@@ -72,7 +72,7 @@ sub __DependsOn
     my $list = [];
 
 # AddLink transactions
-    my $map = RT::Ticket->LINKTYPEMAP;
+    my $map = { %RT::Link::TYPEMAP };
     my $link_meta = $map->{ $self->Type };
     unless ( $link_meta && $link_meta->{'Mode'} && $link_meta->{'Type'} ) {
         RT::Shredder::Exception->throw( 'Wrong link link_meta, no record for '. $self->Type );

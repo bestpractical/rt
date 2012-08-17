@@ -70,6 +70,7 @@ use warnings;
 use RT::Date;
 use RT::User;
 use RT::Attributes;
+use RT::Link;
 use Encode qw();
 
 our $_TABLE_ATTR = { };
@@ -820,23 +821,6 @@ sub _DecodeLOB {
         return ($Content);
 }
 
-# A helper table for links mapping to make it easier
-# to build and parse links between tickets
-
-use vars '%LINKDIRMAP';
-
-%LINKDIRMAP = (
-    MemberOf => { Base => 'MemberOf',
-                  Target => 'HasMember', },
-    RefersTo => { Base => 'RefersTo',
-                Target => 'ReferredToBy', },
-    DependsOn => { Base => 'DependsOn',
-                   Target => 'DependedOnBy', },
-    MergedInto => { Base => 'MergedInto',
-                   Target => 'MergedInto', },
-
-);
-
 =head2 Update  ARGSHASH
 
 Updates fields on an object for you using the proper Set methods,
@@ -1352,7 +1336,7 @@ sub _AddLink {
     unless ( $args{ 'Silent'. $direction } ) {
         my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
             Type      => 'AddLink',
-            Field     => $LINKDIRMAP{$args{'Type'}}->{$direction},
+            Field     => $RT::Link::DIRMAP{$args{'Type'}}->{$direction},
             NewValue  => $remote_uri->URI || $remote_link,
             TimeTaken => 0
         );
@@ -1363,7 +1347,7 @@ sub _AddLink {
         my $OtherObj = $remote_uri->Object;
         my ( $val, $msg ) = $OtherObj->_NewTransaction(
             Type           => 'AddLink',
-            Field          => $LINKDIRMAP{$args{'Type'}}->{$opposite_direction},
+            Field          => $RT::Link::DIRMAP{$args{'Type'}}->{$opposite_direction},
             NewValue       => $self->URI,
             ActivateScrips => !RT->Config->Get('LinkTransactionsRun1Scrip'),
             TimeTaken      => 0,
@@ -1463,7 +1447,7 @@ sub _DeleteLink {
     unless ( $args{ 'Silent'. $direction } ) {
         my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
             Type      => 'DeleteLink',
-            Field     => $LINKDIRMAP{$args{'Type'}}->{$direction},
+            Field     => $RT::Link::DIRMAP{$args{'Type'}}->{$direction},
             OldValue  => $remote_uri->URI || $remote_link,
             TimeTaken => 0
         );
@@ -1474,7 +1458,7 @@ sub _DeleteLink {
         my $OtherObj = $remote_uri->Object;
         my ( $val, $msg ) = $OtherObj->_NewTransaction(
             Type           => 'DeleteLink',
-            Field          => $LINKDIRMAP{$args{'Type'}}->{$opposite_direction},
+            Field          => $RT::Link::DIRMAP{$args{'Type'}}->{$opposite_direction},
             OldValue       => $self->URI,
             ActivateScrips => !RT->Config->Get('LinkTransactionsRun1Scrip'),
             TimeTaken      => 0,

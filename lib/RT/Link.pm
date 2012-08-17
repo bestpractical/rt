@@ -79,6 +79,26 @@ sub Table {'Links'}
 use Carp;
 use RT::URI;
 
+# Helper tables for links mapping to make it easier
+# to build and parse links between objects.
+our %TYPEMAP = (
+    MemberOf        => { Type => 'MemberOf',    Mode => 'Target' },
+    Parents         => { Type => 'MemberOf',    Mode => 'Target' },
+    Members         => { Type => 'MemberOf',    Mode => 'Base'   },
+    Children        => { Type => 'MemberOf',    Mode => 'Base'   },
+    HasMember       => { Type => 'MemberOf',    Mode => 'Base'   },
+    RefersTo        => { Type => 'RefersTo',    Mode => 'Target' },
+    ReferredToBy    => { Type => 'RefersTo',    Mode => 'Base'   },
+    DependsOn       => { Type => 'DependsOn',   Mode => 'Target' },
+    DependedOnBy    => { Type => 'DependsOn',   Mode => 'Base'   },
+    MergedInto      => { Type => 'MergedInto',  Mode => 'Target' },
+);
+our %DIRMAP = (
+    MemberOf    => { Base => 'MemberOf',    Target => 'HasMember'    },
+    RefersTo    => { Base => 'RefersTo',    Target => 'ReferredToBy' },
+    DependsOn   => { Base => 'DependsOn',   Target => 'DependedOnBy' },
+    MergedInto  => { Base => 'MergedInto',  Target => 'MergedInto'   },
+);
 
 
 =head2 Create PARAMHASH

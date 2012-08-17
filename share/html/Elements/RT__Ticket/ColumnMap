@@ -57,8 +57,8 @@ my $COLUMN_MAP;
 my $LinkCallback = sub {
     my $method = shift;
 
-    my $mode            = $RT::Ticket::LINKTYPEMAP{$method}{Mode};
-    my $type            = $RT::Ticket::LINKTYPEMAP{$method}{Type};
+    my $mode            = $RT::Link::TYPEMAP{$method}{Mode};
+    my $type            = $RT::Link::TYPEMAP{$method}{Type};
     my $other_mode      = ($mode eq "Target" ? "Base" : "Target");
     my $mode_uri        = $mode.'URI';
     my $local_type      = 'Local'.$mode;
@@ -291,7 +291,7 @@ $COLUMN_MAP = {
     # Everything from LINKTYPEMAP
     (map {
         $_ => { value => $LinkCallback->( $_ ) }
-    } keys %RT::Ticket::LINKTYPEMAP),
+    } keys %RT::Link::TYPEMAP),
 
     '_CLASS' => {
         value => sub { return $_[1] % 2 ? 'oddline' : 'evenline' }

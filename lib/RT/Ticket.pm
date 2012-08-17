@@ -72,6 +72,7 @@ use warnings;
 use RT::Queue;
 use RT::User;
 use RT::Record;
+use RT::Link;
 use RT::Links;
 use RT::Date;
 use RT::CustomFields;
@@ -82,54 +83,6 @@ use RT::URI::fsck_com_rt;
 use RT::URI;
 use MIME::Entity;
 use Devel::GlobalDestruction;
-
-
-# A helper table for links mapping to make it easier
-# to build and parse links between tickets
-
-our %LINKTYPEMAP = (
-    MemberOf => { Type => 'MemberOf',
-                  Mode => 'Target', },
-    Parents => { Type => 'MemberOf',
-         Mode => 'Target', },
-    Members => { Type => 'MemberOf',
-                 Mode => 'Base', },
-    Children => { Type => 'MemberOf',
-          Mode => 'Base', },
-    HasMember => { Type => 'MemberOf',
-                   Mode => 'Base', },
-    RefersTo => { Type => 'RefersTo',
-                  Mode => 'Target', },
-    ReferredToBy => { Type => 'RefersTo',
-                      Mode => 'Base', },
-    DependsOn => { Type => 'DependsOn',
-                   Mode => 'Target', },
-    DependedOnBy => { Type => 'DependsOn',
-                      Mode => 'Base', },
-    MergedInto => { Type => 'MergedInto',
-                   Mode => 'Target', },
-
-);
-
-
-# A helper table for links mapping to make it easier
-# to build and parse links between tickets
-
-our %LINKDIRMAP = (
-    MemberOf => { Base => 'MemberOf',
-                  Target => 'HasMember', },
-    RefersTo => { Base => 'RefersTo',
-                Target => 'ReferredToBy', },
-    DependsOn => { Base => 'DependsOn',
-                   Target => 'DependedOnBy', },
-    MergedInto => { Base => 'MergedInto',
-                   Target => 'MergedInto', },
-
-);
-
-
-sub LINKTYPEMAP   { return \%LINKTYPEMAP   }
-sub LINKDIRMAP   { return \%LINKDIRMAP   }
 
 our %MERGE_CACHE = (
     effective => {},
@@ -608,7 +561,7 @@ sub Create {
     #
     # //RUZ
 
-    foreach my $type ( keys %LINKTYPEMAP ) {
+    foreach my $type ( keys %RT::Link::TYPEMAP ) {
         next unless ( defined $args{$type} );
         foreach my $link (
             ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) )
@@ -635,10 +588,10 @@ sub Create {
             }
 
             my ( $wval, $wmsg ) = $self->_AddLink(
-                Type                          => $LINKTYPEMAP{$type}->{'Type'},
-                $LINKTYPEMAP{$type}->{'Mode'} => $link,
+                Type                          => $RT::Link::TYPEMAP{$type}->{'Type'},
+                $RT::Link::TYPEMAP{$type}->{'Mode'} => $link,
                 Silent                        => !$args{'_RecordTransaction'} || $self->Type eq 'reminder',
-                'Silent'. ( $LINKTYPEMAP{$type}->{'Mode'} eq 'Base'? 'Target': 'Base' )
+                'Silent'. ( $RT::Link::TYPEMAP{$type}->{'Mode'} eq 'Base'? 'Target': 'Base' )
                                               => 1,
             );
 
