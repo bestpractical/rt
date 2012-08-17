@@ -1264,8 +1264,6 @@ sub FormatLink {
     return $text;
 }
 
-
-
 =head2 _AddLink
 
 Takes a paramhash of Type and one of Base or Target. Adds that link to this object.
@@ -1277,12 +1275,13 @@ Returns C<link id>, C<message> and C<exist> flag.
 
 sub _AddLink {
     my $self = shift;
-    my %args = ( Target => '',
-                 Base   => '',
-                 Type   => '',
-                 Silent => undef,
-                 @_ );
-
+    my %args = (
+        Target       => '',
+        Base         => '',
+        Type         => '',
+        Silent       => undef,
+        @_
+    );
 
     # Remote_link is the URI of the object that is not this ticket
     my $remote_link;
@@ -1317,31 +1316,25 @@ sub _AddLink {
         return ( $old_link->id, $self->loc("Link already exists"), 1 );
     }
 
-    # }}}
-
-
     # Storing the link in the DB.
     my $link = RT::Link->new( $self->CurrentUser );
     my ($linkid, $linkmsg) = $link->Create( Target => $args{Target},
-                                  Base   => $args{Base},
-                                  Type   => $args{Type} );
+                                            Base   => $args{Base},
+                                            Type   => $args{Type} );
 
     unless ($linkid) {
         $RT::Logger->error("Link could not be created: ".$linkmsg);
         return ( 0, $self->loc("Link could not be created") );
     }
 
-    my $basetext = $self->FormatLink(Object => $link->BaseObj,
-				     FallBack => $args{Base});
-    my $targettext = $self->FormatLink(Object => $link->TargetObj,
-				       FallBack => $args{Target});
+    my $basetext = $self->FormatLink(Object   => $link->BaseObj,
+                                     FallBack => $args{Base});
+    my $targettext = $self->FormatLink(Object   => $link->TargetObj,
+                                       FallBack => $args{Target});
     my $typetext = $self->FormatType(Type => $args{Type});
-    my $TransString =
-      "$basetext $typetext $targettext.";
+    my $TransString = "$basetext $typetext $targettext.";
     return ( $linkid, $TransString ) ;
 }
-
-
 
 =head2 _DeleteLink
 
@@ -1360,9 +1353,7 @@ sub _DeleteLink {
         @_
     );
 
-    #we want one of base and target. we don't care which
-    #but we only want _one_
-
+    # We want one of base and target. We don't care which but we only want _one_.
     my $direction;
     my $remote_link;
 
@@ -1372,13 +1363,13 @@ sub _DeleteLink {
     }
     elsif ( $args{'Base'} ) {
         $args{'Target'} = $self->URI();
-	$remote_link = $args{'Base'};
-    	$direction = 'Target';
+        $remote_link    = $args{'Base'};
+        $direction      = 'Target';
     }
     elsif ( $args{'Target'} ) {
         $args{'Base'} = $self->URI();
-	$remote_link = $args{'Target'};
-        $direction='Base';
+        $remote_link  = $args{'Target'};
+        $direction    = 'Base';
     }
     else {
         $RT::Logger->error("Base or Target must be specified");
@@ -1386,17 +1377,23 @@ sub _DeleteLink {
     }
 
     my $link = RT::Link->new( $self->CurrentUser );
-    $RT::Logger->debug( "Trying to load link: " . $args{'Base'} . " " . $args{'Type'} . " " . $args{'Target'} );
+    $RT::Logger->debug( "Trying to load link: "
+            . $args{'Base'} . " "
+            . $args{'Type'} . " "
+            . $args{'Target'} );
 
+    $link->LoadByParams(
+        Base   => $args{'Base'},
+        Type   => $args{'Type'},
+        Target => $args{'Target'}
+    );
 
-    $link->LoadByParams( Base=> $args{'Base'}, Type=> $args{'Type'}, Target=>  $args{'Target'} );
-    #it's a real link. 
-
+    # it's a real link.
     if ( $link->id ) {
-        my $basetext = $self->FormatLink(Object => $link->BaseObj,
-                                     FallBack => $args{Base});
-        my $targettext = $self->FormatLink(Object => $link->TargetObj,
-                                       FallBack => $args{Target});
+        my $basetext = $self->FormatLink(Object   => $link->BaseObj,
+                                         FallBack => $args{Base});
+        my $targettext = $self->FormatLink(Object   => $link->TargetObj,
+                                           FallBack => $args{Target});
         my $typetext = $self->FormatType(Type => $args{Type});
         my $linkid = $link->id;
         $link->Delete();
@@ -1410,10 +1407,6 @@ sub _DeleteLink {
         return ( 0, $self->loc("Link not found") );
     }
 }
-
-
-
-
 
 =head2 _NewTransaction  PARAMHASH
 
