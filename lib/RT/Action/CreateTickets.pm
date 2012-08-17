@@ -966,15 +966,7 @@ sub GetUpdateTemplate {
     $string .= "InitialPriority: " . $t->Priority . "\n";
     $string .= "FinalPriority: " . $t->FinalPriority . "\n";
 
-    foreach my $type ( sort keys %RT::Link::TYPEMAP ) {
-
-        # don't display duplicates
-        if (   $type eq "HasMember"
-            || $type eq "Members"
-            || $type eq "MemberOf" )
-        {
-            next;
-        }
+    foreach my $type ( RT::Link->DisplayTypes ) {
         $string .= "$type: ";
 
         my $mode   = $RT::Link::TYPEMAP{$type}->{Mode};
@@ -1044,15 +1036,7 @@ sub GetCreateTemplate {
     $string .= "InitialPriority: \n";
     $string .= "FinalPriority: \n";
 
-    foreach my $type ( keys %RT::Link::TYPEMAP ) {
-
-        # don't display duplicates
-        if (   $type eq "HasMember"
-            || $type eq 'Members'
-            || $type eq 'MemberOf' )
-        {
-            next;
-        }
+    foreach my $type ( RT::Link->DisplayTypes ) {
         $string .= "$type: \n";
     }
     return $string;
