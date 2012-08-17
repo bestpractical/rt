@@ -2413,14 +2413,10 @@ sub _Links {
 
 =head2 DeleteLink
 
-Delete a link. takes a paramhash of Base, Target, Type, Silent,
-SilentBase and SilentTarget. Either Base or Target must be null.
-The null value will be replaced with this ticket\'s id.
+Takes a paramhash of Type and one of Base or Target. Removes that link from this ticket.
 
-If Silent is true then no transaction would be recorded, in other
-case you can control creation of transactions on both base and
-target with SilentBase and SilentTarget respectively. By default
-both transactions are created.
+Refer to L<RT::Record/_DeleteLink> for full documentation.  This method
+implements permission checks before calling into L<RT::Record>.
 
 =cut 
 
@@ -2429,10 +2425,6 @@ sub DeleteLink {
     my %args = (
         Base   => undef,
         Target => undef,
-        Type   => undef,
-        Silent => undef,
-        SilentBase   => undef,
-        SilentTarget => undef,
         @_
     );
 
@@ -2461,61 +2453,15 @@ sub DeleteLink {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-    my ($val, $Msg) = $self->SUPER::_DeleteLink(%args);
-    return ( 0, $Msg ) unless $val;
-
-    return ( $val, $Msg ) if $args{'Silent'};
-
-    my ($direction, $remote_link);
-
-    if ( $args{'Base'} ) {
-        $remote_link = $args{'Base'};
-        $direction = 'Target';
-    }
-    elsif ( $args{'Target'} ) {
-        $remote_link = $args{'Target'};
-        $direction = 'Base';
-    } 
-
-    my $remote_uri = RT::URI->new( $self->CurrentUser );
-    $remote_uri->FromURI( $remote_link );
-
-    unless ( $args{ 'Silent'. $direction } ) {
-        my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
-            Type      => 'DeleteLink',
-            Field     => $LINKDIRMAP{$args{'Type'}}->{$direction},
-            OldValue  => $remote_uri->URI || $remote_link,
-            TimeTaken => 0
-        );
-        $RT::Logger->error("Couldn't create transaction: $Msg") unless $Trans;
-    }
-
-    if ( !$args{ 'Silent'. ( $direction eq 'Target'? 'Base': 'Target' ) } && $remote_uri->IsLocal ) {
-        my $OtherObj = $remote_uri->Object;
-        my ( $val, $Msg ) = $OtherObj->_NewTransaction(
-            Type           => 'DeleteLink',
-            Field          => $direction eq 'Target' ? $LINKDIRMAP{$args{'Type'}}->{Base}
-                                            : $LINKDIRMAP{$args{'Type'}}->{Target},
-            OldValue       => $self->URI,
-            ActivateScrips => !RT->Config->Get('LinkTransactionsRun1Scrip'),
-            TimeTaken      => 0,
-        );
-        $RT::Logger->error("Couldn't create transaction: $Msg") unless $val;
-    }
-
-    return ( $val, $Msg );
+    return $self->_DeleteLink(%args);
 }
-
-
 
 =head2 AddLink
 
 Takes a paramhash of Type and one of Base or Target. Adds that link to this ticket.
 
-If Silent is true then no transaction would be recorded, in other
-case you can control creation of transactions on both base and
-target with SilentBase and SilentTarget respectively. By default
-both transactions are created.
+Refer to L<RT::Record/_AddLink> for full documentation.  This method implements
+permissions and ticket validity checks before calling into L<RT::Record>.
 
 =cut
 
@@ -2579,67 +2525,6 @@ sub __GetTicketFromURI {
     }
     return (1, 'Found ticket', $obj);
 }
-
-=head2 _AddLink  
-
-Private non-acled variant of AddLink so that links can be added during create.
-
-=cut
-
-sub _AddLink {
-    my $self = shift;
-    my %args = ( Target       => '',
-                 Base         => '',
-                 Type         => '',
-                 Silent       => undef,
-                 SilentBase   => undef,
-                 SilentTarget => undef,
-                 @_ );
-
-    my ($val, $msg, $exist) = $self->SUPER::_AddLink(%args);
-    return ($val, $msg) if !$val || $exist;
-    return ($val, $msg) if $args{'Silent'};
-
-    my ($direction, $remote_link);
-    if ( $args{'Target'} ) {
-        $remote_link  = $args{'Target'};
-        $direction    = 'Base';
-    } elsif ( $args{'Base'} ) {
-        $remote_link  = $args{'Base'};
-        $direction    = 'Target';
-    }
-
-    my $remote_uri = RT::URI->new( $self->CurrentUser );
-    $remote_uri->FromURI( $remote_link );
-
-    unless ( $args{ 'Silent'. $direction } ) {
-        my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
-            Type      => 'AddLink',
-            Field     => $LINKDIRMAP{$args{'Type'}}->{$direction},
-            NewValue  =>  $remote_uri->URI || $remote_link,
-            TimeTaken => 0
-        );
-        $RT::Logger->error("Couldn't create transaction: $Msg") unless $Trans;
-    }
-
-    if ( !$args{ 'Silent'. ( $direction eq 'Target'? 'Base': 'Target' ) } && $remote_uri->IsLocal ) {
-        my $OtherObj = $remote_uri->Object;
-        my ( $val, $msg ) = $OtherObj->_NewTransaction(
-            Type           => 'AddLink',
-            Field          => $direction eq 'Target' ? $LINKDIRMAP{$args{'Type'}}->{Base}
-                                            : $LINKDIRMAP{$args{'Type'}}->{Target},
-            NewValue       => $self->URI,
-            ActivateScrips => !RT->Config->Get('LinkTransactionsRun1Scrip'),
-            TimeTaken      => 0,
-        );
-        $RT::Logger->error("Couldn't create transaction: $msg") unless $val;
-    }
-
-    return ( $val, $msg );
-}
-
-
-
 
 =head2 MergeInto
 
