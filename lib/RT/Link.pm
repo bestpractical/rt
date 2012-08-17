@@ -82,8 +82,11 @@ use List::MoreUtils 'uniq';
 our %TYPEMAP = (
     MemberOf        => { Type => 'MemberOf',    Mode => 'Target',   Display => 0 },
     Parents         => { Type => 'MemberOf',    Mode => 'Target',   Display => 1 },
+    Parent          => { Type => 'MemberOf',    Mode => 'Target',   Display => 0 },
     Members         => { Type => 'MemberOf',    Mode => 'Base',     Display => 0 },
+    Member          => { Type => 'MemberOf',    Mode => 'Base',     Display => 0 },
     Children        => { Type => 'MemberOf',    Mode => 'Base',     Display => 1 },
+    Child           => { Type => 'MemberOf',    Mode => 'Base',     Display => 0 },
     HasMember       => { Type => 'MemberOf',    Mode => 'Base',     Display => 0 },
     RefersTo        => { Type => 'RefersTo',    Mode => 'Target',   Display => 1 },
     ReferredToBy    => { Type => 'RefersTo',    Mode => 'Base',     Display => 1 },
