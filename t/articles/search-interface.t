@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 23;
+use RT::Test tests => 44;
 
 use RT::CustomField;
 use RT::Queue;
@@ -67,7 +67,12 @@ my %cvals = ('article1q' => 'Some question about swallows',
 		'article3q' => 'Why should I eat my supper?',
 		'article3a' => 'There are starving children in Africa',
 		'article4q' => 'What did Brian originally write?',
-		'article4a' => 'Romanes eunt domus');
+		'article4a' => 'This is an answer that is longer than 255 '
+	     . 'characters so these tests will be sure to use the LargeContent '
+	     . 'SQL as well as the normal SQL that would be generated if this '
+	     . 'was an answer that was shorter than 255 characters. This second '
+	     . 'sentence has a few extra characters to get this string to go '
+	     . 'over the 255 character boundary. Lorem ipsum.');
 
 # Create an article or two with our custom field values.
 
@@ -108,6 +113,52 @@ isa_ok($m, 'Test::WWW::Mechanize');
 ok($m->login, 'logged in');
 $m->follow_link_ok( { text => 'Articles', url_regex => qr!^/Articles/! },
     'UI -> Articles' );
-$m->follow_link_ok( {text => 'Search'}, 'Articles -> Search');
-$m->follow_link_ok( {text => 'in class '.$class->Name}, 'Articles in class '.$class->Name);
-$m->content_contains($article1->Name);
+
+# In all of the search results below, the results page should
+# have the summary text of the article it occurs in.
+
+# Case sensitive search on small field.
+DoArticleSearch($m, $class->Name, 'Africa');
+$m->text_contains('Search results'); # Did we do a search?
+$m->text_contains('blah blah 1');
+
+# Case insensitive search on small field.
+DoArticleSearch($m, $class->Name, 'africa');
+$m->text_contains('Search results'); # Did we do a search?
+$m->text_contains('blah blah 1');
+
+# Case sensitive search on large field.
+DoArticleSearch($m, $class->Name, 'ipsum');
+$m->text_contains('Search results'); # Did we do a search?
+$m->text_contains('hoi polloi 4');
+
+# Case insensitive search on large field.
+DoArticleSearch($m, $class->Name, 'lorem');
+$m->text_contains('Search results'); # Did we do a search?
+TODO:{
+    local $TODO = 'Case insensitive search on LONGBLOB not available in MySQL'
+      if RT->Config->Get('DatabaseType') eq 'mysql';
+    $m->text_contains('hoi polloi 4');
+}
+
+# When you send $m to this sub, it must be on a page with
+# a Search link.
+sub DoArticleSearch{
+  my $m = shift;
+  my $class_name = shift;
+  my $search_text = shift;
+
+  $m->follow_link_ok( {text => 'Search'}, 'Articles -> Search');
+  $m->follow_link_ok( {text => 'in class '. $class_name}, 'Articles in class '. $class_name);
+  $m->text_contains('First article');
+
+  $m->submit_form_ok( {
+            form_number => 3,
+            fields      => {
+                'Article~' => $search_text
+            },
+        }, "Search for $search_text"
+    );
+  return;
+}
+
