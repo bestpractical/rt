@@ -360,6 +360,7 @@ Convert::Color
 
 my %AVOID = (
     'DBD::Oracle' => [qw(1.23)],
+    'Email::Address' => [qw(1.893 1.894)],
 );
 
 if ($args{'download'}) {
