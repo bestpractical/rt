@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 231;
+use RT::Test tests => 245;
 use Test::Warn;
 
 my $queue = RT::Queue->new(RT->SystemUser);
@@ -172,32 +172,47 @@ SimpleTemplateTest(
 );
 is($ticket->Status, 'new', "simple templates can't call ->SetStatus");
 
+note "test arguments passing";
+{
+    PerlTemplateTest(
+        Content => "\ntest { \$Nonexistent }",
+        Output  => "test ",
+    );
+    PerlTemplateTest(
+        Content   => "\ntest { \$Nonexistent }",
+        Arguments => { Nonexistent => 'foo' },
+        Output    => "test foo",
+    );
+}
+
 # Make sure changing the template's type works
-my $template = RT::Template->new(RT->SystemUser);
-$template->Create(
-    Name    => "type chameleon",
-    Type    => "Perl",
-    Content => "\ntest { 10 * 7 }",
-);
-ok($id = $template->id, "Created template");
-$template->Parse;
-is($template->MIMEObj->stringify_body, "test 70", "Perl output");
+{
+    my $template = RT::Template->new(RT->SystemUser);
+    $template->Create(
+        Name    => "type chameleon",
+        Type    => "Perl",
+        Content => "\ntest { 10 * 7 }",
+    );
+    ok($id = $template->id, "Created template");
+    $template->Parse;
+    is($template->MIMEObj->stringify_body, "test 70", "Perl output");
 
-$template = RT::Template->new(RT->SystemUser);
-$template->Load($id);
-is($template->Name, "type chameleon");
+    $template = RT::Template->new(RT->SystemUser);
+    $template->Load($id);
+    is($template->Name, "type chameleon");
 
-$template->SetType('Simple');
-$template->Parse;
-is($template->MIMEObj->stringify_body, "test { 10 * 7 }", "Simple output");
+    $template->SetType('Simple');
+    $template->Parse;
+    is($template->MIMEObj->stringify_body, "test { 10 * 7 }", "Simple output");
 
-$template = RT::Template->new(RT->SystemUser);
-$template->Load($id);
-is($template->Name, "type chameleon");
+    $template = RT::Template->new(RT->SystemUser);
+    $template->Load($id);
+    is($template->Name, "type chameleon");
 
-$template->SetType('Perl');
-$template->Parse;
-is($template->MIMEObj->stringify_body, "test 70", "Perl output");
+    $template->SetType('Perl');
+    $template->Parse;
+    is($template->MIMEObj->stringify_body, "test 70", "Perl output");
+}
 
 undef $ticket;
 
@@ -236,8 +251,10 @@ sub IndividualTemplateTest {
     }
 
     ($ok, $msg) = $t->Parse(
-        TicketObj      => $ticket,
-        TransactionObj => $txn,
+        $args{'Arguments'}
+            ? ( %{ $args{'Arguments'} } )
+            : (TicketObj => $ticket, TransactionObj => $txn )
+        ,
     );
     if (defined $args{Output}) {
         ok($ok, $msg);
@@ -253,8 +270,6 @@ sub TemplateTest {
     my %args = @_;
 
     for my $type ('Perl', 'Simple') {
-        next if $args{"Skip$type"};
-
         IndividualTemplateTest(
             %args,
             Type   => $type,
@@ -265,11 +280,11 @@ sub TemplateTest {
 
 sub SimpleTemplateTest {
     local $Test::Builder::Level = $Test::Builder::Level + 1;
-    my %args = @_;
+    IndividualTemplateTest( @_, Type => 'Simple' );
+}
 
-    IndividualTemplateTest(
-        %args,
-        Type => 'Simple',
-    );
+sub PerlTemplateTest {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+    IndividualTemplateTest( @_, Type => 'Perl' );
 }
 
