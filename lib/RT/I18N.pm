@@ -227,7 +227,7 @@ sub SetMIMEEntityToEncoding {
 
     my $body = $entity->bodyhandle;
 
-    if ( $enc ne $charset && $body ) {
+    if ( $body && ($enc ne $charset || $enc =~ /^utf-?8(?:-strict)?$/i) ) {
         my $string = $body->as_string or return;
 
         $RT::Logger->debug( "Converting '$charset' to '$enc' for "
@@ -335,7 +335,7 @@ sub DecodeMIMEWordsToEncoding {
             }
 
             # now we have got a decoded subject, try to convert into the encoding
-            unless ( $charset eq $to_charset ) {
+            if ( $charset ne $to_charset || $charset =~ /^utf-?8(?:-strict)?$/i ) {
                 Encode::from_to( $enc_str, $charset, $to_charset );
             }
 
@@ -537,7 +537,7 @@ sub SetMIMEHeadToEncoding {
         my @values = $head->get_all($tag);
         $head->delete($tag);
         foreach my $value (@values) {
-            if ( $charset ne $enc ) {
+            if ( $charset ne $enc || $enc =~ /^utf-?8(?:-strict)?$/i ) {
                 Encode::_utf8_off($value);
                 Encode::from_to( $value, $charset => $enc );
             }

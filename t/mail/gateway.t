@@ -608,6 +608,35 @@ EOF
     $m->no_warnings_ok;
 }
 
+diag "make sure we check that UTF-8 is really UTF-8";
+{
+    my $text = <<EOF;
+From: root\@localhost
+To: rtemail\@@{[RT->Config->Get('rtname')]}
+Subject: This is test wrong utf-8 chars
+Content-Type: text/plain; charset="utf-8"
+
+utf-8: informaci\303\263n confidencial
+latin1: informaci\363n confidencial
+
+bye
+EOF
+    my ($status, $id) = RT::Test->send_via_mailgate_and_http($text);
+    is ($status >> 8, 0, "The mail gateway exited normally");
+    ok ($id, "created ticket");
+
+    my $tick = RT::Test->last_ticket;
+    is ($tick->Id, $id, "correct ticket");
+
+    my $content = $tick->Transactions->First->Content;
+    Encode::_utf8_off($content);
+
+    like $content, qr{informaci\303\263n confidencial};
+    like $content, qr{informaci\357\277\275n confidencial};
+
+    $m->no_warnings_ok;
+}
+
 diag "check that mailgate doesn't suffer from empty Reply-To:";
 {
     my $text = <<EOF;
