@@ -97,6 +97,7 @@ my %Meta = (
         },
     },
     DatabaseAdmin => {
+        SkipWrite       => 1,
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
             Default => 1,
@@ -106,6 +107,7 @@ my %Meta = (
         },
     },
     DatabaseAdminPassword => {
+        SkipWrite       => 1,
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
             Description => 'DBA password',  #loc
@@ -149,6 +151,7 @@ my %Meta = (
         },
     },
     Password => {
+        SkipWrite       => 1,
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
             Description => 'Administrative password', #loc
@@ -277,7 +280,7 @@ sub SaveConfig {
         for ( keys %{ $RT::Installer->{InstallConfig} } ) {
 
             # we don't want to store root's password in config.
-            next if $_ eq 'Password';
+            next if $class->Meta($_) and $class->Meta($_)->{SkipWrite};
 
             $RT::Installer->{InstallConfig}{$_} = ''
               unless defined $RT::Installer->{InstallConfig}{$_};
