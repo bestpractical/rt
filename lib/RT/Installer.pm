@@ -277,7 +277,7 @@ sub SaveConfig {
       $RT::Installer->{InstallConfig}{rtname};
 
     if ( open my $fh, '>', $file ) {
-        for ( keys %{ $RT::Installer->{InstallConfig} } ) {
+        for ( sort keys %{ $RT::Installer->{InstallConfig} } ) {
 
             # we don't want to store root's password in config.
             next if $class->Meta($_) and $class->Meta($_)->{SkipWrite};
