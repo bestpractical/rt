@@ -2520,15 +2520,7 @@ sub ProcessObjectCustomFieldUpdates {
     my @results;
 
     # Build up a list of objects that we want to work with
-    my %custom_fields_to_mod;
-    foreach my $arg ( keys %$ARGSRef ) {
-
-        # format: Object-<object class>-<object id>-CustomField-<CF id>-<commands>
-        next unless $arg =~ /^Object-([\w:]+)-(\d*)-CustomField-(\d+)-(.*)$/;
-
-        # For each of those objects, find out what custom fields we want to work with.
-        $custom_fields_to_mod{$1}{ $2 || 0 }{$3}{$4} = $ARGSRef->{$arg};
-    }
+    my %custom_fields_to_mod = _ParseObjectCustomFieldArgs($ARGSRef);
 
     # For each of those objects
     foreach my $class ( keys %custom_fields_to_mod ) {
@@ -2562,6 +2554,22 @@ sub ProcessObjectCustomFieldUpdates {
         }
     }
     return @results;
+}
+
+sub _ParseObjectCustomFieldArgs {
+    my $ARGSRef = shift || {};
+    my %custom_fields_to_mod;
+
+    foreach my $arg ( keys %$ARGSRef ) {
+
+        # format: Object-<object class>-<object id>-CustomField-<CF id>-<commands>
+        next unless $arg =~ /^Object-([\w:]+)-(\d*)-CustomField-(\d+)-(.*)$/;
+
+        # For each of those objects, find out what custom fields we want to work with.
+        $custom_fields_to_mod{$1}{ $2 || 0 }{$3}{$4} = $ARGSRef->{$arg};
+    }
+
+    return wantarray ? %custom_fields_to_mod : \%custom_fields_to_mod;
 }
 
 sub _ProcessObjectCustomFieldUpdates {
