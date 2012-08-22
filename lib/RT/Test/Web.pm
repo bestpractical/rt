@@ -393,6 +393,14 @@ sub auth_header {
         MIME::Base64::encode( join(":", @_) );
 }
 
+sub dom {
+    my $self = shift;
+    Carp::croak("Can not get DOM, not HTML repsone")
+        unless $self->is_html;
+    require Mojo::DOM;
+    return Mojo::DOM->new( $self->content );
+}
+
 sub DESTROY {
     my $self = shift;
     if ( !$RT::Test::Web::DESTROY++ ) {
