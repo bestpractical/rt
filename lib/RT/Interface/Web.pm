@@ -1671,52 +1671,10 @@ sub CreateTicket {
             : ( $ARGS{'AttachTickets'} ) );
     }
 
-    foreach my $arg ( keys %ARGS ) {
-        next if $arg =~ /-(?:Magic|Category)$/;
-
-        if ( $arg =~ /^Object-RT::Transaction--CustomField-/ ) {
-            $create_args{$arg} = $ARGS{$arg};
-        }
-
-        # Object-RT::Ticket--CustomField-3-Values
-        elsif ( $arg =~ /^Object-RT::Ticket--CustomField-(\d+)/ ) {
-            my $cfid = $1;
-
-            my $cf = RT::CustomField->new( $session{'CurrentUser'} );
-            $cf->SetContextObject( $Queue );
-            $cf->Load($cfid);
-            unless ( $cf->id ) {
-                $RT::Logger->error( "Couldn't load custom field #" . $cfid );
-                next;
-            }
-
-            if ( $arg =~ /-Upload$/ ) {
-                $create_args{"CustomField-$cfid"} = _UploadedFile($arg);
-                next;
-            }
-
-            my $type = $cf->Type;
-
-            my @values = ();
-            if ( ref $ARGS{$arg} eq 'ARRAY' ) {
-                @values = @{ $ARGS{$arg} };
-            } elsif ( $type =~ /text/i ) {
-                @values = ( $ARGS{$arg} );
-            } else {
-                no warnings 'uninitialized';
-                @values = split /\r*\n/, $ARGS{$arg};
-            }
-            @values = grep length, map {
-                s/\r+\n/\n/g;
-                s/^\s+//;
-                s/\s+$//;
-                $_;
-                }
-                grep defined, @values;
-
-            $create_args{"CustomField-$cfid"} = \@values;
-        }
-    }
+    my %cfs = ProcessObjectCustomFieldUpdatesForCreate(
+        ARGSRef         => \%ARGS,
+        ContextObject   => $Queue,
+    );
 
     # turn new link lists into arrays, and pass in the proper arguments
     my %map = (
@@ -1733,7 +1691,7 @@ sub CreateTicket {
 
     }
 
-    my ( $id, $Trans, $ErrMsg ) = $Ticket->Create(%create_args);
+    my ( $id, $Trans, $ErrMsg ) = $Ticket->Create(%create_args, %cfs);
     unless ($id) {
         Abort($ErrMsg);
     }
@@ -2711,6 +2669,47 @@ sub _ProcessObjectCustomFieldUpdates {
         }
     }
     return @results;
+}
+
+sub ProcessObjectCustomFieldUpdatesForCreate {
+    my %args = (
+        ARGSRef         => {},
+        ContextObject   => undef,
+        @_
+    );
+    my %parsed;
+    my %custom_fields = _ParseObjectCustomFieldArgs( $args{'ARGSRef'} );
+
+    for my $class (keys %custom_fields) {
+        # we're only interested in new objects, so only look at $id == 0
+        for my $cfid (keys %{ $custom_fields{$class}{0} || {} }) {
+            my $cf = RT::CustomField->new( $session{'CurrentUser'} );
+            $cf->SetContextObject( $args{'ContextObject'} ); # XXX TODO: ValidateContextObject?
+            $cf->LoadById($cfid);
+
+            unless ($cf->id) {
+                RT->Logger->warning("Couldn't load custom field #$cfid");
+                next;
+            }
+
+            my @values;
+            while (my ($arg, $value) = each %{ $custom_fields{$class}{0}{$cfid} }) {
+                # Values-Magic doesn't matter on create; no previous values are being removed
+                # Category is irrelevant for the actual value
+                next if $arg eq "Values-Magic" or $arg eq "Category";
+
+                push @values, _NormalizeObjectCustomFieldValue(
+                    CustomField => $cf,
+                    Param       => "Object-$class--CustomField-$cfid-$arg",
+                    Value       => $value,
+                );
+            }
+
+            $parsed{"CustomField-$cfid"} = \@values if @values;
+        }
+    }
+
+    return wantarray ? %parsed : \%parsed;
 }
 
 sub _NormalizeObjectCustomFieldValue {
