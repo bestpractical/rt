@@ -2545,6 +2545,9 @@ sub ProcessObjectCustomFieldUpdates {
                 }
                 push @results,
                     _ProcessObjectCustomFieldUpdates(
+                    # XXX FIXME: Prefix is not quite right, as $id almost
+                    # certainly started as blank for new objects and is now 0.
+                    # Only Image/Binary CFs on new objects should be affected.
                     Prefix      => "Object-$class-$id-CustomField-$cf-",
                     Object      => $Object,
                     CustomField => $CustomFieldObj,
@@ -2607,22 +2610,14 @@ sub _ProcessObjectCustomFieldUpdates {
             $args{'ARGS'}->{'Values'} = undef;
         }
 
-        my @values = ();
-        if ( ref $args{'ARGS'}->{$arg} eq 'ARRAY' ) {
-            @values = @{ $args{'ARGS'}->{$arg} };
-        } elsif ( $cf_type =~ /text/i ) {    # Both Text and Wikitext
-            @values = ( $args{'ARGS'}->{$arg} );
-        } else {
-            @values = split /\r*\n/, $args{'ARGS'}->{$arg}
-                if defined $args{'ARGS'}->{$arg};
-        }
-        @values = grep length, map {
-            s/\r+\n/\n/g;
-            s/^\s+//;
-            s/\s+$//;
-            $_;
-            }
-            grep defined, @values;
+        my @values = _NormalizeObjectCustomFieldValue(
+            CustomField => $cf,
+            Param       => $args{'Prefix'} . $arg,
+            Value       => $args{'ARGS'}->{$arg}
+        );
+
+        # "Empty" values still don't mean anything for Image and Binary fields
+        next if $cf_type =~ /^(?:Image|Binary)$/ and not @values;
 
         if ( $arg eq 'AddValue' || $arg eq 'Value' ) {
             foreach my $value (@values) {
@@ -2633,8 +2628,7 @@ sub _ProcessObjectCustomFieldUpdates {
                 push( @results, $msg );
             }
         } elsif ( $arg eq 'Upload' ) {
-            my $value_hash = _UploadedFile( $args{'Prefix'} . $arg ) or next;
-            my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue( %$value_hash, Field => $cf, );
+            my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue( %{$values[0]}, Field => $cf, );
             push( @results, $msg );
         } elsif ( $arg eq 'DeleteValues' ) {
             foreach my $value (@values) {
@@ -2719,6 +2713,33 @@ sub _ProcessObjectCustomFieldUpdates {
     return @results;
 }
 
+sub _NormalizeObjectCustomFieldValue {
+    my %args    = (@_);
+    my $cf_type = $args{CustomField}->Type;
+    my @values  = ();
+
+    if ( ref $args{'Value'} eq 'ARRAY' ) {
+        @values = @{ $args{'Value'} };
+    } elsif ( $cf_type =~ /text/i ) {    # Both Text and Wikitext
+        @values = ( $args{'Value'} );
+    } else {
+        @values = split /\r*\n/, $args{'Value'}
+            if defined $args{'Value'};
+    }
+    @values = grep length, map {
+        s/\r+\n/\n/g;
+        s/^\s+//;
+        s/\s+$//;
+        $_;
+        }
+        grep defined, @values;
+
+    if ($cf_type eq 'Image' or $cf_type eq 'Binary') {
+        @values = _UploadedFile( $args{'Param'} ) || ();
+    }
+
+    return @values;
+}
 
 =head2 ProcessTicketWatchers ( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
