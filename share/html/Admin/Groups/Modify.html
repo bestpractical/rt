@@ -162,10 +162,7 @@ MaybeRedirectForResults(
 
 push @results, @warnings;
 
-unless ($Group->Disabled()) {
-    $EnabledChecked ='checked="checked"';
-}
-
+$EnabledChecked = ( $Group->Disabled() ? '' : 'checked="checked"' );
 
 </%INIT>
 
