@@ -861,15 +861,21 @@ sub InsertData {
             }
 
             if ( $item->{'BasedOn'} ) {
-                my $basedon = RT::CustomField->new($RT::SystemUser);
-                my ($ok, $msg ) = $basedon->LoadByCols( Name => $item->{'BasedOn'},
-                                                        LookupType => $item->{'LookupType'} );
-                if ($ok) {
-                    $item->{'BasedOn'} = $basedon->Id;
+                if ( $item->{'LookupType'} ) {
+                    my $basedon = RT::CustomField->new($RT::SystemUser);
+                    my ($ok, $msg ) = $basedon->LoadByCols( Name => $item->{'BasedOn'},
+                                                            LookupType => $item->{'LookupType'} );
+                    if ($ok) {
+                        $item->{'BasedOn'} = $basedon->Id;
+                    } else {
+                        $RT::Logger->error("Unable to load $item->{BasedOn} as a $item->{LookupType} CF.  Skipping BasedOn: $msg");
+                        delete $item->{'BasedOn'};
+                    }
                 } else {
-                    $RT::Logger->error("Unable to load $item->{BasedOn} as a $item->{LookupType} CF.  Skipping BasedOn: $msg");
+                    $RT::Logger->error("Unable to load CF $item->{BasedOn} because no LookupType was specified.  Skipping BasedOn");
                     delete $item->{'BasedOn'};
                 }
+
             } 
 
             my ( $return, $msg ) = $new_entry->Create(%$item);
