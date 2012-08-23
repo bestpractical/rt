@@ -70,7 +70,7 @@
 % if ( $type_class eq 'message' ) {
       <& /Elements/ShowCustomFields, Object => $Transaction &>
 % }
-% $m->comp('ShowTransactionAttachments', %ARGS, Parent => 0) unless ($Collapsed ||!$ShowBody);
+% $m->comp('ShowTransactionAttachments', %ARGS, Parent => 0, ShowBody => $ShowBody) unless $Collapsed;
     </div>
 </div>
 </div>
