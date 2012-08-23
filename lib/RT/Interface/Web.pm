@@ -2677,6 +2677,7 @@ sub ProcessObjectCustomFieldUpdatesForCreate {
         ContextObject   => undef,
         @_
     );
+    my $context = $args{'ContextObject'};
     my %parsed;
     my %custom_fields = _ParseObjectCustomFieldArgs( $args{'ARGSRef'} );
 
@@ -2684,7 +2685,19 @@ sub ProcessObjectCustomFieldUpdatesForCreate {
         # we're only interested in new objects, so only look at $id == 0
         for my $cfid (keys %{ $custom_fields{$class}{0} || {} }) {
             my $cf = RT::CustomField->new( $session{'CurrentUser'} );
-            $cf->SetContextObject( $args{'ContextObject'} ); # XXX TODO: ValidateContextObject?
+            if ($context) {
+                my $system_cf = RT::CustomField->new( RT->SystemUser );
+                $system_cf->LoadById($cfid);
+                if ($system_cf->ValidateContextObject($context)) {
+                    $cf->SetContextObject($context);
+                } else {
+                    RT->Logger->error(
+                        sprintf "Invalid context object %s (%d) for CF %d; skipping CF",
+                                ref $context, $context->id, $system_cf->id
+                    );
+                    next;
+                }
+            }
             $cf->LoadById($cfid);
 
             unless ($cf->id) {
