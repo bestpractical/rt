@@ -115,6 +115,12 @@ my $title;
 my $Entries    = {};
 my $ArticleObj = RT::Article->new( $session{'CurrentUser'} );
 my $ClassObj   = RT::Class->new( $session{'CurrentUser'} );
+
+if ($Class) {
+    $ClassObj->Load($Class);
+    Abort(loc("'[_1]' isn't a valid class", $Class)) unless $ClassObj->Id;
+}
+
 my %create_args;
 my %CFContent;
 my $EditClass = 1;
@@ -129,11 +135,6 @@ if ( !$id ) {
         }
     }
 
-    $ClassObj->Load($Class);
-    unless ( $ClassObj->Id ) {
-        $m->comp( "/Elements/Error",
-            Why => loc( "'[_1]' isn't a valid class identifier", $Class ) );
-    }
     $EditClass = 0;
     $id        = 'new';
 }
@@ -151,7 +152,7 @@ elsif ( $id eq 'new' ) {
 
     my %cfs = ProcessObjectCustomFieldUpdatesForCreate(
         ARGSRef         => \%ARGS,
-        ContextObject   => $ArticleObj,
+        ContextObject   => $ClassObj,
     );
 
     my $msg;
@@ -182,12 +183,7 @@ elsif ( $id eq 'new' ) {
             );
         }
     }
-   if (!$id) {
-        $ClassObj->Load($Class);
-        unless ( $ClassObj->Id ) {
-            $m->comp( "/Elements/Error",
-                Why => loc( "'[_1]' isn't a valid class identifier", $Class ) );
-        }
+    else {
         $ArticleObj = RT::Article->new( $session{'CurrentUser'} );
         $id        = 'new';
         $EditClass = 0;
