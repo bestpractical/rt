@@ -49,14 +49,7 @@
   <input size="12" name="q" accesskey="0" class="field" value="<% $value %>" placeholder="<% loc('Search') %>..." />
 </form>
 <%init>
-my $value = '';
-
-# The current simple search is sticky
-if (defined $m->request_args->{q}) {
-    my %request = ( q => $m->request_args->{q} );
-    RT::Interface::Web::DecodeARGS(\%request);
-    $value = $request{q};
-}
+my $value = defined $DECODED_ARGS->{q} ? $DECODED_ARGS->{q} : '';
 </%init>
 <%ARGS>
 $SendTo => '/Search/Simple.html'
