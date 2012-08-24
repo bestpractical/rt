@@ -90,7 +90,7 @@ while ( my $CF = $CustomFields->Next ) {
                     my $msg =
                       loc( "Input can not be parsed as an IP address" );
                     $m->notes( ( 'InvalidField-' . $CF->Id ) => $msg );
-                    push @res, $msg;
+                    push @res, loc($CF->Name) .': '. $msg;
                     $valid = 0;
                 }
             }
@@ -101,7 +101,7 @@ while ( my $CF = $CustomFields->Next ) {
                     my $msg =
                       loc( "Input can not be parsed as an IP address range" );
                     $m->notes( ( 'InvalidField-' . $CF->Id ) => $msg );
-                    push @res, $msg;
+                    push @res, loc($CF->Name) .': '. $msg;
                     $valid = 0;
                 }
             }
@@ -111,7 +111,7 @@ while ( my $CF = $CustomFields->Next ) {
 
         my $msg = loc("Input must match [_1]", $CF->FriendlyPattern);
         $m->notes( ('InvalidField-' . $CF->Id) => $msg );
-        push @res, $msg;
+        push @res, loc($CF->Name) .': '. $msg;
         $valid = 0;
     }
 }

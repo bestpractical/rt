@@ -121,28 +121,28 @@ $Queue => undef
 my @results;
 my $queue_obj = RT::Queue->new($session{'CurrentUser'});
 $queue_obj->Load($Queue);
-my $CFs = $queue_obj->TicketCustomFields();
-my $ValidCFs = $m->comp(
-    '/Elements/ValidateCustomFields',
-    CustomFields => $CFs,
-    ARGSRef => \%ARGS
-);
 
 my $skip_create = 0;
+
+{
+    my ($status, @msg) = $m->comp(
+        '/Elements/ValidateCustomFields',
+        CustomFields => $queue_obj->TicketCustomFields,
+        ARGSRef => \%ARGS
+    );
+    unless ($status) {
+        push @results, @msg;
+        $skip_create = 1;
+    }
+}
+
 $m->callback( CallbackName => 'BeforeCreate', ARGSRef => \%ARGS, skip_create => \$skip_create, results => \@results );
 
 if ( defined($ARGS{'id'}) and $ARGS{'id'} eq 'new' ) { # new ticket?
-    if ( $ValidCFs && !$skip_create ) {
+    if ( !$skip_create ) {
         $m->comp('Display.html', %ARGS);
         $RT::Logger->crit("After display call; error is $@");
         $m->abort();
-    }
-    elsif ( !$ValidCFs ) {
-        # Invalid CFs
-        while (my $CF = $CFs->Next) {
-            my $msg = $m->notes('InvalidField-' . $CF->Id) or next;
-            push @results, $CF->Name . ': ' . $msg;
-        }
     }
 }
 
