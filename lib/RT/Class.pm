@@ -262,8 +262,7 @@ sub CurrentUserHasRight {
     return (
         $self->CurrentUser->HasRight(
             Right        => $right,
-            Object       => ( $self->Id ? $self : $RT::System ),
-            EquivObjects => [ $RT::System, $RT::System ]
+            Object       => ( $self->Id ? $self : RT->System ),
         )
     );
 
