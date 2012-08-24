@@ -102,7 +102,7 @@ sub Create {
         @_
     );
 
-    my $class = RT::Class->new($RT::SystemUser);
+    my $class = RT::Class->new( $self->CurrentUser );
     $class->Load( $args{'Class'} );
     unless ( $class->Id ) {
         return ( 0, $self->loc('Invalid Class') );
