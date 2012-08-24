@@ -156,6 +156,7 @@ SYSTEM_BINARIES		=	rt-attributes-viewer \
 				rt-shredder \
 				rt-test-dependencies \
 				rt-validator \
+				rt-validate-aliases \
 				standalone_httpd
 
 
