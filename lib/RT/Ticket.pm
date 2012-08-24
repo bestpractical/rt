@@ -2120,14 +2120,16 @@ sub Comment {
     }
     $args{'NoteType'} = 'Comment';
 
+    $RT::Handle->BeginTransaction();
     if ($args{'DryRun'}) {
-        $RT::Handle->BeginTransaction();
         $args{'CommitScrips'} = 0;
     }
 
     my @results = $self->_RecordNote(%args);
     if ($args{'DryRun'}) {
         $RT::Handle->Rollback();
+    } else {
+        $RT::Handle->Commit();
     }
 
     return(@results);
@@ -2166,10 +2168,10 @@ sub Correspond {
              or ( $self->CurrentUserHasRight('ModifyTicket') ) ) {
         return ( 0, $self->loc("Permission Denied"), undef );
     }
+    $args{'NoteType'} = 'Correspond';
 
-    $args{'NoteType'} = 'Correspond'; 
+    $RT::Handle->BeginTransaction();
     if ($args{'DryRun'}) {
-        $RT::Handle->BeginTransaction();
         $args{'CommitScrips'} = 0;
     }
 
@@ -2186,6 +2188,8 @@ sub Correspond {
 
     if ($args{'DryRun'}) {
         $RT::Handle->Rollback();
+    } else {
+        $RT::Handle->Commit();
     }
 
     return (@results);
