@@ -80,10 +80,8 @@ sub Commit {
             }
 
         }
-        $obj->SetStatus(
-            Status => $obj->QueueObj->Lifecycle->DefaultStatus('approved') || 'open',
-            Force => 1,
-        );
+        $obj->SetStatus( Status => $obj->FirstActiveStatus, Force => 1 )
+            if $obj->FirstActiveStatus;
     }
 
     my $passed = !$top->HasUnresolvedDependencies( Type => 'approval' );
@@ -98,6 +96,11 @@ sub Commit {
     $top->Correspond( MIMEObj => $template->MIMEObj );
 
     if ($passed) {
+        my $new_status = $top->QueueObj->Lifecycle->DefaultStatus('approved') || 'open';
+        if ( $new_status ne $top->Status ) {
+            $top->SetStatus( $new_status );
+        }
+
         $self->RunScripAction('Notify Owner', 'Approval Ready for Owner',
                               TicketObj => $top);
     }
