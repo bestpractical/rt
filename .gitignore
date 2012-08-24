@@ -32,6 +32,7 @@
 /sbin/rt-shredder
 /sbin/rt-test-dependencies
 /sbin/rt-validator
+/sbin/rt-validate-aliases
 /sbin/standalone_httpd
 /var/mason_data/
 /autom4te.cache/
