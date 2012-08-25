@@ -1529,7 +1529,88 @@ sub PageWidgets {
     return $HTML::Mason::Commands::m->notes('page-widgets');
 }
 
+sub RenderMenu {
+    my %args = (toplevel => 1, parent_id => '', depth => 0, @_);
+    return unless $args{'menu'};
 
+    my ($menu, $depth, $toplevel, $id, $parent_id)
+        = @args{qw(menu depth toplevel id parent_id)};
+
+    my $interp = $m->interp;
+    my $web_path = RT->Config->Get('WebPath');
+
+    my $res = '';
+    $res .= ' ' x $depth;
+    $res .= '<ul';
+    $res .= ' id="'. $interp->apply_escapes($id, 'h') .'"'
+        if $id;
+    $res .= ' class="toplevel"' if $toplevel;
+    $res .= ">\n";
+
+    for my $child ($menu->children) {
+        $res .= ' 'x ($depth+1);
+
+        my $item_id = lc(($parent_id? "$parent_id-" : "") .$child->key);
+        $item_id =~ s/\s/-/g;
+        my $eitem_id = $interp->apply_escapes($item_id, 'h');
+        $res .= qq{<li id="li-$eitem_id"};
+
+        my @classes;
+        push @classes, 'has-children' if $child->has_children;
+        push @classes, 'active'       if $child->active;
+        $res .= ' class="'. join( ' ', @classes ) .'"'
+            if @classes;
+
+        $res .= '>';
+
+        if ( my $tmp = $child->raw_html ) {
+            $res .= $tmp;
+        } else {
+            $res .= qq{<a id="$eitem_id" class="menu-item};
+            if ( $tmp = $child->class ) {
+                $res .= ' '. $interp->apply_escapes($tmp, 'h');
+            }
+            $res .= '"';
+
+            my $path = $child->path;
+            my $url = (not $path or $path =~ m{^\w+:/}) ? $path : $web_path . $path;
+            $res .= ' href="'. $interp->apply_escapes($url, 'h') .'"'
+                if $url;
+
+            if ( $tmp = $child->target ) {
+                $res .= ' target="'. $interp->apply_escapes($tmp, 'h') .'"'
+            }
+            $res .= '>';
+
+            if ( $child->escape_title ) {
+                $res .= $interp->apply_escapes($child->title, 'h');
+            } else {
+                $res .= $child->title;
+            }
+            $res .= '</a>';
+        }
+
+        if ( $child->has_children ) {
+            $res .= "\n";
+            $res .= RenderMenu(
+                menu => $child,
+                toplevel => 0,
+                parent_id => $item_id,
+                depth => $depth+1,
+                return => 1,
+            );
+            $res .= "\n";
+            $res .= ' ' x ($depth+1);
+        }
+        $res .= "</li>\n";
+    }
+    $res .= ' ' x $depth;
+    $res .= '</ul>';
+    return $res if $args{'return'};
+
+    $m->print($res);
+    return '';
+}
 
 =head2 loc ARRAY
 
