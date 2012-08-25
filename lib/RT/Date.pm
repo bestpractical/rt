@@ -1038,6 +1038,8 @@ sub Localtime
     my @local;
     if ($tz eq 'UTC') {
         @local = gmtime($unix);
+    } elsif ( ($ENV{'TZ'}||'') eq $tz ) {
+        @local = localtime($unix);
     } else {
         {
             local $ENV{'TZ'} = $tz;

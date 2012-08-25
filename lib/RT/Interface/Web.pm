@@ -367,6 +367,12 @@ sub HandleRequest {
     # Process per-page global callbacks
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Default', CallbackPage => '/autohandler' );
 
+    # set timezone to user's to avoid tzset calls
+    {
+        $ENV{'TZ'} = RT::Date->new($HTML::Mason::Commands::session{'CurrentUser'})->Timezone('user');
+        POSIX::tzset();
+    }
+
     ShowRequestedPage($ARGS);
     LogRecordedSQLStatements(RequestData => {
         Path => $HTML::Mason::Commands::m->request_path,
