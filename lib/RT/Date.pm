@@ -1064,8 +1064,6 @@ sub Timezone {
 
     my $context = lc(shift);
 
-    $context = 'utc' unless $context =~ /^(?:utc|server|user)$/i;
-
     my $tz;
     if( $context eq 'user' ) {
         $tz = $self->CurrentUser->UserObj->Timezone;
