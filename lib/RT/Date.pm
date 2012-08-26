@@ -225,7 +225,7 @@ sub Set {
             "RT::Date used Time::ParseDate to make '$args{'Value'}' $date\n"
         );
 
-        return $self->Set( Format => 'unix', Value => $date);
+        return $self->Unix($date || 0);
     }
     else {
         $RT::Logger->error(
