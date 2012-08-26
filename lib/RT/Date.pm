@@ -631,7 +631,7 @@ sub DefaultFormat
                             $self->Localtime($args{'Timezone'});
     $wday = $self->GetWeekday($wday);
     $mon = $self->GetMonth($mon);
-    ($mday, $hour, $min, $sec) = map { sprintf "%02d", $_ } ($mday, $hour, $min, $sec);
+    $_ = sprintf "%02d", $_ foreach $mday, $hour, $min, $sec;
 
     if( $args{'Date'} && !$args{'Time'} ) {
         return $self->loc('[_1] [_2] [_3] [_4]',
