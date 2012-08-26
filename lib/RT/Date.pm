@@ -166,10 +166,12 @@ sub Set {
 
     return $self->Unix(0) unless $args{'Value'} && $args{'Value'} =~ /\S/;
 
-    if ( $args{'Format'} =~ /^unix$/i ) {
+    my $format = lc $args{'Format'};
+
+    if ( $format eq 'unix' ) {
         return $self->Unix( $args{'Value'} );
     }
-    elsif ( $args{'Format'} =~ /^(sql|datemanip|iso)$/i ) {
+    elsif ( $format =~ /^(sql|datemanip|iso)$/ ) {
         $args{'Value'} =~ s!/!-!g;
 
         if (   ( $args{'Value'} =~ /^(\d{4})?(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/ )
@@ -201,7 +203,7 @@ sub Set {
             return $self->Unix(0);
         }
     }
-    elsif ( $args{'Format'} =~ /^unknown$/i ) {
+    elsif ( $format eq 'unknown' ) {
         require Time::ParseDate;
         # the module supports only legacy timezones like PDT or EST...
         # so we parse date as GMT and later apply offset, this only
