@@ -2777,7 +2777,7 @@ sub Next {
         # if we found a ticket with this option enabled then
         # all tickets we found are ACLed, cache this fact
         my $key = join ";:;", $self->CurrentUser->id, 'ShowTicket', 'RT::Ticket-'. $Ticket->id;
-        $RT::Principal::_ACL_CACHE->set( $key => 1 );
+        $RT::Principal::_ACL_CACHE->{ $key } = 1;
         return $Ticket;
     }
     elsif ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
@@ -2807,7 +2807,7 @@ sub _RolesCanSee {
 
     my $cache_key = 'RolesHasRight;:;ShowTicket';
  
-    if ( my $cached = $RT::Principal::_ACL_CACHE->fetch( $cache_key ) ) {
+    if ( my $cached = $RT::Principal::_ACL_CACHE->{ $cache_key } ) {
         return %$cached;
     }
 
@@ -2837,7 +2837,7 @@ sub _RolesCanSee {
             $RT::Logger->error('ShowTicket right is granted on unsupported object');
         }
     }
-    $RT::Principal::_ACL_CACHE->set( $cache_key => \%res );
+    $RT::Principal::_ACL_CACHE->{ $cache_key } = \%res;
     return %res;
 }
 
@@ -2846,7 +2846,7 @@ sub _DirectlyCanSeeIn {
     my $id = $self->CurrentUser->id;
 
     my $cache_key = 'User-'. $id .';:;ShowTicket;:;DirectlyCanSeeIn';
-    if ( my $cached = $RT::Principal::_ACL_CACHE->fetch( $cache_key ) ) {
+    if ( my $cached = $RT::Principal::_ACL_CACHE->{ $cache_key } ) {
         return @$cached;
     }
 
@@ -2874,7 +2874,7 @@ sub _DirectlyCanSeeIn {
         if ( $type eq 'RT::System' ) {
             # If user is direct member of a group that has the right
             # on the system then he can see any ticket
-            $RT::Principal::_ACL_CACHE->set( $cache_key => [-1] );
+            $RT::Principal::_ACL_CACHE->{ $cache_key } = [-1];
             return (-1);
         }
         elsif ( $type eq 'RT::Queue' ) {
@@ -2884,7 +2884,7 @@ sub _DirectlyCanSeeIn {
             $RT::Logger->error('ShowTicket right is granted on unsupported object');
         }
     }
-    $RT::Principal::_ACL_CACHE->set( $cache_key => \@res );
+    $RT::Principal::_ACL_CACHE->{ $cache_key } = \@res;
     return @res;
 }
 

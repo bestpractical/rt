@@ -60,9 +60,6 @@ sub Table {'Principals'}
 
 
 
-use Cache::Simple::TimedExpiry;
-
-
 use RT;
 use RT::Group;
 use RT::User;
@@ -308,9 +305,9 @@ sub HasRight {
     }
 
     {
-        my $cached = $_ACL_CACHE->fetch(
+        my $cached = $_ACL_CACHE->{
             $self->id .';:;'. ref($args{'Object'}) .'-'. $args{'Object'}->id
-        );
+        };
         return $cached->{'SuperUser'} || $cached->{ $args{'Right'} }
             if $cached;
     }
@@ -331,19 +328,19 @@ sub HasRight {
         $full_hashkey .= ";:;".$ref_id;
 
         my $short_hashkey = join(";:;", $self->id, $args{'Right'}, $ref_id);
-        my $cached_answer = $_ACL_CACHE->fetch($short_hashkey);
+        my $cached_answer = $_ACL_CACHE->{ $short_hashkey };
         return $cached_answer > 0 if defined $cached_answer;
     }
 
     {
-        my $cached_answer = $_ACL_CACHE->fetch($full_hashkey);
+        my $cached_answer = $_ACL_CACHE->{ $full_hashkey };
         return $cached_answer > 0 if defined $cached_answer;
     }
 
     my ( $hitcount, $via_obj ) = $self->_HasRight(%args);
 
-    $_ACL_CACHE->set( $full_hashkey => $hitcount ? 1 : -1 );
-    $_ACL_CACHE->set( join(';:;',  $self->id, $args{'Right'},$via_obj) => 1 )
+    $_ACL_CACHE->{ $full_hashkey } = $hitcount ? 1 : -1;
+    $_ACL_CACHE->{ join ';:;',  $self->id, $args{'Right'}, $via_obj } = 1
         if $via_obj && $hitcount;
 
     return ($hitcount);
@@ -384,7 +381,7 @@ sub HasRights {
     }
 
     my $cache_key = $self->id .';:;'. ref($object) .'-'. $object->id;
-    my $cached = $_ACL_CACHE->fetch($cache_key);
+    my $cached = $_ACL_CACHE->{ $cache_key };
     return $cached if $cached;
 
     push @{ $args{'EquivObjects'} }, $object;
@@ -438,7 +435,7 @@ sub HasRights {
     delete $res{'ExecuteCode'} if 
         RT->Config->Get('DisallowExecuteCode');
 
-    $_ACL_CACHE->store( $cache_key, \%res );
+    $_ACL_CACHE->{ $cache_key } = \%res;
     return \%res;
 }
 
@@ -690,10 +687,7 @@ Cleans out and reinitializes the user rights cache
 =cut
 
 sub InvalidateACLCache {
-    $_ACL_CACHE = Cache::Simple::TimedExpiry->new();
-    my $lifetime;
-    $lifetime = $RT::Config->Get('ACLCacheLifetime') if $RT::Config;
-    $_ACL_CACHE->expire_after( $lifetime || 60 );
+    $_ACL_CACHE = {}
 }
 
 
