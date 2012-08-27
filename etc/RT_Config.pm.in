@@ -1784,7 +1784,7 @@ backwards compatability.
 
 Set($RestrictLoginReferrer, 0);
 
-=item C<$ReferrerWhitelist>
+=item C<@ReferrerWhitelist>
 
 This is a list of hostname:port combinations that RT will treat as being
 part of RT's domain. This is particularly useful if you access RT as

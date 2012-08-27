@@ -11,7 +11,7 @@ BEGIN {
 }
 
 use RT::Test::GnuPG
-  tests         => 41,
+  tests         => 49,
   actual_server => 1,
   gnupg_options => {
     passphrase => 'rt-test',
@@ -20,6 +20,7 @@ use RT::Test::GnuPG
 
 use String::ShellQuote 'shell_quote';
 use IPC::Run3 'run3';
+use MIME::Base64;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -195,6 +196,44 @@ RT::Test->close_mailgate_ok($mail);
     is( $orig->GetHeader('Content-Type'), 'application/x-rt-original-message');
     ok(index($orig->Content, $buf) != -1, 'found original msg');
 }
+
+
+# test that if it gets base64 transfer-encoded, we still get the content out
+$buf = encode_base64($buf);
+$mail = RT::Test->open_mailgate_ok($baseurl);
+print $mail <<"EOF";
+From: recipient\@example.com
+To: general\@$RT::rtname
+Content-transfer-encoding: base64
+Subject: Encrypted message for queue
+
+$buf
+EOF
+RT::Test->close_mailgate_ok($mail);
+
+{
+    my $tick = RT::Test->last_ticket;
+    is( $tick->Subject, 'Encrypted message for queue',
+        "Created the ticket"
+    );
+
+    my $txn = $tick->Transactions->First;
+    my ($msg, $attach, $orig) = @{$txn->Attachments->ItemsArrayRef};
+
+    is( $msg->GetHeader('X-RT-Incoming-Encryption'),
+        'Success',
+        'recorded incoming mail that is encrypted'
+    );
+    is( $msg->GetHeader('X-RT-Privacy'),
+        'PGP',
+        'recorded incoming mail that is encrypted'
+    );
+    like( $attach->Content, qr/orz/);
+
+    is( $orig->GetHeader('Content-Type'), 'application/x-rt-original-message');
+    ok(index($orig->Content, $buf) != -1, 'found original msg');
+}
+
 
 # test for signed mail by other key
 $buf = '';
