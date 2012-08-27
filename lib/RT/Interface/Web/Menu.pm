@@ -153,7 +153,7 @@ sub path {
         $self->{path} = shift;
         $self->{path} = URI->new_abs($self->{path}, $self->parent->path . "/")->as_string
             if defined $self->{path} and $self->parent and $self->parent->path;
-        $self->{path} =~ s!///!/! if $self->{path};
+        $self->{path} =~ s!/+!/!g if $self->{path};
     }
     return $self->{path};
 }
