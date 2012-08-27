@@ -94,7 +94,7 @@ while (my $t = $tickets->Next) {
     my $start = Data::ICal::Entry::Event->new;
     my $end   = Data::ICal::Entry::Event->new;
     $_->add_properties(
-        url       => RT->Config->Get('WebURL') . "?q=".$t->id,
+        url       => RT->Config->Get('WebURL') . "Ticket/Display.html?id=".$t->id,
         organizer => $t->OwnerObj->Name,
         dtstamp   => $now->iCal,
         created   => $t->CreatedObj->iCal,
