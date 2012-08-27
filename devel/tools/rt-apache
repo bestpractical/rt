@@ -28,6 +28,7 @@ GetOptions(  \%opt,
 
     "port|p=i",
     "ssl:i",
+    "single|X",
 
     "modules=s",
 
@@ -83,6 +84,7 @@ $template =~ s/\$SSL/$opt{ssl} || 0/ge;
 $template =~ s/\$RTHOME/$opt{root}/g;
 $template =~ s/\$MODULES/$opt{modules}/g;
 $template =~ s/\$TOOLS/$FindBin::Bin/g;
+$template =~ s/\$PROCESSES/$opt{single} ? 1 : 3/ge;
 
 my $conf = "$opt{root}/var/apache.conf";
 open(CONF, ">", $conf)
@@ -93,7 +95,7 @@ close CONF;
 my @opts = ("-f", $conf, "-D" . uc($mod) );
 push @opts, "-DSSL" if $opt{ssl};
 push @opts, "-DRT3" if $opt{rt3};
-
+push @opts, "-DSINGLE" if $opt{single};
 
 # Wait for a previous run to terminate
 if ( open( PIDFILE, "<", "$opt{root}/var/apache2.pid") ) {
@@ -141,7 +143,7 @@ sub parseconf {
 
 =head1 NAME
 
-rt-apache - Wrapper to start single-threaded Apache running RT
+rt-apache - Wrapper to start Apache running RT
 
 =head1 DESCRIPTION
 
@@ -153,8 +155,8 @@ please read the provided F<docs/web_deployment.pod> file.
 Running this script will start F<apache2> with a custom-built
 configuration file, built based on command-line options and the contents
 of your F<RT_SiteConfig.pm>.  It will work with either RT 3.8.x or RT
-4.0.x.  As it is primarily for simple testing, it only starts one Apache
-process or thread, and runs as the current user.
+4.0.x.  As it is primarily for simple testing, it runs Apache as the
+current user.
 
 =head1 OPTIONS
 
@@ -184,6 +186,10 @@ Also listens on the provided port with HTTPS, using a self-signed
 certificate for C<localhost>.  If the port number is not specified,
 defaults to port 4430.
 
+=item --single, -X
+
+Run only one process or thread, for ease of debugging.
+
 =item --rt3, -3
 
 Declares that the RT install in question is RT 3.8.x.  C<rt-apache> can
@@ -200,23 +206,25 @@ to F</usr/lib/apache2/modules>.
 =cut
 
 __DATA__
-<IfModule mpm_prefork_module>
-    StartServers          1
-    MinSpareServers       1
-    MaxSpareServers       1
-    MaxClients            1
-    MaxRequestsPerChild   0
-</IfModule>
+<IfDefine SINGLE>
+    <IfModule mpm_prefork_module>
+        StartServers          1
+        MinSpareServers       1
+        MaxSpareServers       1
+        MaxClients            1
+        MaxRequestsPerChild   0
+    </IfModule>
 
-<IfModule mpm_worker_module>
-    StartServers          1
-    MinSpareThreads       1
-    MaxSpareThreads       1
-    ThreadLimit           1
-    ThreadsPerChild       1
-    MaxClients            1
-    MaxRequestsPerChild   0
-</IfModule>
+    <IfModule mpm_worker_module>
+        StartServers          1
+        MinSpareThreads       1
+        MaxSpareThreads       1
+        ThreadLimit           1
+        ThreadsPerChild       1
+        MaxClients            1
+        MaxRequestsPerChild   0
+    </IfModule>
+</IfDefine>
 
 Listen $PORT
 <IfDefine SSL>
@@ -293,7 +301,7 @@ Alias $PATH/NoAuth/images/ $RTHOME/share/html/NoAuth/images/
 ########## 4.0 mod_fastcgi
 <IfDefine FASTCGI>
     FastCgiIpcDir $RTHOME/var
-    FastCgiServer $RTHOME/sbin/rt-server.fcgi -processes 1 -idle-timeout 300
+    FastCgiServer $RTHOME/sbin/rt-server.fcgi -processes $PROCESSES -idle-timeout 300
     ScriptAlias $PATH $RTHOME/sbin/rt-server.fcgi/
     <Location $PATH>
         Order allow,deny
@@ -336,7 +344,7 @@ Alias $PATH/NoAuth/images/ $RTHOME/share/html/NoAuth/images/
 ########## 3.8 mod_fastcgi
 <IfDefine FASTCGI>
     FastCgiIpcDir $RTHOME/var
-    FastCgiServer $RTHOME/bin/mason_handler.fcgi -processes 1 -idle-timeout 300
+    FastCgiServer $RTHOME/bin/mason_handler.fcgi -processes $PROCESSES -idle-timeout 300
     ScriptAlias $PATH $RTHOME/bin/mason_handler.fcgi/
     <Location $PATH>
 	Order allow,deny
