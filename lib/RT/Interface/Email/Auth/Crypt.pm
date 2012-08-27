@@ -114,7 +114,7 @@ sub GetCurrentUser {
     # we clean all possible headers
     my @headers =
         qw(
-            X-RT-Incoming-Encrypton
+            X-RT-Incoming-Encryption
             X-RT-Incoming-Signature
             X-RT-Privacy
         ),
