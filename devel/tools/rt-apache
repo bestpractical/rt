@@ -55,7 +55,7 @@ die "$opt{root} doesn't look like an RT install\n"
     unless -e "$opt{root}/lib/RT.pm";
 
 # Detect if we are actually rt3
-if (not -e "$opt{root}/bin/rt-server.fcgi"
+if (not -e "$opt{root}/sbin/rt-server.fcgi"
         and -e "$opt{root}/bin/mason_handler.fcgi") {
     $opt{rt3}++;
     warn "RT3 install detected!\n";
