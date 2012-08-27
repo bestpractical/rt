@@ -307,6 +307,7 @@ Alias $PATH/NoAuth/images/ $RTHOME/share/html/NoAuth/images/
 <IfDefine FCGID>
     FcgidProcessTableFile $RTHOME/var/fcgid_shm
     FcgidIPCDir $RTHOME/var
+    FcgidMaxRequestLen 1073741824
     ScriptAlias $PATH $RTHOME/sbin/rt-server.fcgi/
     <Location $PATH>
         Order allow,deny
@@ -349,6 +350,7 @@ Alias $PATH/NoAuth/images/ $RTHOME/share/html/NoAuth/images/
 <IfDefine FCGID>
     FcgidProcessTableFile $RTHOME/var/fcgid_shm
     FcgidIPCDir $RTHOME/var
+    FcgidMaxRequestLen 1073741824
     ScriptAlias $PATH $RTHOME/bin/mason_handler.fcgi/
     <Location $PATH>
 	Order allow,deny
