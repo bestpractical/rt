@@ -256,6 +256,9 @@ TypesConfig $TOOLS/mime.types
     LoadModule ssl_module     $MODULES/mod_ssl.so
 </IfDefine>
 
+<IfModule !log_config_module>
+    LoadModule log_config_module $MODULES/mod_log_config.so
+</IfModule>
 ErrorLog    "$RTHOME/var/log/apache-error.log"
 TransferLog "$RTHOME/var/log/apache-access.log"
 LogLevel notice
