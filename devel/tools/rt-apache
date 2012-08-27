@@ -41,14 +41,14 @@ my $mod;
 if ($opt{fcgid} + $opt{fastcgi} + $opt{perl} > 1) {
     die "Can only supply one of fcgid, fastcgi, or perl\n";
 } elsif ($opt{fcgid} + $opt{fastcgi} + $opt{perl} == 0) {
-    my @guess = qw(fcgid fastcgi perl);
+    my @guess = qw(fastcgi fcgid perl);
     @guess = grep {-f "$opt{modules}/mod_$_.so"} @guess;
     die "Neither mod_fcgid, mod_fastcgi, nor mod_perl are installed; aborting\n"
         unless @guess;
     warn "No deployment given -- assuming mod_$guess[0] deployment\n";
     $mod = $guess[0];
 } else {
-    $mod = (grep {$opt{$_}} qw(fcgid fastcgi perl))[0];
+    $mod = (grep {$opt{$_}} qw(fastcgi fcgid perl))[0];
 }
 
 # Sanity check that the root contains an RT install
@@ -170,7 +170,7 @@ C<WebPort> configuration, and adjust its defaults accordingly.
 The path to the RT install to serve.  This defaults to the C<RTHOME>
 environment variable, or C</opt/rt4>.
 
-=item --fcgid, --fastcgi, --perl
+=item --fastcgi, --fcgid, --perl
 
 Determines the Apache module which is used.  By default, the first one
 of that list which exists will be used.  See also L</--modules>.
@@ -198,8 +198,8 @@ usually detect this for you, however.
 =item --modules B<path>
 
 The path to the Apache2 modules directory, which is expected to contain
-one of F<mod_fcgid.so>, F<mod_fastcgi.so>, or F<mod_perl.so>.  Defaults
-to F</usr/lib/apache2/modules>.
+at least one of F<mod_fcgid.so>, F<mod_fastcgi.so>, or F<mod_perl.so>.
+Defaults to F</usr/lib/apache2/modules>.
 
 =back
 
