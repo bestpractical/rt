@@ -316,6 +316,29 @@ sub LoadSystemInternalGroup {
     );
 }
 
+=head2 LoadRoleGroup
+
+Takes a paramhash of Object and Type and attempts to load the suitable role
+group for said object.
+
+=cut
+
+sub LoadRoleGroup {
+    my $self = shift;
+    my %args = (
+        Object  => undef,
+        Type    => undef,
+        @_
+    );
+
+    # Translate Object to Domain + Instance
+    my $object      = delete $args{Object};
+    $args{Domain}   = ref($object) . "-Role";
+    $args{Instance} = $object->id
+        if $object->id and not ref($object) eq 'RT::System';
+
+    return $self->LoadByCols(%args);
+}
 
 
 =head2 LoadTicketRoleGroup  { Ticket => TICKET_ID, Type => TYPE }
