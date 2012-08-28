@@ -194,7 +194,7 @@ sub LimitToRolesForTicket {
     my $self = shift;
     my $Ticket = shift;
     $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'RT::Ticket-Role');
-    $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => '$Ticket');
+    $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => $Ticket);
 }
 
 
