@@ -52,7 +52,7 @@ use warnings;
 
 use Getopt::Long;
 use File::Basename 'basename';
-use Pod::Simple::HTMLBatch;
+use RT::Pod::Simple::HTMLBatch;
 
 my %opts;
 GetOptions( \%opts, "help|h", 'rt-root=s', 'to=s' );
@@ -73,10 +73,22 @@ if ( $opts{'rt-root'} ) {
     chdir $opts{'rt-root'};
 }
 
-my @dirs = ( 'docs', 'lib' );
+my @dirs = ( 'docs', 'lib', 'bin', 'sbin' );
 
-my $batch = Pod::Simple::HTMLBatch->new;
-$batch->contents_page_start('');
+my $batch = RT::Pod::Simple::HTMLBatch->new;
+$batch->css_flurry(0);
+$batch->add_css('rt-docs.css');
+
+my $contents_page_start =<<START;
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>RT Documentation</title></head>
+<body class='contentspage'>
+<h1>RT Documentation</h1>
+START
+
+$batch->contents_page_start($contents_page_start);
 $batch->contents_page_end('');
 $batch->batch_convert( join( ':', @dirs ), $opts{to} );
 
@@ -89,6 +101,8 @@ rt-static-docs - generate doc shipped with RT
 =head1 SYNOPSIS
 
     rt-static-docs --rt-root /path/to/rt --to /path/to/output
+
+    perl -Ilib devel/tools/rt-static-docs --to share/html/Documentation
 
 =head1 DESCRIPTION
 
