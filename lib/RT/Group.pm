@@ -187,32 +187,32 @@ Returns a user-readable description of what this group is for and what it's name
 =cut
 
 sub SelfDescription {
-	my $self = shift;
-	if ($self->Domain eq 'ACLEquivalence') {
-		my $user = RT::Principal->new($self->CurrentUser);
-		$user->Load($self->Instance);
-		return $self->loc("user [_1]",$user->Object->Name);
-	}
-	elsif ($self->Domain eq 'UserDefined') {
-		return $self->loc("group '[_1]'",$self->Name);
-	}
-	elsif ($self->Domain eq 'RT::System-Role') {
-		return $self->loc("system [_1]",$self->Type);
-	}
-	elsif ($self->Domain eq 'RT::Queue-Role') {
-		my $queue = RT::Queue->new($self->CurrentUser);
-		$queue->Load($self->Instance);
-		return $self->loc("queue [_1] [_2]",$queue->Name, $self->Type);
-	}
-	elsif ($self->Domain eq 'RT::Ticket-Role') {
-		return $self->loc("ticket #[_1] [_2]",$self->Instance, $self->Type);
-	}
-	elsif ($self->Domain eq 'SystemInternal') {
-		return $self->loc("system group '[_1]'",$self->Type);
-	}
-	else {
-		return $self->loc("undescribed group [_1]",$self->Id);
-	}
+    my $self = shift;
+    if ($self->Domain eq 'ACLEquivalence') {
+        my $user = RT::Principal->new($self->CurrentUser);
+        $user->Load($self->Instance);
+        return $self->loc("user [_1]",$user->Object->Name);
+    }
+    elsif ($self->Domain eq 'UserDefined') {
+        return $self->loc("group '[_1]'",$self->Name);
+    }
+    elsif ($self->Domain eq 'RT::System-Role') {
+        return $self->loc("system [_1]",$self->Type);
+    }
+    elsif ($self->Domain eq 'RT::Queue-Role') {
+        my $queue = RT::Queue->new($self->CurrentUser);
+        $queue->Load($self->Instance);
+        return $self->loc("queue [_1] [_2]",$queue->Name, $self->Type);
+    }
+    elsif ($self->Domain eq 'RT::Ticket-Role') {
+        return $self->loc("ticket #[_1] [_2]",$self->Instance, $self->Type);
+    }
+    elsif ($self->Domain eq 'SystemInternal') {
+        return $self->loc("system group '[_1]'",$self->Type);
+    }
+    else {
+        return $self->loc("undescribed group [_1]",$self->Id);
+    }
 }
 
 
