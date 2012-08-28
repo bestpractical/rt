@@ -117,6 +117,8 @@ sub GetCurrentUser {
             X-RT-Incoming-Encryption
             X-RT-Incoming-Signature
             X-RT-Privacy
+            X-RT-Sign
+            X-RT-Encrypt
         ),
         map "X-RT-$_-Status", RT::Crypt->Protocols;
     foreach my $p ( $args{'Message'}->parts_DFS ) {
