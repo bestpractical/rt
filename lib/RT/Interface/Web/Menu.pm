@@ -230,6 +230,7 @@ sub child {
         if ( defined $path and length $path ) {
             my $base_path = $HTML::Mason::Commands::r->path_info;
             my $query     = $HTML::Mason::Commands::m->cgi_object->query_string;
+            $base_path =~ s!/+!/!g;
             $base_path .= "?$query" if defined $query and length $query;
 
             $base_path =~ s/index\.html$//;
