@@ -322,21 +322,7 @@ Takes all the regular arguments to L<child>.
 
 =cut
 
-sub add_after {
-    my $self = shift;
-    my $parent = $self->parent;
-    my $sort_order;
-    for my $contemporary ($parent->children) {
-        if ( $contemporary->key eq $self->key ) {
-            $sort_order = $contemporary->sort_order + 1;
-            next;
-        }
-        if ( $sort_order ) {
-            $contemporary->sort_order( $contemporary->sort_order + 1 );
-        }
-    }
-    $parent->child( @_, sort_order => $sort_order );
-}
+sub add_after { shift->_insert_sibling("after", @_) }
 
 =head2 add_before
 
@@ -350,13 +336,27 @@ Takes all the regular arguments to L<child>.
 
 =cut
 
-sub add_before {
+sub add_before { shift->_insert_sibling("before", @_) }
+
+sub _insert_sibling {
     my $self = shift;
+    my $where = shift;
     my $parent = $self->parent;
     my $sort_order;
     for my $contemporary ($parent->children) {
         if ( $contemporary->key eq $self->key ) {
-            $sort_order = $contemporary->sort_order;
+            if ($where eq "before") {
+                # Bump the current child and the following
+                $sort_order = $contemporary->sort_order;
+            }
+            elsif ($where eq "after") {
+                # Leave the current child along, bump the rest
+                $sort_order = $contemporary->sort_order + 1;
+                next;
+            }
+            else {
+                # never set $sort_order, act no differently than ->child()
+            }
         }
         if ( $sort_order ) {
             $contemporary->sort_order( $contemporary->sort_order + 1 );
