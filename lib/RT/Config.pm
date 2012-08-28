@@ -220,6 +220,16 @@ our %META = (
             $self->Set('WebDefaultStylesheet', 'aileron');
         },
     },
+    TimeInICal => {
+        Section     => 'General',
+        Overridable => 1,
+        SortOrder   => 5,
+        Widget      => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Include time in iCal feed events?', # loc
+            Hints       => 'Formats iCal feed events with date and time' #loc
+        }
+    },
     UseSideBySideLayout => {
         Section => 'Ticket composition',
         Overridable => 1,
