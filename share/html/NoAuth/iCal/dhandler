@@ -104,7 +104,8 @@ while (my $t = $tickets->Next) {
     my %time = ( Time => 0 );
     my %ical_value = ( value => 'DATE' );
 
-    if ( RT->Config->Get('TimeInICal', $user) ){
+    if ( defined $ARGS{Time} ?
+         $ARGS{Time} : RT->Config->Get('TimeInICal', $user) ) {
         $time{Time} = 1;
         $ical_value{value} = 'DATE-TIME';
     }
