@@ -3254,17 +3254,7 @@ sub GetPrincipalsMap {
         }
         elsif (/Roles/) {
             my $roles = RT::Groups->new($session{'CurrentUser'});
-
-            if ($object->isa('RT::System')) {
-                $roles->LimitToRolesForSystem();
-            }
-            elsif ($object->isa('RT::Queue')) {
-                $roles->LimitToRolesForQueue($object->Id);
-            }
-            else {
-                $RT::Logger->warn("Skipping unknown object type ($object) for Role principals");
-                next;
-            }
+            $roles->LimitToRolesForObject($object);
             $roles->OrderBy( FIELD => 'Type', ORDER => 'ASC' );
             push @map, [
                 'Roles' => $roles,  # loc_left_pair

@@ -166,10 +166,29 @@ sub LimitToUserDefinedGroups {
     #$self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => '');
 }
 
+=head2 LimitToRolesForObject OBJECT
 
+Limits the set of groups to role groups specifically for the object in question
+based on the object's class and ID.  If the object has no ID, the roles are not
+limited by group C<Instance>.  That is, calling this method on an unloaded
+object will find all role groups for that class of object.
 
+Replaces L</LimitToRolesForQueue>, L</LimitToRolesForTicket>, and
+L</LimitToRolesForSystem>.
+
+=cut
+
+sub LimitToRolesForObject {
+    my $self   = shift;
+    my $object = shift;
+    $self->Limit(FIELD => 'Domain',   OPERATOR => '=', VALUE => ref($object) . "-Role");
+    $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => $object->id)
+        if $object->id and not ref($object) eq "RT::System";
+}
 
 =head2 LimitToRolesForQueue QUEUE_ID
+
+B<DEPRECATED>. Use L</LimitToRolesForObject> instead.
 
 Limits the set of groups found to role groups for queue QUEUE_ID
 
@@ -178,6 +197,7 @@ Limits the set of groups found to role groups for queue QUEUE_ID
 sub LimitToRolesForQueue {
     my $self = shift;
     my $queue = shift;
+    RT->Logger->warning("LimitToRolesForQueue is deprecated; please change code to use LimitToRolesForObject (caller @{[join '/', caller]})");
     $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'RT::Queue-Role');
     $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => $queue);
 }
@@ -186,6 +206,8 @@ sub LimitToRolesForQueue {
 
 =head2 LimitToRolesForTicket Ticket_ID
 
+B<DEPRECATED>. Use L</LimitToRolesForObject> instead.
+
 Limits the set of groups found to role groups for Ticket Ticket_ID
 
 =cut
@@ -193,6 +215,7 @@ Limits the set of groups found to role groups for Ticket Ticket_ID
 sub LimitToRolesForTicket {
     my $self = shift;
     my $Ticket = shift;
+    RT->Logger->warning("LimitToRolesForTicket is deprecated; please change code to use LimitToRolesForObject (caller @{[join '/', caller]})");
     $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'RT::Ticket-Role');
     $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => $Ticket);
 }
@@ -201,12 +224,15 @@ sub LimitToRolesForTicket {
 
 =head2 LimitToRolesForSystem System_ID
 
+B<DEPRECATED>. Use L</LimitToRolesForObject> instead.
+
 Limits the set of groups found to role groups for System System_ID
 
 =cut
 
 sub LimitToRolesForSystem {
     my $self = shift;
+    RT->Logger->warning("LimitToRolesForSystem is deprecated; please change code to use LimitToRolesForObject (caller @{[join '/', caller]})");
     $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'RT::System-Role');
 }
 
