@@ -207,6 +207,11 @@ sub SelfDescription {
     elsif ($self->Domain eq 'RT::Ticket-Role') {
         return $self->loc("ticket #[_1] [_2]",$self->Instance, $self->Type);
     }
+    elsif ($self->Domain =~ /^(.+)-Role$/) {
+        my $class = lc $1;
+           $class =~ s/^RT:://i;
+        return $self->loc("[_1] #[_2] [_3]", $self->loc($class), $self->Instance, $self->Type);
+    }
     elsif ($self->Domain eq 'SystemInternal') {
         return $self->loc("system group '[_1]'",$self->Type);
     }
