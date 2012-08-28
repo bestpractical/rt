@@ -3,7 +3,7 @@
 use strict;
 
 use Data::ICal;
-use RT::Test tests => 65;
+use RT::Test tests => 77;
 
 my $start_obj = RT::Date->new( RT->SystemUser );
 $start_obj->SetToNow;
@@ -153,6 +153,35 @@ diag 'Test iCal with date and time using query param';
     is( $ical_count, 10, "Got $ical_count ical entries");
 
     my $prop_ref = $entries[0]->[0]->properties;
+    $start =~ s/-//g;
+    is($prop_ref->{'dtstart'}->[0]->value, $start, "Got start date with time: $start");
+    like( $prop_ref->{'dtstart'}->[0]->as_string, qr/VALUE=DATE-TIME\:/, 'Got DATE-TIME value');
+
+    $prop_ref = $entries[0]->[1]->properties;
+    $due =~ s/-//g;
+    is($prop_ref->{'dtend'}->[0]->value, $due, "Got due date with time: $due");
+    like( $prop_ref->{'dtend'}->[0]->as_string, qr/VALUE=DATE-TIME\:/, 'Got DATE-TIME value');
+
+    diag 'Test iCal with date and time in single events';
+
+    my $url = $link->url . '?SingleEvent=1&Time=1';
+    $agent->get_ok($url);
+
+    is( $agent->content_type, 'text/calendar', 'content type is text/calendar' );
+
+    for ( 1 .. 5 ) {
+        $agent->content_like(qr/URL\:$baseurl\/\?q=$_/);
+    }
+
+    $ical = Data::ICal->new(data => $agent->content);
+
+    @entries = $ical->entries;
+    $ical_count = @{$entries[0]};
+
+    # Only 5 entries in single event mode
+    is( $ical_count, 5, "Got $ical_count ical entries");
+
+    $prop_ref = $entries[0]->[0]->properties;
     $start =~ s/-//g;
     is($prop_ref->{'dtstart'}->[0]->value, $start, "Got start date with time: $start");
     like( $prop_ref->{'dtstart'}->[0]->as_string, qr/VALUE=DATE-TIME\:/, 'Got DATE-TIME value');

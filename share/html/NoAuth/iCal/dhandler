@@ -110,19 +110,28 @@ while (my $t = $tickets->Next) {
         $ical_value{value} = 'DATE-TIME';
     }
 
-    $start->add_properties(
-                           summary   => "Start: ".$t->Subject,
-                           dtstart   => [$starttime->iCal( %time ) => \%ical_value ],
-                           dtend     => [$starttime->iCal( %time ) => \%ical_value ],
-                           );
-    $end->add_properties(
-                         summary   => "Due: ".$t->Subject,
-                         dtstart   => [$t->DueObj->iCal( %time ) => \%ical_value ],
-                         dtend     => [$t->DueObj->iCal( %time ) => \%ical_value ],
-                         );
-
-    $feed->add_entry($start);
-    $feed->add_entry($end);
+    if( $ARGS{SingleEvent} ){
+        $start->add_properties(
+                               summary   => $t->Subject,
+                               dtstart   => [$starttime->iCal( %time ) => \%ical_value ],
+                               dtend     => [$t->DueObj->iCal( %time ) => \%ical_value ],
+                              );
+        $feed->add_entry($start);
+    }
+    else{
+        $start->add_properties(
+                               summary   => "Start: ".$t->Subject,
+                               dtstart   => [$starttime->iCal( %time ) => \%ical_value ],
+                               dtend     => [$starttime->iCal( %time ) => \%ical_value ],
+                              );
+        $end->add_properties(
+                             summary   => "Due: ".$t->Subject,
+                             dtstart   => [$t->DueObj->iCal( %time ) => \%ical_value ],
+                             dtend     => [$t->DueObj->iCal( %time ) => \%ical_value ],
+                            );
+        $feed->add_entry($start);
+        $feed->add_entry($end);
+    }
 }
 
 $m->clear_buffer;
