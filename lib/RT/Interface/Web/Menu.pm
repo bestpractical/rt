@@ -340,8 +340,8 @@ sub add_after {
 
 =head2 add_before
 
-Called on a child, inserts a new menu item before it and shifts the other
-menu items at this level to the right.
+Called on a child, inserts a new menu item at the child's location and shifts
+the child and the other menu items at this level to the right.
 
 L<child> by default would insert at the end of the list of children, unless you
 did manual sort_order calculations.
@@ -356,7 +356,7 @@ sub add_before {
     my $sort_order;
     for my $contemporary ($parent->children) {
         if ( $contemporary->key eq $self->key ) {
-            $sort_order = $contemporary->sort_order + 1;
+            $sort_order = $contemporary->sort_order;
         }
         if ( $sort_order ) {
             $contemporary->sort_order( $contemporary->sort_order + 1 );
