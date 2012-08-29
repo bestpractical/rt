@@ -347,7 +347,8 @@ Set($StoreLoops, undef);
 =item C<$MaxAttachmentSize>
 
 C<$MaxAttachmentSize> sets the maximum size (in bytes) of attachments
-stored in the database.
+stored in the database.  This setting is irrelevant unless one of
+$TruncateLongAttachments or $DropLongAttachments (below) are set.
 
 =cut
 
