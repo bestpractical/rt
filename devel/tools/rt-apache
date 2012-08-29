@@ -1,0 +1,387 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+use Getopt::Long;
+use FindBin;
+use Pod::Usage;
+
+my %opt = (
+    root => ($ENV{RTHOME} || "/opt/rt4"),
+
+    fcgid   => 0,
+    fastcgi => 0,
+    perl    => 0,
+
+    modules => "/usr/lib/apache2/modules",
+);
+
+GetOptions(  \%opt,
+    "root=s",
+
+    "rt3|3!",
+
+    "fcgid!",
+    "fastcgi!",
+    "perl!",
+
+    "port|p=i",
+    "ssl:i",
+    "single|X",
+
+    "modules=s",
+
+    "help|h|?",
+) or pod2usage( 1 );
+pod2usage( {verbose => 2} ) if $opt{help};
+
+# Determine what module to use
+my $mod;
+if ($opt{fcgid} + $opt{fastcgi} + $opt{perl} > 1) {
+    die "Can only supply one of fcgid, fastcgi, or perl\n";
+} elsif ($opt{fcgid} + $opt{fastcgi} + $opt{perl} == 0) {
+    my @guess = qw(fastcgi fcgid perl);
+    @guess = grep {-f "$opt{modules}/mod_$_.so"} @guess;
+    die "Neither mod_fcgid, mod_fastcgi, nor mod_perl are installed; aborting\n"
+        unless @guess;
+    warn "No deployment given -- assuming mod_$guess[0] deployment\n";
+    $mod = $guess[0];
+} else {
+    $mod = (grep {$opt{$_}} qw(fastcgi fcgid perl))[0];
+}
+
+# Sanity check that the root contains an RT install
+die "$opt{root} doesn't look like an RT install\n"
+    unless -e "$opt{root}/lib/RT.pm";
+
+# Detect if we are actually rt3
+if (not -e "$opt{root}/sbin/rt-server.fcgi"
+        and -e "$opt{root}/bin/mason_handler.fcgi") {
+    $opt{rt3}++;
+    warn "RT3 install detected!\n";
+}
+
+# Parse etc/RT_SiteConfig.pm for the default port
+my $RTCONF;
+$opt{port} ||= parseconf( "WebPort" );
+unless ($opt{port}) {
+    warn "Defaulting to port 8888\n";
+    $opt{port} = 8888;
+}
+
+# Set ssl port if they want it but didn't provide a number
+$opt{ssl} = 4430 if defined $opt{ssl} and not $opt{ssl};
+
+# Parse out the WebPath
+my $path = parseconf( "WebPath" ) || "";
+
+my $template = join("", <DATA>);
+$template =~ s/\$PORT/$opt{port}/g;
+$template =~ s!\$PATH/!$path/!g;
+$template =~ s!\$PATH!$path || "/"!ge;
+$template =~ s/\$SSL/$opt{ssl} || 0/ge;
+$template =~ s/\$RTHOME/$opt{root}/g;
+$template =~ s/\$MODULES/$opt{modules}/g;
+$template =~ s/\$TOOLS/$FindBin::Bin/g;
+$template =~ s/\$PROCESSES/$opt{single} ? 1 : 3/ge;
+
+my $conf = "$opt{root}/var/apache.conf";
+open(CONF, ">", $conf)
+    or die "Can't write $conf: $!";
+print CONF $template;
+close CONF;
+
+my @opts = ("-f", $conf, "-D" . uc($mod) );
+push @opts, "-DSSL" if $opt{ssl};
+push @opts, "-DRT3" if $opt{rt3};
+push @opts, "-DSINGLE" if $opt{single};
+
+# Wait for a previous run to terminate
+if ( open( PIDFILE, "<", "$opt{root}/var/apache2.pid") ) {
+    my $pid = <PIDFILE>;
+    chomp $pid;
+    close PIDFILE;
+    if ($pid and kill 0, $pid) {
+        warn "Waiting for previous run (pid $pid) to finish...\n";
+        sleep 1 while kill 0, $pid;
+    }
+}
+
+# Clean out the log in preparation
+my $log = "$opt{root}/var/log/apache-error.log";
+unlink($log);
+
+# Start 'er up
+warn "Starting apache server on http://localhost:$opt{port}$path/"
+    . ($opt{ssl} ? " and https://localhost:$opt{ssl}$path/" : "") . "\n";
+!system("apache2", @opts, "-k", "start")
+    or die "Can't exec apache2: $@";
+# Ignore the return value, as we expect it to be ^C'd
+system("tail", "-f", $log);
+warn "Shutting down apache...\n";
+!system("apache2", @opts, "-k", "stop")
+    or die "Can't exec apache2: $@";
+
+
+sub parseconf {
+    my ($optname) = @_;
+    # We're going to be evil, and try to parse the config
+    unless (defined $RTCONF) {
+        unless ( open(CONF, "<", "$opt{root}/etc/RT_SiteConfig.pm") ) {
+            warn "Can't open $opt{root}/etc/RT_SiteConfig.pm: $!\n";
+            $RTCONF = "";
+            return;
+        }
+        $RTCONF = join("", <CONF>);
+        close CONF;
+    }
+
+    return unless $RTCONF =~ /^\s*Set\(\s*\$$optname\s*(?:,|=>)\s*['"]?(.*?)['"]?\s*\)/m;
+    return $1;
+}
+
+=head1 NAME
+
+rt-apache - Wrapper to start Apache running RT
+
+=head1 DESCRIPTION
+
+This script exists to make it easier to run RT under Apache for testing.
+It is not intended as a way to deploy RT, or to provide example Apache
+configuration for RT.  For instructions on how to deploy RT with Apache,
+please read the provided F<docs/web_deployment.pod> file.
+
+Running this script will start F<apache2> with a custom-built
+configuration file, built based on command-line options and the contents
+of your F<RT_SiteConfig.pm>.  It will work with either RT 3.8.x or RT
+4.0.x.  As it is primarily for simple testing, it runs Apache as the
+current user.
+
+=head1 OPTIONS
+
+C<rt-apache> will parse your F<RT_SiteConfig.pm> for its C<WebPath> and
+C<WebPort> configuration, and adjust its defaults accordingly.
+
+=over
+
+=item --root B<path>
+
+The path to the RT install to serve.  This defaults to the C<RTHOME>
+environment variable, or C</opt/rt4>.
+
+=item --fastcgi, --fcgid, --perl
+
+Determines the Apache module which is used.  By default, the first one
+of that list which exists will be used.  See also L</--modules>.
+
+=item --port B<number>
+
+Choses the port to listen on.  By default, this is parsed from the
+F<RT_SiteConfig.pm>, and falling back to 8888.
+
+=item --ssl [B<number>]
+
+Also listens on the provided port with HTTPS, using a self-signed
+certificate for C<localhost>.  If the port number is not specified,
+defaults to port 4430.
+
+=item --single, -X
+
+Run only one process or thread, for ease of debugging.
+
+=item --rt3, -3
+
+Declares that the RT install in question is RT 3.8.x.  C<rt-apache> can
+usually detect this for you, however.
+
+=item --modules B<path>
+
+The path to the Apache2 modules directory, which is expected to contain
+at least one of F<mod_fcgid.so>, F<mod_fastcgi.so>, or F<mod_perl.so>.
+Defaults to F</usr/lib/apache2/modules>.
+
+=back
+
+=cut
+
+__DATA__
+<IfDefine SINGLE>
+    <IfModule mpm_prefork_module>
+        StartServers          1
+        MinSpareServers       1
+        MaxSpareServers       1
+        MaxClients            1
+        MaxRequestsPerChild   0
+    </IfModule>
+
+    <IfModule mpm_worker_module>
+        StartServers          1
+        MinSpareThreads       1
+        MaxSpareThreads       1
+        ThreadLimit           1
+        ThreadsPerChild       1
+        MaxClients            1
+        MaxRequestsPerChild   0
+    </IfModule>
+</IfDefine>
+
+Listen $PORT
+<IfDefine SSL>
+   Listen $SSL
+</IfDefine>
+
+ServerName localhost
+ServerRoot $RTHOME/var
+PidFile    $RTHOME/var/apache2.pid
+LockFile   $RTHOME/var/apache2.lock
+ServerAdmin root@localhost
+
+LoadModule authz_host_module  $MODULES/mod_authz_host.so
+LoadModule env_module         $MODULES/mod_env.so
+LoadModule alias_module       $MODULES/mod_alias.so
+LoadModule mime_module        $MODULES/mod_mime.so
+TypesConfig $TOOLS/mime.types
+
+<IfDefine PERL>
+    LoadModule perl_module    $MODULES/mod_perl.so
+</IfDefine>
+<IfDefine FASTCGI>
+    LoadModule fastcgi_module $MODULES/mod_fastcgi.so
+</IfDefine>
+<IfDefine FCGID>
+    LoadModule fcgid_module   $MODULES/mod_fcgid.so
+</IfDefine>
+<IfDefine SSL>
+    LoadModule ssl_module     $MODULES/mod_ssl.so
+</IfDefine>
+
+<IfModule !log_config_module>
+    LoadModule log_config_module $MODULES/mod_log_config.so
+</IfModule>
+ErrorLog    "$RTHOME/var/log/apache-error.log"
+TransferLog "$RTHOME/var/log/apache-access.log"
+LogLevel notice
+
+<Directory />
+    Options FollowSymLinks
+    AllowOverride None
+    Order deny,allow
+    Deny from all
+</Directory>
+
+AddDefaultCharset UTF-8
+
+DocumentRoot $RTHOME/share/html
+<Directory $RTHOME/share/html>
+    Order allow,deny
+    Allow from all
+</Directory>
+
+Alias $PATH/NoAuth/images/ $RTHOME/share/html/NoAuth/images/
+<Directory $RTHOME/share/html/NoAuth/images>
+    Order allow,deny
+    Allow from all
+</Directory>
+
+<IfDefine !RT3>
+########## 4.0 mod_perl
+<IfDefine PERL>
+    PerlSetEnv RT_SITE_CONFIG $RTHOME/etc/RT_SiteConfig.pm
+    <Location $PATH>
+        Order allow,deny
+        Allow from all
+        SetHandler modperl
+        PerlResponseHandler Plack::Handler::Apache2
+        PerlSetVar psgi_app $RTHOME/sbin/rt-server
+    </Location>
+    <Perl>
+        use Plack::Handler::Apache2;
+        Plack::Handler::Apache2->preload("$RTHOME/sbin/rt-server");
+    </Perl>
+</IfDefine>
+
+########## 4.0 mod_fastcgi
+<IfDefine FASTCGI>
+    FastCgiIpcDir $RTHOME/var
+    FastCgiServer $RTHOME/sbin/rt-server.fcgi -processes $PROCESSES -idle-timeout 300
+    ScriptAlias $PATH $RTHOME/sbin/rt-server.fcgi/
+    <Location $PATH>
+        Order allow,deny
+        Allow from all
+        Options +ExecCGI
+        AddHandler fastcgi-script fcgi
+    </Location>
+</IfDefine>
+
+########## 4.0 mod_fcgid
+<IfDefine FCGID>
+    FcgidProcessTableFile $RTHOME/var/fcgid_shm
+    FcgidIPCDir $RTHOME/var
+    FcgidMaxRequestLen 1073741824
+    ScriptAlias $PATH $RTHOME/sbin/rt-server.fcgi/
+    <Location $PATH>
+        Order allow,deny
+        Allow from all
+        Options +ExecCGI
+        AddHandler fcgid-script fcgi
+    </Location>
+</IfDefine>
+</IfDefine>
+
+
+<IfDefine RT3>
+########## 3.8 mod_perl
+<IfDefine PERL>
+    PerlSetEnv RT_SITE_CONFIG $RTHOME/etc/RT_SiteConfig.pm
+    PerlRequire "$RTHOME/bin/webmux.pl"
+    <Location $PATH/NoAuth/images>
+        SetHandler default
+    </Location>
+    <Location $PATH>
+        SetHandler perl-script
+        PerlResponseHandler RT::Mason
+    </Location>
+</IfDefine>
+
+########## 3.8 mod_fastcgi
+<IfDefine FASTCGI>
+    FastCgiIpcDir $RTHOME/var
+    FastCgiServer $RTHOME/bin/mason_handler.fcgi -processes $PROCESSES -idle-timeout 300
+    ScriptAlias $PATH $RTHOME/bin/mason_handler.fcgi/
+    <Location $PATH>
+	Order allow,deny
+	Allow from all
+	Options +ExecCGI
+	AddHandler fastcgi-script fcgi
+    </Location>
+</IfDefine>
+
+########## 3.8 mod_fcgid
+<IfDefine FCGID>
+    FcgidProcessTableFile $RTHOME/var/fcgid_shm
+    FcgidIPCDir $RTHOME/var
+    FcgidMaxRequestLen 1073741824
+    ScriptAlias $PATH $RTHOME/bin/mason_handler.fcgi/
+    <Location $PATH>
+	Order allow,deny
+	Allow from all
+	Options +ExecCGI
+	AddHandler fcgid-script fcgi
+    </Location>
+</IfDefine>
+</IfDefine>
+
+<IfDefine SSL>
+    SSLRandomSeed startup builtin
+    SSLRandomSeed startup file:/dev/urandom 512
+    SSLRandomSeed connect builtin
+    SSLRandomSeed connect file:/dev/urandom 512
+    SSLSessionCache shmcb:$RTHOME/var/ssl_scache(512000)
+    SSLMutex file:$RTHOME/var/ssl_mutex
+    <VirtualHost *:$SSL>
+        SSLEngine on
+	SSLCertificateFile    $TOOLS/localhost.crt
+	SSLCertificateKeyFile $TOOLS/localhost.key
+    </VirtualHost>
+</IfDefine>
