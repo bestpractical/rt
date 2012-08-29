@@ -435,10 +435,13 @@ our %META = (
             Description => 'Date format',                            #loc
             Callback => sub { my $ret = { Values => [], ValuesLabel => {}};
                               my $date = RT::Date->new($HTML::Mason::Commands::session{'CurrentUser'});
-                              $date->Set;
+                              $date->SetToNow;
                               foreach my $value ($date->Formatters) {
                                  push @{$ret->{Values}}, $value;
-                                 $ret->{ValuesLabel}{$value} = $date->$value();
+                                 $ret->{ValuesLabel}{$value} = $date->Get(
+                                     Format     => $value,
+                                     Timezone   => 'user',
+                                 );
                               }
                               return $ret;
             },
