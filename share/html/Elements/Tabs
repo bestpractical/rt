@@ -642,8 +642,10 @@ my $build_main_nav = sub {
                 if ( $item_map->{$id}->{next} ) {
                     $search->child( next =>
                         title => loc('Next') . ' >',  class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{$id}->{next});
-                    $search->child( last =>
-                        title => loc('Last') . ' >>', class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{last});
+                    if ( $item_map->{last} ) {
+                        $search->child( last =>
+                            title => loc('Last') . ' >>', class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{last});
+                    }
                 }
             }
         }
