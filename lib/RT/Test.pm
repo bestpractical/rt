@@ -283,6 +283,9 @@ Set( \$RTAddressRegexp , qr/^bad_re_that_doesnt_match\$/i);
 
     if ( $args{'plugins'} ) {
         print $config "Set( \@Plugins, qw(". join( ' ', @{ $args{'plugins'} } ) .") );\n";
+
+        my $plugin_data = File::Spec->rel2abs("t/data/plugins");
+        print $config qq[\$RT::PluginPath = "$plugin_data";\n];
     }
 
     if ( $INC{'Devel/Cover.pm'} ) {
