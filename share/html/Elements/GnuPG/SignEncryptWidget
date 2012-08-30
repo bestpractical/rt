@@ -124,12 +124,16 @@ if ( $self->{'Sign'} ) {
     $QueueObj ||= $TicketObj->QueueObj
         if $TicketObj;
 
-    my $address = $self->{'SignUsing'};
-    $address ||= ($self->{'UpdateType'} && $self->{'UpdateType'} eq "private")
+    my $private = $session{'CurrentUser'}->UserObj->PrivateKey || '';
+    my $queue = ($self->{'UpdateType'} && $self->{'UpdateType'} eq "private")
         ? ( $QueueObj->CommentAddress || RT->Config->Get('CommentAddress') )
         : ( $QueueObj->CorrespondAddress || RT->Config->Get('CorrespondAddress') );
 
-    unless ( RT::Crypt::GnuPG::DrySign( $address ) ) {
+    my $address = $self->{'SignUsing'} || $queue;
+    if ($address ne $private and $address ne $queue) {
+        push @{ $self->{'GnuPGCanNotSignAs'} ||= [] }, $address;
+        $checks_failure = 1;
+    } elsif ( not RT::Crypt::GnuPG::DrySign( $address ) ) {
         push @{ $self->{'GnuPGCanNotSignAs'} ||= [] }, $address;
         $checks_failure = 1;
     } else {
