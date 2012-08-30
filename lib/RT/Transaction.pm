@@ -430,8 +430,12 @@ sub QuoteWrap {
         my $col = $args{cols} - (length $ref->{quoter});
         my $wrapper = Text::Wrapper->new( columns => $col );
 
-        my $tmp = join ' ', split /\n/, $ref->{text};
-        my $wrap = $wrapper->wrap($tmp);
+        # Wrap on individual lines to honor incoming line breaks
+        # Otherwise deliberate separate lines (like a list or a sig)
+        # all get combined incorrectly into single paragraphs.
+
+        my @lines = split /\n/, $ref->{text};
+        my $wrap = join '', map { $wrapper->wrap($_) } @lines;
         my $quoter = $ref->{quoter};
 
         # Only add the space if actually quoting
