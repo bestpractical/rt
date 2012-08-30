@@ -1,0 +1,8 @@
+<%flags>
+inherit => undef    # avoid auth
+</%flags>
+<%init>
+$r->content_type("text/plain");
+$m->out( $RT::User::LOADED_OVERLAY ? "yes" : "no" );
+$m->abort(200);
+</%init>

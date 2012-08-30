@@ -1,0 +1,8 @@
+<%flags>
+inherit => undef    # avoid auth
+</%flags>
+<%init>
+$r->content_type("application/json");
+$m->out( JSON( RT::User->_ClassAccessible() ) );
+$m->abort(200);
+</%init>
