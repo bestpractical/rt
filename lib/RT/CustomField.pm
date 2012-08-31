@@ -1238,6 +1238,51 @@ sub CollectionClassFromLookupType {
     return $collection_class;
 }
 
+
+sub Group {
+
+
+}
+
+sub Groups {
+    my $self = shift;
+    my $record = shift;
+
+    my $record_class = ref($record) || $record || '';
+    $record_class = $self->RecordClassFromLookupType
+        if !$record_class && $self->id;
+
+    my $config = RT->Config->Get('CustomFieldGroups');
+    my @groups;
+    if ( $record_class ) {
+        @groups = keys %{ $config->{$record_class} };
+    } else {
+        @groups = map { keys %$_ } values %$config;
+    }
+
+    my %seen;
+    return
+        sort { lc($a) cmp lc($b) }
+        grep defined && length && !$seen{lc $_}++,
+        @groups;
+}
+
+my %BUILTIN_GROUPS = (
+    'RT::Ticket' => { map { $_ => 1 } qw(Basics Dates Links People) },
+);
+$BUILTIN_GROUPS{''} = { map { %$_ } values %BUILTIN_GROUPS  };
+
+sub CustomGroups {
+    my $self = shift;
+    my $record = shift;
+
+    my $record_class = ref($record) || $record || '';
+    $record_class = $self->RecordClassFromLookupType
+        if !$record_class && $self->id;
+
+    return grep !$BUILTIN_GROUPS{$record_class}{$_}, $self->Groups( $record_class );
+}
+
 =head1 ApplyGlobally
 
 Certain custom fields (users, groups) should only be applied globally

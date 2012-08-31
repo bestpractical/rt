@@ -96,6 +96,36 @@ sub _Init {
     return ( $self->SUPER::_Init(@_) );
 }
 
+sub LimitToGroup {
+    my $self = shift;
+    my $group = shift;
+
+    if ( $group ) {
+        my $list = RT->Config->Get('CustomFieldGroups')->{'RT::Ticket'}{$group};
+        unless ( $list && @$list ) {
+            return $self->Limit( FIELD => 'id', VALUE => 0, ENTRYAGGREGATOR => 'AND' );
+        }
+        foreach ( @$list ) {
+            $self->Limit( FIELD => 'Name', VALUE => $_ );
+        }
+    } else {
+        my @list = map {@$_} grep defined && ref $_,
+            values %{ RT->Config->Get('CustomFieldGroups')->{'RT::Ticket'} };
+
+        return unless @list;
+        foreach ( @list ) {
+            $self->Limit(
+                FIELD => 'Name',
+                OPERATOR => '!=',
+                VALUE => $_,
+                ENTRYAGGREGATOR => 'AND',
+            );
+        }
+
+    }
+    return;
+}
+
 
 =head2 LimitToLookupType
 

@@ -2716,4 +2716,13 @@ with L</Lifecycles> (see L</Labeling and defining actions>).
 
 =cut
 
+Set(%CustomFieldGroups,
+    'RT::Ticket' => {
+        Basics => [],
+        Dates => [],
+        People => [],
+        Links   => [],
+    },
+);
+
 1;
