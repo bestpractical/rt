@@ -107,8 +107,10 @@ $ARGS{'PrivateKey'} = $m->comp('/Widgets/Form/Select:Process',
 
 if ( $Update ) {
     if (not $ARGS{'PrivateKey'} or grep {$_ eq $ARGS{'PrivateKey'}} @potential_keys) {
-        my ($status, $msg) = $UserObj->SetPrivateKey( $ARGS{'PrivateKey'} );
-        push @results, $msg;
+        if (($ARGS{'PrivateKey'}||'') ne ($UserObj->PrivateKey||'')) {
+            my ($status, $msg) = $UserObj->SetPrivateKey( $ARGS{'PrivateKey'} );
+            push @results, $msg;
+        }
     } else {
         push @results, loc("Invalid key [_1] for address '[_2]'", $ARGS{'PrivateKey'}, $email);
     }
