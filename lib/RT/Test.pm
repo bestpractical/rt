@@ -135,6 +135,7 @@ sub import {
     RT::InitPluginPaths();
     RT::InitClasses();
 
+    RT::I18N->Init();
     $class->bootstrap_db( %args );
 
     __reconnect_rt()
@@ -144,7 +145,6 @@ sub import {
 
     RT->Plugins;
 
-    RT::I18N->Init();
     RT->Config->PostLoadCheck;
 
     $class->set_config_wrapper;
