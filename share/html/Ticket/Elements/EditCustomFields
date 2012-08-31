@@ -90,6 +90,8 @@ if ($TicketObj && !$OnCreate) {
     $NamePrefix .= "Object-RT::Ticket--CustomField-";
 }
 
+$CustomFields->LimitToGroup( $Group ) if defined $Group;
+
 $m->callback( %ARGS, CallbackName => 'MassageCustomFields', CustomFields => $CustomFields );
 
 $AsTable ||= $InTable;
@@ -108,6 +110,7 @@ $NamePrefix => ''
 $TicketObj => undef
 $QueueObj => undef
 $OnCreate => undef
+$Group => undef
 $DefaultsFromTopArguments => 1
 $AsTable => 0
 $InTable => 0
