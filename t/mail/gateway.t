@@ -470,7 +470,7 @@ diag "Testing preservation of binary attachments";
     is ($acontent, $file, 'The attachment isn\'t screwed up in the database.');
 
     # Grab the binary attachment via the web ui
-    my $ua = new LWP::UserAgent;
+    my $ua = LWP::UserAgent->new;
     my $full_url = "$url/Ticket/Attachment/". $attachment->TransactionId
         ."/". $attachment->id. "/bpslogo.png?&user=root&pass=password";
     my $r = $ua->get( $full_url );

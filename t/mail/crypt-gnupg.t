@@ -327,7 +327,7 @@ diag 'wrong signed/encrypted parts: wrong proto';
 diag 'verify inline and in attachment signatures';
 {
     open( my $fh, '<', "$homedir/signed_old_style_with_attachment.eml" ) or die $!;
-    my $parser = new MIME::Parser;
+    my $parser = MIME::Parser->new;
     my $entity = $parser->parse( $fh );
 
     my @parts = RT::Crypt->FindProtectedParts( Entity => $entity );
