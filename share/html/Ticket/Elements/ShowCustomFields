@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/ShowCustomFields, Object => $Ticket &>
+<& /Elements/ShowCustomFields, %ARGS, Object => $Ticket &>
 <%ARGS>
 $Ticket => undef
 </%ARGS>
