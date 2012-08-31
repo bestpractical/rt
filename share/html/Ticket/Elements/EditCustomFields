@@ -94,6 +94,10 @@ $CustomFields->LimitToGroup( $Group ) if defined $Group;
 
 $m->callback( %ARGS, CallbackName => 'MassageCustomFields', CustomFields => $CustomFields );
 
+# don't print anything if there is no custom fields
+return unless $CustomFields->First;
+$CustomFields->GotoFirstItem;
+
 $AsTable ||= $InTable;
 my $FIELD = $AsTable ? 'tr' : 'div';
 my $CELL  = $AsTable ? 'td' : 'div';
