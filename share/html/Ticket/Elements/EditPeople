@@ -66,17 +66,29 @@
 <h3><&|/l&>Owner</&></h3>
 <&|/l&>Owner</&>: <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id, DefaultValue => 0&>
 <h3><&|/l&>Current watchers</&></h3>
-
-<&|/l&>Requestors</&>:
-<& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Requestors &>
-
-<&|/l&>Cc</&>:
-<& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Cc &>
-
-<&|/l&>Administrative Cc</&>:
-<& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->AdminCc &>
-
 <i><&|/l&>(Check box to delete)</&></i><br />
+
+<table>
+
+<tr>
+  <td class="label"><&|/l&>Requestors</&>:</td>
+  <td class="value"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Requestors &></td>
+</tr>
+
+<tr>
+  <td class="label"><&|/l&>Cc</&>:</td>
+  <td class="value"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Cc &></td>
+</tr>
+
+<tr>
+  <td class="label"><&|/l&>Administrative Cc</&>:</td>
+  <td class="value"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->AdminCc &></td>
+</tr>
+
+<& EditCustomFields, TicketObj => $Ticket, Group => 'People', InTable => 1 &>
+
+</table>
+
 </td>
 </tr>
 </table>

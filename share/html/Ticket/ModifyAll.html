@@ -57,11 +57,16 @@
 
 <&| /Widgets/TitleBox, title => loc('Modify ticket # [_1]', $Ticket->Id), class=>'ticket-info-basics' &>
 <& Elements/EditBasics, TicketObj => $Ticket &>
-<& Elements/EditCustomFields, TicketObj => $Ticket &>
+<& Elements/EditCustomFields, TicketObj => $Ticket, Group => 'Basics' &>
 </&>
 
 % $m->callback(CallbackName => 'AfterBasics', Ticket => $Ticket);
-<br />
+
+% foreach my $group ( RT::CustomField->CustomGroups( $Ticket ), '' ) {
+<&| /Widgets/TitleBox, title => $group? loc($group) : loc('CustomFields'), class => 'ticket-info-cfs', hide_empty => 1 &>
+<& Elements/EditCustomFields, TicketObj => $Ticket, Group => $group &>
+</&>
+% }
 
 <&| /Widgets/TitleBox, title => loc('Dates'), class=>'ticket-info-dates'&>
 <& Elements/EditDates, TicketObj => $Ticket &>

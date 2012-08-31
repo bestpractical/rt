@@ -158,6 +158,9 @@
     <td class="label"><& ShowRelationLabel, id => $id, Label => loc('Referred to by'), Relation => 'ReferredToBy' &>:</td>
     <td class="entry"> <input name="RefersTo-<%$id%>" /></td>
   </tr>
+% if ( $Object->isa('RT::Ticket') ) {
+  <& /Ticket/Elements/EditCustomFields, TicketObj => $Object, Group => 'Links', InTable => 1 &>
+% }
 % $m->callback( CallbackName => 'NewLink' );
 </table>
 </td>
