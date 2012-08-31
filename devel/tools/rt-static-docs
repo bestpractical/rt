@@ -55,7 +55,8 @@ use File::Basename 'basename';
 use RT::Pod::Simple::HTMLBatch;
 
 my %opts;
-GetOptions( \%opts, "help|h", 'rt-root=s', 'to=s' );
+my $print_header = '';
+GetOptions( \%opts, "help|h", 'rt-root=s', 'to=s', 'print_header' );
 
 if ( $opts{'help'} ) {
     require Pod::Usage;
@@ -73,11 +74,12 @@ if ( $opts{'rt-root'} ) {
     chdir $opts{'rt-root'};
 }
 
-my @dirs = ( 'docs', 'lib', 'bin', 'sbin' );
+my @dirs = ( 'docs', 'lib', 'bin', 'sbin', 'etc' );
 
 my $batch = RT::Pod::Simple::HTMLBatch->new;
 $batch->css_flurry(0);
-$batch->add_css('rt-docs.css');
+$batch->javascript_flurry(0);
+#$batch->add_css('rt-docs.css');
 
 my $contents_page_start =<<START;
 <html>
@@ -87,6 +89,8 @@ my $contents_page_start =<<START;
 <body class='contentspage'>
 <h1>RT Documentation</h1>
 START
+
+$contents_page_start = '' unless $print_header;
 
 $batch->contents_page_start($contents_page_start);
 $batch->contents_page_end('');
@@ -108,3 +112,19 @@ rt-static-docs - generate doc shipped with RT
 
 This script is used to generate documents shipped with RT.
 
+=head1 OPTIONS
+
+=over
+
+=item --to
+
+Set the destination directory for the output files.
+
+=item --print_header
+
+Flag to printer HTML page header on the TOC page. This only effects
+the TOC page. It defaults to off.
+
+=back
+
+=cut
