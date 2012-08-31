@@ -72,6 +72,7 @@ my $Ticket = LoadTicket($id);
 my @results;  
 $m->callback( TicketObj => $Ticket, ARGSRef => \%ARGS, Results => \@results );
 push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS );
+push @results, ProcessObjectCustomFieldUpdates( TicketObj => $Ticket, ARGSRef => \%ARGS );
 $Ticket->ApplyTransactionBatch;
     
 </%INIT>

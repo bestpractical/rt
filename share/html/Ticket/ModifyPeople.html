@@ -100,6 +100,8 @@ $Ticket->SquelchMailTo($_)
 unless ($OnlySearchForPeople or $OnlySearchForGroup) {
     push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
     push @results, ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
+    push @results, ProcessObjectCustomFieldUpdates( TicketObj => $Ticket, ARGSRef => \%ARGS );
+
     $Ticket->ApplyTransactionBatch;
 }
 
