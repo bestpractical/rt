@@ -101,8 +101,12 @@ $ARGS{'PrivateKey'} = $m->comp('/Widgets/Form/Select:Process',
 );
 
 if ( $Update ) {
-    my ($status, $msg) = $UserObj->SetPrivateKey( $ARGS{'PrivateKey'} );
-    push @results, $msg;
+    if (not $ARGS{'PrivateKey'} or grep {$_ eq $ARGS{'PrivateKey'}} @potential_keys) {
+        my ($status, $msg) = $UserObj->SetPrivateKey( $ARGS{'PrivateKey'} );
+        push @results, $msg;
+    } else {
+        push @results, loc("Invalid key [_1] for address '[_2]'", $ARGS{'PrivateKey'}, $email);
+    }
 }
 
 my $title = loc("[_1]'s GnuPG keys",$UserObj->Name);
