@@ -53,11 +53,13 @@
         (($can_modify || $can_modify_cf) ? (title_href => RT->Config->Get('WebPath')."/Ticket/Modify.html?id=".$Ticket->Id) : ()),
         class => 'ticket-info-basics',
     &><& /Ticket/Elements/ShowBasics, Ticket => $Ticket &></&>
+% foreach my $group ( RT::CustomField->CustomGroups($Ticket), '' ) {
     <&| /Widgets/TitleBox, title => loc('Custom Fields'),
         (($can_modify || $can_modify_cf) ? (title_href => RT->Config->Get('WebPath')."/Ticket/Modify.html?id=".$Ticket->Id) : ()),
         class => 'ticket-info-cfs',
         hide_empty => 1,
-    &><& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket &></&>
+    &><& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Group => $group &></&>
+% }
 
     <&| /Widgets/TitleBox, title => loc('People'),
         (($can_modify || $can_modify_owner) ? (title_href => RT->Config->Get('WebPath')."/Ticket/ModifyPeople.html?id=".$Ticket->Id) : ()),
