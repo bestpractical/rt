@@ -2,8 +2,12 @@ use strict;
 use warnings;
 use File::Spec;
 use utf8;
-use RT::Test tests => 60, actual_server => 1, noinitialdata => 1;
-RT->InstallMode(1);
+
+$ENV{RT_TEST_WEB_HANDLER} = 'plack+rt-server';
+use RT::Test
+    tests     => undef,
+    nodb      => 1,
+    server_ok => 1;
 
 my $dbname     = 'rt4test_install_xxx';
 my $rtname     = 'rttestname';
@@ -19,6 +23,9 @@ my $owner = 'root@localhost';
 unlink File::Spec->catfile( $RT::VarPath, $dbname );
 
 my ( $url, $m ) = RT::Test->started_ok;
+$m->warning_like(qr/If this is a new installation of RT/,
+                 "Got startup warning");
+
 my ($port) = $url =~ /:(\d+)/;
 $m->get_ok($url);
 
@@ -163,3 +170,5 @@ is( $config->Get('CommentAddress'), $comment, 'comment address in config' );
 
 unlink File::Spec->catfile( $RT::VarPath, $dbname );
 
+undef $m;
+done_testing;
