@@ -5,15 +5,10 @@ use strict;
 use RT;
 use RT::Test nodata => 1, tests => undef;
 
-sub new (*) {
-    my $class = shift;
-    return $class->new(RT->SystemUser);
-}
-
 use constant VALUES_CLASS => 'RT::CustomFieldValues::Groups';
 RT->Config->Set(CustomFieldValuesSources => VALUES_CLASS);
 
-my $q = new( RT::Queue );
+my $q = RT::Queue->new( RT->SystemUser );
 isa_ok( $q, 'RT::Queue' );
 my ($qid) = $q->Create( Name => "CF-External-". $$ );
 ok( $qid, "created queue" );
@@ -23,7 +18,7 @@ my %arg = ( Name        => $q->Name,
             MaxValues   => 1,
             ValuesClass => VALUES_CLASS );
 
-my $cf = new( RT::CustomField );
+my $cf = RT::CustomField->new( RT->SystemUser );
 isa_ok( $cf, 'RT::CustomField' );
 
 {
