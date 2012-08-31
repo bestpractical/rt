@@ -374,14 +374,36 @@ sub set_config_wrapper {
                 SCALAR => '$',
             );
             my $sigil = $sigils{$type} || $sigils{'SCALAR'};
-            open( my $fh, '>>', $tmp{'config'}{'RT'} )
+            open( my $fh, '<', $tmp{'config'}{'RT'} )
                 or die "Couldn't open config file: $!";
+            my @lines;
+            while (<$fh>) {
+                if (not @lines or /^Set\(/) {
+                    push @lines, $_;
+                } else {
+                    $lines[-1] .= $_;
+                }
+            }
+            close $fh;
+
+            # Traim trailing newlines and "1;"
+            $lines[-1] =~ s/(^1;\n|^\n)*\Z//m;
+
+            # Remove any previous definitions of this var
+            @lines = grep {not /^Set\(\s*\Q$sigil$name\E\b/} @lines;
+
+            # Format the new value for output
             require Data::Dumper;
             local $Data::Dumper::Terse = 1;
             my $dump = Data::Dumper::Dumper([@_[2 .. $#_]]);
-            $dump =~ s/;\s+$//;
-            print $fh
-                "\nSet(${sigil}${name}, \@{". $dump ."});\n1;\n";
+            $dump =~ s/;?\s+\Z//;
+            push @lines, "Set( ${sigil}${name}, \@{". $dump ."});\n";
+            push @lines, "\n1;\n";
+
+            # Re-write the configuration file
+            open( $fh, '>', $tmp{'config'}{'RT'} )
+                or die "Couldn't open config file: $!";
+            print $fh $_ for @lines;
             close $fh;
 
             if ( @SERVERS ) {
