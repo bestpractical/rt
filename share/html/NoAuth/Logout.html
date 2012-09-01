@@ -71,7 +71,7 @@ my $URL = RT->Config->Get('WebPath')."/";
 
 # Allow a callback to modify the URL we redirect to, which is useful for
 # external webauth systems
-$m->callback( %ARGS, URL => \$URL );
+$m->callback( %ARGS, CallbackName => 'ModifyLoginRedirect', URL => \$URL );
 
 $m->callback( %ARGS, CallbackName => 'BeforeSessionDelete' );
 
