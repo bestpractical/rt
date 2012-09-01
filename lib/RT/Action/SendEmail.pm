@@ -100,34 +100,31 @@ activated in the config.
 sub Commit {
     my $self = shift;
 
-    $self->DeferDigestRecipients() if RT->Config->Get('RecordOutgoingEmail');
+    return abs $self->SendMessage( $self->TemplateObj->MIMEObj )
+        unless RT->Config->Get('RecordOutgoingEmail');
+
+    $self->DeferDigestRecipients();
     my $message = $self->TemplateObj->MIMEObj;
 
     my $orig_message;
-    if (   RT->Config->Get('RecordOutgoingEmail')
-        && RT->Config->Get('GnuPG')->{'Enable'} )
-    {
-        $orig_message = $message->dup if RT::Interface::Email::WillSignEncrypt(
-            Attachment => $self->TransactionObj->Attachments->First,
-            Ticket     => $self->TicketObj,
-        );
-    }
+    $orig_message = $message->dup if RT::Interface::Email::WillSignEncrypt(
+        Attachment => $self->TransactionObj->Attachments->First,
+        Ticket     => $self->TicketObj,
+    );
 
     my ($ret) = $self->SendMessage($message);
-    if ( $ret > 0 && RT->Config->Get('RecordOutgoingEmail') ) {
-        if ($orig_message) {
-            $message->attach(
-                Type        => 'application/x-rt-original-message',
-                Disposition => 'inline',
-                Data        => $orig_message->as_string,
-            );
-        }
-        $self->RecordOutgoingMailTransaction($message);
-        $self->RecordDeferredRecipients();
+    return abs( $ret ) if $ret <= 0;
+
+    if ($orig_message) {
+        $message->attach(
+            Type        => 'application/x-rt-original-message',
+            Disposition => 'inline',
+            Data        => $orig_message->as_string,
+        );
     }
-
-
-    return ( abs $ret );
+    $self->RecordOutgoingMailTransaction($message);
+    $self->RecordDeferredRecipients();
+    return 1;
 }
 
 =head2 Prepare

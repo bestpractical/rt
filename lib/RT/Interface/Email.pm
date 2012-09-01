@@ -323,6 +323,11 @@ sub WillSignEncrypt {
     my $attachment = delete $args{Attachment};
     my $ticket     = delete $args{Ticket};
 
+    if ( not RT->Config->Get('GnuPG')->{'Enable'} ) {
+        $args{Sign} = $args{Encrypt} = 0;
+        return wantarray ? %args : 0;
+    }
+
     for my $argument ( qw(Sign Encrypt) ) {
         next if defined $args{ $argument };
 
