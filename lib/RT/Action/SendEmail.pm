@@ -107,23 +107,10 @@ sub Commit {
     if (   RT->Config->Get('RecordOutgoingEmail')
         && RT->Config->Get('GnuPG')->{'Enable'} )
     {
-
-        # it's hacky, but we should know if we're going to crypt things
-        my $attachment = $self->TransactionObj->Attachments->First;
-
-        my %crypt;
-        foreach my $argument (qw(Sign Encrypt)) {
-            if ( $attachment
-                && defined $attachment->GetHeader("X-RT-$argument") )
-            {
-                $crypt{$argument} = $attachment->GetHeader("X-RT-$argument");
-            } else {
-                $crypt{$argument} = $self->TicketObj->QueueObj->$argument();
-            }
-        }
-        if ( $crypt{'Sign'} || $crypt{'Encrypt'} ) {
-            $orig_message = $message->dup;
-        }
+        $orig_message = $message->dup if RT::Interface::Email::WillSignEncrypt(
+            Attachment => $self->TransactionObj->Attachments->First,
+            Ticket     => $self->TicketObj,
+        );
     }
 
     my ($ret) = $self->SendMessage($message);
