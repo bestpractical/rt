@@ -318,6 +318,24 @@ header field then it's value is used
 
 =cut
 
+sub WillSignEncrypt {
+    my %args = @_;
+    my $attachment = delete $args{Attachment};
+    my $ticket     = delete $args{Ticket};
+
+    for my $argument ( qw(Sign Encrypt) ) {
+        next if defined $args{ $argument };
+
+        if ( $attachment and defined $attachment->GetHeader("X-RT-$argument") ) {
+            $args{$argument} = $attachment->GetHeader("X-RT-$argument");
+        } elsif ( $ticket ) {
+            $args{$argument} = $ticket->QueueObj->$argument();
+        }
+    }
+
+    return wantarray ? %args : ($args{Sign} || $args{Encrypt});
+}
+
 sub SendEmail {
     my (%args) = (
         Entity => undef,
@@ -366,23 +384,12 @@ sub SendEmail {
     }
 
     if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
-        my %crypt;
-
-        my $attachment;
-        $attachment = $TransactionObj->Attachments->First
-            if $TransactionObj;
-
-        foreach my $argument ( qw(Sign Encrypt) ) {
-            next if defined $args{ $argument };
-
-            if ( $attachment && defined $attachment->GetHeader("X-RT-$argument") ) {
-                $crypt{$argument} = $attachment->GetHeader("X-RT-$argument");
-            } elsif ( $TicketObj ) {
-                $crypt{$argument} = $TicketObj->QueueObj->$argument();
-            }
-        }
-
-        my $res = SignEncrypt( %args, %crypt );
+        %args = WillSignEncrypt(
+            %args,
+            Attachment => $TransactionObj ? $TransactionObj->Attachments->First : undef,
+            Ticket     => $TicketObj,
+        );
+        my $res = SignEncrypt( %args );
         return $res unless $res > 0;
     }
 
