@@ -113,6 +113,8 @@
 <td align="right"><input type="checkbox" class="checkbox" name="Encrypt" value="1" <% $QueueObj->Encrypt? 'checked="checked"': '' |n%> /></td>
 <td><&|/l&>Encrypt by default</&></td>
 </tr>
+<tr><td align="right"><input type="checkbox" class="checkbox" name="SignAuto" value="1" <% $QueueObj->SignAuto? 'checked="checked"': '' |n%> /></td>
+<td colspan="3"><&|/l_unsafe, "<b>","</b>","<i>","</i>"&>Sign all auto-generated mail.  [_1]Caution[_2]: Enabling this option alters the signature from providing [_3]authentication[_4] to providing [_3]integrity[_4].</&></td></tr>
 % }
 
 <tr><td align="right"><input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked|n%> /></td>
@@ -180,13 +182,13 @@ if ($Create) {
 if ( $QueueObj->Id ) {
     delete $session{'create_in_queues'};
     my @attribs= qw(Description CorrespondAddress CommentAddress Name
-        InitialPriority FinalPriority DefaultDueIn Sign Encrypt SubjectTag Disabled);
+        InitialPriority FinalPriority DefaultDueIn Sign SignAuto Encrypt SubjectTag Disabled);
 
     # we're asking about enabled on the web page but really care about disabled
     if ( $SetEnabled ) {
         $Disabled = $ARGS{'Disabled'} = $Enabled? 0: 1;
         $ARGS{$_} = 0 foreach grep !defined $ARGS{$_} || !length $ARGS{$_},
-            qw(Sign Encrypt Disabled);
+            qw(Sign SignAuto Encrypt Disabled);
     }
 
     push @results, UpdateRecordObject(

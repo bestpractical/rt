@@ -333,8 +333,14 @@ sub WillSignEncrypt {
 
         if ( $attachment and defined $attachment->GetHeader("X-RT-$argument") ) {
             $args{$argument} = $attachment->GetHeader("X-RT-$argument");
-        } elsif ( $ticket ) {
-            $args{$argument} = $ticket->QueueObj->$argument();
+        } elsif ( $ticket and $argument eq "Encrypt" ) {
+            $args{Encrypt} = $ticket->QueueObj->Encrypt();
+        } elsif ( $ticket and $argument eq "Sign" ) {
+            # Note that $queue->Sign is UI-only, and that all
+            # UI-generated messages explicitly set the X-RT-Crypt header
+            # to 0 or 1; thus this path is only taken for messages
+            # generated _not_ via the web UI.
+            $args{Sign} = $ticket->QueueObj->SignAuto();
         }
     }
 
