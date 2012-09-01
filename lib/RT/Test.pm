@@ -1503,9 +1503,7 @@ sub stop_server {
     my $in_end = shift;
     return unless @SERVERS;
 
-    my $sig = 'TERM';
-    $sig = 'INT' if $ENV{'RT_TEST_WEB_HANDLER'} eq "plack";
-    kill $sig, @SERVERS;
+    kill 'TERM', @SERVERS;
     foreach my $pid (@SERVERS) {
         if ($ENV{RT_TEST_WEB_HANDLER} =~ /^apache/) {
             sleep 1 while kill 0, $pid;
