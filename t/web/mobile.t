@@ -47,7 +47,7 @@ for my $agent (@agents) {
 
 $m->submit_form( fields => { user => 'root', pass => 'password' } );
 is( $m->uri, $url . '/m/', 'logged in via mobile ui' );
-ok( $m->find_link( text => 'Homepage' ), 'has homepage link, so really logged in' );
+ok( $m->find_link( text => 'Home' ), 'has homepage link, so really logged in' );
 
 diag "create some tickets";
 $m->follow_link_ok( { text => 'New ticket' } );
@@ -135,7 +135,7 @@ $m->content_contains( 'reply 1', 'has replied content' );
 $m->content_contains( 'reply 2', 'has replied content' );
 
 diag "create another ticket in queue foo";
-$m->follow_link_ok( { text => 'Homepage' } );
+$m->follow_link_ok( { text => 'Home' } );
 is( $m->uri, "$url/m/", 'main mobile page' );
 $m->follow_link_ok( { text => 'New ticket' } );
 like( $m->uri, qr'/m/ticket/select_create_queue', 'queue select page' );
@@ -156,7 +156,7 @@ like( $m->uri, qr'/m/ticket/show', 'ticket show page' );
 $m->content_contains( 'cfbar', 'has cf name' );
 $m->content_contains( 'cfvalue', 'has cf value' );
 
-$m->follow_link_ok( { text => 'Homepage' } );
+$m->follow_link_ok( { text => 'Home' } );
 is( $m->uri, "$url/m/", 'main mobile page' );
 
 diag "test unowned tickets link";
@@ -204,7 +204,7 @@ is( $m->uri, "$url/m/", 'still in mobile' );
 $m->submit_form( fields => { user => 'root', pass => 'password' } );
 
 diag "test notmobile link";
-$m->follow_link_ok( { text => 'Homepage' } );
+$m->follow_link_ok( { text => 'Home' } );
 $m->follow_link_ok( { text => 'Not using a mobile browser?' } );
 is( $m->uri, $url . '/', 'got full ui' );
 

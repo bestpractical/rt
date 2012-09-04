@@ -126,12 +126,12 @@ sub start_server {
         rt_site_config => $ENV{'RT_SITE_CONFIG'},
         load_modules   => $info{load_modules},
     );
-    if ($config{basic_auth}) {
-        if ($config{basic_auth} eq 'anon') {
-            $opt{basic_auth} = $self->basic_auth_anon;
-        } else {
-            $opt{basic_auth} = $self->basic_auth;
-        }
+    if (not $config{basic_auth}) {
+        $opt{basic_auth} = "";
+    } elsif ($config{basic_auth} eq 'anon') {
+        $opt{basic_auth} = $self->basic_auth_anon;
+    } else {
+        $opt{basic_auth} = $self->basic_auth;
     }
     foreach (qw(log pid lock)) {
         $opt{$_ .'_file'} = File::Spec->catfile(
