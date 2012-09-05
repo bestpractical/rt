@@ -1,7 +1,11 @@
 To perform an incremental upgrade of your RT instance you will need to
 perform the following steps on your production server.
 
-  Turn off all access to RT (this usually involves turning down your web and mail servers).
+  Copy the rt-validator command from the current version of RT and run
+  it against your production RT instance. The output from --help will
+  show you how to run it in check and then in fix mode.
+
+  Turn off all access to RT (this usually involves stopping your web and mail servers).
   Take a snapshot of the RT database.
   Install Record_Local.pm into $RTHOME/lib/RT/.
   Create the IncrementalRecords table using the schema file for your database.
