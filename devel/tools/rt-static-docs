@@ -78,7 +78,7 @@ die "--to MUST be a directory\n"    unless -d $opts{to};
 
 chdir $opts{rt} if $opts{rt};
 
-my @dirs = qw(
+my @dirs = (qw(
     docs
     etc
     lib
@@ -87,8 +87,7 @@ my @dirs = qw(
     local/lib
     local/sbin
     local/bin
-    local/plugins
-);
+), glob("local/plugins/*/{lib,sbin,bin}"));
 
 my $converter = RT::Pod::HTMLBatch->new;
 
