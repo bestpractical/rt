@@ -51,12 +51,17 @@ use strict;
 use warnings;
 
 use Getopt::Long;
+use File::Path 'make_path';
 use File::Basename 'basename';
-use RT::Pod::Simple::HTMLBatch;
+use RT::Pod::HTMLBatch;
 
 my %opts;
-my $print_header = '';
-GetOptions( \%opts, "help|h", 'rt-root=s', 'to=s', 'print_header' );
+GetOptions(
+    \%opts,
+    "help|h",
+    "rt=s",
+    "to=s",
+);
 
 if ( $opts{'help'} ) {
     require Pod::Usage;
@@ -64,37 +69,28 @@ if ( $opts{'help'} ) {
     exit;
 }
 
-die "--to is not supplied" unless $opts{to};
-unless ( -e $opts{to} ) {
-    require File::Path;
-    File::Path::make_path( $opts{to} );
-}
+die "--to=DIRECTORY is required\n"  unless $opts{to};
+make_path( $opts{to} )              unless -e $opts{to};
+die "--to MUST be a directory\n"    unless -d $opts{to};
 
-if ( $opts{'rt-root'} ) {
-    chdir $opts{'rt-root'};
-}
+chdir $opts{rt} if $opts{rt};
 
-my @dirs = ( 'docs', 'lib', 'bin', 'sbin', 'etc' );
+my @dirs = qw(
+    docs
+    etc
+    lib
+    bin
+    sbin
+    local/lib
+    local/sbin
+    local/bin
+    local/plugins
+);
 
-my $batch = RT::Pod::Simple::HTMLBatch->new;
-$batch->css_flurry(0);
-$batch->javascript_flurry(0);
-#$batch->add_css('rt-docs.css');
+# Convert each POD file to HTML
+RT::Pod::HTMLBatch->batch_convert( \@dirs, $opts{to} );
 
-my $contents_page_start =<<START;
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>RT Documentation</title></head>
-<body class='contentspage'>
-<h1>RT Documentation</h1>
-START
 
-$contents_page_start = '' unless $print_header;
-
-$batch->contents_page_start($contents_page_start);
-$batch->contents_page_end('');
-$batch->batch_convert( join( ':', @dirs ), $opts{to} );
 
 __END__
 
@@ -104,13 +100,19 @@ rt-static-docs - generate doc shipped with RT
 
 =head1 SYNOPSIS
 
-    rt-static-docs --rt-root /path/to/rt --to /path/to/output
-
-    perl -Ilib devel/tools/rt-static-docs --to share/html/Documentation
+    rt-static-docs --to /path/to/output [--rt /path/to/rt]
 
 =head1 DESCRIPTION
 
-This script is used to generate documents shipped with RT.
+RT ships with documentation (written in POD) embedded in library files, at the
+end of utility scripts, and in standalone files.  This script finds all of that
+documentation, collects and converts it into a nice set of HTML files, and tops
+it off with a helpful index.
+
+Best Practical uses this to publish documentation under
+L<http://bestpractical.com/rt/docs/>.  You can run it yourself, however, on
+your local RT and browse the documentation specific to your installation
+(extensions included!).
 
 =head1 OPTIONS
 
@@ -120,10 +122,15 @@ This script is used to generate documents shipped with RT.
 
 Set the destination directory for the output files.
 
-=item --print_header
+=item --rt
 
-Flag to printer HTML page header on the TOC page. This only effects
-the TOC page. It defaults to off.
+Set the RT base directory to search under.  Defaults to the current working
+directory, which is fine if you're running this script as
+C<devel/tools/rt-static-docs>.
+
+=item --help
+
+Print this help.
 
 =back
 
