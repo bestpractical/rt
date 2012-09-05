@@ -13,7 +13,11 @@ sub new {
 sub perldoc_url_prefix { "http://metacpan.org/module/" }
 
 sub html_header { '' }
-sub html_footer { '' }
+sub html_footer {
+    my $self = shift;
+    my $toc  = "../" x ($self->batch_mode_current_level - 1);
+    return '<a href="./' . $toc . '">&larr; Back to index</a>';
+}
 
 sub start_Verbatim { $_[0]{'scratch'} = "<pre>" }
 sub end_Verbatim   { $_[0]{'scratch'} .= "</pre>"; $_[0]->emit; }
