@@ -251,6 +251,8 @@ sub AddToObject {
         $queue->Load( $args{'ObjectId'} );
         return (0, $self->loc('Invalid queue'))
             unless $queue->id;
+
+        $args{'ObjectId'} = $queue->id;
     }
     return ( 0, $self->loc('Permission Denied') )
         unless $self->CurrentUser->PrincipalObj->HasRight(
