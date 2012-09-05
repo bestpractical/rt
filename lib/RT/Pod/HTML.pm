@@ -24,4 +24,38 @@ sub _end_head {
     return $self->SUPER::_end_head(@_);
 }
 
+sub resolve_pod_page_link {
+    my $self = shift;
+    my ($name, $section) = @_;
+
+    # Only try to resolve local links if we're in batch mode and are linking
+    # outside the current document.
+    return $self->SUPER::resolve_pod_page_link(@_)
+        unless $self->batch_mode and $name;
+
+    $section = defined $section
+        ? '#' . $self->idify($section, 1)
+        : '';
+
+    my $local;
+    if ($name =~ /^RT::/) {
+        $local = join "/",
+                  map { $self->encode_entities($_) }
+                split /::/, $name;
+    }
+    elsif ($name =~ /^rt-/) {
+        $local = $self->encode_entities($name);
+    }
+
+    if ($local) {
+        # Resolve links correctly by going up
+        my $depth = $self->batch_mode_current_level - 1;
+        return join "/",
+                    ($depth ? ".." x $depth : ()),
+                    "$local.html$section";
+    } else {
+        return $self->SUPER::resolve_pod_page_link(@_)
+    }
+}
+
 1;
