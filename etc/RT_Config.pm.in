@@ -340,7 +340,8 @@ Set($StoreLoops, undef);
 =item C<$MaxAttachmentSize>
 
 C<$MaxAttachmentSize> sets the maximum size (in bytes) of attachments
-stored in the database.
+stored in the database.  This setting is irrelevant unless one of
+$TruncateLongAttachments or $DropLongAttachments (below) are set.
 
 =cut
 
@@ -1774,7 +1775,7 @@ backwards compatability.
 
 Set($RestrictLoginReferrer, 0);
 
-=item C<$ReferrerWhitelist>
+=item C<@ReferrerWhitelist>
 
 This is a list of hostname:port combinations that RT will treat as being
 part of RT's domain. This is particularly useful if you access RT as
@@ -1786,6 +1787,16 @@ redirect back to RT once authentication is complete.
 If the "RT has detected a possible cross-site request forgery" error is triggered
 by a host:port sent by your browser that you believe should be valid, you can copy
 the host:port from the error message into this list.
+
+Simple wildcards, similar to SSL certificates, are allowed.  For example:
+
+    *.example.com:80    # matches foo.example.com
+                        # but not example.com
+                        #      or foo.bar.example.com
+
+    www*.example.com:80 # matches www3.example.com
+                        #     and www-test.example.com
+                        #     and www.example.com
 
 =cut
 
@@ -2244,10 +2255,11 @@ all possible transitions in each lifecycle using the following format:
 
 =head3 Statuses available during ticket creation
 
-By default users can create tickets with any status, except
-deleted. If you want to restrict statuses available during creation
-then describe transition from '' (empty string), like in the example
-above.
+By default users can create tickets with a status of new,
+open, or resolved, but cannot create tickets with a status of
+rejected, stalled, or deleted. If you want to change the statuses
+available during creation, update the transition from '' (empty
+string), like in the example above.
 
 =head3 Protecting status changes with rights
 

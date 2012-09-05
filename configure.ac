@@ -424,6 +424,7 @@ AC_CONFIG_FILES([
                  sbin/rt-clean-sessions
                  sbin/rt-shredder
                  sbin/rt-validator
+                 sbin/rt-validate-aliases
                  sbin/rt-email-group-admin
                  sbin/rt-server
                  sbin/rt-server.fcgi

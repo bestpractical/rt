@@ -56,7 +56,7 @@
 
 <%INIT>
 my @types;
-if ($Scope =~ 'queue') {
+if ($Scope =~ /queue/) {
    @types = RT::Queue->ManageableRoleGroupTypes;
 }
 else { 

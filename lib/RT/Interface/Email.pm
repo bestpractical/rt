@@ -793,7 +793,7 @@ sub GetForwardFrom {
     my $ticket = $args{Ticket} || $txn->Object;
 
     if ( RT->Config->Get('ForwardFromUser') ) {
-        return ( $txn || $ticket )->CurrentUser->UserObj->EmailAddress;
+        return ( $txn || $ticket )->CurrentUser->EmailAddress;
     }
     else {
         return $ticket->QueueObj->CorrespondAddress
@@ -1216,6 +1216,14 @@ sub SetInReplyTo {
     $mail->head->set( 'References' => Encode::encode_utf8(join ' ', @references) );
 }
 
+sub ExtractTicketId {
+    my $entity = shift;
+
+    my $subject = $entity->head->get('Subject') || '';
+    chomp $subject;
+    return ParseTicketId( $subject );
+}
+
 sub ParseTicketId {
     my $Subject = shift;
 
@@ -1441,7 +1449,7 @@ sub Gateway {
     }
     # }}}
 
-    $args{'ticket'} ||= ParseTicketId( $Subject );
+    $args{'ticket'} ||= ExtractTicketId( $Message );
 
     $SystemTicket = RT::Ticket->new( RT->SystemUser );
     $SystemTicket->Load( $args{'ticket'} ) if ( $args{'ticket'} ) ;

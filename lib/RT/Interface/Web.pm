@@ -254,7 +254,15 @@ sub HandleRequest {
 
     $HTML::Mason::Commands::m->comp( '/Elements/SetupSessionCookie', %$ARGS );
     SendSessionCookie();
-    $HTML::Mason::Commands::session{'CurrentUser'} = RT::CurrentUser->new() unless _UserLoggedIn();
+
+    if ( _UserLoggedIn() ) {
+        # make user info up to date
+        $HTML::Mason::Commands::session{'CurrentUser'}
+          ->Load( $HTML::Mason::Commands::session{'CurrentUser'}->id );
+    }
+    else {
+        $HTML::Mason::Commands::session{'CurrentUser'} = RT::CurrentUser->new();
+    }
 
     # Process session-related callbacks before any auth attempts
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Session', CallbackPage => '/autohandler' );
@@ -280,7 +288,7 @@ sub HandleRequest {
             my $m = $HTML::Mason::Commands::m;
 
             # REST urls get a special 401 response
-            if ($m->request_comp->path =~ '^/REST/\d+\.\d+/') {
+            if ($m->request_comp->path =~ m{^/REST/\d+\.\d+/}) {
                 $HTML::Mason::Commands::r->content_type("text/plain");
                 $m->error_format("text");
                 $m->out("RT/$RT::VERSION 401 Credentials required\n");
@@ -464,7 +472,7 @@ sub MaybeShowInstallModePage {
     my $m = $HTML::Mason::Commands::m;
     if ( $m->base_comp->path =~ RT->Config->Get('WebNoAuthRegex') ) {
         $m->call_next();
-    } elsif ( $m->request_comp->path !~ '^(/+)Install/' ) {
+    } elsif ( $m->request_comp->path !~ m{^(/+)Install/} ) {
         RT::Interface::Web::Redirect( RT->Config->Get('WebURL') . "Install/index.html" );
     } else {
         $m->call_next();
@@ -560,7 +568,7 @@ sub ShowRequestedPage {
     unless ( $HTML::Mason::Commands::session{'CurrentUser'}->Privileged ) {
 
         # if the user is trying to access a ticket, redirect them
-        if ( $m->request_comp->path =~ '^(/+)Ticket/Display.html' && $ARGS->{'id'} ) {
+        if ( $m->request_comp->path =~ m{^(/+)Ticket/Display.html} && $ARGS->{'id'} ) {
             RT::Interface::Web::Redirect( RT->Config->Get('WebURL') . "SelfService/Display.html?id=" . $ARGS->{'id'} );
         }
 
@@ -1196,6 +1204,14 @@ our %is_whitelisted_component = (
     # information for the search.  Because it's a straight-up read, in
     # addition to embedding its own auth, it's fine.
     '/NoAuth/rss/dhandler' => 1,
+
+    # While these can be used for denial-of-service against RT
+    # (construct a very inefficient query and trick lots of users into
+    # running them against RT) it's incredibly useful to be able to link
+    # to a search result or bookmark a result page.
+    '/Search/Results.html' => 1,
+    '/Search/Simple.html'  => 1,
+    '/m/tickets/search'     => 1,
 );
 
 sub IsCompCSRFWhitelisted {
@@ -1250,7 +1266,19 @@ sub IsRefererCSRFWhitelisted {
     my $configs;
     for my $config ( $base_url, RT->Config->Get('ReferrerWhitelist') ) {
         push @$configs,$config;
-        return 1 if $referer->host_port eq $config;
+
+        my $host_port = $referer->host_port;
+        if ($config =~ /\*/) {
+            # Turn a literal * into a domain component or partial component match.
+            # Refer to http://tools.ietf.org/html/rfc2818#page-5
+            my $regex = join "[a-zA-Z0-9\-]*",
+                         map { quotemeta($_) }
+                       split /\*/, $config;
+
+            return 1 if $host_port =~ /^$regex$/i;
+        } else {
+            return 1 if $host_port eq $config;
+        }
     }
 
     return (0,$referer,$configs);

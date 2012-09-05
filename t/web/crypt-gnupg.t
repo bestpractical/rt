@@ -52,6 +52,7 @@ RT::Test->clean_caught_mails;
 
 $m->goto_create_ticket( $queue );
 $m->form_name('TicketCreate');
+$m->field('Requestors', 'recipient@example.com');
 $m->field('Subject', 'Encryption test');
 $m->field('Content', 'Some content');
 ok($m->value('Encrypt', 2), "encrypt tick box is checked");
@@ -121,6 +122,7 @@ RT::Test->clean_caught_mails;
 
 $m->goto_create_ticket( $queue );
 $m->form_name('TicketCreate');
+$m->field('Requestors', 'recipient@example.com');
 $m->field('Subject', 'Signing test');
 $m->field('Content', 'Some other content');
 ok(!$m->value('Encrypt', 2), "encrypt tick box is unchecked");
@@ -194,6 +196,7 @@ RT::Test->clean_caught_mails;
 
 $m->goto_create_ticket( $queue );
 $m->form_name('TicketCreate');
+$m->field('Requestors', 'recipient@example.com');
 $m->field('Subject', 'Crypt+Sign test');
 $m->field('Content', 'Some final? content');
 ok($m->value('Encrypt', 2), "encrypt tick box is checked");
@@ -259,6 +262,7 @@ RT::Test->clean_caught_mails;
 
 $m->goto_create_ticket( $queue );
 $m->form_name('TicketCreate');
+$m->field('Requestors', 'recipient@example.com');
 $m->field('Subject', 'Test crypt-off on encrypted queue');
 $m->field('Content', 'Thought you had me figured out didya');
 $m->field(Encrypt => undef, 2); # turn off encryption

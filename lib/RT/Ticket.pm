@@ -1058,7 +1058,7 @@ sub AddWatcher {
         return (0, $self->loc("Couldn't parse address from '[_1]' string", $args{'Email'} ))
             unless $addr;
 
-        if ( lc $self->CurrentUser->UserObj->EmailAddress
+        if ( lc $self->CurrentUser->EmailAddress
             eq lc RT::User->CanonicalizeEmailAddress( $addr->address ) )
         {
             $args{'PrincipalId'} = $self->CurrentUser->id;
@@ -2121,14 +2121,16 @@ sub Comment {
     }
     $args{'NoteType'} = 'Comment';
 
+    $RT::Handle->BeginTransaction();
     if ($args{'DryRun'}) {
-        $RT::Handle->BeginTransaction();
         $args{'CommitScrips'} = 0;
     }
 
     my @results = $self->_RecordNote(%args);
     if ($args{'DryRun'}) {
         $RT::Handle->Rollback();
+    } else {
+        $RT::Handle->Commit();
     }
 
     return(@results);
@@ -2167,10 +2169,10 @@ sub Correspond {
              or ( $self->CurrentUserHasRight('ModifyTicket') ) ) {
         return ( 0, $self->loc("Permission Denied"), undef );
     }
+    $args{'NoteType'} = 'Correspond';
 
-    $args{'NoteType'} = 'Correspond'; 
+    $RT::Handle->BeginTransaction();
     if ($args{'DryRun'}) {
-        $RT::Handle->BeginTransaction();
         $args{'CommitScrips'} = 0;
     }
 
@@ -2187,6 +2189,8 @@ sub Correspond {
 
     if ($args{'DryRun'}) {
         $RT::Handle->Rollback();
+    } else {
+        $RT::Handle->Commit();
     }
 
     return (@results);
@@ -3301,6 +3305,28 @@ sub SeenUpTo {
     return $txns->First;
 }
 
+=head2 RanTransactionBatch
+
+Acts as a guard around running TransactionBatch scrips.
+
+Should be false until you enter the code that runs TransactionBatch scrips
+
+Accepts an optional argument to indicate that TransactionBatch Scrips should no longer be run on this object.
+
+=cut
+
+sub RanTransactionBatch {
+    my $self = shift;
+    my $val = shift;
+
+    if ( defined $val ) {
+        return $self->{_RanTransactionBatch} = $val;
+    } else {
+        return $self->{_RanTransactionBatch};
+    }
+
+}
+
 
 =head2 TransactionBatch
 
@@ -3337,6 +3363,22 @@ sub ApplyTransactionBatch {
 
 sub _ApplyTransactionBatch {
     my $self = shift;
+
+    return if $self->RanTransactionBatch;
+    $self->RanTransactionBatch(1);
+
+    my $still_exists = RT::Ticket->new( RT->SystemUser );
+    $still_exists->Load( $self->Id );
+    if (not $still_exists->Id) {
+        # The ticket has been removed from the database, but we still
+        # have pending TransactionBatch txns for it.  Unfortunately,
+        # because it isn't in the DB anymore, attempting to run scrips
+        # on it may produce unpredictable results; simply drop the
+        # batched transactions.
+        $RT::Logger->warning("TransactionBatch was fired on a ticket that no longer exists; unable to run scrips!  Call ->ApplyTransactionBatch before shredding the ticket, for consistent results.");
+        return;
+    }
+
     my $batch = $self->TransactionBatch;
 
     my %seen;
@@ -3384,10 +3426,7 @@ sub DESTROY {
         return;
     }
 
-    my $batch = $self->TransactionBatch;
-    return unless $batch && @$batch;
-
-    return $self->_ApplyTransactionBatch;
+    return $self->ApplyTransactionBatch;
 }
 
 

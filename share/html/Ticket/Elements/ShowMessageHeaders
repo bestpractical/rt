@@ -80,6 +80,11 @@ foreach my $f (@headers) {
     $m->comp('/Elements/MakeClicky', content => \$f->{'Value'}, ticket => $ticket, %ARGS);
 }
 
+$m->callback(
+    CallbackName => 'BeforeLocalization',
+    headers      => \@headers,
+);
+
 if ( $Localize ) {
     $_->{'Tag'} = loc($_->{'Tag'}) foreach @headers;
 }

@@ -62,7 +62,7 @@
 
 <%INIT>
 my @types;
-if ($Scope =~ 'queue') {
+if ($Scope =~ /queue/) {
    @types = qw(Cc AdminCc);
 }
 elsif ($Suffix eq 'Group') {

@@ -153,7 +153,7 @@ sub path {
         $self->{path} = shift;
         $self->{path} = URI->new_abs($self->{path}, $self->parent->path . "/")->as_string
             if defined $self->{path} and $self->parent and $self->parent->path;
-        $self->{path} =~ s!///!/! if $self->{path};
+        $self->{path} =~ s!/+!/!g if $self->{path};
     }
     return $self->{path};
 }
@@ -230,6 +230,7 @@ sub child {
         if ( defined $path and length $path ) {
             my $base_path = $HTML::Mason::Commands::r->path_info;
             my $query     = $HTML::Mason::Commands::m->cgi_object->query_string;
+            $base_path =~ s!/+!/!g;
             $base_path .= "?$query" if defined $query and length $query;
 
             $base_path =~ s/index\.html$//;

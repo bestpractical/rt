@@ -1,4 +1,4 @@
-# Initial data for a fresh RT3 Installation.
+# Initial data for a fresh RT installation.
 
 @Users = (
     {  Name         => 'root',

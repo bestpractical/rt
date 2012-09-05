@@ -33,6 +33,7 @@ use_ok('RT::Tickets');
     my $child = RT::Ticket->new( RT->SystemUser );
     my ($cid) = $child->Create( Subject => 'child', Queue => 1, MemberOf => $pid );
     ok( $cid, "created new ticket" );
+    $_->ApplyTransactionBatch for $parent, $child;
 
     my $plugin = RT::Shredder::Plugin::Tickets->new;
     isa_ok($plugin, 'RT::Shredder::Plugin::Tickets');
@@ -75,6 +76,8 @@ cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint"
 
     my ($status, $msg) = $child->AddLink( Target => $pid, Type => 'DependsOn' );
     ok($status, "added reqursive link") or diag "error: $msg";
+
+    $_->ApplyTransactionBatch for $parent, $child;
 
     my $plugin = RT::Shredder::Plugin::Tickets->new;
     isa_ok($plugin, 'RT::Shredder::Plugin::Tickets');
@@ -119,6 +122,8 @@ cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint"
     my ($cid2) = $child2->Create( Subject => 'child', Queue => 1, MemberOf => $pid);
     ok( $cid2, "created new ticket" );
     $child2->SetStatus('resolved');
+
+    $_->ApplyTransactionBatch for $parent, $child1, $child2;
 
     my $plugin = RT::Shredder::Plugin::Tickets->new;
     isa_ok($plugin, 'RT::Shredder::Plugin::Tickets');

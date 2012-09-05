@@ -344,13 +344,6 @@ else {
                 }
             }
             foreach $p (keys %new) {
-                # XXX: This is a stupid test.
-                unless ($p =~ /^[\w.+-]+\@([\w.-]+\.)*\w+.?$/) {
-                    $s = 0;
-                    $n = "$p is not a valid email address.";
-                    push @msgs, [ $s, $n ];
-                    next;
-                }
                 unless ($ticket->IsWatcher(Type => $type, Email => $p)) {
                     ($s, $n) = $ticket->AddWatcher(Type => $type,
                                                    Email => $p);

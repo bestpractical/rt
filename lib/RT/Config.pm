@@ -743,7 +743,7 @@ our %META = (
 
             my %seen;
             foreach my $encoding ( grep defined && length, splice @$value ) {
-                next if $seen{ $encoding }++;
+                next if $seen{ $encoding };
                 if ( $encoding eq '*' ) {
                     unshift @$value, '*';
                     next;
