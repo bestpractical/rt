@@ -4,6 +4,8 @@ use warnings;
 package RT::Pod::HTMLBatch;
 use base 'Pod::Simple::HTMLBatch';
 
+use List::MoreUtils qw/all/;
+
 use RT::Pod::Search;
 use RT::Pod::HTML;
 
@@ -49,6 +51,8 @@ sub write_contents_file {
                       $name   =~ /^RT::Action/          ? '08 Actions'                 :
                       $name   =~ /^RT::Condition/       ? '09 Conditions'              :
                       $name   =~ /^RT(::|$)/            ? '07 Developer Documentation' :
+                      $name   =~ /^(README|UPGRADING)/  ? '00 Install and Upgrade '.
+                                                             'Documentation'           :
                                                           '06 Miscellaneous'           ;
 
         if ($section =~ /User/) {
@@ -74,7 +78,17 @@ sub write_contents_file {
         print $index "<dt>", esc($section), "</dt>\n";
         print $index "<dd>\n";
 
-        for my $page (sort { $a->{name} cmp $b->{name} } @{ $toc{$key} }) {
+        my @sorted = sort {
+            my @names = map { $_->{name} } $a, $b;
+
+            # Sort just the upgrading docs descending within everything else
+            @names = reverse @names
+                if all { /^UPGRADING-/ } @names;
+
+            $names[0] cmp $names[1]
+        } @{ $toc{$key} };
+
+        for my $page (@sorted) {
             print $index "  <a href='", esc($page->{path}), "'>",
                                 esc($page->{name}),
                            "</a><br>\n";

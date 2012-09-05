@@ -87,10 +87,33 @@ my @dirs = qw(
     local/plugins
 );
 
+my $converter = RT::Pod::HTMLBatch->new;
+
+# Manually "convert" README* and docs/UPGRADING* to HTML and push them into the
+# known contents.
+for my $file (<README* docs/UPGRADING*>) {
+    (my $name = $file) =~ s{^.+/}{};
+    my $dest = "$opts{to}/$name.html";
+
+    open my $source, "<", $file
+        or warn "Can't open $file: $!", next;
+
+    open my $html, ">", $dest
+        or warn "Can't open $dest: $!", next;
+
+    print $html "<pre>";
+    print $html $_ while <$source>;
+    print $html "</pre>";
+
+    close $source; close $html;
+
+    $converter->note_for_contents_file([$name], $file, $dest);
+}
+
 # Convert each POD file to HTML
-RT::Pod::HTMLBatch->batch_convert( \@dirs, $opts{to} );
+$converter->batch_convert( \@dirs, $opts{to} );
 
-
+exit 0;
 
 __END__
 
