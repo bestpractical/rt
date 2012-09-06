@@ -28,6 +28,31 @@ sub new {
     return $self;
 }
 
+sub classify {
+    my $self = shift;
+    my %info = (@_);
+
+    my $section = $info{infile} =~ m{/plugins/([^/]+)}      ? "05 Extension: $1"           :
+                  $info{infile} =~ m{/local/}               ? '04 Local Documenation'      :
+                  $info{infile} =~ m{/(docs|etc)/}          ? '01 User Documentation'      :
+                  $info{infile} =~ m{/bin/}                 ? '02 Utilities (bin)'         :
+                  $info{infile} =~ m{/sbin/}                ? '03 Utilities (sbin)'        :
+                  $info{name}   =~ /^RT::Action/            ? '08 Actions'                 :
+                  $info{name}   =~ /^RT::Condition/         ? '09 Conditions'              :
+                  $info{name}   =~ /^RT(::|$)/              ? '07 Developer Documentation' :
+                  $info{name}   =~ /^(README|UPGRADING)/    ? '00 Install and Upgrade '.
+                                                                 'Documentation'           :
+                  $info{infile} =~ m{/devel/tools/}         ? '20 Utilities (devel/tools)' :
+                                                              '06 Miscellaneous'           ;
+
+    if ($section =~ /User/) {
+        $info{name} =~ s/_/ /g;
+        $info{name} = join "/", map { ucfirst } split /::/, $info{name};
+    }
+
+    return ($info{name}, $section);
+}
+
 sub write_contents_file {
     my ($self, $to) = @_;
     return unless $self->contents_file;
@@ -43,28 +68,16 @@ sub write_contents_file {
     my %toc;
     for my $page (@$pages) {
         my ($name, $infile, $outfile, $pieces) = @$page;
-        my $section = $infile =~ m{/plugins/([^/]+)}    ? "05 Extension: $1"           :
-                      $infile =~ m{/local/}             ? '04 Local Documenation'      :
-                      $infile =~ m{/(docs|etc)/}        ? '01 User Documentation'      :
-                      $infile =~ m{/bin/}               ? '02 Utilities (bin)'         :
-                      $infile =~ m{/sbin/}              ? '03 Utilities (sbin)'        :
-                      $name   =~ /^RT::Action/          ? '08 Actions'                 :
-                      $name   =~ /^RT::Condition/       ? '09 Conditions'              :
-                      $name   =~ /^RT(::|$)/            ? '07 Developer Documentation' :
-                      $name   =~ /^(README|UPGRADING)/  ? '00 Install and Upgrade '.
-                                                             'Documentation'           :
-                      $infile =~ m{/devel/tools/}       ? '20 Utilities (devel/tools)' :
-                                                          '06 Miscellaneous'           ;
 
-        if ($section =~ /User/) {
-            $name =~ s/_/ /g;
-            $name = join "/", map { ucfirst } split /::/, $name;
-        }
+        my ($title, $section) = $self->classify(
+            name    => $name,
+            infile  => $infile,
+        );
 
         (my $path = $outfile) =~ s{^\Q$to\E/?}{};
 
         push @{ $toc{$section} }, {
-            name => $name,
+            name => $title,
             path => $path,
         };
     }
