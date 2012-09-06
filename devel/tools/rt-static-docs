@@ -136,12 +136,7 @@ documentation, collects and converts it into a nice set of HTML files, and tops
 it off with a helpful index.
 
 Best Practical uses this to publish documentation under
-L<http://bestpractical.com/rt/docs/>.  You can run it yourself, if you'd like,
-on your local RT and browse the documentation specific to your installation
-(extensions included!).
-
-    rt-static-docs --to /opt/rt4/local/html/Documentation/ --rt /opt/rt4
-    # now browse to http://your.rt/Documentation/
+L<http://bestpractical.com/rt/docs/>.
 
 =head1 OPTIONS
 
