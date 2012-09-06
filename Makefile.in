@@ -468,9 +468,6 @@ regenerate-catalogs:
 license-tag:
 	$(PERL) devel/tools/license_tag
 
-factory: initialize-database
-	cd lib; $(PERL) ../devel/tools/factory  $(DB_DATABASE) RT
-
 start-httpd:
 	$(PERL) sbin/standalone_httpd &
 
