@@ -51,8 +51,8 @@ use strict;
 use warnings;
 
 use Getopt::Long;
+use File::Spec;
 use File::Path 'make_path';
-use File::Basename 'basename';
 use RT::Pod::HTMLBatch;
 
 my %opts;
