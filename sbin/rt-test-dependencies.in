@@ -362,6 +362,7 @@ Convert::Color
 
 $deps{'HTML-DOC'} = [ text_to_hash( <<'.') ];
 Pod::Simple 3.07
+HTML::Entities
 .
 
 my %AVOID = (

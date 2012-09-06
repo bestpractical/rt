@@ -53,6 +53,7 @@ use warnings;
 use Getopt::Long;
 use File::Spec;
 use File::Path 'make_path';
+use HTML::Entities qw(encode_entities);
 use RT::Pod::HTMLBatch;
 
 my %opts;
@@ -104,7 +105,7 @@ for my $file (<README* docs/UPGRADING*>) {
         or warn "Can't open $dest: $!", next;
 
     print $html "<pre>";
-    print $html $_ while <$source>;
+    print $html encode_entities($_) while <$source>;
     print $html "</pre>";
 
     close $source; close $html;
