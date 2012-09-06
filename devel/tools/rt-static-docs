@@ -85,6 +85,7 @@ my @dirs = (qw(
     lib
     bin
     sbin
+    devel/tools
     local/lib
     local/sbin
     local/bin

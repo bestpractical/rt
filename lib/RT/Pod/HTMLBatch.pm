@@ -53,6 +53,7 @@ sub write_contents_file {
                       $name   =~ /^RT(::|$)/            ? '07 Developer Documentation' :
                       $name   =~ /^(README|UPGRADING)/  ? '00 Install and Upgrade '.
                                                              'Documentation'           :
+                      $infile =~ m{/devel/tools/}       ? '20 Utilities (devel/tools)' :
                                                           '06 Miscellaneous'           ;
 
         if ($section =~ /User/) {
