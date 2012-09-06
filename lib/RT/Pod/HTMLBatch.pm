@@ -32,20 +32,28 @@ sub classify {
     my $self = shift;
     my %info = (@_);
 
+    my $is_install_doc = sub {
+        local $_ = shift;
+        return 1 if /^(README|UPGRADING)/;
+        return 1 if $_ eq "RT_Config";
+        return 1 if $_ eq "web_deployment";
+        return 0;
+    };
+
     my $section = $info{infile} =~ m{/plugins/([^/]+)}      ? "05 Extension: $1"           :
                   $info{infile} =~ m{/local/}               ? '04 Local Documenation'      :
+                  $is_install_doc->($info{name})            ? '00 Install and Upgrade '.
+                                                                 'Documentation'           :
                   $info{infile} =~ m{/(docs|etc)/}          ? '01 User Documentation'      :
                   $info{infile} =~ m{/bin/}                 ? '02 Utilities (bin)'         :
                   $info{infile} =~ m{/sbin/}                ? '03 Utilities (sbin)'        :
                   $info{name}   =~ /^RT::Action/            ? '08 Actions'                 :
                   $info{name}   =~ /^RT::Condition/         ? '09 Conditions'              :
                   $info{name}   =~ /^RT(::|$)/              ? '07 Developer Documentation' :
-                  $info{name}   =~ /^(README|UPGRADING)/    ? '00 Install and Upgrade '.
-                                                                 'Documentation'           :
                   $info{infile} =~ m{/devel/tools/}         ? '20 Utilities (devel/tools)' :
                                                               '06 Miscellaneous'           ;
 
-    if ($section =~ /User/) {
+    if ($info{infile} =~ m{/(docs|etc)/}) {
         $info{name} =~ s/_/ /g;
         $info{name} = join "/", map { ucfirst } split /::/, $info{name};
     }
