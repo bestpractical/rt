@@ -231,6 +231,13 @@ sub IsAdded {
     return $record;
 }
 
+sub IsAddedToAny {
+    my $self = shift;
+    my $record = RT::ObjectScrip->new( $self->CurrentUser );
+    $record->LoadByCols( Scrip => $self->id );
+    return $record->id ? 1 : 0;
+}
+
 sub AddedTo {
     my $self = shift;
     return RT::ObjectScrip->new( $self->CurrentUser )
