@@ -1253,6 +1253,8 @@ sub Groups {
         if !$record_class && $self->id;
 
     my $config = RT->Config->Get('CustomFieldGroups');
+       $config = {} unless ref($config) eq 'HASH';
+
     my @groups;
     if ( $record_class ) {
         @groups = keys %{ $config->{$record_class} };

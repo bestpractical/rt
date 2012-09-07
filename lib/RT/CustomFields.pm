@@ -100,17 +100,20 @@ sub LimitToGroup {
     my $self = shift;
     my $group = shift;
 
+    my $config = RT->Config->Get('CustomFieldGroups');
+       $config = {} unless ref($config) eq 'HASH';
+
     if ( $group ) {
-        my $list = RT->Config->Get('CustomFieldGroups')->{'RT::Ticket'}{$group};
-        unless ( $list && @$list ) {
+        my $list = $config->{'RT::Ticket'}{$group};
+        unless ( $list and ref($list) eq 'ARRAY' and @$list ) {
             return $self->Limit( FIELD => 'id', VALUE => 0, ENTRYAGGREGATOR => 'AND' );
         }
         foreach ( @$list ) {
             $self->Limit( FIELD => 'Name', VALUE => $_ );
         }
     } else {
-        my @list = map {@$_} grep defined && ref $_,
-            values %{ RT->Config->Get('CustomFieldGroups')->{'RT::Ticket'} };
+        my @list = map {@$_} grep defined && ref($_) eq 'ARRAY',
+            values %{ $config->{'RT::Ticket'} };
 
         return unless @list;
         foreach ( @list ) {
