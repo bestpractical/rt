@@ -57,7 +57,7 @@
     <&| /Widgets/TitleBox,
         title => $group? loc($group) : loc('Custom Fields'),
         (($can_modify || $can_modify_cf) ? (title_href => RT->Config->Get('WebPath')."/Ticket/Modify.html?id=".$Ticket->Id) : ()),
-        class => 'ticket-info-cfs',
+        class => 'ticket-info-cfs '. ($group? CSSClass("ticket-info-cfs-$group") : ''),
         hide_empty => 1,
     &><& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Group => $group &></&>
 % }

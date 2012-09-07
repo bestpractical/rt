@@ -3382,6 +3382,13 @@ sub JSON {
     RT::Interface::Web::EncodeJSON(@_);
 }
 
+sub CSSClass {
+    my $value = shift;
+    return '' unless defined $value;
+    $value =~ s/[^A-Za-z0-9_-]/_/g;
+    return $value;
+}
+
 package RT::Interface::Web;
 RT::Base->_ImportOverlays();
 
