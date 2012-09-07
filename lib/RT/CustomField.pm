@@ -1267,7 +1267,7 @@ sub Groups {
         @groups;
 }
 
-my %BUILTIN_GROUPS = (
+our %BUILTIN_GROUPS = (
     'RT::Ticket' => { map { $_ => 1 } qw(Basics Dates Links People) },
 );
 $BUILTIN_GROUPS{''} = { map { %$_ } values %BUILTIN_GROUPS  };
