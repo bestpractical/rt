@@ -807,6 +807,34 @@ lifecycle and add transition rules; see RT_Config.pm for documentation.
 EOT
         },
     },
+    CustomFieldGroups   => {
+        Type            => 'HASH',
+        PostLoadCheck   => sub {
+            my $config = shift;
+            # use scalar context intentionally to avoid not a hash error
+            my $groups = $config->Get('CustomFieldGroups') || {};
+
+            unless (ref($groups) eq 'HASH') {
+                RT->Logger->error("Config option %CustomFieldGroups is a @{[ref $groups]} not a HASH; ignoring");
+                $groups = {};
+            }
+
+            for my $class (keys %$groups) {
+                unless (ref($groups->{$class}) eq 'HASH') {
+                    RT->Logger->error("Config option \%CustomFieldGroups{$class} is not a HASH; ignoring");
+                    delete $groups->{$class};
+                    next;
+                }
+                for my $group (keys %{ $groups->{$class} }) {
+                    unless (ref($groups->{$class}{$group}) eq 'ARRAY') {
+                        RT->Logger->error("Config option \%CustomFieldGroups{$class}{$group} is not an ARRAY; ignoring");
+                        delete $groups->{$class}{$group};
+                    }
+                }
+            }
+            $config->Set( CustomFieldGroups => %$groups );
+        },
+    },
 );
 my %OPTIONS = ();
 
