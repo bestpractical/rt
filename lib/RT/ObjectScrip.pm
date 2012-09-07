@@ -55,7 +55,35 @@ use base 'RT::Record::AddAndSort';
 use RT::Scrip;
 use RT::ObjectScrips;
 
+=head1 NAME
+
+RT::ObjectScrip - record representing addition of a scrip to a queue
+
+=head1 DESCRIPTION
+
+This record is created if you want to add a scrip to a queue or globally.
+
+Inherits methods from L<RT::Record::AddAndSort>.
+
+For most operations it's better to use methods in L<RT::Scrip>.
+
+=head1 METHODS
+
+=head2 Table
+
+Returns table name for records of this class.
+
+=cut
+
 sub Table {'ObjectScrips'}
+
+=head2 ObjectCollectionClass
+
+Returns class name of collection of records scrips can be added to.
+Now it's only L<RT::Queue>, so 'RT::Queues' is returned.
+
+=cut
+
 sub ObjectCollectionClass {'RT::Queues'}
 
 =head2 ScripObj
@@ -71,6 +99,12 @@ sub ScripObj {
     $obj->Load( $id );
     return $obj;
 }
+
+=head2 Neighbors
+
+Stage splits scrips into neighborhoods. See L<RT::Record::AddAndSort/Neighbors and Siblings>.
+
+=cut
 
 sub Neighbors {
     my $self = shift;

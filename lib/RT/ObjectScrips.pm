@@ -55,7 +55,31 @@ use base 'RT::SearchBuilder::AddAndSort';
 use RT::Scrips;
 use RT::ObjectScrip;
 
+=head1 NAME
+
+RT::ObjectScrips - collection of RT::ObjectScrip records
+
+=head1 DESCRIPTION
+
+Collection of L<RT::ObjectScrip> records. Inherits methods from L<RT::SearchBuilder::AddAndSort>.
+
+=head1 METHODS
+
+=cut
+
+=head2 Table
+
+Returns name of the table where records are stored.
+
+=cut
+
 sub Table { 'ObjectScrips'}
+
+=head2 LimitToScrip
+
+Takes id of a L<RT::Scrip> object and limits this collection.
+
+=cut
 
 sub LimitToScrip {
     my $self = shift;
