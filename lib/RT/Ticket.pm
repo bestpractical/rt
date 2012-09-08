@@ -3584,12 +3584,8 @@ sub Attachments {
         return $res;
     }
 
-    my @columns = qw(
-        id TransactionId Parent MessageId
-        Subject Filename
-        ContentType ContentEncoding
-        Creator Created
-    );
+    my @columns = grep { not /^(Headers|Content)$/ }
+                       RT::Attachment->ReadableAttributes;
     push @columns, 'Headers' if $args{'WithHeaders'};
     push @columns, 'Content' if $args{'WithContent'};
 
