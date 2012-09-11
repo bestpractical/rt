@@ -151,6 +151,7 @@ sub PushCollections {
         my $class = "RT::\u$type";
         my $collection = $class->new( RT->SystemUser );
         $collection->FindAllRows;   # be explicit
+        $collection->CleanSlate;    # some collections (like groups and users) join in _Init
         $collection->UnLimit;
         $collection->OrderBy( FIELD => 'id' );
 
