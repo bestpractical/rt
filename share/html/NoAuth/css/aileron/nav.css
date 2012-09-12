@@ -162,3 +162,55 @@
 #topactions #simple-search .field:focus {
  color: #000;
  }
+
+/* The bookmark star is too tall without adjusting the padding and height */
+
+.sf-menu .toggle-bookmark a {
+    padding: 0 1em;
+    height: 2.5em;
+}
+
+.sf-menu .toggle-bookmark a img {
+    padding-top: 0.6em;
+}
+
+/* Pin page menu to top left corner once you scroll past it */
+
+#page-menu.pinned {
+    position: fixed;
+    top:    0;
+    right:  0;
+    left:   auto;
+    width:  auto;
+
+    background:     white;
+    border-left:    1px #aaa solid;
+    border-bottom:  1px #aaa solid;
+    border-radius:  0 0 0 5px;
+    box-shadow:     0 0 10px rgba(0,0,0,0.4);
+
+    /* stupid vendor prefixes */
+    -moz-border-radius:     0 0 0 5px;
+    -webkit-border-radius:  0 0 0 5px;
+    -moz-box-shadow:        0 0 10px rgba(0,0,0,0.4);
+    -webkit-box-shadow:     0 0 10px rgba(0,0,0,0.4);
+}
+
+#page-menu.pinned li:hover ul,
+#page-menu.pinned li.sfHover ul {
+    border-left:    1px #aaa solid;
+    border-right:   1px #aaa solid;
+    z-index:        -1 !important; /* relative to current stacking context */
+    box-shadow:     0 0 10px rgba(0,0,0,0.4);
+
+    -moz-box-shadow:    0 0 10px rgba(0,0,0,0.4);
+    -webkit-box-shadow: 0 0 10px rgba(0,0,0,0.4);
+}
+
+/* round off the corner of the first menu item so it matches the container */
+#page-menu.pinned > li:first-of-type,
+#page-menu.pinned > li:first-of-type > a {
+    border-radius:          0 0 0 5px;
+    -moz-border-radius:     0 0 0 5px;
+    -webkit-border-radius:  0 0 0 5px;
+}
