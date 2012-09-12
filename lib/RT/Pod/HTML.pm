@@ -7,6 +7,7 @@ use base 'Pod::Simple::XHTML';
 sub new {
     my $self = shift->SUPER::new(@_);
     $self->index(1);
+    $self->anchor_items(1);
     return $self;
 }
 
