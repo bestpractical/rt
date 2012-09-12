@@ -410,21 +410,23 @@ sub SendEmail {
         # SetOutgoingMailFrom and bounces conflict, since they both want -f
         if ( $args{'Bounce'} ) {
             push @args, shellwords(RT->Config->Get('SendmailBounceArguments'));
-        } elsif ( RT->Config->Get('SetOutgoingMailFrom') ) {
-            my $OutgoingMailAddress;
+        } elsif ( my $MailFrom = RT->Config->Get('SetOutgoingMailFrom') ) {
+            my $OutgoingMailAddress = $MailFrom =~ /\@/ ? $MailFrom : undef;
+            my $Overrides = RT->Config->Get('OverrideOutgoingMailFrom') || {};
 
             if ($TicketObj) {
                 my $QueueName = $TicketObj->QueueObj->Name;
-                my $QueueAddressOverride = RT->Config->Get('OverrideOutgoingMailFrom')->{$QueueName};
+                my $QueueAddressOverride = $Overrides->{$QueueName};
 
                 if ($QueueAddressOverride) {
                     $OutgoingMailAddress = $QueueAddressOverride;
                 } else {
-                    $OutgoingMailAddress = $TicketObj->QueueObj->CorrespondAddress
-                                           || RT->Config->Get('CorrespondAddress');
+                    $OutgoingMailAddress ||= $TicketObj->QueueObj->CorrespondAddress
+                                             || RT->Config->Get('CorrespondAddress');
                 }
-            } else {
-                $OutgoingMailAddress ||= RT->Config->Get('OverrideOutgoingMailFrom')->{'Default'};
+            }
+            elsif ($Overrides->{'Default'}) {
+                $OutgoingMailAddress = $Overrides->{'Default'};
             }
 
             push @args, "-f", $OutgoingMailAddress
