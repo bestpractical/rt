@@ -420,11 +420,12 @@ sub SendEmail {
                 if ($QueueAddressOverride) {
                     $OutgoingMailAddress = $QueueAddressOverride;
                 } else {
-                    $OutgoingMailAddress = $TicketObj->QueueObj->CorrespondAddress;
+                    $OutgoingMailAddress = $TicketObj->QueueObj->CorrespondAddress
+                                           || RT->Config->Get('CorrespondAddress');
                 }
+            } else {
+                $OutgoingMailAddress ||= RT->Config->Get('OverrideOutgoingMailFrom')->{'Default'};
             }
-
-            $OutgoingMailAddress ||= RT->Config->Get('OverrideOutgoingMailFrom')->{'Default'};
 
             push @args, "-f", $OutgoingMailAddress
                 if $OutgoingMailAddress;
