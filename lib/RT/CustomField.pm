@@ -374,6 +374,8 @@ sub Create {
         }
     }
 
+    $args{'Disabled'} ||= 0;
+
     (my $rv, $msg) = $self->SUPER::Create(
         Name        => $args{'Name'},
         Type        => $args{'Type'},

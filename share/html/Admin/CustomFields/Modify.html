@@ -173,7 +173,7 @@ else {
             LinkValueTo   => $LinkValueTo,
             IncludeContentForValue => $IncludeContentForValue,
             BasedOn       => $BasedOn,
-            Disabled      => !$Enabled,
+            Disabled      => ($Enabled ? 0 : 1),
         );
         if (!$val) {
             push @results, loc("Could not create CustomField: [_1]", $msg);
