@@ -95,7 +95,7 @@ my $converter = RT::Pod::HTMLBatch->new;
 
 # Manually "convert" README* and docs/UPGRADING* to HTML and push them into the
 # known contents.
-for my $file (<README* docs/UPGRADING*>) {
+for my $file (<README* docs/UPGRADING* UPGRADING*>) {
     (my $name = $file) =~ s{^.+/}{};
     my $dest = "$opts{to}/$name.html";
 
