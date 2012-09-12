@@ -128,8 +128,21 @@ sub Metadata {
 sub PushAll {
     my $self = shift;
 
-    # Ordering _shouldn't_ matter since we don't convert FK references to UIDs
-    # and hence don't have to look them up during import.
+    # To keep unique constraints happy, we need to remove old records
+    # before we insert new ones.  This fixes the case where a
+    # GroupMember was deleted and re-added (with a new id, but the same
+    # membership).
+    if ($self->{Incremental}) {
+        my $removed = RT::Migrate::Serializer::IncrementalRecords->new( RT->SystemUser );
+        $removed->Limit( FIELD => "UpdateType", VALUE => 3 );
+        $removed->OrderBy( FIELD => 'id' );
+        $self->PushObj( $removed );
+    }
+    # XXX: This is sadly not sufficient to deal with the general case of
+    # non-id unique constraints, such as queue names.  If queues A and B
+    # existed, and B->C and A->B renames were done, these will be
+    # serialized with A->B first, which will fail because there already
+    # exists a B.
 
     # Principals first; while we don't serialize these separately during
     # normal dependency walking (we fold them into users and groups),
@@ -160,13 +173,6 @@ sub PushAll {
 
     # Attributes
     $self->PushCollections(qw(Attributes));
-
-    if ($self->{Incremental}) {
-        my $removed = RT::Migrate::Serializer::IncrementalRecords->new( RT->SystemUser );
-        $removed->Limit( FIELD => "UpdateType", VALUE => 3 );
-        $removed->OrderBy( FIELD => 'id' );
-        $self->PushObj( $removed );
-    }
 }
 
 sub PushCollections {
