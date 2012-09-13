@@ -209,16 +209,6 @@ sub IsApplicable  {
 }
 
 
-sub DESTROY {
-    my $self=shift;
-    $self->{'Condition'} = undef;
-}
-
-
-
-
-
-
 
 =head2 id
 

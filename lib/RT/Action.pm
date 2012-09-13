@@ -179,19 +179,6 @@ sub IsApplicable  {
   return(undef);
 }
 
-sub DESTROY {
-    my $self = shift;
-
-    # We need to clean up all the references that might maybe get
-    # oddly circular
-    $self->{'ScripActionObj'} = undef;
-    $self->{'ScripObj'} = undef;
-    $self->{'TemplateObj'} =undef
-    $self->{'TicketObj'} = undef;
-    $self->{'TransactionObj'} = undef;
-}
-
-
 RT::Base->_ImportOverlays();
 
 1;

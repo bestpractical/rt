@@ -233,14 +233,6 @@ sub Action {
     return $self->{'Action'};
 }
 
-sub DESTROY {
-    my $self=shift;
-    $self->{'_TicketObj'} = undef;
-    $self->{'Action'} = undef;
-    $self->{'TemplateObj'} = undef;
-}
-
-
 =head2 id
 
 Returns the current value of id.
