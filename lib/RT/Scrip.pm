@@ -107,7 +107,7 @@ sub Create {
     my $self = shift;
     my %args = (
         Queue                  => 0,
-        Template               => 0,                     # name or id
+        Template               => undef,                 # name or id
         ScripAction            => 0,                     # name or id
         ScripCondition         => 0,                     # name or id
         Stage                  => 'TransactionCreate',
