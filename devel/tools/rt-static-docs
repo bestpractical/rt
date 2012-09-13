@@ -77,6 +77,16 @@ $opts{to} = File::Spec->rel2abs($opts{to});
 make_path( $opts{to} )              unless -e $opts{to};
 die "--to MUST be a directory\n"    unless -d $opts{to};
 
+# Unpack the tarball, if that's what we're given.
+if (($opts{rt} || '') =~ /\.tar\.gz$/ and -f $opts{rt}) {
+    my $tmpdir = "/tmp/rt-docs-$$";
+
+    mkdir $tmpdir
+        or die "Unable to mkdir $tmpdir: $!\n";
+
+    system qq[tar xzpf "$opts{rt}" -C $tmpdir];
+    $opts{rt} = <$tmpdir/rt-*>;
+}
 chdir $opts{rt} if $opts{rt};
 
 my @dirs = (qw(
@@ -152,6 +162,9 @@ Set the destination directory for the output files.
 Set the RT base directory to search under.  Defaults to the current working
 directory, which is fine if you're running this script as
 C<devel/tools/rt-static-docs>.
+
+May also point to a tarball (a file ending in C<.tar.gz>) which will be
+unpacked into a temporary directory and used as the RT base directory.
 
 =item --help
 
