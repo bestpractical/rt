@@ -52,7 +52,7 @@ use warnings;
 
 use Getopt::Long;
 use File::Spec;
-use File::Path 'make_path';
+use File::Path qw(make_path rmtree);
 use HTML::Entities qw(encode_entities);
 use RT::Pod::HTMLBatch;
 
@@ -102,6 +102,33 @@ my @dirs = (qw(
 ), glob("local/plugins/*/{lib,sbin,bin}"));
 
 my $converter = RT::Pod::HTMLBatch->new;
+
+sub generate_configure_help {
+    my $configure = shift;
+    my $help = `./$configure --help`;
+    my $dest = "$opts{to}/configure.html";
+
+    if ($help and open my $html, ">", $dest) {
+        print $html join "\n",
+            "<pre>", encode_entities($help), "</pre>", "\n";
+        close $html;
+        $converter->note_for_contents_file(["configure options"], $configure, $dest);
+    } else {
+        warn "Can't open $dest: $!";
+    }
+}
+
+# Generate a page for ./configure --help if we can
+if (-x "configure.ac" and -d ".git") {
+    rmtree("autom4te.cache") if -d "autom4te.cache";
+    generate_configure_help("configure.ac");
+}
+elsif (-x "configure") {
+    generate_configure_help("configure");
+}
+else {
+    warn "Unable to generate a page for ./configure --help!\n";
+}
 
 # Manually "convert" README* and docs/UPGRADING* to HTML and push them into the
 # known contents.

@@ -33,16 +33,18 @@ sub classify {
     my %info = (@_);
 
     my $is_install_doc = sub {
-        local $_ = shift;
+        my %page = @_;
+        local $_ = $page{name};
         return 1 if /^(README|UPGRADING)/;
         return 1 if $_ eq "RT_Config";
         return 1 if $_ eq "web_deployment";
+        return 1 if $page{infile} =~ m{^configure(\.ac)?$};
         return 0;
     };
 
     my $section = $info{infile} =~ m{/plugins/([^/]+)}      ? "05 Extension: $1"           :
                   $info{infile} =~ m{/local/}               ? '04 Local Documenation'      :
-                  $is_install_doc->($info{name})            ? '00 Install and Upgrade '.
+                  $is_install_doc->(%info)                  ? '00 Install and Upgrade '.
                                                                  'Documentation'           :
                   $info{infile} =~ m{/(docs|etc)/}          ? '01 User Documentation'      :
                   $info{infile} =~ m{/bin/}                 ? '02 Utilities (bin)'         :
