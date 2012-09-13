@@ -78,13 +78,6 @@ use base 'RT::Record';
 sub Table {'ScripConditions'}
 
 
-
-sub _Init  {
-    my $self = shift; 
-    $self->{'table'} = "ScripConditions";
-    return ($self->SUPER::_Init(@_));
-}
-
 sub _Accessible  {
     my $self = shift;
     my %Cols = ( Name  => 'read',
