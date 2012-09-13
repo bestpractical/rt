@@ -172,13 +172,6 @@ sub Prepare  {
 }
 
 
-#If this rule applies to this transaction, return true.
-
-sub IsApplicable  {
-  my $self = shift;
-  return(undef);
-}
-
 RT::Base->_ImportOverlays();
 
 1;
