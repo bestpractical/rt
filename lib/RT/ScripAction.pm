@@ -209,17 +209,17 @@ sub TemplateObj {
 sub Prepare  {
     my $self = shift;
     $self->{_Message_ID} = 0;
-    return $self->Action->Prepare();
+    return $self->Action->Prepare( @_ );
 }
 
 sub Commit  {
     my $self = shift;
-    return $self->Action->Commit();
+    return $self->Action->Commit( @_ );
 }
 
 sub Describe  {
     my $self = shift;
-    return $self->Action->Describe();
+    return $self->Action->Describe( @_ );
 }
 
 =head2 Action
