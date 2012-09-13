@@ -217,6 +217,11 @@ sub attachments {
         VALUE => 'deleted'
     );
 
+    # On newer DBIx::SearchBuilder's, indicate that making the query DISTINCT
+    # is unnecessary because the joins won't produce duplicates.  This
+    # drastically improves performance when fetching attachments.
+    $res->{joins_are_distinct} = 1;
+
     return goto_specific(
         suffix => $type,
         error => "Don't know how to find $type attachments",
