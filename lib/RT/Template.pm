@@ -151,7 +151,7 @@ Load a template, either by number or by name.
 Note that loading templates by name using this method B<is
 ambiguous>. Several queues may have template with the same name
 and as well global template with the same name may exist.
-Use L</LoadGlobalTemplate> and/or L<LoadQueueTemplate> to get
+Use L</LoadByName>, L</LoadGlobalTemplate> or L<LoadQueueTemplate> to get
 precise result.
 
 =cut
@@ -165,6 +165,37 @@ sub Load {
         return $self->LoadByCol( 'Name', $identifier );
     }
     return $self->LoadById( $identifier );
+}
+
+=head2 LoadByName
+
+Takes Name and Queue arguments. Tries to load queue specific template
+first, then global. If Queue argument is omitted then global template
+is tried, not template with the name in any queue.
+
+=cut
+
+sub LoadByName {
+    my $self = shift;
+    my %args = (
+        Queue => undef,
+        Name  => undef,
+        @_
+    );
+    my $queue = $args{'Queue'};
+    if ( blessed $queue ) {
+        $queue = $queue->id;
+    } elsif ( $queue =~ /\D/ ) {
+        my $tmp = RT::Queue->new( $self->CurrentUser );
+        $tmp->Load($queue);
+        $queue = $tmp->id;
+    }
+
+    return $self->LoadGlobalTemplate( $args{'Name'} ) unless $queue;
+
+    $self->LoadQueueTemplate( Queue => $queue, Name => $args{'Name'} );
+    return $self->id if $self->id;
+    return $self->LoadGlobalTemplate( $args{'Name'} );
 }
 
 =head2 LoadGlobalTemplate NAME
@@ -185,18 +216,7 @@ sub LoadGlobalTemplate {
 Loads the Queue template named NAME for Queue QUEUE.
 
 Note that this method doesn't load a global template with the same name
-if template in the queue doesn't exist. THe following code can be used:
-
-    $template->LoadQueueTemplate( Queue => $queue_id, Name => $template_name );
-    unless ( $template->id ) {
-        $template->LoadGlobalTemplate( $template_name );
-        unless ( $template->id ) {
-            # no template
-            ...
-        }
-    }
-    # ok, template either queue's or global
-    ...
+if template in the queue doesn't exist. Use L</LoadByName>.
 
 =cut
 

@@ -268,8 +268,7 @@ sub AddToObject {
 
     my $tname = $self->Template;
     my $template = RT::Template->new( $self->CurrentUser );
-    $template->LoadQueueTemplate( Queue => $queue? $queue->id : 0, Name => $tname );
-    $template->LoadGlobalTemplate( $tname ) if $queue && !$template->id;
+    $template->LoadByName( Queue => $queue? $queue->id : 0, Name => $tname );
     unless ( $template->id ) {
         if ( $queue ) {
             return (0, $self->loc('No template [_1] in the queue', $tname));
