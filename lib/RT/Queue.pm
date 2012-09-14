@@ -814,9 +814,10 @@ sub _CreateQueueRoleGroup {
     my $type = shift;
 
     my $type_obj = RT::Group->new($self->CurrentUser);
-    my ($id, $msg) = $type_obj->CreateRoleGroup(Instance => $self->Id, 
-                                                    Type => $type,
-                                                    Domain => 'RT::Queue-Role');
+    my ($id, $msg) = $type_obj->CreateRoleGroup(
+        Type    => $type,
+        Object  => $self,
+    );
     unless ($id) {
         $RT::Logger->error("Couldn't create a Queue group of type '$type' for queue ".
                             $self->Id.": ".$msg);

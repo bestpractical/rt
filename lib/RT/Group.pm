@@ -606,16 +606,47 @@ sub _CreateACLEquivalenceGroup {
 
 
 
-=head2 CreateRoleGroup { Domain => DOMAIN, Type =>  TYPE, Instance => ID }
+=head2 CreateRoleGroup
 
-A helper subroutine which creates a  ticket group. (What RT 2.0 called Ticket watchers)
-Type is one of ( "Requestor" || "Cc" || "AdminCc" || "Owner") 
-Domain is one of (RT::Ticket-Role || RT::Queue-Role || RT::System-Role)
-Instance is the id of the ticket or queue in question
+A convenience method for creating a role group on an object.
 
-This routine expects to be called from {Ticket||Queue}->CreateTicketGroups _inside of a transaction_
+Takes a paramhash of:
 
-Returns a tuple of (Id, Message).  If id is 0, the create failed
+=over 4
+
+=item Type
+
+Required.  RT's core role types are C<Requestor>, C<Cc>, C<AdminCc>, and
+C<Owner>.  Extensions may add their own.
+
+=item Object
+
+Optional.  The object on which this role applies, used to set Domain and
+Instance automatically.
+
+=item Domain
+
+Optional.  The class on which this role applies, with C<-Role> appended.  RT's
+supported core role group domains are C<RT::Ticket-Role>, C<RT::Queue-Role>,
+and C<RT::System-Role>.
+
+Not required if you pass an Object.
+
+=item Instance
+
+Optional.  The numeric ID of the object (of the class encoded in Domain) on
+which this role applies.  If Domain is C<RT::System-Role>, Instance should be C<0>.
+
+Not required if you pass an Object.
+
+=back
+
+You must pass either an Object or both Domain and Instance.
+
+This method must be called from B<inside of a database transaction>!
+
+Returns a tuple of (id, Message).  If id is false, the create failed and
+Message should contain an error string.
 
 =cut
 
@@ -624,17 +655,24 @@ sub CreateRoleGroup {
     my %args = ( Instance => undef,
                  Type     => undef,
                  Domain   => undef,
+                 Object   => undef,
                  @_ );
+
+    # Translate Object to Domain + Instance
+    if ( my $object = delete $args{Object} ) {
+        $args{Domain}   = ref($object) . "-Role";
+        $args{Instance} = ref($object) eq "RT::System" ? 0 : $object->id;
+    }
 
     unless (RT::Queue->IsRoleGroupType($args{Type})) {
         return ( 0, $self->loc("Invalid Group Type") );
     }
 
+    return $self->_Create(
+        InsideTransaction => 1,
+        map { $_ => $args{$_} } qw(Domain Instance Type),
+    );
 
-    return ( $self->_Create( Domain            => $args{'Domain'},
-                             Instance          => $args{'Instance'},
-                             Type              => $args{'Type'},
-                             InsideTransaction => 1 ) );
 }
 
 
