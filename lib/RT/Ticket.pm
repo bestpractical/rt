@@ -944,9 +944,7 @@ It will return true on success and undef on failure.
 sub _CreateTicketGroups {
     my $self = shift;
     
-    my @types = (qw(Requestor Owner Cc AdminCc));
-
-    foreach my $type (@types) {
+    foreach my $type (RT::Group->RolesOf($self)) {
         my $type_obj = RT::Group->new($self->CurrentUser);
         my ($id, $msg) = $type_obj->CreateRoleGroup(
             Type    => $type,

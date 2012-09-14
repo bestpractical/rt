@@ -727,15 +727,22 @@ sub TicketTransactionCustomFields {
 
 =head2 AllRoleGroupTypes
 
-Returns a list of the names of the various role group types that this queue
-has, including Requestor and Owner. If you don't want them, see
-L</ManageableRoleGroupTypes>.
+B<DEPRECATED> and will be removed in a future release. Use L<RT::Group/RolesOf>
+instead.
+
+Returns a list of the names of the various role group types for Queues,
+including roles used only for ACLs like Requestor and Owner. If you don't want
+them, see L</ManageableRoleGroupTypes>.
 
 =cut
 
 sub AllRoleGroupTypes {
-    my $self = shift;
-    return ($self->ManageableRoleGroupTypes, qw(Requestor Owner));
+    RT->Logger->warn(<<"    .");
+RT::Queue->AllRoleGroupTypes is DEPRECATED and will be removed in a future release.
+
+Please use RT::Group->RolesOf('RT::Queue') instead at @{[join '/', caller]}.
+    .
+    RT::Group->RolesOf('RT::Queue')
 }
 
 =head2 IsRoleGroupType
@@ -748,22 +755,24 @@ sub IsRoleGroupType {
     my $self = shift;
     my $type = shift;
 
-    for my $valid_type ($self->AllRoleGroupTypes) {
-        return 1 if $type eq $valid_type;
-    }
-
-    return 0;
+    return RT::Group->ValidateRoleGroup(
+        Domain  => 'RT::Queue-Role',
+        Type    => $type,
+    );
 }
 
 =head2 ManageableRoleGroupTypes
 
-Returns a list of the names of the various role group types that this queue
-has, excluding Requestor and Owner. If you want them, see L</AllRoleGroupTypes>.
+Returns a list of the names of the various role group types for Queues,
+excluding ones used only for ACLs such as Requestor and Owner. If you want
+them, see L<RT::Group/RolesOf>.
 
 =cut
 
 sub ManageableRoleGroupTypes {
-    return qw(Cc AdminCc);
+    # This grep is a little hacky, but I don't want to introduce the concept of
+    # manageable vs. unmanageable roles globally (yet).
+    return grep { not /^(Requestor|Owner)$/ } RT::Group->RolesOf('RT::Queue');
 }
 
 =head2 IsManageableRoleGroupType
@@ -799,9 +808,7 @@ It will return true on success and undef on failure.
 sub _CreateQueueGroups {
     my $self = shift;
 
-    my @types = $self->AllRoleGroupTypes;
-
-    foreach my $type (@types) {
+    foreach my $type (RT::Group->RolesOf($self)) {
         my $ok = $self->_CreateQueueRoleGroup($type);
         return undef if !$ok;
     }
