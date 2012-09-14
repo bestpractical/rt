@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 87;
+use RT::Test tests => 89;
 
 
 {
@@ -250,7 +250,16 @@ like($msg, qr/resolved/i, "Status message is correct");
 ($id, $msg) = $tt->SetStatus('resolved');
 ok(!$id,$msg);
 
+my $dep = RT::Ticket->new( RT->SystemUser );
+my ( $dep_id, undef, $dep_msg ) = $dep->Create(
+    Queue          => 'general',
+    Subject        => 'dep ticket',
+    'DependedOnBy' => $tt->id,
+);
+ok( $dep->id, $dep_msg );
 
+($id, $msg) = $tt->SetStatus('rejected');
+ok( $id, $msg );
 
 }
 
