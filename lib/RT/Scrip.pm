@@ -316,12 +316,8 @@ sub ActionObj {
 
     unless ( defined $self->{'ScripActionObj'} ) {
         require RT::ScripAction;
-
         $self->{'ScripActionObj'} = RT::ScripAction->new( $self->CurrentUser );
-
-        #TODO: why are we loading Actions with templates like this.
-        # two separate methods might make more sense
-        $self->{'ScripActionObj'}->Load( $self->ScripAction, $self->Template );
+        $self->{'ScripActionObj'}->Load( $self->ScripAction );
     }
     return ( $self->{'ScripActionObj'} );
 }
@@ -365,13 +361,11 @@ Retuns an RT::Template object with this Scrip\'s Template
 
 sub TemplateObj {
     my $self = shift;
+    my $queue = shift;
 
-    unless ( defined $self->{'TemplateObj'} ) {
-        require RT::Template;
-        $self->{'TemplateObj'} = RT::Template->new( $self->CurrentUser );
-        $self->{'TemplateObj'}->Load( $self->Template );
-    }
-    return ( $self->{'TemplateObj'} );
+    my $res = RT::Template->new( $self->CurrentUser );
+    $res->LoadByName( Queue => $queue, Name => $self->Template );
+    return $res;
 }
 
 =head2 Stage
@@ -546,9 +540,11 @@ sub Prepare {
 
     my $return;
     eval {
-        $self->ActionObj->LoadAction( ScripObj       => $self,
-                                      TicketObj      => $args{'TicketObj'},
-                                      TransactionObj => $args{'TransactionObj'},
+        $self->ActionObj->LoadAction(
+            ScripObj       => $self,
+            TicketObj      => $args{'TicketObj'},
+            TransactionObj => $args{'TransactionObj'},
+            TemplateObj    => $self->TemplateObj( $args{'TicketObj'}->Queue ),
         );
 
         $return = $self->ActionObj->Prepare();

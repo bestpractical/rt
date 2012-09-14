@@ -103,11 +103,10 @@ sub RunScripAction {
 
     my $action = $ScripAction->LoadAction( TransactionObj => $self->TransactionObj,
                                            TicketObj => $self->TicketObj,
+                                           TemplateObj => $template,
                                            %args,
                                        );
 
-    # XXX: fix template to allow additional arguments to be passed from here
-    $action->{'TemplateObj'} = $template;
     $action->{'ScripObj'} = RT::Scrip->new($self->CurrentUser); # Stub. sendemail action really wants a scripobj available
     $action->Prepare or return;
     $action->Commit;

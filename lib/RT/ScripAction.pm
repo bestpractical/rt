@@ -131,9 +131,8 @@ sub Load  {
     }
 
     if (@_) {
-        # Set the template Id to the passed in template
-        my $template = shift;
-        $self->{'Template'} = $template;
+        $RT::Logger->warning("Passing in Template as second argument is deprecated");
+        $self->{'Template'} = shift;
     }
 
     return ($ok, $msg);
@@ -155,7 +154,14 @@ sub LoadAction  {
         @_
     );
 
-    $self->{_TicketObj} = $args{TicketObj};
+    # XXX: this whole block goes with TemplateObj method
+    unless ( @_ && exists $args{'TemplateObj'} ) {
+        local $self->{_TicketObj} = $args{TicketObj};
+        $args{'TemplateObj'} = $self->TemplateObj;
+    }
+    else {
+        $self->{'TemplateObj'} = $args{'TemplateObj'};
+    }
 
     $self->ExecModule =~ /^(\w+)$/;
     my $module = $1;
@@ -164,13 +170,10 @@ sub LoadAction  {
     eval "require $type" || die "Require of $type failed.\n$@\n";
 
     return $self->{'Action'} = $type->new(
-        Argument => $self->Argument,
-        CurrentUser => $self->CurrentUser,
+        %args,
+        Argument       => $self->Argument,
+        CurrentUser    => $self->CurrentUser,
         ScripActionObj => $self,
-        ScripObj => $args{'ScripObj'},
-        TemplateObj => $self->TemplateObj,
-        TicketObj => $args{'TicketObj'},
-        TransactionObj => $args{'TransactionObj'},
     );
 }
 
@@ -183,6 +186,8 @@ Return this action's template object
 
 sub TemplateObj {
     my $self = shift;
+    Carp::carp(__PACKAGE__."::TemplateObj is deprecated");
+
     return undef unless $self->{Template};
     if ( !$self->{'TemplateObj'} ) {
         $self->{'TemplateObj'} = RT::Template->new( $self->CurrentUser );
