@@ -450,8 +450,8 @@ sub _ParseRefStrArgs
     return '';
 }
 
-sub GetObject { return (shift)->GetRecord( @_ )->{'Object'} }
-sub GetState { return (shift)->GetRecord( @_ )->{'State'} }
+sub GetObject { return ((shift)->GetRecord( @_ ) || {})->{'Object'} }
+sub GetState { return ((shift)->GetRecord( @_ ) || {})->{'State'} }
 sub GetRecord
 {
     my $self = shift;

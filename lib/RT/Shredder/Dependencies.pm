@@ -105,14 +105,15 @@ sub _PushDependency
             Shredder => undef,
             @_
            );
-    my $rec = $args{'Shredder'}->PutObject( Object => $args{'TargetObject'} );
-    return if $rec->{'State'} & WIPED; # there is no object anymore
+    my $lookup = $args{Flags} & VARIABLE ? 'GetRecord' : 'PutObject';
+    my $rec = $args{'Shredder'}->$lookup( Object => $args{'TargetObject'} );
+    return if $rec and $rec->{'State'} & WIPED; # there is no object anymore
 
     push @{ $self->{'list'} },
         RT::Shredder::Dependency->new(
             BaseObject => $args{'BaseObject'},
             Flags => $args{'Flags'},
-            TargetObject => $rec->{'Object'},
+            TargetObject => $args{'TargetObject'},
         );
 
     if( scalar @{ $self->{'list'} } > ( $RT::DependenciesLimit || 1000 ) ) {
