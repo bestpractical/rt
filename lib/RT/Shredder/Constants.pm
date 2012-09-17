@@ -84,6 +84,11 @@ This flag is used to mark dependencies that can be resolved with changing
 value in target object. For example ticket can be created by user we can
 change this reference when we delete user.
 
+Dependencies with the VARIABLE flag are B<not> pushed onto the stack of objects
+to be wiped, only the list of dependencies.  They must be handled by a resolver
+which either modifies the necessary values or pushes the object onto the stack
+with L<RT::Shredder/PutObject> if resolution is not possible.
+
 =head2 RELATES
 
 This flag is used to validate relationships integrity. Base object

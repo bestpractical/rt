@@ -107,7 +107,7 @@ sub __DependsOn
             Code => sub {
                 my %args = (@_);
                 my $group = $args{'TargetObject'};
-                return if $args{'Shredder'}->GetState( Object => $group ) & (WIPED|IN_WIPING);
+                return if ($args{'Shredder'}->GetState( Object => $group ) || 0) & (WIPED|IN_WIPING);
                 return if $group->id != $target_group_id; # ensure we're resolving the right group
 
                 return if $group->MembersObj->Count > 1;
