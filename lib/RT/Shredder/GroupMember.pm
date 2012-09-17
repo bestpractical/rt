@@ -92,6 +92,8 @@ sub __DependsOn
         return $self->SUPER::__DependsOn( %args );
     }
 
+    my $target_group_id = $group->id;
+
     # we don't delete group, so we have to fix Ticket and Group
     $deps->_PushDependencies(
                 BaseObject => $self,
@@ -106,8 +108,7 @@ sub __DependsOn
                 my %args = (@_);
                 my $group = $args{'TargetObject'};
                 return if $args{'Shredder'}->GetState( Object => $group ) & (WIPED|IN_WIPING);
-                return unless ($group->Type || '') eq 'Owner';
-                return unless ($group->Domain || '') eq 'RT::Ticket-Role';
+                return if $group->id != $target_group_id; # ensure we're resolving the right group
 
                 return if $group->MembersObj->Count > 1;
 
