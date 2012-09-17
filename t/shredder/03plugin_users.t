@@ -92,7 +92,13 @@ create_savepoint('clean');
     $transaction->Load($trid);
     is ( $transaction->Creator, $uidA, "ticket creator is now user A" );
 
-    $shredder->Wipeout( Object => $ticket );
-    $shredder->Wipeout( Object => $userA );
+    $ticket = RT::Ticket->new( RT->SystemUser );
+    $ticket->Load($tid);
+
+    $shredder->PutObject( Object => $ticket );
+    $shredder->WipeoutAll;
+
+    $shredder->PutObject( Object => $userA );
+    $shredder->WipeoutAll;
 }
 cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
