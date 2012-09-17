@@ -539,9 +539,11 @@ sub WipeoutAll
 {
     my $self = $_[0];
 
-    foreach my $cache_val ( values %{ $self->{'cache'} } ) {
-        next if $cache_val->{'State'} & (WIPED | IN_WIPING);
-        $self->Wipeout( Object => $cache_val->{'Object'} );
+    while (my @rec = grep { !($_->{State} & WIPED) } values %{ $self->{'cache'} }) {
+        for my $v (@rec) {
+            next if $v->{'State'} & IN_WIPING;
+            $self->Wipeout( Object => $v->{'Object'} );
+        }
     }
 }
 
