@@ -715,12 +715,10 @@ sub InsertInitialData {
         }
 
         $group = RT::Group->new( RT->SystemUser );
-        my ( $val, $msg ) = $group->_Create(
+        my ( $val, $msg ) = $group->CreateRoleGroup(
             Type        => $name,
-            Domain      => 'RT::System-Role',
+            Object      => RT->System,
             Description => 'SystemRolegroup for internal use',  # loc
-            Name        => '',
-            Instance    => '',
         );
         return ($val, $msg) unless $val;
     }

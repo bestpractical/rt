@@ -327,13 +327,11 @@ sub LoadRoleGroup {
     my $object = delete $args{Object};
 
     return (0, $self->loc("Object passed is not loaded"))
-        if ref($object) ne "RT::System"
-       and not $object->id;
+       unless $object->id;
 
     # Translate Object to Domain + Instance
     $args{Domain}   = ref($object) . "-Role";
-    $args{Instance} = $object->id
-        unless ref($object) eq 'RT::System';
+    $args{Instance} = $object->id;
 
     return $self->LoadByCols(%args);
 }
@@ -633,7 +631,7 @@ Not required if you pass an Object.
 =item Instance
 
 Optional.  The numeric ID of the object (of the class encoded in Domain) on
-which this role applies.  If Domain is C<RT::System-Role>, Instance should be C<0>.
+which this role applies.  If Domain is C<RT::System-Role>, Instance should be C<1>.
 
 Not required if you pass an Object.
 
@@ -659,10 +657,10 @@ sub CreateRoleGroup {
     # Translate Object to Domain + Instance
     if ( my $object = delete $args{Object} ) {
         $args{Domain}   = ref($object) . "-Role";
-        $args{Instance} = ref($object) eq "RT::System" ? 0 : $object->id;
+        $args{Instance} = $object->id;
     }
 
-    unless (defined $args{Instance}) {
+    unless ($args{Instance}) {
         return ( 0, $self->loc("An Instance must be provided") );
     }
 
