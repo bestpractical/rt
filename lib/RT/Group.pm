@@ -662,6 +662,10 @@ sub CreateRoleGroup {
         $args{Instance} = ref($object) eq "RT::System" ? 0 : $object->id;
     }
 
+    unless (defined $args{Instance}) {
+        return ( 0, $self->loc("An Instance must be provided") );
+    }
+
     unless ($self->ValidateRoleGroup(%args)) {
         return ( 0, $self->loc("Invalid Group Type and Domain") );
     }
