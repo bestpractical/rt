@@ -670,9 +670,17 @@ sub CreateRoleGroup {
         return ( 0, $self->loc("Invalid Group Type and Domain") );
     }
 
+    my %create = map { $_ => $args{$_} } qw(Domain Instance Type);
+
+    my $duplicate = RT::Group->new( RT->SystemUser );
+    $duplicate->LoadByCols( %create );
+    if ($duplicate->id) {
+        return ( 0, $self->loc("Role group exists already") );
+    }
+
     return $self->_Create(
         InsideTransaction => 1,
-        map { $_ => $args{$_} } qw(Domain Instance Type),
+        %create,
     );
 }
 
