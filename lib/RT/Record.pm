@@ -2040,6 +2040,77 @@ sub WikiBase {
     return RT->Config->Get('WebPath'). "/index.html?q=";
 }
 
+=head2 RegisterRole
+
+Registers an RT role which applies to this class for role-based access control.
+Arguments:
+
+=over 4
+
+=item Name
+
+Required.  The role name (i.e. Requestor, Owner, AdminCc, etc).
+
+=item EquivClasses
+
+Optional.  Array ref of classes through which this role percolates up to
+L<RT::System>.  You can think of this list as:
+
+    map { ref } $record_object->ACLEquivalenceObjects;
+
+You should not include L<RT::System> itself in this list.
+
+Simply calls RegisterRole on each equivalent class.
+
+=back
+
+=cut
+
+sub RegisterRole {
+    my $self  = shift;
+    my $class = ref($self) || $self;
+    my %role  = (
+        Name            => undef,
+        EquivClasses    => [],
+        @_
+    );
+    return unless $role{Name};
+
+    # Stash the role on ourself
+    $class->_ROLES->{ $role{Name} } = \%role;
+
+    # Register it with any equivalent classes...
+    my $equiv = delete $role{EquivClasses} || [];
+
+    # ... and globally unless we ARE global
+    unless ($class eq "RT::System") {
+        require RT::System;
+        push @$equiv, "RT::System";
+    }
+
+    $_->RegisterRole(%role) for @$equiv;
+
+    # XXX TODO: Register which classes have roles on them somewhere?
+
+    return 1;
+}
+
+=head2 Roles
+
+Returns a list of role names registered for this class.
+
+=cut
+
+sub Roles { sort { $a cmp $b } keys %{ shift->_ROLES } }
+
+{
+    my %ROLES;
+    sub _ROLES {
+        my $class = ref($_[0]) || $_[0];
+        return $ROLES{$class} ||= {};
+    }
+}
+
 RT::Base->_ImportOverlays();
 
 1;

@@ -727,7 +727,7 @@ sub TicketTransactionCustomFields {
 
 =head2 AllRoleGroupTypes
 
-B<DEPRECATED> and will be removed in a future release. Use L<RT::Group/RolesOf>
+B<DEPRECATED> and will be removed in a future release. Use L</Roles>
 instead.
 
 Returns a list of the names of the various role group types for Queues,
@@ -740,9 +740,9 @@ sub AllRoleGroupTypes {
     RT->Logger->warn(<<"    .");
 RT::Queue->AllRoleGroupTypes is DEPRECATED and will be removed in a future release.
 
-Please use RT::Group->RolesOf('RT::Queue') instead at @{[join '/', caller]}.
+Please use RT::Queue->Roles instead at @{[join '/', caller]}.
     .
-    RT::Group->RolesOf('RT::Queue')
+    shift->Roles;
 }
 
 =head2 IsRoleGroupType
@@ -765,14 +765,14 @@ sub IsRoleGroupType {
 
 Returns a list of the names of the various role group types for Queues,
 excluding ones used only for ACLs such as Requestor and Owner. If you want
-them, see L<RT::Group/RolesOf>.
+them, see L</Roles>.
 
 =cut
 
 sub ManageableRoleGroupTypes {
     # This grep is a little hacky, but I don't want to introduce the concept of
     # manageable vs. unmanageable roles globally (yet).
-    return grep { not /^(Requestor|Owner)$/ } RT::Group->RolesOf('RT::Queue');
+    return grep { not /^(Requestor|Owner)$/ } shift->Roles;
 }
 
 =head2 IsManageableRoleGroupType
@@ -808,7 +808,7 @@ It will return true on success and undef on failure.
 sub _CreateQueueGroups {
     my $self = shift;
 
-    foreach my $type (RT::Group->RolesOf($self)) {
+    foreach my $type ($self->Roles) {
         my $ok = $self->_CreateQueueRoleGroup($type);
         return undef if !$ok;
     }

@@ -113,36 +113,6 @@ $RIGHT_CATEGORIES = {
 # Tell RT::ACE that this sort of object can get acls granted
 $RT::ACE::OBJECT_TYPES{'RT::Group'} = 1;
 
-=head1 PACKAGE VARIABLES
-
-=head2 %ROLES
-
-If you need to know the roles provided by a class, use L</RolesOf>.  If you
-want to validate a role type and domain pair, use L</ValidateRoleGroup>.
-
-B<You should not need to touch this variable directly unless you're adding new
-roles into RT.>
-
-Defines which roles are valid for which classes.  In terms of groups, this maps
-group Types to Domains (minus the C<-Role> suffix), providing valid (Domain,
-Type) pairs.
-
-L<RT::System> is implicitly valid for all roles, as the ACL system assumes such
-and there's not much value requiring it repeated here.
-
-The right hand side essentially lists the class names for the possible
-ACLEquivalenceObjects.
-
-=cut
-
-our %ROLES = (
-    Requestor   => [qw(RT::Ticket RT::Queue)],
-    Cc          => [qw(RT::Ticket RT::Queue)],
-    Owner       => [qw(RT::Ticket RT::Queue)],
-    AdminCc     => [qw(RT::Ticket RT::Queue)],
-);
-
-
 # TODO: This should be refactored out into an RT::ACLedObject or something
 # stuff the rights into a hash of rights that can exist.
 
@@ -703,10 +673,8 @@ sub CreateRoleGroup {
 =head2 ValidateRoleGroup
 
 Takes a param hash containing Domain and Type which are expected to be values
-passed into L</CreateRoleGroup>.  Returns true if the specified Type is a valid
-role on the specified Domain.  Otherwise returns false.
-
-All roles are valid for the global Domain (C<RT::System-Role>).
+passed into L</CreateRoleGroup>.  Returns true if the specified Type is a
+registered role on the specified Domain.  Otherwise returns false.
 
 =cut
 
@@ -715,34 +683,11 @@ sub ValidateRoleGroup {
     my %args = (@_);
     return 0 unless $args{Domain} and $args{Type};
 
-    my $classes = $ROLES{ $args{Type} };
-    return 0 unless $classes and ref($classes) eq 'ARRAY';
+    my ($class) = $args{Domain} =~ /^(.+)-Role$/;
+    return 0 unless $class and $class->can('Roles');
 
-    my ($domain) = $args{Domain} =~ /^(.+)-Role$/;
-
-    # All roles are valid for the global domain (RT::System), and we've already
-    # determined this is a role defined in %ROLES.
-    return 1 if $domain eq "RT::System";
-    return 1 if grep { $_ eq $domain } @$classes;
+    return 1 if grep { $args{Type} eq $_ } $class->Roles;
     return 0;
-}
-
-=head2 RolesOf
-
-Takes a class name or object, and returns the names of the roles which apply to
-the class.
-
-=cut
-
-sub RolesOf {
-    my $self  = shift;
-    my $class = ref($_[0]) || $_[0];
-    my @roles;
-    for my $role (keys %ROLES) {
-        push @roles, $role
-            if grep { $_ eq $class } @{$ROLES{$role}};
-    }
-    return @roles;
 }
 
 =head2 Delete
