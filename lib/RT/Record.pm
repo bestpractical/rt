@@ -2111,6 +2111,19 @@ sub Roles { sort { $a cmp $b } keys %{ shift->_ROLES } }
     }
 }
 
+=head2 HasRole
+
+Returns true if the name provided is a registered role for this class.
+Otherwise returns false.
+
+=cut
+
+sub HasRole {
+    my $self = shift;
+    my $type = shift;
+    return scalar grep { $type eq $_ } $self->Roles;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

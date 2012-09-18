@@ -657,9 +657,6 @@ sub CreateRoleGroup {
         $args{Instance} = ref($object) eq "RT::System" ? 0 : $object->id;
     }
 
-    # XXX I WISH: If this was Moose and we had Roles to implement roles, we'd
-    # take a class or object, check $class->DOES('ACLRole'), and then call
-    # $class->IsValidRole($Type) or similar if DOES was true.
     unless ($self->ValidateRoleGroup(%args)) {
         return ( 0, $self->loc("Invalid Group Type and Domain") );
     }
@@ -684,10 +681,9 @@ sub ValidateRoleGroup {
     return 0 unless $args{Domain} and $args{Type};
 
     my ($class) = $args{Domain} =~ /^(.+)-Role$/;
-    return 0 unless $class and $class->can('Roles');
+    return 0 unless $class and $class->can('HasRole');
 
-    return 1 if grep { $args{Type} eq $_ } $class->Roles;
-    return 0;
+    return $class->HasRole($args{Type});
 }
 
 =head2 Delete
