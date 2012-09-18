@@ -324,11 +324,16 @@ sub LoadRoleGroup {
         @_
     );
 
+    my $object = delete $args{Object};
+
+    return (0, $self->loc("Object passed is not loaded"))
+        if ref($object) ne "RT::System"
+       and not $object->id;
+
     # Translate Object to Domain + Instance
-    my $object      = delete $args{Object};
     $args{Domain}   = ref($object) . "-Role";
     $args{Instance} = $object->id
-        if $object->id and not ref($object) eq 'RT::System';
+        unless ref($object) eq 'RT::System';
 
     return $self->LoadByCols(%args);
 }
