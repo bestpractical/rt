@@ -1,7 +1,7 @@
 
 use strict;
 use warnings;
-use RT::Test tests => 68;
+use RT::Test tests => 74;
 
 my $queue = RT::Test->load_or_create_queue( Name => 'General' );
 ok $queue && $queue->id, 'loaded or created queue';
@@ -113,6 +113,59 @@ note 'modify properties of a scrip';
 my $queue_B = RT::Test->load_or_create_queue( Name => 'B' );
 ok $queue_B && $queue_B->id, 'loaded or created queue';
 
+note 'check creation errors vs. templates';
+{
+    my $scrip = RT::Scrip->new(RT->SystemUser);
+    my ($status, $msg) = $scrip->Create(
+        Queue          => $queue->id,
+        ScripAction    => 'User Defined',
+        ScripCondition => 'User Defined',
+        Template       => 'not exist',
+    );
+    ok(!$status, "couldn't create scrip, not existing template");
+
+    ($status, $msg) = $scrip->Create(
+        ScripAction    => 'User Defined',
+        ScripCondition => 'User Defined',
+        Template       => 'not exist',
+    );
+    ok(!$status, "couldn't create scrip, not existing template");
+
+    ($status, $msg) = $scrip->Create(
+        Queue          => $queue->id,
+        ScripAction    => 'User Defined',
+        ScripCondition => 'User Defined',
+        Template       => 54321,
+    );
+    ok(!$status, "couldn't create scrip, not existing template");
+
+    ($status, $msg) = $scrip->Create(
+        ScripAction    => 'User Defined',
+        ScripCondition => 'User Defined',
+        Template       => 54321,
+    );
+    ok(!$status, "couldn't create scrip, not existing template");
+
+    my $template = RT::Template->new( RT->SystemUser );
+    ($status, $msg) = $template->Create( Queue => $queue->id, Name => 'bar' );
+    ok $status, 'created a template';
+
+    ($status, $msg) = $scrip->Create(
+        ScripAction    => 'User Defined',
+        ScripCondition => 'User Defined',
+        Template       => $template->id,
+    );
+    ok(!$status, "couldn't create scrip, wrong template");
+
+    ($status, $msg) = $scrip->Create(
+        Queue          => $queue_B->id,
+        ScripAction    => 'User Defined',
+        ScripCondition => 'User Defined',
+        Template       => $template->id,
+    );
+    ok(!$status, "couldn't create scrip, wrong template");
+}
+
 note 'check applications vs. templates';
 {
     my $template = RT::Template->new( RT->SystemUser );
@@ -120,14 +173,6 @@ note 'check applications vs. templates';
     ok $status, 'created a template';
 
     my $scrip = RT::Scrip->new(RT->SystemUser);
-    ($status, $msg) = $scrip->Create(
-        Queue          => $queue->Id,
-        ScripAction    => 'User Defined',
-        ScripCondition => 'User Defined',
-        Template       => 'bar',
-    );
-    ok(!$status, "couldn't create scrip, incorrect template");
-
     ($status, $msg) = $scrip->Create(
         Queue          => $queue->Id,
         ScripAction    => 'User Defined',

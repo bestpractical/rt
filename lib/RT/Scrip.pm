@@ -158,9 +158,22 @@ sub Create {
     return ( 0, $self->loc("Template is mandatory argument") )
         unless $args{'Template'};
     my $template = RT::Template->new( $self->CurrentUser );
-    $template->Load( $args{'Template'} );
-    return ( 0, $self->loc( "Template '[_1]' not found", $args{'Template'} ) )
-        unless $template->Id;
+    if ( $args{'Template'} =~ /\D/ ) {
+        $template->LoadByName( Name => $args{'Template'}, Queue => $args{'Queue'} );
+        return ( 0, $self->loc( "Global template '[_1]' not found", $args{'Template'} ) )
+            if !$template->Id && !$args{'Queue'};
+        return ( 0, $self->loc( "Global or queue specific template '[_1]' not found", $args{'Template'} ) )
+            if !$template->Id;
+    } else {
+        $template->Load( $args{'Template'} );
+        return ( 0, $self->loc( "Template '[_1]' not found", $args{'Template'} ) )
+            unless $template->Id;
+
+        return (0, $self->loc( "Template '[_1]' is not global" ))
+            if !$args{'Queue'} && $template->Queue;
+        return (0, $self->loc( "Template '[_1]' is not global nor queue specific" ))
+            if $args{'Queue'} && $template->Queue && $template->Queue != $args{'Queue'};
+    }
 
     return ( 0, $self->loc("Condition is mandatory argument") )
         unless $args{'ScripCondition'};
