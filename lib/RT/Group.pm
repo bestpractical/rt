@@ -606,6 +606,10 @@ sub _CreateACLEquivalenceGroup {
 
 A convenience method for creating a role group on an object.
 
+This method expects to be called from B<inside of a database transaction>!  If
+you're calling it outside of one, you B<MUST> pass a false value for
+InsideTransaction.
+
 Takes a paramhash of:
 
 =over 4
@@ -635,11 +639,15 @@ which this role applies.  If Domain is C<RT::System-Role>, Instance should be C<
 
 Not required if you pass an Object.
 
+=item InsideTransaction
+
+Optional.  Defaults to true in expectation of usual call sites.  If you call
+this method while not inside a transaction, you C<MUST> pass a false value for
+this parameter.
+
 =back
 
 You must pass either an Object or both Domain and Instance.
-
-This method must be called from B<inside of a database transaction>!
 
 Returns a tuple of (id, Message).  If id is false, the create failed and
 Message should contain an error string.
