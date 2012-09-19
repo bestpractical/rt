@@ -461,10 +461,7 @@ sub _RoleClauses {
         $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
 
         my $role_clause = "$groups.Domain = '$type-Role'";
-        # XXX: Groups.Instance is VARCHAR in DB, we should quote value
-        # if we want mysql 4.0 use indexes here. we MUST convert that
-        # field to integer and drop this quotes.
-        $role_clause   .= " AND $groups.Instance = '$id'" if $id;
+        $role_clause   .= " AND $groups.Instance = $id" if $id;
         push @groups_clauses, "($role_clause)";
     }
     return @groups_clauses;

@@ -577,11 +577,8 @@ sub _HasRoleRightQuery {
 
         my $clause = "Groups.Domain = '$type-Role'";
 
-        # XXX: Groups.Instance is VARCHAR in DB, we should quote value
-        # if we want mysql 4.0 use indexes here. we MUST convert that
-        # field to integer and drop this quotes.
         if ( my $id = eval { $obj->id } ) {
-            $clause .= " AND Groups.Instance = '$id'";
+            $clause .= " AND Groups.Instance = $id";
         }
         push @object_clauses, "($clause)";
     }
