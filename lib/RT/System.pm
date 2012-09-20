@@ -117,28 +117,46 @@ This method as well returns rights of other RT objects,
 like L<RT::Queue> or L<RT::Group>. To allow users to apply
 those rights globally.
 
+If an L<RT::Principal> is passed as the first argument, the available rights
+will be limited to ones which make sense for the principal.  Currently only
+role groups are supported and rights announced by object types to which the
+role group doesn't apply are not returned.
+
 =cut
 
 sub AvailableRights {
-    my $self = shift;
+    my $self        = shift;
+    my $principal   = shift;
+    my @types       = keys %RT::ACE::OBJECT_TYPES;
 
-    # Build a merged list of all system wide rights, queue rights, group rights, etc.
-    my %rights = (
-        %{ $RIGHTS },
-        %{ $self->_ForAllACEObjectTypes('AvailableRights') },
+    # Include global system rights by default
+    my %rights = %{ $RIGHTS };
+
+    # Only return rights on classes which support the role asked for
+    if ($principal and $principal->IsRoleGroup) {
+        my $role = $principal->Object->Type;
+        @types   = grep { $_->HasRole($role) } @types;
+        %rights  = ();
+    }
+
+    # Build a merged list of system wide rights, queue rights, group rights, etc.
+    %rights = (
+        %rights,
+        %{ $self->_ForACEObjectTypes(\@types => 'AvailableRights', @_) },
     );
     delete $rights{ExecuteCode} if RT->Config->Get('DisallowExecuteCode');
 
     return(\%rights);
 }
 
-sub _ForAllACEObjectTypes {
-    my $self = shift;
+sub _ForACEObjectTypes {
+    my $self   = shift;
+    my $types  = shift || [];
     my $method = shift;
-    return {} unless $method;
+    return {} unless @$types and $method;
 
     my %data;
-    for my $class (sort keys %RT::ACE::OBJECT_TYPES) {
+    for my $class (sort @$types) {
         next unless $RT::ACE::OBJECT_TYPES{$class};
 
         # Skip ourselves otherwise we'd loop infinitely
@@ -154,7 +172,7 @@ sub _ForAllACEObjectTypes {
         # embrace and extend
         %data = (
             %data,
-            %{ $object->$method || {} },
+            %{ $object->$method(@_) || {} },
         );
     }
 
@@ -174,7 +192,7 @@ sub RightCategories {
     # Build a merged list of all right categories system wide, per-queue, per-group, etc.
     my %categories = (
         %{ $RIGHT_CATEGORIES },
-        %{ $self->_ForAllACEObjectTypes('RightCategories') },
+        %{ $self->_ForACEObjectTypes([keys %RT::ACE::OBJECT_TYPES] => 'RightCategories') },
     );
 
     return \%categories;

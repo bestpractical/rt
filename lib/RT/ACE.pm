@@ -266,7 +266,7 @@ sub Create {
 
     #check if it's a valid RightName
     if ( $args{'Object'}->can('AvailableRights') ) {
-        my $available = $args{'Object'}->AvailableRights;
+        my $available = $args{'Object'}->AvailableRights($princ_obj);
         unless ( grep $_ eq $args{'RightName'}, map $self->CanonicalizeRightName( $_ ), keys %$available ) {
             $RT::Logger->warning(
                 "Couldn't validate right name '$args{'RightName'}'"

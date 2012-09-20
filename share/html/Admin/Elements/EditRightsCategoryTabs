@@ -52,15 +52,10 @@ $id
 $acldesc => ''
 </%args>
 <%init>
-# XXX OPTIMIZATION: Moving the calls to AvailableRights and RightCategories up
-# one component to avoid calling them for every principal would be a win, but
-# it's cleaner to do it here.  The values can really be computed once per
-# $Context.
-
 # Find all our available rights...
 my (%available_rights, %categories);
 if ( blessed($Context) and $Context->can('AvailableRights') ) {
-    %available_rights = %{$Context->AvailableRights};
+    %available_rights = %{$Context->AvailableRights( $Principal ? $Principal->PrincipalObj : undef )};
 } else {
     %available_rights = ( loc('System Error') => loc("No rights found") );
 }
