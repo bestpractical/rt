@@ -138,7 +138,7 @@ sub _ForAllACEObjectTypes {
     return {} unless $method;
 
     my %data;
-    for my $class (keys %RT::ACE::OBJECT_TYPES) {
+    for my $class (sort keys %RT::ACE::OBJECT_TYPES) {
         next unless $RT::ACE::OBJECT_TYPES{$class};
 
         # Skip ourselves otherwise we'd loop infinitely
