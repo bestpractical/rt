@@ -53,7 +53,6 @@
 ><% loc($name) %></option>
 % }
 </select>
-
 <%ARGS>
 $Name => 'Template'
 $Queue => undef
@@ -65,32 +64,42 @@ $Default => undef
 my $current;
 $current = $Scrip->Template if $Scrip;
 
-my $global = RT::Templates->new($session{'CurrentUser'});
-$global->LimitToGlobal;
-
-my %global;
-$global{ lc $_ } = $_ foreach map $_->Name, @{ $global->ItemsArrayRef };
-
-my @queues;
-push @queues, @{ $Scrip->AddedTo->ItemsArrayRef } if $Scrip && $Scrip->id;
-push @queues, $Queue if $Queue && $Queue->id;
-
-my (%names, %counters);
-foreach my $queue ( @queues ) {
+my @list;
+if ( $Scrip && $Scrip->id && !$Scrip->IsAddedToAny ) {
     my $templates = RT::Templates->new($session{'CurrentUser'});
-    $templates->LimitToQueue( $queue->id );
-    foreach my $name ( map $_->Name, @{ $templates->ItemsArrayRef } ) {
-        next if $global{ lc $name };
-        $counters{ lc $name }++;
-        $names{lc $name} = $name;
-    }
-}
-delete $counters{ $_ }
-    foreach grep $counters{$_} != @queues,
-    keys %counters;
+    $templates->UnLimit;
+    @list = $templates->DistinctFieldValues('Name');
+} else {
+    my $global = RT::Templates->new($session{'CurrentUser'});
+    $global->LimitToGlobal;
 
-my @list =
-    sort { lc loc($a) cmp lc loc($b) }
-    map $global{$_} || $names{$_},
-    keys %global, keys %counters;
+    my %global;
+    $global{ lc $_ } = $_ foreach map $_->Name, @{ $global->ItemsArrayRef };
+
+    my @queues;
+    push @queues, @{ $Scrip->AddedTo->ItemsArrayRef } if $Scrip && $Scrip->id;
+    push @queues, $Queue if $Queue && $Queue->id;
+
+    my (%names, %counters);
+    foreach my $queue ( @queues ) {
+        my $templates = RT::Templates->new($session{'CurrentUser'});
+        $templates->LimitToQueue( $queue->id );
+        foreach my $name ( map $_->Name, @{ $templates->ItemsArrayRef } ) {
+            next if $global{ lc $name };
+            $counters{ lc $name }++;
+            $names{lc $name} = $name;
+        }
+    }
+    delete $counters{ $_ }
+        foreach grep $counters{$_} != @queues,
+        keys %counters;
+
+    @list =
+        map $global{$_} || $names{$_},
+        keys %global, keys %counters;
+}
+
+@list = sort { lc loc($a) cmp lc loc($b) } @list
+    if @list;
+
 </%INIT>

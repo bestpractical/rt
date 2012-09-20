@@ -227,7 +227,7 @@ note "check templates in scrip's admin interface";
     $m->follow_link_ok( { id => 'page-scrips-create' } );
 
     ok $m->form_name('CreateScrip');
-    my @templates = ($m->find_all_inputs( type => 'option', name => 'Template' ))[0]
+    @templates = ($m->find_all_inputs( type => 'option', name => 'Template' ))[0]
         ->possible_values;
     is_deeply([sort @templates], [sort @default, 'foo']);
 
@@ -244,8 +244,37 @@ note "make sure we can not apply scrip to queue without required template";
     $m->form_name('AddRemoveScrip');
     $m->tick('AddScrip-'.$id, $queue_r->id);
     $m->click('Update');
-
     $m->content_like(qr{No template foo in queue Regression or global});
+
+note "unapply the scrip from any queue";
+    $m->form_name('AddRemoveScrip');
+    $m->tick('RemoveScrip-'.$id, $queue_g->id);
+    $m->click('Update');
+    $m->content_like(qr{Object deleted});
+
+note "you can pick any template";
+    $m->follow_link_ok( { id => 'page-basics' } );
+    ok $m->form_name('ModifyScrip');
+    @templates = ($m->find_all_inputs( type => 'option', name => 'Template' ))[0]
+        ->possible_values;
+    is_deeply(
+        [sort @templates],
+        [sort do {
+            my $t = RT::Templates->new( RT->SystemUser );
+            $t->UnLimit;
+            ('', $t->DistinctFieldValues('Name'))
+        }],
+    );
+
+note "go to apply page and apply with template change";
+    $m->follow_link_ok( { id => 'page-applies-to' } );
+    $m->form_name('AddRemoveScrip');
+    $m->field('Template' => 'blank');
+    $m->tick('AddScrip-'.$id, $queue_g->id);
+    $m->tick('AddScrip-'.$id, $queue_r->id);
+    $m->click('Update');
+    $m->content_contains("Template: Template changed from ");
+    $m->content_contains("Object created");
 }
 
 note "apply scrip in different stage to different queues";
