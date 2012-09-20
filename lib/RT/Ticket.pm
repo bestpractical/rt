@@ -84,7 +84,15 @@ use RT::URI;
 use MIME::Entity;
 use Devel::GlobalDestruction;
 
-for my $role (qw(Requestor Cc AdminCc Owner)) {
+my %ROLES = (
+    # name    =>  description
+    Owner     => 'The owner of a ticket',                             # loc_pair
+    Requestor => 'The requestor of a ticket',                         # loc_pair
+    Cc        => 'The CC of a ticket',                                # loc_pair
+    AdminCc   => 'The administrative CC of a ticket',                 # loc_pair
+);
+
+for my $role (sort keys %ROLES) {
     RT::Ticket->RegisterRole(
         Name            => $role,
         EquivClasses    => ['RT::Queue'],

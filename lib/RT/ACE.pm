@@ -78,7 +78,6 @@ use RT::Groups;
 use vars qw (
   %LOWERCASERIGHTNAMES
   %OBJECT_TYPES
-  %TICKET_METAPRINCIPALS
 );
 
 
@@ -89,21 +88,6 @@ use vars qw (
 # to real people or groups
 
 =cut
-
-
-
-
-
-
-%TICKET_METAPRINCIPALS = (
-    Owner     => 'The owner of a ticket',                             # loc_pair
-    Requestor => 'The requestor of a ticket',                         # loc_pair
-    Cc        => 'The CC of a ticket',                                # loc_pair
-    AdminCc   => 'The administrative CC of a ticket',                 # loc_pair
-);
-
-
-
 
 =head2 LoadByValues PARAMHASH
 
