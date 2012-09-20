@@ -88,7 +88,18 @@ sub IsGroup {
     return undef;
 }
 
+=head2 IsRoleGroup
 
+Returns true if this principal is a role group.
+Returns undef, otherwise.
+
+=cut
+
+sub IsRoleGroup {
+    my $self = shift;
+    return ($self->IsGroup and $self->Object->Domain =~ /-Role$/)
+        ? 1 : undef;
+}
 
 =head2 IsUser 
 
@@ -698,7 +709,7 @@ return that. if it has no type, return group.
 
 sub _GetPrincipalTypeForACL {
     my $self = shift;
-    if ($self->PrincipalType eq 'Group' && $self->Object->Domain =~ /Role$/) {
+    if ($self->IsRoleGroup) {
         return $self->Object->Type;
     } else {
         return $self->PrincipalType;
