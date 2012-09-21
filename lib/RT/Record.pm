@@ -2124,6 +2124,28 @@ sub HasRole {
     return scalar grep { $type eq $_ } $self->Roles;
 }
 
+=head2 RoleGroup
+
+Expects a role name as the first parameter which is used to load the
+L<RT::Group> for the specified role on this record.  Returns an unloaded
+L<RT::Group> object on failure.
+
+=cut
+
+sub RoleGroup {
+    my $self  = shift;
+    my $type  = shift;
+    my $group = RT::Group->new( $self->CurrentUser );
+
+    if ($self->HasRole($type)) {
+        $group->LoadRoleGroup(
+            Object  => $self,
+            Type    => $type,
+        );
+    }
+    return $group;
+}
+
 RT::Base->_ImportOverlays();
 
 1;
