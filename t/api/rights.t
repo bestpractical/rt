@@ -1,17 +1,14 @@
-use RT::Test nodata => 1, tests => 30;
+use RT::Test nodata => 1, tests => 38;
 
 use strict;
 use warnings;
 
+use Test::Warn;
+
+sub reset_rights { RT::Test->set_rights }
+
 # clear all global right
-{
-    my $acl = RT::ACL->new(RT->SystemUser);
-    $acl->Limit( FIELD => 'RightName', OPERATOR => '!=', VALUE => 'SuperUser' );
-    $acl->LimitToObject( $RT::System );
-    while( my $ace = $acl->Next ) {
-            $ace->Delete;
-    }
-}
+reset_rights;
 
 my $queue = RT::Test->load_or_create_queue( Name => 'Regression' );
 ok $queue && $queue->id, 'loaded or created queue';
@@ -145,4 +142,39 @@ my $ticket2;
     ok( !$user->HasRight( Right => 'ModifyTicket', Object => $ticket2, EquivObjects => \@list ), 
         "user is not AdminCc and can't modify ticket2 (same question different answer)"
     );
+}
+
+my $queue2 = RT::Test->load_or_create_queue( Name => 'Rights' );
+ok $queue2 && $queue2->id, 'loaded or created queue';
+
+my $user2 = RT::Test->load_or_create_user(
+    Name => 'user2', Password => 'password',
+);
+ok $user2 && $user2->id, 'Created user: ' . $user2->Name . ' with id ' . $user2->Id;
+
+warning_like {
+    ok( !$user2->HasRight( Right => 'Foo', Object => $queue2 ),
+        "HasRight false for invalid right Foo"
+    );
+} qr/Invalid right\. Couldn't canonicalize right 'Foo'/,
+    'Got warning on invalid right';
+
+
+note "Right name canonicalization";
+{
+    reset_rights;
+    my ($ok, $msg) = $user->PrincipalObj->GrantRight(
+        Right   => "showticket",
+        Object  => RT->System,
+    );
+    ok $ok, "Granted showticket: $msg";
+    ok $user->HasRight( Right => "ShowTicket", Object => RT->System ), "HasRight ShowTicket";
+
+    reset_rights;
+    ($ok, $msg) = $user->PrincipalObj->GrantRight(
+        Right   => "ShowTicket",
+        Object  => RT->System,
+    );
+    ok $ok, "Granted ShowTicket: $msg";
+    ok $user->HasRight( Right => "showticket", Object => RT->System ), "HasRight showticket";
 }
