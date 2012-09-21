@@ -1,0 +1,49 @@
+use strict;
+use warnings;
+
+our (@Final);
+
+push @Final, sub {
+    my %global = %{ RT->System->AvailableRights };
+    my $handle = RT->DatabaseHandle;
+
+    for my $role (RT::System->Roles) {
+        my $group       = RT::Group->new( RT->SystemUser );
+        my ($ok, $msg)  = $group->LoadRoleGroup(
+            Object  => RT->System,
+            Type    => $role,
+        );
+
+        unless ($group->id) {
+            RT->Logger->error("Can't load role group $role: $msg");
+            next;
+        }
+
+        my %rights = %{ RT->System->AvailableRights( $group->PrincipalObj ) };
+
+        # Global rights which aren't available on the role anymore
+        my @remove = grep { not $rights{$_} }
+                     keys %global;
+        my $placeholders = join ",", map { "?" } 1 .. scalar @remove;
+
+        my $query = <<"        SQL";
+            DELETE FROM ACL
+                  WHERE PrincipalType = ?
+                    AND PrincipalId   = ?
+                    AND ObjectType    = 'RT::System'
+                    AND RightName    IN ($placeholders)
+        SQL
+
+        my $res = $handle->SimpleQuery(
+            $query,
+            $role,                  # Type
+            $group->PrincipalId,    # Id
+            @remove,                # Right names
+        );
+
+        unless ($res) {
+            RT->Logger->error("Failed to delete invalid rights on system role $role!");
+            next;
+        }
+    }
+};
