@@ -245,6 +245,10 @@ my $print_value = sub {
     <div class="label queue"><&|/l&>Queue</&>:</div>
     <div class="value queue"><& /Ticket/Elements/ShowQueue, QueueObj => $Ticket->QueueObj &></div>
   </div>
+ <div class="entry">
+    <div class="label bookmark"><&|/l&>Bookmark</&>:</div>
+    <div class="value bookmark"><& /Ticket/Elements/Bookmark, id => $Ticket->id &></div>
+  </div>
     </&>
 
 % if ($Ticket->CustomFields->First) {

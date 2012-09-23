@@ -58,6 +58,8 @@ $r->headers_out->{'Cache-control'} = 'no-cache';
 <& /Elements/Framekiller &>
 <link rel="stylesheet" type="text/css" href="<%RT->Config->Get('WebPath')|n%>/m/style.css"/>
 <title><%$title%></title>
+% my ($jquery) = grep { /^jquery-\d+\./ } RT->Config->Get('JSFiles');
+<script src="<% RT->Config->Get('WebPath') |n%>/NoAuth/js/<% $jquery %>"></script>
 <meta name="viewport" content="width=device-width height=device-height user-scalable=yes"/>
 </head>
 <body>
