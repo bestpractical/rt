@@ -1,0 +1,25 @@
+<%init>
+my $Config = {};
+$Config->{$_} = RT->Config->Get( $_, $session{CurrentUser} )
+  for qw(rtname WebPath);
+
+my $CurrentUser = {};
+if ($session{CurrentUser} and $session{CurrentUser}->id) {
+    $CurrentUser->{$_} = $session{CurrentUser}->$_
+      for qw(id Name EmailAddress);
+
+    $CurrentUser->{Privileged} = $session{CurrentUser}->Privileged
+        ? JSON::true : JSON::false;
+}
+
+$m->callback(
+    CallbackName    => "Data",
+    CurrentUser     => $CurrentUser,
+    Config          => $Config,
+);
+</%init>
+<script>
+window.RT = {};
+RT.CurrentUser = <% JSON( $CurrentUser ) |n%>;
+RT.Config      = <% JSON( $Config      ) |n%>;
+</script>
