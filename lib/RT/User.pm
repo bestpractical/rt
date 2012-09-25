@@ -166,18 +166,10 @@ sub Create {
         return ( 0, $self->loc("Must specify 'Name' attribute") );
     }
 
-    #SANITY CHECK THE NAME AND ABORT IF IT'S TAKEN
-    if (RT->SystemUser) {   #This only works if RT::SystemUser has been defined
-        my $TempUser = RT::User->new(RT->SystemUser);
-        $TempUser->Load( $args{'Name'} );
-        return ( 0, $self->loc('Name in use') ) if ( $TempUser->Id );
-
-        my ($val, $message) = $self->ValidateEmailAddress( $args{'EmailAddress'} );
-        return (0, $message) unless ( $val );
-    } else {
-        $RT::Logger->warning( "$self couldn't check for pre-existing users");
-    }
-
+    my ( $val, $msg ) = $self->ValidateName( $args{'Name'} );
+    return ( 0, $msg ) unless $val;
+    ( $val, $msg ) = $self->ValidateEmailAddress( $args{'EmailAddress'} );
+    return ( 0, $msg ) unless ($val);
 
     $RT::Handle->BeginTransaction();
     # Groups deal with principal ids, rather than user ids.
@@ -267,6 +259,30 @@ sub Create {
     $RT::Handle->Commit;
 
     return ( $id, $self->loc('User created') );
+}
+
+=head2 ValidateName STRING
+
+Returns either (0, "failure reason") or 1 depending on whether the given
+name is valid.
+
+=cut
+
+sub ValidateName {
+    my $self = shift;
+    my $name = shift;
+
+    return ( 0, $self->loc('empty name') ) unless defined $name && length $name;
+
+    my $TempUser = RT::User->new( RT->SystemUser );
+    $TempUser->Load($name);
+
+    if ( $TempUser->id && ( !$self->id || $TempUser->id != $self->id ) ) {
+        return ( 0, $self->loc('Name in use') );
+    }
+    else {
+        return 1;
+    }
 }
 
 =head2 ValidatePassword STRING
@@ -568,6 +584,25 @@ sub ValidateEmailAddress {
         return ( 0, $self->loc('Email address in use') );
     } else {    #it's a valid email address
         return (1);
+    }
+}
+
+=head2 SetName
+
+Check to make sure someone else isn't using this name already
+
+=cut
+
+sub SetName {
+    my $self  = shift;
+    my $Value = shift;
+
+    my ( $val, $message ) = $self->ValidateName($Value);
+    if ($val) {
+        return $self->_Set( Field => 'Name', Value => $Value );
+    }
+    else {
+        return ( 0, $message );
     }
 }
 
