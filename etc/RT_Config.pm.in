@@ -1723,6 +1723,18 @@ is redirected to
 
 Set($ForceApprovalsView, 0);
 
+=item C<@SkipFieldsOnTicketClone>
+
+A list of ticket fields that should not be copied in the new ticket if
+you create it with the create link within the ticket links section (cloning).
+For example:
+
+C<Set(@SkipFieldsOnTicketClone, qw(Requestors Status Owner TimeWorked));>
+
+=cut
+
+Set(@SkipFieldsOnTicketClone, qw());
+
 =head1 Extra security
 
 =over 4

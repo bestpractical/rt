@@ -336,8 +336,10 @@ if ($CloneTicket) {
             @cf_values;
     }
 
-    for ( keys %$clone ) {
-        $ARGS{$_} = $clone->{$_} if not defined $ARGS{$_};
+    my @skip_fields = RT->Config->Get('SkipFieldsOnTicketClone');
+    foreach my $field ( keys %$clone ) {
+        next if grep {$_ eq $field} @skip_fields;
+        $ARGS{$field} = $clone->{$field} if not defined $ARGS{$field};
     }
 
 }
