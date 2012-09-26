@@ -2146,6 +2146,99 @@ sub RoleGroup {
     return $group;
 }
 
+=head2 AddRoleMember
+
+Adds the described L<RT::Principal> to the specified role group for this record.
+
+Takes a set of key-value pairs:
+
+=over 4
+
+=item PrincipalId
+
+Optional.  The ID of the L<RT::Principal> object to add.
+
+=item User
+
+=item Group
+
+Optional.  The Name of an L<RT::User> or L<RT::Group>, respectively, to use as
+the principal.
+
+=item Type
+
+Required.  One of the valid roles for this record, as returned by L</Roles>.
+
+=back
+
+One, and only one, of I<PrincipalId>, I<User>, or I<Group> is required.
+
+Returns a tuple of (status, message).
+
+=cut
+
+sub AddRoleMember {
+    my $self = shift;
+    my %args = (@_);
+
+    return (0, $self->loc("One, and only one, of PrincipalId/User/Group is required"))
+        if 1 != grep { $_ } @args{qw/PrincipalId User Group/};
+
+    return (0, $self->loc("No valid Type specified"))
+        unless $args{Type} and $self->HasRole($args{Type});
+
+    unless ($args{PrincipalId}) {
+        my $object;
+        if ($args{User}) {
+            $object = RT::User->new( $self->CurrentUser );
+            $object->Load(delete $args{User});
+        }
+        elsif ($args{Group}) {
+            $object = RT::Group->new( $self->CurrentUser );
+            $object->LoadUserDefinedGroup(delete $args{Group});
+        }
+        $args{PrincipalId} = $object->PrincipalObj->id;
+    }
+
+    return (0, $self->loc("No valid PrincipalId"))
+        unless $args{PrincipalId};
+
+    return $self->RoleGroup(delete $args{Type})->_AddMember(%args);
+}
+
+=head2 DeleteRoleMember
+
+Removes the specified L<RT::Principal> from the specified role group for this
+record.
+
+Takes a set of key-value pairs:
+
+=over 4
+
+=item PrincipalId
+
+Required.  The ID of the L<RT::Principal> object to remove.
+
+=item Type
+
+Required.  One of the valid roles for this record, as returned by L</Roles>.
+
+=back
+
+Returns a tuple of (status, message).
+
+=cut
+
+sub DeleteRoleMember {
+    my $self = shift;
+    my %args = (@_);
+
+    return (0, $self->loc("No valid Type specified"))
+        unless $args{Type} and $self->HasRole($args{Type});
+
+    return $self->RoleGroup($args{Type})->_DeleteMember(delete $args{PrincipalId});
+}
+
 RT::Base->_ImportOverlays();
 
 1;
