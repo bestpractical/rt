@@ -46,6 +46,8 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
+$RT::Logger->warning("DEPRECATED: use /Elements/EditCustomFields");
+
 my $CustomFields;
 if ($TicketObj && !$OnCreate) {
     $CustomFields = $TicketObj->CustomFields;

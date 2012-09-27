@@ -85,7 +85,7 @@
   <td class="value"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->AdminCc &></td>
 </tr>
 
-<& EditCustomFields, TicketObj => $Ticket, Group => 'People', InTable => 1 &>
+<& /Elements/EditCustomFields, Object => $Ticket, Group => 'People', InTable => 1 &>
 
 </table>
 

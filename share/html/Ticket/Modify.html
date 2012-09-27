@@ -57,7 +57,7 @@
 
 <&| /Widgets/TitleBox, title => loc('Modify ticket #[_1]',$TicketObj->Id), class=>'ticket-info-basics' &>
 <& Elements/EditBasics, TicketObj => $TicketObj &>
-<& Elements/EditCustomFields, TicketObj => $TicketObj, DefaultsFromTopArguments => 0, Group => 'Basics' &>
+<& /Elements/EditCustomFields, Object => $TicketObj, DefaultsFromTopArguments => 0, Group => 'Basics' &>
 </&>
 % $m->callback( CallbackName => 'AfterBasics', Ticket => $TicketObj );
 

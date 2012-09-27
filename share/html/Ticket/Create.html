@@ -101,7 +101,13 @@
 
 % $m->callback( CallbackName => 'AfterOwner', ARGSRef => \%ARGS );
 
-      <& /Ticket/Elements/EditCustomFields, %ARGS, QueueObj => $QueueObj, Group => 'Basics', InTable => 1 &>
+      <& /Elements/EditCustomFields,
+          %ARGS,
+          Object => $ticket,
+          CustomFields => $QueueObj->TicketCustomFields,
+          Group => 'Basics',
+          InTable => 1,
+      &>
       <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, QueueObj => $QueueObj, InTable => 1 &>
     </table>
   </&>
@@ -160,7 +166,13 @@
   </td>
 </tr>
 
-<& Elements/EditCustomFields, QueueObj => $QueueObj, Group => 'People', InTable => 1 &>
+<& /Elements/EditCustomFields,
+    %ARGS,
+    Object => $ticket,
+    CustomFields => $QueueObj->TicketCustomFields,
+    Group => 'People',
+    InTable => 1,
+&>
 
 <tr>
 <td class="label">
@@ -248,7 +260,13 @@
 <table>
 <tr><td class="label"><&|/l&>Starts</&>:</td><td><& /Elements/SelectDate, Name => "Starts", Default => $ARGS{Starts} || '' &></td></tr>
 <tr><td class="label"><&|/l&>Due</&>:</td><td><& /Elements/SelectDate, Name => "Due", Default => $ARGS{Due} || '' &></td></tr>
-<& Elements/EditCustomFields, QueueObj => $QueueObj, Group => 'Dates', InTable => 1 &>
+<& /Elements/EditCustomFields,
+    %ARGS,
+    Object => $ticket,
+    CustomFields => $QueueObj->TicketCustomFields,
+    Group => 'Dates',
+    InTable => 1,
+&>
 </table>
 </&>
 </div>
@@ -268,7 +286,13 @@
 <tr><td class="label"><&|/l&>Children</&></td><td><input size="10" name="MemberOf-new" value="<% $ARGS{'MemberOf-new'} || '' %>" /></td></tr>
 <tr><td class="label"><&|/l&>Refers to</&></td><td><input size="10" name="new-RefersTo" value="<% $ARGS{'new-RefersTo'} || '' %>" /></td></tr>
 <tr><td class="label"><&|/l&>Referred to by</&></td><td><input size="10" name="RefersTo-new" value="<% $ARGS{'RefersTo-new'} || '' %>" /></td></tr>
-<& Elements/EditCustomFields, QueueObj => $QueueObj, Group => 'Links', InTable => 1 &>
+<& /Elements/EditCustomFields,
+    %ARGS,
+    Object => $ticket,
+    CustomFields => $QueueObj->TicketCustomFields,
+    Group => 'Links',
+    InTable => 1,
+&>
 </table>
 </&>
 </div>
