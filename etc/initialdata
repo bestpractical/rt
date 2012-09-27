@@ -58,7 +58,10 @@
       Description => 'Sends mail to the administrative Ccs',              # loc
       ExecModule  => 'Notify',
       Argument    => 'AdminCc' },
-
+    { Name        => 'Notify Owner and AdminCcs',                         # loc
+      Description => 'Sends mail to the Owner and administrative Ccs',    # loc
+      ExecModule  => 'Notify',
+      Argument    => 'Owner,AdminCc' },
     { Name        => 'Notify Requestors and Ccs as Comment',              # loc
       Description => 'Send mail to requestors and Ccs as a comment',      # loc
       ExecModule  => 'NotifyAsComment',
