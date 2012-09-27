@@ -1044,6 +1044,13 @@ our %is_whitelisted_component = (
     '/Search/Simple.html'  => 1,
 );
 
+# Components which are blacklisted from automatic, argument-based whitelisting.
+# These pages are not idempotent when called with just an id.
+our %is_blacklisted_component = (
+    # Takes only id and toggles bookmark state
+    '/Helpers/Toggle/TicketBookmark' => 1,
+);
+
 sub IsCompCSRFWhitelisted {
     my $comp = shift;
     my $ARGS = shift;
@@ -1065,6 +1072,10 @@ sub IsCompCSRFWhitelisted {
         delete $args{user};
         delete $args{pass};
     }
+
+    # Some pages aren't idempotent even with safe args like id; blacklist
+    # them from the automatic whitelisting below.
+    return 0 if $is_blacklisted_component{$comp};
 
     # Eliminate arguments that do not indicate an effectful request.
     # For example, "id" is acceptable because that is how RT retrieves a
