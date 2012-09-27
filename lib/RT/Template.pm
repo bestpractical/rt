@@ -311,6 +311,10 @@ sub Delete {
         return ( 0, $self->loc('Permission Denied') );
     }
 
+    if ( $self->UsedBy->Count ) {
+        return ( 0, $self->loc('Template is in use') );
+    }
+
     return ( $self->SUPER::Delete(@_) );
 }
 
