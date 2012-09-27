@@ -45,24 +45,67 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%INIT>
-my $CustomFields;
-if ($TicketObj && !$OnCreate) {
-    $CustomFields = $TicketObj->CustomFields;
-} else {
-    $CustomFields = $QueueObj->TicketCustomFields;
-}
-$m->callback( %ARGS, CallbackName => 'MassageCustomFields', CustomFields => $CustomFields );
+% if ( $WRAP ) {
+<<% $WRAP %> class="edit-custom-fields">
+% }
+% while ( my $CustomField = $CustomFields->Next ) {
+% next unless $CustomField->CurrentUserHasRight('ModifyCustomField');
+% my $Type = $CustomField->Type || 'Unknown';
 
-return $m->comp('/Elements/EditCustomFields',
-    %ARGS,
-    Object => $TicketObj || RT::Ticket->new( $session{'CurrenUser'} ),
-    CustomFields => $CustomFields,
-);
+  <<% $FIELD %> class="edit-custom-field cftype-<% $Type %>">
+    <<% $CELL %> class="cflabel">
+      <span class="name"><% loc($CustomField->Name) %></span><br />
+      <span class="type"><% $CustomField->FriendlyType %></span>
+    </<% $CELL %>>
+    <<% $CELL %> class="entry">
+% my $default = $m->notes('Field-' . $CustomField->Id);
+% $default ||= $ARGS{"CustomField-". $CustomField->Id };
+      <& /Elements/EditCustomField,
+          %ARGS,
+          CustomField => $CustomField,
+          NamePrefix => $NamePrefix,
+          Default => $default,
+      &>
+%  if (my $msg = $m->notes('InvalidField-' . $CustomField->Id)) {
+        <br />
+        <span class="cfinvalidfield"><% $msg %></span>
+%  }
+    </<% $CELL %>>
+  </<% $FIELD %>>
+% }
+
+% if ( $WRAP ) {
+</<% $WRAP %>>
+% }
+% $m->callback( %ARGS, CallbackName => 'AfterCustomFields' );
+<%INIT>
+$NamePrefix   ||= join '-', 'Object', ref($Object), ($Object->Id || ''), 'CustomField', '';
+$CustomFields ||= $Object->CustomFields;
+
+$CustomFields->LimitToGroup( $Group  ) if defined $Group;
+
+$m->callback( %ARGS, CallbackName => 'MassageCustomFields', $CustomFields => $CustomFields );
+
+# don't print anything if there is no custom fields
+return unless $CustomFields->First;
+$CustomFields->GotoFirstItem;
+
+$AsTable ||= $InTable;
+my $FIELD = $AsTable ? 'tr' : 'div';
+my $CELL  = $AsTable ? 'td' : 'div';
+my $WRAP  = '';
+if ( $AsTable ) {
+    $WRAP = 'table' unless $InTable;
+} else {
+    $WRAP = 'div';
+}
 
 </%INIT>
 <%ARGS>
-$TicketObj => undef
-$QueueObj => undef
-$OnCreate => undef
+$Object
+$CustomFields => undef
+$NamePrefix   => ''
+$Group        => undef
+$AsTable => 1
+$InTable => 0
 </%ARGS>
