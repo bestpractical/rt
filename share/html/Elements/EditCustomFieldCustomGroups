@@ -45,55 +45,22 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc('Modify ticket #[_1]', $TicketObj->Id) &>
-<& /Elements/Tabs &>
-
-% $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $TicketObj);
-
-<& /Elements/ListActions, actions => \@results &>
-<form method="post" action="Modify.html" enctype="multipart/form-data" name="TicketModify" id="TicketModify">
-% $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
-<input type="hidden" class="hidden" name="id" value="<% $TicketObj->Id %>" />
-
-<&| /Widgets/TitleBox, title => loc('Modify ticket #[_1]',$TicketObj->Id), class=>'ticket-info-basics' &>
-<& Elements/EditBasics, TicketObj => $TicketObj &>
-<& Elements/EditCustomFields, TicketObj => $TicketObj, DefaultsFromTopArguments => 0, Group => 'Basics' &>
+% foreach my $group ( RT::CustomField->CustomGroups( $Object ), '' ) {
+<&| /Widgets/TitleBox,
+    title => $group? loc($group) : loc('Custom Fields'),
+    class => $css_class .' '. ($group? CSSClass("$css_class-$group") : ''),
+    hide_empty => 1,
+&>
+<& EditCustomFields, %ARGS, Object => $Object, Group => $group &>
 </&>
-% $m->callback( CallbackName => 'AfterBasics', Ticket => $TicketObj );
-
-<& /Elements/EditCustomFieldCustomGroups, Object => $TicketObj, DefaultsFromTopArguments => 0 &>
-
-<& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#993333" &>
-</form>
-<%INIT>
-  
-my $TicketObj = LoadTicket($id);
-my $CustomFields = $TicketObj->CustomFields;
-
-# call this to show up hints of valid cf values.
-$m->comp(
-    '/Elements/ValidateCustomFields',
-    CustomFields => $CustomFields,
-    ARGSRef => {},
-);
-
-# Now let callbacks have a chance at editing %ARGS
-$m->callback( TicketObj => $TicketObj, CustomFields => $CustomFields, ARGSRef => \%ARGS );
-
-my @results = ProcessTicketBasics(TicketObj => $TicketObj, ARGSRef => \%ARGS);
-push @results, ProcessObjectCustomFieldUpdates(Object => $TicketObj, ARGSRef => \%ARGS);
-
-$TicketObj->ApplyTransactionBatch;
-
-unless ($TicketObj->CurrentUserHasRight('ShowTicket')) {
-    if (@results) {
-        Abort("A change was applied successfully, but you no longer have permissions to view the ticket", Actions => \@results);
-    } else {
-        Abort("No permission to view ticket");
-    }
-}
-
-</%INIT>
+% }
 <%ARGS>
-$id => undef
+$Object
 </%ARGS>
+<%INIT>
+my $css_class = lc(ref($Object)||$Object);
+$css_class =~ s/^rt:://;
+$css_class =~ s/::/-/g;
+$css_class = CSSClass($css_class);
+$css_class .= '-info-cfs';
+</%INIT>
