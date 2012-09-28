@@ -304,12 +304,12 @@ sub HandleRequest {
             }
             # Specially handle /index.html so that we get a nicer URL
             elsif ( $m->request_comp->path eq '/index.html' ) {
-                my $next = SetNextPage();
+                my $next = SetNextPage($ARGS);
                 $m->comp('/NoAuth/Login.html', next => $next, actions => [$msg]);
                 $m->abort;
             }
             else {
-                TangentForLogin(results => ($msg ? LoginError($msg) : undef));
+                TangentForLogin($ARGS, results => ($msg ? LoginError($msg) : undef));
             }
         }
     }
@@ -362,7 +362,7 @@ sub LoginError {
     return $key;
 }
 
-=head2 SetNextPage [PATH]
+=head2 SetNextPage ARGSRef [PATH]
 
 Intuits and stashes the next page in the sesssion hash.  If PATH is
 specified, uses that instead of the value of L<IntuitNextPage()>.  Returns
@@ -371,10 +371,30 @@ the hash value.
 =cut
 
 sub SetNextPage {
-    my $next = shift || IntuitNextPage();
+    my $ARGS = shift;
+    my $next = $_[0] ? $_[0] : IntuitNextPage();
     my $hash = Digest::MD5::md5_hex($next . $$ . rand(1024));
+    my $page = { url => $next };
 
-    $HTML::Mason::Commands::session{'NextPage'}->{$hash}{'url'} = $next;
+    # If an explicit URL was passed and we didn't IntuitNextPage, then
+    # IsPossibleCSRF below is almost certainly unrelated to the actual
+    # destination.  Currently explicit next pages aren't used in RT, but the
+    # API is available.
+    if (not $_[0] and RT->Config->Get("RestrictReferrer")) {
+        # This isn't really CSRF, but the CSRF heuristics are useful for catching
+        # requests which may have unintended side-effects.
+        my ($is_csrf, $msg, @loc) = IsPossibleCSRF($ARGS);
+        if ($is_csrf) {
+            RT->Logger->notice(
+                "Marking original destination as having side-effects before redirecting for login.\n"
+               ."Request: $next\n"
+               ."Reason: " . HTML::Mason::Commands::loc($msg, @loc)
+            );
+            $page->{'HasSideEffects'} = [$msg, @loc];
+        }
+    }
+
+    $HTML::Mason::Commands::session{'NextPage'}->{$hash} = $page;
     $HTML::Mason::Commands::session{'i'}++;
     return $hash;
 }
@@ -401,15 +421,18 @@ sub RemoveNextPage {
     return delete $HTML::Mason::Commands::session{'NextPage'}->{$hash};
 }
 
-=head2 TangentForLogin [HASH]
+=head2 TangentForLogin ARGSRef [HASH]
 
 Redirects to C</NoAuth/Login.html>, setting the value of L<IntuitNextPage> as
-the next page.  Optionally takes a hash which is dumped into query params.
+the next page.  Takes a hashref of request %ARGS as the first parameter.
+Optionally takes all other parameters as a hash which is dumped into query
+params.
 
 =cut
 
 sub TangentForLogin {
-    my $hash  = SetNextPage();
+    my $ARGS  = shift;
+    my $hash  = SetNextPage($ARGS);
     my %query = (@_, next => $hash);
     my $login = RT->Config->Get('WebURL') . 'NoAuth/Login.html?';
     $login .= $HTML::Mason::Commands::m->comp('/Elements/QueryString', %query);
@@ -424,8 +447,9 @@ calls L<TangentForLogin> with the appropriate results key.
 =cut
 
 sub TangentForLoginWithError {
-    my $key = LoginError(HTML::Mason::Commands::loc(@_));
-    TangentForLogin( results => $key );
+    my $ARGS = shift;
+    my $key  = LoginError(HTML::Mason::Commands::loc(@_));
+    TangentForLogin( $ARGS, results => $key );
 }
 
 =head2 IntuitNextPage
@@ -661,7 +685,7 @@ sub AttemptExternalAuth {
                 delete $HTML::Mason::Commands::session{'CurrentUser'};
 
                 if (RT->Config->Get('WebFallbackToInternalAuth')) {
-                    TangentForLoginWithError('Cannot create user: [_1]', $msg);
+                    TangentForLoginWithError($ARGS, 'Cannot create user: [_1]', $msg);
                 } else {
                     $m->abort();
                 }
@@ -684,13 +708,13 @@ sub AttemptExternalAuth {
             $user = $orig_user;
 
             unless ( RT->Config->Get('WebFallbackToInternalAuth') ) {
-                TangentForLoginWithError('You are not an authorized user');
+                TangentForLoginWithError($ARGS, 'You are not an authorized user');
             }
         }
     } elsif ( RT->Config->Get('WebFallbackToInternalAuth') ) {
         unless ( defined $HTML::Mason::Commands::session{'CurrentUser'} ) {
             # XXX unreachable due to prior defaulting in HandleRequest (check c34d108)
-            TangentForLoginWithError('You are not an authorized user');
+            TangentForLoginWithError($ARGS, 'You are not an authorized user');
         }
     } else {
 
