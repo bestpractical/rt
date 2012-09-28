@@ -304,7 +304,7 @@ sub HandleRequest {
             }
             # Specially handle /index.html so that we get a nicer URL
             elsif ( $m->request_comp->path eq '/index.html' ) {
-                my $next = SetNextPage(RT->Config->Get('WebURL'));
+                my $next = SetNextPage();
                 $m->comp('/NoAuth/Login.html', next => $next, actions => [$msg]);
                 $m->abort;
             }
