@@ -364,6 +364,7 @@ our $RE_FILE_EXTENSIONS = qr/pgp|asc/i;
 =cut
 
 sub CallGnuPG {
+    my $self = shift;
     my %args = (
         Options     => undef,
         Signer      => undef,
@@ -412,7 +413,7 @@ sub CallGnuPG {
 
     $args{Passphrase} = $GnuPGOptions{passphrase}
         unless defined $args{'Passphrase'};
-    $args{Passphrase} = $self->( Address => $args{Signer} )
+    $args{Passphrase} = $self->GetPassphrase( Address => $args{Signer} )
         unless defined $args{'Passphrase'};
     $gnupg->passphrase( $args{'Passphrase'} )
         if defined $args{Passphrase};
@@ -557,7 +558,7 @@ sub SignEncryptRFC3156 {
         my @signature;
         # We use RT::Crypt::GnuPG::CRLFHandle to canonicalize the
         # MIME::Entity output to use \r\n instead of \n for its newlines
-        %res = CallGnuPG(
+        %res = $self->CallGnuPG(
             Signer     => $args{'Signer'},
             Command    => "detach_sign",
             Handles    => { stdin => RT::Crypt::GnuPG::CRLFHandle->new },
@@ -590,7 +591,7 @@ sub SignEncryptRFC3156 {
         binmode $tmp_fh, ':raw';
 
         $entity->make_multipart( 'mixed', Force => 1 );
-        %res = CallGnuPG(
+        %res = $self->CallGnuPG(
             Signer     => $args{'Signer'},
             Recipients => \@recipients,
             Command    => ( $args{'Sign'} ? "sign_and_encrypt" : "encrypt" ),
@@ -664,7 +665,7 @@ sub _SignEncryptTextInline {
     binmode $tmp_fh, ':raw';
 
     my $entity = $args{'Entity'};
-    my %res = CallGnuPG(
+    my %res = $self->CallGnuPG(
         Signer     => $args{'Signer'},
         Recipients => $args{'Recipients'},
         Command    => ( $args{'Sign'} && $args{'Encrypt'}
@@ -706,7 +707,7 @@ sub _SignEncryptAttachmentInline {
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
     binmode $tmp_fh, ':raw';
 
-    my %res = CallGnuPG(
+    my %res = $self->CallGnuPG(
         Signer     => $args{'Signer'},
         Recipients => $args{'Recipients'},
         Command    => ( $args{'Sign'} && $args{'Encrypt'}
@@ -760,7 +761,7 @@ sub SignEncryptContent {
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
     binmode $tmp_fh, ':raw';
 
-    my %res = CallGnuPG(
+    my %res = $self->CallGnuPG(
         Signer     => $args{'Signer'},
         Recipients => $args{'Recipients'},
         Command    => ( $args{'Sign'} && $args{'Encrypt'}
@@ -1109,7 +1110,7 @@ sub VerifyAttachment {
     $args{'Data'}->bodyhandle->print( $tmp_fh );
     $tmp_fh->flush;
 
-    return CallGnuPG(
+    return $self->CallGnuPG(
         Command     => "verify",
         CommandArgs => [ '-', $tmp_fn ],
         Passphrase  => $args{'Passphrase'},
@@ -1126,7 +1127,7 @@ sub VerifyRFC3156 {
     $args{'Data'}->print( $tmp_fh );
     $tmp_fh->flush;
 
-    return CallGnuPG(
+    return $self->CallGnuPG(
         Command     => "verify",
         CommandArgs => [ '-', $tmp_fn ],
         Passphrase  => $args{'Passphrase'},
@@ -1152,7 +1153,7 @@ sub DecryptRFC3156 {
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
     binmode $tmp_fh, ':raw';
 
-    my %res = CallGnuPG(
+    my %res = $self->CallGnuPG(
         Command     => "decrypt",
         Handles     => { stdout => $tmp_fh },
         Passphrase  => $args{'Passphrase'},
@@ -1278,7 +1279,7 @@ sub _DecryptInlineBlock {
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
     binmode $tmp_fh, ':raw';
 
-    my %res = CallGnuPG(
+    my %res = $self->CallGnuPG(
         Command     => "decrypt",
         Handles     => { stdout => $tmp_fh, stdin => $args{'BlockHandle'} },
         Passphrase  => $args{'Passphrase'},
@@ -1349,7 +1350,7 @@ sub DecryptContent {
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
     binmode $tmp_fh, ':raw';
 
-    my %res = CallGnuPG(
+    my %res = $self->CallGnuPG(
         Command     => "decrypt",
         Handles     => { stdout => $tmp_fh },
         Passphrase  => $args{'Passphrase'},
@@ -1793,7 +1794,7 @@ sub GetKeysInfo {
 
     my @info;
     my $method = $type eq 'private'? 'list_secret_keys': 'list_public_keys';
-    my %res = CallGnuPG(
+    my %res = $self->CallGnuPG(
         Options     => {
             'with-colons'     => undef, # parseable format
             'fingerprint'     => undef, # show fingerprint
@@ -1948,7 +1949,7 @@ sub DeleteKey {
     my $self = shift;
     my $key = shift;
 
-    return CallGnuPG(
+    return $self->CallGnuPG(
         Command     => "--delete-secret-and-public-key",
         CommandArgs => [\--', $key],
         Callback    => sub {
@@ -1966,7 +1967,7 @@ sub ImportKey {
     my $self = shift;
     my $key = shift;
 
-    return CallGnuPG(
+    return $self->CallGnuPG(
         Command     => "import_keys",
         Content     => $key,
     );
