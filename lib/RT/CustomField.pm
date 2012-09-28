@@ -1271,6 +1271,7 @@ sub Groups {
 
 our %BUILTIN_GROUPS = (
     'RT::Ticket' => { map { $_ => 1 } qw(Basics Dates Links People) },
+    'RT::User' => { map { $_ => 1 } 'Identity', 'Access control', 'Location', 'Phones' },
 );
 $BUILTIN_GROUPS{''} = { map { %$_ } values %BUILTIN_GROUPS  };
 

@@ -2723,6 +2723,12 @@ Set(%CustomFieldGroups,
         People => [],
         Links   => [],
     },
+    'RT::User' => {
+        Identity => [],
+        'Access control' => [],
+        Location => [],
+        Phones   => [],
+    },
 );
 
 1;

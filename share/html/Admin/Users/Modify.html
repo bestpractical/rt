@@ -50,7 +50,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%RT->Config->Get('WebPath')%>/Admin/Users/Modify.html" method="post" enctype="multipart/form-data">
+<form action="<%RT->Config->Get('WebPath')%>/Admin/Users/Modify.html" method="post" enctype="multipart/form-data" name="<% $Create ? 'UserCreate': 'UserModify' %>">
 %if ($Create) {
 <input type="hidden" class="hidden" name="id" value="new" />
 % } else {
@@ -60,7 +60,7 @@
 <tr>
 
 <td valign="top" class="boxcontainer">
-<&| /Widgets/TitleBox, title => loc('Identity') &>
+<&| /Widgets/TitleBox, title => loc('Identity'), class => 'user-info-identity' &>
 
 <table>
 <tr><td align="right">
@@ -98,10 +98,12 @@
 </td><td>
 <textarea name="FreeformContactInfo" cols="20" rows="5"><%$UserObj->FreeformContactInfo||$FreeformContactInfo||''%></textarea>
 </td></tr>
+<& /Elements/EditCustomFields, Object => $UserObj, Group => 'Identity', InTable => 1 &>
 </table>
 </&>
+
 <br />
-<&| /Widgets/TitleBox, title => loc('Access control') &>
+<&| /Widgets/TitleBox, title => loc('Access control'), class => 'user-info-access-control' &>
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
 <input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked%> />
 <&|/l&>Let this user access RT</&><br />
@@ -114,12 +116,15 @@
     User => $UserObj,
     Name => [qw(CurrentPass Pass1 Pass2)],
 &>
+
+<& /Elements/EditCustomFields, Object => $UserObj, Group => 'Access control' &>
+
 </&>
 % $m->callback( %ARGS, CallbackName => 'LeftColumnBottom', UserObj => $UserObj );
 </td>
 
 <td valign="top" class="boxcontainer">
-<&| /Widgets/TitleBox, title => loc('Location') &>
+<&| /Widgets/TitleBox, title => loc('Location'), class => 'user-info-location' &>
 <table>
 <tr><td align="right">
 <&|/l&>Organization</&>: 
@@ -158,10 +163,13 @@
 </td><td>
 <input name="Country" value="<%$UserObj->Country||$Country||''%>" />
 </td></tr>
+
+<& /Elements/EditCustomFields, Object => $UserObj, Group => 'Location', InTable => 1 &>
+
 </table>
 </&>
 <br />
-<&| /Widgets/TitleBox, title => loc('Phone numbers') &>
+<&| /Widgets/TitleBox, title => loc('Phone numbers'), class => 'user-info-phones' &>
 <table>
 <tr><td align="right">
 <&|/l&>Residence</&>: 
@@ -184,25 +192,15 @@
 <input name="PagerPhone" value="<%$UserObj->PagerPhone||$PagerPhone||''%>" size="13" /><br />
 </td>
 </tr>
+
+<& /Elements/EditCustomFields, Object => $UserObj, Group => 'Phones', InTable => 1 &>
+
 </table>
 </&>
 <br />
-<&| /Widgets/TitleBox, title => loc('Custom Fields') &>
-<table>
-% my $CFs = $UserObj->CustomFields;
-% while (my $CF = $CFs->Next) {
-<tr valign="top"><td align="right">
-<% loc($CF->Name) %>:
-</td><td>
-% if ($UserObj->id) {
-<& /Elements/EditCustomField, %ARGS, Object => $UserObj, CustomField => $CF &>
-% } else {
-<& /Elements/EditCustomField, %ARGS, NamePrefix => 'Object-RT::User--CustomField-', CustomField => $CF &>
-% }
-</td></tr>
-% }
-</table>
-</&>
+
+<& /Elements/EditCustomFieldCustomGroups, Object => $UserObj &>
+
 % $m->callback( %ARGS, CallbackName => 'RightColumnBottom', UserObj => $UserObj );
 </td></tr>
 <tr>
