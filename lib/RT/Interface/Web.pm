@@ -1302,6 +1302,29 @@ sub MaybeShowInterstitialCSRFPage {
     # Calls abort, never gets here
 }
 
+our @POTENTIAL_PAGE_ACTIONS = (
+    qr'/Ticket/Create.html' => "create a ticket",              # loc
+    qr'/Ticket/'            => "update a ticket",              # loc
+    qr'/Admin/'             => "modify RT's configuration",    # loc
+    qr'/Approval/'          => "update an approval",           # loc
+    qr'/Dashboards/'        => "modify a dashboard",           # loc
+    qr'/m/ticket/'          => "update a ticket",              # loc
+    qr'Prefs'               => "modify your preferences",      # loc
+    qr'/Search/'            => "modify or access a search",    # loc
+    qr'/SelfService/Create' => "create a ticket",              # loc
+    qr'/SelfService/'       => "update a ticket",              # loc
+);
+
+sub PotentialPageAction {
+    my $page = shift;
+    my @potentials = @POTENTIAL_PAGE_ACTIONS;
+    while (my ($pattern, $result) = splice @potentials, 0, 2) {
+        return HTML::Mason::Commands::loc($result)
+            if $page =~ $pattern;
+    }
+    return "";
+}
+
 package HTML::Mason::Commands;
 
 use vars qw/$r $m %session/;
