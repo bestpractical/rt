@@ -98,13 +98,15 @@ sub _Init {
 
 sub LimitToGroup {
     my $self = shift;
+    my $obj = shift;
     my $group = shift;
 
     my $config = RT->Config->Get('CustomFieldGroups');
        $config = {} unless ref($config) eq 'HASH';
+       $config = $config->{ref($obj) || $obj} || {};
 
     if ( $group ) {
-        my $list = $config->{'RT::Ticket'}{$group};
+        my $list = $config->{$group};
         unless ( $list and ref($list) eq 'ARRAY' and @$list ) {
             return $self->Limit( FIELD => 'id', VALUE => 0, ENTRYAGGREGATOR => 'AND' );
         }
@@ -113,7 +115,7 @@ sub LimitToGroup {
         }
     } else {
         my @list = map {@$_} grep defined && ref($_) eq 'ARRAY',
-            values %{ $config->{'RT::Ticket'} };
+            values %{ $config };
 
         return unless @list;
         foreach ( @list ) {

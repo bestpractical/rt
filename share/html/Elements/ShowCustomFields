@@ -83,7 +83,7 @@ $m->callback(
     CustomFields => $CustomFields,
 );
 
-$CustomFields->LimitToGroup($Group) if defined $Group;
+$CustomFields->LimitToGroup( $Object => $Group ) if defined $Group;
 
 # don't print anything if there is no custom fields
 return unless $CustomFields->First;
