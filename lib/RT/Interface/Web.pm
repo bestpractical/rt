@@ -310,14 +310,14 @@ sub SetNextPage {
     my $next = shift || IntuitNextPage();
     my $hash = Digest::MD5::md5_hex($next . $$ . rand(1024));
 
-    $HTML::Mason::Commands::session{'NextPage'}->{$hash} = $next;
+    $HTML::Mason::Commands::session{'NextPage'}->{$hash}{'url'} = $next;
     $HTML::Mason::Commands::session{'i'}++;
     return $hash;
 }
 
 =head2 FetchNextPage HASHKEY
 
-Returns the stashed next page URL for the given hash.
+Returns the stashed next page hashref for the given hash.
 
 =cut
 
@@ -328,7 +328,7 @@ sub FetchNextPage {
 
 =head2 RemoveNextPage HASHKEY
 
-Removes the stashed next page URL for the given hash and returns it.
+Removes the stashed next page for the given hash and returns it.
 
 =cut
 
@@ -547,6 +547,7 @@ sub AttemptExternalAuth {
         }
 
         my $next = RemoveNextPage($ARGS->{'next'});
+           $next = $next->{'url'} if $next;
         InstantiateNewSession() unless _UserLoggedIn;
         $HTML::Mason::Commands::session{'CurrentUser'} = RT::CurrentUser->new();
         $HTML::Mason::Commands::session{'CurrentUser'}->$load_method($user);
@@ -646,6 +647,7 @@ sub AttemptPasswordAuthentication {
         # It's important to nab the next page from the session before we blow
         # the session away
         my $next = RemoveNextPage($ARGS->{'next'});
+           $next = $next->{'url'} if $next;
 
         InstantiateNewSession();
         $HTML::Mason::Commands::session{'CurrentUser'} = $user_obj;
