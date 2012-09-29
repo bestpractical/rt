@@ -7,3 +7,9 @@ UPGRADING FROM RT 4.0.0 and greater
 
 * Rich text (HTML) messages are now preferred for display.  If you prefer plain
   text messages, set $PreferRichText to 0.
+
+* User email addresses are now validated by default and multiple,
+  comma-separated addresses for a single user are no longer allowed.  Existing
+  users with invalid addresses will continue to work until the next time they
+  are updated by an administrator on the modify user page.  If you prefer no
+  address validation, set $ValidateUserEmailAddresses to 0.

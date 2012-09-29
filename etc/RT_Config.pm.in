@@ -415,13 +415,16 @@ Set($CanonicalizeOnCreate, 0);
 
 =item C<$ValidateUserEmailAddresses>
 
-If C<$ValidateUserEmailAddresses> is 1, RT will refuse to create
+By default C<$ValidateUserEmailAddresses> is 1, and RT will refuse to create
 users with an invalid email address (as specified in RFC 2822) or with
 an email address made of multiple email addresses.
 
+Set this to 0 to skip any email address validation.  Doing so may open up
+vulnerabilities.
+
 =cut
 
-Set($ValidateUserEmailAddresses, undef);
+Set($ValidateUserEmailAddresses, 1);
 
 =item C<@MailPlugins>
 
