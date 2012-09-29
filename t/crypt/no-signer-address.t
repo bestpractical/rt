@@ -13,7 +13,7 @@ my $queue;
 {
     $queue = RT::Test->load_or_create_queue(
         Name => 'Regression',
-        Sign => 1,
+        SignAuto => 1,
     );
     ok $queue && $queue->id, 'loaded or created queue';
     ok !$queue->CorrespondAddress, 'address not set';
