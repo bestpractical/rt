@@ -676,6 +676,12 @@ sub _SplitHeaders {
     my $self = shift;
     my $headers = (shift || $self->_Value('Headers'));
     my @headers;
+    # XXX TODO: splitting on \n\w is _wrong_ as it treats \n[ as a valid
+    # continuation, which it isn't.  The correct split pattern, per RFC 2822,
+    # is /\n(?=[^ \t]|\z)/.  That is, only "\n " or "\n\t" is a valid
+    # continuation.  Older values of X-RT-GnuPG-Status contain invalid
+    # continuations and rely on this bogus split pattern, however, so it is
+    # left as-is for now.
     for (split(/\n(?=\w|\z)/,$headers)) {
         push @headers, $_;
 
