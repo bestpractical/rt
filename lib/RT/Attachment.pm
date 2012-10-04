@@ -600,7 +600,7 @@ sub DelHeader {
 
     my $newheader = '';
     foreach my $line ($self->_SplitHeaders) {
-        next if $line =~ /^\Q$tag\E:\s+(.*)$/is;
+        next if $line =~ /^\Q$tag\E:\s+/i;
         $newheader .= "$line\n";
     }
     return $self->__Set( Field => 'Headers', Value => $newheader);
