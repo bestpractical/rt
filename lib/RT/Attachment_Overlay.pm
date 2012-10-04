@@ -567,9 +567,7 @@ sub AddHeader {
 
     my $newheader = $self->__Value( 'Headers' );
     while ( my ($tag, $value) = splice @_, 0, 2 ) {
-        $value = '' unless defined $value;
-        $value =~ s/\s+$//s;
-        $value =~ s/\r*\n/\n /g;
+        $value = $self->_CanonicalizeHeaderValue($value);
         $newheader .= "$tag: $value\n";
     }
     return $self->__Set( Field => 'Headers', Value => $newheader);
@@ -597,6 +595,17 @@ sub SetHeader {
 
     $newheader .= "$tag: $_[0]\n" if defined $tag;
     $self->__Set( Field => 'Headers', Value => $newheader);
+}
+
+sub _CanonicalizeHeaderValue {
+    my $self  = shift;
+    my $value = shift;
+
+    $value = '' unless defined $value;
+    $value =~ s/\s+$//s;
+    $value =~ s/\r*\n/\n /g;
+
+    return $value;
 }
 
 =head2 SplitHeaders
