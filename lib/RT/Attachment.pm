@@ -630,20 +630,25 @@ Replace or add a Header to the attachment's headers.
 =cut
 
 sub SetHeader {
-    my $self = shift;
-    my $tag = shift;
+    my $self  = shift;
+    my $tag   = shift;
+    my $value = $self->_CanonicalizeHeaderValue(shift);
 
+    my $replaced  = 0;
     my $newheader = '';
     foreach my $line ( $self->_SplitHeaders ) {
-        if ( defined $tag and $line =~ /^\Q$tag\E:\s+(.*)$/i ) {
-            $newheader .= "$tag: $_[0]\n";
-            undef $tag;
+        if ( $line =~ /^\Q$tag\E:\s+/i ) {
+            # replace first instance, skip all the rest
+            unless ($replaced) {
+                $newheader .= "$tag: $value\n";
+                $replaced = 1;
+            }
         } else {
             $newheader .= "$line\n";
         }
     }
 
-    $newheader .= "$tag: $_[0]\n" if defined $tag;
+    $newheader .= "$tag: $value\n" unless $replaced;
     $self->__Set( Field => 'Headers', Value => $newheader);
 }
 
