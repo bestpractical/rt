@@ -165,4 +165,21 @@ sub request_path {
     return $path;
 }
 
+=head2 abort
+
+Logs any recorded SQL statements for this request before calling the standard
+abort.
+
+=cut
+
+sub abort {
+    my $self = shift;
+    RT::Interface::Web::LogRecordedSQLStatements(
+        RequestData => {
+            Path => $self->request_path,
+        },
+    );
+    return $self->SUPER::abort(@_);
+}
+
 1;
