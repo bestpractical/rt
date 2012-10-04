@@ -601,7 +601,7 @@ sub DelHeader {
     my $newheader = '';
     foreach my $line ($self->_SplitHeaders) {
         next if $line =~ /^\Q$tag\E:\s+(.*)$/is;
-	$newheader .= "$line\n";
+        $newheader .= "$line\n";
     }
     return $self->__Set( Field => 'Headers', Value => $newheader);
 }
@@ -636,14 +636,13 @@ sub SetHeader {
     my $tag = shift;
 
     my $newheader = '';
-    foreach my $line ($self->_SplitHeaders) {
-        if (defined $tag and $line =~ /^\Q$tag\E:\s+(.*)$/i) {
-	    $newheader .= "$tag: $_[0]\n";
-	    undef $tag;
+    foreach my $line ( $self->_SplitHeaders ) {
+        if ( defined $tag and $line =~ /^\Q$tag\E:\s+(.*)$/i ) {
+            $newheader .= "$tag: $_[0]\n";
+            undef $tag;
+        } else {
+            $newheader .= "$line\n";
         }
-	else {
-	    $newheader .= "$line\n";
-	}
     }
 
     $newheader .= "$tag: $_[0]\n" if defined $tag;
