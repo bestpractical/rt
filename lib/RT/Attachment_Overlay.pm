@@ -569,7 +569,7 @@ sub AddHeader {
     while ( my ($tag, $value) = splice @_, 0, 2 ) {
         $value = '' unless defined $value;
         $value =~ s/\s+$//s;
-        $value =~ s/\r+\n/\n /g;
+        $value =~ s/\r*\n/\n /g;
         $newheader .= "$tag: $value\n";
     }
     return $self->__Set( Field => 'Headers', Value => $newheader);
