@@ -646,7 +646,7 @@ sub AttemptExternalAuth {
         }
 
         my $next = RemoveNextPage($ARGS->{'next'});
-           $next = $next->{'url'} if $next;
+           $next = $next->{'url'} if ref $next;
         InstantiateNewSession() unless _UserLoggedIn;
         $HTML::Mason::Commands::session{'CurrentUser'} = RT::CurrentUser->new();
         $HTML::Mason::Commands::session{'CurrentUser'}->$load_method($user);
@@ -746,7 +746,7 @@ sub AttemptPasswordAuthentication {
         # It's important to nab the next page from the session before we blow
         # the session away
         my $next = RemoveNextPage($ARGS->{'next'});
-           $next = $next->{'url'} if $next;
+           $next = $next->{'url'} if ref $next;
 
         InstantiateNewSession();
         $HTML::Mason::Commands::session{'CurrentUser'} = $user_obj;
