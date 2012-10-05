@@ -293,17 +293,25 @@ sub VerifyDecrypt {
         }
         if ( $args{'SetStatus'} || $args{'AddStatus'} ) {
             my $method = $args{'AddStatus'} ? 'add' : 'set';
+            # Let the header be modified so continuations are handled
+            my $modify = $status_on->head->modify;
+            $status_on->head->modify(1);
             $status_on->head->$method(
                 'X-RT-SMIME-Status' => $res{'status'}
             );
+            $status_on->head->modify($modify);
         }
     } elsif ( $item->{'Type'} eq 'encrypted' ) {
         %res = $self->DecryptRFC3851( %args, %$item );
         if ( $args{'SetStatus'} || $args{'AddStatus'} ) {
             my $method = $args{'AddStatus'} ? 'add' : 'set';
+            # Let the header be modified so continuations are handled
+            my $modify = $item->{'Data'}->head->modify;
+            $item->{'Data'}->head->modify(1);
             $item->{'Data'}->head->$method(
                 'X-RT-SMIME-Status' => $res{'status'}
             );
+            $item->{'Data'}->head->modify($modify);
         }
     } else {
         die "Unknow type '". $item->{'Type'} ."' of protected item";
