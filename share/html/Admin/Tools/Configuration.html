@@ -270,7 +270,7 @@ my $row = 0;
 % my $res = `$cmd </dev/null 2>/dev/null` or next;
 <tr class="collection-as-table <% $row++ % 2 ? "oddline" : "evenline" %>">
 <td class="collection-as-table"><% $name %></td>
-<td class="collection-as-table" style="white-space: pre; font-family: monospace"><% $res %></td>
+<td class="collection-as-table" style="font-family: monospace"><% $res %></td>
 </tr>
 % }
 </table>
