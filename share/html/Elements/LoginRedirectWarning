@@ -5,7 +5,7 @@ $next => undef
 return unless $next;
 
 my $destination = RT::Interface::Web::FetchNextPage($next);
-return unless $destination and $destination->{'HasSideEffects'};
+return unless ref $destination and $destination->{'HasSideEffects'};
 
 my $consequence = RT::Interface::Web::PotentialPageAction($destination->{'url'}) || loc("perform actions");
    $consequence = $m->interp->apply_escapes($consequence => "h");
