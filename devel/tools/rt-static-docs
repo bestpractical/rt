@@ -51,6 +51,7 @@ use strict;
 use warnings;
 
 use Getopt::Long;
+use File::Temp;
 use File::Spec;
 use File::Path qw(make_path rmtree);
 use HTML::Entities qw(encode_entities);
@@ -78,11 +79,9 @@ make_path( $opts{to} )              unless -e $opts{to};
 die "--to MUST be a directory\n"    unless -d $opts{to};
 
 # Unpack the tarball, if that's what we're given.
+my $tmpdir;
 if (($opts{rt} || '') =~ /\.tar\.gz$/ and -f $opts{rt}) {
-    my $tmpdir = "/tmp/rt-docs-$$";
-
-    mkdir $tmpdir
-        or die "Unable to mkdir $tmpdir: $!\n";
+    $tmpdir = File::Temp->newdir();
 
     system("tar", "xzpf", $opts{rt}, "-C", $tmpdir);
     $opts{rt} = <$tmpdir/rt-*>;
@@ -153,6 +152,9 @@ for my $file (<README* docs/UPGRADING* UPGRADING*>) {
 
 # Convert each POD file to HTML
 $converter->batch_convert( \@dirs, $opts{to} );
+
+# Need to chdir back out, if we are in the tmpdir, to let it clean up
+chdir "/" if $tmpdir;
 
 exit 0;
 
