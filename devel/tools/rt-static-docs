@@ -84,7 +84,7 @@ if (($opts{rt} || '') =~ /\.tar\.gz$/ and -f $opts{rt}) {
     mkdir $tmpdir
         or die "Unable to mkdir $tmpdir: $!\n";
 
-    system qq[tar xzpf "$opts{rt}" -C $tmpdir];
+    system("tar", "xzpf", $opts{rt}, "-C", $tmpdir);
     $opts{rt} = <$tmpdir/rt-*>;
 }
 chdir $opts{rt} if $opts{rt};
