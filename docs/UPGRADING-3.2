@@ -1,11 +1,10 @@
-UPGRADING FROM 3.2 and earlier - Changes:
+=head1 UPGRADING FROM 3.2.0 AND EARLIER
 
-= Rights changes =
+There have been a number of rights changes.  Now, if you want any user to be
+able to access the Admin tools (a.k.a.  the Configuration tab), you must grant
+that user the "ShowConfigTab" right.  Making the user a privileged user is no
+longer sufficient.
 
-Now, if you want any user to be able to access the Admin tools (a.k.a.
-the Configuration tab), you must grant that user the "ShowConfigTab"
-right.  Making the user a privileged user is no longer sufficient.
-
-"SuperUser" users are no longer automatically added to the list of users
-who can own tickets in a queue. You now need to explicitly give them the
+"SuperUser" users are no longer automatically added to the list of users who
+can own tickets in a queue. You now need to explicitly give them the
 "OwnTicket" right.

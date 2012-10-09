@@ -1,85 +1,142 @@
-If you did not start by reading the README file, please start there;
-these steps do not list the full upgrading process, merely a part which
-is sometimes necessary.
+If you did not start by reading the README file, please start there; these
+steps do not list the full upgrading process, merely a part which is sometimes
+necessary.
 
 This file applies if either:
 
- 1) You are upgrading RT from a version prior to 3.8.0, on any version
-    of MySQL
-............. OR .............
- 2) You are migrating from MySQL 4.0 to MySQL 4.1 or above
+=over
+
+=item 1.
+
+You are upgrading RT from a version prior to 3.8.0, on any version
+of MySQL
+
+=item 2.
+
+You are migrating from MySQL 4.0 to MySQL 4.1 or above
+
+=back
 
 If neither of the above cases apply, your should upgrade as per the
 instructions in the README.
 
-These changes are necessary because MySQL 4.1 and greater changed some
-aspects of character set handling that may result in RT failures; this
-will manifest as multiple login requests, corrupted binary attachments,
-and corrupted image custom fields, among others.  In order to resolve
-this issue, the upgrade process will need to modify the schema.
+These changes are necessary because MySQL 4.1 and greater changed some aspects
+of character set handling that may result in RT failures; this will manifest
+as multiple login requests, corrupted binary attachments, and corrupted image
+custom fields, among others.  In order to resolve this issue, the upgrade
+process will need to modify the schema.
 
- 1) If you are moving the database and/or upgrading MySQL
-   1a) Dump the database; with MySQL 4.1 and greater be sure to pass
-       the mysqldump command the --default-character-set=binary option.
-       This is necessary because the data was originally encoded in
-       Latin1.
+=over
 
-   1b) Configure the new MySQL to use Latin1 as the default character
-       set everywhere, not UTF-8.  This is necessary so the import in
-       the next step assumes the data is Latin1.
+=item 1.
 
-   1c) Import the dump made in step 1a into the new MySQL server, using
-       the --default-character-set=binary option on restore.  This will
-       ensure that the data is imported as bytes, which will be
-       interpreted as Latin1 thanks to step 1b above.
+If you are moving the database and/or upgrading MySQL
 
-   1d) Test that your RT works as expected on this new database.
+=over
 
- 2) Backup RT's database using --default-character-set=binary
-    Furthermore, test that you can restore from this backup.
+=item 1a.
 
- 3) Follow instructions in the README file to step 6b.
+Dump the database; with MySQL 4.1 and greater be sure to pass the mysqldump
+command the --default-character-set=binary option.  This is necessary because
+the data was originally encoded in Latin1.
 
- 4) Apply changes described in the README's step 6b, but only up to
-    version 3.7.87.
+=item 1b.
 
- 5) Apply the RT 3.8 schema upgrades. Included in RT is the script
-    etc/upgrade/upgrade-mysql-schema.pl that will generate the
-    appropriate SQL queries:
+Configure the new MySQL to use Latin1 as the default character set everywhere,
+not UTF-8.  This is necessary so the import in the next step assumes the data
+is Latin1.
 
-        perl etc/upgrade/upgrade-mysql-schema.pl db user pass > queries.sql
+=item 1c.
 
-    If your mysql database is on a remote host, you can run the script
-    like this instead:
+Import the dump made in step 1a into the new MySQL server, using the
+--default-character-set=binary option on restore.  This will ensure that the
+data is imported as bytes, which will be interpreted as Latin1 thanks to step
+1b above.
 
-        perl etc/upgrade/upgrade-mysql-schema.pl db:host user pass > queries.sql
+=item 1d.
 
- 6) Check the sanity of the SQL queries in the queries.sql file
-    yourself, or consult with your DBA.
+Test that your RT works as expected on this new database.
 
- 7) Apply the queries. Note that this step can take a while; it may also
-    require additional space on your hard drive comparable with size of
-    your tables.
+=back
 
-        mysql -u root -p rt3 < queries.sql
+=item 2.
 
-    NOTE that 'rt3' is the default name of the RT database, change it in
-    the command above if your database is named differently.
+Backup RT's database using --default-character-set=binary  Furthermore, test
+that you can restore from this backup.
 
-    This step should not produce any errors or warnings. If you see any,
-    restore your database from the backup you made at step 1, and send a
-    report to the rt-users@lists.bestpractical.com mailing list.
+=item 3.
 
- 8) Re-run the `make upgrade-database` command from step 6b of the
-    README, applying the rest of the upgrades, starting with 3.7.87, and
-    follow the README's remaining steps.
+Follow instructions in the README file to step 6b.
 
- 9) Test everything. The most important parts you have to test:
-     * binary attachments, like docs, PDFs, and images
-     * binary custom fields
-     * everything that may contain characters other than ASCII
+=item 4.
 
-10) If you were upgrading from MySQL 4.0, you may now, if you wish,
-    reconfigure your newer MySQL instance to use UTF-8 as the default
-    character set, as step 7 above adjusted the character sets on all
-    existing tables to contain UTF-8 encoded data, rather than Latin1.
+Apply changes described in the README's step 6b, but only up to version
+3.7.87.
+
+=item 5.
+
+Apply the RT 3.8 schema upgrades. Included in RT is the script
+etc/upgrade/upgrade-mysql-schema.pl that will generate the appropriate SQL
+queries:
+
+    perl etc/upgrade/upgrade-mysql-schema.pl db user pass > queries.sql
+
+If your mysql database is on a remote host, you can run the script like this
+instead:
+
+    perl etc/upgrade/upgrade-mysql-schema.pl db:host user pass > queries.sql
+
+=item 6.
+
+Check the sanity of the SQL queries in the queries.sql file yourself, or
+consult with your DBA.
+
+=item 7.
+
+Apply the queries. Note that this step can take a while; it may also require
+additional space on your hard drive comparable with size of your tables.
+
+    mysql -u root -p rt3 < queries.sql
+
+NOTE that 'rt3' is the default name of the RT database, change it in the
+command above if your database is named differently.
+
+This step should not produce any errors or warnings. If you see any, restore
+your database from the backup you made at step 1, and send a report to the
+rt-users@lists.bestpractical.com mailing list.
+
+=item 8.
+
+Re-run the `make upgrade-database` command from step 6b of the README,
+applying the rest of the upgrades, starting with 3.7.87, and follow the
+README's remaining steps.
+
+=item 9.
+
+Test everything. The most important parts you have to test:
+
+=over
+
+=item *
+
+binary attachments, like docs, PDFs, and images
+
+=item *
+
+binary custom fields
+
+=item *
+
+everything that may contain characters other than ASCII
+
+=back
+
+
+=item 10.
+
+If you were upgrading from MySQL 4.0, you may now, if you wish, reconfigure
+your newer MySQL instance to use UTF-8 as the default character set, as step 7
+above adjusted the character sets on all existing tables to contain UTF-8
+encoded data, rather than Latin1.
+
+=back
