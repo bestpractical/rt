@@ -88,17 +88,21 @@ if (($opts{rt} || '') =~ /\.tar\.gz$/ and -f $opts{rt}) {
 }
 chdir $opts{rt} if $opts{rt};
 
-my @dirs = (qw(
-    docs
-    etc
-    lib
-    bin
-    sbin
-    devel/tools
-    local/lib
-    local/sbin
-    local/bin
-), glob("local/plugins/*/{lib,sbin,bin}"));
+my @dirs = (
+    qw(
+        docs
+        etc
+        lib
+        bin
+        sbin
+        devel/tools
+        local/lib
+        local/sbin
+        local/bin
+    ),
+    glob("local/plugins/*/{lib,sbin,bin}"),
+    glob("docs/UPGRADING*"),
+);
 
 my $converter = RT::Pod::HTMLBatch->new;
 
@@ -129,9 +133,9 @@ else {
     warn "Unable to generate a page for ./configure --help!\n";
 }
 
-# Manually "convert" README* and docs/UPGRADING* to HTML and push them into the
-# known contents.
-for my $file (<README* docs/UPGRADING* UPGRADING*>) {
+# Manually "convert" README* and 3.8-era UPGRADING* to HTML and push them into
+# the known contents.
+for my $file (<README* UPGRADING*>) {
     (my $name = $file) =~ s{^.+/}{};
     my $dest = "$opts{to}/$name.html";
 
@@ -150,8 +154,20 @@ for my $file (<README* docs/UPGRADING* UPGRADING*>) {
     $converter->note_for_contents_file([$name], $file, $dest);
 }
 
+# Temporarily set executable bits on upgrading doc to work around
+# Pod::Simple::Search limitation/bug:
+#    https://rt.cpan.org/Ticket/Display.html?id=80082
+sub system_chmod {
+    system("chmod", @_) == 0
+        or die "Unable to chmod: $! (exit $?)";
+}
+system_chmod("+x", $_) for <docs/UPGRADING*>;
+
 # Convert each POD file to HTML
 $converter->batch_convert( \@dirs, $opts{to} );
+
+# Remove execution bit from workaround above
+system_chmod("-x", $_) for <docs/UPGRADING*>;
 
 # Need to chdir back out, if we are in the tmpdir, to let it clean up
 chdir "/" if $tmpdir;
