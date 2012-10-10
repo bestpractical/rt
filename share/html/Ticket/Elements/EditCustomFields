@@ -58,7 +58,7 @@ $m->callback( %ARGS, CallbackName => 'MassageCustomFields', CustomFields => $Cus
 
 return $m->comp('/Elements/EditCustomFields',
     %ARGS,
-    Object => $TicketObj || RT::Ticket->new( $session{'CurrenUser'} ),
+    Object => $TicketObj || RT::Ticket->new( $session{'CurrentUser'} ),
     CustomFields => $CustomFields,
 );
 
