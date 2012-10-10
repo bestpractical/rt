@@ -88,7 +88,12 @@
 </tr>
 <tr>
     <td colspan="2">
-        <& /Ticket/Elements/EditCustomFields, %ARGS, QueueObj => $queue_obj &>
+        <& /Elements/EditCustomFields,
+            %ARGS,
+            Object          => RT::Ticket->new($session{CurrentUser}),
+            CustomFields    => $queue_obj->TicketCustomFields,
+            AsTable         => 0,
+            &>
     </td>
 </tr>
 <tr>

@@ -321,7 +321,12 @@ $showrows->(
 
 </%perl>
 
-<& /Ticket/Elements/EditCustomFields, %ARGS, QueueObj => $QueueObj &>
+<& /Elements/EditCustomFields,
+    %ARGS,
+    Object          => RT::Ticket->new($session{CurrentUser}),
+    CustomFields    => $QueueObj->TicketCustomFields,
+    AsTable         => 0,
+    &>
 <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, QueueObj => $QueueObj &>
 
 % if (exists $session{'Attachments'}) {
