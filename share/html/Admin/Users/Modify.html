@@ -317,7 +317,7 @@ if ($UserObj->Id && $id ne 'new') {
 
 
     # {{{ Deal with special fields: Privileged, Enabled
-    if  ( $SetPrivileged and $Privileged != $UserObj->Privileged ) {
+    if  ( $SetPrivileged and $Privileged != ($UserObj->Privileged || 0) ) {
          my ($code, $msg) = $UserObj->SetPrivileged($Privileged);
          push @results, loc('Privileged status: [_1]', loc_fuzzy($msg));
     }
@@ -378,7 +378,7 @@ $FreeformContactInfo => undef
 $Organization  => undef
 $RealName  => undef
 $NickName  => undef
-$Privileged => undef
+$Privileged => 0
 $SetPrivileged => undef
 $Enabled => undef
 $SetEnabled => undef
