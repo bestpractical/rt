@@ -68,8 +68,8 @@ sub import {
     $t->plan( skip_all => 'gpg executable is required.' )
       unless RT::Test->find_executable('gpg');
 
-    require RT::Crypt::GnuPG;
     $class->SUPER::import(%args);
+    require RT::Crypt::GnuPG;
 
     RT::Test::diag "GnuPG --homedir " . RT->Config->Get('GnuPGOptions')->{'homedir'};
 
