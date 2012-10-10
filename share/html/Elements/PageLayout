@@ -50,6 +50,11 @@
 <div id="page-navigation"><& /Elements/Menu, menu => PageMenu(), id => 'page-menu', 'parent_id' => 'page' &></div>
 % }
 <div id="topactions"><& /Elements/WidgetBar, menu => PageWidgets() &></div>
+
+% if ($m->comp_exists($stylesheet_plugin) ) {
+<& $stylesheet_plugin &>
+% }
+
 <div id="body">
 % $m->callback( %ARGS, CallbackName => 'BeforeBody' );
 % $m->flush_buffer(); # we've got the page laid out, let's flush the buffer;
@@ -57,3 +62,9 @@
 $title => $m->callers(-1)->path
 $show_menu => 1
 </%ARGS>
+<%init>
+my $style = $session{'CurrentUser'}
+          ? $session{'CurrentUser'}->Stylesheet
+          : RT->Config->Get('WebDefaultStylesheet');
+my $stylesheet_plugin = "/NoAuth/css/".$style."/AfterMenus";
+</%init>
