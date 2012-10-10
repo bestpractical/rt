@@ -75,6 +75,7 @@ GetOptions(
     'with-DASHBOARDS',
     'with-USERLOGO',
     'with-SSL-MAILGATE',
+    'with-HTML-DOC',
 
     'download=s',
     'repository=s',
@@ -104,6 +105,7 @@ my %default = (
     'with-DASHBOARDS' => 1,
     'with-USERLOGO' => 1,
     'with-SSL-MAILGATE' => @RT_SSL_MAILGATE@,
+    'with-HTML-DOC' => @RT_DEVEL_MODE@,
 );
 $args{$_} = $default{$_} foreach grep !exists $args{$_}, keys %default;
 
@@ -356,6 +358,11 @@ GD::Text
 
 $deps{'USERLOGO'} = [ text_to_hash( << '.') ];
 Convert::Color
+.
+
+$deps{'HTML-DOC'} = [ text_to_hash( <<'.') ];
+Pod::Simple 3.17
+HTML::Entities
 .
 
 my %AVOID = (

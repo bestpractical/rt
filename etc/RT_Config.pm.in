@@ -1735,11 +1735,11 @@ Set($ForceApprovalsView, 0);
 
 =head1 Extra security
 
-=over 4
-
 This is a list of extra security measures to enable that help keep your RT
 safe.  If you don't know what these mean, you should almost certainly leave the
 defaults alone.
+
+=over 4
 
 =item C<$DisallowExecuteCode>
 
@@ -2707,6 +2707,8 @@ Set($LinkTransactionsRun1Scrip, 0);
 
 This option has been deprecated.  You can configure this site-wide
 with L</Lifecycles> (see L</Labeling and defining actions>).
+
+=back
 
 =cut
 
