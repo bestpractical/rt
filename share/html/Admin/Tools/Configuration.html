@@ -259,18 +259,34 @@ if ($item =~ /^\s*(.*?)\s*v(\S+);/) {
 <&|/Widgets/TitleBox, title => loc("Operating System") &>
 <table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection">
 <%perl>
-my %os = (
+my @os = (
     "Distribution"   => 'lsb_release --all',
     "uname -a"       => 'uname -a',
     "SELinux status" => 'getenforce',
+    "Apache"         => [map { "$_ -V" } qw(apache2ctl apachectl httpdctl)],
+    "nginx"          => 'nginx -V 2>&1',
+    "lighttpd"       => 'lighttpd -V',
 );
+my @os_info;
+
+while (my ($name, $cmd) = splice @os, 0, 2) {
+    $cmd = [$cmd] unless ref $cmd eq 'ARRAY';
+    for my $run (@$cmd) {
+        $run .= " </dev/null";
+        $run .= " 2>/dev/null" unless $run =~ /2>/;
+        my $result = `$run`;
+        if (defined $result and $result =~ /\S/) {
+            push @os_info, $name => $result;
+            last;
+        }
+    }
+}
 my $row = 0;
 </%perl>
-% while (my ($name, $cmd) = each %os) {
-% my $res = `$cmd </dev/null 2>/dev/null` or next;
+% while (my ($name, $output) = splice @os_info, 0, 2) {
 <tr class="collection-as-table <% $row++ % 2 ? "oddline" : "evenline" %>">
 <td class="collection-as-table"><% $name %></td>
-<td class="collection-as-table" style="white-space: pre-wrap; font-family: monospace"><% $res %></td>
+<td class="collection-as-table" style="white-space: pre-wrap; font-family: monospace"><% $output %></td>
 </tr>
 % }
 </table>
