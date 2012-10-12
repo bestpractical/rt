@@ -562,6 +562,7 @@ sub GetResource {
     sub new { bless {}, shift }
     sub header_out { shift }
     sub headers_out { shift }
+    sub err_headers_out { shift }
     sub content_type {
         my $self = shift;
         $self->{content_type} = shift if @_;
