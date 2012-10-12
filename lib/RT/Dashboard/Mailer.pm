@@ -560,9 +560,9 @@ sub GetResource {
 {
     package RT::Dashboard::FakeRequest;
     sub new { bless {}, shift }
-    sub header_out { shift }
-    sub headers_out { shift }
-    sub err_headers_out { shift }
+    sub header_out { return undef }
+    sub headers_out { wantarray ? () : {} }
+    sub err_headers_out { wantarray ? () : {} }
     sub content_type {
         my $self = shift;
         $self->{content_type} = shift if @_;
