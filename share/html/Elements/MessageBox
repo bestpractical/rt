@@ -48,7 +48,7 @@
 <textarea autocomplete="off" class="messagebox" <% $width_attr %>="<% $Width %>" rows="<% $Height %>" <% $wrap_type |n %> name="<% $Name %>" id="<% $Name %>">\
 % $m->comp('/Articles/Elements/IncludeArticle', %ARGS) if $IncludeArticle;
 % $m->callback( %ARGS, SignatureRef => \$signature );
-<% $Default || '' %><% RT->Config->Get('MessageBoxIncludeSignatureBeforeQuote') ? ( $signature . ( $message =~ /\S/ ? "\n$message" : $message ) ) : ( $message . $signature ) %></textarea>
+<% $Default || '' %><% RT->Config->Get('MessageBoxIncludeSignatureBeforeQuote', $session{CurrentUser}) ? ( $signature . ( $message =~ /\S/ ? "\n$message" : $message ) ) : ( $message . $signature ) %></textarea>
 % $m->callback( %ARGS, CallbackName => 'AfterTextArea' );
 <%INIT>
 

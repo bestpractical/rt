@@ -271,6 +271,15 @@ our %META = (
             Hints => "When the WYSIWYG editor is not enabled, this setting determines whether automatic line wraps in the ticket message box are sent to RT or not.",              # loc
         },
     },
+    MessageBoxIncludeSignatureBeforeQuote => {
+        Section         => 'Ticket composition', #loc
+        Overridable     => 1,
+        SortOrder       => 8.2,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Message box includes signature before quote', #loc
+        },
+    },
     DefaultTimeUnitsToHours => {
         Section         => 'Ticket composition', #loc
         Overridable     => 1,
