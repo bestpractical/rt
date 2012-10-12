@@ -276,6 +276,15 @@ our %META;
             Description => 'Message box height',          #loc
         },
     },
+    MessageBoxIncludeSignatureBeforeQuote => {
+        Section         => 'Ticket composition', #loc
+        Overridable     => 1,
+        SortOrder       => 8.2,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Message box includes signature before quote', #loc
+        },
+    },
     DefaultTimeUnitsToHours => {
         Section         => 'Ticket composition', #loc
         Overridable     => 1,
