@@ -1500,6 +1500,16 @@ C<$MessageBoxIncludeSignature>.
 
 Set($MessageBoxIncludeSignatureOnComment, 1);
 
+=item C<$MessageBoxIncludeSignatureBeforeQuote>
+
+Should your users' signatures (from their Preferences page) be
+included before quoted text
+
+=cut
+
+Set($MessageBoxIncludeSignatureBeforeQuote, 0);
+
+
 =back
 
 
