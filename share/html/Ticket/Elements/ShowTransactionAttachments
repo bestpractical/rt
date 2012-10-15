@@ -59,6 +59,8 @@ foreach my $message ( grep $_->__Value('Parent') == $Parent, @$Attachments ) {
               DisplayHeaders => \@DisplayHeaders,
             );
 
+    next unless $ShowBody;
+
     my $size = $message->ContentLength;
     my $name = defined $message->Filename && length $message->Filename ?  $message->Filename : '';
     if ( $size ) {
