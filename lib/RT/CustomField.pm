@@ -1260,11 +1260,7 @@ If called on an unloaded object, all potential groupings are returned.
 
 sub Groupings {
     my $self = shift;
-    my $record = shift;
-
-    my $record_class = ref($record) || $record || '';
-    $record_class = $self->RecordClassFromLookupType
-        if !$record_class && $self->id;
+    my $record_class = $self->_GroupingClass(shift);
 
     my $config = RT->Config->Get('CustomFieldGroupings');
        $config = {} unless ref($config) eq 'HASH';
@@ -1323,13 +1319,19 @@ returned list.
 
 sub CustomGroupings {
     my $self = shift;
-    my $record = shift;
+    my $record_class = $self->_GroupingClass(shift);
+    return grep !$BUILTIN_GROUPINGS{$record_class}{$_}, $self->Groupings( $record_class );
+}
+
+sub _GroupingClass {
+    my $self    = shift;
+    my $record  = shift;
 
     my $record_class = ref($record) || $record || '';
     $record_class = $self->RecordClassFromLookupType
         if !$record_class && $self->id;
 
-    return grep !$BUILTIN_GROUPINGS{$record_class}{$_}, $self->Groupings( $record_class );
+    return $record_class;
 }
 
 =head1 ApplyGlobally
