@@ -1243,6 +1243,21 @@ sub CollectionClassFromLookupType {
     return $collection_class;
 }
 
+=head2 Groupings
+
+Returns a (sorted and lowercased) list of the groupings in which this custom
+field appears.
+
+If called on a loaded object, the returned list is limited to groupings which
+apply to the record class this CF applies to (L</RecordClassFromLookupType>).
+
+If passed a loaded object or a class name, the returned list is limited to
+groupings which apply to the class of the object or the specified class.
+
+If called on an unloaded object, all potential groupings are returned.
+
+=cut
+
 sub Groupings {
     my $self = shift;
     my $record = shift;
@@ -1268,6 +1283,22 @@ sub Groupings {
         @groups;
 }
 
+=head2 RegisterBuiltInGroupings
+
+Registers groupings to be considered a fundamental part of RT, either via use
+in core RT or via an extension.  These groupings must be rendered explicitly in
+Mason by specific calls to F</Elements/ShowCustomFields> and
+F</Elements/EditCustomFields>.  They will not show up automatically on normal
+display pages like configured custom groupings.
+
+Takes a set of key-value pairs of class names (valid L<RT::Record> subclasses)
+and array refs of grouping names to consider built-in.
+
+If a class already contains built-in groupings (such as L<RT::Ticket> and
+L<RT::User>), new groupings are appended.
+
+=cut
+
 my %BUILTIN_GROUPINGS;
 sub RegisterBuiltInGroupings {
     my $self = shift;
@@ -1282,6 +1313,13 @@ sub RegisterBuiltInGroupings {
     }
     $BUILTIN_GROUPINGS{''} = { map { %$_ } values %BUILTIN_GROUPINGS  };
 }
+
+=head2 CustomGroupings
+
+Identical to L</Groupings> but filters out built-in groupings from the the
+returned list.
+
+=cut
 
 sub CustomGroupings {
     my $self = shift;

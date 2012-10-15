@@ -96,6 +96,25 @@ sub _Init {
     return ( $self->SUPER::_Init(@_) );
 }
 
+=head2 LimitToGrouping
+
+Limits this collection object to custom fields which appear under a
+specified grouping by calling L</Limit> for each CF name as appropriate.
+
+Requires an L<RT::Record> object or class name as the first argument and
+accepts a grouping name as the second.  If the grouping name is false
+(usually via the empty string), limits to custom fields which appear in no
+grouping.
+
+I<Caveat:> While the record object or class name is used to find the
+available groupings, no automatic limit is placed on the lookup type of
+the custom fields.  It's highly suggested you limit the collection by
+queue or another lookup type first.  This is already done for you if
+you're creating the collection via the L</CustomFields> method on an
+L<RT::Record> object.
+
+=cut
+
 sub LimitToGrouping {
     my $self = shift;
     my $obj = shift;
