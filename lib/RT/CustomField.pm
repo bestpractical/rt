@@ -201,6 +201,11 @@ RT::CustomField->_ForObjectType( 'RT::User'  => "Users", );                     
 RT::CustomField->_ForObjectType( 'RT::Queue'  => "Queues", );                         #loc
 RT::CustomField->_ForObjectType( 'RT::Group' => "Groups", );                          #loc
 
+__PACKAGE__->RegisterBuiltInGroups(
+    'RT::Ticket'    => [ qw(Basics Dates Links People) ],
+    'RT::User'      => [ 'Identity', 'Access control', 'Location', 'Phones' ],
+);
+
 our $RIGHTS = {
     SeeCustomField            => 'View custom fields',                                    # loc_pair
     AdminCustomField          => 'Create, modify and delete custom fields',               # loc_pair
@@ -1269,11 +1274,17 @@ sub Groups {
         @groups;
 }
 
-our %BUILTIN_GROUPS = (
-    'RT::Ticket' => { map { $_ => 1 } qw(Basics Dates Links People) },
-    'RT::User' => { map { $_ => 1 } 'Identity', 'Access control', 'Location', 'Phones' },
-);
-$BUILTIN_GROUPS{''} = { map { %$_ } values %BUILTIN_GROUPS  };
+my %BUILTIN_GROUPS;
+sub RegisterBuiltInGroups {
+    my $self = shift;
+    my %new  = @_;
+
+    while (my ($k,$v) = each %new) {
+        $v = [$v] unless ref($v) eq 'ARRAY';
+        $BUILTIN_GROUPS{$k} = { map { $_ => 1 } @$v };
+    }
+    $BUILTIN_GROUPS{''} = { map { %$_ } values %BUILTIN_GROUPS  };
+}
 
 sub CustomGroups {
     my $self = shift;
