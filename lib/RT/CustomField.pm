@@ -1279,6 +1279,30 @@ sub Groupings {
         @groups;
 }
 
+=head2 CustomGroupings
+
+Identical to L</Groupings> but filters out built-in groupings from the the
+returned list.
+
+=cut
+
+sub CustomGroupings {
+    my $self = shift;
+    my $record_class = $self->_GroupingClass(shift);
+    return grep !$BUILTIN_GROUPINGS{$record_class}{$_}, $self->Groupings( $record_class );
+}
+
+sub _GroupingClass {
+    my $self    = shift;
+    my $record  = shift;
+
+    my $record_class = ref($record) || $record || '';
+    $record_class = $self->RecordClassFromLookupType
+        if !$record_class && $self->id;
+
+    return $record_class;
+}
+
 =head2 RegisterBuiltInGroupings
 
 Registers groupings to be considered a fundamental part of RT, either via use
@@ -1308,30 +1332,6 @@ sub RegisterBuiltInGroupings {
         };
     }
     $BUILTIN_GROUPINGS{''} = { map { %$_ } values %BUILTIN_GROUPINGS  };
-}
-
-=head2 CustomGroupings
-
-Identical to L</Groupings> but filters out built-in groupings from the the
-returned list.
-
-=cut
-
-sub CustomGroupings {
-    my $self = shift;
-    my $record_class = $self->_GroupingClass(shift);
-    return grep !$BUILTIN_GROUPINGS{$record_class}{$_}, $self->Groupings( $record_class );
-}
-
-sub _GroupingClass {
-    my $self    = shift;
-    my $record  = shift;
-
-    my $record_class = ref($record) || $record || '';
-    $record_class = $self->RecordClassFromLookupType
-        if !$record_class && $self->id;
-
-    return $record_class;
 }
 
 =head1 ApplyGlobally
