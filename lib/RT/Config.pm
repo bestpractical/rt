@@ -815,7 +815,7 @@ EOT
             my $groups = $config->Get('CustomFieldGroupings') || {};
 
             unless (ref($groups) eq 'HASH') {
-                RT->Logger->error("Config option %CustomFieldGroupings is a @{[ref $groups]} not a HASH; ignoring");
+                RT->Logger->error("Config option \%CustomFieldGroupings is a @{[ref $groups]} not a HASH; ignoring");
                 $groups = {};
             }
 
