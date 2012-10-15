@@ -54,7 +54,7 @@
         class => 'ticket-info-basics',
     &><& /Ticket/Elements/ShowBasics, Ticket => $Ticket &></&>
 
-    <& /Elements/ShowCustomFieldCustomGroups,
+    <& /Elements/ShowCustomFieldCustomGroupings,
         Object       => $Ticket,
         TitleBoxARGS => {
             (($can_modify || $can_modify_cf)

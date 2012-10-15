@@ -2716,7 +2716,7 @@ with L</Lifecycles> (see L</Labeling and defining actions>).
 
 =cut
 
-Set(%CustomFieldGroups,
+Set(%CustomFieldGroupings,
     'RT::Ticket' => {
         Basics => [],
         Dates => [],

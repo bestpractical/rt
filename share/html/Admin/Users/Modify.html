@@ -98,7 +98,7 @@
 </td><td>
 <textarea name="FreeformContactInfo" cols="20" rows="5"><%$UserObj->FreeformContactInfo||$FreeformContactInfo||''%></textarea>
 </td></tr>
-<& /Elements/EditCustomFields, Object => $UserObj, Group => 'Identity', InTable => 1 &>
+<& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Identity', InTable => 1 &>
 </table>
 </&>
 
@@ -117,7 +117,7 @@
     Name => [qw(CurrentPass Pass1 Pass2)],
 &>
 
-<& /Elements/EditCustomFields, Object => $UserObj, Group => 'Access control' &>
+<& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Access control' &>
 
 </&>
 % $m->callback( %ARGS, CallbackName => 'LeftColumnBottom', UserObj => $UserObj );
@@ -164,7 +164,7 @@
 <input name="Country" value="<%$UserObj->Country||$Country||''%>" />
 </td></tr>
 
-<& /Elements/EditCustomFields, Object => $UserObj, Group => 'Location', InTable => 1 &>
+<& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Location', InTable => 1 &>
 
 </table>
 </&>
@@ -193,13 +193,13 @@
 </td>
 </tr>
 
-<& /Elements/EditCustomFields, Object => $UserObj, Group => 'Phones', InTable => 1 &>
+<& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Phones', InTable => 1 &>
 
 </table>
 </&>
 <br />
 
-<& /Elements/EditCustomFieldCustomGroups, Object => $UserObj &>
+<& /Elements/EditCustomFieldCustomGroupings, Object => $UserObj &>
 
 % $m->callback( %ARGS, CallbackName => 'RightColumnBottom', UserObj => $UserObj );
 </td></tr>

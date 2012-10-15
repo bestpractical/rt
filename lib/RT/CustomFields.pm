@@ -96,17 +96,17 @@ sub _Init {
     return ( $self->SUPER::_Init(@_) );
 }
 
-sub LimitToGroup {
+sub LimitToGrouping {
     my $self = shift;
     my $obj = shift;
-    my $group = shift;
+    my $grouping = shift;
 
-    my $config = RT->Config->Get('CustomFieldGroups');
+    my $config = RT->Config->Get('CustomFieldGroupings');
        $config = {} unless ref($config) eq 'HASH';
        $config = $config->{ref($obj) || $obj} || {};
 
-    if ( $group ) {
-        my $list = $config->{$group};
+    if ( $grouping ) {
+        my $list = $config->{$grouping};
         unless ( $list and ref($list) eq 'ARRAY' and @$list ) {
             return $self->Limit( FIELD => 'id', VALUE => 0, ENTRYAGGREGATOR => 'AND' );
         }

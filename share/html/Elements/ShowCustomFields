@@ -83,7 +83,7 @@ $m->callback(
     CustomFields => $CustomFields,
 );
 
-$CustomFields->LimitToGroup( $Object => $Group ) if defined $Group;
+$CustomFields->LimitToGrouping( $Object => $Grouping ) if defined $Grouping;
 
 # don't print anything if there is no custom fields
 return unless $CustomFields->First;
@@ -129,6 +129,6 @@ my $print_value = sub {
 <%ARGS>
 $Object => undef
 $CustomFields => $Object->CustomFields
-$Group => undef
+$Grouping => undef
 $Table => 1
 </%ARGS>

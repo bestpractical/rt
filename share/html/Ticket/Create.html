@@ -105,7 +105,7 @@
           %ARGS,
           Object => $ticket,
           CustomFields => $QueueObj->TicketCustomFields,
-          Group => 'Basics',
+          Grouping => 'Basics',
           InTable => 1,
       &>
       <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, QueueObj => $QueueObj, InTable => 1 &>
@@ -113,7 +113,7 @@
   </&>
 % $m->callback( CallbackName => 'AfterBasics', QueueObj => $QueueObj, ARGSRef => \%ARGS );
 
-<& /Elements/EditCustomFieldCustomGroups,
+<& /Elements/EditCustomFieldCustomGroupings,
     %ARGS,
     Object => $ticket,
     CustomFields => $QueueObj->TicketCustomFields,
@@ -170,7 +170,7 @@
     %ARGS,
     Object => $ticket,
     CustomFields => $QueueObj->TicketCustomFields,
-    Group => 'People',
+    Grouping => 'People',
     InTable => 1,
 &>
 
@@ -264,7 +264,7 @@
     %ARGS,
     Object => $ticket,
     CustomFields => $QueueObj->TicketCustomFields,
-    Group => 'Dates',
+    Grouping => 'Dates',
     InTable => 1,
 &>
 </table>
@@ -290,7 +290,7 @@
     %ARGS,
     Object => $ticket,
     CustomFields => $QueueObj->TicketCustomFields,
-    Group => 'Links',
+    Grouping => 'Links',
     InTable => 1,
 &>
 </table>

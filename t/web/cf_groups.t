@@ -3,7 +3,7 @@ use warnings;
 
 use RT::Test tests => 67;
 
-RT->Config->Set( 'CustomFieldGroups',
+RT->Config->Set( 'CustomFieldGroupings',
     'RT::Ticket' => {
         Basics => ['TestBasics'],
         Dates  => ['TestDates'],
@@ -15,7 +15,7 @@ RT->Config->Set( 'CustomFieldGroups',
 
 my %CF;
 
-foreach my $name ( map { @$_ } values %{ RT->Config->Get('CustomFieldGroups')->{'RT::Ticket'} } ) {
+foreach my $name ( map { @$_ } values %{ RT->Config->Get('CustomFieldGroupings')->{'RT::Ticket'} } ) {
     my $cf = RT::CustomField->new( RT->SystemUser );
     my ($id, $msg) = $cf->Create(
         Name => $name,

@@ -82,7 +82,7 @@
 $NamePrefix   ||= join '-', 'Object', ref($Object), ($Object->Id || ''), 'CustomField', '';
 $CustomFields ||= $Object->CustomFields;
 
-$CustomFields->LimitToGroup( $Object => $Group ) if defined $Group;
+$CustomFields->LimitToGrouping( $Object => $Grouping ) if defined $Grouping;
 
 $m->callback( %ARGS, CallbackName => 'MassageCustomFields', $CustomFields => $CustomFields );
 
@@ -105,7 +105,7 @@ if ( $AsTable ) {
 $Object
 $CustomFields => undef
 $NamePrefix   => ''
-$Group        => undef
+$Grouping     => undef
 $AsTable => 1
 $InTable => 0
 </%ARGS>

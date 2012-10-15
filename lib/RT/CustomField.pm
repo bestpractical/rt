@@ -201,7 +201,7 @@ RT::CustomField->_ForObjectType( 'RT::User'  => "Users", );                     
 RT::CustomField->_ForObjectType( 'RT::Queue'  => "Queues", );                         #loc
 RT::CustomField->_ForObjectType( 'RT::Group' => "Groups", );                          #loc
 
-__PACKAGE__->RegisterBuiltInGroups(
+__PACKAGE__->RegisterBuiltInGroupings(
     'RT::Ticket'    => [ qw(Basics Dates Links People) ],
     'RT::User'      => [ 'Identity', 'Access control', 'Location', 'Phones' ],
 );
@@ -1243,7 +1243,7 @@ sub CollectionClassFromLookupType {
     return $collection_class;
 }
 
-sub Groups {
+sub Groupings {
     my $self = shift;
     my $record = shift;
 
@@ -1251,7 +1251,7 @@ sub Groups {
     $record_class = $self->RecordClassFromLookupType
         if !$record_class && $self->id;
 
-    my $config = RT->Config->Get('CustomFieldGroups');
+    my $config = RT->Config->Get('CustomFieldGroupings');
        $config = {} unless ref($config) eq 'HASH';
 
     my @groups;
@@ -1268,22 +1268,22 @@ sub Groups {
         @groups;
 }
 
-my %BUILTIN_GROUPS;
-sub RegisterBuiltInGroups {
+my %BUILTIN_GROUPINGS;
+sub RegisterBuiltInGroupings {
     my $self = shift;
     my %new  = @_;
 
     while (my ($k,$v) = each %new) {
         $v = [$v] unless ref($v) eq 'ARRAY';
-        $BUILTIN_GROUPS{$k} = {
-            %{$BUILTIN_GROUPS{$k} || {}},
+        $BUILTIN_GROUPINGS{$k} = {
+            %{$BUILTIN_GROUPINGS{$k} || {}},
             map { $_ => 1 } @$v
         };
     }
-    $BUILTIN_GROUPS{''} = { map { %$_ } values %BUILTIN_GROUPS  };
+    $BUILTIN_GROUPINGS{''} = { map { %$_ } values %BUILTIN_GROUPINGS  };
 }
 
-sub CustomGroups {
+sub CustomGroupings {
     my $self = shift;
     my $record = shift;
 
@@ -1291,7 +1291,7 @@ sub CustomGroups {
     $record_class = $self->RecordClassFromLookupType
         if !$record_class && $self->id;
 
-    return grep !$BUILTIN_GROUPS{$record_class}{$_}, $self->Groups( $record_class );
+    return grep !$BUILTIN_GROUPINGS{$record_class}{$_}, $self->Groupings( $record_class );
 }
 
 =head1 ApplyGlobally

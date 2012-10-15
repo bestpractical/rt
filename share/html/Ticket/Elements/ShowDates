@@ -84,7 +84,7 @@
     <td class="value"><% $UpdatedString | n %></td>
 % }
   </tr>
-  <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Group => 'Dates', Table => 0 &>
+  <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Grouping => 'Dates', Table => 0 &>
 % $m->callback( %ARGS, CallbackName => 'EndOfList', TicketObj => $Ticket );
 </table>
 <%ARGS>
