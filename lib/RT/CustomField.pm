@@ -1281,7 +1281,10 @@ sub RegisterBuiltInGroups {
 
     while (my ($k,$v) = each %new) {
         $v = [$v] unless ref($v) eq 'ARRAY';
-        $BUILTIN_GROUPS{$k} = { map { $_ => 1 } @$v };
+        $BUILTIN_GROUPS{$k} = {
+            %{$BUILTIN_GROUPS{$k} || {}},
+            map { $_ => 1 } @$v
+        };
     }
     $BUILTIN_GROUPS{''} = { map { %$_ } values %BUILTIN_GROUPS  };
 }
