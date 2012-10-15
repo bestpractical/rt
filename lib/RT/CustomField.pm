@@ -1243,12 +1243,6 @@ sub CollectionClassFromLookupType {
     return $collection_class;
 }
 
-
-sub Group {
-
-
-}
-
 sub Groups {
     my $self = shift;
     my $record = shift;
