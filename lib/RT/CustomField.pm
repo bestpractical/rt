@@ -57,7 +57,7 @@ use base 'RT::Record';
 
 sub Table {'CustomFields'}
 
-
+use Scalar::Util qw(blessed);
 use RT::CustomFieldValues;
 use RT::ObjectCustomFields;
 use RT::ObjectCustomFieldValues;
@@ -1301,7 +1301,7 @@ sub _GroupingClass {
 
     my $record_class = ref($record) || $record || '';
     $record_class = $self->RecordClassFromLookupType
-        if !$record_class && $self->id;
+        if !$record_class and blessed($self) and $self->id;
 
     return $record_class;
 }
