@@ -192,6 +192,7 @@ our %FieldTypes = (
 );
 
 
+my %BUILTIN_GROUPINGS;
 our %FRIENDLY_OBJECT_TYPES =  ();
 
 RT::CustomField->_ForObjectType( 'RT::Queue-RT::Ticket' => "Tickets", );    #loc
@@ -1267,9 +1268,11 @@ sub Groupings {
 
     my @groups;
     if ( $record_class ) {
-        @groups = keys %{ $config->{$record_class} };
+        push @groups, keys %{ $config->{$record_class} || {} };
+        push @groups, keys %{ $BUILTIN_GROUPINGS{$record_class} || {} };
     } else {
-        @groups = map { keys %$_ } values %$config;
+        push @groups, map { keys %$_ } values %$config;
+        push @groups, map { keys %$_ } values %BUILTIN_GROUPINGS;
     }
 
     my %seen;
@@ -1319,7 +1322,6 @@ L<RT::User>), new groupings are appended.
 
 =cut
 
-my %BUILTIN_GROUPINGS;
 sub RegisterBuiltInGroupings {
     my $self = shift;
     my %new  = @_;

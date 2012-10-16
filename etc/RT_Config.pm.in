@@ -2749,19 +2749,4 @@ with L</Lifecycles> (see L</Labeling and defining actions>).
 
 =cut
 
-Set(%CustomFieldGroupings,
-    'RT::Ticket' => {
-        Basics => [],
-        Dates => [],
-        People => [],
-        Links   => [],
-    },
-    'RT::User' => {
-        Identity => [],
-        'Access control' => [],
-        Location => [],
-        Phones   => [],
-    },
-);
-
 1;
