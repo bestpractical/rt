@@ -1461,6 +1461,10 @@ sub Gateway {
 
     $args{'ticket'} ||= ExtractTicketId( $Message );
 
+    # ExtractTicketId may have been overridden, and edited the Subject
+    my $NewSubject = $Message->head->get('Subject');
+    chomp $NewSubject;
+
     $SystemTicket = RT::Ticket->new( RT->SystemUser );
     $SystemTicket->Load( $args{'ticket'} ) if ( $args{'ticket'} ) ;
     if ( $SystemTicket->id ) {
@@ -1547,7 +1551,7 @@ sub Gateway {
 
         my ( $id, $Transaction, $ErrStr ) = $Ticket->Create(
             Queue     => $SystemQueueObj->Id,
-            Subject   => $Subject,
+            Subject   => $NewSubject,
             Requestor => \@Requestors,
             Cc        => \@Cc,
             MIMEObj   => $Message
