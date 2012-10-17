@@ -408,9 +408,21 @@ sub IsApplicable {
 	    );
 
             if ( $ConditionObj->IsApplicable() ) {
-	        # We found an application Transaction -- return it
-                $return = $TransactionObj;
-                last;
+                # run scrip which condition isn't UserDefined only on tickets of type ticket
+                if ( $ConditionObj->ExecModule ne 'UserDefined'
+                  && $args{'TicketObj'}->Type ne 'ticket' ) {
+                    $RT::Logger->debug("We don't run scrip "
+                        . $self->Id
+                        . " which condition isn't UserDefined on ticket "
+                        . $args{'TicketObj'}->Id
+                        . " of type "
+                        . $args{'TicketObj'}->Type
+                    );
+                } else {
+	                # We found an application Transaction -- return it
+                    $return = $TransactionObj;
+                    last;
+                }
             }
 	}
     };
