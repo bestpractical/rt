@@ -1686,18 +1686,9 @@ sub CreateTicket {
         }
     }
 
-    # turn new link lists into arrays, and pass in the proper arguments
-    foreach my $type ( keys %RT::Link::DIRMAP ) {
-        for ([Base => "new-$type"], [Target => "$type-new"]) {
-            my ($direction, $key) = @$_;
-            next unless $ARGS{$key};
-            $create_args{ $RT::Link::DIRMAP{$type}->{$direction} } = [
-                grep $_, split ' ', $ARGS{$key}
-            ];
-        }
-    }
+    my %links = ProcessLinksForCreate( ARGSRef => \%ARGS );
 
-    my ( $id, $Trans, $ErrMsg ) = $Ticket->Create(%create_args);
+    my ( $id, $Trans, $ErrMsg ) = $Ticket->Create(%create_args, %links);
     unless ($id) {
         Abort($ErrMsg);
     }
@@ -2908,6 +2899,41 @@ sub ProcessRecordLinks {
     }
 
     return (@results);
+}
+
+=head2 ProcessLinksForCreate
+
+Takes a hash with a single key, C<ARGSRef>, the value of which is a hashref to
+C<%ARGS>.
+
+Converts and returns submitted args in the form of C<new-LINKTYPE> and
+C<LINKTYPE-new> into their appropriate directional link types.  For example,
+C<new-DependsOn> becomes C<DependsOn> and C<DependsOn-new> becomes
+C<DependedOnBy>.  The incoming arg values are split on whitespace and
+normalized into arrayrefs before being returned.
+
+Primarily used by object creation pages for transforming incoming form inputs
+from F</Elements/EditLinks> into arguments appropriate for individual record
+Create methods.
+
+Returns a hashref in scalar context and a hash in list context.
+
+=cut
+
+sub ProcessLinksForCreate {
+    my %args = @_;
+    my %links;
+
+    foreach my $type ( keys %RT::Link::DIRMAP ) {
+        for ([Base => "new-$type"], [Target => "$type-new"]) {
+            my ($direction, $key) = @$_;
+            next unless $args{ARGSRef}->{$key};
+            $links{ $RT::Link::DIRMAP{$type}->{$direction} } = [
+                grep $_, split ' ', $args{ARGSRef}->{$key}
+            ];
+        }
+    }
+    return wantarray ? %links : \%links;
 }
 
 =head2 _UploadedFile ( $arg );
