@@ -303,7 +303,7 @@ if ($chart_class eq "GD::Graph::bars") {
         y_label => $report->Label( $columns{'Functions'}[0] ),
         y_label_position => 0.6,
         show_values => 1,
-        values_space => -1,
+        values_space => 2,
 # use a top margin enough to display values over the top line if needed
         t_margin => 18,
 # the following line to make sure there's enough space for values to show
