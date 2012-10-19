@@ -1687,18 +1687,14 @@ sub CreateTicket {
     }
 
     # turn new link lists into arrays, and pass in the proper arguments
-    my %map = (
-        'new-DependsOn' => 'DependsOn',
-        'DependsOn-new' => 'DependedOnBy',
-        'new-MemberOf'  => 'Parents',
-        'MemberOf-new'  => 'Children',
-        'new-RefersTo'  => 'RefersTo',
-        'RefersTo-new'  => 'ReferredToBy',
-    );
-    foreach my $key ( keys %map ) {
-        next unless $ARGS{$key};
-        $create_args{ $map{$key} } = [ grep $_, split ' ', $ARGS{$key} ];
-
+    foreach my $type ( keys %RT::Link::DIRMAP ) {
+        for ([Base => "new-$type"], [Target => "$type-new"]) {
+            my ($direction, $key) = @$_;
+            next unless $ARGS{$key};
+            $create_args{ $RT::Link::DIRMAP{$type}->{$direction} } = [
+                grep $_, split ' ', $ARGS{$key}
+            ];
+        }
     }
 
     my ( $id, $Trans, $ErrMsg ) = $Ticket->Create(%create_args);
