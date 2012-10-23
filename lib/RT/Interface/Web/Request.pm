@@ -142,6 +142,10 @@ sub callback {
     }
     return @rv;
 }
+
+sub clear_callback_cache {
+    %cache = %called = ();
+}
 }
 
 =head2 request_path

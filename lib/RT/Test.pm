@@ -1413,6 +1413,8 @@ sub start_inline_server {
     # Clear out squished CSS and JS cache, since it's retained across
     # servers, since it's in-process
     RT::Interface::Web->ClearSquished;
+    require RT::Interface::Web::Request;
+    RT::Interface::Web::Request->clear_callback_cache;
 
     Test::More::ok(1, "psgi test server ok");
     $TEST_APP = $self->test_app(@_);
