@@ -1212,6 +1212,7 @@ sub _Set {
     unless ( $self->CurrentUserHasRight('AdminQueue') ) {
         return ( 0, $self->loc('Permission Denied') );
     }
+    RT->System->QueueCacheNeedsUpdate(1);
     return ( $self->SUPER::_Set(@_) );
 }
 
