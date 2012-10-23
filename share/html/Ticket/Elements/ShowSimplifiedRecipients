@@ -93,8 +93,9 @@ my %recips;
 </td></tr>
 % }
 </table>
-<i>(Uncheck boxes to disable notifications to the listed
-recipients. Does <b>not</b> change who will receive future
-updates.)</i>
+<p>
+<&|/l, RT->Config->Get('WebPath')."/Ticket/ModifyPeople.html?id=".$TicketObj->Id,
+&>Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href="[_1]">People page</a>.</&>
+</p>
 </&>
 % $m->notes("DryRun-Recipients-".$TicketObj->Id, \%recips);
