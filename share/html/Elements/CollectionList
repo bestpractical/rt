@@ -111,7 +111,7 @@ if ($Class =~ /::/) { # older passed in value
     $Class =~ s/:/_/g;
 }
 
-$m->out('<table border="0" cellspacing="0" cellpadding="1" class="' .
+$m->out('<table cellspacing="0" class="' .
 	($Collection->isa('RT::Tickets') ? 'ticket-list' : 'collection') . ' collection-as-table">');
 
 if ( $ShowHeader ) {

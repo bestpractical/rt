@@ -137,14 +137,6 @@ div#nav li.last {
     margin-right: auto;
 }
 
-th.collection-as-table {
-    padding: 0.25em;
-}
-
-table.queue-summary td, td.collection-as-table {
-    padding: 0.25em;
-}
-
 .titlebox-title {
     position: relative;
 }
