@@ -48,21 +48,35 @@
 <textarea autocomplete="off" class="messagebox" <% $width_attr %>="<% $Width %>" rows="<% $Height %>" <% $wrap_type |n %> name="<% $Name %>" id="<% $Name %>">
 % $m->comp('/Articles/Elements/IncludeArticle', %ARGS) if $IncludeArticle;
 % $m->callback( %ARGS, SignatureRef => \$signature );
-<% $Default || '' %><% RT->Config->Get('MessageBoxIncludeSignatureBeforeQuote', $session{CurrentUser}) ? ( $signature . ( $message =~ /\S/ ? "\n$message" : $message ) ) : ( $message . $signature ) %></textarea>
+<% $Default || '' %><% $body %></textarea>
 % $m->callback( %ARGS, CallbackName => 'AfterTextArea' );
 <%INIT>
 
 my $message = '';
-
 if ( $QuoteTransaction ) {
     my $transaction = RT::Transaction->new( $session{'CurrentUser'} );
     $transaction->Load( $QuoteTransaction );
     $message = $transaction->Content( Quote => 1 );
+    $message =~ s/\n*$//;
 }
 
-my $signature = '';
-if ( $IncludeSignature and my $text = $session{'CurrentUser'}->UserObj->Signature ) {
-    $signature = "-- \n". $text;
+my $signature = $session{'CurrentUser'}->UserObj->Signature;
+if ( $IncludeSignature and defined $signature and  $signature =~ /\S/ ) {
+    $signature =~ s/\n*$//;
+    $signature = "\n\n-- \n". $signature;
+} else {
+    $signature = "";
+}
+
+my $body = '';
+if ($message =~ /\S/) {
+    if (RT->Config->Get('MessageBoxIncludeSignatureBeforeQuote', $session{CurrentUser})) {
+        $body = $signature . "\n\n" . $message;
+    } else {
+        $body = $message . "\n\n" . $signature;
+    }
+} else {
+    $body = $signature;
 }
 
 # wrap="something" seems to really break IE + richtext
