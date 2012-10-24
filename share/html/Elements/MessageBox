@@ -48,7 +48,7 @@
 <textarea autocomplete="off" class="messagebox" <% $width_attr %>="<% $Width %>" rows="<% $Height %>" <% $wrap_type |n %> name="<% $Name %>" id="<% $Name %>">
 % $m->comp('/Articles/Elements/IncludeArticle', %ARGS) if $IncludeArticle;
 % $m->callback( %ARGS, SignatureRef => \$signature );
-<% $Default || '' %><% RT->Config->Get('MessageBoxIncludeSignatureBeforeQuote', $session{CurrentUser}) ? ( $signature . ( $message =~ /\S/ ? "\n$message" : $message ) ) : ( $message . $signature ) %></textarea>
+<% $Default || '' %><% RT->Config->Get('MessageBoxIncludeSignatureBeforeQuote', $session{CurrentUser}) ? ( "\n\n$signature\n\n" . $message ) : ( $message .  "\n\n$signature" ) %></textarea>
 % $m->callback( %ARGS, CallbackName => 'AfterTextArea' );
 <%INIT>
 
@@ -58,10 +58,12 @@ if ( $QuoteTransaction ) {
     my $transaction = RT::Transaction->new( $session{'CurrentUser'} );
     $transaction->Load( $QuoteTransaction );
     $message = $transaction->Content( Quote => 1 );
+    chomp $message;
 }
 
 my $signature = '';
 if ( $IncludeSignature and my $text = $session{'CurrentUser'}->UserObj->Signature ) {
+    chomp $text;
 	$signature = "-- \n". $text;
 }
 
