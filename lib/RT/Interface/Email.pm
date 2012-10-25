@@ -318,6 +318,35 @@ header field then it's value is used
 
 =cut
 
+sub WillSignEncrypt {
+    my %args = @_;
+    my $attachment = delete $args{Attachment};
+    my $ticket     = delete $args{Ticket};
+
+    if ( not RT->Config->Get('GnuPG')->{'Enable'} ) {
+        $args{Sign} = $args{Encrypt} = 0;
+        return wantarray ? %args : 0;
+    }
+
+    for my $argument ( qw(Sign Encrypt) ) {
+        next if defined $args{ $argument };
+
+        if ( $attachment and defined $attachment->GetHeader("X-RT-$argument") ) {
+            $args{$argument} = $attachment->GetHeader("X-RT-$argument");
+        } elsif ( $ticket and $argument eq "Encrypt" ) {
+            $args{Encrypt} = $ticket->QueueObj->Encrypt();
+        } elsif ( $ticket and $argument eq "Sign" ) {
+            # Note that $queue->Sign is UI-only, and that all
+            # UI-generated messages explicitly set the X-RT-Crypt header
+            # to 0 or 1; thus this path is only taken for messages
+            # generated _not_ via the web UI.
+            $args{Sign} = $ticket->QueueObj->SignAuto();
+        }
+    }
+
+    return wantarray ? %args : ($args{Sign} || $args{Encrypt});
+}
+
 sub SendEmail {
     my (%args) = (
         Entity => undef,
@@ -366,23 +395,12 @@ sub SendEmail {
     }
 
     if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
-        my %crypt;
-
-        my $attachment;
-        $attachment = $TransactionObj->Attachments->First
-            if $TransactionObj;
-
-        foreach my $argument ( qw(Sign Encrypt) ) {
-            next if defined $args{ $argument };
-
-            if ( $attachment && defined $attachment->GetHeader("X-RT-$argument") ) {
-                $crypt{$argument} = $attachment->GetHeader("X-RT-$argument");
-            } elsif ( $TicketObj ) {
-                $crypt{$argument} = $TicketObj->QueueObj->$argument();
-            }
-        }
-
-        my $res = SignEncrypt( %args, %crypt );
+        %args = WillSignEncrypt(
+            %args,
+            Attachment => $TransactionObj ? $TransactionObj->Attachments->First : undef,
+            Ticket     => $TicketObj,
+        );
+        my $res = SignEncrypt( %args );
         return $res unless $res > 0;
     }
 
