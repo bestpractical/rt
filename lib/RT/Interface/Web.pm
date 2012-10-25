@@ -3083,6 +3083,16 @@ sub ScrubHTML {
     $SCRUBBER = _NewScrubber() unless $SCRUBBER;
 
     $Content = '' if !defined($Content);
+
+    {
+        # Remove invalid Unicode codepoints, which can cause errors in
+        # HTML::Scrubber/HTML::Parser in perl < 5.12 when the regex
+        # engine dies on U+FFFF and other "non-character codepoints."
+        no warnings 'utf8';
+        my @invalid = map { hex($_ . "FFEF"), hex($_ . "FFFF") } 0..10;
+        push @invalid, hex("FDD0") .. hex("FDEF");
+        $Content =~ s/$_//g for map { chr( $_ ) } @invalid;
+    }
     return $SCRUBBER->scrub($Content);
 }
 

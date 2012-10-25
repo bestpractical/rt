@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodb => 1, tests => 6;
+use RT::Test nodb => 1, tests => 10;
 use RT::Interface::Web; # This gets us HTML::Mason::Commands
 use Test::LongString;
 
@@ -38,6 +38,20 @@ use Test::LongString;
     my $html = q[<span lang=EN-US style='font-size:7.5pt;font-family:"Century Gothic","sans-serif";color:#666666;mso-fareast-language:IT'>oh hai I'm some text</span>];
     my $expected = q[<span lang="EN-US" style="font-size:7.5pt;font-family:&quot;Century Gothic&quot;,&quot;sans-serif&quot;;color:#666666;mso-fareast-language:IT">oh hai I'm some text</span>];
     is_string(scrub_html($html), $expected, "outlook html");
+}
+
+{
+    no warnings 'utf8';
+    my $html = qq[Some content\N{U+FFFF}here];
+    my $expected = q[Some contenthere];
+    my $got = eval{scrub_html($html)};
+    ok(!$@, "Testing U+FFFF didn't die");
+    is_string($got, $expected, "U+FFFF non-character");
+
+    # This may die _hard_, escaping even the eval.
+    $got = eval{scrub_html("<p>content</p>")};
+    ok(!$@, "Later uninteresting calls also don't die");
+    is_string($got, "<p>content</p>", "Later uninteresting calls return the right value");
 }
 
 sub scrub_html {
