@@ -905,7 +905,7 @@ sub EncodeToMIME {
         return ($value);
     }
 
-    return ($value) unless $value =~ /[^\x20-\x7e]/;
+    return ($value) if $value =~ /^(?:[\t\x20-\x7e]|\x0D*\x0A[ \t])+$/s;
 
     $value =~ s/\s+$//;
 

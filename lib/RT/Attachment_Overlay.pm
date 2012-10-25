@@ -550,8 +550,8 @@ sub DelHeader {
 
     my $newheader = '';
     foreach my $line ($self->_SplitHeaders) {
-        next if $line =~ /^\Q$tag\E:\s+(.*)$/is;
-	$newheader .= "$line\n";
+        next if $line =~ /^\Q$tag\E:\s+/i;
+        $newheader .= "$line\n";
     }
     return $self->__Set( Field => 'Headers', Value => $newheader);
 }
@@ -567,9 +567,7 @@ sub AddHeader {
 
     my $newheader = $self->__Value( 'Headers' );
     while ( my ($tag, $value) = splice @_, 0, 2 ) {
-        $value = '' unless defined $value;
-        $value =~ s/\s+$//s;
-        $value =~ s/\r+\n/\n /g;
+        $value = $self->_CanonicalizeHeaderValue($value);
         $newheader .= "$tag: $value\n";
     }
     return $self->__Set( Field => 'Headers', Value => $newheader);
@@ -582,22 +580,37 @@ Replace or add a Header to the attachment's headers.
 =cut
 
 sub SetHeader {
-    my $self = shift;
-    my $tag = shift;
+    my $self  = shift;
+    my $tag   = shift;
+    my $value = $self->_CanonicalizeHeaderValue(shift);
 
+    my $replaced  = 0;
     my $newheader = '';
-    foreach my $line ($self->_SplitHeaders) {
-        if (defined $tag and $line =~ /^\Q$tag\E:\s+(.*)$/i) {
-	    $newheader .= "$tag: $_[0]\n";
-	    undef $tag;
+    foreach my $line ( $self->_SplitHeaders ) {
+        if ( $line =~ /^\Q$tag\E:\s+/i ) {
+            # replace first instance, skip all the rest
+            unless ($replaced) {
+                $newheader .= "$tag: $value\n";
+                $replaced = 1;
+            }
+        } else {
+            $newheader .= "$line\n";
         }
-	else {
-	    $newheader .= "$line\n";
-	}
     }
 
-    $newheader .= "$tag: $_[0]\n" if defined $tag;
+    $newheader .= "$tag: $value\n" unless $replaced;
     $self->__Set( Field => 'Headers', Value => $newheader);
+}
+
+sub _CanonicalizeHeaderValue {
+    my $self  = shift;
+    my $value = shift;
+
+    $value = '' unless defined $value;
+    $value =~ s/\s+$//s;
+    $value =~ s/\r*\n/\n /g;
+
+    return $value;
 }
 
 =head2 SplitHeaders
@@ -626,6 +639,12 @@ sub _SplitHeaders {
     my $self = shift;
     my $headers = (shift || $self->SUPER::Headers());
     my @headers;
+    # XXX TODO: splitting on \n\w is _wrong_ as it treats \n[ as a valid
+    # continuation, which it isn't.  The correct split pattern, per RFC 2822,
+    # is /\n(?=[^ \t]|\z)/.  That is, only "\n " or "\n\t" is a valid
+    # continuation.  Older values of X-RT-GnuPG-Status contain invalid
+    # continuations and rely on this bogus split pattern, however, so it is
+    # left as-is for now.
     for (split(/\n(?=\w|\z)/,$headers)) {
         push @headers, $_;
 

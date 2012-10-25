@@ -1077,9 +1077,13 @@ sub VerifyDecrypt {
         }
         if ( $args{'SetStatus'} || $args{'AddStatus'} ) {
             my $method = $args{'AddStatus'} ? 'add' : 'set';
+            # Let the header be modified so continuations are handled
+            my $modify = $status_on->head->modify;
+            $status_on->head->modify(1);
             $status_on->head->$method(
                 'X-RT-GnuPG-Status' => $res[-1]->{'status'}
             );
+            $status_on->head->modify($modify);
         }
     }
     foreach my $item( grep $_->{'Type'} eq 'encrypted', @protected ) {
@@ -1096,9 +1100,13 @@ sub VerifyDecrypt {
         }
         if ( $args{'SetStatus'} || $args{'AddStatus'} ) {
             my $method = $args{'AddStatus'} ? 'add' : 'set';
+            # Let the header be modified so continuations are handled
+            my $modify = $status_on->head->modify;
+            $status_on->head->modify(1);
             $status_on->head->$method(
                 'X-RT-GnuPG-Status' => $res[-1]->{'status'}
             );
+            $status_on->head->modify($modify);
         }
     }
     return @res;

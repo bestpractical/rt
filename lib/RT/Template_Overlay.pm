@@ -383,6 +383,7 @@ sub _Parse {
 
     # Unfold all headers
     $self->{'MIMEObj'}->head->unfold;
+    $self->{'MIMEObj'}->head->modify(1);
 
     return ( 1, $self->loc("Template parsed") );
 
