@@ -64,7 +64,7 @@
 <& /Widgets/Form/Select,
     Name         => 'PrivateKey',
     Description  => loc('Private Key'),
-    Values       => [ map $_->{'Key'}, @{ $keys_meta{'info'} } ],
+    Values       => \@potential_keys,
     CurrentValue => $UserObj->PrivateKey,
     DefaultLabel => loc('No private key'),
 &>
@@ -91,7 +91,8 @@ unless ( $UserObj->id ) {
 $id = $ARGS{'id'} = $UserObj->id;
 
 my $email = $UserObj->EmailAddress;
-my %keys_meta = RT::Crypt::GnuPG::GetKeysForSigning( $email, 'force' );
+my %keys_meta = RT::Crypt::GnuPG::GetKeysForSigning( $email );
+my @potential_keys = map $_->{'Key'}, @{ $keys_meta{'info'} || [] };
 
 $ARGS{'PrivateKey'} = $m->comp('/Widgets/Form/Select:Process',
     Name      => 'PrivateKey',
@@ -100,8 +101,14 @@ $ARGS{'PrivateKey'} = $m->comp('/Widgets/Form/Select:Process',
 );
 
 if ( $Update ) {
-    my ($status, $msg) = $UserObj->SetPrivateKey( $ARGS{'PrivateKey'} );
-    push @results, $msg;
+    if (not $ARGS{'PrivateKey'} or grep {$_ eq $ARGS{'PrivateKey'}} @potential_keys) {
+        if (($ARGS{'PrivateKey'}||'') ne ($UserObj->PrivateKey||'')) {
+            my ($status, $msg) = $UserObj->SetPrivateKey( $ARGS{'PrivateKey'} );
+            push @results, $msg;
+        }
+    } else {
+        push @results, loc("Invalid key [_1] for address '[_2]'", $ARGS{'PrivateKey'}, $email);
+    }
 }
 
 my $title = loc("[_1]'s GnuPG keys",$UserObj->Name);

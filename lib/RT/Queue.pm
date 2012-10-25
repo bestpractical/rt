@@ -394,6 +394,7 @@ sub Create {
         FinalPriority     => 0,
         DefaultDueIn      => 0,
         Sign              => undef,
+        SignAuto          => undef,
         Encrypt           => undef,
         _RecordTransaction => 1,
         @_
@@ -436,14 +437,11 @@ sub Create {
     }
     $RT::Handle->Commit;
 
-    if ( defined $args{'Sign'} ) {
-        my ($status, $msg) = $self->SetSign( $args{'Sign'} );
-        $RT::Logger->error("Couldn't set attribute 'Sign': $msg")
-            unless $status;
-    }
-    if ( defined $args{'Encrypt'} ) {
-        my ($status, $msg) = $self->SetEncrypt( $args{'Encrypt'} );
-        $RT::Logger->error("Couldn't set attribute 'Encrypt': $msg")
+    for my $attr (qw/Sign SignAuto Encrypt/) {
+        next unless defined $args{$attr};
+        my $set = "Set" . $attr;
+        my ($status, $msg) = $self->$set( $args{$attr} );
+        $RT::Logger->error("Couldn't set attribute '$attr': $msg")
             unless $status;
     }
 
@@ -588,6 +586,32 @@ sub SetSign {
     my ($status, $msg) = $self->SetAttribute(
         Name        => 'Sign',
         Description => 'Sign outgoing messages by default',
+        Content     => $value,
+    );
+    return ($status, $msg) unless $status;
+    return ($status, $self->loc('Signing enabled')) if $value;
+    return ($status, $self->loc('Signing disabled'));
+}
+
+sub SignAuto {
+    my $self = shift;
+    my $value = shift;
+
+    return undef unless $self->CurrentUserHasRight('SeeQueue');
+    my $attr = $self->FirstAttribute('SignAuto') or return 0;
+    return $attr->Content;
+}
+
+sub SetSignAuto {
+    my $self = shift;
+    my $value = shift;
+
+    return ( 0, $self->loc('Permission Denied') )
+        unless $self->CurrentUserHasRight('AdminQueue');
+
+    my ($status, $msg) = $self->SetAttribute(
+        Name        => 'SignAuto',
+        Description => 'Sign auto-generated outgoing messages',
         Content     => $value,
     );
     return ($status, $msg) unless $status;
