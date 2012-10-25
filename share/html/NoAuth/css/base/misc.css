@@ -98,3 +98,12 @@ hr.clear {
     border: none;
     font-size: 1px;
 }
+
+.redirect-warning tt {
+    display: block;
+    margin: 0.5em 0 0.5em 1em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 90%;
+}

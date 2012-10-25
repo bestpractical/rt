@@ -244,12 +244,12 @@ sub HandleRequest {
             }
             # Specially handle /index.html so that we get a nicer URL
             elsif ( $m->request_comp->path eq '/index.html' ) {
-                my $next = SetNextPage(RT->Config->Get('WebURL'));
+                my $next = SetNextPage($ARGS);
                 $m->comp('/NoAuth/Login.html', next => $next, actions => [$msg]);
                 $m->abort;
             }
             else {
-                TangentForLogin(results => ($msg ? LoginError($msg) : undef));
+                TangentForLogin($ARGS, results => ($msg ? LoginError($msg) : undef));
             }
         }
     }
@@ -298,7 +298,7 @@ sub LoginError {
     return $key;
 }
 
-=head2 SetNextPage [PATH]
+=head2 SetNextPage ARGSRef [PATH]
 
 Intuits and stashes the next page in the sesssion hash.  If PATH is
 specified, uses that instead of the value of L<IntuitNextPage()>.  Returns
@@ -307,24 +307,68 @@ the hash value.
 =cut
 
 sub SetNextPage {
-    my $next = shift || IntuitNextPage();
+    my $ARGS = shift;
+    my $next = $_[0] ? $_[0] : IntuitNextPage();
     my $hash = Digest::MD5::md5_hex($next . $$ . rand(1024));
+    my $page = { url => $next };
 
-    $HTML::Mason::Commands::session{'NextPage'}->{$hash} = $next;
+    # If an explicit URL was passed and we didn't IntuitNextPage, then
+    # IsPossibleCSRF below is almost certainly unrelated to the actual
+    # destination.  Currently explicit next pages aren't used in RT, but the
+    # API is available.
+    if (not $_[0] and RT->Config->Get("RestrictReferrer")) {
+        # This isn't really CSRF, but the CSRF heuristics are useful for catching
+        # requests which may have unintended side-effects.
+        my ($is_csrf, $msg, @loc) = IsPossibleCSRF($ARGS);
+        if ($is_csrf) {
+            RT->Logger->notice(
+                "Marking original destination as having side-effects before redirecting for login.\n"
+               ."Request: $next\n"
+               ."Reason: " . HTML::Mason::Commands::loc($msg, @loc)
+            );
+            $page->{'HasSideEffects'} = [$msg, @loc];
+        }
+    }
+
+    $HTML::Mason::Commands::session{'NextPage'}->{$hash} = $page;
     $HTML::Mason::Commands::session{'i'}++;
     return $hash;
 }
 
+=head2 FetchNextPage HASHKEY
 
-=head2 TangentForLogin [HASH]
+Returns the stashed next page hashref for the given hash.
+
+=cut
+
+sub FetchNextPage {
+    my $hash = shift || "";
+    return $HTML::Mason::Commands::session{'NextPage'}->{$hash};
+}
+
+=head2 RemoveNextPage HASHKEY
+
+Removes the stashed next page for the given hash and returns it.
+
+=cut
+
+sub RemoveNextPage {
+    my $hash = shift || "";
+    return delete $HTML::Mason::Commands::session{'NextPage'}->{$hash};
+}
+
+=head2 TangentForLogin ARGSRef [HASH]
 
 Redirects to C</NoAuth/Login.html>, setting the value of L<IntuitNextPage> as
-the next page.  Optionally takes a hash which is dumped into query params.
+the next page.  Takes a hashref of request %ARGS as the first parameter.
+Optionally takes all other parameters as a hash which is dumped into query
+params.
 
 =cut
 
 sub TangentForLogin {
-    my $hash  = SetNextPage();
+    my $ARGS  = shift;
+    my $hash  = SetNextPage($ARGS);
     my %query = (@_, next => $hash);
     my $login = RT->Config->Get('WebURL') . 'NoAuth/Login.html?';
     $login .= $HTML::Mason::Commands::m->comp('/Elements/QueryString', %query);
@@ -339,8 +383,9 @@ calls L<TangentForLogin> with the appropriate results key.
 =cut
 
 sub TangentForLoginWithError {
-    my $key = LoginError(HTML::Mason::Commands::loc(@_));
-    TangentForLogin( results => $key );
+    my $ARGS = shift;
+    my $key  = LoginError(HTML::Mason::Commands::loc(@_));
+    TangentForLogin( $ARGS, results => $key );
 }
 
 =head2 IntuitNextPage
@@ -525,6 +570,8 @@ sub AttemptExternalAuth {
             $user =~ s/^\Q$NodeName\E\\//i;
         }
 
+        my $next = RemoveNextPage($ARGS->{'next'});
+           $next = $next->{'url'} if ref $next;
         InstantiateNewSession() unless _UserLoggedIn;
         $HTML::Mason::Commands::session{'CurrentUser'} = RT::CurrentUser->new();
         $HTML::Mason::Commands::session{'CurrentUser'}->$load_method($user);
@@ -563,7 +610,7 @@ sub AttemptExternalAuth {
                 delete $HTML::Mason::Commands::session{'CurrentUser'};
 
                 if (RT->Config->Get('WebFallbackToInternalAuth')) {
-                    TangentForLoginWithError('Cannot create user: [_1]', $msg);
+                    TangentForLoginWithError($ARGS, 'Cannot create user: [_1]', $msg);
                 } else {
                     $m->abort();
                 }
@@ -572,18 +619,27 @@ sub AttemptExternalAuth {
 
         if ( _UserLoggedIn() ) {
             $m->callback( %$ARGS, CallbackName => 'ExternalAuthSuccessfulLogin', CallbackPage => '/autohandler' );
+            # It is possible that we did a redirect to the login page,
+            # if the external auth allows lack of auth through with no
+            # REMOTE_USER set, instead of forcing a "permission
+            # denied" message.  Honor the $next.
+            Redirect($next) if $next;
+            # Unlike AttemptPasswordAuthentication below, we do not
+            # force a redirect to / if $next is not set -- otherwise,
+            # straight-up external auth would always redirect to /
+            # when you first hit it.
         } else {
             delete $HTML::Mason::Commands::session{'CurrentUser'};
             $user = $orig_user;
 
-            if ( RT->Config->Get('WebExternalOnly') ) {
-                TangentForLoginWithError('You are not an authorized user');
+            unless ( RT->Config->Get('WebFallbackToInternalAuth') ) {
+                TangentForLoginWithError($ARGS, 'You are not an authorized user');
             }
         }
     } elsif ( RT->Config->Get('WebFallbackToInternalAuth') ) {
         unless ( defined $HTML::Mason::Commands::session{'CurrentUser'} ) {
             # XXX unreachable due to prior defaulting in HandleRequest (check c34d108)
-            TangentForLoginWithError('You are not an authorized user');
+            TangentForLoginWithError($ARGS, 'You are not an authorized user');
         }
     } else {
 
@@ -614,7 +670,8 @@ sub AttemptPasswordAuthentication {
 
         # It's important to nab the next page from the session before we blow
         # the session away
-        my $next = delete $HTML::Mason::Commands::session{'NextPage'}->{$ARGS->{'next'} || ''};
+        my $next = RemoveNextPage($ARGS->{'next'});
+           $next = $next->{'url'} if ref $next;
 
         InstantiateNewSession();
         $HTML::Mason::Commands::session{'CurrentUser'} = $user_obj;
@@ -1254,6 +1311,29 @@ sub MaybeShowInterstitialCSRFPage {
         Token => $token,
     );
     # Calls abort, never gets here
+}
+
+our @POTENTIAL_PAGE_ACTIONS = (
+    qr'/Ticket/Create.html' => "create a ticket",              # loc
+    qr'/Ticket/'            => "update a ticket",              # loc
+    qr'/Admin/'             => "modify RT's configuration",    # loc
+    qr'/Approval/'          => "update an approval",           # loc
+    qr'/Dashboards/'        => "modify a dashboard",           # loc
+    qr'/m/ticket/'          => "update a ticket",              # loc
+    qr'Prefs'               => "modify your preferences",      # loc
+    qr'/Search/'            => "modify or access a search",    # loc
+    qr'/SelfService/Create' => "create a ticket",              # loc
+    qr'/SelfService/'       => "update a ticket",              # loc
+);
+
+sub PotentialPageAction {
+    my $page = shift;
+    my @potentials = @POTENTIAL_PAGE_ACTIONS;
+    while (my ($pattern, $result) = splice @potentials, 0, 2) {
+        return HTML::Mason::Commands::loc($result)
+            if $page =~ $pattern;
+    }
+    return "";
 }
 
 package HTML::Mason::Commands;

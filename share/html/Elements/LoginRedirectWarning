@@ -1,0 +1,20 @@
+<%args>
+$next => undef
+</%args>
+<%init>
+return unless $next;
+
+my $destination = RT::Interface::Web::FetchNextPage($next);
+return unless ref $destination and $destination->{'HasSideEffects'};
+
+my $consequence = RT::Interface::Web::PotentialPageAction($destination->{'url'}) || loc("perform actions");
+   $consequence = $m->interp->apply_escapes($consequence => "h");
+</%init>
+<div class="redirect-warning">
+  <p>
+    <&|/l&>After logging in you'll be sent to your original destination:</&>
+    <tt title="<% $destination->{'url'} %>"><% $destination->{'url'} %></tt>
+    <&|/l_unsafe, "<strong>$consequence</strong>" &>which may [_1] on your behalf.</&>
+  </p>
+  <p><&|/l&>If this is not what you expect, leave this page now without logging in.</&></p>
+</div>
