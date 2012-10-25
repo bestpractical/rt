@@ -94,6 +94,7 @@ sub _OverlayAccessible {
           AuthSystem            => { public => 1,  admin => 1 },
           Gecos                 => { public => 1,  admin => 1 },
           PGPKey                => { public => 1,  admin => 1 },
+          PrivateKey            => {               admin => 1 },
 
     }
 }
