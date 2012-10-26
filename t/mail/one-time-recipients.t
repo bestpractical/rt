@@ -137,4 +137,33 @@ warnings_are {
     }  { Cc => 'test@localhost' };
 } [];
 
+diag "Requestor is an RT address";
+warnings_are {
+    my $ticket = RT::Ticket->new( RT::CurrentUser->new( $user ) );
+    mail_ok {
+        my ($status, undef, $msg) = $ticket->Create(
+            Queue => $queue->id,
+            Subject => 'test',
+            Requestor => 'rt-address@example.com',
+        );
+        ok $status, "created ticket";
+    } { To => 'rt-address@example.com' };
+
+    RT->Config->Set( RTAddressRegexp => qr/^rt-address\@example\.com$/i );
+    mail_ok {
+        my ($status, $msg) = $ticket->Correspond(
+            Content => 'test mail',
+        );
+        ok $status, "replied to a ticket";
+    };
+
+    mail_ok {
+        my ($status, $msg) = $ticket->Correspond(
+            Content => 'test mail',
+            CcMessageTo => 'rt-address@example.com',
+        );
+        ok $status, "replied to a ticket";
+    };
+} [];
+
 done_testing;
