@@ -5,6 +5,7 @@ use utf8;
 
 use RT::Test tests => undef;
 use RT::Test::Email;
+use Test::Warn;
 
 my $queue = RT::Test->load_or_create_queue(
     Name              => 'General',
@@ -20,7 +21,7 @@ my $user = RT::Test->load_or_create_user(
 ok $user && $user->id, 'loaded or created user';
 
 diag "Reply to ticket with actor as one time cc";
-{
+warnings_are {
     my $ticket = RT::Ticket->new( RT::CurrentUser->new( $user ) );
     mail_ok {
         my ($status, undef, $msg) = $ticket->Create(
@@ -54,10 +55,10 @@ diag "Reply to ticket with actor as one time cc";
         );
         ok $status, "replied to a ticket";
     } { Cc => 'root@localhost' };
-}
+} [];
 
 diag "Reply to ticket with requestor squelched";
-{
+warnings_are {
     my $ticket = RT::Ticket->new( RT::CurrentUser->new( $user ) );
     mail_ok {
         my ($status, undef, $msg) = $ticket->Create(
@@ -90,10 +91,10 @@ diag "Reply to ticket with requestor squelched";
         );
         ok $status, "replied to a ticket";
     } { Cc => 'test@localhost' };
-}
+} [];
 
 diag "Reply to ticket with requestor squelched";
-{
+warnings_are {
     my $ticket = RT::Ticket->new( RT::CurrentUser->new( $user ) );
     mail_ok {
         my ($status, undef, $msg) = $ticket->Create(
@@ -134,6 +135,6 @@ diag "Reply to ticket with requestor squelched";
         );
         ok $status, "replied to a ticket";
     }  { Cc => 'test@localhost' };
-}
+} [];
 
 done_testing;
