@@ -3,7 +3,8 @@ use strict;
 use warnings;
 use utf8;
 
-use RT::Test tests => 38;
+use RT::Test tests => undef;
+use RT::Test::Email;
 
 my $queue = RT::Test->load_or_create_queue(
     Name              => 'General',
@@ -21,189 +22,118 @@ ok $user && $user->id, 'loaded or created user';
 diag "Reply to ticket with actor as one time cc";
 {
     my $ticket = RT::Ticket->new( RT::CurrentUser->new( $user ) );
-    my ($status, undef, $msg) = $ticket->Create(
-        Queue => $queue->id,
-        Subject => 'test',
-        Requestor => 'root@localhost',
-    );
-    ok $status, "created ticket";
-
-    my @mails = RT::Test->fetch_caught_mails;
-    ok @mails, "got some outgoing emails";
-    foreach my $mail ( @mails ) {
-        my $entity = parse_mail( $mail );
-        my $to = $entity->head->get('To');
-        $to =~ s/^\s+|\s+$//; 
-        is $to, 'root@localhost', 'got mail'
-    }
+    mail_ok {
+        my ($status, undef, $msg) = $ticket->Create(
+            Queue => $queue->id,
+            Subject => 'test',
+            Requestor => 'root@localhost',
+        );
+        ok $status, "created ticket";
+    } { To => 'root@localhost' };
 
     RT->Config->Set( NotifyActor => 1 );
-    ($status, $msg) = $ticket->Correspond(
-        Content => 'test mail',
-    );
-    ok $status, "replied to a ticket";
-
-    @mails = RT::Test->fetch_caught_mails;
-    ok @mails, "got some outgoing emails";
-    foreach my $mail ( @mails ) {
-        my $entity = parse_mail( $mail );
-        my $to = $entity->head->get('To');
-        $to =~ s/^\s+|\s+$//; 
-        is $to, 'root@localhost', 'got mail'
-    }
+    mail_ok {
+        my ($status, $msg) = $ticket->Correspond(
+            Content => 'test mail',
+        );
+        ok $status, "replied to a ticket";
+    } { To => 'root@localhost' };
 
     RT->Config->Set( NotifyActor => 0 );
-    ($status, $msg) = $ticket->Correspond(
-        Content => 'test mail',
-    );
-    ok $status, "replied to a ticket";
+    mail_ok {
+        my ($status, $msg) = $ticket->Correspond(
+            Content => 'test mail',
+        );
+        ok $status, "replied to a ticket";
+    };
 
-    @mails = RT::Test->fetch_caught_mails;
-    ok !@mails, "no mail - don't notify actor";
-
-    ($status, $msg) = $ticket->Correspond(
-        Content => 'test mail',
-        CcMessageTo => 'root@localhost',
-    );
-    ok $status, "replied to a ticket";
-
-    @mails = RT::Test->fetch_caught_mails;
-    ok @mails, "got some outgoing emails";
-    foreach my $mail ( @mails ) {
-        my $entity = parse_mail( $mail );
-        my $to = $entity->head->get('Cc');
-        $to =~ s/^\s+|\s+$//; 
-        is $to, 'root@localhost', 'got mail'
-    }
+    mail_ok {
+        my ($status, $msg) = $ticket->Correspond(
+            Content => 'test mail',
+            CcMessageTo => 'root@localhost',
+        );
+        ok $status, "replied to a ticket";
+    } { Cc => 'root@localhost' };
 }
 
 diag "Reply to ticket with requestor squelched";
 {
     my $ticket = RT::Ticket->new( RT::CurrentUser->new( $user ) );
-    my ($status, undef, $msg) = $ticket->Create(
-        Queue => $queue->id,
-        Subject => 'test',
-        Requestor => 'test@localhost',
-    );
-    ok $status, "created ticket";
+    mail_ok {
+        my ($status, undef, $msg) = $ticket->Create(
+            Queue => $queue->id,
+            Subject => 'test',
+            Requestor => 'test@localhost',
+        );
+        ok $status, "created ticket";
+    } { To => 'test@localhost' };
 
-    my @mails = RT::Test->fetch_caught_mails;
-    ok @mails, "got some outgoing emails";
-    foreach my $mail ( @mails ) {
-        my $entity = parse_mail( $mail );
-        my $to = $entity->head->get('To');
-        $to =~ s/^\s+|\s+$//; 
-        is $to, 'test@localhost', 'got mail'
-    }
-
-    ($status, $msg) = $ticket->Correspond(
-        Content => 'test mail',
-    );
-    ok $status, "replied to a ticket";
-
-    @mails = RT::Test->fetch_caught_mails;
-    ok @mails, "got some outgoing emails";
-    foreach my $mail ( @mails ) {
-        my $entity = parse_mail( $mail );
-        my $to = $entity->head->get('To');
-        $to =~ s/^\s+|\s+$//; 
-        is $to, 'test@localhost', 'got mail'
-    }
+    mail_ok {
+        my ($status, $msg) = $ticket->Correspond(
+            Content => 'test mail',
+        );
+        ok $status, "replied to a ticket";
+    } { To => 'test@localhost' };
 
     $ticket->SquelchMailTo('test@localhost');
-    ($status, $msg) = $ticket->Correspond(
-        Content => 'test mail',
-    );
-    ok $status, "replied to a ticket";
+    mail_ok {
+        my ($status, $msg) = $ticket->Correspond(
+            Content => 'test mail',
+        );
+        ok $status, "replied to a ticket";
+    };
 
-    @mails = RT::Test->fetch_caught_mails;
-    ok !@mails, "no mail - squelched";
-
-    ($status, $msg) = $ticket->Correspond(
-        Content => 'test mail',
-        CcMessageTo => 'test@localhost',
-    );
-    ok $status, "replied to a ticket";
-
-    @mails = RT::Test->fetch_caught_mails;
-    ok @mails, "got some outgoing emails";
-    foreach my $mail ( @mails ) {
-        my $entity = parse_mail( $mail );
-        my $to = $entity->head->get('Cc');
-        $to =~ s/^\s+|\s+$//; 
-        is $to, 'test@localhost', 'got mail'
-    }
+    mail_ok {
+        my ($status, $msg) = $ticket->Correspond(
+            Content => 'test mail',
+            CcMessageTo => 'test@localhost',
+        );
+        ok $status, "replied to a ticket";
+    } { Cc => 'test@localhost' };
 }
 
 diag "Reply to ticket with requestor squelched";
 {
     my $ticket = RT::Ticket->new( RT::CurrentUser->new( $user ) );
-    my ($status, undef, $msg) = $ticket->Create(
-        Queue => $queue->id,
-        Subject => 'test',
-        Requestor => 'test@localhost',
-    );
-    ok $status, "created ticket";
+    mail_ok {
+        my ($status, undef, $msg) = $ticket->Create(
+            Queue => $queue->id,
+            Subject => 'test',
+            Requestor => 'test@localhost',
+        );
+        ok $status, "created ticket";
+    } { To => 'test@localhost' };
 
-    my @mails = RT::Test->fetch_caught_mails;
-    ok @mails, "got some outgoing emails";
-    foreach my $mail ( @mails ) {
-        my $entity = parse_mail( $mail );
-        my $to = $entity->head->get('To');
-        $to =~ s/^\s+|\s+$//; 
-        is $to, 'test@localhost', 'got mail'
-    }
+    mail_ok {
+        my ($status, $msg) = $ticket->Correspond(
+            Content => 'test mail',
+        );
+        ok $status, "replied to a ticket";
+    } { To => 'test@localhost' };
 
-    ($status, $msg) = $ticket->Correspond(
-        Content => 'test mail',
-    );
-    ok $status, "replied to a ticket";
+    mail_ok {
+        my ($status, $msg) = $ticket->Correspond(
+            Content => 'test mail',
+            SquelchMailTo => ['test@localhost'],
+        );
+        ok $status, "replied to a ticket";
+    };
 
-    @mails = RT::Test->fetch_caught_mails;
-    ok @mails, "got some outgoing emails";
-    foreach my $mail ( @mails ) {
-        my $entity = parse_mail( $mail );
-        my $to = $entity->head->get('To');
-        $to =~ s/^\s+|\s+$//; 
-        is $to, 'test@localhost', 'got mail'
-    }
+    mail_ok {
+        my ($status, $msg) = $ticket->Correspond(
+            Content => 'test mail',
+        );
+        ok $status, "replied to a ticket";
+    } { To => 'test@localhost' };
 
-    ($status, $msg) = $ticket->Correspond(
-        Content => 'test mail',
-        SquelchMailTo => ['test@localhost'],
-    );
-    ok $status, "replied to a ticket";
-
-    @mails = RT::Test->fetch_caught_mails;
-    ok !@mails, "no mail - squelched";
-
-    ($status, $msg) = $ticket->Correspond(
-        Content => 'test mail',
-    );
-    ok $status, "replied to a ticket";
-
-    @mails = RT::Test->fetch_caught_mails;
-    ok @mails, "got some outgoing emails";
-    foreach my $mail ( @mails ) {
-        my $entity = parse_mail( $mail );
-        my $to = $entity->head->get('To');
-        $to =~ s/^\s+|\s+$//; 
-        is $to, 'test@localhost', 'got mail'
-    }
-
-    ($status, $msg) = $ticket->Correspond(
-        Content => 'test mail',
-        CcMessageTo => 'test@localhost',
-        SquelchMailTo => ['test@localhost'],
-    );
-    ok $status, "replied to a ticket";
-
-    @mails = RT::Test->fetch_caught_mails;
-    ok @mails, "got some outgoing emails";
-    foreach my $mail ( @mails ) {
-        my $entity = parse_mail( $mail );
-        my $to = $entity->head->get('Cc');
-        $to =~ s/^\s+|\s+$//; 
-        is $to, 'test@localhost', 'got mail'
-    }
+    mail_ok {
+        my ($status, $msg) = $ticket->Correspond(
+            Content => 'test mail',
+            CcMessageTo => 'test@localhost',
+            SquelchMailTo => ['test@localhost'],
+        );
+        ok $status, "replied to a ticket";
+    }  { Cc => 'test@localhost' };
 }
+
+done_testing;
