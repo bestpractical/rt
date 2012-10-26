@@ -1,6 +1,7 @@
 use strict;
 use warnings;
-use RT::Test nodb => 1, tests => 13;
+use RT::Test nodb => 1, tests => undef;
+use Test::LongString;
 
 use_ok('RT::I18N');
 
@@ -116,7 +117,6 @@ diag q{canonicalize mime word encodings like gb2312};
     );
 }
 
-
 diag q{Whitespace between encoded words should be removed};
 {
     my $str = "=?utf-8?Q?=E3=82=AD?=    =?utf-8?Q?=E3=83=A3?=";
@@ -158,3 +158,63 @@ EOT
     );
 
 }
+
+diag "multiple mime words containing special chars already in quotes";
+{
+    my $str = q{attachment; filename="=?ISO-2022-JP?B?Mi4bJEIlSyVlITwlOSVqJWohPCU5GyhC?= =?ISO-2022-JP?B?LnBkZg==?="};
+    is_string(
+        RT::I18N::DecodeMIMEWordsToUTF8($str, 'Content-Disposition'),
+        q{attachment; filename="2.ニュースリリース.pdf"},
+        "base64"
+    );
+
+    $str = q{attachment; filename="=?UTF-8?Q?2=2E=E3=83=8B=E3=83=A5=E3=83=BC=E3=82=B9=E3=83=AA=E3=83=AA?= =?UTF-8?Q?=E3=83=BC=E3=82=B9=2Epdf?="};
+    is_string(
+        RT::I18N::DecodeMIMEWordsToUTF8($str, 'Content-Disposition'),
+        q{attachment; filename="2.ニュースリリース.pdf"},
+        "QP"
+    );
+}
+
+diag "mime word combined with text in quoted filename property";
+{
+    my $str = q{attachment; filename="=?UTF-8?B?Q2VjaSBuJ2VzdCBwYXMgdW5l?= pipe.pdf"};
+    is_string(
+        RT::I18N::DecodeMIMEWordsToUTF8($str, 'Content-Disposition'),
+        q{attachment; filename="Ceci n'est pas une pipe.pdf"},
+        "base64"
+    );
+
+    $str = q{attachment; filename="=?UTF-8?B?Q2VjaSBuJ2VzdCBwYXMgdW5lLi4u?= pipe.pdf"};
+    is_string(
+        RT::I18N::DecodeMIMEWordsToUTF8($str, 'Content-Disposition'),
+        q{attachment; filename="Ceci n'est pas une... pipe.pdf"},
+        "base64"
+    );
+
+    $str = q{attachment; filename="=?UTF-8?Q?Ceci n'est pas une?= pipe.pdf"};
+    is_string(
+        RT::I18N::DecodeMIMEWordsToUTF8($str, 'Content-Disposition'),
+        q{attachment; filename="Ceci n'est pas une pipe.pdf"},
+        "QP"
+    );
+
+    $str = q{attachment; filename="=?UTF-8?Q?Ceci n'est pas une...?= pipe.pdf"};
+    is_string(
+        RT::I18N::DecodeMIMEWordsToUTF8($str, 'Content-Disposition'),
+        q{attachment; filename="Ceci n'est pas une... pipe.pdf"},
+        "QP"
+    );
+}
+
+diag "quotes in filename";
+{
+    my $str = q{attachment; filename="=?UTF-8?B?YSAicXVvdGVkIiBmaWxl?="};
+    is_string(
+        RT::I18N::DecodeMIMEWordsToUTF8($str, 'Content-Disposition'),
+        q{attachment; filename="a \"quoted\" file"},
+        "quoted filename correctly decoded"
+    );
+}
+
+done_testing;
