@@ -46,12 +46,12 @@ use Test::LongString;
     my $expected = q[Some contenthere];
     my $got = eval{scrub_html($html)};
     ok(!$@, "Testing U+FFFF didn't die");
-    is_string($got, $expected, "U+FFFF non-character");
+    is($got, $expected, "U+FFFF non-character");
 
     # This may die _hard_, escaping even the eval.
     $got = eval{scrub_html("<p>content</p>")};
     ok(!$@, "Later uninteresting calls also don't die");
-    is_string($got, "<p>content</p>", "Later uninteresting calls return the right value");
+    is($got, "<p>content</p>", "Later uninteresting calls return the right value");
 }
 
 sub scrub_html {
