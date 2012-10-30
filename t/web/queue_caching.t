@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Test tests => 36;
+use RT::Test tests => 48;
 
 # make an initial queue, so we have more than 1
 my $original_test_queue = new_queue("Test$$");
@@ -31,6 +31,12 @@ diag("Bring back a disabled queue");
     check_queues($m);
 }
 
+diag("Rename the original queue, make sure the name change is uncached");
+{
+    ok($original_test_queue->SetName("Name Change $$"));
+    check_queues($m);
+}
+
 diag("Test a user who has more limited rights Queues");
 {
 
@@ -47,7 +53,7 @@ my $a_m = RT::Test::Web->new;
 ok $a_m->login('user_a', 'password'), 'logged in as user A';
 
 # check that they see a single queue
-check_queues($a_m,[$original_test_queue->Id]);
+check_queues($a_m,[$original_test_queue->Id],[$original_test_queue->Name]);
 
 ok( RT::Test->add_rights(
         { Principal => $user_a, Right => [qw(SeeQueue CreateTicket)] },
@@ -75,16 +81,22 @@ sub internal_queues {
 }
 
 
-# takes a WWW::Mech object and an optional arrayref of queue ids
-# compares the list of ids to the dropdown of Queues for the New Ticket In form
+# takes a WWW::Mech object and two optional arrayrefs of queue ids and names
+# compares the list of ids and names to the dropdown of Queues for the New Ticket In form
 sub check_queues {
-    my $browser = shift;
-    my $queue_list = shift;
+    my ($browser, $queue_id_list, $queue_name_list) = @_;
     $browser->get_ok($baseurl,"Navigated to homepage");
     ok(my $form = $browser->form_name('CreateTicketInQueue'), "Found New Ticket In form");
     ok(my $queuelist = $form->find_input('Queue','option'), "Found queue select");
-    my @queues = $queuelist->possible_values;
 
-    $queue_list = [keys %{internal_queues()}] unless $queue_list;
-    is_deeply([sort @queues],[sort @$queue_list], "Queue list contains the expected queues");
+    my @queue_ids = $queuelist->possible_values;
+    my @queue_names = $queuelist->value_names;
+
+    my $full_queue_list = internal_queues();
+    $queue_id_list = [keys %$full_queue_list] unless $queue_id_list;
+    $queue_name_list = [values %$full_queue_list] unless $queue_name_list;
+    is_deeply([sort @queue_ids],[sort @$queue_id_list],
+              "Queue list contains the expected queue ids");
+    is_deeply([sort @queue_names],[sort @$queue_name_list],
+              "Queue list contains the expected queue namess");
 }

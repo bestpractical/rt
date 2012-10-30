@@ -52,11 +52,11 @@
 
 % my $strong_start = "<strong>";
 % my $strong_end   = "</strong>";
-<p><&|/l_unsafe, $strong_start, $strong_end, $Reason &>RT has detected a possible [_1]cross-site request forgery[_2] for this request, because [_3].  This is possibly caused by a malicious attacker trying to perform actions against RT on your behalf. If you did not initiate this request, then you should alert your security team.</&></p>
+<p><&|/l_unsafe, $strong_start, $strong_end, $Reason, $action &>RT has detected a possible [_1]cross-site request forgery[_2] for this request, because [_3].  A malicious attacker may be trying to [_1][_4][_2] on your behalf. If you did not initiate this request, then you should alert your security team.</&></p>
 
 % my $start = qq|<strong><a href="$url_with_token">|;
 % my $end   = qq|</a></strong>|;
-<p><&|/l_unsafe, $escaped_path, $start, $end &>If you really intended to visit [_1], then [_2]click here to resume your request[_3].</&></p>
+<p><&|/l_unsafe, $escaped_path, $action, $start, $end &>If you really intended to visit [_1] and [_2], then [_3]click here to resume your request[_4].</&></p>
 
 <& /Elements/Footer, %ARGS &>
 % $m->abort;
@@ -71,4 +71,6 @@ $escaped_path = "<tt>$escaped_path</tt>";
 
 my $url_with_token = URI->new($OriginalURL);
 $url_with_token->query_form([CSRF_Token => $Token]);
+
+my $action = RT::Interface::Web::PotentialPageAction($OriginalURL) || loc("perform actions");
 </%INIT>

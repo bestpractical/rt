@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Test nodb => 1, tests => 9;
+use RT::Test nodb => 1, tests => 13;
 
 use_ok('RT::I18N');
 
@@ -96,3 +96,45 @@ diag q{canonicalize mime word encodings like gb2312};
     );
 }
 
+
+diag q{Whitespace between encoded words should be removed};
+{
+    my $str = "=?utf-8?Q?=E3=82=AD?=    =?utf-8?Q?=E3=83=A3?=";
+    is(
+        RT::I18N::DecodeMIMEWordsToUTF8($str),
+        "キャ",
+        "whitespace between encoded words is removed",
+    );
+
+    $str = "=?utf-8?Q?=E3=82=AD?=  \n   =?utf-8?Q?=E3=83=A3?=";
+    is(
+        RT::I18N::DecodeMIMEWordsToUTF8($str),
+        "キャ",
+        "newlines between encoded words also removed",
+    );
+}
+
+diag q{Multiple octets split across QP hunks are correctly reassembled};
+{
+    # This passes even without explicit code to handle it because utf8
+    # is perl's internal string encoding.
+    my $str = "=?utf-8?Q?=E3?=    =?utf-8?Q?=82?=    =?utf-8?Q?=AD?=";
+    is(
+        RT::I18N::DecodeMIMEWordsToUTF8($str),
+        "キ",
+        "UTF8 character split in three is successfully reassembled",
+    );
+
+    # Non-utf8 encodings thus also must be checked
+    $str = <<EOT; chomp $str;
+=?gb2312?q?Chinese(gb2312)=20=20=C3=C0=B9=FA=C7=B0=CB=BE=B7=A8=B2=BF=B3?=
+ =?gb2312?q?=A4=C3=E6=BC=FB=C8=F8=B4=EF=C4=B7=BA=F3=B3=C6=C6=E4=D7=B4=CC=AC?=
+ =?gb2312?q?=BA=DC=BA=C3=20=20Chinese=20(gb2312)?=
+EOT
+    is(
+        RT::I18N::DecodeMIMEWordsToUTF8($str),
+        "Chinese(gb2312)  美国前司法部长面见萨达姆后称其状态很好  Chinese (gb2312)",
+        "gb2312 character is successfully reassembled",
+    );
+
+}

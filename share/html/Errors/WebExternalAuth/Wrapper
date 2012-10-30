@@ -3,7 +3,7 @@ $Title => loc("An error occurred")
 $Error => ''
 </%args>
 <%init>
-my $login_url = $m->interp->apply_escapes(RT::Interface::Web::TangentForLoginURL(), 'h');
+my $login_url = $m->interp->apply_escapes(RT::Interface::Web::TangentForLoginURL(\%ARGS), 'h');
 </%init>
 <html>
   <head>

@@ -77,8 +77,9 @@ sub GetCurrentUser {
 
     foreach my $p ( $args{'Message'}->parts_DFS ) {
         $p->head->delete($_) for qw(
-            X-RT-GnuPG-Status X-RT-Incoming-Encrypton
+            X-RT-GnuPG-Status X-RT-Incoming-Encryption
             X-RT-Incoming-Signature X-RT-Privacy
+            X-RT-Sign X-RT-Encrypt
         );
     }
 

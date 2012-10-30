@@ -1725,11 +1725,11 @@ Set($ForceApprovalsView, 0);
 
 =head1 Extra security
 
-=over 4
-
 This is a list of extra security measures to enable that help keep your RT
 safe.  If you don't know what these mean, you should almost certainly leave the
 defaults alone.
+
+=over 4
 
 =item C<$DisallowExecuteCode>
 
@@ -2560,7 +2560,7 @@ Set(%AdminSearchResultFormat,
     Queues =>
         q{'<a href="__WebPath__/Admin/Queues/Modify.html?id=__id__">__id__</a>/TITLE:#'}
         .q{,'<a href="__WebPath__/Admin/Queues/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}
-        .q{,__Description__,__Address__,__Priority__,__DefaultDueIn__,'__Disabled__,__Lifecycle__},
+        .q{,__Description__,__Address__,__Priority__,__DefaultDueIn__,__Disabled__,__Lifecycle__},
 
     Groups =>
         q{'<a href="__WebPath__/Admin/Groups/Modify.html?id=__id__">__id__</a>/TITLE:#'}
@@ -2711,6 +2711,8 @@ Set($LinkTransactionsRun1Scrip, 0);
 
 This option has been deprecated.  You can configure this site-wide
 with L</Lifecycles> (see L</Labeling and defining actions>).
+
+=back
 
 =cut
 

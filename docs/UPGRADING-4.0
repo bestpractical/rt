@@ -1,87 +1,99 @@
-Common Issues
+=head1 UPGRADING FROM BEFORE 4.0.0
 
-RT now defaults to a database name of rt4 and an installation root of /opt/rt4.
+=head2 Common issues
 
-If you are upgrading, you will likely want to specify that your database
-is still named rt3 (or import a backup of your database as rt4 so that
-you can feel more confident making the upgrade).
+RT now defaults to a database name of rt4 and an installation root of
+/opt/rt4.
 
-You really shouldn't install RT4 into your RT3 source tree (/opt/rt3)
-and instead should be using make install to set up a clean environment.
-This will allow you to evaluate your local modifications and configuration
-changes as you migrate to 4.0.
+If you are upgrading, you will likely want to specify that your database is
+still named rt3 (or import a backup of your database as rt4 so that you can
+feel more confident making the upgrade).
+
+You really shouldn't install RT4 into your RT3 source tree (/opt/rt3) and
+instead should be using make install to set up a clean environment.  This will
+allow you to evaluate your local modifications and configuration changes as
+you migrate to 4.0.
 
 If you choose to force RT to install into /opt/rt3, or another existing RT 3.x
 install location, you will encounter issues because we removed the _Overlay
-files (such as Ticket_Overlay.pm) and relocated other files.  You will
-need to manually remove these files after the upgrade or RT will fail.
-After making a complete backup of your /opt/rt3 install, you might use a
-command like the following to remove the _Overlay files:
+files (such as Ticket_Overlay.pm) and relocated other files.  You will need to
+manually remove these files after the upgrade or RT will fail.  After making a
+complete backup of your /opt/rt3 install, you might use a command like the
+following to remove the _Overlay files:
 
     find /opt/rt3/lib/ -type f -name '*_Overlay*' -delete
 
 RT has also changed how web deployment works; you will need to review
-docs/web_deployment.pod for current instructions.  The old
-`fastcgi_server`, `webmux.pl`, and `mason_handler.*` files will not
-work with RT 4.0, and should be removed to reduce confusion.
+docs/web_deployment.pod for current instructions.  The old `fastcgi_server`,
+`webmux.pl`, and `mason_handler.*` files will not work with RT 4.0, and should
+be removed to reduce confusion.
 
-*******
-RT_SiteConfig.pm
 
-You will need to carefully review your local settings when moving from
-3.8 to 4.0.
+=head2 RT_SiteConfig.pm
 
-If you were adding your own custom statuses in earlier versions of RT,
-using ActiveStatus or InactiveStatus you will need to port these to use
-the new Lifecycles functionality.  You can read more about it in
-RT_Config.pm.  In most cases, you can do this by extending the default
-active and inactive lists.
+You will need to carefully review your local settings when moving from 3.8 to
+4.0.
 
-*******
-Upgrading sessions on MySQL
+If you were adding your own custom statuses in earlier versions of RT, using
+ActiveStatus or InactiveStatus you will need to port these to use the new
+Lifecycles functionality.  You can read more about it in RT_Config.pm.  In
+most cases, you can do this by extending the default active and inactive
+lists.
 
-In 4.0.0rc2, RT began shipping an updated schema for the sesions table
-that specificies a character set as well as making the table InnoDB.  As
-part of the upgrade process, your sessions table will be dropped and
-recreated with the new schema.
 
-*******
-UPGRADING FROM RT 3.8.x and RTFM 2.1 or greater
+=head2 Upgrading sessions on MySQL
 
-RT4 now includes an Articles functionality, merged from RTFM.
-You should not install and enable the RT::FM plugin separately on RT 4.
-If you have existing data in RTFM, you can use the etc/upgrade/upgrade-articles
-script to upgrade that data.
+In 4.0.0rc2, RT began shipping an updated schema for the sesions table that
+specificies a character set as well as making the table InnoDB.  As part of
+the upgrade process, your sessions table will be dropped and recreated with
+the new schema.
 
-When running normal upgrade scripts, RT will warn if it finds existing
-RTFM tables that contain data and point you to the upgrade-articles script.
 
-This script should be run from your RT tarball.  It will immediately
-begin populating your new RT4 tables with data from RTFM.  If you have
-browsed in the RT4 UI and created new classes and articles, this script
-will fail spectacularly.  Do *not* run this except on a fresh upgrade of
-RT.
+=head2 Upgrading from installs with RTFM
+
+RT4 now includes an Articles functionality, merged from RTFM.  You should not
+install and enable the RT::FM plugin separately on RT 4.  If you have existing
+data in RTFM, you can use the etc/upgrade/upgrade-articles script to upgrade
+that data.
+
+When running normal upgrade scripts, RT will warn if it finds existing RTFM
+tables that contain data and point you to the upgrade-articles script.
+
+This script should be run from your RT tarball.  It will immediately begin
+populating your new RT4 tables with data from RTFM.  If you have browsed in
+the RT4 UI and created new classes and articles, this script will fail
+spectacularly.  Do *not* run this except on a fresh upgrade of RT.
 
 You can run this as
 
   etc/upgrade/upgrade-articles
 
-It will ouput a lot of data about what it is changing.  You should
-review this for errors.
+It will ouput a lot of data about what it is changing.  You should review this
+for errors.
 
-If you are running RTFM 2.0 with a release of RT, there isn't currently an upgrade
-script that can port RTFM's internal CustomField and Transaction data to RT4.
+If you are running RTFM 2.0 with a release of RT, there isn't currently an
+upgrade script that can port RTFM's internal CustomField and Transaction data
+to RT4.
 
 You must also remove RT::FM from your @Plugins line in RT_SiteConfig.pm.
 
-*******
-The deprecated classes RT::Action::Generic, RT::Condition::Generic and RT::Search::Generic
-have been removed, but you shouldn't have been using them anyway. You should have been using
-RT::Action, RT::Condition and RT::Search, respectively.
 
-* The "Rights Delegation" and "Personal Groups" features have been removed.
+=head2 Removals and updates
 
-* Replace the following code in templates:
+The deprecated classes RT::Action::Generic, RT::Condition::Generic and
+RT::Search::Generic have been removed, but you shouldn't have been using them
+anyway. You should have been using RT::Action, RT::Condition and RT::Search,
+respectively.
+
+=over
+
+=item *
+
+The "Rights Delegation" and "Personal Groups" features have been removed.
+
+=item *
+
+Replace the following code in templates:
 
     [{$Ticket->QueueObj->SubjectTag || $rtname} #{$Ticket->id}]
 
@@ -89,38 +101,45 @@ with
 
     { $Ticket->SubjectTag }
 
-* Unique names are now enforced for user defined groups.  New groups cannot be
-  created with a duplicate name and existing groups cannot be renamed to an
-  in-use name.  The admin interface will warn about existing groups with
-  duplicate names.  Although the groups will still function, some parts of the
-  interface (rights management, subgroup membership) may not work as expected
-  with duplicate names.  Running
+=item *
+
+Unique names are now enforced for user defined groups.  New groups cannot be
+created with a duplicate name and existing groups cannot be renamed to an
+in-use name.  The admin interface will warn about existing groups with
+duplicate names.  Although the groups will still function, some parts of the
+interface (rights management, subgroup membership) may not work as expected
+with duplicate names.  Running
 
     /opt/rt4/sbin/rt-validator --check
 
-  will report duplicate group names, and running it with --resolve will fix
-  duplicates by appending the group id to the name.
+will report duplicate group names, and running it with --resolve will fix
+duplicates by appending the group id to the name.
 
-  Nota Bene: As a result of differing indexes in the schema files, Postgres and
-  SQLite RT databases have enforced group name uniqueness for many years at the
-  database level.
+Nota Bene: As a result of differing indexes in the schema files, Postgres and
+SQLite RT databases have enforced group name uniqueness for many years at the
+database level.
 
-*******
+=back
 
-UPGRADING FROM 4.0.5 and earlier - Changes:
+
+
+=head1 UPGRADING FROM 4.0.5 AND EARLIER
+
+=head2 Schema updates
 
 The fix for an attribute truncation bug on MySQL requires a small ALTER TABLE.
 Be sure you run `make upgrade-database` to apply this change automatically.
 The bug primarily manifested when uploading large logos in the theme editor on
-MySQL.  Refer to etc/upgrade/4.0.6/schema.mysql for the actual ALTER TABLE that
-will be run.
+MySQL.  Refer to etc/upgrade/4.0.6/schema.mysql for the actual ALTER TABLE
+that will be run.
 
-*******
+
+=head2 Query Builder
+
 The web-based query builder now uses Queue limits to restrict the set of
 displayed statuses and owners.  As part of this change, the %cfqueues
-parameter was renamed to %Queues; if you have local modifications to any
-of the following Mason templates, this feature will not function
-correctly:
+parameter was renamed to %Queues; if you have local modifications to any of
+the following Mason templates, this feature will not function correctly:
 
     share/html/Elements/SelectOwner
     share/html/Elements/SelectStatus
