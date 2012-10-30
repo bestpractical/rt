@@ -3495,6 +3495,9 @@ sub _Set {
                                                OldValue  => $Old,
                                                TimeTaken => $args{'TimeTaken'},
         );
+        # Ensure that we can read the transaction, even if the change
+        # just made the ticket unreadable to us
+        $TransObj->{ _object_is_readable } = 1;
         return ( $Trans, scalar $TransObj->BriefDescription );
     }
     else {

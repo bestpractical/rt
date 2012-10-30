@@ -52,6 +52,8 @@
 <& /Elements/Tabs &>
 % }
 
+<& /Elements/ListActions, actions => $Actions &>
+
 <div class="error">
 <%$Why%>
 <br />
@@ -64,6 +66,7 @@ $m->abort();
 </%cleanup>
 
 <%args>
+$Actions => []
 $Code => undef
 $Details => ''
 $Title => loc("RT Error")
