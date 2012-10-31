@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <table>
   <tr>
-    <td class="labeltop"><& ShowRelationLabel, id => $id, Label => loc('Depends on'), Relation => 'DependsOn' &>:\
+    <td class="labeltop"><& ShowRelationLabel, Object => $Ticket, Label => loc('Depends on'), Relation => 'DependsOn' &>:\
 % if ($can_create) {
         <span class="create">(<a href="<%$clone->{'DependsOn-new'}%>"><% loc('Create') %></a>)</span>
 % }
@@ -80,7 +80,7 @@ while ( my $link = $depends_on->Next ) {
     </td>
   </tr>
   <tr>
-    <td class="labeltop"><& ShowRelationLabel, id => $id, Label => loc('Depended on by'), Relation => 'DependedOnBy' &>:\
+    <td class="labeltop"><& ShowRelationLabel, Object => $Ticket, Label => loc('Depended on by'), Relation => 'DependedOnBy' &>:\
 % if ($can_create) {
         <span class="create">(<a href="<%$clone->{'new-DependsOn'}%>"><% loc('Create') %></a>)</span>
 % }
@@ -94,7 +94,7 @@ while ( my $link = $depends_on->Next ) {
     </td>
   </tr>
   <tr>
-    <td class="labeltop"><& ShowRelationLabel, id => $id, Label => loc('Parents'), Relation => 'Parents' &>:\
+    <td class="labeltop"><& ShowRelationLabel, Object => $Ticket, Label => loc('Parents'), Relation => 'Parents' &>:\
 % if ($can_create) {
         <span class="create">(<a href="<%$clone->{'MemberOf-new'}%>"><% loc('Create') %></a>)</span>
 % }
@@ -102,7 +102,7 @@ while ( my $link = $depends_on->Next ) {
     <td class="value"><& /Ticket/Elements/ShowParents, Ticket => $Ticket &></td>
   </tr>
   <tr>
-    <td class="labeltop"><& ShowRelationLabel, id => $id, Label => loc('Children'), Relation => 'Children' &>:\
+    <td class="labeltop"><& ShowRelationLabel, Object => $Ticket, Label => loc('Children'), Relation => 'Children' &>:\
 % if ($can_create) {
         <span class="create">(<a href="<%$clone->{'new-MemberOf'}%>"><% loc('Create') %></a>)</span>
 % }
@@ -110,7 +110,7 @@ while ( my $link = $depends_on->Next ) {
     <td class="value"><& /Ticket/Elements/ShowMembers, Ticket => $Ticket &></td>
   </tr>
   <tr>
-    <td class="labeltop"><& ShowRelationLabel, id => $id, Label => loc('Refers to'), Relation => 'RefersTo' &>:\
+    <td class="labeltop"><& ShowRelationLabel, Object => $Ticket, Label => loc('Refers to'), Relation => 'RefersTo' &>:\
 % if ($can_create) {
         <span class="create">(<a href="<%$clone->{'RefersTo-new'}%>"><% loc('Create') %></a>)</span>
 % }
@@ -124,7 +124,7 @@ while ( my $link = $depends_on->Next ) {
     </td>
   </tr>
   <tr>
-    <td class="labeltop"><& ShowRelationLabel, id => $id, Label => loc('Referred to by'), Relation => 'ReferredToBy' &>:\
+    <td class="labeltop"><& ShowRelationLabel, Object => $Ticket, Label => loc('Referred to by'), Relation => 'ReferredToBy' &>:\
 % if ($can_create) {
         <span class="create">(<a href="<%$clone->{'new-RefersTo'}%>"><% loc('Create') %></a>)</span>
 % }
