@@ -1,25 +1,25 @@
+# Occitan (post 1500) translation for rt
+# Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
+# This file is distributed under the same license as the rt package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: RT 4.0.x\n"
-"Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
-"POT-Creation-Date: 2011-08-05 23:32+0000\n"
-"PO-Revision-Date: 2011-08-05 23:57+0000\n"
-"Last-Translator: Alex Vandiver <alexmv@bestpractical.com>\n"
-"Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
+"Project-Id-Version: rt\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2012-02-04 04:01+0000\n"
+"PO-Revision-Date: 2012-04-29 09:55+0000\n"
+"Last-Translator: Cédric VALMARY (Tot en òc) <cvalmary@yahoo.fr>\n"
+"Language-Team: Occitan (post 1500) <oc@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-06 01:12+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
-
-#: NOT FOUND IN SOURCE
-msgid " (no pubkey!)"
-msgstr " (אין מפתח ציבורי!)"
+"X-Launchpad-Export-Date: 2012-11-01 16:01+0000\n"
+"X-Generator: Launchpad (build 16218)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/RT__Class/ColumnMap:55 share/html/Elements/RT__CustomField/ColumnMap:55 share/html/Elements/RT__Dashboard/ColumnMap:55 share/html/Elements/RT__Group/ColumnMap:55 share/html/Elements/RT__Queue/ColumnMap:55 share/html/Elements/RT__SavedSearch/ColumnMap:55 share/html/Elements/RT__Scrip/ColumnMap:55 share/html/Elements/RT__Template/ColumnMap:55 share/html/Elements/RT__User/ColumnMap:55
 msgid "#"
-msgstr "#"
+msgstr "n°"
 
 #: share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:196 share/html/m/ticket/history:56 share/html/m/ticket/show:205
 #. ($Ticket->Id, $Ticket->Subject || '')
@@ -29,12 +29,12 @@ msgstr "#"
 #. ($t->Id, $t->Subject || '')
 #. ($ticket->Id, $ticket->Subject)
 msgid "#%1: %2"
-msgstr ""
+msgstr "n°%1 : %2"
 
 #: lib/RT/URI/fsck_com_rt.pm:219
 #. ($self->ObjectType, $self->Object->Id)
 msgid "%1 #%2"
-msgstr ""
+msgstr "%1 n°%2"
 
 #: lib/RT/Date.pm:369
 #. ($s, $time_unit)
@@ -49,69 +49,69 @@ msgstr "%1 %2 %3"
 #: lib/RT/Date.pm:627
 #. ($wday,$mon,$mday,$year)
 msgid "%1 %2 %3 %4"
-msgstr ""
+msgstr "%1 %2 %3 %4"
 
 #: lib/RT/Date.pm:642
 #. ($wday,$mon,$mday,$hour,$min,$year)
 msgid "%1 %2 %3 %4:%5 %6"
-msgstr ""
+msgstr "%1 %2 %3 %4 : %5 %6"
 
 #: lib/RT/Date.pm:639
 #. ($wday,$mon,$mday,$hour,$min,$sec,$year)
 msgid "%1 %2 %3 %4:%5:%6 %7"
-msgstr ""
+msgstr "%1 %2 %3 %4 : %5 : %6 %7"
 
 #: lib/RT/Record.pm:1772 lib/RT/Transaction.pm:721 lib/RT/Transaction.pm:763
 #. ($cf->Name, $new_content)
 #. ($field, $new)
 #. ($self->Field, $principal->Object->Name)
 msgid "%1 %2 added"
-msgstr "%1 %2 נוסף"
+msgstr "%1 %2 apondut"
 
 #: lib/RT/Date.pm:366
 #. ($s, $time_unit)
 msgid "%1 %2 ago"
-msgstr "לפני %1 %2"
+msgstr "i a %1 %2"
 
 #: lib/RT/Record.pm:1779 lib/RT/Transaction.pm:727
 #. ($cf->Name, $old_content, $new_content)
 #. ($field, $old, $new)
 msgid "%1 %2 changed to %3"
-msgstr "%1 %2 שונה ל%3"
+msgstr "%1 %2 cambiat en %3"
 
 #: lib/RT/Record.pm:1776 lib/RT/Transaction.pm:724 lib/RT/Transaction.pm:769
 #. ($cf->Name, $old_content)
 #. ($field, $old)
 #. ($self->Field, $principal->Object->Name)
 msgid "%1 %2 deleted"
-msgstr "%1 %2 נמחק"
+msgstr "%1 %2 suprimit"
 
 #: share/html/Widgets/SavedSearch:139
 #. (loc($self->{SearchType}), $self->{CurrentSearch}{Object}->Description)
 msgid "%1 %2 deleted."
-msgstr "%1 %2 נמחק."
+msgstr "%1 %2 suprimits"
 
 #: share/html/Widgets/SavedSearch:129
 #. (loc($self->{SearchType}), $args->{SavedSearchDescription})
 msgid "%1 %2 saved."
-msgstr "%1 %2 נשמר."
+msgstr "%1 %2 salvats."
 
 #: share/html/Widgets/SavedSearch:113
 #. (loc($self->{SearchType}), $args->{SavedSearchDescription})
 msgid "%1 %2 updated."
-msgstr "%1 %2  עודכן."
+msgstr "%1 %2 mes a jorn"
 
 #: share/html/Elements/RT__Scrip/ColumnMap:89 share/html/Ticket/Elements/PreviewScrips:70
 #. ($_[0]->loc($_[0]->ConditionObj->Name),            $_[0]->loc($_[0]->ActionObj->Name),            $_[0]->loc($_[0]->TemplateObj->Name),)
 #. (loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name))
 msgid "%1 %2 with template %3"
-msgstr "%1 %2 עם תבנית %3"
+msgstr "%1 %2 amb lo modèl %3"
 
 #: share/html/Ticket/Elements/ShowAttachments:86 share/html/m/ticket/show:342
 #. ($rev->CreatedAsString, $size, $m->scomp('/Elements/ShowUser', User => $rev->CreatorObj))
 #. ($rev->CreatedAsString, $size, $rev->CreatorObj->Name)
 msgid "%1 (%2) by %3"
-msgstr "%1 (%2) ע\"י %3"
+msgstr "%1 (%2) per %3"
 
 #: share/html/Approvals/Elements/Approve:72 share/html/Approvals/Elements/Approve:81 share/html/SelfService/Update.html:63 share/html/Ticket/Elements/EditBasics:64 share/html/Ticket/Update.html:110 share/html/Ticket/Update.html:122 share/html/Tools/MyDay.html:68 share/html/m/ticket/reply:64 share/html/m/ticket/reply:73
 #. ($m->scomp('/Elements/ShowUser', User => $TicketObj->OwnerObj))
@@ -123,74 +123,70 @@ msgstr "%1 (%2) ע\"י %3"
 #. (loc('Deny'))
 #. (loc($Ticket->Status()))
 msgid "%1 (Unchanged)"
-msgstr "%1 (לא השתנה)"
+msgstr "%1 (incambiat)"
 
 #: share/html/Dashboards/Elements/Deleted:57
 #. (($_->{description} || $_->{name}), $_->{pane})
 msgid "%1 (from pane %2)"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "%1 - %2 shown"
-msgstr "%1 - %2 מוצגים"
+msgstr "%1 (del panèl %2)"
 
 #: bin/rt-crontool:360
 #. ("--log")
 msgid "%1 - Adjust LogToScreen config option"
-msgstr ""
+msgstr "%1 - Ajustatz l'opcion de configuracion LogToScreen"
 
 #: bin/rt-crontool:335 bin/rt-crontool:342 bin/rt-crontool:348
 #. ("--action-arg", "--action")
 #. ("--condition-arg", "--condition")
 #. ("--search-arg", "--search")
 msgid "%1 - An argument to pass to %2"
-msgstr ""
+msgstr "%1 - Un paramètre de passar a %2"
 
 #: bin/rt-crontool:362
 #. ("--verbose")
 msgid "%1 - Output status updates to STDOUT"
-msgstr ""
+msgstr "%1 - Escriu las mesas a jorn d'estatuts sus STDOUT"
 
 #: bin/rt-crontool:354
 #. ("--transaction")
 msgid "%1 - Specify if you want to use either 'first', 'last' or 'all' transactions"
-msgstr ""
+msgstr "%1 - Precisatz se volètz utilizar la primièra (first), la darrièra (last) o totas (all) las transaccions"
 
 #: bin/rt-crontool:351
 #. ("--template")
 msgid "%1 - Specify name or id of template(s) you want to use"
-msgstr ""
+msgstr "%1 - Especificatz lo nom o l'id del modèl que volètz utilizar"
 
 #: bin/rt-crontool:345
 #. ("--action")
 msgid "%1 - Specify the action module you want to use"
-msgstr ""
+msgstr "%1 - Precisatz l'accion que volètz utilizar"
 
 #: bin/rt-crontool:357
 #. ("--transaction-type")
 msgid "%1 - Specify the comma separated list of transactions' types you want to use"
-msgstr ""
+msgstr "%1 - Precisatz per una lista separada per de virgulas, los tipes de transaccions que volètz utilizar"
 
 #: bin/rt-crontool:339
 #. ("--condition")
 msgid "%1 - Specify the condition module you want to use"
-msgstr "%1 - ציין את רכיב התנאי בו תרצה להשתמש"
+msgstr "%1 - Precisatz la condicion que volètz utilizar"
 
 #: bin/rt-crontool:332
 #. ("--search")
 msgid "%1 - Specify the search module you want to use"
-msgstr "%1 - ציין את רכיב החיפוש בו תרצה להשתמש"
+msgstr "%1 - Precisatz la recèrca que volètz utilizar"
 
 #: share/html/Elements/Footer:56 share/html/m/_elements/footer:51
 #. (_unsafe,     '&#187;&#124;&#171;', $RT::VERSION, '2012', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #. (_unsafe,     '', '', '2012', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 msgid "%1 RT %2 Copyright 1996-%3 %4."
-msgstr ""
+msgstr "%1 RT %2 Copyright 1996-%3 %4."
 
 #: lib/RT/Record.pm:1807
 #. ($args{'Value'}, $cf->Name)
 msgid "%1 added as a value for %2"
-msgstr "%1 הוסף כערך של %2"
+msgstr "%1 apondut(da) coma valor de %2"
 
 #: share/html/Install/DatabaseDetails.html:170
 #. ($RT::DatabaseName)
@@ -218,7 +214,7 @@ msgstr ""
 #. ($Ticket->LastUpdatedAsString, $m->scomp('/Elements/ShowUser', User => $Ticket->LastUpdatedByObj))
 #. ($self->BriefDescription , $self->CreatorObj->Name)
 msgid "%1 by %2"
-msgstr "%1 של %2"
+msgstr "%1 per %2"
 
 #: lib/RT/Record.pm:509 lib/RT/Transaction.pm:657 lib/RT/Transaction.pm:858 lib/RT/Transaction.pm:863 lib/RT/Transaction.pm:877 lib/RT/Transaction.pm:886 lib/RT/Transaction.pm:924
 #. ($self->loc($self->Field),                               ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'")
@@ -227,68 +223,60 @@ msgstr "%1 של %2"
 #. ($self->loc( $args{'Field'} ),            ( $old_val ? '"' . $old_val . '"' : $self->loc("(no value)") ),            '"' . $self->__Value( $args{'Field'}) . '"')
 #. ($self->loc($self->Field), $t2->AsString, $t1->AsString)
 msgid "%1 changed from %2 to %3"
-msgstr "%1 שונה מ%2 ל%3"
+msgstr "%1 cambiat(ada) de %2 a %3"
 
 #: share/html/Admin/CustomFields/Modify.html:218
 #. (loc("Render Type"), $original, $RenderType)
 msgid "%1 changed from '%2' to '%3'"
-msgstr ""
+msgstr "%1 cambiat de '%2' en '%3'"
 
 #: share/html/Search/Chart.html:128
 #. (_unsafe, $m->scomp('Elements/SelectChartType', Name => 'ChartStyle', Default => $ChartStyle), $m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $ARGS{Query}, Default => $PrimaryGroupBy))
 msgid "%1 chart by %2"
-msgstr ""
+msgstr "grafic %1 per %2"
 
 #: share/html/Search/Elements/EditSearches:201
 #. ($SavedSearch->{'Object'}->Description)
 msgid "%1 copy"
-msgstr "העתק של%1"
+msgstr "còpia de %1"
 
 #: share/html/Admin/Tools/Configuration.html:77
 #. ($meta->{'Source'}{'Extension'})
 msgid "%1 core config"
-msgstr ""
+msgstr "Configuracion centrala %1"
 
 #: lib/RT/Record.pm:953
 msgid "%1 could not be set to %2."
-msgstr "לא התאפשר לשנות את %1 ל%2"
+msgstr "%1 a pas pogut èsser posicionat a %2."
 
 #: lib/RT/Transaction.pm:624
 #. ($obj_type)
 msgid "%1 created"
-msgstr "%1 נוצר"
+msgstr "%1 creat(ada)"
 
 #: lib/RT/Transaction.pm:635
 #. ($obj_type)
 msgid "%1 deleted"
-msgstr "%1 נמחק"
+msgstr "%1 suprimit(ida)"
 
 #: lib/RT/Transaction.pm:630
 #. ($obj_type)
 msgid "%1 disabled"
-msgstr "מבוטל"
+msgstr "%1 desactivat(ada)"
 
 #: share/html/Install/Sendmail.html:86
 #. ($ARGS{SendmailPath})
 msgid "%1 doesn't exist."
-msgstr "%1 אינו קיים."
+msgstr "%1 existís pas."
 
 #: lib/RT/Transaction.pm:627
 #. ($obj_type)
 msgid "%1 enabled"
-msgstr "מופעל"
+msgstr "%1 activat(ada)"
 
 #: etc/initialdata:574
 msgid "%1 highest priority tickets I own"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "%1 highest priority tickets I own..."
-msgstr "%1 הפניות עם העדיפות הגבוהה ביותר בטיפולי..."
-
-#: NOT FOUND IN SOURCE
-msgid "%1 highest priority tickets I requested..."
-msgstr "%1 הפניות עם העדיפות הגבוהה ביותר שאני פתחתי..."
 
 #: bin/rt-crontool:327
 #. ($0)
@@ -326,7 +314,7 @@ msgstr ""
 #: share/html/Ticket/Elements/ShowTime:49 share/html/Ticket/Elements/ShowTime:51
 #. ($minutes)
 msgid "%1 min"
-msgstr ""
+msgstr "%1 min"
 
 #: share/html/Articles/Elements/UpdatedArticles:48
 #. ($rows)
@@ -336,7 +324,7 @@ msgstr ""
 #: share/html/Articles/Elements/NewestArticles:48
 #. ($rows)
 msgid "%1 newest articles"
-msgstr ""
+msgstr "%1 articles los mai recents"
 
 #: etc/initialdata:585
 msgid "%1 newest unowned tickets"
@@ -344,21 +332,17 @@ msgstr ""
 
 #: lib/RT/CustomField.pm:1183
 msgid "%1 objects"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "%1 rights"
-msgstr "זכויות"
+msgstr "%1 objèctes"
 
 #: share/html/Admin/Tools/Configuration.html:74
 #. ($meta->{'Source'}{'Extension'})
 msgid "%1 site config"
-msgstr ""
+msgstr "Configuracion de site %1"
 
 #: lib/RT/SharedSetting.pm:257
 #. (ucfirst($self->ObjectName), $msg)
 msgid "%1 update: %2"
-msgstr ""
+msgstr "%1 mesa a jorn : %2"
 
 #: lib/RT/SharedSetting.pm:250
 #. (ucfirst($self->ObjectName))
@@ -367,32 +351,32 @@ msgstr ""
 
 #: lib/RT/SharedSetting.pm:254
 msgid "%1 updated"
-msgstr ""
+msgstr "%1 mes a jorn"
 
 #: lib/RT/CustomField.pm:1184
 msgid "%1's %2 objects"
-msgstr ""
+msgstr "%1 de %2 objèctes"
 
 #: lib/RT/CustomField.pm:1185
 msgid "%1's %2's %3 objects"
-msgstr ""
+msgstr "%1 de %2 de %3 objèctes"
 
 #: share/html/Admin/Users/GnuPG.html:114
 #. ($UserObj->Name)
 msgid "%1's GnuPG keys"
-msgstr ""
+msgstr "Claus GnuPG de %1"
 
 #: share/html/Elements/EditPassword:55
 #. ($session{'CurrentUser'}->Name())
 msgid "%1's current password"
-msgstr ""
+msgstr "Senhal actual de %1"
 
 #: share/html/Dashboards/Elements/SelectPrivacy:63 share/html/Dashboards/Elements/SelectPrivacy:65 share/html/Dashboards/Elements/ShowDashboards:55
 #. ($m->interp->apply_escapes($object->Name, 'h'))
 #. ($m->scomp('/Elements/ShowUser', User => $object))
 #. ($Object->Name)
 msgid "%1's dashboards"
-msgstr ""
+msgstr "Tablèus de bòrd de %1"
 
 #: share/html/Articles/Article/Elements/SelectSavedSearches:56 share/html/Elements/SavedSearches:56 share/html/Search/Elements/SearchPrivacy:56 share/html/Search/Elements/SearchPrivacy:58
 #. ($m->interp->apply_escapes($Object->Name, 'h'))
@@ -400,48 +384,48 @@ msgstr ""
 #. ($privacies{$privacy}->Name)
 #. ($Object->Name)
 msgid "%1's saved searches"
-msgstr ""
+msgstr "Recèrcas salvadas de %1"
 
 #: lib/RT/Transaction.pm:539
 #. ($self)
 msgid "%1: no attachment specified"
-msgstr ""
+msgstr "%1 : pas d'estacament especificat"
 
 #: lib/RT/Date.pm:634
 #. ($hour,$min)
 msgid "%1:%2"
-msgstr ""
+msgstr "%1 : %2"
 
 #: lib/RT/Date.pm:631
 #. ($hour,$min,$sec)
 msgid "%1:%2:%3"
-msgstr ""
+msgstr "%1 : %2 : %3"
 
 #: share/html/Elements/CreateTicket:54
 #. (_unsafe, $button_start, $button_end, $queue_selector)
 msgid "%1New ticket in%2&nbsp;%3"
-msgstr ""
+msgstr "%1Crear un tiquet dins%2&nbsp;%3"
 
 #: share/html/Ticket/Elements/ShowTransactionAttachments:138
 #. ($size)
 msgid "%1b"
-msgstr ""
+msgstr "%1b"
 
 #: share/html/Ticket/Elements/ShowTransactionAttachments:135
 #. (int( $size / 102.4 ) / 10)
 msgid "%1k"
-msgstr ""
+msgstr "%1k"
 
 #: share/html/Ticket/Elements/ShowTransactionAttachments:132
 #. (int( $size / 1024 / 102.4 ) / 10)
 msgid "%1m"
-msgstr ""
+msgstr "%1 m"
 
 #: share/html/Admin/Tools/Queries.html:110 share/html/Admin/Tools/Queries.html:81
 #. (sprintf('%.4f', $duration))
 #. (sprintf('%.4f', $seconds))
 msgid "%1s"
-msgstr ""
+msgstr "%1 s"
 
 #: share/html/Articles/Elements/ShowTopicLink:14
 #. ($Articles->Count)
@@ -451,17 +435,17 @@ msgstr ""
 #: share/html/Ticket/Elements/ShowTime:51
 #. (sprintf("%.1f",$minutes / 60))
 msgid "%quant(%1,hour)"
-msgstr ""
+msgstr "%quant(%1,ora)"
 
 #: lib/RT/Ticket.pm:903
 #. ($args{'Status'})
 msgid "'%1' is an invalid value for status"
-msgstr ""
+msgstr "'%1' es un estatut invalid"
 
 #: lib/RT/Queue.pm:551
 #. ($name)
 msgid "'%1' is not a valid name."
-msgstr ""
+msgstr "%1 es pas un nom valid."
 
 #: share/html/Articles/Article/Edit.html:135 share/html/Articles/Article/Edit.html:226 share/html/Articles/Article/ExtractFromTicket.html:93 share/html/Articles/Article/ExtractIntoTopic.html:70
 #. ($Class)
@@ -470,39 +454,31 @@ msgstr ""
 
 #: lib/RT/Interface/Web.pm:3104
 msgid "'Roles'"
-msgstr ""
+msgstr "Ròtles"
 
 #: lib/RT/Interface/Web.pm:3067
 msgid "'System'"
-msgstr ""
+msgstr "Sistèma"
 
 #: lib/RT/Interface/Web.pm:3085
 msgid "'User Groups'"
-msgstr ""
+msgstr "Gropes d'utilizaires"
 
 #: lib/RT/Interface/Web.pm:3136
 msgid "'Users'"
-msgstr ""
+msgstr "Utilizaires"
 
 #: share/html/Ticket/Elements/Reminders:102
 msgid "(Check box to complete)"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "(Check box to delete group member)"
-msgstr "(סמן תיבה כדי למחוק חבר בקבוצה)"
-
-#: NOT FOUND IN SOURCE
-msgid "(Check box to delete scrip)"
-msgstr "(סמן תיבה כדי למחוק סקריפ)"
-
 #: share/html/Admin/Elements/EditCustomFieldValues:92 share/html/Admin/Elements/EditQueueWatchers:67 share/html/Admin/Elements/EditScrips:67 share/html/Admin/Elements/EditTemplates:69 share/html/Admin/Groups/Members.html:107 share/html/Elements/EditLinks:112 share/html/Ticket/Elements/BulkLinks:117 share/html/Ticket/Elements/EditPeople:79
 msgid "(Check box to delete)"
-msgstr "(סמן תיבה כדי למחוק)"
+msgstr ""
 
 #: share/html/Articles/Article/Elements/EditLinks:53
 msgid "(Check boxes to delete)"
-msgstr "(סמן תיבות כדי למחוק)"
+msgstr ""
 
 #: share/html/Ticket/Create.html:252 share/html/m/ticket/create:413
 msgid "(Enter ticket ids or URLs, separated with spaces)"
@@ -516,23 +492,23 @@ msgstr ""
 
 #: share/html/Admin/Elements/EditCustomFields:95 share/html/Admin/Elements/ListGlobalCustomFields:55
 msgid "(No custom fields)"
-msgstr ""
+msgstr "(Pas de camp personalizat)"
 
 #: share/html/Admin/Groups/Members.html:71
 msgid "(No members)"
-msgstr ""
+msgstr "(Pas cap de membre)"
 
 #: share/html/Admin/Elements/EditScrips:69 share/html/Admin/Elements/ListGlobalScrips:49
 msgid "(No scrips)"
-msgstr ""
+msgstr "(Pas cap de Scrip)"
 
 #: share/html/Admin/Elements/EditTemplates:54
 msgid "(No templates)"
-msgstr ""
+msgstr "(Pas cap de modèl)"
 
 #: share/html/Admin/Elements/PickCustomFields:49 share/html/Admin/Elements/PickObjects:49
 msgid "(None)"
-msgstr ""
+msgstr "(Pas cap)"
 
 #: share/html/Ticket/Create.html:150 share/html/m/ticket/create:319
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)"
@@ -552,7 +528,7 @@ msgstr ""
 
 #: share/html/Admin/CustomFields/index.html:74
 msgid "(any)"
-msgstr ""
+msgstr "(totes)"
 
 #: share/html/Articles/Elements/NewestArticles:66 share/html/Articles/Elements/UpdatedArticles:67
 msgid "(no Summary)"
@@ -560,23 +536,23 @@ msgstr ""
 
 #: share/html/Admin/Articles/Elements/Topics:99 share/html/Articles/Article/Elements/EditTopics:58 share/html/Articles/Article/Elements/EditTopics:74 share/html/Articles/Article/Elements/Preformatted:49 share/html/Articles/Article/Elements/Preformatted:50 share/html/Articles/Elements/BeforeMessageBox:103 share/html/Articles/Elements/BeforeMessageBox:120 share/html/Articles/Elements/BeforeMessageBox:70 share/html/Articles/Elements/BeforeMessageBox:82 share/html/Articles/Elements/BeforeMessageBox:90 share/html/Articles/Elements/NewestArticles:60 share/html/Articles/Elements/ShowTopic:51 share/html/Articles/Elements/ShowTopicLink:8 share/html/Articles/Elements/UpdatedArticles:61 share/html/Articles/Topics.html:105 share/html/SelfService/Article/Display.html:49 share/html/SelfService/Article/Search.html:77 share/html/SelfService/Article/Search.html:85
 msgid "(no name)"
-msgstr ""
+msgstr "(sens nom)"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:264 share/html/Elements/RT__Ticket/ColumnMap:281
 msgid "(no pubkey!)"
-msgstr ""
+msgstr "(pas de clau publica !)"
 
 #: lib/RT/Transaction.pm:650 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Elements/SelectRights:77 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:116 share/html/Elements/EditCustomFieldSelect:90 share/html/Elements/EditCustomFieldSelect:99 share/html/Elements/SelectCustomFieldValue:53 share/html/Elements/ShowCustomFields:59 share/html/Search/Elements/Chart:121 share/html/Search/Elements/Chart:82 share/html/m/ticket/show:262
 msgid "(no value)"
-msgstr ""
+msgstr "(pas cap de valor)"
 
 #: share/html/Admin/Elements/EditCustomFieldValues:49
 msgid "(no values)"
-msgstr ""
+msgstr "(pas cap de valors)"
 
 #: share/html/Elements/EditLinks:134 share/html/Ticket/Elements/BulkLinks:128
 msgid "(only one ticket)"
-msgstr "(רק פנייה אחת)"
+msgstr "(un sol tiquet)"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:121
 #. ($count)
@@ -589,16 +565,16 @@ msgstr ""
 
 #: share/html/Admin/Users/Modify.html:69
 msgid "(required)"
-msgstr ""
+msgstr "(requesit)"
 
 #: share/html/Elements/GnuPG/SelectKeyForEncryption:53
 #. ($key->{'TrustTerse'})
 msgid "(trust: %1)"
-msgstr ""
+msgstr "(fisança : %1)"
 
 #: share/html/Ticket/Elements/ShowTransactionAttachments:259 share/html/Ticket/Elements/ShowTransactionAttachments:67
 msgid "(untitled)"
-msgstr ""
+msgstr "(sens títol)"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:267 share/html/Elements/RT__Ticket/ColumnMap:284
 msgid "(untrusted!)"
@@ -606,7 +582,7 @@ msgstr ""
 
 #: share/html/Articles/Elements/BeforeMessageBox:68 share/html/Elements/EditCustomFieldSelect:59
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #: bin/rt-crontool:136
 msgid "--template-id is deprecated argument and can not be used with --template"
@@ -620,13 +596,9 @@ msgstr ""
 msgid "<% $field->{'name'} %>"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
-msgstr "<input type=\"submit\" value=\"פנייה חדשה ב\">&nbsp;%1"
-
 #: etc/initialdata:215
 msgid "A blank template"
-msgstr ""
+msgstr "Un modèl void"
 
 #: share/html/Admin/Users/Modify.html:350
 msgid "A password was not set, so user won't be able to login."
@@ -634,7 +606,7 @@ msgstr ""
 
 #: lib/RT/ACE.pm:169
 msgid "ACE not found"
-msgstr ""
+msgstr "ACE pas trobat"
 
 #: lib/RT/ACE.pm:490
 msgid "ACEs can only be created and deleted."
@@ -642,25 +614,25 @@ msgstr ""
 
 #: share/html/Search/Elements/SelectAndOr:48
 msgid "AND"
-msgstr ""
+msgstr "E"
 
 #: share/html/Elements/Tabs:469
 msgid "About me"
-msgstr "מידע אודותי"
+msgstr "A prepaus de ieu"
 
 #: share/html/Admin/Users/Modify.html:104
 msgid "Access control"
-msgstr ""
+msgstr "Contraròtle d'accès"
 
 #: share/html/Admin/Elements/EditScrip:69 share/html/Elements/RT__Scrip/ColumnMap:76
 msgid "Action"
-msgstr ""
+msgstr "Accion"
 
 #: lib/RT/Scrip.pm:153 lib/RT/Scrip.pm:655
 #. ($args{'ScripAction'})
 #. ($value)
 msgid "Action '%1' not found"
-msgstr ""
+msgstr "Accion '%1' pas trobada"
 
 #: bin/rt-crontool:231
 msgid "Action committed."
@@ -668,15 +640,15 @@ msgstr ""
 
 #: lib/RT/Scrip.pm:149 lib/RT/Scrip.pm:650
 msgid "Action is mandatory argument"
-msgstr ""
+msgstr "L'argument 'Accion' es obligatòri"
 
 #: bin/rt-crontool:227
 msgid "Action prepared..."
-msgstr ""
+msgstr "Accion preparada..."
 
 #: share/html/Elements/Tabs:515
 msgid "Actions"
-msgstr ""
+msgstr "Accions"
 
 #: share/html/Ticket/Elements/ShowRequestor:164
 msgid "Active Tickets"
@@ -690,39 +662,39 @@ msgstr ""
 #: share/html/Admin/Elements/EditRights:105
 #. (loc($AddPrincipal))
 msgid "Add %1"
-msgstr ""
+msgstr "Apondre %1"
 
 #: share/html/Search/Bulk.html:93
 msgid "Add AdminCc"
-msgstr "הוסף העתק ניהולי"
+msgstr "Apondre AdminCC"
 
 #: share/html/Ticket/Elements/Bookmark:90
 msgid "Add Bookmark"
-msgstr ""
+msgstr "Apondre un signet"
 
 #: share/html/Search/Bulk.html:89
 msgid "Add Cc"
-msgstr "הוסף העתק"
+msgstr "Apondre CC"
 
 #: share/html/Search/Elements/EditFormat:51
 msgid "Add Columns"
-msgstr ""
+msgstr "Apondre de colomnas"
 
 #: share/html/Search/Elements/PickCriteria:48
 msgid "Add Criteria"
-msgstr ""
+msgstr "Apondre un critèri"
 
 #: share/html/Ticket/Elements/AddAttachments:59 share/html/m/ticket/create:347 share/html/m/ticket/reply:133
 msgid "Add More Files"
-msgstr "הוסף עוד קבצים"
+msgstr "Apondre d'autres fichièrs"
 
 #: share/html/Search/Bulk.html:85
 msgid "Add Requestor"
-msgstr "הוסף מבקש"
+msgstr "Apondre un Demandaire"
 
 #: share/html/Admin/Elements/AddCustomFieldValue:48
 msgid "Add Value"
-msgstr ""
+msgstr "Apondre una valor"
 
 #: share/html/Admin/Global/Scrip.html:61
 msgid "Add a scrip which will apply to all queues"
@@ -730,11 +702,11 @@ msgstr ""
 
 #: share/html/Search/Bulk.html:125
 msgid "Add comments or replies to selected tickets"
-msgstr "הוסף הערות או תגובות לפניות הנבחרות"
+msgstr ""
 
 #: share/html/Admin/Elements/SelectNewGroupMembers:66
 msgid "Add group"
-msgstr ""
+msgstr "Apondre un grop"
 
 #: share/html/Admin/Articles/Elements/Topics:108
 msgid "Add here"
@@ -742,11 +714,11 @@ msgstr ""
 
 #: share/html/Admin/Groups/Members.html:63
 msgid "Add members"
-msgstr ""
+msgstr "Apondre de membres"
 
 #: share/html/Admin/Queues/People.html:83 share/html/Ticket/Elements/AddWatchers:51
 msgid "Add new watchers"
-msgstr "הוסף צופים חדשים"
+msgstr ""
 
 #: share/html/Admin/Elements/EditRights:170
 #. (loc($AddPrincipal))
@@ -755,7 +727,7 @@ msgstr ""
 
 #: share/html/Search/Build.html:83
 msgid "Add these terms"
-msgstr ""
+msgstr "Apondre aqueles tèrmes"
 
 #: share/html/Search/Build.html:84
 msgid "Add these terms and Search"
@@ -763,11 +735,11 @@ msgstr ""
 
 #: share/html/Admin/Elements/SelectNewGroupMembers:49
 msgid "Add user"
-msgstr ""
+msgstr "Apondre un utilizaire"
 
 #: share/html/Search/Bulk.html:172
 msgid "Add values"
-msgstr ""
+msgstr "Apondre las valors"
 
 #: lib/RT/CustomField.pm:208
 msgid "Add, modify and delete custom field values for objects"
@@ -785,51 +757,51 @@ msgstr ""
 
 #: share/html/Elements/RT__Queue/ColumnMap:70 share/html/Elements/RT__User/ColumnMap:106
 msgid "Address"
-msgstr ""
+msgstr "Adreça"
 
 #: share/html/Elements/RT__User/ColumnMap:111
 msgid "Address 2"
-msgstr ""
+msgstr "Adreça 2"
 
 #: share/html/Admin/Users/Modify.html:130 share/html/User/Prefs.html:123
 msgid "Address1"
-msgstr "כתובת1"
+msgstr "Adreça1"
 
 #: share/html/Admin/Users/Modify.html:135 share/html/User/Prefs.html:127
 msgid "Address2"
-msgstr "כתובת2"
+msgstr "Adreça2"
 
 #: share/html/Ticket/Create.html:141 share/html/m/ticket/create:313
 msgid "Admin Cc"
-msgstr ""
+msgstr "Admin Cc"
 
 #: etc/initialdata:292
 msgid "Admin Comment"
-msgstr ""
+msgstr "Comentari Admin"
 
 #: etc/initialdata:271
 msgid "Admin Correspondence"
-msgstr ""
+msgstr "Correspondéncia Admin"
 
 #: share/html/Admin/Queues/index.html:48
 msgid "Admin queues"
-msgstr ""
+msgstr "Administrators de filas"
 
 #: share/html/Admin/Global/index.html:48
 msgid "Admin/Global configuration"
-msgstr ""
+msgstr "Configuracion globala / administracion"
 
 #: lib/RT/Tickets.pm:151
 msgid "AdminCCGroup"
-msgstr ""
+msgstr "AdminCCGroup"
 
 #: lib/RT/ACE.pm:102 lib/RT/Tickets.pm:140 share/html/Elements/RT__Ticket/ColumnMap:183 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowPeople:66 share/html/m/ticket/show:298
 msgid "AdminCc"
-msgstr "העתק ניהולי"
+msgstr "AdminCc"
 
 #: lib/RT/Graph/Tickets.pm:154
 msgid "AdminCcs"
-msgstr ""
+msgstr "AdminCcs"
 
 #: lib/RT/Class.pm:94
 msgid "AdminClass"
@@ -837,7 +809,7 @@ msgstr ""
 
 #: lib/RT/CustomField.pm:206
 msgid "AdminCustomField"
-msgstr ""
+msgstr "GerirCampPersonalizat"
 
 #: lib/RT/CustomField.pm:207
 msgid "AdminCustomFieldValues"
@@ -845,7 +817,7 @@ msgstr ""
 
 #: lib/RT/Group.pm:94
 msgid "AdminGroup"
-msgstr ""
+msgstr "GerirGropes"
 
 #: lib/RT/Group.pm:95
 msgid "AdminGroupMembership"
@@ -853,7 +825,7 @@ msgstr ""
 
 #: lib/RT/Queue.pm:93
 msgid "AdminQueue"
-msgstr ""
+msgstr "GerirFila"
 
 #: lib/RT/Class.pm:95
 msgid "AdminTopics"
@@ -861,19 +833,19 @@ msgstr ""
 
 #: lib/RT/System.pm:81
 msgid "AdminUsers"
-msgstr ""
+msgstr "GerirUtilizaires"
 
 #: share/html/Ticket/Elements/EditPeople:76
 msgid "Administrative Cc"
-msgstr "העתק ניהולי"
+msgstr "Cc Administratiu"
 
 #: lib/RT/Installer.pm:154
 msgid "Administrative password"
-msgstr ""
+msgstr "Senhal d'administrator"
 
 #: share/html/Elements/Tabs:725
 msgid "Advanced"
-msgstr ""
+msgstr "Avançat"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:49 share/html/Articles/Article/Elements/ShowSearchCriteria:51
 msgid "Advanced search"
@@ -889,7 +861,7 @@ msgstr ""
 
 #: etc/initialdata:363 etc/upgrade/3.8.2/content:69
 msgid "All Approvals Passed"
-msgstr ""
+msgstr "Totas las aprovacions obtengudas"
 
 #: share/html/Admin/Articles/Classes/Modify.html:75
 msgid "All Articles in this class should be listed in a dropdown of the ticket reply page"
@@ -905,7 +877,7 @@ msgstr ""
 
 #: share/html/Admin/Queues/index.html:110
 msgid "All Queues"
-msgstr ""
+msgstr "Totas las filas"
 
 #: share/html/Ticket/Elements/ShowRequestor:166
 msgid "All Tickets"
@@ -941,11 +913,11 @@ msgstr ""
 
 #: lib/RT/Attachment.pm:722
 msgid "Already encrypted"
-msgstr ""
+msgstr "Ja chifrat"
 
 #: share/html/Search/Elements/EditQuery:60
 msgid "And/Or"
-msgstr ""
+msgstr "E/O"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:74
 msgid "Any field"
@@ -957,11 +929,11 @@ msgstr ""
 
 #: share/html/Elements/RT__CustomField/ColumnMap:90
 msgid "Applied"
-msgstr ""
+msgstr "Aplicat"
 
 #: share/html/Admin/CustomFields/Modify.html:89 share/html/Elements/Tabs:340 share/html/Elements/Tabs:370
 msgid "Applies to"
-msgstr ""
+msgstr "S'aplica a"
 
 #: share/html/Admin/Articles/Classes/Objects.html:56 share/html/Admin/CustomFields/Objects.html:57
 msgid "Applies to all objects"
@@ -969,7 +941,7 @@ msgstr ""
 
 #: share/html/Search/Edit.html:62
 msgid "Apply"
-msgstr ""
+msgstr "Aplicar"
 
 #: share/html/Admin/Articles/Classes/Objects.html:60 share/html/Admin/CustomFields/Objects.html:61
 msgid "Apply globally"
@@ -977,18 +949,18 @@ msgstr ""
 
 #: share/html/Search/Edit.html:62
 msgid "Apply your changes"
-msgstr ""
+msgstr "Aplicar vòstres cambiaments"
 
 #: share/html/Elements/Tabs:444
 msgid "Approval"
-msgstr "אישור"
+msgstr "Aprovacion"
 
 #: share/html/Approvals/Display.html:64 share/html/Approvals/Elements/ShowDependency:65 share/html/Approvals/index.html:88
 #. ($Ticket->Id, $Ticket->Subject)
 #. ($link->BaseObj->Id, $link->BaseObj->Subject)
 #. ($ticket->id, $msg)
 msgid "Approval #%1: %2"
-msgstr ""
+msgstr "Aprovacion #%1 : %2"
 
 #: share/html/Approvals/index.html:77
 #. ($ticket->Id)
@@ -1002,7 +974,7 @@ msgstr ""
 
 #: etc/initialdata:349 etc/upgrade/3.8.2/content:55
 msgid "Approval Passed"
-msgstr ""
+msgstr "Aprovacion obtenguda"
 
 #: etc/initialdata:390 etc/upgrade/3.8.2/content:96
 msgid "Approval Ready for Owner"
@@ -1010,23 +982,15 @@ msgstr ""
 
 #: etc/initialdata:377 etc/upgrade/3.8.2/content:83
 msgid "Approval Rejected"
-msgstr ""
+msgstr "Aprovacion refusada"
 
 #: share/html/Approvals/Elements/Approve:75
 msgid "Approve"
-msgstr ""
+msgstr "Aprovar"
 
 #: lib/RT/Date.pm:94
 msgid "Apr"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Apr."
-msgstr "אפריל"
-
-#: NOT FOUND IN SOURCE
-msgid "April"
-msgstr "אפריל"
+msgstr "Abr"
 
 #: share/html/Articles/Article/Delete.html:56
 msgid "Are you sure you want to delete this article?"
@@ -1040,12 +1004,12 @@ msgstr ""
 #: share/html/Articles/Article/Display.html:84 share/html/SelfService/Article/Display.html:66
 #. ($article->Id, $article->Name || loc("(no name)"))
 msgid "Article #%1: %2"
-msgstr ""
+msgstr "Article #%1: %2"
 
 #: lib/RT/URI/fsck_com_article.pm:207
 #. ($self->Object->id)
 msgid "Article %1"
-msgstr ""
+msgstr "Article %1"
 
 #: lib/RT/Article.pm:215
 #. ($self->id)
@@ -1066,7 +1030,7 @@ msgstr ""
 
 #: share/html/Admin/Global/CustomFields/index.html:95 share/html/Articles/index.html:48 share/html/Elements/Tabs:153 share/html/Elements/Tabs:158 share/html/Elements/Tabs:417
 msgid "Articles"
-msgstr ""
+msgstr "Articles"
 
 #: share/html/Articles/Topics.html:99
 #. ($currtopic->Name)
@@ -1084,11 +1048,11 @@ msgstr ""
 
 #: share/html/Search/Elements/EditSort:79
 msgid "Asc"
-msgstr ""
+msgstr "Creis."
 
 #: share/html/Elements/SelectSortOrder:58
 msgid "Ascending"
-msgstr "עולה"
+msgstr "Creissent"
 
 #: lib/RT/Queue.pm:99
 msgid "Assign and remove queue custom fields"
@@ -1100,19 +1064,19 @@ msgstr ""
 
 #: share/html/Ticket/Elements/AddAttachments:59
 msgid "Attach"
-msgstr "צרף"
+msgstr "Jónher"
 
 #: share/html/SelfService/Create.html:98 share/html/m/ticket/create:344 share/html/m/ticket/reply:130
 msgid "Attach file"
-msgstr ""
+msgstr "Jónher un fichièr"
 
 #: share/html/Ticket/Elements/AddAttachments:49 share/html/m/ticket/create:332 share/html/m/ticket/reply:119
 msgid "Attached file"
-msgstr "קובץ מצורף"
+msgstr "Fichièr junt"
 
 #: share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:53
 msgid "Attachment"
-msgstr ""
+msgstr "Fichièr junt"
 
 #: share/html/Ticket/ShowEmailRecord.html:83 share/html/Ticket/ShowEmailRecord.html:85 share/html/Ticket/ShowEmailRecord.html:88
 #. ($Attachment)
@@ -1121,15 +1085,15 @@ msgstr ""
 
 #: lib/RT/Transaction.pm:547
 msgid "Attachment created"
-msgstr "קובץ צורף"
+msgstr "Estacament creat"
 
 #: lib/RT/Tickets.pm:2401
 msgid "Attachment filename"
-msgstr "שם קובץ מצורף"
+msgstr "Nom de fichièr de l'estacament"
 
 #: share/html/Ticket/Elements/ShowAttachments:49 share/html/m/ticket/show:305
 msgid "Attachments"
-msgstr "קבצים מצורפים"
+msgstr "Pèças juntas"
 
 #: lib/RT/Attachment.pm:715
 msgid "Attachments encryption is disabled"
@@ -1137,19 +1101,11 @@ msgstr ""
 
 #: lib/RT/Attributes.pm:196
 msgid "Attribute Deleted"
-msgstr ""
+msgstr "Atribut suprimit"
 
 #: lib/RT/Date.pm:98
 msgid "Aug"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Aug."
-msgstr "אוגוסט"
-
-#: NOT FOUND IN SOURCE
-msgid "August"
-msgstr "אוגוסט"
+msgstr "Ago"
 
 #: share/html/Admin/Tools/Theme.html:276
 #. ($valid_image_types)
@@ -1158,7 +1114,7 @@ msgstr ""
 
 #: etc/initialdata:218
 msgid "Autoreply"
-msgstr ""
+msgstr "ResponsaAuto"
 
 #: etc/initialdata:28
 msgid "Autoreply To Requestors"
@@ -1166,11 +1122,11 @@ msgstr ""
 
 #: share/html/Widgets/SelectionBox:193
 msgid "Available"
-msgstr ""
+msgstr "Disponible(a)"
 
 #: share/html/Elements/Submit:109 share/html/Install/Basics.html:63 share/html/Install/DatabaseDetails.html:73 share/html/Install/DatabaseDetails.html:89 share/html/Install/Global.html:65 share/html/Install/Initialize.html:62 share/html/Install/Sendmail.html:64
 msgid "Back"
-msgstr ""
+msgstr "Retorn"
 
 #: lib/RT/SharedSetting.pm:150
 #. ($id)
@@ -1179,35 +1135,27 @@ msgstr ""
 
 #: share/html/Articles/Article/Display.html:50 share/html/Articles/Article/Edit.html:57 share/html/Articles/Article/Elements/ShowSearchCriteria:55 share/html/Dashboards/Modify.html:60 share/html/Elements/Tabs:273 share/html/Elements/Tabs:304 share/html/Elements/Tabs:322 share/html/Elements/Tabs:337 share/html/Elements/Tabs:365 share/html/Elements/Tabs:499 share/html/Elements/Tabs:534 share/html/Ticket/Create.html:445 share/html/Ticket/Create.html:68 share/html/m/_elements/ticket_menu:60
 msgid "Basics"
-msgstr "בסיסי"
+msgstr ""
 
 #: share/html/Ticket/Forward.html:72
 msgid "Bcc"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Be sure to save your changes"
-msgstr "אל תשכח לשמור את השינויים"
+msgstr "Cci"
 
 #: etc/initialdata:214
 msgid "Blank"
-msgstr ""
+msgstr "Void"
 
 #: share/html/Dashboards/Queries.html:179
 msgid "Body"
-msgstr ""
+msgstr "Còs"
 
 #: share/html/Search/Elements/EditFormat:96
 msgid "Bold"
-msgstr ""
+msgstr "Gras"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "Bookmark"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Bookmarkable URL for this search"
-msgstr "הוסף כתובת זו לספר הכתובות כדי לחזור על אותו חיפוש"
+msgstr "Marcapagina"
 
 #: share/html/Articles/Article/Search.html:107
 msgid "Bookmarkable link for this search"
@@ -1221,10 +1169,6 @@ msgstr ""
 msgid "Bookmarked tickets"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Brief headers"
-msgstr "תקציר כותרים"
-
 #: share/html/Articles/Topics.html:48 share/html/Articles/Topics.html:60
 msgid "Browse by topic"
 msgstr ""
@@ -1235,19 +1179,15 @@ msgstr ""
 
 #: share/html/Elements/Tabs:731
 msgid "Bulk Update"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Bulk ticket update"
-msgstr "עדכון פניות מרוכז"
+msgstr "Mesa a jorn en massa"
 
 #: lib/RT/Tickets.pm:150
 msgid "CCGroup"
-msgstr ""
+msgstr "CCGroup"
 
 #: lib/RT/Tickets.pm:147
 msgid "CF"
-msgstr ""
+msgstr "CF"
 
 #: share/html/Search/Simple.html:87
 #. (_unsafe, '<strong>cf.Name:value</strong>')
@@ -1278,11 +1218,11 @@ msgstr ""
 #: share/html/Widgets/SavedSearch:132
 #. (loc($self->{SearchType}))
 msgid "Can't save %1"
-msgstr ""
+msgstr "Impossible de salvar %1"
 
 #: share/html/Search/Elements/EditSearches:317
 msgid "Can't save this search"
-msgstr ""
+msgstr "Impossible de salvar aquesta recèrca"
 
 #: lib/RT/Record.pm:1296 lib/RT/Record.pm:1374
 msgid "Can't specifiy both base and target"
@@ -1302,19 +1242,19 @@ msgstr ""
 
 #: share/html/Admin/Elements/AddCustomFieldValue:57 share/html/Admin/Elements/EditCustomFieldValues:61
 msgid "Category"
-msgstr ""
+msgstr "Categoria"
 
 #: lib/RT/ACE.pm:101 lib/RT/Tickets.pm:139 share/html/Elements/RT__Ticket/ColumnMap:178 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:75 share/html/Ticket/Create.html:125 share/html/Ticket/Elements/EditPeople:73 share/html/Ticket/Elements/ShowPeople:62 share/html/Ticket/Forward.html:69 share/html/m/ticket/create:304 share/html/m/ticket/show:294
 msgid "Cc"
-msgstr "העתק"
+msgstr "Còpia a (CC)"
 
 #: lib/RT/Graph/Tickets.pm:154
 msgid "Ccs"
-msgstr ""
+msgstr "Ccs"
 
 #: share/html/Install/index.html:64 share/html/Search/Results.html:72
 msgid "Change"
-msgstr ""
+msgstr "Modificar"
 
 #: lib/RT/Approval/Rule/Created.pm:56
 msgid "Change Approval ticket to open status"
@@ -1322,11 +1262,11 @@ msgstr ""
 
 #: share/html/SelfService/Prefs.html:53
 msgid "Change password"
-msgstr ""
+msgstr "Modificar lo senhal"
 
 #: share/html/Elements/Tabs:732
 msgid "Chart"
-msgstr ""
+msgstr "Diagrama"
 
 #: share/html/Search/Chart.html:122
 msgid "Chart Properties"
@@ -1334,7 +1274,7 @@ msgstr ""
 
 #: share/html/Elements/Submit:102
 msgid "Check All"
-msgstr ""
+msgstr "Marcar tot"
 
 #: share/html/Install/DatabaseDetails.html:88
 msgid "Check Database Connectivity"
@@ -1346,15 +1286,15 @@ msgstr ""
 
 #: share/html/Ticket/Elements/AddAttachments:51 share/html/m/ticket/create:334 share/html/m/ticket/reply:121
 msgid "Check box to delete"
-msgstr "סמן תיבה כדי למחוק"
+msgstr ""
 
 #: share/html/Admin/Elements/SelectRights:66
 msgid "Check box to revoke right"
-msgstr "סמן תיבה כדי לבטל זכות"
+msgstr ""
 
 #: share/html/Elements/EditLinks:150 share/html/Elements/EditLinks:82 share/html/Elements/ShowLinks:105 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:257 share/html/Ticket/Elements/BulkLinks:143 share/html/Ticket/Elements/BulkLinks:84 share/html/m/ticket/create:420 share/html/m/ticket/show:456
 msgid "Children"
-msgstr "ילדים"
+msgstr "Enfants"
 
 #: share/html/Install/DatabaseDetails.html:89 share/html/Install/DatabaseType.html:48
 msgid "Choose Database Engine"
@@ -1367,11 +1307,11 @@ msgstr ""
 
 #: share/html/Admin/Users/Modify.html:140 share/html/Elements/RT__User/ColumnMap:116 share/html/User/Prefs.html:131
 msgid "City"
-msgstr "עיר"
+msgstr "Vila"
 
 #: share/html/Articles/Article/Display.html:51 share/html/Articles/Article/Elements/EditBasics:57 share/html/Articles/Article/Elements/ShowSearchCriteria:58 share/html/Elements/RT__Article/ColumnMap:75
 msgid "Class"
-msgstr ""
+msgstr "Classa"
 
 #: share/html/Admin/Articles/Classes/Modify.html:62
 msgid "Class Name"
@@ -1397,15 +1337,15 @@ msgstr ""
 
 #: share/html/Elements/Tabs:159 share/html/Elements/Tabs:361
 msgid "Classes"
-msgstr ""
+msgstr "Classas"
 
 #: share/html/Tools/MyDay.html:73 share/html/Widgets/SelectionBox:221
 msgid "Clear"
-msgstr ""
+msgstr "Escafar"
 
 #: share/html/Elements/Submit:104
 msgid "Clear All"
-msgstr ""
+msgstr "Tot escafar"
 
 #: share/html/Install/Finish.html:52
 msgid "Click \"Finish Installation\" below to complete this wizard."
@@ -1417,7 +1357,7 @@ msgstr ""
 
 #: share/html/Ticket/Elements/ShowDates:75 share/html/m/ticket/show:398
 msgid "Closed"
-msgstr "נסגר"
+msgstr "Tampat"
 
 #: share/html/Elements/Tabs:842 share/html/SelfService/Closed.html:48
 msgid "Closed tickets"
@@ -1437,15 +1377,15 @@ msgstr ""
 
 #: share/html/Elements/Tabs:560 share/html/Search/Elements/EditFormat:74 share/html/Ticket/Elements/ShowTransaction:212
 msgid "Comment"
-msgstr "הערה"
+msgstr "Comentari"
 
 #: share/html/Admin/Queues/Modify.html:83
 msgid "Comment Address"
-msgstr ""
+msgstr "Adreça de comentari"
 
 #: lib/RT/Installer.pm:169
 msgid "Comment address"
-msgstr ""
+msgstr "Adreça de comentari"
 
 #: lib/RT/Queue.pm:114
 msgid "Comment on tickets"
@@ -1457,45 +1397,37 @@ msgstr ""
 
 #: share/html/Tools/MyDay.html:64
 msgid "Comments"
-msgstr ""
+msgstr "Comentaris"
 
 #: share/html/Search/Bulk.html:129 share/html/Ticket/ModifyAll.html:92 share/html/Ticket/Update.html:76 share/html/m/ticket/reply:88
 msgid "Comments (Not sent to requestors)"
-msgstr "הערות (לא נשלחות אל המבקשים)"
-
-#: NOT FOUND IN SOURCE
-msgid "Comments (not sent to requestors)"
-msgstr "הערות (לא נשלחות אל המבקשים)"
-
-#: NOT FOUND IN SOURCE
-msgid "Comments about %1"
-msgstr "הערות לגבי %1"
+msgstr ""
 
 #: share/html/Admin/Users/Modify.html:210 share/html/Ticket/Elements/ShowRequestor:83
 msgid "Comments about this user"
-msgstr "הערות לגבי משתמש זה"
+msgstr ""
 
 #: lib/RT/Transaction.pm:703
 msgid "Comments added"
-msgstr "הערות נוספו"
+msgstr "Comentaris aponduts"
 
 #: lib/RT/Action.pm:155 lib/RT/Rule.pm:74
 msgid "Commit Stubbed"
-msgstr ""
+msgstr "tr(Commit Stubbed)"
 
 #: share/html/Admin/Elements/EditScrip:63 share/html/Elements/RT__Scrip/ColumnMap:72
 msgid "Condition"
-msgstr ""
+msgstr "Condicion"
 
 #: lib/RT/Scrip.pm:169 lib/RT/Scrip.pm:676
 #. ($args{'ScripCondition'})
 #. ($value)
 msgid "Condition '%1' not found"
-msgstr ""
+msgstr "Condicion '%1' pas trobada"
 
 #: lib/RT/Scrip.pm:165 lib/RT/Scrip.pm:669
 msgid "Condition is mandatory argument"
-msgstr ""
+msgstr "L'argument condicion es obligatòri"
 
 #: bin/rt-crontool:211
 msgid "Condition matches..."
@@ -1512,7 +1444,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:64
 msgid "Configuration"
-msgstr "הגדרות"
+msgstr "Configuracion"
 
 #: share/html/Admin/Queues/Modify.html:184
 #. ($QueueObj->Name)
@@ -1521,11 +1453,11 @@ msgstr ""
 
 #: share/html/Install/DatabaseDetails.html:141
 msgid "Connection succeeded"
-msgstr ""
+msgstr "Connexion capitada"
 
 #: lib/RT/Tickets.pm:133 share/html/Admin/Elements/ModifyTemplate:65 share/html/Articles/Article/Display.html:53 share/html/Articles/Article/Edit.html:68 share/html/Articles/Article/Elements/ShowSearchCriteria:71 share/html/Elements/QuickCreate:74 share/html/Elements/SelectAttachmentField:51 share/html/Elements/Tabs:500 share/html/Ticket/ModifyAll.html:113
 msgid "Content"
-msgstr "תוכן"
+msgstr "Contengut"
 
 #: lib/RT/ObjectCustomFieldValue.pm:99
 msgid "Content is an invalid IP address"
@@ -1537,15 +1469,15 @@ msgstr ""
 
 #: share/html/Elements/SelectAttachmentField:53
 msgid "Content-Type"
-msgstr ""
+msgstr "Tipe de contengut"
 
 #: lib/RT/Tickets.pm:134
 msgid "ContentType"
-msgstr ""
+msgstr "TipeDeContengut"
 
 #: lib/RT/Installer.pm:177
 msgid "Correspond address"
-msgstr ""
+msgstr "Adreça de responsa"
 
 #: etc/initialdata:283
 msgid "Correspondence"
@@ -1575,7 +1507,7 @@ msgstr ""
 
 #: lib/RT/Group.pm:450 lib/RT/Group.pm:457
 msgid "Could not create group"
-msgstr ""
+msgstr "Impossible de crear un grop"
 
 #: share/html/Articles/Article/Search.html:197
 #. ($msg)
@@ -1585,7 +1517,7 @@ msgstr ""
 #: share/html/Admin/Global/Template.html:84 share/html/Admin/Queues/Template.html:83
 #. ($msg)
 msgid "Could not create template: %1"
-msgstr ""
+msgstr "Impossible de crear lo modèl : %1"
 
 #: lib/RT/Ticket.pm:279 lib/RT/Ticket.pm:836
 msgid "Could not create ticket. Queue not set"
@@ -1593,7 +1525,7 @@ msgstr ""
 
 #: lib/RT/User.pm:195 lib/RT/User.pm:209 lib/RT/User.pm:218 lib/RT/User.pm:227 lib/RT/User.pm:236 lib/RT/User.pm:250 lib/RT/User.pm:260 lib/RT/User.pm:429
 msgid "Could not create user"
-msgstr ""
+msgstr "Impossible de crear l'utilizaire"
 
 #: share/html/Articles/Article/Search.html:237
 #. ($searchname, $msg)
@@ -1611,7 +1543,7 @@ msgstr ""
 #: lib/RT/SharedSetting.pm:242
 #. ($self->ObjectName)
 msgid "Could not load %1 attribute"
-msgstr ""
+msgstr "Impossible de cargar l'atribut %1"
 
 #: share/html/Admin/Articles/Classes/Objects.html:105
 msgid "Could not load Class %1"
@@ -1624,12 +1556,12 @@ msgstr ""
 
 #: share/html/Admin/Groups/Members.html:115
 msgid "Could not load group"
-msgstr ""
+msgstr "Impossible de cargar aqueste grop"
 
 #: lib/RT/SharedSetting.pm:126
 #. ($privacy)
 msgid "Could not load object for %1"
-msgstr ""
+msgstr "Impossible de cargar l'objècte per %1"
 
 #: lib/RT/Queue.pm:982
 #. ($args{'Type'})
@@ -1695,7 +1627,7 @@ msgstr ""
 
 #: lib/RT/Record.pm:962
 msgid "Couldn't find row"
-msgstr ""
+msgstr "Colomna introbabla"
 
 #: bin/rt-crontool:182
 msgid "Couldn't find suitable transaction, skipping"
@@ -1707,12 +1639,12 @@ msgstr ""
 
 #: lib/RT/CustomField.pm:582
 msgid "Couldn't find that value"
-msgstr ""
+msgstr "Valor introbabla"
 
 #: share/html/Admin/Articles/Classes/GroupRights.html:66 share/html/Admin/Articles/Classes/UserRights.html:65 share/html/Admin/CustomFields/UserRights.html:66
 #. ($id)
 msgid "Couldn't load Class %1"
-msgstr ""
+msgstr "Impossible de cargar la classa %1"
 
 #: lib/RT/CustomFieldValue.pm:143 lib/RT/CustomFieldValue.pm:86
 #. ($cf_id)
@@ -1747,7 +1679,7 @@ msgstr ""
 #: share/html/Admin/Groups/GroupRights.html:66 share/html/Admin/Groups/UserRights.html:67
 #. ($id)
 msgid "Couldn't load group %1"
-msgstr ""
+msgstr "Impossible de cargar lo grop %1"
 
 #: lib/RT/Link.pm:195 lib/RT/Link.pm:204 lib/RT/Link.pm:229
 msgid "Couldn't load link"
@@ -1756,7 +1688,7 @@ msgstr ""
 #: share/html/Admin/Articles/Classes/CustomFields.html:54 share/html/Admin/Queues/CustomFields.html:56 share/html/Admin/Users/CustomFields.html:56
 #. ($id)
 msgid "Couldn't load object %1"
-msgstr ""
+msgstr "Impossible de cargar l'objècte %1"
 
 #: lib/RT/Ticket.pm:453
 #. ($msg)
@@ -1766,22 +1698,22 @@ msgstr ""
 #: share/html/Admin/Queues/People.html:132
 #. ($id)
 msgid "Couldn't load queue"
-msgstr ""
+msgstr "Impossible de cargar la fila"
 
 #: share/html/Admin/Elements/EditScrips:86
 #. ($id)
 msgid "Couldn't load queue #%1"
-msgstr ""
+msgstr "Impossible de cargar la fila #%1"
 
 #: share/html/Admin/Queues/GroupRights.html:71 share/html/Admin/Queues/UserRights.html:72
 #. ($id)
 msgid "Couldn't load queue %1"
-msgstr ""
+msgstr "Impossible de cargar la fila %1"
 
 #: share/html/Admin/Queues/Modify.html:179
 #. ($Name)
 msgid "Couldn't load queue '%1'"
-msgstr ""
+msgstr "Impossible de cargar la fila '%1'"
 
 #: share/html/Admin/Elements/EditScrip:143 share/html/Admin/Elements/EditScrip:190
 #. ($id)
@@ -1885,15 +1817,15 @@ msgstr ""
 
 #: share/html/Admin/Users/Modify.html:157 share/html/Elements/RT__User/ColumnMap:131 share/html/User/Prefs.html:143
 msgid "Country"
-msgstr "ארץ"
+msgstr "País"
 
 #: share/html/Admin/Articles/Classes/Modify.html:97 share/html/Admin/CustomFields/Modify.html:151 share/html/Admin/Elements/CreateUserCalled:49 share/html/Admin/Elements/EditCustomField:86 share/html/Admin/Elements/EditScrip:150 share/html/Admin/Global/Template.html:78 share/html/Admin/Groups/Modify.html:92 share/html/Admin/Queues/Modify.html:156 share/html/Admin/Queues/Template.html:111 share/html/Admin/Users/Modify.html:225 share/html/Articles/Article/Edit.html:102 share/html/Articles/Article/ExtractFromTicket.html:83 share/html/Articles/Article/ExtractIntoClass.html:68 share/html/Articles/Article/ExtractIntoTopic.html:60 share/html/Dashboards/Modify.html:72 share/html/Elements/QuickCreate:77 share/html/Elements/ShowLinks:107 share/html/Elements/ShowLinks:115 share/html/Elements/ShowLinks:129 share/html/Elements/ShowLinks:52 share/html/Elements/ShowLinks:85 share/html/Elements/ShowLinks:99 share/html/Elements/Tabs:112 share/html/Elements/Tabs:120 share/html/Elements/Tabs:166 share/html/Elements/Tabs:181 share/html/Elements/Tabs:260 share/html/Elements/Tabs:278 share/html/Elements/Tabs:282 share/html/Elements/Tabs:352 share/html/Elements/Tabs:363 share/html/Elements/Tabs:373 share/html/Elements/Tabs:72 share/html/Elements/Tabs:80 share/html/Elements/Tabs:88 share/html/Elements/Tabs:97 share/html/Ticket/Create.html:192 share/html/Ticket/Create.html:270 share/html/m/ticket/create:262 share/html/m/ticket/create:429
 msgid "Create"
-msgstr "צור"
+msgstr "Crear"
 
 #: etc/initialdata:91
 msgid "Create Tickets"
-msgstr "צור פניות"
+msgstr ""
 
 #: share/html/Admin/Articles/Classes/Modify.html:109 share/html/Admin/Articles/Classes/Modify.html:129
 msgid "Create a Class"
@@ -1922,23 +1854,7 @@ msgstr ""
 
 #: share/html/Admin/Groups/Modify.html:104 share/html/Admin/Groups/Modify.html:124
 msgid "Create a new group"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Create a new personal group"
-msgstr "צור קבוצה פרטית חדשה"
-
-#: NOT FOUND IN SOURCE
-msgid "Create a new queue"
-msgstr "צור תור חדש"
-
-#: NOT FOUND IN SOURCE
-msgid "Create a new scrip"
-msgstr "צור סקריפ חדש"
-
-#: NOT FOUND IN SOURCE
-msgid "Create a new template"
-msgstr "צור תבנית חדשה"
+msgstr "Crear un grop novèl"
 
 #: share/html/Admin/Queues/Template.html:110
 #. ($QueueObj->Name)
@@ -1947,23 +1863,15 @@ msgstr ""
 
 #: share/html/Ticket/Create.html:347
 msgid "Create a new ticket"
-msgstr "צור פנייה חדשה"
+msgstr ""
 
 #: share/html/Admin/Users/Modify.html:239 share/html/Admin/Users/Modify.html:295
 msgid "Create a new user"
-msgstr "צור משתמש חדש"
+msgstr "Creacion d'un utilizaire novèl"
 
 #: share/html/Admin/Queues/Modify.html:230
 msgid "Create a queue"
-msgstr "צור תור חדש"
-
-#: NOT FOUND IN SOURCE
-msgid "Create a queue called"
-msgstr "צור תור שנקרא"
-
-#: NOT FOUND IN SOURCE
-msgid "Create a request"
-msgstr "צור בקשה"
+msgstr "Apondre una fila"
 
 #: share/html/Admin/Queues/Scrip.html:68
 #. ($QueueObj->Name)
@@ -1972,7 +1880,7 @@ msgstr ""
 
 #: share/html/Admin/Global/Template.html:77
 msgid "Create a template"
-msgstr ""
+msgstr "Apondre un modèl"
 
 #: share/html/SelfService/Create.html:48 share/html/SelfService/CreateTicketInQueue.html:48 share/html/m/ticket/create:141 share/html/m/ticket/select_create_queue:53
 msgid "Create a ticket"
@@ -2068,11 +1976,11 @@ msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Ticket.pm:930 lib/RT/Tickets.pm:131 share/html/Admin/Elements/ShowKeyInfo:60 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:66 share/html/Elements/ColumnMap:71 share/html/Elements/RT__Article/ColumnMap:80 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:373
 msgid "Created"
-msgstr "נוצר"
+msgstr "Creat"
 
 #: share/html/Elements/ColumnMap:76
 msgid "Created By"
-msgstr ""
+msgstr "Creat per"
 
 #: share/html/Admin/CustomFields/Modify.html:184 share/html/Admin/Elements/EditCustomField:119
 #. ($CustomFieldObj->Name)
@@ -2082,7 +1990,7 @@ msgstr ""
 
 #: share/html/Articles/Elements/NewestArticles:53 share/html/Articles/Elements/UpdatedArticles:53
 msgid "Created by"
-msgstr ""
+msgstr "Creat per"
 
 #: share/html/Articles/Article/Search.html:193
 #. ($search->Name)
@@ -2091,7 +1999,7 @@ msgstr ""
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "CreatedBy"
-msgstr ""
+msgstr "CreatPer"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "CreatedRelative"
@@ -2099,19 +2007,19 @@ msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:154 lib/RT/Tickets.pm:103 share/html/Search/Elements/PickBasics:115
 msgid "Creator"
-msgstr ""
+msgstr "Creator"
 
 #: share/html/Prefs/Other.html:71
 msgid "Cryptography"
-msgstr ""
+msgstr "Chiframent"
 
 #: share/html/Elements/EditLinks:51 share/html/Ticket/Elements/BulkLinks:51
 msgid "Current Links"
-msgstr "יחסים נוכחיים"
+msgstr "Ligams corrents"
 
 #: share/html/Admin/Elements/EditScrips:53
 msgid "Current Scrips"
-msgstr ""
+msgstr "Scrips actuals"
 
 #: share/html/Elements/Tabs:716
 msgid "Current Search"
@@ -2119,27 +2027,23 @@ msgstr ""
 
 #: share/html/Admin/Groups/Members.html:60
 msgid "Current members"
-msgstr ""
+msgstr "Membres actuals"
 
 #: share/html/Admin/Elements/SelectRights:62
 msgid "Current rights"
-msgstr ""
+msgstr "Dreches actuals"
 
 #: share/html/Search/Elements/EditQuery:49
 msgid "Current search"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Current search criteria"
-msgstr "קריטריוני החיפוש הנוכחיים"
-
 #: share/html/Admin/Queues/People.html:62 share/html/Ticket/Elements/EditPeople:68
 msgid "Current watchers"
-msgstr "צופים נוכחיים"
+msgstr ""
 
 #: share/html/Admin/Users/Modify.html:190 share/html/Elements/Tabs:123 share/html/Elements/Tabs:173 share/html/Elements/Tabs:243 share/html/Elements/Tabs:367 share/html/Elements/Tabs:92 share/html/Ticket/Elements/ShowSummary:56 share/html/User/Prefs.html:149 share/html/m/ticket/show:251
 msgid "Custom Fields"
-msgstr ""
+msgstr "Camps personalizats"
 
 #: share/html/Admin/CustomFields/index.html:53
 #. ($tmp->FriendlyLookupType( $Type ))
@@ -2231,11 +2135,11 @@ msgstr ""
 
 #: share/html/Prefs/MyRT.html:84 share/html/Prefs/Quicksearch.html:69 share/html/Prefs/Search.html:73
 msgid "Customize"
-msgstr ""
+msgstr "Personalizar"
 
 #: share/html/Install/Basics.html:48 share/html/Install/DatabaseDetails.html:72 share/html/Install/Sendmail.html:64
 msgid "Customize Basics"
-msgstr ""
+msgstr "Personalizacion de basa"
 
 #: share/html/Install/Global.html:48 share/html/Install/Initialize.html:62 share/html/Install/Sendmail.html:63
 msgid "Customize Email Addresses"
@@ -2251,15 +2155,15 @@ msgstr ""
 
 #: lib/RT/Installer.pm:111
 msgid "DBA password"
-msgstr ""
+msgstr "Senhal de l'administrator"
 
 #: lib/RT/Installer.pm:104
 msgid "DBA username"
-msgstr ""
+msgstr "Identificant DBA"
 
 #: lib/RT/Dashboard/Mailer.pm:325
 msgid "Daily"
-msgstr ""
+msgstr "Cada jorn"
 
 #: lib/RT/Config.pm:483
 msgid "Daily digest"
@@ -2267,7 +2171,7 @@ msgstr ""
 
 #: share/html/Dashboards/Subscription.html:59 share/html/Dashboards/Subscription.html:63
 msgid "Dashboard"
-msgstr ""
+msgstr "Tablèu de bòrd"
 
 #: share/html/Dashboards/Modify.html:110
 #. ($msg)
@@ -2285,7 +2189,7 @@ msgstr ""
 
 #: share/html/Dashboards/index.html:48 share/html/Elements/Dashboards:49
 msgid "Dashboards"
-msgstr ""
+msgstr "Tablèus de bòrd"
 
 #: lib/RT/Installer.pm:78
 msgid "Database host"
@@ -2293,15 +2197,15 @@ msgstr ""
 
 #: lib/RT/Installer.pm:96
 msgid "Database name"
-msgstr ""
+msgstr "Nom de banca de donadas"
 
 #: lib/RT/Installer.pm:127
 msgid "Database password for RT"
-msgstr ""
+msgstr "Senhal de la banca de donadas per RT"
 
 #: lib/RT/Installer.pm:87
 msgid "Database port"
-msgstr ""
+msgstr "Pòrt de connexion a la banca"
 
 #: lib/RT/Installer.pm:60
 msgid "Database type"
@@ -2313,27 +2217,19 @@ msgstr ""
 
 #: lib/RT/Config.pm:435
 msgid "Date format"
-msgstr ""
+msgstr "Format de la data"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:543 share/html/SelfService/Display.html:66 share/html/Ticket/Create.html:234 share/html/Ticket/Elements/ShowSummary:85 share/html/Ticket/ModifyAll.html:66 share/html/m/ticket/create:398 share/html/m/ticket/show:367
 msgid "Dates"
-msgstr "תאריכים"
+msgstr "Datas"
 
 #: lib/RT/Date.pm:102
 msgid "Dec"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Dec."
-msgstr "דצמבר"
-
-#: NOT FOUND IN SOURCE
-msgid "December"
-msgstr "דצמבר"
+msgstr "Dec"
 
 #: share/html/Ticket/GnuPG.html:58
 msgid "Decrypt"
-msgstr ""
+msgstr "Deschifrar"
 
 #: etc/initialdata:219
 msgid "Default Autoresponse template"
@@ -2341,7 +2237,7 @@ msgstr ""
 
 #: share/html/Tools/Offline.html:60
 msgid "Default Queue"
-msgstr ""
+msgstr "Fila per defaut"
 
 #: share/html/Tools/Offline.html:69
 msgid "Default Requestor"
@@ -2361,7 +2257,7 @@ msgstr ""
 
 #: lib/RT/Config.pm:144
 msgid "Default queue"
-msgstr ""
+msgstr "Fila per defaut"
 
 #: etc/initialdata:250
 msgid "Default transaction template"
@@ -2370,7 +2266,7 @@ msgstr ""
 #: share/html/Widgets/Form/Integer:61 share/html/Widgets/Form/String:69
 #. ($DefaultValue)
 msgid "Default: %1"
-msgstr ""
+msgstr "Per defaut : %1"
 
 #: lib/RT/Transaction.pm:685
 #. ($type,        $self->Field,        (            $self->OldValue            ? "'" . $self->OldValue . "'"            : $self->loc("(no value)")        ),        "'" . $self->NewValue . "'")
@@ -2379,15 +2275,11 @@ msgstr ""
 
 #: lib/RT/Date.pm:116
 msgid "DefaultFormat"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Delegation"
-msgstr "דלגציות"
+msgstr "DefaultFormat"
 
 #: etc/RT_Config.pm:2411 etc/RT_Config.pm:2487 share/html/Admin/Elements/EditScrips:73 share/html/Articles/Article/Elements/ShowSavedSearches:61 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:784 share/html/Elements/Tabs:804 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:219
 msgid "Delete"
-msgstr "מחק"
+msgstr "Suprimir"
 
 #: share/html/Admin/Elements/EditTemplates:72
 msgid "Delete Template"
@@ -2458,7 +2350,7 @@ msgstr ""
 #: lib/RT/SharedSetting.pm:283
 #. ($self->ObjectName)
 msgid "Deleted %1"
-msgstr ""
+msgstr "Suprimit %1"
 
 #: share/html/Dashboards/Elements/Deleted:52
 msgid "Deleted queries"
@@ -2483,11 +2375,11 @@ msgstr ""
 
 #: share/html/Approvals/Elements/Approve:84
 msgid "Deny"
-msgstr ""
+msgstr "Refusar"
 
 #: share/html/Elements/EditLinks:142 share/html/Elements/EditLinks:64 share/html/Elements/ShowLinks:83 share/html/Ticket/Create.html:255 share/html/Ticket/Elements/BulkLinks:135 share/html/Ticket/Elements/BulkLinks:64 share/html/Ticket/Elements/ShowDependencies:56 share/html/m/ticket/create:418 share/html/m/ticket/show:442
 msgid "Depended on by"
-msgstr "תלויים בו"
+msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:123 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
 msgid "DependedOnBy"
@@ -2519,19 +2411,19 @@ msgstr ""
 
 #: share/html/Elements/EditLinks:138 share/html/Elements/EditLinks:55 share/html/Elements/SelectLinkType:50 share/html/Elements/ShowLinks:50 share/html/Ticket/Create.html:254 share/html/Ticket/Elements/BulkLinks:131 share/html/Ticket/Elements/BulkLinks:54 share/html/Ticket/Elements/ShowDependencies:48 share/html/m/ticket/create:417 share/html/m/ticket/show:412
 msgid "Depends on"
-msgstr "תלוי ב"
+msgstr "Depend de"
 
 #: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:119 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
 msgid "DependsOn"
-msgstr ""
+msgstr "DependDe"
 
 #: share/html/Search/Elements/EditSort:84
 msgid "Desc"
-msgstr ""
+msgstr "Desc."
 
 #: share/html/Elements/SelectSortOrder:58
 msgid "Descending"
-msgstr "יורד"
+msgstr "Òrdre descreissent"
 
 #: share/html/SelfService/Create.html:108 share/html/Ticket/Create.html:173 share/html/m/ticket/create:258
 msgid "Describe the issue below"
@@ -2539,7 +2431,7 @@ msgstr ""
 
 #: share/html/Admin/Articles/Classes/Modify.html:66 share/html/Admin/Articles/Elements/Topics:60 share/html/Admin/CustomFields/Modify.html:61 share/html/Admin/Elements/AddCustomFieldValue:55 share/html/Admin/Elements/EditCustomField:62 share/html/Admin/Elements/EditCustomFieldValues:59 share/html/Admin/Elements/EditScrip:57 share/html/Admin/Elements/ModifyTemplate:54 share/html/Admin/Groups/Modify.html:70 share/html/Admin/Queues/Modify.html:63 share/html/Elements/RT__Class/ColumnMap:65 share/html/Elements/RT__Group/ColumnMap:82 share/html/Elements/RT__Scrip/ColumnMap:92 share/html/Elements/RT__Template/ColumnMap:66 share/html/Search/Elements/EditSearches:56
 msgid "Description"
-msgstr "תיאור"
+msgstr "Descripcion"
 
 #: share/html/Elements/Tabs:213
 msgid "Detailed information about your RT setup"
@@ -2547,19 +2439,19 @@ msgstr ""
 
 #: share/html/Ticket/Create.html:446
 msgid "Details"
-msgstr "פרטים"
+msgstr "Detalhs"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:50
 msgid "Direction"
-msgstr ""
+msgstr "Direccion"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:63 share/html/Elements/RT__Queue/ColumnMap:63
 msgid "Disabled"
-msgstr ""
+msgstr "Desactivat"
 
 #: share/html/Elements/Tabs:518 share/html/Elements/Tabs:781 share/html/Elements/Tabs:797 share/html/Search/Elements/EditFormat:71
 msgid "Display"
-msgstr "הצג"
+msgstr "Afichatge"
 
 #: lib/RT/Class.pm:96 lib/RT/Queue.pm:94
 msgid "Display Access Control List"
@@ -2574,14 +2466,6 @@ msgstr ""
 msgid "Display Columns"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Display mode"
-msgstr "מצב תצוגה"
-
-#: NOT FOUND IN SOURCE
-msgid "Display ticket #%1"
-msgstr "הצג פנייה #%1"
-
 #: share/html/Elements/Footer:59
 #. (_unsafe, '<a href="http://www.gnu.org/licenses/gpl-2.0.html">', '</a>')
 msgid "Distributed under %1version 2 of the GNU GPL%2."
@@ -2593,7 +2477,7 @@ msgstr ""
 
 #: lib/RT/Installer.pm:212
 msgid "Domain name"
-msgstr ""
+msgstr "Nom de domeni"
 
 #: lib/RT/Installer.pm:213
 msgid "Don't include http://, just something like 'localhost', 'rt.example.com'"
@@ -2609,11 +2493,7 @@ msgstr ""
 
 #: share/html/Elements/Refresh:53
 msgid "Don't refresh this page."
-msgstr "אל תרענן דף זה."
-
-#: NOT FOUND IN SOURCE
-msgid "Don't show search results"
-msgstr "אל תראה את תוצאות החיפוש"
+msgstr ""
 
 #: lib/RT/Crypt/GnuPG.pm:2246
 msgid "Don't trust this key at all"
@@ -2621,7 +2501,7 @@ msgstr ""
 
 #: share/html/Ticket/Elements/ShowTransactionAttachments:67
 msgid "Download"
-msgstr "הורד"
+msgstr "Telecargar"
 
 #: share/html/Admin/Tools/Shredder/Elements/DumpFileLink:49
 msgid "Download dumpfile"
@@ -2633,7 +2513,7 @@ msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Ticket.pm:934 lib/RT/Tickets.pm:128 share/html/Elements/RT__Ticket/ColumnMap:203 share/html/Elements/RT__Ticket/ColumnMap:236 share/html/Elements/SelectDateType:55 share/html/Elements/ShowReminders:52 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:240 share/html/Ticket/Elements/EditDates:68 share/html/Ticket/Elements/Reminders:131 share/html/Ticket/Elements/Reminders:151 share/html/Ticket/Elements/Reminders:81 share/html/Ticket/Elements/ShowDates:66 share/html/m/ticket/create:405 share/html/m/ticket/show:389
 msgid "Due"
-msgstr "תאריך יעד"
+msgstr "Tèrme"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "DueRelative"
@@ -2642,7 +2522,7 @@ msgstr ""
 #: share/html/Install/Initialize.html:131 share/html/Install/Initialize.html:94
 #. ($msg)
 msgid "ERROR: %1"
-msgstr ""
+msgstr "ERROR : %1"
 
 #: share/html/Elements/Tabs:424
 msgid "Easy updating of your open tickets"
@@ -2654,7 +2534,7 @@ msgstr ""
 
 #: share/html/Elements/Dashboards:51 share/html/Elements/Quicksearch:52 share/html/Elements/ShowSearch:51 share/html/Elements/Tabs:811 share/html/Ticket/Elements/ShowRequestor:127
 msgid "Edit"
-msgstr ""
+msgstr "Editar"
 
 #: share/html/Search/Bulk.html:168
 msgid "Edit Custom Fields"
@@ -2687,15 +2567,15 @@ msgstr ""
 
 #: share/html/Search/Bulk.html:208 share/html/Ticket/ModifyLinks.html:59
 msgid "Edit Links"
-msgstr ""
+msgstr "Modificar los ligams"
 
 #: share/html/Search/Edit.html:66
 msgid "Edit Query"
-msgstr ""
+msgstr "Modificar la requèsta"
 
 #: share/html/Elements/Tabs:723
 msgid "Edit Search"
-msgstr ""
+msgstr "Mod. recèrca"
 
 #: share/html/Admin/Global/Topics.html:56
 msgid "Edit global topic hierarchy"
@@ -2740,11 +2620,11 @@ msgstr ""
 
 #: share/html/Admin/Users/Modify.html:72 share/html/Ticket/Elements/AddWatchers:79 share/html/User/Prefs.html:65
 msgid "Email"
-msgstr "אי-מייל"
+msgstr "Corrièr electronic"
 
 #: share/html/Elements/RT__User/ColumnMap:76
 msgid "Email Address"
-msgstr ""
+msgstr "Adreça electronica"
 
 #: etc/initialdata:478 etc/upgrade/3.7.85/content:4
 msgid "Email Digest"
@@ -2764,7 +2644,7 @@ msgstr ""
 
 #: share/html/Elements/RT__CustomField/ColumnMap:63 share/html/Elements/RT__Queue/ColumnMap:63
 msgid "Enabled"
-msgstr ""
+msgstr "Activat"
 
 #: share/html/Admin/Articles/Classes/Modify.html:71
 msgid "Enabled (Unchecking this box disables this class)"
@@ -2776,7 +2656,7 @@ msgstr ""
 
 #: share/html/Admin/Groups/Modify.html:86
 msgid "Enabled (Unchecking this box disables this group)"
-msgstr "מופעל (מחיקת סימון תיבה זו מבטלת את קבוצה זו)"
+msgstr ""
 
 #: share/html/Admin/Queues/Modify.html:127
 msgid "Enabled (Unchecking this box disables this queue)"
@@ -2801,11 +2681,11 @@ msgstr ""
 
 #: share/html/Elements/GnuPG/SignEncryptWidget:58 share/html/Elements/RT__Queue/ColumnMap:84 share/html/Ticket/GnuPG.html:58
 msgid "Encrypt"
-msgstr ""
+msgstr "Chifrar"
 
 #: share/html/Admin/Queues/Modify.html:120
 msgid "Encrypt by default"
-msgstr ""
+msgstr "Chifrar per defaut"
 
 #: share/html/Ticket/Elements/ShowTransaction:235
 msgid "Encrypt/Decrypt"
@@ -2870,7 +2750,7 @@ msgstr ""
 
 #: share/html/Elements/EditLinks:120 share/html/Search/Bulk.html:209 share/html/Ticket/Elements/BulkLinks:123
 msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with spaces."
-msgstr "הכנס פניות או כתובות כדי לקשר פניות אליהן. הפרד ערכים רבים באמצעות רווחים."
+msgstr ""
 
 #: lib/RT/Config.pm:280
 msgid "Enter time in hours by default"
@@ -2899,7 +2779,7 @@ msgstr ""
 
 #: sbin/rt-email-digest:103 share/html/Elements/Login:54 share/html/Install/Elements/Errors:49 share/html/SelfService/Error.html:48 share/html/SelfService/Error.html:49 share/html/m/login:85
 msgid "Error"
-msgstr ""
+msgstr "Error"
 
 #: lib/RT/Ticket.pm:1090
 msgid "Error in parameters to Ticket->AddWatcher"
@@ -2949,15 +2829,15 @@ msgstr ""
 
 #: share/html/Ticket/Elements/ShowBasics:59 share/html/m/ticket/show:224
 msgid "Estimated"
-msgstr ""
+msgstr "Estimat"
 
 #: lib/RT/Handle.pm:659
 msgid "Everyone"
-msgstr ""
+msgstr "Tot lo monde"
 
 #: bin/rt-crontool:371
 msgid "Example:"
-msgstr ""
+msgstr "Exemple :"
 
 #: lib/RT/System.pm:88
 msgid "ExecuteCode"
@@ -2965,7 +2845,7 @@ msgstr ""
 
 #: share/html/Admin/Elements/ShowKeyInfo:63
 msgid "Expire"
-msgstr ""
+msgstr "Expiracion"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "ExtendedStatus"
@@ -3049,23 +2929,15 @@ msgstr ""
 
 #: lib/RT/Date.pm:92
 msgid "Feb"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Feb."
-msgstr "פברואר"
-
-#: NOT FOUND IN SOURCE
-msgid "February"
-msgstr "פברואר"
+msgstr "Feb"
 
 #: share/html/Elements/Tabs:734
 msgid "Feeds"
-msgstr ""
+msgstr "Fluxes"
 
 #: share/html/Articles/Article/ExtractFromTicket.html:62
 msgid "Field"
-msgstr ""
+msgstr "Camp"
 
 #: share/html/Admin/CustomFields/Modify.html:84
 msgid "Field values source:"
@@ -3073,7 +2945,7 @@ msgstr ""
 
 #: lib/RT/Tickets.pm:135 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:53 share/html/Elements/SelectAttachmentField:54
 msgid "Filename"
-msgstr ""
+msgstr "Nom del fichièr"
 
 #: share/html/Admin/Tools/Shredder/Elements/PluginArguments:52
 msgid "Fill arguments"
@@ -3113,7 +2985,7 @@ msgstr ""
 
 #: lib/RT/Tickets.pm:2307 share/html/Search/Elements/PickBasics:188 share/html/Ticket/Create.html:211 share/html/m/ticket/create:368
 msgid "Final Priority"
-msgstr "עדיפות סופית"
+msgstr ""
 
 #: lib/RT/Ticket.pm:925 lib/RT/Tickets.pm:109 share/html/Elements/RT__Ticket/ColumnMap:142 share/html/Search/Elements/BuildFormatString:100
 msgid "FinalPriority"
@@ -3129,27 +3001,23 @@ msgstr ""
 
 #: share/html/Admin/Queues/People.html:74 share/html/Ticket/Elements/EditPeople:53
 msgid "Find people whose"
-msgstr "מצא אנשים ש"
+msgstr ""
 
 #: share/html/Search/Results.html:135
 msgid "Find tickets"
-msgstr "מצא פניות"
+msgstr ""
 
 #: share/html/Admin/Elements/ShowKeyInfo:58
 msgid "Fingerprint"
-msgstr ""
+msgstr "Emprencha digitala"
 
 #: share/html/Install/Finish.html:48 share/html/Install/Global.html:64
 msgid "Finish"
-msgstr ""
+msgstr "Acabar"
 
 #: share/html/Elements/Tabs:637
 msgid "First"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "First page"
-msgstr "עמוד ראשון"
+msgstr "Primièr"
 
 #: share/html/Search/Simple.html:91
 #. (_unsafe, $link_start, $link_end)
@@ -3158,15 +3026,15 @@ msgstr ""
 
 #: share/html/Search/Bulk.html:84
 msgid "Force change"
-msgstr "הכרח שינוי"
+msgstr ""
 
 #: share/html/Search/Edit.html:59 share/html/Search/Elements/EditFormat:52
 msgid "Format"
-msgstr ""
+msgstr "Formatar"
 
 #: etc/initialdata:402 etc/upgrade/3.7.15/content:4 share/html/Elements/Tabs:564 share/html/Ticket/Elements/ShowTransaction:222
 msgid "Forward"
-msgstr ""
+msgstr "Transferiment"
 
 #: share/html/Ticket/Forward.html:78
 msgid "Forward Message"
@@ -3212,7 +3080,7 @@ msgstr ""
 #. ($ticketcount)
 #. ($collection->CountAll)
 msgid "Found %quant(%1,ticket)"
-msgstr "נמצאו %1 פניות"
+msgstr ""
 
 #: lib/RT/Record.pm:964
 msgid "Found Object"
@@ -3220,27 +3088,19 @@ msgstr ""
 
 #: share/html/Dashboards/Subscription.html:92
 msgid "Frequency"
-msgstr ""
+msgstr "Frequéncia"
 
 #: lib/RT/Date.pm:111
 msgid "Fri"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Fri."
-msgstr "שישי"
+msgstr "Div"
 
 #: share/html/Dashboards/Subscription.html:110
 msgid "Friday"
-msgstr ""
+msgstr "Divendres"
 
 #: share/html/Ticket/Forward.html:60
 msgid "From"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Full headers"
-msgstr "כותרים מלאים"
+msgstr "De"
 
 #: share/html/Admin/Tools/Theme.html:67
 msgid "GD is disabled or not installed. You can upload an image, but you won't get automatic color suggestions."
@@ -3248,7 +3108,7 @@ msgstr ""
 
 #: lib/RT/Config.pm:192 lib/RT/Config.pm:285
 msgid "General"
-msgstr ""
+msgstr "General"
 
 #: share/html/Admin/Elements/EditRightsCategoryTabs:91
 msgid "General rights"
@@ -3260,16 +3120,16 @@ msgstr ""
 
 #: share/html/Install/index.html:76
 msgid "Getting started"
-msgstr ""
+msgstr "Per començar"
 
 #: lib/RT/Transaction.pm:757 lib/RT/Transaction.pm:899 lib/RT/Transaction.pm:911
 #. ($New->Name)
 msgid "Given to %1"
-msgstr ""
+msgstr "Balhat a %1"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:93 share/html/Elements/RT__Scrip/ColumnMap:64 share/html/Elements/RT__Template/ColumnMap:74 share/html/Elements/Tabs:101
 msgid "Global"
-msgstr "גלובאלי"
+msgstr "Global"
 
 #: share/html/Admin/Tools/Configuration.html:193
 msgid "Global Attributes"
@@ -3291,11 +3151,11 @@ msgstr ""
 #: share/html/Admin/Elements/SelectTemplate:55
 #. (loc($Template->Name))
 msgid "Global template: %1"
-msgstr ""
+msgstr "Modèl global : %1"
 
 #: share/html/Elements/Tabs:309
 msgid "GnuPG"
-msgstr ""
+msgstr "GnuPG"
 
 #: lib/RT/Attachment.pm:758 lib/RT/Attachment.pm:793
 msgid "GnuPG error. Contact with administrator"
@@ -3307,7 +3167,7 @@ msgstr ""
 
 #: share/html/Elements/GnuPG/KeyIssues:49
 msgid "GnuPG issues"
-msgstr ""
+msgstr "Problèmas GnuPG"
 
 #: share/html/Admin/Elements/ShowKeyInfo:91
 #. ($EmailAddress)
@@ -3325,7 +3185,7 @@ msgstr ""
 
 #: share/html/m/_elements/menu:67
 msgid "Go"
-msgstr ""
+msgstr "Anem !"
 
 #: share/html/Admin/Groups/index.html:55
 msgid "Go to group"
@@ -3337,7 +3197,7 @@ msgstr ""
 
 #: share/html/Admin/Articles/Classes/index.html:69 share/html/Admin/CustomFields/index.html:86 share/html/Admin/Groups/index.html:76 share/html/Admin/Queues/People.html:76 share/html/Admin/Queues/People.html:80 share/html/Admin/Queues/index.html:88 share/html/Admin/Users/index.html:87 share/html/Approvals/index.html:54 share/html/Elements/RefreshHomepage:52 share/html/Ticket/Elements/EditPeople:55 share/html/Ticket/Elements/EditPeople:59 share/html/Tools/Offline.html:88
 msgid "Go!"
-msgstr "חפש"
+msgstr "Anem !"
 
 #: share/html/SelfService/Elements/GotoTicket:49 share/html/SelfService/Elements/GotoTicket:49
 msgid "Goto Ticket"
@@ -3349,7 +3209,7 @@ msgstr ""
 
 #: share/html/Ticket/Elements/ShowSummary:90 share/html/Ticket/ModifyLinks.html:58
 msgid "Graph"
-msgstr ""
+msgstr "Grafic"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:48
 msgid "Graph Properties"
@@ -3361,15 +3221,11 @@ msgstr ""
 
 #: lib/RT/Record.pm:944 share/html/Ticket/Elements/AddWatchers:69 share/html/Ticket/Elements/ShowGroupMembers:60
 msgid "Group"
-msgstr "קבוצה"
-
-#: NOT FOUND IN SOURCE
-msgid "Group %1 %2: %3"
-msgstr "קבוצה %1 %2: %3"
+msgstr "Grop"
 
 #: share/html/Elements/Tabs:186 share/html/Elements/Tabs:290 share/html/Elements/Tabs:324 share/html/Elements/Tabs:338 share/html/Elements/Tabs:368
 msgid "Group Rights"
-msgstr "זכויות קבוצה"
+msgstr ""
 
 #: lib/RT/Group.pm:928
 #. ($new_member_obj->Object->Name)
@@ -3391,7 +3247,7 @@ msgstr ""
 
 #: lib/RT/Group.pm:697
 msgid "Group enabled"
-msgstr ""
+msgstr "Grop activat"
 
 #: lib/RT/Group.pm:1084
 msgid "Group has no such member"
@@ -3404,11 +3260,11 @@ msgstr ""
 
 #: lib/RT/Group.pm:908 lib/RT/Queue.pm:1042 lib/RT/Queue.pm:969 lib/RT/Ticket.pm:1138 lib/RT/Ticket.pm:1216
 msgid "Group not found"
-msgstr ""
+msgstr "Grop introbable"
 
 #: lib/RT/CustomField.pm:1675 share/html/Admin/Global/CustomFields/index.html:71 share/html/Admin/Groups/Members.html:88 share/html/Admin/Queues/People.html:102 share/html/Elements/Tabs:133 share/html/Elements/Tabs:242 share/html/Elements/Tabs:75
 msgid "Groups"
-msgstr "קבוצות"
+msgstr "Gropes"
 
 #: lib/RT/Group.pm:934
 msgid "Groups can't be members of their members"
@@ -3444,7 +3300,7 @@ msgstr ""
 
 #: lib/RT/Interface/CLI.pm:82 lib/RT/Interface/CLI.pm:82
 msgid "Hello!"
-msgstr ""
+msgstr "Bonjorn !"
 
 #: share/html/Install/Global.html:52
 msgid "Help us set up some useful defaults for RT."
@@ -3464,7 +3320,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:306 share/html/Elements/Tabs:326 share/html/Elements/Tabs:519 share/html/Elements/Tabs:782 share/html/Elements/Tabs:798 share/html/Ticket/Elements/ShowHistory:55 share/html/m/_elements/ticket_menu:64
 msgid "History"
-msgstr "הסטוריה"
+msgstr "Istoric"
 
 #: share/html/Articles/Article/History.html:52
 #. ($id)
@@ -3488,7 +3344,7 @@ msgstr ""
 
 #: share/html/Elements/RT__User/ColumnMap:86
 msgid "Home Phone"
-msgstr ""
+msgstr "Telefòn personal"
 
 #: lib/RT/Config.pm:320
 msgid "Home page refresh interval"
@@ -3496,15 +3352,15 @@ msgstr ""
 
 #: share/html/Elements/Tabs:381 share/html/m/_elements/header:67
 msgid "Homepage"
-msgstr "דף הבית"
+msgstr "Site web"
 
 #: share/html/Dashboards/Subscription.html:138
 msgid "Hour"
-msgstr ""
+msgstr "Ora"
 
 #: share/html/Elements/SelectTimeUnits:53
 msgid "Hours"
-msgstr ""
+msgstr "Oras"
 
 #: lib/RT/Base.pm:125
 #. (6)
@@ -3513,15 +3369,15 @@ msgstr ""
 
 #: lib/RT/Date.pm:117
 msgid "ISO"
-msgstr ""
+msgstr "ISO"
 
 #: lib/RT/Tickets.pm:2238 share/html/Ticket/Elements/ShowBasics:50 share/html/m/ticket/show:215
 msgid "Id"
-msgstr ""
+msgstr "Id"
 
 #: share/html/Admin/Users/Modify.html:63 share/html/User/Prefs.html:60
 msgid "Identity"
-msgstr "זהות"
+msgstr "Identitat"
 
 #: lib/RT/Approval/Rule/Rejected.pm:54
 msgid "If an approval is rejected, reject the original and delete pending approvals"
@@ -3558,7 +3414,7 @@ msgstr ""
 
 #: share/html/Admin/Queues/People.html:124 share/html/Ticket/Modify.html:64 share/html/Ticket/ModifyAll.html:128 share/html/Ticket/ModifyPeople.html:76
 msgid "If you've updated anything above, be sure to"
-msgstr "אם עדכנת משהו לעיל, אל תשכח ל"
+msgstr ""
 
 #: share/html/Install/DatabaseType.html:61
 #. (_unsafe, '<a href="http://search.cpan.org" target="_new">CPAN</a>')
@@ -3659,7 +3515,7 @@ msgstr ""
 
 #: lib/RT/ScripAction.pm:131
 msgid "Input error"
-msgstr ""
+msgstr "Error d’entrada"
 
 #: lib/RT/CustomField.pm:1467 lib/RT/CustomField.pm:1628 share/html/Elements/ValidateCustomFields:112
 #. ($CF->FriendlyPattern)
@@ -3669,12 +3525,12 @@ msgstr ""
 
 #: lib/RT/Article.pm:281 lib/RT/Article.pm:290 lib/RT/Article.pm:299 lib/RT/Article.pm:308 lib/RT/Article.pm:317 lib/RT/Ticket.pm:3468
 msgid "Internal Error"
-msgstr ""
+msgstr "Error intèrna"
 
 #: lib/RT/Record.pm:321
 #. ($id->{error_message})
 msgid "Internal Error: %1"
-msgstr ""
+msgstr "Error intèrna : %1"
 
 #: lib/RT/Article.pm:211
 #. ($txn_msg)
@@ -3730,7 +3586,7 @@ msgstr ""
 
 #: lib/RT/Record.pm:961
 msgid "Invalid data"
-msgstr ""
+msgstr "Donada invalida"
 
 #: share/html/Admin/Users/GnuPG.html:110
 #. ($ARGS{'PrivateKey'}, $email)
@@ -3743,12 +3599,12 @@ msgstr ""
 
 #: lib/RT/CustomField.pm:1460
 msgid "Invalid object"
-msgstr ""
+msgstr "Objècte invalid"
 
 #: lib/RT/CustomField.pm:347 lib/RT/CustomField.pm:783
 #. ($msg)
 msgid "Invalid pattern: %1"
-msgstr ""
+msgstr "Motiu invalid : %1"
 
 #: lib/RT/Scrip.pm:138 lib/RT/Template.pm:251
 msgid "Invalid queue"
@@ -3800,19 +3656,11 @@ msgstr ""
 
 #: share/html/Search/Elements/EditFormat:97
 msgid "Italic"
-msgstr ""
+msgstr "Italica"
 
 #: lib/RT/Date.pm:91
 msgid "Jan"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Jan."
-msgstr "ינואר"
-
-#: NOT FOUND IN SOURCE
-msgid "January"
-msgstr "ינואר"
+msgstr "Gen"
 
 #: lib/RT/Group.pm:96
 msgid "Join or leave group"
@@ -3820,31 +3668,15 @@ msgstr ""
 
 #: lib/RT/Date.pm:97
 msgid "Jul"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Jul."
-msgstr "יולי"
-
-#: NOT FOUND IN SOURCE
-msgid "July"
-msgstr "יולי"
+msgstr "Jul"
 
 #: share/html/Elements/Tabs:548
 msgid "Jumbo"
-msgstr "ג'מבו"
+msgstr "Jumbo"
 
 #: lib/RT/Date.pm:96
 msgid "Jun"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Jun."
-msgstr "יוני"
-
-#: NOT FOUND IN SOURCE
-msgid "June"
-msgstr "יוני"
+msgstr "Jun"
 
 #: lib/RT/Installer.pm:80
 msgid "Keep 'localhost' if you're not sure. Leave blank to connect locally over a socket"
@@ -3857,31 +3689,27 @@ msgstr ""
 
 #: share/html/Admin/Users/Modify.html:92 share/html/Elements/RT__User/ColumnMap:141 share/html/Install/index.html:56 share/html/User/Prefs.html:76
 msgid "Language"
-msgstr ""
+msgstr "Lenga"
 
 #: share/html/Search/Elements/EditFormat:88
 msgid "Large"
-msgstr ""
+msgstr "Granda"
 
 #: share/html/Elements/Tabs:646
 msgid "Last"
-msgstr ""
+msgstr "Darrièr"
 
 #: share/html/Ticket/Elements/EditDates:61 share/html/Ticket/Elements/ShowDates:62 share/html/m/ticket/show:385
 msgid "Last Contact"
-msgstr "מגע אחרון"
+msgstr ""
 
 #: share/html/Elements/SelectDateType:52
 msgid "Last Contacted"
-msgstr "קשר אחרון"
-
-#: NOT FOUND IN SOURCE
-msgid "Last Notified"
-msgstr "נודע לאחרונה"
+msgstr ""
 
 #: share/html/Elements/ColumnMap:81 share/html/Elements/ColumnMap:86 share/html/Elements/SelectDateType:53
 msgid "Last Updated"
-msgstr "עדכון אחרון"
+msgstr "Darrièra mesa a jorn"
 
 #: share/html/Elements/ColumnMap:91
 msgid "Last Updated By"
@@ -3922,11 +3750,11 @@ msgstr ""
 
 #: share/html/Ticket/Elements/ShowBasics:71 share/html/m/ticket/show:236
 msgid "Left"
-msgstr "נותרה"
+msgstr "Restant"
 
 #: share/html/Ticket/Graphs/Elements/ShowLegends:48
 msgid "Legends"
-msgstr ""
+msgstr "Legendas"
 
 #: lib/RT/Config.pm:343
 msgid "Length in characters; Use '0' to show all messages inline, regardless of length"
@@ -3934,15 +3762,15 @@ msgstr ""
 
 #: share/html/Admin/Users/Modify.html:107
 msgid "Let this user access RT"
-msgstr "תן למשתמש זה לגשת ל R"
+msgstr ""
 
 #: share/html/Admin/Users/Modify.html:111
 msgid "Let this user be granted rights"
-msgstr "תן אפשרות להעניק זכויות למשתמש זה"
+msgstr ""
 
 #: share/html/Install/index.html:79 share/html/Install/index.html:87
 msgid "Let's go!"
-msgstr ""
+msgstr "Es partit !"
 
 #: share/html/Admin/Queues/Modify.html:67
 msgid "Lifecycle"
@@ -3950,7 +3778,7 @@ msgstr ""
 
 #: share/html/Search/Elements/EditFormat:67
 msgid "Link"
-msgstr ""
+msgstr "Ligam"
 
 #: lib/RT/Record.pm:1320
 msgid "Link already exists"
@@ -3975,7 +3803,7 @@ msgstr ""
 
 #: lib/RT/Tickets.pm:115
 msgid "Linked"
-msgstr ""
+msgstr "Ligat"
 
 #: lib/RT/Tickets.pm:117
 msgid "LinkedFrom"
@@ -3995,15 +3823,15 @@ msgstr ""
 
 #: share/html/Articles/Article/Display.html:56 share/html/Articles/Article/Edit.html:79 share/html/Articles/Article/Elements/ShowSearchCriteria:117 share/html/Elements/Tabs:544 share/html/Ticket/Create.html:250 share/html/Ticket/Elements/ShowSummary:92 share/html/Ticket/ModifyAll.html:79 share/html/m/ticket/create:411 share/html/m/ticket/show:409
 msgid "Links"
-msgstr "קישורים"
+msgstr "Ligams"
 
 #: lib/RT/CustomField.pm:80 lib/RT/CustomField.pm:84
 msgid "List"
-msgstr ""
+msgstr "Lista"
 
 #: share/html/Articles/Article/Elements/ShowSavedSearches:70 share/html/Articles/Article/Search.html:68 share/html/Search/Elements/EditSearches:80
 msgid "Load"
-msgstr ""
+msgstr "Cargar"
 
 #: share/html/Articles/Article/Elements/ShowSavedSearches:68
 msgid "Load a saved search"
@@ -4024,7 +3852,7 @@ msgstr ""
 #: lib/RT/SharedSetting.pm:118
 #. ($self->ObjectName, $self->Name)
 msgid "Loaded %1 %2"
-msgstr ""
+msgstr "%1 %2 cargat"
 
 #: share/html/Search/Elements/EditSearches:168
 #. ($SavedSearch->{'Description'})
@@ -4042,11 +3870,11 @@ msgstr ""
 
 #: share/html/Ticket/Elements/ClickToShowHistory:50 share/html/Ticket/Elements/ShowRequestor:112
 msgid "Loading..."
-msgstr ""
+msgstr "Cargament en cors..."
 
 #: lib/RT/Config.pm:431
 msgid "Locale"
-msgstr ""
+msgstr "Localizacion"
 
 #: lib/RT/Date.pm:122
 msgid "LocalizedDateTime"
@@ -4054,24 +3882,24 @@ msgstr ""
 
 #: share/html/Admin/Users/Modify.html:122 share/html/User/Prefs.html:116
 msgid "Location"
-msgstr "מיקום"
+msgstr "Emplaçament"
 
 #: lib/RT/Interface/Web.pm:766
 msgid "Logged in"
-msgstr ""
+msgstr "Connectat"
 
 #: share/html/Elements/Tabs:459 share/html/Elements/Tabs:849
 #. ($username)
 msgid "Logged in as %1"
-msgstr "מחובר כ %1"
+msgstr ""
 
 #: share/html/NoAuth/Logout.html:54
 msgid "Logged out"
-msgstr ""
+msgstr "Desconnectat"
 
 #: share/html/Elements/Login:49 share/html/Elements/Login:62 share/html/Elements/Login:91 share/html/m/login:105 share/html/m/login:92
 msgid "Login"
-msgstr "כניסה"
+msgstr "Se connectar"
 
 #: share/html/Elements/Logo:52 share/html/Elements/Logo:56
 #. ())
@@ -4080,7 +3908,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:491 share/html/Elements/Tabs:861 share/html/NoAuth/Logout.html:48 share/html/m/_elements/menu:107
 msgid "Logout"
-msgstr "יציאה"
+msgstr "Se desconnectar"
 
 #: lib/RT/CustomField.pm:1370
 msgid "Lookup type mismatch"
@@ -4093,7 +3921,7 @@ msgstr ""
 
 #: lib/RT/Config.pm:475 lib/RT/Config.pm:490
 msgid "Mail"
-msgstr ""
+msgstr "Corrièl"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:58
 msgid "Main type of links"
@@ -4101,43 +3929,43 @@ msgstr ""
 
 #: share/html/Search/Bulk.html:81
 msgid "Make Owner"
-msgstr "שנה בעלות ל"
+msgstr "Attribuer"
 
 #: share/html/Search/Bulk.html:107
 msgid "Make Status"
-msgstr "שנה סטטוס"
+msgstr ""
 
 #: share/html/Search/Bulk.html:115
 msgid "Make date Due"
-msgstr "שנה תאריך יעד"
+msgstr ""
 
 #: share/html/Search/Bulk.html:117
 msgid "Make date Resolved"
-msgstr "שנה תאריך פתרון"
+msgstr ""
 
 #: share/html/Search/Bulk.html:111
 msgid "Make date Started"
-msgstr "שנה תאריך 'הותחל'"
+msgstr ""
 
 #: share/html/Search/Bulk.html:109
 msgid "Make date Starts"
-msgstr "שנה תאריך התחלה"
+msgstr ""
 
 #: share/html/Search/Bulk.html:113
 msgid "Make date Told"
-msgstr "שנע תאריך מגע אחרון"
+msgstr ""
 
 #: share/html/Search/Bulk.html:103
 msgid "Make priority"
-msgstr "שנה עדיפות"
+msgstr ""
 
 #: share/html/Search/Bulk.html:105
 msgid "Make queue"
-msgstr "שנה תור"
+msgstr ""
 
 #: share/html/Search/Bulk.html:101
 msgid "Make subject"
-msgstr "שנה נושא"
+msgstr ""
 
 #: share/html/Elements/Tabs:93
 msgid "Manage custom fields and custom field values"
@@ -4145,15 +3973,15 @@ msgstr ""
 
 #: share/html/Elements/Tabs:76
 msgid "Manage groups and group membership"
-msgstr "נהל קבוצות וחברות בקבוצות"
+msgstr ""
 
 #: share/html/Elements/Tabs:102
 msgid "Manage properties and configuration which apply to all queues"
-msgstr "נהל מאפיינים והגדרות שתקפים לכל התורות"
+msgstr ""
 
 #: share/html/Elements/Tabs:84
 msgid "Manage queues and queue-specific properties"
-msgstr "נהל תורות ומאפיינים ספציפיים לתורות"
+msgstr ""
 
 #: share/html/Ticket/Graphs/index.html:63
 msgid "Manage saved graphs"
@@ -4161,7 +3989,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:68
 msgid "Manage users and passwords"
-msgstr "נהל משתמשים וספריות"
+msgstr ""
 
 #: lib/RT/Ticket.pm:1719
 msgid "Mapping between queues' lifecycles is incomplete. Contact your system administrator."
@@ -4169,15 +3997,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:93
 msgid "Mar"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Mar."
-msgstr "מרץ"
-
-#: NOT FOUND IN SOURCE
-msgid "March"
-msgstr "מרץ"
+msgstr "Mar"
 
 #: share/html/Ticket/Display.html:190 share/html/m/ticket/show:125
 msgid "Marked all messages as seen"
@@ -4197,19 +4017,15 @@ msgstr ""
 
 #: lib/RT/Date.pm:95
 msgid "May"
-msgstr "מאי"
-
-#: NOT FOUND IN SOURCE
-msgid "May."
-msgstr "מאי"
+msgstr "Mai"
 
 #: share/html/Elements/QuickCreate:64
 msgid "Me"
-msgstr ""
+msgstr "Me"
 
 #: share/html/Elements/RT__Group/ColumnMap:61
 msgid "Member"
-msgstr ""
+msgstr "Membre"
 
 #: lib/RT/Transaction.pm:804
 #. ($value)
@@ -4224,19 +4040,19 @@ msgstr ""
 #: lib/RT/Group.pm:945
 #. ($new_member_obj->Object->Name)
 msgid "Member added: %1"
-msgstr "חבר הוסף: %1"
+msgstr ""
 
 #: lib/RT/Group.pm:1091
 msgid "Member deleted"
-msgstr "חבר נמחק"
+msgstr ""
 
 #: lib/RT/Group.pm:1095
 msgid "Member not deleted"
-msgstr "חבר לא נמחק"
+msgstr ""
 
 #: share/html/Elements/SelectLinkType:49
 msgid "Member of"
-msgstr "חבר ב"
+msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:118 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
 msgid "MemberOf"
@@ -4244,7 +4060,7 @@ msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:156 share/html/Elements/Tabs:323 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
 msgid "Members"
-msgstr "חברים"
+msgstr "Membres"
 
 #: lib/RT/Transaction.pm:801
 #. ($value)
@@ -4267,11 +4083,11 @@ msgstr ""
 
 #: lib/RT/Ticket.pm:2687
 msgid "Merge Successful"
-msgstr "מיזוג הצליח"
+msgstr ""
 
 #: lib/RT/Ticket.pm:2708
 msgid "Merge failed. Couldn't set EffectiveId"
-msgstr "מיזוג נכשל. לא יכולתי להגדיר מזהה אפקטיבי"
+msgstr ""
 
 #: lib/RT/Ticket.pm:2722
 msgid "Merge failed. Couldn't set Status"
@@ -4279,7 +4095,7 @@ msgstr ""
 
 #: share/html/Elements/EditLinks:133 share/html/Ticket/Elements/BulkLinks:127
 msgid "Merge into"
-msgstr "מזג לתוך"
+msgstr ""
 
 #: lib/RT/Transaction.pm:807
 #. ($value)
@@ -4288,7 +4104,7 @@ msgstr ""
 
 #: share/html/Search/Bulk.html:149 share/html/Ticket/Update.html:148 share/html/Ticket/Update.html:166 share/html/m/ticket/reply:103
 msgid "Message"
-msgstr "הודעה"
+msgstr "Messatge"
 
 #: share/html/Ticket/Elements/ShowTransactionAttachments:170
 msgid "Message body is not shown because it is too large."
@@ -4332,35 +4148,31 @@ msgstr ""
 
 #: share/html/Elements/SelectTimeUnits:50
 msgid "Minutes"
-msgstr ""
+msgstr "Minutas"
 
 #: share/html/Admin/Elements/EditRightsCategoryTabs:105
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Divèrs"
 
 #: lib/RT/Record.pm:963
 msgid "Missing a primary key?: %1"
-msgstr "חסר מפתח ראשי?: %1"
+msgstr ""
 
 #: share/html/Admin/Users/Modify.html:177 share/html/User/Prefs.html:96
 msgid "Mobile"
-msgstr "נייד"
+msgstr "Telefonet"
 
 #: share/html/Elements/RT__User/ColumnMap:96
 msgid "Mobile Phone"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "MobilePhone"
-msgstr "טלפון נייד"
+msgstr "Telefonet"
 
 #: share/html/Elements/Tabs:783 share/html/Elements/Tabs:801 share/html/m/_elements/ticket_menu:67
 msgid "Modify"
-msgstr ""
+msgstr "Modificar"
 
 #: lib/RT/Class.pm:97
 msgid "Modify Access Control List"
-msgstr "שנה רשימת בקרת גישה"
+msgstr ""
 
 #: share/html/Admin/Groups/Members.html:108
 msgid "Modify Members"
@@ -4567,16 +4379,16 @@ msgstr ""
 #: share/html/Ticket/ModifyAll.html:58
 #. ($Ticket->Id)
 msgid "Modify ticket # %1"
-msgstr "שנה פנייה מספר %1"
+msgstr ""
 
 #: share/html/Ticket/Modify.html:48 share/html/Ticket/Modify.html:58
 #. ($TicketObj->Id)
 msgid "Modify ticket #%1"
-msgstr "שינוי פנוייה מספר %1"
+msgstr ""
 
 #: lib/RT/Queue.pm:116
 msgid "Modify tickets"
-msgstr "שינוי פניות"
+msgstr ""
 
 #: share/html/Admin/Articles/Classes/Topics.html:59
 #. ($ClassObj->Name)
@@ -4670,19 +4482,15 @@ msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:220
 msgid "Module"
-msgstr ""
+msgstr "Modul"
 
 #: lib/RT/Date.pm:107
 msgid "Mon"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Mon."
-msgstr "שני"
+msgstr "Dil"
 
 #: share/html/Dashboards/Subscription.html:106
 msgid "Monday"
-msgstr ""
+msgstr "Diluns"
 
 #: share/html/Dashboards/Subscription.html:100
 msgid "Monday through Friday"
@@ -4690,11 +4498,7 @@ msgstr ""
 
 #: lib/RT/Dashboard/Mailer.pm:327
 msgid "Monthly"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "More about %1"
-msgstr "עוד לגבי %1"
+msgstr "Cada mes"
 
 #: share/html/Ticket/Elements/ShowRequestor:67
 msgid "More about the requestors"
@@ -4702,7 +4506,7 @@ msgstr ""
 
 #: share/html/Admin/Elements/PickCustomFields:85
 msgid "Move down"
-msgstr ""
+msgstr "Desplaçar cap aval"
 
 #: share/html/Admin/Articles/Elements/Topics:108
 msgid "Move here"
@@ -4710,11 +4514,11 @@ msgstr ""
 
 #: share/html/Admin/Elements/PickCustomFields:77
 msgid "Move up"
-msgstr ""
+msgstr "Desplaçar cap amont"
 
 #: share/html/Admin/Elements/SelectSingleOrMultiple:50
 msgid "Multiple"
-msgstr ""
+msgstr "Multiple"
 
 #: lib/RT/User.pm:167
 msgid "Must specify 'Name' attribute"
@@ -4727,7 +4531,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:445
 msgid "My Approvals"
-msgstr "האישורים שלי"
+msgstr ""
 
 #: share/html/Elements/Tabs:423
 msgid "My Day"
@@ -4739,7 +4543,7 @@ msgstr ""
 
 #: share/html/Approvals/index.html:48
 msgid "My approvals"
-msgstr "האישורים שלי"
+msgstr ""
 
 #: share/html/Dashboards/Elements/SelectPrivacy:62 share/html/Dashboards/Elements/ShowDashboards:53
 msgid "My dashboards"
@@ -4755,11 +4559,11 @@ msgstr ""
 
 #: lib/RT/Installer.pm:68
 msgid "MySQL"
-msgstr ""
+msgstr "MySQL"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "NBSP"
-msgstr ""
+msgstr "NBSP"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "NEWLINE"
@@ -4767,7 +4571,7 @@ msgstr ""
 
 #: share/html/Admin/CustomFields/Modify.html:58 share/html/Admin/Elements/AddCustomFieldValue:54 share/html/Admin/Elements/EditCustomField:57 share/html/Admin/Elements/EditCustomFieldValues:58 share/html/Admin/Elements/ModifyTemplate:50 share/html/Admin/Groups/Modify.html:64 share/html/Admin/Tools/Configuration.html:196 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Articles/Article/Elements/EditBasics:49 share/html/Articles/Article/Elements/ShowSearchCriteria:63 share/html/Articles/Elements/NewestArticles:52 share/html/Articles/Elements/UpdatedArticles:52 share/html/Dashboards/Modify.html:63 share/html/Elements/RT__Article/ColumnMap:60 share/html/Elements/RT__Class/ColumnMap:60 share/html/Elements/RT__Dashboard/ColumnMap:61 share/html/Elements/RT__Group/ColumnMap:77 share/html/Elements/RT__SavedSearch/ColumnMap:61 share/html/Elements/RT__Template/ColumnMap:61 share/html/Elements/RT__User/ColumnMap:61 share/html/Search/Bulk.html:171
 msgid "Name"
-msgstr "שם"
+msgstr "Nom"
 
 #: lib/RT/Config.pm:177
 msgid "Name and email address"
@@ -4775,19 +4579,19 @@ msgstr ""
 
 #: lib/RT/Article.pm:115 lib/RT/User.pm:174
 msgid "Name in use"
-msgstr "שם בשימוש"
+msgstr "Nom ja utilizat"
 
 #: share/html/Articles/Article/Elements/ShowSavedSearches:55
 msgid "Name:"
-msgstr ""
+msgstr "Nom :"
 
 #: lib/RT/Dashboard/Mailer.pm:328 share/html/Elements/RT__Dashboard/ColumnMap:107 share/html/Ticket/Elements/ShowDates:80 share/html/m/ticket/show:403
 msgid "Never"
-msgstr ""
+msgstr "Pas jamai"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:251
 msgid "New"
-msgstr "חדש"
+msgstr "Novèl"
 
 #: share/html/Elements/Tabs:791
 msgid "New Article"
@@ -4799,11 +4603,7 @@ msgstr ""
 
 #: share/html/Elements/EditLinks:118 share/html/Ticket/Elements/BulkLinks:122
 msgid "New Links"
-msgstr "יחסים חדשים"
-
-#: NOT FOUND IN SOURCE
-msgid "New Password"
-msgstr "סיסמא חדשה"
+msgstr ""
 
 #: etc/initialdata:330 etc/upgrade/3.8.2/content:36
 msgid "New Pending Approval"
@@ -4811,96 +4611,60 @@ msgstr ""
 
 #: share/html/Elements/Tabs:413
 msgid "New Search"
-msgstr "חיפוש חדש"
-
-#: NOT FOUND IN SOURCE
-msgid "New group"
-msgstr "קבוצה חדשה"
+msgstr "Recèrca novèla"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:246 share/html/Ticket/Elements/ShowUpdateStatus:49
 msgid "New messages"
-msgstr ""
+msgstr "Messatges novèls"
 
 #: share/html/Elements/EditPassword:61
 msgid "New password"
-msgstr "סיסמא חדשה"
+msgstr "Senhal novèl"
 
 #: lib/RT/User.pm:747
 msgid "New password notification sent"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "New queue"
-msgstr "תור חדש"
-
 #: share/html/Ticket/Elements/Reminders:115
 msgid "New reminder:"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "New request"
-msgstr "בקשה חדשה"
-
 #: share/html/Admin/Elements/SelectRights:72
 msgid "New rights"
-msgstr "זכויות חדשות"
-
-#: NOT FOUND IN SOURCE
-msgid "New scrip"
-msgstr "סקריפ חדש"
-
-#: NOT FOUND IN SOURCE
-msgid "New search"
-msgstr "חיפוש חדש"
-
-#: NOT FOUND IN SOURCE
-msgid "New template"
-msgstr "תבנית חדשה"
+msgstr ""
 
 #: share/html/Elements/Tabs:836 share/html/Elements/Tabs:838 share/html/m/_elements/menu:70
 msgid "New ticket"
-msgstr "פנייה חדשה"
+msgstr ""
 
 #: lib/RT/Ticket.pm:2668
 msgid "New ticket doesn't exist"
-msgstr "פנייה חדשה לא קיימת"
+msgstr ""
 
 #: lib/RT/Ticket.pm:311
 #. ($self->loc($args{'Status'}))
 msgid "New tickets can not have status '%1' in this queue."
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "New user"
-msgstr "משתמש חדש"
-
 #: share/html/Admin/Elements/CreateUserCalled:49
 msgid "New user called"
-msgstr "משתמש חדש שנקרא"
+msgstr ""
 
 #: share/html/Admin/Queues/People.html:72 share/html/Ticket/Elements/EditPeople:52
 msgid "New watchers"
-msgstr "צופים חדשים"
+msgstr ""
 
 #: share/html/Elements/CollectionListPaging:106 share/html/Elements/Tabs:644 share/html/Install/Basics.html:62 share/html/Install/DatabaseDetails.html:72 share/html/Install/DatabaseType.html:70 share/html/Install/Global.html:64 share/html/Install/Global.html:64 share/html/Install/Sendmail.html:63
 msgid "Next"
-msgstr "הבא"
-
-#: NOT FOUND IN SOURCE
-msgid "Next page"
-msgstr "דף הבא"
-
-#: NOT FOUND IN SOURCE
-msgid "NickName"
-msgstr "כינוי"
+msgstr "Seguent"
 
 #: share/html/Admin/Users/Modify.html:82 share/html/Elements/RT__User/ColumnMap:71 share/html/User/Prefs.html:72
 msgid "Nickname"
-msgstr "כינוי"
+msgstr "Escais"
 
 #: share/html/Articles/Article/Delete.html:62 share/html/Elements/RT__Ticket/ColumnMap:248 share/html/Widgets/Form/Boolean:79
 msgid "No"
-msgstr ""
+msgstr "Non"
 
 #: lib/RT/SharedSetting.pm:241
 #. ($self->ObjectName)
@@ -4946,7 +4710,7 @@ msgstr ""
 
 #: share/html/Search/Elements/ResultsRSSView:125
 msgid "No Subject"
-msgstr ""
+msgstr "Sens subjècte"
 
 #: share/html/Admin/Global/Template.html:88 share/html/Admin/Queues/Template.html:86
 msgid "No Template"
@@ -4954,7 +4718,7 @@ msgstr ""
 
 #: share/html/Approvals/Elements/Approve:90
 msgid "No action"
-msgstr ""
+msgstr "Pas cap d'accion"
 
 #: lib/RT/Record.pm:958
 msgid "No column specified"
@@ -5072,7 +4836,7 @@ msgstr ""
 
 #: share/html/Elements/RT__Ticket/ColumnMap:101
 msgid "No subject"
-msgstr ""
+msgstr "Sens objècte"
 
 #: lib/RT/User.pm:1614
 msgid "No such key or it's not suitable for signing"
@@ -5100,11 +4864,11 @@ msgstr ""
 
 #: share/html/Elements/QuickCreate:65
 msgid "Nobody"
-msgstr "אף אחד"
+msgstr "Degun"
 
 #: share/html/Elements/RT__Dashboard/ColumnMap:76
 msgid "None"
-msgstr ""
+msgstr "Pas cap"
 
 #: lib/RT/Record.pm:960
 msgid "Nonexistant field?"
@@ -5112,19 +4876,15 @@ msgstr ""
 
 #: lib/RT/CustomField.pm:500
 msgid "Not found"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Not logged in"
-msgstr "לא בתוך המערכת"
+msgstr "Pas trobat"
 
 #: share/html/Elements/PersonalQuickbar:54
 msgid "Not logged in."
-msgstr "לא בתוך המערכת."
+msgstr "Pas connectat."
 
 #: lib/RT/Date.pm:399 share/html/Elements/ShowReminders:72 share/html/Ticket/Elements/Reminders:166
 msgid "Not set"
-msgstr "לא הוזן"
+msgstr ""
 
 #: share/html/m/_elements/full_site_link:48
 msgid "Not using a mobile browser?"
@@ -5136,7 +4896,7 @@ msgstr ""
 
 #: share/html/Approvals/Elements/Approve:95
 msgid "Notes"
-msgstr ""
+msgstr "Nòtas"
 
 #: lib/RT/User.pm:749
 msgid "Notification could not be sent"
@@ -5224,15 +4984,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:101
 msgid "Nov"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Nov."
-msgstr "נובמבר"
-
-#: NOT FOUND IN SOURCE
-msgid "November"
-msgstr "נובמבר"
+msgstr "Nov"
 
 #: lib/RT/Config.pm:311
 msgid "Number of search results"
@@ -5240,11 +4992,11 @@ msgstr ""
 
 #: share/html/Search/Elements/SelectAndOr:49
 msgid "OR"
-msgstr ""
+msgstr "O"
 
 #: share/html/Admin/Tools/Configuration.html:142
 msgid "Object"
-msgstr ""
+msgstr "Objècte"
 
 #: lib/RT/Record.pm:335
 msgid "Object could not be created"
@@ -5260,7 +5012,7 @@ msgstr ""
 
 #: lib/RT/Record.pm:123
 msgid "Object deleted"
-msgstr ""
+msgstr "Objècte suprimit"
 
 #: lib/RT/CustomField.pm:1416
 msgid "Object type mismatch"
@@ -5272,19 +5024,11 @@ msgstr ""
 
 #: lib/RT/Date.pm:100
 msgid "Oct"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Oct."
-msgstr "אוקטובר"
-
-#: NOT FOUND IN SOURCE
-msgid "October"
-msgstr "אוקטובר"
+msgstr "Oct"
 
 #: share/html/Elements/Tabs:437
 msgid "Offline"
-msgstr ""
+msgstr "Desconnectat"
 
 #: share/html/Tools/Offline.html:48
 msgid "Offline upload"
@@ -5370,20 +5114,16 @@ msgstr ""
 #: share/html/Approvals/Elements/PendingMyApproval:68
 #. (_unsafe, qq{<input size='15' class="ui-datepicker" value='}.( $created_after->Unix >0 && $created_after->ISO(Timezone => 'user'))."' name='CreatedAfter' id='CreatedAfter' />")
 msgid "Only show approvals for requests created after %1"
-msgstr "הצג רק אישורים עבור בקשות שנוצרו אחרי %1"
+msgstr ""
 
 #: share/html/Approvals/Elements/PendingMyApproval:66
 #. (_unsafe, qq{<input size='15' class="ui-datepicker" value='}.($created_before->Unix > 0 &&$created_before->ISO(Timezone => 'user'))."' name='CreatedBefore' id='CreatedBefore' />")
 msgid "Only show approvals for requests created before %1"
-msgstr "הצג רק אישורים עבור בקשות שנוצרו לפני %1"
+msgstr ""
 
 #: share/html/Admin/CustomFields/index.html:72
 msgid "Only show custom fields for:"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Open"
-msgstr "פתוח"
 
 #: etc/RT_Config.pm:2399 etc/RT_Config.pm:2428 etc/RT_Config.pm:2475 etc/RT_Config.pm:2504
 msgid "Open It"
@@ -5395,11 +5135,7 @@ msgstr ""
 
 #: share/html/Elements/MakeClicky:58
 msgid "Open URL"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Open it"
-msgstr "פתח"
+msgstr "Dobrir l'URL"
 
 #: share/html/Elements/Tabs:841 share/html/SelfService/index.html:48
 msgid "Open tickets"
@@ -5411,27 +5147,23 @@ msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:61
 msgid "Option"
-msgstr ""
+msgstr "Оpcion"
 
 #: share/html/Elements/Tabs:468 share/html/Prefs/MyRT.html:67
 msgid "Options"
-msgstr ""
+msgstr "Opcions"
 
 #: lib/RT/Installer.pm:71
 msgid "Oracle"
-msgstr ""
+msgstr "Oracle"
 
 #: share/html/Search/Elements/EditSort:55
 msgid "Order by"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Ordering and sorting"
-msgstr "סידור ומיון"
+msgstr "Triar per"
 
 #: share/html/Admin/Users/Modify.html:125 share/html/Elements/RT__User/ColumnMap:81 share/html/User/Prefs.html:119
 msgid "Organization"
-msgstr "ארגון"
+msgstr "Organizacion"
 
 #: share/html/Approvals/Elements/Approve:55
 #. ($approving->Id, $approving->Subject)
@@ -5456,7 +5188,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:418
 msgid "Overview"
-msgstr ""
+msgstr "Vista d'ensemble"
 
 #: lib/RT/Queue.pm:115
 msgid "Own tickets"
@@ -5468,7 +5200,7 @@ msgstr ""
 
 #: lib/RT/ACE.pm:99 lib/RT/Graph/Tickets.pm:154 lib/RT/Tickets.pm:105 lib/RT/Tickets.pm:2456 share/html/Elements/QuickCreate:62 share/html/Elements/RT__Ticket/ColumnMap:274 share/html/Elements/RT__Ticket/ColumnMap:89 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:127 share/html/Ticket/Elements/Reminders:149 share/html/Ticket/Elements/Reminders:82 share/html/Ticket/Elements/ShowPeople:50 share/html/m/_elements/ticket_list:96 share/html/m/ticket/create:287 share/html/m/ticket/reply:67 share/html/m/ticket/show:285
 msgid "Owner"
-msgstr "בעלים"
+msgstr "Proprietari"
 
 #: lib/RT/Ticket.pm:661
 #. ($DeferOwner->Name)
@@ -5490,29 +5222,25 @@ msgstr ""
 msgid "Owner forcibly changed from %1 to %2"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Owner is"
-msgstr "הבעלים"
-
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "OwnerName"
 msgstr ""
 
 #: share/html/Elements/CollectionListPaging:65
 msgid "Page"
-msgstr ""
+msgstr "Pagina"
 
 #: share/html/Elements/CollectionListPaging:62
 msgid "Page 1 of 1"
-msgstr ""
+msgstr "Pagina 1 sus 1"
 
 #: share/html/dhandler:48
 msgid "Page not found"
-msgstr ""
+msgstr "Impossible de trobar la pagina"
 
 #: share/html/Admin/Users/Modify.html:182 share/html/User/Prefs.html:100
 msgid "Pager"
-msgstr "ביפר"
+msgstr "Messatgièr de pòcha"
 
 #: share/html/Elements/RT__User/ColumnMap:101
 msgid "Pager Phone"
@@ -5520,15 +5248,15 @@ msgstr ""
 
 #: share/html/Elements/EditLinks:146 share/html/Elements/EditLinks:73 share/html/Elements/ShowLinks:97 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:256 share/html/Ticket/Elements/BulkLinks:139 share/html/Ticket/Elements/BulkLinks:74 share/html/m/ticket/create:419 share/html/m/ticket/show:452
 msgid "Parents"
-msgstr "הורים"
+msgstr "Parents"
 
 #: share/html/Elements/Login:75 share/html/User/Prefs.html:109 share/html/m/login:102
 msgid "Password"
-msgstr "סיסמא"
+msgstr "Senhal"
 
 #: share/html/NoAuth/Reminder.html:48
 msgid "Password Reminder"
-msgstr "מזכיר סיסמא"
+msgstr ""
 
 #: lib/RT/Transaction.pm:869 lib/RT/User.pm:827
 msgid "Password changed"
@@ -5551,14 +5279,10 @@ msgstr ""
 msgid "Password set"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Password too short"
-msgstr "סיסמא קצרה מדי"
-
 #: share/html/SelfService/Prefs.html:76 share/html/User/Prefs.html:259
 #. ($msg)
 msgid "Password: %1"
-msgstr "סיסמא: %1"
+msgstr ""
 
 #: lib/RT/User.pm:812
 msgid "Password: Permission Denied"
@@ -5570,7 +5294,7 @@ msgstr ""
 
 #: lib/RT/User.pm:789
 msgid "Passwords do not match."
-msgstr "הסיסמאות אינן תואמות"
+msgstr "Los senhals correspondon pas."
 
 #: lib/RT/Installer.pm:186
 msgid "Path to sendmail"
@@ -5578,7 +5302,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:539 share/html/Ticket/Elements/ShowSummary:62 share/html/Ticket/ModifyAll.html:73 share/html/m/ticket/show:281
 msgid "People"
-msgstr "אנשים"
+msgstr "Personas"
 
 #: share/html/Admin/Queues/People.html:188
 #. ($QueueObj->Name)
@@ -5591,7 +5315,7 @@ msgstr ""
 
 #: share/html/Admin/Elements/ModifyTemplate:60
 msgid "Perl"
-msgstr ""
+msgstr "Perl"
 
 #: share/html/Admin/Tools/Configuration.html:252
 msgid "Perl configuration"
@@ -5607,27 +5331,15 @@ msgstr ""
 
 #: lib/RT/ACE.pm:249 lib/RT/ACE.pm:255 lib/RT/ACE.pm:331 lib/RT/Article.pm:112 lib/RT/Article.pm:266 lib/RT/Article.pm:371 lib/RT/Article.pm:388 lib/RT/Article.pm:417 lib/RT/Article.pm:469 lib/RT/Article.pm:493 lib/RT/Article.pm:577 lib/RT/Attachment.pm:710 lib/RT/Attachment.pm:711 lib/RT/Attachment.pm:772 lib/RT/Attachment.pm:773 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:379 lib/RT/Attribute.pm:388 lib/RT/Attribute.pm:401 lib/RT/Class.pm:202 lib/RT/Class.pm:237 lib/RT/Class.pm:390 lib/RT/Class.pm:440 lib/RT/CurrentUser.pm:138 lib/RT/CurrentUser.pm:144 lib/RT/CurrentUser.pm:150 lib/RT/CustomField.pm:1374 lib/RT/CustomField.pm:1420 lib/RT/CustomField.pm:1463 lib/RT/CustomField.pm:1604 lib/RT/CustomField.pm:1745 lib/RT/CustomField.pm:312 lib/RT/CustomField.pm:329 lib/RT/CustomField.pm:340 lib/RT/CustomField.pm:549 lib/RT/CustomField.pm:576 lib/RT/CustomField.pm:964 lib/RT/CustomFieldValue.pm:147 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1060 lib/RT/Group.pm:1112 lib/RT/Group.pm:397 lib/RT/Group.pm:496 lib/RT/Group.pm:655 lib/RT/Group.pm:885 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:1237 lib/RT/Queue.pm:200 lib/RT/Queue.pm:218 lib/RT/Queue.pm:583 lib/RT/Queue.pm:609 lib/RT/Queue.pm:635 lib/RT/Queue.pm:860 lib/RT/Scrip.pm:122 lib/RT/Scrip.pm:130 lib/RT/Scrip.pm:141 lib/RT/Scrip.pm:203 lib/RT/Scrip.pm:509 lib/RT/Scrip.pm:517 lib/RT/Scrip.pm:526 lib/RT/Scrip.pm:531 lib/RT/Scrip.pm:539 lib/RT/Template.pm:106 lib/RT/Template.pm:116 lib/RT/Template.pm:121 lib/RT/Template.pm:240 lib/RT/Template.pm:245 lib/RT/Template.pm:254 lib/RT/Template.pm:281 lib/RT/Template.pm:411 lib/RT/Template.pm:636 lib/RT/Template.pm:653 lib/RT/Template.pm:671 lib/RT/Ticket.pm:1072 lib/RT/Ticket.pm:1078 lib/RT/Ticket.pm:1085 lib/RT/Ticket.pm:1228 lib/RT/Ticket.pm:1238 lib/RT/Ticket.pm:1252 lib/RT/Ticket.pm:1347 lib/RT/Ticket.pm:1694 lib/RT/Ticket.pm:1952 lib/RT/Ticket.pm:2119 lib/RT/Ticket.pm:2169 lib/RT/Ticket.pm:2452 lib/RT/Ticket.pm:2465 lib/RT/Ticket.pm:2544 lib/RT/Ticket.pm:2557 lib/RT/Ticket.pm:2659 lib/RT/Ticket.pm:2673 lib/RT/Ticket.pm:2932 lib/RT/Ticket.pm:2943 lib/RT/Ticket.pm:2949 lib/RT/Ticket.pm:3158 lib/RT/Ticket.pm:3232 lib/RT/Ticket.pm:3462 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Transaction.pm:590 lib/RT/Transaction.pm:612 lib/RT/User.pm:1060 lib/RT/User.pm:134 lib/RT/User.pm:1476 lib/RT/User.pm:1599 lib/RT/User.pm:307 lib/RT/User.pm:695 lib/RT/User.pm:730 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/Elements/ShowHistory:68 share/html/Articles/Article/PreCreate.html:61 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:84
 msgid "Permission Denied"
-msgstr ""
+msgstr "Permission Refusada"
 
 #: lib/RT/SharedSetting.pm:112 lib/RT/SharedSetting.pm:204 lib/RT/SharedSetting.pm:245 lib/RT/SharedSetting.pm:277 lib/RT/Topic.pm:88 share/html/Admin/Global/MyRT.html:98 share/html/Dashboards/Modify.html:95
 msgid "Permission denied"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Personal Groups"
-msgstr "קבוצות אישיות"
-
-#: NOT FOUND IN SOURCE
-msgid "Personal groups"
-msgstr "קבוצות אישיות"
-
-#: NOT FOUND IN SOURCE
-msgid "Personal groups:"
-msgstr "קבוצות אישיות"
+msgstr "Permission refusada"
 
 #: share/html/Admin/Users/Modify.html:164 share/html/User/Prefs.html:85
 msgid "Phone numbers"
-msgstr "מספרי טלפון"
+msgstr "Numèros de telefòn"
 
 #: share/html/dhandler:51
 msgid "Please check the URL and try again."
@@ -5651,7 +5363,7 @@ msgstr ""
 
 #: lib/RT/Installer.pm:69
 msgid "PostgreSQL"
-msgstr ""
+msgstr "PostgreSQL"
 
 #: share/html/Elements/ShowSearch:96 share/html/m/tickets/search:81
 #. ($m->interp->apply_escapes($Name, 'h'))
@@ -5661,36 +5373,36 @@ msgstr ""
 
 #: share/html/Elements/Tabs:855 share/html/SelfService/Prefs.html:48 share/html/User/Prefs.html:48
 msgid "Preferences"
-msgstr "העדפות"
+msgstr "Preferéncias"
 
 #: share/html/Admin/Users/MyRT.html:118
 #. ($pane, $UserObj->Name)
 msgid "Preferences %1 for user %2."
-msgstr "העדפות %1 עבור המשתמש %2."
+msgstr ""
 
 #: share/html/Prefs/MyRT.html:158 share/html/Prefs/MyRT.html:94
 #. ($pane)
 #. (loc('summary rows'))
 msgid "Preferences saved for %1."
-msgstr "ההעדפות עבור %1 נשמרו."
+msgstr ""
 
 #: share/html/Admin/Users/MyRT.html:77
 #. ($UserObj->Name)
 msgid "Preferences saved for user %1."
-msgstr "ההעדפות עבור המשתמש %1 נשמרו."
+msgstr ""
 
 #: share/html/Prefs/MyRT.html:101 share/html/Prefs/Other.html:103 share/html/Prefs/Quicksearch.html:87 share/html/Prefs/Search.html:104 share/html/Prefs/SearchOptions.html:81
 msgid "Preferences saved."
-msgstr "ההעדפות נשמרו."
+msgstr ""
 
 #: share/html/Prefs/Other.html:88
 #. ($msg)
 msgid "Preferred Key: %1"
-msgstr "המפתח המועדף: %1"
+msgstr ""
 
 #: share/html/Prefs/Other.html:72
 msgid "Preferred key"
-msgstr "מפתח מועדף"
+msgstr ""
 
 #: lib/RT/Action.pm:171
 msgid "Prepare Stubbed"
@@ -5698,20 +5410,16 @@ msgstr ""
 
 #: share/html/Elements/Tabs:639
 msgid "Prev"
-msgstr "הקודם"
+msgstr "Precedent"
 
 #: share/html/Elements/CollectionListPaging:103
 msgid "Previous"
-msgstr "הקודם"
-
-#: NOT FOUND IN SOURCE
-msgid "Previous page"
-msgstr "דף קודם"
+msgstr "Precedent"
 
 #: lib/RT/ACE.pm:152 lib/RT/ACE.pm:237
 #. ($args{'PrincipalId'})
 msgid "Principal %1 not found."
-msgstr "העקרון %1 לא נמצא."
+msgstr ""
 
 #: sbin/rt-email-digest:96
 msgid "Print the resulting digest messages to STDOUT; don't mail them. Do not mark them as sent"
@@ -5719,11 +5427,11 @@ msgstr ""
 
 #: sbin/rt-email-digest:98
 msgid "Print this message"
-msgstr "הדפס הודעה זו"
+msgstr "Estampar lo messatge"
 
 #: lib/RT/Tickets.pm:110 lib/RT/Tickets.pm:2260 share/html/Elements/RT__Queue/ColumnMap:66 share/html/Elements/RT__Ticket/ColumnMap:131 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:186 share/html/Ticket/Create.html:206 share/html/Ticket/Elements/ShowBasics:76 share/html/m/_elements/ticket_list:99 share/html/m/ticket/create:363 share/html/m/ticket/show:241
 msgid "Priority"
-msgstr "עדיפות"
+msgstr "Prioritat"
 
 #: share/html/Admin/Queues/Modify.html:88
 msgid "Priority starts at"
@@ -5731,15 +5439,15 @@ msgstr ""
 
 #: share/html/Dashboards/Modify.html:67 share/html/Search/Elements/EditSearches:53
 msgid "Privacy"
-msgstr ""
+msgstr "Confidencialitat"
 
 #: share/html/Articles/Article/Elements/ShowSavedSearches:56
 msgid "Privacy:"
-msgstr ""
+msgstr "Confidencialitat :"
 
 #: share/html/Admin/Users/GnuPG.html:66
 msgid "Private Key"
-msgstr ""
+msgstr "Clau privada"
 
 #: lib/RT/Handle.pm:660 share/html/Admin/Users/Modify.html:111
 msgid "Privileged"
@@ -5769,11 +5477,11 @@ msgstr ""
 
 #: share/html/Dashboards/Subscription.html:69
 msgid "Queries"
-msgstr ""
+msgstr "Requèstas"
 
 #: share/html/Elements/RT__SavedSearch/ColumnMap:66 share/html/Search/Edit.html:56 share/html/Search/Elements/Chart:152
 msgid "Query"
-msgstr ""
+msgstr "Requèsta"
 
 #: share/html/Search/Build.html:115
 msgid "Query Builder"
@@ -5781,7 +5489,7 @@ msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:153 lib/RT/Record.pm:945 lib/RT/Tickets.pm:101 lib/RT/Tickets.pm:2103 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:61 share/html/Elements/RT__Scrip/ColumnMap:68 share/html/Elements/RT__Template/ColumnMap:71 share/html/Elements/RT__Template/ColumnMap:78 share/html/Elements/RT__Ticket/ColumnMap:85 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:57 share/html/Ticket/Elements/ShowBasics:82 share/html/m/ticket/create:275 share/html/m/ticket/show:245
 msgid "Queue"
-msgstr "תור"
+msgstr "Metre en fila d'espèra"
 
 #: share/html/Admin/Queues/CustomField.html:60 share/html/Admin/Queues/Scrip.html:58 share/html/Admin/Queues/Scrips.html:66 share/html/Admin/Queues/Templates.html:58
 #. ($Queue)
@@ -5847,7 +5555,7 @@ msgstr ""
 
 #: share/html/Admin/Global/CustomFields/index.html:77 share/html/Elements/Tabs:138 share/html/Elements/Tabs:240 share/html/Elements/Tabs:83
 msgid "Queues"
-msgstr "תורים"
+msgstr ""
 
 #: share/html/Elements/MyAdminQueues:48
 msgid "Queues I administer"
@@ -5863,7 +5571,7 @@ msgstr ""
 
 #: share/html/Articles/Elements/QuickSearch:48 share/html/Elements/Quicksearch:50 share/html/Elements/Tabs:472 share/html/Prefs/Quicksearch.html:69
 msgid "Quick search"
-msgstr "חיפוש מהיר"
+msgstr "Recèrca rapida"
 
 #: share/html/Elements/QuickCreate:49
 msgid "Quick ticket creation"
@@ -5871,19 +5579,19 @@ msgstr ""
 
 #: lib/RT/Date.pm:120
 msgid "RFC2616"
-msgstr ""
+msgstr "RFC2616"
 
 #: lib/RT/Date.pm:119
 msgid "RFC2822"
-msgstr ""
+msgstr "RFC2822"
 
 #: share/html/Elements/Tabs:753
 msgid "RSS"
-msgstr ""
+msgstr "RSS"
 
 #: share/html/Admin/index.html:48
 msgid "RT Administration"
-msgstr "ניהול RT"
+msgstr ""
 
 #: lib/RT/Installer.pm:162
 msgid "RT Administrator Email"
@@ -5903,7 +5611,7 @@ msgstr ""
 
 #: lib/RT/Config.pm:306 lib/RT/Config.pm:315 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:56 share/html/Admin/Users/MyRT.html:64 share/html/Elements/Tabs:196 share/html/Elements/Tabs:307 share/html/Elements/Tabs:471 share/html/Prefs/MyRT.html:60 share/html/Prefs/MyRT.html:84 share/html/index.html:4
 msgid "RT at a glance"
-msgstr "RT ממבט כולל"
+msgstr ""
 
 #: share/html/Admin/Users/MyRT.html:73
 #. ($UserObj->Name)
@@ -5933,7 +5641,7 @@ msgstr ""
 #: share/html/Elements/Logo:61 share/html/m/_elements/header:49 share/html/m/index.html:48 share/html/m/login:82
 #. (RT->Config->Get('rtname'))
 msgid "RT for %1"
-msgstr "RT / %1"
+msgstr ""
 
 #: share/html/Elements/CSRF:55
 #. (_unsafe, $strong_start, $strong_end, $Reason, $action)
@@ -5980,15 +5688,11 @@ msgstr ""
 
 #: share/html/Admin/Users/Modify.html:77 share/html/Elements/RT__User/ColumnMap:66 share/html/User/Prefs.html:69
 msgid "Real Name"
-msgstr "שם אמיתי"
-
-#: NOT FOUND IN SOURCE
-msgid "RealName"
-msgstr "שם אמיתי"
+msgstr "Nom vertadièr"
 
 #: share/html/Dashboards/Subscription.html:171
 msgid "Recipient"
-msgstr ""
+msgstr "Destinatari"
 
 #: share/html/Dashboards/Subscription.html:239
 msgid "Recipient must be an email address"
@@ -5996,7 +5700,7 @@ msgstr ""
 
 #: share/html/Ticket/Elements/ShowSimplifiedRecipients:77
 msgid "Recipients"
-msgstr ""
+msgstr "Destinataris"
 
 #: share/html/Tools/MyDay.html:73
 msgid "Record all updates"
@@ -6032,7 +5736,7 @@ msgstr ""
 
 #: share/html/Articles/Article/Elements/EditLinks:84 share/html/Articles/Article/Elements/ShowLinks:70 share/html/Articles/Article/Elements/ShowSearchCriteria:128 share/html/Elements/EditLinks:100 share/html/Elements/EditLinks:158 share/html/Elements/ShowLinks:127 share/html/Ticket/Create.html:259 share/html/Ticket/Elements/BulkLinks:104 share/html/Ticket/Elements/BulkLinks:151 share/html/m/ticket/create:422 share/html/m/ticket/show:470
 msgid "Referred to by"
-msgstr "מתייחסים אליו"
+msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:124 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
 msgid "ReferredToBy"
@@ -6040,19 +5744,15 @@ msgstr ""
 
 #: share/html/Articles/Article/Elements/EditLinks:58 share/html/Articles/Article/Elements/ShowLinks:48 share/html/Elements/EditLinks:154 share/html/Elements/EditLinks:91 share/html/Elements/SelectLinkType:51 share/html/Elements/ShowLinks:113 share/html/Ticket/Create.html:258 share/html/Ticket/Elements/BulkLinks:147 share/html/Ticket/Elements/BulkLinks:94 share/html/m/ticket/create:421 share/html/m/ticket/show:460
 msgid "Refers to"
-msgstr "מתייחס ל"
+msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:120 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
 msgid "RefersTo"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Refine search"
-msgstr "חדד את החיפוש"
-
 #: share/html/Elements/RefreshHomepage:48
 msgid "Refresh"
-msgstr ""
+msgstr "Actualizar"
 
 #: lib/RT/Config.pm:326
 msgid "Refresh home page every 10 minutes."
@@ -6105,11 +5805,11 @@ msgstr ""
 #: share/html/Elements/Refresh:59
 #. ($value/60)
 msgid "Refresh this page every %1 minutes."
-msgstr "רענן דף זה כל %1 דקות."
+msgstr ""
 
 #: etc/RT_Config.pm:2407 etc/RT_Config.pm:2423 etc/RT_Config.pm:2483 etc/RT_Config.pm:2499
 msgid "Reject"
-msgstr ""
+msgstr "Regetar"
 
 #: lib/RT/Config.pm:164
 msgid "Remember default queue"
@@ -6117,7 +5817,7 @@ msgstr ""
 
 #: share/html/Elements/ShowReminders:51 share/html/Ticket/Elements/Reminders:80
 msgid "Reminder"
-msgstr ""
+msgstr "Rapèl"
 
 #: lib/RT/Interface/Web.pm:2531 lib/RT/Transaction.pm:935
 #. ($args->{'NewReminder-Subject'})
@@ -6137,7 +5837,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:552 share/html/Ticket/Elements/Reminders:77 share/html/Ticket/Elements/ShowSummary:73 share/html/Ticket/Reminders.html:54 share/html/m/ticket/show:355
 msgid "Reminders"
-msgstr ""
+msgstr "Rapèls"
 
 #: share/html/Ticket/Reminders.html:48
 #. ($Ticket->Id)
@@ -6146,19 +5846,19 @@ msgstr ""
 
 #: share/html/Search/Bulk.html:95
 msgid "Remove AdminCc"
-msgstr "הסר העתק ניהולי"
+msgstr ""
 
 #: share/html/Ticket/Elements/Bookmark:88
 msgid "Remove Bookmark"
-msgstr ""
+msgstr "Suprimir lo marcapaginas"
 
 #: share/html/Search/Bulk.html:91
 msgid "Remove Cc"
-msgstr "הסר העתק"
+msgstr ""
 
 #: share/html/Search/Bulk.html:87
 msgid "Remove Requestor"
-msgstr "הסר מבקש"
+msgstr ""
 
 #: lib/RT/Queue.pm:1066
 #. ($principal->Object->Name, $args{'Type'})
@@ -6175,7 +5875,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:556 share/html/Ticket/Elements/ShowTransaction:201 share/html/m/_elements/ticket_menu:69
 msgid "Reply"
-msgstr "הגב"
+msgstr "Respondre"
 
 #: share/html/Admin/Queues/Modify.html:80
 msgid "Reply Address"
@@ -6191,23 +5891,11 @@ msgstr ""
 
 #: lib/RT/Queue.pm:113
 msgid "ReplyToTicket"
-msgstr "מענה לפנייה"
+msgstr ""
 
 #: lib/RT/ACE.pm:100 lib/RT/Tickets.pm:137
 msgid "Requestor"
-msgstr "מבקש"
-
-#: NOT FOUND IN SOURCE
-msgid "Requestor email address"
-msgstr "כתובת האי-מייל של המבקש"
-
-#: NOT FOUND IN SOURCE
-msgid "Requestor(s)"
-msgstr "מבקש(ים)"
-
-#: NOT FOUND IN SOURCE
-msgid "RequestorAddresses"
-msgstr "כתובת הפונה"
+msgstr ""
 
 #: lib/RT/Tickets.pm:149
 msgid "RequestorGroup"
@@ -6215,7 +5903,7 @@ msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:154 lib/RT/Tickets.pm:138 share/html/Elements/QuickCreate:70 share/html/Elements/RT__Ticket/ColumnMap:173 share/html/Elements/RT__Ticket/ColumnMap:255 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:67 share/html/Ticket/Create.html:116 share/html/Ticket/Elements/EditPeople:70 share/html/Ticket/Elements/ShowPeople:58 share/html/m/_elements/ticket_list:94 share/html/m/ticket/create:297 share/html/m/ticket/show:290
 msgid "Requestors"
-msgstr "מבקשים"
+msgstr ""
 
 #: share/html/Admin/Queues/Modify.html:100
 msgid "Requests should be due in"
@@ -6228,7 +5916,7 @@ msgstr ""
 
 #: share/html/Elements/Submit:114
 msgid "Reset"
-msgstr "אפס נתונים"
+msgstr "Reïnicializar"
 
 #: share/html/Prefs/MyRT.html:74
 msgid "Reset RT at a glance"
@@ -6240,24 +5928,24 @@ msgstr ""
 
 #: share/html/Admin/Users/MyRT.html:58 share/html/Prefs/MyRT.html:77
 msgid "Reset to default"
-msgstr ""
+msgstr "Restablir per defaut"
 
 #: share/html/Admin/Users/Modify.html:167 share/html/User/Prefs.html:88
 msgid "Residence"
-msgstr "בית"
+msgstr ""
 
 #: etc/RT_Config.pm:2403 etc/RT_Config.pm:2419 etc/RT_Config.pm:2479 etc/RT_Config.pm:2495 share/html/Search/Elements/EditFormat:75
 msgid "Resolve"
-msgstr "פתור"
+msgstr "Resòlvre"
 
 #: share/html/m/ticket/reply:167
 #. ($t->id, $t->Subject)
 msgid "Resolve ticket #%1 (%2)"
-msgstr "פתור פנייה #%1 (%2)"
+msgstr ""
 
 #: etc/initialdata:321 lib/RT/Graph/Tickets.pm:155 lib/RT/Ticket.pm:933 lib/RT/Tickets.pm:129 share/html/Elements/RT__Ticket/ColumnMap:216 share/html/Elements/RT__Ticket/ColumnMap:241 share/html/Elements/SelectDateType:51 share/html/Search/Elements/BuildFormatString:100
 msgid "Resolved"
-msgstr "נפתר"
+msgstr "Resolgut"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "ResolvedRelative"
@@ -6265,19 +5953,11 @@ msgstr ""
 
 #: share/html/Search/Elements/EditFormat:73
 msgid "Respond"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Response to requestors"
-msgstr "תגובה למבקשים"
+msgstr "Respondre"
 
 #: share/html/Elements/ListActions:49 share/html/Search/Elements/NewListActions:48
 msgid "Results"
-msgstr "תוצאות"
-
-#: NOT FOUND IN SOURCE
-msgid "Results per page"
-msgstr "תוצאות לעמוד"
+msgstr "Resultats"
 
 #: share/html/Ticket/GnuPG.html:55
 msgid "Return back to the ticket"
@@ -6285,11 +5965,11 @@ msgstr ""
 
 #: share/html/Elements/EditPassword:66
 msgid "Retype Password"
-msgstr "הקלד שנית:"
+msgstr ""
 
 #: share/html/Search/Elements/EditSearches:62
 msgid "Revert"
-msgstr ""
+msgstr "Restablir"
 
 #: lib/RT/ACE.pm:302
 msgid "Right Granted"
@@ -6326,7 +6006,7 @@ msgstr ""
 
 #: share/html/Dashboards/Subscription.html:161
 msgid "Rows"
-msgstr ""
+msgstr "Linhas"
 
 #: share/html/Prefs/MyRT.html:69
 msgid "Rows per box"
@@ -6342,7 +6022,7 @@ msgstr ""
 
 #: lib/RT/Installer.pm:70
 msgid "SQLite"
-msgstr ""
+msgstr "SQLite"
 
 #: share/html/Install/DatabaseType.html:58
 msgid "SQLite is a database that doesn't need a server or any configuration whatsoever. RT's authors recommend it for testing, demoing and development, but it's not quite right for a high-volume production RT server."
@@ -6350,23 +6030,19 @@ msgstr ""
 
 #: lib/RT/Date.pm:112
 msgid "Sat"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Sat."
-msgstr "שבת"
+msgstr "Dis"
 
 #: share/html/Dashboards/Subscription.html:111
 msgid "Saturday"
-msgstr ""
+msgstr "Dissabte"
 
 #: share/html/Articles/Article/Elements/ShowSavedSearches:63 share/html/Prefs/MyRT.html:71 share/html/Prefs/Quicksearch.html:63 share/html/Prefs/Search.html:67 share/html/Search/Elements/EditSearches:73 share/html/Ticket/Elements/ShowSummary:80 share/html/Widgets/SelectionBox:233 share/html/m/ticket/show:361
 msgid "Save"
-msgstr ""
+msgstr "Enregistrar"
 
 #: share/html/Admin/Articles/Classes/GroupRights.html:57 share/html/Admin/Articles/Classes/Modify.html:99 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:151 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/Elements/EditScrip:145 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:91 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:94 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:158 share/html/Admin/Queues/People.html:124 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Users/GnuPG.html:73 share/html/Admin/Users/Modify.html:227 share/html/Articles/Article/Edit.html:102 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:183 share/html/Prefs/Other.html:76 share/html/Prefs/Quicksearch.html:63 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:62 share/html/SelfService/Prefs.html:61 share/html/Ticket/Modify.html:64 share/html/Ticket/ModifyAll.html:127 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:62 share/html/Ticket/ModifyPeople.html:76 share/html/Ticket/Reminders.html:61
 msgid "Save Changes"
-msgstr "שמירת שינויים"
+msgstr "Enregistrar las modificacions"
 
 #: share/html/User/Prefs.html:190
 msgid "Save Preferences"
@@ -6375,10 +6051,6 @@ msgstr ""
 #: share/html/Search/Elements/EditSearches:66
 msgid "Save as New"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Save changes"
-msgstr "שמור שינויים"
 
 #: share/html/Articles/Article/Elements/ShowSavedSearches:60
 msgid "Save new"
@@ -6400,7 +6072,7 @@ msgstr ""
 
 #: share/html/Elements/SavedSearches:48 share/html/Elements/Tabs:474
 msgid "Saved Searches"
-msgstr ""
+msgstr "Recèrcas enregistradas"
 
 #: share/html/Search/Chart.html:133
 msgid "Saved charts"
@@ -6441,7 +6113,7 @@ msgstr ""
 
 #: share/html/Admin/Tools/Shredder/index.html:63 share/html/Articles/Article/Elements/ShowSearchCriteria:144 share/html/Elements/SimpleSearch:49 share/html/Elements/SimpleSearch:49 share/html/Elements/Tabs:419 share/html/Elements/Tabs:790 share/html/Search/Simple.html:58 share/html/m/_elements/menu:64
 msgid "Search"
-msgstr "חיפוש"
+msgstr "Recercar"
 
 #: share/html/Articles/Article/Search.html:214
 #. ($search->Name)
@@ -6454,7 +6126,7 @@ msgstr ""
 
 #: share/html/Prefs/SearchOptions.html:48
 msgid "Search Preferences"
-msgstr ""
+msgstr "Preferéncias de recèrca"
 
 #: share/html/Articles/Elements/BeforeMessageBox:55 share/html/SelfService/Article/Search.html:53
 msgid "Search for Articles matching"
@@ -6479,11 +6151,11 @@ msgstr ""
 
 #: share/html/Elements/Tabs:470
 msgid "Search options"
-msgstr ""
+msgstr "Opcions de recèrca"
 
 #: share/html/Articles/Article/Search.html:81
 msgid "Search results"
-msgstr ""
+msgstr "Resultats de la recèrca"
 
 #: share/html/Search/Chart.html:71
 #. ($PrimaryGroupByLabel)
@@ -6505,11 +6177,11 @@ msgstr ""
 
 #: bin/rt-crontool:365
 msgid "Security:"
-msgstr ""
+msgstr "Seguretat :"
 
 #: share/html/Elements/ShowCustomFields:116 share/html/m/ticket/show:194
 msgid "See also:"
-msgstr ""
+msgstr "Vejatz tanben :"
 
 #: lib/RT/Class.pm:90
 msgid "See articles in this class"
@@ -6553,7 +6225,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:111 share/html/Elements/Tabs:119 share/html/Elements/Tabs:161 share/html/Elements/Tabs:177 share/html/Elements/Tabs:259 share/html/Elements/Tabs:277 share/html/Elements/Tabs:281 share/html/Elements/Tabs:351 share/html/Elements/Tabs:362 share/html/Elements/Tabs:372 share/html/Elements/Tabs:71 share/html/Elements/Tabs:79 share/html/Elements/Tabs:87 share/html/Elements/Tabs:96
 msgid "Select"
-msgstr ""
+msgstr "Seleccionar"
 
 #: share/html/Admin/Global/CustomFields/index.html:96 share/html/Elements/Tabs:154
 msgid "Select Custom Fields for Articles in all Classes"
@@ -6639,10 +6311,6 @@ msgstr ""
 #: lib/RT/CustomField.pm:169
 msgid "Select datetime"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Select group"
-msgstr "בחר קבוצה"
 
 #: lib/RT/CustomField.pm:159
 msgid "Select multiple dates"
@@ -6753,17 +6421,9 @@ msgstr ""
 msgid "Sep"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Sep."
-msgstr "ספטמבר"
-
 #: share/html/Articles/Article/Elements/LinkEntryInstructions:49
 msgid "Separate multiple entries with spaces."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "September"
-msgstr "ספטמבר"
 
 #: lib/RT/User.pm:1624
 msgid "Set private key"
@@ -6771,7 +6431,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:467 share/html/Prefs/Other.html:80
 msgid "Settings"
-msgstr ""
+msgstr "Paramètres"
 
 #: lib/RT/Config.pm:176
 msgid "Short usernames"
@@ -6783,7 +6443,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:503 share/html/Ticket/Elements/ShowTransaction:182
 msgid "Show"
-msgstr ""
+msgstr "Afichar"
 
 #: lib/RT/System.pm:84
 msgid "Show Approvals tab"
@@ -6791,7 +6451,7 @@ msgstr ""
 
 #: share/html/Search/Elements/EditFormat:54
 msgid "Show Columns"
-msgstr ""
+msgstr "Afichar las colomnas"
 
 #: lib/RT/System.pm:83
 msgid "Show Configuration tab"
@@ -6812,7 +6472,7 @@ msgstr ""
 
 #: share/html/Approvals/Elements/PendingMyApproval:62
 msgid "Show approved requests"
-msgstr "הצג בקשות שאושרו"
+msgstr ""
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:71
 msgid "Show as well"
@@ -6824,7 +6484,7 @@ msgstr ""
 
 #: share/html/Approvals/Elements/PendingMyApproval:63
 msgid "Show denied requests"
-msgstr "הצג בקשות שנדחו"
+msgstr ""
 
 #: share/html/Ticket/Elements/ShowHistory:78
 msgid "Show full headers"
@@ -6848,7 +6508,7 @@ msgstr ""
 
 #: share/html/Approvals/Elements/PendingMyApproval:61
 msgid "Show pending requests"
-msgstr "הצג בקשות ממתינות"
+msgstr ""
 
 #: share/html/Ticket/Elements/FoldStanzaJS:50 share/html/Ticket/Elements/FoldStanzaJS:50
 msgid "Show quoted text"
@@ -6856,7 +6516,7 @@ msgstr ""
 
 #: share/html/Approvals/Elements/PendingMyApproval:64
 msgid "Show requests awaiting other approvals"
-msgstr "הצג בקשות שממתינות לאישורים אחרים"
+msgstr ""
 
 #: lib/RT/Config.pm:403
 msgid "Show the Requestor's 10 highest priority active tickets"
@@ -6933,11 +6593,11 @@ msgstr ""
 
 #: share/html/Dashboards/Queries.html:180
 msgid "Sidebar"
-msgstr ""
+msgstr "Barra laterala"
 
 #: share/html/Elements/RT__Queue/ColumnMap:80
 msgid "Sign"
-msgstr ""
+msgstr "Signar"
 
 #: share/html/Admin/Queues/Modify.html:123
 #. (_unsafe, "<b>","</b>","<i>","</i>")
@@ -6963,7 +6623,7 @@ msgstr ""
 
 #: share/html/Admin/Users/Modify.html:215 share/html/User/Prefs.html:170
 msgid "Signature"
-msgstr "חתימה"
+msgstr "Signatura"
 
 #: lib/RT/Queue.pm:593 lib/RT/Queue.pm:619
 msgid "Signing disabled"
@@ -6979,7 +6639,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:412
 msgid "Simple Search"
-msgstr ""
+msgstr "Recèrca simpla"
 
 #: share/html/Admin/Elements/SelectSingleOrMultiple:49
 msgid "Single"
@@ -6987,11 +6647,11 @@ msgstr ""
 
 #: lib/RT/Installer.pm:141
 msgid "Site name"
-msgstr ""
+msgstr "Nom del site"
 
 #: share/html/Admin/Tools/Configuration.html:143 share/html/Search/Elements/EditFormat:84
 msgid "Size"
-msgstr ""
+msgstr "Talha"
 
 #: share/html/Elements/PersonalQuickbar:52
 msgid "Skip Menu"
@@ -7003,7 +6663,7 @@ msgstr ""
 
 #: share/html/Search/Elements/EditFormat:87
 msgid "Small"
-msgstr ""
+msgstr "Pichon"
 
 #: share/html/Admin/CustomFields/Modify.html:117
 msgid "Some browsers may only load content from the same domain as your RT server."
@@ -7015,19 +6675,15 @@ msgstr ""
 
 #: share/html/Admin/Elements/AddCustomFieldValue:53 share/html/Admin/Elements/EditCustomFieldValues:57
 msgid "Sort"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Sort results by"
-msgstr "סדר תוצאות על פי"
+msgstr "Triada"
 
 #: share/html/Search/Elements/DisplayOptions:48
 msgid "Sorting"
-msgstr ""
+msgstr "Triada"
 
 #: share/html/Admin/Tools/Configuration.html:222 share/html/Admin/Tools/Configuration.html:63
 msgid "Source"
-msgstr ""
+msgstr "Font"
 
 #: sbin/rt-email-digest:94
 msgid "Specify whether this is a daily or weekly run."
@@ -7035,7 +6691,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:736
 msgid "Spreadsheet"
-msgstr ""
+msgstr "Fuèlh de calcul"
 
 #: share/html/Admin/Elements/EditScrip:82 share/html/Elements/RT__Scrip/ColumnMap:97
 msgid "Stage"
@@ -7045,10 +6701,6 @@ msgstr ""
 msgid "Stall"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Stalled"
-msgstr "מושהה"
-
 #: share/html/Search/Simple.html:85
 #. (_unsafe, map { "<strong>$_</strong>" } 'queue:"Example Queue"', 'owner:email@example.com')
 msgid "Start the search term with the name of a supported field followed by a colon, as in %1 and %2, to explicitly specify the search type."
@@ -7056,7 +6708,7 @@ msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Tickets.pm:127 share/html/Elements/RT__Ticket/ColumnMap:193 share/html/Elements/RT__Ticket/ColumnMap:226 share/html/Elements/SelectDateType:50 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/EditDates:55 share/html/Ticket/Elements/ShowDates:58 share/html/m/ticket/show:381
 msgid "Started"
-msgstr "התחיל"
+msgstr "Aviat"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "StartedRelative"
@@ -7064,7 +6716,7 @@ msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Tickets.pm:126 share/html/Elements/RT__Ticket/ColumnMap:188 share/html/Elements/RT__Ticket/ColumnMap:221 share/html/Elements/SelectDateType:54 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:239 share/html/Ticket/Elements/EditDates:50 share/html/Ticket/Elements/ShowDates:54 share/html/m/ticket/create:404 share/html/m/ticket/show:377
 msgid "Starts"
-msgstr "מתחיל ב"
+msgstr "Comença"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "StartsRelative"
@@ -7072,11 +6724,11 @@ msgstr ""
 
 #: share/html/Admin/Users/Modify.html:146 share/html/Elements/RT__User/ColumnMap:121 share/html/User/Prefs.html:135
 msgid "State"
-msgstr "מדינה"
+msgstr "Estat"
 
 #: lib/RT/Graph/Tickets.pm:153 lib/RT/Ticket.pm:927 lib/RT/Tickets.pm:100 lib/RT/Tickets.pm:2135 share/html/Elements/RT__Ticket/ColumnMap:104 share/html/Elements/RT__Ticket/ColumnMap:94 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:60 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Tools/MyDay.html:67 share/html/m/_elements/ticket_list:95 share/html/m/ticket/create:277 share/html/m/ticket/reply:62 share/html/m/ticket/show:219
 msgid "Status"
-msgstr "מצב"
+msgstr "Estat"
 
 #: lib/RT/Ticket.pm:304 lib/RT/Ticket.pm:3148
 #. ($self->loc($args{'Status'}))
@@ -7086,7 +6738,7 @@ msgstr ""
 
 #: etc/initialdata:307
 msgid "Status Change"
-msgstr ""
+msgstr "Cambiament d'estat"
 
 #: lib/RT/Transaction.pm:643
 #. ("'" . $self->loc( $self->OldValue ) . "'",                        "'" . $self->loc( $self->NewValue ) . "'")
@@ -7099,7 +6751,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:613
 msgid "Steal"
-msgstr "גנוב"
+msgstr ""
 
 #: lib/RT/Queue.pm:119
 msgid "Steal tickets"
@@ -7123,19 +6775,15 @@ msgstr ""
 #: lib/RT/Transaction.pm:751 lib/RT/Transaction.pm:904
 #. ($Old->Name)
 msgid "Stolen from %1"
-msgstr "נגנב מ %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Stolen from %1 "
-msgstr "נגנב מ %1 "
+msgstr ""
 
 #: share/html/Search/Elements/EditFormat:93
 msgid "Style"
-msgstr ""
+msgstr "Estil"
 
 #: lib/RT/Graph/Tickets.pm:153 lib/RT/Ticket.pm:923 lib/RT/Tickets.pm:132 lib/RT/Tickets.pm:2209 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/QuickCreate:57 share/html/Elements/RT__Ticket/ColumnMap:99 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:133 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:83 share/html/SelfService/Update.html:68 share/html/Ticket/Create.html:157 share/html/Ticket/Elements/Reminders:123 share/html/Ticket/Elements/Reminders:144 share/html/Ticket/Forward.html:63 share/html/Ticket/ModifyAll.html:102 share/html/Ticket/Update.html:162 share/html/m/ticket/create:256 share/html/m/ticket/reply:95
 msgid "Subject"
-msgstr "נושא"
+msgstr "Subjècte"
 
 #: share/html/Admin/Queues/Modify.html:76
 msgid "Subject Tag"
@@ -7144,7 +6792,7 @@ msgstr ""
 #: lib/RT/Transaction.pm:773
 #. ($self->Data)
 msgid "Subject changed to %1"
-msgstr "נושא שונה ל %1"
+msgstr ""
 
 #: share/html/Elements/RT__Queue/ColumnMap:76
 msgid "SubjectTag"
@@ -7152,11 +6800,11 @@ msgstr ""
 
 #: share/html/Elements/Submit:99
 msgid "Submit"
-msgstr "שלח"
+msgstr "Mandar"
 
 #: share/html/Dashboards/Subscription.html:185
 msgid "Subscribe"
-msgstr ""
+msgstr "S'inscriure"
 
 #: share/html/Dashboards/Subscription.html:287
 #. ($Dashboard->Name)
@@ -7178,16 +6826,12 @@ msgstr ""
 
 #: share/html/Dashboards/Subscription.html:88 share/html/Elements/RT__Dashboard/ColumnMap:66 share/html/Elements/Tabs:501
 msgid "Subscription"
-msgstr ""
+msgstr "Inscripcion"
 
 #: share/html/Dashboards/Subscription.html:277
 #. ($msg)
 msgid "Subscription could not be created: %1"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Succeeded"
-msgstr "הצליח"
 
 #: lib/RT/Attachment.pm:800
 msgid "Successfuly decrypted data"
@@ -7199,35 +6843,27 @@ msgstr ""
 
 #: share/html/Articles/Article/Elements/EditBasics:53 share/html/Articles/Article/Elements/ShowSearchCriteria:67 share/html/Elements/RT__Article/ColumnMap:65
 msgid "Summary"
-msgstr ""
+msgstr "Resumit"
 
 #: lib/RT/Date.pm:106
 msgid "Sun"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Sun."
-msgstr "ראשון"
+msgstr "Dim"
 
 #: share/html/Dashboards/Subscription.html:112
 msgid "Sunday"
-msgstr ""
+msgstr "Dimenge"
 
 #: lib/RT/System.pm:80
 msgid "SuperUser"
-msgstr "סופר-משתמש"
+msgstr ""
 
 #: lib/RT/Config.pm:485
 msgid "Suspended"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "System"
-msgstr "מערכת"
+msgstr "Suspendut"
 
 #: share/html/Admin/Tools/Configuration.html:50 share/html/Elements/Tabs:212
 msgid "System Configuration"
-msgstr ""
+msgstr "Configuracion del sistèma"
 
 #: lib/RT/Installer.pm:203 share/html/Elements/SelectTimezone:63
 msgid "System Default"
@@ -7235,7 +6871,7 @@ msgstr ""
 
 #: lib/RT/Interface/Web.pm:2166 lib/RT/Interface/Web.pm:2277 share/html/Admin/Elements/EditRightsCategoryTabs:65 share/html/Admin/Elements/SelectRights:110
 msgid "System Error"
-msgstr ""
+msgstr "Error del sistèma"
 
 #: lib/RT/Transaction.pm:261 lib/RT/Transaction.pm:267
 #. ($msg)
@@ -7244,11 +6880,11 @@ msgstr ""
 
 #: share/html/Admin/Tools/index.html:48
 msgid "System Tools"
-msgstr ""
+msgstr "Aisinas pel sistèma"
 
 #: lib/RT/Transaction.pm:661
 msgid "System error"
-msgstr ""
+msgstr "Error del sistèma"
 
 #: lib/RT/ACE.pm:158 lib/RT/ACE.pm:226 lib/RT/ACE.pm:305
 msgid "System error. Right not granted."
@@ -7260,7 +6896,7 @@ msgstr ""
 
 #: etc/initialdata:587 share/html/Elements/Tabs:607 share/html/Search/Elements/EditFormat:72
 msgid "Take"
-msgstr "קח"
+msgstr "Prene"
 
 #: lib/RT/Queue.pm:118
 msgid "Take tickets"
@@ -7272,7 +6908,7 @@ msgstr ""
 
 #: lib/RT/Transaction.pm:736 lib/RT/Transaction.pm:896
 msgid "Taken"
-msgstr "נלקחה"
+msgstr ""
 
 #: share/html/Install/DatabaseDetails.html:53
 msgid "Tell us a little about how to find the database RT will be using"
@@ -7280,7 +6916,7 @@ msgstr ""
 
 #: share/html/Admin/Elements/EditScrip:75 share/html/Elements/RT__Scrip/ColumnMap:80 share/html/Tools/Offline.html:77
 msgid "Template"
-msgstr ""
+msgstr "Modèl"
 
 #: share/html/Admin/Elements/EditTemplates:111
 #. ($id)
@@ -7303,7 +6939,7 @@ msgstr ""
 
 #: lib/RT/Template.pm:415
 msgid "Template is empty"
-msgstr ""
+msgstr "Lo modèl es void"
 
 #: lib/RT/Scrip.pm:157 lib/RT/Scrip.pm:690
 msgid "Template is mandatory argument"
@@ -7311,29 +6947,29 @@ msgstr ""
 
 #: lib/RT/Template.pm:395
 msgid "Template parsed"
-msgstr ""
+msgstr "Modèl analisat"
 
 #: lib/RT/Template.pm:480
 msgid "Template parsing error"
-msgstr ""
+msgstr "Error d'analisi del modèl"
 
 #: lib/RT/Template.pm:500 lib/RT/Template.pm:702
 #. ($Text::Template::ERROR)
 msgid "Template parsing error: %1"
-msgstr ""
+msgstr "Error de format de modèl : %1"
 
 #: share/html/Elements/Tabs:115 share/html/Elements/Tabs:276
 msgid "Templates"
-msgstr ""
+msgstr "Modèls"
 
 #: share/html/Admin/Queues/Templates.html:60
 #. ($QueueObj->Name)
 msgid "Templates for queue %1"
-msgstr ""
+msgstr "Modèls per la fila %1"
 
 #: share/html/Admin/Tools/Theme.html:90
 msgid "Text"
-msgstr ""
+msgstr "Tèxte"
 
 #: share/html/Ticket/Elements/ShowTransactionAttachments:166
 msgid "Text file is not shown because it is disabled in preferences."
@@ -7349,7 +6985,7 @@ msgstr ""
 
 #: lib/RT/Ticket.pm:1705
 msgid "That is the same value"
-msgstr ""
+msgstr "Valor identica"
 
 #: lib/RT/ACE.pm:288
 msgid "That principal already has that right"
@@ -7377,7 +7013,7 @@ msgstr ""
 
 #: lib/RT/Ticket.pm:1701
 msgid "That queue does not exist"
-msgstr ""
+msgstr "Fila desconeguda"
 
 #: lib/RT/Ticket.pm:3162
 msgid "That ticket has unresolved dependencies"
@@ -7417,7 +7053,7 @@ msgstr ""
 
 #: share/html/SelfService/Display.html:57 share/html/Ticket/Create.html:202 share/html/Ticket/Elements/ShowSummary:52 share/html/m/ticket/create:358 share/html/m/ticket/show:209
 msgid "The Basics"
-msgstr "מידע בסיסי"
+msgstr ""
 
 #: lib/RT/ACE.pm:101
 msgid "The CC of a ticket"
@@ -7588,31 +7224,23 @@ msgstr ""
 msgid "Thu"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Thu."
-msgstr "חמישי"
-
 #: share/html/Dashboards/Subscription.html:109
 msgid "Thursday"
 msgstr ""
 
 #: lib/RT/Record.pm:942 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/ShowReminders:53
 msgid "Ticket"
-msgstr "כרטיס"
-
-#: NOT FOUND IN SOURCE
-msgid "Ticket # %1 Jumbo update: %2"
-msgstr "פנייה מספר %1 עדכון ג'מבו: %2"
+msgstr ""
 
 #: share/html/Ticket/ModifyAll.html:48
 #. ($Ticket->Id, $Ticket->Subject)
 msgid "Ticket #%1 Jumbo update: %2"
-msgstr "כרטיס מספר %1 עדכון Jumbo: %2"
+msgstr ""
 
 #: share/html/Ticket/Graphs/index.html:109
 #. ($id)
 msgid "Ticket #%1 relationships graph"
-msgstr "כרטיס #%1 גרף יחסים"
+msgstr ""
 
 #: share/html/Ticket/Elements/ShowTransaction:152
 #. ($Transaction->Ticket)
@@ -7622,7 +7250,7 @@ msgstr ""
 #: share/html/Approvals/Elements/ShowDependency:69
 #. ($link->BaseObj->Id, $link->BaseObj->Subject)
 msgid "Ticket #%1: %2"
-msgstr "כרטיס #%1: %2"
+msgstr ""
 
 #: lib/RT/Action/CreateTickets.pm:1158 lib/RT/Action/CreateTickets.pm:1167 lib/RT/Action/CreateTickets.pm:386 lib/RT/Action/CreateTickets.pm:509 lib/RT/Action/CreateTickets.pm:521
 #. ($T::Tickets{$template_id}->Id)
@@ -7667,10 +7295,6 @@ msgstr ""
 msgid "Ticket and Transaction"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Ticket attachment"
-msgstr "מצורף לפנייה"
-
 #: lib/RT/Config.pm:264 lib/RT/Config.pm:275
 msgid "Ticket composition"
 msgstr ""
@@ -7691,45 +7315,21 @@ msgstr ""
 msgid "Ticket could not be loaded"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Ticket created"
-msgstr "פנייה נוצרה"
-
-#: NOT FOUND IN SOURCE
-msgid "Ticket deleted"
-msgstr "פנייה נמחקה"
-
 #: lib/RT/Config.pm:336 lib/RT/Config.pm:395 lib/RT/Config.pm:411
 msgid "Ticket display"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Ticket id not found"
-msgstr "מזהה פנייה לא נמצא"
-
-#: NOT FOUND IN SOURCE
-msgid "Ticket killed"
-msgstr "פנייה נמחקה"
 
 #: share/html/Ticket/Display.html:60
 msgid "Ticket metadata"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Ticket not found"
-msgstr "פנייה לא נמצאה"
-
 #: etc/initialdata:308
 msgid "Ticket status changed"
-msgstr "סטטוס פנייה שונה"
+msgstr ""
 
 #: share/html/Articles/Article/ExtractFromTicket.html:63
 msgid "Ticket update"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Ticket watchers"
-msgstr "צופי הפנייה"
 
 #: lib/RT/Search/FromSQL.pm:79
 #. (ref $self)
@@ -7738,7 +7338,7 @@ msgstr ""
 
 #: lib/RT/CustomField.pm:1672 share/html/Admin/Global/CustomFields/index.html:83 share/html/Elements/Tabs:143 share/html/Elements/Tabs:411 share/html/Elements/Tabs:840 share/html/Search/Chart:152 share/html/Search/Elements/Chart:107
 msgid "Tickets"
-msgstr "פניות"
+msgstr ""
 
 #: lib/RT/Tickets.pm:2580
 #. ($self->loc( $args{'TYPE'} ),            $args{'BASE'},)
@@ -7764,23 +7364,15 @@ msgstr ""
 
 #: lib/RT/Tickets.pm:2353 share/html/Elements/RT__Ticket/ColumnMap:164 share/html/Search/Elements/PickBasics:166 share/html/Ticket/Create.html:226 share/html/m/ticket/create:388
 msgid "Time Left"
-msgstr "זמן נותר"
+msgstr ""
 
 #: lib/RT/Tickets.pm:2330 share/html/Elements/RT__Ticket/ColumnMap:159 share/html/Search/Elements/PickBasics:164 share/html/Ticket/Create.html:221 share/html/m/ticket/create:381
 msgid "Time Worked"
-msgstr "זמן עבודה"
-
-#: NOT FOUND IN SOURCE
-msgid "Time left"
-msgstr "זמן נותר"
+msgstr ""
 
 #: share/html/Elements/Footer:54
 msgid "Time to display"
-msgstr "זמן להציג"
-
-#: NOT FOUND IN SOURCE
-msgid "Time worked"
-msgstr "זמן עבודה"
+msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:153 lib/RT/Tickets.pm:113 share/html/Search/Elements/BuildFormatString:100
 msgid "TimeEstimated"
@@ -7894,17 +7486,13 @@ msgstr ""
 msgid "Tue"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Tue."
-msgstr "שלישי"
-
 #: share/html/Dashboards/Subscription.html:107
 msgid "Tuesday"
 msgstr ""
 
 #: lib/RT/Ticket.pm:929 lib/RT/Tickets.pm:102 lib/RT/Tickets.pm:2185 share/html/Admin/CustomFields/Modify.html:64 share/html/Admin/Elements/EditCustomField:67 share/html/Admin/Elements/ModifyTemplate:58 share/html/Elements/RT__Ticket/ColumnMap:153 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/AddWatchers:56 share/html/Ticket/Elements/AddWatchers:67 share/html/Ticket/Elements/AddWatchers:77
 msgid "Type"
-msgstr "סוג"
+msgstr ""
 
 #: share/html/Articles/Article/Elements/LinkEntryInstructions:48
 msgid "Type <b>a:</b> before article numbers and <b>t:</b> before ticket numbers."
@@ -7973,7 +7561,7 @@ msgstr ""
 
 #: lib/RT/ScripCondition.pm:125
 msgid "Unimplemented"
-msgstr "לא מייושם"
+msgstr ""
 
 #: share/html/Admin/Users/Modify.html:87 share/html/Elements/RT__User/ColumnMap:136
 msgid "Unix login"
@@ -8014,7 +7602,7 @@ msgstr ""
 
 #: share/html/Elements/SelectResultsPerPage:60
 msgid "Unlimited"
-msgstr "לא מוגבל"
+msgstr "Sens limit"
 
 #: share/html/Elements/RT__Dashboard/ColumnMap:63
 msgid "Unnamed dashboard"
@@ -8054,7 +7642,7 @@ msgstr ""
 
 #: share/html/Admin/Users/Memberships.html:84 share/html/Articles/Article/Elements/ShowSavedSearches:59 share/html/Articles/Elements/NewestArticles:62 share/html/Articles/Elements/UpdatedArticles:63 share/html/Elements/RT__Ticket/ColumnMap:301 share/html/Search/Bulk.html:213 share/html/Search/Bulk.html:74 share/html/Search/Elements/EditSearches:71 share/html/Widgets/SelectionBox:224
 msgid "Update"
-msgstr "עדכן"
+msgstr "Mesa a jorn"
 
 #: share/html/Search/Chart.html:128
 msgid "Update Chart"
@@ -8070,15 +7658,7 @@ msgstr ""
 
 #: share/html/Search/Bulk.html:127 share/html/Ticket/ModifyAll.html:88 share/html/Ticket/Update.html:73 share/html/m/ticket/reply:85
 msgid "Update Type"
-msgstr "סוג עדכון"
-
-#: NOT FOUND IN SOURCE
-msgid "Update all these tickets at once"
-msgstr "עדכן את כל הפניות לעיל בבת אחת"
-
-#: NOT FOUND IN SOURCE
-msgid "Update email"
-msgstr "עדכן אי-מייל"
+msgstr ""
 
 #: share/html/Search/Build.html:106
 msgid "Update format and Search"
@@ -8088,25 +7668,13 @@ msgstr ""
 msgid "Update multiple tickets"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Update name"
-msgstr "עדכן שם"
-
 #: lib/RT/Action/CreateTickets.pm:530 lib/RT/Interface/Web.pm:1974
 msgid "Update not recorded."
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Update selected tickets"
-msgstr "עדכן פניות נבחרות"
-
-#: NOT FOUND IN SOURCE
-msgid "Update signature"
-msgstr "עדכן חתימה"
-
 #: share/html/Ticket/ModifyAll.html:85
 msgid "Update ticket"
-msgstr "עדכן פנייה"
+msgstr ""
 
 #: share/html/SelfService/Update.html:49 share/html/SelfService/Update.html:96 share/html/m/ticket/reply:48
 #. ($Ticket->id)
@@ -8130,7 +7698,7 @@ msgstr ""
 
 #: lib/RT/CustomField.pm:1748 lib/RT/Ticket.pm:932 lib/RT/Tickets.pm:148 share/html/Elements/SelectDateType:56 share/html/Ticket/Elements/ShowDates:79 share/html/m/ticket/show:402
 msgid "Updated"
-msgstr "עודכן"
+msgstr "Mes a jorn"
 
 #: share/html/Search/Elements/EditSearches:291
 #. ($desc)
@@ -8139,7 +7707,7 @@ msgstr ""
 
 #: share/html/Tools/Offline.html:92
 msgid "Upload"
-msgstr ""
+msgstr "Mandar"
 
 #: share/html/Admin/Tools/Theme.html:61
 msgid "Upload a new logo"
@@ -8175,7 +7743,11 @@ msgstr ""
 
 #: sbin/rt-email-digest:88
 msgid "Usage:"
-msgstr ""
+msgstr "Utilizacion :"
+
+#: NOT FOUND IN SOURCE
+msgid "Usage: "
+msgstr "Utilizacion : "
 
 #: lib/RT/Installer.pm:135
 msgid "Use SSL?"
@@ -8217,7 +7789,7 @@ msgstr ""
 
 #: lib/RT/Record.pm:943 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52
 msgid "User"
-msgstr ""
+msgstr "Utilizaire"
 
 #: lib/RT/Ticket.pm:412
 #. ($args{'Owner'})
@@ -8230,23 +7802,15 @@ msgstr ""
 
 #: etc/initialdata:192 etc/initialdata:88
 msgid "User Defined"
-msgstr ""
+msgstr "Definit per l'utilizaire"
 
 #: share/html/Admin/Elements/EditScrip:97
 msgid "User Defined conditions and actions"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "User ID"
-msgstr "מזהה המשתמש"
-
-#: NOT FOUND IN SOURCE
-msgid "User Id"
-msgstr "מזהה המשתמש"
-
 #: share/html/Elements/Tabs:191 share/html/Elements/Tabs:291 share/html/Elements/Tabs:325 share/html/Elements/Tabs:339 share/html/Elements/Tabs:369
 msgid "User Rights"
-msgstr "זכויות המשתמש"
+msgstr ""
 
 #: lib/RT/Interface/Web.pm:2744
 #. ($cf->Name, ref $args{'Object'},                    $args{'Object'}->id)
@@ -8284,7 +7848,7 @@ msgstr ""
 
 #: share/html/Admin/Users/Modify.html:67 share/html/Elements/Login:70 share/html/Ticket/Elements/AddWatchers:58 share/html/m/login:98
 msgid "Username"
-msgstr "שם משתמש"
+msgstr ""
 
 #: lib/RT/Config.pm:173
 msgid "Username format"
@@ -8292,7 +7856,7 @@ msgstr ""
 
 #: lib/RT/CustomField.pm:1674 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:128 share/html/Elements/Tabs:241 share/html/Elements/Tabs:67
 msgid "Users"
-msgstr "משתמשים"
+msgstr "Utilizaires"
 
 #: share/html/Admin/Users/index.html:114
 msgid "Users matching search criteria"
@@ -8309,23 +7873,23 @@ msgstr ""
 
 #: share/html/Admin/CustomFields/Modify.html:95
 msgid "Validation"
-msgstr ""
+msgstr "Validacion"
 
 #: share/html/Admin/Tools/Configuration.html:114 share/html/Admin/Tools/Configuration.html:197 share/html/Admin/Tools/Configuration.html:62
 msgid "Value"
-msgstr ""
+msgstr "Valor"
 
 #: share/html/Admin/CustomFields/Modify.html:144 share/html/Admin/Elements/EditCustomField:80
 msgid "Values"
-msgstr ""
+msgstr "Valors"
 
 #: share/html/Admin/Tools/Configuration.html:113
 msgid "Variable"
-msgstr ""
+msgstr "Variabla"
 
 #: share/html/Admin/Tools/Configuration.html:221
 msgid "Version"
-msgstr ""
+msgstr "Version"
 
 #: lib/RT/Queue.pm:101
 msgid "View Scrip templates"
@@ -8413,7 +7977,7 @@ msgstr ""
 
 #: lib/RT/Tickets.pm:141
 msgid "Watcher"
-msgstr ""
+msgstr "Susvelhança"
 
 #: lib/RT/Tickets.pm:152
 msgid "WatcherGroup"
@@ -8441,23 +8005,19 @@ msgstr ""
 
 #: lib/RT/Date.pm:109
 msgid "Wed"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Wed."
-msgstr "רביעי"
+msgstr "Mèc"
 
 #: share/html/Dashboards/Subscription.html:108
 msgid "Wednesday"
-msgstr ""
+msgstr "Dimècres"
 
 #: lib/RT/Dashboard/Mailer.pm:324
 msgid "Weekday"
-msgstr ""
+msgstr "Jorn de la setmana"
 
 #: lib/RT/Dashboard/Mailer.pm:326
 msgid "Weekly"
-msgstr ""
+msgstr "Cada setmana"
 
 #: lib/RT/Config.pm:484
 msgid "Weekly digest"
@@ -8493,7 +8053,7 @@ msgstr ""
 
 #: etc/initialdata:110
 msgid "When anything happens"
-msgstr "בכל פעם שדבר כלשהוא קורה"
+msgstr ""
 
 #: lib/RT/Config.pm:271
 msgid "When the WYSIWYG editor is not enabled, this setting determines whether automatic line wraps in the ticket message box are sent to RT or not."
@@ -8521,7 +8081,7 @@ msgstr ""
 
 #: etc/initialdata:179
 msgid "Whenever a ticket is resolved"
-msgstr "בכל פעם שפנייה נסגרת"
+msgstr ""
 
 #: etc/initialdata:123 etc/upgrade/4.0.3/content:5
 msgid "Whenever a ticket or transaction is forwarded"
@@ -8529,7 +8089,7 @@ msgstr ""
 
 #: etc/initialdata:165
 msgid "Whenever a ticket's owner changes"
-msgstr "בכל פעם שבעלי הפנייה משתנה"
+msgstr ""
 
 #: etc/initialdata:158 etc/upgrade/3.1.17/content:16
 msgid "Whenever a ticket's priority changes"
@@ -8537,11 +8097,11 @@ msgstr ""
 
 #: etc/initialdata:173
 msgid "Whenever a ticket's queue changes"
-msgstr "בכל מצב שתור הפנייה משתנה"
+msgstr ""
 
 #: etc/initialdata:150
 msgid "Whenever a ticket's status changes"
-msgstr "בכל פעם שמצב הפנייה משתנה"
+msgstr ""
 
 #: etc/initialdata:137 etc/upgrade/4.0.3/content:19
 msgid "Whenever a transaction is forwarded"
@@ -8549,19 +8109,19 @@ msgstr ""
 
 #: etc/initialdata:193
 msgid "Whenever a user-defined condition occurs"
-msgstr "בכל פעם שמצב מוגדר על ידי משתמש קורה"
+msgstr ""
 
 #: etc/initialdata:144
 msgid "Whenever comments come in"
-msgstr "בכל פעם שהערה מגיעה ב"
+msgstr ""
 
 #: etc/initialdata:116
 msgid "Whenever correspondence comes in"
-msgstr "בכל פעם שתכתובת מגיעה ב"
+msgstr ""
 
 #: lib/RT/Installer.pm:185
 msgid "Where to find your sendmail binary."
-msgstr "היכן נמצאת תוכנת sendmail"
+msgstr ""
 
 #: share/html/Admin/Tools/Shredder/Elements/SelectObjects:63
 msgid "Wipeout"
@@ -8569,23 +8129,19 @@ msgstr ""
 
 #: share/html/Admin/Users/Modify.html:172 share/html/User/Prefs.html:92
 msgid "Work"
-msgstr "עבודה"
+msgstr "Trabalh"
 
 #: share/html/Elements/RT__User/ColumnMap:91
 msgid "Work Phone"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "WorkPhone"
-msgstr "טלפון בעבודה"
+msgstr "Telefòn professional"
 
 #: share/html/Ticket/Elements/ShowBasics:65 share/html/Tools/MyDay.html:62 share/html/m/ticket/reply:77 share/html/m/ticket/show:230
 msgid "Worked"
-msgstr "זמן טיפול"
+msgstr ""
 
 #: share/html/Articles/Article/Delete.html:70 share/html/Widgets/Form/Boolean:77
 msgid "Yes"
-msgstr "כן"
+msgstr "Òc"
 
 #: share/html/Dashboards/Render.html:86
 #. ($edit, $subscription)
@@ -8594,7 +8150,7 @@ msgstr ""
 
 #: lib/RT/Ticket.pm:3081
 msgid "You already own this ticket"
-msgstr "אתה כבר הבעלים של פנייה זו"
+msgstr ""
 
 #: share/html/Elements/GnuPG/KeyIssues:63
 msgid "You are going to encrypt outgoing email messages, but there are problems with recipients' public keys. You have to fix the problems with the keys, disable sending a message to the recipients with key problems, or disable encryption."
@@ -8603,10 +8159,6 @@ msgstr ""
 #: share/html/Elements/GnuPG/KeyIssues:61
 msgid "You are going to encrypt outgoing email messages, but there is a problem with a recipient's public key. You have to fix the problem with the key, disable sending a message to that recipient, or disable encryption."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "You are not an authorized user"
-msgstr "אינך משתמש מורשה"
 
 #: share/html/Ticket/Elements/ShowUpdateStatus:54
 #. (RT->Config->Get('WebPath') ."/Ticket/Display.html?id=". $Ticket->id. "#txn-".$txn->id, RT->Config->Get('WebPath') ."/Ticket/Display.html?id=". $Ticket->id ."&MarkAsSeen=1&Anchor=txn-" . $txn->id)
@@ -8627,7 +8179,7 @@ msgstr ""
 
 #: lib/RT/Ticket.pm:2964
 msgid "You can only reassign tickets that you own or that are unowned"
-msgstr "אתה יכול להציב פניה רק אם אתה הבעלים שלה, או שאין לה בעלים"
+msgstr ""
 
 #: lib/RT/Ticket.pm:2960
 msgid "You can only take tickets that are unowned"
@@ -8647,17 +8199,9 @@ msgstr ""
 msgid "You don't have <b>SuperUser</b> right."
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "You don't have permission to view that ticket.\\n"
-msgstr "אין לך הרשאה כדי לראות את פנייה זו.\\n"
-
-#: NOT FOUND IN SOURCE
-msgid "You found %1 tickets in queue %2"
-msgstr "מצאת %1 פניות בתור %2"
-
 #: share/html/NoAuth/Logout.html:55
 msgid "You have been logged out of RT."
-msgstr "התנתקת מהמערכת."
+msgstr ""
 
 #: share/html/Admin/Queues/Modify.html:147
 msgid "You have enabled GnuPG support but have not set a comment address for this queue."
@@ -8669,7 +8213,7 @@ msgstr ""
 
 #: share/html/SelfService/Display.html:131
 msgid "You have no permission to create tickets in that queue."
-msgstr "אין לך הרשאות ליצור פניות בתור זה."
+msgstr ""
 
 #: share/html/Elements/EditLinks:121
 msgid "You may enter links to Articles as \"a:###\", where ### represents the number of the Article."
@@ -8677,7 +8221,7 @@ msgstr ""
 
 #: lib/RT/Ticket.pm:1708
 msgid "You may not create requests in that queue."
-msgstr "אינך מורשה ליצור פניות בתור זה."
+msgstr ""
 
 #: share/html/Install/Basics.html:85
 msgid "You must enter an Administrative password"
@@ -8711,35 +8255,11 @@ msgstr ""
 
 #: share/html/NoAuth/Logout.html:59
 msgid "You're welcome to login again"
-msgstr "הנך מוזמן להיכנס שנית"
-
-#: NOT FOUND IN SOURCE
-msgid "Your %1 requests"
-msgstr "%1 הבקשות שלך"
-
-#: NOT FOUND IN SOURCE
-msgid "Your RT administrator has misconfigured the mail aliases which invoke RT"
-msgstr "מנהל המערכת לא הגדיר את כתובות הדואר שמפעילות את התוכנה כמו שצריך"
+msgstr ""
 
 #: lib/RT/User.pm:967
 msgid "Your password is not set."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Your request has been approved by %1. Other approvals may still be pending."
-msgstr "בקשתך אושרה על ידי %1. ייתכן שאישורים נוספים עדיין ממתינים."
-
-#: NOT FOUND IN SOURCE
-msgid "Your request has been approved."
-msgstr "בקשתך אושרה."
-
-#: NOT FOUND IN SOURCE
-msgid "Your request was rejected"
-msgstr "בקשתך נדחתה"
-
-#: NOT FOUND IN SOURCE
-msgid "Your request was rejected."
-msgstr "בקשתך נדחתה."
 
 #: share/html/Admin/Tools/Theme.html:65
 #. ($valid_image_types)
@@ -8748,11 +8268,11 @@ msgstr ""
 
 #: lib/RT/Interface/Web.pm:741
 msgid "Your username or password is incorrect"
-msgstr "שם המשתמש ו/או הסיסמא אינם נכונים"
+msgstr ""
 
 #: share/html/Admin/Users/Modify.html:152 share/html/Elements/RT__User/ColumnMap:126 share/html/User/Prefs.html:139
 msgid "Zip"
-msgstr "מיקוד"
+msgstr ""
 
 #: share/html/Elements/RT__CustomField/ColumnMap:168
 msgid "[Down]"
@@ -8762,13 +8282,9 @@ msgstr ""
 msgid "[Up]"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "[no subject]"
-msgstr "[ללא נושא]"
-
 #: share/html/Search/Elements/EditSort:61
 msgid "[none]"
-msgstr "[ללא]"
+msgstr "[pas cap]"
 
 #: lib/RT/Transaction.pm:714
 msgid "a custom field"
@@ -8776,7 +8292,7 @@ msgstr ""
 
 #: share/html/Ticket/Elements/ShowRequestorTicketsActive:48
 msgid "active"
-msgstr ""
+msgstr "actiu"
 
 #: lib/RT/Config.pm:380
 msgid "add <pre> tag around plain text attachments"
@@ -8784,15 +8300,7 @@ msgstr ""
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:100 share/html/Articles/Article/Elements/ShowSearchCriteria:108 share/html/Elements/SelectDateRelation:59
 msgid "after"
-msgstr "אחרי"
-
-#: NOT FOUND IN SOURCE
-msgid "allow creation of saved searches"
-msgstr "אפשר יצירת חיפושים שמורים"
-
-#: NOT FOUND IN SOURCE
-msgid "allow loading of saved searches"
-msgstr "אפשר טעינת חיפושים שמורים"
+msgstr "aprèp"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:102 share/html/Articles/Article/Elements/ShowSearchCriteria:111
 msgid "and before"
@@ -8802,21 +8310,17 @@ msgstr ""
 msgid "and not"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "as granted to %1"
-msgstr "שהוענק ל%1"
-
 #: share/html/Search/Elements/SelectChartType:54
 msgid "bar"
-msgstr ""
+msgstr "bar"
 
 #: share/html/Elements/SelectDateRelation:57
 msgid "before"
-msgstr "לפני"
+msgstr "abans"
 
 #: share/html/Admin/Global/MyRT.html:88
 msgid "body"
-msgstr ""
+msgstr "còs"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:54
 msgid "bottom to top"
@@ -8848,31 +8352,11 @@ msgstr ""
 
 #: share/html/SelfService/Closed.html:53
 msgid "closed"
-msgstr "סגור"
-
-#: NOT FOUND IN SOURCE
-msgid "contains"
-msgstr "מכיל"
-
-#: NOT FOUND IN SOURCE
-msgid "content"
-msgstr "תוכן"
-
-#: NOT FOUND IN SOURCE
-msgid "content-type"
-msgstr "סוג התוכן"
+msgstr "tampat"
 
 #: share/html/Admin/Tools/Configuration.html:83
 msgid "core config"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "correspondence (probably) not sent"
-msgstr "התכתבות (כנראה) לא נשלחה"
-
-#: NOT FOUND IN SOURCE
-msgid "correspondence sent"
-msgstr "התכתבות נשלחה"
 
 #: lib/RT/Interface/Web.pm:1468 lib/RT/Interface/Web.pm:1477
 msgid "create a ticket"
@@ -8886,72 +8370,60 @@ msgstr ""
 
 #: share/html/Dashboards/Subscription.html:96
 msgid "daily"
-msgstr ""
+msgstr "cada jorn"
 
 #: share/html/Elements/RT__Dashboard/ColumnMap:101
 #. ($hour)
 msgid "daily at %1"
-msgstr "יומי בשעה %1"
+msgstr ""
 
 #: lib/RT/Date.pm:350 share/html/Admin/Queues/Modify.html:101
 msgid "days"
-msgstr "ימים"
-
-#: NOT FOUND IN SOURCE
-msgid "delete"
-msgstr "מחק"
+msgstr "jorns"
 
 #: lib/RT/Queue.pm:88
 msgid "deleted"
-msgstr "מחוק"
+msgstr "escafat"
 
 #: lib/RT/Config.pm:390
 msgid "display wrapped and formatted plain text attachments"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "does not match"
-msgstr "לא מכיל"
-
-#: NOT FOUND IN SOURCE
-msgid "doesn't contain"
-msgstr "לא מכיל"
-
 #: share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectMatch:58 share/html/Search/Elements/PickBasics:74
 msgid "doesn't match"
-msgstr "לא תואם"
+msgstr ""
 
 #: share/html/Ticket/ShowEmailRecord.html:62
 msgid "download"
-msgstr "הורדה"
+msgstr "telecargar"
 
 #: share/html/Admin/Tools/Queries.html:87
 msgid "duration"
-msgstr ""
+msgstr "durada"
 
 #: share/html/Elements/SelectEqualityOperator:61
 msgid "equal to"
-msgstr "שווה ל"
+msgstr "egal a"
 
 #: share/html/Search/Elements/EditQuery:93
 msgid "error: can't move down"
-msgstr "שגיאה: לא ניתן להזיז למטה"
+msgstr ""
 
 #: share/html/Search/Elements/EditQuery:110 share/html/Search/Elements/EditQuery:116
 msgid "error: can't move left"
-msgstr "שגיאה: לא ניתן להזיז שמאלה"
+msgstr ""
 
 #: share/html/Search/Elements/EditQuery:92
 msgid "error: can't move up"
-msgstr "שגיאה: לא ניתן להזיז למעלה"
+msgstr ""
 
 #: share/html/Search/Elements/EditQuery:188
 msgid "error: nothing to delete"
-msgstr "שגיאה: אין מה למחוק"
+msgstr ""
 
 #: share/html/Search/Elements/EditQuery:102 share/html/Search/Elements/EditQuery:129 share/html/Search/Elements/EditQuery:150
 msgid "error: nothing to move"
-msgstr "שגיאה: אין מה להזיז"
+msgstr ""
 
 #: share/html/Search/Elements/EditQuery:208
 msgid "error: nothing to toggle"
@@ -8959,36 +8431,32 @@ msgstr ""
 
 #: share/html/Dashboards/Subscription.html:114
 msgid "every"
-msgstr ""
+msgstr "cada"
 
 #: share/html/Admin/Tools/Shredder/index.html:169
 msgid "executed plugin successfuly"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "filename"
-msgstr "שם קובץ"
-
 #: lib/RT/Crypt/GnuPG.pm:2275
 msgid "full"
-msgstr "מלא"
+msgstr "complet"
 
 #: share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectEqualityOperator:61 share/html/Elements/SelectIPRelation:61
 msgid "greater than"
-msgstr "גדול מ"
+msgstr "superior a"
 
 #: share/html/Admin/Elements/EditRights:63
 msgid "group"
-msgstr ""
+msgstr "grop"
 
 #: lib/RT/Group.pm:197
 #. ($self->Name)
 msgid "group '%1'"
-msgstr "קבוצה %1"
+msgstr ""
 
 #: lib/RT/Date.pm:346
 msgid "hours"
-msgstr "שעות"
+msgstr "oras"
 
 #: lib/RT/Date.pm:121 share/html/Elements/Tabs:758
 msgid "iCal"
@@ -8996,7 +8464,7 @@ msgstr "iCal"
 
 #: lib/RT/Tickets.pm:107 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:53 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Elements/ColumnMap:59 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:56
 msgid "id"
-msgstr "מזהה"
+msgstr "id"
 
 #: share/html/Articles/Article/PreCreate.html:57 share/html/Articles/Article/Search.html:59
 #. ($Class->Name)
@@ -9006,7 +8474,7 @@ msgstr ""
 
 #: share/html/Ticket/Elements/ShowRequestorTicketsInactive:48
 msgid "inactive"
-msgstr ""
+msgstr "inactiu"
 
 #: share/html/Admin/Elements/EditRights:155
 #. ($inc)
@@ -9015,23 +8483,23 @@ msgstr ""
 
 #: share/html/Admin/Tools/Queries.html:86
 msgid "index"
-msgstr ""
+msgstr "indèx"
 
 #: share/html/Elements/SelectBoolean:55 share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectIPRelation:61 share/html/Elements/SelectMatch:59 share/html/Search/Elements/PickCFs:90
 msgid "is"
-msgstr "הוא"
+msgstr "es"
 
 #: share/html/Elements/SelectBoolean:59 share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectIPRelation:61 share/html/Elements/SelectMatch:60 share/html/Search/Elements/PickCFs:91
 msgid "isn't"
-msgstr "הוא לא"
+msgstr "es pas"
 
 #: lib/RT/Crypt/GnuPG.pm:2231
 msgid "key disabled"
-msgstr "מפתח מבוטל"
+msgstr ""
 
 #: lib/RT/Crypt/GnuPG.pm:2242
 msgid "key expired"
-msgstr "מפתח אשר פג תוקפו"
+msgstr ""
 
 #: lib/RT/Crypt/GnuPG.pm:2237
 msgid "key revoked"
@@ -9039,31 +8507,31 @@ msgstr ""
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:52
 msgid "left to right"
-msgstr "שמאל לימין"
+msgstr ""
 
 #: share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectEqualityOperator:61 share/html/Elements/SelectIPRelation:61
 msgid "less than"
-msgstr "פחות מ"
+msgstr "mai pichon que"
 
 #: lib/RT/Crypt/GnuPG.pm:2270
 msgid "marginal"
-msgstr "שולי"
+msgstr "marginal"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:64 share/html/Articles/Article/Elements/ShowSearchCriteria:68 share/html/Articles/Article/Elements/ShowSearchCriteria:74 share/html/Articles/Article/Elements/ShowSearchCriteria:79 share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectMatch:57 share/html/Search/Elements/PickBasics:73
 msgid "matches"
-msgstr "מכיל"
+msgstr "correspondéncias"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:64
 msgid "maximum depth"
-msgstr "עומק מרבי"
+msgstr ""
 
 #: lib/RT/Date.pm:342
 msgid "min"
-msgstr "דקות"
+msgstr "min"
 
 #: share/html/Tools/MyDay.html:62
 msgid "minutes"
-msgstr "דקות"
+msgstr "minutas"
 
 #: lib/RT/Interface/Web.pm:1470
 msgid "modify RT's configuration"
@@ -9083,48 +8551,44 @@ msgstr ""
 
 #: share/html/Dashboards/Subscription.html:124
 msgid "monthly"
-msgstr ""
+msgstr "cada mes"
 
 #: share/html/Elements/RT__Dashboard/ColumnMap:98
 #. ($Subscription->SubValue('Dom'), $hour)
 msgid "monthly (day %1) at %2"
-msgstr "חודשי (ביום %1) בשעה %2"
+msgstr ""
 
 #: lib/RT/Date.pm:358
 msgid "months"
-msgstr "חודשים"
+msgstr "meses"
 
 #: share/html/Admin/Elements/ShowKeyInfo:61 share/html/Admin/Elements/ShowKeyInfo:64 share/html/Admin/Elements/ShowKeyInfo:69 share/html/Admin/Elements/ShowKeyInfo:70 share/html/Dashboards/Subscription.html:133
 msgid "never"
-msgstr "אף פעם"
+msgstr "pas jamai"
 
 #: lib/RT/Queue.pm:83
 msgid "new"
-msgstr "חדש"
+msgstr "novèl"
 
 #: share/html/Elements/RT__Group/ColumnMap:65 share/html/Elements/RT__Group/ColumnMap:73 share/html/Elements/RT__Queue/ColumnMap:81 share/html/Elements/RT__Queue/ColumnMap:85
 msgid "no"
-msgstr "לא"
+msgstr "non"
 
 #: share/html/Admin/Elements/PickCustomFields:66 share/html/Admin/Elements/PickObjects:67
 msgid "no name"
-msgstr "אין שם"
-
-#: NOT FOUND IN SOURCE
-msgid "no value"
-msgstr "אין ערך"
+msgstr "pas cap de nom"
 
 #: lib/RT/Crypt/GnuPG.pm:2247 share/html/Admin/Elements/EditQueueWatchers:50 share/html/Dashboards/Subscription.html:73 share/html/Ticket/Elements/EditWatchers:51
 msgid "none"
-msgstr "אין"
+msgstr "pas cap"
 
 #: share/html/Elements/SelectEqualityOperator:61
 msgid "not equal to"
-msgstr "לא שווה ל"
+msgstr "es pas egal a"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:83
 msgid "nothing"
-msgstr ""
+msgstr "pas res"
 
 #: share/html/Admin/Tools/Shredder/index.html:157
 msgid "objects were successfuly removed"
@@ -9132,7 +8596,7 @@ msgstr ""
 
 #: share/html/Dashboards/Subscription.html:104 share/html/Elements/SelectDateRelation:58
 msgid "on"
-msgstr "ב"
+msgstr "lo"
 
 #: share/html/Dashboards/Subscription.html:124
 msgid "on day"
@@ -9140,11 +8604,11 @@ msgstr ""
 
 #: share/html/Elements/RT__CustomField/ColumnMap:86
 msgid "one"
-msgstr ""
+msgstr "una ora"
 
 #: lib/RT/Queue.pm:84 share/html/SelfService/Elements/MyRequests:72 share/html/SelfService/index.html:52
 msgid "open"
-msgstr "פתוח"
+msgstr "dobrir"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:154
 msgid "open/close"
@@ -9152,15 +8616,11 @@ msgstr ""
 
 #: share/html/Widgets/Form/Select:79
 msgid "other..."
-msgstr "אחר..."
+msgstr ""
 
 #: share/html/Elements/CSRF:75 share/html/Elements/LoginRedirectWarning:10
 msgid "perform actions"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "personal group '%1' for user '%2'"
-msgstr "קבוצה אישית '%1' למשתמש '%2'"
 
 #: share/html/Search/Elements/SelectChartType:55
 msgid "pie"
@@ -9173,11 +8633,11 @@ msgstr ""
 #: lib/RT/Group.pm:205
 #. ($queue->Name, $self->Type)
 msgid "queue %1 %2"
-msgstr "תור %1 %2"
+msgstr ""
 
 #: lib/RT/Queue.pm:87
 msgid "rejected"
-msgstr "נדחה"
+msgstr "rejetat"
 
 #: share/html/Admin/Queues/Modify.html:97
 msgid "requires running rt-crontool"
@@ -9185,15 +8645,15 @@ msgstr ""
 
 #: lib/RT/Queue.pm:86
 msgid "resolved"
-msgstr "פתור"
+msgstr "resolgut"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:55
 msgid "right to left"
-msgstr "ימין לשמאל"
+msgstr ""
 
 #: lib/RT/Date.pm:338
 msgid "sec"
-msgstr "שניות"
+msgstr "seg"
 
 #: share/html/Admin/Tools/Shredder/index.html:179
 msgid "see object list below"
@@ -9205,29 +8665,29 @@ msgstr ""
 
 #: lib/RT/Queue.pm:85
 msgid "stalled"
-msgstr "מושהה"
+msgstr ""
 
 #: share/html/Admin/Tools/Queries.html:88
 msgid "statement"
-msgstr ""
+msgstr "estat"
 
 #: share/html/Admin/Global/MyRT.html:89
 msgid "summary"
-msgstr ""
+msgstr "resumit"
 
 #: share/html/Prefs/MyRT.html:89
 msgid "summary rows"
-msgstr "שורות סיכום"
+msgstr ""
 
 #: lib/RT/Group.pm:200
 #. ($self->Type)
 msgid "system %1"
-msgstr "מערכת %1"
+msgstr ""
 
 #: lib/RT/Group.pm:211
 #. ($self->Type)
 msgid "system group '%1'"
-msgstr "קבוצת מערכת '%1'"
+msgstr ""
 
 #: lib/RT/Interface/Web.pm:1384
 msgid "the Referrer header supplied by your browser (%1) is not allowed by RT's configured hostname (%2)"
@@ -9239,15 +8699,15 @@ msgstr ""
 
 #: share/html/Elements/Error:70 share/html/SelfService/Error.html:65
 msgid "the calling component did not specify why"
-msgstr "הרכיב הקורא לא הסביר מדוע"
+msgstr ""
 
 #: lib/RT/Installer.pm:171
 msgid "the default addresses that will be listed in From: and Reply-To: headers of comment mail."
-msgstr "כתובות ברירת המחדל אשר יופיעו בשדות ה\"From\" ו\"Reply-To\" בדואל תגובות."
+msgstr ""
 
 #: lib/RT/Installer.pm:179
 msgid "the default addresses that will be listed in From: and Reply-To: headers of correspondence mail."
-msgstr "כתובות ברירת המחדל אשר יופיעו בשדות ה\"From\" ו\"Reply-To\" בדואל תכתובת."
+msgstr ""
 
 #: lib/RT/Group.pm:208
 #. ($self->Instance, $self->Type)
@@ -9260,16 +8720,16 @@ msgstr ""
 
 #: lib/RT/Crypt/GnuPG.pm:2280
 msgid "ultimate"
-msgstr ""
+msgstr "ultima"
 
 #: lib/RT/Group.pm:214
 #. ($self->Id)
 msgid "undescribed group %1"
-msgstr "קבוצה ללא תאור %1"
+msgstr ""
 
 #: share/html/Elements/RT__CustomField/ColumnMap:86
 msgid "unlimited"
-msgstr ""
+msgstr "illimitat"
 
 #: lib/RT/Interface/Web.pm:1469 lib/RT/Interface/Web.pm:1474 lib/RT/Interface/Web.pm:1478
 msgid "update a ticket"
@@ -9285,29 +8745,29 @@ msgstr ""
 
 #: share/html/Admin/Elements/EditRights:66
 msgid "user"
-msgstr ""
+msgstr "utilizaire"
 
 #: lib/RT/Group.pm:194
 #. ($user->Object->Name)
 msgid "user %1"
-msgstr "משתמש %1"
+msgstr ""
 
 #: share/html/Admin/Elements/EditRights:126
 msgid "username"
-msgstr ""
+msgstr "nom d'utilizaire"
 
 #: share/html/Dashboards/Subscription.html:104
 msgid "weekly"
-msgstr ""
+msgstr "cada setmana"
 
 #: share/html/Elements/RT__Dashboard/ColumnMap:95
 #. (loc($day), $hour)
 msgid "weekly (on %1) at %2"
-msgstr "שבועי (ביום %1) בשעה %2"
+msgstr ""
 
 #: lib/RT/Date.pm:354 share/html/Dashboards/Subscription.html:120
 msgid "weeks"
-msgstr "שבועות"
+msgstr "setmanas"
 
 #: share/html/Elements/LoginRedirectWarning:17
 #. (_unsafe, "<strong>$consequence</strong>")
@@ -9324,11 +8784,11 @@ msgstr ""
 
 #: lib/RT/Date.pm:362
 msgid "years"
-msgstr "שנים"
+msgstr "annadas"
 
 #: share/html/Elements/RT__Group/ColumnMap:65 share/html/Elements/RT__Group/ColumnMap:73 share/html/Elements/RT__Queue/ColumnMap:81 share/html/Elements/RT__Queue/ColumnMap:85
 msgid "yes"
-msgstr "כן"
+msgstr "òc"
 
 #: lib/RT/Interface/Web.pm:1369
 msgid "your browser did not supply a Referrer header"
