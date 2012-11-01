@@ -1,4 +1,3 @@
-#!/opt/perl/bin/perl -w
 
 # tests relating to searching. Especially around custom fields, and
 # corner cases.

@@ -1,6 +1,6 @@
-#!/usr/bin/perl -w
 
 use strict;
+use warnings;
 
 use RT;
 use RT::Test tests => 7;

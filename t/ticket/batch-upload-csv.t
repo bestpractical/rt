@@ -1,5 +1,5 @@
-#!/usr/bin/perl -w
-use strict; use warnings;
+use strict;
+use warnings;
 
 use RT::Test tests => 12;
 use_ok('RT');

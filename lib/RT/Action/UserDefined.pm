@@ -50,6 +50,7 @@ package RT::Action::UserDefined;
 use base 'RT::Action';
 
 use strict;
+use warnings;
 
 =head2 Prepare
 

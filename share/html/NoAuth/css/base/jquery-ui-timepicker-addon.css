@@ -1,3 +1,15 @@
+/*
+* jQuery timepicker addon
+* By: Trent Richardson [http://trentrichardson.com]
+* Version 1.0.0
+* Last Modified: 02/05/2012
+*
+* Copyright 2012 Trent Richardson
+* Dual licensed under the MIT and GPL licenses.
+* http://trentrichardson.com/Impromptu/GPL-LICENSE.txt
+* http://trentrichardson.com/Impromptu/MIT-LICENSE.txt
+*/
+
 .ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
 .ui-timepicker-div dl { text-align: left; }
 .ui-timepicker-div dl dt { height: 25px; margin-bottom: -25px; }

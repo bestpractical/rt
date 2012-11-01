@@ -1,3 +1,5 @@
+use strict;
+use warnings;
 use RT::Test tests => 5;
 use MIME::Entity;
 my $ticket = RT::Ticket->new(RT->SystemUser);

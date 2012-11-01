@@ -70,6 +70,7 @@ package RT::Dashboards;
 use RT::Dashboard;
 
 use strict;
+use warnings;
 use base 'RT::SharedSettings';
 
 sub RecordClass {

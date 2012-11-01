@@ -70,6 +70,7 @@ package RT::SavedSearches;
 use RT::SavedSearch;
 
 use strict;
+use warnings;
 use base 'RT::SharedSettings';
 
 sub RecordClass {

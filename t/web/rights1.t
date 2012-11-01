@@ -1,5 +1,5 @@
-#!/usr/bin/perl -w
 use strict;
+use warnings;
 use HTTP::Cookies;
 
 use RT::Test nodata => 1, tests => 31;

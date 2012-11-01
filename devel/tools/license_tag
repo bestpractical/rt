@@ -48,6 +48,8 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
+use strict;
+use warnings;
 my $LICENSE  = <<'EOL';
 
 COPYRIGHT:
@@ -113,7 +115,7 @@ tag_makefile ('README');
 sub tag_mason {
         my $pm = $_;
         return unless (-f $pm);
-        return if $pm =~ /images/ || $pm =~ /\.(?:png|jpe?g|gif)$/;
+        return if $pm =~ /\.(?:png|jpe?g|gif)$/;
         open( FILE, '<', $pm ) or die "Failed to open $pm";
         my $file = (join "", <FILE>);
         close (FILE);
