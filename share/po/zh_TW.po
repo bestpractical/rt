@@ -250,8 +250,8 @@ msgid "%1 DashBoards"
 msgstr "%1 表單"
 
 #: share/html/Elements/Footer:56 share/html/m/_elements/footer:51
-#. (_unsafe,     '&#187;&#124;&#171;', $RT::VERSION, '2012', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-#. (_unsafe,     '', '', '2012', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('&#187;&#124;&#171;', $RT::VERSION, '2012', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('', '', '2012', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr "%1 RT %2 版，%4 版權所有，1996-%3。"
 
@@ -323,7 +323,7 @@ msgid "%1 changed from '%2' to '%3'"
 msgstr "%1 已由'%2' 改為 '%3'"
 
 #: share/html/Search/Chart.html:128
-#. (_unsafe, $m->scomp('Elements/SelectChartType', Name => 'ChartStyle', Default => $ChartStyle), $m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $ARGS{Query}, Default => $PrimaryGroupBy))
+#. ($m->scomp('Elements/SelectChartType', Name => 'ChartStyle', Default => $ChartStyle), $m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $ARGS{Query}, Default => $PrimaryGroupBy))
 msgid "%1 chart by %2"
 msgstr "%1圖, 依%2"
 
@@ -558,7 +558,7 @@ msgid "%1:%2:%3"
 msgstr "%1:%2:%3"
 
 #: share/html/Elements/CreateTicket:54
-#. (_unsafe, $button_start, $button_end, $queue_selector)
+#. ($button_start, $button_end, $queue_selector)
 msgid "%1New ticket in%2&nbsp;%3"
 msgstr "%1提出申請單%2&nbsp;%3"
 
@@ -1926,7 +1926,7 @@ msgid "CF"
 msgstr "CF"
 
 #: share/html/Search/Simple.html:87
-#. (_unsafe, '<strong>cf.Name:value</strong>')
+#. ('<strong>cf.Name:value</strong>')
 msgid "CFs may be searched using a similar syntax as above with %1."
 msgstr ""
 
@@ -3919,7 +3919,7 @@ msgid "Display ticket #%1"
 msgstr "顯示第%1號申請單"
 
 #: share/html/Elements/Footer:59
-#. (_unsafe, '<a href="http://www.gnu.org/licenses/gpl-2.0.html">', '</a>')
+#. ('<a href="http://www.gnu.org/licenses/gpl-2.0.html">', '</a>')
 msgid "Distributed under %1version 2 of the GNU GPL%2."
 msgstr "以 %1GNU GPL%2 第二版發布。"
 
@@ -4401,7 +4401,7 @@ msgid "Enter up to %1 values with autocompletion"
 msgstr "輸入最多%1個值(帶自動補全功能)"
 
 #: share/html/Search/Simple.html:77
-#. (_unsafe, map { "<strong>$_</strong>" } qw(initial active inactive any))
+#. (map { "<strong>$_</strong>" } qw(initial active inactive any))
 msgid "Entering %1, %2, %3, or %4 limits results to tickets with one of the respective types of statuses.  Any individual status name limits results to just the statuses named."
 msgstr ""
 
@@ -4840,7 +4840,7 @@ msgid "Foo!"
 msgstr "甲！"
 
 #: share/html/Search/Simple.html:91
-#. (_unsafe, $link_start, $link_end)
+#. ($link_start, $link_end)
 msgid "For the full power of RT's searches, please visit the %1search builder interface%2."
 msgstr ""
 
@@ -5472,7 +5472,7 @@ msgid "If you already have a working RT server and database, you should take thi
 msgstr "如果已經有了正常工作的RT，在這里您還可以確定資料庫正在運行並且RT可以正常訪問它。完成之後，請重啟RT。"
 
 #: share/html/Elements/CSRF:59
-#. (_unsafe, $escaped_path, $action, $start, $end)
+#. ($escaped_path, $action, $start, $end)
 msgid "If you really intended to visit %1 and %2, then %3click here to resume your request%4."
 msgstr ""
 
@@ -5489,7 +5489,7 @@ msgid "If you've updated anything above, be sure to"
 msgstr "若您已更新以上資料，請記得按一下"
 
 #: share/html/Install/DatabaseType.html:61
-#. (_unsafe, '<a href="http://search.cpan.org" target="_new">CPAN</a>')
+#. ('<a href="http://search.cpan.org" target="_new">CPAN</a>')
 msgid "If your preferred database isn't listed in the dropdown below, that means RT couldn't find a <i>database driver</i> for it installed locally. You may be able to remedy this by using %1 to download and install DBD::MySQL, DBD::Oracle or DBD::Pg."
 msgstr "如果你想用的資料庫不再列表里，說明RT找不到<i>資料庫驅動</i>。可以嘗試使用%1下載並安裝DBD::MySQL，DBD::Oracle或者DBD::Pg"
 
@@ -7816,12 +7816,12 @@ msgid "Only for entry, not display"
 msgstr ""
 
 #: share/html/Approvals/Elements/PendingMyApproval:68
-#. (_unsafe, qq{<input size='15' class="ui-datepicker" value='}.( $created_after->Unix >0 && $created_after->ISO(Timezone => 'user'))."' name='CreatedAfter' id='CreatedAfter' />")
+#. (qq{<input size='15' class="ui-datepicker" value='}.( $created_after->Unix >0 && $created_after->ISO(Timezone => 'user'))."' name='CreatedAfter' id='CreatedAfter' />")
 msgid "Only show approvals for requests created after %1"
 msgstr "僅顯示 %1 之後新增的申請單"
 
 #: share/html/Approvals/Elements/PendingMyApproval:66
-#. (_unsafe, qq{<input size='15' class="ui-datepicker" value='}.($created_before->Unix > 0 &&$created_before->ISO(Timezone => 'user'))."' name='CreatedBefore' id='CreatedBefore' />")
+#. (qq{<input size='15' class="ui-datepicker" value='}.($created_before->Unix > 0 &&$created_before->ISO(Timezone => 'user'))."' name='CreatedBefore' id='CreatedBefore' />")
 msgid "Only show approvals for requests created before %1"
 msgstr "僅顯示 %1 之前新增的申請單"
 
@@ -8768,7 +8768,7 @@ msgid "RT for %1: %2"
 msgstr "%1 專用 RT 系統：%2"
 
 #: share/html/Elements/CSRF:55
-#. (_unsafe, $strong_start, $strong_end, $Reason, $action)
+#. ($strong_start, $strong_end, $Reason, $action)
 msgid "RT has detected a possible %1cross-site request forgery%2 for this request, because %3.  A malicious attacker may be trying to %1%4%2 on your behalf. If you did not initiate this request, then you should alert your security team."
 msgstr ""
 
@@ -8809,7 +8809,7 @@ msgid "RT will process this message as if it were unsigned.\\n"
 msgstr "RT 以未簽章方式處理這封郵件。\\n"
 
 #: share/html/Admin/CustomFields/Modify.html:108 share/html/Admin/CustomFields/Modify.html:116
-#. (_unsafe, '<tt>__id__</tt>', '<tt>__CustomField__</tt>')
+#. ('<tt>__id__</tt>', '<tt>__CustomField__</tt>')
 msgid "RT will replace %1 and %2 with the record's id and the custom field's value, respectively."
 msgstr "RT 會將 %1 及 %2 置換成紀錄編號及自訂欄位"
 
@@ -9525,7 +9525,7 @@ msgid "Search for tickets"
 msgstr "申請單查詢"
 
 #: share/html/Search/Simple.html:63
-#. (_unsafe, @strong)
+#. (@strong)
 msgid "Search for tickets by entering %1id%2 numbers, subject words %1\"in quotes\"%2, %1queues%2 by name, Owners by %1username%2, Requestors by %1email address%2, and ticket %1statuses%2."
 msgstr ""
 
@@ -10139,7 +10139,7 @@ msgid "Shredder needs a directory to write dumps to. Please check that you have 
 msgstr "粉碎機需要一個目錄來保存資訊. 請檢查<span class=\"file-path\">%1</span>是否存在以及可被網頁伺服器執行寫操作"
 
 #: share/html/Admin/Tools/Shredder/Elements/Error/NoStorage:55
-#. (_unsafe, $path_tag)
+#. ($path_tag)
 msgid "Shredder needs a directory to write dumps to. Please ensure that the directory %1 exists and that it is writable by your web server."
 msgstr ""
 
@@ -10152,7 +10152,7 @@ msgid "Sign"
 msgstr "簽名"
 
 #: share/html/Admin/Queues/Modify.html:123
-#. (_unsafe, "<b>","</b>","<i>","</i>")
+#. ("<b>","</b>","<i>","</i>")
 msgid "Sign all auto-generated mail.  %1Caution%2: Enabling this option alters the signature from providing %3authentication%4 to providing %3integrity%4."
 msgstr ""
 
@@ -10286,7 +10286,7 @@ msgid "Start page"
 msgstr "首頁"
 
 #: share/html/Search/Simple.html:85
-#. (_unsafe, map { "<strong>$_</strong>" } 'queue:"Example Queue"', 'owner:email@example.com')
+#. (map { "<strong>$_</strong>" } 'queue:"Example Queue"', 'owner:email@example.com')
 msgid "Start the search term with the name of a supported field followed by a colon, as in %1 and %2, to explicitly specify the search type."
 msgstr ""
 
@@ -11275,7 +11275,7 @@ msgid "To generate a diff of this commit:\\n"
 msgstr "產生這次更動的差異檔：\\n"
 
 #: share/html/Elements/Footer:59
-#. (_unsafe, '<a href="mailto:sales@bestpractical.com">sales@bestpractical.com</a>')
+#. ('<a href="mailto:sales@bestpractical.com">sales@bestpractical.com</a>')
 msgid "To inquire about support, training, custom development or licensing, please contact %1."
 msgstr "如果有支援、教育訓練及定製開發的需要，請連絡 %1。"
 
@@ -12356,7 +12356,7 @@ msgid "You need to restart the Request Tracker service for saved changes to take
 msgstr "您必須重新啟動 Request Tracker 服務，儲存的更動纔會生效。"
 
 #: share/html/Install/Finish.html:56
-#. (_unsafe, '<tt>root</tt>')
+#. ('<tt>root</tt>')
 msgid "You should be taken directly to a login page. You'll be able to log in with username of %1 and the password you set earlier."
 msgstr "將會跳轉到登錄頁面，您可以以使用者%1和之前設定的密碼登錄。"
 
@@ -13126,7 +13126,7 @@ msgid "weeks"
 msgstr "週"
 
 #: share/html/Elements/LoginRedirectWarning:17
-#. (_unsafe, "<strong>$consequence</strong>")
+#. ("<strong>$consequence</strong>")
 msgid "which may %1 on your behalf."
 msgstr ""
 

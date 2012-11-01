@@ -198,8 +198,8 @@ msgid "%1 DashBoards"
 msgstr "%1 DashBoards"
 
 #: share/html/Elements/Footer:56 share/html/m/_elements/footer:51
-#. (_unsafe,     '&#187;&#124;&#171;', $RT::VERSION, '2012', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-#. (_unsafe,     '', '', '2012', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('&#187;&#124;&#171;', $RT::VERSION, '2012', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('', '', '2012', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr "%1 RT %2 Copyright 1996-%3 %4"
 
@@ -267,7 +267,7 @@ msgid "%1 changed from '%2' to '%3'"
 msgstr "%1 veranded van '%2' naar '%3'"
 
 #: share/html/Search/Chart.html:128
-#. (_unsafe, $m->scomp('Elements/SelectChartType', Name => 'ChartStyle', Default => $ChartStyle), $m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $ARGS{Query}, Default => $PrimaryGroupBy))
+#. ($m->scomp('Elements/SelectChartType', Name => 'ChartStyle', Default => $ChartStyle), $m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $ARGS{Query}, Default => $PrimaryGroupBy))
 msgid "%1 chart by %2"
 msgstr "%1 gesorteerd op %2"
 
@@ -478,7 +478,7 @@ msgid "%1:%2:%3"
 msgstr "%1:%2:%3"
 
 #: share/html/Elements/CreateTicket:54
-#. (_unsafe, $button_start, $button_end, $queue_selector)
+#. ($button_start, $button_end, $queue_selector)
 msgid "%1New ticket in%2&nbsp;%3"
 msgstr "%1Nieuw ticket in%2&nbsp;%3"
 
@@ -1502,7 +1502,7 @@ msgid "CF"
 msgstr ""
 
 #: share/html/Search/Simple.html:87
-#. (_unsafe, '<strong>cf.Name:value</strong>')
+#. ('<strong>cf.Name:value</strong>')
 msgid "CFs may be searched using a similar syntax as above with %1."
 msgstr ""
 
@@ -3075,7 +3075,7 @@ msgid "Display ticket #%1"
 msgstr "Toon ticket #%1"
 
 #: share/html/Elements/Footer:59
-#. (_unsafe, '<a href="http://www.gnu.org/licenses/gpl-2.0.html">', '</a>')
+#. ('<a href="http://www.gnu.org/licenses/gpl-2.0.html">', '</a>')
 msgid "Distributed under %1version 2 of the GNU GPL%2."
 msgstr ""
 
@@ -3429,7 +3429,7 @@ msgid "Enter up to %1 values with autocompletion"
 msgstr ""
 
 #: share/html/Search/Simple.html:77
-#. (_unsafe, map { "<strong>$_</strong>" } qw(initial active inactive any))
+#. (map { "<strong>$_</strong>" } qw(initial active inactive any))
 msgid "Entering %1, %2, %3, or %4 limits results to tickets with one of the respective types of statuses.  Any individual status name limits results to just the statuses named."
 msgstr ""
 
@@ -3720,7 +3720,7 @@ msgid "Foo!"
 msgstr "Aap!"
 
 #: share/html/Search/Simple.html:91
-#. (_unsafe, $link_start, $link_end)
+#. ($link_start, $link_end)
 msgid "For the full power of RT's searches, please visit the %1search builder interface%2."
 msgstr ""
 
@@ -4160,7 +4160,7 @@ msgid "If you already have a working RT server and database, you should take thi
 msgstr ""
 
 #: share/html/Elements/CSRF:59
-#. (_unsafe, $escaped_path, $action, $start, $end)
+#. ($escaped_path, $action, $start, $end)
 msgid "If you really intended to visit %1 and %2, then %3click here to resume your request%4."
 msgstr ""
 
@@ -4173,7 +4173,7 @@ msgid "If you've updated anything above, be sure to"
 msgstr "Als u een van de bovenstaande elemented ververst heeft, zorg dan dat u"
 
 #: share/html/Install/DatabaseType.html:61
-#. (_unsafe, '<a href="http://search.cpan.org" target="_new">CPAN</a>')
+#. ('<a href="http://search.cpan.org" target="_new">CPAN</a>')
 msgid "If your preferred database isn't listed in the dropdown below, that means RT couldn't find a <i>database driver</i> for it installed locally. You may be able to remedy this by using %1 to download and install DBD::MySQL, DBD::Oracle or DBD::Pg."
 msgstr ""
 
@@ -6176,12 +6176,12 @@ msgid "Only for entry, not display"
 msgstr ""
 
 #: share/html/Approvals/Elements/PendingMyApproval:68
-#. (_unsafe, qq{<input size='15' class="ui-datepicker" value='}.( $created_after->Unix >0 && $created_after->ISO(Timezone => 'user'))."' name='CreatedAfter' id='CreatedAfter' />")
+#. (qq{<input size='15' class="ui-datepicker" value='}.( $created_after->Unix >0 && $created_after->ISO(Timezone => 'user'))."' name='CreatedAfter' id='CreatedAfter' />")
 msgid "Only show approvals for requests created after %1"
 msgstr "Toon alleen goedkeuringen voor verzoeken gecreëerd na %1"
 
 #: share/html/Approvals/Elements/PendingMyApproval:66
-#. (_unsafe, qq{<input size='15' class="ui-datepicker" value='}.($created_before->Unix > 0 &&$created_before->ISO(Timezone => 'user'))."' name='CreatedBefore' id='CreatedBefore' />")
+#. (qq{<input size='15' class="ui-datepicker" value='}.($created_before->Unix > 0 &&$created_before->ISO(Timezone => 'user'))."' name='CreatedBefore' id='CreatedBefore' />")
 msgid "Only show approvals for requests created before %1"
 msgstr "Toon alleen goedkeuringen voor verzoeken gecreëerd voor %1"
 
@@ -6856,7 +6856,7 @@ msgid "RT for %1: %2"
 msgstr "RT voor %1: %2"
 
 #: share/html/Elements/CSRF:55
-#. (_unsafe, $strong_start, $strong_end, $Reason, $action)
+#. ($strong_start, $strong_end, $Reason, $action)
 msgid "RT has detected a possible %1cross-site request forgery%2 for this request, because %3.  A malicious attacker may be trying to %1%4%2 on your behalf. If you did not initiate this request, then you should alert your security team."
 msgstr ""
 
@@ -6897,7 +6897,7 @@ msgid "RT will process this message as if it were unsigned.\\n"
 msgstr "RT zal dit bericht verwerken als of het ongesigneerd is.\\n"
 
 #: share/html/Admin/CustomFields/Modify.html:108 share/html/Admin/CustomFields/Modify.html:116
-#. (_unsafe, '<tt>__id__</tt>', '<tt>__CustomField__</tt>')
+#. ('<tt>__id__</tt>', '<tt>__CustomField__</tt>')
 msgid "RT will replace %1 and %2 with the record's id and the custom field's value, respectively."
 msgstr "RT zal %1 en %2 vervangen met het record id respectievelijk de custom field waarde"
 
@@ -7465,7 +7465,7 @@ msgid "Search for tickets"
 msgstr "Zoeken naar tickets"
 
 #: share/html/Search/Simple.html:63
-#. (_unsafe, @strong)
+#. (@strong)
 msgid "Search for tickets by entering %1id%2 numbers, subject words %1\"in quotes\"%2, %1queues%2 by name, Owners by %1username%2, Requestors by %1email address%2, and ticket %1statuses%2."
 msgstr ""
 
@@ -8007,7 +8007,7 @@ msgid "Shredder"
 msgstr ""
 
 #: share/html/Admin/Tools/Shredder/Elements/Error/NoStorage:55
-#. (_unsafe, $path_tag)
+#. ($path_tag)
 msgid "Shredder needs a directory to write dumps to. Please ensure that the directory %1 exists and that it is writable by your web server."
 msgstr ""
 
@@ -8020,7 +8020,7 @@ msgid "Sign"
 msgstr ""
 
 #: share/html/Admin/Queues/Modify.html:123
-#. (_unsafe, "<b>","</b>","<i>","</i>")
+#. ("<b>","</b>","<i>","</i>")
 msgid "Sign all auto-generated mail.  %1Caution%2: Enabling this option alters the signature from providing %3authentication%4 to providing %3integrity%4."
 msgstr ""
 
@@ -8142,7 +8142,7 @@ msgid "Start page"
 msgstr "Start pagina"
 
 #: share/html/Search/Simple.html:85
-#. (_unsafe, map { "<strong>$_</strong>" } 'queue:"Example Queue"', 'owner:email@example.com')
+#. (map { "<strong>$_</strong>" } 'queue:"Example Queue"', 'owner:email@example.com')
 msgid "Start the search term with the name of a supported field followed by a colon, as in %1 and %2, to explicitly specify the search type."
 msgstr ""
 
@@ -9011,7 +9011,7 @@ msgid "To generate a diff of this commit:\\n"
 msgstr "Om een verschil van deze uitvoering te genereren:\\n"
 
 #: share/html/Elements/Footer:59
-#. (_unsafe, '<a href="mailto:sales@bestpractical.com">sales@bestpractical.com</a>')
+#. ('<a href="mailto:sales@bestpractical.com">sales@bestpractical.com</a>')
 msgid "To inquire about support, training, custom development or licensing, please contact %1."
 msgstr "Voor vragen over support, training, bedrijfsspecifieke software-ontwikkeling of licentieovereenkomsten, gelieve contact op te nemen met %1."
 
@@ -9972,7 +9972,7 @@ msgid "You must set a correspondence address for this queue in order to configur
 msgstr ""
 
 #: share/html/Install/Finish.html:56
-#. (_unsafe, '<tt>root</tt>')
+#. ('<tt>root</tt>')
 msgid "You should be taken directly to a login page. You'll be able to log in with username of %1 and the password you set earlier."
 msgstr ""
 
@@ -10582,7 +10582,7 @@ msgid "weeks"
 msgstr "weken"
 
 #: share/html/Elements/LoginRedirectWarning:17
-#. (_unsafe, "<strong>$consequence</strong>")
+#. ("<strong>$consequence</strong>")
 msgid "which may %1 on your behalf."
 msgstr ""
 

@@ -198,8 +198,8 @@ msgid "%1 DashBoards"
 msgstr "%1 DashBoards"
 
 #: share/html/Elements/Footer:56 share/html/m/_elements/footer:51
-#. (_unsafe,     '&#187;&#124;&#171;', $RT::VERSION, '2012', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-#. (_unsafe,     '', '', '2012', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('&#187;&#124;&#171;', $RT::VERSION, '2012', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('', '', '2012', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr "%1 RT %2 Copyright 1996-%3 %4."
 
@@ -250,7 +250,7 @@ msgid "%1 changed from %2 to %3"
 msgstr "%1 changed from %2 to %3"
 
 #: share/html/Search/Chart.html:128
-#. (_unsafe, $m->scomp('Elements/SelectChartType', Name => 'ChartStyle', Default => $ChartStyle), $m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $ARGS{Query}, Default => $PrimaryGroupBy))
+#. ($m->scomp('Elements/SelectChartType', Name => 'ChartStyle', Default => $ChartStyle), $m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $ARGS{Query}, Default => $PrimaryGroupBy))
 msgid "%1 chart by %2"
 msgstr "%1 chart by %2"
 
@@ -400,7 +400,7 @@ msgid "%1:%2:%3"
 msgstr "%1:%2:%3"
 
 #: share/html/Elements/CreateTicket:54
-#. (_unsafe, $button_start, $button_end, $queue_selector)
+#. ($button_start, $button_end, $queue_selector)
 msgid "%1New ticket in%2&nbsp;%3"
 msgstr "%1New ticket in%2&nbsp;%3"
 
@@ -3027,7 +3027,7 @@ msgid "If you've updated anything above, be sure to"
 msgstr "If you've updated anything above, be sure to"
 
 #: share/html/Install/DatabaseType.html:61
-#. (_unsafe, '<a href="http://search.cpan.org" target="_new">CPAN</a>')
+#. ('<a href="http://search.cpan.org" target="_new">CPAN</a>')
 msgid "If your preferred database isn't listed in the dropdown below, that means RT couldn't find a <i>database driver</i> for it installed locally. You may be able to remedy this by using %1 to download and install DBD::MySQL, DBD::Oracle or DBD::Pg."
 msgstr "If your preferred database isn't listed in the dropdown below, that means RT couldn't find a <i>database driver</i> for it installed locally. You may be able to remedy this by using %1 to download and install DBD::MySQL, DBD::Oracle or DBD::Pg."
 
@@ -4518,12 +4518,12 @@ msgid "One-time Cc"
 msgstr "One-time Cc"
 
 #: share/html/Approvals/Elements/PendingMyApproval:68
-#. (_unsafe, qq{<input size='15' class="ui-datepicker" value='}.( $created_after->Unix >0 && $created_after->ISO(Timezone => 'user'))."' name='CreatedAfter' id='CreatedAfter' />")
+#. (qq{<input size='15' class="ui-datepicker" value='}.( $created_after->Unix >0 && $created_after->ISO(Timezone => 'user'))."' name='CreatedAfter' id='CreatedAfter' />")
 msgid "Only show approvals for requests created after %1"
 msgstr "Only show approvals for requests created after %1"
 
 #: share/html/Approvals/Elements/PendingMyApproval:66
-#. (_unsafe, qq{<input size='15' class="ui-datepicker" value='}.($created_before->Unix > 0 &&$created_before->ISO(Timezone => 'user'))."' name='CreatedBefore' id='CreatedBefore' />")
+#. (qq{<input size='15' class="ui-datepicker" value='}.($created_before->Unix > 0 &&$created_before->ISO(Timezone => 'user'))."' name='CreatedBefore' id='CreatedBefore' />")
 msgid "Only show approvals for requests created before %1"
 msgstr "Only show approvals for requests created before %1"
 
@@ -5075,7 +5075,7 @@ msgid "RT will look for anything else you enter in ticket subjects."
 msgstr "RT will look for anything else you enter in ticket subjects."
 
 #: share/html/Admin/CustomFields/Modify.html:108 share/html/Admin/CustomFields/Modify.html:116
-#. (_unsafe, '<tt>__id__</tt>', '<tt>__CustomField__</tt>')
+#. ('<tt>__id__</tt>', '<tt>__CustomField__</tt>')
 msgid "RT will replace %1 and %2 with the record's id and the custom field's value, respectively."
 msgstr "RT will replace %1 and %2 with the record's id and the custom field's value, respectively."
 
@@ -6584,7 +6584,7 @@ msgid "To"
 msgstr "To"
 
 #: share/html/Elements/Footer:59
-#. (_unsafe, '<a href="mailto:sales@bestpractical.com">sales@bestpractical.com</a>')
+#. ('<a href="mailto:sales@bestpractical.com">sales@bestpractical.com</a>')
 msgid "To inquire about support, training, custom development or licensing, please contact %1."
 msgstr "To inquire about support, training, custom development or licensing, please contact %1."
 
@@ -7199,7 +7199,7 @@ msgid "You must enter an Administrative password"
 msgstr "You must enter an Administrative password"
 
 #: share/html/Install/Finish.html:56
-#. (_unsafe, '<tt>root</tt>')
+#. ('<tt>root</tt>')
 msgid "You should be taken directly to a login page. You'll be able to log in with username of %1 and the password you set earlier."
 msgstr "You should be taken directly to a login page. You'll be able to log in with username of %1 and the password you set earlier."
 

@@ -148,9 +148,9 @@ sub extract_strings_from_code {
 
     $_ = <_>;
 
-    # Mason filter: <&|/l>...</&>
+    # Mason filter: <&|/l>...</&> and <&|/l_unsafe>...</&>
     my $line = 1;
-    while (m!\G(.*?<&\|/l(.*?)&>(.*?)</&>)!sg) {
+    while (m!\G(.*?<&\|/l(?:_unsafe)?(.*?)&>(.*?)</&>)!sg) {
         my ( $all, $vars, $str ) = ( $1, $2, $3 );
         $vars =~ s/[\n\r]//g;
         $line += ( $all =~ tr/\n/\n/ );
