@@ -356,7 +356,7 @@ my $build_admin_menu = sub {
             $tabs->child( basics           => title => loc('Basics'),       path => "/Admin/CustomFields/Modify.html?id=".$id );
             $tabs->child( 'group-rights'   => title => loc('Group Rights'), path => "/Admin/CustomFields/GroupRights.html?id=" . $id );
             $tabs->child( 'user-rights'    => title => loc('User Rights'),  path => "/Admin/CustomFields/UserRights.html?id=" . $id );
-            unless ( $obj->LookupType =~ /^RT::(?:User|Group)$/ ) {
+            unless ( $obj->IsOnlyGlobal ) {
                 $tabs->child( 'applies-to' => title => loc('Applies to'),   path => "/Admin/CustomFields/Objects.html?id=" . $id );
             }
         }
