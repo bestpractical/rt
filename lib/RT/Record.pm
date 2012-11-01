@@ -1563,29 +1563,32 @@ sub CustomFields {
     $cfs->SetContextObject( $self );
     # XXX handle multiple types properly
     $cfs->LimitToLookupType( $self->CustomFieldLookupType );
-    $cfs->LimitToGlobalOrObjectId(
-        $self->_LookupId( $self->CustomFieldLookupType )
-    );
+    $cfs->LimitToGlobalOrObjectId( $self->CustomFieldLookupId );
     $cfs->ApplySortOrder;
 
     return $cfs;
 }
 
-# TODO: This _only_ works for RT::Class classes. it doesn't work, for example,
-# for RT::IR classes.
+# TODO: This _only_ works for RT::Foo classes. it doesn't work, for
+# example, for RT::IR::Foo classes.
 
-sub _LookupId {
+sub CustomFieldLookupId {
     my $self = shift;
-    my $lookup = shift;
+    my $lookup = shift || $self->CustomFieldLookupType;
     my @classes = ($lookup =~ /RT::(\w+)-/g);
 
+    # Work on "RT::Queue", for instance
+    return $self->Id unless @classes;
+
     my $object = $self;
+    # Save a ->Load call by not calling ->FooObj->Id, just ->Foo
+    my $final = shift @classes;
     foreach my $class (reverse @classes) {
 	my $method = "${class}Obj";
 	$object = $object->$method;
     }
 
-    return $object->Id;
+    return $object->$final;
 }
 
 
