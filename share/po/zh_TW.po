@@ -41,7 +41,7 @@ msgstr "#"
 msgid "#%1"
 msgstr "#%1"
 
-#: share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:194 share/html/m/ticket/history:56 share/html/m/ticket/show:205
+#: share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:196 share/html/m/ticket/history:56 share/html/m/ticket/show:205
 #. ($Ticket->Id, $Ticket->Subject || '')
 #. ($Ticket->id, $Ticket->Subject)
 #. ($TicketObj->Id, $TicketObj->Subject || '')
@@ -81,27 +81,27 @@ msgstr "%1 #%2"
 msgid "%1 %2"
 msgstr "%1 %2"
 
-#: lib/RT/Tickets.pm:2011
+#: lib/RT/Tickets.pm:2038
 #. ($args{'FIELD'},        $args{'OPERATOR'}, $args{'VALUE'})
 msgid "%1 %2 %3"
 msgstr "%1 %2 %3"
 
-#: lib/RT/Date.pm:609
+#: lib/RT/Date.pm:627
 #. ($wday,$mon,$mday,$year)
 msgid "%1 %2 %3 %4"
 msgstr "%1 %2 %3 %4"
 
-#: lib/RT/Date.pm:624
+#: lib/RT/Date.pm:642
 #. ($wday,$mon,$mday,$hour,$min,$year)
 msgid "%1 %2 %3 %4:%5 %6"
 msgstr "%1 %2 %3 %4:%5 %6"
 
-#: lib/RT/Date.pm:621
+#: lib/RT/Date.pm:639
 #. ($wday,$mon,$mday,$hour,$min,$sec,$year)
 msgid "%1 %2 %3 %4:%5:%6 %7"
 msgstr "%7-%2-%3 %4:%5:%6 %1"
 
-#: lib/RT/Record.pm:1735 lib/RT/Transaction.pm:720 lib/RT/Transaction.pm:762
+#: lib/RT/Record.pm:1772 lib/RT/Transaction.pm:721 lib/RT/Transaction.pm:763
 #. ($cf->Name, $new_content)
 #. ($field, $new)
 #. ($self->Field, $principal->Object->Name)
@@ -113,13 +113,13 @@ msgstr "%2 已新增為 %1"
 msgid "%1 %2 ago"
 msgstr "%1 %2 之前"
 
-#: lib/RT/Record.pm:1742 lib/RT/Transaction.pm:726
+#: lib/RT/Record.pm:1779 lib/RT/Transaction.pm:727
 #. ($cf->Name, $old_content, $new_content)
 #. ($field, $old, $new)
 msgid "%1 %2 changed to %3"
 msgstr "%1 已從 %2 改為 %3"
 
-#: lib/RT/Record.pm:1739 lib/RT/Transaction.pm:723 lib/RT/Transaction.pm:768
+#: lib/RT/Record.pm:1776 lib/RT/Transaction.pm:724 lib/RT/Transaction.pm:769
 #. ($cf->Name, $old_content)
 #. ($field, $old)
 #. ($self->Field, $principal->Object->Name)
@@ -263,7 +263,7 @@ msgstr "載入手續 %1"
 msgid "%1 Total"
 msgstr "共 %1 筆"
 
-#: lib/RT/Record.pm:1770
+#: lib/RT/Record.pm:1807
 #. ($args{'Value'}, $cf->Name)
 msgid "%1 added as a value for %2"
 msgstr "新增 %1 作為 %2 的值"
@@ -308,7 +308,7 @@ msgstr "%1 已經完全初始化了。不需要再創建任何的資料庫表或
 msgid "%1 by %2"
 msgstr "%1 (%2)"
 
-#: lib/RT/Record.pm:509 lib/RT/Transaction.pm:657 lib/RT/Transaction.pm:857 lib/RT/Transaction.pm:862 lib/RT/Transaction.pm:876 lib/RT/Transaction.pm:885 lib/RT/Transaction.pm:923
+#: lib/RT/Record.pm:509 lib/RT/Transaction.pm:657 lib/RT/Transaction.pm:858 lib/RT/Transaction.pm:863 lib/RT/Transaction.pm:877 lib/RT/Transaction.pm:886 lib/RT/Transaction.pm:924
 #. ($self->loc($self->Field),                               ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'")
 #. ($self->loc($self->Field) , $q1->Name , $q2->Name)
 #. ($self->Field,                ( $self->OldValue ? "'" . $self->OldValue . "'" : $no_value ),                "'" . $self->NewValue . "'")
@@ -337,7 +337,7 @@ msgstr "%1 複製"
 msgid "%1 core config"
 msgstr "%1 核心配置"
 
-#: lib/RT/Record.pm:951
+#: lib/RT/Record.pm:953
 msgid "%1 could not be set to %2."
 msgstr "無法將 %1 設定為 %2。"
 
@@ -400,7 +400,7 @@ msgstr "%1 是從外部排程程式(如 cron)來對申請單進行操作的工�
 msgid "%1 is a utility, meant to be run from cron, that dispatches all deferred RT notifications as a per-user digest."
 msgstr "%1是一個由cron運行的工具，可以分派所有延期的通知生成每個使用者的摘要。"
 
-#: lib/RT/Queue.pm:899 lib/RT/Queue.pm:905 lib/RT/Ticket.pm:1112 lib/RT/Ticket.pm:1121 share/html/Ticket/Create.html:427 share/html/Ticket/Update.html:315 share/html/m/ticket/create:220 share/html/m/ticket/reply:229
+#: lib/RT/Queue.pm:924 lib/RT/Queue.pm:930 lib/RT/Ticket.pm:1112 lib/RT/Ticket.pm:1121 share/html/Ticket/Create.html:416 share/html/Ticket/Update.html:315 share/html/m/ticket/create:210 share/html/m/ticket/reply:229
 #. ($args{'Email'}, $self->loc($args{'Type'}))
 #. ($email, $self->loc($args{'Type'}))
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
@@ -417,7 +417,7 @@ msgstr "%1 已不再是此表單的 %2。"
 msgid "%1 is no longer a %2 for this ticket."
 msgstr "%1 已不再是此申請單的 %2。"
 
-#: lib/RT/Record.pm:1835
+#: lib/RT/Record.pm:1872
 #. ($old_value, $cf->Name)
 msgid "%1 is no longer a value for custom field %2"
 msgstr "%1 已不再是自訂欄位 %2 的值。"
@@ -454,7 +454,7 @@ msgstr "前 %1 份待認領的申請單"
 msgid "%1 not shown"
 msgstr "沒有顯示 %1"
 
-#: lib/RT/CustomField.pm:1109
+#: lib/RT/CustomField.pm:1183
 msgid "%1 objects"
 msgstr "%1 物件"
 
@@ -509,15 +509,15 @@ msgstr "%1 會解決在已解決群組裡成員的申請單。"
 msgid "%1 will stall a [local] BASE if it's dependent [or member] of a linked up request."
 msgstr "如果 %1 起始申請單依賴於某個鏈結，或是某個鏈結的成員，它將會被延宕。"
 
-#: lib/RT/CustomField.pm:1110
+#: lib/RT/CustomField.pm:1184
 msgid "%1's %2 objects"
 msgstr "%1 內的 %2 物件"
 
-#: lib/RT/CustomField.pm:1111
+#: lib/RT/CustomField.pm:1185
 msgid "%1's %2's %3 objects"
 msgstr "%1 內的 %2 的 %3 物件"
 
-#: share/html/Admin/Users/GnuPG.html:107
+#: share/html/Admin/Users/GnuPG.html:114
 #. ($UserObj->Name)
 msgid "%1's GnuPG keys"
 msgstr "%1 的 GnuPG 密鑰"
@@ -547,12 +547,12 @@ msgstr "%1 的預存查詢"
 msgid "%1: no attachment specified"
 msgstr "%1：未指定附件"
 
-#: lib/RT/Date.pm:616
+#: lib/RT/Date.pm:634
 #. ($hour,$min)
 msgid "%1:%2"
 msgstr "%1:%2"
 
-#: lib/RT/Date.pm:613
+#: lib/RT/Date.pm:631
 #. ($hour,$min,$sec)
 msgid "%1:%2:%3"
 msgstr "%1:%2:%3"
@@ -583,7 +583,7 @@ msgstr "%1 分鐘"
 msgid "%1s"
 msgstr "%1 秒"
 
-#: share/html/Articles/Topics.html:252
+#: share/html/Articles/Elements/ShowTopicLink:14
 #. ($Articles->Count)
 msgid "%quant(%1,article)"
 msgstr "%1 篇文章"
@@ -602,12 +602,12 @@ msgstr "找到 %1 項結果"
 msgid "'%1' is an invalid value for status"
 msgstr "'%1' 不是一個合法的狀態值"
 
-#: lib/RT/Queue.pm:553
+#: lib/RT/Queue.pm:551
 #. ($name)
 msgid "'%1' is not a valid name."
 msgstr ""
 
-#: share/html/Articles/Article/Edit.html:135 share/html/Articles/Article/Edit.html:225 share/html/Articles/Article/ExtractFromTicket.html:93 share/html/Articles/Article/ExtractIntoTopic.html:70
+#: share/html/Articles/Article/Edit.html:135 share/html/Articles/Article/Edit.html:226 share/html/Articles/Article/ExtractFromTicket.html:93 share/html/Articles/Article/ExtractIntoTopic.html:70
 #. ($Class)
 msgid "'%1' isn't a valid class identifier"
 msgstr "'%1' 不是一個有效的類型識別字"
@@ -616,23 +616,23 @@ msgstr "'%1' 不是一個有效的類型識別字"
 msgid "'%1' not a recognized action. "
 msgstr "'%1'為無法辨識的動作。 "
 
-#: lib/RT/Interface/Web.pm:2740
+#: lib/RT/Interface/Web.pm:3104
 msgid "'Roles'"
 msgstr "'角色'"
 
-#: lib/RT/Interface/Web.pm:2703
+#: lib/RT/Interface/Web.pm:3067
 msgid "'System'"
 msgstr "'系統'"
 
-#: lib/RT/Interface/Web.pm:2721
+#: lib/RT/Interface/Web.pm:3085
 msgid "'User Groups'"
 msgstr "'使用者群組'"
 
-#: lib/RT/Interface/Web.pm:2772
+#: lib/RT/Interface/Web.pm:3136
 msgid "'Users'"
 msgstr "'使用者'"
 
-#: share/html/Ticket/Elements/Reminders:101
+#: share/html/Ticket/Elements/Reminders:102
 msgid "(Check box to complete)"
 msgstr "(標記要完成的專案)"
 
@@ -660,7 +660,7 @@ msgstr "(點選欲停用通知的收件人)"
 msgid "(Check boxes to enable notifications to the listed recipients)"
 msgstr "(點選欲啟用通知的收件人)"
 
-#: share/html/Ticket/Create.html:252 share/html/m/ticket/create:423
+#: share/html/Ticket/Create.html:252 share/html/m/ticket/create:413
 msgid "(Enter ticket ids or URLs, separated with spaces)"
 msgstr "(鍵入申請單編號或網址，以空白分隔)"
 
@@ -714,7 +714,7 @@ msgstr "(送出本份更新的密件副本給名單上以逗號隔開的電子�
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)"
 msgstr "(送出本份更新的副本給名單上以逗號隔開的管理員電子郵件位址。這<b>將會</b>更改後續的收件者名單。)"
 
-#: share/html/Ticket/Create.html:150 share/html/m/ticket/create:329
+#: share/html/Ticket/Create.html:150 share/html/m/ticket/create:319
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)"
 msgstr "(送出本份更新的副本給名單上以逗號隔開的管理員電子郵件位址。這<strong>將會</strong>更改後續的收件者名單。)"
 
@@ -734,7 +734,7 @@ msgstr "(送出本份更新的副本給名單上以逗號隔開的電子郵件�
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)"
 msgstr "(送出本份更新的副本給名單上以逗號隔開的電子郵件位址。這<b>將會</b>更改後續的收件者名單。)"
 
-#: share/html/Ticket/Create.html:134 share/html/m/ticket/create:320
+#: share/html/Ticket/Create.html:134 share/html/m/ticket/create:310
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)"
 msgstr "(送出本份更新的副本給名單上以逗號隔開的電子郵件位址。這<strong>將會</strong>更改後續的收件者名單。)"
 
@@ -778,7 +778,7 @@ msgstr "(沒有摘要)"
 msgid "(no name listed)"
 msgstr "(沒有列出姓名)"
 
-#: share/html/Admin/Articles/Elements/Topics:99 share/html/Articles/Article/Elements/EditTopics:59 share/html/Articles/Article/Elements/EditTopics:76 share/html/Articles/Article/Elements/Preformatted:49 share/html/Articles/Article/Elements/Preformatted:50 share/html/Articles/Elements/BeforeMessageBox:103 share/html/Articles/Elements/BeforeMessageBox:120 share/html/Articles/Elements/BeforeMessageBox:70 share/html/Articles/Elements/BeforeMessageBox:82 share/html/Articles/Elements/BeforeMessageBox:90 share/html/Articles/Elements/NewestArticles:60 share/html/Articles/Elements/ShowTopic:51 share/html/Articles/Elements/UpdatedArticles:61 share/html/Articles/Topics.html:136 share/html/Articles/Topics.html:238 share/html/SelfService/Article/Display.html:49 share/html/SelfService/Article/Search.html:77 share/html/SelfService/Article/Search.html:85
+#: share/html/Admin/Articles/Elements/Topics:99 share/html/Articles/Article/Elements/EditTopics:58 share/html/Articles/Article/Elements/EditTopics:74 share/html/Articles/Article/Elements/Preformatted:49 share/html/Articles/Article/Elements/Preformatted:50 share/html/Articles/Elements/BeforeMessageBox:103 share/html/Articles/Elements/BeforeMessageBox:120 share/html/Articles/Elements/BeforeMessageBox:70 share/html/Articles/Elements/BeforeMessageBox:82 share/html/Articles/Elements/BeforeMessageBox:90 share/html/Articles/Elements/NewestArticles:60 share/html/Articles/Elements/ShowTopic:51 share/html/Articles/Elements/ShowTopicLink:8 share/html/Articles/Elements/UpdatedArticles:61 share/html/Articles/Topics.html:105 share/html/SelfService/Article/Display.html:49 share/html/SelfService/Article/Search.html:77 share/html/SelfService/Article/Search.html:85
 msgid "(no name)"
 msgstr "(沒有名稱)"
 
@@ -880,7 +880,7 @@ msgstr "<% $_ %>"
 msgid "<% $field->{'name'} %>"
 msgstr "<% $field->{'name'} %>"
 
-#: share/html/Admin/Articles/Elements/Topics:108
+#: NOT FOUND IN SOURCE
 msgid "<%$Action%> here"
 msgstr "<%$Action%> 在此"
 
@@ -916,7 +916,7 @@ msgstr "<tt>%1</tt> - <i>%2秒</i>"
 msgid "A blank template"
 msgstr "空白範本"
 
-#: share/html/Admin/Users/Modify.html:356
+#: share/html/Admin/Users/Modify.html:350
 msgid "A password was not set, so user won't be able to login."
 msgstr "密碼沒有設定，因此該使用者將無法登入。"
 
@@ -960,7 +960,7 @@ msgstr "離開以免不小心更改到申請單。\\n"
 msgid "About Me"
 msgstr "個人資訊"
 
-#: share/html/Elements/Tabs:468
+#: share/html/Elements/Tabs:469
 msgid "About me"
 msgstr "個人資訊"
 
@@ -980,7 +980,7 @@ msgstr "動作"
 msgid "Action %1 not found"
 msgstr "動作 %1 找不到"
 
-#: lib/RT/Scrip.pm:153 lib/RT/Scrip.pm:633
+#: lib/RT/Scrip.pm:153 lib/RT/Scrip.pm:655
 #. ($args{'ScripAction'})
 #. ($value)
 msgid "Action '%1' not found"
@@ -994,7 +994,7 @@ msgstr "動作執行完畢"
 msgid "Action committed.\\n"
 msgstr "動作執行完畢。\\n"
 
-#: lib/RT/Scrip.pm:149 lib/RT/Scrip.pm:628
+#: lib/RT/Scrip.pm:149 lib/RT/Scrip.pm:650
 msgid "Action is mandatory argument"
 msgstr "動作為必填欄位"
 
@@ -1002,7 +1002,7 @@ msgstr "動作為必填欄位"
 msgid "Action prepared..."
 msgstr "動作準備完畢..."
 
-#: share/html/Elements/Tabs:514
+#: share/html/Elements/Tabs:515
 msgid "Actions"
 msgstr "動作"
 
@@ -1052,7 +1052,7 @@ msgstr "新增條件"
 msgid "Add Entry"
 msgstr "新增列"
 
-#: share/html/Ticket/Elements/AddAttachments:59 share/html/m/ticket/create:357 share/html/m/ticket/reply:133
+#: share/html/Ticket/Elements/AddAttachments:59 share/html/m/ticket/create:347 share/html/m/ticket/reply:133
 msgid "Add More Files"
 msgstr "新增更多附件"
 
@@ -1108,6 +1108,10 @@ msgstr "新增評論或回覆到指定的申請單"
 msgid "Add group"
 msgstr "添加群組"
 
+#: share/html/Admin/Articles/Elements/Topics:108
+msgid "Add here"
+msgstr ""
+
 #: share/html/Admin/Groups/Members.html:63
 msgid "Add members"
 msgstr "新增成員"
@@ -1149,7 +1153,7 @@ msgstr "添加、修改與刪除物件的欄位值"
 msgid "AddNextState"
 msgstr "新增下一項關卡"
 
-#: lib/RT/Queue.pm:959
+#: lib/RT/Queue.pm:984
 #. ($principal->Object->Name, $args{'Type'})
 msgid "Added %1 to members of %2 for this queue."
 msgstr "添加 %1 為 %2 該表單的成員"
@@ -1191,7 +1195,7 @@ msgstr "調整閃爍速度快慢"
 msgid "Admin"
 msgstr "管理員"
 
-#: share/html/Ticket/Create.html:141 share/html/m/ticket/create:323
+#: share/html/Ticket/Create.html:141 share/html/m/ticket/create:313
 msgid "Admin Cc"
 msgstr "管理員副本"
 
@@ -1331,7 +1335,7 @@ msgstr "系統管理員密碼"
 msgid "Admins"
 msgstr "主管"
 
-#: share/html/Elements/Tabs:724
+#: share/html/Elements/Tabs:725
 msgid "Advanced"
 msgstr "進階"
 
@@ -1346,6 +1350,10 @@ msgstr "進階查詢條件"
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:49 share/html/Articles/Article/Elements/ShowSearchCriteria:51
 msgid "Advanced search"
 msgstr "高級搜索"
+
+#: share/html/Elements/LoginRedirectWarning:15
+msgid "After logging in you'll be sent to your original destination:"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Age"
@@ -1387,7 +1395,7 @@ msgstr "所有條件"
 msgid "All Custom Fields"
 msgstr "所有自訂欄位"
 
-#: share/html/Elements/Tabs:403
+#: share/html/Elements/Tabs:404
 msgid "All Dashboards"
 msgstr "所有表單"
 
@@ -1419,7 +1427,7 @@ msgstr "滿足條件的表單"
 msgid "All tickets"
 msgstr "所有申請單"
 
-#: share/html/Articles/Topics.html:52
+#: share/html/Articles/Topics.html:51
 msgid "All topics"
 msgstr "所有主題"
 
@@ -1439,7 +1447,7 @@ msgstr "允許在範本、腳本等處寫 Perl 代碼"
 msgid "Allowance Request"
 msgstr "福利補助申請"
 
-#: lib/RT/Attachment.pm:703
+#: lib/RT/Attachment.pm:722
 msgid "Already encrypted"
 msgstr "已加密"
 
@@ -1475,7 +1483,7 @@ msgstr "已應用"
 msgid "Applies To"
 msgstr "套用於"
 
-#: share/html/Admin/CustomFields/Modify.html:89 share/html/Elements/Tabs:339 share/html/Elements/Tabs:369
+#: share/html/Admin/CustomFields/Modify.html:89 share/html/Elements/Tabs:340 share/html/Elements/Tabs:370
 msgid "Applies to"
 msgstr "套用於"
 
@@ -1499,7 +1507,7 @@ msgstr "應用到全域"
 msgid "Apply your changes"
 msgstr "套用更動"
 
-#: share/html/Elements/Tabs:443
+#: share/html/Elements/Tabs:444
 msgid "Approval"
 msgstr "簽核"
 
@@ -1628,11 +1636,11 @@ msgstr "文章已刪除"
 msgid "Article not found"
 msgstr "文章未找到"
 
-#: share/html/Admin/Global/CustomFields/index.html:95 share/html/Articles/index.html:48 share/html/Elements/Tabs:152 share/html/Elements/Tabs:157 share/html/Elements/Tabs:416
+#: share/html/Admin/Global/CustomFields/index.html:95 share/html/Articles/index.html:48 share/html/Elements/Tabs:153 share/html/Elements/Tabs:158 share/html/Elements/Tabs:417
 msgid "Articles"
 msgstr "文章"
 
-#: share/html/Articles/Topics.html:130
+#: share/html/Articles/Topics.html:99
 #. ($currtopic->Name)
 msgid "Articles in %1"
 msgstr "%1 的文章"
@@ -1642,7 +1650,7 @@ msgstr "%1 的文章"
 msgid "Articles matching %1"
 msgstr "匹配 %1 的文章"
 
-#: share/html/Articles/Topics.html:132
+#: share/html/Articles/Topics.html:101
 msgid "Articles with no topics"
 msgstr "無主題的文章"
 
@@ -1670,11 +1678,11 @@ msgstr "指派自訂欄位"
 msgid "Attach"
 msgstr "附件"
 
-#: share/html/SelfService/Create.html:98 share/html/m/ticket/create:354 share/html/m/ticket/reply:130
+#: share/html/SelfService/Create.html:98 share/html/m/ticket/create:344 share/html/m/ticket/reply:130
 msgid "Attach file"
 msgstr "附加檔案"
 
-#: share/html/Ticket/Elements/AddAttachments:49 share/html/m/ticket/create:342 share/html/m/ticket/reply:119
+#: share/html/Ticket/Elements/AddAttachments:49 share/html/m/ticket/create:332 share/html/m/ticket/reply:119
 msgid "Attached file"
 msgstr "現有附件"
 
@@ -1691,7 +1699,7 @@ msgstr "無法載入附件 '%1'"
 msgid "Attachment created"
 msgstr "附件新增完畢"
 
-#: lib/RT/Tickets.pm:2374
+#: lib/RT/Tickets.pm:2401
 msgid "Attachment filename"
 msgstr "附件檔名"
 
@@ -1699,7 +1707,7 @@ msgstr "附件檔名"
 msgid "Attachments"
 msgstr "附件"
 
-#: lib/RT/Attachment.pm:696
+#: lib/RT/Attachment.pm:715
 msgid "Attachments encryption is disabled"
 msgstr "附件加密已取消"
 
@@ -1801,7 +1809,7 @@ msgstr "屬性%1含錯誤的隱私項"
 msgid "Bad transaction number for attachment. %1 should be %2\\n"
 msgstr "附件的處理號碼錯誤。%1 應為 %2\\n"
 
-#: share/html/Articles/Article/Display.html:50 share/html/Articles/Article/Edit.html:57 share/html/Articles/Article/Elements/ShowSearchCriteria:55 share/html/Dashboards/Modify.html:60 share/html/Elements/Tabs:272 share/html/Elements/Tabs:303 share/html/Elements/Tabs:321 share/html/Elements/Tabs:336 share/html/Elements/Tabs:364 share/html/Elements/Tabs:498 share/html/Elements/Tabs:533 share/html/Ticket/Create.html:456 share/html/Ticket/Create.html:68 share/html/m/_elements/ticket_menu:60
+#: share/html/Articles/Article/Display.html:50 share/html/Articles/Article/Edit.html:57 share/html/Articles/Article/Elements/ShowSearchCriteria:55 share/html/Dashboards/Modify.html:60 share/html/Elements/Tabs:273 share/html/Elements/Tabs:304 share/html/Elements/Tabs:322 share/html/Elements/Tabs:337 share/html/Elements/Tabs:365 share/html/Elements/Tabs:499 share/html/Elements/Tabs:534 share/html/Ticket/Create.html:445 share/html/Ticket/Create.html:68 share/html/m/_elements/ticket_menu:60
 msgid "Basics"
 msgstr "基本資訊"
 
@@ -1877,15 +1885,15 @@ msgstr "已加入書簽的申請單"
 msgid "Brief headers"
 msgstr "精簡標頭檔"
 
-#: share/html/Articles/Topics.html:48 share/html/Articles/Topics.html:61
+#: share/html/Articles/Topics.html:48 share/html/Articles/Topics.html:60
 msgid "Browse by topic"
 msgstr "根據主題瀏覽"
 
-#: share/html/Elements/Tabs:224
+#: share/html/Elements/Tabs:225
 msgid "Browse the SQL queries made in this process"
 msgstr "瀏覽該進程中的 SQL 表單"
 
-#: share/html/Elements/Tabs:730
+#: share/html/Elements/Tabs:731
 msgid "Bulk Update"
 msgstr "整批更新"
 
@@ -1931,7 +1939,7 @@ msgstr "行事曆"
 msgid "Can not load saved search \"%1\""
 msgstr "載入\"%1\"失敗"
 
-#: lib/RT/User.pm:1434
+#: lib/RT/User.pm:1473
 msgid "Can not modify system users"
 msgstr "無法更改系統使用者"
 
@@ -1939,7 +1947,7 @@ msgstr "無法更改系統使用者"
 msgid "Can this principal see this queue"
 msgstr "該單位是否能查閱此表單"
 
-#: lib/RT/CustomField.pm:550
+#: lib/RT/CustomField.pm:554
 msgid "Can't add a custom field value without a name"
 msgstr "不能新增沒有名稱的自訂欄位值"
 
@@ -1968,7 +1976,7 @@ msgstr "無法儲存 %1"
 msgid "Can't save this search"
 msgstr "無法儲存此項查詢"
 
-#: lib/RT/Record.pm:1294 lib/RT/Record.pm:1372
+#: lib/RT/Record.pm:1296 lib/RT/Record.pm:1374
 msgid "Can't specifiy both base and target"
 msgstr "不能同時指定起始申請單與目的申請單"
 
@@ -1980,7 +1988,7 @@ msgstr "取消"
 msgid "Cannot add link to plain number"
 msgstr "不能為編號添加鏈結"
 
-#: share/html/Ticket/Create.html:365 share/html/m/ticket/create:158
+#: share/html/Ticket/Create.html:354 share/html/m/ticket/create:148
 msgid "Cannot create tickets in a disabled queue."
 msgstr "無法在已關閉的 queue 中建立新 ticket."
 
@@ -2012,7 +2020,7 @@ msgstr "分類"
 msgid "Category unset"
 msgstr "類別尚未設定"
 
-#: lib/RT/ACE.pm:101 lib/RT/Tickets.pm:139 share/html/Elements/RT__Ticket/ColumnMap:178 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:75 share/html/Ticket/Create.html:125 share/html/Ticket/Elements/EditPeople:73 share/html/Ticket/Elements/ShowPeople:62 share/html/Ticket/Forward.html:69 share/html/m/ticket/create:314 share/html/m/ticket/show:294
+#: lib/RT/ACE.pm:101 lib/RT/Tickets.pm:139 share/html/Elements/RT__Ticket/ColumnMap:178 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:75 share/html/Ticket/Create.html:125 share/html/Ticket/Elements/EditPeople:73 share/html/Ticket/Elements/ShowPeople:62 share/html/Ticket/Forward.html:69 share/html/m/ticket/create:304 share/html/m/ticket/show:294
 msgid "Cc"
 msgstr "副本"
 
@@ -2052,7 +2060,7 @@ msgstr "更改密碼"
 msgid "ChangeOwnerUI"
 msgstr "可否選擇表單承辦人"
 
-#: share/html/Elements/Tabs:731
+#: share/html/Elements/Tabs:732
 msgid "Chart"
 msgstr "圖表"
 
@@ -2072,7 +2080,7 @@ msgstr "檢查資料庫連線"
 msgid "Check Database Credentials"
 msgstr "檢查資料庫的連接設定"
 
-#: share/html/Ticket/Elements/AddAttachments:51 share/html/m/ticket/create:344 share/html/m/ticket/reply:121
+#: share/html/Ticket/Elements/AddAttachments:51 share/html/m/ticket/create:334 share/html/m/ticket/reply:121
 msgid "Check box to delete"
 msgstr "選擇欲刪除的項目"
 
@@ -2084,7 +2092,7 @@ msgstr "選擇欲撤消的權利"
 msgid "Check your database credentials"
 msgstr "檢查您的資料庫權限"
 
-#: share/html/Elements/EditLinks:150 share/html/Elements/EditLinks:82 share/html/Elements/ShowLinks:105 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:257 share/html/Ticket/Elements/BulkLinks:143 share/html/Ticket/Elements/BulkLinks:84 share/html/m/ticket/create:430 share/html/m/ticket/show:456
+#: share/html/Elements/EditLinks:150 share/html/Elements/EditLinks:82 share/html/Elements/ShowLinks:105 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:257 share/html/Ticket/Elements/BulkLinks:143 share/html/Ticket/Elements/BulkLinks:84 share/html/m/ticket/create:420 share/html/m/ticket/show:456
 msgid "Children"
 msgstr "子申請單"
 
@@ -2134,16 +2142,16 @@ msgstr ""
 msgid "Class id"
 msgstr "類型id"
 
-#: lib/RT/Class.pm:407
+#: lib/RT/Class.pm:408
 msgid "Class is already applied Globally"
 msgstr "類型已應用到全域"
 
-#: lib/RT/Class.pm:402
+#: lib/RT/Class.pm:403
 #. ($queue->Name)
 msgid "Class is already applied to %1"
 msgstr "類型已應用到 %1"
 
-#: share/html/Elements/Tabs:158 share/html/Elements/Tabs:360
+#: share/html/Elements/Tabs:159 share/html/Elements/Tabs:361
 msgid "Classes"
 msgstr "類型"
 
@@ -2179,7 +2187,7 @@ msgstr "已解決"
 msgid "Closed Tickets"
 msgstr "已解決的申請單"
 
-#: share/html/Elements/Tabs:836 share/html/SelfService/Closed.html:48
+#: share/html/Elements/Tabs:842 share/html/SelfService/Closed.html:48
 msgid "Closed tickets"
 msgstr "已解決的申請單"
 
@@ -2203,7 +2211,7 @@ msgstr "下拉文字框：選擇或鍵入最多 %1 個項目"
 msgid "Command not understood!\\n"
 msgstr "指令無法辨識！\\n"
 
-#: share/html/Elements/Tabs:559 share/html/Search/Elements/EditFormat:74 share/html/Ticket/Elements/ShowTransaction:212
+#: share/html/Elements/Tabs:560 share/html/Search/Elements/EditFormat:74 share/html/Ticket/Elements/ShowTransaction:212
 msgid "Comment"
 msgstr "評論"
 
@@ -2279,13 +2287,13 @@ msgstr "設定查詢條件"
 msgid "Condition"
 msgstr "條件"
 
-#: lib/RT/Scrip.pm:169 lib/RT/Scrip.pm:654
+#: lib/RT/Scrip.pm:169 lib/RT/Scrip.pm:676
 #. ($args{'ScripCondition'})
 #. ($value)
 msgid "Condition '%1' not found"
 msgstr "找不到條件 '%1'"
 
-#: lib/RT/Scrip.pm:165 lib/RT/Scrip.pm:647
+#: lib/RT/Scrip.pm:165 lib/RT/Scrip.pm:669
 msgid "Condition is mandatory argument"
 msgstr "條件是必填欄位"
 
@@ -2306,11 +2314,11 @@ msgstr "條件, 動作, 和樣版"
 msgid "Config file %1 is locked"
 msgstr "設定檔 %1 已被鎖定"
 
-#: share/html/Elements/Tabs:63
+#: share/html/Elements/Tabs:64
 msgid "Configuration"
 msgstr "設定"
 
-#: share/html/Admin/Queues/Modify.html:182
+#: share/html/Admin/Queues/Modify.html:184
 #. ($QueueObj->Name)
 msgid "Configuration for queue %1"
 msgstr "表單 %1 的配置"
@@ -2343,7 +2351,7 @@ msgstr "連絡資訊系統"
 msgid "Contacted date '%1' could not be parsed"
 msgstr "無法解讀聯絡日期 '%1'"
 
-#: lib/RT/Tickets.pm:133 share/html/Admin/Elements/ModifyTemplate:65 share/html/Articles/Article/Display.html:53 share/html/Articles/Article/Edit.html:68 share/html/Articles/Article/Elements/ShowSearchCriteria:71 share/html/Elements/QuickCreate:74 share/html/Elements/SelectAttachmentField:51 share/html/Elements/Tabs:499 share/html/Ticket/ModifyAll.html:113
+#: lib/RT/Tickets.pm:133 share/html/Admin/Elements/ModifyTemplate:65 share/html/Articles/Article/Display.html:53 share/html/Articles/Article/Edit.html:68 share/html/Articles/Article/Elements/ShowSearchCriteria:71 share/html/Elements/QuickCreate:74 share/html/Elements/SelectAttachmentField:51 share/html/Elements/Tabs:500 share/html/Ticket/ModifyAll.html:113
 msgid "Content"
 msgstr "內容"
 
@@ -2415,7 +2423,7 @@ msgstr "不能新增自訂欄位的值。 "
 msgid "Could not add new custom field value. %1 "
 msgstr "不能新增自訂欄位的值。%1 "
 
-#: lib/RT/Record.pm:1691 lib/RT/Record.pm:1757
+#: lib/RT/Record.pm:1728 lib/RT/Record.pm:1794
 #. ($msg)
 #. ($value_msg)
 msgid "Could not add new custom field value: %1"
@@ -2425,7 +2433,7 @@ msgstr "無法創建新的自定欄位值: %1"
 msgid "Could not change owner. "
 msgstr "不能更改承辦人。 "
 
-#: lib/RT/Ticket.pm:2961 lib/RT/Ticket.pm:2969 lib/RT/Ticket.pm:2986
+#: lib/RT/Ticket.pm:2992 lib/RT/Ticket.pm:3000 lib/RT/Ticket.pm:3017
 #. ($add_msg)
 #. ($del_msg)
 #. ($msg)
@@ -2475,7 +2483,7 @@ msgstr "無法在已關閉的 queue 裡建立新 ticket \"%1\""
 msgid "Could not create ticket. Queue not set"
 msgstr "無法新增申請單。尚未指定表單。"
 
-#: lib/RT/User.pm:194 lib/RT/User.pm:208 lib/RT/User.pm:217 lib/RT/User.pm:226 lib/RT/User.pm:235 lib/RT/User.pm:249 lib/RT/User.pm:259 lib/RT/User.pm:428
+#: lib/RT/User.pm:195 lib/RT/User.pm:209 lib/RT/User.pm:218 lib/RT/User.pm:227 lib/RT/User.pm:236 lib/RT/User.pm:250 lib/RT/User.pm:260 lib/RT/User.pm:429
 msgid "Could not create user"
 msgstr "無法新增使用者"
 
@@ -2500,11 +2508,11 @@ msgstr "找不到編號 %1 的申請單"
 msgid "Could not find group %1."
 msgstr "找不到群組 %1。"
 
-#: lib/RT/Queue.pm:938 lib/RT/Ticket.pm:1131
+#: lib/RT/Queue.pm:963 lib/RT/Ticket.pm:1131
 msgid "Could not find or create that user"
 msgstr "找不到或無法新增該名使用者"
 
-#: lib/RT/Queue.pm:1011 lib/RT/Ticket.pm:1210
+#: lib/RT/Queue.pm:1036 lib/RT/Ticket.pm:1210
 msgid "Could not find that principal"
 msgstr "找不到該單位"
 
@@ -2539,7 +2547,7 @@ msgstr "無法為 %1 載入物件"
 msgid "Could not load search attribute"
 msgstr "無法載入查詢屬性"
 
-#: lib/RT/Queue.pm:957
+#: lib/RT/Queue.pm:982
 #. ($args{'Type'})
 msgid "Could not make that principal a %1 for this queue"
 msgstr "無法將該單位設為此表單的 %1。"
@@ -2549,7 +2557,7 @@ msgstr "無法將該單位設為此表單的 %1。"
 msgid "Could not make that principal a %1 for this ticket"
 msgstr "無法將該單位設為此申請單的 %1。"
 
-#: lib/RT/Queue.pm:1038
+#: lib/RT/Queue.pm:1063
 #. ($args{'Type'})
 msgid "Could not remove that principal as a %1 for this queue"
 msgstr "無法將單位 %1 從表單移除。"
@@ -2559,7 +2567,7 @@ msgstr "無法將單位 %1 從表單移除。"
 msgid "Could not remove that principal as a %1 for this ticket"
 msgstr "無法將單位 %1 從申請單移除。"
 
-#: lib/RT/User.pm:138
+#: lib/RT/User.pm:139
 msgid "Could not set user info"
 msgstr "無法設定使用者資訊"
 
@@ -2571,21 +2579,21 @@ msgstr "無法新增附件"
 msgid "Couldn't add member to group"
 msgstr "無法新增成員至群組"
 
-#: lib/RT/CustomField.pm:1309
+#: lib/RT/CustomField.pm:1383
 msgid "Couldn't apply custom field to an object as it's global already"
 msgstr "無法應用自定欄位到改物件因該欄位已應用到全域"
 
-#: lib/RT/Scrip.pm:615
+#: lib/RT/Scrip.pm:637
 #. ($method, $code, $error)
 msgid "Couldn't compile %1 codeblock '%2': %3"
 msgstr "無法編譯 %1 碼塊 '%2': %3"
 
-#: lib/RT/Template.pm:696
+#: lib/RT/Template.pm:721
 #. ($fi_text, $error)
 msgid "Couldn't compile template codeblock '%1': %2"
 msgstr "無法編譯範本碼塊 '%1': %2"
 
-#: lib/RT/Record.pm:1767 lib/RT/Record.pm:1817
+#: lib/RT/Record.pm:1804 lib/RT/Record.pm:1854
 #. ($Msg)
 #. ($msg)
 msgid "Couldn't create a transaction: %1"
@@ -2595,7 +2603,7 @@ msgstr "無法新增更動報告: %1"
 msgid "Couldn't create record"
 msgstr "無法建立紀錄"
 
-#: lib/RT/CustomField.pm:1439
+#: lib/RT/CustomField.pm:1513
 #. ($msg)
 msgid "Couldn't create record: %1"
 msgstr "無法創建記錄: %1"
@@ -2613,7 +2621,7 @@ msgstr "無法從 gpg 回函辨識出該採取的行動\\n"
 msgid "Couldn't find group\\n"
 msgstr "找不到群組\\n"
 
-#: lib/RT/Record.pm:960
+#: lib/RT/Record.pm:962
 msgid "Couldn't find row"
 msgstr "找不到此列資料"
 
@@ -2625,7 +2633,7 @@ msgstr "找不到合適的 transaction, 跳過"
 msgid "Couldn't find that principal"
 msgstr "找不到該單位"
 
-#: lib/RT/CustomField.pm:578
+#: lib/RT/CustomField.pm:582
 msgid "Couldn't find that value"
 msgstr "找不到該值"
 
@@ -2651,7 +2659,7 @@ msgstr "無法載入類別 %1"
 msgid "Couldn't load Custom Field #%1"
 msgstr "無法載入自訂欄位 #%1"
 
-#: share/html/Admin/Elements/EditCustomFields:133 share/html/Admin/Elements/EditCustomFields:143
+#: share/html/Admin/Elements/EditCustomFields:134 share/html/Admin/Elements/EditCustomFields:145
 #. ($cf_id)
 msgid "Couldn't load CustomField #%1"
 msgstr "無法載入自定欄位 #%1"
@@ -2726,7 +2734,7 @@ msgstr "無法載入表單 #%1"
 msgid "Couldn't load queue %1"
 msgstr "無法載入表單 %1"
 
-#: share/html/Admin/Queues/Modify.html:177
+#: share/html/Admin/Queues/Modify.html:179
 #. ($Name)
 msgid "Couldn't load queue '%1'"
 msgstr "無法載入表單 '%1'"
@@ -2753,11 +2761,11 @@ msgstr "無法載入樣板 #%1"
 msgid "Couldn't load that user (%1)"
 msgstr "無法載入該名使用者(%1)"
 
-#: lib/RT/Interface/Web.pm:1857
+#: lib/RT/Interface/Web.pm:2219
 msgid "Couldn't load the specified principal"
 msgstr "無法載入指定的單位"
 
-#: lib/RT/Action/CreateTickets.pm:450 share/html/SelfService/Display.html:154
+#: lib/RT/Action/CreateTickets.pm:460 share/html/SelfService/Display.html:154
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "無法載入申請單 '%1'"
@@ -2796,12 +2804,12 @@ msgstr "無法載入使用者 '%1'"
 msgid "Couldn't parse address from '%1' string"
 msgstr "無法從字串 '%1' 解析出位址"
 
-#: lib/RT/Attachment.pm:779
+#: lib/RT/Attachment.pm:798
 #. ($msg)
 msgid "Couldn't replace content with decrypted data: %1"
 msgstr "無法以解密過的資料取代內容: %1"
 
-#: lib/RT/Attachment.pm:744
+#: lib/RT/Attachment.pm:763
 #. ($msg)
 msgid "Couldn't replace content with encrypted data: %1"
 msgstr "無法以加密過的資料取代內容: %1"
@@ -2811,7 +2819,7 @@ msgstr "無法以加密過的資料取代內容: %1"
 msgid "Couldn't resolve '%1' into a Link."
 msgstr "無法將 '%1' 分解為鏈結."
 
-#: lib/RT/Ticket.pm:2545
+#: lib/RT/Ticket.pm:2576
 #. ($args{'URI'})
 msgid "Couldn't resolve '%1' into a URI."
 msgstr "無法將「%1」解讀為網址"
@@ -2826,7 +2834,7 @@ msgstr "無法解析源 '%1' 到一個URI"
 msgid "Couldn't resolve target '%1' into a URI."
 msgstr "無法解析目標 '%1'  到一個URI"
 
-#: lib/RT/Interface/Email.pm:706 lib/RT/Interface/Email.pm:766
+#: lib/RT/Interface/Email.pm:729 lib/RT/Interface/Email.pm:792
 msgid "Couldn't send email"
 msgstr "無法寄出電子郵件"
 
@@ -2835,11 +2843,11 @@ msgstr "無法寄出電子郵件"
 msgid "Couldn't set %1 watcher: %2"
 msgstr "無法設定%1視察員: %2"
 
-#: lib/RT/User.pm:1597
+#: lib/RT/User.pm:1622
 msgid "Couldn't set private key"
 msgstr "無法設定私鑰"
 
-#: lib/RT/User.pm:1581
+#: lib/RT/User.pm:1606
 msgid "Couldn't unset private key"
 msgstr "無法解除設定私鑰"
 
@@ -2847,7 +2855,7 @@ msgstr "無法解除設定私鑰"
 msgid "Country"
 msgstr "國家"
 
-#: share/html/Admin/Articles/Classes/Modify.html:97 share/html/Admin/CustomFields/Modify.html:151 share/html/Admin/Elements/CreateUserCalled:49 share/html/Admin/Elements/EditCustomField:86 share/html/Admin/Elements/EditScrip:150 share/html/Admin/Global/Template.html:78 share/html/Admin/Groups/Modify.html:92 share/html/Admin/Queues/Modify.html:154 share/html/Admin/Queues/Template.html:111 share/html/Admin/Users/Modify.html:225 share/html/Articles/Article/Edit.html:102 share/html/Articles/Article/ExtractFromTicket.html:83 share/html/Articles/Article/ExtractIntoClass.html:68 share/html/Articles/Article/ExtractIntoTopic.html:60 share/html/Dashboards/Modify.html:72 share/html/Elements/QuickCreate:77 share/html/Elements/ShowLinks:107 share/html/Elements/ShowLinks:115 share/html/Elements/ShowLinks:129 share/html/Elements/ShowLinks:52 share/html/Elements/ShowLinks:85 share/html/Elements/ShowLinks:99 share/html/Elements/Tabs:111 share/html/Elements/Tabs:119 share/html/Elements/Tabs:165 share/html/Elements/Tabs:180 share/html/Elements/Tabs:259 share/html/Elements/Tabs:277 share/html/Elements/Tabs:281 share/html/Elements/Tabs:351 share/html/Elements/Tabs:362 share/html/Elements/Tabs:372 share/html/Elements/Tabs:71 share/html/Elements/Tabs:79 share/html/Elements/Tabs:87 share/html/Elements/Tabs:96 share/html/Ticket/Create.html:192 share/html/Ticket/Create.html:270 share/html/m/ticket/create:272 share/html/m/ticket/create:439
+#: share/html/Admin/Articles/Classes/Modify.html:97 share/html/Admin/CustomFields/Modify.html:151 share/html/Admin/Elements/CreateUserCalled:49 share/html/Admin/Elements/EditCustomField:86 share/html/Admin/Elements/EditScrip:150 share/html/Admin/Global/Template.html:78 share/html/Admin/Groups/Modify.html:92 share/html/Admin/Queues/Modify.html:156 share/html/Admin/Queues/Template.html:111 share/html/Admin/Users/Modify.html:225 share/html/Articles/Article/Edit.html:102 share/html/Articles/Article/ExtractFromTicket.html:83 share/html/Articles/Article/ExtractIntoClass.html:68 share/html/Articles/Article/ExtractIntoTopic.html:60 share/html/Dashboards/Modify.html:72 share/html/Elements/QuickCreate:77 share/html/Elements/ShowLinks:107 share/html/Elements/ShowLinks:115 share/html/Elements/ShowLinks:129 share/html/Elements/ShowLinks:52 share/html/Elements/ShowLinks:85 share/html/Elements/ShowLinks:99 share/html/Elements/Tabs:112 share/html/Elements/Tabs:120 share/html/Elements/Tabs:166 share/html/Elements/Tabs:181 share/html/Elements/Tabs:260 share/html/Elements/Tabs:278 share/html/Elements/Tabs:282 share/html/Elements/Tabs:352 share/html/Elements/Tabs:363 share/html/Elements/Tabs:373 share/html/Elements/Tabs:72 share/html/Elements/Tabs:80 share/html/Elements/Tabs:88 share/html/Elements/Tabs:97 share/html/Ticket/Create.html:192 share/html/Ticket/Create.html:270 share/html/m/ticket/create:262 share/html/m/ticket/create:429
 msgid "Create"
 msgstr "新增"
 
@@ -2884,7 +2892,7 @@ msgstr "新增套用於所有表單的自訂欄位"
 msgid "Create a new Custom Field"
 msgstr "新增自訂欄位"
 
-#: share/html/Articles/Article/Edit.html:122 share/html/Articles/Article/Edit.html:230
+#: share/html/Articles/Article/Edit.html:122 share/html/Articles/Article/Edit.html:231
 msgid "Create a new article"
 msgstr "創建新文章"
 
@@ -2929,11 +2937,11 @@ msgstr "新增範本"
 msgid "Create a new template for queue %1"
 msgstr "創建表單 %1 的新範本"
 
-#: share/html/Ticket/Create.html:358
+#: share/html/Ticket/Create.html:347
 msgid "Create a new ticket"
 msgstr "新增申請單"
 
-#: share/html/Admin/Users/Modify.html:239 share/html/Admin/Users/Modify.html:301
+#: share/html/Admin/Users/Modify.html:239 share/html/Admin/Users/Modify.html:295
 msgid "Create a new user"
 msgstr "新增使用者"
 
@@ -2941,7 +2949,7 @@ msgstr "新增使用者"
 msgid "Create a new workflow"
 msgstr "新增流程"
 
-#: share/html/Admin/Queues/Modify.html:228
+#: share/html/Admin/Queues/Modify.html:230
 msgid "Create a queue"
 msgstr "新增表單"
 
@@ -2962,7 +2970,7 @@ msgstr "為 %1 表單新增手續"
 msgid "Create a template"
 msgstr "新增範本"
 
-#: share/html/SelfService/Create.html:48 share/html/SelfService/CreateTicketInQueue.html:48 share/html/m/ticket/create:151 share/html/m/ticket/select_create_queue:53
+#: share/html/SelfService/Create.html:48 share/html/SelfService/CreateTicketInQueue.html:48 share/html/m/ticket/create:141 share/html/m/ticket/select_create_queue:53
 msgid "Create a ticket"
 msgstr "提出申請單"
 
@@ -3026,7 +3034,7 @@ msgstr "創建申請單"
 msgid "Create tickets in this queue"
 msgstr "在此表單中新增申請單"
 
-#: share/html/Elements/Tabs:437
+#: share/html/Elements/Tabs:438
 msgid "Create tickets offline"
 msgstr "離線建立申請單"
 
@@ -3149,7 +3157,7 @@ msgstr "實際新增日(相對值)"
 msgid "Creator"
 msgstr "建立者"
 
-#: share/html/Prefs/Other.html:70
+#: share/html/Prefs/Other.html:71
 msgid "Cryptography"
 msgstr "加密"
 
@@ -3181,7 +3189,7 @@ msgstr "現有權限："
 msgid "Current Scrips"
 msgstr "現有手續"
 
-#: share/html/Elements/Tabs:715
+#: share/html/Elements/Tabs:716
 msgid "Current Search"
 msgstr "當前搜索"
 
@@ -3221,7 +3229,7 @@ msgstr "現有視察員"
 msgid "Custom Field #%1"
 msgstr "自訂欄位 #%1"
 
-#: share/html/Admin/Users/Modify.html:190 share/html/Elements/Tabs:122 share/html/Elements/Tabs:172 share/html/Elements/Tabs:242 share/html/Elements/Tabs:366 share/html/Elements/Tabs:91 share/html/Ticket/Elements/ShowSummary:56 share/html/User/Prefs.html:149 share/html/m/ticket/show:251
+#: share/html/Admin/Users/Modify.html:190 share/html/Elements/Tabs:123 share/html/Elements/Tabs:173 share/html/Elements/Tabs:243 share/html/Elements/Tabs:367 share/html/Elements/Tabs:92 share/html/Ticket/Elements/ShowSummary:56 share/html/User/Prefs.html:149 share/html/m/ticket/show:251
 msgid "Custom Fields"
 msgstr "自訂欄位"
 
@@ -3257,32 +3265,32 @@ msgstr "自訂條件"
 msgid "Custom field #%1 is not applied to this object"
 msgstr "自定欄位 #%1 沒有應用到該物件"
 
-#: lib/RT/Tickets.pm:2800
+#: lib/RT/Tickets.pm:2827
 #. ($CF->Name, $args{OPERATOR}, $args{VALUE})
 msgid "Custom field %1 %2 %3"
 msgstr "自訂欄位 %1 %2 %3"
 
-#: lib/RT/Record.pm:1609
-#. ($args{'Field'})
+#: lib/RT/Record.pm:1646
+#. (ref $args{'Field'} ? $args{'Field'}->id : $args{'Field'})
 msgid "Custom field %1 does not apply to this object"
 msgstr "自訂欄位 %1 不適用於此物件"
 
-#: lib/RT/Tickets.pm:2794
+#: lib/RT/Tickets.pm:2821
 #. ($CF->Name)
 msgid "Custom field %1 has a value."
 msgstr "自訂欄位 %1 已有值"
 
-#: lib/RT/Tickets.pm:2790
+#: lib/RT/Tickets.pm:2817
 #. ($CF->Name)
 msgid "Custom field %1 has no value."
 msgstr "自訂欄位 %1 沒有值"
 
-#: lib/RT/Record.pm:1598 lib/RT/Record.pm:1798
+#: lib/RT/Record.pm:1635 lib/RT/Record.pm:1835
 #. ($args{'Field'})
 msgid "Custom field %1 not found"
 msgstr "找不到自訂欄位 %1"
 
-#: lib/RT/Report/Tickets.pm:113 lib/RT/Report/Tickets.pm:116
+#: lib/RT/Report/Tickets.pm:107 lib/RT/Report/Tickets.pm:110
 #. ($cf)
 #. ($obj->Name)
 msgid "Custom field '%1'"
@@ -3292,7 +3300,7 @@ msgstr "自訂欄位「%1」"
 msgid "Custom field deleted"
 msgstr "自訂欄位已刪除"
 
-#: lib/RT/CustomField.pm:1304
+#: lib/RT/CustomField.pm:1378
 msgid "Custom field is already applied to the object"
 msgstr "自定欄位已應用到該物件"
 
@@ -3300,7 +3308,7 @@ msgstr "自定欄位已應用到該物件"
 msgid "Custom field not found"
 msgstr "找不到自訂欄位"
 
-#: lib/RT/CustomField.pm:1549
+#: lib/RT/CustomField.pm:1623
 #. ($args{'Content'}, $self->Name)
 msgid "Custom field value %1 could not be found for custom field %2"
 msgstr "無法從自訂欄位 %2 中找到 %1 這個欄位值"
@@ -3309,15 +3317,15 @@ msgstr "無法從自訂欄位 %2 中找到 %1 這個欄位值"
 msgid "Custom field value changed from %1 to %2"
 msgstr "自訂欄位值從 %1 改為 %2"
 
-#: lib/RT/CustomField.pm:586
+#: lib/RT/CustomField.pm:590
 msgid "Custom field value could not be deleted"
 msgstr "無法刪除自訂欄位值"
 
-#: lib/RT/CustomField.pm:1561
+#: lib/RT/CustomField.pm:1635
 msgid "Custom field value could not be found"
 msgstr "找不到自訂欄位值"
 
-#: lib/RT/CustomField.pm:1563 lib/RT/CustomField.pm:588
+#: lib/RT/CustomField.pm:1637 lib/RT/CustomField.pm:592
 msgid "Custom field value deleted"
 msgstr "自訂欄位值刪除成功"
 
@@ -3361,7 +3369,7 @@ msgstr "自訂全域"
 msgid "Customize Global Defaults"
 msgstr "自訂全域預設值"
 
-#: share/html/Elements/Tabs:217
+#: share/html/Elements/Tabs:218
 msgid "Customize the look of your RT"
 msgstr "自定 RT 外觀"
 
@@ -3463,7 +3471,7 @@ msgstr "當前的DateTime::Locale版本不支援date_format_full, 請升級"
 msgid "DateTime::Locale module missing"
 msgstr "無法載入DateTime::Locale模組"
 
-#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:542 share/html/SelfService/Display.html:66 share/html/Ticket/Create.html:234 share/html/Ticket/Elements/ShowSummary:85 share/html/Ticket/ModifyAll.html:66 share/html/m/ticket/create:408 share/html/m/ticket/show:367
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:543 share/html/SelfService/Display.html:66 share/html/Ticket/Create.html:234 share/html/Ticket/Elements/ShowSummary:85 share/html/Ticket/ModifyAll.html:66 share/html/m/ticket/create:398 share/html/m/ticket/show:367
 msgid "Dates"
 msgstr "日期"
 
@@ -3621,7 +3629,7 @@ msgstr "代理人群組"
 msgid "Delegation Rights"
 msgstr "代理人權限"
 
-#: etc/RT_Config.pm:2346 etc/RT_Config.pm:2420 share/html/Admin/Elements/EditScrips:73 share/html/Articles/Article/Elements/ShowSavedSearches:61 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:783 share/html/Elements/Tabs:803 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:219
+#: etc/RT_Config.pm:2411 etc/RT_Config.pm:2487 share/html/Admin/Elements/EditScrips:73 share/html/Articles/Article/Elements/ShowSavedSearches:61 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:784 share/html/Elements/Tabs:804 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:219
 msgid "Delete"
 msgstr "刪除"
 
@@ -3651,7 +3659,7 @@ msgstr "刪除失敗：%1"
 msgid "Delete group dashboards"
 msgstr "刪除群組表單"
 
-#: lib/RT/Ticket.pm:3182
+#: lib/RT/Ticket.pm:3213
 msgid "Delete operation is disabled by lifecycle configuration"
 msgstr "刪除被生命周期配置停用的操作"
 
@@ -3725,11 +3733,11 @@ msgstr "刪除搜索 %1"
 msgid "Deleting this object could break referential integrity"
 msgstr "刪除此物件可能破壞參考完整性"
 
-#: lib/RT/Queue.pm:460
+#: lib/RT/Queue.pm:458
 msgid "Deleting this object would break referential integrity"
 msgstr "刪除此物件可能破壞參考完整性"
 
-#: lib/RT/User.pm:439
+#: lib/RT/User.pm:440
 msgid "Deleting this object would violate referential integrity"
 msgstr "刪除此物件會違反參考完整性"
 
@@ -3777,7 +3785,7 @@ msgstr "請假單"
 msgid "Departure Until"
 msgstr "差旅截止日"
 
-#: share/html/Elements/EditLinks:142 share/html/Elements/EditLinks:64 share/html/Elements/ShowLinks:83 share/html/Ticket/Create.html:255 share/html/Ticket/Elements/BulkLinks:135 share/html/Ticket/Elements/BulkLinks:64 share/html/Ticket/Elements/ShowDependencies:56 share/html/m/ticket/create:428 share/html/m/ticket/show:442
+#: share/html/Elements/EditLinks:142 share/html/Elements/EditLinks:64 share/html/Elements/ShowLinks:83 share/html/Ticket/Create.html:255 share/html/Ticket/Elements/BulkLinks:135 share/html/Ticket/Elements/BulkLinks:64 share/html/Ticket/Elements/ShowDependencies:56 share/html/m/ticket/create:418 share/html/m/ticket/show:442
 msgid "Depended on by"
 msgstr "可接續處理的申請單"
 
@@ -3789,22 +3797,22 @@ msgstr "可接續處理"
 msgid "Dependencies: \\n"
 msgstr "附屬性：\\n"
 
-#: lib/RT/Transaction.pm:790
+#: lib/RT/Transaction.pm:791
 #. ($value)
 msgid "Dependency by %1 added"
 msgstr "已加入可接續處理的申請單 %1"
 
-#: lib/RT/Transaction.pm:830
+#: lib/RT/Transaction.pm:831
 #. ($value)
 msgid "Dependency by %1 deleted"
 msgstr "已移除可接續處理的申請單 %1"
 
-#: lib/RT/Transaction.pm:787
+#: lib/RT/Transaction.pm:788
 #. ($value)
 msgid "Dependency on %1 added"
 msgstr "已加入需先處理的申請單 %1"
 
-#: lib/RT/Transaction.pm:827
+#: lib/RT/Transaction.pm:828
 #. ($value)
 msgid "Dependency on %1 deleted"
 msgstr "已移除需先處理的申請單 %1"
@@ -3813,7 +3821,7 @@ msgstr "已移除需先處理的申請單 %1"
 msgid "DependentOn"
 msgstr "需先處理"
 
-#: share/html/Elements/EditLinks:138 share/html/Elements/EditLinks:55 share/html/Elements/SelectLinkType:50 share/html/Elements/ShowLinks:50 share/html/Ticket/Create.html:254 share/html/Ticket/Elements/BulkLinks:131 share/html/Ticket/Elements/BulkLinks:54 share/html/Ticket/Elements/ShowDependencies:48 share/html/m/ticket/create:427 share/html/m/ticket/show:412
+#: share/html/Elements/EditLinks:138 share/html/Elements/EditLinks:55 share/html/Elements/SelectLinkType:50 share/html/Elements/ShowLinks:50 share/html/Ticket/Create.html:254 share/html/Ticket/Elements/BulkLinks:131 share/html/Ticket/Elements/BulkLinks:54 share/html/Ticket/Elements/ShowDependencies:48 share/html/m/ticket/create:417 share/html/m/ticket/show:412
 msgid "Depends on"
 msgstr "需先處理"
 
@@ -3829,7 +3837,7 @@ msgstr "遞減"
 msgid "Descending"
 msgstr "遞減"
 
-#: share/html/SelfService/Create.html:108 share/html/Ticket/Create.html:173 share/html/m/ticket/create:268
+#: share/html/SelfService/Create.html:108 share/html/Ticket/Create.html:173 share/html/m/ticket/create:258
 msgid "Describe the issue below"
 msgstr "在以下欄位描述主題"
 
@@ -3845,11 +3853,11 @@ msgstr "經辦業務說明"
 msgid "Description:"
 msgstr "描述："
 
-#: share/html/Elements/Tabs:212
+#: share/html/Elements/Tabs:213
 msgid "Detailed information about your RT setup"
 msgstr "RT設定的詳細資訊"
 
-#: share/html/Ticket/Create.html:457
+#: share/html/Ticket/Create.html:446
 msgid "Details"
 msgstr "細節"
 
@@ -3873,7 +3881,7 @@ msgstr "殘障類別"
 msgid "Disabled"
 msgstr "停用"
 
-#: share/html/Elements/Tabs:517 share/html/Elements/Tabs:780 share/html/Elements/Tabs:796 share/html/Search/Elements/EditFormat:71
+#: share/html/Elements/Tabs:518 share/html/Elements/Tabs:781 share/html/Elements/Tabs:797 share/html/Search/Elements/EditFormat:71
 msgid "Display"
 msgstr "顯示內容"
 
@@ -3951,7 +3959,7 @@ msgstr "不更新此頁面。"
 msgid "Don't show search results"
 msgstr "不顯示查詢結果"
 
-#: lib/RT/Crypt/GnuPG.pm:2222
+#: lib/RT/Crypt/GnuPG.pm:2246
 msgid "Don't trust this key at all"
 msgstr "不信任該值"
 
@@ -3983,7 +3991,7 @@ msgstr "博士"
 msgid "Dropdown"
 msgstr "下拉列表"
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Ticket.pm:934 lib/RT/Tickets.pm:128 share/html/Elements/RT__Ticket/ColumnMap:203 share/html/Elements/RT__Ticket/ColumnMap:236 share/html/Elements/SelectDateType:55 share/html/Elements/ShowReminders:52 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:240 share/html/Ticket/Elements/EditDates:68 share/html/Ticket/Elements/Reminders:130 share/html/Ticket/Elements/Reminders:150 share/html/Ticket/Elements/Reminders:80 share/html/Ticket/Elements/ShowDates:66 share/html/m/ticket/create:415 share/html/m/ticket/show:389
+#: lib/RT/Graph/Tickets.pm:155 lib/RT/Ticket.pm:934 lib/RT/Tickets.pm:128 share/html/Elements/RT__Ticket/ColumnMap:203 share/html/Elements/RT__Ticket/ColumnMap:236 share/html/Elements/SelectDateType:55 share/html/Elements/ShowReminders:52 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:240 share/html/Ticket/Elements/EditDates:68 share/html/Ticket/Elements/Reminders:131 share/html/Ticket/Elements/Reminders:151 share/html/Ticket/Elements/Reminders:81 share/html/Ticket/Elements/ShowDates:66 share/html/m/ticket/create:405 share/html/m/ticket/show:389
 msgid "Due"
 msgstr "到期日"
 
@@ -4008,15 +4016,15 @@ msgstr "錯誤: %1"
 msgid "ERROR: Couldn't load ticket '%1': %2.\\n"
 msgstr "無法載入申請單 '%1'：%2.\\n"
 
-#: share/html/Elements/Tabs:423
+#: share/html/Elements/Tabs:424
 msgid "Easy updating of your open tickets"
 msgstr "更新您已打開的申請單"
 
-#: share/html/Elements/Tabs:430
+#: share/html/Elements/Tabs:431
 msgid "Easy viewing of your reminders"
 msgstr "提醒專案的便捷視圖"
 
-#: share/html/Elements/Dashboards:51 share/html/Elements/Quicksearch:52 share/html/Elements/ShowSearch:51 share/html/Elements/Tabs:810 share/html/Ticket/Elements/ShowRequestor:127
+#: share/html/Elements/Dashboards:51 share/html/Elements/Quicksearch:52 share/html/Elements/ShowSearch:51 share/html/Elements/Tabs:811 share/html/Ticket/Elements/ShowRequestor:127
 msgid "Edit"
 msgstr "編輯"
 
@@ -4065,7 +4073,7 @@ msgstr "編輯申請單關係"
 msgid "Edit Query"
 msgstr "編輯查詢"
 
-#: share/html/Elements/Tabs:722
+#: share/html/Elements/Tabs:723
 msgid "Edit Search"
 msgstr "編輯查詢"
 
@@ -4097,7 +4105,7 @@ msgstr "編輯此群組的預存查詢"
 msgid "Edit scrips"
 msgstr "編輯手續"
 
-#: share/html/Elements/Tabs:115
+#: share/html/Elements/Tabs:116
 msgid "Edit system templates"
 msgstr "編輯全域範本"
 
@@ -4169,12 +4177,12 @@ msgstr "最高學歷"
 msgid "EffectiveId"
 msgstr "有效編號"
 
-#: lib/RT/Record.pm:1307 lib/RT/Record.pm:1386 lib/RT/Ticket.pm:2414 lib/RT/Ticket.pm:2507
+#: lib/RT/Record.pm:1309 lib/RT/Record.pm:1388 lib/RT/Ticket.pm:2445 lib/RT/Ticket.pm:2538
 msgid "Either base or target must be specified"
 msgstr "需要指定起始申請單或目的申請單"
 
 #: share/html/Elements/ShowSearch:67
-#. ($SavedSearch)
+#. ($m->interp->apply_escapes($SavedSearch, 'h'))
 msgid "Either you have no rights to view saved search %1 or identifier is incorrect"
 msgstr "您可能沒有檢視預存查詢%1的權限或識別碼不正確"
 
@@ -4194,7 +4202,7 @@ msgstr "電子郵件設定"
 msgid "Email Digest"
 msgstr "郵件摘要"
 
-#: lib/RT/User.pm:568
+#: lib/RT/User.pm:569
 msgid "Email address in use"
 msgstr "此電子郵件信箱已被使用"
 
@@ -4246,7 +4254,7 @@ msgstr "啟用(取消勾選將停用此自訂欄位)"
 msgid "Enabled (Unchecking this box disables this group)"
 msgstr "啟用(取消勾選將停用此群組)"
 
-#: share/html/Admin/Queues/Modify.html:125
+#: share/html/Admin/Queues/Modify.html:127
 msgid "Enabled (Unchecking this box disables this queue)"
 msgstr "啟用(取消勾選將停用此表單)"
 
@@ -4304,11 +4312,11 @@ msgstr "加密/解密"
 msgid "Encrypt/Decrypt transaction #%1 of ticket #%2"
 msgstr "加密/解密申請單#%2的事務#%1"
 
-#: lib/RT/Queue.pm:621
+#: lib/RT/Queue.pm:645
 msgid "Encrypting disabled"
 msgstr "已取消加密"
 
-#: lib/RT/Queue.pm:620
+#: lib/RT/Queue.pm:644
 msgid "Encrypting enabled"
 msgstr "已啟用加密"
 
@@ -4499,7 +4507,7 @@ msgstr "預計"
 msgid "Estimated"
 msgstr "預計"
 
-#: lib/RT/Handle.pm:661
+#: lib/RT/Handle.pm:659
 msgid "Everyone"
 msgstr "所有人"
 
@@ -4539,7 +4547,7 @@ msgstr "匯出"
 msgid "ExtendedStatus"
 msgstr "額外現況"
 
-#: lib/RT/User.pm:959
+#: lib/RT/User.pm:960
 msgid "External authentication enabled."
 msgstr "外部認證已啟用"
 
@@ -4571,7 +4579,7 @@ msgstr "外部介面網址"
 msgid "Extra info"
 msgstr "備註"
 
-#: share/html/Elements/Tabs:618
+#: share/html/Elements/Tabs:619
 msgid "Extract Article"
 msgstr "提取文章"
 
@@ -4607,11 +4615,11 @@ msgstr "建立 %1 屬性失敗"
 msgid "Failed to create search attribute"
 msgstr "查詢屬性建立失敗"
 
-#: lib/RT/User.pm:319
+#: lib/RT/User.pm:320
 msgid "Failed to find 'Privileged' users pseudogroup."
 msgstr "找不到「內部成員」虛擬群組的使用者。"
 
-#: lib/RT/User.pm:326
+#: lib/RT/User.pm:327
 msgid "Failed to find 'Unprivileged' users pseudogroup"
 msgstr "找不到「非內部成員」虛擬群組的使用者。"
 
@@ -4655,7 +4663,7 @@ msgstr "02"
 msgid "February"
 msgstr "二月"
 
-#: share/html/Elements/Tabs:733
+#: share/html/Elements/Tabs:734
 msgid "Feeds"
 msgstr "饋送"
 
@@ -4747,7 +4755,7 @@ msgstr "篩選列表："
 msgid "Fin"
 msgstr "最終"
 
-#: lib/RT/Tickets.pm:2280 share/html/Search/Elements/PickBasics:188 share/html/Ticket/Create.html:211 share/html/m/ticket/create:378
+#: lib/RT/Tickets.pm:2307 share/html/Search/Elements/PickBasics:188 share/html/Ticket/Create.html:211 share/html/m/ticket/create:368
 msgid "Final Priority"
 msgstr "最終順位"
 
@@ -4799,7 +4807,7 @@ msgstr "完成"
 msgid "Finish Approval"
 msgstr "簽核完畢"
 
-#: share/html/Elements/Tabs:636
+#: share/html/Elements/Tabs:637
 msgid "First"
 msgstr "第一項"
 
@@ -4848,7 +4856,7 @@ msgstr "電子表單作業區"
 msgid "Format"
 msgstr "格式"
 
-#: etc/initialdata:402 etc/upgrade/3.7.15/content:4 share/html/Elements/Tabs:563 share/html/Ticket/Elements/ShowTransaction:222
+#: etc/initialdata:402 etc/upgrade/3.7.15/content:4 share/html/Elements/Tabs:564 share/html/Ticket/Elements/ShowTransaction:222
 msgid "Forward"
 msgstr "往前"
 
@@ -4902,7 +4910,7 @@ msgstr "轉發事務 #%1 至 %2"
 msgid "Found %quant(%1,ticket)"
 msgstr "找到 %1 張申請單"
 
-#: lib/RT/Record.pm:962
+#: lib/RT/Record.pm:964
 msgid "Found Object"
 msgstr "已找到物件"
 
@@ -5002,12 +5010,12 @@ msgstr "准備開始"
 msgid "Getting the current user from a pgp sig\\n"
 msgstr "取得目前使用者的 pgp 簽章\\n"
 
-#: lib/RT/Transaction.pm:756 lib/RT/Transaction.pm:898 lib/RT/Transaction.pm:910
+#: lib/RT/Transaction.pm:757 lib/RT/Transaction.pm:899 lib/RT/Transaction.pm:911
 #. ($New->Name)
 msgid "Given to %1"
 msgstr "交予 %1"
 
-#: share/html/Elements/RT__CustomField/ColumnMap:93 share/html/Elements/RT__Scrip/ColumnMap:64 share/html/Elements/RT__Template/ColumnMap:74 share/html/Elements/Tabs:100
+#: share/html/Elements/RT__CustomField/ColumnMap:93 share/html/Elements/RT__Scrip/ColumnMap:64 share/html/Elements/RT__Template/ColumnMap:74 share/html/Elements/Tabs:101
 msgid "Global"
 msgstr "全域設定"
 
@@ -5039,7 +5047,7 @@ msgstr "全域手續"
 msgid "Global Setup"
 msgstr "全域設定"
 
-#: share/html/Articles/Topics.html:76
+#: share/html/Articles/Topics.html:91
 msgid "Global Topics"
 msgstr ""
 
@@ -5061,15 +5069,15 @@ msgstr "全域範本：%1"
 msgid "GlobalApproval"
 msgstr "全域簽核"
 
-#: share/html/Elements/Tabs:308
+#: share/html/Elements/Tabs:309
 msgid "GnuPG"
 msgstr "GnuPG"
 
-#: lib/RT/Attachment.pm:739 lib/RT/Attachment.pm:774
+#: lib/RT/Attachment.pm:758 lib/RT/Attachment.pm:793
 msgid "GnuPG error. Contact with administrator"
 msgstr "GnuPG 錯誤。請與系統管理者聯絡。"
 
-#: lib/RT/Attachment.pm:694 lib/RT/Attachment.pm:756
+#: lib/RT/Attachment.pm:713 lib/RT/Attachment.pm:775
 msgid "GnuPG integration is disabled"
 msgstr "GnuPG整合已停用"
 
@@ -5082,7 +5090,7 @@ msgstr "GnuPG問題"
 msgid "GnuPG private key(s) for %1"
 msgstr "%1的GnuPG私鑰"
 
-#: share/html/Admin/Queues/Modify.html:134 share/html/Admin/Queues/Modify.html:144
+#: share/html/Admin/Queues/Modify.html:136 share/html/Admin/Queues/Modify.html:146
 msgid "GnuPG private keys"
 msgstr "GnuPG 私鑰"
 
@@ -5139,7 +5147,7 @@ msgstr "圖示屬性"
 msgid "Graphical charts are not available."
 msgstr "圖表已停用"
 
-#: lib/RT/Record.pm:942 share/html/Ticket/Elements/AddWatchers:69 share/html/Ticket/Elements/ShowGroupMembers:60
+#: lib/RT/Record.pm:944 share/html/Ticket/Elements/AddWatchers:69 share/html/Ticket/Elements/ShowGroupMembers:60
 msgid "Group"
 msgstr "群組"
 
@@ -5171,7 +5179,7 @@ msgstr "群組名稱"
 msgid "Group Name:"
 msgstr "群組名稱："
 
-#: share/html/Elements/Tabs:185 share/html/Elements/Tabs:289 share/html/Elements/Tabs:323 share/html/Elements/Tabs:337 share/html/Elements/Tabs:367
+#: share/html/Elements/Tabs:186 share/html/Elements/Tabs:290 share/html/Elements/Tabs:324 share/html/Elements/Tabs:338 share/html/Elements/Tabs:368
 msgid "Group Rights"
 msgstr "群組權限"
 
@@ -5226,7 +5234,7 @@ msgstr "群組沒有這個成員"
 msgid "Group name '%1' is already in use"
 msgstr "群組名稱 '%1' 已經被使用"
 
-#: lib/RT/Group.pm:908 lib/RT/Queue.pm:1017 lib/RT/Queue.pm:944 lib/RT/Ticket.pm:1138 lib/RT/Ticket.pm:1216
+#: lib/RT/Group.pm:908 lib/RT/Queue.pm:1042 lib/RT/Queue.pm:969 lib/RT/Ticket.pm:1138 lib/RT/Ticket.pm:1216
 msgid "Group not found"
 msgstr "找不到群組"
 
@@ -5262,7 +5270,7 @@ msgstr "群組之"
 msgid "Group:"
 msgstr "群組："
 
-#: lib/RT/CustomField.pm:1601 share/html/Admin/Global/CustomFields/index.html:71 share/html/Admin/Groups/Members.html:88 share/html/Admin/Queues/People.html:102 share/html/Elements/Tabs:132 share/html/Elements/Tabs:241 share/html/Elements/Tabs:74
+#: lib/RT/CustomField.pm:1675 share/html/Admin/Global/CustomFields/index.html:71 share/html/Admin/Groups/Members.html:88 share/html/Admin/Queues/People.html:102 share/html/Elements/Tabs:133 share/html/Elements/Tabs:242 share/html/Elements/Tabs:75
 msgid "Groups"
 msgstr "群組"
 
@@ -5338,7 +5346,7 @@ msgstr "幫忙我們為 RT 設定有用的預設值"
 msgid "Hidden"
 msgstr "隱藏"
 
-#: share/html/Ticket/Elements/ShowHistory:64
+#: share/html/Ticket/Elements/ShowHistory:65
 msgid "Hide all quoted text"
 msgstr ""
 
@@ -5350,7 +5358,7 @@ msgstr "隱藏引用文本"
 msgid "Hide ticket history by default"
 msgstr "預設隱藏申請單歷史"
 
-#: share/html/Elements/Tabs:305 share/html/Elements/Tabs:325 share/html/Elements/Tabs:518 share/html/Elements/Tabs:781 share/html/Elements/Tabs:797 share/html/Ticket/Elements/ShowHistory:55 share/html/m/_elements/ticket_menu:64
+#: share/html/Elements/Tabs:306 share/html/Elements/Tabs:326 share/html/Elements/Tabs:519 share/html/Elements/Tabs:782 share/html/Elements/Tabs:798 share/html/Ticket/Elements/ShowHistory:55 share/html/m/_elements/ticket_menu:64
 msgid "History"
 msgstr "紀錄"
 
@@ -5390,7 +5398,7 @@ msgstr "主頁刷新間隔時間"
 msgid "HomePhone"
 msgstr "住處電話"
 
-#: share/html/Elements/Tabs:380 share/html/m/_elements/header:67
+#: share/html/Elements/Tabs:381 share/html/m/_elements/header:67
 msgid "Homepage"
 msgstr "主頁"
 
@@ -5427,7 +5435,7 @@ msgstr "身分類別"
 msgid "ISO"
 msgstr "ISO"
 
-#: lib/RT/Tickets.pm:2211 share/html/Ticket/Elements/ShowBasics:50 share/html/m/ticket/show:215
+#: lib/RT/Tickets.pm:2238 share/html/Ticket/Elements/ShowBasics:50 share/html/m/ticket/show:215
 msgid "Id"
 msgstr "編號"
 
@@ -5447,6 +5455,10 @@ msgstr "若沒有指定申請者，則以此使用者作為申請者"
 msgid "If no queue is specified, create tickets in this queue."
 msgstr "申請單若沒有指定表單，則將它新增在此表單內"
 
+#: share/html/Elements/LoginRedirectWarning:19
+msgid "If this is not what you expect, leave this page now without logging in."
+msgstr ""
+
 #: bin/rt-crontool:367
 msgid "If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT."
 msgstr "如果此工具程式為 setgid，惡意的本地端使用者即能由此取得 RT 的管理員權限。"
@@ -5458,6 +5470,11 @@ msgstr "如果已經有了正常工作的RT，在這里您還可以確定資料�
 #: NOT FOUND IN SOURCE
 msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server.</p>"
 msgstr "如果已經有了正常工作的RT，在這里您還可以確定資料庫正在運行並且RT可以正常訪問它。完成之後，請重啟RT。"
+
+#: share/html/Elements/CSRF:59
+#. ($escaped_path, $action, $start, $end)
+msgid "If you really intended to visit %1 and %2, then %3click here to resume your request%4."
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "If you've change the Port that RT runs on, you'll need to restart the server in order to log in."
@@ -5476,7 +5493,7 @@ msgstr "若您已更新以上資料，請記得按一下"
 msgid "If your preferred database isn't listed in the dropdown below, that means RT couldn't find a <i>database driver</i> for it installed locally. You may be able to remedy this by using %1 to download and install DBD::MySQL, DBD::Oracle or DBD::Pg."
 msgstr "如果你想用的資料庫不再列表里，說明RT找不到<i>資料庫驅動</i>。可以嘗試使用%1下載並安裝DBD::MySQL，DBD::Oracle或者DBD::Pg"
 
-#: lib/RT/Record.pm:954
+#: lib/RT/Record.pm:956
 msgid "Illegal value for %1"
 msgstr "%1 的值錯誤"
 
@@ -5484,7 +5501,7 @@ msgstr "%1 的值錯誤"
 msgid "Image"
 msgstr "圖片"
 
-#: lib/RT/Record.pm:957
+#: lib/RT/Record.pm:959
 msgid "Immutable field"
 msgstr "此欄位值不可更動"
 
@@ -5560,7 +5577,7 @@ msgstr "通知使用者密碼已被重置"
 msgid "Inform user that we received an encrypted email and we have no private keys to decrypt"
 msgstr "通知使用者我們收到加密的郵件但是沒有可用的私鑰來解密"
 
-#: lib/RT/Tickets.pm:2257 share/html/Search/Elements/PickBasics:187
+#: lib/RT/Tickets.pm:2284 share/html/Search/Elements/PickBasics:187
 msgid "Initial Priority"
 msgstr "初始優先順位"
 
@@ -5584,7 +5601,7 @@ msgstr "輸入無法解析為IP位址範圍"
 msgid "Input error"
 msgstr "輸入錯誤"
 
-#: lib/RT/CustomField.pm:1393 lib/RT/CustomField.pm:1554 share/html/Elements/ValidateCustomFields:112
+#: lib/RT/CustomField.pm:1467 lib/RT/CustomField.pm:1628 share/html/Elements/ValidateCustomFields:112
 #. ($CF->FriendlyPattern)
 #. ($self->FriendlyPattern)
 msgid "Input must match %1"
@@ -5598,7 +5615,7 @@ msgstr "安裝 RT"
 msgid "Interest noted"
 msgstr "登記成功"
 
-#: lib/RT/Article.pm:281 lib/RT/Article.pm:290 lib/RT/Article.pm:299 lib/RT/Article.pm:308 lib/RT/Article.pm:317 lib/RT/Ticket.pm:3402
+#: lib/RT/Article.pm:281 lib/RT/Article.pm:290 lib/RT/Article.pm:299 lib/RT/Article.pm:308 lib/RT/Article.pm:317 lib/RT/Ticket.pm:3468
 msgid "Internal Error"
 msgstr "內部錯誤"
 
@@ -5641,7 +5658,7 @@ msgstr "無效的 %1: 不像是電子郵件地址"
 msgid "Invalid Class"
 msgstr "無效類型"
 
-#: lib/RT/CustomField.pm:373 lib/RT/CustomField.pm:683
+#: lib/RT/CustomField.pm:373 lib/RT/CustomField.pm:687
 msgid "Invalid Custom Field values source"
 msgstr "無效自定欄位值來源"
 
@@ -5649,7 +5666,7 @@ msgstr "無效自定欄位值來源"
 msgid "Invalid Group Type"
 msgstr "錯誤的群組類別"
 
-#: lib/RT/Class.pm:396
+#: lib/RT/Class.pm:397
 #. ($msg)
 msgid "Invalid Queue, unable to apply Class: %1"
 msgstr "無效表單，無法應用類型: %1"
@@ -5658,7 +5675,7 @@ msgstr "無效表單，無法應用類型: %1"
 msgid "Invalid Render Type"
 msgstr "無效呈現類型"
 
-#: lib/RT/CustomField.pm:1020
+#: lib/RT/CustomField.pm:1094
 #. ($self->FriendlyType)
 msgid "Invalid Render Type for custom field of type %1"
 msgstr "無效的類型 %1 自定欄位呈現類型"
@@ -5671,15 +5688,20 @@ msgstr "錯誤的權限"
 msgid "Invalid Type"
 msgstr "錯誤的類型"
 
-#: lib/RT/Record.pm:959
+#: lib/RT/Record.pm:961
 msgid "Invalid data"
 msgstr "錯誤的資料"
 
-#: lib/RT/Queue.pm:413
+#: share/html/Admin/Users/GnuPG.html:110
+#. ($ARGS{'PrivateKey'}, $email)
+msgid "Invalid key %1 for address '%2'"
+msgstr ""
+
+#: lib/RT/Queue.pm:414
 msgid "Invalid lifecycle name"
 msgstr "無效生命周期名稱"
 
-#: lib/RT/CustomField.pm:1386
+#: lib/RT/CustomField.pm:1460
 msgid "Invalid object"
 msgstr "無效的物件"
 
@@ -5691,16 +5713,16 @@ msgstr "無效的擁有者物件"
 msgid "Invalid owner. Defaulting to 'nobody'."
 msgstr "錯誤的承辦人。改為預設承辦人「nobody」。"
 
-#: lib/RT/CustomField.pm:347 lib/RT/CustomField.pm:779
+#: lib/RT/CustomField.pm:347 lib/RT/CustomField.pm:783
 #. ($msg)
 msgid "Invalid pattern: %1"
 msgstr "不合理的樣式：%1"
 
-#: lib/RT/Scrip.pm:138 lib/RT/Template.pm:227
+#: lib/RT/Scrip.pm:138 lib/RT/Template.pm:251
 msgid "Invalid queue"
 msgstr "錯誤的表單"
 
-#: lib/RT/Queue.pm:831
+#: lib/RT/Queue.pm:856
 #. ($args{Type})
 msgid "Invalid queue role group type %1"
 msgstr "無效表單角色群組類型 %1"
@@ -5714,7 +5736,7 @@ msgstr "錯誤的權限"
 msgid "Invalid right. Couldn't canonicalize right '%1'"
 msgstr "無效的權限. 不能規範化權限'%1'"
 
-#: lib/RT/User.pm:558
+#: lib/RT/User.pm:559
 msgid "Invalid syntax for email address"
 msgstr "無效的郵箱"
 
@@ -5724,7 +5746,7 @@ msgstr "無效的郵箱"
 msgid "Invalid value for %1"
 msgstr "%1 的值錯誤"
 
-#: lib/RT/Record.pm:1619
+#: lib/RT/Record.pm:1656
 msgid "Invalid value for custom field"
 msgstr "錯誤的自訂欄位值"
 
@@ -5732,7 +5754,7 @@ msgstr "錯誤的自訂欄位值"
 msgid "Invalid value for status"
 msgstr "錯誤的狀態值"
 
-#: lib/RT/Attachment.pm:766
+#: lib/RT/Attachment.pm:785
 msgid "Is not encrypted"
 msgstr "沒有加密"
 
@@ -5804,7 +5826,7 @@ msgstr "07"
 msgid "July"
 msgstr "七月"
 
-#: share/html/Elements/Tabs:547
+#: share/html/Elements/Tabs:548
 msgid "Jumbo"
 msgstr "全部資訊"
 
@@ -5869,7 +5891,7 @@ msgstr "語言."
 msgid "Large"
 msgstr "大"
 
-#: share/html/Elements/Tabs:645
+#: share/html/Elements/Tabs:646
 msgid "Last"
 msgstr "上次更新"
 
@@ -5914,7 +5936,7 @@ msgid "LastUpdatedRelative"
 msgstr "上次更新(相對值)"
 
 #: share/html/Dashboards/Subscription.html:174
-#. ($session{'CurrentUser'}->UserObj->EmailAddress)
+#. ($session{'CurrentUser'}->EmailAddress)
 msgid "Leave blank to send to your current email address (%1)"
 msgstr "保持空白意味著發送到您的當前郵箱 (%1)"
 
@@ -5970,11 +5992,11 @@ msgstr "鏈結"
 msgid "Link a Queue"
 msgstr "申請表單連結"
 
-#: lib/RT/Record.pm:1318
+#: lib/RT/Record.pm:1320
 msgid "Link already exists"
 msgstr "此鏈結已存在"
 
-#: lib/RT/Record.pm:1332
+#: lib/RT/Record.pm:1334
 msgid "Link could not be created"
 msgstr "無法新增鏈結"
 
@@ -5986,7 +6008,7 @@ msgstr "鏈結(%1)新增完畢"
 msgid "Link deleted (%1)"
 msgstr "鏈結(%1)刪除完畢"
 
-#: lib/RT/Record.pm:1411
+#: lib/RT/Record.pm:1413
 msgid "Link not found"
 msgstr "找不到鏈結"
 
@@ -6023,7 +6045,7 @@ msgstr ""
 msgid "Linking. Permission denied"
 msgstr "連結中。權限不足"
 
-#: share/html/Articles/Article/Display.html:56 share/html/Articles/Article/Edit.html:79 share/html/Articles/Article/Elements/ShowSearchCriteria:117 share/html/Elements/Tabs:543 share/html/Ticket/Create.html:250 share/html/Ticket/Elements/ShowSummary:92 share/html/Ticket/ModifyAll.html:79 share/html/m/ticket/create:421 share/html/m/ticket/show:409
+#: share/html/Articles/Article/Display.html:56 share/html/Articles/Article/Edit.html:79 share/html/Articles/Article/Elements/ShowSearchCriteria:117 share/html/Elements/Tabs:544 share/html/Ticket/Create.html:250 share/html/Ticket/Elements/ShowSummary:92 share/html/Ticket/ModifyAll.html:79 share/html/m/ticket/create:411 share/html/m/ticket/show:409
 msgid "Links"
 msgstr "鏈結"
 
@@ -6106,11 +6128,11 @@ msgstr "紀錄等級"
 msgid "LogToFileNamed"
 msgstr "紀錄檔名"
 
-#: lib/RT/Interface/Web.pm:692
+#: lib/RT/Interface/Web.pm:766
 msgid "Logged in"
 msgstr "已登入"
 
-#: share/html/Elements/Tabs:458 share/html/Elements/Tabs:848
+#: share/html/Elements/Tabs:459 share/html/Elements/Tabs:849
 #. ($username)
 msgid "Logged in as %1"
 msgstr "使用者：%1"
@@ -6123,7 +6145,7 @@ msgstr "以 <span class=\"current-user\">%1</span> 帳號登入"
 msgid "Logged out"
 msgstr "登出"
 
-#: share/html/Elements/Login:49 share/html/Elements/Login:62 share/html/Elements/Login:89 share/html/m/login:105 share/html/m/login:92
+#: share/html/Elements/Login:49 share/html/Elements/Login:62 share/html/Elements/Login:91 share/html/m/login:105 share/html/m/login:92
 msgid "Login"
 msgstr "登入"
 
@@ -6132,7 +6154,7 @@ msgstr "登入"
 msgid "LogoAltText"
 msgstr "LogoAltText"
 
-#: share/html/Elements/Tabs:490 share/html/Elements/Tabs:860 share/html/NoAuth/Logout.html:48 share/html/m/_elements/menu:107
+#: share/html/Elements/Tabs:491 share/html/Elements/Tabs:861 share/html/NoAuth/Logout.html:48 share/html/m/_elements/menu:107
 msgid "Logout"
 msgstr "登出"
 
@@ -6140,7 +6162,7 @@ msgstr "登出"
 msgid "Long-term contractor"
 msgstr "長期契約員工"
 
-#: lib/RT/CustomField.pm:1296
+#: lib/RT/CustomField.pm:1370
 msgid "Lookup type mismatch"
 msgstr "對應的類別不符"
 
@@ -6205,19 +6227,19 @@ msgstr "讓此群組能被使用者看見"
 msgid "Male"
 msgstr "男"
 
-#: share/html/Elements/Tabs:92
+#: share/html/Elements/Tabs:93
 msgid "Manage custom fields and custom field values"
 msgstr "管理自訂欄位及欄位值"
 
-#: share/html/Elements/Tabs:75
+#: share/html/Elements/Tabs:76
 msgid "Manage groups and group membership"
 msgstr "管理群組及所屬成員"
 
-#: share/html/Elements/Tabs:101
+#: share/html/Elements/Tabs:102
 msgid "Manage properties and configuration which apply to all queues"
 msgstr "管理適用於所有表單的屬性與設定"
 
-#: share/html/Elements/Tabs:83
+#: share/html/Elements/Tabs:84
 msgid "Manage queues and queue-specific properties"
 msgstr "管理各表單及相關屬性"
 
@@ -6225,7 +6247,7 @@ msgstr "管理各表單及相關屬性"
 msgid "Manage saved graphs"
 msgstr "管理已存圖像"
 
-#: share/html/Elements/Tabs:67
+#: share/html/Elements/Tabs:68
 msgid "Manage users and passwords"
 msgstr "管理使用者與密碼"
 
@@ -6249,7 +6271,7 @@ msgstr "03"
 msgid "March"
 msgstr "三月"
 
-#: share/html/Ticket/Display.html:188 share/html/m/ticket/show:125
+#: share/html/Ticket/Display.html:190 share/html/m/ticket/show:125
 msgid "Marked all messages as seen"
 msgstr "標記所有消息為已讀"
 
@@ -6289,12 +6311,12 @@ msgstr "我"
 msgid "Member"
 msgstr "成員"
 
-#: lib/RT/Transaction.pm:803
+#: lib/RT/Transaction.pm:804
 #. ($value)
 msgid "Member %1 added"
 msgstr "成員 %1 新增完畢"
 
-#: lib/RT/Transaction.pm:843
+#: lib/RT/Transaction.pm:844
 #. ($value)
 msgid "Member %1 deleted"
 msgstr "成員 %1 刪除完畢"
@@ -6324,21 +6346,21 @@ msgstr "註冊日期"
 msgid "MemberOf"
 msgstr "隸屬於"
 
-#: lib/RT/Graph/Tickets.pm:156 share/html/Elements/Tabs:322 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
+#: lib/RT/Graph/Tickets.pm:156 share/html/Elements/Tabs:323 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
 msgid "Members"
 msgstr "成員"
 
-#: lib/RT/Transaction.pm:800
+#: lib/RT/Transaction.pm:801
 #. ($value)
 msgid "Membership in %1 added"
 msgstr "所屬群組 %1 加入完畢"
 
-#: lib/RT/Transaction.pm:840
+#: lib/RT/Transaction.pm:841
 #. ($value)
 msgid "Membership in %1 deleted"
 msgstr "所屬群組 %1 移除完畢"
 
-#: share/html/Elements/Tabs:304
+#: share/html/Elements/Tabs:305
 msgid "Memberships"
 msgstr "所屬群組"
 
@@ -6347,15 +6369,15 @@ msgstr "所屬群組"
 msgid "Memberships of the user %1"
 msgstr "使用者 %1 的所屬群組"
 
-#: lib/RT/Ticket.pm:2656
+#: lib/RT/Ticket.pm:2687
 msgid "Merge Successful"
 msgstr "整合完畢"
 
-#: lib/RT/Ticket.pm:2677
+#: lib/RT/Ticket.pm:2708
 msgid "Merge failed. Couldn't set EffectiveId"
 msgstr "整合失敗。無法設定 EffectiveId"
 
-#: lib/RT/Ticket.pm:2691
+#: lib/RT/Ticket.pm:2722
 msgid "Merge failed. Couldn't set Status"
 msgstr "整合失敗。無法設定 Status"
 
@@ -6363,7 +6385,7 @@ msgstr "整合失敗。無法設定 Status"
 msgid "Merge into"
 msgstr "整合進"
 
-#: lib/RT/Transaction.pm:806
+#: lib/RT/Transaction.pm:807
 #. ($value)
 msgid "Merged into %1"
 msgstr "已整合進 %1"
@@ -6372,11 +6394,11 @@ msgstr "已整合進 %1"
 msgid "Message"
 msgstr "訊息"
 
-#: share/html/Ticket/Elements/ShowTransactionAttachments:168
+#: share/html/Ticket/Elements/ShowTransactionAttachments:170
 msgid "Message body is not shown because it is too large."
 msgstr "由於資訊過大，資訊內容未顯示"
 
-#: share/html/Ticket/Elements/ShowTransactionAttachments:160 share/html/Ticket/Elements/ShowTransactionAttachments:255
+#: share/html/Ticket/Elements/ShowTransactionAttachments:162 share/html/Ticket/Elements/ShowTransactionAttachments:255
 msgid "Message body is not shown because sender requested not to inline it."
 msgstr "發送者要求消息不能inline，所以未予顯示。"
 
@@ -6404,7 +6426,7 @@ msgstr "訊息方塊的寬度"
 msgid "Message box wrapping"
 msgstr "消息框包裝"
 
-#: lib/RT/Ticket.pm:2254
+#: lib/RT/Ticket.pm:2285
 msgid "Message could not be recorded"
 msgstr "無法紀錄訊息"
 
@@ -6412,7 +6434,7 @@ msgstr "無法紀錄訊息"
 msgid "Message for user"
 msgstr "給使用者的消息"
 
-#: lib/RT/Ticket.pm:2257
+#: lib/RT/Ticket.pm:2288
 msgid "Message recorded"
 msgstr "訊息紀錄成功"
 
@@ -6440,7 +6462,7 @@ msgstr "雜項"
 msgid "Mismatched parentheses"
 msgstr "未對齊的括號"
 
-#: lib/RT/Record.pm:961
+#: lib/RT/Record.pm:963
 msgid "Missing a primary key?: %1"
 msgstr "缺少主鍵值？(%1)"
 
@@ -6460,7 +6482,7 @@ msgstr "移動電話"
 msgid "MobilePhone"
 msgstr "行動電話"
 
-#: share/html/Elements/Tabs:782 share/html/Elements/Tabs:800 share/html/m/_elements/ticket_menu:67
+#: share/html/Elements/Tabs:783 share/html/Elements/Tabs:801 share/html/m/_elements/ticket_menu:67
 msgid "Modify"
 msgstr "更改"
 
@@ -6542,15 +6564,15 @@ msgstr "更改 %1 表單內的手續"
 msgid "Modify a scrip that applies to all queues"
 msgstr "更改適用於所有表單的手續"
 
-#: share/html/Elements/Tabs:161
+#: share/html/Elements/Tabs:162
 msgid "Modify and Create Classes"
 msgstr ""
 
-#: share/html/Elements/Tabs:166
+#: share/html/Elements/Tabs:167
 msgid "Modify and Create Custom Fields for Articles"
 msgstr ""
 
-#: share/html/Articles/Article/Edit.html:208 share/html/Articles/Article/Edit.html:316
+#: share/html/Articles/Article/Edit.html:209 share/html/Articles/Article/Edit.html:317
 #. ($ArticleObj->Id)
 msgid "Modify article #%1"
 msgstr "更改文章 #%1"
@@ -6583,15 +6605,15 @@ msgstr "更改 #%1 的日期"
 msgid "Modify dates for ticket # %1"
 msgstr "更改申請單 # %1 的日期"
 
-#: share/html/Elements/Tabs:201
+#: share/html/Elements/Tabs:202
 msgid "Modify global article topics"
 msgstr ""
 
-#: share/html/Elements/Tabs:123
+#: share/html/Elements/Tabs:124
 msgid "Modify global custom fields"
 msgstr "更改全域自訂欄位"
 
-#: share/html/Admin/Global/GroupRights.html:48 share/html/Elements/Tabs:186
+#: share/html/Admin/Global/GroupRights.html:48 share/html/Elements/Tabs:187
 msgid "Modify global group rights"
 msgstr "更改全域設定的群組權限"
 
@@ -6615,7 +6637,7 @@ msgstr "更改全域手續"
 msgid "Modify global topics"
 msgstr "更改全域主題"
 
-#: share/html/Admin/Global/UserRights.html:48 share/html/Elements/Tabs:191
+#: share/html/Admin/Global/UserRights.html:48 share/html/Elements/Tabs:192
 msgid "Modify global user rights"
 msgstr "更改全域設定的使用者權限"
 
@@ -6694,7 +6716,7 @@ msgstr "更改表單的關注者"
 msgid "Modify scrips for queue %1"
 msgstr "更改表單 %1 的手續"
 
-#: share/html/Admin/Global/Scrips.html:53 share/html/Elements/Tabs:107
+#: share/html/Admin/Global/Scrips.html:53 share/html/Elements/Tabs:108
 msgid "Modify scrips which apply to all queues"
 msgstr "更改適用於所有表單的手續"
 
@@ -6731,7 +6753,7 @@ msgstr "更改表單 %1 的內容"
 msgid "Modify the dashboard %1"
 msgstr "修改控制面板 %1"
 
-#: share/html/Elements/Tabs:196
+#: share/html/Elements/Tabs:197
 msgid "Modify the default \"RT at a glance\" view"
 msgstr "更改預設的「RT 一覽」檢視"
 
@@ -6753,7 +6775,7 @@ msgstr "更改表單視察員"
 msgid "Modify the subscription to dashboard %1"
 msgstr "修改控制面板 %1 的訂閱"
 
-#: share/html/Admin/Users/Modify.html:296
+#: share/html/Admin/Users/Modify.html:290
 #. ($UserObj->Name)
 msgid "Modify the user %1"
 msgstr "更改使用者 %1"
@@ -6942,6 +6964,10 @@ msgstr "全移"
 msgid "Move down"
 msgstr "下移"
 
+#: share/html/Admin/Articles/Elements/Topics:108
+msgid "Move here"
+msgstr ""
+
 #: share/html/Admin/Elements/PickCustomFields:77
 msgid "Move up"
 msgstr "上移"
@@ -6950,24 +6976,24 @@ msgstr "上移"
 msgid "Multiple"
 msgstr "多重"
 
-#: lib/RT/User.pm:166
+#: lib/RT/User.pm:167
 msgid "Must specify 'Name' attribute"
 msgstr "必須指定 'Name' 的屬性"
 
-#: share/html/SelfService/Elements/MyRequests:77
+#: share/html/SelfService/Elements/MyRequests:62
 #. ($friendly_status)
 msgid "My %1 tickets"
 msgstr "我的 %1 申請單"
 
-#: share/html/Elements/Tabs:444
+#: share/html/Elements/Tabs:445
 msgid "My Approvals"
 msgstr "表單簽核"
 
-#: share/html/Elements/Tabs:422
+#: share/html/Elements/Tabs:423
 msgid "My Day"
 msgstr "今日事"
 
-#: share/html/Elements/Tabs:429
+#: share/html/Elements/Tabs:430
 msgid "My Reminders"
 msgstr "我的提醒專案"
 
@@ -7015,7 +7041,7 @@ msgstr "名稱"
 msgid "Name and email address"
 msgstr ""
 
-#: lib/RT/Article.pm:115 lib/RT/User.pm:173
+#: lib/RT/Article.pm:115 lib/RT/User.pm:174
 msgid "Name in use"
 msgstr "帳號已有人使用"
 
@@ -7047,11 +7073,11 @@ msgstr "從未更動"
 msgid "New"
 msgstr "新建立"
 
-#: share/html/Elements/Tabs:790
+#: share/html/Elements/Tabs:791
 msgid "New Article"
 msgstr "新文章"
 
-#: share/html/Elements/Tabs:407
+#: share/html/Elements/Tabs:408
 msgid "New Dashboard"
 msgstr "新表單"
 
@@ -7075,7 +7101,7 @@ msgstr "新增查詢"
 msgid "New Request"
 msgstr "表單申請"
 
-#: share/html/Elements/Tabs:412
+#: share/html/Elements/Tabs:413
 msgid "New Search"
 msgstr "新增查詢"
 
@@ -7107,7 +7133,7 @@ msgstr "新訊息"
 msgid "New password"
 msgstr "新的密碼"
 
-#: lib/RT/User.pm:746
+#: lib/RT/User.pm:747
 msgid "New password notification sent"
 msgstr "送出新密碼通知"
 
@@ -7115,7 +7141,7 @@ msgstr "送出新密碼通知"
 msgid "New queue"
 msgstr "新增表單"
 
-#: share/html/Ticket/Elements/Reminders:114
+#: share/html/Ticket/Elements/Reminders:115
 msgid "New reminder:"
 msgstr "新增提醒項目："
 
@@ -7139,11 +7165,11 @@ msgstr "重新查詢"
 msgid "New template"
 msgstr "新增範本"
 
-#: share/html/Elements/Tabs:838 share/html/Elements/Tabs:840 share/html/m/_elements/menu:70
+#: share/html/Elements/Tabs:836 share/html/Elements/Tabs:838 share/html/m/_elements/menu:70
 msgid "New ticket"
 msgstr "提出申請單"
 
-#: lib/RT/Ticket.pm:2637
+#: lib/RT/Ticket.pm:2668
 msgid "New ticket doesn't exist"
 msgstr "沒有新申請單"
 
@@ -7172,7 +7198,7 @@ msgstr "更新視窗設定"
 msgid "New workflow"
 msgstr "新增流程"
 
-#: share/html/Elements/CollectionListPaging:104 share/html/Elements/Tabs:643 share/html/Install/Basics.html:62 share/html/Install/DatabaseDetails.html:72 share/html/Install/DatabaseType.html:70 share/html/Install/Global.html:64 share/html/Install/Global.html:64 share/html/Install/Sendmail.html:63
+#: share/html/Elements/CollectionListPaging:106 share/html/Elements/Tabs:644 share/html/Install/Basics.html:62 share/html/Install/DatabaseDetails.html:72 share/html/Install/DatabaseType.html:70 share/html/Install/Global.html:64 share/html/Install/Global.html:64 share/html/Install/Sendmail.html:63
 msgid "Next"
 msgstr "下一項"
 
@@ -7270,7 +7296,7 @@ msgstr "沒有流程"
 msgid "No action"
 msgstr "暫不處理"
 
-#: lib/RT/Record.pm:956
+#: lib/RT/Record.pm:958
 msgid "No column specified"
 msgstr "未指定欄位"
 
@@ -7307,7 +7333,7 @@ msgstr "未指定群組"
 msgid "No groups matching search criteria found."
 msgstr "找不到符合查詢條件的群組。"
 
-#: lib/RT/Attachment.pm:725
+#: lib/RT/Attachment.pm:744
 msgid "No key suitable for encryption"
 msgstr "沒有適合的密鑰"
 
@@ -7315,7 +7341,7 @@ msgstr "沒有適合的密鑰"
 msgid "No keys for this address"
 msgstr "沒有這個位址的密鑰"
 
-#: lib/RT/Ticket.pm:2197
+#: lib/RT/Ticket.pm:2226
 msgid "No message attached"
 msgstr "沒有附上訊息"
 
@@ -7323,15 +7349,15 @@ msgstr "沒有附上訊息"
 msgid "No name provided"
 msgstr "沒有提供名字"
 
-#: lib/RT/Attachment.pm:705
+#: lib/RT/Attachment.pm:724
 msgid "No need to encrypt"
 msgstr "不許要加密"
 
-#: lib/RT/User.pm:815
+#: lib/RT/User.pm:816
 msgid "No password set"
 msgstr "沒有設定密碼"
 
-#: lib/RT/Queue.pm:404
+#: lib/RT/Queue.pm:405
 msgid "No permission to create queues"
 msgstr "沒有新增表單的權限"
 
@@ -7356,11 +7382,11 @@ msgstr "沒有更改文章的權限"
 msgid "No permission to save system-wide searches"
 msgstr "沒有儲存全域預存查詢的權限"
 
-#: lib/RT/User.pm:1311
+#: lib/RT/User.pm:1343
 msgid "No permission to set preferences"
 msgstr "沒有設定權限"
 
-#: share/html/Articles/Article/Edit.html:323
+#: share/html/Articles/Article/Edit.html:324
 msgid "No permission to view Article"
 msgstr "沒有查看文章的權限"
 
@@ -7368,7 +7394,7 @@ msgstr "沒有查看文章的權限"
 msgid "No permission to view update ticket"
 msgstr "沒有檢視申請單更新的權限"
 
-#: lib/RT/Queue.pm:990 lib/RT/Ticket.pm:1195
+#: lib/RT/Queue.pm:1015 lib/RT/Ticket.pm:1195
 msgid "No principal specified"
 msgstr "未指定單位"
 
@@ -7412,7 +7438,7 @@ msgstr "沒有要進行的查詢"
 msgid "No subject"
 msgstr "沒有標題"
 
-#: lib/RT/User.pm:1589
+#: lib/RT/User.pm:1614
 msgid "No such key or it's not suitable for signing"
 msgstr "沒有密鑰或者它不能做簽名"
 
@@ -7444,7 +7470,7 @@ msgstr "找不到符合查詢條件的使用者。"
 msgid "No valid RT user found. RT cvs handler disengaged. Please consult your RT administrator.\\n"
 msgstr "找不到合格的 RT 使用者。RT cvs 處理器已停用。請向 RT 管理者詢問。\\n"
 
-#: lib/RT/Record.pm:953
+#: lib/RT/Record.pm:955
 msgid "No value sent to _Set!"
 msgstr "沒有發送至 _Set的值!"
 
@@ -7460,7 +7486,7 @@ msgstr "沒有人"
 msgid "None"
 msgstr "無"
 
-#: lib/RT/Record.pm:958
+#: lib/RT/Record.pm:960
 msgid "Nonexistant field?"
 msgstr "欄位不存在？"
 
@@ -7476,7 +7502,7 @@ msgstr "未設定"
 msgid "Not configured to fetch the content from a %1 in %2"
 msgstr "未設定成從 %2 內擷取 %1"
 
-#: lib/RT/CustomField.pm:498
+#: lib/RT/CustomField.pm:500
 msgid "Not found"
 msgstr "找不到"
 
@@ -7488,7 +7514,7 @@ msgstr "尚未登入"
 msgid "Not logged in."
 msgstr "尚未登入"
 
-#: lib/RT/Date.pm:399 share/html/Elements/ShowReminders:72 share/html/Ticket/Elements/Reminders:165
+#: lib/RT/Date.pm:399 share/html/Elements/ShowReminders:72 share/html/Ticket/Elements/Reminders:166
 msgid "Not set"
 msgstr "尚未設定"
 
@@ -7512,7 +7538,7 @@ msgstr "備註"
 msgid "Notes:"
 msgstr "備註："
 
-#: lib/RT/User.pm:748
+#: lib/RT/User.pm:749
 msgid "Notification could not be sent"
 msgstr "無法送出通知"
 
@@ -7668,7 +7694,7 @@ msgstr "物件刪除完畢"
 msgid "Object of type %1 cannot take custom fields"
 msgstr "自訂欄位不適用於類別為 %1 的物件"
 
-#: lib/RT/CustomField.pm:1342
+#: lib/RT/CustomField.pm:1416
 msgid "Object type mismatch"
 msgstr "物件類別不符"
 
@@ -7696,7 +7722,7 @@ msgstr "十月"
 msgid "Office Phone"
 msgstr "辦公室電話"
 
-#: share/html/Elements/Tabs:436
+#: share/html/Elements/Tabs:437
 msgid "Offline"
 msgstr "離線"
 
@@ -7777,7 +7803,7 @@ msgstr "現況改變時"
 msgid "On Transaction"
 msgstr "發生更動時"
 
-#: share/html/Ticket/Elements/UpdateCc:69 share/html/m/ticket/reply:101
+#: share/html/Ticket/Elements/UpdateCc:68 share/html/m/ticket/reply:101
 msgid "One-time Bcc"
 msgstr "密件副本(僅此一次)"
 
@@ -7807,7 +7833,7 @@ msgstr "僅顯示適用於下列項目的自訂欄位："
 msgid "Open"
 msgstr "開啟"
 
-#: etc/RT_Config.pm:2334 etc/RT_Config.pm:2363 etc/RT_Config.pm:2408 etc/RT_Config.pm:2437
+#: etc/RT_Config.pm:2399 etc/RT_Config.pm:2428 etc/RT_Config.pm:2475 etc/RT_Config.pm:2504
 msgid "Open It"
 msgstr ""
 
@@ -7823,7 +7849,7 @@ msgstr "開啟 URL"
 msgid "Open it"
 msgstr "開啟"
 
-#: share/html/Elements/Tabs:835 share/html/SelfService/index.html:48
+#: share/html/Elements/Tabs:841 share/html/SelfService/index.html:48
 msgid "Open tickets"
 msgstr "開啟的申請單"
 
@@ -7859,7 +7885,7 @@ msgstr "選項描述"
 msgid "Option Name"
 msgstr "選項名稱"
 
-#: share/html/Elements/Tabs:467 share/html/Prefs/MyRT.html:67
+#: share/html/Elements/Tabs:468 share/html/Prefs/MyRT.html:67
 msgid "Options"
 msgstr "選項"
 
@@ -7924,7 +7950,7 @@ msgstr "取代全域權限"
 msgid "OverrideGlobalACL status %1"
 msgstr "取代全域權限 %1"
 
-#: share/html/Elements/Tabs:417
+#: share/html/Elements/Tabs:418
 msgid "Overview"
 msgstr "總覽"
 
@@ -7936,7 +7962,7 @@ msgstr "承辦申請單"
 msgid "OwnTicket"
 msgstr "承辦申請單"
 
-#: lib/RT/ACE.pm:99 lib/RT/Graph/Tickets.pm:154 lib/RT/Tickets.pm:105 lib/RT/Tickets.pm:2429 share/html/Elements/QuickCreate:62 share/html/Elements/RT__Ticket/ColumnMap:274 share/html/Elements/RT__Ticket/ColumnMap:89 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:126 share/html/Ticket/Elements/Reminders:148 share/html/Ticket/Elements/Reminders:81 share/html/Ticket/Elements/ShowPeople:50 share/html/m/_elements/ticket_list:96 share/html/m/ticket/create:297 share/html/m/ticket/reply:67 share/html/m/ticket/show:285
+#: lib/RT/ACE.pm:99 lib/RT/Graph/Tickets.pm:154 lib/RT/Tickets.pm:105 lib/RT/Tickets.pm:2456 share/html/Elements/QuickCreate:62 share/html/Elements/RT__Ticket/ColumnMap:274 share/html/Elements/RT__Ticket/ColumnMap:89 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:127 share/html/Ticket/Elements/Reminders:149 share/html/Ticket/Elements/Reminders:82 share/html/Ticket/Elements/ShowPeople:50 share/html/m/_elements/ticket_list:96 share/html/m/ticket/create:287 share/html/m/ticket/reply:67 share/html/m/ticket/show:285
 msgid "Owner"
 msgstr "承辦人"
 
@@ -7945,7 +7971,7 @@ msgstr "承辦人"
 msgid "Owner '%1' does not have rights to own this ticket."
 msgstr "擁有人'%1'沒有權限擁有此申請單"
 
-#: lib/RT/Ticket.pm:2999
+#: lib/RT/Ticket.pm:3030
 #. ($OldOwnerObj->Name, $NewOwnerObj->Name)
 msgid "Owner changed from %1 to %2"
 msgstr "承辦人已從 %1 改為 %2"
@@ -7954,7 +7980,7 @@ msgstr "承辦人已從 %1 改為 %2"
 msgid "Owner could not be set."
 msgstr "無法設定承辦人。"
 
-#: lib/RT/Transaction.pm:744 lib/RT/Transaction.pm:916
+#: lib/RT/Transaction.pm:745 lib/RT/Transaction.pm:917
 #. ($Old->Name , $New->Name)
 #. ($Old->Name, $New->Name)
 msgid "Owner forcibly changed from %1 to %2"
@@ -7972,7 +7998,7 @@ msgstr "承辦人電話"
 msgid "OwnerName"
 msgstr "承辦人名稱"
 
-#: share/html/Elements/CollectionListPaging:63
+#: share/html/Elements/CollectionListPaging:65
 msgid "Page"
 msgstr "頁"
 
@@ -7980,7 +8006,7 @@ msgstr "頁"
 msgid "Page %1 of %2"
 msgstr "第 %1/%2 頁"
 
-#: share/html/Elements/CollectionListPaging:60
+#: share/html/Elements/CollectionListPaging:62
 msgid "Page 1 of 1"
 msgstr "第1頁(共1頁)"
 
@@ -8008,7 +8034,7 @@ msgstr "呼叫參數"
 msgid "Parent"
 msgstr "上級"
 
-#: share/html/Elements/EditLinks:146 share/html/Elements/EditLinks:73 share/html/Elements/ShowLinks:97 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:256 share/html/Ticket/Elements/BulkLinks:139 share/html/Ticket/Elements/BulkLinks:74 share/html/m/ticket/create:429 share/html/m/ticket/show:452
+#: share/html/Elements/EditLinks:146 share/html/Elements/EditLinks:73 share/html/Elements/ShowLinks:97 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:256 share/html/Ticket/Elements/BulkLinks:139 share/html/Ticket/Elements/BulkLinks:74 share/html/m/ticket/create:419 share/html/m/ticket/show:452
 msgid "Parents"
 msgstr "母申請單"
 
@@ -8016,7 +8042,7 @@ msgstr "母申請單"
 msgid "Park Space"
 msgstr "停車位申請"
 
-#: share/html/Elements/Login:73 share/html/User/Prefs.html:109 share/html/m/login:102
+#: share/html/Elements/Login:75 share/html/User/Prefs.html:109 share/html/m/login:102
 msgid "Password"
 msgstr "密碼"
 
@@ -8024,15 +8050,15 @@ msgstr "密碼"
 msgid "Password Reminder"
 msgstr "密碼提示"
 
-#: lib/RT/Transaction.pm:868 lib/RT/User.pm:826
+#: lib/RT/Transaction.pm:869 lib/RT/User.pm:827
 msgid "Password changed"
 msgstr "密碼更改完畢"
 
-#: lib/RT/User.pm:792
+#: lib/RT/User.pm:793
 msgid "Password has not been set."
 msgstr "密碼未設定"
 
-#: lib/RT/User.pm:284
+#: lib/RT/User.pm:285
 #. (RT->Config->Get('MinimumPasswordLength'))
 msgid "Password needs to be at least %1 characters long"
 msgstr "密碼長度至少必須為 %1 個字元"
@@ -8041,7 +8067,7 @@ msgstr "密碼長度至少必須為 %1 個字元"
 msgid "Password not printed"
 msgstr "密碼未列印"
 
-#: lib/RT/User.pm:825
+#: lib/RT/User.pm:826
 msgid "Password set"
 msgstr "密碼已設定"
 
@@ -8054,7 +8080,7 @@ msgstr "密碼太短"
 msgid "Password: %1"
 msgstr "密碼：%1"
 
-#: lib/RT/User.pm:811
+#: lib/RT/User.pm:812
 msgid "Password: Permission Denied"
 msgstr "密碼：權限不足"
 
@@ -8062,7 +8088,7 @@ msgstr "密碼：權限不足"
 msgid "PasswordChange"
 msgstr "密碼更改"
 
-#: lib/RT/User.pm:788
+#: lib/RT/User.pm:789
 msgid "Passwords do not match."
 msgstr "密碼確認失敗。"
 
@@ -8082,7 +8108,7 @@ msgstr "請選擇表單名稱"
 msgid "Pending Approval"
 msgstr "等待簽核"
 
-#: share/html/Elements/Tabs:538 share/html/Ticket/Elements/ShowSummary:62 share/html/Ticket/ModifyAll.html:73 share/html/m/ticket/show:281
+#: share/html/Elements/Tabs:539 share/html/Ticket/Elements/ShowSummary:62 share/html/Ticket/ModifyAll.html:73 share/html/m/ticket/show:281
 msgid "People"
 msgstr "人員"
 
@@ -8111,11 +8137,11 @@ msgstr "Perl 設定"
 msgid "Perl library search order"
 msgstr "Perl庫的搜索順序"
 
-#: share/html/Elements/Tabs:230
+#: share/html/Elements/Tabs:231
 msgid "Permanently wipeout data from RT"
 msgstr "永久刪除 RT 的資料"
 
-#: lib/RT/ACE.pm:249 lib/RT/ACE.pm:255 lib/RT/ACE.pm:331 lib/RT/Article.pm:112 lib/RT/Article.pm:266 lib/RT/Article.pm:371 lib/RT/Article.pm:388 lib/RT/Article.pm:417 lib/RT/Article.pm:469 lib/RT/Article.pm:493 lib/RT/Article.pm:566 lib/RT/Attachment.pm:691 lib/RT/Attachment.pm:692 lib/RT/Attachment.pm:753 lib/RT/Attachment.pm:754 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:379 lib/RT/Attribute.pm:388 lib/RT/Attribute.pm:401 lib/RT/Class.pm:202 lib/RT/Class.pm:237 lib/RT/Class.pm:389 lib/RT/Class.pm:439 lib/RT/CurrentUser.pm:138 lib/RT/CurrentUser.pm:144 lib/RT/CurrentUser.pm:150 lib/RT/CustomField.pm:1300 lib/RT/CustomField.pm:1346 lib/RT/CustomField.pm:1389 lib/RT/CustomField.pm:1530 lib/RT/CustomField.pm:1671 lib/RT/CustomField.pm:312 lib/RT/CustomField.pm:329 lib/RT/CustomField.pm:340 lib/RT/CustomField.pm:545 lib/RT/CustomField.pm:572 lib/RT/CustomField.pm:890 lib/RT/CustomFieldValue.pm:147 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1060 lib/RT/Group.pm:1112 lib/RT/Group.pm:397 lib/RT/Group.pm:496 lib/RT/Group.pm:655 lib/RT/Group.pm:885 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:1212 lib/RT/Queue.pm:200 lib/RT/Queue.pm:218 lib/RT/Queue.pm:585 lib/RT/Queue.pm:611 lib/RT/Queue.pm:835 lib/RT/Scrip.pm:122 lib/RT/Scrip.pm:130 lib/RT/Scrip.pm:141 lib/RT/Scrip.pm:203 lib/RT/Scrip.pm:509 lib/RT/Scrip.pm:517 lib/RT/Template.pm:101 lib/RT/Template.pm:216 lib/RT/Template.pm:221 lib/RT/Template.pm:230 lib/RT/Template.pm:257 lib/RT/Template.pm:386 lib/RT/Template.pm:611 lib/RT/Template.pm:628 lib/RT/Template.pm:646 lib/RT/Ticket.pm:1072 lib/RT/Ticket.pm:1078 lib/RT/Ticket.pm:1085 lib/RT/Ticket.pm:1228 lib/RT/Ticket.pm:1238 lib/RT/Ticket.pm:1252 lib/RT/Ticket.pm:1347 lib/RT/Ticket.pm:1694 lib/RT/Ticket.pm:1927 lib/RT/Ticket.pm:2094 lib/RT/Ticket.pm:2142 lib/RT/Ticket.pm:2421 lib/RT/Ticket.pm:2434 lib/RT/Ticket.pm:2513 lib/RT/Ticket.pm:2526 lib/RT/Ticket.pm:2628 lib/RT/Ticket.pm:2642 lib/RT/Ticket.pm:2901 lib/RT/Ticket.pm:2912 lib/RT/Ticket.pm:2918 lib/RT/Ticket.pm:3127 lib/RT/Ticket.pm:3201 lib/RT/Ticket.pm:3396 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Transaction.pm:590 lib/RT/Transaction.pm:612 lib/RT/User.pm:1059 lib/RT/User.pm:133 lib/RT/User.pm:1437 lib/RT/User.pm:1574 lib/RT/User.pm:306 lib/RT/User.pm:694 lib/RT/User.pm:729 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/Elements/ShowHistory:68 share/html/Articles/Article/PreCreate.html:61 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:84
+#: lib/RT/ACE.pm:249 lib/RT/ACE.pm:255 lib/RT/ACE.pm:331 lib/RT/Article.pm:112 lib/RT/Article.pm:266 lib/RT/Article.pm:371 lib/RT/Article.pm:388 lib/RT/Article.pm:417 lib/RT/Article.pm:469 lib/RT/Article.pm:493 lib/RT/Article.pm:577 lib/RT/Attachment.pm:710 lib/RT/Attachment.pm:711 lib/RT/Attachment.pm:772 lib/RT/Attachment.pm:773 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:379 lib/RT/Attribute.pm:388 lib/RT/Attribute.pm:401 lib/RT/Class.pm:202 lib/RT/Class.pm:237 lib/RT/Class.pm:390 lib/RT/Class.pm:440 lib/RT/CurrentUser.pm:138 lib/RT/CurrentUser.pm:144 lib/RT/CurrentUser.pm:150 lib/RT/CustomField.pm:1374 lib/RT/CustomField.pm:1420 lib/RT/CustomField.pm:1463 lib/RT/CustomField.pm:1604 lib/RT/CustomField.pm:1745 lib/RT/CustomField.pm:312 lib/RT/CustomField.pm:329 lib/RT/CustomField.pm:340 lib/RT/CustomField.pm:549 lib/RT/CustomField.pm:576 lib/RT/CustomField.pm:964 lib/RT/CustomFieldValue.pm:147 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1060 lib/RT/Group.pm:1112 lib/RT/Group.pm:397 lib/RT/Group.pm:496 lib/RT/Group.pm:655 lib/RT/Group.pm:885 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:1237 lib/RT/Queue.pm:200 lib/RT/Queue.pm:218 lib/RT/Queue.pm:583 lib/RT/Queue.pm:609 lib/RT/Queue.pm:635 lib/RT/Queue.pm:860 lib/RT/Scrip.pm:122 lib/RT/Scrip.pm:130 lib/RT/Scrip.pm:141 lib/RT/Scrip.pm:203 lib/RT/Scrip.pm:509 lib/RT/Scrip.pm:517 lib/RT/Scrip.pm:526 lib/RT/Scrip.pm:531 lib/RT/Scrip.pm:539 lib/RT/Template.pm:106 lib/RT/Template.pm:116 lib/RT/Template.pm:121 lib/RT/Template.pm:240 lib/RT/Template.pm:245 lib/RT/Template.pm:254 lib/RT/Template.pm:281 lib/RT/Template.pm:411 lib/RT/Template.pm:636 lib/RT/Template.pm:653 lib/RT/Template.pm:671 lib/RT/Ticket.pm:1072 lib/RT/Ticket.pm:1078 lib/RT/Ticket.pm:1085 lib/RT/Ticket.pm:1228 lib/RT/Ticket.pm:1238 lib/RT/Ticket.pm:1252 lib/RT/Ticket.pm:1347 lib/RT/Ticket.pm:1694 lib/RT/Ticket.pm:1952 lib/RT/Ticket.pm:2119 lib/RT/Ticket.pm:2169 lib/RT/Ticket.pm:2452 lib/RT/Ticket.pm:2465 lib/RT/Ticket.pm:2544 lib/RT/Ticket.pm:2557 lib/RT/Ticket.pm:2659 lib/RT/Ticket.pm:2673 lib/RT/Ticket.pm:2932 lib/RT/Ticket.pm:2943 lib/RT/Ticket.pm:2949 lib/RT/Ticket.pm:3158 lib/RT/Ticket.pm:3232 lib/RT/Ticket.pm:3462 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Transaction.pm:590 lib/RT/Transaction.pm:612 lib/RT/User.pm:1060 lib/RT/User.pm:134 lib/RT/User.pm:1476 lib/RT/User.pm:1599 lib/RT/User.pm:307 lib/RT/User.pm:695 lib/RT/User.pm:730 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/Elements/ShowHistory:68 share/html/Articles/Article/PreCreate.html:61 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:84
 msgid "Permission Denied"
 msgstr "權限不足"
 
@@ -8219,11 +8245,11 @@ msgstr "請先選中要刪除的對象"
 msgid "Please check the URL and try again."
 msgstr "請檢查 URL 並再試一次"
 
-#: lib/RT/User.pm:783
+#: lib/RT/User.pm:784
 msgid "Please enter your current password correctly."
 msgstr "請輸入您目前的密碼."
 
-#: lib/RT/User.pm:785
+#: lib/RT/User.pm:786
 msgid "Please enter your current password."
 msgstr "請輸入您目前的密碼."
 
@@ -8275,6 +8301,10 @@ msgstr "職務代碼"
 msgid "Position Rank"
 msgstr "職級"
 
+#: share/html/Elements/CSRF:48 share/html/Elements/CSRF:51
+msgid "Possible cross-site request forgery"
+msgstr ""
+
 #: share/html/Dashboards/Elements/HiddenSearches:73
 msgid "Possible hidden searches"
 msgstr "可能的隱藏搜索"
@@ -8283,11 +8313,17 @@ msgstr "可能的隱藏搜索"
 msgid "PostgreSQL"
 msgstr "PostgreSQL"
 
+#: share/html/Elements/ShowSearch:96 share/html/m/tickets/search:81
+#. ($m->interp->apply_escapes($Name, 'h'))
+#. ($m->interp->apply_escapes($name, 'h'))
+msgid "Predefined search %1 not found"
+msgstr ""
+
 #: NOT FOUND IN SOURCE
 msgid "Pref"
 msgstr "偏好"
 
-#: share/html/Elements/Tabs:854 share/html/SelfService/Prefs.html:48 share/html/User/Prefs.html:48
+#: share/html/Elements/Tabs:855 share/html/SelfService/Prefs.html:48 share/html/User/Prefs.html:48
 msgid "Preferences"
 msgstr "偏好"
 
@@ -8311,16 +8347,16 @@ msgstr "成功儲存 %1 的偏好。"
 msgid "Preferences saved for user %1."
 msgstr "使用者%1的首選項已保存."
 
-#: share/html/Prefs/MyRT.html:101 share/html/Prefs/Other.html:102 share/html/Prefs/Quicksearch.html:87 share/html/Prefs/Search.html:104 share/html/Prefs/SearchOptions.html:81
+#: share/html/Prefs/MyRT.html:101 share/html/Prefs/Other.html:103 share/html/Prefs/Quicksearch.html:87 share/html/Prefs/Search.html:104 share/html/Prefs/SearchOptions.html:81
 msgid "Preferences saved."
 msgstr "已儲存設定"
 
-#: share/html/Prefs/Other.html:87
+#: share/html/Prefs/Other.html:88
 #. ($msg)
 msgid "Preferred Key: %1"
 msgstr "首選密鑰: %1"
 
-#: share/html/Prefs/Other.html:71
+#: share/html/Prefs/Other.html:72
 msgid "Preferred key"
 msgstr "首選密鑰"
 
@@ -8336,11 +8372,11 @@ msgstr "預備動作完畢"
 msgid "Press 'Esc' to close this window."
 msgstr "按 'Esc' 鍵可關閉本視窗。"
 
-#: share/html/Elements/Tabs:638
+#: share/html/Elements/Tabs:639
 msgid "Prev"
 msgstr "上一項"
 
-#: share/html/Elements/CollectionListPaging:101
+#: share/html/Elements/CollectionListPaging:103
 msgid "Previous"
 msgstr "前一項"
 
@@ -8369,7 +8405,7 @@ msgstr "輸出摘要消息到終端; 不要發送也不要標記為已發送"
 msgid "Print this message"
 msgstr "輸出此消息"
 
-#: lib/RT/Tickets.pm:110 lib/RT/Tickets.pm:2233 share/html/Elements/RT__Queue/ColumnMap:66 share/html/Elements/RT__Ticket/ColumnMap:131 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:186 share/html/Ticket/Create.html:206 share/html/Ticket/Elements/ShowBasics:76 share/html/m/_elements/ticket_list:99 share/html/m/ticket/create:373 share/html/m/ticket/show:241
+#: lib/RT/Tickets.pm:110 lib/RT/Tickets.pm:2260 share/html/Elements/RT__Queue/ColumnMap:66 share/html/Elements/RT__Ticket/ColumnMap:131 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:186 share/html/Ticket/Create.html:206 share/html/Ticket/Elements/ShowBasics:76 share/html/m/_elements/ticket_list:99 share/html/m/ticket/create:363 share/html/m/ticket/show:241
 msgid "Priority"
 msgstr "優先順位"
 
@@ -8389,11 +8425,11 @@ msgstr "隱私設定："
 msgid "Private Key"
 msgstr "私密金鑰"
 
-#: lib/RT/Handle.pm:662 share/html/Admin/Users/Modify.html:111
+#: lib/RT/Handle.pm:660 share/html/Admin/Users/Modify.html:111
 msgid "Privileged"
 msgstr "內部成員"
 
-#: share/html/Admin/Users/Modify.html:330 share/html/User/Prefs.html:249
+#: share/html/Admin/Users/Modify.html:324 share/html/User/Prefs.html:249
 #. (loc_fuzzy($msg))
 msgid "Privileged status: %1"
 msgstr "內部成員狀態：%1"
@@ -8422,7 +8458,7 @@ msgstr "專案名稱"
 msgid "Projects"
 msgstr "專案"
 
-#: lib/RT/Handle.pm:676
+#: lib/RT/Handle.pm:674
 msgid "Pseudogroup for internal use"
 msgstr "內部用的虛擬群組"
 
@@ -8463,7 +8499,7 @@ msgstr "建立查詢"
 msgid "Query:"
 msgstr "查詢："
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Record.pm:943 lib/RT/Tickets.pm:101 lib/RT/Tickets.pm:2076 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:61 share/html/Elements/RT__Scrip/ColumnMap:68 share/html/Elements/RT__Template/ColumnMap:71 share/html/Elements/RT__Template/ColumnMap:78 share/html/Elements/RT__Ticket/ColumnMap:85 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:57 share/html/Ticket/Elements/ShowBasics:82 share/html/m/ticket/create:285 share/html/m/ticket/show:245
+#: lib/RT/Graph/Tickets.pm:153 lib/RT/Record.pm:945 lib/RT/Tickets.pm:101 lib/RT/Tickets.pm:2103 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:61 share/html/Elements/RT__Scrip/ColumnMap:68 share/html/Elements/RT__Template/ColumnMap:71 share/html/Elements/RT__Template/ColumnMap:78 share/html/Elements/RT__Ticket/ColumnMap:85 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:57 share/html/Ticket/Elements/ShowBasics:82 share/html/m/ticket/create:275 share/html/m/ticket/show:245
 msgid "Queue"
 msgstr "表單"
 
@@ -8505,27 +8541,27 @@ msgstr "表單手續"
 msgid "Queue Setup"
 msgstr "表單設定"
 
-#: lib/RT/Queue.pm:561
+#: lib/RT/Queue.pm:559
 msgid "Queue already exists"
 msgstr "表單已存在"
 
-#: lib/RT/Queue.pm:426 lib/RT/Queue.pm:432
+#: lib/RT/Queue.pm:427 lib/RT/Queue.pm:433
 msgid "Queue could not be created"
 msgstr "無法新增表單"
 
-#: share/html/Ticket/Create.html:361 share/html/index.html:94 share/html/m/ticket/create:154
+#: share/html/Ticket/Create.html:350 share/html/index.html:94 share/html/m/ticket/create:144
 msgid "Queue could not be loaded."
 msgstr "無法載入表單"
 
-#: lib/RT/Queue.pm:452
+#: lib/RT/Queue.pm:450
 msgid "Queue created"
 msgstr "表單新增完畢"
 
-#: lib/RT/Queue.pm:491
+#: lib/RT/Queue.pm:489
 msgid "Queue disabled"
 msgstr "表單已停用"
 
-#: lib/RT/Queue.pm:493
+#: lib/RT/Queue.pm:491
 msgid "Queue enabled"
 msgstr "表單已啟用"
 
@@ -8565,7 +8601,7 @@ msgstr "表單名稱"
 msgid "QueueWatcher"
 msgstr "表單視察員"
 
-#: share/html/Admin/Global/CustomFields/index.html:77 share/html/Elements/Tabs:137 share/html/Elements/Tabs:239 share/html/Elements/Tabs:82
+#: share/html/Admin/Global/CustomFields/index.html:77 share/html/Elements/Tabs:138 share/html/Elements/Tabs:240 share/html/Elements/Tabs:83
 msgid "Queues"
 msgstr "表單"
 
@@ -8585,7 +8621,7 @@ msgstr "快速創建"
 msgid "Quick Search"
 msgstr "表單現況"
 
-#: share/html/Articles/Elements/QuickSearch:48 share/html/Elements/Quicksearch:50 share/html/Elements/Tabs:471 share/html/Prefs/Quicksearch.html:69
+#: share/html/Articles/Elements/QuickSearch:48 share/html/Elements/Quicksearch:50 share/html/Elements/Tabs:472 share/html/Prefs/Quicksearch.html:69
 msgid "Quick search"
 msgstr "表單一覽"
 
@@ -8601,7 +8637,7 @@ msgstr "RFC2616"
 msgid "RFC2822"
 msgstr "RFC2822"
 
-#: share/html/Elements/Tabs:752
+#: share/html/Elements/Tabs:753
 msgid "RSS"
 msgstr "RSS"
 
@@ -8677,7 +8713,7 @@ msgstr "RT大小"
 msgid "RT Variables"
 msgstr "RT 的變數"
 
-#: lib/RT/Config.pm:306 lib/RT/Config.pm:315 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:56 share/html/Admin/Users/MyRT.html:64 share/html/Elements/Tabs:195 share/html/Elements/Tabs:306 share/html/Elements/Tabs:470 share/html/Prefs/MyRT.html:60 share/html/Prefs/MyRT.html:84 share/html/index.html:4
+#: lib/RT/Config.pm:306 lib/RT/Config.pm:315 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:56 share/html/Admin/Users/MyRT.html:64 share/html/Elements/Tabs:196 share/html/Elements/Tabs:307 share/html/Elements/Tabs:471 share/html/Prefs/MyRT.html:60 share/html/Prefs/MyRT.html:84 share/html/index.html:4
 msgid "RT at a glance"
 msgstr "RT 一覽"
 
@@ -8730,6 +8766,11 @@ msgstr "%1 專用流程系統"
 #: NOT FOUND IN SOURCE
 msgid "RT for %1: %2"
 msgstr "%1 專用 RT 系統：%2"
+
+#: share/html/Elements/CSRF:55
+#. ($strong_start, $strong_end, $Reason, $action)
+msgid "RT has detected a possible %1cross-site request forgery%2 for this request, because %3.  A malicious attacker may be trying to %1%4%2 on your behalf. If you did not initiate this request, then you should alert your security team."
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "RT has proccessed your commands"
@@ -8804,7 +8845,7 @@ msgstr "系統運行角色"
 msgid "RT::Ticket-Role"
 msgstr "申請單運行角色"
 
-#: share/html/Admin/Queues/Modify.html:224
+#: share/html/Admin/Queues/Modify.html:226
 #. ($address)
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr "配置里的RTAddressRegexp選項不匹配%1"
@@ -8813,7 +8854,7 @@ msgstr "配置里的RTAddressRegexp選項不匹配%1"
 msgid "RT_System"
 msgstr "系統訊息"
 
-#: etc/RT_Config.pm:2366 etc/RT_Config.pm:2370 etc/RT_Config.pm:2440 etc/RT_Config.pm:2444
+#: etc/RT_Config.pm:2431 etc/RT_Config.pm:2435 etc/RT_Config.pm:2507 etc/RT_Config.pm:2511
 msgid "Re-open"
 msgstr ""
 
@@ -8857,27 +8898,27 @@ msgstr "遞歸的成員"
 msgid "Refer to"
 msgstr "參考"
 
-#: lib/RT/Transaction.pm:797
+#: lib/RT/Transaction.pm:798
 #. ($value)
 msgid "Reference by %1 added"
 msgstr "已加入 %1 為參考本申請單"
 
-#: lib/RT/Transaction.pm:837
+#: lib/RT/Transaction.pm:838
 #. ($value)
 msgid "Reference by %1 deleted"
 msgstr "已移除 %1 為參考本申請單"
 
-#: lib/RT/Transaction.pm:794
+#: lib/RT/Transaction.pm:795
 #. ($value)
 msgid "Reference to %1 added"
 msgstr "已加入參考申請單 %1"
 
-#: lib/RT/Transaction.pm:834
+#: lib/RT/Transaction.pm:835
 #. ($value)
 msgid "Reference to %1 deleted"
 msgstr "已移除參考申請單 %1"
 
-#: share/html/Articles/Article/Elements/EditLinks:84 share/html/Articles/Article/Elements/ShowLinks:70 share/html/Articles/Article/Elements/ShowSearchCriteria:128 share/html/Elements/EditLinks:100 share/html/Elements/EditLinks:158 share/html/Elements/ShowLinks:127 share/html/Ticket/Create.html:259 share/html/Ticket/Elements/BulkLinks:104 share/html/Ticket/Elements/BulkLinks:151 share/html/m/ticket/create:432 share/html/m/ticket/show:470
+#: share/html/Articles/Article/Elements/EditLinks:84 share/html/Articles/Article/Elements/ShowLinks:70 share/html/Articles/Article/Elements/ShowSearchCriteria:128 share/html/Elements/EditLinks:100 share/html/Elements/EditLinks:158 share/html/Elements/ShowLinks:127 share/html/Ticket/Create.html:259 share/html/Ticket/Elements/BulkLinks:104 share/html/Ticket/Elements/BulkLinks:151 share/html/m/ticket/create:422 share/html/m/ticket/show:470
 msgid "Referred to by"
 msgstr "被參考"
 
@@ -8885,7 +8926,7 @@ msgstr "被參考"
 msgid "ReferredToBy"
 msgstr "被參考"
 
-#: share/html/Articles/Article/Elements/EditLinks:58 share/html/Articles/Article/Elements/ShowLinks:48 share/html/Elements/EditLinks:154 share/html/Elements/EditLinks:91 share/html/Elements/SelectLinkType:51 share/html/Elements/ShowLinks:113 share/html/Ticket/Create.html:258 share/html/Ticket/Elements/BulkLinks:147 share/html/Ticket/Elements/BulkLinks:94 share/html/m/ticket/create:431 share/html/m/ticket/show:460
+#: share/html/Articles/Article/Elements/EditLinks:58 share/html/Articles/Article/Elements/ShowLinks:48 share/html/Elements/EditLinks:154 share/html/Elements/EditLinks:91 share/html/Elements/SelectLinkType:51 share/html/Elements/ShowLinks:113 share/html/Ticket/Create.html:258 share/html/Ticket/Elements/BulkLinks:147 share/html/Ticket/Elements/BulkLinks:94 share/html/m/ticket/create:421 share/html/m/ticket/show:460
 msgid "Refers to"
 msgstr "參考"
 
@@ -8958,7 +8999,7 @@ msgstr "每60分鐘刷新一次搜索結果"
 msgid "Refresh this page every %1 minutes."
 msgstr "每 %1 分鐘更新頁面"
 
-#: etc/RT_Config.pm:2342 etc/RT_Config.pm:2358 etc/RT_Config.pm:2416 etc/RT_Config.pm:2432
+#: etc/RT_Config.pm:2407 etc/RT_Config.pm:2423 etc/RT_Config.pm:2483 etc/RT_Config.pm:2499
 msgid "Reject"
 msgstr ""
 
@@ -8974,22 +9015,22 @@ msgstr "駁回申請單"
 msgid "Remember default queue"
 msgstr "記住預設表單"
 
-#: share/html/Elements/ShowReminders:51 share/html/Ticket/Elements/Reminders:79
+#: share/html/Elements/ShowReminders:51 share/html/Ticket/Elements/Reminders:80
 msgid "Reminder"
 msgstr "提醒"
 
-#: lib/RT/Interface/Web.pm:2168 lib/RT/Transaction.pm:934
+#: lib/RT/Interface/Web.pm:2531 lib/RT/Transaction.pm:935
 #. ($args->{'NewReminder-Subject'})
 #. ($ticket->Subject)
 msgid "Reminder '%1' added"
 msgstr "已建立提醒項目「%1」"
 
-#: lib/RT/Transaction.pm:947
+#: lib/RT/Transaction.pm:948
 #. ($ticket->Subject)
 msgid "Reminder '%1' completed"
 msgstr "已完成提醒項目「%1」"
 
-#: lib/RT/Transaction.pm:940
+#: lib/RT/Transaction.pm:941
 #. ($ticket->Subject)
 msgid "Reminder '%1' reopened"
 msgstr "已重新開啟提醒項目「%1」"
@@ -8998,7 +9039,7 @@ msgstr "已重新開啟提醒項目「%1」"
 msgid "Reminder ticket #%1"
 msgstr "提醒項目 #%1"
 
-#: share/html/Elements/Tabs:551 share/html/Ticket/Elements/Reminders:76 share/html/Ticket/Elements/ShowSummary:73 share/html/Ticket/Reminders.html:54 share/html/m/ticket/show:355
+#: share/html/Elements/Tabs:552 share/html/Ticket/Elements/Reminders:77 share/html/Ticket/Elements/ShowSummary:73 share/html/Ticket/Reminders.html:54 share/html/m/ticket/show:355
 msgid "Reminders"
 msgstr "提醒項目"
 
@@ -9027,7 +9068,7 @@ msgstr "移除副本"
 msgid "Remove Requestor"
 msgstr "移除申請人"
 
-#: lib/RT/Queue.pm:1041
+#: lib/RT/Queue.pm:1066
 #. ($principal->Object->Name, $args{'Type'})
 msgid "Removed %1 from members of %2 for this queue."
 msgstr "在該表單將 %1 的 %2 成員資格移除."
@@ -9040,7 +9081,7 @@ msgstr "呈現類型"
 msgid "Replaces the owner dropdowns with textboxes"
 msgstr "用文本框來替代所有者的下拉列表"
 
-#: share/html/Elements/Tabs:555 share/html/Ticket/Elements/ShowTransaction:201 share/html/m/_elements/ticket_menu:69
+#: share/html/Elements/Tabs:556 share/html/Ticket/Elements/ShowTransaction:201 share/html/m/_elements/ticket_menu:69
 msgid "Reply"
 msgstr "回覆"
 
@@ -9108,7 +9149,7 @@ msgstr "申請人地址"
 msgid "RequestorGroup"
 msgstr "申請人群組"
 
-#: lib/RT/Graph/Tickets.pm:154 lib/RT/Tickets.pm:138 share/html/Elements/QuickCreate:70 share/html/Elements/RT__Ticket/ColumnMap:173 share/html/Elements/RT__Ticket/ColumnMap:255 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:67 share/html/Ticket/Create.html:116 share/html/Ticket/Elements/EditPeople:70 share/html/Ticket/Elements/ShowPeople:58 share/html/m/_elements/ticket_list:94 share/html/m/ticket/create:307 share/html/m/ticket/show:290
+#: lib/RT/Graph/Tickets.pm:154 lib/RT/Tickets.pm:138 share/html/Elements/QuickCreate:70 share/html/Elements/RT__Ticket/ColumnMap:173 share/html/Elements/RT__Ticket/ColumnMap:255 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:67 share/html/Ticket/Create.html:116 share/html/Ticket/Elements/EditPeople:70 share/html/Ticket/Elements/ShowPeople:58 share/html/m/_elements/ticket_list:94 share/html/m/ticket/create:297 share/html/m/ticket/show:290
 msgid "Requestors"
 msgstr "申請人"
 
@@ -9145,7 +9186,7 @@ msgstr "住處"
 msgid "Resolution"
 msgstr "解決狀態"
 
-#: etc/RT_Config.pm:2338 etc/RT_Config.pm:2354 etc/RT_Config.pm:2412 etc/RT_Config.pm:2428 share/html/Search/Elements/EditFormat:75
+#: etc/RT_Config.pm:2403 etc/RT_Config.pm:2419 etc/RT_Config.pm:2479 etc/RT_Config.pm:2495 share/html/Search/Elements/EditFormat:75
 msgid "Resolve"
 msgstr "解決"
 
@@ -9246,7 +9287,7 @@ msgstr "權限撤消完畢"
 msgid "Rights"
 msgstr "權限及代理人"
 
-#: lib/RT/Interface/Web.pm:1804 lib/RT/Interface/Web.pm:1915
+#: lib/RT/Interface/Web.pm:2166 lib/RT/Interface/Web.pm:2277
 #. ($object_type)
 msgid "Rights could not be granted for %1"
 msgstr "無法將權限賦予 %1"
@@ -9307,7 +9348,7 @@ msgstr "SMTP 寄件位址"
 msgid "SMTPServer"
 msgstr "SMTP 伺服器"
 
-#: share/html/Admin/Tools/Queries.html:49 share/html/Admin/Tools/Queries.html:58 share/html/Elements/Tabs:223
+#: share/html/Admin/Tools/Queries.html:49 share/html/Admin/Tools/Queries.html:58 share/html/Elements/Tabs:224
 msgid "SQL Queries"
 msgstr "SQL 查詢"
 
@@ -9335,7 +9376,7 @@ msgstr "星期六"
 msgid "Save"
 msgstr "儲存"
 
-#: share/html/Admin/Articles/Classes/GroupRights.html:57 share/html/Admin/Articles/Classes/Modify.html:99 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:151 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/Elements/EditScrip:145 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:91 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:94 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:156 share/html/Admin/Queues/People.html:124 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Users/GnuPG.html:73 share/html/Admin/Users/Modify.html:227 share/html/Articles/Article/Edit.html:102 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:183 share/html/Prefs/Other.html:75 share/html/Prefs/Quicksearch.html:63 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:62 share/html/SelfService/Prefs.html:61 share/html/Ticket/Modify.html:64 share/html/Ticket/ModifyAll.html:127 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:62 share/html/Ticket/ModifyPeople.html:76 share/html/Ticket/Reminders.html:61
+#: share/html/Admin/Articles/Classes/GroupRights.html:57 share/html/Admin/Articles/Classes/Modify.html:99 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:151 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/Elements/EditScrip:145 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:91 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:94 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:158 share/html/Admin/Queues/People.html:124 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Users/GnuPG.html:73 share/html/Admin/Users/Modify.html:227 share/html/Articles/Article/Edit.html:102 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:183 share/html/Prefs/Other.html:76 share/html/Prefs/Quicksearch.html:63 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:62 share/html/SelfService/Prefs.html:61 share/html/Ticket/Modify.html:64 share/html/Ticket/ModifyAll.html:127 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:62 share/html/Ticket/ModifyPeople.html:76 share/html/Ticket/Reminders.html:61
 msgid "Save Changes"
 msgstr "儲存更改"
 
@@ -9365,11 +9406,11 @@ msgid "Saved %1 %2"
 msgstr "已保存%1 %2"
 
 #: share/html/Elements/ShowSearch:72
-#. ($SavedSearch)
+#. ($m->interp->apply_escapes($SavedSearch, 'h'))
 msgid "Saved Search %1 not found"
 msgstr "找不到預存查詢 %1"
 
-#: share/html/Elements/SavedSearches:48 share/html/Elements/Tabs:473
+#: share/html/Elements/SavedSearches:48 share/html/Elements/Tabs:474
 msgid "Saved Searches"
 msgstr "已存搜索"
 
@@ -9418,7 +9459,7 @@ msgstr "訊息名稱"
 msgid "Scrip deleted"
 msgstr "手續刪除完畢"
 
-#: share/html/Elements/Tabs:106 share/html/Elements/Tabs:279
+#: share/html/Elements/Tabs:107 share/html/Elements/Tabs:280
 msgid "Scrips"
 msgstr "手續"
 
@@ -9438,7 +9479,7 @@ msgstr "%1 的手續\\n"
 msgid "Scrips which apply to all queues"
 msgstr "適用於所有表單的手續"
 
-#: share/html/Admin/Tools/Shredder/index.html:63 share/html/Articles/Article/Elements/ShowSearchCriteria:144 share/html/Elements/SimpleSearch:49 share/html/Elements/SimpleSearch:49 share/html/Elements/Tabs:418 share/html/Elements/Tabs:789 share/html/Search/Simple.html:58 share/html/m/_elements/menu:64
+#: share/html/Admin/Tools/Shredder/index.html:63 share/html/Articles/Article/Elements/ShowSearchCriteria:144 share/html/Elements/SimpleSearch:49 share/html/Elements/SimpleSearch:49 share/html/Elements/Tabs:419 share/html/Elements/Tabs:790 share/html/Search/Simple.html:58 share/html/m/_elements/menu:64
 msgid "Search"
 msgstr "查詢"
 
@@ -9496,7 +9537,7 @@ msgstr "申請單搜索。輸入<strong>編號</strong>數字，<strong>表單</
 msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name, Owners by <strong>username</strong> and Requestors by <strong>email address</strong>. RT will look for anything else you enter in ticket bodies and attachments."
 msgstr "搜尋申請單。請鍵入<strong>編號</strong>、<strong>表單名稱</strong>、承辦人的<strong>使用者名稱</strong>、或申請人的<strong>電子郵件地址</strong>。以上格式之外的文字，則會在申請單內文及附件內檢索。"
 
-#: share/html/Elements/Tabs:469
+#: share/html/Elements/Tabs:470
 msgid "Search options"
 msgstr "搜尋選項"
 
@@ -9610,7 +9651,7 @@ msgstr "檢視自己的控制面板"
 msgid "SeeQueue"
 msgstr "查閱表單"
 
-#: share/html/Elements/Tabs:110 share/html/Elements/Tabs:118 share/html/Elements/Tabs:160 share/html/Elements/Tabs:176 share/html/Elements/Tabs:258 share/html/Elements/Tabs:276 share/html/Elements/Tabs:280 share/html/Elements/Tabs:350 share/html/Elements/Tabs:361 share/html/Elements/Tabs:371 share/html/Elements/Tabs:70 share/html/Elements/Tabs:78 share/html/Elements/Tabs:86 share/html/Elements/Tabs:95
+#: share/html/Elements/Tabs:111 share/html/Elements/Tabs:119 share/html/Elements/Tabs:161 share/html/Elements/Tabs:177 share/html/Elements/Tabs:259 share/html/Elements/Tabs:277 share/html/Elements/Tabs:281 share/html/Elements/Tabs:351 share/html/Elements/Tabs:362 share/html/Elements/Tabs:372 share/html/Elements/Tabs:71 share/html/Elements/Tabs:79 share/html/Elements/Tabs:87 share/html/Elements/Tabs:96
 msgid "Select"
 msgstr "選擇"
 
@@ -9618,7 +9659,7 @@ msgstr "選擇"
 msgid "Select All"
 msgstr "全選"
 
-#: share/html/Admin/Global/CustomFields/index.html:96 share/html/Elements/Tabs:153
+#: share/html/Admin/Global/CustomFields/index.html:96 share/html/Elements/Tabs:154
 msgid "Select Custom Fields for Articles in all Classes"
 msgstr "選擇所有類型文章的自定欄位"
 
@@ -9683,23 +9724,23 @@ msgstr "選擇框"
 msgid "Select custom field"
 msgstr "選擇自訂欄位"
 
-#: share/html/Admin/Global/CustomFields/index.html:78 share/html/Elements/Tabs:138
+#: share/html/Admin/Global/CustomFields/index.html:78 share/html/Elements/Tabs:139
 msgid "Select custom fields for all queues"
 msgstr "選擇對所有表單的自訂欄位"
 
-#: share/html/Admin/Global/CustomFields/index.html:72 share/html/Elements/Tabs:133
+#: share/html/Admin/Global/CustomFields/index.html:72 share/html/Elements/Tabs:134
 msgid "Select custom fields for all user groups"
 msgstr "選擇適用於所有使用者群組的自訂欄位"
 
-#: share/html/Admin/Global/CustomFields/index.html:67 share/html/Elements/Tabs:128
+#: share/html/Admin/Global/CustomFields/index.html:67 share/html/Elements/Tabs:129
 msgid "Select custom fields for all users"
 msgstr "選擇適用於所有使用者的自訂欄位"
 
-#: share/html/Admin/Global/CustomFields/index.html:84 share/html/Elements/Tabs:143
+#: share/html/Admin/Global/CustomFields/index.html:84 share/html/Elements/Tabs:144
 msgid "Select custom fields for tickets in all queues"
 msgstr "選擇適用於所有表單內申請單的自訂欄位"
 
-#: share/html/Admin/Global/CustomFields/index.html:91 share/html/Elements/Tabs:148
+#: share/html/Admin/Global/CustomFields/index.html:91 share/html/Elements/Tabs:149
 msgid "Select custom fields for transactions on tickets in all queues"
 msgstr "選擇適用於所有表單內申請單之更動的自訂欄位"
 
@@ -9796,7 +9837,7 @@ msgstr "已選取的自訂欄位"
 msgid "Selected Queues"
 msgstr "已選表單"
 
-#: lib/RT/Crypt/GnuPG.pm:2032
+#: lib/RT/Crypt/GnuPG.pm:2054
 msgid "Selected key either is not trusted or doesn't exist anymore."
 msgstr "選擇的密鑰不被信任或不存在."
 
@@ -9872,7 +9913,7 @@ msgstr "以評論寄信給管理員副本收件人"
 msgid "Sends mail to the owner"
 msgstr "寄信給申請人"
 
-#: lib/RT/Interface/Email.pm:767
+#: lib/RT/Interface/Email.pm:793
 msgid "Sent email successfully"
 msgstr ""
 
@@ -9892,7 +9933,7 @@ msgstr "以空格區分多個條目"
 msgid "September"
 msgstr "九月"
 
-#: lib/RT/User.pm:1599
+#: lib/RT/User.pm:1624
 msgid "Set private key"
 msgstr ""
 
@@ -9900,7 +9941,7 @@ msgstr ""
 msgid "Setting %1's 'Disabled' property to %2"
 msgstr "%1 的「停用」屬性已設為 %2"
 
-#: share/html/Elements/Tabs:466 share/html/Prefs/Other.html:79
+#: share/html/Elements/Tabs:467 share/html/Prefs/Other.html:80
 msgid "Settings"
 msgstr "設定"
 
@@ -9916,7 +9957,7 @@ msgstr ""
 msgid "Should RT send you mail for ticket updates you make?"
 msgstr "對於您對申請單的更新，RT是否給您發信？"
 
-#: share/html/Elements/Tabs:502 share/html/Ticket/Elements/ShowTransaction:182
+#: share/html/Elements/Tabs:503 share/html/Ticket/Elements/ShowTransaction:182
 msgid "Show"
 msgstr "顯示"
 
@@ -9936,7 +9977,7 @@ msgstr "顯示欄位"
 msgid "Show Configuration tab"
 msgstr "顯示配置標簽欄"
 
-#: share/html/Elements/Tabs:726
+#: share/html/Elements/Tabs:727
 msgid "Show Results"
 msgstr "顯示結果"
 
@@ -9945,7 +9986,7 @@ msgstr "顯示結果"
 msgid "Show Tickets Properties on %1 level"
 msgstr "在%1級顯示申請單屬性"
 
-#: share/html/Ticket/Elements/ShowHistory:63
+#: share/html/Ticket/Elements/ShowHistory:63 share/html/Ticket/Elements/ShowHistory:64
 msgid "Show all quoted text"
 msgstr ""
 
@@ -9961,7 +10002,7 @@ msgstr "也顯示"
 msgid "Show basics"
 msgstr "顯示基本資訊"
 
-#: share/html/Ticket/Elements/ShowHistory:72
+#: share/html/Ticket/Elements/ShowHistory:73
 msgid "Show brief headers"
 msgstr ""
 
@@ -9973,7 +10014,7 @@ msgstr "顯示已駁回的簽核單"
 msgid "Show details"
 msgstr "顯示細節"
 
-#: share/html/Ticket/Elements/ShowHistory:77
+#: share/html/Ticket/Elements/ShowHistory:78
 msgid "Show full headers"
 msgstr ""
 
@@ -10005,11 +10046,19 @@ msgstr "顯示引用文本"
 msgid "Show requests awaiting other approvals"
 msgstr "顯示尚待他人批准的簽核單"
 
-#: lib/RT/Config.pm:404
+#: lib/RT/Config.pm:403
+msgid "Show the Requestor's 10 highest priority active tickets"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "Show the Requestor's 10 highest priority closed tickets"
 msgstr "顯示申請者 10 個最優先的關閉申請單"
 
-#: lib/RT/Config.pm:403
+#: lib/RT/Config.pm:404
+msgid "Show the Requestor's 10 highest priority inactive tickets"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "Show the Requestor's 10 highest priority open tickets"
 msgstr "顯示申請者 10 個最優先的開放申請單"
 
@@ -10077,7 +10126,7 @@ msgstr "顯示申請單"
 msgid "ShowTicketComments"
 msgstr "顯示申請單的評論"
 
-#: share/html/Admin/Tools/Shredder/index.html:74 share/html/Elements/Tabs:229 share/html/Elements/Tabs:769
+#: share/html/Admin/Tools/Shredder/index.html:74 share/html/Elements/Tabs:230 share/html/Elements/Tabs:770
 msgid "Shredder"
 msgstr "粉碎機"
 
@@ -10101,6 +10150,11 @@ msgstr "工具欄"
 #: share/html/Elements/RT__Queue/ColumnMap:80
 msgid "Sign"
 msgstr "簽名"
+
+#: share/html/Admin/Queues/Modify.html:123
+#. ("<b>","</b>","<i>","</i>")
+msgid "Sign all auto-generated mail.  %1Caution%2: Enabling this option alters the signature from providing %3authentication%4 to providing %3integrity%4."
+msgstr ""
 
 #: share/html/Admin/Queues/Modify.html:118
 msgid "Sign by default"
@@ -10127,11 +10181,11 @@ msgstr "簽名檔"
 msgid "Signed in as %1"
 msgstr "使用者：%1"
 
-#: lib/RT/Queue.pm:595
+#: lib/RT/Queue.pm:593 lib/RT/Queue.pm:619
 msgid "Signing disabled"
 msgstr "簽名已停用"
 
-#: lib/RT/Queue.pm:594
+#: lib/RT/Queue.pm:592 lib/RT/Queue.pm:618
 msgid "Signing enabled"
 msgstr "簽名已啟用"
 
@@ -10139,7 +10193,7 @@ msgstr "簽名已啟用"
 msgid "Simple"
 msgstr "簡單"
 
-#: share/html/Elements/Tabs:411
+#: share/html/Elements/Tabs:412
 msgid "Simple Search"
 msgstr "簡易查詢"
 
@@ -10203,7 +10257,7 @@ msgstr "源"
 msgid "Specify whether this is a daily or weekly run."
 msgstr "指定是每天運行還是每周運行"
 
-#: share/html/Elements/Tabs:735
+#: share/html/Elements/Tabs:736
 msgid "Spreadsheet"
 msgstr "試算表"
 
@@ -10219,7 +10273,7 @@ msgstr "關卡運行動作"
 msgid "Stage Condition"
 msgstr "關卡運行條件"
 
-#: etc/RT_Config.pm:2350 etc/RT_Config.pm:2424
+#: etc/RT_Config.pm:2415 etc/RT_Config.pm:2491
 msgid "Stall"
 msgstr ""
 
@@ -10248,7 +10302,7 @@ msgstr "無法解讀起始日期 '%1"
 msgid "StartedRelative"
 msgstr "實際起始日(相對值)"
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Tickets.pm:126 share/html/Elements/RT__Ticket/ColumnMap:188 share/html/Elements/RT__Ticket/ColumnMap:221 share/html/Elements/SelectDateType:54 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:239 share/html/Ticket/Elements/EditDates:50 share/html/Ticket/Elements/ShowDates:54 share/html/m/ticket/create:414 share/html/m/ticket/show:377
+#: lib/RT/Graph/Tickets.pm:155 lib/RT/Tickets.pm:126 share/html/Elements/RT__Ticket/ColumnMap:188 share/html/Elements/RT__Ticket/ColumnMap:221 share/html/Elements/SelectDateType:54 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:239 share/html/Ticket/Elements/EditDates:50 share/html/Ticket/Elements/ShowDates:54 share/html/m/ticket/create:404 share/html/m/ticket/show:377
 msgid "Starts"
 msgstr "應起始日"
 
@@ -10268,11 +10322,11 @@ msgstr "應起始日(相對值)"
 msgid "State"
 msgstr "州"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Ticket.pm:927 lib/RT/Tickets.pm:100 lib/RT/Tickets.pm:2108 share/html/Elements/RT__Ticket/ColumnMap:104 share/html/Elements/RT__Ticket/ColumnMap:94 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:60 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Tools/MyDay.html:67 share/html/m/_elements/ticket_list:95 share/html/m/ticket/create:287 share/html/m/ticket/reply:62 share/html/m/ticket/show:219
+#: lib/RT/Graph/Tickets.pm:153 lib/RT/Ticket.pm:927 lib/RT/Tickets.pm:100 lib/RT/Tickets.pm:2135 share/html/Elements/RT__Ticket/ColumnMap:104 share/html/Elements/RT__Ticket/ColumnMap:94 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:60 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Tools/MyDay.html:67 share/html/m/_elements/ticket_list:95 share/html/m/ticket/create:277 share/html/m/ticket/reply:62 share/html/m/ticket/show:219
 msgid "Status"
 msgstr "現況"
 
-#: lib/RT/Ticket.pm:304 lib/RT/Ticket.pm:3117
+#: lib/RT/Ticket.pm:304 lib/RT/Ticket.pm:3148
 #. ($self->loc($args{'Status'}))
 #. ($self->loc($new))
 msgid "Status '%1' isn't a valid status for tickets in this queue."
@@ -10295,7 +10349,7 @@ msgstr "狀態改變"
 msgid "StatusChange"
 msgstr "現況改變時"
 
-#: share/html/Elements/Tabs:612
+#: share/html/Elements/Tabs:613
 msgid "Steal"
 msgstr "強制更換承辦人"
 
@@ -10318,7 +10372,7 @@ msgstr "強制承辦申請單"
 msgid "Step %1 of %2"
 msgstr "%2的步驟%1"
 
-#: lib/RT/Transaction.pm:750 lib/RT/Transaction.pm:903
+#: lib/RT/Transaction.pm:751 lib/RT/Transaction.pm:904
 #. ($Old->Name)
 msgid "Stolen from %1"
 msgstr "承辦人從 %1 強制更換"
@@ -10335,7 +10389,7 @@ msgstr "樣式"
 msgid "Subgroup"
 msgstr "子群組"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Ticket.pm:923 lib/RT/Tickets.pm:132 lib/RT/Tickets.pm:2182 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/QuickCreate:57 share/html/Elements/RT__Ticket/ColumnMap:99 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:133 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:83 share/html/SelfService/Update.html:68 share/html/Ticket/Create.html:157 share/html/Ticket/Elements/Reminders:122 share/html/Ticket/Elements/Reminders:143 share/html/Ticket/Forward.html:63 share/html/Ticket/ModifyAll.html:102 share/html/Ticket/Update.html:162 share/html/m/ticket/create:266 share/html/m/ticket/reply:95
+#: lib/RT/Graph/Tickets.pm:153 lib/RT/Ticket.pm:923 lib/RT/Tickets.pm:132 lib/RT/Tickets.pm:2209 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/QuickCreate:57 share/html/Elements/RT__Ticket/ColumnMap:99 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:133 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:83 share/html/SelfService/Update.html:68 share/html/Ticket/Create.html:157 share/html/Ticket/Elements/Reminders:123 share/html/Ticket/Elements/Reminders:144 share/html/Ticket/Forward.html:63 share/html/Ticket/ModifyAll.html:102 share/html/Ticket/Update.html:162 share/html/m/ticket/create:256 share/html/m/ticket/reply:95
 msgid "Subject"
 msgstr "主題"
 
@@ -10343,7 +10397,7 @@ msgstr "主題"
 msgid "Subject Tag"
 msgstr "主題標簽"
 
-#: lib/RT/Transaction.pm:772
+#: lib/RT/Transaction.pm:773
 #. ($self->Data)
 msgid "Subject changed to %1"
 msgstr "標題已改為 %1"
@@ -10386,7 +10440,7 @@ msgstr "訂閱控制面板"
 msgid "Subscribed to dashboard %1"
 msgstr "已訂閱控制面板 %1"
 
-#: share/html/Dashboards/Subscription.html:88 share/html/Elements/RT__Dashboard/ColumnMap:66 share/html/Elements/Tabs:500
+#: share/html/Dashboards/Subscription.html:88 share/html/Elements/RT__Dashboard/ColumnMap:66 share/html/Elements/Tabs:501
 msgid "Subscription"
 msgstr "訂閱"
 
@@ -10399,11 +10453,11 @@ msgstr "無法創建訂閱: %1"
 msgid "Succeeded"
 msgstr "設定成功"
 
-#: lib/RT/Attachment.pm:781
+#: lib/RT/Attachment.pm:800
 msgid "Successfuly decrypted data"
 msgstr "已解密資料"
 
-#: lib/RT/Attachment.pm:746
+#: lib/RT/Attachment.pm:765
 msgid "Successfuly encrypted data"
 msgstr "已加密資料"
 
@@ -10447,7 +10501,7 @@ msgstr "正在同步化 HRMS 人事系統資料。請稍待..."
 msgid "System"
 msgstr "系統"
 
-#: share/html/Admin/Tools/Configuration.html:50 share/html/Elements/Tabs:211
+#: share/html/Admin/Tools/Configuration.html:50 share/html/Elements/Tabs:212
 msgid "System Configuration"
 msgstr "系統設定"
 
@@ -10463,7 +10517,7 @@ msgstr "系統預設"
 msgid "System Defined"
 msgstr "系統定義"
 
-#: lib/RT/Interface/Web.pm:1804 lib/RT/Interface/Web.pm:1915 share/html/Admin/Elements/EditRightsCategoryTabs:65 share/html/Admin/Elements/SelectRights:110
+#: lib/RT/Interface/Web.pm:2166 lib/RT/Interface/Web.pm:2277 share/html/Admin/Elements/EditRightsCategoryTabs:65 share/html/Admin/Elements/SelectRights:110
 msgid "System Error"
 msgstr "系統錯誤"
 
@@ -10516,7 +10570,7 @@ msgstr "系統權限"
 msgid "SystemInternal"
 msgstr "系統內部用"
 
-#: lib/RT/Handle.pm:728
+#: lib/RT/Handle.pm:726
 msgid "SystemRolegroup for internal use"
 msgstr "內部使用的系統角色群組"
 
@@ -10528,7 +10582,7 @@ msgstr "TEST_STRING"
 msgid "TabbedUI"
 msgstr "頁籤介面"
 
-#: etc/initialdata:587 share/html/Elements/Tabs:606 share/html/Search/Elements/EditFormat:72
+#: etc/initialdata:587 share/html/Elements/Tabs:607 share/html/Search/Elements/EditFormat:72
 msgid "Take"
 msgstr "受理"
 
@@ -10540,7 +10594,7 @@ msgstr "自行承辦申請單"
 msgid "TakeTicket"
 msgstr "自行承辦申請單"
 
-#: lib/RT/Transaction.pm:735 lib/RT/Transaction.pm:895
+#: lib/RT/Transaction.pm:736 lib/RT/Transaction.pm:896
 msgid "Taken"
 msgstr "已受理"
 
@@ -10565,7 +10619,7 @@ msgstr "範本 #%1"
 msgid "Template #%1 deleted"
 msgstr "範本#%1已刪除"
 
-#: lib/RT/Scrip.pm:161 lib/RT/Scrip.pm:673
+#: lib/RT/Scrip.pm:161 lib/RT/Scrip.pm:695
 #. ($args{'Template'})
 #. ($value)
 msgid "Template '%1' not found"
@@ -10583,7 +10637,7 @@ msgstr "通知範本描述"
 msgid "Template Name"
 msgstr "通知範本名稱"
 
-#: lib/RT/Template.pm:699
+#: lib/RT/Template.pm:724
 msgid "Template compiles"
 msgstr "範本編譯"
 
@@ -10591,15 +10645,15 @@ msgstr "範本編譯"
 msgid "Template deleted"
 msgstr "範本已刪除"
 
-#: lib/RT/Template.pm:666
+#: lib/RT/Template.pm:691
 msgid "Template does not include Perl code"
 msgstr "範本不包括Perl代碼"
 
-#: lib/RT/Template.pm:390
+#: lib/RT/Template.pm:415
 msgid "Template is empty"
 msgstr "範本為空"
 
-#: lib/RT/Scrip.pm:157 lib/RT/Scrip.pm:668
+#: lib/RT/Scrip.pm:157 lib/RT/Scrip.pm:690
 msgid "Template is mandatory argument"
 msgstr "範本是必填欄位"
 
@@ -10611,20 +10665,20 @@ msgstr "找不到範本"
 msgid "Template not found\\n"
 msgstr "找不到範本\\n"
 
-#: lib/RT/Template.pm:370
+#: lib/RT/Template.pm:395
 msgid "Template parsed"
 msgstr "範本剖析完畢"
 
-#: lib/RT/Template.pm:455
+#: lib/RT/Template.pm:480
 msgid "Template parsing error"
 msgstr "範本剖析錯誤"
 
-#: lib/RT/Template.pm:475 lib/RT/Template.pm:677
+#: lib/RT/Template.pm:500 lib/RT/Template.pm:702
 #. ($Text::Template::ERROR)
 msgid "Template parsing error: %1"
 msgstr "範本解析錯誤: %1"
 
-#: share/html/Elements/Tabs:114 share/html/Elements/Tabs:275
+#: share/html/Elements/Tabs:115 share/html/Elements/Tabs:276
 msgid "Templates"
 msgstr "範本"
 
@@ -10645,15 +10699,15 @@ msgstr "表單 %1 的範本"
 msgid "Text"
 msgstr "文字"
 
-#: share/html/Ticket/Elements/ShowTransactionAttachments:164
+#: share/html/Ticket/Elements/ShowTransactionAttachments:166
 msgid "Text file is not shown because it is disabled in preferences."
 msgstr "首選項里停用，所以文本文件未予顯示"
 
-#: lib/RT/Record.pm:952
+#: lib/RT/Record.pm:954
 msgid "That is already the current value"
 msgstr "已經是目前欄位的值"
 
-#: lib/RT/CustomField.pm:581
+#: lib/RT/CustomField.pm:585
 msgid "That is not a value for this custom field"
 msgstr "這不是該自訂欄位的值"
 
@@ -10665,7 +10719,7 @@ msgstr "同樣的值"
 msgid "That principal already has that right"
 msgstr "這項單位已經擁有該權限"
 
-#: lib/RT/Queue.pm:949
+#: lib/RT/Queue.pm:974
 #. ($args{'Type'})
 msgid "That principal is already a %1 for this queue"
 msgstr "這項單位已經是這個表單的 %1"
@@ -10675,7 +10729,7 @@ msgstr "這項單位已經是這個表單的 %1"
 msgid "That principal is already a %1 for this ticket"
 msgstr "這項單位已經是這份申請單的 %1"
 
-#: lib/RT/Queue.pm:1030
+#: lib/RT/Queue.pm:1055
 #. ($args{'Type'})
 msgid "That principal is not a %1 for this queue"
 msgstr "這項單位不是這個表單的 %1"
@@ -10689,7 +10743,7 @@ msgstr "這項單位不是這份申請單的 %1"
 msgid "That queue does not exist"
 msgstr "此表單不存在"
 
-#: lib/RT/Ticket.pm:3131
+#: lib/RT/Ticket.pm:3162
 msgid "That ticket has unresolved dependencies"
 msgstr "這份申請單有尚未解決的附屬申請單"
 
@@ -10697,27 +10751,27 @@ msgstr "這份申請單有尚未解決的附屬申請單"
 msgid "That user already has that right"
 msgstr "使用者已具有該項權限"
 
-#: lib/RT/Action/CreateTickets.pm:480 lib/RT/Ticket.pm:2947
+#: lib/RT/Action/CreateTickets.pm:490 lib/RT/Ticket.pm:2978
 msgid "That user already owns that ticket"
 msgstr "該使用者已經承辦這份申請單"
 
-#: lib/RT/Ticket.pm:2890
+#: lib/RT/Ticket.pm:2921
 msgid "That user does not exist"
 msgstr "使用者不存在"
 
-#: lib/RT/User.pm:333
+#: lib/RT/User.pm:334
 msgid "That user is already privileged"
 msgstr "這名使用者已經是內部成員"
 
-#: lib/RT/User.pm:353
+#: lib/RT/User.pm:354
 msgid "That user is already unprivileged"
 msgstr "這名使用者屬於非內部成員群組"
 
-#: lib/RT/User.pm:346
+#: lib/RT/User.pm:347
 msgid "That user is now privileged"
 msgstr "使用者加入內部成員群組完畢"
 
-#: lib/RT/User.pm:366
+#: lib/RT/User.pm:367
 msgid "That user is now unprivileged"
 msgstr "這名使用者已加入非內部成員群組"
 
@@ -10725,7 +10779,7 @@ msgstr "這名使用者已加入非內部成員群組"
 msgid "That user is now unprivilegedileged"
 msgstr "這名使用者已加入非內部成員群組"
 
-#: lib/RT/Ticket.pm:2940
+#: lib/RT/Ticket.pm:2971
 msgid "That user may not own tickets in that queue"
 msgstr "使用者可能沒有承辦表單裡的申請單"
 
@@ -10733,7 +10787,7 @@ msgstr "使用者可能沒有承辦表單裡的申請單"
 msgid "That's not a numerical id"
 msgstr "這不是一個數字編號"
 
-#: share/html/SelfService/Display.html:57 share/html/Ticket/Create.html:202 share/html/Ticket/Elements/ShowSummary:52 share/html/m/ticket/create:368 share/html/m/ticket/show:209
+#: share/html/SelfService/Display.html:57 share/html/Ticket/Create.html:202 share/html/Ticket/Elements/ShowSummary:52 share/html/m/ticket/create:358 share/html/m/ticket/show:209
 msgid "The Basics"
 msgstr "基本資訊"
 
@@ -10741,7 +10795,7 @@ msgstr "基本資訊"
 msgid "The CC of a ticket"
 msgstr "申請單的副本收件人"
 
-#: lib/RT/Article.pm:660
+#: lib/RT/Article.pm:671
 #. ($Value)
 msgid "The Class of the Article identified by %1 is not applied to the current Queue"
 msgstr "標識為 %1 的文章類型不適用於此表單"
@@ -10782,27 +10836,27 @@ msgstr "下列元件已被刪除並且將會被從表單里刪除"
 msgid "The following queries may not be visible to all users who can see this dashboard."
 msgstr "下列元件對某些可看見該表單的使用者可能不可見"
 
-#: lib/RT/Crypt/GnuPG.pm:2206
+#: lib/RT/Crypt/GnuPG.pm:2230
 msgid "The key has been disabled"
 msgstr "密鑰已被停用"
 
-#: lib/RT/Crypt/GnuPG.pm:2212
+#: lib/RT/Crypt/GnuPG.pm:2236
 msgid "The key has been revoked"
 msgstr "密鑰已被登出"
 
-#: lib/RT/Crypt/GnuPG.pm:2217
+#: lib/RT/Crypt/GnuPG.pm:2241
 msgid "The key has expired"
 msgstr "密鑰已過期"
 
-#: lib/RT/Crypt/GnuPG.pm:2250
+#: lib/RT/Crypt/GnuPG.pm:2274
 msgid "The key is fully trusted"
 msgstr "密鑰被完全信任(fully)"
 
-#: lib/RT/Crypt/GnuPG.pm:2255
+#: lib/RT/Crypt/GnuPG.pm:2279
 msgid "The key is ultimately trusted"
 msgstr "密鑰被終極信任(ultimately)"
 
-#: lib/RT/Record.pm:955
+#: lib/RT/Record.pm:957
 msgid "The new value has been set."
 msgstr "新的欄位值設定完成。"
 
@@ -10827,11 +10881,11 @@ msgstr "設定保存在%1"
 msgid "The system is unable to sign outgoing email messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately. The problem addresses are:"
 msgstr "系統不能對要發送的郵件簽名，通常是因為密碼錯誤或者GPG代理宕了。請立即聯系系統管理員，出問題的位址是:"
 
-#: lib/RT/Config.pm:197 share/html/Admin/Tools/Theme.html:49 share/html/Elements/Tabs:216
+#: lib/RT/Config.pm:197 share/html/Admin/Tools/Theme.html:49 share/html/Elements/Tabs:217
 msgid "Theme"
 msgstr "主題"
 
-#: lib/RT/Crypt/GnuPG.pm:2059
+#: lib/RT/Crypt/GnuPG.pm:2081
 msgid "There are several keys suitable for encryption."
 msgstr "有好幾個可用作加密的密鑰"
 
@@ -10839,7 +10893,7 @@ msgstr "有好幾個可用作加密的密鑰"
 msgid "There are unread messages on this ticket."
 msgstr "申請單有未讀資訊"
 
-#: lib/RT/Crypt/GnuPG.pm:2245
+#: lib/RT/Crypt/GnuPG.pm:2269
 msgid "There is marginal trust in this key"
 msgstr "密鑰被部分信任(marginal)"
 
@@ -10848,7 +10902,7 @@ msgstr "密鑰被部分信任(marginal)"
 msgid "There is more than one group with the name '%1'.  This may cause inconsistency in parts of the admin interface, and therefore it's recommended you rename the conflicting groups."
 msgstr "有超過一個名為 '%1' 的群組。這將會造成部分管理界面的矛盾，因此建議您重命名有衝突的群組。"
 
-#: lib/RT/Crypt/GnuPG.pm:2051
+#: lib/RT/Crypt/GnuPG.pm:2073
 msgid "There is no key suitable for encryption."
 msgstr "沒有適合加密的密鑰"
 
@@ -10856,7 +10910,7 @@ msgstr "沒有適合加密的密鑰"
 msgid "There is no mapping for statuses between these queues. Contact your system administrator."
 msgstr "沒有該表單之間狀態的繪圖，請聯系系統管理員。"
 
-#: lib/RT/Crypt/GnuPG.pm:2055
+#: lib/RT/Crypt/GnuPG.pm:2077
 msgid "There is one suitable key, but trust level is not set."
 msgstr "有一個合適的密鑰，但是信任等級沒有設定"
 
@@ -10872,19 +10926,19 @@ msgstr "這些配置選項包括運行RT的基本選項。我們需要知道此R
 msgid "Third-"
 msgstr "三"
 
-#: lib/RT/CustomField.pm:369 lib/RT/CustomField.pm:679
+#: lib/RT/CustomField.pm:369 lib/RT/CustomField.pm:683
 msgid "This Custom Field can not have list of values"
 msgstr "該自定欄位不能具有值列表"
 
-#: lib/RT/Class.pm:444
+#: lib/RT/Class.pm:445
 msgid "This class does not apply to that object"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1351
+#: lib/RT/CustomField.pm:1425
 msgid "This custom field does not apply to that object"
 msgstr "此自訂欄位不適用於該物件"
 
-#: lib/RT/CustomField.pm:1011 lib/RT/CustomField.pm:356
+#: lib/RT/CustomField.pm:1085 lib/RT/CustomField.pm:356
 msgid "This custom field has no Render Types"
 msgstr "該自定欄位沒有呈現類型"
 
@@ -10946,7 +11000,7 @@ msgstr "星期四"
 msgid "Thursday"
 msgstr "星期四"
 
-#: lib/RT/Record.pm:940 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/ShowReminders:53
+#: lib/RT/Record.pm:942 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/ShowReminders:53
 msgid "Ticket"
 msgstr "申請單"
 
@@ -10978,7 +11032,7 @@ msgstr "申請單#%1:"
 msgid "Ticket #%1: %2"
 msgstr "申請單 #%1: %2"
 
-#: lib/RT/Action/CreateTickets.pm:1147 lib/RT/Action/CreateTickets.pm:1156 lib/RT/Action/CreateTickets.pm:376 lib/RT/Action/CreateTickets.pm:499 lib/RT/Action/CreateTickets.pm:511
+#: lib/RT/Action/CreateTickets.pm:1158 lib/RT/Action/CreateTickets.pm:1167 lib/RT/Action/CreateTickets.pm:386 lib/RT/Action/CreateTickets.pm:509 lib/RT/Action/CreateTickets.pm:521
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
@@ -11000,7 +11054,7 @@ msgstr "載入申請單 %1\\n"
 msgid "Ticket %1: %2"
 msgstr "申請單 %1：%2"
 
-#: share/html/Elements/Tabs:283
+#: share/html/Elements/Tabs:284
 msgid "Ticket Custom Fields"
 msgstr "申請單的自訂欄位"
 
@@ -11033,7 +11087,7 @@ msgstr "申請單已解決"
 msgid "Ticket Search"
 msgstr "申請單搜索"
 
-#: lib/RT/CustomField.pm:1599 share/html/Admin/Global/CustomFields/index.html:89 share/html/Elements/Tabs:147
+#: lib/RT/CustomField.pm:1673 share/html/Admin/Global/CustomFields/index.html:89 share/html/Elements/Tabs:148
 msgid "Ticket Transactions"
 msgstr "申請單的更動"
 
@@ -11053,11 +11107,11 @@ msgstr "申請單附件"
 msgid "Ticket composition"
 msgstr "申請單構成"
 
-#: lib/RT/Tickets.pm:2351
+#: lib/RT/Tickets.pm:2378
 msgid "Ticket content"
 msgstr "申請單內容"
 
-#: lib/RT/Tickets.pm:2396
+#: lib/RT/Tickets.pm:2423
 msgid "Ticket content type"
 msgstr "申請單內容類別"
 
@@ -11065,7 +11119,7 @@ msgstr "申請單內容類別"
 msgid "Ticket could not be created due to an internal error"
 msgstr "內部錯誤，無法新增申請單"
 
-#: share/html/Ticket/Create.html:282 share/html/m/ticket/create:75
+#: share/html/Ticket/Create.html:282 share/html/m/ticket/create:76
 msgid "Ticket could not be loaded"
 msgstr "無法載入申請單"
 
@@ -11118,16 +11172,16 @@ msgstr "申請單視察員"
 msgid "TicketSQL search module"
 msgstr "TicketSQL 查詢模組"
 
-#: lib/RT/CustomField.pm:1598 share/html/Admin/Global/CustomFields/index.html:83 share/html/Elements/Tabs:142 share/html/Elements/Tabs:410 share/html/Elements/Tabs:834 share/html/Search/Chart:152 share/html/Search/Elements/Chart:107
+#: lib/RT/CustomField.pm:1672 share/html/Admin/Global/CustomFields/index.html:83 share/html/Elements/Tabs:143 share/html/Elements/Tabs:411 share/html/Elements/Tabs:840 share/html/Search/Chart:152 share/html/Search/Elements/Chart:107
 msgid "Tickets"
 msgstr "申請單"
 
-#: lib/RT/Tickets.pm:2553
+#: lib/RT/Tickets.pm:2580
 #. ($self->loc( $args{'TYPE'} ),            $args{'BASE'},)
 msgid "Tickets %1 %2"
 msgstr "申請單 %1 %2"
 
-#: lib/RT/Tickets.pm:2510
+#: lib/RT/Tickets.pm:2537
 #. ($self->loc( $args{'TYPE'} ),            $args{'TARGET'})
 msgid "Tickets %1 by %2"
 msgstr "申請單 %1 (%2)"
@@ -11164,15 +11218,15 @@ msgstr "申請單解決截止日"
 msgid "Tickets which depend on this approval:"
 msgstr "批准之後，可接續處理："
 
-#: share/html/Elements/RT__Ticket/ColumnMap:169 share/html/Search/Elements/PickBasics:165 share/html/Ticket/Create.html:216 share/html/m/ticket/create:384
+#: share/html/Elements/RT__Ticket/ColumnMap:169 share/html/Search/Elements/PickBasics:165 share/html/Ticket/Create.html:216 share/html/m/ticket/create:374
 msgid "Time Estimated"
 msgstr "預計時間"
 
-#: lib/RT/Tickets.pm:2326 share/html/Elements/RT__Ticket/ColumnMap:164 share/html/Search/Elements/PickBasics:166 share/html/Ticket/Create.html:226 share/html/m/ticket/create:398
+#: lib/RT/Tickets.pm:2353 share/html/Elements/RT__Ticket/ColumnMap:164 share/html/Search/Elements/PickBasics:166 share/html/Ticket/Create.html:226 share/html/m/ticket/create:388
 msgid "Time Left"
 msgstr "剩餘時間"
 
-#: lib/RT/Tickets.pm:2303 share/html/Elements/RT__Ticket/ColumnMap:159 share/html/Search/Elements/PickBasics:164 share/html/Ticket/Create.html:221 share/html/m/ticket/create:391
+#: lib/RT/Tickets.pm:2330 share/html/Elements/RT__Ticket/ColumnMap:159 share/html/Search/Elements/PickBasics:164 share/html/Ticket/Create.html:221 share/html/m/ticket/create:381
 msgid "Time Worked"
 msgstr "處理時間"
 
@@ -11247,7 +11301,7 @@ msgstr "告知日"
 msgid "ToldRelative"
 msgstr "告知日(相對值)"
 
-#: share/html/Elements/Tabs:206 share/html/Elements/Tabs:415 share/html/Tools/index.html:48
+#: share/html/Elements/Tabs:207 share/html/Elements/Tabs:416 share/html/Tools/index.html:48
 msgid "Tools"
 msgstr "工具"
 
@@ -11267,7 +11321,7 @@ msgstr "主題成員已移除"
 msgid "Topic not found"
 msgstr "未找到主題"
 
-#: share/html/Articles/Article/Display.html:59 share/html/Articles/Article/Edit.html:87 share/html/Articles/Article/Edit.html:91 share/html/Articles/Article/Elements/ShowSearchCriteria:132 share/html/Elements/RT__Article/ColumnMap:89 share/html/Elements/Tabs:200 share/html/Elements/Tabs:365 share/html/Elements/Tabs:419
+#: share/html/Articles/Article/Display.html:59 share/html/Articles/Article/Edit.html:87 share/html/Articles/Article/Edit.html:91 share/html/Articles/Article/Elements/ShowSearchCriteria:132 share/html/Elements/RT__Article/ColumnMap:89 share/html/Elements/Tabs:201 share/html/Elements/Tabs:366 share/html/Elements/Tabs:420
 msgid "Topics"
 msgstr "主題"
 
@@ -11279,7 +11333,7 @@ msgstr "頁"
 msgid "Transaction"
 msgstr "更動"
 
-#: lib/RT/Transaction.pm:928
+#: lib/RT/Transaction.pm:929
 #. ($self->Data)
 msgid "Transaction %1 purged"
 msgstr "清除更動報告 %1"
@@ -11288,7 +11342,7 @@ msgstr "清除更動報告 %1"
 msgid "Transaction Created"
 msgstr "更動報告已新增"
 
-#: share/html/Elements/Tabs:286
+#: share/html/Elements/Tabs:287
 msgid "Transaction Custom Fields"
 msgstr "更動的自訂欄位"
 
@@ -11312,7 +11366,7 @@ msgstr "新增更動時"
 msgid "TransactionDate"
 msgstr "事務日期"
 
-#: lib/RT/Transaction.pm:985
+#: lib/RT/Transaction.pm:986
 msgid "Transactions are immutable"
 msgstr "不可更改更動報告"
 
@@ -11340,7 +11394,7 @@ msgstr "星期二"
 msgid "Tuesday"
 msgstr "星期二"
 
-#: lib/RT/Ticket.pm:929 lib/RT/Tickets.pm:102 lib/RT/Tickets.pm:2158 share/html/Admin/CustomFields/Modify.html:64 share/html/Admin/Elements/EditCustomField:67 share/html/Admin/Elements/ModifyTemplate:58 share/html/Elements/RT__Ticket/ColumnMap:153 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/AddWatchers:56 share/html/Ticket/Elements/AddWatchers:67 share/html/Ticket/Elements/AddWatchers:77
+#: lib/RT/Ticket.pm:929 lib/RT/Tickets.pm:102 lib/RT/Tickets.pm:2185 share/html/Admin/CustomFields/Modify.html:64 share/html/Admin/Elements/EditCustomField:67 share/html/Admin/Elements/ModifyTemplate:58 share/html/Elements/RT__Ticket/ColumnMap:153 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/AddWatchers:56 share/html/Ticket/Elements/AddWatchers:67 share/html/Ticket/Elements/AddWatchers:77
 msgid "Type"
 msgstr "類別"
 
@@ -11348,7 +11402,7 @@ msgstr "類別"
 msgid "Type <b>a:</b> before article numbers and <b>t:</b> before ticket numbers."
 msgstr "在文章編號前輸入<b>a:</b> ，在申請單編號前輸入 <b>t:</b>"
 
-#: lib/RT/CustomField.pm:961
+#: lib/RT/CustomField.pm:1035
 #. ($self->FriendlyTypeComposite( $old ),        $self->FriendlyTypeComposite( $composite ),)
 msgid "Type changed from '%1' to '%2'"
 msgstr "類型從'%1'更改為'%2'"
@@ -11366,7 +11420,7 @@ msgstr "無法刪除 %1 主題的成員"
 msgid "Unable to determine object type or id"
 msgstr "無法確定物件類型或編號"
 
-#: share/html/Articles/Article/Delete.html:87 share/html/Articles/Article/Edit.html:238
+#: share/html/Articles/Article/Delete.html:87 share/html/Articles/Article/Edit.html:239
 msgid "Unable to load article"
 msgstr "無法載入文章"
 
@@ -11413,7 +11467,7 @@ msgstr "無法訂閱控制面板 %1: 權限不足"
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr "Uncheck boxes to disable notifications to the listed recipients <b>僅針對該事務</b>不勾選以停止通知列出的收件人；在<a href=\"%1\">『人員頁面』</a>中進行永久取消的管理。"
 
-#: etc/RT_Config.pm:2374 etc/RT_Config.pm:2448
+#: etc/RT_Config.pm:2439 etc/RT_Config.pm:2515
 msgid "Undelete"
 msgstr ""
 
@@ -11429,26 +11483,26 @@ msgstr "外部系統登入帳號"
 msgid "UnixUsername"
 msgstr "外部系統登入帳號"
 
-#: lib/RT/Crypt/GnuPG.pm:2229 lib/RT/Crypt/GnuPG.pm:2234
+#: lib/RT/Crypt/GnuPG.pm:2253 lib/RT/Crypt/GnuPG.pm:2258
 msgid "Unknown (no trust value assigned)"
 msgstr "未知的(沒有設定信任值)"
 
-#: lib/RT/Crypt/GnuPG.pm:2239
+#: lib/RT/Crypt/GnuPG.pm:2263
 msgid "Unknown (this value is new to the system)"
 msgstr "未知的(該值是新添加的)"
 
-#: lib/RT/Attachment.pm:333 lib/RT/Record.pm:813
+#: lib/RT/Attachment.pm:333 lib/RT/Record.pm:815
 #. ($ContentEncoding)
 #. ($self->ContentEncoding)
 msgid "Unknown ContentEncoding %1"
 msgstr "不可解的內容文字編碼方式 %1"
 
-#: lib/RT/Interface/Web/QueryBuilder/Tree.pm:268
+#: lib/RT/Interface/Web/QueryBuilder/Tree.pm:270
 #. ($key)
 msgid "Unknown field: %1"
 msgstr "未知的欄位：%1"
 
-#: lib/RT/Queue.pm:1020
+#: lib/RT/Queue.pm:1045
 #. ($args{Type})
 msgid "Unknown watcher type %1"
 msgstr ""
@@ -11478,7 +11532,7 @@ msgstr "未命名的查詢"
 msgid "Unowned tickets"
 msgstr "未分配的申請單"
 
-#: lib/RT/Handle.pm:663
+#: lib/RT/Handle.pm:661
 msgid "Unprivileged"
 msgstr "非內部成員"
 
@@ -11494,11 +11548,11 @@ msgstr "未選中表單"
 msgid "Unselected objects"
 msgstr "未選取的物件"
 
-#: lib/RT/User.pm:1583
+#: lib/RT/User.pm:1608
 msgid "Unset private key"
 msgstr "未設定主密鑰"
 
-#: lib/RT/Transaction.pm:731 lib/RT/Transaction.pm:907
+#: lib/RT/Transaction.pm:732 lib/RT/Transaction.pm:908
 msgid "Untaken"
 msgstr "未被受理"
 
@@ -11558,7 +11612,7 @@ msgstr "批次更新申請單"
 msgid "Update name"
 msgstr "更新帳號"
 
-#: lib/RT/Action/CreateTickets.pm:520 lib/RT/Interface/Web.pm:1612
+#: lib/RT/Action/CreateTickets.pm:530 lib/RT/Interface/Web.pm:1974
 msgid "Update not recorded."
 msgstr "更新未被記錄"
 
@@ -11590,7 +11644,7 @@ msgstr "更新申請單 #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "更新申請單 #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:518 lib/RT/Interface/Web.pm:1612
+#: lib/RT/Action/CreateTickets.pm:528 lib/RT/Interface/Web.pm:1974
 msgid "Update type was neither correspondence nor comment."
 msgstr "更新的內容並非申請單回覆也不是評論"
 
@@ -11598,7 +11652,7 @@ msgstr "更新的內容並非申請單回覆也不是評論"
 msgid "UpdateStatus"
 msgstr "更新狀態"
 
-#: lib/RT/CustomField.pm:1674 lib/RT/Ticket.pm:932 lib/RT/Tickets.pm:148 share/html/Elements/SelectDateType:56 share/html/Ticket/Elements/ShowDates:79 share/html/m/ticket/show:402
+#: lib/RT/CustomField.pm:1748 lib/RT/Ticket.pm:932 lib/RT/Tickets.pm:148 share/html/Elements/SelectDateType:56 share/html/Ticket/Elements/ShowDates:79 share/html/m/ticket/show:402
 msgid "Updated"
 msgstr "前次更新"
 
@@ -11672,7 +11726,7 @@ msgstr "使用css規則等寬顯示文本並且保留格式，但是如果有需
 msgid "Use default (%1)"
 msgstr "使用預設值(%1)"
 
-#: share/html/Elements/Tabs:207
+#: share/html/Elements/Tabs:208
 msgid "Use other RT administrative tools"
 msgstr "使用其他的 RT 管理工具"
 
@@ -11689,7 +11743,7 @@ msgstr "使用下拉列表功能表來選擇您想要提取為新文章的申請
 msgid "Use this to protect the format of plain text"
 msgstr "使用此項可以保護文本文件的格式"
 
-#: lib/RT/Record.pm:941 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52
+#: lib/RT/Record.pm:943 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52
 msgid "User"
 msgstr "使用者"
 
@@ -11738,7 +11792,7 @@ msgstr "使用者 ID"
 msgid "User Number"
 msgstr "員工編號"
 
-#: share/html/Elements/Tabs:190 share/html/Elements/Tabs:290 share/html/Elements/Tabs:324 share/html/Elements/Tabs:338 share/html/Elements/Tabs:368
+#: share/html/Elements/Tabs:191 share/html/Elements/Tabs:291 share/html/Elements/Tabs:325 share/html/Elements/Tabs:339 share/html/Elements/Tabs:369
 msgid "User Rights"
 msgstr "使用者權限"
 
@@ -11750,17 +11804,17 @@ msgstr "使用者設定"
 msgid "User Shift"
 msgstr "員工班別"
 
-#: lib/RT/Interface/Web.pm:2380
+#: lib/RT/Interface/Web.pm:2744
 #. ($cf->Name, ref $args{'Object'},                    $args{'Object'}->id)
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
 msgstr "使用者試圖在 %2 物件 #%3 的自訂欄位 %1 上執行未知的更新操作"
 
-#: share/html/Admin/Users/Modify.html:287
+#: share/html/Admin/Users/Modify.html:281
 #. ($msg)
 msgid "User could not be created: %1"
 msgstr "無法新增使用者：%1"
 
-#: lib/RT/User.pm:269
+#: lib/RT/User.pm:270
 msgid "User created"
 msgstr "使用者新增完畢"
 
@@ -11776,11 +11830,11 @@ msgstr "使用者 %1 (%2) 新增完畢"
 msgid "User defined groups"
 msgstr "使用者定義的群組"
 
-#: lib/RT/User.pm:1074
+#: lib/RT/User.pm:1075
 msgid "User disabled"
 msgstr "使用者已停用"
 
-#: lib/RT/User.pm:1076
+#: lib/RT/User.pm:1077
 msgid "User enabled"
 msgstr "使用者已啟用"
 
@@ -11788,7 +11842,7 @@ msgstr "使用者已啟用"
 msgid "User has empty email address"
 msgstr "使用者的郵箱為空"
 
-#: lib/RT/User.pm:511 lib/RT/User.pm:531
+#: lib/RT/User.pm:512 lib/RT/User.pm:532
 msgid "User loaded"
 msgstr "已載入使用者"
 
@@ -11816,7 +11870,7 @@ msgstr "使用者自定群組"
 msgid "UserDefined"
 msgstr "使用者自定"
 
-#: share/html/Admin/Users/Modify.html:67 share/html/Elements/Login:68 share/html/Ticket/Elements/AddWatchers:58 share/html/m/login:98
+#: share/html/Admin/Users/Modify.html:67 share/html/Elements/Login:70 share/html/Ticket/Elements/AddWatchers:58 share/html/m/login:98
 msgid "Username"
 msgstr "帳號"
 
@@ -11824,7 +11878,7 @@ msgstr "帳號"
 msgid "Username format"
 msgstr "使用者名格式"
 
-#: lib/RT/CustomField.pm:1600 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:127 share/html/Elements/Tabs:240 share/html/Elements/Tabs:66
+#: lib/RT/CustomField.pm:1674 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:128 share/html/Elements/Tabs:241 share/html/Elements/Tabs:67
 msgid "Users"
 msgstr "使用者"
 
@@ -11973,7 +12027,7 @@ msgstr "成功載入視察員資訊"
 msgid "WatcherGroup"
 msgstr "視察員群組"
 
-#: share/html/Elements/Tabs:273
+#: share/html/Elements/Tabs:274
 msgid "Watchers"
 msgstr "視察員"
 
@@ -11981,7 +12035,7 @@ msgstr "視察員"
 msgid "We are able to find your database and connect as the DBA.  You can click on 'Customize Basics' to continue customizing RT."
 msgstr "可以用資料庫管理員的身分連接到資料庫。請點擊'自定基本項'繼續自定RT。"
 
-#: lib/RT/CustomField.pm:1025 lib/RT/CustomField.pm:1703
+#: lib/RT/CustomField.pm:1099 lib/RT/CustomField.pm:1778
 msgid "We can't currently render as a List when basing categories on another custom field.  Please use another render type."
 msgstr "當類別以另一自定欄位為基礎時，我們目前無法呈現列表。請使用其他的呈現類型。"
 
@@ -12190,7 +12244,7 @@ msgstr "是"
 msgid "You <a href=\"%1\">may edit this dashboard</a> and <a href=\"%2\">your subscription</a> to it in RT."
 msgstr "您可以在RT<a href=\"%1\">編輯該表單</a> 與 <a href=\"%2\">您的訂閱</a> to it in RT."
 
-#: lib/RT/Ticket.pm:3050
+#: lib/RT/Ticket.pm:3081
 msgid "You already own this ticket"
 msgstr "您已是這份申請單的承辦人"
 
@@ -12223,15 +12277,15 @@ msgstr "您也可以直接編輯預先定義的搜尋方式"
 msgid "You can insert ticket content into any freeform, text or wiki field."
 msgstr "您不能在申請單內容插入任何自由形式、文本或wiki欄位"
 
-#: lib/RT/User.pm:777
+#: lib/RT/User.pm:778
 msgid "You can not set password."
 msgstr "不能設定密碼."
 
-#: lib/RT/Ticket.pm:2933
+#: lib/RT/Ticket.pm:2964
 msgid "You can only reassign tickets that you own or that are unowned"
 msgstr "祇能重新指派您所承辦或是沒有承辦人的申請單"
 
-#: lib/RT/Ticket.pm:2929
+#: lib/RT/Ticket.pm:2960
 msgid "You can only take tickets that are unowned"
 msgstr "您祇能受理尚無承辦人的申請單"
 
@@ -12240,7 +12294,7 @@ msgstr "您祇能受理尚無承辦人的申請單"
 msgid "You can search for any word in full ticket history by typing <b>%1<i>word</i></b>."
 msgstr ""
 
-#: lib/RT/Ticket.pm:3122
+#: lib/RT/Ticket.pm:3153
 #. ($self->loc($old), $self->loc($new))
 msgid "You can't change status from '%1' to '%2'."
 msgstr "您不能將改變狀態 '%1' 至 '%2'."
@@ -12261,11 +12315,11 @@ msgstr "您會在表單 %2 找到 %1 的申請單"
 msgid "You have been logged out of RT."
 msgstr "您已登出 RT。"
 
-#: share/html/Admin/Queues/Modify.html:145
+#: share/html/Admin/Queues/Modify.html:147
 msgid "You have enabled GnuPG support but have not set a comment address for this queue."
 msgstr "您已經啟用 GnuPG 支援，但是沒有為此表單設定評論位址"
 
-#: share/html/Admin/Queues/Modify.html:135
+#: share/html/Admin/Queues/Modify.html:137
 msgid "You have enabled GnuPG support but have not set a correspondence address for this queue."
 msgstr "您已經啟用 GnuPG 支援，但是沒有為此表單設定一致的位址"
 
@@ -12289,11 +12343,11 @@ msgstr "必須輸入管理員密碼"
 msgid "You must set StatementLog to true to enable this query history page."
 msgstr "您必須設定指令日志為真，以啟用該表單的歷史頁面"
 
-#: share/html/Admin/Queues/Modify.html:146
+#: share/html/Admin/Queues/Modify.html:148
 msgid "You must set a comment address for this queue in order to configure a GnuPG private key."
 msgstr "您必須為該表單設定一個評論位址，以配置 GnuPG 私鑰"
 
-#: share/html/Admin/Queues/Modify.html:136
+#: share/html/Admin/Queues/Modify.html:138
 msgid "You must set a correspondence address for this queue in order to configure a GnuPG private key."
 msgstr "您必須為該表單設定一個一致的位址，以配置 GnuPG 私鑰"
 
@@ -12339,7 +12393,7 @@ msgstr "RT 管理員可能設錯了由 RT 寄出的郵件收件人標頭檔"
 msgid "Your current password"
 msgstr "當前密碼"
 
-#: lib/RT/User.pm:966
+#: lib/RT/User.pm:967
 msgid "Your password is not set."
 msgstr "密碼未設定."
 
@@ -12368,7 +12422,7 @@ msgstr "您的申請單已被駁回。"
 msgid "Your system supports automatic color suggestions for: %1"
 msgstr "您的系統支援自動顏色建議於: %1"
 
-#: lib/RT/Interface/Web.pm:667
+#: lib/RT/Interface/Web.pm:741
 msgid "Your username or password is incorrect"
 msgstr "您的帳號或密碼有誤"
 
@@ -12376,11 +12430,11 @@ msgstr "您的帳號或密碼有誤"
 msgid "Zip"
 msgstr "郵遞區號"
 
-#: share/html/Elements/RT__CustomField/ColumnMap:166
+#: share/html/Elements/RT__CustomField/ColumnMap:168
 msgid "[Down]"
 msgstr "[下]"
 
-#: share/html/Elements/RT__CustomField/ColumnMap:163
+#: share/html/Elements/RT__CustomField/ColumnMap:165
 msgid "[Up]"
 msgstr "[上]"
 
@@ -12392,7 +12446,7 @@ msgstr "[沒有標題]"
 msgid "[none]"
 msgstr "[無]"
 
-#: lib/RT/Transaction.pm:713
+#: lib/RT/Transaction.pm:714
 msgid "a custom field"
 msgstr "自定欄位"
 
@@ -12476,7 +12530,7 @@ msgstr "選中本框以移除該全域類型，之後即能為此類型選擇特
 msgid "check this box to remove this Custom Field from all objects and be able to choose specific objects."
 msgstr "標記此項以從所有物件移除，然後便可以選擇指定的物件"
 
-#: share/html/Ticket/Elements/UpdateCc:55 share/html/Ticket/Elements/UpdateCc:71
+#: share/html/Ticket/Elements/UpdateCc:55 share/html/Ticket/Elements/UpdateCc:70
 msgid "check to add"
 msgstr "標記以增加"
 
@@ -12515,6 +12569,10 @@ msgstr "申請單回覆(可能)未送出"
 #: NOT FOUND IN SOURCE
 msgid "correspondence sent"
 msgstr "申請單回覆已送出"
+
+#: lib/RT/Interface/Web.pm:1468 lib/RT/Interface/Web.pm:1477
+msgid "create a ticket"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "critical"
@@ -12635,7 +12693,7 @@ msgstr "假"
 msgid "filename"
 msgstr "檔名"
 
-#: lib/RT/Crypt/GnuPG.pm:2251
+#: lib/RT/Crypt/GnuPG.pm:2275
 msgid "full"
 msgstr "完全"
 
@@ -12664,7 +12722,7 @@ msgstr "隱藏引用文本"
 msgid "hours"
 msgstr "小時"
 
-#: lib/RT/Date.pm:121 share/html/Elements/Tabs:757
+#: lib/RT/Date.pm:121 share/html/Elements/Tabs:758
 msgid "iCal"
 msgstr "iCal"
 
@@ -12695,23 +12753,23 @@ msgstr "索引"
 msgid "info"
 msgstr "資訊"
 
-#: share/html/Elements/SelectBoolean:55 share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectIPRelation:61 share/html/Elements/SelectMatch:59 share/html/Search/Elements/PickCFs:100
+#: share/html/Elements/SelectBoolean:55 share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectIPRelation:61 share/html/Elements/SelectMatch:59 share/html/Search/Elements/PickCFs:90
 msgid "is"
 msgstr "是"
 
-#: share/html/Elements/SelectBoolean:59 share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectIPRelation:61 share/html/Elements/SelectMatch:60 share/html/Search/Elements/PickCFs:101
+#: share/html/Elements/SelectBoolean:59 share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectIPRelation:61 share/html/Elements/SelectMatch:60 share/html/Search/Elements/PickCFs:91
 msgid "isn't"
 msgstr "不是"
 
-#: lib/RT/Crypt/GnuPG.pm:2207
+#: lib/RT/Crypt/GnuPG.pm:2231
 msgid "key disabled"
 msgstr "金鑰已取消作用"
 
-#: lib/RT/Crypt/GnuPG.pm:2218
+#: lib/RT/Crypt/GnuPG.pm:2242
 msgid "key expired"
 msgstr "金鑰已過期"
 
-#: lib/RT/Crypt/GnuPG.pm:2213
+#: lib/RT/Crypt/GnuPG.pm:2237
 msgid "key revoked"
 msgstr "金鑰已撤回"
 
@@ -12727,7 +12785,7 @@ msgstr "小於"
 msgid "level Admin"
 msgstr "層主管"
 
-#: lib/RT/Crypt/GnuPG.pm:2246
+#: lib/RT/Crypt/GnuPG.pm:2270
 msgid "marginal"
 msgstr "勉強"
 
@@ -12750,6 +12808,22 @@ msgstr "分鐘"
 #: NOT FOUND IN SOURCE
 msgid "modifications\\n\\n"
 msgstr "更改\\n\\n"
+
+#: lib/RT/Interface/Web.pm:1470
+msgid "modify RT's configuration"
+msgstr ""
+
+#: lib/RT/Interface/Web.pm:1473
+msgid "modify a dashboard"
+msgstr ""
+
+#: lib/RT/Interface/Web.pm:1476
+msgid "modify or access a search"
+msgstr ""
+
+#: lib/RT/Interface/Web.pm:1475
+msgid "modify your preferences"
+msgstr ""
 
 #: share/html/Dashboards/Subscription.html:124
 msgid "monthly"
@@ -12784,7 +12858,7 @@ msgstr "沒有名稱"
 msgid "no value"
 msgstr "沒有值"
 
-#: lib/RT/Crypt/GnuPG.pm:2223 share/html/Admin/Elements/EditQueueWatchers:50 share/html/Dashboards/Subscription.html:73 share/html/Ticket/Elements/EditWatchers:51
+#: lib/RT/Crypt/GnuPG.pm:2247 share/html/Admin/Elements/EditQueueWatchers:50 share/html/Dashboards/Subscription.html:73 share/html/Ticket/Elements/EditWatchers:51
 msgid "none"
 msgstr "無"
 
@@ -12824,7 +12898,7 @@ msgstr "第幾天"
 msgid "one"
 msgstr "一"
 
-#: lib/RT/Queue.pm:84 share/html/SelfService/Elements/MyRequests:76
+#: lib/RT/Queue.pm:84 share/html/SelfService/Elements/MyRequests:72 share/html/SelfService/index.html:52
 msgid "open"
 msgstr "開啟"
 
@@ -12839,6 +12913,10 @@ msgstr "已開啟"
 #: share/html/Widgets/Form/Select:79
 msgid "other..."
 msgstr "其他..."
+
+#: share/html/Elements/CSRF:75 share/html/Elements/LoginRedirectWarning:10
+msgid "perform actions"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "personal group '%1' for user '%2'"
@@ -12939,6 +13017,14 @@ msgstr "系統 %1"
 msgid "system group '%1'"
 msgstr "系統群組 '%1'"
 
+#: lib/RT/Interface/Web.pm:1384
+msgid "the Referrer header supplied by your browser (%1) is not allowed by RT's configured hostname (%2)"
+msgstr ""
+
+#: lib/RT/Interface/Web.pm:1377
+msgid "the Referrer header supplied by your browser (%1) is not allowed by RT's configured hostname (%2) or whitelisted hosts (%3)"
+msgstr ""
+
 #: share/html/Elements/Error:70 share/html/SelfService/Error.html:65
 msgid "the calling component did not specify why"
 msgstr "呼叫元件未指明原因"
@@ -12976,7 +13062,7 @@ msgstr "由上往下"
 msgid "true"
 msgstr "真"
 
-#: lib/RT/Crypt/GnuPG.pm:2256
+#: lib/RT/Crypt/GnuPG.pm:2280
 msgid "ultimate"
 msgstr "徹底"
 
@@ -12992,6 +13078,18 @@ msgstr "無限制的"
 #: NOT FOUND IN SOURCE
 msgid "unresolved"
 msgstr "未處理"
+
+#: lib/RT/Interface/Web.pm:1469 lib/RT/Interface/Web.pm:1474 lib/RT/Interface/Web.pm:1478
+msgid "update a ticket"
+msgstr ""
+
+#: lib/RT/Interface/Web.pm:1471
+msgid "update an approval"
+msgstr ""
+
+#: lib/RT/Interface/Web.pm:1472
+msgid "update an article"
+msgstr ""
 
 #: share/html/Admin/Elements/EditRights:66
 msgid "user"
@@ -13027,6 +13125,11 @@ msgstr "每週%1於%2"
 msgid "weeks"
 msgstr "週"
 
+#: share/html/Elements/LoginRedirectWarning:17
+#. ("<strong>$consequence</strong>")
+msgid "which may %1 on your behalf."
+msgstr ""
+
 #: lib/RT/Installer.pm:220
 msgid "which port your web server will listen to, e.g. 8080"
 msgstr "網頁伺服器所使用的埠號, 如 8080"
@@ -13046,4 +13149,8 @@ msgstr "年"
 #: share/html/Elements/RT__Group/ColumnMap:65 share/html/Elements/RT__Group/ColumnMap:73 share/html/Elements/RT__Queue/ColumnMap:81 share/html/Elements/RT__Queue/ColumnMap:85
 msgid "yes"
 msgstr "是"
+
+#: lib/RT/Interface/Web.pm:1369
+msgid "your browser did not supply a Referrer header"
+msgstr ""
 
