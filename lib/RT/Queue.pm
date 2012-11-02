@@ -265,7 +265,7 @@ sub SetLifecycle {
     my $self = shift;
     my $value = shift || 'default';
 
-    return ( 0, $self->loc( '[_1] is not valid lifecycle', $value ) )
+    return ( 0, $self->loc( '[_1] is not a valid lifecycle', $value ) )
       unless $self->ValidateLifecycle($value);
 
     return $self->_Set( Field => 'Lifecycle', Value => $value, @_ );
@@ -407,7 +407,7 @@ sub Create {
 
     $args{'Lifecycle'} ||= 'default';
 
-    return ( 0, $self->loc('Invalid lifecycle name') )
+    return ( 0, $self->loc('[_1] is not a valid lifecycle', $args{'Lifecycle'} ) )
       unless $self->ValidateLifecycle( $args{'Lifecycle'} );
 
     my %attrs = map {$_ => 1} $self->ReadableAttributes;
