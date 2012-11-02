@@ -102,6 +102,14 @@
   </tr>
 </table>
 </&>
+
+%if ($UserObj->Privileged) {
+<&| /Widgets/TitleBox, title => loc('Signature') &>
+<textarea cols="80" rows="5" name="Signature" class="signature" wrap="hard">
+<%$UserObj->Signature || ''%></textarea>
+</&>
+% }
+
 % $m->callback( %ARGS, UserObj => $UserObj, CallbackName => 'FormLeftColumn' );
 </td>
 <td valign="top" class="boxcontainer">
@@ -159,29 +167,30 @@
 </table>
 </&>
 
+<&| /Widgets/TitleBox, title => loc('Secret authentication token'), id => "user-prefs-feeds" &>
+
+<&|/l&>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</&>
+
+<a href="#" id="ResetAuthTokenPrompt" style="display: none">
+  <&|/l&>I want to reset my secret token.</&>
+</a>
+<& /Elements/Submit,
+    Label       => loc('Reset secret authentication token'),
+    Name        => "ResetAuthToken",
+    id          => "ResetAuthTokenContainer" &>
+<script>
+    jQuery("#ResetAuthTokenContainer").hide();
+    jQuery("#ResetAuthTokenPrompt").show().click(function(ev){
+        jQuery(this).slideUp();
+        jQuery("#ResetAuthTokenContainer").slideDown();
+        ev.preventDefault();
+    });
+</script>
+</&>
+
 % $m->callback( %ARGS, UserObj => $UserObj, CallbackName => 'FormRightColumn' );
 </td>
 </tr>
-
-
-<tr><td colspan="2" valign="top" class="boxcontainer">
-%if ($UserObj->Privileged) {
-<br />
-<&| /Widgets/TitleBox, title => loc('Signature') &>
-<textarea cols="80" rows="5" name="Signature" class="signature" wrap="hard">
-<%$UserObj->Signature || ''%></textarea>
-</&>
-% }
-</td></tr>
-
-<tr><td colspan="2" valign="top" class="boxcontainer">
-<&| /Widgets/TitleBox, title => loc('Secret authentication token'), id => "user-prefs-feeds" &>
-
-<p><&|/l&>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</&></p>
-
-<& /Elements/Submit, Label => loc('Reset secret authentication token'), Name => "ResetAuthToken" &>
-</&>
-</td></tr>
 
 </table>
 
