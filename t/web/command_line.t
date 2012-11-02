@@ -3,7 +3,7 @@
 use strict;
 use File::Spec ();
 use Test::Expect;
-use RT::Test tests => 315, actual_server => 1;
+use RT::Test tests => undef, actual_server => 1;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 use RT::User;
@@ -82,6 +82,16 @@ TODO: {
     expect_send("list -t queue 'id > 0'", 'Listing the queues...');
     expect_like(qr/$queue_id: EditedQueue$$/, 'Found the queue');
 }
+
+# Queues with spaces in their names
+expect_send("create -t queue set Name='Spaced Out'", 'Creating a queue...');
+expect_like(qr/Queue \d+ created/, 'Created the queue');
+expect_handle->before() =~ /Queue (\d+) created/;
+my $other_queue = $1;
+ok($other_queue, "Got queue id=$other_queue");
+expect_send("show 'queue/Spaced Out'", 'Showing the queue...');
+expect_like(qr/id: queue\/$other_queue/, 'Saw the queue');
+expect_like(qr/Name: Spaced Out/, 'Saw the modification');
 
 
 
@@ -535,5 +545,8 @@ sub check_attachment {
 # ... in Time::ParseDate
 my @warnings = grep { $_ !~ /\$ampm/ } $m->get_warnings;
 is( scalar @warnings, 0, 'no extra warnings' );
+
+undef $m;
+done_testing;
 
 1; # needed to avoid a weird exit value from expect_quit
