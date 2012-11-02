@@ -11,8 +11,9 @@ new installs or upgrades.
 
 =head1 Examples
 
-RT ships with many initialdata files, some of which are used for upgrades and
-named differently (but function the same).
+RT ships with many initialdata files, only one of which is used to
+configure a fresh install; the rest are used for upgrades, but function
+the same despite being named differently.
 
     etc/initialdata
     etc/upgrade/*/content
@@ -52,6 +53,9 @@ described below.  None are required, all may be used.  Keep in mind that since
 they're just normal Perl arrays, you can C<push> onto them from a loop or
 C<grep> out definitions based on conditionals or generate their content with
 C<map>, etc.
+
+The complete list of possible arrays which can be used, along with
+descriptions of the values to place in them, is below.
 
 =head2 C<@Users>
 
