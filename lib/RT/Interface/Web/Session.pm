@@ -224,6 +224,10 @@ sub _ClearOldDir {
         tied(%session)->delete;
         $RT::Logger->info("successfuly deleted session '$id'");
     }
+
+    my $lock = Apache::Session::Lock::File->new;
+    $lock->clean( $dir, $older_than );
+
     return;
 }
 
