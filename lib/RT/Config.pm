@@ -1222,13 +1222,19 @@ sub SetFromConfig {
             # Otherwie 5.10 goes boom. maybe we should skip any
             # reference
             next if ref($entry) eq 'SCALAR' || ref($entry) eq 'REF';
-            my $entry_ref = *{$entry}{ ref($ref) };
+
+            my $ref_type = ref($ref);
+
+            # regex/arrayref/hashref/coderef are stored in SCALAR glob
+            $ref_type = 'SCALAR' if $ref_type eq 'REF';
+
+            my $entry_ref = *{$entry}{ $ref_type };
             next unless $entry_ref;
 
             # if references are equal then we've found
             if ( $entry_ref == $ref ) {
                 $last_pack = $pack;
-                return ( $REF_SYMBOLS{ ref($ref) } || '*' ) . $pack . $k;
+                return ( $REF_SYMBOLS{ $ref_type } || '*' ) . $pack . $k;
             }
         }
         return '';
