@@ -35,8 +35,12 @@ RT. :)
     mysqldump rt4 --ignore-table rt4.sessions \
                   --single-transaction | gzip > rt-`date +%Y%M%d`.sql.gz
 
-It will be much faster if you can connect to the MySQL server over localhost.
-This will use a local socket instead of the network.
+If you're using a MySQL version older than 4.1.2 (only supported on RT 3.8.x
+and older), you should be also pass the C<--default-character-set=binary>
+option to the second C<mysqldump> command.
+
+The dump will be much faster if you can connect to the MySQL server over
+localhost.  This will use a local socket instead of the network.
 
 If you find your backups taking far far too long to complete (this point should
 take quite a long time to get to on an RT database), there are some alternate
