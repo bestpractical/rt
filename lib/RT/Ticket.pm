@@ -2228,6 +2228,9 @@ sub _RecordNote {
         );
     }
 
+    $args{'MIMEObj'}->head->replace('X-RT-Interface' => 'API')
+        unless $args{'MIMEObj'}->head->get('X-RT-Interface');
+
     # convert text parts into utf-8
     RT::I18N::SetMIMEEntityToUTF8( $args{'MIMEObj'} );
 
