@@ -131,8 +131,6 @@ sub SmartParseMIMEEntityFromScalar {
         }
     };
 
-    $self->RescueOutlook;
-
     #If for some reason we weren't able to parse the message using a temp file
     # try it with a scalar
     if ( $@ || !$self->Entity ) {
@@ -588,6 +586,13 @@ sub RescueOutlook {
         if ( $first->head->get('Content-Type') =~ m{text/plain} ) {
             $text_part = $first;
         }
+    }
+
+    # Add base64 since we've seen examples of double newlines with
+    # this type too. Need an example of a multi-part base64 to
+    # handle that permutation if it exists.
+    elsif ( $mime->head->get('Content-Transfer-Encoding') =~ m{base64} ) {
+        $text_part = $mime;    # Assuming single part, already decoded.
     }
 
     if ($text_part) {
