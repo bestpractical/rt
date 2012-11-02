@@ -765,9 +765,9 @@ sub InsertData {
     );
 
     # Slurp in stuff to insert from the datafile. Possible things to go in here:-
-    our (@Groups, @Users, @ACL, @Queues, @ScripActions, @ScripConditions,
+    our (@Groups, @Users, @Members, @ACL, @Queues, @ScripActions, @ScripConditions,
            @Templates, @CustomFields, @Scrips, @Attributes, @Initial, @Final);
-    local (@Groups, @Users, @ACL, @Queues, @ScripActions, @ScripConditions,
+    local (@Groups, @Users, @Members, @ACL, @Queues, @ScripActions, @ScripConditions,
            @Templates, @CustomFields, @Scrips, @Attributes, @Initial, @Final);
 
     local $@;
@@ -788,6 +788,7 @@ sub InsertData {
         foreach my $item (@Groups) {
             my $new_entry = RT::Group->new( RT->SystemUser );
             my $member_of = delete $item->{'MemberOf'};
+            my $members = delete $item->{'Members'};
             my ( $return, $msg ) = $new_entry->_Create(%$item);
             unless ( $return ) {
                 $RT::Logger->error( $msg );
@@ -826,6 +827,12 @@ sub InsertData {
                     }
                 }
             }
+            push @Members, map { +{Group => $new_entry->id,
+                                   Class => "RT::User", Name => $_} }
+                @{ $members->{Users} || [] };
+            push @Members, map { +{Group => $new_entry->id,
+                                   Class => "RT::Group", Name => $_} }
+                @{ $members->{Groups} || [] };
         }
         $RT::Logger->debug("done.");
     }
@@ -844,6 +851,33 @@ sub InsertData {
             }
         }
         $RT::Logger->debug("done.");
+    }
+    if ( @Members ) {
+        $RT::Logger->debug("Adding users and groups to groups...");
+        for my $item (@Members) {
+            my $group = RT::Group->new(RT->SystemUser);
+            $group->LoadUserDefinedGroup( delete $item->{Group} );
+            unless ($group->Id) {
+                RT->Logger->error("Unable to find group '$group' to add members to");
+                next;
+            }
+
+            my $class = delete $item->{Class} || 'RT::User';
+            my $member = $class->new( RT->SystemUser );
+            $item->{Domain} = 'UserDefined' if $member->isa("RT::Group");
+            $member->LoadByCols( %$item );
+            unless ($member->Id) {
+                RT->Logger->error("Unable to find $class '".($item->{id} || $item->{Name})."' to add to ".$group->Name);
+                next;
+            }
+
+            my ( $return, $msg) = $group->AddMember( $member->PrincipalObj->Id );
+            unless ( $return ) {
+                $RT::Logger->error( $msg );
+            } else {
+                $RT::Logger->debug( $return ."." );
+            }
+        }
     }
     if ( @Queues ) {
         $RT::Logger->debug("Creating queues...");
