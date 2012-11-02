@@ -64,7 +64,7 @@ sub Groupings {
         for my $field (
             qw( Name EmailAddress RealName NickName Organization Lang City Country Timezone ) # loc_qw
           )
-        {    # loc
+        {
             push @fields,
               $self->CurrentUser->loc($type) . ' '
               . $self->CurrentUser->loc($field), $type . '.' . $field;
