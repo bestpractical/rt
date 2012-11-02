@@ -6,7 +6,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 44;
+use RT::Test nodata => 1, tests => undef;
 
 # setup the queue
 
@@ -280,3 +280,8 @@ is($tix->Count, 3, "is cf1 or is cf1 or is cf2 or is cf2");
 $tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL('Requestor.Name IS null');
 is($tix->Count, 1, "t6 doesn't have a Requestor");
+like($tix->BuildSelectCountQuery, qr/\bNULL\b/, "Contains upper-case NULL");
+unlike($tix->BuildSelectCountQuery, qr/\bnull\b/, "Lacks lower-case NULL");
+
+
+done_testing;
