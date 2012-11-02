@@ -56,7 +56,6 @@ my %FlagDescs = (
     DEPENDS_ON, 'depends on',
     VARIABLE,   'resolvable dependency',
     WIPE_AFTER, 'delete after',
-    RELATES,    'relates with',
 );
 
 sub new

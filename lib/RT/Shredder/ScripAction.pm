@@ -81,20 +81,4 @@ sub __DependsOn
     return $self->SUPER::__DependsOn( %args );
 }
 
-sub __Relates
-{
-    my $self = shift;
-    my %args = (
-            Shredder => undef,
-            Dependencies => undef,
-            @_,
-           );
-    my $deps = $args{'Dependencies'};
-    my $list = [];
-
-# TODO: Check here for exec module
-
-    return $self->SUPER::__Relates( %args );
-}
-
 1;

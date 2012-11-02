@@ -84,18 +84,11 @@ This flag is used to mark dependencies that can be resolved with changing
 value in target object. For example ticket can be created by user we can
 change this reference when we delete user.
 
-=head2 RELATES
-
-This flag is used to validate relationships integrity. Base object
-is valid only when all target objects which are marked with this flags
-exist.
-
 =cut
 
 use constant {
     DEPENDS_ON    => 0x000001,
     WIPE_AFTER    => 0x000010,
-    RELATES        => 0x000100,
     VARIABLE    => 0x001000,
 };
 
@@ -112,33 +105,21 @@ Objects with this state are not exist any more in DB, but perl
 object is still in memory. This state is used to be shure that
 delete query is called once.
 
-=head2 VALID
-
-Object is marked with this state only when its relationships
-are valid.
-
-=head2 INVALID
-
 =cut
 
 use constant {
     ON_STACK    => 0x00000,
     IN_WIPING    => 0x00001,
     WIPED        => 0x00010,
-    VALID        => 0x00100,
-    INVALID        => 0x01000,
 };
 
 our @EXPORT = qw(
         DEPENDS_ON
         WIPE_AFTER
-        RELATES
         VARIABLE
         ON_STACK
         IN_WIPING
         WIPED
-        VALID
-        INVALID
         );
 
 1;
