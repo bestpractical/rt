@@ -568,50 +568,67 @@ return 1 if it does find the problem in the entity and get it fixed.
 sub RescueOutlook {
     my $self = shift;
     my $mime = $self->Entity();
-    return unless $mime;
 
-    my $mailer = $mime->head->get('X-Mailer');
-    # 12.0 is outlook 2007, 14.0 is 2010
-    if ( $mailer && $mailer =~ /Microsoft(?:.*?)Outlook 1[2-4]\./ ) {
-        my $text_part;
-        if ( $mime->head->get('Content-Type') =~ m{multipart/mixed} ) {
-            my $first = $mime->parts(0);
-            if ( $first->head->get('Content-Type') =~ m{multipart/alternative} )
+    return unless $mime && $self->LooksLikeMSEmail($mime);
+
+    my $text_part;
+    if ( $mime->head->get('Content-Type') =~ m{multipart/mixed} ) {
+        my $first = $mime->parts(0);
+        if ( $first->head->get('Content-Type') =~ m{multipart/alternative} )
+        {
+            my $inner_first = $first->parts(0);
+            if ( $inner_first->head->get('Content-Type') =~ m{text/plain} )
             {
-                my $inner_first = $first->parts(0);
-                if ( $inner_first->head->get('Content-Type') =~ m{text/plain} )
-                {
-                    $text_part = $inner_first;
-                }
-            }
-        }
-        elsif ( $mime->head->get('Content-Type') =~ m{multipart/alternative} ) {
-            my $first = $mime->parts(0);
-            if ( $first->head->get('Content-Type') =~ m{text/plain} ) {
-                $text_part = $first;
-            }
-        }
-
-        if ($text_part) {
-
-            # use the unencoded string
-            my $content = $text_part->bodyhandle->as_string;
-            if ( $content =~ s/\n\n/\n/g ) {
-                # only write only if we did change the content
-                if ( my $io = $text_part->open("w") ) {
-                    $io->print($content);
-                    $io->close;
-                    return 1;
-                }
-                else {
-                    $RT::Logger->error("can't write to body");
-                }
+                $text_part = $inner_first;
             }
         }
     }
+    elsif ( $mime->head->get('Content-Type') =~ m{multipart/alternative} ) {
+        my $first = $mime->parts(0);
+        if ( $first->head->get('Content-Type') =~ m{text/plain} ) {
+            $text_part = $first;
+        }
+    }
+
+    if ($text_part) {
+
+        # use the unencoded string
+        my $content = $text_part->bodyhandle->as_string;
+        if ( $content =~ s/\n\n/\n/g ) {
+            # only write only if we did change the content
+            if ( my $io = $text_part->open("w") ) {
+                $io->print($content);
+                $io->close;
+                return 1;
+            }
+            else {
+                $RT::Logger->error("can't write to body");
+            }
+        }
+    }
+
     return;
 }
 
+=head1 LooksLikeMSEmail
+
+Try to determine if the current email may have
+come from MS Outlook or gone through Exchange, and therefore
+may have extra newlines added.
+
+=cut
+
+sub LooksLikeMSEmail {
+    my $self = shift;
+    my $mime = shift;
+
+    my $mailer = $mime->head->get('X-Mailer');
+
+    # 12.0 is outlook 2007, 14.0 is 2010
+    return 1 if ( $mailer && $mailer =~ /Microsoft(?:.*?)Outlook 1[2-4]\./ );
+
+    return 0;    # Doesn't look like MS email.
+}
 
 sub DESTROY {
     my $self = shift;
