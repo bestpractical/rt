@@ -1987,8 +1987,9 @@ sub MakeMIMEEntity {
                 $Message->head->set( 'Subject' => $filename );
             }
 
-            # Attachment parts really shouldn't get a Message-ID
+            # Attachment parts really shouldn't get a Message-ID or "interface"
             $Message->head->delete('Message-ID');
+            $Message->head->delete('X-RT-Interface');
         }
     }
 
