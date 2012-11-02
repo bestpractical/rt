@@ -638,6 +638,17 @@ sub LooksLikeMSEmail {
     # 12.0 is outlook 2007, 14.0 is 2010
     return 1 if ( $mailer && $mailer =~ /Microsoft(?:.*?)Outlook 1[2-4]\./ );
 
+    if ( RT->Config->Get('CheckMoreMSMailHeaders') ) {
+
+        # Check for additional headers that might
+        # indicate this came from Outlook or through Exchange.
+        # A sample we received had the headers X-MS-Has-Attach: and
+        # X-MS-Tnef-Correlator: and both had no value.
+
+        my @tags = $mime->head->tags();
+        return 1 if grep { /^X-MS-/ } @tags;
+    }
+
     return 0;    # Doesn't look like MS email.
 }
 
