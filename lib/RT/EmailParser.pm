@@ -599,10 +599,12 @@ sub RescueOutlook {
             if ( my $io = $text_part->open("w") ) {
                 $io->print($content);
                 $io->close;
+                $RT::Logger->debug(
+                    "Removed extra newlines from MS Outlook message.");
                 return 1;
             }
             else {
-                $RT::Logger->error("can't write to body");
+                $RT::Logger->error("Can't write to body to fix newlines");
             }
         }
     }
