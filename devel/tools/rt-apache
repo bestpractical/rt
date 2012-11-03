@@ -53,6 +53,7 @@ use warnings;
 use Getopt::Long;
 use FindBin;
 use Pod::Usage;
+use File::Spec::Functions qw(rel2abs);
 
 my %opt = (
     root => ($ENV{RTHOME} || "/opt/rt4"),
@@ -82,6 +83,10 @@ GetOptions(  \%opt,
     "help|h|?",
 ) or pod2usage( 1 );
 pod2usage( {verbose => 2} ) if $opt{help};
+
+# All paths must be absolute
+$opt{$_} = rel2abs($opt{$_})
+    for qw(root modules);
 
 # Determine what module to use
 my $mod;
