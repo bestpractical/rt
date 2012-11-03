@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 67;
+use RT::Test tests => undef;
 
 RT->Config->Set( 'CustomFieldGroupings',
     'RT::Ticket' => {
@@ -91,50 +91,56 @@ ok $m->login, 'logged in as root';
     note "testing Basics/People/Dates/Links pages";
     { # Basics
         $m->follow_link_ok({id => 'page-basics'}, 'Ticket -> Basics');
-        $m->form_name("TicketModify");
         is $m->dom->find(qq{input[name^="$prefix"][name\$="-Value"]})->size, 2,
             "only one CF input on the page";
         my $input_name = $prefix . $CF{'TestBasics'}->id .'-Value';
         ok $m->dom->at(qq{.ticket-info-basics input[name="$input_name"]}),
             "CF is in the right place";
-        $m->field( $input_name, "TestBasicsChanged" );
-        $m->click('SubmitTicket');
+        $m->submit_form_ok({
+            with_fields => { $input_name => "TestBasicsChanged" },
+            button      => 'SubmitTicket',
+        });
         $m->content_like(qr{to TestBasicsChanged});
 
-        $m->form_name("TicketModify");
-        $m->field( $input_name, "bad value" );
-        $m->click('SubmitTicket');
+        $m->submit_form_ok({
+            with_fields => { $input_name => "bad value" },
+            button      => 'SubmitTicket',
+        });
         $m->content_like(qr{Input must match});
     }
     { # Custom group 'More'
         $m->follow_link_ok({id => 'page-basics'}, 'Ticket -> Basics');
-        $m->form_name("TicketModify");
         my $input_name = $prefix . $CF{'TestMore'}->id .'-Value';
         ok $m->dom->at(qq{.ticket-info-cfs input[name="$input_name"]}),
             "CF is in the right place";
-        $m->field( $input_name, "TestMoreChanged" );
-        $m->click('SubmitTicket');
+        $m->submit_form_ok({
+            with_fields => { $input_name => "TestMoreChanged" },
+            button      => 'SubmitTicket',
+        });
         $m->content_like(qr{to TestMoreChanged});
 
-        $m->form_name("TicketModify");
-        $m->field( $input_name, "bad value" );
-        $m->click('SubmitTicket');
+        $m->submit_form_ok({
+            with_fields => { $input_name => "bad value" },
+            button      => 'SubmitTicket',
+        });
         $m->content_like(qr{Input must match});
     }
 
     foreach my $name ( qw(People Dates Links) ) {
         $m->follow_link_ok({id => "page-\L$name"}, "Ticket's $name page");
-        $m->form_name("Ticket$name");
         is $m->dom->find(qq{input[name^="$prefix"][name\$="-Value"]})->size, 1,
             "only one CF input on the page";
         my $input_name = $prefix . $CF{"Test$name"}->id .'-Value';
-        $m->field( $input_name, "Test${name}Changed" );
-        $m->click('SubmitTicket');
+        $m->submit_form_ok({
+            with_fields => { $input_name => "Test${name}Changed" },
+            button      => 'SubmitTicket',
+        });
         $m->content_like(qr{to Test${name}Changed});
 
-        $m->form_name("Ticket$name");
-        $m->field( $input_name, "bad value" );
-        $m->click('SubmitTicket');
+        $m->submit_form_ok({
+            with_fields => { $input_name => "bad value" },
+            button      => 'SubmitTicket',
+        });
         $m->content_like(qr{Input must match});
     }
 
@@ -154,3 +160,6 @@ ok $m->login, 'logged in as root';
         $m->content_like(qr{to Test${name}Again});
     }
 }
+
+undef $m;
+done_testing;
