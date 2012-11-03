@@ -1140,7 +1140,8 @@ sub _AddWatcher {
 
     if ( $group->HasMember( $principal)) {
 
-        return ( 0, $self->loc('That principal is already a [_1] for this ticket', $self->loc($args{'Type'})) );
+        return ( 0, $self->loc('[_1] is already a [_2] for this ticket',
+                    $principal->Object->Name, $self->loc($args{'Type'})) );
     }
 
 
@@ -1149,7 +1150,8 @@ sub _AddWatcher {
     unless ($m_id) {
         $RT::Logger->error("Failed to add ".$principal->Id." as a member of group ".$group->Id.": ".$m_msg);
 
-        return ( 0, $self->loc('Could not make that principal a [_1] for this ticket', $self->loc($args{'Type'})) );
+        return ( 0, $self->loc('Could not make [_1] a [_2] for this ticket',
+                    $principal->Object->Name, $self->loc($args{'Type'})) );
     }
 
     unless ( $args{'Silent'} ) {
@@ -1160,7 +1162,8 @@ sub _AddWatcher {
         );
     }
 
-        return ( 1, $self->loc('Added principal as a [_1] for this ticket', $self->loc($args{'Type'})) );
+    return ( 1, $self->loc('Added [_1] as a [_2] for this ticket',
+                $principal->Object->Name, $self->loc($args{'Type'})) );
 }
 
 
@@ -1259,8 +1262,8 @@ sub DeleteWatcher {
 
     unless ( $group->HasMember($principal) ) {
         return ( 0,
-                 $self->loc( 'That principal is not a [_1] for this ticket',
-                             $args{'Type'} ) );
+                 $self->loc( '[_1] is not a [_2] for this ticket',
+                             $principal->Object->Name, $args{'Type'} ) );
     }
 
     my ( $m_id, $m_msg ) = $group->_DeleteMember( $principal->Id );
@@ -1273,8 +1276,8 @@ sub DeleteWatcher {
 
         return (0,
                 $self->loc(
-                    'Could not remove that principal as a [_1] for this ticket',
-                    $args{'Type'} ) );
+                    'Could not remove [_1] as a [_2] for this ticket',
+                    $principal->Object->Name, $args{'Type'} ) );
     }
 
     unless ( $args{'Silent'} ) {
