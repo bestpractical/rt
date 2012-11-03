@@ -59,6 +59,7 @@ use RT::Dashboard;
 use RT::Interface::Web::Handler;
 use RT::Interface::Web;
 use File::Temp 'tempdir';
+use HTML::Scrubber;
 
 sub MailDashboards {
     my $self = shift;
@@ -247,6 +248,8 @@ SUMMARY
             $content =~ s/$_//g;
         }
     }
+
+    $content = ScrubContent($content);
 
     $RT::Logger->debug("Got ".length($content)." characters of output.");
 
@@ -459,6 +462,33 @@ sub BuildEmail {
         my $ret = $outbuf;
         $outbuf = '';
         return $ret;
+    }
+}
+
+{
+    my $scrubber;
+
+    sub _scrubber {
+        unless ($scrubber) {
+            $scrubber = HTML::Scrubber->new;
+            # Allow everything by default, except JS attributes ...
+            $scrubber->default(
+                1 => {
+                    '*' => 1,
+                    map { ("on$_" => 0) }
+                         qw(blur change click dblclick error focus keydown keypress keyup load
+                            mousedown mousemove mouseout mouseover mouseup reset select submit unload)
+                }
+            );
+            # ... and <script>s
+            $scrubber->deny('script');
+        }
+        return $scrubber;
+    }
+
+    sub ScrubContent {
+        my $content = shift;
+        return _scrubber->scrub($content);
     }
 }
 
