@@ -325,7 +325,7 @@ sub HandleRequest {
 
     ShowRequestedPage($ARGS);
     LogRecordedSQLStatements(RequestData => {
-        Path => $HTML::Mason::Commands::m->request_comp->path,
+        Path => $HTML::Mason::Commands::m->request_path,
     });
 
     # Process per-page final cleanup callbacks
