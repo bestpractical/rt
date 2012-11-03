@@ -80,7 +80,6 @@ $EmailAddress
 $Type => 'public'
 </%ARGS>
 <%INIT>
-return if ($m->cache_self( key => join("||",$EmailAddress,$Type, $$), expires_in => '2 minutes'));
 require RT::Crypt::GnuPG;
 my %res = RT::Crypt::GnuPG::GetKeyInfo( $EmailAddress, $Type );
 
