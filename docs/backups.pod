@@ -31,9 +31,9 @@ RT. :)
 
 =head3 MySQL
 
-    mysqldump rt4 --tables sessions --no-data > rt-`date +%Y%M%d`-sessions.sql
-    mysqldump rt4 --ignore-table rt4.sessions \
-                  --single-transaction | gzip > rt-`date +%Y%M%d`.sql.gz
+    ( mysqldump rt4 --tables sessions --no-data; \
+      mysqldump rt4 --ignore-table rt4.sessions --single-transaction ) \
+        | gzip > rt-`date +%Y%M%d`.sql.gz
 
 If you're using a MySQL version older than 4.1.2 (only supported on RT 3.8.x
 and older), you should be also pass the C<--default-character-set=binary>
