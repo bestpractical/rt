@@ -485,11 +485,9 @@ Set( $CheckMoreMSMailHeaders, 0);
 
 C<$MailCommand> defines which method RT will use to try to send mail.
 We know that 'sendmailpipe' works fairly well.  If 'sendmailpipe'
-doesn't work well for you, try 'sendmail'.  Other options are 'smtp'
-or 'qmail'.
-
-Note that you should remove the '-t' from C<$SendmailArguments> if you
-use 'sendmail' rather than 'sendmailpipe'
+doesn't work well for you, try 'sendmail'.  Note that you should remove
+the '-t' from C<$SendmailArguments> if you use 'sendmail' rather than
+'sendmailpipe'.  'qmail' is also a supported value.
 
 For testing purposes, or to simply disable sending mail out into the
 world, you can set C<$MailCommand> to 'testfile' which writes all mail
@@ -746,39 +744,6 @@ Set($SendmailPath, "/usr/sbin/sendmail");
 
 =back
 
-=head2 SMTP configuration
-
-These options only take effect if C<$MailCommand> is 'smtp'
-
-=over 4
-
-=item C<$SMTPServer>
-
-C<$SMTPServer> should be set to the hostname of the SMTP server to use
-
-=cut
-
-Set($SMTPServer, undef);
-
-=item C<$SMTPFrom>
-
-C<$SMTPFrom> should be set to the 'From' address to use, if not the
-email's 'From'
-
-=cut
-
-Set($SMTPFrom, undef);
-
-=item C<$SMTPDebug>
-
-C<$SMTPDebug> should be set to 1 to debug SMTP mail sending
-
-=cut
-
-Set($SMTPDebug, 0);
-
-=back
-
 =head2 Other mailers
 
 =over 4
@@ -786,7 +751,7 @@ Set($SMTPDebug, 0);
 =item C<@MailParams>
 
 C<@MailParams> defines a list of options passed to $MailCommand if it
-is not 'sendmailpipe', 'sendmail', or 'smtp'
+is not 'sendmailpipe' or 'sendmail';
 
 =cut
 

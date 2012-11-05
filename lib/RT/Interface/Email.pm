@@ -494,51 +494,6 @@ sub SendEmail {
             return 0;
         }
     }
-    elsif ( $mail_command eq 'smtp' ) {
-        require Net::SMTP;
-        my $smtp = do { local $@; eval { Net::SMTP->new(
-            Host  => RT->Config->Get('SMTPServer'),
-            Debug => RT->Config->Get('SMTPDebug'),
-        ) } };
-        unless ( $smtp ) {
-            $RT::Logger->crit( "Could not connect to SMTP server.");
-            if ($TicketObj) {
-                _RecordSendEmailFailure( $TicketObj );
-            }
-            return 0;
-        }
-
-        # duplicate head as we want drop Bcc field
-        my $head = $args{'Entity'}->head->dup;
-        my @recipients = map $_->address, map 
-            Email::Address->parse($head->get($_)), qw(To Cc Bcc);                       
-        $head->delete('Bcc');
-
-        my $sender = RT->Config->Get('SMTPFrom')
-            || $args{'Entity'}->head->get('From');
-        chomp $sender;
-
-        my $status = $smtp->mail( $sender )
-            && $smtp->recipient( @recipients );
-
-        if ( $status ) {
-            $smtp->data;
-            my $fh = $smtp->tied_fh;
-            $head->print( $fh );
-            print $fh "\n";
-            $args{'Entity'}->print_body( $fh );
-            $smtp->dataend;
-        }
-        $smtp->quit;
-
-        unless ( $status ) {
-            $RT::Logger->crit( "$msgid: Could not send mail via SMTP." );
-            if ( $TicketObj ) {
-                _RecordSendEmailFailure( $TicketObj );
-            }
-            return 0;
-        }
-    }
     else {
         local ($ENV{'MAILADDRESS'}, $ENV{'PERL_MAILERS'});
 

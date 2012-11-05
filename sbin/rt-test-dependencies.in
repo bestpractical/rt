@@ -70,7 +70,6 @@ GetOptions(
 
     'with-GPG',
     'with-ICAL',
-    'with-SMTP',
     'with-GRAPHVIZ',
     'with-GD',
     'with-DASHBOARDS',
@@ -100,7 +99,6 @@ my %default = (
     'with-DEV' => @RT_DEVEL_MODE@, 
     'with-GPG' => @RT_GPG@,
     'with-ICAL' => 1,
-    'with-SMTP' => 1,
     'with-GRAPHVIZ' => @RT_GRAPHVIZ@,
     'with-GD' => @RT_GD@,
     'with-DASHBOARDS' => 1,
@@ -343,10 +341,6 @@ PerlIO::eol
 
 $deps{'ICAL'} = [ text_to_hash( << '.') ];
 Data::ICal
-.
-
-$deps{'SMTP'} = [ text_to_hash( << '.') ];
-Net::SMTP
 .
 
 $deps{'DASHBOARDS'} = [ text_to_hash( << '.') ];
