@@ -181,79 +181,79 @@ sub text_to_hash {
 }
 
 $deps{'CORE'} = [ text_to_hash( << '.') ];
+Cache::Simple::TimedExpiry
 Class::Accessor 0.34
+Class::ReturnValue 0.40
+CSS::Squish 0.06
 DateTime 0.44
 DateTime::Locale 0.40
+DBI 1.37
+DBIx::SearchBuilder 1.63
+Devel::GlobalDestruction
+Devel::StackTrace 1.19
 Digest::base
 Digest::MD5 2.27
 Digest::SHA
-DBI 1.37
-Class::ReturnValue 0.40
-DBIx::SearchBuilder 1.63
-Text::Template 1.44
+Email::Address
+Encode 2.39
+File::Glob
 File::ShareDir
 File::Spec 0.8
+File::Temp 0.19
+HTML::Entities
+HTML::FormatText
 HTML::Quoted
 HTML::Scrubber 0.08
 HTML::TreeBuilder
-HTML::FormatText
-Log::Dispatch 2.30
-Sys::Syslog 0.16
-Locale::Maketext 1.06
-Locale::Maketext::Lexicon 0.32
-Locale::Maketext::Fuzzy 0.11
-MIME::Entity 5.425
-Mail::Mailer 1.57
-Email::Address
-Text::Wrapper 
-Time::ParseDate
-Time::HiRes 
-File::Temp 0.19
-Text::Quoted 2.02
-Tree::Simple 1.04
-UNIVERSAL::require
-Regexp::Common
-Scalar::Util
-Module::Versions::Report 1.05
-Cache::Simple::TimedExpiry
-Encode 2.39
-CSS::Squish 0.06
-File::Glob
-Devel::StackTrace 1.19
-Text::Password::Pronounceable
-Devel::GlobalDestruction
 List::MoreUtils
+Locale::Maketext 1.06
+Locale::Maketext::Fuzzy 0.11
+Locale::Maketext::Lexicon 0.32
+Log::Dispatch 2.30
+Mail::Mailer 1.57
+MIME::Entity 5.425
+Module::Refresh 0.03
+Module::Versions::Report 1.05
 Net::CIDR
+Regexp::Common
 Regexp::Common::net::CIDR
 Regexp::IPv6
-Symbol::Global::Name
-HTML::Entities
 Role::Basic 0.12
-Module::Refresh 0.03
+Scalar::Util
+Symbol::Global::Name
+Sys::Syslog 0.16
+Text::Password::Pronounceable
+Text::Quoted 2.02
+Text::Template 1.44
+Text::Wrapper
+Time::HiRes
+Time::ParseDate
+Tree::Simple 1.04
+UNIVERSAL::require
 .
 
 $deps{'MASON'} = [ text_to_hash( << '.') ];
-HTML::Mason 1.43
-Errno
-Digest::MD5 2.27
-CGI::Cookie 1.20
-Storable 2.08
 Apache::Session 1.53
-XML::RSS 1.05
-Text::WikiFormat 0.76
+CGI::Cookie 1.20
 CSS::Squish 0.06
 Devel::StackTrace 1.19
-JSON
+Digest::MD5 2.27
+Errno
+HTML::Mason 1.43
 IPC::Run3
+JSON
+Storable 2.08
+Text::WikiFormat 0.76
+XML::RSS 1.05
 .
 
 $deps{'PSGI'} = [ text_to_hash( << '.') ];
 CGI 3.38
+CGI::Emulate::PSGI
 CGI::PSGI 0.12
 HTML::Mason::PSGIHandler 0.52
 Plack 0.9971
 Plack::Handler::Starlet
-CGI::Emulate::PSGI
 .
 
 $deps{'MAILGATE'} = [ text_to_hash( << '.') ];
@@ -264,44 +264,43 @@ Pod::Usage
 
 $deps{'SSL-MAILGATE'} = [ text_to_hash( << '.') ];
 Crypt::SSLeay
-Net::SSL
-LWP::UserAgent 6.0
 LWP::Protocol::https
+LWP::UserAgent 6.0
 Mozilla::CA
+Net::SSL
 .
 
 $deps{'CLI'} = [ text_to_hash( << '.') ];
 Getopt::Long 2.24
-LWP
 HTTP::Request::Common
-Text::ParseWords
-Term::ReadLine
+LWP
 Term::ReadKey
+Term::ReadLine
+Text::ParseWords
 .
 
 $deps{'DEVELOPER'} = [ text_to_hash( << '.') ];
 Email::Abstract
-Test::Email
+File::Find
 HTML::Form
 HTML::TokeParser
-WWW::Mechanize 1.52
-Test::WWW::Mechanize 1.30
-Test::Expect 0.31
-XML::Simple
-File::Find
-Test::Deep 0 # needed for shredder tests
-String::ShellQuote 0 # needed for gnupg-incoming.t
 Log::Dispatch::Perl
-Test::Warn
-Test::Builder 0.90 # needed for is_passing
-Test::MockTime
-Log::Dispatch::Perl
-Test::WWW::Mechanize::PSGI
-Plack::Middleware::Test::StashWarnings 0.06
-Test::LongString
 Mojo::DOM
+Plack::Middleware::Test::StashWarnings 0.06
 Set::Tiny
+String::ShellQuote 0 # needed for gnupg-incoming.t
+Test::Builder 0.90 # needed for is_passing
+Test::Deep 0 # needed for shredder tests
+Test::Email
+Test::Expect 0.31
+Test::LongString
+Test::MockTime
 Test::NoWarnings
+Test::Warn
+Test::WWW::Mechanize 1.30
+Test::WWW::Mechanize::PSGI
+WWW::Mechanize 1.52
+XML::Simple
 .
 
 $deps{'FASTCGI'} = [ text_to_hash( << '.') ];
@@ -310,13 +309,12 @@ FCGI::ProcManager
 .
 
 $deps{'MODPERL1'} = [ text_to_hash( << '.') ];
-Apache::Request
 Apache::DBI 0.92
+Apache::Request
 .
 
 $deps{'MODPERL2'} = [ text_to_hash( << '.') ];
 Apache::DBI
-HTML::Mason 1.36
 .
 
 $deps{'MYSQL'} = [ text_to_hash( << '.') ];
@@ -366,8 +364,8 @@ Convert::Color
 .
 
 $deps{'HTML-DOC'} = [ text_to_hash( <<'.') ];
-Pod::Simple 3.17
 HTML::Entities
+Pod::Simple 3.17
 .
 
 my %AVOID = (
