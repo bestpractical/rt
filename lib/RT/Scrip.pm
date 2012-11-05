@@ -229,7 +229,7 @@ sub QueueObj {
 
 =head2 ActionObj
 
-Retuns an RT::Action object with this Scrip\'s Action
+Retuns an RT::Action object with this Scrip's Action
 
 =cut
 
@@ -281,7 +281,7 @@ sub LoadModules {
 
 =head2 TemplateObj
 
-Retuns an RT::Template object with this Scrip\'s Template
+Retuns an RT::Template object with this Scrip's Template
 
 =cut
 
@@ -358,7 +358,7 @@ sub Apply {
 
 =head2 IsApplicable
 
-Calls the  Condition object\'s IsApplicable method
+Calls the  Condition object's IsApplicable method
 
 Upon success, returns the applicable Transaction object.
 Otherwise, undef is returned.

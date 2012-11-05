@@ -185,7 +185,7 @@ sub LoadCondition  {
 
 =head2 Describe 
 
-Helper method to call the condition module\'s Describe method.
+Helper method to call the condition module's Describe method.
 
 =cut
 
@@ -198,7 +198,7 @@ sub Describe  {
 
 =head2 IsApplicable
 
-Helper method to call the condition module\'s IsApplicable method.
+Helper method to call the condition module's IsApplicable method.
 
 =cut
 

@@ -54,7 +54,7 @@
 
 =head1 DESCRIPTION
 
-This module lets you manipulate RT\'s ticket object.
+This module lets you manipulate RT's ticket object.
 
 
 =head1 METHODS
@@ -196,8 +196,8 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   AdminCc  - A reference to a  list of  email addresses or Names
   SquelchMailTo - A reference to a list of email addresses - 
                   who should this ticket not mail
-  Type -- The ticket\'s type. ignore this for now
-  Owner -- This ticket\'s owner. either an RT::User object or this user\'s id
+  Type -- The ticket's type. ignore this for now
+  Owner -- This ticket's owner. either an RT::User object or this user's id
   Subject -- A string describing the subject of the ticket
   Priority -- an integer from 0 to 99
   InitialPriority -- an integer from 0 to 99
@@ -206,8 +206,8 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   TimeEstimated -- an integer. estimated time for this task in minutes
   TimeWorked -- an integer. time worked so far in minutes
   TimeLeft -- an integer. time remaining in minutes
-  Starts -- an ISO date describing the ticket\'s start date and time in GMT
-  Due -- an ISO date describing the ticket\'s due date and time in GMT
+  Starts -- an ISO date describing the ticket's start date and time in GMT
+  Due -- an ISO date describing the ticket's due date and time in GMT
   MIMEObj -- a MIME::Entity object with the content of the initial ticket request.
   CustomField-<n> -- a scalar or array of values for the customfield with the id <n>
 
@@ -784,8 +784,8 @@ sub _Parse822HeadersForAttributes {
 =head2 Import PARAMHASH
 
 Import a ticket. 
-Doesn\'t create a transaction. 
-Doesn\'t supply queue defaults, etc.
+Doesn't create a transaction. 
+Doesn't supply queue defaults, etc.
 
 Returns: TICKETID
 
@@ -819,7 +819,7 @@ sub Import {
         $QueueObj = RT::Queue->new(RT->SystemUser);
         $QueueObj->Load( $args{'Queue'} );
 
-        #TODO error check this and return 0 if it\'s not loading properly +++
+        #TODO error check this and return 0 if it's not loading properly +++
     }
     elsif ( ref( $args{'Queue'} ) eq 'RT::Queue' ) {
         $QueueObj = RT::Queue->new(RT->SystemUser);
@@ -1037,7 +1037,7 @@ PrincipalId The RT::Principal id of the user or group that's being added as a wa
 Email       The email address of the new watcher. If a user with this 
             email address can't be found, a new nonprivileged user will be created.
 
-If the watcher you\'re trying to set has an RT account, set the PrincipalId paremeter to their User Id. Otherwise, set the Email parameter to their Email address.
+If the watcher you're trying to set has an RT account, set the PrincipalId paremeter to their User Id. Otherwise, set the Email parameter to their Email address.
 
 =cut
 
@@ -2422,7 +2422,7 @@ sub _Links {
 
 Delete a link. takes a paramhash of Base, Target, Type, Silent,
 SilentBase and SilentTarget. Either Base or Target must be null.
-The null value will be replaced with this ticket\'s id.
+The null value will be replaced with this ticket's id.
 
 If Silent is true then no transaction would be recorded, in other
 case you can control creation of transactions on both base and
@@ -3120,7 +3120,7 @@ sub ValidateStatus {
 
 =head2 SetStatus STATUS
 
-Set this ticket\'s status. STATUS can be one of: new, open, stalled, resolved, rejected or deleted.
+Set this ticket's status. STATUS can be one of: new, open, stalled, resolved, rejected or deleted.
 
 Alternatively, you can pass in a list of named parameters (Status => STATUS, Force => FORCE, SetStarted => SETSTARTED ).
 If FORCE is true, ignore unresolved dependencies and force a status change.

@@ -87,7 +87,7 @@ sub SetRecipients {
 
 =head2 SetReturnAddress
 
-Set this message\'s return address to the apropriate queue address
+Set this message's return address to the apropriate queue address
 
 =cut
 
