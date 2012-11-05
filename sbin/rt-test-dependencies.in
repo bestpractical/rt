@@ -61,7 +61,7 @@ my @orig_argv = @ARGV;
 GetOptions(
     \%args,                               'v|verbose',
     'install!',                           'with-MYSQL',
-    'with-POSTGRESQL|with-pg|with-pgsql', 'with-SQLITE',
+    'with-PG',                            'with-SQLITE',
     'with-ORACLE',                        'with-FASTCGI',
     'with-MODPERL1',                      'with-MODPERL2',
     'with-STANDALONE',
@@ -314,7 +314,7 @@ $deps{'ORACLE'} = [ text_to_hash( << '.') ];
 DBD::Oracle
 .
 
-$deps{'POSTGRESQL'} = [ text_to_hash( << '.') ];
+$deps{'PG'} = [ text_to_hash( << '.') ];
 DBD::Pg 1.43
 .
 
@@ -639,7 +639,7 @@ list the status of all dependencies, rather than just the missing ones.
 
     database interface for mysql
 
-=item --with-postgresql
+=item --with-pg
 
     database interface for postgresql 
 
