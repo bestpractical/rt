@@ -139,7 +139,7 @@ sub _DoSearch {
     my $self = shift;
     
     # unless we really want to find disabled rows,
-    # make sure we\'re only finding enabled ones.
+    # make sure we're only finding enabled ones.
     unless ( $self->{'find_expired_rows'} ) {
         $self->LimitToEnabled();
     }
@@ -151,7 +151,7 @@ sub _DoCount {
     my $self = shift;
     
     # unless we really want to find disabled rows,
-    # make sure we\'re only finding enabled ones.
+    # make sure we're only finding enabled ones.
     unless ( $self->{'find_expired_rows'} ) {
         $self->LimitToEnabled();
     }

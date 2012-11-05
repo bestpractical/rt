@@ -391,7 +391,7 @@ sub ForWhichCurrentUserHasRight {
 
 =head2 LimitToEnabled
 
-Only find items that haven\'t been disabled
+Only find items that haven't been disabled
 
 =cut
 
@@ -449,7 +449,7 @@ sub Next {
 sub _DoSearch {
     my $self = shift;
     
-    #unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
+    #unless we really want to find disabled rows, make sure we're only finding enabled ones.
     unless($self->{'find_disabled_rows'}) {
 	$self->LimitToEnabled();
     }

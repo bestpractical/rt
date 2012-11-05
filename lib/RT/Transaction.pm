@@ -48,7 +48,7 @@
 
 =head1 NAME
 
-  RT::Transaction - RT\'s transaction object
+  RT::Transaction - RT's transaction object
 
 =head1 SYNOPSIS
 

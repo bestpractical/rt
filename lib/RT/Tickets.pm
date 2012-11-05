@@ -2245,7 +2245,7 @@ sub LimitId {
 
 Takes a paramhash with the fields OPERATOR and VALUE.
 OPERATOR is one of =, >, < or !=.
-VALUE is a value to match the ticket\'s priority against
+VALUE is a value to match the ticket's priority against
 
 =cut
 
@@ -2268,7 +2268,7 @@ sub LimitPriority {
 
 Takes a paramhash with the fields OPERATOR and VALUE.
 OPERATOR is one of =, >, < or !=.
-VALUE is a value to match the ticket\'s initial priority against
+VALUE is a value to match the ticket's initial priority against
 
 
 =cut
@@ -2292,7 +2292,7 @@ sub LimitInitialPriority {
 
 Takes a paramhash with the fields OPERATOR and VALUE.
 OPERATOR is one of =, >, < or !=.
-VALUE is a value to match the ticket\'s final priority against
+VALUE is a value to match the ticket's final priority against
 
 =cut
 
@@ -2465,7 +2465,7 @@ sub LimitOwner {
 
   Takes a paramhash with the fields OPERATOR, TYPE and VALUE.
   OPERATOR is one of =, LIKE, NOT LIKE or !=.
-  VALUE is a value to match the ticket\'s watcher email addresses against
+  VALUE is a value to match the ticket's watcher email addresses against
   TYPE is the sort of watchers you want to match against. Leave it undef if you want to search all of them
 
 

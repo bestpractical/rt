@@ -93,7 +93,7 @@ our @EXPORT_OK = qw(CleanEnv GetCurrentUser GetMessageContent debug loc);
 
 =head2 CleanEnv
 
-Removes some of the nastiest nasties from the user\'s environment.
+Removes some of the nastiest nasties from the user's environment.
 
 =cut
 

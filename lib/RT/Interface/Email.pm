@@ -1059,7 +1059,7 @@ sub CreateUser {
 
 Takes a hash containing QueueObj, Head and CurrentUser objects.
 Returns a list of all email addresses in the To and Cc
-headers b<except> the current Queue\'s email addresses, the CurrentUser\'s
+headers b<except> the current Queue's email addresses, the CurrentUser's
 email address  and anything that the configuration sub RT::IsRTAddress matches.
 
 =cut

@@ -1350,7 +1350,7 @@ sub _AddLink {
 
 Delete a link. takes a paramhash of Base, Target and Type.
 Either Base or Target must be null. The null value will 
-be replaced with this ticket\'s id
+be replaced with this ticket's id
 
 =cut 
 

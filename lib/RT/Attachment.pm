@@ -266,7 +266,7 @@ sub ParentObj {
 =head2 Children
 
 Returns an L<RT::Attachments> object which is preloaded with
-all attachments objects with this attachment\'s Id as their
+all attachments objects with this attachment's Id as their
 C<Parent>.
 
 =cut
