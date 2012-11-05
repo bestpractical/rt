@@ -1067,6 +1067,11 @@ sub CurrentUserCanSee {
         $cf->Load( $cf_id );
         return 0 unless $cf->CurrentUserHasRight('SeeCustomField');
     }
+
+    # Transactions that might have changed the ->Object's visibility to
+    # the current user are marked readable
+    return 1 if $self->{ _object_is_readable };
+
     # Defer to the object in question
     return $self->Object->CurrentUserCanSee("Transaction");
 }

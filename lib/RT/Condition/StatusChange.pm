@@ -49,6 +49,7 @@
 package RT::Condition::StatusChange;
 use base 'RT::Condition';
 use strict;
+use warnings;
 
 =head2 DESCRIPTION
 

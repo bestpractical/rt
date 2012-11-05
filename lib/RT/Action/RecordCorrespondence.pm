@@ -49,6 +49,7 @@
 package RT::Action::RecordCorrespondence;
 use base 'RT::Action';
 use strict;
+use warnings;
 
 =head1 NAME
 

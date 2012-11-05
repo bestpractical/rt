@@ -68,7 +68,7 @@ $m->field(WatcherTypeEmail => 'Requestor');
 $m->field(WatcherAddressEmail => 'root@localhost');
 $m->click('SubmitTicket');
 $m->text_contains(
-    "Added principal as a Requestor for this ticket",
+    "Added root as a Requestor for this ticket",
     'watcher is added',
 );
 $m->form_name('TicketModifyAll');
@@ -76,7 +76,7 @@ $m->field(WatcherTypeEmail => 'Requestor');
 $m->field(WatcherAddressEmail => 'root@localhost');
 $m->click('SubmitTicket');
 $m->text_contains(
-    "That principal is already a Requestor for this ticket",
+    "root is already a Requestor for this ticket",
     'no duplicate watchers',
 );
 

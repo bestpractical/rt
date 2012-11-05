@@ -1,4 +1,5 @@
 use strict;
+use warnings;
 
 use RT::Test nodata => 1, tests => 64;
 my ($baseurl, $m) = RT::Test->started_ok;

@@ -70,6 +70,7 @@ package RT::SharedSettings;
 use RT::SharedSetting;
 
 use strict;
+use warnings;
 use base 'RT::Base';
 
 sub new  {

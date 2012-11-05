@@ -1,5 +1,6 @@
 
 use strict;
+use warnings;
 
 use RT;
 use RT::Test tests => 7;

@@ -221,10 +221,12 @@ MaybeRedirectForResults(
 );
 
 # If they've gone and moved the ticket to somewhere they can't see, etc...
-# TODO: display the results, even if we can't display the ticket.
-
 unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
-   Abort("No permission to view ticket");
+    if (@results) {
+        Abort("A change was applied successfully, but you no longer have permissions to view the ticket", Actions => \@results);
+    } else {
+        Abort("No permission to view ticket");
+    }
 }
 
 

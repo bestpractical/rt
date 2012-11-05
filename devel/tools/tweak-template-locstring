@@ -47,6 +47,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 use strict;
+use warnings;
 # run this script with:
 # perl -0pi sbin/tweak-template-locstring `ack -f share/html -G 'html$'`
 s!\<\&\|\/l([^&]*)\&\>[\n\s]+(.*?)[\n\s]*\<\/\&\>!;my ($arg, $x) = ($1, $2); $x =~ s/\s*\n\s*/ /g;"<&|/l$arg&>$x</&>"!smge;

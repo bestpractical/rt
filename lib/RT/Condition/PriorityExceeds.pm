@@ -49,6 +49,7 @@
 package RT::Condition::PriorityExceeds;
 use base 'RT::Condition';
 use strict;
+use warnings;
 
 =head2 IsApplicable
 

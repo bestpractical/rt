@@ -1,5 +1,5 @@
-
 use strict;
+use warnings;
 use RT;
 
 # Load the config file

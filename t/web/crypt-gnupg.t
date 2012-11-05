@@ -1,4 +1,5 @@
 use strict;
+use warnings;
 
 use RT::Test::GnuPG
   tests         => 102,

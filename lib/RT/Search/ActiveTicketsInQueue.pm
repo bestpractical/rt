@@ -66,6 +66,7 @@ Find all active tickets in the queue named in the argument passed in
 package RT::Search::ActiveTicketsInQueue;
 
 use strict;
+use warnings;
 use base qw(RT::Search);
 
 

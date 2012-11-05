@@ -1,5 +1,5 @@
-
 use strict;
+use warnings;
 use File::Spec ();
 use Test::Expect;
 use RT::Test tests => 17, actual_server => 1;

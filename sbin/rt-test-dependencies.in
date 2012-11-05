@@ -52,6 +52,7 @@
 #
 
 use strict;
+use warnings;
 no warnings qw(numeric redefine);
 use Getopt::Long;
 my %args;
@@ -345,7 +346,7 @@ Net::SMTP
 .
 
 $deps{'DASHBOARDS'} = [ text_to_hash( << '.') ];
-HTML::RewriteAttributes 0.04
+HTML::RewriteAttributes 0.05
 MIME::Types
 URI 1.59
 .

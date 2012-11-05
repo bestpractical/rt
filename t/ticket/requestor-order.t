@@ -1,4 +1,5 @@
-use strict; use warnings;
+use strict;
+use warnings;
 
 use RT::Test tests => 58;
 use_ok('RT');

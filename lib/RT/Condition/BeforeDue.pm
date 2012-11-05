@@ -52,6 +52,7 @@ use base 'RT::Condition';
 use RT::Date;
 
 use strict;
+use warnings;
 
 sub IsApplicable {
     my $self = shift;

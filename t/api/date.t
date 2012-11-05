@@ -2,7 +2,8 @@
 use Test::MockTime qw(set_fixed_time restore_time);
 use DateTime;
 
-use warnings; use strict;
+use warnings;
+use strict;
 use RT::Test tests => 173;
 use RT::User;
 use Test::Warn;

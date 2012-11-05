@@ -50,6 +50,7 @@
 # Abhijit Menon-Sen <ams@wiw.org>
 
 use strict;
+use warnings;
 
 if ( $ARGV[0] && $ARGV[0] =~ /^(?:--help|-h)$/ ) {
     require Pod::Usage;
@@ -121,7 +122,7 @@ sub DEBUG { warn @_ if $config{debug} >= shift }
 my $name    = '[\w.-]+';
 my $CF_name = '[\sa-z0-9_ :()/-]+';
 my $field   = '(?i:[a-z][a-z0-9_-]*|C(?:ustom)?F(?:ield)?-'.$CF_name.'|CF\.\{'.$CF_name.'\})';
-my $label   = '[a-zA-Z0-9@_.+-]+';
+my $label   = '[^,\\/]+';
 my $labels  = "(?:$label,)*$label";
 my $idlist  = '(?:(?:\d+-)?\d+,)*(?:\d+-)?\d+';
 
@@ -967,12 +968,8 @@ sub take {
 sub grant {
     my ($cmd) = @_;
 
-    my $revoke = 0;
-    while (@ARGV) {
-    }
-
-    $revoke = 1 if $cmd->{action} eq 'revoke';
-    return 0;
+    whine "$cmd is unimplemented.";
+    return 1;
 }
 
 # Client <-> Server communication.
@@ -1909,8 +1906,6 @@ Text:
         ticket/1-3,5-7/history
 
         user/ams
-        user/ams/rights
-        user/ams,rai,1/rights
 
     For more information:
 
@@ -2027,20 +2022,6 @@ Text:
         - show
         - edit
         - create
-
-    In addition, the following type-specific actions exist:
-
-        - grant
-        - revoke
-
-    Attributes:
-
-        The following attributes can be used with "rt show" or "rt edit"
-        to retrieve or edit other information associated with users and
-        groups:
-
-        rights                  Global rights granted to this user.
-        rights/<queue>          Queue rights for this user.
 
 --
 
@@ -2381,12 +2362,6 @@ Text:
 
         rt link 2 dependson 3
         rt link -d 4 referredtoby 6     # 6 no longer refers to 4
-
---
-
-Title: grant
-Title: revoke
-Text:
 
 --
 

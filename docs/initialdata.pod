@@ -1,0 +1,486 @@
+=head1 Summary of initialdata files
+
+It's often useful to be able to test configuration/database changes and then
+apply the same changes in production without manually clicking around.  It's
+also helpful if you're developing customizations or extensions to be able to
+get a fresh database back to the state you want for testing/development.
+
+This documentation applies to careful and thorough sysadmins as well as
+extension authors who need to make database changes easily and repeatably for
+new installs or upgrades.
+
+=head1 Examples
+
+RT ships with many initialdata files, only one of which is used to
+configure a fresh install; the rest are used for upgrades, but function
+the same despite being named differently.
+
+    etc/initialdata
+    etc/upgrade/*/content
+
+The upgrade "content" files are meant to be incremental changes applied on top
+of one another while the top level initialdata file is for fresh RT installs.
+
+Extensions may also ship with database changes in such files.  You may find
+some in your install with:
+
+    find local/plugins -name initialdata -or -name content
+
+=head1 What can be in an initialdata file?
+
+initialdata files are Perl, but often consist primarily of a bunch of data
+structures defining the new records you want and not much extra code.  There's
+nothing stopping you from writing a bunch of code, however!
+
+The basic template of a new initialdata file should look something like this:
+
+    use strict;
+    use warnings;
+
+    our @Queues = (
+        # some definitions here
+    );
+
+    our @Groups = (
+        # some other definitions here
+    );
+
+    1;
+
+The C<@Queues> and C<@Groups> arrays are expected by RT and should contain
+hashref definitions.  There are many other arrays RT will look for and act on,
+described below.  None are required, all may be used.  Keep in mind that since
+they're just normal Perl arrays, you can C<push> onto them from a loop or
+C<grep> out definitions based on conditionals or generate their content with
+C<map>, etc.
+
+The complete list of possible arrays which can be used, along with
+descriptions of the values to place in them, is below.
+
+=head2 C<@Users>
+
+    push @Users, {
+        Name        => 'john.doe',
+        Password    => 'changethis',
+        Language    => 'fr',
+        Timezone    => 'America/Vancouver',
+        Privileged  => 1,
+        Disabled    => 0,
+    };
+
+Each hashref in C<@Users> is treated as a new user to create and passed
+straight into C<< RT::User->Create >>.  All of the normal user fields are
+available, as well as C<Privileged> and C<Disabled> (both booleans) which will
+do the appropriate internal group/flag handling.
+
+For a full list of fields, read the documentation for L<RT::User/Create>.
+
+=head2 C<@Groups>
+
+    push @Groups, {
+        Domain      => 'UserDefined',
+        Name        => 'Example Employees',
+        Description => 'All of the employees of my company',
+    };
+
+Creates a new L<RT::Group> for each hashref.  In almost all cases you'll want
+to follow the example above to create a group just as if you had done it from
+the admin interface.  B<Do not> omit the C<< Domain => 'UserDefined' >> line.
+
+Additionally, the C<MemberOf> field is specially handled to make it easier to
+add the new group to other groups.  C<MemberOf> may be a single value or an
+array ref.  Each value should be a user-defined group name or hashref to pass
+into L<< RT::Group->LoadByCols >>.  Each group found will have the new group
+added as a member.
+
+Unfortunately you can't specify the I<members> of a group at this time.  As a
+workaround, you can push a subref into C<@Final> which adds members to your new
+groups.  An example, using a convenience function to avoid repeating yourself:
+
+    push @Final, sub {
+        add_members('My New Group Name' => qw(trs alex ruslan));
+        add_members('My Second Group'   => qw(jesse kevin sunnavy jim));
+    };
+
+    sub add_members {
+        my $group_name = shift;
+        my @members    = @_;
+
+        my $group = RT::Group->new( RT->SystemUser );
+        $group->LoadUserDefinedGroup($group_name);
+
+        if ($group->id) {
+            for my $name (@members) {
+                my $member = RT::User->new( RT->SystemUser );
+                $member->LoadByCols( Name => $name );
+
+                unless ($member->Id) {
+                    RT->Logger->error("Unable to find user '$name'");
+                    next;
+                }
+
+                my ($ok, $msg) = $group->AddMember( $member->PrincipalObj->Id );
+                if ($ok) {
+                    RT->Logger->info("Added member $name to $group_name");
+                } else {
+                    RT->Logger->error("Unable to AddMember $name to $group_name: $msg");
+                }
+            }
+        } else {
+            RT->Logger->error("Unable to find group '$group_name'!");
+        }
+    }
+
+=head2 C<@Queues>
+
+    push @Queues, {
+        Name                => 'Helpdesk',
+        CorrespondAddress   => 'help@example.com',
+        CommentAddress      => 'help-comment@example.com',
+    };
+
+Creates a new L<RT::Queue> for each hashref.  Refer to the documentation of
+L<RT::Queue/Create> for the fields you can use.
+
+=head2 C<@CustomFields>
+
+    push @CustomFields, {
+        Queue       => 0,
+        Name        => 'Favorite color',
+        Type        => 'FreeformSingle',
+        LookupType  => 'RT::Queue-RT::Ticket',
+    };
+
+Creates a new L<RT::CustomField> for each hashref.  It is the most complex of
+the initialdata structures.  The most commonly used fields are:
+
+=over 4
+
+=item C<Name>
+
+The name of this CF as displayed in RT.
+
+=item C<Description>
+
+A short summary of what this CF is for.
+
+=item C<Queue>
+
+May be a Name or ID.  The single queue or array ref of queues to apply this CF
+to.  This does not apply when C<LookupType> does not start with C<RT::Queue>.
+
+=item C<Type>
+
+One of the following on the left hand side:
+
+    SelectSingle            # Select one value
+    SelectMultiple          # Select multiple values
+
+    FreeformSingle          # Enter one value
+    FreeformMultiple        # Enter multiple values
+
+    Text                    # Fill in one text area
+    Wikitext                # Fill in one wikitext area
+
+    BinarySingle            # Upload one file
+    BinaryMultiple          # Upload multiple files
+
+    ImageSingle             # Upload one image
+    ImageMultiple           # Upload multiple images
+
+    Combobox                # Combobox: Select or enter one value
+
+    AutocompleteSingle      # Enter one value with autocompletion
+    AutocompleteMultiple    # Enter multiple values with autocompletion
+
+    Date                    # Select date
+    DateTime                # Select datetime
+
+    IPAddressSingle         # Enter one IP address
+    IPAddressMultiple       # Enter multiple IP addresses
+
+    IPAddressRangeSingle    # Enter one IP address range
+    IPAddressRangeMultiple  # Enter multiple IP address ranges
+
+If you don't specify "Single" or "Multiple" in the type, you must specify
+C<MaxValues>.
+
+=item C<LookupType>
+
+Labeled in the CF admin page as "Applies to".  This determines whether your CF
+is for Tickets, Transactions, Users, Groups, or Queues.  Possible values:
+
+    RT::Queue-RT::Ticket                    # Tickets
+    RT::Queue-RT::Ticket-RT::Transaction    # Transactions
+    RT::User                                # Users
+    RT::Group                               # Groups
+    RT::Queue                               # Queues
+
+Ticket CFs are the most common, meaning C<RT::Queue-RT::Ticket> is the most
+common C<LookupType>.
+
+=item C<RenderType>
+
+Only valid when C<Type> is "Select".  Controls how the CF is displayed when
+editing it.  Valid values are: C<Select box>, C<List>, and C<Dropdown>.
+
+C<List> is either a list of radio buttons or a list of checkboxes depending on
+C<MaxValues>.
+
+=item C<MaxValues>
+
+Determines whether this CF is a Single or Multiple type.  0 means multiple.  1
+means single.
+
+Make sure to set the C<MaxValues> field appropriately, otherwise you can end up
+with unsupported CF types like a "Select multiple dates" (it doesn't Just
+Work).
+
+You can also use old-style C<Type>s which end with "Single" or "Multiple", for
+example: SelectSingle, SelectMultiple, FreeformSingle, etc.
+
+=item C<Values>
+
+C<Values> should be an array ref (never a single value!) of hashrefs
+representing new L<RT::CustomFieldValue> objects to create for the new custom
+field.  This only makes sense for "Select" CFs.  An example:
+
+    my $i = 1;
+    push @CustomFields, {
+        Queue       => 0,                       # Globally applied
+        LookupType  => 'RT::Queue-RT::Ticket',  # for Tickets
+        Name        => 'Type of food',
+        Type        => 'SelectSingle',  # SelectSingle is the same as: Type => 'Select', MaxValues => 1
+        RenderType  => 'Dropdown',
+        Values      => [
+            { Name => 'Fruit',      Description => 'Berries, peaches, tomatos, etc', SortOrder => $i++ },
+            { Name => 'Vegetable',  Description => 'Asparagus, peas, lettuce, etc',  SortOrder => $i++ },
+            # more values as such...
+        ],
+    };
+
+In order to ensure the same sorting of C<Values>, set C<SortOrder> inside each
+value.  A clever way to do this easily is with a simple variable you increment
+each time (as above with C<$i>).  You can use the same variable throughout the
+whole file, and don't need one per CF.
+
+=item C<BasedOn>
+
+Name or ID of another Select Custom Field.  This makes the named CF the source
+of categories for your values.
+
+=item C<Pattern>
+
+The regular expression text (not C<qr//>!) used to validate values.
+
+=back
+
+Refer to the documentation and implementation of L<RT::CustomField/Create> and
+L<RT::CustomFieldValue/Create> for the full list of available fields and
+allowed values.
+
+=head2 C<@ACL>
+
+C<@ACL> is very useful for granting rights on your newly created records or
+setting up a standard system configuration.  It is one of the most complex
+initialdata structures.
+
+=head3 Pick a Right
+
+All ACL definitions expect a key named C<Right> with the internal right name
+you want to grant.  The internal right names are visible in RT's admin
+interface in grey next to the longer descriptions.
+
+=head3 Pick a level: on a queue, on a CF, or globally
+
+After picking a C<Right>, you need to specify on what object the right is
+granted.  This is B<different> than the user/group/role receiving the right.
+
+=over 4
+
+=item Granted on a custom field by name (or ID), potentially a global or queue
+
+    CF => 'Name',
+
+=item Granted on a queue
+
+    Queue => 'Name',
+
+=item Granted on a custom field applied to a specific queue
+
+    CF      => 'Name',
+    Queue   => 'Name',
+
+=item Granted globally
+
+Specifying none of the above will get you a global right.
+
+=back
+
+There is currently no way to grant rights on a group or article class level.
+Note that you can grant rights B<to> a group; see below.  If you need to grants
+rights on a group or article class level, you'll need to write an C<@Final>
+subref to handle it using the RT Perl API.
+
+=head3 Pick a Principal: User or Group or Role
+
+Finally you need to specify to what system group, system/queue role,
+user defined group, or user you want to grant the right B<to>.
+
+=over 4
+
+=item An internal user group
+
+    GroupDomain => 'SystemInternal',
+      GroupType => 'Everyone, Privileged, or Unprivileged'
+
+=item A system-level role
+
+    GroupDomain => 'RT::System-Role',
+      GroupType => 'Requestor, Owner, AdminCc, or Cc'
+
+=item A queue-level role
+
+    GroupDomain => 'RT::Queue-Role',
+      Queue     => 'Name',
+      GroupType => 'Requestor, Owner, AdminCc, or Cc',
+
+=item A group you created
+
+    GroupDomain => 'UserDefined',
+      GroupId   => 'Name'
+
+=item Individual user
+
+    UserId => 'Name or email or ID'
+
+=back
+
+=head3 Common cases
+
+You're probably looking for definitions like these most of the time.
+
+=over 4
+
+=item Grant a global right to a group you created
+
+    { Right       => '...',
+      GroupDomain => 'UserDefined',
+      GroupId     => 'Name' }
+
+=item Grant a queue-level right to a group you created
+
+    { Queue       => 'Name',
+      Right       => '...',
+      GroupDomain => 'UserDefined',
+      GroupId     => 'Name' }
+
+=item Grant a CF-level right to a group you created
+
+    { CF          => 'Name',
+      Right       => '...',
+      GroupDomain => 'UserDefined',
+      GroupId     => 'Name' }
+
+=back
+
+Since you often want to grant a list of rights on the same object/level to the
+same role/group/user, we generally use Perl loops and operators to aid in the
+generation of C<@ACL> without repeating ourselves.
+
+    # Give Requestors globally the right to see tickets, reply, and see the
+    # queue their ticket is in
+    push @ACL, map {
+        {
+            Right       => $_,
+            GroupDomain => 'RT::System-Role',
+            GroupType   => 'Requestor',
+        }
+    } qw(ShowTicket ReplyToTicket SeeQueue);
+
+=head3 Troubleshooting
+
+The best troubleshooting is often to see how the rights you define in C<@ACL>
+show up in the RT admin interface.
+
+=head2 C<@Scrips>
+
+Creates a new L<RT::Scrip> for each hashref.  Refer to the documentation of
+L<RT::Scrip/Create> for the fields you can use.
+
+Additionally, the C<Queue> field is specially handled to make it easier to
+setup the same Scrip on multiple queues:
+
+=over 4
+
+=item Globally
+
+    Queue => 0,
+
+=item Single queue
+
+    Queue => 'General', # Name or ID
+
+=item Multiple queues
+
+    Queue => ['General', 'Helpdesk', 13],   # Array ref of Name or ID
+
+=back
+
+=head2 C<@ScripActions>
+
+Creates a new L<RT::ScripAction> for each hashref.  Refer to the documentation
+of L<RT::ScripAction/Create> for the fields you can use.
+
+=head2 C<@ScripConditions>
+
+Creates a new L<RT::ScripCondition> for each hashref.  Refer to the
+documentation of L<RT::ScripCondition/Create> for the fields you can use.
+
+=head2 C<@Templates>
+
+Creates a new L<RT::Template> for each hashref.  Refer to the documentation of
+L<RT::Template/Create> for the fields you can use.
+
+=head2 C<@Attributes>
+
+An array of L<RT::Attribute>s to create.  You likely don't need to mess with
+this.  If you do, know that the key C<Object> is expected to be an
+L<RT::Record> object on which to call C<AddAttribute>.  If you don't provide
+C<Object> or it's undefined, C<< RT->System >> will be used.
+
+=head2 C<@Initial>
+
+=head2 C<@Final>
+
+C<@Initial> and C<@Final> are special and let you write your own processing
+code that runs before anything else or after everything else.  They are
+expected to be arrays of subrefs (usually anonymous) like so:
+
+    our @Final = (sub {
+        RT->Logger->info("Finishing up!");
+    });
+
+You have the full power of RT's Perl libraries at your disposal.  Be sure to do
+error checking and log any errors with C<< RT->Logger->error("...") >>!
+
+=head1 What's missing?
+
+There is currently no way, short of writing code in C<@Final> or C<@Initial>,
+to easily create B<Classes>, B<Topics>, or B<Articles> from initialdata files.
+
+=head1 Running an initialdata file
+
+    sbin/rt-setup-database --action insert --datafile /path/to/your/initialdata
+
+This may prompt you for a database password.
+
+=head1 Implementation details
+
+All the handling of initialdata files is done in C<< RT::Handle->InsertData >>.
+If you want to know B<exactly> what's happening with each array, your best bet
+is to start reading the code there.
+
+RT takes care of the ordering so that your new queues are created before it
+processes the new ACLs for those queues.  This lets you refer to new queues you
+just created by Name.

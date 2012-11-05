@@ -48,6 +48,7 @@
 
 package RT::Test::GnuPG;
 use strict;
+use warnings;
 use Test::More;
 use base qw(RT::Test);
 use File::Temp qw(tempdir);
@@ -68,8 +69,8 @@ sub import {
     $t->plan( skip_all => 'gpg executable is required.' )
       unless RT::Test->find_executable('gpg');
 
-    require RT::Crypt::GnuPG;
     $class->SUPER::import(%args);
+    require RT::Crypt::GnuPG;
 
     RT::Test::diag "GnuPG --homedir " . RT->Config->Get('GnuPGOptions')->{'homedir'};
 
