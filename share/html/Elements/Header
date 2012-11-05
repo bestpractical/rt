@@ -75,9 +75,7 @@
     <link rel="alternate" href="<%$RSSAutoDiscovery%>" type="application/rss+xml" title="RSS RT Search" />
 % }
 
-% if ($JavaScript) {
 <& HeaderJavascript, focus => $Focus, onload => $onload, RichText => $RichText &>
-% }
 
 % my $stylesheet_plugin = "/NoAuth/css/".$style."/InHeader";
 % if ($m->comp_exists($stylesheet_plugin) ) {
@@ -148,7 +146,6 @@ $URL => undef
 $RSSAutoDiscovery => undef
 $onload => undef
 $LinkRel => undef
-$JavaScript => 1
 $SkipDoctype => 0
 $RichText => 1
 </%ARGS>
