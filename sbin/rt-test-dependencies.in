@@ -229,6 +229,7 @@ Regexp::IPv6
 Symbol::Global::Name
 HTML::Entities
 Role::Basic 0.12
+Module::Refresh 0.03
 .
 
 $deps{'MASON'} = [ text_to_hash( << '.') ];
@@ -285,7 +286,6 @@ HTML::Form
 HTML::TokeParser
 WWW::Mechanize 1.52
 Test::WWW::Mechanize 1.30
-Module::Refresh 0.03
 Test::Expect 0.31
 XML::Simple
 File::Find
