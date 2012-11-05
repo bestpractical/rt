@@ -60,11 +60,9 @@ my %deps;
 my @orig_argv = @ARGV;
 GetOptions(
     \%args,                               'v|verbose',
-    'install!',                           'with-MYSQL',
-    'with-PG',                            'with-SQLITE',
-    'with-ORACLE',                        'with-FASTCGI',
-    'with-MODPERL1',                      'with-MODPERL2',
-    'with-STANDALONE',
+    'install!',
+    'with-MYSQL', 'with-PG', 'with-SQLITE', 'with-ORACLE',
+    'with-FASTCGI', 'with-MODPERL1', 'with-MODPERL2', 'with-STANDALONE',
 
     'with-DEVELOPER',
 
@@ -637,35 +635,37 @@ list the status of all dependencies, rather than just the missing ones.
 
 =item --with-mysql
 
-    database interface for mysql
+database interface for mysql
 
 =item --with-pg
 
-    database interface for postgresql 
+database interface for postgresql
 
-=item with-oracle       
-    
-    database interface for oracle
+=item --with-oracle
 
-=item with-sqlite 
+database interface for oracle
 
-    database interface and driver for sqlite (unsupported)
+=item --with-sqlite
 
-=item with-fastcgi 
+database interface and driver for sqlite (unsupported)
 
-    libraries needed to support the fastcgi handler
+=item --with-fastcgi
 
-=item with-modperl1
+libraries needed to support the fastcgi handler
 
-    libraries needed to support the modperl 1 handler
+=item --with-modperl1
 
-=item with-modperl2
+libraries needed to support the modperl 1 handler
 
-    libraries needed to support the modperl 2 handler
+=item --with-modperl2
 
-=item with-developer
+libraries needed to support the modperl 2 handler
 
-    tools needed for RT development
+=item --with-developer
+
+tools needed for RT development
+
+=item
 
 =back
 
