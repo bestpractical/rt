@@ -51,11 +51,13 @@
     class => $css_class .' '. ($group? CSSClass("$css_class-$group") : ''),
     hide_empty => 1,
 &>
+% $ARGS{CustomFields} = $CustomFieldGenerator->() if $CustomFieldGenerator;
 <& EditCustomFields, %ARGS, Object => $Object, Grouping => $group &>
 </&>
 % }
 <%ARGS>
 $Object
+$CustomFieldGenerator => undef,
 </%ARGS>
 <%INIT>
 my $css_class = lc(ref($Object)||$Object);

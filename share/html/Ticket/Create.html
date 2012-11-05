@@ -116,7 +116,7 @@
 <& /Elements/EditCustomFieldCustomGroupings,
     %ARGS,
     Object => $ticket,
-    CustomFields => $QueueObj->TicketCustomFields,
+    CustomFieldGenerator => sub { $QueueObj->TicketCustomFields },
     DefaultsFromTopArguments => 0,
 &>
 
