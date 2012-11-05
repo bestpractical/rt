@@ -251,19 +251,19 @@ AC_ARG_WITH(apachectl,
             APACHECTL=`which apachectl`)
 AC_SUBST(APACHECTL)
 
-dnl RT's "maintainer mode"
-AC_ARG_WITH(devel-mode,[],RT_DEVEL_MODE=$withval,RT_DEVEL_MODE="0")
-AC_ARG_ENABLE(devel-mode,
-            AC_HELP_STRING([--enable-devel-mode],
-                           [Turn on development aids that might hurt you in production]),
-            RT_DEVEL_MODE=$enableval,
-            RT_DEVEL_MODE=$RT_DEVEL_MODE)
-if test "$RT_DEVEL_MODE" = yes; then
-        RT_DEVEL_MODE="1"
+dnl Dependencies for testing and developing RT
+AC_ARG_WITH(developer,[],RT_DEVELOPER=$withval,RT_DEVELOPER="0")
+AC_ARG_ENABLE(developer,
+            AC_HELP_STRING([--enable-developer],
+                           [Add dependencies needed for testing and developing RT]),
+            RT_DEVELOPER=$enableval,
+            RT_DEVELOPER=$RT_DEVELOPER)
+if test "$RT_DEVELOPER" = yes; then
+        RT_DEVELOPER="1"
 else
-        RT_DEVEL_MODE="0"
+        RT_DEVELOPER="0"
 fi
-AC_SUBST(RT_DEVEL_MODE)
+AC_SUBST(RT_DEVELOPER)
 
 dnl RT's GraphViz dependency charts
 AC_CHECK_LIB([graph],[aginitlib],RT_GRAPHVIZ="1")
