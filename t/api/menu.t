@@ -62,7 +62,7 @@ sub order_ok($$;$) {
     }
 }
 
-my $menu = RT::Interface::Web::Menu->new;
+$menu = RT::Interface::Web::Menu->new;
 
 ok $menu->child("foo", title => "foo"), "added child foo";
 order_ok $menu, [qw(foo)], "sorted";
