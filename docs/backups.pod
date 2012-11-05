@@ -52,8 +52,9 @@ but lets you take backups without putting load on your production server.
 
 =head3 PostgreSQL
 
-    pg_dump rt4 --table=sessions --schema-only  > rt-`date +%Y%M%d`-sessions.sql
-    pg_dump rt4 --exclude-table=sessions | gzip > rt-`date +%Y%M%d`.sql.gz
+    ( pg_dump rt4 --table=sessions --schema-only; \
+      pg_dump rt4 --exclude-table=sessions ) \
+        | gzip > rt-`date +%Y%M%d`.sql.gz
 
 =head2 FILESYSTEM
 
