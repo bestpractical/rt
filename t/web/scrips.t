@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 54;
+use RT::Test tests => undef;
 
 RT->Config->Set( UseTransactionBatch => 1 );
 
@@ -151,6 +151,40 @@ note "check basics in scrip's admin interface";
     $m->content_contains("Description changed from", "found action result message");
 }
 
+note "check application in admin interface";
+{
+    $m->follow_link_ok({ id => 'tools-config-global-scrips-create' });
+    $m->submit_form_ok({
+        with_fields => {
+            Description     => "testing application",
+            ScripCondition  => "On Create",
+            ScripAction     => "Open Tickets",
+            Template        => "Blank",
+        },
+        button => 'Create',
+    }, "created scrip");
+    $m->content_contains("Scrip Created", "found result message");
+
+    my ($sid) = ($m->content =~ /Modify scrip #(\d+)/);
+    ok $sid, "found scrip id on the page";
+    RT::Test->object_scrips_are($sid, [0]);
+
+    $m->follow_link_ok({ id => 'page-applies-to' });
+    ok $m->form_name("AddRemoveScrip"), "found form";
+    $m->tick("RemoveScrip-$sid", 0);
+    $m->click_ok("Update", "update scrip application");
+    RT::Test->object_scrips_are($sid, []);
+
+    my $queue = RT::Test->load_or_create_queue( Name => 'General' );
+    ok $queue && $queue->id, "loaded queue";
+
+    ok $m->form_name("AddRemoveScrip"), "found form";
+    $m->tick("AddScrip-$sid", 0);
+    $m->tick("AddScrip-$sid", $queue->id);
+    $m->click_ok("Update", "update scrip application");
+    RT::Test->object_scrips_are($sid, [0], [$queue->id]);
+}
+
 note "apply scrip in different stage to different queues";
 {
     my $queue = RT::Test->load_or_create_queue( Name => 'Regression' );
@@ -185,3 +219,6 @@ note "apply scrip in different stage to different queues";
     # regression
     is scalar @matches, 1, 'scrip mentioned only once';
 }
+
+undef $m;
+done_testing;
