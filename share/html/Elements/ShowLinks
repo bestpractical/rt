@@ -154,25 +154,20 @@ my $path
     . $id;
 my $can_create = $Ticket->QueueObj->CurrentUserHasRight('CreateTicket');
 
-for my $relation (
-    qw(RefersTo ReferredToBy)) {
-    my $mode  = $RT::Link::TYPEMAP{$relation}->{Mode};
-    my $type  = $RT::Link::TYPEMAP{$relation}->{Type};
-    my $other = "Local" . $mode;
-    my $field = $mode eq 'Base' ? 'new-' . $type : $type . '-new';
-    $clone->{$field} 
-        = $path . "&$field="
-        . join( '%20',
-        ( map { $_->$other() } @{ $Ticket->$relation->ItemsArrayRef } ), $id );
-}
-
-for my $relation ( qw(MemberOf Members DependsOn DependedOnBy)) {
+for my $relation (grep { $_ ne "MergedInto" } RT::Link->DisplayTypes) {
     my $mode  = $RT::Link::TYPEMAP{$relation}->{Mode};
     my $type  = $RT::Link::TYPEMAP{$relation}->{Type};
     my $field = $mode eq 'Base' ? 'new-' . $type : $type . '-new';
-    $clone->{$field} = $path . "&$field=$id";
-}
+    my @copy  = ($id);
 
+    # Canonicalized type captures both directions
+    if ($type eq "RefersTo") {
+        my $other = "Local" . $mode;
+        push @copy, map { $_->$other() } @{ $Ticket->$relation->ItemsArrayRef };
+    }
+
+    $clone->{$field} = "$path&$field=" . join('%20', @copy);
+}
 </%INIT>
 <%ARGS>
 $Ticket => undef
