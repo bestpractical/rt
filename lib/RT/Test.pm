@@ -58,6 +58,7 @@ use Socket;
 use File::Temp qw(tempfile);
 use File::Path qw(mkpath);
 use File::Spec;
+use Scalar::Util qw(blessed);
 
 our @EXPORT = qw(is_empty diag parse_mail works fails);
 
@@ -1095,6 +1096,52 @@ sub fetch_caught_mails {
 
 sub clean_caught_mails {
     unlink $tmp{'mailbox'};
+}
+
+=head2 object_scrips_are
+
+Takes an L<RT::Scrip> object or ID as the first argument and an arrayref of
+L<RT::Queue> objects and/or Queue IDs as the second argument.
+
+The scrip's applications (L<RT::ObjectScrip> records) are tested to ensure they
+exactly match the arrayref.
+
+An optional third arrayref may be passed to enumerate and test the queues the
+scrip is B<not> added to.  This is most useful for testing the API returns the
+correct results.
+
+=cut
+
+sub object_scrips_are {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+    my $self    = shift;
+    my $scrip   = shift;
+    my $to      = shift || [];
+    my $not_to  = shift;
+
+    unless (blessed($scrip)) {
+        my $id = $scrip;
+        $scrip = RT::Scrip->new( RT->SystemUser );
+        $scrip->Load($id);
+    }
+
+    $to = [ map { blessed($_) ? $_->id : $_ } @$to ];
+    Test::More::ok($scrip->IsAdded($_), "added to queue $_" ) foreach @$to;
+    Test::More::is_deeply(
+        [sort map $_->id, @{ $scrip->AddedTo->ItemsArrayRef }],
+        [sort grep $_, @$to ],
+        'correct list of added to queues',
+    );
+
+    if ($not_to) {
+        $not_to = [ map { blessed($_) ? $_->id : $_ } @$not_to ];
+        Test::More::ok(!$scrip->IsAdded($_), "not added to queue $_" ) foreach @$not_to;
+        Test::More::is_deeply(
+            [sort map $_->id, @{ $scrip->NotAddedTo->ItemsArrayRef }],
+            [sort grep $_, @$not_to ],
+            'correct list of not added to queues',
+        );
+    }
 }
 
 =head2 get_relocatable_dir
