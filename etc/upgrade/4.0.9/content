@@ -1,0 +1,30 @@
+@Final = (
+    sub {
+        $RT::Logger->debug(
+            'Going to update empty Queue Lifecycle column to "default"');
+
+        my $queues = RT::Queues->new( RT->SystemUser );
+        $queues->FindAllRows;
+        $queues->Limit(
+            FIELD    => 'Lifecycle',
+            OPERATOR => 'IS',
+            VALUE    => 'NULL',
+        );
+
+        $queues->Limit(
+            FIELD           => 'Lifecycle',
+            VALUE           => '',
+            ENTRYAGGREGATOR => 'OR',
+        );
+
+        $queues->Limit(
+            FIELD           => 'Lifecycle',
+            VALUE           => 0,
+            ENTRYAGGREGATOR => 'OR',
+        );
+
+        while ( my $q = $queues->Next ) {
+            $q->SetLifecycle('default');
+        }
+    }
+);
