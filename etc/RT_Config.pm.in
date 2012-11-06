@@ -485,9 +485,8 @@ Set( $CheckMoreMSMailHeaders, 0);
 
 C<$MailCommand> defines which method RT will use to try to send mail.
 We know that 'sendmailpipe' works fairly well.  If 'sendmailpipe'
-doesn't work well for you, try 'sendmail'.  Note that you should remove
-the '-t' from C<$SendmailArguments> if you use 'sendmail' rather than
-'sendmailpipe'.  'qmail' is also a supported value.
+doesn't work well for you, try 'sendmail'.  'qmail' is also a supported
+value.
 
 For testing purposes, or to simply disable sending mail out into the
 world, you can set C<$MailCommand> to 'testfile' which writes all mail
@@ -711,16 +710,14 @@ These options only take effect if C<$MailCommand> is 'sendmail' or
 =item C<$SendmailArguments>
 
 C<$SendmailArguments> defines what flags to pass to C<$SendmailPath>
-If you picked 'sendmailpipe', you MUST add a -t flag to
-C<$SendmailArguments> These options are good for most sendmail
-wrappers and work-a-likes.
+These options are good for most sendmail wrappers and work-a-likes.
 
 These arguments are good for sendmail brand sendmail 8 and newer:
-C<Set($SendmailArguments,"-oi -t -ODeliveryMode=b -OErrorMode=m");>
+C<Set($SendmailArguments,"-oi -ODeliveryMode=b -OErrorMode=m");>
 
 =cut
 
-Set($SendmailArguments, "-oi -t");
+Set($SendmailArguments, "-oi");
 
 
 =item C<$SendmailBounceArguments>

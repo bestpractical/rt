@@ -421,6 +421,7 @@ sub SendEmail {
     if ( $mail_command eq 'sendmailpipe' ) {
         my $path = RT->Config->Get('SendmailPath');
         my @args = shellwords(RT->Config->Get('SendmailArguments'));
+        push @args, "-t" unless grep {$_ eq "-t"} @args;
 
         # SetOutgoingMailFrom and bounces conflict, since they both want -f
         if ( $args{'Bounce'} ) {
@@ -495,7 +496,8 @@ sub SendEmail {
         my @mailer_args = ($mail_command);
         if ( $mail_command eq 'sendmail' ) {
             $ENV{'PERL_MAILERS'} = RT->Config->Get('SendmailPath');
-            push @mailer_args, split(/\s+/, RT->Config->Get('SendmailArguments'));
+            push @mailer_args, grep {$_ ne "-t"}
+                split(/\s+/, RT->Config->Get('SendmailArguments'));
         } elsif ( $mail_command eq 'testfile' ) {
             unless ($Mail::Mailer::testfile::config{outfile}) {
                 $Mail::Mailer::testfile::config{outfile} = File::Temp->new;
