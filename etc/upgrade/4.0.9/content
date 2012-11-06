@@ -4,6 +4,7 @@
             'Going to update empty Queue Lifecycle column to "default"');
 
         my $queues = RT::Queues->new( RT->SystemUser );
+        $queues->FindAllRows;
         $queues->Limit(
             FIELD    => 'Lifecycle',
             OPERATOR => 'IS',
