@@ -104,7 +104,7 @@ my $COLUMN_MAP = {
             my $checked = $m->request_args->{ $name .'All' }? 'checked="checked"': '';
 
             return \qq{<input type="checkbox" name="${name}All" value="1" $checked
-                              onclick="setCheckbox(this.form, '$name', this.checked)" />};
+                              onclick="setCheckbox(this, '$name')" />};
         },
         value => sub {
             my $id = $_[0]->id;

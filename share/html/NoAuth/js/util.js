@@ -127,7 +127,10 @@ function focusElementById(id) {
     if (e) e.focus();
 }
 
-function setCheckbox(form, name, val) {
+function setCheckbox(input, name, val) {
+    if (val == null) val = input.checked;
+
+    var form    = input.form;
     var myfield = form.getElementsByTagName('input');
     for ( var i = 0; i < myfield.length; i++ ) {
         if ( myfield[i].type != 'checkbox' ) continue;
