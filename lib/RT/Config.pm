@@ -590,6 +590,16 @@ our %META = (
             $self->Set( DisableGD => 1 );
         },
     },
+    MailCommand => {
+        Type    => 'SCALAR',
+        PostLoadCheck => sub {
+            my $self = shift;
+            my $value = $self->Get('MailCommand');
+            $RT::Logger->error("Unknown value for \$MailCommand: $value")
+                unless ref($value) eq "CODE"
+                    or $value =~/^(sendmail|sendmailpipe|qmail|testfile)$/;
+        },
+    },
     MailPlugins  => { Type => 'ARRAY' },
     GnuPG        => { Type => 'HASH' },
     GnuPGOptions => { Type => 'HASH',
