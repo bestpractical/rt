@@ -130,8 +130,9 @@ function focusElementById(id) {
 function setCheckbox(input, name, val) {
     if (val == null) val = input.checked;
 
-    var form    = input.form;
-    var myfield = form.getElementsByTagName('input');
+    // Find inputs within the current form or collection list, whichever is closest.
+    var container = jQuery(input).closest("form, table.collection-as-table").get(0);
+    var myfield   = container.getElementsByTagName('input');
     for ( var i = 0; i < myfield.length; i++ ) {
         if ( myfield[i].type != 'checkbox' ) continue;
         if ( name ) {
