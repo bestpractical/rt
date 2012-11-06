@@ -48,8 +48,8 @@
 <table>
   <tr>
     <td class="labeltop"><& ShowRelationLabel, Object => $Ticket, Label => loc('Depends on'), Relation => 'DependsOn' &>:\
-% if ($can_create) {
-        <span class="create">(<a href="<%$clone->{'DependsOn-new'}%>"><% loc('Create') %></a>)</span>
+% if (%clone) {
+        <span class="create">(<a href="<%$clone{'DependsOn-new'}%>"><% loc('Create') %></a>)</span>
 % }
     </td>
     <td class="value">
@@ -81,8 +81,8 @@ while ( my $link = $depends_on->Next ) {
   </tr>
   <tr>
     <td class="labeltop"><& ShowRelationLabel, Object => $Ticket, Label => loc('Depended on by'), Relation => 'DependedOnBy' &>:\
-% if ($can_create) {
-        <span class="create">(<a href="<%$clone->{'new-DependsOn'}%>"><% loc('Create') %></a>)</span>
+% if (%clone) {
+        <span class="create">(<a href="<%$clone{'new-DependsOn'}%>"><% loc('Create') %></a>)</span>
 % }
     </td>
     <td class="value">
@@ -95,24 +95,24 @@ while ( my $link = $depends_on->Next ) {
   </tr>
   <tr>
     <td class="labeltop"><& ShowRelationLabel, Object => $Ticket, Label => loc('Parents'), Relation => 'Parents' &>:\
-% if ($can_create) {
-        <span class="create">(<a href="<%$clone->{'MemberOf-new'}%>"><% loc('Create') %></a>)</span>
+% if (%clone) {
+        <span class="create">(<a href="<%$clone{'MemberOf-new'}%>"><% loc('Create') %></a>)</span>
 % }
     </td>
     <td class="value"><& /Ticket/Elements/ShowParents, Ticket => $Ticket &></td>
   </tr>
   <tr>
     <td class="labeltop"><& ShowRelationLabel, Object => $Ticket, Label => loc('Children'), Relation => 'Children' &>:\
-% if ($can_create) {
-        <span class="create">(<a href="<%$clone->{'new-MemberOf'}%>"><% loc('Create') %></a>)</span>
+% if (%clone) {
+        <span class="create">(<a href="<%$clone{'new-MemberOf'}%>"><% loc('Create') %></a>)</span>
 % }
     </td>
     <td class="value"><& /Ticket/Elements/ShowMembers, Ticket => $Ticket &></td>
   </tr>
   <tr>
     <td class="labeltop"><& ShowRelationLabel, Object => $Ticket, Label => loc('Refers to'), Relation => 'RefersTo' &>:\
-% if ($can_create) {
-        <span class="create">(<a href="<%$clone->{'RefersTo-new'}%>"><% loc('Create') %></a>)</span>
+% if (%clone) {
+        <span class="create">(<a href="<%$clone{'RefersTo-new'}%>"><% loc('Create') %></a>)</span>
 % }
     </td>
     <td class="value">
@@ -125,8 +125,8 @@ while ( my $link = $depends_on->Next ) {
   </tr>
   <tr>
     <td class="labeltop"><& ShowRelationLabel, Object => $Ticket, Label => loc('Referred to by'), Relation => 'ReferredToBy' &>:\
-% if ($can_create) {
-        <span class="create">(<a href="<%$clone->{'new-RefersTo'}%>"><% loc('Create') %></a>)</span>
+% if (%clone) {
+        <span class="create">(<a href="<%$clone{'new-RefersTo'}%>"><% loc('Create') %></a>)</span>
 % }
     </td>
     <td class="value">
@@ -142,31 +142,31 @@ while ( my $link = $depends_on->Next ) {
 % $m->callback( %ARGS );
 </table>
 <%INIT>
+my %clone;
 
-my $id = $Ticket->id;
+if ($Ticket->QueueObj->CurrentUserHasRight('CreateTicket')) {
+    my $id = $Ticket->id;
+    my $path
+        = RT->Config->Get('WebPath')
+        . '/Ticket/Create.html?Queue='
+        . $Ticket->Queue
+        . '&CloneTicket='
+        . $id;
 
-my $clone = {};
-my $path
-    = RT->Config->Get('WebPath')
-    . '/Ticket/Create.html?Queue='
-    . $Ticket->Queue
-    . '&CloneTicket='
-    . $id;
-my $can_create = $Ticket->QueueObj->CurrentUserHasRight('CreateTicket');
+    for my $relation (grep { $_ ne "MergedInto" } RT::Link->DisplayTypes) {
+        my $mode  = $RT::Link::TYPEMAP{$relation}->{Mode};
+        my $type  = $RT::Link::TYPEMAP{$relation}->{Type};
+        my $field = $mode eq 'Base' ? 'new-' . $type : $type . '-new';
+        my @copy  = ($id);
 
-for my $relation (grep { $_ ne "MergedInto" } RT::Link->DisplayTypes) {
-    my $mode  = $RT::Link::TYPEMAP{$relation}->{Mode};
-    my $type  = $RT::Link::TYPEMAP{$relation}->{Type};
-    my $field = $mode eq 'Base' ? 'new-' . $type : $type . '-new';
-    my @copy  = ($id);
+        # Canonicalized type captures both directions
+        if ($type eq "RefersTo") {
+            my $other = "Local" . $mode;
+            push @copy, map { $_->$other() } @{ $Ticket->$relation->ItemsArrayRef };
+        }
 
-    # Canonicalized type captures both directions
-    if ($type eq "RefersTo") {
-        my $other = "Local" . $mode;
-        push @copy, map { $_->$other() } @{ $Ticket->$relation->ItemsArrayRef };
+        $clone{$field} = "$path&$field=" . join('%20', @copy);
     }
-
-    $clone->{$field} = "$path&$field=" . join('%20', @copy);
 }
 </%INIT>
 <%ARGS>
