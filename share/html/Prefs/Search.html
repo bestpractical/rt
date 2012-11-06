@@ -81,7 +81,7 @@ Abort('No search specified')
 
 my $search = $class->new ($session{'CurrentUser'});
 $search->LoadById ($id);
-$title .= loc ($search->Description, loc ('"N"'));
+$title .= loc (RT::SavedSearch->EscapeDescription($search->Description), loc ('"N"'));
 my $user = $session{'CurrentUser'}->UserObj;
 my $SearchArg = $user->Preferences($search, $search->Content);
 $ARGS{Order}       = (ref $ARGS{Order}   ? join('|',grep {/\S/} @{$ARGS{Order}})   : $ARGS{Order});

@@ -162,10 +162,10 @@ my $COLUMN_MAP = {
             my @res = (
                 \'<a href="',
                 $uri .'?'. $m->comp("/Elements/QueryString", %pass, MoveCustomFieldUp => $id ),
-                \'">', loc('[Up]'), \'</a>',
+                \'">', loc('~[Up~]'), \'</a>',
                 \' <a href="',
                 $uri .'?'. $m->comp("/Elements/QueryString", %pass, MoveCustomFieldDown => $id ),
-                \'">', loc('[Down]'), \'</a>'
+                \'">', loc('~[Down~]'), \'</a>'
             );
 
             return @res;
