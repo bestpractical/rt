@@ -415,11 +415,6 @@ sub SendEmail {
 
     my $mail_command = RT->Config->Get('MailCommand');
 
-    if ($mail_command eq 'testfile' and not $Mail::Mailer::testfile::config{outfile}) {
-        $Mail::Mailer::testfile::config{outfile} = File::Temp->new;
-        $RT::Logger->info("Storing outgoing emails in $Mail::Mailer::testfile::config{outfile}");
-    }
-
     # if it is a sub routine, we just return it;
     return $mail_command->($args{'Entity'}) if UNIVERSAL::isa( $mail_command, 'CODE' );
 
@@ -501,8 +496,12 @@ sub SendEmail {
         if ( $mail_command eq 'sendmail' ) {
             $ENV{'PERL_MAILERS'} = RT->Config->Get('SendmailPath');
             push @mailer_args, split(/\s+/, RT->Config->Get('SendmailArguments'));
-        }
-        else {
+        } elsif ( $mail_command eq 'testfile' ) {
+            unless ($Mail::Mailer::testfile::config{outfile}) {
+                $Mail::Mailer::testfile::config{outfile} = File::Temp->new;
+                $RT::Logger->info("Storing outgoing emails in $Mail::Mailer::testfile::config{outfile}");
+            }
+        } else {
             push @mailer_args, RT->Config->Get('MailParams');
         }
 
