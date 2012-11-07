@@ -78,7 +78,7 @@ ok( !$form->find_input("ValueOf'CF.{foo_cf}'"), 'no foo_cf by default' );
 my $status_input = $form->find_input('ValueOfStatus');
 my @statuses     = sort $status_input->possible_values;
 is_deeply(
-    \@statuses, [ '', qw/initial new open rejected resolved stalled/], 'found all statuses'
+    \@statuses, [ '', qw/initial new open open rejected resolved resolved stalled/], 'found all statuses'
 ) or diag "Statuses are: ", explain \@statuses;
 
 my $owner_input = $form->find_input('ValueOfActor');
@@ -126,7 +126,7 @@ $status_input = $form->find_input('ValueOfStatus');
 @statuses     = sort $status_input->possible_values;
 is_deeply(
     \@statuses,
-    [ '', qw/initial new open rejected resolved stalled/ ],
+    [ '', qw/initial new open open rejected resolved resolved stalled/ ],
     'found all statuses again'
 ) or diag "Statuses are: ", explain \@statuses;
 $owner_input = $form->find_input('ValueOfActor');
@@ -150,7 +150,7 @@ ok( !$form->find_input("ValueOf'CF.{general_cf}'"), 'no general_cf' );
 $status_input = $form->find_input('ValueOfStatus');
 @statuses     = sort $status_input->possible_values;
 is_deeply(
-    \@statuses, [ '', qw/initial new open rejected resolved stalled/],
+    \@statuses, [ '', qw/initial new open open rejected resolved resolved stalled/],
     'found all statuses'
 ) or diag "Statuses are: ", explain \@statuses;
 $owner_input = $form->find_input('ValueOfActor');
@@ -173,7 +173,7 @@ $status_input = $form->find_input('ValueOfStatus');
 @statuses     = sort $status_input->possible_values;
 is_deeply(
     \@statuses,
-    [ '', qw/initial new open rejected resolved stalled/ ],
+    [ '', qw/initial new open open rejected resolved resolved stalled/ ],
     'found all statuses'
 ) or diag "Statuses are: ", explain \@statuses;
 $owner_input = $form->find_input('ValueOfActor');
