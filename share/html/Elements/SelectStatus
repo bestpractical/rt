@@ -49,21 +49,29 @@
 % if ( $DefaultValue ) {
 <option value=""<% !$Default && qq[ selected="selected"] |n %>><% $DefaultLabel %></option>
 % }
-% foreach my $status (@status) {
-% next if ($SkipDeleted && $status eq 'deleted');
-% my $selected = defined $Default && $status eq $Default ? 'selected="selected"' : '';
+% for my $lifecycle (sort keys %statuses_by_lifecycle) {
+%     if ($group_by_lifecycle) {
+<optgroup label="<% $lifecycle %>">
+%     }
+%     foreach my $status (@{$statuses_by_lifecycle{$lifecycle}}) {
+%         next if ($SkipDeleted && $status eq 'deleted');
+%         my $selected = defined $Default && $status eq $Default ? 'selected="selected"' : '';
 <option value="<% $status %>" <% $selected |n %>><% loc($status) %></option>
+%     }
+%     if ($group_by_lifecycle) {
+</optgroup>
+%     }
 % }
 </select>
 <%INIT>
 ### XXX: no cover for Tools/MyDay.html
 
-
-my @status;
+my %statuses_by_lifecycle;
 if ( @Statuses ) {
-    @status = @Statuses;
+    $statuses_by_lifecycle{''} = \@Statuses;
 }
 elsif ( $TicketObj ) {
+    my @status;
     my $current = $TicketObj->Status;
     push @status, $current;
 
@@ -76,20 +84,27 @@ elsif ( $TicketObj ) {
             unless exists $has{ $check };
         push @status, $next if $has{ $check };
     }
+    $statuses_by_lifecycle{$lifecycle->Name} = \@status;
 }
 elsif ( $QueueObj ) {
-    @status = $QueueObj->Lifecycle->Transitions('');
+    my $lifecycle = $QueueObj->Lifecycle;
+    $statuses_by_lifecycle{$lifecycle->Name} = [ $lifecycle->Transitions('') ];
 } elsif ( %Queues ) {
     for my $id (keys %Queues) {
         my $queue = RT::Queue->new($session{'CurrentUser'});
         $queue->Load($id);
-        push @status, $queue->Lifecycle->Valid if $queue->id;
+        if ($queue->id) {
+            my $lifecycle = $queue->Lifecycle;
+            $statuses_by_lifecycle{$lifecycle->Name} = [ $lifecycle->Valid ];
+        }
     }
-    my %seen;
-    @status = grep { not $seen{$_}++ } @status;
 } else {
-    @status = RT::Queue->Lifecycle->Valid;
+    for my $lifecycle (map { RT::Lifecycle->Load($_) } RT::Lifecycle->List) {
+        $statuses_by_lifecycle{$lifecycle->Name} = [ $lifecycle->Valid ];
+    }
 }
+
+my $group_by_lifecycle = keys %statuses_by_lifecycle > 1;
 </%INIT>
 <%ARGS>
 $Name => undef
