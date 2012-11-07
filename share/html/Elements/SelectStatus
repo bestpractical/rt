@@ -104,6 +104,29 @@ elsif ( $QueueObj ) {
     }
 }
 
+if (keys %statuses_by_lifecycle) {
+    my %simplified;
+    my $key = sub {
+        join "\0", sort @{$_[0]};
+    };
+    for my $name (sort keys %statuses_by_lifecycle) {
+        my $matched;
+        my $statuses = $statuses_by_lifecycle{$name};
+        for my $simple (sort keys %simplified) {
+            if ($key->($statuses) eq $key->($simplified{$simple})) {
+                # Statuses are the same, join 'em!
+                $simplified{"$simple, $name"} = delete $simplified{$simple};
+                $matched++;
+                last;
+            }
+        }
+        unless ($matched) {
+            $simplified{$name} = $statuses;
+        }
+    }
+    %statuses_by_lifecycle = %simplified;
+}
+
 my $group_by_lifecycle = keys %statuses_by_lifecycle > 1;
 </%INIT>
 <%ARGS>
