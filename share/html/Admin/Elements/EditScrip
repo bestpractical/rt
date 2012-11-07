@@ -87,6 +87,29 @@
 &></td></tr>
 % }
 
+% if ( $id ne 'new' && $EnabledChecked ) {
+<tr><td class="label"><&|/l&>Added</&>:</td><td class="value">\
+% if ( $scrip->IsAdded(0) ) {
+<% loc('Global') %>
+% } else {
+% my $added_to = $scrip->AddedTo;
+% my $found = 0;
+% while ( my $queue = $added_to->Next ) {
+% $m->out(', ') if $found++;
+<% $queue->Name %>
+% last if $found == 10;
+% }
+% $m->out(', ...') if $found == 10;
+% }
+<td></tr>
+% }
+
+<tr><td class="label">&nbsp;</td><td>
+<input type="hidden" class="hidden" name="SetEnabled" value="1" />
+<input type="checkbox" class="checkbox" name="Scrip-<% $id %>-Enabled" value="1" <% $EnabledChecked |n%> />
+<label for="Scrip-<% $id %>-Enabled"><&|/l&>Enabled (Unchecking this box disables this scrip)</&></label>
+</td></tr>
+
 </table>
 </&>
 
@@ -147,9 +170,14 @@ if ( $id ) {
     $SubmitLabel = loc('Save Changes');
 }
 
+my $EnabledChecked = qq[checked="checked"];
+
 unless ( $id ) {
     $id = 'new';
     $SubmitLabel = loc('Create');
+}
+else {
+    $EnabledChecked = '' if $scrip->Disabled;
 }
 
 my $min_lines = 10;
@@ -185,6 +213,7 @@ if ( $id eq 'new' ) {
         CustomCommitCode       => $ARGS{"Scrip-new-CustomCommitCode"},
         CustomIsApplicableCode => $ARGS{"Scrip-new-CustomIsApplicableCode"},
         Stage                  => $ARGS{"Scrip-new-Stage"},
+        Disabled               => $ARGS{"Scrip-new-Enabled"} ? 0 : 1,
     );
 }
 else {
@@ -192,8 +221,11 @@ else {
     return (undef, loc("Couldn't load scrip #[_1]", $id))
         unless $scrip->id;
 
+    $ARGS{"Scrip-$id-Disabled"} = $ARGS{"Scrip-$id-Enabled"} ? 0 : 1
+        if $ARGS{"SetEnabled"};
+
     my @attribs = qw(ScripAction ScripCondition Template Stage
-        Description CustomPrepareCode CustomCommitCode CustomIsApplicableCode);
+        Description CustomPrepareCode CustomCommitCode CustomIsApplicableCode Disabled);
     my @results = UpdateRecordObject(
         AttributesRef   => \@attribs,
         AttributePrefix => 'Scrip-'.$scrip->Id,
