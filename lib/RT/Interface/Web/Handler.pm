@@ -205,7 +205,7 @@ sub CleanupRequest {
 
 sub HTML::Mason::Exception::as_rt_error {
     my ($self) = @_;
-    $RT::Logger->error( $self->full_message );
+    $RT::Logger->error( $self->as_text );
     return "An internal RT error has occurred.  Your administrator can find more details in RT's log files.";
 }
 
