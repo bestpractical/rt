@@ -79,7 +79,7 @@ my $status_input = $form->find_input('ValueOfStatus');
 my @statuses     = sort $status_input->possible_values;
 is_deeply(
     \@statuses, [ '', qw/initial new open rejected resolved stalled/], 'found all statuses'
-);
+) or diag "Statuses are: ", explain \@statuses;
 
 my $owner_input = $form->find_input('ValueOfActor');
 my @owners     = sort $owner_input->possible_values;
@@ -128,7 +128,7 @@ is_deeply(
     \@statuses,
     [ '', qw/initial new open rejected resolved stalled/ ],
     'found all statuses again'
-);
+) or diag "Statuses are: ", explain \@statuses;
 $owner_input = $form->find_input('ValueOfActor');
 @owners     = sort $owner_input->possible_values;
 is_deeply(
@@ -152,7 +152,7 @@ $status_input = $form->find_input('ValueOfStatus');
 is_deeply(
     \@statuses, [ '', qw/initial new open rejected resolved stalled/],
     'found all statuses'
-);
+) or diag "Statuses are: ", explain \@statuses;
 $owner_input = $form->find_input('ValueOfActor');
 @owners     = sort $owner_input->possible_values;
 is_deeply(
@@ -175,7 +175,7 @@ is_deeply(
     \@statuses,
     [ '', qw/initial new open rejected resolved stalled/ ],
     'found all statuses'
-);
+) or diag "Statuses are: ", explain \@statuses;
 $owner_input = $form->find_input('ValueOfActor');
 @owners     = sort $owner_input->possible_values;
 is_deeply(
