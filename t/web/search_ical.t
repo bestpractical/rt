@@ -1,6 +1,5 @@
-#!/usr/bin/perl
-
 use strict;
+use warnings;
 
 use Data::ICal;
 use RT::Test tests => 77;
@@ -49,7 +48,7 @@ diag 'Test iCal with date only';
     is( $agent->content_type, 'text/calendar', 'content type is text/calendar' );
 
     for ( 1 .. 5 ) {
-        $agent->content_like(qr/URL\:$baseurl\/\?q=$_/);
+        $agent->content_like(qr/URL\:$baseurl\/Ticket\/Display\.html\?id=$_/);
     }
 
     my $ical = Data::ICal->new(data => $agent->content);
@@ -97,7 +96,7 @@ diag 'Test iCal with date and time with config option';
     is( $agent->content_type, 'text/calendar', 'content type is text/calendar' );
 
     for ( 1 .. 5 ) {
-        $agent->content_like(qr/URL\:$baseurl\/\?q=$_/);
+        $agent->content_like(qr/URL\:$baseurl\/Ticket\/Display\.html\?id=$_/);
     }
 
     my $ical = Data::ICal->new(data => $agent->content);
@@ -143,7 +142,7 @@ diag 'Test iCal with date and time using query param';
     is( $agent->content_type, 'text/calendar', 'content type is text/calendar' );
 
     for ( 1 .. 5 ) {
-        $agent->content_like(qr/URL\:$baseurl\/\?q=$_/);
+        $agent->content_like(qr/URL\:$baseurl\/Ticket\/Display\.html\?id=$_/);
     }
 
     my $ical = Data::ICal->new(data => $agent->content);
@@ -170,7 +169,7 @@ diag 'Test iCal with date and time using query param';
     is( $agent->content_type, 'text/calendar', 'content type is text/calendar' );
 
     for ( 1 .. 5 ) {
-        $agent->content_like(qr/URL\:$baseurl\/\?q=$_/);
+        $agent->content_like(qr/URL\:$baseurl\/Ticket\/Display\.html\?id=$_/);
     }
 
     $ical = Data::ICal->new(data => $agent->content);
