@@ -46,29 +46,18 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <ul>
-% while (my $link = $members->Next) {
-<li><& /Elements/ShowLink, URI => $link->BaseURI &><br />
-% next if $link->BaseObj and $checked->{$link->BaseObj->id};
-% if ($depth < 8) {
-<& /Ticket/Elements/ShowMembers, Ticket => $link->BaseObj, depth => ($depth+1), checked => $checked &> 
-% }
-</li>
+% while (my $link = $member_of->Next) {
+<li><& ShowLink, URI => $link->TargetURI &></li>
 % }
 </ul>
-
 <%INIT>
 
-return unless $Ticket;
-my $members = $Ticket->Members;
-return unless $members->Count;
+return unless $Object;
+my $member_of = $Object->MemberOf;
+return unless $member_of->Count;
 
-return if $checked->{$Ticket->id};
-
-$checked->{$Ticket->id} = 1;
 </%INIT>
 
 <%ARGS>
-$Ticket => undef
-$depth => 1
-$checked => {}
+$Object => undef
 </%ARGS>

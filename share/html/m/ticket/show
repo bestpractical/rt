@@ -450,11 +450,11 @@ for my $link ( @{ $Ticket->DependsOn->ItemsArrayRef } ) {
   </div>
  <div class="entry">
     <div class="label"><% loc('Parents') %>:</div>
-    <div class="value"><& /Ticket/Elements/ShowParents, Ticket => $Ticket &></div>
+    <div class="value"><& /Elements/ShowParents, Object => $Ticket &></div>
   </div>
  <div class="entry">
     <div class="label"><% loc('Children')%>:</div>
-    <div class="value"><& /Ticket/Elements/ShowMembers, Ticket => $Ticket &></div>
+    <div class="value"><& /Elements/ShowMembers, Object => $Ticket &></div>
   </div>
  <div class="entry">
     <div class="label"><% loc('Refers to')%>:</div>
