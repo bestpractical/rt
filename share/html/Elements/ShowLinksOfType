@@ -90,6 +90,15 @@ return if $checked->{$Object->id};
 $checked->{$Object->id} = 1;
 
 my $mode = $RT::Link::TYPEMAP{$Type}->{'Mode'};
+
+$m->callback(
+    CallbackName => "Init",
+    ARGSRef      => \%ARGS,
+    Object       => $Object,
+    $Type        => $Type,
+    $Recurse     => \$Recurse,
+    $MaxDepth    => \$MaxDepth,
+);
 </%INIT>
 <%ARGS>
 $Object     => undef
