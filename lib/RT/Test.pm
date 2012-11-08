@@ -53,14 +53,16 @@ use warnings;
 
 
 use base 'Test::More';
+require Test::NoWarnings;
 
 use Socket;
 use File::Temp qw(tempfile);
 use File::Path qw(mkpath);
 use File::Spec;
 
-our @EXPORT = qw(is_empty diag parse_mail works fails);
+our @EXPORT = qw(is_empty diag parse_mail works fails plan done_testing);
 
+my $check_warnings_in_end = 1;
 my %tmp = (
     directory => undef,
     config    => {
@@ -100,14 +102,14 @@ sub import {
 
     # Spit out a plan (if we got one) *before* we load modules
     if ( $args{'tests'} ) {
-        $class->builder->plan( tests => $args{'tests'} )
+        plan( tests => $args{'tests'} )
           unless $args{'tests'} eq 'no_declare';
     }
     elsif ( exists $args{'tests'} ) {
         # do nothing if they say "tests => undef" - let them make the plan
     }
     elsif ( $args{'skip_all'} ) {
-        $class->builder->plan(skip_all => $args{'skip_all'});
+        plan(skip_all => $args{'skip_all'});
     }
     else {
         $class->builder->no_plan unless $class->builder->has_plan;
@@ -168,12 +170,15 @@ sub import {
     }
 
     Test::More->export_to_level($level);
+    Test::NoWarnings->export_to_level($level);
 
-    # blow away their diag so we can redefine it without warning
+    # Blow away symbols we redefine to avoid warnings.
     # better than "no warnings 'redefine'" because we might accidentally
     # suppress a mistaken redefinition
     no strict 'refs';
     delete ${ caller($level) . '::' }{diag};
+    delete ${ caller($level) . '::' }{plan};
+    delete ${ caller($level) . '::' }{done_testing};
     __PACKAGE__->export_to_level($level);
 }
 
@@ -1521,14 +1526,37 @@ sub fails {
     Test::More::ok(!$_[0], $_[1] || 'This should fail');
 }
 
+sub plan {
+    my ($cmd, @args) = @_;
+    my $builder = RT::Test->builder;
+
+    if ($cmd eq "skip_all") {
+        $check_warnings_in_end = 0;
+    } elsif ($cmd eq "tests") {
+        # Increment the test count for the warnings check
+        $args[0]++;
+    }
+    $builder->plan($cmd, @args);
+}
+
+sub done_testing {
+    my $builder = RT::Test->builder;
+
+    Test::NoWarnings::had_no_warnings();
+    $check_warnings_in_end = 0;
+
+    $builder->done_testing(@_);
+}
+
 END {
     my $Test = RT::Test->builder;
     return if $Test->{Original_Pid} != $$;
 
-
     # we are in END block and should protect our exit code
     # so calls below may call system or kill that clobbers $?
     local $?;
+
+    Test::NoWarnings::had_no_warnings() if $check_warnings_in_end;
 
     RT::Test->stop_server(1);
 

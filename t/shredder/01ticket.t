@@ -4,7 +4,7 @@ use warnings;
 
 use Test::Deep;
 use File::Spec;
-use Test::More tests => 15;
+use Test::More tests => 15 + 1; # plus one for warnings check
 use RT::Test ();
 
 

@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use File::Spec;
-use Test::More tests => 11;
+use Test::More tests => 11 + 1; # plus one for warnings check
 use RT::Test nodb => 1;
 
 BEGIN {
