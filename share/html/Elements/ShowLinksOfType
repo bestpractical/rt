@@ -46,18 +46,56 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <ul>
-% while (my $link = $member_of->Next) {
-<li><& ShowLink, URI => $link->TargetURI &></li>
+<%perl>
+while (my $link = $links->Next) {
+    next if $Type eq "ReferredToBy"
+        and UNIVERSAL::isa($link->BaseObj, 'RT::Ticket')
+        and $link->BaseObj->Type eq 'reminder';
+
+    my $ModeURI = "${mode}URI";
+</%perl>
+<li><& ShowLink, URI => $link->$ModeURI &>
+<%perl>
+    next unless $Recurse;
+
+    my $ModeObj = "${mode}Obj";
+    my $ToObj   = $link->$ModeObj;
+
+    next if $ToObj and $checked->{$ToObj->id};
+    if ($depth <= $MaxDepth) {
+</%perl>
+<& ShowLinksOfType, %ARGS, Object => $ToObj, depth => ($depth + 1), checked => $checked &>
+%   }
+</li>
 % }
 </ul>
 <%INIT>
-
 return unless $Object;
-my $member_of = $Object->MemberOf;
-return unless $member_of->Count;
 
+unless ($RT::Link::TYPEMAP{$Type}) {
+    RT->Logger->error("Unknown link Type '$ARGS{Type}'");
+    return;
+}
+
+unless ($Object->can($Type)) {
+    RT->Logger->error("Don't know how to fetch links of '$Type' for object '$Object'");
+    return;
+}
+
+my $links = $Object->$Type;
+return unless $links->Count;
+
+return if $checked->{$Object->id};
+
+$checked->{$Object->id} = 1;
+
+my $mode = $RT::Link::TYPEMAP{$Type}->{'Mode'};
 </%INIT>
-
 <%ARGS>
-$Object => undef
+$Object     => undef
+$Type
+$Recurse    => 0
+$MaxDepth   => 7
+$depth      => 1
+$checked    => {}
 </%ARGS>

@@ -47,9 +47,9 @@
 %# END BPS TAGGED BLOCK }}}
 <table>
   <tr>
-    <td class="labeltop"><& ShowRelationLabel, Object => $Object, Label => loc('Depends on'), Relation => 'DependsOn' &>:\
-% if (%clone) {
-        <span class="create">(<a href="<%$clone{'DependsOn-new'}%>"><% loc('Create') %></a>)</span>
+    <td class="labeltop"><& ShowRelationLabel, Object => $Object, Label => $labels{'DependsOn'}, Relation => 'DependsOn' &>:\
+% if ($clone{'DependsOn'}) {
+        <span class="create">(<a href="<%$clone{'DependsOn'}%>"><% loc('Create') %></a>)</span>
 % }
     </td>
     <td class="value">
@@ -79,69 +79,34 @@ while ( my $link = $depends_on->Next ) {
 </ul>
     </td>
   </tr>
+
+% for my $type (grep { $_ ne "DependsOn" } @display) {
   <tr>
-    <td class="labeltop"><& ShowRelationLabel, Object => $Object, Label => loc('Depended on by'), Relation => 'DependedOnBy' &>:\
-% if (%clone) {
-        <span class="create">(<a href="<%$clone{'new-DependsOn'}%>"><% loc('Create') %></a>)</span>
-% }
+    <td class="labeltop">
+      <& ShowRelationLabel, Object => $Object, Label => $labels{$type}, Relation => $type &>:\
+%     if ($clone{$type}) {
+        <span class="create">(<a href="<% $clone{$type} %>"><% loc('Create') %></a>)</span>
+%     }
     </td>
     <td class="value">
-<ul>
-% while (my $Link = $Object->DependedOnBy->Next) {
-<li><& ShowLink, URI => $Link->BaseURI &></li>
-% }
-</ul>
+      <& ShowLinksOfType, Object => $Object, Type => $type, Recurse => ($type eq 'Members') &>
     </td>
   </tr>
-  <tr>
-    <td class="labeltop"><& ShowRelationLabel, Object => $Object, Label => loc('Parents'), Relation => 'Parents' &>:\
-% if (%clone) {
-        <span class="create">(<a href="<%$clone{'MemberOf-new'}%>"><% loc('Create') %></a>)</span>
 % }
-    </td>
-    <td class="value"><& /Elements/ShowParents, Object => $Object &></td>
-  </tr>
-  <tr>
-    <td class="labeltop"><& ShowRelationLabel, Object => $Object, Label => loc('Children'), Relation => 'Children' &>:\
-% if (%clone) {
-        <span class="create">(<a href="<%$clone{'new-MemberOf'}%>"><% loc('Create') %></a>)</span>
-% }
-    </td>
-    <td class="value"><& /Elements/ShowMembers, Object => $Object &></td>
-  </tr>
-  <tr>
-    <td class="labeltop"><& ShowRelationLabel, Object => $Object, Label => loc('Refers to'), Relation => 'RefersTo' &>:\
-% if (%clone) {
-        <span class="create">(<a href="<%$clone{'RefersTo-new'}%>"><% loc('Create') %></a>)</span>
-% }
-    </td>
-    <td class="value">
-<ul>
-% while (my $Link = $Object->RefersTo->Next) {
-<li><& ShowLink, URI => $Link->TargetURI &></li>
-% }
-</ul>
-    </td>
-  </tr>
-  <tr>
-    <td class="labeltop"><& ShowRelationLabel, Object => $Object, Label => loc('Referred to by'), Relation => 'ReferredToBy' &>:\
-% if (%clone) {
-        <span class="create">(<a href="<%$clone{'new-RefersTo'}%>"><% loc('Create') %></a>)</span>
-% }
-    </td>
-    <td class="value">
-    <ul>
-% while (my $Link = $Object->ReferredToBy->Next) {
-% next if (UNIVERSAL::isa($Link->BaseObj, 'RT::Ticket')  && $Link->BaseObj->Type eq 'reminder');
-<li><& ShowLink, URI => $Link->BaseURI &></li>
-% }
-</ul>
-    </td>
-  </tr>
+
 % # Allow people to add more rows to the table
 % $m->callback( %ARGS );
 </table>
 <%INIT>
+my @display = qw(DependsOn DependedOnBy MemberOf Members RefersTo ReferredToBy);
+my %labels  = (
+    DependsOn       => loc('Depends on'),
+    DependedOnBy    => loc('Depended on by'),
+    MemberOf        => loc('Parents'),
+    Members         => loc('Children'),
+    RefersTo        => loc('Refers to'),
+    ReferredToBy    => loc('Referred to by'),
+);
 my %clone;
 
 if (    $Object->isa("RT::Ticket")
@@ -155,7 +120,7 @@ if (    $Object->isa("RT::Ticket")
         . '&CloneTicket='
         . $id;
 
-    for my $relation (grep { $_ ne "MergedInto" } RT::Link->DisplayTypes) {
+    for my $relation (@display) {
         my $mode  = $RT::Link::TYPEMAP{$relation}->{Mode};
         my $type  = $RT::Link::TYPEMAP{$relation}->{Type};
         my $field = $mode eq 'Base' ? 'new-' . $type : $type . '-new';
@@ -167,7 +132,7 @@ if (    $Object->isa("RT::Ticket")
             push @copy, map { $_->$other() } @{ $Object->$relation->ItemsArrayRef };
         }
 
-        $clone{$field} = "$path&$field=" . join('%20', @copy);
+        $clone{$relation} = "$path&$field=" . join('%20', @copy);
     }
 }
 </%INIT>
