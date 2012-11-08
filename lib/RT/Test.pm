@@ -1079,17 +1079,28 @@ sub clean_caught_mails {
 Takes a path relative to the location of the test file that is being
 run and returns a path that takes the invocation path into account.
 
-e.g. RT::Test::get_relocatable_dir(File::Spec->updir(), 'data', 'emails')
+e.g. C<RT::Test::get_relocatable_dir(File::Spec->updir(), 'data', 'emails')>
+
+Parent directory traversals (C<..> or File::Spec->updir()) are naively
+canonicalized based on the test file path (C<$0>) so that symlinks aren't
+followed.  This is the exact opposite behaviour of most filesystems and is
+considered "wrong", however it is necessary for some subsets of tests which are
+symlinked into the testing tree.
 
 =cut
 
 sub get_relocatable_dir {
-    (my $volume, my $directories, my $file) = File::Spec->splitpath($0);
-    if (File::Spec->file_name_is_absolute($directories)) {
-        return File::Spec->catdir($directories, @_);
-    } else {
-        return File::Spec->catdir(File::Spec->curdir(), $directories, @_);
+    my @directories = File::Spec->splitdir(
+        File::Spec->rel2abs((File::Spec->splitpath($0))[1])
+    );
+    push @directories, File::Spec->splitdir($_) for @_;
+
+    my @clean;
+    for (@directories) {
+        if    ($_ eq "..") { pop @clean      }
+        elsif ($_ ne ".")  { push @clean, $_ }
     }
+    return File::Spec->catdir(@clean);
 }
 
 =head2 get_relocatable_file
