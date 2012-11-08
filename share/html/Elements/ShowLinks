@@ -46,41 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <table>
-  <tr>
-    <td class="labeltop"><& ShowRelationLabel, Object => $Object, Label => $labels{'DependsOn'}, Relation => 'DependsOn' &>:\
-% if ($clone{'DependsOn'}) {
-        <span class="create">(<a href="<%$clone{'DependsOn'}%>"><% loc('Create') %></a>)</span>
-% }
-    </td>
-    <td class="value">
-<%PERL>
-my ( $depends_on, @active, @inactive, @not_tickets );
-$depends_on = $Object->DependsOn;
-
-while ( my $link = $depends_on->Next ) {
-    my $target = $link->TargetObj;
-    if ( $target && $target->isa('RT::Ticket') ) {
-        if ( $target->QueueObj->IsInactiveStatus( $target->Status ) ) {
-            push( @inactive, $link->TargetURI );
-        }
-        else {
-            push( @active, $link->TargetURI );
-        }
-    }
-    else {
-        push( @not_tickets, $link->TargetURI );
-    }
-}
-</%PERL>
-<ul>
-% for my $Link (@not_tickets, @active, @inactive) {
-<li><& ShowLink, URI => $Link &></li>
-% }
-</ul>
-    </td>
-  </tr>
-
-% for my $type (grep { $_ ne "DependsOn" } @display) {
+% for my $type (@display) {
   <tr>
     <td class="labeltop">
       <& ShowRelationLabel, Object => $Object, Label => $labels{$type}, Relation => $type &>:\

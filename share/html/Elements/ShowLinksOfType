@@ -46,22 +46,14 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <ul>
-<%perl>
-while (my $link = $links->Next) {
-    next if $Type eq "ReferredToBy"
-        and UNIVERSAL::isa($link->BaseObj, 'RT::Ticket')
-        and $link->BaseObj->Type eq 'reminder';
-
-    my $ModeURI = "${mode}URI";
-</%perl>
+% for my $link (@not_tickets, @active, @inactive) {
 <li><& ShowLink, URI => $link->$ModeURI &>
 <%perl>
     next unless $Recurse;
 
-    my $ModeObj = "${mode}Obj";
-    my $ToObj   = $link->$ModeObj;
-
+    my $ToObj = $link->$ModeObj;
     next if $ToObj and $checked->{$ToObj->id};
+
     if ($depth <= $MaxDepth) {
 </%perl>
 <& ShowLinksOfType, %ARGS, Object => $ToObj, depth => ($depth + 1), checked => $checked &>
@@ -89,7 +81,29 @@ return if $checked->{$Object->id};
 
 $checked->{$Object->id} = 1;
 
-my $mode = $RT::Link::TYPEMAP{$Type}->{'Mode'};
+my $mode    = $RT::Link::TYPEMAP{$Type}->{'Mode'};
+my $ModeURI = "${mode}URI";
+my $ModeObj = "${mode}Obj";
+
+# Filter and bucket
+my (@active, @inactive, @not_tickets);
+while (my $link = $links->Next) {
+    my $ToObj = $link->$ModeObj;
+    if ($ToObj and $ToObj->isa('RT::Ticket')) {
+        next if $Type eq "ReferredToBy"
+            and $ToObj->Type eq 'reminder';
+
+        if ( $ToObj->QueueObj->IsInactiveStatus( $ToObj->Status ) ) {
+            push @inactive, $link;
+        }
+        else {
+            push @active, $link;
+        }
+    }
+    else {
+        push @not_tickets, $link;
+    }
+}
 
 $m->callback(
     CallbackName => "Init",
@@ -98,6 +112,9 @@ $m->callback(
     $Type        => $Type,
     $Recurse     => \$Recurse,
     $MaxDepth    => \$MaxDepth,
+    active       => \@active,
+    inactive     => \@inactive,
+    not_tickets  => \@not_tickets,
 );
 </%INIT>
 <%ARGS>
