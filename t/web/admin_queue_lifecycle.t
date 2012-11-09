@@ -4,11 +4,13 @@ use warnings;
 use RT::Test tests => 13;
 
 my $lifecycles = RT->Config->Get('Lifecycles');
-$lifecycles->{foo} = {
-    initial  => ['initial'],
-    active   => ['open'],
-    inactive => ['resolved'],
-};
+RT->Config->Set( Lifecycles => %{$lifecycles},
+                 foo => {
+                     initial  => ['initial'],
+                     active   => ['open'],
+                     inactive => ['resolved'],
+                 }
+);
 
 RT::Lifecycle->FillCache();
 
