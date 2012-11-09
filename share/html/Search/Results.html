@@ -49,6 +49,9 @@
     Refresh => $refresh,
     LinkRel => \%link_rel &>
 <& /Elements/Tabs &>
+
+% $m->callback( ARGSRef => \%ARGS, CallbackName => 'BeforeResults' );
+
 <& /Elements/CollectionList, 
     Query => $Query,
     TotalFound => $ticketcount,
@@ -62,6 +65,8 @@
     BaseURL => $BaseURL
 
    &>
+% $m->callback( ARGSRef => \%ARGS, CallbackName => 'AfterResults' );
+
 % my %hiddens = (Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order, HideResults => $HideResults, Page => $Page, SavedChartSearchId => $SavedChartSearchId );
 <div align="right" class="refresh">
 <form method="get" action="<%RT->Config->Get('WebPath')%>/Search/Results.html">
