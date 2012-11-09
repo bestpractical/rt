@@ -1545,6 +1545,8 @@ sub Gateway {
             );
         }
 
+        $head->replace('X-RT-Interface' => 'Email');
+
         my ( $id, $Transaction, $ErrStr ) = $Ticket->Create(
             Queue     => $SystemQueueObj->Id,
             Subject   => $Subject,
