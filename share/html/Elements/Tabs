@@ -270,29 +270,29 @@ my $build_admin_menu = sub {
             $queue_obj->Load($id);
 
             if ( $queue_obj and $queue_obj->id ) {
-            my $queue = PageMenu();
-            $queue->child( basics => title => loc('Basics'),   path => "/Admin/Queues/Modify.html?id=" . $id );
-            $queue->child( people => title => loc('Watchers'), path => "/Admin/Queues/People.html?id=" . $id );
+                my $queue = PageMenu();
+                $queue->child( basics => title => loc('Basics'),   path => "/Admin/Queues/Modify.html?id=" . $id );
+                $queue->child( people => title => loc('Watchers'), path => "/Admin/Queues/People.html?id=" . $id );
 
-            my $templates = $queue->child(templates => title => loc('Templates'), path => "/Admin/Queues/Templates.html?id=" . $id);
-            $templates->child( select => title => loc('Select'), path => "/Admin/Queues/Templates.html?id=".$id);
-            $templates->child( create => title => loc('Create'), path => "/Admin/Queues/Template.html?Create=1;Queue=".$id);
+                my $templates = $queue->child(templates => title => loc('Templates'), path => "/Admin/Queues/Templates.html?id=" . $id);
+                $templates->child( select => title => loc('Select'), path => "/Admin/Queues/Templates.html?id=".$id);
+                $templates->child( create => title => loc('Create'), path => "/Admin/Queues/Template.html?Create=1;Queue=".$id);
 
-            my $scrips = $queue->child( scrips => title => loc('Scrips'), path => "/Admin/Queues/Scrips.html?id=" . $id);
-            $scrips->child( select => title => loc('Select'), path => "/Admin/Queues/Scrips.html?id=" . $id );
-            $scrips->child( create => title => loc('Create'), path => "/Admin/Queues/Scrip.html?Create=1;Queue=" . $id);
+                my $scrips = $queue->child( scrips => title => loc('Scrips'), path => "/Admin/Queues/Scrips.html?id=" . $id);
+                $scrips->child( select => title => loc('Select'), path => "/Admin/Queues/Scrips.html?id=" . $id );
+                $scrips->child( create => title => loc('Create'), path => "/Admin/Queues/Scrip.html?Create=1;Queue=" . $id);
 
-            my $ticket_cfs = $queue->child( 'ticket-custom-fields' => title => loc('Ticket Custom Fields'),
-                path => '/Admin/Queues/CustomFields.html?SubType=RT::Ticket&id=' . $id );
+                my $ticket_cfs = $queue->child( 'ticket-custom-fields' => title => loc('Ticket Custom Fields'),
+                    path => '/Admin/Queues/CustomFields.html?SubType=RT::Ticket&id=' . $id );
 
-            my $txn_cfs = $queue->child( 'transaction-custom-fields' => title => loc('Transaction Custom Fields'),
-                path => '/Admin/Queues/CustomFields.html?SubType=RT::Ticket-RT::Transaction&id='.$id );
+                my $txn_cfs = $queue->child( 'transaction-custom-fields' => title => loc('Transaction Custom Fields'),
+                    path => '/Admin/Queues/CustomFields.html?SubType=RT::Ticket-RT::Transaction&id='.$id );
 
-            $queue->child( 'group-rights' => title => loc('Group Rights'), path => "/Admin/Queues/GroupRights.html?id=".$id );
-            $queue->child( 'user-rights' => title => loc('User Rights'), path => "/Admin/Queues/UserRights.html?id=" . $id );
+                $queue->child( 'group-rights' => title => loc('Group Rights'), path => "/Admin/Queues/GroupRights.html?id=".$id );
+                $queue->child( 'user-rights' => title => loc('User Rights'), path => "/Admin/Queues/UserRights.html?id=" . $id );
 
 
-            $m->callback( CallbackName => 'PrivilegedQueue', queue_id => $id, page_menu => $queue);
+                $m->callback( CallbackName => 'PrivilegedQueue', queue_id => $id, page_menu => $queue);
             }
         }
     }
@@ -303,14 +303,14 @@ my $build_admin_menu = sub {
             $obj->Load($id);
 
             if ( $obj and $obj->id ) {
-            my $tabs = PageMenu();
-            $tabs->child( basics      => title => loc('Basics'),         path => "/Admin/Users/Modify.html?id=" . $id );
-            $tabs->child( memberships => title => loc('Memberships'),    path => "/Admin/Users/Memberships.html?id=" . $id );
-            $tabs->child( history     => title => loc('History'),        path => "/Admin/Users/History.html?id=" . $id );
-            $tabs->child( 'my-rt'     => title => loc('RT at a glance'), path => "/Admin/Users/MyRT.html?id=" . $id );
-            if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
-                $tabs->child( pgp     => title => loc('GnuPG'),          path => "/Admin/Users/GnuPG.html?id=" . $id );
-            }
+                my $tabs = PageMenu();
+                $tabs->child( basics      => title => loc('Basics'),         path => "/Admin/Users/Modify.html?id=" . $id );
+                $tabs->child( memberships => title => loc('Memberships'),    path => "/Admin/Users/Memberships.html?id=" . $id );
+                $tabs->child( history     => title => loc('History'),        path => "/Admin/Users/History.html?id=" . $id );
+                $tabs->child( 'my-rt'     => title => loc('RT at a glance'), path => "/Admin/Users/MyRT.html?id=" . $id );
+                if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
+                    $tabs->child( pgp     => title => loc('GnuPG'),          path => "/Admin/Users/GnuPG.html?id=" . $id );
+                }
             }
         }
 
@@ -323,12 +323,12 @@ my $build_admin_menu = sub {
             $obj->Load($id);
 
             if ( $obj and $obj->id ) {            
-            my $tabs = PageMenu();
-            $tabs->child( basics         => title => loc('Basics'),       path => "/Admin/Groups/Modify.html?id=" . $obj->id );
-            $tabs->child( members        => title => loc('Members'),      path => "/Admin/Groups/Members.html?id=" . $obj->id );
-            $tabs->child( 'group-rights' => title => loc('Group Rights'), path => "/Admin/Groups/GroupRights.html?id=" . $obj->id );
-            $tabs->child( 'user-rights'  => title => loc('User Rights'),  path => "/Admin/Groups/UserRights.html?id=" . $obj->id );
-            $tabs->child( history        => title => loc('History'),      path => "/Admin/Groups/History.html?id=" . $obj->id );
+                my $tabs = PageMenu();
+                $tabs->child( basics         => title => loc('Basics'),       path => "/Admin/Groups/Modify.html?id=" . $obj->id );
+                $tabs->child( members        => title => loc('Members'),      path => "/Admin/Groups/Members.html?id=" . $obj->id );
+                $tabs->child( 'group-rights' => title => loc('Group Rights'), path => "/Admin/Groups/GroupRights.html?id=" . $obj->id );
+                $tabs->child( 'user-rights'  => title => loc('User Rights'),  path => "/Admin/Groups/UserRights.html?id=" . $obj->id );
+                $tabs->child( history        => title => loc('History'),      path => "/Admin/Groups/History.html?id=" . $obj->id );
             }
         }
     }
@@ -340,11 +340,11 @@ my $build_admin_menu = sub {
             $obj->Load($id);
 
             if ( $obj and $obj->id ) {
-            my $tabs = PageMenu();
-            $tabs->child( basics         => title => loc('Basics'),       path => "/Admin/CustomFields/Modify.html?id=".$id );
-            $tabs->child( 'group-rights' => title => loc('Group Rights'), path => "/Admin/CustomFields/GroupRights.html?id=" . $id );
-            $tabs->child( 'user-rights'  => title => loc('User Rights'),  path => "/Admin/CustomFields/UserRights.html?id=" . $id );
-            $tabs->child( 'applies-to'   => title => loc('Applies to'),   path => "/Admin/CustomFields/Objects.html?id=" . $id );
+                my $tabs = PageMenu();
+                $tabs->child( basics         => title => loc('Basics'),       path => "/Admin/CustomFields/Modify.html?id=".$id );
+                $tabs->child( 'group-rights' => title => loc('Group Rights'), path => "/Admin/CustomFields/GroupRights.html?id=" . $id );
+                $tabs->child( 'user-rights'  => title => loc('User Rights'),  path => "/Admin/CustomFields/UserRights.html?id=" . $id );
+                $tabs->child( 'applies-to'   => title => loc('Applies to'),   path => "/Admin/CustomFields/Objects.html?id=" . $id );
             }
         }
     }
@@ -367,16 +367,16 @@ my $build_admin_menu = sub {
             $obj->Load($id);
 
             if ( $obj and $obj->id ) {
-            my $section = $tabs->child( select => title => loc("Classes"), path => "/Admin/Articles/Classes/" );
-            $section->child( select => title => loc('Select'), path => "/Admin/Articles/Classes/" );
-            $section->child( create => title => loc('Create'), path => "/Admin/Articles/Classes/Modify.html?Create=1" );
+                my $section = $tabs->child( select => title => loc("Classes"), path => "/Admin/Articles/Classes/" );
+                $section->child( select => title => loc('Select'), path => "/Admin/Articles/Classes/" );
+                $section->child( create => title => loc('Create'), path => "/Admin/Articles/Classes/Modify.html?Create=1" );
 
-            $tabs->child( basics          => title => loc('Basics'),        path => "/Admin/Articles/Classes/Modify.html?id=".$id );
-            $tabs->child( topics          => title => loc('Topics'),        path => "/Admin/Articles/Classes/Topics.html?id=".$id );
-            $tabs->child( 'custom-fields' => title => loc('Custom Fields'), path => "/Admin/Articles/Classes/CustomFields.html?id=".$id );
-            $tabs->child( 'group-rights'  => title => loc('Group Rights'),  path => "/Admin/Articles/Classes/GroupRights.html?id=".$id );
-            $tabs->child( 'user-rights'   => title => loc('User Rights'),   path => "/Admin/Articles/Classes/UserRights.html?id=".$id );
-            $tabs->child( 'applies-to'    => title => loc('Applies to'),    path => "/Admin/Articles/Classes/Objects.html?id=$id" );
+                $tabs->child( basics          => title => loc('Basics'),        path => "/Admin/Articles/Classes/Modify.html?id=".$id );
+                $tabs->child( topics          => title => loc('Topics'),        path => "/Admin/Articles/Classes/Topics.html?id=".$id );
+                $tabs->child( 'custom-fields' => title => loc('Custom Fields'), path => "/Admin/Articles/Classes/CustomFields.html?id=".$id );
+                $tabs->child( 'group-rights'  => title => loc('Group Rights'),  path => "/Admin/Articles/Classes/GroupRights.html?id=".$id );
+                $tabs->child( 'user-rights'   => title => loc('User Rights'),   path => "/Admin/Articles/Classes/UserRights.html?id=".$id );
+                $tabs->child( 'applies-to'    => title => loc('Applies to'),    path => "/Admin/Articles/Classes/Objects.html?id=$id" );
             }
         } else {
             $tabs->child( select => title => loc('Select'), path => "/Admin/Articles/Classes/" );
@@ -523,140 +523,140 @@ my $build_main_nav = sub {
             $obj->Load($id);
 
             if ( $obj and $obj->id ) {
-            my $actions = PageMenu()->child( actions => title => loc('Actions'), sort_order  => 95 );
-            my $tabs = PageMenu();
-            $tabs->child( bookmark => raw_html => $m->scomp( '/Ticket/Elements/Bookmark', id => $id ), sort_order => 99 );
-            $tabs->child( display => title => loc('Display'), path => "/Ticket/Display.html?id=" . $id );
-            $tabs->child( history => title => loc('History'), path => "/Ticket/History.html?id=" . $id );
+                my $actions = PageMenu()->child( actions => title => loc('Actions'), sort_order  => 95 );
+                my $tabs = PageMenu();
+                $tabs->child( bookmark => raw_html => $m->scomp( '/Ticket/Elements/Bookmark', id => $id ), sort_order => 99 );
+                $tabs->child( display => title => loc('Display'), path => "/Ticket/Display.html?id=" . $id );
+                $tabs->child( history => title => loc('History'), path => "/Ticket/History.html?id=" . $id );
 
-            my %can = %{ $obj->CurrentUser->PrincipalObj->HasRights( Object => $obj ) };
-            $can{'_ModifyOwner'} = $can{'OwnTicket'} || $can{'TakeTicket'} || $can{'StealTicket'};
-            my $can = sub {
-                unless ($_[0] eq 'ExecuteCode') {
-                    return $can{$_[0]} || $can{'SuperUser'};
-                } else {
-                    return !RT->Config->Get('DisallowExecuteCode')
-                        && ( $can{'ExecuteCode'} || $can{'SuperUser'} );
-                }
-            };
+                my %can = %{ $obj->CurrentUser->PrincipalObj->HasRights( Object => $obj ) };
+                $can{'_ModifyOwner'} = $can{'OwnTicket'} || $can{'TakeTicket'} || $can{'StealTicket'};
+                my $can = sub {
+                    unless ($_[0] eq 'ExecuteCode') {
+                        return $can{$_[0]} || $can{'SuperUser'};
+                    } else {
+                        return !RT->Config->Get('DisallowExecuteCode')
+                            && ( $can{'ExecuteCode'} || $can{'SuperUser'} );
+                    }
+                };
 
-            # comment out until we can do it for an individual custom field
-            #if ( $can->('ModifyTicket') || $can->('ModifyCustomField') ) {
-            $tabs->child( basics => title => loc('Basics'), path => "/Ticket/Modify.html?id=" . $id );
+                # comment out until we can do it for an individual custom field
+                #if ( $can->('ModifyTicket') || $can->('ModifyCustomField') ) {
+                $tabs->child( basics => title => loc('Basics'), path => "/Ticket/Modify.html?id=" . $id );
 
-            #}
+                #}
 
-            if ( $can->('ModifyTicket') || $can->('_ModifyOwner') || $can->('Watch') || $can->('WatchAsAdminCc') ) {
-                $tabs->child( people => title => loc('People'), path => "/Ticket/ModifyPeople.html?id=" . $id );
-            }
-
-            if ( $can->('ModifyTicket') ) {
-                $tabs->child( dates => title => loc('Dates'), path => "/Ticket/ModifyDates.html?id=" . $id );
-                $tabs->child( links => title => loc('Links'), path => "/Ticket/ModifyLinks.html?id=" . $id );
-            }
-
-            #if ( $can->('ModifyTicket') || $can->('ModifyCustomField') || $can->('_ModifyOwner') ) {
-            $tabs->child( jumbo => title => loc('Jumbo'), path => "/Ticket/ModifyAll.html?id=" . $id );
-            #}
-
-            if ( RT->Config->Get('EnableReminders') ) {
-                $tabs->child( reminders => title => loc('Reminders'), path => "/Ticket/Reminders.html?id=" . $id );
-            }
-
-            if ( $can->('ModifyTicket') or $can->('ReplyToTicket') ) {
-                $actions->child( reply => title => loc('Reply'), path => "/Ticket/Update.html?Action=Respond;id=" . $id );
-            }
-
-            if ( $can->('ModifyTicket') or $can->('CommentOnTicket') ) {
-                $actions->child( comment => title => loc('Comment'), path => "/Ticket/Update.html?Action=Comment;id=" . $id );
-            }
-
-            if ( $can->('ForwardMessage') ) {
-                $actions->child( forward => title => loc('Forward'), path => "/Ticket/Forward.html?id=" . $id );
-            }
-
-            my $hide_resolve_with_deps = RT->Config->Get('HideResolveActionsWithDependencies')
-                && $obj->HasUnresolvedDependencies;
-
-            my $current   = $obj->Status;
-            my $lifecycle = $obj->QueueObj->Lifecycle;
-            my $i         = 1;
-            foreach my $info ( $lifecycle->Actions($current) ) {
-                my $next = $info->{'to'};
-                next unless $lifecycle->IsTransition( $current => $next );
-
-                my $check = $lifecycle->CheckRight( $current => $next );
-                next unless $can->($check);
-
-                next if $hide_resolve_with_deps
-                    && $lifecycle->IsInactive($next)
-                    && !$lifecycle->IsInactive($current);
-
-                my $action = $info->{'update'} || '';
-                my $url = '/Ticket/';
-                if ($action) {
-                    $url .= "Update.html?"
-                        . $query_string->(
-                            Action        => $action,
-                            DefaultStatus => $next,
-                            id            => $id,
-                        );
-                } else {
-                    $url .= "Display.html?"
-                        . $query_string->(
-                            Status => $next,
-                            id     => $id,
-                        );
-                }
-                my $key = $info->{'label'} || ucfirst($next);
-                $actions->child( $key => title => loc( $key ), path => $url);
-            }
-
-            if ( $can->('OwnTicket') ) {
-                if ( $obj->OwnerObj->Id == RT->Nobody->id
-                     && ( $can->('ModifyTicket') or $can->('TakeTicket') ) ) {
-                    $actions->child( take => title => loc('Take'), path => "/Ticket/Display.html?Action=Take;id=" . $id );
+                if ( $can->('ModifyTicket') || $can->('_ModifyOwner') || $can->('Watch') || $can->('WatchAsAdminCc') ) {
+                    $tabs->child( people => title => loc('People'), path => "/Ticket/ModifyPeople.html?id=" . $id );
                 }
 
-                elsif (    $obj->OwnerObj->id != RT->Nobody->id
-                        && $obj->OwnerObj->id != $session{CurrentUser}->id
-                        && ( $can->('ModifyTicket') or $can->('StealTicket') ) ) {
-                    $actions->child( steal => title => loc('Steal'), path => "/Ticket/Display.html?Action=Steal;id=" . $id );
-                }
-            }
-
-            # TODO needs a "Can extract article into a class applied to this queue" check
-            $actions->child( 'extract-article' =>
-                title => loc('Extract Article'),
-                path  => "/Articles/Article/ExtractIntoClass.html?Ticket=".$obj->id,
-            );
-
-            if ( defined $session{"tickets"} ) {
-                # we have to update session data if we get new ItemMap
-                my $updatesession = 1 unless ( $session{"tickets"}->{'item_map'} );
-
-                my $item_map = $session{"tickets"}->ItemMap;
-
-                if ($updatesession) {
-                    $session{"tickets"}->PrepForSerialization();
+                if ( $can->('ModifyTicket') ) {
+                    $tabs->child( dates => title => loc('Dates'), path => "/Ticket/ModifyDates.html?id=" . $id );
+                    $tabs->child( links => title => loc('Links'), path => "/Ticket/ModifyLinks.html?id=" . $id );
                 }
 
-                my $search = Menu()->child('search');
-                # Don't display prev links if we're on the first ticket
-                if ( $item_map->{$id}->{prev} ) {
-                    $search->child( first =>
-                        title => '<< ' . loc('First'), class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{first});
-                    $search->child( prev =>
-                        title => '< ' . loc('Prev'),   class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{$id}->{prev});
+                #if ( $can->('ModifyTicket') || $can->('ModifyCustomField') || $can->('_ModifyOwner') ) {
+                $tabs->child( jumbo => title => loc('Jumbo'), path => "/Ticket/ModifyAll.html?id=" . $id );
+                #}
+
+                if ( RT->Config->Get('EnableReminders') ) {
+                    $tabs->child( reminders => title => loc('Reminders'), path => "/Ticket/Reminders.html?id=" . $id );
                 }
-                # Don't display next links if we're on the last ticket
-                if ( $item_map->{$id}->{next} ) {
-                    $search->child( next =>
-                        title => loc('Next') . ' >',  class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{$id}->{next});
-                    $search->child( last =>
-                        title => loc('Last') . ' >>', class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{last});
+
+                if ( $can->('ModifyTicket') or $can->('ReplyToTicket') ) {
+                    $actions->child( reply => title => loc('Reply'), path => "/Ticket/Update.html?Action=Respond;id=" . $id );
                 }
-            }
+
+                if ( $can->('ModifyTicket') or $can->('CommentOnTicket') ) {
+                    $actions->child( comment => title => loc('Comment'), path => "/Ticket/Update.html?Action=Comment;id=" . $id );
+                }
+
+                if ( $can->('ForwardMessage') ) {
+                    $actions->child( forward => title => loc('Forward'), path => "/Ticket/Forward.html?id=" . $id );
+                }
+
+                my $hide_resolve_with_deps = RT->Config->Get('HideResolveActionsWithDependencies')
+                    && $obj->HasUnresolvedDependencies;
+
+                my $current   = $obj->Status;
+                my $lifecycle = $obj->QueueObj->Lifecycle;
+                my $i         = 1;
+                foreach my $info ( $lifecycle->Actions($current) ) {
+                    my $next = $info->{'to'};
+                    next unless $lifecycle->IsTransition( $current => $next );
+
+                    my $check = $lifecycle->CheckRight( $current => $next );
+                    next unless $can->($check);
+
+                    next if $hide_resolve_with_deps
+                        && $lifecycle->IsInactive($next)
+                        && !$lifecycle->IsInactive($current);
+
+                    my $action = $info->{'update'} || '';
+                    my $url = '/Ticket/';
+                    if ($action) {
+                        $url .= "Update.html?"
+                            . $query_string->(
+                                Action        => $action,
+                                DefaultStatus => $next,
+                                id            => $id,
+                            );
+                    } else {
+                        $url .= "Display.html?"
+                            . $query_string->(
+                                Status => $next,
+                                id     => $id,
+                            );
+                    }
+                    my $key = $info->{'label'} || ucfirst($next);
+                    $actions->child( $key => title => loc( $key ), path => $url);
+                }
+
+                if ( $can->('OwnTicket') ) {
+                    if ( $obj->OwnerObj->Id == RT->Nobody->id
+                         && ( $can->('ModifyTicket') or $can->('TakeTicket') ) ) {
+                        $actions->child( take => title => loc('Take'), path => "/Ticket/Display.html?Action=Take;id=" . $id );
+                    }
+
+                    elsif (    $obj->OwnerObj->id != RT->Nobody->id
+                            && $obj->OwnerObj->id != $session{CurrentUser}->id
+                            && ( $can->('ModifyTicket') or $can->('StealTicket') ) ) {
+                        $actions->child( steal => title => loc('Steal'), path => "/Ticket/Display.html?Action=Steal;id=" . $id );
+                    }
+                }
+
+                # TODO needs a "Can extract article into a class applied to this queue" check
+                $actions->child( 'extract-article' =>
+                    title => loc('Extract Article'),
+                    path  => "/Articles/Article/ExtractIntoClass.html?Ticket=".$obj->id,
+                );
+
+                if ( defined $session{"tickets"} ) {
+                    # we have to update session data if we get new ItemMap
+                    my $updatesession = 1 unless ( $session{"tickets"}->{'item_map'} );
+
+                    my $item_map = $session{"tickets"}->ItemMap;
+
+                    if ($updatesession) {
+                        $session{"tickets"}->PrepForSerialization();
+                    }
+
+                    my $search = Menu()->child('search');
+                    # Don't display prev links if we're on the first ticket
+                    if ( $item_map->{$id}->{prev} ) {
+                        $search->child( first =>
+                            title => '<< ' . loc('First'), class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{first});
+                        $search->child( prev =>
+                            title => '< ' . loc('Prev'),   class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{$id}->{prev});
+                    }
+                    # Don't display next links if we're on the last ticket
+                    if ( $item_map->{$id}->{next} ) {
+                        $search->child( next =>
+                            title => loc('Next') . ' >',  class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{$id}->{next});
+                        $search->child( last =>
+                            title => loc('Last') . ' >>', class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{last});
+                    }
+                }
             }
         }
     }
@@ -807,15 +807,15 @@ my $build_main_nav = sub {
             $obj->Load($id);
 
             if ( $obj and $obj->id ) {
-            $tabs->child( display => title => loc("Display"), path => "/Articles/Article/Display.html?id=" . $id );
-            $tabs->child( history => title => loc('History'), path => '/Articles/Article/History.html?id=' . $id );
+                $tabs->child( display => title => loc("Display"), path => "/Articles/Article/Display.html?id=" . $id );
+                $tabs->child( history => title => loc('History'), path => '/Articles/Article/History.html?id=' . $id );
 
-            if ( $obj->CurrentUserHasRight('ModifyArticle') ) {
-                $tabs->child(modify => title => loc('Modify'), path => '/Articles/Article/Edit.html?id=' . $id );
-            }
-            if ( $obj->CurrentUserHasRight('DeleteArticle') ) {
-                $tabs->child(delete => title => loc('Delete'), path => '/Articles/Article/Delete.html?id=' . $id );
-            }
+                if ( $obj->CurrentUserHasRight('ModifyArticle') ) {
+                    $tabs->child(modify => title => loc('Modify'), path => '/Articles/Article/Edit.html?id=' . $id );
+                }
+                if ( $obj->CurrentUserHasRight('DeleteArticle') ) {
+                    $tabs->child(delete => title => loc('Delete'), path => '/Articles/Article/Delete.html?id=' . $id );
+                }
             }
         }
 
