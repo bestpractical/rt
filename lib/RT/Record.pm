@@ -2184,8 +2184,9 @@ sub AddRoleMember {
     return (0, $self->loc("One, and only one, of PrincipalId/User/Group is required"))
         if 1 != grep { $_ } @args{qw/PrincipalId User Group/};
 
+    my $type = delete $args{Type};
     return (0, $self->loc("No valid Type specified"))
-        unless $args{Type} and $self->HasRole($args{Type});
+        unless $type and $self->HasRole($type);
 
     unless ($args{PrincipalId}) {
         my $object;
@@ -2203,7 +2204,17 @@ sub AddRoleMember {
     return (0, $self->loc("No valid PrincipalId"))
         unless $args{PrincipalId};
 
-    return $self->RoleGroup(delete $args{Type})->_AddMember(%args);
+    my ($ok, $msg) = $self->RoleGroup($type)->_AddMember(%args);
+
+    if ($ok and not $args{Silent}) {
+        $self->_NewTransaction(
+            Type     => 'AddWatcher', # use "watcher" for history's sake
+            NewValue => $args{PrincipalId},
+            Field    => $type,
+        );
+    }
+
+    return ($ok, $msg);
 }
 
 =head2 DeleteRoleMember
@@ -2236,7 +2247,16 @@ sub DeleteRoleMember {
     return (0, $self->loc("No valid Type specified"))
         unless $args{Type} and $self->HasRole($args{Type});
 
-    return $self->RoleGroup($args{Type})->_DeleteMember(delete $args{PrincipalId});
+    my ($ok, $msg) = $self->RoleGroup($args{Type})->_DeleteMember($args{PrincipalId});
+
+    if ($ok and not $args{Silent}) {
+        $self->_NewTransaction(
+            Type     => 'DelWatcher', # use "watcher" for history's sake
+            OldValue => $args{PrincipalId},
+            Field    => $args{Type},
+        );
+    }
+    return ($ok, $msg);
 }
 
 RT::Base->_ImportOverlays();
