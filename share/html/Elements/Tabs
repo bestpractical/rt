@@ -269,6 +269,7 @@ my $build_admin_menu = sub {
             my $queue_obj = RT::Queue->new( $session{'CurrentUser'} );
             $queue_obj->Load($id);
 
+            if ( $queue_obj and $queue_obj->id ) {
             my $queue = PageMenu();
             $queue->child( basics => title => loc('Basics'),   path => "/Admin/Queues/Modify.html?id=" . $id );
             $queue->child( people => title => loc('Watchers'), path => "/Admin/Queues/People.html?id=" . $id );
@@ -292,6 +293,7 @@ my $build_admin_menu = sub {
 
 
             $m->callback( CallbackName => 'PrivilegedQueue', queue_id => $id, page_menu => $queue);
+            }
         }
     }
     if ( $request_path =~ m{^/Admin/Users} ) {
@@ -300,6 +302,7 @@ my $build_admin_menu = sub {
             my $obj = RT::User->new( $session{'CurrentUser'} );
             $obj->Load($id);
 
+            if ( $obj and $obj->id ) {
             my $tabs = PageMenu();
             $tabs->child( basics      => title => loc('Basics'),         path => "/Admin/Users/Modify.html?id=" . $id );
             $tabs->child( memberships => title => loc('Memberships'),    path => "/Admin/Users/Memberships.html?id=" . $id );
@@ -307,6 +310,7 @@ my $build_admin_menu = sub {
             $tabs->child( 'my-rt'     => title => loc('RT at a glance'), path => "/Admin/Users/MyRT.html?id=" . $id );
             if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
                 $tabs->child( pgp     => title => loc('GnuPG'),          path => "/Admin/Users/GnuPG.html?id=" . $id );
+            }
             }
         }
 
@@ -318,12 +322,14 @@ my $build_admin_menu = sub {
             my $obj = RT::Group->new( $session{'CurrentUser'} );
             $obj->Load($id);
 
+            if ( $obj and $obj->id ) {            
             my $tabs = PageMenu();
             $tabs->child( basics         => title => loc('Basics'),       path => "/Admin/Groups/Modify.html?id=" . $obj->id );
             $tabs->child( members        => title => loc('Members'),      path => "/Admin/Groups/Members.html?id=" . $obj->id );
             $tabs->child( 'group-rights' => title => loc('Group Rights'), path => "/Admin/Groups/GroupRights.html?id=" . $obj->id );
             $tabs->child( 'user-rights'  => title => loc('User Rights'),  path => "/Admin/Groups/UserRights.html?id=" . $obj->id );
             $tabs->child( history        => title => loc('History'),      path => "/Admin/Groups/History.html?id=" . $obj->id );
+            }
         }
     }
 
@@ -333,11 +339,13 @@ my $build_admin_menu = sub {
             my $obj = RT::CustomField->new( $session{'CurrentUser'} );
             $obj->Load($id);
 
+            if ( $obj and $obj->id ) {
             my $tabs = PageMenu();
             $tabs->child( basics         => title => loc('Basics'),       path => "/Admin/CustomFields/Modify.html?id=".$id );
             $tabs->child( 'group-rights' => title => loc('Group Rights'), path => "/Admin/CustomFields/GroupRights.html?id=" . $id );
             $tabs->child( 'user-rights'  => title => loc('User Rights'),  path => "/Admin/CustomFields/UserRights.html?id=" . $id );
             $tabs->child( 'applies-to'   => title => loc('Applies to'),   path => "/Admin/CustomFields/Objects.html?id=" . $id );
+            }
         }
     }
 
@@ -358,6 +366,7 @@ my $build_admin_menu = sub {
             my $obj = RT::CustomField->new( $session{'CurrentUser'} );
             $obj->Load($id);
 
+            if ( $obj and $obj->id ) {
             my $section = $tabs->child( select => title => loc("Classes"), path => "/Admin/Articles/Classes/" );
             $section->child( select => title => loc('Select'), path => "/Admin/Articles/Classes/" );
             $section->child( create => title => loc('Create'), path => "/Admin/Articles/Classes/Modify.html?Create=1" );
@@ -368,6 +377,7 @@ my $build_admin_menu = sub {
             $tabs->child( 'group-rights'  => title => loc('Group Rights'),  path => "/Admin/Articles/Classes/GroupRights.html?id=".$id );
             $tabs->child( 'user-rights'   => title => loc('User Rights'),   path => "/Admin/Articles/Classes/UserRights.html?id=".$id );
             $tabs->child( 'applies-to'    => title => loc('Applies to'),    path => "/Admin/Articles/Classes/Objects.html?id=$id" );
+            }
         } else {
             $tabs->child( select => title => loc('Select'), path => "/Admin/Articles/Classes/" );
             $tabs->child( create => title => loc('Create'), path => "/Admin/Articles/Classes/Modify.html?Create=1" );
@@ -512,6 +522,7 @@ my $build_main_nav = sub {
             my $obj = RT::Ticket->new( $session{'CurrentUser'} );
             $obj->Load($id);
 
+            if ( $obj and $obj->id ) {
             my $actions = PageMenu()->child( actions => title => loc('Actions'), sort_order  => 95 );
             my $tabs = PageMenu();
             $tabs->child( bookmark => raw_html => $m->scomp( '/Ticket/Elements/Bookmark', id => $id ), sort_order => 99 );
@@ -645,6 +656,7 @@ my $build_main_nav = sub {
                     $search->child( last =>
                         title => loc('Last') . ' >>', class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{last});
                 }
+            }
             }
         }
     }
@@ -794,6 +806,7 @@ my $build_main_nav = sub {
             my $obj = RT::Article->new( $session{'CurrentUser'} );
             $obj->Load($id);
 
+            if ( $obj and $obj->id ) {
             $tabs->child( display => title => loc("Display"), path => "/Articles/Article/Display.html?id=" . $id );
             $tabs->child( history => title => loc('History'), path => '/Articles/Article/History.html?id=' . $id );
 
@@ -802,6 +815,7 @@ my $build_main_nav = sub {
             }
             if ( $obj->CurrentUserHasRight('DeleteArticle') ) {
                 $tabs->child(delete => title => loc('Delete'), path => '/Articles/Article/Delete.html?id=' . $id );
+            }
             }
         }
 
