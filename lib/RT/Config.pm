@@ -426,6 +426,16 @@ our %META = (
         },
     },
 
+    ShowEmailRecordRawHeaders=> {
+        Section         => 'Ticket display',
+        Overridable     => 1,
+        SortOrder       => 9,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => { 
+            Description => q{Show raw MIME headers in recorded outgoing mesages.}, #loc 
+        },   
+    },  
+
     # User overridable locale options
     DateTimeFormat => {
         Section         => 'Locale',                       #loc

@@ -1367,6 +1367,16 @@ to the Article with that name.
 
 =cut
 
+Set($ShowEmailRecordRawHeaders, 0);
+
+=item C<$ShowEmailRecordRawHeaders>
+
+Show raw MIME headers in recorded outgoing mesages. If you want see
+readable headers set this to 0. This option can be overridden by users
+in their preferences.
+
+=cut
+
 Set($WikiImplicitLinks, 0);
 
 =item C<$PreviewScripMessages>
