@@ -2247,6 +2247,9 @@ sub DeleteRoleMember {
     return (0, $self->loc("No valid Type specified"))
         unless $args{Type} and $self->HasRole($args{Type});
 
+    return (0, $self->loc("No valid PrincipalId"))
+        unless $args{PrincipalId};
+
     my ($ok, $msg) = $self->RoleGroup($args{Type})->_DeleteMember($args{PrincipalId});
 
     if ($ok and not $args{Silent}) {
