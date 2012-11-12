@@ -65,12 +65,12 @@ my $show_content = sub {
 my $show;
 $show = sub {
     my $attach = shift;
-		my $show_raw_headers = RT->Config->Get( 'ShowEmailRecordRawHeaders', $session{'CurrentUser'} );
-		
-    $m->out( '<div id="body"><pre style="padding: 2em;">' );
-		$m->out( $m->interp->apply_escapes( $show_raw_headers ?
-						 $attach->Headers : Encode::decode("MIME-Header",$attach->Headers) , 'h' ) );
-    $m->out( "\n\n" );
+
+    $m->out( '<div id="body"><pre style="padding: 2em;"><div title="' );
+    $m->out( $m->interp->apply_escapes( Encode::decode('MIME-Header',$attach->Headers) , 'h' ) );
+    $m->out( '">' );
+    $m->out( $m->interp->apply_escapes( $attach->Headers , 'h' ) );
+    $m->out( "</div>\n\n" );
     if ( $attach->ContentType =~ m{^multipart/}i ) {
         my $children = $attach->Children;
         while ( my $child = $children->Next ) {
