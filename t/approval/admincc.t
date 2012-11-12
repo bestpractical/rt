@@ -84,7 +84,12 @@ mail_ok {
         Requestor => 'minion',
         Queue     => $q->Id,
     );
-} { from => qr/RT System/,
+} { from => qr/PO via RT/,
+    to => 'minion@company.com',
+    subject => qr/PO for stationary/,
+    body => qr/automatically generated in response/
+},
+{ from => qr/RT System/,
     bcc => qr/ceo.*coo|coo.*ceo/i,
     subject => qr/PO for stationary/i,
 },
@@ -92,12 +97,8 @@ mail_ok {
     to => 'cto@company.com',
     subject => qr/New Pending Approval: CTO Approval/,
     body => qr/pending your approval.*Your approval is requested.*Blah/s
-},
-{ from => qr/PO via RT/,
-    to => 'minion@company.com',
-    subject => qr/PO for stationary/,
-    body => qr/automatically generated in response/
-};
+}
+;
 
 ok ($tid,$tmsg);
 
