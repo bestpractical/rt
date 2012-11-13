@@ -7,7 +7,7 @@ use IPC::Run3;
 
 my @files;
 find( sub { push @files, $File::Find::name if -f },
-      qw{lib share t bin sbin devel/tools} );
+      qw{lib share t bin sbin devel/tools etc} );
 if ( my $dir = `git rev-parse --git-dir 2>/dev/null` ) {
     # We're in a git repo, use the ignore list
     chomp $dir;
@@ -25,6 +25,7 @@ sub check {
         shebang  => 0,
         exec     => 0,
         bps_tag  => 0,
+        compile  => 0,
         @_,
     );
 
@@ -75,6 +76,15 @@ sub check {
     } elsif ($check{exec} == -1) {
         ok( !$executable, "$file permission is u-x" );
     }
+
+    if ($check{compile}) {
+        my ($input, $output, $error) = ('', '', '');
+        run3(
+            [$^X, '-Ilib', '-Mstrict', '-Mwarnings', '-c', $file],
+            \$input, \$output, \$error,
+        );
+        is $error, "$file syntax OK\n", "$file syntax is OK";
+    }
 }
 
 check( $_, shebang => -1, exec => -1, warnings => 1, strict => 1, bps_tag => 1 )
@@ -98,36 +108,5 @@ check( $_, exec => -1 )
 check( $_, exec => -1 )
     for grep {m{^t/data/}} @files;
 
-{ # Check to make sure all our upgrade files compile
-my @files = upgrade_files();
-ok( scalar @files, "found content files" );
-
-test_it($_) foreach @files;
-
-sub test_it {
-    my $file = shift;
-
-    my ($input, $output, $error) = ('', '', '');
-    run3(
-        [$^X, '-Ilib', '-Mstrict', '-Mwarnings', '-c', $file],
-        \$input, \$output, \$error,
-    );
-    is $error, "$file syntax OK\n", "syntax is OK";
-
-    open my $fh, "<", $file or die "$!";
-    my ($first, $second) = (grep /\S/, map { chomp; $_ } <$fh>);
-    close $fh;
-
-    is $first, 'use strict;', 'first not empty line is "use strict;"';
-    is $second, 'use warnings;', 'second not empty line is "use warnings;"';
-}
-
-sub upgrade_files {
-    my @res;
-    find(
-        sub { push @res, $File::Find::name if -f && $_ eq 'content' },
-        'etc/upgrade/'
-    );
-    return @res;
-}
-}
+check( $_, warnings => 1, strict => 1, compile => 1 )
+    for grep {m{^etc/upgrade/.*/content$}} @files;
