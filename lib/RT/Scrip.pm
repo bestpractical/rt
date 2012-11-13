@@ -629,7 +629,7 @@ sub CompileCheck {
 
         do {
             no strict 'vars';
-            eval "sub { $code }";
+            eval "sub { $code \n }";
         };
         next if !$@;
 
