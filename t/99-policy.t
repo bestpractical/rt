@@ -3,6 +3,7 @@ use warnings;
 
 use RT::Test nodb => 1;
 use File::Find;
+use IPC::Run3;
 
 my @files;
 find( sub { push @files, $File::Find::name if -f },
@@ -96,3 +97,37 @@ check( $_, exec => -1 )
 
 check( $_, exec => -1 )
     for grep {m{^t/data/}} @files;
+
+{ # Check to make sure all our upgrade files compile
+my @files = upgrade_files();
+ok( scalar @files, "found content files" );
+
+test_it($_) foreach @files;
+
+sub test_it {
+    my $file = shift;
+
+    my ($input, $output, $error) = ('', '', '');
+    run3(
+        [$^X, '-Ilib', '-Mstrict', '-Mwarnings', '-c', $file],
+        \$input, \$output, \$error,
+    );
+    is $error, "$file syntax OK\n", "syntax is OK";
+
+    open my $fh, "<", $file or die "$!";
+    my ($first, $second) = (grep /\S/, map { chomp; $_ } <$fh>);
+    close $fh;
+
+    is $first, 'use strict;', 'first not empty line is "use strict;"';
+    is $second, 'use warnings;', 'second not empty line is "use warnings;"';
+}
+
+sub upgrade_files {
+    my @res;
+    find(
+        sub { push @res, $File::Find::name if -f && $_ eq 'content' },
+        'etc/upgrade/'
+    );
+    return @res;
+}
+}
