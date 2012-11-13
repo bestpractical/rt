@@ -1,6 +1,9 @@
-@Initial = (
+use strict;
+use warnings;
+
+our @Initial = (
     sub {
-        my $txns = RT::Transactions->new( $RT::SystemUser );
+        my $txns = RT::Transactions->new( RT->SystemUser );
         $txns->Limit(
             FIELD => "ObjectType",
             VALUE => "RT::User",
