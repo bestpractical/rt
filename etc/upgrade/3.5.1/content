@@ -1,4 +1,7 @@
-@Attributes = (
+use strict;
+use warnings;
+
+our @Attributes = (
     { Name => 'Search - My Tickets',
       Description => '[_1] highest priority tickets I own',
       Content     =>

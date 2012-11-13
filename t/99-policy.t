@@ -3,10 +3,11 @@ use warnings;
 
 use RT::Test nodb => 1;
 use File::Find;
+use IPC::Run3;
 
 my @files;
 find( sub { push @files, $File::Find::name if -f },
-      qw{lib share t bin sbin devel/tools} );
+      qw{lib share t bin sbin devel/tools etc} );
 if ( my $dir = `git rev-parse --git-dir 2>/dev/null` ) {
     # We're in a git repo, use the ignore list
     chomp $dir;
@@ -24,6 +25,7 @@ sub check {
         shebang  => 0,
         exec     => 0,
         bps_tag  => 0,
+        compile  => 0,
         @_,
     );
 
@@ -74,6 +76,15 @@ sub check {
     } elsif ($check{exec} == -1) {
         ok( !$executable, "$file permission is u-x" );
     }
+
+    if ($check{compile}) {
+        my ($input, $output, $error) = ('', '', '');
+        run3(
+            [$^X, '-Ilib', '-Mstrict', '-Mwarnings', '-c', $file],
+            \$input, \$output, \$error,
+        );
+        is $error, "$file syntax OK\n", "$file syntax is OK";
+    }
 }
 
 check( $_, shebang => -1, exec => -1, warnings => 1, strict => 1, bps_tag => 1 )
@@ -96,3 +107,6 @@ check( $_, exec => -1 )
 
 check( $_, exec => -1 )
     for grep {m{^t/data/}} @files;
+
+check( $_, warnings => 1, strict => 1, compile => 1 )
+    for grep {m{^etc/upgrade/.*/content$}} @files;

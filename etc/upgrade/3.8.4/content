@@ -1,8 +1,10 @@
+use strict;
+use warnings;
 
-@Final = (
+
+our @Final = (
     sub {
-        $RT::Logger->debug("Going to correct arguments of NotifyGroup actions if you have any");
-        use strict;
+        RT->Logger->debug("Going to correct arguments of NotifyGroup actions if you have any");
 
         my $actions = RT::ScripActions->new( RT->SystemUser );
         $actions->Limit(
@@ -50,7 +52,7 @@
             next if $new eq $argument;
 
             my ($status, $msg) = $action->__Set( Field => 'Argument', Value => $new );
-            $RT::Logger->warning( "Couldn't change argument value of the action: $msg" )
+            RT->Logger->warning( "Couldn't change argument value of the action: $msg" )
                 unless $status;
         }
     },

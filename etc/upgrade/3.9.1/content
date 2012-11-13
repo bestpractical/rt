@@ -1,7 +1,9 @@
-@Initial = (
+use strict;
+use warnings;
+
+our @Initial = (
     sub {
-        use strict;
-        $RT::Logger->debug('Make sure templates all have known types');
+        RT->Logger->debug('Make sure templates all have known types');
 
         # We update all NULL rows, below.  We want to find non-NULL
         # rows, which weren't created by the current codebase running
@@ -26,12 +28,11 @@
         );
         while (my $template = $templates->Next) {
             my ($status, $msg) = $template->SetType('Perl');
-            $RT::Logger->warning( "Couldn't change Type of Template #" . $template->Id . ": $msg" ) unless $status;
+            RT->Logger->warning( "Couldn't change Type of Template #" . $template->Id . ": $msg" ) unless $status;
         }
     },
     sub {
-        use strict;
-        $RT::Logger->debug('Adding ExecuteCode right to principals that currently have ModifyTemplate or ModifyScrips');
+        RT->Logger->debug('Adding ExecuteCode right to principals that currently have ModifyTemplate or ModifyScrips');
 
         my $acl = RT::ACL->new(RT->SystemUser);
         $acl->Limit(
@@ -60,7 +61,7 @@
             );
 
             if (!$ok) {
-                $RT::Logger->warn("Unable to grant ExecuteCode on principal " . $principal->id . ": $msg");
+                RT->Logger->warn("Unable to grant ExecuteCode on principal " . $principal->id . ": $msg");
             }
         }
     },

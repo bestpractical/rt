@@ -1,4 +1,7 @@
-@Initial = (
+use strict;
+use warnings;
+
+our @Initial = (
     sub {
         # make sure global CFs are not applied to local objects
         my $ocfs = RT::ObjectCustomFields->new( RT->SystemUser );
@@ -15,7 +18,7 @@
     },
     sub {
         # sort SortOrder
-        my $sth = $RT::Handle->dbh->prepare(
+        my $sth = RT->DatabaseHandle->dbh->prepare(
             "SELECT cfs.LookupType, ocfs.id"
             ." FROM ObjectCustomFields ocfs, CustomFields cfs"
             ." WHERE cfs.id = ocfs.CustomField"
@@ -29,7 +32,7 @@
             my $ocf = RT::ObjectCustomField->new( RT->SystemUser );
             $ocf->Load( $id );
             my ($status, $msg) = $ocf->SetSortOrder( $i++ );
-            $RT::Logger->warning("Couldn't set SortOrder: $msg")
+            RT->Logger->warning("Couldn't set SortOrder: $msg")
                 unless $status;
             $prev_type = $lt;
         }
