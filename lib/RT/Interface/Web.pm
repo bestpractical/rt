@@ -2464,24 +2464,6 @@ sub ProcessTicketReminders {
     return @results;
 }
 
-sub ProcessTicketCustomFieldUpdates {
-    my %args = @_;
-    $args{'Object'} = delete $args{'TicketObj'};
-    my $ARGSRef = { %{ $args{'ARGSRef'} } };
-
-    # Build up a list of objects that we want to work with
-    my %custom_fields_to_mod;
-    foreach my $arg ( keys %$ARGSRef ) {
-        if ( $arg =~ /^Ticket-(\d+-.*)/ ) {
-            $ARGSRef->{"Object-RT::Ticket-$1"} = delete $ARGSRef->{$arg};
-        } elsif ( $arg =~ /^CustomField-(\d+-.*)/ ) {
-            $ARGSRef->{"Object-RT::Ticket--$1"} = delete $ARGSRef->{$arg};
-        }
-    }
-
-    return ProcessObjectCustomFieldUpdates( %args, ARGSRef => $ARGSRef );
-}
-
 sub ProcessObjectCustomFieldUpdates {
     my %args    = @_;
     my $ARGSRef = $args{'ARGSRef'};
