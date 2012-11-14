@@ -52,7 +52,7 @@
 <form action="Objects.html" method="post" name="AddRemoveScrip">
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
 
-% if ( $is_global ) {
+% if ( $global ) {
 <h2><&|/l&>Applies to all objects</&></h2>
 <label>
 <input type="checkbox" name="RemoveScrip-<% $id %>" value="0" />
@@ -60,7 +60,7 @@
 </label>
 
 <& /Admin/Elements/SelectStageForAdded,
-    Default => $Stage || ($global_os ? $global_os->Stage : undef),
+    Default => $Stage || $global->Stage,
     Label   => loc("Select global scrip stage:")
     &>
 % } else {
@@ -120,14 +120,7 @@ my $scrip = RT::Scrip->new( $session{'CurrentUser'} );
 $scrip->Load($id) or Abort(loc("Could not load scrip #[_1]", $id));
 $id = $scrip->id;
 
-my $is_global = $scrip->IsGlobal;
-my $global_os;
-
-if ( $is_global ) {
-    $global_os = RT::ObjectScrip->new( $session{CurrentUser} );
-    $global_os->LoadByCols( Scrip => $scrip->id, ObjectId => 0 );
-    undef $global_os unless $global_os->id;
-}
+my $global = $scrip->IsGlobal;
 
 if ( $Update ) {
     my (@results);
@@ -143,8 +136,8 @@ if ( $Update ) {
             push @results, $msg;
         }
     }
-    if ($is_global and $global_os and $global_os->Stage ne $Stage) {
-        my ($status, $msg) = $global_os->SetStage($Stage);
+    if ($global and $global->Stage ne $Stage) {
+        my ($status, $msg) = $global->SetStage($Stage);
         push @results, $msg;
     }
     MaybeRedirectForResults(
