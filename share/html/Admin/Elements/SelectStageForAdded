@@ -46,6 +46,9 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div style="text-align:right">
-<% loc('Select scrip stage for newly added queues:') %>
+<% $Label %>
 <& SelectStage, %ARGS &>
 </div>
+<%args>
+$Label => loc('Select scrip stage for newly added queues:')
+</%args>
