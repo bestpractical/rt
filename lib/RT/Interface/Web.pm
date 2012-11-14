@@ -1780,52 +1780,10 @@ sub CreateTicket {
             : ( $ARGS{'AttachTickets'} ) );
     }
 
-    foreach my $arg ( keys %ARGS ) {
-        next if $arg =~ /-(?:Magic|Category)$/;
-
-        if ( $arg =~ /^Object-RT::Transaction--CustomField-/ ) {
-            $create_args{$arg} = $ARGS{$arg};
-        }
-
-        # Object-RT::Ticket--CustomField-3-Values
-        elsif ( $arg =~ /^Object-RT::Ticket--CustomField-(\d+)/ ) {
-            my $cfid = $1;
-
-            my $cf = RT::CustomField->new( $session{'CurrentUser'} );
-            $cf->SetContextObject( $Queue );
-            $cf->Load($cfid);
-            unless ( $cf->id ) {
-                $RT::Logger->error( "Couldn't load custom field #" . $cfid );
-                next;
-            }
-
-            if ( $arg =~ /-Upload$/ ) {
-                $create_args{"CustomField-$cfid"} = _UploadedFile($arg);
-                next;
-            }
-
-            my $type = $cf->Type;
-
-            my @values = ();
-            if ( ref $ARGS{$arg} eq 'ARRAY' ) {
-                @values = @{ $ARGS{$arg} };
-            } elsif ( $type =~ /text/i ) {
-                @values = ( $ARGS{$arg} );
-            } else {
-                no warnings 'uninitialized';
-                @values = split /\r*\n/, $ARGS{$arg};
-            }
-            @values = grep length, map {
-                s/\r+\n/\n/g;
-                s/^\s+//;
-                s/\s+$//;
-                $_;
-                }
-                grep defined, @values;
-
-            $create_args{"CustomField-$cfid"} = \@values;
-        }
-    }
+    my %cfs = ProcessObjectCustomFieldUpdatesForCreate(
+        ARGSRef         => \%ARGS,
+        ContextObject   => $Queue,
+    );
 
     # turn new link lists into arrays, and pass in the proper arguments
     my %map = (
@@ -1842,7 +1800,7 @@ sub CreateTicket {
 
     }
 
-    my ( $id, $Trans, $ErrMsg ) = $Ticket->Create(%create_args);
+    my ( $id, $Trans, $ErrMsg ) = $Ticket->Create(%create_args, %cfs);
     unless ($id) {
         Abort($ErrMsg);
     }
@@ -2629,15 +2587,7 @@ sub ProcessObjectCustomFieldUpdates {
     my @results;
 
     # Build up a list of objects that we want to work with
-    my %custom_fields_to_mod;
-    foreach my $arg ( keys %$ARGSRef ) {
-
-        # format: Object-<object class>-<object id>-CustomField-<CF id>-<commands>
-        next unless $arg =~ /^Object-([\w:]+)-(\d*)-CustomField-(\d+)-(.*)$/;
-
-        # For each of those objects, find out what custom fields we want to work with.
-        $custom_fields_to_mod{$1}{ $2 || 0 }{$3}{$4} = $ARGSRef->{$arg};
-    }
+    my %custom_fields_to_mod = _ParseObjectCustomFieldArgs($ARGSRef);
 
     # For each of those objects
     foreach my $class ( keys %custom_fields_to_mod ) {
@@ -2662,6 +2612,9 @@ sub ProcessObjectCustomFieldUpdates {
                 }
                 push @results,
                     _ProcessObjectCustomFieldUpdates(
+                    # XXX FIXME: Prefix is not quite right, as $id almost
+                    # certainly started as blank for new objects and is now 0.
+                    # Only Image/Binary CFs on new objects should be affected.
                     Prefix      => "Object-$class-$id-CustomField-$cf-",
                     Object      => $Object,
                     CustomField => $CustomFieldObj,
@@ -2671,6 +2624,22 @@ sub ProcessObjectCustomFieldUpdates {
         }
     }
     return @results;
+}
+
+sub _ParseObjectCustomFieldArgs {
+    my $ARGSRef = shift || {};
+    my %custom_fields_to_mod;
+
+    foreach my $arg ( keys %$ARGSRef ) {
+
+        # format: Object-<object class>-<object id>-CustomField-<CF id>-<commands>
+        next unless $arg =~ /^Object-([\w:]+)-(\d*)-CustomField-(\d+)-(.*)$/;
+
+        # For each of those objects, find out what custom fields we want to work with.
+        $custom_fields_to_mod{$1}{ $2 || 0 }{$3}{$4} = $ARGSRef->{$arg};
+    }
+
+    return wantarray ? %custom_fields_to_mod : \%custom_fields_to_mod;
 }
 
 sub _ProcessObjectCustomFieldUpdates {
@@ -2708,22 +2677,14 @@ sub _ProcessObjectCustomFieldUpdates {
             $args{'ARGS'}->{'Values'} = undef;
         }
 
-        my @values = ();
-        if ( ref $args{'ARGS'}->{$arg} eq 'ARRAY' ) {
-            @values = @{ $args{'ARGS'}->{$arg} };
-        } elsif ( $cf_type =~ /text/i ) {    # Both Text and Wikitext
-            @values = ( $args{'ARGS'}->{$arg} );
-        } else {
-            @values = split /\r*\n/, $args{'ARGS'}->{$arg}
-                if defined $args{'ARGS'}->{$arg};
-        }
-        @values = grep length, map {
-            s/\r+\n/\n/g;
-            s/^\s+//;
-            s/\s+$//;
-            $_;
-            }
-            grep defined, @values;
+        my @values = _NormalizeObjectCustomFieldValue(
+            CustomField => $cf,
+            Param       => $args{'Prefix'} . $arg,
+            Value       => $args{'ARGS'}->{$arg}
+        );
+
+        # "Empty" values still don't mean anything for Image and Binary fields
+        next if $cf_type =~ /^(?:Image|Binary)$/ and not @values;
 
         if ( $arg eq 'AddValue' || $arg eq 'Value' ) {
             foreach my $value (@values) {
@@ -2734,8 +2695,7 @@ sub _ProcessObjectCustomFieldUpdates {
                 push( @results, $msg );
             }
         } elsif ( $arg eq 'Upload' ) {
-            my $value_hash = _UploadedFile( $args{'Prefix'} . $arg ) or next;
-            my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue( %$value_hash, Field => $cf, );
+            my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue( %{$values[0]}, Field => $cf, );
             push( @results, $msg );
         } elsif ( $arg eq 'DeleteValues' ) {
             foreach my $value (@values) {
@@ -2820,6 +2780,87 @@ sub _ProcessObjectCustomFieldUpdates {
     return @results;
 }
 
+sub ProcessObjectCustomFieldUpdatesForCreate {
+    my %args = (
+        ARGSRef         => {},
+        ContextObject   => undef,
+        @_
+    );
+    my $context = $args{'ContextObject'};
+    my %parsed;
+    my %custom_fields = _ParseObjectCustomFieldArgs( $args{'ARGSRef'} );
+
+    for my $class (keys %custom_fields) {
+        # we're only interested in new objects, so only look at $id == 0
+        for my $cfid (keys %{ $custom_fields{$class}{0} || {} }) {
+            my $cf = RT::CustomField->new( $session{'CurrentUser'} );
+            if ($context) {
+                my $system_cf = RT::CustomField->new( RT->SystemUser );
+                $system_cf->LoadById($cfid);
+                if ($system_cf->ValidateContextObject($context)) {
+                    $cf->SetContextObject($context);
+                } else {
+                    RT->Logger->error(
+                        sprintf "Invalid context object %s (%d) for CF %d; skipping CF",
+                                ref $context, $context->id, $system_cf->id
+                    );
+                    next;
+                }
+            }
+            $cf->LoadById($cfid);
+
+            unless ($cf->id) {
+                RT->Logger->warning("Couldn't load custom field #$cfid");
+                next;
+            }
+
+            my @values;
+            while (my ($arg, $value) = each %{ $custom_fields{$class}{0}{$cfid} }) {
+                # Values-Magic doesn't matter on create; no previous values are being removed
+                # Category is irrelevant for the actual value
+                next if $arg eq "Values-Magic" or $arg eq "Category";
+
+                push @values, _NormalizeObjectCustomFieldValue(
+                    CustomField => $cf,
+                    Param       => "Object-$class--CustomField-$cfid-$arg",
+                    Value       => $value,
+                );
+            }
+
+            $parsed{"CustomField-$cfid"} = \@values if @values;
+        }
+    }
+
+    return wantarray ? %parsed : \%parsed;
+}
+
+sub _NormalizeObjectCustomFieldValue {
+    my %args    = (@_);
+    my $cf_type = $args{CustomField}->Type;
+    my @values  = ();
+
+    if ( ref $args{'Value'} eq 'ARRAY' ) {
+        @values = @{ $args{'Value'} };
+    } elsif ( $cf_type =~ /text/i ) {    # Both Text and Wikitext
+        @values = ( $args{'Value'} );
+    } else {
+        @values = split /\r*\n/, $args{'Value'}
+            if defined $args{'Value'};
+    }
+    @values = grep length, map {
+        s/\r+\n/\n/g;
+        s/^\s+//;
+        s/\s+$//;
+        $_;
+        }
+        grep defined, @values;
+
+    if ($cf_type eq 'Image' or $cf_type eq 'Binary') {
+        @values = _UploadedFile( $args{'Param'} ) || ();
+    }
+
+    return @values;
+}
 
 =head2 ProcessTicketWatchers ( TicketObj => $Ticket, ARGSRef => \%ARGS );
 

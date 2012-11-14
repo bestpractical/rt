@@ -537,7 +537,6 @@ sub CurrentUserHasRight {
         $self->CurrentUser->HasRight(
             Right        => $right,
             Object       => $self,
-            EquivObjects => [ $RT::System, $RT::System, $self->ClassObj ]
         )
     );
 
@@ -618,6 +617,11 @@ sub _LookupId {
     my $self = shift;
     return $self->ClassObj->id;
 
+}
+
+sub ACLEquivalenceObjects {
+    my $self = shift;
+    return $self->ClassObj;
 }
 
 =head2 LoadByInclude Field Value

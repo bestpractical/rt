@@ -115,6 +115,12 @@ my $title;
 my $Entries    = {};
 my $ArticleObj = RT::Article->new( $session{'CurrentUser'} );
 my $ClassObj   = RT::Class->new( $session{'CurrentUser'} );
+
+if ($Class) {
+    $ClassObj->Load($Class);
+    Abort(loc("'[_1]' isn't a valid class", $Class)) unless $ClassObj->Id;
+}
+
 my %create_args;
 my %CFContent;
 my $EditClass = 1;
@@ -129,11 +135,6 @@ if ( !$id ) {
         }
     }
 
-    $ClassObj->Load($Class);
-    unless ( $ClassObj->Id ) {
-        $m->comp( "/Elements/Error",
-            Why => loc( "'[_1]' isn't a valid class identifier", $Class ) );
-    }
     $EditClass = 0;
     $id        = 'new';
 }
@@ -149,48 +150,10 @@ elsif ( $id eq 'new' ) {
           split( /\s+/, $ARGS{'new-RefersTo'} );
     }
 
-
-    foreach my $arg (keys %ARGS) {
-        next if $arg =~ /-(?:Magic|Category)$/;
-        # Object-RT::Article--CustomField-3-Values
-        if ( $arg =~ /^Object-RT::Article--CustomField-(\d+)(.*?)$/ ) {
-            my $cfid = $1; 
-        
-            my $cf = RT::CustomField->new( $session{'CurrentUser'} );
-            $cf->SetContextObject( $ArticleObj );
-            $cf->Load( $cfid );
-            unless ( $cf->id ) {
-                $RT::Logger->error( "Couldn't load custom field #". $cfid );
-                next;
-            }
-
-            if ( $arg =~ /-Upload$/ ) {
-                $create_args{"CustomField-$cfid"} = _UploadedFile( $arg );
-                next;
-            }
-            
-            my $type = $cf->Type;
-        
-            my @values = ();
-            if ( ref $ARGS{ $arg } eq 'ARRAY' ) {
-                @values = @{ $ARGS{ $arg } };
-            } elsif ( $type =~ /text/i ) {
-                @values = ($ARGS{ $arg });
-            } else {
-                @values = split /\r*\n/, $ARGS{ $arg } || '';
-            }
-            @values = grep $_ ne '',
-                map {
-                    s/\r+\n/\n/g;
-                    s/^\s+//;
-                    s/\s+$//;
-                    $_;
-                }
-                grep defined, @values;
-
-            $create_args{"CustomField-$cfid"} = \@values;
-        }
-    }
+    my %cfs = ProcessObjectCustomFieldUpdatesForCreate(
+        ARGSRef         => \%ARGS,
+        ContextObject   => $ClassObj,
+    );
 
     my $msg;
     ( $id, $msg ) = $ArticleObj->Create(
@@ -198,7 +161,8 @@ elsif ( $id eq 'new' ) {
         Name    => $ARGS{'Name'},
         Class   => $ARGS{'Class'},
         Topics  => $ARGS{'Topics'},
-        %create_args
+        %create_args,
+        %cfs
     );
     push( @results, $msg );
     if ($id) {
@@ -219,12 +183,7 @@ elsif ( $id eq 'new' ) {
             );
         }
     }
-   if (!$id) {
-        $ClassObj->Load($Class);
-        unless ( $ClassObj->Id ) {
-            $m->comp( "/Elements/Error",
-                Why => loc( "'[_1]' isn't a valid class identifier", $Class ) );
-        }
+    else {
         $ArticleObj = RT::Article->new( $session{'CurrentUser'} );
         $id        = 'new';
         $EditClass = 0;
