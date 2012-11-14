@@ -1649,14 +1649,13 @@ sub ValuesForObject {
     my $object = shift;
 
     my $values = RT::ObjectCustomFieldValues->new($self->CurrentUser);
-    unless ($self->CurrentUserHasRight('SeeCustomField')) {
+    unless ($self->id and $self->CurrentUserHasRight('SeeCustomField')) {
         # Return an empty object if they have no rights to see
+        $values->Limit( FIELD => "id", VALUE => 0, SUBCLAUSE => "ACL" );
         return ($values);
     }
-    
-    
+
     $values->LimitToCustomField($self->Id);
-    $values->LimitToEnabled();
     $values->LimitToObject($object);
 
     return ($values);
