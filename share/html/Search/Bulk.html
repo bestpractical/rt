@@ -138,8 +138,6 @@ size="60" value="<% $ARGS{UpdateSubject} || "" %>" /></td></tr>
 <td><& /Elements/EditCustomField, 
     CustomField => $CF, 
     NamePrefix => "Object-RT::Transaction--CustomField-",
-    Default => $ARGS{"Object-RT::Transaction--CustomField-" . $CF->id . '-Values'} || 
-            $ARGS{"Object-RT::Transaction--CustomField-" . $CF->id . '-Value'},
     &><em><% $CF->FriendlyType %></em></td>
 </td></tr>
 % } # end if while

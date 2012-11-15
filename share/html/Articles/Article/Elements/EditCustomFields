@@ -52,11 +52,7 @@
         Object => $ArticleObj, 
         CustomField => $CustomField, 
         NamePrefix => $NamePrefix,
-        Default => 
-            ($CFContent->{$CustomField->Id} || 
-              $ARGS{$NamePrefix .$CustomField->id .'-Values'} ||
-              $ARGS{$NamePrefix .$CustomField->id .'-Value'})
-              ,
+        Default => $CFContent->{$CustomField->Id},
         Rows => 15,
         Cols => 70
         &></td>
