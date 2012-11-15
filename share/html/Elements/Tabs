@@ -372,6 +372,9 @@ my $build_admin_menu = sub {
             $tabs->child( basics => title => loc('Basics') => path => "/Admin/Scrips/Modify.html?id=".$id );
             $tabs->child( 'applies-to' => title => loc('Applies to'), path => "/Admin/Scrips/Objects.html?id=" . $id );
         }
+        elsif ( $request_path =~ m{^/Admin/Scrips/(index\.html)?$} ) {
+            PageMenu->child( create => title => loc('Create') => path => "/Admin/Scrips/Create.html" );
+        }
     }
 
     if ( $request_path =~ m{^/Admin/Global/Scrips\.html} ) {
