@@ -2,7 +2,8 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 102;
+use RT::Test tests => undef;
+use Test::Warn;
 
 my ( $baseurl, $agent ) = RT::Test->started_ok;
 ok( $agent->login, 'log in' );
@@ -241,7 +242,9 @@ diag "create a ticket with an IP of abcd:23:: and search for doesn't match 'abcd
     ok( $id, "created first ticket $id" );
 
     my $tickets = RT::Tickets->new($RT::SystemUser);
-    $tickets->FromSQL("id=$id AND CF.{IP} NOT LIKE 'abcd:23'");
+    warning_like {
+        $tickets->FromSQL("id=$id AND CF.{IP} NOT LIKE 'abcd:23'");
+    } [qr/not a valid IPAddress/], "caught warning about IPAddress";
 
     SKIP: {
         skip "partical ip parse can causes ambiguity", 1;
@@ -249,3 +252,5 @@ diag "create a ticket with an IP of abcd:23:: and search for doesn't match 'abcd
     }
 }
 
+undef $agent;
+done_testing;
