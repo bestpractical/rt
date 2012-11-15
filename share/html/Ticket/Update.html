@@ -287,7 +287,7 @@ if ( $ARGS{'SubmitTicket'} ) {
     my ($status, @msg) = $m->comp(
         '/Elements/ValidateCustomFields',
         CustomFields => $TicketObj->TransactionCustomFields,
-        NamePrefix => "Object-RT::Transaction--CustomField-",
+        Object => RT::Transaction->new( $session{'CurrentUser'} ),
         ARGSRef => \%ARGS
     );
     unless ( $status ) {

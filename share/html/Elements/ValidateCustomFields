@@ -48,38 +48,23 @@
 <%INIT>
 my ($valid, @res) = (1, ());
 $CustomFields->GotoFirstItem;
+
+my $CFArgs = _ParseObjectCustomFieldArgs( $ARGSRef )->{ref($Object)}{$Object->Id || 0} || {};
+
 while ( my $CF = $CustomFields->Next ) {
-    my $field = $NamePrefix . $CF->Id . "-Value";
+    my $submitted = $CFArgs->{$CF->Id} || {};
 
-    my $value;
-    if ($ARGSRef->{"${field}s-Magic"} and exists $ARGSRef->{"${field}s"}) {
-        $value = $ARGSRef->{"${field}s"};
+    # We only validate Single Combos -- multis can never be user input
+    next if $submitted->{"Values-Magic"} and exists $submitted->{"Values"}
+        and ref $submitted->{"Values"};
 
-        # We only validate Single Combos -- multis can never be user input
-        next if ref $value;
-    }
-    else {
-        $value = $ARGSRef->{$field};
-    }
-    $m->notes(('Field-' . $CF->Id) => $value);
+    $m->notes(('Field-' . $CF->Id) => $submitted->{Value} );
 
-    my @values = ();
-    if ( ref $value eq 'ARRAY' ) {
-        @values = @$value;
-    } elsif ( $CF->Type =~ /text/i ) {
-        @values = ($value);
-    } else {
-        @values = split /\r*\n/, ( defined $value ? $value : '');
-    }
-    @values = grep $_ ne '',
-        map {
-            s/\r+\n/\n/g;
-            s/^\s+//;
-            s/\s+$//;
-            $_;
-        }
-        grep defined, @values;
-    @values = ('') unless @values;
+    my @values = _NormalizeObjectCustomFieldValue(
+        CustomField => $CF,
+        Value       => $submitted->{Values} || $submitted->{Value},
+    );
+    push @values, '' unless @values;
 
     for my $value( @values ) {
         if ($value) {
@@ -119,7 +104,7 @@ $m->notes('ValidFields', $valid);
 return wantarray? ($valid, @res): $valid;
 </%INIT>
 <%ARGS>
+$Object => RT::Ticket->new( $session{'CurrentUser'})
 $CustomFields
 $ARGSRef
-$NamePrefix => "Object-RT::Ticket--CustomField-"
 </%ARGS>
