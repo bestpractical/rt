@@ -2,7 +2,8 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 73;
+use RT::Test tests => undef;
+use Test::Warn;
 
 my ( $baseurl, $agent ) = RT::Test->started_ok;
 ok( $agent->login, 'log in' );
@@ -264,7 +265,9 @@ diag "create a ticket with an IP of 10.0.0.1 and search for doesn't match '10.0.
     ok( $id, "created first ticket $id" );
 
     my $tickets = RT::Tickets->new($RT::SystemUser);
-    $tickets->FromSQL("id=$id AND CF.{IP} NOT LIKE '10.0.0.'");
+    warning_like {
+        $tickets->FromSQL("id=$id AND CF.{IP} NOT LIKE '10.0.0.'");
+    } [qr/not a valid IPAddress/], "caught warning about valid IP address";
 
     SKIP: {
         skip "partical ip parse causes ambiguity", 1;
@@ -282,3 +285,6 @@ diag "test the operators in search page" if $ENV{'TEST_VERBOSE'};
     ok( $op, "found CF.{IP}Op" );
     is_deeply( [ $op->possible_values ], [ '=', '!=', '<', '>' ], 'op values' );
 }
+
+undef $agent;
+done_testing;
