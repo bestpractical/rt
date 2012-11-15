@@ -874,6 +874,7 @@ Set(@JSFiles, qw/
     supersubs.js
     jquery.supposition.js
     history-folding.js
+    event-registration.js
     late.js
 /);
 
@@ -2575,17 +2576,12 @@ Set(%AdminSearchResultFormat,
     CustomFields =>
         q{'<a href="__WebPath__/Admin/CustomFields/Modify.html?id=__id__">__id__</a>/TITLE:#'}
         .q{,'<a href="__WebPath__/Admin/CustomFields/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}
-        .q{,__AppliedTo__, __FriendlyType__, __FriendlyPattern__},
+        .q{,__AddedTo__, __FriendlyType__, __FriendlyPattern__},
 
     Scrips =>
-        q{'<a href="__WebPath__/Admin/Queues/Scrip.html?id=__id__&Queue=__QueueId__">__id__</a>/TITLE:#'}
-        .q{,'<a href="__WebPath__/Admin/Queues/Scrip.html?id=__id__&Queue=__QueueId__">__Description__</a>/TITLE:Description'}
-        .q{,__Stage__, __Condition__, __Action__, __Template__},
-
-    GlobalScrips =>
-        q{'<a href="__WebPath__/Admin/Global/Scrip.html?id=__id__">__id__</a>/TITLE:#'}
-        .q{,'<a href="__WebPath__/Admin/Global/Scrip.html?id=__id__">__Description__</a>/TITLE:Description'}
-        .q{,__Stage__, __Condition__, __Action__, __Template__},
+        q{'<a href="__WebPath__/Admin/Scrips/Modify.html?id=__id__">__id__</a>/TITLE:#'}
+        .q{,'<a href="__WebPath__/Admin/Scrips/Modify.html?id=__id__">__Description__</a>/TITLE:Description'}
+        .q{,__Condition__, __Action__, __Template__, __Disabled__},
 
     Templates =>
         q{'<a href="__WebPath__/__WebRequestPathDir__/Template.html?Queue=__QueueId__&Template=__id__">__id__</a>/TITLE:#'}

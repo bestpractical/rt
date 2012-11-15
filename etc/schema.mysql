@@ -142,8 +142,7 @@ CREATE TABLE Scrips (
   CustomIsApplicableCode text NULL  ,
   CustomPrepareCode text NULL  ,
   CustomCommitCode text NULL  ,
-  Stage varchar(32) CHARACTER SET ascii NULL  ,
-  Queue integer NOT NULL DEFAULT 0  ,
+  Disabled int2 NOT NULL DEFAULT 0 ,
   Template integer NOT NULL DEFAULT 0  ,
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
@@ -152,6 +151,21 @@ CREATE TABLE Scrips (
   PRIMARY KEY (id)
 ) ENGINE=InnoDB CHARACTER SET utf8;
 
+CREATE TABLE ObjectScrips (
+  id INTEGER NOT NULL  AUTO_INCREMENT,
+  Scrip integer NOT NULL  ,
+  Stage varchar(32) CHARACTER SET ascii NOT NULL DEFAULT 'TransactionCreate',
+  ObjectId integer NOT NULL,
+  SortOrder integer NOT NULL DEFAULT 0  ,
+
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created DATETIME NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated DATETIME NULL  ,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+
+CREATE UNIQUE INDEX ObjectScrips1 ON ObjectScrips (ObjectId, Scrip);
 
 CREATE TABLE ACL (
   id INTEGER NOT NULL  AUTO_INCREMENT,

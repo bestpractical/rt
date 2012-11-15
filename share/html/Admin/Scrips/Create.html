@@ -1,0 +1,138 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Admin/Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
+<& /Elements/ListActions, actions => \@results &>
+
+<form method="post" action="Create.html" id="CreateScrip" name="CreateScrip">
+<input type="hidden" class="hidden" name="Queue" value="<% $Queue %>" />
+
+<&| /Widgets/TitleBox, title => loc('Basics') &>
+<table>
+
+<& Elements/EditBasics, %ARGS, Scrip => $scrip, Queue => $queue_obj &>
+
+<tr><td class="label"><&|/l&>Stage</&>:</td><td class="value">\
+<& /Admin/Elements/SelectStage, Default => $ARGS{"Stage"} &></td></tr>
+
+<tr><td class="label">&nbsp;</td><td>
+<input type="hidden" class="hidden" name="SetEnabled" value="1" />
+<input type="checkbox" class="checkbox" name="Enabled" value="1" <% $ARGS{'Enabled'}? 'checked="checked"': '' |n%> />
+<label for="Enabled"><&|/l&>Enabled (Unchecking this box disables this scrip)</&></label>
+</td></tr>
+
+</table>
+</&>
+
+<& /Elements/Submit,
+    Label => loc('Create'),
+    Name => 'Create',
+&>
+
+% if ($session{CurrentUser}->HasRight(Object => $RT::System, Right => 'ExecuteCode')) {
+<& Elements/EditCustomCode, %ARGS, Scrip => $scrip &>
+<& /Elements/Submit,
+    Label => loc('Create'),
+    Name => 'Create',
+&>
+% }
+
+</form>
+<%ARGS>
+$Queue => 0
+$Create => undef
+</%ARGS>
+<%INIT>
+my @results;
+
+$ARGS{'Enabled'} = 1 unless $ARGS{'SetEnabled'};
+
+my $queue_obj;
+if ( $Queue ) {
+    $queue_obj = RT::Queue->new( $session{'CurrentUser'} );
+    $queue_obj->Load( $Queue );
+    Abort( loc("Couldn't load queue [_1]", $Queue) )
+        unless $queue_obj->id;
+}
+
+my $title;
+if ( $queue_obj ) {
+    $title = loc('Create a scrip and add to queue [_1]', $queue_obj->Name );
+} else {
+    $title = loc('Create a global scrip');
+}
+
+my $scrip = RT::Scrip->new( $session{'CurrentUser'} );
+if ( $Create ) {
+    my ($status, $msg) = $scrip->Create(
+        Description            => $ARGS{"Description"},
+
+        Queue                  => $Queue || 0,
+        Stage                  => $ARGS{"Stage"},
+        Disabled               => $ARGS{"Disabled"},
+
+        ScripAction            => $ARGS{"ScripAction"},
+        ScripCondition         => $ARGS{"ScripCondition"},
+        Template               => $ARGS{"Template"},
+
+        CustomPrepareCode      => $ARGS{"CustomPrepareCode"},
+        CustomCommitCode       => $ARGS{"CustomCommitCode"},
+        CustomIsApplicableCode => $ARGS{"CustomIsApplicableCode"},
+    );
+
+    MaybeRedirectForResults(
+        Force     => 1,
+        Actions   => [ $msg ],
+        Path      => 'Admin/Scrips/Modify.html',
+        Arguments => { id => $scrip->id },
+    ) if $status;
+
+    push @results, $msg;
+}
+
+</%INIT>

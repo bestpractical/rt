@@ -23,6 +23,8 @@ sub acl {
         Transactions 
         scrips_id_seq
         Scrips 
+        objectscrips_id_seq
+        ObjectScrips
         acl_id_seq
         ACL 
         groupmembers_id_seq

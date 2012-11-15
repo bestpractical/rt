@@ -45,31 +45,33 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>">
-% foreach my $stage (@stages) {
+<&| /Widgets/TitleBox, title => loc('User Defined conditions and results') &>
 
-%# allow [stage, display] in place of a scalar stage name
-% my ($value, $display) = ref($stage) ? @$stage : ($stage, $stage);
+<table>
+<tr><td colspan="2" class="comment">
+<i><&|/l&>(Use these fields when you choose 'User Defined' for a condition or action)</&></i>
+</td></tr>
 
-<option value="<%$value%>"
-<% ($value eq $Default) && qq[ selected="selected"] |n %>
-<% ($value eq 'TransactionBatch' and not RT->Config->Get('UseTransactionBatch')) && qq[ disabled ] %>
-><% loc($display) %>
-</option>
-
+% while ( my ($method, $desc) = splice @list, 0, 2 ) {
+<tr><td class="labeltop"><% $desc %>:</td><td class="value">
+% my $code = $ARGS{ $method } || $Scrip->$method() || '';
+% my $lines = @{[ $code =~ /\n/gs ]} + 3;
+% $lines = $min_lines if $lines < $min_lines;
+<textarea cols="80" rows="<% $lines %>" name="<% $method %>"><% $code %></textarea>
+</td></tr>
 % }
-</select>
-<%INIT>
-if ( !defined $Default || $Default eq '') {
-    $Default = 'TransactionCreate';
-}
-my @stages = ['TransactionCreate', loc('Normal')];
 
-push @stages, RT->Config->Get('UseTransactionBatch')
-            ? ['TransactionBatch', loc('Batch')]
-            : ['TransactionBatch', loc('Batch (disabled by config)')];
-</%INIT>
+</table>
+</&>
 <%ARGS>
-$Default => 'TransactionCreate'
-$Name => 'Stage'
+$Scrip
 </%ARGS>
+<%INIT>
+my @list = (
+    CustomIsApplicableCode => loc('Custom condition'),
+    CustomPrepareCode      => loc('Custom action preparation code'),
+    CustomCommitCode       => loc('Custom action commit code'),
+);
+
+my $min_lines = 10;
+</%INIT>

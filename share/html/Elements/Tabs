@@ -97,6 +97,16 @@ my $build_admin_menu = sub {
         $cfs->child( create => title => loc('Create'), path => "/Admin/CustomFields/Modify.html?Create=1" );
     }
 
+    if ( $session{'CurrentUser'}->HasRight( Object => RT->System, Right => 'ModifyScrips' ) ) {
+        my $scrips = $admin->child( 'scrips' =>
+            title       => loc('Scrips'),
+            description => loc('Manage scrips'),
+            path        => '/Admin/Scrips/',
+        );
+        $scrips->child( select => title => loc('Select'), path => "/Admin/Scrips/" );
+        $scrips->child( create => title => loc('Create'), path => "/Admin/Scrips/Create.html" );
+    }
+
     my $admin_global = $admin->child( global =>
         title       => loc('Global'),
         description => loc('Manage properties and configuration which apply to all queues'),
@@ -109,7 +119,7 @@ my $build_admin_menu = sub {
         path        => '/Admin/Global/Scrips.html',
     );
     $scrips->child( select => title => loc('Select'), path => "/Admin/Global/Scrips.html" );
-    $scrips->child( create => title => loc('Create'), path => "/Admin/Global/Scrip.html?Create=1" );
+    $scrips->child( create => title => loc('Create'), path => "/Admin/Scrips/Create.html" );
 
     my $templates = $admin_global->child( templates =>
         title       => loc('Templates'),
@@ -284,7 +294,7 @@ my $build_admin_menu = sub {
 
             my $scrips = $queue->child( scrips => title => loc('Scrips'), path => "/Admin/Queues/Scrips.html?id=" . $id);
             $scrips->child( select => title => loc('Select'), path => "/Admin/Queues/Scrips.html?id=" . $id );
-            $scrips->child( create => title => loc('Create'), path => "/Admin/Queues/Scrip.html?Create=1;Queue=" . $id);
+            $scrips->child( create => title => loc('Create'), path => "/Admin/Scrips/Create.html?Queue=" . $id);
 
             my $ticket_cfs = $queue->child( 'ticket-custom-fields' => title => loc('Ticket Custom Fields'),
                 path => '/Admin/Queues/CustomFields.html?SubType=RT::Ticket&id=' . $id );
@@ -346,21 +356,34 @@ my $build_admin_menu = sub {
             $tabs->child( basics           => title => loc('Basics'),       path => "/Admin/CustomFields/Modify.html?id=".$id );
             $tabs->child( 'group-rights'   => title => loc('Group Rights'), path => "/Admin/CustomFields/GroupRights.html?id=" . $id );
             $tabs->child( 'user-rights'    => title => loc('User Rights'),  path => "/Admin/CustomFields/UserRights.html?id=" . $id );
-            unless ( $obj->LookupType =~ /^RT::(?:User|Group)$/ ) {
+            unless ( $obj->IsOnlyGlobal ) {
                 $tabs->child( 'applies-to' => title => loc('Applies to'),   path => "/Admin/CustomFields/Objects.html?id=" . $id );
             }
         }
     }
 
-    if ( $request_path =~ m{^/Admin/Global/(Scrip|Template)s?\.html} ) {
-        my $type = $1;
+    if ( $request_path =~ m{^/Admin/Scrips/} ) {
+        if ( $m->request_args->{'id'} && $m->request_args->{'id'} =~ /^\d+$/ ) {
+            my $id = $m->request_args->{'id'};
+            my $obj = RT::Scrip->new( $session{'CurrentUser'} );
+            $obj->Load($id);
+
+            my $tabs = PageMenu();
+            $tabs->child( basics => title => loc('Basics') => path => "/Admin/Scrips/Modify.html?id=".$id );
+            $tabs->child( 'applies-to' => title => loc('Applies to'), path => "/Admin/Scrips/Objects.html?id=" . $id );
+        }
+    }
+
+    if ( $request_path =~ m{^/Admin/Global/Scrips\.html} ) {
         my $tabs = PageMenu();
+        $tabs->child( select => title => loc('Select'), path => "/Admin/Global/Scrips.html" );
+        $tabs->child( create => title => loc('Create'), path => "/Admin/Scrips/Create.html" );
+    }
 
-        # With only two elements, swapping between dropdown and menu is kinda dumb
-        # In the glorious future this should be cleaner.
-
-        $tabs->child( select => title => loc('Select'), path => "/Admin/Global/${type}s.html" );
-        $tabs->child( create => title => loc('Create'), path => "/Admin/Global/${type}.html?Create=1" );
+    if ( $request_path =~ m{^/Admin/Global/Templates?\.html} ) {
+        my $tabs = PageMenu();
+        $tabs->child( select => title => loc('Select'), path => "/Admin/Global/Templates.html" );
+        $tabs->child( create => title => loc('Create'), path => "/Admin/Global/Template.html?Create=1" );
     }
 
     if ( $request_path =~ m{^/Admin/Articles/Classes/} ) {

@@ -1,0 +1,136 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Admin/Elements/Header, Title => loc("Modify scrip #[_1]", $id) &>
+<& /Elements/Tabs &>
+<& /Elements/ListActions, actions => \@results &>
+
+<form method="post" action="Modify.html" id="ModifyScrip" name="ModifyScrip">
+<input type="hidden" class="hidden" name="id" value="<% $id %>" />
+
+<&| /Widgets/TitleBox, title => loc('Basics') &>
+<table>
+
+<& Elements/EditBasics, %ARGS, Scrip => $scrip &>
+
+% if ( not $disabled ) {
+<tr><td class="label"><a href="Objects.html?id=<% $id %>"><&|/l&>Applies to</&></a>:</td>
+<td class="value">\
+% if ( $scrip->IsGlobal ) {
+<a href="<% RT->Config->Get('WebPath') %>/Admin/Global/Scrips.html"><% loc('Global') %></a>
+% } else {
+% my $added_to = $scrip->AddedTo;
+% my $found = 0;
+% while ( my $queue = $added_to->Next ) {
+% $m->out(', ') if $found++;
+<a href="<% RT->Config->Get('WebPath') %>/Admin/Queues/Scrips.html?id=<% $queue->id %>">\
+<% $queue->Name %></a>\
+% last if $found == 10;
+% }
+% $m->out(', ...') if $found == 10;
+% }
+<td></tr>
+% }
+
+<tr><td class="label">&nbsp;</td><td>
+<input type="hidden" class="hidden" name="SetEnabled" value="1" />
+<input type="checkbox" class="checkbox" name="Enabled" value="1" <% $EnabledChecked |n%> />
+<label for="Enabled"><&|/l&>Enabled (Unchecking this box disables this scrip)</&></label>
+</td></tr>
+
+</table>
+</&>
+
+<& /Elements/Submit, Label => loc('Save Changes'), Name => 'Update', Reset => 1 &>
+
+% if ($session{CurrentUser}->HasRight(Object => $RT::System, Right => 'ExecuteCode')) {
+<& Elements/EditCustomCode, %ARGS, Scrip => $scrip &>
+<& /Elements/Submit, Label => loc('Save Changes'), Name => 'Update', Reset => 1 &>
+% }
+
+</form>
+<%ARGS>
+$id     => undef
+$Update => undef
+</%ARGS>
+<%INIT>
+my $scrip = RT::Scrip->new( $session{'CurrentUser'} );
+$scrip->Load( $id );
+Abort(loc("Couldn't load scrip #[_1]", $id))
+    unless $scrip->id;
+
+my $disabled = $scrip->Disabled;
+
+if ( $Update ) {
+    my @attribs = qw(
+        Description
+        ScripAction ScripCondition
+        CustomPrepareCode CustomCommitCode CustomIsApplicableCode
+    );
+    push @attribs, "Template" if defined $ARGS{Template} and length $ARGS{Template};
+    if ($ARGS{"SetEnabled"}) {
+        push @attribs, "Disabled";
+        $ARGS{"Disabled"} = not $ARGS{"Enabled"};
+    }
+    my @results = UpdateRecordObject(
+        AttributesRef   => \@attribs,
+        Object          => $scrip,
+        ARGSRef         => \%ARGS
+    );
+    MaybeRedirectForResults(
+        Actions   => \@results,
+        Arguments => { id => $scrip->id },
+    );
+}
+
+my $EnabledChecked = qq[checked="checked"];
+$EnabledChecked = '' if $disabled;
+
+my @results;
+my ($ok, $msg) = $scrip->CompileCheck;
+push @results, $msg if !$ok;
+</%INIT>

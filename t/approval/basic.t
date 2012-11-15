@@ -86,14 +86,14 @@ mail_ok {
         $t->Create(Subject => "PO for stationary",
                    Owner => "root", Requestor => 'minion',
                    Queue => $q->Id);
-} { from => qr/RT System/,
-    to => 'cfo@company.com',
-    subject => qr/New Pending Approval: CFO Approval/,
-    body => qr/pending your approval.*Your approval is requested.*Blah/s
-},{ from => qr/PO via RT/,
+} { from => qr/PO via RT/,
     to => 'minion@company.com',
     subject => qr/PO for stationary/,
     body => qr/automatically generated in response/
+}, { from => qr/RT System/,
+    to => 'cfo@company.com',
+    subject => qr/New Pending Approval: CFO Approval/,
+    body => qr/pending your approval.*Your approval is requested.*Blah/s
 };
 
 ok ($tid,$tmsg);

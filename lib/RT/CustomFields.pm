@@ -145,7 +145,7 @@ sub LimitToParentType  {
 =head2 LimitToGlobalOrObjectId
 
 Takes list of object IDs and limits collection to custom
-fields that are applied to these objects or globally.
+fields that are added to these objects or globally.
 
 =cut
 
@@ -170,29 +170,7 @@ sub LimitToGlobalOrObjectId {
                  ENTRYAGGREGATOR => 'OR' ) unless $global_only;
 }
 
-sub _LimitToOCFs {
-    my $self = shift;
-    my @ids = @_;
-
-    my $ocfs_alias = $self->_OCFAlias( New => 1, Left => 1 );
-    if ( @ids ) {
-        # XXX: we need different EA in join clause, but DBIx::SB
-        # doesn't support them, use IN (X) instead
-        my $dbh = $self->_Handle->dbh;
-        $self->Limit(
-            LEFTJOIN   => $ocfs_alias,
-            ALIAS      => $ocfs_alias,
-            FIELD      => 'ObjectId',
-            OPERATOR   => 'IN',
-            QUOTEVALUE => 0,
-            VALUE      => "(". join( ',', map $dbh->quote($_), @ids ) .")",
-        );
-    }
-
-    return $ocfs_alias;
-}
-
-=head2 LimitToNotApplied
+=head2 LimitToNotAdded
 
 Takes either list of object ids or nothing. Limits collection
 to custom fields to listed objects or any corespondingly. Use
@@ -200,41 +178,23 @@ zero to mean global.
 
 =cut
 
-sub LimitToNotApplied {
+sub LimitToNotAdded {
     my $self = shift;
-    my @ids = @_;
-
-    my $ocfs_alias = $self->_LimitToOCFs(@ids);
-
-    $self->Limit(
-        ENTRYAGGREGATOR => 'AND',
-        ALIAS    => $ocfs_alias,
-        FIELD    => 'id',
-        OPERATOR => 'IS',
-        VALUE    => 'NULL',
-    );
+    return RT::ObjectCustomFields->new( $self->CurrentUser )
+        ->LimitTargetToNotAdded( $self => @_ );
 }
 
-=head2 LimitToApplied
+=head2 LimitToAdded
 
 Limits collection to custom fields to listed objects or any corespondingly. Use
 zero to mean global.
 
 =cut
 
-sub LimitToApplied {
+sub LimitToAdded {
     my $self = shift;
-    my @ids = @_;
-
-    my $ocfs_alias = $self->_LimitToOCFs(@ids);
-
-    $self->Limit(
-        ENTRYAGGREGATOR => 'AND',
-        ALIAS    => $ocfs_alias,
-        FIELD    => 'id',
-        OPERATOR => 'IS NOT',
-        VALUE    => 'NULL',
-    );
+    return RT::ObjectCustomFields->new( $self->CurrentUser )
+        ->LimitTargetToAdded( $self => @_ );
 }
 
 =head2 LimitToGlobalOrQueue QUEUEID
@@ -344,19 +304,8 @@ sub SetContextObject {
 
 sub _OCFAlias {
     my $self = shift;
-    my %args = ( New => 0, Left => 0, @_ );
-
-    return $self->{'_sql_ocfalias'} if $self->{'_sql_ocfalias'} && !$args{'New'};
-
-    my $alias = $self->Join(
-        $args{'Left'} ? (TYPE => 'LEFT') : (),
-        ALIAS1 => 'main',
-        FIELD1 => 'id',
-        TABLE2 => 'ObjectCustomFields',
-        FIELD2 => 'CustomField'
-    );
-    return $alias if $args{'New'};
-    return $self->{'_sql_ocfalias'} = $alias;
+    return RT::ObjectCustomFields->new( $self->CurrentUser )
+        ->JoinTargetToThis( $self => @_ );
 }
 
 

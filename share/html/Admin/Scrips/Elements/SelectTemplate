@@ -45,24 +45,52 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% unless ( $Scrips->Count ) {
-<p><i><&|/l&>(No scrips)</&></i></p>
-% } else {
-
-<& /Elements/CollectionList,
-    OrderBy => 'Description',
-    Order => 'ASC',
-    Rows  => 0,
-    %ARGS,
-    Format => $Format,
-    Collection => $Scrips,
-&>
-
+<select name="<% $Name %>">
+<option value=""><% $current || '-' %></option>
+% foreach my $name ( @list ) {
+<option value="<% $name %>" \
+    <% lc($Default||'') eq lc $name ? 'selected="selected"' : '' |n %>
+><% loc($name) %></option>
 % }
+</select>
 
-<%init>
-my $Format = RT->Config->Get('AdminSearchResultFormat')->{'GlobalScrips'};
+<%ARGS>
+$Name => 'Template'
+$Queue => undef
+$Scrip => undef
+$Default => undef
+</%ARGS>
+<%INIT>
 
-my $Scrips = RT::Scrips->new( $session{'CurrentUser'} );
-$Scrips->LimitToGlobal;
+my $current;
+$current = $Scrip->TemplateObj->Name if $Scrip;
+
+my $global = RT::Templates->new($session{'CurrentUser'});
+$global->LimitToGlobal;
+
+my %global;
+$global{ lc $_ } = $_ foreach map $_->Name, @{ $global->ItemsArrayRef };
+
+my @queues;
+push @queues, @{ $Scrip->AddedTo->ItemsArrayRef } if $Scrip && $Scrip->id;
+push @queues, $Queue if $Queue && $Queue->id;
+
+my (%names, %counters);
+foreach my $queue ( @queues ) {
+    my $templates = RT::Templates->new($session{'CurrentUser'});
+    $templates->LimitToQueue( $queue->id );
+    foreach my $name ( map $_->Name, @{ $templates->ItemsArrayRef } ) {
+        next if $global{ lc $name };
+        $counters{ lc $name }++;
+        $names{lc $name} = $name;
+    }
+}
+delete $counters{ $_ }
+    foreach grep $counters{$_} != @queues,
+    keys %counters;
+
+my @list =
+    sort { lc loc($a) cmp lc loc($b) }
+    map $global{$_} || $names{$_},
+    keys %global, keys %counters;
 </%INIT>

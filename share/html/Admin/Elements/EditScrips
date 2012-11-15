@@ -50,70 +50,150 @@
 <form action="Scrips.html" method="post">
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
 
-<h2><&|/l&>Current Scrips</&></h2>
-<& /Elements/CollectionList,
-    OrderBy => 'Description',
-    Order => 'ASC',
-    Rows  => 100,
-    %ARGS,
-    Format => $Format,
-    DisplayFormat => "__CheckBox.{DeleteScrip}__, $Format",
-    Collection => $Scrips,
-    AllowSorting => 1,
-    PassArguments => [ qw(Query Format Rows Page Order OrderBy id) ],
-&>
-
-% if ( $Scrips->Count ) {
-<p><i><&|/l&>(Check box to delete)</&></i></p>
-% } else  {
+<h2><&|/l&>Scrips</&></h2>
+<div class="admin-hint">Scrips normally run after each individual change to a ticket.</div>
+% my $scrips = $find_scrips->(Stage => 'TransactionCreate');
+<& /Elements/CollectionList, %common_applied_args, Collection => $scrips &>
+% unless ( $scrips->Count ) {
 <p><i><&|/l&>(No scrips)</&></i></p>
 % }
+
+<h2><&|/l&>Batch scrips</&></h2>
+<div class="admin-hint">Batch scrips run after a set of related changes to a ticket.</div>
+% $scrips = $find_scrips->(Stage => 'TransactionBatch');
+<& /Elements/CollectionList, %common_applied_args, Collection => $scrips &>
+% unless ( $scrips->Count ) {
+<p><i><&|/l&>(No scrips)</&></i></p>
+% }
+
 <& /Elements/Submit,
-    Caption => loc("Delete selected scrips"),
-    Label => loc("Delete")
+    Name => 'RemoveScrips',
+    Caption => loc("Un-apply selected scrips"),
+    Label => loc("Update"),
 &>
+
+<h2><&|/l&>Not applied scrips</&></h2>
+% $scrips = $find_scrips->(Added => 0);
+<& /Elements/CollectionList,
+    Rows => 50,
+    Page => 1,
+    %ARGS,
+    Collection => $scrips,
+    Format     => $Format,
+    DisplayFormat => "__CheckBox.{AddScrip}__, $Format",
+    AllowSorting => 1,
+    PassArguments => [ qw(Format Rows Page Order OrderBy id) ],
+&>
+% unless ( $scrips->Count ) {
+<p><i><&|/l&>(No scrips)</&></i></p>
+% }
+
+<& SelectStageForAdded &>
+
+<& /Elements/Submit,
+    Name => 'AddScrips',
+    Caption => loc("Apply selected scrips"),
+    Label => loc("Update"),
+&>
+
 </form>
 
 <%init>
 my (@actions);
 
-my $Scrips = RT::Scrips->new($session{'CurrentUser'});
-
-my $QueueObj = RT::Queue->new($session{'CurrentUser'});
 if ( $id ) {
+    my $QueueObj = RT::Queue->new($session{'CurrentUser'});
     $QueueObj->Load( $id );
-    unless ( $QueueObj->id ) {
-        push @actions, loc("Couldn't load queue #[_1]", $id)
-    }
+    Abort(loc("Couldn't load queue #[_1]", $id)) unless $QueueObj->id;
 }
+$id ||= 0;
 
-if ($QueueObj->id) {
-    $Scrips->LimitToQueue($id);
-    $Format ||= RT->Config->Get('AdminSearchResultFormat')->{'Scrips'};
-}
-else {
-    $Scrips->LimitToGlobal();
-    $Format ||= RT->Config->Get('AdminSearchResultFormat')->{'GlobalScrips'};
-}
+my $find_scrips = sub {
+    my %args = (Added => 1, @_);
+    my $scrips = RT::Scrips->new($session{'CurrentUser'});
+    $scrips->LimitByStage( $args{'Stage'} )
+        if $args{'Stage'};
+    my $method = $args{'Added'}? 'LimitToAdded' : 'LimitToNotAdded';
+    $scrips->$method(0, $id);
+    $scrips->ApplySortOrder if $args{'Added'};
+    $scrips->FindAllRows;
+    return $scrips;
+};
 
-# deal with modifying and deleting existing scrips
-# we still support DeleteScrip-id format but array is preferred
-foreach my $id ( grep $_, @DeleteScrip, map /^DeleteScrip-(\d+)/, keys %ARGS ) {
-    my $scrip = RT::Scrip->new($session{'CurrentUser'});
-    $scrip->Load( $id );
-    my ($retval, $msg) = $scrip->Delete;
-    if ($retval) {
-        push @actions, loc("Scrip deleted");
-    }
-    else {
+$Format ||= RT->Config->Get('AdminSearchResultFormat')->{'Scrips'};
+my $DisplayFormat = $Format;
+if ( $id ) {
+    $DisplayFormat = "__RemoveCheckBox__, $DisplayFormat";
+} else {
+    $DisplayFormat = "__CheckBox.{RemoveScrip}__, $DisplayFormat";
+}
+$DisplayFormat .= ", __Move.{$id}__";
+
+my %common_applied_args = (
+    %ARGS,
+    Format => $Format,
+    DisplayFormat => $DisplayFormat,
+    Rows => 0,
+    Page => 1,
+    AllowSorting => 0,
+    PassArguments => [ qw(Format id) ],
+);
+
+if ( $RemoveScrips ) {
+    foreach my $sid ( @RemoveScrip ) {
+        my $scrip = RT::Scrip->new( $session{'CurrentUser'} );
+        $scrip->Load( $sid );
+        next unless $scrip->id;
+
+        my ($status, $msg) = $scrip->RemoveFromObject( $id );
         push @actions, $msg;
     }
 }
+
+if ( $AddScrips ) {
+    foreach my $sid ( @AddScrip ) {
+        my $scrip = RT::Scrip->new( $session{'CurrentUser'} );
+        $scrip->Load( $sid );
+        next unless $scrip->id;
+
+        my ($status, $msg) = $scrip->AddToObject( $id, Stage => $Stage );
+        push @actions, $msg;
+    }
+}
+
+if ( $MoveScripUp ) {
+    my $scrip = RT::ObjectScrip->new( $session{'CurrentUser'} );
+    $scrip->LoadByCols( Scrip => $MoveScripUp, ObjectId => $id );
+    if ( $scrip->id ) {
+        my ($status, $msg) = $scrip->MoveUp;
+        push @actions, $msg;
+    }
+}
+
+if ( $MoveScripDown ) {
+    my $scrip = RT::ObjectScrip->new( $session{'CurrentUser'} );
+    $scrip->LoadByCols( Scrip => $MoveScripDown, ObjectId => $id );
+    if ( $scrip->id ) {
+        my ($status, $msg) = $scrip->MoveDown;
+        push @actions, $msg;
+    }
+}
+
 </%init>
 
 <%ARGS>
 $id => undef
 $title => undef
 $Format => undef
-@DeleteScrip => ()
+
+@RemoveScrip => ()
+$RemoveScrips => undef
+
+@AddScrip => ()
+$AddScrips => undef
+$Stage     => 'TransactionCreate'
+
+$MoveScripUp => undef
+$MoveScripDown => undef
+
 </%ARGS>

@@ -1062,14 +1062,21 @@ sub InsertData {
             my @queues = ref $item->{'Queue'} eq 'ARRAY'? @{ $item->{'Queue'} }: $item->{'Queue'} || 0;
             push @queues, 0 unless @queues; # add global queue at least
 
+            my ( $return, $msg ) = $new_entry->Create( %$item, Queue => shift @queues );
+            unless ( $return ) {
+                $RT::Logger->error( $msg );
+                next;
+            }
+            else {
+                $RT::Logger->debug( $return ."." );
+            }
             foreach my $q ( @queues ) {
-                my ( $return, $msg ) = $new_entry->Create( %$item, Queue => $q );
-                unless ( $return ) {
-                    $RT::Logger->error( $msg );
-                }
-                else {
-                    $RT::Logger->debug( $return ."." );
-                }
+                my ($return, $msg) = $new_entry->AddToObject(
+                    ObjectId => $q,
+                    Stage    => $item->{'Stage'},
+                );
+                $RT::Logger->error( "Couldn't apply scrip to $q: $msg" )
+                    unless $return;
             }
         }
         $RT::Logger->debug("done.");

@@ -45,59 +45,73 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
+
 use strict;
 use warnings;
 
-package RT::ObjectCustomField;
+package RT::ObjectScrip;
 use base 'RT::Record::AddAndSort';
 
-use RT::CustomField;
-use RT::ObjectCustomFields;
+use RT::Scrip;
+use RT::ObjectScrips;
 
-sub Table {'ObjectCustomFields'}
+=head1 NAME
 
-sub ObjectCollectionClass {
-    my $self = shift;
-    my %args = (@_);
-    return $args{'CustomField'}->CollectionClassFromLookupType;
-}
+RT::ObjectScrip - record representing addition of a scrip to a queue
 
-# XXX: Where is ACL check when we create a record?
+=head1 DESCRIPTION
 
-=head2 CustomFieldObj
+This record is created if you want to add a scrip to a queue or globally.
 
-Returns the CustomField Object which has the id returned by CustomField
+Inherits methods from L<RT::Record::AddAndSort>.
+
+For most operations it's better to use methods in L<RT::Scrip>.
+
+=head1 METHODS
+
+=head2 Table
+
+Returns table name for records of this class.
 
 =cut
 
-sub CustomFieldObj {
+sub Table {'ObjectScrips'}
+
+=head2 ObjectCollectionClass
+
+Returns class name of collection of records scrips can be added to.
+Now it's only L<RT::Queue>, so 'RT::Queues' is returned.
+
+=cut
+
+sub ObjectCollectionClass {'RT::Queues'}
+
+=head2 ScripObj
+
+Returns the Scrip Object which has the id returned by Scrip
+
+=cut
+
+sub ScripObj {
     my $self = shift;
-    my $id = shift || $self->CustomField;
-
-    # To find out the proper context object to load the CF with, we need
-    # data from the CF -- namely, the record class.  Go find that as the
-    # system user first.
-    my $system_CF = RT::CustomField->new( RT->SystemUser );
-    $system_CF->Load( $id );
-    my $class = $system_CF->RecordClassFromLookupType;
-
-    my $obj = $class->new( $self->CurrentUser );
-    $obj->Load( $self->ObjectId );
-
-    my $CF = RT::CustomField->new( $self->CurrentUser );
-    $CF->SetContextObject( $obj );
-    $CF->Load( $id );
-    return $CF;
+    my $id = shift || $self->Scrip;
+    my $obj = RT::Scrip->new( $self->CurrentUser );
+    $obj->Load( $id );
+    return $obj;
 }
+
+=head2 Neighbors
+
+Stage splits scrips into neighborhoods. See L<RT::Record::AddAndSort/Neighbors and Siblings>.
+
+=cut
 
 sub Neighbors {
     my $self = shift;
     my %args = @_;
 
     my $res = $self->CollectionClass->new( $self->CurrentUser );
-    $res->LimitToLookupType(
-        ($args{'CustomField'} || $self->CustomFieldObj)->LookupType
-    );
+    $res->Limit( FIELD => 'Stage', VALUE => $args{'Stage'} || $self->Stage );
     return $res;
 }
 
@@ -110,23 +124,30 @@ Returns the current value of id.
 =cut
 
 
-=head2 CustomField
+=head2 Scrip
 
-Returns the current value of CustomField.
-(In the database, CustomField is stored as int(11).)
-
-
-
-=head2 SetCustomField VALUE
+Returns the current value of Scrip.
+(In the database, Scrip is stored as int(11).)
 
 
-Set CustomField to VALUE.
+
+=head2 SetScrip VALUE
+
+
+Set Scrip to VALUE.
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, CustomField will be stored as a int(11).)
+(In the database, Scrip will be stored as a int(11).)
 
+=head2 Stage
 
-=cut
+Returns the current value of Stage.
+(In the database, Stage is stored as varchar(32).)
 
+=head2 SetStage VALUE
+
+Set Stage to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Stage will be stored as a varchar(32).)
 
 =head2 ObjectId
 
@@ -206,8 +227,10 @@ sub _CoreAccessible {
 
         id =>
 		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
-        CustomField =>
+        Scrip =>
 		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        Stage =>
+		{read => 1, write => 1, sql_type => 12, length => 32,  is_blob => 0,  is_numeric => 0,  type => 'varchar(32)', default => 'TransactionCreate'},
         ObjectId =>
 		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         SortOrder =>

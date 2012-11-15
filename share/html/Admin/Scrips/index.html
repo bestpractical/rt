@@ -45,19 +45,27 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => $title &>
+<& /Admin/Elements/Header, Title => loc('Select a Scrip') &>
 <& /Elements/Tabs &>
-<& /Elements/ListActions, actions => \@results &>
-<& /Admin/Elements/EditScrip, title => $title,  %ARGS, id => $id &>
 
-<%init>
-my ($id, @results) = $m->comp( '/Admin/Elements/EditScrip:Process', %ARGS );
+<& /Elements/CollectionList,
+    OrderBy       => 'Description',
+    Order         => 'ASC',
+    Rows          => 50,
+    %ARGS,
+    Collection    => $scrips,
+    Format        => $Format,
+    AllowSorting  => 1,
+&>
+<%args>
+$Format => undef
+</%args>
+<%INIT>
+my $scrips = RT::Scrips->new( $session{'CurrentUser'} );
+$scrips->FindAllRows;
+$scrips->UnLimit;
 
-my ($title);
-if ( $id ) {
-    $title = loc("Modify a scrip that applies to all queues");
-}
-else {
-    $title = loc("Add a scrip which will apply to all queues");
-}
-</%init>
+$m->callback(CallbackName => 'Massage', Scrips => $scrips);
+
+$Format ||= RT->Config->Get('AdminSearchResultFormat')->{'Scrips'};
+</%INIT>

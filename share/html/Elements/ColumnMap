@@ -119,9 +119,9 @@ my $COLUMN_MAP = {
             my $checked = $DECODED_ARGS->{ $name .'All' }? 'checked="checked"': '';
 
             return \qq{<input type="checkbox" name="}, $name, \qq{All" value="1" $checked
-                              onclick="setCheckbox(this.form, },
+                              onclick="setCheckbox(this, },
                               $m->interp->apply_escapes($name,'j'),
-                              \qq{, this.checked)" />};
+                              \qq{)" />};
         },
         value => sub {
             my $id = $_[0]->id;

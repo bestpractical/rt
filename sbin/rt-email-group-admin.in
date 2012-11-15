@@ -373,6 +373,7 @@ sub delete {
     require RT::Scrips;
     my $scrips = RT::Scrips->new( RT->SystemUser );
     $scrips->Limit( FIELD => 'ScripAction', VALUE => $action->id );
+    $scrips->FindAllRows;
     if ( $scrips->Count ) {
         my @sid;
         while( my $s = $scrips->Next ) {

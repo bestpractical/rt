@@ -86,14 +86,14 @@ my $COLUMN_MAP = {
             return !$v ? $_[0]->loc('unlimited') : $v == 0 ? $_[0]->loc('one') : $v;
         },
     },
-    AppliedTo => {
-        title     => 'Applied', # loc
+    AddedTo => {
+        title     => 'Added', # loc
 	value     => sub {
-            if ( $_[0]->IsApplied ) {
+            if ( $_[0]->IsGlobal ) {
                 return $_[0]->loc('Global');
             }
 
-            my $collection = $_[0]->AppliedTo;
+            my $collection = $_[0]->AddedTo;
             return '' unless $collection;
 
             $collection->RowsPerPage(10);
@@ -121,13 +121,13 @@ my $COLUMN_MAP = {
             my $checked = $DECODED_ARGS->{ $name .'All' }? 'checked="checked"': '';
 
             return \qq{<input type="checkbox" name="}, $name, \qq{All" value="1" $checked
-                              onclick="setCheckbox(this.form, },
+                              onclick="setCheckbox(this, },
                               $m->interp->apply_escapes($name,'j'),
-                              \qq{, this.checked)" />};
+                              \qq{)" />};
         },
         value => sub {
             my $id = $_[0]->id;
-            return '' if $_[0]->IsApplied;
+            return '' if $_[0]->IsGlobal;
 
             my $name = 'RemoveCustomField';
             my $arg = $DECODED_ARGS->{ $name };
@@ -148,7 +148,7 @@ my $COLUMN_MAP = {
             my $id = $_[0]->id;
             
             my $context = $_[2] || 0;
-            return '' unless $_[0]->IsApplied( $context );
+            return '' unless $_[0]->IsAdded( $context );
 
             my $name = 'MoveCustomField';
             my $args = $m->caller_args( 1 );
@@ -172,6 +172,8 @@ my $COLUMN_MAP = {
         },
     },
 };
+
+$COLUMN_MAP->{'AppliedTo'} = $COLUMN_MAP->{'AddedTo'};
 
 </%ONCE>
 <%INIT>

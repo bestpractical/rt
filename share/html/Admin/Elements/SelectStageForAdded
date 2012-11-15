@@ -45,33 +45,10 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>">
-<option value="" 
-<% defined($Default) && $Default eq 'none' && qq[ selected="selected"] |n %>>-</option>
-%while  (my $Template = $PrimaryTemplates->Next) {
-<option value="<%$Template->Id%>" <% ($Template->Id == $Default) && qq[ selected="selected"] |n %>><% loc($Template->Name) %></option>
-%}
-%while  (my $Template = $OtherTemplates->Next) {
-<option value="<%$Template->Id%>" <% defined($Default) && ($Template->Id == $Default) && qq[ selected="selected"] |n %>><&|/l, loc($Template->Name) &>Global template: [_1]</&></option>
-%}
-</select>
-
-<%INIT>
-
-
-my $PrimaryTemplates = RT::Templates->new($session{'CurrentUser'});
-if ($Queue != 0) {
-$PrimaryTemplates->LimitToQueue($Queue);
-$PrimaryTemplates->OrderBy(FIELD => 'Name');
-}
-
-my $OtherTemplates = RT::Templates->new($session{'CurrentUser'});
-$OtherTemplates->LimitToGlobal;
-$OtherTemplates->OrderBy(FIELD => 'Name');
-
-</%INIT>
-<%ARGS>
-$Queue => undef
-$Default => 'none'
-$Name => 'Template'
-</%ARGS>
+<div style="text-align:right">
+<% $Label %>
+<& SelectStage, %ARGS &>
+</div>
+<%args>
+$Label => loc('Select scrip stage for newly added queues:')
+</%args>

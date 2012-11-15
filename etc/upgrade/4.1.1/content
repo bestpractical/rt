@@ -1,0 +1,36 @@
+use strict;
+use warnings;
+
+our @Initial = (
+    sub {
+        require RT::ObjectScrips;
+        foreach my $stage ('TransactionCreate', 'TransactionBatch') {
+            my $applications = RT::ObjectScrips->new( RT->SystemUser );
+            $applications->Limit( FIELD => 'Stage', VALUE => $stage );
+            my $alias = $applications->Join(
+                FIELD1 => 'Scrip',
+                TABLE2 => 'Scrips', FIELD2 => 'id'
+            );
+            $applications->OrderByCols(
+                { ALIAS => $alias, FIELD => 'Description', ORDER => 'ASC' },
+            );
+            my %h; my $top_so = $h{0} = 0;
+            while ( my $record = $applications->Next ) {
+                my $oid = $record->ObjectId || 0;
+
+                my $so;
+                unless ( $oid ) {
+                    %h = (); $h{0} = $so = ++$top_so;
+                }
+                else {
+                    $so = $h{ $oid } = ($h{$oid}||$h{0}) + 1;
+                }
+                next if $record->SortOrder == $so;
+
+                my ($status, $msg) = $record->SetSortOrder($so);
+                RT->Logger->error("Couldn't set sort order: $msg")
+                    unless $status;
+            }
+        }
+    },
+);

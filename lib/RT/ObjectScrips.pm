@@ -46,40 +46,47 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use RT::Scrip ();
-package RT::Scrip;
-
 use strict;
 use warnings;
-use warnings FATAL => 'redefine';
 
-use RT::Shredder::Constants;
-use RT::Shredder::Exceptions;
-use RT::Shredder::Dependencies;
+package RT::ObjectScrips;
+use base 'RT::SearchBuilder::AddAndSort';
 
-sub __DependsOn
-{
+use RT::Scrips;
+use RT::ObjectScrip;
+
+=head1 NAME
+
+RT::ObjectScrips - collection of RT::ObjectScrip records
+
+=head1 DESCRIPTION
+
+Collection of L<RT::ObjectScrip> records. Inherits methods from L<RT::SearchBuilder::AddAndSort>.
+
+=head1 METHODS
+
+=cut
+
+=head2 Table
+
+Returns name of the table where records are stored.
+
+=cut
+
+sub Table { 'ObjectScrips'}
+
+=head2 LimitToScrip
+
+Takes id of a L<RT::Scrip> object and limits this collection.
+
+=cut
+
+sub LimitToScrip {
     my $self = shift;
-    my %args = (
-            Shredder => undef,
-            Dependencies => undef,
-            @_,
-           );
-    my $deps = $args{'Dependencies'};
-    my $list = [];
-
-    my $objs = RT::ObjectScrips->new( $self->CurrentUser );
-    $objs->LimitToScrip( $self->Id );
-    push @$list, $objs;
-
-    $deps->_PushDependencies(
-        BaseObject    => $self,
-        Flags         => DEPENDS_ON,
-        TargetObjects => $list,
-        Shredder      => $args{'Shredder'}
-    );
-
-    return $self->SUPER::__DependsOn( %args );
+    my $id = shift;
+    $self->Limit( FIELD => 'Scrip', VALUE => $id );
 }
+
+RT::Base->_ImportOverlays();
 
 1;

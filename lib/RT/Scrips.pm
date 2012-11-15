@@ -70,11 +70,19 @@ use strict;
 use warnings;
 
 use RT::Scrip;
+use RT::ObjectScrips;
 
 use base 'RT::SearchBuilder';
 
 sub Table { 'Scrips'}
 
+sub _Init {
+    my $self = shift;
+
+    $self->{'with_disabled_column'} = 1;
+
+    return ( $self->SUPER::_Init(@_) );
+}
 
 =head2 LimitToQueue
 
@@ -85,14 +93,17 @@ another call to this method
 =cut
 
 sub LimitToQueue  {
-   my $self = shift;
-  my $queue = shift;
- 
-  $self->Limit (ENTRYAGGREGATOR => 'OR',
-		FIELD => 'Queue',
-		VALUE => "$queue")
-      if defined $queue;
-  
+    my $self = shift;
+    my $queue = shift;
+    return unless defined $queue;
+
+    my $alias = RT::ObjectScrips->new( $self->CurrentUser )
+        ->JoinTargetToThis( $self );
+    $self->Limit(
+        ALIAS => $alias,
+        FIELD => 'ObjectId',
+        VALUE => int $queue,
+    );
 }
 
 
@@ -106,12 +117,46 @@ another call to this method or LimitToQueue
 
 
 sub LimitToGlobal  {
-   my $self = shift;
- 
-  $self->Limit (ENTRYAGGREGATOR => 'OR',
-		FIELD => 'Queue',
-		VALUE => 0);
-  
+    my $self = shift;
+    return $self->LimitToQueue(0);
+}
+
+sub LimitToAdded {
+    my $self = shift;
+    return RT::ObjectScrips->new( $self->CurrentUser )
+        ->LimitTargetToAdded( $self => @_ );
+}
+
+sub LimitToNotAdded {
+    my $self = shift;
+    return RT::ObjectScrips->new( $self->CurrentUser )
+        ->LimitTargetToNotAdded( $self => @_ );
+}
+
+sub LimitByStage  {
+    my $self = shift;
+    my %args = @_%2? (Stage => @_) : @_;
+    return unless defined $args{'Stage'};
+
+    my $alias = RT::ObjectScrips->new( $self->CurrentUser )
+        ->JoinTargetToThis( $self, %args );
+    $self->Limit(
+        ALIAS => $alias,
+        FIELD => 'Stage',
+        VALUE => $args{'Stage'},
+    );
+}
+
+sub ApplySortOrder {
+    my $self = shift;
+    my $order = shift || 'ASC';
+    $self->OrderByCols( {
+        ALIAS => RT::ObjectScrips->new( $self->CurrentUser )
+            ->JoinTargetToThis( $self => @_ )
+        ,
+        FIELD => 'SortOrder',
+        ORDER => $order,
+    } );
 }
 
 # {{{ sub Next 
@@ -330,12 +375,9 @@ sub _FindScrips {
                  @_ );
 
 
-    $self->LimitToQueue( $self->{'TicketObj'}->QueueObj->Id )
-      ;    #Limit it to  $Ticket->QueueObj->Id
-    $self->LimitToGlobal();
-      # or to "global"
-
-    $self->Limit( FIELD => "Stage", VALUE => $args{'Stage'} );
+    $self->LimitToQueue( $self->{'TicketObj'}->QueueObj->Id );
+    $self->LimitToGlobal;
+    $self->LimitByStage( $args{'Stage'} );
 
     my $ConditionsAlias = $self->NewAlias('ScripConditions');
 
@@ -367,8 +409,7 @@ sub _FindScrips {
         ENTRYAGGREGATOR => 'OR',
     );
 
-    # Promise some kind of ordering
-    $self->OrderBy( FIELD => 'Description' );
+    $self->ApplySortOrder;
 
     # we call Count below, but later we always do search
     # so just do search and get count from results

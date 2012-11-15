@@ -464,7 +464,6 @@ sub InitClasses {
     if ( $args{'Heavy'} ) {
         # load scrips' modules
         my $scrips = RT::Scrips->new(RT->SystemUser);
-        $scrips->Limit( FIELD => 'Stage', OPERATOR => '!=', VALUE => 'Disabled' );
         while ( my $scrip = $scrips->Next ) {
             local $@;
             eval { $scrip->LoadModules } or
