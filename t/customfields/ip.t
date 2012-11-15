@@ -269,8 +269,8 @@ diag "create a ticket with an IP of 10.0.0.1 and search for doesn't match '10.0.
         $tickets->FromSQL("id=$id AND CF.{IP} NOT LIKE '10.0.0.'");
     } [qr/not a valid IPAddress/], "caught warning about valid IP address";
 
-    SKIP: {
-        skip "partical ip parse causes ambiguity", 1;
+    TODO: {
+        local $TODO = "partial ip parse causes ambiguity";
         is( $tickets->Count, 0, "should not have found the ticket" );
     }
 }
