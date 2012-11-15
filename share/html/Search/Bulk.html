@@ -135,9 +135,9 @@ size="60" value="<% $ARGS{UpdateSubject} || "" %>" /></td></tr>
 % while (my $CF = $TxnCFs->Next()) {
 <tr>
 <td align="right"><% $CF->Name %>:</td>
-<td><& /Elements/EditCustomField, 
-    CustomField => $CF, 
-    NamePrefix => "Object-RT::Transaction--CustomField-",
+<td><& /Elements/EditCustomField,
+    CustomField => $CF,
+    Object => RT::Transaction->new( $session{'CurrentUser'} ),
     &><em><% $CF->FriendlyType %></em></td>
 </td></tr>
 % } # end if while

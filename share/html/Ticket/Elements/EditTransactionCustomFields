@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $m->callback( CallbackName => 'BeforeTransactionCustomFields', TicketObj => $TicketObj, QueueObj => $QueueObj, NamePrefix => $NamePrefix );
+% $m->callback( CallbackName => 'BeforeTransactionCustomFields', TicketObj => $TicketObj, QueueObj => $QueueObj );
 % if ( $WRAP ) {
 <<% $WRAP %> class="edit-transaction-custom-fields">
 % }
@@ -60,7 +60,7 @@
 <<% $CELL %>>
 <& /Elements/EditCustomField,
     CustomField => $CF,
-    NamePrefix => $NamePrefix
+    Object => RT::Transaction->new( $session{'CurrentUser'} ),
 &>
 %  if (my $msg = $m->notes('InvalidField-' . $CF->Id)) {
         <br />
@@ -73,7 +73,7 @@
 % if ( $WRAP ) {
 </<% $WRAP %>>
 % }
-% $m->callback( CallbackName => 'AfterTransactionCustomFields', TicketObj => $TicketObj, QueueObj => $QueueObj, NamePrefix => $NamePrefix );
+% $m->callback( CallbackName => 'AfterTransactionCustomFields', TicketObj => $TicketObj, QueueObj => $QueueObj );
 
 <%INIT>
 my $CustomFields;
@@ -98,7 +98,6 @@ if ( $AsTable ) {
 
 </%INIT>
 <%ARGS>
-$NamePrefix => "Object-RT::Transaction--CustomField-"
 $TicketObj => undef
 $QueueObj => undef
 $AsTable => 0

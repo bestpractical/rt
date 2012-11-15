@@ -63,8 +63,8 @@
       <& /Elements/EditCustomField,
           %ARGS,
           CustomField => $CustomField,
-          NamePrefix => $NamePrefix,
           Default => $default,
+          Object => $Object,
       &>
 %  if (my $msg = $m->notes('InvalidField-' . $CustomField->Id)) {
         <br />
@@ -79,7 +79,6 @@
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterCustomFields' );
 <%INIT>
-$NamePrefix   ||= join '-', 'Object', ref($Object), ($Object->Id || ''), 'CustomField', '';
 $CustomFields ||= $Object->CustomFields;
 
 $CustomFields->LimitToGrouping( $Object => $Grouping ) if defined $Grouping;
@@ -104,7 +103,6 @@ if ( $AsTable ) {
 <%ARGS>
 $Object
 $CustomFields => undef
-$NamePrefix   => ''
 $Grouping     => undef
 $AsTable => 1
 $InTable => 0

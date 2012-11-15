@@ -55,18 +55,20 @@ unless ( $Type ) {
 }
 
 my $Values;
-if ( $Object && $Object->id ) {
-    $NamePrefix ||= join '-', 
-        'Object', ref($Object), $Object->Id, 'CustomField', '';
+if ( $Object ) {
+    $NamePrefix ||= join '-',
+        'Object', ref($Object), ($Object->Id || ''), 'CustomField', '';
 
-    $Values = $Object->CustomFieldValues( $CustomField->id );
-    $Values->Columns(
-        qw( id CustomField ObjectType ObjectId Disabled Content
-        ContentType ContentEncoding SortOrder Creator Created
-        LastUpdatedBy LastUpdated )
-    );
-    # Don't take care of $Values if there isn't values inside
-    undef ( $Values ) unless ( $Values->Count );
+    if ( $Object->Id ) {
+        $Values = $Object->CustomFieldValues( $CustomField->id );
+        $Values->Columns(
+            qw( id CustomField ObjectType ObjectId Disabled Content
+            ContentType ContentEncoding SortOrder Creator Created
+            LastUpdatedBy LastUpdated )
+        );
+        # Don't take care of $Values if there isn't values inside
+        undef ( $Values ) unless ( $Values->Count );
+    }
 }
 
 # Always fill $Default with submited values if it's empty
