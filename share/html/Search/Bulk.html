@@ -299,13 +299,6 @@ my %queues;
 
 $Tickets->RedoSearch();
 
-# pull out the labels for any custom fields we want to update
-
-my $cf_del_keys;
-@$cf_del_keys = grep { /^Bulk-Delete-CustomField/ } keys %ARGS;
-my $cf_add_keys;
-@$cf_add_keys = grep { /^Bulk-Add-CustomField/ } keys %ARGS;
-
 unless ( $ARGS{'AddMoreAttach'} ) {
     # Add session attachments if any to be processed by ProcessUpdateMessage
     $ARGS{'UpdateAttachments'} = $session{'Attachments'} if ( $session{'Attachments'} );
@@ -345,60 +338,37 @@ unless ( $ARGS{'AddMoreAttach'} ) {
 
         my @cfresults;
 
-        foreach my $list ( $cf_add_keys, $cf_del_keys ) {
-            next unless $list->[0];
+        foreach my $key ( keys %ARGS ) {
+            next unless $key =~ /^Bulk-(Add|Delete)-CustomField-(\d+)-(.*)$/;
+            my ($op,$cfid,$rest) = ($1, $2, $3);
+            next if $rest eq "Category";
 
+            my $cf = RT::CustomField->new( $session{'CurrentUser'} );
+            $cf->Load($cfid);
+            next unless $cf->Id;
 
-            my $op;
-            if ( $list->[0] =~ /Add/ ) {
-                $op = 'add';
+            my @values = _NormalizeObjectCustomFieldValue(
+                CustomField => $cf,
+                Value => $ARGS{$key},
+                Param => $key,
+            );
 
-            }
-            elsif ( $list->[0] =~ /Del/ ) {
-                $op = 'del';
-            }
-            else {
-                $RT::Logger->crit(
-                    "Got an op that was neither add nor delete. can never happen"
-                      . $list->[0] );
-                last;
-            }
-
-            foreach my $key (@$list) {
-                my ( $cfid, $cf );
-                next if $key =~ /CustomField-(\d+)-Category$/;
-                if ( $key =~ /CustomField-(\d+)-/ ) {
-                    $cfid = $1;
-                    $cf   = RT::CustomField->new( $session{'CurrentUser'} );
-                    $cf->Load($cfid);
+            my $current_values = $Ticket->CustomFieldValues($cfid);
+            foreach my $value (@values) {
+                if ( $op eq 'Delete' && $current_values->HasEntry($value) ) {
+                    my ( $id, $msg ) = $Ticket->DeleteCustomFieldValue(
+                        Field => $cfid,
+                        Value => $value
+                    );
+                    push @cfresults, $msg;
                 }
-                else {next}
-                my @values =
-                  ref( $ARGS{$key} ) eq 'ARRAY'
-                  ? @{ $ARGS{$key} }
-                  : ( $ARGS{$key} );
-                map { s/(\r\n|\r)/\n/g; } @values;    # fix the newlines
-                     # now break the multiline values into multivalues
-                @values = map { split( /\n/, $_ ) } @values
-                  unless ( $cf->SingleValue );
 
-                my $current_values = $Ticket->CustomFieldValues($cfid);
-                foreach my $value (@values) {
-                    if ( $op eq 'del' && $current_values->HasEntry($value) ) {
-                        my ( $id, $msg ) = $Ticket->DeleteCustomFieldValue(
-                            Field => $cfid,
-                            Value => $value
-                        );
-                        push @cfresults, $msg;
-                    }
-
-                    elsif ( $op eq 'add' && !$current_values->HasEntry($value) ) {
-                        my ( $id, $msg ) = $Ticket->AddCustomFieldValue(
-                            Field => $cfid,
-                            Value => $value
-                        );
-                        push @cfresults, $msg;
-                    }
+                elsif ( $op eq 'Add' && !$current_values->HasEntry($value) ) {
+                    my ( $id, $msg ) = $Ticket->AddCustomFieldValue(
+                        Field => $cfid,
+                        Value => $value
+                    );
+                    push @cfresults, $msg;
                 }
             }
         }
