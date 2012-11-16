@@ -3560,6 +3560,84 @@ sub _Value {
 
 }
 
+=head2 Attachments
+
+Customization of L<RT::Record/Attachments> for tickets.
+
+=cut
+
+sub Attachments {
+    my $self = shift;
+    my %args = (
+        WithHeaders => 0,
+        WithContent => 0,
+        @_
+    );
+    my $res = RT::Attachments->new( $self->CurrentUser );
+    unless ( $self->CurrentUserHasRight('ShowTicket') ) {
+        $res->Limit(
+            SUBCLAUSE => 'acl',
+            FIELD    => 'id',
+            VALUE    => 0,
+            ENTRYAGGREGATOR => 'AND'
+        );
+        return $res;
+    }
+
+    my @columns = qw(
+        id TransactionId Parent MessageId
+        Subject Filename
+        ContentType ContentEncoding
+        Creator Created
+    );
+    push @columns, 'Headers' if $args{'WithHeaders'};
+    push @columns, 'Content' if $args{'WithContent'};
+
+    $res->Columns( @columns );
+    my $txn_alias = $res->TransactionAlias;
+    $res->Limit(
+        ALIAS => $txn_alias,
+        FIELD => 'ObjectType',
+        VALUE => ref($self),
+    );
+    my $ticket_alias = $res->Join(
+        ALIAS1 => $txn_alias,
+        FIELD1 => 'ObjectId',
+        TABLE2 => 'Tickets',
+        FIELD2 => 'id',
+    );
+    $res->Limit(
+        ALIAS => $ticket_alias,
+        FIELD => 'EffectiveId',
+        VALUE => $self->id,
+    );
+    return $res;
+}
+
+=head2 TextAttachments
+
+Customization of L<RT::Record/TextAttachments> for tickets.
+
+=cut
+
+sub TextAttachments {
+    my $self = shift;
+
+    my $res = $self->SUPER::TextAttachments( @_ );
+    unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
+        # if the user may not see comments do not return them
+        $res->Limit(
+            SUBCLAUSE => 'ACL',
+            ALIAS     => $res->TransactionAlias,
+            FIELD     => 'Type',
+            OPERATOR  => '!=',
+            VALUE     => 'Comment',
+        );
+    }
+
+    return $res;
+}
+
 
 
 =head2 _UpdateTimeTaken
