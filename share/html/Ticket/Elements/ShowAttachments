@@ -102,6 +102,8 @@ if ($size) {
 # then we need to find one
 $Attachments ||= $m->comp('FindAttachments', Ticket => $Ticket);
 
+# XXX PERF: why doesn't this Limit on Filename to avoid fetching *all* the
+# attachments?
 my %documents;
 while ( my $attach = $Attachments->Next() ) {
     next unless defined $attach->Filename && length $attach->Filename;
