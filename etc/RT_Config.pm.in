@@ -1546,18 +1546,6 @@ overrides C<TrustHTMLAttachments>.
 
 Set($AlwaysDownloadAttachments, undef);
 
-=item C<$AttachmentUnits>
-
-Controls the units (kilobytes or bytes) that attachment sizes use for
-display. The default is to display kilobytes if the attachment is
-larger than 1024 bytes, bytes otherwise. If you set
-C<$AttachmentUnits> to C<'k'> then attachment sizes will always be
-displayed in kilobytes. If set to C<'b'>, then sizes will be bytes.
-
-=cut
-
-Set($AttachmentUnits, undef);
-
 =item C<$PreferRichText>
 
 If C<$PreferRichText> is set to 1, RT will show HTML/Rich text messages

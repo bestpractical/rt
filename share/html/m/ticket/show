@@ -314,34 +314,10 @@ my $print_value = sub {
 <%$key%><br />
 <ul>
 % foreach my $rev (@{$documents{$key}}) {
-
-<%PERL>
-my $size = $rev->ContentLength;
-
-if ($size) {
-    my $kb = int($size/102.4) / 10;
-    my $units = RT->Config->Get('AttachmentUnits');
-
-    if (!defined($units)) {
-        if ($size > 1024) {
-            $size = $kb . "k";
-        }
-        else {
-            $size = $size . "b";
-        }
-    }
-    elsif ($units eq 'k') {
-        $size = $kb . "k";
-    }
-    else {
-        $size = $size . "b";
-    }
-
-</%PERL>
-
+% if ($rev->ContentLength) {
 <li><font size="-2">
 <a href="<%RT->Config->Get('WebPath')%>/Ticket/Attachment/<%$rev->TransactionId%>/<%$rev->Id%>/<%$rev->Filename | u%>">
-<&|/l, $rev->CreatedAsString, $size, $rev->CreatorObj->Name &>[_1] ([_2]) by [_3]</&>
+<&|/l, $rev->CreatedAsString, $rev->FriendlyContentLength, $rev->CreatorObj->Name &>[_1] ([_2]) by [_3]</&>
 </a>
 </font></li>
 % }
