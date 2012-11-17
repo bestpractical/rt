@@ -65,7 +65,7 @@ jQuery(function() {
         var update_elems = all_inputs.filter(function () {
             return name_filter_regex.test(jQuery(this).attr("name"));
         }).not(elem);
-        elem.change( function() {
+        var trigger_func = function() {
             var curval = elem.val();
             if ((elem.attr("type") == "checkbox") || (elem.attr("type") == "radio")) {
                 curval = [ ];
@@ -74,6 +74,10 @@ jQuery(function() {
                 });
             }
             update_elems.val(curval);
-        } );
+        };
+        if ((elem.attr("type") == "text") || (elem.attr("tagName") == "TEXTAREA"))
+            elem.keyup( trigger_func );
+        else
+            elem.change( trigger_func );
     });
 });
