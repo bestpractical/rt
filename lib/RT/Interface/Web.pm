@@ -2611,6 +2611,16 @@ sub ProcessObjectCustomFieldUpdates {
                     next;
                 }
                 my @groupings = sort keys %{ $custom_fields_to_mod{$class}{$id}{$cf} };
+                if (@groupings > 1) {
+                    # Check for consistency, in case of JS fail
+                    for my $key (qw/AddValue Value Values DeleteValues DeleteValueIds/) {
+                        warn "CF $cf submitted with multiple differing $key"
+                            if grep {($custom_fields_to_mod{$class}{$id}{$cf}{$_}{$key} || '')
+                                 ne  ($custom_fields_to_mod{$class}{$id}{$cf}{$groupings[0]}{$key} || '')}
+                                @groupings;
+                    }
+                    # We'll just be picking the 1st grouping in the hash, alphabetically
+                }
                 push @results,
                     _ProcessObjectCustomFieldUpdates(
                     # XXX FIXME: Prefix is not quite right, as $id almost
@@ -2817,6 +2827,17 @@ sub ProcessObjectCustomFieldUpdatesForCreate {
             }
 
             my @groupings = sort keys %{ $custom_fields{$class}{0}{$cfid} };
+            if (@groupings > 1) {
+                # Check for consistency, in case of JS fail
+                for my $key (qw/AddValue Value Values DeleteValues DeleteValueIds/) {
+                    warn "CF $cfid submitted with multiple differing $key"
+                        if grep {($custom_fields{$class}{0}{$cfid}{$_}{$key} || '')
+                             ne  ($custom_fields{$class}{0}{$cfid}{$groupings[0]}{$key} || '')}
+                            @groupings;
+                }
+                # We'll just be picking the 1st grouping in the hash, alphabetically
+            }
+
             my @values;
             while (my ($arg, $value) = each %{ $custom_fields{$class}{0}{$cfid}{$groupings[0]} }) {
                 # Values-Magic doesn't matter on create; no previous values are being removed
