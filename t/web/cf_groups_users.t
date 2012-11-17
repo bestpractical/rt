@@ -23,7 +23,7 @@ while (my ($group,$cfs) = each %{ RT->Config->Get('CustomFieldGroupings')->{'RT:
         Description => 'A custom field',
         LookupType => RT::User->new( $RT::SystemUser )->CustomFieldLookupType,
         Type => 'FreeformSingle',
-        Pattern => qr{^(?!bad value).*$},
+        Pattern => '^(?!bad value).*$',
     );
     ok $id, "custom field '$name' correctly created";
 

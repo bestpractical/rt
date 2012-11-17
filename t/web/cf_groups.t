@@ -23,7 +23,7 @@ while ( my ($grouping, $cfs) = each %{ RT->Config->Get('CustomFieldGroupings')->
         Queue => '0',
         Description => 'A Testing custom field',
         Type => 'FreeformSingle',
-        Pattern => qr{^(?!bad value).*$},
+        Pattern => '^(?!bad value).*$',
     );
     ok $id, "custom field '$name' correctly created";
     $grouping =~ s/\W//g;
