@@ -15,7 +15,8 @@ RT->Config->Set( 'CustomFieldGroupings',
 
 my %CF;
 
-foreach my $name ( map { @$_ } values %{ RT->Config->Get('CustomFieldGroupings')->{'RT::User'} } ) {
+while (my ($group,$cfs) = each %{ RT->Config->Get('CustomFieldGroupings')->{'RT::User'} } ) {
+    my $name = $cfs->[0];
     my $cf = RT::CustomField->new( RT->SystemUser );
     my ($id, $msg) = $cf->Create(
         Name => $name,
@@ -29,7 +30,8 @@ foreach my $name ( map { @$_ } values %{ RT->Config->Get('CustomFieldGroupings')
     ($id, $msg) = $cf->AddToObject( RT::User->new( $cf->CurrentUser ) );
     ok $id, "applied custom field" or diag "error: $msg";
 
-    $CF{$name} = $cf;
+    $group =~ s/\W//g;
+    $CF{$name} = "$group-" . $cf->Id;
 }
 
 my ( $baseurl, $m ) = RT::Test->started_ok;
@@ -46,28 +48,28 @@ my $index = 1;
 
     $m->field( 'Name', 'user'. $index++ );
 
-    my $prefix = 'Object-RT::User--CustomField-';
-    my $input_name = $prefix . $CF{'TestIdentity'}->id .'-Value';
+    my $prefix = 'Object-RT::User--CustomField:';
+    my $input_name = $prefix . $CF{'TestIdentity'} .'-Value';
     is $dom->find(qq{input[name="$input_name"]})->size, 1, "only one CF input on the page";
     ok $dom->at(qq{.user-info-identity input[name="$input_name"]}), "CF is in the right place";
     $m->field( $input_name, 'TestIdentityValue' );
 
-    $input_name = $prefix . $CF{'TestAccessControl'}->id .'-Value';
+    $input_name = $prefix . $CF{'TestAccessControl'} .'-Value';
     is $dom->find(qq{input[name="$input_name"]})->size, 1, "only one CF input on the page";
     ok $dom->at(qq{.user-info-access-control input[name="$input_name"]}), "CF is in the right place";
     $m->field( $input_name, 'TestAccessControlValue' );
 
-    $input_name = $prefix . $CF{'TestLocation'}->id .'-Value';
+    $input_name = $prefix . $CF{'TestLocation'} .'-Value';
     is $dom->find(qq{input[name="$input_name"]})->size, 1, "only one CF input on the page";
     ok $dom->at(qq{.user-info-location input[name="$input_name"]}), "CF is in the right place";
     $m->field( $input_name, 'TestLocationValue' );
 
-    $input_name = $prefix . $CF{'TestPhones'}->id .'-Value';
+    $input_name = $prefix . $CF{'TestPhones'} .'-Value';
     is $dom->find(qq{input[name="$input_name"]})->size, 1, "only one CF input on the page";
     ok $dom->at(qq{.user-info-phones input[name="$input_name"]}), "CF is in the right place";
     $m->field( $input_name, 'TestPhonesValue' );
 
-    $input_name = $prefix . $CF{'TestMore'}->id .'-Value';
+    $input_name = $prefix . $CF{'TestMore'} .'-Value';
     is $dom->find(qq{input[name="$input_name"]})->size, 1, "only one CF input on the page";
     ok $dom->at(qq{.user-info-cfs input[name="$input_name"]}), "CF is in the right place";
     $m->field( $input_name, 'TestMoreValue' );
@@ -87,8 +89,8 @@ my $index = 1;
         foreach my $cf_name ( keys %CF ) {
             is $user->FirstCustomFieldValue($cf_name), "${cf_name}Value",
                 "correct value of $cf_name CF";
-            my $input = 'Object-RT::User-'. $id .'-CustomField-'
-                . $CF{$cf_name}->id .'-Value';
+            my $input = 'Object-RT::User-'. $id .'-CustomField:'
+                . $CF{$cf_name} .'-Value';
             is $m->value($input), "${cf_name}Value",
                 "correct value in UI";
             $m->field( $input, "${cf_name}Changed" );
@@ -106,8 +108,8 @@ my $index = 1;
         foreach my $cf_name ( keys %CF ) {
             is $user->FirstCustomFieldValue($cf_name), "${cf_name}Changed",
                 "correct value of $cf_name CF";
-            my $input = 'Object-RT::User-'. $id .'-CustomField-'
-                . $CF{$cf_name}->id .'-Value';
+            my $input = 'Object-RT::User-'. $id .'-CustomField:'
+                . $CF{$cf_name} .'-Value';
             is $m->value($input), "${cf_name}Changed",
                 "correct value in UI";
         }

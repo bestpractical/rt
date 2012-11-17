@@ -56,8 +56,11 @@ unless ( $Type ) {
 
 my $Values;
 if ( $Object ) {
+    $Grouping =~ s/\W//g if $Grouping;
     $NamePrefix ||= join '-',
-        'Object', ref($Object), ($Object->Id || ''), 'CustomField', '';
+        'Object', ref($Object), ($Object->Id || ''),
+        'CustomField' . ($Grouping ? ":$Grouping" : ""),
+        '';
 
     if ( $Object->Id ) {
         $Values = $Object->CustomFieldValues( $CustomField->id );
@@ -108,6 +111,7 @@ return $m->comp(
 );
 </%INIT>
 <%ARGS>
+$Grouping    => undef
 $Object      => undef
 $CustomField => undef
 $NamePrefix  => undef

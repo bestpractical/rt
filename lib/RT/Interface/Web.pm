@@ -2610,6 +2610,7 @@ sub ProcessObjectCustomFieldUpdates {
                     $RT::Logger->warning("Couldn't load custom field #$cf");
                     next;
                 }
+                my @groupings = sort keys %{ $custom_fields_to_mod{$class}{$id}{$cf} };
                 push @results,
                     _ProcessObjectCustomFieldUpdates(
                     # XXX FIXME: Prefix is not quite right, as $id almost
@@ -2618,7 +2619,7 @@ sub ProcessObjectCustomFieldUpdates {
                     Prefix      => "Object-$class-$id-CustomField-$cf-",
                     Object      => $Object,
                     CustomField => $CustomFieldObj,
-                    ARGS        => $custom_fields_to_mod{$class}{$id}{$cf},
+                    ARGS        => $custom_fields_to_mod{$class}{$id}{$cf}{$groupings[0]},
                     );
             }
         }
@@ -2632,11 +2633,12 @@ sub _ParseObjectCustomFieldArgs {
 
     foreach my $arg ( keys %$ARGSRef ) {
 
-        # format: Object-<object class>-<object id>-CustomField-<CF id>-<commands>
-        next unless $arg =~ /^Object-([\w:]+)-(\d*)-CustomField-(\d+)-(.*)$/;
+        # format: Object-<object class>-<object id>-CustomField[:<grouping>]-<CF id>-<commands>
+        next unless $arg =~ /^Object-([\w:]+)-(\d*)-CustomField(?::(\w+))?-(\d+)-(.*)$/;
 
         # For each of those objects, find out what custom fields we want to work with.
-        $custom_fields_to_mod{$1}{ $2 || 0 }{$3}{$4} = $ARGSRef->{$arg};
+        #                   Class     ID     CF  grouping command
+        $custom_fields_to_mod{$1}{ $2 || 0 }{$4}{$3 || ''}{$5} = $ARGSRef->{$arg};
     }
 
     return wantarray ? %custom_fields_to_mod : \%custom_fields_to_mod;
@@ -2814,8 +2816,9 @@ sub ProcessObjectCustomFieldUpdatesForCreate {
                 next;
             }
 
+            my @groupings = sort keys %{ $custom_fields{$class}{0}{$cfid} };
             my @values;
-            while (my ($arg, $value) = each %{ $custom_fields{$class}{0}{$cfid} }) {
+            while (my ($arg, $value) = each %{ $custom_fields{$class}{0}{$cfid}{$groupings[0]} }) {
                 # Values-Magic doesn't matter on create; no previous values are being removed
                 # Category is irrelevant for the actual value
                 next if $arg eq "Values-Magic" or $arg eq "Category";

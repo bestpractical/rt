@@ -52,7 +52,9 @@ $CustomFields->GotoFirstItem;
 my $CFArgs = _ParseObjectCustomFieldArgs( $ARGSRef )->{ref($Object)}{$Object->Id || 0} || {};
 
 while ( my $CF = $CustomFields->Next ) {
-    my $submitted = $CFArgs->{$CF->Id} || {};
+    my $submitted = $CFArgs->{$CF->Id};
+    # Pick the first grouping
+    $submitted = $submitted ? $submitted->{(keys %$submitted)[0]} : {};
 
     # We only validate Single Combos -- multis can never be user input
     next if $submitted->{"Values-Magic"} and exists $submitted->{"Values"}
