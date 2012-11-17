@@ -214,7 +214,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
         RT::Interface::Web::Redirect( RT->Config->Get('WebURL') ."SelfService/Display.html?id=". $Ticket->id."&results=".$key);
     }
 
-    my $Transactions = $Ticket->Transactions;
+    my $Transactions = $m->comp("/Ticket/Elements/FindTransactions", Ticket => $Ticket);
     my $attachments = $Ticket->Attachments;
 
     my $LinkBasicsTitle = $Ticket->CurrentUserHasRight('ModifyTicket')
