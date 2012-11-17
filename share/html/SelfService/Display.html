@@ -215,9 +215,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
     }
 
     my $Transactions = $Ticket->Transactions;
-
-    my $attachments =
-      $m->comp( '/Ticket/Elements/FindAttachments', Ticket => $Ticket );
+    my $attachments = $Ticket->Attachments;
 
     my $LinkBasicsTitle = $Ticket->CurrentUserHasRight('ModifyTicket')
                           || $Ticket->CurrentUserHasRight('ReplyToTicket');

@@ -46,11 +46,9 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-
-# DON'T USE IT. it's here for backwards compatibility
-
+# DEPRECATED: use the method below directly
 return $Ticket->TextAttachments;
 </%INIT>
 <%ARGS>
-$Ticket => undef
+$Ticket
 </%ARGS>

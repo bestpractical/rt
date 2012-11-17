@@ -46,47 +46,9 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-# A default implementation here loops through all transactions and pulls out all their attachments.
-# We end up doing an end-run around that to get a bit more performance
-
-# We force the cache of ticket transactions to get populated up front. otherwise, the
-# code that looks at attachments will look at each one in turn.
-
-return $Ticket->Attachments unless $Tickets;
-
-my $attachments = RT::Attachments->new( $session{'CurrentUser'} );
-$attachments->Columns( qw(
-    id TransactionId Parent MessageId
-    Subject Filename
-    ContentType ContentEncoding
-    Creator Created
-) );
-
-my $transactions = $attachments->TransactionsAlias;
-my $tickets = $attachments->Join(
-    ALIAS1 => $transactions,
-    FIELD1 => 'ObjectId',
-    TABLE2 => 'Tickets',
-    FIELD2 => 'id',
-);
-
-$attachments->Limit(
-    ALIAS => $transactions,
-    FIELD => 'ObjectType',
-    VALUE => 'RT::Ticket',
-);
-
-while ( my $Ticket = $Tickets->Next) {
-    $attachments->Limit(
-        ALIAS => $tickets,
-        FIELD => 'EffectiveId',
-        VALUE => $Ticket->id,
-    );
-}
-
-return ($attachments);
+# DEPRECATED: use the method below directly
+return $Ticket->Attachments;
 </%INIT>
 <%ARGS>
-$Ticket => undef
-$Tickets => undef
+$Ticket
 </%ARGS>

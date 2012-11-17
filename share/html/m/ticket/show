@@ -152,7 +152,7 @@ if (@Actions) {
 
 # If we haven't been passed in an Attachments object (through the precaching mechanism)
 # then we need to find one
-my $Attachments = $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket);
+my $Attachments = $Ticket->Attachments;
 
 my %documents;
 while ( my $attach = $Attachments->Next() ) {

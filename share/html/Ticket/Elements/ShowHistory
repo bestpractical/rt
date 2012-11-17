@@ -138,14 +138,13 @@ while ( my $Transaction = $Transactions->Next ) {
 % }
 </div>
 <%INIT>
-$Transactions ||= $m->comp('/Ticket/Elements/FindTransactions',Ticket => $Ticket, Tickets => $Tickets || undef);
-$Attachments ||=  $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket, Tickets => $Tickets || undef);
+$Transactions ||= $m->comp('/Ticket/Elements/FindTransactions', Ticket => $Ticket);
+$Attachments  ||= $Ticket->Attachments;
 $AttachmentContent ||= $Ticket->TextAttachments;
 </%INIT>
 <%ARGS>
 $URIFile => RT->Config->Get('WebPath')."/Ticket/Display.html"
 $Ticket => undef
-$Tickets => undef
 $Transactions => undef
 $Attachments => undef
 $AttachmentContent => undef

@@ -76,7 +76,7 @@
 
 # If we haven't been passed in an Attachments object (through the precaching mechanism)
 # then we need to find one
-$Attachments ||= $m->comp('FindAttachments', Ticket => $Ticket);
+$Attachments ||= $Ticket->Attachments;
 
 # XXX PERF: why doesn't this Limit on Filename to avoid fetching *all* the
 # attachments?
