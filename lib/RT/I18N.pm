@@ -325,6 +325,8 @@ sub DecodeMIMEWordsToEncoding {
         my $params = MIME::Field::ParamVal->parse_params($str);
         foreach my $v ( values %$params ) {
             $v = _DecodeMIMEWordsToEncoding( $v, $to_charset );
+            # de-quote in case those were hidden inside encoded part
+            $v =~ s/\\(.)/$1/g if $v =~ s/^"(.*)"$/$1/;
         }
         $str = bless({}, 'MIME::Field::ParamVal')->set($params)->stringify;
     }
@@ -334,6 +336,10 @@ sub DecodeMIMEWordsToEncoding {
             foreach my $field (qw(phrase comment)) {
                 my $v = $address->$field() or next;
                 $v = _DecodeMIMEWordsToEncoding( $v, $to_charset );
+                if ( $field eq 'phrase' ) {
+                    # de-quote in case quoted value were hidden inside encoded part
+                    $v =~ s/\\(.)/$1/g if $v =~ s/^"(.*)"$/$1/;
+                }
                 $address->$field($v);
             }
         }
