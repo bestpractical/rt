@@ -199,7 +199,7 @@ HTML::Quoted
 HTML::Scrubber 0.08
 HTML::TreeBuilder
 HTML::FormatText
-Log::Dispatch 2.23
+Log::Dispatch 2.30
 Sys::Syslog 0.16
 Locale::Maketext 1.06
 Locale::Maketext::Lexicon 0.32
