@@ -81,6 +81,7 @@
     InUnits => $ARGS{'UpdateTimeWorked-TimeUnits'}||'minutes',
 &>
 </span></div>
+% $m->callback( %ARGS, CallbackName => 'AfterWorked', Ticket => $t );
 <input type="hidden" class="hidden" name="id" value="<%$t->Id%>" /><br />
 <div class="entry"><span class="label"><&|/l&>Update Type</&>:</span>
 <div class="value"><select name="UpdateType">
@@ -240,12 +241,17 @@ $m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
     TicketObj => $t,
 );
 
-if ( !$checks_failure && exists $ARGS{SubmitTicket} ) {
+my $skip_update = 0;
+$m->callback( CallbackName => 'BeforeUpdate', ARGSRef => \%ARGS, skip_update => \$skip_update,
+              checks_failure => $checks_failure, results => \@results, TicketObj => $t );
+
+if ( !$checks_failure && !$skip_update && exists $ARGS{SubmitTicket} ) {
     my $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
         self      => $gnupg_widget,
         TicketObj => $t,
     );
     $checks_failure = 1 unless $status;
+    $m->callback( Ticket => $t, ARGSRef => \%ARGS, CallbackName => 'BeforeDisplay' );
     return $m->comp('/m/ticket/show', TicketObj => $t, %ARGS);
 }
 </%INIT>
