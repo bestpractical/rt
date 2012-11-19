@@ -37,8 +37,13 @@ while (my ($group,$cfs) = each %{ RT->Config->Get('CustomFieldGroupings')->{'RT:
 my ( $baseurl, $m ) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
 
-my $index = 1;
-
+my %location = (
+    Identity      => ".user-info-identity",
+    AccessControl => ".user-info-access-control",
+    Location      => ".user-info-location",
+    Phones        => ".user-info-phones",
+    More          => ".user-info-cfs",
+);
 {
     note "testing Create";
     $m->follow_link_ok({id => 'tools-config-users-create'}, 'Create ');
@@ -46,73 +51,58 @@ my $index = 1;
     my $dom = $m->dom;
     $m->form_name('UserCreate');
 
-    $m->field( 'Name', 'user'. $index++ );
+    $m->field( 'Name', 'user1' );
 
     my $prefix = 'Object-RT::User--CustomField:';
-    my $input_name = $prefix . $CF{'TestIdentity'} .'-Value';
-    is $dom->find(qq{input[name="$input_name"]})->size, 1, "only one CF input on the page";
-    ok $dom->at(qq{.user-info-identity input[name="$input_name"]}), "CF is in the right place";
-    $m->field( $input_name, 'TestIdentityValue' );
-
-    $input_name = $prefix . $CF{'TestAccessControl'} .'-Value';
-    is $dom->find(qq{input[name="$input_name"]})->size, 1, "only one CF input on the page";
-    ok $dom->at(qq{.user-info-access-control input[name="$input_name"]}), "CF is in the right place";
-    $m->field( $input_name, 'TestAccessControlValue' );
-
-    $input_name = $prefix . $CF{'TestLocation'} .'-Value';
-    is $dom->find(qq{input[name="$input_name"]})->size, 1, "only one CF input on the page";
-    ok $dom->at(qq{.user-info-location input[name="$input_name"]}), "CF is in the right place";
-    $m->field( $input_name, 'TestLocationValue' );
-
-    $input_name = $prefix . $CF{'TestPhones'} .'-Value';
-    is $dom->find(qq{input[name="$input_name"]})->size, 1, "only one CF input on the page";
-    ok $dom->at(qq{.user-info-phones input[name="$input_name"]}), "CF is in the right place";
-    $m->field( $input_name, 'TestPhonesValue' );
-
-    $input_name = $prefix . $CF{'TestMore'} .'-Value';
-    is $dom->find(qq{input[name="$input_name"]})->size, 1, "only one CF input on the page";
-    ok $dom->at(qq{.user-info-cfs input[name="$input_name"]}), "CF is in the right place";
-    $m->field( $input_name, 'TestMoreValue' );
+    for my $name (keys %location) {
+        my $input_name = $prefix . $CF{"Test$name"} .'-Value';
+        is $dom->find(qq{input[name="$input_name"]})->size, 1, "only one CF input on the page";
+        ok $dom->at(qq{$location{$name} input[name="$input_name"]}), "CF is in the right place";
+        $m->field( $input_name, "Test${name}Value" );
+    }
 
     $m->submit;
     $m->content_like(qr{User created});
-    my ($id) = ($m->uri =~ /id=(\d+)/);
-    ok $id, "found user's id #$id";
+}
 
+my ($id) = ($m->uri =~ /id=(\d+)/);
+ok $id, "found user's id #$id";
+
+{
     note "testing values on Modify page and on the object";
-    {
-        my $user = RT::User->new( RT->SystemUser );
-        $user->Load( $id );
-        ok $user->id, "loaded user";
+    my $user = RT::User->new( RT->SystemUser );
+    $user->Load( $id );
+    ok $user->id, "loaded user";
 
-        $m->form_name('UserModify');
-        foreach my $cf_name ( keys %CF ) {
-            is $user->FirstCustomFieldValue($cf_name), "${cf_name}Value",
-                "correct value of $cf_name CF";
-            my $input = 'Object-RT::User-'. $id .'-CustomField:'
-                . $CF{$cf_name} .'-Value';
-            is $m->value($input), "${cf_name}Value",
-                "correct value in UI";
-            $m->field( $input, "${cf_name}Changed" );
-        }
-        $m->submit;
+    my $dom = $m->dom;
+    $m->form_name('UserModify');
+    my $prefix = "Object-RT::User-$id-CustomField:";
+    foreach my $name ( keys %location ) {
+        is $user->FirstCustomFieldValue("Test$name"), "Test${name}Value",
+            "correct value of Test$name CF";
+        my $input_name = $prefix . $CF{"Test$name"} .'-Value';
+        is $m->value($input_name), "Test${name}Value",
+            "correct value in UI";
+        $m->field( $input_name, "Test${name}Changed" );
+        ok $dom->at(qq{$location{$name} input[name="$input_name"]}), "CF is in the right place";
     }
+    $m->submit;
+}
 
+{
     note "testing that update works";
-    {
-        my $user = RT::User->new( RT->SystemUser );
-        $user->Load( $id );
-        ok $user->id, "loaded user";
+    my $user = RT::User->new( RT->SystemUser );
+    $user->Load( $id );
+    ok $user->id, "loaded user";
 
-        $m->form_name('UserModify');
-        foreach my $cf_name ( keys %CF ) {
-            is $user->FirstCustomFieldValue($cf_name), "${cf_name}Changed",
-                "correct value of $cf_name CF";
-            my $input = 'Object-RT::User-'. $id .'-CustomField:'
-                . $CF{$cf_name} .'-Value';
-            is $m->value($input), "${cf_name}Changed",
-                "correct value in UI";
-        }
+    $m->form_name('UserModify');
+    my $prefix = "Object-RT::User-$id-CustomField:";
+    foreach my $name ( keys %location ) {
+        is $user->FirstCustomFieldValue("Test$name"), "Test${name}Changed",
+            "correct value of Test$name CF";
+        my $input = $prefix . $CF{"Test$name"} .'-Value';
+        is $m->value($input), "Test${name}Changed",
+            "correct value in UI";
     }
 }
 
