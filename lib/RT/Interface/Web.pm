@@ -2614,10 +2614,17 @@ sub ProcessObjectCustomFieldUpdates {
                 if (@groupings > 1) {
                     # Check for consistency, in case of JS fail
                     for my $key (qw/AddValue Value Values DeleteValues DeleteValueIds/) {
-                        warn "CF $cf submitted with multiple differing $key"
-                            if grep {($custom_fields_to_mod{$class}{$id}{$cf}{$_}{$key} || '')
-                                 ne  ($custom_fields_to_mod{$class}{$id}{$cf}{$groupings[0]}{$key} || '')}
-                                @groupings;
+                        my $base = $custom_fields_to_mod{$class}{$id}{$cf}{$groupings[0]}{$key};
+                        $base = [ $base ] unless ref $base;
+                        for my $grouping (@groupings[1..$#groupings]) {
+                            my $other = $custom_fields_to_mod{$class}{$id}{$cf}{$grouping}{$key};
+                            $other = [ $other ] unless ref $other;
+                            warn "CF $cf submitted with multiple differing values"
+                                if grep {$_} List::MoreUtils::pairwise {
+                                    no warnings qw(uninitialized);
+                                    $a ne $b
+                                } @{$base}, @{$other};
+                        }
                     }
                     # We'll just be picking the 1st grouping in the hash, alphabetically
                 }
