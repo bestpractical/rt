@@ -345,7 +345,7 @@ sub custom_field_input {
     my $cf_id = $cf_obj->id;
     
     my ($res) =
-        grep /^Object-RT::Ticket-\d*-CustomField-$cf_id-Values?$/,
+        grep /^Object-RT::Ticket-\d*-CustomField(?::\w+)?-$cf_id-Values?$/,
         map $_->name,
         $self->current_form->inputs;
     unless ( $res ) {
