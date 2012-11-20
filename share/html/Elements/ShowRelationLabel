@@ -66,6 +66,12 @@ if ($Object and $Object->id) {
             . $m->comp('/Elements/QueryString', Query => "$search_relation = $id");
     }
 }
+
+$m->callback(
+    CallbackName    => "ModifySearchURL",
+    SearchURL       => \$SearchURL,
+    ARGSRef         => \%ARGS,
+);
 </%INIT>
 <%ARGS>
 $Object => undef
