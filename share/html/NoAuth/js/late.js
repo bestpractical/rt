@@ -65,6 +65,8 @@ jQuery(function() {
         var update_elems = all_inputs.filter(function () {
             return name_filter_regex.test(jQuery(this).attr("name"));
         }).not(elem);
+        if (update_elems.length == 0)
+            return;
         var trigger_func = function() {
             var curval = elem.val();
             if ((elem.attr("type") == "checkbox") || (elem.attr("type") == "radio")) {
