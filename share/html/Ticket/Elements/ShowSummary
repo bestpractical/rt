@@ -96,7 +96,7 @@
         ($can_modify ? (title_href => RT->Config->Get('WebPath')."/Ticket/ModifyLinks.html?id=".$Ticket->Id) : ()),
         class => 'ticket-info-links',
         @extra,
-    &><& /Elements/ShowLinks, Ticket => $Ticket &></&>
+    &><& /Elements/ShowLinks, Object => $Ticket &></&>
 % $m->callback( %ARGS, CallbackName => 'RightColumn' );
   </td>
 </tr>

@@ -745,7 +745,7 @@ sub create_tickets {
     while ( @data ) {
         my %args = %{ shift @data };
         $args{$_} = $res[ $args{$_} ]->id foreach
-            grep $args{ $_ }, keys %RT::Ticket::LINKTYPEMAP;
+            grep $args{ $_ }, keys %RT::Link::TYPEMAP;
         push @res, $self->create_ticket( %$defaults, %args );
     }
     return @res;

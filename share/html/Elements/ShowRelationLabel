@@ -45,18 +45,36 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<a href="<%$SearchURL |n %>"><%$Label%></a>
+% if ($SearchURL) {
+<a href="<% $SearchURL %>"><% $Label %></a>
+% } else {
+<% $Label %>
+% }
 <%INIT>
-my $typemap = RT::Ticket->LINKTYPEMAP->{$Relation};
+my $typemap = $RT::Link::TYPEMAP{$Relation};
 my $search_mode = $typemap->{Mode};
 my $search_type = $typemap->{Type};
-my $search_relation = RT::Ticket->LINKDIRMAP->{$search_type}{$search_mode};
+my $search_relation = $RT::Link::DIRMAP{$search_type}->{$search_mode};
+my $SearchURL;
 
-my $Query = $search_relation . ' = ' . $id;
-my $SearchURL = RT->Config->Get('WebPath') . '/Search/Results.html?' . $m->comp('/Elements/QueryString', Query => $Query);
+if ($Object and $Object->id) {
+    my $id = $Object->id;
+
+    if ($Object->isa("RT::Ticket")) {
+        $SearchURL = RT->Config->Get('WebPath')
+            . '/Search/Results.html?'
+            . $m->comp('/Elements/QueryString', Query => "$search_relation = $id");
+    }
+}
+
+$m->callback(
+    CallbackName    => "ModifySearchURL",
+    SearchURL       => \$SearchURL,
+    ARGSRef         => \%ARGS,
+);
 </%INIT>
 <%ARGS>
-$id
+$Object => undef
 $Label
 $Relation
 </%ARGS>

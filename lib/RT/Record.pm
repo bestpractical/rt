@@ -70,6 +70,7 @@ use warnings;
 use RT::Date;
 use RT::User;
 use RT::Attributes;
+use RT::Link;
 use Encode qw();
 
 our $_TABLE_ATTR = { };
@@ -820,23 +821,6 @@ sub _DecodeLOB {
         return ($Content);
 }
 
-# A helper table for links mapping to make it easier
-# to build and parse links between tickets
-
-use vars '%LINKDIRMAP';
-
-%LINKDIRMAP = (
-    MemberOf => { Base => 'MemberOf',
-                  Target => 'HasMember', },
-    RefersTo => { Base => 'RefersTo',
-                Target => 'ReferredToBy', },
-    DependsOn => { Base => 'DependsOn',
-                   Target => 'DependedOnBy', },
-    MergedInto => { Base => 'MergedInto',
-                   Target => 'MergedInto', },
-
-);
-
 =head2 Update  ARGSHASH
 
 Updates fields on an object for you using the proper Set methods,
@@ -1264,25 +1248,30 @@ sub FormatLink {
     return $text;
 }
 
-
-
 =head2 _AddLink
 
 Takes a paramhash of Type and one of Base or Target. Adds that link to this object.
 
-Returns C<link id>, C<message> and C<exist> flag.
+If Silent is true then no transactions will be recorded.  You can individually
+control transactions on both base and target and with SilentBase and
+SilentTarget respectively. By default both transactions are created.
 
+Returns a tuple of (link ID, message, flag if link already existed).
 
 =cut
 
 sub _AddLink {
     my $self = shift;
-    my %args = ( Target => '',
-                 Base   => '',
-                 Type   => '',
-                 Silent => undef,
-                 @_ );
-
+    my %args = (
+        Target       => '',
+        Base         => '',
+        Type         => '',
+        Silent       => undef,
+        Silent       => undef,
+        SilentBase   => undef,
+        SilentTarget => undef,
+        @_
+    );
 
     # Remote_link is the URI of the object that is not this ticket
     my $remote_link;
@@ -1317,52 +1306,83 @@ sub _AddLink {
         return ( $old_link->id, $self->loc("Link already exists"), 1 );
     }
 
-    # }}}
-
-
     # Storing the link in the DB.
     my $link = RT::Link->new( $self->CurrentUser );
     my ($linkid, $linkmsg) = $link->Create( Target => $args{Target},
-                                  Base   => $args{Base},
-                                  Type   => $args{Type} );
+                                            Base   => $args{Base},
+                                            Type   => $args{Type} );
 
     unless ($linkid) {
         $RT::Logger->error("Link could not be created: ".$linkmsg);
-        return ( 0, $self->loc("Link could not be created") );
+        return ( 0, $self->loc("Link could not be created: [_1]", $linkmsg) );
     }
 
-    my $basetext = $self->FormatLink(Object => $link->BaseObj,
-				     FallBack => $args{Base});
-    my $targettext = $self->FormatLink(Object => $link->TargetObj,
-				       FallBack => $args{Target});
+    my $basetext = $self->FormatLink(Object   => $link->BaseObj,
+                                     FallBack => $args{Base});
+    my $targettext = $self->FormatLink(Object   => $link->TargetObj,
+                                       FallBack => $args{Target});
     my $typetext = $self->FormatType(Type => $args{Type});
-    my $TransString =
-      "$basetext $typetext $targettext.";
-    return ( $linkid, $TransString ) ;
+    my $TransString = "$basetext $typetext $targettext.";
+
+    # No transactions for you!
+    return ($linkid, $TransString) if $args{'Silent'};
+
+    # Some transactions?
+    my $remote_uri = RT::URI->new( $self->CurrentUser );
+    $remote_uri->FromURI( $remote_link );
+
+    my $opposite_direction = $direction eq 'Target' ? 'Base': 'Target';
+
+    unless ( $args{ 'Silent'. $direction } ) {
+        my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
+            Type      => 'AddLink',
+            Field     => $RT::Link::DIRMAP{$args{'Type'}}->{$direction},
+            NewValue  => $remote_uri->URI || $remote_link,
+            TimeTaken => 0
+        );
+        $RT::Logger->error("Couldn't create transaction: $Msg") unless $Trans;
+    }
+
+    if ( !$args{"Silent$opposite_direction"} && $remote_uri->IsLocal ) {
+        my $OtherObj = $remote_uri->Object;
+        my ( $val, $msg ) = $OtherObj->_NewTransaction(
+            Type           => 'AddLink',
+            Field          => $RT::Link::DIRMAP{$args{'Type'}}->{$opposite_direction},
+            NewValue       => $self->URI,
+            ActivateScrips => !RT->Config->Get('LinkTransactionsRun1Scrip'),
+            TimeTaken      => 0,
+        );
+        $RT::Logger->error("Couldn't create transaction: $msg") unless $val;
+    }
+
+    return ($linkid, $TransString);
 }
-
-
 
 =head2 _DeleteLink
 
-Delete a link. takes a paramhash of Base, Target and Type.
-Either Base or Target must be null. The null value will 
-be replaced with this ticket\'s id
+Takes a paramhash of Type and one of Base or Target. Removes that link from this object.
+
+If Silent is true then no transactions will be recorded.  You can individually
+control transactions on both base and target and with SilentBase and
+SilentTarget respectively. By default both transactions are created.
+
+Returns a tuple of (status flag, message).
 
 =cut 
 
 sub _DeleteLink {
     my $self = shift;
     my %args = (
-        Base   => undef,
-        Target => undef,
-        Type   => undef,
+        Base         => undef,
+        Target       => undef,
+        Type         => undef,
+        Silent       => undef,
+        SilentBase   => undef,
+        SilentTarget => undef,
         @_
     );
 
-    #we want one of base and target. we don't care which
-    #but we only want _one_
-
+    # We want one of base and target. We don't care which but we only want _one_.
     my $direction;
     my $remote_link;
 
@@ -1372,13 +1392,13 @@ sub _DeleteLink {
     }
     elsif ( $args{'Base'} ) {
         $args{'Target'} = $self->URI();
-	$remote_link = $args{'Base'};
-    	$direction = 'Target';
+        $remote_link    = $args{'Base'};
+        $direction      = 'Target';
     }
     elsif ( $args{'Target'} ) {
         $args{'Base'} = $self->URI();
-	$remote_link = $args{'Target'};
-        $direction='Base';
+        $remote_link  = $args{'Target'};
+        $direction    = 'Base';
     }
     else {
         $RT::Logger->error("Base or Target must be specified");
@@ -1386,31 +1406,68 @@ sub _DeleteLink {
     }
 
     my $link = RT::Link->new( $self->CurrentUser );
-    $RT::Logger->debug( "Trying to load link: " . $args{'Base'} . " " . $args{'Type'} . " " . $args{'Target'} );
+    $RT::Logger->debug( "Trying to load link: "
+            . $args{'Base'} . " "
+            . $args{'Type'} . " "
+            . $args{'Target'} );
 
+    $link->LoadByParams(
+        Base   => $args{'Base'},
+        Type   => $args{'Type'},
+        Target => $args{'Target'}
+    );
 
-    $link->LoadByParams( Base=> $args{'Base'}, Type=> $args{'Type'}, Target=>  $args{'Target'} );
-    #it's a real link. 
-
-    if ( $link->id ) {
-        my $basetext = $self->FormatLink(Object => $link->BaseObj,
-                                     FallBack => $args{Base});
-        my $targettext = $self->FormatLink(Object => $link->TargetObj,
-                                       FallBack => $args{Target});
-        my $typetext = $self->FormatType(Type => $args{Type});
-        my $linkid = $link->id;
-        $link->Delete();
-        my $TransString = "$basetext no longer $typetext $targettext.";
-        return ( 1, $TransString);
-    }
-
-    #if it's not a link we can find
-    else {
+    unless ($link->id) {
         $RT::Logger->debug("Couldn't find that link");
         return ( 0, $self->loc("Link not found") );
     }
-}
 
+    my $basetext = $self->FormatLink(Object   => $link->BaseObj,
+                                     FallBack => $args{Base});
+    my $targettext = $self->FormatLink(Object   => $link->TargetObj,
+                                       FallBack => $args{Target});
+    my $typetext = $self->FormatType(Type => $args{Type});
+    my $TransString = "$basetext no longer $typetext $targettext.";
+
+    my ($ok, $msg) = $link->Delete();
+    unless ($ok) {
+        RT->Logger->error("Link could not be deleted: $msg");
+        return ( 0, $self->loc("Link could not be deleted: [_1]", $msg) );
+    }
+
+    # No transactions for you!
+    return (1, $TransString) if $args{'Silent'};
+
+    # Some transactions?
+    my $remote_uri = RT::URI->new( $self->CurrentUser );
+    $remote_uri->FromURI( $remote_link );
+
+    my $opposite_direction = $direction eq 'Target' ? 'Base': 'Target';
+
+    unless ( $args{ 'Silent'. $direction } ) {
+        my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
+            Type      => 'DeleteLink',
+            Field     => $RT::Link::DIRMAP{$args{'Type'}}->{$direction},
+            OldValue  => $remote_uri->URI || $remote_link,
+            TimeTaken => 0
+        );
+        $RT::Logger->error("Couldn't create transaction: $Msg") unless $Trans;
+    }
+
+    if ( !$args{"Silent$opposite_direction"} && $remote_uri->IsLocal ) {
+        my $OtherObj = $remote_uri->Object;
+        my ( $val, $msg ) = $OtherObj->_NewTransaction(
+            Type           => 'DeleteLink',
+            Field          => $RT::Link::DIRMAP{$args{'Type'}}->{$opposite_direction},
+            OldValue       => $self->URI,
+            ActivateScrips => !RT->Config->Get('LinkTransactionsRun1Scrip'),
+            TimeTaken      => 0,
+        );
+        $RT::Logger->error("Couldn't create transaction: $msg") unless $val;
+    }
+
+    return (1, $TransString);
+}
 
 =head1 LockForUpdate
 

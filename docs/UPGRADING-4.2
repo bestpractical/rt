@@ -4,3 +4,9 @@ UPGRADING FROM RT 4.0.0 and greater
   describes what the log level controls.  Setting $LogToScreen will still work,
   but an informational notice will be issued on server start telling you about
   the rename.  To avoid this you should set $LogToSTDERR instead.
+
+* The link direction and type maps are consolidated into RT::Link.  If you
+  wrote local customizations or extensions utilizing %RT::Ticket::LINKDIRMAP,
+  %RT::Ticket::LINKTYPEMAP, RT::Ticket->LINKDIRMAP, RT::Ticket->LINKTYPEMAP, or
+  %RT::Record::LINKDIRMAP, you will need to switch to %RT::Link::DIRMAP and
+  %RT::Link::TYPEMAP.

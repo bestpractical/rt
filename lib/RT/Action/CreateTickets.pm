@@ -53,6 +53,7 @@ use strict;
 use warnings;
 
 use MIME::Entity;
+use RT::Link;
 
 =head1 NAME
 
@@ -252,47 +253,6 @@ Jesse Vincent <jesse@bestpractical.com>
 perl(1).
 
 =cut
-
-my %LINKTYPEMAP = (
-    MemberOf => {
-        Type => 'MemberOf',
-        Mode => 'Target',
-    },
-    Parents => {
-        Type => 'MemberOf',
-        Mode => 'Target',
-    },
-    Members => {
-        Type => 'MemberOf',
-        Mode => 'Base',
-    },
-    Children => {
-        Type => 'MemberOf',
-        Mode => 'Base',
-    },
-    HasMember => {
-        Type => 'MemberOf',
-        Mode => 'Base',
-    },
-    RefersTo => {
-        Type => 'RefersTo',
-        Mode => 'Target',
-    },
-    ReferredToBy => {
-        Type => 'RefersTo',
-        Mode => 'Base',
-    },
-    DependsOn => {
-        Type => 'DependsOn',
-        Mode => 'Target',
-    },
-    DependedOnBy => {
-        Type => 'DependsOn',
-        Mode => 'Base',
-    },
-
-);
-
 
 #Do what we need to do and send it out.
 sub Commit {
@@ -721,7 +681,7 @@ sub ParseLines {
                 }
                 if (
                     ($tag =~ /^(requestor|cc|admincc)(group)?$/i
-                        or grep {lc $_ eq $tag} keys %LINKTYPEMAP)
+                        or grep {lc $_ eq $tag} keys %RT::Link::TYPEMAP)
                     and $args{$tag} =~ /,/
                 ) {
                     $args{$tag} = [ split /,\s*/, $args{$tag} ];
@@ -1006,19 +966,11 @@ sub GetUpdateTemplate {
     $string .= "InitialPriority: " . $t->Priority . "\n";
     $string .= "FinalPriority: " . $t->FinalPriority . "\n";
 
-    foreach my $type ( sort keys %LINKTYPEMAP ) {
-
-        # don't display duplicates
-        if (   $type eq "HasMember"
-            || $type eq "Members"
-            || $type eq "MemberOf" )
-        {
-            next;
-        }
+    foreach my $type ( RT::Link->DisplayTypes ) {
         $string .= "$type: ";
 
-        my $mode   = $LINKTYPEMAP{$type}->{Mode};
-        my $method = $LINKTYPEMAP{$type}->{Type};
+        my $mode   = $RT::Link::TYPEMAP{$type}->{Mode};
+        my $method = $RT::Link::TYPEMAP{$type}->{Type};
 
         my $links = '';
         while ( my $link = $t->$method->Next ) {
@@ -1084,15 +1036,7 @@ sub GetCreateTemplate {
     $string .= "InitialPriority: \n";
     $string .= "FinalPriority: \n";
 
-    foreach my $type ( keys %LINKTYPEMAP ) {
-
-        # don't display duplicates
-        if (   $type eq "HasMember"
-            || $type eq 'Members'
-            || $type eq 'MemberOf' )
-        {
-            next;
-        }
+    foreach my $type ( RT::Link->DisplayTypes ) {
         $string .= "$type: \n";
     }
     return $string;
@@ -1214,7 +1158,7 @@ sub PostProcess {
         $RT::Logger->debug( "Handling links for " . $ticket->Id );
         my %args = %{ shift(@$links) };
 
-        foreach my $type ( keys %LINKTYPEMAP ) {
+        foreach my $type ( keys %RT::Link::TYPEMAP ) {
             next unless ( defined $args{$type} );
             foreach my $link (
                 ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) )
@@ -1241,8 +1185,8 @@ sub PostProcess {
                 }
 
                 my ( $wval, $wmsg ) = $ticket->AddLink(
-                    Type => $LINKTYPEMAP{$type}->{'Type'},
-                    $LINKTYPEMAP{$type}->{'Mode'} => $link,
+                    Type => $RT::Link::TYPEMAP{$type}->{'Type'},
+                    $RT::Link::TYPEMAP{$type}->{'Mode'} => $link,
                     Silent                        => 1
                 );
 

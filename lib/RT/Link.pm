@@ -59,10 +59,6 @@
 This module should never be called directly by client code. it's an internal module which
 should only be accessed through exported APIs in Ticket other similar objects.
 
-=head1 METHODS
-
-
-
 =cut
 
 
@@ -78,8 +74,67 @@ use base 'RT::Record';
 sub Table {'Links'}
 use Carp;
 use RT::URI;
+use List::Util 'first';
+use List::MoreUtils 'uniq';
 
+# Helper tables for links mapping to make it easier
+# to build and parse links between objects.
+our %TYPEMAP = (
+    MemberOf        => { Type => 'MemberOf',    Mode => 'Target',   Display => 0 },
+    Parents         => { Type => 'MemberOf',    Mode => 'Target',   Display => 1 },
+    Parent          => { Type => 'MemberOf',    Mode => 'Target',   Display => 0 },
+    Members         => { Type => 'MemberOf',    Mode => 'Base',     Display => 0 },
+    Member          => { Type => 'MemberOf',    Mode => 'Base',     Display => 0 },
+    Children        => { Type => 'MemberOf',    Mode => 'Base',     Display => 1 },
+    Child           => { Type => 'MemberOf',    Mode => 'Base',     Display => 0 },
+    HasMember       => { Type => 'MemberOf',    Mode => 'Base',     Display => 0 },
+    RefersTo        => { Type => 'RefersTo',    Mode => 'Target',   Display => 1 },
+    ReferredToBy    => { Type => 'RefersTo',    Mode => 'Base',     Display => 1 },
+    DependsOn       => { Type => 'DependsOn',   Mode => 'Target',   Display => 1 },
+    DependedOnBy    => { Type => 'DependsOn',   Mode => 'Base',     Display => 1 },
+    MergedInto      => { Type => 'MergedInto',  Mode => 'Target',   Display => 1 },
+);
+our %DIRMAP = (
+    MemberOf    => { Base => 'MemberOf',    Target => 'HasMember'    },
+    RefersTo    => { Base => 'RefersTo',    Target => 'ReferredToBy' },
+    DependsOn   => { Base => 'DependsOn',   Target => 'DependedOnBy' },
+    MergedInto  => { Base => 'MergedInto',  Target => 'MergedInto'   },
+);
 
+__PACKAGE__->_BuildDisplayAs;
+
+my %DISPLAY_AS;
+sub _BuildDisplayAs {
+    %DISPLAY_AS = ();
+    foreach my $in_db ( uniq map { $_->{Type} } values %TYPEMAP ) {
+        foreach my $mode (qw(Base Target)) {
+            $DISPLAY_AS{$in_db}{$mode} = first {
+                   $TYPEMAP{$_}{Display}
+                && $TYPEMAP{$_}{Type} eq $in_db
+                && $TYPEMAP{$_}{Mode} eq $mode
+            } keys %TYPEMAP;
+        }
+    }
+}
+
+=head1 CLASS METHODS
+
+=head2 DisplayTypes
+
+Returns a list of the standard link Types for display, including directional
+variants but not aliases.
+
+=cut
+
+sub DisplayTypes {
+    sort { $a cmp $b }
+    uniq
+    grep { defined }
+     map { values %$_ }
+  values %DISPLAY_AS
+}
+
+=head1 METHODS
 
 =head2 Create PARAMHASH
 
@@ -281,7 +336,6 @@ sub BaseObj {
   my $self = shift;
   return $self->BaseURI->Object;
 }
-
 
 =head2 id
 
