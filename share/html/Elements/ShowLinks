@@ -98,7 +98,7 @@ if (    $Object->isa("RT::Ticket")
             push @copy, map { $_->$other() } @{ $Object->$relation->ItemsArrayRef };
         }
 
-        $clone{$relation} = "$path&$field=" . join('%20', @copy);
+        $clone{$relation} = "$path&$field=" . join('%20', grep { $_ } @copy);
     }
 }
 </%INIT>
