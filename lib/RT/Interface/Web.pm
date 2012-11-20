@@ -2610,6 +2610,24 @@ sub ProcessObjectCustomFieldUpdates {
                     $RT::Logger->warning("Couldn't load custom field #$cf");
                     next;
                 }
+                my @groupings = sort keys %{ $custom_fields_to_mod{$class}{$id}{$cf} };
+                if (@groupings > 1) {
+                    # Check for consistency, in case of JS fail
+                    for my $key (qw/AddValue Value Values DeleteValues DeleteValueIds/) {
+                        my $base = $custom_fields_to_mod{$class}{$id}{$cf}{$groupings[0]}{$key};
+                        $base = [ $base ] unless ref $base;
+                        for my $grouping (@groupings[1..$#groupings]) {
+                            my $other = $custom_fields_to_mod{$class}{$id}{$cf}{$grouping}{$key};
+                            $other = [ $other ] unless ref $other;
+                            warn "CF $cf submitted with multiple differing values"
+                                if grep {$_} List::MoreUtils::pairwise {
+                                    no warnings qw(uninitialized);
+                                    $a ne $b
+                                } @{$base}, @{$other};
+                        }
+                    }
+                    # We'll just be picking the 1st grouping in the hash, alphabetically
+                }
                 push @results,
                     _ProcessObjectCustomFieldUpdates(
                     # XXX FIXME: Prefix is not quite right, as $id almost
@@ -2618,7 +2636,7 @@ sub ProcessObjectCustomFieldUpdates {
                     Prefix      => "Object-$class-$id-CustomField-$cf-",
                     Object      => $Object,
                     CustomField => $CustomFieldObj,
-                    ARGS        => $custom_fields_to_mod{$class}{$id}{$cf},
+                    ARGS        => $custom_fields_to_mod{$class}{$id}{$cf}{$groupings[0]},
                     );
             }
         }
@@ -2632,11 +2650,12 @@ sub _ParseObjectCustomFieldArgs {
 
     foreach my $arg ( keys %$ARGSRef ) {
 
-        # format: Object-<object class>-<object id>-CustomField-<CF id>-<commands>
-        next unless $arg =~ /^Object-([\w:]+)-(\d*)-CustomField-(\d+)-(.*)$/;
+        # format: Object-<object class>-<object id>-CustomField[:<grouping>]-<CF id>-<commands>
+        next unless $arg =~ /^Object-([\w:]+)-(\d*)-CustomField(?::(\w+))?-(\d+)-(.*)$/;
 
         # For each of those objects, find out what custom fields we want to work with.
-        $custom_fields_to_mod{$1}{ $2 || 0 }{$3}{$4} = $ARGSRef->{$arg};
+        #                   Class     ID     CF  grouping command
+        $custom_fields_to_mod{$1}{ $2 || 0 }{$4}{$3 || ''}{$5} = $ARGSRef->{$arg};
     }
 
     return wantarray ? %custom_fields_to_mod : \%custom_fields_to_mod;
@@ -2814,8 +2833,20 @@ sub ProcessObjectCustomFieldUpdatesForCreate {
                 next;
             }
 
+            my @groupings = sort keys %{ $custom_fields{$class}{0}{$cfid} };
+            if (@groupings > 1) {
+                # Check for consistency, in case of JS fail
+                for my $key (qw/AddValue Value Values DeleteValues DeleteValueIds/) {
+                    warn "CF $cfid submitted with multiple differing $key"
+                        if grep {($custom_fields{$class}{0}{$cfid}{$_}{$key} || '')
+                             ne  ($custom_fields{$class}{0}{$cfid}{$groupings[0]}{$key} || '')}
+                            @groupings;
+                }
+                # We'll just be picking the 1st grouping in the hash, alphabetically
+            }
+
             my @values;
-            while (my ($arg, $value) = each %{ $custom_fields{$class}{0}{$cfid} }) {
+            while (my ($arg, $value) = each %{ $custom_fields{$class}{0}{$cfid}{$groupings[0]} }) {
                 # Values-Magic doesn't matter on create; no previous values are being removed
                 # Category is irrelevant for the actual value
                 next if $arg eq "Values-Magic" or $arg eq "Category";
@@ -3380,6 +3411,13 @@ Redispatches to L<RT::Interface::Web/EncodeJSON>
 
 sub JSON {
     RT::Interface::Web::EncodeJSON(@_);
+}
+
+sub CSSClass {
+    my $value = shift;
+    return '' unless defined $value;
+    $value =~ s/[^A-Za-z0-9_-]/_/g;
+    return $value;
 }
 
 package RT::Interface::Web;

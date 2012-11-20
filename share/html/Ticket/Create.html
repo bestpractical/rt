@@ -101,11 +101,25 @@
 
 % $m->callback( CallbackName => 'AfterOwner', ARGSRef => \%ARGS );
 
-      <& /Ticket/Elements/EditCustomFields, %ARGS, QueueObj => $QueueObj, InTable => 1 &>
+      <& /Elements/EditCustomFields,
+          %ARGS,
+          Object => $ticket,
+          CustomFields => $QueueObj->TicketCustomFields,
+          Grouping => 'Basics',
+          InTable => 1,
+      &>
       <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, QueueObj => $QueueObj, InTable => 1 &>
     </table>
   </&>
 % $m->callback( CallbackName => 'AfterBasics', QueueObj => $QueueObj, ARGSRef => \%ARGS );
+
+<& /Elements/EditCustomFieldCustomGroupings,
+    %ARGS,
+    Object => $ticket,
+    CustomFieldGenerator => sub { $QueueObj->TicketCustomFields },
+    DefaultsFromTopArguments => 0,
+&>
+
 </div>
 
 <div id="ticket-create-message">
@@ -151,6 +165,14 @@
     </font></i>
   </td>
 </tr>
+
+<& /Elements/EditCustomFields,
+    %ARGS,
+    Object => $ticket,
+    CustomFields => $QueueObj->TicketCustomFields,
+    Grouping => 'People',
+    InTable => 1,
+&>
 
 <tr>
 <td class="label">
@@ -238,6 +260,13 @@
 <table>
 <tr><td class="label"><&|/l&>Starts</&>:</td><td><& /Elements/SelectDate, Name => "Starts", Default => $ARGS{Starts} || '' &></td></tr>
 <tr><td class="label"><&|/l&>Due</&>:</td><td><& /Elements/SelectDate, Name => "Due", Default => $ARGS{Due} || '' &></td></tr>
+<& /Elements/EditCustomFields,
+    %ARGS,
+    Object => $ticket,
+    CustomFields => $QueueObj->TicketCustomFields,
+    Grouping => 'Dates',
+    InTable => 1,
+&>
 </table>
 </&>
 </div>
@@ -257,8 +286,13 @@
 <tr><td class="label"><&|/l&>Children</&></td><td><input size="10" name="MemberOf-new" value="<% $ARGS{'MemberOf-new'} || '' %>" /></td></tr>
 <tr><td class="label"><&|/l&>Refers to</&></td><td><input size="10" name="new-RefersTo" value="<% $ARGS{'new-RefersTo'} || '' %>" /></td></tr>
 <tr><td class="label"><&|/l&>Referred to by</&></td><td><input size="10" name="RefersTo-new" value="<% $ARGS{'RefersTo-new'} || '' %>" /></td></tr>
-
-
+<& /Elements/EditCustomFields,
+    %ARGS,
+    Object => $ticket,
+    CustomFields => $QueueObj->TicketCustomFields,
+    Grouping => 'Links',
+    InTable => 1,
+&>
 </table>
 </&>
 </div>
@@ -354,6 +388,8 @@ $m->callback( QueueObj => $QueueObj, title => \$title, results => \@results, ARG
 $m->scomp( '/Articles/Elements/SubjectOverride', ARGSRef => \%ARGS, QueueObj => $QueueObj, results => \@results );
 
 $QueueObj->Disabled && Abort(loc("Cannot create tickets in a disabled queue."));
+
+my $ticket = RT::Ticket->new($session{'CurrentUser'}); # empty ticket object
 
 my $CFs = $QueueObj->TicketCustomFields();
 

@@ -345,7 +345,7 @@ sub custom_field_input {
     my $cf_id = $cf_obj->id;
     
     my ($res) =
-        grep /^Object-RT::Ticket-\d*-CustomField-$cf_id-Values?$/,
+        grep /^Object-RT::Ticket-\d*-CustomField(?::\w+)?-$cf_id-Values?$/,
         map $_->name,
         $self->current_form->inputs;
     unless ( $res ) {
@@ -409,6 +409,14 @@ sub auth_header {
     my $self = shift;
     return Authorization => "Basic " .
         MIME::Base64::encode( join(":", @_) );
+}
+
+sub dom {
+    my $self = shift;
+    Carp::croak("Can not get DOM, not HTML repsone")
+        unless $self->is_html;
+    require Mojo::DOM;
+    return Mojo::DOM->new( $self->content );
 }
 
 sub DESTROY {

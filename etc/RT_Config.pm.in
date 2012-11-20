@@ -835,6 +835,39 @@ custom field values from external sources at runtime.
 
 Set(@CustomFieldValuesSources, ());
 
+=item C<%CustomFieldGroupings>
+
+This option affects the display of ticket and user custom fields in the web
+interface.  A nested datastructure defines how to group together custom fields
+under a mix of built-in and arbitrary headings ("groupings").
+
+Set C<%CustomFieldGroupings> to a nested hash similar to the following:
+
+    Set(%CustomFieldGroupings,
+        'RT::Ticket' => {
+            'Grouping Name'     => ['CF Name', 'Another CF'],
+            'Another Grouping'  => ['Some CF'],
+            'Dates'             => ['Shipped date'],
+        },
+        'RT::User' => {
+            'Phones' => ['Fax number'],
+        },
+    );
+
+The first level keys are record types for which CFs may be used, and the values
+are hashrefs.  The second level keys are the grouping names and the values are
+array refs containing a list of CF names.
+
+There are several special built-in groupings which RT displays in specific
+places (usually the collapsible box of the same title).
+
+For C<RT::Ticket>, these groupings are: C<Basics>, C<Dates>, C<Links>, C<People>
+
+For C<RT::User>: C<Identity>, C<Access control>, C<Location>, C<Phones>
+
+Extensions may also add their own built-in groupings, refer to the individual
+extension documentation for those.
+
 =item C<$CanonicalizeRedirectURLs>
 
 Set C<$CanonicalizeRedirectURLs> to 1 to use C<$WebURL> when

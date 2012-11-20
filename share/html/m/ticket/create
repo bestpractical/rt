@@ -147,14 +147,6 @@ $m->callback( QueueObj => $QueueObj, title => \$title, results => \@results, ARG
 
 $QueueObj->Disabled && Abort(loc("Cannot create tickets in a disabled queue."));
 
-my $CFs = $QueueObj->TicketCustomFields();
-
-my $ValidCFs = $m->comp(
-    '/Elements/ValidateCustomFields',
-    CustomFields => $CFs,
-    ARGSRef => \%ARGS
-);
-
 # deal with deleting uploaded attachments
 foreach my $key (keys %ARGS) {
     if ($key =~ m/^DeleteAttach-(.+)$/) {
@@ -182,6 +174,18 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
 }
 
 my $checks_failure = 0;
+
+{
+    my ($status, @msg) = $m->comp(
+        '/Elements/ValidateCustomFields',
+        CustomFields => $QueueObj->TicketCustomFields,
+        ARGSRef      => \%ARGS
+    );
+    unless ( $status ) {
+        $checks_failure = 1;
+        push @results, @msg;
+    }
+}
 
 my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', Arguments => \%ARGS );
 $m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
@@ -220,17 +224,10 @@ $m->callback( CallbackName => 'BeforeCreate', ARGSRef => \%ARGS, skip_create => 
               checks_failure => $checks_failure, results => \@results );
 
 if ((!exists $ARGS{'AddMoreAttach'}) and (defined($ARGS{'id'}) and $ARGS{'id'} eq 'new')) { # new ticket?
-    if ( $ValidCFs && !$checks_failure && !$skip_create ) {
+    if ( !$checks_failure && !$skip_create ) {
         $m->comp('show', %ARGS);
         $RT::Logger->crit("After display call; error is $@");
         $m->abort();
-    }
-    elsif ( !$ValidCFs ) {
-        # Invalid CFs
-        while (my $CF = $CFs->Next) {
-            my $msg = $m->notes('InvalidField-' . $CF->Id) or next;
-            push @results, $CF->Name . ': ' . $msg;
-        }
     }
 }
 
@@ -324,7 +321,12 @@ $showrows->(
 
 </%perl>
 
-<& /Ticket/Elements/EditCustomFields, %ARGS, QueueObj => $QueueObj &>
+<& /Elements/EditCustomFields,
+    %ARGS,
+    Object          => RT::Ticket->new($session{CurrentUser}),
+    CustomFields    => $QueueObj->TicketCustomFields,
+    AsTable         => 0,
+    &>
 <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, QueueObj => $QueueObj &>
 
 % if (exists $session{'Attachments'}) {

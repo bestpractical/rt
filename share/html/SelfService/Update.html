@@ -73,7 +73,7 @@
 
     </tr>
     <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $Ticket &>
-    <tr><td colspan="2"><& /Ticket/Elements/EditCustomFields,  TicketObj => $Ticket &></td></tr>
+    <tr><td colspan="2"><& /Elements/EditCustomFields, Object => $Ticket, AsTable => 0 &></td></tr>
 </table>
 <& /Elements/MessageBox, 
     Name => "UpdateContent", 

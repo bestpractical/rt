@@ -75,9 +75,7 @@
 <% loc($CF->Name) %>:
 </td><td>
 <& /Elements/EditCustomField, CustomField => $CF, 
-                              Object => $Group, 
-                              ($Create ? (NamePrefix => 'Object-RT::Group--CustomField-') 
-                                       : () )&>
+                              Object => $Group, &>
 </td></tr>
 % }
 <tr>

@@ -51,12 +51,7 @@
     <td class="entry"><& /Elements/EditCustomField, 
         Object => $ArticleObj, 
         CustomField => $CustomField, 
-        NamePrefix => $NamePrefix,
-        Default => 
-            ($CFContent->{$CustomField->Id} || 
-              $ARGS{$NamePrefix .$CustomField->id .'-Values'} ||
-              $ARGS{$NamePrefix .$CustomField->id .'-Value'})
-              ,
+        Default => $CFContent->{$CustomField->Id},
         Rows => 15,
         Cols => 70
         &></td>
@@ -64,15 +59,12 @@
 % }
 <%INIT>
 my $CustomFields;
-my $NamePrefix;
 
 if ($ArticleObj->id && $ArticleObj->ClassObj->id) {
     $CustomFields = $ArticleObj->CustomFields();
-    $NamePrefix = "Object-RT::Article-".$ArticleObj->Id."-CustomField-";
 }
 else {
     $CustomFields = $ClassObj->ArticleCustomFields();
-    $NamePrefix = "Object-RT::Article--CustomField-";
 }
 </%INIT>
 <%ARGS>

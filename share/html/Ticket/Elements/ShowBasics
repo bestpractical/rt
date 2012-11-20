@@ -83,6 +83,7 @@
     <td class="value"><& ShowQueue, Ticket => $Ticket, QueueObj => $Ticket->QueueObj &></td>
   </tr>
 % }
+  <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Grouping => 'Basics', Table => 0 &>
 % $m->callback( %ARGS, CallbackName => 'EndOfList', TicketObj => $Ticket );
 </table>
 <%ARGS>

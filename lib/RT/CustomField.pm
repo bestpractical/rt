@@ -57,7 +57,7 @@ use base 'RT::Record';
 
 sub Table {'CustomFields'}
 
-
+use Scalar::Util qw(blessed);
 use RT::CustomFieldValues;
 use RT::ObjectCustomFields;
 use RT::ObjectCustomFieldValues;
@@ -192,6 +192,7 @@ our %FieldTypes = (
 );
 
 
+my %BUILTIN_GROUPINGS;
 our %FRIENDLY_OBJECT_TYPES =  ();
 
 RT::CustomField->_ForObjectType( 'RT::Queue-RT::Ticket' => "Tickets", );    #loc
@@ -200,6 +201,11 @@ RT::CustomField->_ForObjectType(
 RT::CustomField->_ForObjectType( 'RT::User'  => "Users", );                           #loc
 RT::CustomField->_ForObjectType( 'RT::Queue'  => "Queues", );                         #loc
 RT::CustomField->_ForObjectType( 'RT::Group' => "Groups", );                          #loc
+
+__PACKAGE__->RegisterBuiltInGroupings(
+    'RT::Ticket'    => [ qw(Basics Dates Links People) ],
+    'RT::User'      => [ 'Identity', 'Access control', 'Location', 'Phones' ],
+);
 
 our $RIGHTS = {
     SeeCustomField            => 'View custom fields',                                    # loc_pair
@@ -1238,6 +1244,98 @@ sub CollectionClassFromLookupType {
         return undef;
     }
     return $collection_class;
+}
+
+=head2 Groupings
+
+Returns a (sorted and lowercased) list of the groupings in which this custom
+field appears.
+
+If called on a loaded object, the returned list is limited to groupings which
+apply to the record class this CF applies to (L</RecordClassFromLookupType>).
+
+If passed a loaded object or a class name, the returned list is limited to
+groupings which apply to the class of the object or the specified class.
+
+If called on an unloaded object, all potential groupings are returned.
+
+=cut
+
+sub Groupings {
+    my $self = shift;
+    my $record_class = $self->_GroupingClass(shift);
+
+    my $config = RT->Config->Get('CustomFieldGroupings');
+       $config = {} unless ref($config) eq 'HASH';
+
+    my @groups;
+    if ( $record_class ) {
+        push @groups, keys %{ $config->{$record_class} || {} };
+        push @groups, keys %{ $BUILTIN_GROUPINGS{$record_class} || {} };
+    } else {
+        push @groups, map { keys %$_ } values %$config;
+        push @groups, map { keys %$_ } values %BUILTIN_GROUPINGS;
+    }
+
+    my %seen;
+    return
+        sort { lc($a) cmp lc($b) }
+        grep defined && length && !$seen{lc $_}++,
+        @groups;
+}
+
+=head2 CustomGroupings
+
+Identical to L</Groupings> but filters out built-in groupings from the the
+returned list.
+
+=cut
+
+sub CustomGroupings {
+    my $self = shift;
+    my $record_class = $self->_GroupingClass(shift);
+    return grep !$BUILTIN_GROUPINGS{$record_class}{$_}, $self->Groupings( $record_class );
+}
+
+sub _GroupingClass {
+    my $self    = shift;
+    my $record  = shift;
+
+    my $record_class = ref($record) || $record || '';
+    $record_class = $self->RecordClassFromLookupType
+        if !$record_class and blessed($self) and $self->id;
+
+    return $record_class;
+}
+
+=head2 RegisterBuiltInGroupings
+
+Registers groupings to be considered a fundamental part of RT, either via use
+in core RT or via an extension.  These groupings must be rendered explicitly in
+Mason by specific calls to F</Elements/ShowCustomFields> and
+F</Elements/EditCustomFields>.  They will not show up automatically on normal
+display pages like configured custom groupings.
+
+Takes a set of key-value pairs of class names (valid L<RT::Record> subclasses)
+and array refs of grouping names to consider built-in.
+
+If a class already contains built-in groupings (such as L<RT::Ticket> and
+L<RT::User>), new groupings are appended.
+
+=cut
+
+sub RegisterBuiltInGroupings {
+    my $self = shift;
+    my %new  = @_;
+
+    while (my ($k,$v) = each %new) {
+        $v = [$v] unless ref($v) eq 'ARRAY';
+        $BUILTIN_GROUPINGS{$k} = {
+            %{$BUILTIN_GROUPINGS{$k} || {}},
+            map { $_ => 1 } @$v
+        };
+    }
+    $BUILTIN_GROUPINGS{''} = { map { %$_ } values %BUILTIN_GROUPINGS  };
 }
 
 =head1 IsOnlyGlobal

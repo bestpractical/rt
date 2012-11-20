@@ -106,10 +106,8 @@
 <tr valign="top"><td align="right">
 <% loc($CF->Name) %>:
 </td><td>
-<& /Elements/EditCustomField, CustomField => $CF, 
-                              Object => $QueueObj, 
-                              ($Create ? (NamePrefix => 'Object-RT::Queue--CustomField-') 
-                                       : () )&>
+<& /Elements/EditCustomField, CustomField => $CF,
+                              Object => $QueueObj, &>
 </td></tr>
 % }
 

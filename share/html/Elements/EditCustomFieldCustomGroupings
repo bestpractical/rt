@@ -45,33 +45,24 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc('Modify dates for #[_1]', $TicketObj->Id) &>
-<& /Elements/Tabs &>
-
-% $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $TicketObj);
-<& /Elements/ListActions, actions => \@results &>
-
-<form method="post" action="ModifyDates.html" name="TicketDates">
-% $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
-<input type="hidden" class="hidden" name="id" value="<%$TicketObj->Id%>" />
-<&| /Widgets/TitleBox,title => loc('Modify dates for ticket # [_1]', $TicketObj->Id), class=> 'ticket-info-dates' &>
-<& Elements/EditDates, TicketObj => $TicketObj &>
+% foreach my $group ( RT::CustomField->CustomGroupings( $Object ), '' ) {
+<&| /Widgets/TitleBox,
+    title => $group? loc($group) : loc('Custom Fields'),
+    class => $css_class .' '. ($group? CSSClass("$css_class-$group") : ''),
+    hide_empty => 1,
+&>
+% $ARGS{CustomFields} = $CustomFieldGenerator->() if $CustomFieldGenerator;
+<& EditCustomFields, %ARGS, Object => $Object, Grouping => $group &>
 </&>
-<& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes') &>
-</form>
-
-
-<%INIT>
-
-my $TicketObj = LoadTicket($id);
-$m->callback( TicketObj => $TicketObj, ARGSRef => \%ARGS );
-my @results = ProcessTicketDates( TicketObj => $TicketObj, ARGSRef => \%ARGS);
-push @results, ProcessObjectCustomFieldUpdates(Object => $TicketObj, ARGSRef => \%ARGS);
-$TicketObj->ApplyTransactionBatch;
-
-</%INIT>
-
-
+% }
 <%ARGS>
-$id => undef
+$Object
+$CustomFieldGenerator => undef,
 </%ARGS>
+<%INIT>
+my $css_class = lc(ref($Object)||$Object);
+$css_class =~ s/^rt:://;
+$css_class =~ s/::/-/g;
+$css_class = CSSClass($css_class);
+$css_class .= '-info-cfs';
+</%INIT>

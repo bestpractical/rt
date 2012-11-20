@@ -66,6 +66,7 @@
     <td class="labeltop"><&|/l&>AdminCc</&>:</td>
     <td class="value"><& ShowGroupMembers, Group => $Ticket->AdminCc, Ticket => $Ticket &></td>
   </tr>
+  <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Grouping => 'People', Table => 0 &>
 </table>
 <%INIT>
 </%INIT>

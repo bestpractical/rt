@@ -284,21 +284,17 @@ if ( $ARGS{'SubmitTicket'} ) {
     my @squelchlist = grep {not $checked{$_}} split /,/, ($ARGS{'TxnRecipients'}||'');
     $ARGS{'SquelchMailTo'} = \@squelchlist if @squelchlist;
 
-    my $CFs = $TicketObj->TransactionCustomFields;
-    my $ValidCFs = $m->comp(
+    my ($status, @msg) = $m->comp(
         '/Elements/ValidateCustomFields',
-        CustomFields => $CFs,
-        NamePrefix => "Object-RT::Transaction--CustomField-",
+        CustomFields => $TicketObj->TransactionCustomFields,
+        Object => RT::Transaction->new( $session{'CurrentUser'} ),
         ARGSRef => \%ARGS
     );
-    unless ( $ValidCFs ) {
+    unless ( $status ) {
+        push @results, @msg;
         $checks_failure = 1;
-        while (my $CF = $CFs->Next) {
-            my $msg = $m->notes('InvalidField-' . $CF->Id) or next;
-            push @results, loc($CF->Name) . ': ' . $msg;
-        }
     }
-    my $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
+    $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
         self      => $gnupg_widget,
         TicketObj => $TicketObj,
     );

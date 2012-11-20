@@ -45,70 +45,26 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $m->callback( %ARGS, CallbackName => 'BeforeCustomFields' );
-% if ( $WRAP ) {
-<<% $WRAP %> class="edit-custom-fields">
-% }
-% while ( my $CustomField = $CustomFields->Next ) {
-% next unless $CustomField->CurrentUserHasRight('ModifyCustomField');
-% my $Type = $CustomField->Type || 'Unknown';
-  <<% $FIELD %> class="edit-custom-field cftype-<% $Type %>">
-    <<% $CELL %> class="cflabel">
-      <span class="name"><% loc($CustomField->Name) %></span><br />
-      <span class="type"><% $CustomField->FriendlyType %></span>
-    </<% $CELL %>>
-    <<% $CELL %> class="entry">
-% my $default = $m->notes('Field-' . $CustomField->Id);
-% $default ||= $ARGS{"CustomField-". $CustomField->Id };
-      <& /Elements/EditCustomField, 
-          %ARGS,
-          Object => $TicketObj,
-          CustomField => $CustomField,
-          NamePrefix => $NamePrefix,
-          Default => $default,
-      &>
-%  if (my $msg = $m->notes('InvalidField-' . $CustomField->Id)) {
-        <br />
-        <span class="cfinvalidfield"><% $msg %></span>
-%  }
-    </<% $CELL %>>
-  </<% $FIELD %>>
-% }
-
-% if ( $WRAP ) {
-</<% $WRAP %>>
-% }
-% $m->callback( %ARGS, CallbackName => 'AfterCustomFields', TicketObj => $TicketObj, QueueObj => $QueueObj );
 <%INIT>
+$RT::Logger->warning("DEPRECATED: use /Elements/EditCustomFields");
+
 my $CustomFields;
-
 if ($TicketObj && !$OnCreate) {
-    $CustomFields = $TicketObj->CustomFields();
-    $NamePrefix .= "Object-RT::Ticket-".$TicketObj->Id."-CustomField-";
+    $CustomFields = $TicketObj->CustomFields;
 } else {
-    $CustomFields = $QueueObj->TicketCustomFields();
-    $NamePrefix .= "Object-RT::Ticket--CustomField-";
+    $CustomFields = $QueueObj->TicketCustomFields;
 }
-
 $m->callback( %ARGS, CallbackName => 'MassageCustomFields', CustomFields => $CustomFields );
 
-$AsTable ||= $InTable;
-my $FIELD = $AsTable ? 'tr' : 'div';
-my $CELL  = $AsTable ? 'td' : 'div';
-my $WRAP  = '';
-if ( $AsTable ) {
-    $WRAP = 'table' unless $InTable;
-} else {
-    $WRAP = 'div';
-}
+return $m->comp('/Elements/EditCustomFields',
+    %ARGS,
+    Object => $TicketObj || RT::Ticket->new( $session{'CurrentUser'} ),
+    CustomFields => $CustomFields,
+);
 
 </%INIT>
 <%ARGS>
-$NamePrefix => ''
 $TicketObj => undef
 $QueueObj => undef
 $OnCreate => undef
-$DefaultsFromTopArguments => 1
-$AsTable => 0
-$InTable => 0
 </%ARGS>
