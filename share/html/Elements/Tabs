@@ -373,7 +373,18 @@ my $build_admin_menu = sub {
             $tabs->child( 'applies-to' => title => loc('Applies to'), path => "/Admin/Scrips/Objects.html?id=" . $id );
         }
         elsif ( $request_path =~ m{^/Admin/Scrips/(index\.html)?$} ) {
+            PageMenu->child( select => title => loc('Select') => path => "/Admin/Scrips/" );
             PageMenu->child( create => title => loc('Create') => path => "/Admin/Scrips/Create.html" );
+        }
+        elsif ( $request_path =~ m{^/Admin/Scrips/Create\.html$} ) {
+            my ($queue) = $DECODED_ARGS->{'Queue'} && $DECODED_ARGS->{'Queue'} =~ /^(\d+)$/;
+            if ($queue) {
+                PageMenu->child( select => title => loc('Select') => path => "/Admin/Queues/Scrips.html?id=$queue" );
+                PageMenu->child( create => title => loc('Create') => path => "/Admin/Scrips/Create.html?Queue=$queue" );
+            } else {
+                PageMenu->child( select => title => loc('Select') => path => "/Admin/Global/Scrips.html" );
+                PageMenu->child( create => title => loc('Create') => path => "/Admin/Scrips/Create.html" );
+            }
         }
     }
 
