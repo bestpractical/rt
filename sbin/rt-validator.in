@@ -789,7 +789,7 @@ push @CHECKS, Scrips => sub {
         'Scrips', 'ScripAction' => 'ScripActions', 'id',
     );
     check_integrity(
-        'Scrips', 'Template' => 'Templates', 'id',
+        'Scrips', 'Template' => 'Templates', 'Name',
     );
     check_integrity(
         'ObjectScrips', 'Scrip' => 'Scrips', 'id',
