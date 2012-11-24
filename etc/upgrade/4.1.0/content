@@ -23,6 +23,73 @@ our @Initial = (
         $settings->{sidebar} = delete $settings->{summary};
         $default_portlets->SetContent($settings);
     },
+    sub {
+        # delete disabled duplicate CGM records in favor of active
+        my $status = $RT::Handle->DeleteFromSelect('CachedGroupMembers', <<END);
+SELECT main.id FROM CachedGroupMembers main
+WHERE
+    main.Disabled != 0
+    NOT EXISTS (
+        SELECT 1 FROM CachedGroupMembers CGM
+        WHERE CGM.GroupId = main.GroupId
+            AND CGM.MemberId = main.MemberId
+            AND CGM.id != main.id
+            AND CGM.Disabled = 0
+    )
+END
+        unless ( $status ) {
+            RT->Logger->error("Couldn't delete CGM records");
+            return;
+        }
+
+        # delete other duplicates
+        $status = $RT::Handle->DeleteFromSelect('CachedGroupMembers', <<END);
+SELECT main.id FROM CachedGroupMembers main
+WHERE EXISTS (
+    SELECT 1 FROM CachedGroupMembers CGM
+    WHERE CGM.GroupId = main.GroupId
+        AND CGM.MemberId = main.MemberId
+        AND CGM.id < main.id
+)
+END
+        unless ( $status ) {
+            RT->Logger->error("Couldn't delete CGM records");
+            return;
+        }
+
+        my $dbh = $RT::Handle->dbh;
+        local $dbh->{'RaiseError'} = 0;
+        local $dbh->{'PrintError'} = 1;
+
+        foreach my $index (qw(
+            CachedGroupMembers2 CachedGroupMembers3
+            DisGrouMem GrouMem
+        )) {
+            $dbh->do("DROP INDEX $index ON CachedGroupMembers")
+                or $dbh->do("ALTER TABLE CachedGroupMembers DROP INDEX $index");
+        }
+
+        # see CGM.pm for explanation
+        unless ( RT->Config->Get('DatabaseType') eq 'Pg' ) {
+            $dbh->do(
+                "CREATE UNIQUE INDEX CGM1"
+                ." ON CachedGroupMembers(GroupId, MemberId, Disabled)"
+            );
+            $dbh->do(
+                "CREATE UNIQUE INDEX CGM2"
+                ." ON CachedGroupMembers(MemberId, GroupId, Disabled)"
+            );
+        } else {
+            $dbh->do(
+                "CREATE UNIQUE INDEX CGM1"
+                ." ON CachedGroupMembers(GroupId, MemberId)"
+            );
+            $dbh->do(
+                "CREATE INDEX CGM2"
+                ." ON CachedGroupMembers(MemberId)"
+            );
+        }
+    },
 );
 
 
