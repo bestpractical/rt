@@ -3313,57 +3313,42 @@ sub _Set {
                  Value             => undef,
                  TimeTaken         => 0,
                  RecordTransaction => 1,
-                 UpdateTicket      => 1,
                  CheckACL          => 1,
                  TransactionType   => 'Set',
                  @_ );
 
     if ($args{'CheckACL'}) {
-      unless ( $self->CurrentUserHasRight('ModifyTicket')) {
-          return ( 0, $self->loc("Permission Denied"));
-      }
-   }
-
-    unless ($args{'UpdateTicket'} || $args{'RecordTransaction'}) {
-        $RT::Logger->error("Ticket->_Set called without a mandate to record an update or update the ticket");
-        return(0, $self->loc("Internal Error"));
+        unless ( $self->CurrentUserHasRight('ModifyTicket')) {
+            return ( 0, $self->loc("Permission Denied"));
+        }
     }
 
-    #if the user is trying to modify the record
+    # Avoid ACL loops using _Value
+    my $Old = $self->SUPER::_Value($args{'Field'});
 
-    #Take care of the old value we really don't want to get in an ACL loop.
-    # so ask the super::_Value
-    my $Old = $self->SUPER::_Value("$args{'Field'}");
-    
-    my ($ret, $msg);
-    if ( $args{'UpdateTicket'}  ) {
+    # Set the new value
+    my ( $ret, $msg ) = $self->SUPER::_Set(
+        Field => $args{'Field'},
+        Value => $args{'Value'}
+    );
+    return ( 0, $msg ) unless $ret;
 
-        #Set the new value
-        ( $ret, $msg ) = $self->SUPER::_Set( Field => $args{'Field'},
-                                                Value => $args{'Value'} );
-    
-        #If we can't actually set the field to the value, don't record
-        # a transaction. instead, get out of here.
-        return ( 0, $msg ) unless $ret;
-    }
+    return ( $ret, $msg ) unless $args{'RecordTransaction'};
 
-    if ( $args{'RecordTransaction'} == 1 ) {
+    my $trans;
+    ( $ret, $msg, $trans ) = $self->_NewTransaction(
+        Type      => $args{'TransactionType'},
+        Field     => $args{'Field'},
+        NewValue  => $args{'Value'},
+        OldValue  => $Old,
+        TimeTaken => $args{'TimeTaken'},
+    );
 
-        my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
-                                               Type => $args{'TransactionType'},
-                                               Field     => $args{'Field'},
-                                               NewValue  => $args{'Value'},
-                                               OldValue  => $Old,
-                                               TimeTaken => $args{'TimeTaken'},
-        );
-        # Ensure that we can read the transaction, even if the change
-        # just made the ticket unreadable to us
-        $TransObj->{ _object_is_readable } = 1;
-        return ( $Trans, scalar $TransObj->BriefDescription );
-    }
-    else {
-        return ( $ret, $msg );
-    }
+    # Ensure that we can read the transaction, even if the change
+    # just made the ticket unreadable to us
+    $trans->{ _object_is_readable } = 1;
+
+    return ( $ret, scalar $trans->BriefDescription );
 }
 
 
