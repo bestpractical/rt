@@ -2815,16 +2815,10 @@ sub SetOwner {
         return ( 0, $self->loc("Could not change owner: [_1]", $add_msg ) );
     }
 
-    # We call set twice with slightly different arguments, so
-    # as to not have an SQL transaction span two RT transactions
-
     ( $val, $msg ) = $self->_Set(
-                      Field             => 'Owner',
-                      RecordTransaction => 0,
-                      Value             => $NewOwnerObj->Id,
-                      TimeTaken         => 0,
-                      TransactionType   => 'Set',
-                      CheckACL          => 0,                  # don't check acl
+        Field    => 'Owner',
+        Value    => $NewOwnerObj->Id,
+        CheckACL => 0,                  # don't check acl
     );
 
     unless ($val) {
@@ -2832,22 +2826,8 @@ sub SetOwner {
         return ( 0, $self->loc("Could not change owner: [_1]", $msg) );
     }
 
-    ($val, $msg) = $self->_NewTransaction(
-        Type      => 'Set',
-        Field     => 'Owner',
-        NewValue  => $NewOwnerObj->Id,
-        OldValue  => $OldOwnerObj->Id,
-        TimeTaken => 0,
-    );
-
-    if ( $val ) {
-        $msg = $self->loc( "Owner changed from [_1] to [_2]",
-                           $OldOwnerObj->Name, $NewOwnerObj->Name );
-    }
-    else {
-        $RT::Handle->Rollback();
-        return ( 0, $msg );
-    }
+    $msg = $self->loc( "Owner changed from [_1] to [_2]",
+                       $OldOwnerObj->Name, $NewOwnerObj->Name );
 
     $RT::Handle->Commit();
 
