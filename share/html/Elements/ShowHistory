@@ -54,9 +54,6 @@ if ( $ShowDisplayModes or $ShowTitle ) {
 
     my $titleright = '';
     if ( $ShowDisplayModes ) {
-        $Page ||= $m->request_path;
-        $Page = RT->Config->Get("WebPath") . $Page;
-
         my $open_all  = $m->interp->apply_escapes( loc("Show all quoted text"), 'j' );
         my $open_html = $m->interp->apply_escapes( loc("Show all quoted text"), 'h' );
         my $close_all = $m->interp->apply_escapes( loc("Hide all quoted text"), 'j' );
@@ -65,12 +62,12 @@ if ( $ShowDisplayModes or $ShowTitle ) {
                         . ">$open_html</a> &mdash; ";
 
         if ($ShowHeaders) {
-            $titleright .= qq{<a href="$Page?id=} .
+            $titleright .= qq{<a href="?id=} .
                            $Object->id.qq{">} .
                            loc("Show brief headers") .
                            qq{</a>};
         } else {
-            $titleright .= qq{<a href="$Page?ShowHeaders=1;id=} .
+            $titleright .= qq{<a href="?ShowHeaders=1;id=} .
                            $Object->id.qq{">} .
                            loc("Show full headers") .
                            qq{</a>};
@@ -157,13 +154,9 @@ for my $attachment (@{$Attachments->ItemsArrayRef()}) {
         EncryptionPath  => 'GnuPG.html',
     );
 
-    my $request_path = $m->request_path;
-    $request_path =~ s/[^\/]+$//;
-
     while ( my ($arg, $path) = each %tmp ) {
         next if defined $ARGS{ $arg };
-
-        $ARGS{ $arg } = $request_path . $path;
+        $ARGS{ $arg } = $path;
     }
 }
 
@@ -175,7 +168,6 @@ $Transactions      => $Object->Transactions
 $Attachments       => $Object->Attachments( WithHeaders => 1 )
 $AttachmentContent => $Object->TextAttachments
 
-$Page              => undef 
 $ShowHeaders       => 0
 $ShowTitle         => 1
 $ShowDisplayModes  => 1
