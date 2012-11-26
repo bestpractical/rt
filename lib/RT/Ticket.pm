@@ -615,27 +615,32 @@ sub Create {
     }
 
     # }}}
-    # Now that we've created the ticket and set up its metadata, we can actually go and check OwnTicket on the ticket itself. 
-    # This might be different than before in cases where extensions like RTIR are doing clever things with RT's ACL system
-    if (  $DeferOwner ) { 
-            if (!$DeferOwner->HasRight( Object => $self, Right  => 'OwnTicket')) {
-    
-            $RT::Logger->warning( "User " . $DeferOwner->Name . "(" . $DeferOwner->id 
+
+
+    # Now that we've created the ticket and set up its metadata, we can
+    # actually go and check OwnTicket on the ticket itself.  This might
+    # be different than before in cases where extensions like RTIR are
+    # doing clever things with RT's ACL system.
+    if ($DeferOwner) {
+        if ( $DeferOwner->HasRight( Object => $self, Right => 'OwnTicket' ) ) {
+            $self->__Set( Field => 'Owner', Value => $DeferOwner->id );
+            $self->OwnerGroup->_AddMember(
+                PrincipalId       => $DeferOwner->PrincipalId,
+                InsideTransaction => 1,
+            );
+        } else {
+            $self->OwnerGroup->_AddMember(
+                PrincipalId       => RT->Nobody->PrincipalId,
+                InsideTransaction => 1,
+            );
+            $RT::Logger->warning( "User " . $DeferOwner->Name . "(" . $DeferOwner->id
                 . ") was proposed as a ticket owner but has no rights to own "
                 . "tickets in " . $QueueObj->Name );
             push @non_fatal_errors, $self->loc(
                 "Owner '[_1]' does not have rights to own this ticket.",
                 $DeferOwner->Name
             );
-        } else {
-            $Owner = $DeferOwner;
-            $self->__Set(Field => 'Owner', Value => $Owner->id);
-
         }
-        $self->OwnerGroup->_AddMember(
-            PrincipalId       => $Owner->PrincipalId,
-            InsideTransaction => 1
-        );
     }
 
     if ( $args{'_RecordTransaction'} ) {

@@ -1,10 +1,7 @@
-
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 18;
-use_ok('RT');
-use_ok('RT::Ticket');
+use RT::Test nodata => 1, tests => undef;
 use Test::Warn;
 
 
@@ -63,7 +60,7 @@ diag "check that previous trick doesn't work without sufficient rights";
     diag $msg if $msg;
     ok $tid, "created a ticket";
     is $ticket->Owner, $tester->id, 'correct owner';
-    unlike $ticket->AdminCcAddresses, qr/root\@localhost/, 'root is there';
+    unlike $ticket->AdminCcAddresses, qr/root\@localhost/, 'root is not there';
 }
 
 diag "check that deffering owner really works";
@@ -88,6 +85,9 @@ diag "check that deffering owner really works";
     ok $tid, "created a ticket";
     like $ticket->CcAddresses, qr/tester\@localhost/, 'tester is in the cc list';
     is $ticket->Owner, $tester->id, 'tester is also owner';
+    my $owners = $ticket->OwnerGroup->MembersObj;
+    is $owners->Count, 1, 'one record in owner group';
+    is $owners->First->MemberObj->Id, $tester->id, 'and it is tester';
 }
 
 diag "check that deffering doesn't work without correct rights";
@@ -112,8 +112,10 @@ diag "check that deffering doesn't work without correct rights";
     diag $msg if $msg;
     ok $tid, "created a ticket";
     like $ticket->CcAddresses, qr/tester\@localhost/, 'tester is in the cc list';
-    isnt $ticket->Owner, $tester->id, 'tester is also owner';
+    is $ticket->Owner, RT->Nobody->id, 'nobody is the owner';
+    my $owners = $ticket->OwnerGroup->MembersObj;
+    is $owners->Count, 1, 'one record in owner group';
+    is $owners->First->MemberObj->Id, RT->Nobody->id, 'and it is nobody';
 }
 
-
-
+done_testing;
