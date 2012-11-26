@@ -312,11 +312,14 @@ sub InitLogging {
     InitSignalHandlers();
 }
 
-{   # Work around bug in Log::Dispatch < 2.30, wherein ->warn() does not
-    # usefully propagate out, unlike ->warning()
+{   # Work around bug in Log::Dispatch < 2.30, wherein the short forms
+    # of ->warn, ->err, and ->crit do not usefully propagate out, unlike
+    # ->warning, ->error, and ->critical
     package Log::Dispatch;
     no warnings 'redefine';
     sub warn { shift->warning(@_) }
+    sub err  { shift->error(@_) }
+    sub crit { shift->critical(@_) }
 }
 
 sub InitSignalHandlers {
