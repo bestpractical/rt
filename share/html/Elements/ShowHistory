@@ -48,30 +48,36 @@
 <div class="history <% lc $record_type %>">
 <%perl>
 if ( $ShowDisplayModes or $ShowTitle ) {
+    my $title = $ShowTitle
+                    ? loc('History')
+                    : '&nbsp;';
+
     my $titleright = '';
     if ( $ShowDisplayModes ) {
         $Page ||= $m->request_path;
-        if ( $ShowHeaders ) {
-            $titleright .=
-                '<a href="'. RT->Config->Get('WebPath') . $Page
-                . '?id='. $Object->id. '">'
-                . loc("Brief headers") .'</a>'
-                . ' &mdash; '
-                . '<span class="selected">'. loc("Full headers") .'</span>';
-        }
-        else {
-            $titleright .= '<span class="selected">'. loc("Brief headers") .'</span>'
-                .' &mdash; '
-                .'<a href="'. RT->Config->Get('WebPath') . $Page
-                . '?ShowHeaders=1&id='. $Object->id. '">'
-                . loc("Full headers") .'</a>';
+        $Page = RT->Config->Get("WebPath") . $Page;
+
+        my $open_all  = $m->interp->apply_escapes( loc("Show all quoted text"), 'j' );
+        my $open_html = $m->interp->apply_escapes( loc("Show all quoted text"), 'h' );
+        my $close_all = $m->interp->apply_escapes( loc("Hide all quoted text"), 'j' );
+        $titleright .=    '<a href="#" data-direction="open" '
+                        . qq{onclick="return toggle_all_folds(this, $open_all, $close_all);"}
+                        . ">$open_html</a> &mdash; ";
+
+        if ($ShowHeaders) {
+            $titleright .= qq{<a href="$Page?id=} .
+                           $Object->id.qq{">} .
+                           loc("Show brief headers") .
+                           qq{</a>};
+        } else {
+            $titleright .= qq{<a href="$Page?ShowHeaders=1;id=} .
+                           $Object->id.qq{">} .
+                           loc("Show full headers") .
+                           qq{</a>};
         }
     }
 </%perl>
-<& /Widgets/TitleBoxStart,
-    title => $ShowTitle ? loc('History') : '&nbsp;',
-    titleright_raw => $titleright,
-&>
+<& /Widgets/TitleBoxStart, title => $title, titleright_raw => $titleright &>
 % }
 
 <div id="<% lc $record_type %>-<% $Object->id %>-history" class="history-container">
@@ -94,16 +100,15 @@ while ( my $Transaction = $Transactions->Next ) {
         $IsLastTransaction = 1 if $i == 1;
     }
 
-    #Args is first because we're clobbering the "Attachments" parameter 
-    $m->comp( '/Elements/ShowTransaction',
+    # ARGS is first because we're clobbering the "Attachments" parameter
+    $m->comp( 'ShowTransaction',
         %ARGS,
-
-        Ticket            => $Object,
+        Object            => $Object,
         Transaction       => $Transaction,
         ShowHeaders       => $ShowHeaders,
         RowNum            => $i,
-        Attachments       => $attachments{ $Transaction->id } || [],
-        AttachmentContent => \%attachment_content,
+        Attachments       => $trans_attachments->{$Transaction->id} || {},
+        AttachmentContent => $trans_content,
         LastTransaction   => $IsLastTransaction
     );
 
@@ -121,8 +126,6 @@ while ( my $Transaction = $Transactions->Next ) {
 % }
 </div>
 <%INIT>
-my $Transactions = $Object->Transactions;
-
 my $OldestFirst = RT->Config->Get(
     OldestTransactionsFirst => $session{'CurrentUser'}
 );
@@ -132,11 +135,17 @@ $Transactions->OrderByCols(
     { FIELD => 'id', ORDER => $SortOrder },
 );
 
-my %attachments;
-push @{ $attachments{ $_->TransactionId } ||= [] }, $_
-    foreach @{ $Attachments->ItemsArrayRef };
-my %attachment_content = map { $_->id => $_ }
-    @{ $AttachmentContent->ItemsArrayRef };
+my $trans_content = {};
+my $trans_attachments = {};
+
+for my $content (@{$AttachmentContent->ItemsArrayRef()}) {
+    $trans_content->{$content->TransactionId}->{$content->Id} = $content;
+}
+
+for my $attachment (@{$Attachments->ItemsArrayRef()}) {
+    my $tmp = $trans_attachments->{ $attachment->TransactionId } ||= {};
+    push @{ $tmp->{ $attachment->Parent || 0 } ||= [] }, $attachment;
+}
 
 {
     my %tmp = (
@@ -162,6 +171,7 @@ my $record_type = $Object->RecordType;
 </%INIT>
 <%ARGS>
 $Object
+$Transactions      => $Object->Transactions
 $Attachments       => $Object->Attachments( WithHeaders => 1 )
 $AttachmentContent => $Object->TextAttachments
 
