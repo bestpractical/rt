@@ -81,6 +81,7 @@ $m->comp(
 ) if $ShowBody;
 </%PERL>
   </div>
+% $m->callback( %ARGS, Transaction => $Transaction, CallbackName => 'AfterContent' );
 </div>
 
 <%ARGS>
