@@ -6,7 +6,7 @@ $Config->{$_} = RT->Config->Get( $_, $session{CurrentUser} )
 my $CurrentUser = {};
 if ($session{CurrentUser} and $session{CurrentUser}->id) {
     $CurrentUser->{$_} = $session{CurrentUser}->$_
-      for qw(id Name EmailAddress);
+      for qw(id Name EmailAddress RealName);
 
     $CurrentUser->{Privileged} = $session{CurrentUser}->Privileged
         ? JSON::true : JSON::false;
