@@ -155,7 +155,9 @@ value or a reference.
 =cut
 
 sub EncodeJSON {
-    JSON::to_json(shift, { utf8 => 1, allow_nonref => 1 });
+    my $s = JSON::to_json(shift, { utf8 => 1, allow_nonref => 1 });
+    $s =~ s{/}{\\/}g;
+    return $s;
 }
 
 sub _encode_surrogates {

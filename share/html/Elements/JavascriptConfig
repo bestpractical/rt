@@ -45,44 +45,28 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%args>
-$focus => undef
-$onload => undef
-</%args>
-<& JavascriptConfig &>
+<%init>
+my $Config = {};
+$Config->{$_} = RT->Config->Get( $_, $session{CurrentUser} )
+  for qw(rtname WebPath);
 
-% for my $jsfile ( @js_files ) {
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/<% $jsfile %>"></script>
-% }
+my $CurrentUser = {};
+if ($session{CurrentUser} and $session{CurrentUser}->id) {
+    $CurrentUser->{$_} = $session{CurrentUser}->$_
+      for qw(id Name EmailAddress RealName);
 
-% if ( $RichText and RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ) {
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/RichText/ckeditor.js"></script>
-% }
-<script type="text/javascript"><!--
-	jQuery( loadTitleBoxStates );
-% if ( $focus ) {
-    jQuery(function () { focusElementById(<% $focus |n,j%>) });
-% }
-% if ( $onload ) {
-    jQuery( <% $onload |n %> );
-% }
-
-% if ( $RichText and RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'})) {
-    jQuery().ready(function ()  { ReplaceAllTextareas(<%$DECODED_ARGS->{'CKeditorEncoded'} || 0 |n,j%>) });
-% }
---></script>
-<%ARGS>
-$RichText => 1
-</%ARGS>
-<%INIT>
-
-my @js_files;
-if ( RT->Config->Get('DevelMode') ) {
-    @js_files = RT->Config->Get('JSFiles' );
-}
-else {
-    my $key = RT::Interface::Web::SquishedJS()->Key;
-    @js_files = "squished-$key.js";
+    $CurrentUser->{Privileged} = $session{CurrentUser}->Privileged
+        ? JSON::true : JSON::false;
 }
 
-</%INIT>
+$m->callback(
+    CallbackName    => "Data",
+    CurrentUser     => $CurrentUser,
+    Config          => $Config,
+);
+</%init>
+<script>
+window.RT = {};
+RT.CurrentUser = <% JSON( $CurrentUser ) |n%>;
+RT.Config      = <% JSON( $Config      ) |n%>;
+</script>
