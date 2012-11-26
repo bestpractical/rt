@@ -50,7 +50,7 @@
 <form method="post" action="<%RT->Config->Get('WebPath')%>/Approvals/index.html">
 
 <&| /Widgets/TitleBox, title => $title &>
-<& /Ticket/Elements/ShowHistory , Ticket => $Ticket, Collapsed => 0, ShowTitle => 0, ShowHeaders => 0, ShowDisplayModes => 0, ShowTitleBarCommands => 0 &>
+<& /Elements/ShowHistory , Object => $Ticket, ShowTitle => 0, ShowHeaders => 0, ShowDisplayModes => 0, ShowTitleBarCommands => 0 &>
 <hr />
 <& Elements/Approve, ticket => $Ticket, ShowApproving => 0 &>
 </&>

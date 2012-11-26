@@ -70,10 +70,9 @@
         Ticket => $TicketObj,
     &>
 % } else {
-    <& /Ticket/Elements/ShowHistory ,
-          Ticket => $TicketObj,
+    <& /Elements/ShowHistory ,
+          Object => $TicketObj,
           Transactions => $transactions,
-          Collapsed => $ARGS{'Collapsed'},
           ShowHeaders => $ARGS{'ShowHeaders'},
           Attachments => $attachments,
           AttachmentContent => $attachment_content
@@ -91,7 +90,6 @@
 $id => undef
 $TicketObj => undef
 $ShowHeaders => 0
-$Collapsed => undef
 $ForceShowHistory => 0
 </%ARGS>
 

@@ -55,9 +55,8 @@ $TicketObj->Load($id);
 my $attachments = $TicketObj->Attachments;
 my $attachment_content = $TicketObj->TextAttachments;
 
-$m->comp('/Ticket/Elements/ShowHistory',
-    Ticket => $TicketObj, 
-    Collapsed => $ARGS{'Collapsed'}, 
+$m->comp('/Elements/ShowHistory',
+    Object => $TicketObj,
     ShowHeaders => $ARGS{'ShowHeaders'},
     Attachments => $attachments,
     AttachmentContent => $attachment_content

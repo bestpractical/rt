@@ -52,7 +52,7 @@ my $plain_text_mono
     = RT->Config->Get( 'PlainTextMono', $session{'CurrentUser'} );
 my $Depth = 0;
 
-my $ticket = $Transaction ? $Transaction->TicketObj : undef;
+my $object = $Transaction ? $Transaction->Object : undef;
 
 my $print_content = sub {
     my $ref = shift;
@@ -62,7 +62,7 @@ my $print_content = sub {
     if ( $ContentType eq 'text/plain' ) {
         $m->comp( '/Elements/MakeClicky',
                   content => $ref,
-                  ticket  => $ticket,
+                  object  => $object,
                   %ARGS
                 );
 

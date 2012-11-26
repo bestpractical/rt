@@ -74,14 +74,11 @@
 
 
 
-<& /Ticket/Elements/ShowHistory, 
-      Ticket => $Ticket, 
-      URIFile => "Display.html", 
+<& /Elements/ShowHistory,
+      Object => $Ticket,
       ShowHeaders => $ARGS{'ShowHeaders'},
       DownloadableHeaders => 0,
-      AttachPath => "Attachment", 
       Attachments => $attachments, 
-      UpdatePath => "Update.html" 
 &>
 
 

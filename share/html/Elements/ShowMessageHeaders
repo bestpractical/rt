@@ -75,9 +75,9 @@ unless ( $display_headers{'_all'} ) {
     @headers = grep $display_headers{ lc $_->{'Tag'} }, @headers;
 }
 
-my $ticket = $Message->TransactionObj->TicketObj;
+my $object = $Message->TransactionObj->Object;
 foreach my $f (@headers) {
-    $m->comp('/Elements/MakeClicky', content => \$f->{'Value'}, ticket => $ticket, %ARGS);
+    $m->comp('/Elements/MakeClicky', content => \$f->{'Value'}, object => $object, %ARGS);
 }
 
 $m->callback(
