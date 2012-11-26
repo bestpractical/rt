@@ -312,6 +312,13 @@ sub InitLogging {
     InitSignalHandlers();
 }
 
+{   # Work around bug in Log::Dispatch < 2.30, wherein ->warn() does not
+    # usefully propagate out, unlike ->warning()
+    package Log::Dispatch;
+    no warnings 'redefine';
+    sub warn { shift->warning(@_) }
+}
+
 sub InitSignalHandlers {
 
 # Signal handlers
