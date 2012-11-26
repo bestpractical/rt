@@ -62,12 +62,12 @@ if ( $ShowDisplayModes or $ShowTitle ) {
                         . ">$open_html</a> &mdash; ";
 
         if ($ShowHeaders) {
-            $titleright .= qq{<a href="?id=} .
+            $titleright .= qq{<a href="?ForceShowHistory=1;id=} .
                            $Object->id.qq{">} .
                            loc("Show brief headers") .
                            qq{</a>};
         } else {
-            $titleright .= qq{<a href="?ShowHeaders=1;id=} .
+            $titleright .= qq{<a href="?ForceShowHistory=1;ShowHeaders=1;id=} .
                            $Object->id.qq{">} .
                            loc("Show full headers") .
                            qq{</a>};
