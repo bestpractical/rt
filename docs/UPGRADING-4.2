@@ -51,3 +51,8 @@ UPGRADING FROM RT 4.0.0 and greater
   users with invalid addresses will continue to work until the next time they
   are updated by an administrator on the modify user page.  If you prefer no
   address validation, set $ValidateUserEmailAddresses to 0.
+
+* The 'smtp' value for $MailCommand, along with the associated
+  $SMTPServer, $SMTPFrom, and $SMTPDebug options, has been removed
+  because it did not guarantee delivery.  Instead, use a local MTA for
+  outgoing mail, via the 'sendmailpipe' setting to $MailCommand.
