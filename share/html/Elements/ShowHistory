@@ -91,7 +91,7 @@ while ( my $Transaction = $Transactions->Next ) {
     next if $skip;
 
     my $IsLastTransaction = 0;
-    if ( $OldestFirst ) {
+    if ( RT->Config->Get("OldestTransactionsFirst" => $session{'CurrentUser'}) ) {
         $IsLastTransaction = $Transactions->IsLast;
     } else {
         $IsLastTransaction = 1 if $i == 1;
@@ -123,15 +123,6 @@ while ( my $Transaction = $Transactions->Next ) {
 % }
 </div>
 <%INIT>
-my $OldestFirst = RT->Config->Get(
-    OldestTransactionsFirst => $session{'CurrentUser'}
-);
-my $SortOrder = $OldestFirst? 'ASC': 'DESC';
-$Transactions->OrderByCols(
-    { FIELD => 'Created', ORDER => $SortOrder },
-    { FIELD => 'id', ORDER => $SortOrder },
-);
-
 my $trans_content = {};
 my $trans_attachments = {};
 
@@ -164,7 +155,7 @@ my $record_type = $Object->RecordType;
 </%INIT>
 <%ARGS>
 $Object
-$Transactions      => $Object->Transactions
+$Transactions      => $Object->SortedTransactions
 $Attachments       => $Object->Attachments( WithHeaders => 1 )
 $AttachmentContent => $Object->TextAttachments
 

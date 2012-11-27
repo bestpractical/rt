@@ -1563,6 +1563,25 @@ sub Transactions {
     return $transactions;
 }
 
+=head2 SortedTransactions
+
+Returns the result of L</Transactions> ordered per the
+I<OldestTransactionsFirst> preference/option.
+
+=cut
+
+sub SortedTransactions {
+    my $self  = shift;
+    my $txns  = $self->Transactions;
+    my $order = RT->Config->Get("OldestTransactionsFirst", $self->CurrentUser)
+        ? 'ASC' : 'DESC';
+    $txns->OrderByCols(
+        { FIELD => 'Created',   ORDER => $order },
+        { FIELD => 'id',        ORDER => $order },
+    );
+    return $txns;
+}
+
 our %TRANSACTION_CLASSIFICATION = (
     Create     => 'message',
     Correspond => 'message',

@@ -213,8 +213,7 @@ MaybeRedirectForResults(
     Arguments => { id => $TicketObj->id },
 );
 
-# Get the transactoins before the attachments, for great ACL justice
-my $transactions = $m->comp('Elements/FindTransactions', Ticket => $TicketObj);
+my $transactions = $TicketObj->SortedTransactions;
 my $attachments = $TicketObj->Attachments;
 my $attachment_content = $TicketObj->TextAttachments;
 
