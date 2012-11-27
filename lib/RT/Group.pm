@@ -1065,14 +1065,9 @@ sub _AddMember {
         return ( 0, $self->loc("Groups can't be members of their members"));
     }
 
-    if ($self->SingleMemberRoleGroup) {
-        # Purge all previous members
-        for my $member (@{$self->MembersObj->ItemsArrayRef}) {
-            my ($ok, $msg) = $member->Delete();
-            return(0, $self->loc("Couldn't remove previous member: [_1]", $msg))
-                unless $ok;
-        }
-    }
+    my @purge;
+    push @purge, @{$self->MembersObj->ItemsArrayRef}
+        if $self->SingleMemberRoleGroup;
 
     my $member_object = RT::GroupMember->new( $self->CurrentUser );
     my $id = $member_object->Create(
@@ -1080,12 +1075,18 @@ sub _AddMember {
         Group => $self->PrincipalObj,
         InsideTransaction => $args{'InsideTransaction'}
     );
-    if ($id) {
-        return ( 1, $self->loc("Member added: [_1]", $new_member_obj->Object->Name) );
+
+    return(0, $self->loc("Couldn't add member to group"))
+        unless $id;
+
+    # Purge all previous members
+    for my $member (@purge) {
+        my ($ok, $msg) = $member->Delete();
+        return(0, $self->loc("Couldn't remove previous member: [_1]", $msg))
+            unless $ok;
     }
-    else {
-        return(0, $self->loc("Couldn't add member to group"));
-    }
+
+    return ( 1, $self->loc("Member added: [_1]", $new_member_obj->Object->Name) );
 }
 
 
