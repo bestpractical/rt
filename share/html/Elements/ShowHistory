@@ -90,13 +90,6 @@ while ( my $Transaction = $Transactions->Next ) {
     );
     next if $skip;
 
-    my $IsLastTransaction = 0;
-    if ( RT->Config->Get("OldestTransactionsFirst" => $session{'CurrentUser'}) ) {
-        $IsLastTransaction = $Transactions->IsLast;
-    } else {
-        $IsLastTransaction = 1 if $i == 1;
-    }
-
     # ARGS is first because we're clobbering the "Attachments" parameter
     $m->comp( 'ShowTransaction',
         %ARGS,
@@ -106,7 +99,6 @@ while ( my $Transaction = $Transactions->Next ) {
         RowNum            => $i,
         Attachments       => $trans_attachments->{$Transaction->id} || {},
         AttachmentContent => $trans_content,
-        LastTransaction   => $IsLastTransaction
     );
 
     # manually flush the content buffer after each txn,

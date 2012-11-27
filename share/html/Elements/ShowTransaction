@@ -53,9 +53,6 @@
       href="<% $DisplayPath %>#txn-<% $Transaction->id %>" \
 % }
       >#</a>
-% if ( $LastTransaction ) {
-      <a id="lasttrans" name="lasttrans"></a>
-% }
     </span>
 % $m->callback( %ARGS, Transaction => $Transaction, CallbackName => 'AfterAnchor' );
     <span class="date"><% $date |n %></span>
@@ -94,7 +91,6 @@ $AttachmentContent => undef
 $ShowBody => 1
 $ShowActions => 1
 $RowNum => 1
-$LastTransaction => 0
 
 $DisplayPath => undef
 $AttachmentPath => undef

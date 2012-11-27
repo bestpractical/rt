@@ -103,14 +103,6 @@ div.history-container span.type a {
  display: block;
 }
 
-.history-container a#lasttrans {
-    display: inline;
-    height: 0;
-    width: 0;
-    padding: 0;
-    margin: 0;
-}
-
 
 div.history-container span.date {
  width: 10em;
