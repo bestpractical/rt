@@ -339,71 +339,76 @@ sub LoadRoleGroup {
 
 =head2 LoadTicketRoleGroup  { Ticket => TICKET_ID, Type => TYPE }
 
-Loads a ticket group from the database. 
-
-Takes a param hash with 2 parameters:
-
-    Ticket is the TicketId we're curious about
-    Type is the type of Group we're trying to load: 
-        Requestor, Cc, AdminCc, Owner
+Deprecated in favor of L</LoadRoleGroup> or L<RT::Record/RoleGroup>.
 
 =cut
 
 sub LoadTicketRoleGroup {
-    my $self       = shift;
-    my %args = (Ticket => '0',
-                Type => undef,
-                @_);
-        $self->LoadByCols( Domain => 'RT::Ticket-Role',
-                           Instance =>$args{'Ticket'}, 
-                           Type => $args{'Type'}
-                           );
+    my $self = shift;
+    my %args = (
+        Ticket => '0',
+        Type => undef,
+        @_,
+    );
+    RT->Logger->warn(<<"    .");
+RT::Group->LoadTicketRoleGroup is DEPRECATED and will be removed in a future release.
+
+Please use RT::Group->LoadRoleGroup or RT::Ticket->RoleGroup instead at @{[join '/', caller]}.
+    .
+    $self->LoadByCols(
+        Domain   => 'RT::Ticket-Role',
+        Instance => $args{'Ticket'},
+        Type     => $args{'Type'},
+    );
 }
 
 
 
 =head2 LoadQueueRoleGroup  { Queue => Queue_ID, Type => TYPE }
 
-Loads a Queue group from the database. 
-
-Takes a param hash with 2 parameters:
-
-    Queue is the QueueId we're curious about
-    Type is the type of Group we're trying to load: 
-        Requestor, Cc, AdminCc, Owner
+Deprecated in favor of L</LoadRoleGroup> or L<RT::Record/RoleGroup>.
 
 =cut
 
 sub LoadQueueRoleGroup {
-    my $self       = shift;
-    my %args = (Queue => undef,
-                Type => undef,
-                @_);
-        $self->LoadByCols( Domain => 'RT::Queue-Role',
-                           Instance =>$args{'Queue'}, 
-                           Type => $args{'Type'}
-                           );
+    my $self = shift;
+    my %args = (
+        Queue => undef,
+        Type => undef,
+        @_,
+    );
+    RT->Logger->warn(<<"    .");
+RT::Group->LoadQueueRoleGroup is DEPRECATED and will be removed in a future release.
+
+Please use RT::Group->LoadRoleGroup or RT::Queue->RoleGroup instead at @{[join '/', caller]}.
+    .
+    $self->LoadByCols(
+        Domain   => 'RT::Queue-Role',
+        Instance => $args{'Queue'},
+        Type     => $args{'Type'},
+    );
 }
 
 
 
 =head2 LoadSystemRoleGroup  Type
 
-Loads a System group from the database. 
-
-Takes a single param: Type
-
-    Type is the type of Group we're trying to load: 
-        Requestor, Cc, AdminCc, Owner
+Deprecated in favor of L</LoadRoleGroup> or L<RT::Record/RoleGroup>.
 
 =cut
 
 sub LoadSystemRoleGroup {
-    my $self       = shift;
+    my $self = shift;
     my $type = shift;
-        $self->LoadByCols( Domain => 'RT::System-Role',
-                           Type => $type
-                           );
+    RT->Logger->warn(<<"    .");
+RT::Group->LoadSystemRoleGroup is DEPRECATED and will be removed in a future release.
+
+Please use RT::Group->LoadRoleGroup or RT::System->RoleGroup instead at @{[join '/', caller]}.
+    .
+    $self->LoadByCols(
+        Domain => 'RT::System-Role',
+        Type => $type
+    );
 }
 
 

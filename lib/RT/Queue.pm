@@ -969,8 +969,7 @@ sub _AddWatcher {
         return(0, $self->loc("Could not find or create that user"));
     }
 
-    my $group = RT::Group->new($self->CurrentUser);
-    $group->LoadQueueRoleGroup(Type => $args{'Type'}, Queue => $self->Id);
+    my $group = $self->RoleGroup( $args{'Type'} );
     unless ($group->id) {
         return(0,$self->loc("Group not found"));
     }
@@ -1044,8 +1043,7 @@ sub DeleteWatcher {
         return ( 0, $self->loc("Could not find that principal") );
     }
 
-    my $group = RT::Group->new($self->CurrentUser);
-    $group->LoadQueueRoleGroup(Type => $args{'Type'}, Queue => $self->Id);
+    my $group = $self->RoleGroup( $args{'Type'} );
     unless ($group->id) {
         return(0,$self->loc("Group not found"));
     }
@@ -1126,12 +1124,9 @@ If the user doesn't have "ShowQueue" permission, returns an empty group
 sub Cc {
     my $self = shift;
 
-    my $group = RT::Group->new($self->CurrentUser);
-    if ( $self->CurrentUserHasRight('SeeQueue') ) {
-        $group->LoadQueueRoleGroup(Type => 'Cc', Queue => $self->Id);
-    }
-    return ($group);
-
+    return RT::Group->new($self->CurrentUser)
+        unless $self->CurrentUserHasRight('SeeQueue');
+    return $self->RoleGroup( 'Cc' );
 }
 
 
@@ -1147,12 +1142,9 @@ If the user doesn't have "ShowQueue" permission, returns an empty group
 sub AdminCc {
     my $self = shift;
 
-    my $group = RT::Group->new($self->CurrentUser);
-    if ( $self->CurrentUserHasRight('SeeQueue') ) {
-        $group->LoadQueueRoleGroup(Type => 'AdminCc', Queue => $self->Id);
-    }
-    return ($group);
-
+    return RT::Group->new($self->CurrentUser)
+        unless $self->CurrentUserHasRight('SeeQueue');
+    return $self->RoleGroup( 'AdminCc' );
 }
 
 
@@ -1180,9 +1172,8 @@ sub IsWatcher {
         @_
     );
 
-    # Load the relevant group. 
-    my $group = RT::Group->new($self->CurrentUser);
-    $group->LoadQueueRoleGroup(Type => $args{'Type'}, Queue => $self->id);
+    # Load the relevant group.
+    my $group = $self->RoleGroup( $args{'Type'} );
     # Ask if it has the member in question
 
     my $principal = RT::Principal->new($self->CurrentUser);

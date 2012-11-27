@@ -990,9 +990,7 @@ A constructor which returns an RT::Group object containing the owner of this tic
 
 sub OwnerGroup {
     my $self = shift;
-    my $owner_obj = RT::Group->new($self->CurrentUser);
-    $owner_obj->LoadTicketRoleGroup( Ticket => $self->Id,  Type => 'Owner');
-    return ($owner_obj);
+    return $self->RoleGroup( 'Owner' );
 }
 
 
@@ -1104,8 +1102,7 @@ sub _AddWatcher {
     }
 
 
-    my $group = RT::Group->new($self->CurrentUser);
-    $group->LoadTicketRoleGroup(Type => $args{'Type'}, Ticket => $self->Id);
+    my $group = $self->RoleGroup( $args{'Type'} );
     unless ($group->id) {
         return(0,$self->loc("Group not found"));
     }
@@ -1185,8 +1182,7 @@ sub DeleteWatcher {
         return ( 0, $self->loc("Could not find that principal") );
     }
 
-    my $group = RT::Group->new( $self->CurrentUser );
-    $group->LoadTicketRoleGroup( Type => $args{'Type'}, Ticket => $self->Id );
+    my $group = $self->RoleGroup( $args{'Type'} );
     unless ( $group->id ) {
         return ( 0, $self->loc("Group not found") );
     }
@@ -1390,13 +1386,9 @@ Returns this ticket's Requestors as an RT::Group object
 
 sub Requestors {
     my $self = shift;
-
-    my $group = RT::Group->new($self->CurrentUser);
-    if ( $self->CurrentUserHasRight('ShowTicket') ) {
-        $group->LoadTicketRoleGroup(Type => 'Requestor', Ticket => $self->Id);
-    }
-    return ($group);
-
+    return RT::Group->new($self->CurrentUser)
+        unless $self->CurrentUserHasRight('ShowTicket');
+    return $self->RoleGroup( 'Requestor' );
 }
 
 
@@ -1412,12 +1404,9 @@ If the user doesn't have "ShowTicket" permission, returns an empty group
 sub Cc {
     my $self = shift;
 
-    my $group = RT::Group->new($self->CurrentUser);
-    if ( $self->CurrentUserHasRight('ShowTicket') ) {
-        $group->LoadTicketRoleGroup(Type => 'Cc', Ticket => $self->Id);
-    }
-    return ($group);
-
+    return RT::Group->new($self->CurrentUser)
+        unless $self->CurrentUserHasRight('ShowTicket');
+    return $self->RoleGroup( 'Cc' );
 }
 
 
@@ -1433,12 +1422,9 @@ If the user doesn't have "ShowTicket" permission, returns an empty group
 sub AdminCc {
     my $self = shift;
 
-    my $group = RT::Group->new($self->CurrentUser);
-    if ( $self->CurrentUserHasRight('ShowTicket') ) {
-        $group->LoadTicketRoleGroup(Type => 'AdminCc', Ticket => $self->Id);
-    }
-    return ($group);
-
+    return RT::Group->new($self->CurrentUser)
+        unless $self->CurrentUserHasRight('ShowTicket');
+    return $self->RoleGroup( 'AdminCc' );
 }
 
 
@@ -1470,9 +1456,8 @@ sub IsWatcher {
         @_
     );
 
-    # Load the relevant group. 
-    my $group = RT::Group->new($self->CurrentUser);
-    $group->LoadTicketRoleGroup(Type => $args{'Type'}, Ticket => $self->id);
+    # Load the relevant group.
+    my $group = $self->RoleGroup( $args{'Type'} );
 
     # Find the relevant principal.
     if (!$args{PrincipalId} && $args{Email}) {

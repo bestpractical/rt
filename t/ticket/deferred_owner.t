@@ -13,8 +13,7 @@ ok $tester && $tester->id, 'loaded or created user';
 my $queue = RT::Test->load_or_create_queue( Name => 'General' );
 ok $queue && $queue->id, 'loaded or created queue';
 
-my $owner_role_group = RT::Group->new( RT->SystemUser );
-$owner_role_group->LoadQueueRoleGroup( Type => 'Owner', Queue => $queue->id );
+my $owner_role_group = $queue->RoleGroup( 'Owner' );
 ok $owner_role_group->id, 'loaded owners role group of the queue';
 
 diag "check that deffering owner doesn't regress";

@@ -32,10 +32,8 @@ ok $user && $user->id, 'loaded or created user';
 }
 
 {
-    my $group = RT::Group->new( RT->SystemUser );
-    ok( $group->LoadQueueRoleGroup( Queue => $queue->id, Type=> 'Owner' ),
-        "load queue owners role group"
-    );
+    my $group = $queue->RoleGroup( 'Owner' );
+    ok( $group->Id, "load queue owners role group" );
     my $ace = RT::ACE->new( RT->SystemUser );
     my ($ace_id, $msg) = $group->PrincipalObj->GrantRight(
         Right => 'ReplyToTicket', Object => $queue
@@ -87,10 +85,8 @@ my $ticket;
 
 {
     # Testing of EquivObjects
-    my $group = RT::Group->new( RT->SystemUser );
-    ok( $group->LoadQueueRoleGroup( Queue => $queue->id, Type=> 'AdminCc' ),
-        "load queue AdminCc role group"
-    );
+    my $group = $queue->RoleGroup( 'AdminCc' );
+    ok( $group->Id, "load queue AdminCc role group" );
     my $ace = RT::ACE->new( RT->SystemUser );
     my ($ace_id, $msg) = $group->PrincipalObj->GrantRight(
         Right => 'ModifyTicket', Object => $queue

@@ -28,11 +28,8 @@ my $tester = RT::Test->load_or_create_user(
 );
 ok $tester && $tester->id, 'loaded or created user';
 
-my $cc_role = RT::Group->new( $queue->CurrentUser );
-$cc_role->LoadQueueRoleGroup( Type => 'Cc', Queue => $queue->id );
-
-my $owner_role = RT::Group->new( $queue->CurrentUser );
-$owner_role->LoadQueueRoleGroup( Type => 'Owner', Queue => $queue->id );
+my $cc_role = $queue->RoleGroup( 'Cc' );
+my $owner_role = $queue->RoleGroup( 'Owner' );
 
 ok( RT::Test->set_rights(
     { Principal => $tester, Right => [qw(SeeQueue ShowTicket CreateTicket ReplyToTicket Watch OwnTicket TakeTicket)] },

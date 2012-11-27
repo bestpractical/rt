@@ -707,8 +707,7 @@ sub InsertInitialData {
 
     # system role groups
     foreach my $name (qw(Owner Requestor Cc AdminCc)) {
-        my $group = RT::Group->new( RT->SystemUser );
-        $group->LoadSystemRoleGroup( $name );
+        my $group = RT->System->RoleGroup( $name );
         if ( $group->id ) {
             push @warns, "System role '$name' already exists.";
             next;
@@ -966,12 +965,11 @@ sub InsertData {
                 } elsif ( $item->{'GroupDomain'} eq 'SystemInternal' ) {
                   $princ->LoadSystemInternalGroup( $item->{'GroupType'} );
                 } elsif ( $item->{'GroupDomain'} eq 'RT::System-Role' ) {
-                  $princ->LoadSystemRoleGroup( $item->{'GroupType'} );
+                  $princ->LoadRoleGroup( Object => RT->System, Type => $item->{'GroupType'} );
                 } elsif ( $item->{'GroupDomain'} eq 'RT::Queue-Role' &&
                           $item->{'Queue'} )
                 {
-                  $princ->LoadQueueRoleGroup( Type => $item->{'GroupType'},
-                                              Queue => $object->id);
+                  $princ->LoadRoleGroup( Object => $object, Type => $item->{'GroupType'} );
                 } else {
                   $princ->Load( $item->{'GroupId'} );
                 }
