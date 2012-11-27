@@ -55,7 +55,6 @@
 @import "boxes.css";
 @import "ticket-lists.css";
 @import "ticket-search.css";
-@import "ticket.css";
 @import "misc.css";
 
 % $m->callback(CallbackName => 'End');

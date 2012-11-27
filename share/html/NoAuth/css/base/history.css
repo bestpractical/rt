@@ -60,7 +60,7 @@ div.history-container {
  margin-top: 0.75em;
  border-left: 1px solid #ccc;
 
- border-right: 2px solid #999; 
+ border-right: 2px solid #999;
   border-bottom: 2px solid #999;
 
 }
@@ -87,8 +87,7 @@ div.history-container {
  float: left;
  margin: 0.25em 0.70em 0.25em 0.25em;
  width: 1em;
- height: 1.25em;
- padding: 0.75em 0 0 0;
+ padding: 0;
  border-right: 1px solid #999;
  border-bottom: 1px solid #999;
  -moz-border-radius-bottomright: 0.25em;
@@ -98,30 +97,33 @@ div.history-container {
 
 }
 
-.transaction div.metadata span.type a {
+div.history-container span.type a {
  color: #fff;
+ padding-top: 0.75em;
+ display: block;
 }
 
 
-.transaction div.metadata span.date {
+div.history-container span.date {
  width: 10em;
 }
 
 
-.transaction div.metadata span.description {
+div.history-container span.description {
  margin-left: 1em;
  font-weight: bold;
 }
 
-.transaction div.metadata span.time-taken {
+div.history-container span.time-taken {
  margin-left: 1em;
 }
 
-.transaction div.content {
+div.history-container div.content {
  padding-right: 1em;
  padding-bottom: 0.7em;
  margin-left: 1.5em;
 }
+
 
 .transaction .messagebody {
  font-size: 1em;
@@ -158,7 +160,7 @@ margin-top: 0.5em;
  border-radius: 0.5em;
 }
 
-div.history-container div.downloadattachment .downloadcontenttype {
+div.history-container div.downloadattachment .downloadcontenttype{
 color: #666;
 padding-right:0.25em;
 }
@@ -173,7 +175,7 @@ div.history-container .message-header-key {
 
 div.history-container .messagebody .messagebody{
  font-size: 1em;
- padding: 0; 
+ padding: 0;
  border: 0;
  margin: 0;
 }
@@ -188,93 +190,3 @@ div.history-container .messagebody .messagebody{
 .transaction.message .type { background: #069; }
 .transaction.reminders .type { background: #369; }
 .transaction.other .type { background: #abc; }
-
-
-
-
-.ticket-info-cfs .titlebox-title .left { background-color: #b32; color: #fff;}
-.ticket-info-basics .titlebox-title .left { background-color: #b32;  color: #fff;}
-.ticket-info-people .titlebox-title .left { background-color: #48c;  color: #fff;}
-.ticket-info-requestor .titlebox-title .left { white-space: nowrap; background-color: #48c;  color: #fff;}
-.ticket-info-links .titlebox-title .left { background-color: #316531;  color: #fff;}
-.ticket-info-reminders .titlebox-title .left { background-color: #369;  color: #fff;}
-.ticket-info-dates .titlebox-title .left { background-color: #633063;  color: #fff;}
-.ticket-info-attachments .titlebox-title .left { background-color: #993366;  color: #fff;}
-
-
-.ticket-summary .titlebox-title .left a, .ticket-summary .titlebox-title .left a:visited { color: #fff;}
-
-.unread-messages .titlebox , .unread-messages .titlebox-title .left { 
-  border: 1px solid #99a;
-  border-right: 2px solid #aab;
-  border-bottom: 2px solid #aab;
-
-}
-
-
-.unread-messages .titlebox { 
-  background-color: #dde;
-}
-
-.unread-messages .titlebox-title .left { 
-  background-color: #cce;
-}
-
-.ticket-inactive {
-  text-decoration: line-through;
-  color: #666
-}
-
-table.ticket-summary td.boxcontainer:first-child {
-  width: 50%;
-}
-
-div.requestor-ticket-links {
-    text-align: left;
-    font-size: 0.8em;
-    padding-top: 0.25em;
-}
-
-.more-about-requestor-extra-field .label {
-    display: inline-block;
-    width: 8em;
-    font-weight: bold;
-    text-align: right;
-}
-
-.more-about-requestor-extra-field .value {
-    display: inline-block;
-}
-
-.ticket-info-requestor .more-about-requestor-extra,
-.ticket-info-requestor .comments-about-user,
-.ticket-info-requestor .more-about-requestor-tickets,
-.ticket-info-requestor .more-about-user-groups
-{
-    margin: 1em 0;
-}
-
-.ticket-info-requestor .comments-about-user .label,
-.ticket-info-requestor .more-about-user-groups .label,
-.ticket-info-requestor .more-about-requestor-tickets .label
-{
-    display: block;
-    font-weight: bold;
-    text-align: left;
-}
-
-.ticket-info-requestor .more-about-user-groups .value ul,
-.ticket-info-requestor .more-about-requestor-tickets ul
-{
-    margin-top: 0;
-    margin-bottom: 0;
-}
-
-
-/* textareas get to be bigger when we're in a table */
-tr.edit-custom-field.cftype-Text textarea,
-tr.edit-custom-field.cftype-Freeform input,
-tr.edit-custom-field.cftype-Wikitext textarea
-{
-    width: 100%;
-}
