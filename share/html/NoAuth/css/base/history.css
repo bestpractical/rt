@@ -45,13 +45,13 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-div.history-container div.transaction {
+.transaction {
     border-top: 2px solid #ccc;
     padding-bottom: 0.5em;
     position: relative; /* gives us a container for position: absolute */
 }
 
-div.history-container div.odd {
+.transaction.odd {
  background-color: #fff;
 }
 
@@ -97,28 +97,28 @@ div.history-container {
 
 }
 
-div.history-container span.type a {
+.transaction span.type a {
  color: #fff;
  padding-top: 0.75em;
  display: block;
 }
 
 
-div.history-container span.date {
+.transaction span.date {
  width: 10em;
 }
 
 
-div.history-container span.description {
+.transaction span.description {
  margin-left: 1em;
  font-weight: bold;
 }
 
-div.history-container span.time-taken {
+.transaction span.time-taken {
  margin-left: 1em;
 }
 
-div.history-container div.content {
+.transaction div.content {
  padding-right: 1em;
  padding-bottom: 0.7em;
  margin-left: 1.5em;
@@ -142,7 +142,7 @@ div.history-container div.content {
  max-width: 100%;
 }
 
-div.history-container div.downloadattachment {
+.transaction div.downloadattachment {
 float: right;
 clear: both;
 font-size: 0.9em;
@@ -160,20 +160,20 @@ margin-top: 0.5em;
  border-radius: 0.5em;
 }
 
-div.history-container div.downloadattachment .downloadcontenttype{
+.transaction div.downloadattachment .downloadcontenttype{
 color: #666;
 padding-right:0.25em;
 }
 
 
-div.history-container .message-header-key {
+.transaction .message-header-key {
   width: 7em;
   font-weight: bold;
   color: #666;
 }
 
 
-div.history-container .messagebody .messagebody{
+.transaction .messagebody .messagebody{
  font-size: 1em;
  padding: 0;
  border: 0;
