@@ -1936,11 +1936,11 @@ sub ProcessUpdateMessage {
     if ( $args{ARGSRef}->{'UpdateType'} =~ /^(private|public)$/ ) {
         my ( $Transaction, $Description, $Object ) = $args{TicketObj}->Comment(%message_args);
         push( @results, $Description );
-        $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
+        $Object->UpdateCustomFields( %{ $args{ARGSRef} } ) if $Object;
     } elsif ( $args{ARGSRef}->{'UpdateType'} eq 'response' ) {
         my ( $Transaction, $Description, $Object ) = $args{TicketObj}->Correspond(%message_args);
         push( @results, $Description );
-        $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
+        $Object->UpdateCustomFields( %{ $args{ARGSRef} } ) if $Object;
     } else {
         push( @results,
             loc("Update type was neither correspondence nor comment.") . " " . loc("Update not recorded.") );
@@ -2550,24 +2550,6 @@ sub ProcessTicketReminders {
         }
     }
     return @results;
-}
-
-sub ProcessTicketCustomFieldUpdates {
-    my %args = @_;
-    $args{'Object'} = delete $args{'TicketObj'};
-    my $ARGSRef = { %{ $args{'ARGSRef'} } };
-
-    # Build up a list of objects that we want to work with
-    my %custom_fields_to_mod;
-    foreach my $arg ( keys %$ARGSRef ) {
-        if ( $arg =~ /^Ticket-(\d+-.*)/ ) {
-            $ARGSRef->{"Object-RT::Ticket-$1"} = delete $ARGSRef->{$arg};
-        } elsif ( $arg =~ /^CustomField-(\d+-.*)/ ) {
-            $ARGSRef->{"Object-RT::Ticket--$1"} = delete $ARGSRef->{$arg};
-        }
-    }
-
-    return ProcessObjectCustomFieldUpdates( %args, ARGSRef => $ARGSRef );
 }
 
 sub ProcessObjectCustomFieldUpdates {

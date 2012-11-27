@@ -100,37 +100,6 @@ sub ValidateName {
     return defined $_[1] && length $_[1];
 };
 
-=head2 DeleteCategory
-
-Deletes the category associated with this value
-Returns -1 if there is no Category
-
-=cut
-
-sub DeleteCategory {
-    my $self = shift;
-    my $attr = $self->FirstAttribute('Category') or return (-1,'No Category Set');
-    return $attr->Delete;
-}
-
-=head2 Delete
-
-Make sure we delete our Category when we're deleted
-
-=cut
-
-sub Delete {
-    my $self = shift;
-
-    my ($result, $msg) = $self->DeleteCategory;
-
-    unless ($result) {
-        return ($result, $msg);
-    }
-
-    return $self->SUPER::Delete(@_);
-}
-
 sub _Set { 
     my $self = shift; 
 

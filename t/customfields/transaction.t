@@ -3,7 +3,7 @@ use warnings;
 use strict;
 use Data::Dumper;
 
-use RT::Test nodata => 1, tests => 14;
+use RT::Test nodata => 1, tests => 13;
 use_ok('RT');
 use_ok('RT::Transactions');
 
@@ -43,17 +43,8 @@ is ($txn_cf->id, $cf->id, "It's the right custom field");
 my $values = $trans->CustomFieldValues($txn_cf->id);
 is ($values->Count, 0, "It has no values");
 
-# Old API
-my %cf_updates = ( 'CustomField-'.$cf->id => 'Testing');
-$trans->UpdateCustomFields( ARGSRef => \%cf_updates);
-
- $values = $trans->CustomFieldValues($txn_cf->id);
-is ($values->Count, 1, "It has one value");
-
-# New API
-
-$trans->UpdateCustomFields( 'CustomField-'.$cf->id => 'Test two');
- $values = $trans->CustomFieldValues($txn_cf->id);
-is ($values->Count, 2, "it has two values");
+$trans->UpdateCustomFields( 'CustomField-'.$cf->id => 'Test');
+$values = $trans->CustomFieldValues($txn_cf->id);
+is ($values->Count, 1, "it has a value");
 
 # TODO ok(0, "Should updating custom field values remove old values?");

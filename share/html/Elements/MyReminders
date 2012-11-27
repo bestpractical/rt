@@ -45,7 +45,6 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-%# DEPRECATED
 <&|/Widgets/TitleBox,
     class => 'reminders',
     title => loc("My reminders"),

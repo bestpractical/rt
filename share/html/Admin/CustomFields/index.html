@@ -95,12 +95,6 @@ $Format => undef
 <%INIT>
 my $title = loc('Select a Custom Field');
 
-$Type ||= $ARGS{'type'} || '';
-if ( !$Type && $ARGS{'type'} ) {
-    $Type ||= $ARGS{'type'};
-    $RT::Logger->warning("'type' argument is deprecated use 'Type' instead");
-}
-
 my $CustomFields = RT::CustomFields->new($session{'CurrentUser'});
 $CustomFields->UnLimit;
 $CustomFields->FindAllRows if $ShowDisabled;

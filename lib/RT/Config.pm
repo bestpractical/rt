@@ -592,16 +592,6 @@ our %META = (
         },
     },
     MailPlugins  => { Type => 'ARRAY' },
-    Plugins      => {
-        Type => 'ARRAY',
-        PostLoadCheck => sub {
-            my $self = shift;
-            my $value = $self->Get('Plugins');
-            # XXX Remove in RT 4.2
-            return unless $value and grep {$_ eq "RT::FM"} @{$value};
-            warn 'RTFM has been integrated into core RT, and must be removed from your @Plugins';
-        },
-    },
     GnuPG        => { Type => 'HASH' },
     GnuPGOptions => { Type => 'HASH',
         PostLoadCheck => sub {
@@ -629,15 +619,6 @@ our %META = (
         }
     },
     ReferrerWhitelist => { Type => 'ARRAY' },
-    ResolveDefaultUpdateType => {
-        PostLoadCheck => sub {
-            my $self  = shift;
-            my $value = shift;
-            return unless $value;
-            $RT::Logger->info('The ResolveDefaultUpdateType config option has been deprecated.  '.
-                              'You can change the site default in your %Lifecycles config.');
-        }
-    },
     WebPath => {
         PostLoadCheck => sub {
             my $self  = shift;
@@ -787,34 +768,9 @@ our %META = (
         },
         PostLoadCheck => sub {
             my $self = shift;
+            # XXX: deprecated, remove in 4.4
             $RT::Logger->info("You set \$LogToScreen in your config, but it's been renamed to \$LogToSTDERR.  Please update your config.")
                 if $self->Meta('LogToScreen')->{'Source'}{'Package'};
-        },
-    },
-    ActiveStatus => {
-        Type => 'ARRAY',
-        PostLoadCheck => sub {
-            my $self  = shift;
-            return unless shift;
-            # XXX Remove in RT 4.2
-            warn <<EOT;
-The ActiveStatus configuration has been replaced by the new Lifecycles
-functionality. You should set the 'active' property of the 'default'
-lifecycle and add transition rules; see RT_Config.pm for documentation.
-EOT
-        },
-    },
-    InactiveStatus => {
-        Type => 'ARRAY',
-        PostLoadCheck => sub {
-            my $self  = shift;
-            return unless shift;
-            # XXX Remove in RT 4.2
-            warn <<EOT;
-The InactiveStatus configuration has been replaced by the new Lifecycles
-functionality. You should set the 'inactive' property of the 'default'
-lifecycle and add transition rules; see RT_Config.pm for documentation.
-EOT
         },
     },
     CustomFieldGroupings => {

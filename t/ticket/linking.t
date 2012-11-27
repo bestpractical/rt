@@ -17,9 +17,6 @@ my $filename = File::Spec->catfile( RT::Test->temp_directory, 'link_count' );
 open my $fh, '>', $filename or die $!;
 close $fh;
 
-my $link_scrips_orig = RT->Config->Get( 'LinkTransactionsRun1Scrip' );
-RT->Config->Set( 'LinkTransactionsRun1Scrip', 1 );
-
 my $link_acl_checks_orig = RT->Config->Get( 'StrictLinkACL' );
 RT->Config->Set( 'StrictLinkACL', 1);
 
@@ -125,8 +122,8 @@ diag('Create tickets with rights checks on one end of a link');
     $child->CurrentUser( RT->SystemUser );
     is($child->_Links('Base')->Count, 1, 'link was created');
     is($child->_Links('Target')->Count, 0, 'link was created only one');
-    # no scrip run on second ticket accroding to config option
-    is(link_count($filename), undef, "scrips ok");
+    # only one scrip run (on second ticket) since this is on a ticket Create txn
+    is(link_count($filename), 1, "scrips ok");
     RT->Config->Set( StrictLinkACL => 1 );
 }
 
@@ -144,7 +141,7 @@ diag('try to add link without rights');
     ok($id,$msg);
     ($id, $msg) = $child->AddLink(Type => 'MemberOf', Target => $parent->id);
     ok(!$id, $msg);
-    is(link_count($filename), undef, "scrips ok");
+    is(link_count($filename), 0, "scrips ok");
     $child->CurrentUser( RT->SystemUser );
     is($child->_Links('Base')->Count, 0, 'link was not created, no permissions');
     is($child->_Links('Target')->Count, 0, 'link was not create, no permissions');
@@ -162,7 +159,7 @@ diag('add link with rights only on base');
     ok($id,$msg);
     ($id, $msg) = $child->AddLink(Type => 'MemberOf', Target => $parent->id);
     ok($id, $msg);
-    is(link_count($filename), 1, "scrips ok");
+    is(link_count($filename), 2, "scrips ok");
     $child->CurrentUser( RT->SystemUser );
     is($child->_Links('Base')->Count, 1, 'link was created');
     is($child->_Links('Target')->Count, 0, 'link was created only one');
@@ -170,9 +167,9 @@ diag('add link with rights only on base');
 
     # turn off feature and try to delete link, we should fail
     RT->Config->Set( StrictLinkACL => 1 );
-    ($id, $msg) = $child->AddLink(Type => 'MemberOf', Target => $parent->id);
+    ($id, $msg) = $child->DeleteLink(Type => 'MemberOf', Target => $parent->id);
     ok(!$id, $msg);
-    is(link_count($filename), 1, "scrips ok");
+    is(link_count($filename), 0, "scrips ok");
     $child->CurrentUser( RT->SystemUser );
     $child->_Links('Base')->_DoCount;
     is($child->_Links('Base')->Count, 1, 'link was not deleted');
@@ -182,7 +179,7 @@ diag('add link with rights only on base');
     RT->Config->Set( StrictLinkACL => 0 );
     ($id, $msg) = $child->DeleteLink(Type => 'MemberOf', Target => $parent->id);
     ok($id, $msg);
-    is(link_count($filename), 0, "scrips ok");
+    is(link_count($filename), -2, "scrips ok");
     $child->CurrentUser( RT->SystemUser );
     $child->_Links('Base')->_DoCount;
     is($child->_Links('Base')->Count, 0, 'link was deleted');
@@ -217,7 +214,7 @@ ok ($id,$msg);
 ok ($id,$msg);
 ($id,$msg) = $ticket->AddLink(Type => 'RefersTo', Target => $ticket2->id);
 ok($id,$msg);
-is(link_count($filename), 1, "scrips ok");
+is(link_count($filename), 2, "scrips ok");
 
 warnings_like {
     ($id,$msg) = $ticket->AddLink(Type => 'RefersTo', Target => -1);
@@ -228,7 +225,7 @@ warnings_like {
 
 ($id,$msg) = $ticket->AddLink(Type => 'RefersTo', Target => $ticket2->id);
 ok($id,$msg);
-is(link_count($filename), 1, "scrips ok");
+is(link_count($filename), 0, "scrips ok"); # already added
 
 my $transactions = $ticket2->Transactions;
 $transactions->Limit( FIELD => 'Type', VALUE => 'AddLink' );
@@ -238,21 +235,19 @@ is( $transactions->First->NewValue , $ticket->URI );
 
 ($id,$msg) = $ticket->DeleteLink(Type => 'RefersTo', Target => $ticket2->id);
 ok($id,$msg);
-is(link_count($filename), 0, "scrips ok");
+is(link_count($filename), -2, "scrips ok");
 $transactions = $ticket2->Transactions;
 $transactions->Limit( FIELD => 'Type', VALUE => 'DeleteLink' );
 is( $transactions->Count, 1, "Transaction found in other ticket" );
 is( $transactions->First->Field , 'ReferredToBy');
 is( $transactions->First->OldValue , $ticket->URI );
 
-RT->Config->Set( LinkTransactionsRun1Scrip => 0 );
-
 ($id,$msg) =$ticket->AddLink(Type => 'RefersTo', Target => $ticket2->id);
 ok($id,$msg);
 is(link_count($filename), 2, "scrips ok");
 ($id,$msg) =$ticket->DeleteLink(Type => 'RefersTo', Target => $ticket2->id);
 ok($id,$msg);
-is(link_count($filename), 0, "scrips ok");
+is(link_count($filename), -2, "scrips ok");
 
 # tests for silent behaviour
 ($id,$msg) = $ticket->AddLink(Type => 'RefersTo', Target => $ticket2->id, Silent => 1);
@@ -287,7 +282,7 @@ is(link_count($filename), 1, "scrips ok");
 }
 ($id,$msg) =$ticket->DeleteLink(Type => 'RefersTo', Target => $ticket2->id, SilentBase => 1);
 ok($id,$msg);
-is(link_count($filename), 0, "scrips ok");
+is(link_count($filename), -1, "scrips ok");
 
 ($id,$msg) = $ticket->AddLink(Type => 'RefersTo', Target => $ticket2->id, SilentTarget => 1);
 ok($id,$msg);
@@ -303,11 +298,10 @@ is(link_count($filename), 1, "scrips ok");
 }
 ($id,$msg) =$ticket->DeleteLink(Type => 'RefersTo', Target => $ticket2->id, SilentTarget => 1);
 ok($id,$msg);
-is(link_count($filename), 0, "scrips ok");
+is(link_count($filename), -1, "scrips ok");
 
 
 # restore
-RT->Config->Set( LinkTransactionsRun1Scrip => $link_scrips_orig );
 RT->Config->Set( StrictLinkACL => $link_acl_checks_orig );
 
 {
@@ -388,8 +382,9 @@ sub link_count {
     open( my $fh, '<', $file ) or die "couldn't open $file";
     my $data = <$fh>;
     close $fh;
+    truncate($file, 0);
 
-    return undef unless $data;
+    return 0 unless defined $data;
     chomp $data;
     return $data + 0;
 }

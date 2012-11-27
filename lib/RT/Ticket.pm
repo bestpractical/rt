@@ -636,7 +636,7 @@ sub Create {
 
         if ( $self->Id && $Trans ) {
 
-            $TransObj->UpdateCustomFields(ARGSRef => \%args);
+            $TransObj->UpdateCustomFields( %args );
 
             $RT::Logger->info( "Ticket " . $self->Id . " created in queue '" . $QueueObj->Name . "' by " . $self->CurrentUser->Name );
             $ErrStr = $self->loc( "Ticket [_1] created in queue '[_2]'", $self->Id, $QueueObj->Name );
@@ -731,201 +731,6 @@ sub _Parse822HeadersForAttributes {
 
     return (%args);
 }
-
-
-
-=head2 Import PARAMHASH
-
-Import a ticket. 
-Doesn\'t create a transaction. 
-Doesn\'t supply queue defaults, etc.
-
-Returns: TICKETID
-
-=cut
-
-sub Import {
-    my $self = shift;
-    my ( $ErrStr, $QueueObj, $Owner );
-
-    my %args = (
-        id              => undef,
-        EffectiveId     => undef,
-        Queue           => undef,
-        Requestor       => undef,
-        Type            => 'ticket',
-        Owner           => RT->Nobody->Id,
-        Subject         => '[no subject]',
-        InitialPriority => undef,
-        FinalPriority   => undef,
-        Status          => 'new',
-        TimeWorked      => "0",
-        Due             => undef,
-        Created         => undef,
-        Updated         => undef,
-        Resolved        => undef,
-        Told            => undef,
-        @_
-    );
-
-    if ( ( defined( $args{'Queue'} ) ) && ( !ref( $args{'Queue'} ) ) ) {
-        $QueueObj = RT::Queue->new(RT->SystemUser);
-        $QueueObj->Load( $args{'Queue'} );
-
-        #TODO error check this and return 0 if it\'s not loading properly +++
-    }
-    elsif ( ref( $args{'Queue'} ) eq 'RT::Queue' ) {
-        $QueueObj = RT::Queue->new(RT->SystemUser);
-        $QueueObj->Load( $args{'Queue'}->Id );
-    }
-    else {
-        $RT::Logger->debug(
-            "$self " . $args{'Queue'} . " not a recognised queue object." );
-    }
-
-    #Can't create a ticket without a queue.
-    unless ( defined($QueueObj) and $QueueObj->Id ) {
-        $RT::Logger->debug("$self No queue given for ticket creation.");
-        return ( 0, $self->loc('Could not create ticket. Queue not set') );
-    }
-
-    #Now that we have a queue, Check the ACLS
-    unless (
-        $self->CurrentUser->HasRight(
-            Right    => 'CreateTicket',
-            Object => $QueueObj
-        )
-      )
-    {
-        return ( 0,
-            $self->loc("No permission to create tickets in the queue '[_1]'"
-              , $QueueObj->Name));
-    }
-
-    # Deal with setting the owner
-
-    # Attempt to take user object, user name or user id.
-    # Assign to nobody if lookup fails.
-    if ( defined( $args{'Owner'} ) ) {
-        if ( ref( $args{'Owner'} ) ) {
-            $Owner = $args{'Owner'};
-        }
-        else {
-            $Owner = RT::User->new( $self->CurrentUser );
-            $Owner->Load( $args{'Owner'} );
-            if ( !defined( $Owner->id ) ) {
-                $Owner->Load( RT->Nobody->id );
-            }
-        }
-    }
-
-    #If we have a proposed owner and they don't have the right 
-    #to own a ticket, scream about it and make them not the owner
-    if (
-        ( defined($Owner) )
-        and ( $Owner->Id != RT->Nobody->Id )
-        and (
-            !$Owner->HasRight(
-                Object => $QueueObj,
-                Right    => 'OwnTicket'
-            )
-        )
-      )
-    {
-
-        $RT::Logger->warning( "$self user "
-              . $Owner->Name . "("
-              . $Owner->id
-              . ") was proposed "
-              . "as a ticket owner but has no rights to own "
-              . "tickets in '"
-              . $QueueObj->Name . "'" );
-
-        $Owner = undef;
-    }
-
-    #If we haven't been handed a valid owner, make it nobody.
-    unless ( defined($Owner) ) {
-        $Owner = RT::User->new( $self->CurrentUser );
-        $Owner->Load( RT->Nobody->UserObj->Id );
-    }
-
-    # }}}
-
-    unless ( $self->ValidateStatus( $args{'Status'} ) ) {
-        return ( 0, $self->loc("'[_1]' is an invalid value for status", $args{'Status'}) );
-    }
-
-    $self->{'_AccessibleCache'}{Created}       = { 'read' => 1, 'write' => 1 };
-    $self->{'_AccessibleCache'}{Creator}       = { 'read' => 1, 'auto'  => 1 };
-    $self->{'_AccessibleCache'}{LastUpdated}   = { 'read' => 1, 'write' => 1 };
-    $self->{'_AccessibleCache'}{LastUpdatedBy} = { 'read' => 1, 'auto'  => 1 };
-
-    # If we're coming in with an id, set that now.
-    my $EffectiveId = undef;
-    if ( $args{'id'} ) {
-        $EffectiveId = $args{'id'};
-
-    }
-
-    my $id = $self->SUPER::Create(
-        id              => $args{'id'},
-        EffectiveId     => $EffectiveId,
-        Queue           => $QueueObj->Id,
-        Owner           => $Owner->Id,
-        Subject         => $args{'Subject'},        # loc
-        InitialPriority => $args{'InitialPriority'},    # loc
-        FinalPriority   => $args{'FinalPriority'},    # loc
-        Priority        => $args{'InitialPriority'},    # loc
-        Status          => $args{'Status'},        # loc
-        TimeWorked      => $args{'TimeWorked'},        # loc
-        Type            => $args{'Type'},        # loc
-        Created         => $args{'Created'},        # loc
-        Told            => $args{'Told'},        # loc
-        LastUpdated     => $args{'Updated'},        # loc
-        Resolved        => $args{'Resolved'},        # loc
-        Due             => $args{'Due'},        # loc
-    );
-
-    # If the ticket didn't have an id
-    # Set the ticket's effective ID now that we've created it.
-    if ( $args{'id'} ) {
-        $self->Load( $args{'id'} );
-    }
-    else {
-        my ( $val, $msg ) =
-          $self->__Set( Field => 'EffectiveId', Value => $id );
-
-        unless ($val) {
-            $RT::Logger->err(
-                $self . "->Import couldn't set EffectiveId: $msg" );
-        }
-    }
-
-    my $create_groups_ret = $self->_CreateTicketGroups();
-    unless ($create_groups_ret) {
-        $RT::Logger->crit(
-            "Couldn't create ticket groups for ticket " . $self->Id );
-    }
-
-    $self->OwnerGroup->_AddMember( PrincipalId => $Owner->PrincipalId );
-
-    foreach my $watcher ( @{ $args{'Cc'} } ) {
-        $self->_AddWatcher( Type => 'Cc', Email => $watcher, Silent => 1 );
-    }
-    foreach my $watcher ( @{ $args{'AdminCc'} } ) {
-        $self->_AddWatcher( Type => 'AdminCc', Email => $watcher,
-            Silent => 1 );
-    }
-    foreach my $watcher ( @{ $args{'Requestor'} } ) {
-        $self->_AddWatcher( Type => 'Requestor', Email => $watcher,
-            Silent => 1 );
-    }
-
-    return ( $self->Id, $ErrStr );
-}
-
-
 
 
 =head2 _CreateTicketGroups
@@ -1816,12 +1621,16 @@ sub DueObj {
 
 =head2 DueAsString
 
-Returns this ticket's due date as a human readable string
+Returns this ticket's due date as a human readable string.
+
+B<DEPRECATED> and will be removed in 4.4; use C<<
+$ticket->DueObj->AsString >> instead.
 
 =cut
 
 sub DueAsString {
     my $self = shift;
+    $RT::Logger->warning("RT::Ticket->DueAsString is deprecated and will be removed in RT 4.4; use ->DueObj->AsString instead");
     return $self->DueObj->AsString();
 }
 
@@ -1989,12 +1798,14 @@ sub ToldObj {
 
 A convenience method that returns ToldObj->AsString
 
-TODO: This should be deprecated
+B<DEPRECATED> and will be removed in 4.4; use C<<
+$ticket->ToldObj->AsString >> instead.
 
 =cut
 
 sub ToldAsString {
     my $self = shift;
+    $RT::Logger->warning("RT::Ticket->ToldAsString is deprecated and will be removed in RT 4.4; use ->ToldObj->AsString instead");
     if ( $self->Told ) {
         return $self->ToldObj->AsString();
     }
@@ -2005,39 +1816,45 @@ sub ToldAsString {
 
 
 
-=head2 TimeWorkedAsString
-
-Returns the amount of time worked on this ticket as a Text String
-
-=cut
-
-sub TimeWorkedAsString {
+sub _DurationAsString {
     my $self = shift;
-    my $value = $self->TimeWorked;
-
-    # return the # of minutes worked turned into seconds and written as
-    # a simple text string, this is not really a date object, but if we
-    # diff a number of seconds vs the epoch, we'll get a nice description
-    # of time worked.
+    my $value = shift;
     return "" unless $value;
     return RT::Date->new( $self->CurrentUser )
         ->DurationAsString( $value * 60 );
 }
 
+=head2 TimeWorkedAsString
 
+Returns the amount of time worked on this ticket as a text string.
+
+=cut
+
+sub TimeWorkedAsString {
+    my $self = shift;
+    return $self->_DurationAsString( $self->TimeWorked );
+}
 
 =head2  TimeLeftAsString
 
-Returns the amount of time left on this ticket as a Text String
+Returns the amount of time left on this ticket as a text string.
 
 =cut
 
 sub TimeLeftAsString {
     my $self = shift;
-    my $value = $self->TimeLeft;
-    return "" unless $value;
-    return RT::Date->new( $self->CurrentUser )
-        ->DurationAsString( $value * 60 );
+    return $self->_DurationAsString( $self->TimeLeft );
+}
+
+=head2  TimeEstimatedAsString
+
+Returns the amount of time estimated on this ticket as a text string.
+
+=cut
+
+sub TimeEstimatedAsString {
+    my $self = shift;
+    return $self->_DurationAsString( $self->TimeEstimated );
 }
 
 

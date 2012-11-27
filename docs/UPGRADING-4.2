@@ -10,3 +10,7 @@ UPGRADING FROM RT 4.0.0 and greater
   %RT::Ticket::LINKTYPEMAP, RT::Ticket->LINKDIRMAP, RT::Ticket->LINKTYPEMAP, or
   %RT::Record::LINKDIRMAP, you will need to switch to %RT::Link::DIRMAP and
   %RT::Link::TYPEMAP.
+
+* $LinkTransactionsRun1Scrip is removed.  If you were relying on this behaviour
+  (by setting it to 1), you should adjust your scrips to ignore one of the link
+  transactions.
