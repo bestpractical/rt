@@ -689,10 +689,20 @@ sub CreateRoleGroup {
         return ( 0, $self->loc("Role group exists already") );
     }
 
-    return $self->_Create(
+    my ($id, $msg) = $self->_Create(
         InsideTransaction => 1,
         %create,
     );
+
+    if ($self->SingleMemberRoleGroup) {
+        $self->_AddMember(
+            PrincipalId => RT->Nobody->Id,
+            InsideTransaction => 1,
+            RecordTransaction => 0,
+        );
+    }
+
+    return ($id, $msg);
 }
 
 =head2 ValidateRoleGroup
@@ -712,6 +722,17 @@ sub ValidateRoleGroup {
     return 0 unless $class and $class->can('HasRole');
 
     return $class->HasRole($args{Type});
+}
+
+=head2 SingleMemberRoleGroup
+
+=cut
+
+sub SingleMemberRoleGroup {
+    my $self = shift;
+    my ($class) = $self->Domain =~ /^(.+)-Role$/;
+    return unless $class;
+    return $class->_ROLES->{$self->Type}{Single};
 }
 
 =head2 Delete
@@ -1037,6 +1058,14 @@ sub _AddMember {
         return ( 0, $self->loc("Groups can't be members of their members"));
     }
 
+    if ($self->SingleMemberRoleGroup) {
+        # Purge all previous members
+        for my $member (@{$self->MembersObj->ItemsArrayRef}) {
+            my ($ok, $msg) = $member->Delete();
+            return(0, $self->loc("Couldn't remove previous member: [_1]", $msg))
+                unless $ok;
+        }
+    }
 
     my $member_object = RT::GroupMember->new( $self->CurrentUser );
     my $id = $member_object->Create(

@@ -96,6 +96,7 @@ for my $role (sort keys %ROLES) {
     RT::Ticket->RegisterRole(
         Name            => $role,
         EquivClasses    => ['RT::Queue'],
+        ( $role eq "Owner" ? ( Single => 1) : () ),
     );
 }
 
@@ -496,15 +497,11 @@ sub Create {
         );
     }
 
-    # Set the owner in the Groups table
-    # We denormalize it into the Ticket table too because doing otherwise would
-    # kill performance, bigtime. It gets kept in lockstep thanks to the magic of transactionalization
+    # Set the owner in the Groups table.
     $self->OwnerGroup->_AddMember(
         PrincipalId       => $Owner->PrincipalId,
-        InsideTransaction => 1
-    ) unless $DeferOwner;
-
-
+        InsideTransaction => 1,
+    );
 
     # Deal with setting up watchers
 
@@ -629,10 +626,6 @@ sub Create {
                 InsideTransaction => 1,
             );
         } else {
-            $self->OwnerGroup->_AddMember(
-                PrincipalId       => RT->Nobody->PrincipalId,
-                InsideTransaction => 1,
-            );
             $RT::Logger->warning( "User " . $DeferOwner->Name . "(" . $DeferOwner->id
                 . ") was proposed as a ticket owner but has no rights to own "
                 . "tickets in " . $QueueObj->Name );
@@ -2773,31 +2766,18 @@ sub SetOwner {
     }
 
     my ( $val, $msg ) = $self->_IsProposedOwnerChangeValid( $NewOwnerObj, $Type );
-    if ( !$val ) {
+    unless ($val) {
         $RT::Handle->Rollback();
         return ( $val, $msg );
     }
 
-    # Delete the owner in the owner group, then add a new one
-    # TODO: is this safe? it's not how we really want the API to work
-    # for most things, but it's fast.
-    my ( $del_id, $del_msg );
-    for my $owner (@{$self->OwnerGroup->MembersObj->ItemsArrayRef}) {
-        ($del_id, $del_msg) = $owner->Delete();
-        last unless ($del_id);
-    }
-
-    unless ($del_id) {
+    ($val, $msg ) = $self->OwnerGroup->_AddMember(
+        PrincipalId       => $NewOwnerObj->PrincipalId,
+        InsideTransaction => 1,
+    );
+    unless ($val) {
         $RT::Handle->Rollback();
-        return ( 0, $self->loc("Could not change owner: [_1]", $del_msg) );
-    }
-
-    my ( $add_id, $add_msg ) = $self->OwnerGroup->_AddMember(
-                                       PrincipalId => $NewOwnerObj->PrincipalId,
-                                       InsideTransaction => 1 );
-    unless ($add_id) {
-        $RT::Handle->Rollback();
-        return ( 0, $self->loc("Could not change owner: [_1]", $add_msg ) );
+        return ( 0, $self->loc("Could not change owner: [_1]", $msg ) );
     }
 
     ( $val, $msg ) = $self->_Set(

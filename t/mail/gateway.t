@@ -639,6 +639,8 @@ EOF
 close (MAIL);
 is ($? >> 8, 0, "The mail gateway exited normally");
 
+DBIx::SearchBuilder::Record::Cachable->FlushCache;
+
 $tick = RT::Ticket->new(RT->SystemUser);
 $tick->Load( $id );
 is( $tick->Id, $id, 'load correct ticket');
