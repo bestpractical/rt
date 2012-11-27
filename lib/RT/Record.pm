@@ -2076,6 +2076,12 @@ sub RegisterRole {
     );
     return unless $role{Name};
 
+    # Keep track of the class this role came from originally
+    $role{ Class } ||= $class;
+
+    # Some groups are limited to a single user
+    $role{ Single } = 1 if $role{Column};
+
     # Stash the role on ourself
     $class->_ROLES->{ $role{Name} } = \%role;
 

@@ -96,7 +96,7 @@ for my $role (sort keys %ROLES) {
     RT::Ticket->RegisterRole(
         Name            => $role,
         EquivClasses    => ['RT::Queue'],
-        ( $role eq "Owner" ? ( Single => 1) : () ),
+        ( $role eq "Owner" ? ( Column => "Owner") : () ),
     );
 }
 
@@ -432,7 +432,6 @@ sub Create {
 
     my %params = (
         Queue           => $QueueObj->Id,
-        Owner           => $Owner->Id,
         Subject         => $args{'Subject'},
         InitialPriority => $args{'InitialPriority'},
         FinalPriority   => $args{'FinalPriority'},
@@ -497,10 +496,13 @@ sub Create {
         );
     }
 
-    # Set the owner in the Groups table.
+    # Set the owner group; this also sets the denormalized Owner field
+    # appropriately.
     $self->OwnerGroup->_AddMember(
         PrincipalId       => $Owner->PrincipalId,
         InsideTransaction => 1,
+        RecordTransaction => 0,
+        Object            => $self,
     );
 
     # Deal with setting up watchers
@@ -620,10 +622,11 @@ sub Create {
     # doing clever things with RT's ACL system.
     if ($DeferOwner) {
         if ( $DeferOwner->HasRight( Object => $self, Right => 'OwnTicket' ) ) {
-            $self->__Set( Field => 'Owner', Value => $DeferOwner->id );
             $self->OwnerGroup->_AddMember(
                 PrincipalId       => $DeferOwner->PrincipalId,
                 InsideTransaction => 1,
+                RecordTransaction => 0,
+                Object            => $self,
             );
         } else {
             $RT::Logger->warning( "User " . $DeferOwner->Name . "(" . $DeferOwner->id
@@ -2774,18 +2777,8 @@ sub SetOwner {
     ($val, $msg ) = $self->OwnerGroup->_AddMember(
         PrincipalId       => $NewOwnerObj->PrincipalId,
         InsideTransaction => 1,
+        Object            => $self,
     );
-    unless ($val) {
-        $RT::Handle->Rollback();
-        return ( 0, $self->loc("Could not change owner: [_1]", $msg ) );
-    }
-
-    ( $val, $msg ) = $self->_Set(
-        Field    => 'Owner',
-        Value    => $NewOwnerObj->Id,
-        CheckACL => 0,                  # don't check acl
-    );
-
     unless ($val) {
         $RT::Handle->Rollback;
         return ( 0, $self->loc("Could not change owner: [_1]", $msg) );

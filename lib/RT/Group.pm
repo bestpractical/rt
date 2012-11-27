@@ -668,7 +668,8 @@ sub CreateRoleGroup {
                  @_ );
 
     # Translate Object to Domain + Instance
-    if ( my $object = delete $args{Object} ) {
+    my $object = delete $args{Object};
+    if ( $object ) {
         $args{Domain}   = ref($object) . "-Role";
         $args{Instance} = $object->id;
     }
@@ -699,6 +700,7 @@ sub CreateRoleGroup {
             PrincipalId => RT->Nobody->Id,
             InsideTransaction => 1,
             RecordTransaction => 0,
+            Object => $object,
         );
     }
 
@@ -740,6 +742,23 @@ sub SingleMemberRoleGroup {
     my $class = $self->RoleClass;
     return unless $class;
     return $class->_ROLES->{$self->Type}{Single};
+}
+
+sub SingleMemberRoleGroupColumn {
+    my $self = shift;
+    my ($class) = $self->Domain =~ /^(.+)-Role$/;
+    return unless $class;
+    return unless $class->_ROLES->{$self->Type}{Class} eq $class;
+    return $class->_ROLES->{$self->Type}{Column};
+}
+
+sub RoleGroupObject {
+    my $self = shift;
+    my ($class) = $self->Domain =~ /^(.+)-Role$/;
+    return unless $class;
+    my $obj = $class->new( $self->CurrentUser );
+    $obj->Load( $self->Instance );
+    return $obj;
 }
 
 =head2 Delete
@@ -1031,6 +1050,7 @@ sub _AddMember {
     my $self = shift;
     my %args = ( PrincipalId => undef,
                  InsideTransaction => undef,
+                 RecordTransaction => 1,
                  @_);
     my $new_member = $args{'PrincipalId'};
 
@@ -1083,6 +1103,19 @@ sub _AddMember {
     for my $member (@purge) {
         my ($ok, $msg) = $member->Delete();
         return(0, $self->loc("Couldn't remove previous member: [_1]", $msg))
+            unless $ok;
+    }
+
+    # Update the column
+    if (my $col = $self->SingleMemberRoleGroupColumn) {
+        my $obj = $args{Object} || $self->RoleGroupObject;
+        my ($ok, $msg) = $obj->_Set(
+            Field    => $col,
+            Value    => $new_member_obj->Id,
+            CheckACL => 0,                  # don't check acl
+            RecordTransaction => $args{'RecordTransaction'},
+        );
+        return (0, $self->loc("Could not update column $col: [_1]", $msg))
             unless $ok;
     }
 
