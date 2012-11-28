@@ -160,6 +160,15 @@ my $COLUMN_MAP = {
     } qw(WebPath WebBaseURL WebURL)),
     WebRequestPath    => { value => sub { substr( $m->request_path, 1 ) } },
     WebRequestPathDir => { value => sub { substr( $m->request_comp->dir_path, 1 ) } },
+    WebHomePath       => {
+        value => sub {
+            my $path = RT->Config->Get("WebPath");
+            if (not $session{CurrentUser}->Privileged) {
+                $path .= "/SelfService";
+            }
+            return \$path;
+        },
+    },
 };
 
 $COLUMN_MAP->{'CF'} = $COLUMN_MAP->{'CustomField'};
