@@ -1226,13 +1226,17 @@ sub _DeleteMember {
     #Now that we've checked ACLs and sanity, delete the groupmember
     my $val = $member_obj->Delete();
 
-    if ($val) {
-        return ( $val, $self->loc("Member deleted") );
-    }
-    else {
+    unless ($val) {
         $RT::Logger->debug("Failed to delete group ".$self->Id." member ". $member_id);
         return ( 0, $self->loc("Member not deleted" ));
     }
+
+    $self->_AddMember(
+        PrincipalId => RT->Nobody->Id,
+        RecordTransaction => 0,
+    ) if $self->SingleMemberRoleGroup;
+
+    return ( $val, $self->loc("Member deleted") );
 }
 
 
