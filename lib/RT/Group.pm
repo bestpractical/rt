@@ -665,6 +665,7 @@ sub CreateRoleGroup {
                  Type     => undef,
                  Domain   => undef,
                  Object   => undef,
+                 InsideTransaction => 1,
                  @_ );
 
     # Translate Object to Domain + Instance
@@ -691,14 +692,14 @@ sub CreateRoleGroup {
     }
 
     my ($id, $msg) = $self->_Create(
-        InsideTransaction => 1,
+        InsideTransaction => $args{InsideTransaction},
         %create,
     );
 
     if ($self->SingleMemberRoleGroup) {
         $self->_AddMember(
             PrincipalId => RT->Nobody->Id,
-            InsideTransaction => 1,
+            InsideTransaction => $args{InsideTransaction},
             RecordTransaction => 0,
             Object => $object,
         );
