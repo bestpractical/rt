@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 35;
+use RT::Test tests => 43;
 
 my ( $baseurl, $m ) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
@@ -183,4 +183,45 @@ diag 'check invalid inputs';
 
     $m->content_contains('test cf date:', 'has no cf date field on the page' );
     $m->content_lacks('foodate', 'invalid dates not set' );
+}
+
+diag 'retain values when adding attachments';
+{
+    my ( $ticket, $id );
+
+    $m->submit_form(
+        form_name => "CreateTicketInQueue",
+        fields    => { Queue => 'General' },
+    );
+    $m->content_contains('Select date', 'has cf field' );
+
+    $m->submit_form_ok(
+        { form_name => "TicketCreate",
+          fields    => {
+              Subject        => 'test 2015-06-04',
+              Content        => 'test',
+        },},
+        'Create test ticket'
+    );
+
+    ok( ($id) = $m->content =~ /Ticket (\d+) created/, "Created ticket $id" );
+    $m->follow_link_ok( {text => 'Jumbo'} );
+    $m->title_like( qr/Jumbo/ );
+
+    $m->submit_form_ok(
+        { form_name => "TicketModifyAll",
+          fields    => {
+            "Object-RT::Ticket-$id-CustomField-$cfid-Values" => '2015-06-04',
+          },
+          button => 'AddMoreAttach',
+      },
+        'Create test ticket'
+    );
+
+    $m->title_like( qr/Jumbo/ );
+
+    $m->form_name("TicketModifyAll");
+    is($m->value("Object-RT::Ticket-$id-CustomField-$cfid-Values"),
+       "2015-06-04",
+       "Date value still on form" );
 }
