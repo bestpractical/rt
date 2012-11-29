@@ -57,7 +57,7 @@ unless ((defined $Default) or
                            $year+1900,$mon+1,$mday,                            
                            $hour,$min);   
 }
-$Value = $Value || $Default;
+$Value = $Value || $Default || '';
 
 unless ($Name) {
 	$Name = $menu_prefix. "_Date";

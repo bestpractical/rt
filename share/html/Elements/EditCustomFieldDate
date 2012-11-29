@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % my $name = $NamePrefix.$CustomField->Id.'-Values';
-<& /Elements/SelectDate, Name => "$name", current => 0, ShowTime => 0 &> (<%$DateObj->AsString(Time => 0)%>)
+<& /Elements/SelectDate, Name => "$name", current => 0, Default => $Default, ShowTime => 0 &> (<%$DateObj->AsString(Time => 0)%>)
 
 <%INIT>
 my $DateObj = RT::Date->new ( $session{'CurrentUser'} );
