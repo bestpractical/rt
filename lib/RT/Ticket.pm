@@ -353,80 +353,10 @@ sub Create {
 
     # }}}
 
-    # Deal with setting the owner
-
-    my $Owner;
-    if ( ref( $args{'Owner'} ) eq 'RT::User' ) {
-        if ( $args{'Owner'}->id ) {
-            $Owner = $args{'Owner'};
-        } else {
-            $RT::Logger->error('Passed an empty RT::User for owner');
-            push @non_fatal_errors,
-                $self->loc("Owner could not be set.") . " ".
-            $self->loc("Invalid value for [_1]",loc('owner'));
-            $Owner = undef;
-        }
-    }
-
-    #If we've been handed something else, try to load the user.
-    elsif ( $args{'Owner'} ) {
-        $Owner = RT::User->new( $self->CurrentUser );
-        $Owner->Load( $args{'Owner'} );
-        if (!$Owner->id) {
-            $Owner->LoadByEmail( $args{'Owner'} )
-        }
-        unless ( $Owner->Id ) {
-            push @non_fatal_errors,
-                $self->loc("Owner could not be set.") . " "
-              . $self->loc( "User '[_1]' could not be found.", $args{'Owner'} );
-            $Owner = undef;
-        }
-    }
-
-    #If we have a proposed owner and they don't have the right
-    #to own a ticket, scream about it and make them not the owner
-   
-    my $DeferOwner;  
-    if ( $Owner && $Owner->Id != RT->Nobody->Id 
-        && !$Owner->HasRight( Object => $QueueObj, Right  => 'OwnTicket' ) )
-    {
-        $DeferOwner = $Owner;
-        $Owner = undef;
-        $RT::Logger->debug('going to deffer setting owner');
-
-    }
-
-    #If we haven't been handed a valid owner, make it nobody.
-    unless ( defined($Owner) && $Owner->Id ) {
-        $Owner = RT::User->new( $self->CurrentUser );
-        $Owner->Load( RT->Nobody->Id );
-    }
-
-    # }}}
-
-# We attempt to load or create each of the people who might have a role for this ticket
-# _outside_ the transaction, so we don't get into ticket creation races
-    foreach my $type ( "Cc", "AdminCc", "Requestor" ) {
-        $args{ $type } = [ $args{ $type } ] unless ref $args{ $type };
-        foreach my $watcher ( splice @{ $args{$type} } ) {
-            next unless $watcher;
-            if ( $watcher =~ /^\d+$/ ) {
-                push @{ $args{$type} }, $watcher;
-            } else {
-                my @addresses = RT::EmailParser->ParseEmailAddress( $watcher );
-                foreach my $address( @addresses ) {
-                    my $user = RT::User->new( RT->SystemUser );
-                    my ($uid, $msg) = $user->LoadOrCreateByEmail( $address );
-                    unless ( $uid ) {
-                        push @non_fatal_errors,
-                            $self->loc("Couldn't load or create user: [_1]", $msg);
-                    } else {
-                        push @{ $args{$type} }, $user->id;
-                    }
-                }
-            }
-        }
-    }
+    # Figure out users for roles
+    my $roles = {};
+    push @non_fatal_errors, $self->_ResolveRoles( $roles, %args );
+    $args{$_} = $roles->{$_} for keys %{ $roles };
 
     $RT::Handle->BeginTransaction();
 
@@ -499,12 +429,14 @@ sub Create {
 
     # Set the owner group; this also sets the denormalized Owner field
     # appropriately.
-    $self->OwnerGroup->_AddMember(
-        PrincipalId       => $Owner->PrincipalId,
-        InsideTransaction => 1,
-        RecordTransaction => 0,
-        Object            => $self,
-    );
+    if ($args{Owner}[0]->HasRight( Object => $self, Right => 'OwnTicket' ) ) {
+        $self->OwnerGroup->_AddMember(
+            PrincipalId       => $args{Owner}[0]->Id,
+            InsideTransaction => 1,
+            RecordTransaction => 0,
+            Object            => $self,
+        );
+    }
 
     # Deal with setting up watchers
 
@@ -520,7 +452,7 @@ sub Create {
 
             my ($val, $msg) = $self->$method(
                 Type   => $type,
-                PrincipalId => $watcher,
+                PrincipalId => $watcher->id,
                 Silent => 1,
             );
             push @non_fatal_errors, $self->loc("Couldn't set [_1] watcher: [_2]", $type, $msg)
@@ -616,29 +548,7 @@ sub Create {
 
     # }}}
 
-
-    # Now that we've created the ticket and set up its metadata, we can
-    # actually go and check OwnTicket on the ticket itself.  This might
-    # be different than before in cases where extensions like RTIR are
-    # doing clever things with RT's ACL system.
-    if ($DeferOwner) {
-        if ( $DeferOwner->HasRight( Object => $self, Right => 'OwnTicket' ) ) {
-            $self->OwnerGroup->_AddMember(
-                PrincipalId       => $DeferOwner->PrincipalId,
-                InsideTransaction => 1,
-                RecordTransaction => 0,
-                Object            => $self,
-            );
-        } else {
-            $RT::Logger->warning( "User " . $DeferOwner->Name . "(" . $DeferOwner->id
-                . ") was proposed as a ticket owner but has no rights to own "
-                . "tickets in " . $QueueObj->Name );
-            push @non_fatal_errors, $self->loc(
-                "Owner '[_1]' does not have rights to own this ticket.",
-                $DeferOwner->Name
-            );
-        }
-    }
+    # XXX: Deferred ownership
 
     if ( $args{'_RecordTransaction'} ) {
 

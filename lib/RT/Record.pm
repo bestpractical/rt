@@ -2268,6 +2268,69 @@ sub DeleteRoleMember {
     return ($ok, $msg);
 }
 
+sub _ResolveRoles {
+    my $self = shift;
+    my ($roles, %args) = (@_);
+
+    my @errors;
+    for my $role ($self->Roles) {
+        if ($self->_ROLES->{$role}{Single}) {
+            # Default to nobody if unspecified
+            my $value = $args{$role} || RT->Nobody;
+            if (Scalar::Util::blessed($value) and $value->isa("RT::User")) {
+                # Accept a user; it may not be loaded, which we catch below
+                $roles->{$role} = $value->PrincipalObj;
+            } else {
+                # Try loading by id, name, then email.  If all fail, catch that below
+                my $user = RT::User->new( $self->CurrentUser );
+                $user->Load( $value );
+                # XXX: LoadOrCreateByEmail ?
+                $user->LoadByEmail( $value ) unless $user->id;
+                $roles->{$role} = $user->PrincipalObj;
+            }
+            unless ($roles->{$role}->id) {
+                push @errors, $self->loc("Invalid value for [_1]",loc($role));
+                $roles->{$role} = RT->Nobody->PrincipalObj unless $roles->{$role}->id;
+            }
+            # For consistency, we always return an arrayref
+            $roles->{$role} = [ $roles->{$role} ];
+        } else {
+            $roles->{$role} = [];
+            my @values = ref $args{ $role } ? @{ $args{$role} } : ($args{$role});
+            for my $value (grep {defined} @values) {
+                if ( $value =~ /^\d+$/ ) {
+                    # This implicitly allows groups, if passed by id.
+                    my $principal = RT::Principal->new( $self->CurrentUser );
+                    my ($ok, $msg) = $principal->Load( $value );
+                    if ($ok) {
+                        push @{ $roles->{$role} }, $principal;
+                    } else {
+                        push @errors,
+                            $self->loc("Couldn't load principal: [_1]", $msg);
+                    }
+                } else {
+                    my @addresses = RT::EmailParser->ParseEmailAddress( $value );
+                    for my $address ( @addresses ) {
+                        my $user = RT::User->new( RT->SystemUser );
+                        my ($id, $msg) = $user->LoadOrCreateByEmail( $address );
+                        if ( $id ) {
+                            # Load it back as us, not as the system
+                            # user, to be completely safe.
+                            $user = RT::User->new( $self->CurrentUser );
+                            $user->Load( $id );
+                            push @{ $roles->{$role} }, $user->PrincipalObj;
+                        } else {
+                            push @errors,
+                                $self->loc("Couldn't load or create user: [_1]", $msg);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return (@errors);
+}
+
 sub _CreateRoleGroups {
     my $self = shift;
     my %args = (@_);
