@@ -2268,6 +2268,25 @@ sub DeleteRoleMember {
     return ($ok, $msg);
 }
 
+sub _CreateRoleGroups {
+    my $self = shift;
+    my %args = (@_);
+    for my $type ($self->Roles) {
+        my $type_obj = RT::Group->new($self->CurrentUser);
+        my ($id, $msg) = $type_obj->CreateRoleGroup(
+            Type    => $type,
+            Object  => $self,
+            %args,
+        );
+        unless ($id) {
+            $RT::Logger->error("Couldn't create a role group of type '$type' for ".ref($self)." ".
+                                   $self->Id.": ".$msg);
+            return(undef);
+        }
+    }
+    return(1);
+}
+
 RT::Base->_ImportOverlays();
 
 1;

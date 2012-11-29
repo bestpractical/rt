@@ -424,7 +424,7 @@ sub Create {
         return ( 0, $self->loc('Queue could not be created') );
     }
 
-    my $create_ret = $self->_CreateQueueGroups();
+    my $create_ret = $self->_CreateRoleGroups();
     unless ($create_ret) {
         $RT::Handle->Rollback();
         return ( 0, $self->loc('Queue could not be created') );
@@ -792,49 +792,6 @@ sub IsManageableRoleGroupType {
 
     return 0;
 }
-
-
-=head2 _CreateQueueGroups
-
-Create the ticket groups and links for this ticket. 
-This routine expects to be called from Ticket->Create _inside of a transaction_
-
-It will create four groups for this ticket: Requestor, Cc, AdminCc and Owner.
-
-It will return true on success and undef on failure.
-
-
-=cut
-
-sub _CreateQueueGroups {
-    my $self = shift;
-
-    foreach my $type ($self->Roles) {
-        my $ok = $self->_CreateQueueRoleGroup($type);
-        return undef if !$ok;
-    }
-
-    return 1;
-}
-
-sub _CreateQueueRoleGroup {
-    my $self = shift;
-    my $type = shift;
-
-    my $type_obj = RT::Group->new($self->CurrentUser);
-    my ($id, $msg) = $type_obj->CreateRoleGroup(
-        Type    => $type,
-        Object  => $self,
-    );
-    unless ($id) {
-        $RT::Logger->error("Couldn't create a Queue group of type '$type' for queue ".
-                            $self->Id.": ".$msg);
-        return(undef);
-    }
-
-    return $id;
-}
-
 
 
 # _HasModifyWatcherRight {{{

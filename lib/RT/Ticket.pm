@@ -485,7 +485,8 @@ sub Create {
         );
     }
 
-    my $create_groups_ret = $self->_CreateTicketGroups();
+    # Create (empty) role groups
+    my $create_groups_ret = $self->_CreateRoleGroups();
     unless ($create_groups_ret) {
         $RT::Logger->crit( "Couldn't create ticket groups for ticket "
               . $self->Id
@@ -940,43 +941,6 @@ sub Import {
 
     return ( $self->Id, $ErrStr );
 }
-
-
-
-
-=head2 _CreateTicketGroups
-
-Create the ticket groups and links for this ticket. 
-This routine expects to be called from Ticket->Create _inside of a transaction_
-
-It will create four groups for this ticket: Requestor, Cc, AdminCc and Owner.
-
-It will return true on success and undef on failure.
-
-
-=cut
-
-
-sub _CreateTicketGroups {
-    my $self = shift;
-    
-    foreach my $type ($self->Roles) {
-        my $type_obj = RT::Group->new($self->CurrentUser);
-        my ($id, $msg) = $type_obj->CreateRoleGroup(
-            Type    => $type,
-            Object  => $self,
-        );
-        unless ($id) {
-            $RT::Logger->error("Couldn't create a ticket group of type '$type' for ticket ".
-                               $self->Id.": ".$msg);     
-            return(undef);
-        }
-     }
-    return(1);
-    
-}
-
-
 
 =head2 OwnerGroup
 
