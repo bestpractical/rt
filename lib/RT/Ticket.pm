@@ -356,7 +356,6 @@ sub Create {
     # Figure out users for roles
     my $roles = {};
     push @non_fatal_errors, $self->_ResolveRoles( $roles, %args );
-    $args{$_} = $roles->{$_} for keys %{ $roles };
 
     $RT::Handle->BeginTransaction();
 
@@ -427,39 +426,27 @@ sub Create {
         );
     }
 
-    # Set the owner group; this also sets the denormalized Owner field
-    # appropriately.
-    if ($args{Owner}[0]->HasRight( Object => $self, Right => 'OwnTicket' ) ) {
-        $self->OwnerGroup->_AddMember(
-            PrincipalId       => $args{Owner}[0]->Id,
-            InsideTransaction => 1,
-            RecordTransaction => 0,
-            Object            => $self,
-        );
-    }
+    # Codify what it takes to add each kind of group
+    my %acls = (
+        Cc        => sub { 1 },
+        Requestor => sub { 1 },
+        AdminCc   => sub {
+            my $principal = shift;
+            return 1 if $self->CurrentUserHasRight('ModifyTicket');
+            return $principal->id == $self->CurrentUser->PrincipalId
+                and $self->CurrentUserHasRight("WatchAsAdminCc");
+        },
+        Owner     => sub {
+            my $principal = shift;
+            return 1 if $principal->id == RT->Nobody->PrincipalId;
+            return $principal->HasRight( Object => $self, Right => 'OwnTicket' );
+        },
+    );
 
-    # Deal with setting up watchers
+    # Populate up the role groups.  This call modifies $roles.
+    push @non_fatal_errors, $self->_AddRolesOnCreate( $roles, %acls );
 
-    foreach my $type ( "Cc", "AdminCc", "Requestor" ) {
-        # we know it's an array ref
-        foreach my $watcher ( @{ $args{$type} } ) {
-
-            # Note that we're using AddWatcher, rather than _AddWatcher, as we
-            # actually _want_ that ACL check. Otherwise, random ticket creators
-            # could make themselves adminccs and maybe get ticket rights. that would
-            # be poor
-            my $method = $type eq 'AdminCc'? 'AddWatcher': '_AddWatcher';
-
-            my ($val, $msg) = $self->$method(
-                Type   => $type,
-                PrincipalId => $watcher->id,
-                Silent => 1,
-            );
-            push @non_fatal_errors, $self->loc("Couldn't set [_1] watcher: [_2]", $type, $msg)
-                unless $val;
-        }
-    } 
-
+    # Squelching
     if ($args{'SquelchMailTo'}) {
        my @squelch = ref( $args{'SquelchMailTo'} ) ? @{ $args{'SquelchMailTo'} }
         : $args{'SquelchMailTo'};
@@ -548,7 +535,27 @@ sub Create {
 
     # }}}
 
-    # XXX: Deferred ownership
+    # Try to add roles once more.
+    push @non_fatal_errors, $self->_AddRolesOnCreate( $roles, %acls );
+
+    # Anything left is failure of ACLs; Cc and Requestor have no ACLs,
+    # so we don't bother checking them.
+    if (@{ $roles->{Owner} }) {
+        my $owner = $roles->{Owner}[0]->Object;
+        $RT::Logger->warning( "User " . $owner->Name . "(" . $owner->id
+                . ") was proposed as a ticket owner but has no rights to own "
+                . "tickets in " . $QueueObj->Name );
+        push @non_fatal_errors, $self->loc(
+            "Owner '[_1]' does not have rights to own this ticket.",
+            $owner->Name
+        );
+    }
+    for my $principal (@{ $roles->{AdminCc} }) {
+        push @non_fatal_errors, $self->loc(
+            "No rights to add '[_1]' as an AdminCc on this ticket",
+            $principal->Object->Name
+        );
+    }
 
     if ( $args{'_RecordTransaction'} ) {
 

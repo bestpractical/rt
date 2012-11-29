@@ -2350,6 +2350,40 @@ sub _CreateRoleGroups {
     return(1);
 }
 
+sub _AddRolesOnCreate {
+    my $self = shift;
+    my ($roles, %acls) = @_;
+
+    my @errors;
+    {
+        my $changed = 0;
+
+        for my $role (keys %{$roles}) {
+            my @left;
+            for my $principal (@{$roles->{$role}}) {
+                if ($acls{$role}->($principal)) {
+                    my ($ok, $msg) = $self->RoleGroup($role)->_AddMember(
+                        PrincipalId       => $principal->id,
+                        InsideTransaction => 1,
+                        RecordTransaction => 0,
+                        Object            => $self,
+                    );
+                    push @errors, $self->loc("Couldn't set [_1] watcher: [_2]", $role, $msg)
+                        unless $ok;
+                    $changed++;
+                } else {
+                    push @left, $principal;
+                }
+            }
+            $roles->{$role} = [ @left ];
+        }
+
+        redo if $changed;
+    }
+
+    return @errors;
+}
+
 RT::Base->_ImportOverlays();
 
 1;
