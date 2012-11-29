@@ -343,15 +343,10 @@ sub Create {
         $Resolved->SetToNow;
     }
 
-    # }}}
-
     # Dealing with time fields
-
     $args{'TimeEstimated'} = 0 unless defined $args{'TimeEstimated'};
     $args{'TimeWorked'}    = 0 unless defined $args{'TimeWorked'};
     $args{'TimeLeft'}      = 0 unless defined $args{'TimeLeft'};
-
-    # }}}
 
     # Figure out users for roles
     my $roles = {};
@@ -453,11 +448,7 @@ sub Create {
         $self->_SquelchMailTo( @squelch );
     }
 
-
-    # }}}
-
     # Add all the custom fields
-
     foreach my $arg ( keys %args ) {
         next unless $arg =~ /^CustomField-(\d+)$/i;
         my $cfid = $1;
@@ -479,8 +470,6 @@ sub Create {
             push @non_fatal_errors, $msg unless $status;
         }
     }
-
-    # }}}
 
     # Deal with setting up links
 
@@ -532,8 +521,6 @@ sub Create {
             push @non_fatal_errors, $wmsg unless ($wval);
         }
     }
-
-    # }}}
 
     # Try to add roles once more.
     push @non_fatal_errors, $self->_AddRolesOnCreate( $roles, %acls );
@@ -590,8 +577,6 @@ sub Create {
         }
         $RT::Handle->Commit();
         return ( $self->Id, $TransObj->Id, $ErrStr );
-
-        # }}}
     }
     else {
 
@@ -783,8 +768,6 @@ sub Import {
         $Owner = RT::User->new( $self->CurrentUser );
         $Owner->Load( RT->Nobody->UserObj->Id );
     }
-
-    # }}}
 
     unless ( $self->ValidateStatus( $args{'Status'} ) ) {
         return ( 0, $self->loc("'[_1]' is an invalid value for status", $args{'Status'}) );
@@ -1100,8 +1083,6 @@ sub DeleteWatcher {
             return ( 0, $self->loc("Permission Denied") );
         }
     }
-
-    # }}}
 
     # see if this user is already a watcher.
 
