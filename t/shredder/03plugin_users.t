@@ -3,15 +3,8 @@ use strict;
 use warnings;
 
 use Test::Deep;
-use File::Spec;
-use Test::More tests => 21;
-use RT::Test ();
-BEGIN {
-    my $shredder_utils = RT::Test::get_relocatable_file('utils.pl',
-        File::Spec->curdir());
-    require $shredder_utils;
-}
-
+use RT::Test::Shredder tests => 21;
+my $test = "RT::Test::Shredder";
 
 my @ARGS = sort qw(limit status name member_of email replace_relations no_tickets);
 
@@ -37,13 +30,11 @@ use_ok('RT::Shredder::Plugin::Users');
     ok(!$status, "bad 'status' arg value");
 }
 
-init_db();
-
 RT::Test->set_rights(
     { Principal => 'Everyone', Right => [qw(CreateTicket)] },
 );
 
-create_savepoint('clean');
+$test->create_savepoint('clean');
 
 { # Create two users and a ticket. Shred second user and replace relations with first user
     my ($uidA, $uidB, $msg);
@@ -59,6 +50,7 @@ create_savepoint('clean');
     my $ticket = RT::Ticket->new( RT::CurrentUser->new($userB) );
     ($tid, $trid, $msg) = $ticket->Create( Subject => 'UserB Ticket', Queue => 1 );
     ok( $tid, "created new ticket") or diag "error: $msg";
+    $ticket->ApplyTransactionBatch;
 
     my $transaction = RT::Transaction->new( RT->SystemUser );
     $transaction->Load($trid);
@@ -71,13 +63,13 @@ create_savepoint('clean');
     ($status, $msg) = $plugin->TestArgs( status => 'any', name => 'userB', replace_relations => $uidA );
     ok($status, "plugin arguments are ok") or diag "error: $msg";
 
+    my $shredder = $test->shredder_new();
+
     my @objs;
     ($status, @objs) = $plugin->Run;
     ok($status, "executed plugin successfully") or diag "error: @objs";
     @objs = RT::Shredder->CastObjectsToRecords( Objects => \@objs );
     is(scalar @objs, 1, "one object in the result set");
-
-    my $shredder = shredder_new();
 
     ($status, $msg) = $plugin->SetResolvers( Shredder => $shredder );
     ok($status, "set conflicts resolver") or diag "error: $msg";
@@ -94,4 +86,4 @@ create_savepoint('clean');
     $shredder->Wipeout( Object => $ticket );
     $shredder->Wipeout( Object => $userA );
 }
-cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
+cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
