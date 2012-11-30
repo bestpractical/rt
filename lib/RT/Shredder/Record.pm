@@ -142,12 +142,13 @@ sub __DependsOn
     push( @$list, $objs );
 
 # Links
-    if ( $self->can('_Links') ) {
-        # XXX: We don't use Links->Next as it's dies when object
-        #      is linked to object that doesn't exist
-        #      also, ->Next skip links to deleted tickets :(
+    if ( $self->can('Links') ) {
+        # make sure we don't skip any record
+        no warnings 'redefine';
+        local *RT::Links::IsValidLink = sub { 1 };
+
         foreach ( qw(Base Target) ) {
-            my $objs = $self->_Links( $_ );
+            my $objs = $self->Links( $_ );
             $objs->_DoSearch;
             push @$list, $objs->ItemsArrayRef;
         }
