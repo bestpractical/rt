@@ -375,10 +375,17 @@ sub process_pg {
     my $status = eval { $dbh->do( $query, undef, $$text, $attachment->id ) };
     unless ( $status ) {
         if ($dbh->errstr =~ /string is too long for tsvector/) {
-            warn "Attachment @{[$attachment->id]} not indexed, as it contains too many unique words to be indexed";
+            warn "Attachment @{[$attachment->id]} cannot be indexed, as it contains too many unique words";
+        } elsif ($dbh->errstr =~ /invalid byte sequence/) {
+            warn "Attachment @{[$attachment->id]} cannot be indexed, as it contains invalid UTF8 bytes";
         } else {
             die "error: ". $dbh->errstr;
         }
+
+        # Insert an empty tsvector, so we count this row as "indexed"
+        # for purposes of knowing where to pick up
+        eval { $dbh->do( $query, undef, "", $attachment->id ) }
+            or die "Failed to insert empty tsvector: " . $dbh->errstr;
     }
 }
 
