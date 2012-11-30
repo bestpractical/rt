@@ -200,8 +200,8 @@ sub SelfDescription {
     elsif ($self->Domain eq 'RT::Ticket-Role') {
         return $self->loc("ticket #[_1] [_2]",$self->Instance, $self->Type);
     }
-    elsif ($self->Domain =~ /^(.+)-Role$/) {
-        my $class = lc $1;
+    elsif ($self->RoleClass) {
+        my $class = lc $self->RoleClass;
            $class =~ s/^RT:://i;
         return $self->loc("[_1] #[_2] [_3]", $self->loc($class), $self->Instance, $self->Type);
     }
@@ -705,6 +705,13 @@ sub CreateRoleGroup {
     return ($id, $msg);
 }
 
+sub RoleClass {
+    my $self = shift;
+    my $domain = shift || $self->Domain;
+    return unless $domain =~ /^(.+)-Role$/;
+    return $1;
+}
+
 =head2 ValidateRoleGroup
 
 Takes a param hash containing Domain and Type which are expected to be values
@@ -718,7 +725,7 @@ sub ValidateRoleGroup {
     my %args = (@_);
     return 0 unless $args{Domain} and $args{Type};
 
-    my ($class) = $args{Domain} =~ /^(.+)-Role$/;
+    my $class = $self->RoleClass($args{Domain});
     return 0 unless $class and $class->can('HasRole');
 
     return $class->HasRole($args{Type});
@@ -730,7 +737,7 @@ sub ValidateRoleGroup {
 
 sub SingleMemberRoleGroup {
     my $self = shift;
-    my ($class) = $self->Domain =~ /^(.+)-Role$/;
+    my $class = $self->RoleClass;
     return unless $class;
     return $class->_ROLES->{$self->Type}{Single};
 }

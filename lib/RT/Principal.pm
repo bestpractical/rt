@@ -97,7 +97,7 @@ Returns undef, otherwise.
 
 sub IsRoleGroup {
     my $self = shift;
-    return ($self->IsGroup and $self->Object->Domain =~ /-Role$/)
+    return ($self->IsGroup and $self->Object->RoleClass)
         ? 1 : undef;
 }
 
