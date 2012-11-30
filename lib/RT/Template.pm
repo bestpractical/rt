@@ -185,7 +185,7 @@ sub LoadByName {
     my $queue = $args{'Queue'};
     if ( blessed $queue ) {
         $queue = $queue->id;
-    } elsif ( $queue =~ /\D/ ) {
+    } elsif ( defined $queue and $queue =~ /\D/ ) {
         my $tmp = RT::Queue->new( $self->CurrentUser );
         $tmp->Load($queue);
         $queue = $tmp->id;
