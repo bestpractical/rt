@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<div class="history <% lc $record_type %>">
+<div class="history <% lc $record_type %>" id="<% $histid %>">
 <%perl>
 if ( $ShowDisplayModes or $ShowTitle ) {
     my $title = $ShowTitle
@@ -63,12 +63,12 @@ if ( $ShowDisplayModes or $ShowTitle ) {
 
         if ($ShowHeaders) {
             $titleright .= qq{<a href="?ForceShowHistory=1;id=} .
-                           $Object->id.qq{">} .
+                           $Object->id.qq{#$histid">} .
                            loc("Show brief headers") .
                            qq{</a>};
         } else {
             $titleright .= qq{<a href="?ForceShowHistory=1;ShowHeaders=1;id=} .
-                           $Object->id.qq{">} .
+                           $Object->id.qq{#$histid">} .
                            loc("Show full headers") .
                            qq{</a>};
         }
@@ -77,7 +77,7 @@ if ( $ShowDisplayModes or $ShowTitle ) {
 <& /Widgets/TitleBoxStart, title => $title, titleright_raw => $titleright &>
 % }
 
-<div id="<% lc $record_type %>-<% $Object->id %>-history" class="history-container">
+<div class="history-container">
 <%perl>
 my $i = 1;
 while ( my $Transaction = $Transactions->Next ) {
@@ -144,6 +144,7 @@ for my $attachment (@{$Attachments->ItemsArrayRef()}) {
 }
 
 my $record_type = $Object->RecordType;
+my $histid      = "\L$record_type\E-" . $Object->id . "-history";
 </%INIT>
 <%ARGS>
 $Object
