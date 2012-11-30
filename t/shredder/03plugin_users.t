@@ -50,6 +50,7 @@ $test->create_savepoint('clean');
     my $ticket = RT::Ticket->new( RT::CurrentUser->new($userB) );
     ($tid, $trid, $msg) = $ticket->Create( Subject => 'UserB Ticket', Queue => 1 );
     ok( $tid, "created new ticket") or diag "error: $msg";
+    $ticket->ApplyTransactionBatch;
 
     my $transaction = RT::Transaction->new( RT->SystemUser );
     $transaction->Load($trid);

@@ -17,6 +17,7 @@ use RT::Tickets;
     ok( $id, "created new ticket" );
     $ticket->Delete;
     is( $ticket->Status, 'deleted', "successfuly changed status" );
+    $ticket->ApplyTransactionBatch;
 
     my $tickets = RT::Tickets->new( RT->SystemUser );
     $tickets->{'allow_deleted_search'} = 1;
@@ -41,6 +42,10 @@ cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to sav
 
     my ($status, $msg) = $parent->AddLink( Type => 'MemberOf', Target => $cid );
     ok( $status, "Added link between tickets") or diag("error: $msg");
+
+    $parent->ApplyTransactionBatch;
+    $child->ApplyTransactionBatch;
+
     my $shredder = $test->shredder_new();
     $shredder->PutObjects( Objects => $child );
     $shredder->WipeoutAll;
@@ -65,6 +70,10 @@ cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to sav
 
     ($status, $msg) = $parent->AddLink( Type => 'DependsOn', Target => $cid );
     ok( $status, "Added link between tickets") or diag("error: $msg");
+
+    $parent->ApplyTransactionBatch;
+    $child->ApplyTransactionBatch;
+
     my $shredder = $test->shredder_new();
     $shredder->PutObjects( Objects => $child );
     $shredder->WipeoutAll;
