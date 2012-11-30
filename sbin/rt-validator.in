@@ -81,7 +81,7 @@ GetOptions(
 if ( $opt{help} || !$opt{check} ) {
     require Pod::Usage;
     print Pod::Usage::pod2usage( { verbose => 2 } );
-    exit;
+    exit 2;
 }
 
 usage_warning() if $opt{'resolve'} && !$opt{'force'};
@@ -210,7 +210,7 @@ foreach my $table ( qw(Users Groups) ) {
             ." The script can either create the missing record in Principals"
             ." or delete the record in $table.";
         my ($type) = ($table =~ /^(.*)s$/);
-        check_integrity(
+        return check_integrity(
             $table, 'id' => 'Principals', 'id',
             join_condition => 't.PrincipalType = ?',
             bind_values => [ $type ],
@@ -238,7 +238,7 @@ foreach my $table ( qw(Users Groups) ) {
             ." In some cases it's possible to manually resurrect such records,"
             ." but this utility can only delete records.";
 
-        check_integrity(
+        return check_integrity(
             'Principals', 'id' => $table, 'id',
             condition   => 's.PrincipalType = ?',
             bind_values => [ $table =~ /^(.*)s$/ ],
@@ -253,8 +253,9 @@ foreach my $table ( qw(Users Groups) ) {
 }
 
 push @CHECKS, 'User <-> ACL equivalence group' => sub {
+    my $res = 1;
     # from user to group
-    check_integrity(
+    $res *= check_integrity(
         'Users', 'id' => 'Groups', 'Instance',
         join_condition   => 't.Domain = ? AND t.Type = ?',
         bind_values => [ 'ACLEquivalence',  'UserEquiv' ],
@@ -270,7 +271,7 @@ push @CHECKS, 'User <-> ACL equivalence group' => sub {
         },
     );
     # from group to user
-    check_integrity(
+    $res *= check_integrity(
         'Groups', 'Instance' => 'Users', 'id',
         condition   => 's.Domain = ? AND s.Type = ?',
         bind_values => [ 'ACLEquivalence',  'UserEquiv' ],
@@ -284,25 +285,27 @@ push @CHECKS, 'User <-> ACL equivalence group' => sub {
         },
     );
     # one ACL equiv group for each user
-    check_uniqueness(
+    $res *= check_uniqueness(
         'Groups',
         columns     => ['Instance'],
         condition   => '.Domain = ? AND .Type = ?',
         bind_values => [ 'ACLEquivalence',  'UserEquiv' ],
     );
+    return $res;
 };
 
 # check integrity of Queue role groups
 push @CHECKS, 'Queues <-> Role Groups' => sub {
     # XXX: we check only that there is at least one group for a queue
     # from queue to group
-    check_integrity(
+    my $res = 1;
+    $res *= check_integrity(
         'Queues', 'id' => 'Groups', 'Instance',
         join_condition   => 't.Domain = ?',
         bind_values => [ 'RT::Queue-Role' ],
     );
     # from group to queue
-    check_integrity(
+    $res *= check_integrity(
         'Groups', 'Instance' => 'Queues', 'id',
         condition   => 's.Domain = ?',
         bind_values => [ 'RT::Queue-Role' ],
@@ -315,19 +318,21 @@ push @CHECKS, 'Queues <-> Role Groups' => sub {
             delete_record( 'Groups', $id );
         },
     );
+    return $res;
 };
 
 # check integrity of Ticket role groups
 push @CHECKS, 'Tickets <-> Role Groups' => sub {
     # XXX: we check only that there is at least one group for a queue
     # from queue to group
-    check_integrity(
+    my $res = 1;
+    $res *= check_integrity(
         'Tickets', 'id' => 'Groups', 'Instance',
         join_condition   => 't.Domain = ?',
         bind_values => [ 'RT::Ticket-Role' ],
     );
     # from group to ticket
-    check_integrity(
+    $res *= check_integrity(
         'Groups', 'Instance' => 'Tickets', 'id',
         condition   => 's.Domain = ?',
         bind_values => [ 'RT::Ticket-Role' ],
@@ -340,12 +345,13 @@ push @CHECKS, 'Tickets <-> Role Groups' => sub {
             delete_record( 'Groups', $id );
         },
     );
+    return $res;
 };
 
 # additional CHECKS on groups
 push @CHECKS, 'Role Groups (Instance, Type) uniqueness' => sub {
     # Check that Domain, Instance and Type are unique
-    check_uniqueness(
+    return check_uniqueness(
         'Groups',
         columns     => ['Domain', 'Instance', 'Type'],
         condition   => '.Domain LIKE ?',
@@ -354,7 +360,7 @@ push @CHECKS, 'Role Groups (Instance, Type) uniqueness' => sub {
 };
 
 push @CHECKS, 'System internal group uniqueness' => sub {
-    check_uniqueness(
+    return check_uniqueness(
         'Groups',
         columns     => ['Instance', 'Type'],
         condition   => '.Domain = ?',
@@ -364,7 +370,7 @@ push @CHECKS, 'System internal group uniqueness' => sub {
 
 # CHECK that user defined group names are unique
 push @CHECKS, 'User Defined Group Name uniqueness' => sub {
-    check_uniqueness(
+    return check_uniqueness(
         'Groups',
         columns         => ['Name'],
         condition       => '.Domain = ?',
@@ -388,7 +394,8 @@ push @CHECKS, 'GMs -> Groups, Members' => sub {
     my $msg = "A record in GroupMembers references an object that doesn't exist."
         ." Maybe you deleted a group or principal directly from the database?"
         ." Usually it's OK to delete such records.";
-    check_integrity(
+    my $res = 1;
+    $res *= check_integrity(
         'GroupMembers', 'GroupId' => 'Groups', 'id',
         action => sub {
             my $id = shift;
@@ -397,7 +404,7 @@ push @CHECKS, 'GMs -> Groups, Members' => sub {
             delete_record( 'GroupMembers', $id );
         },
     );
-    check_integrity(
+    $res *= check_integrity(
         'GroupMembers', 'MemberId' => 'Principals', 'id',
         action => sub {
             my $id = shift;
@@ -406,12 +413,14 @@ push @CHECKS, 'GMs -> Groups, Members' => sub {
             delete_record( 'GroupMembers', $id );
         },
     );
+    return $res;
 };
 
 # CGM and GM
 push @CHECKS, 'CGM vs. GM' => sub {
+    my $res = 1;
     # all GM record should be duplicated in CGM
-    check_integrity(
+    $res *= check_integrity(
         GroupMembers       => ['GroupId', 'MemberId'],
         CachedGroupMembers => ['GroupId', 'MemberId'],
         join_condition     => 't.ImmediateParentId = t.GroupId AND t.Via = t.id',
@@ -434,7 +443,7 @@ push @CHECKS, 'CGM vs. GM' => sub {
         },
     );
     # all first level CGM records should have a GM record
-    check_integrity(
+    $res *= check_integrity(
         CachedGroupMembers => ['GroupId', 'MemberId'],
         GroupMembers       => ['GroupId', 'MemberId'],
         condition     => 's.ImmediateParentId = s.GroupId AND s.Via = s.id AND s.GroupId != s.MemberId',
@@ -450,7 +459,7 @@ push @CHECKS, 'CGM vs. GM' => sub {
         },
     );
     # each group should have a CGM record where MemberId == GroupId
-    check_integrity(
+    $res *= check_integrity(
         Groups => ['id', 'id'],
         CachedGroupMembers => ['GroupId', 'MemberId'],
         join_condition     => 't.ImmediateParentId = t.GroupId AND t.Via = t.id',
@@ -477,7 +486,7 @@ push @CHECKS, 'CGM vs. GM' => sub {
 
     # and back, each record in CGM with MemberId == GroupId without exceptions
     # should reference a group
-    check_integrity(
+    $res *= check_integrity(
         CachedGroupMembers => ['GroupId', 'MemberId'],
         Groups => ['id', 'id'],
         condition => "s.GroupId = s.MemberId",
@@ -492,7 +501,7 @@ push @CHECKS, 'CGM vs. GM' => sub {
         },
     );
     # Via
-    check_integrity(
+    $res *= check_integrity(
         CachedGroupMembers => 'Via',
         CachedGroupMembers => 'id',
         action => sub {
@@ -508,7 +517,7 @@ push @CHECKS, 'CGM vs. GM' => sub {
 
     # for every CGM where ImmediateParentId != GroupId there should be
     # matching parent record (first level) 
-    check_integrity(
+    $res *= check_integrity(
         CachedGroupMembers => ['ImmediateParentId', 'MemberId'],
         CachedGroupMembers => ['GroupId', 'MemberId'],
         join_condition => 't.Via = t.id',
@@ -526,7 +535,7 @@ push @CHECKS, 'CGM vs. GM' => sub {
 
     # for every CGM where ImmediateParentId != GroupId there should be
     # matching "grand" parent record
-    check_integrity(
+    $res *= check_integrity(
         CachedGroupMembers => ['GroupId', 'ImmediateParentId', 'Via'],
         CachedGroupMembers => ['GroupId', 'MemberId', 'id'],
         condition => 's.ImmediateParentId != s.GroupId',
@@ -572,6 +581,7 @@ END
 
         my $sth = execute_query( $query );
         while ( my ($g, $m, $via, $ip, $dis) = $sth->fetchrow_array ) {
+            $res = 0;
             print STDERR "Principal #$m is member of #$ip when #$ip is member of #$g,";
             print STDERR " but there is no cached GM record that $m is member of #$g.\n";
             $action->(
@@ -580,11 +590,14 @@ END
             );
         }
     }
+
+    return $res;
 };
 
 # Tickets
 push @CHECKS, 'Tickets -> other' => sub {
-    check_integrity(
+    my $res = 1;
+    $res *= check_integrity(
         'Tickets', 'EffectiveId' => 'Tickets', 'id',
         action => sub {
             my $id = shift;
@@ -596,19 +609,21 @@ push @CHECKS, 'Tickets -> other' => sub {
             delete_record( 'Tickets', $id );
         },
     );
-    check_integrity(
+    $res *= check_integrity(
         'Tickets', 'Queue' => 'Queues', 'id',
     );
-    check_integrity(
+    $res *= check_integrity(
         'Tickets', 'Owner' => 'Users', 'id',
     );
     # XXX: check that owner is only member of owner role group
+    return $res;
 };
 
 
 push @CHECKS, 'Transactions -> other' => sub {
+    my $res = 1;
     foreach my $model ( @models ) {
-        check_integrity(
+        $res *= check_integrity(
             'Transactions', 'ObjectId' => m2t($model), 'id',
             condition   => 's.ObjectType = ?',
             bind_values => [ "RT::$model" ],
@@ -623,13 +638,13 @@ push @CHECKS, 'Transactions -> other' => sub {
         );
     }
     # type = CustomField
-    check_integrity(
+    $res *= check_integrity(
         'Transactions', 'Field' => 'CustomFields', 'id',
         condition   => 's.Type = ?',
         bind_values => [ 'CustomField' ],
     );
     # type = Take, Untake, Force, Steal or Give
-    check_integrity(
+    $res *= check_integrity(
         'Transactions', 'OldValue' => 'Users', 'id',
         condition   => 's.Type IN (?, ?, ?, ?, ?)',
         bind_values => [ qw(Take Untake Force Steal Give) ],
@@ -643,7 +658,7 @@ push @CHECKS, 'Transactions -> other' => sub {
             delete_record( 'Transactions', $id );
         },
     );
-    check_integrity(
+    $res *= check_integrity(
         'Transactions', 'NewValue' => 'Users', 'id',
         condition   => 's.Type IN (?, ?, ?, ?, ?)',
         bind_values => [ qw(Take Untake Force Steal Give) ],
@@ -658,7 +673,7 @@ push @CHECKS, 'Transactions -> other' => sub {
         },
     );
     # type = DelWatcher
-    check_integrity(
+    $res *= check_integrity(
         'Transactions', 'OldValue' => 'Principals', 'id',
         condition   => 's.Type = ?',
         bind_values => [ 'DelWatcher' ],
@@ -673,7 +688,7 @@ push @CHECKS, 'Transactions -> other' => sub {
         },
     );
     # type = AddWatcher
-    check_integrity(
+    $res *= check_integrity(
         'Transactions', 'NewValue' => 'Principals', 'id',
         condition   => 's.Type = ?',
         bind_values => [ 'AddWatcher' ],
@@ -692,7 +707,7 @@ push @CHECKS, 'Transactions -> other' => sub {
 #   handled in 'Links: *' checks as {New,Old}Value store URIs
 
     # type = Set, Field = Queue
-    check_integrity(
+    $res *= check_integrity(
         'Transactions', 'NewValue' => 'Queues', 'id',
         condition   => 's.Type = ? AND s.Field = ?',
         bind_values => [ 'Set', 'Queue' ],
@@ -706,7 +721,7 @@ push @CHECKS, 'Transactions -> other' => sub {
             delete_record( 'Transactions', $id );
         },
     );
-    check_integrity(
+    $res *= check_integrity(
         'Transactions', 'OldValue' => 'Queues', 'id',
         condition   => 's.Type = ? AND s.Field = ?',
         bind_values => [ 'Set', 'Queue' ],
@@ -721,17 +736,19 @@ push @CHECKS, 'Transactions -> other' => sub {
         },
     );
     # Reminders
-    check_integrity(
+    $res *= check_integrity(
         'Transactions', 'NewValue' => 'Tickets', 'id',
         join_condition => 't.Type = ?',
         condition      => 's.Type IN (?, ?, ?)',
         bind_values    => [ 'reminder', 'AddReminder', 'OpenReminder', 'ResolveReminder' ],
     );
+    return $res;
 };
 
 # Attachments
 push @CHECKS, 'Attachments -> other' => sub {
-    check_integrity(
+    my $res = 1;
+    $res *= check_integrity(
         Attachments  => 'TransactionId', Transactions => 'id',
         action => sub {
             my $id = shift;
@@ -741,7 +758,7 @@ push @CHECKS, 'Attachments -> other' => sub {
             delete_record( 'Attachments', $id );
         },
     );
-    check_integrity(
+    $res *= check_integrity(
         Attachments => 'Parent', Attachments => 'id',
         action => sub {
             my $id = shift;
@@ -751,67 +768,75 @@ push @CHECKS, 'Attachments -> other' => sub {
             delete_record( 'Attachments', $id );
         },
     );
-    check_integrity(
+    $res *= check_integrity(
         Attachments => 'Parent',
         Attachments => 'id',
         join_condition => 's.TransactionId = t.TransactionId',
     );
+    return $res;
 };
 
 push @CHECKS, 'CustomFields and friends' => sub {
+    my $res = 1;
     #XXX: ObjectCustomFields needs more love
-    check_integrity(
+    $res *= check_integrity(
         'CustomFieldValues', 'CustomField' => 'CustomFields', 'id',
     );
-    check_integrity(
+    $res *= check_integrity(
         'ObjectCustomFieldValues', 'CustomField' => 'CustomFields', 'id',
     );
     foreach my $model ( @models ) {
-        check_integrity(
+        $res *= check_integrity(
             'ObjectCustomFieldValues', 'ObjectId' => m2t($model), 'id',
             condition   => 's.ObjectType = ?',
             bind_values => [ "RT::$model" ],
         );
     }
+    return $res;
 };
 
 push @CHECKS, Templates => sub {
-    check_integrity(
+    return check_integrity(
         'Templates', 'Queue' => 'Queues', 'id',
     );
 };
 
 push @CHECKS, Scrips => sub {
-    check_integrity(
+    my $res = 1;
+    $res *= check_integrity(
         'Scrips', 'ScripCondition' => 'ScripConditions', 'id',
     );
-    check_integrity(
+    $res *= check_integrity(
         'Scrips', 'ScripAction' => 'ScripActions', 'id',
     );
-    check_integrity(
+    $res *= check_integrity(
         'Scrips', 'Template' => 'Templates', 'id',
     );
-    check_integrity(
+    $res *= check_integrity(
         'ObjectScrips', 'Scrip' => 'Scrips', 'id',
     );
-    check_integrity(
+    $res *= check_integrity(
         'ObjectScrips', 'ObjectId' => 'Queues', 'id',
     );
+    return $res;
 };
 
 push @CHECKS, Attributes => sub {
+    my $res = 1;
     foreach my $model ( @models ) {
-        check_integrity(
+        $res *= check_integrity(
             'Attributes', 'ObjectId' => m2t($model), 'id',
             condition   => 's.ObjectType = ?',
             bind_values => [ "RT::$model" ],
         );
     }
+    return $res;
 };
 
 # Fix situations when Creator or LastUpdatedBy references ACL equivalence
 # group of a user instead of user
 push @CHECKS, 'FIX: LastUpdatedBy and Creator' => sub {
+    my $res = 1;
     my %fix = ();
     foreach my $model ( @models ) {
         my $class = "RT::$model";
@@ -841,6 +866,7 @@ END
 
             my $sth = execute_query( $query, 'ACLEquivalence', 'UserEquiv' );
             while ( my ($rid, $gid, $uid) = $sth->fetchrow_array ) {
+                $res = 0;
                 print STDERR "Record #$rid in $table refers to ACL equivalence group #$gid of user #$uid";
                 print STDERR " when must reference user.\n";
                 $action->( $gid, $uid );
@@ -863,16 +889,18 @@ END
         }
         $redo_check{'FIX: LastUpdatedBy and Creator'} = 1;
     }
+    return $res;
 };
 
 push @CHECKS, 'LastUpdatedBy and Creator' => sub {
+    my $res = 1;
     foreach my $model ( @models ) {
         my $class = "RT::$model";
         my $object = $class->new( RT->SystemUser );
         my $table = $object->Table;
         foreach my $column ( qw(LastUpdatedBy Creator) ) {
             next unless $object->_Accessible( $column, 'auto' );
-            check_integrity(
+            $res *= check_integrity(
                 $table, $column => 'Users', 'id',
                 action => sub {
                     my ($id, %prop) = @_;
@@ -890,9 +918,11 @@ push @CHECKS, 'LastUpdatedBy and Creator' => sub {
             );
         }
     }
+    return $res;
 };
 
 push @CHECKS, 'Links: wrong organization' => sub {
+    my $res = 1;
     my @URI_USES = (
         { model => 'Transaction', column => 'OldValue', Additional => { Type => 'DeleteLink' } },
         { model => 'Transaction', column => 'NewValue', Additional => { Type => 'AddLink' } },
@@ -918,6 +948,7 @@ push @CHECKS, 'Links: wrong organization' => sub {
         }
         my $sth = execute_query( $query, @binds );
         while ( my ($id, $value) = $sth->fetchrow_array ) {
+            $res = 0;
             print STDERR "Record #$id in $table. Value of $column column most probably is an incorrect link\n";
             my ($wrong_org) = ( $value =~ m{^\Q$scheme\E://(.+)/[^/]+/[0-9]*$} );
             next unless my $replace_with = prompt(
@@ -941,9 +972,11 @@ push @CHECKS, 'Links: wrong organization' => sub {
             last; # plenty of chances we covered all cases with one update
         }
     }
+    return $res;
 };
 
 push @CHECKS, 'Links: LocalX for non-ticket' => sub {
+    my $res = 1;
     my $rt_uri = RT::URI::fsck_com_rt->new( $RT::SystemUser );
     my $scheme = $rt_uri->Scheme;
     my $prefix = $rt_uri->LocalURIPrefix;
@@ -957,6 +990,7 @@ push @CHECKS, 'Links: LocalX for non-ticket' => sub {
 
         my $sth = execute_query( "SELECT id FROM $table WHERE $where", @binds );
         while ( my ($id, $value) = $sth->fetchrow_array ) {
+            $res = 0;
             print STDERR "Record #$id in $table. Value of Local$dir is not 0\n";
             next unless my $replace_with = prompt(
                 'Replace',
@@ -971,9 +1005,11 @@ push @CHECKS, 'Links: LocalX for non-ticket' => sub {
             last; # we covered all cases with one update
         }
     }
+    return $res;
 };
 
 push @CHECKS, 'Links: LocalX != X' => sub {
+    my $res = 1;
     my $rt_uri = RT::URI::fsck_com_rt->new( $RT::SystemUser );
     my $scheme = $rt_uri->Scheme;
     my $prefix = $rt_uri->LocalURIPrefix .'/ticket/';
@@ -990,6 +1026,7 @@ push @CHECKS, 'Links: LocalX != X' => sub {
 
         my $sth = execute_query( "SELECT id FROM $table WHERE $where", @binds );
         while ( my ($id, $value) = $sth->fetchrow_array ) {
+            $res = 0;
             print STDERR "Record #$id in $table. Value of $dir doesn't match ticket id in Local$dir\n";
             next unless my $replace_with = prompt(
                 'Replace',
@@ -1006,9 +1043,11 @@ push @CHECKS, 'Links: LocalX != X' => sub {
             last; # we covered all cases with one update
         }
     }
+    return $res;
 };
 
 push @CHECKS, 'Links: missing object' => sub {
+    my $res = 1;
     my @URI_USES = (
         { model => 'Transaction', column => 'OldValue', Additional => { Type => 'DeleteLink' } },
         { model => 'Transaction', column => 'NewValue', Additional => { Type => 'AddLink' } },
@@ -1042,6 +1081,7 @@ push @CHECKS, 'Links: missing object' => sub {
 
             my $sth = execute_query( $query, @binds );
             while ( my ($sid) = $sth->fetchrow_array ) {
+                $res = 0;
                 print STDERR "Link in $scolumn column in record #$sid in $stable table points"
                     ." to not existing object.\n";
                 next unless prompt(
@@ -1056,6 +1096,7 @@ push @CHECKS, 'Links: missing object' => sub {
             }
         }
     }
+    return $res;
 };
 
 
@@ -1067,8 +1108,9 @@ if ($opt{'links-only'}) {
     @do_check = grep { /^Links:/ } @do_check;
 }
 
+my $status = 1;
 while ( my $check = shift @do_check ) {
-    $CHECKS{ $check }->();
+    $status *= $CHECKS{ $check }->();
 
     foreach my $redo ( keys %redo_check ) {
         die "check $redo doesn't exist" unless $CHECKS{ $redo };
@@ -1077,6 +1119,8 @@ while ( my $check = shift @do_check ) {
         push @do_check, $redo;
     }
 }
+exit 1 unless $status;
+exit 0;
 
 =head2 check_integrity
 
@@ -1084,6 +1128,8 @@ Takes two (table name, column(s)) pairs. First pair
 is reference we check and second is destination that
 must exist. Array reference can be used for multiple
 columns.
+
+Returns 0 if a record is missing or 1 otherwise.
 
 =cut
 
@@ -1121,8 +1167,12 @@ sub check_integrity {
         push @binds, 0;
     }
 
+    my $res = 1;
+
     my $sth = execute_query( $query, @binds );
     while ( my ($sid, @set) = $sth->fetchrow_array ) {
+        $res = 0;
+
         print STDERR "Record #$sid in $stable references a nonexistent record in $ttable\n";
         for ( my $i = 0; $i < @scols; $i++ ) {
             print STDERR "\t$scols[$i] => '$set[$i]' => $tcols[$i]\n";
@@ -1131,6 +1181,7 @@ sub check_integrity {
         $args{'action'}->( $sid, map { $scols[$_] => $set[$_] } (0 .. (@scols-1)) )
             if $args{'action'};
     }
+    return $res;
 }
 
 sub describe {
@@ -1190,13 +1241,16 @@ sub check_uniqueness {
         $args{'bind_values'}? (@{ $args{'bind_values'} }, @{ $args{'bind_values'} }): (),
         $args{'extra_values'}? (@{ $args{'extra_values'} }): ()
     );
+    my $res = 1;
     while ( my ($sid, $tid, @set) = $sth->fetchrow_array ) {
+        $res = 0;
         print STDERR "Record #$tid in $on has the same set of values as $sid\n";
         for ( my $i = 0; $i < @columns; $i++ ) {
             print STDERR "\t$columns[$i] => '$set[$i]'\n";
         }
         $args{'action'}->( $tid, map { $columns[$_] => $set[$_] } (0 .. (@columns-1)) ) if $args{'action'};
     }
+    return $res;
 }
 
 sub load_record {
