@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use Test::Deep;
-use RT::Test::Shredder tests => 3;
+use RT::Test::Shredder tests => 4;
 my $test = "RT::Test::Shredder";
 
 $test->create_savepoint();
@@ -19,5 +19,7 @@ ok( $id, "load ticket" ) or diag( "error: $msg" );
 
 my $shredder = $test->shredder_new();
 $shredder->Wipeout( Object => $ticket );
+
+$test->db_is_valid;
 
 cmp_deeply( $test->dump_current_and_savepoint(), "current DB equal to savepoint");

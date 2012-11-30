@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use Test::Deep;
-use RT::Test::Shredder tests => 15;
+use RT::Test::Shredder tests => 20;
 my $test = "RT::Test::Shredder";
 
 $test->create_savepoint('clean');
@@ -27,6 +27,7 @@ use RT::Tickets;
     my $shredder = $test->shredder_new();
     $shredder->PutObjects( Objects => $tickets );
     $shredder->WipeoutAll;
+    $test->db_is_valid;
 }
 cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 
@@ -49,10 +50,12 @@ cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to sav
     my $shredder = $test->shredder_new();
     $shredder->PutObjects( Objects => $child );
     $shredder->WipeoutAll;
+    $test->db_is_valid;
     cmp_deeply( $test->dump_current_and_savepoint('parent_ticket'), "current DB equal to savepoint");
 
     $shredder->PutObjects( Objects => $parent );
     $shredder->WipeoutAll;
+    $test->db_is_valid;
 }
 cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 
@@ -66,7 +69,7 @@ cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to sav
 
     my $child = RT::Ticket->new( RT->SystemUser );
     my ($cid) = $child->Create( Subject => 'test', Queue => 1 );
-    ok( $cid, "created new ticket" );
+    ok( $cid, "created new ticket #$cid" );
 
     ($status, $msg) = $parent->AddLink( Type => 'DependsOn', Target => $cid );
     ok( $status, "Added link between tickets") or diag("error: $msg");
@@ -77,10 +80,11 @@ cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to sav
     my $shredder = $test->shredder_new();
     $shredder->PutObjects( Objects => $child );
     $shredder->WipeoutAll;
-
+    $test->db_is_valid;
     cmp_deeply( $test->dump_current_and_savepoint('parent_ticket'), "current DB equal to savepoint");
 
     $shredder->PutObjects( Objects => $parent );
     $shredder->WipeoutAll;
+    $test->db_is_valid;
 }
 cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
