@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 89;
+use RT::Test tests => undef;
 
 
 {
@@ -115,8 +115,7 @@ my ($id, $msg) = $ticket->Create(Subject => "Foo",
                 Queue => '1'
                 );
 ok ($id, "Ticket $id was created");
-ok(my $group = RT::Group->new(RT->SystemUser));
-ok($group->LoadTicketRoleGroup(Ticket => $id, Type=> 'Requestor'));
+ok(my $group = $ticket->RoleGroup('Requestor'));
 ok ($group->Id, "Found the requestors object for this ticket");
 
 ok(my $jesse = RT::User->new(RT->SystemUser), "Creating a jesse rt::user");
@@ -135,14 +134,11 @@ ok ( ($add_id, $add_msg) = $ticket->DeleteWatcher(Type =>'Requestor', Email => '
 ok (!$ticket->IsWatcher(Type => 'Requestor', PrincipalId => $bob->PrincipalId), "The ticket no longer has bob at fsck.com as a requestor");
 
 
-$group = RT::Group->new(RT->SystemUser);
-ok($group->LoadTicketRoleGroup(Ticket => $id, Type=> 'Cc'));
+$group = $ticket->RoleGroup('Cc');
 ok ($group->Id, "Found the cc object for this ticket");
-$group = RT::Group->new(RT->SystemUser);
-ok($group->LoadTicketRoleGroup(Ticket => $id, Type=> 'AdminCc'));
+$group = $ticket->RoleGroup('AdminCc');
 ok ($group->Id, "Found the AdminCc object for this ticket");
-$group = RT::Group->new(RT->SystemUser);
-ok($group->LoadTicketRoleGroup(Ticket => $id, Type=> 'Owner'));
+$group = $ticket->RoleGroup('Owner');
 ok ($group->Id, "Found the Owner object for this ticket");
 ok($group->HasMember(RT->SystemUser->UserObj->PrincipalObj), "the owner group has the member 'RT_System'");
 
@@ -263,3 +259,4 @@ ok( $id, $msg );
 
 }
 
+done_testing;

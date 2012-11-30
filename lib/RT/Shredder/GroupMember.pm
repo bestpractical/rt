@@ -118,15 +118,7 @@ sub __DependsOn
                 }
 
                 my( $status, $msg ) = $group->AddMember( RT->Nobody->id );
-                RT::Shredder::Exception->throw( $msg ) unless $status;
 
-                my $ticket = RT::Ticket->new( $group->CurrentUser );
-                $ticket->Load( $group->Instance );
-                RT::Shredder::Exception->throw( "Couldn't load ticket" ) unless $ticket->id;
-
-                ( $status, $msg ) = $ticket->_Set( Field => 'Owner',
-                                   Value => RT->Nobody->id,
-                                 );
                 RT::Shredder::Exception->throw( $msg ) unless $status;
 
                 return;

@@ -2020,6 +2020,350 @@ sub WikiBase {
     return RT->Config->Get('WebPath'). "/index.html?q=";
 }
 
+=head2 RegisterRole
+
+Registers an RT role which applies to this class for role-based access control.
+Arguments:
+
+=over 4
+
+=item Name
+
+Required.  The role name (i.e. Requestor, Owner, AdminCc, etc).
+
+=item EquivClasses
+
+Optional.  Array ref of classes through which this role percolates up to
+L<RT::System>.  You can think of this list as:
+
+    map { ref } $record_object->ACLEquivalenceObjects;
+
+You should not include L<RT::System> itself in this list.
+
+Simply calls RegisterRole on each equivalent class.
+
+=back
+
+=cut
+
+sub RegisterRole {
+    my $self  = shift;
+    my $class = ref($self) || $self;
+    my %role  = (
+        Name            => undef,
+        EquivClasses    => [],
+        @_
+    );
+    return unless $role{Name};
+
+    # Keep track of the class this role came from originally
+    $role{ Class } ||= $class;
+
+    # Some groups are limited to a single user
+    $role{ Single } = 1 if $role{Column};
+
+    # Stash the role on ourself
+    $class->_ROLES->{ $role{Name} } = \%role;
+
+    # Register it with any equivalent classes...
+    my $equiv = delete $role{EquivClasses} || [];
+
+    # ... and globally unless we ARE global
+    unless ($class eq "RT::System") {
+        require RT::System;
+        push @$equiv, "RT::System";
+    }
+
+    $_->RegisterRole(%role) for @$equiv;
+
+    # XXX TODO: Register which classes have roles on them somewhere?
+
+    return 1;
+}
+
+=head2 Roles
+
+Returns a list of role names registered for this class.
+
+=cut
+
+sub Roles { sort { $a cmp $b } keys %{ shift->_ROLES } }
+
+{
+    my %ROLES;
+    sub _ROLES {
+        my $class = ref($_[0]) || $_[0];
+        return $ROLES{$class} ||= {};
+    }
+}
+
+=head2 HasRole
+
+Returns true if the name provided is a registered role for this class.
+Otherwise returns false.
+
+=cut
+
+sub HasRole {
+    my $self = shift;
+    my $type = shift;
+    return scalar grep { $type eq $_ } $self->Roles;
+}
+
+=head2 RoleGroup
+
+Expects a role name as the first parameter which is used to load the
+L<RT::Group> for the specified role on this record.  Returns an unloaded
+L<RT::Group> object on failure.
+
+=cut
+
+sub RoleGroup {
+    my $self  = shift;
+    my $type  = shift;
+    my $group = RT::Group->new( $self->CurrentUser );
+
+    if ($self->HasRole($type)) {
+        $group->LoadRoleGroup(
+            Object  => $self,
+            Type    => $type,
+        );
+    }
+    return $group;
+}
+
+=head2 AddRoleMember
+
+Adds the described L<RT::Principal> to the specified role group for this record.
+
+Takes a set of key-value pairs:
+
+=over 4
+
+=item PrincipalId
+
+Optional.  The ID of the L<RT::Principal> object to add.
+
+=item User
+
+=item Group
+
+Optional.  The Name of an L<RT::User> or L<RT::Group>, respectively, to use as
+the principal.
+
+=item Type
+
+Required.  One of the valid roles for this record, as returned by L</Roles>.
+
+=back
+
+One, and only one, of I<PrincipalId>, I<User>, or I<Group> is required.
+
+Returns a tuple of (status, message).
+
+=cut
+
+sub AddRoleMember {
+    my $self = shift;
+    my %args = (@_);
+
+    return (0, $self->loc("One, and only one, of PrincipalId/User/Group is required"))
+        if 1 != grep { $_ } @args{qw/PrincipalId User Group/};
+
+    my $type = delete $args{Type};
+    return (0, $self->loc("No valid Type specified"))
+        unless $type and $self->HasRole($type);
+
+    unless ($args{PrincipalId}) {
+        my $object;
+        if ($args{User}) {
+            $object = RT::User->new( $self->CurrentUser );
+            $object->Load(delete $args{User});
+        }
+        elsif ($args{Group}) {
+            $object = RT::Group->new( $self->CurrentUser );
+            $object->LoadUserDefinedGroup(delete $args{Group});
+        }
+        $args{PrincipalId} = $object->PrincipalObj->id;
+    }
+
+    return (0, $self->loc("No valid PrincipalId"))
+        unless $args{PrincipalId};
+
+    my ($ok, $msg) = $self->RoleGroup($type)->_AddMember(%args);
+
+    if ($ok and not $args{Silent}) {
+        $self->_NewTransaction(
+            Type     => 'AddWatcher', # use "watcher" for history's sake
+            NewValue => $args{PrincipalId},
+            Field    => $type,
+        );
+    }
+
+    return ($ok, $msg);
+}
+
+=head2 DeleteRoleMember
+
+Removes the specified L<RT::Principal> from the specified role group for this
+record.
+
+Takes a set of key-value pairs:
+
+=over 4
+
+=item PrincipalId
+
+Required.  The ID of the L<RT::Principal> object to remove.
+
+=item Type
+
+Required.  One of the valid roles for this record, as returned by L</Roles>.
+
+=back
+
+Returns a tuple of (status, message).
+
+=cut
+
+sub DeleteRoleMember {
+    my $self = shift;
+    my %args = (@_);
+
+    return (0, $self->loc("No valid Type specified"))
+        unless $args{Type} and $self->HasRole($args{Type});
+
+    return (0, $self->loc("No valid PrincipalId"))
+        unless $args{PrincipalId};
+
+    my ($ok, $msg) = $self->RoleGroup($args{Type})->_DeleteMember($args{PrincipalId});
+
+    if ($ok and not $args{Silent}) {
+        $self->_NewTransaction(
+            Type     => 'DelWatcher', # use "watcher" for history's sake
+            OldValue => $args{PrincipalId},
+            Field    => $args{Type},
+        );
+    }
+    return ($ok, $msg);
+}
+
+sub _ResolveRoles {
+    my $self = shift;
+    my ($roles, %args) = (@_);
+
+    my @errors;
+    for my $role ($self->Roles) {
+        if ($self->_ROLES->{$role}{Single}) {
+            # Default to nobody if unspecified
+            my $value = $args{$role} || RT->Nobody;
+            if (Scalar::Util::blessed($value) and $value->isa("RT::User")) {
+                # Accept a user; it may not be loaded, which we catch below
+                $roles->{$role} = $value->PrincipalObj;
+            } else {
+                # Try loading by id, name, then email.  If all fail, catch that below
+                my $user = RT::User->new( $self->CurrentUser );
+                $user->Load( $value );
+                # XXX: LoadOrCreateByEmail ?
+                $user->LoadByEmail( $value ) unless $user->id;
+                $roles->{$role} = $user->PrincipalObj;
+            }
+            unless ($roles->{$role}->id) {
+                push @errors, $self->loc("Invalid value for [_1]",loc($role));
+                $roles->{$role} = RT->Nobody->PrincipalObj unless $roles->{$role}->id;
+            }
+            # For consistency, we always return an arrayref
+            $roles->{$role} = [ $roles->{$role} ];
+        } else {
+            $roles->{$role} = [];
+            my @values = ref $args{ $role } ? @{ $args{$role} } : ($args{$role});
+            for my $value (grep {defined} @values) {
+                if ( $value =~ /^\d+$/ ) {
+                    # This implicitly allows groups, if passed by id.
+                    my $principal = RT::Principal->new( $self->CurrentUser );
+                    my ($ok, $msg) = $principal->Load( $value );
+                    if ($ok) {
+                        push @{ $roles->{$role} }, $principal;
+                    } else {
+                        push @errors,
+                            $self->loc("Couldn't load principal: [_1]", $msg);
+                    }
+                } else {
+                    my @addresses = RT::EmailParser->ParseEmailAddress( $value );
+                    for my $address ( @addresses ) {
+                        my $user = RT::User->new( RT->SystemUser );
+                        my ($id, $msg) = $user->LoadOrCreateByEmail( $address );
+                        if ( $id ) {
+                            # Load it back as us, not as the system
+                            # user, to be completely safe.
+                            $user = RT::User->new( $self->CurrentUser );
+                            $user->Load( $id );
+                            push @{ $roles->{$role} }, $user->PrincipalObj;
+                        } else {
+                            push @errors,
+                                $self->loc("Couldn't load or create user: [_1]", $msg);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return (@errors);
+}
+
+sub _CreateRoleGroups {
+    my $self = shift;
+    my %args = (@_);
+    for my $type ($self->Roles) {
+        my $type_obj = RT::Group->new($self->CurrentUser);
+        my ($id, $msg) = $type_obj->CreateRoleGroup(
+            Type    => $type,
+            Object  => $self,
+            %args,
+        );
+        unless ($id) {
+            $RT::Logger->error("Couldn't create a role group of type '$type' for ".ref($self)." ".
+                                   $self->Id.": ".$msg);
+            return(undef);
+        }
+    }
+    return(1);
+}
+
+sub _AddRolesOnCreate {
+    my $self = shift;
+    my ($roles, %acls) = @_;
+
+    my @errors;
+    {
+        my $changed = 0;
+
+        for my $role (keys %{$roles}) {
+            my @left;
+            for my $principal (@{$roles->{$role}}) {
+                if ($acls{$role}->($principal)) {
+                    my ($ok, $msg) = $self->RoleGroup($role)->_AddMember(
+                        PrincipalId       => $principal->id,
+                        InsideTransaction => 1,
+                        RecordTransaction => 0,
+                        Object            => $self,
+                    );
+                    push @errors, $self->loc("Couldn't set [_1] watcher: [_2]", $role, $msg)
+                        unless $ok;
+                    $changed++;
+                } else {
+                    push @left, $principal;
+                }
+            }
+            $roles->{$role} = [ @left ];
+        }
+
+        redo if $changed;
+    }
+
+    return @errors;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

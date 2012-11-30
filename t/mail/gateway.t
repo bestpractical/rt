@@ -639,6 +639,8 @@ EOF
 close (MAIL);
 is ($? >> 8, 0, "The mail gateway exited normally");
 
+DBIx::SearchBuilder::Record::Cachable->FlushCache;
+
 $tick = RT::Ticket->new(RT->SystemUser);
 $tick->Load( $id );
 is( $tick->Id, $id, 'load correct ticket');
@@ -793,8 +795,8 @@ while( my $ace = $acl->Next ) {
 ok( !$user->HasRight( Right => 'ReplyToTicket', Object => $tick ), "User can't reply to ticket any more" );
 
 
-my $group = RT::Group->new( RT->SystemUser );
-ok( $group->LoadQueueRoleGroup( Queue => $qid, Type=> 'Owner' ), "load queue owners role group" );
+my $group = $queue->RoleGroup( 'Owner' );
+ok( $group->Id, "load queue owners role group" );
 $ace = RT::ACE->new( RT->SystemUser );
 ($ace_id, $msg) = $group->PrincipalObj->GrantRight( Right => 'ReplyToTicket', Object => $queue );
 ok( $ace_id, "Granted queue owners role group with ReplyToTicket right" );

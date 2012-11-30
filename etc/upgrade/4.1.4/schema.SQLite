@@ -1,0 +1,1 @@
+UPDATE Groups SET Instance = 1 WHERE Domain = 'RT::System-Role' AND Instance = 0;

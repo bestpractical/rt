@@ -424,7 +424,7 @@ sub Create {
         return ( 0, $self->loc('Queue could not be created') );
     }
 
-    my $create_ret = $self->_CreateQueueGroups();
+    my $create_ret = $self->_CreateRoleGroups();
     unless ($create_ret) {
         $RT::Handle->Rollback();
         return ( 0, $self->loc('Queue could not be created') );
@@ -727,43 +727,53 @@ sub TicketTransactionCustomFields {
 
 =head2 AllRoleGroupTypes
 
-Returns a list of the names of the various role group types that this queue
-has, including Requestor and Owner. If you don't want them, see
-L</ManageableRoleGroupTypes>.
+B<DEPRECATED> and will be removed in a future release. Use L</Roles>
+instead.
+
+Returns a list of the names of the various role group types for Queues,
+including roles used only for ACLs like Requestor and Owner. If you don't want
+them, see L</ManageableRoleGroupTypes>.
 
 =cut
 
 sub AllRoleGroupTypes {
-    my $self = shift;
-    return ($self->ManageableRoleGroupTypes, qw(Requestor Owner));
+    RT->Logger->warn(<<"    .");
+RT::Queue->AllRoleGroupTypes is DEPRECATED and will be removed in a future release.
+
+Please use RT::Queue->Roles instead at @{[join '/', caller]}.
+    .
+    shift->Roles;
 }
 
 =head2 IsRoleGroupType
+
+B<DEPRECATED> and will be removed in a future release. Use L</HasRole> instead.
 
 Returns whether the passed-in type is a role group type.
 
 =cut
 
 sub IsRoleGroupType {
-    my $self = shift;
-    my $type = shift;
+    RT->Logger->warn(<<"    .");
+RT::Queue->IsRoleGroupType is DEPRECATED and will be removed in a future release.
 
-    for my $valid_type ($self->AllRoleGroupTypes) {
-        return 1 if $type eq $valid_type;
-    }
-
-    return 0;
+Please use RT::Queue->HasRole instead at @{[join '/', caller]}.
+    .
+    shift->HasRole(@_);
 }
 
 =head2 ManageableRoleGroupTypes
 
-Returns a list of the names of the various role group types that this queue
-has, excluding Requestor and Owner. If you want them, see L</AllRoleGroupTypes>.
+Returns a list of the names of the various role group types for Queues,
+excluding ones used only for ACLs such as Requestor and Owner. If you want
+them, see L</Roles>.
 
 =cut
 
 sub ManageableRoleGroupTypes {
-    return qw(Cc AdminCc);
+    # This grep is a little hacky, but I don't want to introduce the concept of
+    # manageable vs. unmanageable roles globally (yet).
+    return grep { not /^(Requestor|Owner)$/ } shift->Roles;
 }
 
 =head2 IsManageableRoleGroupType
@@ -782,50 +792,6 @@ sub IsManageableRoleGroupType {
 
     return 0;
 }
-
-
-=head2 _CreateQueueGroups
-
-Create the ticket groups and links for this ticket. 
-This routine expects to be called from Ticket->Create _inside of a transaction_
-
-It will create four groups for this ticket: Requestor, Cc, AdminCc and Owner.
-
-It will return true on success and undef on failure.
-
-
-=cut
-
-sub _CreateQueueGroups {
-    my $self = shift;
-
-    my @types = $self->AllRoleGroupTypes;
-
-    foreach my $type (@types) {
-        my $ok = $self->_CreateQueueRoleGroup($type);
-        return undef if !$ok;
-    }
-
-    return 1;
-}
-
-sub _CreateQueueRoleGroup {
-    my $self = shift;
-    my $type = shift;
-
-    my $type_obj = RT::Group->new($self->CurrentUser);
-    my ($id, $msg) = $type_obj->CreateRoleGroup(Instance => $self->Id, 
-                                                    Type => $type,
-                                                    Domain => 'RT::Queue-Role');
-    unless ($id) {
-        $RT::Logger->error("Couldn't create a Queue group of type '$type' for queue ".
-                            $self->Id.": ".$msg);
-        return(undef);
-    }
-
-    return $id;
-}
-
 
 
 # _HasModifyWatcherRight {{{
@@ -893,7 +859,7 @@ sub AddWatcher {
     }
 
     return ( 0, "Unknown watcher type [_1]", $args{Type} )
-        unless $self->IsRoleGroupType($args{Type});
+        unless $self->HasRole($args{Type});
 
     my ($ok, $msg) = $self->_HasModifyWatcherRight(%args);
     return ($ok, $msg) if !$ok;
@@ -960,8 +926,7 @@ sub _AddWatcher {
         return(0, $self->loc("Could not find or create that user"));
     }
 
-    my $group = RT::Group->new($self->CurrentUser);
-    $group->LoadQueueRoleGroup(Type => $args{'Type'}, Queue => $self->Id);
+    my $group = $self->RoleGroup( $args{'Type'} );
     unless ($group->id) {
         return(0,$self->loc("Group not found"));
     }
@@ -1035,14 +1000,13 @@ sub DeleteWatcher {
         return ( 0, $self->loc("Could not find that principal") );
     }
 
-    my $group = RT::Group->new($self->CurrentUser);
-    $group->LoadQueueRoleGroup(Type => $args{'Type'}, Queue => $self->Id);
+    my $group = $self->RoleGroup( $args{'Type'} );
     unless ($group->id) {
         return(0,$self->loc("Group not found"));
     }
 
     return ( 0, $self->loc('Unknown watcher type [_1]', $args{Type}) )
-        unless $self->IsRoleGroupType($args{Type});
+        unless $self->HasRole($args{Type});
 
     my ($ok, $msg) = $self->_HasModifyWatcherRight(%args);
     return ($ok, $msg) if !$ok;
@@ -1117,12 +1081,9 @@ If the user doesn't have "ShowQueue" permission, returns an empty group
 sub Cc {
     my $self = shift;
 
-    my $group = RT::Group->new($self->CurrentUser);
-    if ( $self->CurrentUserHasRight('SeeQueue') ) {
-        $group->LoadQueueRoleGroup(Type => 'Cc', Queue => $self->Id);
-    }
-    return ($group);
-
+    return RT::Group->new($self->CurrentUser)
+        unless $self->CurrentUserHasRight('SeeQueue');
+    return $self->RoleGroup( 'Cc' );
 }
 
 
@@ -1138,12 +1099,9 @@ If the user doesn't have "ShowQueue" permission, returns an empty group
 sub AdminCc {
     my $self = shift;
 
-    my $group = RT::Group->new($self->CurrentUser);
-    if ( $self->CurrentUserHasRight('SeeQueue') ) {
-        $group->LoadQueueRoleGroup(Type => 'AdminCc', Queue => $self->Id);
-    }
-    return ($group);
-
+    return RT::Group->new($self->CurrentUser)
+        unless $self->CurrentUserHasRight('SeeQueue');
+    return $self->RoleGroup( 'AdminCc' );
 }
 
 
@@ -1171,9 +1129,8 @@ sub IsWatcher {
         @_
     );
 
-    # Load the relevant group. 
-    my $group = RT::Group->new($self->CurrentUser);
-    $group->LoadQueueRoleGroup(Type => $args{'Type'}, Queue => $self->id);
+    # Load the relevant group.
+    my $group = $self->RoleGroup( $args{'Type'} );
     # Ask if it has the member in question
 
     my $principal = RT::Principal->new($self->CurrentUser);

@@ -62,12 +62,6 @@ my $group = RT::Group->new($CurrentUser);
 
 An RT group object.
 
-=head1 METHODS
-
-
-
-
-
 =cut
 
 
@@ -119,14 +113,13 @@ $RIGHT_CATEGORIES = {
 # Tell RT::ACE that this sort of object can get acls granted
 $RT::ACE::OBJECT_TYPES{'RT::Group'} = 1;
 
-
-#
-
 # TODO: This should be refactored out into an RT::ACLedObject or something
 # stuff the rights into a hash of rights that can exist.
 
 __PACKAGE__->AddRights(%$RIGHTS);
 __PACKAGE__->AddRightCategories(%$RIGHT_CATEGORIES);
+
+=head1 METHODS
 
 =head2 AddRights C<RIGHT>, C<DESCRIPTION> [, ...]
 
@@ -187,32 +180,37 @@ Returns a user-readable description of what this group is for and what it's name
 =cut
 
 sub SelfDescription {
-	my $self = shift;
-	if ($self->Domain eq 'ACLEquivalence') {
-		my $user = RT::Principal->new($self->CurrentUser);
-		$user->Load($self->Instance);
-		return $self->loc("user [_1]",$user->Object->Name);
-	}
-	elsif ($self->Domain eq 'UserDefined') {
-		return $self->loc("group '[_1]'",$self->Name);
-	}
-	elsif ($self->Domain eq 'RT::System-Role') {
-		return $self->loc("system [_1]",$self->Type);
-	}
-	elsif ($self->Domain eq 'RT::Queue-Role') {
-		my $queue = RT::Queue->new($self->CurrentUser);
-		$queue->Load($self->Instance);
-		return $self->loc("queue [_1] [_2]",$queue->Name, $self->Type);
-	}
-	elsif ($self->Domain eq 'RT::Ticket-Role') {
-		return $self->loc("ticket #[_1] [_2]",$self->Instance, $self->Type);
-	}
-	elsif ($self->Domain eq 'SystemInternal') {
-		return $self->loc("system group '[_1]'",$self->Type);
-	}
-	else {
-		return $self->loc("undescribed group [_1]",$self->Id);
-	}
+    my $self = shift;
+    if ($self->Domain eq 'ACLEquivalence') {
+        my $user = RT::Principal->new($self->CurrentUser);
+        $user->Load($self->Instance);
+        return $self->loc("user [_1]",$user->Object->Name);
+    }
+    elsif ($self->Domain eq 'UserDefined') {
+        return $self->loc("group '[_1]'",$self->Name);
+    }
+    elsif ($self->Domain eq 'RT::System-Role') {
+        return $self->loc("system [_1]",$self->Type);
+    }
+    elsif ($self->Domain eq 'RT::Queue-Role') {
+        my $queue = RT::Queue->new($self->CurrentUser);
+        $queue->Load($self->Instance);
+        return $self->loc("queue [_1] [_2]",$queue->Name, $self->Type);
+    }
+    elsif ($self->Domain eq 'RT::Ticket-Role') {
+        return $self->loc("ticket #[_1] [_2]",$self->Instance, $self->Type);
+    }
+    elsif ($self->RoleClass) {
+        my $class = lc $self->RoleClass;
+           $class =~ s/^RT:://i;
+        return $self->loc("[_1] #[_2] [_3]", $self->loc($class), $self->Instance, $self->Type);
+    }
+    elsif ($self->Domain eq 'SystemInternal') {
+        return $self->loc("system group '[_1]'",$self->Type);
+    }
+    else {
+        return $self->loc("undescribed group [_1]",$self->Id);
+    }
 }
 
 
@@ -311,75 +309,106 @@ sub LoadSystemInternalGroup {
     );
 }
 
+=head2 LoadRoleGroup
+
+Takes a paramhash of Object and Type and attempts to load the suitable role
+group for said object.
+
+=cut
+
+sub LoadRoleGroup {
+    my $self = shift;
+    my %args = (
+        Object  => undef,
+        Type    => undef,
+        @_
+    );
+
+    my $object = delete $args{Object};
+
+    return (0, $self->loc("Object passed is not loaded"))
+       unless $object->id;
+
+    # Translate Object to Domain + Instance
+    $args{Domain}   = ref($object) . "-Role";
+    $args{Instance} = $object->id;
+
+    return $self->LoadByCols(%args);
+}
 
 
 =head2 LoadTicketRoleGroup  { Ticket => TICKET_ID, Type => TYPE }
 
-Loads a ticket group from the database. 
-
-Takes a param hash with 2 parameters:
-
-    Ticket is the TicketId we're curious about
-    Type is the type of Group we're trying to load: 
-        Requestor, Cc, AdminCc, Owner
+Deprecated in favor of L</LoadRoleGroup> or L<RT::Record/RoleGroup>.
 
 =cut
 
 sub LoadTicketRoleGroup {
-    my $self       = shift;
-    my %args = (Ticket => '0',
-                Type => undef,
-                @_);
-        $self->LoadByCols( Domain => 'RT::Ticket-Role',
-                           Instance =>$args{'Ticket'}, 
-                           Type => $args{'Type'}
-                           );
+    my $self = shift;
+    my %args = (
+        Ticket => '0',
+        Type => undef,
+        @_,
+    );
+    RT->Logger->warn(<<"    .");
+RT::Group->LoadTicketRoleGroup is DEPRECATED and will be removed in a future release.
+
+Please use RT::Group->LoadRoleGroup or RT::Ticket->RoleGroup instead at @{[join '/', caller]}.
+    .
+    $self->LoadByCols(
+        Domain   => 'RT::Ticket-Role',
+        Instance => $args{'Ticket'},
+        Type     => $args{'Type'},
+    );
 }
 
 
 
 =head2 LoadQueueRoleGroup  { Queue => Queue_ID, Type => TYPE }
 
-Loads a Queue group from the database. 
-
-Takes a param hash with 2 parameters:
-
-    Queue is the QueueId we're curious about
-    Type is the type of Group we're trying to load: 
-        Requestor, Cc, AdminCc, Owner
+Deprecated in favor of L</LoadRoleGroup> or L<RT::Record/RoleGroup>.
 
 =cut
 
 sub LoadQueueRoleGroup {
-    my $self       = shift;
-    my %args = (Queue => undef,
-                Type => undef,
-                @_);
-        $self->LoadByCols( Domain => 'RT::Queue-Role',
-                           Instance =>$args{'Queue'}, 
-                           Type => $args{'Type'}
-                           );
+    my $self = shift;
+    my %args = (
+        Queue => undef,
+        Type => undef,
+        @_,
+    );
+    RT->Logger->warn(<<"    .");
+RT::Group->LoadQueueRoleGroup is DEPRECATED and will be removed in a future release.
+
+Please use RT::Group->LoadRoleGroup or RT::Queue->RoleGroup instead at @{[join '/', caller]}.
+    .
+    $self->LoadByCols(
+        Domain   => 'RT::Queue-Role',
+        Instance => $args{'Queue'},
+        Type     => $args{'Type'},
+    );
 }
 
 
 
 =head2 LoadSystemRoleGroup  Type
 
-Loads a System group from the database. 
-
-Takes a single param: Type
-
-    Type is the type of Group we're trying to load: 
-        Requestor, Cc, AdminCc, Owner
+Deprecated in favor of L</LoadRoleGroup> or L<RT::Record/RoleGroup>.
 
 =cut
 
 sub LoadSystemRoleGroup {
-    my $self       = shift;
+    my $self = shift;
     my $type = shift;
-        $self->LoadByCols( Domain => 'RT::System-Role',
-                           Type => $type
-                           );
+    RT->Logger->warn(<<"    .");
+RT::Group->LoadSystemRoleGroup is DEPRECATED and will be removed in a future release.
+
+Please use RT::Group->LoadRoleGroup or RT::System->RoleGroup instead at @{[join '/', caller]}.
+    .
+    $self->LoadByCols(
+        Domain => 'RT::System-Role',
+        Type => $type
+    );
 }
 
 
@@ -578,16 +607,55 @@ sub _CreateACLEquivalenceGroup {
 
 
 
-=head2 CreateRoleGroup { Domain => DOMAIN, Type =>  TYPE, Instance => ID }
+=head2 CreateRoleGroup
 
-A helper subroutine which creates a  ticket group. (What RT 2.0 called Ticket watchers)
-Type is one of ( "Requestor" || "Cc" || "AdminCc" || "Owner") 
-Domain is one of (RT::Ticket-Role || RT::Queue-Role || RT::System-Role)
-Instance is the id of the ticket or queue in question
+A convenience method for creating a role group on an object.
 
-This routine expects to be called from {Ticket||Queue}->CreateTicketGroups _inside of a transaction_
+This method expects to be called from B<inside of a database transaction>!  If
+you're calling it outside of one, you B<MUST> pass a false value for
+InsideTransaction.
 
-Returns a tuple of (Id, Message).  If id is 0, the create failed
+Takes a paramhash of:
+
+=over 4
+
+=item Type
+
+Required.  RT's core role types are C<Requestor>, C<Cc>, C<AdminCc>, and
+C<Owner>.  Extensions may add their own.
+
+=item Object
+
+Optional.  The object on which this role applies, used to set Domain and
+Instance automatically.
+
+=item Domain
+
+Optional.  The class on which this role applies, with C<-Role> appended.  RT's
+supported core role group domains are C<RT::Ticket-Role>, C<RT::Queue-Role>,
+and C<RT::System-Role>.
+
+Not required if you pass an Object.
+
+=item Instance
+
+Optional.  The numeric ID of the object (of the class encoded in Domain) on
+which this role applies.  If Domain is C<RT::System-Role>, Instance should be C<1>.
+
+Not required if you pass an Object.
+
+=item InsideTransaction
+
+Optional.  Defaults to true in expectation of usual call sites.  If you call
+this method while not inside a transaction, you C<MUST> pass a false value for
+this parameter.
+
+=back
+
+You must pass either an Object or both Domain and Instance.
+
+Returns a tuple of (id, Message).  If id is false, the create failed and
+Message should contain an error string.
 
 =cut
 
@@ -596,20 +664,103 @@ sub CreateRoleGroup {
     my %args = ( Instance => undef,
                  Type     => undef,
                  Domain   => undef,
+                 Object   => undef,
+                 InsideTransaction => 1,
                  @_ );
 
-    unless (RT::Queue->IsRoleGroupType($args{Type})) {
-        return ( 0, $self->loc("Invalid Group Type") );
+    # Translate Object to Domain + Instance
+    my $object = delete $args{Object};
+    if ( $object ) {
+        $args{Domain}   = ref($object) . "-Role";
+        $args{Instance} = $object->id;
     }
 
+    unless ($args{Instance}) {
+        return ( 0, $self->loc("An Instance must be provided") );
+    }
 
-    return ( $self->_Create( Domain            => $args{'Domain'},
-                             Instance          => $args{'Instance'},
-                             Type              => $args{'Type'},
-                             InsideTransaction => 1 ) );
+    unless ($self->ValidateRoleGroup(%args)) {
+        return ( 0, $self->loc("Invalid Group Type and Domain") );
+    }
+
+    my %create = map { $_ => $args{$_} } qw(Domain Instance Type);
+
+    my $duplicate = RT::Group->new( RT->SystemUser );
+    $duplicate->LoadByCols( %create );
+    if ($duplicate->id) {
+        return ( 0, $self->loc("Role group exists already") );
+    }
+
+    my ($id, $msg) = $self->_Create(
+        InsideTransaction => $args{InsideTransaction},
+        %create,
+    );
+
+    if ($self->SingleMemberRoleGroup) {
+        $self->_AddMember(
+            PrincipalId => RT->Nobody->Id,
+            InsideTransaction => $args{InsideTransaction},
+            RecordTransaction => 0,
+            Object => $object,
+        );
+    }
+
+    return ($id, $msg);
 }
 
+sub RoleClass {
+    my $self = shift;
+    my $domain = shift || $self->Domain;
+    return unless $domain =~ /^(.+)-Role$/;
+    return $1;
+}
 
+=head2 ValidateRoleGroup
+
+Takes a param hash containing Domain and Type which are expected to be values
+passed into L</CreateRoleGroup>.  Returns true if the specified Type is a
+registered role on the specified Domain.  Otherwise returns false.
+
+=cut
+
+sub ValidateRoleGroup {
+    my $self = shift;
+    my %args = (@_);
+    return 0 unless $args{Domain} and $args{Type};
+
+    my $class = $self->RoleClass($args{Domain});
+    return 0 unless $class and $class->can('HasRole');
+
+    return $class->HasRole($args{Type});
+}
+
+=head2 SingleMemberRoleGroup
+
+=cut
+
+sub SingleMemberRoleGroup {
+    my $self = shift;
+    my $class = $self->RoleClass;
+    return unless $class;
+    return $class->_ROLES->{$self->Type}{Single};
+}
+
+sub SingleMemberRoleGroupColumn {
+    my $self = shift;
+    my ($class) = $self->Domain =~ /^(.+)-Role$/;
+    return unless $class;
+    return unless $class->_ROLES->{$self->Type}{Class} eq $class;
+    return $class->_ROLES->{$self->Type}{Column};
+}
+
+sub RoleGroupObject {
+    my $self = shift;
+    my ($class) = $self->Domain =~ /^(.+)-Role$/;
+    return unless $class;
+    my $obj = $class->new( $self->CurrentUser );
+    $obj->Load( $self->Instance );
+    return $obj;
+}
 
 =head2 Delete
 
@@ -900,6 +1051,7 @@ sub _AddMember {
     my $self = shift;
     my %args = ( PrincipalId => undef,
                  InsideTransaction => undef,
+                 RecordTransaction => 1,
                  @_);
     my $new_member = $args{'PrincipalId'};
 
@@ -934,6 +1086,9 @@ sub _AddMember {
         return ( 0, $self->loc("Groups can't be members of their members"));
     }
 
+    my @purge;
+    push @purge, @{$self->MembersObj->ItemsArrayRef}
+        if $self->SingleMemberRoleGroup;
 
     my $member_object = RT::GroupMember->new( $self->CurrentUser );
     my $id = $member_object->Create(
@@ -941,12 +1096,31 @@ sub _AddMember {
         Group => $self->PrincipalObj,
         InsideTransaction => $args{'InsideTransaction'}
     );
-    if ($id) {
-        return ( 1, $self->loc("Member added: [_1]", $new_member_obj->Object->Name) );
+
+    return(0, $self->loc("Couldn't add member to group"))
+        unless $id;
+
+    # Purge all previous members
+    for my $member (@purge) {
+        my ($ok, $msg) = $member->Delete();
+        return(0, $self->loc("Couldn't remove previous member: [_1]", $msg))
+            unless $ok;
     }
-    else {
-        return(0, $self->loc("Couldn't add member to group"));
+
+    # Update the column
+    if (my $col = $self->SingleMemberRoleGroupColumn) {
+        my $obj = $args{Object} || $self->RoleGroupObject;
+        my ($ok, $msg) = $obj->_Set(
+            Field    => $col,
+            Value    => $new_member_obj->Id,
+            CheckACL => 0,                  # don't check acl
+            RecordTransaction => $args{'RecordTransaction'},
+        );
+        return (0, $self->loc("Could not update column $col: [_1]", $msg))
+            unless $ok;
     }
+
+    return ( 1, $self->loc("Member added: [_1]", $new_member_obj->Object->Name) );
 }
 
 
@@ -1087,13 +1261,17 @@ sub _DeleteMember {
     #Now that we've checked ACLs and sanity, delete the groupmember
     my $val = $member_obj->Delete();
 
-    if ($val) {
-        return ( $val, $self->loc("Member deleted") );
-    }
-    else {
+    unless ($val) {
         $RT::Logger->debug("Failed to delete group ".$self->Id." member ". $member_id);
         return ( 0, $self->loc("Member not deleted" ));
     }
+
+    $self->_AddMember(
+        PrincipalId => RT->Nobody->Id,
+        RecordTransaction => 0,
+    ) if $self->SingleMemberRoleGroup;
+
+    return ( $val, $self->loc("Member deleted") );
 }
 
 
