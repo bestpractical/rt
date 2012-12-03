@@ -47,6 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 .sf-menu {
     width: 100%;
+    margin-bottom: 0;
 }
 
 .sf-menu li:hover {

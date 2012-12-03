@@ -260,14 +260,10 @@ sub Lifecycle {
 
 sub SetLifecycle {
     my $self = shift;
-    my $value = shift;
+    my $value = shift || 'default';
 
-    if ( $value && $value ne 'default' ) {
-        return (0, $self->loc('[_1] is not valid lifecycle', $value ))
-            unless $self->ValidateLifecycle( $value );
-    } else {
-        $value = undef;
-    }
+    return ( 0, $self->loc( '[_1] is not a valid lifecycle', $value ) )
+      unless $self->ValidateLifecycle($value);
 
     return $self->_Set( Field => 'Lifecycle', Value => $value, @_ );
 }
@@ -407,12 +403,10 @@ sub Create {
         return ($val, $msg) unless $val;
     }
 
-    if ( $args{'Lifecycle'} && $args{'Lifecycle'} ne 'default' ) {
-        return ( 0, $self->loc('Invalid lifecycle name') )
-            unless $self->ValidateLifecycle( $args{'Lifecycle'} );
-    } else {
-        $args{'Lifecycle'} = undef;
-    }
+    $args{'Lifecycle'} ||= 'default';
+
+    return ( 0, $self->loc('[_1] is not a valid lifecycle', $args{'Lifecycle'} ) )
+      unless $self->ValidateLifecycle( $args{'Lifecycle'} );
 
     my %attrs = map {$_ => 1} $self->ReadableAttributes;
 
@@ -834,7 +828,7 @@ PrinicpalId The RT::Principal id of the user or group that's being added as a wa
 Email       The email address of the new watcher. If a user with this 
             email address can't be found, a new nonprivileged user will be created.
 
-If the watcher you\'re trying to set has an RT account, set the Owner parameter to their User Id. Otherwise, set the Email parameter to their Email address.
+If the watcher you're trying to set has an RT account, set the Owner parameter to their User Id. Otherwise, set the Email parameter to their Email address.
 
 Returns a tuple of (status/id, message).
 
@@ -1518,7 +1512,7 @@ sub _CoreAccessible {
         SubjectTag => 
         {read => 1, write => 1, sql_type => 12, length => 120,  is_blob => 0,  is_numeric => 0,  type => 'varchar(120)', default => ''},
         Lifecycle => 
-        {read => 1, write => 1, sql_type => 12, length => 32,  is_blob => 0,  is_numeric => 0,  type => 'varchar(32)', default => ''},
+        {read => 1, write => 1, sql_type => 12, length => 32,  is_blob => 0, is_numeric => 0,  type => 'varchar(32)', default => 'default'},
         InitialPriority => 
         {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         FinalPriority => 

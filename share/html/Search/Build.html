@@ -222,7 +222,7 @@ foreach my $arg ( keys %ARGS ) {
         next if !defined $value || $value eq '';
         my $rawvalue = $value;
 
-        if ( $value eq 'NULL' && $op =~ /=/ ) {
+        if ( $value =~ /^NULL$/i && $op =~ /=/ ) {
             if ( $op eq '=' ) {
                 $op = "IS";
             }

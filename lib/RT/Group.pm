@@ -51,7 +51,7 @@
 
 =head1 NAME
 
-  RT::Group - RT\'s group object
+  RT::Group - RT's group object
 
 =head1 SYNOPSIS
 

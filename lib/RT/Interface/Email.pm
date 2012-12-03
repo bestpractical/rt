@@ -1058,7 +1058,7 @@ sub CreateUser {
 
 Takes a hash containing QueueObj, Head and CurrentUser objects.
 Returns a list of all email addresses in the To and Cc
-headers b<except> the current Queue\'s email addresses, the CurrentUser\'s
+headers b<except> the current Queue's email addresses, the CurrentUser's
 email address  and anything that the configuration sub RT::IsRTAddress matches.
 
 =cut
@@ -1462,6 +1462,10 @@ sub Gateway {
 
     $args{'ticket'} ||= ExtractTicketId( $Message );
 
+    # ExtractTicketId may have been overridden, and edited the Subject
+    my $NewSubject = $Message->head->get('Subject');
+    chomp $NewSubject;
+
     $SystemTicket = RT::Ticket->new( RT->SystemUser );
     $SystemTicket->Load( $args{'ticket'} ) if ( $args{'ticket'} ) ;
     if ( $SystemTicket->id ) {
@@ -1546,9 +1550,11 @@ sub Gateway {
             );
         }
 
+        $head->replace('X-RT-Interface' => 'Email');
+
         my ( $id, $Transaction, $ErrStr ) = $Ticket->Create(
             Queue     => $SystemQueueObj->Id,
-            Subject   => $Subject,
+            Subject   => $NewSubject,
             Requestor => \@Requestors,
             Cc        => \@Cc,
             MIMEObj   => $Message

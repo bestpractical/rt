@@ -1806,6 +1806,7 @@ sub CreateTicket {
         Cc      => $ARGS{'Cc'},
         Body    => $sigless,
         Type    => $ARGS{'ContentType'},
+        Interface => RT::Interface::Web::MobileClient() ? 'Mobile' : 'Web',
     );
 
     if ( $ARGS{'Attachments'} ) {
@@ -1969,6 +1970,7 @@ sub ProcessUpdateMessage {
         Subject => $args{ARGSRef}->{'UpdateSubject'},
         Body    => $args{ARGSRef}->{'UpdateContent'},
         Type    => $args{ARGSRef}->{'UpdateContentType'},
+        Interface => RT::Interface::Web::MobileClient() ? 'Mobile' : 'Web',
     );
 
     $Message->head->replace( 'Message-ID' => Encode::encode_utf8(
@@ -2099,11 +2101,13 @@ sub MakeMIMEEntity {
         Body                => undef,
         AttachmentFieldName => undef,
         Type                => undef,
+        Interface           => 'API',
         @_,
     );
     my $Message = MIME::Entity->build(
         Type    => 'multipart/mixed',
         "Message-Id" => Encode::encode_utf8( RT::Interface::Email::GenMessageId ),
+        "X-RT-Interface" => $args{Interface},
         map { $_ => Encode::encode_utf8( $args{ $_} ) }
             grep defined $args{$_}, qw(Subject From Cc)
     );
@@ -2145,8 +2149,9 @@ sub MakeMIMEEntity {
                 $Message->head->set( 'Subject' => $filename );
             }
 
-            # Attachment parts really shouldn't get a Message-ID
+            # Attachment parts really shouldn't get a Message-ID or "interface"
             $Message->head->delete('Message-ID');
+            $Message->head->delete('X-RT-Interface');
         }
     }
 

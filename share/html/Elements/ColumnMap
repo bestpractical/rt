@@ -96,13 +96,25 @@ my $COLUMN_MAP = {
         attribute => sub { return shift @_ },
         title     => sub { return pop @_ },
         value     => sub {
+            # Cache the CF object on a per-request basis, to avoid
+            # having to load it for every row
+            my $key = join("-","CF",
+                           $_[0]->CustomFieldLookupType,
+                           $_[0]->CustomFieldLookupId,
+                           $_[-1]);
+
+            my $cf = $m->notes($key);
+            unless ($cf) {
+                $cf = $_[0]->LoadCustomFieldByIdentifier($_[-1]);
+                $m->notes($key, $cf);
+            }
+
             # Display custom field contents, separated by newlines.
             # For Image custom fields we also show a thumbnail here.
-
-            my $values = $_[0]->CustomFieldValues( $_[-1] );
+            my $values = $cf->ValuesForObject( $_[0] );
             my @values = map {
                 (
-                    ($_->CustomFieldObj->Type eq 'Image')
+                    ($cf->Type eq 'Image')
                         ? \($m->scomp( '/Elements/ShowCustomFieldImage', Object => $_ ))
                         : $_->Content
                 ),

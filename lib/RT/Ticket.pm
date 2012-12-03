@@ -54,7 +54,7 @@
 
 =head1 DESCRIPTION
 
-This module lets you manipulate RT\'s ticket object.
+This module lets you manipulate RT's ticket object.
 
 
 =head1 METHODS
@@ -165,8 +165,8 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   AdminCc  - A reference to a  list of  email addresses or Names
   SquelchMailTo - A reference to a list of email addresses - 
                   who should this ticket not mail
-  Type -- The ticket\'s type. ignore this for now
-  Owner -- This ticket\'s owner. either an RT::User object or this user\'s id
+  Type -- The ticket's type. ignore this for now
+  Owner -- This ticket's owner. either an RT::User object or this user's id
   Subject -- A string describing the subject of the ticket
   Priority -- an integer from 0 to 99
   InitialPriority -- an integer from 0 to 99
@@ -175,8 +175,8 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   TimeEstimated -- an integer. estimated time for this task in minutes
   TimeWorked -- an integer. time worked so far in minutes
   TimeLeft -- an integer. time remaining in minutes
-  Starts -- an ISO date describing the ticket\'s start date and time in GMT
-  Due -- an ISO date describing the ticket\'s due date and time in GMT
+  Starts -- an ISO date describing the ticket's start date and time in GMT
+  Due -- an ISO date describing the ticket's due date and time in GMT
   MIMEObj -- a MIME::Entity object with the content of the initial ticket request.
   CustomField-<n> -- a scalar or array of values for the customfield with the id <n>
 
@@ -651,6 +651,38 @@ sub _Parse822HeadersForAttributes {
     return (%args);
 }
 
+=head2 _CreateTicketGroups
+
+Create the ticket groups and links for this ticket. 
+This routine expects to be called from Ticket->Create _inside of a transaction_
+
+It will create four groups for this ticket: Requestor, Cc, AdminCc and Owner.
+
+It will return true on success and undef on failure.
+
+
+=cut
+
+
+sub _CreateTicketGroups {
+    my $self = shift;
+    
+    my @types = (qw(Requestor Owner Cc AdminCc));
+
+    foreach my $type (@types) {
+        my $type_obj = RT::Group->new($self->CurrentUser);
+        my ($id, $msg) = $type_obj->CreateRoleGroup(Domain => 'RT::Ticket-Role',
+                                                       Instance => $self->Id, 
+                                                       Type => $type);
+        unless ($id) {
+            $RT::Logger->error("Couldn't create a ticket group of type '$type' for ticket ".
+                               $self->Id.": ".$msg);     
+            return(undef);
+        }
+     }
+    return(1);
+    
+}
 
 
 =head2 OwnerGroup
@@ -678,7 +710,7 @@ PrincipalId The RT::Principal id of the user or group that's being added as a wa
 Email       The email address of the new watcher. If a user with this 
             email address can't be found, a new nonprivileged user will be created.
 
-If the watcher you\'re trying to set has an RT account, set the PrincipalId paremeter to their User Id. Otherwise, set the Email parameter to their Email address.
+If the watcher you're trying to set has an RT account, set the PrincipalId paremeter to their User Id. Otherwise, set the Email parameter to their Email address.
 
 =cut
 
@@ -1873,6 +1905,9 @@ sub _RecordNote {
             Data => ( ref $args{'Content'}? $args{'Content'}: [ $args{'Content'} ] )
         );
     }
+
+    $args{'MIMEObj'}->head->replace('X-RT-Interface' => 'API')
+        unless $args{'MIMEObj'}->head->get('X-RT-Interface');
 
     # convert text parts into utf-8
     RT::I18N::SetMIMEEntityToUTF8( $args{'MIMEObj'} );
@@ -3199,35 +3234,27 @@ sub TransactionCustomFields {
 }
 
 
+=head2 LoadCustomFieldByIdentifier
 
-=head2 CustomFieldValues
-
-# Do name => id mapping (if needed) before falling back to
-# RT::Record's CustomFieldValues
-
-See L<RT::Record>
+Finds and returns the custom field of the given name for the ticket,
+overriding L<RT::Record/LoadCustomFieldByIdentifier> to look for
+queue-specific CFs before global ones.
 
 =cut
 
-sub CustomFieldValues {
+sub LoadCustomFieldByIdentifier {
     my $self  = shift;
     my $field = shift;
 
-    return $self->SUPER::CustomFieldValues( $field ) if !$field || $field =~ /^\d+$/;
+    return $self->SUPER::LoadCustomFieldByIdentifier($field)
+        if ref $field or $field =~ /^\d+$/;
 
     my $cf = RT::CustomField->new( $self->CurrentUser );
     $cf->SetContextObject( $self );
     $cf->LoadByNameAndQueue( Name => $field, Queue => $self->Queue );
-    unless ( $cf->id ) {
-        $cf->LoadByNameAndQueue( Name => $field, Queue => 0 );
-    }
-
-    # If we didn't find a valid cfid, give up.
-    return RT::ObjectCustomFieldValues->new( $self->CurrentUser ) unless $cf->id;
-
-    return $self->SUPER::CustomFieldValues( $cf->id );
+    $cf->LoadByNameAndQueue( Name => $field, Queue => 0 ) unless $cf->id;
+    return $cf;
 }
-
 
 
 =head2 CustomFieldLookupType

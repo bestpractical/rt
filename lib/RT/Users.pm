@@ -118,7 +118,7 @@ sub PrincipalsAlias {
 
 =head2 LimitToEnabled
 
-Only find items that haven\'t been disabled
+Only find items that haven't been disabled
 
 =cut
 

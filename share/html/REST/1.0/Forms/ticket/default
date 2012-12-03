@@ -188,7 +188,8 @@ else {
                 MIME::Entity->build(
                     From => $session{CurrentUser}->EmailAddress,
                     Subject => $v{Subject},
-                    Data => $text
+                    Data => $text,
+                    'X-RT-Interface' => 'REST',
                 );
         }
 

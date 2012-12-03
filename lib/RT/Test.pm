@@ -95,6 +95,11 @@ problem in Perl that hides the top-level optree from L<Devel::Cover>.
 our $port;
 our @SERVERS;
 
+BEGIN {
+    delete $ENV{$_} for qw/LANGUAGE LC_ALL LC_MESSAGES LANG/;
+    $ENV{LANG} = "C";
+};
+
 sub import {
     my $class = shift;
     my %args = %rttest_opt = @_;

@@ -106,7 +106,10 @@ if (!$k->{Text} && @atts == 0) {
 }
 
 my $cgi = $m->cgi_object;
-my $ent = MIME::Entity->build(Type => "multipart/mixed");
+my $ent = MIME::Entity->build(
+    Type => "multipart/mixed",
+    'X-RT-Interface' => 'REST',
+);
 $ent->attach(Data => $k->{Text}) if $k->{Text};
 
 my $i = 1;

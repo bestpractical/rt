@@ -610,14 +610,6 @@ sub CustomFieldLookupType {
     "RT::Class-RT::Article";
 }
 
-# _LookupId is the id of the toplevel type object the customfield is joined to
-# in this case, that's an RT::Class.
-
-sub _LookupId {
-    my $self = shift;
-    return $self->ClassObj->id;
-
-}
 
 sub ACLEquivalenceObjects {
     my $self = shift;
