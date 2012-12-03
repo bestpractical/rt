@@ -27,14 +27,14 @@ sub follow_parent_with_headers_link {
     my $m    = shift;
     my $link = $m->find_link(@_)->url;
     $link =~ s{/(\d+)$}{"/" . ($1-1)}e;  # get the parent attach
-    $m->get_ok($baseurl . $link);
+    $m->get_ok($link);
 }
 
 sub follow_with_headers_link {
     my $m    = shift;
     my $link = $m->find_link(@_)->url;
     $link =~ s{/\d+/(\d+)/.+$}{/WithHeaders/$1};   # frob into a with headers url
-    $m->get_ok($baseurl . $link);
+    $m->get_ok($link);
 }
 
 for my $type ( 'text/plain', 'text/html' ) {

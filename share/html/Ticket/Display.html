@@ -70,11 +70,9 @@
         Ticket => $TicketObj,
     &>
 % } else {
-    <& /Ticket/Elements/ShowHistory ,
-          Ticket => $TicketObj,
-          Tickets => $Tickets,
+    <& /Elements/ShowHistory ,
+          Object => $TicketObj,
           Transactions => $transactions,
-          Collapsed => $ARGS{'Collapsed'},
           ShowHeaders => $ARGS{'ShowHeaders'},
           Attachments => $attachments,
           AttachmentContent => $attachment_content
@@ -92,7 +90,6 @@
 $id => undef
 $TicketObj => undef
 $ShowHeaders => 0
-$Collapsed => undef
 $ForceShowHistory => 0
 </%ARGS>
 
@@ -107,7 +104,7 @@ if ( ! $ARGS{'NoRedirect'} && RT::Interface::Web->MobileClient()) {
 }
 
 
-my (@Actions, $Tickets, $title);
+my (@Actions, $title);
 
 
 unless ($id || $TicketObj) {
@@ -142,7 +139,7 @@ if ($ARGS{'id'} eq 'new') {
     my $SkipProcessing;
 
     $m->callback( CallbackName => 'BeforeProcessArguments',
-        TicketObj => $TicketObj, Tickets => $Tickets,
+        TicketObj => $TicketObj,
         ActionsRef => \@Actions, ARGSRef => \%ARGS,
         SkipProcessing => \$SkipProcessing );
 
@@ -200,7 +197,6 @@ $title = loc("#[_1]: [_2]", $TicketObj->Id, $TicketObj->Subject || '');
 $m->callback(
     CallbackName => 'BeforeDisplay',
     TicketObj => \$TicketObj,
-    Tickets => \$Tickets,
     Actions => \@Actions,
     title => \$title,
     ARGSRef => \%ARGS,
@@ -217,10 +213,9 @@ MaybeRedirectForResults(
     Arguments => { id => $TicketObj->id },
 );
 
-# Get the transactoins before the attachments, for great ACL justice
-my $transactions = $m->comp('Elements/FindTransactions',Ticket => $TicketObj, Tickets => $Tickets || undef);
-my $attachments = $m->comp('Elements/FindAttachments', Ticket => $TicketObj, Tickets => $Tickets);
-my $attachment_content = $m->comp('Elements/LoadTextAttachments', Ticket => $TicketObj);
+my $transactions = $TicketObj->SortedTransactions;
+my $attachments = $TicketObj->Attachments;
+my $attachment_content = $TicketObj->TextAttachments;
 
 my %link_rel;
 if (defined $session{'tickets'} and ($ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'})) {

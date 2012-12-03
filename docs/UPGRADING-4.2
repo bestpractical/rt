@@ -14,3 +14,11 @@ UPGRADING FROM RT 4.0.0 and greater
 * $LinkTransactionsRun1Scrip is removed.  If you were relying on this behaviour
   (by setting it to 1), you should adjust your scrips to ignore one of the link
   transactions.
+
+* The $AttachmentUnits option was removed in preference of always displaying in
+  megabytes, kilobytes, or bytes as appropriate.  The option was incompletely
+  implemented and controlled display in the attachments list but not history.
+
+* MakeClicky handlers added via a callback are now passed an "object" key in
+  the parameter hash instead of "ticket".  The object may be any RT::Record
+  subclass.

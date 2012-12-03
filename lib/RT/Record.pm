@@ -128,21 +128,35 @@ sub Delete {
     } 
 }
 
-=head2 ObjectTypeStr
+=head2 RecordType
 
-Returns a string which is this object's type.  The type is the class,
-without the "RT::" prefix.
-
+Returns a string which is this record's type. It's not localized and by
+default last part (everything after last ::) of class name is returned.
 
 =cut
 
+sub RecordType {
+    my $res = ref($_[0]) || $_[0];
+    $res =~ s/.*:://;
+    return $res;
+}
+
+=head2 ObjectTypeStr
+
+DEPRECATED. Stays here for backwards. Returns localized L</RecordType>.
+
+=cut
+
+# we deprecate because of:
+# * ObjectType is used in several classes with ObjectId to store
+#   records of different types, for example transactions use those
+#   and it's unclear what this method should return 'Transaction'
+#   or type of referenced record
+# * returning localized thing is not good idea
+
 sub ObjectTypeStr {
     my $self = shift;
-    if (ref($self) =~ /^.*::(\w+)$/) {
-	return $self->loc($1);
-    } else {
-	return $self->loc(ref($self));
-    }
+    return $self->loc( $self->RecordType( @_ ) );
 }
 
 =head2 Attributes
@@ -1574,7 +1588,7 @@ sub _NewTransaction {
 
 =head2 Transactions
 
-  Returns an RT::Transactions object of all transactions on this record object
+Returns an L<RT::Transactions> object of all transactions on this record object
 
 =cut
 
@@ -1583,8 +1597,6 @@ sub Transactions {
 
     use RT::Transactions;
     my $transactions = RT::Transactions->new( $self->CurrentUser );
-
-    #If the user has no rights, return an empty object
     $transactions->Limit(
         FIELD => 'ObjectId',
         VALUE => $self->id,
@@ -1594,10 +1606,134 @@ sub Transactions {
         VALUE => ref($self),
     );
 
-    return ($transactions);
+    return $transactions;
 }
 
-#
+=head2 SortedTransactions
+
+Returns the result of L</Transactions> ordered per the
+I<OldestTransactionsFirst> preference/option.
+
+=cut
+
+sub SortedTransactions {
+    my $self  = shift;
+    my $txns  = $self->Transactions;
+    my $order = RT->Config->Get("OldestTransactionsFirst", $self->CurrentUser)
+        ? 'ASC' : 'DESC';
+    $txns->OrderByCols(
+        { FIELD => 'Created',   ORDER => $order },
+        { FIELD => 'id',        ORDER => $order },
+    );
+    return $txns;
+}
+
+our %TRANSACTION_CLASSIFICATION = (
+    Create     => 'message',
+    Correspond => 'message',
+    Comment    => 'message',
+
+    AddWatcher => 'people',
+    DelWatcher => 'people',
+
+    Take       => 'people',
+    Untake     => 'people',
+    Force      => 'people',
+    Steal      => 'people',
+    Give       => 'people',
+
+    AddLink    => 'links',
+    DeleteLink => 'links',
+
+    Status     => 'basics',
+    Set        => {
+        __default => 'basics',
+        map( { $_ => 'dates' } qw(
+            Told Starts Started Due LastUpdated Created LastUpdated
+        ) ),
+        map( { $_ => 'people' } qw(
+            Owner Creator LastUpdatedBy
+        ) ),
+    },
+    __default => 'other',
+);
+
+sub ClassifyTransaction {
+    my $self = shift;
+    my $txn = shift;
+
+    my $type = $txn->Type;
+
+    my $res = $TRANSACTION_CLASSIFICATION{ $type };
+    return $res || $TRANSACTION_CLASSIFICATION{ '__default' }
+        unless ref $res;
+
+    return $res->{ $txn->Field } || $res->{'__default'}
+        || $TRANSACTION_CLASSIFICATION{ '__default' }; 
+}
+
+=head2 Attachments
+
+Returns an L<RT::Attachments> object of all attachments on this record object
+(for all its L</Transactions>).
+
+By default Content and Headers of attachments are not fetched right away from
+database. Use C<WithContent> and C<WithHeaders> options to override this.
+
+=cut
+
+sub Attachments {
+    my $self = shift;
+    my %args = (
+        WithHeaders => 0,
+        WithContent => 0,
+        @_
+    );
+    my @columns = grep { not /^(Headers|Content)$/ }
+                       RT::Attachment->ReadableAttributes;
+    push @columns, 'Headers' if $args{'WithHeaders'};
+    push @columns, 'Content' if $args{'WithContent'};
+
+    my $res = RT::Attachments->new( $self->CurrentUser );
+    $res->Columns( @columns );
+    my $txn_alias = $res->TransactionAlias;
+    $res->Limit(
+        ALIAS => $txn_alias,
+        FIELD => 'ObjectType',
+        VALUE => ref($self),
+    );
+    $res->Limit(
+        ALIAS => $txn_alias,
+        FIELD => 'ObjectId',
+        VALUE => $self->id,
+    );
+    return $res;
+}
+
+=head2 TextAttachments
+
+Returns an L<RT::Attachments> object of all attachments, like L<Attachments>,
+but only those that are text.
+
+By default Content and Headers are fetched. Use C<WithContent> and
+C<WithHeaders> options to override this.
+
+=cut
+
+sub TextAttachments {
+    my $self = shift;
+    my $res = $self->Attachments(
+        WithHeaders => 1,
+        WithContent => 1,
+        @_
+    );
+    $res->Limit( FIELD => 'ContentType', OPERATOR => '=', VALUE => 'text/plain');
+    $res->Limit( FIELD => 'ContentType', OPERATOR => 'STARTSWITH', VALUE => 'message/');
+    $res->Limit( FIELD => 'ContentType', OPERATOR => '=', VALUE => 'text');
+    $res->Limit( FIELD => 'Filename', OPERATOR => 'IS', VALUE => 'NULL')
+        if RT->Config->Get( 'SuppressInlineTextFiles', $self->CurrentUser );
+    return $res;
+}
 
 sub CustomFields {
     my $self = shift;

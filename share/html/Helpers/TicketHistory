@@ -52,12 +52,11 @@ $id
 my $TicketObj = RT::Ticket->new($session{'CurrentUser'});
 $TicketObj->Load($id);
 
-my $attachments = $m->comp('/Ticket/Elements/FindAttachments', Ticket => $TicketObj);
-my $attachment_content = $m->comp('/Ticket/Elements/LoadTextAttachments', Ticket => $TicketObj);
+my $attachments = $TicketObj->Attachments;
+my $attachment_content = $TicketObj->TextAttachments;
 
-$m->comp('/Ticket/Elements/ShowHistory',
-    Ticket => $TicketObj, 
-    Collapsed => $ARGS{'Collapsed'}, 
+$m->comp('/Elements/ShowHistory',
+    Object => $TicketObj,
     ShowHeaders => $ARGS{'ShowHeaders'},
     Attachments => $attachments,
     AttachmentContent => $attachment_content

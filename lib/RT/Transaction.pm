@@ -1124,9 +1124,7 @@ sub Object {
 
 sub FriendlyObjectType {
     my $self = shift;
-    my $type = $self->ObjectType or return undef;
-    $type =~ s/^RT:://;
-    return $self->loc($type);
+    return $self->loc( $self->Object->RecordType );
 }
 
 =head2 UpdateCustomFields
