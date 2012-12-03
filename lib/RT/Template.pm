@@ -282,7 +282,7 @@ sub Create {
     {
         my $tmp = $self->new( RT->SystemUser );
         $tmp->LoadByCols( Name => $args{'Name'}, Queue => $args{'Queue'} );
-        return ( undef, $self->loc('Template with that name already exist') )
+        return ( undef, $self->loc('A Template with that name already exists') )
             if $tmp->id;
     }
 
@@ -700,7 +700,7 @@ sub SetName {
 
     my $tmp = $self->new( RT->SystemUser );
     $tmp->LoadByCols( Name => $value, Queue => $self->Queue );
-    return ( undef, $self->loc('Template with that name already exist') )
+    return ( undef, $self->loc('A Template with that name already exists') )
         if $tmp->id;
 
     return $self->_Set( Field => 'Name', Value => $value );
