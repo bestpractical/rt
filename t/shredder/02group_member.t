@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use Test::Deep;
-use RT::Test::Shredder tests => 26;
+use RT::Test::Shredder tests => 34;
 my $test = "RT::Test::Shredder";
 
 ### nested membership check
@@ -53,6 +53,48 @@ my $test = "RT::Test::Shredder";
 	$shredder->WipeoutAll();
 	$test->db_is_valid;
 	cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
+}
+
+### deleting member of the ticket AdminCc role group
+{
+	$test->restore_savepoint('clean');
+
+	my $user = RT::User->new( RT->SystemUser );
+	my ($uid, $msg) = $user->Create( Name => 'new user', Privileged => 1, Disabled => 0 );
+	ok( $uid, "created new user" ) or diag "error: $msg";
+	is( $user->id, $uid, "id is correct" );
+
+	use RT::Queue;
+	my $queue = RT::Queue->new( RT->SystemUser );
+	$queue->Load('general');
+	ok( $queue->id, "queue loaded succesfully" );
+
+	$user->PrincipalObj->GrantRight( Right => 'WatchAsAcminCc', Object => $queue );
+
+	use RT::Tickets;
+	my $ticket = RT::Ticket->new( RT->SystemUser );
+	my ($id) = $ticket->Create( Subject => 'test', Queue => $queue->id );
+	ok( $id, "created new ticket" );
+	$ticket = RT::Ticket->new( RT->SystemUser );
+	my $status;
+	($status, $msg) = $ticket->Load( $id );
+	ok( $id, "load ticket" ) or diag( "error: $msg" );
+
+	($status, $msg) = $ticket->AddWatcher( Type => "AdminCc", PrincipalId => $user->id );
+	ok( $status, "AdminCC successfuly added") or diag( "error: $msg" );
+
+	my $member = $ticket->AdminCc->MembersObj->First;
+	my $shredder = $test->shredder_new();
+	$shredder->PutObjects( Objects => $member );
+	$shredder->WipeoutAll();
+	$test->db_is_valid;
+
+	$shredder->PutObjects( Objects => $user );
+	$shredder->WipeoutAll();
+      TODO: {
+            local $TODO = "AddWatcher/DelWatcher records not removed";
+            $test->db_is_valid;
+        }
 }
 
 ### deleting member of the ticket Owner role group
