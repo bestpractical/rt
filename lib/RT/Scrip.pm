@@ -107,7 +107,7 @@ sub Create {
     my $self = shift;
     my %args = (
         Queue                  => 0,
-        Template               => 0,                     # name or id
+        Template               => undef,                 # name or id
         ScripAction            => 0,                     # name or id
         ScripCondition         => 0,                     # name or id
         Stage                  => 'TransactionCreate',
@@ -148,7 +148,6 @@ sub Create {
 
     #TODO +++ validate input
 
-    require RT::ScripAction;
     return ( 0, $self->loc("Action is mandatory argument") )
         unless $args{'ScripAction'};
     my $action = RT::ScripAction->new( $self->CurrentUser );
@@ -156,15 +155,26 @@ sub Create {
     return ( 0, $self->loc( "Action '[_1]' not found", $args{'ScripAction'} ) ) 
         unless $action->Id;
 
-    require RT::Template;
     return ( 0, $self->loc("Template is mandatory argument") )
         unless $args{'Template'};
     my $template = RT::Template->new( $self->CurrentUser );
-    $template->Load( $args{'Template'} );
-    return ( 0, $self->loc( "Template '[_1]' not found", $args{'Template'} ) )
-        unless $template->Id;
+    if ( $args{'Template'} =~ /\D/ ) {
+        $template->LoadByName( Name => $args{'Template'}, Queue => $args{'Queue'} );
+        return ( 0, $self->loc( "Global template '[_1]' not found", $args{'Template'} ) )
+            if !$template->Id && !$args{'Queue'};
+        return ( 0, $self->loc( "Global or queue specific template '[_1]' not found", $args{'Template'} ) )
+            if !$template->Id;
+    } else {
+        $template->Load( $args{'Template'} );
+        return ( 0, $self->loc( "Template '[_1]' not found", $args{'Template'} ) )
+            unless $template->Id;
 
-    require RT::ScripCondition;
+        return (0, $self->loc( "Template '[_1]' is not global" ))
+            if !$args{'Queue'} && $template->Queue;
+        return (0, $self->loc( "Template '[_1]' is not global nor queue specific" ))
+            if $args{'Queue'} && $template->Queue && $template->Queue != $args{'Queue'};
+    }
+
     return ( 0, $self->loc("Condition is mandatory argument") )
         unless $args{'ScripCondition'};
     my $condition = RT::ScripCondition->new( $self->CurrentUser );
@@ -180,7 +190,7 @@ sub Create {
     $args{'Disabled'} ||= 0;
 
     my ( $id, $msg ) = $self->SUPER::Create(
-        Template               => $template->Id,
+        Template               => $template->Name,
         ScripCondition         => $condition->id,
         ScripAction            => $action->Id,
         Disabled               => $args{'Disabled'},
@@ -269,13 +279,13 @@ sub AddToObject {
         )
     ;
 
-    my $tname = $self->TemplateObj->Name;
+    my $tname = $self->Template;
     my $template = RT::Template->new( $self->CurrentUser );
-    $template->LoadQueueTemplate( Queue => $queue? $queue->id : 0, Name => $tname );
-    $template->LoadGlobalTemplate( $tname ) if $queue && !$template->id;
+    $template->LoadByName( Queue => $queue? $queue->id : 0, Name => $tname );
     unless ( $template->id ) {
         if ( $queue ) {
-            return (0, $self->loc('No template [_1] in the queue', $tname));
+            return (0, $self->loc('No template [_1] in queue [_2] or global',
+                    $tname, $queue->Name||$queue->id));
         } else {
             return (0, $self->loc('No global template [_1]', $tname));
         }
@@ -319,12 +329,8 @@ sub ActionObj {
 
     unless ( defined $self->{'ScripActionObj'} ) {
         require RT::ScripAction;
-
         $self->{'ScripActionObj'} = RT::ScripAction->new( $self->CurrentUser );
-
-        #TODO: why are we loading Actions with templates like this.
-        # two separate methods might make more sense
-        $self->{'ScripActionObj'}->Load( $self->ScripAction, $self->Template );
+        $self->{'ScripActionObj'}->Load( $self->ScripAction );
     }
     return ( $self->{'ScripActionObj'} );
 }
@@ -368,13 +374,11 @@ Retuns an RT::Template object with this Scrip\'s Template
 
 sub TemplateObj {
     my $self = shift;
+    my $queue = shift;
 
-    unless ( defined $self->{'TemplateObj'} ) {
-        require RT::Template;
-        $self->{'TemplateObj'} = RT::Template->new( $self->CurrentUser );
-        $self->{'TemplateObj'}->Load( $self->Template );
-    }
-    return ( $self->{'TemplateObj'} );
+    my $res = RT::Template->new( $self->CurrentUser );
+    $res->LoadByName( Queue => $queue, Name => $self->Template );
+    return $res;
 }
 
 =head2 Stage
@@ -549,9 +553,11 @@ sub Prepare {
 
     my $return;
     eval {
-        $self->ActionObj->LoadAction( ScripObj       => $self,
-                                      TicketObj      => $args{'TicketObj'},
-                                      TransactionObj => $args{'TransactionObj'},
+        $self->ActionObj->LoadAction(
+            ScripObj       => $self,
+            TicketObj      => $args{'TicketObj'},
+            TransactionObj => $args{'TransactionObj'},
+            TemplateObj    => $self->TemplateObj( $args{'TicketObj'}->Queue ),
         );
 
         $return = $self->ActionObj->Prepare();
@@ -803,7 +809,7 @@ sub SetTemplate {
     return ( 0, $self->loc( "Template '[_1]' not found", $value ) )
       unless $template->Id;
 
-    return $self->_Set( Field => 'Template', Value => $template->Id );
+    return $self->_Set( Field => 'Template', Value => $template->Name );
 }
 
 1;
@@ -1015,7 +1021,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =head2 Template
 
 Returns the current value of Template.
-(In the database, Template is stored as int(11).)
+(In the database, Template is stored as varchar(200).)
 
 
 
@@ -1024,7 +1030,7 @@ Returns the current value of Template.
 
 Set Template to VALUE.
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Template will be stored as a int(11).)
+(In the database, Template will be stored as a varchar(200).)
 
 
 =cut
@@ -1091,7 +1097,7 @@ sub _CoreAccessible {
         Disabled =>
                 {read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '0'},
         Template =>
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+		{read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => 'Blank'},
         Creator =>
 		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Created =>

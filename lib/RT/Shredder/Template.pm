@@ -69,9 +69,7 @@ sub __DependsOn
     my $list = [];
 
 # Scrips
-    my $objs = RT::Scrips->new( $self->CurrentUser );
-    $objs->Limit( FIELD => 'Template', VALUE => $self->Id );
-    push( @$list, $objs );
+    push( @$list, $self->UsedBy );
 
     $deps->_PushDependencies(
         BaseObject => $self,

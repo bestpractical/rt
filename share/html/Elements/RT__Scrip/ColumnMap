@@ -78,14 +78,14 @@ my $COLUMN_MAP = {
     },
     Template => {
         title     => 'Template', # loc
-        value     => sub { return $_[0]->loc( $_[0]->TemplateObj->Name ) },
+        value     => sub { return $_[0]->loc( $_[0]->Template ) },
     },
     AutoDescription => {
         title     => 'Condition, Action and Template', # loc
         value     => sub { return $_[0]->loc( "[_1] [_2] with template [_3]",
             $_[0]->loc($_[0]->ConditionObj->Name),
             $_[0]->loc($_[0]->ActionObj->Name),
-            $_[0]->loc($_[0]->TemplateObj->Name),
+            $_[0]->loc($_[0]->Template),
         ) },
     },
     Description => {

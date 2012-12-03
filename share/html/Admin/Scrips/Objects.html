@@ -105,6 +105,11 @@
 &>
 
 <& /Admin/Elements/SelectStageForAdded, Default => $Stage &>
+<div style="text-align:right">
+<% loc('You can change template if needed') %>:
+<& Elements/SelectTemplate, Scrip => $scrip, Default => $Template &>
+</div>
+
 % }
 
 <& /Elements/Submit, Name => 'Update' &>
@@ -113,6 +118,7 @@
 <%ARGS>
 $id => undef
 $Stage => undef
+$Template => ''
 $Update => 0
 </%ARGS>
 <%INIT>
@@ -124,6 +130,10 @@ my $global = $scrip->IsGlobal;
 
 if ( $Update ) {
     my (@results);
+    if ( $Template ) {
+        my ($status, $msg) = $scrip->SetTemplate( $Template );
+        push @results, loc('Template: [_1]', $msg);
+    }
     if ( defined (my $del = $ARGS{"RemoveScrip-$id"}) ) {
         foreach my $id ( ref $del? (@$del) : ($del) ) {
             my ($status, $msg) = $scrip->RemoveFromObject( $id );

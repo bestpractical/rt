@@ -2633,7 +2633,7 @@ Set(%AdminSearchResultFormat,
     Templates =>
         q{'<a href="__WebPath__/__WebRequestPathDir__/Template.html?Queue=__QueueId__&Template=__id__">__id__</a>/TITLE:#'}
         .q{,'<a href="__WebPath__/__WebRequestPathDir__/Template.html?Queue=__QueueId__&Template=__id__">__Name__</a>/TITLE:Name'}
-        .q{,'__Description__'},
+        .q{,'__Description__','__UsedBy__','__IsEmpty__'},
     Classes =>
         q{ '<a href="__WebPath__/Admin/Articles/Classes/Modify.html?id=__id__">__id__</a>/TITLE:#'}
         .q{,'<a href="__WebPath__/Admin/Articles/Classes/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}

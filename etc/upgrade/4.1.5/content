@@ -1,0 +1,34 @@
+use strict;
+use warnings;
+
+our @Initial = (
+    # upgrade Template from id to name
+    sub {
+        require RT::Scrips;
+        my $scrips = RT::Scrips->new( RT->SystemUser );
+        $scrips->UnLimit;
+        while ( my $scrip = $scrips->Next ) {
+            my $id = $scrip->Template;
+            if ( $id =~ /\D/ ) {
+                $RT::Logger->info('Template column for scrip #'. $scrip->id .' already contains characters');
+                next;
+            }
+
+            my $name;
+
+            my $template = RT::Template->new( RT->SystemUser );
+            $template->Load( $id );
+            unless ( $template->id ) {
+                $RT::Logger->error("Scrip #". $scrip->id ." has template set to #$id, but it's not in DB, setting it 'Blank'");
+                $name = 'Blank';
+            } else {
+                $name = $template->Name;
+            }
+
+            my ($status, $msg) = $scrip->_Set( Field => 'Template', Value => $name );
+            unless ( $status ) {
+                $RT::Logger->error("Couldn't set template: $msg");
+            }
+        }
+    },
+);
