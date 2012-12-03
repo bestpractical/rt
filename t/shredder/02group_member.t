@@ -91,10 +91,7 @@ my $test = "RT::Test::Shredder";
 
 	$shredder->PutObjects( Objects => $user );
 	$shredder->WipeoutAll();
-      TODO: {
-            local $TODO = "AddWatcher/DelWatcher records not removed";
-            $test->db_is_valid;
-        }
+        $test->db_is_valid;
 }
 
 ### deleting member of the ticket Owner role group
