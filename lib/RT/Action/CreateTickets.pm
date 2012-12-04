@@ -56,10 +56,9 @@ use MIME::Entity;
 
 =head1 NAME
 
- RT::Action::CreateTickets
+RT::Action::CreateTickets
 
 Create one or more tickets according to an externally supplied template.
-
 
 =head1 SYNOPSIS
 
@@ -72,18 +71,14 @@ Create one or more tickets according to an externally supplied template.
 
 =head1 DESCRIPTION
 
+The CreateTickets ScripAction allows you to create automated workflows in RT,
+creating new tickets in response to actions and conditions from other
+tickets.
 
-Using the "CreateTickets" ScripAction and mandatory dependencies, RT now has 
-the ability to model complex workflow. When a ticket is created in a queue
-that has a "CreateTickets" scripaction, that ScripAction parses its "Template"
+=head2 Format
 
-
-
-=head2 FORMAT
-
-CreateTickets uses the template as a template for an ordered set of tickets 
-to create. The basic format is as follows:
-
+CreateTickets uses the RT template configured in the scrip as a template
+for an ordered set of tickets to create. The basic format is as follows:
 
  ===Create-Ticket: identifier
  Param: Value
@@ -126,22 +121,20 @@ A simple example:
  so they can finish their work
  ENDOFCONTENT
 
-
-
-A convoluted example
+A convoluted example:
 
  ===Create-Ticket: approval
  { # Find out who the administrators of the group called "HR" 
    # of which the creator of this ticket is a member
     my $name = "HR";
-   
+
     my $groups = RT::Groups->new(RT->SystemUser);
     $groups->LimitToUserDefinedGroups();
     $groups->Limit(FIELD => "Name", OPERATOR => "=", VALUE => "$name");
     $groups->WithMember($TransactionObj->CreatorObj->Id);
- 
+
     my $groupid = $groups->First->Id;
- 
+
     my $adminccs = RT::Users->new(RT->SystemUser);
     $adminccs->WhoHaveRight(
 	Right => "AdminGroup",
@@ -177,8 +170,6 @@ A convoluted example
  Content-Type: text/plain
  Content: Your approval is requred for this ticket, too.
  ENDOFCONTENT
- 
-=head2 Acceptable fields
 
 As shown above, you can include a block with perl code to set up some
 values for the new tickets. If you want to access a variable in the
@@ -186,43 +177,43 @@ template section after the block, you must scope it with C<our> rather
 than C<my>. Just as with other RT templates, you can also include
 perl code in the template sections using C<{}>.
 
+=head2 Acceptable Fields
+
+A complete list of acceptable fields:
 
 
     *  Queue           => Name or id# of a queue
        Subject         => A text string
-     ! Status          => A valid status. defaults to 'new'
+     ! Status          => A valid status. Defaults to 'new'
        Due             => Dates can be specified in seconds since the epoch
                           to be handled literally or in a semi-free textual
                           format which RT will attempt to parse.
-                        
-                          
-                          
-       Starts          => 
-       Started         => 
-       Resolved        => 
-       Owner           => Username or id of an RT user who can and should own 
+       Starts          =>
+       Started         =>
+       Resolved        =>
+       Owner           => Username or id of an RT user who can and should own
                           this ticket; forces the owner if necessary
    +   Requestor       => Email address
-   +   Cc              => Email address 
-   +   AdminCc         => Email address 
+   +   Cc              => Email address
+   +   AdminCc         => Email address
    +   RequestorGroup  => Group name
    +   CcGroup         => Group name
    +   AdminCcGroup    => Group name
-       TimeWorked      => 
-       TimeEstimated   => 
-       TimeLeft        => 
-       InitialPriority => 
-       FinalPriority   => 
-       Type            => 
-    +! DependsOn       => 
+       TimeWorked      =>
+       TimeEstimated   =>
+       TimeLeft        =>
+       InitialPriority =>
+       FinalPriority   =>
+       Type            =>
+    +! DependsOn       =>
     +! DependedOnBy    =>
     +! RefersTo        =>
-    +! ReferredToBy    => 
+    +! ReferredToBy    =>
     +! Members         =>
-    +! MemberOf        => 
-       Content         => content. Can extend to multiple lines. Everything
+    +! MemberOf        =>
+       Content         => Content. Can extend to multiple lines. Everything
                           within a template after a Content: header is treated
-                          as content until we hit a line containing only 
+                          as content until we hit a line containing only
                           ENDOFCONTENT
        ContentType     => the content-type of the Content field.  Defaults to
                           'text/plain'
@@ -239,26 +230,17 @@ Fields marked with an * are required.
 Fields marked with a + may have multiple values, simply
 by repeating the fieldname on a new line with an additional value.
 
-Fields marked with a ! are postponed to be processed after all
-tickets in the same actions are created.  Except for 'Status', those
-field can also take a ticket name within the same action (i.e.
-the identifiers after ===Create-Ticket), instead of raw Ticket ID
+Fields marked with a ! have processing postponed until after all
+tickets in the same actions are created.  Except for C<Status>, those
+fields can also take a ticket name within the same action (i.e.
+the identifiers after C<===Create-Ticket:>), instead of raw ticket ID
 numbers.
 
 When parsed, field names are converted to lowercase and have -s stripped.
-Refers-To, RefersTo, refersto, refers-to and r-e-f-er-s-tO will all 
+Refers-To, RefersTo, refersto, refers-to and r-e-f-er-s-tO will all
 be treated as the same thing.
 
-
-
-
-=head1 AUTHOR
-
-Jesse Vincent <jesse@bestpractical.com> 
-
-=head1 SEE ALSO
-
-perl(1).
+=head1 METHODS
 
 =cut
 
@@ -548,10 +530,10 @@ sub UpdateByTemplate {
 
 =head2 Parse  TEMPLATE_CONTENT, DEFAULT_QUEUE, DEFAULT_REQEUESTOR ACTIVE
 
-Parse a template from TEMPLATE_CONTENT
+Parse a template from C<TEMPLATE_CONTENT>.
 
-If $active is set to true, then we'll use Text::Template to parse the templates,
-allowing you to embed active perl in your templates.
+If C<$active> is set to true, then we'll use L<Text::Template> to parse the
+templates, allowing you to embed active perl in your templates.
 
 =cut
 
@@ -585,9 +567,9 @@ sub Parse {
 
 Parses mulitline templates. Things like:
 
- ===Create-Ticket ... 
+ ===Create-Ticket ...
 
-Takes the same arguments as Parse
+Takes the same arguments as C<Parse>.
 
 =cut
 
@@ -842,9 +824,10 @@ sub ParseLines {
 }
 
 
-=head2 _ParseXSVTemplate 
+=head2 _ParseXSVTemplate
 
-Parses a tab or comma delimited template. Should only ever be called by Parse
+Parses a tab or comma delimited template. Should only ever be called by
+C<Parse>.
 
 =cut
 
@@ -1284,6 +1267,16 @@ sub PostProcess {
 }
 
 RT::Base->_ImportOverlays();
+
+=head1 AUTHOR
+
+Jesse Vincent <jesse@bestpractical.com>
+
+=head1 SEE ALSO
+
+perl(1).
+
+=cut
 
 1;
 
