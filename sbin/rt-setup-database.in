@@ -309,7 +309,7 @@ sub action_insert {
 
     my %upgrade_data = (
         action   => 'insert',
-        filename => $file,
+        filename => Cwd::abs_path($file),
         content  => $content,
         stage    => 'after',);
 
