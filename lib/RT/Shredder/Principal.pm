@@ -85,6 +85,14 @@ sub __DependsOn
            );
     push( @$list, $objs );
 
+# AddWatcher/DelWatcher txns
+    foreach my $type ( qw(AddWatcher DelWatcher) ) {
+        my $objs = RT::Transactions->new( $self->CurrentUser );
+        $objs->Limit( FIELD => $type =~ /Add/? 'NewValue': 'OldValue', VALUE => $self->Id );
+        $objs->Limit( FIELD => 'Type', VALUE => $type );
+        push( @$list, $objs );
+    }
+
     $deps->_PushDependencies(
             BaseObject => $self,
             Flags => DEPENDS_ON,
