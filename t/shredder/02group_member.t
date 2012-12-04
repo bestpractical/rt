@@ -69,8 +69,6 @@ my $test = "RT::Test::Shredder";
 	$queue->Load('general');
 	ok( $queue->id, "queue loaded succesfully" );
 
-	$user->PrincipalObj->GrantRight( Right => 'WatchAsAcminCc', Object => $queue );
-
 	use RT::Tickets;
 	my $ticket = RT::Ticket->new( RT->SystemUser );
 	my ($id) = $ticket->Create( Subject => 'test', Queue => $queue->id );
