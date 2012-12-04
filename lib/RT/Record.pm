@@ -2487,10 +2487,12 @@ sub _AddRolesOnCreate {
         my $changed = 0;
 
         for my $role (keys %{$roles}) {
+            my $group = $self->RoleGroup($role);
             my @left;
             for my $principal (@{$roles->{$role}}) {
                 if ($acls{$role}->($principal)) {
-                    my ($ok, $msg) = $self->RoleGroup($role)->_AddMember(
+                    next if $group->HasMember($principal);
+                    my ($ok, $msg) = $group->_AddMember(
                         PrincipalId       => $principal->id,
                         InsideTransaction => 1,
                         RecordTransaction => 0,
