@@ -145,10 +145,10 @@ A convoluted example
 	IncludeSuperusers => 0,
 	IncludeSubgroupMembers => 0,
     );
- 
-     my @admins;
+
+     our @admins;
      while (my $admin = $adminccs->Next) {
-         push (@admins, $admin->EmailAddress); 
+         push (@admins, $admin->EmailAddress);
      }
  }
  Queue: ___Approvals
@@ -176,7 +176,12 @@ A convoluted example
  
 =head2 Acceptable fields
 
-A complete list of acceptable fields for this beastie:
+As shown above, you can include a block with perl code to set up some
+values for the new tickets. If you want to access a variable in the
+template section after the block, you must scope it with C<our> rather
+than C<my>. Just as with other RT templates, you can also include
+perl code in the template sections using C<{}>.
+
 
 
     *  Queue           => Name or id# of a queue
