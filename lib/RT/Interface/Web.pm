@@ -2206,19 +2206,8 @@ sub ProcessACLs {
 
     # Check if we want to grant rights to a previously rights-less user
     for my $type (qw(user group)) {
-        my $key = "AddPrincipalForRights-$type";
-
-        next unless $ARGSref->{$key};
-
-        my $principal;
-        if ( $type eq 'user' ) {
-            $principal = RT::User->new( $session{'CurrentUser'} );
-            $principal->LoadByCol( Name => $ARGSref->{$key} );
-        }
-        else {
-            $principal = RT::Group->new( $session{'CurrentUser'} );
-            $principal->LoadUserDefinedGroup( $ARGSref->{$key} );
-        }
+        my $principal = _ParseACLNewPrincipal($ARGSref, $type)
+            or next;
 
         unless ($principal->PrincipalId) {
             push @results, loc("Couldn't load the specified principal");
@@ -2318,7 +2307,34 @@ sub ProcessACLs {
     return (@results);
 }
 
+=head2 _ParseACLNewPrincipal
 
+Takes a hashref of C<%ARGS> and a principal type (C<user> or C<group>).  Looks
+for the presence of rights being added on a principal of the specified type,
+and returns undef if no new principal is being granted rights.  Otherwise loads
+up an L<RT::User> or L<RT::Group> object and returns it.  Note that the object
+may not be successfully loaded, and you should check C<->id> yourself.
+
+=cut
+
+sub _ParseACLNewPrincipal {
+    my $ARGSref = shift;
+    my $type    = lc shift;
+    my $key     = "AddPrincipalForRights-$type";
+
+    return unless $ARGSref->{$key};
+
+    my $principal;
+    if ( $type eq 'user' ) {
+        $principal = RT::User->new( $session{'CurrentUser'} );
+        $principal->LoadByCol( Name => $ARGSref->{$key} );
+    }
+    elsif ( $type eq 'group' ) {
+        $principal = RT::Group->new( $session{'CurrentUser'} );
+        $principal->LoadUserDefinedGroup( $ARGSref->{$key} );
+    }
+    return $principal;
+}
 
 
 =head2 UpdateRecordObj ( ARGSRef => \%ARGS, Object => RT::Record, AttributesRef => \@attribs)
