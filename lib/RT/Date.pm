@@ -115,6 +115,7 @@ our @DAYS_OF_WEEK = (
 our @FORMATTERS = (
     'DefaultFormat',     # loc
     'ISO',               # loc
+    'ISODateOnly',       # loc
     'W3CDTF',            # loc
     'RFC2822',           # loc
     'RFC2616',           # loc
@@ -759,6 +760,25 @@ sub ISO {
     $res =~ s/^\s+//;
 
     return $res;
+}
+
+=head3 ISODateOnly
+
+A convenience method to return only the date portion of an ISO date.
+Accepts the same arguments as ISO, then ISO with Date => 1, Time => 0.
+Timezone is passed through. Seconds is ignored in ISO when Time is 0.
+
+=cut
+
+sub ISODateOnly {
+    my $self = shift;
+
+    # Set Date and Time, preserve Timezone, if passed.
+    my %args = (@_,
+                Date => 1,
+                Time => 0 );
+
+    return $self->ISO( %args );
 }
 
 =head3 W3CDTF

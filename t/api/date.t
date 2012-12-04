@@ -4,7 +4,7 @@ use DateTime;
 
 use warnings;
 use strict;
-use RT::Test tests => 173;
+use RT::Test tests => 174;
 use RT::User;
 use Test::Warn;
 
@@ -103,6 +103,9 @@ my $current_user;
     is($date->ISO(Time => 0),
        '1970-01-01',
        "ISO format without time part");
+    is($date->ISODateOnly(),
+       '1970-01-01',
+       "ISO format without time part using ISODateOnly");
     is($date->W3CDTF(Time => 0),
        '1970-01-01',
        "W3CDTF format without time part");
