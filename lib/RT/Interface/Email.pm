@@ -63,9 +63,6 @@ BEGIN {
     use base 'Exporter';
     use vars qw ( @EXPORT_OK);
 
-    # set the version for version checking
-    our $VERSION = 2.0;
-
     # your exported package globals go here,
     # as well as any optionally exported functions
     @EXPORT_OK = qw(

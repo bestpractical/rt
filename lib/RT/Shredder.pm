@@ -195,7 +195,6 @@ objects in the cache and backups storage.
 
 =cut
 
-our $VERSION = '0.04';
 use File::Spec ();
 
 
