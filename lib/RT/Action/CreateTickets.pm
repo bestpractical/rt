@@ -98,19 +98,24 @@ to create. The basic format is as follows:
  Content: Blah
  ENDOFCONTENT
 
+As shown, you can put one or more C<===Create-Ticket:> sections in
+a template. Each C<===Create-Ticket:> section is evaluated as its own
+L<Text::Template> object, which means that you can embed snippets
+of perl inside the L<Text::Template> using C<{}> delimiters, but that
+such sections absolutely can not span a C<===Create-Ticket> boundary.
 
-Each ===Create-Ticket: section is evaluated as its own 
-Text::Template object, which means that you can embed snippets
-of perl inside the Text::Template using {} delimiters, but that 
-such sections absolutely can not span a ===Create-Ticket boundary.
+Note that each C<Value> must come right after the C<Param> on the same
+line. The C<Content:> param can extend over multiple lines, but the text
+of the first line must start right after C<Content:>. Don't try to start
+your C<Content:> section with a newline.
 
-After each ticket is created, it's stuffed into a hash called %Tickets
-so as to be available during the creation of other tickets during the
-same ScripAction, using the key 'create-identifier', where
-C<identifier> is the id you put after C<===Create-Ticket:>.  The hash
+After each ticket is created, it's stuffed into a hash called C<%Tickets>
+making it available during the creation of other tickets during the
+same ScripAction. The hash key for each ticket is C<create-[identifier]>,
+where C<identifier> is the value you put after C<===Create-Ticket:>.  The hash
 is prepopulated with the ticket which triggered the ScripAction as
-$Tickets{'TOP'}; you can also access that ticket using the shorthand
-TOP.
+C<$Tickets{'TOP'}>. You can also access that ticket using the shorthand
+C<TOP>.
 
 A simple example:
 
@@ -170,8 +175,7 @@ A convoluted example
  Refers-To: {$Tickets{"create-approval"}->Id}
  Queue: ___Approvals
  Content-Type: text/plain
- Content: 
- Your approval is requred for this ticket, too.
+ Content: Your approval is requred for this ticket, too.
  ENDOFCONTENT
  
 =head2 Acceptable fields
