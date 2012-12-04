@@ -100,6 +100,7 @@ if ($anchor =~ /AddPrincipal/) {
       });
 
       jQuery(".rights-editor .category-tabs").tabs({
+          cookie: { name: "rights-category-tab" /* saves current tab in cookie */ },
           show: function(ev, ui) {
               jQuery(".rights-editor .category-tabs").not(this).each(function() {
                   var item     = jQuery(this);
