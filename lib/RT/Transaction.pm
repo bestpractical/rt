@@ -612,27 +612,47 @@ sub BriefDescription {
         return ( $self->loc("Permission Denied") );
     }
 
-    my $type = $self->Type;    #cache this, rather than calling it 30 times
+    my $type = $self->Type;
 
     unless ( defined $type ) {
         return $self->loc("No transaction type specified");
     }
 
-    my $obj_type = $self->FriendlyObjectType;
+    if ( my $code = $_BriefDescriptions{$type} ) {
+        return $code->($self);
+    }
 
-    if ( $type eq 'Create' ) {
-        return ( $self->loc( "[_1] created", $obj_type ) );
-    }
-    elsif ( $type eq 'Enabled' ) {
-        return ( $self->loc( "[_1] enabled", $obj_type ) );
-    }
-    elsif ( $type eq 'Disabled' ) {
-        return ( $self->loc( "[_1] disabled", $obj_type ) );
-    }
-    elsif ( $type =~ /Status/ ) {
+    return $self->loc(
+        "Default: [_1]/[_2] changed from [_3] to [_4]",
+        $type,
+        $self->Field,
+        (
+            $self->OldValue
+            ? "'" . $self->OldValue . "'"
+            : $self->loc("(no value)")
+        ),
+        "'" . $self->NewValue . "'"
+    );
+}
+
+%_BriefDescriptions = (
+    Create => sub {
+        my $self = shift;
+        return ( $self->loc( "[_1] created", $self->FriendlyObjectType ) );
+    },
+    Enabled => sub {
+        my $self = shift;
+        return ( $self->loc( "[_1] enabled", $self->FriendlyObjectType ) );
+    },
+    Disabled => sub {
+        my $self = shift;
+        return ( $self->loc( "[_1] disabled", $self->FriendlyObjectType ) );
+    },
+    Status => sub {
+        my $self = shift;
         if ( $self->Field eq 'Status' ) {
             if ( $self->NewValue eq 'deleted' ) {
-                return ( $self->loc( "[_1] deleted", $obj_type ) );
+                return ( $self->loc( "[_1] deleted", $self->FriendlyObjectType ) );
             }
             else {
                 return (
@@ -656,36 +676,20 @@ sub BriefDescription {
                 "'" . $self->NewValue . "'"
             )
         );
-    }
-    elsif ( $type =~ /SystemError/ ) {
+    },
+    SystemError => sub {
+        my $self = shift;
         return $self->loc("System error");
-    }
-    elsif ( $type =~ /Forward Transaction/ ) {
+    },
+    "Forward Transaction" => sub {
+        my $self = shift;
         return $self->loc( "Forwarded Transaction #[_1] to [_2]",
             $self->Field, $self->Data );
-    }
-    elsif ( $type =~ /Forward Ticket/ ) {
+    },
+    "Forward Ticket" => sub {
+        my $self = shift;
         return $self->loc( "Forwarded Ticket to [_1]", $self->Data );
-    }
-
-    if ( my $code = $_BriefDescriptions{$type} ) {
-        return $code->($self);
-    }
-
-    return $self->loc(
-        "Default: [_1]/[_2] changed from [_3] to [_4]",
-        $type,
-        $self->Field,
-        (
-            $self->OldValue
-            ? "'" . $self->OldValue . "'"
-            : $self->loc("(no value)")
-        ),
-        "'" . $self->NewValue . "'"
-    );
-}
-
-%_BriefDescriptions = (
+    },
     CommentEmailRecord => sub {
         my $self = shift;
         return $self->loc("Outgoing email about a comment recorded");
