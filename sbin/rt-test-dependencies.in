@@ -229,6 +229,7 @@ Net::CIDR
 Regexp::Common::net::CIDR
 Regexp::IPv6
 Symbol::Global::Name
+HTML::Entities
 .
 
 $deps{'MASON'} = [ text_to_hash( << '.') ];
