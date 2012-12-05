@@ -45,32 +45,5 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $m->callback(CallbackName => 'Begin');
-
-@import "yui-fonts.css";
-@import "jquery-ui.css";
-@import "jquery-ui-timepicker-addon.css";
-@import "jquery.modal.css";
-@import "superfish.css";
-@import "superfish-navbar.css";
-@import "superfish-vertical.css";
-@import "tablesorter.css";
-@import "farbtastic.css";
-@import "collection.css";
-@import "forms.css";
-@import "misc.css";
-@import "nav.css";
-@import "ticket-form.css";
-@import "rights-editor.css";
-@import "theme-editor.css";
-@import "ticket.css";
-@import "admin.css";
-@import "articles.css";
-@import "portlets.css";
-@import "tools.css";
-@import "login.css";
-@import "history-folding.css";
-@import "history.css";
-
-% $m->callback(CallbackName => 'End');
-
+// RT's styles have some crazy z-indexes, so get above 'em all by default.
+jQuery.fn.modal.defaults.zIndex = 9999;
