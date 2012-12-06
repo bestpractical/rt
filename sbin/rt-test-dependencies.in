@@ -369,6 +369,7 @@ HTML::Entities
 my %AVOID = (
     'DBD::Oracle' => [qw(1.23)],
     'Email::Address' => [qw(1.893 1.894)],
+    'Devel::StackTrace' => [qw(1.28 1.29)],
 );
 
 if ($args{'download'}) {
