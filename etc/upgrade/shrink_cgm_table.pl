@@ -106,7 +106,7 @@ while ( my $rec = FetchNext( $cgms ) ) {
     $RT::Handle->Commit;
 }
 
-use constant PAGE_SIZE => 1000;
+use constant PAGE_SIZE => 10000;
 sub FetchNext {
     my ($objs, $init) = @_;
     if ( $init ) {
