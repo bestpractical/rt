@@ -919,6 +919,19 @@ sub _LoadConfig {
                 Extension  => $is_ext,
             );
         };
+        local *Plugin = sub {
+            my (@new_plugins) = @_;
+            my ( $pack, $file, $line ) = caller;
+            return $self->SetFromConfig(
+                Option     => \@RT::Plugins,
+                Value      => [@RT::Plugins, @new_plugins],
+                Package    => $pack,
+                File       => $file,
+                Line       => $line,
+                SiteConfig => $is_site,
+                Extension  => $is_ext,
+            );
+        };
         my @etc_dirs = ($RT::LocalEtcPath);
         push @etc_dirs, RT->PluginDirs('etc') if $is_ext;
         push @etc_dirs, $RT::EtcPath, @INC;
