@@ -43,14 +43,14 @@ qq{create -t ticket set subject='test cf $name' 'CF.{$name}=foo:b a.r=baz'},
 
     expect_send( "show ticket/$ticket_id -f 'CF.{$name}'",
         'checking new value' );
-    expect_like( qr/CF\.{\Q$name\E}: foo:b a\.r=baz/i, 'verified change' );
+    expect_like( qr/CF\.\Q{$name}\E: foo:b a\.r=baz/i, 'verified change' );
 
     expect_send( "edit ticket/$ticket_id set 'CF.{$name}=bar'",
         "changing cf $name to bar" );
     expect_like( qr/Ticket $ticket_id updated/, 'changed cf' );
     expect_send( "show ticket/$ticket_id -f 'CF.{$name}'",
         'checking new value' );
-    expect_like( qr/CF\.{\Q$name\E}: bar/i, 'verified change' );
+    expect_like( qr/CF\.\Q{$name}\E: bar/i, 'verified change' );
 
     expect_send(
 qq{create -t ticket set subject='test cf $name' 'CF-$name=foo:b a.r=baz'},
@@ -61,17 +61,17 @@ qq{create -t ticket set subject='test cf $name' 'CF-$name=foo:b a.r=baz'},
 
     expect_send( "show ticket/$ticket_id -f 'CF-$name'", 'checking new value' );
     if ( $name eq 'foo=bar' ) {
-        expect_like( qr/CF\.{\Q$name\E}: $/mi,
+        expect_like( qr/CF\.\Q{$name}\E: $/mi,
             "can't use = in cf name with old style" );
     }
     else {
-        expect_like( qr/CF\.{\Q$name\E}: foo:b a\.r=baz/i, 'verified change' );
+        expect_like( qr/CF\.\Q{$name}\E: foo:b a\.r=baz/i, 'verified change' );
         expect_send( "edit ticket/$ticket_id set 'CF-$name=bar'",
             "changing cf $name to bar" );
         expect_like( qr/Ticket $ticket_id updated/, 'changed cf' );
         expect_send( "show ticket/$ticket_id -f 'CF-$name'",
             'checking new value' );
-        expect_like( qr/CF\.{\Q$name\E}: bar/i, 'verified change' );
+        expect_like( qr/CF\.\Q{$name}\E: bar/i, 'verified change' );
     }
 }
 

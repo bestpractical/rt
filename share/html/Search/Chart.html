@@ -55,7 +55,7 @@ $ARGS{Query} ||= 'id > 0';
 
 # FIXME: should be factored with RT::Report::Tickets::Label :(
 my $PrimaryGroupByLabel;
-if ( $PrimaryGroupBy =~ /^(?:CF|CustomField)\.{(.*)}$/ ) {
+if ( $PrimaryGroupBy =~ /^(?:CF|CustomField)\.\{(.*)\}$/ ) {
     my $cf = $1;
     if ( $cf =~ /\D/ ) {
         $PrimaryGroupByLabel = loc( "custom field '[_1]'", $cf );

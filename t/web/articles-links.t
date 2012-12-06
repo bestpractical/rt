@@ -37,7 +37,7 @@ $m->content_contains('instance of ticket #17421', 'got the name of the article i
 # delete RT::Article's Name method on the server so we'll need to AUTOLOAD it
 my $clone = $m->clone;
 $clone->get_ok('/delete-article-name-method.html');
-like($clone->content, qr/{deleted}/);
+like($clone->content, qr/\{deleted\}/);
 
 $m->form_name('TicketUpdate');
 $m->click('SubmitTicket');

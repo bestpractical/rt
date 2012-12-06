@@ -69,10 +69,10 @@ for my $queue_name (qw/foo bar/) {
         ]
     );
     $text = $m->content;
-    like( $text, qr/^CF\.{test}: baz\s*$/m, 'cf value in rest show' );
+    like( $text, qr/^CF\.\{test\}: baz\s*$/m, 'cf value in rest show' );
 
     $text =~ s{.*}{}; # remove header
-    $text =~ s!CF\.{test}: baz!CF.{test}: newbaz!;
+    $text =~ s!CF\.\{test\}: baz!CF.{test}: newbaz!;
     $m->post(
         "$baseurl/REST/1.0/ticket/edit",
         [

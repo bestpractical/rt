@@ -105,7 +105,7 @@ is ($dependson->FirstCustomFieldValue('GlobalCF'), 'A Value',
   'global custom field was set');
 is ($dependson->FirstCustomFieldValue('QueueCF'), 'Another Value',
   'queue custom field was set');
-unlike ($dependson->Subject, qr/{/, "The subject doesn't have braces in it. that means we're interpreting expressions");
+unlike ($dependson->Subject, qr/\{/, "The subject doesn't have braces in it. that means we're interpreting expressions");
 is ($t->ReferredToBy->Count,1, "It's only referred to by one other ticket");
 is ($t->ReferredToBy->First->BaseObj->Id,$t->DependsOn->First->TargetObj->Id, "The same ticket that depends on it refers to it.");
 use RT::Action::CreateTickets;

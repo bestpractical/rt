@@ -111,7 +111,7 @@ sub Groupings {
 sub Label {
     my $self = shift;
     my $field = shift;
-    if ( $field =~ /^(?:CF|CustomField)\.{(.*)}$/ ) {
+    if ( $field =~ /^(?:CF|CustomField)\.\{(.*)\}$/ ) {
         my $cf = $1;
         return $self->CurrentUser->loc( "Custom field '[_1]'", $cf ) if $cf =~ /\D/;
         my $obj = RT::CustomField->new( $self->CurrentUser );
@@ -239,7 +239,7 @@ sub _FieldToFunction {
             $func = "SUBSTR($func,1,4)";
         }
         $args{'FUNCTION'} = $func;
-    } elsif ( $field =~ /^(?:CF|CustomField)\.{(.*)}$/ ) { #XXX: use CFDecipher method
+    } elsif ( $field =~ /^(?:CF|CustomField)\.\{(.*)\}$/ ) { #XXX: use CFDecipher method
         my $cf_name = $1;
         my $cf = RT::CustomField->new( $self->CurrentUser );
         $cf->Load($cf_name);

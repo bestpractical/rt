@@ -1527,15 +1527,15 @@ sub vsplit {
                 }
                 push @words, $s;
             }
-            elsif ( $a =~ /^q{/ ) {
+            elsif ( $a =~ /^q\{/ ) {
                 my $s = $a;
-                while ( $a !~ /}$/ ) {
+                while ( $a !~ /\}$/ ) {
                     ( $a, $b ) =
                       split /\s*,\s*/, $b, 2;
                     $s .= ',' . $a;
                 }
-                $s =~ s/^q{/'/;
-                $s =~ s/}/'/;
+                $s =~ s/^q\{/'/;
+                $s =~ s/\}/'/;
                 push @words, $s;
             }
             else {
