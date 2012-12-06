@@ -188,7 +188,7 @@ for my $quote ( q{'}, q{"} ) {
         $m->field( q => $q );
         $m->submit;
         my $escape_quote = $quote;
-        RT::Interface::Web::EscapeUTF8(\$escape_quote);
+        RT::Interface::Web::EscapeHTML(\$escape_quote);
         $m->content_contains( "base${escape_quote}ticket",
             "base${quote}ticket is found" );
     }

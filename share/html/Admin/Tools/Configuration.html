@@ -310,7 +310,7 @@ local $Data::Dumper::Indent = 2;
 sub stringify {
     my $value = shift;
     my $output = Dumper $value;
-    RT::Interface::Web::EscapeUTF8(\$output);
+    RT::Interface::Web::EscapeHTML(\$output);
     $output =~ s/ /&nbsp;/g;
     $output =~ s!\n!<br />!g;
     return $output;
