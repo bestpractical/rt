@@ -115,7 +115,7 @@ sub logged_in_as {
         Test::More::diag( "error: status is ". $self->status );
         return 0;
     }
-    RT::Interface::Web::EscapeUTF8(\$user);
+    RT::Interface::Web::EscapeHTML(\$user);
     unless ( $self->content =~ m{<span class="current-user">\Q$user\E</span>}i ) {
         Test::More::diag("Page has no user name");
         return 0;

@@ -26,7 +26,7 @@ ok( $m->login( 'foo', 'foobar', logout => 1 ), 'logged in' );
 $m->get_ok( $url . "/Search/Build.html?SavedSearchLoad=$id" );
 
 my $message = qq{Can not load saved search "$id"};
-RT::Interface::Web::EscapeUTF8( \$message );
+RT::Interface::Web::EscapeHTML( \$message );
 $m->content_contains( $message, 'user foo can not load saved search of root' );
 
 $m->warning_like( qr/User #\d+ tried to load container user #\d+/,

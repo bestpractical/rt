@@ -91,7 +91,7 @@ my $handle = sub {
 
 my $escaper = sub {
     my $content = shift;
-    RT::Interface::Web::EscapeUTF8( \$content );
+    RT::Interface::Web::EscapeHTML( \$content );
     return $content;
 };
 
@@ -131,7 +131,7 @@ $html => undef
 <%INIT>
 return unless defined $$content;
 unless ( $regexp ) {
-    RT::Interface::Web::EscapeUTF8( $content ) unless $html;
+    RT::Interface::Web::EscapeHTML( $content ) unless $html;
     return;
 }
 

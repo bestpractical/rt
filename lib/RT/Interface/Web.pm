@@ -112,13 +112,13 @@ sub ClearSquished {
     %SQUISHED_CSS = ();
 }
 
-=head2 EscapeUTF8 SCALARREF
+=head2 EscapeHTML SCALARREF
 
 does a css-busting but minimalist escaping of whatever html you're passing in.
 
 =cut
 
-sub EscapeUTF8 {
+sub EscapeHTML {
     my $ref = shift;
     return unless defined $$ref;
 
@@ -131,7 +131,12 @@ sub EscapeUTF8 {
     $$ref =~ s/'/&#39;/g;
 }
 
-
+# Back-compat
+# XXX: Remove in 4.4
+sub EscapeUTF8 {
+    RT->Logger->warning("EscapeUTF8 is deprecated; use EscapeHTML at @{[join '/', caller]}");
+    EscapeHTML(@_);
+}
 
 =head2 EscapeURI SCALARREF
 
