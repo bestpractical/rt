@@ -450,7 +450,7 @@ sub BuildEmail {
                 autohandler_name => '', # disable forced login and more
                 data_dir => $data_dir,
             );
-            $mason->set_escape( h => \&RT::Interface::Web::EscapeUTF8 );
+            $mason->set_escape( h => \&RT::Interface::Web::EscapeHTML );
             $mason->set_escape( u => \&RT::Interface::Web::EscapeURI  );
             $mason->set_escape( j => \&RT::Interface::Web::EscapeJS   );
         }

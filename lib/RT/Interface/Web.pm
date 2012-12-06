@@ -1094,7 +1094,7 @@ sub StripContent {
     # Check for plaintext sig
     return '' if not $html and $content =~ /^(--)?\Q$sig\E$/;
 
-    # Check for html-formatted sig; we don't use EscapeUTF8 here
+    # Check for html-formatted sig; we don't use EscapeHTML here
     # because we want to precisely match the escapting that FCKEditor
     # uses.
     $sig =~ s/&/&amp;/g;
