@@ -68,7 +68,7 @@ diag "Forward Transaction" if $ENV{TEST_VERBOSE};
     );
     $m->content_contains( 'Sent email successfully', 'sent mail msg' );
     $m->content_like(
-qr/Forwarded Transaction #\d+ to rt-test, rt-to\@example.com, rt-cc\@example.com, rt-bcc\@example.com/,
+qr/Forwarded .*?Transaction #\d+.*? to rt-test, rt-to\@example.com, rt-cc\@example.com, rt-bcc\@example.com/,
         'txn msg'
     );
     my ($mail) = RT::Test->fetch_caught_mails;
@@ -138,7 +138,7 @@ diag "Forward Transaction with attachments but empty content" if $ENV{TEST_VERBO
         button => 'ForwardAndReturn'
     );
     $m->content_contains( 'Sent email successfully', 'sent mail msg' );
-    $m->content_like( qr/Forwarded Transaction #\d+ to rt-test\@example\.com/, 'txn msg' );
+    $m->content_like( qr/Forwarded .*?Transaction #\d+.*? to rt-test\@example\.com/, 'txn msg' );
     my ($mail) = RT::Test->fetch_caught_mails;
     like( $mail, qr/Subject: test forward, empty content but attachments/, 'Subject field' );
     like( $mail, qr/To: rt-test\@example.com/,         'To field' );
@@ -196,7 +196,7 @@ diag "Forward Transaction with attachments but no 'content' part" if $ENV{TEST_V
         button => 'ForwardAndReturn'
     );
     $m->content_contains( 'Sent email successfully', 'sent mail msg' );
-    $m->content_like( qr/Forwarded Transaction #\d+ to rt-test\@example\.com/, 'txn msg' );
+    $m->content_like( qr/Forwarded .*?Transaction #\d+.*? to rt-test\@example\.com/, 'txn msg' );
     
     # Forward ticket
     $m->follow_link_ok( { text => 'Forward', n => 1 }, 'follow 1st Forward' );

@@ -720,8 +720,9 @@ sub _ProcessReturnValues {
     },
     "Forward Transaction" => sub {
         my $self = shift;
-        return ( "Forwarded Transaction #[_1] to [_2]", #loc
-            $self->Field, $self->Data );
+        return ( "Forwarded [_3]Transaction #[_1][_4] to [_2]", #loc
+            $self->Field, $self->Data,
+            [\'<a href="#txn-', $self->Field, \'">'], \'</a>');
     },
     "Forward Ticket" => sub {
         my $self = shift;
