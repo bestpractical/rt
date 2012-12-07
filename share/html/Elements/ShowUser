@@ -45,7 +45,6 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-%# Released under the terms of version 2 of the GNU Public License
 <%INIT>
 # $User is an RT::User object
 # $Address is Email::Address object
