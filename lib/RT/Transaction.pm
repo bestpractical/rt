@@ -820,17 +820,21 @@ sub _ProcessReturnValues {
             my $URI = RT::URI->new( $self->CurrentUser );
             $URI->FromURI( $self->NewValue );
             if ( $URI->Resolver ) {
-                $value = $URI->Resolver->AsString;
+                $value = [
+                    \'<a href="', $URI->AsHREF, \'">',
+                    $URI->Resolver->AsString,
+                    \'</a>'
+                ];
             }
             else {
                 $value = $self->NewValue;
             }
+
             if ( $self->Field eq 'DependsOn' ) {
                 return ( "Dependency on [_1] added", $value );  #loc
             }
             elsif ( $self->Field eq 'DependedOnBy' ) {
                 return ( "Dependency by [_1] added", $value );  #loc
-
             }
             elsif ( $self->Field eq 'RefersTo' ) {
                 return ( "Reference to [_1] added", $value );   #loc
@@ -859,7 +863,11 @@ sub _ProcessReturnValues {
             my $URI = RT::URI->new( $self->CurrentUser );
             $URI->FromURI( $self->OldValue );
             if ( $URI->Resolver ) {
-                $value = $URI->Resolver->AsString;
+                $value = [
+                    \'<a href="', $URI->AsHREF, \'">',
+                    $URI->Resolver->AsString,
+                    \'</a>'
+                ];
             }
             else {
                 $value = $self->OldValue;
