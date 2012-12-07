@@ -141,6 +141,10 @@ sub Load {
     $self->{'name'} = $name;
     $self->{'data'} = $LIFECYCLES_CACHE{ $name };
 
+    my $type = $self->{'data'}{'type'} || 'ticket';
+    $type = "RT::Lifecycle::".ucfirst($type);
+    bless $self, $type if $type->require;
+
     return $self;
 }
 
@@ -152,33 +156,21 @@ Returns sorted list of the lifecycles' names.
 
 sub List {
     my $self = shift;
+    my $for = shift || 'ticket';
 
     $self->FillCache unless keys %LIFECYCLES_CACHE;
 
-    return sort grep length && $_ ne '__maps__', keys %LIFECYCLES_CACHE;
+    return sort grep {$LIFECYCLES_CACHE{$_}{type} eq $for}
+        grep length && $_ ne '__maps__', keys %LIFECYCLES_CACHE;
 }
 
 =head2 Name
 
-Returns name of the laoded lifecycle.
+Returns name of the loaded lifecycle.
 
 =cut
 
 sub Name { return $_[0]->{'name'} }
-
-=head2 Queues
-
-Returns L<RT::Queues> collection with queues that use this lifecycle.
-
-=cut
-
-sub Queues {
-    my $self = shift;
-    require RT::Queues;
-    my $queues = RT::Queues->new( RT->SystemUser );
-    $queues->Limit( FIELD => 'Lifecycle', VALUE => $self->Name );
-    return $queues;
-}
 
 =head2 Getting statuses and validating.
 
@@ -352,41 +344,6 @@ when ticket is created.
 sub DefaultOnCreate {
     my $self = shift;
     return $self->DefaultStatus('on_create');
-}
-
-
-=head3 DefaultOnMerge
-
-Returns the status that should be used when tickets
-are merged.
-
-=cut
-
-sub DefaultOnMerge {
-    my $self = shift;
-    return $self->DefaultStatus('on_merge');
-}
-
-=head3 ReminderStatusOnOpen
-
-Returns the status that should be used when reminders are opened.
-
-=cut
-
-sub ReminderStatusOnOpen {
-    my $self = shift;
-    return $self->DefaultStatus('reminder_on_open') || 'open';
-}
-
-=head3 ReminderStatusOnResolve
-
-Returns the status that should be used when reminders are resolved.
-
-=cut
-
-sub ReminderStatusOnResolve {
-    my $self = shift;
-    return $self->DefaultStatus('reminder_on_resolve') || 'resolved';
 }
 
 =head2 Transitions, rights, labels and actions.
@@ -640,6 +597,10 @@ sub FillCache {
 
     %LIFECYCLES_CACHE = %LIFECYCLES = %$map;
     $_ = { %$_ } foreach values %LIFECYCLES_CACHE;
+
+    for my $lifecycles (values %LIFECYCLES_CACHE) {
+        $lifecycles->{type} ||= 'ticket';
+    }
 
     my %all = (
         '' => [],
