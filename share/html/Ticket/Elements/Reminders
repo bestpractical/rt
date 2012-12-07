@@ -150,7 +150,7 @@ $Reminder
 $Ticket
 $Index
 </%args>
-<tr class="<% $Index%2 ? 'oddline' : 'evenline' %>">
+<tr class="<% $Index%2 ? 'oddline' : 'evenline' %>" id="reminder-<% $Reminder->id %>">
 <td class="entry">
 % unless ( $Reminder->CurrentUserHasRight('ModifyTicket') ) {
 <input name="Complete-Reminder-<% $Reminder->id %>" type="hidden" 
@@ -192,7 +192,7 @@ $Index
 </%args>
 % my $dueobj = $Reminder->DueObj;
 % my $overdue = $dueobj->Unix > 0 && $dueobj->Diff < 0 ? 1 : 0;
-<tr class="<% $Index%2 ? 'oddline' : 'evenline' %>">
+<tr class="<% $Index%2 ? 'oddline' : 'evenline' %>" id="reminder-<% $Reminder->id %>">
 
 <td class="collection-as-table">
 % unless ( $Reminder->CurrentUserHasRight('ModifyTicket') ) {

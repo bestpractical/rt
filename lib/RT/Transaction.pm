@@ -981,19 +981,34 @@ sub _ProcessReturnValues {
         my $self = shift;
         my $ticket = RT::Ticket->new($self->CurrentUser);
         $ticket->Load($self->NewValue);
-        return ("Reminder '[_1]' added", $ticket->Subject); #loc
+        my $subject = [
+            \'<a href="', RT->Config->Get('WebPath'),
+            "/Ticket/Reminders.html?id=", $self->ObjectId,
+            "#reminder-", $ticket->id, \'">', $ticket->Subject, \'</a>'
+        ];
+        return ("Reminder '[_1]' added", $subject); #loc
     },
     OpenReminder => sub {
         my $self = shift;
         my $ticket = RT::Ticket->new($self->CurrentUser);
         $ticket->Load($self->NewValue);
-        return ("Reminder '[_1]' reopened", $ticket->Subject);  #loc
+        my $subject = [
+            \'<a href="', RT->Config->Get('WebPath'),
+            "/Ticket/Reminders.html?id=", $self->ObjectId,
+            "#reminder-", $ticket->id, \'">', $ticket->Subject, \'</a>'
+        ];
+        return ("Reminder '[_1]' reopened", $subject);  #loc
     },
     ResolveReminder => sub {
         my $self = shift;
         my $ticket = RT::Ticket->new($self->CurrentUser);
         $ticket->Load($self->NewValue);
-        return ("Reminder '[_1]' completed", $ticket->Subject); #loc
+        my $subject = [
+            \'<a href="', RT->Config->Get('WebPath'),
+            "/Ticket/Reminders.html?id=", $self->ObjectId,
+            "#reminder-", $ticket->id, \'">', $ticket->Subject, \'</a>'
+        ];
+        return ("Reminder '[_1]' completed", $subject); #loc
     }
 );
 
