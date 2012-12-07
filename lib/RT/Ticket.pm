@@ -1389,36 +1389,10 @@ sub SetQueue {
             return ( 0, $self->loc("Couldn't load copy of ticket #[_1].", $self->Id) );
         }
 
-        my $now = RT::Date->new( $self->CurrentUser );
-        $now->SetToNow;
-
-        my $old_status = $clone->Status;
-
-        #If we're changing the status from initial in old to not intial in new,
-        # record that we've started
-        if ( $old_lifecycle->IsInitial($old_status) && !$new_lifecycle->IsInitial($new_status)  && $clone->StartedObj->Unix == 0 ) {
-            #Set the Started time to "now"
-            $clone->_Set(
-                Field             => 'Started',
-                Value             => $now->ISO,
-                RecordTransaction => 0
-            );
-        }
-
-        #When we close a ticket, set the 'Resolved' attribute to now.
-        # It's misnamed, but that's just historical.
-        if ( $new_lifecycle->IsInactive($new_status) ) {
-            $clone->_Set(
-                Field             => 'Resolved',
-                Value             => $now->ISO,
-                RecordTransaction => 0,
-            );
-        }
-
-        #Actually update the status
-        my ($val, $msg)= $clone->_Set(
-            Field             => 'Status',
-            Value             => $new_status,
+        my ($val, $msg) = $clone->_SetStatus(
+            Lifecycle         => $old_lifecycle,
+            NewLifecycle      => $new_lifecycle,
+            Status            => $new_status,
             RecordTransaction => 0,
         );
         $RT::Logger->error( 'Status change failed on queue change: '. $msg )
@@ -2701,15 +2675,37 @@ sub SetStatus {
         return ( 0, $self->loc('That ticket has unresolved dependencies') );
     }
 
+    return $self->_SetStatus(
+        Status     => $args{Status},
+        SetStarted => $args{SetStarted},
+    );
+}
+
+sub _SetStatus {
+    my $self = shift;
+    my %args = (
+        Status => undef,
+        SetStarted => 1,
+        RecordTransaction => 1,
+        Lifecycle => $self->QueueObj->Lifecycle,
+        @_,
+    );
+    $args{NewLifecycle} ||= $args{Lifecycle};
+
     my $now = RT::Date->new( $self->CurrentUser );
     $now->SetToNow();
 
     my $raw_started = RT::Date->new(RT->SystemUser);
     $raw_started->Set(Format => 'ISO', Value => $self->__Value('Started'));
 
-    #If we're changing the status from new, record that we've started
-    if ( $args{SetStarted} && $lifecycle->IsInitial($old) && !$lifecycle->IsInitial($new) && !$raw_started->Unix) {
-        #Set the Started time to "now"
+    my $old = $self->__Value('Status');
+
+    # If we're changing the status from new, record that we've started
+    if ( $args{SetStarted}
+             && $args{Lifecycle}->IsInitial($old)
+             && !$args{NewLifecycle}->IsInitial($args{Status})
+             && !$raw_started->Unix) {
+        # Set the Started time to "now"
         $self->_Set(
             Field             => 'Started',
             Value             => $now->ISO,
@@ -2717,9 +2713,9 @@ sub SetStatus {
         );
     }
 
-    #When we close a ticket, set the 'Resolved' attribute to now.
+    # When we close a ticket, set the 'Resolved' attribute to now.
     # It's misnamed, but that's just historical.
-    if ( $lifecycle->IsInactive($new) ) {
+    if ( $args{NewLifecycle}->IsInactive($args{Status}) ) {
         $self->_Set(
             Field             => 'Resolved',
             Value             => $now->ISO,
@@ -2727,13 +2723,14 @@ sub SetStatus {
         );
     }
 
-    #Actually update the status
+    # Actually update the status
     my ($val, $msg)= $self->_Set(
         Field           => 'Status',
         Value           => $args{Status},
         TimeTaken       => 0,
         CheckACL        => 0,
         TransactionType => 'Status',
+        RecordTransaction => $args{RecordTransaction},
     );
     return ($val, $msg);
 }
