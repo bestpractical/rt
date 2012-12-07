@@ -51,16 +51,7 @@ $User => undef
 $Address => undef
 </%ARGS>
 <%INIT>
-if ( !$User && $Address ) {
-    $User = RT::User->new( $session{'CurrentUser'} );
-    $User->LoadByEmail( $Address->address );
-    if ( $User->Id ) {
-        $Address = '';
-    } else {
-        $Address = $Address->address;
-    }
-}
-my $display = $Address || $User->RealName || $User->Name;
+my $display = $User ? ($User->RealName || $User->Name) : $Address->address;
    $display = $m->interp->apply_escapes( $display, 'h' )
         unless $ARGS{'NoEscape'};
 </%INIT>

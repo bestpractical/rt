@@ -57,9 +57,13 @@ unless ( RT::Interface::Web->ComponentPathIsSafe($comp) and $m->comp_exists( $co
         . ' picked UsernameFormat '. $style
         . ', but '. $comp . "doesn't exist"
     );
-    return $m->comp('/Elements/ShowUserConcise',
-        User => $User, Address => $Address, NoEscape => $NoEscape
-    );
+    $comp = '/Elements/ShowUserConcise';
+}
+
+if (not $User and $Address) {
+    $User = RT::User->new( $session{'CurrentUser'} );
+    $User->LoadByEmail( $Address->address );
+    undef $User unless $User->id;
 }
 return $m->comp( $comp, User => $User, Address => $Address, NoEscape => $NoEscape );
 </%INIT>
