@@ -114,7 +114,7 @@ sub IsApplicable {
     }
     else {
         $RT::Logger->error("Argument '$argument' is incorrect.")
-            unless RT::Lifecycle->Load('')->IsValid( $argument );
+            unless RT::Lifecycle->Load(Type => 'ticket')->IsValid( $argument );
         return 0;
     }
 

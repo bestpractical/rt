@@ -54,16 +54,11 @@ package RT::Lifecycle;
 
 our %LIFECYCLES;
 our %LIFECYCLES_CACHE;
+our %LIFECYCLES_TYPES;
 __PACKAGE__->RegisterRights;
 
 # cache structure:
 #    {
-#        '' => { # all valid statuses
-#            '' => [...],
-#            initial => [...],
-#            active => [...],
-#            inactive => [...],
-#        },
 #        lifecycle_x => {
 #            '' => [...], # all valid in lifecycle
 #            initial => [...],
@@ -119,31 +114,50 @@ sub new {
     return $self;
 }
 
-=head2 Load
+=head2 Load Name => I<NAME>, Type => I<TYPE>
 
-Takes a name of the lifecycle and loads it. If name is empty or undefined then
-loads the global lifecycle with statuses from all named lifecycles.
+Takes a name of the lifecycle and loads it. If only a Type is provided,
+loads the global lifecycle with statuses from all named lifecycles of
+that type.
 
 Can be called as class method, returns a new object, for example:
 
-    my $lifecycle = RT::Lifecycle->Load('default');
+    my $lifecycle = RT::Lifecycle->Load( Name => 'default');
+
+Returns an object which may be a subclass of L<RT::Lifecycle>
+(L<RT::Lifecycle::Ticket>, for example) depending on the type of the
+lifecycle in question.
 
 =cut
 
 sub Load {
     my $self = shift;
-    my $name = shift || '';
-    return $self->new->Load( $name, @_ )
+    return $self->new->Load( @_ )
         unless ref $self;
 
-    return unless exists $LIFECYCLES_CACHE{ $name };
+    unshift @_, Type => "ticket", "Name"
+        if @_ % 2;
 
-    $self->{'name'} = $name;
-    $self->{'data'} = $LIFECYCLES_CACHE{ $name };
+    my %args = (
+        Type => "ticket",
+        Name => '',
+        @_,
+    );
 
-    my $type = $self->{'data'}{'type'} || 'ticket';
-    $type = "RT::Lifecycle::".ucfirst($type);
-    bless $self, $type if $type->require;
+    if (defined $args{Name} and exists $LIFECYCLES_CACHE{ $args{Name} }) {
+        $self->{'name'} = $args{Name};
+        $self->{'data'} = $LIFECYCLES_CACHE{ $args{Name} };
+
+        my $found_type = $self->{'data'}{'type'};
+        warn "Found type of $found_type ne $args{Type}" if $found_type ne $args{Type};
+    } elsif (not $args{Name} and exists $LIFECYCLES_TYPES{ $args{Type} }) {
+        $self->{'data'} = $LIFECYCLES_TYPES{ $args{Type} };
+    } else {
+        return undef;
+    }
+
+    my $class = "RT::Lifecycle::".ucfirst($args{Type});
+    bless $self, $class if $class->require;
 
     return $self;
 }
@@ -161,7 +175,7 @@ sub List {
     $self->FillCache unless keys %LIFECYCLES_CACHE;
 
     return sort grep {$LIFECYCLES_CACHE{$_}{type} eq $for}
-        grep length && $_ ne '__maps__', keys %LIFECYCLES_CACHE;
+        grep $_ ne '__maps__', keys %LIFECYCLES_CACHE;
 }
 
 =head2 Name
@@ -518,7 +532,8 @@ move map from this cycle to provided.
 sub MoveMap {
     my $from = shift; # self
     my $to = shift;
-    $to = RT::Lifecycle->Load( $to ) unless ref $to;
+    my $type = $from->{'data'}{'type'};
+    $to = RT::Lifecycle->Load( Name => $to, Type => $type ) unless ref $to;
     return $LIFECYCLES{'__maps__'}{ $from->Name .' -> '. $to->Name } || {};
 }
 
@@ -546,13 +561,14 @@ move maps.
 
 sub NoMoveMaps {
     my $self = shift;
-    my @list = $self->List;
+    my $type = $self->{'data'}{'type'};
+    my @list = $self->List( $type );
     my @res;
     foreach my $from ( @list ) {
         foreach my $to ( @list ) {
             next if $from eq $to;
             push @res, $from, $to
-                unless RT::Lifecycle->Load( $from )->HasMoveMap( $to );
+                unless RT::Lifecycle->Load( Name => $from, Type => $type )->HasMoveMap( $to );
         }
     }
     return @res;
@@ -573,7 +589,7 @@ sub ForLocalization {
 
     my @res = ();
 
-    push @res, @{ $LIFECYCLES_CACHE{''}{''} || [] };
+    push @res, @{$_->{''}} for values %LIFECYCLES_TYPES;
     foreach my $lifecycle ( values %LIFECYCLES ) {
         push @res,
             grep defined && length,
@@ -598,21 +614,21 @@ sub FillCache {
     %LIFECYCLES_CACHE = %LIFECYCLES = %$map;
     $_ = { %$_ } foreach values %LIFECYCLES_CACHE;
 
-    for my $lifecycles (values %LIFECYCLES_CACHE) {
-        $lifecycles->{type} ||= 'ticket';
-    }
+    for my $lifecycle ( values %LIFECYCLES_CACHE ) {
+        my $type = $lifecycle->{type} ||= 'ticket';
+        $LIFECYCLES_TYPES{$type} ||= {
+            '' => [],
+            initial => [],
+            active => [],
+            inactive => [],
+            actions => [],
+        };
 
-    my %all = (
-        '' => [],
-        initial => [],
-        active => [],
-        inactive => [],
-    );
-    foreach my $lifecycle ( values %LIFECYCLES_CACHE ) {
         my @res;
-        foreach my $type ( qw(initial active inactive) ) {
-            push @{ $all{ $type } }, @{ $lifecycle->{ $type } || [] };
-            push @res,               @{ $lifecycle->{ $type } || [] };
+        foreach my $category ( qw(initial active inactive) ) {
+            my @vals = @{ $lifecycle->{ $category } ||= [] };
+            push @{ $LIFECYCLES_TYPES{$type}{$category} }, @vals;
+            push @res,                                     @vals;
         }
 
         my %seen;
@@ -623,12 +639,15 @@ sub FillCache {
             $lifecycle->{'transitions'}{''} = [ grep $_ ne 'deleted', @res ];
         }
     }
-    foreach my $type ( qw(initial active inactive), '' ) {
-        my %seen;
-        @{ $all{ $type } } = grep !$seen{ lc $_ }++, @{ $all{ $type } };
-        push @{ $all{''} }, @{ $all{ $type } } if $type;
+    for my $type (keys %LIFECYCLES_TYPES) {
+        for my $category ( qw(initial active inactive), '' ) {
+            my %seen;
+            @{ $LIFECYCLES_TYPES{$type}{$category} } =
+                grep !$seen{ lc $_ }++, @{ $LIFECYCLES_TYPES{$type}{$category} };
+            push @{ $LIFECYCLES_TYPES{$type}{''} },
+                @{ $LIFECYCLES_TYPES{$type}{$category} } if $category;
+        }
     }
-    $LIFECYCLES_CACHE{''} = \%all;
 
     foreach my $lifecycle ( values %LIFECYCLES_CACHE ) {
         my @res;
