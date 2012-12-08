@@ -67,6 +67,6 @@ Set(\%Lifecycles,
 END
 }
 
-use RT::Test config => $config;
+use RT::Test config => $config, tests => undef;
 
 1;
