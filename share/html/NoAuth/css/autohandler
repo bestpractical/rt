@@ -59,7 +59,7 @@ elsif ($file =~ /\.(?:htc)$/i) {
     return();
 } else {
     RT::Interface::Web::StaticFileHeaders();
-    $r->content_type('text/css') ;
+    $r->content_type('text/css; charset=utf-8') ;
     $m->call_next();
     return();
 }

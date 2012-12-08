@@ -296,7 +296,7 @@ sub HandleRequest {
 
             # REST urls get a special 401 response
             if ($m->request_comp->path =~ m{^/REST/\d+\.\d+/}) {
-                $HTML::Mason::Commands::r->content_type("text/plain");
+                $HTML::Mason::Commands::r->content_type("text/plain; charset=utf-8");
                 $m->error_format("text");
                 $m->out("RT/$RT::VERSION 401 Credentials required\n");
                 $m->out("\n$msg\n") if $msg;

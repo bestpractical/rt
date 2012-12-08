@@ -55,7 +55,7 @@ if ($file =~ /\.(gif|png|jpe?g)$/i) {
     RT::Interface::Web->SendStaticFile( File => $file, RelativeFile => $relfile );
 } else {
     &RT::Interface::Web::StaticFileHeaders();
-    $r->content_type('application/x-javascript');
+    $r->content_type('application/x-javascript; charset=utf-8');
     $m->call_next();
     return();
 }

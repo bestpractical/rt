@@ -85,7 +85,7 @@ Encode::_utf8_off($error);
 $RT::Logger->error($error);
 
 if ( $session{'REST'} ) {
-    $r->content_type('text/plain');
+    $r->content_type('text/plain; charset=utf-8');
     $m->out( "Error: " . $Why . "\n" );
     $m->out( $Details . "\n" ) if defined $Details && length $Details;
     $m->abort();
