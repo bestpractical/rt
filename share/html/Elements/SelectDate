@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, Name => $Name, CallbackName => 'BeforeDateInput' );
-<input type="text" class="datepicker<% $ShowTime ? ' withtime' : '' %>" id="<% $Name %>" name="<% $Name %>" value="<% $Value %>" size="<% $Size %>" />
+<input type="text" class="datepicker<% $ShowTime ? ' withtime' : '' %>" id="<% $Name %>" name="<% $Name %>" value="<% $Default %>" size="<% $Size %>" />
 % $m->callback( %ARGS, Name => $Name, CallbackName => 'AfterDateInput' );
 <%init>
 unless ((defined $Default) or ($current <= 0)) {
@@ -56,7 +56,7 @@ unless ((defined $Default) or ($current <= 0)) {
                        $year+1900,$mon+1,$mday,
                        $hour,$min);
 }
-$Value = $Value || $Default || '';
+$Default ||= '';
 
 unless ($Name) {
     $Name = $menu_prefix. "_Date";
@@ -69,7 +69,6 @@ $ShowTime => 1
 $menu_prefix=>''
 $current=>time
 $Default => ''
-$Value => ''
 $Name => undef
 $Size => 16
 </%args>
