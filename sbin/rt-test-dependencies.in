@@ -294,6 +294,7 @@ Log::Dispatch::Perl
 Test::WWW::Mechanize::PSGI
 Plack::Middleware::Test::StashWarnings 0.06
 Test::LongString
+Test::NoWarnings
 .
 
 $deps{'FASTCGI'} = [ text_to_hash( << '.') ];
