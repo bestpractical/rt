@@ -720,13 +720,21 @@ sub _ProcessReturnValues {
     },
     "Forward Transaction" => sub {
         my $self = shift;
+        my $recipients = join ", ", map {
+            RT::User->Format( Address => $_, CurrentUser => $self->CurrentUser )
+        } RT::EmailParser->ParseEmailAddress($self->Data);
+
         return ( "Forwarded [_3]Transaction #[_1][_4] to [_2]", #loc
-            $self->Field, $self->Data,
+            $self->Field, $recipients,
             [\'<a href="#txn-', $self->Field, \'">'], \'</a>');
     },
     "Forward Ticket" => sub {
         my $self = shift;
-        return ( "Forwarded Ticket to [_1]", $self->Data ); #loc
+        my $recipients = join ", ", map {
+            RT::User->Format( Address => $_, CurrentUser => $self->CurrentUser )
+        } RT::EmailParser->ParseEmailAddress($self->Data);
+
+        return ( "Forwarded Ticket to [_1]", $recipients ); #loc
     },
     CommentEmailRecord => sub {
         my $self = shift;
@@ -784,31 +792,31 @@ sub _ProcessReturnValues {
         my $New = RT::User->new( $self->CurrentUser );
         $New->Load( $self->NewValue );
 
-        return ("Owner forcibly changed from [_1] to [_2]" , $Old->Name , $New->Name); #loc
+        return ("Owner forcibly changed from [_1] to [_2]", $Old->Format, $New->Format); #loc
     },
     Steal => sub {
         my $self = shift;
         my $Old = RT::User->new( $self->CurrentUser );
         $Old->Load( $self->OldValue );
-        return ("Stolen from [_1]",  $Old->Name);   #loc
+        return ("Stolen from [_1]", $Old->Format);   #loc
     },
     Give => sub {
         my $self = shift;
         my $New = RT::User->new( $self->CurrentUser );
         $New->Load( $self->NewValue );
-        return ( "Given to [_1]",  $New->Name );    #loc
+        return ( "Given to [_1]", $New->Format );    #loc
     },
     AddWatcher => sub {
         my $self = shift;
         my $principal = RT::Principal->new($self->CurrentUser);
         $principal->Load($self->NewValue);
-        return ( "[_1] [_2] added", $self->loc($self->Field), $principal->Object->Name);    #loc
+        return ( "[_1] [_2] added", $self->loc($self->Field), $principal->Object->Format);    #loc
     },
     DelWatcher => sub {
         my $self = shift;
         my $principal = RT::Principal->new($self->CurrentUser);
         $principal->Load($self->OldValue);
-        return ( "[_1] [_2] deleted", $self->loc($self->Field), $principal->Object->Name);  #loc
+        return ( "[_1] [_2] deleted", $self->loc($self->Field), $principal->Object->Format);  #loc
     },
     Subject => sub {
         my $self = shift;
@@ -945,25 +953,26 @@ sub _ProcessReturnValues {
                     return ("Taken");   #loc
                 }
                 else {
-                    return ( "Given to [_1]",  $New->Name );    #loc
+                    return ( "Given to [_1]", $New->Format );    #loc
                 }
             }
             else {
                 if ( $New->id == $self->Creator ) {
-                    return ("Stolen from [_1]",  $Old->Name);   #loc
+                    return ("Stolen from [_1]",  $Old->Format );   #loc
                 }
                 elsif ( $Old->id == $self->Creator ) {
                     if ( $New->id == RT->Nobody->id ) {
                         return ("Untaken"); #loc
                     }
                     else {
-                        return ( "Given to [_1]", $New->Name ); #loc
+                        return ( "Given to [_1]", $New->Format ); #loc
                     }
                 }
                 else {
                     return (
                         "Owner forcibly changed from [_1] to [_2]", #loc
-                        $Old->Name, $New->Name );
+                        $Old->Format, $New->Format
+                    );
                 }
             }
         }
