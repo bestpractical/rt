@@ -70,7 +70,7 @@
     Name         => "Owner",
     TicketObj    => $t,
     QueueObj     => $t->QueueObj,
-    DefaultLabel => loc("[_1] (Unchanged)", $m->scomp('/Elements/ShowUser', User => $t->OwnerObj)),
+    DefaultLabel => loc("[_1] (Unchanged)", $t->OwnerObj->Format),
     Default      => $ARGS{'Owner'}
 &>
 </div></div>
