@@ -1403,12 +1403,12 @@ records or ressurect accidentally deleted.
 
     mandatory.
     
-    it's equall to -c
+    it's equal to -c
 
 =item verbose
 
     print additional info to STDOUT
-    it's equall to -v
+    it's equal to -v
 
 =item resolve
 

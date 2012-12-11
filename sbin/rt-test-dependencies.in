@@ -301,6 +301,7 @@ Plack::Middleware::Test::StashWarnings 0.06
 Test::LongString
 Mojo::DOM
 Set::Tiny
+Test::NoWarnings
 .
 
 $deps{'FASTCGI'} = [ text_to_hash( << '.') ];

@@ -105,7 +105,7 @@
 <tr><td class="label"> <&|/l&>Make queue</&>: </td>
 <td class="value"> <& /Elements/SelectQueue, Name => "Queue", Default => $ARGS{Queue} &> </td></tr>
 <tr><td class="label"> <&|/l&>Make Status</&>: </td>
-<td class="value"> <& /Elements/SelectStatus, Name => "Status", Default => $ARGS{Status} &> </td></tr>
+<td class="value"> <& /Elements/SelectStatus, Name => "Status", Default => $ARGS{Status}, Queues => $seen_queues &> </td></tr>
 <tr><td class="label"> <&|/l&>Make date Starts</&>: </td>
 <td class="value"> <& /Elements/SelectDate, Name => "Starts_Date", Default => $ARGS{Starts_Date} || '' &> </td></tr>
 <tr><td class="label"> <&|/l&>Make date Started</&>: </td>

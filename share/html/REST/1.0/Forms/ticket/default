@@ -167,7 +167,7 @@ else {
             elsif (lc $k eq 'text') {
                 $text = delete $data{$k};
             }
-            elsif ( lc $k ne 'id' ) {
+            elsif ( $k !~ /^(?:id|requestors)$/i ) {
                 $e = 1;
                 push @$o, $k;
                 push(@comments, "# $k: Unknown field");
