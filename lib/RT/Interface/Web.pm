@@ -1086,26 +1086,31 @@ sub ValidateWebConfig {
     return if $_has_validated_web_config;
     $_has_validated_web_config = 1;
 
-    if (!$ENV{'rt.explicit_port'} && $ENV{SERVER_PORT} != RT->Config->Get('WebPort')) {
-        $RT::Logger->warn("The actual SERVER_PORT ($ENV{SERVER_PORT}) does NOT match the configured WebPort ($RT::WebPort). Perhaps you should Set(\$WebPort, $ENV{SERVER_PORT}); in RT_SiteConfig.pm, otherwise your internal links may be broken.");
+    my $port = $ENV{SERVER_PORT};
+    my $host = $ENV{HTTP_X_FORWARDED_HOST} || $ENV{HTTP_X_FORWARDED_SERVER}
+            || $ENV{HTTP_HOST}             || $ENV{SERVER_NAME};
+    ($host, $port) = ($1, $2) if $host =~ /^(.*?):(\d+)$/;
+
+    if ( $port != RT->Config->Get('WebPort') and not $ENV{'rt.explicit_port'}) {
+        $RT::Logger->warn("The requested port ($port) does NOT match the configured WebPort ($RT::WebPort).  "
+                         ."Perhaps you should Set(\$WebPort, $port); in RT_SiteConfig.pm, "
+                         ."otherwise your internal links may be broken.");
     }
 
-    if ($ENV{HTTP_HOST}) {
-        # match "example.com" or "example.com:80"
-        my ($host) = $ENV{HTTP_HOST} =~ /^(.*?)(:\d+)?$/;
-
-        if ($host ne RT->Config->Get('WebDomain')) {
-            $RT::Logger->warn("The actual HTTP_HOST ($host) does NOT match the configured WebDomain ($RT::WebDomain). Perhaps you should Set(\$WebDomain, '$host'); in RT_SiteConfig.pm, otherwise your internal links may be broken.");
-        }
-    }
-    else {
-        if ($ENV{SERVER_NAME} ne RT->Config->Get('WebDomain')) {
-            $RT::Logger->warn("The actual SERVER_NAME ($ENV{SERVER_NAME}) does NOT match the configured WebDomain ($RT::WebDomain). Perhaps you should Set(\$WebDomain, '$ENV{SERVER_NAME}'); in RT_SiteConfig.pm, otherwise your internal links may be broken.");
-        }
+    if ( $host ne RT->Config->Get('WebDomain') ) {
+        $RT::Logger->warn("The requested host ($host) does NOT match the configured WebDomain ($RT::WebDomain).  "
+                         ."Perhaps you should Set(\$WebDomain, '$host'); in RT_SiteConfig.pm, "
+                         ."otherwise your internal links may be broken.");
     }
 
-    if ($ENV{SCRIPT_NAME} ne RT->Config->Get('WebPath')) {
-        $RT::Logger->warn("The actual SCRIPT_NAME ($ENV{SCRIPT_NAME}) does NOT match the configured WebPath ($RT::WebPath). Perhaps you should Set(\$WebPath, '$ENV{SCRIPT_NAME}'); in RT_SiteConfig.pm, otherwise your internal links may be broken.");
+    # Unfortunately, there is no reliable way to get the _path_ that was
+    # requested at the proxy level; simply disable this warning if we're
+    # proxied and there's a mismatch.
+    my $proxied = $ENV{HTTP_X_FORWARDED_HOST} || $ENV{HTTP_X_FORWARDED_SERVER};
+    if ($ENV{SCRIPT_NAME} ne RT->Config->Get('WebPath') and not $proxied) {
+        $RT::Logger->warn("The requested path ($ENV{SCRIPT_NAME}) does NOT match the configured WebPath ($RT::WebPath).  "
+                         ."Perhaps you should Set(\$WebPath, '$ENV{SCRIPT_NAME}'); in RT_SiteConfig.pm, "
+                         ."otherwise your internal links may be broken.");
     }
 }
 
