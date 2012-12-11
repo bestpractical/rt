@@ -49,27 +49,20 @@
 # $User is an RT::User object
 # $Address is Email::Address object
 
-my $comp = '/Elements/ShowUser'. ucfirst lc $style;
-unless ( RT::Interface::Web->ComponentPathIsSafe($comp) and $m->comp_exists( $comp ) ) {
-    $RT::Logger->error(
-        'Either system config or user #'
-        . $session{'CurrentUser'}->id
-        . ' picked UsernameFormat '. $style
-        . ', but '. $comp . "doesn't exist"
-    );
-    $comp = '/Elements/ShowUserConcise';
-}
+my $display = RT::User->Format(
+    User        => $User,
+    Address     => $Address,
+    CurrentUser => $session{CurrentUser},
+    Format      => $style,
+);
 
-if (not $User and $Address) {
-    $User = RT::User->new( $session{'CurrentUser'} );
-    $User->LoadByEmail( $Address->address );
-    undef $User unless $User->id;
-}
-return $m->comp( $comp, User => $User, Address => $Address, NoEscape => $NoEscape );
+$display = $m->interp->apply_escapes($display, 'h')
+    unless $NoEscape;
 </%INIT>
 <%ARGS>
 $User => undef
 $Address => undef
 $NoEscape => 0
-$style => RT->Config->Get('UsernameFormat', $session{'CurrentUser'})
+$style => undef
 </%ARGS>
+<% $display |n %>\

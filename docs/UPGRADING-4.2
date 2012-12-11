@@ -22,3 +22,14 @@ UPGRADING FROM RT 4.0.0 and greater
 * MakeClicky handlers added via a callback are now passed an "object" key in
   the parameter hash instead of "ticket".  The object may be any RT::Record
   subclass.
+
+* ShowUser handlers (/Elements/ShowUser*) have moved out of Mason components
+  and into RT::User methods.  Any custom username formats will need to be
+  reimplemented as RT::User methods.  Renaming should follow that of the core
+  components:
+
+        /Elements/ShowUserConcise => RT::User->_FormatUserConcise
+        /Elements/ShowUserVerbose => RT::User->_FormatUserVerbose
+
+  The _FormatUser* methods are passed a hash containing the keys User and
+  Address, which have the same properties as before.

@@ -66,6 +66,7 @@ package RT::User;
 use strict;
 use warnings;
 
+use Scalar::Util qw(blessed);
 
 use base 'RT::Record';
 
@@ -1538,9 +1539,120 @@ Return the friendly name
 
 sub FriendlyName {
     my $self = shift;
-    return $self->RealName if defined($self->RealName);
-    return $self->Name if defined($self->Name);
-    return "";
+    return $self->RealName if defined $self->RealName and length $self->RealName;
+    return $self->Name;
+}
+
+=head2 Format
+
+Class or object method.
+
+Returns a string describing a user in the current user's preferred format.
+
+May be invoked in three ways:
+
+    $UserObj->Format;
+    RT::User->Format( User => $UserObj );   # same as above
+    RT::User->Format( Address => $AddressObj, CurrentUser => $CurrentUserObj );
+
+Possible arguments are:
+
+=over
+
+=item User
+
+An L<RT::User> object representing the user to format.  Preferred to Address.
+
+=item Address
+
+An L<Email::Address> object representing the user address to format.  Address
+will be used to lookup an L<RT::User> if possible.
+
+=item CurrentUser
+
+Required when Format is called as a class method with an Address argument.
+Otherwise, this argument is ignored in preference to the CurrentUser of the
+involved L<RT::User> object.
+
+=item Format
+
+Specifies the format to use, overriding any set from the config or current
+user's preferences.
+
+=back
+
+=cut
+
+sub Format {
+    my $self = shift;
+    my %args = (
+        User        => undef,
+        Address     => undef,
+        CurrentUser => undef,
+        Format      => undef,
+        @_
+    );
+
+    if (blessed($self) and $self->id) {
+        @args{"User", "CurrentUser"} = ($self, $self->CurrentUser);
+    }
+    elsif ($args{User} and $args{User}->id) {
+        $args{CurrentUser} = $args{User}->CurrentUser;
+    }
+    elsif ($args{Address} and $args{CurrentUser}) {
+        $args{User} = RT::User->new( $args{CurrentUser} );
+        $args{User}->LoadByEmail( $args{Address}->address );
+        if ($args{User}->id) {
+            delete $args{Address};
+        } else {
+            delete $args{User};
+        }
+    }
+    else {
+        RT->Logger->warning("Invalid arguments to RT::User->Format at @{[join '/', caller]}");
+        return "";
+    }
+
+    $args{Format} ||= RT->Config->Get("UsernameFormat", $args{CurrentUser});
+    $args{Format} =~ s/[^A-Za-z0-9_]+//g;
+
+    my $method    = "_FormatUser" . ucfirst lc $args{Format};
+    my $formatter = $self->can($method);
+
+    unless ($formatter) {
+        RT->Logger->error(
+            "Either system config or user #" . $args{CurrentUser}->id .
+            " picked UsernameFormat $args{Format}, but RT::User->$method doesn't exist"
+        );
+        $formatter = $self->can("_FormatUserConcise");
+    }
+    return $formatter->( $self, map { $_ => $args{$_} } qw(User Address) );
+}
+
+sub _FormatUserConcise {
+    my $self = shift;
+    my %args = @_;
+    return $args{User} ? $args{User}->FriendlyName : $args{Address}->address;
+}
+
+sub _FormatUserVerbose {
+    my $self = shift;
+    my %args = @_;
+    my ($user, $address) = @args{"User", "Address"};
+
+    my $email   = '';
+    my $phrase  = '';
+    my $comment = '';
+
+    if ($user) {
+        $email   = $user->EmailAddress || '';
+        $phrase  = $user->RealName  if $user->RealName and lc $user->RealName ne lc $email;
+        $comment = $user->Name      if lc $user->Name ne lc $email;
+    } else {
+        ($email, $phrase, $comment) = (map { $address->$_ } "address", "phrase", "comment");
+    }
+
+    return join " ", grep { $_ } ($phrase || $comment || ''), ($email ? "<$email>" : "");
 }
 
 =head2 PreferredKey
