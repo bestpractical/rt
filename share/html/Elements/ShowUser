@@ -56,6 +56,14 @@ my $display = RT::User->Format(
     Format      => $style,
 );
 
+$m->callback(
+    ARGSRef         => \%ARGS,
+    User            => $User,
+    Address         => $Address,
+    NoEscape        => \$NoEscape,
+    CallbackName    => 'Modify',
+);
+
 $display = $m->interp->apply_escapes($display, 'h')
     unless $NoEscape;
 </%INIT>
