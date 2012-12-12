@@ -10,7 +10,7 @@ BEGIN {
 }
 
 use RT::Test::GnuPG
-  tests         => 52,
+  tests         => 53,
   actual_server => 1,
   gnupg_options => {
     passphrase => 'rt-test',
@@ -369,4 +369,6 @@ EOF
     is( $tick->Subject, 'Long not encrypted message for queue',
         "Created the ticket"
     );
+    my $content = $tick->Transactions->First->Content;
+    like $content, qr/a{1024,}/, 'content is not lost';
 }
