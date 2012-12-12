@@ -58,7 +58,7 @@ unless ( @fields ) {
             html => '<input name="Subject" value="'.$m->interp->apply_escapes( $defaults{'Subject'} || $TicketObj->Subject, 'h' ).'" />',
         },
         {   name => 'Status',
-            comp => '/Elements/SelectStatus',
+            comp => '/Ticket/Elements/SelectStatus',
             args => {
                 Name => 'Status',
                 DefaultLabel => loc("[_1] (Unchanged)",loc($TicketObj->Status)),

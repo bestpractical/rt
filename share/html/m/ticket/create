@@ -274,7 +274,7 @@ $showrows->(
     loc('Status') =>
 
         $m->scomp(
-        "/Elements/SelectStatus",
+        "/Ticket/Elements/SelectStatus",
         Name         => "Status",
         QueueObj     => $QueueObj,
         Default      => $ARGS{Status} || $QueueObj->Lifecycle->DefaultOnCreate,
