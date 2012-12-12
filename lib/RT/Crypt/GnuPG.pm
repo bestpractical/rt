@@ -905,11 +905,23 @@ sub FindProtectedParts {
         # sense) unnecessarily applies a base64 transfer encoding to PGP
         # mail (whose content is already base64-encoded).
         if ( $entity->bodyhandle->is_encoded and $entity->head->mime_encoding ) {
-            pipe( my ($read_decoded, $write_decoded) );
             my $decoder = MIME::Decoder->new( $entity->head->mime_encoding );
             if ($decoder) {
-                eval { $decoder->decode($io, $write_decoded) };
-                $io = $read_decoded;
+                local $@;
+                eval {
+                    my $buf = '';
+                    open my $fh, '>:raw', \$buf
+                        or die "Couldn't open scalar for writing: $!";
+                    $decoder->decode($io, $fh);
+                    close $fh or die "Couldn't close scalar: $!";
+
+                    open my $fh, '<:raw', \$buf
+                        or die "Couldn't re-open scalar for reading: $!";
+                    $io = $fh;
+                    1;
+                } or do {
+                    $RT::Logger->error("Couldn't decode body: $@");
+                }
             }
         }
 
