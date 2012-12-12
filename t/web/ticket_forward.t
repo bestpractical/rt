@@ -36,19 +36,22 @@ diag "Forward Ticket" if $ENV{TEST_VERBOSE};
     $m->submit_form(
         form_name => 'ForwardMessage',
         fields    => {
-            To => 'rt-test, rt-to@example.com',
-            Cc => 'rt-cc@example.com',
+            To  => 'rt-to@example.com, rt-too@example.com',
+            Cc  => 'rt-cc@example.com',
+            Bcc => 'root',
         },
         button => 'ForwardAndReturn'
     );
     $m->content_contains( 'Sent email successfully', 'sent mail msg' );
     $m->content_contains(
-        'Forwarded Ticket to rt-test, rt-to@example.com, rt-cc@example.com',
+        'Forwarded Ticket to rt-to@example.com, rt-too@example.com, rt-cc@example.com, Enoch Root',
         'txn msg' );
     my ($mail) = RT::Test->fetch_caught_mails;
     like( $mail, qr!Subject: test forward!,           'Subject field' );
-    like( $mail, qr!To: rt-test, rt-to\@example.com!, 'To field' );
+    like( $mail, qr!To: .*?rt-to\@example.com!i,      'To field' );
+    like( $mail, qr!To: .*?rt-too\@example.com!i,     'To field' );
     like( $mail, qr!Cc: rt-cc\@example.com!i,         'Cc field' );
+    like( $mail, qr!Bcc: "root" <root\@localhost>!i,  'Bcc field' );
     like( $mail, qr!This is a forward of ticket!,     'content' );
     like( $mail, qr!this is an attachment!,           'att content' );
     like( $mail, qr!$att_name!,                       'att file name' );
@@ -60,22 +63,23 @@ diag "Forward Transaction" if $ENV{TEST_VERBOSE};
     $m->submit_form(
         form_name => 'ForwardMessage',
         fields    => {
-            To  => 'rt-test, rt-to@example.com',
+            To  => 'rt-to@example.com, rt-too@example.com',
             Cc  => 'rt-cc@example.com',
-            Bcc => 'rt-bcc@example.com'
+            Bcc => 'root'
         },
         button => 'ForwardAndReturn'
     );
     $m->content_contains( 'Sent email successfully', 'sent mail msg' );
     $m->content_like(
-qr/Forwarded .*?Transaction #\d+.*? to rt-test, rt-to\@example.com, rt-cc\@example.com, rt-bcc\@example.com/,
+qr/Forwarded .*?Transaction #\d+.*? to rt-to\@example.com, rt-too\@example.com, rt-cc\@example.com, Enoch Root/,
         'txn msg'
     );
     my ($mail) = RT::Test->fetch_caught_mails;
     like( $mail, qr!Subject: test forward!,            'Subject field' );
-    like( $mail, qr!To: rt-test, rt-to\@example.com!,  'To field' );
+    like( $mail, qr!To: .*rt-to\@example.com!i,        'To field' );
+    like( $mail, qr!To: .*rt-too\@example.com!i,       'To field' );
     like( $mail, qr!Cc: rt-cc\@example.com!i,          'Cc field' );
-    like( $mail, qr!Bcc: rt-bcc\@example.com!i,        'Bcc field' );
+    like( $mail, qr!Bcc: "root" <root\@localhost>!i,   'Bcc field' );
     like( $mail, qr!This is a forward of transaction!, 'content' );
     like( $mail, qr!$att_name!,                        'att file name' );
     like( $mail, qr!this is an attachment!,            'att content' );
