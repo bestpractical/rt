@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 50;
+use RT::Test tests => 51;
 
 plan skip_all => 'GnuPG required.'
     unless eval 'use GnuPG::Interface; 1';
@@ -379,4 +379,6 @@ EOF
     is( $tick->Subject, 'Long not encrypted message for queue',
         "Created the ticket"
     );
+    my $content = $tick->Transactions->First->Content;
+    like $content, qr/a{1024,}/, 'content is not lost';
 }
