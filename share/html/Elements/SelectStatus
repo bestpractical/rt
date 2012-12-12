@@ -75,7 +75,7 @@ elsif ( $TicketObj ) {
     my $current = $TicketObj->Status;
     push @status, $current;
 
-    my $lifecycle = $TicketObj->QueueObj->Lifecycle;
+    my $lifecycle = $TicketObj->Lifecycle;
 
     my %has = ();
     foreach my $next ( $lifecycle->Transitions( $current ) ) {

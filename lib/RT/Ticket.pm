@@ -1371,7 +1371,7 @@ sub SetQueue {
     }
 
     my $new_status;
-    my $old_lifecycle = $self->QueueObj->Lifecycle;
+    my $old_lifecycle = $self->Lifecycle;
     my $new_lifecycle = $NewQueueObj->Lifecycle;
     if ( $old_lifecycle->Name ne $new_lifecycle->Name ) {
         unless ( $old_lifecycle->HasMoveMap( $new_lifecycle ) ) {
@@ -1524,6 +1524,17 @@ sub ResolvedObj {
     return $time;
 }
 
+=head2 Lifecycle
+
+Returns the L<RT::Lifecycle> for this ticket, which is picked up from
+the ticket's current queue.
+
+=cut
+
+sub Lifecycle {
+    my $self = shift;
+    return $self->QueueObj->Lifecycle;
+}
 
 =head2 FirstActiveStatus
 
@@ -1537,7 +1548,7 @@ This is used in L<RT::Action::AutoOpen>, for instance.
 sub FirstActiveStatus {
     my $self = shift;
 
-    my $lifecycle = $self->QueueObj->Lifecycle;
+    my $lifecycle = $self->Lifecycle;
     my $status = $self->Status;
     my @active = $lifecycle->Active;
     # no change if no active statuses in the lifecycle
@@ -1562,7 +1573,7 @@ This is used in resolve action in UnsafeEmailCommands, for instance.
 sub FirstInactiveStatus {
     my $self = shift;
 
-    my $lifecycle = $self->QueueObj->Lifecycle;
+    my $lifecycle = $self->Lifecycle;
     my $status = $self->Status;
     my @inactive = $lifecycle->Inactive;
     # no change if no inactive statuses in the lifecycle
@@ -2245,7 +2256,7 @@ sub _MergeInto {
     }
 
 
-    my $force_status = $self->QueueObj->Lifecycle->DefaultOnMerge;
+    my $force_status = $self->Lifecycle->DefaultOnMerge;
     if ( $force_status && $force_status ne $self->__Value('Status') ) {
         my ( $status_val, $status_msg )
             = $self->__Set( Field => 'Status', Value => $force_status );
@@ -2650,7 +2661,7 @@ sub SetStatus {
     $args{SetStarted} = 1 unless exists $args{SetStarted};
 
 
-    my $lifecycle = $self->QueueObj->Lifecycle;
+    my $lifecycle = $self->Lifecycle;
 
     my $new = $args{'Status'};
     unless ( $lifecycle->IsValid( $new ) ) {
@@ -2687,7 +2698,7 @@ sub _SetStatus {
         Status => undef,
         SetStarted => 1,
         RecordTransaction => 1,
-        Lifecycle => $self->QueueObj->Lifecycle,
+        Lifecycle => $self->Lifecycle,
         @_,
     );
     $args{NewLifecycle} ||= $args{Lifecycle};
@@ -2745,7 +2756,7 @@ Takes no arguments. Marks this ticket for garbage collection
 
 sub Delete {
     my $self = shift;
-    unless ( $self->QueueObj->Lifecycle->IsValid('deleted') ) {
+    unless ( $self->Lifecycle->IsValid('deleted') ) {
         return (0, $self->loc('Delete operation is disabled by lifecycle configuration') ); #loc
     }
     return ( $self->SetStatus('deleted') );

@@ -647,7 +647,7 @@ my $build_main_nav = sub {
                     && $obj->HasUnresolvedDependencies;
 
                 my $current   = $obj->Status;
-                my $lifecycle = $obj->QueueObj->Lifecycle;
+                my $lifecycle = $obj->Lifecycle;
                 my $i         = 1;
                 foreach my $info ( $lifecycle->Actions($current) ) {
                     my $next = $info->{'to'};

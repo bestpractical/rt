@@ -55,7 +55,7 @@ $ShowSave => 1
 <%init>
 
 $Ticket = LoadTicket($id) if ($id);
-my $resolve_status = $Ticket->QueueObj->Lifecycle->ReminderStatusOnResolve;
+my $resolve_status = $Ticket->Lifecycle->ReminderStatusOnResolve;
 
 my $count_reminders = RT::Reminders->new($session{'CurrentUser'});
 $count_reminders->Ticket($Ticket->id);
@@ -154,10 +154,10 @@ $Index
 <td class="entry">
 % unless ( $Reminder->CurrentUserHasRight('ModifyTicket') ) {
 <input name="Complete-Reminder-<% $Reminder->id %>" type="hidden" 
-value=<% $Reminder->Status eq $Reminder->QueueObj->Lifecycle->ReminderStatusOnResolve ? 1 : 0 %> />
+value=<% $Reminder->Status eq $Reminder->Lifecycle->ReminderStatusOnResolve ? 1 : 0 %> />
 % }
 
-<input type="checkbox" value="1" name="Complete-Reminder-<% $Reminder->id %>" <% $Reminder->Status eq $Reminder->QueueObj->Lifecycle->ReminderStatusOnResolve ? 'checked="checked"' : '' |n %> 
+<input type="checkbox" value="1" name="Complete-Reminder-<% $Reminder->id %>" <% $Reminder->Status eq $Reminder->Lifecycle->ReminderStatusOnResolve ? 'checked="checked"' : '' |n %>
 % unless ( $Reminder->CurrentUserHasRight('ModifyTicket') ) {
 disabled="disabled" 
 % }
@@ -197,9 +197,9 @@ $Index
 <td class="collection-as-table">
 % unless ( $Reminder->CurrentUserHasRight('ModifyTicket') ) {
 <input name="Complete-Reminder-<% $Reminder->id %>" type="hidden" 
-value=<% $Reminder->Status eq $Reminder->QueueObj->Lifecycle->ReminderStatusOnResolve ? 1 : 0 %> />
+value=<% $Reminder->Status eq $Reminder->Lifecycle->ReminderStatusOnResolve ? 1 : 0 %> />
 % }
-<input type="checkbox" value="1" name="Complete-Reminder-<% $Reminder->id %>" <% $Reminder->Status eq $Reminder->QueueObj->Lifecycle->ReminderStatusOnResolve ? 'checked="checked"' : '' |n %> 
+<input type="checkbox" value="1" name="Complete-Reminder-<% $Reminder->id %>" <% $Reminder->Status eq $Reminder->Lifecycle->ReminderStatusOnResolve ? 'checked="checked"' : '' |n %>
 % unless ( $Reminder->CurrentUserHasRight('ModifyTicket') ) {
 disabled="disabled" 
 % }
