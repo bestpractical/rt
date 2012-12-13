@@ -276,5 +276,4 @@ my $nobody = RT::Nobody();
     is($tix->Count, 2, "found ticket(s)");
 }
 
-
-exit(0)
+@tickets = ();
