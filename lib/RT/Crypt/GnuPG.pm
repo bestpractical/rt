@@ -915,7 +915,7 @@ sub FindProtectedParts {
                     $decoder->decode($io, $fh);
                     close $fh or die "Couldn't close scalar: $!";
 
-                    open my $fh, '<:raw', \$buf
+                    open $fh, '<:raw', \$buf
                         or die "Couldn't re-open scalar for reading: $!";
                     $io = $fh;
                     1;
