@@ -48,7 +48,7 @@ sub test_get {
 
         $file =~ s#^share/html/##;
         diag( "testing $url/$file" ) if $ENV{TEST_VERBOSE};
-        ok ($agent->get("$url/$file", "GET $url/$file"), "Can Get $url/$file");
+        ok ($agent->get("$url/$file"), "Can Get $url/$file");
         is ($agent->{'status'}, 200, "Loaded $file");
 #        ok( $agent->{'content'} =~ /Logout/i, "Found a logout link on $file ");
         ok( $agent->{'content'} !~ /Not logged in/i, "Still logged in for  $file");
