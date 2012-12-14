@@ -59,8 +59,21 @@ for my $id (keys %Queues) {
     $queue->Load($id);
     push @Lifecycles, $queue->Lifecycle if $queue->id;
 }
+
+if ($TicketObj) {
+    $ARGS{DefaultLabel} = loc("[_1] (Unchanged)", loc($TicketObj->Status));
+    if ($DefaultFromArgs and $DECODED_ARGS->{Status}) {
+        $ARGS{Default} = $DECODED_ARGS->{Status};
+    } elsif (defined $ARGS{Default}) {
+        $ARGS{Default} = undef if $TicketObj->Status eq $ARGS{Default};
+    }
+} elsif ($QueueObj) {
+    $ARGS{DefaultValue} = 0;
+    $ARGS{Default} ||= $DECODED_ARGS->{Status} || $QueueObj->Lifecycle->DefaultOnCreate;
+}
 </%INIT>
 <%ARGS>
+$DefaultFromArgs => 1,
 @Statuses => ()
 $TicketObj => undef
 $QueueObj => undef

@@ -61,10 +61,9 @@ unless ( @fields ) {
             comp => '/Ticket/Elements/SelectStatus',
             args => {
                 Name => 'Status',
-                DefaultLabel => loc("[_1] (Unchanged)",loc($TicketObj->Status)),
-                Default => $defaults{'Status'} || undef,
+                Default => $defaults{Status},
+                DefaultFromArgs => 0,
                 TicketObj => $TicketObj,
-                QueueObj => $TicketObj->QueueObj,
             },
         },
         {   name => 'Queue',

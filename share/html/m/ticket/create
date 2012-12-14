@@ -277,8 +277,6 @@ $showrows->(
         "/Ticket/Elements/SelectStatus",
         Name         => "Status",
         QueueObj     => $QueueObj,
-        Default      => $ARGS{Status} || $QueueObj->Lifecycle->DefaultOnCreate,
-        DefaultValue => 0,
         ),
 
     loc("Owner") =>

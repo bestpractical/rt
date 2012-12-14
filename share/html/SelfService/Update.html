@@ -60,7 +60,10 @@
             <&|/l&>Status</&>
         </td>
         <td class="value">
-            <& /Ticket/Elements/SelectStatus, Name => "Status", TicketObj => $Ticket, DefaultLabel => loc("[_1] (Unchanged)", loc($Ticket->Status)), Default => $ARGS{'Status'} || ($Ticket->Status eq $DefaultStatus ? undef : $DefaultStatus)&>
+            <& /Ticket/Elements/SelectStatus,
+               Name => "Status",
+               TicketObj => $Ticket,
+               Default => $DefaultStatus &>
         </td>
     </tr>
     <tr>

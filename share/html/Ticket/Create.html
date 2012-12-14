@@ -81,9 +81,6 @@
                 comp => '/Ticket/Elements/SelectStatus',
                 args => {
                     Name            => "Status",
-                    Default         => $ARGS{Status} || $QueueObj->Lifecycle->DefaultOnCreate,
-                    DefaultValue    => 0,
-                    SkipDeleted     => 1,
                     QueueObj        => $QueueObj,
                 },
             },
