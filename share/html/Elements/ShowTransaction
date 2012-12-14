@@ -50,7 +50,7 @@
     <span class="type">
       <a name="txn-<% $Transaction->id %>" \
 % if ( $DisplayPath ) {
-      href="<% $DisplayPath %>#txn-<% $Transaction->id %>" \
+      href="<% $DisplayPath %>?id=<% $Object->id %>#txn-<% $Transaction->id %>" \
 % }
       >#</a>
     </span>
