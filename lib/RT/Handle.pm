@@ -262,8 +262,8 @@ sub CheckCompatibility {
             unless $version;
 
         ($version) = $version =~ /^(\d+\.\d+)/;
-        return (0, "RT is unsupported on MySQL versions before 4.0.x, it's $version")
-            if $version < 4;
+        return (0, "RT is unsupported on MySQL versions before 4.1.  Your version is $version.")
+            if $version < 4.1;
 
         # MySQL must have InnoDB support
         my $innodb = ($dbh->selectrow_array("show variables like 'have_innodb'"))[1];
@@ -280,9 +280,8 @@ sub CheckCompatibility {
             unless ( $create_table =~ /(?:ENGINE|TYPE)\s*=\s*InnoDB/i ) {
                 return (0, "RT requires that all its tables be of InnoDB type. Upgrade RT tables.");
             }
-        }
-        if ( $version >= 4.1 && $state eq 'post' ) {
-            my $create_table = $dbh->selectrow_arrayref("SHOW CREATE TABLE Attachments")->[1];
+
+            $create_table = $dbh->selectrow_arrayref("SHOW CREATE TABLE Attachments")->[1];
             unless ( $create_table =~ /\bContent\b[^,]*BLOB/i ) {
                 return (0, "RT since version 3.8 has new schema for MySQL versions after 4.1.0\n"
                     ."Follow instructions in the UPGRADING.mysql file.");
