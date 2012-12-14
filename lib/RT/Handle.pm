@@ -354,6 +354,9 @@ sub CreateDatabase {
     elsif ( $db_type eq 'Pg' ) {
         $status = $dbh->do("CREATE DATABASE $db_name WITH ENCODING='UNICODE' TEMPLATE template0");
     }
+    elsif ( $db_type eq 'mysql' ) {
+        $status = $dbh->do("CREATE DATABASE $db_name DEFAULT CHARACTER SET utf8");
+    }
     else {
         $status = $dbh->do("CREATE DATABASE $db_name");
     }
