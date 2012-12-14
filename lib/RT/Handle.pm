@@ -266,13 +266,15 @@ sub CheckCompatibility {
             if $version < 4.1;
 
         # MySQL must have InnoDB support
-        my $innodb = ($dbh->selectrow_array("show variables like 'have_innodb'"))[1];
-        if ( lc $innodb eq "no" ) {
+        local $dbh->{FetchHashKeyName} = 'NAME_lc';
+        my $innodb = lc($dbh->selectall_hashref("SHOW ENGINES", "engine")->{InnoDB}{support} || "no");
+        if ( $innodb eq "no" ) {
             return (0, "RT requires that MySQL be compiled with InnoDB table support.\n".
-                "See http://dev.mysql.com/doc/mysql/en/InnoDB.html");
-        } elsif ( lc $innodb eq "disabled" ) {
+                "See <http://dev.mysql.com/doc/mysql/en/innodb-storage-engine.html>\n".
+                "and check that there are no 'skip-innodb' lines in your my.cnf.");
+        } elsif ( $innodb eq "disabled" ) {
             return (0, "RT requires that MySQL InnoDB table support be enabled.\n".
-                "Remove the 'skip-innodb' line from your my.cnf file, restart MySQL, and try again.\n");
+                "Remove the 'skip-innodb' or 'innodb = OFF' line from your my.cnf file, restart MySQL, and try again.\n");
         }
 
         if ( $state eq 'post' ) {
