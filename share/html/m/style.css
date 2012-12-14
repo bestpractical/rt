@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%init>
-    $HTML::Mason::Commands::r->content_type('text/css');
+    $HTML::Mason::Commands::r->content_type('text/css; charset=utf-8');
     $m->comp('/m/_elements/raw_style');
     $m->abort();
 </%init>

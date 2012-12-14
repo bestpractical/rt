@@ -96,7 +96,7 @@ if ($OrderBy =~ /\|/) {
 } else {
     $Tickets->OrderBy(FIELD => $OrderBy, ORDER => $Order);
 }
-$r->content_type('application/rss+xml');
+$r->content_type('application/rss+xml; charset=utf-8');
 
 
 
