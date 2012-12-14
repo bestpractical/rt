@@ -187,6 +187,18 @@ for my $type (qw/Tickets Queues Transactions Groups PrivilegedUsers Unprivileged
 </ol>
 </&>
 
+<&|/Widgets/TitleBox, title=> loc("Loaded config files") &>
+<ol>
+% foreach my $config (RT->Config->LoadedConfigs) {
+%   if ($config->{site}) {
+<li><strong><% $config->{filename} %></strong></li>
+%   } else {
+<li><% $config->{filename} %></li>
+%   }
+% }
+</ol>
+</&>
+
 </td>
 </table>
 
