@@ -76,9 +76,9 @@ my %recips;
 </%init>
 <&|/Widgets/TitleBox, title => loc('Recipients'), id => 'recipients' &>
 <table>
-<tr>
 % for my $type (qw(To Cc Bcc)) {
 %     next unless keys %{$headers{$type}};
+<tr>
 <td valign="top"><% $type %>:</td>
 <td valign="top">
 %     for my $addr (sort {$a->address cmp $b->address} values %{$headers{$type}}) {
