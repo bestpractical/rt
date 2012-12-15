@@ -92,6 +92,7 @@ my %recips;
 %     }
 </td></tr>
 % }
+% $m->callback( CallbackName => 'AfterRecipients', TicketObj => $TicketObj );
 </table>
 <i>(Uncheck boxes to disable notifications to the listed
 recipients. Does <b>not</b> change who will receive future
