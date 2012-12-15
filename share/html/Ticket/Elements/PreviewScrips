@@ -116,4 +116,6 @@ return unless $Object;
 %     }
 % }
 
+% $m->callback( CallbackName => 'AfterRecipients', TicketObj => $TicketObj );
+
 % $m->notes("DryRun-Recipients-".$TicketObj->Id, \%recips);
