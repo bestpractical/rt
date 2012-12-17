@@ -258,6 +258,14 @@ if ($item =~ /^\s*(.*?)\s*v(\S+);/) {
 
 <&|/Widgets/TitleBox, title => loc("Operating System") &>
 <table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection">
+<tr class="collection-as-table evenline">
+<td class="collection-as-table">Deployment type</td>
+<td class="collection-as-table"><%
+  $INC{'mod_perl.pm'} ? "mod_perl" :
+  $INC{'FCGI.pm'}     ? "fastcgi"  :
+                        "standalone" %>
+</td>
+</tr>
 <%perl>
 my @os = (
     "Distribution"   => 'lsb_release --all',
@@ -281,7 +289,7 @@ while (my ($name, $cmd) = splice @os, 0, 2) {
         }
     }
 }
-my $row = 0;
+my $row = 1;
 </%perl>
 % while (my ($name, $output) = splice @os_info, 0, 2) {
 <tr class="collection-as-table <% $row++ % 2 ? "oddline" : "evenline" %>">
