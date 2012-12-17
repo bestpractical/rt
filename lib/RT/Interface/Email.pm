@@ -1098,9 +1098,6 @@ sub ParseSenderAddressFromHead {
         $error_msg .= "$header: $addr_line";
     }
 
-    $RT::Logger->warning("Couldn't find a sender in "
-                      . join(', ', @sender_headers) );
-
     return (undef, undef, $error_msg);
 }
 
