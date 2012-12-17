@@ -149,6 +149,9 @@ sub CheckForSuspiciousSender {
 
     my ( $From, $junk ) = ParseSenderAddressFromHead($head);
 
+    # If unparseable (non-ASCII), $From can come back undef
+    return undef if not defined $From;
+
     if (   ( $From =~ /^mailer-daemon\@/i )
         or ( $From =~ /^postmaster\@/i )
         or ( $From eq "" ))
@@ -1086,23 +1089,34 @@ sub ParseCcAddressesFromHead {
 
 =head2 ParseSenderAddressFromHead HEAD
 
-Takes a MIME::Header object. Returns a tuple: (user@host, friendly name)
-of the From (evaluated in order of Reply-To:, From:, Sender)
+Takes a MIME::Header object. Returns (user@host, friendly name, errors)
+where the first two values are the From (evaluated in order of
+Reply-To:, From:, Sender).
+
+A list of error messages may be returned even when a Sender value is
+found, since it could be a parse error for another (checked earlier)
+sender field. In this case, the errors aren't fatal, but may be useful
+to investigate the parse failure.
 
 =cut
 
 sub ParseSenderAddressFromHead {
     my $head = shift;
+    my @sender_headers = ('Reply-To', 'From', 'Sender');
+    my @errors;  # Accumulate any errors
 
     #Figure out who's sending this message.
-    foreach my $header ('Reply-To', 'From', 'Sender') {
+    foreach my $header ( @sender_headers ) {
         my $addr_line = $head->get($header) || next;
         my ($addr, $name) = ParseAddressFromHeader( $addr_line );
         # only return if the address is not empty
-        return ($addr, $name) if $addr;
+        return ($addr, $name, @errors) if $addr;
+
+        chomp $addr_line;
+        push @errors, "$header: $addr_line";
     }
 
-    return (undef, undef);
+    return (undef, undef, @errors);
 }
 
 =head2 ParseErrorsToAddressFromHead HEAD
