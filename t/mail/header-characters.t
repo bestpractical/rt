@@ -25,7 +25,7 @@ here's some content
 
     my ($status, $id);
     warnings_like { ( $status, $id ) = RT::Test->send_via_mailgate($mail) }
-        [qr/Failed to parse sender using/,
+        [qr/Failed to parse Reply-To:.*, From:/,
          qr/Couldn't parse or find sender's address/
         ],
         'Got parse error for non-ASCII in From';
@@ -53,7 +53,7 @@ here's some content
 
     my ($status, $id);
     warnings_like { ( $status, $id ) = RT::Test->send_via_mailgate($mail) }
-        [qr/Failed to parse sender using/,
+        [qr/Failed to parse Reply-To:.*, From:/,
          qr/Couldn't parse or find sender's address/
         ],
         'Got parse error for iso-8859-1 in From';
