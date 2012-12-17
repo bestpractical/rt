@@ -1296,6 +1296,10 @@ sub IsCompCSRFWhitelisted {
     # with, HomeRefreshInterval, which is safe
     delete $args{HomeRefreshInterval};
 
+    # The NotMobile flag is fine for any page; it's only used to toggle a flag
+    # in the session related to which interface you get.
+    delete $args{NotMobile};
+
     # If there are no arguments, then it's likely to be an idempotent
     # request, which are not susceptible to CSRF
     return 1 if !%args;
