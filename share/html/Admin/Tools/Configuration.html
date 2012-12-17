@@ -256,6 +256,22 @@ if ($item =~ /^\s*(.*?)\s*v(\S+);/) {
 </pre>
 </&>
 
+<&|/Widgets/TitleBox, title=> loc("Environment variables") &>
+<table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection">
+<tr class="collection-as-table">
+<th class="collection-as-table"><&|/l&>Variable</&></th>
+<th class="collection-as-table"><&|/l&>Value</&></th>
+</tr>
+% my $row = 0;
+% for my $key (sort keys %ENV) {
+<tr class="collection-as-table <% $row++ %2 ? 'oddline' : 'evenline'%>">
+<td class="collection-as-table"><% $key %></td>
+<td class="collection-as-table"><% $ENV{$key} %></td>
+</tr>
+% }
+</table>
+</&>
+
 <&|/Widgets/TitleBox, title => loc("Operating System") &>
 <table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection">
 <tr class="collection-as-table evenline">
