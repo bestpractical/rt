@@ -1444,6 +1444,7 @@ sub Gateway {
     }
     @mail_plugins = grep !$skip_plugin{"$_"}, @mail_plugins;
     $parser->_DecodeBodies;
+    $parser->RescueOutlook;
     $parser->_PostProcessNewEntity;
 
     my $head = $Message->head;
