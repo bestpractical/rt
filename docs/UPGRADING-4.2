@@ -1,5 +1,11 @@
 UPGRADING FROM RT 4.0.0 and greater
 
+* The $UseSQLForACLChecks option defaults to on.  This provides a number
+  of improvements, most notably no longer showing pages of empty results
+  if the user doesn't have permissions to view the tickets in question.
+  It may, in some cases, have performance impacts, but these have been
+  found to be minimal in existing 4.0 installs.
+
 * The $LogToScreen config setting is now named $LogToSTDERR which better
   describes what the log level controls.  Setting $LogToScreen will still work,
   but an informational notice will be issued on server start telling you about
