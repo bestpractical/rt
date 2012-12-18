@@ -115,7 +115,7 @@ the correspondence mentioned above.
 
 =item * New Pending Approval
 
-Owners and AdminCcs of a new approval requests get this message.
+Owners of new approval requests get this message.
 
 =item * Approval Passed
 
