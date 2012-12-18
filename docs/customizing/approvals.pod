@@ -46,9 +46,9 @@ leave the default Type as Perl and in the content area enter the following:
     Type: approval
     Content-Type: text/plain
     Due: {time + 3*24*60*60}
-    Content:
+    Content: Please approve me.
 
-    Please approve me
+    Thanks.
     ENDOFCONTENT
 
 All of the text should be against the left side of the textarea
