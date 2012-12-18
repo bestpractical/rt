@@ -70,7 +70,7 @@ action, and select the template you just created. Click create.
 You can already test your first workflow with approvals. Create
 a ticket in your new 'Change requests' queue. You're logged in as
 'root' and the owner of the approval is root (based on the template),
-so it's your job to approve or deny the reuqest. Select Tools -> Approvals
+so it's your job to approve or deny the request. Select Tools -> Approvals
 in the RT main menu. You should see your first approval request.
 
 Select the 'Deny' radio button, write 'too expensive' in the notes area
