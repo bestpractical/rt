@@ -84,8 +84,11 @@ sub Import {
     my $self = shift;
     my $dir = $self->{Directory};
 
-    $self->{Files} = ($self->{Metadata} and $self->{Metadata}{Files}) ?
-        $self->{Metadata}{Files} : [ <$dir/*.dat> ];
+    if ($self->{Metadata} and $self->{Metadata}{Files}) {
+        $self->{Files} = [ map {s|^.*?/|$dir/|;$_} @{$self->{Metadata}{Files}} ];
+    } else {
+        $self->{Files} = [ <$dir/*.dat> ];
+    }
     $self->{Files} = [ map {File::Spec->rel2abs($_)} @{ $self->{Files} } ];
 
     $self->RestoreState( $self->{Statefile} );

@@ -54,7 +54,10 @@ use warnings;
 use base 'RT::DependencyWalker';
 
 use Storable qw//;
-use DateTime;
+sub cmp_version($$) { RT::Handle::cmp_version($_[0],$_[1]) };
+use RT::Migrate::Incremental;
+use RT::Migrate::Serializer::IncrementalRecord;
+use RT::Migrate::Serializer::IncrementalRecords;
 
 sub Init {
     my $self = shift;
@@ -68,7 +71,8 @@ sub Init {
         FollowTickets       => 1,
         FollowACL           => 0,
 
-        Clone   => 0,
+        Clone       => 0,
+        Incremental => 0,
 
         Verbose => 1,
         @_,
@@ -85,7 +89,10 @@ sub Init {
                   FollowTickets
                   FollowACL
                   Clone
+                  Incremental
               /;
+
+    $self->{Clone} = 1 if $self->{Incremental};
 
     $self->SUPER::Init(@_, First => "top");
 
@@ -101,11 +108,18 @@ sub Init {
 
 sub Metadata {
     my $self = shift;
+
+    # Determine the highest upgrade step that we run
+    my @versions = ($RT::VERSION, keys %RT::Migrate::Incremental::UPGRADES);
+    my ($max) = reverse sort cmp_version @versions;
+
     return {
-        Format       => "0.7",
-        Version      => $RT::VERSION,
+        Format       => "0.8",
+        VersionFrom  => $RT::VERSION,
+        Version      => $max,
         Organization => $RT::Organization,
         Clone        => $self->{Clone},
+        Incremental  => $self->{Incremental},
         ObjectCount  => { $self->ObjectCount },
         @_,
     },
@@ -114,8 +128,21 @@ sub Metadata {
 sub PushAll {
     my $self = shift;
 
-    # Ordering _shouldn't_ matter since we don't convert FK references to UIDs
-    # and hence don't have to look them up during import.
+    # To keep unique constraints happy, we need to remove old records
+    # before we insert new ones.  This fixes the case where a
+    # GroupMember was deleted and re-added (with a new id, but the same
+    # membership).
+    if ($self->{Incremental}) {
+        my $removed = RT::Migrate::Serializer::IncrementalRecords->new( RT->SystemUser );
+        $removed->Limit( FIELD => "UpdateType", VALUE => 3 );
+        $removed->OrderBy( FIELD => 'id' );
+        $self->PushObj( $removed );
+    }
+    # XXX: This is sadly not sufficient to deal with the general case of
+    # non-id unique constraints, such as queue names.  If queues A and B
+    # existed, and B->C and A->B renames were done, these will be
+    # serialized with A->B first, which will fail because there already
+    # exists a B.
 
     # Principals first; while we don't serialize these separately during
     # normal dependency walking (we fold them into users and groups),
@@ -132,7 +159,11 @@ sub PushAll {
     $self->PushCollections(qw(Articles), map { ($_, "Object$_") } qw(Classes Topics));
 
     # Custom Fields
-    $self->PushCollections(map { ($_, "Object$_") } qw(CustomFields CustomFieldValues));
+    if (eval "require RT::ObjectCustomFields; 1") {
+        $self->PushCollections(map { ($_, "Object$_") } qw(CustomFields CustomFieldValues));
+    } elsif (eval "require RT::TicketCustomFieldValues; 1") {
+        $self->PushCollections(qw(CustomFields CustomFieldValues TicketCustomFieldValues));
+    }
 
     # ACLs
     $self->PushCollections(qw(ACL));
@@ -149,6 +180,8 @@ sub PushCollections {
 
     for my $type (@_) {
         my $class = "RT::\u$type";
+
+        eval "require $class; 1" or next;
         my $collection = $class->new( RT->SystemUser );
         $collection->FindAllRows;   # be explicit
         $collection->CleanSlate;    # some collections (like groups and users) join in _Init
@@ -163,6 +196,20 @@ sub PushCollections {
             elsif ($collection->isa('RT::ObjectCustomFieldValues')) {
                 # FindAllRows (find_disabled_rows) isn't used by OCFVs
                 $collection->{find_expired_rows} = 1;
+            }
+
+            if ($self->{Incremental}) {
+                my $alias = $collection->Join(
+                    ALIAS1 => "main",
+                    FIELD1 => "id",
+                    TABLE2 => "IncrementalRecords",
+                    FIELD2 => "ObjectId",
+                );
+                $collection->DBIx::SearchBuilder::Limit(
+                    ALIAS => $alias,
+                    FIELD => "ObjectType",
+                    VALUE => ref($collection->NewItem),
+                );
             }
         }
 
@@ -203,13 +250,14 @@ sub PushBasics {
     $self->PushObj( $cfs );
 
     # Global attributes
-    my $attributes = RT::System->new( RT->SystemUser )->Attributes;
+    my $attributes = RT::Attributes->new( RT->SystemUser );
+    $attributes->LimitToObject( $RT::System );
     $self->PushObj( $attributes );
 
     # Global ACLs
     if ($self->{FollowACL}) {
         my $acls = RT::ACL->new( RT->SystemUser );
-        $acls->LimitToObject( RT->System );
+        $acls->LimitToObject( $RT::System );
         $self->PushObj( $acls );
     }
 
@@ -237,7 +285,9 @@ sub PushBasics {
         $self->PushObj( $groups );
     }
 
-    $self->PushCollections(qw(Topics Classes));
+    if (eval "require RT::Articles; 1") {
+        $self->PushCollections(qw(Topics Classes));
+    }
 
     $self->PushCollections(qw(Queues));
 }
@@ -246,9 +296,36 @@ sub InitStream {
     my $self = shift;
 
     # Write the initial metadata
+    my $meta = $self->Metadata;
     $! = 0;
-    Storable::nstore_fd( $self->Metadata, $self->{Filehandle} );
+    Storable::nstore_fd( $meta, $self->{Filehandle} );
     die "Failed to write metadata: $!" if $!;
+
+    return unless cmp_version($meta->{VersionFrom}, $meta->{Version}) < 0;
+
+    my %transforms;
+    for my $v (sort cmp_version keys %RT::Migrate::Incremental::UPGRADES) {
+        for my $ref (keys %{$RT::Migrate::Incremental::UPGRADES{$v}}) {
+            push @{$transforms{$ref}}, $RT::Migrate::Incremental::UPGRADES{$v}{$ref};
+        }
+    }
+    for my $ref (keys %transforms) {
+        # XXX Does not correctly deal with updates of $classref, which
+        # should technically apply all later transforms of the _new_
+        # class.  This is not relevant in the current upgrades, as
+        # RT::ObjectCustomFieldValues do not have interesting later
+        # upgrades if you start from 3.2 (which does
+        # RT::TicketCustomFieldValues -> RT::ObjectCustomFieldValues)
+        $self->{Transform}{$ref} = sub {
+            my ($dat, $classref) = @_;
+            my @extra;
+            for my $c (@{$transforms{$ref}}) {
+                push @extra, $c->($dat, $classref);
+                return @extra if not $$classref;
+            }
+            return @extra;
+        };
+    }
 }
 
 sub NextPage {
@@ -342,14 +419,58 @@ sub Visit {
     # Serialize it
     my $obj = $args{object};
     warn "Writing ".$obj->UID."\n" if $self->{Verbose};
-    # Short-circuit and get Just The Basics, Sir if we're cloning
-    my %data = $self->{Clone} ? $obj->RT::Record::Serialize( UIDs => 0 )
-        : $obj->Serialize;
-    my @store = (
-        ref($obj),
-        $obj->UID,
-        \%data,
-    );
+    my @store;
+    if ($obj->isa("RT::Migrate::Serializer::IncrementalRecord")) {
+        # These are stand-ins for record removals
+        my $class = $obj->ObjectType;
+        my %data  = ( id => $obj->ObjectId );
+        # -class is used for transforms when dropping a record
+        if ($self->{Transform}{"-$class"}) {
+            $self->{Transform}{"-$class"}->(\%data,\$class)
+        }
+        @store = (
+            $class,
+            undef,
+            \%data,
+        );
+    } elsif ($self->{Clone}) {
+        # Short-circuit and get Just The Basics, Sir if we're cloning
+        my $class = ref($obj);
+        my $uid   = $obj->UID;
+        my %data  = $obj->RT::Record::Serialize( UIDs => 0 );
+
+        # +class is used when seeing a record of one class might insert
+        # a separate record into the stream
+        if ($self->{Transform}{"+$class"}) {
+            my @extra = $self->{Transform}{"+$class"}->(\%data,\$class);
+            for my $e (@extra) {
+                $! = 0;
+                Storable::nstore_fd($e, $self->{Filehandle});
+                die "Failed to write: $!" if $!;
+                $self->{ObjectCount}{$e->[0]}++;
+            }
+        }
+
+        # Upgrade the record if necessary
+        if ($self->{Transform}{$class}) {
+            $self->{Transform}{$class}->(\%data,\$class);
+        }
+
+        # Transforms set $class to undef to drop the record
+        return unless $class;
+
+        @store = (
+            $class,
+            $uid,
+            \%data,
+        );
+    } else {
+        @store = (
+            ref($obj),
+            $obj->UID,
+            { $obj->Serialize },
+        );
+    }
 
     # Write it out; nstore_fd doesn't trap failures to write, so we have
     # to; by clearing $! and checking it afterwards.
@@ -357,7 +478,7 @@ sub Visit {
     Storable::nstore_fd(\@store, $self->{Filehandle});
     die "Failed to write: $!" if $!;
 
-    $self->{ObjectCount}{ref($obj)}++;
+    $self->{ObjectCount}{$store[0]}++;
 }
 
 1;

@@ -1,0 +1,25 @@
+To perform an incremental upgrade of your RT instance you will need to
+perform the following steps on your production server.
+
+  Turn off all access to RT (this usually involves turning down your web and mail servers).
+  Take a snapshot of the RT database.
+  Install Record_Local.pm into $RTHOME/lib/RT/.
+  Create the IncrementalRecords table using the schema file for your database.
+  Add Set($IncrementalExport, 1); to your RT_SiteConfig.pm
+  Bring your webserver back up.
+  Confirm that changes in RT (such as a ticket status change or reply)
+    result in records being added to IncrementalRecords.
+
+
+Using the backup, upgrade on your new server to the latest release of RT.
+Once this upgrade is complete, you should avoid making changes to it
+until you import the incremental changes from production.
+
+For additional information on the following steps, please review
+rt-importer --help and rt-serializer --help
+
+During your final cutover, you will bring down the production web and mail servers for the final time.
+Run $RTHOME/sbin/rt-serializer --incremental
+This will create a directory named $Organization:date
+Once this has completed, you will copy this directory to the new server.
+On the new server, run $RTHOME/sbin/rt-importer $Organization:date

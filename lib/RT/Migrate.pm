@@ -140,7 +140,7 @@ sub progress {
         }
 
         my $total = 0;
-        $total += $_ for values %counts;
+        $total += $_ for map {$counts{$_}} grep {exists $args{max}{$_}} keys %counts;
         $offset = $total unless defined $offset;
         print "\n", progress_bar(
             label => "Total",
@@ -176,16 +176,16 @@ sub progress {
 sub setup_logging {
     my ($dir, $file) = @_;
 
-    RT->Config->Set( LogToScreen    => 'warning' );
-    RT->Config->Set( LogToFile      => 'warning' );
-    RT->Config->Set( LogDir         => $dir );
-    RT->Config->Set( LogToFileNamed => $file );
-    RT->Config->Set( LogStackTraces => 'error' );
+    $RT::LogToScreen    = 'warning';
+    $RT::LogToFile      = 'warning';
+    $RT::LogDir         = $dir;
+    $RT::LogToFileNamed = $file;
+    $RT::LogStackTraces = 'error';
 
     undef $RT::Logger;
     RT->InitLogging();
 
-    my $logger = RT->Logger->output('file');
+    my $logger = $RT::Logger->output('file') || $RT::Logger->output("rtlog");
     return $logger ? $logger->{filename} : undef;
 }
 
