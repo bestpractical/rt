@@ -14,7 +14,7 @@ set up approvals.
 
 =head2 Overview
 
-The approvals solution in RT involves using another queue,
+The approvals solution in RT involves using a special queue,
 called ___Approvals, to hold approval requests. Scrips and
 templates automatically create the necessary tickets
 and process the approval or rejection.
@@ -98,6 +98,10 @@ Go to Tools -> Configuration -> Queues, leave "Name is" in the search
 area and enter ___Approvals into the search
 field. Check 'Include disabled queues in listing.' and click Go!
 You should now see the ___Approvals queue configuration page.
+
+You may want to change the name of the ___Approvals queue, but parts of RT
+expect it not to change.  The name normally isn't shown to users, however, so
+it will be largely invisible.
 
 =head2 Approvals' templates
 
