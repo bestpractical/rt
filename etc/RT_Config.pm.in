@@ -1708,8 +1708,9 @@ Set($ApprovalRejectionNotes, 1);
 =item C<$ForceApprovalsView>
 
 Should approval tickets only be viewed and modified through the standard
-approval interface?  Changing this setting to 1 will redirect any attempt to
-use the normal ticket display and modify page for approval tickets.
+approval interface?  With this setting enabled (by default), any attempt to use
+the normal ticket display and modify page for approval tickets will be
+redirected.
 
 For example, with this option set to 1 and an approval ticket #123:
 
@@ -1719,11 +1720,13 @@ is redirected to
 
     /Approval/Display.html?id=123
 
+With this option set to 0, the redirect won't happen.
+
 =back
 
 =cut
 
-Set($ForceApprovalsView, 0);
+Set($ForceApprovalsView, 1);
 
 =head1 Extra security
 
