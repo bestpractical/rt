@@ -1481,15 +1481,6 @@ for Rich Text settings.
 Set($MessageBoxWidth, undef);
 Set($MessageBoxHeight, 15);
 
-=item C<$MessageBoxWrap>
-
-Wrapping is disabled when using MessageBoxRichText because of a bad
-interaction between IE and wrapping with the Rich Text Editor.
-
-=cut
-
-Set($MessageBoxWrap, "SOFT");
-
 =item C<$MessageBoxRichText>
 
 Should "rich text" editing be enabled? This option lets your users
