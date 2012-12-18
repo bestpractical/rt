@@ -275,17 +275,6 @@ our %META = (
             Description => 'Message box height',          #loc
         },
     },
-    MessageBoxWrap => {
-        Section         => 'Ticket composition',                #loc
-        Overridable     => 1,
-        SortOrder       => 8.1,
-        Widget          => '/Widgets/Form/Select',
-        WidgetArguments => {
-            Description => 'Message box wrapping',   #loc
-            Values => [qw(SOFT HARD)],
-            Hints => "When the WYSIWYG editor is not enabled, this setting determines whether automatic line wraps in the ticket message box are sent to RT or not.",              # loc
-        },
-    },
     DefaultTimeUnitsToHours => {
         Section         => 'Ticket composition', #loc
         Overridable     => 1,

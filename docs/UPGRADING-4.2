@@ -28,3 +28,6 @@ UPGRADING FROM RT 4.0.0 and greater
 * MakeClicky handlers added via a callback are now passed an "object" key in
   the parameter hash instead of "ticket".  The object may be any RT::Record
   subclass.
+
+* $MessageBoxWrap was removed.  Wrapping is now always SOFT.  If you want hard
+  line breaks, enter them manually.
