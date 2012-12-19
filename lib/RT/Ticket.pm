@@ -1371,7 +1371,7 @@ sub SetQueue {
     }
 
     my $new_status;
-    my $old_lifecycle = $self->QueueObj->Lifecycle;
+    my $old_lifecycle = $self->Lifecycle;
     my $new_lifecycle = $NewQueueObj->Lifecycle;
     if ( $old_lifecycle->Name ne $new_lifecycle->Name ) {
         unless ( $old_lifecycle->HasMoveMap( $new_lifecycle ) ) {
@@ -1389,36 +1389,10 @@ sub SetQueue {
             return ( 0, $self->loc("Couldn't load copy of ticket #[_1].", $self->Id) );
         }
 
-        my $now = RT::Date->new( $self->CurrentUser );
-        $now->SetToNow;
-
-        my $old_status = $clone->Status;
-
-        #If we're changing the status from initial in old to not intial in new,
-        # record that we've started
-        if ( $old_lifecycle->IsInitial($old_status) && !$new_lifecycle->IsInitial($new_status)  && $clone->StartedObj->Unix == 0 ) {
-            #Set the Started time to "now"
-            $clone->_Set(
-                Field             => 'Started',
-                Value             => $now->ISO,
-                RecordTransaction => 0
-            );
-        }
-
-        #When we close a ticket, set the 'Resolved' attribute to now.
-        # It's misnamed, but that's just historical.
-        if ( $new_lifecycle->IsInactive($new_status) ) {
-            $clone->_Set(
-                Field             => 'Resolved',
-                Value             => $now->ISO,
-                RecordTransaction => 0,
-            );
-        }
-
-        #Actually update the status
-        my ($val, $msg)= $clone->_Set(
-            Field             => 'Status',
-            Value             => $new_status,
+        my ($val, $msg) = $clone->_SetStatus(
+            Lifecycle         => $old_lifecycle,
+            NewLifecycle      => $new_lifecycle,
+            Status            => $new_status,
             RecordTransaction => 0,
         );
         $RT::Logger->error( 'Status change failed on queue change: '. $msg )
@@ -1550,6 +1524,17 @@ sub ResolvedObj {
     return $time;
 }
 
+=head2 Lifecycle
+
+Returns the L<RT::Lifecycle> for this ticket, which is picked up from
+the ticket's current queue.
+
+=cut
+
+sub Lifecycle {
+    my $self = shift;
+    return $self->QueueObj->Lifecycle;
+}
 
 =head2 FirstActiveStatus
 
@@ -1563,7 +1548,7 @@ This is used in L<RT::Action::AutoOpen>, for instance.
 sub FirstActiveStatus {
     my $self = shift;
 
-    my $lifecycle = $self->QueueObj->Lifecycle;
+    my $lifecycle = $self->Lifecycle;
     my $status = $self->Status;
     my @active = $lifecycle->Active;
     # no change if no active statuses in the lifecycle
@@ -1588,7 +1573,7 @@ This is used in resolve action in UnsafeEmailCommands, for instance.
 sub FirstInactiveStatus {
     my $self = shift;
 
-    my $lifecycle = $self->QueueObj->Lifecycle;
+    my $lifecycle = $self->Lifecycle;
     my $status = $self->Status;
     my @inactive = $lifecycle->Inactive;
     # no change if no inactive statuses in the lifecycle
@@ -2271,7 +2256,7 @@ sub _MergeInto {
     }
 
 
-    my $force_status = $self->QueueObj->Lifecycle->DefaultOnMerge;
+    my $force_status = $self->Lifecycle->DefaultOnMerge;
     if ( $force_status && $force_status ne $self->__Value('Status') ) {
         my ( $status_val, $status_msg )
             = $self->__Set( Field => 'Status', Value => $force_status );
@@ -2676,7 +2661,7 @@ sub SetStatus {
     $args{SetStarted} = 1 unless exists $args{SetStarted};
 
 
-    my $lifecycle = $self->QueueObj->Lifecycle;
+    my $lifecycle = $self->Lifecycle;
 
     my $new = $args{'Status'};
     unless ( $lifecycle->IsValid( $new ) ) {
@@ -2701,15 +2686,37 @@ sub SetStatus {
         return ( 0, $self->loc('That ticket has unresolved dependencies') );
     }
 
+    return $self->_SetStatus(
+        Status     => $args{Status},
+        SetStarted => $args{SetStarted},
+    );
+}
+
+sub _SetStatus {
+    my $self = shift;
+    my %args = (
+        Status => undef,
+        SetStarted => 1,
+        RecordTransaction => 1,
+        Lifecycle => $self->Lifecycle,
+        @_,
+    );
+    $args{NewLifecycle} ||= $args{Lifecycle};
+
     my $now = RT::Date->new( $self->CurrentUser );
     $now->SetToNow();
 
     my $raw_started = RT::Date->new(RT->SystemUser);
     $raw_started->Set(Format => 'ISO', Value => $self->__Value('Started'));
 
-    #If we're changing the status from new, record that we've started
-    if ( $args{SetStarted} && $lifecycle->IsInitial($old) && !$lifecycle->IsInitial($new) && !$raw_started->Unix) {
-        #Set the Started time to "now"
+    my $old = $self->__Value('Status');
+
+    # If we're changing the status from new, record that we've started
+    if ( $args{SetStarted}
+             && $args{Lifecycle}->IsInitial($old)
+             && !$args{NewLifecycle}->IsInitial($args{Status})
+             && !$raw_started->Unix) {
+        # Set the Started time to "now"
         $self->_Set(
             Field             => 'Started',
             Value             => $now->ISO,
@@ -2717,9 +2724,9 @@ sub SetStatus {
         );
     }
 
-    #When we close a ticket, set the 'Resolved' attribute to now.
+    # When we close a ticket, set the 'Resolved' attribute to now.
     # It's misnamed, but that's just historical.
-    if ( $lifecycle->IsInactive($new) ) {
+    if ( $args{NewLifecycle}->IsInactive($args{Status}) ) {
         $self->_Set(
             Field             => 'Resolved',
             Value             => $now->ISO,
@@ -2727,13 +2734,14 @@ sub SetStatus {
         );
     }
 
-    #Actually update the status
+    # Actually update the status
     my ($val, $msg)= $self->_Set(
         Field           => 'Status',
         Value           => $args{Status},
         TimeTaken       => 0,
         CheckACL        => 0,
         TransactionType => 'Status',
+        RecordTransaction => $args{RecordTransaction},
     );
     return ($val, $msg);
 }
@@ -2748,7 +2756,7 @@ Takes no arguments. Marks this ticket for garbage collection
 
 sub Delete {
     my $self = shift;
-    unless ( $self->QueueObj->Lifecycle->IsValid('deleted') ) {
+    unless ( $self->Lifecycle->IsValid('deleted') ) {
         return (0, $self->loc('Delete operation is disabled by lifecycle configuration') ); #loc
     }
     return ( $self->SetStatus('deleted') );

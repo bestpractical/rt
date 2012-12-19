@@ -69,38 +69,34 @@
 my %statuses_by_lifecycle;
 if ( @Statuses ) {
     $statuses_by_lifecycle{''} = \@Statuses;
-}
-elsif ( $TicketObj ) {
-    my @status;
-    my $current = $TicketObj->Status;
-    push @status, $current;
+} else {
+    if ( $Object ) {
+        my $lifecycle = $Object->Lifecycle;
+        if ($Object->_Accessible("Status", "read")) {
+            my $current = $Object->Status;
+            my @status;
+            push @status, $current;
 
-    my $lifecycle = $TicketObj->QueueObj->Lifecycle;
-
-    my %has = ();
-    foreach my $next ( $lifecycle->Transitions( $current ) ) {
-        my $check = $lifecycle->CheckRight( $current => $next );
-        $has{ $check } = $TicketObj->CurrentUserHasRight( $check )
-            unless exists $has{ $check };
-        push @status, $next if $has{ $check };
-    }
-    $statuses_by_lifecycle{$lifecycle->Name} = \@status;
-}
-elsif ( $QueueObj ) {
-    my $lifecycle = $QueueObj->Lifecycle;
-    $statuses_by_lifecycle{$lifecycle->Name} = [ $lifecycle->Transitions('') ];
-} elsif ( %Queues ) {
-    for my $id (keys %Queues) {
-        my $queue = RT::Queue->new($session{'CurrentUser'});
-        $queue->Load($id);
-        if ($queue->id) {
-            my $lifecycle = $queue->Lifecycle;
-            $statuses_by_lifecycle{$lifecycle->Name} = [ $lifecycle->Valid ];
+            my %has = ();
+            foreach my $next ( $lifecycle->Transitions( $current ) ) {
+                my $check = $lifecycle->CheckRight( $current => $next );
+                $has{ $check } = $Object->CurrentUserHasRight( $check )
+                    unless exists $has{ $check };
+                push @status, $next if $has{ $check };
+            }
+            $statuses_by_lifecycle{$lifecycle->Name} = \@status;
+        } else {
+            $statuses_by_lifecycle{$lifecycle->Name} = [ $lifecycle->Transitions('') ];
         }
     }
-} else {
-    for my $lifecycle (map { RT::Lifecycle->Load($_) } RT::Lifecycle->List) {
-        $statuses_by_lifecycle{$lifecycle->Name} = [ $lifecycle->Valid ];
+    for my $lifecycle ( @Lifecycles ) {
+        $statuses_by_lifecycle{$lifecycle->Name} ||= [ $lifecycle->Valid ];
+    }
+
+    if (not keys %statuses_by_lifecycle) {
+        for my $lifecycle (map { RT::Lifecycle->Load($_) } RT::Lifecycle->List($Type)) {
+            $statuses_by_lifecycle{$lifecycle->Name} = [ $lifecycle->Valid ];
+        }
     }
 }
 
@@ -131,11 +127,11 @@ my $group_by_lifecycle = keys %statuses_by_lifecycle > 1;
 </%INIT>
 <%ARGS>
 $Name => undef
+$Type => undef,
 
 @Statuses => ()
-$TicketObj => undef
-$QueueObj => undef
-%Queues => ()
+$Object => undef,
+@Lifecycles => (),
 
 $Default => ''
 $SkipDeleted => 0

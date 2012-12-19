@@ -114,11 +114,11 @@ sub IsApplicable {
     }
     else {
         $RT::Logger->error("Argument '$argument' is incorrect.")
-            unless RT::Lifecycle->Load('')->IsValid( $argument );
+            unless RT::Lifecycle->Load(Type => 'ticket')->IsValid( $argument );
         return 0;
     }
 
-    my $lifecycle = $self->TicketObj->QueueObj->Lifecycle;
+    my $lifecycle = $self->TicketObj->Lifecycle;
     if ( $new_must_be ) {
         return 0 unless grep lc($new) eq lc($_),
             map {m/^(initial|active|inactive)$/i? $lifecycle->Valid(lc $_): $_ }

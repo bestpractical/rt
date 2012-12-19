@@ -46,81 +46,59 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-package RT::Approval::Rule::Passed;
 use strict;
 use warnings;
-use base 'RT::Approval::Rule';
 
-use constant Description => "Notify Owner of their ticket has been approved by some or all approvers"; # loc
+package RT::Lifecycle::Ticket;
 
-sub Prepare {
+use base qw(RT::Lifecycle);
+
+=head2 Queues
+
+Returns L<RT::Queues> collection with queues that use this lifecycle.
+
+=cut
+
+sub Queues {
     my $self = shift;
-    return unless $self->SUPER::Prepare();
-
-    $self->OnStatusChange('resolved');
+    require RT::Queues;
+    my $queues = RT::Queues->new( RT->SystemUser );
+    $queues->Limit( FIELD => 'Lifecycle', VALUE => $self->Name );
+    return $queues;
 }
 
-sub Commit {
+=head3 DefaultOnMerge
+
+Returns the status that should be used when tickets
+are merged.
+
+=cut
+
+sub DefaultOnMerge {
     my $self = shift;
-    my $note = $self->GetNotes;
-
-    my ($top) = $self->TicketObj->AllDependedOnBy( Type => 'ticket' );
-    my $links  = $self->TicketObj->DependedOnBy;
-
-    while ( my $link = $links->Next ) {
-        my $obj = $link->BaseObj;
-        next unless $obj->Type eq 'approval';
-
-        for my $other ($obj->AllDependsOn( Type => 'approval' )) {
-            if ( $other->QueueObj->IsActiveStatus( $other->Status ) ) {
-                $other->__Set(
-                    Field => 'Status',
-                    Value => 'deleted',
-                );
-            }
-
-        }
-        $obj->SetStatus( Status => $obj->FirstActiveStatus, Force => 1 )
-            if $obj->FirstActiveStatus;
-    }
-
-    my $passed = !$top->HasUnresolvedDependencies( Type => 'approval' );
-    my $template = $self->GetTemplate(
-        $passed ? 'All Approvals Passed' : 'Approval Passed',
-        TicketObj => $top,
-        Approval => $self->TicketObj,
-        Approver => $self->TransactionObj->CreatorObj,
-        Notes => $note,
-    ) or die;
-
-    $top->Correspond( MIMEObj => $template->MIMEObj );
-
-    if ($passed) {
-        my $new_status = $top->Lifecycle->DefaultStatus('approved') || 'open';
-        if ( $new_status ne $top->Status ) {
-            $top->SetStatus( $new_status );
-        }
-
-        $self->RunScripAction('Notify Owner', 'Approval Ready for Owner',
-                              TicketObj => $top);
-    }
-
-    return;
+    return $self->DefaultStatus('on_merge');
 }
 
-sub GetNotes {
+=head3 ReminderStatusOnOpen
+
+Returns the status that should be used when reminders are opened.
+
+=cut
+
+sub ReminderStatusOnOpen {
     my $self = shift;
-    my $t = $self->TicketObj->Transactions;
-    my $note = '';
-
-    while ( my $o = $t->Next ) {
-        next unless $o->Type eq 'Correspond';
-        $note .= $o->Content . "\n" if $o->ContentObj;
-    }
-    return $note;
-
+    return $self->DefaultStatus('reminder_on_open') || 'open';
 }
 
-RT::Base->_ImportOverlays();
+=head3 ReminderStatusOnResolve
+
+Returns the status that should be used when reminders are resolved.
+
+=cut
+
+sub ReminderStatusOnResolve {
+    my $self = shift;
+    return $self->DefaultStatus('reminder_on_resolve') || 'resolved';
+}
 
 1;

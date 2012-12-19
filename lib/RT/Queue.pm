@@ -243,17 +243,17 @@ sub RightCategories {
 
 sub Lifecycle {
     my $self = shift;
-    unless (ref $self && $self->id) { 
-        return RT::Lifecycle->Load('')
+    unless (ref $self && $self->id) {
+        return RT::Lifecycle->Load( Type => 'ticket')
     }
 
     my $name = $self->_Value( Lifecycle => @_ );
     $name ||= 'default';
 
-    my $res = RT::Lifecycle->Load( $name );
+    my $res = RT::Lifecycle->Load( Name => $name );
     unless ( $res ) {
         $RT::Logger->error("Lifecycle '$name' for queue '".$self->Name."' doesn't exist");
-        return RT::Lifecycle->Load('default');
+        return RT::Lifecycle->Load( Name => 'default');
     }
     return $res;
 }
@@ -278,7 +278,7 @@ lifecycle is configured. Returns undef otherwise.
 sub ValidateLifecycle {
     my $self = shift;
     my $value = shift;
-    return undef unless RT::Lifecycle->Load( $value );
+    return undef unless RT::Lifecycle->Load( Name => $value );
     return 1;
 }
 

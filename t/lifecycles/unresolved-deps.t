@@ -1,8 +1,6 @@
 use strict;
 use warnings;
-use Data::Dumper;
 
-use Test::More tests => 15 + 1; # plus one for warnings check
 BEGIN {require  't/lifecycles/utils.pl'};
 
 my $general = RT::Test->load_or_create_queue(
@@ -41,3 +39,5 @@ ok $m->login, 'logged in';
     );
 }
 
+undef $m;
+done_testing;

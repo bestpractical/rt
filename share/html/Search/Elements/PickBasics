@@ -102,7 +102,7 @@ my @lines = (
         },
         Value => {
             Type => 'component',
-            Path => '/Elements/SelectStatus',
+            Path => '/Ticket/Elements/SelectStatus',
             Arguments => { SkipDeleted => 1, Queues => \%queues },
         },
     },

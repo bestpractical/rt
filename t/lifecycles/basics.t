@@ -1,7 +1,5 @@
-
 use strict;
 use warnings;
-use Data::Dumper;
 
 BEGIN {require  't/lifecycles/utils.pl'};
 
@@ -244,3 +242,5 @@ diag "'!inactive -> inactive' actions are shown even if ticket has unresolved de
     );
 }
 
+undef $m;
+done_testing;

@@ -104,13 +104,11 @@
     InTable   => 1,
     fields    => [
         {   name => 'Status',
-            comp => '/Elements/SelectStatus',
+            comp => '/Ticket/Elements/SelectStatus',
             args => {
                 Name => 'Status',
-                DefaultLabel => loc("[_1] (Unchanged)", loc($TicketObj->Status)),
-                Default => $ARGS{'Status'} || ($TicketObj->Status eq $DefaultStatus ? undef : $DefaultStatus),
+                Default => $DefaultStatus,
                 TicketObj => $TicketObj,
-                QueueObj => $TicketObj->QueueObj
             },
         },
         {   name => 'Owner',

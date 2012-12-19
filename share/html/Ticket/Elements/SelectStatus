@@ -45,71 +45,37 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /SelfService/Elements/Header, 
-    Title =>loc('Update ticket #[_1]', $Ticket->id) 
+<& /Elements/SelectStatus,
+   %ARGS,
+   Statuses => \@Statuses,
+   Object => $TicketObj || $QueueObj,
+   Lifecycles => \@Lifecycles,
+   Type => 'ticket',
 &>
-
-% $m->callback(CallbackName => 'BeforeForm', %ARGS, ARGSRef => \%ARGS, Ticket => $Ticket );
-
-<form action="Display.html" method="post" enctype="multipart/form-data">
-<input type="hidden" class="hidden" name="UpdateType" value="response" />
-<input type="hidden" class="hidden" name="id" value="<%$Ticket->Id%>" />
-<table width="100%">
-    <tr>
-        <td class="label">
-            <&|/l&>Status</&>
-        </td>
-        <td class="value">
-            <& /Ticket/Elements/SelectStatus,
-               Name => "Status",
-               TicketObj => $Ticket,
-               Default => $DefaultStatus &>
-        </td>
-    </tr>
-    <tr>
-        <td class="label">
-            <&|/l&>Subject</&>
-        </td>
-        <td class="value">
-            <input name="UpdateSubject" size="60" value="<% $Ticket->Subject %>" />
-        </td>
-
-    </tr>
-    <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $Ticket &>
-    <tr><td colspan="2"><& /Elements/EditCustomFields, Object => $Ticket, AsTable => 0 &></td></tr>
-</table>
-<& /Elements/MessageBox, 
-    Name => "UpdateContent", 
-    QuoteTransaction => $ARGS{QuoteTransaction} 
-    &>
-    <br />
-
-
-<& /Elements/Submit &>
-  </form>
-
-
-
 <%INIT>
+my @Lifecycles;
+for my $id (keys %Queues) {
+    my $queue = RT::Queue->new($session{'CurrentUser'});
+    $queue->Load($id);
+    push @Lifecycles, $queue->Lifecycle if $queue->id;
+}
 
-my $Ticket = LoadTicket($id);
-
-$m->callback( Ticket => $Ticket, ARGSRef => \%ARGS, CallbackName => 'Initial' ); 
-
-my $title = loc( "Update ticket #[_1]", $Ticket->id );
-
-$DefaultStatus = $ARGS{Status} || $Ticket->Status() unless ($DefaultStatus);
-
-
-Abort( loc("No permission to view update ticket") )
-  unless ( $Ticket->CurrentUserHasRight('ReplyToTicket')
-    or $Ticket->CurrentUserHasRight('ModifyTicket') );
-
-$m->callback(CallbackName => 'BeforeDisplay', Ticket => \$Ticket, ARGSRef => \%ARGS);
+if ($TicketObj) {
+    $ARGS{DefaultLabel} = loc("[_1] (Unchanged)", loc($TicketObj->Status));
+    if ($DefaultFromArgs and $DECODED_ARGS->{Status}) {
+        $ARGS{Default} = $DECODED_ARGS->{Status};
+    } elsif (defined $ARGS{Default}) {
+        $ARGS{Default} = undef if $TicketObj->Status eq $ARGS{Default};
+    }
+} elsif ($QueueObj) {
+    $ARGS{DefaultValue} = 0;
+    $ARGS{Default} ||= $DECODED_ARGS->{Status} || $QueueObj->Lifecycle->DefaultOnCreate;
+}
 </%INIT>
-
 <%ARGS>
-$id => undef
-$Action => undef
-$DefaultStatus => undef
+$DefaultFromArgs => 1,
+@Statuses => ()
+$TicketObj => undef
+$QueueObj => undef
+%Queues => ()
 </%ARGS>
