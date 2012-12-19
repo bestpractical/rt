@@ -638,6 +638,9 @@ sub ForwardTransaction {
     my $txn = shift;
     my %args = ( To => '', Cc => '', Bcc => '', @_ );
 
+    $args{$_} = join ", ", map { $_->format } RT::EmailParser->ParseEmailAddress($args{$_} || '')
+        for qw(To Cc Bcc);
+
     my $entity = $txn->ContentAsMIME;
 
     my ( $ret, $msg ) = SendForward( %args, Entity => $entity, Transaction => $txn );
@@ -664,6 +667,9 @@ Forwards a ticket's Create and Correspond Transactions and their Attachments as 
 sub ForwardTicket {
     my $ticket = shift;
     my %args = ( To => '', Cc => '', Bcc => '', @_ );
+
+    $args{$_} = join ", ", map { $_->format } RT::EmailParser->ParseEmailAddress($args{$_} || '')
+        for qw(To Cc Bcc);
 
     my $txns = $ticket->Transactions;
     $txns->Limit(

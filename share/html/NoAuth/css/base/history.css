@@ -114,6 +114,10 @@ div.history-container {
  font-weight: bold;
 }
 
+.transaction .description a:visited {
+    color: inherit;
+}
+
 .transaction span.time-taken {
  margin-left: 1em;
 }

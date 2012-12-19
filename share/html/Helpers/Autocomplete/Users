@@ -123,9 +123,7 @@ while ( my $user = $users->Next ) {
     next if $user->id == RT->SystemUser->id
          or $user->id == RT->Nobody->id;
 
-    my $formatted = $m->scomp('/Elements/ShowUser', User => $user, NoEscape => 1);
-    $formatted =~ s/\n//g;
-    my $suggestion = { label => $formatted, value => $user->$return };
+    my $suggestion = { label => $user->Format, value => $user->$return };
     $m->callback( CallbackName => "ModifySuggestion", suggestion => $suggestion, user => $user );
     push @suggestions, $suggestion;
 }

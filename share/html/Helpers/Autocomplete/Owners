@@ -117,7 +117,7 @@ foreach my $spec (map { [split /\-/, $_, 2] } split /\|/, $limit) {
         next if $user_uniq_hash{ $User->Id };
         $user_uniq_hash{ $User->Id() } = [
             $User,
-            $m->scomp('/Elements/ShowUser', User => $User, NoEscape => 1)
+            $User->Format,
         ];
     }
 }
@@ -127,7 +127,7 @@ my $nobody = qr/^n(?:o(?:b(?:o(?:d(?:y)?)?)?)?)?$/i;
 if ( not $user_uniq_hash{RT->Nobody->id} and $term =~ $nobody ) {
     $user_uniq_hash{RT->Nobody->id} = [
         RT->Nobody,
-        $m->scomp('/Elements/ShowUser', User => RT->Nobody, NoEscape => 1)
+        RT->Nobody->Format,
     ];
 }
 

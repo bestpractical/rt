@@ -45,28 +45,32 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-%# Released under the terms of version 2 of the GNU Public License
 <%INIT>
 # $User is an RT::User object
 # $Address is Email::Address object
 
-my $comp = '/Elements/ShowUser'. ucfirst lc $style;
-unless ( RT::Interface::Web->ComponentPathIsSafe($comp) and $m->comp_exists( $comp ) ) {
-    $RT::Logger->error(
-        'Either system config or user #'
-        . $session{'CurrentUser'}->id
-        . ' picked UsernameFormat '. $style
-        . ', but '. $comp . "doesn't exist"
-    );
-    return $m->comp('/Elements/ShowUserConcise',
-        User => $User, Address => $Address, NoEscape => $NoEscape
-    );
-}
-return $m->comp( $comp, User => $User, Address => $Address, NoEscape => $NoEscape );
+my $display = RT::User->Format(
+    User        => $User,
+    Address     => $Address,
+    CurrentUser => $session{CurrentUser},
+    Format      => $style,
+);
+
+$m->callback(
+    ARGSRef         => \%ARGS,
+    User            => $User,
+    Address         => $Address,
+    NoEscape        => \$NoEscape,
+    CallbackName    => 'Modify',
+);
+
+$display = $m->interp->apply_escapes($display, 'h')
+    unless $NoEscape;
 </%INIT>
 <%ARGS>
 $User => undef
 $Address => undef
 $NoEscape => 0
-$style => RT->Config->Get('UsernameFormat', $session{'CurrentUser'})
+$style => undef
 </%ARGS>
+<% $display |n %>\

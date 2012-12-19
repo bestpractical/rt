@@ -31,3 +31,14 @@ UPGRADING FROM RT 4.0.0 and greater
 
 * $MessageBoxWrap was removed.  Wrapping is now always SOFT.  If you want hard
   line breaks, enter them manually.
+
+* ShowUser handlers (/Elements/ShowUser*) have moved out of Mason components
+  and into RT::User methods.  Any custom username formats will need to be
+  reimplemented as RT::User methods.  Renaming should follow that of the core
+  components:
+
+        /Elements/ShowUserConcise => RT::User->_FormatUserConcise
+        /Elements/ShowUserVerbose => RT::User->_FormatUserVerbose
+
+  The _FormatUser* methods are passed a hash containing the keys User and
+  Address, which have the same properties as before.

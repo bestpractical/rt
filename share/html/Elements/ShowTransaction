@@ -57,7 +57,7 @@
 % $m->callback( %ARGS, Transaction => $Transaction, CallbackName => 'AfterAnchor' );
     <span class="date"><% $date |n %></span>
     <span class="description">
-      <& /Elements/ShowUser, User => $Transaction->CreatorObj &> - <% $desc %>
+      <& /Elements/ShowUser, User => $Transaction->CreatorObj &> - <% $desc |n %>
 % $m->callback( %ARGS, Transaction => $Transaction, CallbackName => 'AfterDescription' );
     </span>
     <span class="time-taken"><% $time %></span>
@@ -121,11 +121,13 @@ my @classes = (
     ($RowNum % 2 ? 'odd' : 'even')
 );
 
-my $desc = $Transaction->BriefDescription;
+my $desc = $Transaction->BriefDescriptionAsHTML;
 if ( $Object->id != $Transaction->ObjectId ) {
     # merged objects
-    $desc = loc("[_1] #[_1]:", loc($record_type), $Transaction->ObjectId)
-        .' - '. $desc;
+    $desc = join " - ",
+        $m->interp->apply_escapes(
+            loc("[_1] #[_1]:", loc($record_type), $Transaction->ObjectId), 'h'),
+        $desc;
 }
 
 my $date = $Transaction->CreatedAsString;

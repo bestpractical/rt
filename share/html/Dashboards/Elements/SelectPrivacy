@@ -60,11 +60,11 @@ foreach my $object (@Objects) {
     if (ref($object) eq 'RT::User') {
         $label = $object->id == $session{'CurrentUser'}->Id
                     ? loc("My dashboards")
-                    : loc("[_1]'s dashboards", $m->scomp('/Elements/ShowUser', User => $object));
+                    : loc("[_1]'s dashboards", $object->Format);
     } else {
-        $label = loc("[_1]'s dashboards", $m->interp->apply_escapes($object->Name, 'h'));
+        $label = loc("[_1]'s dashboards", $object->Name);
     }
 </%perl>
-<option <%$selected|n%> value="<%$privacy%>"><% $label |n %></option>
+<option <%$selected|n%> value="<%$privacy%>"><% $label %></option>
 % }
 </select>
