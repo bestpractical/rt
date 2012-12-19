@@ -595,9 +595,10 @@ our %META = (
         PostLoadCheck => sub {
             my $self = shift;
             my $value = $self->Get('MailCommand');
-            $RT::Logger->error("Unknown value for \$MailCommand: $value")
-                unless ref($value) eq "CODE"
-                    or $value =~/^(sendmail|sendmailpipe|qmail|testfile)$/;
+            return if ref($value) eq "CODE"
+                or $value =~/^(sendmail|sendmailpipe|qmail|testfile)$/;
+            $RT::Logger->error("Unknown value for \$MailCommand: $value; defaulting to sendmailpipe");
+            $self->Set( MailCommand => 'sendmailpipe' );
         },
     },
     MailPlugins  => { Type => 'ARRAY' },
