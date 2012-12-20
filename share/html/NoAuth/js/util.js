@@ -311,7 +311,7 @@ function ReplaceAllTextareas(encoded) {
 
 
             CKEDITOR.replace(textArea.name,{width:'100%',height:<% RT->Config->Get('MessageBoxRichTextHeight') |n,j%>});
-            CKEDITOR.basePath = <%RT->Config->Get('WebPath')|n,j%>+"/NoAuth/RichText/";
+            CKEDITOR.basePath = <%RT->Config->Get('WebPath')|n,j%>+"/static/RichText/";
 
             jQuery("#" + textArea.name + "___Frame").addClass("richtext-editor");
         }

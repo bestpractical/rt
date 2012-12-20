@@ -78,7 +78,7 @@ div#body {
 
 
 .sf-sub-indicator {
-	background:		url(<%RT->Config->Get('WebPath')%>/NoAuth/css/images/arrows-ffffff.gif) no-repeat -10px -100px;
+	background:		url(<%RT->Config->Get('WebPath')%>/static/css/images/arrows-ffffff.gif) no-repeat -10px -100px;
 }
 
 #page-navigation ul {

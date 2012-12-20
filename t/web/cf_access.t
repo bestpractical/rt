@@ -5,7 +5,7 @@ use RT::Test tests => 32;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
-use constant ImageFile => $RT::MasonComponentRoot .'/NoAuth/images/bpslogo.png';
+use constant ImageFile => $RT::StaticPath .'/images/bpslogo.png';
 use constant ImageFileContent => RT::Test->file_content(ImageFile);
 
 ok $m->login, 'logged in';

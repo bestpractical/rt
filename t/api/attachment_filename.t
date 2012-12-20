@@ -10,18 +10,18 @@ my $mime   = MIME::Entity->build(
 );
 
 $mime->attach(
-    Path     => 'share/html/NoAuth/images/bpslogo.png',
+    Path     => 'share/static/images/bpslogo.png',
     Type     => 'image/png',
 );
 
 $mime->attach(
-    Path     => 'share/html/NoAuth/images/bpslogo.png',
+    Path     => 'share/static/images/bpslogo.png',
     Type     => 'image/png',
     Filename => 'bpslogo.png',
 );
 
 $mime->attach(
-    Path     => 'share/html/NoAuth/images/bpslogo.png',
+    Path     => 'share/static/images/bpslogo.png',
     Filename => 'images/bpslogo.png',
     Type     => 'image/png',
 );

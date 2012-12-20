@@ -1016,7 +1016,7 @@ Define the directory name to be used for images in RT web documents.
 
 =cut
 
-Set($WebImagesURL, RT->Config->Get('WebPath') . "/NoAuth/images/");
+Set($WebImagesURL, RT->Config->Get('WebPath') . "/static/images/");
 
 =item C<$LogoURL>
 
