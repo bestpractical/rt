@@ -63,7 +63,8 @@
 </tr>
 <tr>
 <td class="label" valign="top"><&|/l&>Content</&>:</td>
-<td class="value"><textarea name="Content" rows="25" cols="80" wrap="soft"><%$Content||''%></textarea></td>
+<td class="value"><textarea name="Content" rows="25" cols="80" wrap="soft">
+<%$Content||''%></textarea></td>
 </tr>
 </table>
 
