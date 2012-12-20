@@ -209,15 +209,26 @@ sub SetMIMEEntityToEncoding {
     # do the same for parts first of all
     SetMIMEEntityToEncoding( $_, $enc, $preserve_words ) foreach $entity->parts;
 
-    my $charset = _FindOrGuessCharset($entity) or return;
+    my $head = $entity->head;
+
+    my $charset = _FindOrGuessCharset($entity);
+    if ( $charset ) {
+        unless( Encode::find_encoding($charset) ) {
+            $RT::Logger->warning("Encoding '$charset' is not supported");
+            $charset = undef;
+        }
+    }
+    unless ( $charset ) {
+        $head->replace( "X-RT-Original-Content-Type" => $head->mime_attr('Content-Type') );
+        $head->mime_attr('Content-Type' => 'application/octet-stream');
+        return;
+    }
 
     SetMIMEHeadToEncoding(
-	$entity->head,
+	$head,
 	_FindOrGuessCharset($entity, 1) => $enc,
 	$preserve_words
     );
-
-    my $head = $entity->head;
 
     # If this is a textual entity, we'd need to preserve its original encoding
     $head->replace( "X-RT-Original-Encoding" => $charset )
@@ -348,7 +359,14 @@ sub DecodeMIMEWordsToEncoding {
 
             # now we have got a decoded subject, try to convert into the encoding
             if ( $charset ne $to_charset || $charset =~ /^utf-?8(?:-strict)?$/i ) {
-                Encode::from_to( $enc_str, $charset, $to_charset );
+                if ( Encode::find_encoding($charset) ) {
+                    Encode::from_to( $enc_str, $charset, $to_charset );
+                } else {
+                    $RT::Logger->warning("Charset '$charset' is not supported");
+                    $enc_str =~ s/[^[:print:]]/\357\277\275/g;
+                    Encode::from_to( $enc_str, 'UTF-8', $to_charset )
+                        unless $to_charset eq 'utf-8';
+                }
             }
 
             # XXX TODO: RT doesn't currently do the right thing with mime-encoded headers
