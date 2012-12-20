@@ -215,6 +215,7 @@ sub HTML::Mason::Exception::as_rt_error {
 
 use RT::Interface::Web::Handler;
 use CGI::Emulate::PSGI;
+use Plack::Builder;
 use Plack::Request;
 use Plack::Response;
 use Plack::Util;
@@ -230,7 +231,9 @@ sub PSGIApp {
 
     $self->InitSessionDir;
 
-    return sub {
+    my $builder = Plack::Builder->new();
+
+    my $mason = sub {
         my $env = shift;
         RT::ConnectToDatabase() unless RT->InstallMode;
 
@@ -270,6 +273,17 @@ sub PSGIApp {
                                             $self->CleanupRequest()
                                         });
     };
+
+    my @system_static = ($RT::LocalStaticPath, $RT::StaticPath);
+    for my $root (grep {$_ and -d $_} @system_static) {
+        $builder->add_middleware(
+            'Plack::Middleware::Static',
+            path         => sub { s!^/static/!! },
+            root         => $root,
+            pass_through => 1,
+        );
+    }
+    return $builder->to_app($mason);
 }
 
 sub _psgi_response_cb {
