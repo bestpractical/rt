@@ -329,6 +329,11 @@ sub InitSignalHandlers {
             unshift @_, $RT::Logger, qw(level warning message);
             goto &Log::Dispatch::log;
         }
+        # Return value is used only by RT::Test to filter warnings from
+        # reaching the Test::NoWarnings catcher.  If Log::Dispatch::log() ever
+        # starts returning 'IGNORE', we'll need to switch to something more
+        # clever.  I don't expect that to happen.
+        return 'IGNORE';
     };
 
 #When we call die, trap it and log->crit with the value of the die.

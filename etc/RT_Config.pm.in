@@ -453,6 +453,23 @@ Set($ExtractSubjectTagNoMatch, ( ${RT::EmailSubjectTagRegex}
        ? qr/\[(?:${RT::EmailSubjectTagRegex}) #\d+\]/
        : qr/\[\Q$RT::rtname\E #\d+\]/));
 
+=item C<$CheckMoreMSMailHeaders>
+
+Some email clients create a plain text version of HTML-formatted
+email to help other clients that read only plain text.
+Unfortunately, the plain text parts sometimes end up with
+doubled newlines and these can then end up in RT. This
+is most often seen in MS Outlook.
+
+Enable this option to have RT check for additional mail headers
+and attempt to identify email from MS Outlook. When detected,
+RT will then clean up double newlines. Note that it may
+clean up intentional double newlines as well.
+
+=cut
+
+Set( $CheckMoreMSMailHeaders, 0);
+
 =back
 
 

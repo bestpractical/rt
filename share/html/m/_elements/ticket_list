@@ -98,6 +98,8 @@ loc("Found [quant,_1,ticket]",$collection->CountAll) &>
 % if ($ticket->Priority) {
 <div class="priority"><span class="label"><&|/l&>Priority</&>:</span> <%$ticket->Priority%></div>
 % }
+<div class="bookmark"><span class="label"><&|/l&>Bookmark</&>:</span> <& /Ticket/Elements/Bookmark, id => $ticket->id &></div>
+
 </div>
 </li>
 % }

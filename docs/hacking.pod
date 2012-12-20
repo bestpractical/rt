@@ -38,7 +38,9 @@ For example, a bugfix branched from C<4.0-trunk> might be named
 C<4.0/fail-taint-mode-early>.  A feature branched from C<master> when
 there exists a C<4.0-trunk> but no C<4.2-trunk> might be named
 C<4.2/rename-LogToScreen>.  For consistency, branches should use dashes,
-not underscores, to separate words.
+not underscores, to separate words.  Branches which are destined for
+4.2, but which are branched from 4.0 (to provide for easy extraction as
+a 4.0 extension) should be named 4.2-on-4.0/branch-name.
 
 Branches should be reviewed by another developer before being merged.
 Reviewers should make sure that the branch accomplishes what it claims
