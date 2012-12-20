@@ -275,6 +275,22 @@ sub PSGIApp {
     };
 
 
+    for my $static ( RT->Config->Get('StaticRoots') ) {
+        if ( ref $static && ref $static eq 'HASH' ) {
+            if ( ref $static eq 'HASH' ) {
+                $builder->add_middleware(
+                    'Plack::Middleware::Static',
+                    pass_through => 1,
+                    %$static
+                );
+            }
+        }
+        else {
+            $RT::Logger->error(
+                "Invalid config StaticRoots: item can only be a hashref" );
+        }
+    }
+
     my @system_static;
     for my $plugin ( @{RT->Plugins} ) {
         my $dir = $plugin->StaticDir;
