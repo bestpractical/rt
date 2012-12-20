@@ -269,7 +269,8 @@ sub PSGIApp {
                                         sub {
                                             $self->CleanupRequest()
                                         });
-};
+    };
+}
 
 sub _psgi_response_cb {
     my $self = shift;
@@ -293,7 +294,6 @@ sub _psgi_response_cb {
                      return $_[0];
                  };
              });
-    }
 }
 
 1;
