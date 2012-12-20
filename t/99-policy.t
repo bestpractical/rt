@@ -99,7 +99,10 @@ check( $_, shebang => 1, exec => 1, warnings => 1, strict => 1, bps_tag => 1 )
 check( $_, shebang => 1, exec => 1, warnings => 1, strict => 1, bps_tag => 1 )
     for grep {m{^devel/tools/} and not m{/(localhost\.(crt|key)|mime\.types)$}} @files;
 
-check( $_, exec => -1, bps_tag => not m{\.(png|gif|jpe?g)$} )
+check( $_, exec => -1 )
+    for grep {m{^share/static/}} @files;
+
+check( $_, exec => -1, bps_tag => 1 )
     for grep {m{^share/html/}} @files;
 
 check( $_, exec => -1 )
