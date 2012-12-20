@@ -910,13 +910,15 @@ sub FindProtectedParts {
                 local $@;
                 eval {
                     my $buf = '';
-                    open my $fh, '>:raw', \$buf
+                    open my $fh, '>', \$buf
                         or die "Couldn't open scalar for writing: $!";
+                    binmode $fh, ":raw";
                     $decoder->decode($io, $fh);
                     close $fh or die "Couldn't close scalar: $!";
 
-                    open $fh, '<:raw', \$buf
+                    open $fh, '<', \$buf
                         or die "Couldn't re-open scalar for reading: $!";
+                    binmode $fh, ":raw";
                     $io = $fh;
                     1;
                 } or do {
