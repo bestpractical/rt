@@ -2,6 +2,7 @@ use strict;
 use warnings;
 
 use RT::Test tests => undef;
+use Test::Warn;
 
 my $queue = RT::Test->load_or_create_queue( Name => 'General' );
 ok $queue->id, 'loaded queue';
@@ -16,9 +17,12 @@ ho hum just some text
 
 END
 
-    my ($stat, $id) = RT::Test->send_via_mailgate($mail);
-    is( $stat >> 8, 0, "The mail gateway exited normally" );
-    ok( $id, "created ticket" );
+    my ($stat, $id);
+    warning_like {
+        ($stat, $id) = RT::Test->send_via_mailgate($mail);
+        is( $stat >> 8, 0, "The mail gateway exited normally" );
+        ok( $id, "created ticket" );
+    } qr/Encoding 'not-supported-encoding' is not supported/;
 
     my $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Load($id);
@@ -49,9 +53,12 @@ ho hum just some text
 
 END
 
-    my ($stat, $id) = RT::Test->send_via_mailgate($mail);
-    is( $stat >> 8, 0, "The mail gateway exited normally" );
-    ok( $id, "created ticket" );
+    my ($stat, $id);
+    warning_like {
+        ($stat, $id) = RT::Test->send_via_mailgate($mail);
+        is( $stat >> 8, 0, "The mail gateway exited normally" );
+        ok( $id, "created ticket" );
+    } qr/Charset 'not-supported' is not supported/;
 
     my $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Load($id);
