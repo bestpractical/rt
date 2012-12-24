@@ -77,7 +77,7 @@ use RT::Interface::CLI ();
 my %DB = (
     type           => scalar RT->Config->Get('DatabaseType'),
     user           => scalar RT->Config->Get('DatabaseUser'),
-    admin          => '@DB_DBA@',
+    admin          => scalar RT->Config->Get('DatabaseAdmin'),
     admin_password => undef,
 );
 
