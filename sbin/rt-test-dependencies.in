@@ -269,8 +269,6 @@ Text::ParseWords
 $deps{'DEVELOPER'} = [ text_to_hash( << '.') ];
 Email::Abstract
 File::Find
-HTML::Form
-HTML::TokeParser
 Log::Dispatch::Perl
 Mojo::DOM
 Plack::Middleware::Test::StashWarnings 0.06
