@@ -181,7 +181,6 @@ CGI::Cookie 1.20
 CGI::Emulate::PSGI
 CGI::PSGI 0.12
 Class::Accessor 0.34
-Class::ReturnValue 0.40
 CSS::Squish 0.06
 Date::Extract 0.02
 Date::Manip
