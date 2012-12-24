@@ -4,20 +4,21 @@ While the default RT color scheme nicely matches the Best Practical colors,
 you may want to personalize your RT instance to make it better fit with
 your company colors.
 
+
 =head1 Selecting a Theme
 
 The fundamental look of RT comes from the selected theme. Different
 RT versions have a default, and the RT admin can set the system-wide
 theme with the C<$WebDefaultStylesheet> configuration value in the
-C<RT_SiteConfig.pm> file.
+F<RT_SiteConfig.pm> file.
 
-RT comes with the following themes:
+RT 4.0 comes with the following themes:
 
 =over
 
 =item web2
 
-The default layout for RT 3.8
+An approximation of the 3.8 style
 
 =item aileron
 
@@ -31,13 +32,14 @@ Theme which doesn't rely on JavaScript for menuing
 
 If you have granted the ModifySelf right to users on your system,
 they can pick a different theme for themselves by going to
-Logged in as > Settings > Options and selecting a different theme.
+Logged in as -> Settings -> Options and selecting a different theme.
+
 
 =head1 RT Theme Editor
 
 RT has some built-in controls to manage the look of the theme you select.
 To use the Theme Editor, log in as a SuperUser (like root), and navigate
-to Tools > Configuration > Tools > Theme.
+to Tools -> Configuration -> Tools -> Theme.
 
 =for html <img alt="RT theme editor, defaults" src="images/theme_editor_defaults.png">
 
@@ -52,8 +54,9 @@ sections.  RT will automatically pick out the six most frequent primary
 colors from your logo and offer them as options next to the color wheel.
 In less than a minute, you can upload a logo and set a few colors.
 
-When you find the color scheme you want, click Save to make it the
-new theme for the entire RT instance. If you ever want to wipe the
+Until you click "Save", color changes are temporary and are only shown
+to you.  When you find the color scheme you want, click Save to make it
+the new theme for the entire RT instance. If you ever want to wipe the
 slate clean, you can use one or both of the "Reset to default" buttons.
 
 =head2 Basic CSS Customization
@@ -67,15 +70,15 @@ edit box.
 After making CSS changes, click Try to see how they look, and click Save
 when you're done.
 
+
 =head1 Advanced CSS Customization
 
 If you're more ambitious and good at CSS, you can go even further and
 create your own theme. As with all modifications to RT, it's a bad idea
-to just start changing the CSS for one of the standard RT themes in
-place. When you upgrade, if you protect your modifications from being
-over-written, you may miss out on updates that are required for new
-features. In the worst case, an upgrade might wipe out all of your
-changes.
+to just change the CSS for one of the standard RT themes in place. When
+you upgrade, if you protect your modifications from being over-written,
+you may miss out on updates that are required for new features. In the
+worst case, an upgrade might wipe out all of your changes.
 
 Below are a few approaches to customizing RT's CSS.
 
@@ -121,8 +124,8 @@ of the C<@import> statements in C<main.css>.
 
 =head1 Designing Your Own Theme
 
-The callback approach works well if you need to change the look of
-one of RT's themes, but you may want to design your own RT theme
+The above approaches work well if you need to change the look of
+part of RT, but you may want to design your own RT theme
 and leave the standard RT themes available to users unmodified. In
 this case, you'll want to create your own CSS directory.
 
@@ -134,9 +137,9 @@ started:
     $ mkdir -p local/html/NoAuth/css/localstyle
     $ cp -R share/html/NoAuth/css/aileron/* local/html/NoAuth/css/localstyle/
 
-You can call your "localstyle" directory whatever you want and you
-don't have to use with the aileron theme, but it's a good start for
-RT4.
+You can call your "localstyle" directory whatever you want and you don't
+have to copy the aileron theme to start from, but it's a good place to
+start off for RT4.
 
 Now set C<$WebDefaultStylesheet> in RT_SiteConfig.pm to the new directory
 name you selected, for example:
