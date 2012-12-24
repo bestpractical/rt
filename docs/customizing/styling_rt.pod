@@ -79,16 +79,32 @@ changes.
 
 Below are a few approaches to customizing RT's CSS.
 
-=head1 Callbacks
+=head2 Additional files
 
-RT's CSS files are actually Mason templates and the main CSS file,
+RT allows you to conveniently include additional CSS files after the
+default CSS styles, via the C<@CSSFiles> configuration option.  To add
+an extra CSS file, for example F<my-site.css>, create the local overlay
+directory:
+
+    $ mkdir -p local/html/NoAuth/css/
+
+And place your F<my-site.css> file in it.  Finally, adjust your
+C<@CSSFiles> in your F<RT_SiteConfig.pm>:
+
+    Set( @CSSFiles, ('my-site.css') );
+
+This technique is preferred to callbacks (below) because CSS included
+via this way will be minified.  It is also included across all styles,
+unlike the callback technique.
+
+If you are writing an extension, see L<RT/AddStyleSheets> for how to
+simply and programmatically add values to C<@CSSFiles>.
+
+=head2 Callbacks
+
+RT's CSS files are also Mason templates and the main CSS file,
 conveniently called C<main.css>, has a C<Begin> and C<End> callback
 allowing you to inject custom CSS.
-
-These callbacks can be particularly useful if you are writing an
-RT extension, but they are also useful if you just want to customize
-your RT. Because of the CSS precedence rules, you can add your own
-CSS with the C<End> callback and override specific RT styles.
 
 To create an End callback, create the callback directory and an
 End file in that directory:
@@ -100,11 +116,8 @@ You can use any name you want for the C<MyRT> directory and the theme
 directory should correspond with the theme you want to change.
 
 RT will now evaluate the contents of that file after it processes all
-of the C<@import> statements in C<main.css>. You can put some raw CSS
-there or an import statement to pull in a CSS file or files with your
-customizations. You can put new CSS files in:
+of the C<@import> statements in C<main.css>.
 
-    local/html/NoAuth/css/
 
 =head1 Designing Your Own Theme
 
