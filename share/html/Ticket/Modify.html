@@ -70,15 +70,15 @@
 my $TicketObj = LoadTicket($id);
 my $CustomFields = $TicketObj->CustomFields;
 
-# call this to show up hints of valid cf values.
-$m->comp(
-    '/Elements/ValidateCustomFields',
-    CustomFields => $CustomFields,
-    ARGSRef => {},
-);
-
 # Now let callbacks have a chance at editing %ARGS
 $m->callback( TicketObj => $TicketObj, CustomFields => $CustomFields, ARGSRef => \%ARGS );
+
+$m->comp(
+    '/Elements/ValidateCustomFields',
+    Object       => $TicketObj,
+    CustomFields => $CustomFields,
+    ARGSRef      => \%ARGS,
+);
 
 my @results = ProcessTicketBasics(TicketObj => $TicketObj, ARGSRef => \%ARGS);
 push @results, ProcessObjectCustomFieldUpdates(Object => $TicketObj, ARGSRef => \%ARGS);

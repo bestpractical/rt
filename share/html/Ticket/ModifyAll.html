@@ -136,13 +136,6 @@
 my $Ticket = LoadTicket($id);
 my $CustomFields = $Ticket->CustomFields;
 
-# call this to show up hints of valid cf values.
-$m->comp(
-    '/Elements/ValidateCustomFields',
-    CustomFields => $CustomFields,
-    ARGSRef => {},
-);
-
 my $CanRespond = 0;
 my $CanComment = 0;
 
@@ -181,6 +174,14 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
 
 
 $m->callback( TicketObj => $Ticket, ARGSRef => \%ARGS );
+
+$m->comp(
+    '/Elements/ValidateCustomFields',
+    Object       => $Ticket,
+    CustomFields => $CustomFields,
+    ARGSRef      => \%ARGS,
+);
+
 my @results;
 
 unless ($OnlySearchForPeople or $OnlySearchForGroup or $ARGS{'AddMoreAttach'} ) {
