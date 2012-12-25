@@ -68,6 +68,10 @@ diag "Quick ticket creation";
     my $tickets = RT::Tickets->new(RT->SystemUser);
     $tickets->FromSQL("Subject = 'test quick create'");
     is $tickets->Count, 0, "No ticket created";
+
+    like $m->uri, qr/Ticket\/Create\.html/, "Redirected to the ticket create page";
+    $m->content_contains("Yaks: Input must match", "Found CF validation error");
+    $m->content_contains("test quick create", "Found prefilled Subject");
 }
 
 undef $m;
