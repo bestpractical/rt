@@ -97,8 +97,9 @@ if ( $ARGS{'QuickCreate'} ) {
     
     my $ValidCFs = $m->comp(
         '/Elements/ValidateCustomFields',
-        CustomFields => $CFs,
-        ARGSRef => \%ARGS
+        CustomFields        => $CFs,
+        ARGSRef             => \%ARGS,
+        ValidateUnsubmitted => 1,
     );
 
 
