@@ -90,7 +90,7 @@ my $id = $m->get_ticket_id;
                 with_fields => { $input_name => "bad value" },
                 button      => 'SubmitTicket',
             });
-            $m->content_like(qr{Input must match});
+            $m->content_like(qr{Could not add new custom field value: Input must match});
         }
     }
 
@@ -110,7 +110,7 @@ my $id = $m->get_ticket_id;
             with_fields => { $input_name => "bad value" },
             button      => 'SubmitTicket',
         });
-        $m->content_like(qr{Input must match});
+        $m->content_like(qr{Could not add new custom field value: Input must match});
     }
 }
 
