@@ -23,6 +23,7 @@ ok $ticket && $ticket->id, "Created ticket";
 $m->login;
 
 for my $page ("/Ticket/Create.html?Queue=1", "/Ticket/Modify.html?id=".$ticket->id) {
+    diag $page;
     $m->get_ok($page, "Fetched $page");
     $m->content_contains("Yaks");
     $m->content_contains("Input must match [Digits]");
@@ -53,6 +54,20 @@ for my $page ("/Ticket/Create.html?Queue=1", "/Ticket/Modify.html?id=".$ticket->
         $m->content_contains("Input must match [Digits]");
         $m->content_lacks("cfinvalidfield");
     }
+}
+
+diag "Quick ticket creation";
+{
+    $m->get_ok("/");
+    $m->submit_form_ok({
+        with_fields => {
+            Subject     => "test quick create",
+            QuickCreate => 1,
+        },
+    });
+    my $tickets = RT::Tickets->new(RT->SystemUser);
+    $tickets->FromSQL("Subject = 'test quick create'");
+    is $tickets->Count, 0, "No ticket created";
 }
 
 undef $m;
