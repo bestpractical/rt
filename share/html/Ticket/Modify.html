@@ -56,7 +56,7 @@
 <input type="hidden" class="hidden" name="id" value="<% $TicketObj->Id %>" />
 
 <&| /Widgets/TitleBox, title => loc('Modify ticket #[_1]',$TicketObj->Id), class=>'ticket-info-basics' &>
-<& Elements/EditBasics, TicketObj => $TicketObj &>
+<& Elements/EditBasics, TicketObj => $TicketObj, defaults => \%ARGS &>
 <& /Elements/EditCustomFields, Object => $TicketObj, DefaultsFromTopArguments => 0, Grouping => 'Basics' &>
 </&>
 % $m->callback( CallbackName => 'AfterBasics', Ticket => $TicketObj );
@@ -70,20 +70,31 @@
 my $TicketObj = LoadTicket($id);
 my $CustomFields = $TicketObj->CustomFields;
 
+my @results;
+my $skip_update = 0;
+
 # Now let callbacks have a chance at editing %ARGS
-$m->callback( TicketObj => $TicketObj, CustomFields => $CustomFields, ARGSRef => \%ARGS );
+$m->callback( TicketObj => $TicketObj, CustomFields => $CustomFields, ARGSRef => \%ARGS, skip_update => \$skip_update );
 
-$m->comp(
-    '/Elements/ValidateCustomFields',
-    Object       => $TicketObj,
-    CustomFields => $CustomFields,
-    ARGSRef      => \%ARGS,
-);
+{
+    my ($status, @msg) = $m->comp(
+        '/Elements/ValidateCustomFields',
+        Object       => $TicketObj,
+        CustomFields => $CustomFields,
+        ARGSRef      => \%ARGS,
+    );
+    unless ($status) {
+        push @results, @msg;
+        $skip_update = 1;
+    }
+}
 
-my @results = ProcessTicketBasics(TicketObj => $TicketObj, ARGSRef => \%ARGS);
-push @results, ProcessObjectCustomFieldUpdates(Object => $TicketObj, ARGSRef => \%ARGS);
+unless ($skip_update) {
+    push @results, ProcessTicketBasics(TicketObj => $TicketObj, ARGSRef => \%ARGS);
+    push @results, ProcessObjectCustomFieldUpdates(Object => $TicketObj, ARGSRef => \%ARGS);
 
-$TicketObj->ApplyTransactionBatch;
+    $TicketObj->ApplyTransactionBatch;
+}
 
 unless ($TicketObj->CurrentUserHasRight('ShowTicket')) {
     if (@results) {

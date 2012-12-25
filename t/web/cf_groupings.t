@@ -73,10 +73,11 @@ my $id = $m->get_ticket_id;
     note "testing Basics/People/Dates/Links pages";
     my $prefix = 'Object-RT::Ticket-'. $id .'-CustomField:';
     { # Basics and More both show up on "Basics"
-        $m->follow_link_ok({id => 'page-basics'}, 'Ticket -> Basics');
-        is $m->dom->find(qq{input[name^="$prefix"][name\$="-Value"]})->size, 2,
-            "two CF inputs on the page";
         for my $name (qw/Basics More/) {
+            $m->follow_link_ok({id => 'page-basics'}, 'Ticket -> Basics');
+            is $m->dom->find(qq{input[name^="$prefix"][name\$="-Value"]})->size, 2,
+                "two CF inputs on the page";
+
             my $input_name = "$prefix$name-$CF{$name}-Value";
             ok $m->dom->at(qq{$location{$name} input[name="$input_name"]}),
                 "CF is in the right place";
@@ -90,7 +91,7 @@ my $id = $m->get_ticket_id;
                 with_fields => { $input_name => "bad value" },
                 button      => 'SubmitTicket',
             });
-            $m->content_like(qr{Could not add new custom field value: Input must match});
+            $m->content_like(qr{Test\Q$name\E: Input must match});
         }
     }
 
