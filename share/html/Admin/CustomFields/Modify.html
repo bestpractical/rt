@@ -234,7 +234,7 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     my $paramtag = "CustomField-". $CustomFieldObj->Id ."-Value";
     # Delete any fields that want to be deleted
     foreach my $key ( keys %ARGS ) {
-        next unless $key =~ /^Delete-$paramtag-(\d+)$/o;
+        next unless $key =~ /^Delete-$paramtag-(\d+)$/;
         my ($val, $msg) = $CustomFieldObj->DeleteValue( $1 );
         push (@results, $msg);
     }
