@@ -416,13 +416,16 @@ Set($CanonicalizeOnCreate, 0);
 
 =item C<$ValidateUserEmailAddresses>
 
-If C<$ValidateUserEmailAddresses> is 1, RT will refuse to create
+By default C<$ValidateUserEmailAddresses> is 1, and RT will refuse to create
 users with an invalid email address (as specified in RFC 2822) or with
 an email address made of multiple email addresses.
 
+Set this to 0 to skip any email address validation.  Doing so may open up
+vulnerabilities.
+
 =cut
 
-Set($ValidateUserEmailAddresses, undef);
+Set($ValidateUserEmailAddresses, 1);
 
 =item C<@MailPlugins>
 
@@ -1591,14 +1594,14 @@ Set($AlwaysDownloadAttachments, undef);
 
 =item C<$PreferRichText>
 
-If C<$PreferRichText> is set to 1, RT will show HTML/Rich text messages
-in preference to their plain-text alternatives. RT "scrubs" the HTML to
-show only a minimal subset of HTML to avoid possible contamination by
-cross-site-scripting attacks.
+By default, RT shows rich text (HTML) messages if possible.
+
+If C<$PreferRichText> is set to 0, RT will show plain text messages
+in preference to any rich text alternatives.
 
 =cut
 
-Set($PreferRichText, undef);
+Set($PreferRichText, 1);
 
 =item C<$MaxInlineBody>
 
@@ -1738,8 +1741,9 @@ Set($ApprovalRejectionNotes, 1);
 =item C<$ForceApprovalsView>
 
 Should approval tickets only be viewed and modified through the standard
-approval interface?  Changing this setting to 1 will redirect any attempt to
-use the normal ticket display and modify page for approval tickets.
+approval interface?  With this setting enabled (by default), any attempt to use
+the normal ticket display and modify page for approval tickets will be
+redirected.
 
 For example, with this option set to 1 and an approval ticket #123:
 
@@ -1749,11 +1753,13 @@ is redirected to
 
     /Approval/Display.html?id=123
 
+With this option set to 0, the redirect won't happen.
+
 =back
 
 =cut
 
-Set($ForceApprovalsView, 0);
+Set($ForceApprovalsView, 1);
 
 =head1 Extra security
 
