@@ -387,6 +387,91 @@ s!(?<=Your ticket has been (?:approved|rejected) by { eval { )\$Approval->OwnerO
                 /^(RejectTicket|ModifyTicketStatus)$/;
         },
     },
+
+    '4.0.4' => {
+        'RT::Template' => sub {
+            my ($ref) = @_;
+            $ref->{Type} ||= 'Perl';
+        },
+    },
+
+    '4.0.6' => {
+        'RT::Transaction' => sub {
+            my ($ref) = @_;
+            return unless $ref->{ObjectType} eq "RT::User" and $ref->{Field} eq "Password";
+            $ref->{OldValue} = $ref->{NewValue} = '********';
+        },
+    },
+
+    '4.0.9' => {
+        'RT::Queue' => sub {
+            my ($ref) = @_;
+            $ref->{Lifecycle} ||= 'default';
+        },
+    },
+
+
+
+    '4.1.0' => {
+        'RT::Attribute' => sub {
+            my ($ref) = @_;
+            return unless $ref->{Name} eq "HomepageSettings";
+
+            my $v = eval {
+                Storable::thaw(MIME::Base64::decode_base64($ref->{Content}))
+              };
+            return if not $v or $v->{sidebar};
+            $v->{sidebar} = delete $v->{summary};
+            $ref->{Content} = MIME::Base64::encode_base64(
+                Storable::nfreeze($v) );
+        },
+    },
+
+    '4.1.1' => {
+        '+RT::Scrip' => sub {
+            my ($ref) = @_;
+            my $new = [
+                "RT::ObjectScrip" => rand(1),
+                {
+                    id            => undef,
+                    Scrip         => $ref->{id},
+                    Stage         => delete $ref->{Stage},
+                    ObjectId      => delete $ref->{Queue},
+                    Creator       => $ref->{Creator},
+                    Created       => $ref->{Created},
+                    LastUpdatedBy => $ref->{LastUpdatedBy},
+                    LastUpdated   => $ref->{LastUpdated},
+                }
+            ];
+            if ( $new->[2]{Stage} eq "Disabled" ) {
+                $ref->{Disabled} = 1;
+                $new->[2]{Stage} = "TransactionCreate";
+            } else {
+                $ref->{Disabled} = 0;
+            }
+            # XXX SortOrder
+            return $new;
+        },
+    },
+
+    '4.1.4' => {
+        'RT::Group' => sub {
+            my ($ref) = @_;
+            $ref->{Instance} = 1
+                if $ref->{Domain} eq "RT::System-Role"
+                    and $ref->{Instance} = 0;
+        },
+        # XXX Invalid rights
+    },
+
+    '4.1.5' => {
+        'RT::Scrip' => sub {
+            my ($ref) = @_;
+            my $template = RT::Template->new( $RT::SystemUser );
+            $template->Load( $ref->{Template} );
+            $ref->{Template} = $template->id ? $template->Name : 'Blank';
+        },
+    },
 );
 
 1;
