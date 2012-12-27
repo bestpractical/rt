@@ -1,8 +1,5 @@
-#!/usr/bin/perl
-
 use strict;
 use warnings;
-use Data::Dumper;
 
 BEGIN {require 't/lifecycles/utils.pl'};
 
@@ -95,3 +92,5 @@ diag "one way map doesn't work backwards";
     is $ticket->Queue, $delivery->id, 'queue is steal the same';
     is $ticket->Status, 'ordered', 'status is steal the same';
 }
+
+done_testing;

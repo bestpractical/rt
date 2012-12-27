@@ -19,25 +19,30 @@ my $sid;
     $m->follow_link_ok( { id => 'tools-config-queues' } );
     $m->follow_link_ok( { text => $queue->Name } );
     $m->follow_link_ok( { id => 'page-scrips-create'});
-    $m->form_name('ModifyScrip');
-    $m->field('Scrip-new-Description' => 'test');
-    $m->select('Scrip-new-ScripCondition' => 'On Transaction');
-    $m->select('Scrip-new-ScripAction' => 'User Defined');
-    $m->select('Scrip-new-Template' => 'Global template: Blank');
-    $m->select('Scrip-new-Stage' => 'TransactionBatch');
-    $m->field('Scrip-new-CustomPrepareCode' => 'return 1;');
-    $m->field('Scrip-new-CustomCommitCode' => 'return 1;');
-    $m->submit;
-    $m->content_contains("Scrip Created");
 
+    $m->form_name('CreateScrip');
+    $m->field('Description' => 'test');
+    $m->select('ScripCondition' => 'On Transaction');
+    $m->select('ScripAction' => 'User Defined');
+    $m->select('Template' => 'Blank');
+    $m->select('Stage' => 'Batch');
+    $m->field('CustomPrepareCode' => 'return 1;');
+    $m->field('CustomCommitCode' => 'return 1;');
+    $m->click('Create');
+    $m->content_contains("Scrip Created");
 
     my $form = $m->form_name('ModifyScrip');
     $sid = $form->value('id');
-    is $m->value("Scrip-$sid-Description"), 'test', 'correct description';
-    is value_name($form, "Scrip-$sid-ScripCondition"), 'On Transaction', 'correct condition';
-    is value_name($form, "Scrip-$sid-ScripAction"), 'User Defined', 'correct action';
-    is value_name($form, "Scrip-$sid-Template"), 'Global template: Blank', 'correct template';
-    is value_name($form, "Scrip-$sid-Stage"), 'TransactionBatch', 'correct stage';
+    is $m->value("Description"), 'test', 'correct description';
+    is value_name($form, "ScripCondition"), 'On Transaction', 'correct condition';
+    is value_name($form, "ScripAction"), 'User Defined', 'correct action';
+    is value_name($form, "Template"), 'Blank', 'correct template';
+
+    {
+        my $rec = RT::ObjectScrip->new( RT->SystemUser );
+        $rec->LoadByCols( Scrip => $sid, ObjectId => $queue->id );
+        is $rec->Stage, 'TransactionBatch', "correct stage";
+    }
 
     my $tmp_fn = File::Spec->catfile( RT::Test->temp_directory, 'transactions' );
     open my $tmp_fh, '+>', $tmp_fn or die $!;
@@ -56,8 +61,8 @@ foreach my \$txn ( \@\$batch ) {
 return 1;
 END
 
-    $m->field( "Scrip-$sid-CustomCommitCode" => $code );
-    $m->submit;
+    $m->field( "CustomCommitCode" => $code );
+    $m->click('Update');
 
     $m->goto_create_ticket( $queue );
     $m->form_name('TicketCreate');

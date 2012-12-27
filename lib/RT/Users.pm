@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -118,7 +118,7 @@ sub PrincipalsAlias {
 
 =head2 LimitToEnabled
 
-Only find items that haven\'t been disabled
+Only find items that haven't been disabled
 
 =cut
 
@@ -188,6 +188,9 @@ sub MemberOfGroup {
                  FIELD1 => 'id',
                  ALIAS2 => $groupalias,
                  FIELD2 => 'MemberId' );
+    $self->Limit( ALIAS => $groupalias,
+                  FIELD => 'Disabled',
+                  VALUE => 0 );
 
     $self->Limit( ALIAS    => "$groupalias",
                   FIELD    => 'GroupId',
@@ -219,6 +222,13 @@ sub LimitToUnprivileged {
     $self->MemberOfGroup( RT->UnprivilegedUsers->id);
 }
 
+
+sub Limit {
+    my $self = shift;
+    my %args = @_;
+    $args{'CASESENSITIVE'} = 0 unless exists $args{'CASESENSITIVE'};
+    return $self->SUPER::Limit( %args );
+}
 
 =head2 WhoHaveRight { Right => 'name', Object => $rt_object , IncludeSuperusers => undef, IncludeSubgroupMembers => undef, IncludeSystemRights => undef, EquivObjects => [ ] }
 
@@ -259,6 +269,11 @@ sub _JoinGroupMembers
         ALIAS2 => $principals,
         FIELD2 => 'id'
     );
+    $self->Limit(
+        ALIAS => $group_members,
+        FIELD => 'Disabled',
+        VALUE => 0,
+    ) if $args{'IncludeSubgroupMembers'};
 
     return $group_members;
 }
@@ -446,10 +461,7 @@ sub _RoleClauses {
         $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
 
         my $role_clause = "$groups.Domain = '$type-Role'";
-        # XXX: Groups.Instance is VARCHAR in DB, we should quote value
-        # if we want mysql 4.0 use indexes here. we MUST convert that
-        # field to integer and drop this quotes.
-        $role_clause   .= " AND $groups.Instance = '$id'" if $id;
+        $role_clause   .= " AND $groups.Instance = $id" if $id;
         push @groups_clauses, "($role_clause)";
     }
     return @groups_clauses;

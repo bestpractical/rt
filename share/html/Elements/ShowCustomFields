@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -83,6 +83,8 @@ $m->callback(
     CustomFields => $CustomFields,
 );
 
+$CustomFields->LimitToGrouping( $Object => $Grouping ) if defined $Grouping;
+
 # don't print anything if there is no custom fields
 return unless $CustomFields->First;
 $CustomFields->GotoFirstItem;
@@ -114,12 +116,12 @@ my $print_value = sub {
        my $vid = $value->id;
        $m->out(   '<div class="object_cf_value_include" id="object_cf_value_'. $vid .'">' );
        $m->out( loc("See also:") );
-       $m->out(   '<a href="'. $value->IncludeContentForValue .'">' );
-       $m->out( $value->IncludeContentForValue );
+       $m->out(   '<a href="'. $m->interp->apply_escapes($value->IncludeContentForValue, 'h') .'">' );
+       $m->out( $m->interp->apply_escapes($value->IncludeContentForValue, 'h') );
        $m->out(   qq{</a></div>\n} );
-       $m->out(   qq{<script><!--\njQuery('#object_cf_value_$vid').load('} );
-       $m->out( $value->IncludeContentForValue );
-       $m->out(   qq{');\n--></script>\n} );
+       $m->out(   qq{<script><!--\njQuery('#object_cf_value_$vid').load(} );
+       $m->out(   $m->interp->apply_escapes($value->IncludeContentForValue, 'j') );
+       $m->out(   qq{);\n--></script>\n} );
     }
 };
 
@@ -127,5 +129,6 @@ my $print_value = sub {
 <%ARGS>
 $Object => undef
 $CustomFields => $Object->CustomFields
+$Grouping => undef
 $Table => 1
 </%ARGS>

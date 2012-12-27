@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -452,6 +452,36 @@ sub CurrentUserCanCreateAny {
         if $CurrentUser->HasRight(Object => $RT::System, Right => 'CreateDashboard');
 
     return 0;
+}
+
+=head2 Delete
+
+Deletes the dashboard and related subscriptions.
+Returns a tuple of status and message, where status is true upon success.
+
+=cut
+
+sub Delete {
+    my $self = shift;
+    my $id = $self->id;
+    my ( $status, $msg ) = $self->SUPER::Delete(@_);
+    if ( $status ) {
+        # delete all the subscriptions
+        my $subscriptions = RT::Attributes->new( RT->SystemUser );
+        $subscriptions->Limit(
+            FIELD => 'Name',
+            VALUE => 'Subscription',
+        );
+        $subscriptions->Limit(
+            FIELD => 'Description',
+            VALUE => "Subscription to dashboard $id",
+        );
+        while ( my $subscription = $subscriptions->Next ) {
+            $subscription->Delete();
+        }
+    }
+
+    return ( $status, $msg );
 }
 
 RT::Base->_ImportOverlays();

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -127,28 +127,40 @@ sub Create {
     # If we possibly can, collapse it to a singlepart
     $Attachment->make_singlepart;
 
+    my $head = $Attachment->head;
+
     # Get the subject
-    my $Subject = $Attachment->head->get( 'subject', 0 );
+    my $Subject = $head->get( 'subject', 0 );
     $Subject = '' unless defined $Subject;
     chomp $Subject;
     utf8::decode( $Subject ) unless utf8::is_utf8( $Subject );
 
     #Get the Message-ID
-    my $MessageId = $Attachment->head->get( 'Message-ID', 0 );
+    my $MessageId = $head->get( 'Message-ID', 0 );
     defined($MessageId) or $MessageId = '';
     chomp ($MessageId);
     $MessageId =~ s/^<(.*?)>$/$1/o;
 
     #Get the filename
-
     my $Filename = mime_recommended_filename($Attachment);
 
     # remove path part. 
     $Filename =~ s!.*/!! if $Filename;
 
+    my $content;
+    unless ( $head->get('Content-Length') ) {
+        my $length = 0;
+        if ( defined $Attachment->bodyhandle ) {
+            $content = $Attachment->bodyhandle->as_string;
+            utf8::encode( $content ) if utf8::is_utf8( $content );
+            $length = length $content;
+        }
+        $head->replace( 'Content-Length' => $length );
+    }
+    $head = $head->as_string;
+
     # MIME::Head doesn't support perl strings well and can return
     # octets which later will be double encoded in low-level code
-    my $head = $Attachment->head->as_string;
     utf8::decode( $head ) unless utf8::is_utf8( $head );
 
     # If a message has no bodyhandle, that means that it has subparts (or appears to)
@@ -165,6 +177,7 @@ sub Create {
 
         unless ($id) {
             $RT::Logger->crit("Attachment insert failed - ". $RT::Handle->dbh->errstr);
+            return ($id);
         }
 
         foreach my $part ( $Attachment->parts ) {
@@ -176,6 +189,7 @@ sub Create {
             );
             unless ($id) {
                 $RT::Logger->crit("Attachment insert failed: ". $RT::Handle->dbh->errstr);
+                return ($id);
             }
         }
         return ($id);
@@ -184,7 +198,8 @@ sub Create {
     #If it's not multipart
     else {
 
-        my ($ContentEncoding, $Body, $ContentType, $Filename) = $self->_EncodeLOB(
+        my ($encoding, $type);
+        ($encoding, $content, $type, $Filename) = $self->_EncodeLOB(
             $Attachment->bodyhandle->as_string,
             $Attachment->mime_type,
             $Filename
@@ -192,12 +207,12 @@ sub Create {
 
         my $id = $self->SUPER::Create(
             TransactionId   => $args{'TransactionId'},
-            ContentType     => $ContentType,
-            ContentEncoding => $ContentEncoding,
+            ContentType     => $type,
+            ContentEncoding => $encoding,
             Parent          => $args{'Parent'},
             Headers         => $head,
             Subject         => $Subject,
-            Content         => $Body,
+            Content         => $content,
             Filename        => $Filename,
             MessageId       => $MessageId,
         );
@@ -207,22 +222,6 @@ sub Create {
         }
         return $id;
     }
-}
-
-=head2 Import
-
-Create an attachment exactly as specified in the named parameters.
-
-=cut
-
-sub Import {
-    my $self = shift;
-    my %args = ( ContentEncoding => 'none', @_ );
-
-    ( $args{'ContentEncoding'}, $args{'Content'} ) =
-        $self->_EncodeLOB( $args{'Content'}, $args{'MimeType'} );
-
-    return ( $self->SUPER::Create(%args) );
 }
 
 =head2 TransactionObj
@@ -266,7 +265,7 @@ sub ParentObj {
 =head2 Children
 
 Returns an L<RT::Attachments> object which is preloaded with
-all attachments objects with this attachment\'s Id as their
+all attachments objects with this attachment's Id as their
 C<Parent>.
 
 =cut
@@ -381,59 +380,32 @@ sub ContentLength {
     return $len;
 }
 
-=head2 Quote
+=head2 FriendlyContentLength
+
+Returns L</ContentLength> in bytes, kilobytes, or megabytes as most
+appropriate.  The size is suffixed with C<M>, C<k>, and C<b> and the returned
+string is localized.
+
+Returns the empty string if the L</ContentLength> is 0 or undefined.
 
 =cut
 
-sub Quote {
-    my $self=shift;
-    my %args=(Reply=>undef, # Prefilled reply (i.e. from the KB/FAQ system)
-	      @_);
+sub FriendlyContentLength {
+    my $self = shift;
+    my $size = $self->ContentLength;
+    return '' unless $size;
 
-    my ($quoted_content, $body, $headers);
-    my $max=0;
-
-    # TODO: Handle Multipart/Mixed (eventually fix the link in the
-    # ShowHistory web template?)
-    if (RT::I18N::IsTextualContentType($self->ContentType)) {
-	$body=$self->Content;
-
-	# Do we need any preformatting (wrapping, that is) of the message?
-
-	# Remove quoted signature.
-	$body =~ s/\n-- \n(.*)$//s;
-
-	# What's the longest line like?
-	foreach (split (/\n/,$body)) {
-	    $max=length if ( length > $max);
-	}
-
-	if ($max>76) {
-	    require Text::Wrapper;
-	    my $wrapper = Text::Wrapper->new
-		(
-		 columns => 70, 
-		 body_start => ($max > 70*3 ? '   ' : ''),
-		 par_start => ''
-		 );
-	    $body=$wrapper->wrap($body);
-	}
-
-	$body =~ s/^/> /gm;
-
-	$body = '[' . $self->TransactionObj->CreatorObj->Name() . ' - ' . $self->TransactionObj->CreatedAsString()
-	            . "]:\n\n"
-   	        . $body . "\n\n";
-
-    } else {
-	$body = "[Non-text message not quoted]\n\n";
+    my $res = '';
+    if ( $size > 1024*1024 ) {
+        $res = $self->loc( "[_1]M", int( $size / 1024 / 102.4 ) / 10 );
     }
-    
-    $max=60 if $max<60;
-    $max=70 if $max>78;
-    $max+=2;
-
-    return (\$body, $max);
+    elsif ( $size > 1024 ) {
+        $res = $self->loc( "[_1]k", int( $size / 102.4 ) / 10 );
+    }
+    else {
+        $res = $self->loc( "[_1]b", $size );
+    }
+    return $res;
 }
 
 =head2 ContentAsMIME [Children => 1]
@@ -600,8 +572,8 @@ sub DelHeader {
 
     my $newheader = '';
     foreach my $line ($self->_SplitHeaders) {
-        next if $line =~ /^\Q$tag\E:\s+(.*)$/is;
-	$newheader .= "$line\n";
+        next if $line =~ /^\Q$tag\E:\s+/i;
+        $newheader .= "$line\n";
     }
     return $self->__Set( Field => 'Headers', Value => $newheader);
 }
@@ -617,9 +589,7 @@ sub AddHeader {
 
     my $newheader = $self->__Value( 'Headers' );
     while ( my ($tag, $value) = splice @_, 0, 2 ) {
-        $value = '' unless defined $value;
-        $value =~ s/\s+$//s;
-        $value =~ s/\r+\n/\n /g;
+        $value = $self->_CanonicalizeHeaderValue($value);
         $newheader .= "$tag: $value\n";
     }
     return $self->__Set( Field => 'Headers', Value => $newheader);
@@ -632,22 +602,37 @@ Replace or add a Header to the attachment's headers.
 =cut
 
 sub SetHeader {
-    my $self = shift;
-    my $tag = shift;
+    my $self  = shift;
+    my $tag   = shift;
+    my $value = $self->_CanonicalizeHeaderValue(shift);
 
+    my $replaced  = 0;
     my $newheader = '';
-    foreach my $line ($self->_SplitHeaders) {
-        if (defined $tag and $line =~ /^\Q$tag\E:\s+(.*)$/i) {
-	    $newheader .= "$tag: $_[0]\n";
-	    undef $tag;
+    foreach my $line ( $self->_SplitHeaders ) {
+        if ( $line =~ /^\Q$tag\E:\s+/i ) {
+            # replace first instance, skip all the rest
+            unless ($replaced) {
+                $newheader .= "$tag: $value\n";
+                $replaced = 1;
+            }
+        } else {
+            $newheader .= "$line\n";
         }
-	else {
-	    $newheader .= "$line\n";
-	}
     }
 
-    $newheader .= "$tag: $_[0]\n" if defined $tag;
+    $newheader .= "$tag: $value\n" unless $replaced;
     $self->__Set( Field => 'Headers', Value => $newheader);
+}
+
+sub _CanonicalizeHeaderValue {
+    my $self  = shift;
+    my $value = shift;
+
+    $value = '' unless defined $value;
+    $value =~ s/\s+$//s;
+    $value =~ s/\r*\n/\n /g;
+
+    return $value;
 }
 
 =head2 SplitHeaders
@@ -676,6 +661,12 @@ sub _SplitHeaders {
     my $self = shift;
     my $headers = (shift || $self->_Value('Headers'));
     my @headers;
+    # XXX TODO: splitting on \n\w is _wrong_ as it treats \n[ as a valid
+    # continuation, which it isn't.  The correct split pattern, per RFC 2822,
+    # is /\n(?=[^ \t]|\z)/.  That is, only "\n " or "\n\t" is a valid
+    # continuation.  Older values of X-RT-GnuPG-Status contain invalid
+    # continuations and rely on this bogus split pattern, however, so it is
+    # left as-is for now.
     for (split(/\n(?=\w|\z)/,$headers)) {
         push @headers, $_;
 

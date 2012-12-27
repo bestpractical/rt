@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -53,21 +53,21 @@
 
 <option value="<%$value%>"
 <% ($value eq $Default) && qq[ selected="selected"] |n %>
+<% ($value eq 'TransactionBatch' and not RT->Config->Get('UseTransactionBatch')) && qq[ disabled ] %>
 ><% loc($display) %>
 </option>
 
 % }
+</select>
 <%INIT>
 if ( !defined $Default || $Default eq '') {
     $Default = 'TransactionCreate';
 }
-my @stages = 'TransactionCreate';
+my @stages = ['TransactionCreate', loc('Normal')];
 
 push @stages, RT->Config->Get('UseTransactionBatch')
-            ? 'TransactionBatch'
-            : ['TransactionBatch', 'TransactionBatch (DISABLED)'];
-
-push @stages, 'Disabled';
+            ? ['TransactionBatch', loc('Batch')]
+            : ['TransactionBatch', loc('Batch (disabled by config)')];
 </%INIT>
 <%ARGS>
 $Default => 'TransactionCreate'

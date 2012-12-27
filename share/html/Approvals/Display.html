@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -50,7 +50,7 @@
 <form method="post" action="<%RT->Config->Get('WebPath')%>/Approvals/index.html">
 
 <&| /Widgets/TitleBox, title => $title &>
-<& /Ticket/Elements/ShowHistory , Ticket => $Ticket, Collapsed => 0, ShowTitle => 0, ShowHeaders => 0, ShowDisplayModes => 0, ShowTitleBarCommands => 0 &>
+<& /Elements/ShowHistory , Object => $Ticket, ShowTitle => 0, ShowHeaders => 0, ShowDisplayModes => 0, ShowTitleBarCommands => 0 &>
 <hr />
 <& Elements/Approve, ticket => $Ticket, ShowApproving => 0 &>
 </&>

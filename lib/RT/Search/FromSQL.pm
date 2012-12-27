@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -66,6 +66,7 @@ Find all tickets described by the SQL statement passed as an argument
 package RT::Search::FromSQL;
 
 use strict;
+use warnings;
 use base qw(RT::Search);
 
 =head2 Describe

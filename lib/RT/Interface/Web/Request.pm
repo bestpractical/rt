@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -118,11 +118,7 @@ sub callback {
     unless ( $callbacks ) {
         $callbacks = [];
         my $path  = "/Callbacks/*$page/$name";
-        my @roots = map $_->[1],
-                        $HTML::Mason::VERSION <= 1.28
-                            ? $self->interp->resolver->comp_root_array
-                            : $self->interp->comp_root_array;
-
+        my @roots = RT::Interface::Web->ComponentRoots;
         my %seen;
         @$callbacks = (
             grep defined && length,
@@ -146,6 +142,10 @@ sub callback {
     }
     return @rv;
 }
+
+sub clear_callback_cache {
+    %cache = %called = ();
+}
 }
 
 =head2 request_path
@@ -167,6 +167,23 @@ sub request_path {
     return $path unless substr($path, -length("/$dh_name")) eq "/$dh_name";
     substr($path, -length $dh_name) = $self->dhandler_arg;
     return $path;
+}
+
+=head2 abort
+
+Logs any recorded SQL statements for this request before calling the standard
+abort.
+
+=cut
+
+sub abort {
+    my $self = shift;
+    RT::Interface::Web::LogRecordedSQLStatements(
+        RequestData => {
+            Path => $self->request_path,
+        },
+    );
+    return $self->SUPER::abort(@_);
 }
 
 1;

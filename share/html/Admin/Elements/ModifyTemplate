@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -69,7 +69,10 @@
 
 <%INIT>
 
-$Type = 'Perl' if !$Type;
+unless ($Type) {
+    $Type = $session{'CurrentUser'}->HasRight(Right => 'ExecuteCode', Object => $RT::System) ?
+        'Perl' : 'Simple';
+}
 
 </%INIT>
 
@@ -77,5 +80,5 @@ $Type = 'Perl' if !$Type;
 $Name => ''
 $Description => ''
 $Content => ''
-$Type => 'Perl'
+$Type => ''
 </%ARGS>

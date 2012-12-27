@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -83,6 +83,8 @@ foreach my $arg ( keys %$parent_args ) {
     my $formatted_article = $m->scomp('/Articles/Article/Elements/Preformatted',
         Article => $article, Ticket => $Ticket
     );
+
+    $m->callback( Article => $article, Ticket => $Ticket, formatted_article => \$formatted_article );
 
     if (RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'})) {
         $formatted_article =~ s/>/&gt;/g;

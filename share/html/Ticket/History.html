@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -53,10 +53,9 @@
 
 <br />
       
-<& /Ticket/Elements/ShowHistory , 
-    Ticket => $Ticket, 
+<& /Elements/ShowHistory,
+    Object => $Ticket,
     ShowHeaders => $ARGS{'ShowHeaders'}, 
-    URIFile => 'History.html', 
     Attachments => $attachments,
     AttachmentContent => $attachment_content
     &> 
@@ -77,9 +76,8 @@ unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
     Abort("No permission to view ticket");
 }
 
-my $attachments = $m->comp('Elements/FindAttachments', Ticket => $Ticket);
-my $attachment_content = $m->comp('Elements/LoadTextAttachments', Ticket =>
-$Ticket);
+my $attachments = $Ticket->Attachments;
+my $attachment_content = $Ticket->TextAttachments;
 
 
 </%INIT>

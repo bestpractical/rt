@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -107,5 +107,10 @@
 #color-picker {
     float: right;
     width: 78%; 
+}
+
+#logo-color-picker {
+    display: none; /* unhidden by javascript */
+    cursor: url(<% RT->Config->Get("WebImagesURL") %>/eyedropper.png), crosshair;
 }
 

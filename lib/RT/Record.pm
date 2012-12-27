@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -70,6 +70,7 @@ use warnings;
 use RT::Date;
 use RT::User;
 use RT::Attributes;
+use RT::Link;
 use Encode qw();
 
 our $_TABLE_ATTR = { };
@@ -127,21 +128,35 @@ sub Delete {
     } 
 }
 
-=head2 ObjectTypeStr
+=head2 RecordType
 
-Returns a string which is this object's type.  The type is the class,
-without the "RT::" prefix.
-
+Returns a string which is this record's type. It's not localized and by
+default last part (everything after last ::) of class name is returned.
 
 =cut
 
+sub RecordType {
+    my $res = ref($_[0]) || $_[0];
+    $res =~ s/.*:://;
+    return $res;
+}
+
+=head2 ObjectTypeStr
+
+DEPRECATED. Stays here for backwards. Returns localized L</RecordType>.
+
+=cut
+
+# we deprecate because of:
+# * ObjectType is used in several classes with ObjectId to store
+#   records of different types, for example transactions use those
+#   and it's unclear what this method should return 'Transaction'
+#   or type of referenced record
+# * returning localized thing is not good idea
+
 sub ObjectTypeStr {
     my $self = shift;
-    if (ref($self) =~ /^.*::(\w+)$/) {
-	return $self->loc($1);
-    } else {
-	return $self->loc(ref($self));
-    }
+    return $self->loc( $self->RecordType( @_ ) );
 }
 
 =head2 Attributes
@@ -264,6 +279,18 @@ an error.
 
 If this object's table has any of the following atetributes defined as
 'Auto', this routine will automatically fill in their values.
+
+=over
+
+=item Created
+
+=item Creator
+
+=item LastUpdated
+
+=item LastUpdatedBy
+
+=back
 
 =cut
 
@@ -406,57 +433,39 @@ sub CreatedObj {
 }
 
 
-#
-# TODO: This should be deprecated
-#
+# B<DEPRECATED> and will be removed in 4.4
 sub AgeAsString {
     my $self = shift;
+    $RT::Logger->warning("RT::Record->AgeAsString is deprecated and will be removed in RT 4.4; use ->CreatedObj->AgeAsString instead");
     return ( $self->CreatedObj->AgeAsString() );
 }
 
+# B<DEPRECATED> and will be removed in 4.4
+sub LongSinceUpdateAsString {
+    my $self = shift;
+    $RT::Logger->warning("RT::Record->LongSinceUpdateAsString is deprecated and will be removed in RT 4.4; use ->LastUpdatedObj->AgeAsString instead");
 
-
-# TODO this should be deprecated
+    if ( $self->LastUpdated ) {
+        return ( $self->LastUpdatedObj->AgeAsString() );
+    } else {
+        return "never";
+    }
+}
 
 sub LastUpdatedAsString {
     my $self = shift;
     if ( $self->LastUpdated ) {
         return ( $self->LastUpdatedObj->AsString() );
-
-    }
-    else {
+    } else {
         return "never";
     }
 }
 
-
-#
-# TODO This should be deprecated 
-#
 sub CreatedAsString {
     my $self = shift;
     return ( $self->CreatedObj->AsString() );
 }
 
-
-#
-# TODO This should be deprecated
-#
-sub LongSinceUpdateAsString {
-    my $self = shift;
-    if ( $self->LastUpdated ) {
-
-        return ( $self->LastUpdatedObj->AgeAsString() );
-
-    }
-    else {
-        return "never";
-    }
-}
-
-
-
-#
 sub _Set {
     my $self = shift;
 
@@ -488,19 +497,24 @@ sub _Set {
     # $ret is a Class::ReturnValue object. as such, in a boolean context, it's a bool
     # we want to change the standard "success" message
     if ($status) {
-        $msg =
-          $self->loc(
-            "[_1] changed from [_2] to [_3]",
-            $self->loc( $args{'Field'} ),
-            ( $old_val ? '"' . $old_val . '"' : $self->loc("(no value)") ),
-            '"' . $self->__Value( $args{'Field'}) . '"' 
-          );
-      } else {
-
-          $msg = $self->CurrentUser->loc_fuzzy($msg);
+        if ($self->SQLType( $args{'Field'}) =~ /text/) {
+            $msg = $self->loc(
+                "[_1] updated",
+                $self->loc( $args{'Field'} ),
+            );
+        } else {
+            $msg = $self->loc(
+                "[_1] changed from [_2] to [_3]",
+                $self->loc( $args{'Field'} ),
+                ( $old_val ? '"' . $old_val . '"' : $self->loc("(no value)") ),
+                '"' . $self->__Value( $args{'Field'}) . '"',
+            );
+        }
+    } else {
+        $msg = $self->CurrentUser->loc_fuzzy($msg);
     }
-    return wantarray ? ($status, $msg) : $ret;     
 
+    return wantarray ? ($status, $msg) : $ret;
 }
 
 
@@ -591,10 +605,10 @@ Validate the name of the record we're creating. Mostly, just make sure it's not 
 sub ValidateName {
     my $self = shift;
     my $value = shift;
-    if ($value && $value=~ /^\d+$/) {
+    if (defined $value && $value=~ /^\d+$/) {
         return(0);
     } else  {
-         return (1);
+        return(1);
     }
 }
 
@@ -625,6 +639,8 @@ sub __Value {
     }
 
     my $value = $self->SUPER::__Value($field);
+
+    return undef if (!defined $value);
 
     if ( $args{'decode_utf8'} ) {
         if ( !utf8::is_utf8($value) ) {
@@ -664,8 +680,8 @@ sub _BuildTableAttributes {
 
     }
 
-    foreach my $column (%$attributes) {
-        foreach my $attr ( %{ $attributes->{$column} } ) {
+    foreach my $column (keys %$attributes) {
+        foreach my $attr ( keys %{ $attributes->{$column} } ) {
             $_TABLE_ATTR->{$class}->{$column}->{$attr} = $attributes->{$column}->{$attr};
         }
     }
@@ -673,8 +689,8 @@ sub _BuildTableAttributes {
         next unless UNIVERSAL::can( $self, $method );
         $attributes = $self->$method();
 
-        foreach my $column (%$attributes) {
-            foreach my $attr ( %{ $attributes->{$column} } ) {
+        foreach my $column ( keys %$attributes ) {
+            foreach my $attr ( keys %{ $attributes->{$column} } ) {
                 $_TABLE_ATTR->{$class}->{$column}->{$attr} = $attributes->{$column}->{$attr};
             }
         }
@@ -806,23 +822,6 @@ sub _DecodeLOB {
         return ($Content);
 }
 
-# A helper table for links mapping to make it easier
-# to build and parse links between tickets
-
-use vars '%LINKDIRMAP';
-
-%LINKDIRMAP = (
-    MemberOf => { Base => 'MemberOf',
-                  Target => 'HasMember', },
-    RefersTo => { Base => 'RefersTo',
-                Target => 'ReferredToBy', },
-    DependsOn => { Base => 'DependsOn',
-                   Target => 'DependedOnBy', },
-    MergedInto => { Base => 'MergedInto',
-                   Target => 'MergedInto', },
-
-);
-
 =head2 Update  ARGSHASH
 
 Updates fields on an object for you using the proper Set methods,
@@ -887,8 +886,12 @@ sub Update {
                 my $name = $self->$object->Name;
                 next if $name eq $value || $name eq ($value || 0);
             };
-            next if $value eq $self->$attribute();
-            next if ($value || 0) eq $self->$attribute();
+
+            my $current = $self->$attribute();
+            # RT::Queue->Lifecycle returns a Lifecycle object instead of name
+            $current = eval { $current->Name } if ref $current;
+            next if $value eq $current;
+            next if ( $value || 0 ) eq $current;
         };
 
         $new_values{$attribute} = $value;
@@ -1077,10 +1080,7 @@ sub UnresolvedDependencies {
     my $self = shift;
     my $deps = RT::Tickets->new($self->CurrentUser);
 
-    my @live_statuses = RT::Queue->ActiveStatusArray();
-    foreach my $status (@live_statuses) {
-        $deps->LimitStatus(VALUE => $status);
-    }
+    $deps->LimitToActiveStatus;
     $deps->LimitDependedOnBy($self->Id);
 
     return($deps);
@@ -1253,25 +1253,30 @@ sub FormatLink {
     return $text;
 }
 
-
-
 =head2 _AddLink
 
 Takes a paramhash of Type and one of Base or Target. Adds that link to this object.
 
-Returns C<link id>, C<message> and C<exist> flag.
+If Silent is true then no transactions will be recorded.  You can individually
+control transactions on both base and target and with SilentBase and
+SilentTarget respectively. By default both transactions are created.
 
+Returns a tuple of (link ID, message, flag if link already existed).
 
 =cut
 
 sub _AddLink {
     my $self = shift;
-    my %args = ( Target => '',
-                 Base   => '',
-                 Type   => '',
-                 Silent => undef,
-                 @_ );
-
+    my %args = (
+        Target       => '',
+        Base         => '',
+        Type         => '',
+        Silent       => undef,
+        Silent       => undef,
+        SilentBase   => undef,
+        SilentTarget => undef,
+        @_
+    );
 
     # Remote_link is the URI of the object that is not this ticket
     my $remote_link;
@@ -1306,52 +1311,82 @@ sub _AddLink {
         return ( $old_link->id, $self->loc("Link already exists"), 1 );
     }
 
-    # }}}
-
-
     # Storing the link in the DB.
     my $link = RT::Link->new( $self->CurrentUser );
     my ($linkid, $linkmsg) = $link->Create( Target => $args{Target},
-                                  Base   => $args{Base},
-                                  Type   => $args{Type} );
+                                            Base   => $args{Base},
+                                            Type   => $args{Type} );
 
     unless ($linkid) {
         $RT::Logger->error("Link could not be created: ".$linkmsg);
-        return ( 0, $self->loc("Link could not be created") );
+        return ( 0, $self->loc("Link could not be created: [_1]", $linkmsg) );
     }
 
-    my $basetext = $self->FormatLink(Object => $link->BaseObj,
-				     FallBack => $args{Base});
-    my $targettext = $self->FormatLink(Object => $link->TargetObj,
-				       FallBack => $args{Target});
+    my $basetext = $self->FormatLink(Object   => $link->BaseObj,
+                                     FallBack => $args{Base});
+    my $targettext = $self->FormatLink(Object   => $link->TargetObj,
+                                       FallBack => $args{Target});
     my $typetext = $self->FormatType(Type => $args{Type});
-    my $TransString =
-      "$basetext $typetext $targettext.";
-    return ( $linkid, $TransString ) ;
+    my $TransString = "$basetext $typetext $targettext.";
+
+    # No transactions for you!
+    return ($linkid, $TransString) if $args{'Silent'};
+
+    # Some transactions?
+    my $remote_uri = RT::URI->new( $self->CurrentUser );
+    $remote_uri->FromURI( $remote_link );
+
+    my $opposite_direction = $direction eq 'Target' ? 'Base': 'Target';
+
+    unless ( $args{ 'Silent'. $direction } ) {
+        my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
+            Type      => 'AddLink',
+            Field     => $RT::Link::DIRMAP{$args{'Type'}}->{$direction},
+            NewValue  => $remote_uri->URI || $remote_link,
+            TimeTaken => 0
+        );
+        $RT::Logger->error("Couldn't create transaction: $Msg") unless $Trans;
+    }
+
+    if ( !$args{"Silent$opposite_direction"} && $remote_uri->IsLocal ) {
+        my $OtherObj = $remote_uri->Object;
+        my ( $val, $msg ) = $OtherObj->_NewTransaction(
+            Type           => 'AddLink',
+            Field          => $RT::Link::DIRMAP{$args{'Type'}}->{$opposite_direction},
+            NewValue       => $self->URI,
+            TimeTaken      => 0,
+        );
+        $RT::Logger->error("Couldn't create transaction: $msg") unless $val;
+    }
+
+    return ($linkid, $TransString);
 }
-
-
 
 =head2 _DeleteLink
 
-Delete a link. takes a paramhash of Base, Target and Type.
-Either Base or Target must be null. The null value will 
-be replaced with this ticket\'s id
+Takes a paramhash of Type and one of Base or Target. Removes that link from this object.
+
+If Silent is true then no transactions will be recorded.  You can individually
+control transactions on both base and target and with SilentBase and
+SilentTarget respectively. By default both transactions are created.
+
+Returns a tuple of (status flag, message).
 
 =cut 
 
 sub _DeleteLink {
     my $self = shift;
     my %args = (
-        Base   => undef,
-        Target => undef,
-        Type   => undef,
+        Base         => undef,
+        Target       => undef,
+        Type         => undef,
+        Silent       => undef,
+        SilentBase   => undef,
+        SilentTarget => undef,
         @_
     );
 
-    #we want one of base and target. we don't care which
-    #but we only want _one_
-
+    # We want one of base and target. We don't care which but we only want _one_.
     my $direction;
     my $remote_link;
 
@@ -1361,13 +1396,13 @@ sub _DeleteLink {
     }
     elsif ( $args{'Base'} ) {
         $args{'Target'} = $self->URI();
-	$remote_link = $args{'Base'};
-    	$direction = 'Target';
+        $remote_link    = $args{'Base'};
+        $direction      = 'Target';
     }
     elsif ( $args{'Target'} ) {
         $args{'Base'} = $self->URI();
-	$remote_link = $args{'Target'};
-        $direction='Base';
+        $remote_link  = $args{'Target'};
+        $direction    = 'Base';
     }
     else {
         $RT::Logger->error("Base or Target must be specified");
@@ -1375,34 +1410,97 @@ sub _DeleteLink {
     }
 
     my $link = RT::Link->new( $self->CurrentUser );
-    $RT::Logger->debug( "Trying to load link: " . $args{'Base'} . " " . $args{'Type'} . " " . $args{'Target'} );
+    $RT::Logger->debug( "Trying to load link: "
+            . $args{'Base'} . " "
+            . $args{'Type'} . " "
+            . $args{'Target'} );
 
+    $link->LoadByParams(
+        Base   => $args{'Base'},
+        Type   => $args{'Type'},
+        Target => $args{'Target'}
+    );
 
-    $link->LoadByParams( Base=> $args{'Base'}, Type=> $args{'Type'}, Target=>  $args{'Target'} );
-    #it's a real link. 
-
-    if ( $link->id ) {
-        my $basetext = $self->FormatLink(Object => $link->BaseObj,
-                                     FallBack => $args{Base});
-        my $targettext = $self->FormatLink(Object => $link->TargetObj,
-                                       FallBack => $args{Target});
-        my $typetext = $self->FormatType(Type => $args{Type});
-        my $linkid = $link->id;
-        $link->Delete();
-        my $TransString = "$basetext no longer $typetext $targettext.";
-        return ( 1, $TransString);
-    }
-
-    #if it's not a link we can find
-    else {
+    unless ($link->id) {
         $RT::Logger->debug("Couldn't find that link");
         return ( 0, $self->loc("Link not found") );
     }
+
+    my $basetext = $self->FormatLink(Object   => $link->BaseObj,
+                                     FallBack => $args{Base});
+    my $targettext = $self->FormatLink(Object   => $link->TargetObj,
+                                       FallBack => $args{Target});
+    my $typetext = $self->FormatType(Type => $args{Type});
+    my $TransString = "$basetext no longer $typetext $targettext.";
+
+    my ($ok, $msg) = $link->Delete();
+    unless ($ok) {
+        RT->Logger->error("Link could not be deleted: $msg");
+        return ( 0, $self->loc("Link could not be deleted: [_1]", $msg) );
+    }
+
+    # No transactions for you!
+    return (1, $TransString) if $args{'Silent'};
+
+    # Some transactions?
+    my $remote_uri = RT::URI->new( $self->CurrentUser );
+    $remote_uri->FromURI( $remote_link );
+
+    my $opposite_direction = $direction eq 'Target' ? 'Base': 'Target';
+
+    unless ( $args{ 'Silent'. $direction } ) {
+        my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
+            Type      => 'DeleteLink',
+            Field     => $RT::Link::DIRMAP{$args{'Type'}}->{$direction},
+            OldValue  => $remote_uri->URI || $remote_link,
+            TimeTaken => 0
+        );
+        $RT::Logger->error("Couldn't create transaction: $Msg") unless $Trans;
+    }
+
+    if ( !$args{"Silent$opposite_direction"} && $remote_uri->IsLocal ) {
+        my $OtherObj = $remote_uri->Object;
+        my ( $val, $msg ) = $OtherObj->_NewTransaction(
+            Type           => 'DeleteLink',
+            Field          => $RT::Link::DIRMAP{$args{'Type'}}->{$opposite_direction},
+            OldValue       => $self->URI,
+            TimeTaken      => 0,
+        );
+        $RT::Logger->error("Couldn't create transaction: $msg") unless $val;
+    }
+
+    return (1, $TransString);
 }
 
+=head1 LockForUpdate
 
+In a database transaction, gains an exclusive lock on the row, to
+prevent race conditions.  On SQLite, this is a "RESERVED" lock on the
+entire database.
 
+=cut
 
+sub LockForUpdate {
+    my $self = shift;
+
+    my $pk = $self->_PrimaryKey;
+    my $id = @_ ? $_[0] : $self->$pk;
+    $self->_expire if $self->isa("DBIx::SearchBuilder::Record::Cachable");
+    if (RT->Config->Get('DatabaseType') eq "SQLite") {
+        # SQLite does DB-level locking, upgrading the transaction to
+        # "RESERVED" on the first UPDATE/INSERT/DELETE.  Do a no-op
+        # UPDATE to force the upgade.
+        return RT->DatabaseHandle->dbh->do(
+            "UPDATE " .$self->Table.
+                " SET $pk = $pk WHERE 1 = 0");
+    } else {
+        return $self->_LoadFromSQL(
+            "SELECT * FROM ".$self->Table
+                ." WHERE $pk = ? FOR UPDATE",
+            $id,
+        );
+    }
+}
 
 =head2 _NewTransaction  PARAMHASH
 
@@ -1428,6 +1526,11 @@ sub _NewTransaction {
         SquelchMailTo => undef,
         @_
     );
+
+    my $in_txn = RT->DatabaseHandle->TransactionDepth;
+    RT->DatabaseHandle->BeginTransaction unless $in_txn;
+
+    $self->LockForUpdate;
 
     my $old_ref = $args{'OldReference'};
     my $new_ref = $args{'NewReference'};
@@ -1475,6 +1578,9 @@ sub _NewTransaction {
     if ( RT->Config->Get('UseTransactionBatch') and $transaction ) {
 	    push @{$self->{_TransactionBatch}}, $trans if $args{'CommitScrips'};
     }
+
+    RT->DatabaseHandle->Commit unless $in_txn;
+
     return ( $transaction, $msg, $trans );
 }
 
@@ -1482,7 +1588,7 @@ sub _NewTransaction {
 
 =head2 Transactions
 
-  Returns an RT::Transactions object of all transactions on this record object
+Returns an L<RT::Transactions> object of all transactions on this record object
 
 =cut
 
@@ -1491,8 +1597,6 @@ sub Transactions {
 
     use RT::Transactions;
     my $transactions = RT::Transactions->new( $self->CurrentUser );
-
-    #If the user has no rights, return an empty object
     $transactions->Limit(
         FIELD => 'ObjectId',
         VALUE => $self->id,
@@ -1502,10 +1606,134 @@ sub Transactions {
         VALUE => ref($self),
     );
 
-    return ($transactions);
+    return $transactions;
 }
 
-#
+=head2 SortedTransactions
+
+Returns the result of L</Transactions> ordered per the
+I<OldestTransactionsFirst> preference/option.
+
+=cut
+
+sub SortedTransactions {
+    my $self  = shift;
+    my $txns  = $self->Transactions;
+    my $order = RT->Config->Get("OldestTransactionsFirst", $self->CurrentUser)
+        ? 'ASC' : 'DESC';
+    $txns->OrderByCols(
+        { FIELD => 'Created',   ORDER => $order },
+        { FIELD => 'id',        ORDER => $order },
+    );
+    return $txns;
+}
+
+our %TRANSACTION_CLASSIFICATION = (
+    Create     => 'message',
+    Correspond => 'message',
+    Comment    => 'message',
+
+    AddWatcher => 'people',
+    DelWatcher => 'people',
+
+    Take       => 'people',
+    Untake     => 'people',
+    Force      => 'people',
+    Steal      => 'people',
+    Give       => 'people',
+
+    AddLink    => 'links',
+    DeleteLink => 'links',
+
+    Status     => 'basics',
+    Set        => {
+        __default => 'basics',
+        map( { $_ => 'dates' } qw(
+            Told Starts Started Due LastUpdated Created LastUpdated
+        ) ),
+        map( { $_ => 'people' } qw(
+            Owner Creator LastUpdatedBy
+        ) ),
+    },
+    __default => 'other',
+);
+
+sub ClassifyTransaction {
+    my $self = shift;
+    my $txn = shift;
+
+    my $type = $txn->Type;
+
+    my $res = $TRANSACTION_CLASSIFICATION{ $type };
+    return $res || $TRANSACTION_CLASSIFICATION{ '__default' }
+        unless ref $res;
+
+    return $res->{ $txn->Field } || $res->{'__default'}
+        || $TRANSACTION_CLASSIFICATION{ '__default' }; 
+}
+
+=head2 Attachments
+
+Returns an L<RT::Attachments> object of all attachments on this record object
+(for all its L</Transactions>).
+
+By default Content and Headers of attachments are not fetched right away from
+database. Use C<WithContent> and C<WithHeaders> options to override this.
+
+=cut
+
+sub Attachments {
+    my $self = shift;
+    my %args = (
+        WithHeaders => 0,
+        WithContent => 0,
+        @_
+    );
+    my @columns = grep { not /^(Headers|Content)$/ }
+                       RT::Attachment->ReadableAttributes;
+    push @columns, 'Headers' if $args{'WithHeaders'};
+    push @columns, 'Content' if $args{'WithContent'};
+
+    my $res = RT::Attachments->new( $self->CurrentUser );
+    $res->Columns( @columns );
+    my $txn_alias = $res->TransactionAlias;
+    $res->Limit(
+        ALIAS => $txn_alias,
+        FIELD => 'ObjectType',
+        VALUE => ref($self),
+    );
+    $res->Limit(
+        ALIAS => $txn_alias,
+        FIELD => 'ObjectId',
+        VALUE => $self->id,
+    );
+    return $res;
+}
+
+=head2 TextAttachments
+
+Returns an L<RT::Attachments> object of all attachments, like L<Attachments>,
+but only those that are text.
+
+By default Content and Headers are fetched. Use C<WithContent> and
+C<WithHeaders> options to override this.
+
+=cut
+
+sub TextAttachments {
+    my $self = shift;
+    my $res = $self->Attachments(
+        WithHeaders => 1,
+        WithContent => 1,
+        @_
+    );
+    $res->Limit( FIELD => 'ContentType', OPERATOR => '=', VALUE => 'text/plain');
+    $res->Limit( FIELD => 'ContentType', OPERATOR => 'STARTSWITH', VALUE => 'message/');
+    $res->Limit( FIELD => 'ContentType', OPERATOR => '=', VALUE => 'text');
+    $res->Limit( FIELD => 'Filename', OPERATOR => 'IS', VALUE => 'NULL')
+        if RT->Config->Get( 'SuppressInlineTextFiles', $self->CurrentUser );
+    return $res;
+}
 
 sub CustomFields {
     my $self = shift;
@@ -1514,29 +1742,32 @@ sub CustomFields {
     $cfs->SetContextObject( $self );
     # XXX handle multiple types properly
     $cfs->LimitToLookupType( $self->CustomFieldLookupType );
-    $cfs->LimitToGlobalOrObjectId(
-        $self->_LookupId( $self->CustomFieldLookupType )
-    );
+    $cfs->LimitToGlobalOrObjectId( $self->CustomFieldLookupId );
     $cfs->ApplySortOrder;
 
     return $cfs;
 }
 
-# TODO: This _only_ works for RT::Class classes. it doesn't work, for example,
-# for RT::IR classes.
+# TODO: This _only_ works for RT::Foo classes. it doesn't work, for
+# example, for RT::IR::Foo classes.
 
-sub _LookupId {
+sub CustomFieldLookupId {
     my $self = shift;
-    my $lookup = shift;
+    my $lookup = shift || $self->CustomFieldLookupType;
     my @classes = ($lookup =~ /RT::(\w+)-/g);
 
+    # Work on "RT::Queue", for instance
+    return $self->Id unless @classes;
+
     my $object = $self;
+    # Save a ->Load call by not calling ->FooObj->Id, just ->Foo
+    my $final = shift @classes;
     foreach my $class (reverse @classes) {
 	my $method = "${class}Obj";
 	$object = $object->$method;
     }
 
-    return $object->Id;
+    return $object->$final;
 }
 
 
@@ -1593,7 +1824,7 @@ sub _AddCustomFieldValue {
             0,
             $self->loc(
                 "Custom field [_1] does not apply to this object",
-                $args{'Field'}
+                ref $args{'Field'} ? $args{'Field'}->id : $args{'Field'}
             )
         );
     }
@@ -1935,6 +2166,352 @@ sub BasicColumns { }
 
 sub WikiBase {
     return RT->Config->Get('WebPath'). "/index.html?q=";
+}
+
+=head2 RegisterRole
+
+Registers an RT role which applies to this class for role-based access control.
+Arguments:
+
+=over 4
+
+=item Name
+
+Required.  The role name (i.e. Requestor, Owner, AdminCc, etc).
+
+=item EquivClasses
+
+Optional.  Array ref of classes through which this role percolates up to
+L<RT::System>.  You can think of this list as:
+
+    map { ref } $record_object->ACLEquivalenceObjects;
+
+You should not include L<RT::System> itself in this list.
+
+Simply calls RegisterRole on each equivalent class.
+
+=back
+
+=cut
+
+sub RegisterRole {
+    my $self  = shift;
+    my $class = ref($self) || $self;
+    my %role  = (
+        Name            => undef,
+        EquivClasses    => [],
+        @_
+    );
+    return unless $role{Name};
+
+    # Keep track of the class this role came from originally
+    $role{ Class } ||= $class;
+
+    # Some groups are limited to a single user
+    $role{ Single } = 1 if $role{Column};
+
+    # Stash the role on ourself
+    $class->_ROLES->{ $role{Name} } = \%role;
+
+    # Register it with any equivalent classes...
+    my $equiv = delete $role{EquivClasses} || [];
+
+    # ... and globally unless we ARE global
+    unless ($class eq "RT::System") {
+        require RT::System;
+        push @$equiv, "RT::System";
+    }
+
+    $_->RegisterRole(%role) for @$equiv;
+
+    # XXX TODO: Register which classes have roles on them somewhere?
+
+    return 1;
+}
+
+=head2 Roles
+
+Returns a list of role names registered for this class.
+
+=cut
+
+sub Roles { sort { $a cmp $b } keys %{ shift->_ROLES } }
+
+{
+    my %ROLES;
+    sub _ROLES {
+        my $class = ref($_[0]) || $_[0];
+        return $ROLES{$class} ||= {};
+    }
+}
+
+=head2 HasRole
+
+Returns true if the name provided is a registered role for this class.
+Otherwise returns false.
+
+=cut
+
+sub HasRole {
+    my $self = shift;
+    my $type = shift;
+    return scalar grep { $type eq $_ } $self->Roles;
+}
+
+=head2 RoleGroup
+
+Expects a role name as the first parameter which is used to load the
+L<RT::Group> for the specified role on this record.  Returns an unloaded
+L<RT::Group> object on failure.
+
+=cut
+
+sub RoleGroup {
+    my $self  = shift;
+    my $type  = shift;
+    my $group = RT::Group->new( $self->CurrentUser );
+
+    if ($self->HasRole($type)) {
+        $group->LoadRoleGroup(
+            Object  => $self,
+            Type    => $type,
+        );
+    }
+    return $group;
+}
+
+=head2 AddRoleMember
+
+Adds the described L<RT::Principal> to the specified role group for this record.
+
+Takes a set of key-value pairs:
+
+=over 4
+
+=item PrincipalId
+
+Optional.  The ID of the L<RT::Principal> object to add.
+
+=item User
+
+=item Group
+
+Optional.  The Name of an L<RT::User> or L<RT::Group>, respectively, to use as
+the principal.
+
+=item Type
+
+Required.  One of the valid roles for this record, as returned by L</Roles>.
+
+=back
+
+One, and only one, of I<PrincipalId>, I<User>, or I<Group> is required.
+
+Returns a tuple of (status, message).
+
+=cut
+
+sub AddRoleMember {
+    my $self = shift;
+    my %args = (@_);
+
+    return (0, $self->loc("One, and only one, of PrincipalId/User/Group is required"))
+        if 1 != grep { $_ } @args{qw/PrincipalId User Group/};
+
+    my $type = delete $args{Type};
+    return (0, $self->loc("No valid Type specified"))
+        unless $type and $self->HasRole($type);
+
+    unless ($args{PrincipalId}) {
+        my $object;
+        if ($args{User}) {
+            $object = RT::User->new( $self->CurrentUser );
+            $object->Load(delete $args{User});
+        }
+        elsif ($args{Group}) {
+            $object = RT::Group->new( $self->CurrentUser );
+            $object->LoadUserDefinedGroup(delete $args{Group});
+        }
+        $args{PrincipalId} = $object->PrincipalObj->id;
+    }
+
+    return (0, $self->loc("No valid PrincipalId"))
+        unless $args{PrincipalId};
+
+    my ($ok, $msg) = $self->RoleGroup($type)->_AddMember(%args);
+
+    if ($ok and not $args{Silent}) {
+        $self->_NewTransaction(
+            Type     => 'AddWatcher', # use "watcher" for history's sake
+            NewValue => $args{PrincipalId},
+            Field    => $type,
+        );
+    }
+
+    return ($ok, $msg);
+}
+
+=head2 DeleteRoleMember
+
+Removes the specified L<RT::Principal> from the specified role group for this
+record.
+
+Takes a set of key-value pairs:
+
+=over 4
+
+=item PrincipalId
+
+Required.  The ID of the L<RT::Principal> object to remove.
+
+=item Type
+
+Required.  One of the valid roles for this record, as returned by L</Roles>.
+
+=back
+
+Returns a tuple of (status, message).
+
+=cut
+
+sub DeleteRoleMember {
+    my $self = shift;
+    my %args = (@_);
+
+    return (0, $self->loc("No valid Type specified"))
+        unless $args{Type} and $self->HasRole($args{Type});
+
+    return (0, $self->loc("No valid PrincipalId"))
+        unless $args{PrincipalId};
+
+    my ($ok, $msg) = $self->RoleGroup($args{Type})->_DeleteMember($args{PrincipalId});
+
+    if ($ok and not $args{Silent}) {
+        $self->_NewTransaction(
+            Type     => 'DelWatcher', # use "watcher" for history's sake
+            OldValue => $args{PrincipalId},
+            Field    => $args{Type},
+        );
+    }
+    return ($ok, $msg);
+}
+
+sub _ResolveRoles {
+    my $self = shift;
+    my ($roles, %args) = (@_);
+
+    my @errors;
+    for my $role ($self->Roles) {
+        if ($self->_ROLES->{$role}{Single}) {
+            # Default to nobody if unspecified
+            my $value = $args{$role} || RT->Nobody;
+            if (Scalar::Util::blessed($value) and $value->isa("RT::User")) {
+                # Accept a user; it may not be loaded, which we catch below
+                $roles->{$role} = $value->PrincipalObj;
+            } else {
+                # Try loading by id, name, then email.  If all fail, catch that below
+                my $user = RT::User->new( $self->CurrentUser );
+                $user->Load( $value );
+                # XXX: LoadOrCreateByEmail ?
+                $user->LoadByEmail( $value ) unless $user->id;
+                $roles->{$role} = $user->PrincipalObj;
+            }
+            unless ($roles->{$role}->id) {
+                push @errors, $self->loc("Invalid value for [_1]",loc($role));
+                $roles->{$role} = RT->Nobody->PrincipalObj unless $roles->{$role}->id;
+            }
+            # For consistency, we always return an arrayref
+            $roles->{$role} = [ $roles->{$role} ];
+        } else {
+            $roles->{$role} = [];
+            my @values = ref $args{ $role } ? @{ $args{$role} } : ($args{$role});
+            for my $value (grep {defined} @values) {
+                if ( $value =~ /^\d+$/ ) {
+                    # This implicitly allows groups, if passed by id.
+                    my $principal = RT::Principal->new( $self->CurrentUser );
+                    my ($ok, $msg) = $principal->Load( $value );
+                    if ($ok) {
+                        push @{ $roles->{$role} }, $principal;
+                    } else {
+                        push @errors,
+                            $self->loc("Couldn't load principal: [_1]", $msg);
+                    }
+                } else {
+                    my @addresses = RT::EmailParser->ParseEmailAddress( $value );
+                    for my $address ( @addresses ) {
+                        my $user = RT::User->new( RT->SystemUser );
+                        my ($id, $msg) = $user->LoadOrCreateByEmail( $address );
+                        if ( $id ) {
+                            # Load it back as us, not as the system
+                            # user, to be completely safe.
+                            $user = RT::User->new( $self->CurrentUser );
+                            $user->Load( $id );
+                            push @{ $roles->{$role} }, $user->PrincipalObj;
+                        } else {
+                            push @errors,
+                                $self->loc("Couldn't load or create user: [_1]", $msg);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return (@errors);
+}
+
+sub _CreateRoleGroups {
+    my $self = shift;
+    my %args = (@_);
+    for my $type ($self->Roles) {
+        my $type_obj = RT::Group->new($self->CurrentUser);
+        my ($id, $msg) = $type_obj->CreateRoleGroup(
+            Type    => $type,
+            Object  => $self,
+            %args,
+        );
+        unless ($id) {
+            $RT::Logger->error("Couldn't create a role group of type '$type' for ".ref($self)." ".
+                                   $self->Id.": ".$msg);
+            return(undef);
+        }
+    }
+    return(1);
+}
+
+sub _AddRolesOnCreate {
+    my $self = shift;
+    my ($roles, %acls) = @_;
+
+    my @errors;
+    {
+        my $changed = 0;
+
+        for my $role (keys %{$roles}) {
+            my $group = $self->RoleGroup($role);
+            my @left;
+            for my $principal (@{$roles->{$role}}) {
+                if ($acls{$role}->($principal)) {
+                    next if $group->HasMember($principal);
+                    my ($ok, $msg) = $group->_AddMember(
+                        PrincipalId       => $principal->id,
+                        InsideTransaction => 1,
+                        RecordTransaction => 0,
+                        Object            => $self,
+                    );
+                    push @errors, $self->loc("Couldn't set [_1] watcher: [_2]", $role, $msg)
+                        unless $ok;
+                    $changed++;
+                } else {
+                    push @left, $principal;
+                }
+            }
+            $roles->{$role} = [ @left ];
+        }
+
+        redo if $changed;
+    }
+
+    return @errors;
 }
 
 sub UID {

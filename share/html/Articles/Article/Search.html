@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -75,13 +75,15 @@
 % }
 
 <& /Elements/ListActions, actions => \@results &>
-<div style="float: right"><a href="#criteria"><&|/l&>Modify this search...</&></a></div>
+<div style="float:right;margin-top:15px"><a href="#criteria"><&|/l&>Modify this search...</&></a></div>
 
 % if ($articles->BuildSelectCountQuery =~ /WHERE/i) {
 <h2><&|/l&>Search results</&></h2>
 <& /Elements/CollectionList,
     Collection => $articles, 
     AllowSorting => 1,
+    OrderBy => \@OrderBy,
+    Order => \@Order,
     Format => $format,
     GenericQueryArgs => { %filtered, Format => $format, },
     &>
@@ -243,7 +245,7 @@ my $customfields = RT::CustomFields->new( $session{'CurrentUser'} );
 my %dates;
 
 $articles->Search( %ARGS, CustomFields => $customfields, Dates => \%dates,
-        OrderBy => \@OrderBy );
+    OrderBy => \@OrderBy, Order => \@Order, );
 
 $m->callback( %ARGS, _Search => $articles );
 

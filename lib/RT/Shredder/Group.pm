@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -126,51 +126,6 @@ sub __DependsOn
             Shredder => $args{'Shredder'}
         );
     return $self->SUPER::__DependsOn( %args );
-}
-
-sub __Relates
-{
-    my $self = shift;
-    my %args = (
-            Shredder => undef,
-            Dependencies => undef,
-            @_,
-           );
-    my $deps = $args{'Dependencies'};
-    my $list = [];
-
-# Equivalence group id inconsistent without User
-    if( $self->Domain eq 'ACLEquivalence' ) {
-        my $obj = RT::User->new($self->CurrentUser);
-        $obj->Load( $self->Instance );
-        if( $obj->id ) {
-            push( @$list, $obj );
-        } else {
-            my $rec = $args{'Shredder'}->GetRecord( Object => $self );
-            $self = $rec->{'Object'};
-            $rec->{'State'} |= INVALID;
-            $rec->{'Description'} = "ACLEguvivalence group have no related User #". $self->Instance ." object.";
-        }
-    }
-
-# Principal
-    my $obj = $self->PrincipalObj;
-    if( $obj && $obj->id ) {
-        push( @$list, $obj );
-    } else {
-        my $rec = $args{'Shredder'}->GetRecord( Object => $self );
-        $self = $rec->{'Object'};
-        $rec->{'State'} |= INVALID;
-        $rec->{'Description'} = "Have no related Principal #". $self->id ." object.";
-    }
-
-    $deps->_PushDependencies(
-            BaseObject => $self,
-            Flags => RELATES,
-            TargetObjects => $list,
-            Shredder => $args{'Shredder'}
-        );
-    return $self->SUPER::__Relates( %args );
 }
 
 sub BeforeWipeout

@@ -1,4 +1,3 @@
-#!/usr/bin/env perl
 # Test ticket creation with REST using non ascii subject
 use strict;
 use warnings;

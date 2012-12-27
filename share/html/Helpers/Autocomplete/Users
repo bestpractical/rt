@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,8 +45,8 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $r->content_type('application/json');
-<% JSON::to_json( \@suggestions ) |n %>
+% $r->content_type('application/json; charset=utf-8');
+<% JSON( \@suggestions ) |n %>
 % $m->abort;
 <%ARGS>
 $return => ''
@@ -58,8 +58,6 @@ $exclude => ''
 $op => undef
 </%ARGS>
 <%INIT>
-require JSON;
-
 # Only allow certain return fields
 $return = 'EmailAddress'
     unless $return =~ /^(?:EmailAddress|Name|RealName)$/;
@@ -118,13 +116,16 @@ foreach (split /\s*,\s*/, $exclude) {
 
 my @suggestions;
 
+$users->Limit( FIELD => $return, OPERATOR => '!=', VALUE => '' );
+$users->Limit( FIELD => $return, OPERATOR => 'IS NOT', VALUE => 'NULL', ENTRYAGGREGATOR => 'AND'  );
+
 while ( my $user = $users->Next ) {
     next if $user->id == RT->SystemUser->id
          or $user->id == RT->Nobody->id;
 
-    my $formatted = $m->scomp('/Elements/ShowUser', User => $user, NoEscape => 1);
-    $formatted =~ s/\n//g;
-    push @suggestions, { label => $formatted, value => $user->$return };
+    my $suggestion = { label => $user->Format, value => $user->$return };
+    $m->callback( CallbackName => "ModifySuggestion", suggestion => $suggestion, user => $user );
+    push @suggestions, $suggestion;
 }
 
 </%INIT>

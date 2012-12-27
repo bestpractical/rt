@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -52,6 +52,8 @@
 <& /Elements/Tabs &>
 % }
 
+<& /Elements/ListActions, actions => $Actions &>
+
 <div class="error">
 <%$Why%>
 <br />
@@ -64,6 +66,7 @@ $m->abort();
 </%cleanup>
 
 <%args>
+$Actions => []
 $Code => undef
 $Details => ''
 $Title => loc("RT Error")
@@ -81,8 +84,8 @@ Encode::_utf8_off($error);
 
 $RT::Logger->error($error);
 
-if ( defined $session{'SessionType'} && $session{'SessionType'} eq 'REST' ) {
-    $r->content_type('text/plain');
+if ( $session{'REST'} ) {
+    $r->content_type('text/plain; charset=utf-8');
     $m->out( "Error: " . $Why . "\n" );
     $m->out( $Details . "\n" ) if defined $Details && length $Details;
     $m->abort();

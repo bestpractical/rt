@@ -3,8 +3,8 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2010 Best Practical Solutions, LLC
-#                                          <jesse@bestpractical.com>
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
 #
@@ -47,6 +47,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 use strict;
+use warnings;
 # run this script with:
 # perl -0pi sbin/tweak-template-locstring `ack -f share/html -G 'html$'`
 s!\<\&\|\/l([^&]*)\&\>[\n\s]+(.*?)[\n\s]*\<\/\&\>!;my ($arg, $x) = ($1, $2); $x =~ s/\s*\n\s*/ /g;"<&|/l$arg&>$x</&>"!smge;

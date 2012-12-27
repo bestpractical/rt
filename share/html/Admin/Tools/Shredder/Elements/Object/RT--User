@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -48,6 +48,6 @@
 <%ARGS>
 $Object => undef
 </%ARGS>
-<a href="<% RT->Config->Get('WebURL') %>/Admin/Users/Modify.html?id=<% $Object->id %>">
+<a href="<% RT->Config->Get('WebPath') %>/Admin/Users/Modify.html?id=<% $Object->id %>">
 <% loc('User') %>(<% loc('id') %>:<% $Object->id %>, <% loc('Name') %>: <% $Object->Name %>)
 </a>

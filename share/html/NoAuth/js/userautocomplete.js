@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -70,7 +70,7 @@ jQuery(function() {
             continue;
 
         var options = {
-            source: "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/Users"
+            source: <% RT->Config->Get('WebPath') |n,j%>+"/Helpers/Autocomplete/Users"
         };
 
         var queryargs = [];

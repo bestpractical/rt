@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -173,7 +173,7 @@ for my $type (qw/Tickets Queues Transactions Groups PrivilegedUsers Unprivileged
 
 <&|/Widgets/TitleBox, title => loc("Mason template search order") &>
 <ol>
-% foreach my $path ( map { $_->[1] } $m->interp->comp_root_array ) {
+% foreach my $path ( RT::Interface::Web->ComponentRoots ) {
 <li><% $path %></li>
 % }
 </ol>
@@ -183,6 +183,18 @@ for my $type (qw/Tickets Queues Transactions Groups PrivilegedUsers Unprivileged
 <ol>
 % foreach my $inc (@INC) {
 <li><% $inc %></li>
+% }
+</ol>
+</&>
+
+<&|/Widgets/TitleBox, title=> loc("Loaded config files") &>
+<ol>
+% foreach my $config (RT->Config->LoadedConfigs) {
+%   if ($config->{site}) {
+<li><strong><% $config->{filename} %></strong></li>
+%   } else {
+<li><% $config->{filename} %></li>
+%   }
 % }
 </ol>
 </&>
@@ -249,11 +261,117 @@ if ($item =~ /^\s*(.*?)\s*v(\S+);/) {
 </table>
 </&>
 
+<&|/Widgets/TitleBox, title => loc("RT upgrade history")&>
+
+% my $upgrade_history = RT->System->UpgradeHistory;
+% my @packages = ('RT', sort grep { $_ ne 'RT' } keys %$upgrade_history);
+% for my $package (@packages) {
+<h4><% $package %></h4>
+<table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection">
+<tr class="collection-as-table">
+<th class="collection-as-table"><&|/l&>Action</&></th>
+<th class="collection-as-table"><&|/l&>Using RT Version</&></th>
+<th class="collection-as-table"><&|/l&>Time</&></th>
+<th class="collection-as-table"><&|/l&>Extra</&></th>
+
+<%perl>
+    my $i = 0;
+    for my $upgrade (@{ $upgrade_history->{$package} }) {
+        # only list completed upgrades
+        next unless $upgrade->{stage} eq 'after';
+</%perl>
+<tr class="<% $i++ %2 ? 'oddline' : 'evenline'%>">
+    <td class="collection-as-table">
+% if ($upgrade->{action} eq 'upgrade') { # type is more specific for upgrades
+    <% $upgrade->{type} %>
+% } else {
+    <% $upgrade->{action} %>
+% }
+    </td>
+    <td class="collection-as-table">
+        <% $upgrade->{rt_version} %>
+    </td>
+    <td class="collection-as-table">
+%          my $timestamp = RT::Date->new($session{CurrentUser});
+%          $timestamp->Set(Value => $upgrade->{timestamp});
+           <% $timestamp->AsString %>
+    </td>
+    <td class="collection-as-table">
+% if ($upgrade->{action} eq 'upgrade') {
+    <&|/l, $upgrade->{from}, $upgrade->{to} &>from [_1] to [_2]</&>
+% }
+    </td>
+</tr>
+% }
+</table>
+% }
+</&>
+
 <&|/Widgets/TitleBox, title => loc("Perl configuration") &>
 % require Config;
 <pre>
 <% Config::myconfig() %>
 </pre>
+</&>
+
+<&|/Widgets/TitleBox, title=> loc("Environment variables") &>
+<table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection">
+<tr class="collection-as-table">
+<th class="collection-as-table"><&|/l&>Variable</&></th>
+<th class="collection-as-table"><&|/l&>Value</&></th>
+</tr>
+% my $row = 0;
+% for my $key (sort keys %ENV) {
+<tr class="collection-as-table <% $row++ %2 ? 'oddline' : 'evenline'%>">
+<td class="collection-as-table"><% $key %></td>
+<td class="collection-as-table"><% $ENV{$key} %></td>
+</tr>
+% }
+</table>
+</&>
+
+<&|/Widgets/TitleBox, title => loc("Operating System") &>
+<table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection">
+<tr class="collection-as-table evenline">
+<td class="collection-as-table">Deployment type</td>
+<td class="collection-as-table"><%
+  $INC{'mod_perl.pm'} ? "mod_perl" :
+  $INC{'FCGI.pm'}     ? "fastcgi"  :
+                        "standalone" %>
+</td>
+</tr>
+<%perl>
+my @os = (
+    "Distribution"   => 'lsb_release --all',
+    "uname -a"       => 'uname -a',
+    "SELinux status" => 'getenforce',
+    "Apache"         => [map { "$_ -V" } qw(apache2ctl apachectl httpdctl)],
+    "nginx"          => 'nginx -V 2>&1',
+    "lighttpd"       => 'lighttpd -V',
+);
+my @os_info;
+
+while (my ($name, $cmd) = splice @os, 0, 2) {
+    $cmd = [$cmd] unless ref $cmd eq 'ARRAY';
+    for my $run (@$cmd) {
+        $run .= " </dev/null";
+        $run .= " 2>/dev/null" unless $run =~ /2>/;
+        my $result = `$run`;
+        if (defined $result and $result =~ /\S/) {
+            push @os_info, $name => $result;
+            last;
+        }
+    }
+}
+my $row = 1;
+</%perl>
+% while (my ($name, $output) = splice @os_info, 0, 2) {
+<tr class="collection-as-table <% $row++ % 2 ? "oddline" : "evenline" %>">
+<td class="collection-as-table"><% $name %></td>
+<td class="collection-as-table" style="white-space: pre-wrap; font-family: monospace"><% $output %></td>
+</tr>
+% }
+</table>
 </&>
 
 <%INIT>
@@ -264,7 +382,7 @@ local $Data::Dumper::Indent = 2;
 sub stringify {
     my $value = shift;
     my $output = Dumper $value;
-    RT::Interface::Web::EscapeUTF8(\$output);
+    RT::Interface::Web::EscapeHTML(\$output);
     $output =~ s/ /&nbsp;/g;
     $output =~ s!\n!<br />!g;
     return $output;

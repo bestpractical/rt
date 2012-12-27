@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -151,7 +151,7 @@ my $class = '';
 $class = 'class="hidden"' if $Level != 1 && !@Default;
 </%INIT>
 <% loc('Show Tickets Properties on [_1] level', $Level) %>
-(<small><a href="#" onclick="hideshow('<% $id %>'); return false;"><% loc('open/close') %></a></small>):
+(<small><a href="#" onclick="hideshow(<% $id |n,j%>); return false;"><% loc('open/close') %></a></small>):
 <table id="<% $id %>" <% $class |n %>>
 % while ( my ($group, $list) = (splice @Available, 0, 2) ) {
 <tr><td><% loc($group) %>:</td><td>

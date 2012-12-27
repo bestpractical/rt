@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -52,6 +52,7 @@ use base 'RT::Condition';
 use RT::Date;
 
 use strict;
+use warnings;
 
 sub IsApplicable {
     my $self = shift;

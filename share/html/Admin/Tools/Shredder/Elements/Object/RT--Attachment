@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -48,7 +48,7 @@
 <%ARGS>
 $Object => undef
 </%ARGS>
-% my $name = (defined $a->Filename and length $a->Filename) ? $a->Filename : loc("(no value)");
-<a href="<% RT->Config->Get('WebURL') %>/Ticket/Attachment/<% $Object->TransactionId %>/<% $Object->id %>/">
+% my $name = (defined $Object->Filename and length $Object->Filename) ? $Object->Filename : loc("(no value)");
+<a href="<% RT->Config->Get('WebPath') %>/Ticket/Attachment/<% $Object->TransactionId %>/<% $Object->id %>/">
 <% loc('Attachment') %>(<% loc('id') %>:<% $Object->id %>, <% loc('Filename') %>: <% $name %>)
 </a>

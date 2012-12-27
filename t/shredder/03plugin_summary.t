@@ -1,18 +1,8 @@
-#!/usr/bin/perl -w
 
 use strict;
 use warnings;
 
-use Test::Deep;
-use File::Spec;
-use Test::More tests => 4;
-use RT::Test nodb => 1;
-BEGIN {
-    my $shredder_utils = RT::Test::get_relocatable_file('utils.pl',
-        File::Spec->curdir());
-    require $shredder_utils;
-}
-
+use RT::Test::Shredder nodb => 1, tests => 4;
 
 use_ok('RT::Shredder::Plugin');
 my $plugin_obj = RT::Shredder::Plugin->new;

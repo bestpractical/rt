@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -106,7 +106,7 @@ $m->callback( CallbackName => 'Filter', Queues => \@queues );
 my %lifecycle;
 
 for my $queue (@queues) {
-    my $cycle = RT::Lifecycle->Load( $queue->{'Lifecycle'} );
+    my $cycle = RT::Lifecycle->Load( Name => $queue->{'Lifecycle'} );
     $lifecycle{ lc $cycle->Name } = $cycle;
 }
 

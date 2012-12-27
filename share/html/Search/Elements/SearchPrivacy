@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -53,9 +53,9 @@ my $label;
 if (ref($Object) eq 'RT::User') {
     $label = $Object->id == $session{'CurrentUser'}->Id
                 ? loc("My saved searches")
-                : loc("[_1]'s saved searches", $m->scomp('/Elements/ShowUser', User => $Object));
+                : loc("[_1]'s saved searches", $Object->Format);
 } else {
-    $label = loc("[_1]'s saved searches", $m->interp->apply_escapes($Object->Name, 'h'));
+    $label = loc("[_1]'s saved searches", $Object->Name);
 }
 </%init>
-<% $label |n %>\
+<% $label %>\

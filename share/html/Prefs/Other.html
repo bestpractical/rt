@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -53,6 +53,7 @@
 % foreach my $section( RT->Config->Sections ) {
 <&|/Widgets/TitleBox, title => loc( $section ) &>
 % foreach my $option( RT->Config->Options( Section => $section ) ) {
+% next if $option eq 'EmailFrequency' && !RT->Config->Get('RecordOutgoingEmail');
 % my $meta = RT->Config->Meta( $option );
 <& $meta->{'Widget'},
     Default      => 1,
@@ -81,9 +82,10 @@ my $title = loc("Settings");
 my $UserObj = $session{'CurrentUser'}->UserObj;
 my $preferences = $UserObj->Preferences( $RT::System );
 
-if ((defined $PreferredKey) && $PreferredKey ne $UserObj->FirstAttribute('PreferredKey')) {
+if (defined($PreferredKey) and (not $UserObj->FirstAttribute('PreferredKey')
+        or $PreferredKey ne $UserObj->FirstAttribute('PreferredKey')->Content)) {
     my ($code, $msg) = $UserObj->SetAttribute(Name => 'PreferredKey', Content => $PreferredKey);
-    push @results, loc('Preferred Key: [_1]', loc_fuzzy($msg));
+    push @results, loc('Preferred Key: [_1]', $msg) unless $code;
 }
 
 if ( $Update ) {

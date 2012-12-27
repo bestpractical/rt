@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -86,14 +86,14 @@ my $COLUMN_MAP = {
             return !$v ? $_[0]->loc('unlimited') : $v == 0 ? $_[0]->loc('one') : $v;
         },
     },
-    AppliedTo => {
-        title     => 'Applied', # loc
+    AddedTo => {
+        title     => 'Added', # loc
 	value     => sub {
-            if ( $_[0]->IsApplied ) {
+            if ( $_[0]->IsGlobal ) {
                 return $_[0]->loc('Global');
             }
 
-            my $collection = $_[0]->AppliedTo;
+            my $collection = $_[0]->AddedTo;
             return '' unless $collection;
 
             $collection->RowsPerPage(10);
@@ -118,17 +118,19 @@ my $COLUMN_MAP = {
     RemoveCheckBox => {
         title => sub {
             my $name = 'RemoveCustomField';
-            my $checked = $m->request_args->{ $name .'All' }? 'checked="checked"': '';
+            my $checked = $DECODED_ARGS->{ $name .'All' }? 'checked="checked"': '';
 
-            return \qq{<input type="checkbox" name="${name}All" value="1" $checked
-                              onclick="setCheckbox(this.form, '$name', this.checked)" />};
+            return \qq{<input type="checkbox" name="}, $name, \qq{All" value="1" $checked
+                              onclick="setCheckbox(this, },
+                              $m->interp->apply_escapes($name,'j'),
+                              \qq{)" />};
         },
         value => sub {
             my $id = $_[0]->id;
-            return '' if $_[0]->IsApplied;
+            return '' if $_[0]->IsGlobal;
 
             my $name = 'RemoveCustomField';
-            my $arg = $m->request_args->{ $name };
+            my $arg = $DECODED_ARGS->{ $name };
 
             my $checked = '';
             if ( $arg && ref $arg ) {
@@ -137,7 +139,7 @@ my $COLUMN_MAP = {
             elsif ( $arg ) {
                 $checked = 'checked="checked"' if $arg == $id;
             }
-            return \qq{<input type="checkbox" name="$name" value="$id" $checked />}
+            return \qq{<input type="checkbox" name="}, $name, \qq{" value="$id" $checked />}
         },
     },
     MoveCF => {
@@ -146,7 +148,7 @@ my $COLUMN_MAP = {
             my $id = $_[0]->id;
             
             my $context = $_[2] || 0;
-            return '' unless $_[0]->IsApplied( $context );
+            return '' unless $_[0]->IsAdded( $context );
 
             my $name = 'MoveCustomField';
             my $args = $m->caller_args( 1 );
@@ -160,16 +162,18 @@ my $COLUMN_MAP = {
             my @res = (
                 \'<a href="',
                 $uri .'?'. $m->comp("/Elements/QueryString", %pass, MoveCustomFieldUp => $id ),
-                \'">', loc('[Up]'), \'</a>',
+                \'">', loc('~[Up~]'), \'</a>',
                 \' <a href="',
                 $uri .'?'. $m->comp("/Elements/QueryString", %pass, MoveCustomFieldDown => $id ),
-                \'">', loc('[Down]'), \'</a>'
+                \'">', loc('~[Down~]'), \'</a>'
             );
 
             return @res;
         },
     },
 };
+
+$COLUMN_MAP->{'AppliedTo'} = $COLUMN_MAP->{'AddedTo'};
 
 </%ONCE>
 <%INIT>

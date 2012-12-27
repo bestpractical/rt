@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -227,15 +227,12 @@ sub Next {
     my $Attachment = $self->SUPER::Next;
     return $Attachment unless $Attachment;
 
-    my $txn = $Attachment->TransactionObj;
-    if ( $txn->__Value('Type') eq 'Comment' ) {
-        return $Attachment if $txn->CurrentUserHasRight('ShowTicketComments');
-    } elsif ( $txn->CurrentUserHasRight('ShowTicket') ) {
+    if ( $Attachment->TransactionObj->CurrentUserCanSee ) {
         return $Attachment;
+    } else {
+        # If the user doesn't have the right to show this ticket
+        return $self->Next;
     }
-
-    # If the user doesn't have the right to show this ticket
-    return $self->Next;
 }
 
 

@@ -1,4 +1,3 @@
-#!/usr/bin/perl
 
 use strict;
 use warnings;
@@ -32,7 +31,7 @@ Content-Type: text/html
 EOF
         },
     );
-    $m->content_like( qr/Content changed/, 'content is changed' );
+    $m->content_like( qr/Content updated/, 'content is changed' );
     $m->content_contains( '你好', 'content is really updated' );
 }
 

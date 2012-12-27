@@ -1,5 +1,5 @@
-#!/usr/bin/perl -w
 use strict;
+use warnings;
 
 use RT::Test nodata => 1, tests => 64;
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -79,7 +79,7 @@ $m->form_name('ModifyDashboard');
 $m->field("Name" => 'inner dashboard');
 $m->field("Privacy" => "RT::Group-" . $inner_group->Id);
 $m->click_button(value => 'Create');
-$m->content_lacks("Permission denied", "we now have SeeGroupDashboard");
+$m->content_lacks("Permission Denied", "we now have SeeGroupDashboard");
 $m->content_contains("Saved dashboard inner dashboard");
 $m->content_lacks('Delete', "Delete button hidden because we lack DeleteDashboard");
 
@@ -95,15 +95,15 @@ is($dashboard->PossibleHiddenSearches, 0, "all searches are visible");
 
 $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->content_contains("inner dashboard", "we now have SeeGroupDashboard right");
-$m->content_lacks("Permission denied");
+$m->content_lacks("Permission Denied");
 $m->content_contains('Subscription', "Subscription link not hidden because we have SubscribeDashboard");
 
 
 $m->get_ok("/Dashboards/index.html");
 $m->content_contains("inner dashboard", "We can see the inner dashboard from the UI");
 
-$m->get_ok("/index.html");
-$m->content_contains("inner dashboard", "We can see the inner dashboard from the menu drop-down");
+$m->get_ok("/Prefs/DashboardsInMenu.html");
+$m->content_contains("inner dashboard", "Can also see it in the menu options");
 
 my ($group) = grep {$_->isa("RT::Group") and $_->Id == $inner_group->Id}
     RT::Dashboard->new($currentuser)->_PrivacyObjects;
@@ -191,5 +191,5 @@ is_deeply(
 
 $m->get_ok("/Dashboards/index.html");
 $m->content_contains("inner dashboard", "The dashboards list includes superuser rights");
-$m->get_ok("/index.html");
+$m->get_ok("/Prefs/DashboardsInMenu.html");
 $m->content_lacks("inner dashboard", "But the menu skips them");

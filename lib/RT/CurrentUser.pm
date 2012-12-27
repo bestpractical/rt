@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -240,9 +240,12 @@ sub loc {
     my $handle = $self->LanguageHandle;
 
     if (@_ == 1) {
-        # pre-scan the lexicon hashes to return _AUTO keys verbatim,
-        # to keep locstrings containing '[' and '~' from tripping over Maketext
-        return $_[0] unless grep exists $_->{$_[0]}, @{ $handle->_lex_refs };
+        # If we have no [_1] replacements, and the key does not appear
+        # in the lexicon, unescape (using ~) and return it verbatim, as
+        # an optimization.
+        my $unescaped = $_[0];
+        $unescaped =~ s!~(.)!$1!g;
+        return $unescaped unless grep exists $_->{$_[0]}, @{ $handle->_lex_refs };
     }
 
     return $handle->maketext(@_);
@@ -266,46 +269,6 @@ Return the current currentuser object
 
 sub CurrentUser {
     return shift;
-}
-
-=head2 Authenticate
-
-Takes $password, $created and $nonce, and returns a boolean value
-representing whether the authentication succeeded.
-
-If both $nonce and $created are specified, validate $password against:
-
-    encode_base64(sha1(
-        $nonce .
-        $created .
-        sha1_hex( "$username:$realm:$server_pass" )
-    ))
-
-where $server_pass is the md5_hex(password) digest stored in the
-database, $created is in ISO time format, and $nonce is a random
-string no longer than 32 bytes.
-
-=cut
-
-sub Authenticate { 
-    my ($self, $password, $created, $nonce, $realm) = @_;
-
-    require Digest::MD5;
-    require Digest::SHA1;
-    require MIME::Base64;
-
-    my $username = $self->UserObj->Name or return;
-    my $server_pass = $self->UserObj->__Value('Password') or return;
-    my $auth_digest = MIME::Base64::encode_base64(Digest::SHA1::sha1(
-        $nonce .
-        $created .
-        Digest::MD5::md5_hex("$username:$realm:$server_pass")
-    ));
-
-    chomp($password);
-    chomp($auth_digest);
-
-    return ($password eq $auth_digest);
 }
 
 RT::Base->_ImportOverlays();

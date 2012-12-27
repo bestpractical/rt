@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -97,6 +97,7 @@ my %Meta = (
         },
     },
     DatabaseAdmin => {
+        SkipWrite       => 1,
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
             Default => 1,
@@ -106,6 +107,7 @@ my %Meta = (
         },
     },
     DatabaseAdminPassword => {
+        SkipWrite       => 1,
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
             Description => 'DBA password',  #loc
@@ -149,6 +151,7 @@ my %Meta = (
         },
     },
     Password => {
+        SkipWrite       => 1,
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
             Description => 'Administrative password', #loc
@@ -252,7 +255,7 @@ sub CurrentValues {
 
 sub ConfigFile {
     require File::Spec;
-    return File::Spec->catfile( $RT::EtcPath, 'RT_SiteConfig.pm' );
+    return $ENV{RT_SITE_CONFIG} || File::Spec->catfile( $RT::EtcPath, 'RT_SiteConfig.pm' );
 }
 
 sub SaveConfig {
@@ -274,10 +277,10 @@ sub SaveConfig {
       $RT::Installer->{InstallConfig}{rtname};
 
     if ( open my $fh, '>', $file ) {
-        for ( keys %{ $RT::Installer->{InstallConfig} } ) {
+        for ( sort keys %{ $RT::Installer->{InstallConfig} } ) {
 
             # we don't want to store root's password in config.
-            next if $_ eq 'Password';
+            next if $class->Meta($_) and $class->Meta($_)->{SkipWrite};
 
             $RT::Installer->{InstallConfig}{$_} = ''
               unless defined $RT::Installer->{InstallConfig}{$_};

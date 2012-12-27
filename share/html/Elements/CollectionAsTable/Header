@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -129,11 +129,11 @@ foreach my $col ( @Format ) {
             if $OrderBy[0] && ($OrderBy[0] eq $attr or "$attr|$OrderBy[0]" =~ /^(Created|id)\|(Created|id)$/);
 
         $m->out(
-            '<a href="' . $BaseURL
+            '<a href="' . $m->interp->apply_escapes($BaseURL
             . $m->comp( '/Elements/QueryString',
                 %$generic_query_args,
                 OrderBy => $attr, Order => $new_order
-            )
+            ), 'h')
             . '">'. loc($title) .'</a>'
         );
     }

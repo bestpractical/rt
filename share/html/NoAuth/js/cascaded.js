@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -75,6 +75,8 @@ function filter_cascade (id, val) {
         else {
             for (i in complete_children) {
                 if (!complete_children[i].label ||
+                      (complete_children[i].hasAttribute &&
+                            !complete_children[i].hasAttribute('label') ) ||
                         complete_children[i].label.substr(0, val.length) == val ) {
                     if ( complete_children[i].cloneNode ) {
                         new_option = complete_children[i].cloneNode(true);

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -66,6 +66,7 @@ package RT::User;
 use strict;
 use warnings;
 
+use Scalar::Util qw(blessed);
 
 use base 'RT::Record';
 
@@ -102,6 +103,7 @@ sub _OverlayAccessible {
           AuthSystem            => { public => 1,  admin => 1 },
           Gecos                 => { public => 1,  admin => 1 },
           PGPKey                => { public => 1,  admin => 1 },
+          PrivateKey            => {               admin => 1 },
 
     }
 }
@@ -932,7 +934,7 @@ sub IsPassword {
         # crypt() output
         return 0 unless crypt(encode_utf8($value), $stored) eq $stored;
     } else {
-        $RT::Logger->warn("Unknown password form");
+        $RT::Logger->warning("Unknown password form");
         return 0;
     }
 
@@ -1060,11 +1062,11 @@ sub SetDisabled {
     }
 
     $RT::Handle->BeginTransaction();
-    my $set_err = $self->PrincipalObj->SetDisabled($val);
-    unless ($set_err) {
+    my ($status, $msg) = $self->PrincipalObj->SetDisabled($val);
+    unless ($status) {
         $RT::Handle->Rollback();
         $RT::Logger->warning(sprintf("Couldn't %s user %s", ($val == 1) ? "disable" : "enable", $self->PrincipalObj->Id));
-        return (undef);
+        return ($status, $msg);
     }
     $self->_NewTransaction( Type => ($val == 1) ? "Disabled" : "Enabled" );
 
@@ -1206,6 +1208,37 @@ sub HasRight {
     return $self->PrincipalObj->HasRight(@_);
 }
 
+=head2 CurrentUserCanSee [FIELD]
+
+Returns true if the current user can see the user, based on if it is
+public, ourself, or we have AdminUsers
+
+=cut
+
+sub CurrentUserCanSee {
+    my $self = shift;
+    my ($what) = @_;
+
+    # If it's public, fine.  Note that $what may be "transaction", which
+    # doesn't have an Accessible value, and thus falls through below.
+    if ( $self->_Accessible( $what, 'public' ) ) {
+        return 1;
+    }
+
+    # Users can see their own properties
+    elsif ( defined($self->Id) && $self->CurrentUser->Id == $self->Id ) {
+        return 1;
+    }
+
+    # If the user has the admin users right, that's also enough
+    elsif ( $self->CurrentUser->HasRight( Right => 'AdminUsers', Object => $RT::System) ) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
+
 =head2 CurrentUserCanModify RIGHT
 
 If the user has rights for this object, either because
@@ -1263,7 +1296,7 @@ sub _PrefName {
         $name = ref($name).'-'.$name->Id;
     }
 
-    return 'Pref-'.$name;
+    return 'Pref-'. $name;
 }
 
 =head2 Preferences NAME/OBJ DEFAULT
@@ -1274,15 +1307,24 @@ override the entries with user preferences.
 
 =cut
 
+our %PREFERENCES_CACHE = ();
+
 sub Preferences {
     my $self  = shift;
-    my $name = _PrefName (shift);
+    my $name = _PrefName(shift);
     my $default = shift;
 
-    my $attr = RT::Attribute->new( $self->CurrentUser );
-    $attr->LoadByNameAndObject( Object => $self, Name => $name );
+    my $content;
+    if ( exists $PREFERENCES_CACHE{ $self->id }{ $name } ) {
+        $content = $PREFERENCES_CACHE{ $self->id }{ $name };
+    }
+    else {
+        my $attr = RT::Attribute->new( $self->CurrentUser );
+        $attr->LoadByNameAndObject( Object => $self, Name => $name );
+        $PREFERENCES_CACHE{ $self->id }{ $name } = $content
+            = $attr->Id ? $attr->Content : undef;
+    }
 
-    my $content = $attr->Id ? $attr->Content : undef;
     unless ( ref $content eq 'HASH' ) {
         return defined $content ? $content : $default;
     }
@@ -1292,7 +1334,7 @@ sub Preferences {
             exists $content->{$_} or $content->{$_} = $default->{$_};
         }
     } elsif (defined $default) {
-        $RT::Logger->error("Preferences $name for user".$self->Id." is hash but default is not");
+        $RT::Logger->error("Preferences $name for user #".$self->Id." is hash but default is not");
     }
     return $content;
 }
@@ -1311,13 +1353,43 @@ sub SetPreferences {
     return (0, $self->loc("No permission to set preferences"))
         unless $self->CurrentUserCanModify('Preferences');
 
+    # we clear cache in RT::Attribute
+
     my $attr = RT::Attribute->new( $self->CurrentUser );
     $attr->LoadByNameAndObject( Object => $self, Name => $name );
     if ( $attr->Id ) {
-        return $attr->SetContent( $value );
+        my ($ok, $msg) = $attr->SetContent( $value );
+        return (1, "No updates made")
+            if $msg eq "That is already the current value";
+        return ($ok, $msg);
     } else {
         return $self->AddAttribute( Name => $name, Content => $value );
     }
+}
+
+=head2 Stylesheet
+
+Returns a list of valid stylesheets take from preferences.
+
+=cut
+
+sub Stylesheet {
+    my $self = shift;
+
+    my $style = RT->Config->Get('WebDefaultStylesheet', $self->CurrentUser);
+
+    if (RT::Interface::Web->ComponentPathIsSafe($style)) {
+        my @css_paths = map { $_ . '/NoAuth/css' } RT::Interface::Web->ComponentRoots;
+
+        for my $css_path (@css_paths) {
+            if (-d "$css_path/$style") {
+                return $style
+            }
+        }
+    }
+
+    # Fall back to the system stylesheet.
+    return RT->Config->Get('WebDefaultStylesheet');
 }
 
 =head2 WatchedQueues ROLE_LIST
@@ -1382,6 +1454,12 @@ sub WatchedQueues {
                             FIELD => 'MemberId',
                             VALUE => $self->PrincipalId,
                           );
+    $watched_queues->Limit(
+                            ALIAS => $queues_alias,
+                            FIELD => 'Disabled',
+                            VALUE => 0,
+                          );
+
 
     $RT::Logger->debug("WatchedQueues got " . $watched_queues->Count . " queues");
 
@@ -1420,7 +1498,9 @@ sub _Set {
     if ( $ret == 0 ) { return ( 0, $msg ); }
 
     if ( $args{'RecordTransaction'} == 1 ) {
-
+        if ($args{'Field'} eq "Password") {
+            $args{'Value'} = $Old = '********';
+        }
         my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
                                                Type => $args{'TransactionType'},
                                                Field     => $args{'Field'},
@@ -1446,25 +1526,9 @@ sub _Value {
     my $self  = shift;
     my $field = shift;
 
-    #if the field is public, return it.
-    if ( $self->_Accessible( $field, 'public' ) ) {
-        return ( $self->SUPER::_Value($field) );
-
-    }
-
-    #If the user wants to see their own values, let them
-    # TODO figure ouyt a better way to deal with this
-    elsif ( defined($self->Id) && $self->CurrentUser->Id == $self->Id ) {
-        return ( $self->SUPER::_Value($field) );
-    }
-
-    #If the user has the admin users right, return the field
-    elsif ( $self->CurrentUser->HasRight(Right =>'AdminUsers', Object => $RT::System) ) {
-        return ( $self->SUPER::_Value($field) );
-    } else {
-        return (undef);
-    }
-
+    # Defer to the abstraction above to know if the field can be read
+    return $self->SUPER::_Value($field) if $self->CurrentUserCanSee($field);
+    return undef;
 }
 
 =head2 FriendlyName
@@ -1475,9 +1539,120 @@ Return the friendly name
 
 sub FriendlyName {
     my $self = shift;
-    return $self->RealName if defined($self->RealName);
-    return $self->Name if defined($self->Name);
-    return "";
+    return $self->RealName if defined $self->RealName and length $self->RealName;
+    return $self->Name;
+}
+
+=head2 Format
+
+Class or object method.
+
+Returns a string describing a user in the current user's preferred format.
+
+May be invoked in three ways:
+
+    $UserObj->Format;
+    RT::User->Format( User => $UserObj );   # same as above
+    RT::User->Format( Address => $AddressObj, CurrentUser => $CurrentUserObj );
+
+Possible arguments are:
+
+=over
+
+=item User
+
+An L<RT::User> object representing the user to format.  Preferred to Address.
+
+=item Address
+
+An L<Email::Address> object representing the user address to format.  Address
+will be used to lookup an L<RT::User> if possible.
+
+=item CurrentUser
+
+Required when Format is called as a class method with an Address argument.
+Otherwise, this argument is ignored in preference to the CurrentUser of the
+involved L<RT::User> object.
+
+=item Format
+
+Specifies the format to use, overriding any set from the config or current
+user's preferences.
+
+=back
+
+=cut
+
+sub Format {
+    my $self = shift;
+    my %args = (
+        User        => undef,
+        Address     => undef,
+        CurrentUser => undef,
+        Format      => undef,
+        @_
+    );
+
+    if (blessed($self) and $self->id) {
+        @args{"User", "CurrentUser"} = ($self, $self->CurrentUser);
+    }
+    elsif ($args{User} and $args{User}->id) {
+        $args{CurrentUser} = $args{User}->CurrentUser;
+    }
+    elsif ($args{Address} and $args{CurrentUser}) {
+        $args{User} = RT::User->new( $args{CurrentUser} );
+        $args{User}->LoadByEmail( $args{Address}->address );
+        if ($args{User}->id) {
+            delete $args{Address};
+        } else {
+            delete $args{User};
+        }
+    }
+    else {
+        RT->Logger->warning("Invalid arguments to RT::User->Format at @{[join '/', caller]}");
+        return "";
+    }
+
+    $args{Format} ||= RT->Config->Get("UsernameFormat", $args{CurrentUser});
+    $args{Format} =~ s/[^A-Za-z0-9_]+//g;
+
+    my $method    = "_FormatUser" . ucfirst lc $args{Format};
+    my $formatter = $self->can($method);
+
+    unless ($formatter) {
+        RT->Logger->error(
+            "Either system config or user #" . $args{CurrentUser}->id .
+            " picked UsernameFormat $args{Format}, but RT::User->$method doesn't exist"
+        );
+        $formatter = $self->can("_FormatUserConcise");
+    }
+    return $formatter->( $self, map { $_ => $args{$_} } qw(User Address) );
+}
+
+sub _FormatUserConcise {
+    my $self = shift;
+    my %args = @_;
+    return $args{User} ? $args{User}->FriendlyName : $args{Address}->address;
+}
+
+sub _FormatUserVerbose {
+    my $self = shift;
+    my %args = @_;
+    my ($user, $address) = @args{"User", "Address"};
+
+    my $email   = '';
+    my $phrase  = '';
+    my $comment = '';
+
+    if ($user) {
+        $email   = $user->EmailAddress || '';
+        $phrase  = $user->RealName  if $user->RealName and lc $user->RealName ne lc $email;
+        $comment = $user->Name      if lc $user->Name ne lc $email;
+    } else {
+        ($email, $phrase, $comment) = (map { $address->$_ } "address", "phrase", "comment");
+    }
+
+    return join " ", grep { $_ } ($phrase || $comment || ''), ($email ? "<$email>" : "");
 }
 
 =head2 PreferredKey
@@ -1579,6 +1754,79 @@ sub BasicColumns {
     [ RealName => 'Name' ],
     [ Organization => 'Organization' ],
     );
+}
+
+=head2 Bookmarks
+
+Returns an unordered list of IDs representing the user's bookmarked tickets.
+
+=cut
+
+sub Bookmarks {
+    my $self = shift;
+    my $bookmarks = $self->FirstAttribute('Bookmarks');
+    return if !$bookmarks;
+
+    $bookmarks = $bookmarks->Content;
+    return if !$bookmarks;
+
+    return keys %$bookmarks;
+}
+
+=head2 HasBookmark TICKET
+
+Returns whether the provided ticket is bookmarked by the user.
+
+=cut
+
+sub HasBookmark {
+    my $self   = shift;
+    my $ticket = shift;
+    my $id     = $ticket->id;
+
+    # maintain bookmarks across merges
+    my @ids = ($id, $ticket->Merged);
+
+    my $bookmarks = $self->FirstAttribute('Bookmarks');
+    $bookmarks = $bookmarks ? $bookmarks->Content : {};
+
+    my @bookmarked = grep { $bookmarks->{ $_ } } $self->Bookmarks;
+    return @bookmarked ? 1 : 0;
+}
+
+=head2 ToggleBookmark TICKET
+
+Toggles whether the provided ticket is bookmarked by the user.
+
+=cut
+
+sub ToggleBookmark {
+    my $self   = shift;
+    my $ticket = shift;
+    my $id     = $ticket->id;
+
+    # maintain bookmarks across merges
+    my @ids = ($id, $ticket->Merged);
+
+    my $bookmarks = $self->FirstAttribute('Bookmarks');
+    $bookmarks = $bookmarks ? $bookmarks->Content : {};
+
+    my $is_bookmarked;
+
+    if ( grep { $bookmarks->{ $_ } } @ids ) {
+        delete $bookmarks->{ $_ } foreach @ids;
+        $is_bookmarked = 0;
+    } else {
+        $bookmarks->{ $id } = 1;
+        $is_bookmarked = 1;
+    }
+
+    $self->SetAttribute(
+        Name    => 'Bookmarks',
+        Content => $bookmarks,
+    );
+
+    return $is_bookmarked;
 }
 
 =head2 Create PARAMHASH

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -80,10 +80,8 @@ sub Commit {
             }
 
         }
-        $obj->SetStatus(
-            Status => $obj->QueueObj->Lifecycle->DefaultStatus('approved') || 'open',
-            Force => 1,
-        );
+        $obj->SetStatus( Status => $obj->FirstActiveStatus, Force => 1 )
+            if $obj->FirstActiveStatus;
     }
 
     my $passed = !$top->HasUnresolvedDependencies( Type => 'approval' );
@@ -98,6 +96,11 @@ sub Commit {
     $top->Correspond( MIMEObj => $template->MIMEObj );
 
     if ($passed) {
+        my $new_status = $top->Lifecycle->DefaultStatus('approved') || 'open';
+        if ( $new_status ne $top->Status ) {
+            $top->SetStatus( $new_status );
+        }
+
         $self->RunScripAction('Notify Owner', 'Approval Ready for Owner',
                               TicketObj => $top);
     }

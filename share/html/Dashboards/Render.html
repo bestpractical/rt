@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,7 +47,6 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header,
     Title => $title,
-    JavaScript => $Preview,
     ShowBar => $Preview,
     Refresh => $Refresh,
 &>
@@ -116,7 +115,7 @@ unless (defined($rows)) {
     $rows = defined($prefs->{'RowsPerPage'}) ? $prefs->{'RowsPerPage'} : 50;
 }
 
-my $title = loc 'Dashboard [_1]', $Dashboard->Name;
+my $title = loc '[_1] Dashboard', $Dashboard->Name;
 
 my $show_cb = sub {
     my $pane = shift;

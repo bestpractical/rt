@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -94,12 +94,6 @@ $Format => undef
 </%args>
 <%INIT>
 my $title = loc('Select a Custom Field');
-
-$Type ||= $ARGS{'type'} || '';
-if ( !$Type && $ARGS{'type'} ) {
-    $Type ||= $ARGS{'type'};
-    $RT::Logger->warning("'type' argument is deprecated use 'Type' instead");
-}
 
 my $CustomFields = RT::CustomFields->new($session{'CurrentUser'});
 $CustomFields->UnLimit;

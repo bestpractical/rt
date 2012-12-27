@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -86,7 +86,7 @@ my @panes = $m->comp(
     '/Admin/Elements/ConfigureMyRT',
     panes  => [
         'body', #loc
-        'summary', #loc
+        'sidebar', #loc
     ],
     Action => 'MyRT.html',
     items => \@items,
@@ -95,7 +95,7 @@ my @panes = $m->comp(
     OnSave => sub {
         my ( $conf, $pane ) = @_;
         if (!$has_right) {
-            push @actions, loc( 'Permission denied' );
+            push @actions, loc( 'Permission Denied' );
         }
         else {
             $default_portlets->SetContent( $conf );

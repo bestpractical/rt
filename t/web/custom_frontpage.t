@@ -1,7 +1,7 @@
-#!/usr/bin/perl -w
 use strict;
+use warnings;
 
-use RT::Test tests => 12;
+use RT::Test tests => 19;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
@@ -88,3 +88,22 @@ $m->click_button( name => 'add' );
 $m->get($url);
 $m->content_like( qr/special chars \[test\] \d+ \[_1\]/,
     'special chars in titlebox' );
+
+
+# Edit a system saved search to contain "[more]"
+{
+    my $search = RT::Attribute->new( RT->SystemUser );
+    $search->LoadByNameAndObject( Name => 'Search - My Tickets', Object => RT->System );
+    my ($id, $desc) = ($search->id, RT->SystemUser->loc($search->Description, '&#34;N&#34;'));
+    ok $id, 'loaded search attribute';
+
+    $m->get_ok($url);
+    $m->follow_link_ok({ url_regex => qr"Prefs/Search\.html\?name=.+?Attribute-$id" }, 'Edit link');
+    $m->content_contains($desc, "found description: $desc");
+
+    ok +($search->SetDescription( $search->Description . " [more]" ));
+
+    $m->get_ok($m->uri); # "reload_ok"
+    $m->content_contains($desc . " [more]", "found description: $desc");
+}
+

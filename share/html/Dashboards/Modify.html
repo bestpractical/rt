@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -92,7 +92,7 @@ my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
 my $method = $Create ? 'ObjectsForCreating' : 'ObjectsForModifying';
 my @privacies = $Dashboard->$method;
 
-Abort(loc("Permission denied")) if @privacies == 0;
+Abort(loc("Permission Denied")) if @privacies == 0;
 
 if ($Create) {
     $title = loc("Create a new dashboard");
@@ -137,10 +137,10 @@ if (!$Create && !$tried_create && $id && $ARGS{'Save'}) {
                                         Name     => $ARGS{'Name'});
 
     if ($ok) {
-        push @results, loc("Dashboard updated");
+        push @results, loc("Dashboard [_1] updated", $Dashboard->Name);
     }
     else {
-        push @results, loc("Dashboard could not be updated: [_1]", $msg);
+        push @results, loc("Dashboard [_1] could not be updated: [_2]", $Dashboard->Name, $msg);
     }
 
 }

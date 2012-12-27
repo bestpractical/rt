@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 16;
+use RT::Test tests => 18;
 
 
 {
@@ -99,5 +99,18 @@ ok( $unlimittickets->UnLimit );
 ok( $unlimittickets->Count > 0, "UnLimited tickets object should return tickets" );
 
 
+}
+
+
+{
+    my $tickets = RT::Tickets->new( RT->SystemUser );
+    $tickets->Limit( FIELD => 'id', OPERATOR => '>', VALUE => 0 );
+    my $count = $tickets->Count();
+    ok $count > 1, "found more than one ticket";
+    undef $count;
+
+    $tickets->Limit( FIELD => 'id', OPERATOR => '=', VALUE => 1, ENTRYAGGREGATOR => 'none' );
+    $count = $tickets->Count();
+    ok $count == 1, "found one ticket";
 }
 

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -77,8 +77,9 @@ sub GetCurrentUser {
 
     foreach my $p ( $args{'Message'}->parts_DFS ) {
         $p->head->delete($_) for qw(
-            X-RT-GnuPG-Status X-RT-Incoming-Encrypton
+            X-RT-GnuPG-Status X-RT-Incoming-Encryption
             X-RT-Incoming-Signature X-RT-Privacy
+            X-RT-Sign X-RT-Encrypt
         );
     }
 

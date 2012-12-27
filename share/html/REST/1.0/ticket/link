@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -81,10 +81,9 @@ if ($id && $object && $id != $object) {
     goto OUTPUT;
 }
 $id ||= $object;
-unless ($id =~ /^\d+$/ && $to =~ /^\d+$/) {
-    my $bad = ($id !~ /^\d+$/) ? $id : $to;
+unless ($id =~ /^\d+$/) {
     $output = $r->path_info. "\n";
-    $output .= "Invalid ticket id: '$bad'.\n";
+    $output .= "Invalid ticket id: '$id'.\n";
     $status = "400 Bad Request";
     goto OUTPUT;
 }

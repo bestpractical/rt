@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -239,6 +239,7 @@
     border: 1px solid #ccc;
     -moz-border-radius-bottomleft: 0.5em;
     -webkit-border-bottom-left-radius: 0.5em;
+    border-bottom-left-radius: 0.5em;
     border-right: none;
     border-top: none;
     list-style-type: none;

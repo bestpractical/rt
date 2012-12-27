@@ -23,7 +23,7 @@ to use L<Starman>, a high performance preforking server:
     /opt/rt4/sbin/rt-server --server Starman --port 8080
 
 B<NOTICE>: After you run the standalone server as root, you will need to
-remove your C<var/mason> directory, or the non-standalone servers
+remove your C<var/mason_data> directory, or the non-standalone servers
 (Apache, etc), which run as a non-privileged user, will not be able to
 write to it and will not work.
 
@@ -67,6 +67,19 @@ spontaneously logged in as other users in the system.
 
 =head3 mod_fcgid
 
+B<WARNING>: Before mod_fcgid 2.3.6, the maximum request size was 1GB.
+Starting in 2.3.6, this is now 128Kb.  This is unlikely to be large
+enough for any RT install that handles attachments.  You can read more
+about FcgidMaxRequestLen at
+L<http://httpd.apache.org/mod_fcgid/mod/mod_fcgid.html#fcgidmaxrequestlen>
+
+Most distributions will have a mod_fcgid.conf or similar file with
+mod_fcgid configurations and you should add:
+
+    FcgidMaxRequestLen 1073741824
+
+to return to the old default.
+
     <VirtualHost rt.example.com>
         ### Optional apache logs for RT
         # Ensure that your log rotation scripts know about these files
@@ -99,6 +112,10 @@ and C<event> MPMs; the C<$Timezone> setting and the user's timezone
 preference are ignored.  We suggest the C<prefork> MPM or FastCGI
 deployment if your privileged users are in a different timezone than the
 one the server is configured for.
+
+B<NOTE>: RT 3.8 and below suggested use of C<SetHandler perl-script>;
+this is incorrect for RT 4, and will lead to difficulties sending
+outgoing mail from RT.  Ensure that you use C<SetHandler modperl>.
 
     <VirtualHost rt.example.com>
         ### Optional apache logs for RT
@@ -216,7 +233,7 @@ For example: if you're using the sample FastCGI config above, you might change
 the relevant directives to:
 
     Alias /rt/NoAuth/images/ /opt/rt4/share/html/NoAuth/images/
-    ScriptAlias /rt/ /opt/rt4/sbin/rt-server.fcgi/
+    ScriptAlias /rt /opt/rt4/sbin/rt-server.fcgi/
 
     # Set DocumentRoot as appropriate for the other content you want to serve
     DocumentRoot /var/www

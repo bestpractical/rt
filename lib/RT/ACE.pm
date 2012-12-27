@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -78,7 +78,6 @@ use RT::Groups;
 use vars qw (
   %LOWERCASERIGHTNAMES
   %OBJECT_TYPES
-  %TICKET_METAPRINCIPALS
 );
 
 
@@ -89,21 +88,6 @@ use vars qw (
 # to real people or groups
 
 =cut
-
-
-
-
-
-
-%TICKET_METAPRINCIPALS = (
-    Owner     => 'The owner of a ticket',                             # loc_pair
-    Requestor => 'The requestor of a ticket',                         # loc_pair
-    Cc        => 'The CC of a ticket',                                # loc_pair
-    AdminCc   => 'The administrative CC of a ticket',                 # loc_pair
-);
-
-
-
 
 =head2 LoadByValues PARAMHASH
 
@@ -266,7 +250,7 @@ sub Create {
 
     #check if it's a valid RightName
     if ( $args{'Object'}->can('AvailableRights') ) {
-        my $available = $args{'Object'}->AvailableRights;
+        my $available = $args{'Object'}->AvailableRights($princ_obj);
         unless ( grep $_ eq $args{'RightName'}, map $self->CanonicalizeRightName( $_ ), keys %$available ) {
             $RT::Logger->warning(
                 "Couldn't validate right name '$args{'RightName'}'"
@@ -285,7 +269,8 @@ sub Create {
                        ObjectId      => $args{'ObjectId'},
                    );
     if ( $self->Id ) {
-        return ( 0, $self->loc('That principal already has that right') );
+        return ( 0, $self->loc('[_1] already has that right',
+                    $princ_obj->Object->Name) );
     }
 
     my $id = $self->SUPER::Create( PrincipalId   => $princ_obj->id,

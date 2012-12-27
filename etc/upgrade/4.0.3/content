@@ -1,4 +1,7 @@
-@ScripConditions = (
+use strict;
+use warnings;
+
+our @ScripConditions = (
     {
 
       Name                 => 'On Forward',                                # loc

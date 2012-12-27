@@ -1,4 +1,3 @@
-#!/usr/bin/perl -w
 
 use RT::Test nodata => 1, tests => 264;
 

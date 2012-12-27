@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,7 +47,11 @@
 %# END BPS TAGGED BLOCK }}}
 <& "SelectOwner$Widget", %ARGS, Objects => \@objects &>
 <%INIT>
-my $Widget = RT->Config->Get('AutocompleteOwners', $session{'CurrentUser'})
+my $Widget;
+if ( !$QueueObj && !$TicketObj && RT->Config->Get('AutocompleteOwnersForSearch') ) {
+    $Widget = 'Autocomplete';
+}
+$Widget ||= RT->Config->Get('AutocompleteOwners', $session{'CurrentUser'})
                 ? 'Autocomplete' : 'Dropdown';
 
 my @objects;
@@ -55,8 +59,12 @@ if ($TicketObj) {
     @objects = ($TicketObj);
 } elsif ($QueueObj) {
     @objects = ($QueueObj);
-} elsif ($cfqueues) {
-    @objects = keys %{$cfqueues};
+} elsif (%Queues) {
+    for my $name (keys %Queues) {
+        my $q = RT::Queue->new($session{'CurrentUser'});
+        $q->Load($name);
+        push @objects, $q;
+    }
 } else {
     # Let's check rights on an empty queue object. that will do a search
     # for any queue.
@@ -73,5 +81,5 @@ $m->callback(
 <%ARGS>
 $TicketObj  => undef
 $QueueObj   => undef
-$cfqueues   => undef
+%Queues     => ()
 </%ARGS>

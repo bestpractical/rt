@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -68,63 +68,18 @@ sub __DependsOn
     my $deps = $args{'Dependencies'};
     my $list = [];
 
-# No dependencies that should be deleted with record
-# Scrip actions and conditions should be exported in feature with it.
-
-    return $self->SUPER::__DependsOn( %args );
-}
-
-sub __Relates
-{
-    my $self = shift;
-    my %args = (
-            Shredder => undef,
-            Dependencies => undef,
-            @_,
-           );
-    my $deps = $args{'Dependencies'};
-    my $list = [];
-
-# Queue
-    my $obj = $self->QueueObj;
-    if( defined $obj->id ) {
-        push( @$list, $obj );
-    } else {
-        my $rec = $args{'Shredder'}->GetRecord( Object => $self );
-        $self = $rec->{'Object'};
-        $rec->{'State'} |= INVALID;
-        $rec->{'Description'} = "Have no related Queue #". $self->id ." object";
-    }
-
-# Condition
-    $obj = $self->ConditionObj;
-    if( defined $obj->id ) {
-        push( @$list, $obj );
-    } else {
-        my $rec = $args{'Shredder'}->GetRecord( Object => $self );
-        $self = $rec->{'Object'};
-        $rec->{'State'} |= INVALID;
-        $rec->{'Description'} = "Have no related ScripCondition #". $self->id ." object";
-    }
-# Action
-    $obj = $self->ActionObj;
-    if( defined $obj->id ) {
-        push( @$list, $obj );
-    } else {
-        my $rec = $args{'Shredder'}->GetRecord( Object => $self );
-        $self = $rec->{'Object'};
-        $rec->{'State'} |= INVALID;
-        $rec->{'Description'} = "Have no related ScripAction #". $self->id ." object";
-    }
+    my $objs = RT::ObjectScrips->new( $self->CurrentUser );
+    $objs->LimitToScrip( $self->Id );
+    push @$list, $objs;
 
     $deps->_PushDependencies(
-            BaseObject => $self,
-            Flags => RELATES,
-            TargetObjects => $list,
-            Shredder => $args{'Shredder'}
-        );
+        BaseObject    => $self,
+        Flags         => DEPENDS_ON,
+        TargetObjects => $list,
+        Shredder      => $args{'Shredder'}
+    );
 
-    return $self->SUPER::__Relates( %args );
+    return $self->SUPER::__DependsOn( %args );
 }
 
 1;

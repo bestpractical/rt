@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -70,11 +70,19 @@ use strict;
 use warnings;
 
 use RT::Scrip;
+use RT::ObjectScrips;
 
 use base 'RT::SearchBuilder';
 
 sub Table { 'Scrips'}
 
+sub _Init {
+    my $self = shift;
+
+    $self->{'with_disabled_column'} = 1;
+
+    return ( $self->SUPER::_Init(@_) );
+}
 
 =head2 LimitToQueue
 
@@ -85,14 +93,17 @@ another call to this method
 =cut
 
 sub LimitToQueue  {
-   my $self = shift;
-  my $queue = shift;
- 
-  $self->Limit (ENTRYAGGREGATOR => 'OR',
-		FIELD => 'Queue',
-		VALUE => "$queue")
-      if defined $queue;
-  
+    my $self = shift;
+    my $queue = shift;
+    return unless defined $queue;
+
+    my $alias = RT::ObjectScrips->new( $self->CurrentUser )
+        ->JoinTargetToThis( $self );
+    $self->Limit(
+        ALIAS => $alias,
+        FIELD => 'ObjectId',
+        VALUE => int $queue,
+    );
 }
 
 
@@ -106,12 +117,125 @@ another call to this method or LimitToQueue
 
 
 sub LimitToGlobal  {
-   my $self = shift;
- 
-  $self->Limit (ENTRYAGGREGATOR => 'OR',
-		FIELD => 'Queue',
-		VALUE => 0);
-  
+    my $self = shift;
+    return $self->LimitToQueue(0);
+}
+
+sub LimitToAdded {
+    my $self = shift;
+    return RT::ObjectScrips->new( $self->CurrentUser )
+        ->LimitTargetToAdded( $self => @_ );
+}
+
+sub LimitToNotAdded {
+    my $self = shift;
+    return RT::ObjectScrips->new( $self->CurrentUser )
+        ->LimitTargetToNotAdded( $self => @_ );
+}
+
+sub LimitByStage  {
+    my $self = shift;
+    my %args = @_%2? (Stage => @_) : @_;
+    return unless defined $args{'Stage'};
+
+    my $alias = RT::ObjectScrips->new( $self->CurrentUser )
+        ->JoinTargetToThis( $self, %args );
+    $self->Limit(
+        ALIAS => $alias,
+        FIELD => 'Stage',
+        VALUE => $args{'Stage'},
+    );
+}
+
+=head2 LimitByTemplate
+
+Takes a L<RT::Template> object and limits scrips to those that
+use the template.
+
+=cut
+
+sub LimitByTemplate {
+    my $self = shift;
+    my $template = shift;
+
+    $self->Limit( FIELD => 'Template', VALUE => $template->Name );
+
+    if ( $template->Queue ) {
+        # if template is local then we are interested in global and
+        # queue specific scrips
+        $self->LimitToQueue( $template->Queue );
+        $self->LimitToGlobal;
+    }
+    else { # template is global
+
+        # if every queue has a custom version then there
+        # is no scrip that uses the template
+        {
+            my $queues = RT::Queues->new( RT->SystemUser );
+            my $alias = $queues->Join(
+                TYPE   => 'LEFT',
+                ALIAS1 => 'main',
+                FIELD1 => 'id',
+                TABLE2 => 'Templates',
+                FIELD2 => 'Queue',
+            );
+            $queues->Limit(
+                LEFTJOIN   => $alias,
+                ALIAS      => $alias,
+                FIELD      => 'Name',
+                VALUE      => $template->Name,
+            );
+            $queues->Limit(
+                ALIAS      => $alias,
+                FIELD      => 'id',
+                OPERATOR   => 'IS',
+                VALUE      => 'NULL',
+            );
+            return $self->Limit( FIELD => 'id', VALUE => 0 )
+                unless $queues->Count;
+        }
+
+        # otherwise it's either a global scrip or application to
+        # a queue with custom version of the template.
+        my $os_alias = RT::ObjectScrips->new( $self->CurrentUser )
+            ->JoinTargetToThis( $self );
+        my $tmpl_alias = $self->Join(
+            TYPE   => 'LEFT',
+            ALIAS1 => $os_alias,
+            FIELD1 => 'ObjectId',
+            TABLE2 => 'Templates',
+            FIELD2 => 'Queue',
+        );
+        $self->Limit(
+            LEFTJOIN => $tmpl_alias, ALIAS => $tmpl_alias, FIELD => 'Name', VALUE => $template->Name,
+        );
+        $self->Limit(
+            LEFTJOIN => $tmpl_alias, ALIAS => $tmpl_alias, FIELD => 'Queue', OPERATOR => '!=', VALUE => 0,
+        );
+
+        $self->_OpenParen('UsedBy');
+        $self->Limit( SUBCLAUSE => 'UsedBy', ALIAS => $os_alias, FIELD => 'ObjectId', VALUE => 0 );
+        $self->Limit(
+            SUBCLAUSE => 'UsedBy',
+            ALIAS => $tmpl_alias,
+            FIELD => 'id',
+            OPERATOR => 'IS',
+            VALUE => 'NULL',
+        );
+        $self->_CloseParen('UsedBy');
+    }
+}
+
+sub ApplySortOrder {
+    my $self = shift;
+    my $order = shift || 'ASC';
+    $self->OrderByCols( {
+        ALIAS => RT::ObjectScrips->new( $self->CurrentUser )
+            ->JoinTargetToThis( $self => @_ )
+        ,
+        FIELD => 'SortOrder',
+        ORDER => $order,
+    } );
 }
 
 # {{{ sub Next 
@@ -178,7 +302,6 @@ Commit all of this object's prepared scrips
 sub Commit {
     my $self = shift;
 
-    
     foreach my $scrip (@{$self->Prepared}) {
         $RT::Logger->debug(
             "Committing scrip #". $scrip->id
@@ -189,6 +312,7 @@ sub Commit {
         $scrip->Commit( TicketObj      => $self->{'TicketObj'},
                         TransactionObj => $self->{'TransactionObj'} );
     }
+
 }
 
 
@@ -257,8 +381,6 @@ sub Prepared {
     return ($self->{'prepared_scrips'} || []);
 }
 
-
-
 =head2  _SetupSourceObjects { TicketObj , Ticket, Transaction, TransactionObj }
 
 Setup a ticket and transaction for this Scrip collection to work with as it runs through the 
@@ -281,9 +403,21 @@ sub _SetupSourceObjects {
 
 
     if ( $args{'TicketObj'} ) {
-        # clone the ticket here as we need to change CurrentUser
-        $self->{'TicketObj'} = bless { %{$args{'TicketObj'} } }, 'RT::Ticket';
-        $self->{'TicketObj'}->CurrentUser( $self->CurrentUser );
+        # This loads a clean copy of the Ticket object to ensure that we
+        # don't accidentally escalate the privileges of the passed in
+        # ticket (this function can be invoked from the UI).
+        # We copy the TransactionBatch transactions so that Scrips
+        # running against the new Ticket will have access to them. We
+        # use RanTransactionBatch to guard against running
+        # TransactionBatch Scrips more than once.
+        $self->{'TicketObj'} = RT::Ticket->new( $self->CurrentUser );
+        $self->{'TicketObj'}->Load( $args{'TicketObj'}->Id );
+        if ( $args{'TicketObj'}->TransactionBatch ) {
+            # try to ensure that we won't infinite loop if something dies, triggering DESTROY while 
+            # we have the _TransactionBatch objects;
+            $self->{'TicketObj'}->RanTransactionBatch(1);
+            $self->{'TicketObj'}->{'_TransactionBatch'} = $args{'TicketObj'}->{'_TransactionBatch'};
+        }
     }
     else {
         $self->{'TicketObj'} = RT::Ticket->new( $self->CurrentUser );
@@ -320,12 +454,9 @@ sub _FindScrips {
                  @_ );
 
 
-    $self->LimitToQueue( $self->{'TicketObj'}->QueueObj->Id )
-      ;    #Limit it to  $Ticket->QueueObj->Id
-    $self->LimitToGlobal();
-      # or to "global"
-
-    $self->Limit( FIELD => "Stage", VALUE => $args{'Stage'} );
+    $self->LimitToQueue( $self->{'TicketObj'}->QueueObj->Id );
+    $self->LimitToGlobal;
+    $self->LimitByStage( $args{'Stage'} );
 
     my $ConditionsAlias = $self->NewAlias('ScripConditions');
 
@@ -357,8 +488,7 @@ sub _FindScrips {
         ENTRYAGGREGATOR => 'OR',
     );
 
-    # Promise some kind of ordering
-    $self->OrderBy( FIELD => 'Description' );
+    $self->ApplySortOrder;
 
     # we call Count below, but later we always do search
     # so just do search and get count from results

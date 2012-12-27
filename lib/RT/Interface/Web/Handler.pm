@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -56,7 +56,6 @@ use Text::Wrapper;
 use CGI::Cookie;
 use Time::ParseDate;
 use Time::HiRes;
-use HTML::Entities;
 use HTML::Scrubber;
 use RT::Interface::Web;
 use RT::Interface::Web::Request;
@@ -65,19 +64,17 @@ use File::Glob qw( bsd_glob );
 use File::Spec::Unix;
 
 sub DefaultHandlerArgs  { (
-    comp_root => [
-        [ local    => $RT::MasonLocalComponentRoot ],
-        (map {[ "plugin-".$_->Name =>  $_->ComponentRoot ]} @{RT->Plugins}),
-        [ standard => $RT::MasonComponentRoot ]
+    comp_root            => [
+        RT::Interface::Web->ComponentRoots( Names => 1 ),
     ],
     default_escape_flags => 'h',
     data_dir             => "$RT::MasonDataDir",
-    allow_globals        => [qw(%session)],
+    allow_globals        => [qw(%session $DECODED_ARGS)],
     # Turn off static source if we're in developer mode.
     static_source        => (RT->Config->Get('DevelMode') ? '0' : '1'), 
     use_object_files     => (RT->Config->Get('DevelMode') ? '0' : '1'), 
     autoflush            => 0,
-    error_format         => (RT->Config->Get('DevelMode') ? 'html': 'brief'),
+    error_format         => (RT->Config->Get('DevelMode') ? 'html': 'rt_error'),
     request_class        => 'RT::Interface::Web::Request',
     named_component_subs => $INC{'Devel/Cover.pm'} ? 1 : 0,
 ) };
@@ -117,8 +114,9 @@ sub NewHandler {
         @_
     );
   
-    $handler->interp->set_escape( h => \&RT::Interface::Web::EscapeUTF8 );
+    $handler->interp->set_escape( h => \&RT::Interface::Web::EscapeHTML );
     $handler->interp->set_escape( u => \&RT::Interface::Web::EscapeURI  );
+    $handler->interp->set_escape( j => \&RT::Interface::Web::EscapeJS   );
     return($handler);
 }
 
@@ -190,6 +188,7 @@ sub CleanupRequest {
     }
 
     %RT::Ticket::MERGE_CACHE = ( effective => {}, merged => {} );
+    %RT::User::PREFERENCES_CACHE = ();
 
     # RT::System persists between requests, so its attributes cache has to be
     # cleared manually. Without this, for example, subject tags across multiple
@@ -202,6 +201,13 @@ sub CleanupRequest {
             unless $INC{'Test/WWW/Mechanize/PSGI.pm'};
 
 
+}
+
+
+sub HTML::Mason::Exception::as_rt_error {
+    my ($self) = @_;
+    $RT::Logger->error( $self->as_text );
+    return "An internal RT error has occurred.  Your administrator can find more details in RT's log files.";
 }
 
 

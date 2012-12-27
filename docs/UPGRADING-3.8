@@ -1,110 +1,111 @@
-UPGRADING FROM 3.8.8 and earlier - Changes:
+=head1 UPGRADING FROM 3.8.8 AND EARLIER
 
-Previous versions of RT used a password hashing scheme which was too
-easy to reverse, which could allow attackers with read access to the RT
-database to possibly compromise users' passwords.  Even if RT does no
-password authentication itself, it may still store these weak password
-hashes -- using ExternalAuth does not guarantee that you are not
-vulnerable!  To upgrade stored passwords to a stronger hash, run:
+Previous versions of RT used a password hashing scheme which was too easy to
+reverse, which could allow attackers with read access to the RT database to
+possibly compromise users' passwords.  Even if RT does no password
+authentication itself, it may still store these weak password hashes -- using
+ExternalAuth does not guarantee that you are not vulnerable!  To upgrade
+stored passwords to a stronger hash, run:
 
     perl etc/upgrade/vulnerable-passwords
 
-We have also proved that it's possible to delete a notable set of
-records from Transactions table without losing functionality. To delete
-these records, run the following script:
+We have also proved that it's possible to delete a notable set of records from
+Transactions table without losing functionality. To delete these records, run
+the following script:
 
     perl -I /opt/rt4/local/lib -I /opt/rt4/lib etc/upgrade/shrink_transactions_table.pl
 
-If you chose not to run the shrink_cgm_table.pl script when you upgraded
-to 3.8, you should read more about it below and run it at this point.
+If you chose not to run the shrink_cgm_table.pl script when you upgraded to
+3.8, you should read more about it below and run it at this point.
 
-The default for $MessageBoxWrap is now SOFT and $MessageBoxWidth is now
-unset by default.  This means the message box will expand to fill all
-the available width.  $MessageBoxWrap is also overridable by the user
-now.  These changes accommodate the new default two column layout for
-ticket create and update pages.  You may turn this layout off by setting
-$UseSideBySideLayout to 0.  To retain the original behavior, set
-$MessageBoxWrap to HARD and $MessageBoxWidth to 72.
-
-
-UPGRADING FROM 3.8.7 and earlier - Changes:
-
-RT's ChartFont option has been changed from a string to a hash which
-lets you specify per-language fonts. RT now comes with a better default
-font for charts, too.  You should either update your 'ChartFont' option
-to match the new format, or consider trying the new default.
-
-RT now gives you more precise control over the order in which custom
-fields are displayed.  This change requires some small changes to your
-currently saved custom field orders.  RT will automatically clean up
-your existing custom fields when you run the standard database upgrade
-steps.  After that cleanup, you should make sure that custom fields are
-ordered in a way that you and your users find pleasing.
+The default for $MessageBoxWrap is now SOFT and $MessageBoxWidth is now unset
+by default.  This means the message box will expand to fill all the available
+width.  $MessageBoxWrap is also overridable by the user now.  These changes
+accommodate the new default two column layout for ticket create and update
+pages.  You may turn this layout off by setting $UseSideBySideLayout to 0.  To
+retain the original behavior, set $MessageBoxWrap to HARD and $MessageBoxWidth
+to 72.
 
 
-UPGRADING FROM 3.8.6 and earlier - Changes:
+=head1 UPGRADING FROM 3.8.7 AND EARLIER
 
-For MySQL and Oracle users:
-If you upgraded from a version of RT earlier than 3.7.81, you should
-already have a CachedGroupMembers3 index on your CachedGroupMembers
-table.  If you did a clean install of RT somewhere in the 3.8 release
-series, you most likely don't have this index.  You can add it manually
-with:
+RT's ChartFont option has been changed from a string to a hash which lets you
+specify per-language fonts. RT now comes with a better default font for
+charts, too.  You should either update your 'ChartFont' option to match the
+new format, or consider trying the new default.
+
+RT now gives you more precise control over the order in which custom fields
+are displayed.  This change requires some small changes to your currently
+saved custom field orders.  RT will automatically clean up your existing
+custom fields when you run the standard database upgrade steps.  After that
+cleanup, you should make sure that custom fields are ordered in a way that you
+and your users find pleasing.
+
+
+=head1 UPGRADING FROM 3.8.6 AND EARLIER
+
+For MySQL and Oracle users: if you upgraded from a version of RT earlier than
+3.7.81, you should already have a CachedGroupMembers3 index on your
+CachedGroupMembers table.  If you did a clean install of RT somewhere in the
+3.8 release series, you most likely don't have this index.  You can add it
+manually with:
 
   CREATE INDEX CachedGroupMembers3 on CachedGroupMembers (MemberId, ImmediateParentId);
 
 
-UPGRADING FROM 3.8.5 and earlier - Changes:
+=head1 UPGRADING FROM 3.8.5 AND EARLIER
 
 You can now forward an entire Ticket history (in addition to specific
-transactions) but this requires a new Template called "Forward Ticket".
-This template will be added as part of the standard database upgrade
-step.
+transactions) but this requires a new Template called "Forward Ticket".  This
+template will be added as part of the standard database upgrade step.
 
-Custom fields with categories can optionally be split out into
-hierarchical custom fields.  If you wish to convert your old
-category-based custom fields, run:
+Custom fields with categories can optionally be split out into hierarchical
+custom fields.  If you wish to convert your old category-based custom fields,
+run:
 
     perl etc/upgrade/split-out-cf-categories
 
-It will prompt you for each custom field with categories that it finds,
-and the name of the custom field to create to store the categories.
+It will prompt you for each custom field with categories that it finds, and
+the name of the custom field to create to store the categories.
 
-If you were using the LocalizedDateTime RT::Date formatter from custom
-code, and passing a DateFormat or TimeFormat argument, you need to
-switch from the strftime methods to the cldr methods; that is,
+If you were using the LocalizedDateTime RT::Date formatter from custom code,
+and passing a DateFormat or TimeFormat argument, you need to switch from the
+strftime methods to the cldr methods; that is,
 'full_date_format' becomes 'date_format_full'.
 
 You may also have done this from your RT_SiteConfig.pm, using:
+
     Set($DateTimeFormat, {
         Format => 'LocalizedDateTime',
         DateFormat => 'medium_date_format',
     );
+
 Which would need to be changed to:
+
     Set($DateTimeFormat, {
         Format => 'LocalizedDateTime',
         DateFormat => 'date_format_medium',
     );
 
 
-UPGRADING FROM 3.8.3 and earlier - Changes:
+=head1 UPGRADING FROM 3.8.3 AND EARLIER
 
 Arguments to the NotifyGroup Scrip Action will be updated as part of the
 standard database upgrade process.
 
 
-UPGRADING FROM 3.8.2 and earlier - Changes:
+=head1 UPGRADING FROM 3.8.2 AND EARLIER
 
 A new scrip condition, 'On Reject', has been added.
 
 
-UPGRADING FROM 3.8.1 and earlier - Changes:
+=head1 UPGRADING FROM 3.8.1 AND EARLIER
 
-When using Oracle, $DatabaseName is now used as SID, so RT can connect
-without environment variables or tnsnames.ora file. Because of this
-change, your RT instance may loose its ability to connect to your DB; to
-resolve this, you will need to update RT's configuration and restart
-your web server.  Example configuration:
+When using Oracle, $DatabaseName is now used as SID, so RT can connect without
+environment variables or tnsnames.ora file. Because of this change, your RT
+instance may loose its ability to connect to your DB; to resolve this, you
+will need to update RT's configuration and restart your web server.  Example
+configuration:
 
     Set($DatabaseType, 'Oracle');
     Set($DatabaseHost, '192.168.0.1');
@@ -121,72 +122,70 @@ If you want a user to be able to access the Approvals tools (a.k.a.  the
 Approvals tab), you must grant that user the "ShowApprovalsTab" right.
 
 
-UPGRADING FROM 3.8.0 and earlier - Changes:
+=head1 UPGRADING FROM 3.8.0 AND EARLIER
 
-The TicketSQL syntax for bookmarked tickets has been changed.
-Specifically, the new phrasing is "id = '__Bookmarked__'", rather than
-the old "__Bookmarks__".  The old form will remain, for backwards
-compatibility.  The standard database upgrade process will only
-automatically change the global 'Bookmarked Tickets' search
+The TicketSQL syntax for bookmarked tickets has been changed.  Specifically,
+the new phrasing is "id = '__Bookmarked__'", rather than the old
+"__Bookmarks__".  The old form will remain, for backwards compatibility.  The
+standard database upgrade process will only automatically change the
+global 'Bookmarked Tickets' search
 
 
-UPGRADING FROM 3.7.85 and earlier - Changes:
+=head1 UPGRADING FROM 3.7.85 AND EARLIER
 
-We have proved that it is possible to delete a large set of records from
-the CachedGroupMembers table without losing functionality; in fact,
-failing to do so may result in occasional problems where RT miscounts
-users, particularly in the chart functionality.  To delete these records
-run the following script:
+We have proved that it is possible to delete a large set of records from the
+CachedGroupMembers table without losing functionality; in fact, failing to do
+so may result in occasional problems where RT miscounts users, particularly in
+the chart functionality.  To delete these records run the following script:
 
     perl -I /opt/rt4/local/lib -I /opt/rt4/lib etc/upgrade/shrink_cgm_table.pl
 
-After you run this, you will have significantly reduced the number of
-records in your CachedGroupMembers table, and may need to tell your
-database to refresh indexes/statistics.  Please consult your DBA for
-specific instructions for your database.
+After you run this, you will have significantly reduced the number of records
+in your CachedGroupMembers table, and may need to tell your database to
+refresh indexes/statistics.  Please consult your DBA for specific instructions
+for your database.
 
 
-UPGRADING FROM 3.7.81 and earlier - Changes:
+=head1 UPGRADING FROM 3.7.81 AND EARLIER
 
-RT::Extension::BrandedQueues has been integrated into core, and the
-handling of subject tags has changed as a consequence.  You will need to
-modify any of your email templates which use the $rtname variable, in
-order to make them respect the per-queue subject tags. To edit your
-templates, log into RT as your administrative user, then click:
+RT::Extension::BrandedQueues has been integrated into core, and the handling
+of subject tags has changed as a consequence.  You will need to modify any of
+your email templates which use the $rtname variable, in order to make them
+respect the per-queue subject tags. To edit your templates, log into RT as
+your administrative user, then click:
 
     Configuration -> Global -> Templates -> Select -> <Some template name>
 
-The only template which ships with RT which needs updating is the
-"Autoreply" template, which includes this line:
+The only template which ships with RT which needs updating is the "Autoreply"
+template, which includes this line:
 
-    "There is no need to reply to this message right now.  Your ticket
-    has been assigned an ID of [{$rtname} #{$Ticket->id()}]."
+    "There is no need to reply to this message right now.  Your ticket has
+    been assigned an ID of [{$rtname} #{$Ticket->id()}]."
 
 Change this line to read:
 
-    "There is no need to reply to this message right now.  Your ticket
-    has been assigned an ID of { $Ticket->SubjectTag }."
+    "There is no need to reply to this message right now.  Your ticket has
+    been assigned an ID of { $Ticket->SubjectTag }."
 
-If you were previously using RT::Extension::BrandedQueues, you MUST
-uninstall it before upgrading. In addition, you must run the
+If you were previously using RT::Extension::BrandedQueues, you MUST uninstall
+it before upgrading. In addition, you must run the
 'etc/upgrade/3.8-branded-queues-extension' perl script.  This will
 convert the extension's configuration into the new format.  Finally, in
 templates where you were using the Tag method ($Ticket->QueueObj->Tag),
 you will need to replace it with $Ticket->SubjectTag
 
-RT::Action::LinearEscalate extension has been integrated into core,
-so you MUST uninstall it before upgrading.
+RT::Action::LinearEscalate extension has been integrated into core, so you
+MUST uninstall it before upgrading.
 
-RT::Extension::iCal has been integrated into core, so you MUST uninstall
-it before upgrading. In addition, you must run etc/upgrade/3.8-ical-extension
+RT::Extension::iCal has been integrated into core, so you MUST uninstall it
+before upgrading. In addition, you must run etc/upgrade/3.8-ical-extension
 script to convert old data.
 
 
-UPGRADING FROM 3.7.80 and earlier - Changes:
+=head1 UPGRADING FROM 3.7.80 AND EARLIER
 
-Added indexes to CachedGroupMembers for MySQL and Oracle.
-If you have previously installed RTx-Shredder, you may already
-have these indexes.  You can see the indexes by looking at
-etc/upgrade/3.7.81/schema.*
+Added indexes to CachedGroupMembers for MySQL and Oracle.  If you have
+previously installed RTx-Shredder, you may already have these indexes.  You
+can see the indexes by looking at etc/upgrade/3.7.81/schema.*
 
 These indexes may take a very long time to create.

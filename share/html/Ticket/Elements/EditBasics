@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -58,13 +58,12 @@ unless ( @fields ) {
             html => '<input name="Subject" value="'.$m->interp->apply_escapes( $defaults{'Subject'} || $TicketObj->Subject, 'h' ).'" />',
         },
         {   name => 'Status',
-            comp => '/Elements/SelectStatus',
+            comp => '/Ticket/Elements/SelectStatus',
             args => {
                 Name => 'Status',
-                DefaultLabel => loc("[_1] (Unchanged)",loc($TicketObj->Status)),
-                Default => $defaults{'Status'} || undef,
+                Default => $defaults{Status},
+                DefaultFromArgs => 0,
                 TicketObj => $TicketObj,
-                QueueObj => $TicketObj->QueueObj,
             },
         },
         {   name => 'Queue',

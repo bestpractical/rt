@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test nodata => 1, tests => 24;
+use RT::Test nodata => 1, tests => undef;
 
 
 {
@@ -58,8 +58,7 @@ ok(!$id, $val);
 my $Queue = RT::Queue->new(RT->SystemUser);
 my ($id, $msg) = $Queue->Create(Name => "Foo");
 ok ($id, "Foo $id was created");
-ok(my $group = RT::Group->new(RT->SystemUser));
-ok($group->LoadQueueRoleGroup(Queue => $id, Type=> 'Requestor'));
+ok(my $group = $Queue->RoleGroup('Requestor'));
 ok ($group->Id, "Found the requestors object for this Queue");
 
 {
@@ -79,13 +78,12 @@ ok ($Queue->IsWatcher(Type => 'Cc', PrincipalId => $bob->PrincipalId), "The Queu
         "The Queue no longer has bob at fsck.com as a requestor");
 }
 
-$group = RT::Group->new(RT->SystemUser);
-ok($group->LoadQueueRoleGroup(Queue => $id, Type=> 'Cc'));
+$group = $Queue->RoleGroup('Cc');
 ok ($group->Id, "Found the cc object for this Queue");
-$group = RT::Group->new(RT->SystemUser);
-ok($group->LoadQueueRoleGroup(Queue => $id, Type=> 'AdminCc'));
+$group = $Queue->RoleGroup('AdminCc');
 ok ($group->Id, "Found the AdminCc object for this Queue");
 
 
 }
 
+done_testing;

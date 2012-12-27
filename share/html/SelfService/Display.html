@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -74,14 +74,10 @@
 
 
 
-<& /Ticket/Elements/ShowHistory, 
-      Ticket => $Ticket, 
-      URIFile => "Display.html", 
+<& /Elements/ShowHistory,
+      Object => $Ticket,
       ShowHeaders => $ARGS{'ShowHeaders'},
       DownloadableHeaders => 0,
-      AttachPath => "Attachment", 
-      Attachments => $attachments, 
-      UpdatePath => "Update.html" 
 &>
 
 
@@ -213,11 +209,6 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
         $session{'i'}++;
         RT::Interface::Web::Redirect( RT->Config->Get('WebURL') ."SelfService/Display.html?id=". $Ticket->id."&results=".$key);
     }
-
-    my $Transactions = $Ticket->Transactions;
-
-    my $attachments =
-      $m->comp( '/Ticket/Elements/FindAttachments', Ticket => $Ticket );
 
     my $LinkBasicsTitle = $Ticket->CurrentUserHasRight('ModifyTicket')
                           || $Ticket->CurrentUserHasRight('ReplyToTicket');

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -91,6 +91,7 @@ sub __DependsOn
 
 # Custom Fields
     $objs = RT::CustomFields->new( $self->CurrentUser );
+    $objs->SetContextObject( $self );
     $objs->LimitToQueue( $self->id );
     push( @$list, $objs );
 

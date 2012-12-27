@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -87,40 +87,4 @@ sub __DependsOn
     return $self->SUPER::__DependsOn( %args );
 }
 
-sub __Relates
-{
-    my $self = shift;
-    my %args = (
-            Shredder => undef,
-            Dependencies => undef,
-            @_,
-           );
-    my $deps = $args{'Dependencies'};
-    my $list = [];
-
-    my $obj = $self->Object;
-
-# Queue
-# Skip if it's global CF
-    if( $self->Queue ) {
-        if( $self->QueueObj && $self->QueueObj->Id ) {
-            push( @$list, $obj );
-        } else {
-            my $rec = $args{'Shredder'}->GetRecord( Object => $self );
-            $self = $rec->{'Object'};
-            $rec->{'State'} |= INVALID;
-            $rec->{'Description'} = "Have no related queue #". $self->Queue ." object";
-        }
-    }
-
-    $deps->_PushDependencies(
-            BaseObject => $self,
-            Flags => RELATES,
-            TargetObjects => $list,
-            Shredder => $args{'Shredder'}
-        );
-    return $self->SUPER::__Relates( %args );
-}
-
 1;
-

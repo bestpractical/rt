@@ -1,9 +1,9 @@
-#!/usr/bin/perl
 
 use strict;
 use warnings FATAL => 'all';
 
-use RT::Test nodata => 1, tests => 139;
+use RT::Test nodata => 1, tests => 145;
+use Test::Warn;
 
 # Before we get going, ditch all object_cfs; this will remove 
 # all custom fields systemwide;
@@ -69,13 +69,21 @@ is( $cfvs->Count, 0 );
 is( $ticket->FirstCustomFieldValue, undef );
 
 # CF with ID -1 shouldnt exist at all
-$cfvs = $ticket->CustomFieldValues( -1 );
+warning_like {
+    $cfvs = $ticket->CustomFieldValues( -1 );
+} qr{Couldn't load custom field};
 is( $cfvs->Count, 0 );
-is( $ticket->FirstCustomFieldValue( -1 ), undef );
+warning_like {
+    is( $ticket->FirstCustomFieldValue( -1 ), undef );
+} qr{Couldn't load custom field};
 
-$cfvs = $ticket->CustomFieldValues( 'SomeUnexpedCustomFieldName' );
+warning_like {
+    $cfvs = $ticket->CustomFieldValues( 'SomeUnexpedCustomFieldName' );
+} qr{Couldn't load custom field};
 is( $cfvs->Count, 0 );
-is( $ticket->FirstCustomFieldValue( 'SomeUnexpedCustomFieldName' ), undef );
+warning_like {
+    is( $ticket->FirstCustomFieldValue( 'SomeUnexpedCustomFieldName' ), undef );
+} qr{Couldn't load custom field};
 
 for (@custom_fields) {
 	$cfvs = $ticket->CustomFieldValues( $_->id );
@@ -183,9 +191,13 @@ $test_add_delete_cycle->( sub { return $_[0] } );
 $ticket->AddCustomFieldValue( Field => $local_cf2->id , Value => 'Baz' );
 $ticket->AddCustomFieldValue( Field => $global_cf3->id , Value => 'Baz' );
 # now if we ask for cf values on RecordCustomFields4 we should not get any
-$cfvs = $ticket->CustomFieldValues( 'RecordCustomFields4' );
+warning_like {
+    $cfvs = $ticket->CustomFieldValues( 'RecordCustomFields4' );
+} qr{Couldn't load custom field};
 is( $cfvs->Count, 0, "No custom field values for non-Queue cf" );
-is( $ticket->FirstCustomFieldValue( 'RecordCustomFields4' ), undef, "No first custom field value for non-Queue cf" );
+warning_like {
+    is( $ticket->FirstCustomFieldValue( 'RecordCustomFields4' ), undef, "No first custom field value for non-Queue cf" );
+} qr{Couldn't load custom field};
 
 {
     my $cfname = $global_cf3->Name;

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,23 +45,9 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<!--[if (lt IE 9)&(gt IE 6)]>
-<link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/aileron/msie-pie.css" type="text/css" media="all" />
-<![endif]-->
 <!--[if lt IE 8]>
 <link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/aileron/msie.css" type="text/css" media="all" />
 <![endif]-->
 <!--[if lt IE 7]>
 <link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/aileron/msie6.css" type="text/css" media="all" />
 <![endif]-->
-<script type="text/javascript">
-jQuery(document).ready(function(){
-    jQuery.fn.supersubs.defaults = {
-        maxWidth: 30,
-        extraWidth: 2
-    };
-
-    jQuery("#app-nav.toplevel").addClass('sf-menu sf-js-enabled sf-shadow').supersubs().superfish({ speed: 'fast' });
-    jQuery("#page-menu.toplevel").addClass('sf-menu sf-js-enabled').supersubs().superfish({ dropShadows: false, speed: 'fast' }).supposition();
-});
-</script>

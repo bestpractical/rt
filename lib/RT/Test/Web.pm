@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -52,15 +52,20 @@ use strict;
 use warnings;
 
 use base qw(Test::WWW::Mechanize);
+use Scalar::Util qw(weaken);
+use MIME::Base64 qw//;
 
-require RT::Test;
+BEGIN { require RT::Test; }
 require Test::More;
+
+my $instance;
 
 sub new {
     my ($class, @args) = @_;
 
     push @args, app => $RT::Test::TEST_APP if $RT::Test::TEST_APP;
-    my $self = $class->SUPER::new(@args);
+    my $self = $instance = $class->SUPER::new(@args);
+    weaken $instance;
     $self->cookie_jar(HTTP::Cookies->new);
 
     return $self;
@@ -92,14 +97,25 @@ sub login {
 
     my $url = $self->rt_base_url;
     $self->get($url . "?user=$user;pass=$pass");
-    unless ( $self->status == 200 ) {
-        Test::More::diag( "error: status is ". $self->status );
-        return 0;
-    }
+
+    return 0 unless $self->logged_in_as($user);
+
     unless ( $self->content =~ m/Logout/i ) {
         Test::More::diag("error: page has no Logout");
         return 0;
     }
+    return 1;
+}
+
+sub logged_in_as {
+    my $self = shift;
+    my $user = shift || '';
+
+    unless ( $self->status == 200 ) {
+        Test::More::diag( "error: status is ". $self->status );
+        return 0;
+    }
+    RT::Interface::Web::EscapeHTML(\$user);
     unless ( $self->content =~ m{<span class="current-user">\Q$user\E</span>}i ) {
         Test::More::diag("Page has no user name");
         return 0;
@@ -160,7 +176,10 @@ sub goto_create_ticket {
     } elsif ( $queue =~ /^\d+$/ ) {
         $id = $queue;
     } else {
-        die "not yet implemented";
+        my $queue_obj = RT::Queue->new(RT->SystemUser);
+        my ($ok, $msg) = $queue_obj->Load($queue);
+        die "Unable to load queue '$queue': $msg" if !$ok;
+        $id = $queue_obj->id;
     }
 
     $self->get($self->rt_base_url . 'Ticket/Create.html?Queue='.$id);
@@ -326,7 +345,7 @@ sub custom_field_input {
     my $cf_id = $cf_obj->id;
     
     my ($res) =
-        grep /^Object-RT::Ticket-\d*-CustomField-$cf_id-Values?$/,
+        grep /^Object-RT::Ticket-\d*-CustomField(?::\w+)?-$cf_id-Values?$/,
         map $_->name,
         $self->current_form->inputs;
     unless ( $res ) {
@@ -336,11 +355,81 @@ sub custom_field_input {
     return $res;
 }
 
+sub value_name {
+    my $self = shift;
+    my $field = shift;
+
+    my $input = $self->current_form->find_input( $field )
+        or return undef;
+
+    my @names = $input->value_names;
+    return $input->value unless @names;
+
+    my @values = $input->possible_values;
+    for ( my $i = 0; $i < @values; $i++ ) {
+        return $names[ $i ] if $values[ $i ] eq $input->value;
+    }
+    return undef;
+}
+
+
+sub check_links {
+    my $self = shift;
+    my %args = @_;
+
+    my %has = map {$_ => 1} @{ $args{'has'} };
+    my %has_no = map {$_ => 1} @{ $args{'has_no'} };
+
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    my @found;
+
+    my @links = $self->followable_links;
+    foreach my $text ( grep defined && length, map $_->text, @links ) {
+        push @found, $text if $has_no{ $text };
+        delete $has{ $text };
+    }
+    if ( @found || keys %has ) {
+        Test::More::ok( 0, "expected links" );
+        Test::More::diag( "didn't expect, but found: ". join ', ', map "'$_'", @found )
+            if @found;
+        Test::More::diag( "didn't find, but expected: ". join ', ', map "'$_'", keys %has )
+            if keys %has;
+        return 0;
+    }
+    return Test::More::ok( 1, "expected links" );
+}
+
+sub auth {
+    my $self = shift;
+    $self->default_header( $self->auth_header(@_) );
+}
+
+sub auth_header {
+    my $self = shift;
+    return Authorization => "Basic " .
+        MIME::Base64::encode( join(":", @_) );
+}
+
+sub dom {
+    my $self = shift;
+    Carp::croak("Can not get DOM, not HTML repsone")
+        unless $self->is_html;
+    require Mojo::DOM;
+    return Mojo::DOM->new( $self->content );
+}
+
 sub DESTROY {
     my $self = shift;
     if ( !$RT::Test::Web::DESTROY++ ) {
         $self->no_warnings_ok;
     }
+}
+
+END {
+    return unless $instance;
+    return if RT::Test->builder->{Original_Pid} != $$;
+    $instance->no_warnings_ok if !$RT::Test::Web::DESTROY++;
 }
 
 1;

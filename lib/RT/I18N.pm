@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -209,22 +209,26 @@ sub SetMIMEEntityToEncoding {
     # do the same for parts first of all
     SetMIMEEntityToEncoding( $_, $enc, $preserve_words ) foreach $entity->parts;
 
-    my $charset = _FindOrGuessCharset($entity) or return;
+    my $head = $entity->head;
+
+    my $charset = _FindOrGuessCharset($entity);
+    if ( $charset ) {
+        unless( Encode::find_encoding($charset) ) {
+            $RT::Logger->warning("Encoding '$charset' is not supported");
+            $charset = undef;
+        }
+    }
+    unless ( $charset ) {
+        $head->replace( "X-RT-Original-Content-Type" => $head->mime_attr('Content-Type') );
+        $head->mime_attr('Content-Type' => 'application/octet-stream');
+        return;
+    }
 
     SetMIMEHeadToEncoding(
-	$entity->head,
+	$head,
 	_FindOrGuessCharset($entity, 1) => $enc,
 	$preserve_words
     );
-
-    my $head = $entity->head;
-
-    # convert at least MIME word encoded attachment filename
-    foreach my $attr (qw(content-type.name content-disposition.filename)) {
-	if ( my $name = $head->mime_attr($attr) and !$preserve_words ) {
-	    $head->mime_attr( $attr => DecodeMIMEWordsToUTF8($name) );
-	}
-    }
 
     # If this is a textual entity, we'd need to preserve its original encoding
     $head->replace( "X-RT-Original-Encoding" => $charset )
@@ -234,7 +238,7 @@ sub SetMIMEEntityToEncoding {
 
     my $body = $entity->bodyhandle;
 
-    if ( $enc ne $charset && $body ) {
+    if ( $body && ($enc ne $charset || $enc =~ /^utf-?8(?:-strict)?$/i) ) {
         my $string = $body->as_string or return;
 
         $RT::Logger->debug( "Converting '$charset' to '$enc' for "
@@ -289,85 +293,106 @@ sub DecodeMIMEWordsToUTF8 {
 
 sub DecodeMIMEWordsToEncoding {
     my $str = shift;
-    my $to_charset = shift;
+    my $to_charset = _CanonicalizeCharset(shift);
     my $field = shift || '';
 
-    my @list = $str =~ m/(.*?)=\?([^?]+)\?([QqBb])\?([^?]+)\?=([^=]*)/gcs;
+    # handle filename*=ISO-8859-1''%74%E9%73%74%2E%74%78%74, parameter value
+    # continuations, and similar syntax from RFC 2231
+    if ($field =~ /^Content-(Type|Disposition)/i) {
+        # This concatenates continued parameters and normalizes encoded params
+        # to QB encoded-words which we handle below
+        $str = MIME::Field::ParamVal->parse($str)->stringify;
+    }
+
+    # Pre-parse by removing all whitespace between encoded words
+    my $encoded_word = qr/
+                 =\?            # =?
+                 ([^?]+?)       # charset
+                 (?:\*[^?]+)?   # optional '*language'
+                 \?             # ?
+                 ([QqBb])       # encoding
+                 \?             # ?
+                 ([^?]+)        # encoded string
+                 \?=            # ?=
+                 /x;
+    $str =~ s/($encoded_word)\s+(?=$encoded_word)/$1/g;
+
+    # Also merge quoted-printable sections together, in case multiple
+    # octets of a single encoded character were split between chunks.
+    # Though not valid according to RFC 2047, this has been seen in the
+    # wild.
+    1 while $str =~ s/(=\?[^?]+\?[Qq]\?)([^?]+)\?=\1([^?]+)\?=/$1$2$3?=/i;
+
+    # XXX TODO: use decode('MIME-Header', ...) and Encode::Alias to replace our
+    # custom MIME word decoding and charset canonicalization.  We can't do this
+    # until we parse before decode, instead of the other way around.
+    my @list = $str =~ m/(.*?)          # prefix
+                         $encoded_word
+                         ([^=]*)        # trailing
+                        /xgcs;
 
     if ( @list ) {
-    # add everything that hasn't matched to the end of the latest
-    # string in array this happen when we have 'key="=?encoded?="; key="plain"'
-    $list[-1] .= substr($str, pos $str);
+        # add everything that hasn't matched to the end of the latest
+        # string in array this happen when we have 'key="=?encoded?="; key="plain"'
+        $list[-1] .= substr($str, pos $str);
 
-    $str = "";
-    while (@list) {
-	my ($prefix, $charset, $encoding, $enc_str, $trailing) =
-            splice @list, 0, 5;
-        $encoding = lc $encoding;
-
-        $trailing =~ s/\s?\t?$//;               # Observed from Outlook Express
-
-	if ( $encoding eq 'q' ) {
-	    use MIME::QuotedPrint;
-	    $enc_str =~ tr/_/ /;		# Observed from Outlook Express
-	    $enc_str = decode_qp($enc_str);
-	} elsif ( $encoding eq 'b' ) {
-	    use MIME::Base64;
-	    $enc_str = decode_base64($enc_str);
-	} else {
-	    $RT::Logger->warning("Incorrect encoding '$encoding' in '$str', "
-            ."only Q(uoted-printable) and B(ase64) are supported");
-	}
-
-        # now we have got a decoded subject, try to convert into the encoding
-        unless ( $charset eq $to_charset ) {
-            Encode::from_to( $enc_str, $charset, $to_charset );
-        }
-
-        # XXX TODO: RT doesn't currently do the right thing with mime-encoded headers
-        # We _should_ be preserving them encoded until after parsing is completed and
-        # THEN undo the mime-encoding.
-        #
-        # This routine should be translating the existing mimeencoding to utf8 but leaving
-        # things encoded.
-        #
-        # It's legal for headers to contain mime-encoded commas and semicolons which
-        # should not be treated as address separators. (Encoding == quoting here)
-        #
-        # until this is fixed, we must escape any string containing a comma or semicolon
-        # this is only a bandaid
-
-        # Some _other_ MUAs encode quotes _already_, and double quotes
-        # confuse us a lot, so only quote it if it isn't quoted
-        # already.
-        $enc_str = qq{"$enc_str"}
-            if $enc_str =~ /[,;]/
-            and $enc_str !~ /^".*"$/
-            and (!$field || $field =~ /^(?:To$|From$|B?Cc$|Content-)/i);
-
-	$str .= $prefix . $enc_str . $trailing;
-    }
-    }
-
-# handle filename*=ISO-8859-1''%74%E9%73%74%2E%74%78%74, see also rfc 2231
-    @list = $str =~ m/(.*?\*=)([^']*?)'([^']*?)'(\S+)(.*?)(?=(?:\*=|$))/gcs;
-    if (@list) {
-        $str = '';
+        $str = "";
         while (@list) {
-            my ( $prefix, $charset, $language, $enc_str, $trailing ) =
-              splice @list, 0, 5;
-            $prefix =~ s/\*=$/=/; # remove the *
-            $enc_str =~ s/%(\w{2})/chr hex $1/eg;
-            unless ( $charset eq $to_charset ) {
-                Encode::from_to( $enc_str, $charset, $to_charset );
+            my ($prefix, $charset, $encoding, $enc_str, $trailing) =
+                    splice @list, 0, 5;
+            $charset  = _CanonicalizeCharset($charset);
+            $encoding = lc $encoding;
+
+            $trailing =~ s/\s?\t?$//;               # Observed from Outlook Express
+
+            if ( $encoding eq 'q' ) {
+                use MIME::QuotedPrint;
+                $enc_str =~ tr/_/ /;		# Observed from Outlook Express
+                $enc_str = decode_qp($enc_str);
+            } elsif ( $encoding eq 'b' ) {
+                use MIME::Base64;
+                $enc_str = decode_base64($enc_str);
+            } else {
+                $RT::Logger->warning("Incorrect encoding '$encoding' in '$str', "
+                    ."only Q(uoted-printable) and B(ase64) are supported");
             }
+
+            # now we have got a decoded subject, try to convert into the encoding
+            if ( $charset ne $to_charset || $charset =~ /^utf-?8(?:-strict)?$/i ) {
+                if ( Encode::find_encoding($charset) ) {
+                    Encode::from_to( $enc_str, $charset, $to_charset );
+                } else {
+                    $RT::Logger->warning("Charset '$charset' is not supported");
+                    $enc_str =~ s/[^[:print:]]/\357\277\275/g;
+                    Encode::from_to( $enc_str, 'UTF-8', $to_charset )
+                        unless $to_charset eq 'utf-8';
+                }
+            }
+
+            # XXX TODO: RT doesn't currently do the right thing with mime-encoded headers
+            # We _should_ be preserving them encoded until after parsing is completed and
+            # THEN undo the mime-encoding.
+            #
+            # This routine should be translating the existing mimeencoding to utf8 but leaving
+            # things encoded.
+            #
+            # It's legal for headers to contain mime-encoded commas and semicolons which
+            # should not be treated as address separators. (Encoding == quoting here)
+            #
+            # until this is fixed, we must escape any string containing a comma or semicolon
+            # this is only a bandaid
+
+            # Some _other_ MUAs encode quotes _already_, and double quotes
+            # confuse us a lot, so only quote it if it isn't quoted
+            # already.
             $enc_str = qq{"$enc_str"}
-              if $enc_str =~ /[,;]/
-              and $enc_str !~ /^".*"$/
-              and (!$field || $field =~ /^(?:To$|From$|B?Cc$|Content-)/i);
+                if $enc_str =~ /[,;]/
+                and $enc_str !~ /^".*"$/
+                and (!$field || $field =~ /^(?:To$|From$|B?Cc$|Content-)/i);
+
             $str .= $prefix . $enc_str . $trailing;
         }
-     }
+    }
 
     # We might have \n without trailing whitespace, which will result in
     # invalid headers.
@@ -500,12 +525,19 @@ sub _CanonicalizeCharset {
     my $charset = lc shift;
     return $charset unless $charset;
 
+    # Canonicalize aliases if they're known
+    if (my $canonical = Encode::resolve_alias($charset)) {
+        $charset = $canonical;
+    }
+
     if ( $charset eq 'utf8' || $charset eq 'utf-8-strict' ) {
         return 'utf-8';
     }
-    elsif ( $charset eq 'gb2312' ) {
-        # gbk is superset of gb2312 so it's safe
+    elsif ( $charset eq 'euc-cn' ) {
+        # gbk is superset of gb2312/euc-cn so it's safe
         return 'gbk';
+        # XXX TODO: gb18030 is an even larger, more permissive superset of gbk,
+        # but needs Encode::HanExtra installed
     }
     else {
         return $charset;
@@ -535,7 +567,7 @@ sub SetMIMEHeadToEncoding {
         my @values = $head->get_all($tag);
         $head->delete($tag);
         foreach my $value (@values) {
-            if ( $charset ne $enc ) {
+            if ( $charset ne $enc || $enc =~ /^utf-?8(?:-strict)?$/i ) {
                 Encode::_utf8_off($value);
                 Encode::from_to( $value, $charset => $enc );
             }

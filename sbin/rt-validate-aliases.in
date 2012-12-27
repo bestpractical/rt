@@ -1,0 +1,343 @@
+#!@PERL@
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
+use strict;
+use warnings;
+use Text::ParseWords qw//;
+use Getopt::Long;
+
+BEGIN { # BEGIN RT CMD BOILERPLATE
+    require File::Spec;
+    require Cwd;
+    my @libs = ("@RT_LIB_PATH@", "@LOCAL_LIB_PATH@");
+    my $bin_path;
+
+    for my $lib (@libs) {
+        unless ( File::Spec->file_name_is_absolute($lib) ) {
+            $bin_path ||= ( File::Spec->splitpath(Cwd::abs_path(__FILE__)) )[1];
+            $lib = File::Spec->catfile( $bin_path, File::Spec->updir, $lib );
+        }
+        unshift @INC, $lib;
+    }
+}
+
+require RT;
+RT::LoadConfig();
+RT::Init();
+
+my ($PREFIX, $URL, $HOST) = ("");
+GetOptions(
+    "prefix|p=s" => \$PREFIX,
+    "url|u=s"    => \$URL,
+    "host|h=s"   => \$HOST,
+);
+
+unless (@ARGV) {
+    @ARGV = grep {-f} ("/etc/aliases",
+                       "/etc/mail/aliases",
+                       "/etc/postfix/aliases");
+    die "Can't determine aliases file to parse!"
+        unless @ARGV;
+}
+
+my %aliases = parse_lines();
+unless (%aliases) {
+    warn "No mailgate aliases found in @ARGV";
+    exit;
+}
+
+my %seen;
+my $global_mailgate;
+for my $address (sort keys %aliases) {
+    my ($mailgate, $opts, $extra) = @{$aliases{$address}};
+    my %opts = %{$opts};
+
+    next if $opts{url} and $URL and $opts{url} !~ /\Q$URL\E/;
+
+    if ($mailgate !~ /^\|/) {
+        warn "Missing the leading | on alias $address\n";
+        $mailgate = "|$mailgate";
+    }
+    if (($global_mailgate ||= $mailgate) ne $mailgate) {
+        warn "Unexpected mailgate for alias $address -- expected $global_mailgate, got $mailgate\n";
+    }
+
+    if (not defined $opts{action}) {
+        warn "Missing --action parameter for alias $address\n";
+    } elsif ($opts{action} !~ /^(correspond|comment)$/) {
+        warn "Invalid --action parameter for alias $address: $opts{action}\n"
+    }
+
+    my $queue = RT::Queue->new( RT->SystemUser );
+    if (not defined $opts{queue}) {
+        warn "Missing --queue parameter for alias $address\n";
+    } else {
+        $queue->Load( $opts{queue} );
+        if (not $queue->id) {
+            warn "Invalid --queue parameter for alias $address: $opts{queue}\n";
+        } elsif ($queue->Disabled) {
+            warn "Disabled --queue given for alias $address: $opts{queue}\n";
+        }
+    }
+
+    if (not defined $opts{url}) {
+        warn "Missing --url parameter for alias $address\n";
+    } #XXX: Test connectivity and/or https certs?
+
+    if ($queue->id and $opts{action} =~ /^(correspond|comment)$/) {
+        push @{$seen{lc $queue->Name}{$opts{action}}}, $address;
+    }
+
+    warn "Unknown extra arguments for alias $address: @{$extra}\n"
+        if @{$extra};
+}
+
+# Check the global settings
+my %global;
+for my $action (qw/correspond comment/) {
+    my $setting = ucfirst($action) . "Address";
+    my $value = RT->Config->Get($setting);
+    if (not defined $value) {
+        warn "$setting is not set!\n";
+        next;
+    }
+    my ($local,$host) = lc($value) =~ /(.*?)\@(.*)/;
+    next if $HOST and $host !~ /\Q$HOST\E/;
+    $local = "$PREFIX$local" unless exists $aliases{$local};
+
+    $global{$setting} = $local;
+    if (not exists $aliases{$local}) {
+        warn "$setting $value does not exist in aliases!\n"
+    } elsif ($aliases{$local}[1]{action} ne $action) {
+        warn "$setting $value is a $aliases{$local}[1]{action} in aliases!"
+    }
+}
+warn "CorrespondAddress and CommentAddress are the same!\n"
+    if RT->Config->Get("CorrespondAddress") eq RT->Config->Get("CommentAddress");
+
+
+# Go through the queues, one at a time
+my $queues = RT::Queues->new( RT->SystemUser );
+$queues->UnLimit;
+while (my $q = $queues->Next) {
+    my $qname = $q->Name;
+    for my $action (qw/correspond comment/) {
+        my $setting = ucfirst($action) . "Address";
+        my $value = $q->$setting;
+
+        if (not $value) {
+            my @other = grep {$_ ne $global{$setting}} @{$seen{lc $q->Name}{$action} || []};
+            warn "CorrespondAddress not set on $qname, but in aliases as "
+                .join(" and ", @other) . "\n" if @other;
+            next;
+        }
+
+        if ($action eq "comment" and $q->CorrespondAddress
+                and $q->CorrespondAddress eq $q->CommentAddress) {
+            warn "CorrespondAddress and CommentAddress are set the same on $qname\n";
+            next;
+        }
+
+        my ($local, $host) = lc($value) =~ /(.*?)\@(.*)/;
+        next if $HOST and $host !~ /\Q$HOST\E/;
+        $local = "$PREFIX$local" unless exists $aliases{$local};
+
+        my @other = @{$seen{lc $q->Name}{$action} || []};
+        if (not exists $aliases{$local}) {
+            if (@other) {
+                warn "$setting $value on $qname does not exist in aliases -- typo'd as "
+                    .join(" or ", @other) . "?\n";
+            } else {
+                warn "$setting $value on $qname does not exist in aliases!\n"
+            }
+            next;
+        }
+
+        my %opt = %{$aliases{$local}[1]};
+        if ($opt{action} ne $action) {
+            warn "$setting address $value on $qname is a $opt{action} in aliases!\n"
+        }
+        if (lc $opt{queue} ne lc $q->Name and $action ne "comment") {
+            warn "$setting address $value on $qname points to queue $opt{queue} in aliases!\n";
+        }
+
+        @other = grep {$_ ne $local} @other;
+        warn "Extra aliases for queue $qname: ".join(",",@other)."\n"
+            if @other;
+    }
+}
+
+
+sub parse_lines {
+    local @ARGV = @ARGV;
+
+    my %aliases;
+    my $line = "";
+    for (<>) {
+        next unless /\S/;
+        next if /^#/;
+        chomp;
+        if (/^\s+/) {
+            $line .= $_;
+        } else {
+            add_line($line, \%aliases);
+            $line = $_;
+        }
+    }
+    add_line($line, \%aliases);
+
+    expand(\%aliases);
+    filter_mailgate(\%aliases);
+
+    return %aliases;
+}
+
+sub expand {
+    my ($data) = @_;
+
+    for (1..100) {
+        my $expanded = 0;
+        for my $address (sort keys %{$data}) {
+            my @new;
+            for my $part (@{$data->{$address}}) {
+                if (m!^[|/]! or not $data->{$part}) {
+                    push @new, $part;
+                } else {
+                    $expanded++;
+                    push @new, @{$data->{$part}};
+                }
+            }
+            $data->{$address} = \@new;
+        }
+        return unless $expanded;
+    }
+    warn "Recursion limit exceeded -- cycle in aliases?\n";
+}
+
+sub filter_mailgate {
+    my ($data) = @_;
+
+    for my $address (sort keys %{$data}) {
+        my @parts = @{delete $data->{$address}};
+
+        my @pipes = grep {m!^\|?.*?/rt-mailgate\b!} @parts;
+        next unless @pipes;
+
+        my $pipe = shift @pipes;
+        warn "More than one rt-mailgate pipe for alias: $address\n"
+            if @pipes;
+
+        my @args = Text::ParseWords::shellwords($pipe);
+
+        # We allow "|/random-other-command /opt/rt4/bin/rt-mailgate ...",
+        # we just need to strip off enough
+        my $index = 0;
+        $index++ while $args[$index] !~ m!/rt-mailgate!;
+        my $mailgate = join(' ', splice(@args,0,$index+1));
+
+        my %opts;
+        local @ARGV = @args;
+        Getopt::Long::Configure( "pass_through" ); # Allow unknown options
+        my $ret = eval {
+            GetOptions( \%opts, "queue=s", "action=s", "url=s",
+                        "jar=s", "debug", "extension=s",
+                        "timeout=i", "verify-ssl!", "ca-file=s",
+                    );
+            1;
+        };
+        warn "Failed to parse options for $address: $@" unless $ret;
+        next unless %opts;
+
+        $data->{lc $address} = [$mailgate, \%opts, [@ARGV]];
+    }
+}
+
+sub add_line {
+    my ($line, $data) = @_;
+    return unless $line =~ /\S/;
+
+    my ($name, $parts) = parse_line($line);
+    return unless defined $name;
+
+    if (defined $data->{$name}) {
+        warn "Duplicate definition for alias $name\n";
+        return;
+    }
+
+    $data->{lc $name} = $parts;
+}
+
+sub parse_line {
+    my $re_name      = qr/\S+/;
+    # Intentionally accept pipe-like aliases with a missing | -- we deal with them later
+    my $re_quoted_pipe    = qr/"\|?[^\\"]*(?:\\[\\"][^\\"]*)*"/;
+    my $re_nonquoted_pipe = qr/\|[^\s,]+/;
+    my $re_pipe      = qr/(?:$re_quoted_pipe|$re_nonquoted_pipe)/;
+    my $re_path      = qr!/[^,\s]+!;
+    my $re_address   = qr![^|/,\s][^,\s]*!;
+    my $re_value     = qr/(?:$re_pipe|$re_path|$re_address)/;
+    my $re_values    = qr/(?:$re_value(?:\s*,\s*$re_value)*)/;
+
+    my ($line) = @_;
+    if ($line =~ /^($re_name):\s*($re_values)/) {
+        my ($name, $all_parts) = ($1, $2);
+        my @parts;
+        while ($all_parts =~ s/^(?:\s*,\s*)?($re_value)//) {
+            my $part = $1;
+            if ($part =~ /^"/) {
+                $part =~ s/^"//; $part =~ s/"$//;
+                $part =~ s/\\(.)/$1/g;
+            }
+            push @parts, $part;
+        }
+        return $name, [@parts];
+    } else {
+        warn "Parse failure, line $. of $ARGV: $line\n";
+        return ();
+    }
+}

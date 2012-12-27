@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -188,7 +188,7 @@ Otherwise, return its URI
 sub HREF {
     my $self = shift;
     if ($self->IsLocal && $self->Object) {
-        return ( RT->Config->Get('WebURL') . "/Articles/Article/Display.html?id=".$self->Object->Id);
+        return ( RT->Config->Get('WebURL') . "Articles/Article/Display.html?id=".$self->Object->Id);
     }   
     else {
         return ($self->URI);

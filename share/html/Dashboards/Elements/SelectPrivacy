@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -60,11 +60,11 @@ foreach my $object (@Objects) {
     if (ref($object) eq 'RT::User') {
         $label = $object->id == $session{'CurrentUser'}->Id
                     ? loc("My dashboards")
-                    : loc("[_1]'s dashboards", $m->scomp('/Elements/ShowUser', User => $object));
+                    : loc("[_1]'s dashboards", $object->Format);
     } else {
-        $label = loc("[_1]'s dashboards", $m->interp->apply_escapes($object->Name, 'h'));
+        $label = loc("[_1]'s dashboards", $object->Name);
     }
 </%perl>
-<option <%$selected|n%> value="<%$privacy%>"><% $label |n %></option>
+<option <%$selected|n%> value="<%$privacy%>"><% $label %></option>
 % }
 </select>

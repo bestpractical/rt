@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -101,7 +101,7 @@ sub Prepare {
     my $self = shift;
 
     my $ticket = $self->TicketObj;
-    my $lifecycle = $ticket->QueueObj->Lifecycle;
+    my $lifecycle = $ticket->Lifecycle;
     my $status = $ticket->Status;
 
     my $argument = $self->Argument;

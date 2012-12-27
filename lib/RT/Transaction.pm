@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -48,7 +48,7 @@
 
 =head1 NAME
 
-  RT::Transaction - RT\'s transaction object
+  RT::Transaction - RT's transaction object
 
 =head1 SYNOPSIS
 
@@ -84,7 +84,11 @@ use RT::Ruleset;
 
 use HTML::FormatText;
 use HTML::TreeBuilder;
+use HTML::Scrubber;
 
+# For EscapeHTML() and decode_entities()
+require RT::Interface::Web;
+require HTML::Entities;
 
 sub Table {'Transactions'}
 
@@ -186,11 +190,14 @@ sub Create {
        # Entry point of the rule system
        my $ticket = RT::Ticket->new(RT->SystemUser);
        $ticket->Load($args{'ObjectId'});
+       my $txn = RT::Transaction->new($RT::SystemUser);
+       $txn->Load($self->id);
+
        my $rules = $self->{rules} = RT::Ruleset->FindAllRules(
             Stage       => 'TransactionCreate',
             Type        => $args{'Type'},
             TicketObj   => $ticket,
-            TransactionObj => $self,
+            TransactionObj => $txn,
        );
 
         if ($args{'CommitScrips'} ) {
@@ -503,7 +510,7 @@ sub Attachments {
     $self->{'attachments'} = RT::Attachments->new( $self->CurrentUser );
 
     unless ( $self->CurrentUserCanSee ) {
-        $self->{'attachments'}->Limit(FIELD => 'id', VALUE => '0');
+        $self->{'attachments'}->Limit(FIELD => 'id', VALUE => '0', SUBCLAUSE => 'acl');
         return $self->{'attachments'};
     }
 
@@ -602,75 +609,39 @@ Returns a text string which briefly describes this transaction
 
 =cut
 
-sub BriefDescription {
+{
+    my $scrubber = HTML::Scrubber->new(default => 0); # deny everything
+
+    sub BriefDescription {
+        my $self = shift;
+        my $desc = $self->BriefDescriptionAsHTML;
+           $desc = $scrubber->scrub($desc);
+           $desc = HTML::Entities::decode_entities($desc);
+        return $desc;
+    }
+}
+
+=head2 BriefDescriptionAsHTML
+
+Returns an HTML string which briefly describes this transaction.
+
+=cut
+
+sub BriefDescriptionAsHTML {
     my $self = shift;
 
     unless ( $self->CurrentUserCanSee ) {
         return ( $self->loc("Permission Denied") );
     }
 
-    my $type = $self->Type;    #cache this, rather than calling it 30 times
+    my $type = $self->Type;
 
     unless ( defined $type ) {
         return $self->loc("No transaction type specified");
     }
 
-    my $obj_type = $self->FriendlyObjectType;
-
-    if ( $type eq 'Create' ) {
-        return ( $self->loc( "[_1] created", $obj_type ) );
-    }
-    elsif ( $type eq 'Enabled' ) {
-        return ( $self->loc( "[_1] enabled", $obj_type ) );
-    }
-    elsif ( $type eq 'Disabled' ) {
-        return ( $self->loc( "[_1] disabled", $obj_type ) );
-    }
-    elsif ( $type =~ /Status/ ) {
-        if ( $self->Field eq 'Status' ) {
-            if ( $self->NewValue eq 'deleted' ) {
-                return ( $self->loc( "[_1] deleted", $obj_type ) );
-            }
-            else {
-                return (
-                    $self->loc(
-                        "Status changed from [_1] to [_2]",
-                        "'" . $self->loc( $self->OldValue ) . "'",
-                        "'" . $self->loc( $self->NewValue ) . "'"
-                    )
-                );
-
-            }
-        }
-
-        # Generic:
-        my $no_value = $self->loc("(no value)");
-        return (
-            $self->loc(
-                "[_1] changed from [_2] to [_3]",
-                $self->Field,
-                ( $self->OldValue ? "'" . $self->OldValue . "'" : $no_value ),
-                "'" . $self->NewValue . "'"
-            )
-        );
-    }
-    elsif ( $type =~ /SystemError/ ) {
-        return $self->loc("System error");
-    }
-    elsif ( $type =~ /Forward Transaction/ ) {
-        return $self->loc( "Forwarded Transaction #[_1] to [_2]",
-            $self->Field, $self->Data );
-    }
-    elsif ( $type =~ /Forward Ticket/ ) {
-        return $self->loc( "Forwarded Ticket to [_1]", $self->Data );
-    }
-
-    if ( my $code = $_BriefDescriptions{$type} ) {
-        return $code->($self);
-    }
-
-    return $self->loc(
-        "Default: [_1]/[_2] changed from [_3] to [_4]",
+    my ($template, @params) = (
+        "Default: [_1]/[_2] changed from [_3] to [_4]", #loc
         $type,
         $self->Field,
         (
@@ -678,26 +649,118 @@ sub BriefDescription {
             ? "'" . $self->OldValue . "'"
             : $self->loc("(no value)")
         ),
-        "'" . $self->NewValue . "'"
+        (
+            $self->NewValue
+            ? "'" . $self->NewValue . "'"
+            : $self->loc("(no value)")
+        ),
     );
+
+    if ( my $code = $_BriefDescriptions{$type} ) {
+        ($template, @params) = $code->($self);
+    }
+
+    unless ($template) {
+        ($template, @params) = ("(No description)"); #loc
+    }
+    return $self->loc($template, $self->_ProcessReturnValues(@params));
+}
+
+sub _ProcessReturnValues {
+    my $self   = shift;
+    my @values = @_;
+    return map {
+        if    (ref eq 'ARRAY')  { $_ = join "", $self->_ProcessReturnValues(@$_) }
+        elsif (ref eq 'SCALAR') { $_ = $$_ }
+        else                    { RT::Interface::Web::EscapeHTML(\$_) }
+        $_
+    } @values;
+}
+
+sub _FormatUser {
+    my $self = shift;
+    my $user = shift;
+    return [
+        \'<span class="user" data-user-id="', $user->id, \'">',
+        $user->Format,
+        \'</span>'
+    ];
 }
 
 %_BriefDescriptions = (
+    Create => sub {
+        my $self = shift;
+        return ( "[_1] created", $self->FriendlyObjectType );   #loc
+    },
+    Enabled => sub {
+        my $self = shift;
+        return ( "[_1] enabled", $self->FriendlyObjectType );   #loc
+    },
+    Disabled => sub {
+        my $self = shift;
+        return ( "[_1] disabled", $self->FriendlyObjectType );  #loc
+    },
+    Status => sub {
+        my $self = shift;
+        if ( $self->Field eq 'Status' ) {
+            if ( $self->NewValue eq 'deleted' ) {
+                return ( "[_1] deleted", $self->FriendlyObjectType );   #loc
+            }
+            else {
+                return (
+                    "Status changed from [_1] to [_2]",                 #loc
+                    "'" . $self->loc( $self->OldValue ) . "'",
+                    "'" . $self->loc( $self->NewValue ) . "'"
+                );
+            }
+        }
+
+        # Generic:
+        my $no_value = $self->loc("(no value)");
+        return (
+            "[_1] changed from [_2] to [_3]", #loc
+            $self->Field,
+            ( $self->OldValue ? "'" . $self->OldValue . "'" : $no_value ),
+            "'" . $self->NewValue . "'"
+        );
+    },
+    SystemError => sub {
+        my $self = shift;
+        return ("System error"); #loc
+    },
+    "Forward Transaction" => sub {
+        my $self = shift;
+        my $recipients = join ", ", map {
+            RT::User->Format( Address => $_, CurrentUser => $self->CurrentUser )
+        } RT::EmailParser->ParseEmailAddress($self->Data);
+
+        return ( "Forwarded [_3]Transaction #[_1][_4] to [_2]", #loc
+            $self->Field, $recipients,
+            [\'<a href="#txn-', $self->Field, \'">'], \'</a>');
+    },
+    "Forward Ticket" => sub {
+        my $self = shift;
+        my $recipients = join ", ", map {
+            RT::User->Format( Address => $_, CurrentUser => $self->CurrentUser )
+        } RT::EmailParser->ParseEmailAddress($self->Data);
+
+        return ( "Forwarded Ticket to [_1]", $recipients ); #loc
+    },
     CommentEmailRecord => sub {
         my $self = shift;
-        return $self->loc("Outgoing email about a comment recorded");
+        return ("Outgoing email about a comment recorded"); #loc
     },
     EmailRecord => sub {
         my $self = shift;
-        return $self->loc("Outgoing email recorded");
+        return ("Outgoing email recorded"); #loc
     },
     Correspond => sub {
         my $self = shift;
-        return $self->loc("Correspondence added");
+        return ("Correspondence added");    #loc
     },
     Comment => sub {
         my $self = shift;
-        return $self->loc("Comments added");
+        return ("Comments added");          #loc
     },
     CustomField => sub {
         my $self = shift;
@@ -705,6 +768,7 @@ sub BriefDescription {
 
         if ( $self->Field ) {
             my $cf = RT::CustomField->new( $self->CurrentUser );
+            $cf->SetContextObject( $self->Object );
             $cf->Load( $self->Field );
             $field = $cf->Name();
             $field = $self->loc('a custom field') if !defined($field);
@@ -714,22 +778,22 @@ sub BriefDescription {
         my $old = $self->OldValue;
 
         if ( !defined($old) || $old eq '' ) {
-            return $self->loc("[_1] [_2] added", $field, $new);
+            return ("[_1] [_2] added", $field, $new);   #loc
         }
         elsif ( !defined($new) || $new eq '' ) {
-            return $self->loc("[_1] [_2] deleted", $field, $old);
+            return ("[_1] [_2] deleted", $field, $old); #loc
         }
         else {
-            return $self->loc("[_1] [_2] changed to [_3]", $field, $old, $new);
+            return ("[_1] [_2] changed to [_3]", $field, $old, $new);   #loc
         }
     },
     Untake => sub {
         my $self = shift;
-        return $self->loc("Untaken");
+        return ("Untaken"); #loc
     },
     Take => sub {
         my $self = shift;
-        return $self->loc("Taken");
+        return ("Taken"); #loc
     },
     Force => sub {
         my $self = shift;
@@ -738,35 +802,36 @@ sub BriefDescription {
         my $New = RT::User->new( $self->CurrentUser );
         $New->Load( $self->NewValue );
 
-        return $self->loc("Owner forcibly changed from [_1] to [_2]" , $Old->Name , $New->Name);
+        return ("Owner forcibly changed from [_1] to [_2]", #loc
+                map { $self->_FormatUser($_) } $Old, $New);
     },
     Steal => sub {
         my $self = shift;
         my $Old = RT::User->new( $self->CurrentUser );
         $Old->Load( $self->OldValue );
-        return $self->loc("Stolen from [_1]",  $Old->Name);
+        return ("Stolen from [_1]", $self->_FormatUser($Old));   #loc
     },
     Give => sub {
         my $self = shift;
         my $New = RT::User->new( $self->CurrentUser );
         $New->Load( $self->NewValue );
-        return $self->loc( "Given to [_1]",  $New->Name );
+        return ( "Given to [_1]", $self->_FormatUser($New));    #loc
     },
     AddWatcher => sub {
         my $self = shift;
         my $principal = RT::Principal->new($self->CurrentUser);
         $principal->Load($self->NewValue);
-        return $self->loc( "[_1] [_2] added", $self->Field, $principal->Object->Name);
+        return ( "[_1] [_2] added", $self->loc($self->Field), $self->_FormatUser($principal->Object));    #loc
     },
     DelWatcher => sub {
         my $self = shift;
         my $principal = RT::Principal->new($self->CurrentUser);
         $principal->Load($self->OldValue);
-        return $self->loc( "[_1] [_2] deleted", $self->Field, $principal->Object->Name);
+        return ( "[_1] [_2] deleted", $self->loc($self->Field), $self->_FormatUser($principal->Object));  #loc
     },
     Subject => sub {
         my $self = shift;
-        return $self->loc( "Subject changed to [_1]", $self->Data );
+        return ( "Subject changed to [_1]", $self->Data );  #loc
     },
     AddLink => sub {
         my $self = shift;
@@ -775,36 +840,40 @@ sub BriefDescription {
             my $URI = RT::URI->new( $self->CurrentUser );
             $URI->FromURI( $self->NewValue );
             if ( $URI->Resolver ) {
-                $value = $URI->Resolver->AsString;
+                $value = [
+                    \'<a href="', $URI->AsHREF, \'">',
+                    $URI->Resolver->AsString,
+                    \'</a>'
+                ];
             }
             else {
                 $value = $self->NewValue;
             }
+
             if ( $self->Field eq 'DependsOn' ) {
-                return $self->loc( "Dependency on [_1] added", $value );
+                return ( "Dependency on [_1] added", $value );  #loc
             }
             elsif ( $self->Field eq 'DependedOnBy' ) {
-                return $self->loc( "Dependency by [_1] added", $value );
-
+                return ( "Dependency by [_1] added", $value );  #loc
             }
             elsif ( $self->Field eq 'RefersTo' ) {
-                return $self->loc( "Reference to [_1] added", $value );
+                return ( "Reference to [_1] added", $value );   #loc
             }
             elsif ( $self->Field eq 'ReferredToBy' ) {
-                return $self->loc( "Reference by [_1] added", $value );
+                return ( "Reference by [_1] added", $value );   #loc
             }
             elsif ( $self->Field eq 'MemberOf' ) {
-                return $self->loc( "Membership in [_1] added", $value );
+                return ( "Membership in [_1] added", $value );  #loc
             }
             elsif ( $self->Field eq 'HasMember' ) {
-                return $self->loc( "Member [_1] added", $value );
+                return ( "Member [_1] added", $value );         #loc
             }
             elsif ( $self->Field eq 'MergedInto' ) {
-                return $self->loc( "Merged into [_1]", $value );
+                return ( "Merged into [_1]", $value );          #loc
             }
         }
         else {
-            return ( $self->Data );
+            return ( "[_1]", $self->Data ); #loc
         }
     },
     DeleteLink => sub {
@@ -814,34 +883,37 @@ sub BriefDescription {
             my $URI = RT::URI->new( $self->CurrentUser );
             $URI->FromURI( $self->OldValue );
             if ( $URI->Resolver ) {
-                $value = $URI->Resolver->AsString;
+                $value = [
+                    \'<a href="', $URI->AsHREF, \'">',
+                    $URI->Resolver->AsString,
+                    \'</a>'
+                ];
             }
             else {
                 $value = $self->OldValue;
             }
 
             if ( $self->Field eq 'DependsOn' ) {
-                return $self->loc( "Dependency on [_1] deleted", $value );
+                return ( "Dependency on [_1] deleted", $value );    #loc
             }
             elsif ( $self->Field eq 'DependedOnBy' ) {
-                return $self->loc( "Dependency by [_1] deleted", $value );
-
+                return ( "Dependency by [_1] deleted", $value );    #loc
             }
             elsif ( $self->Field eq 'RefersTo' ) {
-                return $self->loc( "Reference to [_1] deleted", $value );
+                return ( "Reference to [_1] deleted", $value );     #loc
             }
             elsif ( $self->Field eq 'ReferredToBy' ) {
-                return $self->loc( "Reference by [_1] deleted", $value );
+                return ( "Reference by [_1] deleted", $value );     #loc
             }
             elsif ( $self->Field eq 'MemberOf' ) {
-                return $self->loc( "Membership in [_1] deleted", $value );
+                return ( "Membership in [_1] deleted", $value );    #loc
             }
             elsif ( $self->Field eq 'HasMember' ) {
-                return $self->loc( "Member [_1] deleted", $value );
+                return ( "Member [_1] deleted", $value );           #loc
             }
         }
         else {
-            return ( $self->Data );
+            return ( "[_1]", $self->Data ); #loc
         }
     },
     Told => sub {
@@ -851,26 +923,26 @@ sub BriefDescription {
             $t1->Set(Format => 'ISO', Value => $self->NewValue);
             my $t2 = RT::Date->new($self->CurrentUser);
             $t2->Set(Format => 'ISO', Value => $self->OldValue);
-            return $self->loc( "[_1] changed from [_2] to [_3]", $self->loc($self->Field), $t2->AsString, $t1->AsString );
+            return ( "[_1] changed from [_2] to [_3]", $self->loc($self->Field), $t2->AsString, $t1->AsString );    #loc
         }
         else {
-            return $self->loc( "[_1] changed from [_2] to [_3]",
-                               $self->loc($self->Field),
-                               ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'" );
+            return ( "[_1] changed from [_2] to [_3]",  #loc
+                    $self->loc($self->Field),
+                    ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'" );
         }
     },
     Set => sub {
         my $self = shift;
         if ( $self->Field eq 'Password' ) {
-            return $self->loc('Password changed');
+            return ('Password changed');    #loc
         }
         elsif ( $self->Field eq 'Queue' ) {
             my $q1 = RT::Queue->new( $self->CurrentUser );
             $q1->Load( $self->OldValue );
             my $q2 = RT::Queue->new( $self->CurrentUser );
             $q2->Load( $self->NewValue );
-            return $self->loc("[_1] changed from [_2] to [_3]",
-                              $self->loc($self->Field) , $q1->Name , $q2->Name);
+            return ("[_1] changed from [_2] to [_3]",   #loc
+                    $self->loc($self->Field) , $q1->Name , $q2->Name);
         }
 
         # Write the date/time change at local time:
@@ -879,7 +951,7 @@ sub BriefDescription {
             $t1->Set(Format => 'ISO', Value => $self->NewValue);
             my $t2 = RT::Date->new($self->CurrentUser);
             $t2->Set(Format => 'ISO', Value => $self->OldValue);
-            return $self->loc( "[_1] changed from [_2] to [_3]", $self->loc($self->Field), $t2->AsString, $t1->AsString );
+            return ( "[_1] changed from [_2] to [_3]", $self->loc($self->Field), $t2->AsString, $t1->AsString );    #loc
         }
         elsif ( $self->Field eq 'Owner' ) {
             my $Old = RT::User->new( $self->CurrentUser );
@@ -889,61 +961,74 @@ sub BriefDescription {
 
             if ( $Old->id == RT->Nobody->id ) {
                 if ( $New->id == $self->Creator ) {
-                    return $self->loc("Taken");
+                    return ("Taken");   #loc
                 }
                 else {
-                    return $self->loc( "Given to [_1]",  $New->Name );
+                    return ( "Given to [_1]", $self->_FormatUser($New) );    #loc
                 }
             }
             else {
                 if ( $New->id == $self->Creator ) {
-                    return $self->loc("Stolen from [_1]",  $Old->Name);
+                    return ("Stolen from [_1]",  $self->_FormatUser($Old) );   #loc
                 }
                 elsif ( $Old->id == $self->Creator ) {
                     if ( $New->id == RT->Nobody->id ) {
-                        return $self->loc("Untaken");
+                        return ("Untaken"); #loc
                     }
                     else {
-                        return $self->loc( "Given to [_1]", $New->Name );
+                        return ( "Given to [_1]", $self->_FormatUser($New) ); #loc
                     }
                 }
                 else {
-                    return $self->loc(
-                        "Owner forcibly changed from [_1] to [_2]",
-                        $Old->Name, $New->Name );
+                    return (
+                        "Owner forcibly changed from [_1] to [_2]", #loc
+                        map { $self->_FormatUser($_) } $Old, $New
+                    );
                 }
             }
         }
         else {
-            return $self->loc( "[_1] changed from [_2] to [_3]",
-                               $self->loc($self->Field),
-                               ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'" );
+            return ( "[_1] changed from [_2] to [_3]",  #loc
+                    $self->loc($self->Field),
+                    ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'" );
         }
     },
     PurgeTransaction => sub {
         my $self = shift;
-        return $self->loc("Transaction [_1] purged", $self->Data);
+        return ("Transaction [_1] purged", $self->Data);    #loc
     },
     AddReminder => sub {
         my $self = shift;
         my $ticket = RT::Ticket->new($self->CurrentUser);
         $ticket->Load($self->NewValue);
-        return $self->loc("Reminder '[_1]' added", $ticket->Subject);
+        my $subject = [
+            \'<a href="', RT->Config->Get('WebPath'),
+            "/Ticket/Reminders.html?id=", $self->ObjectId,
+            "#reminder-", $ticket->id, \'">', $ticket->Subject, \'</a>'
+        ];
+        return ("Reminder '[_1]' added", $subject); #loc
     },
     OpenReminder => sub {
         my $self = shift;
         my $ticket = RT::Ticket->new($self->CurrentUser);
         $ticket->Load($self->NewValue);
-        return $self->loc("Reminder '[_1]' reopened", $ticket->Subject);
-    
+        my $subject = [
+            \'<a href="', RT->Config->Get('WebPath'),
+            "/Ticket/Reminders.html?id=", $self->ObjectId,
+            "#reminder-", $ticket->id, \'">', $ticket->Subject, \'</a>'
+        ];
+        return ("Reminder '[_1]' reopened", $subject);  #loc
     },
     ResolveReminder => sub {
         my $self = shift;
         my $ticket = RT::Ticket->new($self->CurrentUser);
         $ticket->Load($self->NewValue);
-        return $self->loc("Reminder '[_1]' completed", $ticket->Subject);
-    
-    
+        my $subject = [
+            \'<a href="', RT->Config->Get('WebPath'),
+            "/Ticket/Reminders.html?id=", $self->ObjectId,
+            "#reminder-", $ticket->id, \'">', $ticket->Subject, \'</a>'
+        ];
+        return ("Reminder '[_1]' completed", $subject); #loc
     }
 );
 
@@ -1063,14 +1148,13 @@ sub CurrentUserCanSee {
         $cf->Load( $cf_id );
         return 0 unless $cf->CurrentUserHasRight('SeeCustomField');
     }
-    #if they ain't got rights to see, don't let em
-    elsif ( $self->__Value('ObjectType') eq "RT::Ticket" ) {
-        unless ( $self->CurrentUserHasRight('ShowTicket') ) {
-            return 0;
-        }
-    }
 
-    return 1;
+    # Transactions that might have changed the ->Object's visibility to
+    # the current user are marked readable
+    return 1 if $self->{ _object_is_readable };
+
+    # Defer to the object in question
+    return $self->Object->CurrentUserCanSee("Transaction");
 }
 
 
@@ -1094,7 +1178,7 @@ sub OldValue {
         return $Object->Content;
     }
     else {
-        return $self->__Value('OldValue');
+        return $self->_Value('OldValue');
     }
 }
 
@@ -1108,7 +1192,7 @@ sub NewValue {
         return $Object->Content;
     }
     else {
-        return $self->__Value('NewValue');
+        return $self->_Value('NewValue');
     }
 }
 
@@ -1121,20 +1205,20 @@ sub Object {
 
 sub FriendlyObjectType {
     my $self = shift;
-    my $type = $self->ObjectType or return undef;
-    $type =~ s/^RT:://;
-    return $self->loc($type);
+    return $self->loc( $self->Object->RecordType );
 }
 
 =head2 UpdateCustomFields
-    
-    Takes a hash of 
 
-    CustomField-<<Id>> => Value
-        or 
+Takes a hash of:
 
-    Object-RT::Transaction-CustomField-<<Id>> => Value parameters to update
-    this transaction's custom fields
+    CustomField-C<Id> => Value
+
+or:
+
+    Object-RT::Transaction-CustomField-C<Id> => Value
+
+parameters to update this transaction's custom fields.
 
 =cut
 
@@ -1146,12 +1230,10 @@ sub UpdateCustomFields {
     # value "ARGSRef", which was a reference to a hash of arguments.
     # This was insane. The next few lines of code preserve that API
     # while giving us something saner.
-
-    # TODO: 3.6: DEPRECATE OLD API
-
-    my $args; 
-
-    if ($args{'ARGSRef'}) { 
+    my $args;
+    if ($args{'ARGSRef'}) {
+        # XXX: deprecated, remove in 4.4
+        $RT::Logger->warning("Passing an ARGSRef to UpdateCustomFields is deprecated, and will be removed in RT 4.4; pass its contents instead");
         $args = $args{ARGSRef};
     } else {
         $args = \%args;
@@ -1177,36 +1259,31 @@ sub UpdateCustomFields {
     }
 }
 
+=head2 LoadCustomFieldByIdentifier
 
-
-=head2 CustomFieldValues
-
- Do name => id mapping (if needed) before falling back to RT::Record's CustomFieldValues
-
- See L<RT::Record>
+Finds and returns the custom field of the given name for the
+transaction, overriding L<RT::Record/LoadCustomFieldByIdentifier> to
+look for queue-specific CFs before global ones.
 
 =cut
 
-sub CustomFieldValues {
+sub LoadCustomFieldByIdentifier {
     my $self  = shift;
     my $field = shift;
 
-    if ( UNIVERSAL::can( $self->Object, 'QueueObj' ) ) {
+    return $self->SUPER::LoadCustomFieldByIdentifier($field)
+        if ref $field or $field =~ /^\d+$/;
 
-        # XXX: $field could be undef when we want fetch values for all CFs
-        #      do we want to cover this situation somehow here?
-        unless ( defined $field && $field =~ /^\d+$/o ) {
-            my $CFs = RT::CustomFields->new( $self->CurrentUser );
-            $CFs->Limit( FIELD => 'Name', VALUE => $field );
-            $CFs->LimitToLookupType($self->CustomFieldLookupType);
-            $CFs->LimitToGlobalOrObjectId($self->Object->QueueObj->id);
-            $field = $CFs->First->id if $CFs->First;
-        }
-    }
-    return $self->SUPER::CustomFieldValues($field);
+    return $self->SUPER::LoadCustomFieldByIdentifier($field)
+        unless UNIVERSAL::can( $self->Object, 'QueueObj' );
+
+    my $CFs = RT::CustomFields->new( $self->CurrentUser );
+    $CFs->SetContextObject( $self->Object );
+    $CFs->Limit( FIELD => 'Name', VALUE => $field );
+    $CFs->LimitToLookupType($self->CustomFieldLookupType);
+    $CFs->LimitToGlobalOrObjectId($self->Object->QueueObj->id);
+    return $CFs->First || RT::CustomField->new( $self->CurrentUser );
 }
-
-
 
 =head2 CustomFieldLookupType
 

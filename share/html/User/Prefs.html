@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -102,6 +102,14 @@
   </tr>
 </table>
 </&>
+
+%if ($UserObj->Privileged) {
+<&| /Widgets/TitleBox, title => loc('Signature') &>
+<textarea cols="80" rows="5" name="Signature" class="signature" wrap="hard">
+<%$UserObj->Signature || ''%></textarea>
+</&>
+% }
+
 % $m->callback( %ARGS, UserObj => $UserObj, CallbackName => 'FormLeftColumn' );
 </td>
 <td valign="top" class="boxcontainer">
@@ -159,29 +167,30 @@
 </table>
 </&>
 
+<&| /Widgets/TitleBox, title => loc('Secret authentication token'), id => "user-prefs-feeds" &>
+
+<&|/l&>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</&>
+
+<a href="#" id="ResetAuthTokenPrompt" style="display: none">
+  <&|/l&>I want to reset my secret token.</&>
+</a>
+<& /Elements/Submit,
+    Label       => loc('Reset secret authentication token'),
+    Name        => "ResetAuthToken",
+    id          => "ResetAuthTokenContainer" &>
+<script>
+    jQuery("#ResetAuthTokenContainer").hide();
+    jQuery("#ResetAuthTokenPrompt").show().click(function(ev){
+        jQuery(this).slideUp();
+        jQuery("#ResetAuthTokenContainer").slideDown();
+        ev.preventDefault();
+    });
+</script>
+</&>
+
 % $m->callback( %ARGS, UserObj => $UserObj, CallbackName => 'FormRightColumn' );
 </td>
 </tr>
-
-
-<tr><td colspan="2" valign="top" class="boxcontainer">
-%if ($UserObj->Privileged) {
-<br />
-<&| /Widgets/TitleBox, title => loc('Signature') &>
-<textarea cols="80" rows="5" name="Signature" class="signature" wrap="hard">
-<%$UserObj->Signature || ''%></textarea>
-</&>
-% }
-</td></tr>
-
-<tr><td colspan="2" valign="top" class="boxcontainer">
-<&| /Widgets/TitleBox, title => loc('Secret authentication token'), id => "user-prefs-feeds" &>
-
-<p><&|/l&>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</&></p>
-
-<& /Elements/Submit, Label => loc('Reset secret authentication token'), Name => "ResetAuthToken" &>
-</&>
-</td></tr>
 
 </table>
 
@@ -230,6 +239,11 @@ else {
         ARGSRef      => \%ARGS,
     );
 
+    if ( $Lang ) {
+        $session{'CurrentUser'}->LanguageHandle($Lang);
+        $session{'CurrentUser'} = $session{'CurrentUser'}; # force writeback
+    }
+
     push @results, UpdateRecordObject (
         AttributesRef => \@fields,
         Object => $UserObj,
@@ -237,11 +251,6 @@ else {
     );
 
     push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $UserObj );
-
-    if ( $Lang ) {
-        $session{'CurrentUser'}->LanguageHandle($Lang);
-        $session{'CurrentUser'} = $session{'CurrentUser'}; # force writeback
-    }
 
     # Deal with special fields: Privileged, Enabled, and Password
     if  ( $SetPrivileged and $Privileged != $UserObj->Privileged ) {

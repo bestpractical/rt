@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -48,15 +48,15 @@
 <%init>
 # put the list of dashboards into the navigation
 use RT::Dashboard;
-
-my @objs = RT::Dashboard->new($session{CurrentUser})->ObjectsForLoading(
+my @objs = RT::Dashboard->new($User)->ObjectsForLoading(
                IncludeSuperuserGroups => $IncludeSuperuserGroups
            );
 
 my %dashboard_map;
 
 for my $object (@objs) {
-    my $new_dashboards = $m->comp("/Dashboards/Elements/DashboardsForObject", Object => $object);
+    my $new_dashboards = $m->comp("/Dashboards/Elements/DashboardsForObject",
+            Object => $object, User => $User );
 
     push @{ $dashboard_map{$_} }, @{ $new_dashboards->{$_} || [] }
         for qw/personal system/;
@@ -78,5 +78,6 @@ $m->callback(%ARGS, dashboards => \@dashboards, CallbackName => 'ModifyDashboard
 return @dashboards;
 </%init>
 <%args>
+$User => $session{CurrentUser}
 $IncludeSuperuserGroups => 1
 </%args>

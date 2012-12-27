@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -70,6 +70,7 @@ use RT::Interface::Web::Session;
 use Digest::MD5 ();
 use Encode qw();
 use List::MoreUtils qw();
+use JSON qw();
 
 =head2 SquishedCSS $style
 
@@ -111,13 +112,13 @@ sub ClearSquished {
     %SQUISHED_CSS = ();
 }
 
-=head2 EscapeUTF8 SCALARREF
+=head2 EscapeHTML SCALARREF
 
 does a css-busting but minimalist escaping of whatever html you're passing in.
 
 =cut
 
-sub EscapeUTF8 {
+sub EscapeHTML {
     my $ref = shift;
     return unless defined $$ref;
 
@@ -130,7 +131,12 @@ sub EscapeUTF8 {
     $$ref =~ s/'/&#39;/g;
 }
 
-
+# Back-compat
+# XXX: Remove in 4.4
+sub EscapeUTF8 {
+    RT->Logger->warning("EscapeUTF8 is deprecated; use EscapeHTML at @{[join '/', caller]}");
+    EscapeHTML(@_);
+}
 
 =head2 EscapeURI SCALARREF
 
@@ -146,7 +152,37 @@ sub EscapeURI {
     $$ref =~ s/([^a-zA-Z0-9_.!~*'()-])/uc sprintf("%%%02X", ord($1))/eg;
 }
 
+=head2 EncodeJSON SCALAR
 
+Encodes the SCALAR to JSON and returns a JSON string.  SCALAR may be a simple
+value or a reference.
+
+=cut
+
+sub EncodeJSON {
+    my $s = JSON::to_json(shift, { utf8 => 1, allow_nonref => 1 });
+    $s =~ s{/}{\\/}g;
+    return $s;
+}
+
+sub _encode_surrogates {
+    my $uni = $_[0] - 0x10000;
+    return ($uni /  0x400 + 0xD800, $uni % 0x400 + 0xDC00);
+}
+
+sub EscapeJS {
+    my $ref = shift;
+    return unless defined $$ref;
+
+    $$ref = "'" . join('',
+                 map {
+                     chr($_) =~ /[a-zA-Z0-9]/ ? chr($_) :
+                     $_  <= 255   ? sprintf("\\x%02X", $_) :
+                     $_  <= 65535 ? sprintf("\\u%04X", $_) :
+                     sprintf("\\u%X\\u%X", _encode_surrogates($_))
+                 } unpack('U*', $$ref))
+        . "'";
+}
 
 =head2 WebCanonicalizeInfo();
 
@@ -181,17 +217,10 @@ sub WebExternalAutoInfo {
         $user_info{'Privileged'} = 1;
     }
 
-    if ( $^O !~ /^(?:riscos|MacOS|MSWin32|dos|os2)$/ ) {
-
-        # Populate fields with information from Unix /etc/passwd
-
-        my ( $comments, $realname ) = ( getpwnam($user) )[ 5, 6 ];
-        $user_info{'Comments'} = $comments if defined $comments;
-        $user_info{'RealName'} = $realname if defined $realname;
-    } elsif ( $^O eq 'MSWin32' and eval 'use Net::AdminMisc; 1' ) {
-
-        # Populate fields with information from NT domain controller
-    }
+    # Populate fields with information from Unix /etc/passwd
+    my ( $comments, $realname ) = ( getpwnam($user) )[ 5, 6 ];
+    $user_info{'Comments'} = $comments if defined $comments;
+    $user_info{'RealName'} = $realname if defined $realname;
 
     # and return the wad of stuff
     return {%user_info};
@@ -224,13 +253,23 @@ sub HandleRequest {
     ValidateWebConfig();
 
     DecodeARGS($ARGS);
+    local $HTML::Mason::Commands::DECODED_ARGS = $ARGS;
     PreprocessTimeUpdates($ARGS);
 
+    InitializeMenu();
     MaybeShowInstallModePage();
 
     $HTML::Mason::Commands::m->comp( '/Elements/SetupSessionCookie', %$ARGS );
     SendSessionCookie();
-    $HTML::Mason::Commands::session{'CurrentUser'} = RT::CurrentUser->new() unless _UserLoggedIn();
+
+    if ( _UserLoggedIn() ) {
+        # make user info up to date
+        $HTML::Mason::Commands::session{'CurrentUser'}
+          ->Load( $HTML::Mason::Commands::session{'CurrentUser'}->id );
+    }
+    else {
+        $HTML::Mason::Commands::session{'CurrentUser'} = RT::CurrentUser->new();
+    }
 
     # Process session-related callbacks before any auth attempts
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Session', CallbackPage => '/autohandler' );
@@ -256,24 +295,30 @@ sub HandleRequest {
             my $m = $HTML::Mason::Commands::m;
 
             # REST urls get a special 401 response
-            if ($m->request_comp->path =~ '^/REST/\d+\.\d+/') {
-                $HTML::Mason::Commands::r->content_type("text/plain");
+            if ($m->request_comp->path =~ m{^/REST/\d+\.\d+/}) {
+                $HTML::Mason::Commands::r->content_type("text/plain; charset=utf-8");
                 $m->error_format("text");
                 $m->out("RT/$RT::VERSION 401 Credentials required\n");
                 $m->out("\n$msg\n") if $msg;
                 $m->abort;
             }
+            elsif ( MobileClient() ) {
+                $m->comp('/m/login');
+                $m->abort;
+            }
             # Specially handle /index.html so that we get a nicer URL
             elsif ( $m->request_comp->path eq '/index.html' ) {
-                my $next = SetNextPage(RT->Config->Get('WebURL'));
+                my $next = SetNextPage($ARGS);
                 $m->comp('/NoAuth/Login.html', next => $next, actions => [$msg]);
                 $m->abort;
             }
             else {
-                TangentForLogin(results => ($msg ? LoginError($msg) : undef));
+                TangentForLogin($ARGS, results => ($msg ? LoginError($msg) : undef));
             }
         }
     }
+
+    MaybeShowInterstitialCSRFPage($ARGS);
 
     # now it applies not only to home page, but any dashboard that can be used as a workspace
     $HTML::Mason::Commands::session{'home_refresh_interval'} = $ARGS->{'HomeRefreshInterval'}
@@ -284,7 +329,7 @@ sub HandleRequest {
 
     ShowRequestedPage($ARGS);
     LogRecordedSQLStatements(RequestData => {
-        Path => $HTML::Mason::Commands::m->request_comp->path,
+        Path => $HTML::Mason::Commands::m->request_path,
     });
 
     # Process per-page final cleanup callbacks
@@ -321,7 +366,7 @@ sub LoginError {
     return $key;
 }
 
-=head2 SetNextPage [PATH]
+=head2 SetNextPage ARGSRef [PATH]
 
 Intuits and stashes the next page in the sesssion hash.  If PATH is
 specified, uses that instead of the value of L<IntuitNextPage()>.  Returns
@@ -330,30 +375,84 @@ the hash value.
 =cut
 
 sub SetNextPage {
-    my $next = shift || IntuitNextPage();
+    my $ARGS = shift;
+    my $next = $_[0] ? $_[0] : IntuitNextPage();
     my $hash = Digest::MD5::md5_hex($next . $$ . rand(1024));
+    my $page = { url => $next };
 
-    $HTML::Mason::Commands::session{'NextPage'}->{$hash} = $next;
+    # If an explicit URL was passed and we didn't IntuitNextPage, then
+    # IsPossibleCSRF below is almost certainly unrelated to the actual
+    # destination.  Currently explicit next pages aren't used in RT, but the
+    # API is available.
+    if (not $_[0] and RT->Config->Get("RestrictReferrer")) {
+        # This isn't really CSRF, but the CSRF heuristics are useful for catching
+        # requests which may have unintended side-effects.
+        my ($is_csrf, $msg, @loc) = IsPossibleCSRF($ARGS);
+        if ($is_csrf) {
+            RT->Logger->notice(
+                "Marking original destination as having side-effects before redirecting for login.\n"
+               ."Request: $next\n"
+               ."Reason: " . HTML::Mason::Commands::loc($msg, @loc)
+            );
+            $page->{'HasSideEffects'} = [$msg, @loc];
+        }
+    }
+
+    $HTML::Mason::Commands::session{'NextPage'}->{$hash} = $page;
     $HTML::Mason::Commands::session{'i'}++;
-    
-    SendSessionCookie();
     return $hash;
 }
 
+=head2 FetchNextPage HASHKEY
 
-=head2 TangentForLogin [HASH]
+Returns the stashed next page hashref for the given hash.
+
+=cut
+
+sub FetchNextPage {
+    my $hash = shift || "";
+    return $HTML::Mason::Commands::session{'NextPage'}->{$hash};
+}
+
+=head2 RemoveNextPage HASHKEY
+
+Removes the stashed next page for the given hash and returns it.
+
+=cut
+
+sub RemoveNextPage {
+    my $hash = shift || "";
+    return delete $HTML::Mason::Commands::session{'NextPage'}->{$hash};
+}
+
+=head2 TangentForLogin ARGSRef [HASH]
 
 Redirects to C</NoAuth/Login.html>, setting the value of L<IntuitNextPage> as
-the next page.  Optionally takes a hash which is dumped into query params.
+the next page.  Takes a hashref of request %ARGS as the first parameter.
+Optionally takes all other parameters as a hash which is dumped into query
+params.
 
 =cut
 
 sub TangentForLogin {
-    my $hash  = SetNextPage();
+    my $login = TangentForLoginURL(@_);
+    Redirect( RT->Config->Get('WebBaseURL') . $login );
+}
+
+=head2 TangentForLoginURL [HASH]
+
+Returns a URL suitable for tangenting for login.  Optionally takes a hash which
+is dumped into query params.
+
+=cut
+
+sub TangentForLoginURL {
+    my $ARGS  = shift;
+    my $hash  = SetNextPage($ARGS);
     my %query = (@_, next => $hash);
-    my $login = RT->Config->Get('WebURL') . 'NoAuth/Login.html?';
+    my $login = RT->Config->Get('WebPath') . '/NoAuth/Login.html?';
     $login .= $HTML::Mason::Commands::m->comp('/Elements/QueryString', %query);
-    Redirect($login);
+    return $login;
 }
 
 =head2 TangentForLoginWithError ERROR
@@ -364,8 +463,9 @@ calls L<TangentForLogin> with the appropriate results key.
 =cut
 
 sub TangentForLoginWithError {
-    my $key = LoginError(HTML::Mason::Commands::loc(@_));
-    TangentForLogin( results => $key );
+    my $ARGS = shift;
+    my $key  = LoginError(HTML::Mason::Commands::loc(@_));
+    TangentForLogin( $ARGS, results => $key );
 }
 
 =head2 IntuitNextPage
@@ -424,7 +524,7 @@ sub MaybeShowInstallModePage {
     my $m = $HTML::Mason::Commands::m;
     if ( $m->base_comp->path =~ RT->Config->Get('WebNoAuthRegex') ) {
         $m->call_next();
-    } elsif ( $m->request_comp->path !~ '^(/+)Install/' ) {
+    } elsif ( $m->request_comp->path !~ m{^(/+)Install/} ) {
         RT::Interface::Web::Redirect( RT->Config->Get('WebURL') . "Install/index.html" );
     } else {
         $m->call_next();
@@ -453,7 +553,6 @@ sub MaybeShowNoAuthPage {
         if $m->base_comp->path eq '/NoAuth/Login.html' and _UserLoggedIn();
 
     # If it's a noauth file, don't ask for auth.
-    SendSessionCookie();
     $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %$ARGS );
     $m->abort;
 }
@@ -480,7 +579,7 @@ sub MaybeRejectPrivateComponentRequest {
               _elements   | # mobile UI
               Widgets     |
               autohandler | # requesting this directly is suspicious
-              l           ) # loc component
+              l (_unsafe)? ) # loc component
             ( $ | / ) # trailing slash or end of path
         }xi) {
             $m->abort(403);
@@ -510,18 +609,18 @@ sub ShowRequestedPage {
 
     my $m = $HTML::Mason::Commands::m;
 
+    # Ensure that the cookie that we send is up-to-date, in case the
+    # session-id has been modified in any way
+    SendSessionCookie();
+
     # precache all system level rights for the current user
     $HTML::Mason::Commands::session{CurrentUser}->PrincipalObj->HasRights( Object => RT->System );
-
-    InitializeMenu();
-
-    SendSessionCookie();
 
     # If the user isn't privileged, they can only see SelfService
     unless ( $HTML::Mason::Commands::session{'CurrentUser'}->Privileged ) {
 
         # if the user is trying to access a ticket, redirect them
-        if ( $m->request_comp->path =~ '^(/+)Ticket/Display.html' && $ARGS->{'id'} ) {
+        if ( $m->request_comp->path =~ m{^(/+)Ticket/Display.html} && $ARGS->{'id'} ) {
             RT::Interface::Web::Redirect( RT->Config->Get('WebURL') . "SelfService/Display.html?id=" . $ARGS->{'id'} );
         }
 
@@ -548,12 +647,17 @@ sub AttemptExternalAuth {
     my $user = $ARGS->{user};
     my $m    = $HTML::Mason::Commands::m;
 
+    my $logged_in_external_user = _UserLoggedIn() && $HTML::Mason::Commands::session{'WebExternallyAuthed'};
+
     # If RT is configured for external auth, let's go through and get REMOTE_USER
 
-    # do we actually have a REMOTE_USER equivlent?
-    if ( RT::Interface::Web::WebCanonicalizeInfo() ) {
-        my $orig_user = $user;
-
+    # Do we actually have a REMOTE_USER or equivalent?  We only check auth if
+    # 1) we have no logged in user, or 2) we have a user who is externally
+    # authed.  If we have a logged in user who is internally authed, don't
+    # check remote user otherwise we may log them out.
+    if (RT::Interface::Web::WebCanonicalizeInfo()
+        and (not _UserLoggedIn() or $logged_in_external_user) )
+    {
         $user = RT::Interface::Web::WebCanonicalizeInfo();
         my $load_method = RT->Config->Get('WebExternalGecos') ? 'LoadByGecos' : 'Load';
 
@@ -562,7 +666,8 @@ sub AttemptExternalAuth {
             $user =~ s/^\Q$NodeName\E\\//i;
         }
 
-        my $next = delete $HTML::Mason::Commands::session{'NextPage'}->{$ARGS->{'next'} || ''};
+        my $next = RemoveNextPage($ARGS->{'next'});
+           $next = $next->{'url'} if ref $next;
         InstantiateNewSession() unless _UserLoggedIn;
         $HTML::Mason::Commands::session{'CurrentUser'} = RT::CurrentUser->new();
         $HTML::Mason::Commands::session{'CurrentUser'}->$load_method($user);
@@ -583,7 +688,7 @@ sub AttemptExternalAuth {
                 my $new_user_info = RT::Interface::Web::WebExternalAutoInfo($user);
 
                 # set the attributes that have been defined.
-                foreach my $attribute ( $UserObj->WritableAttributes ) {
+                foreach my $attribute ( $UserObj->WritableAttributes, qw(Privileged Disabled) ) {
                     $m->callback(
                         Attribute    => $attribute,
                         User         => $user,
@@ -596,19 +701,13 @@ sub AttemptExternalAuth {
                 }
                 $HTML::Mason::Commands::session{'CurrentUser'}->Load($user);
             } else {
-
-                # we failed to successfully create the user. abort abort abort.
-                delete $HTML::Mason::Commands::session{'CurrentUser'};
-
-                if (RT->Config->Get('WebFallbackToInternalAuth')) {
-                    TangentForLoginWithError('Cannot create user: [_1]', $msg);
-                } else {
-                    $m->abort();
-                }
+                RT->Logger->error("Couldn't auto-create user '$user' when attempting WebExternalAuth: $msg");
+                AbortExternalAuth( Error => "AutoCreate" );
             }
         }
 
         if ( _UserLoggedIn() ) {
+            $HTML::Mason::Commands::session{'WebExternallyAuthed'} = 1;
             $m->callback( %$ARGS, CallbackName => 'ExternalAuthSuccessfulLogin', CallbackPage => '/autohandler' );
             # It is possible that we did a redirect to the login page,
             # if the external auth allows lack of auth through with no
@@ -620,26 +719,43 @@ sub AttemptExternalAuth {
             # straight-up external auth would always redirect to /
             # when you first hit it.
         } else {
-            delete $HTML::Mason::Commands::session{'CurrentUser'};
-            $user = $orig_user;
-
-            if ( RT->Config->Get('WebExternalOnly') ) {
-                TangentForLoginWithError('You are not an authorized user');
-            }
+            # Couldn't auth with the REMOTE_USER provided because an RT
+            # user doesn't exist and we're configured not to create one.
+            RT->Logger->error("Couldn't find internal user for '$user' when attempting WebExternalAuth and RT is not configured for auto-creation. Refer to `perldoc $RT::BasePath/docs/authentication.pod` if you want to allow auto-creation.");
+            AbortExternalAuth(
+                Error => "NoInternalUser",
+                User  => $user,
+            );
         }
-    } elsif ( RT->Config->Get('WebFallbackToInternalAuth') ) {
-        unless ( defined $HTML::Mason::Commands::session{'CurrentUser'} ) {
-            # XXX unreachable due to prior defaulting in HandleRequest (check c34d108)
-            TangentForLoginWithError('You are not an authorized user');
-        }
-    } else {
-
-        # WebExternalAuth is set, but we don't have a REMOTE_USER. abort
-        # XXX: we must return AUTH_REQUIRED status or we fallback to
-        # internal auth here too.
-        delete $HTML::Mason::Commands::session{'CurrentUser'}
-            if defined $HTML::Mason::Commands::session{'CurrentUser'};
     }
+    elsif ($logged_in_external_user) {
+        # The logged in external user was deauthed by the auth system and we
+        # should kick them out.
+        AbortExternalAuth( Error => "Deauthorized" );
+    }
+    elsif (not RT->Config->Get('WebFallbackToInternalAuth')) {
+        # Abort if we don't want to fallback internally
+        AbortExternalAuth( Error => "NoRemoteUser" );
+    }
+}
+
+sub AbortExternalAuth {
+    my %args  = @_;
+    my $error = $args{Error} ? "/Errors/WebExternalAuth/$args{Error}" : undef;
+    my $m     = $HTML::Mason::Commands::m;
+    my $r     = $HTML::Mason::Commands::r;
+
+    _ForceLogout();
+
+    # Clear the decks, not that we should have partial content.
+    $m->clear_buffer;
+
+    $r->status(403);
+    $m->comp($error, %args)
+        if $error and $m->comp_exists($error);
+
+    # Return a 403 Forbidden or we may fallback to a login page with no form
+    $m->abort(403);
 }
 
 sub AttemptPasswordAuthentication {
@@ -661,11 +777,11 @@ sub AttemptPasswordAuthentication {
 
         # It's important to nab the next page from the session before we blow
         # the session away
-        my $next = delete $HTML::Mason::Commands::session{'NextPage'}->{$ARGS->{'next'} || ''};
+        my $next = RemoveNextPage($ARGS->{'next'});
+           $next = $next->{'url'} if ref $next;
 
         InstantiateNewSession();
         $HTML::Mason::Commands::session{'CurrentUser'} = $user_obj;
-        SendSessionCookie();
 
         $m->callback( %$ARGS, CallbackName => 'SuccessfulLogin', CallbackPage => '/autohandler' );
 
@@ -720,14 +836,16 @@ sub LoadSessionFromCookie {
 sub InstantiateNewSession {
     tied(%HTML::Mason::Commands::session)->delete if tied(%HTML::Mason::Commands::session);
     tie %HTML::Mason::Commands::session, 'RT::Interface::Web::Session', undef;
+    SendSessionCookie();
 }
 
 sub SendSessionCookie {
     my $cookie = CGI::Cookie->new(
-        -name   => _SessionCookieName(),
-        -value  => $HTML::Mason::Commands::session{_session_id},
-        -path   => RT->Config->Get('WebPath'),
-        -secure => ( RT->Config->Get('WebSecureCookies') ? 1 : 0 )
+        -name     => _SessionCookieName(),
+        -value    => $HTML::Mason::Commands::session{_session_id},
+        -path     => RT->Config->Get('WebPath'),
+        -secure   => ( RT->Config->Get('WebSecureCookies') ? 1 : 0 ),
+        -httponly => ( RT->Config->Get('WebHttpOnlyCookies') ? 1 : 0 ),
     );
 
     $HTML::Mason::Commands::r->err_headers_out->{'Set-Cookie'} = $cookie->as_string;
@@ -800,6 +918,10 @@ sub StaticFileHeaders {
     # make cache public
     $HTML::Mason::Commands::r->headers_out->{'Cache-Control'} = 'max-age=259200, public';
 
+    # remove any cookie headers -- if it is cached publicly, it
+    # shouldn't include anyone's cookie!
+    delete $HTML::Mason::Commands::r->err_headers_out->{'Set-Cookie'};
+
     # Expire things in a month.
     $date->Set( Value => time + 30 * 24 * 60 * 60 );
     $HTML::Mason::Commands::r->headers_out->{'Expires'} = $date->RFC2616;
@@ -809,6 +931,22 @@ sub StaticFileHeaders {
     # Last modified at server start time
     # $date->Set( Value => $^T );
     # $HTML::Mason::Commands::r->headers_out->{'Last-Modified'} = $date->RFC2616;
+}
+
+=head2 ComponentPathIsSafe PATH
+
+Takes C<PATH> and returns a boolean indicating that the user-specified partial
+component path is safe.
+
+Currently "safe" means that the path does not start with a dot (C<.>) and does
+not contain a slash-dot C</.>.
+
+=cut
+
+sub ComponentPathIsSafe {
+    my $self = shift;
+    my $path = shift;
+    return $path !~ m{(?:^|/)\.};
 }
 
 =head2 PathIsSafe
@@ -913,7 +1051,7 @@ sub MobileClient {
     my $self = shift;
 
 
-if (($ENV{'HTTP_USER_AGENT'} || '') =~ /(?:hiptop|Blazer|Novarra|Vagabond|SonyEricsson|Symbian|NetFront|UP.Browser|UP.Link|Windows CE|MIDP|J2ME|DoCoMo|J-PHONE|PalmOS|PalmSource|iPhone|iPod|AvantGo|Nokia|Android|WebOS|S60)/io && !$HTML::Mason::Commands::session{'NotMobile'})  {
+if (($ENV{'HTTP_USER_AGENT'} || '') =~ /(?:hiptop|Blazer|Novarra|Vagabond|SonyEricsson|Symbian|NetFront|UP.Browser|UP.Link|Windows CE|MIDP|J2ME|DoCoMo|J-PHONE|PalmOS|PalmSource|iPhone|iPod|AvantGo|Nokia|Android|WebOS|S60|Mobile)/io && !$HTML::Mason::Commands::session{'NotMobile'})  {
     return 1;
 } else {
     return undef;
@@ -956,7 +1094,7 @@ sub StripContent {
     # Check for plaintext sig
     return '' if not $html and $content =~ /^(--)?\Q$sig\E$/;
 
-    # Check for html-formatted sig; we don't use EscapeUTF8 here
+    # Check for html-formatted sig; we don't use EscapeHTML here
     # because we want to precisely match the escapting that FCKEditor
     # uses.
     $sig =~ s/&/&amp;/g;
@@ -1061,7 +1199,7 @@ sub LogRecordedSQLStatements {
             message => "SQL("
                 . sprintf( "%.6f", $duration )
                 . "s): $sql;"
-                . ( @bind ? "  [ bound values: @{[map{qq|'$_'|} @bind]} ]" : "" )
+                . ( @bind ? "  [ bound values: @{[map{ defined $_ ? qq|'$_'| : 'undef'} @bind]} ]" : "" )
         );
     }
 
@@ -1075,27 +1213,316 @@ sub ValidateWebConfig {
     return if $_has_validated_web_config;
     $_has_validated_web_config = 1;
 
-    if (!$ENV{'rt.explicit_port'} && $ENV{SERVER_PORT} != RT->Config->Get('WebPort')) {
-        $RT::Logger->warn("The actual SERVER_PORT ($ENV{SERVER_PORT}) does NOT match the configured WebPort ($RT::WebPort). Perhaps you should Set(\$WebPort, $ENV{SERVER_PORT}); in RT_SiteConfig.pm, otherwise your internal links may be broken.");
+    my $port = $ENV{SERVER_PORT};
+    my $host = $ENV{HTTP_X_FORWARDED_HOST} || $ENV{HTTP_X_FORWARDED_SERVER}
+            || $ENV{HTTP_HOST}             || $ENV{SERVER_NAME};
+    ($host, $port) = ($1, $2) if $host =~ /^(.*?):(\d+)$/;
+
+    if ( $port != RT->Config->Get('WebPort') and not $ENV{'rt.explicit_port'}) {
+        $RT::Logger->warn("The requested port ($port) does NOT match the configured WebPort ($RT::WebPort).  "
+                         ."Perhaps you should Set(\$WebPort, $port); in RT_SiteConfig.pm, "
+                         ."otherwise your internal links may be broken.");
     }
 
-    if ($ENV{HTTP_HOST}) {
-        # match "example.com" or "example.com:80"
-        my ($host) = $ENV{HTTP_HOST} =~ /^(.*?)(:\d+)?$/;
+    if ( $host ne RT->Config->Get('WebDomain') ) {
+        $RT::Logger->warn("The requested host ($host) does NOT match the configured WebDomain ($RT::WebDomain).  "
+                         ."Perhaps you should Set(\$WebDomain, '$host'); in RT_SiteConfig.pm, "
+                         ."otherwise your internal links may be broken.");
+    }
 
-        if ($host ne RT->Config->Get('WebDomain')) {
-            $RT::Logger->warn("The actual HTTP_HOST ($host) does NOT match the configured WebDomain ($RT::WebDomain). Perhaps you should Set(\$WebDomain, '$host'); in RT_SiteConfig.pm, otherwise your internal links may be broken.");
+    # Unfortunately, there is no reliable way to get the _path_ that was
+    # requested at the proxy level; simply disable this warning if we're
+    # proxied and there's a mismatch.
+    my $proxied = $ENV{HTTP_X_FORWARDED_HOST} || $ENV{HTTP_X_FORWARDED_SERVER};
+    if ($ENV{SCRIPT_NAME} ne RT->Config->Get('WebPath') and not $proxied) {
+        $RT::Logger->warn("The requested path ($ENV{SCRIPT_NAME}) does NOT match the configured WebPath ($RT::WebPath).  "
+                         ."Perhaps you should Set(\$WebPath, '$ENV{SCRIPT_NAME}'); in RT_SiteConfig.pm, "
+                         ."otherwise your internal links may be broken.");
+    }
+}
+
+sub ComponentRoots {
+    my $self = shift;
+    my %args = ( Names => 0, @_ );
+    my @roots;
+    if (defined $HTML::Mason::Commands::m) {
+        @roots = $HTML::Mason::Commands::m->interp->comp_root_array;
+    } else {
+        @roots = (
+            [ local    => $RT::MasonLocalComponentRoot ],
+            (map {[ "plugin-".$_->Name =>  $_->ComponentRoot ]} @{RT->Plugins}),
+            [ standard => $RT::MasonComponentRoot ]
+        );
+    }
+    @roots = map { $_->[1] } @roots unless $args{Names};
+    return @roots;
+}
+
+our %is_whitelisted_component = (
+    # The RSS feed embeds an auth token in the path, but query
+    # information for the search.  Because it's a straight-up read, in
+    # addition to embedding its own auth, it's fine.
+    '/NoAuth/rss/dhandler' => 1,
+
+    # While these can be used for denial-of-service against RT
+    # (construct a very inefficient query and trick lots of users into
+    # running them against RT) it's incredibly useful to be able to link
+    # to a search result or bookmark a result page.
+    '/Search/Results.html' => 1,
+    '/Search/Simple.html'  => 1,
+    '/m/tickets/search'     => 1,
+);
+
+# Components which are blacklisted from automatic, argument-based whitelisting.
+# These pages are not idempotent when called with just an id.
+our %is_blacklisted_component = (
+    # Takes only id and toggles bookmark state
+    '/Helpers/Toggle/TicketBookmark' => 1,
+);
+
+sub IsCompCSRFWhitelisted {
+    my $comp = shift;
+    my $ARGS = shift;
+
+    return 1 if $is_whitelisted_component{$comp};
+
+    my %args = %{ $ARGS };
+
+    # If the user specifies a *correct* user and pass then they are
+    # golden.  This acts on the presumption that external forms may
+    # hardcode a username and password -- if a malicious attacker knew
+    # both already, CSRF is the least of your problems.
+    my $AllowLoginCSRF = not RT->Config->Get('RestrictReferrerLogin');
+    if ($AllowLoginCSRF and defined($args{user}) and defined($args{pass})) {
+        my $user_obj = RT::CurrentUser->new();
+        $user_obj->Load($args{user});
+        return 1 if $user_obj->id && $user_obj->IsPassword($args{pass});
+
+        delete $args{user};
+        delete $args{pass};
+    }
+
+    # Some pages aren't idempotent even with safe args like id; blacklist
+    # them from the automatic whitelisting below.
+    return 0 if $is_blacklisted_component{$comp};
+
+    # Eliminate arguments that do not indicate an effectful request.
+    # For example, "id" is acceptable because that is how RT retrieves a
+    # record.
+    delete $args{id};
+
+    # If they have a valid results= from MaybeRedirectForResults, that's
+    # also fine.
+    delete $args{results} if $args{results}
+        and $HTML::Mason::Commands::session{"Actions"}->{$args{results}};
+
+    # The homepage refresh, which uses the Refresh header, doesn't send
+    # a referer in most browsers; whitelist the one parameter it reloads
+    # with, HomeRefreshInterval, which is safe
+    delete $args{HomeRefreshInterval};
+
+    # If there are no arguments, then it's likely to be an idempotent
+    # request, which are not susceptible to CSRF
+    return 1 if !%args;
+
+    return 0;
+}
+
+sub IsRefererCSRFWhitelisted {
+    my $referer = _NormalizeHost(shift);
+    my $base_url = _NormalizeHost(RT->Config->Get('WebBaseURL'));
+    $base_url = $base_url->host_port;
+
+    my $configs;
+    for my $config ( $base_url, RT->Config->Get('ReferrerWhitelist') ) {
+        push @$configs,$config;
+
+        my $host_port = $referer->host_port;
+        if ($config =~ /\*/) {
+            # Turn a literal * into a domain component or partial component match.
+            # Refer to http://tools.ietf.org/html/rfc2818#page-5
+            my $regex = join "[a-zA-Z0-9\-]*",
+                         map { quotemeta($_) }
+                       split /\*/, $config;
+
+            return 1 if $host_port =~ /^$regex$/i;
+        } else {
+            return 1 if $host_port eq $config;
         }
     }
-    else {
-        if ($ENV{SERVER_NAME} ne RT->Config->Get('WebDomain')) {
-            $RT::Logger->warn("The actual SERVER_NAME ($ENV{SERVER_NAME}) does NOT match the configured WebDomain ($RT::WebDomain). Perhaps you should Set(\$WebDomain, '$ENV{SERVER_NAME}'); in RT_SiteConfig.pm, otherwise your internal links may be broken.");
-        }
+
+    return (0,$referer,$configs);
+}
+
+=head3 _NormalizeHost
+
+Takes a URI and creates a URI object that's been normalized
+to handle common problems such as localhost vs 127.0.0.1
+
+=cut
+
+sub _NormalizeHost {
+
+    my $uri= URI->new(shift);
+    $uri->host('127.0.0.1') if $uri->host eq 'localhost';
+
+    return $uri;
+
+}
+
+sub IsPossibleCSRF {
+    my $ARGS = shift;
+
+    # If first request on this session is to a REST endpoint, then
+    # whitelist the REST endpoints -- and explicitly deny non-REST
+    # endpoints.  We do this because using a REST cookie in a browser
+    # would open the user to CSRF attacks to the REST endpoints.
+    my $path = $HTML::Mason::Commands::r->path_info;
+    $HTML::Mason::Commands::session{'REST'} = $path =~ m{^/+REST/\d+\.\d+(/|$)}
+        unless defined $HTML::Mason::Commands::session{'REST'};
+
+    if ($HTML::Mason::Commands::session{'REST'}) {
+        return 0 if $path =~ m{^/+REST/\d+\.\d+(/|$)};
+        my $why = <<EOT;
+This login session belongs to a REST client, and cannot be used to
+access non-REST interfaces of RT for security reasons.
+EOT
+        my $details = <<EOT;
+Please log out and back in to obtain a session for normal browsing.  If
+you understand the security implications, disabling RT's CSRF protection
+will remove this restriction.
+EOT
+        chomp $details;
+        HTML::Mason::Commands::Abort( $why, Details => $details );
     }
 
-    if ($ENV{SCRIPT_NAME} ne RT->Config->Get('WebPath')) {
-        $RT::Logger->warn("The actual SCRIPT_NAME ($ENV{SCRIPT_NAME}) does NOT match the configured WebPath ($RT::WebPath). Perhaps you should Set(\$WebPath, '$ENV{SCRIPT_NAME}'); in RT_SiteConfig.pm, otherwise your internal links may be broken.");
+    return 0 if IsCompCSRFWhitelisted(
+        $HTML::Mason::Commands::m->request_comp->path,
+        $ARGS
+    );
+
+    # if there is no Referer header then assume the worst
+    return (1,
+            "your browser did not supply a Referrer header", # loc
+        ) if !$ENV{HTTP_REFERER};
+
+    my ($whitelisted, $browser, $configs) = IsRefererCSRFWhitelisted($ENV{HTTP_REFERER});
+    return 0 if $whitelisted;
+
+    if ( @$configs > 1 ) {
+        return (1,
+                "the Referrer header supplied by your browser ([_1]) is not allowed by RT's configured hostname ([_2]) or whitelisted hosts ([_3])", # loc
+                $browser->host_port,
+                shift @$configs,
+                join(', ', @$configs) );
     }
+
+    return (1,
+            "the Referrer header supplied by your browser ([_1]) is not allowed by RT's configured hostname ([_2])", # loc
+            $browser->host_port,
+            $configs->[0]);
+}
+
+sub ExpandCSRFToken {
+    my $ARGS = shift;
+
+    my $token = delete $ARGS->{CSRF_Token};
+    return unless $token;
+
+    my $data = $HTML::Mason::Commands::session{'CSRF'}{$token};
+    return unless $data;
+    return unless $data->{path} eq $HTML::Mason::Commands::r->path_info;
+
+    my $user = $HTML::Mason::Commands::session{'CurrentUser'}->UserObj;
+    return unless $user->ValidateAuthString( $data->{auth}, $token );
+
+    %{$ARGS} = %{$data->{args}};
+    $HTML::Mason::Commands::DECODED_ARGS = $ARGS;
+
+    # We explicitly stored file attachments with the request, but not in
+    # the session yet, as that would itself be an attack.  Put them into
+    # the session now, so they'll be visible.
+    if ($data->{attach}) {
+        my $filename = $data->{attach}{filename};
+        my $mime     = $data->{attach}{mime};
+        $HTML::Mason::Commands::session{'Attachments'}{$filename}
+            = $mime;
+    }
+
+    return 1;
+}
+
+sub StoreRequestToken {
+    my $ARGS = shift;
+
+    my $token = Digest::MD5::md5_hex(time . {} . $$ . rand(1024));
+    my $user = $HTML::Mason::Commands::session{'CurrentUser'}->UserObj;
+    my $data = {
+        auth => $user->GenerateAuthString( $token ),
+        path => $HTML::Mason::Commands::r->path_info,
+        args => $ARGS,
+    };
+    if ($ARGS->{Attach}) {
+        my $attachment = HTML::Mason::Commands::MakeMIMEEntity( AttachmentFieldName => 'Attach' );
+        my $file_path = delete $ARGS->{'Attach'};
+        $data->{attach} = {
+            filename => Encode::decode_utf8("$file_path"),
+            mime     => $attachment,
+        };
+    }
+
+    $HTML::Mason::Commands::session{'CSRF'}->{$token} = $data;
+    $HTML::Mason::Commands::session{'i'}++;
+    return $token;
+}
+
+sub MaybeShowInterstitialCSRFPage {
+    my $ARGS = shift;
+
+    return unless RT->Config->Get('RestrictReferrer');
+
+    # Deal with the form token provided by the interstitial, which lets
+    # browsers which never set referer headers still use RT, if
+    # painfully.  This blows values into ARGS
+    return if ExpandCSRFToken($ARGS);
+
+    my ($is_csrf, $msg, @loc) = IsPossibleCSRF($ARGS);
+    return if !$is_csrf;
+
+    $RT::Logger->notice("Possible CSRF: ".RT::CurrentUser->new->loc($msg, @loc));
+
+    my $token = StoreRequestToken($ARGS);
+    $HTML::Mason::Commands::m->comp(
+        '/Elements/CSRF',
+        OriginalURL => RT->Config->Get('WebPath') . $HTML::Mason::Commands::r->path_info,
+        Reason => HTML::Mason::Commands::loc( $msg, @loc ),
+        Token => $token,
+    );
+    # Calls abort, never gets here
+}
+
+our @POTENTIAL_PAGE_ACTIONS = (
+    qr'/Ticket/Create.html' => "create a ticket",              # loc
+    qr'/Ticket/'            => "update a ticket",              # loc
+    qr'/Admin/'             => "modify RT's configuration",    # loc
+    qr'/Approval/'          => "update an approval",           # loc
+    qr'/Articles/'          => "update an article",            # loc
+    qr'/Dashboards/'        => "modify a dashboard",           # loc
+    qr'/m/ticket/'          => "update a ticket",              # loc
+    qr'Prefs'               => "modify your preferences",      # loc
+    qr'/Search/'            => "modify or access a search",    # loc
+    qr'/SelfService/Create' => "create a ticket",              # loc
+    qr'/SelfService/'       => "update a ticket",              # loc
+);
+
+sub PotentialPageAction {
+    my $page = shift;
+    my @potentials = @POTENTIAL_PAGE_ACTIONS;
+    while (my ($pattern, $result) = splice @potentials, 0, 2) {
+        return HTML::Mason::Commands::loc($result)
+            if $page =~ $pattern;
+    }
+    return "";
 }
 
 package HTML::Mason::Commands;
@@ -1114,7 +1541,88 @@ sub PageWidgets {
     return $HTML::Mason::Commands::m->notes('page-widgets');
 }
 
+sub RenderMenu {
+    my %args = (toplevel => 1, parent_id => '', depth => 0, @_);
+    return unless $args{'menu'};
 
+    my ($menu, $depth, $toplevel, $id, $parent_id)
+        = @args{qw(menu depth toplevel id parent_id)};
+
+    my $interp = $m->interp;
+    my $web_path = RT->Config->Get('WebPath');
+
+    my $res = '';
+    $res .= ' ' x $depth;
+    $res .= '<ul';
+    $res .= ' id="'. $interp->apply_escapes($id, 'h') .'"'
+        if $id;
+    $res .= ' class="toplevel"' if $toplevel;
+    $res .= ">\n";
+
+    for my $child ($menu->children) {
+        $res .= ' 'x ($depth+1);
+
+        my $item_id = lc(($parent_id? "$parent_id-" : "") .$child->key);
+        $item_id =~ s/\s/-/g;
+        my $eitem_id = $interp->apply_escapes($item_id, 'h');
+        $res .= qq{<li id="li-$eitem_id"};
+
+        my @classes;
+        push @classes, 'has-children' if $child->has_children;
+        push @classes, 'active'       if $child->active;
+        $res .= ' class="'. join( ' ', @classes ) .'"'
+            if @classes;
+
+        $res .= '>';
+
+        if ( my $tmp = $child->raw_html ) {
+            $res .= $tmp;
+        } else {
+            $res .= qq{<a id="$eitem_id" class="menu-item};
+            if ( $tmp = $child->class ) {
+                $res .= ' '. $interp->apply_escapes($tmp, 'h');
+            }
+            $res .= '"';
+
+            my $path = $child->path;
+            my $url = (not $path or $path =~ m{^\w+:/}) ? $path : $web_path . $path;
+            $res .= ' href="'. $interp->apply_escapes($url, 'h') .'"'
+                if $url;
+
+            if ( $tmp = $child->target ) {
+                $res .= ' target="'. $interp->apply_escapes($tmp, 'h') .'"'
+            }
+            $res .= '>';
+
+            if ( $child->escape_title ) {
+                $res .= $interp->apply_escapes($child->title, 'h');
+            } else {
+                $res .= $child->title;
+            }
+            $res .= '</a>';
+        }
+
+        if ( $child->has_children ) {
+            $res .= "\n";
+            $res .= RenderMenu(
+                menu => $child,
+                toplevel => 0,
+                parent_id => $item_id,
+                depth => $depth+1,
+                return => 1,
+            );
+            $res .= "\n";
+            $res .= ' ' x ($depth+1);
+        }
+        $res .= "</li>\n";
+    }
+    $res .= ' ' x $depth;
+    $res .= '</ul>';
+    return $res if $args{'return'};
+
+    $m->print($res);
+    return '';
+}
 
 =head2 loc ARRAY
 
@@ -1221,6 +1729,47 @@ sub MaybeRedirectForResults {
     return RT::Interface::Web::Redirect($url);
 }
 
+=head2 MaybeRedirectToApproval Path => 'path', Whitelist => REGEX, ARGSRef => HASHREF
+
+If the ticket specified by C<< $ARGSRef->{id} >> is an approval ticket,
+redirect to the approvals display page, preserving any arguments.
+
+C<Path>s matching C<Whitelist> are let through.
+
+This is a no-op if the C<ForceApprovalsView> option isn't enabled.
+
+=cut
+
+sub MaybeRedirectToApproval {
+    my %args = (
+        Path        => $HTML::Mason::Commands::m->request_comp->path,
+        ARGSRef     => {},
+        Whitelist   => undef,
+        @_
+    );
+
+    return unless $ENV{REQUEST_METHOD} eq 'GET';
+
+    my $id = $args{ARGSRef}->{id};
+
+    if (    $id
+        and RT->Config->Get('ForceApprovalsView')
+        and not $args{Path} =~ /$args{Whitelist}/)
+    {
+        my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
+        $ticket->Load($id);
+
+        if ($ticket and $ticket->id and lc($ticket->Type) eq 'approval') {
+            MaybeRedirectForResults(
+                Path      => "/Approvals/Display.html",
+                Force     => 1,
+                Anchor    => $args{ARGSRef}->{Anchor},
+                Arguments => $args{ARGSRef},
+            );
+        }
+    }
+}
+
 =head2 CreateTicket ARGS
 
 Create a new ticket, using Mason's %ARGS.  returns @results.
@@ -1267,6 +1816,7 @@ sub CreateTicket {
         Cc      => $ARGS{'Cc'},
         Body    => $sigless,
         Type    => $ARGS{'ContentType'},
+        Interface => RT::Interface::Web::MobileClient() ? 'Mobile' : 'Web',
     );
 
     if ( $ARGS{'Attachments'} ) {
@@ -1283,9 +1833,8 @@ sub CreateTicket {
         }
     }
 
-    foreach my $argument (qw(Encrypt Sign)) {
-        $MIMEObj->head->replace( "X-RT-$argument" => $ARGS{$argument} ? 1 : 0 )
-          if defined $ARGS{$argument};
+    for my $argument (qw(Encrypt Sign)) {
+        $MIMEObj->head->replace( "X-RT-$argument" => $ARGS{$argument} ? 1 : 0 );
     }
 
     my %create_args = (
@@ -1325,68 +1874,14 @@ sub CreateTicket {
             : ( $ARGS{'AttachTickets'} ) );
     }
 
-    foreach my $arg ( keys %ARGS ) {
-        next if $arg =~ /-(?:Magic|Category)$/;
-
-        if ( $arg =~ /^Object-RT::Transaction--CustomField-/ ) {
-            $create_args{$arg} = $ARGS{$arg};
-        }
-
-        # Object-RT::Ticket--CustomField-3-Values
-        elsif ( $arg =~ /^Object-RT::Ticket--CustomField-(\d+)/ ) {
-            my $cfid = $1;
-
-            my $cf = RT::CustomField->new( $session{'CurrentUser'} );
-            $cf->Load($cfid);
-            unless ( $cf->id ) {
-                $RT::Logger->error( "Couldn't load custom field #" . $cfid );
-                next;
-            }
-
-            if ( $arg =~ /-Upload$/ ) {
-                $create_args{"CustomField-$cfid"} = _UploadedFile($arg);
-                next;
-            }
-
-            my $type = $cf->Type;
-
-            my @values = ();
-            if ( ref $ARGS{$arg} eq 'ARRAY' ) {
-                @values = @{ $ARGS{$arg} };
-            } elsif ( $type =~ /text/i ) {
-                @values = ( $ARGS{$arg} );
-            } else {
-                no warnings 'uninitialized';
-                @values = split /\r*\n/, $ARGS{$arg};
-            }
-            @values = grep length, map {
-                s/\r+\n/\n/g;
-                s/^\s+//;
-                s/\s+$//;
-                $_;
-                }
-                grep defined, @values;
-
-            $create_args{"CustomField-$cfid"} = \@values;
-        }
-    }
-
-    # turn new link lists into arrays, and pass in the proper arguments
-    my %map = (
-        'new-DependsOn' => 'DependsOn',
-        'DependsOn-new' => 'DependedOnBy',
-        'new-MemberOf'  => 'Parents',
-        'MemberOf-new'  => 'Children',
-        'new-RefersTo'  => 'RefersTo',
-        'RefersTo-new'  => 'ReferredToBy',
+    my %cfs = ProcessObjectCustomFieldUpdatesForCreate(
+        ARGSRef         => \%ARGS,
+        ContextObject   => $Queue,
     );
-    foreach my $key ( keys %map ) {
-        next unless $ARGS{$key};
-        $create_args{ $map{$key} } = [ grep $_, split ' ', $ARGS{$key} ];
 
-    }
+    my %links = ProcessLinksForCreate( ARGSRef => \%ARGS );
 
-    my ( $id, $Trans, $ErrMsg ) = $Ticket->Create(%create_args);
+    my ( $id, $Trans, $ErrMsg ) = $Ticket->Create(%create_args, %links, %cfs);
     unless ($id) {
         Abort($ErrMsg);
     }
@@ -1485,6 +1980,7 @@ sub ProcessUpdateMessage {
         Subject => $args{ARGSRef}->{'UpdateSubject'},
         Body    => $args{ARGSRef}->{'UpdateContent'},
         Type    => $args{ARGSRef}->{'UpdateContentType'},
+        Interface => RT::Interface::Web::MobileClient() ? 'Mobile' : 'Web',
     );
 
     $Message->head->replace( 'Message-ID' => Encode::encode_utf8(
@@ -1533,11 +2029,11 @@ sub ProcessUpdateMessage {
     if ( $args{ARGSRef}->{'UpdateType'} =~ /^(private|public)$/ ) {
         my ( $Transaction, $Description, $Object ) = $args{TicketObj}->Comment(%message_args);
         push( @results, $Description );
-        $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
+        $Object->UpdateCustomFields( %{ $args{ARGSRef} } ) if $Object;
     } elsif ( $args{ARGSRef}->{'UpdateType'} eq 'response' ) {
         my ( $Transaction, $Description, $Object ) = $args{TicketObj}->Correspond(%message_args);
         push( @results, $Description );
-        $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
+        $Object->UpdateCustomFields( %{ $args{ARGSRef} } ) if $Object;
     } else {
         push( @results,
             loc("Update type was neither correspondence nor comment.") . " " . loc("Update not recorded.") );
@@ -1615,11 +2111,13 @@ sub MakeMIMEEntity {
         Body                => undef,
         AttachmentFieldName => undef,
         Type                => undef,
+        Interface           => 'API',
         @_,
     );
     my $Message = MIME::Entity->build(
         Type    => 'multipart/mixed',
-        "Message-Id" => RT::Interface::Email::GenMessageId,
+        "Message-Id" => Encode::encode_utf8( RT::Interface::Email::GenMessageId ),
+        "X-RT-Interface" => $args{Interface},
         map { $_ => Encode::encode_utf8( $args{ $_} ) }
             grep defined $args{$_}, qw(Subject From Cc)
     );
@@ -1649,9 +2147,7 @@ sub MakeMIMEEntity {
 
             my $uploadinfo = $cgi_object->uploadInfo($filehandle);
 
-            # Prefer the cached name first over CGI.pm stringification.
-            my $filename = $RT::Mason::CGI::Filename;
-            $filename = "$filehandle" unless defined $filename;
+            my $filename = "$filehandle";
             $filename =~ s{^.*[\\/]}{};
 
             $Message->attach(
@@ -1663,8 +2159,9 @@ sub MakeMIMEEntity {
                 $Message->head->set( 'Subject' => $filename );
             }
 
-            # Attachment parts really shouldn't get a Message-ID
+            # Attachment parts really shouldn't get a Message-ID or "interface"
             $Message->head->delete('Message-ID');
+            $Message->head->delete('X-RT-Interface');
         }
     }
 
@@ -2024,7 +2521,9 @@ sub ProcessTicketBasics {
     );
 
     # We special case owner changing, so we can use ForceOwnerChange
-    if ( $ARGSRef->{'Owner'} && ( $OrigOwner != $ARGSRef->{'Owner'} ) ) {
+    if ( $ARGSRef->{'Owner'}
+      && $ARGSRef->{'Owner'} !~ /\D/
+      && ( $OrigOwner != $ARGSRef->{'Owner'} ) ) {
         my ($ChownType);
         if ( $ARGSRef->{'ForceOwnerChange'} ) {
             $ChownType = "Force";
@@ -2057,31 +2556,72 @@ sub ProcessTicketReminders {
 
     if ( $args->{'update-reminders'} ) {
         while ( my $reminder = $reminder_collection->Next ) {
-            if (   $reminder->Status ne 'resolved' && $args->{ 'Complete-Reminder-' . $reminder->id } ) {
-                $Ticket->Reminders->Resolve($reminder);
+            my $resolve_status = $reminder->Lifecycle->ReminderStatusOnResolve;
+            my ( $status, $msg, $old_subject, @subresults );
+            if (   $reminder->Status ne $resolve_status
+                && $args->{ 'Complete-Reminder-' . $reminder->id } )
+            {
+                ( $status, $msg ) = $Ticket->Reminders->Resolve($reminder);
+                push @subresults, $msg;
             }
-            elsif ( $reminder->Status eq 'resolved' && !$args->{ 'Complete-Reminder-' . $reminder->id } ) {
-                $Ticket->Reminders->Open($reminder);
+            elsif ( $reminder->Status eq $resolve_status
+                && !$args->{ 'Complete-Reminder-' . $reminder->id } )
+            {
+                ( $status, $msg ) = $Ticket->Reminders->Open($reminder);
+                push @subresults, $msg;
             }
 
-            if ( exists( $args->{ 'Reminder-Subject-' . $reminder->id } ) && ( $reminder->Subject ne $args->{ 'Reminder-Subject-' . $reminder->id } )) {
-                $reminder->SetSubject( $args->{ 'Reminder-Subject-' . $reminder->id } ) ;
+            if (
+                exists( $args->{ 'Reminder-Subject-' . $reminder->id } )
+                && ( $reminder->Subject ne
+                    $args->{ 'Reminder-Subject-' . $reminder->id } )
+              )
+            {
+                $old_subject = $reminder->Subject;
+                ( $status, $msg ) =
+                  $reminder->SetSubject(
+                    $args->{ 'Reminder-Subject-' . $reminder->id } );
+                push @subresults, $msg;
             }
 
-            if ( exists( $args->{ 'Reminder-Owner-' . $reminder->id } ) && ( $reminder->Owner != $args->{ 'Reminder-Owner-' . $reminder->id } )) {
-                $reminder->SetOwner( $args->{ 'Reminder-Owner-' . $reminder->id } , "Force" ) ;
+            if (
+                exists( $args->{ 'Reminder-Owner-' . $reminder->id } )
+                && ( $reminder->Owner !=
+                    $args->{ 'Reminder-Owner-' . $reminder->id } )
+              )
+            {
+                ( $status, $msg ) =
+                  $reminder->SetOwner(
+                    $args->{ 'Reminder-Owner-' . $reminder->id }, "Force" );
+                push @subresults, $msg;
             }
 
-            if ( exists( $args->{ 'Reminder-Due-' . $reminder->id } ) && $args->{ 'Reminder-Due-' . $reminder->id } ne '' ) {
+            if ( exists( $args->{ 'Reminder-Due-' . $reminder->id } )
+                && $args->{ 'Reminder-Due-' . $reminder->id } ne '' )
+            {
                 my $DateObj = RT::Date->new( $session{'CurrentUser'} );
+                my $due     = $args->{ 'Reminder-Due-' . $reminder->id };
+
                 $DateObj->Set(
                     Format => 'unknown',
-                    Value  => $args->{ 'Reminder-Due-' . $reminder->id }
+                    Value  => $due,
                 );
-                if ( defined $DateObj->Unix && $DateObj->Unix != $reminder->DueObj->Unix ) {
-                    $reminder->SetDue( $DateObj->ISO );
+                if ( defined $DateObj->Unix
+                    && $DateObj->Unix != $reminder->DueObj->Unix )
+                {
+                    ( $status, $msg ) = $reminder->SetDue( $DateObj->ISO );
                 }
+                else {
+                    $msg = loc( "invalid due date: [_1]", $due );
+                }
+
+                push @subresults, $msg;
             }
+
+            push @results, map {
+                loc( "Reminder '[_1]': ", $old_subject || $reminder->Subject )
+                  . $_
+            } @subresults;
         }
     }
 
@@ -2091,32 +2631,21 @@ sub ProcessTicketReminders {
           Format => 'unknown',
           Value => $args->{'NewReminder-Due'}
         );
-        my ( $add_id, $msg, $txnid ) = $Ticket->Reminders->Add(
+        my ( $status, $msg ) = $Ticket->Reminders->Add(
             Subject => $args->{'NewReminder-Subject'},
             Owner   => $args->{'NewReminder-Owner'},
             Due     => $due_obj->ISO
         );
-        push @results, loc("Reminder '[_1]' added", $args->{'NewReminder-Subject'});
-    }
-    return @results;
-}
-
-sub ProcessTicketCustomFieldUpdates {
-    my %args = @_;
-    $args{'Object'} = delete $args{'TicketObj'};
-    my $ARGSRef = { %{ $args{'ARGSRef'} } };
-
-    # Build up a list of objects that we want to work with
-    my %custom_fields_to_mod;
-    foreach my $arg ( keys %$ARGSRef ) {
-        if ( $arg =~ /^Ticket-(\d+-.*)/ ) {
-            $ARGSRef->{"Object-RT::Ticket-$1"} = delete $ARGSRef->{$arg};
-        } elsif ( $arg =~ /^CustomField-(\d+-.*)/ ) {
-            $ARGSRef->{"Object-RT::Ticket--$1"} = delete $ARGSRef->{$arg};
+        if ( $status ) {
+            push @results,
+              loc( "Reminder '[_1]': ", $args->{'NewReminder-Subject'} )
+              . loc("Created");
+        }
+        else {
+            push @results, $msg;
         }
     }
-
-    return ProcessObjectCustomFieldUpdates( %args, ARGSRef => $ARGSRef );
+    return @results;
 }
 
 sub ProcessObjectCustomFieldUpdates {
@@ -2125,15 +2654,7 @@ sub ProcessObjectCustomFieldUpdates {
     my @results;
 
     # Build up a list of objects that we want to work with
-    my %custom_fields_to_mod;
-    foreach my $arg ( keys %$ARGSRef ) {
-
-        # format: Object-<object class>-<object id>-CustomField-<CF id>-<commands>
-        next unless $arg =~ /^Object-([\w:]+)-(\d*)-CustomField-(\d+)-(.*)$/;
-
-        # For each of those objects, find out what custom fields we want to work with.
-        $custom_fields_to_mod{$1}{ $2 || 0 }{$3}{$4} = $ARGSRef->{$arg};
-    }
+    my %custom_fields_to_mod = _ParseObjectCustomFieldArgs($ARGSRef);
 
     # For each of those objects
     foreach my $class ( keys %custom_fields_to_mod ) {
@@ -2150,22 +2671,61 @@ sub ProcessObjectCustomFieldUpdates {
 
             foreach my $cf ( keys %{ $custom_fields_to_mod{$class}{$id} } ) {
                 my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
+                $CustomFieldObj->SetContextObject($Object);
                 $CustomFieldObj->LoadById($cf);
                 unless ( $CustomFieldObj->id ) {
                     $RT::Logger->warning("Couldn't load custom field #$cf");
                     next;
                 }
+                my @groupings = sort keys %{ $custom_fields_to_mod{$class}{$id}{$cf} };
+                if (@groupings > 1) {
+                    # Check for consistency, in case of JS fail
+                    for my $key (qw/AddValue Value Values DeleteValues DeleteValueIds/) {
+                        my $base = $custom_fields_to_mod{$class}{$id}{$cf}{$groupings[0]}{$key};
+                        $base = [ $base ] unless ref $base;
+                        for my $grouping (@groupings[1..$#groupings]) {
+                            my $other = $custom_fields_to_mod{$class}{$id}{$cf}{$grouping}{$key};
+                            $other = [ $other ] unless ref $other;
+                            warn "CF $cf submitted with multiple differing values"
+                                if grep {$_} List::MoreUtils::pairwise {
+                                    no warnings qw(uninitialized);
+                                    $a ne $b
+                                } @{$base}, @{$other};
+                        }
+                    }
+                    # We'll just be picking the 1st grouping in the hash, alphabetically
+                }
                 push @results,
                     _ProcessObjectCustomFieldUpdates(
+                    # XXX FIXME: Prefix is not quite right, as $id almost
+                    # certainly started as blank for new objects and is now 0.
+                    # Only Image/Binary CFs on new objects should be affected.
                     Prefix      => "Object-$class-$id-CustomField-$cf-",
                     Object      => $Object,
                     CustomField => $CustomFieldObj,
-                    ARGS        => $custom_fields_to_mod{$class}{$id}{$cf},
+                    ARGS        => $custom_fields_to_mod{$class}{$id}{$cf}{$groupings[0]},
                     );
             }
         }
     }
     return @results;
+}
+
+sub _ParseObjectCustomFieldArgs {
+    my $ARGSRef = shift || {};
+    my %custom_fields_to_mod;
+
+    foreach my $arg ( keys %$ARGSRef ) {
+
+        # format: Object-<object class>-<object id>-CustomField[:<grouping>]-<CF id>-<commands>
+        next unless $arg =~ /^Object-([\w:]+)-(\d*)-CustomField(?::(\w+))?-(\d+)-(.*)$/;
+
+        # For each of those objects, find out what custom fields we want to work with.
+        #                   Class     ID     CF  grouping command
+        $custom_fields_to_mod{$1}{ $2 || 0 }{$4}{$3 || ''}{$5} = $ARGSRef->{$arg};
+    }
+
+    return wantarray ? %custom_fields_to_mod : \%custom_fields_to_mod;
 }
 
 sub _ProcessObjectCustomFieldUpdates {
@@ -2203,22 +2763,14 @@ sub _ProcessObjectCustomFieldUpdates {
             $args{'ARGS'}->{'Values'} = undef;
         }
 
-        my @values = ();
-        if ( ref $args{'ARGS'}->{$arg} eq 'ARRAY' ) {
-            @values = @{ $args{'ARGS'}->{$arg} };
-        } elsif ( $cf_type =~ /text/i ) {    # Both Text and Wikitext
-            @values = ( $args{'ARGS'}->{$arg} );
-        } else {
-            @values = split /\r*\n/, $args{'ARGS'}->{$arg}
-                if defined $args{'ARGS'}->{$arg};
-        }
-        @values = grep length, map {
-            s/\r+\n/\n/g;
-            s/^\s+//;
-            s/\s+$//;
-            $_;
-            }
-            grep defined, @values;
+        my @values = _NormalizeObjectCustomFieldValue(
+            CustomField => $cf,
+            Param       => $args{'Prefix'} . $arg,
+            Value       => $args{'ARGS'}->{$arg}
+        );
+
+        # "Empty" values still don't mean anything for Image and Binary fields
+        next if $cf_type =~ /^(?:Image|Binary)$/ and not @values;
 
         if ( $arg eq 'AddValue' || $arg eq 'Value' ) {
             foreach my $value (@values) {
@@ -2229,8 +2781,7 @@ sub _ProcessObjectCustomFieldUpdates {
                 push( @results, $msg );
             }
         } elsif ( $arg eq 'Upload' ) {
-            my $value_hash = _UploadedFile( $args{'Prefix'} . $arg ) or next;
-            my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue( %$value_hash, Field => $cf, );
+            my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue( %{$values[0]}, Field => $cf, );
             push( @results, $msg );
         } elsif ( $arg eq 'DeleteValues' ) {
             foreach my $value (@values) {
@@ -2315,6 +2866,99 @@ sub _ProcessObjectCustomFieldUpdates {
     return @results;
 }
 
+sub ProcessObjectCustomFieldUpdatesForCreate {
+    my %args = (
+        ARGSRef         => {},
+        ContextObject   => undef,
+        @_
+    );
+    my $context = $args{'ContextObject'};
+    my %parsed;
+    my %custom_fields = _ParseObjectCustomFieldArgs( $args{'ARGSRef'} );
+
+    for my $class (keys %custom_fields) {
+        # we're only interested in new objects, so only look at $id == 0
+        for my $cfid (keys %{ $custom_fields{$class}{0} || {} }) {
+            my $cf = RT::CustomField->new( $session{'CurrentUser'} );
+            if ($context) {
+                my $system_cf = RT::CustomField->new( RT->SystemUser );
+                $system_cf->LoadById($cfid);
+                if ($system_cf->ValidateContextObject($context)) {
+                    $cf->SetContextObject($context);
+                } else {
+                    RT->Logger->error(
+                        sprintf "Invalid context object %s (%d) for CF %d; skipping CF",
+                                ref $context, $context->id, $system_cf->id
+                    );
+                    next;
+                }
+            }
+            $cf->LoadById($cfid);
+
+            unless ($cf->id) {
+                RT->Logger->warning("Couldn't load custom field #$cfid");
+                next;
+            }
+
+            my @groupings = sort keys %{ $custom_fields{$class}{0}{$cfid} };
+            if (@groupings > 1) {
+                # Check for consistency, in case of JS fail
+                for my $key (qw/AddValue Value Values DeleteValues DeleteValueIds/) {
+                    warn "CF $cfid submitted with multiple differing $key"
+                        if grep {($custom_fields{$class}{0}{$cfid}{$_}{$key} || '')
+                             ne  ($custom_fields{$class}{0}{$cfid}{$groupings[0]}{$key} || '')}
+                            @groupings;
+                }
+                # We'll just be picking the 1st grouping in the hash, alphabetically
+            }
+
+            my @values;
+            while (my ($arg, $value) = each %{ $custom_fields{$class}{0}{$cfid}{$groupings[0]} }) {
+                # Values-Magic doesn't matter on create; no previous values are being removed
+                # Category is irrelevant for the actual value
+                next if $arg eq "Values-Magic" or $arg eq "Category";
+
+                push @values, _NormalizeObjectCustomFieldValue(
+                    CustomField => $cf,
+                    Param       => "Object-$class--CustomField-$cfid-$arg",
+                    Value       => $value,
+                );
+            }
+
+            $parsed{"CustomField-$cfid"} = \@values if @values;
+        }
+    }
+
+    return wantarray ? %parsed : \%parsed;
+}
+
+sub _NormalizeObjectCustomFieldValue {
+    my %args    = (@_);
+    my $cf_type = $args{CustomField}->Type;
+    my @values  = ();
+
+    if ( ref $args{'Value'} eq 'ARRAY' ) {
+        @values = @{ $args{'Value'} };
+    } elsif ( $cf_type =~ /text/i ) {    # Both Text and Wikitext
+        @values = ( $args{'Value'} );
+    } else {
+        @values = split /\r*\n/, $args{'Value'}
+            if defined $args{'Value'};
+    }
+    @values = grep length, map {
+        s/\r+\n/\n/g;
+        s/^\s+//;
+        s/\s+$//;
+        $_;
+        }
+        grep defined, @values;
+
+    if ($cf_type eq 'Image' or $cf_type eq 'Binary') {
+        @values = _UploadedFile( $args{'Param'} ) || ();
+    }
+
+    return @values;
+}
 
 =head2 ProcessTicketWatchers ( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
@@ -2550,6 +3194,41 @@ sub ProcessRecordLinks {
     return (@results);
 }
 
+=head2 ProcessLinksForCreate
+
+Takes a hash with a single key, C<ARGSRef>, the value of which is a hashref to
+C<%ARGS>.
+
+Converts and returns submitted args in the form of C<new-LINKTYPE> and
+C<LINKTYPE-new> into their appropriate directional link types.  For example,
+C<new-DependsOn> becomes C<DependsOn> and C<DependsOn-new> becomes
+C<DependedOnBy>.  The incoming arg values are split on whitespace and
+normalized into arrayrefs before being returned.
+
+Primarily used by object creation pages for transforming incoming form inputs
+from F</Elements/EditLinks> into arguments appropriate for individual record
+Create methods.
+
+Returns a hashref in scalar context and a hash in list context.
+
+=cut
+
+sub ProcessLinksForCreate {
+    my %args = @_;
+    my %links;
+
+    foreach my $type ( keys %RT::Link::DIRMAP ) {
+        for ([Base => "new-$type"], [Target => "$type-new"]) {
+            my ($direction, $key) = @$_;
+            next unless $args{ARGSRef}->{$key};
+            $links{ $RT::Link::DIRMAP{$type}->{$direction} } = [
+                grep $_, split ' ', $args{ARGSRef}->{$key}
+            ];
+        }
+    }
+    return wantarray ? %links : \%links;
+}
+
 =head2 _UploadedFile ( $arg );
 
 Takes a CGI parameter name; if a file is uploaded under that name,
@@ -2655,17 +3334,7 @@ sub GetPrincipalsMap {
         }
         elsif (/Roles/) {
             my $roles = RT::Groups->new($session{'CurrentUser'});
-
-            if ($object->isa('RT::System')) {
-                $roles->LimitToRolesForSystem();
-            }
-            elsif ($object->isa('RT::Queue')) {
-                $roles->LimitToRolesForQueue($object->Id);
-            }
-            else {
-                $RT::Logger->warn("Skipping unknown object type ($object) for Role principals");
-                next;
-            }
+            $roles->LimitToRolesForObject($object);
             $roles->OrderBy( FIELD => 'Type', ORDER => 'ASC' );
             push @map, [
                 'Roles' => $roles,  # loc_left_pair
@@ -2756,10 +3425,54 @@ sub ScrubHTML {
 
 =head2 _NewScrubber
 
-Returns a new L<HTML::Scrubber> object.  Override this if you insist on
-letting more HTML through.
+Returns a new L<HTML::Scrubber> object.
+
+If you need to be more lax about what HTML tags and attributes are allowed,
+create C</opt/rt4/local/lib/RT/Interface/Web_Local.pm> with something like the
+following:
+
+    package HTML::Mason::Commands;
+    # Let tables through
+    push @SCRUBBER_ALLOWED_TAGS, qw(TABLE THEAD TBODY TFOOT TR TD TH);
+    1;
 
 =cut
+
+our @SCRUBBER_ALLOWED_TAGS = qw(
+    A B U P BR I HR BR SMALL EM FONT SPAN STRONG SUB SUP STRIKE H1 H2 H3 H4 H5
+    H6 DIV UL OL LI DL DT DD PRE BLOCKQUOTE BDO
+);
+
+our %SCRUBBER_ALLOWED_ATTRIBUTES = (
+    # Match http, ftp and relative urls
+    # XXX: we also scrub format strings with this module then allow simple config options
+    href   => qr{^(?:http:|ftp:|https:|/|__Web(?:Path|HomePath|BaseURL|URL)__)}i,
+    face   => 1,
+    size   => 1,
+    target => 1,
+    style  => qr{
+        ^(?:\s*
+            (?:(?:background-)?color: \s*
+                    (?:rgb\(\s* \d+, \s* \d+, \s* \d+ \s*\) |   # rgb(d,d,d)
+                       \#[a-f0-9]{3,6}                      |   # #fff or #ffffff
+                       [\w\-]+                                  # green, light-blue, etc.
+                       )                            |
+               text-align: \s* \w+                  |
+               font-size: \s* [\w.\-]+              |
+               font-family: \s* [\w\s"',.\-]+       |
+               font-weight: \s* [\w\-]+             |
+
+               # MS Office styles, which are probably fine.  If we don't, then any
+               # associated styles in the same attribute get stripped.
+               mso-[\w\-]+?: \s* [\w\s"',.\-]+
+            )\s* ;? \s*)
+         +$ # one or more of these allowed properties from here 'till sunset
+    }ix,
+    dir    => qr/^(rtl|ltr)$/i,
+    lang   => qr/^\w+(-\w+)?$/,
+);
+
+our %SCRUBBER_RULES = ();
 
 sub _NewScrubber {
     require HTML::Scrubber;
@@ -2767,42 +3480,36 @@ sub _NewScrubber {
     $scrubber->default(
         0,
         {
-            '*'    => 0,
-            id     => 1,
-            class  => 1,
-            # Match http, ftp and relative urls
-            # XXX: we also scrub format strings with this module then allow simple config options
-            href   => qr{^(?:http:|ftp:|https:|/|__Web(?:Path|BaseURL|URL)__)}i,
-            face   => 1,
-            size   => 1,
-            target => 1,
-            style  => qr{
-                ^(?:\s*
-                    (?:(?:background-)?color: \s*
-                            (?:rgb\(\s* \d+, \s* \d+, \s* \d+ \s*\) |   # rgb(d,d,d)
-                               \#[a-f0-9]{3,6}                      |   # #fff or #ffffff
-                               [\w\-]+                                  # green, light-blue, etc.
-                               )                            |
-                       text-align: \s* \w+                  |
-                       font-size: \s* [\w.\-]+              |
-                       font-family: \s* [\w\s"',.\-]+       |
-                       font-weight: \s* [\w\-]+             |
-
-                       # MS Office styles, which are probably fine.  If we don't, then any
-                       # associated styles in the same attribute get stripped.
-                       mso-[\w\-]+?: \s* [\w\s"',.\-]+
-                    )\s* ;? \s*)
-                 +$ # one or more of these allowed properties from here 'till sunset
-            }ix,
-        }
+            %SCRUBBER_ALLOWED_ATTRIBUTES,
+            '*' => 0, # require attributes be explicitly allowed
+        },
     );
     $scrubber->deny(qw[*]);
-    $scrubber->allow(
-        qw[A B U P BR I HR BR SMALL EM FONT SPAN STRONG SUB SUP STRIKE H1 H2 H3 H4 H5 H6 DIV UL OL LI DL DT DD PRE BLOCKQUOTE]
-    );
+    $scrubber->allow(@SCRUBBER_ALLOWED_TAGS);
+    $scrubber->rules(%SCRUBBER_RULES);
+
+    # Scrubbing comments is vital since IE conditional comments can contain
+    # arbitrary HTML and we'd pass it right on through.
     $scrubber->comment(0);
 
     return $scrubber;
+}
+
+=head2 JSON
+
+Redispatches to L<RT::Interface::Web/EncodeJSON>
+
+=cut
+
+sub JSON {
+    RT::Interface::Web::EncodeJSON(@_);
+}
+
+sub CSSClass {
+    my $value = shift;
+    return '' unless defined $value;
+    $value =~ s/[^A-Za-z0-9_-]/_/g;
+    return $value;
 }
 
 package RT::Interface::Web;

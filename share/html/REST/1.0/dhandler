@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -62,7 +62,7 @@ my $object = $m->dhandler_arg;
 
 my $name   = qr{[\w.-]+};
 my $list   = '(?:(?:\d+-)?\d+,)*(?:\d+-)?\d+';
-my $label  = '[a-zA-Z0-9@_.+-]+';
+my $label   = '[^,\\/]+';
 my $field  = RT::Interface::REST->field_spec;
 my $labels = "(?:$label,)*$label";
 
@@ -242,7 +242,7 @@ foreach $object (@objects) {
         $handler = "Forms/$type/$attr";
 
         unless ($m->comp_exists($handler)) {
-            $args = "$attr/$args";
+            $args = defined $args ? "$attr/$args" : $attr;
             $handler = "Forms/$type/default";
 
             unless ($m->comp_exists($handler)) {

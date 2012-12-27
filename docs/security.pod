@@ -9,6 +9,21 @@ key).
 
 More information is available at L<http://bestpractical.com/security/>.
 
+
+=head2 RT's security process
+
+After a security vulnerability is reported to Best Practical and
+verified, we attempt to resolve it in as timely a fashion as possible.
+Best Practical support customers will be notified before we disclose the
+information to the public.  All security announcements will be sent to
+C<rt-announce@bestpractical.com>, which includes
+C<rt-users@bestpractical.com> and C<rt-devel@bestpractical.com>.
+
+As the tests for security vulnerabilities are often nearly identical to
+working exploits, sensitive tests will be embargoed for a period of six
+months before being added to the public RT repository.
+
+
 =head2 Security tips for running RT
 
 =over
@@ -17,8 +32,18 @@ More information is available at L<http://bestpractical.com/security/>.
 
 Protect your RT installation by making it only accessible via SSL.  This
 will protect against users' passwords being sniffed as they go over the
-wire, as well as helping prevent phishing attacks.
+wire, as well as helping prevent phishing attacks.  If you use SSL, you
+will need to install some additional Perl libraries so that C<rt-mailgate>
+can connect.  You can use the C<--enable-ssl-mailgate> command to
+configure to automate the installation of these dependencies.  This is
+documented further in step 10 of the README.
 
+You should use a certificate signed by a reputable authority, or at very
+least a certificate signed by a consistent local CA, which you configure
+your local systems to trust.  If your SSL certificate is self-signed, it
+does little to prevent phishing, as users are trained to accept the
+unauthorized certificate.  See also the C<--no-verify-ssl> flag to
+C<rt-mailgate>.
 
 =item *
 

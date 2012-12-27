@@ -1,4 +1,7 @@
-@ScripConditions = (
+use strict;
+use warnings;
+
+our @ScripConditions = (
     {  Name                 => 'On Close',                                 # loc
        Description          => 'Whenever a ticket is closed', # loc
        ApplicableTransTypes => 'Status,Set',

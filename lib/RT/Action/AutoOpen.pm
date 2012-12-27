@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -87,7 +87,7 @@ sub Prepare {
 
     # no change if the ticket is in initial status and the message is a mail
     # from a requestor
-    return 1 if $ticket->QueueObj->Lifecycle->IsInitial($ticket->Status)
+    return 1 if $ticket->Lifecycle->IsInitial($ticket->Status)
         && $self->TransactionObj->IsInbound;
 
     if ( my $msg = $self->TransactionObj->Message->First ) {

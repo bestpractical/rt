@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -57,22 +57,27 @@ use warnings;
 sub Groupings {
     my $self = shift;
     my %args = (@_);
-    my @fields = map {$_, $_} qw(
-        Status
-        Queue
-    );
+    my @fields =
+      map { $self->CurrentUser->loc($_), $_ } qw( Status Queue );    # loc_qw
 
-    foreach my $type ( qw(Owner Creator LastUpdatedBy Requestor Cc AdminCc Watcher) ) {
-        push @fields, $type.' '.$_, $type.'.'.$_ foreach qw(
-            Name EmailAddress RealName NickName Organization Lang City Country Timezone
-        );
+    foreach my $type ( qw(Owner Creator LastUpdatedBy Requestor Cc AdminCc Watcher) ) { # loc_qw
+        for my $field (
+            qw( Name EmailAddress RealName NickName Organization Lang City Country Timezone ) # loc_qw
+          )
+        {
+            push @fields,
+              $self->CurrentUser->loc($type) . ' '
+              . $self->CurrentUser->loc($field), $type . '.' . $field;
+        }
     }
 
 
-    for my $field (qw(Due Resolved Created LastUpdated Started Starts)) {
-        for my $frequency (qw(Hourly Daily Monthly Annually)) {
-            my $item = $field.$frequency;
-            push @fields,  $item,  $item;
+    for my $field (qw(Due Resolved Created LastUpdated Started Starts Told)) { # loc_qw
+        for my $frequency (qw(Hourly Daily Monthly Annually)) { # loc_qw
+            push @fields,
+              $self->CurrentUser->loc($field)
+              . $self->CurrentUser->loc($frequency),
+              $field . $frequency;
         }
     }
 
@@ -89,17 +94,15 @@ sub Groupings {
         foreach my $id (keys %$queues) {
             my $queue = RT::Queue->new( $self->CurrentUser );
             $queue->Load($id);
-            unless ($queue->id) {
-                # XXX TODO: This ancient code dates from a former developer
-                # we have no idea what it means or why cfqueues are so encoded.
-                $id =~ s/^.'*(.*).'*$/$1/;
-                $queue->Load($id);
-            }
-            $CustomFields->LimitToQueue($queue->Id);
+            $CustomFields->LimitToQueue($queue->Id) if $queue->Id;
         }
         $CustomFields->LimitToGlobal;
         while ( my $CustomField = $CustomFields->Next ) {
-            push @fields, "Custom field '". $CustomField->Name ."'", "CF.{". $CustomField->id ."}";
+            push @fields, $self->CurrentUser->loc(
+                "Custom field '[_1]'",
+                $CustomField->Name
+              ),
+              "CF.{" . $CustomField->id . "}";
         }
     }
     return @fields;

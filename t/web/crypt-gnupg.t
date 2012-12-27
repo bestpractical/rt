@@ -1,5 +1,5 @@
-#!/usr/bin/perl -w
 use strict;
+use warnings;
 
 use RT::Test::GnuPG
   tests         => 102,
@@ -8,6 +8,7 @@ use RT::Test::GnuPG
     'trust-model' => 'always',
 };
 use Test::Warn;
+use MIME::Head;
 
 use RT::Action::SendEmail;
 
@@ -53,6 +54,7 @@ RT::Test->clean_caught_mails;
 
 $m->goto_create_ticket( $queue );
 $m->form_name('TicketCreate');
+$m->field('Requestors', 'recipient@example.com');
 $m->field('Subject', 'Encryption test');
 $m->field('Content', 'Some content');
 ok($m->value('Encrypt', 2), "encrypt tick box is checked");
@@ -69,8 +71,7 @@ $user->SetEmailAddress('general@example.com');
 for my $mail (@mail) {
     unlike $mail, qr/Some content/, "outgoing mail was encrypted";
 
-    my ($content_type) = $mail =~ /^(Content-Type: .*)/m;
-    my ($mime_version) = $mail =~ /^(MIME-Version: .*)/m;
+    my ($content_type, $mime_version) = get_headers($mail, "Content-Type", "MIME-Version");
     my $body = strip_headers($mail);
 
     $mail = << "MAIL";
@@ -122,6 +123,7 @@ RT::Test->clean_caught_mails;
 
 $m->goto_create_ticket( $queue );
 $m->form_name('TicketCreate');
+$m->field('Requestors', 'recipient@example.com');
 $m->field('Subject', 'Signing test');
 $m->field('Content', 'Some other content');
 ok(!$m->value('Encrypt', 2), "encrypt tick box is unchecked");
@@ -137,8 +139,7 @@ for my $mail (@mail) {
     like $mail, qr/Some other content/, "outgoing mail was not encrypted";
     like $mail, qr/-----BEGIN PGP SIGNATURE-----[\s\S]+-----END PGP SIGNATURE-----/, "data has some kind of signature";
 
-    my ($content_type) = $mail =~ /^(Content-Type: .*)/m;
-    my ($mime_version) = $mail =~ /^(MIME-Version: .*)/m;
+    my ($content_type, $mime_version) = get_headers($mail, "Content-Type", "MIME-Version");
     my $body = strip_headers($mail);
 
     $mail = << "MAIL";
@@ -195,6 +196,7 @@ RT::Test->clean_caught_mails;
 
 $m->goto_create_ticket( $queue );
 $m->form_name('TicketCreate');
+$m->field('Requestors', 'recipient@example.com');
 $m->field('Subject', 'Crypt+Sign test');
 $m->field('Content', 'Some final? content');
 ok($m->value('Encrypt', 2), "encrypt tick box is checked");
@@ -209,8 +211,7 @@ ok(@mail, "got some mail");
 for my $mail (@mail) {
     unlike $mail, qr/Some other content/, "outgoing mail was encrypted";
 
-    my ($content_type) = $mail =~ /^(Content-Type: .*)/m;
-    my ($mime_version) = $mail =~ /^(MIME-Version: .*)/m;
+    my ($content_type, $mime_version) = get_headers($mail, "Content-Type", "MIME-Version");
     my $body = strip_headers($mail);
 
     $mail = << "MAIL";
@@ -260,6 +261,7 @@ RT::Test->clean_caught_mails;
 
 $m->goto_create_ticket( $queue );
 $m->form_name('TicketCreate');
+$m->field('Requestors', 'recipient@example.com');
 $m->field('Subject', 'Test crypt-off on encrypted queue');
 $m->field('Content', 'Thought you had me figured out didya');
 $m->field(Encrypt => undef, 2); # turn off encryption
@@ -275,8 +277,7 @@ ok(@mail, "got some mail");
 for my $mail (@mail) {
     like $mail, qr/Thought you had me figured out didya/, "outgoing mail was unencrypted";
 
-    my ($content_type) = $mail =~ /^(Content-Type: .*)/m;
-    my ($mime_version) = $mail =~ /^(MIME-Version: .*)/m;
+    my ($content_type, $mime_version) = get_headers($mail, "Content-Type", "MIME-Version");
     my $body = strip_headers($mail);
 
     $mail = << "MAIL";
@@ -320,6 +321,20 @@ MAIL
 
     like($attachments[0]->Content, qr/Thought you had me figured out didya/, "RT's mail includes copy of ticket text");
     like($attachments[0]->Content, qr/$RT::rtname/, "RT's mail includes this instance's name");
+}
+
+sub get_headers {
+    my $mail = shift;
+    open my $fh, "<", \$mail or die $!;
+    my $head = MIME::Head->read($fh);
+    return @{[
+        map {
+            my $hdr = "$_: " . $head->get($_);
+            chomp $hdr;
+            $hdr;
+        }
+        @_
+    ]};
 }
 
 sub strip_headers

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -57,7 +57,7 @@ use URI;
 use Scalar::Util qw(weaken);
 
 __PACKAGE__->mk_accessors(qw(
-    title sort_order target escape_title class raw_html key description
+    key title description raw_html escape_title sort_order target class
 ));
 
 =head1 NAME
@@ -69,9 +69,10 @@ RT::Interface::Web::Menu - Handle the API for menu navigation
 =head2 new PARAMHASH
 
 Creates a new L<RT::Interface::Web::Menu> object.  Possible keys in the
-I<PARAMHASH> are L</title>, L</parent>, L</sort_order>, L</path>, L</class>,
-L</raw_html>, and L</active>, and L</escape_title>.  See the subroutines with
-the respective name below for each option's use.
+I<PARAMHASH> are L</parent>, L</title>, L</description>, L</path>,
+L</raw_html>, L<escape_title>, L</sort_order>, L</class>, L</target> and
+L</active>.  See the subroutines with the respective name below for
+each option's use.
 
 =cut
 
@@ -149,10 +150,12 @@ treated as relative to it's parent's path, and made absolute.
 sub path {
     my $self = shift;
     if (@_) {
-        $self->{path} = shift;
-        $self->{path} = URI->new_abs($self->{path}, $self->parent->path . "/")->as_string
-            if defined $self->{path} and $self->parent and $self->parent->path;
-        $self->{path} =~ s!///!/! if $self->{path};
+        if (defined($self->{path} = shift)) {
+            my $base  = ($self->parent and $self->parent->path) ? $self->parent->path : "";
+               $base .= "/" unless $base =~ m{/$};
+            my $uri = URI->new_abs($self->{path}, $base);
+            $self->{path} = $uri->as_string;
+        }
     }
     return $self->{path};
 }
@@ -229,6 +232,7 @@ sub child {
         if ( defined $path and length $path ) {
             my $base_path = $HTML::Mason::Commands::r->path_info;
             my $query     = $HTML::Mason::Commands::m->cgi_object->query_string;
+            $base_path =~ s!/+!/!g;
             $base_path .= "?$query" if defined $query and length $query;
 
             $base_path =~ s/index\.html$//;
@@ -308,6 +312,61 @@ sub children {
         $self->{children_list} = \@kids;
     }
     return wantarray ? @kids : \@kids;
+}
+
+=head2 add_after
+
+Called on a child, inserts a new menu item after it and shifts any other
+menu items at this level to the right.
+
+L<child> by default would insert at the end of the list of children, unless you
+did manual sort_order calculations.
+
+Takes all the regular arguments to L<child>.
+
+=cut
+
+sub add_after { shift->_insert_sibling("after", @_) }
+
+=head2 add_before
+
+Called on a child, inserts a new menu item at the child's location and shifts
+the child and the other menu items at this level to the right.
+
+L<child> by default would insert at the end of the list of children, unless you
+did manual sort_order calculations.
+
+Takes all the regular arguments to L<child>.
+
+=cut
+
+sub add_before { shift->_insert_sibling("before", @_) }
+
+sub _insert_sibling {
+    my $self = shift;
+    my $where = shift;
+    my $parent = $self->parent;
+    my $sort_order;
+    for my $contemporary ($parent->children) {
+        if ( $contemporary->key eq $self->key ) {
+            if ($where eq "before") {
+                # Bump the current child and the following
+                $sort_order = $contemporary->sort_order;
+            }
+            elsif ($where eq "after") {
+                # Leave the current child along, bump the rest
+                $sort_order = $contemporary->sort_order + 1;
+                next;
+            }
+            else {
+                # never set $sort_order, act no differently than ->child()
+            }
+        }
+        if ( $sort_order ) {
+            $contemporary->sort_order( $contemporary->sort_order + 1 );
+        }
+    }
+    $parent->child( @_, sort_order => $sort_order );
 }
 
 1;

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -351,6 +351,8 @@ sub CastObjectsToRecords
     } elsif ( UNIVERSAL::isa( $targets, 'SCALAR' ) || !ref $targets ) {
         $targets = $$targets if ref $targets;
         my ($class, $id) = split /-/, $targets;
+        RT::Shredder::Exception->throw( "Unsupported class $class" )
+              unless $class =~ /^\w+(::\w+)*$/;
         $class = 'RT::'. $class unless $class =~ /^RTx?::/i;
         eval "require $class";
         die "Couldn't load '$class' module" if $@;
@@ -537,9 +539,9 @@ sub WipeoutAll
 {
     my $self = $_[0];
 
-    while ( my ($k, $v) = each %{ $self->{'cache'} } ) {
-        next if $v->{'State'} & (WIPED | IN_WIPING);
-        $self->Wipeout( Object => $v->{'Object'} );
+    foreach my $cache_val ( values %{ $self->{'cache'} } ) {
+        next if $cache_val->{'State'} & (WIPED | IN_WIPING);
+        $self->Wipeout( Object => $cache_val->{'Object'} );
     }
 }
 
@@ -607,17 +609,6 @@ sub _Wipeout
     $self->DumpObject( Object => $object, State => 'after late dependencies' );
 
     return;
-}
-
-sub ValidateRelations
-{
-    my $self = shift;
-    my %args = ( @_ );
-
-    foreach my $record( values %{ $self->{'cache'} } ) {
-        next if( $record->{'State'} & VALID );
-        $record->{'Object'}->ValidateRelations( Shredder => $self );
-    }
 }
 
 =head3 Data storage and backups

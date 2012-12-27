@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -113,6 +113,28 @@ sub UpdateAttribute {
     }
 
     return ($status, $msg);
+}
+
+=head2 RT::SavedSearch->EscapeDescription STRING
+
+This is a class method because system-level saved searches aren't true
+C<RT::SavedSearch> objects but direct C<RT::Attribute> objects.
+
+Returns C<STRING> with all square brackets except those in C<[_1]> escaped,
+ready for passing as the first argument to C<loc()>.
+
+=cut
+
+sub EscapeDescription {
+    my $self = shift;
+    my $desc = shift;
+    if ($desc) {
+        # We only use [_1] in saved search descriptions, so let's escape other "["
+        # and "]" unless they are escaped already.
+        $desc =~ s/(?<!~)\[(?!_1\])/~[/g;
+        $desc =~ s/(?<!~)(?<!\[_1)\]/~]/g;
+    }
+    return $desc;
 }
 
 =head2 Type

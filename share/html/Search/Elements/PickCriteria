@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -51,8 +51,8 @@
 
 
 
-<& PickBasics &>
-<& PickCFs, cfqueues => \%cfqueues &>
+<& PickBasics, queues => \%queues &>
+<& PickCFs, queues => \%queues &>
 
 <tr class="separator"><td colspan="3"><hr /></td></tr>
 <tr>
@@ -68,5 +68,5 @@
 <%ARGS>
 $addquery => 0
 $query => undef
-%cfqueues => undef
+%queues => ()
 </%ARGS>

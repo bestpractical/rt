@@ -1,8 +1,5 @@
-#!/usr/bin/perl
-
 use strict;
 use warnings;
-use Data::Dumper;
 
 BEGIN {require 't/lifecycles/utils.pl'};
 
@@ -23,9 +20,6 @@ my $tstatus = sub {
     $ticket->Load( $_[0] );
     return $ticket->Status;
 };
-
-my ($baseurl, $m) = RT::Test->started_ok;
-ok $m->login, 'logged in';
 
 diag "check basic API";
 {
@@ -315,3 +309,5 @@ diag "check date changes on moving a ticket";
     ok $ticket->StartedObj->Unix > 0, 'started is set';
     ok $ticket->ResolvedObj->Unix > 0, 'resolved is set';
 }
+
+done_testing;

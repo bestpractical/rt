@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -65,7 +65,7 @@ if ( ref( $session{'Actions'}{''} ) eq 'ARRAY' ) {
     unshift @actions, @{ delete $session{'Actions'}{''} };
 }
 
-my $actions_pointer = $m->request_args->{'results'};
+my $actions_pointer = $DECODED_ARGS->{'results'};
 
 if ($actions_pointer &&  ref( $session{'Actions'}->{$actions_pointer} ) eq 'ARRAY' ) {
     unshift @actions, @{ delete $session{'Actions'}->{$actions_pointer} };

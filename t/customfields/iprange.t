@@ -1,4 +1,3 @@
-#!/usr/bin/perl
 
 use strict;
 use warnings;
@@ -462,8 +461,8 @@ diag "test the operators in search page" if $ENV{'TEST_VERBOSE'};
     $agent->get_ok( $baseurl . "/Search/Build.html?Query=Queue='General'" );
     $agent->content_contains('CF.{IP}', 'got CF.{IP}');
     my $form = $agent->form_name('BuildQuery');
-    my $op = $form->find_input("'CF.{IP}'Op");
-    ok( $op, "found 'CF.{IP}'Op" );
+    my $op = $form->find_input("CF.{IP}Op");
+    ok( $op, "found CF.{IP}Op" );
     is_deeply( [ $op->possible_values ], [ '=', '!=', '<', '>' ], 'op values' );
 }
 

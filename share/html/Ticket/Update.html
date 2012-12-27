@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -104,13 +104,11 @@
     InTable   => 1,
     fields    => [
         {   name => 'Status',
-            comp => '/Elements/SelectStatus',
+            comp => '/Ticket/Elements/SelectStatus',
             args => {
                 Name => 'Status',
-                DefaultLabel => loc("[_1] (Unchanged)", loc($TicketObj->Status)),
-                Default => $ARGS{'Status'} || ($TicketObj->Status eq $DefaultStatus ? undef : $DefaultStatus),
+                Default => $DefaultStatus,
                 TicketObj => $TicketObj,
-                QueueObj => $TicketObj->QueueObj
             },
         },
         {   name => 'Owner',
@@ -119,7 +117,7 @@
                 Name         => "Owner",
                 TicketObj    => $TicketObj,
                 QueueObj     => $TicketObj->QueueObj,
-                DefaultLabel => loc("[_1] (Unchanged)", $m->scomp('/Elements/ShowUser', User => $TicketObj->OwnerObj)),
+                DefaultLabel => loc("[_1] (Unchanged)", $TicketObj->OwnerObj->Format),
                 Default      => $ARGS{'Owner'}
             }
         },
@@ -210,6 +208,7 @@ my $TicketObj = LoadTicket($id);
 my @results;
 
 $m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS, checks_failure => \$checks_failure, results => \@results, CallbackName => 'Initial' );
+$m->scomp( '/Articles/Elements/SubjectOverride', Ticket => $TicketObj, ARGSRef => \%ARGS, results => \@results );
 
 unless($DefaultStatus){
     $DefaultStatus=($ARGS{'Status'} ||$TicketObj->Status());
@@ -283,21 +282,17 @@ if ( $ARGS{'SubmitTicket'} ) {
     my @squelchlist = grep {not $checked{$_}} split /,/, ($ARGS{'TxnRecipients'}||'');
     $ARGS{'SquelchMailTo'} = \@squelchlist if @squelchlist;
 
-    my $CFs = $TicketObj->TransactionCustomFields;
-    my $ValidCFs = $m->comp(
+    my ($status, @msg) = $m->comp(
         '/Elements/ValidateCustomFields',
-        CustomFields => $CFs,
-        NamePrefix => "Object-RT::Transaction--CustomField-",
+        CustomFields => $TicketObj->TransactionCustomFields,
+        Object => RT::Transaction->new( $session{'CurrentUser'} ),
         ARGSRef => \%ARGS
     );
-    unless ( $ValidCFs ) {
+    unless ( $status ) {
+        push @results, @msg;
         $checks_failure = 1;
-        while (my $CF = $CFs->Next) {
-            my $msg = $m->notes('InvalidField-' . $CF->Id) or next;
-            push @results, loc($CF->Name) . ': ' . $msg;
-        }
     }
-    my $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
+    $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
         self      => $gnupg_widget,
         TicketObj => $TicketObj,
     );

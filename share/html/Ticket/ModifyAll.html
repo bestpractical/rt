@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -51,17 +51,18 @@
 % $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" action="ModifyAll.html" enctype="multipart/form-data">
+<form method="post" action="ModifyAll.html" name="TicketModifyAll" enctype="multipart/form-data">
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->Id%>" />
 
 <&| /Widgets/TitleBox, title => loc('Modify ticket # [_1]', $Ticket->Id), class=>'ticket-info-basics' &>
 <& Elements/EditBasics, TicketObj => $Ticket &>
-<& Elements/EditCustomFields, TicketObj => $Ticket &>
+<& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'Basics' &>
 </&>
 
 % $m->callback(CallbackName => 'AfterBasics', Ticket => $Ticket);
-<br />
+
+<& /Elements/EditCustomFieldCustomGroupings, Object => $Ticket &>
 
 <&| /Widgets/TitleBox, title => loc('Dates'), class=>'ticket-info-dates'&>
 <& Elements/EditDates, TicketObj => $Ticket &>
@@ -112,7 +113,7 @@
   <tr>
     <td class="labeltop"><&|/l&>Content</&>:</td>
     <td class="entry">
-% if (defined $ARGS{UpdateContent} && length($ARGS{UpdateContent} && !grep { /Message recorded/ } @results )) {
+% if (defined $ARGS{UpdateContent} && length($ARGS{UpdateContent})) {
     <& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent}, IncludeSignature => 0 &>
 % } else {
     <& /Elements/MessageBox, Name=>"UpdateContent", QuoteTransaction=>$ARGS{QuoteTransaction} &>
@@ -188,7 +189,12 @@ unless ($OnlySearchForPeople or $OnlySearchForGroup or $ARGS{'AddMoreAttach'} ) 
         my @owners =@{$ARGS{'Owner'}};
         delete $ARGS{'Owner'};
         foreach my $owner(@owners){
-            $ARGS{'Owner'} = $owner unless ($Ticket->OwnerObj->id == $owner);
+            if (defined($owner) && $owner =~ /\D/) {
+                $ARGS{'Owner'} = $owner unless ($Ticket->OwnerObj->Name eq $owner);
+            }
+            elsif (length $owner) {
+                $ARGS{'Owner'} = $owner unless ($Ticket->OwnerObj->id == $owner);
+            }
         }
 
     }
@@ -209,11 +215,19 @@ unless ($OnlySearchForPeople or $OnlySearchForGroup or $ARGS{'AddMoreAttach'} ) 
 
 $Ticket->ApplyTransactionBatch;
 
-# If they've gone and moved the ticket to somewhere they can't see, etc...
-# TODO: display the results, even if we can't display the ticket.
+MaybeRedirectForResults(
+    Actions   => \@results,
+    Path      => "/Ticket/ModifyAll.html",
+    Arguments => { id => $Ticket->id },
+);
 
+# If they've gone and moved the ticket to somewhere they can't see, etc...
 unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
-   Abort("No permission to view ticket");
+    if (@results) {
+        Abort("A change was applied successfully, but you no longer have permissions to view the ticket", Actions => \@results);
+    } else {
+        Abort("No permission to view ticket");
+    }
 }
 
 

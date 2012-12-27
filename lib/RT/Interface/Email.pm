@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -57,6 +57,7 @@ use RT::EmailParser;
 use File::Temp;
 use UNIVERSAL::require;
 use Mail::Mailer ();
+use Text::ParseWords qw/shellwords/;
 
 BEGIN {
     use base 'Exporter';
@@ -147,6 +148,9 @@ sub CheckForSuspiciousSender {
     #TODO: search through the whole email and find the right Ticket ID.
 
     my ( $From, $junk ) = ParseSenderAddressFromHead($head);
+
+    # If unparseable (non-ASCII), $From can come back undef
+    return undef if not defined $From;
 
     if (   ( $From =~ /^mailer-daemon\@/i )
         or ( $From =~ /^postmaster\@/i )
@@ -317,6 +321,35 @@ header field then it's value is used
 
 =cut
 
+sub WillSignEncrypt {
+    my %args = @_;
+    my $attachment = delete $args{Attachment};
+    my $ticket     = delete $args{Ticket};
+
+    if ( not RT->Config->Get('GnuPG')->{'Enable'} ) {
+        $args{Sign} = $args{Encrypt} = 0;
+        return wantarray ? %args : 0;
+    }
+
+    for my $argument ( qw(Sign Encrypt) ) {
+        next if defined $args{ $argument };
+
+        if ( $attachment and defined $attachment->GetHeader("X-RT-$argument") ) {
+            $args{$argument} = $attachment->GetHeader("X-RT-$argument");
+        } elsif ( $ticket and $argument eq "Encrypt" ) {
+            $args{Encrypt} = $ticket->QueueObj->Encrypt();
+        } elsif ( $ticket and $argument eq "Sign" ) {
+            # Note that $queue->Sign is UI-only, and that all
+            # UI-generated messages explicitly set the X-RT-Crypt header
+            # to 0 or 1; thus this path is only taken for messages
+            # generated _not_ via the web UI.
+            $args{Sign} = $ticket->QueueObj->SignAuto();
+        }
+    }
+
+    return wantarray ? %args : ($args{Sign} || $args{Encrypt});
+}
+
 sub SendEmail {
     my (%args) = (
         Entity => undef,
@@ -328,13 +361,6 @@ sub SendEmail {
 
     my $TicketObj = $args{'Ticket'};
     my $TransactionObj = $args{'Transaction'};
-
-    foreach my $arg( qw(Entity Bounce) ) {
-        next unless defined $args{ lc $arg };
-
-        $RT::Logger->warning("'". lc($arg) ."' argument is deprecated, use '$arg' instead");
-        $args{ $arg } = delete $args{ lc $arg };
-    }
 
     unless ( $args{'Entity'} ) {
         $RT::Logger->crit( "Could not send mail without 'Entity' object" );
@@ -358,6 +384,12 @@ sub SendEmail {
         return -1;
     }
 
+    if (my $precedence = RT->Config->Get('DefaultMailPrecedence')
+        and !$args{'Entity'}->head->get("Precedence")
+    ) {
+        $args{'Entity'}->head->set( 'Precedence', $precedence );
+    }
+
     if ( $TransactionObj && !$TicketObj
         && $TransactionObj->ObjectType eq 'RT::Ticket' )
     {
@@ -365,23 +397,12 @@ sub SendEmail {
     }
 
     if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
-        my %crypt;
-
-        my $attachment;
-        $attachment = $TransactionObj->Attachments->First
-            if $TransactionObj;
-
-        foreach my $argument ( qw(Sign Encrypt) ) {
-            next if defined $args{ $argument };
-
-            if ( $attachment && defined $attachment->GetHeader("X-RT-$argument") ) {
-                $crypt{$argument} = $attachment->GetHeader("X-RT-$argument");
-            } elsif ( $TicketObj ) {
-                $crypt{$argument} = $TicketObj->QueueObj->$argument();
-            }
-        }
-
-        my $res = SignEncrypt( %args, %crypt );
+        %args = WillSignEncrypt(
+            %args,
+            Attachment => $TransactionObj ? $TransactionObj->Attachments->First : undef,
+            Ticket     => $TicketObj,
+        );
+        my $res = SignEncrypt( %args );
         return $res unless $res > 0;
     }
 
@@ -404,10 +425,12 @@ sub SendEmail {
 
     if ( $mail_command eq 'sendmailpipe' ) {
         my $path = RT->Config->Get('SendmailPath');
-        my $args = RT->Config->Get('SendmailArguments');
+        my @args = shellwords(RT->Config->Get('SendmailArguments'));
 
-        # SetOutgoingMailFrom
-        if ( RT->Config->Get('SetOutgoingMailFrom') ) {
+        # SetOutgoingMailFrom and bounces conflict, since they both want -f
+        if ( $args{'Bounce'} ) {
+            push @args, shellwords(RT->Config->Get('SendmailBounceArguments'));
+        } elsif ( RT->Config->Get('SetOutgoingMailFrom') ) {
             my $OutgoingMailAddress;
 
             if ($TicketObj) {
@@ -423,12 +446,9 @@ sub SendEmail {
 
             $OutgoingMailAddress ||= RT->Config->Get('OverrideOutgoingMailFrom')->{'Default'};
 
-            $args .= " -f $OutgoingMailAddress"
+            push @args, "-f", $OutgoingMailAddress
                 if $OutgoingMailAddress;
         }
-
-        # Set Bounce Arguments
-        $args .= ' '. RT->Config->Get('SendmailBounceArguments') if $args{'Bounce'};
 
         # VERP
         if ( $TransactionObj and
@@ -438,32 +458,36 @@ sub SendEmail {
             my $from = $TransactionObj->CreatorObj->EmailAddress;
             $from =~ s/@/=/g;
             $from =~ s/\s//g;
-            $args .= " -f $prefix$from\@$domain";
+            push @args, "-f", "$prefix$from\@$domain";
         }
 
         eval {
             # don't ignore CHLD signal to get proper exit code
             local $SIG{'CHLD'} = 'DEFAULT';
 
-            open( my $mail, '|-', "$path $args >/dev/null" )
-                or die "couldn't execute program: $!";
-
             # if something wrong with $mail->print we will get PIPE signal, handle it
             local $SIG{'PIPE'} = sub { die "program unexpectedly closed pipe" };
-            $args{'Entity'}->print($mail);
 
-            unless ( close $mail ) {
-                die "close pipe failed: $!" if $!; # system error
+            require IPC::Open2;
+            my ($mail, $stdout);
+            my $pid = IPC::Open2::open2( $stdout, $mail, $path, @args )
+                or die "couldn't execute program: $!";
+
+            $args{'Entity'}->print($mail);
+            close $mail or die "close pipe failed: $!";
+
+            waitpid($pid, 0);
+            if ($?) {
                 # sendmail exit statuses mostly errors with data not software
                 # TODO: status parsing: core dump, exit on signal or EX_*
-                my $msg = "$msgid: `$path $args` exitted with code ". ($?>>8);
+                my $msg = "$msgid: `$path @args` exited with code ". ($?>>8);
                 $msg = ", interrupted by signal ". ($?&127) if $?&127;
                 $RT::Logger->error( $msg );
                 die $msg;
             }
         };
         if ( $@ ) {
-            $RT::Logger->crit( "$msgid: Could not send mail with command `$path $args`: " . $@ );
+            $RT::Logger->crit( "$msgid: Could not send mail with command `$path @args`: " . $@ );
             if ( $TicketObj ) {
                 _RecordSendEmailFailure( $TicketObj );
             }
@@ -617,6 +641,9 @@ sub ForwardTransaction {
     my $txn = shift;
     my %args = ( To => '', Cc => '', Bcc => '', @_ );
 
+    $args{$_} = join ", ", map { $_->format } RT::EmailParser->ParseEmailAddress($args{$_} || '')
+        for qw(To Cc Bcc);
+
     my $entity = $txn->ContentAsMIME;
 
     my ( $ret, $msg ) = SendForward( %args, Entity => $entity, Transaction => $txn );
@@ -643,6 +670,9 @@ Forwards a ticket's Create and Correspond Transactions and their Attachments as 
 sub ForwardTicket {
     my $ticket = shift;
     my %args = ( To => '', Cc => '', Bcc => '', @_ );
+
+    $args{$_} = join ", ", map { $_->format } RT::EmailParser->ParseEmailAddress($args{$_} || '')
+        for qw(To Cc Bcc);
 
     my $txns = $ticket->Transactions;
     $txns->Limit(
@@ -744,16 +774,19 @@ sub SendForward {
     $mail->add_part( $entity );
 
     my $from;
-    my $subject = '';
-    $subject = $txn->Subject if $txn;
-    $subject ||= $ticket->Subject if $ticket;
+    unless (defined $mail->head->get('Subject')) {
+        my $subject = '';
+        $subject = $txn->Subject if $txn;
+        $subject ||= $ticket->Subject if $ticket;
 
-    unless ( RT->Config->Get('ForwardFromUser') ) {
-        # XXX: what if want to forward txn of other object than ticket?
-        $subject = AddSubjectTag( $subject, $ticket );
+        unless ( RT->Config->Get('ForwardFromUser') ) {
+            # XXX: what if want to forward txn of other object than ticket?
+            $subject = AddSubjectTag( $subject, $ticket );
+        }
+
+        $mail->head->set( Subject => EncodeToMIME( String => "Fwd: $subject" ) );
     }
 
-    $mail->head->set( Subject => EncodeToMIME( String => "Fwd: $subject" ) );
     $mail->head->set(
         From => EncodeToMIME(
             String => GetForwardFrom( Transaction => $txn, Ticket => $ticket )
@@ -780,7 +813,7 @@ sub GetForwardFrom {
     my $ticket = $args{Ticket} || $txn->Object;
 
     if ( RT->Config->Get('ForwardFromUser') ) {
-        return ( $txn || $ticket )->CurrentUser->UserObj->EmailAddress;
+        return ( $txn || $ticket )->CurrentUser->EmailAddress;
     }
     else {
         return $ticket->QueueObj->CorrespondAddress
@@ -1034,7 +1067,7 @@ sub CreateUser {
 
 Takes a hash containing QueueObj, Head and CurrentUser objects.
 Returns a list of all email addresses in the To and Cc
-headers b<except> the current Queue\'s email addresses, the CurrentUser\'s
+headers b<except> the current Queue's email addresses, the CurrentUser's
 email address  and anything that the configuration sub RT::IsRTAddress matches.
 
 =cut
@@ -1061,23 +1094,34 @@ sub ParseCcAddressesFromHead {
 
 =head2 ParseSenderAddressFromHead HEAD
 
-Takes a MIME::Header object. Returns a tuple: (user@host, friendly name)
-of the From (evaluated in order of Reply-To:, From:, Sender)
+Takes a MIME::Header object. Returns (user@host, friendly name, errors)
+where the first two values are the From (evaluated in order of
+Reply-To:, From:, Sender).
+
+A list of error messages may be returned even when a Sender value is
+found, since it could be a parse error for another (checked earlier)
+sender field. In this case, the errors aren't fatal, but may be useful
+to investigate the parse failure.
 
 =cut
 
 sub ParseSenderAddressFromHead {
     my $head = shift;
+    my @sender_headers = ('Reply-To', 'From', 'Sender');
+    my @errors;  # Accumulate any errors
 
     #Figure out who's sending this message.
-    foreach my $header ('Reply-To', 'From', 'Sender') {
+    foreach my $header ( @sender_headers ) {
         my $addr_line = $head->get($header) || next;
         my ($addr, $name) = ParseAddressFromHeader( $addr_line );
         # only return if the address is not empty
-        return ($addr, $name) if $addr;
+        return ($addr, $name, @errors) if $addr;
+
+        chomp $addr_line;
+        push @errors, "$header: $addr_line";
     }
 
-    return (undef, undef);
+    return (undef, undef, @errors);
 }
 
 =head2 ParseErrorsToAddressFromHead HEAD
@@ -1199,8 +1243,16 @@ sub SetInReplyTo {
         if @references > 10;
 
     my $mail = $args{'Message'};
-    $mail->head->set( 'In-Reply-To' => join ' ', @rtid? (@rtid) : (@id) ) if @id || @rtid;
-    $mail->head->set( 'References' => join ' ', @references );
+    $mail->head->set( 'In-Reply-To' => Encode::encode_utf8(join ' ', @rtid? (@rtid) : (@id)) ) if @id || @rtid;
+    $mail->head->set( 'References' => Encode::encode_utf8(join ' ', @references) );
+}
+
+sub ExtractTicketId {
+    my $entity = shift;
+
+    my $subject = $entity->head->get('Subject') || '';
+    chomp $subject;
+    return ParseTicketId( $subject );
 }
 
 sub ParseTicketId {
@@ -1209,13 +1261,15 @@ sub ParseTicketId {
     my $rtname = RT->Config->Get('rtname');
     my $test_name = RT->Config->Get('EmailSubjectTagRegex') || qr/\Q$rtname\E/i;
 
+    # We use @captures and pull out the last capture value to guard against
+    # someone using (...) instead of (?:...) in $EmailSubjectTagRegex.
     my $id;
-    if ( $Subject =~ s/\[$test_name\s+\#(\d+)\s*\]//i ) {
-        $id = $1;
+    if ( my @captures = $Subject =~ /\[$test_name\s+\#(\d+)\s*\]/i ) {
+        $id = $captures[-1];
     } else {
         foreach my $tag ( RT->System->SubjectTag ) {
-            next unless $Subject =~ s/\[\Q$tag\E\s+\#(\d+)\s*\]//i;
-            $id = $1;
+            next unless my @captures = $Subject =~ /\[\Q$tag\E\s+\#(\d+)\s*\]/i;
+            $id = $captures[-1];
             last;
         }
     }
@@ -1397,6 +1451,7 @@ sub Gateway {
     }
     @mail_plugins = grep !$skip_plugin{"$_"}, @mail_plugins;
     $parser->_DecodeBodies;
+    $parser->RescueOutlook;
     $parser->_PostProcessNewEntity;
 
     my $head = $Message->head;
@@ -1426,7 +1481,11 @@ sub Gateway {
     }
     # }}}
 
-    $args{'ticket'} ||= ParseTicketId( $Subject );
+    $args{'ticket'} ||= ExtractTicketId( $Message );
+
+    # ExtractTicketId may have been overridden, and edited the Subject
+    my $NewSubject = $Message->head->get('Subject');
+    chomp $NewSubject;
 
     $SystemTicket = RT::Ticket->new( RT->SystemUser );
     $SystemTicket->Load( $args{'ticket'} ) if ( $args{'ticket'} ) ;
@@ -1512,9 +1571,11 @@ sub Gateway {
             );
         }
 
+        $head->replace('X-RT-Interface' => 'Email');
+
         my ( $id, $Transaction, $ErrStr ) = $Ticket->Create(
             Queue     => $SystemQueueObj->Id,
-            Subject   => $Subject,
+            Subject   => $NewSubject,
             Requestor => \@Requestors,
             Cc        => \@Cc,
             MIMEObj   => $Message
@@ -1682,17 +1743,20 @@ sub _RunUnsafeAction {
             return ( 0, "Ticket not taken" );
         }
     } elsif ( $args{'Action'} =~ /^resolve$/i ) {
-        my ( $status, $msg ) = $args{'Ticket'}->SetStatus('resolved');
-        unless ($status) {
+        my $new_status = $args{'Ticket'}->FirstInactiveStatus;
+        if ($new_status) {
+            my ( $status, $msg ) = $args{'Ticket'}->SetStatus($new_status);
+            unless ($status) {
 
-            #Warn the sender that we couldn't actually submit the comment.
-            MailError(
-                To          => $args{'ErrorsTo'},
-                Subject     => "Ticket not resolved",
-                Explanation => $msg,
-                MIMEObj     => $args{'Message'}
-            );
-            return ( 0, "Ticket not resolved" );
+                #Warn the sender that we couldn't actually submit the comment.
+                MailError(
+                    To          => $args{'ErrorsTo'},
+                    Subject     => "Ticket not resolved",
+                    Explanation => $msg,
+                    MIMEObj     => $args{'Message'}
+                );
+                return ( 0, "Ticket not resolved" );
+            }
         }
     } else {
         return ( 0, "Not supported unsafe action $args{'Action'}", $args{'Ticket'} );

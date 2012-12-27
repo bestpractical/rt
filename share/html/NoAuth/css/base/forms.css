@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -87,6 +87,7 @@ input[type=reset], input[type=submit], input[class=button], button {
    padding-right: 0.5em;
    -moz-border-radius: 0.5em;
    -webkit-border-radius: 0.5em;
+   border-radius: 0.5em;
 }
 
 input.button:hover, button:hover, input[type=reset]:hover, input[type=submit]:hover, input[class=button]:hover {
@@ -267,4 +268,11 @@ form div.submit div.buttons div.next {
 
 #formatbuttons {
     clear: both;
+}
+
+#ResetAuthTokenPrompt {
+    display: block;
+    text-align: right;
+    font-weight: bold;
+    text-decoration: underline;
 }

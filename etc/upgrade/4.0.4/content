@@ -1,0 +1,19 @@
+use strict;
+use warnings;
+
+our @Initial = (
+    sub {
+        use strict;
+        my $templates = RT::Templates->new(RT->SystemUser);
+        $templates->Limit(
+            FIELD => 'Type',
+            OPERATOR => 'IS',
+            VALUE => 'NULL',
+        );
+        while (my $template = $templates->Next) {
+            my ($status, $msg) = $template->SetType('Perl');
+            RT->Logger->warning( "Couldn't change Type of Template #" . $template->Id . ": $msg" ) unless $status;
+        }
+    },
+);
+

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -51,7 +51,7 @@
 
 
 
-<form action="<%RT->Config->Get('WebPath')%>/Admin/Queues/Modify.html" method="post">
+<form action="<%RT->Config->Get('WebPath')%>/Admin/Queues/Modify.html" name="ModifyQueue" method="post" enctype="multipart/form-data">
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
 <input type="hidden" class="hidden" name="id" value="<% $Create? 'new': $QueueObj->Id %>" />
 
@@ -106,10 +106,8 @@
 <tr valign="top"><td align="right">
 <% loc($CF->Name) %>:
 </td><td>
-<& /Elements/EditCustomField, CustomField => $CF, 
-                              Object => $QueueObj, 
-                              ($Create ? (NamePrefix => 'Object-RT::Queue--CustomField-') 
-                                       : () )&>
+<& /Elements/EditCustomField, CustomField => $CF,
+                              Object => $QueueObj, &>
 </td></tr>
 % }
 
@@ -119,6 +117,8 @@
 <td align="right"><input type="checkbox" class="checkbox" name="Encrypt" value="1" <% $QueueObj->Encrypt? 'checked="checked"': '' |n%> /></td>
 <td><&|/l&>Encrypt by default</&></td>
 </tr>
+<tr><td align="right"><input type="checkbox" class="checkbox" name="SignAuto" value="1" <% $QueueObj->SignAuto? 'checked="checked"': '' |n%> /></td>
+<td colspan="3"><&|/l_unsafe, "<b>","</b>","<i>","</i>"&>Sign all auto-generated mail.  [_1]Caution[_2]: Enabling this option alters the signature from providing [_3]authentication[_4] to providing [_3]integrity[_4].</&></td></tr>
 % }
 
 <tr><td align="right"><input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked|n%> /></td>
@@ -166,30 +166,28 @@ $QueueObj->Load( $id ) if !$id || $id eq 'new';
 
 $EnabledChecked = 'checked="checked"';
 
-if ($Create) {
-    $title = loc("Create a queue");
-} else {
+unless ($Create) {
     if ( defined $id && $id eq 'new' ) {
         my ($val, $msg) = $QueueObj->Create( Name => $Name );
-        if ($val) {
+        if (!$val) {
             $Create = 1; # Create failed, so bring us back to step 1
         }
         push @results, $msg;
-    }
-    else {
+    } else {
         $QueueObj->Load($id) || $QueueObj->Load($Name) || Abort(loc("Couldn't load queue '[_1]'", $Name));
     }
-    $title = loc('Configuration for queue [_1]', $QueueObj->Name);
 }
+
 if ( $QueueObj->Id ) {
+    $title = loc('Configuration for queue [_1]', $QueueObj->Name );
     my @attribs= qw(Description CorrespondAddress CommentAddress Name
-        InitialPriority FinalPriority DefaultDueIn Sign Encrypt Lifecycle SubjectTag Disabled);
+        InitialPriority FinalPriority DefaultDueIn Sign SignAuto Encrypt Lifecycle SubjectTag Disabled);
 
     # we're asking about enabled on the web page but really care about disabled
     if ( $SetEnabled ) {
         $Disabled = $ARGS{'Disabled'} = $Enabled? 0: 1;
         $ARGS{$_} = 0 foreach grep !defined $ARGS{$_} || !length $ARGS{$_},
-            qw(Sign Encrypt Disabled);
+            qw(Sign SignAuto Encrypt Disabled);
     }
 
     $m->callback(
@@ -199,10 +197,9 @@ if ( $QueueObj->Id ) {
         ARGSRef => \%ARGS,
     );
 
-    $ARGS{'Lifecycle'} = undef if defined $ARGS{'Lifecycle'} and $ARGS{'Lifecycle'} eq "default";
     push @results, UpdateRecordObject(
         AttributesRef => \@attribs,
-        Object => $QueueObj, 
+        Object => $QueueObj,
         ARGSRef => \%ARGS
     );
 
@@ -226,6 +223,8 @@ if ( $QueueObj->Id ) {
             push @no_redirect_results, loc("RTAddressRegexp option in the config doesn't match [_1]", $address );
         }
     }
+} else {
+    $title = loc("Create a queue");
 }
 
 # This code does automatic redirection if any updates happen.

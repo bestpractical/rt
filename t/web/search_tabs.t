@@ -1,6 +1,6 @@
-#!/usr/bin/perl
-use warnings;
 use strict;
+use warnings;
+
 
 use RT::Test tests => 21;
 my ($baseurl, $agent) = RT::Test->started_ok;

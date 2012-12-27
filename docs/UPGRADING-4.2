@@ -1,0 +1,53 @@
+UPGRADING FROM RT 4.0.0 and greater
+
+* The $UseSQLForACLChecks option defaults to on.  This provides a number
+  of improvements, most notably no longer showing pages of empty results
+  if the user doesn't have permissions to view the tickets in question.
+  It may, in some cases, have performance impacts, but these have been
+  found to be minimal in existing 4.0 installs.
+
+* The $LogToScreen config setting is now named $LogToSTDERR which better
+  describes what the log level controls.  Setting $LogToScreen will still work,
+  but an informational notice will be issued on server start telling you about
+  the rename.  To avoid this you should set $LogToSTDERR instead.
+
+* The link direction and type maps are consolidated into RT::Link.  If you
+  wrote local customizations or extensions utilizing %RT::Ticket::LINKDIRMAP,
+  %RT::Ticket::LINKTYPEMAP, RT::Ticket->LINKDIRMAP, RT::Ticket->LINKTYPEMAP, or
+  %RT::Record::LINKDIRMAP, you will need to switch to %RT::Link::DIRMAP and
+  %RT::Link::TYPEMAP.
+
+* $LinkTransactionsRun1Scrip is removed.  If you were relying on this behaviour
+  (by setting it to 1), you should adjust your scrips to ignore one of the link
+  transactions.
+
+* The $AttachmentUnits option was removed in preference of always displaying in
+  megabytes, kilobytes, or bytes as appropriate.  The option was incompletely
+  implemented and controlled display in the attachments list but not history.
+
+* MakeClicky handlers added via a callback are now passed an "object" key in
+  the parameter hash instead of "ticket".  The object may be any RT::Record
+  subclass.
+
+* $MessageBoxWrap was removed.  Wrapping is now always SOFT.  If you want hard
+  line breaks, enter them manually.
+
+* ShowUser handlers (/Elements/ShowUser*) have moved out of Mason components
+  and into RT::User methods.  Any custom username formats will need to be
+  reimplemented as RT::User methods.  Renaming should follow that of the core
+  components:
+
+        /Elements/ShowUserConcise => RT::User->_FormatUserConcise
+        /Elements/ShowUserVerbose => RT::User->_FormatUserVerbose
+
+  The _FormatUser* methods are passed a hash containing the keys User and
+  Address, which have the same properties as before.
+
+* Rich text (HTML) messages are now preferred for display.  If you prefer plain
+  text messages, set $PreferRichText to 0.
+
+* User email addresses are now validated by default and multiple,
+  comma-separated addresses for a single user are no longer allowed.  Existing
+  users with invalid addresses will continue to work until the next time they
+  are updated by an administrator on the modify user page.  If you prefer no
+  address validation, set $ValidateUserEmailAddresses to 0.

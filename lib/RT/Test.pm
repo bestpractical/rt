@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -54,12 +54,21 @@ use warnings;
 
 use base 'Test::More';
 
+# We use the Test::NoWarnings catching and reporting functionality, but need to
+# wrap it in our own special handler because of the warn handler installed via
+# RT->InitLogging().
+require Test::NoWarnings;
+
+my $Test_NoWarnings_Catcher = $SIG{__WARN__};
+my $check_warnings_in_end   = 1;
+
 use Socket;
 use File::Temp qw(tempfile);
 use File::Path qw(mkpath);
 use File::Spec;
+use Scalar::Util qw(blessed);
 
-our @EXPORT = qw(is_empty diag parse_mail works fails);
+our @EXPORT = qw(is_empty diag parse_mail works fails plan done_testing);
 
 my %tmp = (
     directory => undef,
@@ -94,20 +103,25 @@ problem in Perl that hides the top-level optree from L<Devel::Cover>.
 our $port;
 our @SERVERS;
 
+BEGIN {
+    delete $ENV{$_} for qw/LANGUAGE LC_ALL LC_MESSAGES LANG/;
+    $ENV{LANG} = "C";
+};
+
 sub import {
     my $class = shift;
     my %args = %rttest_opt = @_;
 
     # Spit out a plan (if we got one) *before* we load modules
     if ( $args{'tests'} ) {
-        $class->builder->plan( tests => $args{'tests'} )
+        plan( tests => $args{'tests'} )
           unless $args{'tests'} eq 'no_declare';
     }
     elsif ( exists $args{'tests'} ) {
         # do nothing if they say "tests => undef" - let them make the plan
     }
     elsif ( $args{'skip_all'} ) {
-        $class->builder->plan(skip_all => $args{'skip_all'});
+        plan(skip_all => $args{'skip_all'});
     }
     else {
         $class->builder->no_plan unless $class->builder->has_plan;
@@ -127,23 +141,24 @@ sub import {
     $class->bootstrap_config( %args );
 
     use RT;
+
     RT::LoadConfig;
 
     if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
 
-    $class->bootstrap_db( %args );
-
     RT::InitPluginPaths();
+    RT::InitClasses();
+
+    RT::I18N->Init();
+    $class->bootstrap_db( %args );
 
     __reconnect_rt()
         unless $args{nodb};
 
-    RT::InitClasses();
-    RT::InitLogging();
+    __init_logging();
 
     RT->Plugins;
 
-    RT::I18N->Init();
     RT->Config->PostLoadCheck;
 
     $class->set_config_wrapper;
@@ -168,12 +183,15 @@ sub import {
     }
 
     Test::More->export_to_level($level);
+    Test::NoWarnings->export_to_level($level);
 
-    # blow away their diag so we can redefine it without warning
+    # Blow away symbols we redefine to avoid warnings.
     # better than "no warnings 'redefine'" because we might accidentally
     # suppress a mistaken redefinition
     no strict 'refs';
     delete ${ caller($level) . '::' }{diag};
+    delete ${ caller($level) . '::' }{plan};
+    delete ${ caller($level) . '::' }{done_testing};
     __PACKAGE__->export_to_level($level);
 }
 
@@ -270,7 +288,7 @@ sub bootstrap_config {
 Set( \$WebDomain, "localhost");
 Set( \$WebPort,   $port);
 Set( \$WebPath,   "");
-Set( \@LexiconLanguages, qw(en zh_TW fr ja));
+Set( \@LexiconLanguages, qw(en zh_TW zh_CN fr ja));
 Set( \$RTAddressRegexp , qr/^bad_re_that_doesnt_match\$/i);
 };
     if ( $ENV{'RT_TEST_DB_SID'} ) { # oracle case
@@ -283,6 +301,9 @@ Set( \$RTAddressRegexp , qr/^bad_re_that_doesnt_match\$/i);
 
     if ( $args{'plugins'} ) {
         print $config "Set( \@Plugins, qw(". join( ' ', @{ $args{'plugins'} } ) .") );\n";
+
+        my $plugin_data = File::Spec->rel2abs("t/data/plugins");
+        print $config qq[\$RT::PluginPath = "$plugin_data";\n];
     }
 
     if ( $INC{'Devel/Cover.pm'} ) {
@@ -343,7 +364,7 @@ sub bootstrap_logging {
 
     print $config <<END;
 Set( \$LogToSyslog , undef);
-Set( \$LogToScreen , "warning");
+Set( \$LogToSTDERR , "warning");
 Set( \$LogToFile, 'debug' );
 Set( \$LogDir, q{$tmp{'directory'}} );
 Set( \$LogToFileNamed, 'rt.debug.log' );
@@ -373,14 +394,36 @@ sub set_config_wrapper {
                 SCALAR => '$',
             );
             my $sigil = $sigils{$type} || $sigils{'SCALAR'};
-            open( my $fh, '>>', $tmp{'config'}{'RT'} )
+            open( my $fh, '<', $tmp{'config'}{'RT'} )
                 or die "Couldn't open config file: $!";
+            my @lines;
+            while (<$fh>) {
+                if (not @lines or /^Set\(/) {
+                    push @lines, $_;
+                } else {
+                    $lines[-1] .= $_;
+                }
+            }
+            close $fh;
+
+            # Traim trailing newlines and "1;"
+            $lines[-1] =~ s/(^1;\n|^\n)*\Z//m;
+
+            # Remove any previous definitions of this var
+            @lines = grep {not /^Set\(\s*\Q$sigil$name\E\b/} @lines;
+
+            # Format the new value for output
             require Data::Dumper;
             local $Data::Dumper::Terse = 1;
             my $dump = Data::Dumper::Dumper([@_[2 .. $#_]]);
-            $dump =~ s/;\s+$//;
-            print $fh
-                "\nSet(${sigil}${name}, \@{". $dump ."});\n1;\n";
+            $dump =~ s/;?\s+\Z//;
+            push @lines, "Set( ${sigil}${name}, \@{". $dump ."});\n";
+            push @lines, "\n1;\n";
+
+            # Re-write the configuration file
+            open( $fh, '>', $tmp{'config'}{'RT'} )
+                or die "Couldn't open config file: $!";
+            print $fh $_ for @lines;
             close $fh;
 
             if ( @SERVERS ) {
@@ -409,7 +452,11 @@ sub bootstrap_db {
         $args{$forceopt}=1;
     }
 
-    return if $args{nodb};
+    # Short-circuit the rest of ourselves if we don't want a db
+    if ($args{nodb}) {
+        __drop_database();
+        return;
+    }
 
     my $db_type = RT->Config->Get('DatabaseType');
     __create_database();
@@ -417,7 +464,7 @@ sub bootstrap_db {
     $RT::Handle->InsertSchema;
     $RT::Handle->InsertACL unless $db_type eq 'Oracle';
 
-    RT->InitLogging;
+    __init_logging();
     __reconnect_rt();
 
     $RT::Handle->InsertInitialData
@@ -556,6 +603,13 @@ sub __drop_database {
         RT::Handle->SystemDSN,
         $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD}
     );
+
+    # We ignore errors intentionally by not checking the return value of
+    # DropDatabase below, so let's also suppress DBI's printing of errors when
+    # we overzealously drop.
+    local $dbh->{PrintError} = 0;
+    local $dbh->{PrintWarn} = 0;
+
     RT::Handle->DropDatabase( $dbh );
     $dbh->disconnect if $my_dbh;
 }
@@ -590,6 +644,28 @@ sub __disconnect_rt {
 
     DBIx::SearchBuilder::Record::Cachable->FlushCache
           if DBIx::SearchBuilder::Record::Cachable->can("FlushCache");
+}
+
+sub __init_logging {
+    my $filter;
+    {
+        # We use local to ensure that the $filter we grab is from InitLogging
+        # and not the handler generated by a previous call to this function
+        # itself.
+        local $SIG{__WARN__};
+        RT::InitLogging();
+        $filter = $SIG{__WARN__};
+    }
+    $SIG{__WARN__} = sub {
+        if ($filter) {
+            my $status = $filter->(@_);
+            if ($status and $status eq 'IGNORE') {
+                return; # pretend the bad dream never happened
+            }
+        }
+        # Avoid reporting this anonymous call frame as the source of the warning.
+        goto &$Test_NoWarnings_Catcher;
+    };
 }
 
 
@@ -710,7 +786,7 @@ sub create_tickets {
     while ( @data ) {
         my %args = %{ shift @data };
         $args{$_} = $res[ $args{$_} ]->id foreach
-            grep $args{ $_ }, keys %RT::Ticket::LINKTYPEMAP;
+            grep $args{ $_ }, keys %RT::Link::TYPEMAP;
         push @res, $self->create_ticket( %$defaults, %args );
     }
     return @res;
@@ -887,16 +963,16 @@ sub add_rights {
             if ( $principal =~ /^(everyone|(?:un)?privileged)$/i ) {
                 $principal = RT::Group->new( RT->SystemUser );
                 $principal->LoadSystemInternalGroup($1);
-            } elsif ( $principal =~ /^(Owner|Requestor|(?:Admin)?Cc)$/i ) {
-                $principal = RT::Group->new( RT->SystemUser );
-                $principal->LoadByCols(
-                    Domain => (ref($e->{'Object'})||'RT::System').'-Role',
-                    Type => $1,
-                    ref($e->{'Object'})? (Instance => $e->{'Object'}->id): (),
-                );
             } else {
-                die "principal is not an object, but also is not name of a system group";
+                my $type = $principal;
+                $principal = RT::Group->new( RT->SystemUser );
+                $principal->LoadRoleGroup(
+                    Object  => ($e->{'Object'} || RT->System),
+                    Type    => $type
+                );
             }
+            die "Principal is not an object nor the name of a system or role group"
+                unless $principal->id;
         }
         unless ( $principal->isa('RT::Principal') ) {
             if ( $principal->can('PrincipalObj') ) {
@@ -1010,7 +1086,7 @@ sub send_via_mailgate {
 
     my ( $status, $error_message, $ticket )
         = RT::Interface::Email::Gateway( {%args, message => $message} );
-    return ( $status, $ticket->id );
+    return ( $status, $ticket ? $ticket->id : 0 );
 
 }
 
@@ -1062,23 +1138,117 @@ sub fetch_caught_mails {
 sub clean_caught_mails {
     unlink $tmp{'mailbox'};
 }
+my $validator_path = "$RT::SbinPath/rt-validator";
+sub run_validator {
+    my $self = shift;
+    my %args = (check => 1, resolve => 0, force => 1, @_ );
+
+    my $cmd = $validator_path;
+    die "Couldn't find $cmd command" unless -f $cmd;
+
+    while( my ($k,$v) = each %args ) {
+        next unless $v;
+        $cmd .= " --$k '$v'";
+    }
+    $cmd .= ' 2>&1';
+
+    require IPC::Open2;
+    my ($child_out, $child_in);
+    my $pid = IPC::Open2::open2($child_out, $child_in, $cmd);
+    close $child_in;
+
+    my $result = do { local $/; <$child_out> };
+    close $child_out;
+    waitpid $pid, 0;
+
+    DBIx::SearchBuilder::Record::Cachable->FlushCache
+        if $args{'resolve'};
+
+    return ($?, $result);
+}
+
+sub db_is_valid {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    my $self = shift;
+    my ($ecode, $res) = $self->run_validator;
+    Test::More::is( $ecode, 0, 'no invalid records' )
+        or Test::More::diag "errors:\n$res";
+}
+
+=head2 object_scrips_are
+
+Takes an L<RT::Scrip> object or ID as the first argument and an arrayref of
+L<RT::Queue> objects and/or Queue IDs as the second argument.
+
+The scrip's applications (L<RT::ObjectScrip> records) are tested to ensure they
+exactly match the arrayref.
+
+An optional third arrayref may be passed to enumerate and test the queues the
+scrip is B<not> added to.  This is most useful for testing the API returns the
+correct results.
+
+=cut
+
+sub object_scrips_are {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+    my $self    = shift;
+    my $scrip   = shift;
+    my $to      = shift || [];
+    my $not_to  = shift;
+
+    unless (blessed($scrip)) {
+        my $id = $scrip;
+        $scrip = RT::Scrip->new( RT->SystemUser );
+        $scrip->Load($id);
+    }
+
+    $to = [ map { blessed($_) ? $_->id : $_ } @$to ];
+    Test::More::ok($scrip->IsAdded($_), "added to queue $_" ) foreach @$to;
+    Test::More::is_deeply(
+        [sort map $_->id, @{ $scrip->AddedTo->ItemsArrayRef }],
+        [sort grep $_, @$to ],
+        'correct list of added to queues',
+    );
+
+    if ($not_to) {
+        $not_to = [ map { blessed($_) ? $_->id : $_ } @$not_to ];
+        Test::More::ok(!$scrip->IsAdded($_), "not added to queue $_" ) foreach @$not_to;
+        Test::More::is_deeply(
+            [sort map $_->id, @{ $scrip->NotAddedTo->ItemsArrayRef }],
+            [sort grep $_, @$not_to ],
+            'correct list of not added to queues',
+        );
+    }
+}
 
 =head2 get_relocatable_dir
 
 Takes a path relative to the location of the test file that is being
 run and returns a path that takes the invocation path into account.
 
-e.g. RT::Test::get_relocatable_dir(File::Spec->updir(), 'data', 'emails')
+e.g. C<RT::Test::get_relocatable_dir(File::Spec->updir(), 'data', 'emails')>
+
+Parent directory traversals (C<..> or File::Spec->updir()) are naively
+canonicalized based on the test file path (C<$0>) so that symlinks aren't
+followed.  This is the exact opposite behaviour of most filesystems and is
+considered "wrong", however it is necessary for some subsets of tests which are
+symlinked into the testing tree.
 
 =cut
 
 sub get_relocatable_dir {
-    (my $volume, my $directories, my $file) = File::Spec->splitpath($0);
-    if (File::Spec->file_name_is_absolute($directories)) {
-        return File::Spec->catdir($directories, @_);
-    } else {
-        return File::Spec->catdir(File::Spec->curdir(), $directories, @_);
+    my @directories = File::Spec->splitdir(
+        File::Spec->rel2abs((File::Spec->splitpath($0))[1])
+    );
+    push @directories, File::Spec->splitdir($_) for @_;
+
+    my @clean;
+    for (@directories) {
+        if    ($_ eq "..") { pop @clean      }
+        elsif ($_ ne ".")  { push @clean, $_ }
     }
+    return File::Spec->catdir(@clean);
 }
 
 =head2 get_relocatable_file
@@ -1276,8 +1446,10 @@ sub started_ok {
 
     require RT::Test::Web;
 
-    if ($rttest_opt{nodb}) {
-        die "you are trying to use a test web server without db, try use noinitialdata => 1 instead";
+    if ($rttest_opt{nodb} and not $rttest_opt{server_ok}) {
+        die "You are trying to use a test web server without a database. "
+           ."You may want noinitialdata => 1 instead. "
+           ."Pass server_ok => 1 if you know what you're doing.";
     }
 
 
@@ -1298,22 +1470,46 @@ sub test_app {
     my $self = shift;
     my %server_opt = @_;
 
-    require RT::Interface::Web::Handler;
-    my $app = RT::Interface::Web::Handler->PSGIApp;
+    my $app;
+
+    my $warnings = "";
+    open( my $warn_fh, ">", \$warnings );
+    local *STDERR = $warn_fh;
+
+    if ($server_opt{variant} and $server_opt{variant} eq 'rt-server') {
+        $app = do {
+            my $file = "$RT::SbinPath/rt-server";
+            my $psgi = do $file;
+            unless ($psgi) {
+                die "Couldn't parse $file: $@" if $@;
+                die "Couldn't do $file: $!"    unless defined $psgi;
+                die "Couldn't run $file"       unless $psgi;
+            }
+            $psgi;
+        };
+    } else {
+        require RT::Interface::Web::Handler;
+        $app = RT::Interface::Web::Handler->PSGIApp;
+    }
 
     require Plack::Middleware::Test::StashWarnings;
-    $app = Plack::Middleware::Test::StashWarnings->wrap($app);
+    my $stashwarnings = Plack::Middleware::Test::StashWarnings->new;
+    $app = $stashwarnings->wrap($app);
 
     if ($server_opt{basic_auth}) {
         require Plack::Middleware::Auth::Basic;
         $app = Plack::Middleware::Auth::Basic->wrap(
             $app,
-            authenticator => sub {
+            authenticator => $server_opt{basic_auth} eq 'anon' ? sub { 1 } : sub {
                 my ($username, $password) = @_;
                 return $username eq 'root' && $password eq 'password';
             }
         );
     }
+
+    close $warn_fh;
+    $stashwarnings->add_warning( $warnings ) if $warnings;
+
     return $app;
 }
 
@@ -1346,7 +1542,8 @@ sub start_plack_server {
         my $Tester = Test::Builder->new;
         $Tester->ok(1, "started plack server ok");
 
-        __reconnect_rt();
+        __reconnect_rt()
+            unless $rttest_opt{nodb};
         return ("http://localhost:$port", RT::Test::Web->new);
     }
 
@@ -1375,6 +1572,8 @@ sub start_inline_server {
     # Clear out squished CSS and JS cache, since it's retained across
     # servers, since it's in-process
     RT::Interface::Web->ClearSquished;
+    require RT::Interface::Web::Request;
+    RT::Interface::Web::Request->clear_callback_cache;
 
     Test::More::ok(1, "psgi test server ok");
     $TEST_APP = $self->test_app(@_);
@@ -1481,14 +1680,37 @@ sub fails {
     Test::More::ok(!$_[0], $_[1] || 'This should fail');
 }
 
+sub plan {
+    my ($cmd, @args) = @_;
+    my $builder = RT::Test->builder;
+
+    if ($cmd eq "skip_all") {
+        $check_warnings_in_end = 0;
+    } elsif ($cmd eq "tests") {
+        # Increment the test count for the warnings check
+        $args[0]++;
+    }
+    $builder->plan($cmd, @args);
+}
+
+sub done_testing {
+    my $builder = RT::Test->builder;
+
+    Test::NoWarnings::had_no_warnings();
+    $check_warnings_in_end = 0;
+
+    $builder->done_testing(@_);
+}
+
 END {
     my $Test = RT::Test->builder;
     return if $Test->{Original_Pid} != $$;
 
-
     # we are in END block and should protect our exit code
     # so calls below may call system or kill that clobbers $?
     local $?;
+
+    Test::NoWarnings::had_no_warnings() if $check_warnings_in_end;
 
     RT::Test->stop_server(1);
 

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -98,6 +98,8 @@ loc("Found [quant,_1,ticket]",$collection->CountAll) &>
 % if ($ticket->Priority) {
 <div class="priority"><span class="label"><&|/l&>Priority</&>:</span> <%$ticket->Priority%></div>
 % }
+<div class="bookmark"><span class="label"><&|/l&>Bookmark</&>:</span> <& /Ticket/Elements/Bookmark, id => $ticket->id &></div>
+
 </div>
 </li>
 % }

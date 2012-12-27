@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -102,8 +102,8 @@ my @lines = (
         },
         Value => {
             Type => 'component',
-            Path => '/Elements/SelectStatus',
-            Arguments => { SkipDeleted => 1 },
+            Path => '/Ticket/Elements/SelectStatus',
+            Arguments => { SkipDeleted => 1, Queues => \%queues },
         },
     },
     {
@@ -124,7 +124,7 @@ my @lines = (
         Value => {
             Type => 'component',
             Path => '/Elements/SelectOwner',
-            Arguments => { ValueAttribute => 'Name' },
+            Arguments => { ValueAttribute => 'Name', Queues => \%queues },
         },
     },
     {
@@ -212,3 +212,6 @@ my @lines = (
 $m->callback( Conditions => \@lines );
 
 </%INIT>
+<%ARGS>
+%queues => ()
+</%ARGS>

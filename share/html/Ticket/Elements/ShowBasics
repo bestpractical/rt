@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -83,6 +83,7 @@
     <td class="value"><& ShowQueue, Ticket => $Ticket, QueueObj => $Ticket->QueueObj &></td>
   </tr>
 % }
+  <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Grouping => 'Basics', Table => 0 &>
 % $m->callback( %ARGS, CallbackName => 'EndOfList', TicketObj => $Ticket );
 </table>
 <%ARGS>

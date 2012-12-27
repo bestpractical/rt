@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -75,7 +75,6 @@ hr.clear {
     font-size: 1px;
 }
 
-
 /* Custom fields */
 
 /* Only apply these when we're not rendering in a table, hence the leading div. */
@@ -88,6 +87,10 @@ div.edit-custom-field {
 div.edit-custom-field .cflabel {
     float: left;
     padding-right: 0.5em;
+}
+
+div.edit-custom-field .entry {
+    margin-left: 10em;
 }
 
 .cflabel .name { font-weight: bold; }

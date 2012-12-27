@@ -84,7 +84,7 @@ high port for this user.
 
 =cut
 
-Set($WebPort, 80);# + ($< * 7274) % 32766 + ($< && 1024));
+Set($WebPort, 80);
 
 =item C<$WebPath>
 
@@ -221,7 +221,7 @@ message.
 
 =over 4
 
-=item C<$LogToSyslog>, C<$LogToScreen>
+=item C<$LogToSyslog>, C<$LogToSTDERR>
 
 The minimum level error that will be logged to the specific device.
 From lowest to highest priority, the levels are:
@@ -239,7 +239,7 @@ in your web server's error logs).
 =cut
 
 Set($LogToSyslog, "info");
-Set($LogToScreen, "info");
+Set($LogToSTDERR, "info");
 
 =item C<$LogToFile>, C<$LogDir>, C<$LogToFileNamed>
 
@@ -299,14 +299,7 @@ you're not dealing with historical C<$rtname> values, you'll likely
 never have to change this configuration.
 
 Be B<very careful> with it. Note that it overrides C<$rtname> for
-subject token matching and that you should use only "non-capturing"
-parenthesis grouping. For example:
-
-C<Set($EmailSubjectTagRegex, qr/(?:example.com|example.org)/i );>
-
-and NOT
-
-C<Set($EmailSubjectTagRegex, qr/(example.com|example.org)/i );>
+subject token matching.
 
 The setting below would make RT behave exactly as it does without the
 setting enabled.
@@ -347,14 +340,10 @@ Set($StoreLoops, undef);
 =item C<$MaxAttachmentSize>
 
 C<$MaxAttachmentSize> sets the maximum size (in bytes) of attachments
-stored in the database.
-
-For MySQL and Oracle, we set this size to 10 megabytes.  If you're
-running a PostgreSQL version earlier than 7.1, you will need to drop
-this to 8192. (8k)
+stored in the database.  This setting is irrelevant unless one of
+$TruncateLongAttachments or $DropLongAttachments (below) are set.
 
 =cut
-
 
 Set($MaxAttachmentSize, 10_000_000);
 
@@ -427,13 +416,16 @@ Set($CanonicalizeOnCreate, 0);
 
 =item C<$ValidateUserEmailAddresses>
 
-If C<$ValidateUserEmailAddresses> is 1, RT will refuse to create
+By default C<$ValidateUserEmailAddresses> is 1, and RT will refuse to create
 users with an invalid email address (as specified in RFC 2822) or with
 an email address made of multiple email addresses.
 
+Set this to 0 to skip any email address validation.  Doing so may open up
+vulnerabilities.
+
 =cut
 
-Set($ValidateUserEmailAddresses, undef);
+Set($ValidateUserEmailAddresses, 1);
 
 =item C<@MailPlugins>
 
@@ -463,6 +455,23 @@ Set($ExtractSubjectTagMatch, qr/\[.+? #\d+\]/);
 Set($ExtractSubjectTagNoMatch, ( ${RT::EmailSubjectTagRegex}
        ? qr/\[(?:${RT::EmailSubjectTagRegex}) #\d+\]/
        : qr/\[\Q$RT::rtname\E #\d+\]/));
+
+=item C<$CheckMoreMSMailHeaders>
+
+Some email clients create a plain text version of HTML-formatted
+email to help other clients that read only plain text.
+Unfortunately, the plain text parts sometimes end up with
+doubled newlines and these can then end up in RT. This
+is most often seen in MS Outlook.
+
+Enable this option to have RT check for additional mail headers
+and attempt to identify email from MS Outlook. When detected,
+RT will then clean up double newlines. Note that it may
+clean up intentional double newlines as well.
+
+=cut
+
+Set( $CheckMoreMSMailHeaders, 0);
 
 =back
 
@@ -619,6 +628,9 @@ Set($NotifyActor, 0);
 
 By default, RT records each message it sends out to its own internal
 database.  To change this behavior, set C<$RecordOutgoingEmail> to 0
+
+If this is disabled, users' digest mail delivery preferences
+(i.e. EmailFrequency) will also be ignored.
 
 =cut
 
@@ -843,6 +855,39 @@ custom field values from external sources at runtime.
 
 Set(@CustomFieldValuesSources, ());
 
+=item C<%CustomFieldGroupings>
+
+This option affects the display of ticket and user custom fields in the web
+interface.  A nested datastructure defines how to group together custom fields
+under a mix of built-in and arbitrary headings ("groupings").
+
+Set C<%CustomFieldGroupings> to a nested hash similar to the following:
+
+    Set(%CustomFieldGroupings,
+        'RT::Ticket' => {
+            'Grouping Name'     => ['CF Name', 'Another CF'],
+            'Another Grouping'  => ['Some CF'],
+            'Dates'             => ['Shipped date'],
+        },
+        'RT::User' => {
+            'Phones' => ['Fax number'],
+        },
+    );
+
+The first level keys are record types for which CFs may be used, and the values
+are hashrefs.  The second level keys are the grouping names and the values are
+array refs containing a list of CF names.
+
+There are several special built-in groupings which RT displays in specific
+places (usually the collapsible box of the same title).
+
+For C<RT::Ticket>, these groupings are: C<Basics>, C<Dates>, C<Links>, C<People>
+
+For C<RT::User>: C<Identity>, C<Access control>, C<Location>, C<Phones>
+
+Extensions may also add their own built-in groupings, refer to the individual
+extension documentation for those.
+
 =item C<$CanonicalizeRedirectURLs>
 
 Set C<$CanonicalizeRedirectURLs> to 1 to use C<$WebURL> when
@@ -864,14 +909,18 @@ Set($CanonicalizeRedirectURLs, 0);
 A list of JavaScript files to be included in head.  Removing any of
 the default entries is not suggested.
 
+If you're a plugin author, refer to RT->AddJavaScript.
+
 =cut
 
 Set(@JSFiles, qw/
     jquery-1.4.2.min.js
     jquery_noconflict.js
     jquery-ui-1.8.4.custom.min.js
+    jquery-ui-timepicker-addon.js
     jquery-ui-patch-datepicker.js
-    ui.timepickr.js
+    jquery.modal.min.js
+    jquery.modal-defaults.js
     titlebox-state.js
     util.js
     userautocomplete.js
@@ -880,6 +929,7 @@ Set(@JSFiles, qw/
     supersubs.js
     jquery.supposition.js
     history-folding.js
+    event-registration.js
     late.js
 /);
 
@@ -899,6 +949,8 @@ directory, or from http://www.crockford.com/javascript/jsmin.html
 =item C<@CSSFiles>
 
 A list of additional CSS files to be included in head.
+
+If you're a plugin author, refer to RT->AddStyleSheets.
 
 =cut
 
@@ -1053,7 +1105,7 @@ RT stores dates using the UTC timezone in the DB, so charts grouped by
 dates and time are not representative. Set C<$ChartsTimezonesInDB> to 1
 to enable timezone conversions using your DB's capabilities. You may
 need to do some work on the DB side to use this feature, read more in
-F<docs/timezones_in_charts.pod>.
+F<docs/customizing/timezones_in_charts.pod>.
 
 At this time, this feature only applies to MySQL and PostgreSQL.
 
@@ -1108,16 +1160,13 @@ Set($HomepageComponents, [qw(QuickCreate Quicksearch MyAdminQueues MySupportQueu
 =item C<$UseSQLForACLChecks>
 
 Historically, ACLs were checked on display, which could lead to empty
-search pages and wrong ticket counts.  Set C<$UseSQLForACLChecks> to 1
-to limit search results in SQL instead, which eliminates these
-problems.
-
-This option is still relatively new; it may result in performance
-problems in some cases, or significant speedups in others.
+search pages and wrong ticket counts.  Set C<$UseSQLForACLChecks> to 0
+to go back to this method; this will reduce the complexity of the
+generated SQL statements, at the cost of the aforementioned bugs.
 
 =cut
 
-Set($UseSQLForACLChecks, undef);
+Set($UseSQLForACLChecks, 1);
 
 =item C<$TicketsItemMapSize>
 
@@ -1255,6 +1304,9 @@ extra information about the user, this expects a Format string of user
 attributes.  Please note that not all the attributes are supported in
 this display because we're not building a table.
 
+Example:
+C<Set($MoreAboutRequestorExtraInfo,"Organization, Address1")>
+
 =cut
 
 Set($MoreAboutRequestorExtraInfo, "");
@@ -1308,6 +1360,16 @@ users have the OwnTicket right.
 =cut
 
 Set($AutocompleteOwners, 0);
+
+=item C<$AutocompleteOwnersForSearch>
+
+If set to 1, the owner drop-downs for the query builder are always
+replaced by text field that autocomplete and C<$AutocompleteOwners>
+is ignored. Helpful when owners list is huge in the query builder.
+
+=cut
+
+Set($AutocompleteOwnersForSearch, 0);
 
 =item C<$UserAutocompleteFields>
 
@@ -1372,6 +1434,19 @@ detailed breakdown by scrip.
 
 Set($SimplifiedRecipients, 0);
 
+=item C<$HideResolveActionsWithDependencies>
+
+If set to 1, this option will skip ticket menu actions which can't be
+completed successfully because of outstanding active Depends On tickets.
+
+By default, all ticket actions are displayed in the menu even if some of
+them can't be successful until all Depends On links are resolved or
+transitioned to another inactive status.
+
+=cut
+
+Set($HideResolveActionsWithDependencies, 0);
+
 =back
 
 
@@ -1425,15 +1500,6 @@ for Rich Text settings.
 
 Set($MessageBoxWidth, undef);
 Set($MessageBoxHeight, 15);
-
-=item C<$MessageBoxWrap>
-
-Wrapping is disabled when using MessageBoxRichText because of a bad
-interaction between IE and wrapping with the Rich Text Editor.
-
-=cut
-
-Set($MessageBoxWrap, "SOFT");
 
 =item C<$MessageBoxRichText>
 
@@ -1526,28 +1592,16 @@ overrides C<TrustHTMLAttachments>.
 
 Set($AlwaysDownloadAttachments, undef);
 
-=item C<$AttachmentUnits>
-
-Controls the units (kilobytes or bytes) that attachment sizes use for
-display. The default is to display kilobytes if the attachment is
-larger than 1024 bytes, bytes otherwise. If you set
-C<$AttachmentUnits> to C<'k'> then attachment sizes will always be
-displayed in kilobytes. If set to C<'b'>, then sizes will be bytes.
-
-=cut
-
-Set($AttachmentUnits, undef);
-
 =item C<$PreferRichText>
 
-If C<$PreferRichText> is set to 1, RT will show HTML/Rich text messages
-in preference to their plain-text alternatives. RT "scrubs" the HTML to
-show only a minimal subset of HTML to avoid possible contamination by
-cross-site-scripting attacks.
+By default, RT shows rich text (HTML) messages if possible.
+
+If C<$PreferRichText> is set to 0, RT will show plain text messages
+in preference to any rich text alternatives.
 
 =cut
 
-Set($PreferRichText, undef);
+Set($PreferRichText, 1);
 
 =item C<$MaxInlineBody>
 
@@ -1575,7 +1629,7 @@ Set($ShowTransactionImages, 1);
 Normally plaintext attachments are displayed as HTML with line breaks
 preserved.  This causes space- and tab-based formatting not to be
 displayed correctly.  By setting $PlainTextPre messages will be
-displayed using <pre>; this option overrides C<$PlainTextMono>.
+displayed using <pre>.
 
 =cut
 
@@ -1586,7 +1640,7 @@ Set($PlainTextPre, 0);
 
 Set C<$PlainTextMono> to 1 to use monospaced font and preserve
 formatting; unlike C<$PlainTextPre>, the text will wrap to fit width
-of the browser window.
+of the browser window; this option overrides C<$PlainTextPre>.
 
 =cut
 
@@ -1613,9 +1667,7 @@ provides two formats:
   link after the URL.
 
 * 'httpurl_overwrite': also detects URLs as 'httpurl' format, but
-  replaces the URL with a link and *adds spaces* into the text if it
-  is longer then 30 characters. This allows the browser to wrap long
-  URLs and avoid horizontal scrolling.
+  replaces the URL with a link.
 
 See F<share/html/Elements/MakeClicky> for documentation on how to add
 your own styles of link detection.
@@ -1682,19 +1734,40 @@ Set($RedistributeAutoGeneratedMessages, "privileged");
 
 Should rejection notes from approvals be sent to the requestors?
 
-=back
-
 =cut
 
 Set($ApprovalRejectionNotes, 1);
 
-=head1 Extra security
+=item C<$ForceApprovalsView>
 
-=over 4
+Should approval tickets only be viewed and modified through the standard
+approval interface?  With this setting enabled (by default), any attempt to use
+the normal ticket display and modify page for approval tickets will be
+redirected.
+
+For example, with this option set to 1 and an approval ticket #123:
+
+    /Ticket/Display.html?id=123
+
+is redirected to
+
+    /Approval/Display.html?id=123
+
+With this option set to 0, the redirect won't happen.
+
+=back
+
+=cut
+
+Set($ForceApprovalsView, 1);
+
+=head1 Extra security
 
 This is a list of extra security measures to enable that help keep your RT
 safe.  If you don't know what these mean, you should almost certainly leave the
 defaults alone.
+
+=over 4
 
 =item C<$DisallowExecuteCode>
 
@@ -1717,7 +1790,59 @@ This disables RT's clickjacking protection.
 
 Set($Framebusting, 1);
 
+=item C<$RestrictReferrer>
+
+If set to a false value, the HTTP C<Referer> (sic) header will not be
+checked to ensure that requests come from RT's own domain.  As RT allows
+for GET requests to alter state, disabling this opens RT up to
+cross-site request forgery (CSRF) attacks.
+
+=cut
+
+Set($RestrictReferrer, 1);
+
+=item C<$RestrictLoginReferrer>
+
+If set to a false value, RT will allow the user to log in from any link
+or request, merely by passing in C<user> and C<pass> parameters; setting
+it to a true value forces all logins to come from the login box, so the
+user is aware that they are being logged in.  The default is off, for
+backwards compatability.
+
+=cut
+
+Set($RestrictLoginReferrer, 0);
+
+=item C<@ReferrerWhitelist>
+
+This is a list of hostname:port combinations that RT will treat as being
+part of RT's domain. This is particularly useful if you access RT as
+multiple hostnames or have an external auth system that needs to
+redirect back to RT once authentication is complete.
+
+ Set(@ReferrerWhitelist, qw(www.example.com:443  www3.example.com:80));
+
+If the "RT has detected a possible cross-site request forgery" error is triggered
+by a host:port sent by your browser that you believe should be valid, you can copy
+the host:port from the error message into this list.
+
+Simple wildcards, similar to SSL certificates, are allowed.  For example:
+
+    *.example.com:80    # matches foo.example.com
+                        # but not example.com
+                        #      or foo.bar.example.com
+
+    www*.example.com:80 # matches www3.example.com
+                        #     and www-test.example.com
+                        #     and www.example.com
+
+=cut
+
+Set(@ReferrerWhitelist, qw());
+
 =back
+
+
 
 =head1 Authorization and user configuration
 
@@ -1784,14 +1909,27 @@ Set($AutoCreate, undef);
 
 =item C<$WebSessionClass>
 
-C<$WebSessionClass> is the class you wish to use for managing
-Sessions.  It defaults to use your SQL database, but if you are using
-MySQL 3.x and plans to use non-ascii Queue names, uncomment and add
-this line to F<RT_SiteConfig.pm> to prevent session corruption.
+C<$WebSessionClass> is the class you wish to use for managing Sessions.
+On mysql and Pg it defaults to use your database, in other cases
+sessions are stored in files using L<Apache::Session::File>. Other
+installed Apache:Session::* modules can be used to store sessions.
+
+    Set($WebSessionClass, "Apache::Session::File");
 
 =cut
 
-# Set($WebSessionClass, "Apache::Session::File");
+Set($WebSessionClass, undef);
+
+=item C<%WebSessionProperties>
+
+C<%WebSessionProperties> is the hash to configure class L</$WebSessionClass>
+in case custom class is used. By default it's empty and values are picked
+depending on the class. Make sure that it's empty if you're using DB as session
+backend.
+
+=cut
+
+Set( %WebSessionProperties );
 
 =item C<$AutoLogoff>
 
@@ -1827,6 +1965,19 @@ connections.
 =cut
 
 Set($WebSecureCookies, 0);
+
+=item C<$WebHttpOnlyCookies>
+
+Default RT's session cookie to not being directly accessible to
+javascript.  The content is still sent during regular and AJAX requests,
+and other cookies are unaffected, but the session-id is less
+programmatically accessible to javascript.  Turning this off should only
+be necessary in situations with odd client-side authentication
+requirements.
+
+=cut
+
+Set($WebHttpOnlyCookies, 1);
 
 =item C<$MinimumPasswordLength>
 
@@ -1940,6 +2091,20 @@ minutes.  Note that this only effects entry, not display.
 =cut
 
 Set($DefaultTimeUnitsToHours, 0);
+
+=item C<$TimeInICal>
+
+By default, events in the iCal feed on the ticket search page
+contain only dates, making them all day calendar events. Set
+C<$TimeInICal> if you have start or due dates on tickets that
+have significant time values and you want those times to be
+included in the events in the iCal feed.
+
+This option can also be set as an individual user preference.
+
+=cut
+
+Set($TimeInICal, 0);
 
 =back
 
@@ -2111,6 +2276,14 @@ be changed to this value.
 When an approval is denied, the status of depending tickets will
 be changed to this value.
 
+=item reminder_on_open
+
+When a reminder is opened, the status will be changed to this value.
+
+=item reminder_on_resolve
+
+When a reminder is resolved, the status will be changed to this value.
+
 =back
 
 =head2 Transitions between statuses and UI actions
@@ -2134,10 +2307,11 @@ all possible transitions in each lifecycle using the following format:
 
 =head3 Statuses available during ticket creation
 
-By default users can create tickets with any status, except
-deleted. If you want to restrict statuses available during creation
-then describe transition from '' (empty string), like in the example
-above.
+By default users can create tickets with a status of new,
+open, or resolved, but cannot create tickets with a status of
+rejected, stalled, or deleted. If you want to change the statuses
+available during creation, update the transition from '' (empty
+string), like in the example above.
 
 =head3 Protecting status changes with rights
 
@@ -2257,6 +2431,8 @@ Set(%Lifecycles,
             on_merge  => 'resolved',
             approved  => 'open',
             denied    => 'rejected',
+            reminder_on_open     => 'open',
+            reminder_on_resolve  => 'resolved',
         },
 
         transitions => {
@@ -2330,6 +2506,8 @@ Set(%Lifecycles,
         defaults => {
             on_create => 'new',
             on_merge => 'resolved',
+            reminder_on_open     => 'open',
+            reminder_on_resolve  => 'resolved',
         },
 
         transitions => {
@@ -2434,7 +2612,7 @@ Set(%AdminSearchResultFormat,
     Queues =>
         q{'<a href="__WebPath__/Admin/Queues/Modify.html?id=__id__">__id__</a>/TITLE:#'}
         .q{,'<a href="__WebPath__/Admin/Queues/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}
-        .q{,__Description__,__Address__,__Priority__,__DefaultDueIn__,__Disabled__},
+        .q{,__Description__,__Address__,__Priority__,__DefaultDueIn__,__Disabled__,__Lifecycle__},
 
     Groups =>
         q{'<a href="__WebPath__/Admin/Groups/Modify.html?id=__id__">__id__</a>/TITLE:#'}
@@ -2449,22 +2627,17 @@ Set(%AdminSearchResultFormat,
     CustomFields =>
         q{'<a href="__WebPath__/Admin/CustomFields/Modify.html?id=__id__">__id__</a>/TITLE:#'}
         .q{,'<a href="__WebPath__/Admin/CustomFields/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}
-        .q{,__AppliedTo__, __FriendlyType__, __FriendlyPattern__},
+        .q{,__AddedTo__, __FriendlyType__, __FriendlyPattern__},
 
     Scrips =>
-        q{'<a href="__WebPath__/Admin/Queues/Scrip.html?id=__id__&Queue=__QueueId__">__id__</a>/TITLE:#'}
-        .q{,'<a href="__WebPath__/Admin/Queues/Scrip.html?id=__id__&Queue=__QueueId__">__Description__</a>/TITLE:Description'}
-        .q{,__Stage__, __Condition__, __Action__, __Template__},
-
-    GlobalScrips =>
-        q{'<a href="__WebPath__/Admin/Global/Scrip.html?id=__id__">__id__</a>/TITLE:#'}
-        .q{,'<a href="__WebPath__/Admin/Global/Scrip.html?id=__id__">__Description__</a>/TITLE:Description'}
-        .q{,__Stage__, __Condition__, __Action__, __Template__},
+        q{'<a href="__WebPath__/Admin/Scrips/Modify.html?id=__id__">__id__</a>/TITLE:#'}
+        .q{,'<a href="__WebPath__/Admin/Scrips/Modify.html?id=__id__">__Description__</a>/TITLE:Description'}
+        .q{,__Condition__, __Action__, __Template__, __Disabled__},
 
     Templates =>
         q{'<a href="__WebPath__/__WebRequestPathDir__/Template.html?Queue=__QueueId__&Template=__id__">__id__</a>/TITLE:#'}
         .q{,'<a href="__WebPath__/__WebRequestPathDir__/Template.html?Queue=__QueueId__&Template=__id__">__Name__</a>/TITLE:Name'}
-        .q{,'__Description__'},
+        .q{,'__Description__','__UsedBy__','__IsEmpty__'},
     Classes =>
         q{ '<a href="__WebPath__/Admin/Articles/Classes/Modify.html?id=__id__">__id__</a>/TITLE:#'}
         .q{,'<a href="__WebPath__/Admin/Articles/Classes/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}
@@ -2487,6 +2660,12 @@ convenience for developers, turns on several of development options
 that you most likely don't want in production:
 
 =over 4
+
+=item *
+
+Disables CSS and JS minification and concatenation.  Both CSS and JS
+will be instead be served as a number of individual smaller files,
+unchanged from how they are stored on disk.
 
 =item *
 
@@ -2557,28 +2736,6 @@ Configuration -> Tools menu for SuperUsers.
 Set($StatementLog, undef);
 
 =back
-
-
-
-
-=head1 Deprecated options
-
-=over 4
-
-=item C<$LinkTransactionsRun1Scrip>
-
-RT-3.4 backward compatibility setting. Add/Delete Link used to record
-one transaction and run one scrip. Set this value to 1 if you want
-only one of the link transactions to have scrips run.
-
-=cut
-
-Set($LinkTransactionsRun1Scrip, 0);
-
-=item C<$ResolveDefaultUpdateType>
-
-This option has been deprecated.  You can configure this site-wide
-with L</Lifecycles> (see L</Labeling and defining actions>).
 
 =cut
 

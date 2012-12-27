@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -94,7 +94,6 @@ if ( $Run ) {
         my ( $status, $msg ) = RT::Installer->SaveConfig;
 
         if ( $status ) {
-            delete $INC{'RT_SiteConfig.pm'};
             RT->LoadConfig;
 
             if ( $RT::Installer->{DatabaseAction} ne 'none' ) {

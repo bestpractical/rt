@@ -1,63 +1,8 @@
-#!/usr/bin/perl -w
-# BEGIN BPS TAGGED BLOCK {{{
-# 
-# COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
-#                                          <jesse.com>
-# 
-# (Except where explicitly superseded by other copyright notices)
-# 
-# 
-# LICENSE:
-# 
-# This work is made available to you under the terms of Version 2 of
-# the GNU General Public License. A copy of that license should have
-# been provided with this software, but in any event can be snarfed
-# from www.gnu.org.
-# 
-# This work is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-# 02110-1301 or visit their web page on the internet at
-# http://www.gnu.org/copyleft/gpl.html.
-# 
-# 
-# CONTRIBUTION SUBMISSION POLICY:
-# 
-# (The following paragraph is not intended to limit the rights granted
-# to you to modify and distribute this software under the terms of
-# the GNU General Public License and is only of importance to you if
-# you choose to contribute your changes and enhancements to the
-# community by submitting them to Best Practical Solutions, LLC.)
-# 
-# By intentionally submitting any modifications, corrections or
-# derivatives to this work, or any other work intended for use with
-# Request Tracker, to Best Practical Solutions, LLC, you confirm that
-# you are the copyright holder for those contributions and you grant
-# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
-# royalty-free, perpetual, license to use, copy, create derivative
-# works based on those contributions, and sublicense and distribute
-# those contributions and any derivatives thereof.
-# 
-# END BPS TAGGED BLOCK }}}
-
-=head1 NAME
-
-rt-mailgate - Mail interface to RT3.
-
-=cut
-
 use strict;
 use warnings;
 
 
-use RT::Test config => 'Set( $UnsafeEmailCommands, 1);', tests => 221, actual_server => 1;
+use RT::Test config => 'Set( $UnsafeEmailCommands, 1);', tests => 228, actual_server => 1;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 use RT::Tickets;
@@ -608,6 +553,35 @@ EOF
     $m->no_warnings_ok;
 }
 
+diag "make sure we check that UTF-8 is really UTF-8";
+{
+    my $text = <<EOF;
+From: root\@localhost
+To: rtemail\@@{[RT->Config->Get('rtname')]}
+Subject: This is test wrong utf-8 chars
+Content-Type: text/plain; charset="utf-8"
+
+utf-8: informaci\303\263n confidencial
+latin1: informaci\363n confidencial
+
+bye
+EOF
+    my ($status, $id) = RT::Test->send_via_mailgate_and_http($text);
+    is ($status >> 8, 0, "The mail gateway exited normally");
+    ok ($id, "created ticket");
+
+    my $tick = RT::Test->last_ticket;
+    is ($tick->Id, $id, "correct ticket");
+
+    my $content = $tick->Transactions->First->Content;
+    Encode::_utf8_off($content);
+
+    like $content, qr{informaci\303\263n confidencial};
+    like $content, qr{informaci\357\277\275n confidencial};
+
+    $m->no_warnings_ok;
+}
+
 diag "check that mailgate doesn't suffer from empty Reply-To:";
 {
     my $text = <<EOF;
@@ -664,6 +638,8 @@ Subject: [@{[RT->Config->Get('rtname')]} \#$id] test
 EOF
 close (MAIL);
 is ($? >> 8, 0, "The mail gateway exited normally");
+
+DBIx::SearchBuilder::Record::Cachable->FlushCache;
 
 $tick = RT::Ticket->new(RT->SystemUser);
 $tick->Load( $id );
@@ -819,8 +795,8 @@ while( my $ace = $acl->Next ) {
 ok( !$user->HasRight( Right => 'ReplyToTicket', Object => $tick ), "User can't reply to ticket any more" );
 
 
-my $group = RT::Group->new( RT->SystemUser );
-ok( $group->LoadQueueRoleGroup( Queue => $qid, Type=> 'Owner' ), "load queue owners role group" );
+my $group = $queue->RoleGroup( 'Owner' );
+ok( $group->Id, "load queue owners role group" );
 $ace = RT::ACE->new( RT->SystemUser );
 ($ace_id, $msg) = $group->PrincipalObj->GrantRight( Right => 'ReplyToTicket', Object => $queue );
 ok( $ace_id, "Granted queue owners role group with ReplyToTicket right" );

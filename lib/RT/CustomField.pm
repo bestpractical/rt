@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -57,7 +57,7 @@ use base 'RT::Record';
 
 sub Table {'CustomFields'}
 
-
+use Scalar::Util qw(blessed);
 use RT::CustomFieldValues;
 use RT::ObjectCustomFields;
 use RT::ObjectCustomFieldValues;
@@ -192,6 +192,7 @@ our %FieldTypes = (
 );
 
 
+my %BUILTIN_GROUPINGS;
 our %FRIENDLY_OBJECT_TYPES =  ();
 
 RT::CustomField->_ForObjectType( 'RT::Queue-RT::Ticket' => "Tickets", );    #loc
@@ -200,6 +201,11 @@ RT::CustomField->_ForObjectType(
 RT::CustomField->_ForObjectType( 'RT::User'  => "Users", );                           #loc
 RT::CustomField->_ForObjectType( 'RT::Queue'  => "Queues", );                         #loc
 RT::CustomField->_ForObjectType( 'RT::Group' => "Groups", );                          #loc
+
+__PACKAGE__->RegisterBuiltInGroupings(
+    'RT::Ticket'    => [ qw(Basics Dates Links People) ],
+    'RT::User'      => [ 'Identity', 'Access control', 'Location', 'Phones' ],
+);
 
 our $RIGHTS = {
     SeeCustomField            => 'View custom fields',                                    # loc_pair
@@ -374,6 +380,8 @@ sub Create {
         }
     }
 
+    $args{'Disabled'} ||= 0;
+
     (my $rv, $msg) = $self->SUPER::Create(
         Name        => $args{'Name'},
         Type        => $args{'Type'},
@@ -388,22 +396,24 @@ sub Create {
         Repeated    => $args{'Repeated'},
     );
 
-    if ( exists $args{'LinkValueTo'}) {
-	$self->SetLinkValueTo($args{'LinkValueTo'});
+    if ($rv) {
+        if ( exists $args{'LinkValueTo'}) {
+            $self->SetLinkValueTo($args{'LinkValueTo'});
+        }
+
+        if ( exists $args{'IncludeContentForValue'}) {
+            $self->SetIncludeContentForValue($args{'IncludeContentForValue'});
+        }
+
+        return ($rv, $msg) unless exists $args{'Queue'};
+
+        # Compat code -- create a new ObjectCustomField mapping
+        my $OCF = RT::ObjectCustomField->new( $self->CurrentUser );
+        $OCF->Create(
+            CustomField => $self->Id,
+            ObjectId => $args{'Queue'},
+        );
     }
-
-    if ( exists $args{'IncludeContentForValue'}) {
-	$self->SetIncludeContentForValue($args{'IncludeContentForValue'});
-    }
-
-    return ($rv, $msg) unless exists $args{'Queue'};
-
-    # Compat code -- create a new ObjectCustomField mapping
-    my $OCF = RT::ObjectCustomField->new( $self->CurrentUser );
-    $OCF->Create(
-        CustomField => $self->Id,
-        ObjectId => $args{'Queue'},
-    );
 
     return ($rv, $msg);
 }
@@ -463,10 +473,12 @@ sub LoadByName {
     }
 
     # if we're looking for a queue by name, make it a number
-    if ( defined $args{'Queue'} && $args{'Queue'} =~ /\D/ ) {
+    if ( defined $args{'Queue'} && ($args{'Queue'} =~ /\D/ || !$self->ContextObject) ) {
         my $QueueObj = RT::Queue->new( $self->CurrentUser );
         $QueueObj->Load( $args{'Queue'} );
         $args{'Queue'} = $QueueObj->Id;
+        $self->SetContextObject( $QueueObj )
+            unless $self->ContextObject;
     }
 
     # XXX - really naive implementation.  Slow. - not really. still just one query
@@ -524,6 +536,8 @@ sub Values {
     # if the user has no rights, return an empty object
     if ( $self->id && $self->CurrentUserHasRight( 'SeeCustomField') ) {
         $cf_values->LimitToCustomField( $self->Id );
+    } else {
+        $cf_values->Limit( FIELD => 'id', VALUE => 0, SUBCLAUSE => 'acl' );
     }
     return ($cf_values);
 }
@@ -587,6 +601,20 @@ sub DeleteValue {
 }
 
 
+=head2 ValidateQueue Queue
+
+Make sure that the name specified is valid
+
+=cut
+
+sub ValidateName {
+    my $self = shift;
+    my $value = shift;
+
+    return 0 unless length $value;
+
+    return $self->SUPER::ValidateName($value);
+}
 
 =head2 ValidateQueue Queue
 
@@ -850,9 +878,10 @@ sub ACLEquivalenceObjects {
 
 =head2 ContextObject and SetContextObject
 
-Set or get a context for this object. It can be ticket, queue or another object
-this CF applies to. Used for ACL control, for example SeeCustomField can be granted on
-queue level to allow people to see all fields applied to the queue.
+Set or get a context for this object. It can be ticket, queue or another
+object this CF added to. Used for ACL control, for example
+SeeCustomField can be granted on queue level to allow people to see all
+fields added to the queue.
 
 =cut
 
@@ -865,7 +894,78 @@ sub ContextObject {
     my $self = shift;
     return $self->{'context_object'};
 }
-  
+
+sub ValidContextType {
+    my $self = shift;
+    my $class = shift;
+
+    my %valid;
+    $valid{$_}++ for split '-', $self->LookupType;
+    delete $valid{'RT::Transaction'};
+
+    return $valid{$class};
+}
+
+=head2 LoadContextObject
+
+Takes an Id for a Context Object and loads the right kind of RT::Object
+for this particular Custom Field (based on the LookupType) and returns it.
+This is a good way to ensure you don't try to use a Queue as a Context
+Object on a User Custom Field.
+
+=cut
+
+sub LoadContextObject {
+    my $self = shift;
+    my $type = shift;
+    my $contextid = shift;
+
+    unless ( $self->ValidContextType($type) ) {
+        RT->Logger->debug("Invalid ContextType $type for Custom Field ".$self->Id);
+        return;
+    }
+
+    my $context_object = $type->new( $self->CurrentUser );
+    my ($id, $msg) = $context_object->LoadById( $contextid );
+    unless ( $id ) {
+        RT->Logger->debug("Invalid ContextObject id: $msg");
+        return;
+    }
+    return $context_object;
+}
+
+=head2 ValidateContextObject
+
+Ensure that a given ContextObject applies to this Custom Field.  For
+custom fields that are assigned to Queues or to Classes, this checks
+that the Custom Field is actually added to that object.  For Global
+Custom Fields, it returns true as long as the Object is of the right
+type, because you may be using your permissions on a given Queue of
+Class to see a Global CF.  For CFs that are only added globally, you
+don't need a ContextObject.
+
+=cut
+
+sub ValidateContextObject {
+    my $self = shift;
+    my $object = shift;
+
+    return 1 if $self->IsGlobal;
+
+    # global only custom fields don't have objects
+    # that should be used as context objects.
+    return if $self->IsOnlyGlobal;
+
+    # Otherwise, make sure we weren't passed a user object that we're
+    # supposed to treat as a queue.
+    return unless $self->ValidContextType(ref $object);
+
+    # Check that it is added correctly
+    my ($added_to) = grep {ref($_) eq $self->RecordClassFromLookupType} ($object, $object->ACLEquivalenceObjects);
+    return unless $added_to;
+    return $self->IsAdded($added_to->id);
+}
+
 
 sub _Set {
     my $self = shift;
@@ -1070,9 +1170,7 @@ sub SetLookupType {
     my $lookup = shift;
     if ( $lookup ne $self->LookupType ) {
         # Okay... We need to invalidate our existing relationships
-        my $ObjectCustomFields = RT::ObjectCustomFields->new($self->CurrentUser);
-        $ObjectCustomFields->LimitToCustomField($self->Id);
-        $_->Delete foreach @{$ObjectCustomFields->ItemsArrayRef};
+        RT::ObjectCustomField->new($self->CurrentUser)->DeleteAll( CustomField => $self );
     }
     return $self->_Set(Field => 'LookupType', Value =>$lookup);
 }
@@ -1148,118 +1246,179 @@ sub CollectionClassFromLookupType {
     return $collection_class;
 }
 
-=head1 ApplyGlobally
+=head2 Groupings
 
-Certain custom fields (users, groups) should only be applied globally
-but rather than regexing in code for LookupType =~ RT::Queue, we'll codify
-the rules here.
+Returns a (sorted and lowercased) list of the groupings in which this custom
+field appears.
+
+If called on a loaded object, the returned list is limited to groupings which
+apply to the record class this CF applies to (L</RecordClassFromLookupType>).
+
+If passed a loaded object or a class name, the returned list is limited to
+groupings which apply to the class of the object or the specified class.
+
+If called on an unloaded object, all potential groupings are returned.
 
 =cut
 
-sub ApplyGlobally {
+sub Groupings {
+    my $self = shift;
+    my $record_class = $self->_GroupingClass(shift);
+
+    my $config = RT->Config->Get('CustomFieldGroupings');
+       $config = {} unless ref($config) eq 'HASH';
+
+    my @groups;
+    if ( $record_class ) {
+        push @groups, keys %{ $config->{$record_class} || {} };
+        push @groups, keys %{ $BUILTIN_GROUPINGS{$record_class} || {} };
+    } else {
+        push @groups, map { keys %$_ } values %$config;
+        push @groups, map { keys %$_ } values %BUILTIN_GROUPINGS;
+    }
+
+    my %seen;
+    return
+        sort { lc($a) cmp lc($b) }
+        grep defined && length && !$seen{lc $_}++,
+        @groups;
+}
+
+=head2 CustomGroupings
+
+Identical to L</Groupings> but filters out built-in groupings from the the
+returned list.
+
+=cut
+
+sub CustomGroupings {
+    my $self = shift;
+    my $record_class = $self->_GroupingClass(shift);
+    return grep !$BUILTIN_GROUPINGS{$record_class}{$_}, $self->Groupings( $record_class );
+}
+
+sub _GroupingClass {
+    my $self    = shift;
+    my $record  = shift;
+
+    my $record_class = ref($record) || $record || '';
+    $record_class = $self->RecordClassFromLookupType
+        if !$record_class and blessed($self) and $self->id;
+
+    return $record_class;
+}
+
+=head2 RegisterBuiltInGroupings
+
+Registers groupings to be considered a fundamental part of RT, either via use
+in core RT or via an extension.  These groupings must be rendered explicitly in
+Mason by specific calls to F</Elements/ShowCustomFields> and
+F</Elements/EditCustomFields>.  They will not show up automatically on normal
+display pages like configured custom groupings.
+
+Takes a set of key-value pairs of class names (valid L<RT::Record> subclasses)
+and array refs of grouping names to consider built-in.
+
+If a class already contains built-in groupings (such as L<RT::Ticket> and
+L<RT::User>), new groupings are appended.
+
+=cut
+
+sub RegisterBuiltInGroupings {
+    my $self = shift;
+    my %new  = @_;
+
+    while (my ($k,$v) = each %new) {
+        $v = [$v] unless ref($v) eq 'ARRAY';
+        $BUILTIN_GROUPINGS{$k} = {
+            %{$BUILTIN_GROUPINGS{$k} || {}},
+            map { $_ => 1 } @$v
+        };
+    }
+    $BUILTIN_GROUPINGS{''} = { map { %$_ } values %BUILTIN_GROUPINGS  };
+}
+
+=head1 IsOnlyGlobal
+
+Certain custom fields (users, groups) should only be added globally;
+codify that set here for reference.
+
+=cut
+
+sub IsOnlyGlobal {
     my $self = shift;
 
     return ($self->LookupType =~ /^RT::(?:Group|User)/io);
 
 }
+sub ApplyGlobally { Carp::carp("DEPRECATED, use IsOnlyGlobal"); return shift->IsOnlyGlobal(@_) }
 
-=head1 AppliedTo
+=head1 AddedTo
 
-Returns collection with objects this custom field is applied to.
+Returns collection with objects this custom field is added to.
 Class of the collection depends on L</LookupType>.
-See all L</NotAppliedTo> .
+See all L</NotAddedTo> .
 
-Doesn't takes into account if object is applied globally.
+Doesn't takes into account if object is added globally.
 
 =cut
 
-sub AppliedTo {
+sub AddedTo {
     my $self = shift;
-
-    my ($res, $ocfs_alias) = $self->_AppliedTo;
-    return $res unless $res;
-
-    $res->Limit(
-        ALIAS     => $ocfs_alias,
-        FIELD     => 'id',
-        OPERATOR  => 'IS NOT',
-        VALUE     => 'NULL',
-    );
-
-    return $res;
+    return RT::ObjectCustomField->new( $self->CurrentUser )
+        ->AddedTo( CustomField => $self );
 }
+sub AppliedTo { Carp::carp("DEPRECATED: use AddedTo"); shift->AddedTo(@_) };
 
-=head1 NotAppliedTo
+=head1 NotAddedTo
 
-Returns collection with objects this custom field is not applied to.
+Returns collection with objects this custom field is not added to.
 Class of the collection depends on L</LookupType>.
-See all L</AppliedTo> .
+See all L</AddedTo> .
 
-Doesn't takes into account if object is applied globally.
+Doesn't take into account if the object is added globally.
 
 =cut
 
-sub NotAppliedTo {
+sub NotAddedTo {
     my $self = shift;
-
-    my ($res, $ocfs_alias) = $self->_AppliedTo;
-    return $res unless $res;
-
-    $res->Limit(
-        ALIAS     => $ocfs_alias,
-        FIELD     => 'id',
-        OPERATOR  => 'IS',
-        VALUE     => 'NULL',
-    );
-
-    return $res;
+    return RT::ObjectCustomField->new( $self->CurrentUser )
+        ->NotAddedTo( CustomField => $self );
 }
+sub NotAppliedTo { Carp::carp("DEPRECATED: use NotAddedTo"); shift->NotAddedTo(@_) };
 
-sub _AppliedTo {
-    my $self = shift;
-
-    my ($class) = $self->CollectionClassFromLookupType;
-    return undef unless $class;
-
-    my $res = $class->new( $self->CurrentUser );
-
-    # If CF is a Group CF, only display user-defined groups
-    if ( $class eq 'RT::Groups' ) {
-        $res->LimitToUserDefinedGroups;
-    }
-
-    $res->OrderBy( FIELD => 'Name' );
-    my $ocfs_alias = $res->Join(
-        TYPE   => 'LEFT',
-        ALIAS1 => 'main',
-        FIELD1 => 'id',
-        TABLE2 => 'ObjectCustomFields',
-        FIELD2 => 'ObjectId',
-    );
-    $res->Limit(
-        LEFTJOIN => $ocfs_alias,
-        ALIAS    => $ocfs_alias,
-        FIELD    => 'CustomField',
-        VALUE    => $self->id,
-    );
-    return ($res, $ocfs_alias);
-}
-
-=head2 IsApplied
+=head2 IsAdded
 
 Takes object id and returns corresponding L<RT::ObjectCustomField>
-record if this custom field is applied to the object. Use 0 to check
-if custom field is applied globally.
+record if this custom field is added to the object. Use 0 to check
+if custom field is added globally.
 
 =cut
 
-sub IsApplied {
+sub IsAdded {
     my $self = shift;
     my $id = shift;
     my $ocf = RT::ObjectCustomField->new( $self->CurrentUser );
     $ocf->LoadByCols( CustomField => $self->id, ObjectId => $id || 0 );
     return undef unless $ocf->id;
     return $ocf;
+}
+sub IsApplied { Carp::carp("DEPRECATED: use IsAdded"); shift->IsAdded(@_) };
+
+sub IsGlobal { return shift->IsAdded(0) }
+
+=head2 IsAddedToAny
+
+Returns true if custom field is applied to any object.
+
+=cut
+
+sub IsAddedToAny {
+    my $self = shift;
+    my $id = shift;
+    my $ocf = RT::ObjectCustomField->new( $self->CurrentUser );
+    $ocf->LoadByCols( CustomField => $self->id );
+    return $ocf->id ? 1 : 0;
 }
 
 =head2 AddToObject OBJECT
@@ -1269,7 +1428,6 @@ Add this custom field as a custom field for a single object, such as a queue or 
 Takes an object 
 
 =cut
-
 
 sub AddToObject {
     my $self  = shift;
@@ -1284,26 +1442,9 @@ sub AddToObject {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    if ( $self->IsApplied( $id ) ) {
-        return ( 0, $self->loc("Custom field is already applied to the object") );
-    }
-
-    if ( $id ) {
-        # applying locally
-        return (0, $self->loc("Couldn't apply custom field to an object as it's global already") )
-            if $self->IsApplied( 0 );
-    }
-    else {
-        my $applied = RT::ObjectCustomFields->new( $self->CurrentUser );
-        $applied->LimitToCustomField( $self->id );
-        while ( my $record = $applied->Next ) {
-            $record->Delete;
-        }
-    }
-
     my $ocf = RT::ObjectCustomField->new( $self->CurrentUser );
-    my ( $oid, $msg ) = $ocf->Create(
-        ObjectId => $id, CustomField => $self->id,
+    my ( $oid, $msg ) = $ocf->Add(
+        CustomField => $self->id, ObjectId => $id,
     );
     return ( $oid, $msg );
 }
@@ -1330,9 +1471,9 @@ sub RemoveFromObject {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    my $ocf = $self->IsApplied( $id );
+    my $ocf = $self->IsAdded( $id );
     unless ( $ocf ) {
-        return ( 0, $self->loc("This custom field does not apply to that object") );
+        return ( 0, $self->loc("This custom field cannot be added to that object") );
     }
 
     # XXX: Delete doesn't return anything
@@ -1559,14 +1700,13 @@ sub ValuesForObject {
     my $object = shift;
 
     my $values = RT::ObjectCustomFieldValues->new($self->CurrentUser);
-    unless ($self->CurrentUserHasRight('SeeCustomField')) {
+    unless ($self->id and $self->CurrentUserHasRight('SeeCustomField')) {
         # Return an empty object if they have no rights to see
+        $values->Limit( FIELD => "id", VALUE => 0, SUBCLAUSE => "ACL" );
         return ($values);
     }
-    
-    
+
     $values->LimitToCustomField($self->Id);
-    $values->LimitToEnabled();
     $values->LimitToObject($object);
 
     return ($values);
@@ -1583,6 +1723,7 @@ Examples:
     'RT::Queue-RT::Ticket-RT::Transaction' => "Ticket Transactions",    # loc
     'RT::User'                             => "Users",                  # loc
     'RT::Group'                            => "Groups",                 # loc
+    'RT::Queue'                            => "Queues",                 # loc
 
 This is a class method. 
 
@@ -1677,9 +1818,10 @@ sub SetBasedOn {
         unless defined $value and length $value;
 
     my $cf = RT::CustomField->new( $self->CurrentUser );
+    $cf->SetContextObject( $self->ContextObject );
     $cf->Load( ref $value ? $value->id : $value );
 
-    return (0, "Permission denied")
+    return (0, "Permission Denied")
         unless $cf->id && $cf->CurrentUserHasRight('SeeCustomField');
 
     # XXX: Remove this restriction once we support lists and cascaded selects
@@ -1694,6 +1836,7 @@ sub BasedOnObj {
     my $self = shift;
 
     my $obj = RT::CustomField->new( $self->CurrentUser );
+    $obj->SetContextObject( $self->ContextObject );
     if ( $self->BasedOn ) {
         $obj->Load( $self->BasedOn );
     }

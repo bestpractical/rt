@@ -5,8 +5,8 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
-#                                          <jesse@bestpractical.com>
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
 #
@@ -48,11 +48,13 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
+use strict;
+use warnings;
 my $LICENSE  = <<'EOL';
 
 COPYRIGHT:
 
-This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
                                          <sales@bestpractical.com>
 
 (Except where explicitly superseded by other copyright notices)
@@ -105,6 +107,7 @@ File::Find::find({ no_chdir => 1, wanted => \&tag_mason}, 'share/html');
 File::Find::find({ no_chdir => 1, wanted => \&tag_script}, 'sbin');
 File::Find::find({ no_chdir => 1, wanted => \&tag_script}, 'bin');
 File::Find::find({ no_chdir => 1, wanted => \&tag_script}, 'etc/upgrade');
+File::Find::find({ no_chdir => 1, wanted => \&tag_script}, 'devel/tools');
 tag_makefile ('Makefile.in');
 tag_makefile ('README');
 
@@ -112,7 +115,7 @@ tag_makefile ('README');
 sub tag_mason {
         my $pm = $_;
         return unless (-f $pm);
-        return if $pm =~ /images/ || $pm =~ /\.(?:png|jpe?g|gif)$/;
+        return if $pm =~ /\.(?:png|jpe?g|gif)$/;
         open( FILE, '<', $pm ) or die "Failed to open $pm";
         my $file = (join "", <FILE>);
         close (FILE);

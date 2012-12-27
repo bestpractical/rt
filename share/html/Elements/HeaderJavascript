@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -49,6 +49,7 @@
 $focus => undef
 $onload => undef
 </%args>
+<& JavascriptConfig &>
 
 % for my $jsfile ( @js_files ) {
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/<% $jsfile %>"></script>
@@ -60,14 +61,14 @@ $onload => undef
 <script type="text/javascript"><!--
 	jQuery( loadTitleBoxStates );
 % if ( $focus ) {
-    jQuery(function () { focusElementById('<% $focus %>') });
+    jQuery(function () { focusElementById(<% $focus |n,j%>) });
 % }
 % if ( $onload ) {
     jQuery( <% $onload |n %> );
 % }
 
 % if ( $RichText and RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'})) {
-    jQuery().ready(function ()  { ReplaceAllTextareas('<%$m->request_args->{'CKeditorEncoded'} || 0 %>') });
+    jQuery().ready(function ()  { ReplaceAllTextareas(<%$DECODED_ARGS->{'CKeditorEncoded'} || 0 |n,j%>) });
 % }
 --></script>
 <%ARGS>

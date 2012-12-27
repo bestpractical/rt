@@ -1,0 +1,32 @@
+
+CREATE TABLE ObjectScrips (
+  id INTEGER NOT NULL  ,
+  Scrip int NOT NULL  ,
+  Stage varchar(32) NOT NULL DEFAULT 'TransactionCreate' ,
+  ObjectId integer NOT NULL,
+  SortOrder integer NOT NULL DEFAULT 0  ,
+  Disabled int2 NOT NULL DEFAULT 0 ,
+
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created DATETIME NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated DATETIME NULL  ,
+  PRIMARY KEY (id)
+);
+ALTER TABLE Scrips ADD COLUMN Disabled int2 NOT NULL DEFAULT 0;
+
+INSERT INTO ObjectScrips(
+    Scrip, Stage, ObjectId,
+    Creator, Created, LastUpdatedBy, LastUpdated
+)
+SELECT id, Stage, Queue, Creator, Created, LastUpdatedBy, LastUpdated
+FROM Scrips
+;
+
+UPDATE Scrips SET Disabled = 1 WHERE Stage = 'Disabled';
+UPDATE ObjectScrips SET Stage = 'TransactionCreate' WHERE Stage = 'Disabled';
+
+CREATE UNIQUE INDEX ObjectScrips1 ON ObjectScrips (ObjectId, Scrip);
+
+# TODO: ALTER TABLE Scrips DROP COLUMN Stage;
+# TODO: ALTER TABLE Scrips DROP COLUMN Queue;

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -66,9 +66,12 @@ sub GetCurrentUser {
 
 
     # We don't need to do any external lookups
-    my ( $Address, $Name ) = ParseSenderAddressFromHead( $args{'Message'}->head );
+    my ( $Address, $Name, @errors ) = ParseSenderAddressFromHead( $args{'Message'}->head );
+    $RT::Logger->warning("Failed to parse ".join(', ', @errors))
+        if @errors;
+
     unless ( $Address ) {
-        $RT::Logger->error("Couldn't find sender's address");
+        $RT::Logger->error("Couldn't parse or find sender's address");
         return ( $args{'CurrentUser'}, -1 );
     }
 

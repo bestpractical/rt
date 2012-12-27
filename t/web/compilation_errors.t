@@ -1,6 +1,5 @@
-#!/usr/bin/perl
-
 use strict;
+use warnings;
 use Test::More;
 use File::Find;
 BEGIN {
@@ -9,7 +8,7 @@ BEGIN {
     }
     my $tests = 8;
     find( sub { wanted() and $tests += 4 }, 'share/html/' );
-    plan tests => $tests;
+    plan tests => $tests + 1; # plus one for warnings check
 }
 
 

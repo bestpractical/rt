@@ -1,9 +1,8 @@
-#!/usr/bin/perl -w
-
 use strict;
+use warnings;
 use File::Spec ();
 use Test::Expect;
-use RT::Test tests => 303, actual_server => 1;
+use RT::Test tests => undef, actual_server => 1;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 use RT::User;
@@ -82,6 +81,16 @@ TODO: {
     expect_send("list -t queue 'id > 0'", 'Listing the queues...');
     expect_like(qr/$queue_id: EditedQueue$$/, 'Found the queue');
 }
+
+# Queues with spaces in their names
+expect_send("create -t queue set Name='Spaced Out'", 'Creating a queue...');
+expect_like(qr/Queue \d+ created/, 'Created the queue');
+expect_handle->before() =~ /Queue (\d+) created/;
+my $other_queue = $1;
+ok($other_queue, "Got queue id=$other_queue");
+expect_send("show 'queue/Spaced Out'", 'Showing the queue...');
+expect_like(qr/id: queue\/$other_queue/, 'Saw the queue');
+expect_like(qr/Name: Spaced Out/, 'Saw the modification');
 
 
 
@@ -480,6 +489,8 @@ expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in 
         expect_like(qr/Created link $link1_id $reln $link2_id/, 'Linked');
         expect_send("show -s ticket/$link1_id/links", "Checking creation of $reln...");
         expect_like(qr/$display_relns{$reln}: [\w\d\.\-]+:\/\/[\w\d\.]+\/ticket\/$link2_id/, "Created link $reln");
+        expect_send("show ticket/$link1_id/links", "Checking show links without format");
+        expect_like(qr/$display_relns{$reln}: [\w\d\.\-]+:\/\/[\w\d\.]+\/ticket\/$link2_id/, "Found link $reln");
 
         # delete link
         expect_send("link -d $link1_id $reln $link2_id", "Delete $reln...");
@@ -533,5 +544,8 @@ sub check_attachment {
 # ... in Time::ParseDate
 my @warnings = grep { $_ !~ /\$ampm/ } $m->get_warnings;
 is( scalar @warnings, 0, 'no extra warnings' );
+
+undef $m;
+done_testing;
 
 1; # needed to avoid a weird exit value from expect_quit

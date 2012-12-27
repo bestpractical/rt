@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -88,7 +88,18 @@ sub IsGroup {
     return undef;
 }
 
+=head2 IsRoleGroup
 
+Returns true if this principal is a role group.
+Returns undef, otherwise.
+
+=cut
+
+sub IsRoleGroup {
+    my $self = shift;
+    return ($self->IsGroup and $self->Object->RoleClass)
+        ? 1 : undef;
+}
 
 =head2 IsUser 
 
@@ -157,7 +168,7 @@ sub GrantRight {
         @_
     );
 
-    return (0, "Permission denied") if $args{'Right'} eq 'ExecuteCode'
+    return (0, "Permission Denied") if $args{'Right'} eq 'ExecuteCode'
         and RT->Config->Get('DisallowExecuteCode');
 
     #ACL check handled in ACE.pm
@@ -301,10 +312,7 @@ sub HasRight {
 
     unshift @{ $args{'EquivObjects'} },
         $args{'Object'}->ACLEquivalenceObjects;
-
-    unshift @{ $args{'EquivObjects'} }, $RT::System
-        unless $self->can('_IsOverrideGlobalACL')
-            && $self->_IsOverrideGlobalACL( $args{'Object'} );
+    unshift @{ $args{'EquivObjects'} }, $RT::System;
 
     # If we've cached a win or loss for this lookup say so
 
@@ -377,9 +385,7 @@ sub HasRights {
     push @{ $args{'EquivObjects'} }, $object;
     unshift @{ $args{'EquivObjects'} },
         $args{'Object'}->ACLEquivalenceObjects;
-    unshift @{ $args{'EquivObjects'} }, $RT::System
-        unless $self->can('_IsOverrideGlobalACL')
-            && $self->_IsOverrideGlobalACL( $object );
+    unshift @{ $args{'EquivObjects'} }, $RT::System;
 
     my %res = ();
     {
@@ -577,11 +583,8 @@ sub _HasRoleRightQuery {
 
         my $clause = "Groups.Domain = '$type-Role'";
 
-        # XXX: Groups.Instance is VARCHAR in DB, we should quote value
-        # if we want mysql 4.0 use indexes here. we MUST convert that
-        # field to integer and drop this quotes.
         if ( my $id = eval { $obj->id } ) {
-            $clause .= " AND Groups.Instance = '$id'";
+            $clause .= " AND Groups.Instance = $id";
         }
         push @object_clauses, "($clause)";
     }
@@ -701,7 +704,7 @@ return that. if it has no type, return group.
 
 sub _GetPrincipalTypeForACL {
     my $self = shift;
-    if ($self->PrincipalType eq 'Group' && $self->Object->Domain =~ /Role$/) {
+    if ($self->IsRoleGroup) {
         return $self->Object->Type;
     } else {
         return $self->PrincipalType;

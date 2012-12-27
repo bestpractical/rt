@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -100,7 +100,7 @@ EOT
 
 sub gv_escape($) {
     my $value = shift;
-    $value =~ s{(?=")}{\\}g;
+    $value =~ s{(?=["\\])}{\\}g;
     return $value;
 }
 
@@ -278,6 +278,14 @@ sub TicketLinks {
         ShowLinkDescriptions => 0,
         @_
     );
+
+    my %valid_links = map { $_ => 1 }
+        qw(Members MemberOf RefersTo ReferredToBy DependsOn DependedOnBy);
+
+    # Validate our link types
+    $args{ShowLinks}   = [ grep { $valid_links{$_} } @{$args{ShowLinks}} ];
+    $args{LeadingLink} = 'Members' unless $valid_links{ $args{LeadingLink} };
+
     unless ( $args{'Graph'} ) {
         $args{'Graph'} = GraphViz->new(
             name    => 'ticket_links_'. $args{'Ticket'}->id,

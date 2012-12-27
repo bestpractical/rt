@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -45,6 +45,7 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
+
 package RT::Interface::REST;
 use strict;
 use warnings;
@@ -57,8 +58,7 @@ sub custom_field_spec {
     my $self    = shift;
     my $capture = shift;
 
-    my $CF_char = '[\sa-z0-9_ :()/-]';
-    my $CF_name = $CF_char . '+';
+    my $CF_name = '[^,]+';
     $CF_name = '(' . $CF_name . ')' if $capture;
 
     my $new_style = 'CF\.\{'.$CF_name.'\}';

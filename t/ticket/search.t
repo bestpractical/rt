@@ -1,4 +1,3 @@
-#!/opt/perl/bin/perl -w
 
 # tests relating to searching. Especially around custom fields, and
 # corner cases.
@@ -6,7 +5,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 43;
+use RT::Test nodata => 1, tests => undef;
 
 # setup the queue
 
@@ -276,3 +275,12 @@ $tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("CF.SearchTest = 'foo1' OR CF.SearchTest = 'foo3' OR CF.SearchTest2 = 'bar1' OR CF.SearchTest2 = 'bar2'");
 is($tix->Count, 3, "is cf1 or is cf1 or is cf2 or is cf2");
 
+# tests with lower cased NULL
+$tix = RT::Tickets->new(RT->SystemUser);
+$tix->FromSQL('Requestor.Name IS null');
+is($tix->Count, 1, "t6 doesn't have a Requestor");
+like($tix->BuildSelectCountQuery, qr/\bNULL\b/, "Contains upper-case NULL");
+unlike($tix->BuildSelectCountQuery, qr/\bnull\b/, "Lacks lower-case NULL");
+
+
+done_testing;

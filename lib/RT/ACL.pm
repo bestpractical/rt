@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -182,6 +182,9 @@ sub LimitToPrincipal {
                      ALIAS2 => $cgm,
                      FIELD2 => 'GroupId'
                    );
+        $self->Limit( ALIAS => $cgm,
+                      FIELD => 'Disabled',
+                      VALUE => 0 );
         $self->Limit( ALIAS           => $cgm,
                       FIELD           => 'MemberId',
                       OPERATOR        => '=',

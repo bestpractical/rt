@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,42 +45,34 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title =>  $title &>
+<&| /Widgets/TitleBox, title => $title &>
 <& /Elements/CollectionList, Title   => $title,
 			 Format  => $Format, 
 			 Query   => $Query, 
 			 Order   => @Order, 
 			 OrderBy => @OrderBy,
 			 BaseURL => $BaseURL,
-			 GenericQueryArgs => $GenericQueryArgs,
-			 AllowSorting => $AllowSorting,
+			 AllowSorting => 1,
 			 Class   => 'RT::Tickets',
              Rows    => $Rows,
 			 Page    => $Page &>
 </&>
 
 <%INIT>
+my $title = loc("My [_1] tickets", $friendly_status);
 my $id = $session{'CurrentUser'}->id;
-my $Query = "( "
-    . join( ' OR ', map "$_.id = $id", @roles )
-    . ")";
+my $Query = "( Watcher.id = $id )";
 if ( @status ) {
-    $Query .= " AND ( "
-        . join( ' OR ', map "Status = '$_'", @status )
-        . " )";
+    @status = map {s/(['\\])/\\$1/g; "Status = '$_'"} @status;
+    $Query .= " AND ( " . join(' OR ', @status ) . " )";
 }
 my $Format = RT->Config->Get('DefaultSelfServiceSearchResultFormat');
-
 </%INIT>
 <%ARGS>
 $friendly_status => loc('open')
-$title => loc("My [_1] tickets", $friendly_status)
-@roles => ('Watcher')
-@status => RT::Queue->ActiveStatusArray()
+@status => ()
 $BaseURL => undef
 $Page => 1
-$GenericQueryArgs => undef
-$AllowSorting => 1
 @Order => ('ASC')
 @OrderBy => ('Created')
 $Rows => 50

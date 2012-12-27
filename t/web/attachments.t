@@ -1,10 +1,11 @@
-#!/usr/bin/perl -w
 use strict;
+use warnings;
 
-use RT::Test tests => 25;
+use RT::Test tests => 33;
 
 use constant LogoFile => $RT::MasonComponentRoot .'/NoAuth/images/bpslogo.png';
 use constant FaviconFile => $RT::MasonComponentRoot .'/NoAuth/images/favicon.png';
+use constant TextFile => $RT::MasonComponentRoot .'/NoAuth/css/print.css';
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in';
@@ -30,9 +31,18 @@ $m->content_contains('Attachments test', 'we have subject on the page');
 $m->content_contains('Some content', 'and content');
 $m->content_contains('Download bpslogo.png', 'page has file name');
 
+open LOGO, "<", LogoFile or die "Can't open logo file: $!";
+binmode LOGO;
+my $logo_contents = do {local $/; <LOGO>};
+close LOGO;
+$m->follow_link_ok({text => "Download bpslogo.png"});
+is($m->content_type, "image/png");
+is($m->content, $logo_contents, "Binary content matches");
+
+$m->back;
 $m->follow_link_ok({text => 'Reply'}, "reply to the ticket");
 $m->form_name('TicketUpdate');
-$m->field('Attach',  LogoFile);
+$m->field('Attach',  TextFile);
 $m->click('AddMoreAttach');
 is($m->status, 200, "request successful");
 
@@ -44,7 +54,16 @@ is($m->status, 200, "request successful");
 
 $m->content_contains('Download bpslogo.png', 'page has file name');
 $m->content_contains('Download favicon.png', 'page has file name');
+$m->content_contains('Download print.css', 'page has file name');
 
+$m->follow_link_ok( { text => 'Download bpslogo.png' } );
+is( $m->response->header('Content-Type'), 'image/png', 'Content-Type of png lacks charset' );
+
+$m->back;
+
+$m->follow_link_ok( { text => 'Download print.css' } );
+is( $m->response->header('Content-Type'),
+    'text/css;charset=UTF-8', 'Content-Type of text has charset' );
 
 diag "test mobile ui";
 $m->get_ok( $baseurl . '/m/ticket/create?Queue=' . $qid );

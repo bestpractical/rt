@@ -141,15 +141,28 @@ CREATE TABLE Scrips (
 	CustomIsApplicableCode	CLOB,
 	CustomPrepareCode	CLOB,
 	CustomCommitCode	CLOB,
-	Stage		VARCHAR2(32),
-	Queue		NUMBER(11,0) DEFAULT 0 NOT NULL,
-	Template	NUMBER(11,0) DEFAULT 0 NOT NULL,
+	Disabled 	NUMBER(11,0) DEFAULT 0 NOT NULL,
+	Template	VARCHAR2(200) NOT NULL,
   	Creator 	NUMBER(11,0) DEFAULT 0 NOT NULL,
   	Created 	DATE,
   	LastUpdatedBy 	NUMBER(11,0) DEFAULT 0 NOT NULL,
   	LastUpdated 	DATE  
 );
 
+CREATE SEQUENCE OBJECTSCRIPS_seq;
+CREATE TABLE ObjectScrips (
+	id		NUMBER(11,0)
+                 CONSTRAINT ObjectScrips_Key PRIMARY KEY,
+        Scrip       NUMBER(11,0)  NOT NULL,
+	Stage		VARCHAR2(32) DEFAULT 'TransactionCreate' NOT NULL,
+        ObjectId              NUMBER(11,0)  NOT NULL,
+	SortOrder	NUMBER(11,0) DEFAULT 0 NOT NULL,
+	Creator		NUMBER(11,0) DEFAULT 0 NOT NULL,
+	Created		DATE,
+	LastUpdatedBy	NUMBER(11,0) DEFAULT 0 NOT NULL,
+	LastUpdated	DATE
+);
+CREATE UNIQUE INDEX ObjectScrips1 ON ObjectScrips (ObjectId, Scrip);
 
 CREATE SEQUENCE ACL_seq;
 CREATE TABLE ACL (

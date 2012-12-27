@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -80,7 +80,7 @@ if ($Create) {
 
 else {
   if (defined ($Template) && $Template eq 'new') {
-      my ($val, $msg) =  $TemplateObj->Create(Queue => $Queue, Name => $Name);
+      my ($val, $msg) =  $TemplateObj->Create(Queue => $Queue, Name => $Name, Type => $Type);
       Abort(loc("Could not create template: [_1]", $msg)) unless ($val);
      push @results, $msg;
     }
@@ -92,7 +92,7 @@ else {
     
 }
 if ($TemplateObj->Id()) {
-  my @attribs = qw( Description Content Queue Name Type );
+  my @attribs = qw( Name Description Queue Type Content );
   my @aresults = UpdateRecordObject( AttributesRef => \@attribs, 
 				     Object => $TemplateObj, 
 				     ARGSRef => \%ARGS);
@@ -108,4 +108,5 @@ $Queue => ''
 $Template => ''
 $Create => ''
 $Name => ''
+$Type => ''
 </%ARGS>

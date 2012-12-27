@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -197,19 +197,6 @@ if ( my $tmp = $ARGS{ $name_prefix ."Articles_Content" } ) {
 my $hotlist = RT::Articles->new( $session{'CurrentUser'} );
 $hotlist->LimitHotlistClasses;
 $hotlist->LimitAppliedClasses( Queue => $QueueObj );
-
-# By default, order by name
-$hotlist->OrderByCols( {
-            ALIAS => 'main',
-            FIELD => 'Name',
-            ORDER => 'ASC'
-    },
-        {   ALIAS => 'main',
-            FIELD => 'SortOrder',
-            ORDER => 'ASC'
-        },
-
-    );
 
 my ( $topic_articles, $topics, $included_topic );
 $topic_articles = RT::Articles->new( $session{CurrentUser} );

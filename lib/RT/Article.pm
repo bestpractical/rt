@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -102,7 +102,7 @@ sub Create {
         @_
     );
 
-    my $class = RT::Class->new($RT::SystemUser);
+    my $class = RT::Class->new( $self->CurrentUser );
     $class->Load( $args{'Class'} );
     unless ( $class->Id ) {
         return ( 0, $self->loc('Invalid Class') );
@@ -537,10 +537,20 @@ sub CurrentUserHasRight {
         $self->CurrentUser->HasRight(
             Right        => $right,
             Object       => $self,
-            EquivObjects => [ $RT::System, $RT::System, $self->ClassObj ]
         )
     );
 
+}
+
+=head2 CurrentUserCanSee
+
+Returns true if the current user can see the article, using ShowArticle
+
+=cut
+
+sub CurrentUserCanSee {
+    my $self = shift;
+    return $self->CurrentUserHasRight('ShowArticle');
 }
 
 # }}}
@@ -600,13 +610,10 @@ sub CustomFieldLookupType {
     "RT::Class-RT::Article";
 }
 
-# _LookupId is the id of the toplevel type object the customfield is joined to
-# in this case, that's an RT::Class.
 
-sub _LookupId {
+sub ACLEquivalenceObjects {
     my $self = shift;
-    return $self->ClassObj->id;
-
+    return $self->ClassObj;
 }
 
 =head2 LoadByInclude Field Value

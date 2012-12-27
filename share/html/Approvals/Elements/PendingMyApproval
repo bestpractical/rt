@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -63,9 +63,9 @@
 <input type="checkbox" class="checkbox" value="1" name="ShowRejected" <% defined($ARGS{'ShowRejected'}) && $ARGS{'ShowRejected'} && qq[checked="checked"] |n%> /> <&|/l&>Show denied requests</&><br />
 <input type="checkbox" class="checkbox" value="1" name="ShowDependent" <% defined($ARGS{'ShowDependent'}) && $ARGS{'ShowDependent'} && qq[checked="checked"] |n%> /> <&|/l&>Show requests awaiting other approvals</&><br />
 
-<&|/l, qq{<input size='15' class="ui-datepicker" value='}.($created_before->Unix > 0 &&$created_before->ISO(Timezone => 'user'))."' name='CreatedBefore' id='CreatedBefore' />"&>Only show approvals for requests created before [_1]</&><br />
+<&|/l_unsafe, qq{<input size='15' class="ui-datepicker" value='}.($created_before->Unix > 0 &&$created_before->ISO(Timezone => 'user'))."' name='CreatedBefore' id='CreatedBefore' />"&>Only show approvals for requests created before [_1]</&><br />
 
-<&|/l, qq{<input size='15' class="ui-datepicker" value='}.( $created_after->Unix >0 && $created_after->ISO(Timezone => 'user'))."' name='CreatedAfter' id='CreatedAfter' />"&>Only show approvals for requests created after [_1]</&>
+<&|/l_unsafe, qq{<input size='15' class="ui-datepicker" value='}.( $created_after->Unix >0 && $created_after->ISO(Timezone => 'user'))."' name='CreatedAfter' id='CreatedAfter' />"&>Only show approvals for requests created after [_1]</&>
 </&>
 
 <%init>
@@ -74,7 +74,7 @@ $tickets->LimitOwner( VALUE => $session{'CurrentUser'}->Id );
 
 # also consider AdminCcs as potential approvers.
 my $group_tickets = RT::Tickets->new( $session{'CurrentUser'} );
-$group_tickets->LimitWatcher( VALUE => $session{'CurrentUser'}->UserObj->EmailAddress, TYPE => 'AdminCc' );
+$group_tickets->LimitWatcher( VALUE => $session{'CurrentUser'}->EmailAddress, TYPE => 'AdminCc' );
 
 my $created_before = RT::Date->new( $session{'CurrentUser'} );
 my $created_after = RT::Date->new( $session{'CurrentUser'} );

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,6 +47,6 @@
 %# END BPS TAGGED BLOCK }}}
 <%init>
  my $hand = ($session{'CurrentUser'} ||= RT::CurrentUser->new)->LanguageHandle;
- $m->print($hand->maketext($m->content,@_));
+ $m->print($hand->maketext($m->content,map { $m->interp->apply_escapes($_, 'h') } @_));
  return(1);
 </%init>

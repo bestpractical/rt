@@ -49,8 +49,7 @@ my $testuser = RT::User->new(RT->SystemUser);
 ($id,$msg) = $testuser->Create(Name => 'JustAnAdminCc');
 ok ($id,$msg);
 
-my $global_admin_cc = RT::Group->new(RT->SystemUser);
-$global_admin_cc->LoadSystemRoleGroup('AdminCc');
+my $global_admin_cc = RT->System->RoleGroup( 'AdminCc' );
 ok($global_admin_cc->id, "Found the global admincc group");
 my $groups = RT::Groups->new(RT->SystemUser);
 $groups->WithRight(Right => 'OwnTicket', Object => $q);

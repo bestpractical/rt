@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -66,7 +66,7 @@ if ( my $ticket= $targets->First ) {
 </%PERL>
 <tr class="<% $i%2 ? 'oddline' : 'evenline' %>">
 <td class="collection-as-table">
-<a href="<% RT->Config->Get('WebPath') %>/Ticket/Reminders.html?id=<% $ticket->id %>"><% $reminder->Subject %></a>
+<a href="<% RT->Config->Get('WebPath') %>/Ticket/Reminders.html?id=<% $ticket->id %>#reminder-<% $reminder->id %>"><% $reminder->Subject %></a>
 </td>
 <td class="collection-as-table">
 <% $overdue ? '<span class="overdue">' : '' |n %><% $dueobj->AgeAsString || loc('Not set') %><% $overdue ? '</span>' : '' |n %>

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -77,6 +77,24 @@ my $COLUMN_MAP = {
     QueueId => {
         title     => 'Queue', # loc
         value     => sub { $_[0]->Queue },
+    },
+    IsEmpty => {
+        title     => 'Empty', # loc
+        value     => sub { $_[0]->IsEmpty? $_[0]->loc('Yes') : $_[0]->loc('No') },
+    },
+    UsedBy => {
+        title     => 'Used by scrips', # loc
+        value     => sub {
+            my @res;
+            my $scrips = $_[0]->UsedBy;
+            while ( my $scrip = $scrips->Next ) {
+                push @res, ', ' if @res;
+                push @res, \'<a href="', RT->Config->Get('WebPath'), '/Admin/Scrips/Modify.html';
+                push @res, '?id='. $scrip->id;
+                push @res, \'" title="', $scrip->Description, \'">', $scrip->id, \'</a>';
+            }
+            return @res;
+        },
     },
 };
 

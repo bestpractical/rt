@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -96,13 +96,25 @@ my $COLUMN_MAP = {
         attribute => sub { return shift @_ },
         title     => sub { return pop @_ },
         value     => sub {
+            # Cache the CF object on a per-request basis, to avoid
+            # having to load it for every row
+            my $key = join("-","CF",
+                           $_[0]->CustomFieldLookupType,
+                           $_[0]->CustomFieldLookupId,
+                           $_[-1]);
+
+            my $cf = $m->notes($key);
+            unless ($cf) {
+                $cf = $_[0]->LoadCustomFieldByIdentifier($_[-1]);
+                $m->notes($key, $cf);
+            }
+
             # Display custom field contents, separated by newlines.
             # For Image custom fields we also show a thumbnail here.
-
-            my $values = $_[0]->CustomFieldValues( $_[-1] );
+            my $values = $cf->ValuesForObject( $_[0] );
             my @values = map {
                 (
-                    ($_->CustomFieldObj->Type eq 'Image')
+                    ($cf->Type eq 'Image')
                         ? \($m->scomp( '/Elements/ShowCustomFieldImage', Object => $_ ))
                         : $_->Content
                 ),
@@ -116,19 +128,21 @@ my $COLUMN_MAP = {
     CheckBox => {
         title => sub {
             my $name = $_[1] || 'SelectedTickets';
-            my $checked = $m->request_args->{ $name .'All' }? 'checked="checked"': '';
+            my $checked = $DECODED_ARGS->{ $name .'All' }? 'checked="checked"': '';
 
-            return \qq{<input type="checkbox" name="${name}All" value="1" $checked
-                              onclick="setCheckbox(this.form, '$name', this.checked)" />};
+            return \qq{<input type="checkbox" name="}, $name, \qq{All" value="1" $checked
+                              onclick="setCheckbox(this, },
+                              $m->interp->apply_escapes($name,'j'),
+                              \qq{)" />};
         },
         value => sub {
             my $id = $_[0]->id;
 
             my $name = $_[2] || 'SelectedTickets';
-            return \qq{<input type="checkbox" name="$name" value="$id" checked="checked" />}
-                if $m->request_args->{ $name . 'All'};
+            return \qq{<input type="checkbox" name="}, $name, \qq{" value="$id" checked="checked" />}
+                if $DECODED_ARGS->{ $name . 'All'};
 
-            my $arg = $m->request_args->{ $name };
+            my $arg = $DECODED_ARGS->{ $name };
             my $checked = '';
             if ( $arg && ref $arg ) {
                 $checked = 'checked="checked"' if grep $_ == $id, @$arg;
@@ -136,7 +150,7 @@ my $COLUMN_MAP = {
             elsif ( $arg ) {
                 $checked = 'checked="checked"' if $arg == $id;
             }
-            return \qq{<input type="checkbox" name="$name" value="$id" $checked />}
+            return \qq{<input type="checkbox" name="}, $name, \qq{" value="$id" $checked />}
         },
     },
     RadioButton => {
@@ -145,10 +159,10 @@ my $COLUMN_MAP = {
             my $id = $_[0]->id;
 
             my $name = $_[2] || 'SelectedTicket';
-            my $arg = $m->request_args->{ $name };
+            my $arg = $DECODED_ARGS->{ $name };
             my $checked = '';
             $checked = 'checked="checked"' if $arg && $arg == $id;
-            return \qq{<input type="radio" name="SelectedTicket" value="$id" $checked />};
+            return \qq{<input type="radio" name="}, $name, \qq{" value="$id" $checked />};
         },
     },
     (map {
@@ -158,6 +172,15 @@ my $COLUMN_MAP = {
     } qw(WebPath WebBaseURL WebURL)),
     WebRequestPath    => { value => sub { substr( $m->request_path, 1 ) } },
     WebRequestPathDir => { value => sub { substr( $m->request_comp->dir_path, 1 ) } },
+    WebHomePath       => {
+        value => sub {
+            my $path = RT->Config->Get("WebPath");
+            if (not $session{CurrentUser}->Privileged) {
+                $path .= "/SelfService";
+            }
+            return \$path;
+        },
+    },
 };
 
 $COLUMN_MAP->{'CF'} = $COLUMN_MAP->{'CustomField'};

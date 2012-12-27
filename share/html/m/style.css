@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%init>
-    $HTML::Mason::Commands::r->content_type('text/css');
+    $HTML::Mason::Commands::r->content_type('text/css; charset=utf-8');
     $m->comp('/m/_elements/raw_style');
     $m->abort();
 </%init>

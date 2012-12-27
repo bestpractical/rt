@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -98,14 +98,14 @@ my %query;
 
     for(@session_fields) {
         $query{$_} = $current->{$_} unless defined $query{$_};
-        $query{$_} = $m->request_args->{$_} unless defined $query{$_};
+        $query{$_} = $DECODED_ARGS->{$_} unless defined $query{$_};
     }
 
-    if ($m->request_args->{'SavedSearchLoadSubmit'}) {
-        $query{'SavedChartSearchId'} = $m->request_args->{'SavedSearchLoad'};
+    if ($DECODED_ARGS->{'SavedSearchLoadSubmit'}) {
+        $query{'SavedChartSearchId'} = $DECODED_ARGS->{'SavedSearchLoad'};
     }
 
-    if ($m->request_args->{'SavedSearchSave'}) {
+    if ($DECODED_ARGS->{'SavedSearchSave'}) {
         $query{'SavedChartSearchId'} = $saved_search->{'SearchId'};
     }
 
@@ -124,7 +124,7 @@ my %query;
 <input type="hidden" class="hidden" name="Query" value="<% $ARGS{Query} %>" />
 <input type="hidden" class="hidden" name="SavedChartSearchId" value="<% $saved_search->{SearchId} || 'new' %>" />
 
-<&|/l, $m->scomp('Elements/SelectChartType', Name => 'ChartStyle', Default => $ChartStyle), $m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $ARGS{Query}, Default => $PrimaryGroupBy) 
+<&|/l_unsafe, $m->scomp('Elements/SelectChartType', Name => 'ChartStyle', Default => $ChartStyle), $m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $ARGS{Query}, Default => $PrimaryGroupBy) 
 &>[_1] chart by [_2]</&><input type="submit" class="button" value="<%loc('Update Chart')%>" />
 </form>
 </&>

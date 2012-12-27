@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -78,12 +78,9 @@
                 },
             },
             {   name => 'Status',
-                comp => '/Elements/SelectStatus',
+                comp => '/Ticket/Elements/SelectStatus',
                 args => {
                     Name            => "Status",
-                    Default         => $ARGS{Status} || $QueueObj->Lifecycle->DefaultOnCreate,
-                    DefaultValue    => 0,
-                    SkipDeleted     => 1,
                     QueueObj        => $QueueObj,
                 },
             },
@@ -101,11 +98,25 @@
 
 % $m->callback( CallbackName => 'AfterOwner', ARGSRef => \%ARGS );
 
-      <& /Ticket/Elements/EditCustomFields, %ARGS, QueueObj => $QueueObj, InTable => 1 &>
+      <& /Elements/EditCustomFields,
+          %ARGS,
+          Object => $ticket,
+          CustomFields => $QueueObj->TicketCustomFields,
+          Grouping => 'Basics',
+          InTable => 1,
+      &>
       <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, QueueObj => $QueueObj, InTable => 1 &>
     </table>
   </&>
-% $m->callback( CallbackName => 'AfterBasics', QueueObj => $QueueObj );
+% $m->callback( CallbackName => 'AfterBasics', QueueObj => $QueueObj, ARGSRef => \%ARGS );
+
+<& /Elements/EditCustomFieldCustomGroupings,
+    %ARGS,
+    Object => $ticket,
+    CustomFieldGenerator => sub { $QueueObj->TicketCustomFields },
+    DefaultsFromTopArguments => 0,
+&>
+
 </div>
 
 <div id="ticket-create-message">
@@ -151,6 +162,14 @@
     </font></i>
   </td>
 </tr>
+
+<& /Elements/EditCustomFields,
+    %ARGS,
+    Object => $ticket,
+    CustomFields => $QueueObj->TicketCustomFields,
+    Grouping => 'People',
+    InTable => 1,
+&>
 
 <tr>
 <td class="label">
@@ -238,6 +257,13 @@
 <table>
 <tr><td class="label"><&|/l&>Starts</&>:</td><td><& /Elements/SelectDate, Name => "Starts", Default => $ARGS{Starts} || '' &></td></tr>
 <tr><td class="label"><&|/l&>Due</&>:</td><td><& /Elements/SelectDate, Name => "Due", Default => $ARGS{Due} || '' &></td></tr>
+<& /Elements/EditCustomFields,
+    %ARGS,
+    Object => $ticket,
+    CustomFields => $QueueObj->TicketCustomFields,
+    Grouping => 'Dates',
+    InTable => 1,
+&>
 </table>
 </&>
 </div>
@@ -257,8 +283,13 @@
 <tr><td class="label"><&|/l&>Children</&></td><td><input size="10" name="MemberOf-new" value="<% $ARGS{'MemberOf-new'} || '' %>" /></td></tr>
 <tr><td class="label"><&|/l&>Refers to</&></td><td><input size="10" name="new-RefersTo" value="<% $ARGS{'new-RefersTo'} || '' %>" /></td></tr>
 <tr><td class="label"><&|/l&>Referred to by</&></td><td><input size="10" name="RefersTo-new" value="<% $ARGS{'RefersTo-new'} || '' %>" /></td></tr>
-
-
+<& /Elements/EditCustomFields,
+    %ARGS,
+    Object => $ticket,
+    CustomFields => $QueueObj->TicketCustomFields,
+    Grouping => 'Links',
+    InTable => 1,
+&>
 </table>
 </&>
 </div>
@@ -299,41 +330,30 @@ if ($CloneTicket) {
     my $members = $CloneTicketObj->Members;
     my ( @members, @members_of, @refers, @refers_by, @depends, @depends_by );
     my $refers = $CloneTicketObj->RefersTo;
+    my $get_link_value = sub {
+        my ($link, $type) = @_;
+        my $uri_method = $type . 'URI';
+        my $local_method = 'Local' . $type;
+        my $uri = $link->$uri_method;
+        return if $uri->IsLocal and
+                $uri->Object and
+                $uri->Object->isa('RT::Ticket') and
+                $uri->Object->Type eq 'reminder';
+
+        return $link->$local_method || $uri->URI;
+    };
     while ( my $refer = $refers->Next ) {
-        push @refers, $refer->LocalTarget;
+        my $refer_value = $get_link_value->($refer, 'Target');
+        push @refers, $refer_value if defined $refer_value;
     }
     $clone->{'new-RefersTo'} = join ' ', @refers;
 
     my $refers_by = $CloneTicketObj->ReferredToBy;
     while ( my $refer_by = $refers_by->Next ) {
-        push @refers_by, $refer_by->LocalBase;
+        my $refer_by_value = $get_link_value->($refer_by, 'Base');
+        push @refers_by, $refer_by_value if defined $refer_by_value;
     }
     $clone->{'RefersTo-new'} = join ' ', @refers_by;
-    if (0) {    # Temporarily disabled
-        my $depends = $CloneTicketObj->DependsOn;
-        while ( my $depend = $depends->Next ) {
-            push @depends, $depend->LocalTarget;
-        }
-        $clone->{'new-DependsOn'} = join ' ', @depends;
-
-        my $depends_by = $CloneTicketObj->DependedOnBy;
-        while ( my $depend_by = $depends_by->Next ) {
-            push @depends_by, $depend_by->LocalBase;
-        }
-        $clone->{'DependsOn-new'} = join ' ', @depends_by;
-
-        while ( my $member = $members->Next ) {
-            push @members, $member->LocalBase;
-        }
-        $clone->{'MemberOf-new'} = join ' ', @members;
-
-        my $members_of = $CloneTicketObj->MemberOf;
-        while ( my $member_of = $members_of->Next ) {
-            push @members_of, $member_of->LocalTarget;
-        }
-        $clone->{'new-MemberOf'} = join ' ', @members_of;
-
-    }
 
     my $cfs = $CloneTicketObj->QueueObj->TicketCustomFields();
     while ( my $cf = $cfs->Next ) {
@@ -358,19 +378,15 @@ my @results;
 my $title = loc("Create a new ticket");
 
 my $QueueObj = RT::Queue->new($session{'CurrentUser'});
-$QueueObj->Load($Queue) || Abort(loc("Queue could not be loaded."));
+$QueueObj->Load($Queue) || Abort(loc("Queue [_1] could not be loaded.", $Queue));
 
 $m->callback( QueueObj => $QueueObj, title => \$title, results => \@results, ARGSRef => \%ARGS );
 
+$m->scomp( '/Articles/Elements/SubjectOverride', ARGSRef => \%ARGS, QueueObj => $QueueObj, results => \@results );
+
 $QueueObj->Disabled && Abort(loc("Cannot create tickets in a disabled queue."));
 
-my $CFs = $QueueObj->TicketCustomFields();
-
-my $ValidCFs = $m->comp(
-    '/Elements/ValidateCustomFields',
-    CustomFields => $CFs,
-    ARGSRef => \%ARGS
-);
+my $ticket = RT::Ticket->new($session{'CurrentUser'}); # empty ticket object
 
 # deal with deleting uploaded attachments
 foreach my $key (keys %ARGS) {
@@ -399,6 +415,18 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
 }
 
 my $checks_failure = 0;
+
+{
+    my ($status, @msg) = $m->comp(
+        '/Elements/ValidateCustomFields',
+        CustomFields    => $QueueObj->TicketCustomFields,
+        ARGSRef         => \%ARGS
+    );
+    unless ($status) {
+        $checks_failure = 1;
+        push @results, @msg;
+    }
+}
 
 my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', Arguments => \%ARGS );
 $m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
@@ -440,17 +468,10 @@ $m->comp( '/Articles/Elements/CheckSkipCreate', ARGSRef => \%ARGS, skip_create =
               checks_failure => $checks_failure, results => \@results );
 
 if ((!exists $ARGS{'AddMoreAttach'}) and (defined($ARGS{'id'}) and $ARGS{'id'} eq 'new')) { # new ticket?
-    if ( $ValidCFs && !$checks_failure && !$skip_create ) {
+    if ( !$checks_failure && !$skip_create ) {
         $m->comp('Display.html', %ARGS);
         $RT::Logger->crit("After display call; error is $@");
         $m->abort();
-    }
-    elsif ( !$ValidCFs ) {
-        # Invalid CFs
-        while (my $CF = $CFs->Next) {
-            my $msg = $m->notes('InvalidField-' . $CF->Id) or next;
-            push @results, $CF->Name . ': ' . $msg;
-        }
     }
 }
 PageMenu->child( basics => raw_html =>  q[<a href="#basics" onclick="return switchVisibility('Ticket-Create-basics','Ticket-Create-details');">] . loc('Basics') . q[</a>]);

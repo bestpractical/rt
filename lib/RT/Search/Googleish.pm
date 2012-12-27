@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -110,7 +110,7 @@ sub QueryToSQL {
                             (\w+)  # A straight word
                             (?:\.  # With an optional .foo
                                 ($RE{delimited}{-delim=>q['"]}
-                                |\w+
+                                |[\w-]+  # Allow \w + dashes
                                 ) # Which could be ."foo bar", too
                             )?
                         )
@@ -133,6 +133,8 @@ sub QueryToSQL {
 
     my @clauses;
     for my $subclause (sort keys %limits) {
+        next unless @{$limits{$subclause}};
+
         my $op = $AND{lc $subclause} ? "AND" : "OR";
         push @clauses, "( ".join(" $op ", @{$limits{$subclause}})." )";
     }
@@ -198,7 +200,7 @@ our @GUESS = (
     [ 40 => sub {
           return "status" if RT::Queue->new( $_[2] )->IsValidStatus( $_ )
       }],
-    [ 40 => sub { return "status" if /^(in)?active$/i } ],
+    [ 40 => sub { return "status" if /^((in)?active|any)$/i } ],
     [ 50 => sub {
           my $q = RT::Queue->new( $_[2] );
           return "queue" if $q->Load($_) and $q->Id
@@ -223,6 +225,11 @@ sub GuessType {
     return "default";
 }
 
+# $_[0] is $self
+# $_[1] is escaped value without surrounding single quotes
+# $_[2] is a boolean of "was quoted by the user?"
+#       ensure this is false before you do smart matching like $_[1] eq "me"
+# $_[3] is escaped subkey, if any (see HandleCf)
 sub HandleDefault   { return subject   => "Subject LIKE '$_[1]'"; }
 sub HandleSubject   { return subject   => "Subject LIKE '$_[1]'"; }
 sub HandleFulltext  { return content   => "Content LIKE '$_[1]'"; }
@@ -233,12 +240,21 @@ sub HandleStatus    {
         return status => map {s/(['\\])/\\$1/g; "Status = '$_'"} RT::Queue->ActiveStatusArray();
     } elsif ($_[1] =~ /^inactive$/i and !$_[2]) {
         return status => map {s/(['\\])/\\$1/g; "Status = '$_'"} RT::Queue->InactiveStatusArray();
+    } elsif ($_[1] =~ /^any$/i and !$_[2]) {
+        return 'status';
     } else {
         return status => "Status = '$_[1]'";
     }
 }
 sub HandleOwner     {
-    return owner  => (!$_[2] and $_[1] eq "me") ? "Owner.id = '__CurrentUser__'" : "Owner = '$_[1]'";
+    if (!$_[2] and $_[1] eq "me") {
+        return owner => "Owner.id = '__CurrentUser__'";
+    }
+    elsif (!$_[2] and $_[1] =~ /\w+@\w+/) {
+        return owner => "Owner.EmailAddress = '$_[1]'";
+    } else {
+        return owner => "Owner = '$_[1]'";
+    }
 }
 sub HandleWatcher     {
     return watcher => (!$_[2] and $_[1] eq "me") ? "Watcher.id = '__CurrentUser__'" : "Watcher = '$_[1]'";

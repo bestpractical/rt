@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -99,47 +99,31 @@ activated in the config.
 sub Commit {
     my $self = shift;
 
-    $self->DeferDigestRecipients() if RT->Config->Get('RecordOutgoingEmail');
+    return abs $self->SendMessage( $self->TemplateObj->MIMEObj )
+        unless RT->Config->Get('RecordOutgoingEmail');
+
+    $self->DeferDigestRecipients();
     my $message = $self->TemplateObj->MIMEObj;
 
     my $orig_message;
-    if (   RT->Config->Get('RecordOutgoingEmail')
-        && RT->Config->Get('GnuPG')->{'Enable'} )
-    {
-
-        # it's hacky, but we should know if we're going to crypt things
-        my $attachment = $self->TransactionObj->Attachments->First;
-
-        my %crypt;
-        foreach my $argument (qw(Sign Encrypt)) {
-            if ( $attachment
-                && defined $attachment->GetHeader("X-RT-$argument") )
-            {
-                $crypt{$argument} = $attachment->GetHeader("X-RT-$argument");
-            } else {
-                $crypt{$argument} = $self->TicketObj->QueueObj->$argument();
-            }
-        }
-        if ( $crypt{'Sign'} || $crypt{'Encrypt'} ) {
-            $orig_message = $message->dup;
-        }
-    }
+    $orig_message = $message->dup if RT::Interface::Email::WillSignEncrypt(
+        Attachment => $self->TransactionObj->Attachments->First,
+        Ticket     => $self->TicketObj,
+    );
 
     my ($ret) = $self->SendMessage($message);
-    if ( $ret > 0 && RT->Config->Get('RecordOutgoingEmail') ) {
-        if ($orig_message) {
-            $message->attach(
-                Type        => 'application/x-rt-original-message',
-                Disposition => 'inline',
-                Data        => $orig_message->as_string,
-            );
-        }
-        $self->RecordOutgoingMailTransaction($message);
-        $self->RecordDeferredRecipients();
+    return abs( $ret ) if $ret <= 0;
+
+    if ($orig_message) {
+        $message->attach(
+            Type        => 'application/x-rt-original-message',
+            Disposition => 'inline',
+            Data        => $orig_message->as_string,
+        );
     }
-
-
-    return ( abs $ret );
+    $self->RecordOutgoingMailTransaction($message);
+    $self->RecordDeferredRecipients();
+    return 1;
 }
 
 =head2 Prepare
@@ -348,7 +332,7 @@ sub AddAttachments {
 
     $MIMEObj->head->delete('RT-Attach-Message');
 
-    my $attachments = RT::Attachments->new(RT->SystemUser);
+    my $attachments = RT::Attachments->new( RT->SystemUser );
     $attachments->Limit(
         FIELD => 'TransactionId',
         VALUE => $self->TransactionObj->Id
@@ -408,11 +392,20 @@ sub AddAttachment {
     my $attach  = shift;
     my $MIMEObj = shift || $self->TemplateObj->MIMEObj;
 
+    # $attach->TransactionObj may not always be $self->TransactionObj
+    return unless $attach->Id
+              and $attach->TransactionObj->CurrentUserCanSee;
+
+    # ->attach expects just the disposition type; extract it if we have the header
+    my $disp = ($attach->GetHeader('Content-Disposition') || '')
+                    =~ /^\s*(inline|attachment)/i ? $1 : undef;
+
     $MIMEObj->attach(
-        Type     => $attach->ContentType,
-        Charset  => $attach->OriginalEncoding,
-        Data     => $attach->OriginalContent,
-        Filename => $self->MIMEEncodeString( $attach->Filename ),
+        Type        => $attach->ContentType,
+        Charset     => $attach->OriginalEncoding,
+        Data        => $attach->OriginalContent,
+        Disposition => $disp, # a false value defaults to inline in MIME::Entity
+        Filename    => $self->MIMEEncodeString( $attach->Filename ),
         'RT-Attachment:' => $self->TicketObj->Id . "/"
             . $self->TransactionObj->Id . "/"
             . $attach->id,
@@ -466,8 +459,7 @@ sub AddTicket {
     my $self = shift;
     my $tid  = shift;
 
-    # XXX: we need a current user here, but who is current user?
-    my $attachs   = RT::Attachments->new(RT->SystemUser);
+    my $attachs   = RT::Attachments->new( $self->TransactionObj->CreatorObj );
     my $txn_alias = $attachs->TransactionAlias;
     $attachs->Limit( ALIAS => $txn_alias, FIELD => 'Type', VALUE => 'Create' );
     $attachs->Limit(
@@ -606,12 +598,6 @@ sub SetRTSpecialHeaders {
                 ),
             );
         }
-    }
-
-    if (my $precedence = RT->Config->Get('DefaultMailPrecedence')
-        and !$self->TemplateObj->MIMEObj->head->get("Precedence")
-    ) {
-        $self->SetHeader( 'Precedence', $precedence );
     }
 
     $self->SetHeader( 'X-RT-Loop-Prevention', RT->Config->Get('rtname') );
@@ -1009,15 +995,16 @@ Set References and In-Reply-To headers for this message.
 
 sub SetReferencesHeaders {
     my $self = shift;
-    my ( @in_reply_to, @references, @msgid );
 
-    if ( my $top = $self->TransactionObj->Message->First ) {
-        @in_reply_to = split( /\s+/m, $top->GetHeader('In-Reply-To') || '' );
-        @references  = split( /\s+/m, $top->GetHeader('References')  || '' );
-        @msgid       = split( /\s+/m, $top->GetHeader('Message-ID')  || '' );
-    } else {
+    my $top = $self->TransactionObj->Message->First;
+    unless ( $top ) {
+        $self->SetHeader( References => $self->PseudoReference );
         return (undef);
     }
+
+    my @in_reply_to = split( /\s+/m, $top->GetHeader('In-Reply-To') || '' );
+    my @references  = split( /\s+/m, $top->GetHeader('References')  || '' );
+    my @msgid       = split( /\s+/m, $top->GetHeader('Message-ID')  || '' );
 
     # There are two main cases -- this transaction was created with
     # the RT Web UI, and hence we want to *not* append its Message-ID

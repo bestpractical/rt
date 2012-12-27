@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -122,15 +122,11 @@ sub Connect {
         ($version) = $version =~ /^(\d+\.\d+)/;
         $self->dbh->do("SET NAMES 'utf8'") if $version >= 4.1;
     }
-
-
-    if ( $db_type eq 'Pg' ) {
+    elsif ( $db_type eq 'Pg' ) {
         my $version = $self->DatabaseVersion;
         ($version) = $version =~ /^(\d+\.\d+)/;
         $self->dbh->do("SET bytea_output = 'escape'") if $version >= 9.0;
     }
-
-
 
     $self->dbh->{'LongReadLen'} = RT->Config->Get('MaxAttachmentSize');
 }
@@ -224,28 +220,25 @@ sub SystemDSN {
 
 sub CheckIntegrity {
     my $self = shift;
-    $self = new $self unless ref $self;
 
-    do {
+    unless ($RT::Handle and $RT::Handle->dbh) {
         local $@;
         unless ( eval { RT::ConnectToDatabase(); 1 } ) {
             return (0, 'no connection', "$@");
         }
-    };
-
-    RT::InitLogging();
+    }
 
     require RT::CurrentUser;
     my $test_user = RT::CurrentUser->new;
     $test_user->Load('RT_System');
     unless ( $test_user->id ) {
-        return (0, 'no system user', "Couldn't find RT_System user in the DB '". $self->DSN ."'");
+        return (0, 'no system user', "Couldn't find RT_System user in the DB '". $RT::Handle->DSN ."'");
     }
 
     $test_user = RT::CurrentUser->new;
     $test_user->Load('Nobody');
     unless ( $test_user->id ) {
-        return (0, 'no nobody user', "Couldn't find Nobody user in the DB '". $self->DSN ."'");
+        return (0, 'no nobody user', "Couldn't find Nobody user in the DB '". $RT::Handle->DSN ."'");
     }
 
     return $RT::Handle->dbh;
@@ -714,20 +707,18 @@ sub InsertInitialData {
 
     # system role groups
     foreach my $name (qw(Owner Requestor Cc AdminCc)) {
-        my $group = RT::Group->new( RT->SystemUser );
-        $group->LoadSystemRoleGroup( $name );
+        my $group = RT->System->RoleGroup( $name );
         if ( $group->id ) {
             push @warns, "System role '$name' already exists.";
             next;
         }
 
         $group = RT::Group->new( RT->SystemUser );
-        my ( $val, $msg ) = $group->_Create(
-            Type        => $name,
-            Domain      => 'RT::System-Role',
-            Description => 'SystemRolegroup for internal use',  # loc
-            Name        => '',
-            Instance    => '',
+        my ( $val, $msg ) = $group->CreateRoleGroup(
+            Type                => $name,
+            Object              => RT->System,
+            Description         => 'SystemRolegroup for internal use',  # loc
+            InsideTransaction   => 0,
         );
         return ($val, $msg) unless $val;
     }
@@ -748,6 +739,10 @@ sub InsertData {
     my $self     = shift;
     my $datafile = shift;
     my $root_password = shift;
+    my %args     = (
+        disconnect_after => 1,
+        @_
+    );
 
     # Slurp in stuff to insert from the datafile. Possible things to go in here:-
     our (@Groups, @Users, @ACL, @Queues, @ScripActions, @ScripConditions,
@@ -817,6 +812,7 @@ sub InsertData {
     if ( @Users ) {
         $RT::Logger->debug("Creating users...");
         foreach my $item (@Users) {
+            my $member_of = delete $item->{'MemberOf'};
             if ( $item->{'Name'} eq 'root' && $root_password ) {
                 $item->{'Password'} = $root_password;
             }
@@ -826,6 +822,37 @@ sub InsertData {
                 $RT::Logger->error( $msg );
             } else {
                 $RT::Logger->debug( $return ."." );
+            }
+            if ( $member_of ) {
+                $member_of = [ $member_of ] unless ref $member_of eq 'ARRAY';
+                foreach( @$member_of ) {
+                    my $parent = RT::Group->new($RT::SystemUser);
+                    if ( ref $_ eq 'HASH' ) {
+                        $parent->LoadByCols( %$_ );
+                    }
+                    elsif ( !ref $_ ) {
+                        $parent->LoadUserDefinedGroup( $_ );
+                    }
+                    else {
+                        $RT::Logger->error(
+                            "(Error: wrong format of MemberOf field."
+                            ." Should be name of user defined group or"
+                            ." hash reference with 'column => value' pairs."
+                            ." Use array reference to add to multiple groups)"
+                        );
+                        next;
+                    }
+                    unless ( $parent->Id ) {
+                        $RT::Logger->error("(Error: couldn't load group to add member)");
+                        next;
+                    }
+                    my ( $return, $msg ) = $parent->AddMember( $new_entry->Id );
+                    unless ( $return ) {
+                        $RT::Logger->error( $msg );
+                    } else {
+                        $RT::Logger->debug( $return ."." );
+                    }
+                }
             }
         }
         $RT::Logger->debug("done.");
@@ -856,26 +883,28 @@ sub InsertData {
                 @queues = @{ delete $item->{'Queue'} };
             }
 
+            if ( $item->{'BasedOn'} ) {
+                if ( $item->{'LookupType'} ) {
+                    my $basedon = RT::CustomField->new($RT::SystemUser);
+                    my ($ok, $msg ) = $basedon->LoadByCols( Name => $item->{'BasedOn'},
+                                                            LookupType => $item->{'LookupType'} );
+                    if ($ok) {
+                        $item->{'BasedOn'} = $basedon->Id;
+                    } else {
+                        $RT::Logger->error("Unable to load $item->{BasedOn} as a $item->{LookupType} CF.  Skipping BasedOn: $msg");
+                        delete $item->{'BasedOn'};
+                    }
+                } else {
+                    $RT::Logger->error("Unable to load CF $item->{BasedOn} because no LookupType was specified.  Skipping BasedOn");
+                    delete $item->{'BasedOn'};
+                }
+
+            } 
+
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless( $return ) {
                 $RT::Logger->error( $msg );
                 next;
-            }
-
-            if ( $item->{'BasedOn'} ) {
-                my $basedon = RT::CustomField->new($RT::SystemUser);
-                my ($ok, $msg ) = $basedon->LoadByCols( Name => $item->{'BasedOn'},
-                                                        LookupType => $new_entry->LookupType );
-                if ($ok) {
-                    ($ok, $msg) = $new_entry->SetBasedOn( $basedon );
-                    if ($ok) {
-                        $RT::Logger->debug("Added BasedOn $item->{BasedOn}: $msg");
-                    } else {
-                        $RT::Logger->error("Failed to add basedOn $item->{BasedOn}: $msg");
-                    }
-                } else {
-                    $RT::Logger->error("Unable to load $item->{BasedOn} as a $item->{LookupType} CF.  Skipping BasedOn");
-                }
             }
 
             foreach my $value ( @{$values} ) {
@@ -936,18 +965,25 @@ sub InsertData {
                 } elsif ( $item->{'GroupDomain'} eq 'SystemInternal' ) {
                   $princ->LoadSystemInternalGroup( $item->{'GroupType'} );
                 } elsif ( $item->{'GroupDomain'} eq 'RT::System-Role' ) {
-                  $princ->LoadSystemRoleGroup( $item->{'GroupType'} );
+                  $princ->LoadRoleGroup( Object => RT->System, Type => $item->{'GroupType'} );
                 } elsif ( $item->{'GroupDomain'} eq 'RT::Queue-Role' &&
                           $item->{'Queue'} )
                 {
-                  $princ->LoadQueueRoleGroup( Type => $item->{'GroupType'},
-                                              Queue => $object->id);
+                  $princ->LoadRoleGroup( Object => $object, Type => $item->{'GroupType'} );
                 } else {
                   $princ->Load( $item->{'GroupId'} );
                 }
+                unless ( $princ->Id ) {
+                    RT->Logger->error("Unable to load Group: GroupDomain => $item->{GroupDomain}, GroupId => $item->{GroupId}, Queue => $item->{Queue}");
+                    next;
+                }
             } else {
                 $princ = RT::User->new(RT->SystemUser);
-                $princ->Load( $item->{'UserId'} );
+                my ($ok, $msg) = $princ->Load( $item->{'UserId'} );
+                unless ( $ok ) {
+                    RT->Logger->error("Unable to load user: $item->{UserId} : $msg");
+                    next;
+                }
             }
 
             # Grant it
@@ -1023,14 +1059,21 @@ sub InsertData {
             my @queues = ref $item->{'Queue'} eq 'ARRAY'? @{ $item->{'Queue'} }: $item->{'Queue'} || 0;
             push @queues, 0 unless @queues; # add global queue at least
 
+            my ( $return, $msg ) = $new_entry->Create( %$item, Queue => shift @queues );
+            unless ( $return ) {
+                $RT::Logger->error( $msg );
+                next;
+            }
+            else {
+                $RT::Logger->debug( $return ."." );
+            }
             foreach my $q ( @queues ) {
-                my ( $return, $msg ) = $new_entry->Create( %$item, Queue => $q );
-                unless ( $return ) {
-                    $RT::Logger->error( $msg );
-                }
-                else {
-                    $RT::Logger->debug( $return ."." );
-                }
+                my ($return, $msg) = $new_entry->AddToObject(
+                    ObjectId => $q,
+                    Stage    => $item->{'Stage'},
+                );
+                $RT::Logger->error( "Couldn't apply scrip to $q: $msg" )
+                    unless $return;
             }
         }
         $RT::Logger->debug("done.");
@@ -1063,8 +1106,14 @@ sub InsertData {
         $RT::Logger->debug("done.");
     }
 
-    my $db_type = RT->Config->Get('DatabaseType');
-    $RT::Handle->Disconnect() unless $db_type eq 'SQLite';
+    # XXX: This disconnect doesn't really belong here; it's a relict from when
+    # this method was extracted from rt-setup-database.  However, too much
+    # depends on it to change without significant testing.  At the very least,
+    # we can provide a way to skip the side-effect.
+    if ( $args{disconnect_after} ) {
+        my $db_type = RT->Config->Get('DatabaseType');
+        $RT::Handle->Disconnect() unless $db_type eq 'SQLite';
+    }
 
     $RT::Logger->debug("Done setting up database content.");
 

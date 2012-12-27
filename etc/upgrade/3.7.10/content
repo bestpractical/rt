@@ -1,5 +1,8 @@
+use strict;
+use warnings;
 
-@Templates = (
+
+our @Templates = (
     {  Queue       => 0,
        Name        => "Error: public key",    # loc
        Description =>

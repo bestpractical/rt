@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -73,6 +73,7 @@ use warnings;
 use base qw/RT::Record/;
 
 use RT::ACL;
+use RT::ACE;
 
 # System rights are rights granted to the whole system
 # XXX TODO Can't localize these outside of having an object around.
@@ -116,31 +117,66 @@ This method as well returns rights of other RT objects,
 like L<RT::Queue> or L<RT::Group>. To allow users to apply
 those rights globally.
 
+If an L<RT::Principal> is passed as the first argument, the available rights
+will be limited to ones which make sense for the principal.  Currently only
+role groups are supported and rights announced by object types to which the
+role group doesn't apply are not returned.
+
 =cut
 
-
-use RT::CustomField;
-use RT::Queue;
-use RT::Group; 
-use RT::Class;
 sub AvailableRights {
-    my $self = shift;
+    my $self        = shift;
+    my $principal   = shift;
+    my @types       = keys %RT::ACE::OBJECT_TYPES;
 
-    my $queue = RT::Queue->new(RT->SystemUser);
-    my $group = RT::Group->new(RT->SystemUser);
-    my $cf    = RT::CustomField->new(RT->SystemUser);
-    my $class = RT::Class->new(RT->SystemUser);
+    # Include global system rights by default
+    my %rights = %{ $RIGHTS };
 
-    my $qr = $queue->AvailableRights();
-    my $gr = $group->AvailableRights();
-    my $cr = $cf->AvailableRights();
-    my $clr = $class->AvailableRights();
+    # Only return rights on classes which support the role asked for
+    if ($principal and $principal->IsRoleGroup) {
+        my $role = $principal->Object->Type;
+        @types   = grep { $_->HasRole($role) } @types;
+        %rights  = ();
+    }
 
-    # Build a merged list of all system wide rights, queue rights and group rights.
-    my %rights = (%{$RIGHTS}, %{$gr}, %{$qr}, %{$cr}, %{$clr});
+    # Build a merged list of system wide rights, queue rights, group rights, etc.
+    %rights = (
+        %rights,
+        %{ $self->_ForACEObjectTypes(\@types => 'AvailableRights', @_) },
+    );
     delete $rights{ExecuteCode} if RT->Config->Get('DisallowExecuteCode');
 
     return(\%rights);
+}
+
+sub _ForACEObjectTypes {
+    my $self   = shift;
+    my $types  = shift || [];
+    my $method = shift;
+    return {} unless @$types and $method;
+
+    my %data;
+    for my $class (sort @$types) {
+        next unless $RT::ACE::OBJECT_TYPES{$class};
+
+        # Skip ourselves otherwise we'd loop infinitely
+        next if $class eq 'RT::System';
+
+        my $object = $class->new(RT->SystemUser);
+
+        unless ($object->can($method)) {
+            RT->Logger->error("RT::ACE object type $class doesn't support the $method method! Skipping.");
+            next;
+        }
+
+        # embrace and extend
+        %data = (
+            %data,
+            %{ $object->$method(@_) || {} },
+        );
+    }
+
+    return \%data;
 }
 
 =head2 RightCategories
@@ -153,20 +189,13 @@ values are the category (General, Staff, Admin) the right falls into.
 sub RightCategories {
     my $self = shift;
 
-    my $queue = RT::Queue->new(RT->SystemUser);
-    my $group = RT::Group->new(RT->SystemUser);
-    my $cf    = RT::CustomField->new(RT->SystemUser);
-    my $class = RT::Class->new(RT->SystemUser);
+    # Build a merged list of all right categories system wide, per-queue, per-group, etc.
+    my %categories = (
+        %{ $RIGHT_CATEGORIES },
+        %{ $self->_ForACEObjectTypes([keys %RT::ACE::OBJECT_TYPES] => 'RightCategories') },
+    );
 
-    my $qr = $queue->RightCategories();
-    my $gr = $group->RightCategories();
-    my $cr = $cf->RightCategories();
-    my $clr = $class->RightCategories();
-
-    # Build a merged list of all system wide rights, queue rights and group rights.
-    my %rights = (%{$RIGHT_CATEGORIES}, %{$gr}, %{$qr}, %{$cr}, %{$clr});
-
-    return(\%rights);
+    return \%categories;
 }
 
 =head2 AddRights C<RIGHT>, C<DESCRIPTION> [, ...]
@@ -258,6 +287,55 @@ sub QueueCacheNeedsUpdate {
         my $cache = $self->FirstAttribute('QueueCacheNeedsUpdate');
         return (defined $cache ? $cache->Content : 0 );
     }
+}
+
+=head2 AddUpgradeHistory package, data
+
+Adds an entry to the upgrade history database. The package can be either C<RT>
+for core RT upgrades, or the fully qualified name of a plugin. The data must be
+a hash reference.
+
+=cut
+
+sub AddUpgradeHistory {
+    my $self  = shift;
+    my $package = shift;
+    my $data  = shift;
+
+    $data->{timestamp}  ||= time;
+    $data->{rt_version} ||= $RT::VERSION;
+
+    my $upgrade_history_attr = $self->FirstAttribute('UpgradeHistory');
+    my $upgrade_history = $upgrade_history_attr ? $upgrade_history_attr->Content : {};
+
+    push @{ $upgrade_history->{$package} }, $data;
+
+    $self->SetAttribute(
+        Name    => 'UpgradeHistory',
+        Content => $upgrade_history,
+    );
+}
+
+=head2 UpgradeHistory [package]
+
+Returns the entries of RT's upgrade history. If a package is specified, the list
+of upgrades for that package will be returned. Otherwise a hash reference of
+C<< package => [upgrades] >> will be returned.
+
+=cut
+
+sub UpgradeHistory {
+    my $self  = shift;
+    my $package = shift;
+
+    my $upgrade_history_attr = $self->FirstAttribute('UpgradeHistory');
+    my $upgrade_history = $upgrade_history_attr ? $upgrade_history_attr->Content : {};
+
+    if ($package) {
+        return @{ $upgrade_history->{$package} || [] };
+    }
+
+    return $upgrade_history;
 }
 
 RT::Base->_ImportOverlays();

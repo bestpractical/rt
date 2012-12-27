@@ -895,7 +895,7 @@ but new tables are expected to be consistent.
 
 =head1 EXTENDING RT CLASSES
 
-=head2 The Overlay mechansim
+=head2 The Overlay mechanism
 
 RT's classes allow "overlay" methods to be placed into files named Filename_Vendor.pm and Filename_Local.pm
 _Vendor is for 3rd-party vendor add-ons, while _Local is for site-local customizations.

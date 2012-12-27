@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -54,6 +54,15 @@ package RT::Articles;
 use base 'RT::SearchBuilder';
 
 sub Table {'Articles'}
+
+sub _Init {
+    my $self = shift;
+    $self->OrderByCols(
+        { FIELD => 'SortOrder', ORDER => 'ASC' },
+        { FIELD => 'Name',      ORDER => 'ASC' },
+    );
+    return $self->SUPER::_Init( @_ );
+}
 
 =head2 Next
 
@@ -351,6 +360,7 @@ sub LimitCustomField {
             QUOTEVALUE      => $args{'QUOTEVALUE'},
             ENTRYAGGREGATOR => 'AND', #$args{'ENTRYAGGREGATOR'},
             SUBCLAUSE       => $clause,
+            CASESENSITIVE   => 0,
         );
         $self->SUPER::Limit(
             ALIAS           => $ObjectValuesAlias,
@@ -371,6 +381,7 @@ sub LimitCustomField {
             QUOTEVALUE      => $args{'QUOTEVALUE'},
             ENTRYAGGREGATOR => $args{'ENTRYAGGREGATOR'},
             SUBCLAUSE       => $clause,
+            CASESENSITIVE   => 0,
         );
         $self->SUPER::Limit(
             ALIAS           => $ObjectValuesAlias,
@@ -380,6 +391,7 @@ sub LimitCustomField {
             QUOTEVALUE      => $args{'QUOTEVALUE'},
             ENTRYAGGREGATOR => $args{'ENTRYAGGREGATOR'},
             SUBCLAUSE       => $clause,
+            CASESENSITIVE   => 0,
         );
     }
 }

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,12 +45,23 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $r->content_type('application/json');
-<% JSON::to_json( \@suggestions ) |n %>
+% $r->content_type('application/json; charset=utf-8');
+<% JSON( \@suggestions ) |n %>
 % $m->abort;
 <%INIT>
 # Only autocomplete the last value
 my $term = (split /\n/, $ARGS{term} || '')[-1];
+
+my $abort = sub {
+    $r->content_type('application/json; charset=utf-8');
+    $m->out(JSON::to_json( [] ));
+    $m->abort;
+};
+
+unless ( exists $ARGS{ContextType} and exists $ARGS{ContextId} ) {
+    RT->Logger->debug("No context provided");
+    $abort->();
+}
 
 my $CustomField;
 for my $k ( keys %ARGS ) {
@@ -59,9 +70,38 @@ for my $k ( keys %ARGS ) {
     last;
 }
 
-$m->abort unless $CustomField;
+unless ( $CustomField ) {
+    RT->Logger->debug("No CustomField provided");
+    $abort->();
+}
+
+my $SystemCustomFieldObj = RT::CustomField->new( RT->SystemUser );
+my ($id, $msg) = $SystemCustomFieldObj->LoadById( $CustomField ) ;
+unless ( $id ) {
+    RT->Logger->debug("Invalid CustomField provided: $msg");
+    $abort->();
+}
+
+my $context_object = $SystemCustomFieldObj->LoadContextObject(
+    $ARGS{ContextType}, $ARGS{ContextId} );
+$abort->() unless $context_object;
+
 my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
-$CustomFieldObj->Load( $CustomField );
+if ( $SystemCustomFieldObj->ValidateContextObject($context_object) ) {
+    # drop our privileges that came from calling LoadContextObject as the System User
+    $context_object->new($session{'CurrentUser'});
+    $context_object->LoadById($ARGS{ContextId});
+    $CustomFieldObj->SetContextObject( $context_object );
+} else {
+    RT->Logger->debug("Invalid Context Object ".$context_object->id." for Custom Field ".$SystemCustomFieldObj->id);
+    $abort->();
+}
+
+($id, $msg) = $CustomFieldObj->LoadById( $CustomField );
+unless ( $CustomFieldObj->Name ) {
+    RT->Logger->debug("Current User cannot see this Custom Field, terminating");
+    $abort->();
+}
 
 my $values = $CustomFieldObj->Values;
 $values->Limit(
@@ -69,6 +109,7 @@ $values->Limit(
     OPERATOR        => 'LIKE',
     VALUE           => $term,
     SUBCLAUSE       => 'autocomplete',
+    CASESENSITIVE   => 0,
 );
 $values->Limit(
     ENTRYAGGREGATOR => 'OR',
@@ -76,6 +117,7 @@ $values->Limit(
     OPERATOR        => 'LIKE',
     VALUE           => $term,
     SUBCLAUSE       => 'autocomplete',
+    CASESENSITIVE   => 0,
 );
 
 my @suggestions;
@@ -89,6 +131,4 @@ while( my $value = $values->Next ) {
         : $value->Name,
       };
 }
-
-require JSON;
 </%INIT>

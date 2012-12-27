@@ -1,0 +1,188 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<%INIT>
+my $plain_text_pre
+    = RT->Config->Get( 'PlainTextPre', $session{'CurrentUser'} );
+my $plain_text_mono
+    = RT->Config->Get( 'PlainTextMono', $session{'CurrentUser'} );
+my $Depth = 0;
+
+my $object = $Transaction ? $Transaction->Object : undef;
+
+my $print_content = sub {
+    my $ref = shift;
+    return unless defined $$ref && length $$ref;
+
+    $m->callback( content => $ref, %ARGS );
+    if ( $ContentType eq 'text/plain' ) {
+        $m->comp( '/Elements/MakeClicky',
+                  content => $ref,
+                  object  => $object,
+                  %ARGS
+                );
+
+        if ( defined $$ref && !$plain_text_pre && !$plain_text_mono ) {
+            $$ref =~ s{(\r?\n)}{<br />}g;
+        }
+    } else {
+        if ( defined $$ref ) {
+            $$ref =~ s/^[\r\n]+//g;
+        }
+    }
+    $m->out($$ref);
+};
+
+if ( ref $Message ) {
+    $m->out('<pre>')
+        if (    $ContentType eq 'text/plain'
+             && $plain_text_pre
+             && !$Depth
+             && !$plain_text_mono );
+    $m->out(   '<div class="message-stanza'
+             . ( ($ContentType eq 'text/plain' &&  $plain_text_mono) ? ' plain-text-white-space' : '' ) . '"'
+             . '>' );
+
+    my @stack;
+    my $para = '';
+    my $i    = 0;
+
+AGAIN: foreach ( ; $i < @$Message; $i++ ) {
+        my $stanza = $Message->[$i];
+        if ( ref $stanza eq "HASH" ) {
+            # Fix message stanza nesting for Outlook's quoting styles
+            if (     $stanza->{raw}
+                 and not $stanza->{_outlooked}
+                 and $stanza->{raw} =~ /^               # start of an internal line
+                                        \s*             # optional whitespace
+                                        (?:
+                                            -{3,}       # at least three hyphens
+                                            \s*         # whitespace varies between Outlook versions
+                                                        # don't trigger on PGP signed message or signature blocks
+                                            (?!(?:BEGIN|END)\s+PGP)
+                                            \w          # at least one word character
+                                            [\w\s]{3,}? # the rest of the word(s), totalling at least 5 characters,
+                                                        #    loose to get different languages
+                                            \w          # at least one ending word character
+                                            \s*         # whitespace varies between Outlook versions
+                                            -{3,}       # at least three hyphens again
+                                          |
+                                            _{6,}       # OR: six or more underscores
+                                        )
+                                        \s*$            # optional whitespace until the end of the line
+                                       /xm )
+            {
+                # There's content before the quoted message, but in the
+                # same stanza.  Break it out!
+                if ( my $start = $-[0] ) {
+                    my %preceding = %$stanza;
+
+                    # We don't process $stanza->{text} because we don't use it
+                    # and it isn't given to us by HTML::Quoted.  If we ever
+                    # need to, we can process it the same way as 'raw'.
+                    $preceding{raw} = substr($stanza->{raw}, 0, $start, '');
+
+                    # Replace the current stanza with the two we just created
+                    splice @$Message, $i, 1, \%preceding, $stanza;
+
+                    # Try it again from the top now that we've rejiggered our
+                    # stanzas.  We'll process the Outlook stanza again, and hit
+                    # the else below this time.
+                    redo;
+                } else {
+                    # Nest the current stanza and everything that follows
+                    $stanza->{_outlooked}++;
+                    $stanza = $Message->[ $i ] = [ splice @$Message, $i ];
+                }
+            }
+            else {
+                $para .= ( defined $stanza->{raw} ? $stanza->{raw} : '' )."\n";
+            }
+        }
+        next unless ref $stanza eq "ARRAY";
+
+        $print_content->( \$para );
+        $para = '';
+
+        $Depth++;
+        push @stack, [ $Message, $i + 1 ];
+        ( $Message, $i ) = ( $stanza, -1 );
+
+        if ( $Depth == 1 ) {
+            $m->comp('FoldStanzaJS');
+        }
+        my @classes = ('message-stanza');
+        push @classes, $Depth == 1 ? 'closed' : 'open';
+        $m->out(   '<div class="' . join(" ", @classes) . '">' );
+    }
+    if ( length $para ) {
+        $print_content->( \$para );
+        $para = '';
+    }
+
+    if (@stack) {
+        ( $Message, $i ) = @{ pop @stack };
+        $Depth--;
+        $m->out('</div>');
+        goto AGAIN;
+    }
+
+    $m->out('</div>');
+    $m->out('</pre>')
+        if (    $ContentType eq 'text/plain'
+             && $plain_text_pre
+             && !$Depth
+             && !$plain_text_mono );
+} else {
+    $print_content->( \$Message );
+}
+</%INIT>
+<%ARGS>
+$Message => undef
+$Transaction => undef
+$ContentType => 'text/plain'
+</%ARGS>

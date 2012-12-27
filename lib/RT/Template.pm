@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -96,10 +96,34 @@ sub _Accessible {
 
 sub _Set {
     my $self = shift;
+    my %args = (
+        Field => undef,
+        Value => undef,
+        @_,
+    );
     
     unless ( $self->CurrentUserHasQueueRight('ModifyTemplate') ) {
         return ( 0, $self->loc('Permission Denied') );
     }
+
+    if (exists $args{Value}) {
+        if ($args{Field} eq 'Queue') {
+            if ($args{Value}) {
+                # moving to another queue
+                my $queue = RT::Queue->new( $self->CurrentUser );
+                $queue->Load($args{Value});
+                unless ($queue->Id and $queue->CurrentUserHasRight('ModifyTemplate')) {
+                    return ( 0, $self->loc('Permission Denied') );
+                }
+            } else {
+                # moving to global
+                unless ($self->CurrentUser->HasRight( Object => RT->System, Right => 'ModifyTemplate' )) {
+                    return ( 0, $self->loc('Permission Denied') );
+                }
+            }
+        }
+    }
+
     return $self->SUPER::_Set( @_ );
 }
 
@@ -127,7 +151,7 @@ Load a template, either by number or by name.
 Note that loading templates by name using this method B<is
 ambiguous>. Several queues may have template with the same name
 and as well global template with the same name may exist.
-Use L</LoadGlobalTemplate> and/or L<LoadQueueTemplate> to get
+Use L</LoadByName>, L</LoadGlobalTemplate> or L<LoadQueueTemplate> to get
 precise result.
 
 =cut
@@ -141,6 +165,37 @@ sub Load {
         return $self->LoadByCol( 'Name', $identifier );
     }
     return $self->LoadById( $identifier );
+}
+
+=head2 LoadByName
+
+Takes Name and Queue arguments. Tries to load queue specific template
+first, then global. If Queue argument is omitted then global template
+is tried, not template with the name in any queue.
+
+=cut
+
+sub LoadByName {
+    my $self = shift;
+    my %args = (
+        Queue => undef,
+        Name  => undef,
+        @_
+    );
+    my $queue = $args{'Queue'};
+    if ( blessed $queue ) {
+        $queue = $queue->id;
+    } elsif ( defined $queue and $queue =~ /\D/ ) {
+        my $tmp = RT::Queue->new( $self->CurrentUser );
+        $tmp->Load($queue);
+        $queue = $tmp->id;
+    }
+
+    return $self->LoadGlobalTemplate( $args{'Name'} ) unless $queue;
+
+    $self->LoadQueueTemplate( Queue => $queue, Name => $args{'Name'} );
+    return $self->id if $self->id;
+    return $self->LoadGlobalTemplate( $args{'Name'} );
 }
 
 =head2 LoadGlobalTemplate NAME
@@ -161,18 +216,7 @@ sub LoadGlobalTemplate {
 Loads the Queue template named NAME for Queue QUEUE.
 
 Note that this method doesn't load a global template with the same name
-if template in the queue doesn't exist. THe following code can be used:
-
-    $template->LoadQueueTemplate( Queue => $queue_id, Name => $template_name );
-    unless ( $template->id ) {
-        $template->LoadGlobalTemplate( $template_name );
-        unless ( $template->id ) {
-            # no template
-            ...
-        }
-    }
-    # ok, template either queue's or global
-    ...
+if template in the queue doesn't exist. Use L</LoadByName>.
 
 =cut
 
@@ -232,6 +276,16 @@ sub Create {
         $args{'Queue'} = $QueueObj->Id;
     }
 
+    return ( undef, $self->loc('Name is required') )
+        unless $args{Name};
+
+    {
+        my $tmp = $self->new( RT->SystemUser );
+        $tmp->LoadByCols( Name => $args{'Name'}, Queue => $args{'Queue'} );
+        return ( undef, $self->loc('A Template with that name already exists') )
+            if $tmp->id;
+    }
+
     my $result = $self->SUPER::Create(
         Content     => $args{'Content'},
         Queue       => $args{'Queue'},
@@ -257,7 +311,26 @@ sub Delete {
         return ( 0, $self->loc('Permission Denied') );
     }
 
+    if ( $self->UsedBy->Count ) {
+        return ( 0, $self->loc('Template is in use') );
+    }
+
     return ( $self->SUPER::Delete(@_) );
+}
+
+=head2 UsedBy
+
+Returns L<RT::Scrips> limitted to scrips that use this template. Takes
+into account that template can be overriden in a queue.
+
+=cut
+
+sub UsedBy {
+    my $self = shift;
+
+    my $scrips = RT::Scrips->new( $self->CurrentUser );
+    $scrips->LimitByTemplate( $self );
+    return $scrips;
 }
 
 =head2 IsEmpty
@@ -366,6 +439,7 @@ sub _Parse {
 
     # Unfold all headers
     $self->{'MIMEObj'}->head->unfold;
+    $self->{'MIMEObj'}->head->modify(1);
 
     return ( 1, $self->loc("Template parsed") );
 
@@ -433,7 +507,7 @@ sub _ParseContentPerl {
     foreach my $key ( keys %{ $args{TemplateArgs} } ) {
         my $val = $args{TemplateArgs}{ $key };
         next unless ref $val;
-        next if ref $val =~ /^(ARRAY|HASH|SCALAR|CODE)$/;
+        next if ref($val) =~ /^(ARRAY|HASH|SCALAR|CODE)$/;
         $args{TemplateArgs}{ $key } = \$val;
     }
 
@@ -595,6 +669,41 @@ Helper function to call the template's queue's CurrentUserHasQueueRight with the
 sub CurrentUserHasQueueRight {
     my $self = shift;
     return ( $self->QueueObj->CurrentUserHasRight(@_) );
+}
+
+=head2 SetQueue
+
+Changing queue is not implemented.
+
+=cut
+
+sub SetQueue {
+    my $self = shift;
+    return ( undef, $self->loc('Changing queue is not implemented') );
+}
+
+=head2 SetName
+
+Change name of the template.
+
+=cut
+
+sub SetName {
+    my $self = shift;
+    my $value = shift;
+
+    return ( undef, $self->loc('Name is required') )
+        unless $value;
+
+    return $self->_Set( Field => 'Name', Value => $value )
+        if lc($self->Name) eq lc($value);
+
+    my $tmp = $self->new( RT->SystemUser );
+    $tmp->LoadByCols( Name => $value, Queue => $self->Queue );
+    return ( undef, $self->loc('A Template with that name already exists') )
+        if $tmp->id;
+
+    return $self->_Set( Field => 'Name', Value => $value );
 }
 
 =head2 SetType

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -55,23 +55,28 @@ unless ( $Type ) {
 }
 
 my $Values;
-if ( $Object && $Object->id ) {
-    $NamePrefix ||= join '-', 
-        'Object', ref($Object), $Object->Id, 'CustomField', '';
+if ( $Object ) {
+    $Grouping =~ s/\W//g if $Grouping;
+    $NamePrefix ||= join '-',
+        'Object', ref($Object), ($Object->Id || ''),
+        'CustomField' . ($Grouping ? ":$Grouping" : ""),
+        '';
 
-    $Values = $Object->CustomFieldValues( $CustomField->id );
-    $Values->Columns(
-        qw( id CustomField ObjectType ObjectId Disabled Content
-        ContentType ContentEncoding SortOrder Creator Created
-        LastUpdatedBy LastUpdated )
-    );
-    # Don't take care of $Values if there isn't values inside
-    undef ( $Values ) unless ( $Values->Count );
+    if ( $Object->Id ) {
+        $Values = $Object->CustomFieldValues( $CustomField->id );
+        $Values->Columns(
+            qw( id CustomField ObjectType ObjectId Disabled Content
+            ContentType ContentEncoding SortOrder Creator Created
+            LastUpdatedBy LastUpdated )
+        );
+        # Don't take care of $Values if there isn't values inside
+        undef ( $Values ) unless ( $Values->Count );
+    }
 }
 
 # Always fill $Default with submited values if it's empty
 if ( ( !defined $Default || !length $Default ) && $DefaultsFromTopArguments ) {
-    my %TOP = $m->request_args;
+    my %TOP = %$DECODED_ARGS;
     $Default = $TOP{ $NamePrefix .$CustomField->Id . '-Values' }
             || $TOP{ $NamePrefix .$CustomField->Id . '-Value' };
 }
@@ -85,7 +90,7 @@ if ($MaxValues == 1 && $Values) {
 }
 # The "Magic" hidden input causes RT to know that we were trying to edit the field, even if 
 # we don't see a value later, since browsers aren't compelled to submit empty form fields
-$m->out("\n".'<input type="hidden" class="hidden" name="'.$NamePrefix.$CustomField->Id.'-Values-Magic" value="1" />'."\n");
+$m->out("\n".'<input type="hidden" class="hidden" name="'.$m->interp->apply_escapes($NamePrefix, 'h').$CustomField->Id.'-Values-Magic" value="1" />'."\n");
 
 my $EditComponent = "EditCustomField$Type";
 $m->callback( %ARGS, CallbackName => 'EditComponentName', Name => \$EditComponent, CustomField => $CustomField, Object => $Object );
@@ -106,6 +111,7 @@ return $m->comp(
 );
 </%INIT>
 <%ARGS>
+$Grouping    => undef
 $Object      => undef
 $CustomField => undef
 $NamePrefix  => undef

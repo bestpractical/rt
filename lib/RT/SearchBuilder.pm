@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -105,10 +105,14 @@ sub JoinTransactions {
         TABLE2 => 'Transactions',
         FIELD2 => 'ObjectId',
     );
+
+    my $item = $self->NewItem;
+    my $object_type = $item->can('ObjectType') ? $item->ObjectType : ref $item;
+
     $self->RT::SearchBuilder::Limit(
         LEFTJOIN => $alias,
         FIELD    => 'ObjectType',
-        VALUE    => ref $self->NewItem,
+        VALUE    => $object_type,
     );
     $self->{'_sql_aliases'}{'transactions'} = $alias
         unless $args{'New'};
@@ -125,6 +129,19 @@ sub OrderByCols {
         push @sort, $s;
     }
     return $self->SUPER::OrderByCols( @sort );
+}
+
+# If we're setting RowsPerPage or FirstRow, ensure we get a natural number or undef.
+sub RowsPerPage {
+    my $self = shift;
+    return if @_ and defined $_[0] and $_[0] =~ /\D/;
+    return $self->SUPER::RowsPerPage(@_);
+}
+
+sub FirstRow {
+    my $self = shift;
+    return if @_ and defined $_[0] and $_[0] =~ /\D/;
+    return $self->SUPER::FirstRow(@_);
 }
 
 =head2 LimitToEnabled
@@ -194,29 +211,35 @@ sub LimitCustomField {
                  @_ );
 
     my $alias = $self->Join(
-	TYPE       => 'left',
-	ALIAS1     => 'main',
-	FIELD1     => 'id',
-	TABLE2     => 'ObjectCustomFieldValues',
-	FIELD2     => 'ObjectId'
+        TYPE       => 'left',
+        ALIAS1     => 'main',
+        FIELD1     => 'id',
+        TABLE2     => 'ObjectCustomFieldValues',
+        FIELD2     => 'ObjectId'
     );
     $self->Limit(
-	ALIAS      => $alias,
-	FIELD      => 'CustomField',
-	OPERATOR   => '=',
-	VALUE      => $args{'CUSTOMFIELD'},
+        ALIAS      => $alias,
+        FIELD      => 'CustomField',
+        OPERATOR   => '=',
+        VALUE      => $args{'CUSTOMFIELD'},
     ) if ($args{'CUSTOMFIELD'});
     $self->Limit(
-	ALIAS      => $alias,
-	FIELD      => 'ObjectType',
-	OPERATOR   => '=',
-	VALUE      => $self->_SingularClass,
+        ALIAS      => $alias,
+        FIELD      => 'ObjectType',
+        OPERATOR   => '=',
+        VALUE      => $self->_SingularClass,
     );
     $self->Limit(
-	ALIAS      => $alias,
-	FIELD      => 'Content',
-	OPERATOR   => $args{'OPERATOR'},
-	VALUE      => $args{'VALUE'},
+        ALIAS      => $alias,
+        FIELD      => 'Content',
+        OPERATOR   => $args{'OPERATOR'},
+        VALUE      => $args{'VALUE'},
+    );
+    $self->Limit(
+        ALIAS => $alias,
+        FIELD => 'Disabled',
+        OPERATOR => '=',
+        VALUE => 0,
     );
 }
 

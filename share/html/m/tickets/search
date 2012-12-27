@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -78,7 +78,7 @@ my $search;
                 if ( $custom->Description eq $name ) { $search = $custom; last }
             }
             unless ( $search && $search->id ) {
-                $m->out("Predefined search $name not found");
+                $m->out(loc("Predefined search [_1] not found", $m->interp->apply_escapes($name, 'h')));
                 return;
             }
         }
@@ -91,10 +91,8 @@ my $search;
             $_->{'Rows'} = 999;
 
             # DEPRECATED: will be here for a while up to 3.10/4.0
-            my $bookmarks = $session{'CurrentUser'}->UserObj->FirstAttribute('Bookmarks');
-            $bookmarks = $bookmarks->Content if $bookmarks;
-            $bookmarks ||= {};
-            my $query = join( " OR ", map " id = '$_' ", grep $bookmarks->{$_}, keys %$bookmarks ) || 'id=0';
+            my @bookmarks = $session{'CurrentUser'}->UserObj->Bookmarks;
+            my $query = join(" OR ", map " id = '$_' ", @bookmarks ) || 'id=0';
             $_->{'Query'} =~ s/__Bookmarks__/( $query )/g;
         }
     }

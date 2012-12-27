@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -91,7 +91,26 @@ sub new {
     return ($self);
 }
 
+=head2 CanonicalizeURI <URI>
 
+Returns the canonical form of the given URI by calling L</FromURI> and then L</URI>.
+
+If the URI is unparseable by FromURI the passed in URI is simply returned untouched.
+
+=cut
+
+sub CanonicalizeURI {
+    my $self = shift;
+    my $uri  = shift;
+    if ($self->FromURI($uri)) {
+        my $canonical = $self->URI;
+        if ($canonical and $uri ne $canonical) {
+            RT->Logger->debug("Canonicalizing URI '$uri' to '$canonical'");
+            $uri = $canonical;
+        }
+    }
+    return $uri;
+}
 
 
 =head2 FromObject <Object>
@@ -130,7 +149,7 @@ sub FromURI {
     # Special case: integers passed in as URIs must be ticket ids
     if ($uri =~ /^(\d+)$/) {
 	$scheme = "fsck.com-rt";
-    } elsif ($uri =~ /^((?:\w|\.|-)+?):/) {
+    } elsif ($uri =~ /^((?!javascript|data)(?:\w|\.|-)+?):/i) {
 	$scheme = $1;
     }
     else {

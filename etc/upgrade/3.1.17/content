@@ -1,4 +1,7 @@
-@ScripActions = (
+use strict;
+use warnings;
+
+our @ScripActions = (
     { Name        => 'Notify Ccs as Comment',              # loc
       Description => 'Sends mail to the Ccs as a comment', # loc
       ExecModule  => 'NotifyAsComment',
@@ -10,7 +13,7 @@
 );
 
 
-@ScripConditions = (
+our @ScripConditions = (
     {
       Name                 => 'On Priority Change',                       # loc
       Description          => 'Whenever a ticket\'s priority changes',    # loc

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -59,7 +59,7 @@ elsif ($file =~ /\.(?:htc)$/i) {
     return();
 } else {
     RT::Interface::Web::StaticFileHeaders();
-    $r->content_type('text/css') ;
+    $r->content_type('text/css; charset=utf-8') ;
     $m->call_next();
     return();
 }

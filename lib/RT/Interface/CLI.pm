@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -45,8 +45,10 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
+
 package RT::Interface::CLI;
 use strict;
+use warnings;
 use RT;
 
 use base 'Exporter';
@@ -91,7 +93,7 @@ our @EXPORT_OK = qw(CleanEnv GetCurrentUser GetMessageContent debug loc);
 
 =head2 CleanEnv
 
-Removes some of the nastiest nasties from the user\'s environment.
+Removes some of the nastiest nasties from the user's environment.
 
 =cut
 

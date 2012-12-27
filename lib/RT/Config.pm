@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -51,8 +51,8 @@ package RT::Config;
 use strict;
 use warnings;
 
-
 use File::Spec ();
+use Symbol::Global::Name;
 
 =head1 NAME
 
@@ -122,6 +122,11 @@ can be set for each config optin:
     Callback    - subref that receives no arguments.  It returns
                   a hashref of items that are added to the rest
                   of the WidgetArguments
+ PostSet       - subref passed the RT::Config object and the current and
+                 previous setting of the config option.  This is called well
+                 before much of RT's subsystems are initialized, so what you
+                 can do here is pretty limited.  It's mostly useful for
+                 effecting the value of other config options early.
  PostLoadCheck - subref passed the RT::Config object and the current
                  setting of the config option.  Can make further checks
                  (such as seeing if a library is installed) and then change
@@ -198,6 +203,32 @@ our %META = (
             # XXX: we need support for 'get values callback'
             Values => [qw(web2 aileron ballard)],
         },
+        PostLoadCheck => sub {
+            my $self = shift;
+            my $value = $self->Get('WebDefaultStylesheet');
+
+            my @comp_roots = RT::Interface::Web->ComponentRoots;
+            for my $comp_root (@comp_roots) {
+                return if -d $comp_root.'/NoAuth/css/'.$value;
+            }
+
+            $RT::Logger->warning(
+                "The default stylesheet ($value) does not exist in this instance of RT. "
+              . "Defaulting to aileron."
+            );
+
+            $self->Set('WebDefaultStylesheet', 'aileron');
+        },
+    },
+    TimeInICal => {
+        Section     => 'General',
+        Overridable => 1,
+        SortOrder   => 5,
+        Widget      => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Include time in iCal feed events?', # loc
+            Hints       => 'Formats iCal feed events with date and time' #loc
+        }
     },
     UseSideBySideLayout => {
         Section => 'Ticket composition',
@@ -242,17 +273,6 @@ our %META = (
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
             Description => 'Message box height',          #loc
-        },
-    },
-    MessageBoxWrap => {
-        Section         => 'Ticket composition',                #loc
-        Overridable     => 1,
-        SortOrder       => 8.1,
-        Widget          => '/Widgets/Form/Select',
-        WidgetArguments => {
-            Description => 'Message box wrapping',   #loc
-            Values => [qw(SOFT HARD)],
-            Hints => "When the WYSIWYG editor is not enabled, this setting determines whether automatic line wraps in the ticket message box are sent to RT or not.",              # loc
         },
     },
     DefaultTimeUnitsToHours => {
@@ -316,6 +336,16 @@ our %META = (
     },
 
     # User overridable options for Ticket displays
+    PreferRichText => {
+        Section         => 'Ticket display', # loc
+        Overridable     => 1,
+        SortOrder       => 0.9,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Display messages in rich text if available', # loc
+            Hints       => 'Rich text (HTML) shows formatting such as colored text, bold, italics, and more', # loc
+        },
+    },
     MaxInlineBody => {
         Section         => 'Ticket display',              #loc
         Overridable     => 1,
@@ -384,8 +414,8 @@ our %META = (
             Description => q|What tickets to display in the 'More about requestor' box|,                #loc
             Values      => [qw(Active Inactive All None)],
             ValuesLabel => {
-                Active   => "Show the Requestor's 10 highest priority open tickets",                  #loc
-                Inactive => "Show the Requestor's 10 highest priority closed tickets",      #loc
+                Active   => "Show the Requestor's 10 highest priority active tickets",                  #loc
+                Inactive => "Show the Requestor's 10 highest priority inactive tickets",      #loc
                 All      => "Show the Requestor's 10 highest priority tickets",      #loc
                 None     => "Show no tickets for the Requestor", #loc
             },
@@ -419,10 +449,13 @@ our %META = (
             Description => 'Date format',                            #loc
             Callback => sub { my $ret = { Values => [], ValuesLabel => {}};
                               my $date = RT::Date->new($HTML::Mason::Commands::session{'CurrentUser'});
-                              $date->Set;
+                              $date->SetToNow;
                               foreach my $value ($date->Formatters) {
                                  push @{$ret->{Values}}, $value;
-                                 $ret->{ValuesLabel}{$value} = $date->$value();
+                                 $ret->{ValuesLabel}{$value} = $date->Get(
+                                     Format     => $value,
+                                     Timezone   => 'user',
+                                 );
                               }
                               return $ret;
             },
@@ -558,16 +591,6 @@ our %META = (
         },
     },
     MailPlugins  => { Type => 'ARRAY' },
-    Plugins      => {
-        Type => 'ARRAY',
-        PostLoadCheck => sub {
-            my $self = shift;
-            my $value = $self->Get('Plugins');
-            # XXX Remove in RT 4.2
-            return unless $value and grep {$_ eq "RT::FM"} @{$value};
-            warn 'RTFM has been integrated into core RT, and must be removed from your @Plugins';
-        },
-    },
     GnuPG        => { Type => 'HASH' },
     GnuPGOptions => { Type => 'HASH',
         PostLoadCheck => sub {
@@ -594,15 +617,7 @@ our %META = (
             }
         }
     },
-    ResolveDefaultUpdateType => {
-        PostLoadCheck => sub {
-            my $self  = shift;
-            my $value = shift;
-            return unless $value;
-            $RT::Logger->info('The ResolveDefaultUpdateType config option has been deprecated.  '.
-                              'You can change the site default in your %Lifecycles config.');
-        }
-    },
+    ReferrerWhitelist => { Type => 'ARRAY' },
     WebPath => {
         PostLoadCheck => sub {
             my $self  = shift;
@@ -721,7 +736,7 @@ our %META = (
 
             my %seen;
             foreach my $encoding ( grep defined && length, splice @$value ) {
-                next if $seen{ $encoding }++;
+                next if $seen{ $encoding };
                 if ( $encoding eq '*' ) {
                     unshift @$value, '*';
                     next;
@@ -740,35 +755,54 @@ our %META = (
             }
         },
     },
-
-    ActiveStatus => {
-        Type => 'ARRAY',
-        PostLoadCheck => sub {
+    LogToScreen => {
+        PostSet => sub {
             my $self  = shift;
-            return unless shift;
-            # XXX Remove in RT 4.2
-            warn <<EOT;
-The ActiveStatus configuration has been replaced by the new Lifecycles
-functionality. You should set the 'active' property of the 'default'
-lifecycle and add transition rules; see RT_Config.pm for documentation.
-EOT
+            my $value = shift;
+            $self->SetFromConfig(
+                Option => \'LogToSTDERR',
+                Value  => [$value],
+                %{$self->Meta('LogToScreen')->{'Source'}}
+            );
+        },
+        PostLoadCheck => sub {
+            my $self = shift;
+            # XXX: deprecated, remove in 4.4
+            $RT::Logger->info("You set \$LogToScreen in your config, but it's been renamed to \$LogToSTDERR.  Please update your config.")
+                if $self->Meta('LogToScreen')->{'Source'}{'Package'};
         },
     },
-    InactiveStatus => {
-        Type => 'ARRAY',
-        PostLoadCheck => sub {
-            my $self  = shift;
-            return unless shift;
-            # XXX Remove in RT 4.2
-            warn <<EOT;
-The InactiveStatus configuration has been replaced by the new Lifecycles
-functionality. You should set the 'inactive' property of the 'default'
-lifecycle and add transition rules; see RT_Config.pm for documentation.
-EOT
+    CustomFieldGroupings => {
+        Type            => 'HASH',
+        PostLoadCheck   => sub {
+            my $config = shift;
+            # use scalar context intentionally to avoid not a hash error
+            my $groups = $config->Get('CustomFieldGroupings') || {};
+
+            unless (ref($groups) eq 'HASH') {
+                RT->Logger->error("Config option \%CustomFieldGroupings is a @{[ref $groups]} not a HASH; ignoring");
+                $groups = {};
+            }
+
+            for my $class (keys %$groups) {
+                unless (ref($groups->{$class}) eq 'HASH') {
+                    RT->Logger->error("Config option \%CustomFieldGroupings{$class} is not a HASH; ignoring");
+                    delete $groups->{$class};
+                    next;
+                }
+                for my $group (keys %{ $groups->{$class} }) {
+                    unless (ref($groups->{$class}{$group}) eq 'ARRAY') {
+                        RT->Logger->error("Config option \%CustomFieldGroupings{$class}{$group} is not an ARRAY; ignoring");
+                        delete $groups->{$class}{$group};
+                    }
+                }
+            }
+            $config->Set( CustomFieldGroupings => %$groups );
         },
     },
 );
 my %OPTIONS = ();
+my @LOADED_CONFIGS = ();
 
 =head1 METHODS
 
@@ -846,9 +880,13 @@ sub LoadConfig {
         and my $site_config = $ENV{RT_SITE_CONFIG} )
     {
         $self->_LoadConfig( %args, File => $site_config );
+        # to allow load siteconfig again and again in case it's updated
+        delete $INC{ $site_config };
     } else {
         $self->_LoadConfig(%args);
+        delete $INC{$args{'File'}};
     }
+
     $args{'File'} =~ s/Site(?=Config\.pm$)//;
     $self->_LoadConfig(%args);
     return 1;
@@ -931,6 +969,14 @@ EOF
         my $errormessage = sprintf( $message,
             $file_path, $fileusername, $filegroup, $filegroup );
         die "$errormessage\n$@";
+    } else {
+        # Loaded successfully
+        push @LOADED_CONFIGS, {
+            as          => $args{'File'},
+            filename    => $INC{ $args{'File'} },
+            extension   => $is_ext,
+            site        => $is_site,
+        };
     }
     return 1;
 }
@@ -965,6 +1011,40 @@ sub Configs {
     my %seen;
     @configs = grep !$seen{$_}++, @configs;
     return @configs;
+}
+
+=head2 LoadedConfigs
+
+Returns a list of hashrefs, one for each config file loaded.  The keys of the
+hashes are:
+
+=over 4
+
+=item as
+
+Name this config file was loaded as (relative filename usually).
+
+=item filename
+
+The full path and filename.
+
+=item extension
+
+The "extension" part of the filename.  For example, the file C<RTIR_Config.pm>
+will have an C<extension> value of C<RTIR>.
+
+=item site
+
+True if the file is considered a site-level override.  For example, C<site>
+will be false for C<RT_Config.pm> and true for C<RT_SiteConfig.pm>.
+
+=back
+
+=cut
+
+sub LoadedConfigs {
+    # Copy to avoid the caller changing our internal data
+    return map { \%$_ } @LOADED_CONFIGS
 }
 
 =head2 Get
@@ -1059,6 +1139,8 @@ sub Set {
         {no warnings 'once'; no strict 'refs'; ${"RT::$name"} = $OPTIONS{$name}; }
     }
     $META{$name}->{'Type'} = $type;
+    $META{$name}->{'PostSet'}->($self, $OPTIONS{$name}, $old)
+        if $META{$name}->{'PostSet'};
     return $self->_ReturnValue( $old, $type );
 }
 
@@ -1094,7 +1176,7 @@ sub SetFromConfig {
     my $opt = $args{'Option'};
 
     my $type;
-    my $name = $self->__GetNameByRef($opt);
+    my $name = Symbol::Global::Name->find($opt);
     if ($name) {
         $type = ref $opt;
         $name =~ s/.*:://;
@@ -1152,67 +1234,6 @@ sub SetFromConfig {
     $self->Set( $name, @{ $args{'Value'} } );
 
     return 1;
-}
-
-    our %REF_SYMBOLS = (
-            SCALAR => '$',
-            ARRAY  => '@',
-            HASH   => '%',
-            CODE   => '&',
-        );
-
-{
-    my $last_pack = '';
-
-    sub __GetNameByRef {
-        my $self = shift;
-        my $ref  = shift;
-        my $pack = shift;
-        if ( !$pack && $last_pack ) {
-            my $tmp = $self->__GetNameByRef( $ref, $last_pack );
-            return $tmp if $tmp;
-        }
-        $pack ||= 'main::';
-        $pack .= '::' unless substr( $pack, -2 ) eq '::';
-
-        no strict 'refs';
-        my $name = undef;
-
-        # scan $pack's nametable(hash)
-        foreach my $k ( keys %{$pack} ) {
-
-            # The hash for main:: has a reference to itself
-            next if $k eq 'main::';
-
-            # if the entry has a trailing '::' then
-            # it is a link to another name space
-            if ( substr( $k, -2 ) eq '::') {
-                $name = $self->__GetNameByRef( $ref, $k );
-                return $name if $name;
-            }
-
-            # entry of the table with references to
-            # SCALAR, ARRAY... and other types with
-            # the same name
-            my $entry = ${$pack}{$k};
-            next unless $entry;
-
-            # get entry for type we are looking for
-            # XXX skip references to scalars or other references.
-            # Otherwie 5.10 goes boom. maybe we should skip any
-            # reference
-            next if ref($entry) eq 'SCALAR' || ref($entry) eq 'REF';
-            my $entry_ref = *{$entry}{ ref($ref) };
-            next unless $entry_ref;
-
-            # if references are equal then we've found
-            if ( $entry_ref == $ref ) {
-                $last_pack = $pack;
-                return ( $REF_SYMBOLS{ ref($ref) } || '*' ) . $pack . $k;
-            }
-        }
-        return '';
-    }
 }
 
 =head2 Metadata

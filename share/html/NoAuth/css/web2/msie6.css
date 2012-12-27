@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -81,7 +81,7 @@ div#page-navigation {
 }
 
 
-.ticket-transaction .messagebody img {
+.transaction .messagebody img {
     /* ie6 does not support max-width */
     width: expression(this.width > 401 ? 400 : true);
 }

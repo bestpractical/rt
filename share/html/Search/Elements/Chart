@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -130,10 +130,10 @@ my ($i,$total);
                          );
 </%perl>
 <td class="label collection-as-table">
-<a href=<% RT->Config->Get('WebURL') %>Search/Results.html?<%$QueryString%>><%$key%></a>
+<a href=<% RT->Config->Get('WebPath') %>/Search/Results.html?<%$QueryString%>><%$key%></a>
 </td>
 <td class="value collection-as-table">
-<a href=<% RT->Config->Get('WebURL') %>Search/Results.html?<%$QueryString%>><%$value%></a>
+<a href=<% RT->Config->Get('WebPath') %>/Search/Results.html?<%$QueryString%>><%$value%></a>
 </td>
 % } else {
 <td class="label collection-as-table"><% $key %></td>

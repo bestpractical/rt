@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -103,13 +103,14 @@ sub Load {
     my $object = $self->_GetObject($privacy);
 
     if ($object) {
-        $self->{'Attribute'} = $object->Attributes->WithId($id);
+        $self->{'Attribute'} = RT::Attribute->new($self->CurrentUser);
+        $self->{'Attribute'}->Load( $id );
         if ($self->{'Attribute'}->Id) {
             $self->{'Id'} = $self->{'Attribute'}->Id;
             $self->{'Privacy'} = $privacy;
             $self->PostLoad();
 
-            return (0, $self->loc("Permission denied"))
+            return (0, $self->loc("Permission Denied"))
                 unless $self->CurrentUserCanSee;
 
             my ($ok, $msg) = $self->PostLoadValidate;
@@ -201,13 +202,14 @@ sub Save {
     return (0, $self->loc("Failed to load object for [_1]", $privacy))
         unless $object;
 
-    return (0, $self->loc("Permission denied"))
+    return (0, $self->loc("Permission Denied"))
         unless $self->CurrentUserCanCreate($privacy);
 
     my ($att_id, $att_msg) = $self->SaveAttribute($object, \%args);
 
     if ($att_id) {
-        $self->{'Attribute'} = $object->Attributes->WithId($att_id);
+        $self->{'Attribute'} = RT::Attribute->new($self->CurrentUser);
+        $self->{'Attribute'}->Load( $att_id );
         $self->{'Id'}        = $att_id;
         $self->{'Privacy'}   = $privacy;
         return ( 1, $self->loc( "Saved [_1] [_2]", $self->ObjectName, $name ) );
@@ -242,7 +244,7 @@ sub Update {
     return(0, $self->loc("Could not load [_1] attribute", $self->ObjectName))
         unless $self->{'Attribute'}->Id;
 
-    return (0, $self->loc("Permission denied"))
+    return (0, $self->loc("Permission Denied"))
         unless $self->CurrentUserCanModify;
 
     my ($status, $msg) = $self->UpdateAttribute(\%args);
@@ -274,7 +276,7 @@ where status is true upon success.
 
 sub Delete {
     my $self = shift;
-    return (0, $self->loc("Permission denied"))
+    return (0, $self->loc("Permission Denied"))
         unless $self->CurrentUserCanDelete;
 
     my ($status, $msg) = $self->{'Attribute'}->Delete;

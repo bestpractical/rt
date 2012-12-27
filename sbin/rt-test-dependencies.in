@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -52,13 +52,15 @@
 #
 
 use strict;
+use warnings;
 no warnings qw(numeric redefine);
 use Getopt::Long;
 my %args;
 my %deps;
+my @orig_argv = @ARGV;
 GetOptions(
     \%args,                               'v|verbose',
-    'install',                            'with-MYSQL',
+    'install!',                           'with-MYSQL',
     'with-POSTGRESQL|with-pg|with-pgsql', 'with-SQLITE',
     'with-ORACLE',                        'with-FASTCGI',
     'with-MODPERL1',                      'with-MODPERL2',
@@ -73,6 +75,8 @@ GetOptions(
     'with-GD',
     'with-DASHBOARDS',
     'with-USERLOGO',
+    'with-SSL-MAILGATE',
+    'with-HTML-DOC',
 
     'download=s',
     'repository=s',
@@ -101,6 +105,8 @@ my %default = (
     'with-GD' => @RT_GD@,
     'with-DASHBOARDS' => 1,
     'with-USERLOGO' => 1,
+    'with-SSL-MAILGATE' => @RT_SSL_MAILGATE@,
+    'with-HTML-DOC' => @RT_DEVEL_MODE@,
 );
 $args{$_} = $default{$_} foreach grep !exists $args{$_}, keys %default;
 
@@ -157,6 +163,10 @@ sub conclude {
                     0, $module->{error} );
             }
         }
+
+        print "\nPerl library path for @PERL@:\n";
+        print "    $_\n" for @INC;
+
         exit 1;
     }
 }
@@ -185,14 +195,15 @@ DBIx::SearchBuilder 1.59
 Text::Template 1.44
 File::ShareDir
 File::Spec 0.8
-HTML::Entities 
 HTML::Quoted
 HTML::Scrubber 0.08
-Log::Dispatch 2.23
+HTML::TreeBuilder
+HTML::FormatText
+Log::Dispatch 2.30
 Sys::Syslog 0.16
 Locale::Maketext 1.06
 Locale::Maketext::Lexicon 0.32
-Locale::Maketext::Fuzzy
+Locale::Maketext::Fuzzy 0.11
 MIME::Entity 5.425
 Mail::Mailer 1.57
 Email::Address
@@ -217,6 +228,8 @@ List::MoreUtils
 Net::CIDR
 Regexp::Common::net::CIDR
 Regexp::IPv6
+Symbol::Global::Name
+HTML::Entities
 .
 
 $deps{'MASON'} = [ text_to_hash( << '.') ];
@@ -244,11 +257,17 @@ CGI::Emulate::PSGI
 .
 
 $deps{'MAILGATE'} = [ text_to_hash( << '.') ];
-HTML::TreeBuilder
-HTML::FormatText
 Getopt::Long
-LWP::UserAgent
+LWP::UserAgent 6.0
 Pod::Usage
+.
+
+$deps{'SSL-MAILGATE'} = [ text_to_hash( << '.') ];
+Crypt::SSLeay
+Net::SSL
+LWP::UserAgent 6.0
+LWP::Protocol::https
+Mozilla::CA
 .
 
 $deps{'CLI'} = [ text_to_hash( << '.') ];
@@ -279,12 +298,15 @@ Test::Builder 0.90 # needed for is_passing
 Test::MockTime
 Log::Dispatch::Perl
 Test::WWW::Mechanize::PSGI
-Plack::Middleware::Test::StashWarnings
+Plack::Middleware::Test::StashWarnings 0.06
 Test::LongString
+Mojo::DOM
+Set::Tiny
+Test::NoWarnings
 .
 
 $deps{'FASTCGI'} = [ text_to_hash( << '.') ];
-FCGI
+FCGI 0.74
 FCGI::ProcManager
 .
 
@@ -328,13 +350,14 @@ Net::SMTP
 .
 
 $deps{'DASHBOARDS'} = [ text_to_hash( << '.') ];
-HTML::RewriteAttributes 0.04
+HTML::RewriteAttributes 0.05
 MIME::Types
+URI 1.59
 .
 
 $deps{'GRAPHVIZ'} = [ text_to_hash( << '.') ];
 GraphViz
-IPC::Run
+IPC::Run 0.90
 .
 
 $deps{'GD'} = [ text_to_hash( << '.') ];
@@ -347,8 +370,14 @@ $deps{'USERLOGO'} = [ text_to_hash( << '.') ];
 Convert::Color
 .
 
+$deps{'HTML-DOC'} = [ text_to_hash( <<'.') ];
+Pod::Simple 3.17
+HTML::Entities
+.
+
 my %AVOID = (
     'DBD::Oracle' => [qw(1.23)],
+    'Email::Address' => [qw(1.893 1.894)],
 );
 
 if ($args{'download'}) {
@@ -393,7 +422,12 @@ foreach my $type (sort grep $args{$_}, keys %args) {
     $Missing_By_Type{$type} = \%missing if keys %missing;
 }
 
-conclude(%Missing_By_Type);
+if ( $args{'install'} && keys %Missing_By_Type ) {
+    exec($0, @orig_argv, '--no-install');
+}
+else {
+    conclude(%Missing_By_Type);
+}
 
 sub test_deps {
     my @deps = @_;
@@ -428,6 +462,10 @@ sub test_dep {
             $error =~ s/\n(.*)$//s;
             $error =~ s/at \(eval \d+\) line \d+\.$//;
             undef $error if $error =~ /this is only/;
+
+            my $path = $module;
+            $path =~ s{::}{/}g;
+            undef $error if $error =~ /^Can't locate $path\.pm in \@INC/;
 
             return ( 0, $error );
         }

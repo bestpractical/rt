@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -60,7 +60,10 @@
             <&|/l&>Status</&>
         </td>
         <td class="value">
-            <& /Elements/SelectStatus, Name => "Status", TicketObj => $Ticket, DefaultLabel => loc("[_1] (Unchanged)", loc($Ticket->Status)), Default => $ARGS{'Status'} || ($Ticket->Status eq $DefaultStatus ? undef : $DefaultStatus)&>
+            <& /Ticket/Elements/SelectStatus,
+               Name => "Status",
+               TicketObj => $Ticket,
+               Default => $DefaultStatus &>
         </td>
     </tr>
     <tr>
@@ -73,7 +76,7 @@
 
     </tr>
     <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $Ticket &>
-    <tr><td colspan="2"><& /Ticket/Elements/EditCustomFields,  TicketObj => $Ticket &></td></tr>
+    <tr><td colspan="2"><& /Elements/EditCustomFields, Object => $Ticket, AsTable => 0 &></td></tr>
 </table>
 <& /Elements/MessageBox, 
     Name => "UpdateContent", 

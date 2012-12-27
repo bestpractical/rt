@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -53,9 +53,9 @@
 % $show_cb->($_) foreach @$body;
 </td>
 
-% if ( $summary ) {
+% if ( $sidebar ) {
 <td class="boxcontainer">
-% $show_cb->($_) foreach @$summary;
+% $show_cb->($_) foreach @$sidebar;
 </td>
 % }
 
@@ -75,12 +75,14 @@ unless ( $Portlets ) {
     );
 }
 
-my ($body, $summary) = @{$Portlets}{qw(body summary)};
+$m->callback( CallbackName => 'MassagePortlets', Portlets => $Portlets );
+
+my ($body, $sidebar) = @{$Portlets}{qw(body sidebar)};
 unless( $body && @$body ) {
-    $body = $summary || [];
-    $summary = undef;
+    $body = $sidebar || [];
+    $sidebar = undef;
 }
-$summary = undef unless $summary && @$summary;
+$sidebar = undef unless $sidebar && @$sidebar;
 
 my $Rows = $user->Preferences( 'SummaryRows', ( RT->Config->Get('DefaultSummaryRows') || 10 ) );
 
@@ -89,12 +91,16 @@ my $show_cb = sub {
     my $type  = $entry->{type};
     my $name = $entry->{'name'};
     if ( $type eq 'component' ) {
-        # XXX: security check etc.
-        $m->comp( $name, %{ $entry->{arguments} || {} } );
+        if (!$allowed_components{$name}) {
+            $m->out( $m->interp->apply_escapes( loc("Invalid portlet [_1]", $name), "h" ) );
+        }
+        else {
+            $m->comp( $name, %{ $entry->{arguments} || {} } );
+        }
     } elsif ( $type eq 'system' ) {
         $m->comp( '/Elements/ShowSearch', Name => $name, Override => { Rows => $Rows } );
     } elsif ( $type eq 'saved' ) {
-        $m->comp( '/Elements/ShowSearch', SavedSearch => $name, Override => { Rows => $Rows }, IgnoreMissing => 1 );
+        $m->comp( '/Elements/ShowSearch', SavedSearch => $name, Override => { Rows => $Rows } );
     } else {
         $RT::Logger->error("unknown portlet type '$type'");
     }

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -57,9 +57,11 @@
 
 <&| /Widgets/TitleBox, title => loc('Modify ticket #[_1]',$TicketObj->Id), class=>'ticket-info-basics' &>
 <& Elements/EditBasics, TicketObj => $TicketObj &>
-<& Elements/EditCustomFields, TicketObj => $TicketObj, DefaultsFromTopArguments => 0 &>
+<& /Elements/EditCustomFields, Object => $TicketObj, DefaultsFromTopArguments => 0, Grouping => 'Basics' &>
 </&>
 % $m->callback( CallbackName => 'AfterBasics', Ticket => $TicketObj );
+
+<& /Elements/EditCustomFieldCustomGroupings, Object => $TicketObj, DefaultsFromTopArguments => 0 &>
 
 <& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#993333" &>
 </form>
@@ -83,10 +85,13 @@ push @results, ProcessObjectCustomFieldUpdates(Object => $TicketObj, ARGSRef => 
 
 $TicketObj->ApplyTransactionBatch;
 
-# TODO: display the results, even if we can't display the ticket
 unless ($TicketObj->CurrentUserHasRight('ShowTicket')) {
-    Abort("No permission to view ticket");
-} 
+    if (@results) {
+        Abort("A change was applied successfully, but you no longer have permissions to view the ticket", Actions => \@results);
+    } else {
+        Abort("No permission to view ticket");
+    }
+}
 
 </%INIT>
 <%ARGS>

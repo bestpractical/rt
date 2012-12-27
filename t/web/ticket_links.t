@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Test tests => 106;
+use RT::Test tests => 146;
 
 my ( $baseurl, $m ) = RT::Test->started_ok;
 ok( $m->login, "Logged in" );
@@ -23,6 +23,16 @@ is( $deleted->Status, 'deleted', "deleted $deleted_id" );
 
 $inactive->SetStatus('resolved');
 is( $inactive->Status, 'resolved', 'resolved $inactive_id' );
+
+# Create an article for linking
+require RT::Class;
+my $class = RT::Class->new($RT::SystemUser);
+$class->Create(Name => 'test class');
+
+require RT::Article;
+my $article = RT::Article->new($RT::SystemUser);
+
+$article->Create(Class => $class->Id, Name => 'test article');
 
 for my $type ( "DependsOn", "MemberOf", "RefersTo" ) {
     for my $c (qw/base target/) {
@@ -105,6 +115,59 @@ for my $type ( "DependsOn", "MemberOf", "RefersTo" ) {
         );
         $m->content_unlike( qr{$deleted_id.*?\[deleted\]}, "no deleted ticket",
         );
+
+        diag "[$type]: Testing that reminders don't get copied for $c tickets";
+        {
+            my $ticket = RT::Test->create_ticket(
+                Subject => 'test ticket',
+                Queue   => 1,
+            );
+
+            $m->goto_ticket($ticket->Id);
+            $m->form_name('UpdateReminders');
+            $m->field('NewReminder-Subject' => 'hello test reminder subject');
+            $m->click_button(value => 'Save');
+            $m->text_contains('hello test reminder subject');
+
+            my $id = $ticket->Id;
+            my $type_value = my $link_field = $type;
+            if ($c eq 'base') {
+                $type_value = "new-$type_value";
+                $link_field    = "$link_field-$id";
+            }
+            else {
+                $type_value = "$type_value-new";
+                $link_field = "$id-$link_field";
+            }
+
+            if ($type eq 'RefersTo') {
+                $m->goto_ticket($ticket->Id);
+                $m->follow_link(id => 'page-links');
+
+                # add $baseurl as a link
+                $m->form_name('ModifyLinks');
+                $m->field($link_field => "$baseurl/test_ticket_reference");
+                $m->click('SubmitTicket');
+
+                # add an article as a link
+                $m->form_name('ModifyLinks');
+                $m->field($link_field => 'a:' . $article->Id);
+                $m->click('SubmitTicket');
+            }
+
+            my $depends_on_url = sprintf(
+                '%s/Ticket/Create.html?Queue=%s&CloneTicket=%s&%s=%s',
+                $baseurl, '1', $id, $type_value, $id,
+            );
+            $m->get_ok($depends_on_url);
+            $m->form_name('TicketCreate');
+            $m->click_button(value => 'Create');
+            $m->content_lacks('hello test reminder subject');
+            if ($type eq 'RefersTo') {
+                $m->text_contains("$baseurl/test_ticket_reference");
+                $m->text_contains("Article " . $article->Id . ': test article');
+            }
+        }
     }
 }
 

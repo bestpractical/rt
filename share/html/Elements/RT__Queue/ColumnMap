@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -84,12 +84,25 @@ my $COLUMN_MAP = {
         title => 'Encrypt', # loc
         value => sub { return $_[0]->Encrypt? $_[0]->loc('yes') : $_[0]->loc('no') },
     },
+    Lifecycle => {
+        title => 'Lifecycle',
+        attribute => 'Lifecycle',
+        value => sub { return $_[0]->Lifecycle->Name },
+    },
+    ScripStage => {
+        title => 'Stage', # loc
+        value => sub {
+            my $sid = $_[-1];
+            my $os = RT::ObjectScrip->new( $_[0]->CurrentUser );
+            $os->LoadByCols( Scrip => $_[-1], ObjectId => $_[0]->id );
+            return $os->Stage;
+        },
+    },
 };
 
 foreach my $field (qw(
     Name Description CorrespondAddress CommentAddress
     InitialPriority FinalPriority DefaultDueIn
-    Lifecycle
 )) {
     $COLUMN_MAP->{$field} = {
         title => $field,

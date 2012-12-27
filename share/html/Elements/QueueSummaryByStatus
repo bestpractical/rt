@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -104,7 +104,7 @@ $m->callback( CallbackName => 'Filter', Queues => \@queues );
 my %lifecycle;
 
 for my $queue (@queues) {
-    my $cycle = RT::Lifecycle->Load( $queue->{'Lifecycle'} );
+    my $cycle = RT::Lifecycle->Load( Name => $queue->{'Lifecycle'} );
     $lifecycle{ lc $cycle->Name } = $cycle;
 }
 
@@ -122,9 +122,13 @@ my $statuses = {};
 
 use RT::Report::Tickets;
 my $report = RT::Report::Tickets->new( RT->SystemUser );
-my $query = @queues
-    ? join(' OR ', map "Queue = ".$_->{id}, @queues)
-    : 'id < 0';
+my $query =
+    "(".
+    join(" OR ", map {s{(['\\])}{\\$1}g; "Status = '$_'"} @statuses) #'
+    .") AND (".
+    join(' OR ', map "Queue = ".$_->{id}, @queues)
+    .")";
+$query = 'id < 0' unless @queues;
 $report->SetupGroupings( Query => $query, GroupBy => [qw(Status Queue)] );
 
 while ( my $entry = $report->Next ) {

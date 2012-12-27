@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -78,7 +78,7 @@
 
 
 <div id="pick-criteria">
-    <& Elements/PickCriteria, query => $query{'Query'}, cfqueues => $queues &>
+    <& Elements/PickCriteria, query => $query{'Query'}, queues => $queues &>
 </div>
 <& /Elements/Submit,  Label => loc('Add these terms'), SubmitId => 'AddClause', Name => 'AddClause'&>
 <& /Elements/Submit, Label => loc('Add these terms and Search'), SubmitId => 'DoSearch', Name => 'DoSearch'&>
@@ -190,7 +190,7 @@ my @new_values = ();
 
 # Try to find if we're adding a clause
 foreach my $arg ( keys %ARGS ) {
-    next unless $arg =~ m/^ValueOf(\w+|'CF.{.*?}')$/
+    next unless $arg =~ m/^ValueOf(\w+|CF.{.*?})$/
                 && ( ref $ARGS{$arg} eq "ARRAY"
                      ? grep $_ ne '', @{ $ARGS{$arg} }
                      : $ARGS{$arg} ne '' );
@@ -220,8 +220,9 @@ foreach my $arg ( keys %ARGS ) {
     for ( my $i = 0; $i < @ops; $i++ ) {
         my ( $op, $value ) = ( $ops[$i], $values[$i] );
         next if !defined $value || $value eq '';
+        my $rawvalue = $value;
 
-        if ( $value eq 'NULL' && $op =~ /=/ ) {
+        if ( $value =~ /^NULL$/i && $op =~ /=/ ) {
             if ( $op eq '=' ) {
                 $op = "IS";
             }
@@ -234,16 +235,15 @@ foreach my $arg ( keys %ARGS ) {
             $value = "'$value'";
         }
 
-        if ($keyword =~ /^'CF\.{(.*)}'/) {
-            my $cf = $1;
-            $cf =~ s/(['\\])/\\$1/g;
-            $keyword = "'CF.{$cf}'";
+        if ($keyword =~ s/(['\\])/\\$1/g or $keyword =~ /\s/) {
+            $keyword = "'$keyword'";
         }
 
         my $clause = {
             Key   => $keyword,
             Op    => $op,
-            Value => $value
+            Value => $value,
+            RawValue => $rawvalue,
         };
 
         push @new_values, RT::Interface::Web::QueryBuilder::Tree->new($clause);
@@ -275,7 +275,7 @@ my ( $AvailableColumns, $CurrentFormat );
 ( $query{'Format'}, $AvailableColumns, $CurrentFormat ) = $m->comp(
     'Elements/BuildFormatString',
     %ARGS,
-    cfqueues => $queues,
+    queues => $queues,
     Format => $query{'Format'},
 );
 
@@ -308,7 +308,7 @@ if ( $ARGS{'DoSearch'} ) {
         SavedChartSearchId => $ARGS{'SavedChartSearchId'},
         SavedSearchId => $saved_search{'Id'},
     );
-    RT::Interface::Web::Redirect(RT->Config->Get('WebPath') . '/Search/Results.html?' . $redir_query_string);
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL') . 'Search/Results.html?' . $redir_query_string);
     $m->abort;
 }
 

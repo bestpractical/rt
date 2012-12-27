@@ -1,0 +1,4 @@
+# This is a mime.types for only the file types which we serve
+# statically (those that Apache might care about).
+image/gif    gif
+image/png    png

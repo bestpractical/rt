@@ -1,7 +1,3 @@
-PIE_uncompressed.htc
-https://github.com/downloads/lojjic/PIE/PIE-1.0beta2.zip
-The uncompressed version of PIE.htc
-
 ckeditor
 http://download.cksource.com/CKEditor/CKEditor/CKEditor%203.4.1/ckeditor_3.4.1.tar.gz
 The JS and CSS source files distributed with the version of ckeditor bundled in RT.
@@ -21,3 +17,17 @@ jQuery UI Accordian component that goes into our minified jquery.ui-1.8.4.custom
 jquery.tablesorter.js
 http://tablesorter.com/jquery.tablesorter.js
 jQuery tablesorter plugin version 2.05b
+
+jquery-ui-timepicker-addon.js 2050b7b6
+https://github.com/trentrichardson/jQuery-Timepicker-Addon
+Timepicker integrated with the jQuery UI datepicker
+
+eyedropper.svg
+The Noun Project
+http://thenounproject.com/noun/eye-dropper/
+Creative Commons - Attribution (CC BY 3.0)
+Modified version included at share/html/NoAuth/images/eyedropper.png
+
+jquery.modal-0.2.5.js
+https://github.com/kylefox/jquery-modal/archive/v0.2.5.tar.gz
+Simple jQuery modal plugin, minified source in jquery.modal.min.js

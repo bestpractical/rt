@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -51,7 +51,7 @@
 % $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="ModifyLinks.html" method="post">
+<form action="ModifyLinks.html" name="ModifyLinks" method="post">
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->id%>" />
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
 % my (@extra);
@@ -72,6 +72,7 @@ my $Ticket = LoadTicket($id);
 my @results;  
 $m->callback( TicketObj => $Ticket, ARGSRef => \%ARGS, Results => \@results );
 push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS );
+push @results, ProcessObjectCustomFieldUpdates( TicketObj => $Ticket, ARGSRef => \%ARGS );
 $Ticket->ApplyTransactionBatch;
     
 </%INIT>

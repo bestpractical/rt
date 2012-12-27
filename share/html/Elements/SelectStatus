@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -49,45 +49,89 @@
 % if ( $DefaultValue ) {
 <option value=""<% !$Default && qq[ selected="selected"] |n %>><% $DefaultLabel %></option>
 % }
-% foreach my $status (@status) {
-% next if ($SkipDeleted && $status eq 'deleted');
-% my $selected = defined $Default && $status eq $Default ? 'selected="selected"' : '';
+% for my $lifecycle (sort keys %statuses_by_lifecycle) {
+%     if ($group_by_lifecycle) {
+<optgroup label="<% $lifecycle %>">
+%     }
+%     foreach my $status (@{$statuses_by_lifecycle{$lifecycle}}) {
+%         next if ($SkipDeleted && $status eq 'deleted');
+%         my $selected = defined $Default && $status eq $Default ? 'selected="selected"' : '';
 <option value="<% $status %>" <% $selected |n %>><% loc($status) %></option>
+%     }
+%     if ($group_by_lifecycle) {
+</optgroup>
+%     }
 % }
 </select>
 <%INIT>
 ### XXX: no cover for Tools/MyDay.html
 
-
-my @status;
+my %statuses_by_lifecycle;
 if ( @Statuses ) {
-    @status = @Statuses;
-}
-elsif ( $TicketObj ) {
-    my $current = $TicketObj->Status;
-    my $lifecycle = $TicketObj->QueueObj->Lifecycle;
+    $statuses_by_lifecycle{''} = \@Statuses;
+} else {
+    if ( $Object ) {
+        my $lifecycle = $Object->Lifecycle;
+        if ($Object->_Accessible("Status", "read")) {
+            my $current = $Object->Status;
+            my @status;
+            push @status, $current;
 
-    my %has = ();
-    foreach my $next ( $lifecycle->Transitions( $current ) ) {
-        my $check = $lifecycle->CheckRight( $current => $next );
-        $has{ $check } = $TicketObj->CurrentUserHasRight( $check )
-            unless exists $has{ $check };
-        push @status, $next if $has{ $check };
+            my %has = ();
+            foreach my $next ( $lifecycle->Transitions( $current ) ) {
+                my $check = $lifecycle->CheckRight( $current => $next );
+                $has{ $check } = $Object->CurrentUserHasRight( $check )
+                    unless exists $has{ $check };
+                push @status, $next if $has{ $check };
+            }
+            $statuses_by_lifecycle{$lifecycle->Name} = \@status;
+        } else {
+            $statuses_by_lifecycle{$lifecycle->Name} = [ $lifecycle->Transitions('') ];
+        }
+    }
+    for my $lifecycle ( @Lifecycles ) {
+        $statuses_by_lifecycle{$lifecycle->Name} ||= [ $lifecycle->Valid ];
+    }
+
+    if (not keys %statuses_by_lifecycle) {
+        for my $lifecycle (map { RT::Lifecycle->Load($_) } RT::Lifecycle->List($Type)) {
+            $statuses_by_lifecycle{$lifecycle->Name} = [ $lifecycle->Valid ];
+        }
     }
 }
-elsif ( $QueueObj ) {
-    @status = $QueueObj->Lifecycle->Transitions('');
+
+if (keys %statuses_by_lifecycle) {
+    my %simplified;
+    my $key = sub {
+        join "\0", sort @{$_[0]};
+    };
+    for my $name (sort keys %statuses_by_lifecycle) {
+        my $matched;
+        my $statuses = $statuses_by_lifecycle{$name};
+        for my $simple (sort keys %simplified) {
+            if ($key->($statuses) eq $key->($simplified{$simple})) {
+                # Statuses are the same, join 'em!
+                $simplified{"$simple, $name"} = delete $simplified{$simple};
+                $matched++;
+                last;
+            }
+        }
+        unless ($matched) {
+            $simplified{$name} = $statuses;
+        }
+    }
+    %statuses_by_lifecycle = %simplified;
 }
-else {
-    @status = RT::Queue->Lifecycle->Valid;
-}
+
+my $group_by_lifecycle = keys %statuses_by_lifecycle > 1;
 </%INIT>
 <%ARGS>
 $Name => undef
+$Type => undef,
 
 @Statuses => ()
-$TicketObj => undef
-$QueueObj => undef
+$Object => undef,
+@Lifecycles => (),
 
 $Default => ''
 $SkipDeleted => 0

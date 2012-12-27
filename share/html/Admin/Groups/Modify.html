@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -52,7 +52,7 @@
 
 
 
-<form action="<%RT->Config->Get('WebPath')%>/Admin/Groups/Modify.html" method="post" enctype="multipart/form-data">
+<form action="<%RT->Config->Get('WebPath')%>/Admin/Groups/Modify.html" name="ModifyGroup" method="post" enctype="multipart/form-data">
 
 %unless ($Group->Id) {
 <input type="hidden" class="hidden" name="id" value="new" />
@@ -75,9 +75,7 @@
 <% loc($CF->Name) %>:
 </td><td>
 <& /Elements/EditCustomField, CustomField => $CF, 
-                              Object => $Group, 
-                              ($Create ? (NamePrefix => 'Object-RT::Group--CustomField-') 
-                                       : () )&>
+                              Object => $Group, &>
 </td></tr>
 % }
 <tr>
@@ -162,10 +160,7 @@ MaybeRedirectForResults(
 
 push @results, @warnings;
 
-unless ($Group->Disabled()) {
-    $EnabledChecked ='checked="checked"';
-}
-
+$EnabledChecked = ( $Group->Disabled() ? '' : 'checked="checked"' );
 
 </%INIT>
 

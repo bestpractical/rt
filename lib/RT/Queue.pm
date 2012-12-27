@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -76,9 +76,6 @@ sub Table {'Queues'}
 use RT::Groups;
 use RT::ACL;
 use RT::Interface::Email;
-
-our @DEFAULT_ACTIVE_STATUS = qw(new open stalled);
-our @DEFAULT_INACTIVE_STATUS = qw(resolved rejected deleted);  
 
 # $self->loc('new'); # For the string extractor to get a string to localize
 # $self->loc('open'); # For the string extractor to get a string to localize
@@ -246,31 +243,27 @@ sub RightCategories {
 
 sub Lifecycle {
     my $self = shift;
-    unless (ref $self && $self->id) { 
-        return RT::Lifecycle->Load('')
+    unless (ref $self && $self->id) {
+        return RT::Lifecycle->Load( Type => 'ticket')
     }
 
     my $name = $self->_Value( Lifecycle => @_ );
     $name ||= 'default';
 
-    my $res = RT::Lifecycle->Load( $name );
+    my $res = RT::Lifecycle->Load( Name => $name );
     unless ( $res ) {
         $RT::Logger->error("Lifecycle '$name' for queue '".$self->Name."' doesn't exist");
-        return RT::Lifecycle->Load('default');
+        return RT::Lifecycle->Load( Name => 'default');
     }
     return $res;
 }
 
 sub SetLifecycle {
     my $self = shift;
-    my $value = shift;
+    my $value = shift || 'default';
 
-    if ( $value && $value ne 'default' ) {
-        return (0, $self->loc('[_1] is not valid lifecycle', $value ))
-            unless $self->ValidateLifecycle( $value );
-    } else {
-        $value = undef;
-    }
+    return ( 0, $self->loc( '[_1] is not a valid lifecycle', $value ) )
+      unless $self->ValidateLifecycle($value);
 
     return $self->_Set( Field => 'Lifecycle', Value => $value, @_ );
 }
@@ -285,7 +278,7 @@ lifecycle is configured. Returns undef otherwise.
 sub ValidateLifecycle {
     my $self = shift;
     my $value = shift;
-    return undef unless RT::Lifecycle->Load( $value );
+    return undef unless RT::Lifecycle->Load( Name => $value );
     return 1;
 }
 
@@ -394,6 +387,7 @@ sub Create {
         FinalPriority     => 0,
         DefaultDueIn      => 0,
         Sign              => undef,
+        SignAuto          => undef,
         Encrypt           => undef,
         _RecordTransaction => 1,
         @_
@@ -405,19 +399,14 @@ sub Create {
     }
 
     {
-        my ($val, $msg) = $self->ValidateName( $args{'Name'} );
-
-        if (!$val) {
-            return ($val, $self->loc($msg));
-        }
+        my ($val, $msg) = $self->_ValidateName( $args{'Name'} );
+        return ($val, $msg) unless $val;
     }
 
-    if ( $args{'Lifecycle'} && $args{'Lifecycle'} ne 'default' ) {
-        return ( 0, $self->loc('Invalid lifecycle name') )
-            unless $self->ValidateLifecycle( $args{'Lifecycle'} );
-    } else {
-        $args{'Lifecycle'} = undef;
-    }
+    $args{'Lifecycle'} ||= 'default';
+
+    return ( 0, $self->loc('[_1] is not a valid lifecycle', $args{'Lifecycle'} ) )
+      unless $self->ValidateLifecycle( $args{'Lifecycle'} );
 
     my %attrs = map {$_ => 1} $self->ReadableAttributes;
 
@@ -429,7 +418,7 @@ sub Create {
         return ( 0, $self->loc('Queue could not be created') );
     }
 
-    my $create_ret = $self->_CreateQueueGroups();
+    my $create_ret = $self->_CreateRoleGroups();
     unless ($create_ret) {
         $RT::Handle->Rollback();
         return ( 0, $self->loc('Queue could not be created') );
@@ -439,14 +428,11 @@ sub Create {
     }
     $RT::Handle->Commit;
 
-    if ( defined $args{'Sign'} ) {
-        my ($status, $msg) = $self->SetSign( $args{'Sign'} );
-        $RT::Logger->error("Couldn't set attribute 'Sign': $msg")
-            unless $status;
-    }
-    if ( defined $args{'Encrypt'} ) {
-        my ($status, $msg) = $self->SetEncrypt( $args{'Encrypt'} );
-        $RT::Logger->error("Couldn't set attribute 'Encrypt': $msg")
+    for my $attr (qw/Sign SignAuto Encrypt/) {
+        next unless defined $args{$attr};
+        my $set = "Set" . $attr;
+        my ($status, $msg) = $self->$set( $args{$attr} );
+        $RT::Logger->error("Couldn't set attribute '$attr': $msg")
             unless $status;
     }
 
@@ -481,7 +467,7 @@ sub SetDisabled {
     my $set_err = $self->_Set( Field =>'Disabled', Value => $val);
     unless ($set_err) {
         $RT::Handle->Rollback();
-        $RT::Logger->warning("Couldn't ".($val == 1) ? "disable" : "enable"." queue ".$self->PrincipalObj->Id);
+        $RT::Logger->warning("Couldn't ".($val == 1) ? "disable" : "enable"." queue ".$self->Name);
         return (undef);
     }
     $self->_NewTransaction( Type => ($val == 1) ? "Disabled" : "Enabled" );
@@ -538,22 +524,33 @@ sub ValidateName {
     my $self = shift;
     my $name = shift;
 
+    my ($ok, $msg) = $self->_ValidateName($name);
+
+    return $ok ? 1 : 0;
+}
+
+sub _ValidateName {
+    my $self = shift;
+    my $name = shift;
+
+    return (undef, "Queue name is required") unless length $name;
+
+    # Validate via the superclass first
+    # Case: short circuit if it's an integer so we don't have
+    # fale negatives when loading a temp queue
+    unless ( my $q = $self->SUPER::ValidateName($name) ) {
+        return ($q, $self->loc("'[_1]' is not a valid name.", $name));
+    }
+
     my $tempqueue = RT::Queue->new(RT->SystemUser);
     $tempqueue->Load($name);
 
     #If this queue exists, return undef
     if ( $tempqueue->Name() && $tempqueue->id != $self->id)  {
-        return (undef, "Queue already exists.");
+        return (undef, $self->loc("Queue already exists") );
     }
 
-    #If the queue doesn't exist, return 1
-    elsif (my $q = $self->SUPER::ValidateName($name)) {
-        return ($q);
-    }
-    else {
-        return (undef, "That's not a valid name.");
-    }
-
+    return (1);
 }
 
 
@@ -580,6 +577,32 @@ sub SetSign {
     my ($status, $msg) = $self->SetAttribute(
         Name        => 'Sign',
         Description => 'Sign outgoing messages by default',
+        Content     => $value,
+    );
+    return ($status, $msg) unless $status;
+    return ($status, $self->loc('Signing enabled')) if $value;
+    return ($status, $self->loc('Signing disabled'));
+}
+
+sub SignAuto {
+    my $self = shift;
+    my $value = shift;
+
+    return undef unless $self->CurrentUserHasRight('SeeQueue');
+    my $attr = $self->FirstAttribute('SignAuto') or return 0;
+    return $attr->Content;
+}
+
+sub SetSignAuto {
+    my $self = shift;
+    my $value = shift;
+
+    return ( 0, $self->loc('Permission Denied') )
+        unless $self->CurrentUserHasRight('AdminQueue');
+
+    my ($status, $msg) = $self->SetAttribute(
+        Name        => 'SignAuto',
+        Description => 'Sign auto-generated outgoing messages',
         Content     => $value,
     );
     return ($status, $msg) unless $status;
@@ -684,6 +707,7 @@ sub TicketTransactionCustomFields {
 
     my $cfs = RT::CustomFields->new( $self->CurrentUser );
     if ( $self->CurrentUserHasRight('SeeQueue') ) {
+        $cfs->SetContextObject( $self );
 	$cfs->LimitToGlobalOrObjectId( $self->Id );
 	$cfs->LimitToLookupType( 'RT::Queue-RT::Ticket-RT::Transaction' );
         $cfs->ApplySortOrder;
@@ -697,43 +721,53 @@ sub TicketTransactionCustomFields {
 
 =head2 AllRoleGroupTypes
 
-Returns a list of the names of the various role group types that this queue
-has, including Requestor and Owner. If you don't want them, see
-L</ManageableRoleGroupTypes>.
+B<DEPRECATED> and will be removed in a future release. Use L</Roles>
+instead.
+
+Returns a list of the names of the various role group types for Queues,
+including roles used only for ACLs like Requestor and Owner. If you don't want
+them, see L</ManageableRoleGroupTypes>.
 
 =cut
 
 sub AllRoleGroupTypes {
-    my $self = shift;
-    return ($self->ManageableRoleGroupTypes, qw(Requestor Owner));
+    RT->Logger->warn(<<"    .");
+RT::Queue->AllRoleGroupTypes is DEPRECATED and will be removed in a future release.
+
+Please use RT::Queue->Roles instead at @{[join '/', caller]}.
+    .
+    shift->Roles;
 }
 
 =head2 IsRoleGroupType
+
+B<DEPRECATED> and will be removed in a future release. Use L</HasRole> instead.
 
 Returns whether the passed-in type is a role group type.
 
 =cut
 
 sub IsRoleGroupType {
-    my $self = shift;
-    my $type = shift;
+    RT->Logger->warn(<<"    .");
+RT::Queue->IsRoleGroupType is DEPRECATED and will be removed in a future release.
 
-    for my $valid_type ($self->AllRoleGroupTypes) {
-        return 1 if $type eq $valid_type;
-    }
-
-    return 0;
+Please use RT::Queue->HasRole instead at @{[join '/', caller]}.
+    .
+    shift->HasRole(@_);
 }
 
 =head2 ManageableRoleGroupTypes
 
-Returns a list of the names of the various role group types that this queue
-has, excluding Requestor and Owner. If you want them, see L</AllRoleGroupTypes>.
+Returns a list of the names of the various role group types for Queues,
+excluding ones used only for ACLs such as Requestor and Owner. If you want
+them, see L</Roles>.
 
 =cut
 
 sub ManageableRoleGroupTypes {
-    return qw(Cc AdminCc);
+    # This grep is a little hacky, but I don't want to introduce the concept of
+    # manageable vs. unmanageable roles globally (yet).
+    return grep { not /^(Requestor|Owner)$/ } shift->Roles;
 }
 
 =head2 IsManageableRoleGroupType
@@ -752,50 +786,6 @@ sub IsManageableRoleGroupType {
 
     return 0;
 }
-
-
-=head2 _CreateQueueGroups
-
-Create the ticket groups and links for this ticket. 
-This routine expects to be called from Ticket->Create _inside of a transaction_
-
-It will create four groups for this ticket: Requestor, Cc, AdminCc and Owner.
-
-It will return true on success and undef on failure.
-
-
-=cut
-
-sub _CreateQueueGroups {
-    my $self = shift;
-
-    my @types = $self->AllRoleGroupTypes;
-
-    foreach my $type (@types) {
-        my $ok = $self->_CreateQueueRoleGroup($type);
-        return undef if !$ok;
-    }
-
-    return 1;
-}
-
-sub _CreateQueueRoleGroup {
-    my $self = shift;
-    my $type = shift;
-
-    my $type_obj = RT::Group->new($self->CurrentUser);
-    my ($id, $msg) = $type_obj->CreateRoleGroup(Instance => $self->Id, 
-                                                    Type => $type,
-                                                    Domain => 'RT::Queue-Role');
-    unless ($id) {
-        $RT::Logger->error("Couldn't create a Queue group of type '$type' for queue ".
-                            $self->Id.": ".$msg);
-        return(undef);
-    }
-
-    return $id;
-}
-
 
 
 # _HasModifyWatcherRight {{{
@@ -838,7 +828,7 @@ PrinicpalId The RT::Principal id of the user or group that's being added as a wa
 Email       The email address of the new watcher. If a user with this 
             email address can't be found, a new nonprivileged user will be created.
 
-If the watcher you\'re trying to set has an RT account, set the Owner parameter to their User Id. Otherwise, set the Email parameter to their Email address.
+If the watcher you're trying to set has an RT account, set the Owner parameter to their User Id. Otherwise, set the Email parameter to their Email address.
 
 Returns a tuple of (status/id, message).
 
@@ -863,7 +853,7 @@ sub AddWatcher {
     }
 
     return ( 0, "Unknown watcher type [_1]", $args{Type} )
-        unless $self->IsRoleGroupType($args{Type});
+        unless $self->HasRole($args{Type});
 
     my ($ok, $msg) = $self->_HasModifyWatcherRight(%args);
     return ($ok, $msg) if !$ok;
@@ -930,15 +920,15 @@ sub _AddWatcher {
         return(0, $self->loc("Could not find or create that user"));
     }
 
-    my $group = RT::Group->new($self->CurrentUser);
-    $group->LoadQueueRoleGroup(Type => $args{'Type'}, Queue => $self->Id);
+    my $group = $self->RoleGroup( $args{'Type'} );
     unless ($group->id) {
         return(0,$self->loc("Group not found"));
     }
 
     if ( $group->HasMember( $principal)) {
 
-        return ( 0, $self->loc('That principal is already a [_1] for this queue', $args{'Type'}) );
+        return ( 0, $self->loc('[_1] is already a [_2] for this queue',
+                    $principal->Object->Name, $args{'Type'}) );
     }
 
 
@@ -946,7 +936,8 @@ sub _AddWatcher {
     unless ($m_id) {
         $RT::Logger->error("Failed to add ".$principal->Id." as a member of group ".$group->Id.": ".$m_msg);
 
-        return ( 0, $self->loc('Could not make that principal a [_1] for this queue', $args{'Type'}) );
+        return ( 0, $self->loc('Could not make [_1] a [_2] for this queue',
+                    $principal->Object->Name, $args{'Type'}) );
     }
     return ( 1, $self->loc("Added [_1] to members of [_2] for this queue.", $principal->Object->Name, $args{'Type'} ));
 }
@@ -1003,14 +994,13 @@ sub DeleteWatcher {
         return ( 0, $self->loc("Could not find that principal") );
     }
 
-    my $group = RT::Group->new($self->CurrentUser);
-    $group->LoadQueueRoleGroup(Type => $args{'Type'}, Queue => $self->Id);
+    my $group = $self->RoleGroup( $args{'Type'} );
     unless ($group->id) {
         return(0,$self->loc("Group not found"));
     }
 
     return ( 0, $self->loc('Unknown watcher type [_1]', $args{Type}) )
-        unless $self->IsRoleGroupType($args{Type});
+        unless $self->HasRole($args{Type});
 
     my ($ok, $msg) = $self->_HasModifyWatcherRight(%args);
     return ($ok, $msg) if !$ok;
@@ -1018,8 +1008,8 @@ sub DeleteWatcher {
     # see if this user is already a watcher.
 
     unless ( $group->HasMember($principal)) {
-        return ( 0,
-        $self->loc('That principal is not a [_1] for this queue', $args{'Type'}) );
+        return ( 0, $self->loc('[_1] is not a [_2] for this queue',
+            $principal->Object->Name, $args{'Type'}) );
     }
 
     my ($m_id, $m_msg) = $group->_DeleteMember($principal->Id);
@@ -1027,7 +1017,8 @@ sub DeleteWatcher {
         $RT::Logger->error("Failed to delete ".$principal->Id.
                            " as a member of group ".$group->Id.": ".$m_msg);
 
-        return ( 0,    $self->loc('Could not remove that principal as a [_1] for this queue', $args{'Type'}) );
+        return ( 0, $self->loc('Could not remove [_1] as a [_2] for this queue',
+                    $principal->Object->Name, $args{'Type'}) );
     }
 
     return ( 1, $self->loc("Removed [_1] from members of [_2] for this queue.", $principal->Object->Name, $args{'Type'} ));
@@ -1084,12 +1075,9 @@ If the user doesn't have "ShowQueue" permission, returns an empty group
 sub Cc {
     my $self = shift;
 
-    my $group = RT::Group->new($self->CurrentUser);
-    if ( $self->CurrentUserHasRight('SeeQueue') ) {
-        $group->LoadQueueRoleGroup(Type => 'Cc', Queue => $self->Id);
-    }
-    return ($group);
-
+    return RT::Group->new($self->CurrentUser)
+        unless $self->CurrentUserHasRight('SeeQueue');
+    return $self->RoleGroup( 'Cc' );
 }
 
 
@@ -1105,12 +1093,9 @@ If the user doesn't have "ShowQueue" permission, returns an empty group
 sub AdminCc {
     my $self = shift;
 
-    my $group = RT::Group->new($self->CurrentUser);
-    if ( $self->CurrentUserHasRight('SeeQueue') ) {
-        $group->LoadQueueRoleGroup(Type => 'AdminCc', Queue => $self->Id);
-    }
-    return ($group);
-
+    return RT::Group->new($self->CurrentUser)
+        unless $self->CurrentUserHasRight('SeeQueue');
+    return $self->RoleGroup( 'AdminCc' );
 }
 
 
@@ -1138,9 +1123,8 @@ sub IsWatcher {
         @_
     );
 
-    # Load the relevant group. 
-    my $group = RT::Group->new($self->CurrentUser);
-    $group->LoadQueueRoleGroup(Type => $args{'Type'}, Queue => $self->id);
+    # Load the relevant group.
+    my $group = $self->RoleGroup( $args{'Type'} );
     # Ask if it has the member in question
 
     my $principal = RT::Principal->new($self->CurrentUser);
@@ -1203,6 +1187,7 @@ sub _Set {
     unless ( $self->CurrentUserHasRight('AdminQueue') ) {
         return ( 0, $self->loc('Permission Denied') );
     }
+    RT->System->QueueCacheNeedsUpdate(1);
     return ( $self->SUPER::_Set(@_) );
 }
 
@@ -1241,6 +1226,17 @@ sub CurrentUserHasRight {
 
 }
 
+=head2 CurrentUserCanSee
+
+Returns true if the current user can see the queue, using SeeQueue
+
+=cut
+
+sub CurrentUserCanSee {
+    my $self = shift;
+
+    return $self->CurrentUserHasRight('SeeQueue');
+}
 
 
 =head2 HasRight
@@ -1516,7 +1512,7 @@ sub _CoreAccessible {
         SubjectTag => 
         {read => 1, write => 1, sql_type => 12, length => 120,  is_blob => 0,  is_numeric => 0,  type => 'varchar(120)', default => ''},
         Lifecycle => 
-        {read => 1, write => 1, sql_type => 12, length => 32,  is_blob => 0,  is_numeric => 0,  type => 'varchar(32)', default => ''},
+        {read => 1, write => 1, sql_type => 12, length => 32,  is_blob => 0, is_numeric => 0,  type => 'varchar(32)', default => 'default'},
         InitialPriority => 
         {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         FinalPriority => 

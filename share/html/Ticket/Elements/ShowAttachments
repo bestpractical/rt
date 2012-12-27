@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -56,34 +56,10 @@
 <%$key%><br />
 <ul>
 % foreach my $rev (@{$documents{$key}}) {
-
-<%PERL>
-my $size = $rev->ContentLength;
-
-if ($size) {
-    my $kb = int($size/102.4) / 10;
-    my $units = RT->Config->Get('AttachmentUnits');
-
-    if (!defined($units)) {
-        if ($size > 1024) {
-            $size = $kb . "k";
-        }
-        else {
-            $size = $size . "b";
-        }
-    }
-    elsif ($units eq 'k') {
-        $size = $kb . "k";
-    }
-    else {
-        $size = $size . "b";
-    }
-
-</%PERL>
-
+% if ($rev->ContentLength) {
 <li><font size="-2">
 <a href="<%RT->Config->Get('WebPath')%>/Ticket/Attachment/<%$rev->TransactionId%>/<%$rev->Id%>/<%$rev->Filename | u%>">
-% my $desc = loc("[_1] ([_2]) by [_3]", $rev->CreatedAsString, $size, $m->scomp('/Elements/ShowUser', User => $rev->CreatorObj));
+% my $desc = loc("[_1] ([_2]) by [_3]", $rev->CreatedAsString, $rev->FriendlyContentLength, $m->scomp('/Elements/ShowUser', User => $rev->CreatorObj));
 <% $desc |n%>
 </a>
 </font></li>
@@ -100,8 +76,10 @@ if ($size) {
 
 # If we haven't been passed in an Attachments object (through the precaching mechanism)
 # then we need to find one
-$Attachments ||= $m->comp('FindAttachments', Ticket => $Ticket);
+$Attachments ||= $Ticket->Attachments;
 
+# XXX PERF: why doesn't this Limit on Filename to avoid fetching *all* the
+# attachments?
 my %documents;
 while ( my $attach = $Attachments->Next() ) {
     next unless defined $attach->Filename && length $attach->Filename;

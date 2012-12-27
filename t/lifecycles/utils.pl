@@ -1,4 +1,3 @@
-#!/usr/bin/perl
 
 use strict;
 use warnings;
@@ -64,10 +63,15 @@ Set(\%Lifecycles,
             'delayed -> on way'   => {label => 'Put On Way', update => 'Respond'},
         },
     },
+    racing => {
+        type => 'racecar',
+        active => ['on-your-mark', 'get-set', 'go'],
+        inactive => ['first', 'second', 'third', 'no-place'],
+    },
 );
 END
 }
 
-use RT::Test config => $config;
+use RT::Test config => $config, tests => undef;
 
 1;

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -110,13 +110,13 @@ for my $category (@$Principals) {
                id="AddPrincipalForRights-<% lc $AddPrincipal %>" />
         <script type="text/javascript">
         jQuery(function() {
-            jQuery("#AddPrincipalForRights-<% lc $AddPrincipal %>").keyup(function(){
+            jQuery("#AddPrincipalForRights-"+<% lc $AddPrincipal |n,j%>).keyup(function(){
                 toggle_addprincipal_validity(this, true);
             });
 
 % if (lc $AddPrincipal eq 'group') {
-            jQuery("#AddPrincipalForRights-<% lc $AddPrincipal %>").autocomplete({
-                source: "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/Groups",
+            jQuery("#AddPrincipalForRights-"+<% lc $AddPrincipal |n,j%>).autocomplete({
+                source: <% RT->Config->Get('WebPath') |n,j%>+"/Helpers/Autocomplete/Groups",
                 select: addprincipal_onselect,
                 change: addprincipal_onchange
             });

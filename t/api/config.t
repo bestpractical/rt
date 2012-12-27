@@ -1,7 +1,8 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test nodb => 1, tests => 9;
+use RT::Test nodb => 1, tests => 11;
+use Test::Warn;
 
 ok(
     RT::Config->AddOption(
@@ -31,3 +32,12 @@ is( $meta->{Widget}, '/Widgets/Form/Boolean', 'widget is updated to boolean' );
 ok( RT::Config->DeleteOption( Name => 'foo' ), 'removed option foo' );
 is( RT::Config->Meta('foo'), undef, 'foo is indeed deleted' );
 
+# Test EmailInputEncodings PostLoadCheck code
+RT::Config->Set('EmailInputEncodings', qw(utf-8 iso-8859-1 us-ascii foo));
+my @encodings = qw(utf-8-strict iso-8859-1 ascii);
+
+warning_is {RT::Config->PostLoadCheck} "Unknown encoding 'foo' in \@EmailInputEncodings option",
+  'Correct warning for encoding foo';
+
+my @canonical_encodings = RT::Config->Get('EmailInputEncodings');
+is_deeply(\@encodings, \@canonical_encodings, 'Got correct encoding list');

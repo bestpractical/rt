@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -72,7 +72,7 @@ sub __DependsOn
     my $list = [];
 
 # AddLink transactions
-    my $map = RT::Ticket->LINKTYPEMAP;
+    my $map = { %RT::Link::TYPEMAP };
     my $link_meta = $map->{ $self->Type };
     unless ( $link_meta && $link_meta->{'Mode'} && $link_meta->{'Type'} ) {
         RT::Shredder::Exception->throw( 'Wrong link link_meta, no record for '. $self->Type );
@@ -117,24 +117,6 @@ sub __DependsOn
             Shredder => $args{'Shredder'}
         );
     return $self->SUPER::__DependsOn( %args );
-}
-
-#TODO: Link record has small strength, but should be encountered
-# if we plan write export tool.
-
-sub __Relates
-{
-    my $self = shift;
-    my %args = (
-            Shredder => undef,
-            Dependencies => undef,
-            @_,
-           );
-    my $deps = $args{'Dependencies'};
-    my $list = [];
-# FIXME: if link is local then object should exist
-
-    return $self->SUPER::__Relates( %args );
 }
 
 1;

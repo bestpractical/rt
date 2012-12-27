@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -166,10 +166,29 @@ sub LimitToUserDefinedGroups {
     #$self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => '');
 }
 
+=head2 LimitToRolesForObject OBJECT
 
+Limits the set of groups to role groups specifically for the object in question
+based on the object's class and ID.  If the object has no ID, the roles are not
+limited by group C<Instance>.  That is, calling this method on an unloaded
+object will find all role groups for that class of object.
 
+Replaces L</LimitToRolesForQueue>, L</LimitToRolesForTicket>, and
+L</LimitToRolesForSystem>.
+
+=cut
+
+sub LimitToRolesForObject {
+    my $self   = shift;
+    my $object = shift;
+    $self->Limit(FIELD => 'Domain',   OPERATOR => '=', VALUE => ref($object) . "-Role");
+    $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => $object->id)
+        if $object->id and not ref($object) eq "RT::System";
+}
 
 =head2 LimitToRolesForQueue QUEUE_ID
+
+B<DEPRECATED>. Use L</LimitToRolesForObject> instead.
 
 Limits the set of groups found to role groups for queue QUEUE_ID
 
@@ -178,6 +197,7 @@ Limits the set of groups found to role groups for queue QUEUE_ID
 sub LimitToRolesForQueue {
     my $self = shift;
     my $queue = shift;
+    RT->Logger->warning("LimitToRolesForQueue is deprecated; please change code to use LimitToRolesForObject (caller @{[join '/', caller]})");
     $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'RT::Queue-Role');
     $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => $queue);
 }
@@ -186,6 +206,8 @@ sub LimitToRolesForQueue {
 
 =head2 LimitToRolesForTicket Ticket_ID
 
+B<DEPRECATED>. Use L</LimitToRolesForObject> instead.
+
 Limits the set of groups found to role groups for Ticket Ticket_ID
 
 =cut
@@ -193,13 +215,16 @@ Limits the set of groups found to role groups for Ticket Ticket_ID
 sub LimitToRolesForTicket {
     my $self = shift;
     my $Ticket = shift;
+    RT->Logger->warning("LimitToRolesForTicket is deprecated; please change code to use LimitToRolesForObject (caller @{[join '/', caller]})");
     $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'RT::Ticket-Role');
-    $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => '$Ticket');
+    $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => $Ticket);
 }
 
 
 
 =head2 LimitToRolesForSystem System_ID
+
+B<DEPRECATED>. Use L</LimitToRolesForObject> instead.
 
 Limits the set of groups found to role groups for System System_ID
 
@@ -207,6 +232,7 @@ Limits the set of groups found to role groups for System System_ID
 
 sub LimitToRolesForSystem {
     my $self = shift;
+    RT->Logger->warning("LimitToRolesForSystem is deprecated; please change code to use LimitToRolesForObject (caller @{[join '/', caller]})");
     $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'RT::System-Role');
 }
 
@@ -234,6 +260,8 @@ sub WithMember {
                 ALIAS2 => $members, FIELD2 => 'GroupId');
 
     $self->Limit(ALIAS => $members, FIELD => 'MemberId', OPERATOR => '=', VALUE => $args{'PrincipalId'});
+    $self->Limit(ALIAS => $members, FIELD => 'Disabled', VALUE => 0)
+        if $args{'Recursively'};
 
     return $members;
 }
@@ -260,6 +288,12 @@ sub WithoutMember {
         OPERATOR => '=',
         VALUE    => $args{'PrincipalId'},
     );
+    $self->Limit(
+        LEFTJOIN => $members_alias,
+        ALIAS    => $members_alias,
+        FIELD    => 'Disabled',
+        VALUE    => 0
+    ) if $args{'Recursively'};
     $self->Limit(
         ALIAS    => $members_alias,
         FIELD    => 'MemberId',
@@ -383,7 +417,7 @@ sub ForWhichCurrentUserHasRight {
 
 =head2 LimitToEnabled
 
-Only find items that haven\'t been disabled
+Only find items that haven't been disabled
 
 =cut
 
@@ -441,7 +475,7 @@ sub Next {
 sub _DoSearch {
     my $self = shift;
     
-    #unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
+    #unless we really want to find disabled rows, make sure we're only finding enabled ones.
     unless($self->{'find_disabled_rows'}) {
 	$self->LimitToEnabled();
     }

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -138,23 +138,6 @@ sub Named {
         @attributes = @{($self->_AttrHash->{$name}||[])};
     }
     return (@attributes);   
-}
-
-=head2 WithId ID
-
-Returns the RT::Attribute objects with the id ID
-
-XXX TODO XXX THIS NEEDS A BETTER ACL CHECK
-
-=cut
-
-sub WithId {
-    my $self = shift;
-    my $id = shift;
-
-    my $attr = RT::Attribute->new($self->CurrentUser);
-    $attr->LoadByCols( id => $id );
-    return($attr);
 }
 
 =head2 DeleteEntry { Name =>   Content => , id => }

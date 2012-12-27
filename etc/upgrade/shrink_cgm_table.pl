@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -52,7 +52,7 @@ use warnings;
 
 use RT;
 RT::LoadConfig();
-RT->Config->Set('LogToScreen' => 'debug');
+RT->Config->Set('LogToSTDERR' => 'debug');
 RT::Init();
 
 use RT::CachedGroupMembers;
@@ -106,7 +106,7 @@ while ( my $rec = FetchNext( $cgms ) ) {
     $RT::Handle->Commit;
 }
 
-use constant PAGE_SIZE => 1000;
+use constant PAGE_SIZE => 10000;
 sub FetchNext {
     my ($objs, $init) = @_;
     if ( $init ) {

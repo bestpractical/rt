@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -90,8 +90,8 @@ sub Collection {
 
     $col->FromSQL($query);
 
-    $col->OrderBy( FIELD => 'Due' );
-    
+    $col->OrderByCols( { FIELD => 'Due' }, { FIELD => 'id' } );
+
     return($col);
 }
 
@@ -116,8 +116,19 @@ sub Add {
         @_
     );
 
+    return ( 0, $self->loc('Permission Denied') )
+      unless $self->CurrentUser->HasRight(
+        Right  => 'CreateTicket',
+        Object => $self->TicketObj->QueueObj,
+      )
+      && $self->CurrentUser->HasRight(
+        Right  => 'ModifyTicket',
+        Object => $self->TicketObj,
+      );
+
     my $reminder = RT::Ticket->new($self->CurrentUser);
-    my ( $status, $msg ) = $reminder->Create(
+    # the 2nd return value is txn id, which is useless here
+    my ( $status, undef, $msg ) = $reminder->Create(
         Subject => $args{'Subject'},
         Owner => $args{'Owner'},
         Due => $args{'Due'},
@@ -137,7 +148,8 @@ sub Open {
     my $self = shift;
     my $reminder = shift;
 
-    my ( $status, $msg ) = $reminder->SetStatus('open');
+    my ( $status, $msg ) =
+      $reminder->SetStatus( $reminder->Lifecycle->ReminderStatusOnOpen );
     $self->TicketObj->_NewTransaction(
         Type => 'OpenReminder',
         Field => 'RT::Ticket',
@@ -149,7 +161,8 @@ sub Open {
 sub Resolve {
     my $self = shift;
     my $reminder = shift;
-    my ( $status, $msg ) = $reminder->SetStatus('resolved');
+    my ( $status, $msg ) =
+      $reminder->SetStatus( $reminder->Lifecycle->ReminderStatusOnResolve );
     $self->TicketObj->_NewTransaction(
         Type => 'ResolveReminder',
         Field => 'RT::Ticket',

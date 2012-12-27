@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -50,6 +50,7 @@
 # Abhijit Menon-Sen <ams@wiw.org>
 
 use strict;
+use warnings;
 
 if ( $ARGV[0] && $ARGV[0] =~ /^(?:--help|-h)$/ ) {
     require Pod::Usage;
@@ -119,9 +120,9 @@ sub DEBUG { warn @_ if $config{debug} >= shift }
 # (XXX: Ask Autrijus how i18n changes these definitions.)
 
 my $name    = '[\w.-]+';
-my $CF_name = '[\sa-z0-9_ :()/-]+';
+my $CF_name = '[^,]+?';
 my $field   = '(?i:[a-z][a-z0-9_-]*|C(?:ustom)?F(?:ield)?-'.$CF_name.'|CF\.\{'.$CF_name.'\})';
-my $label   = '[a-zA-Z0-9@_.+-]+';
+my $label   = '[^,\\/]+';
 my $labels  = "(?:$label,)*$label";
 my $idlist  = '(?:(?:\d+-)?\d+,)*(?:\d+-)?\d+';
 
@@ -420,7 +421,7 @@ sub show {
         }
         elsif (my $spec = is_object_spec($_, $type)) {
             push @objects, $spec;
-            $rawprint = 1 if $_ =~ /\/content$/ or $_ !~ /^ticket/;
+            $rawprint = 1 if $_ =~ /\/content$/ or $_ =~ /\/links/ or $_ !~ /^ticket/;
         }
         else {
             my $datum = /^-/ ? "option" : "argument";
@@ -905,11 +906,6 @@ sub link {
     
     if (@ARGV == 3) {
         my ($from, $rel, $to) = @ARGV;
-        if ($from !~ /^\d+$/ || $to !~ /^\d+$/) {
-            my $bad = $from =~ /^\d+$/ ? $to : $from;
-            whine "Invalid $type ID '$bad' specified.";
-            $bad = 1;
-        }
         if (($type eq "ticket") && ( ! exists $ltypes{lc $rel})) {
             whine "Invalid link '$rel' for type $type specified.";
             $bad = 1;
@@ -972,12 +968,8 @@ sub take {
 sub grant {
     my ($cmd) = @_;
 
-    my $revoke = 0;
-    while (@ARGV) {
-    }
-
-    $revoke = 1 if $cmd->{action} eq 'revoke';
-    return 0;
+    whine "$cmd is unimplemented.";
+    return 1;
 }
 
 # Client <-> Server communication.
@@ -1710,7 +1702,7 @@ sub prettyshow {
         }
         print "$k->{Content}\n" if exists $k->{Content} and
                                    $k->{Content} !~ /to have no content$/ and
-                                   $k->{Type} ne 'EmailRecord';
+                                   ($k->{Type}||'') ne 'EmailRecord';
         print "$k->{Attachments}\n" if exists $k->{Attachments} and
                                    $k->{Attachments};
     }
@@ -1914,8 +1906,6 @@ Text:
         ticket/1-3,5-7/history
 
         user/ams
-        user/ams/rights
-        user/ams,rai,1/rights
 
     For more information:
 
@@ -2032,20 +2022,6 @@ Text:
         - show
         - edit
         - create
-
-    In addition, the following type-specific actions exist:
-
-        - grant
-        - revoke
-
-    Attributes:
-
-        The following attributes can be used with "rt show" or "rt edit"
-        to retrieve or edit other information associated with users and
-        groups:
-
-        rights                  Global rights granted to this user.
-        rights/<queue>          Queue rights for this user.
 
 --
 
@@ -2386,12 +2362,6 @@ Text:
 
         rt link 2 dependson 3
         rt link -d 4 referredtoby 6     # 6 no longer refers to 4
-
---
-
-Title: grant
-Title: revoke
-Text:
 
 --
 

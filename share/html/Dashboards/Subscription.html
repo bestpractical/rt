@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -171,7 +171,7 @@
 <&|/l&>Recipient</&>:
 </td><td class="value">
 <input name="Recipient" id="Recipient" size="30" value="<%$fields{Recipient} ? $fields{Recipient} : ''%>" />
-<div class="hints"><% loc("Leave blank to send to your current email address ([_1])", $session{'CurrentUser'}->UserObj->EmailAddress) %></div>
+<div class="hints"><% loc("Leave blank to send to your current email address ([_1])", $session{'CurrentUser'}->EmailAddress) %></div>
 </td></tr>
 </table>
 </&>
@@ -257,7 +257,7 @@ if (defined $ARGS{Save}) {
         }
         # create
         else {
-            Abort(loc("Unable to subscribe to dashboard [_1]: Permission denied", $id))
+            Abort(loc("Unable to subscribe to dashboard [_1]: Permission Denied", $id))
                 unless $Dashboard->CurrentUserCanSubscribe;
 
             $SubscriptionObj = RT::Attribute->new($session{CurrentUser});

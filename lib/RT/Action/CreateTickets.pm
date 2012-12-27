@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -53,13 +53,11 @@ use strict;
 use warnings;
 
 use MIME::Entity;
+use RT::Link;
 
 =head1 NAME
 
- RT::Action::CreateTickets
-
-Create one or more tickets according to an externally supplied template.
-
+RT::Action::CreateTickets - Create one or more tickets according to an externally supplied template
 
 =head1 SYNOPSIS
 
@@ -72,18 +70,14 @@ Create one or more tickets according to an externally supplied template.
 
 =head1 DESCRIPTION
 
+The CreateTickets ScripAction allows you to create automated workflows in RT,
+creating new tickets in response to actions and conditions from other
+tickets.
 
-Using the "CreateTickets" ScripAction and mandatory dependencies, RT now has 
-the ability to model complex workflow. When a ticket is created in a queue
-that has a "CreateTickets" scripaction, that ScripAction parses its "Template"
+=head2 Format
 
-
-
-=head2 FORMAT
-
-CreateTickets uses the template as a template for an ordered set of tickets 
-to create. The basic format is as follows:
-
+CreateTickets uses the RT template configured in the scrip as a template
+for an ordered set of tickets to create. The basic format is as follows:
 
  ===Create-Ticket: identifier
  Param: Value
@@ -98,19 +92,24 @@ to create. The basic format is as follows:
  Content: Blah
  ENDOFCONTENT
 
+As shown, you can put one or more C<===Create-Ticket:> sections in
+a template. Each C<===Create-Ticket:> section is evaluated as its own
+L<Text::Template> object, which means that you can embed snippets
+of Perl inside the L<Text::Template> using C<{}> delimiters, but that
+such sections absolutely can not span a C<===Create-Ticket:> boundary.
 
-Each ===Create-Ticket: section is evaluated as its own 
-Text::Template object, which means that you can embed snippets
-of perl inside the Text::Template using {} delimiters, but that 
-such sections absolutely can not span a ===Create-Ticket boundary.
+Note that each C<Value> must come right after the C<Param> on the same
+line. The C<Content:> param can extend over multiple lines, but the text
+of the first line must start right after C<Content:>. Don't try to start
+your C<Content:> section with a newline.
 
-After each ticket is created, it's stuffed into a hash called %Tickets
-so as to be available during the creation of other tickets during the
-same ScripAction, using the key 'create-identifier', where
-C<identifier> is the id you put after C<===Create-Ticket:>.  The hash
+After each ticket is created, it's stuffed into a hash called C<%Tickets>
+making it available during the creation of other tickets during the
+same ScripAction. The hash key for each ticket is C<create-[identifier]>,
+where C<[identifier]> is the value you put after C<===Create-Ticket:>.  The hash
 is prepopulated with the ticket which triggered the ScripAction as
-$Tickets{'TOP'}; you can also access that ticket using the shorthand
-TOP.
+C<$Tickets{'TOP'}>. You can also access that ticket using the shorthand
+C<TOP>.
 
 A simple example:
 
@@ -121,22 +120,20 @@ A simple example:
  so they can finish their work
  ENDOFCONTENT
 
-
-
-A convoluted example
+A convoluted example:
 
  ===Create-Ticket: approval
  { # Find out who the administrators of the group called "HR" 
    # of which the creator of this ticket is a member
     my $name = "HR";
-   
+
     my $groups = RT::Groups->new(RT->SystemUser);
     $groups->LimitToUserDefinedGroups();
     $groups->Limit(FIELD => "Name", OPERATOR => "=", VALUE => "$name");
     $groups->WithMember($TransactionObj->CreatorObj->Id);
- 
+
     my $groupid = $groups->First->Id;
- 
+
     my $adminccs = RT::Users->new(RT->SystemUser);
     $adminccs->WhoHaveRight(
 	Right => "AdminGroup",
@@ -145,10 +142,10 @@ A convoluted example
 	IncludeSuperusers => 0,
 	IncludeSubgroupMembers => 0,
     );
- 
-     my @admins;
+
+     our @admins;
      while (my $admin = $adminccs->Next) {
-         push (@admins, $admin->EmailAddress); 
+         push (@admins, $admin->EmailAddress);
      }
  }
  Queue: ___Approvals
@@ -170,47 +167,51 @@ A convoluted example
  Refers-To: {$Tickets{"create-approval"}->Id}
  Queue: ___Approvals
  Content-Type: text/plain
- Content: 
- Your approval is requred for this ticket, too.
+ Content: Your approval is requred for this ticket, too.
  ENDOFCONTENT
- 
-=head2 Acceptable fields
 
-A complete list of acceptable fields for this beastie:
+As shown above, you can include a block with Perl code to set up some
+values for the new tickets. If you want to access a variable in the
+template section after the block, you must scope it with C<our> rather
+than C<my>. Just as with other RT templates, you can also include
+Perl code in the template sections using C<{}>.
 
+=head2 Acceptable Fields
+
+A complete list of acceptable fields:
 
     *  Queue           => Name or id# of a queue
        Subject         => A text string
-     ! Status          => A valid status. defaults to 'new'
+     ! Status          => A valid status. Defaults to 'new'
        Due             => Dates can be specified in seconds since the epoch
                           to be handled literally or in a semi-free textual
                           format which RT will attempt to parse.
-                        
-                          
-                          
-       Starts          => 
-       Started         => 
-       Resolved        => 
-       Owner           => Username or id of an RT user who can and should own 
+       Starts          =>
+       Started         =>
+       Resolved        =>
+       Owner           => Username or id of an RT user who can and should own
                           this ticket; forces the owner if necessary
    +   Requestor       => Email address
-   +   Cc              => Email address 
-   +   AdminCc         => Email address 
-       TimeWorked      => 
-       TimeEstimated   => 
-       TimeLeft        => 
-       InitialPriority => 
-       FinalPriority   => 
-       Type            => 
-    +! DependsOn       => 
+   +   Cc              => Email address
+   +   AdminCc         => Email address
+   +   RequestorGroup  => Group name
+   +   CcGroup         => Group name
+   +   AdminCcGroup    => Group name
+       TimeWorked      =>
+       TimeEstimated   =>
+       TimeLeft        =>
+       InitialPriority =>
+       FinalPriority   =>
+       Type            =>
+    +! DependsOn       =>
     +! DependedOnBy    =>
     +! RefersTo        =>
-    +! ReferredToBy    => 
+    +! ReferredToBy    =>
     +! Members         =>
-    +! MemberOf        => 
-       Content         => content. Can extend to multiple lines. Everything
+    +! MemberOf        =>
+       Content         => Content. Can extend to multiple lines. Everything
                           within a template after a Content: header is treated
-                          as content until we hit a line containing only 
+                          as content until we hit a line containing only
                           ENDOFCONTENT
        ContentType     => the content-type of the Content field.  Defaults to
                           'text/plain'
@@ -222,74 +223,24 @@ A complete list of acceptable fields for this beastie:
        CF-name           => custom field value
        CustomField-name  => custom field value
 
-Fields marked with an * are required.
+Fields marked with an C<*> are required.
 
-Fields marked with a + may have multiple values, simply
+Fields marked with a C<+> may have multiple values, simply
 by repeating the fieldname on a new line with an additional value.
 
-Fields marked with a ! are postponed to be processed after all
-tickets in the same actions are created.  Except for 'Status', those
-field can also take a ticket name within the same action (i.e.
-the identifiers after ==Create-Ticket), instead of raw Ticket ID
+Fields marked with a C<!> have processing postponed until after all
+tickets in the same actions are created.  Except for C<Status>, those
+fields can also take a ticket name within the same action (i.e.
+the identifiers after C<===Create-Ticket:>), instead of raw ticket ID
 numbers.
 
-When parsed, field names are converted to lowercase and have -s stripped.
-Refers-To, RefersTo, refersto, refers-to and r-e-f-er-s-tO will all 
-be treated as the same thing.
+When parsed, field names are converted to lowercase and have hyphens stripped.
+C<Refers-To>, C<RefersTo>, C<refersto>, C<refers-to> and C<r-e-f-er-s-tO> will
+all be treated as the same thing.
 
-
-
-
-=head1 AUTHOR
-
-Jesse Vincent <jesse@bestpractical.com> 
-
-=head1 SEE ALSO
-
-perl(1).
+=head1 METHODS
 
 =cut
-
-my %LINKTYPEMAP = (
-    MemberOf => {
-        Type => 'MemberOf',
-        Mode => 'Target',
-    },
-    Parents => {
-        Type => 'MemberOf',
-        Mode => 'Target',
-    },
-    Members => {
-        Type => 'MemberOf',
-        Mode => 'Base',
-    },
-    Children => {
-        Type => 'MemberOf',
-        Mode => 'Base',
-    },
-    HasMember => {
-        Type => 'MemberOf',
-        Mode => 'Base',
-    },
-    RefersTo => {
-        Type => 'RefersTo',
-        Mode => 'Target',
-    },
-    ReferredToBy => {
-        Type => 'RefersTo',
-        Mode => 'Base',
-    },
-    DependsOn => {
-        Type => 'DependsOn',
-        Mode => 'Target',
-    },
-    DependedOnBy => {
-        Type => 'DependsOn',
-        Mode => 'Base',
-    },
-
-);
-
 
 #Do what we need to do and send it out.
 sub Commit {
@@ -322,9 +273,19 @@ sub Prepare {
 
     }
 
+    my $active = 0;
+    if ( $self->TemplateObj->Type eq 'Perl' ) {
+        $active = 1;
+    } else {
+        RT->Logger->info(sprintf(
+            "Template #%d is type %s.  You most likely want to use a Perl template instead.",
+            $self->TemplateObj->id, $self->TemplateObj->Type
+        ));
+    }
+
     $self->Parse(
         Content        => $self->TemplateObj->Content,
-        _ActiveContent => 1
+        _ActiveContent => $active,
     );
     return 1;
 
@@ -387,10 +348,6 @@ sub CreateByTemplate {
         }
 
         $RT::Logger->debug("Assigned $template_id with $id");
-        $T::Tickets{$template_id}->SetOriginObj( $self->TicketObj )
-            if $self->TicketObj
-            && $T::Tickets{$template_id}->can('SetOriginObj');
-
     }
 
     $self->PostProcess( \@links, \@postponed );
@@ -524,12 +481,16 @@ sub UpdateByTemplate {
     return @results;
 }
 
-=head2 Parse  TEMPLATE_CONTENT, DEFAULT_QUEUE, DEFAULT_REQEUESTOR ACTIVE
+=head2 Parse
 
-Parse a template from TEMPLATE_CONTENT
+Takes (in order) template content, a default queue, a default requestor, and
+active (a boolean flag).
 
-If $active is set to true, then we'll use Text::Template to parse the templates,
-allowing you to embed active perl in your templates.
+Parses a template in the template content, defaulting queue and requestor if
+unspecified in the template to the values provided as arguments.
+
+If the active flag is true, then we'll use L<Text::Template> to parse the
+templates, allowing you to embed active Perl in your templates.
 
 =cut
 
@@ -554,7 +515,8 @@ sub Parse {
         $self->_ParseMultilineTemplate(%args);
     } elsif ( $args{'Content'} =~ /(?:\t|,)/i ) {
         $self->_ParseXSVTemplate(%args);
-
+    } else {
+        RT->Logger->error("Invalid Template Content (Couldn't find ===, and is not a csv/tsv template) - unable to parse: $args{Content}");
     }
 }
 
@@ -562,9 +524,9 @@ sub Parse {
 
 Parses mulitline templates. Things like:
 
- ===Create-Ticket ... 
+ ===Create-Ticket ...
 
-Takes the same arguments as Parse
+Takes the same arguments as L</Parse>.
 
 =cut
 
@@ -667,11 +629,6 @@ sub ParseLines {
 
         if ($err) {
             $RT::Logger->error( "Ticket creation failed: " . $err );
-            while ( my ( $k, $v ) = each %T::X ) {
-                $RT::Logger->debug(
-                    "Eliminating $template_id from ${k}'s parents.");
-                delete $v->{$template_id};
-            }
             next;
         }
     }
@@ -714,7 +671,11 @@ sub ParseLines {
                     $args{$tag} =~ s/^\s+//g;
                     $args{$tag} =~ s/\s+$//g;
                 }
-                if (($tag =~ /^(requestor|cc|admincc)$/i or grep {lc $_ eq $tag} keys %LINKTYPEMAP) and $args{$tag} =~ /,/) {
+                if (
+                    ($tag =~ /^(requestor|cc|admincc)(group)?$/i
+                        or grep {lc $_ eq $tag} keys %RT::Link::TYPEMAP)
+                    and $args{$tag} =~ /,/
+                ) {
                     $args{$tag} = [ split /,\s*/, $args{$tag} ];
                 }
             }
@@ -735,6 +696,21 @@ sub ParseLines {
             }
         }
         $args{$date} = $dateobj->ISO;
+    }
+
+    foreach my $role (qw(requestor cc admincc)) {
+        next unless my $value = $args{ $role . 'group' };
+
+        my $group = RT::Group->new( $self->CurrentUser );
+        $group->LoadUserDefinedGroup( $value );
+        unless ( $group->id ) {
+            $RT::Logger->error("Couldn't load group '$value'");
+            next;
+        }
+
+        $args{ $role } = $args{ $role } ? [$args{ $role }] : []
+            unless ref $args{ $role };
+        push @{ $args{ $role } }, $group->PrincipalObj->id;
     }
 
     $args{'requestor'} ||= $self->TicketObj->Requestors->MemberEmailAddresses
@@ -800,9 +776,10 @@ sub ParseLines {
 }
 
 
-=head2 _ParseXSVTemplate 
+=head2 _ParseXSVTemplate
 
-Parses a tab or comma delimited template. Should only ever be called by Parse
+Parses a tab or comma delimited template. Should only ever be called by
+L</Parse>.
 
 =cut
 
@@ -982,19 +959,11 @@ sub GetUpdateTemplate {
     $string .= "InitialPriority: " . $t->Priority . "\n";
     $string .= "FinalPriority: " . $t->FinalPriority . "\n";
 
-    foreach my $type ( sort keys %LINKTYPEMAP ) {
-
-        # don't display duplicates
-        if (   $type eq "HasMember"
-            || $type eq "Members"
-            || $type eq "MemberOf" )
-        {
-            next;
-        }
+    foreach my $type ( RT::Link->DisplayTypes ) {
         $string .= "$type: ";
 
-        my $mode   = $LINKTYPEMAP{$type}->{Mode};
-        my $method = $LINKTYPEMAP{$type}->{Type};
+        my $mode   = $RT::Link::TYPEMAP{$type}->{Mode};
+        my $method = $RT::Link::TYPEMAP{$type}->{Type};
 
         my $links = '';
         while ( my $link = $t->$method->Next ) {
@@ -1060,15 +1029,7 @@ sub GetCreateTemplate {
     $string .= "InitialPriority: \n";
     $string .= "FinalPriority: \n";
 
-    foreach my $type ( keys %LINKTYPEMAP ) {
-
-        # don't display duplicates
-        if (   $type eq "HasMember"
-            || $type eq 'Members'
-            || $type eq 'MemberOf' )
-        {
-            next;
-        }
+    foreach my $type ( RT::Link->DisplayTypes ) {
         $string .= "$type: \n";
     }
     return $string;
@@ -1148,6 +1109,7 @@ sub UpdateCustomFields {
         my $cf = $1;
 
         my $CustomFieldObj = RT::CustomField->new($self->CurrentUser);
+        $CustomFieldObj->SetContextObject( $ticket );
         $CustomFieldObj->LoadById($cf);
 
         my @values;
@@ -1189,7 +1151,7 @@ sub PostProcess {
         $RT::Logger->debug( "Handling links for " . $ticket->Id );
         my %args = %{ shift(@$links) };
 
-        foreach my $type ( keys %LINKTYPEMAP ) {
+        foreach my $type ( keys %RT::Link::TYPEMAP ) {
             next unless ( defined $args{$type} );
             foreach my $link (
                 ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) )
@@ -1216,8 +1178,8 @@ sub PostProcess {
                 }
 
                 my ( $wval, $wmsg ) = $ticket->AddLink(
-                    Type => $LINKTYPEMAP{$type}->{'Type'},
-                    $LINKTYPEMAP{$type}->{'Mode'} => $link,
+                    Type => $RT::Link::TYPEMAP{$type}->{'Type'},
+                    $RT::Link::TYPEMAP{$type}->{'Mode'} => $link,
                     Silent                        => 1
                 );
 

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -77,13 +77,6 @@ use base 'RT::Record';
 
 sub Table {'ScripConditions'}
 
-
-
-sub _Init  {
-    my $self = shift; 
-    $self->{'table'} = "ScripConditions";
-    return ($self->SUPER::_Init(@_));
-}
 
 sub _Accessible  {
     my $self = shift;
@@ -185,7 +178,7 @@ sub LoadCondition  {
 
 =head2 Describe 
 
-Helper method to call the condition module\'s Describe method.
+Helper method to call the condition module's Describe method.
 
 =cut
 
@@ -198,7 +191,7 @@ sub Describe  {
 
 =head2 IsApplicable
 
-Helper method to call the condition module\'s IsApplicable method.
+Helper method to call the condition module's IsApplicable method.
 
 =cut
 
@@ -207,16 +200,6 @@ sub IsApplicable  {
     return ($self->{'Condition'}->IsApplicable());
     
 }
-
-
-sub DESTROY {
-    my $self=shift;
-    $self->{'Condition'} = undef;
-}
-
-
-
-
 
 
 

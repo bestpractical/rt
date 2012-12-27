@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -48,7 +48,7 @@
 <%ARGS>
 $Format => RT->Config->Get('DefaultSearchResultFormat')
 
-%cfqueues => ()
+%queues => ()
 
 $Face => undef
 $Size => undef
@@ -96,22 +96,17 @@ my @fields = qw(
     Bookmark
 
     NEWLINE
+    NBSP
 ); # loc_qw
 
 $m->callback( CallbackOnce => 1, CallbackName => 'SetFieldsOnce', Fields => \@fields );
 
 my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
-foreach my $id (keys %cfqueues) {
-    # Gotta load up the $queue object, since queues get stored by name now. my $id
+foreach my $id (keys %queues) {
+    # Gotta load up the $queue object, since queues get stored by name now.
     my $queue = RT::Queue->new($session{'CurrentUser'});
     $queue->Load($id);
-    unless ($queue->id) {
-        # XXX TODO: This ancient code dates from a former developer
-        # we have no idea what it means or why cfqueues are so encoded.
-        $id =~ s/^.'*(.*).'*$/$1/;
-        $queue->Load($id);
-    }
-    $CustomFields->LimitToQueue($queue->Id);
+    $CustomFields->LimitToQueue($queue->Id) if $queue->Id;
 }
 $CustomFields->LimitToGlobal;
 

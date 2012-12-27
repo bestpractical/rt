@@ -1,0 +1,191 @@
+=head1 RT Approvals
+
+Some types of change requests processed through RT can
+require an approval before being fulfilled. You can configure
+RT to set up such an approval workflow for tickets in
+queues you select.
+
+This document walks through the steps to set up a
+"Change requests" queue with approvals. You should try
+this in a test instance first. If you don't have a test RT
+instance, you should read through the entire document first,
+change the details as needed for you approval scenario, and then
+set up approvals.
+
+=head2 Overview
+
+The approvals solution in RT involves using a special queue,
+called ___Approvals, to hold approval requests. Scrips and
+templates automatically create the necessary tickets
+and process the approval or rejection.
+
+=head2 Change Management Queue
+
+Since this example will use a change management queue as the
+queue where tickets need approval, first we'll set up the queue.
+
+Login into UI as the 'root' user. Go to Tools -> Configuration ->
+Queues and create a new 'Change requests' queue.
+
+When you set up this queue, do not select the "approvals" Lifecycle.
+That selection is for the ___Approvals queue itself, not for queues that
+need tickets approved.
+
+=head3 Change Management Template
+
+Once the Change Management queue is created, select Templates
+-> Create in the queue configuration menu. Enter the Name 'create approval',
+leave the default Type as Perl and in the content area enter the following:
+
+    ===Create-Ticket: Manager approval
+    Subject: Manager Approval for {$Tickets{TOP}->Id} - {$Tickets{TOP}->Subject}
+    Depended-On-By: TOP
+    Queue: ___Approvals
+    Owner: root
+    Requestors: {$Tickets{TOP}->RequestorAddresses}
+    Type: approval
+    Content-Type: text/plain
+    Due: {time + 3*24*60*60}
+    Content: Please approve me.
+
+    Thanks.
+    ENDOFCONTENT
+
+All of the text should be against the left side of the textarea
+with no spaces.
+
+Click create.
+
+You'll now use this template when you create the scrip.
+
+=head3 Change Management Scrip
+
+Now you need a scrip. On the queue configuration page, select
+Scrips -> Create. For the Description, enter 'Create an approval
+on ticket create', select the 'On Create' condition, 'Create Tickets'
+action, and select the template you just created. Click create.
+
+=head3 Testing
+
+You can already test your first workflow with approvals. Create
+a ticket in your new 'Change requests' queue. You're logged in as
+'root' and the owner of the approval is root (based on the template),
+so it's your job to approve or deny the request. Select Tools -> Approvals
+in the RT main menu. You should see your first approval request.
+
+Select the 'Deny' radio button, write 'too expensive' in the notes area
+and click Go! You just rejected the approval request. If you open the ticket
+you created for testing then you will see that it's rejected
+as well and has the correspondence:
+
+    Greetings,
+
+    Your ticket has been rejected by root.
+
+    Approver's notes: too expensive
+
+You may need to search for the ticket since the rejected state means
+it's no longer 'active'.
+
+Where did this message come from? From templates in the ___Approvals
+queue.
+
+=head2 ___Approvals queue
+
+___Approvals is a special queue where all approvals are created. The queue
+is disabled and is not shown in until you search for it.
+Go to Tools -> Configuration -> Queues, leave "Name is" in the search
+area and enter ___Approvals into the search
+field. Check 'Include disabled queues in listing.' and click Go!
+You should now see the ___Approvals queue configuration page.
+
+You may want to change the name of the ___Approvals queue, but parts of RT
+expect it not to change.  The name normally isn't shown to users, however, so
+it will be largely invisible.
+
+=head2 Approvals' templates
+
+From the ___Approvals queue configuration page, click 'Templates' in the
+page menu. You should see templates that are used after actions
+on approvals. For example if you click on the 'Approval Rejected'
+template in the list, you will see the template that generates
+the correspondence mentioned above.
+
+=over 4
+
+=item * New Pending Approval
+
+Owners of new approval requests get this message.
+
+=item * Approval Passed
+
+Recorded as correspondence on the ticket when it's approved by an
+approver, but still requires more people to approve.
+
+=item * All Approvals Passed
+
+Recorded when no more approvals are required.
+
+=item * Approval Rejected
+
+Recorded when the approval request is rejected (denied).
+
+=item * Approval Ready for Owner
+
+Sent to the Owner of the ticket when it's approved and no more approvals
+are required.
+
+=back
+
+You can customize these templates to meet your needs. However,
+note that there is just one ___Approvals queue for the system,
+so make sure changes work with all queues that use approvals.
+
+=head2 Approvers
+
+Navigate back to the template used to create approvals. It has
+the following line:
+
+    Owner: root
+
+With this code you set the owner of the approval request to root.
+Approvals, as well as tickets, have Ccs, AdminCcs and Requestors. For
+example the following line copies requestors from the Tickets
+to the approval request:
+
+    Requestors: {$Tickets{TOP}->RequestorAddresses}
+
+Let's create a group 'Change Approvers' and let any user of
+this group approve 'Change Requests'. Create the group, and add root
+as a member. Open the 'create an approval' template, and replace
+the 'Owner:...' line with the following:
+
+    AdminCcGroup: Change Approvers
+
+Note that this line only works in RT 4.0.5 and newer.
+
+Create another test ticket, and you as root still should be able to see
+the newly created approval, but now because of the group membership.
+You can accept or deny it.
+
+Any member of the group can accept/deny without consulting
+the other members, which is useful with more complex
+multistep workflows.
+
+=head2 Approvers' Rights
+
+Since the ___Approvals queue is a regular RT queue, you need
+to grant rights to allow your approvers to operate on approval
+requests. As root, you have super user rights and haven't needed
+specific rights for this example.
+
+It's wise to grant rights via roles as there
+is only one queue for all approvals in the system.
+
+To grant rights to your Change Approvers group, go to the queue
+configuration page for the ___Approvals queue. Click on Group Rights
+in the page menu. Grant ShowTicket and ModifyTicket rights to the
+Owner and AdminCc roles. This should be enough for most cases.
+
+Now members of the 'Change Approvers' group can act on approvals
+even if they have no SuperUser rights.

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -350,6 +350,8 @@ my %supported_opt = map { $_ => 1 } qw(
        textmode
        verbose
 );
+
+our $RE_FILE_EXTENSIONS = qr/pgp|asc/i;
 
 # DEV WARNING: always pass all STD* handles to GnuPG interface even if we don't
 # need them, just pass 'IO::Handle->new()' and then close it after safe_run_child.
@@ -891,19 +893,48 @@ sub FindProtectedParts {
 
     # inline PGP block, only in singlepart
     unless ( $entity->is_multipart ) {
+        my $file = ($entity->head->recommended_filename||'') =~ /\.${RE_FILE_EXTENSIONS}$/;
+
         my $io = $entity->open('r');
         unless ( $io ) {
             $RT::Logger->warning( "Entity of type ". $entity->effective_type ." has no body" );
             return ();
         }
+
+        # Deal with "partitioned" PGP mail, which (contrary to common
+        # sense) unnecessarily applies a base64 transfer encoding to PGP
+        # mail (whose content is already base64-encoded).
+        if ( $entity->bodyhandle->is_encoded and $entity->head->mime_encoding ) {
+            my $decoder = MIME::Decoder->new( $entity->head->mime_encoding );
+            if ($decoder) {
+                local $@;
+                eval {
+                    my $buf = '';
+                    open my $fh, '>', \$buf
+                        or die "Couldn't open scalar for writing: $!";
+                    binmode $fh, ":raw";
+                    $decoder->decode($io, $fh);
+                    close $fh or die "Couldn't close scalar: $!";
+
+                    open $fh, '<', \$buf
+                        or die "Couldn't re-open scalar for reading: $!";
+                    binmode $fh, ":raw";
+                    $io = $fh;
+                    1;
+                } or do {
+                    $RT::Logger->error("Couldn't decode body: $@");
+                }
+            }
+        }
+
         while ( defined($_ = $io->getline) ) {
             next unless /^-----BEGIN PGP (SIGNED )?MESSAGE-----/;
             my $type = $1? 'signed': 'encrypted';
             $RT::Logger->debug("Found $type inline part");
             return {
                 Type    => $type,
-                Format  => 'Inline',
-                Data  => $entity,
+                Format  => !$file || $type eq 'signed'? 'Inline' : 'Attachment',
+                Data    => $entity,
             };
         }
         $io->close;
@@ -1000,7 +1031,7 @@ sub FindProtectedParts {
 
     # attachments with inline encryption
     my @encrypted_indices =
-        grep {($entity->parts($_)->head->recommended_filename || '') =~ /\.pgp$/}
+        grep {($entity->parts($_)->head->recommended_filename || '') =~ /\.${RE_FILE_EXTENSIONS}$/}
             0 .. $entity->parts - 1;
 
     foreach my $i ( @encrypted_indices ) {
@@ -1060,9 +1091,13 @@ sub VerifyDecrypt {
         }
         if ( $args{'SetStatus'} || $args{'AddStatus'} ) {
             my $method = $args{'AddStatus'} ? 'add' : 'set';
+            # Let the header be modified so continuations are handled
+            my $modify = $status_on->head->modify;
+            $status_on->head->modify(1);
             $status_on->head->$method(
                 'X-RT-GnuPG-Status' => $res[-1]->{'status'}
             );
+            $status_on->head->modify($modify);
         }
     }
     foreach my $item( grep $_->{'Type'} eq 'encrypted', @protected ) {
@@ -1079,9 +1114,13 @@ sub VerifyDecrypt {
         }
         if ( $args{'SetStatus'} || $args{'AddStatus'} ) {
             my $method = $args{'AddStatus'} ? 'add' : 'set';
+            # Let the header be modified so continuations are handled
+            my $modify = $status_on->head->modify;
+            $status_on->head->modify(1);
             $status_on->head->$method(
                 'X-RT-GnuPG-Status' => $res[-1]->{'status'}
             );
+            $status_on->head->modify($modify);
         }
     }
     return @res;
@@ -1472,9 +1511,16 @@ sub DecryptAttachment {
     $args{'Data'}->bodyhandle(MIME::Body::File->new($res_fn) );
     $args{'Data'}->{'__store_tmp_handle_to_avoid_early_cleanup'} = $res_fh;
 
-    my $filename = $args{'Data'}->head->recommended_filename;
-    $filename =~ s/\.pgp$//i;
-    $args{'Data'}->head->mime_attr( $_ => $filename )
+    my $head = $args{'Data'}->head;
+
+    # we can not trust original content type
+    # TODO: and don't have way to detect, so we just use octet-stream
+    # some clients may send .asc files (encryped) as text/plain
+    $head->mime_attr( "Content-Type" => 'application/octet-stream' );
+
+    my $filename = $head->recommended_filename;
+    $filename =~ s/\.${RE_FILE_EXTENSIONS}$//i;
+    $head->mime_attr( $_ => $filename )
         foreach (qw(Content-Type.name Content-Disposition.filename));
 
     return %res;
@@ -1597,8 +1643,7 @@ User friendly message.
 
 =back
 
-This parser is based on information from GnuPG distribution, see also
-F<docs/design_docs/gnupg_details_on_output_formats> in the RT distribution.
+This parser is based on information from GnuPG distribution.
 
 =cut
 
@@ -1673,6 +1718,7 @@ my %ignore_keyword = map { $_ => 1 } qw(
     BEGIN_ENCRYPTION SIG_ID VALIDSIG
     ENC_TO BEGIN_DECRYPTION END_DECRYPTION GOODMDC
     TRUST_UNDEFINED TRUST_NEVER TRUST_MARGINAL TRUST_FULLY TRUST_ULTIMATE
+    DECRYPTION_INFO
 );
 
 sub ParseStatus {
@@ -2096,7 +2142,9 @@ sub GetKeysInfo {
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
         my $method = $type eq 'private'? 'list_secret_keys': 'list_public_keys';
-        my $pid = safe_run_child { $gnupg->$method( handles => $handles, $email? (command_args => $email) : () ) };
+        my $pid = safe_run_child { $gnupg->$method( handles => $handles, $email
+                                                        ? (command_args => [ "--", $email])
+                                                        : () ) };
         close $handle{'stdin'};
         waitpid $pid, 0;
     };
@@ -2290,7 +2338,7 @@ sub DeleteKey {
         my $pid = safe_run_child { $gnupg->wrap_call(
             handles => $handles,
             commands => ['--delete-secret-and-public-key'],
-            command_args => [$key],
+            command_args => ["--", $key],
         ) };
         close $handle{'stdin'};
         while ( my $str = readline $handle{'status'} ) {

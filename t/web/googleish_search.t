@@ -1,8 +1,8 @@
-#!/usr/bin/env perl
 use strict;
 use warnings;
 
-use RT::Test tests => 96, config => 'Set( %FullTextSearch, Enable => 1, Indexed => 0 );';
+use RT::Test tests => undef,
+    config => 'Set( %FullTextSearch, Enable => 1, Indexed => 0 );';
 my ($baseurl, $m) = RT::Test->started_ok;
 my $url = $m->rt_base_url;
 
@@ -57,6 +57,7 @@ ok $two_words_queue && $two_words_queue->id, 'loaded or created a queue';
     is $parser->QueryToSQL("'me'"), "$active AND ( Subject LIKE 'me' )", "correct parsing";
     is $parser->QueryToSQL("owner:me"), "( Owner.id = '__CurrentUser__' ) AND $active", "correct parsing";
     is $parser->QueryToSQL("owner:'me'"), "( Owner = 'me' ) AND $active", "correct parsing";
+    is $parser->QueryToSQL('owner:root@localhost'), "( Owner.EmailAddress = 'root\@localhost' ) AND $active", "Email address as owner";
 
     is $parser->QueryToSQL("resolved me"), "( Owner.id = '__CurrentUser__' ) AND ( Status = 'resolved' )", "correct parsing";
     is $parser->QueryToSQL("resolved active me"), "( Owner.id = '__CurrentUser__' ) AND ( Status = 'resolved' OR Status = 'new' OR Status = 'open' OR Status = 'stalled' )", "correct parsing";
@@ -187,7 +188,7 @@ for my $quote ( q{'}, q{"} ) {
         $m->field( q => $q );
         $m->submit;
         my $escape_quote = $quote;
-        RT::Interface::Web::EscapeUTF8(\$escape_quote);
+        RT::Interface::Web::EscapeHTML(\$escape_quote);
         $m->content_contains( "base${escape_quote}ticket",
             "base${quote}ticket is found" );
     }
@@ -217,3 +218,5 @@ for my $quote ( q{'}, q{"} ) {
     }
 }
 
+undef $m;
+done_testing;

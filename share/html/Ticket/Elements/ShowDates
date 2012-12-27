@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -79,14 +79,31 @@
     <td class="label"><&|/l&>Updated</&>:</td>\
 % my $UpdatedString = $Ticket->LastUpdated ? loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $m->scomp('/Elements/ShowUser', User => $Ticket->LastUpdatedByObj)) : loc("Never");
 % if ($UpdatedLink) {
-    <td class="value"><a href="#lasttrans"><% $UpdatedString | n %></a></td>
+    <td class="value"><a href="<% $UpdatedLink %>"><% $UpdatedString | n %></a></td>
 % } else {
     <td class="value"><% $UpdatedString | n %></td>
 % }
   </tr>
+  <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Grouping => 'Dates', Table => 0 &>
 % $m->callback( %ARGS, CallbackName => 'EndOfList', TicketObj => $Ticket );
 </table>
 <%ARGS>
 $Ticket => undef
 $UpdatedLink => 1
 </%ARGS>
+<%INIT>
+if ($UpdatedLink and $Ticket) {
+    my $txns = $Ticket->Transactions;
+    $txns->OrderByCols(
+        { FIELD => "Created",   ORDER => "DESC" },
+        { FIELD => "id",        ORDER => "DESC" },
+    );
+    $txns->RowsPerPage(1);
+
+    if (my $latest = $txns->First) {
+        $UpdatedLink = "#txn-" . $latest->id;
+    } else {
+        undef $UpdatedLink;
+    }
+}
+</%INIT>

@@ -1,0 +1,108 @@
+=head1 BACKUPS
+
+RT is often a critical piece of businesses and organizations.  Backups are
+absolutely necessary to ensure you can recover quickly from an incident.
+
+Make sure you take backups.  Make sure they I<work>.
+
+There are many issues that can cause broken backups, such as a
+max_attachment_size too low for MySQL (in either the client or server), or
+encoding issues, or running out of disk space.
+
+Make sure your backup cronjobs notify someone if they fail instead of failing
+silently until you need them.
+
+Test your backups regularly to discover any unknown problems B<before> they
+become an issue.  You don't want to discover problems with your backups while
+tensely restoring from them in a critical data loss situation.
+
+=head2 DATABASE
+
+You should backup the entire RT database, although for improved speed and space
+you can ignore the I<data> in the C<sessions> table.  Make sure you still get
+the C<sessions> schema, however.
+
+Database specific notes and example backup commands for each database are
+below.  Adjust the commands as necessary for connection details such as
+database name (C<rt4> is the placeholder below), user, password, host, etc.
+You should put the example commands into a shell script for backup and setup a
+cronjob.  Make sure output from cron goes to someone who reads mail!  (Or into
+RT. :)
+
+=head3 MySQL
+
+    ( mysqldump rt4 --tables sessions --no-data; \
+      mysqldump rt4 --ignore-table rt4.sessions --single-transaction ) \
+        | gzip > rt-`date +%Y%M%d`.sql.gz
+
+If you're using a MySQL version older than 4.1.2 (only supported on RT 3.8.x
+and older), you should be also pass the C<--default-character-set=binary>
+option to the second C<mysqldump> command.
+
+The dump will be much faster if you can connect to the MySQL server over
+localhost.  This will use a local socket instead of the network.
+
+If you find your backups taking far far too long to complete (this point should
+take quite a long time to get to on an RT database), there are some alternate
+solutions.  Percona maintains a highly regarded hot-backup tool for MySQL
+called L<XtraBackup|http://www.percona.com/software/percona-xtrabackup/>.  If
+you have more resources, you can also setup replication to a slave using binary
+logs and backup from there as necessary.  This not only duplicates the data,
+but lets you take backups without putting load on your production server.
+
+=head3 PostgreSQL
+
+    ( pg_dump rt4 --table=sessions --schema-only; \
+      pg_dump rt4 --exclude-table=sessions ) \
+        | gzip > rt-`date +%Y%M%d`.sql.gz
+
+=head2 FILESYSTEM
+
+You will want to back up, at the very least, the following directories and files:
+
+=over 4
+
+=item /opt/rt4
+
+RT's source code, configuration, GPG data, and plugins.  Your install location
+may be different, of course.
+
+You can omit F<var/mason_data> and F<var/session_data> if you'd like since
+those are temporary caches.  Don't omit all of F<var/> however as it may
+contain important GPG data.
+
+=item Webserver configuration
+
+Often F</etc/httpd> or F</etc/apache2>.  This will depend on your OS, web
+server, and internal configuration standards.
+
+=item /etc/aliases
+
+Your incoming mail aliases mapping addresses to queues.
+
+=item Mail server configuration
+
+If you're running an MTA like Postfix, Exim, SendMail, or qmail, you'll want to
+backup their configuration files to minimize restore time.  "Lightweight" mail
+handling programs like fetchmail, msmtp, and ssmtp will also have configuration
+files, although usually not as many nor as complex.  You'll still want to back
+them up.
+
+The location of these files is highly dependent on what software you're using.
+
+=item Crontab containing RT's cronjobs
+
+This may be F</etc/crontab>, F</etc/cron.d/rt>, a user-specific crontab file
+(C<crontab -l $USER>), or some other file altogether.  Even if you only have
+the default cronjobs in place, it's one less piece to forget during a restore.
+If you have custom L<< C<rt-crontool> >> invocations, you don't want to have to
+recreate those.
+
+=back
+
+Simply saving a tarball should be sufficient, with something like:
+
+    tar czvpf rt-backup-`date +%Y%M%d`.tar.gz /opt/rt4 /etc/aliases /etc/httpd ...
+
+Be sure to include all the directories and files you enumerated above!
+

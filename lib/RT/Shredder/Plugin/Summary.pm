@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -114,7 +114,7 @@ sub WriteDownPrincipal { return 1 }
 sub WriteDownGroup {
     my $self = shift;
     my %args = ( Object => undef, @_ );
-    if ( $args{'Object'}->Domain =~ /-Role$/ ) {
+    if ( $args{'Object'}->RoleClass ) {
         return $skip_refs_to{ $args{'Object'}->_AsString } = 1;
     }
     return $self->WriteDownDefault( %args );
@@ -142,7 +142,7 @@ sub WriteDownScrip {
     my $props = $self->_MakeHash( $args{'Object'} );
     $props->{'Action'} = $args{'Object'}->ActionObj->Name;
     $props->{'Condition'} = $args{'Object'}->ConditionObj->Name;
-    $props->{'Template'} = $args{'Object'}->TemplateObj->Name;
+    $props->{'Template'} = $args{'Object'}->Template;
     $props->{'Queue'} = $args{'Object'}->QueueObj->Name || 'global';
 
     return $self->_WriteDownHash( $args{'Object'}, $props );

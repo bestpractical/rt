@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,9 +46,12 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title,
-    Refresh => $session{'tickets_refresh_interval'} || RT->Config->Get('SearchResultsRefreshInterval', $session{'CurrentUser'} ),
+    Refresh => $refresh,
     LinkRel => \%link_rel &>
 <& /Elements/Tabs &>
+
+% $m->callback( ARGSRef => \%ARGS, CallbackName => 'BeforeResults' );
+
 <& /Elements/CollectionList, 
     Query => $Query,
     TotalFound => $ticketcount,
@@ -62,6 +65,8 @@
     BaseURL => $BaseURL
 
    &>
+% $m->callback( ARGSRef => \%ARGS, CallbackName => 'AfterResults' );
+
 % my %hiddens = (Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order, HideResults => $HideResults, Page => $Page, SavedChartSearchId => $SavedChartSearchId );
 <div align="right" class="refresh">
 <form method="get" action="<%RT->Config->Get('WebPath')%>/Search/Results.html">
@@ -148,6 +153,17 @@ if ($ARGS{'TicketsRefreshInterval'}) {
 	$session{'tickets_refresh_interval'} = $ARGS{'TicketsRefreshInterval'};
 }
 
+my $refresh = $session{'tickets_refresh_interval'}
+    || RT->Config->Get('SearchResultsRefreshInterval', $session{'CurrentUser'} );
+
+# Check $m->request_args, not $DECODED_ARGS, to avoid creating a new CSRF token on each refresh
+if (RT->Config->Get('RestrictReferrer') and $refresh and not $m->request_args->{CSRF_Token}) {
+    my $token = RT::Interface::Web::StoreRequestToken( $session{'CurrentSearchHash'} );
+    $m->notes->{RefreshURL} = RT->Config->Get('WebURL')
+        . "Search/Results.html?CSRF_Token="
+            . $token;
+}
+
 my %link_rel;
 my $genpage = sub {
     return $m->comp(
@@ -161,7 +177,10 @@ my $genpage = sub {
     );
 };
 
-if ( RT->Config->Get('SearchResultsAutoRedirect') && $ticketcount == 1 ) {
+if ( RT->Config->Get('SearchResultsAutoRedirect') && $ticketcount == 1 &&
+    $session{tickets}->First ) {
+# $ticketcount is not always precise unless $UseSQLForACLChecks is set to true,
+# check $session{tickets}->First here is to make sure the ticket is there.
     RT::Interface::Web::Redirect( RT->Config->Get('WebURL')
             ."Ticket/Display.html?id=". $session{tickets}->First->id );
 }
