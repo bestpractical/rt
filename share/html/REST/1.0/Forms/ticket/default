@@ -388,7 +388,6 @@ else {
                     my $old = $vals->Next;
                     if ( $old ) {
                         if ( $val ne $old->Content ) {
-                            $old->Delete;
                             ($n, $s) = $ticket->AddCustomFieldValue(
                                  Field => $cf, Value => $val );
                             $s =~ s/^# // if defined $s;
