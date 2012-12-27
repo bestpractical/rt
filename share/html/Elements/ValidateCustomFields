@@ -56,6 +56,13 @@ while ( my $CF = $CustomFields->Next ) {
     # Pick the first grouping
     $submitted = $submitted ? $submitted->{(keys %$submitted)[0]} : {};
 
+    # If we don't have a value and we don't see the Magic, then we're not
+    # submitting a field.
+    next if not $ValidateUnsubmitted
+        and not exists $submitted->{"Value"}
+        and not exists $submitted->{"Values"}
+        and not $submitted->{"Values-Magic"};
+
     # We only validate Single Combos -- multis can never be user input
     next if $submitted->{"Values-Magic"} and exists $submitted->{"Values"}
         and ref $submitted->{"Values"};
@@ -109,4 +116,5 @@ return wantarray? ($valid, @res): $valid;
 $Object => RT::Ticket->new( $session{'CurrentUser'})
 $CustomFields
 $ARGSRef
+$ValidateUnsubmitted => 0
 </%ARGS>

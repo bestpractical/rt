@@ -69,6 +69,11 @@
 %  if (my $msg = $m->notes('InvalidField-' . $CustomField->Id)) {
         <br />
         <span class="cfinvalidfield"><% $msg %></span>
+%  } elsif ($ShowHints and $CustomField->FriendlyPattern) {
+        <br>
+        <span class="cfhints">
+          <&|/l, $CustomField->FriendlyPattern &>Input must match [_1]</&>
+        </span>
 %  }
     </<% $CELL %>>
   </<% $FIELD %>>
@@ -106,4 +111,5 @@ $CustomFields => undef
 $Grouping     => undef
 $AsTable => 1
 $InTable => 0
+$ShowHints => 1
 </%ARGS>

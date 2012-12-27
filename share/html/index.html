@@ -95,10 +95,11 @@ if ( $ARGS{'QuickCreate'} ) {
     
     my $CFs = $QueueObj->TicketCustomFields();
     
-    my $ValidCFs = $m->comp(
+    my ($ValidCFs, @msg) = $m->comp(
         '/Elements/ValidateCustomFields',
-        CustomFields => $CFs,
-        ARGSRef => \%ARGS
+        CustomFields        => $CFs,
+        ARGSRef             => \%ARGS,
+        ValidateUnsubmitted => 1,
     );
 
 
@@ -121,11 +122,25 @@ if ( $ARGS{'QuickCreate'} ) {
                 Arguments => { id => $t->Id },
             );
         }
-
     }
     elsif ( !$ValidCFs ) {
-        push @results, "can't quickly create ticket in queue " .
-            $QueueObj->Name . ' because some custom fields need to be set, please go to normal ticket creation page to do that.';
+        push @results, loc("Can't quickly create ticket in queue [_1] because custom fields are required.  Please finish by using the normal ticket creation page.", $QueueObj->Name);
+        push @results, @msg;
+
+        MaybeRedirectForResults(
+            Actions     => \@results,
+            Path        => "/Ticket/Create.html",
+            Arguments   => {
+                (map { $_ => $ARGS{$_} } qw(Queue Owner Status Content Subject)),
+                Requestors => $ARGS{Requestors},
+                # From is set above when CFs are OK, but not here since we're
+                # not calling CreateTicket() directly.  The proper place to set
+                # a default for From, if desired in the future, is in
+                # CreateTicket() itself, or at least /Ticket/Display.html
+                # (which processes /Ticket/Create.html).  From is rarely used
+                # overall.
+            },
+        );
     }
     MaybeRedirectForResults(
         Actions   => \@results,

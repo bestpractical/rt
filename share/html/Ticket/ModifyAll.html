@@ -56,7 +56,7 @@
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->Id%>" />
 
 <&| /Widgets/TitleBox, title => loc('Modify ticket # [_1]', $Ticket->Id), class=>'ticket-info-basics' &>
-<& Elements/EditBasics, TicketObj => $Ticket &>
+<& Elements/EditBasics, TicketObj => $Ticket, defaults => \%ARGS &>
 <& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'Basics' &>
 </&>
 
@@ -136,13 +136,6 @@
 my $Ticket = LoadTicket($id);
 my $CustomFields = $Ticket->CustomFields;
 
-# call this to show up hints of valid cf values.
-$m->comp(
-    '/Elements/ValidateCustomFields',
-    CustomFields => $CustomFields,
-    ARGSRef => {},
-);
-
 my $CanRespond = 0;
 my $CanComment = 0;
 
@@ -180,25 +173,38 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
 }
 
 
-$m->callback( TicketObj => $Ticket, ARGSRef => \%ARGS );
 my @results;
+my $skip_update = 0;
+$m->callback( TicketObj => $Ticket, ARGSRef => \%ARGS, skip_update => \$skip_update );
 
-unless ($OnlySearchForPeople or $OnlySearchForGroup or $ARGS{'AddMoreAttach'} ) {
-    # There might be two owners. 
-    if ( ref ($ARGS{'Owner'} )) {
-        my @owners =@{$ARGS{'Owner'}};
-        delete $ARGS{'Owner'};
-        foreach my $owner(@owners){
-            if (defined($owner) && $owner =~ /\D/) {
-                $ARGS{'Owner'} = $owner unless ($Ticket->OwnerObj->Name eq $owner);
-            }
-            elsif (length $owner) {
-                $ARGS{'Owner'} = $owner unless ($Ticket->OwnerObj->id == $owner);
-            }
-        }
-
+{
+    my ($status, @msg) = $m->comp(
+        '/Elements/ValidateCustomFields',
+        Object       => $Ticket,
+        CustomFields => $CustomFields,
+        ARGSRef      => \%ARGS,
+    );
+    unless ($status) {
+        push @results, @msg;
+        $skip_update = 1;
     }
+}
 
+# There might be two owners.
+if ( ref ($ARGS{'Owner'} )) {
+    my @owners =@{$ARGS{'Owner'}};
+    delete $ARGS{'Owner'};
+    foreach my $owner(@owners){
+        if (defined($owner) && $owner =~ /\D/) {
+            $ARGS{'Owner'} = $owner unless ($Ticket->OwnerObj->Name eq $owner);
+        }
+        elsif (length $owner) {
+            $ARGS{'Owner'} = $owner unless ($Ticket->OwnerObj->id == $owner);
+        }
+    }
+}
+
+unless ($skip_update or $OnlySearchForPeople or $OnlySearchForGroup or $ARGS{'AddMoreAttach'} ) {
     push @results, ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
     push @results, ProcessObjectCustomFieldUpdates( Object => $Ticket, ARGSRef => \%ARGS);
     push @results, ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
@@ -211,15 +217,15 @@ unless ($OnlySearchForPeople or $OnlySearchForGroup or $ARGS{'AddMoreAttach'} ) 
 
     push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS );
     push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
+
+    $Ticket->ApplyTransactionBatch;
+
+    MaybeRedirectForResults(
+        Actions   => \@results,
+        Path      => "/Ticket/ModifyAll.html",
+        Arguments => { id => $Ticket->id },
+    );
 }
-
-$Ticket->ApplyTransactionBatch;
-
-MaybeRedirectForResults(
-    Actions   => \@results,
-    Path      => "/Ticket/ModifyAll.html",
-    Arguments => { id => $Ticket->id },
-);
 
 # If they've gone and moved the ticket to somewhere they can't see, etc...
 unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
