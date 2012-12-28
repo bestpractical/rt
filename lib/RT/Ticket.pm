@@ -710,21 +710,13 @@ sub AddWatcher {
 }
 
 
+=head2 DeleteWatcher
 
+Applies access control checking, then calls L<RT::Record/DeleteRoleMember>.
+Additionally, C<Email> is accepted as an alternative argument name for
+C<User>.
 
-=head2 DeleteWatcher { Type => TYPE, PrincipalId => PRINCIPAL_ID, Email => EMAIL_ADDRESS }
-
-
-Deletes a Ticket watcher.  Takes two arguments:
-
-Type  (one of Requestor,Cc,AdminCc)
-
-and one of
-
-PrincipalId (an RT::Principal Id of the watcher you want to remove)
-    OR
-Email (the email address of an existing wathcer)
-
+Returns a tuple of (status, message).
 
 =cut
 
@@ -737,99 +729,28 @@ sub DeleteWatcher {
                  Email       => undef,
                  @_ );
 
-    unless ( $args{'PrincipalId'} || $args{'Email'} ) {
-        return ( 0, $self->loc("No principal specified") );
-    }
-    my $principal = RT::Principal->new( $self->CurrentUser );
-    if ( $args{'PrincipalId'} ) {
+    $args{ACL} = sub {
+        my $principal = shift;
+        # ModifyTicket works in any case
+        return 1 if $self->CurrentUserHasRight('ModifyTicket');
+        # If the watcher isn't the current user then the current user has no right
+        return 0 unless $self->CurrentUser->id == $principal->id;
+        # If it's an AdminCc and they don't have 'WatchAsAdminCc', bail
+        return 0 if $args{Type} eq "AdminCc" and not $self->CurrentUserHasRight('WatchAsAdminCc');
+        # If it's a Requestor or Cc and they don't have 'Watch', bail
+        return 0 if ($args{Type} eq "Cc" or $args{'Type'} eq 'Requestor')
+            and not $self->CurrentUserHasRight('Watch');
+        return 1;
+    };
 
-        $principal->Load( $args{'PrincipalId'} );
-    }
-    else {
-        my $user = RT::User->new( $self->CurrentUser );
-        $user->LoadByEmail( $args{'Email'} );
-        $principal->Load( $user->Id );
-    }
-
-    # If we can't find this watcher, we need to bail.
-    unless ( $principal->Id ) {
-        return ( 0, $self->loc("Could not find that principal") );
-    }
-
-    my $group = $self->RoleGroup( $args{'Type'} );
-    unless ( $group->id ) {
-        return ( 0, $self->loc("Group not found") );
-    }
-
-    # Check ACLS
-    #If the watcher we're trying to add is for the current user
-    if ( $self->CurrentUser->PrincipalId == $principal->id ) {
-
-        #  If it's an AdminCc and they don't have
-        #   'WatchAsAdminCc' or 'ModifyTicket', bail
-        if ( $args{'Type'} eq 'AdminCc' ) {
-            unless (    $self->CurrentUserHasRight('ModifyTicket')
-                     or $self->CurrentUserHasRight('WatchAsAdminCc') ) {
-                return ( 0, $self->loc('Permission Denied') );
-            }
-        }
-
-        #  If it's a Requestor or Cc and they don't have
-        #   'Watch' or 'ModifyTicket', bail
-        elsif ( ( $args{'Type'} eq 'Cc' ) or ( $args{'Type'} eq 'Requestor' ) )
-        {
-            unless (    $self->CurrentUserHasRight('ModifyTicket')
-                     or $self->CurrentUserHasRight('Watch') ) {
-                return ( 0, $self->loc('Permission Denied') );
-            }
-        }
-        else {
-            $RT::Logger->warning("$self -> DeleteWatcher got passed a bogus type");
-            return ( 0,
-                     $self->loc('Error in parameters to Ticket->DeleteWatcher') );
-        }
-    }
-
-    # If the watcher isn't the current user
-    # and the current user  doesn't have 'ModifyTicket' bail
-    else {
-        unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
-            return ( 0, $self->loc("Permission Denied") );
-        }
-    }
-
-    # see if this user is already a watcher.
-
-    unless ( $group->HasMember($principal) ) {
-        return ( 0,
-                 $self->loc( '[_1] is not a [_2] for this ticket',
-                             $principal->Object->Name, $args{'Type'} ) );
-    }
-
-    my ( $m_id, $m_msg ) = $group->_DeleteMember( $principal->Id );
-    unless ($m_id) {
-        $RT::Logger->error( "Failed to delete "
-                            . $principal->Id
-                            . " as a member of group "
-                            . $group->Id . ": "
-                            . $m_msg );
-
-        return (0,
-                $self->loc(
-                    'Could not remove [_1] as a [_2] for this ticket',
-                    $principal->Object->Name, $args{'Type'} ) );
-    }
-
-    unless ( $args{'Silent'} ) {
-        $self->_NewTransaction( Type     => 'DelWatcher',
-                                OldValue => $principal->Id,
-                                Field    => $args{'Type'} );
-    }
+    $args{User} ||= delete $args{Email};
+    my ($principal, $msg) = $self->DeleteRoleMember( %args );
+    return ( 0, $msg ) unless $principal;
 
     return ( 1,
              $self->loc( "[_1] is no longer a [_2] for this ticket.",
                          $principal->Object->Name,
-                         $args{'Type'} ) );
+                         $self->loc($args{'Type'}) ) );
 }
 
 

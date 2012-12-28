@@ -2415,7 +2415,12 @@ Takes a set of key-value pairs:
 
 =item PrincipalId
 
-Required.  The ID of the L<RT::Principal> object to remove.
+Optional.  The ID of the L<RT::Principal> object to remove.
+
+=item User
+
+Optional.  The Name or EmailAddress of an L<RT::User> to use as the
+principal
 
 =item Type
 
@@ -2423,7 +2428,9 @@ Required.  One of the valid roles for this record, as returned by L</Roles>.
 
 =back
 
-Returns a tuple of (status, message).
+One, and only one, of I<PrincipalId> or I<User> is required.
+
+Returns a tuple of (principal object that was removed, message).
 
 =cut
 
@@ -2434,19 +2441,49 @@ sub DeleteRoleMember {
     return (0, $self->loc("No valid Type specified"))
         unless $args{Type} and $self->HasRole($args{Type});
 
+    if ($args{User}) {
+        my $user = RT::User->new( $self->CurrentUser );
+        $user->LoadByEmail( $args{User} );
+        $user->Load( $args{User} ) unless $user->id;
+        return (0, $self->loc("Could not load user '$args{User}'") )
+            unless $user->id;
+        $args{PrincipalId} = $user->PrincipalId;
+    }
+
     return (0, $self->loc("No valid PrincipalId"))
         unless $args{PrincipalId};
 
-    my ($ok, $msg) = $self->RoleGroup($args{Type})->_DeleteMember($args{PrincipalId});
+    my $principal = RT::Principal->new( $self->CurrentUser );
+    $principal->Load( $args{PrincipalId} );
 
-    if ($ok and not $args{Silent}) {
+    my $acl = delete $args{ACL};
+    return (0, $self->loc("Permission denied"))
+        if $acl and not $acl->($principal);
+
+    my $group = $self->RoleGroup( $args{Type} );
+    return (0, $self->loc("Role group '$args{Type}' not found"))
+        unless $group->id;
+
+    return ( 0, $self->loc( '[_1] is not a [_2]',
+                            $principal->Object->Name, $self->loc($args{Type}) ) )
+        unless $group->HasMember($principal);
+
+    my ($ok, $msg) = $group->_DeleteMember($args{PrincipalId});
+    unless ($ok) {
+        $RT::Logger->error("Failed to remove $args{PrincipalId} as a member of group ".$group->Id.": ".$msg);
+
+        return ( 0, $self->loc('Could not remove [_1] as a [_2]',
+                    $principal->Object->Name, $self->loc($args{Type})) );
+    }
+
+    unless ($args{Silent}) {
         $self->_NewTransaction(
             Type     => 'DelWatcher', # use "watcher" for history's sake
             OldValue => $args{PrincipalId},
             Field    => $args{Type},
         );
     }
-    return ($ok, $msg);
+    return ($principal, $msg);
 }
 
 sub _ResolveRoles {

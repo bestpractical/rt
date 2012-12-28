@@ -856,84 +856,41 @@ sub AddWatcher {
 
 
 
-=head2 DeleteWatcher { Type => TYPE, PrincipalId => PRINCIPAL_ID, Email => EMAIL_ADDRESS }
+=head2 DeleteWatcher
 
+Applies access control checking, then calls L<RT::Record/DeleteRoleMember>.
+Additionally, C<Email> is accepted as an alternative argument name for
+C<User>.
 
-Deletes a queue  watcher.  Takes two arguments:
-
-Type  (one of Requestor,Cc,AdminCc)
-
-and one of
-
-PrincipalId (an RT::Principal Id of the watcher you want to remove)
-    OR
-Email (the email address of an existing wathcer)
-
+Returns a tuple of (status, message).
 
 =cut
-
 
 sub DeleteWatcher {
     my $self = shift;
 
-    my %args = ( Type => undef,
-                 PrincipalId => undef,
-                 Email => undef,
-                 @_ );
+    my %args = (
+        Type => undef,
+        PrincipalId => undef,
+        Email => undef,
+        @_
+    );
 
-    unless ( $args{'PrincipalId'} || $args{'Email'} ) {
-        return ( 0, $self->loc("No principal specified") );
-    }
+    $args{ACL} = sub {
+        my $principal = shift;
+        my ($ok, $msg) = $self->_HasModifyWatcherRight(
+            Type        => $args{Type},
+            PrincipalId => $principal->id
+        );
+        return $ok;
+    };
 
-    if ( !$args{PrincipalId} and $args{Email} ) {
-        my $user = RT::User->new( $self->CurrentUser );
-        my ($rv, $msg) = $user->LoadByEmail( $args{Email} );
-        $args{PrincipalId} = $user->PrincipalId if $rv;
-    }
-    
-    my $principal = RT::Principal->new( $self->CurrentUser );
-    if ( $args{'PrincipalId'} ) {
-        $principal->Load( $args{'PrincipalId'} );
-    }
-    else {
-        my $user = RT::User->new( $self->CurrentUser );
-        $user->LoadByEmail( $args{'Email'} );
-        $principal->Load( $user->Id );
-    }
+    $args{User} ||= delete $args{Email};
+    my ($principal, $msg) = $self->DeleteRoleMember( %args );
+    return ( 0, $msg) unless $principal;
 
-    # If we can't find this watcher, we need to bail.
-    unless ( $principal->Id ) {
-        return ( 0, $self->loc("Could not find that principal") );
-    }
-
-    my $group = $self->RoleGroup( $args{'Type'} );
-    unless ($group->id) {
-        return(0,$self->loc("Group not found"));
-    }
-
-    return ( 0, $self->loc('Unknown watcher type [_1]', $args{Type}) )
-        unless $self->HasRole($args{Type});
-
-    my ($ok, $msg) = $self->_HasModifyWatcherRight(%args);
-    return ($ok, $msg) if !$ok;
-
-    # see if this user is already a watcher.
-
-    unless ( $group->HasMember($principal)) {
-        return ( 0, $self->loc('[_1] is not a [_2] for this queue',
-            $principal->Object->Name, $args{'Type'}) );
-    }
-
-    my ($m_id, $m_msg) = $group->_DeleteMember($principal->Id);
-    unless ($m_id) {
-        $RT::Logger->error("Failed to delete ".$principal->Id.
-                           " as a member of group ".$group->Id.": ".$m_msg);
-
-        return ( 0, $self->loc('Could not remove [_1] as a [_2] for this queue',
-                    $principal->Object->Name, $args{'Type'}) );
-    }
-
-    return ( 1, $self->loc("Removed [_1] from members of [_2] for this queue.", $principal->Object->Name, $args{'Type'} ));
+    return ( 1, $self->loc("Removed [_1] from members of [_2] for this queue.",
+                           $principal->Object->Name, $self->loc($args{'Type'}) ));
 }
 
 
