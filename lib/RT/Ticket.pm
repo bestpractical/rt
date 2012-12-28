@@ -2294,25 +2294,21 @@ sub _MergeInto {
             ( $MergeInto->$type() || 0 ) + ( $self->$type() || 0 ) );
 
     }
-#add all of this ticket's watchers to that ticket.
-    foreach my $watcher_type (qw(Requestors Cc AdminCc)) {
-
-        my $people = $self->$watcher_type->MembersObj;
-        my $addwatcher_type =  $watcher_type;
-        $addwatcher_type  =~ s/s$//;
-
+    # add all of this ticket's watchers to that ticket.
+    for my $role ($self->Roles) {
+        next if $self->RoleGroup($role)->SingleMemberRoleGroup;
+        my $people = $self->RoleGroup($role)->MembersObj;
         while ( my $watcher = $people->Next ) {
-            
-           my ($val, $msg) =  $MergeInto->_AddWatcher(
-                Type        => $addwatcher_type,
-                Silent => 1,
-                PrincipalId => $watcher->MemberId
+            my ($val, $msg) =  $MergeInto->AddRoleMember(
+                Type              => $role,
+                Silent            => 1,
+                PrincipalId       => $watcher->MemberId,
+                InsideTransaction => 1,
             );
             unless ($val) {
                 $RT::Logger->debug($msg);
             }
-    }
-
+        }
     }
 
     #find all of the tickets that were merged into this ticket. 
