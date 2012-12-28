@@ -820,17 +820,11 @@ sub _HasModifyWatcherRight {
 
 =head2 AddWatcher
 
-AddWatcher takes a parameter hash. The keys are as follows:
+Applies access control checking, then calls L<RT::Record/AddRoleMember>.
+Additionally, C<Email> is accepted as an alternative argument name for
+C<User>.
 
-Type        One of Requestor, Cc, AdminCc
-
-PrinicpalId The RT::Principal id of the user or group that's being added as a watcher
-Email       The email address of the new watcher. If a user with this 
-            email address can't be found, a new nonprivileged user will be created.
-
-If the watcher you're trying to set has an RT account, set the Owner parameter to their User Id. Otherwise, set the Email parameter to their Email address.
-
-Returns a tuple of (status/id, message).
+Returns a tuple of (status, message).
 
 =cut
 
@@ -848,7 +842,7 @@ sub AddWatcher {
 
     if ( !$args{'PrincipalId'} && $args{'Email'} ) {
         my $user = RT::User->new( $self->CurrentUser );
-        $user->LoadByEmail( $args{'Email'} );
+        $user->LoadByEmail( delete $args{'Email'} );
         $args{'PrincipalId'} = $user->PrincipalId if $user->id;
     }
 
@@ -861,8 +855,6 @@ sub AddWatcher {
     return $self->_AddWatcher(%args);
 }
 
-#This contains the meat of AddWatcher. but can be called from a routine like
-# Create, which doesn't need the additional acl check
 sub _AddWatcher {
     my $self = shift;
     my %args = (
@@ -873,73 +865,12 @@ sub _AddWatcher {
         @_
     );
 
+    $args{User} ||= delete $args{Email};
+    my ($principal, $msg) = $self->AddRoleMember( %args );
+    return ( 0, $msg) unless $principal;
 
-    my $principal = RT::Principal->new( $self->CurrentUser );
-    if ( $args{'PrincipalId'} ) {
-        $principal->Load( $args{'PrincipalId'} );
-        if ( $principal->id and $principal->IsUser and my $email = $principal->Object->EmailAddress ) {
-            return (0, $self->loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $email, $self->loc($args{'Type'})))
-                if RT::EmailParser->IsRTAddress( $email );
-        }
-    }
-    elsif ( $args{'Email'} ) {
-        if ( RT::EmailParser->IsRTAddress( $args{'Email'} ) ) {
-            return (0, $self->loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $args{'Email'}, $self->loc($args{'Type'})));
-        }
-        my $user = RT::User->new($self->CurrentUser);
-        $user->LoadByEmail( $args{'Email'} );
-        $user->Load( $args{'Email'} )
-            unless $user->id;
-
-        if ( $user->Id ) { # If the user exists
-            $principal->Load( $user->PrincipalId );
-        } else {
-            # if the user doesn't exist, we need to create a new user
-            my $new_user = RT::User->new(RT->SystemUser);
-
-            my ( $Address, $Name ) =  
-               RT::Interface::Email::ParseAddressFromHeader($args{'Email'});
-
-            my ( $Val, $Message ) = $new_user->Create(
-                Name         => $Address,
-                EmailAddress => $Address,
-                RealName     => $Name,
-                Privileged   => 0,
-                Comments     => 'Autocreated when added as a watcher'
-            );
-            unless ($Val) {
-                $RT::Logger->error("Failed to create user ".$args{'Email'} .": " .$Message);
-                # Deal with the race condition of two account creations at once
-                $new_user->LoadByEmail( $args{'Email'} );
-            }
-            $principal->Load( $new_user->PrincipalId );
-        }
-    }
-    # If we can't find this watcher, we need to bail.
-    unless ( $principal->Id ) {
-        return(0, $self->loc("Could not find or create that user"));
-    }
-
-    my $group = $self->RoleGroup( $args{'Type'} );
-    unless ($group->id) {
-        return(0,$self->loc("Group not found"));
-    }
-
-    if ( $group->HasMember( $principal)) {
-
-        return ( 0, $self->loc('[_1] is already a [_2] for this queue',
-                    $principal->Object->Name, $args{'Type'}) );
-    }
-
-
-    my ($m_id, $m_msg) = $group->_AddMember(PrincipalId => $principal->Id);
-    unless ($m_id) {
-        $RT::Logger->error("Failed to add ".$principal->Id." as a member of group ".$group->Id.": ".$m_msg);
-
-        return ( 0, $self->loc('Could not make [_1] a [_2] for this queue',
-                    $principal->Object->Name, $args{'Type'}) );
-    }
-    return ( 1, $self->loc("Added [_1] to members of [_2] for this queue.", $principal->Object->Name, $args{'Type'} ));
+    return ( 1, $self->loc("Added [_1] to members of [_2] for this queue.",
+                           $principal->Object->Name, $self->loc($args{'Type'}) ));
 }
 
 

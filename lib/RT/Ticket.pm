@@ -667,16 +667,11 @@ sub OwnerGroup {
 
 =head2 AddWatcher
 
-AddWatcher takes a parameter hash. The keys are as follows:
+Applies access control checking, then calls L<RT::Record/AddRoleMember>.
+Additionally, C<Email> is accepted as an alternative argument name for
+C<User>.
 
-Type        One of Requestor, Cc, AdminCc
-
-PrincipalId The RT::Principal id of the user or group that's being added as a watcher
-
-Email       The email address of the new watcher. If a user with this 
-            email address can't be found, a new nonprivileged user will be created.
-
-If the watcher you're trying to set has an RT account, set the PrincipalId paremeter to their User Id. Otherwise, set the Email parameter to their Email address.
+Returns a tuple of (status, message).
 
 =cut
 
@@ -732,8 +727,6 @@ sub AddWatcher {
     return $self->_AddWatcher( %args );
 }
 
-#This contains the meat of AddWatcher. but can be called from a routine like
-# Create, which doesn't need the additional acl check
 sub _AddWatcher {
     my $self = shift;
     my %args = (
@@ -744,61 +737,12 @@ sub _AddWatcher {
         @_
     );
 
-
-    my $principal = RT::Principal->new($self->CurrentUser);
-    if ($args{'Email'}) {
-        if ( RT::EmailParser->IsRTAddress( $args{'Email'} ) ) {
-            return (0, $self->loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $args{'Email'}, $self->loc($args{'Type'})));
-        }
-        my $user = RT::User->new(RT->SystemUser);
-        my ($pid, $msg) = $user->LoadOrCreateByEmail( $args{'Email'} );
-        $args{'PrincipalId'} = $pid if $pid; 
-    }
-    if ($args{'PrincipalId'}) {
-        $principal->Load($args{'PrincipalId'});
-        if ( $principal->id and $principal->IsUser and my $email = $principal->Object->EmailAddress ) {
-            return (0, $self->loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $email, $self->loc($args{'Type'})))
-                if RT::EmailParser->IsRTAddress( $email );
-
-        }
-    } 
-
- 
-    # If we can't find this watcher, we need to bail.
-    unless ($principal->Id) {
-            $RT::Logger->error("Could not load create a user with the email address '".$args{'Email'}. "' to add as a watcher for ticket ".$self->Id);
-        return(0, $self->loc("Could not find or create that user"));
-    }
-
-
-    my $group = $self->RoleGroup( $args{'Type'} );
-    unless ($group->id) {
-        return(0,$self->loc("Group not found"));
-    }
-
-    if ( $group->HasMember( $principal)) {
-
-        return ( 0, $self->loc('[_1] is already a [_2] for this ticket',
-                    $principal->Object->Name, $self->loc($args{'Type'})) );
-    }
-
-
-    my ( $m_id, $m_msg ) = $group->_AddMember( PrincipalId => $principal->Id,
-                                               InsideTransaction => 1 );
-    unless ($m_id) {
-        $RT::Logger->error("Failed to add ".$principal->Id." as a member of group ".$group->Id.": ".$m_msg);
-
-        return ( 0, $self->loc('Could not make [_1] a [_2] for this ticket',
-                    $principal->Object->Name, $self->loc($args{'Type'})) );
-    }
-
-    unless ( $args{'Silent'} ) {
-        $self->_NewTransaction(
-            Type     => 'AddWatcher',
-            NewValue => $principal->Id,
-            Field    => $args{'Type'}
-        );
-    }
+    $args{User} ||= delete $args{Email};
+    my ($principal, $msg) = $self->AddRoleMember(
+        %args,
+        InsideTransaction => 1,
+    );
+    return ( 0, $msg) unless $principal;
 
     return ( 1, $self->loc('Added [_1] as a [_2] for this ticket',
                 $principal->Object->Name, $self->loc($args{'Type'})) );

@@ -2294,10 +2294,13 @@ Optional.  The ID of the L<RT::Principal> object to add.
 
 =item User
 
+Optional.  The Name or EmailAddress of an L<RT::User> to use as the
+principal.  If an email address is given, but a user matching it cannot
+be found, a new user will be created.
+
 =item Group
 
-Optional.  The Name of an L<RT::User> or L<RT::Group>, respectively, to use as
-the principal.
+Optional.  The Name of an L<RT::Group> to use as the principal.
 
 =item Type
 
@@ -2307,7 +2310,7 @@ Required.  One of the valid roles for this record, as returned by L</Roles>.
 
 One, and only one, of I<PrincipalId>, I<User>, or I<Group> is required.
 
-Returns a tuple of (status, message).
+Returns a tuple of (principal object which was added, message).
 
 =cut
 
@@ -2322,25 +2325,65 @@ sub AddRoleMember {
     return (0, $self->loc("No valid Type specified"))
         unless $type and $self->HasRole($type);
 
-    unless ($args{PrincipalId}) {
-        my $object;
+    if ($args{PrincipalId}) {
+        # Check the PrincipalId for loops
+        my $principal = RT::Principal->new( $self->CurrentUser );
+        $principal->Load($args{'PrincipalId'});
+        if ( $principal->id and $principal->IsUser and my $email = $principal->Object->EmailAddress ) {
+            return (0, $self->loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop",
+                                  $email, $self->loc($type)))
+                if RT::EmailParser->IsRTAddress( $email );
+        }
+    } else {
         if ($args{User}) {
-            $object = RT::User->new( $self->CurrentUser );
-            $object->Load(delete $args{User});
+            my $name = delete $args{User};
+            # Sanity check the address
+            return (0, $self->loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop",
+                                  $name, $self->loc($type) ))
+                if RT::EmailParser->IsRTAddress( $name );
+
+            # Create as the SystemUser, not the current user
+            my $user = RT::User->new(RT->SystemUser);
+            my ($pid, $msg) = $user->LoadOrCreateByEmail( $name );
+            unless ($pid) {
+                # If we can't find this watcher, we need to bail.
+                $RT::Logger->error("Could not load or create a user '$name' to add as a watcher: $msg");
+                return (0, $self->loc("Could not find or create user '$name'"));
+            }
+            $args{PrincipalId} = $pid;
         }
         elsif ($args{Group}) {
-            $object = RT::Group->new( $self->CurrentUser );
-            $object->LoadUserDefinedGroup(delete $args{Group});
+            my $name = delete $args{Group};
+            my $group = RT::Group->new( $self->CurrentUser );
+            $group->LoadUserDefinedGroup($name);
+            unless ($group->id) {
+                $RT::Logger->error("Could not load group '$name' to add as a watcher");
+                return (0, $self->loc("Could not find group '$name'"));
+            }
+            $args{PrincipalId} = $group->PrincipalObj->id;
         }
-        $args{PrincipalId} = $object->PrincipalObj->id;
     }
 
-    return (0, $self->loc("No valid PrincipalId"))
-        unless $args{PrincipalId};
+    my $principal = RT::Principal->new( $self->CurrentUser );
+    $principal->Load( $args{PrincipalId} );
 
-    my ($ok, $msg) = $self->RoleGroup($type)->_AddMember(%args);
+    my $group = $self->RoleGroup( $type );
+    return (0, $self->loc("Role group '$type' not found"))
+        unless $group->id;
 
-    if ($ok and not $args{Silent}) {
+    return (0, $self->loc('[_1] is already a [_2]',
+                          $principal->Object->Name, $self->loc($type)) )
+            if $group->HasMember( $principal );
+
+    my ( $ok, $msg ) = $group->_AddMember( %args );
+    unless ($ok) {
+        $RT::Logger->error("Failed to add $args{PrincipalId} as a member of group ".$group->Id.": ".$msg);
+
+        return ( 0, $self->loc('Could not make [_1] a [_2]',
+                    $principal->Object->Name, $self->loc($type)) );
+    }
+
+    unless ($args{Silent}) {
         $self->_NewTransaction(
             Type     => 'AddWatcher', # use "watcher" for history's sake
             NewValue => $args{PrincipalId},
@@ -2348,7 +2391,7 @@ sub AddRoleMember {
         );
     }
 
-    return ($ok, $msg);
+    return ($principal, $msg);
 }
 
 =head2 DeleteRoleMember
