@@ -143,6 +143,13 @@
     display: none;
 }
 
+.dependency-status {
+    font-style: italic;
+}
+.dependency-status .summary {
+    font-weight: bold;
+    font-style: normal;
+}
 
 /* Color the titlebox tabs */
 .ticket-info-cfs .titlebox .titlebox-title .left { background-color: #b32; color: #fff;}
