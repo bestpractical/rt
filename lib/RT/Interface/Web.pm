@@ -871,6 +871,38 @@ sub Redirect {
     $HTML::Mason::Commands::m->abort;
 }
 
+=head2 CacheControlExpiresHeaders
+
+set both Cache-Control and Expires http headers
+
+=cut
+
+sub CacheControlExpiresHeaders {
+    my %args = @_;
+
+    my $Visibility = 'private';
+    if ( ! defined $args{Time} ) {
+        $args{Time} = 0;
+    } elsif ( $args{Time} eq 'no-cache' ) {
+        $args{Time} = 0;
+    } elsif ( $args{Time} eq 'forever' ) {
+        $args{Time} = 30 * 24 * 60 * 60;
+        $Visibility = 'public';
+    }
+
+    my $CacheControl = $args{Time}
+        ? sprintf "max-age=%d, %s", $args{Time}, $Visibility
+        : 'no-cache'
+    ;
+    $HTML::Mason::Commands::r->headers_out->{'Cache-Control'} = $CacheControl;
+
+    my $expires = RT::Date->new(RT->SystemUser);
+    $expires->SetToNow;
+    $expires->AddSeconds( $args{Time} ) if $args{Time};
+
+    $HTML::Mason::Commands::r->headers_out->{'Expires'} = $expires->RFC2616;
+}
+
 =head2 StaticFileHeaders 
 
 Send the browser a few headers to try to get it to (somewhat agressively)
