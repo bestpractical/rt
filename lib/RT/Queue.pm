@@ -788,33 +788,20 @@ sub IsManageableRoleGroupType {
 }
 
 
-# _HasModifyWatcherRight {{{
 sub _HasModifyWatcherRight {
     my $self = shift;
-    my %args = (
-        Type  => undef,
-        PrincipalId => undef,
-        Email => undef,
-        @_
-    );
+    my ($type, $principal) = @_;
 
+    # ModifyQueueWatchers works in any case
     return 1 if $self->CurrentUserHasRight('ModifyQueueWatchers');
-
-    #If the watcher we're trying to add is for the current user
-    if ( defined $args{'PrincipalId'} && $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}) {
-        if ( $args{'Type'} eq 'AdminCc' ) {
-            return 1 if $self->CurrentUserHasRight('WatchAsAdminCc');
-        }
-        elsif ( $args{'Type'} eq 'Cc' or $args{'Type'} eq 'Requestor' ) {
-            return 1 if $self->CurrentUserHasRight('Watch');
-        }
-        else {
-            $RT::Logger->warning( "$self -> _HasModifyWatcher got passed a bogus type $args{Type}");
-            return ( 0, $self->loc('Invalid queue role group type [_1]', $args{Type}) );
-        }
-    }
-
-    return ( 0, $self->loc("Permission Denied") );
+    # If the watcher isn't the current user then the current user has no right
+    return 0 unless $self->CurrentUser->PrincipalId == $principal->id;
+    # If it's an AdminCc and they don't have 'WatchAsAdminCc', bail
+    return 0 if $type eq 'AdminCc' and not $self->CurrentUserHasRight('WatchAsAdminCc');
+    # If it's a Requestor or Cc and they don't have 'Watch', bail
+    return 0 if ($type eq "Cc" or $type eq 'Requestor')
+        and not $self->CurrentUserHasRight('Watch');
+    return 1;
 }
 
 
@@ -837,15 +824,7 @@ sub AddWatcher {
         @_
     );
 
-    $args{ACL} = sub {
-        my $principal = shift;
-        my ($ok, $msg) = $self->_HasModifyWatcherRight(
-            Type        => $args{Type},
-            PrincipalId => $principal->id
-        );
-        return $ok;
-    };
-
+    $args{ACL} = sub { $self->_HasModifyWatcherRight( @_ ) };
     $args{User} ||= delete $args{Email};
     my ($principal, $msg) = $self->AddRoleMember( %args );
     return ( 0, $msg) unless $principal;
@@ -853,7 +832,6 @@ sub AddWatcher {
     return ( 1, $self->loc("Added [_1] to members of [_2] for this queue.",
                            $principal->Object->Name, $self->loc($args{'Type'}) ));
 }
-
 
 
 =head2 DeleteWatcher
@@ -876,15 +854,7 @@ sub DeleteWatcher {
         @_
     );
 
-    $args{ACL} = sub {
-        my $principal = shift;
-        my ($ok, $msg) = $self->_HasModifyWatcherRight(
-            Type        => $args{Type},
-            PrincipalId => $principal->id
-        );
-        return $ok;
-    };
-
+    $args{ACL} = sub { $self->_HasModifyWatcherRight( @_ ) };
     $args{User} ||= delete $args{Email};
     my ($principal, $msg) = $self->DeleteRoleMember( %args );
     return ( 0, $msg) unless $principal;

@@ -2308,9 +2308,9 @@ Required.  One of the valid roles for this record, as returned by L</Roles>.
 
 =item ACL
 
-Optional.  A subroutine reference which will be passed the principal
-being added, once it has been resolved.  If it returns false, the method
-will fail with a status of "Permission denied".
+Optional.  A subroutine reference which will be passed the role type and
+principal being added.  If it returns false, the method will fail with a
+status of "Permission denied".
 
 =back
 
@@ -2375,7 +2375,7 @@ sub AddRoleMember {
 
     my $acl = delete $args{ACL};
     return (0, $self->loc("Permission denied"))
-        if $acl and not $acl->($principal);
+        if $acl and not $acl->($type => $principal);
 
     my $group = $self->RoleGroup( $type );
     return (0, $self->loc("Role group '$type' not found"))

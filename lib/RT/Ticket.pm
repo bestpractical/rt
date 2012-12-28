@@ -663,6 +663,21 @@ sub OwnerGroup {
 }
 
 
+sub _HasModifyWatcherRight {
+    my $self = shift;
+    my ($type, $principal) = @_;
+
+    # ModifyTicket works in any case
+    return 1 if $self->CurrentUserHasRight('ModifyTicket');
+    # If the watcher isn't the current user then the current user has no right
+    return 0 unless $self->CurrentUser->PrincipalId == $principal->id;
+    # If it's an AdminCc and they don't have 'WatchAsAdminCc', bail
+    return 0 if $type eq 'AdminCc' and not $self->CurrentUserHasRight('WatchAsAdminCc');
+    # If it's a Requestor or Cc and they don't have 'Watch', bail
+    return 0 if ($type eq "Cc" or $type eq 'Requestor')
+        and not $self->CurrentUserHasRight('Watch');
+    return 1;
+}
 
 
 =head2 AddWatcher
@@ -684,20 +699,7 @@ sub AddWatcher {
         @_
     );
 
-    $args{ACL} = sub {
-        my $principal = shift;
-        # ModifyTicket works in any case
-        return 1 if $self->CurrentUserHasRight('ModifyTicket');
-        # If the watcher isn't the current user then the current user has no right
-        return 0 unless $self->CurrentUser->id == $principal->id;
-        # If it's an AdminCc and they don't have 'WatchAsAdminCc', bail
-        return 0 if $args{Type} eq "AdminCc" and not $self->CurrentUserHasRight('WatchAsAdminCc');
-        # If it's a Requestor or Cc and they don't have 'Watch', bail
-        return 0 if ($args{Type} eq "Cc" or $args{'Type'} eq 'Requestor')
-            and not $self->CurrentUserHasRight('Watch');
-        return 1;
-    };
-
+    $args{ACL} = sub { $self->_HasModifyWatcherRight( @_ ) };
     $args{User} ||= delete $args{Email};
     my ($principal, $msg) = $self->AddRoleMember(
         %args,
@@ -729,20 +731,7 @@ sub DeleteWatcher {
                  Email       => undef,
                  @_ );
 
-    $args{ACL} = sub {
-        my $principal = shift;
-        # ModifyTicket works in any case
-        return 1 if $self->CurrentUserHasRight('ModifyTicket');
-        # If the watcher isn't the current user then the current user has no right
-        return 0 unless $self->CurrentUser->id == $principal->id;
-        # If it's an AdminCc and they don't have 'WatchAsAdminCc', bail
-        return 0 if $args{Type} eq "AdminCc" and not $self->CurrentUserHasRight('WatchAsAdminCc');
-        # If it's a Requestor or Cc and they don't have 'Watch', bail
-        return 0 if ($args{Type} eq "Cc" or $args{'Type'} eq 'Requestor')
-            and not $self->CurrentUserHasRight('Watch');
-        return 1;
-    };
-
+    $args{ACL} = sub { $self->_HasModifyWatcherRight( @_ ) };
     $args{User} ||= delete $args{Email};
     my ($principal, $msg) = $self->DeleteRoleMember( %args );
     return ( 0, $msg ) unless $principal;
