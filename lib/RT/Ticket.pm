@@ -684,58 +684,19 @@ sub AddWatcher {
         @_
     );
 
-    # ModifyTicket works in any case
-    return $self->_AddWatcher( %args )
-        if $self->CurrentUserHasRight('ModifyTicket');
-    if ( $args{'Email'} ) {
-        my ($addr) = RT::EmailParser->ParseEmailAddress( $args{'Email'} );
-        return (0, $self->loc("Couldn't parse address from '[_1]' string", $args{'Email'} ))
-            unless $addr;
-
-        if ( lc $self->CurrentUser->EmailAddress
-            eq lc RT::User->CanonicalizeEmailAddress( $addr->address ) )
-        {
-            $args{'PrincipalId'} = $self->CurrentUser->id;
-            delete $args{'Email'};
-        }
-    }
-
-    # If the watcher isn't the current user then the current user has no right
-    # bail
-    unless ( $args{'PrincipalId'} && $self->CurrentUser->id == $args{'PrincipalId'} ) {
-        return ( 0, $self->loc("Permission Denied") );
-    }
-
-    #  If it's an AdminCc and they don't have 'WatchAsAdminCc', bail
-    if ( $args{'Type'} eq 'AdminCc' ) {
-        unless ( $self->CurrentUserHasRight('WatchAsAdminCc') ) {
-            return ( 0, $self->loc('Permission Denied') );
-        }
-    }
-
-    #  If it's a Requestor or Cc and they don't have 'Watch', bail
-    elsif ( $args{'Type'} eq 'Cc' || $args{'Type'} eq 'Requestor' ) {
-        unless ( $self->CurrentUserHasRight('Watch') ) {
-            return ( 0, $self->loc('Permission Denied') );
-        }
-    }
-    else {
-        $RT::Logger->warning( "AddWatcher got passed a bogus type");
-        return ( 0, $self->loc('Error in parameters to Ticket->AddWatcher') );
-    }
-
-    return $self->_AddWatcher( %args );
-}
-
-sub _AddWatcher {
-    my $self = shift;
-    my %args = (
-        Type   => undef,
-        Silent => undef,
-        PrincipalId => undef,
-        Email => undef,
-        @_
-    );
+    $args{ACL} = sub {
+        my $principal = shift;
+        # ModifyTicket works in any case
+        return 1 if $self->CurrentUserHasRight('ModifyTicket');
+        # If the watcher isn't the current user then the current user has no right
+        return 0 unless $self->CurrentUser->id == $principal->id;
+        # If it's an AdminCc and they don't have 'WatchAsAdminCc', bail
+        return 0 if $args{Type} eq "AdminCc" and not $self->CurrentUserHasRight('WatchAsAdminCc');
+        # If it's a Requestor or Cc and they don't have 'Watch', bail
+        return 0 if ($args{Type} eq "Cc" or $args{'Type'} eq 'Requestor')
+            and not $self->CurrentUserHasRight('Watch');
+        return 1;
+    };
 
     $args{User} ||= delete $args{Email};
     my ($principal, $msg) = $self->AddRoleMember(

@@ -2306,6 +2306,12 @@ Optional.  The Name of an L<RT::Group> to use as the principal.
 
 Required.  One of the valid roles for this record, as returned by L</Roles>.
 
+=item ACL
+
+Optional.  A subroutine reference which will be passed the principal
+being added, once it has been resolved.  If it returns false, the method
+will fail with a status of "Permission denied".
+
 =back
 
 One, and only one, of I<PrincipalId>, I<User>, or I<Group> is required.
@@ -2366,6 +2372,10 @@ sub AddRoleMember {
 
     my $principal = RT::Principal->new( $self->CurrentUser );
     $principal->Load( $args{PrincipalId} );
+
+    my $acl = delete $args{ACL};
+    return (0, $self->loc("Permission denied"))
+        if $acl and not $acl->($principal);
 
     my $group = $self->RoleGroup( $type );
     return (0, $self->loc("Role group '$type' not found"))

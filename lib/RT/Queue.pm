@@ -837,33 +837,14 @@ sub AddWatcher {
         @_
     );
 
-    return ( 0, "No principal specified" )
-        unless $args{'Email'} or $args{'PrincipalId'};
-
-    if ( !$args{'PrincipalId'} && $args{'Email'} ) {
-        my $user = RT::User->new( $self->CurrentUser );
-        $user->LoadByEmail( delete $args{'Email'} );
-        $args{'PrincipalId'} = $user->PrincipalId if $user->id;
-    }
-
-    return ( 0, "Unknown watcher type [_1]", $args{Type} )
-        unless $self->HasRole($args{Type});
-
-    my ($ok, $msg) = $self->_HasModifyWatcherRight(%args);
-    return ($ok, $msg) if !$ok;
-
-    return $self->_AddWatcher(%args);
-}
-
-sub _AddWatcher {
-    my $self = shift;
-    my %args = (
-        Type   => undef,
-        Silent => undef,
-        PrincipalId => undef,
-        Email => undef,
-        @_
-    );
+    $args{ACL} = sub {
+        my $principal = shift;
+        my ($ok, $msg) = $self->_HasModifyWatcherRight(
+            Type        => $args{Type},
+            PrincipalId => $principal->id
+        );
+        return $ok;
+    };
 
     $args{User} ||= delete $args{Email};
     my ($principal, $msg) = $self->AddRoleMember( %args );
