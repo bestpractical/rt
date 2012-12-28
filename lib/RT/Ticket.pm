@@ -651,40 +651,6 @@ sub _Parse822HeadersForAttributes {
     return (%args);
 }
 
-=head2 _CreateTicketGroups
-
-Create the ticket groups and links for this ticket. 
-This routine expects to be called from Ticket->Create _inside of a transaction_
-
-It will create four groups for this ticket: Requestor, Cc, AdminCc and Owner.
-
-It will return true on success and undef on failure.
-
-
-=cut
-
-
-sub _CreateTicketGroups {
-    my $self = shift;
-    
-    my @types = (qw(Requestor Owner Cc AdminCc));
-
-    foreach my $type (@types) {
-        my $type_obj = RT::Group->new($self->CurrentUser);
-        my ($id, $msg) = $type_obj->CreateRoleGroup(Domain => 'RT::Ticket-Role',
-                                                       Instance => $self->Id, 
-                                                       Type => $type);
-        unless ($id) {
-            $RT::Logger->error("Couldn't create a ticket group of type '$type' for ticket ".
-                               $self->Id.": ".$msg);     
-            return(undef);
-        }
-     }
-    return(1);
-    
-}
-
-
 =head2 OwnerGroup
 
 A constructor which returns an RT::Group object containing the owner of this ticket.
