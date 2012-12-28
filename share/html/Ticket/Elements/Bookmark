@@ -61,9 +61,9 @@ else {
 $id
 $Toggle => 0
 </%ARGS>
-<span class="toggle-bookmark-<% $id %>">
+<span class="toggle-bookmark toggle-bookmark-<% $id %>">
 % my $url = RT->Config->Get('WebPath') ."/Helpers/Toggle/TicketBookmark?id=". $id;
-<a align="right" href="<% $url %>" onclick="jQuery('.toggle-bookmark-'+<% $id |n,j%>).load(<% $url |n,j %>); return false;" >
+<a align="right" href="<% $url %>" onclick="jQuery.get(<% $url |n,j %>, function(data){ jQuery('.toggle-bookmark-'+<% $id |n,j%>).replaceWith(data) }); return false;" >
 % if ( $is_bookmarked ) {
 <img src="<% RT->Config->Get('WebPath') %>/NoAuth/images/star.gif" alt="<% loc('Remove Bookmark') %>" style="border-style: none" />
 % } else {
