@@ -100,6 +100,32 @@ sub SquishedJS {
     return $js;
 }
 
+=head2 JSFiles
+
+=cut
+
+sub JSFiles {
+    return qw/
+      jquery-1.4.2.min.js
+      jquery_noconflict.js
+      jquery-ui-1.8.4.custom.min.js
+      jquery-ui-timepicker-addon.js
+      jquery-ui-patch-datepicker.js
+      jquery.modal.min.js
+      jquery.modal-defaults.js
+      titlebox-state.js
+      util.js
+      userautocomplete.js
+      jquery.event.hover-1.0.js
+      superfish.js
+      supersubs.js
+      jquery.supposition.js
+      history-folding.js
+      event-registration.js
+      late.js
+      /, RT->Config->Get('JSFiles');
+}
+
 =head2 ClearSquished
 
 Removes the cached CSS and JS entries, forcing them to be regenerated

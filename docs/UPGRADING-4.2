@@ -56,3 +56,8 @@ UPGRADING FROM RT 4.0.0 and greater
   $SMTPServer, $SMTPFrom, and $SMTPDebug options, has been removed
   because it did not guarantee delivery.  Instead, use a local MTA for
   outgoing mail, via the 'sendmailpipe' setting to $MailCommand.
+
+* The @JSFiles config now only keeps additional JavaScript filenames; if
+  you had copied @JSFiles to add extra entries in your RT_SiteConfig,
+  remove the core JS from the list, or RT will serve those files
+  multiple times.

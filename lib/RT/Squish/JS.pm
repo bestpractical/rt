@@ -75,7 +75,7 @@ sub Squish {
     my $self    = shift;
     my $content;
 
-    for my $file ( RT->Config->Get('JSFiles') ) {
+    for my $file ( RT::Interface::Web->JSFiles ) {
         my $path = "/NoAuth/js/$file";
         if ( $HTML::Mason::Commands::m->comp_exists($path) ) {
             $content .= $HTML::Mason::Commands::m->scomp($path);

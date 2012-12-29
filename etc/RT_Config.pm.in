@@ -868,32 +868,11 @@ Set($CanonicalizeRedirectURLs, 0);
 
 =item C<@JSFiles>
 
-A list of JavaScript files to be included in head.  Removing any of
-the default entries is not suggested.
-
-If you're a plugin author, refer to RT->AddJavaScript.
+A list of additional JavaScript files to be included in head.
 
 =cut
 
-Set(@JSFiles, qw/
-    jquery-1.4.2.min.js
-    jquery_noconflict.js
-    jquery-ui-1.8.4.custom.min.js
-    jquery-ui-timepicker-addon.js
-    jquery-ui-patch-datepicker.js
-    jquery.modal.min.js
-    jquery.modal-defaults.js
-    titlebox-state.js
-    util.js
-    userautocomplete.js
-    jquery.event.hover-1.0.js
-    superfish.js
-    supersubs.js
-    jquery.supposition.js
-    history-folding.js
-    event-registration.js
-    late.js
-/);
+Set(@JSFiles, qw//);
 
 =item C<$JSMinPath>
 
