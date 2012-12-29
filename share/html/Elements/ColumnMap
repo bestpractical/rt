@@ -181,6 +181,8 @@ my $COLUMN_MAP = {
             return \$path;
         },
     },
+    CurrentUser       => { value => sub { $session{CurrentUser}->id } },
+    CurrentUserName   => { value => sub { $session{CurrentUser}->Name } },
 };
 
 $COLUMN_MAP->{'CF'} = $COLUMN_MAP->{'CustomField'};
