@@ -52,11 +52,6 @@ use strict;
 use warnings;
 
 
-use constant HAS_BOOLEAN_PARSER => do {
-    local $@;
-    eval { require Parse::BooleanLogic; 1 }
-};
-
 # States
 use constant VALUE       => 1;
 use constant AGGREG      => 2;
@@ -216,80 +211,6 @@ sub _BitmaskToString {
     unshift @res, $tmp if $tmp;
     return join ' or ', @res;
 }
-
-sub PossibleCustomFields {
-    my %args = (Query => undef, CurrentUser => undef, @_);
-
-    my $cfs = RT::CustomFields->new( $args{'CurrentUser'} );
-    my $ocf_alias = $cfs->_OCFAlias;
-    $cfs->LimitToLookupType( 'RT::Queue-RT::Ticket' );
-
-    my $tree;
-    if ( HAS_BOOLEAN_PARSER ) {
-        $tree = Parse::BooleanLogic->filter(
-            RT::SQL::ParseToArray( $args{'Query'} ),
-            sub { $_[0]->{'key'} =~ /^Queue(?:\z|\.)/ },
-        );
-    }
-    if ( $tree && @$tree ) {
-        my $clause = 'QUEUES';
-        my $queue_alias = $cfs->Join(
-            TYPE   => 'LEFT',
-            ALIAS1 => $ocf_alias,
-            FIELD1 => 'ObjectId',
-            TABLE2 => 'Queues',
-            FIELD2 => 'id',
-        );
-        $cfs->_OpenParen($clause);
-        $cfs->Limit(
-            SUBCLAUSE       => $clause,
-            ENTRYAGGREGATOR => 'AND',
-            ALIAS           => $ocf_alias,
-            FIELD           => 'ObjectId',
-            VALUE           => 0,
-        );
-        $cfs->_OpenParen($clause);
-
-        my $ea = 'OR';
-        Parse::BooleanLogic->walk(
-            $tree,
-            {
-                open_paren  => sub { $cfs->_OpenParen($clause) },
-                close_paren => sub { $cfs->_CloseParen($clause) },
-                operator    => sub { $ea = $_[0] },
-                operand     => sub {
-                    my ($key, $op, $value) = @{$_[0]}{'key', 'op', 'value'};
-                    my (undef, @sub) = split /\./, $key;
-                    push @sub, $value =~ /\D/? 'Name' : 'id'
-                        unless @sub;
-                    
-                    die "Couldn't handle ". join('.', 'Queue', @sub) if @sub > 1;
-                    $cfs->Limit(
-                        SUBCLAUSE       => $clause,
-                        ENTRYAGGREGATOR => $ea,
-                        ALIAS           => $queue_alias,
-                        FIELD           => $sub[0],
-                        OPERATOR        => $op,
-                        VALUE           => $value,
-                    );
-                },
-            }
-        );
-
-        $cfs->_CloseParen($clause);
-        $cfs->_CloseParen($clause);
-    } else {
-        $cfs->Limit(
-            ENTRYAGGREGATOR => 'AND',
-            ALIAS           => $ocf_alias,
-            FIELD           => 'ObjectId',
-            OPERATOR        => 'IS NOT',
-            VALUE           => 'NULL',
-        );
-    }
-    return $cfs;
-}
-
 
 RT::Base->_ImportOverlays();
 
