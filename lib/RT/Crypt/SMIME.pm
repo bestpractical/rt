@@ -460,7 +460,10 @@ sub _Decrypt {
     my $found_key = 0;
     foreach my $address ( @addresses ) {
         my $key_file = File::Spec->catfile( $keyring, $address .'.pem' );
-        next unless -e $key_file && -r _;
+        unless ( -e $key_file && -r _ ) {
+            $RT::Logger->debug("No '$key_file' or it's unreadable");
+            next;
+        }
 
         $found_key = 1;
 
@@ -476,10 +479,14 @@ sub _Decrypt {
         safe_run_child { run3( $cmd, $args{'Content'}, \$buf, \$res{'stderr'} ) };
         unless ( $? ) {
             $encrypted_to = $address;
+            $RT::Logger->debug("Message encrypted for $encrypted_to");
             last;
         }
 
-        next if index($res{'stderr'}, 'no recipient matches key') >= 0;
+        if ( index($res{'stderr'}, 'no recipient matches key') >= 0 ) {
+            $RT::Logger->debug("Message was sent to $address and we have key, but it's not encrypted for this address");
+            next;
+        }
 
         $res{'exit_code'} = $?;
         $res{'message'} = "openssl exitted with error code ". ($? >> 8)
@@ -493,6 +500,7 @@ sub _Decrypt {
         return (undef, %res);
     }
     unless ( $found_key ) {
+        $RT::Logger->error("Couldn't find SMIME key for addresses: ". join ', ', @addresses);
         $res{'exit_code'} = 1;
         $res{'status'} = $self->FormatStatus({
             Operation => 'KeyCheck',
