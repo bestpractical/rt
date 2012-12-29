@@ -368,19 +368,19 @@ my $year = (localtime(time))[5] + 1900;
     is($date->ISO, '2012-06-15 06:00:00', "YYYY-DD-MM hh:mm:ss");
 
     set_fixed_time("2012-06-13T23:10:00Z"); # 13th in UTC and 14th in Moscow
-    my $date = RT::Date->new( $current_user );
+    $date = RT::Date->new( $current_user );
     $date->Set(Format => 'unknown', Value => 'tomorrow 10am');
     is($date->ISO, '2012-06-15 06:00:00', "YYYY-DD-MM hh:mm:ss");
 
     $current_user->UserObj->__Set( Field => 'Timezone', Value => 'US/Hawaii');
 
     set_fixed_time("2012-06-14T20:10:00Z"); # 14th in UTC and Hawaii
-    my $date = RT::Date->new( $current_user );
+    $date = RT::Date->new( $current_user );
     $date->Set(Format => 'unknown', Value => 'tomorrow 10am');
     is($date->ISO, '2012-06-15 20:00:00', "YYYY-DD-MM hh:mm:ss");
 
     set_fixed_time("2012-06-15T05:10:00Z"); # 15th in UTC and 14th in Hawaii
-    my $date = RT::Date->new( $current_user );
+    $date = RT::Date->new( $current_user );
     $date->Set(Format => 'unknown', Value => 'tomorrow 10am');
     is($date->ISO, '2012-06-15 20:00:00', "YYYY-DD-MM hh:mm:ss");
 
