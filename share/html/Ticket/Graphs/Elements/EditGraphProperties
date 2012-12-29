@@ -72,7 +72,8 @@
 % foreach my $type ( @link_types ) {
 % my $checked = '';
 % $checked = 'checked="checked"' if grep $type eq $_, @ShowLinks;
-<input type="checkbox" name="ShowLinks" value="<% $type %>" <% $checked |n %> /><% loc($type) %>
+<input type="checkbox" id="ShowLinks" name="ShowLinks" value="<% $type %>" <% $checked |n %> />
+<label for="ShowLinks"><% loc($type) %></label>
 % }
 <br />
 
@@ -98,8 +99,8 @@ while ( my ($group, $list) = (splice @tmp, 0, 2) ) {
 % if ( RT::Link->can('Description' ) ) {
 % my $checked = '';
 % $checked = 'checked="checked"' if $ShowLinkDescriptions;
-<% loc('Show link descriptions') %>:
-<input type="checkbox" name="ShowLinkDescriptions" value="1" <% $checked |n %> />
+<label for="ShowLinkDescriptions"><% loc('Show link descriptions') %>:</label>
+<input type="checkbox" id="ShowLinkDescriptions" name="ShowLinkDescriptions" value="1" <% $checked |n %> />
 <br />
 % }
 
@@ -158,7 +159,8 @@ $class = 'class="hidden"' if $Level != 1 && !@Default;
 % foreach my $prop ( @$list ) {
 % my $checked = '';
 % $checked = 'checked="checked"' if grep $_ eq $prop, @Default;
-<input type="checkbox" class="checkbox" name="Level-<% $Level %>-Properties" value="<% $prop %>" <% $checked |n %> /><% loc($prop) %>
+<input type="checkbox" class="checkbox" id="Level-<% $Level %>-Properties" name="Level-<% $Level %>-Properties" value="<% $prop %>" <% $checked |n %> />
+<label for="Level-<% $Level %>-Properties"><% loc($prop) %></label>
 % }
 </td></tr>
 % }

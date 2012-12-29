@@ -57,8 +57,13 @@
 <tr>
 <td class="label"><&|/l&>Type</&>:</td>
 <td class="value">
-<input type="radio" name="Type" value="Perl" <% $Type eq "Perl" ? 'checked="checked"' : "" |n %>><&|/l&>Perl</&></input><br />
-<input type="radio" name="Type" value="Simple" <% $Type eq "Simple" ? 'checked="checked"' : "" |n %>><&|/l&>Simple</&></input><br />
+
+<input type="radio" name="Type" id="Type-Perl" value="Perl" <% $Type eq "Perl" ? 'checked="checked"' : "" |n %>></input>
+<label for="Type-Perl"><&|/l&>Perl</&></label><br />
+
+<input type="radio" name="Type" id="Type-Simple" value="Simple" <% $Type eq "Simple" ? 'checked="checked"' : "" |n %>>
+<label for="Type-Simple"><&|/l&>Simple</&></label><br />
+
 </td>
 </tr>
 <tr>

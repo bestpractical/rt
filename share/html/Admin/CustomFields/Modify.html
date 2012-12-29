@@ -132,8 +132,8 @@
 
 <tr><td class="label">&nbsp;</td><td>
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
-<input type="checkbox" class="checkbox" name="Enabled" value="1" <% $EnabledChecked |n%> />
-<&|/l&>Enabled (Unchecking this box disables this custom field)</&>
+<input type="checkbox" class="checkbox" id="Enabled" name="Enabled" value="1" <% $EnabledChecked |n %> />
+<label for="Enabled"><&|/l&>Enabled (Unchecking this box disables this custom field)</&></label>
 </td></tr>
 
 % $m->callback(CallbackName => 'EndOfTable', CustomField => $CustomFieldObj, CFvalidations => \@CFvalidations);

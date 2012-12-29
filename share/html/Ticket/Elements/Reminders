@@ -199,12 +199,12 @@ $Index
 <input name="Complete-Reminder-<% $Reminder->id %>" type="hidden" 
 value=<% $Reminder->Status eq $Reminder->Lifecycle->ReminderStatusOnResolve ? 1 : 0 %> />
 % }
-<input type="checkbox" value="1" name="Complete-Reminder-<% $Reminder->id %>" <% $Reminder->Status eq $Reminder->Lifecycle->ReminderStatusOnResolve ? 'checked="checked"' : '' |n %>
+<input type="checkbox" value="1" id="Complete-Reminder-<% $Reminder->id %>" name="Complete-Reminder-<% $Reminder->id %>" <% $Reminder->Status eq $Reminder->Lifecycle->ReminderStatusOnResolve ? 'checked="checked"' : '' |n %>
 % unless ( $Reminder->CurrentUserHasRight('ModifyTicket') ) {
 disabled="disabled" 
 % }
 /></td>
-<td class="collection-as-table"><% $Reminder->Subject %></td>
+<td class="collection-as-table"><label for="Complete-Reminder-<% $Reminder->id %>"><% $Reminder->Subject %></label></td>
 <td class="collection-as-table"><% $overdue ? '<span class="overdue">' : '' |n %><% $dueobj->AgeAsString || loc('Not set') %><% $overdue ? '</span>' : '' |n %></td>
 <td class="collection-as-table"><& /Elements/ShowUser, User => $Reminder->OwnerObj &></td>
 </tr>

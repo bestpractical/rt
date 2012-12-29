@@ -136,8 +136,8 @@
 <td>
 <& /Articles/Article/Elements/EditTopics, %ARGS, Classes => \@Classes, OnlyThisClass => 1 &>
 <br />
-<input type="checkbox" name="ExpandTopics" <% $ARGS{'ExpandTopics'} ? 'checked="checked"' : "" %> />
-<&|/l&>Include subtopics</&> 
+<input type="checkbox" id="ExpandTopics" name="ExpandTopics" <% $ARGS{'ExpandTopics'} ? 'checked="checked"' : "" %> />
+<label for="ExpandTopics"><&|/l&>Include subtopics</&></label>
 </td>
 </tr>
 </table>

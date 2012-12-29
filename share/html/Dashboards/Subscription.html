@@ -92,16 +92,17 @@
 <&|/l&>Frequency</&>:
 </td><td class="value">
 
-<input type="radio" name="Frequency" value="daily" <% $fields{'Frequency'} eq 'daily' ? 'checked="checked"' : "" |n %>>
-    <&|/l&>daily</&>
-</input><br />
+<input type="radio" id="Frequency-daily" name="Frequency" value="daily" <% $fields{'Frequency'} eq 'daily' ? 'checked="checked"' : "" |n %>></input>
+<label for="Frequency-daily"><&|/l&>daily</&></label>
+<br />
 
-<input type="radio" name="Frequency" value="m-f" <% $fields{'Frequency'} eq 'm-f' ? 'checked="checked"' : "" |n %>>
-    <&|/l&>Monday through Friday</&>
-</input><br />
+<input type="radio" id="Frequency-m-f" name="Frequency" value="m-f" <% $fields{'Frequency'} eq 'm-f' ? 'checked="checked"' : "" |n %>></input>
+<label for="Frequency-m-f"><&|/l&>Monday through Friday</&></label>
+<br />
 
-<input type="radio" name="Frequency" value="weekly"<% $fields{'Frequency'} eq 'weekly' ? 'checked="checked"' : "" |n %>>
-<&|/l&>weekly</&></input>, <&|/l&>on</&>
+<input type="radio" id="Frequency-weekly" name="Frequency" value="weekly"<% $fields{'Frequency'} eq 'weekly' ? 'checked="checked"' : "" |n %>></input>
+<label for="Frequency-weekly">
+<&|/l&>weekly</&>, <&|/l&>on</&>
 <select name="Dow">
     <option value="Monday" <% $fields{'Dow'} eq 'Monday' ? 'selected="selected"' : '' |n %>><&|/l&>Monday</&></option>
     <option value="Tuesday" <% $fields{'Dow'} eq 'Tuesday' ? 'selected="selected"' : '' |n %>><&|/l&>Tuesday</&></option>
@@ -118,20 +119,22 @@
 % }
 </select>
 <&|/l&>weeks</&>
+</label>
 <br />
 
-<input type="radio" name="Frequency" value="monthly"<% $fields{'Frequency'} eq 'monthly' ? 'checked="checked"' : "" |n %>>
-<&|/l&>monthly</&></input> , <&|/l&>on day</&>
+<input type="radio" id="Frequency-monthly" name="Frequency" value="monthly"<% $fields{'Frequency'} eq 'monthly' ? 'checked="checked"' : "" |n %>></input>
+<label for="Frequency-monthly">
+<&|/l&>monthly</&>, <&|/l&>on day</&>
 <select name="Dom">
 %   for my $dom (1..31) {
     <option value="<% $dom %>" <% $fields{'Dom'} == $dom ? 'selected="selected"' : '' |n %>><% loc($dom) %></option>
 %   }
 </select>
+</label>
 <br />
 
-<input type="radio" name="Frequency" value="never" <% $fields{'Frequency'} eq 'never' ? 'checked="checked"' : "" |n %>>
-    <&|/l&>never</&>
-</input>
+<input type="radio" id="Frequency-never" name="Frequency" value="never" <% $fields{'Frequency'} eq 'never' ? 'checked="checked"' : "" |n %>></input>
+<label for="Frequency-never"><&|/l&>never</&></label>
 
 </td></tr>
 <tr><td class="label">
