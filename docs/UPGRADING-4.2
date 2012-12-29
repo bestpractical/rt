@@ -5,5 +5,7 @@ UPGRADING FROM RT 4.0.0 and greater
   but an informational notice will be issued on server start telling you about
   the rename.  To avoid this you should set $LogToSTDERR instead.
 
-* the @JSFiles config now only keeps additional js filenames, please remove core
-  js there or you will get duplicated js files in page.
+* The @JSFiles config now only keeps additional JavaScript filenames; if
+  you had copied @JSFiles to add extra entries in your RT_SiteConfig,
+  remove the core JS from the list, or RT will serve those files
+  multiple times.
