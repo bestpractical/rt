@@ -68,7 +68,8 @@
 % }
 
 <form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Groups/index.html">
-<input type="checkbox" class="checkbox" name="FindDisabledGroups" value="1" <% $FindDisabledGroups? 'checked="checked"': '' |n %> /> <&|/l&>Include disabled groups in listing.</&><br />
+<input type="checkbox" class="checkbox" id="FindDisabledGroups" name="FindDisabledGroups" value="1" <% $FindDisabledGroups? 'checked="checked"': '' |n %> />
+<label for="FindDisabledGroups"><&|/l&>Include disabled groups in listing.</&></label><br />
 <&|/l&>Find groups whose</&> <& /Elements/SelectGroups &><br />
 <div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
 </form>
