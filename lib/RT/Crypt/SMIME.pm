@@ -462,7 +462,11 @@ sub Decrypt {
 
     foreach my $address ( @addresses ) {
         my $file = $self->CheckKeyring( Key => $address );
-        next unless $file;
+        unless ( $file ) {
+            my $keyring = RT->Config->Get('SMIME')->{'Keyring'};
+            $RT::Logger->debug("No key found for $address in $keyring directory");
+            next;
+        }
 
         local $ENV{SMIME_PASS} = $self->GetPassphrase( Address => $address );
         local $SIG{CHLD} = 'DEFAULT';
@@ -477,10 +481,14 @@ sub Decrypt {
         safe_run_child { run3( $cmd, \$msg, \$buf, \$res{'stderr'} ) };
         unless ( $? ) {
             $encrypted_to = $address;
+            $RT::Logger->debug("Message encrypted for $encrypted_to");
             last;
         }
 
-        next if index($res{'stderr'}, 'no recipient matches key') >= 0;
+        if ( index($res{'stderr'}, 'no recipient matches key') >= 0 ) {
+            $RT::Logger->debug("Although we have a key for $address, it is not the one that encrypted this message");
+            next;
+        }
 
         $res{'exit_code'} = $?;
         $res{'message'} = "openssl exited with error code ". ($? >> 8)
@@ -494,6 +502,7 @@ sub Decrypt {
         return %res;
     }
     unless ( $encrypted_to ) {
+        $RT::Logger->error("Couldn't find SMIME key for addresses: ". join ', ', @addresses);
         $res{'exit_code'} = 1;
         $res{'status'} = $self->FormatStatus({
             Operation => 'KeyCheck',
