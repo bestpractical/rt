@@ -4,7 +4,7 @@ use DateTime;
 
 use warnings;
 use strict;
-use RT::Test tests => 173;
+use RT::Test tests => undef;
 use RT::User;
 use Test::Warn;
 
@@ -57,7 +57,7 @@ my $current_user;
     is($date->Timezone('user'),
        'Europe/Moscow',
        "in user context still returns user's timezone");
-    
+
     $current_user->UserObj->__Set( Field => 'Timezone', Value => '');
     is_empty($current_user->UserObj->Timezone,
        "successfuly changed user's timezone");
@@ -360,6 +360,34 @@ my $year = (localtime(time))[5] + 1900;
     is($date->ISO, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
 }
 
+{ # 'tomorrow 10am' with TZ
+    $current_user->UserObj->__Set( Field => 'Timezone', Value => 'Europe/Moscow');
+
+    set_fixed_time("2012-06-14T15:10:00Z"); # 14th in UTC and Moscow
+    my $date = RT::Date->new( $current_user );
+    $date->Set(Format => 'unknown', Value => 'tomorrow 10am');
+    is($date->ISO, '2012-06-15 06:00:00', "YYYY-DD-MM hh:mm:ss");
+
+    set_fixed_time("2012-06-13T23:10:00Z"); # 13th in UTC and 14th in Moscow
+    $date = RT::Date->new( $current_user );
+    $date->Set(Format => 'unknown', Value => 'tomorrow 10am');
+    is($date->ISO, '2012-06-15 06:00:00', "YYYY-DD-MM hh:mm:ss");
+
+    $current_user->UserObj->__Set( Field => 'Timezone', Value => 'US/Hawaii');
+
+    set_fixed_time("2012-06-14T20:10:00Z"); # 14th in UTC and Hawaii
+    $date = RT::Date->new( $current_user );
+    $date->Set(Format => 'unknown', Value => 'tomorrow 10am');
+    is($date->ISO, '2012-06-15 20:00:00', "YYYY-DD-MM hh:mm:ss");
+
+    set_fixed_time("2012-06-15T05:10:00Z"); # 15th in UTC and 14th in Hawaii
+    $date = RT::Date->new( $current_user );
+    $date->Set(Format => 'unknown', Value => 'tomorrow 10am');
+    is($date->ISO, '2012-06-15 20:00:00', "YYYY-DD-MM hh:mm:ss");
+
+    restore_time();
+}
+
 { # SetToMidnight
     my $date = RT::Date->new(RT->SystemUser);
 
@@ -554,3 +582,4 @@ my $year = (localtime(time))[5] + 1900;
 #TODO: AsString
 #TODO: RFC2822, W3CDTF with Timezones
 
+done_testing;
