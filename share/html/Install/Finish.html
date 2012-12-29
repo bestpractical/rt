@@ -79,9 +79,11 @@ if ( $Run ) {
     RT->InitClasses();
     RT->InitPlugins();
 
-    system( 'chmod -w ' . RT::Installer->ConfigFile ) &&
+    my $ret = chmod 0440, RT::Installer->ConfigFile;
+    if ( !$ret ) {
         $RT::Logger->error(
                 'failed to make ' . RT::Installer->ConfigFile . ' readonly' );
+    }
     my $root = RT::User->new( RT->SystemUser );
     $root->Load('root');
     my ($ok, $val) = $root->SetPassword( $RT::Installer->{InstallConfig}{Password} );
