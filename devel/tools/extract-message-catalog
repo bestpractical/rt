@@ -201,7 +201,7 @@ sub extract_strings_from_code {
     # Comment-based qw mark: "qw(...)" # loc_qw
     $line = 1;
     pos($_) = 0;
-    while (m/\G(.*?(?:qw\(([^)]+)\)[\}\)\],;]*)?$re_loc_qw_suffix)/smgo) {
+    while (m/\G(.*?(?:qw\(([^)]+)\)\s*[\{\}\)\],; ]*)?$re_loc_qw_suffix)/smgo) {
         my ( $all, $str ) = ( $1, $2 );
         $line += ( $all =~ tr/\n/\n/ );
         unless ( defined $str ) {
