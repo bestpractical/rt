@@ -2294,20 +2294,29 @@ Optional.  The ID of the L<RT::Principal> object to add.
 
 =item User
 
+Optional.  The Name or EmailAddress of an L<RT::User> to use as the
+principal.  If an email address is given, but a user matching it cannot
+be found, a new user will be created.
+
 =item Group
 
-Optional.  The Name of an L<RT::User> or L<RT::Group>, respectively, to use as
-the principal.
+Optional.  The Name of an L<RT::Group> to use as the principal.
 
 =item Type
 
 Required.  One of the valid roles for this record, as returned by L</Roles>.
 
+=item ACL
+
+Optional.  A subroutine reference which will be passed the role type and
+principal being added.  If it returns false, the method will fail with a
+status of "Permission denied".
+
 =back
 
 One, and only one, of I<PrincipalId>, I<User>, or I<Group> is required.
 
-Returns a tuple of (status, message).
+Returns a tuple of (principal object which was added, message).
 
 =cut
 
@@ -2322,25 +2331,69 @@ sub AddRoleMember {
     return (0, $self->loc("No valid Type specified"))
         unless $type and $self->HasRole($type);
 
-    unless ($args{PrincipalId}) {
-        my $object;
+    if ($args{PrincipalId}) {
+        # Check the PrincipalId for loops
+        my $principal = RT::Principal->new( $self->CurrentUser );
+        $principal->Load($args{'PrincipalId'});
+        if ( $principal->id and $principal->IsUser and my $email = $principal->Object->EmailAddress ) {
+            return (0, $self->loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop",
+                                  $email, $self->loc($type)))
+                if RT::EmailParser->IsRTAddress( $email );
+        }
+    } else {
         if ($args{User}) {
-            $object = RT::User->new( $self->CurrentUser );
-            $object->Load(delete $args{User});
+            my $name = delete $args{User};
+            # Sanity check the address
+            return (0, $self->loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop",
+                                  $name, $self->loc($type) ))
+                if RT::EmailParser->IsRTAddress( $name );
+
+            # Create as the SystemUser, not the current user
+            my $user = RT::User->new(RT->SystemUser);
+            my ($pid, $msg) = $user->LoadOrCreateByEmail( $name );
+            unless ($pid) {
+                # If we can't find this watcher, we need to bail.
+                $RT::Logger->error("Could not load or create a user '$name' to add as a watcher: $msg");
+                return (0, $self->loc("Could not find or create user '$name'"));
+            }
+            $args{PrincipalId} = $pid;
         }
         elsif ($args{Group}) {
-            $object = RT::Group->new( $self->CurrentUser );
-            $object->LoadUserDefinedGroup(delete $args{Group});
+            my $name = delete $args{Group};
+            my $group = RT::Group->new( $self->CurrentUser );
+            $group->LoadUserDefinedGroup($name);
+            unless ($group->id) {
+                $RT::Logger->error("Could not load group '$name' to add as a watcher");
+                return (0, $self->loc("Could not find group '$name'"));
+            }
+            $args{PrincipalId} = $group->PrincipalObj->id;
         }
-        $args{PrincipalId} = $object->PrincipalObj->id;
     }
 
-    return (0, $self->loc("No valid PrincipalId"))
-        unless $args{PrincipalId};
+    my $principal = RT::Principal->new( $self->CurrentUser );
+    $principal->Load( $args{PrincipalId} );
 
-    my ($ok, $msg) = $self->RoleGroup($type)->_AddMember(%args);
+    my $acl = delete $args{ACL};
+    return (0, $self->loc("Permission denied"))
+        if $acl and not $acl->($type => $principal);
 
-    if ($ok and not $args{Silent}) {
+    my $group = $self->RoleGroup( $type );
+    return (0, $self->loc("Role group '$type' not found"))
+        unless $group->id;
+
+    return (0, $self->loc('[_1] is already a [_2]',
+                          $principal->Object->Name, $self->loc($type)) )
+            if $group->HasMember( $principal );
+
+    my ( $ok, $msg ) = $group->_AddMember( %args );
+    unless ($ok) {
+        $RT::Logger->error("Failed to add $args{PrincipalId} as a member of group ".$group->Id.": ".$msg);
+
+        return ( 0, $self->loc('Could not make [_1] a [_2]',
+                    $principal->Object->Name, $self->loc($type)) );
+    }
+
+    unless ($args{Silent}) {
         $self->_NewTransaction(
             Type     => 'AddWatcher', # use "watcher" for history's sake
             NewValue => $args{PrincipalId},
@@ -2348,7 +2401,7 @@ sub AddRoleMember {
         );
     }
 
-    return ($ok, $msg);
+    return ($principal, $msg);
 }
 
 =head2 DeleteRoleMember
@@ -2362,7 +2415,12 @@ Takes a set of key-value pairs:
 
 =item PrincipalId
 
-Required.  The ID of the L<RT::Principal> object to remove.
+Optional.  The ID of the L<RT::Principal> object to remove.
+
+=item User
+
+Optional.  The Name or EmailAddress of an L<RT::User> to use as the
+principal
 
 =item Type
 
@@ -2370,7 +2428,9 @@ Required.  One of the valid roles for this record, as returned by L</Roles>.
 
 =back
 
-Returns a tuple of (status, message).
+One, and only one, of I<PrincipalId> or I<User> is required.
+
+Returns a tuple of (principal object that was removed, message).
 
 =cut
 
@@ -2381,19 +2441,49 @@ sub DeleteRoleMember {
     return (0, $self->loc("No valid Type specified"))
         unless $args{Type} and $self->HasRole($args{Type});
 
+    if ($args{User}) {
+        my $user = RT::User->new( $self->CurrentUser );
+        $user->LoadByEmail( $args{User} );
+        $user->Load( $args{User} ) unless $user->id;
+        return (0, $self->loc("Could not load user '$args{User}'") )
+            unless $user->id;
+        $args{PrincipalId} = $user->PrincipalId;
+    }
+
     return (0, $self->loc("No valid PrincipalId"))
         unless $args{PrincipalId};
 
-    my ($ok, $msg) = $self->RoleGroup($args{Type})->_DeleteMember($args{PrincipalId});
+    my $principal = RT::Principal->new( $self->CurrentUser );
+    $principal->Load( $args{PrincipalId} );
 
-    if ($ok and not $args{Silent}) {
+    my $acl = delete $args{ACL};
+    return (0, $self->loc("Permission denied"))
+        if $acl and not $acl->($principal);
+
+    my $group = $self->RoleGroup( $args{Type} );
+    return (0, $self->loc("Role group '$args{Type}' not found"))
+        unless $group->id;
+
+    return ( 0, $self->loc( '[_1] is not a [_2]',
+                            $principal->Object->Name, $self->loc($args{Type}) ) )
+        unless $group->HasMember($principal);
+
+    my ($ok, $msg) = $group->_DeleteMember($args{PrincipalId});
+    unless ($ok) {
+        $RT::Logger->error("Failed to remove $args{PrincipalId} as a member of group ".$group->Id.": ".$msg);
+
+        return ( 0, $self->loc('Could not remove [_1] as a [_2]',
+                    $principal->Object->Name, $self->loc($args{Type})) );
+    }
+
+    unless ($args{Silent}) {
         $self->_NewTransaction(
             Type     => 'DelWatcher', # use "watcher" for history's sake
             OldValue => $args{PrincipalId},
             Field    => $args{Type},
         );
     }
-    return ($ok, $msg);
+    return ($principal, $msg);
 }
 
 sub _ResolveRoles {
