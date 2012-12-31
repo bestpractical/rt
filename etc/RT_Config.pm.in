@@ -127,6 +127,26 @@ C<Set(@Plugins, (qw(Extension::QuickDelete RT::Extension::CommandByMail)));>
 
 Set(@Plugins, ());
 
+=item C<@StaticRoots>
+
+Set C<@StaticRoots> to serve extra paths with a static handler.  The
+contents of each hashref should be the the same arguments as
+L<Plack::Middleware::Static> takes.  These paths will be checked before
+any plugin or core static paths.
+
+Example:
+
+    Set( @StaticRoots,
+        {
+            path => qr{^/static/},
+            root => '/local/path/to/static/parent',
+        },
+    );
+
+=cut
+
+Set( @StaticRoots, () );
+
 =back
 
 
@@ -940,7 +960,7 @@ Define the directory name to be used for images in RT web documents.
 
 =cut
 
-Set($WebImagesURL, RT->Config->Get('WebPath') . "/NoAuth/images/");
+Set($WebImagesURL, RT->Config->Get('WebPath') . "/static/images/");
 
 =item C<$LogoURL>
 

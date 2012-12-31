@@ -58,7 +58,7 @@
 }
 
 #requestor-accordion h3 .ui-icon {
-    background-image: url(<%RT->Config->Get('WebPath')%>/NoAuth/images/jquery_ui/ui-icons_4488cc_256x240.png);
+    background-image: url(<%RT->Config->Get('WebPath')%>/static/images/jquery_ui/ui-icons_4488cc_256x240.png);
     left: 0;
 }
 

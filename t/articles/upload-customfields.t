@@ -8,12 +8,12 @@ use RT;
 my $logo;
 BEGIN {
     $logo =
-      -e $RT::MasonComponentRoot . '/NoAuth/images/bpslogo.png'
+      -e $RT::StaticPath . '/images/bpslogo.png'
       ? 'bpslogo.png'
       : 'bplogo.gif';
 }
 
-use constant ImageFile => $RT::MasonComponentRoot . "/NoAuth/images/$logo";
+use constant ImageFile => $RT::StaticPath . "/images/$logo";
 
 use constant ImageFileContent => do {
     local $/;

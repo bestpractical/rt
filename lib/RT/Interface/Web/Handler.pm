@@ -215,6 +215,7 @@ sub HTML::Mason::Exception::as_rt_error {
 
 use RT::Interface::Web::Handler;
 use CGI::Emulate::PSGI;
+use Plack::Builder;
 use Plack::Request;
 use Plack::Response;
 use Plack::Util;
@@ -230,7 +231,9 @@ sub PSGIApp {
 
     $self->InitSessionDir;
 
-    return sub {
+    my $builder = Plack::Builder->new();
+
+    my $mason = sub {
         my $env = shift;
         RT::ConnectToDatabase() unless RT->InstallMode;
 
@@ -269,7 +272,41 @@ sub PSGIApp {
                                         sub {
                                             $self->CleanupRequest()
                                         });
-};
+    };
+
+
+    for my $static ( RT->Config->Get('StaticRoots') ) {
+        if ( ref $static && ref $static eq 'HASH' ) {
+            if ( ref $static eq 'HASH' ) {
+                $builder->add_middleware(
+                    'Plack::Middleware::Static',
+                    pass_through => 1,
+                    %$static
+                );
+            }
+        }
+        else {
+            $RT::Logger->error(
+                "Invalid config StaticRoots: item can only be a hashref" );
+        }
+    }
+
+    my @system_static;
+    for my $plugin ( @{RT->Plugins} ) {
+        my $dir = $plugin->StaticDir;
+        push @system_static, $dir if -d $dir;
+    }
+    push @system_static, $RT::LocalStaticPath, $RT::StaticPath;
+    for my $root (grep {$_ and -d $_} @system_static) {
+        $builder->add_middleware(
+            'Plack::Middleware::Static',
+            path         => sub { s!^/static/!! },
+            root         => $root,
+            pass_through => 1,
+        );
+    }
+    return $builder->to_app($mason);
+}
 
 sub _psgi_response_cb {
     my $self = shift;
@@ -293,7 +330,6 @@ sub _psgi_response_cb {
                      return $_[0];
                  };
              });
-    }
 }
 
 1;

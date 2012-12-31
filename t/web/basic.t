@@ -76,12 +76,10 @@ my $url = $agent->rt_base_url;
 }
 
 
-TODO: {
-    todo_skip("Need to handle mason trying to compile images",1);
-$agent->get( $url."NoAuth/images/test.png" );
+$agent->get( $url."static/images/test.png" );
 my $file = RT::Test::get_relocatable_file(
   File::Spec->catfile(
-    qw(.. .. share html NoAuth images test.png)
+    qw(.. .. share static images test.png)
   )
 );
 is(
@@ -89,7 +87,6 @@ is(
     -s $file,
     "got a file of the correct size ($file)",
 );
-}
 
 #
 # XXX: hey-ho, we have these tests in t/web/query-builder

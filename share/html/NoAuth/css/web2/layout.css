@@ -50,7 +50,7 @@
 body {
     padding:0;
     margin:0;
-    background: #547CCC url(<%RT->Config->Get('WebPath')%>/NoAuth/css/web2/images/background-gradient.png) top left repeat-x ;
+    background: #547CCC url(<%RT->Config->Get('WebPath')%>/static/css/web2/images/background-gradient.png) top left repeat-x ;
     font-family: arial, helvetica, sans-serif;
     color: #000000;
 }
@@ -106,7 +106,7 @@ div#footer #time {
 
 div#footer #bpscredits {
  text-align: right;
- background: url(<%RT->Config->Get('WebPath')%>/NoAuth/images/bpslogo.png) no-repeat top right;
+ background: url(<%RT->Config->Get('WebPath')%>/static/images/bpslogo.png) no-repeat top right;
  padding-top: 4em;
 }
 

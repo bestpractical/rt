@@ -90,7 +90,7 @@ Takes a name of sub directory and returns its full path, for example:
 
     my $plugin_etc_dir = $plugin->Path('etc');
 
-See also L</ComponentRoot>, L</PoDir> and other shortcut methods.
+See also L</ComponentRoot>, L</StaticDir>, L</PoDir> and other shortcut methods.
 
 =cut
 
@@ -119,6 +119,14 @@ Returns the directory this plugin has installed its L<HTML::Mason> templates int
 =cut
 
 sub ComponentRoot { return $_[0]->Path('html') }
+
+=head2 StaticDir
+
+Returns the directory this plugin has installed its static files into
+
+=cut
+
+sub StaticDir { return $_[0]->Path('static') }
 
 =head2 PoDir
 

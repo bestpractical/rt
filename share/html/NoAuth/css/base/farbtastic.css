@@ -81,18 +81,18 @@
   height: 101px;
 }
 .farbtastic .wheel {
-  background: url(<%RT->Config->Get('WebPath')%>/NoAuth/images/farbtastic/wheel.png) no-repeat;
+  background: url(<%RT->Config->Get('WebPath')%>/static/images/farbtastic/wheel.png) no-repeat;
   width: 195px;
   height: 195px;
 }
 .farbtastic .overlay {
-  background: url(<%RT->Config->Get('WebPath')%>/NoAuth/images/farbtastic/mask.png) no-repeat;
+  background: url(<%RT->Config->Get('WebPath')%>/static/images/farbtastic/mask.png) no-repeat;
 }
 .farbtastic .marker {
   width: 17px;
   height: 17px;
   margin: -8px 0 0 -8px;
   overflow: hidden; 
-  background: url(<%RT->Config->Get('WebPath')%>/NoAuth/images/farbtastic/marker.png) no-repeat;
+  background: url(<%RT->Config->Get('WebPath')%>/static/images/farbtastic/marker.png) no-repeat;
 }
 

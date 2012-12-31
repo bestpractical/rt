@@ -41,5 +41,5 @@
   width: 30px;
   height: 30px;
   text-indent: -9999px;
-  background: url(<% RT->Config->Get("WebPath") %>/NoAuth/css/images/jquery-modal-close.png) no-repeat 0 0;
+  background: url(<% RT->Config->Get("WebPath") %>/static/css/images/jquery-modal-close.png) no-repeat 0 0;
 }

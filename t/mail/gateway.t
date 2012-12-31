@@ -420,7 +420,7 @@ EOF
 diag "Testing preservation of binary attachments";
 {
     # Get a binary blob (Best Practical logo) 
-    my $LOGO_FILE = $RT::MasonComponentRoot .'/NoAuth/images/bpslogo.png';
+    my $LOGO_FILE = $RT::StaticPath .'/images/bpslogo.png';
 
     # Create a mime entity with an attachment
     my $entity = MIME::Entity->build(

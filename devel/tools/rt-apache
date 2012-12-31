@@ -330,12 +330,6 @@ DocumentRoot $RTHOME/share/html
     Allow from all
 </Directory>
 
-Alias $PATH/NoAuth/images/ $RTHOME/share/html/NoAuth/images/
-<Directory $RTHOME/share/html/NoAuth/images>
-    Order allow,deny
-    Allow from all
-</Directory>
-
 <IfDefine !RT3>
 ########## 4.0 mod_perl
 <IfDefine PERL>

@@ -369,7 +369,7 @@ div#login-box input[type=text], div#login-box input[type=password] {
 
 #bpscredits #copyright {
     padding-top: 4em;
-    background: white url(<%RT->Config->Get('WebPath')%>/NoAuth/images/bpslogo.png) no-repeat top right;
+    background: white url(<%RT->Config->Get('WebPath')%>/static/images/bpslogo.png) no-repeat top right;
 }
 
 

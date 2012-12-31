@@ -11,7 +11,7 @@
 ##  The following variables must _all_ be set:
 ##	prefix exec_prefix bindir sbindir sysconfdir mandir libdir
 ##	datadir htmldir localstatedir logfiledir masonstatedir fontdir
-##	sessionstatedir customdir customhtmldir customlexdir
+##	sessionstatedir customdir customhtmldir customlexdir customstaticdir
 ##  (This can be seen in m4/rt_layout.m4.)
 ##
 
@@ -29,6 +29,7 @@
   htmldir:		${datadir}/html
   fontdir:		${datadir}/fonts
   lexdir:		${datadir}/po
+  staticdir:	${datadir}/static
   manualdir:		${prefix}/docs
   localstatedir:	${prefix}/var
   logfiledir:		${localstatedir}/log
@@ -38,6 +39,7 @@
   custometcdir:		${customdir}/etc
   customhtmldir:	${customdir}/html
   customlexdir:		${customdir}/po
+  customstaticdir:	${customdir}/static
   customlibdir:		${customdir}/lib
   customplugindir:  ${customdir}/plugins
 </Layout>
@@ -53,6 +55,7 @@
   datadir:		${prefix}/share
   htmldir:		${datadir}/html
   lexdir:		${datadir}/po
+  staticdir:	${datadir}/static
   fontdir:		${datadir}/fonts
   manualdir:		${prefix}/docs
   localstatedir:	${prefix}/var
@@ -63,6 +66,7 @@
   custometcdir:		${customdir}/etc
   customhtmldir:	${customdir}/html
   customlexdir:		${customdir}/po
+  customstaticdir:	${customdir}/static
   customlibdir:		${customdir}/lib
   customplugindir:  ${customdir}/plugins
 </Layout>
@@ -81,6 +85,7 @@
   plugindir:		${datadir}/plugins
   htmldir:		${datadir}/html
   lexdir:		${datadir}/po
+  staticdir:	${datadir}/static
   fontdir:		${datadir}/fonts
   manualdir:		${datadir}/doc
   localstatedir:	/var
@@ -92,6 +97,7 @@
   custometcdir:		${customdir}/etc
   customhtmldir:	${customdir}/html
   customlexdir:		${customdir}/po
+  customstaticdir:	${customdir}/static
   customlibdir:		${customdir}/lib
   customplugindir:  ${customdir}/plugins
 </Layout>
@@ -108,6 +114,7 @@
   datadir:		${prefix}/share+
   htmldir:		${datadir}/html
   lexdir:		${datadir}/po
+  staticdir:	${datadir}/static
   fontdir:		${datadir}/fonts
   manualdir:		${prefix}/share/doc+
   logfiledir:		/var/log
@@ -118,6 +125,7 @@
   custometcdir:		${customdir}/local/etc
   customhtmldir:	${customdir}/local/html
   customlexdir:		${customdir}/local/po
+  customstaticdir:	${customdir}/static
   customlibdir:		${customdir}/local/lib
   customplugindir:  ${customdir}/local/plugins
 </Layout>
@@ -135,6 +143,7 @@
   htmldir:		${datadir}/html
   fontdir:		${datadir}/fonts
   lexdir:		${datadir}/po
+  staticdir:	${datadir}/static
   manualdir:		${datadir}/doc
   localstatedir:	${prefix}/var
   logfiledir:		${localstatedir}/log
@@ -144,6 +153,7 @@
   custometcdir:		${customdir}/etc
   customhtmldir:	${customdir}/html
   customlexdir:		${customdir}/po
+  customstaticdir:	${customdir}/static
   customlibdir:		${customdir}/lib
   customplugindir:  ${customdir}/plugins
 </Layout>
@@ -161,6 +171,7 @@
   htmldir:		${datadir}/html
   fontdir:		${datadir}/fonts
   lexdir:		${datadir}/po
+  staticdir:	${datadir}/static
   manualdir:		${datadir}/doc
   plugindir:		${datadir}/plugins
   localstatedir:	/var
@@ -171,6 +182,7 @@
   custometcdir:		${customdir}/etc
   customhtmldir:	${customdir}/html
   customlexdir:		${customdir}/po
+  customstaticdir:	${customdir}/static
   customlibdir:		${customdir}/lib
   customplugindir:  ${customdir}/plugins
 </Layout>
@@ -189,6 +201,7 @@
   htmldir:		${datadir}/html
   fontdir:		${datadir}/fonts
   lexdir:		${datadir}/po
+  staticdir:	${datadir}/static
   manualdir:	docs
   localstatedir:	var
   logfiledir:		${localstatedir}/log
@@ -198,6 +211,7 @@
   custometcdir:		${customdir}/etc
   customhtmldir:	${customdir}/html
   customlexdir:		${customdir}/po
+  customstaticdir:	${customdir}/static
   customlibdir:		${customdir}/lib
   customplugindir:  ${customdir}/plugins
 </Layout>
@@ -214,6 +228,7 @@
   htmldir:		${datadir}/html
   fontdir:		${datadir}/fonts
   lexdir:		${datadir}/po
+  staticdir:	${datadir}/static
   manualdir:	docs/rt
   localstatedir:	var/rt/
   logfiledir:		${localstatedir}/log
@@ -223,6 +238,7 @@
   custometcdir:		${customdir}/etc
   customhtmldir:	${customdir}/html
   customlexdir:		${customdir}/po
+  customstaticdir:	${customdir}/static
   customlibdir:		${customdir}/lib
   customplugindir:  ${customdir}/plugins
 </Layout>

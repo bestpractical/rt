@@ -136,7 +136,7 @@ $m->content_contains("Create a new ticket", 'ticket create page');
 $m->form_name('TicketCreate');
 $m->field('Subject', 'Attachments test');
 
-my $logofile = "$RT::MasonComponentRoot/NoAuth/images/bpslogo.png";
+my $logofile = "$RT::StaticPath/images/bpslogo.png";
 open LOGO, "<", $logofile or die "Can't open logo file: $!";
 binmode LOGO;
 my $logo_contents = do {local $/; <LOGO>};
