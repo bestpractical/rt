@@ -131,7 +131,10 @@ sub Load  {
     }
 
     if (@_) {
-        $RT::Logger->warning("Passing in Template as second argument is deprecated");
+        RT->Deprecated(
+            Arguments => "Template as second argument",
+            Remove    => "4.4",
+        );
         $self->{'Template'} = shift;
     }
 
@@ -180,13 +183,15 @@ sub LoadAction  {
 
 =head2 TemplateObj
 
-Return this action's template object
+Return this action's template object.  Deprecated.
 
 =cut
 
 sub TemplateObj {
     my $self = shift;
-    Carp::carp(__PACKAGE__."::TemplateObj is deprecated");
+    RT->Deprecated(
+        Remove => "4.4",
+    );
 
     return undef unless $self->{Template};
     if ( !$self->{'TemplateObj'} ) {

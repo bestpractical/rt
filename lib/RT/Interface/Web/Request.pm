@@ -65,8 +65,6 @@ sub new {
 
 =head2 callback
 
-Method replaces deprecated component C<Element/Callback>.
-
 Takes hash with optional C<CallbackPage>, C<CallbackName>
 and C<CallbackOnce> arguments, other arguments are passed
 throught to callback components.

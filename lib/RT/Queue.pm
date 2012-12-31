@@ -731,11 +731,10 @@ them, see L</ManageableRoleGroupTypes>.
 =cut
 
 sub AllRoleGroupTypes {
-    RT->Logger->warn(<<"    .");
-RT::Queue->AllRoleGroupTypes is DEPRECATED and will be removed in a future release.
-
-Please use RT::Queue->Roles instead at @{[join '/', caller]}.
-    .
+    RT->Deprecated(
+        Remove => "4.4",
+        Instead => "RT::Queue->Roles",
+    );
     shift->Roles;
 }
 
@@ -748,11 +747,10 @@ Returns whether the passed-in type is a role group type.
 =cut
 
 sub IsRoleGroupType {
-    RT->Logger->warn(<<"    .");
-RT::Queue->IsRoleGroupType is DEPRECATED and will be removed in a future release.
-
-Please use RT::Queue->HasRole instead at @{[join '/', caller]}.
-    .
+    RT->Deprecated(
+        Remove => "4.4",
+        Instead => "RT::Queue->HasRole",
+    );
     shift->HasRole(@_);
 }
 

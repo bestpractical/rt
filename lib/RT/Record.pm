@@ -156,6 +156,10 @@ DEPRECATED. Stays here for backwards. Returns localized L</RecordType>.
 
 sub ObjectTypeStr {
     my $self = shift;
+    RT->Deprecated(
+        Remove => "4.4",
+        Instead => "RecordType",
+    );
     return $self->loc( $self->RecordType( @_ ) );
 }
 
@@ -436,15 +440,20 @@ sub CreatedObj {
 # B<DEPRECATED> and will be removed in 4.4
 sub AgeAsString {
     my $self = shift;
-    $RT::Logger->warning("RT::Record->AgeAsString is deprecated and will be removed in RT 4.4; use ->CreatedObj->AgeAsString instead");
+    RT->Deprecated(
+        Remove => "4.4",
+        Instead => "->CreatedObj->AgeAsString",
+    );
     return ( $self->CreatedObj->AgeAsString() );
 }
 
 # B<DEPRECATED> and will be removed in 4.4
 sub LongSinceUpdateAsString {
     my $self = shift;
-    $RT::Logger->warning("RT::Record->LongSinceUpdateAsString is deprecated and will be removed in RT 4.4; use ->LastUpdatedObj->AgeAsString instead");
-
+    RT->Deprecated(
+        Remove => "4.4",
+        Instead => "->LastUpdatedObj->AgeAsString",
+    );
     if ( $self->LastUpdated ) {
         return ( $self->LastUpdatedObj->AgeAsString() );
     } else {

@@ -350,11 +350,10 @@ sub LoadTicketRoleGroup {
         Type => undef,
         @_,
     );
-    RT->Logger->warn(<<"    .");
-RT::Group->LoadTicketRoleGroup is DEPRECATED and will be removed in a future release.
-
-Please use RT::Group->LoadRoleGroup or RT::Ticket->RoleGroup instead at @{[join '/', caller]}.
-    .
+    RT->Deprecated(
+        Instead => "RT::Group->LoadRoleGroup or RT::Ticket->RoleGroup",
+        Remove => "4.4",
+    );
     $self->LoadByCols(
         Domain   => 'RT::Ticket-Role',
         Instance => $args{'Ticket'},
@@ -377,11 +376,10 @@ sub LoadQueueRoleGroup {
         Type => undef,
         @_,
     );
-    RT->Logger->warn(<<"    .");
-RT::Group->LoadQueueRoleGroup is DEPRECATED and will be removed in a future release.
-
-Please use RT::Group->LoadRoleGroup or RT::Queue->RoleGroup instead at @{[join '/', caller]}.
-    .
+    RT->Deprecated(
+        Instead => "RT::Group->LoadRoleGroup or RT::Queue->RoleGroup",
+        Remove => "4.4",
+    );
     $self->LoadByCols(
         Domain   => 'RT::Queue-Role',
         Instance => $args{'Queue'},
@@ -400,11 +398,10 @@ Deprecated in favor of L</LoadRoleGroup> or L<RT::Record/RoleGroup>.
 sub LoadSystemRoleGroup {
     my $self = shift;
     my $type = shift;
-    RT->Logger->warn(<<"    .");
-RT::Group->LoadSystemRoleGroup is DEPRECATED and will be removed in a future release.
-
-Please use RT::Group->LoadRoleGroup or RT::System->RoleGroup instead at @{[join '/', caller]}.
-    .
+    RT->Deprecated(
+        Instead => "RT::Group->LoadRoleGroup or RT::System->RoleGroup",
+        Remove => "4.4",
+    );
     $self->LoadByCols(
         Domain => 'RT::System-Role',
         Type => $type
