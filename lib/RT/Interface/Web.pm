@@ -266,6 +266,7 @@ sub HandleRequest {
         # make user info up to date
         $HTML::Mason::Commands::session{'CurrentUser'}
           ->Load( $HTML::Mason::Commands::session{'CurrentUser'}->id );
+        undef $HTML::Mason::Commands::session{'CurrentUser'}->{'LangHandle'};
     }
     else {
         $HTML::Mason::Commands::session{'CurrentUser'} = RT::CurrentUser->new();
