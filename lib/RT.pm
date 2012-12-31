@@ -803,6 +803,73 @@ sub StyleSheets {
     return RT->Config->Get('CSSFiles');
 }
 
+=head2 Deprecated
+
+Notes that a particular call path is deprecated, and will be removed in
+a particular release.  Puts a warning in the logs indicating such, along
+with a stack trace.
+
+Optional arguments include:
+
+=over
+
+=item Remove
+
+The release which is slated to remove the method or component
+
+=item Instead
+
+A suggestion of what to use in place of the deprecated API
+
+=item Arguments
+
+Used if not the entire method is being removed, merely a manner of
+calling it; names the arguments which are deprecated.
+
+=back
+
+=cut
+
+sub Deprecated {
+    my $class = shift;
+    my %args = (
+        Arguments => undef,
+        Remove => undef,
+        Instead => undef,
+        @_,
+    );
+
+    my ($function) = (caller(1))[3];
+    my $stack;
+    if ($function eq "HTML::Mason::Commands::__ANON__") {
+        eval { HTML::Mason::Exception->throw() };
+        my $error = $@;
+        my $info = $error->analyze_error;
+        $function = "Mason component ".$info->{frames}[0]->filename;
+        $stack = join("\n", map { sprintf("\t[%s:%d]", $_->filename, $_->line) } @{$info->{frames}});
+    } else {
+        $function = "function $function";
+        $stack = Carp::longmess();
+    }
+    $stack =~ s/^.*?\n//; # Strip off call to ->Deprecated
+
+    my $msg;
+    if ($args{Arguments}) {
+        $msg = "Calling $function with $args{Arguments} is deprecated";
+    } else {
+        $msg = "The $function is deprecated";
+    }
+    $msg .= ", and will be removed in RT $args{Remove}"
+        if $args{Remove};
+    $msg .= ".";
+
+    $msg .= "  You should use $args{Instead} instead."
+        if $args{Instead};
+
+    $msg .= "  Call stack:\n$stack";
+    RT->Logger->warn($msg);
+}
+
 =head1 BUGS
 
 Please report them to rt-bugs@bestpractical.com, if you know what's
