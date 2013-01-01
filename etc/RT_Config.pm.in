@@ -223,6 +223,15 @@ database.
 
 Set($DatabaseRequireSSL, undef);
 
+=item <$DatabaseAdmin>
+
+The name of the database administrator to connect to the database as
+during upgrades.
+
+=cut
+
+Set($DatabaseAdmin, "@DB_DBA@");
+
 =back
 
 

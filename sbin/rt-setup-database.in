@@ -73,9 +73,7 @@ use Getopt::Long;
 
 $| = 1; # unbuffer all output.
 
-my %args = (
-    dba => '@DB_DBA@',
-);
+my %args;
 GetOptions(
     \%args,
     'action=s',
@@ -169,7 +167,7 @@ if ( $db_type eq 'SQLite' && !File::Spec->file_name_is_absolute($db_name) ) {
     RT->Config->Set( DatabaseName => $db_name );
 }
 
-my $dba_user = $args{'dba'} || $ENV{'RT_DBA_USER'} || $db_user || '';
+my $dba_user = $args{'dba'} || $ENV{'RT_DBA_USER'} || RT->Config->Get('DatabaseAdmin') || '';
 my $dba_pass = $args{'dba-password'} || $ENV{'RT_DBA_PASSWORD'};
 
 if ($args{'skip-create'}) {
