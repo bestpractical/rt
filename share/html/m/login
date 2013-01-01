@@ -76,19 +76,8 @@
 
 <& /Elements/Submit, Label => loc('Login')&>
 
-% foreach my $key (keys %ARGS) {
-%  if ( $key !~ /^(?:user|pass|actions)$/ ) {
-% 	if (ref($ARGS{$key}) =~ /ARRAY/) {
-% 		foreach my $val (@{$ARGS{$key}}) {
-<input type="hidden" class="hidden" name="<%$key %>" value="<% $val %>" />
-% 		}
-% 	}
-%	else {
-<input type="hidden" class="hidden" name="<% $key %>" value="<% $ARGS{$key} %>" />
-% 	}
-%  }
-% }
-</form>
+<input type="hidden" name="next" value="<% $next %>" />
+<input type="hidden" name="mobile" value="1" />
 
 <script type="text/javascript">
 if (window.location.hash) {
@@ -109,4 +98,5 @@ $user => ""
 $pass => undef
 $goto => undef
 $actions => undef
+$next => ""
 </%ARGS>
