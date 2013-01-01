@@ -91,7 +91,7 @@ if (window.location.hash) {
 </&>
 </div><!-- #login-box -->
 </div><!-- #login-body -->
-<& _elements/full_site_link &>
+<& /m/_elements/full_site_link &>
 </&>
 <%ARGS>
 $user => ""

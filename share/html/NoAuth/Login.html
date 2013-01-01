@@ -51,7 +51,7 @@ $ARGS{'actions'} = [$msg] if not $good and $msg;
 </%init>
 
 % if ( RT::Interface::Web::MobileClient() || $ARGS{mobile} ) {
-<& /m/login, %ARGS &>
+<& /m/_elements/login, %ARGS &>
 % } else {
 <& /Elements/Login, %ARGS &>
 % }
