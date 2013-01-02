@@ -45,54 +45,26 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%INIT>
-
-my $req_uri;
-
-if (UNIVERSAL::can($r, 'uri') and $r->uri =~ m{.*/m/(.*)}) {
-    $req_uri = '/m/'.$1;
-}
-
-my $default_path = RT->Config->Get('WebPath') ."/m/";
-
-my $form_action = defined $goto             ? $goto
-                : defined $req_uri          ? $req_uri
-                :                             $default_path
-                ;
-
-# sanitize $form_action
-my $uri = URI->new($form_action);
-
-# You get undef scheme with a relative uri like "/Search/Build.html"
-unless (!defined($uri->scheme) || $uri->scheme eq 'http' || $uri->scheme eq 'https') {
-    $form_action = $default_path;
-}
-
-# Make sure we're logging in to the same domain
-# You can get an undef authority with a relative uri like "index.html"
-my $uri_base_url = URI->new(RT->Config->Get('WebURL')."m/");
-unless (!defined($uri->authority) || $uri->authority eq $uri_base_url->authority) {
-    $form_action = $default_path;
-}
-</%INIT>
 <&| /m/_elements/wrapper, show_home_button => 0 &>
 <style>
 <& /m/_elements/raw_style &>
 </style>
 <h1><&|/l, RT->Config->Get('rtname') &>RT for [_1]</&></h1>
 <div id="body" class="login-body">
-% if ($Error) {
-<&| "/Widgets/TitleBox", title => loc('Error'), hideable => 0, class => 'error'  &>
-<% $Error %>
-</&>
-% }
 
+<& /Elements/ListActions,
+    title       => loc('Error'),
+    titlebox    => { class => 'error', hideable => 0 },
+    actions     => $actions,
+&>
 
 <div id="login-box">
 <&| /Widgets/TitleBox, title => loc('Login'), hideable => 0 &>
 
+<& /Elements/LoginRedirectWarning, %ARGS &>
+
 % unless (RT->Config->Get('WebExternalAuth') and !RT->Config->Get('WebFallbackToInternalAuth')) {
-<form id="login" name="login" method="post" action="<% $form_action %>">
+<form id="login" name="login" method="post" action="<% RT->Config->Get("WebPath") %>/NoAuth/Login.html">
 
 <div class="entry">
     <span class="label"><&|/l&>Username</&>:</span><span class="value"><input type="text" name="user" value="<%$user%>" id="user" /></span>
@@ -104,28 +76,27 @@ unless (!defined($uri->authority) || $uri->authority eq $uri_base_url->authority
 
 <& /Elements/Submit, Label => loc('Login')&>
 
-% foreach my $key (keys %ARGS) {
-%  if (($key ne 'user') and ($key ne 'pass')) {
-% 	if (ref($ARGS{$key}) =~ /ARRAY/) {
-% 		foreach my $val (@{$ARGS{$key}}) {
-<input type="hidden" class="hidden" name="<%$key %>" value="<% $val %>" />
-% 		}
-% 	}
-%	else {
-<input type="hidden" class="hidden" name="<% $key %>" value="<% $ARGS{$key} %>" />
-% 	}
-%  }
-% }
-</form>
+<input type="hidden" name="next" value="<% $next %>" />
+<input type="hidden" name="mobile" value="1" />
+
+<script type="text/javascript">
+if (window.location.hash) {
+    var form = (document.getElementsByName("login"))[0];
+    if (form) {
+        form.action = form.action + '#' + window.location.hash.replace(/^#/, '');
+    }
+}
+</script>
 % }
 </&>
 </div><!-- #login-box -->
 </div><!-- #login-body -->
-<& _elements/full_site_link &>
+<& /m/_elements/full_site_link &>
 </&>
 <%ARGS>
 $user => ""
 $pass => undef
 $goto => undef
-$Error => undef
+$actions => undef
+$next => ""
 </%ARGS>
