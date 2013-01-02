@@ -1,0 +1,43 @@
+use strict;
+use warnings;
+
+our @Initial = (sub {
+    my $users = RT::Users->new(RT->SystemUser);
+    $users->FindAllRows;
+
+    my $attributes = $users->Join(
+        ALIAS1  => "main",
+        FIELD1  => "id",
+        TABLE2  => RT::Attributes->Table,
+        FIELD2  => "ObjectId",
+    );
+    $users->Limit(
+        ALIAS   => $attributes,
+        FIELD   => "ObjectType",
+        VALUE   => "RT::User",
+    );
+    $users->Limit(
+        ALIAS   => $attributes,
+        FIELD   => "Name",
+        VALUE   => RT::User::_PrefName( RT->System ),
+    );
+
+    # Iterate all users (including disabled), with config preferences set.
+    # Avoids running a query for every user in the system by only selecting
+    # those known to have preferences.
+    while (my $user = $users->Next) {
+        RT->Logger->debug(sprintf "User #%d has config preferences", $user->id);
+
+        my $config = $user->Preferences( RT->System )
+            or next;
+        next unless exists $config->{DeferTransactionLoading};
+
+        $config->{ShowHistory} = delete $config->{DeferTransactionLoading}
+            ? "click" : "delay";
+
+        $user->SetPreferences( RT->System, $config );
+        RT->Logger->debug(sprintf "Updated config Preferences for user %s (#%d)", $user->Name, $user->id);
+    }
+});
+
+1;
