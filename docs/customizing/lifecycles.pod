@@ -79,7 +79,7 @@ approvals queue, and should not be changed or used by other queues. Do
 not modify the approvals lifecycle unless you fully understand how RT
 approvals work.
 
-=for html <img alt="Lifecycle choices" src="images/lifecycle-choices.png">
+=for html <img alt="Lifecycle choices" src="../images/lifecycle-choices.png">
 
 =for :text [Lifecycle choices F<docs/images/lifecycle-choices.png>]
 
@@ -193,7 +193,7 @@ server), they can be assigned in the web UI to groups, queues, and users.
 The rights show up on the rights pages in a Status tab alongside the
 standard RT rights tabs.
 
-=for html <img alt="Lifecycle group rights" src="images/global-lifecycle-group-rights.png">
+=for html <img alt="Lifecycle group rights" src="../images/global-lifecycle-group-rights.png">
 
 =for :text [Lifecycle group rights F<docs/images/global-lifecycle-group-rights.png>]
 
@@ -281,7 +281,7 @@ in their Actions menu if a ticket has a pending status. The
 L</"Full Configuration"> at the end shows other action entries that
 make the Decline option available in more cases.
 
-=for html <img alt="Action menu decline" src="images/action-decline.png">
+=for html <img alt="Action menu decline" src="../images/action-decline.png">
 
 =for :text [Action menu decline F<docs/images/action-decline.png>]
 
@@ -441,7 +441,7 @@ to experiment.
 
 Here is an example history of a ticket following this lifecycle:
 
-=for html <img alt="Lifecycle history" src="images/order-history-example.png">
+=for html <img alt="Lifecycle history" src="../images/order-history-example.png">
 
 =for :text [Lifecycle history F<docs/images/order-history-example.png>]
 
