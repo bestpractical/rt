@@ -889,11 +889,8 @@ sub Update {
                 next if $name eq $value || $name eq ($value || 0);
             }
 
-            my $current = $self->$attribute();
-            # RT::Queue->Lifecycle returns a Lifecycle object instead of name
-            $current = eval { $current->Name } if ref $current;
-            next if $value eq $current;
-            next if ( $value || 0 ) eq $current;
+            next if $value eq $self->$attribute();
+            next if ($value || 0) eq $self->$attribute();
         };
 
         $new_values{$attribute} = $value;

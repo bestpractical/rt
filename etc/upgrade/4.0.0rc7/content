@@ -12,7 +12,7 @@ our @Initial = (
             return 1;
         }
 
-        return 1 if $queue->Lifecycle->Name eq 'approvals';
+        return 1 if $queue->Lifecycle eq 'approvals';
 
         my ($status, $msg) = $queue->SetLifecycle('approvals');
         unless ( $status ) {

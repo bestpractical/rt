@@ -87,7 +87,7 @@ my $COLUMN_MAP = {
     Lifecycle => {
         title => 'Lifecycle',
         attribute => 'Lifecycle',
-        value => sub { return $_[0]->Lifecycle->Name },
+        value => sub { return $_[0]->Lifecycle },
     },
     ScripStage => {
         title => 'Stage', # loc

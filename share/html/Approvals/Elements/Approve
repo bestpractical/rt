@@ -106,5 +106,5 @@ $ticket => undef
 </%ARGS>
 <%INIT>
 my $status = $ticket->Status;
-my $inactive = $ticket->Lifecycle->IsInactive( $status );
+my $inactive = $ticket->LifecycleObj->IsInactive( $status );
 </%INIT>

@@ -17,7 +17,7 @@ my $tstatus = sub {
 
 diag "check basic API";
 {
-    my $schema = $general->Lifecycle;
+    my $schema = $general->LifecycleObj;
     isa_ok($schema, 'RT::Lifecycle');
     is $schema->Name, 'default', "it's a default schema";
     is_deeply [$schema->Valid],
@@ -78,7 +78,7 @@ diag "check status input on create";
 
     my $valid = 1;
     foreach ( @form_values ) {
-        next if $general->Lifecycle->IsValid($_);
+        next if $general->LifecycleObj->IsValid($_);
         $valid = 0;
         diag("$_ doesn't appear to be a valid status, but it was in the form");
     }

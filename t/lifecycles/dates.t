@@ -23,11 +23,11 @@ my $tstatus = sub {
 
 diag "check basic API";
 {
-    my $schema = $general->Lifecycle;
+    my $schema = $general->LifecycleObj;
     isa_ok($schema, 'RT::Lifecycle');
     is $schema->Name, 'default', "it's a default schema";
 
-    $schema = $delivery->Lifecycle;
+    $schema = $delivery->LifecycleObj;
     isa_ok($schema, 'RT::Lifecycle');
     is $schema->Name, 'delivery', "it's a delivery schema";
 }

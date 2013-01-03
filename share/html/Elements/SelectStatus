@@ -71,7 +71,7 @@ if ( @Statuses ) {
     $statuses_by_lifecycle{''} = \@Statuses;
 } else {
     if ( $Object ) {
-        my $lifecycle = $Object->Lifecycle;
+        my $lifecycle = $Object->LifecycleObj;
         if ($Object->_Accessible("Status", "read")) {
             my $current = $Object->Status;
             my @status;

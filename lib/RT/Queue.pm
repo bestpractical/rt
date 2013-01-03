@@ -241,14 +241,13 @@ sub RightCategories {
 }
 
 
-sub Lifecycle {
+sub LifecycleObj {
     my $self = shift;
     unless (ref $self && $self->id) {
         return RT::Lifecycle->Load( Type => 'ticket')
     }
 
-    my $name = $self->_Value( Lifecycle => @_ );
-    $name ||= 'default';
+    my $name = $self->Lifecycle || 'default';
 
     my $res = RT::Lifecycle->Load( Name => $name );
     unless ( $res ) {
@@ -291,7 +290,7 @@ Returns an array of all ActiveStatuses for this queue
 
 sub ActiveStatusArray {
     my $self = shift;
-    return $self->Lifecycle->Valid('initial', 'active');
+    return $self->LifecycleObj->Valid('initial', 'active');
 }
 
 =head2 InactiveStatusArray
@@ -302,7 +301,7 @@ Returns an array of all InactiveStatuses for this queue
 
 sub InactiveStatusArray {
     my $self = shift;
-    return $self->Lifecycle->Inactive;
+    return $self->LifecycleObj->Inactive;
 }
 
 =head2 StatusArray
@@ -313,7 +312,7 @@ Returns an array of all statuses for this queue
 
 sub StatusArray {
     my $self = shift;
-    return $self->Lifecycle->Valid( @_ );
+    return $self->LifecycleObj->Valid( @_ );
 }
 
 =head2 IsValidStatus value
@@ -324,7 +323,7 @@ Returns true if value is a valid status.  Otherwise, returns 0.
 
 sub IsValidStatus {
     my $self  = shift;
-    return $self->Lifecycle->IsValid( shift );
+    return $self->LifecycleObj->IsValid( shift );
 }
 
 =head2 IsActiveStatus value
@@ -335,7 +334,7 @@ Returns true if value is a Active status.  Otherwise, returns 0
 
 sub IsActiveStatus {
     my $self  = shift;
-    return $self->Lifecycle->IsValid( shift, 'initial', 'active');
+    return $self->LifecycleObj->IsValid( shift, 'initial', 'active');
 }
 
 
@@ -349,7 +348,7 @@ Returns true if value is a Inactive status.  Otherwise, returns 0
 
 sub IsInactiveStatus {
     my $self  = shift;
-    return $self->Lifecycle->IsInactive( shift );
+    return $self->LifecycleObj->IsInactive( shift );
 }
 
 
