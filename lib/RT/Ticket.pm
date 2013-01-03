@@ -1163,28 +1163,28 @@ sub SetQueue {
             unless $new_status;
     }
 
-    if ( $new_status ) {
-        my $clone = RT::Ticket->new( RT->SystemUser );
-        $clone->Load( $self->Id );
-        unless ( $clone->Id ) {
-            return ( 0, $self->loc("Couldn't load copy of ticket #[_1].", $self->Id) );
-        }
-
-        my ($val, $msg) = $clone->_SetStatus(
-            Lifecycle         => $old_lifecycle,
-            NewLifecycle      => $new_lifecycle,
-            Status            => $new_status,
-            RecordTransaction => 0,
-        );
-        $RT::Logger->error( 'Status change failed on queue change: '. $msg )
-            unless $val;
-    }
-
     my ($status, $msg) = $self->_Set( Field => 'Queue', Value => $NewQueueObj->Id() );
 
     if ( $status ) {
         # Clear the queue object cache;
         $self->{_queue_obj} = undef;
+
+        if ( $new_status ) {
+            my $clone = RT::Ticket->new( RT->SystemUser );
+            $clone->Load( $self->Id );
+            unless ( $clone->Id ) {
+                return ( 0, $self->loc("Couldn't load copy of ticket #[_1].", $self->Id) );
+            }
+
+            my ($val, $msg) = $clone->_SetStatus(
+                Lifecycle         => $old_lifecycle,
+                NewLifecycle      => $new_lifecycle,
+                Status            => $new_status,
+                RecordTransaction => 0,
+            );
+            RT->Logger->error("Status change failed on queue change: $msg")
+                unless $val;
+        }
 
         # Untake the ticket if we have no permissions in the new queue
         unless ( $self->OwnerObj->HasRight( Right => 'OwnTicket', Object => $NewQueueObj ) ) {
@@ -1203,6 +1203,11 @@ sub SetQueue {
             my ($status, $msg) = $reminder->_Set( Field => 'Queue', Value => $NewQueueObj->Id(), RecordTransaction => 0 );
             $RT::Logger->error('Queue change failed for reminder #' . $reminder->Id . ': ' . $msg) unless $status;
         }
+
+        # Pick up any changes made by the clones above
+        $self->Load( $self->id );
+        RT->Logger->error("Unable to reload ticket #" . $self->id)
+            unless $self->id;
     }
 
     return ($status, $msg);
@@ -2401,11 +2406,6 @@ sub ValidateStatus {
 
     #Make sure the status passed in is valid
     return 1 if $self->QueueObj->IsValidStatus($status);
-
-    my $i = 0;
-    while ( my $caller = (caller($i++))[3] ) {
-        return 1 if $caller eq 'RT::Ticket::SetQueue';
-    }
 
     return 0;
 }
