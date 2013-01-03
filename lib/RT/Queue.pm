@@ -69,8 +69,12 @@ use strict;
 use warnings;
 use base 'RT::Record';
 
+use Role::Basic 'with';
+with "RT::Role::Record::Lifecycle";
+
 sub Table {'Queues'}
 
+sub LifecycleType { "ticket" }
 
 
 use RT::Groups;
@@ -155,7 +159,6 @@ $RT::ACE::OBJECT_TYPES{'RT::Queue'} = 1;
 
 __PACKAGE__->AddRights(%$RIGHTS);
 __PACKAGE__->AddRightCategories(%$RIGHT_CATEGORIES);
-require RT::Lifecycle;
 
 =head2 AddRights C<RIGHT>, C<DESCRIPTION> [, ...]
 
@@ -239,122 +242,6 @@ values are the category (General, Staff, Admin) the right falls into.
 sub RightCategories {
     return $RIGHT_CATEGORIES;
 }
-
-
-sub LifecycleObj {
-    my $self = shift;
-    unless (ref $self && $self->id) {
-        return RT::Lifecycle->Load( Type => 'ticket')
-    }
-
-    my $name = $self->Lifecycle || 'default';
-
-    my $res = RT::Lifecycle->Load( Name => $name );
-    unless ( $res ) {
-        $RT::Logger->error("Lifecycle '$name' for queue '".$self->Name."' doesn't exist");
-        return RT::Lifecycle->Load( Name => 'default');
-    }
-    return $res;
-}
-
-sub SetLifecycle {
-    my $self = shift;
-    my $value = shift || 'default';
-
-    return ( 0, $self->loc( '[_1] is not a valid lifecycle', $value ) )
-      unless $self->ValidateLifecycle($value);
-
-    return $self->_Set( Field => 'Lifecycle', Value => $value, @_ );
-}
-
-=head2 ValidateLifecycle NAME
-
-Takes a lifecycle name. Returns true if it's an ok name and such
-lifecycle is configured. Returns undef otherwise.
-
-=cut
-
-sub ValidateLifecycle {
-    my $self = shift;
-    my $value = shift;
-    return undef unless RT::Lifecycle->Load( Name => $value );
-    return 1;
-}
-
-
-=head2 ActiveStatusArray
-
-Returns an array of all ActiveStatuses for this queue
-
-=cut
-
-sub ActiveStatusArray {
-    my $self = shift;
-    return $self->LifecycleObj->Valid('initial', 'active');
-}
-
-=head2 InactiveStatusArray
-
-Returns an array of all InactiveStatuses for this queue
-
-=cut
-
-sub InactiveStatusArray {
-    my $self = shift;
-    return $self->LifecycleObj->Inactive;
-}
-
-=head2 StatusArray
-
-Returns an array of all statuses for this queue
-
-=cut
-
-sub StatusArray {
-    my $self = shift;
-    return $self->LifecycleObj->Valid( @_ );
-}
-
-=head2 IsValidStatus value
-
-Returns true if value is a valid status.  Otherwise, returns 0.
-
-=cut
-
-sub IsValidStatus {
-    my $self  = shift;
-    return $self->LifecycleObj->IsValid( shift );
-}
-
-=head2 IsActiveStatus value
-
-Returns true if value is a Active status.  Otherwise, returns 0
-
-=cut
-
-sub IsActiveStatus {
-    my $self  = shift;
-    return $self->LifecycleObj->IsValid( shift, 'initial', 'active');
-}
-
-
-
-=head2 IsInactiveStatus value
-
-Returns true if value is a Inactive status.  Otherwise, returns 0
-
-
-=cut
-
-sub IsInactiveStatus {
-    my $self  = shift;
-    return $self->LifecycleObj->IsInactive( shift );
-}
-
-
-
-
-
 
 =head2 Create(ARGS)
 

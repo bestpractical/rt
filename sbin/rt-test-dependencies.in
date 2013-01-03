@@ -228,6 +228,7 @@ Regexp::Common::net::CIDR
 Regexp::IPv6
 Symbol::Global::Name
 HTML::Entities
+Role::Basic 0.12
 .
 
 $deps{'MASON'} = [ text_to_hash( << '.') ];
