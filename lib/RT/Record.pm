@@ -881,11 +881,13 @@ sub Update {
         do {
             no warnings "uninitialized";
             local $@;
-            eval {
+            my $name = eval {
                 my $object = $attribute . "Obj";
-                my $name = $self->$object->Name;
-                next if $name eq $value || $name eq ($value || 0);
+                $self->$object->Name;
             };
+            unless ($@) {
+                next if $name eq $value || $name eq ($value || 0);
+            }
 
             my $current = $self->$attribute();
             # RT::Queue->Lifecycle returns a Lifecycle object instead of name
