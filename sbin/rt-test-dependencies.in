@@ -189,7 +189,7 @@ Digest::MD5 2.27
 Digest::SHA
 DBI 1.37
 Class::ReturnValue 0.40
-DBIx::SearchBuilder 1.59
+DBIx::SearchBuilder 1.63
 Text::Template 1.44
 File::ShareDir
 File::Spec 0.8
