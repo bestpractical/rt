@@ -749,7 +749,11 @@ sub ValidateType {
     my $type = shift;
 
     if ( $type =~ s/(?:Single|Multiple)$// ) {
-        $RT::Logger->warning( "Prefix 'Single' and 'Multiple' to Type deprecated, use MaxValues instead at (". join(":",caller).")");
+        RT->Deprecated(
+            Arguments => "suffix 'Single' or 'Multiple'",
+            Instead   => "MaxValues",
+            Remove    => "4.4",
+        );
     }
 
     if ( $FieldTypes{$type} ) {
@@ -765,7 +769,11 @@ sub SetType {
     my $self = shift;
     my $type = shift;
     if ($type =~ s/(?:(Single)|Multiple)$//) {
-        $RT::Logger->warning("'Single' and 'Multiple' on SetType deprecated, use SetMaxValues instead at (". join(":",caller).")");
+        RT->Deprecated(
+            Arguments => "suffix 'Single' or 'Multiple'",
+            Instead   => "MaxValues",
+            Remove    => "4.4",
+        );
         $self->SetMaxValues($1 ? 1 : 0);
     }
     $self->_Set(Field => 'Type', Value =>$type);
@@ -1351,7 +1359,13 @@ sub IsOnlyGlobal {
     return ($self->LookupType =~ /^RT::(?:Group|User)/io);
 
 }
-sub ApplyGlobally { Carp::carp("DEPRECATED, use IsOnlyGlobal"); return shift->IsOnlyGlobal(@_) }
+sub ApplyGlobally {
+    RT->Deprecated(
+        Instead   => "IsOnlyGlobal",
+        Remove    => "4.4",
+    );
+    return shift->IsOnlyGlobal(@_);
+}
 
 =head1 AddedTo
 
@@ -1368,7 +1382,13 @@ sub AddedTo {
     return RT::ObjectCustomField->new( $self->CurrentUser )
         ->AddedTo( CustomField => $self );
 }
-sub AppliedTo { Carp::carp("DEPRECATED: use AddedTo"); shift->AddedTo(@_) };
+sub AppliedTo {
+    RT->Deprecated(
+        Instead   => "AddedTo",
+        Remove    => "4.4",
+    );
+    shift->AddedTo(@_);
+};
 
 =head1 NotAddedTo
 
@@ -1385,7 +1405,13 @@ sub NotAddedTo {
     return RT::ObjectCustomField->new( $self->CurrentUser )
         ->NotAddedTo( CustomField => $self );
 }
-sub NotAppliedTo { Carp::carp("DEPRECATED: use NotAddedTo"); shift->NotAddedTo(@_) };
+sub NotAppliedTo {
+    RT->Deprecated(
+        Instead   => "NotAddedTo",
+        Remove    => "4.4",
+    );
+    shift->NotAddedTo(@_)
+};
 
 =head2 IsAdded
 
@@ -1403,7 +1429,13 @@ sub IsAdded {
     return undef unless $ocf->id;
     return $ocf;
 }
-sub IsApplied { Carp::carp("DEPRECATED: use IsAdded"); shift->IsAdded(@_) };
+sub IsApplied {
+    RT->Deprecated(
+        Instead   => "IsAdded",
+        Remove    => "4.4",
+    );
+    shift->IsAdded(@_);
+};
 
 sub IsGlobal { return shift->IsAdded(0) }
 

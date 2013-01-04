@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-# DEPRECATED: use the method below directly
+RT->Deprecated( Remove => "4.4", Instead => "RT::Ticket->TextAttachments" );
 return $Ticket->TextAttachments;
 </%INIT>
 <%ARGS>

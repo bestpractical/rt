@@ -1285,7 +1285,10 @@ $ticket->DueObj->AsString >> instead.
 
 sub DueAsString {
     my $self = shift;
-    $RT::Logger->warning("RT::Ticket->DueAsString is deprecated and will be removed in RT 4.4; use ->DueObj->AsString instead");
+    RT->Deprecated(
+        Instead => "->DueObj->AsString",
+        Remove => "4.4",
+    );
     return $self->DueObj->AsString();
 }
 
@@ -1471,7 +1474,10 @@ $ticket->ToldObj->AsString >> instead.
 
 sub ToldAsString {
     my $self = shift;
-    $RT::Logger->warning("RT::Ticket->ToldAsString is deprecated and will be removed in RT 4.4; use ->ToldObj->AsString instead");
+    RT->Deprecated(
+        Instead => "->ToldObj->AsString",
+        Remove => "4.4",
+    );
     if ( $self->Told ) {
         return $self->ToldObj->AsString();
     }

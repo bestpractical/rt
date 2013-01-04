@@ -48,6 +48,9 @@
 <%INIT>
 $ARGS{'CallbackPage'} = delete $ARGS{'Page'} || $m->callers(1)->path;
 $ARGS{'CallbackName'} = delete $ARGS{'_CallbackName'};
-$RT::Logger->debug("$ARGS{'CallbackPage'} calls old style callback, use \$m->callback");
+RT->Deprecated(
+    Instead => '$m->callback',
+    Remove => "4.4",
+);
 return $m->callback( %ARGS );
 </%INIT>

@@ -16,8 +16,8 @@ ok (require RT::Record);
 
 my $ticket = RT::Ticket->new(RT->SystemUser);
 my $group = RT::Group->new(RT->SystemUser);
-is($ticket->ObjectTypeStr, 'Ticket', "Ticket returns correct typestring");
-is($group->ObjectTypeStr, 'Group', "Group returns correct typestring");
+is($ticket->RecordType, 'Ticket', "Ticket returns correct typestring");
+is($group->RecordType, 'Group', "Group returns correct typestring");
 
 
 }

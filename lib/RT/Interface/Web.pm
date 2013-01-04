@@ -160,7 +160,10 @@ sub EscapeHTML {
 # Back-compat
 # XXX: Remove in 4.4
 sub EscapeUTF8 {
-    RT->Logger->warning("EscapeUTF8 is deprecated; use EscapeHTML at @{[join '/', caller]}");
+    RT->Deprecated(
+        Instead => "EscapeHTML",
+        Remove => "4.4",
+    );
     EscapeHTML(@_);
 }
 

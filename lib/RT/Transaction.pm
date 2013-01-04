@@ -1232,8 +1232,7 @@ sub UpdateCustomFields {
     # while giving us something saner.
     my $args;
     if ($args{'ARGSRef'}) {
-        # XXX: deprecated, remove in 4.4
-        $RT::Logger->warning("Passing an ARGSRef to UpdateCustomFields is deprecated, and will be removed in RT 4.4; pass its contents instead");
+        RT->Deprecated( Arguments => "ARGSRef", Remove => "4.4" );
         $args = $args{ARGSRef};
     } else {
         $args = \%args;
