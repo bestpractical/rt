@@ -750,7 +750,7 @@ sub ValidateType {
 
     if ( $type =~ s/(?:Single|Multiple)$// ) {
         RT->Deprecated(
-            Arguments => "prefix 'Single' or 'Multiple'",
+            Arguments => "suffix 'Single' or 'Multiple'",
             Instead   => "MaxValues",
             Remove    => "4.4",
         );
@@ -770,7 +770,7 @@ sub SetType {
     my $type = shift;
     if ($type =~ s/(?:(Single)|Multiple)$//) {
         RT->Deprecated(
-            Arguments => "prefix 'Single' or 'Multiple'",
+            Arguments => "suffix 'Single' or 'Multiple'",
             Instead   => "MaxValues",
             Remove    => "4.4",
         );
