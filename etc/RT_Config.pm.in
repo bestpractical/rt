@@ -1524,15 +1524,39 @@ option can be overridden by users in their preferences.
 
 Set($OldestTransactionsFirst, 1);
 
-=item C<$DeferTransactionLoading>
+=item C<$ShowHistory>
 
-When set, defers loading ticket history until the user clicks a link.
-This should end up serving pages to users quicker, since generating
-all the HTML for transaction history can be slow for long tickets.
+This option controls how history is shown on the ticket display page.  It
+accepts one of three possible modes and is overrideable on a per-user
+preference level.  If you regularly deal with long tickets and don't care much
+about the history, you may wish to change this option to C<click>.
+
+=over
+
+=item C<delay> (the default)
+
+When set to C<delay>, history is loaded via javascript after the rest of the
+page has been loaded.  This speeds up apparent page load times and generally
+provides a smoother experience.  You may notice slight delays before the ticket
+history appears on very long tickets.
+
+=item C<click>
+
+When set to C<click>, history is loaded on demand when a placeholder link is
+clicked.  This speeds up ticket display page loads and history is never loaded
+if not requested.
+
+=item C<always>
+
+When set to C<always>, history is loaded before showing the page.  This ensures
+history is always available immediately, but at the expense of longer page load
+times.  This behaviour was the default in RT 4.0.
+
+=back
 
 =cut
 
-# Set($DeferTransactionLoading, 1);
+Set($ShowHistory, 'delay');
 
 =item C<$ShowBccHeader>
 

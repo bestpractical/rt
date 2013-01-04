@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,19 +45,38 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div id="deferred_ticket_history">
+<div id="delayed_ticket_history">
     <& /Widgets/TitleBoxStart, title => 'History' &>
-        <a href="<% $display %>" onclick="jQuery('#deferred_ticket_history').text(<% loc('Loading...') |n,j%>).load(<% $url |n,j %>); return false;" ><% loc('Show ticket history') %></a>
+        <&|/l&>Loading...</&>
     <& /Widgets/TitleBoxEnd &>
 </div>
+<script type="text/javascript">
+jQuery(function(){
+    jQuery('#delayed_ticket_history').load(<% $url |n %>, null, function() {
+        jQuery(this).find('.titlebox-content').hide().slideDown(400, function(){
+            // Jump to any anchor specified after we load the txns into the page
+            var hash = window.location.hash;
+            if (hash) {
+                window.location.hash = "";  // trick the browser into a "change"
+                window.location.hash = hash;
+            }
+        });
+    });
+});
+</script>
 <%ARGS>
 $Ticket
 </%ARGS>
+<%ONCE>
+require JSON;
+</%ONCE>
 <%INIT>
 my %params = %ARGS;
 delete $params{Ticket};
 
-my $query   = $m->comp('/Elements/QueryString', %params, id => $Ticket->id );
-my $url     = RT->Config->Get('WebPath')."/Helpers/TicketHistory?$query";
-my $display = RT->Config->Get('WebPath')."/Ticket/Display.html?ForceShowHistory=1;$query";
+my $url = JSON::to_json(
+    RT->Config->Get('WebPath') . "/Helpers/TicketHistory?".
+        $m->comp('/Elements/QueryString', %params, id => $Ticket->id ),
+    { allow_nonref => 1 }
+);
 </%INIT>

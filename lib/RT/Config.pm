@@ -366,13 +366,19 @@ our %META = (
             Description => 'Show oldest history first',    #loc
         },
     },
-    DeferTransactionLoading => {
+    ShowHistory => {
         Section         => 'Ticket display',
         Overridable     => 1,
         SortOrder       => 3,
-        Widget          => '/Widgets/Form/Boolean',
+        Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
-            Description => 'Hide ticket history by default',    #loc
+            Description => 'Show history',                #loc
+            Values      => [qw(delay click always)],
+            ValuesLabel => {
+                delay   => "after the rest of the page loads",  #loc
+                click   => "after clicking a link",             #loc
+                always  => "immediately",                       #loc
+            },
         },
     },
     ShowUnreadMessageNotifications => { 

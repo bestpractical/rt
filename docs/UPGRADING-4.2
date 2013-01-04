@@ -61,3 +61,8 @@ UPGRADING FROM RT 4.0.0 and greater
   you had copied @JSFiles to add extra entries in your RT_SiteConfig,
   remove the core JS from the list, or RT will serve those files
   multiple times.
+
+* The $DeferTransactionLoading was combined into the new option $ShowHistory.
+  If you had enabled $DeferTransactionLoading, you may want to set $ShowHistory
+  to "click".  However, $ShowHistory provides a new mode, "delay", which is the
+  default and may be a more appealing alternative to "click".
