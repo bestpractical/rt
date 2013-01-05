@@ -66,6 +66,9 @@ package RT::Record;
 use strict;
 use warnings;
 
+use RT;
+use base RT->Config->Get('RecordBaseClass');
+use base 'RT::Base';
 
 use RT::Date;
 use RT::User;
@@ -74,8 +77,6 @@ use RT::Link;
 use Encode qw();
 
 our $_TABLE_ATTR = { };
-use base RT->Config->Get('RecordBaseClass');
-use base 'RT::Base';
 
 
 sub _Init {
