@@ -68,6 +68,8 @@ package RT::Ticket;
 use strict;
 use warnings;
 
+use Role::Basic 'with';
+with "RT::Role::Record::Status";
 
 use RT::Queue;
 use RT::User;
@@ -83,6 +85,8 @@ use RT::URI::fsck_com_rt;
 use RT::URI;
 use MIME::Entity;
 use Devel::GlobalDestruction;
+
+sub LifecycleColumn { "Queue" }
 
 my %ROLES = (
     # name    =>  description
@@ -1125,69 +1129,26 @@ sub ValidateQueue {
     }
 }
 
-
-
 sub SetQueue {
-    my $self     = shift;
-    my $NewQueue = shift;
+    my $self  = shift;
+    my $value = shift;
 
-    #Redundant. ACL gets checked in _Set;
     unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-    my $NewQueueObj = RT::Queue->new( $self->CurrentUser );
-    $NewQueueObj->Load($NewQueue);
+    my ($ok, $msg, $status) = $self->_SetLifecycleColumn(
+        Value           => $value,
+        RequireRight    => "CreateTicket"
+    );
 
-    unless ( $NewQueueObj->Id() ) {
-        return ( 0, $self->loc("That queue does not exist") );
-    }
-
-    if ( $NewQueueObj->Id == $self->QueueObj->Id ) {
-        return ( 0, $self->loc('That is the same value') );
-    }
-    unless ( $self->CurrentUser->HasRight( Right    => 'CreateTicket', Object => $NewQueueObj)
-         and $NewQueueObj->Disabled != 1) {
-        return ( 0, $self->loc("You may not create requests in that queue.") );
-    }
-
-    my $new_status;
-    my $old_lifecycle = $self->LifecycleObj;
-    my $new_lifecycle = $NewQueueObj->LifecycleObj;
-    if ( $old_lifecycle->Name ne $new_lifecycle->Name ) {
-        unless ( $old_lifecycle->HasMoveMap( $new_lifecycle ) ) {
-            return ( 0, $self->loc("There is no mapping for statuses between these queues. Contact your system administrator.") );
-        }
-        $new_status = $old_lifecycle->MoveMap( $new_lifecycle )->{ $self->Status };
-        return ( 0, $self->loc("Mapping between queues' lifecycles is incomplete. Contact your system administrator.") )
-            unless $new_status;
-    }
-
-    my ($status, $msg) = $self->_Set( Field => 'Queue', Value => $NewQueueObj->Id() );
-
-    if ( $status ) {
+    if ($ok) {
         # Clear the queue object cache;
         $self->{_queue_obj} = undef;
-
-        if ( $new_status ) {
-            my $clone = RT::Ticket->new( RT->SystemUser );
-            $clone->Load( $self->Id );
-            unless ( $clone->Id ) {
-                return ( 0, $self->loc("Couldn't load copy of ticket #[_1].", $self->Id) );
-            }
-
-            my ($val, $msg) = $clone->_SetStatus(
-                Lifecycle         => $old_lifecycle,
-                NewLifecycle      => $new_lifecycle,
-                Status            => $new_status,
-                RecordTransaction => 0,
-            );
-            RT->Logger->error("Status change failed on queue change: $msg")
-                unless $val;
-        }
+        my $queue = $self->QueueObj;
 
         # Untake the ticket if we have no permissions in the new queue
-        unless ( $self->OwnerObj->HasRight( Right => 'OwnTicket', Object => $NewQueueObj ) ) {
+        unless ($self->OwnerObj->HasRight( Right => 'OwnTicket', Object => $queue )) {
             my $clone = RT::Ticket->new( RT->SystemUser );
             $clone->Load( $self->Id );
             unless ( $clone->Id ) {
@@ -1200,7 +1161,7 @@ sub SetQueue {
         # On queue change, change queue for reminders too
         my $reminder_collection = $self->Reminders->Collection;
         while ( my $reminder = $reminder_collection->Next ) {
-            my ($status, $msg) = $reminder->_Set( Field => 'Queue', Value => $NewQueueObj->Id(), RecordTransaction => 0 );
+            my ($status, $msg) = $reminder->_Set( Field => 'Queue', Value => $queue->Id(), RecordTransaction => 0 );
             $RT::Logger->error('Queue change failed for reminder #' . $reminder->Id . ': ' . $msg) unless $status;
         }
 
@@ -1210,7 +1171,7 @@ sub SetQueue {
             unless $self->id;
     }
 
-    return ($status, $msg);
+    return ($ok, $msg);
 }
 
 
@@ -1308,28 +1269,6 @@ sub ResolvedObj {
     my $time = RT::Date->new( $self->CurrentUser );
     $time->Set( Format => 'sql', Value => $self->Resolved );
     return $time;
-}
-
-=head2 Lifecycle
-
-Returns the L<RT::Lifecycle/Name> for this ticket.
-
-=cut
-
-sub Lifecycle {
-    return shift->LifecycleObj->Name;
-}
-
-=head2 LifecycleObj
-
-Returns the L<RT::Lifecycle> for this ticket, which is picked up from
-the ticket's current queue.
-
-=cut
-
-sub LifecycleObj {
-    my $self = shift;
-    return $self->QueueObj->LifecycleObj;
 }
 
 =head2 FirstActiveStatus
@@ -2399,29 +2338,6 @@ sub Steal {
 
 }
 
-
-
-
-
-=head2 ValidateStatus STATUS
-
-Takes a string. Returns true if that status is a valid status for this ticket.
-Returns false otherwise.
-
-=cut
-
-sub ValidateStatus {
-    my $self   = shift;
-    my $status = shift;
-
-    #Make sure the status passed in is valid
-    return 1 if $self->QueueObj->IsValidStatus($status);
-
-    return 0;
-}
-
-
-
 =head2 SetStatus STATUS
 
 Set this ticket's status.
@@ -2447,27 +2363,14 @@ sub SetStatus {
     # this option was added for rtir initially
     $args{SetStarted} = 1 unless exists $args{SetStarted};
 
+    my ($valid, $msg) = $self->ValidateStatusChange($args{Status});
+    return ($valid, $msg) unless $valid;
 
     my $lifecycle = $self->LifecycleObj;
 
-    my $new = $args{'Status'};
-    unless ( $lifecycle->IsValid( $new ) ) {
-        return (0, $self->loc("Status '[_1]' isn't a valid status for tickets in this queue.", $self->loc($new)));
-    }
-
-    my $old = $self->__Value('Status');
-    unless ( $lifecycle->IsTransition( $old => $new ) ) {
-        return (0, $self->loc("You can't change status from '[_1]' to '[_2]'.", $self->loc($old), $self->loc($new)));
-    }
-
-    my $check_right = $lifecycle->CheckRight( $old => $new );
-    unless ( $self->CurrentUserHasRight( $check_right ) ) {
-        return ( 0, $self->loc('Permission Denied') );
-    }
-
     if (   !$args{Force}
         && !$lifecycle->IsInactive($self->Status)
-        && $lifecycle->IsInactive($new)
+        && $lifecycle->IsInactive($args{Status})
         && $self->HasUnresolvedDependencies )
     {
         return ( 0, $self->loc('That ticket has unresolved dependencies') );
