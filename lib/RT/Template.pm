@@ -70,7 +70,9 @@ package RT::Template;
 use strict;
 use warnings;
 
+use base 'RT::Record';
 
+use RT::Queue;
 
 use Text::Template;
 use MIME::Entity;
@@ -824,9 +826,6 @@ sub CurrentUserCanRead {
 }
 
 1;
-
-use RT::Queue;
-use base 'RT::Record';
 
 sub Table {'Templates'}
 

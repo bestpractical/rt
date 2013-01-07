@@ -65,9 +65,9 @@ my $ACL = RT::ACL->new($CurrentUser);
 
 
 package RT::ACL;
-use RT::ACE;
-
 use base 'RT::SearchBuilder';
+
+use RT::ACE;
 
 sub Table { 'ACL'}
 

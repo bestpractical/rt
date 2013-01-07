@@ -68,11 +68,11 @@ package RT::CustomFields;
 use strict;
 use warnings;
 
+use base 'RT::SearchBuilder';
+
 use DBIx::SearchBuilder::Unique;
 
 use RT::CustomField;
-
-use base 'RT::SearchBuilder';
 
 sub Table { 'CustomFields'}
 

@@ -67,12 +67,12 @@
 
 package RT::Dashboard;
 
-use RT::SavedSearch;
-
 use strict;
 use warnings;
 
 use base qw/RT::SharedSetting/;
+
+use RT::SavedSearch;
 
 use RT::System;
 RT::System::AddRights(

@@ -67,7 +67,7 @@ package RT::Scrip;
 
 use strict;
 use warnings;
-
+use base 'RT::Record';
 
 use RT::Queue;
 use RT::Template;
@@ -75,8 +75,6 @@ use RT::ScripCondition;
 use RT::ScripAction;
 use RT::Scrips;
 use RT::ObjectScrip;
-
-use base 'RT::Record';
 
 sub Table {'Scrips'}
 

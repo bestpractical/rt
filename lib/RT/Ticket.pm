@@ -67,6 +67,7 @@ package RT::Ticket;
 
 use strict;
 use warnings;
+use base 'RT::Record';
 
 use Role::Basic 'with';
 with "RT::Role::Record::Status";
@@ -3068,10 +3069,6 @@ Jesse Vincent, jesse@bestpractical.com
 RT
 
 =cut
-
-
-use RT::Queue;
-use base 'RT::Record';
 
 sub Table {'Tickets'}
 

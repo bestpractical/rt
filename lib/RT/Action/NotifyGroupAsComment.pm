@@ -62,8 +62,6 @@ package RT::Action::NotifyGroupAsComment;
 use strict;
 use warnings;
 
-use RT::Action::NotifyGroup;
-
 use base qw(RT::Action::NotifyGroup);
 
 sub SetReturnAddress {

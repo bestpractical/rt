@@ -64,14 +64,13 @@
 
 package RT::SearchBuilder;
 
-use RT::Base;
-use DBIx::SearchBuilder "1.40";
-
 use strict;
 use warnings;
 
-
 use base qw(DBIx::SearchBuilder RT::Base);
+
+use RT::Base;
+use DBIx::SearchBuilder "1.40";
 
 sub _Init  {
     my $self = shift;

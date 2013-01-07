@@ -69,9 +69,9 @@ package RT::GroupMembers;
 use strict;
 use warnings;
 
-use RT::GroupMember;
-
 use base 'RT::SearchBuilder';
+
+use RT::GroupMember;
 
 sub Table { 'GroupMembers'}
 

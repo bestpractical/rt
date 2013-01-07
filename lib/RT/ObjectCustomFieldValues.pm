@@ -51,10 +51,9 @@ package RT::ObjectCustomFieldValues;
 use strict;
 use warnings;
 
+use base 'RT::SearchBuilder';
 
 use RT::ObjectCustomFieldValue;
-
-use base 'RT::SearchBuilder';
 
 sub Table { 'ObjectCustomFieldValues'}
 

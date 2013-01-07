@@ -63,11 +63,9 @@ use strict;
 use warnings;
 no warnings 'redefine';
 
-use RT::Record; 
-use RT::Topic;
-
-
 use base qw( RT::Record );
+
+use RT::Topic;
 
 sub _Init {
   my $self = shift; 

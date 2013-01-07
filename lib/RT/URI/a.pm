@@ -51,8 +51,8 @@ package RT::URI::a;
 use strict;
 use warnings;
 
-use RT::Article;
 use base qw/RT::URI::fsck_com_article/;
+use RT::Article;
 
 my $scheme = "a";
 

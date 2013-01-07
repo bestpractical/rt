@@ -69,9 +69,9 @@ package RT::Users;
 use strict;
 use warnings;
 
-use RT::User;
-
 use base 'RT::SearchBuilder';
+
+use RT::User;
 
 sub Table { 'Users'}
 

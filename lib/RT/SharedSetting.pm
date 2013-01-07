@@ -64,10 +64,10 @@ It consists of an ID, a name, and some arbitrary data.
 package RT::SharedSetting;
 use strict;
 use warnings;
+use base qw/RT::Base/;
 
 use RT::Attribute;
 use Scalar::Util 'blessed';
-use base qw/RT::Base/;
 
 =head1 METHODS
 
