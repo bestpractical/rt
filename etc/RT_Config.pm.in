@@ -890,6 +890,7 @@ Set(@JSFiles, qw/
     jquery-ui-1.8.4.custom.min.js
     jquery-ui-timepicker-addon.js
     jquery-ui-patch-datepicker.js
+    jquery.cookie.js
     titlebox-state.js
     util.js
     userautocomplete.js
