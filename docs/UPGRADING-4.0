@@ -148,3 +148,15 @@ the following Mason templates, this feature will not function correctly:
     share/html/Search/Elements/BuildFormatString
     share/html/Search/Elements/PickCFs
     share/html/Search/Elements/PickCriteria
+
+=head1 UPGRADING FROM 4.0.8 AND EARLIER
+
+=head2 Data upgrades
+
+Previously, the default lifecycle was stored in Queues.Lifecycle as
+NULL. To simplify code, RT now stores the string 'default' to match the
+name of the Lifecycle.
+
+The 3.9.2 upgrade step removed all enabled Personal Groups, but missed
+any disabled groups. We catch and clean up the disabled Personal groups
+during the 4.0.9 upgrade step.
