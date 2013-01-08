@@ -2129,11 +2129,11 @@ sub Merged {
         if $MERGE_CACHE{'merged'}{ $id };
 
     my $mergees = RT::Tickets->new( $self->CurrentUser );
-    $mergees->Limit(
+    $mergees->LimitField(
         FIELD    => 'EffectiveId',
         VALUE    => $id,
     );
-    $mergees->Limit(
+    $mergees->LimitField(
         FIELD    => 'id',
         OPERATOR => '!=',
         VALUE    => $id,

@@ -78,19 +78,10 @@ sub _InitSQL {
 sub _SQLLimit {
   my $self = shift;
     my %args = (@_);
-    if ($args{'FIELD'} eq 'EffectiveId' &&
-         (!$args{'ALIAS'} || $args{'ALIAS'} eq 'main' ) ) {
-        $self->{'looking_at_effective_id'} = 1;
-    }      
-    
-    if ($args{'FIELD'} eq 'Type' &&
-         (!$args{'ALIAS'} || $args{'ALIAS'} eq 'main' ) ) {
-        $self->{'looking_at_type'} = 1;
-    }
 
   # All SQL stuff goes into one SB subclause so we can deal with all
   # the aggregation
-  $self->SUPER::Limit(%args,
+  $self->Limit(%args,
                       SUBCLAUSE => 'ticketsql');
 }
 

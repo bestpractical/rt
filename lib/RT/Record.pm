@@ -1058,12 +1058,9 @@ sub HasUnresolvedDependencies {
     my $deps = $self->UnresolvedDependencies;
 
     if ($args{Type}) {
-        $deps->Limit( FIELD => 'Type', 
-              OPERATOR => '=',
-              VALUE => $args{Type}); 
-    }
-    else {
-	    $deps->IgnoreType;
+        $deps->LimitType( VALUE => $args{Type} );
+    } else {
+        $deps->IgnoreType;
     }
 
     if ($deps->Count > 0) {
