@@ -70,10 +70,11 @@ use RT;
 use base RT->Config->Get('RecordBaseClass');
 use base 'RT::Base';
 
-use RT::Date;
-use RT::User;
-use RT::Attributes;
-use RT::Link;
+require RT::Date;
+require RT::User;
+require RT::Attributes;
+require RT::Transactions;
+require RT::Link;
 use Encode qw();
 
 our $_TABLE_ATTR = { };
@@ -529,7 +530,6 @@ It takes no options. Arguably, this is a bug
 
 sub _SetLastUpdated {
     my $self = shift;
-    use RT::Date;
     my $now = RT::Date->new( $self->CurrentUser );
     $now->SetToNow();
 
@@ -1301,7 +1301,6 @@ sub _AddLink {
     }
 
     # Check if the link already exists - we don't want duplicates
-    use RT::Link;
     my $old_link = RT::Link->new( $self->CurrentUser );
     $old_link->LoadByParams( Base   => $args{'Base'},
                              Type   => $args{'Type'},
@@ -1595,7 +1594,6 @@ Returns an L<RT::Transactions> object of all transactions on this record object
 sub Transactions {
     my $self = shift;
 
-    use RT::Transactions;
     my $transactions = RT::Transactions->new( $self->CurrentUser );
     $transactions->Limit(
         FIELD => 'ObjectId',
