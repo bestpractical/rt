@@ -70,7 +70,7 @@ use warnings;
 use base 'RT::Record';
 
 use Role::Basic 'with';
-with "RT::Role::Record::Status";
+with "RT::Role::Record::Status", "RT::Role::Record::Roles";
 
 use RT::Queue;
 use RT::User;

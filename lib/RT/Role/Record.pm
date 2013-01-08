@@ -72,6 +72,7 @@ requires $_ for qw(
 
     _Set
     _Accessible
+    _NewTransaction
 );
 
 1;

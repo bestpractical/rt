@@ -70,7 +70,7 @@ use warnings;
 use base 'RT::Record';
 
 use Role::Basic 'with';
-with "RT::Role::Record::Lifecycle";
+with "RT::Role::Record::Lifecycle", "RT::Role::Record::Roles";
 
 sub Table {'Queues'}
 
