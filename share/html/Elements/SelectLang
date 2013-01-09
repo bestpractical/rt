@@ -59,11 +59,9 @@
 </select>
 <%ARGS>
 $ShowNullOption => 1
-$ShowAllQueues => 1
 $Name => undef
 $Verbose => undef
 $Default => 0
-$Lite => 0
 </%ARGS>
 
 <%ONCE>
