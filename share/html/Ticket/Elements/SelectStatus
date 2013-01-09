@@ -57,7 +57,7 @@ my @Lifecycles;
 for my $id (keys %Queues) {
     my $queue = RT::Queue->new($session{'CurrentUser'});
     $queue->Load($id);
-    push @Lifecycles, $queue->Lifecycle if $queue->id;
+    push @Lifecycles, $queue->LifecycleObj if $queue->id;
 }
 
 if ($TicketObj) {
@@ -69,7 +69,7 @@ if ($TicketObj) {
     }
 } elsif ($QueueObj) {
     $ARGS{DefaultValue} = 0;
-    $ARGS{Default} ||= $DECODED_ARGS->{Status} || $QueueObj->Lifecycle->DefaultOnCreate;
+    $ARGS{Default} ||= $DECODED_ARGS->{Status} || $QueueObj->LifecycleObj->DefaultOnCreate;
 }
 </%INIT>
 <%ARGS>

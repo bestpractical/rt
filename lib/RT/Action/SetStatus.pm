@@ -101,7 +101,7 @@ sub Prepare {
     my $self = shift;
 
     my $ticket = $self->TicketObj;
-    my $lifecycle = $ticket->Lifecycle;
+    my $lifecycle = $ticket->LifecycleObj;
     my $status = $ticket->Status;
 
     my $argument = $self->Argument;

@@ -69,10 +69,10 @@ package RT::Scrips;
 use strict;
 use warnings;
 
+use base 'RT::SearchBuilder';
+
 use RT::Scrip;
 use RT::ObjectScrips;
-
-use base 'RT::SearchBuilder';
 
 sub Table { 'Scrips'}
 

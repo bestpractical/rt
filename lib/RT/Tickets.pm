@@ -81,10 +81,9 @@ package RT::Tickets;
 use strict;
 use warnings;
 
+use base 'RT::SearchBuilder';
 
 use RT::Ticket;
-
-use base 'RT::SearchBuilder';
 
 sub Table { 'Tickets'}
 

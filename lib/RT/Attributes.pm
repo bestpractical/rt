@@ -68,10 +68,9 @@ package RT::Attributes;
 use strict;
 use warnings;
 
+use base 'RT::SearchBuilder';
 
 use RT::Attribute;
-
-use base 'RT::SearchBuilder';
 
 sub Table { 'Attributes'}
 

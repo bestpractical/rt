@@ -66,3 +66,8 @@ UPGRADING FROM RT 4.0.0 and greater
   If you had enabled $DeferTransactionLoading, you may want to set $ShowHistory
   to "click".  However, $ShowHistory provides a new mode, "delay", which is the
   default and may be a more appealing alternative to "click".
+
+* A Status transaction is now recorded when a ticket status changes as a
+  result of a queue change.  Scrips with conditions relying on Status changes
+  may start to trigger on these transitions; previously these Status changes
+  never triggered scrips.

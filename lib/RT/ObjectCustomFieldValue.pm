@@ -50,6 +50,7 @@ package RT::ObjectCustomFieldValue;
 
 use strict;
 use warnings;
+use base 'RT::Record';
 
 use RT::Interface::Web;
 use Regexp::Common qw(RE_net_IPv4);
@@ -60,10 +61,7 @@ require Net::CIDR;
 # Allow the empty IPv6 address
 $IPv6_re = qr/(?:$IPv6_re|::)/;
 
-
-
 use RT::CustomField;
-use base 'RT::Record';
 
 sub Table {'ObjectCustomFieldValues'}
 

@@ -69,10 +69,9 @@ package RT::Queues;
 use strict;
 use warnings;
 
+use base 'RT::SearchBuilder';
 
 use RT::Queue;
-
-use base 'RT::SearchBuilder';
 
 sub Table { 'Queues'}
 

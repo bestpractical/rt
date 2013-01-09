@@ -66,16 +66,18 @@ package RT::Record;
 use strict;
 use warnings;
 
+use RT;
+use base RT->Config->Get('RecordBaseClass');
+use base 'RT::Base';
 
-use RT::Date;
-use RT::User;
-use RT::Attributes;
-use RT::Link;
+require RT::Date;
+require RT::User;
+require RT::Attributes;
+require RT::Transactions;
+require RT::Link;
 use Encode qw();
 
 our $_TABLE_ATTR = { };
-use base RT->Config->Get('RecordBaseClass');
-use base 'RT::Base';
 
 
 sub _Init {
@@ -537,7 +539,6 @@ It takes no options. Arguably, this is a bug
 
 sub _SetLastUpdated {
     my $self = shift;
-    use RT::Date;
     my $now = RT::Date->new( $self->CurrentUser );
     $now->SetToNow();
 
@@ -890,17 +891,16 @@ sub Update {
         do {
             no warnings "uninitialized";
             local $@;
-            eval {
+            my $name = eval {
                 my $object = $attribute . "Obj";
-                my $name = $self->$object->Name;
-                next if $name eq $value || $name eq ($value || 0);
+                $self->$object->Name;
             };
+            unless ($@) {
+                next if $name eq $value || $name eq ($value || 0);
+            }
 
-            my $current = $self->$attribute();
-            # RT::Queue->Lifecycle returns a Lifecycle object instead of name
-            $current = eval { $current->Name } if ref $current;
-            next if $value eq $current;
-            next if ( $value || 0 ) eq $current;
+            next if $value eq $self->$attribute();
+            next if ($value || 0) eq $self->$attribute();
         };
 
         $new_values{$attribute} = $value;
@@ -1310,7 +1310,6 @@ sub _AddLink {
     }
 
     # Check if the link already exists - we don't want duplicates
-    use RT::Link;
     my $old_link = RT::Link->new( $self->CurrentUser );
     $old_link->LoadByParams( Base   => $args{'Base'},
                              Type   => $args{'Type'},
@@ -1604,7 +1603,6 @@ Returns an L<RT::Transactions> object of all transactions on this record object
 sub Transactions {
     my $self = shift;
 
-    use RT::Transactions;
     my $transactions = RT::Transactions->new( $self->CurrentUser );
     $transactions->Limit(
         FIELD => 'ObjectId',

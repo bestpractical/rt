@@ -69,10 +69,9 @@ package RT::Transactions;
 use strict;
 use warnings;
 
+use base 'RT::SearchBuilder';
 
 use RT::Transaction;
-
-use base 'RT::SearchBuilder';
 
 sub Table { 'Transactions'}
 

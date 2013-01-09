@@ -96,7 +96,7 @@ sub Commit {
     $top->Correspond( MIMEObj => $template->MIMEObj );
 
     if ($passed) {
-        my $new_status = $top->Lifecycle->DefaultStatus('approved') || 'open';
+        my $new_status = $top->LifecycleObj->DefaultStatus('approved') || 'open';
         if ( $new_status ne $top->Status ) {
             $top->SetStatus( $new_status );
         }

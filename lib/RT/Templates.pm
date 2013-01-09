@@ -68,9 +68,9 @@ package RT::Templates;
 use strict;
 use warnings;
 
-use RT::Template;
-
 use base 'RT::SearchBuilder';
+
+use RT::Template;
 
 sub Table { 'Templates'}
 

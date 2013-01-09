@@ -70,10 +70,9 @@ package RT::Links;
 use strict;
 use warnings;
 
+use base 'RT::SearchBuilder';
 
 use RT::Link;
-
-use base 'RT::SearchBuilder';
 
 sub Table { 'Links'}
 

@@ -2585,7 +2585,7 @@ sub ProcessTicketReminders {
 
     if ( $args->{'update-reminders'} ) {
         while ( my $reminder = $reminder_collection->Next ) {
-            my $resolve_status = $reminder->Lifecycle->ReminderStatusOnResolve;
+            my $resolve_status = $reminder->LifecycleObj->ReminderStatusOnResolve;
             my ( $status, $msg, $old_subject, @subresults );
             if (   $reminder->Status ne $resolve_status
                 && $args->{ 'Complete-Reminder-' . $reminder->id } )

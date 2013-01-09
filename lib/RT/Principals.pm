@@ -70,9 +70,9 @@ use strict;
 use warnings;
 
 
-use RT::Principal;
-
 use base 'RT::SearchBuilder';
+
+use RT::Principal;
 
 sub Table { 'Principals'}
 

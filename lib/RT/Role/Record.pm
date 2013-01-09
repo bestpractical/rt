@@ -46,66 +46,32 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-package RT::CustomFieldValues;
-
 use strict;
 use warnings;
 
-use base 'RT::SearchBuilder';
+package RT::Role::Record;
+use Role::Basic;
 
-use RT::CustomFieldValue;
+=head1 NAME
 
-sub Table { 'CustomFieldValues'}
+RT::Role::Record - Common requirements for roles which are consumed by records
 
-sub _Init {
-    my $self = shift;
+=head1 DESCRIPTION
 
-  # By default, order by SortOrder
-  $self->OrderByCols(
-	 { ALIAS => 'main',
-	   FIELD => 'SortOrder',
-	   ORDER => 'ASC' },
-	 { ALIAS => 'main',
-	   FIELD => 'Name',
-	   ORDER => 'ASC' },
-	 { ALIAS => 'main',
-	   FIELD => 'id',
-	   ORDER => 'ASC' },
-     );
-
-    return ( $self->SUPER::_Init(@_) );
-}
-# {{{ sub LimitToCustomField
-
-=head2 LimitToCustomField FIELD
-
-Limits the returned set to values for the custom field with Id FIELD
-
-=cut
-  
-sub LimitToCustomField {
-    my $self = shift;
-    my $cf = shift;
-    return $self->Limit(
-        FIELD    => 'CustomField',
-        VALUE    => $cf,
-        OPERATOR => '=',
-    );
-}
-
-
-
-
-=head2 NewItem
-
-Returns an empty new RT::CustomFieldValue item
+Various L<RT::Record> (and by inheritance L<DBIx::SearchBuilder::Record>)
+methods are required by this role.  It provides no methods on its own but is
+simply a contract for other roles to require (usually under the
+I<RT::Role::Record::> namespace).
 
 =cut
 
-sub NewItem {
-    my $self = shift;
-    return(RT::CustomFieldValue->new($self->CurrentUser));
-}
-RT::Base->_ImportOverlays();
+requires $_ for qw(
+    id
+    loc
+    CurrentUser
+
+    _Set
+    _Accessible
+);
 
 1;

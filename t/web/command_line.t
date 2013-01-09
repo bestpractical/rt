@@ -158,7 +158,7 @@ expect_send("show ticket/$ticket_id -f queue", 'Verifying change...');
 expect_like(qr/Queue: EditedQueue$$/, 'Verified change');
 # cannot move ticket to a nonexistent queue
 expect_send("edit ticket/$ticket_id set queue=nonexistent-$$", 'Changing to nonexistent queue...');
-expect_like(qr/queue does not exist/i, 'Errored out');
+expect_like(qr/Queue nonexistent-$$ does not exist/i, 'Errored out');
 expect_send("show ticket/$ticket_id -f queue", 'Verifying lack of change...');
 expect_like(qr/Queue: EditedQueue$$/, 'Verified lack of change');
 

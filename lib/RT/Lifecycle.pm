@@ -147,11 +147,13 @@ sub Load {
     if (defined $args{Name} and exists $LIFECYCLES_CACHE{ $args{Name} }) {
         $self->{'name'} = $args{Name};
         $self->{'data'} = $LIFECYCLES_CACHE{ $args{Name} };
+        $self->{'type'} = $args{Type};
 
         my $found_type = $self->{'data'}{'type'};
         warn "Found type of $found_type ne $args{Type}" if $found_type ne $args{Type};
     } elsif (not $args{Name} and exists $LIFECYCLES_TYPES{ $args{Type} }) {
         $self->{'data'} = $LIFECYCLES_TYPES{ $args{Type} };
+        $self->{'type'} = $args{Type};
     } else {
         return undef;
     }
@@ -185,6 +187,14 @@ Returns name of the loaded lifecycle.
 =cut
 
 sub Name { return $_[0]->{'name'} }
+
+=head2 Type
+
+Returns the type of the loaded lifecycle.
+
+=cut
+
+sub Type { return $_[0]->{'type'} }
 
 =head2 Getting statuses and validating.
 
@@ -532,8 +542,7 @@ move map from this cycle to provided.
 sub MoveMap {
     my $from = shift; # self
     my $to = shift;
-    my $type = $from->{'data'}{'type'};
-    $to = RT::Lifecycle->Load( Name => $to, Type => $type ) unless ref $to;
+    $to = RT::Lifecycle->Load( Name => $to, Type => $from->Type ) unless ref $to;
     return $LIFECYCLES{'__maps__'}{ $from->Name .' -> '. $to->Name } || {};
 }
 
@@ -561,7 +570,7 @@ move maps.
 
 sub NoMoveMaps {
     my $self = shift;
-    my $type = $self->{'data'}{'type'};
+    my $type = $self->Type;
     my @list = $self->List( $type );
     my @res;
     foreach my $from ( @list ) {

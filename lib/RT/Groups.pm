@@ -74,14 +74,11 @@ package RT::Groups;
 use strict;
 use warnings;
 
-
-
-use RT::Group;
-
 use base 'RT::SearchBuilder';
 
 sub Table { 'Groups'}
 
+use RT::Group;
 use RT::Users;
 
 # XXX: below some code is marked as subject to generalize in Groups, Users classes.

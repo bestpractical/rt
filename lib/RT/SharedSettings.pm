@@ -67,11 +67,11 @@
 
 package RT::SharedSettings;
 
-use RT::SharedSetting;
-
 use strict;
 use warnings;
 use base 'RT::Base';
+
+use RT::SharedSetting;
 
 sub new  {
     my $proto = shift;

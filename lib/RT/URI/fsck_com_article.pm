@@ -52,8 +52,8 @@ use strict;
 use warnings;
 no warnings 'redefine';
 
-use RT::Article;
 use base qw/RT::URI::base/;
+use RT::Article;
 
 =head2 LocalURIPrefix 
 

@@ -87,7 +87,7 @@ sub Prepare {
 
     # no change if the ticket is in initial status and the message is a mail
     # from a requestor
-    return 1 if $ticket->Lifecycle->IsInitial($ticket->Status)
+    return 1 if $ticket->LifecycleObj->IsInitial($ticket->Status)
         && $self->TransactionObj->IsInbound;
 
     if ( my $msg = $self->TransactionObj->Message->First ) {

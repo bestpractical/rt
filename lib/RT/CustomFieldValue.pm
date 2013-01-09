@@ -54,8 +54,8 @@ package RT::CustomFieldValue;
 no warnings qw/redefine/;
 
 
-use RT::CustomField;
 use base 'RT::Record';
+use RT::CustomField;
 
 sub Table {'CustomFieldValues'}
 
