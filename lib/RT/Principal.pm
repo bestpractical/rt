@@ -186,7 +186,7 @@ sub GrantRight {
     );
 
     RT->System->QueueCacheNeedsUpdate(1)
-        if $id and $ace->RightName eq 'SeeQueue';
+        if $id and grep { $ace->RightName eq $_ } qw(SeeQueue CreateTicket);
 
     return ($id, $msg);
 }
@@ -238,7 +238,7 @@ sub RevokeRight {
     ($status, $msg) = $ace->Delete;
 
     RT->System->QueueCacheNeedsUpdate(1)
-        if $status and $right eq 'SeeQueue';
+        if $status and grep { $right eq $_ } qw(SeeQueue CreateTicket);
 
     return ($status, $msg);
 }
