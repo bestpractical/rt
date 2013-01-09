@@ -1113,7 +1113,7 @@ sub _AddMember {
             CheckACL => 0,                  # don't check acl
             RecordTransaction => $args{'RecordTransaction'},
         );
-        return (0, $self->loc("Could not update column $col: [_1]", $msg))
+        return (0, $self->loc("Could not update column [_1]: [_2]", $col, $msg))
             unless $ok;
     }
 
