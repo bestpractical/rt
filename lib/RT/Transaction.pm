@@ -634,7 +634,7 @@ sub BriefDescriptionAsHTML {
         return ( $self->loc("Permission Denied") );
     }
 
-    my $type = $self->Type;
+    my ($objecttype, $type, $field) = ($self->ObjectType, $self->Type, $self->Field);
 
     unless ( defined $type ) {
         return $self->loc("No transaction type specified");
@@ -643,7 +643,7 @@ sub BriefDescriptionAsHTML {
     my ($template, @params) = (
         "Default: [_1]/[_2] changed from [_3] to [_4]", #loc
         $type,
-        $self->Field,
+        $field,
         (
             $self->OldValue
             ? "'" . $self->OldValue . "'"
@@ -656,8 +656,14 @@ sub BriefDescriptionAsHTML {
         ),
     );
 
-    if ( my $code = $_BriefDescriptions{$type} ) {
-        ($template, @params) = $code->($self);
+    my @code = grep { ref eq 'CODE' } map { $_BriefDescriptions{$_} }
+        ( $field
+            ? ("$objecttype-$type-$field", "$type-$field")
+            : () ),
+        "$objecttype-$type", $type;
+
+    if (@code) {
+        ($template, @params) = $code[0]->($self);
     }
 
     unless ($template) {
