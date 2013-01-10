@@ -175,9 +175,32 @@ sub Role {
 
 Returns a list of role names registered for this class.
 
+Optionally takes a hash specifying attributes the returned roles must possess
+or lack.  Testing is done on a simple truthy basis and the actual values of
+the role attributes and arguments you pass are not compared string-wise or
+numerically; they must simply evaluate to the same truthiness.
+
+For example:
+
+    # Return role names which are denormalized into a column; note that the
+    # role's Column attribute contains a string.
+    $object->Roles( Column => 1 );
+
 =cut
 
-sub Roles { sort { $a cmp $b } keys %{ shift->_ROLES } }
+sub Roles {
+    my $self = shift;
+    my %attr = @_;
+
+    return grep {
+        my $ok = 1;
+        my $role = $self->Role($_);
+        for my $k (keys %attr) {
+            $ok = 0, last if $attr{$k} xor $role->{$k};
+        }
+        $ok;
+    } sort { $a cmp $b } keys %{ $self->_ROLES };
+}
 
 {
     my %ROLES;
