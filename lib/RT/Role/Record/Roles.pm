@@ -148,6 +148,29 @@ sub RegisterRole {
     return 1;
 }
 
+=head2 Role
+
+Takes a role name; returns a hashref describing the role.  This hashref
+contains the same attributes used to register the role (see L</RegisterRole>),
+as well as some extras, including:
+
+=over
+
+=item Class
+
+The original class which announced the role.  This is set automatically by
+L</RegisterRole> and is the same across all EquivClasses.
+
+=back
+
+Returns an empty hashref if the role doesn't exist.
+
+=cut
+
+sub Role {
+    return \%{ $_[0]->_ROLES->{$_[1]} || {} };
+}
+
 =head2 Roles
 
 Returns a list of role names registered for this class.

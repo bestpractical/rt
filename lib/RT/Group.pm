@@ -740,15 +740,17 @@ sub SingleMemberRoleGroup {
     my $self = shift;
     my $class = $self->RoleClass;
     return unless $class;
-    return $class->_ROLES->{$self->Type}{Single};
+    return $class->Role($self->Type)->{Single};
 }
 
 sub SingleMemberRoleGroupColumn {
     my $self = shift;
     my ($class) = $self->Domain =~ /^(.+)-Role$/;
     return unless $class;
-    return unless $class->_ROLES->{$self->Type}{Class} eq $class;
-    return $class->_ROLES->{$self->Type}{Column};
+
+    my $role = $class->Role($self->Type);
+    return unless $role->{Class} eq $class;
+    return $role->{Column};
 }
 
 sub RoleGroupObject {
