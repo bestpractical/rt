@@ -70,7 +70,12 @@ use warnings;
 use base 'RT::Record';
 
 use Role::Basic 'with';
-with "RT::Role::Record::Status", "RT::Role::Record::Roles";
+
+# SetStatus and _SetStatus are reimplemented below (using other pieces of the
+# role) to deal with ACLs, moving tickets between queues, and automatically
+# setting dates.
+with "RT::Role::Record::Status" => { -excludes => [qw(SetStatus _SetStatus)] },
+     "RT::Role::Record::Roles";
 
 use RT::Queue;
 use RT::User;
