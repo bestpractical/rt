@@ -106,7 +106,8 @@ for my $role (sort keys %ROLES) {
     RT::Ticket->RegisterRole(
         Name            => $role,
         EquivClasses    => ['RT::Queue'],
-        ( $role eq "Owner" ? ( Column => "Owner") : () ),
+        ( $role eq "Owner" ? ( Column => "Owner")   : () ),
+        ( $role !~ /Cc/    ? ( ACLOnlyInEquiv => 1) : () ),
     );
 }
 

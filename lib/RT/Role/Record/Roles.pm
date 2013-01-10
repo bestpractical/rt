@@ -110,6 +110,19 @@ which the single role member's user ID is denormalized.  The column will be
 kept updated automatically as the role member changes.  This is used, for
 example, for ticket owners and makes searching simpler (among other benefits).
 
+=item ACLOnly
+
+Optional.  A true value indicates this role is only used for ACLs and should
+not be populated with members.
+
+This flag is advisory only, and the Perl API still allows members to be added
+to ACLOnly roles.
+
+=item ACLOnlyInEquiv
+
+Optional.  Automatically sets the ACLOnly flag for all EquivClasses, but not
+the announcing class.
+
 =back
 
 =cut
@@ -140,6 +153,9 @@ sub RegisterRole {
     unless ($class eq "RT::System") {
         push @$equiv, "RT::System";
     }
+
+    # ... marked as "for ACLs only" if flagged as such by the announcing class
+    $role{ACLOnly} = 1 if delete $role{ACLOnlyInEquiv};
 
     $_->RegisterRole(%role) for @$equiv;
 
@@ -181,6 +197,9 @@ the role attributes and arguments you pass are not compared string-wise or
 numerically; they must simply evaluate to the same truthiness.
 
 For example:
+
+    # Return role names which are not only for ACL purposes
+    $object->Roles( ACLOnly => 0 );
 
     # Return role names which are denormalized into a column; note that the
     # role's Column attribute contains a string.
