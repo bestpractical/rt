@@ -709,6 +709,7 @@ sub RoleClass {
     my $self = shift;
     my $domain = shift || $self->Domain;
     return unless $domain =~ /^(.+)-Role$/;
+    return unless $1->DOES("RT::Role::Record::Roles");
     return $1;
 }
 
@@ -726,7 +727,7 @@ sub ValidateRoleGroup {
     return 0 unless $args{Domain} and $args{Type};
 
     my $class = $self->RoleClass($args{Domain});
-    return 0 unless $class and $class->can('HasRole');
+    return 0 unless $class;
 
     return $class->HasRole($args{Type});
 }
