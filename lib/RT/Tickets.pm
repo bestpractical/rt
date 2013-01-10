@@ -154,6 +154,9 @@ our %FIELD_METADATA = (
     HasNoAttribute     => [ 'HASATTRIBUTE', 0 ],
 );
 
+# Lower Case version of FIELDS, for case insensitivity
+our %LOWER_CASE_FIELDS = map { ( lc($_) => $_ ) } (keys %FIELD_METADATA);
+
 our %SEARCHABLE_SUBFIELDS = (
     User => [qw(
         EmailAddress Name RealName Nickname Organization Address1 Address2
