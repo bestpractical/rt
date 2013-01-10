@@ -96,6 +96,20 @@ You should not include L<RT::System> itself in this list.
 
 Simply calls RegisterRole on each equivalent class.
 
+=item Single
+
+Optional.  A true value indicates that this role may only contain a single user
+as a member at any given time.  When adding a new member to a Single role, any
+existing member will be removed.  If all members are removed, L<RT/Nobody> is
+added automatically.
+
+=item Column
+
+Optional, implies Single.  Specifies a column on the announcing class into
+which the single role member's user ID is denormalized.  The column will be
+kept updated automatically as the role member changes.  This is used, for
+example, for ticket owners and makes searching simpler (among other benefits).
+
 =back
 
 =cut
