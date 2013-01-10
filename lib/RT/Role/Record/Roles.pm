@@ -131,7 +131,7 @@ sub RegisterRole {
     $role{ Single } = 1 if $role{Column};
 
     # Stash the role on ourself
-    $class->_ROLES->{ $role{Name} } = \%role;
+    $class->_ROLES->{ $role{Name} } = { %role };
 
     # Register it with any equivalent classes...
     my $equiv = delete $role{EquivClasses} || [];
