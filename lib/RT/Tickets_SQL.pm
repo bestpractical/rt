@@ -175,7 +175,6 @@ sub _parser {
         my $sub = $dispatch{ $class };
 
         $sub->( $self, $key, $op, $value,
-                SUBCLAUSE       => '',  # don't need anymore
                 ENTRYAGGREGATOR => $ea,
                 SUBKEY          => $subkey,
               );
