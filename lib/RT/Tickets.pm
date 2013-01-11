@@ -83,6 +83,9 @@ use warnings;
 
 use base 'RT::SearchBuilder';
 
+use Role::Basic 'with';
+with 'RT::Role::SearchBuilder::Roles';
+
 use RT::Ticket;
 
 sub Table { 'Tickets'}
@@ -899,250 +902,14 @@ sub _WatcherLimit {
         die "Invalid watcher subfield: '$rest{SUBKEY}'";
     }
 
-    # Owner was ENUM field, so "Owner = 'xxx'" allowed user to
-    # search by id and Name at the same time, this is workaround
-    # to preserve backward compatibility
-    if ( $field eq 'Owner' ) {
-        if ( $op =~ /^!?=$/ && (!$rest{'SUBKEY'} || $rest{'SUBKEY'} eq 'Name' || $rest{'SUBKEY'} eq 'EmailAddress') ) {
-            my $o = RT::User->new( $self->CurrentUser );
-            my $method = ($rest{'SUBKEY'}||'') eq 'EmailAddress' ? 'LoadByEmail': 'Load';
-            $o->$method( $value );
-            $self->_SQLLimit(
-                FIELD    => 'Owner',
-                OPERATOR => $op,
-                VALUE    => $o->id,
-                %rest,
-            );
-            return;
-        }
-        if ( ($rest{'SUBKEY'}||'') eq 'id' ) {
-            $self->_SQLLimit(
-                FIELD    => 'Owner',
-                OPERATOR => $op,
-                VALUE    => $value,
-                %rest,
-            );
-            return;
-        }
-    }
-    $rest{SUBKEY} ||= 'EmailAddress';
-
-    my $groups = $self->_RoleGroupsJoin( Type => $type, Class => $class, New => !$type );
-
-    $self->_OpenParen;
-    if ( $op =~ /^IS(?: NOT)?$/i ) {
-        # is [not] empty case
-
-        my $group_members = $self->_GroupMembersJoin( GroupsAlias => $groups );
-        # to avoid joining the table Users into the query, we just join GM
-        # and make sure we don't match records where group is member of itself
-        $self->SUPER::Limit(
-            LEFTJOIN   => $group_members,
-            FIELD      => 'GroupId',
-            OPERATOR   => '!=',
-            VALUE      => "$group_members.MemberId",
-            QUOTEVALUE => 0,
-        );
-        $self->_SQLLimit(
-            ALIAS         => $group_members,
-            FIELD         => 'GroupId',
-            OPERATOR      => $op,
-            VALUE         => $value,
-            %rest,
-        );
-    }
-    elsif ( $op =~ /^!=$|^NOT\s+/i ) {
-        # negative condition case
-
-        # reverse op
-        $op =~ s/!|NOT\s+//i;
-
-        # XXX: we have no way to build correct "Watcher.X != 'Y'" when condition
-        # "X = 'Y'" matches more then one user so we try to fetch two records and
-        # do the right thing when there is only one exist and semi-working solution
-        # otherwise.
-        my $users_obj = RT::Users->new( $self->CurrentUser );
-        $users_obj->Limit(
-            FIELD         => $rest{SUBKEY},
-            OPERATOR      => $op,
-            VALUE         => $value,
-        );
-        $users_obj->OrderBy;
-        $users_obj->RowsPerPage(2);
-        my @users = @{ $users_obj->ItemsArrayRef };
-
-        my $group_members = $self->_GroupMembersJoin( GroupsAlias => $groups );
-        if ( @users <= 1 ) {
-            my $uid = 0;
-            $uid = $users[0]->id if @users;
-            $self->SUPER::Limit(
-                LEFTJOIN      => $group_members,
-                ALIAS         => $group_members,
-                FIELD         => 'MemberId',
-                VALUE         => $uid,
-            );
-            $self->_SQLLimit(
-                %rest,
-                ALIAS           => $group_members,
-                FIELD           => 'id',
-                OPERATOR        => 'IS',
-                VALUE           => 'NULL',
-            );
-        } else {
-            $self->SUPER::Limit(
-                LEFTJOIN   => $group_members,
-                FIELD      => 'GroupId',
-                OPERATOR   => '!=',
-                VALUE      => "$group_members.MemberId",
-                QUOTEVALUE => 0,
-            );
-            my $users = $self->Join(
-                TYPE            => 'LEFT',
-                ALIAS1          => $group_members,
-                FIELD1          => 'MemberId',
-                TABLE2          => 'Users',
-                FIELD2          => 'id',
-            );
-            $self->SUPER::Limit(
-                LEFTJOIN      => $users,
-                ALIAS         => $users,
-                FIELD         => $rest{SUBKEY},
-                OPERATOR      => $op,
-                VALUE         => $value,
-                CASESENSITIVE => 0,
-            );
-            $self->_SQLLimit(
-                %rest,
-                ALIAS         => $users,
-                FIELD         => 'id',
-                OPERATOR      => 'IS',
-                VALUE         => 'NULL',
-            );
-        }
-    } else {
-        # positive condition case
-
-        my $group_members = $self->_GroupMembersJoin(
-            GroupsAlias => $groups, New => 1, Left => 0
-        );
-        my $users = $self->Join(
-            TYPE            => 'LEFT',
-            ALIAS1          => $group_members,
-            FIELD1          => 'MemberId',
-            TABLE2          => 'Users',
-            FIELD2          => 'id',
-        );
-        $self->_SQLLimit(
-            %rest,
-            ALIAS           => $users,
-            FIELD           => $rest{'SUBKEY'},
-            VALUE           => $value,
-            OPERATOR        => $op,
-            CASESENSITIVE   => 0,
-        );
-    }
-    $self->_CloseParen;
-}
-
-sub _RoleGroupsJoin {
-    my $self = shift;
-    my %args = (New => 0, Class => 'Ticket', Type => '', @_);
-    return $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $args{'Type'} }
-        if $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $args{'Type'} }
-           && !$args{'New'};
-
-    # we always have watcher groups for ticket, so we use INNER join
-    my $groups = $self->Join(
-        ALIAS1          => 'main',
-        FIELD1          => $args{'Class'} eq 'Queue'? 'Queue': 'id',
-        TABLE2          => 'Groups',
-        FIELD2          => 'Instance',
-        ENTRYAGGREGATOR => 'AND',
+    $self->RoleLimit(
+        TYPE      => $type,
+        FIELD     => $rest{SUBKEY},
+        OPERATOR  => $op,
+        VALUE     => $value,
+        SUBCLAUSE => "ticketsql",
+        %rest,
     );
-    $self->SUPER::Limit(
-        LEFTJOIN        => $groups,
-        ALIAS           => $groups,
-        FIELD           => 'Domain',
-        VALUE           => 'RT::'. $args{'Class'} .'-Role',
-    );
-    $self->SUPER::Limit(
-        LEFTJOIN        => $groups,
-        ALIAS           => $groups,
-        FIELD           => 'Type',
-        VALUE           => $args{'Type'},
-    ) if $args{'Type'};
-
-    $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $args{'Type'} } = $groups
-        unless $args{'New'};
-
-    return $groups;
-}
-
-sub _GroupMembersJoin {
-    my $self = shift;
-    my %args = (New => 1, GroupsAlias => undef, Left => 1, @_);
-
-    return $self->{'_sql_group_members_aliases'}{ $args{'GroupsAlias'} }
-        if $self->{'_sql_group_members_aliases'}{ $args{'GroupsAlias'} }
-            && !$args{'New'};
-
-    my $alias = $self->Join(
-        $args{'Left'} ? (TYPE            => 'LEFT') : (),
-        ALIAS1          => $args{'GroupsAlias'},
-        FIELD1          => 'id',
-        TABLE2          => 'CachedGroupMembers',
-        FIELD2          => 'GroupId',
-        ENTRYAGGREGATOR => 'AND',
-    );
-    $self->SUPER::Limit(
-        $args{'Left'} ? (LEFTJOIN => $alias) : (),
-        ALIAS => $alias,
-        FIELD => 'Disabled',
-        VALUE => 0,
-    );
-
-    $self->{'_sql_group_members_aliases'}{ $args{'GroupsAlias'} } = $alias
-        unless $args{'New'};
-
-    return $alias;
-}
-
-=head2 _WatcherJoin
-
-Helper function which provides joins to a watchers table both for limits
-and for ordering.
-
-=cut
-
-sub _WatcherJoin {
-    my $self = shift;
-    my $type = shift || '';
-
-
-    my $groups = $self->_RoleGroupsJoin( Type => $type );
-    my $group_members = $self->_GroupMembersJoin( GroupsAlias => $groups );
-    # XXX: work around, we must hide groups that
-    # are members of the role group we search in,
-    # otherwise them result in wrong NULLs in Users
-    # table and break ordering. Now, we know that
-    # RT doesn't allow to add groups as members of the
-    # ticket roles, so we just hide entries in CGM table
-    # with MemberId == GroupId from results
-    $self->SUPER::Limit(
-        LEFTJOIN   => $group_members,
-        FIELD      => 'GroupId',
-        OPERATOR   => '!=',
-        VALUE      => "$group_members.MemberId",
-        QUOTEVALUE => 0,
-    );
-    my $users = $self->Join(
-        TYPE            => 'LEFT',
-        ALIAS1          => $group_members,
-        FIELD1          => 'MemberId',
-        TABLE2          => 'Users',
-        FIELD2          => 'id',
-    );
-    return ($groups, $group_members, $users);
 }
 
 =head2 _WatcherMembershipLimit
@@ -1195,30 +962,13 @@ sub _WatcherMembershipLimit {
     my $users        = $self->NewAlias('Users');
     my $memberships  = $self->NewAlias('CachedGroupMembers');
 
-    if ( ref $field ) {    # gross hack
-        my @bundle = @$field;
-        $self->_OpenParen;
-        for my $chunk (@bundle) {
-            ( $field, $op, $value, @rest ) = @$chunk;
-            $self->_SQLLimit(
-                ALIAS    => $memberships,
-                FIELD    => 'GroupId',
-                VALUE    => $value,
-                OPERATOR => $op,
-                @rest,
-            );
-        }
-        $self->_CloseParen;
-    }
-    else {
-        $self->_SQLLimit(
-            ALIAS    => $memberships,
-            FIELD    => 'GroupId',
-            VALUE    => $value,
-            OPERATOR => $op,
-            @rest,
-        );
-    }
+    $self->_SQLLimit(
+        ALIAS    => $memberships,
+        FIELD    => 'GroupId',
+        VALUE    => $value,
+        OPERATOR => $op,
+        @rest,
+    );
 
     # Tie to groups for tickets we care about
     $self->_SQLLimit(
