@@ -87,6 +87,7 @@ use Role::Basic 'with';
 with 'RT::Role::SearchBuilder::Roles';
 
 use RT::Ticket;
+use RT::SQL;
 
 sub Table { 'Tickets'}
 
@@ -222,14 +223,7 @@ my %DefaultEA = (
     CUSTOMFIELD => 'OR',
 );
 
-# Helper functions for passing the above lexically scoped tables above
-# into Tickets_SQL.
 sub FIELDS     { return \%FIELD_METADATA }
-sub dispatch   { return \%dispatch }
-
-# Bring in the clowns.
-require RT::Tickets_SQL;
-
 
 our @SORTFIELDS = qw(id Status
     Queue Subject
@@ -1630,7 +1624,7 @@ sub OrderByCols {
             next;
         }
         if ( $row->{FIELD} !~ /\./ ) {
-            my $meta = $self->FIELDS->{ $row->{FIELD} };
+            my $meta = $FIELD_METADATA{ $row->{FIELD} };
             unless ( $meta ) {
                 push @res, $row;
                 next;
@@ -1663,7 +1657,7 @@ sub OrderByCols {
         }
 
         my ( $field, $subkey ) = split /\./, $row->{FIELD}, 2;
-        my $meta = $self->FIELDS->{$field};
+        my $meta = $FIELD_METADATA{$field};
         if ( defined $meta->[0] && $meta->[0] eq 'WATCHERFIELD' ) {
             # cache alias as we want to use one alias per watcher type for sorting
             my $users = $self->{_sql_u_watchers_alias_for_sort}{ $meta->[1] };
@@ -1753,6 +1747,33 @@ sub OrderByCols {
        }
     }
     return $self->SUPER::OrderByCols(@res);
+}
+
+
+# All SQL stuff goes into one SB subclause so we can deal with all
+# the aggregation
+sub _SQLLimit {
+    my $self = shift;
+    my %args = (@_);
+    $self->Limit(
+        %args,
+        SUBCLAUSE => 'ticketsql'
+    );
+}
+
+sub _SQLJoin {
+    my $self = shift;
+    $self->SUPER::Join(
+        @_,
+        SUBCLAUSE => 'ticketsql'
+    );
+}
+
+sub _OpenParen {
+    $_[0]->SUPER::_OpenParen( 'ticketsql' );
+}
+sub _CloseParen {
+    $_[0]->SUPER::_CloseParen( 'ticketsql' );
 }
 
 
@@ -1939,7 +1960,7 @@ sub IgnoreType {
 
     # Instead of faking a Limit that later gets ignored, fake up the
     # fact that we're already looking at type, so that the check in
-    # Tickets_SQL/FromSQL goes down the right branch
+    # FromSQL goes down the right branch
 
     #  $self->LimitType(VALUE => '__any');
     $self->{_sql_looking_at}{type} = 1;
@@ -2665,8 +2686,19 @@ sub _Init {
     delete $self->{'columns_to_display'};
     $self->SUPER::_Init(@_);
 
-    $self->_InitSQL;
+    $self->_InitSQL();
+}
 
+sub _InitSQL {
+    my $self = shift;
+    # Private Member Variables (which should get cleaned)
+    $self->{'_sql_transalias'}    = undef;
+    $self->{'_sql_trattachalias'} = undef;
+    $self->{'_sql_cf_alias'}  = undef;
+    $self->{'_sql_object_cfv_alias'}  = undef;
+    $self->{'_sql_watcher_join_users_alias'} = undef;
+    $self->{'_sql_query'}         = '';
+    $self->{'_sql_looking_at'}    = {};
 }
 
 
@@ -3201,14 +3233,32 @@ sub _RestrictionsToClauses {
     return \%clause;
 }
 
-
-
-=head2 _ProcessRestrictions PARAMHASH
-
-# The new _ProcessRestrictions is somewhat dependent on the SQL stuff,
-# but isn't quite generic enough to move into Tickets_SQL.
+=head2 ClausesToSQL
 
 =cut
+
+sub ClausesToSQL {
+  my $self = shift;
+  my $clauses = shift;
+  my @sql;
+
+  for my $f (keys %{$clauses}) {
+    my $sql;
+    my $first = 1;
+
+    # Build SQL from the data hash
+    for my $data ( @{ $clauses->{$f} } ) {
+      $sql .= $data->[0] unless $first; $first=0; # ENTRYAGGREGATOR
+      $sql .= " '". $data->[2] . "' ";            # FIELD
+      $sql .= $data->[3] . " ";                   # OPERATOR
+      $sql .= "'". $data->[4] . "' ";             # VALUE
+    }
+
+    push @sql, " ( " . $sql . " ) ";
+  }
+
+  return join("AND",@sql);
+}
 
 sub _ProcessRestrictions {
     my $self = shift;
@@ -3222,7 +3272,7 @@ sub _ProcessRestrictions {
     delete $self->{'rows'};
     delete $self->{'count_all'};
 
-    my $sql = $self->Query;    # Violating the _SQL namespace
+    my $sql = $self->Query;
     if ( !$sql || $self->{'RecalcTicketLimits'} ) {
 
         local $self->{using_restrictions};
@@ -3336,6 +3386,121 @@ BUG: There should be an API for this
 
 =cut
 
+=head2 FromSQL
+
+Convert a RT-SQL string into a set of SearchBuilder restrictions.
+
+Returns (1, 'Status message') on success and (0, 'Error Message') on
+failure.
+
+=cut
+
+sub _parser {
+    my ($self,$string) = @_;
+    my $ea = '';
+
+    # Lower Case version of %FIELD_METADATA, for case insensitivity
+    my %lcfields = map { ( lc($_) => $_ ) } (keys %FIELD_METADATA);
+
+    my %callback;
+    $callback{'OpenParen'} = sub {
+      $self->_OpenParen
+    };
+    $callback{'CloseParen'} = sub {
+      $self->_CloseParen;
+    };
+    $callback{'EntryAggregator'} = sub { $ea = $_[0] || '' };
+    $callback{'Condition'} = sub {
+        my ($key, $op, $value) = @_;
+
+        # key has dot then it's compound variant and we have subkey
+        my $subkey = '';
+        ($key, $subkey) = ($1, $2) if $key =~ /^([^\.]+)\.(.+)$/;
+
+        # normalize key and get class (type)
+        my $class;
+        if (exists $lcfields{lc $key}) {
+            $key = $lcfields{lc $key};
+            $class = $FIELD_METADATA{$key}->[0];
+        }
+        die "Unknown field '$key' in '$string'" unless $class;
+
+        # replace __CurrentUser__ with id
+        $value = $self->CurrentUser->id if $value eq '__CurrentUser__';
+
+
+        unless( $dispatch{ $class } ) {
+            die "No dispatch method for class '$class'"
+        }
+        my $sub = $dispatch{ $class };
+
+        $sub->( $self, $key, $op, $value,
+                ENTRYAGGREGATOR => $ea,
+                SUBKEY          => $subkey,
+              );
+        $ea = '';
+    };
+    RT::SQL::Parse($string, \%callback);
+}
+
+sub FromSQL {
+    my ($self,$query) = @_;
+
+    {
+        # preserve first_row and show_rows across the CleanSlate
+        local ($self->{'first_row'}, $self->{'show_rows'}, $self->{_sql_looking_at});
+        $self->CleanSlate;
+        $self->_InitSQL();
+    }
+
+    return (1, $self->loc("No Query")) unless $query;
+
+    $self->{_sql_query} = $query;
+    eval { $self->_parser( $query ); };
+    if ( $@ ) {
+        $RT::Logger->error( $@ );
+        return (0, $@);
+    }
+
+    # We only want to look at EffectiveId's (mostly) for these searches.
+    unless ( $self->{_sql_looking_at}{effectiveid} ) {
+        $self->Limit(
+            FIELD           => 'EffectiveId',
+            VALUE           => 'main.id',
+            ENTRYAGGREGATOR => 'AND',
+            QUOTEVALUE      => 0,
+        );
+    }
+    unless ( $self->{_sql_looking_at}{type} ) {
+        $self->Limit( FIELD => 'Type', VALUE => 'ticket' );
+    }
+
+    # We don't want deleted tickets unless 'allow_deleted_search' is set
+    unless( $self->{'allow_deleted_search'} ) {
+        $self->Limit(
+            FIELD    => 'Status',
+            OPERATOR => '!=',
+            VALUE => 'deleted',
+        );
+    }
+
+    # set SB's dirty flag
+    $self->{'must_redo_search'} = 1;
+    $self->{'RecalcTicketLimits'} = 0;
+
+    return (1, $self->loc("Valid Query"));
+}
+
+=head2 Query
+
+Returns the last string passed to L</FromSQL>.
+
+=cut
+
+sub Query {
+    my $self = shift;
+    return $self->{_sql_query};
+}
 
 
 =head2 NewItem
