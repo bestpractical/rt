@@ -1214,8 +1214,8 @@ sub _CustomFieldLimit {
 # we explicitly don't include the "IS NULL" case, since we would
 # otherwise end up with a redundant clause.
 
-    my ($negative_op, $null_op, $inv_op, $range_op)
-        = $self->ClassifySQLOperation( $op );
+    my $negative_op = ($op eq '!=' || $op =~ /\bNOT\b/i);
+    my $null_op = ( 'is not' eq lc($op) || 'is' eq lc($op) );
 
     my $fix_op = sub {
         return @_ unless RT->Config->Get('DatabaseType') eq 'Oracle';
@@ -1347,7 +1347,7 @@ sub _CustomFieldLimit {
         $self->_CloseParen;
     } 
     elsif ( !$negative_op || $single_value ) {
-        $cfkey .= '.'. $self->{'_sql_multiple_cfs_index'}++ if !$single_value && !$range_op;
+        $cfkey .= '.'. $self->{'_sql_multiple_cfs_index'}++ if not $single_value and not $op =~ /^[<>]=?$/;
         my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
 
         $self->_OpenParen;
