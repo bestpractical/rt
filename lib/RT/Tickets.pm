@@ -3185,7 +3185,6 @@ sub _ProcessRestrictions {
     delete $self->{'items_array'};
     delete $self->{'item_map'};
     delete $self->{'raw_rows'};
-    delete $self->{'rows'};
     delete $self->{'count_all'};
 
     my $sql = $self->Query;
