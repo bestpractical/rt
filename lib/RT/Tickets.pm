@@ -692,7 +692,7 @@ sub _TransLimit {
 
     my $txn_alias = $self->JoinTransactions;
     unless ( defined $self->{_sql_trattachalias} ) {
-        $self->{_sql_trattachalias} = $self->_SQLJoin(
+        $self->{_sql_trattachalias} = $self->Join(
             TYPE   => 'LEFT', # not all txns have an attachment
             ALIAS1 => $txn_alias,
             FIELD1 => 'id',
@@ -762,7 +762,7 @@ sub _TransContentLimit {
 
     my $txn_alias = $self->JoinTransactions;
     unless ( defined $self->{_sql_trattachalias} ) {
-        $self->{_sql_trattachalias} = $self->_SQLJoin(
+        $self->{_sql_trattachalias} = $self->Join(
             TYPE   => 'LEFT', # not all txns have an attachment
             ALIAS1 => $txn_alias,
             FIELD1 => 'id',
@@ -777,7 +777,7 @@ sub _TransContentLimit {
 
         my $alias;
         if ( $config->{'Table'} and $config->{'Table'} ne "Attachments") {
-            $alias = $self->{'_sql_aliases'}{'full_text'} ||= $self->_SQLJoin(
+            $alias = $self->{'_sql_aliases'}{'full_text'} ||= $self->Join(
                 TYPE   => 'LEFT',
                 ALIAS1 => $self->{'_sql_trattachalias'},
                 FIELD1 => 'id',
@@ -1760,13 +1760,10 @@ sub _SQLLimit {
         SUBCLAUSE => 'ticketsql'
     );
 }
-
 sub _SQLJoin {
     my $self = shift;
-    $self->SUPER::Join(
-        @_,
-        SUBCLAUSE => 'ticketsql'
-    );
+    RT->Deprecated( Remove => "4.4", Instead => "Join" );
+    $self->Join(@_);
 }
 
 sub _OpenParen {
