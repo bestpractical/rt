@@ -96,6 +96,33 @@ You should not include L<RT::System> itself in this list.
 
 Simply calls RegisterRole on each equivalent class.
 
+=item Single
+
+Optional.  A true value indicates that this role may only contain a single user
+as a member at any given time.  When adding a new member to a Single role, any
+existing member will be removed.  If all members are removed, L<RT/Nobody> is
+added automatically.
+
+=item Column
+
+Optional, implies Single.  Specifies a column on the announcing class into
+which the single role member's user ID is denormalized.  The column will be
+kept updated automatically as the role member changes.  This is used, for
+example, for ticket owners and makes searching simpler (among other benefits).
+
+=item ACLOnly
+
+Optional.  A true value indicates this role is only used for ACLs and should
+not be populated with members.
+
+This flag is advisory only, and the Perl API still allows members to be added
+to ACLOnly roles.
+
+=item ACLOnlyInEquiv
+
+Optional.  Automatically sets the ACLOnly flag for all EquivClasses, but not
+the announcing class.
+
 =back
 
 =cut
@@ -117,7 +144,7 @@ sub RegisterRole {
     $role{ Single } = 1 if $role{Column};
 
     # Stash the role on ourself
-    $class->_ROLES->{ $role{Name} } = \%role;
+    $class->_ROLES->{ $role{Name} } = { %role };
 
     # Register it with any equivalent classes...
     my $equiv = delete $role{EquivClasses} || [];
@@ -127,6 +154,9 @@ sub RegisterRole {
         push @$equiv, "RT::System";
     }
 
+    # ... marked as "for ACLs only" if flagged as such by the announcing class
+    $role{ACLOnly} = 1 if delete $role{ACLOnlyInEquiv};
+
     $_->RegisterRole(%role) for @$equiv;
 
     # XXX TODO: Register which classes have roles on them somewhere?
@@ -134,13 +164,62 @@ sub RegisterRole {
     return 1;
 }
 
+=head2 Role
+
+Takes a role name; returns a hashref describing the role.  This hashref
+contains the same attributes used to register the role (see L</RegisterRole>),
+as well as some extras, including:
+
+=over
+
+=item Class
+
+The original class which announced the role.  This is set automatically by
+L</RegisterRole> and is the same across all EquivClasses.
+
+=back
+
+Returns an empty hashref if the role doesn't exist.
+
+=cut
+
+sub Role {
+    return \%{ $_[0]->_ROLES->{$_[1]} || {} };
+}
+
 =head2 Roles
 
 Returns a list of role names registered for this class.
 
+Optionally takes a hash specifying attributes the returned roles must possess
+or lack.  Testing is done on a simple truthy basis and the actual values of
+the role attributes and arguments you pass are not compared string-wise or
+numerically; they must simply evaluate to the same truthiness.
+
+For example:
+
+    # Return role names which are not only for ACL purposes
+    $object->Roles( ACLOnly => 0 );
+
+    # Return role names which are denormalized into a column; note that the
+    # role's Column attribute contains a string.
+    $object->Roles( Column => 1 );
+
 =cut
 
-sub Roles { sort { $a cmp $b } keys %{ shift->_ROLES } }
+sub Roles {
+    my $self = shift;
+    my %attr = @_;
+
+    return grep {
+        my $ok = 1;
+        my $role = $self->Role($_);
+        for my $k (keys %attr) {
+            $ok = 0, last if $attr{$k} xor $role->{$k};
+        }
+        $ok;
+    } sort { $a cmp $b } keys %{ $self->_ROLES };
+}
 
 {
     my %ROLES;
