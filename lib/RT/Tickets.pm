@@ -910,22 +910,23 @@ sub _WatcherLimit {
         die "Invalid watcher subfield: '$rest{SUBKEY}'";
     }
 
+    # if it's equality op and search by Email or Name then we can preload user
+    # we do it to help some DBs better estimate number of rows and get better plans
+    if ( $op =~ /^!?=$/ && (!$rest{'SUBKEY'} || $rest{'SUBKEY'} eq 'Name' || $rest{'SUBKEY'} eq 'EmailAddress') ) {
+        my $o = RT::User->new( $self->CurrentUser );
+        my $method =
+            !$rest{'SUBKEY'}
+            ? $field eq 'Owner'? 'Load' : 'LoadByEmail'
+            : $rest{'SUBKEY'} eq 'EmailAddress' ? 'LoadByEmail': 'Load';
+        $o->$method( $value );
+        $rest{'SUBKEY'} = 'id';
+        $value = $o->id || 0;
+    }
+
     # Owner was ENUM field, so "Owner = 'xxx'" allowed user to
     # search by id and Name at the same time, this is workaround
     # to preserve backward compatibility
     if ( $field eq 'Owner' ) {
-        if ( $op =~ /^!?=$/ && (!$rest{'SUBKEY'} || $rest{'SUBKEY'} eq 'Name' || $rest{'SUBKEY'} eq 'EmailAddress') ) {
-            my $o = RT::User->new( $self->CurrentUser );
-            my $method = ($rest{'SUBKEY'}||'') eq 'EmailAddress' ? 'LoadByEmail': 'Load';
-            $o->$method( $value );
-            $self->_SQLLimit(
-                FIELD    => 'Owner',
-                OPERATOR => $op,
-                VALUE    => $o->id,
-                %rest,
-            );
-            return;
-        }
         if ( ($rest{'SUBKEY'}||'') eq 'id' ) {
             $self->_SQLLimit(
                 FIELD    => 'Owner',
