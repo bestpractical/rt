@@ -3046,58 +3046,6 @@ sub CurrentUserCanSee {
 
 
 
-
-
-=head2 LoadRestrictions
-
-LoadRestrictions takes a string which can fully populate the TicketRestrictons hash.
-TODO It is not yet implemented
-
-=cut
-
-
-
-=head2 DescribeRestrictions
-
-takes nothing.
-Returns a hash keyed by restriction id.
-Each element of the hash is currently a one element hash that contains DESCRIPTION which
-is a description of the purpose of that TicketRestriction
-
-=cut
-
-sub DescribeRestrictions {
-    my $self = shift;
-
-    my %listing;
-
-    foreach my $row ( keys %{ $self->{'TicketRestrictions'} } ) {
-        $listing{$row} = $self->{'TicketRestrictions'}{$row}{'DESCRIPTION'};
-    }
-    return (%listing);
-}
-
-
-
-=head2 RestrictionValues FIELD
-
-Takes a restriction field and returns a list of values this field is restricted
-to.
-
-=cut
-
-sub RestrictionValues {
-    my $self  = shift;
-    my $field = shift;
-    map $self->{'TicketRestrictions'}{$_}{'VALUE'}, grep {
-               $self->{'TicketRestrictions'}{$_}{'FIELD'}    eq $field
-            && $self->{'TicketRestrictions'}{$_}{'OPERATOR'} eq "="
-        }
-        keys %{ $self->{'TicketRestrictions'} };
-}
-
-
-
 =head2 ClearRestrictions
 
 Removes all restrictions irretrievably
@@ -3110,27 +3058,6 @@ sub ClearRestrictions {
     $self->{_sql_looking_at} = {};
     $self->{'RecalcTicketLimits'}      = 1;
 }
-
-
-
-=head2 DeleteRestriction
-
-Takes the row Id of a restriction (From DescribeRestrictions' output, for example.
-Removes that restriction from the session's limits.
-
-=cut
-
-sub DeleteRestriction {
-    my $self = shift;
-    my $row  = shift;
-    delete $self->{'TicketRestrictions'}{$row};
-
-    $self->{'RecalcTicketLimits'} = 1;
-
-    #make the underlying easysearch object forget all its preconceptions
-}
-
-
 
 # Convert a set of oldstyle SB Restrictions to Clauses for RQL
 
