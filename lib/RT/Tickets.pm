@@ -176,7 +176,6 @@ our %dispatch = (
     CUSTOMFIELD     => \&_CustomFieldLimit,
     HASATTRIBUTE    => \&_HasAttributeLimit,
 );
-our %can_bundle = ();# WATCHERFIELD => "yes", );
 
 # Default EntryAggregator per type
 # if you specify OP, you must specify all valid OPs
@@ -224,7 +223,6 @@ my %DefaultEA = (
 # into Tickets_SQL.
 sub FIELDS     { return \%FIELD_METADATA }
 sub dispatch   { return \%dispatch }
-sub can_bundle { return \%can_bundle }
 
 # Bring in the clowns.
 require RT::Tickets_SQL;
