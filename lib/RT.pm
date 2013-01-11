@@ -828,6 +828,11 @@ A suggestion of what to use in place of the deprecated API
 Used if not the entire method is being removed, merely a manner of
 calling it; names the arguments which are deprecated.
 
+=item Message
+
+Overrides the auto-built phrasing of C<Calling function ____ is
+deprecated> with a custom message.
+
 =back
 
 =cut
@@ -838,6 +843,7 @@ sub Deprecated {
         Arguments => undef,
         Remove => undef,
         Instead => undef,
+        Message => undef,
         @_,
     );
 
@@ -856,7 +862,9 @@ sub Deprecated {
     $stack =~ s/^.*?\n//; # Strip off call to ->Deprecated
 
     my $msg;
-    if ($args{Arguments}) {
+    if ($args{Message}) {
+        $msg = $args{Message};
+    } elsif ($args{Arguments}) {
         $msg = "Calling $function with $args{Arguments} is deprecated";
     } else {
         $msg = "The $function is deprecated";

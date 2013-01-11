@@ -66,12 +66,12 @@ $Ticket
 <%init>
 # normal tickets
 my $deps = $Ticket->UnresolvedDependencies;
-$deps->Limit( FIELD => 'Type', VALUE => 'ticket' );
+$deps->LimitType( VALUE => 'ticket' );
 my $depends = $deps->Count || 0;
 
 # approvals
 $deps = $Ticket->UnresolvedDependencies;
-$deps->Limit( FIELD => 'Type', VALUE => 'approval' );
+$deps->LimitType( VALUE => 'approval' );
 my $approvals = $deps->Count || 0;
 
 return unless $depends or $approvals;
