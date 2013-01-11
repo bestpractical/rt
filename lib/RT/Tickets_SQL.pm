@@ -169,7 +169,6 @@ sub _parser {
                 ENTRYAGGREGATOR => $ea,
                 SUBKEY          => $subkey,
               );
-        $self->{_sql_looking_at}{lc $key} = 1;
         $ea = '';
     };
     RT::SQL::Parse($string, \%callback);
@@ -219,10 +218,10 @@ sub FromSQL {
 
     {
         # preserve first_row and show_rows across the CleanSlate
-        local ($self->{'first_row'}, $self->{'show_rows'});
+        local ($self->{'first_row'}, $self->{'show_rows'}, $self->{_sql_looking_at});
         $self->CleanSlate;
+        $self->_InitSQL();
     }
-    $self->_InitSQL();
 
     return (1, $self->loc("No Query")) unless $query;
 
@@ -234,29 +233,16 @@ sub FromSQL {
     }
 
     # We only want to look at EffectiveId's (mostly) for these searches.
-    unless ( exists $self->{_sql_looking_at}{'effectiveid'} ) {
-        #TODO, we shouldn't be hard #coding the tablename to main.
-        $self->SUPER::Limit( FIELD           => 'EffectiveId',
-                             VALUE           => 'main.id',
-                             ENTRYAGGREGATOR => 'AND',
-                             QUOTEVALUE      => 0,
-                           );
+    unless ( $self->{_sql_looking_at}{effectiveid} ) {
+        $self->Limit(
+            FIELD           => 'EffectiveId',
+            VALUE           => 'main.id',
+            ENTRYAGGREGATOR => 'AND',
+            QUOTEVALUE      => 0,
+        );
     }
-    # FIXME: Need to bring this logic back in
-
-    #      if ($self->_isLimited && (! $self->{'looking_at_effective_id'})) {
-    #         $self->SUPER::Limit( FIELD => 'EffectiveId',
-    #               OPERATOR => '=',
-    #               QUOTEVALUE => 0,
-    #               VALUE => 'main.id');   #TODO, we shouldn't be hard coding the tablename to main.
-    #       }
-    # --- This is hardcoded above.  This comment block can probably go.
-    # Or, we need to reimplement the looking_at_effective_id toggle.
-
-    # Unless we've explicitly asked to look at a specific Type, we need
-    # to limit to it.
-    unless ( $self->{looking_at_type} ) {
-        $self->SUPER::Limit( FIELD => 'Type', VALUE => 'ticket' );
+    unless ( $self->{_sql_looking_at}{type} ) {
+        $self->Limit( FIELD => 'Type', VALUE => 'ticket' );
     }
 
     # We don't want deleted tickets unless 'allow_deleted_search' is set

@@ -1763,16 +1763,14 @@ sub Limit {
     delete $self->{'raw_rows'};
     delete $self->{'count_all'};
 
-    $args{ALIAS} ||= 'main';
-    $self->{'looking_at_effective_id'} = 1
-        if $args{'ALIAS'} eq 'main' and $args{'FIELD'} eq 'EffectiveId';
-    $self->{'looking_at_type'} = 1
-        if $args{'ALIAS'} eq 'main' and $args{'FIELD'} eq 'Type';
-
     if ($self->{'using_restrictions'}) {
         RT->Deprecated( Message => "Mixing old-style LimitFoo methods with Limit is deprecated" );
         $self->LimitField(@_);
     }
+
+    $self->{_sql_looking_at}{ lc $args{FIELD} } = 1
+        if (not $args{ALIAS} or $args{ALIAS} eq "main");
+
     $self->SUPER::Limit(@_);
 }
 
@@ -1944,7 +1942,7 @@ sub IgnoreType {
     # Tickets_SQL/FromSQL goes down the right branch
 
     #  $self->LimitType(VALUE => '__any');
-    $self->{looking_at_type} = 1;
+    $self->{_sql_looking_at}{type} = 1;
 }
 
 
@@ -2660,8 +2658,6 @@ sub _Init {
     my $self = shift;
     $self->{'table'}                   = "Tickets";
     $self->{'RecalcTicketLimits'}      = 1;
-    $self->{'looking_at_effective_id'} = 0;
-    $self->{'looking_at_type'}         = 0;
     $self->{'restriction_index'}       = 1;
     $self->{'primary_key'}             = "id";
     delete $self->{'items_array'};
@@ -3086,8 +3082,7 @@ Removes all restrictions irretrievably
 sub ClearRestrictions {
     my $self = shift;
     delete $self->{'TicketRestrictions'};
-    $self->{'looking_at_effective_id'} = 0;
-    $self->{'looking_at_type'}         = 0;
+    $self->{_sql_looking_at} = {};
     $self->{'RecalcTicketLimits'}      = 1;
 }
 
@@ -3330,7 +3325,6 @@ RT::Tickets supports several flags which alter search behavior:
 
 
 allow_deleted_search  (Otherwise never show deleted tickets in search results)
-looking_at_type (otherwise limit to type=ticket)
 
 These flags are set by calling 
 
