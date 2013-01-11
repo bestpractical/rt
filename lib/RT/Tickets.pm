@@ -727,8 +727,7 @@ sub _TransContentLimit {
     #Basically, we want to make sure that the limits apply to
     #the same attachment, rather than just another attachment
     #for the same ticket, no matter how many clauses we lump
-    #on. We put them in TicketAliases so that they get nuked
-    #when we redo the join.
+    #on.
 
     # In the SQL, we might have
     #       (( Content = foo ) or ( Content = bar AND Content = baz ))
@@ -3183,9 +3182,6 @@ sub ClausesToSQL {
 sub _ProcessRestrictions {
     my $self = shift;
 
-    #Blow away ticket aliases since we'll need to regenerate them for
-    #a new search
-    delete $self->{'TicketAliases'};
     delete $self->{'items_array'};
     delete $self->{'item_map'};
     delete $self->{'raw_rows'};
