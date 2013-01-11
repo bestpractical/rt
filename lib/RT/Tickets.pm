@@ -299,7 +299,7 @@ sub _BookmarkLimit {
 
     my @bookmarks = $sb->CurrentUser->UserObj->Bookmarks;
 
-    return $sb->_SQLLimit(
+    return $sb->Limit(
         FIELD    => $field,
         OPERATOR => $op,
         VALUE    => 0,
@@ -319,7 +319,7 @@ sub _BookmarkLimit {
     my $first = 1;
     my $ea = $op eq '='? 'OR': 'AND';
     foreach my $id ( sort @bookmarks ) {
-        $sb->_SQLLimit(
+        $sb->Limit(
             ALIAS    => $tickets_alias,
             FIELD    => 'id',
             OPERATOR => $op,
@@ -365,7 +365,7 @@ sub _EnumLimit {
         $o->Load($value);
         $value = $o->Id;
     }
-    $sb->_SQLLimit(
+    $sb->Limit(
         FIELD    => $field,
         VALUE    => $value,
         OPERATOR => $op,
@@ -389,7 +389,7 @@ sub _IntLimit {
     die "Invalid Operator $op for $field"
         unless $op =~ /^(=|!=|>|<|>=|<=)$/;
 
-    $sb->_SQLLimit(
+    $sb->Limit(
         FIELD    => $field,
         VALUE    => $value,
         OPERATOR => $op,
@@ -468,13 +468,13 @@ sub _LinkLimit {
             TABLE2 => 'Links',
             FIELD2 => 'Local' . $linkfield
         );
-        $sb->SUPER::Limit(
+        $sb->Limit(
             LEFTJOIN => $linkalias,
             FIELD    => 'Type',
             OPERATOR => '=',
             VALUE    => $meta->[2],
         ) if $meta->[2];
-        $sb->_SQLLimit(
+        $sb->Limit(
             @rest,
             ALIAS      => $linkalias,
             FIELD      => $matchfield,
@@ -491,19 +491,19 @@ sub _LinkLimit {
             TABLE2 => 'Links',
             FIELD2 => 'Local' . $linkfield
         );
-        $sb->SUPER::Limit(
+        $sb->Limit(
             LEFTJOIN => $linkalias,
             FIELD    => 'Type',
             OPERATOR => '=',
             VALUE    => $meta->[2],
         ) if $meta->[2];
-        $sb->SUPER::Limit(
+        $sb->Limit(
             LEFTJOIN => $linkalias,
             FIELD    => $matchfield,
             OPERATOR => '=',
             VALUE    => $value,
         );
-        $sb->_SQLLimit(
+        $sb->Limit(
             @rest,
             ALIAS      => $linkalias,
             FIELD      => $matchfield,
@@ -549,14 +549,14 @@ sub _DateLimit {
 
         $sb->_OpenParen;
 
-        $sb->_SQLLimit(
+        $sb->Limit(
             FIELD    => $meta->[1],
             OPERATOR => ">=",
             VALUE    => $daystart,
             @rest,
         );
 
-        $sb->_SQLLimit(
+        $sb->Limit(
             FIELD    => $meta->[1],
             OPERATOR => "<",
             VALUE    => $dayend,
@@ -568,7 +568,7 @@ sub _DateLimit {
 
     }
     else {
-        $sb->_SQLLimit(
+        $sb->Limit(
             FIELD    => $meta->[1],
             OPERATOR => $op,
             VALUE    => $date->ISO,
@@ -604,7 +604,7 @@ sub _StringLimit {
         $value = 'NULL';
     }
 
-    $sb->_SQLLimit(
+    $sb->Limit(
         FIELD         => $field,
         OPERATOR      => $op,
         VALUE         => $value,
@@ -647,14 +647,14 @@ sub _TransDateLimit {
         $date->AddDay;
         my $dayend = $date->ISO;
 
-        $sb->_SQLLimit(
+        $sb->Limit(
             ALIAS         => $txn_alias,
             FIELD         => 'Created',
             OPERATOR      => ">=",
             VALUE         => $daystart,
             @rest
         );
-        $sb->_SQLLimit(
+        $sb->Limit(
             ALIAS         => $txn_alias,
             FIELD         => 'Created',
             OPERATOR      => "<=",
@@ -669,7 +669,7 @@ sub _TransDateLimit {
     else {
 
         #Search for the right field
-        $sb->_SQLLimit(
+        $sb->Limit(
             ALIAS         => $txn_alias,
             FIELD         => 'Created',
             OPERATOR      => $op,
@@ -701,7 +701,7 @@ sub _TransLimit {
         );
     }
 
-    $self->_SQLLimit(
+    $self->Limit(
         %rest,
         ALIAS         => $self->{_sql_trattachalias},
         FIELD         => $field,
@@ -756,7 +756,7 @@ sub _TransContentLimit {
 
     my $config = RT->Config->Get('FullTextSearch') || {};
     unless ( $config->{'Enable'} ) {
-        $self->_SQLLimit( %rest, FIELD => 'id', VALUE => 0 );
+        $self->Limit( %rest, FIELD => 'id', VALUE => 0 );
         return;
     }
 
@@ -793,7 +793,7 @@ sub _TransContentLimit {
         if ( $db_type eq 'Oracle' ) {
             my $dbh = $RT::Handle->dbh;
             my $alias = $self->{_sql_trattachalias};
-            $self->_SQLLimit(
+            $self->Limit(
                 %rest,
                 FUNCTION      => "CONTAINS( $alias.$field, ".$dbh->quote($value) .")",
                 OPERATOR      => '>',
@@ -803,7 +803,7 @@ sub _TransContentLimit {
             );
             # this is required to trick DBIx::SB's LEFT JOINS optimizer
             # into deciding that join is redundant as it is
-            $self->_SQLLimit(
+            $self->Limit(
                 ENTRYAGGREGATOR => 'AND',
                 ALIAS           => $self->{_sql_trattachalias},
                 FIELD           => 'Content',
@@ -813,7 +813,7 @@ sub _TransContentLimit {
         }
         elsif ( $db_type eq 'Pg' ) {
             my $dbh = $RT::Handle->dbh;
-            $self->_SQLLimit(
+            $self->Limit(
                 %rest,
                 ALIAS       => $alias,
                 FIELD       => $index,
@@ -837,7 +837,7 @@ sub _TransContentLimit {
             $value =~ s/;/\\;/g;
 
             my $max = $config->{'MaxMatches'};
-            $self->_SQLLimit(
+            $self->Limit(
                 %rest,
                 ALIAS       => $alias,
                 FIELD       => 'query',
@@ -846,7 +846,7 @@ sub _TransContentLimit {
             );
         }
     } else {
-        $self->_SQLLimit(
+        $self->Limit(
             %rest,
             ALIAS         => $self->{_sql_trattachalias},
             FIELD         => $field,
@@ -856,7 +856,7 @@ sub _TransContentLimit {
         );
     }
     if ( RT->Config->Get('DontSearchFileAttachments') ) {
-        $self->_SQLLimit(
+        $self->Limit(
             ENTRYAGGREGATOR => 'AND',
             ALIAS           => $self->{_sql_trattachalias},
             FIELD           => 'Filename',
@@ -956,7 +956,7 @@ sub _WatcherMembershipLimit {
     my $users        = $self->NewAlias('Users');
     my $memberships  = $self->NewAlias('CachedGroupMembers');
 
-    $self->_SQLLimit(
+    $self->Limit(
         ALIAS    => $memberships,
         FIELD    => 'GroupId',
         VALUE    => $value,
@@ -965,7 +965,7 @@ sub _WatcherMembershipLimit {
     );
 
     # Tie to groups for tickets we care about
-    $self->_SQLLimit(
+    $self->Limit(
         ALIAS           => $groups,
         FIELD           => 'Domain',
         VALUE           => 'RT::Ticket-Role',
@@ -986,7 +986,7 @@ sub _WatcherMembershipLimit {
     my $type = ( defined $meta->[1] ? $meta->[1] : undef );
 
     if ($type) {
-        $self->_SQLLimit(
+        $self->Limit(
             ALIAS           => $groups,
             FIELD           => 'Type',
             VALUE           => $type,
@@ -1105,7 +1105,7 @@ sub _CustomFieldJoin {
             TABLE2 => 'ObjectCustomFieldValues',
             FIELD2 => 'ObjectId',
         );
-        $self->SUPER::Limit(
+        $self->Limit(
             LEFTJOIN        => $TicketCFs,
             FIELD           => 'CustomField',
             VALUE           => $cfid,
@@ -1120,7 +1120,7 @@ sub _CustomFieldJoin {
             FIELD2     => 'ObjectId',
         );
 
-        $self->SUPER::Limit(
+        $self->Limit(
             LEFTJOIN        => $ocfalias,
             ENTRYAGGREGATOR => 'OR',
             FIELD           => 'ObjectId',
@@ -1134,13 +1134,13 @@ sub _CustomFieldJoin {
             TABLE2     => 'CustomFields',
             FIELD2     => 'id',
         );
-        $self->SUPER::Limit(
+        $self->Limit(
             LEFTJOIN        => $CFs,
             ENTRYAGGREGATOR => 'AND',
             FIELD           => 'LookupType',
             VALUE           => 'RT::Queue-RT::Ticket',
         );
-        $self->SUPER::Limit(
+        $self->Limit(
             LEFTJOIN        => $CFs,
             ENTRYAGGREGATOR => 'AND',
             FIELD           => 'Name',
@@ -1154,7 +1154,7 @@ sub _CustomFieldJoin {
             TABLE2 => 'ObjectCustomFieldValues',
             FIELD2 => 'CustomField',
         );
-        $self->SUPER::Limit(
+        $self->Limit(
             LEFTJOIN        => $TicketCFs,
             FIELD           => 'ObjectId',
             VALUE           => 'main.id',
@@ -1162,13 +1162,13 @@ sub _CustomFieldJoin {
             ENTRYAGGREGATOR => 'AND',
         );
     }
-    $self->SUPER::Limit(
+    $self->Limit(
         LEFTJOIN        => $TicketCFs,
         FIELD           => 'ObjectType',
         VALUE           => 'RT::Ticket',
         ENTRYAGGREGATOR => 'AND'
     );
-    $self->SUPER::Limit(
+    $self->Limit(
         LEFTJOIN        => $TicketCFs,
         FIELD           => 'Disabled',
         OPERATOR        => '=',
@@ -1281,14 +1281,14 @@ sub _CustomFieldLimit {
         # with column specified we have different situation
         my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
         $self->_OpenParen;
-        $self->_SQLLimit(
+        $self->Limit(
             ALIAS    => $TicketCFs,
             FIELD    => 'id',
             OPERATOR => $op,
             VALUE    => $value,
             %rest
         );
-        $self->_SQLLimit(
+        $self->Limit(
             ALIAS      => $CFs,
             FIELD      => 'Name',
             OPERATOR   => 'IS NOT',
@@ -1352,7 +1352,7 @@ sub _CustomFieldLimit {
         # if column is defined then deal only with it
         # otherwise search in Content and in LargeContent
         if ( $column ) {
-            $self->_SQLLimit( $fix_op->(
+            $self->Limit( $fix_op->(
                 ALIAS      => $TicketCFs,
                 FIELD      => $column,
                 OPERATOR   => $op,
@@ -1372,7 +1372,7 @@ sub _CustomFieldLimit {
                     # there is time speccified.
                     my $date = RT::Date->new( $self->CurrentUser );
                     $date->Set( Format => 'unknown', Value => $value );
-                    $self->_SQLLimit(
+                    $self->Limit(
                         ALIAS    => $TicketCFs,
                         FIELD    => 'Content',
                         OPERATOR => "=",
@@ -1393,7 +1393,7 @@ sub _CustomFieldLimit {
 
                     $self->_OpenParen;
 
-                    $self->_SQLLimit(
+                    $self->Limit(
                         ALIAS    => $TicketCFs,
                         FIELD    => 'Content',
                         OPERATOR => ">=",
@@ -1401,7 +1401,7 @@ sub _CustomFieldLimit {
                         %rest,
                     );
 
-                    $self->_SQLLimit(
+                    $self->Limit(
                         ALIAS    => $TicketCFs,
                         FIELD    => 'Content',
                         OPERATOR => "<=",
@@ -1415,7 +1415,7 @@ sub _CustomFieldLimit {
             }
             elsif ( $op eq '=' || $op eq '!=' || $op eq '<>' ) {
                 if ( length( Encode::encode_utf8($value) ) < 256 ) {
-                    $self->_SQLLimit(
+                    $self->Limit(
                         ALIAS    => $TicketCFs,
                         FIELD    => 'Content',
                         OPERATOR => $op,
@@ -1426,14 +1426,14 @@ sub _CustomFieldLimit {
                 }
                 else {
                     $self->_OpenParen;
-                    $self->_SQLLimit(
+                    $self->Limit(
                         ALIAS           => $TicketCFs,
                         FIELD           => 'Content',
                         OPERATOR        => '=',
                         VALUE           => '',
                         ENTRYAGGREGATOR => 'OR'
                     );
-                    $self->_SQLLimit(
+                    $self->Limit(
                         ALIAS           => $TicketCFs,
                         FIELD           => 'Content',
                         OPERATOR        => 'IS',
@@ -1441,7 +1441,7 @@ sub _CustomFieldLimit {
                         ENTRYAGGREGATOR => 'OR'
                     );
                     $self->_CloseParen;
-                    $self->_SQLLimit( $fix_op->(
+                    $self->Limit( $fix_op->(
                         ALIAS           => $TicketCFs,
                         FIELD           => 'LargeContent',
                         OPERATOR        => $op,
@@ -1452,7 +1452,7 @@ sub _CustomFieldLimit {
                 }
             }
             else {
-                $self->_SQLLimit(
+                $self->Limit(
                     ALIAS    => $TicketCFs,
                     FIELD    => 'Content',
                     OPERATOR => $op,
@@ -1463,14 +1463,14 @@ sub _CustomFieldLimit {
 
                 $self->_OpenParen;
                 $self->_OpenParen;
-                $self->_SQLLimit(
+                $self->Limit(
                     ALIAS           => $TicketCFs,
                     FIELD           => 'Content',
                     OPERATOR        => '=',
                     VALUE           => '',
                     ENTRYAGGREGATOR => 'OR'
                 );
-                $self->_SQLLimit(
+                $self->Limit(
                     ALIAS           => $TicketCFs,
                     FIELD           => 'Content',
                     OPERATOR        => 'IS',
@@ -1478,7 +1478,7 @@ sub _CustomFieldLimit {
                     ENTRYAGGREGATOR => 'OR'
                 );
                 $self->_CloseParen;
-                $self->_SQLLimit( $fix_op->(
+                $self->Limit( $fix_op->(
                     ALIAS           => $TicketCFs,
                     FIELD           => 'LargeContent',
                     OPERATOR        => $op,
@@ -1501,7 +1501,7 @@ sub _CustomFieldLimit {
             # TODO: reorder joins T <- OCFVs <- CFs <- OCFs if
             # we want treat IS NULL as (not applies or has
             # no value)
-            $self->_SQLLimit(
+            $self->Limit(
                 ALIAS           => $CFs,
                 FIELD           => 'Name',
                 OPERATOR        => 'IS NOT',
@@ -1512,7 +1512,7 @@ sub _CustomFieldLimit {
             $self->_CloseParen;
 
             if ($negative_op) {
-                $self->_SQLLimit(
+                $self->Limit(
                     ALIAS           => $TicketCFs,
                     FIELD           => $column || 'Content',
                     OPERATOR        => 'IS',
@@ -1535,7 +1535,7 @@ sub _CustomFieldLimit {
         # if column is defined then deal only with it
         # otherwise search in Content and in LargeContent
         if ( $column ) {
-            $self->SUPER::Limit( $fix_op->(
+            $self->Limit( $fix_op->(
                 LEFTJOIN   => $TicketCFs,
                 ALIAS      => $TicketCFs,
                 FIELD      => $column,
@@ -1545,7 +1545,7 @@ sub _CustomFieldLimit {
             ) );
         }
         else {
-            $self->SUPER::Limit(
+            $self->Limit(
                 LEFTJOIN   => $TicketCFs,
                 ALIAS      => $TicketCFs,
                 FIELD      => 'Content',
@@ -1554,7 +1554,7 @@ sub _CustomFieldLimit {
                 CASESENSITIVE => 0,
             );
         }
-        $self->_SQLLimit(
+        $self->Limit(
             %rest,
             ALIAS      => $TicketCFs,
             FIELD      => 'id',
@@ -1575,20 +1575,20 @@ sub _HasAttributeLimit {
         TABLE2 => 'Attributes',
         FIELD2 => 'ObjectId',
     );
-    $self->SUPER::Limit(
+    $self->Limit(
         LEFTJOIN        => $alias,
         FIELD           => 'ObjectType',
         VALUE           => 'RT::Ticket',
         ENTRYAGGREGATOR => 'AND'
     );
-    $self->SUPER::Limit(
+    $self->Limit(
         LEFTJOIN        => $alias,
         FIELD           => 'Name',
         OPERATOR        => $op,
         VALUE           => $value,
         ENTRYAGGREGATOR => 'AND'
     );
-    $self->_SQLLimit(
+    $self->Limit(
         %rest,
         ALIAS      => $alias,
         FIELD      => 'id',
@@ -1672,7 +1672,7 @@ sub OrderByCols {
            $cfkey .= ".ordering" if !$cf_obj || ($cf_obj->MaxValues||0) != 1;
            my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, ($cf_obj ?$cf_obj->id :0) , $field );
            # this is described in _CustomFieldLimit
-           $self->_SQLLimit(
+           $self->Limit(
                ALIAS      => $CFs,
                FIELD      => 'Name',
                OPERATOR   => 'IS NOT',
@@ -1697,7 +1697,7 @@ sub OrderByCols {
                TABLE2 => 'CustomFieldValues',
                FIELD2 => 'CustomField',
            );
-           $self->SUPER::Limit(
+           $self->Limit(
                LEFTJOIN        => $CFvs,
                FIELD           => 'Name',
                QUOTEVALUE      => 0,
@@ -1749,16 +1749,10 @@ sub OrderByCols {
     return $self->SUPER::OrderByCols(@res);
 }
 
-
-# All SQL stuff goes into one SB subclause so we can deal with all
-# the aggregation
 sub _SQLLimit {
     my $self = shift;
-    my %args = (@_);
-    $self->Limit(
-        %args,
-        SUBCLAUSE => 'ticketsql'
-    );
+    RT->Deprecated( Remove => "4.4", Instead => "Limit" );
+    $self->Limit(@_);
 }
 sub _SQLJoin {
     my $self = shift;
@@ -1773,7 +1767,6 @@ sub _CloseParen {
     $_[0]->SUPER::_CloseParen( 'ticketsql' );
 }
 
-
 sub Limit {
     my $self = shift;
     my %args = @_;
@@ -1786,10 +1779,13 @@ sub Limit {
         $self->LimitField(@_);
     }
 
+    $args{SUBCLAUSE} ||= "ticketsql"
+        if $self->{parsing_ticketsql} and not $args{LEFTJOIN};
+
     $self->{_sql_looking_at}{ lc $args{FIELD} } = 1
         if (not $args{ALIAS} or $args{ALIAS} eq "main");
 
-    $self->SUPER::Limit(@_);
+    $self->SUPER::Limit(%args);
 }
 
 
@@ -2954,7 +2950,7 @@ sub CurrentUserCanSee {
     }
 
     unless ( @direct_queues || keys %roles ) {
-        $self->SUPER::Limit(
+        $self->Limit(
             SUBCLAUSE => 'ACL',
             ALIAS => 'main',
             FIELD => 'id',
@@ -2971,7 +2967,7 @@ sub CurrentUserCanSee {
         if ( $join_roles ) {
             $role_group_alias = $self->_RoleGroupsJoin( New => 1 );
             $cgm_alias = $self->_GroupMembersJoin( GroupsAlias => $role_group_alias );
-            $self->SUPER::Limit(
+            $self->Limit(
                 LEFTJOIN   => $cgm_alias,
                 FIELD      => 'MemberId',
                 OPERATOR   => '=',
@@ -2984,7 +2980,7 @@ sub CurrentUserCanSee {
 
             return unless @queues;
             if ( @queues == 1 ) {
-                $self->SUPER::Limit(
+                $self->Limit(
                     SUBCLAUSE => 'ACL',
                     ALIAS => 'main',
                     FIELD => 'Queue',
@@ -2994,7 +2990,7 @@ sub CurrentUserCanSee {
             } else {
                 $self->SUPER::_OpenParen('ACL');
                 foreach my $q ( @queues ) {
-                    $self->SUPER::Limit(
+                    $self->Limit(
                         SUBCLAUSE => 'ACL',
                         ALIAS => 'main',
                         FIELD => 'Queue',
@@ -3014,7 +3010,7 @@ sub CurrentUserCanSee {
         while ( my ($role, $queues) = each %roles ) {
             $self->SUPER::_OpenParen('ACL');
             if ( $role eq 'Owner' ) {
-                $self->SUPER::Limit(
+                $self->Limit(
                     SUBCLAUSE => 'ACL',
                     FIELD           => 'Owner',
                     VALUE           => $id,
@@ -3022,7 +3018,7 @@ sub CurrentUserCanSee {
                 );
             }
             else {
-                $self->SUPER::Limit(
+                $self->Limit(
                     SUBCLAUSE       => 'ACL',
                     ALIAS           => $cgm_alias,
                     FIELD           => 'MemberId',
@@ -3031,7 +3027,7 @@ sub CurrentUserCanSee {
                     QUOTEVALUE      => 0,
                     ENTRYAGGREGATOR => $ea,
                 );
-                $self->SUPER::Limit(
+                $self->Limit(
                     SUBCLAUSE       => 'ACL',
                     ALIAS           => $role_group_alias,
                     FIELD           => 'Type',
@@ -3453,7 +3449,10 @@ sub FromSQL {
     return (1, $self->loc("No Query")) unless $query;
 
     $self->{_sql_query} = $query;
-    eval { $self->_parser( $query ); };
+    eval {
+        local $self->{parsing_ticketsql} = 1;
+        $self->_parser( $query );
+    };
     if ( $@ ) {
         $RT::Logger->error( $@ );
         return (0, $@);

@@ -128,7 +128,7 @@ sub _GroupMembersJoin {
         ENTRYAGGREGATOR => 'AND',
     );
     $self->Limit(
-        $args{'Left'} ? (LEFTJOIN => $alias) : (),
+        LEFTJOIN => $alias,
         ALIAS => $alias,
         FIELD => 'Disabled',
         VALUE => 0,
