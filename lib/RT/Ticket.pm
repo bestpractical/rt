@@ -2180,6 +2180,11 @@ sub Correspond {
 
     my @results = $self->_RecordNote(%args);
 
+    unless ( $results[0] ) {
+        $RT::Handle->Rollback();
+        return @results;
+    }
+
     #Set the last told date to now if this isn't mail from the requestor.
     #TODO: Note that this will wrongly ack mail from any non-requestor as a "told"
     unless ( $self->IsRequestor($self->CurrentUser->id) ) {
