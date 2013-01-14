@@ -160,3 +160,16 @@ name of the Lifecycle.
 The 3.9.2 upgrade step removed all enabled Personal Groups, but missed
 any disabled groups. We catch and clean up the disabled Personal groups
 during the 4.0.9 upgrade step.
+
+=head2 Javascript Changes
+
+If you have set a custom @JSFiles in RT_SiteConfig.pm, you will need to
+amend this to include the new jquery.cookie.js file added to
+RT_Config.pm.  If you are using an extension that requires manually
+tweaking @JSFiles, please contact the developer and ask them to use
+RT->AddJavaScript in their extension to avoid these upgrade problems.
+
+If you have @JSFiles set in your RT_SiteConfig.pm but it appears to be
+the same as RT_Config.pm (no local js files added) you can safely remove
+the whole setting from RT_SiteConfig.pm and allow our default to be
+used.
