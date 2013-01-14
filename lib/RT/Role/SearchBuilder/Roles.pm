@@ -191,6 +191,7 @@ sub RoleLimit {
 
     my $class = blessed($self->NewItem);
 
+    $args{FIELD} ||= 'id' if $args{VALUE} =~ /^\d+$/;
     my $type = delete $args{TYPE};
     if ($type) {
         unless ($class->HasRole($type)) {
