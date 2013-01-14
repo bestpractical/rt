@@ -28,6 +28,9 @@ docs/web_deployment.pod for current instructions.  The old `fastcgi_server`,
 `webmux.pl`, and `mason_handler.*` files will not work with RT 4.0, and should
 be removed to reduce confusion.
 
+RT::Extension::CustomField::Checkbox has been integrated into core, so you
+MUST uninstall it before upgrading. In addition, you must run
+etc/upgrade/4.0-customfield-checkbox-extension script to convert old data.
 
 =head2 RT_SiteConfig.pm
 
