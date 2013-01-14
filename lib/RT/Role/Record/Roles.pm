@@ -334,13 +334,18 @@ sub AddRoleMember {
 
             # Create as the SystemUser, not the current user
             my $user = RT::User->new(RT->SystemUser);
-            my ($pid, $msg) = $user->LoadOrCreateByEmail( $name );
-            unless ($pid) {
+            my ($ok, $msg);
+            if ($name =~ /@/) {
+                ($ok, $msg) = $user->LoadOrCreateByEmail( $name );
+            } else {
+                ($ok, $msg) = $user->Load( $name );
+            }
+            unless ($user->Id) {
                 # If we can't find this watcher, we need to bail.
                 $RT::Logger->error("Could not load or create a user '$name' to add as a watcher: $msg");
                 return (0, $self->loc("Could not find or create user '$name'"));
             }
-            $args{PrincipalId} = $pid;
+            $args{PrincipalId} = $user->PrincipalId;
         }
         elsif ($args{Group}) {
             my $name = delete $args{Group};
