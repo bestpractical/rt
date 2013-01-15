@@ -64,15 +64,15 @@ if ($Pages == 1) {
 else{
 $m->out(loc('Page') . ' ');
 my $prev = $m->interp->apply_escapes($m->comp(
-		    '/Elements/QueryString',
-		    %$URLParams,
-		    Page    => ( $CurrentPage - 1 )
-		   ), 'h');
+                    '/Elements/QueryString',
+                    %$URLParams,
+                    Page    => ( $CurrentPage - 1 )
+                   ), 'h');
 my $next = $m->interp->apply_escapes($m->comp(
-		    '/Elements/QueryString',
-		    %$URLParams,
-		    Page    => ( $CurrentPage + 1 )
-		   ), 'h');
+                    '/Elements/QueryString',
+                    %$URLParams,
+                    Page    => ( $CurrentPage + 1 )
+                   ), 'h');
 my %show;
 $show{1} = 1;
 $show{$_} = 1 for (($CurrentPage - 2)..($CurrentPage + 2));
@@ -84,7 +84,7 @@ for my $number ( 1 .. $Pages ) {
         $dots = undef;
         my $qs =
           $m->interp->apply_escapes($m->comp( '/Elements/QueryString', %$URLParams, Page => $number ), 'h');
-	$m->out(qq{<span class="pagenum">});
+        $m->out(qq{<span class="pagenum">});
         if ( $number == $CurrentPage ) {
             $m->out(qq{<span class="currentpage">$number</span> });
         }
@@ -96,7 +96,7 @@ for my $number ( 1 .. $Pages ) {
         $dots = 1;
         $m->out(qq{<span class="dots">...</span>});
     }
-	$m->out(qq{</span>});
+    $m->out(qq{</span>});
 }
 
 if ($CurrentPage > 1) {

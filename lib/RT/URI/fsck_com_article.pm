@@ -100,39 +100,36 @@ sub ParseURI {
     my $self = shift;
     my $uri = shift;
 
-	my $article;
- 
- 	if ($uri =~ /^(\d+)$/) {
- 		$article = RT::Article->new($self->CurrentUser);
- 		$article->Load($uri);	
- 		$self->{'uri'} = $article->URI;
- 	}
- 	else {
-	    $self->{'uri'} = $uri;
- 	}
- 
+    my $article;
+
+    if ($uri =~ /^(\d+)$/) {
+        $article = RT::Article->new($self->CurrentUser);
+        $article->Load($uri);
+        $self->{'uri'} = $article->URI;
+    }
+    else {
+        $self->{'uri'} = $uri;
+    }
+
        #If it's a local URI, load the article object and return its URI
     if ( $self->IsLocal) {
-   
         my $local_uri_prefix = $self->LocalURIPrefix;
-    	if ($self->{'uri'} =~ /^$local_uri_prefix(\d+)$/) {
-    		my $id = $1;
-    	
-    
-	        $article = RT::Article->new( $self->CurrentUser );
-    	    $article->Load($id);
+        if ($self->{'uri'} =~ /^$local_uri_prefix(\d+)$/) {
+            my $id = $1;
+            $article = RT::Article->new( $self->CurrentUser );
+            $article->Load($id);
 
-    	    #If we couldn't find a article, return undef.
-    	    unless ( defined $article->Id ) {
-    	    	return undef;
-    	    }
-    	    } else {
-    	    return undef;
-    	    }	
+            #If we couldn't find a article, return undef.
+            unless ( defined $article->Id ) {
+                return undef;
+            }
+            } else {
+                return undef;
+            }
     }
- 
- 	$self->{'object'} = $article;
-  	return ($article->Id);
+
+    $self->{'object'} = $article;
+    return ($article->Id);
 }
 
 =head2 IsLocal 
@@ -143,14 +140,14 @@ Returns undef otherwise.
 =cut
 
 sub IsLocal {
-	my $self = shift;
-        my $local_uri_prefix = $self->LocalURIPrefix;
-	if ($self->{'uri'} =~ /^$local_uri_prefix/) {
-		return 1;
+    my $self = shift;
+    my $local_uri_prefix = $self->LocalURIPrefix;
+    if ($self->{'uri'} =~ /^$local_uri_prefix/) {
+        return 1;
     }
-	else {
-		return undef;
-	}
+    else {
+        return undef;
+    }
 }
 
 
@@ -175,7 +172,7 @@ Return the URI scheme for RT articles
 
 sub Scheme {
     my $self = shift;
-	return "fsck.com-article";
+    return "fsck.com-article";
 }
 
 =head2 HREF

@@ -62,15 +62,15 @@ sub _Init {
 
   # By default, order by SortOrder
   $self->OrderByCols(
-	 { ALIAS => 'main',
-	   FIELD => 'SortOrder',
-	   ORDER => 'ASC' },
-	 { ALIAS => 'main',
-	   FIELD => 'Name',
-	   ORDER => 'ASC' },
-	 { ALIAS => 'main',
-	   FIELD => 'id',
-	   ORDER => 'ASC' },
+         { ALIAS => 'main',
+           FIELD => 'SortOrder',
+           ORDER => 'ASC' },
+         { ALIAS => 'main',
+           FIELD => 'Name',
+           ORDER => 'ASC' },
+         { ALIAS => 'main',
+           FIELD => 'id',
+           ORDER => 'ASC' },
      );
 
     return ( $self->SUPER::_Init(@_) );

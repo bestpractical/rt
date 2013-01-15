@@ -1063,7 +1063,7 @@ sub HasUnresolvedDependencies {
               VALUE => $args{Type}); 
     }
     else {
-	    $deps->IgnoreType;
+        $deps->IgnoreType;
     }
 
     if ($deps->Count > 0) {
@@ -1137,35 +1137,35 @@ sub _AllLinkedTickets {
         LinkType  => undef,
         Direction => undef,
         Type   => undef,
-	_found => {},
-	_top   => 1,
+        _found => {},
+        _top   => 1,
         @_
     );
 
     my $dep = $self->_Links( $args{Direction}, $args{LinkType});
     while (my $link = $dep->Next()) {
         my $uri = $args{Direction} eq 'Target' ? $link->BaseURI : $link->TargetURI;
-	next unless ($uri->IsLocal());
+        next unless ($uri->IsLocal());
         my $obj = $args{Direction} eq 'Target' ? $link->BaseObj : $link->TargetObj;
-	next if $args{_found}{$obj->Id};
+        next if $args{_found}{$obj->Id};
 
-	if (!$args{Type}) {
-	    $args{_found}{$obj->Id} = $obj;
-	    $obj->_AllLinkedTickets( %args, _top => 0 );
-	}
-	elsif ($obj->Type and $obj->Type eq $args{Type}) {
-	    $args{_found}{$obj->Id} = $obj;
-	}
-	else {
-	    $obj->_AllLinkedTickets( %args, _top => 0 );
-	}
+        if (!$args{Type}) {
+            $args{_found}{$obj->Id} = $obj;
+            $obj->_AllLinkedTickets( %args, _top => 0 );
+        }
+        elsif ($obj->Type and $obj->Type eq $args{Type}) {
+            $args{_found}{$obj->Id} = $obj;
+        }
+        else {
+            $obj->_AllLinkedTickets( %args, _top => 0 );
+        }
     }
 
     if ($args{_top}) {
-	return map { $args{_found}{$_} } sort keys %{$args{_found}};
+        return map { $args{_found}{$_} } sort keys %{$args{_found}};
     }
     else {
-	return 1;
+        return 1;
     }
 }
 
@@ -1233,8 +1233,8 @@ Takes a Type and returns a string that is more human readable.
 sub FormatType{
     my $self = shift;
     my %args = ( Type => '',
-		 @_
-	       );
+                 @_
+               );
     $args{Type} =~ s/([A-Z])/" " . lc $1/ge;
     $args{Type} =~ s/^\s+//;
     return $args{Type};
@@ -1252,12 +1252,12 @@ Takes either a Target or a Base and returns a string of human friendly text.
 sub FormatLink {
     my $self = shift;
     my %args = ( Object => undef,
-		 FallBack => '',
-		 @_
-	       );
+                 FallBack => '',
+                 @_
+               );
     my $text = "URI " . $args{FallBack};
     if ($args{Object} && $args{Object}->isa("RT::Ticket")) {
-	$text = "Ticket " . $args{Object}->id;
+        $text = "Ticket " . $args{Object}->id;
     }
     return $text;
 }
@@ -1544,20 +1544,20 @@ sub _NewTransaction {
     my $new_ref = $args{'NewReference'};
     my $ref_type = $args{'ReferenceType'};
     if ($old_ref or $new_ref) {
-	$ref_type ||= ref($old_ref) || ref($new_ref);
-	if (!$ref_type) {
-	    $RT::Logger->error("Reference type not specified for transaction");
-	    return;
-	}
-	$old_ref = $old_ref->Id if ref($old_ref);
-	$new_ref = $new_ref->Id if ref($new_ref);
+        $ref_type ||= ref($old_ref) || ref($new_ref);
+        if (!$ref_type) {
+            $RT::Logger->error("Reference type not specified for transaction");
+            return;
+        }
+        $old_ref = $old_ref->Id if ref($old_ref);
+        $new_ref = $new_ref->Id if ref($new_ref);
     }
 
     require RT::Transaction;
     my $trans = RT::Transaction->new( $self->CurrentUser );
     my ( $transaction, $msg ) = $trans->Create(
-	ObjectId  => $self->Id,
-	ObjectType => ref($self),
+        ObjectId  => $self->Id,
+        ObjectType => ref($self),
         TimeTaken => $args{'TimeTaken'},
         Type      => $args{'Type'},
         Data      => $args{'Data'},
@@ -1584,7 +1584,7 @@ sub _NewTransaction {
         $self->_UpdateTimeTaken( $args{'TimeTaken'} );
     }
     if ( RT->Config->Get('UseTransactionBatch') and $transaction ) {
-	    push @{$self->{_TransactionBatch}}, $trans if $args{'CommitScrips'};
+            push @{$self->{_TransactionBatch}}, $trans if $args{'CommitScrips'};
     }
 
     RT->DatabaseHandle->Commit unless $in_txn;
@@ -1770,8 +1770,8 @@ sub CustomFieldLookupId {
     # Save a ->Load call by not calling ->FooObj->Id, just ->Foo
     my $final = shift @classes;
     foreach my $class (reverse @classes) {
-	my $method = "${class}Obj";
-	$object = $object->$method;
+        my $method = "${class}Obj";
+        $object = $object->$method;
     }
 
     return $object->$final;

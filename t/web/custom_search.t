@@ -11,7 +11,7 @@ my $url = $m->rt_base_url;
 
 my $t = RT::Ticket->new(RT->SystemUser);
 $t->Create(Subject => 'for custom search'.$$, Queue => 'general',
-	   Owner => 'root', Requestor => 'customsearch@localhost');
+           Owner => 'root', Requestor => 'customsearch@localhost');
 ok(my $id = $t->id, 'created ticket for custom search');
 
 ok $m->login, 'logged in';

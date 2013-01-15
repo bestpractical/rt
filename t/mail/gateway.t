@@ -705,10 +705,10 @@ is( $tick->Transactions->Count, 7, 'no superfluous transactions');
 use RT::User;
 my $user = RT::User->new( RT->SystemUser );
 my ($uid) = $user->Create( Name => 'ext-mailgate',
-			   EmailAddress => 'ext-mailgate@localhost',
-			   Privileged => 1,
-			   Password => 'qwe123',
-			 );
+                           EmailAddress => 'ext-mailgate@localhost',
+                           Privileged => 1,
+                           Password => 'qwe123',
+                         );
 ok( $uid, 'user created for ext-mailgate tests' );
 ok( !$user->HasRight( Right => 'OwnTicket', Object => $queue ), "User can't own ticket" );
 
@@ -789,7 +789,7 @@ my $acl = RT::ACL->new(RT->SystemUser);
 $acl->Limit( FIELD => 'RightName', VALUE => 'ReplyToTicket' );
 $acl->LimitToObject( $RT::System );
 while( my $ace = $acl->Next ) {
-	$ace->Delete;
+    $ace->Delete;
 }
 
 ok( !$user->HasRight( Right => 'ReplyToTicket', Object => $tick ), "User can't reply to ticket any more" );

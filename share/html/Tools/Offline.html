@@ -52,8 +52,7 @@
 
 % $m->callback( Requestor => \$requestoraddress, Queue => \$qname, %ARGS );
 
-<form action="Offline.html" name="TicketUpdate" 
-	method="post" enctype="multipart/form-data">
+<form action="Offline.html" name="TicketUpdate" method="post" enctype="multipart/form-data">
 <table>
 <tr>
 <td class="label">
@@ -111,7 +110,7 @@ if ($ARGS{'Parse'} && $ARGS{'Template'}) {
 
     my ($buffer, $template);
     while ( my $bytesread = read( $fh, $buffer, 4096 ) ) {
-	    $template .= $buffer;
+        $template .= $buffer;
     }
     my $encode = RT::I18N::_GuessCharset( $template );
     require Encode;
@@ -138,29 +137,29 @@ if ($ARGS{'Parse'} && $ARGS{'Template'}) {
     push @results, $action->UpdateByTemplate();
 } else {
     if ($ARGS{'Query'}) {
-	my $Tickets = RT::Tickets->new($session{'CurrentUser'});
-	$Tickets->FromSQL($ARGS{'Query'});
-	
-	while (my $t = $Tickets->Next) {
-	    $string .= "===Update-Ticket: " . $t->Id . "\n";
-	    $string .= $action->GetUpdateTemplate($t);
-	    $string .= "" . "\n";
-	}
-	
-	$string .= "" . "\n";
-	$string .= "===# DO NOT EDIT BELOW THIS LINE#===\n";
-	$string .= "" . "\n";
-	
-	while (my $t = $Tickets->Next) {
-	    $string .= "===# DO NOT EDIT #===\n";
-		$string .= "===Base-Ticket: " . $t->Id . "\n";
-	    $string .= $action->GetBaseTemplate($t);
-	    $string .= "===# DO NOT EDIT #===\n";
-		$string .= "" . "\n";
-	}
+        my $Tickets = RT::Tickets->new($session{'CurrentUser'});
+        $Tickets->FromSQL($ARGS{'Query'});
+
+        while (my $t = $Tickets->Next) {
+            $string .= "===Update-Ticket: " . $t->Id . "\n";
+            $string .= $action->GetUpdateTemplate($t);
+            $string .= "" . "\n";
+        }
+
+        $string .= "" . "\n";
+        $string .= "===# DO NOT EDIT BELOW THIS LINE#===\n";
+        $string .= "" . "\n";
+
+        while (my $t = $Tickets->Next) {
+            $string .= "===# DO NOT EDIT #===\n";
+                $string .= "===Base-Ticket: " . $t->Id . "\n";
+            $string .= $action->GetBaseTemplate($t);
+            $string .= "===# DO NOT EDIT #===\n";
+                $string .= "" . "\n";
+        }
     } else {
-	$string .= "===Create-Ticket: ticket1\n";
-	$string .= $action->GetCreateTemplate();
+        $string .= "===Create-Ticket: ticket1\n";
+        $string .= $action->GetCreateTemplate();
     }
 }
 </%INIT>

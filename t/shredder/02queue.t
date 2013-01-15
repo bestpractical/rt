@@ -8,21 +8,21 @@ my $test = "RT::Test::Shredder";
 
 diag 'simple queue' if $ENV{TEST_VERBOSE};
 {
-	$test->create_savepoint('clean');
+    $test->create_savepoint('clean');
     my $queue = RT::Queue->new( RT->SystemUser );
     my ($id, $msg) = $queue->Create( Name => 'my queue' );
     ok($id, 'created queue') or diag "error: $msg";
 
-	my $shredder = $test->shredder_new();
-	$shredder->PutObjects( Objects => $queue );
-	$shredder->WipeoutAll;
-	$test->db_is_valid;
-	cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
+    my $shredder = $test->shredder_new();
+    $shredder->PutObjects( Objects => $queue );
+    $shredder->WipeoutAll;
+    $test->db_is_valid;
+    cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 
 diag 'queue with scrip' if $ENV{TEST_VERBOSE};
 {
-	$test->create_savepoint('clean');
+    $test->create_savepoint('clean');
     my $queue = RT::Queue->new( RT->SystemUser );
     my ($id, $msg) = $queue->Create( Name => 'my queue' );
     ok($id, 'created queue') or diag "error: $msg";
@@ -37,16 +37,16 @@ diag 'queue with scrip' if $ENV{TEST_VERBOSE};
     );
     ok($id, 'created scrip') or diag "error: $msg";
 
-	my $shredder = $test->shredder_new();
-	$shredder->PutObjects( Objects => $queue );
-	$shredder->WipeoutAll;
-	$test->db_is_valid;
-	cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
+    my $shredder = $test->shredder_new();
+    $shredder->PutObjects( Objects => $queue );
+    $shredder->WipeoutAll;
+    $test->db_is_valid;
+    cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 
 diag 'queue with template' if $ENV{TEST_VERBOSE};
 {
-	$test->create_savepoint('clean');
+    $test->create_savepoint('clean');
     my $queue = RT::Queue->new( RT->SystemUser );
     my ($id, $msg) = $queue->Create( Name => 'my queue' );
     ok($id, 'created queue') or diag "error: $msg";
@@ -59,16 +59,16 @@ diag 'queue with template' if $ENV{TEST_VERBOSE};
     );
     ok($id, 'created template') or diag "error: $msg";
 
-	my $shredder = $test->shredder_new();
-	$shredder->PutObjects( Objects => $queue );
-	$shredder->WipeoutAll;
-	$test->db_is_valid;
-	cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
+    my $shredder = $test->shredder_new();
+    $shredder->PutObjects( Objects => $queue );
+    $shredder->WipeoutAll;
+    $test->db_is_valid;
+    cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 
 diag 'queue with a right granted' if $ENV{TEST_VERBOSE};
 {
-	$test->create_savepoint('clean');
+    $test->create_savepoint('clean');
     my $queue = RT::Queue->new( RT->SystemUser );
     my ($id, $msg) = $queue->Create( Name => 'my queue' );
     ok($id, 'created queue') or diag "error: $msg";
@@ -83,22 +83,22 @@ diag 'queue with a right granted' if $ENV{TEST_VERBOSE};
     );
     ok($id, 'granted right') or diag "error: $msg";
 
-	my $shredder = $test->shredder_new();
-	$shredder->PutObjects( Objects => $queue );
-	$shredder->WipeoutAll;
-	$test->db_is_valid;
-	cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
+    my $shredder = $test->shredder_new();
+    $shredder->PutObjects( Objects => $queue );
+    $shredder->WipeoutAll;
+    $test->db_is_valid;
+    cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 
 diag 'queue with a watcher' if $ENV{TEST_VERBOSE};
 {
 # XXX, FIXME: if uncomment these lines then we'll get 'Bizarre...'
-#	$test->create_savepoint('clean');
+#    $test->create_savepoint('clean');
     my $group = RT::Group->new( RT->SystemUser );
     my ($id, $msg) = $group->CreateUserDefinedGroup(Name => 'my group');
     ok($id, 'created group') or diag "error: $msg";
 
-	$test->create_savepoint('bqcreate');
+    $test->create_savepoint('bqcreate');
     my $queue = RT::Queue->new( RT->SystemUser );
     ($id, $msg) = $queue->Create( Name => 'my queue' );
     ok($id, 'created queue') or diag "error: $msg";
@@ -109,13 +109,13 @@ diag 'queue with a watcher' if $ENV{TEST_VERBOSE};
     );
     ok($id, 'added watcher') or diag "error: $msg";
 
-	my $shredder = $test->shredder_new();
-	$shredder->PutObjects( Objects => $queue );
-	$shredder->WipeoutAll;
-	$test->db_is_valid;
-	cmp_deeply( $test->dump_current_and_savepoint('bqcreate'), "current DB equal to savepoint");
+    my $shredder = $test->shredder_new();
+    $shredder->PutObjects( Objects => $queue );
+    $shredder->WipeoutAll;
+    $test->db_is_valid;
+    cmp_deeply( $test->dump_current_and_savepoint('bqcreate'), "current DB equal to savepoint");
 
-#	$shredder->PutObjects( Objects => $group );
-#	$shredder->WipeoutAll;
-#	cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
+#    $shredder->PutObjects( Objects => $group );
+#    $shredder->WipeoutAll;
+#    cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }

@@ -90,8 +90,8 @@ my $COLUMN_MAP = {
     },
     Description => {
         title     => 'Description', # loc
-	attribute => 'Description',
-	value     => sub { return $_[0]->Description() },
+        attribute => 'Description',
+        value     => sub { return $_[0]->Description() },
     },
     Disabled => {
         title     => \'&nbsp;',

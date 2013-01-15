@@ -60,8 +60,8 @@
 
 <& AddWatchers, Ticket => $Ticket, UserString => $UserString,
         UserOp => $UserOp, UserField => $UserField,
-	GroupString => $GroupString, GroupOp => $GroupOp,
-	GroupField => $GroupField, PrivilegedOnly => $PrivilegedOnly &> 
+        GroupString => $GroupString, GroupOp => $GroupOp,
+        GroupField => $GroupField, PrivilegedOnly => $PrivilegedOnly &> 
 </td><td valign="top">
 <h3><&|/l&>Owner</&></h3>
 <&|/l&>Owner</&>: <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id, DefaultValue => 0&>

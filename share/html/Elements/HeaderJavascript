@@ -59,7 +59,7 @@ $onload => undef
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/RichText/ckeditor.js"></script>
 % }
 <script type="text/javascript"><!--
-	jQuery( loadTitleBoxStates );
+jQuery( loadTitleBoxStates );
 % if ( $focus ) {
     jQuery(function () { focusElementById(<% $focus |n,j%>) });
 % }

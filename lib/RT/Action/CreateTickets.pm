@@ -136,11 +136,11 @@ A convoluted example:
 
     my $adminccs = RT::Users->new(RT->SystemUser);
     $adminccs->WhoHaveRight(
-	Right => "AdminGroup",
-	Object =>$groups->First,
-	IncludeSystemRights => undef,
-	IncludeSuperusers => 0,
-	IncludeSubgroupMembers => 0,
+        Right => "AdminGroup",
+        Object =>$groups->First,
+        IncludeSystemRights => undef,
+        IncludeSuperusers => 0,
+        IncludeSubgroupMembers => 0,
     );
 
      our @admins;

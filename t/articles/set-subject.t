@@ -17,7 +17,7 @@ my ($ret, $msg);
 # Create a test class
 my $class = RT::Class->new($RT::SystemUser);
 ($ret, $msg) = $class->Create('Name' => 'TestClass-'.$$,
-			      'Description' => 'A general-purpose test class');
+                              'Description' => 'A general-purpose test class');
 ok($ret, "Test class created: $msg");
 # because id 0 represents global, it uses an empty Queue object...
 ($ret, $msg) = $class->AddToObject(RT::Queue->new($RT::SystemUser));
@@ -27,18 +27,18 @@ ok($ret, "Applied Class globally: $msg");
 my $bodyCF    = RT::CustomField->new($RT::SystemUser);
 my $subjectCF = RT::CustomField->new($RT::SystemUser);
 ($ret, $msg) = $subjectCF->Create('Name' => 'Subject-'.$$,
-			   'Type' => 'Text',
-			   'MaxValues' => 1,
-			   'LookupType' => 'RT::Class-RT::Article',
-			   'Description' => 'The subject to be answered',
-			   'Disabled' => 0);
+                           'Type' => 'Text',
+                           'MaxValues' => 1,
+                           'LookupType' => 'RT::Class-RT::Article',
+                           'Description' => 'The subject to be answered',
+                           'Disabled' => 0);
 ok($ret, "Question CF created: $msg");
 ($ret, $msg) = $bodyCF->Create('Name' => 'Body-'.$$,
-			 'Type' => 'Text',
-			 'MaxValues' => 1,
-			 'LookupType' => 'RT::Class-RT::Article',
-			 'Description' => 'The body to the subject',
-			 'Disabled' => 0);
+                         'Type' => 'Text',
+                         'MaxValues' => 1,
+                         'LookupType' => 'RT::Class-RT::Article',
+                         'Description' => 'The body to the subject',
+                         'Disabled' => 0);
 ok($ret, "Answer CF created: $msg");
 my ($sid, $bid) = ($subjectCF->Id, $bodyCF->Id);
 
@@ -50,11 +50,11 @@ ok($ret, "Body CF added to class: $msg");
 
 my $article = RT::Article->new($RT::SystemUser);
 ($ret, $msg) = $article->Create(Name => 'First article '.$$,
-				 Summary => 'blah blah 1',
-				 Class => $class->Id,
-				 "CustomField-$bid" => 'This goes in the body', 
-				 "CustomField-$sid" => 'This clobbers your subject',
-				 );
+                                Summary => 'blah blah 1',
+                                Class => $class->Id,
+                                "CustomField-$bid" => 'This goes in the body', 
+                                "CustomField-$sid" => 'This clobbers your subject',
+                            );
 ok($ret, "article 1 created: $msg");
 
 # Create a ticket.
@@ -69,8 +69,8 @@ May as well say something about Africa.');
 my $ticket = RT::Ticket->new($RT::SystemUser);
 my $obj;
 ($ret, $obj, $msg) = $ticket->Create(Queue => 'General',
-			       Subject => 'test ticket for articles '.$$,
-			       MIMEObj => $parser->Entity);
+                                     Subject => 'test ticket for articles '.$$,
+                                     MIMEObj => $parser->Entity);
 ok($ret, "Test ticket for articles created: $msg");
 
 

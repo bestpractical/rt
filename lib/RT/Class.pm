@@ -617,25 +617,25 @@ sub _CoreAccessible {
     {
      
         id =>
-		{read => 1, type => 'int(11)', default => ''},
+                {read => 1, type => 'int(11)', default => ''},
         Name => 
-		{read => 1, write => 1, type => 'varchar(255)', default => ''},
+                {read => 1, write => 1, type => 'varchar(255)', default => ''},
         Description => 
-		{read => 1, write => 1, type => 'varchar(255)', default => ''},
+                {read => 1, write => 1, type => 'varchar(255)', default => ''},
         SortOrder => 
-		{read => 1, write => 1, type => 'int(11)', default => '0'},
+                {read => 1, write => 1, type => 'int(11)', default => '0'},
         Disabled => 
-		{read => 1, write => 1, type => 'int(2)', default => '0'},
+                {read => 1, write => 1, type => 'int(2)', default => '0'},
         HotList => 
-		{read => 1, write => 1, type => 'int(2)', default => '0'},
+                {read => 1, write => 1, type => 'int(2)', default => '0'},
         Creator => 
-		{read => 1, auto => 1, type => 'int(11)', default => '0'},
+                {read => 1, auto => 1, type => 'int(11)', default => '0'},
         Created => 
-		{read => 1, auto => 1, type => 'datetime', default => ''},
+                {read => 1, auto => 1, type => 'datetime', default => ''},
         LastUpdatedBy => 
-		{read => 1, auto => 1, type => 'int(11)', default => '0'},
+                {read => 1, auto => 1, type => 'int(11)', default => '0'},
         LastUpdated => 
-		{read => 1, auto => 1, type => 'datetime', default => ''},
+                {read => 1, auto => 1, type => 'datetime', default => ''},
 
  }
 };

@@ -150,7 +150,7 @@ $QueueObj->Disabled && Abort(loc("Cannot create tickets in a disabled queue."));
 # deal with deleting uploaded attachments
 foreach my $key (keys %ARGS) {
     if ($key =~ m/^DeleteAttach-(.+)$/) {
-	delete $session{'Attachments'}{$1};
+        delete $session{'Attachments'}{$1};
     }
     $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
 }
@@ -164,7 +164,7 @@ if ( defined $ARGS{'Attach'} && length $ARGS{'Attach'} ) { # attachment?
     my $file_path = Encode::decode_utf8("$ARGS{'Attach'}");
     $session{'Attachments'} = {
         %{$session{'Attachments'} || {}},
-	$file_path => $attachment,
+        $file_path => $attachment,
     };
 }
 
@@ -356,9 +356,9 @@ $showrows->(
 
 
     <div class="ticket-info-basics">
-	  <&| /Widgets/TitleBox, title => loc('The Basics'), 
-		title_class=> 'inverse',  
-		color => "#993333" &>
+          <&| /Widgets/TitleBox, title => loc('The Basics'), 
+                title_class=> 'inverse',  
+                color => "#993333" &>
 <%perl>
 $showrows->(
     loc("Priority") => $m->scomp(
@@ -397,8 +397,8 @@ $showrows->(
 </%perl>
 </&>
 <&|/Widgets/TitleBox, title => loc("Dates"),
-		title_class=> 'inverse',  
-		 color => "#663366"  &>
+    title_class=> 'inverse',  
+    color => "#663366"  &>
 
 <%perl>
 $showrows->(

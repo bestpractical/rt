@@ -22,16 +22,16 @@ our @Attributes = (
       Description => 'HomepageSettings',
       Content =>
       { 'body' =>
-	[ { type => 'system', name => 'My Tickets' },
-	  { type => 'system', name => 'Unowned Tickets' },
-	  { type => 'component',  name => 'QuickCreate'},
-	],
+        [ { type => 'system', name => 'My Tickets' },
+          { type => 'system', name => 'Unowned Tickets' },
+          { type => 'component',  name => 'QuickCreate'},
+        ],
         'summary' =>
-	[ 
-	  { type => 'component', name => 'MyReminders' },
+        [
+          { type => 'component', name => 'MyReminders' },
           { type => 'component', name => 'Quicksearch' },
-	  { type => 'component', name => 'RefreshHomepage' },
-	]
+          { type => 'component', name => 'RefreshHomepage' },
+        ]
     },
 }
 );

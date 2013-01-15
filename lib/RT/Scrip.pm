@@ -484,46 +484,46 @@ sub IsApplicable {
     my $return;
     eval {
 
-	my @Transactions;
+        my @Transactions;
 
         my $stage = $self->Stage( TicketObj => $args{'TicketObj'} );
         unless ( $stage ) {
-	    $RT::Logger->error(
+            $RT::Logger->error(
                 "Scrip #". $self->id ." is not applied to"
                 ." queue #". $args{'TicketObj'}->Queue
             );
-	    return (undef);
+            return (undef);
         }
         elsif ( $stage eq 'TransactionCreate') {
-	    # Only look at our current Transaction
-	    @Transactions = ( $args{'TransactionObj'} );
+            # Only look at our current Transaction
+            @Transactions = ( $args{'TransactionObj'} );
         }
         elsif ( $stage eq 'TransactionBatch') {
-	    # Look at all Transactions in this Batch
+            # Look at all Transactions in this Batch
             @Transactions = @{ $args{'TicketObj'}->TransactionBatch || [] };
         }
-	else {
-	    $RT::Logger->error( "Unknown Scrip stage: '$stage'" );
-	    return (undef);
-	}
-	my $ConditionObj = $self->ConditionObj;
-	foreach my $TransactionObj ( @Transactions ) {
-	    # in TxnBatch stage we can select scrips that are not applicable to all txns
-	    my $txn_type = $TransactionObj->Type;
-	    next unless( $ConditionObj->ApplicableTransTypes =~ /(?:^|,)(?:Any|\Q$txn_type\E)(?:,|$)/i );
-	    # Load the scrip's Condition object
-	    $ConditionObj->LoadCondition(
-		ScripObj       => $self,
-		TicketObj      => $args{'TicketObj'},
-		TransactionObj => $TransactionObj,
-	    );
+        else {
+            $RT::Logger->error( "Unknown Scrip stage: '$stage'" );
+            return (undef);
+        }
+        my $ConditionObj = $self->ConditionObj;
+        foreach my $TransactionObj ( @Transactions ) {
+            # in TxnBatch stage we can select scrips that are not applicable to all txns
+            my $txn_type = $TransactionObj->Type;
+            next unless( $ConditionObj->ApplicableTransTypes =~ /(?:^|,)(?:Any|\Q$txn_type\E)(?:,|$)/i );
+            # Load the scrip's Condition object
+            $ConditionObj->LoadCondition(
+                ScripObj       => $self,
+                TicketObj      => $args{'TicketObj'},
+                TransactionObj => $TransactionObj,
+            );
 
             if ( $ConditionObj->IsApplicable() ) {
-	        # We found an application Transaction -- return it
+                # We found an application Transaction -- return it
                 $return = $TransactionObj;
                 last;
             }
-	}
+        }
     };
 
     if ($@) {
@@ -870,10 +870,10 @@ Returns the ScripCondition Object which has the id returned by ScripCondition
 =cut
 
 sub ScripConditionObj {
-	my $self = shift;
-	my $ScripCondition =  RT::ScripCondition->new($self->CurrentUser);
-	$ScripCondition->Load($self->__Value('ScripCondition'));
-	return($ScripCondition);
+        my $self = shift;
+        my $ScripCondition =  RT::ScripCondition->new($self->CurrentUser);
+        $ScripCondition->Load($self->__Value('ScripCondition'));
+        return($ScripCondition);
 }
 
 =head2 ScripAction
@@ -902,10 +902,10 @@ Returns the ScripAction Object which has the id returned by ScripAction
 =cut
 
 sub ScripActionObj {
-	my $self = shift;
-	my $ScripAction =  RT::ScripAction->new($self->CurrentUser);
-	$ScripAction->Load($self->__Value('ScripAction'));
-	return($ScripAction);
+        my $self = shift;
+        my $ScripAction =  RT::ScripAction->new($self->CurrentUser);
+        $ScripAction->Load($self->__Value('ScripAction'));
+        return($ScripAction);
 }
 
 =head2 ConditionRules
@@ -1075,35 +1075,35 @@ sub _CoreAccessible {
     {
 
         id =>
-		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+                {read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         Description =>
-		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
+                {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         ScripCondition =>
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+                {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         ScripAction =>
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+                {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         ConditionRules =>
-		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
+                {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
         ActionRules =>
-		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
+                {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
         CustomIsApplicableCode =>
-		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
+                {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
         CustomPrepareCode =>
-		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
+                {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
         CustomCommitCode =>
-		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
+                {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
         Disabled =>
                 {read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '0'},
         Template =>
-		{read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => 'Blank'},
+                {read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => 'Blank'},
         Creator =>
-		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+                {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Created =>
-		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+                {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
         LastUpdatedBy =>
-		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+                {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         LastUpdated =>
-		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+                {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
 
  }
 };

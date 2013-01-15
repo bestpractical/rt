@@ -12,8 +12,8 @@ BEGIN{
 # look like RT::Record.
 
 can_ok('RT::System', qw( AvailableRights RightCategories AddRights AddRightCategories
-			 id Id SubjectTag Name QueueCacheNeedsUpdate AddUpgradeHistory
-			 UpgradeHistory ));
+                         id Id SubjectTag Name QueueCacheNeedsUpdate AddUpgradeHistory
+                         UpgradeHistory ));
 
 {
 

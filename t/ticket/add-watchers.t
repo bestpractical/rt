@@ -15,7 +15,7 @@ my $acl = RT::ACL->new(RT->SystemUser);
 $acl->Limit( FIELD => 'RightName', OPERATOR => '!=', VALUE => 'SuperUser' );
 $acl->LimitToObject( RT->System );
 while( my $ace = $acl->Next ) {
-	$ace->Delete;
+    $ace->Delete;
 }
 
 # create new queue to be sure we do not mess with rights
@@ -25,11 +25,12 @@ ok( $queue_id, 'queue created for watcher tests' );
 
 # new privileged user to check rights
 my $user = RT::User->new( RT->SystemUser );
-my ($user_id) = $user->Create( Name => 'watcher'.$$,
-			   EmailAddress => "watcher$$".'@localhost',
-			   Privileged => 1,
-			   Password => 'qwe123',
-			 );
+my ($user_id) = $user->Create(
+    Name => 'watcher'.$$,
+    EmailAddress => "watcher$$".'@localhost',
+    Privileged => 1,
+    Password => 'qwe123',
+);
 my $cu= RT::CurrentUser->new($user);
 
 # make sure user can see tickets in the queue

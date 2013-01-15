@@ -19,7 +19,7 @@ my ($ret, $msg);
 # Create a test class
 my $class = RT::Class->new($RT::SystemUser);
 ($ret, $msg) = $class->Create('Name' => 'tlaTestClass-'.$$,
-			      'Description' => 'A general-purpose test class');
+                              'Description' => 'A general-purpose test class');
 ok($ret, "Test class created");
 
 
@@ -27,25 +27,25 @@ my $questionCF = RT::CustomField->new($RT::SystemUser);
 my $answerCF = RT::CustomField->new($RT::SystemUser);
 my $ticketCF = RT::CustomField->new($RT::SystemUser);
 ($ret, $msg) = $questionCF->Create('Name' => 'Question-'.$$,
-			   'Type' => 'Text',
-			   'MaxValues' => 1,
-			   'LookupType' => 'RT::Class-RT::Article',
-			   'Description' => 'The question to be answered',
-			   'Disabled' => 0);
+                           'Type' => 'Text',
+                           'MaxValues' => 1,
+                           'LookupType' => 'RT::Class-RT::Article',
+                           'Description' => 'The question to be answered',
+                           'Disabled' => 0);
 ok($ret, "Question CF created: $msg");
 ($ret, $msg) = $answerCF->Create('Name' => 'Answer-'.$$,
-			 'Type' => 'Text',
-			 'MaxValues' => 1,
-			 'LookupType' => 'RT::Class-RT::Article',
-			 'Description' => 'The answer to the question',
-			 'Disabled' => 0);
+                         'Type' => 'Text',
+                         'MaxValues' => 1,
+                         'LookupType' => 'RT::Class-RT::Article',
+                         'Description' => 'The answer to the question',
+                         'Disabled' => 0);
 ok($ret, "Answer CF created: $msg");
 
 ($ret, $msg) = $ticketCF->Create('Name' => 'Class',
-			 'Type' => 'Text',
-			 'MaxValues' => 1,
-			 'LookupType' => 'RT::Queue-RT::Ticket',
-			 'Disabled' => 0);
+                         'Type' => 'Text',
+                         'MaxValues' => 1,
+                         'LookupType' => 'RT::Queue-RT::Ticket',
+                         'Disabled' => 0);
 ok($ret, "Ticket CF 'Class' created: $msg");
 
 # Attach the custom fields to our class
@@ -60,18 +60,18 @@ my $global_queue = RT::Queue->new($RT::SystemUser);
 ok($ret, "Ticket CF added globally: $msg");
 
 my %cvals = ('article1q' => 'Some question about swallows',
-		'article1a' => 'Some answer about Europe and Africa',
-		'article2q' => 'Another question about Monty Python',
-		'article2a' => 'Romani ite domum',
-		'article3q' => 'Why should I eat my supper?',
-		'article3a' => 'There are starving children in Africa',
-		'article4q' => 'What did Brian originally write?',
-		'article4a' => 'This is an answer that is longer than 255 '
-	     . 'characters so these tests will be sure to use the LargeContent '
-	     . 'SQL as well as the normal SQL that would be generated if this '
-	     . 'was an answer that was shorter than 255 characters. This second '
-	     . 'sentence has a few extra characters to get this string to go '
-	     . 'over the 255 character boundary. Lorem ipsum.');
+                'article1a' => 'Some answer about Europe and Africa',
+                'article2q' => 'Another question about Monty Python',
+                'article2a' => 'Romani ite domum',
+                'article3q' => 'Why should I eat my supper?',
+                'article3a' => 'There are starving children in Africa',
+                'article4q' => 'What did Brian originally write?',
+                'article4a' => 'This is an answer that is longer than 255 '
+             . 'characters so these tests will be sure to use the LargeContent '
+             . 'SQL as well as the normal SQL that would be generated if this '
+             . 'was an answer that was shorter than 255 characters. This second '
+             . 'sentence has a few extra characters to get this string to go '
+             . 'over the 255 character boundary. Lorem ipsum.');
 
 # Create an article or two with our custom field values.
 
@@ -80,32 +80,32 @@ my $article2 = RT::Article->new($RT::SystemUser);
 my $article3 = RT::Article->new($RT::SystemUser);
 my $article4 = RT::Article->new($RT::SystemUser);
 ($ret, $msg) = $article1->Create(Name => 'First article '.$$,
-				 Summary => 'blah blah 1',
-				 Class => $class->Id,
-				 "CustomField-$qid" => $cvals{'article1q'},
-				 "CustomField-$aid" => $cvals{'article1a'},
-				 );
+                                 Summary => 'blah blah 1',
+                                 Class => $class->Id,
+                                 "CustomField-$qid" => $cvals{'article1q'},
+                                 "CustomField-$aid" => $cvals{'article1a'},
+                                 );
 ok($ret, "article 1 created");
 ($ret, $msg) = $article2->Create(Name => 'Second article '.$$,
-				 Summary => 'foo bar 2',
-				 Class => $class->Id,
-				 "CustomField-$qid" => $cvals{'article2q'},
-				 "CustomField-$aid" => $cvals{'article2a'},
-				 );
+                                 Summary => 'foo bar 2',
+                                 Class => $class->Id,
+                                 "CustomField-$qid" => $cvals{'article2q'},
+                                 "CustomField-$aid" => $cvals{'article2a'},
+                                 );
 ok($ret, "article 2 created");
 ($ret, $msg) = $article3->Create(Name => 'Third article '.$$,
-				 Summary => 'ping pong 3',
-				 Class => $class->Id,
-				 "CustomField-$qid" => $cvals{'article3q'},
-				 "CustomField-$aid" => $cvals{'article3a'},
-				 );
+                                 Summary => 'ping pong 3',
+                                 Class => $class->Id,
+                                 "CustomField-$qid" => $cvals{'article3q'},
+                                 "CustomField-$aid" => $cvals{'article3a'},
+                                 );
 ok($ret, "article 3 created");
 ($ret, $msg) = $article4->Create(Name => 'Fourth article '.$$,
-				 Summary => 'hoi polloi 4',
-				 Class => $class->Id,
-				 "CustomField-$qid" => $cvals{'article4q'},
-				 "CustomField-$aid" => $cvals{'article4a'},
-				 );
+                                 Summary => 'hoi polloi 4',
+                                 Class => $class->Id,
+                                 "CustomField-$qid" => $cvals{'article4q'},
+                                 "CustomField-$aid" => $cvals{'article4a'},
+                                 );
 ok($ret, "article 4 created");
 
 isa_ok($m, 'Test::WWW::Mechanize');

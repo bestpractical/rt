@@ -198,7 +198,7 @@ sub Prepare {
     my $percent_complete = ($now-$starts)/($due - $starts);
 
     my $new_priority = int($percent_complete * $priority_range) + ($ticket->InitialPriority || 0);
-	$new_priority = $ticket->FinalPriority if $new_priority > $ticket->FinalPriority;
+    $new_priority = $ticket->FinalPriority if $new_priority > $ticket->FinalPriority;
     $self->{'new_priority'} = $new_priority;
 
     return 1;

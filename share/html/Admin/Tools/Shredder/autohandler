@@ -47,13 +47,13 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 unless( $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => $RT::System ) ) {
-	return $m->comp( 'Elements/Error/NoRights' );
+    return $m->comp( 'Elements/Error/NoRights' );
 }
 
 use RT::Shredder ();
 my $path = RT::Shredder->StoragePath;
 unless( -d $path && -w _ ) {
-	return $m->comp( 'Elements/Error/NoStorage', Path => $path );
+    return $m->comp( 'Elements/Error/NoStorage', Path => $path );
 }
 
 $m->call_next(%ARGS);

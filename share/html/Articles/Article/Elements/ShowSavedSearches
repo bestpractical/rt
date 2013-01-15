@@ -53,8 +53,7 @@
 %                                       Object=> $RT::System )) {
 <h2><&|/l&>Save this search</&></h2>
 <&|/l&>Name:</&> <input name="NewSearchName" value="<%$Name||''%>">
-<&|/l&>Privacy:</&> <& SelectSearchPrivacy, Name => 'SearchPrivacy',
-	Default => $Privacy &><br />
+<&|/l&>Privacy:</&> <& SelectSearchPrivacy, Name => 'SearchPrivacy', Default => $Privacy &><br />
 %     if ($CurrentSearch && $CurrentSearch ne 'new') {
 <input value="<%loc('Update')%>" name="Update" type="submit" />&nbsp;
 <input value="<%loc('Save new')%>" name="Save" type="submit" />&nbsp;

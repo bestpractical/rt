@@ -132,9 +132,9 @@ sub ContentType  {
     my $self = shift;
     my %args = (
         VALUE           => 'text/plain',
-	    OPERATOR        => '=',
-	    ENTRYAGGREGATOR => 'OR',
-	    @_
+        OPERATOR        => '=',
+        ENTRYAGGREGATOR => 'OR',
+        @_
     );
 
     return $self->Limit ( %args, FIELD => 'ContentType' );

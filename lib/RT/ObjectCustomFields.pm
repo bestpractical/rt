@@ -87,13 +87,13 @@ sub HasEntryForCustomField {
     my @items = grep {$_->CustomField == $id } @{$self->ItemsArrayRef};
 
     if ($#items > 1) {
-	die "$self HasEntry had a list with more than one of $id in it. this can never happen";
+        die "$self HasEntry had a list with more than one of $id in it. this can never happen";
     }
     if ($#items == -1 ) {
-	return undef;
+        return undef;
     }
     else {
-	return ($items[0]);
+        return ($items[0]);
     }  
 }
 

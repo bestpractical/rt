@@ -146,7 +146,7 @@ my $shredder = RT::Shredder->new;
         file_name    => $opt{'sqldump'},
         from_storage => 0,
     } ) };
-	if( $@ ) {
+        if( $@ ) {
         print STDERR "ERROR: Couldn't open SQL dump file: $@\n";
         exit 1 if $opt{'sqldump'};
 
@@ -154,7 +154,7 @@ my $shredder = RT::Shredder->new;
         unless( $opt{'force'} ) {
             exit 0 unless prompt_yN( "Do you want to proceed?" );
         }
-	} else {
+        } else {
         print "SQL dump file is '". $plugin->FileName ."'\n";
     }
 }
@@ -175,95 +175,95 @@ if( $@ ) {
 
 sub prompt_delete_objs
 {
-	my( $objs ) = @_;
-	unless( @$objs ) {
-		print "Objects list is empty, try refine search options\n";
-		exit 0;
-	}
-	my $list = "Next ". scalar( @$objs ) ." objects would be deleted:\n";
-	foreach my $o( @$objs ) {
-		$list .= "\t". $o->_AsString ." object\n";
-	}
-	print $list;
-	exit(0) unless prompt_yN( "Do you want to proceed?" );
+    my( $objs ) = @_;
+    unless( @$objs ) {
+        print "Objects list is empty, try refine search options\n";
+        exit 0;
+    }
+    my $list = "Next ". scalar( @$objs ) ." objects would be deleted:\n";
+    foreach my $o( @$objs ) {
+        $list .= "\t". $o->_AsString ." object\n";
+    }
+    print $list;
+    exit(0) unless prompt_yN( "Do you want to proceed?" );
 }
 
 sub prompt_yN
 {
-	my $text = shift;
-	print "$text [y/N] ";
-	unless( <STDIN> =~ /^(?:y|yes)$/i ) {
-		return 0;
-	}
-	return 1;
+    my $text = shift;
+    print "$text [y/N] ";
+    unless( <STDIN> =~ /^(?:y|yes)$/i ) {
+        return 0;
+    }
+    return 1;
 }
 
 sub usage
 {
-	require RT::Shredder::POD;
-	RT::Shredder::POD::shredder_cli( $0, \*STDOUT );
-	exit 1;
+    require RT::Shredder::POD;
+    RT::Shredder::POD::shredder_cli( $0, \*STDOUT );
+    exit 1;
 }
 
 sub parse_args
 {
-	my $tmp;
-	Getopt::Long::Configure( "pass_through" );
-	my @objs = ();
-	if( GetOptions( 'object=s' => \@objs ) && @objs ) {
-		print STDERR "Option --object had been deprecated, use plugin 'Objects' instead\n";
+    my $tmp;
+    Getopt::Long::Configure( "pass_through" );
+    my @objs = ();
+    if( GetOptions( 'object=s' => \@objs ) && @objs ) {
+        print STDERR "Option --object had been deprecated, use plugin 'Objects' instead\n";
         exit(1);
-	}
+    }
 
-	my @plugins = ();
-	if( GetOptions( 'plugin=s' => \@plugins ) && @plugins ) {
-		$opt{'plugin'} = \@plugins;
-		foreach my $str( @plugins ) {
-			if( $str =~ /^\s*list\s*$/ ) {
-				show_plugin_list();
-			} elsif( $str =~ /^\s*help-(\w+)\s*$/ ) {
-				show_plugin_help( $1 );
-			} elsif( $str =~ /^(\w+)(=.*)?$/ && !$plugins{$1} ) {
-				print "Couldn't find plugin '$1'\n";
-				show_plugin_list();
-			}
-		}
-	}
+    my @plugins = ();
+    if( GetOptions( 'plugin=s' => \@plugins ) && @plugins ) {
+        $opt{'plugin'} = \@plugins;
+        foreach my $str( @plugins ) {
+            if( $str =~ /^\s*list\s*$/ ) {
+                show_plugin_list();
+            } elsif( $str =~ /^\s*help-(\w+)\s*$/ ) {
+                show_plugin_help( $1 );
+            } elsif( $str =~ /^(\w+)(=.*)?$/ && !$plugins{$1} ) {
+                print "Couldn't find plugin '$1'\n";
+                show_plugin_list();
+            }
+        }
+    }
 
-	# other options make no sense without previouse
-	usage() unless keys %opt;
+    # other options make no sense without previouse
+    usage() unless keys %opt;
 
-	if( GetOptions( 'force' => \$tmp ) && $tmp ) {
-		$opt{'force'}++;
-	}
-	$tmp = undef;
-	if( GetOptions( 'sqldump=s' => \$tmp ) && $tmp ) {
-		$opt{'sqldump'} = $tmp;
-	}
-	return;
+    if( GetOptions( 'force' => \$tmp ) && $tmp ) {
+        $opt{'force'}++;
+    }
+    $tmp = undef;
+    if( GetOptions( 'sqldump=s' => \$tmp ) && $tmp ) {
+        $opt{'sqldump'} = $tmp;
+    }
+    return;
 }
 
 sub process_plugins
 {
-	my $shredder = shift;
+    my $shredder = shift;
 
-	my @res;
-	foreach my $str( @{ $opt{'plugin'} } ) {
-		my $plugin = RT::Shredder::Plugin->new;
-		my( $status, $msg ) = $plugin->LoadByString( $str );
-		unless( $status ) {
-			print STDERR "Couldn't load plugin\n";
-			print STDERR "Error: $msg\n";
-			exit(1);
-		}
+    my @res;
+    foreach my $str( @{ $opt{'plugin'} } ) {
+        my $plugin = RT::Shredder::Plugin->new;
+        my( $status, $msg ) = $plugin->LoadByString( $str );
+        unless( $status ) {
+            print STDERR "Couldn't load plugin\n";
+            print STDERR "Error: $msg\n";
+            exit(1);
+        }
         if ( lc $plugin->Type eq 'search' ) {
             push @res, _process_search_plugin( $shredder, $plugin );
         }
         elsif ( lc $plugin->Type eq 'dump' ) {
             _process_dump_plugin( $shredder, $plugin );
         }
-	}
-	return RT::Shredder->CastObjectsToRecords( Objects => \@res );
+    }
+    return RT::Shredder->CastObjectsToRecords( Objects => \@res );
 }
 
 sub _process_search_plugin {
@@ -294,22 +294,22 @@ sub _process_dump_plugin {
 
 sub show_plugin_list
 {
-	print "Plugins list:\n";
-	print "\t$_\n" foreach( grep !/^Base$/, keys %plugins );
-	exit(1);
+    print "Plugins list:\n";
+    print "\t$_\n" foreach( grep !/^Base$/, keys %plugins );
+    exit(1);
 }
 
 sub show_plugin_help
 {
-	my( $name ) = @_;
-	require RT::Shredder::POD;
-	unless( $plugins{ $name } ) {
-		print "Couldn't find plugin '$name'\n";
-		show_plugin_list();
-	}
-	RT::Shredder::POD::plugin_cli( $plugins{'Base'}, \*STDOUT, 1 );
-	RT::Shredder::POD::plugin_cli( $plugins{ $name }, \*STDOUT );
-	exit(1);
+    my( $name ) = @_;
+    require RT::Shredder::POD;
+    unless( $plugins{ $name } ) {
+        print "Couldn't find plugin '$name'\n";
+        show_plugin_list();
+    }
+    RT::Shredder::POD::plugin_cli( $plugins{'Base'}, \*STDOUT, 1 );
+    RT::Shredder::POD::plugin_cli( $plugins{ $name }, \*STDOUT );
+    exit(1);
 }
 
 exit(0);

@@ -95,16 +95,16 @@ Load an ACE by specifying a paramhash with the following fields:
 
               PrincipalId => undef,
               PrincipalType => undef,
-	      RightName => undef,
+              RightName => undef,
 
         And either:
 
-	      Object => undef,
+              Object => undef,
 
             OR
 
-	      ObjectType => undef,
-	      ObjectId => undef
+              ObjectType => undef,
+              ObjectId => undef
 
 =cut
 
@@ -139,7 +139,7 @@ sub LoadByValues {
 
     my ($object, $object_type, $object_id) = $self->_ParseObjectArg( %args );
     unless( $object ) {
-	return ( 0, $self->loc("System error. Right not granted.") );
+        return ( 0, $self->loc("System error. Right not granted.") );
     }
 
     $self->LoadByCols( PrincipalId   => $princ_obj->Id,
@@ -207,7 +207,7 @@ sub Create {
     }
     ($args{'Object'}, $args{'ObjectType'}, $args{'ObjectId'}) = $self->_ParseObjectArg( %args );
     unless( $args{'Object'} ) {
-	return ( 0, $self->loc("System error. Right not granted.") );
+        return ( 0, $self->loc("System error. Right not granted.") );
     }
 
     # Validate the principal
@@ -331,9 +331,9 @@ sub _Delete {
     my ( $val, $msg ) = $self->SUPER::Delete(@_);
 
     if ($val) {
-	#Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
-	# TODO what about the groups key cache?
-	RT::Principal->InvalidateACLCache();
+        #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
+        # TODO what about the groups key cache?
+        RT::Principal->InvalidateACLCache();
         $RT::Handle->Commit() unless $InsideTransaction;
         return ( $val, $self->loc('Right revoked') );
     }
@@ -547,21 +547,21 @@ sub _ParseObjectArg {
                  @_ );
 
     if( $args{'Object'} && ($args{'ObjectId'} || $args{'ObjectType'}) ) {
-	$RT::Logger->crit( "Method called with an ObjectType or an ObjectId and Object args" );
-	return ();
+        $RT::Logger->crit( "Method called with an ObjectType or an ObjectId and Object args" );
+        return ();
     } elsif( $args{'Object'} && ref($args{'Object'}) &&  !$args{'Object'}->can('id') ) {
-	$RT::Logger->crit( "Method called called Object that has no id method" );
-	return ();
+        $RT::Logger->crit( "Method called called Object that has no id method" );
+        return ();
     } elsif( $args{'Object'} ) {
-	my $obj = $args{'Object'};
-	return ($obj, ref $obj, $obj->id);
+        my $obj = $args{'Object'};
+        return ($obj, ref $obj, $obj->id);
     } elsif ( $args{'ObjectType'} ) {
-	my $obj =  $args{'ObjectType'}->new( $self->CurrentUser );
-	$obj->Load( $args{'ObjectId'} );
-	return ($obj, ref $obj, $obj->id);
+        my $obj =  $args{'ObjectType'}->new( $self->CurrentUser );
+        $obj->Load( $args{'ObjectId'} );
+        return ($obj, ref $obj, $obj->id);
     } else {
-	$RT::Logger->crit( "Method called with wrong args" );
-	return ();
+        $RT::Logger->crit( "Method called with wrong args" );
+        return ();
     }
 }
 
@@ -706,25 +706,25 @@ sub _CoreAccessible {
     {
 
         id =>
-		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+                {read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         PrincipalType =>
-		{read => 1, write => 1, sql_type => 12, length => 25,  is_blob => 0,  is_numeric => 0,  type => 'varchar(25)', default => ''},
+                {read => 1, write => 1, sql_type => 12, length => 25,  is_blob => 0,  is_numeric => 0,  type => 'varchar(25)', default => ''},
         PrincipalId =>
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+                {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         RightName =>
-		{read => 1, write => 1, sql_type => 12, length => 25,  is_blob => 0,  is_numeric => 0,  type => 'varchar(25)', default => ''},
+                {read => 1, write => 1, sql_type => 12, length => 25,  is_blob => 0,  is_numeric => 0,  type => 'varchar(25)', default => ''},
         ObjectType =>
-		{read => 1, write => 1, sql_type => 12, length => 25,  is_blob => 0,  is_numeric => 0,  type => 'varchar(25)', default => ''},
+                {read => 1, write => 1, sql_type => 12, length => 25,  is_blob => 0,  is_numeric => 0,  type => 'varchar(25)', default => ''},
         ObjectId =>
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+                {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Creator =>
-		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+                {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Created =>
-		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+                {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
         LastUpdatedBy =>
-		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+                {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         LastUpdated =>
-		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+                {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
 
  }
 };

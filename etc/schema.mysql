@@ -342,14 +342,14 @@ CREATE TABLE Templates (
 CREATE TABLE ObjectCustomFieldValues (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   CustomField int NOT NULL  ,
-  ObjectType varchar(255) CHARACTER SET ascii NOT NULL,	    # Final target of the Object
-  ObjectId int NOT NULL  ,		    # New -- Replaces Ticket
+  ObjectType varchar(255) CHARACTER SET ascii NOT NULL,     # Final target of the Object
+  ObjectId int NOT NULL  ,                  # New -- Replaces Ticket
   SortOrder integer NOT NULL DEFAULT 0  ,   # New -- ordering for multiple values
 
   Content varchar(255) NULL  ,
-  LargeContent LONGBLOB NULL,		    # New -- to hold 255+ strings
-  ContentType varchar(80) CHARACTER SET ascii NULL,		    # New -- only text/* gets searched
-  ContentEncoding varchar(80) CHARACTER SET ascii NULL  ,	    # New -- for binary Content
+  LargeContent LONGBLOB NULL,               # New -- to hold 255+ strings
+  ContentType varchar(80) CHARACTER SET ascii NULL,                 # New -- only text/* gets searched
+  ContentEncoding varchar(80) CHARACTER SET ascii NULL  ,           # New -- for binary Content
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
@@ -367,10 +367,10 @@ CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,Ob
 CREATE TABLE CustomFields (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Name varchar(200) NULL  ,
-  Type varchar(200) CHARACTER SET ascii NULL  ,	# Changed -- 'Single' and 'Multiple' is moved out
+  Type varchar(200) CHARACTER SET ascii NULL  , # Changed -- 'Single' and 'Multiple' is moved out
   RenderType varchar(64) CHARACTER SET ascii NULL  ,
-  MaxValues integer,		# New -- was 'Single'(1) and 'Multiple'(0)
-  Pattern TEXT NULL  ,	# New -- Must validate against this
+  MaxValues integer,            # New -- was 'Single'(1) and 'Multiple'(0)
+  Pattern TEXT NULL  ,  # New -- Must validate against this
   Repeated int2 NOT NULL DEFAULT 0 , # New -- repeated table entry
   BasedOn INTEGER NULL,
   ValuesClass varchar(64) CHARACTER SET ascii NULL  ,

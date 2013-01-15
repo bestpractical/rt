@@ -224,7 +224,7 @@ Greetings,
 
 This message has been automatically generated in response to the
 creation of a trouble ticket regarding:
-	"{$Ticket->Subject()}", 
+        "{$Ticket->Subject()}", 
 a summary of which appears below.
 
 There is no need to reply to this message right now.  Your ticket has been
@@ -474,10 +474,10 @@ Your new password is:
 }
     },
 
-	       {   Queue       => '0',
-		   Name        => 'Email Digest',    # loc
-		   Description => 'Email template for periodic notification digests',  # loc
-		   Content => q[Subject: RT Email Digest
+               {   Queue       => '0',
+                   Name        => 'Email Digest',    # loc
+                   Description => 'Email template for periodic notification digests',  # loc
+                   Content => q[Subject: RT Email Digest
 
 { $Argument }
 ],

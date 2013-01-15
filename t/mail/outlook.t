@@ -210,8 +210,8 @@ John Smith
 Some Company
 email\@someco.com
 EOF
-	test_email( $text, $content,
-		    ' with base64, no X-Mailer, \n\n are replaced' );
+        test_email( $text, $content,
+                    ' with base64, no X-Mailer, \n\n are replaced' );
 }
 
 
@@ -382,8 +382,8 @@ This isthesig
 
 EOF
 
-	test_email( $text, $content,
-		    'Another sample multipart message with Exchange headers' );
+        test_email( $text, $content,
+                    'Another sample multipart message with Exchange headers' );
 }
 
 sub test_email {

@@ -1169,11 +1169,11 @@ WHERE (
     (main.Type = 'ticket')
 ) AND (
     (
-	(Users_3.EmailAddress = '22')
-	    AND
-	(Groups_1.Domain = 'RT::Ticket-Role')
-	    AND
-	(Groups_1.Type = 'RequestorGroup')
+        (Users_3.EmailAddress = '22')
+            AND
+        (Groups_1.Domain = 'RT::Ticket-Role')
+            AND
+        (Groups_1.Type = 'RequestorGroup')
     )
 ) AND
     Groups_1.Instance = main.id

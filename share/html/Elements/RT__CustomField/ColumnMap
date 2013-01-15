@@ -66,7 +66,7 @@ my $COLUMN_MAP = {
     map(
         { my $c = $_; $c => {
             title     => $c, attribute => $c,
-	    value     => sub { return $_[0]->$c() },
+            value     => sub { return $_[0]->$c() },
         } }
         qw(Name Description Type LookupType Pattern)
     ),
@@ -74,21 +74,21 @@ my $COLUMN_MAP = {
         { my $c = $_; my $short = $c; $short =~ s/^Friendly//;
           $c => {
             title     => $short, attribute => $short,
-	    value     => sub { return $_[0]->$c() },
+            value     => sub { return $_[0]->$c() },
         } }
         qw(FriendlyLookupType FriendlyType FriendlyPattern)
     ),
     MaxValues => {
         title     => 'MaxValues', # loc
-	attribute => 'MaxValues',
-	value     => sub {
+        attribute => 'MaxValues',
+        value     => sub {
             my $v = $_[0]->MaxValues;
             return !$v ? $_[0]->loc('unlimited') : $v == 0 ? $_[0]->loc('one') : $v;
         },
     },
     AddedTo => {
         title     => 'Added', # loc
-	value     => sub {
+        value     => sub {
             if ( $_[0]->IsGlobal ) {
                 return $_[0]->loc('Global');
             }

@@ -478,7 +478,7 @@ sub InitClasses {
                                    "You should delete or repair this Scrip in the admin UI.\n$@\n");
         }
 
-	foreach my $class ( grep $_, RT->Config->Get('CustomFieldValuesSources') ) {
+        foreach my $class ( grep $_, RT->Config->Get('CustomFieldValuesSources') ) {
             local $@;
             eval "require $class; 1" or $RT::Logger->error(
                 "Class '$class' is listed in CustomFieldValuesSources option"

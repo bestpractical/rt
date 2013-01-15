@@ -103,7 +103,7 @@ if ($Create) {
     $title = loc("Create a new group");
 } else {
     if ($id eq 'new' ) {
-	my ($create_id, $create_msg) = $Group->CreateUserDefinedGroup(Name => $Name );
+        my ($create_id, $create_msg) = $Group->CreateUserDefinedGroup(Name => $Name );
         if ($create_id) {
             $id = $Group->Id;
             push @results, $create_msg;
@@ -111,25 +111,25 @@ if ($Create) {
             push @results, loc("Group could not be created: [_1]", $create_msg);
         }
     } else {
-	$Group->Load($id) || Abort('Could not load group');
+        $Group->Load($id) || Abort('Could not load group');
     }
 
     if ($Group->Id) {
-	$title = loc("Modify the group [_1]", $Group->Name);
+        $title = loc("Modify the group [_1]", $Group->Name);
     }
 
     # If the create failed
     else {
-	$title = loc("Create a new group");
-	$Create = 1;
+        $title = loc("Create a new group");
+        $Create = 1;
     }
 }
 
 if ($Group->Id) {
     my @fields = qw(Description Name );
     my @fieldresults = UpdateRecordObject ( AttributesRef => \@fields,
-					    Object => $Group,
-					    ARGSRef => \%ARGS );
+                                            Object => $Group,
+                                            ARGSRef => \%ARGS );
     push (@results,@fieldresults);
     push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $Group );
 

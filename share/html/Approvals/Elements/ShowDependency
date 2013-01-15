@@ -62,16 +62,16 @@ while (my $link = $approving->Next()) {
     my $dep  = $m->scomp('ShowDependency', Ticket => $link->BaseObj, _seen => $_seen);
 
     if ($type eq 'approval') {
-	$head .= $m->scomp('/Widgets/TitleBoxStart', title => loc("Approval #[_1]: [_2]", $link->BaseObj->Id, $link->BaseObj->Subject));
-	$text .= $head;
-	$text .= $m->scomp('/Ticket/Elements/ShowCustomFields', Ticket => $link->BaseObj);
+        $head .= $m->scomp('/Widgets/TitleBoxStart', title => loc("Approval #[_1]: [_2]", $link->BaseObj->Id, $link->BaseObj->Subject));
+        $text .= $head;
+        $text .= $m->scomp('/Ticket/Elements/ShowCustomFields', Ticket => $link->BaseObj);
     } elsif ($type eq 'ticket') {
-	$head .= $m->scomp('/Widgets/TitleBoxStart', title => loc("Ticket #[_1]: [_2]", $link->BaseObj->Id, $link->BaseObj->Subject));
-	$text .= $head;
-	$text .= $m->scomp('/Ticket/Elements/ShowSummary', Ticket => $link->BaseObj);
+        $head .= $m->scomp('/Widgets/TitleBoxStart', title => loc("Ticket #[_1]: [_2]", $link->BaseObj->Id, $link->BaseObj->Subject));
+        $text .= $head;
+        $text .= $m->scomp('/Ticket/Elements/ShowSummary', Ticket => $link->BaseObj);
     } else {
-	$head .= $m->scomp('/Widgets/TitleBoxStart', title => loc("#[_1]: [_2]", $link->BaseObj->Id, $link->BaseObj->Subject));
-	$text .= $head;
+        $head .= $m->scomp('/Widgets/TitleBoxStart', title => loc("#[_1]: [_2]", $link->BaseObj->Id, $link->BaseObj->Subject));
+        $text .= $head;
     }
 
     $text .= $m->scomp('/Elements/ShowHistory' , Object => $link->BaseObj, ShowTitle => 0, ShowHeaders => 0, ShowDisplayModes => 0, ShowTitleBarCommands => 0);
@@ -81,16 +81,16 @@ while (my $link = $approving->Next()) {
     $text .= $dep;
     $text .= '</a>';
     $show{$link->BaseObj->Id} = {
-	text => $text,
-	head => $head,
+        text => $text,
+        head => $head,
     };
 }
 
 my $refer;
 foreach my $id (sort keys %show) {
     if ($_seen->{$id}++) {
-	$refer .= "<a href='#txn-$id'>" . $show{$id}{head} . "</a>";
-	next;
+        $refer .= "<a href='#txn-$id'>" . $show{$id}{head} . "</a>";
+        next;
     }
 
     $m->print($show{$id}{text});

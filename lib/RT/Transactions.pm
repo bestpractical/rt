@@ -84,9 +84,9 @@ sub _Init   {
   
   # By default, order by the date of the transaction, rather than ID.
   $self->OrderByCols( { FIELD => 'Created',
-			ORDER => 'ASC' },
-		      { FIELD => 'id',
-			ORDER => 'ASC' } );
+                        ORDER => 'ASC' },
+                      { FIELD => 'id',
+                        ORDER => 'ASC' } );
 
   return ( $self->SUPER::_Init(@_));
 }
@@ -133,25 +133,25 @@ sub LimitToTicket {
 
 sub Next {
     my $self = shift;
- 	
+
     my $Transaction = $self->SUPER::Next();
     if ((defined($Transaction)) and (ref($Transaction))) {
-    	# If the user can see the transaction's type, then they can 
-	#  see the transaction and we should hand it back.
-	if ($Transaction->Type) {
-	    return($Transaction);
-	}
+        # If the user can see the transaction's type, then they can
+        #  see the transaction and we should hand it back.
+        if ($Transaction->Type) {
+            return($Transaction);
+        }
 
-	#If the user doesn't have the right to show this ticket
-	else {	
-	    return($self->Next());
-	}
+        #If the user doesn't have the right to show this ticket
+        else {
+            return($self->Next());
+        }
     }
 
     #if there never was any ticket
     else {
-	return(undef);
-    }	
+        return(undef);
+    }
 }
 
 

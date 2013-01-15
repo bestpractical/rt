@@ -95,8 +95,8 @@ sub _Init {
   my @result = $self->SUPER::_Init(@_);
 
   $self->OrderBy( ALIAS => 'main',
-		  FIELD => 'Name',
-		  ORDER => 'ASC');
+                  FIELD => 'Name',
+                  ORDER => 'ASC');
 
   # XXX: this code should be generalized
   $self->{'princalias'} = $self->Join(
@@ -465,14 +465,14 @@ sub Next {
 
     my $Group = $self->SUPER::Next();
     if ((defined($Group)) and (ref($Group))) {
-	unless ($Group->CurrentUserHasRight('SeeGroup')) {
-	    return $self->Next();
-	}
-	
-	return $Group;
+        unless ($Group->CurrentUserHasRight('SeeGroup')) {
+            return $self->Next();
+        }
+
+        return $Group;
     }
     else {
-	return undef;
+        return undef;
     }
 }
 
@@ -480,14 +480,14 @@ sub Next {
 
 sub _DoSearch {
     my $self = shift;
-    
+
     #unless we really want to find disabled rows, make sure we're only finding enabled ones.
     unless($self->{'find_disabled_rows'}) {
-	$self->LimitToEnabled();
+        $self->LimitToEnabled();
     }
-    
+
     return($self->SUPER::_DoSearch(@_));
-    
+
 }
 
 

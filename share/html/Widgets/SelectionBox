@@ -54,13 +54,13 @@
 %#
 %# <%init>:
 %# my $sel = $m->comp ('/Widgets/SelectionBox:new',
-%#		  Action => me.html',
-%#		  Name => 'my-selection',
-%#		  Available => \@items,
+%#                Action => me.html',
+%#                Name => 'my-selection',
+%#                Available => \@items,
 %#                # you can do things with @{$sel->{Current}} in the 
 %#                # OnSubmit callback
-%#		  OnSubmit => sub { my $sel = shift; },
-%#		  Selected => \@selected);
+%#                OnSubmit => sub { my $sel = shift; },
+%#                Selected => \@selected);
 %#
 %# $m->comp ('/Widgets/SelectionBox:process', %ARGS, self => $sel)
 %#

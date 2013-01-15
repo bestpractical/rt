@@ -107,18 +107,18 @@ if ($FindDisabledGroups) {
 if (length $GroupString) {
     $caption = loc("Groups matching search criteria");
     if ($GroupField =~ /^CustomField-(\d+)/) {
-	$Groups->LimitCustomField(
-	    CUSTOMFIELD => $1,
-	    OPERATOR => $GroupOp,
-	    VALUE => $GroupString,
-	); 
+        $Groups->LimitCustomField(
+            CUSTOMFIELD => $1,
+            OPERATOR => $GroupOp,
+            VALUE => $GroupString,
+        );
     }
     else {
-	$Groups->Limit(
-	    FIELD => $GroupField,
-	    OPERATOR => $GroupOp,
-	    VALUE => $GroupString,
-	); 
+        $Groups->Limit(
+            FIELD => $GroupField,
+            OPERATOR => $GroupOp,
+            VALUE => $GroupString,
+        );
     }
     RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Admin/Groups/Modify.html?id=".$Groups->First->id)
           if $Groups->Count == 1 and $Groups->First;

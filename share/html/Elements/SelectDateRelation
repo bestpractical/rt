@@ -55,6 +55,6 @@
 $Name => undef
 $Default => undef
 $Before => loc('before')
-$On => 	loc('on')
+$On => loc('on')
 $After => loc('after')
 </%ARGS>

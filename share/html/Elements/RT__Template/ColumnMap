@@ -59,13 +59,13 @@ my $COLUMN_MAP = {
     },
     Name => {
         title     => 'Name', # loc
-	attribute => 'Name',
-	value     => sub { return $_[0]->Name() },
+        attribute => 'Name',
+        value     => sub { return $_[0]->Name() },
     },
     Description => {
         title     => 'Description', # loc
-	attribute => 'Description',
-	value     => sub { return $_[0]->Description() },
+        attribute => 'Description',
+        value     => sub { return $_[0]->Description() },
     },
     Queue => {
         title     => 'Queue', # loc

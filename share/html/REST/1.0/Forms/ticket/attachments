@@ -89,23 +89,23 @@ if ($aid) {
             $r->content_type($attachment->ContentType);
         }
     } else {
-	my @data;
-	push @data, [ id    => $attachment->Id   ];
-	push @data, [ Subject    => $attachment->Subject   ];
-	push @data, [ Creator    => $attachment->Creator   ];
-	push @data, [ Created    => $attachment->Created   ];
-	push @data, [ Transaction    => $attachment->TransactionId   ];
-	push @data, [ Parent    => $attachment->Parent   ];
-	push @data, [ MessageId    => $attachment->MessageId   ];
-	push @data, [ Filename    => $attachment->Filename   ];
-	push @data, [ ContentType    => $attachment->ContentType   ];
-	push @data, [ ContentEncoding    => $attachment->ContentEncoding   ];
-	push @data, [ Headers    => $attachment->Headers   ];
-	push @data, [ Content    => $attachment->Content   ];
+        my @data;
+        push @data, [ id    => $attachment->Id   ];
+        push @data, [ Subject    => $attachment->Subject   ];
+        push @data, [ Creator    => $attachment->Creator   ];
+        push @data, [ Created    => $attachment->Created   ];
+        push @data, [ Transaction    => $attachment->TransactionId   ];
+        push @data, [ Parent    => $attachment->Parent   ];
+        push @data, [ MessageId    => $attachment->MessageId   ];
+        push @data, [ Filename    => $attachment->Filename   ];
+        push @data, [ ContentType    => $attachment->ContentType   ];
+        push @data, [ ContentEncoding    => $attachment->ContentEncoding   ];
+        push @data, [ Headers    => $attachment->Headers   ];
+        push @data, [ Content    => $attachment->Content   ];
 
-	my %k = map {@$_} @data;
-	$o = [ map {$_->[0]} @data ];
-	$k = \%k;
+        my %k = map {@$_} @data;
+        $o = [ map {$_->[0]} @data ];
+        $k = \%k;
     }
 
 }
