@@ -116,7 +116,7 @@ for my $category (@$Principals) {
 
 % if (lc $AddPrincipal eq 'group') {
             jQuery("#AddPrincipalForRights-"+<% lc $AddPrincipal |n,j%>).autocomplete({
-                source: <% RT->Config->Get('WebPath') |n,j%>+"/Helpers/Autocomplete/Groups",
+                source: RT.Config.WebPath + "/Helpers/Autocomplete/Groups",
                 select: addprincipal_onselect,
                 change: addprincipal_onchange
             });
