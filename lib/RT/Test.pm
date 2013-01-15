@@ -54,6 +54,11 @@ use warnings;
 
 use base 'Test::More';
 
+BEGIN {
+    # Warn about role consumers overriding role methods so we catch it in tests.
+    $ENV{PERL_ROLE_OVERRIDE_WARN} = 1;
+}
+
 # We use the Test::NoWarnings catching and reporting functionality, but need to
 # wrap it in our own special handler because of the warn handler installed via
 # RT->InitLogging().

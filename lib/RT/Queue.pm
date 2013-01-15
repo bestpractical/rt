@@ -70,7 +70,7 @@ use warnings;
 use base 'RT::Record';
 
 use Role::Basic 'with';
-with "RT::Role::Record::Lifecycle";
+with "RT::Role::Record::Lifecycle", "RT::Role::Record::Roles";
 
 sub Table {'Queues'}
 
@@ -649,9 +649,7 @@ them, see L</Roles>.
 =cut
 
 sub ManageableRoleGroupTypes {
-    # This grep is a little hacky, but I don't want to introduce the concept of
-    # manageable vs. unmanageable roles globally (yet).
-    return grep { not /^(Requestor|Owner)$/ } shift->Roles;
+    shift->Roles( ACLOnly => 0 )
 }
 
 =head2 IsManageableRoleGroupType
@@ -663,12 +661,7 @@ Returns whether the passed-in type is a manageable role group type.
 sub IsManageableRoleGroupType {
     my $self = shift;
     my $type = shift;
-
-    for my $valid_type ($self->ManageableRoleGroupTypes) {
-        return 1 if $type eq $valid_type;
-    }
-
-    return 0;
+    return not $self->Role($type)->{ACLOnly};
 }
 
 

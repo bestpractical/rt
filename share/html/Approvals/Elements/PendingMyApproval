@@ -87,7 +87,7 @@ my $created_before = RT::Date->new( $session{'CurrentUser'} );
 my $created_after = RT::Date->new( $session{'CurrentUser'} );
 
 foreach ($tickets, $group_tickets) {
-    $_->Limit( FIELD      => 'Type', VALUE => 'approval' );
+    $_->LimitType( VALUE => 'approval' );
 
     if ( $ARGS{'ShowResolved'} ) {
 	$_->LimitStatus( VALUE => 'resolved' );

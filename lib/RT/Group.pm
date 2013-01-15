@@ -709,6 +709,7 @@ sub RoleClass {
     my $self = shift;
     my $domain = shift || $self->Domain;
     return unless $domain =~ /^(.+)-Role$/;
+    return unless $1->DOES("RT::Role::Record::Roles");
     return $1;
 }
 
@@ -726,7 +727,7 @@ sub ValidateRoleGroup {
     return 0 unless $args{Domain} and $args{Type};
 
     my $class = $self->RoleClass($args{Domain});
-    return 0 unless $class and $class->can('HasRole');
+    return 0 unless $class;
 
     return $class->HasRole($args{Type});
 }
@@ -739,15 +740,17 @@ sub SingleMemberRoleGroup {
     my $self = shift;
     my $class = $self->RoleClass;
     return unless $class;
-    return $class->_ROLES->{$self->Type}{Single};
+    return $class->Role($self->Type)->{Single};
 }
 
 sub SingleMemberRoleGroupColumn {
     my $self = shift;
     my ($class) = $self->Domain =~ /^(.+)-Role$/;
     return unless $class;
-    return unless $class->_ROLES->{$self->Type}{Class} eq $class;
-    return $class->_ROLES->{$self->Type}{Column};
+
+    my $role = $class->Role($self->Type);
+    return unless $role->{Class} eq $class;
+    return $role->{Column};
 }
 
 sub RoleGroupObject {

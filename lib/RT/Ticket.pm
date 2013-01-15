@@ -70,7 +70,12 @@ use warnings;
 use base 'RT::Record';
 
 use Role::Basic 'with';
-with "RT::Role::Record::Status";
+
+# SetStatus and _SetStatus are reimplemented below (using other pieces of the
+# role) to deal with ACLs, moving tickets between queues, and automatically
+# setting dates.
+with "RT::Role::Record::Status" => { -excludes => [qw(SetStatus _SetStatus)] },
+     "RT::Role::Record::Roles";
 
 use RT::Queue;
 use RT::User;
@@ -101,7 +106,8 @@ for my $role (sort keys %ROLES) {
     RT::Ticket->RegisterRole(
         Name            => $role,
         EquivClasses    => ['RT::Queue'],
-        ( $role eq "Owner" ? ( Column => "Owner") : () ),
+        ( $role eq "Owner" ? ( Column => "Owner")   : () ),
+        ( $role !~ /Cc/    ? ( ACLOnlyInEquiv => 1) : () ),
     );
 }
 
@@ -2123,11 +2129,11 @@ sub Merged {
         if $MERGE_CACHE{'merged'}{ $id };
 
     my $mergees = RT::Tickets->new( $self->CurrentUser );
-    $mergees->Limit(
+    $mergees->LimitField(
         FIELD    => 'EffectiveId',
         VALUE    => $id,
     );
-    $mergees->Limit(
+    $mergees->LimitField(
         FIELD    => 'id',
         OPERATOR => '!=',
         VALUE    => $id,

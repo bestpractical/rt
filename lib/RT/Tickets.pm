@@ -83,6 +83,9 @@ use warnings;
 
 use base 'RT::SearchBuilder';
 
+use Role::Basic 'with';
+with 'RT::Role::SearchBuilder::Roles';
+
 use RT::Ticket;
 
 sub Table { 'Tickets'}
@@ -176,7 +179,6 @@ our %dispatch = (
     CUSTOMFIELD     => \&_CustomFieldLimit,
     HASATTRIBUTE    => \&_HasAttributeLimit,
 );
-our %can_bundle = ();# WATCHERFIELD => "yes", );
 
 # Default EntryAggregator per type
 # if you specify OP, you must specify all valid OPs
@@ -224,7 +226,6 @@ my %DefaultEA = (
 # into Tickets_SQL.
 sub FIELDS     { return \%FIELD_METADATA }
 sub dispatch   { return \%dispatch }
-sub can_bundle { return \%can_bundle }
 
 # Bring in the clowns.
 require RT::Tickets_SQL;
@@ -901,250 +902,14 @@ sub _WatcherLimit {
         die "Invalid watcher subfield: '$rest{SUBKEY}'";
     }
 
-    # Owner was ENUM field, so "Owner = 'xxx'" allowed user to
-    # search by id and Name at the same time, this is workaround
-    # to preserve backward compatibility
-    if ( $field eq 'Owner' ) {
-        if ( $op =~ /^!?=$/ && (!$rest{'SUBKEY'} || $rest{'SUBKEY'} eq 'Name' || $rest{'SUBKEY'} eq 'EmailAddress') ) {
-            my $o = RT::User->new( $self->CurrentUser );
-            my $method = ($rest{'SUBKEY'}||'') eq 'EmailAddress' ? 'LoadByEmail': 'Load';
-            $o->$method( $value );
-            $self->_SQLLimit(
-                FIELD    => 'Owner',
-                OPERATOR => $op,
-                VALUE    => $o->id,
-                %rest,
-            );
-            return;
-        }
-        if ( ($rest{'SUBKEY'}||'') eq 'id' ) {
-            $self->_SQLLimit(
-                FIELD    => 'Owner',
-                OPERATOR => $op,
-                VALUE    => $value,
-                %rest,
-            );
-            return;
-        }
-    }
-    $rest{SUBKEY} ||= 'EmailAddress';
-
-    my $groups = $self->_RoleGroupsJoin( Type => $type, Class => $class, New => !$type );
-
-    $self->_OpenParen;
-    if ( $op =~ /^IS(?: NOT)?$/i ) {
-        # is [not] empty case
-
-        my $group_members = $self->_GroupMembersJoin( GroupsAlias => $groups );
-        # to avoid joining the table Users into the query, we just join GM
-        # and make sure we don't match records where group is member of itself
-        $self->SUPER::Limit(
-            LEFTJOIN   => $group_members,
-            FIELD      => 'GroupId',
-            OPERATOR   => '!=',
-            VALUE      => "$group_members.MemberId",
-            QUOTEVALUE => 0,
-        );
-        $self->_SQLLimit(
-            ALIAS         => $group_members,
-            FIELD         => 'GroupId',
-            OPERATOR      => $op,
-            VALUE         => $value,
-            %rest,
-        );
-    }
-    elsif ( $op =~ /^!=$|^NOT\s+/i ) {
-        # negative condition case
-
-        # reverse op
-        $op =~ s/!|NOT\s+//i;
-
-        # XXX: we have no way to build correct "Watcher.X != 'Y'" when condition
-        # "X = 'Y'" matches more then one user so we try to fetch two records and
-        # do the right thing when there is only one exist and semi-working solution
-        # otherwise.
-        my $users_obj = RT::Users->new( $self->CurrentUser );
-        $users_obj->Limit(
-            FIELD         => $rest{SUBKEY},
-            OPERATOR      => $op,
-            VALUE         => $value,
-        );
-        $users_obj->OrderBy;
-        $users_obj->RowsPerPage(2);
-        my @users = @{ $users_obj->ItemsArrayRef };
-
-        my $group_members = $self->_GroupMembersJoin( GroupsAlias => $groups );
-        if ( @users <= 1 ) {
-            my $uid = 0;
-            $uid = $users[0]->id if @users;
-            $self->SUPER::Limit(
-                LEFTJOIN      => $group_members,
-                ALIAS         => $group_members,
-                FIELD         => 'MemberId',
-                VALUE         => $uid,
-            );
-            $self->_SQLLimit(
-                %rest,
-                ALIAS           => $group_members,
-                FIELD           => 'id',
-                OPERATOR        => 'IS',
-                VALUE           => 'NULL',
-            );
-        } else {
-            $self->SUPER::Limit(
-                LEFTJOIN   => $group_members,
-                FIELD      => 'GroupId',
-                OPERATOR   => '!=',
-                VALUE      => "$group_members.MemberId",
-                QUOTEVALUE => 0,
-            );
-            my $users = $self->Join(
-                TYPE            => 'LEFT',
-                ALIAS1          => $group_members,
-                FIELD1          => 'MemberId',
-                TABLE2          => 'Users',
-                FIELD2          => 'id',
-            );
-            $self->SUPER::Limit(
-                LEFTJOIN      => $users,
-                ALIAS         => $users,
-                FIELD         => $rest{SUBKEY},
-                OPERATOR      => $op,
-                VALUE         => $value,
-                CASESENSITIVE => 0,
-            );
-            $self->_SQLLimit(
-                %rest,
-                ALIAS         => $users,
-                FIELD         => 'id',
-                OPERATOR      => 'IS',
-                VALUE         => 'NULL',
-            );
-        }
-    } else {
-        # positive condition case
-
-        my $group_members = $self->_GroupMembersJoin(
-            GroupsAlias => $groups, New => 1, Left => 0
-        );
-        my $users = $self->Join(
-            TYPE            => 'LEFT',
-            ALIAS1          => $group_members,
-            FIELD1          => 'MemberId',
-            TABLE2          => 'Users',
-            FIELD2          => 'id',
-        );
-        $self->_SQLLimit(
-            %rest,
-            ALIAS           => $users,
-            FIELD           => $rest{'SUBKEY'},
-            VALUE           => $value,
-            OPERATOR        => $op,
-            CASESENSITIVE   => 0,
-        );
-    }
-    $self->_CloseParen;
-}
-
-sub _RoleGroupsJoin {
-    my $self = shift;
-    my %args = (New => 0, Class => 'Ticket', Type => '', @_);
-    return $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $args{'Type'} }
-        if $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $args{'Type'} }
-           && !$args{'New'};
-
-    # we always have watcher groups for ticket, so we use INNER join
-    my $groups = $self->Join(
-        ALIAS1          => 'main',
-        FIELD1          => $args{'Class'} eq 'Queue'? 'Queue': 'id',
-        TABLE2          => 'Groups',
-        FIELD2          => 'Instance',
-        ENTRYAGGREGATOR => 'AND',
+    $self->RoleLimit(
+        TYPE      => $type,
+        FIELD     => $rest{SUBKEY},
+        OPERATOR  => $op,
+        VALUE     => $value,
+        SUBCLAUSE => "ticketsql",
+        %rest,
     );
-    $self->SUPER::Limit(
-        LEFTJOIN        => $groups,
-        ALIAS           => $groups,
-        FIELD           => 'Domain',
-        VALUE           => 'RT::'. $args{'Class'} .'-Role',
-    );
-    $self->SUPER::Limit(
-        LEFTJOIN        => $groups,
-        ALIAS           => $groups,
-        FIELD           => 'Type',
-        VALUE           => $args{'Type'},
-    ) if $args{'Type'};
-
-    $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $args{'Type'} } = $groups
-        unless $args{'New'};
-
-    return $groups;
-}
-
-sub _GroupMembersJoin {
-    my $self = shift;
-    my %args = (New => 1, GroupsAlias => undef, Left => 1, @_);
-
-    return $self->{'_sql_group_members_aliases'}{ $args{'GroupsAlias'} }
-        if $self->{'_sql_group_members_aliases'}{ $args{'GroupsAlias'} }
-            && !$args{'New'};
-
-    my $alias = $self->Join(
-        $args{'Left'} ? (TYPE            => 'LEFT') : (),
-        ALIAS1          => $args{'GroupsAlias'},
-        FIELD1          => 'id',
-        TABLE2          => 'CachedGroupMembers',
-        FIELD2          => 'GroupId',
-        ENTRYAGGREGATOR => 'AND',
-    );
-    $self->SUPER::Limit(
-        $args{'Left'} ? (LEFTJOIN => $alias) : (),
-        ALIAS => $alias,
-        FIELD => 'Disabled',
-        VALUE => 0,
-    );
-
-    $self->{'_sql_group_members_aliases'}{ $args{'GroupsAlias'} } = $alias
-        unless $args{'New'};
-
-    return $alias;
-}
-
-=head2 _WatcherJoin
-
-Helper function which provides joins to a watchers table both for limits
-and for ordering.
-
-=cut
-
-sub _WatcherJoin {
-    my $self = shift;
-    my $type = shift || '';
-
-
-    my $groups = $self->_RoleGroupsJoin( Type => $type );
-    my $group_members = $self->_GroupMembersJoin( GroupsAlias => $groups );
-    # XXX: work around, we must hide groups that
-    # are members of the role group we search in,
-    # otherwise them result in wrong NULLs in Users
-    # table and break ordering. Now, we know that
-    # RT doesn't allow to add groups as members of the
-    # ticket roles, so we just hide entries in CGM table
-    # with MemberId == GroupId from results
-    $self->SUPER::Limit(
-        LEFTJOIN   => $group_members,
-        FIELD      => 'GroupId',
-        OPERATOR   => '!=',
-        VALUE      => "$group_members.MemberId",
-        QUOTEVALUE => 0,
-    );
-    my $users = $self->Join(
-        TYPE            => 'LEFT',
-        ALIAS1          => $group_members,
-        FIELD1          => 'MemberId',
-        TABLE2          => 'Users',
-        FIELD2          => 'id',
-    );
-    return ($groups, $group_members, $users);
 }
 
 =head2 _WatcherMembershipLimit
@@ -1197,30 +962,13 @@ sub _WatcherMembershipLimit {
     my $users        = $self->NewAlias('Users');
     my $memberships  = $self->NewAlias('CachedGroupMembers');
 
-    if ( ref $field ) {    # gross hack
-        my @bundle = @$field;
-        $self->_OpenParen;
-        for my $chunk (@bundle) {
-            ( $field, $op, $value, @rest ) = @$chunk;
-            $self->_SQLLimit(
-                ALIAS    => $memberships,
-                FIELD    => 'GroupId',
-                VALUE    => $value,
-                OPERATOR => $op,
-                @rest,
-            );
-        }
-        $self->_CloseParen;
-    }
-    else {
-        $self->_SQLLimit(
-            ALIAS    => $memberships,
-            FIELD    => 'GroupId',
-            VALUE    => $value,
-            OPERATOR => $op,
-            @rest,
-        );
-    }
+    $self->_SQLLimit(
+        ALIAS    => $memberships,
+        FIELD    => 'GroupId',
+        VALUE    => $value,
+        OPERATOR => $op,
+        @rest,
+    );
 
     # Tie to groups for tickets we care about
     $self->_SQLLimit(
@@ -2008,16 +1756,35 @@ sub OrderByCols {
 }
 
 
+sub Limit {
+    my $self = shift;
+    my %args = @_;
+    $self->{'must_redo_search'} = 1;
+    delete $self->{'raw_rows'};
+    delete $self->{'count_all'};
+
+    $args{ALIAS} ||= 'main';
+    $self->{'looking_at_effective_id'} = 1
+        if $args{'ALIAS'} eq 'main' and $args{'FIELD'} eq 'EffectiveId';
+    $self->{'looking_at_type'} = 1
+        if $args{'ALIAS'} eq 'main' and $args{'FIELD'} eq 'Type';
+
+    if ($self->{'using_restrictions'}) {
+        RT->Deprecated( Message => "Mixing old-style LimitFoo methods with Limit is deprecated" );
+        $self->LimitField(@_);
+    }
+    $self->SUPER::Limit(@_);
+}
 
 
-=head2 Limit
+=head2 LimitField
 
 Takes a paramhash with the fields FIELD, OPERATOR, VALUE and DESCRIPTION
 Generally best called from LimitFoo methods
 
 =cut
 
-sub Limit {
+sub LimitField {
     my $self = shift;
     my %args = (
         FIELD       => undef,
@@ -2032,6 +1799,12 @@ sub Limit {
         )
         if ( !defined $args{'DESCRIPTION'} );
 
+
+    if ($self->_isLimited > 1) {
+        RT->Deprecated( Message => "Mixing old-style LimitFoo methods with Limit is deprecated" );
+    }
+    $self->{using_restrictions} = 1;
+
     my $index = $self->_NextIndex;
 
 # make the TicketRestrictions hash the equivalent of whatever we just passed in;
@@ -2039,20 +1812,6 @@ sub Limit {
     %{ $self->{'TicketRestrictions'}{$index} } = %args;
 
     $self->{'RecalcTicketLimits'} = 1;
-
-# If we're looking at the effective id, we don't want to append the other clause
-# which limits us to tickets where id = effective id
-    if ( $args{'FIELD'} eq 'EffectiveId'
-        && ( !$args{'ALIAS'} || $args{'ALIAS'} eq 'main' ) )
-    {
-        $self->{'looking_at_effective_id'} = 1;
-    }
-
-    if ( $args{'FIELD'} eq 'Type'
-        && ( !$args{'ALIAS'} || $args{'ALIAS'} eq 'main' ) )
-    {
-        $self->{'looking_at_type'} = 1;
-    }
 
     return ($index);
 }
@@ -2089,7 +1848,7 @@ sub LimitQueue {
 
     #TODO check for a valid queue here
 
-    $self->Limit(
+    $self->LimitField(
         FIELD       => 'Queue',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
@@ -2121,7 +1880,7 @@ sub LimitStatus {
         OPERATOR => '=',
         @_
     );
-    $self->Limit(
+    $self->LimitField(
         FIELD       => 'Status',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
@@ -2207,12 +1966,12 @@ sub LimitType {
         VALUE    => undef,
         @_
     );
-    $self->Limit(
+    $self->LimitField(
         FIELD       => 'Type',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
         DESCRIPTION => join( ' ',
-            $self->loc('Type'), $args{'OPERATOR'}, $args{'Limit'}, ),
+            $self->loc('Type'), $args{'OPERATOR'}, $args{'VALUE'}, ),
     );
 }
 
@@ -2231,7 +1990,7 @@ VALUE is a string to search for in the subject of the ticket.
 sub LimitSubject {
     my $self = shift;
     my %args = (@_);
-    $self->Limit(
+    $self->LimitField(
         FIELD       => 'Subject',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
@@ -2260,7 +2019,7 @@ sub LimitId {
         @_
     );
 
-    $self->Limit(
+    $self->LimitField(
         FIELD       => 'id',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
@@ -2282,7 +2041,7 @@ VALUE is a value to match the ticket's priority against
 sub LimitPriority {
     my $self = shift;
     my %args = (@_);
-    $self->Limit(
+    $self->LimitField(
         FIELD       => 'Priority',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
@@ -2306,7 +2065,7 @@ VALUE is a value to match the ticket's initial priority against
 sub LimitInitialPriority {
     my $self = shift;
     my %args = (@_);
-    $self->Limit(
+    $self->LimitField(
         FIELD       => 'InitialPriority',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
@@ -2329,7 +2088,7 @@ VALUE is a value to match the ticket's final priority against
 sub LimitFinalPriority {
     my $self = shift;
     my %args = (@_);
-    $self->Limit(
+    $self->LimitField(
         FIELD       => 'FinalPriority',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
@@ -2352,7 +2111,7 @@ VALUE is a value to match the ticket's TimeWorked attribute
 sub LimitTimeWorked {
     my $self = shift;
     my %args = (@_);
-    $self->Limit(
+    $self->LimitField(
         FIELD       => 'TimeWorked',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
@@ -2375,7 +2134,7 @@ VALUE is a value to match the ticket's TimeLeft attribute
 sub LimitTimeLeft {
     my $self = shift;
     my %args = (@_);
-    $self->Limit(
+    $self->LimitField(
         FIELD       => 'TimeLeft',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
@@ -2400,7 +2159,7 @@ VALUE is a string to search for in the body of the ticket
 sub LimitContent {
     my $self = shift;
     my %args = (@_);
-    $self->Limit(
+    $self->LimitField(
         FIELD       => 'Content',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
@@ -2423,7 +2182,7 @@ VALUE is a string to search for in the body of the ticket
 sub LimitFilename {
     my $self = shift;
     my %args = (@_);
-    $self->Limit(
+    $self->LimitField(
         FIELD       => 'Filename',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
@@ -2445,7 +2204,7 @@ VALUE is a content type to search ticket attachments for
 sub LimitContentType {
     my $self = shift;
     my %args = (@_);
-    $self->Limit(
+    $self->LimitField(
         FIELD       => 'ContentType',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
@@ -2478,7 +2237,7 @@ sub LimitOwner {
     $owner->Load( $args{'VALUE'} );
 
     # FIXME: check for a valid $owner
-    $self->Limit(
+    $self->LimitField(
         FIELD       => 'Owner',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
@@ -2519,7 +2278,7 @@ sub LimitWatcher {
         $watcher_type = "Watcher";
     }
 
-    $self->Limit(
+    $self->LimitField(
         FIELD       => $watcher_type,
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
@@ -2555,7 +2314,7 @@ sub LimitLinkedTo {
         @_
     );
 
-    $self->Limit(
+    $self->LimitField(
         FIELD       => 'LinkedTo',
         BASE        => undef,
         TARGET      => $args{'TARGET'},
@@ -2598,7 +2357,7 @@ sub LimitLinkedFrom {
     my $type = $args{'TYPE'};
     $type = $fromToMap{$type} if exists( $fromToMap{$type} );
 
-    $self->Limit(
+    $self->LimitField(
         FIELD       => 'LinkedTo',
         TARGET      => undef,
         BASE        => $args{'BASE'},
@@ -2720,7 +2479,7 @@ sub LimitDate {
             . $args{'VALUE'} . " GMT";
     }
 
-    $self->Limit(%args);
+    $self->LimitField(%args);
 
 }
 
@@ -2794,7 +2553,7 @@ sub LimitTransactionDate {
             . $args{'VALUE'} . " GMT";
     }
 
-    $self->Limit(%args);
+    $self->LimitField(%args);
 
 }
 
@@ -2868,7 +2627,7 @@ sub LimitCustomField {
     @rest = ( ENTRYAGGREGATOR => 'AND' )
         if ( $CF->Type eq 'SelectMultiple' );
 
-    $self->Limit(
+    $self->LimitField(
         VALUE => $args{VALUE},
         FIELD => "CF"
             .(defined $args{'QUEUE'}? ".{$args{'QUEUE'}}" : '' )
@@ -3112,6 +2871,8 @@ sub CurrentUserCanSee {
         if $self->CurrentUser->UserObj->HasRight(
             Right => 'SuperUser', Object => $RT::System
         );
+
+    local $self->{using_restrictions};
 
     my $id = $self->CurrentUser->id;
 
@@ -3469,6 +3230,7 @@ sub _ProcessRestrictions {
     my $sql = $self->Query;    # Violating the _SQL namespace
     if ( !$sql || $self->{'RecalcTicketLimits'} ) {
 
+        local $self->{using_restrictions};
         #  "Restrictions to Clauses Branch\n";
         my $clauseRef = eval { $self->_RestrictionsToClauses; };
         if ($@) {

@@ -49,30 +49,29 @@
 use strict;
 use warnings;
 
-package RT::Role::Record;
+package RT::Role::SearchBuilder;
 use Role::Basic;
 
 =head1 NAME
 
-RT::Role::Record - Common requirements for roles which are consumed by records
+RT::Role::SearchBuilder - Common requirements for roles which are consumed by collections
 
 =head1 DESCRIPTION
 
-Various L<RT::Record> (and by inheritance L<DBIx::SearchBuilder::Record>)
+Various L<RT::SearchBuilder> (and by inheritance L<DBIx::SearchBuilder>)
 methods are required by this role.  It provides no methods on its own but is
 simply a contract for other roles to require (usually under the
-I<RT::Role::Record::> namespace).
+I<RT::Role::SearchBuilder::> namespace).
 
 =cut
 
 requires $_ for qw(
-    id
-    loc
+    Join
+    Limit
+    NewItem
     CurrentUser
-
-    _Set
-    _Accessible
-    _NewTransaction
+    _OpenParen
+    _CloseParen
 );
 
 1;

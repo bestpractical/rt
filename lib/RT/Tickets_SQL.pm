@@ -57,7 +57,7 @@ use RT::SQL;
 # Import configuration data from the lexcial scope of __PACKAGE__ (or
 # at least where those two Subroutines are defined.)
 
-our (%FIELD_METADATA, %dispatch, %can_bundle);
+our (%FIELD_METADATA, %dispatch);
 
 # Lower Case version of FIELDS, for case insensitivity
 my %lcfields = map { ( lc($_) => $_ ) } (keys %FIELD_METADATA);
@@ -78,19 +78,10 @@ sub _InitSQL {
 sub _SQLLimit {
   my $self = shift;
     my %args = (@_);
-    if ($args{'FIELD'} eq 'EffectiveId' &&
-         (!$args{'ALIAS'} || $args{'ALIAS'} eq 'main' ) ) {
-        $self->{'looking_at_effective_id'} = 1;
-    }      
-    
-    if ($args{'FIELD'} eq 'Type' &&
-         (!$args{'ALIAS'} || $args{'ALIAS'} eq 'main' ) ) {
-        $self->{'looking_at_type'} = 1;
-    }
 
   # All SQL stuff goes into one SB subclause so we can deal with all
   # the aggregation
-  $self->SUPER::Limit(%args,
+  $self->Limit(%args,
                       SUBCLAUSE => 'ticketsql');
 }
 
@@ -138,49 +129,15 @@ just handed off the SearchBuilder)
 
 =cut
 
-sub _close_bundle {
-    my ($self, @bundle) = @_;
-    return unless @bundle;
-
-    if ( @bundle == 1 ) {
-        $bundle[0]->{'dispatch'}->(
-            $self,
-            $bundle[0]->{'key'},
-            $bundle[0]->{'op'},
-            $bundle[0]->{'val'},
-            SUBCLAUSE       => '',
-            ENTRYAGGREGATOR => $bundle[0]->{ea},
-            SUBKEY          => $bundle[0]->{subkey},
-        );
-    }
-    else {
-        my @args;
-        foreach my $chunk (@bundle) {
-            push @args, [
-                $chunk->{key},
-                $chunk->{op},
-                $chunk->{val},
-                SUBCLAUSE       => '',
-                ENTRYAGGREGATOR => $chunk->{ea},
-                SUBKEY          => $chunk->{subkey},
-            ];
-        }
-        $bundle[0]->{dispatch}->( $self, \@args );
-    }
-}
-
 sub _parser {
     my ($self,$string) = @_;
-    my @bundle;
     my $ea = '';
 
     my %callback;
     $callback{'OpenParen'} = sub {
-      $self->_close_bundle(@bundle); @bundle = ();
       $self->_OpenParen
     };
     $callback{'CloseParen'} = sub {
-      $self->_close_bundle(@bundle); @bundle = ();
       $self->_CloseParen;
     };
     $callback{'EntryAggregator'} = sub { $ea = $_[0] || '' };
@@ -208,37 +165,14 @@ sub _parser {
         }
         my $sub = $dispatch{ $class };
 
-        if ( $can_bundle{ $class }
-             && ( !@bundle
-                  || ( $bundle[-1]->{dispatch}  == $sub
-                       && $bundle[-1]->{key}    eq $key
-                       && $bundle[-1]->{subkey} eq $subkey
-                     )
-                )
-           )
-        {
-            push @bundle, {
-                dispatch => $sub,
-                key      => $key,
-                op       => $op,
-                val      => $value,
-                ea       => $ea,
-                subkey   => $subkey,
-            };
-        }
-        else {
-            $self->_close_bundle(@bundle); @bundle = ();
-            $sub->( $self, $key, $op, $value,
-                    SUBCLAUSE       => '',  # don't need anymore
-                    ENTRYAGGREGATOR => $ea,
-                    SUBKEY          => $subkey,
-                  );
-        }
+        $sub->( $self, $key, $op, $value,
+                ENTRYAGGREGATOR => $ea,
+                SUBKEY          => $subkey,
+              );
         $self->{_sql_looking_at}{lc $key} = 1;
         $ea = '';
     };
     RT::SQL::Parse($string, \%callback);
-    $self->_close_bundle(@bundle); @bundle = ();
 }
 
 =head2 ClausesToSQL
