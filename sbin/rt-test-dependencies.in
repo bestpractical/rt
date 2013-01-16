@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -373,6 +373,7 @@ HTML::Entities
 my %AVOID = (
     'DBD::Oracle' => [qw(1.23)],
     'Email::Address' => [qw(1.893 1.894)],
+    'Devel::StackTrace' => [qw(1.28 1.29)],
 );
 
 if ($args{'download'}) {

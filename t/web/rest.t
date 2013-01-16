@@ -2,18 +2,26 @@ use strict;
 use warnings;
 use RT::Interface::REST;
 
-use RT::Test tests => 22;
+use RT::Test tests => 34;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
 for my $name ("severity", "fu()n:k/") {
     my $cf = RT::Test->load_or_create_custom_field(
         Name  => $name,
-        Type  => 'Freeform',
+        Type  => 'FreeformMultiple',
         Queue => 'General',
     );
     ok($cf->Id, "created a CustomField");
     is($cf->Name, $name, "correct CF name");
+}
+{
+    my $cf = RT::Test->load_or_create_custom_field(
+        Name  => 'single',
+        Type  => 'FreeformSingle',
+        Queue => 'General',
+    );
+    ok($cf->Id, "created a CustomField");
 }
 
 my $queue = RT::Test->load_or_create_queue(Name => 'General');
@@ -149,3 +157,171 @@ $m->post(
 );
 ($link) = $m->content =~ m|DependedOnBy:.*ticket/(\d+)|;
 is($link, 1, "Check ticket link.") or diag("'content' obtained:\n", $m->content);
+
+
+{
+    $m->post("$baseurl/REST/1.0/ticket/new", [
+        user    => 'root',
+        pass    => 'password',
+        format  => 'l',
+    ]);
+
+    my $text = $m->content;
+    my @lines = $text =~ m{.*}g;
+    shift @lines; # header
+    push @lines, "CF.{severity}: explosive";
+    push @lines, "CF.{severity}: very";
+    $text = join "\n", @lines;
+
+    $m->post("$baseurl/REST/1.0/ticket/edit", [
+        user    => 'root',
+        pass    => 'password',
+
+        content => $text,
+    ], Content_Type => 'form-data');
+
+    my ($id) = $m->content =~ /Ticket (\d+) created/;
+    ok($id, "got ticket #$id");
+
+    my $ticket = RT::Ticket->new(RT->SystemUser);
+    $ticket->Load($id);
+    is($ticket->Id, $id, "loaded the REST-created ticket");
+    is_deeply(
+        [sort map $_->Content, @{ $ticket->CustomFieldValues("severity")->ItemsArrayRef }],
+        ["explosive", "very"],
+        "CF successfully set"
+    );
+
+    $m->post(
+        "$baseurl/REST/1.0/ticket/show",
+        [
+            user   => 'root',
+            pass   => 'password',
+            format => 'l',
+            id     => "ticket/$id",
+        ]
+    );
+    $text = $m->content;
+    $text =~ s/.*?\n\n//;
+    $text =~ s/\n\n/\n/;
+    $text =~ s{CF\.{severity}:.*\n}{}img;
+    $text .= "CF.{severity}: explosive, a bit\n";
+    $m->post(
+        "$baseurl/REST/1.0/ticket/edit",
+        [
+            user => 'root',
+            pass => 'password',
+            content => $text,
+        ],
+        Content_Type => 'form-data'
+    );
+    $m->content =~ /Ticket ($id) updated/;
+
+    $ticket->Load($id);
+    is_deeply(
+        [sort map $_->Content, @{ $ticket->CustomFieldValues("severity")->ItemsArrayRef }],
+        ['a bit', 'explosive'],
+        "CF successfully set"
+    );
+
+    $m->post(
+        "$baseurl/REST/1.0/ticket/show",
+        [
+            user   => 'root',
+            pass   => 'password',
+            format => 'l',
+            id     => "ticket/$id",
+        ]
+    );
+    $text = $m->content;
+    $text =~ s{CF\.{severity}:.*\n}{}img;
+    $text .= "CF.{severity}:\n";
+    $m->post(
+        "$baseurl/REST/1.0/ticket/edit",
+        [
+            user => 'root',
+            pass => 'password',
+            content => $text,
+        ],
+        Content_Type => 'form-data'
+    );
+    $m->content =~ /Ticket ($id) updated/;
+
+    $ticket->Load($id);
+    is_deeply(
+        [sort map $_->Content, @{ $ticket->CustomFieldValues("severity")->ItemsArrayRef }],
+        [],
+        "CF successfully set"
+    );
+
+    my @txns = map [$_->OldValue, $_->NewValue], grep $_->Type eq 'CustomField',
+        @{ $ticket->Transactions->ItemsArrayRef };
+    is_deeply(\@txns, [['very', undef], [undef, 'a bit'], ['explosive', undef], ['a bit', undef]]);
+}
+
+{
+    $m->post("$baseurl/REST/1.0/ticket/new", [
+        user    => 'root',
+        pass    => 'password',
+        format  => 'l',
+    ]);
+
+    my $text = $m->content;
+    my @lines = $text =~ m{.*}g;
+    shift @lines; # header
+    push @lines, "CF.{single}: this";
+    $text = join "\n", @lines;
+
+    $m->post("$baseurl/REST/1.0/ticket/edit", [
+        user    => 'root',
+        pass    => 'password',
+
+        content => $text,
+    ], Content_Type => 'form-data');
+
+    my ($id) = $m->content =~ /Ticket (\d+) created/;
+    ok($id, "got ticket #$id");
+
+    my $ticket = RT::Ticket->new(RT->SystemUser);
+    $ticket->Load($id);
+    is($ticket->Id, $id, "loaded the REST-created ticket");
+    is_deeply(
+        [sort map $_->Content, @{ $ticket->CustomFieldValues("single")->ItemsArrayRef }],
+        ["this"],
+        "CF successfully set"
+    );
+
+    $m->post(
+        "$baseurl/REST/1.0/ticket/show",
+        [
+            user   => 'root',
+            pass   => 'password',
+            format => 'l',
+            id     => "ticket/$id",
+        ]
+    );
+    $text = $m->content;
+    $text =~ s{CF\.{single}:.*\n}{}img;
+    $text .= "CF.{single}: that\n";
+    $m->post(
+        "$baseurl/REST/1.0/ticket/edit",
+        [
+            user => 'root',
+            pass => 'password',
+            content => $text,
+        ],
+        Content_Type => 'form-data'
+    );
+    $m->content =~ /Ticket ($id) updated/;
+
+    $ticket->Load($id);
+    is_deeply(
+        [sort map $_->Content, @{ $ticket->CustomFieldValues("single")->ItemsArrayRef }],
+        ['that'],
+        "CF successfully set"
+    );
+
+    my @txns = map [$_->OldValue, $_->NewValue], grep $_->Type eq 'CustomField',
+        @{ $ticket->Transactions->ItemsArrayRef };
+    is_deeply(\@txns, [['this', 'that']]);
+}

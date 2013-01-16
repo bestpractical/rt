@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -234,7 +234,7 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     my $paramtag = "CustomField-". $CustomFieldObj->Id ."-Value";
     # Delete any fields that want to be deleted
     foreach my $key ( keys %ARGS ) {
-        next unless $key =~ /^Delete-$paramtag-(\d+)$/o;
+        next unless $key =~ /^Delete-$paramtag-(\d+)$/;
         my ($val, $msg) = $CustomFieldObj->DeleteValue( $1 );
         push (@results, $msg);
     }

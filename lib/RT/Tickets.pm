@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -155,6 +155,9 @@ our %FIELD_METADATA = (
     HasAttribute     => [ 'HASATTRIBUTE', 1 ],
     HasNoAttribute     => [ 'HASATTRIBUTE', 0 ],
 );
+
+# Lower Case version of FIELDS, for case insensitivity
+our %LOWER_CASE_FIELDS = map { ( lc($_) => $_ ) } (keys %FIELD_METADATA);
 
 our %SEARCHABLE_SUBFIELDS = (
     User => [qw(
@@ -369,7 +372,7 @@ sub _EnumLimit {
         my $class = "RT::" . $meta->[1];
         my $o     = $class->new( $sb->CurrentUser );
         $o->Load($value);
-        $value = $o->Id;
+        $value = $o->Id || 0;
     }
     $sb->_SQLLimit(
         FIELD    => $field,

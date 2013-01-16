@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -239,11 +239,6 @@ else {
         ARGSRef      => \%ARGS,
     );
 
-    if ( $Lang ) {
-        $session{'CurrentUser'}->LanguageHandle($Lang);
-        $session{'CurrentUser'} = $session{'CurrentUser'}; # force writeback
-    }
-
     push @results, UpdateRecordObject (
         AttributesRef => \@fields,
         Object => $UserObj,
@@ -268,6 +263,11 @@ else {
         push @results, loc("Password: [_1]", $msg);
     }
 }
+
+
+MaybeRedirectForResults(
+    Actions   => \@results,
+);
 
 </%INIT>
 

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -66,6 +66,18 @@ unless ( $AddPrincipal ) {
         $AddPrincipal = 'user'; # loc
     }
 }
+
+my $anchor = $DECODED_ARGS->{Anchor} || '';
+if ($anchor =~ /AddPrincipal/) {
+    for my $type ("group", "user") {
+        my $record = _ParseACLNewPrincipal($DECODED_ARGS, $type)
+            or next;
+        if ($record->PrincipalId) {
+            $anchor = "#acl-" . $record->PrincipalId;
+            last;
+        }
+    }
+}
 </%init>
 %# Principals is an array of arrays, where the inner arrays are like:
 %#      [ 'Category name' => $CollectionObj => 'DisplayColumn' => 1 ]
@@ -74,16 +86,36 @@ unless ( $AddPrincipal ) {
 
 <script type="text/javascript">
   jQuery(function() {
+      function sync_anchor(hash) {
+          if (!hash.length) return;
+          window.location.hash = hash;
+          jQuery(".rights-editor input[name=Anchor]").val(hash);
+      }
+      sync_anchor(<% $anchor |n,j %>);
+
       jQuery(".rights-editor").tabs({
           select: function(ev, ui) {
-              window.location.hash = ui.tab.hash;
+              sync_anchor(ui.tab.hash);
           }
       });
-      jQuery(".rights-editor .category-tabs").tabs();
+
+      jQuery(".rights-editor .category-tabs").tabs({
+          cookie: { name: "rights-category-tab" /* saves current tab in cookie */ },
+          show: function(ev, ui) {
+              jQuery(".rights-editor .category-tabs").not(this).each(function() {
+                  var item     = jQuery(this);
+                  var selected = item.tabs("option", "selected") || 0;
+                  if (selected != ui.index)
+                      item.tabs("select", ui.index);
+              });
+          }
+      });
   });
 </script>
 
 <div class="rights-editor clearfix">
+  <input type="hidden" value="" name="Anchor" />
+
   <ul>
 <%perl>
 for my $category (@$Principals) {
@@ -93,8 +125,7 @@ for my $category (@$Principals) {
 <%perl>
     while ( my $obj = $collection->Next ) {
         my $display = ref $col eq 'CODE' ? $col->($obj) : $obj->$col;
-        my $id = "acl-$name-" . $obj->PrincipalId;
-        $id =~ s/[^a-zA-Z0-9\-]/_/g;
+        my $id = "acl-" . $obj->PrincipalId;
 </%perl>
 <li><a href="#<% $id %>"><% $loc ? loc($display) : $display %></a></li>
 <%perl>
@@ -136,8 +167,7 @@ for my $category (@$Principals) {
     my ($name, $collection, $col, $loc) = @$category;
     while ( my $obj = $collection->Next ) {
         my $display = ref $col eq 'CODE' ? $col->($obj) : $obj->$col;
-        my $id = "acl-$name-" . $obj->PrincipalId;
-        $id =~ s/[^a-zA-Z0-9\-]/_/g;
+        my $id = "acl-" . $obj->PrincipalId;
 </%perl>
 
   <div id="<% $id %>">

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -113,6 +113,7 @@ sub JSFiles {
       jquery-ui-patch-datepicker.js
       jquery.modal.min.js
       jquery.modal-defaults.js
+      jquery.cookie.js
       titlebox-state.js
       util.js
       userautocomplete.js
@@ -295,6 +296,7 @@ sub HandleRequest {
         # make user info up to date
         $HTML::Mason::Commands::session{'CurrentUser'}
           ->Load( $HTML::Mason::Commands::session{'CurrentUser'}->id );
+        undef $HTML::Mason::Commands::session{'CurrentUser'}->{'LangHandle'};
     }
     else {
         $HTML::Mason::Commands::session{'CurrentUser'} = RT::CurrentUser->new();
@@ -314,6 +316,10 @@ sub HandleRequest {
     # Process per-page authentication callbacks
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Auth', CallbackPage => '/autohandler' );
 
+    if ( $ARGS->{'NotMobile'} ) {
+        $HTML::Mason::Commands::session{'NotMobile'} = 1;
+    }
+
     unless ( _UserLoggedIn() ) {
         _ForceLogout();
 
@@ -331,14 +337,14 @@ sub HandleRequest {
                 $m->out("\n$msg\n") if $msg;
                 $m->abort;
             }
-            elsif ( MobileClient() ) {
-                $m->comp('/m/login');
-                $m->abort;
-            }
-            # Specially handle /index.html so that we get a nicer URL
-            elsif ( $m->request_comp->path eq '/index.html' ) {
-                my $next = SetNextPage($ARGS);
-                $m->comp('/NoAuth/Login.html', next => $next, actions => [$msg]);
+            # Specially handle /index.html and /m/index.html so that we get a nicer URL
+            elsif ( $m->request_comp->path =~ m{^(/m)?/index\.html$} ) {
+                my $mobile = $1 ? 1 : 0;
+                my $next   = SetNextPage($ARGS);
+                $m->comp('/NoAuth/Login.html',
+                    next    => $next,
+                    actions => [$msg],
+                    mobile  => $mobile);
                 $m->abort;
             }
             else {
@@ -479,6 +485,10 @@ sub TangentForLoginURL {
     my $ARGS  = shift;
     my $hash  = SetNextPage($ARGS);
     my %query = (@_, next => $hash);
+
+    $query{mobile} = 1
+        if $HTML::Mason::Commands::m->request_comp->path =~ m{^/m(/|$)};
+
     my $login = RT->Config->Get('WebPath') . '/NoAuth/Login.html?';
     $login .= $HTML::Mason::Commands::m->comp('/Elements/QueryString', %query);
     return $login;
@@ -1349,6 +1359,10 @@ sub IsCompCSRFWhitelisted {
     # a referer in most browsers; whitelist the one parameter it reloads
     # with, HomeRefreshInterval, which is safe
     delete $args{HomeRefreshInterval};
+
+    # The NotMobile flag is fine for any page; it's only used to toggle a flag
+    # in the session related to which interface you get.
+    delete $args{NotMobile};
 
     # If there are no arguments, then it's likely to be an idempotent
     # request, which are not susceptible to CSRF
@@ -2298,19 +2312,8 @@ sub ProcessACLs {
 
     # Check if we want to grant rights to a previously rights-less user
     for my $type (qw(user group)) {
-        my $key = "AddPrincipalForRights-$type";
-
-        next unless $ARGSref->{$key};
-
-        my $principal;
-        if ( $type eq 'user' ) {
-            $principal = RT::User->new( $session{'CurrentUser'} );
-            $principal->LoadByCol( Name => $ARGSref->{$key} );
-        }
-        else {
-            $principal = RT::Group->new( $session{'CurrentUser'} );
-            $principal->LoadUserDefinedGroup( $ARGSref->{$key} );
-        }
+        my $principal = _ParseACLNewPrincipal($ARGSref, $type)
+            or next;
 
         unless ($principal->PrincipalId) {
             push @results, loc("Couldn't load the specified principal");
@@ -2410,7 +2413,34 @@ sub ProcessACLs {
     return (@results);
 }
 
+=head2 _ParseACLNewPrincipal
 
+Takes a hashref of C<%ARGS> and a principal type (C<user> or C<group>).  Looks
+for the presence of rights being added on a principal of the specified type,
+and returns undef if no new principal is being granted rights.  Otherwise loads
+up an L<RT::User> or L<RT::Group> object and returns it.  Note that the object
+may not be successfully loaded, and you should check C<->id> yourself.
+
+=cut
+
+sub _ParseACLNewPrincipal {
+    my $ARGSref = shift;
+    my $type    = lc shift;
+    my $key     = "AddPrincipalForRights-$type";
+
+    return unless $ARGSref->{$key};
+
+    my $principal;
+    if ( $type eq 'user' ) {
+        $principal = RT::User->new( $session{'CurrentUser'} );
+        $principal->LoadByCol( Name => $ARGSref->{$key} );
+    }
+    elsif ( $type eq 'group' ) {
+        $principal = RT::Group->new( $session{'CurrentUser'} );
+        $principal->LoadUserDefinedGroup( $ARGSref->{$key} );
+    }
+    return $principal;
+}
 
 
 =head2 UpdateRecordObj ( ARGSRef => \%ARGS, Object => RT::Record, AttributesRef => \@attribs)

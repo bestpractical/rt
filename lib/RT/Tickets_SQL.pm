@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -57,10 +57,7 @@ use RT::SQL;
 # Import configuration data from the lexcial scope of __PACKAGE__ (or
 # at least where those two Subroutines are defined.)
 
-our (%FIELD_METADATA, %dispatch);
-
-# Lower Case version of FIELDS, for case insensitivity
-my %lcfields = map { ( lc($_) => $_ ) } (keys %FIELD_METADATA);
+our (%FIELD_METADATA, %LOWER_CASE_FIELDS, %dispatch);
 
 sub _InitSQL {
   my $self = shift;
@@ -150,8 +147,8 @@ sub _parser {
 
         # normalize key and get class (type)
         my $class;
-        if (exists $lcfields{lc $key}) {
-            $key = $lcfields{lc $key};
+        if (exists $LOWER_CASE_FIELDS{lc $key}) {
+            $key = $LOWER_CASE_FIELDS{lc $key};
             $class = $FIELD_METADATA{$key}->[0];
         }
         die "Unknown field '$key' in '$string'" unless $class;

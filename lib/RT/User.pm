@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -1745,6 +1745,21 @@ sub SetPrivateKey {
     return ($status, $self->loc("Couldn't set private key"))
         unless $status;
     return ($status, $self->loc("Set private key"));
+}
+
+sub SetLang {
+    my $self = shift;
+    my ($lang) = @_;
+
+    unless ($self->CurrentUserCanModify('Lang')) {
+        return (0, $self->loc("Permission Denied"));
+    }
+
+    # Local hack to cause the result message to be in the _new_ language
+    # if we're updating ourselves
+    $self->CurrentUser->{LangHandle} = RT::I18N->get_handle( $lang )
+        if $self->CurrentUser->id == $self->id;
+    return $self->_Set( Field => 'Lang', Value => $lang );
 }
 
 sub BasicColumns {

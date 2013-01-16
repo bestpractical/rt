@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -53,6 +53,7 @@ use Getopt::Long;
 use File::Temp;
 use File::Spec;
 use File::Path qw(make_path rmtree);
+use File::Copy qw(copy);
 use HTML::Entities qw(encode_entities);
 use RT::Pod::HTMLBatch;
 
@@ -152,6 +153,11 @@ for my $file (<README* UPGRADING*>) {
 
     $converter->note_for_contents_file([$name], $file, $dest);
 }
+
+# Copy images into place
+make_path("$opts{to}/images/");
+copy($_, "$opts{to}/images/")
+    for <docs/images/*.{png,jpeg,jpg,gif}>;
 
 # Temporarily set executable bits on upgrading doc to work around
 # Pod::Simple::Search limitation/bug:

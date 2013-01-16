@@ -1,0 +1,169 @@
+=head1 Customizing the Look of Your RT
+
+While the default RT color scheme nicely matches the Best Practical colors,
+you may want to personalize your RT instance to make it better fit with
+your company colors.
+
+
+=head1 Selecting a Theme
+
+The fundamental look of RT comes from the selected theme. Different
+RT versions have a default, and the RT admin can set the system-wide
+theme with the C<$WebDefaultStylesheet> configuration value in the
+F<RT_SiteConfig.pm> file.
+
+RT 4.0 comes with the following themes:
+
+=over
+
+=item web2
+
+An approximation of the 3.8 style
+
+=item aileron
+
+The default layout for RT 4.0
+
+=item ballard
+
+Theme which doesn't rely on JavaScript for menuing
+
+=back
+
+If you have granted the ModifySelf right to users on your system,
+they can pick a different theme for themselves by going to
+Logged in as -> Settings -> Options and selecting a different theme.
+
+
+=head1 RT Theme Editor
+
+RT has some built-in controls to manage the look of the theme you select.
+To use the Theme Editor, log in as a SuperUser (like root), and navigate
+to Tools -> Configuration -> Tools -> Theme.
+
+=for html <img alt="RT theme editor, defaults" src="../images/theme_editor_defaults.png">
+
+=for :text [RT theme editor image at F<docs/images/theme_editor_defaults.png>]
+
+=for :man [RT theme editor image at F<docs/images/theme_editor_defaults.png>]
+
+=head2 Logo and Colors
+
+From there you can upload a logo and pick colors for the various page
+sections.  RT will automatically pick out the six most frequent primary
+colors from your logo and offer them as options next to the color wheel.
+In less than a minute, you can upload a logo and set a few colors.
+
+Until you click "Save", color changes are temporary and are only shown
+to you.  When you find the color scheme you want, click Save to make it
+the new theme for the entire RT instance. If you ever want to wipe the
+slate clean, you can use one or both of the "Reset to default" buttons.
+
+=head2 Basic CSS Customization
+
+The theme editor lets you do a bit more if you know your way around CSS
+or have a web designer who does.  By writing your own styles in the
+Custom CSS box, you can quickly customize the RT look and feel pretty
+extensively. The primary RT elements are stubbed out for you in the
+edit box.
+
+After making CSS changes, click Try to see how they look, and click Save
+when you're done.
+
+
+=head1 Advanced CSS Customization
+
+If you're more ambitious and good at CSS, you can go even further and
+create your own theme. As with all modifications to RT, it's a bad idea
+to just change the CSS for one of the standard RT themes in place. When
+you upgrade, if you protect your modifications from being over-written,
+you may miss out on updates that are required for new features. In the
+worst case, an upgrade might wipe out all of your changes.
+
+Below are a few approaches to customizing RT's CSS.
+
+=head2 Additional files
+
+RT allows you to conveniently include additional CSS files after the
+default CSS styles, via the C<@CSSFiles> configuration option.  To add
+an extra CSS file, for example F<my-site.css>, create the local overlay
+directory:
+
+    $ mkdir -p local/html/NoAuth/css/
+
+And place your F<my-site.css> file in it.  Finally, adjust your
+C<@CSSFiles> in your F<RT_SiteConfig.pm>:
+
+    Set( @CSSFiles, ('my-site.css') );
+
+This technique is preferred to callbacks (below) because CSS included
+via this way will be minified.  It is also included across all styles,
+unlike the callback technique.
+
+If you are writing an extension, see L<RT/AddStyleSheets> for how to
+simply and programmatically add values to C<@CSSFiles>.
+
+=head2 Callbacks
+
+RT's CSS files are also Mason templates and the main CSS file,
+conveniently called C<main.css>, has a C<Begin> and C<End> callback
+allowing you to inject custom CSS.
+
+To create an End callback, create the callback directory and an
+End file in that directory:
+
+    $ mkdir -p local/html/Callbacks/MyRT/NoAuth/css/aileron/main.css
+    $ touch local/html/Callbacks/MyRT/NoAuth/css/aileron/main.css/End
+
+You can use any name you want for the C<MyRT> directory and the theme
+directory should correspond with the theme you want to change.
+
+RT will now evaluate the contents of that file after it processes all
+of the C<@import> statements in C<main.css>.
+
+
+=head1 Designing Your Own Theme
+
+The above approaches work well if you need to change the look of
+part of RT, but you may want to design your own RT theme
+and leave the standard RT themes available to users unmodified. In
+this case, you'll want to create your own CSS directory.
+
+As shown above, the C<local> directory is the place to put
+local modifications to RT. Run the following commands in your
+C</opt/rt4> directory (or wherever your RT is installed) to get
+started:
+
+    $ mkdir -p local/html/NoAuth/css/localstyle
+    $ cp -R share/html/NoAuth/css/aileron/* local/html/NoAuth/css/localstyle/
+
+You can call your "localstyle" directory whatever you want and you don't
+have to copy the aileron theme to start from, but it's a good place to
+start off for RT4.
+
+Now set C<$WebDefaultStylesheet> in RT_SiteConfig.pm to the new directory
+name you selected, for example:
+
+    Set( $WebDefaultStylesheet, 'localstyle' );
+
+If you restart your RT it should look just the same (assuming you copied
+your current default theme), but if you go to your Options page you'll
+see that the system default theme is now your new "localtheme."
+
+If you look at the CSS being loaded, you'll also see that the main css
+file is now being loaded from your local directory. But you'll also see
+that files are still being loaded from the main RT css directories as
+well. Why?
+
+The place to start understanding the loading order of RT's CSS is the
+C<main.css> file. You'll see it first loads C<..base/main.css> which
+are the base styles for RT along with styles for other tools RT uses
+like jQuery. After loading all of the base styles, C<main.css> then
+imports a theme-specific version with overrides and new style elements
+for the selected theme. So as long as you follow the CSS precedence rules
+and use the correct specificity, you get the last chance to modify things.
+
+You can start modifying things by editing the CSS files in your new
+localstyle directory. When you upgrade RT, you'll want to look specifically
+at any changes to the style you started from to see if there are any new
+styles you want to merge into your new style.
