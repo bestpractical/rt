@@ -69,7 +69,7 @@ sub check {
                         . ($other_copyright ? " (other copyright)" : ""));
         }
 
-        if ($check{bps_tag} != -1 and $check{no_tabs}) {
+        if (not $other_copyright and $check{no_tabs}) {
             unlike( $content, qr/\t/, "$file has no hard tabs" );
         }
     }
