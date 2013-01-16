@@ -59,7 +59,7 @@ sub check {
         $check{bps_tag} = -1 if $check{bps_tag} == 1
             and not $content =~ /Copyright\s+\(c\)\s+\d\d\d\d-\d\d\d\d Best Practical Solutions/i
                 and ($content =~ /\b(copyright|GPL|Public Domain)\b/i
-                  or /\(c\)\s+\d\d\d\d(?:-\d\d\d\d)?/i);
+                  or $content =~ /\(c\)\s+\d\d\d\d(?:-\d\d\d\d)?/i);
         if ($check{bps_tag} == 1) {
             like( $content, qr/[B]EGIN BPS TAGGED BLOCK {{{/, "$file has BPS license tag");
         } elsif ($check{bps_tag} == -1) {
