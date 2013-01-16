@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodb => 1;
+use RT::Test nodb => 1, tests => undef;
 use File::Find;
 use IPC::Run3;
 
@@ -121,3 +121,5 @@ check( $_, exec => -1 )
 
 check( $_, warnings => 1, strict => 1, compile => 1, no_tabs => 1 )
     for grep {m{^etc/upgrade/.*/content$}} @files;
+
+done_testing;
