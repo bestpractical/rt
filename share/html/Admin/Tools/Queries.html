@@ -53,7 +53,7 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 </%init>
 <& /Admin/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/jquery.tablesorter.min.js"></script>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/jquery.tablesorter.min.js"></script>
 
 <&|/Widgets/TitleBox, title => loc('SQL Queries') &>
 % my $history = $RT::Handle->QueryHistory;

@@ -45,9 +45,6 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%ONCE>
-my $content = '';
-</%ONCE>
 <%INIT>
 my $arg = $m->dhandler_arg;
 if ( $arg =~ m{squished-[a-f0-9]{32}\.js$} ) {
@@ -61,5 +58,4 @@ if ( $arg =~ m{squished-[a-f0-9]{32}\.js$} ) {
 else {
     return $m->decline;
 }
-
 </%INIT>

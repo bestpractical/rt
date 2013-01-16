@@ -52,7 +52,7 @@ $onload => undef
 <& JavascriptConfig &>
 
 % for my $jsfile ( @js_files ) {
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/<% $jsfile %>"></script>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%><% $jsfile %>"></script>
 % }
 
 % if ( $RichText and RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ) {
@@ -78,11 +78,11 @@ $RichText => 1
 
 my @js_files;
 if ( RT->Config->Get('DevelMode') ) {
-    @js_files = RT::Interface::Web->JSFiles();
+    @js_files = map { "/static/js/$_" } RT::Interface::Web->JSFiles();
 }
 else {
     my $key = RT::Interface::Web::SquishedJS()->Key;
-    @js_files = "squished-$key.js";
+    @js_files = "/NoAuth/js/squished-$key.js";
 }
 
 </%INIT>

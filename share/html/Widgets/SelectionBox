@@ -74,8 +74,8 @@
 %# on every button clicked in non-js mode.
 <%method header>
 % unless ($nojs) {
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/class.js"></script>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/list.js"></script>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/class.js"></script>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/list.js"></script>
 % }
 <%ARGS>
 $nojs => 0

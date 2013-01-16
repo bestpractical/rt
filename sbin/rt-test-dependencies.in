@@ -254,6 +254,7 @@ HTML::Mason::PSGIHandler 0.52
 Plack 0.9971
 Plack::Handler::Starlet
 CGI::Emulate::PSGI
+LWP::Protocol::PSGI
 .
 
 $deps{'MAILGATE'} = [ text_to_hash( << '.') ];

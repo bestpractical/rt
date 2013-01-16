@@ -65,6 +65,9 @@ use warnings;
 package RT::Squish::JS;
 use base 'RT::Squish';
 
+use LWP::Simple ();
+use LWP::Protocol::PSGI;
+
 =head2 Squish
 
 not only concatenate files, but also minify them
@@ -73,18 +76,27 @@ not only concatenate files, but also minify them
 
 sub Squish {
     my $self    = shift;
-    my $content;
+    my $content = "";
+
+    LWP::Protocol::PSGI->register(
+        RT::Interface::Web::Handler->StaticWrap(
+            # Anything the static wrap doesn't handle gets 404'd.
+            sub { [404, [], []] }
+        )
+    );
 
     for my $file ( RT::Interface::Web->JSFiles ) {
-        my $path = "/NoAuth/js/$file";
-        if ( $HTML::Mason::Commands::m->comp_exists($path) ) {
-            $content .= $HTML::Mason::Commands::m->scomp($path);
+        my $uri = "http://psgi-internal/static/js/$file";
+
+        if (defined(my $js = LWP::Simple::get($uri))) {
+            $content .= $js;
         } else {
-            RT->Logger->error("Unable to open $path for JS Squishing");
+            RT->Logger->error("Unable to fetch $uri for JS Squishing");
             next;
         }
     }
 
+    LWP::Protocol::PSGI->unregister;
     return $self->Filter($content);
 }
 

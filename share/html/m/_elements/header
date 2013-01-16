@@ -59,7 +59,7 @@ $r->headers_out->{'Cache-control'} = 'no-cache';
 <link rel="stylesheet" type="text/css" href="<%RT->Config->Get('WebPath')|n%>/m/style.css"/>
 <title><%$title%></title>
 % my ($jquery) = grep { /^jquery-\d+\./ } RT::Interface::Web->JSFiles;
-<script src="<% RT->Config->Get('WebPath') %>/NoAuth/js/<% $jquery %>"></script>
+<script src="<% RT->Config->Get('WebPath') %>/static/js/<% $jquery %>"></script>
 <meta name="viewport" content="width=device-width height=device-height user-scalable=yes"/>
 </head>
 <body>
