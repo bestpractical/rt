@@ -751,11 +751,15 @@ sub CanonicalizeGeneratedPaths {
 
 =head2 AddJavaScript
 
-helper method to add js files to C<JSFiles> config.
-to add extra js files, you can add the following line
-in the plugin's main file:
+Helper method to add JS files to the C<@JSFiles> config at runtime.
+
+To add files, you can add the following line to your extension's main C<.pm>
+file:
 
     RT->AddJavaScript( 'foo.js', 'bar.js' ); 
+
+Files are expected to be in a static root in a F<js/> directory, such as
+F<static/js/> in your extension or F<local/static/js/> for local overlays.
 
 =cut
 
@@ -769,12 +773,16 @@ sub AddJavaScript {
 
 =head2 AddStyleSheets
 
-helper method to add css files to C<CSSFiles> config
+Helper method to add CSS files to the C<@CSSFiles> config at runtime.
 
-to add extra css files, you can add the following line
-in the plugin's main file:
+To add files, you can add the following line to your extension's main C<.pm>
+file:
 
     RT->AddStyleSheets( 'foo.css', 'bar.css' ); 
+
+Files are expected to be in a Mason root in a F<NoAuth/css/> directory, such as
+F<html/NoAuth/css/> in your extension or F<local/html/NoAuth/css/> for local
+overlays.
 
 =cut
 
