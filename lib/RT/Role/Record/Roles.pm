@@ -164,6 +164,36 @@ sub RegisterRole {
     return 1;
 }
 
+=head2 UnregisterRole
+
+Removes an RT role which applies to this class for role-based access control.
+Any roles on equivalent classes (via EquivClasses passed to L</RegisterRole>)
+are also unregistered.
+
+Takes a role name as the sole argument.
+
+B<Use this carefully:> Objects created after a role is unregistered will not
+have an associated L<RT::Group> for the removed role.  If you later decide to
+stop unregistering the role, operations on those objects created in the
+meantime will fail when trying to interact with the missing role groups.
+
+B<Unregistering a role may break code which assumes the role exists.>
+
+=cut
+
+sub UnregisterRole {
+    my $self  = shift;
+    my $class = ref($self) || $self;
+    my $name  = shift
+        or return;
+
+    my $role = delete $self->_ROLES->{$name}
+        or return;
+
+    $_->UnregisterRole($name)
+        for "RT::System", reverse @{$role->{EquivClasses}};
+}
+
 =head2 Role
 
 Takes a role name; returns a hashref describing the role.  This hashref
