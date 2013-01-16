@@ -53,17 +53,20 @@ sub check {
             unlike( $content, qr/^#!/, "$file has no shebang" );
         }
 
-        $check{bps_tag} = -1 if $check{bps_tag} == 1
+        my $other_copyright = 0;
+        $other_copyright = 1 if $file =~ /\.(css|js)$/
             and not $content =~ /Copyright\s+\(c\)\s+\d\d\d\d-\d\d\d\d Best Practical Solutions/i
                 and $file =~ /(?:FCKEditor|scriptaculous|superfish|tablesorter|farbtastic)/i;
-        $check{bps_tag} = -1 if $check{bps_tag} == 1
+        $other_copyright = 1 if $file =~ /\.(css|js)$/
             and not $content =~ /Copyright\s+\(c\)\s+\d\d\d\d-\d\d\d\d Best Practical Solutions/i
                 and ($content =~ /\b(copyright|GPL|Public Domain)\b/i
                   or $content =~ /\(c\)\s+\d\d\d\d(?:-\d\d\d\d)?/i);
+        $check{bps_tag} = -1 if $check{bps_tag} and $other_copyright;
         if ($check{bps_tag} == 1) {
             like( $content, qr/[B]EGIN BPS TAGGED BLOCK {{{/, "$file has BPS license tag");
         } elsif ($check{bps_tag} == -1) {
-            unlike( $content, qr/[B]EGIN BPS TAGGED BLOCK {{{/, "$file has no BPS license tag");
+            unlike( $content, qr/[B]EGIN BPS TAGGED BLOCK {{{/, "$file has no BPS license tag"
+                        . ($other_copyright ? " (other copyright)" : ""));
         }
 
         if ($check{bps_tag} != -1 and $check{no_tabs}) {
