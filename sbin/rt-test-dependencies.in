@@ -202,6 +202,7 @@ Sys::Syslog 0.16
 Locale::Maketext 1.06
 Locale::Maketext::Lexicon 0.32
 Locale::Maketext::Fuzzy 0.11
+LWP::Simple
 MIME::Entity 5.425
 Mail::Mailer 1.57
 Email::Address
