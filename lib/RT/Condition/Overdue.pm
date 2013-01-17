@@ -71,11 +71,11 @@ If the due date is before "now" return true
 sub IsApplicable {
     my $self = shift;
     if ($self->TicketObj->DueObj->Unix > 0 and
-	$self->TicketObj->DueObj->Unix < time())  {
-	return(1);
-    } 
+        $self->TicketObj->DueObj->Unix < time())  {
+        return(1);
+    }
     else {
-	return(undef);
+        return(undef);
     }
 }
 

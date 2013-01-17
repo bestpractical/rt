@@ -1030,8 +1030,8 @@ sub AddMember {
     # to modify group membership or the user is the principal in question
     # and the user has the right to modify his own membership
     unless ( ($new_member == $self->CurrentUser->PrincipalId &&
-	      $self->CurrentUserHasRight('ModifyOwnMembership') ) ||
-	      $self->CurrentUserHasRight('AdminGroupMembership') ) {
+              $self->CurrentUserHasRight('ModifyOwnMembership') ) ||
+              $self->CurrentUserHasRight('AdminGroupMembership') ) {
         #User has no permission to be doing this
         return ( 0, $self->loc("Permission Denied") );
     }
@@ -1043,7 +1043,7 @@ sub AddMember {
 # this should _ONLY_ ever be called from Ticket/Queue AddWatcher
 # when we want to deal with groups according to queue rights
 # In the dim future, this will all get factored out and life
-# will get better	
+# will get better
 
 # takes a paramhash of { PrincipalId => undef, InsideTransaction }
 
@@ -1228,8 +1228,8 @@ sub DeleteMember {
     # and the user has the right to modify his own membership
 
     unless ( (($member_id == $self->CurrentUser->PrincipalId) &&
-	      $self->CurrentUserHasRight('ModifyOwnMembership') ) ||
-	      $self->CurrentUserHasRight('AdminGroupMembership') ) {
+              $self->CurrentUserHasRight('ModifyOwnMembership') ) ||
+              $self->CurrentUserHasRight('AdminGroupMembership') ) {
         #User has no permission to be doing this
         return ( 0, $self->loc("Permission Denied") );
     }
@@ -1240,7 +1240,7 @@ sub DeleteMember {
 # this should _ONLY_ ever be called from Ticket/Queue  DeleteWatcher
 # when we want to deal with groups according to queue rights
 # In the dim future, this will all get factored out and life
-# will get better	
+# will get better
 
 sub _DeleteMember {
     my $self = shift;
@@ -1281,20 +1281,20 @@ sub _Set {
     my %args = (
         Field => undef,
         Value => undef,
-	TransactionType   => 'Set',
-	RecordTransaction => 1,
+        TransactionType   => 'Set',
+        RecordTransaction => 1,
         @_
     );
 
     unless ( $self->CurrentUserHasRight('AdminGroup') ) {
-      	return ( 0, $self->loc('Permission Denied') );
-	}
+        return ( 0, $self->loc('Permission Denied') );
+        }
 
     my $Old = $self->SUPER::_Value("$args{'Field'}");
-    
+
     my ($ret, $msg) = $self->SUPER::_Set( Field => $args{'Field'},
-					  Value => $args{'Value'} );
-    
+                                          Value => $args{'Value'} );
+
     #If we can't actually set the field to the value, don't record
     # a transaction. instead, get out of here.
     if ( $ret == 0 ) { return ( 0, $msg ); }
@@ -1335,13 +1335,13 @@ sub CurrentUserHasRight {
 
 
 
-    if ($self->Id && 
-		$self->CurrentUser->HasRight( Object => $self,
-										   Right => $right )) {
+    if ($self->Id &&
+                $self->CurrentUser->HasRight( Object => $self,
+                                              Right => $right )) {
         return(1);
-   }
+    }
     elsif ( $self->CurrentUser->HasRight(Object => $RT::System, Right =>  $right )) {
-		return (1);
+        return (1);
     } else {
         return(undef);
     }
@@ -1403,8 +1403,8 @@ sub PrincipalId {
 
 sub BasicColumns {
     (
-	[ Name => 'Name' ],
-	[ Description => 'Description' ],
+        [ Name => 'Name' ],
+        [ Description => 'Description' ],
     );
 }
 
@@ -1563,25 +1563,25 @@ sub _CoreAccessible {
     {
 
         id =>
-		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+                {read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         Name =>
-		{read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => ''},
+                {read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => ''},
         Description =>
-		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
+                {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         Domain =>
-		{read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
+                {read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
         Type =>
-		{read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
+                {read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
         Instance =>
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+                {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         Creator =>
-		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+                {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Created =>
-		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+                {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
         LastUpdatedBy =>
-		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+                {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         LastUpdated =>
-		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+                {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
 
  }
 };

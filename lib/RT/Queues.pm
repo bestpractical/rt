@@ -82,8 +82,8 @@ sub _Init {
 
   # By default, order by name
   $self->OrderBy( ALIAS => 'main',
-		  FIELD => 'Name',
-		  ORDER => 'ASC');
+                  FIELD => 'Name',
+                  ORDER => 'ASC');
 
   return ($self->SUPER::_Init(@_));
 }
@@ -91,7 +91,7 @@ sub _Init {
 sub Limit  {
   my $self = shift;
   my %args = ( ENTRYAGGREGATOR => 'AND',
-	       @_);
+               @_);
   $self->SUPER::Limit(%args);
 }
 

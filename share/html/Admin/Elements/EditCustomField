@@ -101,19 +101,19 @@ if (! $CustomField ) {
 } else {
 
     if ($CustomField eq 'new') {
-      my ($val, $msg) =  $CustomFieldObj->Create(Queue => $Queue, 
-                                                 Name => $Name, 
+      my ($val, $msg) =  $CustomFieldObj->Create(Queue => $Queue,
+                                                 Name => $Name,
                                                  Type => $Type,
                                                  Description => $Description,
-						 );
-      
+                                             );
+
       # if there is an error, then abort.  But since at this point there's
       # stuff already printed, clear it out.
       # (This only works in conjunction with temporarily turning autoflush
       #  off in the files that use this component.)
       unless ($val) {
-	  $m->clear_buffer;
-	  Abort(loc("Could not create CustomField: [_1]", $msg), SuppressHeader => 1);
+          $m->clear_buffer;
+          Abort(loc("Could not create CustomField: [_1]", $msg), SuppressHeader => 1);
       }
       push @results, $msg;
       $CustomFieldObj->SetSortOrder($CustomFieldObj->id);

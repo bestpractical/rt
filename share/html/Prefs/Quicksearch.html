@@ -78,10 +78,10 @@ my @queues = grep {$_->CurrentUserHasRight('ShowTicket')} @{$Queues->ItemsArrayR
 if ($ARGS{'Save'}) {
     for my $queue (@queues) {
         if ($ARGS{"Want-".$queue->Name}) {
-	    delete $unwanted->{$queue->Name};
-	}
+            delete $unwanted->{$queue->Name};
+        }
         else {
-	    ++$unwanted->{$queue->Name};
+            ++$unwanted->{$queue->Name};
         }
     }
 

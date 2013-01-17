@@ -100,22 +100,22 @@ if ($object eq 'show' ||                                # $REST/show
         if (my ($type, $oids, $extra) =
             ($id =~ m#^($name)/($list|$labels)(?:(/.*))?$#o))
         {
-	    $extra ||= '';
-	    my ($attr, $args) = $extra =~ m{^(?:/($name)(?:/(.*))?)?$}o;
-	    my $tids;
-	    if ($attr and $attr eq 'history' and $args) {
-	       	($tids) = $args =~ m#id/(\d.*)#o;
-	    }
-	    # expand transaction and attachment range specifications
-	    # (if applicable)
-	    foreach my $oid (expand_list($oids)) {
-		if ($tids) {
-		    push(@objects, "$type/$oid/$attr/id/$_") for expand_list($tids);
-		} else {
-		    push(@objects, "$type/$oid$extra");
-		}
-	    }
-	}
+            $extra ||= '';
+            my ($attr, $args) = $extra =~ m{^(?:/($name)(?:/(.*))?)?$}o;
+            my $tids;
+            if ($attr and $attr eq 'history' and $args) {
+                ($tids) = $args =~ m#id/(\d.*)#o;
+            }
+            # expand transaction and attachment range specifications
+            # (if applicable)
+            foreach my $oid (expand_list($oids)) {
+                if ($tids) {
+                    push(@objects, "$type/$oid/$attr/id/$_") for expand_list($tids);
+                } else {
+                    push(@objects, "$type/$oid$extra");
+                }
+            }
+        }
         else {
             $status = "400 Bad Request";
             $output = "Invalid object ID specified: '$id'";

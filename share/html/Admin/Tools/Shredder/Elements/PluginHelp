@@ -59,8 +59,8 @@ my %plugins = $plugin_obj->List;
 <%INIT>
 my $file = $plugins{ $Plugin };
 unless( $file ) {
-	$RT::Logger->error( "Couldn't find plugin '$Plugin'" );
-	return;
+    $RT::Logger->error( "Couldn't find plugin '$Plugin'" );
+    return;
 }
 
 use RT::Shredder::POD qw();

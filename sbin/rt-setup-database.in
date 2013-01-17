@@ -445,10 +445,10 @@ sub action_upgrade {
             return ( $ret, $msg ) unless $ret;
         }
 
-	# XXX: Another connect since the insert called
-	# previous to this step will disconnect.
+        # XXX: Another connect since the insert called
+        # previous to this step will disconnect.
 
-	RT->ConnectToDatabase();
+        RT->ConnectToDatabase();
 
         RT->System->AddUpgradeHistory($package => {
             action => 'upgrade',

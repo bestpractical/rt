@@ -25,7 +25,7 @@ use constant ImageFileContent => do {
 use RT::Class;
 my $class = RT::Class->new($RT::SystemUser);
 my ($ret, $msg) = $class->Create('Name' => 'tlaTestClass-'.$$,
-			      'Description' => 'A general-purpose test class');
+                                 'Description' => 'A general-purpose test class');
 ok($ret, "Test class created");
 
 

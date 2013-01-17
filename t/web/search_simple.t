@@ -44,14 +44,14 @@ my $t = RT::Ticket->new(RT->SystemUser);
 {
   my ($status, $msg) = $t->AddCustomFieldValue(
                            Field => $cf1->id,
-			   Value => 'Downtown');
+                           Value => 'Downtown');
   ok( $status, "Added CF value - $msg" );
 }
 
 {
   my ($status, $msg) = $t->AddCustomFieldValue(
                            Field => $cf2->id,
-			   Value => 'Proxy');
+                           Value => 'Proxy');
   ok( $status, "Added CF value - $msg" );
 }
 

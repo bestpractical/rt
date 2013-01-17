@@ -192,7 +192,7 @@ sub Save {
     my %args = (
         'Privacy' => 'RT::User-' . $self->CurrentUser->Id,
         'Name'    => "new " . $self->ObjectName,
-		@_,
+        @_,
     );
 
     my $privacy = $args{'Privacy'};

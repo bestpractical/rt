@@ -62,8 +62,8 @@ our @EXPORT_OK = qw(CleanEnv GetCurrentUser GetMessageContent debug loc);
 
   use lib "/path/to/rt/libraries/";
 
-  use RT::Interface::CLI  qw(CleanEnv 
-	  		   GetCurrentUser GetMessageContent loc);
+  use RT::Interface::CLI  qw(CleanEnv
+                             GetCurrentUser GetMessageContent loc);
 
   #Clean out all the nasties from the environment
   CleanEnv();
@@ -102,7 +102,7 @@ sub CleanEnv {
     $ENV{'CDPATH'} = '' if defined $ENV{'CDPATH'};
     $ENV{'SHELL'} = '/bin/sh' if defined $ENV{'SHELL'};
     $ENV{'ENV'} = '' if defined $ENV{'ENV'};
-    $ENV{'IFS'} = ''		if defined $ENV{'IFS'};
+    $ENV{'IFS'} = '' if defined $ENV{'IFS'};
 }
 
 
@@ -135,7 +135,7 @@ sub GetCurrentUser  {
     $CurrentUser->LoadByGecos($Gecos);
     
     unless ($CurrentUser->Id) {
-	$RT::Logger->debug("No user with a unix login of '$Gecos' was found. ");
+        $RT::Logger->debug("No user with a unix login of '$Gecos' was found. ");
     }
 
     return($CurrentUser);
@@ -168,54 +168,54 @@ array of lines.
 
 sub GetMessageContent {
     my %args = (  Source => undef,
-		  Content => undef,
-		  Edit => undef,
-		  CurrentUser => undef,
-		 @_);
+                  Content => undef,
+                  Edit => undef,
+                  CurrentUser => undef,
+                 @_);
     my $source = $args{'Source'};
 
     my $edit = $args{'Edit'};
-    
+
     my $currentuser = $args{'CurrentUser'};
     my @lines;
 
     use File::Temp qw/ tempfile/;
-    
+
     #Load the sourcefile, if it's been handed to us
     if ($source) {
-	open( SOURCE, '<', $source ) or die $!;
-	@lines = (<SOURCE>) or die $!;
-	close (SOURCE) or die $!;
+        open( SOURCE, '<', $source ) or die $!;
+        @lines = (<SOURCE>) or die $!;
+        close (SOURCE) or die $!;
     }
     elsif ($args{'Content'}) {
-	@lines = split('\n',$args{'Content'});
+        @lines = split('\n',$args{'Content'});
     }
     #get us a tempfile.
     my ($fh, $filename) = tempfile();
-	
+
     #write to a tmpfile
     for (@lines) {
-	print $fh $_;
+        print $fh $_;
     }
     close ($fh) or die $!;
-    
-    #Edit the file if we need to
-    if ($edit) {	
 
-	unless ($ENV{'EDITOR'}) {
-	    $RT::Logger->crit('No $EDITOR variable defined');
-	    return undef;
-	}
-	system ($ENV{'EDITOR'}, $filename);
-    }	
-    
+    #Edit the file if we need to
+    if ($edit) {
+
+        unless ($ENV{'EDITOR'}) {
+            $RT::Logger->crit('No $EDITOR variable defined');
+            return undef;
+        }
+        system ($ENV{'EDITOR'}, $filename);
+    }
+
     open( READ, '<', $filename ) or die $!;
     my @newlines = (<READ>);
     close (READ) or die $!;
 
     unlink ($filename) unless (debug());
     return(\@newlines);
-    
+
 }
 
 
@@ -224,14 +224,14 @@ sub debug {
     my $val = shift;
     my ($debug);
     if ($val) {
-	$RT::Logger->debug($val);
-	if ($debug) {
-	    print STDERR "$val\n";
-	}
+        $RT::Logger->debug($val);
+        if ($debug) {
+            print STDERR "$val\n";
+        }
     }
     if ($debug) {
-	return(1);
-    }	
+        return(1);
+    }
 }
 
 sub ShowHelp {

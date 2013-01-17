@@ -194,8 +194,8 @@ sub extract_strings_from_code {
             next;
         }
         $str = substr($str, 1, -1);
-	$str =~ s/\\'/\'/g;
-	push @{ $FILECAT{$str} }, [ $filename, $line, '' ];
+        $str =~ s/\\'/\'/g;
+        push @{ $FILECAT{$str} }, [ $filename, $line, '' ];
     }
 
     # Comment-based qw mark: "qw(...)" # loc_qw
@@ -223,8 +223,8 @@ sub extract_strings_from_code {
             warn "Couldn't process loc_left_pair at $filename:$line";
             next;
         }
-	$key  =~ s/\\'/\'/g;
-	push @{ $FILECAT{$key} }, [ $filename, $line, '' ];
+        $key  =~ s/\\'/\'/g;
+        push @{ $FILECAT{$key} }, [ $filename, $line, '' ];
     }
 
     # Comment-based pair mark: "..." => "..." # loc_pair
@@ -237,11 +237,11 @@ sub extract_strings_from_code {
             warn "Couldn't process loc_pair at $filename:$line";
             next;
         }
-	$val = substr($val, 1, -1);
-	$key  =~ s/\\'/\'/g;
-	$val  =~ s/\\'/\'/g;
-	push @{ $FILECAT{$key} }, [ $filename, $line, '' ];
-	push @{ $FILECAT{$val} }, [ $filename, $line, '' ];
+        $val = substr($val, 1, -1);
+        $key  =~ s/\\'/\'/g;
+        $val  =~ s/\\'/\'/g;
+        push @{ $FILECAT{$key} }, [ $filename, $line, '' ];
+        push @{ $FILECAT{$val} }, [ $filename, $line, '' ];
     }
 
     close (_);
@@ -259,8 +259,8 @@ sub update {
     my $out = '';
 
     unless (!-e $file or -w $file) {
-	warn "Can't write to $lang, skipping...\n";
-	return;
+        warn "Can't write to $lang, skipping...\n";
+        return;
     }
 
     print "Updating $lang...\n";

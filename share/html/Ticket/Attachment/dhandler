@@ -83,7 +83,7 @@
      require MIME::Types;
      my $mimetype = MIME::Types->new->type($content_type);
      unless ( $mimetype && $mimetype->isBinary ) {
-	    $content_type .= ";charset=$iana";
+         $content_type .= ";charset=$iana";
      }
 
      $r->content_type( $content_type );

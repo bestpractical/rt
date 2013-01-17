@@ -29,9 +29,9 @@ $agent->login( $user_obj->Name, 'customer');
 
 # Test for absence of Configure and Preferences tabs.
 ok(!$agent->find_link( url => "$RT::WebPath/Admin/",
-		       text => 'Configuration'), "No config tab" );
+                       text => 'Configuration'), "No config tab" );
 ok(!$agent->find_link( url => "$RT::WebPath/User/Prefs.html",
-		       text => 'Preferences'), "No prefs pane" );
+                       text => 'Preferences'), "No prefs pane" );
 
 # Now test for their presence, one at a time.  Sleep for a bit after
 # ACL changes, thanks to the 10s ACL cache.
@@ -43,20 +43,20 @@ $agent->reload;
 
 $agent->content_contains('Logout', "Reloaded page successfully");
 ok($agent->find_link( url => "$RT::WebPath/Admin/",
-		       text => 'Configuration'), "Found config tab" );
+                       text => 'Configuration'), "Found config tab" );
 my ($revokeid,$revokemsg) =$user_obj->PrincipalObj->RevokeRight(Right => 'ShowConfigTab');
 ok ($revokeid,$revokemsg);
 ($grantid,$grantmsg) =$user_obj->PrincipalObj->GrantRight(Right => 'ModifySelf');
 ok ($grantid,$grantmsg);
 $agent->reload();
 $agent->content_contains('Logout', "Reloaded page successfully");
-ok($agent->find_link( 
-		       id => 'preferences-settings' ), "Found prefs pane" );
+ok($agent->find_link(
+                       id => 'preferences-settings' ), "Found prefs pane" );
 ($revokeid,$revokemsg) = $user_obj->PrincipalObj->RevokeRight(Right => 'ModifySelf');
 ok ($revokeid,$revokemsg);
 # Good.  Now load the search page and test Load/Save Search.
 $agent->follow_link( url => "$RT::WebPath/Search/Build.html",
-		     text => 'Tickets');
+                     text => 'Tickets');
 is($agent->status, 200, "Fetched search builder page");
 $agent->content_lacks("Load saved search", "No search loading box");
 $agent->content_lacks("Saved searches", "No saved searches box");
@@ -79,23 +79,23 @@ $agent->content_like(qr/input\s+type=['"]submit['"][^>]+name=['"]SavedSearchSave
 # via SelectOwner.
 
 my $queue_obj = RT::Queue->new(RT->SystemUser);
-($ret, $msg) = $queue_obj->Create(Name => 'CustomerQueue-'.$$, 
-				  Description => 'queue for SelectOwner testing');
+($ret, $msg) = $queue_obj->Create(Name => 'CustomerQueue-'.$$,
+                                  Description => 'queue for SelectOwner testing');
 ok($ret, "SelectOwner test queue creation. $msg");
 my $group_obj = RT::Group->new(RT->SystemUser);
 ($ret, $msg) = $group_obj->CreateUserDefinedGroup(Name => 'CustomerGroup-'.$$,
-			      Description => 'group for SelectOwner testing');
+                              Description => 'group for SelectOwner testing');
 ok($ret, "SelectOwner test group creation. $msg");
 
 # Add our customer to the customer group, and give it queue rights.
 ($ret, $msg) = $group_obj->AddMember($user_obj->PrincipalObj->Id());
 ok($ret, "Added customer to its group. $msg");
 ($grantid,$grantmsg) =$group_obj->PrincipalObj->GrantRight(Right => 'OwnTicket',
-				     Object => $queue_obj);
-                                     
+                                     Object => $queue_obj);
+
 ok($grantid,$grantmsg);
 ($grantid,$grantmsg) =$group_obj->PrincipalObj->GrantRight(Right => 'SeeQueue',
-				     Object => $queue_obj);
+                                     Object => $queue_obj);
 ok ($grantid,$grantmsg);
 # Now.  When we look at the search page we should be able to see
 # ourself in the list of possible owners.

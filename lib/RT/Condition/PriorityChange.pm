@@ -62,10 +62,10 @@ the Priority Obj
 sub IsApplicable {
     my $self = shift;
     if ($self->TransactionObj->Field eq 'Priority') {
-	return(1);
-    } 
+        return(1);
+    }
     else {
-	return(undef);
+        return(undef);
     }
 }
 

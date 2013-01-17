@@ -240,59 +240,59 @@ if ($Create) {
 else {
 
     if ( defined $id && $id eq 'new') {
-	( $val, $msg ) = $UserObj->Create(
-	    Name                  => $Name,
-	    EmailAddress          => $ARGS{'EmailAddress'},
-	    Name                  => $ARGS{'Name'},
-	    Comments              => $ARGS{'Comments'},
-	    Signature             => $ARGS{'Signature'},
-	    EmailAddress          => $ARGS{'EmailAddress'},
-	    FreeformContactInfo   => $ARGS{'FreeformContactInfo'},
-	    Organization          => $ARGS{'Organization'},
-	    RealName              => $ARGS{'RealName'},
-	    NickName              => $ARGS{'NickName'},
-	    Lang                  => $ARGS{'Lang'},
-	    EmailEncoding         => $ARGS{'EmailEncoding'},
-	    WebEncoding           => $ARGS{'WebEncoding'},
-	    ExternalContactInfoId => $ARGS{'ExternalContactInfoId'},
-	    ContactInfoSystem     => $ARGS{'ContactInfoSystem'},
-	    Gecos                 => $ARGS{'Gecos'},
-	    ExternalAuthId        => $ARGS{'ExternalAuthId'},
-	    AuthSystem            => $ARGS{'AuthSystem'},
-	    HomePhone             => $ARGS{'HomePhone'},
-	    WorkPhone             => $ARGS{'WorkPhone'},
-	    MobilePhone           => $ARGS{'MobilePhone'},
-	    PagerPhone            => $ARGS{'PagerPhone'},
-	    Address1              => $ARGS{'Address1'},
-	    Address2              => $ARGS{'Address2'},
-	    City                  => $ARGS{'City'},
-	    State                 => $ARGS{'State'},
-	    Zip                   => $ARGS{'Zip'},
-	    Country               => $ARGS{'Country'},
-	    Privileged           => $ARGS{'Privileged'},
-	    Disabled            => ($ARGS{'Enabled'} ? 0 : 1)
-	);
+        ( $val, $msg ) = $UserObj->Create(
+            Name                  => $Name,
+            EmailAddress          => $ARGS{'EmailAddress'},
+            Name                  => $ARGS{'Name'},
+            Comments              => $ARGS{'Comments'},
+            Signature             => $ARGS{'Signature'},
+            EmailAddress          => $ARGS{'EmailAddress'},
+            FreeformContactInfo   => $ARGS{'FreeformContactInfo'},
+            Organization          => $ARGS{'Organization'},
+            RealName              => $ARGS{'RealName'},
+            NickName              => $ARGS{'NickName'},
+            Lang                  => $ARGS{'Lang'},
+            EmailEncoding         => $ARGS{'EmailEncoding'},
+            WebEncoding           => $ARGS{'WebEncoding'},
+            ExternalContactInfoId => $ARGS{'ExternalContactInfoId'},
+            ContactInfoSystem     => $ARGS{'ContactInfoSystem'},
+            Gecos                 => $ARGS{'Gecos'},
+            ExternalAuthId        => $ARGS{'ExternalAuthId'},
+            AuthSystem            => $ARGS{'AuthSystem'},
+            HomePhone             => $ARGS{'HomePhone'},
+            WorkPhone             => $ARGS{'WorkPhone'},
+            MobilePhone           => $ARGS{'MobilePhone'},
+            PagerPhone            => $ARGS{'PagerPhone'},
+            Address1              => $ARGS{'Address1'},
+            Address2              => $ARGS{'Address2'},
+            City                  => $ARGS{'City'},
+            State                 => $ARGS{'State'},
+            Zip                   => $ARGS{'Zip'},
+            Country               => $ARGS{'Country'},
+            Privileged           => $ARGS{'Privileged'},
+            Disabled            => ($ARGS{'Enabled'} ? 0 : 1)
+        );
 
-	if ($val) {
-		push @results, $msg;
+        if ($val) {
+                push @results, $msg;
         push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $UserObj );
-	} else {
-		push @results, loc('User could not be created: [_1]', $msg);
-	}
+        } else {
+                push @results, loc('User could not be created: [_1]', $msg);
+        }
     } else {
-	    $UserObj->Load($id) || $UserObj->Load($Name) 
+            $UserObj->Load($id) || $UserObj->Load($Name) 
             || Abort("Couldn't load user '" . ( $Name || '') . "'");
         $val = $UserObj->Id();
     }
 
     if ($val) {
-	$title = loc("Modify the user [_1]", $UserObj->Name);
+        $title = loc("Modify the user [_1]", $UserObj->Name);
     }
 
     # If the create failed
     else {
-	$title = loc("Create a new user");
-	$Create = 1;
+        $title = loc("Create a new user");
+        $Create = 1;
     }
 }
 
@@ -304,15 +304,15 @@ $m->callback( %ARGS, CallbackName => 'BeforeUpdate', User => $UserObj, ARGSRef =
 if ($UserObj->Id && $id ne 'new') {
 
     my @fields = qw(Name Comments Signature EmailAddress FreeformContactInfo 
-		    Organization RealName NickName Lang EmailEncoding WebEncoding 
-		    ExternalContactInfoId ContactInfoSystem Gecos ExternalAuthId 
-		    AuthSystem HomePhone WorkPhone MobilePhone PagerPhone Address1
-		    Address2 City State Zip Country 
-		   );
+                    Organization RealName NickName Lang EmailEncoding WebEncoding 
+                    ExternalContactInfoId ContactInfoSystem Gecos ExternalAuthId 
+                    AuthSystem HomePhone WorkPhone MobilePhone PagerPhone Address1
+                    Address2 City State Zip Country 
+                   );
 
     my @fieldresults = UpdateRecordObject ( AttributesRef => \@fields,
-					    Object => $UserObj,
-					    ARGSRef => \%ARGS );
+                                            Object => $UserObj,
+                                            ARGSRef => \%ARGS );
     push (@results,@fieldresults);
     push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $UserObj );
 

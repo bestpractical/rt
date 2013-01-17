@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodb => 1;
+use RT::Test nodb => 1, tests => undef;
 use File::Find;
 use IPC::Run3;
 
@@ -22,6 +22,7 @@ sub check {
     my %check = (
         strict   => 0,
         warnings => 0,
+        no_tabs  => 0,
         shebang  => 0,
         exec     => 0,
         bps_tag  => 0,
@@ -29,7 +30,7 @@ sub check {
         @_,
     );
 
-    if ($check{strict} or $check{warnings} or $check{shebang} or $check{bps_tag}) {
+    if ($check{strict} or $check{warnings} or $check{shebang} or $check{bps_tag} or $check{no_tabs}) {
         local $/;
         open my $fh, '<', $file or die $!;
         my $content = <$fh>;
@@ -52,17 +53,24 @@ sub check {
             unlike( $content, qr/^#!/, "$file has no shebang" );
         }
 
-        $check{bps_tag} = -1 if $check{bps_tag} == 1
+        my $other_copyright = 0;
+        $other_copyright = 1 if $file =~ /\.(css|js)$/
             and not $content =~ /Copyright\s+\(c\)\s+\d\d\d\d-\d\d\d\d Best Practical Solutions/i
                 and $file =~ /(?:FCKEditor|scriptaculous|superfish|tablesorter|farbtastic)/i;
-        $check{bps_tag} = -1 if $check{bps_tag} == 1
+        $other_copyright = 1 if $file =~ /\.(css|js)$/
             and not $content =~ /Copyright\s+\(c\)\s+\d\d\d\d-\d\d\d\d Best Practical Solutions/i
                 and ($content =~ /\b(copyright|GPL|Public Domain)\b/i
-                  or /\(c\)\s+\d\d\d\d(?:-\d\d\d\d)?/i);
+                  or $content =~ /\(c\)\s+\d\d\d\d(?:-\d\d\d\d)?/i);
+        $check{bps_tag} = -1 if $check{bps_tag} and $other_copyright;
         if ($check{bps_tag} == 1) {
             like( $content, qr/[B]EGIN BPS TAGGED BLOCK {{{/, "$file has BPS license tag");
         } elsif ($check{bps_tag} == -1) {
-            unlike( $content, qr/[B]EGIN BPS TAGGED BLOCK {{{/, "$file has no BPS license tag");
+            unlike( $content, qr/[B]EGIN BPS TAGGED BLOCK {{{/, "$file has no BPS license tag"
+                        . ($other_copyright ? " (other copyright)" : ""));
+        }
+
+        if (not $other_copyright and $check{no_tabs}) {
+            unlike( $content, qr/\t/, "$file has no hard tabs" );
         }
     }
 
@@ -87,22 +95,22 @@ sub check {
     }
 }
 
-check( $_, shebang => -1, exec => -1, warnings => 1, strict => 1, bps_tag => 1 )
+check( $_, shebang => -1, exec => -1, warnings => 1, strict => 1, bps_tag => 1, no_tabs => 1 )
     for grep {m{^lib/.*\.pm$}} @files;
 
-check( $_, shebang => -1, exec => -1, warnings => 1, strict => 1, bps_tag => -1 )
+check( $_, shebang => -1, exec => -1, warnings => 1, strict => 1, bps_tag => -1, no_tabs => 1 )
     for grep {m{^t/.*\.t$}} @files;
 
-check( $_, shebang => 1, exec => 1, warnings => 1, strict => 1, bps_tag => 1 )
+check( $_, shebang => 1, exec => 1, warnings => 1, strict => 1, bps_tag => 1, no_tabs => 1 )
     for grep {m{^s?bin/}} @files;
 
-check( $_, shebang => 1, exec => 1, warnings => 1, strict => 1, bps_tag => 1 )
+check( $_, shebang => 1, exec => 1, warnings => 1, strict => 1, bps_tag => 1, no_tabs => 1 )
     for grep {m{^devel/tools/} and not m{/(localhost\.(crt|key)|mime\.types)$}} @files;
 
 check( $_, exec => -1 )
     for grep {m{^share/static/}} @files;
 
-check( $_, exec => -1, bps_tag => 1 )
+check( $_, exec => -1, bps_tag => 1, no_tabs => 1 )
     for grep {m{^share/html/}} @files;
 
 check( $_, exec => -1 )
@@ -111,5 +119,7 @@ check( $_, exec => -1 )
 check( $_, exec => -1 )
     for grep {m{^t/data/}} @files;
 
-check( $_, warnings => 1, strict => 1, compile => 1 )
+check( $_, warnings => 1, strict => 1, compile => 1, no_tabs => 1 )
     for grep {m{^etc/upgrade/.*/content$}} @files;
+
+done_testing;

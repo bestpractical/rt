@@ -88,7 +88,7 @@ sub _SQLJoin {
   my $this = shift;
 
   $this->SUPER::Join(@_,
-		     SUBCLAUSE => 'ticketsql');
+                     SUBCLAUSE => 'ticketsql');
 }
 
 # Helpers

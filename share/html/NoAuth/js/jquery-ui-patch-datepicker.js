@@ -83,8 +83,8 @@
     $.timepicker._newInst = function($input, o) {
         var tp_inst = $.timepicker._newInst_orig($input, o);
         tp_inst._defaults.onClose = function(dateText, dp_inst) {
-	    if ($.isFunction(o.onClose))
-		o.onClose.call($input[0], dateText, dp_inst, tp_inst);
+            if ($.isFunction(o.onClose))
+                o.onClose.call($input[0], dateText, dp_inst, tp_inst);
         };
         return tp_inst;
     };

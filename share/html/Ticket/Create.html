@@ -218,9 +218,9 @@
 <tr>
 <td width="50%" valign="top" class="boxcontainer">
     <div class="ticket-info-basics">
-	  <&| /Widgets/TitleBox, title => loc('The Basics'), 
-		title_class=> 'inverse',  
-		color => "#993333" &>
+          <&| /Widgets/TitleBox, title => loc('The Basics'), 
+                title_class=> 'inverse',  
+                color => "#993333" &>
 <table border="0">
 <tr><td class="label"><&|/l&>Priority</&>:</td>
 <td><& /Elements/SelectPriority,
@@ -251,8 +251,8 @@
 <br />
 <div class="ticket-info-dates">
 <&|/Widgets/TitleBox, title => loc("Dates"),
-		title_class=> 'inverse',  
-		 color => "#663366" &>
+  title_class=> 'inverse',  
+  color => "#663366" &>
 
 <table>
 <tr><td class="label"><&|/l&>Starts</&>:</td><td><& /Elements/SelectDate, Name => "Starts", Default => $ARGS{Starts} || '' &></td></tr>
@@ -391,7 +391,7 @@ my $ticket = RT::Ticket->new($session{'CurrentUser'}); # empty ticket object
 # deal with deleting uploaded attachments
 foreach my $key (keys %ARGS) {
     if ($key =~ m/^DeleteAttach-(.+)$/) {
-	delete $session{'Attachments'}{$1};
+        delete $session{'Attachments'}{$1};
     }
     $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
 }
@@ -405,7 +405,7 @@ if ( defined $ARGS{'Attach'} && length $ARGS{'Attach'} ) { # attachment?
     my $file_path = Encode::decode_utf8("$ARGS{'Attach'}");
     $session{'Attachments'} = {
         %{$session{'Attachments'} || {}},
-	$file_path => $attachment,
+        $file_path => $attachment,
     };
 }
 

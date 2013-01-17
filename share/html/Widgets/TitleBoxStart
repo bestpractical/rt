@@ -54,8 +54,8 @@
             $title_href ? qq[<a href="$title_href">] : '' | n
         %><% $title %><% $title_raw |n %><% $title_href ? "</a>" : '' |n%></span>
     <span class="right<%($titleright_href || $titleright || $titleright_raw) ? '' : '-empty' %>">\
-	<% $titleright_href ? qq[<a href="$titleright_href">] : '' | n %>\
-	<% $titleright  %><% $titleright_raw |n%><% $titleright_href ? "</a>" : '' |n%>\
+        <% $titleright_href ? qq[<a href="$titleright_href">] : '' | n %>\
+        <% $titleright  %><% $titleright_raw |n%><% $titleright_href ? "</a>" : '' |n%>\
     </span>
   </div>
   <div class="titlebox-content <% $bodyclass %><% $rolledup ? " hidden" : ""%>" id="<% $tid %>">

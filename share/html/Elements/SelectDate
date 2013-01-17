@@ -49,18 +49,17 @@
 <input type="text" class="ui-datepicker<% $ShowTime ? ' withtime' : '' %>" id="<% $Name %>" name="<% $Name %>" value="<% $Value %>" size="<% $Size %>" />
 % $m->callback( %ARGS, Name => $Name, CallbackName => 'AfterDateInput' );
 <%init>
-unless ((defined $Default) or 
-	($current <= 0)) {
-	my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) =
-                                            localtime($current);
-        $Default = sprintf("%04d-%02d-%02d %02d:%02d",                         
-                           $year+1900,$mon+1,$mday,                            
-                           $hour,$min);   
+unless ((defined $Default) or ($current <= 0)) {
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) =
+                                           localtime($current);
+    $Default = sprintf("%04d-%02d-%02d %02d:%02d",
+                       $year+1900,$mon+1,$mday,
+                       $hour,$min);
 }
 $Value = $Value || $Default;
 
 unless ($Name) {
-	$Name = $menu_prefix. "_Date";
+    $Name = $menu_prefix. "_Date";
 }
 </%init>
 

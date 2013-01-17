@@ -572,8 +572,8 @@ sub TicketCustomFields {
     my $cfs = RT::CustomFields->new( $self->CurrentUser );
     if ( $self->CurrentUserHasRight('SeeQueue') ) {
         $cfs->SetContextObject( $self );
-	$cfs->LimitToGlobalOrObjectId( $self->Id );
-	$cfs->LimitToLookupType( 'RT::Queue-RT::Ticket' );
+        $cfs->LimitToGlobalOrObjectId( $self->Id );
+        $cfs->LimitToLookupType( 'RT::Queue-RT::Ticket' );
         $cfs->ApplySortOrder;
     }
     return ($cfs);
@@ -594,8 +594,8 @@ sub TicketTransactionCustomFields {
     my $cfs = RT::CustomFields->new( $self->CurrentUser );
     if ( $self->CurrentUserHasRight('SeeQueue') ) {
         $cfs->SetContextObject( $self );
-	$cfs->LimitToGlobalOrObjectId( $self->Id );
-	$cfs->LimitToLookupType( 'RT::Queue-RT::Ticket-RT::Transaction' );
+        $cfs->LimitToGlobalOrObjectId( $self->Id );
+        $cfs->LimitToLookupType( 'RT::Queue-RT::Ticket-RT::Transaction' );
         $cfs->ApplySortOrder;
     }
     return ($cfs);

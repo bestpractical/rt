@@ -60,10 +60,10 @@ If the priority exceeds the argument value
 sub IsApplicable {
     my $self = shift;
     if ($self->TicketObj->Priority > $self->Argument)  {
-	return(1);
-    } 
+        return(1);
+    }
     else {
-	return(undef);
+        return(undef);
     }
 }
 

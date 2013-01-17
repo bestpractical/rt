@@ -26,7 +26,7 @@ want to make up for it now.
 
 If you have any questions, please ask us on the B<rt-devel> mailing list:
 
-	http://www.bestpractical.com/rt/lists.html
+        http://www.bestpractical.com/rt/lists.html
 
 We don't always follow this guide.  We are making changes throughout
 our code to be in line with it.  But just because we didn't do
@@ -71,7 +71,7 @@ purpose, and use in a mason comment block.
 
 Any external documents, and documentation for command-line programs and
 modules, should be written in POD, where appropriate. From there, they
-can be translated to many formats with the various pod2* translators. 
+can be translated to many formats with the various pod2* translators.
 Read the perlpod manpage before writing any POD, because although POD is
 not difficult, it is not what most people are used to.  It is not a
 regular markup language; it is just a way to make easy documentation
@@ -86,24 +86,24 @@ major revision, the second number is the version, and third
 number is the subversion.  Odd-numbered versions are development
 versions.  Examples:
 
-	1.0.0		First release of RT 1
-	1.0.1		Second release of RT 1.0
-	1.0.10		etc.
-	1.1.0		First development release of RT 1.2 (or 2.0)
-	2.0.0		First release of RT 2
+        1.0.0           First release of RT 1
+        1.0.1           Second release of RT 1.0
+        1.0.10          etc.
+        1.1.0           First development release of RT 1.2 (or 2.0)
+        2.0.0           First release of RT 2
 
 Versions can be modified with a hyphen followed by some text, for
 special versions, or to give extra information.  Examples:
 
-	2.0.0-pre1	Notes that this is not final, but preview
+        2.0.0-pre1      Notes that this is not final, but preview
 
 In perl 5.6.0, you can have versions like C<v2.0.0>, but this is not
 allowed in previous versions of perl.  So to convert a tuple version
 string to a string to use with $VERSION, use a regular integer for
 the revision, and three digits for version and subversion.  Examples:
 
-	1.1.6	->	1.001006
-	2.0.0	->	2.000000
+        1.1.6   ->      1.001006
+        2.0.0   ->      2.000000
 
 This way, perl can use the version strings in greater-than and
 less-than comparisons.
@@ -115,8 +115,8 @@ All code should be self-documenting as much as possible.  Only include
 necessary comments.  Use names like "$ticket_count", so you don't need to
 do something like:
 
-	# ticket count
-	my $tc = 0;
+        # ticket count
+        my $tc = 0;
 
 Include any comments that are, or might be, necessary in order for
 someone else to understand the code.  Sometimes a simple one-line
@@ -166,21 +166,21 @@ Arrays and hashes should be passed to and from functions by reference
 only.  Note that a list and an array are NOT the same thing.  This
 is perfectly fine:
 
-	return($user, $form, $constants);
+        return($user, $form, $constants);
 
 An exception might be a temporary array of discrete arguments:
 
-	my @return = ($user, $form);
-	push @return, $constants if $flag;
-	return @return;
+        my @return = ($user, $form);
+        push @return, $constants if $flag;
+        return @return;
 
 Although, usually, this is better (faster, easier to read, etc.):
 
-	if ($flag) {
-		return($user, $form, $constants);
-	} else {
-		return($user, $form);
-	}
+        if ($flag) {
+                return($user, $form, $constants);
+        } else {
+                return($user, $form);
+        }
 
 We need to talk about Class::ReturnValue here.
 
@@ -201,16 +201,16 @@ Also, if you have a long-running function that has a large data
 structure in it, it is polite to free up the memory as soon as you are
 done with it, if possible.
 
-	my $huge_data_structure = get_huge_data_structure();
-	do_something_with($huge_data_structure);
-	undef $huge_data_structure;
+        my $huge_data_structure = get_huge_data_structure();
+        do_something_with($huge_data_structure);
+        undef $huge_data_structure;
 
 =head2 DESTROY
 
 All object classes must provide a DESTROY method.  If it won't do
 anything, provide it anyway:
 
-	sub DESTROY { }
+        sub DESTROY { }
 
 
 
@@ -224,18 +224,18 @@ In command-line programs, do as you please.
 
 =head2 shift and @_
 
-Do not use @_.  Use shift.  shift may take more lines, but Jesse thinks it 
+Do not use @_.  Use shift.  shift may take more lines, but Jesse thinks it
 leads to cleaner code.
 
-	my $var = shift;			# right
-	my($var) = @_;				# ick. no
-	sub foo { uc $_[0] }			# icky. sometimes ok.
+        my $var = shift;                        # right
+        my($var) = @_;                          # ick. no
+        sub foo { uc $_[0] }                    # icky. sometimes ok.
 
 
-	my($var1, $var2) = (shift, shift);	# Um, no.
+        my($var1, $var2) = (shift, shift);      # Um, no.
 
         my $var1 = shift;                       # right
-        my $var2 = shift;                       
+        my $var2 = shift;
 
 =head2 Method parameters
 
@@ -314,7 +314,7 @@ use the logging API.
 =head2 System Calls
 
 Always check return values from system calls, including open(),
-close(), mkdir(), or anything else that talks directly to the system. 
+close(), mkdir(), or anything else that talks directly to the system.
 Perl built-in system calls return the error in $!; some functions in
 modules might return an error in $@ or some other way, so read the module's
 documentation if you don't know.  Always do something, even if it is
@@ -335,7 +335,7 @@ document, too.
 =item RT the name
 
 "RT" is the name of the project.  "RT" is, optionally, the
-specific name for the actual file distribution.  That's it. 
+specific name for the actual file distribution.  That's it.
 
 While we sometimes use "RT2" or "RT3", that's shortand that's really
 not recommended. The name of the project is "RT".
@@ -357,7 +357,7 @@ are optionally called constructors.
 =item Users
 
 "users" are normally users of RT, the ones hitting the site; if using
-it in any other context, specify.  
+it in any other context, specify.
 "system users" are user
 names on the operating system.  "database users" are the user names in
 the database server.  None of these needs to be capitalized.
@@ -374,28 +374,28 @@ Don't use two-character variables just to spite us over the above rule.
 Constants are in all caps; these are variables whose value will I<never>
 change during the course of the program.
 
-	$Minimum = 10;		# wrong
-	$MAXIMUM = 50;		# right
+        $Minimum = 10;          # wrong
+        $MAXIMUM = 50;          # right
 
-Other variables are lowercase, with underscores separating the words. 
+Other variables are lowercase, with underscores separating the words.
 They words used should, in general, form a noun (usually singular),
 unless the variable is a flag used to denote some action that should be
 taken, in which case they should be verbs (or gerunds, as appropriate)
 describing that action.
 
-	$thisVar      = 'foo';	# wrong
-	$this_var     = 'foo';	# right
-	$work_hard    = 1;	# right, verb, boolean flag
-	$running_fast = 0;	# right, gerund, boolean flag
+        $thisVar      = 'foo';  # wrong
+        $this_var     = 'foo';  # right
+        $work_hard    = 1;      # right, verb, boolean flag
+        $running_fast = 0;      # right, gerund, boolean flag
 
 Arrays and hashes should be plural nouns, whether as regular arrays and
 hashes or array and hash references.  Do not name references with "ref"
 or the data type in the name.
 
-	@stories     = (1, 2, 3);      # right
-	$comment_ref = [4, 5, 6];      # wrong
-	$comments    = [4, 5, 6];      # right
-	$comment     = $comments->[0]; # right
+        @stories     = (1, 2, 3);      # right
+        $comment_ref = [4, 5, 6];      # wrong
+        $comments    = [4, 5, 6];      # right
+        $comment     = $comments->[0]; # right
 
 Make the name descriptive.  Don't use variables like "$sc" when you
 could call it "$story_count".  See L<"Comments">.
@@ -405,7 +405,7 @@ that you should use in your code.  Do not use these variable names for
 anything other than how they are normally used, and do not use any
 other variable names in their place.  Some of these are:
 
-	$self		# first named argument in object method
+        $self           # first named argument in object method
 
 Subroutines (except for special cases, like AUTOLOAD and simple accessors)
 begin with a verb, with words following to complete the action.  Accessors
@@ -417,13 +417,13 @@ This section needs clarification for RT.
 
 Words begin with a capital letter.  They
 should as clearly as possible describe the activity to be peformed, and
-the data to be returned. 
+the data to be returned.
 
 
 
-	Load();		# good
-	LoadByName();	# good
-	LoadById();		# good
+        Load();         # good
+        LoadByName();   # good
+        LoadById();             # good
 
 Subroutines beginning with C<_> are special: they are not to be used
 outside the current object.  There is not to be enforced by the code
@@ -434,11 +434,11 @@ Do not use $_ (or assume it) except for when it is absolutely
 clear what is going on, or when it is required (such as with
 map() and grep()).
 
-	for (@list) {
-		print;			# OK; everyone knows this one
-		print uc;		# wrong; few people know this
-		print uc $_;		# better
-	}
+        for (@list) {
+                print;                  # OK; everyone knows this one
+                print uc;               # wrong; few people know this
+                print uc $_;            # better
+        }
 
 Note that the special variable C<_> I<should> be used when possible.
 It is a placeholder that can be passed to stat() and the file test
@@ -447,29 +447,29 @@ example below, using C<$file> over for each file test, instead of
 C<_> for subsequent uses, is a performance hit.  You should be
 careful that the last-tested file is what you think it is, though.
 
-	if (-d $file) {		# $file is a directory
-		# ...
-	} elsif (-l _) {	# $file is a symlink
-		# ...
-	}
+        if (-d $file) {         # $file is a directory
+                # ...
+        } elsif (-l _) {        # $file is a symlink
+                # ...
+        }
 
 Package names begin with a capital letter in each word, followed by
 lower case letters (for the most part).  Multiple words should be StudlyCapped.
 
-	RT::User			# good
-	RT::Database::MySQL		# proper name
-	RT::Display::Provider	        # good
-	RT::CustomField			# not so good, but OK
+        RT::User                        # good
+        RT::Database::MySQL             # proper name
+        RT::Display::Provider           # good
+        RT::CustomField                 # not so good, but OK
 
 Plugin modules should begin with "RTx::", followed by the name
-of the plugin.  
+of the plugin.
 
 =head1 Code formatting
 
 Use perltidy. Anything we say here is wrong if it conflicts with what
 perltidy does. Your perltidyrc should read:
 
--lp -vt=2 -vtc=2 -nsfs -bar                                                                                             
+-lp -vt=2 -vtc=2 -nsfs -bar
 
 =head2 Indents and Blank Space
 
@@ -478,25 +478,25 @@ to be; I use 8 spaces per tabs.
 
 No space before a semicolon that closes a statement.
 
-	foo(@bar) ;	# wrong
-	foo(@bar);	# right
+        foo(@bar) ;     # wrong
+        foo(@bar);      # right
 
 Line up corresponding items vertically.
 
-	my $foo   = 1;
-	my $bar   = 2;
-	my $xyzzy = 3;
+        my $foo   = 1;
+        my $bar   = 2;
+        my $xyzzy = 3;
 
-	open(FILE, $fh)	  or die $!;
-	open(FILE2, $fh2) or die $!;
+        open(FILE, $fh)   or die $!;
+        open(FILE2, $fh2) or die $!;
 
-	$rot13 =~ tr[abcedfghijklmnopqrstuvwxyz]
-	            [nopqrstuvwxyzabcdefghijklm];
+        $rot13 =~ tr[abcedfghijklmnopqrstuvwxyz]
+                    [nopqrstuvwxyzabcdefghijklm];
 
-	# note we use a-mn-z instead of a-z,
-	# for readability
-	$rot13 =~ tr[a-mn-z]
-	            [n-za-m];
+        # note we use a-mn-z instead of a-z,
+        # for readability
+        $rot13 =~ tr[a-mn-z]
+                    [n-za-m];
 
 Put blank lines between groups of code that do different things.  Put
 blank lines after your variable declarations.  Put a blank line before a
@@ -505,20 +505,20 @@ before, with the exception of comment lines).
 
 An example:
 
-	# this is my function!
-	sub foo {
+        # this is my function!
+        sub foo {
                 my $val = shift;
-		my $obj = new Constructor;
-		my($var1, $var2);
+                my $obj = new Constructor;
+                my($var1, $var2);
 
-		$obj->SetFoo($val);
-		$var1 = $obj->Foo();
+                $obj->SetFoo($val);
+                $var1 = $obj->Foo();
 
 
-		return($val);
-	}
+                return($val);
+        }
 
-	print 1;
+        print 1;
 
 
 =head2 Parentheses
@@ -526,19 +526,19 @@ An example:
 For control structures, there is a space between the keyword and opening
 parenthesis.  For functions, there is not.
 
-	for(@list)	# wrong
-	for (@list)	# right
+        for(@list)      # wrong
+        for (@list)     # right
 
-	my ($ref)	# wrong
-	my($ref)	# right
+        my ($ref)       # wrong
+        my($ref)        # right
 
 Be careful about list vs. scalar context with parentheses!
 
-	my @array = ('a', 'b', 'c');
-	my($first_element) = @array;		# a
-	my($first_element) = ('a', 'b', 'c');	# a
-	my $element_count  = @array;		# 3
-	my $last_element   = ('a', 'b', 'c');	# c
+        my @array = ('a', 'b', 'c');
+        my($first_element) = @array;            # a
+        my($first_element) = ('a', 'b', 'c');   # a
+        my $element_count  = @array;            # 3
+        my $last_element   = ('a', 'b', 'c');   # c
 
 Always include parentheses after functions, even if there are no arguments.
 There are some exceptions, such as list operators (like print) and unary
@@ -547,28 +547,28 @@ operators (like undef, delete, uc).
 There is no space inside the parentheses, unless it is needed for
 readability.
 
-	for ( map { [ $_, 1 ] } @list )	# OK
-	for ( @list )			# not really OK, not horrible
+        for ( map { [ $_, 1 ] } @list ) # OK
+        for ( @list )                   # not really OK, not horrible
 
 On multi-line expressions, match up the closing parenthesis with either
 the opening statement, or the opening parenthesis, whichever works best.
 Examples:
 
-	@list = qw(
-		bar
-		baz
-	);			# right
+        @list = qw(
+                bar
+                baz
+        );                      # right
 
-	if ($foo && $bar && $baz
-		 && $buz && $xyzzy
-	) {
-		print $foo;
-	}
+        if ($foo && $bar && $baz
+                 && $buz && $xyzzy
+        ) {
+                print $foo;
+        }
 
 Whether or not there is space following a closing parenthesis is
 dependent on what it is that follows.
 
-	print foo(@bar), baz(@buz) if $xyzzy;
+        print foo(@bar), baz(@buz) if $xyzzy;
 
 Note also that parentheses around single-statement control expressions,
 as in C<if $xyzzy>, are optional (and discouraged) C<if> it is I<absolutely>
@@ -583,19 +583,19 @@ function call in the statement, or the function call is separated by a
 flow control operator).  User-supplied functions must always include
 parentheses.
 
-	print 1, 2, 3;				# good
-	delete $hash{key} if isAnon($uid);	# good
+        print 1, 2, 3;                          # good
+        delete $hash{key} if isAnon($uid);      # good
 
 
 However, if there is any possible confusion at all, then include the
 parentheses.  Remember the words of Larry Wall in the perlstyle manpage:
 
-	When in doubt, parenthesize.  At the very least it will
-	let some poor schmuck bounce on the % key in vi.
+        When in doubt, parenthesize.  At the very least it will
+        let some poor schmuck bounce on the % key in vi.
 
-	Even if you aren't in doubt, consider the mental welfare
-	of the person who has to maintain the code after you, and
-	who will probably put parens in the wrong place.
+        Even if you aren't in doubt, consider the mental welfare
+        of the person who has to maintain the code after you, and
+        who will probably put parens in the wrong place.
 
 So leave them out when it is absoutely clear to a programmer, but if
 there is any question, leave them in.
@@ -607,40 +607,40 @@ there is any question, leave them in.
 
 There is always a space befor the opening brace.
 
-	while (<$fh>){	# wrong
-	while (<$fh>) {	# right
+        while (<$fh>){  # wrong
+        while (<$fh>) { # right
 
 A one-line block may be put on one line, and the semicolon may be
 omitted.
 
-	for (@list) { print }
+        for (@list) { print }
 
 Otherwise, finish each statement with a semicolon, put the keyword and
 opening curly on the first line, and the ending curly lined up with the
 keyword at the end.
 
-	for (@list) {
-		print;
-		smell();
-	}
+        for (@list) {
+                print;
+                smell();
+        }
 
 Generally, we prefer "uncuddled elses":
 
-	if ($foo) {
-		print;
-	}
-	else {
-		die;
-	}
+        if ($foo) {
+                print;
+        }
+        else {
+                die;
+        }
 
 _If_ the if statement is very brief, sometimes "cuddling" the else makes code more readable. Feel free to cuddle them in that case:
 
 
-	if ($foo) {
-		print;
-	} else {
-		die;
-	}
+        if ($foo) {
+                print;
+        } else {
+                die;
+        }
 
 =head2 Operators
 
@@ -648,28 +648,28 @@ Put space around most operators.  The primary exception is the for
 aesthetics; e.g., sometimes the space around "**" is ommitted,
 and there is never a space before a ",", but always after.
 
-	print $x , $y;	# wrong
-	print $x, $y;	# right
+        print $x , $y;  # wrong
+        print $x, $y;   # right
 
-	$x = 2 >> 1;	# good
-	$y = 2**2;	# ok
+        $x = 2 >> 1;    # good
+        $y = 2**2;      # ok
 
-Note that "&&" and "||" have a higher precedence than "and" and "or". 
+Note that "&&" and "||" have a higher precedence than "and" and "or".
 Other than that, they are exactly the same.  It is best to use the lower
 precedence version for control, and the higher for testing/returning
 values.  Examples:
 
-	$bool = $flag1 or $flag2;	# WRONG (doesn't work)
-	$value = $foo || $bar;		# right
-	open(FILE, $file) or die $!;
+        $bool = $flag1 or $flag2;       # WRONG (doesn't work)
+        $value = $foo || $bar;          # right
+        open(FILE, $file) or die $!;
 
-	$true  = foo($bar) && baz($buz);
-	foo($bar) and baz($buz);
+        $true  = foo($bar) && baz($buz);
+        foo($bar) and baz($buz);
 
 Note that "and" is seldom ever used, because the statement above is
 better written using "if":
 
-	baz($buz) if foo($bar);
+        baz($buz) if foo($bar);
 
 Most of the time, the confusion between and/&&, or/|| can be alleviated
 by using parentheses.  If you want to leave off the parentheses then you
@@ -682,51 +682,51 @@ Break long lines AFTER operators, except for "and", "or", "&&", "||".
 Try to keep the two parts to a binary operator (an operator that
 has two operands) together when possible.
 
-	print "foo" . "bar" . "baz"
-		. "buz";			# wrong
+        print "foo" . "bar" . "baz"
+                . "buz";                        # wrong
 
-	print "foo" . "bar" . "baz" .
-		"buz";				# right
+        print "foo" . "bar" . "baz" .
+                "buz";                          # right
 
-	print $foo unless $x == 3 && $y ==
-		4 && $z == 5;			# wrong
+        print $foo unless $x == 3 && $y ==
+                4 && $z == 5;                   # wrong
 
-	print $foo unless $x == 3 && $y == 4
-		&& $z == 5;			# right
+        print $foo unless $x == 3 && $y == 4
+                && $z == 5;                     # right
 
 
 =head2 Other
 
 Put space around a complex subscript inside the brackets or braces.
 
-	$foo{$bar{baz}{buz}};	# OK
-	$foo{ $bar{baz}{buz} };	# better
+        $foo{$bar{baz}{buz}};   # OK
+        $foo{ $bar{baz}{buz} }; # better
 
 In general, use single-quotes around literals, and double-quotes
-when the text needs to be interpolated. 
+when the text needs to be interpolated.
 
 It is OK to omit quotes around names in braces and when using
 the => operator, but be careful not to use a name that doubles as
 a function; in that case, quote.
 
-	$what{'time'}{it}{is} = time();
+        $what{'time'}{it}{is} = time();
 
 When making compound statements, put the primary action first.
 
-	open(FILE, $fh) or die $!;	# right
-	die $! unless open(FILE, $fh);	# wrong
+        open(FILE, $fh) or die $!;      # right
+        die $! unless open(FILE, $fh);  # wrong
 
-	print "Starting\n" if $verbose;	# right
-	$verbose && print "Starting\n";	# wrong
+        print "Starting\n" if $verbose; # right
+        $verbose && print "Starting\n"; # wrong
 
 
 Use here-docs instead of repeated print statements.
 
-		print <<EOT;
-	This is a whole bunch of text.
-	I like it.  I don't need to worry about messing
-	with lots of print statements and lining them up.
-	EOT
+                print <<EOT;
+        This is a whole bunch of text.
+        I like it.  I don't need to worry about messing
+        with lots of print statements and lining them up.
+        EOT
 
 Just remember that unless you put single quotes around your here-doc
 token (<<'EOT'), the text will be interpolated, so escape any "$" or "@"
@@ -744,67 +744,67 @@ as needed.
 Templates should use the /l filtering component to call the localisation
 framework
 
-The string 		Foo!
+The string              Foo!
 
-Should become		<&|/l&>Foo!</&>
+Should become           <&|/l&>Foo!</&>
 
-All newlines should be removed from localized strings, to make it easy to 
+All newlines should be removed from localized strings, to make it easy to
 grep the codebase for strings to be localized
 
-The string 		Foo
-			Bar
-			Baz
-			
-Should become		<&|/l&>Foo Bar Baz</&>
+The string              Foo
+                        Bar
+                        Baz
+
+Should become           <&|/l&>Foo Bar Baz</&>
 
 
 Variable subsititutions should be moved to Locale::MakeText format
 
-The string		Hello, <%$name %>
+The string              Hello, <%$name %>
 
-should become		<&|/l, $name &>Hello, [_1]</&>	
+should become           <&|/l, $name &>Hello, [_1]</&>
 
 
 Multiple variables work just like single variables
- 
-The string		You found <%$num%> tickets in queue <%$queue%>
 
-should become		<&|/l, $num, $queue &>You found [_1] tickets in queue [_2]</&>
+The string              You found <%$num%> tickets in queue <%$queue%>
+
+should become           <&|/l, $num, $queue &>You found [_1] tickets in queue [_2]</&>
 
 When subcomponents are called in the middle of a phrase, they need to be escaped
 too:
 
-The string		 <input type="submit" value="New ticket in">&nbsp<& /Elements/SelectNewTicketQueue&>
+The string               <input type="submit" value="New ticket in">&nbsp<& /Elements/SelectNewTicketQueue&>
 
-should become		<&|/l, $m->scomp('/Elements/SelectNewTicketQueue')&><input type="submit" value="New ticket in">&nbsp;[_1]</&>
-
-
+should become           <&|/l, $m->scomp('/Elements/SelectNewTicketQueue')&><input type="submit" value="New ticket in">&nbsp;[_1]</&>
 
 
-The string	<& /Elements/TitleBoxStart, width=> "40%", titleright => "RT $RT::VERSION for   RT->Config->Get('rtname')", title => 'Login' &>
 
-should become 	<& /Elements/TitleBoxStart, 
-			width=> "40%",
-			titleright => loc("RT [_1] for [_2]",$RT::VERSION, RT->Config->Get('rtname')),
-			title => loc('Login'),
-	      	&>
-	
 
-=item Library code			
+The string      <& /Elements/TitleBoxStart, width=> "40%", titleright => "RT $RT::VERSION for   RT->Config->Get('rtname')", title => 'Login' &>
+
+should become   <& /Elements/TitleBoxStart,
+                        width=> "40%",
+                        titleright => loc("RT [_1] for [_2]",$RT::VERSION, RT->Config->Get('rtname')),
+                        title => loc('Login'),
+                &>
+
+
+=item Library code
 
 
 
 Within RT's core code, every module has a localization handle available through the 'loc' method:
 
-The code 	return ( $id, "Queue created" );
+The code        return ( $id, "Queue created" );
 
-should become 	return ( $id, $self->loc("Queue created") );	
+should become   return ( $id, $self->loc("Queue created") );
 
 When returning or localizing a single string, the "extra" set of parenthesis () should be omitted.
 
-The code  	return ("Subject changed to ". $self->Data );
+The code        return ("Subject changed to ". $self->Data );
 
-should become	 return $self->loc( "Subject changed to [_1]", $self->Data );
+should become    return $self->loc( "Subject changed to [_1]", $self->Data );
 
 
 It is important not to localize  the names of rights or statuses within RT's core, as there is logic that depends on them as string identifiers.  The proper place to localize these values is when they're presented for display in the web or commandline interfaces.
@@ -821,7 +821,7 @@ This is for new programs, modules, specific APIs, or anything else.
 =item Present idea to rt-devel
 
 We may know of a better way to approach the problem, or know of an
-existing way to deal with it, or know someone else is working on it. 
+existing way to deal with it, or know someone else is working on it.
 This is mostly informal, but a fairly complete explanation for the need
 and use of the code should be provided.
 
@@ -915,7 +915,7 @@ Talk about DBIx::SearchBuilder
 Talk about mason
         component style
         cascading style sheets
-         
+
 Talk about adding a new translation
 
 Talk more about logging
@@ -927,4 +927,4 @@ Talk more about logging
 
 =head1 VERSION
 
-0.1 
+0.1

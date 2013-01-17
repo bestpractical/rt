@@ -111,7 +111,7 @@ if ( $args->{SavedSearchSave} ) {
         # rename
         $search->SetDescription( $args->{SavedSearchDescription} );
         $search->SetSubValues(%$SearchParams);
-	    push @actions, loc( '[_1] [_2] updated.', loc($self->{SearchType}), $args->{SavedSearchDescription} );
+        push @actions, loc( '[_1] [_2] updated.', loc($self->{SearchType}), $args->{SavedSearchDescription} );
     }
     else {
         # new saved search
@@ -123,7 +123,7 @@ if ( $args->{SavedSearchSave} ) {
             SearchParams => $SearchParams
         );
         if ($ok) {
-	        $self->{CurrentSearch}{Object} = $saved_search->{Attribute};
+            $self->{CurrentSearch}{Object} = $saved_search->{Attribute};
             $self->{SearchId} = $args->{SavedChartSearchId} = 'RT::User-' .
                 $session{CurrentUser}->id . '-SavedSearch-' .
                 $saved_search->Id;

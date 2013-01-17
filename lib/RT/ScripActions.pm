@@ -84,17 +84,17 @@ sub LimitToType  {
   my $self = shift;
   my $type = shift;
   $self->Limit (ENTRYAGGREGATOR => 'OR',
-		FIELD => 'Type',
-		VALUE => "$type")
+                FIELD => 'Type',
+                VALUE => "$type")
       if defined $type;
   $self->Limit (ENTRYAGGREGATOR => 'OR',
-		FIELD => 'Type',
-		VALUE => "Correspond")
+                FIELD => 'Type',
+                VALUE => "Correspond")
       if $type eq "Create";
   $self->Limit (ENTRYAGGREGATOR => 'OR',
-		FIELD => 'Type',
-		VALUE => 'any');
-  
+                FIELD => 'Type',
+                VALUE => 'any');
+
 }
 
 =head2 NewItem

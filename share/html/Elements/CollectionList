@@ -112,24 +112,24 @@ if ($Class =~ /::/) { # older passed in value
 }
 
 $m->out('<table class="' .
-	($Collection->isa('RT::Tickets') ? 'ticket-list' : 'collection') . ' collection-as-table">');
+            ($Collection->isa('RT::Tickets') ? 'ticket-list' : 'collection') . ' collection-as-table">');
 
 if ( $ShowHeader ) {
-  $m->comp('/Elements/CollectionAsTable/Header',
-	   %ARGS,
-	   Class        => $Class,
-	   Format       => \@Format,
-	   FormatString => $Format,
-	   Order        => \@Order,
-	   OrderBy      => \@OrderBy,
-	   Rows         => $Rows,
-	   Page         => $Page,
-	   AllowSorting => $AllowSorting, 
-	   BaseURL      => $BaseURL,
-	   GenericQueryArgs => $GenericQueryArgs,
-	   maxitems     => $maxitems,
-	   PassArguments => \@PassArguments,
-	   );
+    $m->comp('/Elements/CollectionAsTable/Header',
+        %ARGS,
+        Class        => $Class,
+        Format       => \@Format,
+        FormatString => $Format,
+        Order        => \@Order,
+        OrderBy      => \@OrderBy,
+        Rows         => $Rows,
+        Page         => $Page,
+        AllowSorting => $AllowSorting,
+        BaseURL      => $BaseURL,
+        GenericQueryArgs => $GenericQueryArgs,
+        maxitems     => $maxitems,
+        PassArguments => \@PassArguments,
+    );
 }
 
 my ($i, $column_map) = (0, {});

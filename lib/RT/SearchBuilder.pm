@@ -77,10 +77,10 @@ sub _Init  {
     
     $self->{'user'} = shift;
     unless(defined($self->CurrentUser)) {
-	use Carp;
-	Carp::confess("$self was created without a CurrentUser");
-	$RT::Logger->err("$self was created without a CurrentUser");
-	return(0);
+        use Carp;
+        Carp::confess("$self was created without a CurrentUser");
+        $RT::Logger->err("$self was created without a CurrentUser");
+        return(0);
     }
     $self->SUPER::_Init( 'Handle' => $RT::Handle);
 }

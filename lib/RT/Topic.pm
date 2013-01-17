@@ -357,17 +357,17 @@ sub _CoreAccessible {
     {
      
         id =>
-		{read => 1, type => 'int(11)', default => ''},
+                {read => 1, type => 'int(11)', default => ''},
         Parent => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+                {read => 1, write => 1, type => 'int(11)', default => ''},
         Name => 
-		{read => 1, write => 1, type => 'varchar(255)', default => ''},
+                {read => 1, write => 1, type => 'varchar(255)', default => ''},
         Description => 
-		{read => 1, write => 1, type => 'varchar(255)', default => ''},
+                {read => 1, write => 1, type => 'varchar(255)', default => ''},
         ObjectType => 
-		{read => 1, write => 1, type => 'varchar(64)', default => ''},
+                {read => 1, write => 1, type => 'varchar(64)', default => ''},
         ObjectId => 
-		{read => 1, write => 1, type => 'int(11)', default => '0'},
+                {read => 1, write => 1, type => 'int(11)', default => '0'},
 
  }
 };

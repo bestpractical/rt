@@ -65,54 +65,53 @@ if ($tid) {
     my $t = RT::Transaction->new($session{CurrentUser});
     $t->Load($tid);
     if ($format eq "l") {
-      push @data, [ id    => $t->Id   ];
-      push @data, [ Ticket    => $t->Ticket   ]
-  	    if (!%$fields || exists $fields->{lc 'Ticket'});
-      push @data, [ TimeTaken    => $t->TimeTaken   ]
-  	    if (!%$fields || exists $fields->{lc 'TimeTaken'});
-      push @data, [ Type    => $t->Type   ]
-      	if (!%$fields || exists $fields->{lc 'Type'});
-      push @data, [ Field    => $t->Field   ]
-      	if (!%$fields || exists $fields->{lc 'Field'});
-      push @data, [ OldValue    => $t->OldValue   ]
-      	if (!%$fields || exists $fields->{lc 'OldValue'});
-      push @data, [ NewValue    => $t->NewValue   ]
-      	if (!%$fields || exists $fields->{lc 'NewValue'});
-      push @data, [ Data    => $t->Data   ]
-  	    if (!%$fields || exists $fields->{lc 'Data'});
-      push @data, [ Description    => $t->Description   ]
-  	    if (!%$fields || exists $fields->{lc 'Description'});
-      push @data, [ Content    => $t->Content   ]
-       	if (!%$fields || exists $fields->{lc 'Content'});
-      
-      if (!%$fields || exists $fields->{lc 'Content'}) {    
-	    my $creator = RT::User->new($session{CurrentUser});
-  	    $creator->Load($t->Creator);
-  	    push @data, [ Creator    => $creator->Name   ];
-      }
-      push @data, [ Created    => $t->Created   ]
-  	    if (!%$fields || exists $fields->{lc 'Created'});
-  
-      if (!%$fields || exists $fields->{lc 'Attachments'}) {
-  	    my $attachlist;
-  	    my $attachments = $t->Attachments;
-  	    while (my $a = $attachments->Next) {
-  	      my $size = length($a->Content);
-  	      if ($size > 1024) {
-  	        $size  = int($size/102.4)/10 . "k";
-  	      }
-  	      else {
-  	        $size .= "b";
-  	      }
-              my $name = (defined $a->Filename and length $a->Filename) ? $a->Filename : "untitled";
-              $attachlist .= "\n" . $a->Id.": $name ($size)";
-  	    }
-  	    push @data, [Attachments => $attachlist];
-      }
-      
+        push @data, [ id    => $t->Id   ];
+        push @data, [ Ticket    => $t->Ticket   ]
+            if (!%$fields || exists $fields->{lc 'Ticket'});
+        push @data, [ TimeTaken    => $t->TimeTaken   ]
+            if (!%$fields || exists $fields->{lc 'TimeTaken'});
+        push @data, [ Type    => $t->Type   ]
+            if (!%$fields || exists $fields->{lc 'Type'});
+        push @data, [ Field    => $t->Field   ]
+            if (!%$fields || exists $fields->{lc 'Field'});
+        push @data, [ OldValue    => $t->OldValue   ]
+            if (!%$fields || exists $fields->{lc 'OldValue'});
+        push @data, [ NewValue    => $t->NewValue   ]
+            if (!%$fields || exists $fields->{lc 'NewValue'});
+        push @data, [ Data    => $t->Data   ]
+            if (!%$fields || exists $fields->{lc 'Data'});
+        push @data, [ Description    => $t->Description   ]
+            if (!%$fields || exists $fields->{lc 'Description'});
+        push @data, [ Content    => $t->Content   ]
+            if (!%$fields || exists $fields->{lc 'Content'});
+
+        if (!%$fields || exists $fields->{lc 'Content'}) {
+            my $creator = RT::User->new($session{CurrentUser});
+            $creator->Load($t->Creator);
+            push @data, [ Creator    => $creator->Name   ];
+        }
+        push @data, [ Created    => $t->Created   ]
+            if (!%$fields || exists $fields->{lc 'Created'});
+
+        if (!%$fields || exists $fields->{lc 'Attachments'}) {
+            my $attachlist;
+            my $attachments = $t->Attachments;
+            while (my $a = $attachments->Next) {
+                my $size = length($a->Content);
+                if ($size > 1024) {
+                    $size  = int($size/102.4)/10 . "k";
+                }
+                else {
+                    $size .= "b";
+                }
+                my $name = (defined $a->Filename and length $a->Filename) ? $a->Filename : "untitled";
+                $attachlist .= "\n" . $a->Id.": $name ($size)";
+            }
+            push @data, [Attachments => $attachlist];
+        }
     } else {
-      push @data, [ id    => $t->Id   ];
-      push @data, [ Description    => $t->Description   ];
+        push @data, [ id    => $t->Id   ];
+        push @data, [ Description    => $t->Description   ];
     }
 
     my %k = map {@$_} @data;
@@ -125,14 +124,14 @@ if ($tid) {
 #    $format = "l" if (%$fields);
 #
 #    while (my $t = $trans->Next) {
-#	    my $tid = $t->Id;
-#	    if ($format eq "l") {
-#	      $tids .= "," if $tids;
-#	      $tids .= $tid;
-#	    } else {
-#	      push @$o, $tid;
-#	      $k->{$tid} = $t->Description;
-#	    }
+#           my $tid = $t->Id;
+#           if ($format eq "l") {
+#             $tids .= "," if $tids;
+#             $tids .= $tid;
+#           } else {
+#             push @$o, $tid;
+#             $k->{$tid} = $t->Description;
+#           }
 #    }
 #}
 

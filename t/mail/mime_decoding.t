@@ -87,7 +87,7 @@ inline;
 diag q{canonicalize mime word encodings like gb2312};
 {
     my $str = qq{Subject: =?gb2312?B?1NrKwL3nuPe12Lmy09CzrN9eX1NpbXBsaWZpZWRfQ05fR0IyMzEyYQ==?=
-	=?gb2312?B?dHRhY2hlbWVudCB0ZXN0IGluIENOIHNpbXBsaWZpZWQ=?=};
+\t=?gb2312?B?dHRhY2hlbWVudCB0ZXN0IGluIENOIHNpbXBsaWZpZWQ=?=};
 
     is(
         RT::I18N::DecodeMIMEWordsToUTF8($str),

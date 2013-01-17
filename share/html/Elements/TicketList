@@ -47,10 +47,10 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 $m->comp(
-	 '/Elements/CollectionList',
-	 %ARGS,
-	 Class => 'RT::Tickets'
-	);
+         '/Elements/CollectionList',
+         %ARGS,
+         Class => 'RT::Tickets'
+        );
 </%INIT>
 <%ARGS>
 $Collection => undef

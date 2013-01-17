@@ -225,14 +225,14 @@ sub SetMIMEEntityToEncoding {
     }
 
     SetMIMEHeadToEncoding(
-	$head,
-	_FindOrGuessCharset($entity, 1) => $enc,
-	$preserve_words
+        $head,
+        _FindOrGuessCharset($entity, 1) => $enc,
+        $preserve_words
     );
 
     # If this is a textual entity, we'd need to preserve its original encoding
     $head->replace( "X-RT-Original-Encoding" => $charset )
-	if $head->mime_attr('content-type.charset') or IsTextualContentType($head->mime_type);
+        if $head->mime_attr('content-type.charset') or IsTextualContentType($head->mime_type);
 
     return unless IsTextualContentType($head->mime_type);
 
@@ -347,7 +347,7 @@ sub DecodeMIMEWordsToEncoding {
 
             if ( $encoding eq 'q' ) {
                 use MIME::QuotedPrint;
-                $enc_str =~ tr/_/ /;		# Observed from Outlook Express
+                $enc_str =~ tr/_/ /;                # Observed from Outlook Express
                 $enc_str = decode_qp($enc_str);
             } elsif ( $encoding eq 'b' ) {
                 use MIME::Base64;
@@ -468,7 +468,7 @@ sub _GuessCharset {
             }
         }
         else {
-	    $RT::Logger->error(
+            $RT::Logger->error(
                 "You requested to guess encoding, but we couldn't"
                 ." load Encode::Detect::Detector module"
             );

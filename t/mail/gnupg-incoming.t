@@ -28,7 +28,7 @@ ok( $m->login, 'we did log in' );
 $m->get( $baseurl.'/Admin/Queues/');
 $m->follow_link_ok( {text => 'General'} );
 $m->submit_form( form_number => 3,
-		 fields      => { CorrespondAddress => 'general@example.com' } );
+                 fields      => { CorrespondAddress => 'general@example.com' } );
 $m->content_like(qr/general\@example.com.* - never/, 'has key info.');
 
 ok(my $user = RT::User->new(RT->SystemUser));
