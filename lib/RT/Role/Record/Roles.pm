@@ -123,6 +123,12 @@ to ACLOnly roles.
 Optional.  Automatically sets the ACLOnly flag for all EquivClasses, but not
 the announcing class.
 
+=item SortOrder
+
+Optional.  A numeric value indicating the position of this role when sorted
+ascending with other roles in a list.  Roles with the same sort order are
+ordered alphabetically by name within themselves.
+
 =back
 
 =cut
@@ -133,6 +139,7 @@ sub RegisterRole {
     my %role  = (
         Name            => undef,
         EquivClasses    => [],
+        SortOrder       => 0,
         @_
     );
     return unless $role{Name};
@@ -189,7 +196,8 @@ sub Role {
 
 =head2 Roles
 
-Returns a list of role names registered for this class.
+Returns a list of role names registered for this class, sorted ascending by
+SortOrder and then alphabetically by name.
 
 Optionally takes a hash specifying attributes the returned roles must possess
 or lack.  Testing is done on a simple truthy basis and the actual values of
@@ -211,14 +219,17 @@ sub Roles {
     my $self = shift;
     my %attr = @_;
 
-    return grep {
-        my $ok = 1;
-        my $role = $self->Role($_);
-        for my $k (keys %attr) {
-            $ok = 0, last if $attr{$k} xor $role->{$k};
-        }
-        $ok;
-    } sort { $a cmp $b } keys %{ $self->_ROLES };
+    return   map { $_->[0] }
+            sort {   $a->[1]{SortOrder} <=> $b->[1]{SortOrder}
+                  or $a->[0] cmp $b->[0] }
+            grep {
+                my $ok = 1;
+                for my $k (keys %attr) {
+                    $ok = 0, last if $attr{$k} xor $_->[1]{$k};
+                }
+                $ok }
+             map { [ $_, $self->Role($_) ] }
+            keys %{ $self->_ROLES };
 }
 
 {
