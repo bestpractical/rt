@@ -87,6 +87,7 @@ if (window.location.hash) {
     }
 }
 </script>
+</form>
 % }
 </&>
 </div><!-- #login-box -->
