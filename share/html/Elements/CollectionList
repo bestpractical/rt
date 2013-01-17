@@ -128,6 +128,7 @@ if ( $ShowHeader ) {
 	   BaseURL      => $BaseURL,
 	   GenericQueryArgs => $GenericQueryArgs,
 	   maxitems     => $maxitems,
+	   PassArguments => \@PassArguments,
 	   );
 }
 
