@@ -506,15 +506,6 @@ sub Create {
                 next;
             }
 
-            # Check rights on the other end of the link if we must
-            # then run _AddLink that doesn't check for ACLs
-            if ( RT->Config->Get( 'StrictLinkACL' ) ) {
-                if ( $obj && !$obj->CurrentUserHasRight('ModifyTicket') ) {
-                    push @non_fatal_errors, $self->loc('Linking. Permission denied');
-                    next;
-                }
-            }
-
             my ( $wval, $wmsg ) = $self->_AddLink(
                 Type                          => $RT::Link::TYPEMAP{$type}->{'Type'},
                 $RT::Link::TYPEMAP{$type}->{'Mode'} => $link,
@@ -1841,25 +1832,8 @@ sub DeleteLink {
         return ( 0, $self->loc('Either base or target must be specified') );
     }
 
-    #check acls
-    my $right = 0;
-    $right++ if $self->CurrentUserHasRight('ModifyTicket');
-    if ( !$right && RT->Config->Get( 'StrictLinkACL' ) ) {
-        return ( 0, $self->loc("Permission Denied") );
-    }
-
-    # If the other URI is an RT::Ticket, we want to make sure the user
-    # can modify it too...
-    my ($status, $msg, $other_ticket) = $self->__GetTicketFromURI( URI => $args{'Target'} || $args{'Base'} );
-    return (0, $msg) unless $status;
-    if ( !$other_ticket || $other_ticket->CurrentUserHasRight('ModifyTicket') ) {
-        $right++;
-    }
-    if ( ( !RT->Config->Get( 'StrictLinkACL' ) && $right == 0 ) ||
-         ( RT->Config->Get( 'StrictLinkACL' ) && $right < 2 ) )
-    {
-        return ( 0, $self->loc("Permission Denied") );
-    }
+    return (0, $self->loc("Permission Denied"))
+        unless $self->CurrentUserHasRight('ModifyTicket');
 
     return $self->_DeleteLink(%args);
 }
@@ -1888,24 +1862,8 @@ sub AddLink {
         return ( 0, $self->loc('Either base or target must be specified') );
     }
 
-    my $right = 0;
-    $right++ if $self->CurrentUserHasRight('ModifyTicket');
-    if ( !$right && RT->Config->Get( 'StrictLinkACL' ) ) {
-        return ( 0, $self->loc("Permission Denied") );
-    }
-
-    # If the other URI is an RT::Ticket, we want to make sure the user
-    # can modify it too...
-    my ($status, $msg, $other_ticket) = $self->__GetTicketFromURI( URI => $args{'Target'} || $args{'Base'} );
-    return (0, $msg) unless $status;
-    if ( !$other_ticket || $other_ticket->CurrentUserHasRight('ModifyTicket') ) {
-        $right++;
-    }
-    if ( ( !RT->Config->Get( 'StrictLinkACL' ) && $right == 0 ) ||
-         ( RT->Config->Get( 'StrictLinkACL' ) && $right < 2 ) )
-    {
-        return ( 0, $self->loc("Permission Denied") );
-    }
+    return (0, $self->loc("Permission Denied"))
+        unless $self->CurrentUserHasRight('ModifyTicket');
 
     return $self->_AddLink(%args);
 }
@@ -3060,6 +3018,12 @@ sub ACLEquivalenceObjects {
     return $self->QueueObj;
 
 }
+
+=head2 StrictLinkACLRight
+
+=cut
+
+sub StrictLinkACLRight { "ModifyTicket" }
 
 1;
 

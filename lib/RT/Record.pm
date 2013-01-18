@@ -1271,6 +1271,13 @@ If the link destination is a local object and does the
 L<RT::Role::Record::Status> role, this method ensures object Status is not
 "deleted".  Linking to deleted objects is forbidden.
 
+If the link destination (i.e. not C<$self>) is a local object and the
+C<$StrictLinkACL> option is enabled, this method checks the appropriate right
+on the destination object (if any, as returned by the L</StrictLinkACLRight>
+method).  B<< The subclass is expected to check the appropriate right on the
+source object (i.e.  C<$self>) before calling this method. >>  This allows a
+different right to be used on the source object during creation, for example.
+
 Returns a tuple of (link ID, message, flag if link already existed).
 
 =cut
@@ -1312,13 +1319,22 @@ sub _AddLink {
 
     my $remote_uri = RT::URI->new( $self->CurrentUser );
     if ($remote_uri->FromURI( $remote_link )) {
-        # Prevent linking to deleted objects
         my $remote_obj = $remote_uri->IsLocal ? $remote_uri->Object : undef;
-        if (    $remote_obj
-            and $remote_obj->id
-            and $remote_obj->DOES("RT::Role::Record::Status")
-            and $remote_obj->Status eq "deleted") {
-            return (0, $self->loc("Linking to a deleted [_1] is not allowed", $self->loc(lc($remote_obj->RecordType))));
+        if ($remote_obj and $remote_obj->id) {
+            # Enforce the remote end of StrictLinkACL
+            if (RT->Config->Get("StrictLinkACL")) {
+                my $right = $remote_obj->StrictLinkACLRight;
+
+                return (0, $self->loc("Permission denied"))
+                    if $right and
+                   not $self->CurrentUser->HasRight( Right => $right, Object => $remote_obj );
+            }
+
+            # Prevent linking to deleted objects
+            if ($remote_obj->DOES("RT::Role::Record::Status")
+                and $remote_obj->Status eq "deleted") {
+                return (0, $self->loc("Linking to a deleted [_1] is not allowed", $self->loc(lc($remote_obj->RecordType))));
+            }
         }
     } else {
         return (0, $self->loc("Couldn't resolve '[_1]' into a link.", $remote_link));
@@ -1390,6 +1406,12 @@ If Silent is true then no transactions will be recorded.  You can individually
 control transactions on both base and target and with SilentBase and
 SilentTarget respectively. By default both transactions are created.
 
+If the link destination (i.e. not C<$self>) is a local object and the
+C<$StrictLinkACL> option is enabled, this method checks the appropriate right
+on the destination object (if any, as returned by the L</StrictLinkACLRight>
+method).  B<< The subclass is expected to check the appropriate right on the
+source object (i.e.  C<$self>) before calling this method. >>
+
 Returns a tuple of (status flag, message).
 
 =cut 
@@ -1429,6 +1451,21 @@ sub _DeleteLink {
         return ( 0, $self->loc('Either base or target must be specified') );
     }
 
+    my $remote_uri = RT::URI->new( $self->CurrentUser );
+    if ($remote_uri->FromURI( $remote_link )) {
+        # Enforce the remote end of StrictLinkACL
+        my $remote_obj = $remote_uri->IsLocal ? $remote_uri->Object : undef;
+        if ($remote_obj and $remote_obj->id and RT->Config->Get("StrictLinkACL")) {
+            my $right = $remote_obj->StrictLinkACLRight;
+
+            return (0, $self->loc("Permission denied"))
+                if $right and
+               not $self->CurrentUser->HasRight( Right => $right, Object => $remote_obj );
+        }
+    } else {
+        return (0, $self->loc("Couldn't resolve '[_1]' into a link.", $remote_link));
+    }
+
     my $link = RT::Link->new( $self->CurrentUser );
     $RT::Logger->debug( "Trying to load link: "
             . $args{'Base'} . " "
@@ -1462,12 +1499,9 @@ sub _DeleteLink {
     # No transactions for you!
     return (1, $TransString) if $args{'Silent'};
 
-    # Some transactions?
-    my $remote_uri = RT::URI->new( $self->CurrentUser );
-    $remote_uri->FromURI( $remote_link );
-
     my $opposite_direction = $direction eq 'Target' ? 'Base': 'Target';
 
+    # Some transactions?
     unless ( $args{ 'Silent'. $direction } ) {
         my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
             Type      => 'DeleteLink',
@@ -2180,6 +2214,8 @@ sub LoadCustomFieldByIdentifier {
 }
 
 sub ACLEquivalenceObjects { } 
+
+sub StrictLinkACLRight { }
 
 sub BasicColumns { }
 
