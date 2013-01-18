@@ -50,8 +50,10 @@ use strict;
 use warnings;
 
 package RT::Article;
-
 use base 'RT::Record';
+
+use Role::Basic 'with';
+with "RT::Role::Record::Links" => { -excludes => ["AddLink", "_AddLinksOnCreate"] };
 
 use RT::Articles;
 use RT::ObjectTopics;
@@ -352,27 +354,11 @@ sub Children {
 
 =head2 AddLink
 
-Takes a paramhash of Type and one of Base or Target. Adds that link to this tick
-et.
+Takes a paramhash of Type and one of Base or Target. Adds that link to this article.
+
+Prevents the use of plain numbers to avoid confusing behaviour.
 
 =cut
-
-sub DeleteLink {
-    my $self = shift;
-    my %args = (
-        Target => '',
-        Base   => '',
-        Type   => '',
-        Silent => undef,
-        @_
-    );
-
-    unless ( $self->CurrentUserHasRight('ModifyArticle') ) {
-        return ( 0, $self->loc("Permission Denied") );
-    }
-
-    $self->_DeleteLink(%args);
-}
 
 sub AddLink {
     my $self = shift;
@@ -605,6 +591,8 @@ sub ACLEquivalenceObjects {
     my $self = shift;
     return $self->ClassObj;
 }
+
+sub ModifyLinkRight { "ModifyArticle" }
 
 =head2 LoadByInclude Field Value
 

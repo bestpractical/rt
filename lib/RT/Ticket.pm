@@ -75,6 +75,7 @@ use Role::Basic 'with';
 # role) to deal with ACLs, moving tickets between queues, and automatically
 # setting dates.
 with "RT::Role::Record::Status" => { -excludes => [qw(SetStatus _SetStatus)] },
+     "RT::Role::Record::Links",
      "RT::Role::Record::Roles";
 
 use RT::Queue;
@@ -494,24 +495,9 @@ sub Create {
     # transaction and only then fire scrips on the other ends of links.
     #
     # //RUZ
-
-    foreach my $type ( keys %RT::Link::TYPEMAP ) {
-        next unless ( defined $args{$type} );
-        foreach my $link (
-            ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) )
-        {
-            my ($ok, $msg) = $self->_AddLink(
-                Type                          => $RT::Link::TYPEMAP{$type}->{'Type'},
-                $RT::Link::TYPEMAP{$type}->{'Mode'} => $link,
-                Silent                        => !$args{'_RecordTransaction'} || $self->Type eq 'reminder',
-                'Silent'. ( $RT::Link::TYPEMAP{$type}->{'Mode'} eq 'Base'? 'Target': 'Base' )
-                                              => 1,
-            );
-            push @non_fatal_errors,
-                 $self->loc("Unable to add [_1] link: [_2]", $self->loc($args{type}), $msg)
-                    unless $ok;
-        }
-    }
+    push @non_fatal_errors, $self->_AddLinksOnCreate(\%args, {
+        Silent => !$args{'_RecordTransaction'} || ($self->Type || '') eq 'reminder',
+    });
 
     # Try to add roles once more.
     push @non_fatal_errors, $self->_AddRolesOnCreate( $roles, %acls );
@@ -1803,56 +1789,6 @@ sub _Links {
     return $links;
 }
 
-
-
-=head2 DeleteLink
-
-Takes a paramhash of Type and one of Base or Target. Removes that link from this ticket.
-
-Refer to L<RT::Record/_DeleteLink> for full documentation.  This method
-implements permission checks before calling into L<RT::Record>.
-
-=cut 
-
-sub DeleteLink {
-    my $self = shift;
-    my %args = (
-        Base   => undef,
-        Target => undef,
-        @_
-    );
-
-    return (0, $self->loc("Permission Denied"))
-        unless $self->CurrentUserHasRight('ModifyTicket');
-
-    return $self->_DeleteLink(%args);
-}
-
-=head2 AddLink
-
-Takes a paramhash of Type and one of Base or Target. Adds that link to this ticket.
-
-Refer to L<RT::Record/_AddLink> for full documentation.  This method implements
-permissions and ticket validity checks before calling into L<RT::Record>.
-
-=cut
-
-sub AddLink {
-    my $self = shift;
-    my %args = ( Target       => '',
-                 Base         => '',
-                 Type         => '',
-                 Silent       => undef,
-                 SilentBase   => undef,
-                 SilentTarget => undef,
-                 @_ );
-
-    return (0, $self->loc("Permission Denied"))
-        unless $self->CurrentUserHasRight('ModifyTicket');
-
-    return $self->_AddLink(%args);
-}
-
 =head2 MergeInto
 
 MergeInto take the id of the ticket to merge this ticket into.
@@ -2983,11 +2919,11 @@ sub ACLEquivalenceObjects {
 
 }
 
-=head2 StrictLinkACLRight
+=head2 ModifyLinkRight
 
 =cut
 
-sub StrictLinkACLRight { "ModifyTicket" }
+sub ModifyLinkRight { "ModifyTicket" }
 
 1;
 

@@ -1273,7 +1273,7 @@ L<RT::Role::Record::Status> role, this method ensures object Status is not
 
 If the link destination (i.e. not C<$self>) is a local object and the
 C<$StrictLinkACL> option is enabled, this method checks the appropriate right
-on the destination object (if any, as returned by the L</StrictLinkACLRight>
+on the destination object (if any, as returned by the L</ModifyLinkRight>
 method).  B<< The subclass is expected to check the appropriate right on the
 source object (i.e.  C<$self>) before calling this method. >>  This allows a
 different right to be used on the source object during creation, for example.
@@ -1323,7 +1323,7 @@ sub _AddLink {
         if ($remote_obj and $remote_obj->id) {
             # Enforce the remote end of StrictLinkACL
             if (RT->Config->Get("StrictLinkACL")) {
-                my $right = $remote_obj->StrictLinkACLRight;
+                my $right = $remote_obj->ModifyLinkRight;
 
                 return (0, $self->loc("Permission denied"))
                     if $right and
@@ -1408,7 +1408,7 @@ SilentTarget respectively. By default both transactions are created.
 
 If the link destination (i.e. not C<$self>) is a local object and the
 C<$StrictLinkACL> option is enabled, this method checks the appropriate right
-on the destination object (if any, as returned by the L</StrictLinkACLRight>
+on the destination object (if any, as returned by the L</ModifyLinkRight>
 method).  B<< The subclass is expected to check the appropriate right on the
 source object (i.e.  C<$self>) before calling this method. >>
 
@@ -1456,7 +1456,7 @@ sub _DeleteLink {
         # Enforce the remote end of StrictLinkACL
         my $remote_obj = $remote_uri->IsLocal ? $remote_uri->Object : undef;
         if ($remote_obj and $remote_obj->id and RT->Config->Get("StrictLinkACL")) {
-            my $right = $remote_obj->StrictLinkACLRight;
+            my $right = $remote_obj->ModifyLinkRight;
 
             return (0, $self->loc("Permission denied"))
                 if $right and
@@ -2215,7 +2215,7 @@ sub LoadCustomFieldByIdentifier {
 
 sub ACLEquivalenceObjects { } 
 
-sub StrictLinkACLRight { }
+sub ModifyLinkRight { }
 
 sub BasicColumns { }
 
