@@ -1267,6 +1267,10 @@ If Silent is true then no transactions will be recorded.  You can individually
 control transactions on both base and target and with SilentBase and
 SilentTarget respectively. By default both transactions are created.
 
+If the link destination is a local object and does the
+L<RT::Role::Record::Status> role, this method ensures object Status is not
+"deleted".  Linking to deleted objects is forbidden.
+
 Returns a tuple of (link ID, message, flag if link already existed).
 
 =cut
@@ -1306,6 +1310,20 @@ sub _AddLink {
         return ( 0, $self->loc('Either base or target must be specified') );
     }
 
+    my $remote_uri = RT::URI->new( $self->CurrentUser );
+    if ($remote_uri->FromURI( $remote_link )) {
+        # Prevent linking to deleted objects
+        my $remote_obj = $remote_uri->IsLocal ? $remote_uri->Object : undef;
+        if (    $remote_obj
+            and $remote_obj->id
+            and $remote_obj->DOES("RT::Role::Record::Status")
+            and $remote_obj->Status eq "deleted") {
+            return (0, $self->loc("Linking to a deleted [_1] is not allowed", $self->loc(lc($remote_obj->RecordType))));
+        }
+    } else {
+        return (0, $self->loc("Couldn't resolve '[_1]' into a link.", $remote_link));
+    }
+
     # Check if the link already exists - we don't want duplicates
     my $old_link = RT::Link->new( $self->CurrentUser );
     $old_link->LoadByParams( Base   => $args{'Base'},
@@ -1337,12 +1355,9 @@ sub _AddLink {
     # No transactions for you!
     return ($linkid, $TransString) if $args{'Silent'};
 
-    # Some transactions?
-    my $remote_uri = RT::URI->new( $self->CurrentUser );
-    $remote_uri->FromURI( $remote_link );
-
     my $opposite_direction = $direction eq 'Target' ? 'Base': 'Target';
 
+    # Some transactions?
     unless ( $args{ 'Silent'. $direction } ) {
         my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
             Type      => 'AddLink',

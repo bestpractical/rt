@@ -515,12 +515,6 @@ sub Create {
                 }
             }
 
-            if ( $obj && $obj->Status eq 'deleted' ) {
-                push @non_fatal_errors,
-                  $self->loc("Linking. Can't link to a deleted ticket");
-                next;
-            }
-
             my ( $wval, $wmsg ) = $self->_AddLink(
                 Type                          => $RT::Link::TYPEMAP{$type}->{'Type'},
                 $RT::Link::TYPEMAP{$type}->{'Mode'} => $link,
@@ -1912,9 +1906,6 @@ sub AddLink {
     {
         return ( 0, $self->loc("Permission Denied") );
     }
-
-    return ( 0, "Can't link to a deleted ticket" )
-      if $other_ticket && $other_ticket->Status eq 'deleted';
 
     return $self->_AddLink(%args);
 }
