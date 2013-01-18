@@ -500,21 +500,16 @@ sub Create {
         foreach my $link (
             ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) )
         {
-            my ( $val, $msg, $obj ) = $self->__GetTicketFromURI( URI => $link );
-            unless ($val) {
-                push @non_fatal_errors, $msg;
-                next;
-            }
-
-            my ( $wval, $wmsg ) = $self->_AddLink(
+            my ($ok, $msg) = $self->_AddLink(
                 Type                          => $RT::Link::TYPEMAP{$type}->{'Type'},
                 $RT::Link::TYPEMAP{$type}->{'Mode'} => $link,
                 Silent                        => !$args{'_RecordTransaction'} || $self->Type eq 'reminder',
                 'Silent'. ( $RT::Link::TYPEMAP{$type}->{'Mode'} eq 'Base'? 'Target': 'Base' )
                                               => 1,
             );
-
-            push @non_fatal_errors, $wmsg unless ($wval);
+            push @non_fatal_errors,
+                 $self->loc("Unable to add [_1] link: [_2]", $self->loc($args{type}), $msg)
+                    unless $ok;
         }
     }
 
@@ -1866,27 +1861,6 @@ sub AddLink {
         unless $self->CurrentUserHasRight('ModifyTicket');
 
     return $self->_AddLink(%args);
-}
-
-sub __GetTicketFromURI {
-    my $self = shift;
-    my %args = ( URI => '', @_ );
-
-    # If the other URI is an RT::Ticket, we want to make sure the user
-    # can modify it too...
-    my $uri_obj = RT::URI->new( $self->CurrentUser );
-    $uri_obj->FromURI( $args{'URI'} );
-
-    unless ( $uri_obj->Resolver && $uri_obj->Scheme ) {
-        my $msg = $self->loc( "Couldn't resolve '[_1]' into a URI.", $args{'URI'} );
-        $RT::Logger->warning( $msg );
-        return( 0, $msg );
-    }
-    my $obj = $uri_obj->Resolver->Object;
-    unless ( UNIVERSAL::isa($obj, 'RT::Ticket') && $obj->id ) {
-        return (1, 'Found not a ticket', undef);
-    }
-    return (1, 'Found ticket', $obj);
 }
 
 =head2 MergeInto
