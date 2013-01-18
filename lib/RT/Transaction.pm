@@ -777,8 +777,7 @@ sub BriefDescription {
         my $value;
         if ( $self->NewValue ) {
             my $URI = RT::URI->new( $self->CurrentUser );
-            $URI->FromURI( $self->NewValue );
-            if ( $URI->Resolver ) {
+            if ( $URI->FromURI( $self->NewValue ) ) {
                 $value = $URI->Resolver->AsString;
             }
             else {
@@ -816,8 +815,7 @@ sub BriefDescription {
         my $value;
         if ( $self->OldValue ) {
             my $URI = RT::URI->new( $self->CurrentUser );
-            $URI->FromURI( $self->OldValue );
-            if ( $URI->Resolver ) {
+            if ( $URI->FromURI( $self->OldValue ) ){
                 $value = $URI->Resolver->AsString;
             }
             else {
