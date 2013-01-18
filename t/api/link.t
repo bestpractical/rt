@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 84;
+use RT::Test nodata => 1, tests => 83;
 use RT::Test::Web;
 use Test::Warn;
 
@@ -35,9 +35,7 @@ ok $cid, 'created a ticket #'. $cid or diag "error: $msg";
     my ($status, $msg);
     clean_links();
 
-    warning_like {
-        ($status, $msg) = $parent->AddLink;
-    } qr/Base or Target must be specified/, "warned about linking a ticket to itself";
+    ($status, $msg) = $parent->AddLink;
     ok(!$status, "didn't create a link: $msg");
 
     warning_like {

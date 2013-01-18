@@ -1822,11 +1822,6 @@ sub DeleteLink {
         @_
     );
 
-    unless ( $args{'Target'} || $args{'Base'} ) {
-        $RT::Logger->error("Base or Target must be specified");
-        return ( 0, $self->loc('Either base or target must be specified') );
-    }
-
     return (0, $self->loc("Permission Denied"))
         unless $self->CurrentUserHasRight('ModifyTicket');
 
@@ -1851,11 +1846,6 @@ sub AddLink {
                  SilentBase   => undef,
                  SilentTarget => undef,
                  @_ );
-
-    unless ( $args{'Target'} || $args{'Base'} ) {
-        $RT::Logger->error("Base or Target must be specified");
-        return ( 0, $self->loc('Either base or target must be specified') );
-    }
 
     return (0, $self->loc("Permission Denied"))
         unless $self->CurrentUserHasRight('ModifyTicket');
