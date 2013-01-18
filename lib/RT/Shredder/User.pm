@@ -126,6 +126,17 @@ sub __DependsOn
             $objs->Limit( FIELD => $method, VALUE => $self->id );
             push @var_objs, $objs;
         }
+# Transactions table might contain more stuff pointing to $self->id
+        if ( $class eq 'RT::Transactions' ) {
+            my $txs = $class->new( $self->CurrentUser );
+            $txs->Limit( FIELD => 'Field', VALUE => 'Owner' );
+            $txs->Limit( FIELD => 'Field', VALUE => 'Requestor' );
+            $txs->Limit( FIELD => 'Field', VALUE => 'AdminCc' );
+            $txs->Limit( FIELD => 'Field', VALUE => 'Cc' );
+            $txs->Limit( FIELD => 'OldValue', VALUE => $self->id, SUBCLAUSE => 'value' );
+            $txs->Limit( FIELD => 'NewValue', VALUE => $self->id, SUBCLAUSE => 'value' );
+            push @var_objs, $txs;
+        }
     }
     $deps->_PushDependencies(
             BaseObject => $self,

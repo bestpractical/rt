@@ -215,6 +215,15 @@ sub SetResolvers
                 next unless $t->_Accessible( $method => 'read' );
                 $t->__Set( Field => $method, Value => $uid );
             }
+# we might need to change more on a transaction object
+            if ( $t->_Accessible('OldValue' => 'read') ) {
+                if ( defined $t->OldValue && $t->OldValue eq $args{'BaseObject'}->id ) {
+                    $t->__Set( Field => 'OldValue', Value => $uid );
+                }
+                elsif ( defined $t->NewValue && $t->NewValue eq $args{'BaseObject'}->id ) {
+                    $t->__Set( Field => 'NewValue', Value => $uid );
+                }
+            }
         };
         $args{'Shredder'}->PutResolver( BaseClass => 'RT::User', Code => $resolver );
     }
