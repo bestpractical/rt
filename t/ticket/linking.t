@@ -220,7 +220,6 @@ warnings_like {
     ($id,$msg) = $ticket->AddLink(Type => 'RefersTo', Target => -1);
 } [
     qr/Could not determine a URI scheme for -1/,
-    qr/Couldn't resolve '-1' into a URI/,
 ];
 
 ($id,$msg) = $ticket->AddLink(Type => 'RefersTo', Target => $ticket2->id);

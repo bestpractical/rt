@@ -70,11 +70,15 @@ use warnings;
 use base 'RT::Record';
 
 use Role::Basic 'with';
-with "RT::Role::Record::Lifecycle", "RT::Role::Record::Roles";
+with "RT::Role::Record::Lifecycle",
+     "RT::Role::Record::Links" => { -excludes => ["_AddLinksOnCreate"] },
+     "RT::Role::Record::Roles";
 
 sub Table {'Queues'}
 
 sub LifecycleType { "ticket" }
+
+sub ModifyLinkRight { "AdminQueue" }
 
 
 use RT::Groups;
@@ -186,39 +190,6 @@ sub AddRightCategories {
     my $self = shift if ref $_[0] or $_[0] eq __PACKAGE__;
     my %new = @_;
     $RIGHT_CATEGORIES = { %$RIGHT_CATEGORIES, %new };
-}
-
-sub AddLink {
-    my $self = shift;
-    my %args = ( Target => '',
-                 Base   => '',
-                 Type   => '',
-                 Silent => undef,
-                 @_ );
-
-    unless ( $self->CurrentUserHasRight('ModifyQueue') ) {
-        return ( 0, $self->loc("Permission Denied") );
-    }
-
-    return $self->SUPER::_AddLink(%args);
-}
-
-sub DeleteLink {
-    my $self = shift;
-    my %args = (
-        Base   => undef,
-        Target => undef,
-        Type   => undef,
-        @_
-    );
-
-    #check acls
-    unless ( $self->CurrentUserHasRight('ModifyQueue') ) {
-        $RT::Logger->debug("No permission to delete links");
-        return ( 0, $self->loc('Permission Denied'))
-    }
-
-    return $self->SUPER::_DeleteLink(%args);
 }
 
 =head2 AvailableRights

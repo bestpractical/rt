@@ -50,8 +50,10 @@ use strict;
 use warnings;
 
 package RT::Article;
-
 use base 'RT::Record';
+
+use Role::Basic 'with';
+with "RT::Role::Record::Links" => { -excludes => ["AddLink", "_AddLinksOnCreate"] };
 
 use RT::Articles;
 use RT::ObjectTopics;
@@ -352,27 +354,11 @@ sub Children {
 
 =head2 AddLink
 
-Takes a paramhash of Type and one of Base or Target. Adds that link to this tick
-et.
+Takes a paramhash of Type and one of Base or Target. Adds that link to this article.
+
+Prevents the use of plain numbers to avoid confusing behaviour.
 
 =cut
-
-sub DeleteLink {
-    my $self = shift;
-    my %args = (
-        Target => '',
-        Base   => '',
-        Type   => '',
-        Silent => undef,
-        @_
-    );
-
-    unless ( $self->CurrentUserHasRight('ModifyArticle') ) {
-        return ( 0, $self->loc("Permission Denied") );
-    }
-
-    $self->_DeleteLink(%args);
-}
 
 sub AddLink {
     my $self = shift;
@@ -396,16 +382,6 @@ sub AddLink {
     {
         return ( 0, $self->loc("Cannot add link to plain number") );
     }
-
-    # Check that we're actually getting a valid URI
-    my $uri_obj = RT::URI->new( $self->CurrentUser );
-    $uri_obj->FromURI( $args{'Target'}||$args{'Base'} );
-    unless ( $uri_obj->Resolver && $uri_obj->Scheme ) {
-        my $msg = $self->loc( "Couldn't resolve '[_1]' into a Link.", $args{'Target'} );
-        $RT::Logger->warning( $msg );
-        return( 0, $msg );
-    }
-
 
     $self->_AddLink(%args);
 }
@@ -615,6 +591,8 @@ sub ACLEquivalenceObjects {
     my $self = shift;
     return $self->ClassObj;
 }
+
+sub ModifyLinkRight { "ModifyArticle" }
 
 =head2 LoadByInclude Field Value
 

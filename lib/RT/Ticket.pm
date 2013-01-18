@@ -75,6 +75,7 @@ use Role::Basic 'with';
 # role) to deal with ACLs, moving tickets between queues, and automatically
 # setting dates.
 with "RT::Role::Record::Status" => { -excludes => [qw(SetStatus _SetStatus)] },
+     "RT::Role::Record::Links",
      "RT::Role::Record::Roles";
 
 use RT::Queue;
@@ -494,44 +495,9 @@ sub Create {
     # transaction and only then fire scrips on the other ends of links.
     #
     # //RUZ
-
-    foreach my $type ( keys %RT::Link::TYPEMAP ) {
-        next unless ( defined $args{$type} );
-        foreach my $link (
-            ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) )
-        {
-            my ( $val, $msg, $obj ) = $self->__GetTicketFromURI( URI => $link );
-            unless ($val) {
-                push @non_fatal_errors, $msg;
-                next;
-            }
-
-            # Check rights on the other end of the link if we must
-            # then run _AddLink that doesn't check for ACLs
-            if ( RT->Config->Get( 'StrictLinkACL' ) ) {
-                if ( $obj && !$obj->CurrentUserHasRight('ModifyTicket') ) {
-                    push @non_fatal_errors, $self->loc('Linking. Permission denied');
-                    next;
-                }
-            }
-
-            if ( $obj && $obj->Status eq 'deleted' ) {
-                push @non_fatal_errors,
-                  $self->loc("Linking. Can't link to a deleted ticket");
-                next;
-            }
-
-            my ( $wval, $wmsg ) = $self->_AddLink(
-                Type                          => $RT::Link::TYPEMAP{$type}->{'Type'},
-                $RT::Link::TYPEMAP{$type}->{'Mode'} => $link,
-                Silent                        => !$args{'_RecordTransaction'} || $self->Type eq 'reminder',
-                'Silent'. ( $RT::Link::TYPEMAP{$type}->{'Mode'} eq 'Base'? 'Target': 'Base' )
-                                              => 1,
-            );
-
-            push @non_fatal_errors, $wmsg unless ($wval);
-        }
-    }
+    push @non_fatal_errors, $self->_AddLinksOnCreate(\%args, {
+        Silent => !$args{'_RecordTransaction'} || ($self->Type || '') eq 'reminder',
+    });
 
     # Try to add roles once more.
     push @non_fatal_errors, $self->_AddRolesOnCreate( $roles, %acls );
@@ -1823,123 +1789,6 @@ sub _Links {
     return $links;
 }
 
-
-
-=head2 DeleteLink
-
-Takes a paramhash of Type and one of Base or Target. Removes that link from this ticket.
-
-Refer to L<RT::Record/_DeleteLink> for full documentation.  This method
-implements permission checks before calling into L<RT::Record>.
-
-=cut 
-
-sub DeleteLink {
-    my $self = shift;
-    my %args = (
-        Base   => undef,
-        Target => undef,
-        @_
-    );
-
-    unless ( $args{'Target'} || $args{'Base'} ) {
-        $RT::Logger->error("Base or Target must be specified");
-        return ( 0, $self->loc('Either base or target must be specified') );
-    }
-
-    #check acls
-    my $right = 0;
-    $right++ if $self->CurrentUserHasRight('ModifyTicket');
-    if ( !$right && RT->Config->Get( 'StrictLinkACL' ) ) {
-        return ( 0, $self->loc("Permission Denied") );
-    }
-
-    # If the other URI is an RT::Ticket, we want to make sure the user
-    # can modify it too...
-    my ($status, $msg, $other_ticket) = $self->__GetTicketFromURI( URI => $args{'Target'} || $args{'Base'} );
-    return (0, $msg) unless $status;
-    if ( !$other_ticket || $other_ticket->CurrentUserHasRight('ModifyTicket') ) {
-        $right++;
-    }
-    if ( ( !RT->Config->Get( 'StrictLinkACL' ) && $right == 0 ) ||
-         ( RT->Config->Get( 'StrictLinkACL' ) && $right < 2 ) )
-    {
-        return ( 0, $self->loc("Permission Denied") );
-    }
-
-    return $self->_DeleteLink(%args);
-}
-
-=head2 AddLink
-
-Takes a paramhash of Type and one of Base or Target. Adds that link to this ticket.
-
-Refer to L<RT::Record/_AddLink> for full documentation.  This method implements
-permissions and ticket validity checks before calling into L<RT::Record>.
-
-=cut
-
-sub AddLink {
-    my $self = shift;
-    my %args = ( Target       => '',
-                 Base         => '',
-                 Type         => '',
-                 Silent       => undef,
-                 SilentBase   => undef,
-                 SilentTarget => undef,
-                 @_ );
-
-    unless ( $args{'Target'} || $args{'Base'} ) {
-        $RT::Logger->error("Base or Target must be specified");
-        return ( 0, $self->loc('Either base or target must be specified') );
-    }
-
-    my $right = 0;
-    $right++ if $self->CurrentUserHasRight('ModifyTicket');
-    if ( !$right && RT->Config->Get( 'StrictLinkACL' ) ) {
-        return ( 0, $self->loc("Permission Denied") );
-    }
-
-    # If the other URI is an RT::Ticket, we want to make sure the user
-    # can modify it too...
-    my ($status, $msg, $other_ticket) = $self->__GetTicketFromURI( URI => $args{'Target'} || $args{'Base'} );
-    return (0, $msg) unless $status;
-    if ( !$other_ticket || $other_ticket->CurrentUserHasRight('ModifyTicket') ) {
-        $right++;
-    }
-    if ( ( !RT->Config->Get( 'StrictLinkACL' ) && $right == 0 ) ||
-         ( RT->Config->Get( 'StrictLinkACL' ) && $right < 2 ) )
-    {
-        return ( 0, $self->loc("Permission Denied") );
-    }
-
-    return ( 0, "Can't link to a deleted ticket" )
-      if $other_ticket && $other_ticket->Status eq 'deleted';
-
-    return $self->_AddLink(%args);
-}
-
-sub __GetTicketFromURI {
-    my $self = shift;
-    my %args = ( URI => '', @_ );
-
-    # If the other URI is an RT::Ticket, we want to make sure the user
-    # can modify it too...
-    my $uri_obj = RT::URI->new( $self->CurrentUser );
-    $uri_obj->FromURI( $args{'URI'} );
-
-    unless ( $uri_obj->Resolver && $uri_obj->Scheme ) {
-        my $msg = $self->loc( "Couldn't resolve '[_1]' into a URI.", $args{'URI'} );
-        $RT::Logger->warning( $msg );
-        return( 0, $msg );
-    }
-    my $obj = $uri_obj->Resolver->Object;
-    unless ( UNIVERSAL::isa($obj, 'RT::Ticket') && $obj->id ) {
-        return (1, 'Found not a ticket', undef);
-    }
-    return (1, 'Found ticket', $obj);
-}
-
 =head2 MergeInto
 
 MergeInto take the id of the ticket to merge this ticket into.
@@ -3069,6 +2918,12 @@ sub ACLEquivalenceObjects {
     return $self->QueueObj;
 
 }
+
+=head2 ModifyLinkRight
+
+=cut
+
+sub ModifyLinkRight { "ModifyTicket" }
 
 1;
 
