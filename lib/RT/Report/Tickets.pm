@@ -282,7 +282,6 @@ sub AddRecord {
     my $self = shift;
     my $record = shift;
     push @{$self->{'items'}}, $record;
-    $self->{'rows'}++;
 }
 
 1;

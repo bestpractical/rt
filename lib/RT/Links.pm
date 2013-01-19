@@ -156,7 +156,6 @@ sub AddRecord {
     return unless $self->IsValidLink($record);
 
     push @{$self->{'items'}}, $record;
-    $self->{'rows'}++;
 }
 
 =head2 IsValidLink
