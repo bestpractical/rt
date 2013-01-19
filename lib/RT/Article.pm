@@ -53,7 +53,7 @@ package RT::Article;
 use base 'RT::Record';
 
 use Role::Basic 'with';
-with "RT::Role::Record::Links" => { -excludes => ["AddLink", "_AddLinksOnCreate"] };
+with "RT::Record::Role::Links" => { -excludes => ["AddLink", "_AddLinksOnCreate"] };
 
 use RT::Articles;
 use RT::ObjectTopics;

@@ -74,9 +74,9 @@ use Role::Basic 'with';
 # SetStatus and _SetStatus are reimplemented below (using other pieces of the
 # role) to deal with ACLs, moving tickets between queues, and automatically
 # setting dates.
-with "RT::Role::Record::Status" => { -excludes => [qw(SetStatus _SetStatus)] },
-     "RT::Role::Record::Links",
-     "RT::Role::Record::Roles";
+with "RT::Record::Role::Status" => { -excludes => [qw(SetStatus _SetStatus)] },
+     "RT::Record::Role::Links",
+     "RT::Record::Role::Roles";
 
 use RT::Queue;
 use RT::User;

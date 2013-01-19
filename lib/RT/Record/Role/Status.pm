@@ -49,18 +49,18 @@
 use strict;
 use warnings;
 
-package RT::Role::Record::Status;
+package RT::Record::Role::Status;
 use Role::Basic;
 use Scalar::Util qw(blessed);
 
 =head1 NAME
 
-RT::Role::Record::Status - Common methods for records which have a Status column
+RT::Record::Role::Status - Common methods for records which have a Status column
 
 =head1 DESCRIPTION
 
 Lifecycles are generally set on container records, and Statuses on records
-which belong to one of those containers.  L<RT::Role::Record::Lifecycle>
+which belong to one of those containers.  L<RT::Record::Role::Lifecycle>
 handles the containers with the I<Lifecycle> column.  This role is for the
 records with a I<Status> column within those containers.  It includes
 convenience methods for grabbing an L<RT::Lifecycle> object as well setters for
@@ -68,12 +68,12 @@ validating I<Status> and the column which points to the container object.
 
 =head1 REQUIRES
 
-=head2 L<RT::Role::Record>
+=head2 L<RT::Record::Role>
 
 =head2 LifecycleColumn
 
 Used as a role parameter.  Must return a string of the column name which points
-to the container object that consumes L<RT::Role::Record::Lifecycle> (or
+to the container object that consumes L<RT::Record::Role::Lifecycle> (or
 conforms to it).  The resulting string is used to construct two method names:
 as-is to fetch the column value and suffixed with "Obj" to fetch the object.
 
@@ -86,7 +86,7 @@ method isn't available in consuming classes, however.
 
 =cut
 
-with 'RT::Role::Record';
+with 'RT::Record::Role';
 requires 'LifecycleColumn';
 
 # XXX: can't require column methods due to DBIx::SB::Record's AUTOLOAD

@@ -84,7 +84,7 @@ use warnings;
 use base 'RT::SearchBuilder';
 
 use Role::Basic 'with';
-with 'RT::Role::SearchBuilder::Roles';
+with 'RT::SearchBuilder::Role::Roles';
 
 use RT::Ticket;
 use RT::SQL;

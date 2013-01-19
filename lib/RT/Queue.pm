@@ -70,9 +70,9 @@ use warnings;
 use base 'RT::Record';
 
 use Role::Basic 'with';
-with "RT::Role::Record::Lifecycle",
-     "RT::Role::Record::Links" => { -excludes => ["_AddLinksOnCreate"] },
-     "RT::Role::Record::Roles";
+with "RT::Record::Role::Lifecycle",
+     "RT::Record::Role::Links" => { -excludes => ["_AddLinksOnCreate"] },
+     "RT::Record::Role::Roles";
 
 sub Table {'Queues'}
 

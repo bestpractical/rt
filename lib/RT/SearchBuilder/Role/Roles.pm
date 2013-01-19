@@ -49,21 +49,21 @@
 use strict;
 use warnings;
 
-package RT::Role::SearchBuilder::Roles;
+package RT::SearchBuilder::Role::Roles;
 use Role::Basic;
 use Scalar::Util qw(blessed);
 
 =head1 NAME
 
-RT::Role::Record::Roles - Common methods for records which "watchers" or "roles"
+RT::Record::Role::Roles - Common methods for records which "watchers" or "roles"
 
 =head1 REQUIRES
 
-=head2 L<RT::Role::SearchBuilder>
+=head2 L<RT::SearchBuilder::Role>
 
 =cut
 
-with 'RT::Role::SearchBuilder';
+with 'RT::SearchBuilder::Role';
 
 require RT::System;
 require RT::Principal;

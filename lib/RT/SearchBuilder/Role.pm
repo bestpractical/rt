@@ -49,19 +49,19 @@
 use strict;
 use warnings;
 
-package RT::Role::SearchBuilder;
+package RT::SearchBuilder::Role;
 use Role::Basic;
 
 =head1 NAME
 
-RT::Role::SearchBuilder - Common requirements for roles which are consumed by collections
+RT::SearchBuilder::Role - Common requirements for roles which are consumed by collections
 
 =head1 DESCRIPTION
 
 Various L<RT::SearchBuilder> (and by inheritance L<DBIx::SearchBuilder>)
 methods are required by this role.  It provides no methods on its own but is
 simply a contract for other roles to require (usually under the
-I<RT::Role::SearchBuilder::> namespace).
+I<RT::SearchBuilder::Role::> namespace).
 
 =cut
 
