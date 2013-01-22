@@ -1268,7 +1268,7 @@ control transactions on both base and target and with SilentBase and
 SilentTarget respectively. By default both transactions are created.
 
 If the link destination is a local object and does the
-L<RT::Role::Record::Status> role, this method ensures object Status is not
+L<RT::Record::Role::Status> role, this method ensures object Status is not
 "deleted".  Linking to deleted objects is forbidden.
 
 If the link destination (i.e. not C<$self>) is a local object and the
@@ -1331,7 +1331,7 @@ sub _AddLink {
             }
 
             # Prevent linking to deleted objects
-            if ($remote_obj->DOES("RT::Role::Record::Status")
+            if ($remote_obj->DOES("RT::Record::Role::Status")
                 and $remote_obj->Status eq "deleted") {
                 return (0, $self->loc("Linking to a deleted [_1] is not allowed", $self->loc(lc($remote_obj->RecordType))));
             }

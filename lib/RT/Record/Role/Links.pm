@@ -49,16 +49,16 @@
 use strict;
 use warnings;
 
-package RT::Role::Record::Links;
+package RT::Record::Role::Links;
 use Role::Basic;
 
 =head1 NAME
 
-RT::Role::Record::Links - Common methods for records which handle links
+RT::Record::Role::Links - Common methods for records which handle links
 
 =head1 REQUIRES
 
-=head2 L<RT::Role::Record>
+=head2 L<RT::Record::Role>
 
 =head2 _AddLink
 
@@ -76,7 +76,7 @@ The right name to check in L<AddLink> and L<DeleteLink>.
 
 =cut
 
-with 'RT::Role::Record';
+with 'RT::Record::Role';
 
 requires '_AddLink';
 requires '_DeleteLink';

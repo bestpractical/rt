@@ -49,19 +49,19 @@
 use strict;
 use warnings;
 
-package RT::Role::Record;
+package RT::Record::Role;
 use Role::Basic;
 
 =head1 NAME
 
-RT::Role::Record - Common requirements for roles which are consumed by records
+RT::Record::Role - Common requirements for roles which are consumed by records
 
 =head1 DESCRIPTION
 
 Various L<RT::Record> (and by inheritance L<DBIx::SearchBuilder::Record>)
 methods are required by this role.  It provides no methods on its own but is
 simply a contract for other roles to require (usually under the
-I<RT::Role::Record::> namespace).
+I<RT::Record::Role::> namespace).
 
 =cut
 

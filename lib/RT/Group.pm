@@ -709,7 +709,7 @@ sub RoleClass {
     my $self = shift;
     my $domain = shift || $self->Domain;
     return unless $domain =~ /^(.+)-Role$/;
-    return unless $1->DOES("RT::Role::Record::Roles");
+    return unless $1->DOES("RT::Record::Role::Roles");
     return $1;
 }
 

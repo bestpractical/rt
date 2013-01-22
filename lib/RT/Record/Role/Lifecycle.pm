@@ -49,17 +49,17 @@
 use strict;
 use warnings;
 
-package RT::Role::Record::Lifecycle;
+package RT::Record::Role::Lifecycle;
 use Role::Basic;
 use Scalar::Util qw(blessed);
 
 =head1 NAME
 
-RT::Role::Record::Lifecycle - Common methods for records which have a Lifecycle column
+RT::Record::Role::Lifecycle - Common methods for records which have a Lifecycle column
 
 =head1 REQUIRES
 
-=head2 L<RT::Role::Record>
+=head2 L<RT::Record::Role>
 
 =head2 LifecycleType
 
@@ -75,7 +75,7 @@ method isn't available in consuming classes, however.
 
 =cut
 
-with 'RT::Role::Record';
+with 'RT::Record::Role';
 requires 'LifecycleType';
 
 # XXX: can't require column methods due to DBIx::SB::Record's AUTOLOAD
