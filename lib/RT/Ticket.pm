@@ -1358,7 +1358,7 @@ sub UnsquelchMailTo {
 
 =head2 RequestorAddresses
 
- B<Returns> String: All Ticket Requestor email addresses as a string.
+B<Returns> String: All Ticket Requestor email addresses as a string.
 
 =cut
 
