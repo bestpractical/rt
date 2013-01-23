@@ -47,6 +47,22 @@ use_ok ('RT::Transaction');
                     "Caught URI warning";
 
     is( $brief, 'Reference to ticket 42 deleted', "Got string description: $brief");
+
+    my $testqueue = RT::Queue->new(RT->SystemUser);
+    ok( $testqueue->Create( Name => 'My Test Queue'), "Created test queue");
+    like( $testqueue->Id, qr/^\d+$/, "New queue has id: " . $testqueue->Id);
+
+    $txn = RT::Transaction->new(RT->SystemUser);
+    ($txn_id, $txn_msg) = $txn->Create(
+                  Type => 'Set',
+                  Field => 'Queue',
+                  Ticket => $id,
+                  OldValue => 'General',
+                  NewValue => $testqueue->Id );
+    ok( $txn_id, "Created transaction $txn_id: $txn_msg");
+
+    $brief = $txn->BriefDescription;
+    is( $brief, 'Queue changed from General to My Test Queue', "Got correct brief description: $brief");
 }
 
 done_testing;
