@@ -868,11 +868,19 @@ sub BriefDescription {
         }
         elsif ( $self->Field eq 'Queue' ) {
             my $q1 = RT::Queue->new( $self->CurrentUser );
-            $q1->Load( $self->OldValue );
+            my $old_queue_name;
+            if( $q1->Load( $self->OldValue ) ){
+                $old_queue_name = $q1->Name;
+            }
+            else{
+                # Allow string name for migrations where the old queue may
+                # not be available in this instance.
+                $old_queue_name = $self->OldValue;
+            }
             my $q2 = RT::Queue->new( $self->CurrentUser );
             $q2->Load( $self->NewValue );
             return $self->loc("[_1] changed from [_2] to [_3]",
-                              $self->loc($self->Field) , $q1->Name , $q2->Name);
+                              $self->loc($self->Field) , $old_queue_name, $q2->Name);
         }
 
         # Write the date/time change at local time:
