@@ -203,7 +203,7 @@ our @GUESS = (
     [ 40 => sub { return "status" if /^((in)?active|any)$/i } ],
     [ 50 => sub {
           my $q = RT::Queue->new( $_[2] );
-          return "queue" if $q->Load($_) and $q->Id
+          return "queue" if $q->Load($_) and $q->Id and not $q->Disabled
       }],
     [ 60 => sub {
           my $u = RT::User->new( $_[2] );
