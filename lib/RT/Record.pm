@@ -1597,7 +1597,12 @@ sub CustomFieldLookupId {
 	$object = $object->$method;
     }
 
-    return $object->$final;
+    my $id = $object->$final;
+    unless (defined $id) {
+        my $method = "${final}Obj";
+        $id = $object->$method->Id;
+    }
+    return $id;
 }
 
 
