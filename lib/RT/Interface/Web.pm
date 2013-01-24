@@ -3391,12 +3391,29 @@ sub GetPrincipalsMap {
         }
         elsif (/Roles/) {
             my $roles = RT::Groups->new($session{'CurrentUser'});
-            $roles->LimitToRolesForObject($object);
-            $roles->OrderBy( FIELD => 'Type', ORDER => 'ASC' );
-            push @map, [
-                'Roles' => $roles,  # loc_left_pair
-                'Type'  => 1
-            ];
+
+            if ($object->isa("RT::CustomField")) {
+                # If we're a custom field, show the global roles for our LookupType.
+                my $class = $object->RecordClassFromLookupType;
+                if ($class and $class->DOES("RT::Record::Role::Roles")) {
+                    $roles->LimitToRolesForObject(RT->System);
+                    $roles->Limit( FIELD => "Type", VALUE => $_ )
+                        for $class->Roles;
+                } else {
+                    # No roles to show; so show nothing
+                    undef $roles;
+                }
+            } else {
+                $roles->LimitToRolesForObject($object);
+            }
+
+            if ($roles) {
+                $roles->OrderBy( FIELD => 'Type', ORDER => 'ASC' );
+                push @map, [
+                    'Roles' => $roles,  # loc_left_pair
+                    'Type'  => 1
+                ];
+            }
         }
         elsif (/Users/) {
             my $Users = RT->PrivilegedUsers->UserMembersObj();
