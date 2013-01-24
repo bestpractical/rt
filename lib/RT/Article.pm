@@ -399,9 +399,8 @@ sub AddLink {
 
     # Check that we're actually getting a valid URI
     my $uri_obj = RT::URI->new( $self->CurrentUser );
-    $uri_obj->FromURI( $args{'Target'}||$args{'Base'} );
-    unless ( $uri_obj->Resolver && $uri_obj->Scheme ) {
-        my $msg = $self->loc( "Couldn't resolve '[_1]' into a Link.", $args{'Target'} );
+    unless ( $uri_obj->FromURI( $args{'Target'}||$args{'Base'} )) {
+        my $msg = $self->loc( "Couldn't resolve '[_1]' into a Link.", $args{'Target'} || $args{'Base'} );
         $RT::Logger->warning( $msg );
         return( 0, $msg );
     }
