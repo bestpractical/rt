@@ -182,7 +182,9 @@ sub LoadByParams {
                                           Target => $target->URI );
 
     unless ($id) {
-        return ( 0, $self->loc("Couldn't load link") );
+        return ( 0, $self->loc("Couldn't load link: [_1]", $msg) );
+    } else {
+        return ($id, $msg);
     }
 }
 
