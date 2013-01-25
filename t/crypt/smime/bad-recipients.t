@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test::SMIME tests => 13;
+use RT::Test::SMIME tests => 14;
 
 use RT::Tickets;
 
@@ -56,10 +56,12 @@ my $bad_user;
 
 RT::Test->clean_caught_mails;
 
-{
+use Test::Warn;
+
+warnings_like {
     my $ticket = RT::Ticket->new(RT->SystemUser);
     my ($status, undef, $msg) = $ticket->Create( Queue => $queue->id, Requestor => [$root->id, $bad_user->id] );
-    ok $status, "created a ticket" or "error: $msg";
+    ok $status, "created a ticket" or diag "error: $msg";
 
     my @mails = RT::Test->fetch_caught_mails;
     is scalar @mails, 3, "autoreply, to bad user, to RT owner";
@@ -68,4 +70,4 @@ RT::Test->clean_caught_mails;
     like $mails[1], qr{To: root}, "notification to RT owner";
     like $mails[1], qr{Recipient 'baduser\@example\.com' is unusable, the reason is 'Key not found'},
         "notification to owner has error";
-}
+} [qr{Recipient 'baduser\@example\.com' is unusable, the reason is 'Key not found'}];
