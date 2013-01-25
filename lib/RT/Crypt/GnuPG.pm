@@ -799,33 +799,6 @@ sub CheckIfProtected {
     # we check inline PGP block later in another sub
     return () unless $entity->is_multipart;
 
-        # Deal with "partitioned" PGP mail, which (contrary to common
-        # sense) unnecessarily applies a base64 transfer encoding to PGP
-        # mail (whose content is already base64-encoded).
-        if ( $entity->bodyhandle->is_encoded and $entity->head->mime_encoding ) {
-            my $decoder = MIME::Decoder->new( $entity->head->mime_encoding );
-            if ($decoder) {
-                local $@;
-                eval {
-                    my $buf = '';
-                    open my $fh, '>', \$buf
-                        or die "Couldn't open scalar for writing: $!";
-                    binmode $fh, ":raw";
-                    $decoder->decode($io, $fh);
-                    close $fh or die "Couldn't close scalar: $!";
-
-                    open $fh, '<', \$buf
-                        or die "Couldn't re-open scalar for reading: $!";
-                    binmode $fh, ":raw";
-                    $io = $fh;
-                    1;
-                } or do {
-                    $RT::Logger->error("Couldn't decode body: $@");
-                }
-            }
-        }
-
-
     # RFC3156, multipart/{signed,encrypted}
     my $type = $entity->effective_type;
     return () unless $type =~ /^multipart\/(?:encrypted|signed)$/;
@@ -999,6 +972,33 @@ sub _CheckIfProtectedInline {
         $RT::Logger->warning( "Entity of type ". $entity->effective_type ." has no body" );
         return '';
     }
+
+    # Deal with "partitioned" PGP mail, which (contrary to common
+    # sense) unnecessarily applies a base64 transfer encoding to PGP
+    # mail (whose content is already base64-encoded).
+    if ( $entity->bodyhandle->is_encoded and $entity->head->mime_encoding ) {
+        my $decoder = MIME::Decoder->new( $entity->head->mime_encoding );
+        if ($decoder) {
+            local $@;
+            eval {
+                my $buf = '';
+                open my $fh, '>', \$buf
+                    or die "Couldn't open scalar for writing: $!";
+                binmode $fh, ":raw";
+                $decoder->decode($io, $fh);
+                close $fh or die "Couldn't close scalar: $!";
+
+                open $fh, '<', \$buf
+                    or die "Couldn't re-open scalar for reading: $!";
+                binmode $fh, ":raw";
+                $io = $fh;
+                1;
+            } or do {
+                $RT::Logger->error("Couldn't decode body: $@");
+            }
+        }
+    }
+
     while ( defined($_ = $io->getline) ) {
         if ( /^-----BEGIN PGP (SIGNED )?MESSAGE-----/ ) {
             return $1? 'signed': 'encrypted';
