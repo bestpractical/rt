@@ -1951,7 +1951,7 @@ sub DeleteKey {
 
     return $self->CallGnuPG(
         Command     => "--delete-secret-and-public-key",
-        CommandArgs => [\--', $key],
+        CommandArgs => ['--', $key],
         Callback    => sub {
             my %handle = @_;
             while ( my $str = readline $handle{'status'} ) {
