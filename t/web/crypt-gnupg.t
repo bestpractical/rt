@@ -420,7 +420,7 @@ like($m->content, qr/$key2/, "second key shows up in preferences");
 like($m->content, qr/$key1/, "first key shows up in preferences");
 like($m->content, qr/$key2.*?$key1/s, "second key (now preferred) shows up before the first");
 
-$m->no_warnings_ok;
+ok !grep !m{Couldn't load custom field by 'SMIME Key' identifier}, $m->get_warnings;
 
 # test that the new fields work
 $m->get("$baseurl/Search/Simple.html?q=". $queue->Name);
