@@ -40,6 +40,7 @@ my $queue = RT::Test->load_or_create_queue(
     CorrespondAddress => 'general@example.com',
 );
 ok $queue && $queue->id, 'loaded or created queue';
+$queue->SetSignAuto(1);
 my $qid = $queue->id;
 
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -351,12 +352,12 @@ $nokey->PrincipalObj->GrantRight(Right => 'CreateTicket');
 $nokey->PrincipalObj->GrantRight(Right => 'OwnTicket');
 
 my $tick = RT::Ticket->new( RT->SystemUser );
-$tick->Create(Subject => 'owner lacks pubkey', Queue => 'general',
+$tick->Create(Subject => 'owner lacks pubkey', Queue => $qid,
               Owner => $nokey);
 ok(my $id = $tick->id, 'created ticket for owner-without-pubkey');
 
 $tick = RT::Ticket->new( RT->SystemUser );
-$tick->Create(Subject => 'owner has pubkey', Queue => 'general',
+$tick->Create(Subject => 'owner has pubkey', Queue => $qid,
               Owner => 'root');
 ok($id = $tick->id, 'created ticket for owner-with-pubkey');
 
@@ -422,7 +423,7 @@ like($m->content, qr/$key2.*?$key1/s, "second key (now preferred) shows up befor
 $m->no_warnings_ok;
 
 # test that the new fields work
-$m->get("$baseurl/Search/Simple.html?q=General");
+$m->get("$baseurl/Search/Simple.html?q=". $queue->Name);
 my $content = $m->content;
 $content =~ s/&#40;/(/g;
 $content =~ s/&#41;/)/g;
