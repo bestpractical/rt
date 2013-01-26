@@ -50,4 +50,4 @@ works($cf->SetPattern('(?!)')); # reject everything
 fails(add(''));
 fails(add('...'));
 
-1;
+undef $t;
