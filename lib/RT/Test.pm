@@ -138,6 +138,8 @@ sub import {
         if $args{'requires'};
     push @{ $args{'plugins'} ||= [] }, $args{'testing'}
         if $args{'testing'};
+    push @{ $args{'plugins'} ||= [] }, split " ", $ENV{RT_TEST_PLUGINS}
+        if $ENV{RT_TEST_PLUGINS};
 
     $class->bootstrap_tempdir;
 
@@ -514,7 +516,7 @@ sub bootstrap_plugins_paths {
 
         if ( grep $name eq $_, @plugins ) {
             my $variants = join "(?:|::|-|_)", map "\Q$_\E", split /::/, $name;
-            my ($path) = map $ENV{$_}, grep /^CHIMPS_(?:$variants).*_ROOT$/i, keys %ENV;
+            my ($path) = map $ENV{$_}, grep /^RT_TEST_PLUGIN_(?:$variants).*_ROOT$/i, keys %ENV;
             return $path if $path;
         }
         return $old_func->(@_);
