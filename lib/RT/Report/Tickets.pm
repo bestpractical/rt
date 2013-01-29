@@ -246,7 +246,7 @@ sub _FieldToFunction {
         unless ( $cf->id ) {
             $RT::Logger->error("Couldn't load CustomField #$cf_name");
         } else {
-            my ($ticket_cf_alias, $cf_alias) = $self->_CustomFieldJoin($cf->id, $cf->id, $cf_name);
+            my ($ticket_cf_alias, $cf_alias) = $self->_CustomFieldJoin($cf->id, $cf);
             @args{qw(ALIAS FIELD)} = ($ticket_cf_alias, 'Content');
         }
     } elsif ( $field =~ /^(?:(Owner|Creator|LastUpdatedBy))(?:\.(.*))?$/ ) {

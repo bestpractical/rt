@@ -1212,7 +1212,7 @@ sub OrderByCols {
            my ($queue, $field, $cf_obj, $column) = $self->_CustomFieldDecipher( $subkey );
            my $cfkey = $cf_obj ? $cf_obj->id : "$queue.$field";
            $cfkey .= ".ordering" if !$cf_obj || ($cf_obj->MaxValues||0) != 1;
-           my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, ($cf_obj ?$cf_obj->id :0) , $field );
+           my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, ($cf_obj || $field) );
            # this is described in _CustomFieldLimit
            $self->Limit(
                ALIAS      => $CFs,

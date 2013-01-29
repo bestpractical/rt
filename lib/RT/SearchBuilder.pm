@@ -72,6 +72,8 @@ use base qw(DBIx::SearchBuilder RT::Base);
 use RT::Base;
 use DBIx::SearchBuilder "1.40";
 
+use Scalar::Util qw/blessed/;
+
 sub _Init  {
     my $self = shift;
     
@@ -209,7 +211,7 @@ Factor out the Join of custom fields so we can use it for sorting too
 =cut
 
 sub _CustomFieldJoin {
-    my ($self, $cfkey, $cfid, $field) = @_;
+    my ($self, $cfkey, $cf) = @_;
     # Perform one Join per CustomField
     if ( $self->{_sql_object_cfv_alias}{$cfkey} ||
          $self->{_sql_cf_alias}{$cfkey} )
@@ -219,7 +221,7 @@ sub _CustomFieldJoin {
     }
 
     my ($ocfvalias, $CFs);
-    if ( $cfid ) {
+    if ( blessed($cf) ) {
         $ocfvalias = $self->{_sql_object_cfv_alias}{$cfkey} = $self->Join(
             TYPE   => 'LEFT',
             ALIAS1 => 'main',
@@ -230,7 +232,7 @@ sub _CustomFieldJoin {
         $self->Limit(
             LEFTJOIN        => $ocfvalias,
             FIELD           => 'CustomField',
-            VALUE           => $cfid,
+            VALUE           => $cf->id,
             ENTRYAGGREGATOR => 'AND'
         );
     }
@@ -266,7 +268,7 @@ sub _CustomFieldJoin {
             LEFTJOIN        => $CFs,
             ENTRYAGGREGATOR => 'AND',
             FIELD           => 'Name',
-            VALUE           => $field,
+            VALUE           => $cf,
         );
 
         $ocfvalias = $self->{_sql_object_cfv_alias}{$cfkey} = $self->Join(
@@ -448,7 +450,7 @@ sub _LimitCustomField {
         # IS[ NOT] NULL without column is the same as has[ no] any CF value,
         # we can reuse our default joins for this operation
         # with column specified we have different situation
-        my ($ocfvalias, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
+        my ($ocfvalias, $CFs) = $self->_CustomFieldJoin( $cfkey, ($cf || $field) );
         $self->_OpenParen;
         $self->Limit(
             ALIAS    => $ocfvalias,
@@ -508,7 +510,7 @@ sub _LimitCustomField {
     } 
     elsif ( !$negative_op || $single_value ) {
         $cfkey .= '.'. $self->{'_sql_multiple_cfs_index'}++ if not $single_value and not $op =~ /^[<>]=?$/;
-        my ($ocfvalias, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
+        my ($ocfvalias, $CFs) = $self->_CustomFieldJoin( $cfkey, ($cf || $field) );
 
         $self->_OpenParen;
 
@@ -677,7 +679,7 @@ sub _LimitCustomField {
     }
     else {
         $cfkey .= '.'. $self->{'_sql_multiple_cfs_index'}++;
-        my ($ocfvalias, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
+        my ($ocfvalias, $CFs) = $self->_CustomFieldJoin( $cfkey, ($cf || $field) );
 
         # reverse operation
         $op =~ s/!|NOT\s+//i;
