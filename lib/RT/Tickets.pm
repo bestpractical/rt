@@ -86,6 +86,8 @@ use base 'RT::SearchBuilder';
 use Role::Basic 'with';
 with 'RT::SearchBuilder::Role::Roles';
 
+use Scalar::Util qw/blessed/;
+
 use RT::Ticket;
 use RT::SQL;
 
@@ -1112,6 +1114,21 @@ sub _CustomFieldLimit {
         COLUMN   => $column,
         SUBCLAUSE => "ticketsql",
     );
+}
+
+sub _CustomFieldJoinByName {
+    my $self = shift;
+    my ($cf) = @_;
+
+    my ($ocfvalias, $CFs, $ocfalias) = $self->SUPER::_CustomFieldJoinByName($cf);
+    $self->Limit(
+        LEFTJOIN        => $ocfalias,
+        ENTRYAGGREGATOR => 'OR',
+        FIELD           => 'ObjectId',
+        VALUE           => 'main.Queue',
+        QUOTEVALUE      => 0,
+    );
+    return ($ocfvalias, $CFs, $ocfalias);
 }
 
 sub _HasAttributeLimit {

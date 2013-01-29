@@ -237,59 +237,14 @@ sub _CustomFieldJoin {
         );
     }
     else {
-        my $ocfalias = $self->Join(
-            TYPE       => 'LEFT',
-            FIELD1     => 'Queue',
-            TABLE2     => 'ObjectCustomFields',
-            FIELD2     => 'ObjectId',
-        );
-
-        $self->Limit(
-            LEFTJOIN        => $ocfalias,
-            ENTRYAGGREGATOR => 'OR',
-            FIELD           => 'ObjectId',
-            VALUE           => '0',
-        );
-
-        $CFs = $self->{_sql_cf_alias}{$cfkey} = $self->Join(
-            TYPE       => 'LEFT',
-            ALIAS1     => $ocfalias,
-            FIELD1     => 'CustomField',
-            TABLE2     => 'CustomFields',
-            FIELD2     => 'id',
-        );
-        $self->Limit(
-            LEFTJOIN        => $CFs,
-            ENTRYAGGREGATOR => 'AND',
-            FIELD           => 'LookupType',
-            VALUE           => 'RT::Queue-RT::Ticket',
-        );
-        $self->Limit(
-            LEFTJOIN        => $CFs,
-            ENTRYAGGREGATOR => 'AND',
-            FIELD           => 'Name',
-            VALUE           => $cf,
-        );
-
-        $ocfvalias = $self->{_sql_object_cfv_alias}{$cfkey} = $self->Join(
-            TYPE   => 'LEFT',
-            ALIAS1 => $CFs,
-            FIELD1 => 'id',
-            TABLE2 => 'ObjectCustomFieldValues',
-            FIELD2 => 'CustomField',
-        );
-        $self->Limit(
-            LEFTJOIN        => $ocfvalias,
-            FIELD           => 'ObjectId',
-            VALUE           => 'main.id',
-            QUOTEVALUE      => 0,
-            ENTRYAGGREGATOR => 'AND',
-        );
+        ($ocfvalias, $CFs) = $self->_CustomFieldJoinByName( $cf );
+        $self->{_sql_cf_alias}{$cfkey} = $CFs;
+        $self->{_sql_object_cfv_alias}{$cfkey} = $ocfvalias;
     }
     $self->Limit(
         LEFTJOIN        => $ocfvalias,
         FIELD           => 'ObjectType',
-        VALUE           => 'RT::Ticket',
+        VALUE           => ref($self->NewItem),
         ENTRYAGGREGATOR => 'AND'
     );
     $self->Limit(
@@ -301,6 +256,54 @@ sub _CustomFieldJoin {
     );
 
     return ($ocfvalias, $CFs);
+}
+
+sub _CustomFieldJoinByName {
+    my $self = shift;
+    my ($cf) = @_;
+    my $ocfalias = $self->Join(
+        TYPE       => 'LEFT',
+        EXPRESSION => q|'0'|,
+        TABLE2     => 'ObjectCustomFields',
+        FIELD2     => 'ObjectId',
+    );
+
+    my $CFs = $self->Join(
+        TYPE       => 'LEFT',
+        ALIAS1     => $ocfalias,
+        FIELD1     => 'CustomField',
+        TABLE2     => 'CustomFields',
+        FIELD2     => 'id',
+    );
+    $self->Limit(
+        LEFTJOIN        => $CFs,
+        ENTRYAGGREGATOR => 'AND',
+        FIELD           => 'LookupType',
+        VALUE           => $self->NewItem->CustomFieldLookupType,
+    );
+    $self->Limit(
+        LEFTJOIN        => $CFs,
+        ENTRYAGGREGATOR => 'AND',
+        FIELD           => 'Name',
+        VALUE           => $cf,
+    );
+
+    my $ocfvalias = $self->Join(
+        TYPE   => 'LEFT',
+        ALIAS1 => $CFs,
+        FIELD1 => 'id',
+        TABLE2 => 'ObjectCustomFieldValues',
+        FIELD2 => 'CustomField',
+    );
+    $self->Limit(
+        LEFTJOIN        => $ocfvalias,
+        FIELD           => 'ObjectId',
+        VALUE           => 'main.id',
+        QUOTEVALUE      => 0,
+        ENTRYAGGREGATOR => 'AND',
+    );
+
+    return ($ocfvalias, $CFs, $ocfalias);
 }
 
 sub LimitCustomField {
