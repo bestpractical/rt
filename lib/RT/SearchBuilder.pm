@@ -308,42 +308,7 @@ sub _CustomFieldJoinByName {
 
 sub LimitCustomField {
     my $self = shift;
-    my %args = ( VALUE        => undef,
-                 CUSTOMFIELD  => undef,
-                 OPERATOR     => '=',
-                 @_ );
-
-    my $alias = $self->Join(
-        TYPE       => 'left',
-        ALIAS1     => 'main',
-        FIELD1     => 'id',
-        TABLE2     => 'ObjectCustomFieldValues',
-        FIELD2     => 'ObjectId'
-    );
-    $self->Limit(
-        ALIAS      => $alias,
-        FIELD      => 'CustomField',
-        OPERATOR   => '=',
-        VALUE      => $args{'CUSTOMFIELD'},
-    ) if ($args{'CUSTOMFIELD'});
-    $self->Limit(
-        ALIAS      => $alias,
-        FIELD      => 'ObjectType',
-        OPERATOR   => '=',
-        VALUE      => $self->_SingularClass,
-    );
-    $self->Limit(
-        ALIAS      => $alias,
-        FIELD      => 'Content',
-        OPERATOR   => $args{'OPERATOR'},
-        VALUE      => $args{'VALUE'},
-    );
-    $self->Limit(
-        ALIAS => $alias,
-        FIELD => 'Disabled',
-        OPERATOR => '=',
-        VALUE => 0,
-    );
+    return $self->_LimitCustomField( @_ );
 }
 
 use Regexp::Common qw(RE_net_IPv4);
