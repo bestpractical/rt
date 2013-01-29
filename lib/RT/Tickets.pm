@@ -1234,46 +1234,8 @@ sub OrderByCols {
             }
             push @res, { %$row, ALIAS => $users, FIELD => $subkey };
        } elsif ( defined $meta->[0] && $meta->[0] eq 'CUSTOMFIELD' ) {
-           my ($queue, $field, $cf_obj, $column) = $self->_CustomFieldDecipher( $subkey );
-           my $cfkey = $cf_obj ? $cf_obj->id : "$queue.$field";
-           $cfkey .= ".ordering" if !$cf_obj || ($cf_obj->MaxValues||0) != 1;
-           my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, ($cf_obj || $field) );
-           # this is described in _CustomFieldLimit
-           $self->Limit(
-               ALIAS      => $CFs,
-               FIELD      => 'Name',
-               OPERATOR   => 'IS NOT',
-               VALUE      => 'NULL',
-               QUOTEVALUE => 1,
-               ENTRYAGGREGATOR => 'AND',
-           ) if $CFs;
-           unless ($cf_obj) {
-               # For those cases where we are doing a join against the
-               # CF name, and don't have a CFid, use Unique to make sure
-               # we don't show duplicate tickets.  NOTE: I'm pretty sure
-               # this will stay mixed in for the life of the
-               # class/package, and not just for the life of the object.
-               # Potential performance issue.
-               require DBIx::SearchBuilder::Unique;
-               DBIx::SearchBuilder::Unique->import;
-           }
-           my $CFvs = $self->Join(
-               TYPE   => 'LEFT',
-               ALIAS1 => $TicketCFs,
-               FIELD1 => 'CustomField',
-               TABLE2 => 'CustomFieldValues',
-               FIELD2 => 'CustomField',
-           );
-           $self->Limit(
-               LEFTJOIN        => $CFvs,
-               FIELD           => 'Name',
-               QUOTEVALUE      => 0,
-               VALUE           => $TicketCFs . ".Content",
-               ENTRYAGGREGATOR => 'AND'
-           );
-
-           push @res, { %$row, ALIAS => $CFvs, FIELD => 'SortOrder' };
-           push @res, { %$row, ALIAS => $TicketCFs, FIELD => 'Content' };
+           my ($queue, $field, $cf, $column) = $self->_CustomFieldDecipher( $subkey );
+           push @res, $self->_OrderByCF( $row, ($cf || "$queue.$field") );
        } elsif ( $field eq "Custom" && $subkey eq "Ownership") {
            # PAW logic is "reversed"
            my $order = "ASC";

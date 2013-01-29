@@ -121,6 +121,51 @@ sub JoinTransactions {
     return $alias;
 }
 
+sub _OrderByCF {
+    my $self = shift;
+    my ($row, $cf) = @_;
+
+    my $cfkey = blessed($cf) ? $cf->id : $cf;
+    $cfkey .= ".ordering" if !blessed($cf) || ($cf->MaxValues||0) != 1;
+    my ($ocfvs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cf );
+    # this is described in _LimitCustomField
+    $self->Limit(
+        ALIAS      => $CFs,
+        FIELD      => 'Name',
+        OPERATOR   => 'IS NOT',
+        VALUE      => 'NULL',
+        QUOTEVALUE => 1,
+        ENTRYAGGREGATOR => 'AND',
+    ) if $CFs;
+    unless (blessed($cf)) {
+        # For those cases where we are doing a join against the
+        # CF name, and don't have a CFid, use Unique to make sure
+        # we don't show duplicate tickets.  NOTE: I'm pretty sure
+        # this will stay mixed in for the life of the
+        # class/package, and not just for the life of the object.
+        # Potential performance issue.
+        require DBIx::SearchBuilder::Unique;
+        DBIx::SearchBuilder::Unique->import;
+    }
+    my $CFvs = $self->Join(
+        TYPE   => 'LEFT',
+        ALIAS1 => $ocfvs,
+        FIELD1 => 'CustomField',
+        TABLE2 => 'CustomFieldValues',
+        FIELD2 => 'CustomField',
+    );
+    $self->Limit(
+        LEFTJOIN        => $CFvs,
+        FIELD           => 'Name',
+        QUOTEVALUE      => 0,
+        VALUE           => "$ocfvs.Content",
+        ENTRYAGGREGATOR => 'AND'
+    );
+
+    return { %$row, ALIAS => $CFvs,  FIELD => 'SortOrder' },
+           { %$row, ALIAS => $ocfvs, FIELD => 'Content' };
+}
+
 sub OrderByCols {
     my $self = shift;
     my @sort;
