@@ -218,9 +218,9 @@ sub _CustomFieldJoin {
                  $self->{_sql_cf_alias}{$cfkey} );
     }
 
-    my ($TicketCFs, $CFs);
+    my ($ocfvalias, $CFs);
     if ( $cfid ) {
-        $TicketCFs = $self->{_sql_object_cfv_alias}{$cfkey} = $self->Join(
+        $ocfvalias = $self->{_sql_object_cfv_alias}{$cfkey} = $self->Join(
             TYPE   => 'LEFT',
             ALIAS1 => 'main',
             FIELD1 => 'id',
@@ -228,7 +228,7 @@ sub _CustomFieldJoin {
             FIELD2 => 'ObjectId',
         );
         $self->Limit(
-            LEFTJOIN        => $TicketCFs,
+            LEFTJOIN        => $ocfvalias,
             FIELD           => 'CustomField',
             VALUE           => $cfid,
             ENTRYAGGREGATOR => 'AND'
@@ -269,7 +269,7 @@ sub _CustomFieldJoin {
             VALUE           => $field,
         );
 
-        $TicketCFs = $self->{_sql_object_cfv_alias}{$cfkey} = $self->Join(
+        $ocfvalias = $self->{_sql_object_cfv_alias}{$cfkey} = $self->Join(
             TYPE   => 'LEFT',
             ALIAS1 => $CFs,
             FIELD1 => 'id',
@@ -277,7 +277,7 @@ sub _CustomFieldJoin {
             FIELD2 => 'CustomField',
         );
         $self->Limit(
-            LEFTJOIN        => $TicketCFs,
+            LEFTJOIN        => $ocfvalias,
             FIELD           => 'ObjectId',
             VALUE           => 'main.id',
             QUOTEVALUE      => 0,
@@ -285,20 +285,20 @@ sub _CustomFieldJoin {
         );
     }
     $self->Limit(
-        LEFTJOIN        => $TicketCFs,
+        LEFTJOIN        => $ocfvalias,
         FIELD           => 'ObjectType',
         VALUE           => 'RT::Ticket',
         ENTRYAGGREGATOR => 'AND'
     );
     $self->Limit(
-        LEFTJOIN        => $TicketCFs,
+        LEFTJOIN        => $ocfvalias,
         FIELD           => 'Disabled',
         OPERATOR        => '=',
         VALUE           => '0',
         ENTRYAGGREGATOR => 'AND'
     );
 
-    return ($TicketCFs, $CFs);
+    return ($ocfvalias, $CFs);
 }
 
 sub LimitCustomField {
@@ -448,10 +448,10 @@ sub _LimitCustomField {
         # IS[ NOT] NULL without column is the same as has[ no] any CF value,
         # we can reuse our default joins for this operation
         # with column specified we have different situation
-        my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
+        my ($ocfvalias, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
         $self->_OpenParen;
         $self->Limit(
-            ALIAS    => $TicketCFs,
+            ALIAS    => $ocfvalias,
             FIELD    => 'id',
             OPERATOR => $op,
             VALUE    => $value,
@@ -508,7 +508,7 @@ sub _LimitCustomField {
     } 
     elsif ( !$negative_op || $single_value ) {
         $cfkey .= '.'. $self->{'_sql_multiple_cfs_index'}++ if not $single_value and not $op =~ /^[<>]=?$/;
-        my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
+        my ($ocfvalias, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
 
         $self->_OpenParen;
 
@@ -519,7 +519,7 @@ sub _LimitCustomField {
         # otherwise search in Content and in LargeContent
         if ( $column ) {
             $self->Limit( $fix_op->(
-                ALIAS      => $TicketCFs,
+                ALIAS      => $ocfvalias,
                 FIELD      => $column,
                 OPERATOR   => $op,
                 VALUE      => $value,
@@ -545,7 +545,7 @@ sub _LimitCustomField {
                 $self->_OpenParen;
 
                 $self->Limit(
-                    ALIAS    => $TicketCFs,
+                    ALIAS    => $ocfvalias,
                     FIELD    => 'Content',
                     OPERATOR => ">=",
                     VALUE    => $daystart,
@@ -553,7 +553,7 @@ sub _LimitCustomField {
                 );
 
                 $self->Limit(
-                    ALIAS    => $TicketCFs,
+                    ALIAS    => $ocfvalias,
                     FIELD    => 'Content',
                     OPERATOR => "<",
                     VALUE    => $dayend,
@@ -566,7 +566,7 @@ sub _LimitCustomField {
             elsif ( $op eq '=' || $op eq '!=' || $op eq '<>' ) {
                 if ( length( Encode::encode_utf8($value) ) < 256 ) {
                     $self->Limit(
-                        ALIAS    => $TicketCFs,
+                        ALIAS    => $ocfvalias,
                         FIELD    => 'Content',
                         OPERATOR => $op,
                         VALUE    => $value,
@@ -577,14 +577,14 @@ sub _LimitCustomField {
                 else {
                     $self->_OpenParen;
                     $self->Limit(
-                        ALIAS           => $TicketCFs,
+                        ALIAS           => $ocfvalias,
                         FIELD           => 'Content',
                         OPERATOR        => '=',
                         VALUE           => '',
                         ENTRYAGGREGATOR => 'OR'
                     );
                     $self->Limit(
-                        ALIAS           => $TicketCFs,
+                        ALIAS           => $ocfvalias,
                         FIELD           => 'Content',
                         OPERATOR        => 'IS',
                         VALUE           => 'NULL',
@@ -592,7 +592,7 @@ sub _LimitCustomField {
                     );
                     $self->_CloseParen;
                     $self->Limit( $fix_op->(
-                        ALIAS           => $TicketCFs,
+                        ALIAS           => $ocfvalias,
                         FIELD           => 'LargeContent',
                         OPERATOR        => $op,
                         VALUE           => $value,
@@ -603,7 +603,7 @@ sub _LimitCustomField {
             }
             else {
                 $self->Limit(
-                    ALIAS    => $TicketCFs,
+                    ALIAS    => $ocfvalias,
                     FIELD    => 'Content',
                     OPERATOR => $op,
                     VALUE    => $value,
@@ -614,14 +614,14 @@ sub _LimitCustomField {
                 $self->_OpenParen;
                 $self->_OpenParen;
                 $self->Limit(
-                    ALIAS           => $TicketCFs,
+                    ALIAS           => $ocfvalias,
                     FIELD           => 'Content',
                     OPERATOR        => '=',
                     VALUE           => '',
                     ENTRYAGGREGATOR => 'OR'
                 );
                 $self->Limit(
-                    ALIAS           => $TicketCFs,
+                    ALIAS           => $ocfvalias,
                     FIELD           => 'Content',
                     OPERATOR        => 'IS',
                     VALUE           => 'NULL',
@@ -629,7 +629,7 @@ sub _LimitCustomField {
                 );
                 $self->_CloseParen;
                 $self->Limit( $fix_op->(
-                    ALIAS           => $TicketCFs,
+                    ALIAS           => $ocfvalias,
                     FIELD           => 'LargeContent',
                     OPERATOR        => $op,
                     VALUE           => $value,
@@ -663,7 +663,7 @@ sub _LimitCustomField {
 
             if ($negative_op) {
                 $self->Limit(
-                    ALIAS           => $TicketCFs,
+                    ALIAS           => $ocfvalias,
                     FIELD           => $column || 'Content',
                     OPERATOR        => 'IS',
                     VALUE           => 'NULL',
@@ -677,7 +677,7 @@ sub _LimitCustomField {
     }
     else {
         $cfkey .= '.'. $self->{'_sql_multiple_cfs_index'}++;
-        my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
+        my ($ocfvalias, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
 
         # reverse operation
         $op =~ s/!|NOT\s+//i;
@@ -686,8 +686,8 @@ sub _LimitCustomField {
         # otherwise search in Content and in LargeContent
         if ( $column ) {
             $self->Limit( $fix_op->(
-                LEFTJOIN   => $TicketCFs,
-                ALIAS      => $TicketCFs,
+                LEFTJOIN   => $ocfvalias,
+                ALIAS      => $ocfvalias,
                 FIELD      => $column,
                 OPERATOR   => $op,
                 VALUE      => $value,
@@ -696,8 +696,8 @@ sub _LimitCustomField {
         }
         else {
             $self->Limit(
-                LEFTJOIN   => $TicketCFs,
-                ALIAS      => $TicketCFs,
+                LEFTJOIN   => $ocfvalias,
+                ALIAS      => $ocfvalias,
                 FIELD      => 'Content',
                 OPERATOR   => $op,
                 VALUE      => $value,
@@ -706,7 +706,7 @@ sub _LimitCustomField {
         }
         $self->Limit(
             %rest,
-            ALIAS      => $TicketCFs,
+            ALIAS      => $ocfvalias,
             FIELD      => 'id',
             OPERATOR   => 'IS',
             VALUE      => 'NULL',
