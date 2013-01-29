@@ -1101,9 +1101,17 @@ sub _CustomFieldLimit {
 
     my ($queue, $cfid, $cf, $column);
     ($queue, $field, $cf, $column) = $self->_CustomFieldDecipher( $field );
-    $cfid = $cf ? $cf->id  : 0 ;
 
-    $self->_LimitCustomField( $field, $queue, $cfid, $cf, $column, $op, $value, %rest );
+
+    $self->_LimitCustomField(
+        %rest,
+        CUSTOMFIELD => $cf || $field,
+        KEY      => $cf ? $cf->id : "$queue.$field",
+        OPERATOR => $op,
+        VALUE    => $value,
+        COLUMN   => $column,
+        SUBCLAUSE => "ticketsql",
+    );
 }
 
 sub _HasAttributeLimit {
