@@ -867,20 +867,22 @@ sub BriefDescription {
             return $self->loc('Password changed');
         }
         elsif ( $self->Field eq 'Queue' ) {
-            my $q1 = RT::Queue->new( $self->CurrentUser );
-            my $old_queue_name;
-            if( $q1->Load( $self->OldValue ) ){
-                $old_queue_name = $q1->Name;
+            my %values;
+            foreach my $field (qw(OldValue NewValue)){
+                my $q = RT::Queue->new( $self->CurrentUser );
+                $q->Load( $self->$field );
+                if( $q->Id ) {
+                    $values{$field} = $q->Name;
+                }
+                else{
+                    # Allow string name for migrations where the old queue may
+                    # not be available in this instance.
+                    $values{$field} = $self->$field;
+                }
             }
-            else{
-                # Allow string name for migrations where the old queue may
-                # not be available in this instance.
-                $old_queue_name = $self->OldValue;
-            }
-            my $q2 = RT::Queue->new( $self->CurrentUser );
-            $q2->Load( $self->NewValue );
+
             return $self->loc("[_1] changed from [_2] to [_3]",
-                              $self->loc($self->Field) , $old_queue_name, $q2->Name);
+                $self->loc($self->Field) , $values{OldValue}, $values{NewValue});
         }
 
         # Write the date/time change at local time:
