@@ -499,12 +499,14 @@ L<Email::Address> objects.
 
 =cut
 
+our @ADDRESS_HEADERS = qw(From To Cc Bcc RT-Send-Cc RT-Send-Bcc);
+
 sub Addresses {
     my $self = shift;
 
     my %data = ();
     my $current_user_address = lc $self->CurrentUser->EmailAddress;
-    foreach my $hdr (qw(From To Cc Bcc RT-Send-Cc RT-Send-Bcc)) {
+    foreach my $hdr (@ADDRESS_HEADERS) {
         my @Addresses;
         my $line = $self->GetHeader($hdr);
         
