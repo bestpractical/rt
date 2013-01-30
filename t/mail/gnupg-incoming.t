@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 47;
+use RT::Test tests => 51;
 
 plan skip_all => 'GnuPG required.'
     unless eval 'use GnuPG::Interface; 1';
@@ -243,7 +243,6 @@ RT::Test->close_mailgate_ok($mail);
     ok(index($orig->Content, $buf) != -1, 'found original msg');
 }
 
-
 # test for signed mail by other key
 $buf = '';
 
@@ -355,3 +354,31 @@ is(@mail, 1, 'caught outgoing mail.');
     unlike( ($attach ? $attach->Content : ''), qr'really should not be there either');
 }
 
+
+# test that if it gets base64 transfer-encoded long mail then it doesn't hang
+{
+    local $SIG{ALRM} = sub {
+        ok 0, "timed out, web server is probably in deadlock";
+        exit;
+    };
+    alarm 30;
+    $buf = encode_base64('a'x(250*1024));
+    $mail = RT::Test->open_mailgate_ok($baseurl);
+    print $mail <<"EOF";
+From: recipient\@example.com
+To: general\@$RT::rtname
+Content-transfer-encoding: base64
+Subject: Long not encrypted message for queue
+
+$buf
+EOF
+    RT::Test->close_mailgate_ok($mail);
+    alarm 0;
+
+    my $tick = RT::Test->last_ticket;
+    is( $tick->Subject, 'Long not encrypted message for queue',
+        "Created the ticket"
+    );
+    my $content = $tick->Transactions->First->Content;
+    like $content, qr/a{1024,}/, 'content is not lost';
+}
