@@ -150,4 +150,4 @@ sub run_tests {
 }
 run_tests();
 
-exit 0;
+@tickets = ();
