@@ -801,6 +801,10 @@ my $build_main_nav = sub {
     }
 
     if ( $request_path =~ m{^/Articles/} ) {
+        PageWidgets()->child( article_search => raw_html => $m->scomp('/Articles/Elements/GotoArticle') );
+        PageWidgets()->delete('create_ticket');
+        PageWidgets()->delete('simple_search');
+
         my $tabs = PageMenu();
         $tabs->child( search => title => loc("Search"),       path => "/Articles/Article/Search.html" );
         $tabs->child( create => title => loc("New Article" ), path => "/Articles/Article/PreCreate.html" );
