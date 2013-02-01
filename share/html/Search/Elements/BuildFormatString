@@ -229,8 +229,7 @@ foreach my $field (@seen) {
     next unless $field;
     my $row = "'";
     $row .= $field->{'Prefix'} if defined $field->{'Prefix'};
-    $row .= "__" . ($field->{'Column'} =~ m/\(/ ? $field->{'Column'} # func, don't escape
-		    : $m->interp->apply_escapes( $field->{'Column'}, 'h' )) . "__"
+    $row .= "__$field->{'Column'}__"
       unless ( $field->{'Column'} eq "<blank>" );
     $row .= $field->{'Suffix'} if defined $field->{'Suffix'};
     $row .= "'";
