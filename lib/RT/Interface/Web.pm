@@ -2566,12 +2566,17 @@ sub ProcessTicketReminders {
           Format => 'unknown',
           Value => $args->{'NewReminder-Due'}
         );
-        my ( $add_id, $msg, $txnid ) = $Ticket->Reminders->Add(
+        my ( $add_id, $msg ) = $Ticket->Reminders->Add(
             Subject => $args->{'NewReminder-Subject'},
             Owner   => $args->{'NewReminder-Owner'},
             Due     => $due_obj->ISO
         );
-        push @results, loc("Reminder '[_1]' added", $args->{'NewReminder-Subject'});
+        if ( $add_id ) {
+            push @results, loc("Reminder '[_1]' added", $args->{'NewReminder-Subject'});
+        }
+        else {
+            push @results, $msg;
+        }
     }
     return @results;
 }

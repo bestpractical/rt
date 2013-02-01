@@ -116,6 +116,16 @@ sub Add {
         @_
     );
 
+    my $ticket = RT::Ticket->new($self->CurrentUser);
+    $ticket->Load($self->Ticket);
+    if ( !$ticket->id ) {
+        return ( 0, $self->loc( "Failed to load ticket [_1]", $self->Ticket ) );
+    }
+
+    if ( $ticket->Status eq 'deleted' ) {
+        return ( 0, $self->loc("Can't link to a deleted ticket") );
+    }
+
     my $reminder = RT::Ticket->new($self->CurrentUser);
     my ( $status, $msg ) = $reminder->Create(
         Subject => $args{'Subject'},

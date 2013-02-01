@@ -47,6 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => loc("Reminders for ticket #[_1]", $Ticket->Id) &>
 <& /Elements/Tabs &>
+<& /Elements/ListActions, actions => \@results &>
     
 % $m->callback(CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $Ticket);
     
@@ -65,7 +66,7 @@
 <%INIT>
 my $Ticket = LoadTicket($id);
 
-ProcessTicketReminders( TicketObj => $Ticket, ARGSRef => \%ARGS );
+my @results = ProcessTicketReminders( TicketObj => $Ticket, ARGSRef => \%ARGS );
 </%INIT>
 <%ARGS>
 $id => undef
