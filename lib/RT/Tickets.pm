@@ -941,7 +941,7 @@ sub _WatcherLimit {
     my $groups = $self->_RoleGroupsJoin( Type => $type, Class => $class, New => !$type );
 
     $self->_OpenParen;
-    if ( $op =~ /^IS(?: NOT)?$/i ) {
+    if ( $op =~ /^IS(?: NOT)?$/i && !$rest{'SUBKEY'} ) {
         # is [not] empty case
 
         my $group_members = $self->_GroupMembersJoin( GroupsAlias => $groups );
@@ -962,7 +962,7 @@ sub _WatcherLimit {
             %rest,
         );
     }
-    elsif ( $op =~ /^!=$|^NOT\s+/i ) {
+    elsif ( $op =~ /^!=$|\bNOT\b/i ) {
         # negative condition case
 
         # reverse op
