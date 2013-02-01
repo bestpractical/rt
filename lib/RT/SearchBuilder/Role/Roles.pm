@@ -78,16 +78,26 @@ require RT::EmailParser;
 
 sub _RoleGroupsJoin {
     my $self = shift;
-    my %args = (New => 0, Class => 'Ticket', Type => '', @_);
-    $args{Class} =~ s/^RT:://;
+    my %args = (New => 0, Class => '', Type => '', @_);
+    my $item = $self->NewItem;
+
+    $args{'Class'} ||= blessed($item);
+
     return $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $args{'Type'} }
         if $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $args{'Type'} }
            && !$args{'New'};
 
-    # we always have watcher groups for ticket, so we use INNER join
+    # If we're looking at a role group on a class that "contains" this record
+    # (i.e. roles on queues for tickets), then we assume that the current
+    # record has a column named after the containing class (i.e.
+    # Tickets.Queue).
+    my $instance = blessed($item) eq $args{Class} ? "id" : $args{Class};
+       $instance =~ s/^RT:://;
+
+    # Watcher groups are always created for each record, so we use INNER join.
     my $groups = $self->Join(
         ALIAS1          => 'main',
-        FIELD1          => $args{'Class'} eq 'Queue'? 'Queue': 'id',
+        FIELD1          => $instance,
         TABLE2          => 'Groups',
         FIELD2          => 'Instance',
         ENTRYAGGREGATOR => 'AND',
@@ -96,7 +106,7 @@ sub _RoleGroupsJoin {
         LEFTJOIN        => $groups,
         ALIAS           => $groups,
         FIELD           => 'Domain',
-        VALUE           => 'RT::'. $args{'Class'} .'-Role',
+        VALUE           => $args{'Class'} .'-Role',
     );
     $self->Limit(
         LEFTJOIN        => $groups,
@@ -183,13 +193,14 @@ sub RoleLimit {
     my $self = shift;
     my %args = (
         TYPE => '',
+        CLASS => '',
         FIELD => undef,
         OPERATOR => '=',
         VALUE => undef,
         @_
     );
 
-    my $class = blessed($self->NewItem);
+    my $class = $args{CLASS} || blessed($self->NewItem);
 
     $args{FIELD} ||= 'id' if $args{VALUE} =~ /^\d+$/;
     my $type = delete $args{TYPE};

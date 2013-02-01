@@ -900,6 +900,7 @@ sub _WatcherLimit {
 
     $self->RoleLimit(
         TYPE      => $type,
+        CLASS     => "RT::$class",
         FIELD     => $rest{SUBKEY},
         OPERATOR  => $op,
         VALUE     => $value,
