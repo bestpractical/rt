@@ -197,7 +197,7 @@ Takes a paramhash of key/value pairs with the following keys:
 
 sub _SingularClass {
     my $self = shift;
-    my $class = ref($self);
+    my $class = ref($self) || $self;
     $class =~ s/s$// or die "Cannot deduce SingularClass for $class";
     return $class;
 }

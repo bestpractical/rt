@@ -731,8 +731,8 @@ sub _Accessible  {
   my $self = shift;
   my $column = shift;
   my $attribute = lc(shift);
-  return 0 unless defined ($_TABLE_ATTR->{ref($self)}->{$column});
-  return $_TABLE_ATTR->{ref($self)}->{$column}->{$attribute} || 0;
+  return 0 unless defined ($_TABLE_ATTR->{ref($self) || $self}->{$column});
+  return $_TABLE_ATTR->{ref($self) || $self}->{$column}->{$attribute} || 0;
 
 }
 
