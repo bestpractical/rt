@@ -47,6 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%args>
 $menu
+$show_children => undef
 </%args>
 <ul class="list-menu">
 % for my $child ($menu->children) {
@@ -55,6 +56,9 @@ $menu
 <span class="description"><% $description %></span>\
 % }
 </li>
+% if ($show_children && $child->children) {
+<& /Elements/ListMenu, menu => $child &>
+% }
 % }
 </ul>
 
