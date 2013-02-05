@@ -47,10 +47,10 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => loc("Reminders for ticket #[_1]", $Ticket->Id) &>
 <& /Elements/Tabs &>
-<& /Elements/ListActions, actions => \@results &>
     
 % $m->callback(CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $Ticket);
     
+<& /Elements/ListActions, actions => \@results &>
 <form action="<%RT->Config->Get('WebPath')%>/Ticket/Reminders.html" name="UpdateReminders" id="UpdateReminders" method="post">
 <&|/Widgets/TitleBox, title => loc("Reminders"),
                        class=>'ticket-info-reminders'
