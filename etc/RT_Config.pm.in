@@ -1115,7 +1115,12 @@ user's customized homepage ("RT at a glance").
 
 =cut
 
-Set($HomepageComponents, [qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues MyReminders RefreshHomepage Dashboards SavedSearches)]);
+Set(
+    $HomepageComponents,
+    [
+        qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues MyReminders RefreshHomepage Dashboards SavedSearches) # loc_qw
+    ]
+);
 
 =back
 

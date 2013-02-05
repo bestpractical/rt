@@ -488,9 +488,9 @@ my $build_main_nav = sub {
 
         for my $search (@$searches) {
             $search_menu->child( "search-" . $i++ =>
-                title => $search->[0],
+                title => $search->[1],
                 path  => "/Prefs/Search.html?"
-                       . $query_string->( name => ref( $search->[1] ) . '-' . $search->[1]->Id ),
+                       . $query_string->( name => ref( $search->[2] ) . '-' . $search->[2]->Id ),
             );
 
         }
