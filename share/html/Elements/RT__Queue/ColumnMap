@@ -74,6 +74,7 @@ my $COLUMN_MAP = {
     # SubjectTag is special as we can not sort
     SubjectTag  => {
         title     => 'SubjectTag', # loc
+        attribute => 'SubjectTag',
         value     => sub { return $_[0]->SubjectTag },
     },
     Sign => {

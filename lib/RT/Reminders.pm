@@ -116,6 +116,16 @@ sub Add {
         @_
     );
 
+    my $ticket = RT::Ticket->new($self->CurrentUser);
+    $ticket->Load($self->Ticket);
+    if ( !$ticket->id ) {
+        return ( 0, $self->loc( "Failed to load ticket [_1]", $self->Ticket ) );
+    }
+
+    if ( $ticket->Status eq 'deleted' ) {
+        return ( 0, $self->loc("Can't link to a deleted ticket") );
+    }
+
     return ( 0, $self->loc('Permission Denied') )
       unless $self->CurrentUser->HasRight(
         Right  => 'CreateTicket',

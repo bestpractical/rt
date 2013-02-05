@@ -844,8 +844,7 @@ sub _FormatUser {
         my $value;
         if ( $self->NewValue ) {
             my $URI = RT::URI->new( $self->CurrentUser );
-            $URI->FromURI( $self->NewValue );
-            if ( $URI->Resolver ) {
+            if ( $URI->FromURI( $self->NewValue ) ) {
                 $value = [
                     \'<a href="', $URI->AsHREF, \'">',
                     $URI->Resolver->AsString,
@@ -887,8 +886,7 @@ sub _FormatUser {
         my $value;
         if ( $self->OldValue ) {
             my $URI = RT::URI->new( $self->CurrentUser );
-            $URI->FromURI( $self->OldValue );
-            if ( $URI->Resolver ) {
+            if ( $URI->FromURI( $self->OldValue ) ) {
                 $value = [
                     \'<a href="', $URI->AsHREF, \'">',
                     $URI->Resolver->AsString,

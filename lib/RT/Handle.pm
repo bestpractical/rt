@@ -573,7 +573,13 @@ sub cmp_version($$) {
         return $a[$i] <=> $b[$i] if $a[$i] <=> $b[$i];
     }
     return 0;
-}}
+}
+
+sub version_words {
+    return keys %word;
+}
+
+}
 
 
 =head2 InsertInitialData

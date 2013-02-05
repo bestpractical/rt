@@ -85,7 +85,6 @@ my $reminder_collection = $count_reminders->Collection;
 % }
 </tr>
 % my $i = 0;
-
 % while ( my $reminder = $reminder_collection->Next ) {
 % $i++;
 % if ( $reminder->Status eq $resolve_status && !$ShowCompleted ) {
@@ -116,7 +115,7 @@ my $reminder_collection = $count_reminders->Collection;
 % }
 % }
 
-% if ( $Ticket->QueueObj->CurrentUserHasRight('CreateTicket') && $Ticket->CurrentUserHasRight('ModifyTicket') ) {
+% if ($Ticket->Status ne "deleted" and $Ticket->QueueObj->CurrentUserHasRight('CreateTicket') and $Ticket->CurrentUserHasRight('ModifyTicket') ) {
 <&|/l&>New reminder:</&>
 <& SELF:NewReminder, Ticket => $Ticket &>
 % $editable = 1;

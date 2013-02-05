@@ -785,7 +785,7 @@ sub UnsquelchMailTo {
 
 =head2 RequestorAddresses
 
- B<Returns> String: All Ticket Requestor email addresses as a string.
+B<Returns> String: All Ticket Requestor email addresses as a string.
 
 =cut
 
@@ -1549,6 +1549,11 @@ sub Correspond {
     }
 
     my @results = $self->_RecordNote(%args);
+
+    unless ( $results[0] ) {
+        $RT::Handle->Rollback();
+        return @results;
+    }
 
     #Set the last told date to now if this isn't mail from the requestor.
     #TODO: Note that this will wrongly ack mail from any non-requestor as a "told"
