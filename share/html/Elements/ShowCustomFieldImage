@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 %    my $url = RT->Config->Get('WebPath') . "/Download/CustomFieldValue/".$Object->Id.'/'.$m->interp->apply_escapes($Object->Content, 'u');
-<a href="<% $url %>"><% $Object->Content %></a>
+<a href="<% $url %>"><% $Object->Content %></a><br>
 <img type="<% $Object->ContentType %>" height="64" src="<% $url %>" align="middle" />
 <%ARGS>
 $Object
