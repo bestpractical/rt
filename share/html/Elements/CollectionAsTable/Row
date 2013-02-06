@@ -130,7 +130,6 @@ foreach my $column (@Format) {
             Arguments => [$record, $i],
         );
     }
-    s/\n/<br \/>/gs for grep defined $_, @out;
 
     $m->out( $_ .'="'. $m->interp->apply_escapes( $attrs{$_} => 'h' ) .'"' )
         foreach grep $attrs{$_}, qw(align style colspan);

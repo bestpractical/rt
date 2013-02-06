@@ -130,7 +130,7 @@ $COLUMN_MAP = {
 
             if (@values > 1) {
                 for my $value (splice @values) {
-                    push @values, \"<li>", $value, \"</li> ";
+                    push @values, \"<li>", $value, \"</li> \n";
                 }
                 @values = (\"<ul class='cf-values'>", @values, \"</ul>");
             }
