@@ -109,18 +109,23 @@ my $COLUMN_MAP = {
                 $m->notes($key, $cf);
             }
 
-            # Display custom field contents, separated by newlines.
-            # For Image custom fields we also show a thumbnail here.
+            my $comp = $m->comp_exists("/Elements/ShowCustomField".$cf->Type)
+                     ? "/Elements/ShowCustomField".$cf->Type
+                     : undef;
+
             my $values = $cf->ValuesForObject( $_[0] );
             my @values = map {
-                (
-                    ($cf->Type eq 'Image')
-                        ? \($m->scomp( '/Elements/ShowCustomFieldImage', Object => $_ ))
-                        : $_->Content
-                ),
-                \'<br />',
+                $comp
+                    ? \($m->scomp( $comp, Object => $_ ))
+                    : $_->Content
             } @{ $values->ItemsArrayRef };
-            pop @values; # Remove that last <br />
+
+            if (@values > 1) {
+                for my $value (splice @values) {
+                    push @values, \"<li>", $value, \"</li> ";
+                }
+                @values = (\"<ul class='cf-values'>", @values, \"</ul>");
+            }
             return @values;
         },
     },
