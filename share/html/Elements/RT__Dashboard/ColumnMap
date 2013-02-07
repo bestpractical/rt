@@ -48,6 +48,7 @@
 <%ARGS>
 $Name
 $Attr => undef
+$GenericMap => {}
 </%ARGS>
 <%ONCE>
 my $COLUMN_MAP = {
@@ -129,6 +130,6 @@ my $COLUMN_MAP = {
 
 </%ONCE>
 <%INIT>
-$m->callback( COLUMN_MAP => $COLUMN_MAP, CallbackName => 'ColumnMap', CallbackOnce => 1 );
+$m->callback( GenericMap => $GenericMap, COLUMN_MAP => $COLUMN_MAP, CallbackName => 'ColumnMap', CallbackOnce => 1 );
 return GetColumnMapEntry( Map => $COLUMN_MAP, Name => $Name, Attribute => $Attr );
 </%INIT>
