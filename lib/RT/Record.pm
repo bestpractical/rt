@@ -1841,7 +1841,7 @@ Returns the path RT uses to figure out which custom fields apply to this object.
 
 sub CustomFieldLookupType {
     my $self = shift;
-    return ref($self);
+    return ref($self) || $self;
 }
 
 
