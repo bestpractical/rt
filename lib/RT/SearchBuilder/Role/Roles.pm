@@ -159,10 +159,8 @@ and for ordering.
 
 sub _WatcherJoin {
     my $self = shift;
-    my $type = shift || '';
 
-
-    my $groups = $self->_RoleGroupsJoin( Type => $type );
+    my $groups = $self->_RoleGroupsJoin(@_);
     my $group_members = $self->_GroupMembersJoin( GroupsAlias => $groups );
     # XXX: work around, we must hide groups that
     # are members of the role group we search in,

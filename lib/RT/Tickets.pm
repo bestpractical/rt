@@ -1663,10 +1663,11 @@ sub OrderByCols {
         my $meta = $FIELD_METADATA{$field};
         if ( defined $meta->[0] && $meta->[0] eq 'WATCHERFIELD' ) {
             # cache alias as we want to use one alias per watcher type for sorting
-            my $users = $self->{_sql_u_watchers_alias_for_sort}{ $meta->[1] };
+            my $cache_key = join "-", map { $_ || "" } @$meta[1,2];
+            my $users = $self->{_sql_u_watchers_alias_for_sort}{ $cache_key };
             unless ( $users ) {
-                $self->{_sql_u_watchers_alias_for_sort}{ $meta->[1] }
-                    = $users = ( $self->_WatcherJoin( $meta->[1] ) )[2];
+                $self->{_sql_u_watchers_alias_for_sort}{ $cache_key }
+                    = $users = ( $self->_WatcherJoin( Type => $meta->[1], Class => "RT::" . ($meta->[2] || 'Ticket') ) )[2];
             }
             push @res, { %$row, ALIAS => $users, FIELD => $subkey };
        } elsif ( defined $meta->[0] && $meta->[0] eq 'CUSTOMFIELD' ) {
