@@ -280,10 +280,10 @@ sub Create {
                                    ObjectId      => $args{'Object'}->id,
                                );
 
-    #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
-    RT::Principal->InvalidateACLCache();
-
     if ( $id ) {
+        # Clear the key cache. TODO someday we may want to just clear a little
+        # bit of the keycache space.
+        RT::Principal->InvalidateACLCache();
         return ( $id, $self->loc('Right Granted') );
     }
     else {
