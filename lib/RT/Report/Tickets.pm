@@ -301,6 +301,10 @@ sub NewItem {
     return RT::Report::Tickets::Entry->new(RT->SystemUser); # $self->CurrentUser);
 }
 
+# This is necessary since normally NewItem (above) is used to intuit the
+# correct class.  However, since we're abusing a subclass, it's incorrect.
+sub _RoleGroupClass { "RT::Ticket" }
+
 
 =head2 AddEmptyRows
 
