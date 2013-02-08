@@ -80,6 +80,8 @@ use vars qw (
   %OBJECT_TYPES
 );
 
+my (@_ACL_CACHE_HANDLERS);
+
 
 
 =head1 Rights
@@ -284,6 +286,11 @@ sub Create {
         # Clear the key cache. TODO someday we may want to just clear a little
         # bit of the keycache space.
         RT::Principal->InvalidateACLCache();
+        RT::ACE->InvalidateCaches(
+            Action      => "Grant",
+            RightName   => $self->RightName,
+            ACE         => $self,
+        );
         return ( $id, $self->loc('Right Granted') );
     }
     else {
@@ -328,12 +335,15 @@ sub _Delete {
 
     $RT::Handle->BeginTransaction() unless $InsideTransaction;
 
+    my $right = $self->RightName;
+
     my ( $val, $msg ) = $self->SUPER::Delete(@_);
 
     if ($val) {
         #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
         # TODO what about the groups key cache?
         RT::Principal->InvalidateACLCache();
+        RT::ACE->InvalidateCaches( Action => "Revoke", RightName => $right );
         $RT::Handle->Commit() unless $InsideTransaction;
         return ( $val, $self->loc('Right revoked') );
     }
@@ -380,7 +390,67 @@ sub _BootstrapCreate {
 
 }
 
+=head2 InvalidateCaches
 
+Calls any registered ACL cache handlers (see L</RegisterCacheHandler>).
+
+Usually called from L</Create> and L</Delete>.
+
+=cut
+
+sub InvalidateCaches {
+    my $class = shift;
+
+    for my $handler (@_ACL_CACHE_HANDLERS) {
+        next unless ref($handler) eq "CODE";
+        $handler->(@_);
+    }
+}
+
+=head2 RegisterCacheHandler
+
+Class method.  Takes a coderef and adds it to the ACL cache handlers.  These
+handlers are called by L</InvalidateCaches>, usually called itself from
+L</Create> and L</Delete>.
+
+The handlers are passed a hash which may contain any (or none) of these
+optional keys:
+
+=over
+
+=item Action
+
+A string indicating the action that (may have) invalidated the cache.  Expected
+values are currently:
+
+=over
+
+=item Grant
+
+=item Revoke
+
+=back
+
+However, other values may be passed in the future.
+
+=item RightName
+
+The (canonicalized) right being granted or revoked.
+
+=item ACE
+
+The L<RT::ACE> object just created.
+
+=back
+
+Your handler should be flexible enough to account for additional arguments
+being passed in the future.
+
+=cut
+
+sub RegisterCacheHandler {
+    push @_ACL_CACHE_HANDLERS, $_[1];
+}
 
 sub RightName {
     my $self = shift;
