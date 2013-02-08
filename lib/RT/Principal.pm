@@ -71,6 +71,8 @@ use RT::User;
 our $_ACL_CACHE;
 InvalidateACLCache();
 
+require RT::ACE;
+RT::ACE->RegisterCacheHandler(sub { RT::Principal->InvalidateACLCache() });
 
 =head2 IsGroup
 
@@ -185,9 +187,6 @@ sub GrantRight {
         PrincipalId   => $self->Id,
     );
 
-    RT->System->QueueCacheNeedsUpdate(1)
-        if $id and grep { $ace->RightName eq $_ } qw(SeeQueue CreateTicket);
-
     return ($id, $msg);
 }
 
@@ -236,9 +235,6 @@ sub RevokeRight {
 
     my $right = $ace->RightName;
     ($status, $msg) = $ace->Delete;
-
-    RT->System->QueueCacheNeedsUpdate(1)
-        if $status and grep { $right eq $_ } qw(SeeQueue CreateTicket);
 
     return ($status, $msg);
 }
