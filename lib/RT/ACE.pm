@@ -283,9 +283,6 @@ sub Create {
                                );
 
     if ( $id ) {
-        # Clear the key cache. TODO someday we may want to just clear a little
-        # bit of the keycache space.
-        RT::Principal->InvalidateACLCache();
         RT::ACE->InvalidateCaches(
             Action      => "Grant",
             RightName   => $self->RightName,
@@ -340,9 +337,6 @@ sub _Delete {
     my ( $val, $msg ) = $self->SUPER::Delete(@_);
 
     if ($val) {
-        #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
-        # TODO what about the groups key cache?
-        RT::Principal->InvalidateACLCache();
         RT::ACE->InvalidateCaches( Action => "Revoke", RightName => $right );
         $RT::Handle->Commit() unless $InsideTransaction;
         return ( $val, $self->loc('Right revoked') );

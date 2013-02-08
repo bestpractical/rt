@@ -71,6 +71,8 @@ use RT::User;
 our $_ACL_CACHE;
 InvalidateACLCache();
 
+require RT::ACE;
+RT::ACE->RegisterCacheHandler(sub { RT::Principal->InvalidateACLCache() });
 
 =head2 IsGroup
 
