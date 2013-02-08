@@ -98,7 +98,7 @@
 
 <%INIT>
 my $title = loc("Search for tickets");
-use RT::Search::Googleish;
+use RT::Search::Simple;
 
 if ($q) {
     my $tickets = RT::Tickets->new( $session{'CurrentUser'} );
@@ -115,7 +115,7 @@ if ($q) {
 
     $m->callback( %ARGS, CallbackName => 'SearchArgs', args => \%args);
 
-    my $search = RT::Search::Googleish->new(%args);
+    my $search = RT::Search::Simple->new(%args);
 
     $m->comp( "Results.html", Query => $search->QueryToSQL() );
     $m->comp( "/Elements/Footer" );
