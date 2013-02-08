@@ -483,15 +483,18 @@ my $build_main_nav = sub {
         $dashes->child('dashboard_create' => title => loc('New Dashboard'), path => "/Dashboards/Modify.html?Create=1" );
     }
 
-    my $tickets = Menu->child( search => title => loc('Tickets'), path => '/Search/Build.html' );
+    my $search = Menu->child( search => title => loc('Search'), path => '/Search/' );
+
+    my $tickets = $search->child( tickets => title => loc('Tickets'), path => '/Search/Build.html' );
     $tickets->child( simple => title => loc('Simple Search'), path => "/Search/Simple.html" );
     $tickets->child( new    => title => loc('New Search'),    path => "/Search/Build.html?NewQuery=1" );
+
+    $search->child( articles => title => loc('Articles'),   path => "/Articles/Article/Search.html" );
 
 
     my $tools = Menu->child( tools => title => loc('Tools'), path => '/Tools/index.html' );
     my $articles = $tools->child( articles => title => loc('Articles'), path => "/Articles/index.html");
     $articles->child( articles => title => loc('Overview'), path => "/Articles/index.html" );
-    $articles->child( search   => title => loc('Search'),   path => "/Articles/Article/Search.html" );
     $articles->child( topics   => title => loc('Topics'),   path => "/Articles/Topics.html" );
 
     $tools->child( my_day =>
@@ -710,7 +713,7 @@ my $build_main_nav = sub {
                         $session{"tickets"}->PrepForSerialization();
                     }
 
-                    my $search = Menu()->child('search');
+                    my $search = Menu()->child('search')->child('tickets');
                     # Don't display prev links if we're on the first ticket
                     if ( $item_map->{$id}->{prev} ) {
                         $search->child( first =>
@@ -739,7 +742,7 @@ my $build_main_nav = sub {
             && $DECODED_ARGS->{'q'} )
       )
     {
-        my $search = Menu()->child('search');
+        my $search = Menu()->child('search')->child('tickets');
         my $args      = '';
         my $has_query = '';
         my $current_search = $session{"CurrentSearchHash"} || {};
