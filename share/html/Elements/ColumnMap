@@ -193,7 +193,7 @@ $m->callback( COLUMN_MAP => $COLUMN_MAP, CallbackName => 'Once', CallbackOnce =>
 $m->callback( COLUMN_MAP => $COLUMN_MAP );
 
 # first deal with class specific things
-my $class_map = $m->comp("/Elements/$Class/ColumnMap", Attr => $Attr, Name => $Name );
+my $class_map = $m->comp("/Elements/$Class/ColumnMap", Attr => $Attr, Name => $Name, GenericMap => $COLUMN_MAP );
 return $class_map if defined $class_map;
 return GetColumnMapEntry( Map => $COLUMN_MAP, Name => $Name, Attribute => $Attr );
 
