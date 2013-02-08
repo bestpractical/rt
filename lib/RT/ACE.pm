@@ -71,9 +71,9 @@ sub Table {'ACL'}
 use strict;
 use warnings;
 
-use RT::Principals;
-use RT::Queues;
-use RT::Groups;
+require RT::Principals;
+require RT::Queues;
+require RT::Groups;
 
 use vars qw (
   %LOWERCASERIGHTNAMES
