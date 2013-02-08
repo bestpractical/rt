@@ -172,7 +172,7 @@ can create and drop databases:
 You'll need to configure RT and make sure you have all the dependencies
 before running tests.  To do this in place without installing:
 
-    ./configure.ac --with-my-user-group --enable-layout=inplace --with-devel-mode
+    ./configure.ac --with-my-user-group --enable-layout=inplace --enable-developer
     make testdeps
     make fixdeps
 

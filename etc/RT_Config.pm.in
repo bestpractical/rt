@@ -2687,7 +2687,7 @@ be added while the server is running.
 
 =cut
 
-Set($DevelMode, "@RT_DEVEL_MODE@");
+Set($DevelMode, 0);
 
 
 =item C<$RecordBaseClass>
