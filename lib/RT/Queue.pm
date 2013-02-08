@@ -80,6 +80,19 @@ sub LifecycleType { "ticket" }
 
 sub ModifyLinkRight { "AdminQueue" }
 
+require RT::ACE;
+RT::ACE->RegisterCacheHandler(sub {
+    my %args = (
+        Action      => "",
+        RightName   => "",
+        @_
+    );
+
+    return unless $args{Action}    =~ /^(Grant|Revoke)$/i
+              and $args{RightName} =~ /^(SeeQueue|CreateTicket)$/;
+
+    RT->System->QueueCacheNeedsUpdate(1);
+});
 
 use RT::Groups;
 use RT::ACL;
