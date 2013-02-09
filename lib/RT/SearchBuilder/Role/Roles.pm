@@ -74,20 +74,48 @@ require RT::EmailParser;
 
 =head1 PROVIDES
 
+=head2 _RoleGroupClass
+
+Returns the class name on which role searches should be based.  This relates to
+the internal L<RT::Group/Domain> and distinguishes between roles on the objects
+being searched and their counterpart roles on containing classes.  For example,
+limiting on L<RT::Queue> roles while searching for L<RT::Ticket>s.
+
+The default implementation is:
+
+    blessed($self->NewItem)
+
+which is the class that this collection object searches and instatiates objects
+for.  If you're doing something hinky, you may need to override this method.
+
 =cut
+
+sub _RoleGroupClass {
+    my $self = shift;
+    return blessed($self->NewItem);
+}
 
 sub _RoleGroupsJoin {
     my $self = shift;
-    my %args = (New => 0, Class => 'Ticket', Type => '', @_);
-    $args{Class} =~ s/^RT:://;
+    my %args = (New => 0, Class => '', Type => '', @_);
+
+    $args{'Class'} ||= $self->_RoleGroupClass;
+
     return $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $args{'Type'} }
         if $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $args{'Type'} }
            && !$args{'New'};
 
-    # we always have watcher groups for ticket, so we use INNER join
+    # If we're looking at a role group on a class that "contains" this record
+    # (i.e. roles on queues for tickets), then we assume that the current
+    # record has a column named after the containing class (i.e.
+    # Tickets.Queue).
+    my $instance = $self->_RoleGroupClass eq $args{Class} ? "id" : $args{Class};
+       $instance =~ s/^RT:://;
+
+    # Watcher groups are always created for each record, so we use INNER join.
     my $groups = $self->Join(
         ALIAS1          => 'main',
-        FIELD1          => $args{'Class'} eq 'Queue'? 'Queue': 'id',
+        FIELD1          => $instance,
         TABLE2          => 'Groups',
         FIELD2          => 'Instance',
         ENTRYAGGREGATOR => 'AND',
@@ -96,7 +124,7 @@ sub _RoleGroupsJoin {
         LEFTJOIN        => $groups,
         ALIAS           => $groups,
         FIELD           => 'Domain',
-        VALUE           => 'RT::'. $args{'Class'} .'-Role',
+        VALUE           => $args{'Class'} .'-Role',
     );
     $self->Limit(
         LEFTJOIN        => $groups,
@@ -149,10 +177,8 @@ and for ordering.
 
 sub _WatcherJoin {
     my $self = shift;
-    my $type = shift || '';
 
-
-    my $groups = $self->_RoleGroupsJoin( Type => $type );
+    my $groups = $self->_RoleGroupsJoin(@_);
     my $group_members = $self->_GroupMembersJoin( GroupsAlias => $groups );
     # XXX: work around, we must hide groups that
     # are members of the role group we search in,
@@ -183,13 +209,14 @@ sub RoleLimit {
     my $self = shift;
     my %args = (
         TYPE => '',
+        CLASS => '',
         FIELD => undef,
         OPERATOR => '=',
         VALUE => undef,
         @_
     );
 
-    my $class = blessed($self->NewItem);
+    my $class = $args{CLASS} || $self->_RoleGroupClass;
 
     $args{FIELD} ||= 'id' if $args{VALUE} =~ /^\d+$/;
     my $type = delete $args{TYPE};
