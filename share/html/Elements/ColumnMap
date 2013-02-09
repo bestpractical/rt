@@ -56,7 +56,7 @@ $Attr  => undef
 my $COLUMN_MAP = {
     id => {
         attribute => 'id',
-        title    => 'id', # loc
+        title     => '#', # loc
         align     => 'right',
         value     => sub { return $_[0]->id }
     },
