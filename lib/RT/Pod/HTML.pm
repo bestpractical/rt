@@ -96,7 +96,7 @@ sub resolve_pod_page_link {
                   map { $self->encode_entities($_) }
                 split /::/, $name;
     }
-    elsif ($name =~ /^rt-/) {
+    elsif ($name =~ /^rt[-_]/i) {
         $local = $self->encode_entities($name);
     }
 
