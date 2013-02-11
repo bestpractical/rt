@@ -74,7 +74,7 @@ diag "Make sure we don't barf on invalid input for IS / IS NOT";
     unlike $tix->BuildSelectQuery, qr/foobar/, "didn't find foobar in the select";
     like $tix->BuildSelectQuery, qr/Subject IS NULL/, "found right clause";
     
-    my ($status, $msg) = $tix->FromSQL("Subject IS NOT 'foobar'");
+    ($status, $msg) = $tix->FromSQL("Subject IS NOT 'foobar'");
     ok ($status, "valid query") or diag("error: $msg");
     is $tix->Count, 2, "found two tickets";
     unlike $tix->BuildSelectQuery, qr/foobar/, "didn't find foobar in the select";
@@ -85,7 +85,7 @@ diag "Make sure we don't barf on invalid input for IS / IS NOT";
     my ($status, $msg) = $tix->FromSQL("Requestor.Signature LIKE 'foo'");
     ok (!$status, "invalid query - Signature not valid") or diag("error: $msg");
 
-    my ($status, $msg) = $tix->FromSQL("Requestor.EmailAddress LIKE 'jesse'");
+    ($status, $msg) = $tix->FromSQL("Requestor.EmailAddress LIKE 'jesse'");
     ok ($status, "valid query") or diag("error: $msg");
     is $tix->Count, 1, "found one ticket";
     like $tix->First->Subject, qr/another ticket/, "found the right ticket";

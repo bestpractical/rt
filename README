@@ -10,11 +10,6 @@ RT is commercially-supported software. To purchase support, training,
 custom development, or professional services, please get in touch with
 us at sales@bestpractical.com.
 
-     Jesse Vincent
-     Best Practical Solutions, LLC
-     March, 2010
-
-
 REQUIRED PACKAGES
 -----------------
 
@@ -380,7 +375,7 @@ To report a bug, send email to rt-bugs@fsck.com.
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2011 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
