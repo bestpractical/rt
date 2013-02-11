@@ -315,9 +315,6 @@ if ($CloneTicket) {
         for grep { $CloneTicketObj->$_->Unix }
         map      { $_ . "Obj" } qw/Starts Started Due Resolved/;
 
-    my $members = $CloneTicketObj->Members;
-    my ( @members, @members_of, @refers, @refers_by, @depends, @depends_by );
-    my $refers = $CloneTicketObj->RefersTo;
     my $get_link_value = sub {
         my ($link, $type) = @_;
         my $uri_method = $type . 'URI';
@@ -330,6 +327,8 @@ if ($CloneTicket) {
 
         return $link->$local_method || $uri->URI;
     };
+    my (@refers, @refers_by);
+    my $refers = $CloneTicketObj->RefersTo;
     while ( my $refer = $refers->Next ) {
         my $refer_value = $get_link_value->($refer, 'Target');
         push @refers, $refer_value if defined $refer_value;
