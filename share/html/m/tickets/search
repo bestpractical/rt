@@ -52,7 +52,7 @@ $order => 'desc'
 $name => undef
 </%args>
 <%init>
-use RT::Search::Googleish;
+use RT::Search::Simple;
 my $query = $ARGS{'query'};
 if ($ARGS{'q'}) {
     my $tickets = RT::Tickets->new( $session{'CurrentUser'} );
@@ -60,7 +60,7 @@ if ($ARGS{'q'}) {
         Argument   => $ARGS{q},
         TicketsObj => $tickets,
     );
-    my $search = RT::Search::Googleish->new(%args);
+    my $search = RT::Search::Simple->new(%args);
     $query = $search->QueryToSQL();
 
 }

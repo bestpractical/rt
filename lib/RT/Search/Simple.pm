@@ -48,19 +48,19 @@
 
 =head1 NAME
 
-  RT::Search::Googleish
+  RT::Search::Simple
 
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
 
-Use the argument passed in as a "Google-style" set of keywords
+Use the argument passed in as a simple set of keywords
 
 =head1 METHODS
 
 =cut
 
-package RT::Search::Googleish;
+package RT::Search::Simple;
 
 use strict;
 use warnings;

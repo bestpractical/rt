@@ -21,8 +21,8 @@ ok $two_words_queue && $two_words_queue->id, 'loaded or created a queue';
     my $active = "( ".join( " OR ", map "Status = '$_'", RT::Queue->ActiveStatusArray())." )";
     my $inactive = "( ".join( " OR ", map "Status = '$_'", RT::Queue->InactiveStatusArray())." )";
 
-    require RT::Search::Googleish;
-    my $parser = RT::Search::Googleish->new(
+    require RT::Search::Simple;
+    my $parser = RT::Search::Simple->new(
         TicketsObj => $tickets,
         Argument   => '',
     );

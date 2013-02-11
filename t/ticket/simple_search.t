@@ -20,12 +20,12 @@ my ( $id, undef, $msg ) = $t1->Create(
 );
 ok( $id, $msg );
 
-use_ok("RT::Search::Googleish");
+use_ok("RT::Search::Simple");
 
 my $active_statuses = join( " OR ", map "Status = '$_'", RT::Queue->ActiveStatusArray());
 
 my $tickets = RT::Tickets->new(RT->SystemUser);
-my $quick = RT::Search::Googleish->new(Argument => "",
+my $quick = RT::Search::Simple->new(Argument => "",
                                  TicketsObj => $tickets);
 my @tests = (
     "General new open root"     => "( Owner = 'root' ) AND ( Queue = 'General' ) AND ( Status = 'new' OR Status = 'open' )", 

@@ -71,3 +71,8 @@ UPGRADING FROM RT 4.0.0 and greater
   result of a queue change.  Scrips with conditions relying on Status changes
   may start to trigger on these transitions; previously these Status changes
   never triggered scrips.
+
+* The Googleish search has been renamed to Simple. If you were
+  using this in an rt-crontool cronjob or had used a
+  Googleish_Local.pm to add features, you will need to convert to
+  using RT::Search::Simple instead.
