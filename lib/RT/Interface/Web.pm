@@ -3345,10 +3345,13 @@ sub ProcessColumnMapValue {
         } elsif ( UNIVERSAL::isa( $value, 'SCALAR' ) ) {
             return $$value;
         }
+    } else {
+        if ($args{'Escape'}) {
+            $value = $m->interp->apply_escapes( $value, 'h' );
+            $value =~ s/\n/<br>/g if defined $value;
+        }
+        return $value;
     }
-
-    return $m->interp->apply_escapes( $value, 'h' ) if $args{'Escape'};
-    return $value;
 }
 
 =head2 GetPrincipalsMap OBJECT, CATEGORIES

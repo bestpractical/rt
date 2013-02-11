@@ -48,3 +48,8 @@
 table.collection td:first-child, table.collection th:first-child {
     padding-left: 1em;
 }
+
+.collection-as-table ul.cf-values {
+    margin-top: 0;
+    margin-bottom: 0;
+}

@@ -53,7 +53,8 @@ $Attr  => undef
 <%ONCE>
 
 # This is scary and should totally be refactored -- jesse
-my $COLUMN_MAP = {
+my $COLUMN_MAP;
+$COLUMN_MAP = {
     id => {
         attribute => 'id',
         title    => 'id', # loc
@@ -96,6 +97,11 @@ my $COLUMN_MAP = {
         attribute => sub { return shift @_ },
         title     => sub { return pop @_ },
         value     => sub {
+            my $self = $COLUMN_MAP->{CustomField};
+            my $cf   = $self->{load}->(@_);
+            return $self->{render}->( $cf, $cf->ValuesForObject($_[0])->ItemsArrayRef );
+        },
+        load      => sub {
             # Cache the CF object on a per-request basis, to avoid
             # having to load it for every row
             my $key = join("-","CF",
@@ -108,19 +114,26 @@ my $COLUMN_MAP = {
                 $cf = $_[0]->LoadCustomFieldByIdentifier($_[-1]);
                 $m->notes($key, $cf);
             }
+            return $cf;
+        },
+        render    => sub {
+            my ($cf, $ocfvs) = @_;
+            my $comp = $m->comp_exists("/Elements/ShowCustomField".$cf->Type)
+                     ? "/Elements/ShowCustomField".$cf->Type
+                     : undef;
 
-            # Display custom field contents, separated by newlines.
-            # For Image custom fields we also show a thumbnail here.
-            my $values = $cf->ValuesForObject( $_[0] );
             my @values = map {
-                (
-                    ($cf->Type eq 'Image')
-                        ? \($m->scomp( '/Elements/ShowCustomFieldImage', Object => $_ ))
-                        : $_->Content
-                ),
-                \'<br />',
-            } @{ $values->ItemsArrayRef };
-            pop @values; # Remove that last <br />
+                $comp
+                    ? \($m->scomp( $comp, Object => $_ ))
+                    : $_->Content
+            } @$ocfvs;
+
+            if (@values > 1) {
+                for my $value (splice @values) {
+                    push @values, \"<li>", $value, \"</li> \n";
+                }
+                @values = (\"<ul class='cf-values'>", @values, \"</ul>");
+            }
             return @values;
         },
     },
