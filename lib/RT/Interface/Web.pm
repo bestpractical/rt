@@ -2990,7 +2990,10 @@ sub ProcessObjectCustomFieldUpdatesForCreate {
 }
 
 sub _NormalizeObjectCustomFieldValue {
-    my %args    = (@_);
+    my %args    = (
+        Param   => "",
+        @_
+    );
     my $cf_type = $args{CustomField}->Type;
     my @values  = ();
 
@@ -3010,7 +3013,7 @@ sub _NormalizeObjectCustomFieldValue {
         }
         grep defined, @values;
 
-    if ($cf_type eq 'Image' or $cf_type eq 'Binary') {
+    if ($args{'Param'} =~ /-Upload$/ and $cf_type =~ /^(Image|Binary)$/) {
         @values = _UploadedFile( $args{'Param'} ) || ();
     }
 
