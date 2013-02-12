@@ -52,11 +52,18 @@ use warnings;
 package RT::Pod::HTML;
 use base 'Pod::Simple::XHTML';
 
+use HTML::Entities qw//;
+
 sub new {
     my $self = shift->SUPER::new(@_);
     $self->index(1);
     $self->anchor_items(1);
     return $self;
+}
+
+sub decode_entities {
+    my $self = shift;
+    return HTML::Entities::decode_entities($_[0]);
 }
 
 sub perldoc_url_prefix { "http://metacpan.org/module/" }
@@ -70,6 +77,23 @@ sub html_footer {
 
 sub start_Verbatim { $_[0]{'scratch'} = "<pre>" }
 sub end_Verbatim   { $_[0]{'scratch'} .= "</pre>"; $_[0]->emit; }
+
+sub start_F {
+    $_[0]{'scratch_F'} = $_[0]{'scratch'};
+    $_[0]{'scratch'}   = "";
+}
+sub end_F   {
+    my $self = shift;
+    my $text = $self->{scratch};
+    my $file = $self->decode_entities($text);
+
+    if (my $local = $self->resolve_local_link($file)) {
+        $text = qq[<a href="$local">$text</a>];
+    }
+
+    $self->{'scratch'} = delete $self->{scratch_F};
+    $self->{'scratch'} .= "<i>$text</i>";
+}
 
 sub _end_head {
     my $self = shift;
@@ -86,6 +110,17 @@ sub resolve_pod_page_link {
     return $self->SUPER::resolve_pod_page_link(@_)
         unless $self->batch_mode and $name;
 
+    my $local = $self->resolve_local_link($name, $section);
+
+    return $local
+        ? $local
+        : $self->SUPER::resolve_pod_page_link(@_);
+}
+
+sub resolve_local_link {
+    my $self = shift;
+    my ($name, $section) = @_;
+
     $section = defined $section
         ? '#' . $self->idify($section, 1)
         : '';
@@ -96,8 +131,20 @@ sub resolve_pod_page_link {
                   map { $self->encode_entities($_) }
                 split /::/, $name;
     }
-    elsif ($name =~ /^rt[-_]/i) {
+    elsif ($name =~ /^rt[-_]/) {
         $local = $self->encode_entities($name);
+    }
+    elsif ($name eq "RT_Config" or $name eq "RT_Config.pm") {
+        $local = "RT_Config";
+    }
+    # These matches handle links that look like filenames, such as those we
+    # parse out of F<> tags.
+    elsif (   $name =~ m{^(?:lib/)(RT/[\w/]+?)\.pm$}
+           or $name =~ m{^(?:docs/)(.+?)\.pod$})
+    {
+        $local = join "/",
+                  map { $self->encode_entities($_) }
+                split /\//, $1;
     }
 
     if ($local) {
@@ -105,7 +152,7 @@ sub resolve_pod_page_link {
         my $depth = $self->batch_mode_current_level - 1;
         return ($depth ? "../" x $depth : "") . "$local.html$section";
     } else {
-        return $self->SUPER::resolve_pod_page_link(@_)
+        return;
     }
 }
 
