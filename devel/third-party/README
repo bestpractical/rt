@@ -2,9 +2,9 @@ ckeditor
 http://ckeditor.com/builder
 The JS and CSS source files distributed with the version of ckeditor bundled in RT.
 
-jquery-1.4.2.js
-http://code.jquery.com/jquery-1.4.2.js
-Unminified version of jQuery 1.4.2
+jquery-1.9.1.js
+http://code.jquery.com/jquery-1.9.1.js
+Unminified version of jQuery 1.9.1
 
 jquery.ui.*-1.8.4.js
 https://github.com/jquery/jquery-ui/zipball/1.8.4
