@@ -188,8 +188,8 @@ jQuery(function() {
         showOtherMonths: true,
         selectOtherMonths: true
     };
-    jQuery(".ui-datepicker:not(.withtime)").datepicker(opts);
-    jQuery(".ui-datepicker.withtime").datetimepicker( jQuery.extend({}, opts, {
+    jQuery(".datepicker:not(.withtime)").datepicker(opts);
+    jQuery(".datepicker.withtime").datetimepicker( jQuery.extend({}, opts, {
         stepHour: 1,
         // We fake this by snapping below for the minute slider
         //stepMinute: 5,
@@ -208,7 +208,7 @@ jQuery(function() {
             this._base_injectTimePicker.apply(this, arguments);
 
             // Now that we have minute_slider, modify it to be stepped for mouse movements
-            var slider = jQuery.data(this.minute_slider[0], "slider");
+            var slider = jQuery.data(this.minute_slider[0], "ui-slider");
             slider._base_normValueFromMouse = slider._normValueFromMouse;
             slider._normValueFromMouse = function() {
                 var value           = this._base_normValueFromMouse.apply(this, arguments);

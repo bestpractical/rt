@@ -6,13 +6,9 @@ jquery-1.9.1.js
 http://code.jquery.com/jquery-1.9.1.js
 Unminified version of jQuery 1.9.1
 
-jquery.ui.*-1.8.4.js
-https://github.com/jquery/jquery-ui/zipball/1.8.4
-jQuery UI components that go into our minified jquery.ui-1.8.4.custom.min.js
-
-jquery.ui.accordian-1.8.5.js
-https://github.com/jquery/jquery-ui/zipball/1.8.5
-jQuery UI Accordian component that goes into our minified jquery.ui-1.8.4.custom.min.js
+jquery.ui.*-1.10.0.js
+https://github.com/jquery/jquery-ui/zipball/1.10.0
+jQuery UI components that go into our minified jquery.ui-1.10.0.custom.min.js
 
 jquery.tablesorter.js
 http://tablesorter.com/jquery.tablesorter.js

@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, Name => $Name, CallbackName => 'BeforeDateInput' );
-<input type="text" class="ui-datepicker<% $ShowTime ? ' withtime' : '' %>" id="<% $Name %>" name="<% $Name %>" value="<% $Value %>" size="<% $Size %>" />
+<input type="text" class="datepicker<% $ShowTime ? ' withtime' : '' %>" id="<% $Name %>" name="<% $Name %>" value="<% $Value %>" size="<% $Size %>" />
 % $m->callback( %ARGS, Name => $Name, CallbackName => 'AfterDateInput' );
 <%init>
 unless ((defined $Default) or ($current <= 0)) {
