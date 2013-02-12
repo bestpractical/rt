@@ -103,9 +103,7 @@ sub resolve_pod_page_link {
     if ($local) {
         # Resolve links correctly by going up
         my $depth = $self->batch_mode_current_level - 1;
-        return join "/",
-                    ($depth ? ".." x $depth : ()),
-                    "$local.html$section";
+        return ($depth ? "../" x $depth : "") . "$local.html$section";
     } else {
         return $self->SUPER::resolve_pod_page_link(@_)
     }
