@@ -68,9 +68,6 @@ sub html_footer {
     return '<a href="./' . $toc . '">&larr; Back to index</a>';
 }
 
-sub start_Verbatim { $_[0]{'scratch'} = "<pre>" }
-sub end_Verbatim   { $_[0]{'scratch'} .= "</pre>"; $_[0]->emit; }
-
 sub _end_head {
     my $self = shift;
     $self->{scratch} = '<a href="#___top">' . $self->{scratch} . '</a>';
