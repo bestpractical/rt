@@ -276,12 +276,8 @@ $m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
 
 if ( $ARGS{'SubmitTicket'} ) {
 
-    my %checked = map {$_ => 1} grep {defined}
-        (ref $ARGS{'TxnSendMailTo'} eq "ARRAY" ? @{$ARGS{'TxnSendMailTo'}}
-             : defined $ARGS{'TxnSendMailTo'} ? ($ARGS{'TxnSendMailTo'}) : ());
-
-    my @squelchlist = grep {not $checked{$_}} split /,/, ($ARGS{'TxnRecipients'}||'');
-    $ARGS{'SquelchMailTo'} = \@squelchlist if @squelchlist;
+    my %squelched = ProcessTransactionSquelching( \%ARGS );
+    $ARGS{'SquelchMailTo'} = [keys %squelched] if keys %squelched;
 
     my $CFs = $TicketObj->TransactionCustomFields;
     my $ValidCFs = $m->comp(

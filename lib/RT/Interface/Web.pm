@@ -3031,6 +3031,24 @@ sub ProcessRecordLinks {
     return (@results);
 }
 
+=head2 ProcessTransactionSquelching
+
+Takes a hashref of the submitted form arguments, C<%ARGS>.
+
+Returns a hash of squelched addresses.
+
+=cut
+
+sub ProcessTransactionSquelching {
+    my $args    = shift;
+    my %checked = map { $_ => 1 } grep { defined }
+        (    ref $args->{'TxnSendMailTo'} eq "ARRAY"  ? @{$args->{'TxnSendMailTo'}} :
+         defined $args->{'TxnSendMailTo'}             ?  ($args->{'TxnSendMailTo'}) :
+                                                                             () );
+    my %squelched = map { $_ => 1 } grep { not $checked{$_} } split /,/, ($args->{'TxnRecipients'}||'');
+    return %squelched;
+}
+
 =head2 _UploadedFile ( $arg );
 
 Takes a CGI parameter name; if a file is uploaded under that name,
