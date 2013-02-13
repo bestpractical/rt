@@ -219,34 +219,35 @@ sub RoleLimit {
     my $class = $args{CLASS} || $self->_RoleGroupClass;
 
     $args{FIELD} ||= 'id' if $args{VALUE} =~ /^\d+$/;
+
     my $type = delete $args{TYPE};
-    if ($type) {
-        unless ($class->HasRole($type)) {
-            RT->Logger->warn("RoleLimit called with invalid role $type for $class");
-            return;
-        }
-        my $column = $class->Role($type)->{Column};
-        if ( $column ) {
-            if ( $args{OPERATOR} =~ /^!?=$/
-                     && (!$args{FIELD} || $args{FIELD} eq 'Name' || $args{FIELD} eq 'EmailAddress') ) {
-                my $o = RT::User->new( $self->CurrentUser );
-                my $method = ($args{FIELD}||'') eq 'EmailAddress' ? 'LoadByEmail': 'Load';
-                $o->$method( $args{VALUE} );
-                $self->Limit(
-                    %args,
-                    FIELD => $column,
-                    VALUE => $o->id,
-                );
-                return;
-            }
-            if ( $args{FIELD} and $args{FIELD} eq 'id' ) {
-                $self->Limit(
-                    %args,
-                    FIELD => $column,
-                );
-                return;
-            }
-        }
+    if ($type and not $class->HasRole($type)) {
+        RT->Logger->warn("RoleLimit called with invalid role $type for $class");
+        return;
+    }
+
+    my $column = $type ? $class->Role($type)->{Column} : undef;
+
+    # if it's equality op and search by Email or Name then we can preload user
+    # we do it to help some DBs better estimate number of rows and get better plans
+    if ( $args{OPERATOR} =~ /^!?=$/
+             && (!$args{FIELD} || $args{FIELD} eq 'Name' || $args{FIELD} eq 'EmailAddress') ) {
+        my $o = RT::User->new( $self->CurrentUser );
+        my $method =
+            !$args{FIELD}
+            ? ($column ? 'Load' : 'LoadByEmail')
+            : $args{FIELD} eq 'EmailAddress' ? 'LoadByEmail': 'Load';
+        $o->$method( $args{VALUE} );
+        $args{FIELD} = 'id';
+        $args{VALUE} = $o->id || 0;
+    }
+
+    if ( $column and $args{FIELD} and $args{FIELD} eq 'id' ) {
+        $self->Limit(
+            %args,
+            FIELD => $column,
+        );
+        return;
     }
 
     $args{FIELD} ||= 'EmailAddress';
