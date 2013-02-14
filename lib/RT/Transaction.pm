@@ -1174,11 +1174,7 @@ sub TicketObj {
 
 sub OldValue {
     my $self = shift;
-    if ( my $type = $self->__Value('ReferenceType')
-         and my $id = $self->__Value('OldReference') )
-    {
-        my $Object = $type->new($self->CurrentUser);
-        $Object->Load( $id );
+    if ( my $Object = $self->OldReferenceObject ) {
         return $Object->Content;
     }
     else {
@@ -1188,11 +1184,7 @@ sub OldValue {
 
 sub NewValue {
     my $self = shift;
-    if ( my $type = $self->__Value('ReferenceType')
-         and my $id = $self->__Value('NewReference') )
-    {
-        my $Object = $type->new($self->CurrentUser);
-        $Object->Load( $id );
+    if ( my $Object = $self->NewReferenceObject ) {
         return $Object->Content;
     }
     else {
@@ -1205,6 +1197,37 @@ sub Object {
     my $Object = $self->__Value('ObjectType')->new($self->CurrentUser);
     $Object->Load($self->__Value('ObjectId'));
     return $Object;
+}
+
+=head2 NewReferenceObject
+
+=head2 OldReferenceObject
+
+Returns an object of the class specified by the column C<ReferenceType> and
+loaded with the id specified by the column C<NewReference> or C<OldReference>.
+C<ReferenceType> is assumed to be an L<RT::Record> subclass.
+
+The object may be unloaded (check C<< $object->id >>) if the reference is
+corrupt (such as if the referenced record was improperly deleted).
+
+Returns undef if either C<ReferenceType> or C<NewReference>/C<OldReference> is
+false.
+
+=cut
+
+sub NewReferenceObject { $_[0]->_ReferenceObject("New") }
+sub OldReferenceObject { $_[0]->_ReferenceObject("Old") }
+
+sub _ReferenceObject {
+    my $self  = shift;
+    my $which = shift;
+    my $type  = $self->__Value("ReferenceType");
+    my $id    = $self->__Value("${which}Reference");
+    return unless $type and $id;
+
+    my $object = $type->new($self->CurrentUser);
+    $object->Load( $id );
+    return $object;
 }
 
 sub FriendlyObjectType {
