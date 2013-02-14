@@ -640,21 +640,7 @@ sub BriefDescriptionAsHTML {
         return $self->loc("No transaction type specified");
     }
 
-    my ($template, @params) = (
-        "Default: [_1]/[_2] changed from [_3] to [_4]", #loc
-        $type,
-        $field,
-        (
-            $self->OldValue
-            ? "'" . $self->OldValue . "'"
-            : $self->loc("(no value)")
-        ),
-        (
-            $self->NewValue
-            ? "'" . $self->NewValue . "'"
-            : $self->loc("(no value)")
-        ),
-    );
+    my ($template, @params);
 
     my @code = grep { ref eq 'CODE' } map { $_BriefDescriptions{$_} }
         ( $field
@@ -667,7 +653,21 @@ sub BriefDescriptionAsHTML {
     }
 
     unless ($template) {
-        ($template, @params) = ("(No description)"); #loc
+        ($template, @params) = (
+            "Default: [_1]/[_2] changed from [_3] to [_4]", #loc
+            $type,
+            $field,
+            (
+                $self->OldValue
+                ? "'" . $self->OldValue . "'"
+                : $self->loc("(no value)")
+            ),
+            (
+                $self->NewValue
+                ? "'" . $self->NewValue . "'"
+                : $self->loc("(no value)")
+            ),
+        );
     }
     return $self->loc($template, $self->_ProcessReturnValues(@params));
 }
