@@ -848,8 +848,12 @@ Set(@CustomFieldValuesSources, ());
 
 =item C<%CustomFieldGroupings>
 
-This option affects the display of ticket and user custom fields in the web
-interface.  A nested datastructure defines how to group together custom fields
+This option affects the display of ticket and user custom fields in the
+web interface. It does not address the sorting of custom fields. The
+order that custom fields are rendered is controlled by the Ticket
+Custom Fields tab in Queue Configuration in the Admin UI.
+
+A nested datastructure defines how to group together custom fields
 under a mix of built-in and arbitrary headings ("groupings").
 
 Set C<%CustomFieldGroupings> to a nested hash similar to the following:
@@ -870,7 +874,9 @@ are hashrefs.  The second level keys are the grouping names and the values are
 array refs containing a list of CF names.
 
 There are several special built-in groupings which RT displays in specific
-places (usually the collapsible box of the same title).
+places (usually the collapsible box of the same title). You may only
+append Custom Fields to the list in these boxes, not reorder or remove
+core fields.
 
 For C<RT::Ticket>, these groupings are: C<Basics>, C<Dates>, C<Links>, C<People>
 
