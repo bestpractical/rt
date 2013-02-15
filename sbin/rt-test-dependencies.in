@@ -363,7 +363,7 @@ Convert::Color
 .
 
 $deps{'HTML-DOC'} = [ text_to_hash( <<'.') ];
-Pod::Simple 3.17
+Pod::Simple 3.24
 HTML::Entities
 .
 
