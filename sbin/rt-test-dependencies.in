@@ -72,7 +72,6 @@ GetOptions(
     'with-GD',
     'with-DASHBOARDS',
     'with-USERLOGO',
-    'with-SSL-MAILGATE',
     'with-HTML-DOC',
 
     'download=s',
@@ -99,7 +98,6 @@ my %default = (
     'with-GD' => @RT_GD@,
     'with-DASHBOARDS' => 1,
     'with-USERLOGO' => 1,
-    'with-SSL-MAILGATE' => @RT_SSL_MAILGATE@,
     'with-HTML-DOC' => @RT_DEVELOPER@,
 );
 $args{$_} = $default{$_} foreach grep !exists $args{$_}, keys %default;
@@ -244,17 +242,13 @@ XML::RSS 1.05
 .
 
 $deps{'MAILGATE'} = [ text_to_hash( << '.') ];
-Getopt::Long
-LWP::UserAgent 6.0
-Pod::Usage
-.
-
-$deps{'SSL-MAILGATE'} = [ text_to_hash( << '.') ];
 Crypt::SSLeay
+Getopt::Long
 LWP::Protocol::https
 LWP::UserAgent 6.0
 Mozilla::CA
 Net::SSL
+Pod::Usage
 .
 
 $deps{'CLI'} = [ text_to_hash( << '.') ];
