@@ -230,6 +230,7 @@ Regexp::IPv6
 Symbol::Global::Name
 HTML::Entities
 Role::Basic 0.12
+HTTP::Message 6.00
 .
 
 $deps{'MASON'} = [ text_to_hash( << '.') ];
@@ -254,7 +255,6 @@ HTML::Mason::PSGIHandler 0.52
 Plack 0.9971
 Plack::Handler::Starlet
 CGI::Emulate::PSGI
-LWP::Protocol::PSGI
 .
 
 $deps{'MAILGATE'} = [ text_to_hash( << '.') ];
