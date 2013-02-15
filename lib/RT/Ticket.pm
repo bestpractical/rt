@@ -2581,9 +2581,7 @@ sub __GetTicketFromURI {
     # If the other URI is an RT::Ticket, we want to make sure the user
     # can modify it too...
     my $uri_obj = RT::URI->new( $self->CurrentUser );
-    $uri_obj->FromURI( $args{'URI'} );
-
-    unless ( $uri_obj->Resolver && $uri_obj->Scheme ) {
+    unless ($uri_obj->FromURI( $args{'URI'} )) {
         my $msg = $self->loc( "Couldn't resolve '[_1]' into a URI.", $args{'URI'} );
         $RT::Logger->warning( $msg );
         return( 0, $msg );

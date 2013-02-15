@@ -96,33 +96,17 @@ sub Create {
                  @_ );
 
     my $base = RT::URI->new( $self->CurrentUser );
-    $base->FromURI( $args{'Base'} );
-
-    unless ( $base->Resolver && $base->Scheme ) {
-	my $msg = $self->loc("Couldn't resolve base '[_1]' into a URI.", 
-			     $args{'Base'});
+    unless ($base->FromURI( $args{'Base'} )) {
+        my $msg = $self->loc("Couldn't resolve base '[_1]' into a URI.", $args{'Base'});
         $RT::Logger->warning( "$self $msg" );
-
-	if (wantarray) {
-	    return(undef, $msg);
-	} else {
-	    return (undef);
-	}
+        return wantarray ? (undef, $msg) : undef;
     }
 
     my $target = RT::URI->new( $self->CurrentUser );
-    $target->FromURI( $args{'Target'} );
-
-    unless ( $target->Resolver ) {
-	my $msg = $self->loc("Couldn't resolve target '[_1]' into a URI.", 
-			     $args{'Target'});
+    unless ($target->FromURI( $args{'Target'} )) {
+        my $msg = $self->loc("Couldn't resolve target '[_1]' into a URI.", $args{'Target'});
         $RT::Logger->warning( "$self $msg" );
-
-	if (wantarray) {
-	    return(undef, $msg);
-	} else {
-	    return (undef);
-	}
+        return wantarray ? (undef, $msg) : undef;
     }
 
     my $base_id   = 0;
@@ -186,22 +170,21 @@ sub LoadByParams {
                  @_ );
 
     my $base = RT::URI->new($self->CurrentUser);
-    $base->FromURI( $args{'Base'} );
+    $base->FromURI( $args{'Base'} )
+        or return (0, $self->loc("Couldn't parse Base URI: [_1]", $args{Base}));
 
     my $target = RT::URI->new($self->CurrentUser);
-    $target->FromURI( $args{'Target'} );
-    
-    unless ($base->Resolver && $target->Resolver) {
-        return ( 0, $self->loc("Couldn't load link") );
-    }
-
+    $target->FromURI( $args{'Target'} )
+        or return (0, $self->loc("Couldn't parse Target URI: [_1]", $args{Target}));
 
     my ( $id, $msg ) = $self->LoadByCols( Base   => $base->URI,
                                           Type   => $args{'Type'},
                                           Target => $target->URI );
 
     unless ($id) {
-        return ( 0, $self->loc("Couldn't load link") );
+        return ( 0, $self->loc("Couldn't load link: [_1]", $msg) );
+    } else {
+        return ($id, $msg);
     }
 }
 
