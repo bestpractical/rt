@@ -57,6 +57,9 @@ if ($session{CurrentUser} and $session{CurrentUser}->id) {
 
     $CurrentUser->{Privileged} = $session{CurrentUser}->Privileged
         ? JSON::true : JSON::false;
+
+    $Config->{WebHomePath} = RT->Config->Get("WebPath")
+        . !$session{CurrentUser}->Privileged ? "/SelfService" : "";
 }
 
 $m->callback(
