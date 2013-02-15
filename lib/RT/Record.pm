@@ -892,6 +892,8 @@ sub Update {
 
         $value =~ s/\r\n/\n/gs;
 
+        my $truncated_value = $self->TruncateValue($attribute, $value);
+
         # If Queue is 'General', we want to resolve the queue name for
         # the object.
 
@@ -910,8 +912,8 @@ sub Update {
             my $current = $self->$attribute();
             # RT::Queue->Lifecycle returns a Lifecycle object instead of name
             $current = eval { $current->Name } if ref $current;
-            next if $value eq $current;
-            next if ( $value || 0 ) eq $current;
+            next if $truncated_value eq $current;
+            next if ( $truncated_value || 0 ) eq $current;
         };
 
         $new_values{$attribute} = $value;
