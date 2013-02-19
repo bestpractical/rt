@@ -48,8 +48,8 @@
 <%INIT>
  my $content = $Object->Content;
  my $DateObj = RT::Date->new ( $session{'CurrentUser'} );
- $DateObj->Set( Format => 'unknown', Value => $content );
- $content = $DateObj->AsString(Time => 0);
+ $DateObj->Set( Format => 'unknown', Value => $content, Timezone => 'utc'  );
+ $content = $DateObj->AsString(Time => 0, Timezone => 'utc');
 </%INIT>
 <%$content|n%>
 <%ARGS>
