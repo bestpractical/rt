@@ -52,7 +52,7 @@
 var id = <% "$name-Values" |n,j%>;
 id = id.replace(/:/g,'\\:');
 jQuery('#'+id).autocomplete( {
-    source: <%RT->Config->Get('WebPath') |n,j%>+"/Helpers/Autocomplete/CustomFieldValues?"+<% $Context |n,j %>+<% "$name-Values" |n,u,j%>,
+    source: RT.Config.WebPath + "/Helpers/Autocomplete/CustomFieldValues?"+<% $Context |n,j %>+<% "$name-Values" |n,u,j%>,
     focus: function () {
         // prevent value inserted on focus
         return false;
@@ -76,7 +76,7 @@ jQuery('#'+id).autocomplete( {
 var id = <% "$name-Value" |n,j%>;
 id = id.replace(/:/g,'\\:');
 jQuery('#'+id).autocomplete( {
-    source: <%RT->Config->Get('WebPath')|n,j%>+"/Helpers/Autocomplete/CustomFieldValues?"+<% $Context |n,j %>+<% "$name-Value" |n,u,j%>
+    source: RT.Config.WebPath + "/Helpers/Autocomplete/CustomFieldValues?"+<% $Context |n,j %>+<% "$name-Value" |n,u,j%>
 }
 );
 % }

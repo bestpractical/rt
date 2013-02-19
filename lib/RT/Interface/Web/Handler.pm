@@ -231,8 +231,6 @@ sub PSGIApp {
 
     $self->InitSessionDir;
 
-    my $builder = Plack::Builder->new();
-
     my $mason = sub {
         my $env = shift;
         RT::ConnectToDatabase() unless RT->InstallMode;
@@ -273,17 +271,21 @@ sub PSGIApp {
                                             $self->CleanupRequest()
                                         });
     };
+    return $self->StaticWrap($mason);
+}
 
+sub StaticWrap {
+    my $self    = shift;
+    my $app     = shift;
+    my $builder = Plack::Builder->new;
 
     for my $static ( RT->Config->Get('StaticRoots') ) {
         if ( ref $static && ref $static eq 'HASH' ) {
-            if ( ref $static eq 'HASH' ) {
-                $builder->add_middleware(
-                    'Plack::Middleware::Static',
-                    pass_through => 1,
-                    %$static
-                );
-            }
+            $builder->add_middleware(
+                'Plack::Middleware::Static',
+                pass_through => 1,
+                %$static
+            );
         }
         else {
             $RT::Logger->error(
@@ -305,7 +307,7 @@ sub PSGIApp {
             pass_through => 1,
         );
     }
-    return $builder->to_app($mason);
+    return $builder->to_app($app);
 }
 
 sub _psgi_response_cb {

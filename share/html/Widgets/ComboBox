@@ -52,7 +52,7 @@ my $z_index = 9999;
 %# reset $z_index. assuming at most 1000 comboboxx in one page
 % $z_index = 9999 if $z_index < 9000;
 <nobr>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/combobox.js"></script>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/combobox.js"></script>
 
 <div id="<% $Name %>_Container" class="combobox <%$Class%>" style="z-index: <%$z_index--%>">
 <input name="<% $Name %>" id="<% $Name %>" class="combo-text" value="<% $Default || '' %>" type="text" <% $Size ? "size='$Size'" : '' |n %> autocomplete="off" />

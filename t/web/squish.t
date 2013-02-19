@@ -5,7 +5,7 @@ use RT::Test tests => 26;
 
 RT->Config->Set( DevelMode            => 0 );
 RT->Config->Set( WebDefaultStylesheet => 'aileron' );
-RT->Config->Set( MasonLocalComponentRoot => RT::Test::get_abs_relocatable_dir('html') );
+RT->Config->Set( LocalStaticPath => RT::Test::get_abs_relocatable_dir('static') );
 
 my ( $url, $m ) = RT::Test->started_ok;
 $m->login;

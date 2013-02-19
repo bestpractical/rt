@@ -86,7 +86,7 @@ my $query = $m->comp('/Elements/QueryString',
                 }
                 else {
                     jQuery.ajax({
-                        url: <% RT->Config->Get('WebPath')|n,j%>+"/Helpers/Autocomplete/Owners?"+<% $query|n,j %>,
+                        url: RT.Config.WebPath + "/Helpers/Autocomplete/Owners?"+<% $query|n,j %>,
                         dataType: "json",
                         data: request,
                         success: function( data ) {

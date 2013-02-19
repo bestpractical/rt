@@ -207,8 +207,10 @@ HTML::Mason::PSGIHandler 0.52
 HTML::Quoted
 HTML::Scrubber 0.08
 HTML::TreeBuilder
+HTTP::Message 6.0
 IPC::Run3
 JSON
+LWP::Simple
 List::MoreUtils
 Locale::Maketext 1.06
 Locale::Maketext::Fuzzy 0.11
