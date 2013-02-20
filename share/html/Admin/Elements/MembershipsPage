@@ -86,7 +86,8 @@
 
 <%INIT>
 my $principal = RT::Principal->new( $session{'CurrentUser'} );
-$principal->Load( $id ) || Abort(loc("Couldn't load principal #[_1]", $id));
+$principal->Load( $id );
+Abort(loc("Couldn't load principal #[_1]", $id)) unless $principal->id;
 
 my $object = $principal->Object;
 $id = $object->id;
