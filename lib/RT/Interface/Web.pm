@@ -799,7 +799,7 @@ sub LoadSessionFromCookie {
     my $SessionCookie = ( $cookies{$cookiename} ? $cookies{$cookiename}->value : undef );
     tie %HTML::Mason::Commands::session, 'RT::Interface::Web::Session', $SessionCookie;
     unless ( $SessionCookie && $HTML::Mason::Commands::session{'_session_id'} eq $SessionCookie ) {
-        undef $cookies{$cookiename};
+        InstantiateNewSession();
     }
     if ( int RT->Config->Get('AutoLogoff') ) {
         my $now = int( time / 60 );
