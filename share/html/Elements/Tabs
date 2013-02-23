@@ -773,8 +773,8 @@ my $build_main_nav = sub {
                 &&                        #XXX TODO better abstraction
                 $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => RT->System )) {
                 my $shred_args = $query_string->(
-                    search          => 1,
-                    plugin          => 'Tickets',
+                    Search          => 1,
+                    Plugin          => 'Tickets',
                     'Tickets:query' => $rss_data{'Query'},
                     'Tickets:limit' => $QueryArgs->{'Rows'},
                 );
