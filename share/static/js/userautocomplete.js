@@ -23,7 +23,7 @@ jQuery(function() {
             continue;
 
         var options = {
-            source: RT.Config.WebPath + "/Helpers/Autocomplete/Users"
+            source: RT.Config.WebHomePath + "/Helpers/Autocomplete/Users"
         };
 
         var queryargs = [];

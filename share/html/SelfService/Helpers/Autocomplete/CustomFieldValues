@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,31 +45,4 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%init>
-my $Config = {};
-$Config->{$_} = RT->Config->Get( $_, $session{CurrentUser} )
-  for qw(rtname WebPath MessageBoxRichTextHeight);
-
-my $CurrentUser = {};
-if ($session{CurrentUser} and $session{CurrentUser}->id) {
-    $CurrentUser->{$_} = $session{CurrentUser}->$_
-      for qw(id Name EmailAddress RealName);
-
-    $CurrentUser->{Privileged} = $session{CurrentUser}->Privileged
-        ? JSON::true : JSON::false;
-
-    $Config->{WebHomePath} = RT->Config->Get("WebPath")
-        . !$session{CurrentUser}->Privileged ? "/SelfService" : "";
-}
-
-$m->callback(
-    CallbackName    => "Data",
-    CurrentUser     => $CurrentUser,
-    Config          => $Config,
-);
-</%init>
-<script>
-window.RT = {};
-RT.CurrentUser = <% JSON( $CurrentUser ) |n%>;
-RT.Config      = <% JSON( $Config      ) |n%>;
-</script>
+% $m->comp('/Helpers/Autocomplete/CustomFieldValues', %ARGS);
