@@ -45,7 +45,49 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /User/Elements/UserInfo, User => $Requestor, FormatConfig => 'MoreAboutRequestorExtraInfo', ClassPrefix => 'more-about-requestor' &>
+<div class="<% $ClassPrefix %>-extra">
+% for my $column (@formats) {
+% my $title = $column->{title} || '';
+% my $attr = $column->{'attribute'} || $column->{'last_attribute'};
+% unless (defined $column->{title}) {
+%   $title = $fetch_columnmap->($attr,'title',[$attr]);
+% }
+% $title = $m->comp('/Elements/ScrubHTML', Content => $title);
+<div class="<% $ClassPrefix %> extra-field <% $fetch_columnmap->($attr,'attribute',[$attr]) %>" >
+<span class="label"><% loc($title) %></span>
+% my @out;
+% foreach my $subcol ( @{ $column->{output} } ) {
+%     my ($col) = ($subcol =~ /^__(.*?)__$/);
+%     unless ( $col ) {
+%         push @out, $subcol;
+%         next;
+%     }
+%     push @out, $fetch_columnmap->($col, 'value', [$User]);
+% }
+% @out = grep { defined $_ and length $_ } @out;
+<span class="value"><% join(' ',@out) %></span>
+</div>
+% }
+</div>
+<%INIT>
+return unless $FormatConfig;
+my $format = RT->Config->Get($FormatConfig);
+return unless $format;
+my @formats = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $format);
+
+my $fetch_columnmap = sub {
+    my ($name, $attr, $arguments) = @_;
+    my $tmp = $m->comp( '/Elements/ColumnMap',
+            Class => $Class,
+            Name  => $name,
+            Attr  => $attr,
+            );
+    return ProcessColumnMapValue( $tmp, Arguments => $arguments, Escape => 0 );
+};
+</%INIT>
 <%ARGS>
-$Requestor => undef
+$User => undef
+$Class => 'RT__User';
+$FormatConfig => undef,
+$ClassPrefix => undef,
 </%ARGS>
