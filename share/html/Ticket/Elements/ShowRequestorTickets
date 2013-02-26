@@ -72,7 +72,9 @@ my %QueryProperties = (
     ShowHeader => 0,
     Format     => qq{
        '<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>',
-       '(__OwnerName__)&nbsp;<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>&nbsp;[__Status__]'
+       '(__OwnerName__)',
+       '<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>',
+       __Status__
     },
 );
 
