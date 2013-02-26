@@ -393,7 +393,10 @@ sub LoadByCols {
     # We don't want to hang onto this
     $self->ClearAttributes;
 
-    return $self->SUPER::LoadByCols( @_ ) unless $self->_Handle->CaseSensitive;
+    unless ( $self->_Handle->CaseSensitive ) {
+        my ( $ret, $msg ) = $self->SUPER::LoadByCols( @_ );
+        return wantarray ? ( $ret, $msg ) : $ret;
+    }
 
     # If this database is case sensitive we need to uncase objects for
     # explicit loading
@@ -411,7 +414,8 @@ sub LoadByCols {
             $hash{$key}->{function} = $func;
         }
     }
-    return $self->SUPER::LoadByCols( %hash );
+    my ( $ret, $msg ) = $self->SUPER::LoadByCols( %hash );
+    return wantarray ? ( $ret, $msg ) : $ret;
 }
 
 

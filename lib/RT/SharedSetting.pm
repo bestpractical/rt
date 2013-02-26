@@ -110,21 +110,21 @@ sub Load {
             $self->{'Privacy'} = $privacy;
             $self->PostLoad();
 
-            return (0, $self->loc("Permission Denied"))
+            return wantarray ? (0, $self->loc("Permission Denied")) : 0
                 unless $self->CurrentUserCanSee;
 
             my ($ok, $msg) = $self->PostLoadValidate;
-            return ($ok, $msg) if !$ok;
+            return wantarray ? ($ok, $msg) : $ok if !$ok;
 
-            return (1, $self->loc("Loaded [_1] [_2]", $self->ObjectName, $self->Name));
+            return wantarray ? (1, $self->loc("Loaded [_1] [_2]", $self->ObjectName, $self->Name)) : 1;
         } else {
             $RT::Logger->error("Could not load attribute " . $id
                     . " for object " . $privacy);
-            return (0, $self->loc("Failed to load [_1] [_2]", $self->ObjectName, $id))
+            return wantarray ? (0, $self->loc("Failed to load [_1] [_2]", $self->ObjectName, $id)) : 0;
         }
     } else {
         $RT::Logger->warning("Could not load object $privacy when loading " . $self->ObjectName);
-        return (0, $self->loc("Could not load object for [_1]", $privacy));
+        return wantarray ? (0, $self->loc("Could not load object for [_1]", $privacy)) : 0;
     }
 }
 
@@ -144,11 +144,11 @@ sub LoadById {
     my ($ok, $msg) = $attr->LoadById($id);
 
     if (!$ok) {
-        return (0, $self->loc("Failed to load [_1] [_2]: [_3]", $self->ObjectName, $id, $msg))
+        return wantarray ? (0, $self->loc("Failed to load [_1] [_2]: [_3]", $self->ObjectName, $id, $msg)) : 0;
     }
 
     my $privacy = $self->_build_privacy($attr->ObjectType, $attr->ObjectId);
-    return (0, $self->loc("Bad privacy for attribute [_1]", $id))
+    return wantarray ? (0, $self->loc("Bad privacy for attribute [_1]", $id)) : 0
         if !$privacy;
 
     return $self->Load($privacy, $id);
