@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="<% $ClassPrefix %>-extra">
+<table class="<% $ClassPrefix %>-extra">
 % for my $column (@formats) {
 % my $title = $column->{title} || '';
 % my $attr = $column->{'attribute'} || $column->{'last_attribute'};
@@ -53,8 +53,8 @@
 %   $title = $fetch_columnmap->($attr,'title',[$attr]);
 % }
 % $title = $m->comp('/Elements/ScrubHTML', Content => $title);
-<div class="<% $ClassPrefix %> extra-field <% $fetch_columnmap->($attr,'attribute',[$attr]) %>" >
-<span class="label"><% loc($title) %></span>
+<tr class="<% $ClassPrefix %> extra-field <% $fetch_columnmap->($attr,'attribute',[$attr]) %>" >
+<td class="label"><% loc($title) %></td>
 % my @out;
 % foreach my $subcol ( @{ $column->{output} } ) {
 %     my ($col) = ($subcol =~ /^__(.*?)__$/);
@@ -65,10 +65,10 @@
 %     push @out, $fetch_columnmap->($col, 'value', [$User]);
 % }
 % @out = grep { defined $_ and length $_ } @out;
-<span class="value"><% join(' ',@out) %></span>
-</div>
+<td class="value"><% join(' ',@out) %></td>
+</tr>
 % }
-</div>
+</table>
 <%INIT>
 return unless $FormatConfig;
 my $format = RT->Config->Get($FormatConfig);
