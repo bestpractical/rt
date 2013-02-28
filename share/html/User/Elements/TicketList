@@ -85,12 +85,7 @@ my %QueryProperties = (
     Order      => 'DESC',
     Rows       => $Rows || 10,
     ShowHeader => 0,
-    Format     => qq{
-       '<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>',
-       '(__OwnerName__)',
-       '<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>',
-       __Status__
-    },
+    Format     => $Format,
 );
 
 my $url  = RT->Config->Get('WebPath') . '/Search/Results.html?';
@@ -114,4 +109,5 @@ $conditions
 $Rows => 10
 $Description => ''
 $TitleBox => 0
+$Format => ''
 </%ARGS>
