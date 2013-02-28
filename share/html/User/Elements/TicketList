@@ -45,18 +45,61 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /User/Elements/TicketList,
-    User => $Requestor,
-    conditions => $conditions,
-    Rows => $Rows,
-    Title => $Title,
-    WatcherTypes => ['Requestor'],
+<span class="label"><a href="<% $url %>"><% $Title %>:</a></span>
+
+<& /Elements/CollectionList,
+    %QueryProperties,
+
+    Class          => 'RT::Tickets',
+    Page           => 1,
+    AllowSorting   => 0,
+    ShowNavigation => 0,
 &>
 <%INIT>
-my $Title = loc("This user's [_1] highest priority [_2] tickets", $Rows, $Description );
+
+my $sql = '';
+
+$sql = join(' OR ', map { "$_.id = ".$User->Id } @WatcherTypes );
+$sql = "( $sql )";
+
+
+if (@$conditions) {
+    $sql .= " AND (".join( " OR ", map $_->{cond}, @$conditions).")";
+}
+
+my %QueryProperties = (
+    Query      => $sql,
+    OrderBy    => 'Priority',
+    Order      => 'DESC',
+    Rows       => $Rows || 10,
+    ShowHeader => 0,
+    Format     => qq{
+       '<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>',
+       '(__OwnerName__)',
+       '<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>',
+       __Status__
+    },
+);
+
+my $url  = RT->Config->Get('WebPath') . '/Search/Results.html?';
+   $url .= $m->comp('/Elements/QueryString',
+                    Query       => $QueryProperties{'Query'},
+                    OrderBy     => $QueryProperties{'OrderBy'},
+                    Order       => $QueryProperties{'Order'},
+           );
+
+$m->callback(
+    %ARGS,
+
+    Title => \$Title,
+    QueryProperties => \%QueryProperties,
+);
+
 </%INIT>
 <%ARGS>
-$Requestor => undef
+$Title => ''
+@WatcherTypes => (qw(Watcher))
+$User => undef
 $conditions
 $Rows => 10
 $Description => ''
