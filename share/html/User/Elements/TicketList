@@ -62,7 +62,6 @@ my $sql = '';
 $sql = join(' OR ', map { "$_.id = ".$User->Id } @WatcherTypes );
 $sql = "( $sql )";
 
-
 if (@$conditions) {
     $sql .= " AND (".join( " OR ", map $_->{cond}, @$conditions).")";
 }
@@ -88,10 +87,8 @@ my $url  = RT->Config->Get('WebPath') . '/Search/Results.html?';
                     Order       => $QueryProperties{'Order'},
            );
 
-$m->callback(
+$m->callback( CallbackName => 'ModifyQueryProperties',
     %ARGS,
-
-    Title => \$Title,
     QueryProperties => \%QueryProperties,
 );
 

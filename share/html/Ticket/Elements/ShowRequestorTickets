@@ -54,6 +54,11 @@
 &>
 <%INIT>
 my $Title = loc("This user's [_1] highest priority [_2] tickets", $Rows, $Description );
+
+$m->callback( CallbackName => 'ModifyTitle',
+    %ARGS,
+    Title => \$Title
+);
 </%INIT>
 <%ARGS>
 $Requestor => undef
