@@ -71,7 +71,16 @@ my $user = $session{'CurrentUser'}->UserObj;
 my $unwanted = $user->Preferences('QuickSearch', {});
 my $Queues = RT::Queues->new($session{'CurrentUser'});
 $Queues->UnLimit;
-my @queues = grep {$_->CurrentUserHasRight('ShowTicket')} @{$Queues->ItemsArrayRef};
+
+my $right = 'ShowTicket';
+$m->callback(
+    CallbackName    => 'ModifyQueues',
+    Queues          => \$Queues,
+    Right           => \$right,
+    Unwanted        => $unwanted,
+);
+
+my @queues = grep { $right ? $_->CurrentUserHasRight($right) : 1 } @{$Queues->ItemsArrayRef};
 
 if ($ARGS{'Save'}) {
     for my $queue (@queues) {
