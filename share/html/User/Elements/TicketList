@@ -45,7 +45,11 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<span class="label"><a href="<% $url %>"><% $Title %>:</a></span>
+% if ( $TitleBox ) {
+    <& /Widgets/TitleBoxStart, title => $Title, title_href => $url, &>
+% } else {
+    <span class="label"><a href="<% $url %>"><% $Title %>:</a></span>
+% }
 
 <& /Elements/CollectionList,
     %QueryProperties,
@@ -55,6 +59,10 @@
     AllowSorting   => 0,
     ShowNavigation => 0,
 &>
+
+% if ( $TitleBox ) {
+    <& /Widgets/TitleBoxEnd &>
+% }
 <%INIT>
 
 my $sql = '';
@@ -105,4 +113,5 @@ $User => undef
 $conditions
 $Rows => 10
 $Description => ''
+$TitleBox => 0
 </%ARGS>
