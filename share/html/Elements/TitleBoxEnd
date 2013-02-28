@@ -47,5 +47,6 @@
 %# END BPS TAGGED BLOCK }}}
 <%init>
 # For compatibility with 3.4
+RT->Deprecated( Remove => 4.4, Instead => "/Widgets/TitleBoxEnd" );
 $m->comp('/Widgets/TitleBoxEnd', %ARGS );
 </%init>

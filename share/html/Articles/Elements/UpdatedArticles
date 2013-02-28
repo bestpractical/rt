@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/TitleBoxStart, title => loc("[_1] most recently updated articles", $rows), bodyclass=> '' &>
+<& /Widgets/TitleBoxStart, title => loc("[_1] most recently updated articles", $rows), bodyclass=> '' &>
 <table border="0" cellspacing="0" cellpadding="1" width="100%">
 <tr>
 <th align="right"><&|/l&>#</&></th>
@@ -68,7 +68,7 @@
 </tr>
 % }
 </table>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 <%INIT>
 my $rows = 10;
 my $i;

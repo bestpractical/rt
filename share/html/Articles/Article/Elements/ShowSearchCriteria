@@ -46,9 +46,9 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if ($ARGS{'HideOptions'}) {
-<& /Elements/TitleBoxStart, title => loc('Advanced search'), class => "rolled-up", bodyclass => "hidden" &>
+<& /Widgets/TitleBoxStart, title => loc('Advanced search'), class => "rolled-up", bodyclass => "hidden" &>
 % } else {
-<& /Elements/TitleBoxStart, title => loc('Advanced search') &>
+<& /Widgets/TitleBoxStart, title => loc('Advanced search') &>
 % }
 <table>
 <tr>
@@ -142,7 +142,7 @@
 </tr>
 </table>
 <& /Elements/Submit, Label => loc('Search') &>
-<&/Elements/TitleBoxEnd&>
+<& /Widgets/TitleBoxEnd &>
 <%init>
 my @Classes =
  ( ref $ARGS{'Class'} eq 'ARRAY' )

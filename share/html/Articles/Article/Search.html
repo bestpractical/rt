@@ -62,11 +62,11 @@
 </td>
 <td valign="top" width="50%">
 <form action="Search.html" method="get">
-<& /Elements/TitleBoxStart, title => loc('Saved searches') &>
+<& /Widgets/TitleBoxStart, title => loc('Saved searches') &>
 <&|/l&>Load saved search:</&><br />
 <& Elements/SelectSavedSearches, Name => 'LoadSavedSearch', Default => $CurrentSearch &>
 <input value="<%loc('Load')%>" name="Load" type="submit" />
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 </form>
 </td>
 </tr>
