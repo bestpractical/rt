@@ -62,6 +62,11 @@ my $sql = '';
 $sql = join(' OR ', map { "$_.id = ".$User->Id } @WatcherTypes );
 $sql = "( $sql )";
 
+$m->callback( CallbackName => 'ModifyWatcherSQL',
+        %ARGS,
+        sql => \$sql,
+);
+
 if (@$conditions) {
     $sql .= " AND (".join( " OR ", map $_->{cond}, @$conditions).")";
 }
