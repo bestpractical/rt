@@ -53,7 +53,7 @@
 %   $title = $fetch_columnmap->($attr,'title',[$attr]);
 % }
 % $title = $m->comp('/Elements/ScrubHTML', Content => $title);
-<div class="<% $ClassPrefix %>-extra-field <% $fetch_columnmap->($attr,'attribute',[$attr]) %>" >
+<div class="<% $ClassPrefix %>-extra-field <% CSSClass($fetch_columnmap->($attr,'attribute',[$attr])) %>" >
 <span class="label"><% loc($title) %></span>
 % my @out;
 % foreach my $subcol ( @{ $column->{output} } ) {
@@ -84,6 +84,8 @@ my $fetch_columnmap = sub {
             );
     return ProcessColumnMapValue( $tmp, Arguments => $arguments, Escape => 0 );
 };
+
+$ClassPrefix = CSSClass($ClassPrefix) if $ClassPrefix;
 </%INIT>
 <%ARGS>
 $User => undef
