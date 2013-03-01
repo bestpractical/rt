@@ -1266,6 +1266,20 @@ Ticket/Display.html.  This option can be controlled by users also.
 
 Set($MoreAboutRequestorTicketList, "Active");
 
+=item C<$MoreAboutRequestorTicketListFormat>
+
+Control the appearance of the ticket lists in the 'More About Requestors' box.
+
+=cut
+
+Set($MoreAboutRequestorTicketListFormat, q{
+       '<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>',
+       '(__OwnerName__)',
+       '<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>',
+       '__Status__',
+});
+
+
 =item C<$MoreAboutRequestorExtraInfo>
 
 By default, the 'More about requestor' box on Ticket/Display.html
