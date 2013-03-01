@@ -388,6 +388,9 @@ my $build_admin_menu = sub {
 
 my $build_main_nav = sub {
 
+    PageWidgets()->child( simple_search => raw_html => $m->scomp('SimpleSearch') );
+    PageWidgets()->child( create_ticket => raw_html => $m->scomp('CreateTicket') );
+
     my $home = Menu->child( home => title => loc('Homepage'), path => '/' );
     # We explicitly exclude superusers; otherwise the dashboards for
     # groups you're not in (but can see the dashboards of by dint of
@@ -798,6 +801,10 @@ my $build_main_nav = sub {
     }
 
     if ( $request_path =~ m{^/Articles/} ) {
+        PageWidgets()->child( article_search => raw_html => $m->scomp('/Articles/Elements/GotoArticle') );
+        PageWidgets()->delete('create_ticket');
+        PageWidgets()->delete('simple_search');
+
         my $tabs = PageMenu();
         $tabs->child( search => title => loc("Search"),       path => "/Articles/Article/Search.html" );
         $tabs->child( create => title => loc("New Article" ), path => "/Articles/Article/PreCreate.html" );
@@ -824,9 +831,6 @@ my $build_main_nav = sub {
     if ( $request_path =~ /^\/(?:index.html|$)/ ) {
         PageMenu()->child( edit => title => loc('Edit'), path => '/Prefs/MyRT.html' );
     }
-
-    PageWidgets()->child( simple_search => raw_html => $m->scomp('SimpleSearch') );
-    PageWidgets()->child( create_ticket => raw_html => $m->scomp('CreateTicket') );
 
     $m->callback( CallbackName => 'Privileged' );
 };
