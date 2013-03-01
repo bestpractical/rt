@@ -363,7 +363,7 @@ my $build_admin_menu = sub {
     if ( $request_path =~ m{^/Admin/Articles/Classes/} ) {
         my $tabs = PageMenu();
         if ( my $id = $DECODED_ARGS->{'id'} ) {
-            my $obj = RT::CustomField->new( $session{'CurrentUser'} );
+            my $obj = RT::Class->new( $session{'CurrentUser'} );
             $obj->Load($id);
 
             if ( $obj and $obj->id ) {
