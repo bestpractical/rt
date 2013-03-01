@@ -45,6 +45,8 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% $m->callback( CallbackName => 'BeforeCustomFields', Object => $Object,
+%               Grouping => $Grouping, ARGSRef => \%ARGS );
 % if ( $WRAP ) {
 <<% $WRAP %> class="edit-custom-fields">
 % }
@@ -76,13 +78,15 @@
         </span>
 %  }
     </<% $CELL %>>
+% $m->callback( CallbackName => 'AfterCustomFieldValue', CustomField => $CustomField, Object => $Object, Grouping => $Grouping );
   </<% $FIELD %>>
 % }
 
 % if ( $WRAP ) {
 </<% $WRAP %>>
 % }
-% $m->callback( %ARGS, CallbackName => 'AfterCustomFields' );
+% $m->callback( CallbackName => 'AfterCustomFields', Object => $Object,
+%               Grouping => $Grouping, ARGSRef => \%ARGS );
 <%INIT>
 $CustomFields ||= $Object->CustomFields;
 
