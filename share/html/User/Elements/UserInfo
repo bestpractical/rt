@@ -47,14 +47,13 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="<% $ClassPrefix %>-extra">
 % for my $column (@formats) {
-% my $title = $column->{title} || '';
+% my $title = $m->interp->apply_escapes($column->{title} || '', 'h');
 % my $attr = $column->{'attribute'} || $column->{'last_attribute'};
 % unless (defined $column->{title}) {
-%   $title = $fetch_columnmap->($attr,'title',[$attr],'no_escape');
+%   $title = $fetch_columnmap->($attr,'title',[$attr]);
 % }
-% $title = $m->comp('/Elements/ScrubHTML', Content => $title);
 <div class="<% $ClassPrefix %>-extra-field <% CSSClass($fetch_columnmap->($attr,'attribute',[$attr],'no_escape')) %>" >
-<span class="label"><% loc($title) %></span>
+<span class="label"><% loc($title) |n %></span>
 % my @out;
 % foreach my $subcol ( @{ $column->{output} } ) {
 %     my ($col) = ($subcol =~ /^__(.*?)__$/);
