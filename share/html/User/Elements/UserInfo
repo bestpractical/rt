@@ -50,10 +50,10 @@
 % my $title = $column->{title} || '';
 % my $attr = $column->{'attribute'} || $column->{'last_attribute'};
 % unless (defined $column->{title}) {
-%   $title = $fetch_columnmap->($attr,'title',[$attr]);
+%   $title = $fetch_columnmap->($attr,'title',[$attr],'no_escape');
 % }
 % $title = $m->comp('/Elements/ScrubHTML', Content => $title);
-<div class="<% $ClassPrefix %>-extra-field <% CSSClass($fetch_columnmap->($attr,'attribute',[$attr])) %>" >
+<div class="<% $ClassPrefix %>-extra-field <% CSSClass($fetch_columnmap->($attr,'attribute',[$attr],'no_escape')) %>" >
 <span class="label"><% loc($title) %></span>
 % my @out;
 % foreach my $subcol ( @{ $column->{output} } ) {
@@ -65,7 +65,7 @@
 %     push @out, $fetch_columnmap->($col, 'value', [$User]);
 % }
 % @out = grep { defined $_ and length $_ } @out;
-<span class="value"><% join(' ',@out) %></span>
+<span class="value"><% join(' ',@out) |n %></span>
 </div>
 % }
 </div>
@@ -73,16 +73,19 @@
 return unless $FormatConfig;
 my $format = RT->Config->Get($FormatConfig);
 return unless $format;
+
+# Note that we don't need to ScrubHTML($format), because it's only modifiable
+# by the RT server admin.
 my @formats = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $format);
 
 my $fetch_columnmap = sub {
-    my ($name, $attr, $arguments) = @_;
+    my ($name, $attr, $arguments, $no_escape) = @_;
     my $tmp = $m->comp( '/Elements/ColumnMap',
             Class => $Class,
             Name  => $name,
             Attr  => $attr,
             );
-    return ProcessColumnMapValue( $tmp, Arguments => $arguments, Escape => 0 );
+    return ProcessColumnMapValue( $tmp, Arguments => $arguments, Escape => !$no_escape );
 };
 
 $ClassPrefix = CSSClass($ClassPrefix) if $ClassPrefix;
