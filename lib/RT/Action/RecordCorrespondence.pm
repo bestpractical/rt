@@ -55,7 +55,7 @@ use warnings;
 
 RT::Action::RecordCorrespondence - An Action which can be used from an
 external tool, or in any situation where a ticket transaction has not
-been started, to make a comment on the ticket.
+been started, to create a correspondence on the ticket.
 
 =head1 SYNOPSIS
 
