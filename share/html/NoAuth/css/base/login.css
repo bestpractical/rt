@@ -81,6 +81,10 @@ margin-right:auto;margin-left:auto;
 
 }
 
+#login-box .input-row input {
+  width: 14em;
+}
+
 #login-box .button-row {
   margin-top: 0.5em;
 }
