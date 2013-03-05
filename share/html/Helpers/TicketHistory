@@ -54,13 +54,12 @@ $TicketObj->Load($id);
 
 my $attachments = $TicketObj->Attachments;
 my $attachment_content = $TicketObj->TextAttachments;
-
-$m->comp('/Elements/ShowHistory',
+</%INIT>
+<& /Elements/ShowHistory,
     Object => $TicketObj,
     ShowHeaders => $ARGS{'ShowHeaders'},
     Attachments => $attachments,
     AttachmentContent => $attachment_content
-);
-
-$m->abort();
-</%INIT>
+    &>
+<script type="text/javascript">ReplaceUserReferences()</script>
+% $m->abort();
