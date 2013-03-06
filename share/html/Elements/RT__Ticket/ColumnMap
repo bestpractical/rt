@@ -66,9 +66,9 @@ my $LinkCallback = sub {
     return sub {
         map {
             \'<a href="',
-            $_->$mode_uri->Resolver->HREF,
+            $_->$mode_uri->AsHREF,
             \'">',
-            ( $_->$mode_uri->Resolver->AsString ),
+            ( $_->$mode_uri->AsString ),
             \'</a><br />',
         } @{ $_[0]->Links($other_mode,$type)->ItemsArrayRef }
     }

@@ -847,7 +847,7 @@ sub _FormatUser {
             if ( $URI->FromURI( $self->NewValue ) ) {
                 $value = [
                     \'<a href="', $URI->AsHREF, \'">',
-                    $URI->Resolver->AsString,
+                    $URI->AsString,
                     \'</a>'
                 ];
             }
@@ -889,7 +889,7 @@ sub _FormatUser {
             if ( $URI->FromURI( $self->OldValue ) ) {
                 $value = [
                     \'<a href="', $URI->AsHREF, \'">',
-                    $URI->Resolver->AsString,
+                    $URI->AsString,
                     \'</a>'
                 ];
             }

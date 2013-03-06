@@ -63,7 +63,7 @@
 <%$URI->Resolver->AsString%>
 % }
 % } else {
-<%$URI->Resolver->AsString%>
+<%$URI->AsString%>
 % }
 </a>
 <%ARGS>
@@ -71,7 +71,7 @@ $URI => undef
 </%ARGS>
 
 <%INIT>
-my $href = $URI->Resolver->HREF;
+my $href = $URI->AsHREF;
 if ( $URI->IsLocal ) {
     my $base = RT->Config->Get('WebBaseURL');
     # URI->rel doesn't contain the leading '/'
