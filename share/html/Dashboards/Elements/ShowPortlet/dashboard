@@ -56,7 +56,6 @@ $Depth => 0
 <%init>
 my $current_dashboard;
 
-use Scalar::Util 'blessed';
 if (blessed($Portlet) && $Portlet->isa('RT::Dashboard')) {
     $current_dashboard = $Portlet;
 }

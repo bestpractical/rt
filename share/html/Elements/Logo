@@ -67,7 +67,6 @@ if ( exists $ARGS{'show_name'} ) {
     $ShowName = delete $ARGS{'show_name'};
 }
 
-use Scalar::Util qw(blessed);
 my $user_logo = blessed $RT::System ? $RT::System->FirstAttribute('UserLogo') : undef;
 
 # If we have the attribute, but no content, we don't really have a user logo

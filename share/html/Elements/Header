@@ -107,8 +107,6 @@
 % }
 <div id="header"><h1><% $Title %></h1></div>
 <%INIT>
-use Scalar::Util qw(blessed);
-
 $r->headers_out->{'Pragma'} = 'no-cache';
 $r->headers_out->{'Cache-control'} = 'no-cache';
 
