@@ -44,7 +44,7 @@ $m->click('SubmitTicket');
 
 $m->follow_link_ok({text => 'Links'});
 
-$m->text_contains('Article ' . $article->id . ': instance of ticket #17421', 'Article appears with its name in the links table');
+$m->text_contains('Article #' . $article->id . ': instance of ticket #17421', 'Article appears with its name in the links table');
 
 my $refers_to = $ticket->RefersTo;
 is($refers_to->Count, 1, 'the ticket has a refers-to link');
