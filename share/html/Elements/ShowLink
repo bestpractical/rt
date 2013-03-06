@@ -48,7 +48,6 @@
 <a href="<% $href %>">
 % if ($URI->IsLocal) {
 % my $member = $URI->Object;
-% my $has_name = UNIVERSAL::can($member, 'Name') || (UNIVERSAL::can($member, '_Accessible') && $member->_Accessible('Name', 'read'));
 % if (blessed($member) && $member->isa("RT::Ticket")) {
 % my $inactive = $member->QueueObj->IsInactiveStatus($member->Status);
 
@@ -57,8 +56,6 @@
 <%$member->Id%>: (<& /Elements/ShowUser, User => $member->OwnerObj &>) <%$member->Subject || ''%> [<% loc($member->Status) %>]
 </span>
 
-% } elsif ($has_name) {
-<%$URI->Resolver->AsString%>: <%$member->Name%>
 % } else {
 <%$URI->Resolver->AsString%>
 % }
