@@ -215,7 +215,7 @@ diag "create a ticket with an image";
 }
 
 $m->get( $m->rt_base_url );
-$m->follow_link( id => 'search-new');
+$m->follow_link( id => 'search-tickets-new');
 $m->title_is(q/Query Builder/, 'Query building');
 $m->submit_form(
     form_name => "BuildQuery",

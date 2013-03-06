@@ -161,7 +161,7 @@ ok($ret, "Test ticket for articles created: $msg");
 
 isa_ok($m, 'Test::WWW::Mechanize');
 ok($m->login, 'logged in');
-$m->follow_link_ok( { text => 'Articles', url_regex => qr!^/Articles/! },
+$m->follow_link_ok( { text => 'Articles', url_regex => qr!^/Articles/index.html! },
     'UI -> Articles' );
 
 $m->content_contains($article3->Name);

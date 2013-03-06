@@ -45,50 +45,6 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%args>
-$menu
-$show_children => undef
-</%args>
-<ul class="list-menu">
-% for my $child ($menu->children) {
-<li><span class="menu-item"><% $show_link->( $child ) |n %></span><br />
-% if ( my $description = $child->description ) {
-<span class="description"><% $description %></span>\
-% }
-</li>
-% if ($show_children && $child->children) {
-<& /Elements/ListMenu, menu => $child &>
-% }
-% }
-</ul>
-
-<%INIT>
-my $web_path = RT->Config->Get('WebPath');
-my $interp = $m->interp;
-my $show_link = sub {
-    my $e = shift;
-    my $res = '';
-    if ( $e->path) {
-        $res .= '<a';
-        my $url = (not $e->path or $e->path =~ m{^\w+:/})
-            ? $e->path
-            : $web_path . $e->path;
-        $res .= ' href="'. $interp->apply_escapes($url, 'h') .'"'
-            if $url;
-
-        if ( $e->target ) {
-            $res .= ' target="'. $interp->apply_escapes( $e->target, 'h' ) .'"';
-        }
-        $res .= '>';
-    }
-
-    my $title = $e->title;
-    $title = $interp->apply_escapes( $title, 'h' );
-    $res .= $title;
-
-    if ( $e->path) {
-        $res .= '</a>';
-    }
-    return $res;
-};
-</%INIT>
+<& /Admin/Elements/Header, Title => loc('Searches') &>
+<& /Elements/Tabs &>
+<& /Elements/ListMenu, menu => Menu()->child('search'), show_children => 1 &>
