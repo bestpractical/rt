@@ -200,9 +200,12 @@ Return "Article 23"
 
 sub AsString {
     my $self = shift;
-    if ($self->IsLocal && $self->Object) {
-    return $self->loc('Article [_1]', $self->Object->id);
-
+    if ($self->IsLocal && ( my $object = $self->Object )) {
+        if ( $object->Name ) {
+            return $self->loc('Article #[_1]: [_2]', $object->id, $object->Name);
+        } else {
+            return $self->loc('Article #[_1]', $object->id);
+        }
     } else {
         return $self->SUPER::AsString(@_);
     }

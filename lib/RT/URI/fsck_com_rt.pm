@@ -215,8 +215,18 @@ Returns either a localized string 'ticket #23' or the full URI if the object is 
 
 sub AsString {
     my $self = shift;
-    if ($self->IsLocal && $self->Object) {
-        return $self->loc("[_1] #[_2]", $self->ObjectType, $self->Object->Id);
+    if ($self->IsLocal && ( my $object = $self->Object )) {
+        my $name = "";
+        if ($object->isa('RT::Ticket')) {
+            $name = $object->Subject||'';
+        } elsif ( $object->_Accessible('Name', 'read') ) {
+            $name = $object->Name||'';
+        }
+        if ( $name ) {
+            return $self->loc("[_1] #[_2]: [_3]", $self->ObjectType, $object->Id, $name);
+        } else {
+            return $self->loc("[_1] #[_2]", $self->ObjectType, $object->Id);
+        }
     }
     else {
         return $self->URI;
