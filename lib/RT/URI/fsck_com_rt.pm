@@ -222,10 +222,14 @@ sub AsString {
         } elsif ( $object->_Accessible('Name', 'read') ) {
             $name = $object->Name||'';
         }
+
+        # awful historical baggage, we rely on the lowercase ticket in a number of places
+        my $object_type = ($self->ObjectType eq 'ticket' ? 'Ticket' : $self->ObjectType);
+
         if ( $name ) {
-            return $self->loc("[_1] #[_2]: [_3]", $self->ObjectType, $object->Id, $name);
+            return $self->loc("[_1] #[_2]: [_3]", $object_type, $object->Id, $name);
         } else {
-            return $self->loc("[_1] #[_2]", $self->ObjectType, $object->Id);
+            return $self->loc("[_1] #[_2]", $object_type, $object->Id);
         }
     }
     else {
