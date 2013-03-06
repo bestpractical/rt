@@ -181,11 +181,11 @@ my $build_admin_menu = sub {
 
     my $cfs = $article_admin->child( 'custom-fields' =>
         title => loc('Custom Fields'),
-        path  => '/Admin/CustomFields/index.html?'.$m->comp('/Elements/QueryString', type => 'RT::Class-RT::Article'),
+        path  => '/Admin/CustomFields/index.html?'.$m->comp('/Elements/QueryString', Type => 'RT::Class-RT::Article'),
     );
     $cfs->child( select =>
         title => loc('Select'),
-        path => '/Admin/CustomFields/index.html?'.$m->comp('/Elements/QueryString', type => 'RT::Class-RT::Article'),
+        path => '/Admin/CustomFields/index.html?'.$m->comp('/Elements/QueryString', Type => 'RT::Class-RT::Article'),
     );
     $cfs->child( create =>
         title => loc('Create'),
