@@ -155,17 +155,6 @@ div.requestor-ticket-links {
     padding-top: 0.25em;
 }
 
-.more-about-requestor-extra-field .label {
-    display: inline-block;
-    width: 8em;
-    font-weight: bold;
-    text-align: right;
-}
-
-.more-about-requestor-extra-field .value {
-    display: inline-block;
-}
-
 .ticket-info-requestor .more-about-requestor-extra,
 .ticket-info-requestor .comments-about-user,
 .ticket-info-requestor .more-about-requestor-tickets,
