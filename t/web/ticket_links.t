@@ -165,7 +165,7 @@ for my $type ( "DependsOn", "MemberOf", "RefersTo" ) {
             $m->content_lacks('hello test reminder subject');
             if ($type eq 'RefersTo') {
                 $m->text_contains("$baseurl/test_ticket_reference");
-                $m->text_contains("Article " . $article->Id . ': test article');
+                $m->text_contains("Article #" . $article->Id . ': test article');
             }
         }
     }

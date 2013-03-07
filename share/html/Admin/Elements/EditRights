@@ -51,8 +51,6 @@ $Principals
 $AddPrincipal => undef
 </%args>
 <%init>
-use Scalar::Util qw(blessed);
-
 # Let callbacks get at principals and context before we do anything with them
 $m->callback( Principals => $Principals, Context => $Context );
 

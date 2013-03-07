@@ -62,16 +62,22 @@ my $LinkCallback = sub {
     my $type            = $RT::Link::TYPEMAP{$method}{Type};
     my $other_mode      = ($mode eq "Target" ? "Base" : "Target");
     my $mode_uri        = $mode.'URI';
-    my $local_type      = 'Local'.$mode;
 
     return sub {
+        my $ObjectType = $_[2]||'';
         map {
             \'<a href="',
-            $_->$mode_uri->Resolver->HREF,
+            $_->$mode_uri->AsHREF,
             \'">',
-            ( $_->$mode_uri->IsLocal ? $_->$local_type : $_->$mode ),
+            ( $_->$mode_uri->AsString ),
             \'</a><br />',
-        } @{ $_[0]->Links($other_mode,$type)->ItemsArrayRef }
+        } # if someone says __RefersTo.{Ticket}__ filter for only local links that are tickets
+          grep { $ObjectType
+                    ? ( $_->$mode_uri->IsLocal
+                        && ( $_->$mode_uri->Object->RecordType eq $ObjectType ))
+                    : 1
+               }
+          @{ $_[0]->Links($other_mode,$type)->ItemsArrayRef }
     }
 };
 

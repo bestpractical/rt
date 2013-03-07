@@ -65,7 +65,7 @@
 <li>
 <input type="checkbox" name="DeleteLink--<%$link->Type%>-<%$link->Target%>" />
 %     if ($link->TargetURI->IsLocal) {
-<a href="<%$member->Resolver->HREF%>"><% loc($member->Object->RecordType) %> <%$member->Object->Id%></a>: 
+<a href="<%$member->AsHREF%>"><% loc($member->Object->RecordType) %> <%$member->Object->Id%></a>: 
 %       if (UNIVERSAL::isa($member->Object, "RT::Article") or UNIVERSAL::can($member->Object, 'Name')) {
 <%$member->Object->Name%>
 %       } elsif (UNIVERSAL::isa($member->Object, "RT::Ticket") or UNIVERSAL::can($member->Object, 'Subject')) {
@@ -73,7 +73,7 @@
 %       }
 </a>
 %     } else {
-<a href="<%$member->Resolver->HREF%>"><%$link->Target%></a>
+<a href="<%$member->AsHREF%>"><%$link->Target%></a>
 %     }
 %   }
 % }
@@ -92,7 +92,7 @@
 <li>
 <input type="checkbox" name="DeleteLink-<%$link->Base%>-<%$link->Type%>-" />
 %     if ($link->BaseURI->IsLocal) {
-<a href="<%$member->Resolver->HREF%>"><% loc($member->Object->RecordType) %> <%$member->Object->Id%>: 
+<a href="<%$member->AsHREF%>"><% loc($member->Object->RecordType) %> <%$member->Object->Id%>: 
 %       if (UNIVERSAL::isa($member->Object, "RT::Article") or UNIVERSAL::can($member->Object, 'Name')) {
 <%$member->Object->Name%>
 %       } elsif (UNIVERSAL::isa($member->Object, "RT::Ticket") or UNIVERSAL::can($member->Object, 'Subject')) {
@@ -100,7 +100,7 @@
 %       }
 </a>
 %     } else {
-<a href="<%$member->Resolver->HREF%>"><%$link->Base%></a>
+<a href="<%$member->AsHREF%>"><%$link->Base%></a>
 %     }
 %   }
 % }

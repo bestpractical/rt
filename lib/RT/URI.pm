@@ -285,6 +285,17 @@ sub Resolver {
     return ($self->{'resolver'});
 }
 
+=head2 AsString
+
+Returns a friendly display form of the object if Local, or the full URI
+
+=cut
+
+sub AsString {
+    my $self = shift;
+    return $self->Resolver->AsString;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

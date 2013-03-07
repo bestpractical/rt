@@ -1572,6 +1572,8 @@ package HTML::Mason::Commands;
 
 use vars qw/$r $m %session/;
 
+use Scalar::Util qw(blessed);
+
 sub Menu {
     return $HTML::Mason::Commands::m->notes('menu');
 }
