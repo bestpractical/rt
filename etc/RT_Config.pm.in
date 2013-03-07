@@ -952,10 +952,20 @@ controlled by C<%AdminSearchResultFormat>.
 =cut
 
 Set($UserSearchResultFormat,
-         q{ __id__}
-        .q{,__Name__}
+         q{ '<a href="__WebPath__/User/Summary.html?id=__id__">__id__</a>/TITLE:#'}
+        .q{,'<a href="__WebPath__/User/Summary.html?id=__id__">__Name__</a>/TITLE:Name'}
         .q{,__RealName__, __EmailAddress__}
 );
+
+=item C<@UserSummaryPortlets>
+
+A list of portlets to be displayed on the User Summary page.
+By default, we show all of the available portlets.
+Extensions may provide their own portlets for this page.
+
+=cut
+
+Set(@UserSummaryPortlets, (qw//));
 
 =item C<$WebBaseURL>, C<$WebURL>
 
