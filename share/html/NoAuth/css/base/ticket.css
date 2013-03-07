@@ -171,7 +171,7 @@ div.requestor-ticket-links {
 .ticket-info-requestor .more-about-requestor-tickets,
 .ticket-info-requestor .more-about-user-groups
 {
-    margin: 1em 0;
+    margin: 0.5em 0 1em 0;
 }
 
 .ticket-info-requestor .comments-about-user .label,
