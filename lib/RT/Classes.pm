@@ -83,9 +83,7 @@ sub Next {
 
 }
 
-sub ColumnMapClassName {
-    return 'RT__Class';
-}
+sub _SingularClass { "RT::Class" }
 
 =head2 NewItem
 

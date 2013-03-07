@@ -362,10 +362,9 @@ algorithm that this code uses.
 =cut
 
 sub ColumnMapClassName {
-    my $self = shift;
-    my $Class = ref $self;
-    $Class =~ s/s$//;
-    $Class =~ s/:/_/g;
+    my $self  = shift;
+    my $Class = $self->_SingularClass;
+       $Class =~ s/:/_/g;
     return $Class;
 }
 
