@@ -943,6 +943,20 @@ RealName and EmailAddress.
 
 Set($UsernameFormat, "concise");
 
+=item C<$UserSearchResultFormat>
+
+This controls the display of lists of users returned from the User
+Summary Search. The display of users in the Admin interface is
+controlled by C<%AdminSearchResultFormat>.
+
+=cut
+
+Set($UserSearchResultFormat,
+         q{ __id__}
+        .q{,__Name__}
+        .q{,__RealName__, __EmailAddress__}
+);
+
 =item C<$WebBaseURL>, C<$WebURL>
 
 Usually you don't want to set these options. The only obvious reason
