@@ -61,8 +61,8 @@
 % if ($child->raw_html) {
 <% $child->raw_html |n %>
 % } else {
-% my $url = (not $child->path or $child->path =~ m{^\w+:/}) ? $child->path : RT->Config->Get('WebPath').$child->path;
-<a id="<%$item_id%>" class="menu-item <% $child->class || '' %>"<% $child->path ? ' href="'.$url.'"' : '' |n%><% $child->target ? ' target="'.$child->target.'"' : '' |n %>>\
+% my $url = $m->interp->apply_escapes((not $child->path or $child->path =~ m{^\w+:/}) ? $child->path : RT->Config->Get('WebPath').$child->path, 'h');
+<a id="<%$item_id%>" class="menu-item <% $child->class || '' %>"<% $child->path ? ' href="'.$url.'"' : '' |n%><% $child->target ? ' target="'.$m->interp->apply_escapes($child->target, 'h').'"' : '' |n %>>\
 <% $child->escape_title ? $m->interp->apply_escapes($child->title, 'h') : $child->title |n %>\
 </a>\
 % }
@@ -82,3 +82,6 @@ $toplevel => 1
 $parent_id => ''
 $depth => 0
 </%ARGS>
+<%init>
+$id = $m->interp->apply_escapes($id, 'h');
+</%init>
