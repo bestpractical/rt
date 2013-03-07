@@ -45,33 +45,40 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $m->callback(CallbackName => 'Begin');
+.rt-accordion .ui-accordion-content {
+    padding: 0 0 0 20px;
+    margin: -0.5em 0 0.5em 0;
+    border: none;
+    background: none;
+    color: black;
+}
 
-@import "yui-fonts.css";
-@import "jquery-ui.css";
-@import "jquery-ui-timepicker-addon.css";
-@import "jquery.modal.css";
-@import "superfish.css";
-@import "superfish-navbar.css";
-@import "superfish-vertical.css";
-@import "tablesorter.css";
-@import "farbtastic.css";
-@import "collection.css";
-@import "forms.css";
-@import "misc.css";
-@import "nav.css";
-@import "ticket-form.css";
-@import "rights-editor.css";
-@import "theme-editor.css";
-@import "ticket.css";
-@import "accordion.css";
-@import "admin.css";
-@import "articles.css";
-@import "portlets.css";
-@import "tools.css";
-@import "login.css";
-@import "history-folding.css";
-@import "history.css";
+.rt-accordion {
+    margin: 0.5em 0 0 0;
+}
 
-% $m->callback(CallbackName => 'End');
+.rt-accordion .ui-accordion-header .ui-icon {
+    background-image: url(<%RT->Config->Get('WebPath')%>/static/images/jquery_ui/ui-icons_4488cc_256x240.png);
+    left: 0;
+}
 
+.rt-accordion .ui-accordion-header {
+    padding: 0;
+    background: none;
+}
+
+.rt-accordion .ui-accordion-header, .rt-accordion .ui-accordion-header a {
+    color: black;
+    border: none;
+    margin: 0;
+}
+
+.rt-accordion .ui-accordion-header a {
+    font-size: 90%;
+    padding: 0 0 0.25em 20px;
+}
+
+.rt-accordion .ui-accordion-header a:hover,
+.rt-accordion .ui-accordion-header.ui-state-active a {
+    text-decoration: underline;
+}

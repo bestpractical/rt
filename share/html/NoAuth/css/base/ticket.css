@@ -45,44 +45,6 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-#requestor-accordion .ui-accordion-content {
-    padding: 0 0 0 20px;
-    margin: -0.5em 0 0.5em 0;
-    border: none;
-    background: none;
-    color: black !important;
-}
-
-#requestor-accordion {
-    margin: 0.5em 0 0 0;
-}
-
-#requestor-accordion h3 .ui-icon {
-    background-image: url(<%RT->Config->Get('WebPath')%>/static/images/jquery_ui/ui-icons_4488cc_256x240.png);
-    left: 0;
-}
-
-#requestor-accordion h3 {
-    padding: 0;
-    background: none !important;
-}
-
-#requestor-accordion h3, #requestor-accordion h3 a {
-    color: black !important;
-    border: none !important;
-    margin: 0;
-}
-
-#requestor-accordion h3 a {
-    font-size: 90%;
-    padding: 0 0 0.25em 20px;
-}
-
-#requestor-accordion h3 a:hover,
-#requestor-accordion h3.ui-state-active a {
-    text-decoration: underline;
-}
-
 #requestor-accordion a.modify-user {
     font-size: 80%;
     color: black !important;

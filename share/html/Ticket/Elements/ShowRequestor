@@ -68,7 +68,7 @@
     class => 'ticket-info-requestor'
 &>
 
-<div id="requestor-accordion">
+<div id="requestor-accordion" class="rt-accordion">
 
 % while ( my $requestor = $people->Next ) {
   <h3><a href="#"><& /Elements/ShowUser, User => $requestor &></a></h3>
