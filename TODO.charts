@@ -1,0 +1,56 @@
+move abuse protection code from callers to SetupGrouping
+    IsValidGrouping, etc.
+
+protect Function in SetupGrouping from abuse
+
+upgrade script for saved charts
+* switch from space separator to dot
+* switch from PrimaryGroupBy to GroupBy name
+
+it'd be nice if full day and month names worked in 
+"Created.DayOfWeek = 'Thu'" searches.
+
+support more than one calculated function in diagrams,
+at least in bars
+
+support putting grouppings as columns of the table
+support horizontal totals when there are gropings as columns
+
+support links with partial queries in tables, for example
+table:
+
+                          Owner
+    Queue      Status     Nobody [3]
+    General[1] open[2]    10[4]
+
+    [1] - $query AND Queue = 'General'
+    [2] - [1] AND Status = 'open'
+    [3] - $query AND Owner = 'Nobody'
+    [4] - [2] AND [3]
+
+
+On my machine Created-LastUpdated interval is 1 second
+for newely created tickets. It's either bug or just
+operation is long enough to span over two seconds. It
+would be nice to ignore difference up to 3 seconds or
+something like that.
+
+During rebase localization of "group by" was lost
+
+Check for abusable ->Column and ->GroupBy calls
+
+@SORT_OPTS and associated ugly function needs to be better
+
+Look at Excel/OO for how it does multiple groupings/sortings?
+
+Option groups for groupings/count
+
+Rename "Count" label
+
+Chart labels can go haywire
+
+Fix max width problems
+
+Configurable default grouping since Queue is outrageous on rt.cpan.org
+
+Integer y-axis ticks, rounded to nearest multiple of 5?
