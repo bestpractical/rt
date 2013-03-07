@@ -45,16 +45,16 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+.rt-accordion {
+    margin: 0;
+}
+
 .rt-accordion .ui-accordion-content {
     padding: 0 0 0 20px;
     margin: 0 0 0.5em 0;
     border: none;
     background: none;
     color: black;
-}
-
-.rt-accordion {
-    margin: 0.5em 0 0 0;
 }
 
 .rt-accordion .ui-accordion-header .ui-icon {
