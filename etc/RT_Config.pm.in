@@ -965,7 +965,20 @@ Extensions may provide their own portlets for this page.
 
 =cut
 
-Set(@UserSummaryPortlets, (qw//));
+Set(@UserSummaryPortlets, (qw/ExtraInfo/));
+
+=item C<$UserSummaryExtraInfo>
+
+This controls what information is displayed on the User Summary
+portal. By default the user's Real Name, Email Address and Username
+are displayed. You can remove these or add more as needed. This
+expects a Format string of user attributes. Please note that not all
+the attributes are supported in this display because we're not
+building a table.
+
+=cut
+
+Set($UserSummaryExtraInfo, "RealName, EmailAddress, Name");
 
 =item C<$WebBaseURL>, C<$WebURL>
 
