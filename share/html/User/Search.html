@@ -49,7 +49,7 @@
 <& /Elements/Tabs &>
     
 <form name="UserSearch" method="post" action="<% RT->Config->Get('WebPath') %>/User/Search.html">
-<input type="text" name="UserString" value="" id="autocomplete-UserString" />
+<input type="text" name="UserString" value="<% $UserString||'' %>" id="autocomplete-UserString" />
 <script type="text/javascript">
 jQuery(function(){
     jQuery("#autocomplete-UserString").autocomplete({
