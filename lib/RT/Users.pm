@@ -566,6 +566,84 @@ sub WhoBelongToGroups {
     }
 }
 
+=head2 SimpleSearch
+
+Does a 'simple' search of Users against a specified Term.
+
+This Term is compared to a number of fields using various types of SQL
+comparison operators.
+
+Ensures that the returned collection of Users will have a value for Return.
+
+This method is passed the following.  You must specify a Term and a Return.
+
+    Privileged - Whether or not to limit to Privileged Users (0 or 1)
+    Fields     - Hashref of data - defaults to C<$UserAutocompleteFields> emulate that if you want to override
+    Term       - String that is in the fields specified by Fields
+    Return     - What field on the User you want to be sure isn't empty
+    Exclude    - Comma separated list of user ids to skip
+    Max        - What to limit this collection to
+
+=cut
+
+sub SimpleSearch {
+    my $self = shift;
+    my %args = (
+        Privileged  => 0,
+        Fields      => RT->Config->Get('UserAutocompleteFields'),
+        Term        => undef,
+        Exclude     => '',
+        Return      => undef,
+        Max         => 10,
+        @_
+    );
+
+    return $self unless defined $args{Return}
+                        and defined $args{Term}
+                        and length $args{Term};
+
+    $self->RowsPerPage( $args{Max} );
+
+    $self->LimitToPrivileged() if $args{Privileged};
+
+    while (my ($name, $op) = each %{$args{Fields}}) {
+        $op = 'STARTSWITH'
+        unless $op =~ /^(?:LIKE|(?:START|END)SWITH|=|!=)$/i;
+
+        $self->Limit(
+            FIELD           => $name,
+            OPERATOR        => $op,
+            VALUE           => $args{Term},
+            ENTRYAGGREGATOR => 'OR',
+            SUBCLAUSE       => 'autocomplete',
+        );
+    }
+
+    # Exclude users we don't want
+    foreach (split /\s*,\s*/, $args{Exclude}) {
+        $self->Limit(FIELD => 'id', VALUE => $_, OPERATOR => '!=');
+    }
+
+    if ( RT->Config->Get('DatabaseType') eq 'Oracle' ) {
+        $self->Limit(
+            FIELD    => $args{Return},
+            OPERATOR => 'IS NOT',
+            VALUE    => 'NULL',
+        );
+    }
+    else {
+        $self->Limit( FIELD => $args{Return}, OPERATOR => '!=', VALUE => '' );
+        $self->Limit(
+            FIELD           => $args{Return},
+            OPERATOR        => 'IS NOT',
+            VALUE           => 'NULL',
+            ENTRYAGGREGATOR => 'AND'
+        );
+    }
+
+    return $self;
+}
+
 
 =head2 NewItem
 
