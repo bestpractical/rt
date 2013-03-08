@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc('User Search') &>
+<& /Elements/Header, Title => loc('User Search'), Focus => 'autocomplete-UserString' &>
 <& /Elements/Tabs &>
     
 <form name="UserSearch" method="post" action="<% RT->Config->Get('WebPath') %>/User/Search.html">
