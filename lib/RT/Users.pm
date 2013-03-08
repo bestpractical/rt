@@ -578,7 +578,7 @@ Ensures that the returned collection of Users will have a value for Return.
 This method is passed the following.  You must specify a Term and a Return.
 
     Privileged - Whether or not to limit to Privileged Users (0 or 1)
-    Fields     - Hashref of data - defaults to C<$UserAutocompleteFields> emulate that if you want to override
+    Fields     - Hashref of data - defaults to C<$UserSearchFields> emulate that if you want to override
     Term       - String that is in the fields specified by Fields
     Return     - What field on the User you want to be sure isn't empty
     Exclude    - Array reference of ids to exclude
@@ -590,7 +590,7 @@ sub SimpleSearch {
     my $self = shift;
     my %args = (
         Privileged  => 0,
-        Fields      => RT->Config->Get('UserAutocompleteFields'),
+        Fields      => RT->Config->Get('UserSearchFields'),
         Term        => undef,
         Exclude     => [],
         Return      => undef,

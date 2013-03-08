@@ -100,7 +100,7 @@ $users->SimpleSearch( Return    => 'Name',
 
 my $Format = RT->Config->Get('UserSearchResultFormat');
 
-my $search_fields = join ", ", map loc($_), keys %{RT->Config->Get('UserAutocompleteFields')};
+my $search_fields = join ", ", map loc($_), keys %{RT->Config->Get('UserSearchFields')};
 
 </%INIT>
 <%ARGS>

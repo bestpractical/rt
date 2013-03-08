@@ -780,6 +780,25 @@ our %META = (
                 if $self->Meta('LogToScreen')->{'Source'}{'Package'};
         },
     },
+    UserAutocompleteFields => {
+        PostSet => sub {
+            my $self  = shift;
+            my $value = shift;
+            $self->SetFromConfig(
+                Option => \'UserSearchFields',
+                Value  => [$value],
+                %{$self->Meta('UserAutocompleteFields')->{'Source'}}
+            );
+        },
+        PostLoadCheck => sub {
+            my $self = shift;
+            RT->Deprecated(
+                Message => '$UserAutocompleteFields is deprecated',
+                Instead => '$UserSearchFields',
+                Remove => "4.4"
+            ) if $self->Meta('UserAutocompleteFields')->{'Source'}{'Package'};
+        },
+    },
     CustomFieldGroupings => {
         Type            => 'HASH',
         PostLoadCheck   => sub {

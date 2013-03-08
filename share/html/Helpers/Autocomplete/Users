@@ -84,7 +84,7 @@ my $CurrentUser = $session{'CurrentUser'};
 $m->abort unless $CurrentUser->Privileged
               or RT->Config->Get('AllowUserAutocompleteForUnprivileged');
 
-my %fields = %{ RT->Config->Get('UserAutocompleteFields')
+my %fields = %{ RT->Config->Get('UserSearchFields')
                 || { EmailAddress => 1, Name => 1, RealName => 'LIKE' } };
 
 # If an operator is provided, check against only the returned field

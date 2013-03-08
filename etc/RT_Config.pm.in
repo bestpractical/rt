@@ -1375,7 +1375,9 @@ is ignored. Helpful when owners list is huge in the query builder.
 
 Set($AutocompleteOwnersForSearch, 0);
 
-=item C<$UserAutocompleteFields>
+=item C<$UserSearchFields>
+
+Used by the User Autocompleter as well as the User Search.
 
 Specifies which fields of L<RT::User> to match against and how to
 match each field when autocompleting users.  Valid match methods are
@@ -1383,7 +1385,7 @@ LIKE, STARTSWITH, ENDSWITH, =, and !=.
 
 =cut
 
-Set($UserAutocompleteFields, {
+Set($UserSearchFields, {
     EmailAddress => 'STARTSWITH',
     Name         => 'STARTSWITH',
     RealName     => 'LIKE',

@@ -65,7 +65,7 @@ $m->abort unless defined $return
 
 my $CurrentUser = $session{'CurrentUser'};
 
-my %fields = %{ RT->Config->Get('UserAutocompleteFields')
+my %fields = %{ RT->Config->Get('UserSearchFields')
                 || { EmailAddress => 1, Name => 1, RealName => 'LIKE' } };
 
 my %user_uniq_hash;
