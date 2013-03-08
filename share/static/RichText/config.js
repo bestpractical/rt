@@ -33,6 +33,7 @@ config.disableNativeSpellChecker = false;
 config.browserContextMenuOnCtrl = true;
 
 
+config.toolbarCanCollapse = true;
 config.toolbarStartupExpanded = false;
 config.font_names =
     'Arial/Arial, Helvetica, sans-serif;' +
