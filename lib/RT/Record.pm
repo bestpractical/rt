@@ -2226,6 +2226,23 @@ sub ACLEquivalenceObjects { }
 
 sub ModifyLinkRight { }
 
+=head2 ColumnMapClassName
+
+ColumnMap needs a massaged collection class name to load the correct list
+display.  Equivalent to L<RT::SearchBuilder/ColumnMapClassName>, but provided
+for a record instead of a collection.
+
+Returns a string.  May be called as a package method.
+
+=cut
+
+sub ColumnMapClassName {
+    my $self  = shift;
+    my $Class = ref($self) || $self;
+       $Class =~ s/:/_/g;
+    return $Class;
+}
+
 sub BasicColumns { }
 
 sub WikiBase {
