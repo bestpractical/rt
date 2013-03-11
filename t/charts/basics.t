@@ -3,14 +3,12 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 9;
+use RT::Test tests => undef;
 use RT::Ticket;
 
-my $q = RT::Test->load_or_create_queue( Name => 'Default' );
+my $q = RT::Test->load_or_create_queue( Name => 'General' );
 ok $q && $q->id, 'loaded or created queue';
 my $queue = $q->Name;
-
-my (%test) = (0, ());
 
 my @tickets = add_tix_from_data(
     { Subject => 'n', Status => 'new' },
@@ -74,17 +72,18 @@ use_ok 'RT::Report::Tickets';
     is_deeply( \%table, $expected, "basic table" );
 }
 
+done_testing;
+
 
 sub add_tix_from_data {
     my @data = @_;
     my @res = ();
     while (@data) {
+        my %info = %{ shift(@data) };
         my $t = RT::Ticket->new($RT::SystemUser);
-        my ( $id, undef, $msg ) = $t->Create(
-            Queue => $q->id,
-            %{ shift(@data) },
-        );
+        my ( $id, undef, $msg ) = $t->Create( Queue => $q->id, %info );
         ok( $id, "ticket created" ) or diag("error: $msg");
+        is $t->Status, $info{'Status'}, 'correct status';
         push @res, $t;
     }
     return @res;
