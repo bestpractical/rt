@@ -1,135 +1,63 @@
-﻿/*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.html or http://ckeditor.com/license
-*/
-
-/**
- * @file Paste as plain text plugin
+﻿/**
+ * @license Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.html or http://ckeditor.com/license
  */
 
-(function()
-{
+/**
+ * @fileOverview Paste as plain text plugin.
+ */
+
+(function() {
 	// The pastetext command definition.
-	var pasteTextCmd =
-	{
-		exec : function( editor )
-		{
-			var clipboardText = CKEDITOR.tools.tryThese(
-				function()
-				{
-					var clipboardText = window.clipboardData.getData( 'Text' );
-					if ( !clipboardText )
-						throw 0;
-					return clipboardText;
-				}
-				// Any other approach that's working...
-				);
+	var pasteTextCmd = {
+		// Snapshots are done manually by editable.insertXXX methods.
+		canUndo: false,
+		async: true,
 
-			if ( !clipboardText )   // Clipboard access privilege is not granted.
-			{
-				editor.openDialog( 'pastetext' );
-				return false;
-			}
-			else
-				editor.fire( 'paste', { 'text' : clipboardText } );
+		exec: function( editor ) {
+			editor.getClipboardData({ title: editor.lang.pastetext.title }, function( data ) {
+				// Do not use editor#paste, because it would start from beforePaste event.
+				data && editor.fire( 'paste', { type: 'text', dataValue: data.dataValue } );
 
-			return true;
+				editor.fire( 'afterCommandExec', {
+					name: 'pastetext',
+					command: pasteTextCmd,
+					returnValue: !!data
+				});
+			});
 		}
 	};
-
-	function doInsertText( doc, text )
-	{
-		// Native text insertion.
-		if ( CKEDITOR.env.ie )
-		{
-			var selection = doc.selection;
-			if ( selection.type == 'Control' )
-				selection.clear();
-			selection.createRange().pasteHTML( text );
-		}
-		else
-			doc.execCommand( 'inserthtml', false, text );
-	}
 
 	// Register the plugin.
-	CKEDITOR.plugins.add( 'pastetext',
-	{
-		init : function( editor )
-		{
-			var commandName = 'pastetext',
-				command = editor.addCommand( commandName, pasteTextCmd );
+	CKEDITOR.plugins.add( 'pastetext', {
+		requires: 'clipboard',
+		lang: 'af,ar,bg,bn,bs,ca,cs,cy,da,de,el,en-au,en-ca,en-gb,en,eo,es,et,eu,fa,fi,fo,fr-ca,fr,gl,gu,he,hi,hr,hu,is,it,ja,ka,km,ko,ku,lt,lv,mk,mn,ms,nb,nl,no,pl,pt-br,pt,ro,ru,sk,sl,sr-latn,sr,sv,th,tr,ug,uk,vi,zh-cn,zh', // %REMOVE_LINE_CORE%
+		icons: 'pastetext,pastetext-rtl', // %REMOVE_LINE_CORE%
+		init: function( editor ) {
+			var commandName = 'pastetext';
 
-			editor.ui.addButton( 'PasteText',
-				{
-					label : editor.lang.pasteText.button,
-					command : commandName
+			editor.addCommand( commandName, pasteTextCmd );
+
+			editor.ui.addButton && editor.ui.addButton( 'PasteText', {
+				label: editor.lang.pastetext.button,
+				command: commandName,
+				toolbar: 'clipboard,40'
+			});
+
+			if ( editor.config.forcePasteAsPlainText ) {
+				editor.on( 'beforePaste', function( evt ) {
+					// Do NOT overwrite if HTML format is explicitly requested.
+					// This allows pastefromword dominates over pastetext.
+					if ( evt.data.type != 'html' )
+						evt.data.type = 'text';
 				});
-
-			CKEDITOR.dialog.add( commandName, CKEDITOR.getUrl( this.path + 'dialogs/pastetext.js' ) );
-
-			if ( editor.config.forcePasteAsPlainText )
-			{
-				// Intercept the default pasting process.
-				editor.on( 'beforeCommandExec', function ( evt )
-				{
-					if ( evt.data.name == 'paste' )
-					{
-						editor.execCommand( 'pastetext' );
-						evt.cancel();
-					}
-				}, null, null, 0 );
 			}
-		},
 
-		requires : [ 'clipboard' ]
-	});
-
-	function doEnter( editor, mode, times, forceMode )
-	{
-		while ( times-- )
-		{
-			CKEDITOR.plugins.enterkey[ mode == CKEDITOR.ENTER_BR ? 'enterBr' : 'enterBlock' ]
-					( editor, mode, null, forceMode );
+			editor.on( 'pasteState', function( evt ) {
+				editor.getCommand( commandName ).setState( evt.data );
+			});
 		}
-	}
-
-	CKEDITOR.editor.prototype.insertText = function( text )
-	{
-		this.focus();
-		this.fire( 'saveSnapshot' );
-
-		var mode = this.getSelection().getStartElement().hasAscendant( 'pre', true ) ? CKEDITOR.ENTER_BR : this.config.enterMode,
-			isEnterBrMode = mode == CKEDITOR.ENTER_BR,
-			doc = this.document.$,
-			self = this,
-			line;
-
-		text = CKEDITOR.tools.htmlEncode( text.replace( /\r\n|\r/g, '\n' ) );
-
-		var startIndex = 0;
-		text.replace( /\n+/g, function( match, lastIndex )
-		 {
-			line = text.substring( startIndex, lastIndex );
-			startIndex = lastIndex + match.length;
-			line.length && doInsertText( doc, line );
-
-			var lineBreakNums = match.length,
-				// Duo consequence line-break as a enter block.
-				enterBlockTimes = isEnterBrMode ? 0 : Math.floor( lineBreakNums / 2 ),
-				// Per link-break as a enter br.
-				enterBrTimes = isEnterBrMode ? lineBreakNums : lineBreakNums % 2;
-
-			// Line-breaks are converted to editor enter key strokes.
-			doEnter( self, mode, enterBlockTimes );
-			doEnter( self, CKEDITOR.ENTER_BR, enterBrTimes, isEnterBrMode ? false : true );
-		 });
-
-		// Insert the last text line of text.
-		line = text.substring( startIndex, text.length );
-		line.length && doInsertText( doc, line );
-
-		this.fire( 'saveSnapshot' );
-	};
+	});
 })();
 
 
@@ -137,9 +65,11 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
  * Whether to force all pasting operations to insert on plain text into the
  * editor, loosing any formatting information possibly available in the source
  * text.
- * @name CKEDITOR.config.forcePasteAsPlainText
- * @type Boolean
- * @default false
- * @example
- * config.forcePasteAsPlainText = true;
+ *
+ * **Note:** paste from word (dialog) is not affected by this configuration.
+ *
+ *		config.forcePasteAsPlainText = true;
+ *
+ * @cfg {Boolean} [forcePasteAsPlainText=false]
+ * @member CKEDITOR.config
  */

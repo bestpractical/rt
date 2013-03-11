@@ -1,35 +1,99 @@
 /*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 
 body
 {
 	/* Font */
-	font-family: Arial, Verdana, sans-serif;
+	font-family: sans-serif, Arial, Verdana, "Trebuchet MS";
 	font-size: 12px;
 
 	/* Text color */
-	color: #222;
+	color: #333;
 
 	/* Remove the background color to make it transparent */
     background-color: transparent;
+
+	margin: 20px;
 }
 
-html
+.cke_editable
 {
-	/* #3658: [IE6] Editor document has horizontal scrollbar on long lines
-	To prevent this misbehavior, we show the scrollbar always */
-	_overflow-y: scroll
+	font-size: 13px;
+	line-height: 1.6em;
 }
 
-img:-moz-broken
+blockquote
 {
-	-moz-force-broken-image-icon : 1;
-	width : 24px;
-	height : 24px;
+	font-style: italic;
+	font-family: Georgia, Times, "Times New Roman", serif;
+	padding: 2px 0;
+	border-style: solid;
+	border-color: #ccc;
+	border-width: 0;
 }
-img, input, textarea
+
+.cke_contents_ltr blockquote
 {
-	cursor: default;
+	padding-left: 20px;
+	padding-right: 8px;
+	border-left-width: 5px;
+}
+
+.cke_contents_rtl blockquote
+{
+	padding-left: 8px;
+	padding-right: 20px;
+	border-right-width: 5px;
+}
+
+a
+{
+	color: #0782C1;
+}
+
+ol,ul,dl
+{
+	/* IE7: reset rtl list margin. (#7334) */
+	*margin-right: 0px;
+	/* preserved spaces for list items with text direction other than the list. (#6249,#8049)*/
+	padding: 0 40px;
+}
+
+h1,h2,h3,h4,h5,h6
+{
+	font-weight: normal;
+	line-height: 1.2em;
+}
+
+hr
+{
+	border: 0px;
+	border-top: 1px solid #ccc;
+}
+
+img.right {
+    border: 1px solid #ccc;
+    float: right;
+    margin-left: 15px;
+    padding: 5px;
+}
+
+img.left {
+    border: 1px solid #ccc;
+    float: left;
+    margin-right: 15px;
+    padding: 5px;
+}
+
+img:hover {
+	opacity: .9;
+	filter: alpha(opacity = 90);
+}
+
+pre
+{
+	white-space: pre-wrap; /* CSS 2.1 */
+	word-wrap: break-word; /* IE7 */
 }
