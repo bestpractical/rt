@@ -2186,7 +2186,7 @@ sub LimitType {
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
         DESCRIPTION => join( ' ',
-            $self->loc('Type'), $args{'OPERATOR'}, $args{'Limit'}, ),
+            $self->loc('Type'), $args{'OPERATOR'}, $args{'VALUE'}, ),
     );
 }
 
