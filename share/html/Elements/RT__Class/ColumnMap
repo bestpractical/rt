@@ -52,11 +52,6 @@ $GenericMap => {}
 </%ARGS>
 <%ONCE>
 my $COLUMN_MAP = {
-    id => {
-        title     => '#', # loc
-        attribute => 'id',
-        value     => sub { return $_[0]->id },
-    },
     Name => {
         title     => 'Name', # loc
         attribute => 'Name',

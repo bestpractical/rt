@@ -76,16 +76,6 @@ $COLUMN_MAP = {
         title     => 'Class',                               # loc
         value     => sub { $_[0]->ClassObj->Name },
     },
-    CreatedRelative => {
-        attribute => 'Created',
-        title => 'Created', # loc
-        value => sub { $_[0]->CreatedObj->AgeAsString },
-    },
-    LastUpdatedRelative => {
-        attribute => 'LastUpdated',
-        title => 'LastUpdated', # loc
-        value => sub { $_[0]->LastUpdatedObj->AgeAsString },
-    },
     Topics => {
         title => 'Topics',                                  # loc
         value => sub {
