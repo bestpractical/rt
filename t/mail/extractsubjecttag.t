@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use utf8;
 
-use RT::Test tests => 13;
+use RT::Test tests => 18;
 
 my $queue = RT::Test->load_or_create_queue(
     Name              => 'Regression',
@@ -81,5 +81,26 @@ EOF
     like($freshticket->Subject,qr/\[remote-rt-system #79\]/,"Kept remote rt's subject tag");
     unlike($freshticket->Subject,qr/\[\Q$subject_tag\E #$ticketid\]/,'Stripped Queue Subject Tag correctly');
 
+}
+
+diag "Test that extraction of another RT's subject tag grabs only tag";
+{
+    my $ticketid = $original_ticket->Id;
+    my $text = <<EOF;
+From: root\@localhost
+To: general\@$RT::rtname
+Subject: [$subject_tag #$ticketid] [comment] [remote-rt-system #79] test
+
+reply with subject tag and remote rt subject tag
+EOF
+    my ($status, $id) = RT::Test->send_via_mailgate($text, queue => $queue->Name);
+    is ($status >> 8, 0, "The mail gateway exited normally");
+    is ($id, $ticketid, "Replied to ticket $id correctly");
+
+    my $freshticket = RT::Ticket->new( RT->SystemUser );
+    $freshticket->LoadById($id);
+    like($freshticket->Subject,qr/\[remote-rt-system #79\]/,"Kept remote rt's subject tag");
+    unlike($freshticket->Subject,qr/comment/,"doesn't grab comment");
+    unlike($freshticket->Subject,qr/\[\Q$subject_tag\E #$ticketid\]/,'Stripped Queue Subject Tag correctly');
 }
 
