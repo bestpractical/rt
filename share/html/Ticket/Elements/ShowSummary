@@ -56,11 +56,7 @@
 
     <& /Elements/ShowCustomFieldCustomGroupings,
         Object       => $Ticket,
-        TitleBoxARGS => {
-            (($can_modify || $can_modify_cf)
-                ? (title_href => RT->Config->Get('WebPath')."/Ticket/Modify.html?id=".$Ticket->Id)
-                : ()),
-        },
+        title_href   => ($can_modify || $can_modify_cf) ? RT->Config->Get('WebPath')."/Ticket/Modify.html" : "",
         &>
 
     <&| /Widgets/TitleBox, title => loc('People'),

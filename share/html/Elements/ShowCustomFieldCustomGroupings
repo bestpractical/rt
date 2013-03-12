@@ -50,6 +50,7 @@
     title => $group? loc($group) : loc('Custom Fields'),
     class => $css_class .' '. ($group? CSSClass("$css_class-$group") : ''),
     hide_empty => 1,
+    title_href => $title_href ? "$title_href?id=".$Object->id.($group?";Grouping=".$m->interp->apply_escapes($group, 'u'):"") : undef,
     %$TitleBoxARGS,
 &>
 <& ShowCustomFields, %ARGS, Object => $Object, Grouping => $group &>
@@ -57,6 +58,7 @@
 % }
 <%ARGS>
 $Object
+$title_href => ""
 </%ARGS>
 <%INIT>
 my $css_class = lc(ref($Object)||$Object);
