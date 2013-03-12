@@ -455,7 +455,7 @@ accordingly.
 
 =cut
 
-Set($ExtractSubjectTagMatch, qr/\[.+? #\d+\]/);
+Set($ExtractSubjectTagMatch, qr/\[[^\]]+? #\d+\]/);
 Set($ExtractSubjectTagNoMatch, ( ${RT::EmailSubjectTagRegex}
        ? qr/\[(?:${RT::EmailSubjectTagRegex}) #\d+\]/
        : qr/\[\Q$RT::rtname\E #\d+\]/));
