@@ -46,6 +46,44 @@
 #
 # END BPS TAGGED BLOCK }}}
 
+=head1 NAME
+
+  RT::Action::ExtractSubjectTag
+
+=head1 DESCRIPTION
+
+ExtractSubjectTag is a ScripAction which allows ticket bonding between
+two RT instances or between RT and other Ticket systems like Siebel
+or Remedy.
+
+Default this ScripAction is set up to run on every transaction on 
+every Correspondence.
+
+One can configure this ScripActions behaviour by changing the
+global ExtractSubjectTagMatch in RT_Config.pm.
+
+If a transaction's subject matches this regexp, we're appending the match
+tag to the current subject.
+
+Take care to not remove the current default setting where it matches
+only a remote RT instance.
+
+
+
+=head1 EXAMPLE
+
+As an example, Siebel will set their subject tag to something
+like:
+
+    B<[SR ID:1-554]>
+
+To record this tag in the local ticket's subject, we need to change
+ExtractSubjectTagMatch to something like:
+
+    Set($ExtractSubjectTagMatch, qr/\[[^\]]+[#:][0-9-]+\]/);
+
+=cut
+
 package RT::Action::ExtractSubjectTag;
 use base 'RT::Action';
 use strict;
