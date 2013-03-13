@@ -52,6 +52,7 @@
     WatcherTypes => [qw(Watcher)],
     Title => loc('Inactive Tickets'),
     TitleBox => 1,
+    ShowHeader => 1,
     Format => RT->Config->Get('UserSummaryTicketListFormat'),
 &>
 <%INIT>
