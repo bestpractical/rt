@@ -99,6 +99,7 @@ $COLUMN_MAP = {
         value     => sub {
             my $self = $COLUMN_MAP->{CustomField};
             my $cf   = $self->{load}->(@_);
+            return unless $cf->Id;
             return $self->{render}->( $cf, $cf->ValuesForObject($_[0])->ItemsArrayRef );
         },
         load      => sub {
