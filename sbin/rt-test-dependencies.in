@@ -229,7 +229,7 @@ Regexp::IPv6
 Role::Basic 0.12
 Scalar::Util
 Storable 2.08
-Symbol::Global::Name
+Symbol::Global::Name 0.02
 Sys::Syslog 0.16
 Text::Password::Pronounceable
 Text::Quoted 2.02
