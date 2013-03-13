@@ -1539,9 +1539,8 @@ sub _CanonicalizeValueDate {
     my $DateObj = RT::Date->new( $self->CurrentUser );
     $DateObj->Set( Format   => 'unknown',
                    Value    => $args->{'Content'},
-                   Timezone => 'UTC',
                  );
-    $args->{'Content'} = $DateObj->Date( Timezone => 'UTC' );
+    $args->{'Content'} = $DateObj->Date( Timezone => 'user' );
 }
 
 =head2 MatchPattern STRING
