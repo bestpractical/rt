@@ -86,10 +86,6 @@ LIBS_GROUP		=	@LIBS_GROUP@
 WEB_USER		=	@WEB_USER@
 WEB_GROUP		=	@WEB_GROUP@
 
-
-APACHECTL		=	@APACHECTL@
-
-
 # DESTDIR allows you to specify that RT be installed somewhere other than
 # where it will eventually reside. DESTDIR _must_ have a trailing slash
 # if it's defined.
@@ -499,11 +495,6 @@ start-httpd:
 start-server:
 	$(PERL) sbin/rt-server &
 
-apachectl:
-	$(APACHECTL) stop
-	sleep 10
-	$(APACHECTL) start
-	sleep 5
 
 SNAPSHOT=$(shell git describe --tags)
 THIRD_PARTY=devel/third-party/
