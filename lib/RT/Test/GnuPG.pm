@@ -71,6 +71,8 @@ sub import {
 
     $class->SUPER::import(%args);
     require RT::Crypt::GnuPG;
+    return $class->export_to_level(1)
+        if $^C;
 
     RT::Test::diag "GnuPG --homedir " . RT->Config->Get('GnuPGOptions')->{'homedir'};
 
