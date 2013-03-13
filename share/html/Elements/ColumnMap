@@ -112,6 +112,7 @@ $COLUMN_MAP = {
             my $cf = $m->notes($key);
             unless ($cf) {
                 $cf = $_[0]->LoadCustomFieldByIdentifier($_[-1]);
+                RT->Logger->debug("Unable to load $_[-1]") unless $cf->Id;
                 $m->notes($key, $cf);
             }
             return $cf;
