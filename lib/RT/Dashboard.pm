@@ -109,7 +109,7 @@ An object of this class is called "dashboard"
 
 =cut
 
-sub ObjectName { "dashboard" }
+sub ObjectName { "dashboard" } # loc
 
 sub SaveAttribute {
     my $self   = shift;
