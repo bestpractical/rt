@@ -93,6 +93,7 @@ my %fields = %{ RT->Config->Get('UserAutocompleteFields')
 
 # the API wants a list of ids
 my @exclude = split /\s*,\s*/, $exclude;
+push @exclude, RT->SystemUser->id, RT->Nobody->id;
 
 my $users = RT::Users->new($CurrentUser);
 $users->SimpleSearch( Privileged => $privileged,
@@ -105,9 +106,6 @@ $users->SimpleSearch( Privileged => $privileged,
 
 my @suggestions;
 while ( my $user = $users->Next ) {
-    next if $user->id == RT->SystemUser->id
-         or $user->id == RT->Nobody->id;
-
     my $suggestion = { label => $user->Format, value => $user->$return };
     $m->callback( CallbackName => "ModifySuggestion", suggestion => $suggestion, user => $user );
     push @suggestions, $suggestion;
