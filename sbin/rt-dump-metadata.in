@@ -79,7 +79,10 @@ BEGIN {
 
 use Getopt::Long;
 my %opt;
-GetOptions( \%opt, "help|h" );
+GetOptions( \%opt, "help|h",
+    "limit-to-privileged|l",
+    "skip-disabled|s",
+);
 
 if ( $opt{help} ) {
     require Pod::Usage;
@@ -117,8 +120,15 @@ my @classes      = qw(
 foreach my $class (@classes) {
     require "RT/$class.pm";
     my $objects = "RT::$class"->new( RT->SystemUser );
-    $objects->{find_disabled_rows} = 1;
+    $objects->{find_disabled_rows} = 1 unless $opt{'skip-disabled'};
     $objects->UnLimit;
+    $objects->LimitToPrivileged if $class eq 'Users'
+        && $opt{'limit-to-privileged'};
+    $objects->Limit(
+        FIELD    => 'Domain',
+        OPERATOR => '=',
+        VALUE    => 'UserDefined'
+    ) if $class eq 'Groups';
 
     if ( $class eq 'CustomFields' ) {
         $objects->OrderByCols(
@@ -142,14 +152,10 @@ foreach my $class (@classes) {
             OPERATOR => '!=',
             VALUE    => $SystemUserId
         ) if $class eq 'Users';
-        $objects->Limit(
-            FIELD    => 'Domain',
-            OPERATOR => '=',
-            VALUE    => 'UserDefined'
-        ) if $class eq 'Groups';
     }
 
     my %fields;
+OBJECT:
     while ( my $obj = $objects->Next ) {
         next
             if $obj->can('LastUpdatedBy')
@@ -163,36 +169,116 @@ foreach my $class (@classes) {
 
         my $rv;
 
-        # next if $obj-> # skip default names
-        foreach my $field ( sort keys %fields ) {
-            my $value = $obj->__Value($field);
-            $rv->{$field} = $value if ( defined($value) && length($value) );
-        }
-        delete $rv->{Disabled} unless $rv->{Disabled};
+        if ( $class ne 'ACL' ) {
+            # next if $obj-> # skip default names
+            foreach my $field ( sort keys %fields ) {
+                my $value = $obj->__Value($field);
+                $rv->{$field} = $value if ( defined($value) && length($value) );
+            }
+            delete $rv->{Disabled} unless $rv->{Disabled};
 
-        foreach my $record ( map { /ACL/ ? 'ACE' : substr( $_, 0, -1 ) }
-            @classes )
-        {
-            foreach my $key ( map "$record$_", ( '', 'Id' ) ) {
-                next unless exists $rv->{$key};
-                my $id = $rv->{$key} or next;
-                my $obj = "RT::$record"->new( RT->SystemUser );
-                $obj->LoadByCols( Id => $id ) or next;
-                $rv->{$key} = $obj->__Value('Name') || 0;
+            foreach my $record ( map { /ACL/ ? 'ACE' : substr( $_, 0, -1 ) }
+                @classes )
+            {
+                foreach my $key ( map "$record$_", ( '', 'Id' ) ) {
+                    next unless exists $rv->{$key};
+                    my $id = $rv->{$key} or next;
+                    my $obj = "RT::$record"->new( RT->SystemUser );
+                    $obj->LoadByCols( Id => $id ) or next;
+                    $rv->{$key} = $obj->__Value('Name') || 0;
+                }
+            }
+
+            if ( $class eq 'Users' and defined $obj->Privileged ) {
+                $rv->{Privileged} = int( $obj->Privileged );
+            } elsif ( $class eq 'CustomFields' ) {
+                my $values = $obj->Values;
+                while ( my $value = $values->Next ) {
+                    push @{ $rv->{Values} }, {
+                        map { ( $_ => $value->__Value($_) ) }
+                            qw(
+                            Name Description SortOrder
+                            ),
+                    };
+                }
+                if ( $obj->LookupType eq 'RT::Queue-RT::Ticket' ) {
+                    # XXX-TODO: unused CF's turn into global CF when importing
+                    # as the sub InsertData in RT::Handle creates a global CF
+                    # when no queue is specified.
+                    $rv->{Queue} = [];
+                    my $applies = $obj->AppliedTo;
+                    while ( my $queue = $applies->Next ) {
+                        push @{ $rv->{Queue} }, $queue->Name;
+                    }
+                }
             }
         }
+        else {
+            # 1) pick the right
+            $rv->{Right} = $obj->RightName;
 
-        if ( $class eq 'Users' and defined $obj->Privileged ) {
-            $rv->{Privileged} = int( $obj->Privileged );
-        } elsif ( $class eq 'CustomFields' ) {
-            my $values = $obj->Values;
-            while ( my $value = $values->Next ) {
-                push @{ $rv->{Values} }, {
-                    map { ( $_ => $value->__Value($_) ) }
-                        qw(
-                        Name Description SortOrder
-                        ),
-                };
+            # 2) Pick a level: Granted on Queue, CF, CF+Queue, or Globally?
+            for ( $obj->ObjectType ) {
+                if ( /^RT::Queue$/ ) {
+                    next OBJECT if $opt{'skip-disabled'} && $obj->Object->Disabled;
+                    $rv->{Queue} = $obj->Object->Name;
+                }
+                elsif ( /^RT::CustomField$/ ) {
+                    next OBJECT if $opt{'skip-disabled'} && $obj->Object->Disabled;
+                    $rv->{CF} = $obj->Object->Name;
+                }
+                elsif ( /^RT::Group$/ ) {
+                    # No support for RT::Group ACLs in RT::Handle yet.
+                    next OBJECT;
+                }
+                elsif ( /^RT::System$/ ) {
+                    # skip setting anything on $rv;
+                    # "Specifying none of the above will get you a global right."
+                }
+            }
+
+            # 3) Pick a Principal; User or Group or Role
+            if ( $obj->PrincipalType eq 'Group' ) {
+                next OBJECT if $opt{'skip-disabled'} && $obj->PrincipalObj->Disabled;
+                my $group = $obj->PrincipalObj->Object;
+                for ( $group->Domain ) {
+                    # An internal user group
+                    if ( /^SystemInternal$/ ) {
+                        $rv->{GroupDomain} = $group->Domain;
+                        $rv->{GroupType} = $group->Type;
+                    }
+                    # An individual user
+                    elsif ( /^ACLEquivalence$/ ) {
+                        my $member = $group->MembersObj->Next->MemberObj;
+                        next OBJECT if $opt{'skip-disabled'} && $member->Disabled;
+                        $rv->{UserId} = $member->Object->Name;
+                    }
+                    # A group you created
+                    elsif ( /^UserDefined$/ ) {
+                        $rv->{GroupDomain} = 'UserDefined';
+                        $rv->{GroupId} = $group->Name;
+                    }
+                }
+            } else {
+                $rv->{GroupType} = $obj->PrincipalType;
+                # A system-level role
+                if ( $obj->ObjectType eq 'RT::System' ) {
+                    $rv->{GroupDomain} = 'RT::System-Role';
+                }
+                # A queue-level role
+                elsif ( $obj->ObjectType eq 'RT::Queue' ) {
+                    $rv->{GroupDomain} = 'RT::Queue-Role';
+                }
+            }
+            if ( $obj->LookupType eq 'RT::Queue-RT::Ticket' ) {
+                # XXX-TODO: unused CF's turn into global CF when importing
+                # as the sub InsertData in RT::Handle creates a global CF
+                # when no queue is specified.
+                $rv->{Queue} = [];
+                my $applies = $obj->AppliedTo;
+                while ( my $queue = $applies->Next ) {
+                    push @{ $rv->{Queue} }, $queue->Name;
+                }
             }
         }
 
