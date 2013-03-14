@@ -116,27 +116,15 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
     # {{{ Create a new ticket
 
     my $Queue = RT::Queue->new( $session{'CurrentUser'} );
-    unless ( $Queue->Load( $ARGS{'Queue'} ) ) {
-        $m->comp( 'Error.html', Why => loc('Queue not found') );
-        $m->abort;
-    }
+    Abort( loc('Queue not found') ) unless $Queue->Load( $ARGS{'Queue'} );
 
-    unless ( $Queue->CurrentUserHasRight('CreateTicket') ) {
-        $m->comp( 'Error.html',
-            Why =>
-              loc('You have no permission to create tickets in that queue.') );
-        $m->abort;
-    }
-
+    Abort( loc('You have no permission to create tickets in that queue.') )
+        unless $Queue->CurrentUserHasRight('CreateTicket');
 
     ( $Ticket, @results ) =
     CreateTicket( Attachments => $session{'Attachments'}, %ARGS );
 
-    unless ( $Ticket->id ) {
-        $m->comp( 'Error.html', Why => join( "\n", @results ));
-              $m->abort();
-        }
-
+    Abort( join("\n", @results ) ) unless $Ticket->id;
 
         # delete temporary storage entry to make WebUI clean
         unless ( keys %{ $session{'Attachments'} } and $ARGS{'UpdateAttach'} ) {
@@ -145,11 +133,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
 
     }
     else {
-        unless ( $Ticket->Load( $id[0] ) ) {
-            $m->comp( 'Error.html',
-                Why => loc( "Couldn't load ticket '[_1]'", $id ) );
-            $m->abort();
-        }
+        $Ticket = LoadTicket($ARGS{'id'});
 
     my ( $code, $msg );
 
