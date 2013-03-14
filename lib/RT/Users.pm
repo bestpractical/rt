@@ -621,7 +621,7 @@ sub SimpleSearch {
 
     # Exclude users we don't want
     foreach (@{$args{Exclude}}) {
-        $self->Limit(FIELD => 'id', VALUE => $_, OPERATOR => '!=');
+        $self->Limit(FIELD => 'id', VALUE => $_, OPERATOR => '!=', ENTRYAGGREGATOR => 'AND');
     }
 
     if ( RT->Config->Get('DatabaseType') eq 'Oracle' ) {
