@@ -91,12 +91,15 @@ my %fields = %{ RT->Config->Get('UserAutocompleteFields')
 # using that operator
 %fields = ( $return => $op ) if $op;
 
+# the API wants a list of ids
+my @exclude = split /\s*,\s*/, $exclude;
+
 my $users = RT::Users->new($CurrentUser);
 $users->SimpleSearch( Privileged => $privileged,
                       Return     => $return,
                       Term       => $term,
                       Max        => $max,
-                      Exclude    => $exclude,
+                      Exclude    => \@exclude,
                       Fields     => \%fields,
                     );
 

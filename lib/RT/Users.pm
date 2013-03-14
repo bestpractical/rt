@@ -581,7 +581,7 @@ This method is passed the following.  You must specify a Term and a Return.
     Fields     - Hashref of data - defaults to C<$UserAutocompleteFields> emulate that if you want to override
     Term       - String that is in the fields specified by Fields
     Return     - What field on the User you want to be sure isn't empty
-    Exclude    - Comma separated list of user ids to skip
+    Exclude    - Array reference of ids to exclude
     Max        - What to limit this collection to
 
 =cut
@@ -592,7 +592,7 @@ sub SimpleSearch {
         Privileged  => 0,
         Fields      => RT->Config->Get('UserAutocompleteFields'),
         Term        => undef,
-        Exclude     => '',
+        Exclude     => [],
         Return      => undef,
         Max         => 10,
         @_
@@ -620,7 +620,7 @@ sub SimpleSearch {
     }
 
     # Exclude users we don't want
-    foreach (split /\s*,\s*/, $args{Exclude}) {
+    foreach (@{$args{Exclude}}) {
         $self->Limit(FIELD => 'id', VALUE => $_, OPERATOR => '!=');
     }
 
