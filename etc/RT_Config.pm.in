@@ -336,6 +336,7 @@ setting enabled.
 =cut
 
 # Set($EmailSubjectTagRegex, qr/\Q$rtname\E/i );
+Set($EmailSubjectTagRegex, undef );
 
 =item C<$OwnerEmail>
 
