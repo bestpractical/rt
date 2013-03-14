@@ -374,9 +374,9 @@ sub process_pg {
 
     my $status = eval { $dbh->do( $query, undef, $$text, $attachment->id ) };
     unless ( $status ) {
-        if ($dbh->errstr =~ /string is too long for tsvector/) {
+        if ( $dbh->err == 7  && $dbh->state eq '54000' ) {
             warn "Attachment @{[$attachment->id]} cannot be indexed, as it contains too many unique words";
-        } elsif ($dbh->errstr =~ /invalid byte sequence/) {
+        } elsif ( $dbh->err == 7 && $dbh->state eq '22021' ) {
             warn "Attachment @{[$attachment->id]} cannot be indexed, as it contains invalid UTF8 bytes";
         } else {
             die "error: ". $dbh->errstr;
