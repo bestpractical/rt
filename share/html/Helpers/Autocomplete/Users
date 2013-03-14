@@ -111,7 +111,7 @@ while (my ($name, $op) = each %fields) {
 
 # Exclude users we don't want
 foreach (split /\s*,\s*/, $exclude) {
-    $users->Limit(FIELD => 'id', VALUE => $_, OPERATOR => '!=');
+    $users->Limit(FIELD => 'id', VALUE => $_, OPERATOR => '!=', ENTRYAGGREGATOR => 'AND');
 }
 
 my @suggestions;
