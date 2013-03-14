@@ -56,19 +56,19 @@ ExtractSubjectTag is a ScripAction which allows ticket bonding between
 two RT instances or between RT and other Ticket systems like Siebel
 or Remedy.
 
-Default this ScripAction is set up to run on every transaction on 
+By default this ScripAction is set up to run on every transaction on
 every Correspondence.
 
 One can configure this ScripActions behaviour by changing the
-global ExtractSubjectTagMatch in RT_Config.pm.
+global C<$ExtractSubjectTagMatch> in C<RT_Config.pm>.
 
-If a transaction's subject matches this regexp, we're appending the match
-tag to the current subject.
+If a transaction's subject matches this regexp, we append the match
+tag to the ticket's current subject. This help's ensure that
+further communication on the ticket will include the remote
+system's subject tag.
 
-Take care to not remove the current default setting where it matches
-only a remote RT instance.
-
-
+If you modify this code, be careful not to remove the code where it
+ensures that it only examines remote systems.
 
 =head1 EXAMPLE
 
