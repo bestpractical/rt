@@ -48,7 +48,7 @@
 % $m->callback( %ARGS, error => $error );
 
 % unless ($SuppressHeader) {
-<& /Elements/Header, Code => $Code, Why => $Why, Title => $Title &>
+<& /Elements/Header, Title => $Title &>
 <& /Elements/Tabs &>
 % }
 
@@ -67,7 +67,6 @@ $m->abort();
 
 <%args>
 $Actions => []
-$Code => undef
 $Details => ''
 $Title => loc("RT Error")
 $Why => loc("the calling component did not specify why"),
