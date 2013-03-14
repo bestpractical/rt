@@ -60,10 +60,8 @@
 <%$Details%>
 </div>
 
-<%cleanup>
-$m->comp('/Elements/Footer');
-$m->abort();
-</%cleanup>
+<& /Elements/Footer &>
+% $m->abort;
 
 <%args>
 $Actions => []
