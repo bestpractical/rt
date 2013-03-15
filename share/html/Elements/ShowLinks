@@ -49,7 +49,7 @@
 % for my $type (@display) {
   <tr>
     <td class="labeltop">
-      <& ShowRelationLabel, Object => $Object, Label => $labels{$type}, Relation => $type &>:\
+      <& ShowRelationLabel, Object => $Object, Label => $labels{$type}.':', Relation => $type &>
 %     if ($clone{$type}) {
         <span class="create">(<a href="<% $clone{$type} %>"><% loc('Create') %></a>)</span>
 %     }
