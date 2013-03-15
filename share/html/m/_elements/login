@@ -45,6 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% $m->callback( %ARGS, CallbackName => 'Header' );
 <&| /m/_elements/wrapper, show_home_button => 0 &>
 <style>
 <& /m/_elements/raw_style &>
@@ -57,6 +58,8 @@
     titlebox    => { class => 'error', hideable => 0 },
     actions     => $actions,
 &>
+
+% $m->callback( %ARGS, CallbackName => 'BeforeForm' );
 
 <div id="login-box">
 <&| /Widgets/TitleBox, title => loc('Login'), hideable => 0 &>
@@ -87,10 +90,16 @@ if (window.location.hash) {
     }
 }
 </script>
+
+% $m->callback( %ARGS );
+
 </form>
 % }
 </&>
 </div><!-- #login-box -->
+
+% $m->callback( %ARGS, CallbackName => 'AfterForm' );
+
 </div><!-- #login-body -->
 <& /m/_elements/full_site_link &>
 </&>
