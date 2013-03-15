@@ -50,7 +50,11 @@
         jQuery("#requestor-accordion").accordion({
             active: <% $count == 1 ? 0 : 'false' %>,
             collapsible: true,
-            heightStyle: 'content'
+            heightStyle: 'content',
+            header: "h3"
+        }).find("h3 a.user-summary").click(function(ev){
+            ev.stopPropagation();
+            return true;
         });
 
 % if ($ShowTickets) {
@@ -71,7 +75,8 @@
 <div id="requestor-accordion" class="rt-accordion">
 
 % while ( my $requestor = $people->Next ) {
-  <h3><a href="#"><& /Elements/ShowUser, User => $requestor &></a></h3>
+<h3><a href="#"><& /Elements/ShowUser, User => $requestor, Link => 0 &></a>
+    <a class="user-summary" href="<%RT->Config->Get('WebPath')%>/User/Summary.html?id=<%$requestor->Id%>">User Summary</a></h3>
   <div class="details">
 
 %# Additional information about this user.  Empty by default.
