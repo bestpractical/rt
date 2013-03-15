@@ -243,14 +243,6 @@ AS_IF([ test "$DB_TYPE" = "mysql" ],
      )
 
 
-dnl Set the value of apachectl
-AC_ARG_WITH(apachectl,
-            AC_HELP_STRING([--with-apachectl],
-                           [instruct RT where to find your apachectl]),
-            APACHECTL=$withval, 
-            APACHECTL=`which apachectl`)
-AC_SUBST(APACHECTL)
-
 dnl Dependencies for testing and developing RT
 AC_ARG_WITH(developer,[],RT_DEVELOPER=$withval,RT_DEVELOPER="0")
 AC_ARG_ENABLE(developer,
