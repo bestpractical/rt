@@ -473,6 +473,8 @@ resolve arbitrary tickets!
 
 =cut
 
+Set($UnsafeEmailCommands, undef);
+
 =item C<$ExtractSubjectTagMatch>, C<$ExtractSubjectTagNoMatch>
 
 The default "extract remote tracking tags" scrip settings; these
@@ -2599,6 +2601,7 @@ Set(%Lifecycles,
             },
         ],
     },
+    __maps__ => {},
 );
 
 
