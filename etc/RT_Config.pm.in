@@ -1222,6 +1222,18 @@ Set(%FullTextSearch,
     Indexed => 0,
 );
 
+=item C<$DontSearchFileAttachments>
+
+If C<$DontSearchFileAttachments> is set to 1, then uploaded files
+(attachments with file names) are not searched during content
+search.
+
+Note that if you use indexed FTS then named attachments are still
+indexed by default regardless of this option.
+
+=cut
+
+Set($DontSearchFileAttachments, undef);
 
 =item C<$OnlySearchActiveTicketsInSimpleSearch>
 
