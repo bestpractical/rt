@@ -225,7 +225,9 @@ sub CheckModPerlHandler{
 
     my $handler = $env->{'psgi.input'}->handler;
 
-    die <<MODPERL if defined $handler && $handler eq 'perl-script';
+    return unless defined $handler && $handler eq 'perl-script';
+
+    $RT::Logger->critical(<<MODPERL);
 RT has problems when SetHandler is set to perl-script.
 Change SetHandler in your in httpd.conf to:
 
@@ -236,7 +238,10 @@ For a complete example mod_perl configuration, see:
 https://bestpractical.com/rt/docs/@{[$RT::VERSION =~ /^(\d\.\d)/]}/web_deployment.html#mod_perl-2.xx
 MODPERL
 
-    return;
+    my $res = Plack::Response->new(500);
+    $res->content_type("text/plain");
+    $res->body("Server misconfiguration; see error log for details");
+    return $res;
 }
 
 # PSGI App
@@ -261,7 +266,10 @@ sub PSGIApp {
     return sub {
         my $env = shift;
 
-        $self->CheckModPerlHandler($env);
+        {
+            my $res = $self->CheckModPerlHandler($env);
+            return $self->_psgi_response_cb( $res->finalize ) if $res;
+        }
 
         RT::ConnectToDatabase() unless RT->InstallMode;
 
