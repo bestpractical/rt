@@ -202,7 +202,15 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
         Object        => $CustomFieldObj,
         ARGSRef       => \%ARGS
     );
-    $CustomFieldObj->SetValuesClass( $ValuesClass );
+    if ( ($ValuesClass||'RT::CustomFieldValues') ne $CustomFieldObj->ValuesClass ) {
+        my $original = $CustomFieldObj->ValuesClass;
+        my ($good, $msg) = $CustomFieldObj->SetValuesClass( $ValuesClass );
+        if ( $good ) {
+            $msg = loc("[_1] changed from '[_2]' to '[_3]'",
+                        loc("Field values source"), $original, $ValuesClass );
+        }
+        push @results, $msg;
+    }
 
     # Set the render type if we have it, but unset it if the new type doesn't
     # support render types
