@@ -84,7 +84,7 @@ my %QueryProperties = (
     OrderBy    => 'Priority',
     Order      => 'DESC',
     Rows       => $Rows || 10,
-    ShowHeader => 0,
+    ShowHeader => $ShowHeader,
     Format     => $Format,
 );
 
@@ -110,4 +110,5 @@ $Rows => 10
 $Description => ''
 $TitleBox => 0
 $Format => ''
+$ShowHeader => 0
 </%ARGS>
