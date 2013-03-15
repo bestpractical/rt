@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 60;
+use RT::Test tests => 63;
 
 {
     my ($ecode, $res) = RT::Test->run_validator();
@@ -116,3 +116,20 @@ use RT::Test tests => 60;
     is $res, '', 'empty result';
 }
 
+# group without principal record and cgm records
+# was causing infinite loop as principal was not created
+{
+    my $group = RT::Test->load_or_create_group('Test');
+    ok $group && $group->id, 'loaded or created group';
+
+    my $dbh = $group->_Handle->dbh;
+    $dbh->do('DELETE FROM Principals WHERE id = ?', {RaiseError => 1}, $group->id);
+    $dbh->do('DELETE FROM CachedGroupMembers WHERE GroupId = ?', {RaiseError => 1}, $group->id);
+    DBIx::SearchBuilder::Record::Cachable->FlushCache;
+
+    my ($ecode, $res) = RT::Test->run_validator(resolve => 1);
+    ok $res;
+
+    ($ecode, $res) = RT::Test->run_validator();
+    is $res, '', 'empty result';
+}
