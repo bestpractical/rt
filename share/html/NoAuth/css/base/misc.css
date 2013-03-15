@@ -111,3 +111,6 @@ fieldset.cfedit {
     font-family: arial,helvetica,sans-serif !important;
 }
 
+.datepicker {
+    width: 17em;
+}

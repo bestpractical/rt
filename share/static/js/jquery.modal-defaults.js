@@ -1,2 +1,2 @@
 // RT's styles have some crazy z-indexes, so get above 'em all by default.
-jQuery.fn.modal.defaults.zIndex = 9999;
+jQuery.modal.defaults.zIndex = 9999;
