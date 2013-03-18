@@ -63,12 +63,12 @@ One can configure this ScripActions behaviour by changing the
 global C<$ExtractSubjectTagMatch> in C<RT_Config.pm>.
 
 If a transaction's subject matches this regexp, we append the match
-tag to the ticket's current subject. This help's ensure that
+tag to the ticket's current subject. This helps ensure that
 further communication on the ticket will include the remote
 system's subject tag.
 
 If you modify this code, be careful not to remove the code where it
-ensures that it only examines remote systems.
+ensures that it only examines remote systems' tags.
 
 =head1 EXAMPLE
 
