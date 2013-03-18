@@ -1638,23 +1638,12 @@ behavior.
 
 Set($ShowTransactionImages, 1);
 
-=item C<$PlainTextPre>
+=item C<$PlainTextMono>
 
 Normally plaintext attachments are displayed as HTML with line breaks
 preserved.  This causes space- and tab-based formatting not to be
-displayed correctly.  By setting $PlainTextPre messages will be
-displayed using <pre>.
-
-=cut
-
-Set($PlainTextPre, 0);
-
-
-=item C<$PlainTextMono>
-
-Set C<$PlainTextMono> to 1 to use monospaced font and preserve
-formatting; unlike C<$PlainTextPre>, the text will wrap to fit width
-of the browser window; this option overrides C<$PlainTextPre>.
+displayed correctly.  Set C<$PlainTextMono> to 1 to use a monospaced
+font and preserve formatting.
 
 =cut
 

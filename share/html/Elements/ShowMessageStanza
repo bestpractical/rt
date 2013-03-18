@@ -46,8 +46,6 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-my $plain_text_pre
-    = RT->Config->Get( 'PlainTextPre', $session{'CurrentUser'} );
 my $plain_text_mono
     = RT->Config->Get( 'PlainTextMono', $session{'CurrentUser'} );
 my $Depth = 0;
@@ -66,7 +64,7 @@ my $print_content = sub {
                   %ARGS
                 );
 
-        if ( defined $$ref && !$plain_text_pre && !$plain_text_mono ) {
+        if ( defined $$ref && !$plain_text_mono ) {
             $$ref =~ s{(\r?\n)}{<br />}g;
         }
     } else {
@@ -78,11 +76,6 @@ my $print_content = sub {
 };
 
 if ( ref $Message ) {
-    $m->out('<pre>')
-        if (    $ContentType eq 'text/plain'
-             && $plain_text_pre
-             && !$Depth
-             && !$plain_text_mono );
     $m->out(   '<div class="message-stanza'
              . ( ($ContentType eq 'text/plain' &&  $plain_text_mono) ? ' plain-text-white-space' : '' ) . '"'
              . '>' );
@@ -172,11 +165,6 @@ AGAIN: foreach ( ; $i < @$Message; $i++ ) {
     }
 
     $m->out('</div>');
-    $m->out('</pre>')
-        if (    $ContentType eq 'text/plain'
-             && $plain_text_pre
-             && !$Depth
-             && !$plain_text_mono );
 } else {
     $print_content->( \$Message );
 }

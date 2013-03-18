@@ -50,11 +50,9 @@ $Attachment => undef
 $Transaction => undef
 </%ARGS>
 <%INIT>
-my $plain_text_pre
-    = RT->Config->Get( 'PlainTextPre', $session{'CurrentUser'} );
 my $plain_text_mono
     = RT->Config->Get( 'PlainTextMono', $session{'CurrentUser'} );
-my $use_brs = !$plain_text_pre && !$plain_text_mono;
+my $use_brs = !$plain_text_mono;
 
 my $show_content = sub {
     my $attach = shift;
@@ -74,7 +72,6 @@ my $show;
 $show = sub {
     my $attach = shift;
     $m->out('<div id="body">');
-    $m->out('<pre style="padding: 2em;">') if $plain_text_pre;
     $m->out('<div class="plain-text-white-space">') if $plain_text_mono;
 
     my $headers = $m->interp->apply_escapes( $attach->Headers, 'h' );
@@ -92,7 +89,6 @@ $show = sub {
         $show_content->( $attach );
     }
     $m->out('</div>') if $plain_text_mono;
-    $m->out('</pre>') if $plain_text_pre;
     $m->out('</div>');
 };
 
