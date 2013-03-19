@@ -1680,7 +1680,7 @@ sub _CustomFieldLimit {
                     $self->_SQLLimit(
                         ALIAS    => $TicketCFs,
                         FIELD    => 'Content',
-                        OPERATOR => "<=",
+                        OPERATOR => "<",
                         VALUE    => $dayend,
                         %rest,
                         ENTRYAGGREGATOR => 'AND',
