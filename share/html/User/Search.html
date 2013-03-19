@@ -75,6 +75,16 @@
 
 <%INIT>
 
+if ($UserName) {
+    my $user = RT::User->new( $session{'CurrentUser'} );
+    my ($status, $msg) = $user->Load($UserName);
+    if ($status) {
+        RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."User/Summary.html?id=".$user->Id);
+    } else {
+        RT->Logger->error("Unable to load $UserName: $msg");
+    }
+}
+
 my $exclude = [RT->Nobody->Id, RT->System->Id];
 my $users = RT::Users->new($session{'CurrentUser'});
 $users->SimpleSearch( Return    => 'Name',
@@ -89,4 +99,5 @@ my $search_fields = join ", ", map loc($_), keys %{RT->Config->Get('UserSearchFi
 </%INIT>
 <%ARGS>
 $UserString => undef
+$UserName   => undef
 </%ARGS>
