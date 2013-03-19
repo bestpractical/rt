@@ -342,7 +342,7 @@ sub EmailDashboard {
     my $entity = $self->BuildEmail(
         %args,
         To      => $email,
-        Subject => $subject,
+        Subject => RT::Interface::Email::EncodeToMIME( String => $subject ),
     );
 
     $entity->head->replace('X-RT-Dashboard-Id', $dashboard->Id);
