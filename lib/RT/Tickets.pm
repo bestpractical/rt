@@ -1539,6 +1539,29 @@ sub _CustomFieldLimit {
         }
     }
 
+    if ( $cf && $cf->Type =~ /^Date(?:Time)?$/ ) {
+        my $date = RT::Date->new( $self->CurrentUser );
+        $date->Set( Format => 'unknown', Value => $value );
+        if ( $date->Unix ) {
+
+            if (
+                   $cf->Type eq 'Date'
+                || $value =~ /^\s*(?:today|tomorrow|yesterday)\s*$/i
+                || (   $value !~ /midnight|\d+:\d+:\d+/i
+                    && $date->Time( Timezone => 'user' ) eq '00:00:00' )
+              )
+            {
+                $value = $date->Date( Timezone => 'user' );
+            }
+            else {
+                $value = $date->DateTime;
+            }
+        }
+        else {
+            $RT::Logger->warn("$value is not a valid date string");
+        }
+    }
+
     my $single_value = !$cf || !$cfid || $cf->SingleValue;
 
     my $cfkey = $cfid ? $cfid : "$queue.$field";
@@ -1634,27 +1657,12 @@ sub _CustomFieldLimit {
         }
         else {
             # need special treatment for Date
-            if ( $cf and $cf->Type eq 'DateTime' and $op eq '=' ) {
-
-                if ( $value =~ /:/ ) {
-                    # there is time speccified.
-                    my $date = RT::Date->new( $self->CurrentUser );
-                    $date->Set( Format => 'unknown', Value => $value );
-                    $self->_SQLLimit(
-                        ALIAS    => $TicketCFs,
-                        FIELD    => 'Content',
-                        OPERATOR => "=",
-                        VALUE    => $date->ISO,
-                        %rest,
-                    );
-                }
-                else {
+            if ( $cf and $cf->Type eq 'DateTime' and $op eq '=' && $value !~ /:/ ) {
                 # no time specified, that means we want everything on a
                 # particular day.  in the database, we need to check for >
                 # and < the edges of that day.
                     my $date = RT::Date->new( $self->CurrentUser );
                     $date->Set( Format => 'unknown', Value => $value );
-                    $date->SetToMidnight( Timezone => 'server' );
                     my $daystart = $date->ISO;
                     $date->AddDay;
                     my $dayend = $date->ISO;
@@ -1679,7 +1687,6 @@ sub _CustomFieldLimit {
                     );
 
                     $self->_CloseParen;
-                }
             }
             elsif ( $op eq '=' || $op eq '!=' || $op eq '<>' ) {
                 if ( length( Encode::encode_utf8($value) ) < 256 ) {
