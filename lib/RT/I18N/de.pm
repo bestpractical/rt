@@ -52,12 +52,8 @@ use warnings;
 package RT::I18N::de;
 use base 'RT::I18N';
 
-sub numf {
-    my ($handle, $num) = @_[0,1];
-    my $de_num = $handle->SUPER::numf($num);
-    $de_num =~ tr<.,><,.>
-        if ref($handle) and not $handle->{'numf_comma'};
-    return $de_num;
+sub init {
+    $_[0]->{numf_comma} = 1;
 }
 
 RT::Base->_ImportOverlays();
