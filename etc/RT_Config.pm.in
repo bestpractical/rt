@@ -934,10 +934,9 @@ Set(@CSSFiles, qw//);
 
 =item C<$UsernameFormat>
 
-This determines how user info is displayed. 'concise' will show one of
-either NickName, RealName, Name or EmailAddress, depending on what
-exists and whether the user is privileged or not. 'verbose' will show
-RealName and EmailAddress.
+This determines how user info is displayed. 'concise' will show the
+first of RealName, Name or EmailAddress that has a value. 'verbose' will
+show EmailAddress, and the first of RealName or Name which is defined.
 
 =cut
 
