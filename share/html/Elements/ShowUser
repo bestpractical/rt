@@ -60,18 +60,13 @@ $m->callback(
     ARGSRef         => \%ARGS,
     User            => $User,
     Address         => $Address,
-    NoEscape        => \$NoEscape,
     display         => \$display,
     CallbackName    => 'Modify',
 );
-
-$display = $m->interp->apply_escapes($display, 'h')
-    unless $NoEscape;
 </%INIT>
 <%ARGS>
 $User => undef
 $Address => undef
-$NoEscape => 0
 $style => undef
 </%ARGS>
-<% $display |n %>\
+<% $display %>\
