@@ -1659,9 +1659,23 @@ sub Format {
             "Either system config or user #" . $args{CurrentUser}->id .
             " picked UsernameFormat $args{Format}, but RT::User->$method doesn't exist"
         );
-        $formatter = $self->can("_FormatUserConcise");
+        $formatter = $self->can("_FormatUserRole");
     }
     return $formatter->( $self, map { $_ => $args{$_} } qw(User Address) );
+}
+
+sub _FormatUserRole {
+    my $self = shift;
+    my %args = @_;
+
+    my $user = $args{User};
+    return $self->_FormatUserVerbose(@_)
+        unless $user and $user->Privileged;
+
+    my $name = $user->Name;
+    $name .= " (".$user->RealName.")"
+        if $user->RealName and lc $user->RealName ne lc $user->Name;
+    return $name;
 }
 
 sub _FormatUserConcise {

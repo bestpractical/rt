@@ -435,9 +435,9 @@ like($content, qr/OO-Nobody in particular-O/,
      "original Owner untouched");
 like($content, qr/OO-nokey-O/,
      "original Owner untouched");
-like($content, qr/OO-Enoch Root-O/,
+like($content, qr/OO-root \(Enoch Root\)-O/,
      "original Owner untouched");
-like($content, qr/OR-recipient\@example\.com-O/,
+like($content, qr/OR-<recipient\@example\.com>-O/,
      "original Requestors untouched");
 like($content, qr/OR-nokey-O/,
      "original Requestors untouched");
@@ -446,9 +446,9 @@ like($content, qr/KO-Nobody in particular \(no pubkey!\)-K/,
      "KeyOwner issues no-pubkey warning for nobody");
 like($content, qr/KO-nokey \(no pubkey!\)-K/,
      "KeyOwner issues no-pubkey warning for root");
-like($content, qr/KO-Enoch Root-K/,
+like($content, qr/KO-root \(Enoch Root\)-K/,
      "KeyOwner does not issue no-pubkey warning for recipient");
-like($content, qr/KR-recipient\@example\.com-K/,
+like($content, qr/KR-<recipient\@example\.com>-K/,
      "KeyRequestors does not issue no-pubkey warning for recipient\@example.com");
 like($content, qr/KR-nokey \(no pubkey!\)-K/,
      "KeyRequestors DOES issue no-pubkey warning for nokey\@example.com");

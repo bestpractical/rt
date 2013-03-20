@@ -940,7 +940,7 @@ show EmailAddress, and the first of RealName or Name which is defined.
 
 =cut
 
-Set($UsernameFormat, "concise");
+Set($UsernameFormat, "role");
 
 =item C<$UserSearchResultFormat>
 
