@@ -50,7 +50,7 @@
         jQuery("#requestor-accordion").accordion({
             active: <% $count == 1 ? 0 : 'false' %>,
             collapsible: true,
-            autoHeight: false
+            heightStyle: 'content'
         });
 
 % if ($ShowTickets) {
@@ -108,7 +108,7 @@
   <div id="requestor-<%$requestor->Id%>-ticket-tab-default">
     <& $TicketTemplate, Requestor => $requestor &>
 % } else {
-  <div id="requestor-<%$requestor->Id%>-ticket-tab-<% $index++ %>" class="ui-tabs-hide">
+  <div id="requestor-<%$requestor->Id%>-ticket-tab-<% $index++ %>" class="hidden">
     <span class="label"><&|/l&>Loading...</&></span>
 % }
   </div>

@@ -128,7 +128,7 @@ li.category ~ li.category {
     border: 1px solid #aaa;
 }
 
-.rights-editor li.ui-tabs-selected {
+.rights-editor li.ui-tabs-active {
     background: white !important;
     color: #222 !important;
     border-color: #aaa !important; 
