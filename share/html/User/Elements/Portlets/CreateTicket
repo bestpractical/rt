@@ -48,7 +48,7 @@
 <div class="quick-create user">
 <&| /Widgets/TitleBox, title => loc('Quick ticket creation') &>
 <form action="<%RT->Config->Get('WebPath')%>/Ticket/Create.html">
-<&|/l&>Create a ticket with this user as the Requestor</&>
+<&|/l&>Create a ticket with this user as the Requestor in Queue</&>
 <input type="hidden" name="Requestors" value="<%$User->EmailAddress%>">
 <& /Elements/SelectNewTicketQueue &>
 <input type="submit" name="Create">
