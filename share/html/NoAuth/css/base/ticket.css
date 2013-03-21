@@ -80,7 +80,7 @@
 }
 
 .more-about-requestor-tickets .ui-tabs-nav a:hover,
-.more-about-requestor-tickets .ui-tabs-nav .ui-tabs-selected a {
+.more-about-requestor-tickets .ui-tabs-nav .ui-tabs-active a {
     text-decoration: underline;
 }
 
