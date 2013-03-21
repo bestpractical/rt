@@ -136,10 +136,6 @@
 </div>
 % }
 
-% if ( $has_right_adminusers ) {
-    <a class="modify-user" href="<% RT->Config->Get('WebPath')."/Admin/Users/Modify.html?id=".$requestor->id %>">Modify this user</a>
-% }
-
 %# end of individual requestor details <div>
   </div>
 % }

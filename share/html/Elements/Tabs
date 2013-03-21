@@ -895,6 +895,17 @@ my $build_main_nav = sub {
 
     }
 
+    if ( $request_path =~ m{^/User/Summary.html} ) {
+        my $admin = $session{'CurrentUser'}->HasRight(
+            Object => $RT::System, Right => 'AdminUsers'
+        );
+        my $config = $session{'CurrentUser'}->HasRight(
+            Object => $RT::System, Right => 'ShowConfigTab'
+        );
+        PageMenu()->child( edit => title => loc('Edit'), path => '/Admin/Users/Modify.html?id=' . $DECODED_ARGS->{'id'} )
+            if $admin && $config;
+    }
+
     if ( $request_path =~ /^\/(?:index.html|$)/ ) {
         PageMenu()->child( edit => title => loc('Edit'), path => '/Prefs/MyRT.html' );
     }
