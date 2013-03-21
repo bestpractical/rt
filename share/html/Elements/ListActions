@@ -59,16 +59,19 @@
 # backward compatibility, don't use array in new code, but use keyed hash
 if ( ref( $session{'Actions'} ) eq 'ARRAY' ) {
     unshift @actions, @{ delete $session{'Actions'} };
+    $session{'i'}++;
 }
 
 if ( ref( $session{'Actions'}{''} ) eq 'ARRAY' ) {
     unshift @actions, @{ delete $session{'Actions'}{''} };
+    $session{'i'}++;
 }
 
 my $actions_pointer = $DECODED_ARGS->{'results'};
 
 if ($actions_pointer &&  ref( $session{'Actions'}->{$actions_pointer} ) eq 'ARRAY' ) {
     unshift @actions, @{ delete $session{'Actions'}->{$actions_pointer} };
+    $session{'i'}++;
 }
 
 # XXX: run callbacks per row really crazy idea

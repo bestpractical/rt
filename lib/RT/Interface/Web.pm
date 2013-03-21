@@ -1292,10 +1292,8 @@ sub IsCompCSRFWhitelisted {
     # record.
     delete $args{id};
 
-    # If they have a valid results= from MaybeRedirectForResults, that's
-    # also fine.
-    delete $args{results} if $args{results}
-        and $HTML::Mason::Commands::session{"Actions"}->{$args{results}};
+    # If they have a results= from MaybeRedirectForResults, that's also fine.
+    delete $args{results};
 
     # The homepage refresh, which uses the Refresh header, doesn't send
     # a referer in most browsers; whitelist the one parameter it reloads
