@@ -146,6 +146,7 @@ our %FIELD_METADATA = (
     CustomField      => [ 'CUSTOMFIELD', ], #loc_left_pair
     CF               => [ 'CUSTOMFIELD', ], #loc_left_pair
     Updated          => [ 'TRANSDATE', ], #loc_left_pair
+    UpdatedBy        => [ 'TRANSCREATOR', ], #loc_left_pair
     RequestorGroup   => [ 'MEMBERSHIPFIELD' => 'Requestor', ], #loc_left_pair
     CCGroup          => [ 'MEMBERSHIPFIELD' => 'Cc', ], #loc_left_pair
     AdminCCGroup     => [ 'MEMBERSHIPFIELD' => 'AdminCc', ], #loc_left_pair
@@ -175,6 +176,7 @@ our %dispatch = (
     TRANSFIELD      => \&_TransLimit,
     TRANSCONTENT    => \&_TransContentLimit,
     TRANSDATE       => \&_TransDateLimit,
+    TRANSCREATOR    => \&_TransCreatorLimit,
     WATCHERFIELD    => \&_WatcherLimit,
     MEMBERSHIPFIELD => \&_WatcherMembershipLimit,
     CUSTOMFIELD     => \&_CustomFieldLimit,
@@ -697,6 +699,21 @@ sub _TransDateLimit {
     }
 
     $sb->_CloseParen;
+}
+
+sub _TransCreatorLimit {
+    my ( $sb, $field, $op, $value, @rest ) = @_;
+    $op = "!=" if $op eq "<>";
+    die "Invalid Operation: $op for $field" unless $op eq "=" or $op eq "!=";
+
+    # See the comments for TransLimit, they apply here too
+    my $txn_alias = $sb->JoinTransactions;
+    if ( defined $value && $value !~ /^\d+$/ ) {
+        my $u = RT::User->new( $sb->CurrentUser );
+        $u->Load($value);
+        $value = $u->id || 0;
+    }
+    $sb->_SQLLimit( ALIAS => $txn_alias, FIELD => 'Creator', OPERATOR => $op, VALUE => $value, @rest );
 }
 
 =head2 _TransLimit
