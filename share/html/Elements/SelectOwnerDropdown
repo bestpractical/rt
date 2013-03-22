@@ -49,10 +49,6 @@
 %if ($DefaultValue) {
 <option value=""<% !$Default ? qq[ selected="selected"] : '' |n %>><%$DefaultLabel |n%></option>
 %}
-% $Default = 0 unless defined $Default && $Default =~ /^\d+$/;
-% my @formatednames = sort {lc $a->[1] cmp lc $b->[1]} map {[$_, $_->Format]} grep { $_->id != RT->Nobody->id } @users;
-% my $nobody = [RT->Nobody, RT->Nobody->Format(CurrentUser => $session{CurrentUser})];
-% unshift @formatednames, $nobody;
 %foreach my $UserRef ( @formatednames)  {
 %my $User = $UserRef->[0];
 <option <% ( $User->Id == $Default) ? qq[ selected="selected"] : '' |n %>
@@ -85,8 +81,16 @@ if ($Default && $Default != RT->Nobody->id && !$user_uniq_hash{$Default}) {
     $user_uniq_hash{$Default} = RT::User->new($session{CurrentUser});
     $user_uniq_hash{$Default}->Load($Default);
 }
+$Default = 0 unless defined $Default && $Default =~ /^\d+$/;
 
-my @users = values %user_uniq_hash;
+my @formatednames = sort {lc $a->[1] cmp lc $b->[1]}
+                     map {[$_, $_->Format]}
+                    grep { $_->id != RT->Nobody->id }
+                  values %user_uniq_hash;
+
+unshift @formatednames,
+    [RT->Nobody, RT->Nobody->Format(CurrentUser => $session{CurrentUser})];
+
 </%INIT>
 
 <%ARGS>
