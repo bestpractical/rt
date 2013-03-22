@@ -76,3 +76,10 @@ UPGRADING FROM RT 4.0.0 and greater
   using this in an rt-crontool cronjob or had used a
   Googleish_Local.pm to add features, you will need to convert to
   using RT::Search::Simple instead.
+
+* The Owner drop-down now only includes privileged users (no matter if
+  unprivileged users have been granted the OwnTicket right) because
+  configurations which have unprivileged Owners are exceedingly rare,
+  and granting Everyone the OwnTicket right is a common cause of
+  performance problems.  Unprivileged Owners (if they exist) may still
+  be set using the Autocompleter.

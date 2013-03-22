@@ -67,6 +67,7 @@ my $isSU = $session{CurrentUser}
     ->HasRight( Right => 'SuperUser', Object => $RT::System );
 foreach my $object (@$Objects) {
     my $Users = RT::Users->new( $session{CurrentUser} );
+    $Users->LimitToPrivileged;
     $Users->WhoHaveRight(
         Right               => 'OwnTicket',
         Object              => $object,
