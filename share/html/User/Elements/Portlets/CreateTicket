@@ -45,70 +45,16 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $r->content_type('application/json; charset=utf-8');
-<% JSON( \@suggestions ) |n %>
-% $m->abort;
+<div class="quick-create user">
+<&| /Widgets/TitleBox, title => loc('Quick ticket creation') &>
+<form action="<%RT->Config->Get('WebPath')%>/Ticket/Create.html">
+<&|/l&>Create a ticket with this user as the Requestor in Queue</&>
+<input type="hidden" name="Requestors" value="<%$User->EmailAddress%>">
+<& /Elements/SelectNewTicketQueue &>
+<input type="submit" name="Create">
+</form>
+</&>
+</div>
 <%ARGS>
-$return => ''
-$term => undef
-$delim => undef
-$max => 10
-$privileged => undef
-$exclude => ''
-$op => undef
+$User
 </%ARGS>
-<%INIT>
-# Only allow certain return fields
-$return = 'EmailAddress'
-    unless $return =~ /^(?:EmailAddress|Name|RealName)$/;
-
-$m->abort unless defined $return
-             and defined $term
-             and length $term;
-
-# Use our delimeter if we have one
-if ( defined $delim and length $delim ) {
-    if ( $delim eq ',' ) {
-        $delim = qr/,\s*/;
-    } else {
-        $delim = qr/\Q$delim\E/;
-    }
-
-    # If the field handles multiple values, pop the last one off
-    $term = (split $delim, $term)[-1] if $term =~ $delim;
-}
-
-my $CurrentUser = $session{'CurrentUser'};
-
-# Require privileged users or overriding config
-$m->abort unless $CurrentUser->Privileged
-              or RT->Config->Get('AllowUserAutocompleteForUnprivileged');
-
-my %fields = %{ RT->Config->Get('UserSearchFields')
-                || { EmailAddress => 1, Name => 1, RealName => 'LIKE' } };
-
-# If an operator is provided, check against only the returned field
-# using that operator
-%fields = ( $return => $op ) if $op;
-
-# the API wants a list of ids
-my @exclude = split /\s*,\s*/, $exclude;
-push @exclude, RT->SystemUser->id, RT->Nobody->id;
-
-my $users = RT::Users->new($CurrentUser);
-$users->SimpleSearch( Privileged => $privileged,
-                      Return     => $return,
-                      Term       => $term,
-                      Max        => $max,
-                      Exclude    => \@exclude,
-                      Fields     => \%fields,
-                    );
-
-my @suggestions;
-while ( my $user = $users->Next ) {
-    my $suggestion = { label => $user->Format, value => $user->$return };
-    $m->callback( CallbackName => "ModifySuggestion", suggestion => $suggestion, user => $user );
-    push @suggestions, $suggestion;
-}
-
-</%INIT>

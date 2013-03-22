@@ -491,6 +491,8 @@ my $build_main_nav = sub {
 
     $search->child( articles => title => loc('Articles'),   path => "/Articles/Article/Search.html" );
 
+    $search->child( users => title => loc('Users'),   path => "/User/Search.html" );
+
 
     my $tools = Menu->child( tools => title => loc('Tools'), path => '/Tools/index.html' );
     my $articles = $tools->child( articles => title => loc('Articles'), path => "/Articles/index.html");

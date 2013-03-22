@@ -45,70 +45,43 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $r->content_type('application/json; charset=utf-8');
-<% JSON( \@suggestions ) |n %>
-% $m->abort;
-<%ARGS>
-$return => ''
-$term => undef
-$delim => undef
-$max => 10
-$privileged => undef
-$exclude => ''
-$op => undef
-</%ARGS>
+<& /Elements/Header, Title => loc('User: [_1]', $User->Format) &>
+<& /Elements/Tabs &>
+    
+<& /Elements/GotoUser &>
+
+<%perl>
+$m->callback( CallbackName => 'BeforePortlets', User => $User );
+for my $portlet (@$portlets) {
+    $show_portlet->($portlet);
+}
+$m->callback( CallbackName => 'AfterPortlets', User => $User );
+</%perl>
+
 <%INIT>
-# Only allow certain return fields
-$return = 'EmailAddress'
-    unless $return =~ /^(?:EmailAddress|Name|RealName)$/;
+my $User = RT::User->new( $session{'CurrentUser'} );
+my ($status, $msg) = $User->Load($id);
+unless ($status) {
+    RT->Logger->error("Unable to load user $id: $msg");
+    Abort("Unable to load User $id");
+}
 
-$m->abort unless defined $return
-             and defined $term
-             and length $term;
+my $portlets = RT->Config->Get('UserSummaryPortlets');
 
-# Use our delimeter if we have one
-if ( defined $delim and length $delim ) {
-    if ( $delim eq ',' ) {
-        $delim = qr/,\s*/;
-    } else {
-        $delim = qr/\Q$delim\E/;
+my $show_portlet = sub {
+    my $portlet = shift;
+    my $full_path = "/User/Elements/Portlets/$portlet";
+    unless ( RT::Interface::Web->ComponentPathIsSafe($full_path) ) {
+        RT->Logger->error("unsafe portlet $portlet specified in UserSummaryPortlets");
+        return;
     }
-
-    # If the field handles multiple values, pop the last one off
-    $term = (split $delim, $term)[-1] if $term =~ $delim;
-}
-
-my $CurrentUser = $session{'CurrentUser'};
-
-# Require privileged users or overriding config
-$m->abort unless $CurrentUser->Privileged
-              or RT->Config->Get('AllowUserAutocompleteForUnprivileged');
-
-my %fields = %{ RT->Config->Get('UserSearchFields')
-                || { EmailAddress => 1, Name => 1, RealName => 'LIKE' } };
-
-# If an operator is provided, check against only the returned field
-# using that operator
-%fields = ( $return => $op ) if $op;
-
-# the API wants a list of ids
-my @exclude = split /\s*,\s*/, $exclude;
-push @exclude, RT->SystemUser->id, RT->Nobody->id;
-
-my $users = RT::Users->new($CurrentUser);
-$users->SimpleSearch( Privileged => $privileged,
-                      Return     => $return,
-                      Term       => $term,
-                      Max        => $max,
-                      Exclude    => \@exclude,
-                      Fields     => \%fields,
-                    );
-
-my @suggestions;
-while ( my $user = $users->Next ) {
-    my $suggestion = { label => $user->Format, value => $user->$return };
-    $m->callback( CallbackName => "ModifySuggestion", suggestion => $suggestion, user => $user );
-    push @suggestions, $suggestion;
-}
-
+    unless ( $m->comp_exists($full_path) ) {
+        RT->Logger->error("Unable to find $portlet in /User/Elements/Portlets - specified in UserSummaryPortlets");
+        return;
+    }
+    $m->comp( $full_path, User => $User );
+};
 </%INIT>
+<%ARGS>
+$id => undef
+</%ARGS>

@@ -943,6 +943,66 @@ RealName and EmailAddress.
 
 Set($UsernameFormat, "concise");
 
+=item C<$UserSearchResultFormat>
+
+This controls the display of lists of users returned from the User
+Summary Search. The display of users in the Admin interface is
+controlled by C<%AdminSearchResultFormat>.
+
+=cut
+
+Set($UserSearchResultFormat,
+         q{ '<a href="__WebPath__/User/Summary.html?id=__id__">__id__</a>/TITLE:#'}
+        .q{,'<a href="__WebPath__/User/Summary.html?id=__id__">__Name__</a>/TITLE:Name'}
+        .q{,__RealName__, __EmailAddress__}
+);
+
+=item C<@UserSummaryPortlets>
+
+A list of portlets to be displayed on the User Summary page.
+By default, we show all of the available portlets.
+Extensions may provide their own portlets for this page.
+
+=cut
+
+Set(@UserSummaryPortlets, (qw/ExtraInfo CreateTicket ActiveTickets InactiveTickets/));
+
+=item C<$UserSummaryExtraInfo>
+
+This controls what information is displayed on the User Summary
+portal. By default the user's Real Name, Email Address and Username
+are displayed. You can remove these or add more as needed. This
+expects a Format string of user attributes. Please note that not all
+the attributes are supported in this display because we're not
+building a table.
+
+=cut
+
+Set($UserSummaryExtraInfo, "RealName, EmailAddress, Name");
+
+=item C<$UserSummaryTicketListFormat>
+
+Control the appearance of the Active and Inactive ticket lists in the
+User Summary.
+
+=cut
+
+Set($UserSummaryTicketListFormat, q{
+       '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
+       '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
+       Status,
+       QueueName,
+       OwnerName,
+       Priority,
+       '__NEWLINE__',
+       '',
+       '<small>__Requestors__</small>',
+       '<small>__CreatedRelative__</small>',
+       '<small>__ToldRelative__</small>',
+       '<small>__LastUpdatedRelative__</small>',
+       '<small>__TimeLeft__</small>'
+});
+
 =item C<$WebBaseURL>, C<$WebURL>
 
 Usually you don't want to set these options. The only obvious reason
@@ -1361,7 +1421,9 @@ is ignored. Helpful when owners list is huge in the query builder.
 
 Set($AutocompleteOwnersForSearch, 0);
 
-=item C<$UserAutocompleteFields>
+=item C<$UserSearchFields>
+
+Used by the User Autocompleter as well as the User Search.
 
 Specifies which fields of L<RT::User> to match against and how to
 match each field when autocompleting users.  Valid match methods are
@@ -1369,7 +1431,7 @@ LIKE, STARTSWITH, ENDSWITH, =, and !=.
 
 =cut
 
-Set($UserAutocompleteFields, {
+Set($UserSearchFields, {
     EmailAddress => 'STARTSWITH',
     Name         => 'STARTSWITH',
     RealName     => 'LIKE',
