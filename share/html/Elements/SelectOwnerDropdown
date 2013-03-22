@@ -77,6 +77,14 @@ foreach my $object (@$Objects) {
         $user_uniq_hash{ $User->Id() } = $User;
     }
 }
+
+if (keys(%user_uniq_hash) > 50 ) {
+    my $desc = $Objects->[0]->RecordType." ".$Objects->[0]->id;
+    RT->Logger->notice("More than 50 possible Owners found for $desc; switching to autocompleter");
+    $m->comp("/Elements/SelectOwnerAutocomplete", %ARGS);
+    return;
+}
+
 if ($Default && $Default != RT->Nobody->id && !$user_uniq_hash{$Default}) {
     $user_uniq_hash{$Default} = RT::User->new($session{CurrentUser});
     $user_uniq_hash{$Default}->Load($Default);
