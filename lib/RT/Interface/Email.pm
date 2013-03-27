@@ -1621,7 +1621,7 @@ sub Gateway {
                 #Warn the sender that we couldn't actually submit the comment.
                 MailError(
                     To          => $ErrorsTo,
-                    Subject     => "Message not recorded: $Subject",
+                    Subject     => "Message not recorded ($method): $Subject",
                     Explanation => $msg,
                     MIMEObj     => $Message
                 );
