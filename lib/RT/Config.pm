@@ -764,39 +764,15 @@ our %META = (
         },
     },
     LogToScreen => {
-        PostSet => sub {
-            my $self  = shift;
-            my $value = shift;
-            $self->SetFromConfig(
-                Option => \'LogToSTDERR',
-                Value  => [$value],
-                %{$self->Meta('LogToScreen')->{'Source'}}
-            );
-        },
-        PostLoadCheck => sub {
-            my $self = shift;
-            # XXX: deprecated, remove in 4.4
-            $RT::Logger->info("You set \$LogToScreen in your config, but it's been renamed to \$LogToSTDERR.  Please update your config.")
-                if $self->Meta('LogToScreen')->{'Source'}{'Package'};
+        Deprecated => {
+            Instead => 'LogToSTDERR',
+            Remove  => '4.4',
         },
     },
     UserAutocompleteFields => {
-        PostSet => sub {
-            my $self  = shift;
-            my $value = shift;
-            $self->SetFromConfig(
-                Option => \'UserSearchFields',
-                Value  => [$value],
-                %{$self->Meta('UserAutocompleteFields')->{'Source'}}
-            );
-        },
-        PostLoadCheck => sub {
-            my $self = shift;
-            RT->Deprecated(
-                Message => '$UserAutocompleteFields is deprecated',
-                Instead => '$UserSearchFields',
-                Remove => "4.4"
-            ) if $self->Meta('UserAutocompleteFields')->{'Source'}{'Package'};
+        Deprecated => {
+            Instead => 'UserSearchFields',
+            Remove  => '4.4',
         },
     },
     CustomFieldGroupings => {
@@ -1168,6 +1144,22 @@ sub Set {
     $META{$name}->{'Type'} = $type;
     $META{$name}->{'PostSet'}->($self, $OPTIONS{$name}, $old)
         if $META{$name}->{'PostSet'};
+    if ($META{$name}->{'Deprecated'}) {
+        my %deprecated = %{$META{$name}->{'Deprecated'}};
+        my $new_var = $deprecated{Instead} || '';
+        $self->SetFromConfig(
+            Option => \$new_var,
+            Value  => [$OPTIONS{$name}],
+            %{$self->Meta($name)->{'Source'}}
+        ) if $new_var;
+        $META{$name}->{'PostLoadCheck'} ||= sub {
+            RT->Deprecated(
+                Message => "Configuration option $name is deprecated",
+                Stack   => 0,
+                %deprecated,
+            );
+        };
+    }
     return $self->_ReturnValue( $old, $type );
 }
 

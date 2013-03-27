@@ -852,6 +852,7 @@ sub Deprecated {
         Remove => undef,
         Instead => undef,
         Message => undef,
+        Stack   => 1,
         @_,
     );
 
@@ -884,7 +885,7 @@ sub Deprecated {
     $msg .= "  You should use $args{Instead} instead."
         if $args{Instead};
 
-    $msg .= "  Call stack:\n$stack";
+    $msg .= "  Call stack:\n$stack" if $args{Stack};
     RT->Logger->warn($msg);
 }
 
