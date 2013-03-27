@@ -270,6 +270,10 @@ sub CurrentUser {
     return shift;
 }
 
+sub CustomFieldLookupType {
+    return "RT::User";
+}
+
 RT::Base->_ImportOverlays();
 
 1;
