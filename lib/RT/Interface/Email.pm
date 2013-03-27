@@ -225,8 +225,8 @@ add 'In-Reply-To' field to the error that points to this message.
 
 =item Attach - optional text that attached to the error as 'message/rfc822' part.
 
-=item LogLevel - log level under which we should write explanation message into the
-log, by default we log it as critical.
+=item LogLevel - log level under which we should write the subject and
+explanation message into the log, by default we log it as critical.
 
 =back
 
@@ -247,7 +247,7 @@ sub MailError {
 
     $RT::Logger->log(
         level   => $args{'LogLevel'},
-        message => $args{'Explanation'}
+        message => "$args{Subject}: $args{'Explanation'}",
     ) if $args{'LogLevel'};
 
     # the colons are necessary to make ->build include non-standard headers
