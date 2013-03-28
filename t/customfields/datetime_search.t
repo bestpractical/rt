@@ -1,17 +1,30 @@
+use Test::MockTime qw(set_fixed_time restore_time);
 
 use warnings;
 use strict;
 
-use RT::Test nodata => 1, tests => 14;
+use RT::Test nodata => 1, tests => 30;
 RT->Config->Set( 'Timezone' => 'EST5EDT' ); # -04:00
 
-my $q = RT::Queue->new(RT->SystemUser);
-ok( $q->Create( Name => 'DateTimeCFTest' . $$ ), 'create queue' );
+RT::Test->set_rights(
+    { Principal => 'Everyone', Right => [qw(
+        SeeQueue ShowTicket CreateTicket SeeCustomField ModifyCustomField
+    )] },
+);
+
+my $q = RT::Test->load_or_create_queue( Name => 'General' );
+ok $q && $q->id, 'loaded or created a queue';
+
+my $user_m = RT::Test->load_or_create_user( Name => 'moscow', Timezone => 'Europe/Moscow' );
+ok $user_m && $user_m->id;
+
+my $user_b = RT::Test->load_or_create_user( Name => 'boston', Timezone => 'America/New_York' );
+ok $user_b && $user_b->id;
 
 my $cf = RT::CustomField->new(RT->SystemUser);
 ok(
     $cf->Create(
-        Name       => 'datetime-' . $$,
+        Name       => 'TestDateTime',
         Type       => 'DateTime',
         MaxValues  => 1,
         LookupType => RT::Ticket->CustomFieldLookupType,
@@ -19,6 +32,7 @@ ok(
     'create cf datetime'
 );
 ok( $cf->AddToObject($q), 'date cf apply to queue' );
+my $cf_name = $cf->Name;
 
 my $ticket = RT::Ticket->new(RT->SystemUser);
 
@@ -76,6 +90,23 @@ is(
 
     is( $tickets->Count, 0, 'did not find the ticket with wrong datetime: 2010-05-05' );
 }
+
+{
+    my $tickets = RT::Tickets->new(RT->SystemUser);
+    $tickets->FromSQL( "'CF.{$cf_name}' = 'May 4 2010 7am'" );
+    is( $tickets->Count, 1, 'found the ticket with = May 4 2010 7am' );
+
+    $tickets->FromSQL( "'CF.{$cf_name}' = 'May 4 2010 8am'" );
+    is( $tickets->Count, 0, 'did not find the ticket with = May 4 2010 8am' );
+
+    $tickets->FromSQL( "'CF.{$cf_name}' > 'May 3 2010 7am'" );
+    is( $tickets->Count, 1, 'found the ticket with > May 3 2010 7am' );
+
+    $tickets->FromSQL( "'CF.{$cf_name}' < 'May 4 2010 8am'" );
+    is( $tickets->Count, 1, 'found the ticket with < May 4 2010 8am' );
+
+}
+
 
 my $tickets = RT::Tickets->new( RT->SystemUser );
 $tickets->UnLimit;
@@ -138,3 +169,69 @@ while( my $ticket  = $tickets->Next ) {
     );
     is( $tickets->Count, 1, 'found the ticket with = 2010-06-22 01:00:01' );
 }
+
+# set timezone in all places to UTC
+{
+    RT->SystemUser->UserObj->__Set(Field => 'Timezone', Value => 'UTC')
+                                if RT->SystemUser->UserObj->Timezone;
+    RT->Config->Set( Timezone => 'UTC' );
+}
+
+# search by absolute date with '=', but date only
+{
+    my $ticket = RT::Ticket->new(RT->SystemUser);
+    my ($tid) = $ticket->Create(
+        Queue                    => $q->id,
+        Subject                  => 'Test',
+        'CustomField-' . $cf->id => '2013-02-11 23:14:15',
+    );
+    is $ticket->FirstCustomFieldValue($cf_name), '2013-02-11 23:14:15';
+
+    my $tickets = RT::Tickets->new($user_m);
+    $tickets->FromSQL("'CustomField.{$cf_name}' = '2013-02-11' AND id = $tid");
+    is( $tickets->Count, 0);
+
+    $tickets = RT::Tickets->new($user_m);
+    $tickets->FromSQL("'CustomField.{$cf_name}' = '2013-02-12' AND id = $tid");
+    is( $tickets->Count, 1);
+
+    $tickets = RT::Tickets->new($user_b);
+    $tickets->FromSQL("'CustomField.{$cf_name}' = '2013-02-11' AND id = $tid");
+    is( $tickets->Count, 1);
+
+    $tickets = RT::Tickets->new($user_b);
+    $tickets->FromSQL("'CustomField.{$cf_name}' = '2013-02-12' AND id = $tid");
+    is( $tickets->Count, 0);
+}
+
+# search by relative date with '=', but date only
+{
+    my $ticket = RT::Ticket->new(RT->SystemUser);
+    my ($tid) = $ticket->Create(
+        Queue                    => $q->id,
+        Subject                  => 'Test',
+        'CustomField-' . $cf->id => '2013-02-11 23:14:15',
+    );
+    is $ticket->FirstCustomFieldValue($cf_name), '2013-02-11 23:14:15';
+
+    set_fixed_time("2013-02-10T16:10:00Z");
+    my $tickets = RT::Tickets->new($user_m);
+    $tickets->FromSQL("'CustomField.{$cf_name}' = 'tomorrow' AND id = $tid");
+    is( $tickets->Count, 0);
+
+    set_fixed_time("2013-02-10T23:10:00Z");
+    $tickets = RT::Tickets->new($user_m);
+    $tickets->FromSQL("'CustomField.{$cf_name}' = 'tomorrow' AND id = $tid");
+    is( $tickets->Count, 1);
+
+    set_fixed_time("2013-02-10T23:10:00Z");
+    $tickets = RT::Tickets->new($user_b);
+    $tickets->FromSQL("'CustomField.{$cf_name}' = 'tomorrow' AND id = $tid");
+    is( $tickets->Count, 1);
+
+    set_fixed_time("2013-02-10T02:10:00Z");
+    $tickets = RT::Tickets->new($user_b);
+    $tickets->FromSQL("'CustomField.{$cf_name}' = 'tomorrow' AND id = $tid");
+    is( $tickets->Count, 0);
+}
+

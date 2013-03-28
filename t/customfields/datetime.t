@@ -21,14 +21,14 @@ my $user_b = RT::Test->load_or_create_user( Name => 'boston', Timezone => 'Ameri
 ok $user_b && $user_b->id;
 
 
-my $cf_name = 'A Date';
+my $cf_name = 'A Date and Time';
 my $cf;
 {
     $cf = RT::CustomField->new(RT->SystemUser);
     ok(
         $cf->Create(
             Name       => $cf_name,
-            Type       => 'Date',
+            Type       => 'DateTime',
             MaxValues  => 1,
             LookupType => RT::Ticket->CustomFieldLookupType,
         ),
@@ -42,28 +42,22 @@ my $cf;
     my ($id) = $ticket->Create(
         Queue                   => $q->id,
         Subject                 => 'Test',
-        'CustomField-'. $cf->id => '2013-02-11',
+        'CustomField-'. $cf->id => '2013-02-11 00:00:00',
     );
     my $cf_value = $ticket->CustomFieldValues($cf_name)->First;
-    is( $cf_value->Content, '2013-02-11', 'correct value' );
+    TODO: {
+        local $TODO = 'questionable result, should we change?';
+        # $Ticket->Created returns UTC, not user's date, but
+        # ticket has ->CreatedObj method to get all required
+        # transformation
+        # No more TODO.
+        is( $cf_value->Content, '2013-02-11 00:00:00', 'correct value' );
+    }
+    is( $cf_value->Content, '2013-02-10 20:00:00', 'correct value' );
 
     $ticket = RT::Ticket->new( RT::CurrentUser->new( $user_b ) );
     $ticket->Load($id);
-    is( $ticket->FirstCustomFieldValue($cf_name), '2013-02-11', 'correct value' );
-}
-
-{
-    my $ticket = RT::Ticket->new(RT->SystemUser);
-    ok(
-        $ticket->Create(
-            Queue                    => $q->id,
-            Subject                  => 'Test',
-            'CustomField-' . $cf->id => '2010-05-04 11:34:56',
-        ),
-        'create ticket with cf set to 2010-05-04 11:34:56'
-    );
-    is( $ticket->CustomFieldValues->First->Content,
-        '2010-05-04', 'date in db only has date' );
+    is( $ticket->FirstCustomFieldValue($cf_name), '2013-02-10 20:00:00', 'correct value' );
 }
 
 # in moscow it's already Feb 11, so tomorrow is Feb 12
@@ -76,11 +70,7 @@ set_fixed_time("2013-02-10T23:10:00Z");
         'CustomField-'. $cf->id => 'tomorrow',
     );
     my $cf_value = $ticket->CustomFieldValues($cf_name)->First;
-    is( $cf_value->Content, '2013-02-12', 'correct value' );
-
-    $ticket = RT::Ticket->new( RT::CurrentUser->new( $user_b ) );
-    $ticket->Load($id);
-    is( $ticket->FirstCustomFieldValue($cf_name), '2013-02-12', 'correct value' );
+    is( $cf_value->Content, '2013-02-11 23:10:00', 'correct value' );
 }
 
 done_testing();
