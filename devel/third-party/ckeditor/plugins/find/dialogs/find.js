@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 
@@ -71,8 +71,9 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 		// Style object for highlights: (#5018)
 		// 1. Defined as full match style to avoid compromising ordinary text color styles.
 		// 2. Must be apply onto inner-most text to avoid conflicting with ordinary text color styles visually.
-		var highlightStyle = new CKEDITOR.style( CKEDITOR.tools.extend( { fullMatch : true, childRule : function(){ return false; } },
-			editor.config.find_highlight ) );
+		var highlightStyle = new CKEDITOR.style(
+			CKEDITOR.tools.extend( { attributes : { 'data-cke-highlight': 1 }, fullMatch : 1, ignoreReadonly : 1, childRule : function(){ return 0; } },
+			editor.config.find_highlight, true ) );
 
 		/**
 		 * Iterator which walk through the specified range char by char. By
@@ -83,11 +84,21 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 		 */
 		var characterWalker = function( range , matchWord )
 		{
+			var self = this;
 			var walker =
 				new CKEDITOR.dom.walker( range );
-			walker.guard = matchWord ? nonCharactersBoundary : null;
+			walker.guard = matchWord ? nonCharactersBoundary : function( node )
+			{
+				!nonCharactersBoundary( node ) && ( self._.matchBoundary = true );
+			};
 			walker[ 'evaluator' ] = findEvaluator;
-			walker.breakOnFalse = true;
+			walker.breakOnFalse = 1;
+
+			if ( range.startContainer.type == CKEDITOR.NODE_TEXT )
+			{
+				this.textNode = range.startContainer;
+				this.offset = range.startOffset - 1;
+			}
 
 			this._ = {
 				matchWord : matchWord,
@@ -111,7 +122,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 			{
 				var currentTextNode = this.textNode;
 				// Already at the end of document, no more character available.
-				if (  currentTextNode === null )
+				if ( currentTextNode === null )
 					return cursorStep.call( this );
 
 				this._.matchBoundary = false;
@@ -142,15 +153,9 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 						// Stop searching if we're need full word match OR
 						// already reach document end.
 						if ( this._.matchWord && !currentTextNode
-							 ||this._.walker._.end )
+							 || this._.walker._.end )
 							break;
-
-						// Marking as match character boundaries.
-						if ( !currentTextNode
-						   && !nonCharactersBoundary( this._.walker.current ) )
-							this._.matchBoundary = true;
-
-					}
+						}
 					// Found a fresh text node.
 					this.textNode = currentTextNode;
 					if ( currentTextNode )
@@ -175,7 +180,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 				cursors : [],
 				rangeLength : rangeLength,
 				highlightRange : null,
-				isMatched : false
+				isMatched : 0
 			};
 		};
 
@@ -490,8 +495,15 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 								tail = cursors[ cursors.length - 1 ],
 								head = cursors[ 0 ];
 
-							var headWalker = new characterWalker( getRangeBeforeCursor( head ), true ),
-								tailWalker = new characterWalker( getRangeAfterCursor( tail ), true );
+							var rangeBefore = getRangeBeforeCursor( head ),
+								rangeAfter = getRangeAfterCursor( tail );
+
+							// The word boundary checks requires to trim the text nodes. (#9036)
+							rangeBefore.trim();
+							rangeAfter.trim();
+
+							var headWalker = new characterWalker( rangeBefore, true ),
+								tailWalker = new characterWalker( rangeAfter, true );
 
 							if ( ! ( isWordSeparator( headWalker.back().character )
 										&& isWordSeparator( tailWalker.next().character ) ) )
@@ -511,7 +523,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 				// Re-run the finding once for cyclic.(#3517)
 				if ( matchCyclic && !cyclicRerun )
 				{
-					this.searchRange = getSearchRange( true );
+					this.searchRange = getSearchRange( 1 );
 					this.matchRange = null;
 					return arguments.callee.apply( this,
 						Array.prototype.slice.call( arguments ).concat( [ true ] ) );
@@ -531,7 +543,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 				isReplace = 1;
 
 				// Successiveness of current replace/find.
-				var result = false;
+				var result = 0;
 
 				// 1. Perform the replace when there's already a match here.
 				// 2. Otherwise perform the find but don't replace it immediately.
@@ -561,7 +573,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 						this.matchRange.highlight();
 					this.matchRange._.isReplaced = true;
 					this.replaceCounter++;
-					result = true;
+					result = 1;
 				}
 				else
 					result = this.find( pattern, matchCase, matchWord, matchCyclic, !isReplaceAll );
@@ -595,17 +607,18 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 			return searchRange;
 		}
 
+		var lang = editor.lang.findAndReplace;
 		return {
-			title : editor.lang.findAndReplace.title,
+			title : lang.title,
 			resizable : CKEDITOR.DIALOG_RESIZE_NONE,
 			minWidth : 350,
-			minHeight : 165,
-			buttons : [ CKEDITOR.dialog.cancelButton ],		//Cancel button only.
+			minHeight : 170,
+			buttons : [ CKEDITOR.dialog.cancelButton ],		// Cancel button only.
 			contents : [
 				{
 					id : 'find',
-					label : editor.lang.findAndReplace.find,
-					title : editor.lang.findAndReplace.find,
+					label : lang.find,
+					title : lang.find,
 					accessKey : '',
 					elements : [
 						{
@@ -616,16 +629,17 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 								{
 									type : 'text',
 									id : 'txtFindFind',
-									label : editor.lang.findAndReplace.findWhat,
+									label : lang.findWhat,
 									isChanged : false,
 									labelLayout : 'horizontal',
 									accessKey : 'F'
 								},
 								{
 									type : 'button',
+									id : 'btnFind',
 									align : 'left',
 									style : 'width:100%',
-									label : editor.lang.findAndReplace.find,
+									label : lang.find,
 									onClick : function()
 									{
 										var dialog = this.getDialog();
@@ -633,36 +647,43 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 													dialog.getValueOf( 'find', 'txtFindCaseChk' ),
 													dialog.getValueOf( 'find', 'txtFindWordChk' ),
 													dialog.getValueOf( 'find', 'txtFindCyclic' ) ) )
-											alert( editor.lang.findAndReplace
+											alert( lang
 												.notFoundMsg );
 									}
 								}
 							]
 						},
 						{
-							type : 'vbox',
-							padding : 0,
+							type : 'fieldset',
+							label : CKEDITOR.tools.htmlEncode( lang.findOptions ),
+							style : 'margin-top:29px',
 							children :
 							[
 								{
-									type : 'checkbox',
-									id : 'txtFindCaseChk',
-									isChanged : false,
-									style : 'margin-top:28px',
-									label : editor.lang.findAndReplace.matchCase
-								},
-								{
-									type : 'checkbox',
-									id : 'txtFindWordChk',
-									isChanged : false,
-									label : editor.lang.findAndReplace.matchWord
-								},
-								{
-									type : 'checkbox',
-									id : 'txtFindCyclic',
-									isChanged : false,
-									'default' : true,
-									label : editor.lang.findAndReplace.matchCyclic
+									type : 'vbox',
+									padding : 0,
+									children :
+									[
+										{
+											type : 'checkbox',
+											id : 'txtFindCaseChk',
+											isChanged : false,
+											label : lang.matchCase
+										},
+										{
+											type : 'checkbox',
+											id : 'txtFindWordChk',
+											isChanged : false,
+											label : lang.matchWord
+										},
+										{
+											type : 'checkbox',
+											id : 'txtFindCyclic',
+											isChanged : false,
+											'default' : true,
+											label : lang.matchCyclic
+										}
+									]
 								}
 							]
 						}
@@ -670,7 +691,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 				},
 				{
 					id : 'replace',
-					label : editor.lang.findAndReplace.replace,
+					label : lang.replace,
 					accessKey : 'M',
 					elements : [
 						{
@@ -681,16 +702,17 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 								{
 									type : 'text',
 									id : 'txtFindReplace',
-									label : editor.lang.findAndReplace.findWhat,
+									label : lang.findWhat,
 									isChanged : false,
 									labelLayout : 'horizontal',
 									accessKey : 'F'
 								},
 								{
 									type : 'button',
+									id : 'btnFindReplace',
 									align : 'left',
 									style : 'width:100%',
-									label : editor.lang.findAndReplace.replace,
+									label : lang.replace,
 									onClick : function()
 									{
 										var dialog = this.getDialog();
@@ -700,7 +722,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 													dialog.getValueOf( 'replace', 'txtReplaceCaseChk' ),
 													dialog.getValueOf( 'replace', 'txtReplaceWordChk' ),
 													dialog.getValueOf( 'replace', 'txtReplaceCyclic' ) ) )
-											alert( editor.lang.findAndReplace
+											alert( lang
 												.notFoundMsg );
 									}
 								}
@@ -714,16 +736,17 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 								{
 									type : 'text',
 									id : 'txtReplace',
-									label : editor.lang.findAndReplace.replaceWith,
+									label : lang.replaceWith,
 									isChanged : false,
 									labelLayout : 'horizontal',
 									accessKey : 'R'
 								},
 								{
 									type : 'button',
+									id : 'btnReplaceAll',
 									align : 'left',
 									style : 'width:100%',
-									label : editor.lang.findAndReplace.replaceAll,
+									label : lang.replaceAll,
 									isChanged : false,
 									onClick : function()
 									{
@@ -733,7 +756,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 										finder.replaceCounter = 0;
 
 										// Scope to full document.
-										finder.searchRange = getSearchRange( true );
+										finder.searchRange = getSearchRange( 1 );
 										if ( finder.matchRange )
 										{
 											finder.matchRange.removeHighlight();
@@ -750,41 +773,45 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 
 										if ( finder.replaceCounter )
 										{
-											alert( editor.lang.findAndReplace.replaceSuccessMsg.replace( /%1/, finder.replaceCounter ) );
+											alert( lang.replaceSuccessMsg.replace( /%1/, finder.replaceCounter ) );
 											editor.fire( 'saveSnapshot' );
 										}
 										else
-											alert( editor.lang.findAndReplace.notFoundMsg );
+											alert( lang.notFoundMsg );
 									}
 								}
 							]
 						},
 						{
-							type : 'vbox',
-							padding : 0,
+							type : 'fieldset',
+							label : CKEDITOR.tools.htmlEncode( lang.findOptions ),
 							children :
 							[
 								{
-									type : 'checkbox',
-									id : 'txtReplaceCaseChk',
-									isChanged : false,
-									label : editor.lang.findAndReplace
-										.matchCase
-								},
-								{
-									type : 'checkbox',
-									id : 'txtReplaceWordChk',
-									isChanged : false,
-									label : editor.lang.findAndReplace
-										.matchWord
-								},
-								{
-									type : 'checkbox',
-									id : 'txtReplaceCyclic',
-									isChanged : false,
-									'default' : true,
-									label : editor.lang.findAndReplace
-										.matchCyclic
+									type : 'vbox',
+									padding : 0,
+									children :
+									[
+										{
+											type : 'checkbox',
+											id : 'txtReplaceCaseChk',
+											isChanged : false,
+											label : lang.matchCase
+										},
+										{
+											type : 'checkbox',
+											id : 'txtReplaceWordChk',
+											isChanged : false,
+											label : lang.matchWord
+										},
+										{
+											type : 'checkbox',
+											id : 'txtReplaceCyclic',
+											isChanged : false,
+											'default' : true,
+											label : lang.matchCyclic
+										}
+									]
 								}
 							]
 						}
@@ -795,19 +822,19 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 			{
 				var dialog = this;
 
-				//keep track of the current pattern field in use.
+				// Keep track of the current pattern field in use.
 				var patternField, wholeWordChkField;
 
-				//Ignore initial page select on dialog show
-				var isUserSelect = false;
-				this.on('hide', function()
+				// Ignore initial page select on dialog show
+				var isUserSelect = 0;
+				this.on( 'hide', function()
 						{
-							isUserSelect = false;
-						} );
-				this.on('show', function()
+							isUserSelect = 0;
+						});
+				this.on( 'show', function()
 						{
-							isUserSelect = true;
-						} );
+							isUserSelect = 1;
+						});
 
 				this.selectPage = CKEDITOR.tools.override( this.selectPage, function( originalFunc )
 					{
@@ -825,7 +852,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 							wholeWordChkField = dialog.getContentElement( pageId,
 								wholeWordChkFieldId );
 
-							// prepare for check pattern text filed 'keyup' event
+							// Prepare for check pattern text filed 'keyup' event
 							if ( !currPage.initialized )
 							{
 								patternFieldInput = CKEDITOR.document
@@ -833,8 +860,8 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 								currPage.initialized = true;
 							}
 
+							// Synchronize fields on tab switch.
 							if ( isUserSelect )
-								// synchronize fields on tab switch.
 								syncFieldsBetweenTabs.call( this, pageId );
 						};
 					} );
@@ -845,7 +872,17 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 				// Establish initial searching start position.
 				finder.searchRange = getSearchRange();
 
+				// Fill in the find field with selected text.
+				var selectedText = this.getParentEditor().getSelection().getSelectedText(),
+					patternFieldId = ( startupPage == 'find' ? 'txtFindFind' : 'txtFindReplace' );
+
+				var field = this.getContentElement( startupPage, patternFieldId );
+				field.setValue( selectedText );
+				field.select();
+
 				this.selectPage( startupPage );
+
+				this[ ( startupPage == 'find' && this._.editor.readOnly? 'hide' : 'show' ) + 'Page' ]( 'replace');
 			},
 			onHide : function()
 			{

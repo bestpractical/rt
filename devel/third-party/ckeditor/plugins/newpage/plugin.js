@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 
@@ -19,16 +19,17 @@ CKEDITOR.plugins.add( 'newpage',
 				exec : function( editor )
 				{
 					var command = this;
-					editor.setData( editor.config.newpage_html, function()
+					editor.setData( editor.config.newpage_html || '', function()
 					{
 						// Save the undo snapshot after all document changes are affected. (#4889)
 						setTimeout( function ()
 						{
 							editor.fire( 'afterCommandExec',
 							{
-								name: command.name,
+								name: 'newpage',
 								command: command
 							} );
+							editor.selectionChange();
 
 						}, 200 );
 					} );
@@ -46,9 +47,9 @@ CKEDITOR.plugins.add( 'newpage',
 });
 /**
  * The HTML to load in the editor when the "new page" command is executed.
+ * @name CKEDITOR.config.newpage_html
  * @type String
  * @default ''
  * @example
  * config.newpage_html = '&lt;p&gt;Type your text here.&lt;/p&gt;';
  */
-CKEDITOR.config.newpage_html = '';

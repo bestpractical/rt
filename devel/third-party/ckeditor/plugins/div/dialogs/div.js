@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+ * Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
  * For licensing, see LICENSE.html or http://ckeditor.com/license
  */
 
@@ -140,8 +140,8 @@
 			var containedBlocks = [], block;
 
 			// Get all ranges from the selection.
-			var selection = editor.document.getSelection();
-			var ranges = selection.getRanges();
+			var selection = editor.document.getSelection(),
+				ranges = selection.getRanges();
 			var bookmarks = selection.createBookmarks();
 			var i, iterator;
 
@@ -437,7 +437,7 @@
 			],
 			onLoad : function()
 			{
-				setupFields.call(this);
+				setupFields.call( this );
 
 				// Preparing for the 'elementStyle' field.
 				var dialog = this,

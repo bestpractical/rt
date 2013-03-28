@@ -1,10 +1,11 @@
 ﻿/*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 
 CKEDITOR.plugins.add( 'table',
 {
+	requires : [ 'dialog' ],
 	init : function( editor )
 	{
 		var table = CKEDITOR.plugins.table,
@@ -58,10 +59,10 @@ CKEDITOR.plugins.add( 'table',
 		{
 			editor.contextMenu.addListener( function( element, selection )
 				{
-					if ( !element || element.isReadOnly())
+					if ( !element || element.isReadOnly() )
 						return null;
 
-					var isTable	= element.is( 'table' ) || element.hasAscendant( 'table' );
+					var isTable = element.hasAscendant( 'table', 1 );
 
 					if ( isTable )
 					{

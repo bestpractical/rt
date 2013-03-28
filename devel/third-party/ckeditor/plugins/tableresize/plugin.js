@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 
@@ -82,7 +82,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 			pillarIndex += td.$.colSpan || 1;
 
 			// Calculate the pillar boundary positions.
-			var pillarLeft, pillarRight, pillarWidth, pillarPadding;
+			var pillarLeft, pillarRight, pillarWidth;
 
 			var x = td.getDocumentPosition().x;
 
@@ -112,9 +112,6 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 
 			pillarWidth = Math.max( pillarRight - pillarLeft, 3 );
 
-			// Make the pillar touch area at least 14 pixels wide, for easy to use.
-			pillarPadding = Math.max( Math.round( 7 - ( pillarWidth / 2 ) ), 0 );
-
 			// The pillar should reflects exactly the shape of the hovered
 			// column border line.
 			pillars.push( {
@@ -123,8 +120,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 				x : pillarLeft,
 				y : tbodyPosition.y,
 				width : pillarWidth,
-				height: tbody.$.offsetHeight,
-				padding : pillarPadding,
+				height : tbody.$.offsetHeight,
 				rtl : rtl } );
 		}
 
@@ -135,10 +131,9 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 	{
 		for ( var i = 0, len = pillars.length ; i < len ; i++ )
 		{
-			var pillar = pillars[ i ],
-				pad = pillar.padding;
+			var pillar = pillars[ i ];
 
-			if ( positionX >= pillar.x - pad && positionX <= ( pillar.x + pillar.width + pad ) )
+			if ( positionX >= pillar.x && positionX <= ( pillar.x + pillar.width ) )
 				return pillar;
 		}
 
@@ -292,13 +287,13 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 
 		function onMouseMove( evt )
 		{
-			move( evt.data.$.clientX );
+			move( evt.data.getPageOffset().x );
 		}
 
 		document = editor.document;
 
 		resizer = CKEDITOR.dom.element.createFromHtml(
-			'<div cke_temp=1 contenteditable=false unselectable=on '+
+			'<div data-cke-temp=1 contenteditable=false unselectable=on '+
 			'style="position:absolute;cursor:col-resize;filter:alpha(opacity=0);opacity:0;' +
 				'padding:0;background-color:#004;background-image:none;border:0px none;z-index:10"></div>', document );
 
@@ -349,9 +344,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 			if ( !pillar )
 				return 0;
 
-			var pad = pillar.padding;
-
-			if ( !isResizing && ( posX < pillar.x - pad || posX > ( pillar.x + pillar.width + pad ) ) )
+			if ( !isResizing && ( posX < pillar.x || posX > ( pillar.x + pillar.width ) ) )
 			{
 				detach();
 				return 0;
@@ -393,7 +386,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 				return;
 		}
 
-		target.getAscendant( 'table', true ).removeCustomData( '_cke_table_pillars' );
+		target.getAscendant( 'table', 1 ).removeCustomData( '_cke_table_pillars' );
 		evt.removeListener();
 	}
 
@@ -410,9 +403,11 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 					{
 						evt = evt.data;
 
+						var pageX = evt.getPageOffset().x;
+
 						// If we're already attached to a pillar, simply move the
 						// resizer.
-						if ( resizer && resizer.move( evt.$.clientX ) )
+						if ( resizer && resizer.move( pageX ) )
 						{
 							cancel( evt );
 							return;
@@ -423,10 +418,10 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 							table,
 							pillars;
 
-						if ( !target.is( 'table' ) && !target.getAscendant( 'tbody', true ) )
+						if ( !target.is( 'table' ) && !target.getAscendant( 'tbody', 1 ) )
 							return;
 
-						table = target.getAscendant( 'table', true );
+						table = target.getAscendant( 'table', 1 );
 
 						if ( !( pillars = table.getCustomData( '_cke_table_pillars' ) ) )
 						{
@@ -436,7 +431,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 							table.on( 'mousedown', clearPillarsCache );
 						}
 
-						var pillar = getPillarAtPosition( pillars, evt.$.clientX );
+						var pillar = getPillarAtPosition( pillars, pageX );
 						if ( pillar )
 						{
 							!resizer && ( resizer = new columnResizer( editor ) );

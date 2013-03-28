@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 
@@ -14,7 +14,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 
 /**
- * Constains the dictionary of language entries.
+ * Contains the dictionary of language entries.
  * @namespace
  */
 CKEDITOR.lang['ko'] =
@@ -31,11 +31,12 @@ CKEDITOR.lang['ko'] =
 	 * Screenreader titles. Please note that screenreaders are not always capable
 	 * of reading non-English words. So be careful while translating it.
 	 */
-	editorTitle : 'Rich text editor, %1, press ALT 0 for help.', // MISSING
+	editorTitle : 'Rich text editor, %1', // MISSING
+	editorHelp : 'Press ALT 0 for help', // MISSING
 
 	// ARIA descriptions.
-	toolbar	: 'Toolbar', // MISSING
-	editor	: 'Rich Text Editor', // MISSING
+	toolbars	: 'Editor toolbars', // MISSING
+	editor		: 'Rich Text Editor', // MISSING
 
 	// Toolbar buttons without dialogs.
 	source			: '소스',
@@ -56,6 +57,7 @@ CKEDITOR.lang['ko'] =
 	superscript		: '위 첨자',
 	horizontalrule	: '수평선 삽입',
 	pagebreak		: 'Insert Page Break for Printing', // MISSING
+	pagebreakAlt		: 'Page Break', // MISSING
 	unlink			: '링크 삭제',
 	undo			: '취소',
 	redo			: '재실행',
@@ -109,6 +111,22 @@ CKEDITOR.lang['ko'] =
 		langDirRTL		: 'Right to Left (RTL)', // MISSING
 		styles			: 'Style', // MISSING
 		cssClasses		: 'Stylesheet Classes', // MISSING
+		width			: '너비',
+		height			: '높이',
+		align			: '정렬',
+		alignLeft		: '왼쪽',
+		alignRight		: '오른쪽',
+		alignCenter		: '가운데',
+		alignTop		: '위',
+		alignMiddle		: '중간',
+		alignBottom		: '아래',
+		invalidValue	: 'Invalid value.', // MISSING
+		invalidHeight	: 'Height must be a number.', // MISSING
+		invalidWidth	: 'Width must be a number.', // MISSING
+		invalidCssLength	: 'Value specified for the "%1" field must be a positive number with or without a valid CSS measurement unit (px, %, in, cm, mm, em, ex, pt, or pc).', // MISSING
+		invalidHtmlLength	: 'Value specified for the "%1" field must be a positive number with or without a valid HTML measurement unit (px or %).', // MISSING
+		invalidInlineStyle	: 'Value specified for the inline style must consist of one or more tuples with the format of "name : value", separated by semi-colons.', // MISSING
+		cssLengthTooltip	: 'Enter a number for a value in pixels or a number with a valid CSS unit (px, %, in, cm, mm, em, ex, pt, or pc).', // MISSING
 
 		// Put the voice-only part of the label in the span.
 		unavailable		: '%1<span class="cke_accessibility">, unavailable</span>' // MISSING
@@ -155,9 +173,7 @@ CKEDITOR.lang['ko'] =
 		popupFullScreen	: '전체화면 (IE)',
 		popupScrollBars	: '스크롤바',
 		popupDependent	: 'Dependent (Netscape)',
-		popupWidth		: '너비',
 		popupLeft		: '왼쪽 위치',
-		popupHeight		: '높이',
 		popupTop		: '윗쪽 위치',
 		id				: 'Id', // MISSING
 		langDir			: '쓰기 방향',
@@ -165,18 +181,19 @@ CKEDITOR.lang['ko'] =
 		langDirRTL		: '오른쪽에서 왼쪽 (RTL)',
 		acccessKey		: '엑세스 키',
 		name			: 'Name',
-		langCode		: '쓰기 방향',
-		tabIndex		: '탭 순서',
-		advisoryTitle	: 'Advisory Title',
+		langCode			: '쓰기 방향',
+		tabIndex			: '탭 순서',
+		advisoryTitle		: 'Advisory Title',
 		advisoryContentType	: 'Advisory Content Type',
 		cssClasses		: 'Stylesheet Classes',
 		charset			: 'Linked Resource Charset',
 		styles			: 'Style',
-		selectAnchor	: '책갈피 선택',
+		rel			: 'Relationship', // MISSING
+		selectAnchor		: '책갈피 선택',
 		anchorName		: '책갈피 이름',
-		anchorId		: '책갈피 ID',
-		emailAddress	: '이메일 주소',
-		emailSubject	: '제목',
+		anchorId			: '책갈피 ID',
+		emailAddress		: '이메일 주소',
+		emailSubject		: '제목',
 		emailBody		: '내용',
 		noAnchors		: '(문서에 책갈피가 없습니다.)',
 		noUrl			: '링크 URL을 입력하십시요.',
@@ -190,7 +207,8 @@ CKEDITOR.lang['ko'] =
 		menu		: '책갈피 속성',
 		title		: '책갈피 속성',
 		name		: '책갈피 이름',
-		errorName	: '책갈피 이름을 입력하십시요.'
+		errorName	: '책갈피 이름을 입력하십시요.',
+		remove		: 'Remove Anchor' // MISSING
 	},
 
 	// List style dialog
@@ -226,6 +244,7 @@ CKEDITOR.lang['ko'] =
 		findWhat			: '찾을 문자열:',
 		replaceWith			: '바꿀 문자열:',
 		notFoundMsg			: '문자열을 찾을 수 없습니다.',
+		findOptions			: 'Find Options', // MISSING
 		matchCase			: '대소문자 구분',
 		matchWord			: '온전한 단어',
 		matchCyclic			: 'Match cyclic', // MISSING
@@ -243,15 +262,9 @@ CKEDITOR.lang['ko'] =
 		rows		: '가로줄',
 		columns		: '세로줄',
 		border		: '테두리 크기',
-		align		: '정렬',
-		alignLeft	: '왼쪽',
-		alignCenter	: '가운데',
-		alignRight	: '오른쪽',
-		width		: '너비',
 		widthPx		: '픽셀',
 		widthPc		: '퍼센트',
 		widthUnit	: 'width unit', // MISSING
-		height		: '높이',
 		cellSpace	: '셀 간격',
 		cellPad		: '셀 여백',
 		caption		: '캡션',
@@ -266,8 +279,8 @@ CKEDITOR.lang['ko'] =
 		invalidBorder	: 'Border size must be a number.', // MISSING
 		invalidWidth	: 'Table width must be a number.', // MISSING
 		invalidHeight	: 'Table height must be a number.', // MISSING
-		invalidCellSpacing	: 'Cell spacing must be a number.', // MISSING
-		invalidCellPadding	: 'Cell padding must be a number.', // MISSING
+		invalidCellSpacing	: 'Cell spacing must be a positive number.', // MISSING
+		invalidCellPadding	: 'Cell padding must be a positive number.', // MISSING
 
 		cell :
 		{
@@ -287,9 +300,6 @@ CKEDITOR.lang['ko'] =
 			wordWrap		: 'Word Wrap', // MISSING
 			hAlign			: 'Horizontal Alignment', // MISSING
 			vAlign			: 'Vertical Alignment', // MISSING
-			alignTop		: 'Top', // MISSING
-			alignMiddle		: 'Middle', // MISSING
-			alignBottom		: 'Bottom', // MISSING
 			alignBaseline	: 'Baseline', // MISSING
 			bgColor			: 'Background Color', // MISSING
 			borderColor		: 'Border Color', // MISSING
@@ -410,24 +420,16 @@ CKEDITOR.lang['ko'] =
 		btnUpload	: '서버로 전송',
 		upload		: '업로드',
 		alt			: '이미지 설명',
-		width		: '너비',
-		height		: '높이',
 		lockRatio	: '비율 유지',
-		unlockRatio	: 'Unlock Ratio', // MISSING
 		resetSize	: '원래 크기로',
 		border		: '테두리',
 		hSpace		: '수평여백',
 		vSpace		: '수직여백',
-		align		: '정렬',
-		alignLeft	: '왼쪽',
-		alignRight	: '오른쪽',
 		alertUrl	: '이미지 URL을 입력하십시요',
 		linkTab		: '링크',
 		button2Img	: 'Do you want to transform the selected image button on a simple image?', // MISSING
 		img2Button	: 'Do you want to transform the selected image on a image button?', // MISSING
 		urlMissing	: 'Image source URL is missing.', // MISSING
-		validateWidth	: 'Width must be a whole number.', // MISSING
-		validateHeight	: 'Height must be a whole number.', // MISSING
 		validateBorder	: 'Border must be a whole number.', // MISSING
 		validateHSpace	: 'HSpace must be a whole number.', // MISSING
 		validateVSpace	: 'VSpace must be a whole number.' // MISSING
@@ -451,16 +453,10 @@ CKEDITOR.lang['ko'] =
 		accessAlways	: 'Always', // MISSING
 		accessSameDomain: 'Same domain', // MISSING
 		accessNever		: 'Never', // MISSING
-		align			: '정렬',
-		alignLeft		: '왼쪽',
 		alignAbsBottom	: '줄아래(Abs Bottom)',
 		alignAbsMiddle	: '줄중간(Abs Middle)',
 		alignBaseline	: '기준선',
-		alignBottom		: '아래',
-		alignMiddle		: '중간',
-		alignRight		: '오른쪽',
 		alignTextTop	: '글자상단',
-		alignTop		: '위',
 		quality			: 'Quality', // MISSING
 		qualityBest		: 'Best', // MISSING
 		qualityHigh		: 'High', // MISSING
@@ -474,13 +470,9 @@ CKEDITOR.lang['ko'] =
 		windowMode		: 'Window mode', // MISSING
 		flashvars		: 'Variables for Flash', // MISSING
 		bgcolor			: '배경 색상',
-		width			: '너비',
-		height			: '높이',
 		hSpace			: '수평여백',
 		vSpace			: '수직여백',
 		validateSrc		: '링크 URL을 입력하십시요.',
-		validateWidth	: 'Width must be a number.', // MISSING
-		validateHeight	: 'Height must be a number.', // MISSING
 		validateHSpace	: 'HSpace must be a number.', // MISSING
 		validateVSpace	: 'VSpace must be a number.' // MISSING
 	},
@@ -615,6 +607,15 @@ CKEDITOR.lang['ko'] =
 		remove				: 'Remove Div' // MISSING
   	},
 
+	iframe :
+	{
+		title		: 'IFrame Properties', // MISSING
+		toolbar		: 'IFrame', // MISSING
+		noUrl		: 'Please type the iframe URL', // MISSING
+		scrolling	: 'Enable scrollbars', // MISSING
+		border		: 'Show frame border' // MISSING
+	},
+
 	font :
 	{
 		label		: '폰트',
@@ -697,7 +698,7 @@ CKEDITOR.lang['ko'] =
 		ignoreAll		: 'Ignore All', // MISSING
 		addWord			: 'Add Word', // MISSING
 		emptyDic		: 'Dictionary name should not be empty.', // MISSING
-
+		noSuggestions	: '추천단어 없음',
 		optionsTab		: 'Options', // MISSING
 		allCaps			: 'Ignore All-Caps Words', // MISSING
 		ignoreDomainNames : 'Ignore Domain Names', // MISSING
@@ -721,6 +722,8 @@ CKEDITOR.lang['ko'] =
 	{
 		title		: 'About CKEditor', // MISSING
 		dlgTitle	: 'About CKEditor', // MISSING
+		help	: 'Check $1 for help.', // MISSING
+		userGuide : 'CKEditor User\'s Guide', // MISSING
 		moreInfo	: 'For licensing information please visit our web site:', // MISSING
 		copy		: 'Copyright &copy; $1. All rights reserved.' // MISSING
 	},
@@ -730,10 +733,11 @@ CKEDITOR.lang['ko'] =
 
 	fakeobjects :
 	{
-		anchor	: 'Anchor', // MISSING
-		flash	: 'Flash Animation', // MISSING
-		div		: 'Page Break', // MISSING
-		unknown	: 'Unknown Object' // MISSING
+		anchor		: 'Anchor', // MISSING
+		flash		: 'Flash Animation', // MISSING
+		iframe		: 'IFrame', // MISSING
+		hiddenfield	: 'Hidden Field', // MISSING
+		unknown		: 'Unknown Object' // MISSING
 	},
 
 	resize : 'Drag to resize', // MISSING
@@ -750,9 +754,64 @@ CKEDITOR.lang['ko'] =
 	toolbarCollapse	: 'Collapse Toolbar', // MISSING
 	toolbarExpand	: 'Expand Toolbar', // MISSING
 
+	toolbarGroups :
+	{
+		document : 'Document', // MISSING
+		clipboard : 'Clipboard/Undo', // MISSING
+		editing : 'Editing', // MISSING
+		forms : 'Forms', // MISSING
+		basicstyles : 'Basic Styles', // MISSING
+		paragraph : 'Paragraph', // MISSING
+		links : 'Links', // MISSING
+		insert : 'Insert', // MISSING
+		styles : 'Styles', // MISSING
+		colors : 'Colors', // MISSING
+		tools : 'Tools' // MISSING
+	},
+
 	bidi :
 	{
 		ltr : 'Text direction from left to right', // MISSING
 		rtl : 'Text direction from right to left' // MISSING
+	},
+
+	docprops :
+	{
+		label : '문서 속성',
+		title : '문서 속성',
+		design : 'Design', // MISSING
+		meta : '메타데이터',
+		chooseColor : 'Choose', // MISSING
+		other : '<기타>',
+		docTitle :	'페이지명',
+		charset : 	'캐릭터셋 인코딩',
+		charsetOther : '다른 캐릭터셋 인코딩',
+		charsetASCII : 'ASCII', // MISSING
+		charsetCE : 'Central European', // MISSING
+		charsetCT : 'Chinese Traditional (Big5)', // MISSING
+		charsetCR : 'Cyrillic', // MISSING
+		charsetGR : 'Greek', // MISSING
+		charsetJP : 'Japanese', // MISSING
+		charsetKR : 'Korean', // MISSING
+		charsetTR : 'Turkish', // MISSING
+		charsetUN : 'Unicode (UTF-8)', // MISSING
+		charsetWE : 'Western European', // MISSING
+		docType : '문서 헤드',
+		docTypeOther : '다른 문서헤드',
+		xhtmlDec : 'XHTML 문서정의 포함',
+		bgColor : '배경색상',
+		bgImage : '배경이미지 URL',
+		bgFixed : '스크롤되지않는 배경',
+		txtColor : '글자 색상',
+		margin : '페이지 여백',
+		marginTop : '위',
+		marginLeft : '왼쪽',
+		marginRight : '오른쪽',
+		marginBottom : '아래',
+		metaKeywords : '문서 키워드 (콤마로 구분)',
+		metaDescription : '문서 설명',
+		metaAuthor : '작성자',
+		metaCopyright : '저작권',
+		previewHtml : '<p>This is some <strong>sample text</strong>. You are using <a href="javascript:void(0)">CKEditor</a>.</p>' // MISSING
 	}
 };

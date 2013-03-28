@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 
@@ -13,7 +13,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 
 /**
- * Constains the dictionary of language entries.
+ * Contains the dictionary of language entries.
  * @namespace
  */
 CKEDITOR.lang['pt-br'] =
@@ -30,11 +30,12 @@ CKEDITOR.lang['pt-br'] =
 	 * Screenreader titles. Please note that screenreaders are not always capable
 	 * of reading non-English words. So be careful while translating it.
 	 */
-	editorTitle : 'Editor de Texto, %1, pressione ALT 0 para obter ajuda.',
+	editorTitle : 'Editor de texto rico, %1',
+	editorHelp : 'Pressione ALT+0 para ajuda',
 
 	// ARIA descriptions.
-	toolbar	: 'Barra de Ferramentas',
-	editor	: 'Editor de Texto',
+	toolbars	: 'Barra de Ferramentas do Editor',
+	editor		: 'Editor de Texto',
 
 	// Toolbar buttons without dialogs.
 	source			: 'Código-Fonte',
@@ -55,6 +56,7 @@ CKEDITOR.lang['pt-br'] =
 	superscript		: 'Sobrescrito',
 	horizontalrule	: 'Inserir Linha Horizontal',
 	pagebreak		: 'Inserir Quebra de Página',
+	pagebreakAlt		: 'Quebra de Página',
 	unlink			: 'Remover Link',
 	undo			: 'Desfazer',
 	redo			: 'Refazer',
@@ -104,10 +106,26 @@ CKEDITOR.lang['pt-br'] =
 		targetTop		: 'Janela de Cima (_top)',
 		targetSelf		: 'Mesma Janela (_self)',
 		targetParent	: 'Janela Pai (_parent)',
-		langDirLTR		: 'Left to Right (LTR)', // MISSING
-		langDirRTL		: 'Right to Left (RTL)', // MISSING
-		styles			: 'Style', // MISSING
-		cssClasses		: 'Stylesheet Classes', // MISSING
+		langDirLTR		: 'Esquerda para Direita (LTR)',
+		langDirRTL		: 'Direita para Esquerda (RTL)',
+		styles			: 'Estilo',
+		cssClasses		: 'Classes',
+		width			: 'Largura',
+		height			: 'Altura',
+		align			: 'Alinhamento',
+		alignLeft		: 'Esquerda',
+		alignRight		: 'Direita',
+		alignCenter		: 'Centralizado',
+		alignTop		: 'Superior',
+		alignMiddle		: 'Centralizado',
+		alignBottom		: 'Inferior',
+		invalidValue	: 'Valor inválido.',
+		invalidHeight	: 'A altura tem que ser um número',
+		invalidWidth	: 'A largura tem que ser um número.',
+		invalidCssLength	: 'O valor do campo "%1" deve ser um número positivo opcionalmente seguido por uma válida unidade de medida de CSS (px, %, in, cm, mm, em, ex, pt, or pc).',
+		invalidHtmlLength	: 'O valor do campo "%1" deve ser um número positivo opcionalmente seguido por uma válida unidade de medida de HTML (px or %).',
+		invalidInlineStyle	: 'O valor válido para estilo deve conter uma ou mais tuplas no formato "nome : valor", separados por ponto e vírgula.',
+		cssLengthTooltip	: 'Insira um número para valor em pixels ou um número seguido de uma válida unidade de medida de CSS (px, %, in, cm, mm, em, ex, pt, or pc).',
 
 		// Put the voice-only part of the label in the span.
 		unavailable		: '%1<span class="cke_accessibility">, indisponível</span>'
@@ -154,9 +172,7 @@ CKEDITOR.lang['pt-br'] =
 		popupFullScreen	: 'Modo Tela Cheia (IE)',
 		popupScrollBars	: 'Barras de Rolagem',
 		popupDependent	: 'Dependente (Netscape)',
-		popupWidth		: 'Largura',
 		popupLeft		: 'Esquerda',
-		popupHeight		: 'Altura',
 		popupTop		: 'Topo',
 		id				: 'Id',
 		langDir			: 'Direção do idioma',
@@ -164,18 +180,19 @@ CKEDITOR.lang['pt-br'] =
 		langDirRTL		: 'Direita para Esquerda (RTL)',
 		acccessKey		: 'Chave de Acesso',
 		name			: 'Nome',
-		langCode		: 'Direção do idioma',
-		tabIndex		: 'Índice de Tabulação',
-		advisoryTitle	: 'Título',
+		langCode			: 'Direção do idioma',
+		tabIndex			: 'Índice de Tabulação',
+		advisoryTitle		: 'Título',
 		advisoryContentType	: 'Tipo de Conteúdo',
 		cssClasses		: 'Classe de CSS',
 		charset			: 'Charset do Link',
 		styles			: 'Estilos',
-		selectAnchor	: 'Selecione uma âncora',
+		rel			: 'Tipo de Relação',
+		selectAnchor		: 'Selecione uma âncora',
 		anchorName		: 'Nome da âncora',
-		anchorId		: 'Id da âncora',
-		emailAddress	: 'Endereço E-Mail',
-		emailSubject	: 'Assunto da Mensagem',
+		anchorId			: 'Id da âncora',
+		emailAddress		: 'Endereço E-Mail',
+		emailSubject		: 'Assunto da Mensagem',
 		emailBody		: 'Corpo da Mensagem',
 		noAnchors		: '(Não há âncoras no documento)',
 		noUrl			: 'Por favor, digite o endereço do Link',
@@ -189,7 +206,8 @@ CKEDITOR.lang['pt-br'] =
 		menu		: 'Formatar Âncora',
 		title		: 'Formatar Âncora',
 		name		: 'Nome da Âncora',
-		errorName	: 'Por favor, digite o nome da âncora'
+		errorName	: 'Por favor, digite o nome da âncora',
+		remove		: 'Remover Âncora'
 	},
 
 	// List style dialog
@@ -199,7 +217,7 @@ CKEDITOR.lang['pt-br'] =
 		bulletedTitle		: 'Propriedades da Lista sem Numeros',
 		type				: 'Tipo',
 		start				: 'Início',
-		validateStartNumber				:'List start number must be a whole number.', // MISSING
+		validateStartNumber				:'O número inicial da lista deve ser um número inteiro.',
 		circle				: 'Círculo',
 		disc				: 'Disco',
 		square				: 'Quadrado',
@@ -225,6 +243,7 @@ CKEDITOR.lang['pt-br'] =
 		findWhat			: 'Procurar por:',
 		replaceWith			: 'Substituir por:',
 		notFoundMsg			: 'O texto especificado não foi encontrado.',
+		findOptions			: 'Opções',
 		matchCase			: 'Coincidir Maiúsculas/Minúsculas',
 		matchWord			: 'Coincidir a palavra inteira',
 		matchCyclic			: 'Coincidir cíclico',
@@ -242,15 +261,9 @@ CKEDITOR.lang['pt-br'] =
 		rows		: 'Linhas',
 		columns		: 'Colunas',
 		border		: 'Borda',
-		align		: 'Alinhamento',
-		alignLeft	: 'Esquerda',
-		alignCenter	: 'Centralizado',
-		alignRight	: 'Direita',
-		width		: 'Largura',
 		widthPx		: 'pixels',
 		widthPc		: '%',
 		widthUnit	: 'unidade largura',
-		height		: 'Altura',
 		cellSpace	: 'Espaçamento',
 		cellPad		: 'Margem interna',
 		caption		: 'Legenda',
@@ -286,9 +299,6 @@ CKEDITOR.lang['pt-br'] =
 			wordWrap		: 'Quebra de palavra',
 			hAlign			: 'Alinhamento horizontal',
 			vAlign			: 'Alinhamento vertical',
-			alignTop		: 'Alinhar no topo',
-			alignMiddle		: 'Centralizado verticalmente',
-			alignBottom		: 'Alinhar na base',
 			alignBaseline	: 'Patamar de alinhamento',
 			bgColor			: 'Cor de fundo',
 			borderColor		: 'Cor das bordas',
@@ -409,24 +419,16 @@ CKEDITOR.lang['pt-br'] =
 		btnUpload	: 'Enviar para o Servidor',
 		upload		: 'Enviar',
 		alt			: 'Texto Alternativo',
-		width		: 'Largura',
-		height		: 'Altura',
 		lockRatio	: 'Travar Proporções',
-		unlockRatio	: 'Destravar Proporções',
 		resetSize	: 'Redefinir para o Tamanho Original',
 		border		: 'Borda',
 		hSpace		: 'HSpace',
 		vSpace		: 'VSpace',
-		align		: 'Alinhamento',
-		alignLeft	: 'Esquerda',
-		alignRight	: 'Direita',
 		alertUrl	: 'Por favor, digite a URL da imagem.',
 		linkTab		: 'Link',
 		button2Img	: 'Deseja transformar o botão de imagem em uma imagem comum?',
 		img2Button	: 'Deseja transformar a imagem em um botão de imagem?',
 		urlMissing	: 'URL da imagem está faltando.',
-		validateWidth	: 'A largura deve ser um número inteiro.',
-		validateHeight	: 'A altura deve ser um número inteiro.',
 		validateBorder	: 'A borda deve ser um número inteiro.',
 		validateHSpace	: 'O HSpace deve ser um número inteiro.',
 		validateVSpace	: 'O VSpace deve ser um número inteiro.'
@@ -450,16 +452,10 @@ CKEDITOR.lang['pt-br'] =
 		accessAlways	: 'Sempre',
 		accessSameDomain: 'Acessar Mesmo Domínio',
 		accessNever		: 'Nunca',
-		align			: 'Alinhamento',
-		alignLeft		: 'Esquerda',
 		alignAbsBottom	: 'Inferior Absoluto',
 		alignAbsMiddle	: 'Centralizado Absoluto',
 		alignBaseline	: 'Baseline',
-		alignBottom		: 'Inferior',
-		alignMiddle		: 'Centralizado',
-		alignRight		: 'Direita',
 		alignTextTop	: 'Superior Absoluto',
-		alignTop		: 'Superior',
 		quality			: 'Qualidade',
 		qualityBest		: 'Qualidade Melhor',
 		qualityHigh		: 'Qualidade Alta',
@@ -473,13 +469,9 @@ CKEDITOR.lang['pt-br'] =
 		windowMode		: 'Modo da janela',
 		flashvars		: 'Variáveis do Flash',
 		bgcolor			: 'Cor do Plano de Fundo',
-		width			: 'Largura',
-		height			: 'Altura',
 		hSpace			: 'HSpace',
 		vSpace			: 'VSpace',
 		validateSrc		: 'Por favor, digite o endereço do link',
-		validateWidth	: 'A largura tem que ser um número.',
-		validateHeight	: 'A altura tem que ser um número',
 		validateHSpace	: 'O HSpace tem que ser um número',
 		validateVSpace	: 'O VSpace tem que ser um número.'
 	},
@@ -614,6 +606,15 @@ CKEDITOR.lang['pt-br'] =
 		remove				: 'Remover Div'
   	},
 
+	iframe :
+	{
+		title		: 'Propriedade do IFrame',
+		toolbar		: 'IFrame',
+		noUrl		: 'Insira a URL do iframe',
+		scrolling	: 'Abilita scrollbars',
+		border		: 'Mostra borda do iframe'
+	},
+
 	font :
 	{
 		label		: 'Fonte',
@@ -696,7 +697,7 @@ CKEDITOR.lang['pt-br'] =
 		ignoreAll		: 'Ignorar todas',
 		addWord			: 'Adicionar palavra',
 		emptyDic		: 'O nome do dicionário não deveria estar vazio.',
-
+		noSuggestions	: 'sem sugestões de ortografia',
 		optionsTab		: 'Opções',
 		allCaps			: 'Ignorar palavras maiúsculas',
 		ignoreDomainNames : 'Ignorar nomes de domínio',
@@ -720,6 +721,8 @@ CKEDITOR.lang['pt-br'] =
 	{
 		title		: 'Sobre o CKEditor',
 		dlgTitle	: 'Sobre o CKEditor',
+		help	: 'Verifique o $1 para obter ajuda.',
+		userGuide : 'Guia do Usuário do CKEditor',
 		moreInfo	: 'Para informações sobre a licença por favor visite o nosso site:',
 		copy		: 'Copyright &copy; $1. Todos os direitos reservados.'
 	},
@@ -729,17 +732,18 @@ CKEDITOR.lang['pt-br'] =
 
 	fakeobjects :
 	{
-		anchor	: 'Âncora',
-		flash	: 'Animação em Flash',
-		div		: 'Quebra de página',
-		unknown	: 'Objeto desconhecido'
+		anchor		: 'Âncora',
+		flash		: 'Animação em Flash',
+		iframe		: 'IFrame',
+		hiddenfield	: 'Campo Oculto',
+		unknown		: 'Objeto desconhecido'
 	},
 
 	resize : 'Arraste para redimensionar',
 
 	colordialog :
 	{
-		title		: 'Selecione uma cor',
+		title		: 'Selecione uma Cor',
 		options	:	'Opções de Cor',
 		highlight	: 'Grifar',
 		selected	: 'Cor Selecionada',
@@ -749,9 +753,64 @@ CKEDITOR.lang['pt-br'] =
 	toolbarCollapse	: 'Diminuir Barra de Ferramentas',
 	toolbarExpand	: 'Aumentar Barra de Ferramentas',
 
+	toolbarGroups :
+	{
+		document : 'Documento',
+		clipboard : 'Clipboard/Desfazer',
+		editing : 'Edição',
+		forms : 'Formulários',
+		basicstyles : 'Estilos Básicos',
+		paragraph : 'Paragrafo',
+		links : 'Links',
+		insert : 'Inserir',
+		styles : 'Estilos',
+		colors : 'Cores',
+		tools : 'Ferramentas'
+	},
+
 	bidi :
 	{
-		ltr : 'Text direction from left to right', // MISSING
-		rtl : 'Text direction from right to left' // MISSING
+		ltr : 'Direção do texto da esquerda para a direita',
+		rtl : 'Direção do texto da direita para a esquerda'
+	},
+
+	docprops :
+	{
+		label : 'Propriedades Documento',
+		title : 'Propriedades Documento',
+		design : 'Design',
+		meta : 'Meta Dados',
+		chooseColor : 'Escolher',
+		other : '<outro>',
+		docTitle :	'Título da Página',
+		charset : 	'Codificação de Caracteres',
+		charsetOther : 'Outra Codificação de Caracteres',
+		charsetASCII : 'ASCII',
+		charsetCE : 'Europa Central',
+		charsetCT : 'Chinês Tradicional (Big5)',
+		charsetCR : 'Cirílico',
+		charsetGR : 'Grego',
+		charsetJP : 'Japonês',
+		charsetKR : 'Coreano',
+		charsetTR : 'Turco',
+		charsetUN : 'Unicode (UTF-8)',
+		charsetWE : 'Europa Ocidental',
+		docType : 'Cabeçalho Tipo de Documento',
+		docTypeOther : 'Outro Tipo de Documento',
+		xhtmlDec : 'Incluir Declarações XHTML',
+		bgColor : 'Cor do Plano de Fundo',
+		bgImage : 'URL da Imagem de Plano de Fundo',
+		bgFixed : 'Plano de Fundo Fixo',
+		txtColor : 'Cor do Texto',
+		margin : 'Margens da Página',
+		marginTop : 'Superior',
+		marginLeft : 'Inferior',
+		marginRight : 'Direita',
+		marginBottom : 'Inferior',
+		metaKeywords : 'Palavras-chave de Indexação do Documento (separadas por vírgula)',
+		metaDescription : 'Descrição do Documento',
+		metaAuthor : 'Autor',
+		metaCopyright : 'Direitos Autorais',
+		previewHtml : '<p>Este é um <strong>texto de exemplo</strong>. Você está usando <a href="javascript:void(0)">CKEditor</a>.</p>'
 	}
 };

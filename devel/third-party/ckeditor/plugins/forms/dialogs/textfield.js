@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 CKEDITOR.dialog.add( 'textfield', function( editor )
@@ -98,7 +98,7 @@ CKEDITOR.dialog.add( 'textfield', function( editor )
 								setup : function( element )
 								{
 									this.setValue(
-											element.getAttribute( '_cke_saved_name' ) ||
+											element.data( 'cke-saved-name' ) ||
 											element.getAttribute( 'name' ) ||
 											'' );
 								},
@@ -107,10 +107,10 @@ CKEDITOR.dialog.add( 'textfield', function( editor )
 									var element = data.element;
 
 									if ( this.getValue() )
-										element.setAttribute( '_cke_saved_name', this.getValue() );
+										element.data( 'cke-saved-name', this.getValue() );
 									else
 									{
-										element.removeAttribute( '_cke_saved_name' );
+										element.data( 'cke-saved-name', false );
 										element.removeAttribute( 'name' );
 									}
 								}

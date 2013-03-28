@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 
@@ -35,23 +35,21 @@ CKEDITOR.plugins.removeformat =
 					( editor._.removeAttributes = editor.config.removeFormatAttributes.split( ',' ) );
 
 				var filter = CKEDITOR.plugins.removeformat.filter;
-				var ranges = editor.getSelection().getRanges( true ),
+				var ranges = editor.getSelection().getRanges( 1 ),
 					iterator = ranges.createIterator(),
 					range;
 
 				while ( ( range = iterator.getNextRange() ) )
 				{
-					if ( range.collapsed )
-						continue;
-
-					range.enlarge( CKEDITOR.ENLARGE_ELEMENT );
+					if ( ! range.collapsed )
+						range.enlarge( CKEDITOR.ENLARGE_ELEMENT );
 
 					// Bookmark the range so we can re-select it after processing.
-					var bookmark = range.createBookmark();
-
-					// The style will be applied within the bookmark boundaries.
-					var startNode	= bookmark.startNode;
-					var endNode		= bookmark.endNode;
+					var bookmark = range.createBookmark(),
+						// The style will be applied within the bookmark boundaries.
+						startNode	= bookmark.startNode,
+						endNode		= bookmark.endNode,
+						currentNode;
 
 					// We need to check the selection boundaries (bookmark spans) to break
 					// the code in a way that we can properly remove partially selected nodes.
@@ -66,8 +64,8 @@ CKEDITOR.plugins.removeformat =
 					var breakParent = function( node )
 					{
 						// Let's start checking the start boundary.
-						var path = new CKEDITOR.dom.elementPath( node );
-						var pathElements = path.elements;
+						var path = new CKEDITOR.dom.elementPath( node ),
+							pathElements = path.elements;
 
 						for ( var i = 1, pathElement ; pathElement = pathElements[ i ] ; i++ )
 						{
@@ -81,37 +79,40 @@ CKEDITOR.plugins.removeformat =
 					};
 
 					breakParent( startNode );
-					breakParent( endNode );
-
-					// Navigate through all nodes between the bookmarks.
-					var currentNode = startNode.getNextSourceNode( true, CKEDITOR.NODE_ELEMENT );
-
-					while ( currentNode )
+					if ( endNode )
 					{
-						// If we have reached the end of the selection, stop looping.
-						if ( currentNode.equals( endNode ) )
-							break;
+						breakParent( endNode );
 
-						// Cache the next node to be processed. Do it now, because
-						// currentNode may be removed.
-						var nextNode = currentNode.getNextSourceNode( false, CKEDITOR.NODE_ELEMENT );
+						// Navigate through all nodes between the bookmarks.
+						currentNode = startNode.getNextSourceNode( true, CKEDITOR.NODE_ELEMENT );
 
-						// This node must not be a fake element.
-						if ( !( currentNode.getName() == 'img'
-							&& currentNode.getAttribute( '_cke_realelement' ) )
-							&& filter( editor, currentNode ) )
+						while ( currentNode )
 						{
-							// Remove elements nodes that match with this style rules.
-							if ( tagsRegex.test( currentNode.getName() ) )
-								currentNode.remove( true );
-							else
-							{
-								currentNode.removeAttributes( removeAttributes );
-								editor.fire( 'removeFormatCleanup', currentNode );
-							}
-						}
+							// If we have reached the end of the selection, stop looping.
+							if ( currentNode.equals( endNode ) )
+								break;
 
-						currentNode = nextNode;
+							// Cache the next node to be processed. Do it now, because
+							// currentNode may be removed.
+							var nextNode = currentNode.getNextSourceNode( false, CKEDITOR.NODE_ELEMENT );
+
+							// This node must not be a fake element.
+							if ( !( currentNode.getName() == 'img'
+								&& currentNode.data( 'cke-realelement' ) )
+								&& filter( editor, currentNode ) )
+							{
+								// Remove elements nodes that match with this style rules.
+								if ( tagsRegex.test( currentNode.getName() ) )
+									currentNode.remove( 1 );
+								else
+								{
+									currentNode.removeAttributes( removeAttributes );
+									editor.fire( 'removeFormatCleanup', currentNode );
+								}
+							}
+
+							currentNode = nextNode;
+						}
 					}
 
 					range.moveToBookmark( bookmark );
@@ -178,7 +179,7 @@ CKEDITOR.config.removeFormatAttributes = 'class,style,lang,width,height,align,hs
 
 /**
  * Fired after an element was cleaned by the removeFormat plugin.
- * @name CKEDITOR#removeFormatCleanup
+ * @name CKEDITOR.editor#removeFormatCleanup
  * @event
  * @param {Object} data.element The element that was cleaned up.
  */

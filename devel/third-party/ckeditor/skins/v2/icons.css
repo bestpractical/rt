@@ -1,11 +1,16 @@
 /*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 
 .cke_skin_v2 .cke_button_source .cke_icon
 {
 	background-position: 0 0;
+}
+
+.cke_skin_v2 .cke_button_docProps .cke_icon
+{
+	background-position: 0 -16px;
 }
 
 .cke_skin_v2 .cke_button_newpage .cke_icon
@@ -342,7 +347,6 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 {
 	background-position: 0 -1200px;
 }
-
 .cke_skin_v2 .cke_button_bidirtl .cke_icon
 {
 	background-position: 0 -1072px;
@@ -351,4 +355,9 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 .cke_skin_v2 .cke_button_bidiltr .cke_icon
 {
 	background-position: 0 -1056px;
+}
+
+.cke_skin_v2 .cke_button_iframe .cke_icon
+{
+	background-position: 0 -1279px;
 }
