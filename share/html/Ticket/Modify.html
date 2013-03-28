@@ -57,11 +57,11 @@
 
 <&| /Widgets/TitleBox, title => loc('Modify ticket #[_1]',$TicketObj->Id), class=>'ticket-info-basics' &>
 <& Elements/EditBasics, TicketObj => $TicketObj, defaults => \%ARGS &>
-<& /Elements/EditCustomFields, Object => $TicketObj, DefaultsFromTopArguments => 0, Grouping => 'Basics' &>
+<& /Elements/EditCustomFields, Object => $TicketObj, Grouping => 'Basics' &>
 </&>
 % $m->callback( CallbackName => 'AfterBasics', Ticket => $TicketObj );
 
-<& /Elements/EditCustomFieldCustomGroupings, Object => $TicketObj, DefaultsFromTopArguments => 0 &>
+<& /Elements/EditCustomFieldCustomGroupings, Object => $TicketObj &>
 
 <& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#993333" &>
 </form>
@@ -96,6 +96,12 @@ unless ($skip_update) {
                   ARGSRef => \%ARGS, Results => \@results );
 
     $TicketObj->ApplyTransactionBatch;
+
+    MaybeRedirectForResults(
+        Actions   => \@results,
+        Path      => "/Ticket/Modify.html",
+        Arguments => { id => $TicketObj->id },
+    );
 }
 
 unless ($TicketObj->CurrentUserHasRight('ShowTicket')) {
