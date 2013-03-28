@@ -82,6 +82,30 @@ if ( $ShowDisplayModes or $ShowTitle ) {
 my $i = 1;
 while ( my $Transaction = $Transactions->Next ) {
     my $skip = 0;
+
+    # Skip display of SetWatcher transactions for ticket Owner groups.  Owner
+    # was a single member role group and denormalized into a column well before
+    # the generic role group handling and transactions came about.  For
+    # tickets, we rely on rendering ownership changes using the Set-Owner
+    # transaction.  For all other record types, or even potential ticket single
+    # role groups which aren't Owner, we use SetWatcher to render history and
+    # skip the Set transactions.  This complication is necessary to avoid
+    # creating backdated transactions on upgrade which normalize to one type or
+    # another.
+    # 
+    # These conditions assumes ticket Owner is a single-member denormalized
+    # role group, which is safe since that is unlikely to ever change in the
+    # future.
+    if ($Object->isa("RT::Ticket") and ($Transaction->Field || '') eq "Owner") {
+        $skip = 1 if $Transaction->Type eq "SetWatcher";
+    } else {
+        $skip = 1 if $Transaction->Type eq "Set"
+                 and $Transaction->Field
+                 and $Object->DOES("RT::Record::Role::Roles")
+                 and $Object->HasRole( $Transaction->Field )
+                 and $Object->RoleGroup( $Transaction->Field )->SingleMemberRoleGroupColumn;
+    }
+
     $m->callback(
         %ARGS,
         Transaction   => $Transaction,

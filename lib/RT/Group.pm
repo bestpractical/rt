@@ -1053,6 +1053,11 @@ sub _AddMember {
                  InsideTransaction => undef,
                  RecordTransaction => 1,
                  @_);
+
+    # RecordSetTransaction is used by _DeleteMember to get one txn but not the other
+    $args{RecordSetTransaction} = $args{RecordTransaction}
+        unless exists $args{RecordSetTransaction};
+
     my $new_member = $args{'PrincipalId'};
 
     unless ($self->Id) {
@@ -1100,11 +1105,18 @@ sub _AddMember {
     return(0, $self->loc("Couldn't add member to group"))
         unless $id;
 
-    # Purge all previous members
+    # Purge all previous members (we're a single member role group)
+    my $old_member_id;
     for my $member (@purge) {
+        my $old_member = $member->MemberId;
         my ($ok, $msg) = $member->Delete();
         return(0, $self->loc("Couldn't remove previous member: [_1]", $msg))
             unless $ok;
+
+        # We remove all members in this loop, but there should only ever be one
+        # member.  Keep track of the last one successfully removed for the
+        # SetWatcher transaction below.
+        $old_member_id = $old_member;
     }
 
     # Update the column
@@ -1114,10 +1126,30 @@ sub _AddMember {
             Field    => $col,
             Value    => $new_member_obj->Id,
             CheckACL => 0,                  # don't check acl
-            RecordTransaction => $args{'RecordTransaction'},
+            RecordTransaction => $args{'RecordSetTransaction'},
         );
         return (0, $self->loc("Could not update column [_1]: [_2]", $col, $msg))
             unless $ok;
+    }
+
+    # Record an Add/SetWatcher txn on the object if we're a role group
+    if ($args{RecordTransaction} and $self->RoleClass) {
+        my $obj = $args{Object} || $self->RoleGroupObject;
+
+        if ($self->SingleMemberRoleGroup) {
+            $obj->_NewTransaction(
+                Type     => 'SetWatcher',
+                OldValue => $old_member_id,
+                NewValue => $new_member_obj->Id,
+                Field    => $self->Type,
+            );
+        } else {
+            $obj->_NewTransaction(
+                Type     => 'AddWatcher', # use "watcher" for history's sake
+                NewValue => $new_member_obj->Id,
+                Field    => $self->Type,
+            );
+        }
     }
 
     return ( 1, $self->loc("Member added: [_1]", $new_member_obj->Object->Name) );
@@ -1216,6 +1248,8 @@ removes that GroupMember from this group.
 Returns a two value array. the first value is true on successful 
 addition or 0 on failure.  The second value is a textual status msg.
 
+Optionally takes a hash of key value flags, such as RecordTransaction.
+
 =cut
 
 sub DeleteMember {
@@ -1233,7 +1267,7 @@ sub DeleteMember {
         #User has no permission to be doing this
         return ( 0, $self->loc("Permission Denied") );
     }
-    $self->_DeleteMember($member_id);
+    $self->_DeleteMember($member_id, @_);
 }
 
 # A helper subroutine for DeleteMember that bypasses the ACL checks
@@ -1245,6 +1279,11 @@ sub DeleteMember {
 sub _DeleteMember {
     my $self = shift;
     my $member_id = shift;
+    my %args = (
+        RecordTransaction   => 1,
+        @_,
+    );
+
 
     my $member_obj =  RT::GroupMember->new( $self->CurrentUser );
     
@@ -1258,6 +1297,8 @@ sub _DeleteMember {
         return ( 0,$self->loc( "Group has no such member" ));
     }
 
+    my $old_member = $member_obj->MemberId;
+
     #Now that we've checked ACLs and sanity, delete the groupmember
     my $val = $member_obj->Delete();
 
@@ -1266,10 +1307,31 @@ sub _DeleteMember {
         return ( 0, $self->loc("Member not deleted" ));
     }
 
-    $self->_AddMember(
-        PrincipalId => RT->Nobody->Id,
-        RecordTransaction => 0,
-    ) if $self->SingleMemberRoleGroup;
+    if ($self->RoleClass) {
+        my %txn = (
+            OldValue => $old_member,
+            Field    => $self->Type,
+        );
+
+        if ($self->SingleMemberRoleGroup) {
+            # _AddMember creates the Set-Owner txn (for example) but we handle
+            # the SetWatcher-Owner txn below.
+            $self->_AddMember(
+                PrincipalId             => RT->Nobody->Id,
+                RecordTransaction       => 0,
+                RecordSetTransaction    => $args{RecordTransaction},
+            );
+            $txn{Type}     = "SetWatcher";
+            $txn{NewValue} = RT->Nobody->id;
+        } else {
+            $txn{Type} = "DelWatcher";
+        }
+
+        if ($args{RecordTransaction}) {
+            my $obj = $args{Object} || $self->RoleGroupObject;
+            $obj->_NewTransaction(%txn);
+        }
+    }
 
     return ( $val, $self->loc("Member deleted") );
 }
