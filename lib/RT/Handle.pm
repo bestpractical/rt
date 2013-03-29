@@ -288,6 +288,12 @@ sub CheckCompatibility {
                     ."Follow instructions in the UPGRADING.mysql file.");
             }
         }
+
+        my $max_packet = ($dbh->selectrow_array("show variables like 'max_allowed_packet'"))[1];
+        if ($state =~ /^(create|post)$/ and $max_packet <= (1024 * 1024)) {
+            my $max_packet = sprintf("%.1fM", $max_packet/1024/1024);
+            warn "max_allowed_packet is set to $max_packet, which limits the maximum attachment or email size that RT can process.  Consider adjusting MySQL's max_allowed_packet setting.\n";
+        }
     }
     return (1)
 }
