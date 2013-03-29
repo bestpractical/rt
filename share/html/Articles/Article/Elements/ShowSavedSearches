@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/TitleBoxStart, title => loc('Saved searches') &>
+<& /Widgets/TitleBoxStart, title => loc('Saved searches') &>
 %# Keep track of what our current search ID is.
 <input type="hidden" name="CurrentSearch" value="<% $CurrentSearch ? $CurrentSearch : 'new' %>">
 %# Hide all the save functionality if the user shouldn't see it.
@@ -67,7 +67,7 @@
 <h2><&|/l&>Load a saved search</&></h2>
 <& SelectSavedSearches, Name => 'LoadSavedSearch', Default => $CurrentSearch &>
 <input value="<%loc('Load')%>" name="Load" type="submit">
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 
 <%INIT>
 unless ($session{'CurrentUser'}->HasRight( Right => 'LoadSavedSearch',
