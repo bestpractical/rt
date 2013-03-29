@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Encode;
 
-use RT::Test tests => 23;
+use RT::Test tests => 24;
 
 my ($baseurl, $agent) = RT::Test->started_ok;
 
@@ -72,7 +72,8 @@ my $url = $agent->rt_base_url;
         fields => { TimeWorked => 5, 'TimeWorked-TimeUnits' => "hours" }
     );
 
-    $agent->content_contains("to &#39;300&#39;", "5 hours is 300 minutes");
+    $agent->content_contains("5 hours", "5 hours is displayed");
+    $agent->content_contains("300 min", "but minutes is also");
 }
 
 

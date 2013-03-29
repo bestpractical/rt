@@ -997,6 +997,20 @@ sub _FormatUser {
                     ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'" );
         }
     },
+    "Set-TimeWorked" => sub {
+        my $self = shift;
+        my $old  = $self->OldValue || 0;
+        my $new  = $self->NewValue || 0;
+        my $duration = $new - $old;
+        if ($duration < 0) {
+            return ("Adjusted time worked by [quant,_1,minute,minutes]", $duration);
+        }
+        elsif ($duration < 60) {
+            return ("Worked [quant,_1,minute,minutes]", $duration);
+        } else {
+            return ("Worked [quant,_1,hour,hours] ([numf,_2] minutes)", sprintf("%.1f", $duration / 60), $duration);
+        }
+    },
     PurgeTransaction => sub {
         my $self = shift;
         return ("Transaction [_1] purged", $self->Data);    #loc
