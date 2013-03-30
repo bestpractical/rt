@@ -1486,7 +1486,7 @@ sub ExpandCSRFToken {
     if ($data->{attach}) {
         my $filename = $data->{attach}{filename};
         my $mime     = $data->{attach}{mime};
-        $HTML::Mason::Commands::session{'Attachments'}{$filename}
+        $HTML::Mason::Commands::session{'Attachments'}{$ARGS->{'Token'}||''}{$filename}
             = $mime;
     }
 
@@ -1863,10 +1863,10 @@ sub CreateTicket {
     );
 
     my @attachments;
-    if ( my $tmp = $session{'Attachments'} ) {
+    if ( my $tmp = $session{'Attachments'}{ $ARGS{'Token'} || '' } ) {
         push @attachments, grep $_, values %$tmp;
 
-        delete $session{'Attachments'}
+        delete $session{'Attachments'}{ $ARGS{'Token'} || '' }
             unless $ARGS{'KeepAttachments'};
         $session{'Attachments'} = $session{'Attachments'}
             if @attachments;
@@ -1993,10 +1993,10 @@ sub ProcessUpdateMessage {
     );
 
     my @attachments;
-    if ( my $tmp = $session{'Attachments'} ) {
+    if ( my $tmp = $session{'Attachments'}{ $args{'ARGSRef'}{'Token'} || '' } ) {
         push @attachments, grep $_, values %$tmp;
 
-        delete $session{'Attachments'}
+        delete $session{'Attachments'}{ $args{'ARGSRef'}{'Token'} || '' }
             unless $args{'KeepAttachments'};
         $session{'Attachments'} = $session{'Attachments'}
             if @attachments;
@@ -2145,14 +2145,18 @@ sub _ProcessUpdateMessageRecipients {
 sub ProcessAttachments {
     my %args = (
         ARGSRef => {},
+        Token   => '',
         @_
     );
+
+    my $token = $args{'ARGSRef'}{'Token'}
+        ||= $args{'Token'} ||= Digest::MD5::md5_hex( rand(1024) );
 
     my $update_session = 0;
 
     # deal with deleting uploaded attachments
     if ( my $del = $args{'ARGSRef'}{'DeleteAttach'} ) {
-        delete $session{'Attachments'}{ $_ }
+        delete $session{'Attachments'}{ $token }{ $_ }
             foreach ref $del? @$del : ($del);
 
         $update_session = 1;
@@ -2166,7 +2170,7 @@ sub ProcessAttachments {
         );
 
         my $file_path = Encode::decode_utf8("$new");
-        $session{'Attachments'}{ $file_path } = $attachment;
+        $session{'Attachments'}{ $token }{ $file_path } = $attachment;
 
         $update_session = 1;
     }

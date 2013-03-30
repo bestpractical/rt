@@ -96,8 +96,6 @@ my @id = ( ref $id eq 'ARRAY' ) ? @{$id} : ($id);
 
 my $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
 
-ProcessAttachments( ARGSRef => \%ARGS );
-
 if ( ($id[0]||'') eq 'new' ) {
 
     my $Queue = RT::Queue->new( $session{'CurrentUser'} );

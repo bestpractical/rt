@@ -214,6 +214,7 @@ if ((!exists $ARGS{'AddMoreAttach'}) and (defined($ARGS{'id'}) and $ARGS{'id'} e
 <& /Elements/ListActions, actions => \@results  &>
 <form action="<% RT->Config->Get('WebPath') %>/m/ticket/create" method="post" enctype="multipart/form-data" name="TicketCreate" id="ticket-create">
 <input type="hidden" class="hidden" name="id" value="new" />
+<input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
 % $m->callback( CallbackName => 'FormStart', QueueObj => $QueueObj, ARGSRef => \%ARGS );
 % if ($gnupg_widget) {
 <& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
@@ -302,7 +303,7 @@ $showrows->(
     &>
 <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, QueueObj => $QueueObj &>
 
-% if ( my $attachments = $session{'Attachments'} ) {
+% if ( my $attachments = $session{'Attachments'}{ $ARGS{'Token'} }) {
 
 <%loc("Attached file") %>
 

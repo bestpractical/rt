@@ -61,9 +61,12 @@
 <tr><td class="label"><&|/l&>Attach</&>:</td><td><input name="Attach" type="file" /><input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" /><input type="hidden" class="hidden" name="UpdateAttach" value="1" />
 </td></tr>
 % $m->callback( %ARGS, CallbackName => 'End' );
+<%ARGS>
+$Token => ''
+</%ARGS>
 <%INIT>
 my $attachments;
-if ( exists $session{'Attachments'} && keys %{ $session{'Attachments'} } ) {
-    $attachments = $session{'Attachments'};
+if ( exists $session{'Attachments'}{ $Token } && keys %{ $session{'Attachments'}{ $Token } } ) {
+    $attachments = $session{'Attachments'}{ $Token };
 }
 </%INIT>

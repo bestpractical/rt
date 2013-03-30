@@ -57,6 +57,7 @@
 <input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction}||'' %>" />
 <input type="hidden" class="hidden" name="DefaultStatus" value="<% $DefaultStatus ||''%>" />
 <input type="hidden" class="hidden" name="Action" value="<% $ARGS{Action}||'' %>" />
+<input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
 
 <& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
@@ -239,7 +240,6 @@ $CanRespond = 1 if ( $TicketObj->CurrentUserHasRight('ReplyToTicket') or
 
 $CanComment = 1 if ( $TicketObj->CurrentUserHasRight('CommentOnTicket') or
                      $TicketObj->CurrentUserHasRight('ModifyTicket') ); 
-
 
 ProcessAttachments(ARGSRef => \%ARGS);
 
