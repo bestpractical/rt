@@ -45,13 +45,13 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% if (exists $session{'Attachments'}) {
+% if ( $attachments ) {
 <tr><td class="label"><&|/l&>Attached file</&>:</td>
 <td>
 <&|/l&>Check box to delete</&><br />
-% foreach my $attach_name (keys %{$session{'Attachments'}}) {
-<input type="checkbox" class="checkbox" id="DeleteAttach-<%$attach_name%>" name="DeleteAttach-<%$attach_name%>" value="1" />
-<label for="DeleteAttach-<%$attach_name%>"><%$attach_name%></label>
+% foreach my $attach_name ( keys %$attachments ) {
+<input type="checkbox" class="checkbox" name="DeleteAttach" value="<% $attach_name %>" id="DeleteAttach-<%$attach_name%>" />
+<label for="DeleteAttach-<%$attach_name%>"><% $attach_name %></label>
 <br />
 % } # end of foreach
 </td>
@@ -61,3 +61,9 @@
 <tr><td class="label"><&|/l&>Attach</&>:</td><td><input name="Attach" type="file" /><input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" /><input type="hidden" class="hidden" name="UpdateAttach" value="1" />
 </td></tr>
 % $m->callback( %ARGS, CallbackName => 'End' );
+<%INIT>
+my $attachments;
+if ( exists $session{'Attachments'} && keys %{ $session{'Attachments'} } ) {
+    $attachments = $session{'Attachments'};
+}
+</%INIT>

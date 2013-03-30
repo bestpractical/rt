@@ -96,6 +96,8 @@ my @id = ( ref $id eq 'ARRAY' ) ? @{$id} : ($id);
 
 my $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
 
+ProcessAttachments( ARGSRef => \%ARGS );
+
 if ( ($id[0]||'') eq 'new' ) {
 
     my $Queue = RT::Queue->new( $session{'CurrentUser'} );
@@ -108,8 +110,7 @@ if ( ($id[0]||'') eq 'new' ) {
     }
 
 
-    ( $Ticket, @results ) =
-    CreateTicket( Attachments => delete $session{'Attachments'}, %ARGS );
+    ( $Ticket, @results ) = CreateTicket( %ARGS );
 
     unless ( $Ticket->id ) {
         Abort( join "\n", @results );
@@ -120,38 +121,22 @@ else {
         Abort( loc( "Couldn't load ticket '[_1]'", $id ) );
     }
 
-    my ( $code, $msg );
-
-
-    if (
-        $session{'Attachments'}
-        || ( defined $ARGS{'UpdateContent'}
-            && $ARGS{'UpdateContent'} ne ''
-            && $ARGS{'UpdateContent'} ne "-- \n"
-            . $session{'CurrentUser'}->UserObj->Signature )
-      )
-    {
-        $ARGS{UpdateAttachments} = $session{'Attachments'};
-    }
     push @results, ProcessUpdateMessage(
         ARGSRef   => \%ARGS,
         TicketObj => $Ticket
     );
-    delete $session{'Attachments'};
 
     my @cfupdates = ProcessObjectCustomFieldUpdates(Object => $Ticket, ARGSRef => \%ARGS);
     push (@results, @cfupdates);
-
 
     #Update the status
     if (    ( defined $ARGS{'Status'} )
         and $ARGS{'Status'}
         and ( $ARGS{'Status'} ne $Ticket->Status ) )
     {
-        ( $code, $msg ) = $Ticket->SetStatus( $ARGS{'Status'} );
+        my ($code, $msg) = $Ticket->SetStatus( $ARGS{'Status'} );
         push @results, "$msg";
     }
-
 
 }
 

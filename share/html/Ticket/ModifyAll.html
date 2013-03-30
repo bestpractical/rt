@@ -183,13 +183,7 @@ unless ($skip_update or $OnlySearchForPeople or $OnlySearchForGroup or $ARGS{'Ad
     push @results, ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
     push @results, ProcessObjectCustomFieldUpdates( Object => $Ticket, ARGSRef => \%ARGS);
     push @results, ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
-    
-    # Add session attachments if any to be processed by ProcessUpdateMessage
-    $ARGS{'UpdateAttachments'} = $session{'Attachments'} if ( $session{'Attachments'} );
     push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef=>\%ARGS );
-    # Cleanup WebUI
-    delete $session{'Attachments'};
-
     push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS );
     push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
 
