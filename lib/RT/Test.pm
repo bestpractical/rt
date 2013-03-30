@@ -51,6 +51,7 @@ package RT::Test;
 use strict;
 use warnings;
 
+BEGIN { $^W = 1 };
 
 use base 'Test::More';
 
