@@ -132,6 +132,7 @@
 <div class="value">
 <input type="file" name="Attach" />
 <input type="submit" class="button" name="AddMoreAttach" value="<% loc("Add More Files") %>" />
+<input type="hidden" class="hidden" name="UpdateAttach" value="1" />
 </div>
 </div>
 
@@ -190,34 +191,7 @@ $CanRespond = 1 if ( $t->CurrentUserHasRight('ReplyToTicket') or
 $CanComment = 1 if ( $t->CurrentUserHasRight('CommentOnTicket') or
                      $t->CurrentUserHasRight('ModifyTicket') ); 
 
-
-# deal with deleting uploaded attachments
-foreach my $key (keys %ARGS) {
-    if ($key =~ m/^DeleteAttach-(.+)$/) {
-        delete $session{'Attachments'}{$1};
-    }
-    $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
-}
-
-# store the uploaded attachment in session
-if ( defined $ARGS{'Attach'} && length $ARGS{'Attach'} ) { # attachment?
-    my $attachment = MakeMIMEEntity(
-        AttachmentFieldName => 'Attach'
-    );
-
-    my $file_path = Encode::decode_utf8("$ARGS{'Attach'}");
-    $session{'Attachments'} = {
-        %{$session{'Attachments'} || {}},
-        $file_path => $attachment,
-    };
-}
-
-# delete temporary storage entry to make WebUI clean
-unless ( keys %{ $session{'Attachments'} }
-    && ( exists $ARGS{'AddMoreAttach'} || exists $ARGS{'SubmitTicket'} ) )
-{
-    delete $session{'Attachments'};
-}
+ProcessAttachments(ARGSRef => \%ARGS);
 
 # check email addresses for RT's
 {

@@ -2046,6 +2046,37 @@ sub _ProcessUpdateMessageRecipients {
     }
 }
 
+sub ProcessAttachments {
+    my %args = (
+        ARGSRef => {},
+        @_
+    );
+
+    my $ARGSRef = $args{ARGSRef} || {};
+    # deal with deleting uploaded attachments
+    foreach my $key ( keys %$ARGSRef ) {
+        if ( $key =~ m/^DeleteAttach-(.+)$/ ) {
+            delete $session{'Attachments'}{$1};
+        }
+        $session{'Attachments'} = { %{ $session{'Attachments'} || {} } };
+    }
+
+    # store the uploaded attachment in session
+    if ( defined $ARGSRef->{'Attach'} && length $ARGSRef->{'Attach'} )
+    {    # attachment?
+        my $attachment = MakeMIMEEntity( AttachmentFieldName => 'Attach' );
+
+        my $file_path = Encode::decode_utf8("$ARGSRef->{'Attach'}");
+        $session{'Attachments'} =
+          { %{ $session{'Attachments'} || {} }, $file_path => $attachment, };
+    }
+
+    # delete temporary storage entry to make WebUI clean
+    unless ( keys %{ $session{'Attachments'} } and $ARGSRef->{'UpdateAttach'} )
+    {
+        delete $session{'Attachments'};
+    }
+}
 
 
 =head2 MakeMIMEEntity PARAMHASH

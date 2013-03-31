@@ -155,31 +155,7 @@ my $ValidCFs = $m->comp(
     ARGSRef => \%ARGS
 );
 
-# deal with deleting uploaded attachments
-foreach my $key (keys %ARGS) {
-    if ($key =~ m/^DeleteAttach-(.+)$/) {
-	delete $session{'Attachments'}{$1};
-    }
-    $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
-}
-
-# store the uploaded attachment in session
-if ( defined $ARGS{'Attach'} && length $ARGS{'Attach'} ) { # attachment?
-    my $attachment = MakeMIMEEntity(
-        AttachmentFieldName => 'Attach'
-    );
-
-    my $file_path = Encode::decode_utf8("$ARGS{'Attach'}");
-    $session{'Attachments'} = {
-        %{$session{'Attachments'} || {}},
-	$file_path => $attachment,
-    };
-}
-
-# delete temporary storage entry to make WebUI clean
-unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
-    delete $session{'Attachments'};
-}
+ProcessAttachments(ARGSRef => \%ARGS);
 
 my $checks_failure = 0;
 
@@ -344,7 +320,9 @@ $showrows->(
     loc("Attach file") =>
 
         '<input type="file" name="Attach" />
-<input type="submit" class="button" name="AddMoreAttach" value="' . loc("Add More Files") . '" />'
+<input type="submit" class="button" name="AddMoreAttach" value="' . loc("Add More Files") . '" />
+<input type="hidden" class="hidden" name="UpdateAttach" value="1" />
+'
 );
 </%perl>
 
