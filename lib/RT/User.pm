@@ -1854,7 +1854,7 @@ sub HasBookmark {
     my $bookmarks = $self->FirstAttribute('Bookmarks');
     $bookmarks = $bookmarks ? $bookmarks->Content : {};
 
-    my @bookmarked = grep { $bookmarks->{ $_ } } $self->Bookmarks;
+    my @bookmarked = grep { $bookmarks->{ $_ } } @ids;
     return @bookmarked ? 1 : 0;
 }
 
