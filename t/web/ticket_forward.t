@@ -44,7 +44,7 @@ diag "Forward Ticket" if $ENV{TEST_VERBOSE};
     );
     $m->content_contains( 'Sent email successfully', 'sent mail msg' );
     $m->content_contains(
-        'Forwarded Ticket to rt-to@example.com, rt-too@example.com, rt-cc@example.com, Enoch Root',
+        'Forwarded Ticket to &lt;rt-to@example.com&gt;, &lt;rt-too@example.com&gt;, &lt;rt-cc@example.com&gt;, root &#40;Enoch Root&#41;',
         'txn msg' );
     my ($mail) = RT::Test->fetch_caught_mails;
     like( $mail, qr!Subject: test forward!,           'Subject field' );
@@ -71,7 +71,7 @@ diag "Forward Transaction" if $ENV{TEST_VERBOSE};
     );
     $m->content_contains( 'Sent email successfully', 'sent mail msg' );
     $m->content_like(
-qr/Forwarded .*?Transaction #\d+.*? to rt-to\@example.com, rt-too\@example.com, rt-cc\@example.com, Enoch Root/,
+qr/Forwarded .*?Transaction #\d+.*? to &lt;rt-to\@example\.com&gt;, &lt;rt-too\@example\.com&gt;, &lt;rt-cc\@example\.com&gt;, root &#40;Enoch Root&#41;/,
         'txn msg'
     );
     my ($mail) = RT::Test->fetch_caught_mails;
@@ -142,7 +142,7 @@ diag "Forward Transaction with attachments but empty content" if $ENV{TEST_VERBO
         button => 'ForwardAndReturn'
     );
     $m->content_contains( 'Sent email successfully', 'sent mail msg' );
-    $m->content_like( qr/Forwarded .*?Transaction #\d+.*? to rt-test\@example\.com/, 'txn msg' );
+    $m->content_like( qr/Forwarded .*?Transaction #\d+.*? to &lt;rt-test\@example\.com&gt;/, 'txn msg' );
     my ($mail) = RT::Test->fetch_caught_mails;
     like( $mail, qr/Subject: test forward, empty content but attachments/, 'Subject field' );
     like( $mail, qr/To: rt-test\@example.com/,         'To field' );
@@ -200,7 +200,7 @@ diag "Forward Transaction with attachments but no 'content' part" if $ENV{TEST_V
         button => 'ForwardAndReturn'
     );
     $m->content_contains( 'Sent email successfully', 'sent mail msg' );
-    $m->content_like( qr/Forwarded .*?Transaction #\d+.*? to rt-test\@example\.com/, 'txn msg' );
+    $m->content_like( qr/Forwarded .*?Transaction #\d+.*? to &lt;rt-test\@example\.com&gt;/, 'txn msg' );
     
     # Forward ticket
     $m->follow_link_ok( { text => 'Forward', n => 1 }, 'follow 1st Forward' );
@@ -212,7 +212,7 @@ diag "Forward Transaction with attachments but no 'content' part" if $ENV{TEST_V
         button => 'ForwardAndReturn'
     );
     $m->content_contains( 'Sent email successfully', 'sent mail msg' );
-    $m->content_like( qr/Forwarded Ticket to rt-test\@example\.com/, 'txn msg' );
+    $m->content_like( qr/Forwarded Ticket to &lt;rt-test\@example\.com&gt;/, 'txn msg' );
 
     my ($forward_txn, $forward_ticket) = RT::Test->fetch_caught_mails;
     my $tag = qr/Fwd: \[example\.com #\d+\]/;

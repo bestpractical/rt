@@ -687,7 +687,7 @@ sub _FormatUser {
     my $self = shift;
     my $user = shift;
     return [
-        \'<span class="user" data-user-id="', $user->id, \'">',
+        \'<span class="user" data-replace="user" data-user-id="', $user->id, \'">',
         $user->Format,
         \'</span>'
     ];

@@ -3446,13 +3446,9 @@ sub GetPrincipalsMap {
             $Users->Limit( ALIAS => $groups, FIELD => 'Domain', VALUE => 'ACLEquivalence' );
             $Users->Limit( ALIAS => $groups, FIELD => 'Type', VALUE => 'UserEquiv' );
 
-
-            my $display = sub {
-                $m->scomp('/Elements/ShowUser', User => $_[0], NoEscape => 1)
-            };
             push @map, [
                 'Users' => $Users,  # loc_left_pair
-                $display => 0
+                'Format' => 0
             ];
         }
     }

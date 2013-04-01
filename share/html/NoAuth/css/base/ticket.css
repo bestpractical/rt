@@ -45,6 +45,10 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+
+#requestor-accordion h3 { clear: right }
+#requestor-accordion a.user-summary { float: right; }
+
 #requestor-accordion a.modify-user {
     font-size: 80%;
     color: black !important;

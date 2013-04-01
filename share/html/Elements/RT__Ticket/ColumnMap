@@ -81,6 +81,33 @@ my $LinkCallback = sub {
     }
 };
 
+my $linkUsers;
+$linkUsers = sub {
+    my ($what, $more) = @_;
+    if ($what->isa("RT::Group")) {
+        my @ret = map {$linkUsers->($_->[1], $more), ", "}
+            sort {$a->[0] cmp $b->[0]}
+            map {+[($_->EmailAddress||''), $_]}
+            @{ $what->UserMembersObj->ItemsArrayRef };
+        pop @ret; # Remove ending ", "
+        return @ret;
+    } else {
+        my @ret = \($m->scomp("/Elements/ShowUser", User => $what));
+        push @ret, $more->($what) if $more;
+        return @ret;
+    }
+};
+my $trustSub = sub {
+    my $user = shift;
+    require RT::Crypt::GnuPG;
+    my %key = RT::Crypt::GnuPG::GetKeyInfo($user->EmailAddress);
+    if (!defined $key{'info'}) {
+        return ' ' . loc("(no pubkey!)");
+    } elsif ($key{'info'}{'TrustLevel'} == 0) {
+        return ' ' . loc("(untrusted!)");
+    }
+};
+
 $COLUMN_MAP = {
     Queue => {
         attribute => 'Queue',
@@ -96,6 +123,11 @@ $COLUMN_MAP = {
         title     => 'Owner', # loc
         attribute => 'Owner',
         value     => sub { return $_[0]->OwnerObj->Name }
+    },
+    Owner => {
+        title     => 'Owner', # loc
+        attribute => 'Owner',
+        value     => sub { return $linkUsers->($_[0]->OwnerObj) }
     },
     Status => {
         title     => 'Status', # loc
@@ -179,17 +211,17 @@ $COLUMN_MAP = {
     Requestors => {
         title     => 'Requestors', # loc
         attribute => 'Requestor.EmailAddress',
-        value     => sub { return $_[0]->Requestors->MemberEmailAddressesAsString }
+        value     => sub { return $linkUsers->( $_[0]->Requestors ) }
     },
     Cc => {
         title     => 'Cc', # loc
         attribute => 'Cc.EmailAddress',
-        value     => sub { return $_[0]->Cc->MemberEmailAddressesAsString }
+        value     => sub { return $linkUsers->( $_[0]->Cc ) }
     },
     AdminCc => {
         title     => 'AdminCc', # loc
         attribute => 'AdminCc.EmailAddress',
-        value     => sub { return $_[0]->AdminCc->MemberEmailAddressesAsString }
+        value     => sub { return $linkUsers->( $_[0]->AdminCc ) }
     },
     StartsRelative => {
         title     => 'Starts', # loc
@@ -261,21 +293,7 @@ $COLUMN_MAP = {
     KeyRequestors => {
         title     => 'Requestors', # loc
         attribute => 'Requestor.EmailAddress',
-        value => sub {
-            my $t = shift;
-            my @requestors = $t->Requestors->MemberEmailAddresses;
-            for my $email (@requestors)
-            {
-                my %key = RT::Crypt::GnuPG::GetKeyInfo($email);
-                if (!defined $key{'info'}) {
-                    $email .= ' ' . loc("(no pubkey!)");
-                }
-                elsif ($key{'info'}{'TrustLevel'} == 0) {
-                    $email .= ' ' . loc("(untrusted!)");
-                }
-            }
-            return join ', ', @requestors;
-        }
+        value     => sub { return $linkUsers->($_[0]->Requestors, $trustSub); }
     },
     KeyOwnerName => {
         title     => 'Owner', # loc
@@ -293,6 +311,11 @@ $COLUMN_MAP = {
 
             return $name;
         }
+    },
+    KeyOwner => {
+        title     => 'Owner', # loc
+        attribute => 'Owner',
+        value     => sub { return $linkUsers->($_[0]->OwnerObj, $trustSub); }
     },
 
     # Everything from LINKTYPEMAP

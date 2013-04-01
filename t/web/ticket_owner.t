@@ -383,10 +383,10 @@ diag
         fields    => { Owner => $user_a->id },
         button => 'SubmitTicket',
     );
-    $agent_a->content_like( qr/user_a\s+-\s+Taken/, 'got user_a Taken message' );
+    $agent_a->content_like( qr{<a\b[^>]+>user_a</a>\s+-\s+Taken}, 'got user_a Taken message' );
 
     $agent_b->goto_ticket($id);
-    $agent_b->content_like( qr/user_a\s+-\s+Taken/, 'got user_a Taken message for user b ' );
+    $agent_b->content_like( qr{<a\b[^>]+>user_a</a>\s+-\s+Taken}, 'got user_a Taken message for user b ' );
 }
 
 diag
@@ -410,9 +410,9 @@ diag
     $agent_a->content_contains( 'Owner changed from Nobody to user_a',
         'got set message in Basics' );
     $agent_a->goto_ticket($id);
-    $agent_a->content_like( qr/user_a\s+-\s+Taken/, 'got user_a Taken message' );
+    $agent_a->content_like( qr{<a\b[^>]+>user_a</a>\s+-\s+Taken}, 'got user_a Taken message' );
 
     $agent_b->goto_ticket($id);
-    $agent_b->content_like( qr/user_a\s+-\s+Taken/, 'got user_a Taken message for user b ' );
+    $agent_b->content_like( qr{<a\b[^>]+>user_a</a>\s+-\s+Taken}, 'got user_a Taken message for user b ' );
 }
 

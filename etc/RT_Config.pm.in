@@ -934,14 +934,13 @@ Set(@CSSFiles, qw//);
 
 =item C<$UsernameFormat>
 
-This determines how user info is displayed. 'concise' will show one of
-either NickName, RealName, Name or EmailAddress, depending on what
-exists and whether the user is privileged or not. 'verbose' will show
-RealName and EmailAddress.
+This determines how user info is displayed. 'concise' will show the
+first of RealName, Name or EmailAddress that has a value. 'verbose' will
+show EmailAddress, and the first of RealName or Name which is defined.
 
 =cut
 
-Set($UsernameFormat, "concise");
+Set($UsernameFormat, "role");
 
 =item C<$UserSearchResultFormat>
 
@@ -992,7 +991,7 @@ Set($UserSummaryTicketListFormat, q{
        '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
        Status,
        QueueName,
-       OwnerName,
+       Owner,
        Priority,
        '__NEWLINE__',
        '',
@@ -1242,7 +1241,7 @@ Set ($DefaultSearchResultFormat, qq{
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
    Status,
    QueueName,
-   OwnerName,
+   Owner,
    Priority,
    '__NEWLINE__',
    '',
@@ -1264,7 +1263,7 @@ Set($DefaultSelfServiceSearchResultFormat, qq{
    '<B><A HREF="__WebPath__/SelfService/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
    Status,
    Requestors,
-   OwnerName});
+   Owner});
 
 =item C<%FullTextSearch>
 
@@ -1340,7 +1339,7 @@ Control the appearance of the ticket lists in the 'More About Requestors' box.
 
 Set($MoreAboutRequestorTicketListFormat, q{
        '<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>',
-       '(__OwnerName__)',
+       '(__Owner__)',
        '<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>',
        '__Status__',
 });
