@@ -335,7 +335,7 @@ sub Parse {
     my ($rv, $msg);
 
 
-    if ($self->Content =~ m{^Content-Type:\s+text/html\b}im) {
+    if (not $self->IsEmpty and $self->Content =~ m{^Content-Type:\s+text/html\b}im) {
         local $RT::Transaction::PreferredContentType = 'text/html';
         ($rv, $msg) = $self->_Parse(@_);
     }
