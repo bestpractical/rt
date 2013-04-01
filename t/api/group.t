@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test nodata => 1, tests => 38;
+use RT::Test nodata => 1, tests => undef;
 
 
 {
@@ -94,3 +94,18 @@ is($u->PrincipalObj->PrincipalType , 'Group' , "Principal 4 is a group");
 
 }
 
+{
+    my $u = RT::Group->new(RT->SystemUser);
+    $u->LoadUserDefinedGroup('TestGroup');
+    ok( $u->id, 'loaded TestGroup' );
+    ok( $u->SetName('testgroup'), 'rename to lower cased version: testgroup' );
+    ok( $u->SetName('TestGroup'), 'rename back' );
+
+    my $u2 = RT::Group->new( RT->SystemUser );
+    my ( $id, $msg ) = $u2->CreateUserDefinedGroup( Name => 'TestGroup' );
+    ok( !$id, "can't create duplicated group: $msg" );
+    ( $id, $msg ) = $u2->CreateUserDefinedGroup( Name => 'testgroup' );
+    ok( !$id, "can't create duplicated group even case is different: $msg" );
+}
+
+done_testing;
