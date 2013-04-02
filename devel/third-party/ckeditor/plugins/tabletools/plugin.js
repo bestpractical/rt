@@ -1,26 +1,14 @@
 ﻿/*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 
 (function()
 {
-	function removeRawAttribute( $node, attr )
-	{
-		if ( CKEDITOR.env.ie )
-			$node.removeAttribute( attr );
-		else
-			delete $node[ attr ];
-	}
-
 	var cellNodeRegex = /^(?:td|th)$/;
 
 	function getSelectedCells( selection )
 	{
-		// Walker will try to split text nodes, which will make the current selection
-		// invalid. So save bookmarks before doing anything.
-		var bookmarks = selection.createBookmarks();
-
 		var ranges = selection.getRanges();
 		var retval = [];
 		var database = {};
@@ -68,8 +56,8 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 					// So we have to take care to include a td we've entered only when we've
 					// walked into its children.
 
-					var parent = node.getParent();
-					if ( parent && cellNodeRegex.test( parent.getName() ) && !parent.getCustomData( 'selected_cell' ) )
+					var parent = node.getAscendant( 'td' ) || node.getAscendant( 'th' );
+					if ( parent && !parent.getCustomData( 'selected_cell' ) )
 					{
 						CKEDITOR.dom.element.setMarker( database, parent, 'selected_cell', true );
 						retval.push( parent );
@@ -79,9 +67,6 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 		}
 
 		CKEDITOR.dom.element.clearAllMarkers( database );
-
-		// Restore selection position.
-		selection.selectBookmarks( bookmarks );
 
 		return retval;
 	}
@@ -123,37 +108,50 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 		return null;
 	}
 
-	function clearRow( $tr )
-	{
-		// Get the array of row's cells.
-		var $cells = $tr.cells;
-
-		// Empty all cells.
-		for ( var i = 0 ; i < $cells.length ; i++ )
-		{
-			$cells[ i ].innerHTML = '';
-
-			if ( !CKEDITOR.env.ie )
-				( new CKEDITOR.dom.element( $cells[ i ] ) ).appendBogus();
-		}
-	}
-
 	function insertRow( selection, insertBefore )
 	{
-		// Get the row where the selection is placed in.
-		var row = selection.getStartElement().getAscendant( 'tr' );
-		if ( !row )
-			return;
+		var cells = getSelectedCells( selection ),
+				firstCell = cells[ 0 ],
+				table = firstCell.getAscendant( 'table' ),
+				doc = firstCell.getDocument(),
+				startRow = cells[ 0 ].getParent(),
+				startRowIndex = startRow.$.rowIndex,
+				lastCell = cells[ cells.length - 1 ],
+				endRowIndex = lastCell.getParent().$.rowIndex + lastCell.$.rowSpan - 1,
+				endRow = new CKEDITOR.dom.element( table.$.rows[ endRowIndex ] ),
+				rowIndex = insertBefore ? startRowIndex : endRowIndex,
+				row = insertBefore ? startRow : endRow;
 
-		// Create a clone of the row.
-		var newRow = row.clone( true );
+		var map = CKEDITOR.tools.buildTableMap( table ),
+				cloneRow = map[ rowIndex ],
+				nextRow = insertBefore ? map[ rowIndex - 1 ] : map[ rowIndex + 1 ],
+				width = map[0].length;
+
+		var newRow = doc.createElement( 'tr' );
+		for ( var i = 0; cloneRow[ i ] && i < width; i++ )
+		{
+			var cell;
+			// Check whether there's a spanning row here, do not break it.
+			if ( cloneRow[ i ].rowSpan > 1 && nextRow && cloneRow[ i ] == nextRow[ i ] )
+			{
+				cell = cloneRow[ i ];
+				cell.rowSpan += 1;
+			}
+			else
+			{
+				cell = new CKEDITOR.dom.element( cloneRow[ i ] ).clone();
+				cell.removeAttribute( 'rowSpan' );
+				!CKEDITOR.env.ie && cell.appendBogus();
+				newRow.append( cell );
+				cell = cell.$;
+			}
+
+			i += cell.colSpan - 1;
+		}
 
 		insertBefore ?
-			newRow.insertBefore( row ) :
-			newRow.insertAfter( row );
-
-		// Clean the new row.
-		clearRow( newRow.$ );
+		newRow.insertBefore( row ) :
+		newRow.insertAfter( row );
 	}
 
 	function deleteRows( selectionOrRow )
@@ -161,41 +159,59 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 		if ( selectionOrRow instanceof CKEDITOR.dom.selection )
 		{
 			var cells = getSelectedCells( selectionOrRow ),
-				cellsCount = cells.length,
-				rowsToDelete = [],
-				cursorPosition,
-				previousRowIndex,
-				nextRowIndex;
+					firstCell = cells[ 0 ],
+					table = firstCell.getAscendant( 'table' ),
+					map = CKEDITOR.tools.buildTableMap( table ),
+					startRow = cells[ 0 ].getParent(),
+					startRowIndex = startRow.$.rowIndex,
+					lastCell = cells[ cells.length - 1 ],
+					endRowIndex = lastCell.getParent().$.rowIndex + lastCell.$.rowSpan - 1,
+					rowsToDelete = [];
 
-			// Queue up the rows - it's possible and likely that we have duplicates.
-			for ( var i = 0 ; i < cellsCount ; i++ )
+			// Delete cell or reduce cell spans by checking through the table map.
+			for ( var i = startRowIndex; i <= endRowIndex; i++ )
 			{
-				var row = cells[ i ].getParent(),
-						rowIndex = row.$.rowIndex;
+				var mapRow = map[ i ],
+						row = new CKEDITOR.dom.element( table.$.rows[ i ] );
 
-				!i && ( previousRowIndex = rowIndex - 1 );
-				rowsToDelete[ rowIndex ] = row;
-				i == cellsCount - 1 && ( nextRowIndex = rowIndex + 1 );
+				for ( var j = 0; j < mapRow.length; j++ )
+				{
+					var cell = new CKEDITOR.dom.element( mapRow[ j ] ),
+							cellRowIndex = cell.getParent().$.rowIndex;
+
+					if ( cell.$.rowSpan == 1 )
+						cell.remove();
+					// Row spanned cell.
+					else
+					{
+						// Span row of the cell, reduce spanning.
+						cell.$.rowSpan -= 1;
+						// Root row of the cell, root cell to next row.
+						if ( cellRowIndex == i )
+						{
+							var nextMapRow = map[ i + 1 ];
+							nextMapRow[ j - 1 ] ?
+							cell.insertAfter( new CKEDITOR.dom.element( nextMapRow[ j - 1 ] ) )
+									: new CKEDITOR.dom.element( table.$.rows[ i + 1 ] ).append( cell, 1 );
+						}
+					}
+
+					j += cell.$.colSpan - 1;
+				}
+
+				rowsToDelete.push( row );
 			}
 
-			var table = row.getAscendant( 'table' ),
-					rows =  table.$.rows,
-					rowCount = rows.length;
+			var rows = table.$.rows;
 
 			// Where to put the cursor after rows been deleted?
 			// 1. Into next sibling row if any;
 			// 2. Into previous sibling row if any;
 			// 3. Into table's parent element if it's the very last row.
-			cursorPosition = new CKEDITOR.dom.element(
-				nextRowIndex < rowCount && table.$.rows[ nextRowIndex ] ||
-				previousRowIndex > 0 && table.$.rows[ previousRowIndex ] ||
-				table.$.parentNode );
+			var cursorPosition =  new CKEDITOR.dom.element( rows[ endRowIndex + 1 ] || ( startRowIndex > 0 ? rows[  startRowIndex - 1 ] : null ) || table.$.parentNode );
 
 			for ( i = rowsToDelete.length ; i >= 0 ; i-- )
-			{
-				if ( rowsToDelete[ i ] )
-					deleteRows( rowsToDelete[ i ] );
-			}
+				deleteRows( rowsToDelete[ i ] );
 
 			return cursorPosition;
 		}
@@ -209,43 +225,147 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 				selectionOrRow.remove();
 		}
 
-		return 0;
+		return null;
+	}
+
+	function getCellColIndex( cell, isStart )
+	{
+		var row = cell.getParent(),
+			rowCells = row.$.cells;
+
+		var colIndex = 0;
+		for ( var i = 0; i < rowCells.length; i++ )
+		{
+			var mapCell = rowCells[ i ];
+			colIndex += isStart ? 1 : mapCell.colSpan;
+			if ( mapCell == cell.$ )
+				break;
+		}
+
+		return colIndex -1;
+	}
+
+	function getColumnsIndices( cells, isStart )
+	{
+		var retval = isStart ? Infinity : 0;
+		for ( var i = 0; i < cells.length; i++ )
+		{
+			var colIndex = getCellColIndex( cells[ i ], isStart );
+			if ( isStart ? colIndex < retval  : colIndex > retval )
+				retval = colIndex;
+		}
+		return retval;
 	}
 
 	function insertColumn( selection, insertBefore )
 	{
-		// Get the cell where the selection is placed in.
-		var startElement = selection.getStartElement();
-		var cell = startElement.getAscendant( 'td', true ) || startElement.getAscendant( 'th', true );
+		var cells = getSelectedCells( selection ),
+			firstCell = cells[ 0 ],
+			table = firstCell.getAscendant( 'table' ),
+			startCol =  getColumnsIndices( cells, 1 ),
+			lastCol =  getColumnsIndices( cells ),
+			colIndex = insertBefore? startCol : lastCol;
 
-		if ( !cell )
-			return;
+		var map = CKEDITOR.tools.buildTableMap( table ),
+			cloneCol = [],
+			nextCol = [],
+			height = map.length;
 
-		// Get the cell's table.
-		var table = cell.getAscendant( 'table' );
-		var cellIndex = cell.$.cellIndex;
-
-		// Loop through all rows available in the table.
-		for ( var i = 0 ; i < table.$.rows.length ; i++ )
+		for ( var i = 0; i < height; i++ )
 		{
-			var $row = table.$.rows[ i ];
+			cloneCol.push( map[ i ][ colIndex ] );
+			var nextCell = insertBefore ? map[ i ][ colIndex - 1 ] : map[ i ][ colIndex + 1 ];
+			nextCol.push( nextCell );
+		}
 
-			// If the row doesn't have enough cells, ignore it.
-			if ( $row.cells.length < ( cellIndex + 1 ) )
+		for ( i = 0; i < height; i++ )
+		{
+			var cell;
+
+			if ( !cloneCol[ i ] )
 				continue;
 
-			cell = ( new CKEDITOR.dom.element( $row.cells[ cellIndex ] ) ).clone( false );
-
-			if ( !CKEDITOR.env.ie )
-				cell.appendBogus();
-
-			// Get back the currently selected cell.
-			var baseCell = new CKEDITOR.dom.element( $row.cells[ cellIndex ] );
-			if ( insertBefore )
-				cell.insertBefore( baseCell );
+			// Check whether there's a spanning column here, do not break it.
+			if ( cloneCol[ i ].colSpan > 1
+				&& nextCol[ i ] == cloneCol[ i ] )
+			{
+				cell = cloneCol[ i ];
+				cell.colSpan += 1;
+			}
 			else
-				cell.insertAfter( baseCell );
+			{
+				cell = new CKEDITOR.dom.element( cloneCol[ i ] ).clone();
+				cell.removeAttribute( 'colSpan' );
+				!CKEDITOR.env.ie && cell.appendBogus();
+				cell[ insertBefore? 'insertBefore' : 'insertAfter' ].call( cell, new CKEDITOR.dom.element ( cloneCol[ i ] ) );
+				cell = cell.$;
+			}
+
+			i += cell.rowSpan - 1;
 		}
+	}
+
+	function deleteColumns( selectionOrCell )
+	{
+		var cells = getSelectedCells( selectionOrCell ),
+				firstCell = cells[ 0 ],
+				lastCell = cells[ cells.length - 1 ],
+				table = firstCell.getAscendant( 'table' ),
+				map = CKEDITOR.tools.buildTableMap( table ),
+				startColIndex,
+				endColIndex,
+				rowsToDelete = [];
+
+		// Figure out selected cells' column indices.
+		for ( var i = 0, rows = map.length; i < rows; i++ )
+		{
+			for ( var j = 0, cols = map[ i ].length; j < cols; j++ )
+			{
+				if ( map[ i ][ j ] == firstCell.$ )
+					startColIndex = j;
+				if ( map[ i ][ j ] == lastCell.$ )
+					endColIndex = j;
+			}
+		}
+
+		// Delete cell or reduce cell spans by checking through the table map.
+		for ( i = startColIndex; i <= endColIndex; i++ )
+		{
+			for ( j = 0; j < map.length; j++ )
+			{
+				var mapRow = map[ j ],
+					row = new CKEDITOR.dom.element( table.$.rows[ j ] ),
+					cell = new CKEDITOR.dom.element( mapRow[ i ] );
+
+				if ( cell.$ )
+				{
+					if ( cell.$.colSpan == 1 )
+						cell.remove();
+					// Reduce the col spans.
+					else
+						cell.$.colSpan -= 1;
+
+					j += cell.$.rowSpan - 1;
+
+					if ( !row.$.cells.length )
+						rowsToDelete.push( row );
+				}
+			}
+		}
+
+		var firstRowCells = table.$.rows[ 0 ] && table.$.rows[ 0 ].cells;
+
+		// Where to put the cursor after columns been deleted?
+		// 1. Into next cell of the first row if any;
+		// 2. Into previous cell of the first row if any;
+		// 3. Into table's parent element;
+		var cursorPosition =  new CKEDITOR.dom.element( firstRowCells[ startColIndex ] || ( startColIndex ? firstRowCells[ startColIndex - 1 ] : table.$.parentNode ) );
+
+		// Delete table rows only if all columns are gone (do not remove empty row).
+		if ( rowsToDelete.length == rows )
+			table.remove();
+
+		return cursorPosition;
 	}
 
 	function getFocusElementAfterDelCols( cells )
@@ -286,60 +406,10 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 		return targetCell ?  new CKEDITOR.dom.element( targetCell ) :  table.getPrevious();
 	}
 
-	function deleteColumns( selectionOrCell )
-	{
-		if ( selectionOrCell instanceof CKEDITOR.dom.selection )
-		{
-			var colsToDelete = getSelectedCells( selectionOrCell ),
-				elementToFocus = getFocusElementAfterDelCols( colsToDelete );
-
-			for ( var i = colsToDelete.length - 1 ; i >= 0 ; i-- )
-			{
-				if ( colsToDelete[ i ] )
-					deleteColumns( colsToDelete[ i ] );
-			}
-
-			return elementToFocus;
-		}
-		else if ( selectionOrCell instanceof CKEDITOR.dom.element )
-		{
-			// Get the cell's table.
-			var table = selectionOrCell.getAscendant( 'table' );
-			if ( !table )
-				return null;
-
-			// Get the cell index.
-			var cellIndex = selectionOrCell.$.cellIndex;
-
-			/*
-			 * Loop through all rows from down to up, coz it's possible that some rows
-			 * will be deleted.
-			 */
-			for ( i = table.$.rows.length - 1 ; i >= 0 ; i-- )
-			{
-				// Get the row.
-				var row = new CKEDITOR.dom.element( table.$.rows[ i ] );
-
-				// If the cell to be removed is the first one and the row has just one cell.
-				if ( !cellIndex && row.$.cells.length == 1 )
-				{
-					deleteRows( row );
-					continue;
-				}
-
-				// Else, just delete the cell.
-				if ( row.$.cells[ cellIndex ] )
-					row.$.removeChild( row.$.cells[ cellIndex ] );
-			}
-		}
-
-		return null;
-	}
-
 	function insertCell( selection, insertBefore )
 	{
 		var startElement = selection.getStartElement();
-		var cell = startElement.getAscendant( 'td', true ) || startElement.getAscendant( 'th', true );
+		var cell = startElement.getAscendant( 'td', 1 ) || startElement.getAscendant( 'th', 1 );
 
 		if ( !cell )
 			return;
@@ -416,21 +486,19 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 		return cell.is ? -1 : null;
 	}
 
-	function cellInCol( tableMap, colIndex, cell )
+	function cellInCol( tableMap, colIndex )
 	{
 		var oCol = [];
 		for ( var r = 0; r < tableMap.length; r++ )
 		{
 			var row = tableMap[ r ];
-			if ( typeof cell == 'undefined' )
-				oCol.push( row[ colIndex ] );
-			else if ( cell.is && row[ colIndex ] == cell.$ )
-				return r;
-			else if ( r == cell )
-				return new CKEDITOR.dom.element( row[ colIndex ] );
-		}
+			oCol.push( row[ colIndex ] );
 
-		return ( typeof cell == 'undefined' )? oCol : cell.is ? -1 :  null;
+			// Avoid adding duplicate cells.
+			if ( row[ colIndex ].rowSpan > 1 )
+				r += row[ colIndex ].rowSpan - 1;
+		}
+		return oCol;
 	}
 
 	function mergeCells( selection, mergeDirection, isDetect )
@@ -464,13 +532,16 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 			var targetCell;
 			try
 			{
+				var rowspan = parseInt( firstCell.getAttribute( 'rowspan' ), 10 ) || 1;
+				var colspan = parseInt( firstCell.getAttribute( 'colspan' ), 10 ) || 1;
+
 				targetCell =
 					map[ mergeDirection == 'up' ?
-							( startRow - 1 ):
-							mergeDirection == 'down' ? ( startRow + 1 ) : startRow  ] [
-						 mergeDirection == 'left' ?
-							( startColumn - 1 ):
-						 mergeDirection == 'right' ?  ( startColumn + 1 ) : startColumn ];
+							( startRow - rowspan ):
+							mergeDirection == 'down' ? ( startRow + rowspan ) : startRow  ] [
+						mergeDirection == 'left' ?
+							( startColumn - colspan ):
+						mergeDirection == 'right' ?  ( startColumn + colspan ) : startColumn ];
 
 			}
 			catch( er )
@@ -527,7 +598,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 					{
 						var last = frag.getLast( CKEDITOR.dom.walker.whitespaces( true ) );
 						if ( last && !( last.is && last.is( 'br' ) ) )
-							frag.append( new CKEDITOR.dom.element( 'br' ) );
+							frag.append( 'br' );
 					}
 
 					cell.moveChildren( frag );
@@ -703,6 +774,8 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 
 	CKEDITOR.plugins.tabletools =
 	{
+		requires : [ 'table', 'dialog' ],
+
 		init : function( editor )
 		{
 			var lang = editor.lang.table;
@@ -714,25 +787,22 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 				{
 					exec : function( editor )
 					{
-						var selection = editor.getSelection();
-						var startElement = selection && selection.getStartElement();
-						var table = startElement && startElement.getAscendant( 'table', true );
+						var selection = editor.getSelection(),
+							startElement = selection && selection.getStartElement(),
+							table = startElement && startElement.getAscendant( 'table', 1 );
 
 						if ( !table )
 							return;
 
-						// Maintain the selection point at where the table was deleted.
-						selection.selectElement( table );
-						var range = selection.getRanges()[0];
-						range.collapse();
-						selection.selectRanges( [ range ] );
-
-						// If the table's parent has only one child, remove it,except body,as well.( #5416 )
+						// If the table's parent has only one child remove it as well (unless it's the body or a table cell) (#5416, #6289)
 						var parent = table.getParent();
-						if ( parent.getChildCount() == 1 && parent.getName() != 'body' )
-							parent.remove();
-						else
-							table.remove();
+						if ( parent.getChildCount() == 1 && !parent.is( 'body', 'td', 'th' ) )
+							table = parent;
+
+						var range = new CKEDITOR.dom.range( editor.document );
+						range.moveToPosition( table, CKEDITOR.POSITION_BEFORE_START );
+						table.remove();
+						range.select();
 					}
 				} );
 

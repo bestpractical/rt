@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 
@@ -89,6 +89,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 
 	var commandDefinition =
 	{
+		readOnly : 1,
 		preserveState : true,
 		editorFocus : false,
 
@@ -100,8 +101,11 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 
 		refresh : function( editor )
 		{
-			var funcName = ( this.state == CKEDITOR.TRISTATE_ON ) ? 'addClass' : 'removeClass';
-			editor.document.getBody()[ funcName ]( 'cke_show_blocks' );
+			if ( editor.document )
+			{
+				var funcName = ( this.state == CKEDITOR.TRISTATE_ON ) ? 'addClass' : 'removeClass';
+				editor.document.getBody()[ funcName ]( 'cke_show_blocks' );
+			}
 		}
 	};
 
@@ -147,10 +151,10 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 
 /**
  * Whether to automaticaly enable the "show block" command when the editor
- * loads.
+ * loads. (StartupShowBlocks in FCKeditor)
+ * @name CKEDITOR.config.startupOutlineBlocks
  * @type Boolean
  * @default false
  * @example
  * config.startupOutlineBlocks = true;
  */
-CKEDITOR.config.startupOutlineBlocks = false;

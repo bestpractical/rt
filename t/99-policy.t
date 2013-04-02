@@ -52,7 +52,7 @@ sub check {
 
         $check{bps_tag} = -1 if $check{bps_tag} == 1
             and not $content =~ /Copyright\s+\(c\)\s+\d\d\d\d-\d\d\d\d Best Practical Solutions/i
-                and $file =~ /(?:FCKEditor|scriptaculous|superfish|tablesorter|farbtastic)/i;
+                and $file =~ /(?:ckeditor|scriptaculous|superfish|tablesorter|farbtastic)/i;
         $check{bps_tag} = -1 if $check{bps_tag} == 1
             and not $content =~ /Copyright\s+\(c\)\s+\d\d\d\d-\d\d\d\d Best Practical Solutions/i
                 and ($content =~ /\b(copyright|GPL|Public Domain)\b/i

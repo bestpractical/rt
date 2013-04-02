@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 
@@ -132,11 +132,12 @@ CKEDITOR.plugins.add( 'dialogadvtab',
 						label : lang.styles,
 						'default' : '',
 
+						validate : CKEDITOR.dialog.validate.inlineStyle( lang.invalidInlineStyle ),
 						onChange : function(){},
 
 						getStyle : function( name, defaultValue )
 						{
-							var match = this.getValue().match( new RegExp( name + '\\s*:\s*([^;]*)', 'i') );
+							var match = this.getValue().match( new RegExp( '(?:^|;)\\s*' + name + '\\s*:\\s*([^;]*)', 'i' ) );
 							return match ? match[ 1 ] : defaultValue;
 						},
 
@@ -144,23 +145,12 @@ CKEDITOR.plugins.add( 'dialogadvtab',
 						{
 							var styles = this.getValue();
 
-							// Remove the current value.
-							if ( styles )
-							{
-								styles = styles
-									.replace( new RegExp( '\\s*' + name + '\s*:[^;]*(?:$|;\s*)', 'i' ), '' )
-									.replace( /^[;\s]+/, '' )
-									.replace( /\s+$/, '' );
-							}
+							var tmp = editor.document.createElement( 'span' );
+							tmp.setAttribute( 'style', styles );
+							tmp.setStyle( name, value );
+							styles = CKEDITOR.tools.normalizeCssText( tmp.getAttribute( 'style' ) );
 
-							if ( value )
-							{
-								styles && !(/;\s*$/).test( styles ) && ( styles += '; ' );
-								styles += name + ': ' + value;
-							}
-
-							this.setValue( styles, true );
-
+							this.setValue( styles, 1 );
 						},
 
 						setup : setupAdvParams,

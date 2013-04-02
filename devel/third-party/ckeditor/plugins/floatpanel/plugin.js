@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 
@@ -16,14 +16,8 @@ CKEDITOR.plugins.add( 'floatpanel',
 	function getPanel( editor, doc, parentElement, definition, level )
 	{
 		// Generates the panel key: docId-eleId-skinName-langDir[-uiColor][-CSSs][-level]
-		var key =
-			doc.getUniqueId() +
-			'-' + parentElement.getUniqueId() +
-			'-' + editor.skinName +
-			'-' + editor.lang.dir +
-			( ( editor.uiColor && ( '-' + editor.uiColor ) ) || '' ) +
-			( ( definition.css && ( '-' + definition.css ) ) || '' ) +
-			( ( level && ( '-' + level ) ) || '' );
+		var key = CKEDITOR.tools.genKey( doc.getUniqueId(), parentElement.getUniqueId(), editor.skinName, editor.lang.dir,
+			editor.uiColor || '', definition.css || '', level || '' );
 
 		var panel = panels[ key ];
 
@@ -46,17 +40,21 @@ CKEDITOR.plugins.add( 'floatpanel',
 	{
 		$ : function( editor, parentElement, definition, level )
 		{
-			definition.forceIFrame = true;
+			definition.forceIFrame = 1;
 
 			var doc = parentElement.getDocument(),
 				panel = getPanel( editor, doc, parentElement, definition, level || 0 ),
 				element = panel.element,
 				iframe = element.getFirst().getFirst();
 
+			// Disable native browser menu. (#4825)
+			element.disableContextMenu();
+
 			this.element = element;
 
 			this._ =
 			{
+				editor : editor,
 				// The panel that will be floating.
 				panel : panel,
 				parentElement : parentElement,
@@ -66,6 +64,8 @@ CKEDITOR.plugins.add( 'floatpanel',
 				children : [],
 				dir : editor.lang.dir
 			};
+
+			editor.on( 'mode', function(){ this.hide(); }, this );
 		},
 
 		proto :
@@ -104,7 +104,11 @@ CKEDITOR.plugins.add( 'floatpanel',
 					block = panel.showBlock( name );
 
 				this.allowBlur( false );
-				isShowing = true;
+				isShowing = 1;
+
+				// Record from where the focus is when open panel.
+				this._.returnFocus = this._.editor.focusManager.hasFocus ? this._.editor : new CKEDITOR.dom.element( CKEDITOR.document.$.activeElement );
+
 
 				var element = this.element,
 					iframe = this._.iframe,
@@ -129,9 +133,11 @@ CKEDITOR.plugins.add( 'floatpanel',
 
 				element.setStyles(
 					{
-						top : '-30000px',
+						top : top + 'px',
+						left: 0,
 						display	: ''
 					});
+
 				// Don't use display or visibility style because we need to
 				// calculate the rendering layout later and focus the element.
 				element.setOpacity( 0 );
@@ -159,14 +165,17 @@ CKEDITOR.plugins.add( 'floatpanel',
 							// the blur event may get fired even when focusing
 							// inside the window itself, so we must ensure the
 							// target is out of it.
-							var target;
-							if ( CKEDITOR.env.ie && !this.allowBlur()
-								 || ( target = ev.data.getTarget() )
-								      && target.getName && target.getName() != 'iframe' )
+							var target = ev.data.getTarget() ;
+							if ( target.getName && target.getName() != 'iframe' )
 								return;
 
 							if ( this.visible && !this._.activeChild && !isShowing )
+							{
+								// Panel close is caused by user's navigating away the focus, e.g. click outside the panel.
+								// DO NOT restore focus in this case.
+								delete this._.returnFocus;
 								this.hide();
+							}
 						},
 						this );
 
@@ -192,30 +201,20 @@ CKEDITOR.plugins.add( 'floatpanel',
 
 				CKEDITOR.tools.setTimeout( function()
 					{
-						if ( rtl )
-							left -= element.$.offsetWidth;
-
 						var panelLoad = CKEDITOR.tools.bind( function ()
 						{
 							var target = element.getFirst();
 
 							if ( block.autoSize )
 							{
-								// We must adjust first the width or IE6 could include extra lines in the height computation
-								var widthNode = block.element.$;
+								var panelDoc = block.element.getDocument();
+								var width = ( CKEDITOR.env.webkit? block.element : panelDoc.getBody() )[ '$' ].scrollWidth;
 
-								if ( CKEDITOR.env.gecko || CKEDITOR.env.opera )
-									widthNode = widthNode.parentNode;
-
-								if ( CKEDITOR.env.ie )
-									widthNode = widthNode.document.body;
-
-								var width = widthNode.scrollWidth;
 								// Account for extra height needed due to IE quirks box model bug:
 								// http://en.wikipedia.org/wiki/Internet_Explorer_box_model_bug
 								// (#3426)
 								if ( CKEDITOR.env.ie && CKEDITOR.env.quirks && width > 0 )
-									width += ( target.$.offsetWidth || 0 ) - ( target.$.clientWidth || 0 );
+									width += ( target.$.offsetWidth || 0 ) - ( target.$.clientWidth || 0 ) + 3;
 								// A little extra at the end.
 								// If not present, IE6 might break into the next line, but also it looks better this way
 								width += 4 ;
@@ -231,7 +230,7 @@ CKEDITOR.plugins.add( 'floatpanel',
 								// http://en.wikipedia.org/wiki/Internet_Explorer_box_model_bug
 								// (#3426)
 								if ( CKEDITOR.env.ie && CKEDITOR.env.quirks && height > 0 )
-									height += ( target.$.offsetHeight || 0 ) - ( target.$.clientHeight || 0 );
+									height += ( target.$.offsetHeight || 0 ) - ( target.$.clientHeight || 0 ) + 3;
 
 								target.setStyle( 'height', height + 'px' );
 
@@ -241,24 +240,72 @@ CKEDITOR.plugins.add( 'floatpanel',
 							else
 								target.removeStyle( 'height' );
 
+							// Flip panel layout horizontally in RTL with known width.
+							if ( rtl )
+								left -= element.$.offsetWidth;
+
+							// Pop the style now for measurement.
+							element.setStyle( 'left', left + 'px' );
+
+							/* panel layout smartly fit the viewport size. */
 							var panelElement = panel.element,
 								panelWindow = panelElement.getWindow(),
-								windowScroll = panelWindow.getScrollPosition(),
-								viewportSize = panelWindow.getViewPaneSize(),
-								panelSize =
+								rect = element.$.getBoundingClientRect(),
+								viewportSize = panelWindow.getViewPaneSize();
+
+							// Compensation for browsers that dont support "width" and "height".
+							var rectWidth = rect.width || rect.right - rect.left,
+							rectHeight = rect.height || rect.bottom - rect.top;
+
+							// Check if default horizontal layout is impossible.
+							var spaceAfter = rtl ? rect.right : viewportSize.width - rect.left,
+								spaceBefore = rtl ? viewportSize.width - rect.right : rect.left;
+
+							if ( rtl )
+							{
+								if ( spaceAfter < rectWidth )
 								{
-									'height' : panelElement.$.offsetHeight,
-									'width' : panelElement.$.offsetWidth
-								};
+									// Flip to show on right.
+									if ( spaceBefore > rectWidth )
+										left += rectWidth;
+									// Align to window left.
+									else if ( viewportSize.width > rectWidth )
+										left = left - rect.left;
+									// Align to window right, never cutting the panel at right.
+									else
+										left = left - rect.right + viewportSize.width;
+								}
+							}
+							else if ( spaceAfter < rectWidth )
+							{
+									// Flip to show on left.
+									if ( spaceBefore > rectWidth )
+										left -= rectWidth;
+									// Align to window right.
+									else if ( viewportSize.width > rectWidth )
+										left = left - rect.right + viewportSize.width;
+									// Align to window left, never cutting the panel at left.
+									else
+										left = left - rect.left;
+								}
 
-							// If the menu is horizontal off, shift it toward
-							// the opposite language direction.
-							if ( rtl ? left < 0 : left + panelSize.width > viewportSize.width + windowScroll.x )
-								left += ( panelSize.width * ( rtl ? 1 : -1 ) );
 
-							// Vertical off screen is simpler.
-							if ( top + panelSize.height > viewportSize.height + windowScroll.y )
-								top -= panelSize.height;
+							// Check if the default vertical layout is possible.
+							var spaceBelow = viewportSize.height - rect.top,
+								spaceAbove = rect.top;
+
+							if ( spaceBelow < rectHeight )
+							{
+								// Flip to show above.
+								if ( spaceAbove > rectHeight )
+									top -= rectHeight;
+								// Align to window bottom.
+								else if ( viewportSize.height > rectHeight )
+									top = top - rect.bottom + viewportSize.height;
+								// Align to top, never cutting the panel at top.
+								else
+									top = top - rect.top;
+							}
 
 							// If IE is in RTL, we have troubles with absolute
 							// position and horizontal scrolls. Here we have a
@@ -282,6 +329,14 @@ CKEDITOR.plugins.add( 'floatpanel',
 								}
 							}
 
+							// Trigger the onHide event of the previously active panel to prevent
+							// incorrect styles from being applied (#6170)
+							var innerElement = element.getFirst(),
+								activePanel;
+							if ( ( activePanel = innerElement.getCustomData( 'activePanel' ) ) )
+								activePanel.onHide && activePanel.onHide.call( this, 1 );
+							innerElement.setCustomData( 'activePanel', this );
+
 							element.setStyles(
 								{
 									top : top + 'px',
@@ -299,22 +354,36 @@ CKEDITOR.plugins.add( 'floatpanel',
 							// We need this get fired manually because of unfired focus() function.
 							this.allowBlur( true );
 						}, 0, this);
-					}, 0, this);
+					},  CKEDITOR.env.air ? 200 : 0, this);
 				this.visible = 1;
 
 				if ( this.onShow )
 					this.onShow.call( this );
 
-				isShowing = false;
+				isShowing = 0;
 			},
 
-			hide : function()
+			hide : function( returnFocus )
 			{
 				if ( this.visible && ( !this.onHide || this.onHide.call( this ) !== true ) )
 				{
 					this.hideChild();
+					// Blur previously focused element. (#6671)
+					CKEDITOR.env.gecko && this._.iframe.getFrameDocument().$.activeElement.blur();
 					this.element.setStyle( 'display', 'none' );
 					this.visible = 0;
+					this.element.getFirst().removeCustomData( 'activePanel' );
+
+					// Return focus properly. (#6247)
+					var focusReturn = returnFocus !== false && this._.returnFocus;
+					if ( focusReturn )
+					{
+						// Webkit requires focus moved out panel iframe first.
+						if ( CKEDITOR.env.webkit && focusReturn.type )
+							focusReturn.getWindow().$.focus();
+
+						focusReturn.focus();
+					}
 				}
 			},
 
@@ -370,6 +439,8 @@ CKEDITOR.plugins.add( 'floatpanel',
 				if ( activeChild )
 				{
 					delete activeChild.onHide;
+					// Sub panels don't manage focus. (#7881)
+					delete activeChild._.returnFocus;
 					delete this._.activeChild;
 					activeChild.hide();
 				}

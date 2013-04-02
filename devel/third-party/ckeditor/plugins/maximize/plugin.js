@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 
@@ -10,8 +10,8 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 		if ( !formElement || formElement.type != CKEDITOR.NODE_ELEMENT || formElement.getName() != 'form' )
 			return [];
 
-		var hijackRecord = [];
-		var hijackNames = [ 'style', 'className' ];
+		var hijackRecord = [],
+			hijackNames = [ 'style', 'className' ];
 		for ( var i = 0 ; i < hijackNames.length ; i++ )
 		{
 			var name = hijackNames[i];
@@ -85,7 +85,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 		for ( var i in all )
 		{
 			var one = all[ i ];
-			if ( one.mode == 'wysiwyg' )
+			if ( one.mode == 'wysiwyg' && !one.readOnly )
 			{
 				var body = one.document.getBody();
 				// Refresh 'contentEditable' otherwise
@@ -129,12 +129,12 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 		init : function( editor )
 		{
 			var lang = editor.lang;
-			var mainDocument = CKEDITOR.document;
-			var mainWindow = mainDocument.getWindow();
+			var mainDocument = CKEDITOR.document,
+				mainWindow = mainDocument.getWindow();
 
 			// Saved selection and scroll position for the editing area.
-			var savedSelection;
-			var savedScroll;
+			var savedSelection,
+				savedScroll;
 
 			// Saved scroll position for the outer window.
 			var outerScroll;
@@ -154,7 +154,9 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 
 			editor.addCommand( 'maximize',
 				{
-					modes : { wysiwyg : 1, source : 1 },
+					// Disabled on iOS (#8307).
+					modes : { wysiwyg : !CKEDITOR.env.iOS, source : !CKEDITOR.env.iOS },
+					readOnly : 1,
 					editorFocus : false,
 					exec : function()
 					{
@@ -194,20 +196,16 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 							container.setCustomData( 'maximize_saved_styles', saveStyles( container, true ) );
 
 							// Hide scroll bars.
-							if ( CKEDITOR.env.ie )
-							{
-								mainDocument.$.documentElement.style.overflow =
-									mainDocument.getBody().$.style.overflow = 'hidden';
-							}
-							else
-							{
-								mainDocument.getBody().setStyles(
-									{
-										overflow : 'hidden',
-										width : '0px',
-										height : '0px'
-									} );
-							}
+							var styles =
+								{
+									overflow : CKEDITOR.env.webkit ? '' : 'hidden',		// #6896
+									width : 0,
+									height : 0
+								};
+
+							mainDocument.getDocumentElement().setStyles( styles );
+							!CKEDITOR.env.gecko && mainDocument.getDocumentElement().setStyle( 'position', 'fixed' );
+							!( CKEDITOR.env.gecko && CKEDITOR.env.quirks ) && mainDocument.getBody().setStyles( styles );
 
 							// Scroll to the top left (IE needs some time for it - #4923).
 							CKEDITOR.env.ie ?
@@ -215,8 +213,8 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 								mainWindow.$.scrollTo( 0, 0 );
 
 							// Resize and move to top left.
-							var viewPaneSize = mainWindow.getViewPaneSize();
-							container.setStyle( 'position', 'absolute' );
+							// Special treatment for FF Quirks (#7284)
+							container.setStyle( 'position', CKEDITOR.env.gecko && CKEDITOR.env.quirks ? 'fixed' : 'absolute' );
 							container.$.offsetLeft;			// SAFARI BUG: See #2066.
 							container.setStyles(
 								{
@@ -272,6 +270,13 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 							// Remove cke_maximized class.
 							container.removeClass( 'cke_maximized' );
 
+							// Webkit requires a re-layout on editor chrome. (#6695)
+							if ( CKEDITOR.env.webkit )
+							{
+								container.setStyle( 'display', 'inline' );
+								setTimeout( function(){ container.setStyle( 'display', 'block' ); }, 0 );
+							}
+
 							if ( shim )
 							{
 								shim.remove();
@@ -287,12 +292,16 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 
 						// Toggle button label.
 						var button = this.uiItems[ 0 ];
-						var label = ( this.state == CKEDITOR.TRISTATE_OFF )
-							? lang.maximize : lang.minimize;
-						var buttonNode = editor.element.getDocument().getById( button._.id );
-						buttonNode.getChild( 1 ).setHtml( label );
-						buttonNode.setAttribute( 'title', label );
-						buttonNode.setAttribute( 'href', 'javascript:void("' + label + '");' );
+						// Only try to change the button if it exists (#6166)
+						if( button )
+						{
+							var label = ( this.state == CKEDITOR.TRISTATE_OFF )
+								? lang.maximize : lang.minimize;
+							var buttonNode = editor.element.getDocument().getById( button._.id );
+							buttonNode.getChild( 1 ).setHtml( label );
+							buttonNode.setAttribute( 'title', label );
+							buttonNode.setAttribute( 'href', 'javascript:void("' + label + '");' );
+						}
 
 						// Restore selection and scroll position in editing area.
 						if ( editor.mode == 'wysiwyg' )
@@ -333,10 +342,11 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 					command : 'maximize'
 				} );
 
-			// Restore the command state after mode change.
+			// Restore the command state after mode change, unless it has been changed to disabled (#6467)
 			editor.on( 'mode', function()
 				{
-					editor.getCommand( 'maximize' ).setState( savedState );
+					var command = editor.getCommand( 'maximize' );
+					command.setState( command.state == CKEDITOR.TRISTATE_DISABLED ? CKEDITOR.TRISTATE_DISABLED : savedState );
 				}, null, null, 100 );
 		}
 	} );

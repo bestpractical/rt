@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 
@@ -8,25 +8,16 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 	// This function is to be called under a "walker" instance scope.
 	function iterate( rtl, breakOnFalse )
 	{
+		var range = this.range;
+
 		// Return null if we have reached the end.
 		if ( this._.end )
 			return null;
-
-		var node,
-			range = this.range,
-			guard,
-			userGuard = this.guard,
-			type = this.type,
-			getSourceNodeFn = ( rtl ? 'getPreviousSourceNode' : 'getNextSourceNode' );
 
 		// This is the first call. Initialize it.
 		if ( !this._.start )
 		{
 			this._.start = 1;
-
-			// Trim text nodes and optmize the range boundaries. DOM changes
-			// may happen at this point.
-			range.trim();
 
 			// A collapsed range must return null at first call.
 			if ( range.collapsed )
@@ -34,14 +25,33 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 				this.end();
 				return null;
 			}
+
+			// Move outside of text node edges.
+			range.optimize();
 		}
+
+		var node,
+			startCt = range.startContainer,
+			endCt = range.endContainer,
+			startOffset = range.startOffset,
+			endOffset = range.endOffset,
+			guard,
+			userGuard = this.guard,
+			type = this.type,
+			getSourceNodeFn = ( rtl ? 'getPreviousSourceNode' : 'getNextSourceNode' );
 
 		// Create the LTR guard function, if necessary.
 		if ( !rtl && !this._.guardLTR )
 		{
-			// Gets the node that stops the walker when going LTR.
-			var limitLTR = range.endContainer,
-				blockerLTR = limitLTR.getChild( range.endOffset );
+			// The node that stops walker from moving up.
+			var limitLTR = endCt.type == CKEDITOR.NODE_ELEMENT ?
+						   endCt :
+						   endCt.getParent();
+
+			// The node that stops the walker from going to next.
+			var blockerLTR = endCt.type == CKEDITOR.NODE_ELEMENT ?
+							 endCt.getChild( endOffset ) :
+							 endCt.getNext();
 
 			this._.guardLTR = function( node, movingOut )
 			{
@@ -54,9 +64,16 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 		// Create the RTL guard function, if necessary.
 		if ( rtl && !this._.guardRTL )
 		{
-			// Gets the node that stops the walker when going LTR.
-			var limitRTL = range.startContainer,
-				blockerRTL = ( range.startOffset > 0 ) && limitRTL.getChild( range.startOffset - 1 );
+			// The node that stops walker from moving up.
+			var limitRTL = startCt.type == CKEDITOR.NODE_ELEMENT ?
+						   startCt :
+						   startCt.getParent();
+
+			// The node that stops the walker from going to next.
+			var blockerRTL = startCt.type == CKEDITOR.NODE_ELEMENT ?
+						 startOffset ?
+						 startCt.getChild( startOffset - 1 ) : null :
+						 startCt.getPrevious();
 
 			this._.guardRTL = function( node, movingOut )
 			{
@@ -89,35 +106,33 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 		else
 		{
 			// Get the first node to be returned.
-
 			if ( rtl )
 			{
-				node = range.endContainer;
+				node = endCt;
 
-				if ( range.endOffset > 0 )
+				if ( node.type == CKEDITOR.NODE_ELEMENT )
 				{
-					node = node.getChild( range.endOffset - 1 );
-					if ( guard( node ) === false )
-						node = null;
+					if ( endOffset > 0 )
+						node = node.getChild( endOffset - 1 );
+					else
+						node = ( guard ( node, true ) === false ) ?
+							null : node.getPreviousSourceNode( true, type, guard );
 				}
-				else
-					node = ( guard ( node, true ) === false ) ?
-						null : node.getPreviousSourceNode( true, type, guard );
 			}
 			else
 			{
-				node = range.startContainer;
-				node = node.getChild( range.startOffset );
+				node = startCt;
 
-				if ( node )
+				if ( node.type == CKEDITOR.NODE_ELEMENT )
 				{
-					if ( guard( node ) === false )
-						node = null;
+					if ( ! ( node = node.getChild( startOffset ) ) )
+						node = ( guard ( startCt, true ) === false ) ?
+							null : startCt.getNextSourceNode( true, type, guard ) ;
 				}
-				else
-					node = ( guard ( range.startContainer, true ) === false ) ?
-						null : range.startContainer.getNextSourceNode( true, type, guard ) ;
 			}
+
+			if ( node && guard( node ) === false )
+				node = null;
 		}
 
 		while ( node && !this._.end )
@@ -261,7 +276,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 			 */
 			previous : function()
 			{
-				return iterate.call( this, true );
+				return iterate.call( this, 1 );
 			},
 
 			/**
@@ -271,7 +286,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 			 */
 			checkForward : function()
 			{
-				return iterate.call( this, false, true ) !== false;
+				return iterate.call( this, 0, 1 ) !== false;
 			},
 
 			/**
@@ -281,7 +296,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 			 */
 			checkBackward : function()
 			{
-				return iterate.call( this, true, true ) !== false;
+				return iterate.call( this, 1, 1 ) !== false;
 			},
 
 			/**
@@ -303,7 +318,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 			 */
 			lastBackward : function()
 			{
-				return iterateToLast.call( this, true );
+				return iterateToLast.call( this, 1 );
 			},
 
 			reset : function()
@@ -334,16 +349,17 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 		'table-column' : 1,
 		'table-cell' : 1,
 		'table-caption' : 1
-	},
-	blockBoundaryNodeNameMatch = { hr : 1 };
+	};
 
 	CKEDITOR.dom.element.prototype.isBlockBoundary = function( customNodeNames )
 	{
-		var nodeNameMatches = CKEDITOR.tools.extend( {},
-													blockBoundaryNodeNameMatch, customNodeNames || {} );
+		var nodeNameMatches = customNodeNames ?
+			CKEDITOR.tools.extend( {}, CKEDITOR.dtd.$block, customNodeNames || {} ) :
+			CKEDITOR.dtd.$block;
 
-		return blockBoundaryDisplayMatch[ this.getComputedStyle( 'display' ) ] ||
-			nodeNameMatches[ this.getName() ];
+		// Don't consider floated formatting as block boundary, fall back to dtd check in that case. (#6297)
+		return this.getComputedStyle( 'float' ) == 'none' && blockBoundaryDisplayMatch[ this.getComputedStyle( 'display' ) ]
+				|| nodeNameMatches[ this.getName() ];
 	};
 
 	CKEDITOR.dom.walker.blockBoundary = function( customNodeNames )
@@ -374,7 +390,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 		{
 			return ( node && node.getName
 					&& node.getName() == 'span'
-					&& node.hasAttribute('_cke_bookmark') );
+					&& node.data( 'cke-bookmark' ) );
 		}
 
 		return function( node )
@@ -385,7 +401,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 						&& isBookmarkNode( parent ) );
 			// Is bookmark node?
 			isBookmark = contentOnly ? isBookmark : isBookmark || isBookmarkNode( node );
-			return isReject ^ isBookmark;
+			return !! ( isReject ^ isBookmark );
 		};
 	};
 
@@ -397,9 +413,15 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 	{
 		return function( node )
 		{
-			var isWhitespace = node && ( node.type == CKEDITOR.NODE_TEXT )
-							&& !CKEDITOR.tools.trim( node.getText() );
-			return isReject ^ isWhitespace;
+			var isWhitespace;
+			if ( node && node.type == CKEDITOR.NODE_TEXT )
+			{
+				// whitespace, as well as the text cursor filler node we used in Webkit. (#9384)
+				isWhitespace = !CKEDITOR.tools.trim( node.getText() ) ||
+					CKEDITOR.env.webkit && node.getText() == '\u200b';
+			}
+
+			return !! ( isReject ^ isWhitespace );
 		};
 	};
 
@@ -412,28 +434,81 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 		var whitespace = CKEDITOR.dom.walker.whitespaces();
 		return function( node )
 		{
-			// Nodes that take no spaces in wysiwyg:
-			// 1. White-spaces but not including NBSP;
-			// 2. Empty inline elements, e.g. <b></b> we're checking here
-			// 'offsetHeight' instead of 'offsetWidth' for properly excluding
-			// all sorts of empty paragraph, e.g. <br />.
-			var isInvisible = whitespace( node ) || node.is && !node.$.offsetHeight;
-			return isReject ^ isInvisible;
+			var invisible;
+
+			if ( whitespace( node ) )
+				invisible = 1;
+			else
+			{
+				// Visibility should be checked on element.
+				if ( node.type == CKEDITOR.NODE_TEXT )
+					node = node.getParent();
+
+				// Nodes that take no spaces in wysiwyg:
+				// 1. White-spaces but not including NBSP;
+				// 2. Empty inline elements, e.g. <b></b> we're checking here
+				// 'offsetHeight' instead of 'offsetWidth' for properly excluding
+				// all sorts of empty paragraph, e.g. <br />.
+				invisible = !node.$.offsetHeight;
+			}
+
+			return !! ( isReject ^ invisible );
+		};
+	};
+
+	CKEDITOR.dom.walker.nodeType = function( type, isReject )
+	{
+		return function( node )
+		{
+			return !! ( isReject ^ ( node.type == type ) );
+		};
+	};
+
+	CKEDITOR.dom.walker.bogus = function( isReject )
+	{
+		function nonEmpty( node )
+		{
+			return !isWhitespaces( node ) && !isBookmark( node );
+		}
+
+		return function( node )
+		{
+			var isBogus = !CKEDITOR.env.ie ? node.is && node.is( 'br' ) :
+					  node.getText && tailNbspRegex.test( node.getText() );
+
+			if ( isBogus )
+			{
+				var parent = node.getParent(), next = node.getNext( nonEmpty );
+				isBogus = parent.isBlockBoundary() &&
+				          ( !next ||
+				            next.type == CKEDITOR.NODE_ELEMENT &&
+				            next.isBlockBoundary() );
+			}
+
+			return !! ( isReject ^ isBogus );
 		};
 	};
 
 	var tailNbspRegex = /^[\t\r\n ]*(?:&nbsp;|\xa0)$/,
-		isNotWhitespaces = CKEDITOR.dom.walker.whitespaces( true ),
-		isNotBookmark = CKEDITOR.dom.walker.bookmark( false, true ),
-		fillerEvaluator = function( element )
+		isWhitespaces = CKEDITOR.dom.walker.whitespaces(),
+		isBookmark = CKEDITOR.dom.walker.bookmark(),
+		toSkip = function( node )
 		{
-			return isNotBookmark( element ) && isNotWhitespaces( element );
+			return isBookmark( node )
+					|| isWhitespaces( node )
+					|| node.type == CKEDITOR.NODE_ELEMENT
+					&& node.getName() in CKEDITOR.dtd.$inline
+					&& !( node.getName() in CKEDITOR.dtd.$empty );
 		};
 
 	// Check if there's a filler node at the end of an element, and return it.
-	CKEDITOR.dom.element.prototype.getBogus = function ()
+	CKEDITOR.dom.element.prototype.getBogus = function()
 	{
-		var tail = this.getLast( fillerEvaluator );
+		// Bogus are not always at the end, e.g. <p><a>text<br /></a></p> (#7070).
+		var tail = this;
+		do { tail = tail.getPreviousSourceNode(); }
+		while ( toSkip( tail ) )
+
 		if ( tail && ( !CKEDITOR.env.ie ? tail.is && tail.is( 'br' )
 				: tail.getText && tailNbspRegex.test( tail.getText() ) ) )
 		{
