@@ -56,7 +56,17 @@
 % }
 </select>
 % }
-% else {
+% elsif ( $CustomField->Type eq 'Autocomplete' )  {
+<input type="text" id="CF-<% $CustomField->id %>" name="<% $Name %>" size="20" />
+<script type="text/javascript">
+% my @options;
+% my $values = $CustomField->Values;
+% while (my $value = $values->Next) {
+%   push @options, $value->Name;
+% }
+jQuery('#'+'CF-' + <% $CustomField->id %>).autocomplete({ source: <% JSON::to_json(\@options) |n %> });
+</script>
+% } else {
 <input name="<%$Name%>" size="20" />
 % }
 <%args>
