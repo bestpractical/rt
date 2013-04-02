@@ -415,20 +415,12 @@ sub AddRoleMember {
                           $principal->Object->Name, $self->loc($type)) )
             if $group->HasMember( $principal );
 
-    my ( $ok, $msg ) = $group->_AddMember( %args );
+    my ( $ok, $msg ) = $group->_AddMember( %args, RecordTransaction => !$args{Silent} );
     unless ($ok) {
         $RT::Logger->error("Failed to add $args{PrincipalId} as a member of group ".$group->Id.": ".$msg);
 
         return ( 0, $self->loc('Could not make [_1] a [_2]',
                     $principal->Object->Name, $self->loc($type)) );
-    }
-
-    unless ($args{Silent}) {
-        $self->_NewTransaction(
-            Type     => 'AddWatcher', # use "watcher" for history's sake
-            NewValue => $args{PrincipalId},
-            Field    => $type,
-        );
     }
 
     return ($principal, $msg);
@@ -498,7 +490,7 @@ sub DeleteRoleMember {
                             $principal->Object->Name, $self->loc($args{Type}) ) )
         unless $group->HasMember($principal);
 
-    my ($ok, $msg) = $group->_DeleteMember($args{PrincipalId});
+    my ($ok, $msg) = $group->_DeleteMember($args{PrincipalId}, RecordTransaction => !$args{Silent});
     unless ($ok) {
         $RT::Logger->error("Failed to remove $args{PrincipalId} as a member of group ".$group->Id.": ".$msg);
 
@@ -506,13 +498,6 @@ sub DeleteRoleMember {
                     $principal->Object->Name, $self->loc($args{Type})) );
     }
 
-    unless ($args{Silent}) {
-        $self->_NewTransaction(
-            Type     => 'DelWatcher', # use "watcher" for history's sake
-            OldValue => $args{PrincipalId},
-            Field    => $args{Type},
-        );
-    }
     return ($principal, $msg);
 }
 

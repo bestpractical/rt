@@ -835,6 +835,12 @@ sub _FormatUser {
         $principal->Load($self->OldValue);
         return ( "[_1] [_2] deleted", $self->loc($self->Field), $self->_FormatUser($principal->Object));  #loc
     },
+    SetWatcher => sub {
+        my $self = shift;
+        my $principal = RT::Principal->new($self->CurrentUser);
+        $principal->Load($self->NewValue);
+        return ( "[_1] set to [_2]", $self->loc($self->Field), $self->_FormatUser($principal->Object));  #loc
+    },
     Subject => sub {
         my $self = shift;
         return ( "Subject changed to [_1]", $self->Data );  #loc
