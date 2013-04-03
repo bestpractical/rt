@@ -667,8 +667,8 @@ sub LocaleObj {
 Returns date and time as string, with user localization.
 
 Supports arguments: C<DateFormat> and C<TimeFormat> which may contains date and
-time format as specified in L<DateTime::Locale> (default to full_date_format and
-medium_time_format), C<AbbrDay> and C<AbbrMonth> which may be set to 0 if
+time format as specified in L<DateTime::Locale> (default to C<date_format_full> and
+C<time_format_medium>), C<AbbrDay> and C<AbbrMonth> which may be set to 0 if
 you want full Day/Month names instead of abbreviated ones.
 
 =cut
