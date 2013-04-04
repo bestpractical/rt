@@ -52,6 +52,11 @@
 
 % $m->callback( ARGSRef => \%ARGS, CallbackName => 'BeforeResults' );
 
+% unless ($ok) {
+%     $msg =~ s{ at .*? line .*}{}s;
+<p><&|/l_unsafe, "<i>".$m->interp->apply_escapes($msg, "h")."</i>" &>There was an error parsing your search query: [_1].  Your RT admin can find more information in the error logs.</&></p>
+% }
+
 <& /Elements/CollectionList, 
     Query => $Query,
     TotalFound => $ticketcount,
