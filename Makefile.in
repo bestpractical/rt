@@ -542,8 +542,8 @@ vessel-import: build-snapshot
      --skip cpan-capitalization,cpan-mod_perl,cpan-Encode,cpan-PPI,cpan-Test-Exception-LessClever,cpan-Test-Manifest,cpan-Test-Object,cpan-Test-Pod,cpan-Test-Requires,cpan-Test-SubCalls,cpan-Test-cpan-Tester,cpan-Test-Warn --skip-all-recommends
 	mv $(VESSEL)/scripts/RT/build  $(VESSEL)/scripts/RT/build.pl
 
-JSMIN_URL = http://download.bestpractical.com/mirror/jsmin-2011-01-22.c
-JSMIN_SHA = 8a6b3b980a52c028eb73aee4a82ebe060c1ee854
+JSMIN_URL = http://download.bestpractical.com/mirror/jsmin-2013-03-29.c
+JSMIN_SHA = 67dc8d73a8878f88cdaeb1a86775872eae5c3077
 
 jsmin: jsmin-checkcc jsmin-fetch jsmin-verify jsmin-confirm jsmin-build jsmin-install
 	@echo ""
