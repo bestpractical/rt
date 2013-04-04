@@ -78,14 +78,13 @@ For a full list of fields, read the documentation for L<RT::User/Create>.
 =head2 C<@Groups>
 
     push @Groups, {
-        Domain      => 'UserDefined',
         Name        => 'Example Employees',
         Description => 'All of the employees of my company',
     };
 
 Creates a new L<RT::Group> for each hashref.  In almost all cases you'll want
 to follow the example above to create a group just as if you had done it from
-the admin interface.  B<Do not> omit the C<< Domain => 'UserDefined' >> line.
+the admin interface.
 
 Additionally, the C<MemberOf> field is specially handled to make it easier to
 add the new group to other groups.  C<MemberOf> may be a single value or an
