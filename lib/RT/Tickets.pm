@@ -939,13 +939,18 @@ sub _WatcherLimit {
     }
     $rest{SUBKEY} ||= 'EmailAddress';
 
-    my $groups = $self->_RoleGroupsJoin( Type => $type, Class => $class, New => !$type );
+    my ($groups, $group_members, $users);
+    if ( $rest{'BUNDLE'} ) {
+        ($groups, $group_members, $users) = @{ $rest{'BUNDLE'} };
+    } else {
+        $groups = $self->_RoleGroupsJoin( Type => $type, Class => $class, New => !$type );
+    }
 
     $self->_OpenParen;
     if ( $op =~ /^IS(?: NOT)?$/i ) {
         # is [not] empty case
 
-        my $group_members = $self->_GroupMembersJoin( GroupsAlias => $groups );
+        $group_members ||= $self->_GroupMembersJoin( GroupsAlias => $groups );
         # to avoid joining the table Users into the query, we just join GM
         # and make sure we don't match records where group is member of itself
         $self->SUPER::Limit(
@@ -983,7 +988,7 @@ sub _WatcherLimit {
         $users_obj->RowsPerPage(2);
         my @users = @{ $users_obj->ItemsArrayRef };
 
-        my $group_members = $self->_GroupMembersJoin( GroupsAlias => $groups );
+        $group_members ||= $self->_GroupMembersJoin( GroupsAlias => $groups );
         if ( @users <= 1 ) {
             my $uid = 0;
             $uid = $users[0]->id if @users;
@@ -1008,7 +1013,7 @@ sub _WatcherLimit {
                 VALUE      => "$group_members.MemberId",
                 QUOTEVALUE => 0,
             );
-            my $users = $self->Join(
+            $users ||= $self->Join(
                 TYPE            => 'LEFT',
                 ALIAS1          => $group_members,
                 FIELD1          => 'MemberId',
@@ -1034,10 +1039,10 @@ sub _WatcherLimit {
     } else {
         # positive condition case
 
-        my $group_members = $self->_GroupMembersJoin(
+        $group_members ||= $self->_GroupMembersJoin(
             GroupsAlias => $groups, New => 1, Left => 0
         );
-        my $users = $self->Join(
+        $users ||= $self->Join(
             TYPE            => 'LEFT',
             ALIAS1          => $group_members,
             FIELD1          => 'MemberId',
@@ -1054,6 +1059,7 @@ sub _WatcherLimit {
         );
     }
     $self->_CloseParen;
+    return ($groups, $group_members, $users);
 }
 
 sub _RoleGroupsJoin {

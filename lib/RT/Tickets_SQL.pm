@@ -171,19 +171,40 @@ sub _parser {
     my @bundle;
     my $ea = '';
 
+    my %sub_tree;
+    my $depth = 0;
+
     my %callback;
     $callback{'OpenParen'} = sub {
       $self->_close_bundle(@bundle); @bundle = ();
-      $self->_OpenParen
+      $self->_OpenParen;
+      $depth++;
+      push @$_, '(' foreach values %sub_tree;
     };
     $callback{'CloseParen'} = sub {
       $self->_close_bundle(@bundle); @bundle = ();
       $self->_CloseParen;
+      $depth--;
+      foreach my $list ( values %sub_tree ) {
+          if ( $list->[-1] eq '(' ) {
+              pop @$list;
+              pop @$list if $list->[-1] =~ /^(?:AND|OR)$/i;
+          }
+          else {
+              pop @$list while $list->[-2] ne '(';
+              $list->[-1] = pop @$list;
+          }
+      }
     };
-    $callback{'EntryAggregator'} = sub { $ea = $_[0] || '' };
+    $callback{'EntryAggregator'} = sub {
+      $ea = $_[0] || '';
+      push @$_, $ea foreach values %sub_tree;
+    };
     $callback{'Condition'} = sub {
         my ($key, $op, $value) = @_;
 
+        my ($negative_op, $null_op, $inv_op, $range_op)
+            = $self->ClassifySQLOperation( $op );
         # key has dot then it's compound variant and we have subkey
         my $subkey = '';
         ($key, $subkey) = ($1, $2) if $key =~ /^([^\.]+)\.(.+)$/;
@@ -225,10 +246,23 @@ sub _parser {
         }
         else {
             $self->_close_bundle(@bundle); @bundle = ();
-            $sub->( $self, $key, $op, $value,
+            my @res; my $bundle_with;
+            if ( $class eq 'WATCHERFIELD' && $key ne 'Owner' && !$negative_op && (!$null_op || $subkey) ) {
+                if ( !$sub_tree{$key} ) {
+                  $sub_tree{$key} = [ ('(')x$depth, \@res ];
+                } else {
+                  $bundle_with = $self->_check_bundling_possibility( $string, @{ $sub_tree{$key} } );
+                  if ( $sub_tree{$key}[-1] eq '(' ) {
+                        push @{ $sub_tree{$key} }, \@res;
+                  }
+                }
+            }
+            pop @$_ foreach grep @$_ && $_->[-1] =~ /^(?:AND|OR)$/i, values %sub_tree;
+            @res = $sub->( $self, $key, $op, $value,
                     SUBCLAUSE       => '',  # don't need anymore
                     ENTRYAGGREGATOR => $ea,
                     SUBKEY          => $subkey,
+                    BUNDLE          => $bundle_with,
                   );
         }
         $self->{_sql_looking_at}{lc $key} = 1;
@@ -236,6 +270,29 @@ sub _parser {
     };
     RT::SQL::Parse($string, \%callback);
     $self->_close_bundle(@bundle); @bundle = ();
+}
+
+sub _check_bundling_possibility {
+    my $self = shift;
+    my $string = shift;
+    my @list = reverse @_;
+    while (my $e = shift @list) {
+        next if $e eq '(';
+        if ( lc($e) eq 'and' ) {
+            return undef;
+        }
+        elsif ( lc($e) eq 'or' ) {
+            return shift @list;
+        }
+        else {
+            # should not happen
+            $RT::Logger->error(
+                "Joins optimization failed when parsing '$string'. It's bug in RT, contact Best Practical"
+            );
+            die "Internal error. Contact your system administrator.";
+        }
+    }
+    return undef;
 }
 
 =head2 ClausesToSQL
