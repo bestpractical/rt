@@ -915,16 +915,12 @@ This routine could really use _accurate_ heuristics. (XXX TODO)
 sub StaticFileHeaders {
     my $date = RT::Date->new(RT->SystemUser);
 
-    # make cache public
-    $HTML::Mason::Commands::r->headers_out->{'Cache-Control'} = 'max-age=259200, public';
-
     # remove any cookie headers -- if it is cached publicly, it
     # shouldn't include anyone's cookie!
     delete $HTML::Mason::Commands::r->err_headers_out->{'Set-Cookie'};
 
     # Expire things in a month.
-    $date->Set( Value => time + 30 * 24 * 60 * 60 );
-    $HTML::Mason::Commands::r->headers_out->{'Expires'} = $date->RFC2616;
+    CacheControlExpiresHeaders( Time => 'forever' );
 
     # if we set 'Last-Modified' then browser request a comp using 'If-Modified-Since'
     # request, but we don't handle it and generate full reply again

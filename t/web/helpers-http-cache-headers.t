@@ -24,7 +24,7 @@ ok $m->login, 'logged in';
 my $docroot = join '/', qw(share html);
 
 # find endpoints to loop over
-my @endpoints;
+my @endpoints = ('/NoAuth/css/print.css');
 find({
   wanted => sub {
     if ( -f $_ && $_ !~ m|autohandler$| ) {
@@ -59,6 +59,10 @@ diag "set up expected date headers";
       'Cache-Control' => 'max-age=120, private',
       'Expires'       => 'Fri, 5 Apr 2013 15:30:19 GMT',
     },
+    NoAuth      => {
+      'Cache-Control' => 'max-age=2592000, public',
+      'Expires'       => 'Sun, 5 May 2013 15:28:19 GMT',
+    },
     default      => {
       'Cache-Control' => 'no-cache',
       'Expires'       => 'Fri, 5 Apr 2013 15:28:19 GMT',
@@ -70,7 +74,12 @@ diag "set up expected date headers";
 foreach my $endpoint ( @endpoints ) {
   $m->get_ok( $endpoint . "?id=${ticket_id}&Status=open&Requestor=root" );
 
-  my $header_key = $endpoint =~ m|Autocomplete| ? 'Autocomplete' : 'default';
+  my $header_key = 'default';
+  if ( $endpoint =~ m|Autocomplete| ) {
+    $header_key =  'Autocomplete';
+  } elsif ( $endpoint =~ m|NoAuth| ) {
+    $header_key =  'NoAuth';
+  }
   my $headers = $expected->{$header_key};
 
   is(
