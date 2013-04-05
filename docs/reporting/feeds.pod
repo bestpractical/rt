@@ -1,0 +1,97 @@
+=head1 Feeds
+
+RT offers several feeds that provide RT data in formats suitable for
+integrating with external applications. This document describes the
+available feeds and some ways they can be used.
+
+The feeds are based on a ticket search you create using the RT Query
+Builder, available at Tickets > New Search or, starting in RT 4.2,
+Search > Tickets > New Search. After you create your search, the
+search results page has a Feeds menu in the upper right-hand corner.
+That menu contains the feeds described below.
+
+=head2 Spreadsheet
+
+If you click the Spreadsheet link, a tab-separated values (.tsv) file is
+downloaded containing the results from the search you performed in the
+browser. You can then import the file into a spreadsheet application like
+the OpenOffice spreadsheet or Microsoft Excel.
+
+Pulling ticket data into a spreadsheet can be handy if you want to
+manipulate a subset of your ticket data outside of RT. Depending on
+what you're doing with the data, once you have it in the form
+you need (sorted, summed, etc.) you can sometimes reproduce the report
+back in RT. This has the advatage of making it dynamic and you can share
+the resulting report with other users as a shared search or dashboard.
+
+=head3 Importing into OpenOffice
+
+To open a tsv in OpenOffice:
+
+=over
+
+=item 1.
+
+Open a new Spreadsheet document
+
+=item 2.
+
+Select Insert > Sheet From File...
+
+=item 3.
+
+In the file selection dialog, find the file downloaded from RT. By default,
+the name is Results.tsv.
+
+=item 4.
+
+In the Separator options, click the checkbox Separated by: Tab. Uncheck any
+other options that might be checked. Click OK.
+
+=item 5.
+
+On the Insert Sheet dialog, select where you want to put the new sheet and
+click OK.
+
+=back
+
+=head2 RSS
+
+You can use the RSS feed to subscribe using your RSS feed reader of
+choice. The feed entries provide the ticket subject, a link to the
+ticket, and the content of the first transaction on the ticket.
+
+=head2 iCal
+
+The iCal link uses your search to provide a feed suitable
+for subscribing to from a calendaring application like Mozilla Lightning
+(the Thunderbird calendar), Microsoft Outlook, or Apple iCal. You can
+copy the link and use your calendar application's subscribe feature to
+pull in and display ticket dates.
+
+The feed provides Starts and Due dates from the selected tickets. In
+RT 4.0, the calendar events are day-long events, which can be handled
+differently in different calendar applications. The events also contain
+a URL linking to the ticket and some calendars will display this link
+with the event.
+
+RT 4.2 adds an option to include times in the iCal feed so you can
+have calendar events at a specific time. In addition, you can provide
+C<SingleEvent=1> as an additional query parameter to have tickets
+generate a single event using the Start and Due dates/times as the
+start and end values for the event. This is useful if you have tickets
+with shorter durations, like for scheduled maintenance for example.
+
+=head3 Secret Token
+
+All of your iCal feeds embed a secret token that is specific to your
+RT user account. If you ever need to change this token, for example
+if someone got access to one of your iCal feed links allowing them
+to see tickets with your permissions, you can reset it. Log into
+RT and go to Logged in as > Settings > About me. In the lower
+right-hand corner, there is a link "I want to reset my secret token"
+and it does just that.
+
+Note that this will disable all of your existing feeds. After updating
+the token, you'll need to update all of your feeds with the new
+token.
