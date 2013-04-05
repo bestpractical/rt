@@ -2097,6 +2097,10 @@ sub SetOwner {
 
 sub _CurrentUserHasRightToSetOwner {
     my $self = shift;
+
+    # ReassignTicket unconditionally allows you to SetOwner
+    return 1 if $self->CurrentUserHasRight('ReassignTicket');
+
     # must have ModifyTicket rights
     # or TakeTicket/StealTicket and $NewOwner is self
     # see if it's a take
@@ -2133,10 +2137,11 @@ sub _IsProposedOwnerChangeValid {
     my $OldOwnerObj = $self->OwnerObj;
 
     # If we're not stealing and the ticket has an owner and it's not
-    # the current user
+    # the current user, and the current user can't reassign tickets
     if (     $Type ne 'Steal' and $Type ne 'Force'
          and $OldOwnerObj->Id != RT->Nobody->Id
-         and $OldOwnerObj->Id != $self->CurrentUser->Id ) {
+         and $OldOwnerObj->Id != $self->CurrentUser->Id
+         and not $self->CurrentUserHasRight('ReassignTicket') ) {
         if ( $NewOwnerObj->id == $self->CurrentUser->id) {
             return ( 0, $self->loc("You can only take tickets that are unowned") )
         }

@@ -135,6 +135,7 @@ our $RIGHTS = {
     DeleteTicket        => 'Delete tickets',                                            # loc_pair
     TakeTicket          => 'Take tickets',                                              # loc_pair
     StealTicket         => 'Steal tickets',                                             # loc_pair
+    ReassignTicket      => 'Modify ticket owner on owned tickets',                      # loc_pair
 
     ForwardMessage      => 'Forward messages outside of RT',                            # loc_pair
 };
@@ -165,6 +166,7 @@ our $RIGHT_CATEGORIES = {
     DeleteTicket        => 'Staff',
     TakeTicket          => 'Staff',
     StealTicket         => 'Staff',
+    ReassignTicket      => 'Staff',
     ForwardMessage      => 'Staff',
 };
 
