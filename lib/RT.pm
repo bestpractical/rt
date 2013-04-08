@@ -93,6 +93,44 @@ L<https://bestpractical.com/rt>.
 
 =head2 INITIALIZATION
 
+If you're using RT's Perl libraries, you need to initialize RT before using any
+of the modules.
+
+You have the option of handling the timing of config loading and the actual
+init sequence yourself with:
+
+    use RT;
+    RT->LoadConfig;
+    RT->Init;
+
+or you can let RT do it all:
+
+    use RT -init;
+
+This second method is particular useful when writing one-liners to interact with RT:
+
+    perl -MRT=-init -e '...'
+
+The first method is necessary if you need to delay or conditionalize
+initialization or if you want to fiddle with C<< RT->Config >> between loading
+the config files and initializing the RT environment.
+
+=cut
+
+{
+    my $DID_IMPORT_INIT;
+    sub import {
+        my $class  = shift;
+        my $action = shift || '';
+
+        if ($action eq "-init" and not $DID_IMPORT_INIT) {
+            $class->LoadConfig;
+            $class->Init;
+            $DID_IMPORT_INIT = 1;
+        }
+    }
+}
+
 =head2 LoadConfig
 
 Load RT's config file.  First, the site configuration file
