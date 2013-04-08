@@ -1,0 +1,2 @@
+ALTER TABLE Tickets ADD COLUMN IsMerged smallint NULL DEFAULT NULL;
+UPDATE Tickets SET IsMerged = 1 WHERE id != EffectiveId;

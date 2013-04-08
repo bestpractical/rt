@@ -3384,9 +3384,11 @@ sub FromSQL {
 
     # We only want to look at EffectiveId's (mostly) for these searches.
     unless ( $self->{_sql_looking_at}{effectiveid} ) {
+        # instead of EffectiveId = id we do IsMerged IS NULL
         $self->Limit(
-            FIELD           => 'EffectiveId',
-            VALUE           => 'main.id',
+            FIELD           => 'IsMerged',
+            OPERATOR        => 'IS',
+            VALUE           => 'NULL',
             ENTRYAGGREGATOR => 'AND',
             QUOTEVALUE      => 0,
         );

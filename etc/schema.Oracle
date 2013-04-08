@@ -261,6 +261,7 @@ CREATE TABLE Tickets (
        id                      NUMBER(11, 0) 
                CONSTRAINT Tickets_Key PRIMARY KEY,
         EffectiveId             NUMBER(11,0) DEFAULT 0 NOT NULL,
+        IsMerged                NUMBER(11,0) DEFAULT NULL NULL,
         Queue                   NUMBER(11,0) DEFAULT 0 NOT NULL,
         Type                    VARCHAR2(16),           
         IssueStatement          NUMBER(11,0) DEFAULT 0 NOT NULL,

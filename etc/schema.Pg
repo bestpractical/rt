@@ -414,6 +414,7 @@ CREATE SEQUENCE tickets_id_seq;
 CREATE TABLE Tickets (
   id INTEGER DEFAULT nextval('tickets_id_seq'),
   EffectiveId integer NOT NULL DEFAULT 0  ,
+  IsMerged smallint NULL DEFAULT NULL ,
   Queue integer NOT NULL DEFAULT 0  ,
   Type varchar(16) NULL  ,
   IssueStatement integer NOT NULL DEFAULT 0  ,
