@@ -198,7 +198,7 @@ sub _parser {
     };
     $callback{'EntryAggregator'} = sub {
       $ea = $_[0] || '';
-      push @$_, $ea foreach values %sub_tree;
+      push @$_, $ea foreach grep @$_ && $_->[-1] ne '(', values %sub_tree;
     };
     $callback{'Condition'} = sub {
         my ($key, $op, $value) = @_;
