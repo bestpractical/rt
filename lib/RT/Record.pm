@@ -1631,7 +1631,7 @@ sub _NewTransaction {
     $self->_SetLastUpdated;
 
     if ( defined $args{'TimeTaken'} and $self->can('_UpdateTimeTaken')) {
-        $self->_UpdateTimeTaken( $args{'TimeTaken'} );
+        $self->_UpdateTimeTaken( $args{'TimeTaken'}, Transaction => $trans );
     }
     if ( RT->Config->Get('UseTransactionBatch') and $transaction ) {
             push @{$self->{_TransactionBatch}}, $trans if $args{'CommitScrips'};

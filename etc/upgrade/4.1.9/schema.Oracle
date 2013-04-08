@@ -1,0 +1,5 @@
+UPDATE Transactions
+SET TimeTaken
+    = COALESCE(TO_NUMBER(REGEXP_SUBSTR(NewValue, '^-?\d+$')), 0)
+    - TO_NUMBER(OldValue)
+WHERE ObjectType = 'RT::Ticket' AND Type = 'Set' AND Field = 'TimeWorked';

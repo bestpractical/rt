@@ -2303,7 +2303,18 @@ sub _SetStatus {
     return ($val, $msg);
 }
 
+sub SetTimeWorked {
+    my $self = shift;
+    my $value = shift;
 
+    my $taken = ($value||0) - ($self->__Value('TimeWorked')||0);
+
+    return $self->_Set(
+        Field           => 'TimeWorked',
+        Value           => $value,
+        TimeTaken       => $taken,
+    );
+}
 
 =head2 Delete
 
@@ -2711,13 +2722,19 @@ only be called from _NewTransaction
 sub _UpdateTimeTaken {
     my $self    = shift;
     my $Minutes = shift;
-    my ($Total);
+    my %rest    = @_;
 
-    $Total = $self->SUPER::_Value("TimeWorked");
+    if ( my $txn = $rest{'Transaction'} ) {
+        return if $txn->__Value('Type') eq 'Set' && $txn->__Value('Field') eq 'TimeWorked';
+    }
+
+    my $Total = $self->__Value("TimeWorked");
     $Total = ( $Total || 0 ) + ( $Minutes || 0 );
-    $self->SUPER::_Set(
+    $self->_Set(
         Field => "TimeWorked",
-        Value => $Total
+        Value => $Total,
+        RecordTransaction => 0,
+        CheckACL => 0,
     );
 
     return ($Total);
