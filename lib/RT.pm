@@ -83,7 +83,11 @@ RT - Request Tracker
 
 =head1 SYNOPSIS
 
-A fully featured request tracker package
+A fully featured request tracker package.
+
+This documentation describes the point-of-entry for RT's Perl API.  To learn
+more about what RT is and what it can do for you, visit
+L<https://bestpractical.com/rt>.
 
 =head1 DESCRIPTION
 
