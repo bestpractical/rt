@@ -298,6 +298,13 @@ fixperms:
 	# Make the system binaries executable also
 	cd $(DESTDIR)$(RT_SBIN_PATH) && ( chmod 0755 $(SYSTEM_BINARIES) ; chown $(BIN_OWNER) $(SYSTEM_BINARIES);  chgrp $(RTGROUP) $(SYSTEM_BINARIES))
 
+	# Make upgrade scripts executable if they are in the source.
+	#
+	# Note that we use the deprecated (by GNU/POSIX find) -perm +0NNN syntax
+	# instead of -perm /0NNN since BSD find doesn't support the latter.
+	( cd etc/upgrade && find . -type f -not -name '*.in' -perm +0111 -print ) | while read file ; do \
+		chmod a+x "$(DESTDIR)$(RT_ETC_PATH)/upgrade/$$file" ; \
+	done
 
 	# Make the web ui readable by all. 
 	chmod -R  u+rwX,go-w,go+rX 	$(DESTDIR)$(MASON_HTML_PATH) \
@@ -425,6 +432,13 @@ etc-install:
 @COMMENT_INPLACE_LAYOUT@	[ -d $(DESTDIR)$(RT_ETC_PATH) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(RT_ETC_PATH)
 @COMMENT_INPLACE_LAYOUT@	for file in $(ETC_FILES) ; do \
 @COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -m 0644 "etc/$$file" "$(DESTDIR)$(RT_ETC_PATH)/" ; \
+@COMMENT_INPLACE_LAYOUT@	done
+@COMMENT_INPLACE_LAYOUT@	[ -d $(DESTDIR)$(RT_ETC_PATH)/upgrade ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(RT_ETC_PATH)/upgrade
+@COMMENT_INPLACE_LAYOUT@	-( cd etc/upgrade && find . -type d -print ) | while read dir ; do \
+@COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -m 0755 -d "$(DESTDIR)$(RT_ETC_PATH)/upgrade/$$dir" ; \
+@COMMENT_INPLACE_LAYOUT@	done
+@COMMENT_INPLACE_LAYOUT@	-( cd etc/upgrade && find . -type f -not -name '*.in' -print ) | while read file ; do \
+@COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -m 0644 "etc/upgrade/$$file" "$(DESTDIR)$(RT_ETC_PATH)/upgrade/$$file" ; \
 @COMMENT_INPLACE_LAYOUT@	done
 
 
