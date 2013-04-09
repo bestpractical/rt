@@ -385,13 +385,24 @@ sub Content {
         }
 
         $content =~ s/^/> /gm;
-        $content = $self->loc("On [_1], [_2] wrote:", $self->CreatedAsString, $self->CreatorObj->Name)
-          . "\n$content\n\n";
+        $content = $self->QuoteHeader . "\n$content\n\n";
     }
 
     return ($content);
 }
 
+=head2 QuoteHeader
+
+Returns text prepended to content when transaction is quoted
+(see C<Quote> argument in L</Content>). By default returns
+localized "On <date> <user name> wrote:\n".
+
+=cut
+
+sub QuoteHeader {
+    my $self = shift;
+    return $self->loc("On [_1], [_2] wrote:", $self->CreatedAsString, $self->CreatorObj->Name);
+}
 
 
 =head2 Addresses

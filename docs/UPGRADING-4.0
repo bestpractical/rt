@@ -24,9 +24,13 @@ following to remove the _Overlay files:
     find /opt/rt3/lib/ -type f -name '*_Overlay*' -delete
 
 RT has also changed how web deployment works; you will need to review
-docs/web_deployment.pod for current instructions.  The old `fastcgi_server`,
-`webmux.pl`, and `mason_handler.*` files will not work with RT 4.0, and should
-be removed to reduce confusion.
+F<docs/web_deployment.pod> for current instructions.  The old
+`fastcgi_server`, `webmux.pl`, and `mason_handler.*` files will not
+work with RT 4.0, and should be removed to reduce confusion.
+
+If you deploy RT with mod_perl, Apache will no longer start with C<SetHandler>
+set to `perl-script`. F<docs/web_deployment.pod> contains the
+new configuration.
 
 
 =head2 RT_SiteConfig.pm

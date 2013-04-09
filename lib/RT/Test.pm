@@ -117,6 +117,8 @@ sub import {
     my $class = shift;
     my %args = %rttest_opt = @_;
 
+    $rttest_opt{'nodb'} = $args{'nodb'} = 1 if $^C;
+
     # Spit out a plan (if we got one) *before* we load modules
     if ( $args{'tests'} ) {
         plan( tests => $args{'tests'} )

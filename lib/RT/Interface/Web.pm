@@ -1350,10 +1350,8 @@ sub IsCompCSRFWhitelisted {
     # record.
     delete $args{id};
 
-    # If they have a valid results= from MaybeRedirectForResults, that's
-    # also fine.
-    delete $args{results} if $args{results}
-        and $HTML::Mason::Commands::session{"Actions"}->{$args{results}};
+    # If they have a results= from MaybeRedirectForResults, that's also fine.
+    delete $args{results};
 
     # The homepage refresh, which uses the Refresh header, doesn't send
     # a referer in most browsers; whitelist the one parameter it reloads
@@ -2134,6 +2132,37 @@ sub _ProcessUpdateMessageRecipients {
     }
 }
 
+sub ProcessAttachments {
+    my %args = (
+        ARGSRef => {},
+        @_
+    );
+
+    my $ARGSRef = $args{ARGSRef} || {};
+    # deal with deleting uploaded attachments
+    foreach my $key ( keys %$ARGSRef ) {
+        if ( $key =~ m/^DeleteAttach-(.+)$/ ) {
+            delete $session{'Attachments'}{$1};
+        }
+        $session{'Attachments'} = { %{ $session{'Attachments'} || {} } };
+    }
+
+    # store the uploaded attachment in session
+    if ( defined $ARGSRef->{'Attach'} && length $ARGSRef->{'Attach'} )
+    {    # attachment?
+        my $attachment = MakeMIMEEntity( AttachmentFieldName => 'Attach' );
+
+        my $file_path = Encode::decode_utf8("$ARGSRef->{'Attach'}");
+        $session{'Attachments'} =
+          { %{ $session{'Attachments'} || {} }, $file_path => $attachment, };
+    }
+
+    # delete temporary storage entry to make WebUI clean
+    unless ( keys %{ $session{'Attachments'} } and $ARGSRef->{'UpdateAttach'} )
+    {
+        delete $session{'Attachments'};
+    }
+}
 
 
 =head2 MakeMIMEEntity PARAMHASH
@@ -3291,6 +3320,24 @@ sub ProcessLinksForCreate {
     return wantarray ? %links : \%links;
 }
 
+=head2 ProcessTransactionSquelching
+
+Takes a hashref of the submitted form arguments, C<%ARGS>.
+
+Returns a hash of squelched addresses.
+
+=cut
+
+sub ProcessTransactionSquelching {
+    my $args    = shift;
+    my %checked = map { $_ => 1 } grep { defined }
+        (    ref $args->{'TxnSendMailTo'} eq "ARRAY"  ? @{$args->{'TxnSendMailTo'}} :
+         defined $args->{'TxnSendMailTo'}             ?  ($args->{'TxnSendMailTo'}) :
+                                                                             () );
+    my %squelched = map { $_ => 1 } grep { not $checked{$_} } split /,/, ($args->{'TxnRecipients'}||'');
+    return %squelched;
+}
+
 =head2 _UploadedFile ( $arg );
 
 Takes a CGI parameter name; if a file is uploaded under that name,
@@ -3522,9 +3569,9 @@ our @SCRUBBER_ALLOWED_TAGS = qw(
 );
 
 our %SCRUBBER_ALLOWED_ATTRIBUTES = (
-    # Match http, ftp and relative urls
+    # Match http, https, ftp, mailto and relative urls
     # XXX: we also scrub format strings with this module then allow simple config options
-    href   => qr{^(?:http:|ftp:|https:|/|__Web(?:Path|HomePath|BaseURL|URL)__)}i,
+    href   => qr{^(?:https?:|ftp:|mailto:|/|__Web(?:Path|HomePath|BaseURL|URL)__)}i,
     face   => 1,
     size   => 1,
     target => 1,

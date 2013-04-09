@@ -241,31 +241,7 @@ $CanComment = 1 if ( $TicketObj->CurrentUserHasRight('CommentOnTicket') or
                      $TicketObj->CurrentUserHasRight('ModifyTicket') ); 
 
 
-# deal with deleting uploaded attachments
-foreach my $key (keys %ARGS) {
-    if ($key =~ m/^DeleteAttach-(.+)$/) {
-        delete $session{'Attachments'}{$1};
-    }
-    $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
-}
-
-# store the uploaded attachment in session
-if ( defined $ARGS{'Attach'} && length $ARGS{'Attach'} ) { # attachment?
-    my $attachment = MakeMIMEEntity(
-        AttachmentFieldName => 'Attach'
-    );
-
-    my $file_path = Encode::decode_utf8("$ARGS{'Attach'}");
-    $session{'Attachments'} = {
-        %{$session{'Attachments'} || {}},
-        $file_path => $attachment,
-    };
-}
-
-# delete temporary storage entry to make WebUI clean
-unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
-    delete $session{'Attachments'};
-}
+ProcessAttachments(ARGSRef => \%ARGS);
 
 my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', Arguments => \%ARGS );
 $m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
@@ -275,12 +251,8 @@ $m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
 
 if ( $ARGS{'SubmitTicket'} ) {
 
-    my %checked = map {$_ => 1} grep {defined}
-        (ref $ARGS{'TxnSendMailTo'} eq "ARRAY" ? @{$ARGS{'TxnSendMailTo'}}
-             : defined $ARGS{'TxnSendMailTo'} ? ($ARGS{'TxnSendMailTo'}) : ());
-
-    my @squelchlist = grep {not $checked{$_}} split /,/, ($ARGS{'TxnRecipients'}||'');
-    $ARGS{'SquelchMailTo'} = \@squelchlist if @squelchlist;
+    my %squelched = ProcessTransactionSquelching( \%ARGS );
+    $ARGS{'SquelchMailTo'} = [keys %squelched] if keys %squelched;
 
     my ($status, @msg) = $m->comp(
         '/Elements/ValidateCustomFields',

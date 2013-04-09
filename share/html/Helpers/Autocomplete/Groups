@@ -77,7 +77,7 @@ $groups->Limit(
 
 # Exclude groups we don't want
 foreach (split /\s*,\s*/, $exclude) {
-    $groups->Limit(FIELD => 'id', VALUE => $_, OPERATOR => '!=');
+    $groups->Limit(FIELD => 'id', VALUE => $_, OPERATOR => '!=', ENTRYAGGREGATOR => 'AND');
 }
 
 my @suggestions;

@@ -93,7 +93,7 @@ if ($self->{SearchId} eq 'new') {
                                               Right => 'SuperUser' );
     for my $obj (@Objects) {
         for ( $m->comp( "/Search/Elements/SearchesForObject", Object => $obj ) ) {
-            my ( $desc, $search ) = @$_;
+            my ( $desc, $loc_desc, $search ) = @$_;
             use Data::Dumper;
             # FFS
             local $Data::Dumper::Sortkeys = 1;

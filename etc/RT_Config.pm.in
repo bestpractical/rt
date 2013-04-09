@@ -480,7 +480,7 @@ accordingly.
 
 =cut
 
-Set($ExtractSubjectTagMatch, qr/\[.+? #\d+\]/);
+Set($ExtractSubjectTagMatch, qr/\[[^\]]+? #\d+\]/);
 Set($ExtractSubjectTagNoMatch, ( ${RT::EmailSubjectTagRegex}
        ? qr/\[(?:${RT::EmailSubjectTagRegex}) #\d+\]/
        : qr/\[\Q$RT::rtname\E #\d+\]/));
@@ -534,6 +534,8 @@ Correspond mail address of the ticket's queue.
 Warning: If you use this setting, bounced mails will appear to be
 incoming mail to the system, thus creating new tickets.
 
+This option only works if C<$MailCommand> is set to 'sendmailpipe'.
+
 =cut
 
 Set($SetOutgoingMailFrom, 0);
@@ -549,7 +551,8 @@ The option is a hash reference of queue name to email address.  If
 there is no ticket involved, then the value of the C<Default> key will
 be used.
 
-This option is irrelevant unless C<$SetOutgoingMailFrom> is set.
+This option only works if C<$SetOutgoingMailFrom> is enabled and
+C<$MailCommand> is set to 'sendmailpipe'.
 
 =cut
 
@@ -1181,7 +1184,12 @@ user's customized homepage ("RT at a glance").
 
 =cut
 
-Set($HomepageComponents, [qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues MyReminders RefreshHomepage Dashboards SavedSearches)]);
+Set(
+    $HomepageComponents,
+    [
+        qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues MyReminders RefreshHomepage Dashboards SavedSearches) # loc_qw
+    ]
+);
 
 =back
 

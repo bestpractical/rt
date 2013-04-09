@@ -50,15 +50,15 @@ $Object => undef
 </%args>
 <%init>
 # Returns an array of search objects associated on $Object,
-# in the form of [Description, searchObj]
+# in the form of [Description, LocalizedDescription, searchObj]
 my @result;
 while (my $search = $Object->Attributes->Next) {
     my $desc;
     if ($search->Name eq 'SavedSearch') {
-        push @result, [$search->Description, $search];
+        push @result, [$search->Description, $search->Description, $search];
     }
     elsif ($search->Name =~ m/^Search - (.*)/) {
-        push @result, [$1, $search];
+        push @result, [$1, loc($1), $search];
     }
 }
 return @result;

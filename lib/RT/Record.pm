@@ -886,6 +886,8 @@ sub Update {
 
         $value =~ s/\r\n/\n/gs;
 
+        my $truncated_value = $self->TruncateValue($attribute, $value);
+
         # If Queue is 'General', we want to resolve the queue name for
         # the object.
 
@@ -903,8 +905,8 @@ sub Update {
                 next if $name eq $value || $name eq ($value || 0);
             }
 
-            next if $value eq $self->$attribute();
-            next if ($value || 0) eq $self->$attribute();
+            next if $truncated_value eq $self->$attribute();
+            next if ( $truncated_value || 0 ) eq $self->$attribute();
         };
 
         $new_values{$attribute} = $value;

@@ -412,7 +412,7 @@ my $build_admin_menu = sub {
     if ( $request_path =~ m{^/Admin/Articles/Classes/} ) {
         my $tabs = PageMenu();
         if ( my $id = $DECODED_ARGS->{'id'} ) {
-            my $obj = RT::CustomField->new( $session{'CurrentUser'} );
+            my $obj = RT::Class->new( $session{'CurrentUser'} );
             $obj->Load($id);
 
             if ( $obj and $obj->id ) {
@@ -435,6 +435,9 @@ my $build_admin_menu = sub {
 };
 
 my $build_main_nav = sub {
+
+    PageWidgets()->child( simple_search => raw_html => $m->scomp('SimpleSearch') );
+    PageWidgets()->child( create_ticket => raw_html => $m->scomp('CreateTicket') );
 
     my $home = Menu->child( home => title => loc('Homepage'), path => '/' );
     unless ($session{'dashboards_in_menu'}) {
@@ -562,9 +565,9 @@ my $build_main_nav = sub {
 
         for my $search (@$searches) {
             $search_menu->child( "search-" . $i++ =>
-                title => $search->[0],
+                title => $search->[1],
                 path  => "/Prefs/Search.html?"
-                       . $query_string->( name => ref( $search->[1] ) . '-' . $search->[1]->Id ),
+                       . $query_string->( name => ref( $search->[2] ) . '-' . $search->[2]->Id ),
             );
 
         }
@@ -847,8 +850,8 @@ my $build_main_nav = sub {
                 &&                        #XXX TODO better abstraction
                 $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => RT->System )) {
                 my $shred_args = $query_string->(
-                    search          => 1,
-                    plugin          => 'Tickets',
+                    Search          => 1,
+                    Plugin          => 'Tickets',
                     'Tickets:query' => $rss_data{'Query'},
                     'Tickets:limit' => $QueryArgs->{'Rows'},
                 );
@@ -872,6 +875,10 @@ my $build_main_nav = sub {
     }
 
     if ( $request_path =~ m{^/Articles/} ) {
+        PageWidgets()->child( article_search => raw_html => $m->scomp('/Articles/Elements/GotoArticle') );
+        PageWidgets()->delete('create_ticket');
+        PageWidgets()->delete('simple_search');
+
         my $tabs = PageMenu();
         $tabs->child( search => title => loc("Search"),       path => "/Articles/Article/Search.html" );
         $tabs->child( create => title => loc("New Article" ), path => "/Articles/Article/PreCreate.html" );
@@ -909,9 +916,6 @@ my $build_main_nav = sub {
     if ( $request_path =~ /^\/(?:index.html|$)/ ) {
         PageMenu()->child( edit => title => loc('Edit'), path => '/Prefs/MyRT.html' );
     }
-
-    PageWidgets()->child( simple_search => raw_html => $m->scomp('SimpleSearch') );
-    PageWidgets()->child( create_ticket => raw_html => $m->scomp('CreateTicket') );
 
     $m->callback( CallbackName => 'Privileged' );
 };

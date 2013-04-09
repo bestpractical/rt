@@ -709,7 +709,7 @@ sub GetFileName
 =head4 StoragePath
 
 Returns an absolute path to the storage dir.  See
-L<CONFIGURATION/$ShredderStoragePath>.
+L</$ShredderStoragePath>.
 
 See also description of the L</GetFileName> method.
 
