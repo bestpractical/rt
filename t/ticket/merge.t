@@ -4,7 +4,7 @@ use warnings;
 
 
 use RT;
-use RT::Test tests => '29';
+use RT::Test tests => '44';
 
 
 # validate that when merging two tickets, the comments from both tickets
@@ -133,4 +133,47 @@ ok $user && $user->id, 'loaded or created user';
 
     ($status,$msg) = $t->MergeInto($t2->id);
     ok($status, "Merged tickets: $msg");
+}
+
+# check Time* fields after merge
+{
+    my @tickets;
+    my @values = (
+        { Worked => 11, Estimated => 17, Left => 6 },
+        { Worked => 7, Estimated => 12, Left => 5 },
+    );
+
+    for my $i (0 .. 1) {
+        my $t = RT::Ticket->new(RT->SystemUser);
+        $t->Create( Queue => 'general');
+        ok ($t->id);
+        push @tickets, $t;
+
+        foreach my $field ( keys %{ $values[ $i ] } ) {
+            my $method = "SetTime$field";
+            my ($status, $msg) = $t->$method( $values[ $i ]{ $field } );
+            ok $status, "changed $field on the ticket"
+                or diag "error: $msg";
+        }
+    }
+
+    my ($status, $msg) = $tickets[1]->MergeInto($tickets[0]->id);
+    ok($status,$msg);
+
+    my $t = RT::Ticket->new(RT->SystemUser);
+    $t->Load( $tickets[0]->id );
+    foreach my $field ( keys %{ $values[0] } ) {
+        my $method = "Time$field";
+        my $expected = 0;
+        $expected += $_->{ $field } foreach @values;
+        is $t->$method, $expected, "correct value";
+
+        my $from_history = 0;
+        my $txns = $t->Transactions;
+        while ( my $txn = $txns->Next ) {
+            next unless $txn->Type eq 'Set' && $txn->Field eq $method;
+            $from_history += $txn->NewValue - $txn->OldValue;
+        }
+        is $from_history, $expected, "history is correct";
+    }
 }

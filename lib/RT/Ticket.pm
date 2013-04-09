@@ -1929,12 +1929,13 @@ sub _MergeInto {
 
     # Update time fields
     foreach my $type (qw(TimeEstimated TimeWorked TimeLeft)) {
-
-        my $mutator = "Set$type";
-        $MergeInto->$mutator(
-            ( $MergeInto->$type() || 0 ) + ( $self->$type() || 0 ) );
-
+        $MergeInto->_Set(
+            Field => $type,
+            Value => ( $MergeInto->$type() || 0 ) + ( $self->$type() || 0 ),
+            RecordTransaction => 0,
+        );
     }
+
     # add all of this ticket's watchers to that ticket.
     for my $role ($self->Roles) {
         next if $self->RoleGroup($role)->SingleMemberRoleGroup;

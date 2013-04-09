@@ -76,3 +76,15 @@ UPGRADING FROM RT 4.0.0 and greater
   using this in an rt-crontool cronjob or had used a
   Googleish_Local.pm to add features, you will need to convert to
   using RT::Search::Simple instead.
+
+* RT was recording additional time change transactions during merge, so
+  difference in ticket's history doesn't add up value on ticket. This has
+  been fixed, time is adjusted during merge, but now transactions are recorded.
+
+  In order to fix history records of old ticket you can run the following
+  command:
+
+    perl -I /opt/rt4/local/lib/ -I /opt/rt4/lib/ etc/upgrade/time-worked-history.pl
+
+  This command deletes records from Transactions table. This script can only fix
+  TimeWorked mismatch, but not TimeLeft or TimeEstimated.
