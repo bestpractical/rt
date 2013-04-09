@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+ * Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
  * For licensing, see LICENSE.html or http://ckeditor.com/license
  */
 
@@ -12,8 +12,10 @@
 		catch( e ) { return null; }
 
 		range.shrink( CKEDITOR.SHRINK_TEXT );
-		return range.getCommonAncestor().getAscendant( listTag, true );
+		return range.getCommonAncestor().getAscendant( listTag, 1 );
 	}
+
+	var listItem = function( node ) { return node.type == CKEDITOR.NODE_ELEMENT && node.is( 'li' ); };
 
 	var mapListStyle = {
 		'a' : 'lower-alpha',
@@ -28,10 +30,11 @@
 
 	function listStyle( editor, startupPage )
 	{
+		var lang = editor.lang.list;
 		if ( startupPage == 'bulletedListStyle' )
 		{
 			return {
-				title : editor.lang.list.bulletedTitle,
+				title : lang.bulletedTitle,
 				minWidth : 300,
 				minHeight : 50,
 				contents :
@@ -43,15 +46,16 @@
 						[
 							{
 								type : 'select',
-								label : editor.lang.list.type,
+								label : lang.type,
 								id : 'type',
-								style : 'width: 150px; margin: auto;',
+								align : 'center',
+								style : 'width:150px',
 								items :
 								[
-									[ editor.lang.list.notset, '' ],
-									[ editor.lang.list.circle, 'circle' ],
-									[ editor.lang.list.disc,  'disc' ],
-									[ editor.lang.list.square, 'square' ]
+									[ lang.notset, '' ],
+									[ lang.circle, 'circle' ],
+									[ lang.disc,  'disc' ],
+									[ lang.square, 'square' ]
 								],
 								setup : function( element )
 								{
@@ -95,26 +99,26 @@
 
 			var listStyleOptions =
 			[
-				[ editor.lang.list.notset, '' ],
-				[ editor.lang.list.lowerRoman, 'lower-roman' ],
-				[ editor.lang.list.upperRoman, 'upper-roman' ],
-				[ editor.lang.list.lowerAlpha, 'lower-alpha' ],
-				[ editor.lang.list.upperAlpha, 'upper-alpha' ],
-				[ editor.lang.list.decimal, 'decimal' ]
+				[ lang.notset, '' ],
+				[ lang.lowerRoman, 'lower-roman' ],
+				[ lang.upperRoman, 'upper-roman' ],
+				[ lang.lowerAlpha, 'lower-alpha' ],
+				[ lang.upperAlpha, 'upper-alpha' ],
+				[ lang.decimal, 'decimal' ]
 			];
 
 			if ( !CKEDITOR.env.ie || CKEDITOR.env.version > 7 )
 			{
 				listStyleOptions.concat( [
-					[ editor.lang.list.armenian, 'armenian' ],
-					[ editor.lang.list.decimalLeadingZero, 'decimal-leading-zero' ],
-					[ editor.lang.list.georgian, 'georgian' ],
-					[ editor.lang.list.lowerGreek, 'lower-greek' ]
+					[ lang.armenian, 'armenian' ],
+					[ lang.decimalLeadingZero, 'decimal-leading-zero' ],
+					[ lang.georgian, 'georgian' ],
+					[ lang.lowerGreek, 'lower-greek' ]
 				]);
 			}
 
 			return {
-				title : editor.lang.list.numberedTitle,
+				title : lang.numberedTitle,
 				minWidth : 300,
 				minHeight : 50,
 				contents :
@@ -130,23 +134,41 @@
 								children :
 								[
 									{
-										label : editor.lang.list.start,
+										label : lang.start,
 										type : 'text',
 										id : 'start',
-										validate : CKEDITOR.dialog.validate.integer( editor.lang.list.validateStartNumber ),
+										validate : CKEDITOR.dialog.validate.integer( lang.validateStartNumber ),
 										setup : function( element )
 										{
-											var value = element.getAttribute( 'start' ) || 1;
+											// List item start number dominates.
+											var value = element.getFirst( listItem ).getAttribute( 'value' ) || element.getAttribute( 'start' ) || 1;
 											value && this.setValue( value );
 										},
 										commit : function( element )
 										{
-											element.setAttribute( 'start', this.getValue() );
+											var firstItem = element.getFirst( listItem );
+											var oldStart = firstItem.getAttribute( 'value' ) || element.getAttribute( 'start' ) || 1;
+
+											// Force start number on list root.
+											element.getFirst( listItem ).removeAttribute( 'value' );
+											var val = parseInt( this.getValue(), 10 );
+											if ( isNaN( val ) )
+												element.removeAttribute( 'start' );
+											else
+												element.setAttribute( 'start', val );
+
+											// Update consequent list item numbering.
+											var nextItem = firstItem, conseq = oldStart, startNumber = isNaN( val ) ? 1 : val;
+											while ( ( nextItem = nextItem.getNext( listItem ) ) && conseq++ )
+											{
+												if ( nextItem.getAttribute( 'value' ) == conseq )
+													nextItem.setAttribute( 'value', startNumber + conseq - oldStart );
+											}
 										}
 									},
 									{
 										type : 'select',
-										label : editor.lang.list.type,
+										label : lang.type,
 										id : 'type',
 										style : 'width: 100%;',
 										items : listStyleOptions,

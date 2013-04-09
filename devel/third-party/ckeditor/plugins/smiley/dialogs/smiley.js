@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 
@@ -34,9 +34,11 @@ CKEDITOR.dialog.add( 'smiley', function( editor )
 				attributes :
 				{
 					src : src,
-					_cke_saved_src : src,
+					'data-cke-saved-src' : src,
 					title : title,
-					alt : title
+					alt : title,
+					width : target.$.width,
+					height : target.$.height
 				}
 			});
 
@@ -52,8 +54,8 @@ CKEDITOR.dialog.add( 'smiley', function( editor )
 		element = new CKEDITOR.dom.element( element );
 		var relative, nodeToMove;
 
-		var keystroke = ev.getKeystroke();
-		var rtl = editor.lang.dir == 'rtl';
+		var keystroke = ev.getKeystroke(),
+			rtl = editor.lang.dir == 'rtl';
 		switch ( keystroke )
 		{
 			// UP-ARROW
@@ -86,8 +88,6 @@ CKEDITOR.dialog.add( 'smiley', function( editor )
 
 			// RIGHT-ARROW
 			case rtl ? 37 : 39 :
-			// TAB
-			case 9 :
 				// relative is TD
 				if ( ( relative = element.getParent().getNext() ) )
 				{
@@ -107,8 +107,6 @@ CKEDITOR.dialog.add( 'smiley', function( editor )
 
 			// LEFT-ARROW
 			case rtl ? 39 : 37 :
-			// SHIFT + TAB
-			case CKEDITOR.SHIFT + 9 :
 				// relative is TD
 				if ( ( relative = element.getParent().getPrevious() ) )
 				{
@@ -145,11 +143,11 @@ CKEDITOR.dialog.add( 'smiley', function( editor )
 	for ( i = 0 ; i < size ; i++ )
 	{
 		if ( i % columns === 0 )
-			html.push( '<tr>' );
+			html.push( '<tr role="presentation">' );
 
 		var smileyLabelId = 'cke_smile_label_' + i + '_' + CKEDITOR.tools.getNextNumber();
 		html.push(
-			'<td class="cke_dark_background cke_centered" style="vertical-align: middle;">' +
+			'<td class="cke_dark_background cke_centered" style="vertical-align: middle;" role="presentation">' +
 				'<a href="javascript:void(0)" role="option"',
 					' aria-posinset="' + ( i +1 ) + '"',
 					' aria-setsize="' + size + '"',
@@ -181,16 +179,22 @@ CKEDITOR.dialog.add( 'smiley', function( editor )
 	var smileySelector =
 	{
 		type : 'html',
+		id : 'smileySelector',
 		html : html.join( '' ),
 		onLoad : function( event )
 		{
 			dialog = event.sender;
 		},
 		focus : function()
- 		{
-			var firstSmile = this.getElement().getElementsByTag( 'a' ).getItem( 0 );
-			firstSmile.focus();
- 		},
+		{
+			var self = this;
+			// IE need a while to move the focus (#6539).
+			setTimeout( function ()
+			{
+				var firstSmile = self.getElement().getElementsByTag( 'a' ).getItem( 0 );
+				firstSmile.focus();
+			}, 0 );
+		},
 		onClick : onClick,
 		style : 'width: 100%; border-collapse: separate;'
 	};

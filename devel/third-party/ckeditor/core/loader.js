@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 
@@ -24,7 +24,6 @@ if ( !CKEDITOR.loader )
 		var scripts =
 		{
 			'core/_bootstrap'		: [ 'core/config', 'core/ckeditor', 'core/plugins', 'core/scriptloader', 'core/tools', /* The following are entries that we want to force loading at the end to avoid dependence recursion */ 'core/dom/comment', 'core/dom/elementpath', 'core/dom/text', 'core/dom/rangelist' ],
-			'core/ajax'				: [ 'core/xml' ],
 			'core/ckeditor'			: [ 'core/ckeditor_basic', 'core/dom', 'core/dtd', 'core/dom/document', 'core/dom/element', 'core/editor', 'core/event', 'core/htmlparser', 'core/htmlparser/element', 'core/htmlparser/fragment', 'core/htmlparser/filter', 'core/htmlparser/basicwriter', 'core/tools' ],
 			'core/ckeditor_base'	: [],
 			'core/ckeditor_basic'	: [ 'core/editor_basic', 'core/env', 'core/event' ],
@@ -59,16 +58,14 @@ if ( !CKEDITOR.loader )
 			'core/htmlparser/cdata'		: [ 'core/htmlparser' ],
 			'core/htmlparser/filter'	: [ 'core/htmlparser' ],
 			'core/htmlparser/basicwriter': [ 'core/htmlparser' ],
-			'core/imagecacher'		: [ 'core/dom/element' ],
 			'core/lang'				: [],
 			'core/plugins'			: [ 'core/resourcemanager' ],
 			'core/resourcemanager'	: [ 'core/scriptloader', 'core/tools' ],
 			'core/scriptloader'		: [ 'core/dom/element', 'core/env' ],
-			'core/skins'			: [ 'core/imagecacher', 'core/scriptloader' ],
+			'core/skins'			: [ 'core/scriptloader' ],
 			'core/themes'			: [ 'core/resourcemanager' ],
 			'core/tools'			: [ 'core/env' ],
-			'core/ui'				: [],
-			'core/xml'				: [ 'core/env' ]
+			'core/ui'				: []
 		};
 
 		var basePath = (function()
@@ -108,7 +105,7 @@ if ( !CKEDITOR.loader )
 			return path;
 		})();
 
-		var timestamp = 'A8LE4JO';
+		var timestamp = 'D03G5XL';
 
 		var getUrl = function( resource )
 		{

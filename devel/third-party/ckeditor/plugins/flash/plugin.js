@@ -1,19 +1,11 @@
 ﻿/*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 
 (function()
 {
-	var flashFilenameRegex = /\.swf(?:$|\?)/i,
-		numberRegex = /^\d+(?:\.\d+)?$/;
-
-	function cssifyLength( length )
-	{
-		if ( numberRegex.test( length ) )
-			return length + 'px';
-		return length;
-	}
+	var flashFilenameRegex = /\.swf(?:$|\?)/i;
 
 	function isFlashEmbed( element )
 	{
@@ -24,19 +16,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 
 	function createFakeElement( editor, realElement )
 	{
-		var fakeElement = editor.createFakeParserElement( realElement, 'cke_flash', 'flash', true ),
-			fakeStyle = fakeElement.attributes.style || '';
-
-		var width = realElement.attributes.width,
-			height = realElement.attributes.height;
-
-		if ( typeof width != 'undefined' )
-			fakeStyle = fakeElement.attributes.style = fakeStyle + 'width:' + cssifyLength( width ) + ';';
-
-		if ( typeof height != 'undefined' )
-			fakeStyle = fakeElement.attributes.style = fakeStyle + 'height:' + cssifyLength( height ) + ';';
-
-		return fakeElement;
+		return editor.createFakeParserElement( realElement, 'cke_flash', 'flash', true );
 	}
 
 	CKEDITOR.plugins.add( 'flash',
@@ -81,7 +61,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 				{
 					var element = evt.data.element;
 
-					if ( element.is( 'img' ) && element.getAttribute( '_cke_real_element_type' ) == 'flash' )
+					if ( element.is( 'img' ) && element.data( 'cke-real-element-type' ) == 'flash' )
 						evt.data.dialog = 'flash';
 				});
 
@@ -91,7 +71,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 				editor.contextMenu.addListener( function( element, selection )
 					{
 						if ( element && element.is( 'img' ) && !element.isReadOnly()
-								&& element.getAttribute( '_cke_real_element_type' ) == 'flash' )
+								&& element.data( 'cke-real-element-type' ) == 'flash' )
 							return { flash : CKEDITOR.TRISTATE_OFF };
 					});
 			}
@@ -113,7 +93,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 								var attributes = element.attributes,
 									classId = attributes.classid && String( attributes.classid ).toLowerCase();
 
-								if ( !classId )
+								if ( !classId && !isFlashEmbed( element ) )
 								{
 									// Look for the inner <embed>
 									for ( var i = 0 ; i < element.children.length ; i++ )

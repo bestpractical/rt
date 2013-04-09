@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 
@@ -8,6 +8,10 @@ CKEDITOR.plugins.add( 'resize',
 	init : function( editor )
 	{
 		var config = editor.config;
+
+		// Resize in the same direction of chrome,
+		// which is identical to dir of editor element. (#6614)
+		var resizeDir = editor.element.getDirection( 1 );
 
 		!config.resize_dir && ( config.resize_dir = 'both' );
 		( config.resize_maxWidth == undefined ) && ( config.resize_maxWidth = 3000 );
@@ -31,7 +35,7 @@ CKEDITOR.plugins.add( 'resize',
 					dy = evt.data.$.screenY - origin.y,
 					width = startSize.width,
 					height = startSize.height,
-					internalWidth = width + dx * ( editor.lang.dir == 'rtl' ? -1 : 1 ),
+					internalWidth = width + dx * ( resizeDir == 'rtl' ? -1 : 1 ),
 					internalHeight = height + dy;
 
 				if ( resizeHorizontal )
@@ -40,7 +44,8 @@ CKEDITOR.plugins.add( 'resize',
 				if ( resizeVertical )
 					height =  Math.max( config.resize_minHeight, Math.min( internalHeight, config.resize_maxHeight ) );
 
-				editor.resize( width, height );
+				// DO NOT impose fixed size with single direction resize. (#6308)
+				editor.resize( resizeHorizontal ? width : null, height );
 			}
 
 			function dragEndHandler ( evt )
@@ -83,15 +88,22 @@ CKEDITOR.plugins.add( 'resize',
 					if ( event.data.space == 'bottom' )
 					{
 						var direction = '';
-						if ( resizeHorizontal && !resizeVertical)
+						if ( resizeHorizontal && !resizeVertical )
 							direction = ' cke_resizer_horizontal';
-						if ( !resizeHorizontal && resizeVertical)
+						if ( !resizeHorizontal && resizeVertical )
 							direction = ' cke_resizer_vertical';
 
-						event.data.html += '<div class="cke_resizer' + direction + '"' +
+						var resizerHtml =
+							'<div' +
+							' class="cke_resizer' + direction + ' cke_resizer_' + resizeDir + '"' +
 							' title="' + CKEDITOR.tools.htmlEncode( editor.lang.resize ) + '"' +
 							' onmousedown="CKEDITOR.tools.callFunction(' + mouseDownFn + ', event)"' +
 							'></div>';
+
+						// Always sticks the corner of botttom space.
+						resizeDir == 'ltr' && direction == 'ltr' ?
+							event.data.html += resizerHtml :
+							event.data.html = resizerHtml + event.data.html;
 					}
 				}, editor, null, 100 );
 		}
@@ -99,8 +111,8 @@ CKEDITOR.plugins.add( 'resize',
 } );
 
 /**
- * The minimum editor width, in pixels, when resizing it with the resize handle.
- * Note: It fallbacks to editor's actual width if that's smaller than the default value.
+ * The minimum editor width, in pixels, when resizing the editor interface by using the resize handle.
+ * Note: It falls back to editor's actual width if it is smaller than the default value.
  * @name CKEDITOR.config.resize_minWidth
  * @type Number
  * @default 750
@@ -109,8 +121,8 @@ CKEDITOR.plugins.add( 'resize',
  */
 
 /**
- * The minimum editor height, in pixels, when resizing it with the resize handle.
- * Note: It fallbacks to editor's actual height if that's smaller than the default value.
+ * The minimum editor height, in pixels, when resizing the editor interface by using the resize handle.
+ * Note: It falls back to editor's actual height if it is smaller than the default value.
  * @name CKEDITOR.config.resize_minHeight
  * @type Number
  * @default 250
@@ -119,7 +131,7 @@ CKEDITOR.plugins.add( 'resize',
  */
 
 /**
- * The maximum editor width, in pixels, when resizing it with the resize handle.
+ * The maximum editor width, in pixels, when resizing the editor interface by using the resize handle.
  * @name CKEDITOR.config.resize_maxWidth
  * @type Number
  * @default 3000
@@ -128,7 +140,7 @@ CKEDITOR.plugins.add( 'resize',
  */
 
 /**
- * The maximum editor height, in pixels, when resizing it with the resize handle.
+ * The maximum editor height, in pixels, when resizing the editor interface by using the resize handle.
  * @name CKEDITOR.config.resize_maxHeight
  * @type Number
  * @default 3000
@@ -137,7 +149,7 @@ CKEDITOR.plugins.add( 'resize',
  */
 
 /**
- * Whether to enable the resizing feature. If disabled the resize handler will not be visible.
+ * Whether to enable the resizing feature. If this feature is disabled, the resize handle will not be visible.
  * @name CKEDITOR.config.resize_enabled
  * @type Boolean
  * @default true
@@ -146,8 +158,8 @@ CKEDITOR.plugins.add( 'resize',
  */
 
 /**
- * The directions to which the editor resizing is enabled. Possible values
- * are "both", "vertical" and "horizontal".
+ * The dimensions for which the editor resizing is enabled. Possible values
+ * are <code>both</code>, <code>vertical</code>, and <code>horizontal</code>.
  * @name CKEDITOR.config.resize_dir
  * @type String
  * @default 'both'

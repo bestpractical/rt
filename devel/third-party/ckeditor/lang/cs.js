@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 
@@ -14,7 +14,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 
 /**
- * Constains the dictionary of language entries.
+ * Contains the dictionary of language entries.
  * @namespace
  */
 CKEDITOR.lang['cs'] =
@@ -31,11 +31,12 @@ CKEDITOR.lang['cs'] =
 	 * Screenreader titles. Please note that screenreaders are not always capable
 	 * of reading non-English words. So be careful while translating it.
 	 */
-	editorTitle : 'Rich text editor, %1, press ALT 0 for help.', // MISSING
+	editorTitle : 'Textový editor, %1',
+	editorHelp : 'Stiskněte ALT 0 pro nápovědu',
 
 	// ARIA descriptions.
-	toolbar	: 'Toolbar', // MISSING
-	editor	: 'Rich Text Editor', // MISSING
+	toolbars	: 'Panely nástrojů editoru',
+	editor		: 'Textový editor',
 
 	// Toolbar buttons without dialogs.
 	source			: 'Zdroj',
@@ -56,6 +57,7 @@ CKEDITOR.lang['cs'] =
 	superscript		: 'Horní index',
 	horizontalrule	: 'Vložit vodorovnou linku',
 	pagebreak		: 'Vložit konec stránky',
+	pagebreakAlt		: 'Konec stránky',
 	unlink			: 'Odstranit odkaz',
 	undo			: 'Zpět',
 	redo			: 'Znovu',
@@ -82,33 +84,49 @@ CKEDITOR.lang['cs'] =
 		notSet			: '<nenastaveno>',
 		id				: 'Id',
 		name			: 'Jméno',
-		langDir			: 'Orientace jazyka',
-		langDirLtr		: 'Zleva do prava (LTR)',
-		langDirRtl		: 'Zprava do leva (RTL)',
+		langDir			: 'Směr jazyka',
+		langDirLtr		: 'Zleva doprava (LTR)',
+		langDirRtl		: 'Zprava doleva (RTL)',
 		langCode		: 'Kód jazyka',
 		longDescr		: 'Dlouhý popis URL',
 		cssClass		: 'Třída stylu',
 		advisoryTitle	: 'Pomocný titulek',
 		cssStyle		: 'Styl',
 		ok				: 'OK',
-		cancel			: 'Storno',
-		close			: 'Close', // MISSING
-		preview			: 'Preview', // MISSING
+		cancel			: 'Zrušit',
+		close			: 'Zavřít',
+		preview			: 'Náhled',
 		generalTab		: 'Obecné',
 		advancedTab		: 'Rozšířené',
 		validateNumberFailed : 'Zadaná hodnota není číselná.',
-		confirmNewPage	: 'Jakékoliv neuložené změny obsahu budou ztraceny. Skutečně chete otevrít novou stránku?',
-		confirmCancel	: 'Některá z nastavení byla změněna. Skutečně chete zavřít dialogové okno?',
-		options			: 'Options', // MISSING
-		target			: 'Target', // MISSING
-		targetNew		: 'New Window (_blank)', // MISSING
-		targetTop		: 'Topmost Window (_top)', // MISSING
-		targetSelf		: 'Same Window (_self)', // MISSING
-		targetParent	: 'Parent Window (_parent)', // MISSING
-		langDirLTR		: 'Left to Right (LTR)', // MISSING
-		langDirRTL		: 'Right to Left (RTL)', // MISSING
-		styles			: 'Style', // MISSING
-		cssClasses		: 'Stylesheet Classes', // MISSING
+		confirmNewPage	: 'Jakékoliv neuložené změny obsahu budou ztraceny. Skutečně chcete otevřít novou stránku?',
+		confirmCancel	: 'Některá z nastavení byla změněna. Skutečně chcete zavřít dialogové okno?',
+		options			: 'Nastavení',
+		target			: 'Cíl',
+		targetNew		: 'Nové okno (_blank)',
+		targetTop		: 'Okno nejvyšší úrovně (_top)',
+		targetSelf		: 'Stejné okno (_self)',
+		targetParent	: 'Rodičovské okno (_parent)',
+		langDirLTR		: 'Zleva doprava (LTR)',
+		langDirRTL		: 'Zprava doleva (RTL)',
+		styles			: 'Styly',
+		cssClasses		: 'Třídy stylů',
+		width			: 'Šířka',
+		height			: 'Výška',
+		align			: 'Zarovnání',
+		alignLeft		: 'Vlevo',
+		alignRight		: 'Vpravo',
+		alignCenter		: 'Na střed',
+		alignTop		: 'Nahoru',
+		alignMiddle		: 'Na střed',
+		alignBottom		: 'Dolů',
+		invalidValue	: 'Neplatná hodnota.',
+		invalidHeight	: 'Zadaná výška musí být číslo.',
+		invalidWidth	: 'Šířka musí být číslo.',
+		invalidCssLength	: 'Hodnota určená pro pole "%1" musí být kladné číslo bez nebo s platnou jednotkou míry CSS (px, %, in, cm, mm, em, ex, pt, nebo pc).',
+		invalidHtmlLength	: 'Hodnota určená pro pole "%1" musí být kladné číslo bez nebo s platnou jednotkou míry HTML (px nebo %).',
+		invalidInlineStyle	: 'Hodnota určená pro řádkový styl se musí skládat z jedné nebo více n-tic ve formátu "název : hodnota", oddělené středníky',
+		cssLengthTooltip	: 'Zadejte číslo jako hodnotu v pixelech nebo číslo s platnou jednotkou CSS (px, %, v cm, mm, em, ex, pt, nebo pc).',
 
 		// Put the voice-only part of the label in the span.
 		unavailable		: '%1<span class="cke_accessibility">, nedostupné</span>'
@@ -116,7 +134,7 @@ CKEDITOR.lang['cs'] =
 
 	contextmenu :
 	{
-		options : 'Context Menu Options' // MISSING
+		options : 'Nastavení kontextové nabídky'
 	},
 
 	// Special char dialog.
@@ -124,13 +142,13 @@ CKEDITOR.lang['cs'] =
 	{
 		toolbar		: 'Vložit speciální znaky',
 		title		: 'Výběr speciálního znaku',
-		options : 'Special Character Options' // MISSING
+		options : 'Nastavení speciálních znaků'
 	},
 
 	// Link dialog.
 	link :
 	{
-		toolbar		: 'Vložit/změnit odkaz',
+		toolbar		: 'Odkaz',
 		other 		: '<jiný>',
 		menu		: 'Změnit odkaz',
 		title		: 'Odkaz',
@@ -139,9 +157,9 @@ CKEDITOR.lang['cs'] =
 		upload		: 'Odeslat',
 		advanced	: 'Rozšířené',
 		type		: 'Typ odkazu',
-		toUrl		: 'URL', // MISSING
+		toUrl		: 'URL',
 		toAnchor	: 'Kotva v této stránce',
-		toEmail		: 'E-Mail',
+		toEmail		: 'E-mail',
 		targetFrame		: '<rámec>',
 		targetPopup		: '<vyskakovací okno>',
 		targetFrameName	: 'Název cílového rámu',
@@ -155,28 +173,27 @@ CKEDITOR.lang['cs'] =
 		popupFullScreen	: 'Celá obrazovka (IE)',
 		popupScrollBars	: 'Posuvníky',
 		popupDependent	: 'Závislost (Netscape)',
-		popupWidth		: 'Šířka',
 		popupLeft		: 'Levý okraj',
-		popupHeight		: 'Výška',
 		popupTop		: 'Horní okraj',
 		id				: 'Id',
-		langDir			: 'Orientace jazyka',
-		langDirLTR		: 'Zleva do prava (LTR)',
-		langDirRTL		: 'Zprava do leva (RTL)',
+		langDir			: 'Směr jazyka',
+		langDirLTR		: 'Zleva doprava (LTR)',
+		langDirRTL		: 'Zprava doleva (RTL)',
 		acccessKey		: 'Přístupový klíč',
 		name			: 'Jméno',
-		langCode		: 'Orientace jazyka',
-		tabIndex		: 'Pořadí prvku',
-		advisoryTitle	: 'Pomocný titulek',
+		langCode			: 'Kód jazyka',
+		tabIndex			: 'Pořadí prvku',
+		advisoryTitle		: 'Pomocný titulek',
 		advisoryContentType	: 'Pomocný typ obsahu',
 		cssClasses		: 'Třída stylu',
 		charset			: 'Přiřazená znaková sada',
 		styles			: 'Styl',
-		selectAnchor	: 'Vybrat kotvu',
+		rel			: 'Vztah',
+		selectAnchor		: 'Vybrat kotvu',
 		anchorName		: 'Podle jména kotvy',
-		anchorId		: 'Podle Id objektu',
-		emailAddress	: 'E-Mailová adresa',
-		emailSubject	: 'Předmět zprávy',
+		anchorId			: 'Podle Id objektu',
+		emailAddress		: 'E-mailová adresa',
+		emailSubject		: 'Předmět zprávy',
 		emailBody		: 'Tělo zprávy',
 		noAnchors		: '(Ve stránce není definována žádná kotva!)',
 		noUrl			: 'Zadejte prosím URL odkazu',
@@ -186,35 +203,36 @@ CKEDITOR.lang['cs'] =
 	// Anchor dialog
 	anchor :
 	{
-		toolbar		: 'Vložít/změnit záložku',
+		toolbar		: 'Záložka',
 		menu		: 'Vlastnosti záložky',
 		title		: 'Vlastnosti záložky',
 		name		: 'Název záložky',
-		errorName	: 'Zadejte prosím název záložky'
+		errorName	: 'Zadejte prosím název záložky',
+		remove		: 'Odstranit záložku'
 	},
 
 	// List style dialog
 	list:
 	{
-		numberedTitle		: 'Numbered List Properties', // MISSING
-		bulletedTitle		: 'Bulleted List Properties', // MISSING
-		type				: 'Type', // MISSING
-		start				: 'Start', // MISSING
-		validateStartNumber				:'List start number must be a whole number.', // MISSING
-		circle				: 'Circle', // MISSING
-		disc				: 'Disc', // MISSING
-		square				: 'Square', // MISSING
-		none				: 'None', // MISSING
-		notset				: '<not set>', // MISSING
-		armenian			: 'Armenian numbering', // MISSING
-		georgian			: 'Georgian numbering (an, ban, gan, etc.)', // MISSING
-		lowerRoman			: 'Lower Roman (i, ii, iii, iv, v, etc.)', // MISSING
-		upperRoman			: 'Upper Roman (I, II, III, IV, V, etc.)', // MISSING
-		lowerAlpha			: 'Lower Alpha (a, b, c, d, e, etc.)', // MISSING
-		upperAlpha			: 'Upper Alpha (A, B, C, D, E, etc.)', // MISSING
-		lowerGreek			: 'Lower Greek (alpha, beta, gamma, etc.)', // MISSING
-		decimal				: 'Decimal (1, 2, 3, etc.)', // MISSING
-		decimalLeadingZero	: 'Decimal leading zero (01, 02, 03, etc.)' // MISSING
+		numberedTitle		: 'Vlastnosti číslování',
+		bulletedTitle		: 'Vlastnosti odrážek',
+		type				: 'Typ',
+		start				: 'Počátek',
+		validateStartNumber				:'Číslování musí začínat celým číslem.',
+		circle				: 'Kroužky',
+		disc				: 'Kolečka',
+		square				: 'Čtverce',
+		none				: 'Nic',
+		notset				: '<nenastaveno>',
+		armenian			: 'Arménské',
+		georgian			: 'Gruzínské (an, ban, gan, atd.)',
+		lowerRoman			: 'Malé římské (i, ii, iii, iv, v, atd.)',
+		upperRoman			: 'Velké římské (I, II, III, IV, V, atd.)',
+		lowerAlpha			: 'Malá latinka (a, b, c, d, e, atd.)',
+		upperAlpha			: 'Velká latinka (A, B, C, D, E, atd.)',
+		lowerGreek			: 'Malé řecké (alpha, beta, gamma, atd.)',
+		decimal				: 'Arabská čísla (1, 2, 3, atd.)',
+		decimalLeadingZero	: 'Arabská čísla uvozená nulou (01, 02, 03, atd.)'
 	},
 
 	// Find And Replace Dialog
@@ -226,6 +244,7 @@ CKEDITOR.lang['cs'] =
 		findWhat			: 'Co hledat:',
 		replaceWith			: 'Čím nahradit:',
 		notFoundMsg			: 'Hledaný text nebyl nalezen.',
+		findOptions			: 'Možnosti hledání',
 		matchCase			: 'Rozlišovat velikost písma',
 		matchWord			: 'Pouze celá slova',
 		matchCyclic			: 'Procházet opakovaně',
@@ -243,15 +262,9 @@ CKEDITOR.lang['cs'] =
 		rows		: 'Řádky',
 		columns		: 'Sloupce',
 		border		: 'Ohraničení',
-		align		: 'Zarovnání',
-		alignLeft	: 'Vlevo',
-		alignCenter	: 'Na střed',
-		alignRight	: 'Vpravo',
-		width		: 'Šířka',
 		widthPx		: 'bodů',
 		widthPc		: 'procent',
-		widthUnit	: 'width unit', // MISSING
-		height		: 'Výška',
+		widthUnit	: 'jednotka šířky',
 		cellSpace	: 'Vzdálenost buněk',
 		cellPad		: 'Odsazení obsahu v buňce',
 		caption		: 'Popis',
@@ -264,8 +277,8 @@ CKEDITOR.lang['cs'] =
 		invalidRows		: 'Počet řádků musí být číslo větší než 0.',
 		invalidCols		: 'Počet sloupců musí být číslo větší než 0.',
 		invalidBorder	: 'Zdaná velikost okraje musí být číselná.',
-		invalidWidth	: 'Zadaná šířka tabulky musí být číselná.',
-		invalidHeight	: 'zadaná výška tabulky musí být číselná.',
+		invalidWidth	: 'Šířka tabulky musí být číslo.',
+		invalidHeight	: 'Zadaná výška tabulky musí být číselná.',
 		invalidCellSpacing	: 'Zadaná vzdálenost buněk musí být číselná.',
 		invalidCellPadding	: 'Zadané odsazení obsahu v buňce musí být číselné.',
 
@@ -287,9 +300,6 @@ CKEDITOR.lang['cs'] =
 			wordWrap		: 'Zalamování',
 			hAlign			: 'Vodorovné zarovnání',
 			vAlign			: 'Svislé zarovnání',
-			alignTop		: 'Nahoru',
-			alignMiddle		: 'Doprostřed',
-			alignBottom		: 'Dolů',
 			alignBaseline	: 'Na účaří',
 			bgColor			: 'Barva pozadí',
 			borderColor		: 'Barva okraje',
@@ -297,7 +307,7 @@ CKEDITOR.lang['cs'] =
 			header			: 'Hlavička',
 			yes				: 'Ano',
 			no				: 'Ne',
-			invalidWidth	: 'Zadaná šířka buňky musí být číslená.',
+			invalidWidth	: 'Šířka buňky musí být číslo.',
 			invalidHeight	: 'Zadaná výška buňky musí být číslená.',
 			invalidRowSpan	: 'Zadaný počet sloučených řádků musí být celé číslo.',
 			invalidColSpan	: 'Zadaný počet sloučených sloupců musí být celé číslo.',
@@ -410,27 +420,19 @@ CKEDITOR.lang['cs'] =
 		btnUpload	: 'Odeslat na server',
 		upload		: 'Odeslat',
 		alt			: 'Alternativní text',
-		width		: 'Šířka',
-		height		: 'Výška',
 		lockRatio	: 'Zámek',
-		unlockRatio	: 'Unlock Ratio', // MISSING
 		resetSize	: 'Původní velikost',
 		border		: 'Okraje',
-		hSpace		: 'H-mezera',
-		vSpace		: 'V-mezera',
-		align		: 'Zarovnání',
-		alignLeft	: 'Vlevo',
-		alignRight	: 'Vpravo',
+		hSpace		: 'Horizontální mezera',
+		vSpace		: 'Vertikální mezera',
 		alertUrl	: 'Zadejte prosím URL obrázku',
 		linkTab		: 'Odkaz',
 		button2Img	: 'Skutečně chcete převést zvolené obrázkové tlačítko na obyčejný obrázek?',
 		img2Button	: 'Skutečně chcete převést zvolený obrázek na obrázkové tlačítko?',
 		urlMissing	: 'Zadané URL zdroje obrázku nebylo nalezeno.',
-		validateWidth	: 'Width must be a whole number.', // MISSING
-		validateHeight	: 'Height must be a whole number.', // MISSING
-		validateBorder	: 'Border must be a whole number.', // MISSING
-		validateHSpace	: 'HSpace must be a whole number.', // MISSING
-		validateVSpace	: 'VSpace must be a whole number.' // MISSING
+		validateBorder	: 'Okraj musí být nastaven v celých číslech.',
+		validateHSpace	: 'Horizontální mezera musí být nastavena v celých číslech.',
+		validateVSpace	: 'Vertikální mezera musí být nastavena v celých číslech.'
 	},
 
 	// Flash Dialog
@@ -451,16 +453,10 @@ CKEDITOR.lang['cs'] =
 		accessAlways	: 'Vždy',
 		accessSameDomain: 'Ve stejné doméně',
 		accessNever		: 'Nikdy',
-		align			: 'Zarovnání',
-		alignLeft		: 'Vlevo',
 		alignAbsBottom	: 'Zcela dolů',
 		alignAbsMiddle	: 'Doprostřed',
 		alignBaseline	: 'Na účaří',
-		alignBottom		: 'Dolů',
-		alignMiddle		: 'Na střed',
-		alignRight		: 'Vpravo',
 		alignTextTop	: 'Na horní okraj textu',
-		alignTop		: 'Nahoru',
 		quality			: 'Kvalita',
 		qualityBest		: 'Nejlepší',
 		qualityHigh		: 'Vysoká',
@@ -474,15 +470,11 @@ CKEDITOR.lang['cs'] =
 		windowMode		: 'Režim okna',
 		flashvars		: 'Proměnné pro Flash',
 		bgcolor			: 'Barva pozadí',
-		width			: 'Šířka',
-		height			: 'Výška',
-		hSpace			: 'H-mezera',
-		vSpace			: 'V-mezera',
+		hSpace			: 'Horizontální mezera',
+		vSpace			: 'Vertikální mezera',
 		validateSrc		: 'Zadejte prosím URL odkazu',
-		validateWidth	: 'Zadaná šířka musí být číslo.',
-		validateHeight	: 'Zadaná výška musí být číslo.',
-		validateHSpace	: 'Zadaná H-mezera musí být číslo.',
-		validateVSpace	: 'Zadaná V-mezera musí být číslo.'
+		validateHSpace	: 'Zadaná horizontální mezera musí být číslo.',
+		validateVSpace	: 'Zadaná vertikální mezera musí být číslo.'
 	},
 
 	// Speller Pages Dialog
@@ -510,14 +502,14 @@ CKEDITOR.lang['cs'] =
 
 	smiley :
 	{
-		toolbar	: 'Smajlíky',
+		toolbar	: 'Smajlíci',
 		title	: 'Vkládání smajlíků',
-		options : 'Smiley Options' // MISSING
+		options : 'Nastavení smajlíků'
 	},
 
 	elementsPath :
 	{
-		eleLabel : 'Elements path', // MISSING
+		eleLabel : 'Cesta objektu',
 		eleTitle : '%1 objekt'
 	},
 
@@ -539,11 +531,11 @@ CKEDITOR.lang['cs'] =
 	clipboard :
 	{
 		title		: 'Vložit',
-		cutError	: 'Bezpečnostní nastavení Vašeho prohlížeče nedovolují editoru spustit funkci pro vyjmutí zvoleného textu do schránky. Prosím vyjměte zvolený text do schránky pomocí klávesnice (Ctrl/Cmd+X).',
-		copyError	: 'Bezpečnostní nastavení Vašeho prohlížeče nedovolují editoru spustit funkci pro kopírování zvoleného textu do schránky. Prosím zkopírujte zvolený text do schránky pomocí klávesnice (Ctrl/Cmd+C).',
+		cutError	: 'Bezpečnostní nastavení vašeho prohlížeče nedovolují editoru spustit funkci pro vyjmutí zvoleného textu do schránky. Prosím vyjměte zvolený text do schránky pomocí klávesnice (Ctrl/Cmd+X).',
+		copyError	: 'Bezpečnostní nastavení vašeho prohlížeče nedovolují editoru spustit funkci pro kopírování zvoleného textu do schránky. Prosím zkopírujte zvolený text do schránky pomocí klávesnice (Ctrl/Cmd+C).',
 		pasteMsg	: 'Do následujícího pole vložte požadovaný obsah pomocí klávesnice (<STRONG>Ctrl/Cmd+V</STRONG>) a stiskněte <STRONG>OK</STRONG>.',
-		securityMsg	: 'Z důvodů nastavení bezpečnosti Vašeho prohlížeče nemůže editor přistupovat přímo do schránky. Obsah schránky prosím vložte znovu do tohoto okna.',
-		pasteArea	: 'Paste Area' // MISSING
+		securityMsg	: 'Z důvodů nastavení bezpečnosti vašeho prohlížeče nemůže editor přistupovat přímo do schránky. Obsah schránky prosím vložte znovu do tohoto okna.',
+		pasteArea	: 'Oblast vkládání'
 	},
 
 	pastefromword :
@@ -551,7 +543,7 @@ CKEDITOR.lang['cs'] =
 		confirmCleanup	: 'Jak je vidět, vkládaný text je kopírován z Wordu. Chcete jej před vložením vyčistit?',
 		toolbar			: 'Vložit z Wordu',
 		title			: 'Vložit z Wordu',
-		error			: 'It was not possible to clean up the pasted data due to an internal error' // MISSING
+		error			: 'Z důvodu vnitřní chyby nebylo možné provést vyčištění vkládaného textu.'
 	},
 
 	pasteText :
@@ -564,7 +556,7 @@ CKEDITOR.lang['cs'] =
 	{
 		button			: 'Šablony',
 		title			: 'Šablony obsahu',
-		options : 'Template Options', // MISSING
+		options : 'Nastavení šablon',
 		insertOption	: 'Nahradit aktuální obsah',
 		selectPromptMsg	: 'Prosím zvolte šablonu pro otevření v editoru<br>(aktuální obsah editoru bude ztracen):',
 		emptyListMsg	: '(Není definována žádná šablona)'
@@ -575,7 +567,7 @@ CKEDITOR.lang['cs'] =
 	stylesCombo :
 	{
 		label		: 'Styl',
-		panelTitle	: 'Formatting Styles', // MISSING
+		panelTitle	: 'Formátovací styly',
 		panelTitle1	: 'Blokové styly',
 		panelTitle2	: 'Řádkové styly',
 		panelTitle3	: 'Objektové styly'
@@ -600,20 +592,29 @@ CKEDITOR.lang['cs'] =
 
 	div :
 	{
-		title				: 'Create Div Container', // MISSING
-		toolbar				: 'Create Div Container', // MISSING
-		cssClassInputLabel	: 'Stylesheet Classes', // MISSING
-		styleSelectLabel	: 'Style', // MISSING
-		IdInputLabel		: 'Id', // MISSING
-		languageCodeInputLabel	: ' Language Code', // MISSING
-		inlineStyleInputLabel	: 'Inline Style', // MISSING
-		advisoryTitleInputLabel	: 'Advisory Title', // MISSING
-		langDirLabel		: 'Language Direction', // MISSING
-		langDirLTRLabel		: 'Left to Right (LTR)', // MISSING
-		langDirRTLLabel		: 'Right to Left (RTL)', // MISSING
-		edit				: 'Edit Div', // MISSING
-		remove				: 'Remove Div' // MISSING
+		title				: 'Vytvořit Div kontejner',
+		toolbar				: 'Vytvořit Div kontejner',
+		cssClassInputLabel	: 'Třídy stylů',
+		styleSelectLabel	: 'Styly',
+		IdInputLabel		: 'Id',
+		languageCodeInputLabel	: ' Kód jazyka',
+		inlineStyleInputLabel	: 'Vnitřní styly',
+		advisoryTitleInputLabel	: 'Nápovědní titulek',
+		langDirLabel		: 'Směr jazyka',
+		langDirLTRLabel		: 'Zleva doprava (LTR)',
+		langDirRTLLabel		: 'Zprava doleva (RTL)',
+		edit				: 'Změnit Div',
+		remove				: 'Odstranit Div'
   	},
+
+	iframe :
+	{
+		title		: 'Vlastnosti IFrame',
+		toolbar		: 'IFrame',
+		noUrl		: 'Zadejte prosím URL obsahu pro IFrame',
+		scrolling	: 'Zapnout posuvníky',
+		border		: 'Zobrazit okraj'
+	},
 
 	font :
 	{
@@ -633,59 +634,59 @@ CKEDITOR.lang['cs'] =
 	{
 		textColorTitle	: 'Barva textu',
 		bgColorTitle	: 'Barva pozadí',
-		panelTitle		: 'Colors', // MISSING
+		panelTitle		: 'Barvy',
 		auto			: 'Automaticky',
 		more			: 'Více barev...'
 	},
 
 	colors :
 	{
-		'000' : 'Black', // MISSING
-		'800000' : 'Maroon', // MISSING
-		'8B4513' : 'Saddle Brown', // MISSING
-		'2F4F4F' : 'Dark Slate Gray', // MISSING
-		'008080' : 'Teal', // MISSING
-		'000080' : 'Navy', // MISSING
-		'4B0082' : 'Indigo', // MISSING
-		'696969' : 'Dark Gray', // MISSING
-		'B22222' : 'Fire Brick', // MISSING
-		'A52A2A' : 'Brown', // MISSING
-		'DAA520' : 'Golden Rod', // MISSING
-		'006400' : 'Dark Green', // MISSING
-		'40E0D0' : 'Turquoise', // MISSING
-		'0000CD' : 'Medium Blue', // MISSING
-		'800080' : 'Purple', // MISSING
-		'808080' : 'Gray', // MISSING
-		'F00' : 'Red', // MISSING
-		'FF8C00' : 'Dark Orange', // MISSING
-		'FFD700' : 'Gold', // MISSING
-		'008000' : 'Green', // MISSING
-		'0FF' : 'Cyan', // MISSING
-		'00F' : 'Blue', // MISSING
-		'EE82EE' : 'Violet', // MISSING
-		'A9A9A9' : 'Dim Gray', // MISSING
-		'FFA07A' : 'Light Salmon', // MISSING
-		'FFA500' : 'Orange', // MISSING
-		'FFFF00' : 'Yellow', // MISSING
-		'00FF00' : 'Lime', // MISSING
-		'AFEEEE' : 'Pale Turquoise', // MISSING
-		'ADD8E6' : 'Light Blue', // MISSING
-		'DDA0DD' : 'Plum', // MISSING
-		'D3D3D3' : 'Light Grey', // MISSING
-		'FFF0F5' : 'Lavender Blush', // MISSING
-		'FAEBD7' : 'Antique White', // MISSING
-		'FFFFE0' : 'Light Yellow', // MISSING
-		'F0FFF0' : 'Honeydew', // MISSING
-		'F0FFFF' : 'Azure', // MISSING
-		'F0F8FF' : 'Alice Blue', // MISSING
-		'E6E6FA' : 'Lavender', // MISSING
-		'FFF' : 'White' // MISSING
+		'000' : 'Černá',
+		'800000' : 'Kaštanová',
+		'8B4513' : 'Sedlová hněď',
+		'2F4F4F' : 'Tmavě bledě šedá',
+		'008080' : 'Čírka',
+		'000080' : 'Námořnická modř',
+		'4B0082' : 'Inkoustová',
+		'696969' : 'Tmavě šedá',
+		'B22222' : 'Pálená cihla',
+		'A52A2A' : 'Hnědá',
+		'DAA520' : 'Zlatý prut',
+		'006400' : 'Tmavě zelená',
+		'40E0D0' : 'Tyrkisová',
+		'0000CD' : 'Středně modrá',
+		'800080' : 'Purpurová',
+		'808080' : 'Šedá',
+		'F00' : 'Červená',
+		'FF8C00' : 'Tmavě oranžová',
+		'FFD700' : 'Zlatá',
+		'008000' : 'Zelená',
+		'0FF' : 'Azurová',
+		'00F' : 'Modrá',
+		'EE82EE' : 'Fialová',
+		'A9A9A9' : 'Kalně šedá',
+		'FFA07A' : 'Světle lososová',
+		'FFA500' : 'Oranžová',
+		'FFFF00' : 'Žlutá',
+		'00FF00' : 'Limetková',
+		'AFEEEE' : 'Bledě tyrkisová',
+		'ADD8E6' : 'Světle modrá',
+		'DDA0DD' : 'Švestková',
+		'D3D3D3' : 'Světle šedá',
+		'FFF0F5' : 'Levandulově ruměnná',
+		'FAEBD7' : 'Antická bílá',
+		'FFFFE0' : 'Světle žlutá',
+		'F0FFF0' : 'Medová rosa',
+		'F0FFFF' : 'Azurová',
+		'F0F8FF' : 'Alenčina modrá',
+		'E6E6FA' : 'Levandulová',
+		'FFF' : 'Bílá'
 	},
 
 	scayt :
 	{
 		title			: 'Kontrola pravopisu během psaní (SCAYT)',
-		opera_title		: 'Not supported by Opera', // MISSING
+		opera_title		: 'Toto Opera nepodporuje',
 		enable			: 'Zapnout SCAYT',
 		disable			: 'Vypnout SCAYT',
 		about			: 'O aplikaci SCAYT',
@@ -697,22 +698,22 @@ CKEDITOR.lang['cs'] =
 		ignoreAll		: 'Přeskočit vše',
 		addWord			: 'Přidat slovo',
 		emptyDic		: 'Název slovníku nesmí být prázdný.',
-
+		noSuggestions	: 'Zádné návrhy',
 		optionsTab		: 'Nastavení',
-		allCaps			: 'Ignore All-Caps Words', // MISSING
-		ignoreDomainNames : 'Ignore Domain Names', // MISSING
-		mixedCase		: 'Ignore Words with Mixed Case', // MISSING
-		mixedWithDigits	: 'Ignore Words with Numbers', // MISSING
+		allCaps			: 'Ignorovat slova tvořená velkými písmeny',
+		ignoreDomainNames : 'Ignorovat doménová jména',
+		mixedCase		: 'Ignorovat slova obsahující různou velikost písma',
+		mixedWithDigits	: 'Ignorovat slova obsahující čísla',
 
 		languagesTab	: 'Jazyky',
 
 		dictionariesTab	: 'Slovníky',
-		dic_field_name	: 'Dictionary name', // MISSING
-		dic_create		: 'Create', // MISSING
-		dic_restore		: 'Restore', // MISSING
-		dic_delete		: 'Delete', // MISSING
-		dic_rename		: 'Rename', // MISSING
-		dic_info		: 'Initially the User Dictionary is stored in a Cookie. However, Cookies are limited in size. When the User Dictionary grows to a point where it cannot be stored in a Cookie, then the dictionary may be stored on our server. To store your personal dictionary on our server you should specify a name for your dictionary. If you already have a stored dictionary, please type its name and click the Restore button.', // MISSING
+		dic_field_name	: 'Název slovníku',
+		dic_create		: 'Vytvořit',
+		dic_restore		: 'Obnovit',
+		dic_delete		: 'Smazat',
+		dic_rename		: 'Přejmenovat',
+		dic_info		: 'Zpočátku se uživatelský slovník ukládá do cookies ve vašem prohlížeči. Ovšem cookies mají omezenou velikost, takže když slovník dosáhne velikosti, kdy se již do cookies nevejde, může být uložen na našem serveru. Chcete-li uložit váš osobní slovník na našem serveru, je třeba slovník nejdříve pojmenovat. Máte-li již slovník pojmenován a uložen, zadejte jeho název a klepněte na tlačítko Obnovit.',
 
 		aboutTab		: 'O aplikaci'
 	},
@@ -721,6 +722,8 @@ CKEDITOR.lang['cs'] =
 	{
 		title		: 'O aplikaci CKEditor',
 		dlgTitle	: 'O aplikaci CKEditor',
+		help	: 'Prohlédněte si $1 pro nápovědu.',
+		userGuide : 'Uživatelská příručka CKEditor',
 		moreInfo	: 'Pro informace o lincenci navštivte naši webovou stránku:',
 		copy		: 'Copyright &copy; $1. All rights reserved.'
 	},
@@ -730,10 +733,11 @@ CKEDITOR.lang['cs'] =
 
 	fakeobjects :
 	{
-		anchor	: 'Záložka',
-		flash	: 'Flash animace',
-		div		: 'Zalomení stránky',
-		unknown	: 'Neznámý objekt'
+		anchor		: 'Záložka',
+		flash		: 'Flash animace',
+		iframe		: 'IFrame',
+		hiddenfield	: 'Skryté pole',
+		unknown		: 'Neznámý objekt'
 	},
 
 	resize : 'Uchopit pro změnu velikosti',
@@ -741,18 +745,73 @@ CKEDITOR.lang['cs'] =
 	colordialog :
 	{
 		title		: 'Výběr barvy',
-		options	:	'Color Options', // MISSING
+		options	:	'Nastavení barvy',
 		highlight	: 'Zvýraznit',
 		selected	: 'Vybráno',
 		clear		: 'Vyčistit'
 	},
 
-	toolbarCollapse	: 'Collapse Toolbar', // MISSING
-	toolbarExpand	: 'Expand Toolbar', // MISSING
+	toolbarCollapse	: 'Skrýt panel nástrojů',
+	toolbarExpand	: 'Zobrazit panel nástrojů',
+
+	toolbarGroups :
+	{
+		document : 'Dokument',
+		clipboard : 'Schránka/Zpět',
+		editing : 'Úpravy',
+		forms : 'Formuláře',
+		basicstyles : 'Základní styly',
+		paragraph : 'Odstavec',
+		links : 'Odkazy',
+		insert : 'Vložit',
+		styles : 'Styly',
+		colors : 'Barvy',
+		tools : 'Nástroje'
+	},
 
 	bidi :
 	{
-		ltr : 'Text direction from left to right', // MISSING
-		rtl : 'Text direction from right to left' // MISSING
+		ltr : 'Směr textu zleva doprava',
+		rtl : 'Směr textu zprava doleva'
+	},
+
+	docprops :
+	{
+		label : 'Vlastnosti dokumentu',
+		title : 'Vlastnosti dokumentu',
+		design : 'Vzhled',
+		meta : 'Metadata',
+		chooseColor : 'Výběr',
+		other : '<jiný>',
+		docTitle :	'Titulek stránky',
+		charset : 	'Znaková sada',
+		charsetOther : 'Další znaková sada',
+		charsetASCII : 'ASCII',
+		charsetCE : 'Středoevropské jazyky',
+		charsetCT : 'Tradiční čínština (Big5)',
+		charsetCR : 'Cyrilice',
+		charsetGR : 'Řečtina',
+		charsetJP : 'Japonština',
+		charsetKR : 'Korejština',
+		charsetTR : 'Turečtina',
+		charsetUN : 'Unicode (UTF-8)',
+		charsetWE : 'Západoevropské jazyky',
+		docType : 'Typ dokumentu',
+		docTypeOther : 'Jiný typ dokumetu',
+		xhtmlDec : 'Zahrnout deklarace XHTML',
+		bgColor : 'Barva pozadí',
+		bgImage : 'URL obrázku na pozadí',
+		bgFixed : 'Nerolovatelné (Pevné) pozadí',
+		txtColor : 'Barva textu',
+		margin : 'Okraje stránky',
+		marginTop : 'Horní',
+		marginLeft : 'Levý',
+		marginRight : 'Pravý',
+		marginBottom : 'Dolní',
+		metaKeywords : 'Klíčová slova (oddělená čárkou)',
+		metaDescription : 'Popis dokumentu',
+		metaAuthor : 'Autor',
+		metaCopyright : 'Autorská práva',
+		previewHtml : '<p>Toto je <strong>ukázkový text</strong>. Používáte <a href="javascript:void(0)">CKEditor</a>.</p>'
 	}
 };
