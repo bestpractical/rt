@@ -100,21 +100,6 @@ my @id = ( ref $id eq 'ARRAY' ) ? @{$id} : ($id);
 
 my $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
 
-# store the uploaded attachment in session
-if ( defined $ARGS{'Attach'} && length $ARGS{'Attach'} ) { # attachment?
-    $session{'Attachments'} = {} unless defined $session{'Attachments'};
-
-    my $attachment = MakeMIMEEntity(
-        AttachmentFieldName => 'Attach'
-    );
-
-    my $file_path = Encode::decode_utf8("$ARGS{'Attach'}");
-    $session{'Attachments'} = {
-        %{ $session{'Attachments'} || {} },
-        $file_path => $attachment,
-    };
-}
-
 if ( defined ($id[0]) && $id[0] eq 'new' ) {
 
     # {{{ Create a new ticket
@@ -134,19 +119,12 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
 
 
     ( $Ticket, @results ) =
-    CreateTicket( Attachments => $session{'Attachments'}, %ARGS );
+    CreateTicket( Attachments => delete $session{'Attachments'}, %ARGS );
 
     unless ( $Ticket->id ) {
         $m->comp( 'Error.html', Why => join( "\n", @results ));
               $m->abort();
         }
-
-
-        # delete temporary storage entry to make WebUI clean
-        unless ( keys %{ $session{'Attachments'} } and $ARGS{'UpdateAttach'} ) {
-            delete $session{'Attachments'};
-        }
-
     }
     else {
         unless ( $Ticket->Load( $id[0] ) ) {
@@ -172,12 +150,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
         ARGSRef   => \%ARGS,
         TicketObj => $Ticket
     );
-            delete $session{'Attachments'};
-
-    # delete temporary storage entry to make WebUI clean
-    unless ( keys %{ $session{'Attachments'} } and $ARGS{'UpdateAttach'} ) {
-        delete $session{'Attachments'};
-    }
+    delete $session{'Attachments'};
 
     my @cfupdates = ProcessObjectCustomFieldUpdates(Object => $Ticket, ARGSRef => \%ARGS);
     push (@results, @cfupdates);
