@@ -166,10 +166,21 @@ sub Set {
 
     return $self->Unix(0) unless $args{'Value'} && $args{'Value'} =~ /\S/;
 
-    if ( $args{'Format'} =~ /^unix$/i ) {
+    my $format = lc $args{'Format'};
+
+    if ( $format eq 'unix' ) {
         return $self->Unix( $args{'Value'} );
     }
-    elsif ( $args{'Format'} =~ /^(sql|datemanip|iso)$/i ) {
+    elsif (
+        ($format eq 'sql' || $format eq 'iso')
+        && $args{'Value'} =~ /^(\d{4})-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)$/
+    ) {
+        local $@;
+        my $u = eval { Time::Local::timegm($6, $5, $4, $3, $2-1, $1) } || 0;
+        $RT::Logger->warning("Invalid date $args{'Value'}: $@") if $@ && !$u;
+        return $self->Unix( $u > 0 ? $u : 0 );
+    }
+    elsif ( $format =~ /^(sql|datemanip|iso)$/ ) {
         $args{'Value'} =~ s!/!-!g;
 
         if (   ( $args{'Value'} =~ /^(\d{4})?(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/ )
@@ -201,7 +212,7 @@ sub Set {
             return $self->Unix(0);
         }
     }
-    elsif ( $args{'Format'} =~ /^unknown$/i ) {
+    elsif ( $format eq 'unknown' ) {
         require Time::ParseDate;
         # the module supports only legacy timezones like PDT or EST...
         # so we parse date as GMT and later apply offset, this only
@@ -223,7 +234,7 @@ sub Set {
             "RT::Date used Time::ParseDate to make '$args{'Value'}' $date\n"
         );
 
-        return $self->Set( Format => 'unix', Value => $date);
+        return $self->Unix($date || 0);
     }
     else {
         $RT::Logger->error(
@@ -620,7 +631,7 @@ sub DefaultFormat
                             $self->Localtime($args{'Timezone'});
     $wday = $self->GetWeekday($wday);
     $mon = $self->GetMonth($mon);
-    ($mday, $hour, $min, $sec) = map { sprintf "%02d", $_ } ($mday, $hour, $min, $sec);
+    $_ = sprintf "%02d", $_ foreach $mday, $hour, $min, $sec;
 
     if( $args{'Date'} && !$args{'Time'} ) {
         return $self->loc('[_1] [_2] [_3] [_4]',
@@ -1052,8 +1063,6 @@ sub Timezone {
     }
 
     my $context = lc(shift);
-
-    $context = 'utc' unless $context =~ /^(?:utc|server|user)$/i;
 
     my $tz;
     if( $context eq 'user' ) {

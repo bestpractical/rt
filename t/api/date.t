@@ -294,10 +294,14 @@ my $year = (localtime(time))[5] + 1900;
     $date->Set(Format => 'ISO', Value => '112815:10:00');
     is($date->ISO, $year .'-11-28 15:10:00', "DDMMhh:mm:ss");
 
-    $date->Set(Format => 'ISO', Value => '2005-13-28 15:10:00');
+    warning_like {
+        $date->Set(Format => 'ISO', Value => '2005-13-28 15:10:00');
+    } qr/Invalid date/;
     is($date->Unix, 0, "wrong month value");
 
-    $date->Set(Format => 'ISO', Value => '2005-00-28 15:10:00');
+    warning_like {
+        $date->Set(Format => 'ISO', Value => '2005-00-28 15:10:00');
+    } qr/Invalid date/;
     is($date->Unix, 0, "wrong month value");
 
     $date->Set(Format => 'ISO', Value => '1960-01-28 15:10:00');
