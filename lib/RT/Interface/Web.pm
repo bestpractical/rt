@@ -3636,12 +3636,20 @@ our %SCRUBBER_ALLOWED_ATTRIBUTES = (
 our %SCRUBBER_RULES = ();
 
 # If we're displaying images, let embedded ones through
-if (RT->Config->Get('ShowTransactionImages')) {
+if (RT->Config->Get('ShowTransactionImages') or RT->Config->Get('ShowRemoteImages')) {
     $SCRUBBER_RULES{'img'} = {
         '*' => 0,
         alt => 1,
-        src => qr/^cid:/i,
     };
+
+    my @src;
+    push @src, qr/^cid:/i
+        if RT->Config->Get('ShowTransactionImages');
+
+    push @src, $SCRUBBER_ALLOWED_ATTRIBUTES{'href'}
+        if RT->Config->Get('ShowRemoteImages');
+
+    $SCRUBBER_RULES{'img'}->{'src'} = join "|", @src;
 }
 
 sub _NewScrubber {
