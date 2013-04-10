@@ -472,6 +472,39 @@ s!(?<=Your ticket has been (?:approved|rejected) by { eval { )\$Approval->OwnerO
             $ref->{Template} = $template->id ? $template->Name : 'Blank';
         },
     },
+
+    '4.1.6' => {
+        'RT::Attribute' => sub {
+            my ($ref) = @_;
+            return unless $ref->{Name} eq RT::User::_PrefName( RT->System )
+                and $ref->{ObjectType} eq "RT::User";
+            my $v = eval {
+                Storable::thaw(MIME::Base64::decode_base64($ref->{Content}))
+              };
+            return if not $v or $v->{ShowHistory};
+            $v->{ShowHistory} = delete $v->{DeferTransactionLoading}
+                ? "click" : "delay";
+            $ref->{Content} = MIME::Base64::encode_base64(
+                Storable::nfreeze($v) );
+        },
+    },
+
+    '4.1.7' => {
+        'RT::Transaction' => sub {
+            my ($ref) = @_;
+            return unless $ref->{ObjectType} eq 'RT::Ticket'
+                      and $ref->{Type} eq 'Set'
+                      and $ref->{Field} eq 'TimeWorked';
+            $ref->{TimeTaken} = $ref->{NewValue} - $ref->{OldValue};
+        },
+    },
+
+    '4.1.8' => {
+        'RT::Ticket' => sub {
+            my ($ref) = @_;
+            $ref->{IsMerged} = 1 if $ref->{id} != $ref->{EffectiveId};
+        },
+    },
 );
 
 1;
