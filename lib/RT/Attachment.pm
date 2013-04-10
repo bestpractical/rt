@@ -262,6 +262,35 @@ sub ParentObj {
     return $parent;
 }
 
+=head2 Closest
+
+Takes a MIME type as a string or regex.  Returns an L<RT::Attachment> object
+for the nearest containing part with a matching L</ContentType>.  Strings must
+match exactly and all matches are done case insensitively.  Strings ending in a
+C</> must only match the first part of the MIME type.  For example:
+
+    # Find the nearest multipart/* container
+    my $container = $attachment->Closest("multipart/");
+
+Returns undef if no such object is found.
+
+=cut
+
+sub Closest {
+    my $self = shift;
+    my $type = shift;
+    my $part = $self->ParentObj or return undef;
+
+    $type = qr/^\Q$type\E$/
+        unless ref $type eq "REGEX";
+
+    while (lc($part->ContentType) !~ $type) {
+        $part = $part->ParentObj or last;
+    }
+
+    return ($part and $part->id) ? $part : undef;
+}
+
 =head2 Children
 
 Returns an L<RT::Attachments> object which is preloaded with
