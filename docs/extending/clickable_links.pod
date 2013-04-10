@@ -23,6 +23,7 @@ after the URL.
 =item C<httpurl_overwrite>
 
 Detects URLs as C<httpurl> format, but replaces the URL with a link.
+This action is enabled by default.
 
 =back
 

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -48,15 +48,10 @@
 <%ARGS>
 $Name
 $Attr => undef
+$GenericMap => {}
 </%ARGS>
 <%ONCE>
 my $COLUMN_MAP = {
-    id => {
-        title     => '#', # loc
-        attribute => 'id',
-        align     => 'right',
-        value     => sub { return $_[0]->id },
-    },
     Queue => {
         title     => 'Queue', # loc
         value     => sub {
@@ -90,8 +85,8 @@ my $COLUMN_MAP = {
     },
     Description => {
         title     => 'Description', # loc
-	attribute => 'Description',
-	value     => sub { return $_[0]->Description() },
+        attribute => 'Description',
+        value     => sub { return $_[0]->Description() },
     },
     Disabled => {
         title     => \'&nbsp;',
@@ -156,6 +151,6 @@ my $COLUMN_MAP = {
 
 </%ONCE>
 <%INIT>
-$m->callback( COLUMN_MAP => $COLUMN_MAP, CallbackName => 'ColumnMap', CallbackOnce => 1 );
+$m->callback( GenericMap => $GenericMap, COLUMN_MAP => $COLUMN_MAP, CallbackName => 'ColumnMap', CallbackOnce => 1 );
 return GetColumnMapEntry( Map => $COLUMN_MAP, Name => $Name, Attribute => $Attr );
 </%INIT>

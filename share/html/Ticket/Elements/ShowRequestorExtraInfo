@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,45 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="more-about-requestor-extra">
-% for my $column (@formats) {
-% my $title = $column->{title} || '';
-% my $attr = $column->{'attribute'} || $column->{'last_attribute'};
-% unless (defined $column->{title}) {
-%   $title = $fetch_columnmap->($attr,'title',[$attr]);
-% }
-% $title = $m->comp('/Elements/ScrubHTML', Content => $title);
-<div class="more-about-requestor-extra-field <% $fetch_columnmap->($attr,'attribute',[$attr]) %>" >
-<span class="label"><% loc($title) %></span>
-% my @out;
-% foreach my $subcol ( @{ $column->{output} } ) {
-%     my ($col) = ($subcol =~ /^__(.*?)__$/);
-%     unless ( $col ) {
-%         push @out, $subcol;
-%         next;
-%     }
-%     push @out, $fetch_columnmap->($col, 'value', [$Requestor]);
-% }
-% @out = grep { defined $_ and length $_ } @out;
-<span class="value"><% join(' ',@out) %></span>
-</div>
-% }
-</div>
-<%INIT>
-my $format = RT->Config->Get('MoreAboutRequestorExtraInfo');
-my @formats = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $format);
-
-my $fetch_columnmap = sub {
-    my ($name, $attr, $arguments) = @_;
-    my $tmp = $m->comp( '/Elements/ColumnMap',
-            Class => $Class,
-            Name  => $name,
-            Attr  => $attr,
-            );
-    return ProcessColumnMapValue( $tmp, Arguments => $arguments, Escape => 0 );
-};
-</%INIT>
+<& /User/Elements/UserInfo, User => $Requestor, FormatConfig => 'MoreAboutRequestorExtraInfo', ClassPrefix => 'more-about-requestor' &>
 <%ARGS>
 $Requestor => undef
-$Class => 'RT__User';
 </%ARGS>

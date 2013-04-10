@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -77,8 +77,8 @@
 % }
 </select>
 <br />
-<input type="checkbox" class="checkbox" name="ShowDisabled" value="1" <% $ShowDisabled && 'checked="checked"' |n%> />
-<&|/l&>Include disabled custom fields in listing.</&>
+<input type="checkbox" class="checkbox" id="ShowDisabled" name="ShowDisabled" value="1" <% $ShowDisabled && 'checked="checked"' |n %> />
+<label for="ShowDisabled"><&|/l&>Include disabled custom fields in listing.</&></label>
 <br />
 
 % $m->callback(CallbackName => 'BeforeSubmit');

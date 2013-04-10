@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Encode;
 
-use RT::Test tests => 23;
+use RT::Test tests => 24;
 
 my ($baseurl, $agent) = RT::Test->started_ok;
 
@@ -72,16 +72,15 @@ my $url = $agent->rt_base_url;
         fields => { TimeWorked => 5, 'TimeWorked-TimeUnits' => "hours" }
     );
 
-    $agent->content_contains("to &#39;300&#39;", "5 hours is 300 minutes");
+    $agent->content_contains("5 hours", "5 hours is displayed");
+    $agent->content_contains("300 min", "but minutes is also");
 }
 
 
-TODO: {
-    todo_skip("Need to handle mason trying to compile images",1);
-$agent->get( $url."NoAuth/images/test.png" );
+$agent->get( $url."static/images/test.png" );
 my $file = RT::Test::get_relocatable_file(
   File::Spec->catfile(
-    qw(.. .. share html NoAuth images test.png)
+    qw(.. .. share static images test.png)
   )
 );
 is(
@@ -89,7 +88,6 @@ is(
     -s $file,
     "got a file of the correct size ($file)",
 );
-}
 
 #
 # XXX: hey-ho, we have these tests in t/web/query-builder

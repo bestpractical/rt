@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -65,9 +65,9 @@ my $ACL = RT::ACL->new($CurrentUser);
 
 
 package RT::ACL;
-use RT::ACE;
-
 use base 'RT::SearchBuilder';
+
+use RT::ACE;
 
 sub Table { 'ACL'}
 
@@ -118,40 +118,6 @@ sub LimitToObject {
     }
     $self->_CloseParen($object_clause);
 
-}
-
-
-
-=head2 LimitNotObject $object
-
-Limit the ACL to rights NOT on the object $object.  $object needs to be
-an RT::Record class.
-
-=cut
-
-sub LimitNotObject {
-    my $self = shift;
-    my $obj  = shift;
-    unless ( defined($obj)
-        && ref($obj)
-        && UNIVERSAL::can( $obj, 'id' )
-        && $obj->id )
-    {
-        return undef;
-    }
-    $self->Limit( FIELD => 'ObjectType',
-		  OPERATOR => '!=',
-		  VALUE => ref($obj),
-		  ENTRYAGGREGATOR => 'OR',
-		  SUBCLAUSE => $obj->id
-		);
-    $self->Limit( FIELD => 'ObjectId',
-		  OPERATOR => '!=',
-		  VALUE => $obj->id,
-		  ENTRYAGGREGATOR => 'OR',
-		  QUOTEVALUE => 0,
-		  SUBCLAUSE => $obj->id
-		);
 }
 
 
@@ -251,76 +217,6 @@ sub Next {
     }
 
 }
-
-
-
-
-#wrap around _DoSearch  so that we can build the hash of returned
-#values 
-sub _DoSearch {
-    my $self = shift;
-   # $RT::Logger->debug("Now in ".$self."->_DoSearch");
-    my $return = $self->SUPER::_DoSearch(@_);
-  #  $RT::Logger->debug("In $self ->_DoSearch. return from SUPER::_DoSearch was $return");
-    if ( $self->{'must_redo_search'} ) {
-        $RT::Logger->crit(
-"_DoSearch is not so successful as it still needs redo search, won't call _BuildHash"
-        );
-    }
-    else {
-        $self->_BuildHash();
-    }
-    return ($return);
-}
-
-
-#Build a hash of this ACL's entries.
-sub _BuildHash {
-    my $self = shift;
-
-    while (my $entry = $self->Next) {
-        my $hashkey = join '-', map $entry->__Value( $_ ),
-            qw(ObjectType ObjectId RightName PrincipalId PrincipalType);
-
-        $self->{'as_hash'}->{"$hashkey"} =1;
-
-    }
-}
-
-
-
-=head2 HasEntry
-
-=cut
-
-sub HasEntry {
-
-    my $self = shift;
-    my %args = ( RightScope => undef,
-                 RightAppliesTo => undef,
-                 RightName => undef,
-                 PrincipalId => undef,
-                 PrincipalType => undef,
-                 @_ );
-
-    #if we haven't done the search yet, do it now.
-    $self->_DoSearch();
-
-    if ($self->{'as_hash'}->{ $args{'RightScope'} . "-" .
-			      $args{'RightAppliesTo'} . "-" . 
-			      $args{'RightName'} . "-" .
-			      $args{'PrincipalId'} . "-" .
-			      $args{'PrincipalType'}
-                            } == 1) {
-	return(1);
-    }
-    else {
-	return(undef);
-    }
-}
-
-# }}}
-
 
 =head2 NewItem
 

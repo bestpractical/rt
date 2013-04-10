@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -96,7 +96,7 @@ sub Commit {
     $top->Correspond( MIMEObj => $template->MIMEObj );
 
     if ($passed) {
-        my $new_status = $top->Lifecycle->DefaultStatus('approved') || 'open';
+        my $new_status = $top->LifecycleObj->DefaultStatus('approved') || 'open';
         if ( $new_status ne $top->Status ) {
             $top->SetStatus( $new_status );
         }

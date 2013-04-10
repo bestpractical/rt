@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -64,8 +64,6 @@ sub new {
 
 
 =head2 callback
-
-Method replaces deprecated component C<Element/Callback>.
 
 Takes hash with optional C<CallbackPage>, C<CallbackName>
 and C<CallbackOnce> arguments, other arguments are passed

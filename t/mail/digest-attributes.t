@@ -51,48 +51,48 @@ my $everyone = RT::Group->new( RT->SystemUser );
 ok( $ret, "Loaded 'everyone' group: $msg" );
 
 ( $ret, $msg ) = $everyone->PrincipalObj->GrantRight( Right => 'CreateTicket',
-						      Object => $testq );
+                                                      Object => $testq );
 ok( $ret || $msg =~ /already has/, "Granted everyone CreateTicket on testq: $msg" );
 
 # Make user_d an admincc for the queue.
 ( $ret, $msg ) = $user_d->PrincipalObj->GrantRight( Right => 'AdminQueue',
-						    Object => $testq );
+                                                    Object => $testq );
 ok( $ret || $msg =~ /already has/, "Granted dduser AdminQueue on testq: $msg" );
 ( $ret, $msg ) = $testq->AddWatcher( Type => 'AdminCc',
-			     PrincipalId => $user_d->PrincipalObj->id );
+                             PrincipalId => $user_d->PrincipalObj->id );
 ok( $ret || $msg =~ /already/, "dduser added as a queue watcher: $msg" );
 
 # Give the others queue rights.
 ( $ret, $msg ) = $user_n->PrincipalObj->GrantRight( Right => 'AdminQueue',
-						    Object => $testq );
+                                                    Object => $testq );
 ok( $ret || $msg =~ /already has/, "Granted emailnormal right on testq: $msg" );
 ( $ret, $msg ) = $user_w->PrincipalObj->GrantRight( Right => 'AdminQueue',
-						    Object => $testq );
+                                                    Object => $testq );
 ok( $ret || $msg =~ /already has/, "Granted emailweekly right on testq: $msg" );
 ( $ret, $msg ) = $user_s->PrincipalObj->GrantRight( Right => 'AdminQueue',
-						    Object => $testq );
+                                                    Object => $testq );
 ok( $ret || $msg =~ /already has/, "Granted emailsusp right on testq: $msg" );
 
 # Create a ticket with To: Cc: Bcc: fields using our four users.
 my $id;
 my $ticket = RT::Ticket->new( RT->SystemUser );
 ( $id, $ret, $msg ) = $ticket->Create( Queue => $testq->Name,
-				       Requestor => [ $user_w->Name ],
-				       Subject => 'Test ticket for RT::Extension::EmailDigest',
-				       );
+                                       Requestor => [ $user_w->Name ],
+                                       Subject => 'Test ticket for RT::Extension::EmailDigest',
+                                       );
 ok( $ret, "Ticket $id created: $msg" );
 
 # Make the other users ticket watchers.
 ( $ret, $msg ) = $ticket->AddWatcher( Type => 'Cc',
-		      PrincipalId => $user_n->PrincipalObj->id );
+                      PrincipalId => $user_n->PrincipalObj->id );
 ok( $ret, "Added user_n as a ticket watcher: $msg" );
 ( $ret, $msg ) = $ticket->AddWatcher( Type => 'Cc',
-		      PrincipalId => $user_s->PrincipalObj->id );
+                      PrincipalId => $user_s->PrincipalObj->id );
 ok( $ret, "Added user_s as a ticket watcher: $msg" );
 
 my $obj;
 ($id, $msg, $obj ) = $ticket->Correspond(
-	Content => "This is a ticket response for CC action" );
+    Content => "This is a ticket response for CC action" );
 ok( $ret, "Transaction created: $msg" );
 
 # Get the deferred notifications that should result.  Should be two for
@@ -113,11 +113,11 @@ while( my $txn = $txns->Next ) {
 
     # If the transaction has content...
     if( $txn->ContentObj ) {
-	# ...none of the deferred folk should be in the header.
-	my $headerstr = $txn->ContentObj->Headers;
-	foreach my $rcpt( @daily_rcpt, @weekly_rcpt, @susp_rcpt ) {
-	    ok( $headerstr !~ /$rcpt/, "Deferred recipient $rcpt not found in header" );
-	}
+        # ...none of the deferred folk should be in the header.
+        my $headerstr = $txn->ContentObj->Headers;
+        foreach my $rcpt( @daily_rcpt, @weekly_rcpt, @susp_rcpt ) {
+            ok( $headerstr !~ /$rcpt/, "Deferred recipient $rcpt not found in header" );
+        }
     }
 }
 

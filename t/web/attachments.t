@@ -3,8 +3,8 @@ use warnings;
 
 use RT::Test tests => 33;
 
-use constant LogoFile => $RT::MasonComponentRoot .'/NoAuth/images/bpslogo.png';
-use constant FaviconFile => $RT::MasonComponentRoot .'/NoAuth/images/favicon.png';
+use constant LogoFile => $RT::StaticPath .'/images/bpslogo.png';
+use constant FaviconFile => $RT::StaticPath .'/images/favicon.png';
 use constant TextFile => $RT::MasonComponentRoot .'/NoAuth/css/print.css';
 
 my ($baseurl, $m) = RT::Test->started_ok;

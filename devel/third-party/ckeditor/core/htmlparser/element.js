@@ -1,104 +1,152 @@
-﻿/*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.html or http://ckeditor.com/license
-*/
+﻿/**
+ * @license Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.html or http://ckeditor.com/license
+ */
 
 /**
  * A lightweight representation of an HTML element.
+ *
+ * @class
+ * @constructor Creates an element class instance.
  * @param {String} name The element name.
  * @param {Object} attributes And object holding all attributes defined for
- *		this element.
- * @constructor
- * @example
+ * this element.
  */
-CKEDITOR.htmlParser.element = function( name, attributes )
-{
+CKEDITOR.htmlParser.element = function( name, attributes ) {
 	/**
 	 * The element name.
-	 * @type String
-	 * @example
+	 *
+	 * @property {String}
 	 */
 	this.name = name;
 
 	/**
 	 * Holds the attributes defined for this element.
-	 * @type Object
-	 * @example
+	 *
+	 * @property {Object}
 	 */
-	this.attributes = attributes || ( attributes = {} );
+	this.attributes = attributes || {};
 
 	/**
 	 * The nodes that are direct children of this element.
-	 * @type Array
-	 * @example
 	 */
 	this.children = [];
 
-	var tagName = attributes._cke_real_element_type || name;
+	// Reveal the real semantic of our internal custom tag name (#6639),
+	// when resolving whether it's block like.
+	var realName = name || '',
+		prefixed = realName.match( /^cke:(.*)/ );
+	prefixed && ( realName = prefixed[ 1 ] );
 
-	var dtd			= CKEDITOR.dtd,
-		isBlockLike	= !!( dtd.$nonBodyContent[ tagName ] || dtd.$block[ tagName ] || dtd.$listItem[ tagName ] || dtd.$tableContent[ tagName ] || dtd.$nonEditable[ tagName ] || tagName == 'br' ),
-		isEmpty		= !!dtd.$empty[ name ];
+	var isBlockLike = !!( CKEDITOR.dtd.$nonBodyContent[ realName ] || CKEDITOR.dtd.$block[ realName ] || CKEDITOR.dtd.$listItem[ realName ] || CKEDITOR.dtd.$tableContent[ realName ] || CKEDITOR.dtd.$nonEditable[ realName ] || realName == 'br' );
 
-	this.isEmpty	= isEmpty;
-	this.isUnknown	= !dtd[ name ];
+	this.isEmpty = !!CKEDITOR.dtd.$empty[ name ];
+	this.isUnknown = !CKEDITOR.dtd[ name ];
 
 	/** @private */
-	this._ =
-	{
-		isBlockLike : isBlockLike,
-		hasInlineStarted : isEmpty || !isBlockLike
+	this._ = {
+		isBlockLike: isBlockLike,
+		hasInlineStarted: this.isEmpty || !isBlockLike
 	};
 };
 
-(function()
-{
+/**
+ * Object presentation of CSS style declaration text.
+ *
+ * @class
+ * @constructor Creates a cssStyle class instance.
+ * @param {CKEDITOR.htmlParser.element/String} elementOrStyleText
+ * A html parser element or the inline style text.
+ */
+CKEDITOR.htmlParser.cssStyle = function() {
+	var styleText,
+		arg = arguments[ 0 ],
+		rules = {};
+
+	styleText = arg instanceof CKEDITOR.htmlParser.element ? arg.attributes.style : arg;
+
+	// html-encoded quote might be introduced by 'font-family'
+	// from MS-Word which confused the following regexp. e.g.
+	//'font-family: &quot;Lucida, Console&quot;'
+	// TODO reuse CSS methods from tools.
+	( styleText || '' ).replace( /&quot;/g, '"' ).replace( /\s*([^ :;]+)\s*:\s*([^;]+)\s*(?=;|$)/g, function( match, name, value ) {
+		name == 'font-family' && ( value = value.replace( /["']/g, '' ) );
+		rules[ name.toLowerCase() ] = value;
+	});
+
+	return {
+
+		rules: rules,
+
+		/**
+		 * Apply the styles onto the specified element or object.
+		 *
+		 * @param {CKEDITOR.htmlParser.element/CKEDITOR.dom.element/Object} obj
+		 */
+		populate: function( obj ) {
+			var style = this.toString();
+			if ( style ) {
+				obj instanceof CKEDITOR.dom.element ? obj.setAttribute( 'style', style ) : obj instanceof CKEDITOR.htmlParser.element ? obj.attributes.style = style : obj.style = style;
+			}
+		},
+
+		/**
+		 * Serialize CSS style declaration to string.
+		 *
+		 * @returns {String}
+		 */
+		toString: function() {
+			var output = [];
+			for ( var i in rules )
+				rules[ i ] && output.push( i, ':', rules[ i ], ';' );
+			return output.join( '' );
+		}
+	};
+};
+
+(function() {
 	// Used to sort attribute entries in an array, where the first element of
 	// each object is the attribute name.
-	var sortAttribs = function( a, b )
-	{
-		a = a[0];
-		b = b[0];
-		return a < b ? -1 : a > b ? 1 : 0;
-	};
+	var sortAttribs = function( a, b ) {
+			a = a[ 0 ];
+			b = b[ 0 ];
+			return a < b ? -1 : a > b ? 1 : 0;
+		};
 
-	CKEDITOR.htmlParser.element.prototype =
-	{
+	CKEDITOR.htmlParser.element.prototype = {
 		/**
-		 * The node type. This is a constant value set to {@link CKEDITOR.NODE_ELEMENT}.
-		 * @type Number
-		 * @example
+		 * The node type. This is a constant value set to {@link CKEDITOR#NODE_ELEMENT}.
+		 *
+		 * @readonly
+		 * @property {Number} [=CKEDITOR.NODE_ELEMENT]
 		 */
-		type : CKEDITOR.NODE_ELEMENT,
+		type: CKEDITOR.NODE_ELEMENT,
 
 		/**
 		 * Adds a node to the element children list.
-		 * @param {Object} node The node to be added. It can be any of of the
-		 *		following types: {@link CKEDITOR.htmlParser.element},
-		 *		{@link CKEDITOR.htmlParser.text} and
-		 *		{@link CKEDITOR.htmlParser.comment}.
-		 * @function
-		 * @example
+		 *
+		 * @method
+		 * @param {CKEDITOR.htmlParser.element/CKEDITOR.htmlParser.text/CKEDITOR.htmlParser.comment} node
+		 * The node to be added.
 		 */
-		add : CKEDITOR.htmlParser.fragment.prototype.add,
+		add: CKEDITOR.htmlParser.fragment.prototype.add,
 
 		/**
 		 * Clone this element.
+		 *
 		 * @returns {CKEDITOR.htmlParser.element} The element clone.
-		 * @example
 		 */
-		clone : function()
-		{
+		clone: function() {
 			return new CKEDITOR.htmlParser.element( this.name, this.attributes );
 		},
 
 		/**
 		 * Writes the element HTML to a CKEDITOR.htmlWriter.
-		 * @param {CKEDITOR.htmlWriter} writer The writer to which write the HTML.
-		 * @example
+		 *
+		 * @param {CKEDITOR.htmlParser.basicWriter} writer The writer to which write the HTML.
+		 * @param {CKEDITOR.htmlParser.filter} filter
 		 */
-		writeHtml : function( writer, filter )
-		{
+		writeHtml: function( writer, filter ) {
 			var attributes = this.attributes;
 
 			// Ignore cke: prefixes when writing HTML.
@@ -109,24 +157,25 @@ CKEDITOR.htmlParser.element = function( name, attributes )
 			var isChildrenFiltered;
 
 			/**
-			 * Providing an option for bottom-up filtering order ( element
-			 * children to be pre-filtered before the element itself ).
+			 * Providing an option for bottom-up filtering order (element
+			 * children to be pre-filtered before the element itself).
 			 */
-			element.filterChildren = function()
-			{
-				if ( !isChildrenFiltered )
-				{
+			element.filterChildren = function() {
+				if ( !isChildrenFiltered ) {
 					var writer = new CKEDITOR.htmlParser.basicWriter();
 					CKEDITOR.htmlParser.fragment.prototype.writeChildrenHtml.call( element, writer, filter );
-					element.children = new CKEDITOR.htmlParser.fragment.fromHtml( writer.getHtml() ).children;
+					element.children = new CKEDITOR.htmlParser.fragment.fromHtml( writer.getHtml(), element.clone(), 0 ).children;
 					isChildrenFiltered = 1;
 				}
 			};
 
-			if ( filter )
-			{
-				while ( true )
-				{
+			if ( filter ) {
+
+				// Filtering if it's the root node.
+				if ( !this.parent )
+					filter.onRoot( this );
+
+				while ( true ) {
 					if ( !( writeName = filter.onElementName( writeName ) ) )
 						return;
 
@@ -142,8 +191,7 @@ CKEDITOR.htmlParser.element = function( name, attributes )
 
 					// If the element has been replaced with something of a
 					// different type, then make the replacement write itself.
-					if ( element.type != CKEDITOR.NODE_ELEMENT )
-					{
+					if ( element.type != CKEDITOR.NODE_ELEMENT ) {
 						element.writeHtml( writer, filter );
 						return;
 					}
@@ -152,8 +200,11 @@ CKEDITOR.htmlParser.element = function( name, attributes )
 
 					// This indicate that the element has been dropped by
 					// filter but not the children.
-					if ( !writeName )
-					{
+					if ( !writeName ) {
+						// Fix broken parent refs.
+						for ( var c = 0, length = this.children.length; c < length; c++ )
+							this.children[ c ].parent = element.parent;
+
 						this.writeChildrenHtml.call( element, writer, isChildrenFiltered ? null : filter );
 						return;
 					}
@@ -171,38 +222,29 @@ CKEDITOR.htmlParser.element = function( name, attributes )
 			var attribsArray = [];
 			// Iterate over the attributes twice since filters may alter
 			// other attributes.
-			for ( var i = 0 ; i < 2; i++ )
-			{
-				for ( a in attributes )
-				{
+			for ( var i = 0; i < 2; i++ ) {
+				for ( a in attributes ) {
 					newAttrName = a;
 					value = attributes[ a ];
 					if ( i == 1 )
 						attribsArray.push( [ a, value ] );
-					else if ( filter )
-					{
-						while ( true )
-						{
-							if ( !( newAttrName = filter.onAttributeName( a ) ) )
-							{
+					else if ( filter ) {
+						while ( true ) {
+							if ( !( newAttrName = filter.onAttributeName( a ) ) ) {
 								delete attributes[ a ];
 								break;
-							}
-							else if ( newAttrName != a )
-							{
+							} else if ( newAttrName != a ) {
 								delete attributes[ a ];
 								a = newAttrName;
 								continue;
-							}
-							else
+							} else
 								break;
 						}
-						if ( newAttrName )
-						{
+						if ( newAttrName ) {
 							if ( ( value = filter.onAttribute( element, newAttrName, value ) ) === false )
 								delete attributes[ newAttrName ];
 							else
-								attributes [ newAttrName ] = value;
+								attributes[ newAttrName ] = value;
 						}
 					}
 				}
@@ -213,28 +255,30 @@ CKEDITOR.htmlParser.element = function( name, attributes )
 
 			// Send the attributes.
 			var len = attribsArray.length;
-			for ( i = 0 ; i < len ; i++ )
-			{
+			for ( i = 0; i < len; i++ ) {
 				var attrib = attribsArray[ i ];
-				writer.attribute( attrib[0], attrib[1] );
+				writer.attribute( attrib[ 0 ], attrib[ 1 ] );
 			}
 
 			// Close the tag.
 			writer.openTagClose( writeName, element.isEmpty );
 
-			if ( !element.isEmpty )
-			{
+			if ( !element.isEmpty ) {
 				this.writeChildrenHtml.call( element, writer, isChildrenFiltered ? null : filter );
 				// Close the element.
 				writer.closeTag( writeName );
 			}
 		},
 
-		writeChildrenHtml : function( writer, filter )
-		{
+		/**
+		 * Send children of this element to the writer.
+		 *
+		 * @param {CKEDITOR.htmlParser.basicWriter} writer The writer to which write the HTML.
+		 * @param {CKEDITOR.htmlParser.filter} filter
+		 */
+		writeChildrenHtml: function( writer, filter ) {
 			// Send children.
 			CKEDITOR.htmlParser.fragment.prototype.writeChildrenHtml.apply( this, arguments );
-
 		}
 	};
 })();

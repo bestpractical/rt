@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -48,7 +48,7 @@
 <%init>
 my $Config = {};
 $Config->{$_} = RT->Config->Get( $_, $session{CurrentUser} )
-  for qw(rtname WebPath);
+  for qw(rtname WebPath MessageBoxRichTextHeight);
 
 my $CurrentUser = {};
 if ($session{CurrentUser} and $session{CurrentUser}->id) {
@@ -57,6 +57,9 @@ if ($session{CurrentUser} and $session{CurrentUser}->id) {
 
     $CurrentUser->{Privileged} = $session{CurrentUser}->Privileged
         ? JSON::true : JSON::false;
+
+    $Config->{WebHomePath} = RT->Config->Get("WebPath")
+        . (!$session{CurrentUser}->Privileged ? "/SelfService" : "");
 }
 
 $m->callback(

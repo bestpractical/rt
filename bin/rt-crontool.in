@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -71,7 +71,7 @@ use RT;
 
 use Getopt::Long;
 
-use RT::Interface::CLI qw(CleanEnv GetCurrentUser GetMessageContent);
+use RT::Interface::CLI qw(CleanEnv GetCurrentUser GetMessageContent loc);
 
 #Clean out all the nasties from the environment
 CleanEnv();
@@ -305,37 +305,37 @@ sub help {
       . "\n";
     print loc("It takes several arguments:") . "\n\n";
 
-    print "	"
+    print "        "
       . loc( "[_1] - Specify the search module you want to use", "--search" )
       . "\n";
-    print "	"
+    print "        "
       . loc( "[_1] - An argument to pass to [_2]", "--search-arg", "--search" )
       . "\n";
 
-    print "	"
+    print "        "
       . loc( "[_1] - Specify the condition module you want to use", "--condition" )
       . "\n";
-    print "	"
+    print "        "
       . loc( "[_1] - An argument to pass to [_2]", "--condition-arg", "--condition" )
       . "\n";
-    print "	"
+    print "        "
       . loc( "[_1] - Specify the action module you want to use", "--action" )
       . "\n";
-    print "	"
+    print "        "
       . loc( "[_1] - An argument to pass to [_2]", "--action-arg", "--action" )
       . "\n";
-    print "	"
+    print "        "
       . loc( "[_1] - Specify name or id of template(s) you want to use", "--template" )
       . "\n";
-    print "	"
+    print "        "
       . loc( "[_1] - Specify if you want to use either 'first', 'last' or 'all' transactions", "--transaction" )
       . "\n";
-    print "	"
+    print "        "
       . loc( "[_1] - Specify the comma separated list of transactions' types you want to use", "--transaction-type" )
       . "\n";
-    print "	"
+    print "        "
       . loc( "[_1] - Adjust LogToScreen config option", "--log" ) . "\n";
-    print "	"
+    print "        "
       . loc( "[_1] - Output status updates to STDOUT", "--verbose" ) . "\n";
     print "\n";
     print "\n";

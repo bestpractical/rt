@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -132,8 +132,8 @@
 
 <tr><td class="label">&nbsp;</td><td>
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
-<input type="checkbox" class="checkbox" name="Enabled" value="1" <% $EnabledChecked |n%> />
-<&|/l&>Enabled (Unchecking this box disables this custom field)</&>
+<input type="checkbox" class="checkbox" id="Enabled" name="Enabled" value="1" <% $EnabledChecked |n %> />
+<label for="Enabled"><&|/l&>Enabled (Unchecking this box disables this custom field)</&></label>
 </td></tr>
 
 % $m->callback(CallbackName => 'EndOfTable', CustomField => $CustomFieldObj, CFvalidations => \@CFvalidations);
@@ -202,7 +202,15 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
         Object        => $CustomFieldObj,
         ARGSRef       => \%ARGS
     );
-    $CustomFieldObj->SetValuesClass( $ValuesClass );
+    if ( ($ValuesClass||'RT::CustomFieldValues') ne $CustomFieldObj->ValuesClass ) {
+        my $original = $CustomFieldObj->ValuesClass;
+        my ($good, $msg) = $CustomFieldObj->SetValuesClass( $ValuesClass );
+        if ( $good ) {
+            $msg = loc("[_1] changed from '[_2]' to '[_3]'",
+                        loc("Field values source"), $original, $ValuesClass );
+        }
+        push @results, $msg;
+    }
 
     # Set the render type if we have it, but unset it if the new type doesn't
     # support render types
@@ -234,7 +242,7 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     my $paramtag = "CustomField-". $CustomFieldObj->Id ."-Value";
     # Delete any fields that want to be deleted
     foreach my $key ( keys %ARGS ) {
-        next unless $key =~ /^Delete-$paramtag-(\d+)$/o;
+        next unless $key =~ /^Delete-$paramtag-(\d+)$/;
         my ($val, $msg) = $CustomFieldObj->DeleteValue( $1 );
         push (@results, $msg);
     }

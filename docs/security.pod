@@ -32,11 +32,7 @@ months before being added to the public RT repository.
 
 Protect your RT installation by making it only accessible via SSL.  This
 will protect against users' passwords being sniffed as they go over the
-wire, as well as helping prevent phishing attacks.  If you use SSL, you
-will need to install some additional Perl libraries so that C<rt-mailgate>
-can connect.  You can use the C<--enable-ssl-mailgate> command to
-configure to automate the installation of these dependencies.  This is
-documented further in step 10 of the README.
+wire, as well as helping prevent phishing attacks.
 
 You should use a certificate signed by a reputable authority, or at very
 least a certificate signed by a consistent local CA, which you configure

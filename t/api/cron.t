@@ -24,10 +24,10 @@ This is a content string with no content.';
 
 my $template_obj = RT::Template->new($CurrentUser);
 $template_obj->Create(Queue       => '0',
-		      Name        => 'recordtest',
-		      Description => 'testing Record actions',
-		      Content     => $template_content,
-		     );
+                      Name        => 'recordtest',
+                      Description => 'testing Record actions',
+                      Content     => $template_content,
+                     );
 
 # Create a queue and some tickets.
 
@@ -36,17 +36,17 @@ my $queue_obj = RT::Queue->new($CurrentUser);
 ok($ret, 'record test queue creation');
 
 my $ticket1 = RT::Ticket->new($CurrentUser);
-my ($id, $tobj, $msg2) = $ticket1->Create(Queue    => $queue_obj,
-					 Requestor => ['tara@example.com'],
-					 Subject   => 'bork bork bork',
-					 Priority  => 22,
-					);
+my ($id, $tobj, $msg2) = $ticket1->Create(Queue     => $queue_obj,
+                                          Requestor => ['tara@example.com'],
+                                          Subject   => 'bork bork bork',
+                                          Priority  => 22,
+                                        );
 ok($id, 'record test ticket creation 1');
 my $ticket2 = RT::Ticket->new($CurrentUser);
 ($id, $tobj, $msg2) = $ticket2->Create(Queue     => $queue_obj,
-				      Requestor => ['root@localhost'],
-				      Subject   => 'hurdy gurdy'
-				      );
+                                       Requestor => ['root@localhost'],
+                                       Subject   => 'hurdy gurdy'
+                                      );
 ok($id, 'record test ticket creation 2');
 
 
@@ -58,7 +58,7 @@ ok(require RT::Search::FromSQL, "Search::FromSQL loaded");
 my $ticketsqlstr = "Requestor.EmailAddress = '" . $CurrentUser->EmailAddress .
     "' AND Priority > '20'";
 my $search = RT::Search::FromSQL->new(Argument => $ticketsqlstr, TicketsObj => RT::Tickets->new($CurrentUser),
-				      );
+                                  );
 is(ref($search), 'RT::Search::FromSQL', "search created");
 ok($search->Prepare(), "fromsql search run");
 my $counter = 0;

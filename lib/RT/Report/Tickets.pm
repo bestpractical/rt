@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -267,7 +267,7 @@ sub _FieldToFunction {
         my $u_alias = $self->{"_sql_report_watcher_users_alias_$type"};
         unless ( $u_alias ) {
             my ($g_alias, $gm_alias);
-            ($g_alias, $gm_alias, $u_alias) = $self->_WatcherJoin( $type );
+            ($g_alias, $gm_alias, $u_alias) = $self->_WatcherJoin( Type => $type );
             $self->{"_sql_report_watcher_users_alias_$type"} = $u_alias;
         }
         @args{qw(ALIAS FIELD)} = ($u_alias, $column);
@@ -282,7 +282,6 @@ sub AddRecord {
     my $self = shift;
     my $record = shift;
     push @{$self->{'items'}}, $record;
-    $self->{'rows'}++;
 }
 
 1;
@@ -301,6 +300,10 @@ sub NewItem {
     my $self = shift;
     return RT::Report::Tickets::Entry->new(RT->SystemUser); # $self->CurrentUser);
 }
+
+# This is necessary since normally NewItem (above) is used to intuit the
+# correct class.  However, since we're abusing a subclass, it's incorrect.
+sub _RoleGroupClass { "RT::Ticket" }
 
 
 =head2 AddEmptyRows

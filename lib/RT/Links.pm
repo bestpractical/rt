@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -70,10 +70,9 @@ package RT::Links;
 use strict;
 use warnings;
 
+use base 'RT::SearchBuilder';
 
 use RT::Link;
-
-use base 'RT::SearchBuilder';
 
 sub Table { 'Links'}
 
@@ -83,27 +82,27 @@ use RT::URI;
 sub Limit  {
     my $self = shift;
     my %args = ( ENTRYAGGREGATOR => 'AND',
-		 OPERATOR => '=',
-		 @_);
+                 OPERATOR => '=',
+                 @_);
 
     # If we're limiting by target, order by base
     # (Order by the thing that's changing)
 
-    if ( ($args{'FIELD'} eq 'Target') or 
-	 ($args{'FIELD'} eq 'LocalTarget') ) {
-	$self->OrderByCols(
+    if ( ($args{'FIELD'} eq 'Target') or
+         ($args{'FIELD'} eq 'LocalTarget') ) {
+        $self->OrderByCols(
             { ALIAS => 'main', FIELD => 'LocalBase', ORDER => 'ASC' },
             { ALIAS => 'main', FIELD => 'Base', ORDER => 'ASC' },
         );
     }
-    elsif ( ($args{'FIELD'} eq 'Base') or 
-	    ($args{'FIELD'} eq 'LocalBase') ) {
-	$self->OrderByCols(
+    elsif ( ($args{'FIELD'} eq 'Base') or
+            ($args{'FIELD'} eq 'LocalBase') ) {
+        $self->OrderByCols(
             { ALIAS => 'main', FIELD => 'LocalTarget', ORDER => 'ASC' },
             { ALIAS => 'main', FIELD => 'Target', ORDER => 'ASC' },
         );
     }
-    
+
 
     $self->SUPER::Limit(%args);
 }
@@ -157,7 +156,6 @@ sub AddRecord {
     return unless $self->IsValidLink($record);
 
     push @{$self->{'items'}}, $record;
-    $self->{'rows'}++;
 }
 
 =head2 IsValidLink

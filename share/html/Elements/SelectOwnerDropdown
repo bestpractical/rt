@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -51,7 +51,9 @@
 %}
 % $Default = 0 unless defined $Default && $Default =~ /^\d+$/;
 % my @formatednames = sort {lc $a->[1] cmp lc $b->[1]} map {[$_, $_->Format]} grep { $_->id != RT->Nobody->id } @users;
-% my $nobody = [RT->Nobody, RT->Nobody->Format(CurrentUser => $session{CurrentUser})];
+% my $nobody_user = RT::User->new( $session{CurrentUser} );
+% $nobody_user->Load( RT->Nobody->id );
+% my $nobody = [$nobody_user, $nobody_user->Format];
 % unshift @formatednames, $nobody;
 %foreach my $UserRef ( @formatednames)  {
 %my $User = $UserRef->[0];

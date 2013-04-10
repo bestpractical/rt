@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,13 +45,13 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/TitleBoxStart, title => loc('Quick search') &>
+<& /Widgets/TitleBoxStart, title => loc('Quick search') &>
 <ul>
 % while (my $class = $classes->Next) {
 <li><a href="<%RT->Config->Get('WebPath')%>/Articles/Article/Search.html?Class=<%$class->Name%>&Parent=0&HideOptions=1"><%$class->Name%></a></li>
 % }
 </ul>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 <%init>
 my $classes = RT::Classes->new($session{'CurrentUser'});
 $classes->LimitToEnabled;

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -68,9 +68,9 @@ package RT::Templates;
 use strict;
 use warnings;
 
-use RT::Template;
-
 use base 'RT::SearchBuilder';
+
+use RT::Template;
 
 sub Table { 'Templates'}
 
@@ -130,32 +130,32 @@ sub LimitToQueue {
 Returns the next template that this user can see.
 
 =cut
-  
+
 sub Next {
     my $self = shift;
-    
-    
+
+
     my $templ = $self->SUPER::Next();
     if ((defined($templ)) and (ref($templ))) {
-        
+
         # If it's part of a queue, and the user can read templates in
         # that queue, or the user can globally read templates, show it
         if ($templ->Queue && $templ->CurrentUserHasQueueRight('ShowTemplate') or
             $templ->CurrentUser->HasRight(Object => $RT::System, Right => 'ShowTemplate') or
             $templ->CurrentUser->HasRight(Object => $RT::System, Right => 'ShowGlobalTemplates')) {
-	    return($templ);
-	}
-	
-	#If the user doesn't have the right to show this template
-	else {	
-	    return($self->Next());
-	}
+            return($templ);
+        }
+
+        #If the user doesn't have the right to show this template
+        else {
+            return($self->Next());
+        }
     }
     #if there never was any template
     else {
-	return(undef);
-    }	
-    
+        return(undef);
+    }
+
 }
 
 =head2 NewItem

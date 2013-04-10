@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -56,12 +56,12 @@
 <input type="hidden" class="hidden" name="id" value="<% $TicketObj->Id %>" />
 
 <&| /Widgets/TitleBox, title => loc('Modify ticket #[_1]',$TicketObj->Id), class=>'ticket-info-basics' &>
-<& Elements/EditBasics, TicketObj => $TicketObj &>
-<& /Elements/EditCustomFields, Object => $TicketObj, DefaultsFromTopArguments => 0, Grouping => 'Basics' &>
+<& Elements/EditBasics, TicketObj => $TicketObj, defaults => \%ARGS &>
+<& /Elements/EditCustomFields, Object => $TicketObj, Grouping => 'Basics' &>
 </&>
 % $m->callback( CallbackName => 'AfterBasics', Ticket => $TicketObj );
 
-<& /Elements/EditCustomFieldCustomGroupings, Object => $TicketObj, DefaultsFromTopArguments => 0 &>
+<& /Elements/EditCustomFieldCustomGroupings, Object => $TicketObj &>
 
 <& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#993333" &>
 </form>
@@ -70,20 +70,39 @@
 my $TicketObj = LoadTicket($id);
 my $CustomFields = $TicketObj->CustomFields;
 
-# call this to show up hints of valid cf values.
-$m->comp(
-    '/Elements/ValidateCustomFields',
-    CustomFields => $CustomFields,
-    ARGSRef => {},
-);
+my @results;
+my $skip_update = 0;
 
 # Now let callbacks have a chance at editing %ARGS
-$m->callback( TicketObj => $TicketObj, CustomFields => $CustomFields, ARGSRef => \%ARGS );
+$m->callback( TicketObj => $TicketObj, CustomFields => $CustomFields, ARGSRef => \%ARGS, skip_update => \$skip_update );
 
-my @results = ProcessTicketBasics(TicketObj => $TicketObj, ARGSRef => \%ARGS);
-push @results, ProcessObjectCustomFieldUpdates(Object => $TicketObj, ARGSRef => \%ARGS);
+{
+    my ($status, @msg) = $m->comp(
+        '/Elements/ValidateCustomFields',
+        Object       => $TicketObj,
+        CustomFields => $CustomFields,
+        ARGSRef      => \%ARGS,
+    );
+    unless ($status) {
+        push @results, @msg;
+        $skip_update = 1;
+    }
+}
 
-$TicketObj->ApplyTransactionBatch;
+unless ($skip_update) {
+    push @results, ProcessTicketBasics(TicketObj => $TicketObj, ARGSRef => \%ARGS);
+    push @results, ProcessObjectCustomFieldUpdates(Object => $TicketObj, ARGSRef => \%ARGS);
+    $m->callback( CallbackName => 'ProcessUpdates', TicketObj => $TicketObj,
+                  ARGSRef => \%ARGS, Results => \@results );
+
+    $TicketObj->ApplyTransactionBatch;
+
+    MaybeRedirectForResults(
+        Actions   => \@results,
+        Path      => "/Ticket/Modify.html",
+        Arguments => { id => $TicketObj->id },
+    );
+}
 
 unless ($TicketObj->CurrentUserHasRight('ShowTicket')) {
     if (@results) {

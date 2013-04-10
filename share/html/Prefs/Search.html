@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -53,8 +53,8 @@
 <p>
   <&|/l&>You can also edit the predefined search itself</&>:
   <a href="<% RT->Config->Get('WebPath').'/Search/Build.html?'.
-	  $m->comp('/Elements/QueryString',
-		   SavedSearchLoad => 'RT::System-1-SavedSearch-'.$id) %>"><% $search->Name %></a>
+          $m->comp('/Elements/QueryString',
+                   SavedSearchLoad => 'RT::System-1-SavedSearch-'.$id) %>"><% $search->Name %></a>
 </p>
 % }
 

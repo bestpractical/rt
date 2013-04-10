@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -84,45 +84,28 @@ my $CurrentUser = $session{'CurrentUser'};
 $m->abort unless $CurrentUser->Privileged
               or RT->Config->Get('AllowUserAutocompleteForUnprivileged');
 
-my %fields = %{ RT->Config->Get('UserAutocompleteFields')
+my %fields = %{ RT->Config->Get('UserSearchFields')
                 || { EmailAddress => 1, Name => 1, RealName => 'LIKE' } };
 
 # If an operator is provided, check against only the returned field
 # using that operator
 %fields = ( $return => $op ) if $op;
 
-my $users = RT::Users->new( $CurrentUser );
-$users->RowsPerPage( $max );
+# the API wants a list of ids
+my @exclude = split /\s*,\s*/, $exclude;
+push @exclude, RT->SystemUser->id, RT->Nobody->id;
 
-$users->LimitToPrivileged() if $privileged;
-
-while (my ($name, $op) = each %fields) {
-    $op = 'STARTSWITH'
-        unless $op =~ /^(?:LIKE|(?:START|END)SWITH|=|!=)$/i;
-
-    $users->Limit(
-        FIELD           => $name,
-        OPERATOR        => $op,
-        VALUE           => $term,
-        ENTRYAGGREGATOR => 'OR',
-        SUBCLAUSE       => 'autocomplete',
-    );
-}
-
-# Exclude users we don't want
-foreach (split /\s*,\s*/, $exclude) {
-    $users->Limit(FIELD => 'id', VALUE => $_, OPERATOR => '!=');
-}
+my $users = RT::Users->new($CurrentUser);
+$users->SimpleSearch( Privileged => $privileged,
+                      Return     => $return,
+                      Term       => $term,
+                      Max        => $max,
+                      Exclude    => \@exclude,
+                      Fields     => \%fields,
+                    );
 
 my @suggestions;
-
-$users->Limit( FIELD => $return, OPERATOR => '!=', VALUE => '' );
-$users->Limit( FIELD => $return, OPERATOR => 'IS NOT', VALUE => 'NULL', ENTRYAGGREGATOR => 'AND'  );
-
 while ( my $user = $users->Next ) {
-    next if $user->id == RT->SystemUser->id
-         or $user->id == RT->Nobody->id;
-
     my $suggestion = { label => $user->Format, value => $user->$return };
     $m->callback( CallbackName => "ModifySuggestion", suggestion => $suggestion, user => $user );
     push @suggestions, $suggestion;

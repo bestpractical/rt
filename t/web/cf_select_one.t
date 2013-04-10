@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 45;
+use RT::Test tests => undef;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
@@ -151,3 +151,32 @@ diag "check that we can set empty value when the current is 0";
        undef, 'API returns correct value';
 }
 
+diag 'retain selected cf values when adding attachments';
+{
+    my ( $ticket, $id );
+    $m->submit_form(
+        form_name => "CreateTicketInQueue",
+        fields    => { Queue => 'General' },
+    );
+    $m->content_contains($cf_name, 'Found cf field' );
+
+    $m->submit_form_ok(
+                       { form_name => "TicketCreate",
+          fields    => {
+              Subject        => 'test defaults',
+              Content        => 'test',
+              "Object-RT::Ticket--CustomField-$cfid-Values" => 'qwe',
+            },
+            button => 'AddMoreAttach',
+        },
+        'Add an attachment on create'
+    );
+
+    $m->form_name("TicketCreate");
+    is($m->value("Object-RT::Ticket--CustomField-$cfid-Values"),
+       "qwe",
+       "Selected value still on form" );
+}
+
+undef $m;
+done_testing;

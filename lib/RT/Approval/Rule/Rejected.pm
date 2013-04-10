@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -75,7 +75,7 @@ sub Commit {    # XXX: from custom prepare code
 
         $rejected->Correspond( MIMEObj => $template->MIMEObj );
         $rejected->SetStatus(
-            Status => $rejected->Lifecycle->DefaultStatus('denied') || 'rejected',
+            Status => $rejected->LifecycleObj->DefaultStatus('denied') || 'rejected',
             Force  => 1,
         );
     }

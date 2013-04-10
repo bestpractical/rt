@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -93,18 +93,18 @@ Set this message's return address to the apropriate queue address
 
 sub SetReturnAddress {
     my $self = shift;
-    
+
     my $friendly_name;
 
-	if (RT->Config->Get('UseFriendlyFromLine')) {
-	    $friendly_name = $self->TicketObj->QueueObj->Description ||
-		    $self->TicketObj->QueueObj->Name;
-	}
+    if (RT->Config->Get('UseFriendlyFromLine')) {
+        $friendly_name = $self->TicketObj->QueueObj->Description ||
+            $self->TicketObj->QueueObj->Name;
+    }
 
     $self->SUPER::SetReturnAddress( @_, friendly_name => $friendly_name );
-    
+
 }
-  
+
 
 
 =head2 SetRTSpecialHeaders

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -69,9 +69,30 @@ use strict;
 use warnings;
 use base 'RT::Record';
 
+use Role::Basic 'with';
+with "RT::Record::Role::Lifecycle",
+     "RT::Record::Role::Links" => { -excludes => ["_AddLinksOnCreate"] },
+     "RT::Record::Role::Roles";
+
 sub Table {'Queues'}
 
+sub LifecycleType { "ticket" }
 
+sub ModifyLinkRight { "AdminQueue" }
+
+require RT::ACE;
+RT::ACE->RegisterCacheHandler(sub {
+    my %args = (
+        Action      => "",
+        RightName   => "",
+        @_
+    );
+
+    return unless $args{Action}    =~ /^(Grant|Revoke)$/i
+              and $args{RightName} =~ /^(SeeQueue|CreateTicket)$/;
+
+    RT->System->QueueCacheNeedsUpdate(1);
+});
 
 use RT::Groups;
 use RT::ACL;
@@ -155,7 +176,6 @@ $RT::ACE::OBJECT_TYPES{'RT::Queue'} = 1;
 
 __PACKAGE__->AddRights(%$RIGHTS);
 __PACKAGE__->AddRightCategories(%$RIGHT_CATEGORIES);
-require RT::Lifecycle;
 
 =head2 AddRights C<RIGHT>, C<DESCRIPTION> [, ...]
 
@@ -185,39 +205,6 @@ sub AddRightCategories {
     $RIGHT_CATEGORIES = { %$RIGHT_CATEGORIES, %new };
 }
 
-sub AddLink {
-    my $self = shift;
-    my %args = ( Target => '',
-                 Base   => '',
-                 Type   => '',
-                 Silent => undef,
-                 @_ );
-
-    unless ( $self->CurrentUserHasRight('ModifyQueue') ) {
-        return ( 0, $self->loc("Permission Denied") );
-    }
-
-    return $self->SUPER::_AddLink(%args);
-}
-
-sub DeleteLink {
-    my $self = shift;
-    my %args = (
-        Base   => undef,
-        Target => undef,
-        Type   => undef,
-        @_
-    );
-
-    #check acls
-    unless ( $self->CurrentUserHasRight('ModifyQueue') ) {
-        $RT::Logger->debug("No permission to delete links");
-        return ( 0, $self->loc('Permission Denied'))
-    }
-
-    return $self->SUPER::_DeleteLink(%args);
-}
-
 =head2 AvailableRights
 
 Returns a hash of available rights for this object. The keys are the right names and the values are a description of what the rights do
@@ -239,123 +226,6 @@ values are the category (General, Staff, Admin) the right falls into.
 sub RightCategories {
     return $RIGHT_CATEGORIES;
 }
-
-
-sub Lifecycle {
-    my $self = shift;
-    unless (ref $self && $self->id) {
-        return RT::Lifecycle->Load( Type => 'ticket')
-    }
-
-    my $name = $self->_Value( Lifecycle => @_ );
-    $name ||= 'default';
-
-    my $res = RT::Lifecycle->Load( Name => $name );
-    unless ( $res ) {
-        $RT::Logger->error("Lifecycle '$name' for queue '".$self->Name."' doesn't exist");
-        return RT::Lifecycle->Load( Name => 'default');
-    }
-    return $res;
-}
-
-sub SetLifecycle {
-    my $self = shift;
-    my $value = shift || 'default';
-
-    return ( 0, $self->loc( '[_1] is not a valid lifecycle', $value ) )
-      unless $self->ValidateLifecycle($value);
-
-    return $self->_Set( Field => 'Lifecycle', Value => $value, @_ );
-}
-
-=head2 ValidateLifecycle NAME
-
-Takes a lifecycle name. Returns true if it's an ok name and such
-lifecycle is configured. Returns undef otherwise.
-
-=cut
-
-sub ValidateLifecycle {
-    my $self = shift;
-    my $value = shift;
-    return undef unless RT::Lifecycle->Load( Name => $value );
-    return 1;
-}
-
-
-=head2 ActiveStatusArray
-
-Returns an array of all ActiveStatuses for this queue
-
-=cut
-
-sub ActiveStatusArray {
-    my $self = shift;
-    return $self->Lifecycle->Valid('initial', 'active');
-}
-
-=head2 InactiveStatusArray
-
-Returns an array of all InactiveStatuses for this queue
-
-=cut
-
-sub InactiveStatusArray {
-    my $self = shift;
-    return $self->Lifecycle->Inactive;
-}
-
-=head2 StatusArray
-
-Returns an array of all statuses for this queue
-
-=cut
-
-sub StatusArray {
-    my $self = shift;
-    return $self->Lifecycle->Valid( @_ );
-}
-
-=head2 IsValidStatus value
-
-Returns true if value is a valid status.  Otherwise, returns 0.
-
-=cut
-
-sub IsValidStatus {
-    my $self  = shift;
-    return $self->Lifecycle->IsValid( shift );
-}
-
-=head2 IsActiveStatus value
-
-Returns true if value is a Active status.  Otherwise, returns 0
-
-=cut
-
-sub IsActiveStatus {
-    my $self  = shift;
-    return $self->Lifecycle->IsValid( shift, 'initial', 'active');
-}
-
-
-
-=head2 IsInactiveStatus value
-
-Returns true if value is a Inactive status.  Otherwise, returns 0
-
-
-=cut
-
-sub IsInactiveStatus {
-    my $self  = shift;
-    return $self->Lifecycle->IsInactive( shift );
-}
-
-
-
-
-
 
 =head2 Create(ARGS)
 
@@ -686,8 +556,8 @@ sub TicketCustomFields {
     my $cfs = RT::CustomFields->new( $self->CurrentUser );
     if ( $self->CurrentUserHasRight('SeeQueue') ) {
         $cfs->SetContextObject( $self );
-	$cfs->LimitToGlobalOrObjectId( $self->Id );
-	$cfs->LimitToLookupType( 'RT::Queue-RT::Ticket' );
+        $cfs->LimitToGlobalOrObjectId( $self->Id );
+        $cfs->LimitToLookupType( 'RT::Queue-RT::Ticket' );
         $cfs->ApplySortOrder;
     }
     return ($cfs);
@@ -708,8 +578,8 @@ sub TicketTransactionCustomFields {
     my $cfs = RT::CustomFields->new( $self->CurrentUser );
     if ( $self->CurrentUserHasRight('SeeQueue') ) {
         $cfs->SetContextObject( $self );
-	$cfs->LimitToGlobalOrObjectId( $self->Id );
-	$cfs->LimitToLookupType( 'RT::Queue-RT::Ticket-RT::Transaction' );
+        $cfs->LimitToGlobalOrObjectId( $self->Id );
+        $cfs->LimitToLookupType( 'RT::Queue-RT::Ticket-RT::Transaction' );
         $cfs->ApplySortOrder;
     }
     return ($cfs);
@@ -731,11 +601,10 @@ them, see L</ManageableRoleGroupTypes>.
 =cut
 
 sub AllRoleGroupTypes {
-    RT->Logger->warn(<<"    .");
-RT::Queue->AllRoleGroupTypes is DEPRECATED and will be removed in a future release.
-
-Please use RT::Queue->Roles instead at @{[join '/', caller]}.
-    .
+    RT->Deprecated(
+        Remove => "4.4",
+        Instead => "RT::Queue->Roles",
+    );
     shift->Roles;
 }
 
@@ -748,11 +617,10 @@ Returns whether the passed-in type is a role group type.
 =cut
 
 sub IsRoleGroupType {
-    RT->Logger->warn(<<"    .");
-RT::Queue->IsRoleGroupType is DEPRECATED and will be removed in a future release.
-
-Please use RT::Queue->HasRole instead at @{[join '/', caller]}.
-    .
+    RT->Deprecated(
+        Remove => "4.4",
+        Instead => "RT::Queue->HasRole",
+    );
     shift->HasRole(@_);
 }
 
@@ -765,9 +633,7 @@ them, see L</Roles>.
 =cut
 
 sub ManageableRoleGroupTypes {
-    # This grep is a little hacky, but I don't want to introduce the concept of
-    # manageable vs. unmanageable roles globally (yet).
-    return grep { not /^(Requestor|Owner)$/ } shift->Roles;
+    shift->Roles( ACLOnly => 0 )
 }
 
 =head2 IsManageableRoleGroupType
@@ -779,58 +645,34 @@ Returns whether the passed-in type is a manageable role group type.
 sub IsManageableRoleGroupType {
     my $self = shift;
     my $type = shift;
-
-    for my $valid_type ($self->ManageableRoleGroupTypes) {
-        return 1 if $type eq $valid_type;
-    }
-
-    return 0;
+    return not $self->Role($type)->{ACLOnly};
 }
 
 
-# _HasModifyWatcherRight {{{
 sub _HasModifyWatcherRight {
     my $self = shift;
-    my %args = (
-        Type  => undef,
-        PrincipalId => undef,
-        Email => undef,
-        @_
-    );
+    my ($type, $principal) = @_;
 
+    # ModifyQueueWatchers works in any case
     return 1 if $self->CurrentUserHasRight('ModifyQueueWatchers');
-
-    #If the watcher we're trying to add is for the current user
-    if ( defined $args{'PrincipalId'} && $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}) {
-        if ( $args{'Type'} eq 'AdminCc' ) {
-            return 1 if $self->CurrentUserHasRight('WatchAsAdminCc');
-        }
-        elsif ( $args{'Type'} eq 'Cc' or $args{'Type'} eq 'Requestor' ) {
-            return 1 if $self->CurrentUserHasRight('Watch');
-        }
-        else {
-            $RT::Logger->warning( "$self -> _HasModifyWatcher got passed a bogus type $args{Type}");
-            return ( 0, $self->loc('Invalid queue role group type [_1]', $args{Type}) );
-        }
-    }
-
-    return ( 0, $self->loc("Permission Denied") );
+    # If the watcher isn't the current user then the current user has no right
+    return 0 unless $self->CurrentUser->PrincipalId == $principal->id;
+    # If it's an AdminCc and they don't have 'WatchAsAdminCc', bail
+    return 0 if $type eq 'AdminCc' and not $self->CurrentUserHasRight('WatchAsAdminCc');
+    # If it's a Requestor or Cc and they don't have 'Watch', bail
+    return 0 if ($type eq "Cc" or $type eq 'Requestor')
+        and not $self->CurrentUserHasRight('Watch');
+    return 1;
 }
 
 
 =head2 AddWatcher
 
-AddWatcher takes a parameter hash. The keys are as follows:
+Applies access control checking, then calls L<RT::Record/AddRoleMember>.
+Additionally, C<Email> is accepted as an alternative argument name for
+C<User>.
 
-Type        One of Requestor, Cc, AdminCc
-
-PrinicpalId The RT::Principal id of the user or group that's being added as a watcher
-Email       The email address of the new watcher. If a user with this 
-            email address can't be found, a new nonprivileged user will be created.
-
-If the watcher you're trying to set has an RT account, set the Owner parameter to their User Id. Otherwise, set the Email parameter to their Email address.
-
-Returns a tuple of (status/id, message).
+Returns a tuple of (status, message).
 
 =cut
 
@@ -843,185 +685,43 @@ sub AddWatcher {
         @_
     );
 
-    return ( 0, "No principal specified" )
-        unless $args{'Email'} or $args{'PrincipalId'};
+    $args{ACL} = sub { $self->_HasModifyWatcherRight( @_ ) };
+    $args{User} ||= delete $args{Email};
+    my ($principal, $msg) = $self->AddRoleMember( %args );
+    return ( 0, $msg) unless $principal;
 
-    if ( !$args{'PrincipalId'} && $args{'Email'} ) {
-        my $user = RT::User->new( $self->CurrentUser );
-        $user->LoadByEmail( $args{'Email'} );
-        $args{'PrincipalId'} = $user->PrincipalId if $user->id;
-    }
-
-    return ( 0, "Unknown watcher type [_1]", $args{Type} )
-        unless $self->HasRole($args{Type});
-
-    my ($ok, $msg) = $self->_HasModifyWatcherRight(%args);
-    return ($ok, $msg) if !$ok;
-
-    return $self->_AddWatcher(%args);
+    return ( 1, $self->loc("Added [_1] to members of [_2] for this queue.",
+                           $principal->Object->Name, $self->loc($args{'Type'}) ));
 }
 
-#This contains the meat of AddWatcher. but can be called from a routine like
-# Create, which doesn't need the additional acl check
-sub _AddWatcher {
+
+=head2 DeleteWatcher
+
+Applies access control checking, then calls L<RT::Record/DeleteRoleMember>.
+Additionally, C<Email> is accepted as an alternative argument name for
+C<User>.
+
+Returns a tuple of (status, message).
+
+=cut
+
+sub DeleteWatcher {
     my $self = shift;
+
     my %args = (
-        Type   => undef,
-        Silent => undef,
+        Type => undef,
         PrincipalId => undef,
         Email => undef,
         @_
     );
 
+    $args{ACL} = sub { $self->_HasModifyWatcherRight( @_ ) };
+    $args{User} ||= delete $args{Email};
+    my ($principal, $msg) = $self->DeleteRoleMember( %args );
+    return ( 0, $msg) unless $principal;
 
-    my $principal = RT::Principal->new( $self->CurrentUser );
-    if ( $args{'PrincipalId'} ) {
-        $principal->Load( $args{'PrincipalId'} );
-        if ( $principal->id and $principal->IsUser and my $email = $principal->Object->EmailAddress ) {
-            return (0, $self->loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $email, $self->loc($args{'Type'})))
-                if RT::EmailParser->IsRTAddress( $email );
-        }
-    }
-    elsif ( $args{'Email'} ) {
-        if ( RT::EmailParser->IsRTAddress( $args{'Email'} ) ) {
-            return (0, $self->loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $args{'Email'}, $self->loc($args{'Type'})));
-        }
-        my $user = RT::User->new($self->CurrentUser);
-        $user->LoadByEmail( $args{'Email'} );
-        $user->Load( $args{'Email'} )
-            unless $user->id;
-
-        if ( $user->Id ) { # If the user exists
-            $principal->Load( $user->PrincipalId );
-        } else {
-            # if the user doesn't exist, we need to create a new user
-            my $new_user = RT::User->new(RT->SystemUser);
-
-            my ( $Address, $Name ) =  
-               RT::Interface::Email::ParseAddressFromHeader($args{'Email'});
-
-            my ( $Val, $Message ) = $new_user->Create(
-                Name         => $Address,
-                EmailAddress => $Address,
-                RealName     => $Name,
-                Privileged   => 0,
-                Comments     => 'Autocreated when added as a watcher'
-            );
-            unless ($Val) {
-                $RT::Logger->error("Failed to create user ".$args{'Email'} .": " .$Message);
-                # Deal with the race condition of two account creations at once
-                $new_user->LoadByEmail( $args{'Email'} );
-            }
-            $principal->Load( $new_user->PrincipalId );
-        }
-    }
-    # If we can't find this watcher, we need to bail.
-    unless ( $principal->Id ) {
-        return(0, $self->loc("Could not find or create that user"));
-    }
-
-    my $group = $self->RoleGroup( $args{'Type'} );
-    unless ($group->id) {
-        return(0,$self->loc("Group not found"));
-    }
-
-    if ( $group->HasMember( $principal)) {
-
-        return ( 0, $self->loc('[_1] is already a [_2] for this queue',
-                    $principal->Object->Name, $args{'Type'}) );
-    }
-
-
-    my ($m_id, $m_msg) = $group->_AddMember(PrincipalId => $principal->Id);
-    unless ($m_id) {
-        $RT::Logger->error("Failed to add ".$principal->Id." as a member of group ".$group->Id.": ".$m_msg);
-
-        return ( 0, $self->loc('Could not make [_1] a [_2] for this queue',
-                    $principal->Object->Name, $args{'Type'}) );
-    }
-    return ( 1, $self->loc("Added [_1] to members of [_2] for this queue.", $principal->Object->Name, $args{'Type'} ));
-}
-
-
-
-=head2 DeleteWatcher { Type => TYPE, PrincipalId => PRINCIPAL_ID, Email => EMAIL_ADDRESS }
-
-
-Deletes a queue  watcher.  Takes two arguments:
-
-Type  (one of Requestor,Cc,AdminCc)
-
-and one of
-
-PrincipalId (an RT::Principal Id of the watcher you want to remove)
-    OR
-Email (the email address of an existing wathcer)
-
-
-=cut
-
-
-sub DeleteWatcher {
-    my $self = shift;
-
-    my %args = ( Type => undef,
-                 PrincipalId => undef,
-                 Email => undef,
-                 @_ );
-
-    unless ( $args{'PrincipalId'} || $args{'Email'} ) {
-        return ( 0, $self->loc("No principal specified") );
-    }
-
-    if ( !$args{PrincipalId} and $args{Email} ) {
-        my $user = RT::User->new( $self->CurrentUser );
-        my ($rv, $msg) = $user->LoadByEmail( $args{Email} );
-        $args{PrincipalId} = $user->PrincipalId if $rv;
-    }
-    
-    my $principal = RT::Principal->new( $self->CurrentUser );
-    if ( $args{'PrincipalId'} ) {
-        $principal->Load( $args{'PrincipalId'} );
-    }
-    else {
-        my $user = RT::User->new( $self->CurrentUser );
-        $user->LoadByEmail( $args{'Email'} );
-        $principal->Load( $user->Id );
-    }
-
-    # If we can't find this watcher, we need to bail.
-    unless ( $principal->Id ) {
-        return ( 0, $self->loc("Could not find that principal") );
-    }
-
-    my $group = $self->RoleGroup( $args{'Type'} );
-    unless ($group->id) {
-        return(0,$self->loc("Group not found"));
-    }
-
-    return ( 0, $self->loc('Unknown watcher type [_1]', $args{Type}) )
-        unless $self->HasRole($args{Type});
-
-    my ($ok, $msg) = $self->_HasModifyWatcherRight(%args);
-    return ($ok, $msg) if !$ok;
-
-    # see if this user is already a watcher.
-
-    unless ( $group->HasMember($principal)) {
-        return ( 0, $self->loc('[_1] is not a [_2] for this queue',
-            $principal->Object->Name, $args{'Type'}) );
-    }
-
-    my ($m_id, $m_msg) = $group->_DeleteMember($principal->Id);
-    unless ($m_id) {
-        $RT::Logger->error("Failed to delete ".$principal->Id.
-                           " as a member of group ".$group->Id.": ".$m_msg);
-
-        return ( 0, $self->loc('Could not remove [_1] as a [_2] for this queue',
-                    $principal->Object->Name, $args{'Type'}) );
-    }
-
-    return ( 1, $self->loc("Removed [_1] from members of [_2] for this queue.", $principal->Object->Name, $args{'Type'} ));
+    return ( 1, $self->loc("Removed [_1] from members of [_2] for this queue.",
+                           $principal->Object->Name, $self->loc($args{'Type'}) ));
 }
 
 

@@ -15,11 +15,11 @@ X-Mailer: $mailer
 To: rt\@@{[RT->Config->Get('rtname')]}
 Subject: outlook basic test
 Content-Type: multipart/alternative;
-	boundary="----=_NextPart_000_0004_01CB045C.A5A075D0"
+\tboundary="----=_NextPart_000_0004_01CB045C.A5A075D0"
 
 ------=_NextPart_000_0004_01CB045C.A5A075D0
 Content-Type: text/plain;
-	charset="us-ascii"
+\tcharset="us-ascii"
 Content-Transfer-Encoding: 7bit
 
 here is the content
@@ -33,7 +33,7 @@ another line
 
 ------=_NextPart_000_0004_01CB045C.A5A075D0
 Content-Type: text/html;
-	charset="us-ascii"
+\tcharset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
 <html>this is fake</html>
@@ -61,16 +61,16 @@ X-Mailer: $mailer
 To: rt\@@{[RT->Config->Get('rtname')]}
 Subject: outlook basic test
 Content-Type: multipart/mixed;
-	boundary="----=_NextPart_000_000F_01CB045E.5222CB40"
+\tboundary="----=_NextPart_000_000F_01CB045E.5222CB40"
 
 ------=_NextPart_000_000F_01CB045E.5222CB40
 Content-Type: multipart/alternative;
-	boundary="----=_NextPart_001_0010_01CB045E.5222CB40"
+\tboundary="----=_NextPart_001_0010_01CB045E.5222CB40"
 
 
 ------=_NextPart_001_0010_01CB045E.5222CB40
 Content-Type: text/plain;
-	charset="us-ascii"
+\tcharset="us-ascii"
 Content-Transfer-Encoding: 7bit
 
 foo
@@ -84,7 +84,7 @@ baz
 
 ------=_NextPart_001_0010_01CB045E.5222CB40
 Content-Type: text/html;
-	charset="us-ascii"
+\tcharset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
 <html>this is fake</html>
@@ -93,10 +93,10 @@ Content-Transfer-Encoding: quoted-printable
 
 ------=_NextPart_000_000F_01CB045E.5222CB40
 Content-Type: text/plain;
-	name="att.txt"
+\tname="att.txt"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: attachment;
-	filename="att.txt"
+\tfilename="att.txt"
 
 this is the attachment! :)=0A=
 
@@ -210,8 +210,8 @@ John Smith
 Some Company
 email\@someco.com
 EOF
-	test_email( $text, $content,
-		    ' with base64, no X-Mailer, \n\n are replaced' );
+        test_email( $text, $content,
+                    ' with base64, no X-Mailer, \n\n are replaced' );
 }
 
 
@@ -223,11 +223,11 @@ X-Mailer: Mutt
 To: rt\@@{[RT->Config->Get('rtname')]}
 Subject: outlook basic test
 Content-Type: multipart/alternative;
-	boundary="----=_NextPart_000_0004_01CB045C.A5A075D0"
+\tboundary="----=_NextPart_000_0004_01CB045C.A5A075D0"
 
 ------=_NextPart_000_0004_01CB045C.A5A075D0
 Content-Type: text/plain;
-	charset="us-ascii"
+\tcharset="us-ascii"
 Content-Transfer-Encoding: 7bit
 
 foo
@@ -241,7 +241,7 @@ baz
 
 ------=_NextPart_000_0004_01CB045C.A5A075D0
 Content-Type: text/html;
-	charset="us-ascii"
+\tcharset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
 <html>this is fake</html>
@@ -382,8 +382,8 @@ This isthesig
 
 EOF
 
-	test_email( $text, $content,
-		    'Another sample multipart message with Exchange headers' );
+        test_email( $text, $content,
+                    'Another sample multipart message with Exchange headers' );
 }
 
 sub test_email {

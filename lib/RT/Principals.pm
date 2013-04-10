@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -70,9 +70,9 @@ use strict;
 use warnings;
 
 
-use RT::Principal;
-
 use base 'RT::SearchBuilder';
+
+use RT::Principal;
 
 sub Table { 'Principals'}
 

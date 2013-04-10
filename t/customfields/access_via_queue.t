@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 37;
+use RT::Test nodata => 1, tests => 47;
 use RT::Ticket;
 use RT::CustomField;
 
@@ -152,5 +152,32 @@ diag "check that owner can see and edit CF";
 
     ok $m->goto_ticket( $tid ), "opened ticket";
     $m->content_contains($cf_name, "changed cf");
+}
+
+note 'make sure CF is not reset to no value';
+{
+    my $t = RT::Test->create_ticket(
+        Queue => $queue->id,
+        Subject => 'test',
+        'CustomField-'.$cf->id => '2012-02-12',
+        Cc => $tester->id,
+        Owner => $tester->id,
+    );
+    ok $t && $t->id, 'created ticket';
+    is $t->FirstCustomFieldValue($cf_name), '2012-02-12';
+
+    $m->goto_ticket($t->id);
+    $m->follow_link_ok({id => 'page-basics'});
+    my $form = $m->form_name('TicketModify');
+    my $input = $form->find_input(
+        'Object-RT::Ticket-'. $t->id .'-CustomField-'. $cf->id .'-Value'
+    );
+    ok $input, 'found input';
+    $m->click('SubmitTicket');
+
+    my $tid = $t->id;
+    $t = RT::Ticket->new( $RT::SystemUser );
+    $t->Load( $tid );
+    is $t->FirstCustomFieldValue($cf_name), '2012-02-12';
 }
 

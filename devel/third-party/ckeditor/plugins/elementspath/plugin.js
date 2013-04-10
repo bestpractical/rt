@@ -1,206 +1,220 @@
-﻿/*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.html or http://ckeditor.com/license
-*/
+﻿/**
+ * @license Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.html or http://ckeditor.com/license
+ */
 
 /**
  * @fileOverview The "elementspath" plugin. It shows all elements in the DOM
  *		parent tree relative to the current selection in the editing area.
  */
 
-(function()
-{
-	var commands =
-	{
-		toolbarFocus :
-		{
-			exec : function( editor )
-			{
+(function() {
+	var commands = {
+		toolbarFocus: {
+			editorFocus: false,
+			readOnly: 1,
+			exec: function( editor ) {
 				var idBase = editor._.elementsPath.idBase;
 				var element = CKEDITOR.document.getById( idBase + '0' );
 
-				if ( element )
-					element.focus();
+				// Make the first button focus accessible for IE. (#3417)
+				// Adobe AIR instead need while of delay.
+				element && element.focus( CKEDITOR.env.ie || CKEDITOR.env.air );
 			}
 		}
 	};
 
-	var emptyHtml = '<span class="cke_empty">&nbsp;</span>';
+	var emptyHtml = '<span class="cke_path_empty">&nbsp;</span>';
 
-	CKEDITOR.plugins.add( 'elementspath',
-	{
-		requires : [ 'selection' ],
+	var extra = '';
 
-		init : function( editor )
-		{
-			var spaceId = 'cke_path_' + editor.name;
+	// Some browsers don't cancel key events in the keydown but in the
+	// keypress.
+	// TODO: Check if really needed for Gecko+Mac.
+	if ( CKEDITOR.env.opera || ( CKEDITOR.env.gecko && CKEDITOR.env.mac ) )
+		extra += ' onkeypress="return false;"';
+
+	// With Firefox, we need to force the button to redraw, otherwise it
+	// will remain in the focus state.
+	if ( CKEDITOR.env.gecko )
+		extra += ' onblur="this.style.cssText = this.style.cssText;"';
+
+	var pathItemTpl = CKEDITOR.addTemplate( 'pathItem', '<a' +
+		' id="{id}"' +
+		' href="{jsTitle}"' +
+		' tabindex="-1"' +
+		' class="cke_path_item"' +
+		' title="{label}"' +
+		( ( CKEDITOR.env.gecko && CKEDITOR.env.version < 10900 ) ? ' onfocus="event.preventBubble();"' : '' ) +
+		extra +
+		' hidefocus="true" ' +
+		' onkeydown="return CKEDITOR.tools.callFunction({keyDownFn},{index}, event );"' +
+		' onclick="CKEDITOR.tools.callFunction({clickFn},{index}); return false;"' +
+		' role="button" aria-label="{label}">' +
+		'{text}' +
+		'</a>' );
+
+	CKEDITOR.plugins.add( 'elementspath', {
+		lang: 'af,ar,bg,bn,bs,ca,cs,cy,da,de,el,en-au,en-ca,en-gb,en,eo,es,et,eu,fa,fi,fo,fr-ca,fr,gl,gu,he,hi,hr,hu,is,it,ja,ka,km,ko,ku,lt,lv,mk,mn,ms,nb,nl,no,pl,pt-br,pt,ro,ru,sk,sl,sr-latn,sr,sv,th,tr,ug,uk,vi,zh-cn,zh', // %REMOVE_LINE_CORE%
+		init: function( editor ) {
+			// Elements path isn't available in inline mode.
+			if ( editor.elementMode == CKEDITOR.ELEMENT_MODE_INLINE )
+				return;
+
+			var spaceId = editor.ui.spaceId( 'path' );
 			var spaceElement;
-			var getSpaceElement = function()
-			{
-				if ( !spaceElement )
-					spaceElement = CKEDITOR.document.getById( spaceId );
-				return spaceElement;
-			};
+			var getSpaceElement = function() {
+					if ( !spaceElement )
+						spaceElement = CKEDITOR.document.getById( spaceId );
+					return spaceElement;
+				};
 
 			var idBase = 'cke_elementspath_' + CKEDITOR.tools.getNextNumber() + '_';
 
-			editor._.elementsPath = { idBase : idBase, filters : [] };
+			editor._.elementsPath = { idBase: idBase, filters: [] };
 
-			editor.on( 'themeSpace', function( event )
-				{
-					if ( event.data.space == 'bottom' )
-					{
-						event.data.html +=
-							'<span id="' + spaceId + '_label" class="cke_voice_label">' + editor.lang.elementsPath.eleLabel + '</span>' +
-							'<div id="' + spaceId + '" class="cke_path" role="group" aria-labelledby="' + spaceId + '_label">' + emptyHtml + '</div>';
-					}
-				});
+			editor.on( 'uiSpace', function( event ) {
+				if ( event.data.space == 'bottom' ) {
+					event.data.html += '<span id="' + spaceId + '_label" class="cke_voice_label">' + editor.lang.elementspath.eleLabel + '</span>' +
+						'<span id="' + spaceId + '" class="cke_path" role="group" aria-labelledby="' + spaceId + '_label">' + emptyHtml + '</span>';
+				}
+			});
 
-			editor.on( 'selectionChange', function( ev )
-				{
-					var env = CKEDITOR.env,
-						selection = ev.data.selection,
-						element = selection.getStartElement(),
-						html = [],
-						editor = ev.editor,
-						elementsList = editor._.elementsPath.list = [],
-						filters = editor._.elementsPath.filters;
+			// Register the ui element to the focus manager.
+			editor.on( 'uiReady', function() {
+				var element = editor.ui.space( 'path' );
+				element && editor.focusManager.add( element, 1 );
+			});
 
-					while ( element )
-					{
-						var ignore = 0;
-						for ( var i = 0; i < filters.length; i++ )
-						{
-							if ( filters[ i ]( element ) === false )
-							{
-								ignore = 1;
-								break;
-							}
-						}
 
-						if ( !ignore )
-						{
-							var index = elementsList.push( element ) - 1;
-							var name;
-							if ( element.getAttribute( '_cke_real_element_type' ) )
-								name = element.getAttribute( '_cke_real_element_type' );
-							else
-								name = element.getName();
+			function onClick( elementIndex ) {
+				editor.focus();
+				var element = editor._.elementsPath.list[ elementIndex ];
+				if ( element.equals( editor.editable() ) ) {
+					var range = editor.createRange();
+					range.selectNodeContents( element );
+					range.select();
+				} else
+					editor.getSelection().selectElement( element );
+			}
 
-							// Use this variable to add conditional stuff to the
-							// HTML (because we are doing it in reverse order... unshift).
-							var extra = '';
+			var onClickHanlder = CKEDITOR.tools.addFunction( onClick );
 
-							// Some browsers don't cancel key events in the keydown but in the
-							// keypress.
-							// TODO: Check if really needed for Gecko+Mac.
-							if ( env.opera || ( env.gecko && env.mac ) )
-								extra += ' onkeypress="return false;"';
+			var onKeyDownHandler = CKEDITOR.tools.addFunction( function( elementIndex, ev ) {
+				var idBase = editor._.elementsPath.idBase,
+					element;
 
-							// With Firefox, we need to force the button to redraw, otherwise it
-							// will remain in the focus state.
-							if ( env.gecko )
-								extra += ' onblur="this.style.cssText = this.style.cssText;"';
+				ev = new CKEDITOR.dom.event( ev );
 
-							var label = editor.lang.elementsPath.eleTitle.replace( /%1/, name );
-							html.unshift(
-								'<a' +
-									' id="', idBase, index, '"' +
-									' href="javascript:void(\'', name, '\')"' +
-									' tabindex="-1"' +
-									' title="', label, '"' +
-									( ( CKEDITOR.env.gecko && CKEDITOR.env.version < 10900 ) ?
-									' onfocus="event.preventBubble();"' : '' ) +
-									' hidefocus="true" ' +
-									' onkeydown="return CKEDITOR._.elementsPath.keydown(\'', editor.name, '\',', index, ', event);"' +
-									extra ,
-									' onclick="return CKEDITOR._.elementsPath.click(\'', editor.name, '\',', index, ');"',
-									' role="button" aria-labelledby="' + idBase + index + '_label">',
-										name,
-										'<span id="', idBase, index, '_label" class="cke_label">' + label + '</span>',
-								'</a>' );
+				var rtl = editor.lang.dir == 'rtl';
+				switch ( ev.getKeystroke() ) {
+					case rtl ? 39:
+						37 : // LEFT-ARROW
+					case 9: // TAB
+						element = CKEDITOR.document.getById( idBase + ( elementIndex + 1 ) );
+						if ( !element )
+							element = CKEDITOR.document.getById( idBase + '0' );
+						element.focus();
+						return false;
 
-						}
+					case rtl ? 37:
+						39 : // RIGHT-ARROW
+					case CKEDITOR.SHIFT + 9: // SHIFT + TAB
+						element = CKEDITOR.document.getById( idBase + ( elementIndex - 1 ) );
+						if ( !element )
+							element = CKEDITOR.document.getById( idBase + ( editor._.elementsPath.list.length - 1 ) );
+						element.focus();
+						return false;
 
-						if ( name == 'body' )
+					case 27: // ESC
+						editor.focus();
+						return false;
+
+					case 13: // ENTER	// Opera
+					case 32: // SPACE
+						onClick( elementIndex );
+						return false;
+				}
+				return true;
+			});
+
+			editor.on( 'selectionChange', function( ev ) {
+				var env = CKEDITOR.env,
+					editable = editor.editable(),
+					selection = ev.data.selection,
+					element = selection.getStartElement(),
+					html = [],
+					elementsList = editor._.elementsPath.list = [],
+					filters = editor._.elementsPath.filters;
+
+				while ( element ) {
+					var ignore = 0,
+						name;
+
+					if ( element.data( 'cke-display-name' ) )
+						name = element.data( 'cke-display-name' );
+					else if ( element.data( 'cke-real-element-type' ) )
+						name = element.data( 'cke-real-element-type' );
+					else
+						name = element.getName();
+
+					for ( var i = 0; i < filters.length; i++ ) {
+						var ret = filters[ i ]( element, name );
+						if ( ret === false ) {
+							ignore = 1;
 							break;
-
-						element = element.getParent();
+						}
+						name = ret || name;
 					}
 
-					getSpaceElement().setHtml( html.join('') + emptyHtml );
-				});
+					if ( !ignore ) {
+						var index = elementsList.push( element ) - 1,
+							label = editor.lang.elementspath.eleTitle.replace( /%1/, name );
 
-			editor.on( 'contentDomUnload', function()
-				{
-					// If the spaceElement hasn't been initialized, don't try to do it at this time
-					// Only reuse existing reference.
-					spaceElement && spaceElement.setHtml( emptyHtml );
-				});
+						var item = pathItemTpl.output({
+							id: idBase + index,
+							label: label,
+							text: name,
+							jsTitle: 'javascript:void(\'' + name + '\')',
+							index: index,
+							keyDownFn: onKeyDownHandler,
+							clickFn: onClickHanlder
+						});
+						html.unshift( item );
+
+					}
+
+					if ( element.equals( editable ) )
+						break;
+
+					element = element.getParent();
+				}
+
+				var space = getSpaceElement();
+				space.setHtml( html.join( '' ) + emptyHtml );
+				editor.fire( 'elementsPathUpdate', { space: space } );
+			});
+
+			function empty() {
+				spaceElement && spaceElement.setHtml( emptyHtml );
+				delete editor._.elementsPath.list;
+			}
+
+			editor.on( 'readOnly', empty );
+			editor.on( 'contentDomUnload', empty );
 
 			editor.addCommand( 'elementsPathFocus', commands.toolbarFocus );
+			editor.setKeystroke( CKEDITOR.ALT + 122 /*F11*/, 'elementsPathFocus' );
 		}
 	});
 })();
 
 /**
- * Handles the click on an element in the element path.
- * @private
+ * Fired when the contents of the elementsPath are changed.
+ *
+ * @event elementsPathUpdate
+ * @member CKEDITOR.editor
+ * @param {CKEDITOR.editor} editor This editor instance.
+ * @param data
+ * @param {CKEDITOR.dom.element} data.space The elementsPath container.
  */
-CKEDITOR._.elementsPath =
-{
-	click : function( instanceName, elementIndex )
-	{
-		var editor = CKEDITOR.instances[ instanceName ];
-		editor.focus();
-
-		var element = editor._.elementsPath.list[ elementIndex ];
-		editor.getSelection().selectElement( element );
-
-		return false;
-	},
-
-	keydown : function( instanceName, elementIndex, ev )
-	{
-		var instance = CKEDITOR.ui.button._.instances[ elementIndex ];
-		var editor = CKEDITOR.instances[ instanceName ];
-		var idBase = editor._.elementsPath.idBase;
-
-		var element;
-
-		ev = new CKEDITOR.dom.event( ev );
-
-		var rtl = editor.lang.dir == 'rtl';
-		switch ( ev.getKeystroke() )
-		{
-			case rtl ? 39 : 37 :					// LEFT-ARROW
-			case 9 :					// TAB
-				element = CKEDITOR.document.getById( idBase + ( elementIndex + 1 ) );
-				if ( !element )
-					element = CKEDITOR.document.getById( idBase + '0' );
-				element.focus();
-				return false;
-
-			case rtl ? 37 : 39 :					// RIGHT-ARROW
-			case CKEDITOR.SHIFT + 9 :	// SHIFT + TAB
-				element = CKEDITOR.document.getById( idBase + ( elementIndex - 1 ) );
-				if ( !element )
-					element = CKEDITOR.document.getById( idBase + ( editor._.elementsPath.list.length - 1 ) );
-				element.focus();
-				return false;
-
-			case 27 :					// ESC
-				editor.focus();
-				return false;
-
-			case 13 :					// ENTER	// Opera
-			case 32 :					// SPACE
-				this.click( instanceName, elementIndex );
-				return false;
-
-			//default :
-			//	alert( ev.getKeystroke() );
-		}
-		return true;
-	}
-};

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -71,7 +71,8 @@
 <tr><td>
 </td><td>
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
-<input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked%> /> <&|/l&>Enabled (Unchecking this box disables this custom field)</&>
+<input type="checkbox" class="checkbox" id="Enabled" name="Enabled" value="1" <%$EnabledChecked%> />
+<label for="Enabled"><&|/l&>Enabled (Unchecking this box disables this custom field)</&></label>
 </td></tr>
 </table>
 
@@ -100,19 +101,19 @@ if (! $CustomField ) {
 } else {
 
     if ($CustomField eq 'new') {
-      my ($val, $msg) =  $CustomFieldObj->Create(Queue => $Queue, 
-                                                 Name => $Name, 
+      my ($val, $msg) =  $CustomFieldObj->Create(Queue => $Queue,
+                                                 Name => $Name,
                                                  Type => $Type,
                                                  Description => $Description,
-						 );
-      
+                                             );
+
       # if there is an error, then abort.  But since at this point there's
       # stuff already printed, clear it out.
       # (This only works in conjunction with temporarily turning autoflush
       #  off in the files that use this component.)
       unless ($val) {
-	  $m->clear_buffer;
-	  Abort(loc("Could not create CustomField: [_1]", $msg), SuppressHeader => 1);
+          $m->clear_buffer;
+          Abort(loc("Could not create CustomField: [_1]", $msg), SuppressHeader => 1);
       }
       push @results, $msg;
       $CustomFieldObj->SetSortOrder($CustomFieldObj->id);

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,21 +46,8 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%init>
-my $file = $m->base_comp->source_file;
-
-if ($file =~ /\.(?:gif|png|jpe?g)$/i) {
-    my $relfile = $m->base_comp->path;
-    RT::Interface::Web->SendStaticFile( File => $file, RelativeFile => $relfile );
-}
-elsif ($file =~ /\.(?:htc)$/i) {
-    RT::Interface::Web::StaticFileHeaders();
-    $r->content_type('text/x-component') ;
-    $m->call_next();
-    return();
-} else {
-    RT::Interface::Web::StaticFileHeaders();
-    $r->content_type('text/css; charset=utf-8') ;
-    $m->call_next();
-    return();
-}
+RT::Interface::Web::StaticFileHeaders();
+$r->content_type('text/css; charset=utf-8') ;
+$m->call_next();
+return();
 </%init>

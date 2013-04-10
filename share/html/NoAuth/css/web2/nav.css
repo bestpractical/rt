@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -64,7 +64,7 @@
 }
 
 .sf-sub-indicator {
-    background-image: url(<%RT->Config->Get('WebPath')%>/NoAuth/css/images/arrows-grey.png);
+    background-image: url(<%RT->Config->Get('WebPath')%>/static/css/images/arrows-grey.png);
     margin-top: -3px;
 }
 
@@ -98,7 +98,7 @@
 }
 
 #prefs-menu .sf-sub-indicator {
-    background-image: url(<%RT->Config->Get('WebPath')%>/NoAuth/css/images/arrows-grey.png);
+    background-image: url(<%RT->Config->Get('WebPath')%>/static/css/images/arrows-grey.png);
     margin-top: 0;
 }
 

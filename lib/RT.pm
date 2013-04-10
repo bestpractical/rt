@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -63,11 +63,13 @@ use vars qw($BasePath
  $SbinPath
  $VarPath
  $LexiconPath
+ $StaticPath
  $PluginPath
  $LocalPath
  $LocalEtcPath
  $LocalLibPath
  $LocalLexiconPath
+ $LocalStaticPath
  $LocalPluginPath
  $MasonComponentRoot
  $MasonLocalComponentRoot
@@ -478,7 +480,7 @@ sub InitClasses {
                                    "You should delete or repair this Scrip in the admin UI.\n$@\n");
         }
 
-	foreach my $class ( grep $_, RT->Config->Get('CustomFieldValuesSources') ) {
+        foreach my $class ( grep $_, RT->Config->Get('CustomFieldValuesSources') ) {
             local $@;
             eval "require $class; 1" or $RT::Logger->error(
                 "Class '$class' is listed in CustomFieldValuesSources option"
@@ -733,9 +735,9 @@ sub CanonicalizeGeneratedPaths {
         $BasePath = Cwd::realpath($BasePath);
 
         for my $path (
-                    qw/EtcPath BinPath SbinPath VarPath LocalPath LocalEtcPath
+                    qw/EtcPath BinPath SbinPath VarPath LocalPath StaticPath LocalEtcPath
                     LocalLibPath LexiconPath LocalLexiconPath PluginPath
-                    LocalPluginPath MasonComponentRoot MasonLocalComponentRoot
+                    LocalPluginPath LocalStaticPath MasonComponentRoot MasonLocalComponentRoot
                     MasonDataDir MasonSessionDir/
                      )
         {
@@ -751,11 +753,15 @@ sub CanonicalizeGeneratedPaths {
 
 =head2 AddJavaScript
 
-helper method to add js files to C<JSFiles> config.
-to add extra js files, you can add the following line
-in the plugin's main file:
+Helper method to add JS files to the C<@JSFiles> config at runtime.
+
+To add files, you can add the following line to your extension's main C<.pm>
+file:
 
     RT->AddJavaScript( 'foo.js', 'bar.js' ); 
+
+Files are expected to be in a static root in a F<js/> directory, such as
+F<static/js/> in your extension or F<local/static/js/> for local overlays.
 
 =cut
 
@@ -769,12 +775,16 @@ sub AddJavaScript {
 
 =head2 AddStyleSheets
 
-helper method to add css files to C<CSSFiles> config
+Helper method to add CSS files to the C<@CSSFiles> config at runtime.
 
-to add extra css files, you can add the following line
-in the plugin's main file:
+To add files, you can add the following line to your extension's main C<.pm>
+file:
 
     RT->AddStyleSheets( 'foo.css', 'bar.css' ); 
+
+Files are expected to be in a Mason root in a F<NoAuth/css/> directory, such as
+F<html/NoAuth/css/> in your extension or F<local/html/NoAuth/css/> for local
+overlays.
 
 =cut
 
@@ -803,6 +813,82 @@ helper method of RT->Config->Get('CSSFiles')
 
 sub StyleSheets {
     return RT->Config->Get('CSSFiles');
+}
+
+=head2 Deprecated
+
+Notes that a particular call path is deprecated, and will be removed in
+a particular release.  Puts a warning in the logs indicating such, along
+with a stack trace.
+
+Optional arguments include:
+
+=over
+
+=item Remove
+
+The release which is slated to remove the method or component
+
+=item Instead
+
+A suggestion of what to use in place of the deprecated API
+
+=item Arguments
+
+Used if not the entire method is being removed, merely a manner of
+calling it; names the arguments which are deprecated.
+
+=item Message
+
+Overrides the auto-built phrasing of C<Calling function ____ is
+deprecated> with a custom message.
+
+=back
+
+=cut
+
+sub Deprecated {
+    my $class = shift;
+    my %args = (
+        Arguments => undef,
+        Remove => undef,
+        Instead => undef,
+        Message => undef,
+        Stack   => 1,
+        @_,
+    );
+
+    my ($function) = (caller(1))[3];
+    my $stack;
+    if ($function eq "HTML::Mason::Commands::__ANON__") {
+        eval { HTML::Mason::Exception->throw() };
+        my $error = $@;
+        my $info = $error->analyze_error;
+        $function = "Mason component ".$info->{frames}[0]->filename;
+        $stack = join("\n", map { sprintf("\t[%s:%d]", $_->filename, $_->line) } @{$info->{frames}});
+    } else {
+        $function = "function $function";
+        $stack = Carp::longmess();
+    }
+    $stack =~ s/^.*?\n//; # Strip off call to ->Deprecated
+
+    my $msg;
+    if ($args{Message}) {
+        $msg = $args{Message};
+    } elsif ($args{Arguments}) {
+        $msg = "Calling $function with $args{Arguments} is deprecated";
+    } else {
+        $msg = "The $function is deprecated";
+    }
+    $msg .= ", and will be removed in RT $args{Remove}"
+        if $args{Remove};
+    $msg .= ".";
+
+    $msg .= "  You should use $args{Instead} instead."
+        if $args{Instead};
+
+    $msg .= "  Call stack:\n$stack" if $args{Stack};
+    RT->Logger->warn($msg);
 }
 
 =head1 BUGS

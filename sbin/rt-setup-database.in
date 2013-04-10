@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -73,9 +73,7 @@ use Getopt::Long;
 
 $| = 1; # unbuffer all output.
 
-my %args = (
-    dba => '@DB_DBA@',
-);
+my %args;
 GetOptions(
     \%args,
     'action=s',
@@ -169,7 +167,7 @@ if ( $db_type eq 'SQLite' && !File::Spec->file_name_is_absolute($db_name) ) {
     RT->Config->Set( DatabaseName => $db_name );
 }
 
-my $dba_user = $args{'dba'} || $ENV{'RT_DBA_USER'} || $db_user || '';
+my $dba_user = $args{'dba'} || $ENV{'RT_DBA_USER'} || RT->Config->Get('DatabaseAdmin') || '';
 my $dba_pass = $args{'dba-password'} || $ENV{'RT_DBA_PASSWORD'};
 
 if ($args{'skip-create'}) {
@@ -329,6 +327,7 @@ sub action_upgrade {
     return (0, "Couldn't read dir '$base_dir' with upgrade data")
         unless -d $base_dir || -r _;
 
+    my $version_word_regex = join '|', RT::Handle->version_words;
     my $upgrading_from = undef;
     do {
         if ( defined $upgrading_from ) {
@@ -339,7 +338,7 @@ sub action_upgrade {
         $upgrading_from = scalar <STDIN>;
         chomp $upgrading_from;
         $upgrading_from =~ s/\s+//g;
-    } while $upgrading_from !~ /^\d+\.\d+\.\w+$/;
+    } while $upgrading_from !~ /^\d+\.\d+\.\d+(?:$version_word_regex)?\d*$/;
 
     my $upgrading_to = $RT::VERSION;
     return (0, "The current version $upgrading_to is lower than $upgrading_from")
@@ -374,7 +373,7 @@ sub action_upgrade {
             chomp $custom_upgrading_to;
             $custom_upgrading_to =~ s/\s+//g;
             last unless $custom_upgrading_to;
-        } while $custom_upgrading_to !~ /^\d+\.\d+\.\w+$/;
+        } while $custom_upgrading_to !~ /^\d+\.\d+\.\d+(?:$version_word_regex)?\d*$/;
 
         if ( $custom_upgrading_to ) {
             return (
@@ -447,10 +446,10 @@ sub action_upgrade {
             return ( $ret, $msg ) unless $ret;
         }
 
-	# XXX: Another connect since the insert called
-	# previous to this step will disconnect.
+        # XXX: Another connect since the insert called
+        # previous to this step will disconnect.
 
-	RT->ConnectToDatabase();
+        RT->ConnectToDatabase();
 
         RT->System->AddUpgradeHistory($package => {
             action => 'upgrade',

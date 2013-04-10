@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -48,6 +48,7 @@
 <%ARGS>
 $Name => undef
 $Attr => undef
+$GenericMap => {}
 </%ARGS>
 
 
@@ -75,16 +76,6 @@ $COLUMN_MAP = {
         title     => 'Class',                               # loc
         value     => sub { $_[0]->ClassObj->Name },
     },
-    CreatedRelative => {
-        attribute => 'Created',
-        title => 'Created', # loc
-        value => sub { $_[0]->CreatedObj->AgeAsString },
-    },
-    LastUpdatedRelative => {
-        attribute => 'LastUpdated',
-        title => 'LastUpdated', # loc
-        value => sub { $_[0]->LastUpdatedObj->AgeAsString },
-    },
     Topics => {
         title => 'Topics',                                  # loc
         value => sub {
@@ -102,6 +93,6 @@ $COLUMN_MAP = {
 
 </%ONCE>
 <%init>
-$m->callback( COLUMN_MAP => $COLUMN_MAP, CallbackName => 'Once', CallbackOnce => 1 );
+$m->callback( GenericMap => $GenericMap, COLUMN_MAP => $COLUMN_MAP, CallbackName => 'Once', CallbackOnce => 1 );
 return GetColumnMapEntry( Map => $COLUMN_MAP, Name => $Name, Attribute => $Attr );
 </%init>

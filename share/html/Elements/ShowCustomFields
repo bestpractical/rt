@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,7 +45,8 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $m->callback( CallbackName => 'BeforeCustomFields' );
+% $m->callback( CallbackName => 'BeforeCustomFields', Object => $Object,
+%               Grouping => $Grouping, ARGSRef => \%ARGS );
 % if ($Table) {
 <table>
 % }
@@ -69,12 +70,14 @@
 </ul>
 % }
     </td>
+% $m->callback( CallbackName => 'AfterCustomFieldValue', CustomField => $CustomField, Object => $Object, Grouping => $Grouping );
   </tr>
 % }
 % if ($Table) {
 </table>
 % }
-% $m->callback( CallbackName => 'AfterCustomFields', Object => $Object );
+% $m->callback( CallbackName => 'AfterCustomFields', Object => $Object,
+%               Grouping => $Grouping, ARGSRef => \%ARGS );
 <%INIT>
 $m->callback(
     %ARGS,

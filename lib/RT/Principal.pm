@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -60,9 +60,6 @@ sub Table {'Principals'}
 
 
 
-use Cache::Simple::TimedExpiry;
-
-
 use RT;
 use RT::Group;
 use RT::User;
@@ -71,6 +68,8 @@ use RT::User;
 our $_ACL_CACHE;
 InvalidateACLCache();
 
+require RT::ACE;
+RT::ACE->RegisterCacheHandler(sub { RT::Principal->InvalidateACLCache() });
 
 =head2 IsGroup
 
@@ -176,16 +175,16 @@ sub GrantRight {
 
     my $type = $self->_GetPrincipalTypeForACL();
 
-    RT->System->QueueCacheNeedsUpdate(1) if $args{'Right'} eq 'SeeQueue';
-
     # If it's a user, we really want to grant the right to their 
     # user equivalence group
-    return $ace->Create(
+    my ($id, $msg) = $ace->Create(
         RightName     => $args{'Right'},
         Object        => $args{'Object'},
         PrincipalType => $type,
         PrincipalId   => $self->Id,
     );
+
+    return ($id, $msg);
 }
 
 
@@ -229,9 +228,12 @@ sub RevokeRight {
         return (1);
     }
 
-    RT->System->QueueCacheNeedsUpdate(1) if $args{'Right'} eq 'SeeQueue';
     return ($status, $msg) unless $status;
-    return $ace->Delete;
+
+    my $right = $ace->RightName;
+    ($status, $msg) = $ace->Delete;
+
+    return ($status, $msg);
 }
 
 
@@ -303,9 +305,9 @@ sub HasRight {
     }
 
     {
-        my $cached = $_ACL_CACHE->fetch(
+        my $cached = $_ACL_CACHE->{
             $self->id .';:;'. ref($args{'Object'}) .'-'. $args{'Object'}->id
-        );
+        };
         return $cached->{'SuperUser'} || $cached->{ $args{'Right'} }
             if $cached;
     }
@@ -326,19 +328,19 @@ sub HasRight {
         $full_hashkey .= ";:;".$ref_id;
 
         my $short_hashkey = join(";:;", $self->id, $args{'Right'}, $ref_id);
-        my $cached_answer = $_ACL_CACHE->fetch($short_hashkey);
+        my $cached_answer = $_ACL_CACHE->{ $short_hashkey };
         return $cached_answer > 0 if defined $cached_answer;
     }
 
     {
-        my $cached_answer = $_ACL_CACHE->fetch($full_hashkey);
+        my $cached_answer = $_ACL_CACHE->{ $full_hashkey };
         return $cached_answer > 0 if defined $cached_answer;
     }
 
     my ( $hitcount, $via_obj ) = $self->_HasRight(%args);
 
-    $_ACL_CACHE->set( $full_hashkey => $hitcount ? 1 : -1 );
-    $_ACL_CACHE->set( join(';:;',  $self->id, $args{'Right'},$via_obj) => 1 )
+    $_ACL_CACHE->{ $full_hashkey } = $hitcount ? 1 : -1;
+    $_ACL_CACHE->{ join ';:;',  $self->id, $args{'Right'}, $via_obj } = 1
         if $via_obj && $hitcount;
 
     return ($hitcount);
@@ -379,7 +381,7 @@ sub HasRights {
     }
 
     my $cache_key = $self->id .';:;'. ref($object) .'-'. $object->id;
-    my $cached = $_ACL_CACHE->fetch($cache_key);
+    my $cached = $_ACL_CACHE->{ $cache_key };
     return $cached if $cached;
 
     push @{ $args{'EquivObjects'} }, $object;
@@ -433,7 +435,7 @@ sub HasRights {
     delete $res{'ExecuteCode'} if 
         RT->Config->Get('DisallowExecuteCode');
 
-    $_ACL_CACHE->store( $cache_key, \%res );
+    $_ACL_CACHE->{ $cache_key } = \%res;
     return \%res;
 }
 
@@ -685,10 +687,7 @@ Cleans out and reinitializes the user rights cache
 =cut
 
 sub InvalidateACLCache {
-    $_ACL_CACHE = Cache::Simple::TimedExpiry->new();
-    my $lifetime;
-    $lifetime = $RT::Config->Get('ACLCacheLifetime') if $RT::Config;
-    $_ACL_CACHE->expire_after( $lifetime || 60 );
+    $_ACL_CACHE = {}
 }
 
 
@@ -809,13 +808,13 @@ sub _CoreAccessible {
     {
 
         id =>
-		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+                {read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         PrincipalType =>
-		{read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
+                {read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
         ObjectId =>
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+                {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         Disabled =>
-		{read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '0'},
+                {read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '0'},
 
  }
 };

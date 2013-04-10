@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -105,12 +105,13 @@ if ($ARGS{Reset}) {
 unless (exists $session{'my_rt_portlets'}) {
     my ($default_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
     my $portlets = $default_portlets ? $default_portlets->Content : {};
+
     $session{'my_rt_portlets'} = $user->Preferences('HomepageSettings', $portlets);
 }
 my $portlets = $session{'my_rt_portlets'};
 
 my %seen;
-my @items = map ["component-$_", $_], grep !$seen{$_}++, @{RT->Config->Get('HomepageComponents')};
+my @items = map ["component-$_", loc($_)], grep !$seen{$_}++, @{RT->Config->Get('HomepageComponents')};
 
 my $sys = RT::System->new($session{'CurrentUser'});
 my @objs = ($sys);
@@ -122,7 +123,7 @@ push @objs, RT::SavedSearch->new( $session{CurrentUser} )->ObjectsForLoading
 my @sys_searches;
 for my $object (@objs) {
     for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
-        my ($desc, $search) = @$_;
+        my ($desc, $loc_desc, $search) = @$_;
 
         my $SearchType = 'Ticket';
         if ((ref($search->Content)||'') eq 'HASH') {
@@ -134,14 +135,14 @@ for my $object (@objs) {
         }
 
         if ($object eq $sys && $SearchType eq 'Ticket') {
-            push @items, ["system-$desc", $desc];
+            push @items, ["system-$desc", $loc_desc];
             push @sys_searches, [$desc, $search];
         }
         else {
             my $oid = ref($object).'-'.$object->Id.'-SavedSearch-'.$search->Id;
             my $type = ($SearchType eq 'Ticket')
                 ? 'Saved Search' : $SearchType; # loc
-            push @items, ["saved-$oid", loc($type).": $desc"];
+            push @items, ["saved-$oid", loc($type).": $loc_desc"];
         }
     }
 }

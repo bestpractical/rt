@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -54,13 +54,13 @@
 %#
 %# <%init>:
 %# my $sel = $m->comp ('/Widgets/SelectionBox:new',
-%#		  Action => me.html',
-%#		  Name => 'my-selection',
-%#		  Available => \@items,
+%#                Action => me.html',
+%#                Name => 'my-selection',
+%#                Available => \@items,
 %#                # you can do things with @{$sel->{Current}} in the 
 %#                # OnSubmit callback
-%#		  OnSubmit => sub { my $sel = shift; },
-%#		  Selected => \@selected);
+%#                OnSubmit => sub { my $sel = shift; },
+%#                Selected => \@selected);
 %#
 %# $m->comp ('/Widgets/SelectionBox:process', %ARGS, self => $sel)
 %#
@@ -74,8 +74,8 @@
 %# on every button clicked in non-js mode.
 <%method header>
 % unless ($nojs) {
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/class.js"></script>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/list.js"></script>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/class.js"></script>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/list.js"></script>
 % }
 <%ARGS>
 $nojs => 0

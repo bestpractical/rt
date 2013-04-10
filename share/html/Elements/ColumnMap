@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -53,10 +53,11 @@ $Attr  => undef
 <%ONCE>
 
 # This is scary and should totally be refactored -- jesse
-my $COLUMN_MAP = {
+my $COLUMN_MAP;
+$COLUMN_MAP = {
     id => {
         attribute => 'id',
-        title    => 'id', # loc
+        title     => '#', # loc
         align     => 'right',
         value     => sub { return $_[0]->id }
     },
@@ -96,6 +97,12 @@ my $COLUMN_MAP = {
         attribute => sub { return shift @_ },
         title     => sub { return pop @_ },
         value     => sub {
+            my $self = $COLUMN_MAP->{CustomField};
+            my $cf   = $self->{load}->(@_);
+            return unless $cf->Id;
+            return $self->{render}->( $cf, $cf->ValuesForObject($_[0])->ItemsArrayRef );
+        },
+        load      => sub {
             # Cache the CF object on a per-request basis, to avoid
             # having to load it for every row
             my $key = join("-","CF",
@@ -106,21 +113,30 @@ my $COLUMN_MAP = {
             my $cf = $m->notes($key);
             unless ($cf) {
                 $cf = $_[0]->LoadCustomFieldByIdentifier($_[-1]);
+                RT->Logger->notice("Unable to load $_[-1] for ".$_[0]->CustomFieldLookupType." ".$_[0]->CustomFieldLookupId)
+                    unless $cf->Id;
                 $m->notes($key, $cf);
             }
+            return $cf;
+        },
+        render    => sub {
+            my ($cf, $ocfvs) = @_;
+            my $comp = $m->comp_exists("/Elements/ShowCustomField".$cf->Type)
+                     ? "/Elements/ShowCustomField".$cf->Type
+                     : undef;
 
-            # Display custom field contents, separated by newlines.
-            # For Image custom fields we also show a thumbnail here.
-            my $values = $cf->ValuesForObject( $_[0] );
             my @values = map {
-                (
-                    ($cf->Type eq 'Image')
-                        ? \($m->scomp( '/Elements/ShowCustomFieldImage', Object => $_ ))
-                        : $_->Content
-                ),
-                \'<br />',
-            } @{ $values->ItemsArrayRef };
-            pop @values; # Remove that last <br />
+                $comp
+                    ? \($m->scomp( $comp, Object => $_ ))
+                    : $_->Content
+            } @$ocfvs;
+
+            if (@values > 1) {
+                for my $value (splice @values) {
+                    push @values, \"<li>", $value, \"</li> \n";
+                }
+                @values = (\"<ul class='cf-values'>", @values, \"</ul>");
+            }
             return @values;
         },
     },
@@ -181,6 +197,8 @@ my $COLUMN_MAP = {
             return \$path;
         },
     },
+    CurrentUser       => { value => sub { $session{CurrentUser}->id } },
+    CurrentUserName   => { value => sub { $session{CurrentUser}->Name } },
 };
 
 $COLUMN_MAP->{'CF'} = $COLUMN_MAP->{'CustomField'};
@@ -191,7 +209,7 @@ $m->callback( COLUMN_MAP => $COLUMN_MAP, CallbackName => 'Once', CallbackOnce =>
 $m->callback( COLUMN_MAP => $COLUMN_MAP );
 
 # first deal with class specific things
-my $class_map = $m->comp("/Elements/$Class/ColumnMap", Attr => $Attr, Name => $Name );
+my $class_map = $m->comp("/Elements/$Class/ColumnMap", Attr => $Attr, Name => $Name, GenericMap => $COLUMN_MAP );
 return $class_map if defined $class_map;
 return GetColumnMapEntry( Map => $COLUMN_MAP, Name => $Name, Attribute => $Attr );
 

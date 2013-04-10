@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -51,8 +51,8 @@ package RT::URI::a;
 use strict;
 use warnings;
 
-use RT::Article;
 use base qw/RT::URI::fsck_com_article/;
+use RT::Article;
 
 my $scheme = "a";
 
@@ -71,11 +71,11 @@ sub ParseURI {
     # articles after stripping off the a: prefix.
 
     if ($uri =~ /^$scheme:(\d+)/) {
-            my $value = $1;
-	return $self->SUPER::ParseURI($value);
+        my $value = $1;
+        return $self->SUPER::ParseURI($value);
     } else {
-	$self->{'uri'} = $uri;
-	return undef;
+        $self->{'uri'} = $uri;
+        return undef;
     }
 }
 

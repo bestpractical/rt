@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -54,7 +54,10 @@
 $Ticket
 </%ARGS>
 <%INIT>
-my $id = $Ticket->id;
-my $url = RT->Config->Get('WebPath') ."/Helpers/TicketHistory?id=". $id;
-my $display = RT->Config->Get('WebPath') ."/Ticket/Display.html?id=$id;ForceShowHistory=1";
+my %params = %ARGS;
+delete $params{Ticket};
+
+my $query   = $m->comp('/Elements/QueryString', %params, id => $Ticket->id );
+my $url     = RT->Config->Get('WebPath')."/Helpers/TicketHistory?$query";
+my $display = RT->Config->Get('WebPath')."/Ticket/Display.html?ForceShowHistory=1;$query";
 </%INIT>

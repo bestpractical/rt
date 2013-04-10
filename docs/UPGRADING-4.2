@@ -51,3 +51,40 @@ UPGRADING FROM RT 4.0.0 and greater
   users with invalid addresses will continue to work until the next time they
   are updated by an administrator on the modify user page.  If you prefer no
   address validation, set $ValidateUserEmailAddresses to 0.
+
+* The 'smtp' value for $MailCommand, along with the associated
+  $SMTPServer, $SMTPFrom, and $SMTPDebug options, has been removed
+  because it did not guarantee delivery.  Instead, use a local MTA for
+  outgoing mail, via the 'sendmailpipe' setting to $MailCommand.
+
+* The @JSFiles config now only keeps additional JavaScript filenames; if
+  you had copied @JSFiles to add extra entries in your RT_SiteConfig,
+  remove the core JS from the list, or RT will serve those files
+  multiple times.
+
+* The $DeferTransactionLoading was combined into the new option $ShowHistory.
+  If you had enabled $DeferTransactionLoading, you may want to set $ShowHistory
+  to "click".  However, $ShowHistory provides a new mode, "delay", which is the
+  default and may be a more appealing alternative to "click".
+
+* A Status transaction is now recorded when a ticket status changes as a
+  result of a queue change.  Scrips with conditions relying on Status changes
+  may start to trigger on these transitions; previously these Status changes
+  never triggered scrips.
+
+* The Googleish search has been renamed to Simple. If you were
+  using this in an rt-crontool cronjob or had used a
+  Googleish_Local.pm to add features, you will need to convert to
+  using RT::Search::Simple instead.
+
+* RT was recording additional time change transactions during merge, so
+  difference in ticket's history doesn't add up value on ticket. This has
+  been fixed, time is adjusted during merge, but now transactions are recorded.
+
+  In order to fix history records of old ticket you can run the following
+  command:
+
+    perl -I /opt/rt4/local/lib/ -I /opt/rt4/lib/ etc/upgrade/time-worked-history.pl
+
+  This command deletes records from Transactions table. This script can only fix
+  TimeWorked mismatch, but not TimeLeft or TimeEstimated.

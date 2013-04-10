@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -64,10 +64,10 @@ It consists of an ID, a name, and some arbitrary data.
 package RT::SharedSetting;
 use strict;
 use warnings;
+use base qw/RT::Base/;
 
 use RT::Attribute;
 use Scalar::Util 'blessed';
-use base qw/RT::Base/;
 
 =head1 METHODS
 
@@ -192,7 +192,7 @@ sub Save {
     my %args = (
         'Privacy' => 'RT::User-' . $self->CurrentUser->Id,
         'Name'    => "new " . $self->ObjectName,
-		@_,
+        @_,
     );
 
     my $privacy = $args{'Privacy'};

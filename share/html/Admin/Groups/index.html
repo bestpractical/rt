@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -57,7 +57,7 @@
 <script type="text/javascript">
 jQuery(function(){
     jQuery("#autocomplete-GroupString").autocomplete({
-        source: <% RT->Config->Get('WebPath') |n,j%>+"/Helpers/Autocomplete/Groups",
+        source: RT.Config.WebPath + "/Helpers/Autocomplete/Groups",
         // Auto-submit once a group is chosen
         select: function( event, ui ) {
             jQuery(event.target).val(ui.item.value);
@@ -72,7 +72,8 @@ jQuery(function(){
 
 <form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Groups/index.html">
 <&|/l&>Find groups whose</&> <& /Elements/SelectGroups &><br />
-<input type="checkbox" class="checkbox" name="FindDisabledGroups" value="1" <% $FindDisabledGroups? 'checked="checked"': '' |n %> /> <&|/l&>Include disabled groups in listing.</&><br />
+<input type="checkbox" class="checkbox" id="FindDisabledGroups" name="FindDisabledGroups" value="1" <% $FindDisabledGroups? 'checked="checked"': '' |n %> />
+<label for="FindDisabledGroups"><&|/l&>Include disabled groups in listing.</&></label><br />
 <div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
 </form>
 
@@ -106,18 +107,18 @@ if ($FindDisabledGroups) {
 if (length $GroupString) {
     $caption = loc("Groups matching search criteria");
     if ($GroupField =~ /^CustomField-(\d+)/) {
-	$Groups->LimitCustomField(
-	    CUSTOMFIELD => $1,
-	    OPERATOR => $GroupOp,
-	    VALUE => $GroupString,
-	); 
+        $Groups->LimitCustomField(
+            CUSTOMFIELD => $1,
+            OPERATOR => $GroupOp,
+            VALUE => $GroupString,
+        );
     }
     else {
-	$Groups->Limit(
-	    FIELD => $GroupField,
-	    OPERATOR => $GroupOp,
-	    VALUE => $GroupString,
-	); 
+        $Groups->Limit(
+            FIELD => $GroupField,
+            OPERATOR => $GroupOp,
+            VALUE => $GroupString,
+        );
     }
     RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Admin/Groups/Modify.html?id=".$Groups->First->id)
           if $Groups->Count == 1 and $Groups->First;

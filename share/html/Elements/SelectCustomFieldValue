@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,21 +45,23 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $m->callback( Name => $Name, CustomField => $CustomField );
+% $m->callback( Name => $Name, CustomField => $CustomField, Default => \$Default );
+% $Default = "" unless defined $Default;
 % if ($CustomField->Type =~ /Select/i) {
 % my $values = $CustomField->Values;
 <select name="<%$Name%>">
 <option value="" selected="selected">-</option>
 <option value="NULL"><&|/l&>(no value)</&></option>
 % while (my $value = $values->Next) {
-<option value="<%$value->Name%>"><%$value->Name%></option>
+<option value="<%$value->Name%>"<% ($value->Name eq $Default) ? q[ selected="selected"] : ''%>><%$value->Name%></option>
 % }
 </select>
 % }
 % else {
-<input name="<%$Name%>" size="20" />
+<input name="<%$Name%>" size="20" value="<% $Default %>" />
 % }
 <%args>
 $Name => undef
-$CustomField =>undef
+$CustomField => undef
+$Default => undef
 </%args>

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -150,7 +150,7 @@ my $QueryString = "?".$m->comp('/Elements/QueryString',
 my $ShortQueryString = "?".$m->comp('/Elements/QueryString', Query => $Query);
 
 if ($ARGS{'TicketsRefreshInterval'}) {
-	$session{'tickets_refresh_interval'} = $ARGS{'TicketsRefreshInterval'};
+    $session{'tickets_refresh_interval'} = $ARGS{'TicketsRefreshInterval'};
 }
 
 my $refresh = $session{'tickets_refresh_interval'}

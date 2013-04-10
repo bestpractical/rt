@@ -36,9 +36,9 @@ my $cfvalue1 = 'Foo';
 
 {
   my ($id, $msg) = $u1->AddCustomFieldValue(
-			  Field => $cfname,
-			  Value => $cfvalue1,
-			  RecordTransaction => 0 );
+                          Field => $cfname,
+                          Value => $cfvalue1,
+                          RecordTransaction => 0 );
   ok( $id, "Adding CF value '$cfvalue1' - " . $msg );
 }
 
@@ -51,18 +51,18 @@ my $cfvalue1 = 'Foo';
 
 {
   my ($id, $msg) = $u1->DeleteCustomFieldValue(
-			    Field => $cfname,
-			    Value => $cfvalue1,
-			    RecordTransaction => 0 );
+                            Field => $cfname,
+                            Value => $cfvalue1,
+                            RecordTransaction => 0 );
   ok( $id, "Deleting CF value - " . $msg );
 }
 
 my $cfvalue2 = 'Bar';
 {
   my ($id, $msg) = $u1->AddCustomFieldValue(
-			  Field => $cfname,
-			  Value => $cfvalue2,
-			  RecordTransaction => 0 );
+                          Field => $cfname,
+                          Value => $cfvalue2,
+                          RecordTransaction => 0 );
   ok( $id, "Adding second CF value '$cfvalue2' - " . $msg );
 }
 
@@ -92,9 +92,9 @@ sub QueryCFValue{
   isa_ok( $users, 'RT::Users' );
 
   $users->LimitCustomField(
-	  CUSTOMFIELD => $cf_id,
-	  OPERATOR => "=",
-	  VALUE => $cf_value );
+      CUSTOMFIELD => $cf_id,
+      OPERATOR => "=",
+      VALUE => $cf_value );
 
   while ( my $filtered_user = $users->Next() ){
     my $cf_values = $filtered_user->CustomFieldValues($cf->id);

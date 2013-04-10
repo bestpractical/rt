@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -66,9 +66,9 @@ foreach my $arg ( keys %ARGS ) {
 
     if ( $ARGS{ "Approval-" . $ticket->Id . "-Notes" } ) {
         my $notes = MIME::Entity->build(
-	    Data => [ $ARGS{ "Approval-" . $ticket->Id . "-Notes" } ]
-	);
-	RT::I18N::SetMIMEEntityToUTF8($notes); # convert text parts into utf-8
+            Data => [ $ARGS{ "Approval-" . $ticket->Id . "-Notes" } ]
+        );
+        RT::I18N::SetMIMEEntityToUTF8($notes); # convert text parts into utf-8
 
         my ( $notesval, $notesmsg ) = $ticket->Correspond( MIMEObj => $notes );
         if ($notesval) {

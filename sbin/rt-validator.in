@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -908,7 +908,7 @@ push @CHECKS, 'LastUpdatedBy and Creator' => sub {
                         'Replace',
                         "Column $column should point to a user, but there is record #$id in table $table\n"
                         ."where it's not true. It's ok to replace these wrong references with id of any user.\n"
-                        ."Note that id you enter is not checked. You can peak any user from your DB, but it's\n"
+                        ."Note that id you enter is not checked. You can pick any user from your DB, but it's\n"
                         ."may be better to create a special user for this, for example 'user_that_has_been_deleted'\n"
                         ."or something like that.",
                         "$table.$column -> user #$prop{$column}"

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,43 +45,8 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-#requestor-accordion .ui-accordion-content {
-    padding: 0 0 0 20px;
-    margin: -0.5em 0 0.5em 0;
-    border: none;
-    background: none;
-    color: black !important;
-}
-
-#requestor-accordion {
-    margin: 0.5em 0 0 0;
-}
-
-#requestor-accordion h3 .ui-icon {
-    background-image: url(<%RT->Config->Get('WebPath')%>/NoAuth/images/jquery_ui/ui-icons_4488cc_256x240.png);
-    left: 0;
-}
-
-#requestor-accordion h3 {
-    padding: 0;
-    background: none !important;
-}
-
-#requestor-accordion h3, #requestor-accordion h3 a {
-    color: black !important;
-    border: none !important;
-    margin: 0;
-}
-
-#requestor-accordion h3 a {
-    font-size: 90%;
-    padding: 0 0 0.25em 20px;
-}
-
-#requestor-accordion h3 a:hover,
-#requestor-accordion h3.ui-state-active a {
-    text-decoration: underline;
-}
+#requestor-accordion h3 { clear: right }
+#requestor-accordion a.user-summary { float: right; }
 
 #requestor-accordion a.modify-user {
     font-size: 80%;
@@ -118,7 +83,7 @@
 }
 
 .more-about-requestor-tickets .ui-tabs-nav a:hover,
-.more-about-requestor-tickets .ui-tabs-nav .ui-tabs-selected a {
+.more-about-requestor-tickets .ui-tabs-nav .ui-tabs-active a {
     text-decoration: underline;
 }
 
@@ -143,6 +108,13 @@
     display: none;
 }
 
+.dependency-status {
+    font-style: italic;
+}
+.dependency-status .summary {
+    font-weight: bold;
+    font-style: normal;
+}
 
 /* Color the titlebox tabs */
 .ticket-info-cfs .titlebox .titlebox-title .left { background-color: #b32; color: #fff;}
@@ -186,23 +158,12 @@ div.requestor-ticket-links {
     padding-top: 0.25em;
 }
 
-.more-about-requestor-extra-field .label {
-    display: inline-block;
-    width: 8em;
-    font-weight: bold;
-    text-align: right;
-}
-
-.more-about-requestor-extra-field .value {
-    display: inline-block;
-}
-
 .ticket-info-requestor .more-about-requestor-extra,
 .ticket-info-requestor .comments-about-user,
 .ticket-info-requestor .more-about-requestor-tickets,
 .ticket-info-requestor .more-about-user-groups
 {
-    margin: 1em 0;
+    margin: 0.5em 0 1em 0;
 }
 
 .ticket-info-requestor .comments-about-user .label,

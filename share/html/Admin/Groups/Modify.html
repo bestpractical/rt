@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -81,7 +81,8 @@
 <tr>
 <td colspan="2">
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
-<input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked%> /> <&|/l&>Enabled (Unchecking this box disables this group)</&><br />
+<input type="checkbox" class="checkbox" id="Enabled" name="Enabled" value="1" <%$EnabledChecked%> />
+<label for="Enabled"><&|/l&>Enabled (Unchecking this box disables this group)</&></label><br />
 </td>
 </tr>
 % $m->callback( %ARGS, GroupObj => $Group, results => \@results );
@@ -102,7 +103,7 @@ if ($Create) {
     $title = loc("Create a new group");
 } else {
     if ($id eq 'new' ) {
-	my ($create_id, $create_msg) = $Group->CreateUserDefinedGroup(Name => $Name );
+        my ($create_id, $create_msg) = $Group->CreateUserDefinedGroup(Name => $Name );
         if ($create_id) {
             $id = $Group->Id;
             push @results, $create_msg;
@@ -110,25 +111,25 @@ if ($Create) {
             push @results, loc("Group could not be created: [_1]", $create_msg);
         }
     } else {
-	$Group->Load($id) || Abort('Could not load group');
+        $Group->Load($id) || Abort('Could not load group');
     }
 
     if ($Group->Id) {
-	$title = loc("Modify the group [_1]", $Group->Name);
+        $title = loc("Modify the group [_1]", $Group->Name);
     }
 
     # If the create failed
     else {
-	$title = loc("Create a new group");
-	$Create = 1;
+        $title = loc("Create a new group");
+        $Create = 1;
     }
 }
 
 if ($Group->Id) {
     my @fields = qw(Description Name );
     my @fieldresults = UpdateRecordObject ( AttributesRef => \@fields,
-					    Object => $Group,
-					    ARGSRef => \%ARGS );
+                                            Object => $Group,
+                                            ARGSRef => \%ARGS );
     push (@results,@fieldresults);
     push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $Group );
 

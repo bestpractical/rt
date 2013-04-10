@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -123,32 +123,32 @@ my @output;
 while (my $ticket = $tickets->Next) {
     $n++;
 
-	my $id = $ticket->Id;
+    my $id = $ticket->Id;
     if ($format eq "i") {
         $output .= "ticket/" . $id . "\n";
     }
     elsif ($format eq "s") {
-	if ($fields) {
-        	my $result = $m->comp("/REST/1.0/Forms/ticket/default", id => $id, format => $format, fields => \%fields);
-		my ($notes, $order, $key_values, $errors) = @$result;
-		# If it's the first time through, add our header
-		if ($n == 1) {
-			$output .= join("\t",@$order)."\n";
-		}
-		# Cut off the annoying ticket/ before the id;
-		$key_values->{'id'} = $id;
-		$output .= join("\t", map { ref $key_values->{$_} eq 'ARRAY' ?
-join( ', ', @{$key_values->{$_}} ) : $key_values->{$_} } @$order)."\n";
-
-
-	} else {
-        	$output .= $ticket->Id . ": ". $ticket->Subject . "\n";
-	}
+        if ($fields) {
+            my $result = $m->comp("/REST/1.0/Forms/ticket/default", id => $id, format => $format, fields => \%fields);
+            my ($notes, $order, $key_values, $errors) = @$result;
+            # If it's the first time through, add our header
+            if ($n == 1) {
+                $output .= join("\t",@$order)."\n";
+            }
+            # Cut off the annoying ticket/ before the id;
+            $key_values->{'id'} = $id;
+            $output .= join("\t", map {
+                ref $key_values->{$_} eq 'ARRAY'
+                    ? join( ', ', @{$key_values->{$_}} )
+                    : $key_values->{$_} } @$order)."\n";
+        } else {
+            $output .= $ticket->Id . ": ". $ticket->Subject . "\n";
+        }
     }
     else {
         my $d = $m->comp("/REST/1.0/Forms/ticket/default", id => $id, format => $format, fields => \%fields);
         my ($c, $o, $k, $e) = @$d;
-	push @output, [ $c, $o, $k ];
+        push @output, [ $c, $o, $k ];
     }
 }
 if ($n == 0 && $format ne "i") {

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -71,10 +71,9 @@ package RT::Attachments;
 use strict;
 use warnings;
 
+use base 'RT::SearchBuilder';
 
 use RT::Attachment;
-
-use base 'RT::SearchBuilder';
 
 sub Table { 'Attachments'}
 
@@ -133,9 +132,9 @@ sub ContentType  {
     my $self = shift;
     my %args = (
         VALUE           => 'text/plain',
-	    OPERATOR        => '=',
-	    ENTRYAGGREGATOR => 'OR',
-	    @_
+        OPERATOR        => '=',
+        ENTRYAGGREGATOR => 'OR',
+        @_
     );
 
     return $self->Limit ( %args, FIELD => 'ContentType' );

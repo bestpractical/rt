@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -51,7 +51,8 @@
 
 % $m->callback(CallbackName => 'BeforeForm', %ARGS, ARGSRef => \%ARGS, Ticket => $Ticket );
 
-<form action="Display.html" method="post" enctype="multipart/form-data">
+<form action="Update.html" method="post" enctype="multipart/form-data">
+<input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction}||'' %>" />
 <input type="hidden" class="hidden" name="UpdateType" value="response" />
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->Id%>" />
 <table width="100%">
@@ -71,21 +72,27 @@
             <&|/l&>Subject</&>
         </td>
         <td class="value">
-            <input name="UpdateSubject" size="60" value="<% $Ticket->Subject %>" />
+            <input name="UpdateSubject" size="60" value="<% $ARGS{UpdateSubject} || $Ticket->Subject || '' %>" />
         </td>
 
     </tr>
     <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $Ticket &>
     <tr><td colspan="2"><& /Elements/EditCustomFields, Object => $Ticket, AsTable => 0 &></td></tr>
 </table>
-<& /Elements/MessageBox, 
-    Name => "UpdateContent", 
-    QuoteTransaction => $ARGS{QuoteTransaction} 
-    &>
+% if (exists $ARGS{UpdateContent}) {
+% # preserve QuoteTransaction so we can use it to set up sane references/in/reply to
+% my $temp = $ARGS{'QuoteTransaction'};
+% delete $ARGS{'QuoteTransaction'};
+<& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent}, IncludeSignature => 0, %ARGS&>
+% $ARGS{'QuoteTransaction'} = $temp;
+% } else {
+% my $IncludeSignature = 1;
+<& /Elements/MessageBox, Name=>"UpdateContent", IncludeSignature => $IncludeSignature, %ARGS &>
+% }
     <br />
 
 
-<& /Elements/Submit &>
+<& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket', id => 'SubmitTicket' &>
   </form>
 
 
@@ -105,7 +112,12 @@ Abort( loc("No permission to view update ticket") )
   unless ( $Ticket->CurrentUserHasRight('ReplyToTicket')
     or $Ticket->CurrentUserHasRight('ModifyTicket') );
 
-$m->callback(CallbackName => 'BeforeDisplay', Ticket => \$Ticket, ARGSRef => \%ARGS);
+ProcessAttachments(ARGSRef => \%ARGS);
+
+if ( exists $ARGS{SubmitTicket} ) {
+    $m->callback(CallbackName => 'BeforeDisplay', Ticket => \$Ticket, ARGSRef => \%ARGS);
+    return $m->comp('Display.html', TicketObj => $Ticket, %ARGS);
+}
 </%INIT>
 
 <%ARGS>

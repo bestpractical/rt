@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -114,7 +114,6 @@
     %ARGS,
     Object => $ticket,
     CustomFieldGenerator => sub { $QueueObj->TicketCustomFields },
-    DefaultsFromTopArguments => 0,
 &>
 
 </div>
@@ -218,9 +217,9 @@
 <tr>
 <td width="50%" valign="top" class="boxcontainer">
     <div class="ticket-info-basics">
-	  <&| /Widgets/TitleBox, title => loc('The Basics'), 
-		title_class=> 'inverse',  
-		color => "#993333" &>
+          <&| /Widgets/TitleBox, title => loc('The Basics'), 
+                title_class=> 'inverse',  
+                color => "#993333" &>
 <table border="0">
 <tr><td class="label"><&|/l&>Priority</&>:</td>
 <td><& /Elements/SelectPriority,
@@ -251,8 +250,8 @@
 <br />
 <div class="ticket-info-dates">
 <&|/Widgets/TitleBox, title => loc("Dates"),
-		title_class=> 'inverse',  
-		 color => "#663366" &>
+  title_class=> 'inverse',  
+  color => "#663366" &>
 
 <table>
 <tr><td class="label"><&|/l&>Starts</&>:</td><td><& /Elements/SelectDate, Name => "Starts", Default => $ARGS{Starts} || '' &></td></tr>
@@ -274,23 +273,11 @@
 <td valign="top" class="boxcontainer">
 <div class="ticket-info-links">
 <&| /Widgets/TitleBox, title => loc('Links'), title_class=> 'inverse' &>
-
-<em><&|/l&>(Enter ticket ids or URLs, separated with spaces)</&></em>
-<table border="0">
-<tr><td class="label"><&|/l&>Depends on</&></td><td><input size="10" name="new-DependsOn" value="<% $ARGS{'new-DependsOn'} || '' %>" /></td></tr>
-<tr><td class="label"><&|/l&>Depended on by</&></td><td><input size="10" name="DependsOn-new" value="<% $ARGS{'DependsOn-new'} || '' %>" /></td></tr>
-<tr><td class="label"><&|/l&>Parents</&></td><td><input size="10" name="new-MemberOf" value="<% $ARGS{'new-MemberOf'} || '' %>" /></td></tr>
-<tr><td class="label"><&|/l&>Children</&></td><td><input size="10" name="MemberOf-new" value="<% $ARGS{'MemberOf-new'} || '' %>" /></td></tr>
-<tr><td class="label"><&|/l&>Refers to</&></td><td><input size="10" name="new-RefersTo" value="<% $ARGS{'new-RefersTo'} || '' %>" /></td></tr>
-<tr><td class="label"><&|/l&>Referred to by</&></td><td><input size="10" name="RefersTo-new" value="<% $ARGS{'RefersTo-new'} || '' %>" /></td></tr>
-<& /Elements/EditCustomFields,
-    %ARGS,
-    Object => $ticket,
-    CustomFields => $QueueObj->TicketCustomFields,
-    Grouping => 'Links',
-    InTable => 1,
-&>
-</table>
+<& /Elements/AddLinks,
+    Object          => $ticket,
+    CustomFields    => $QueueObj->TicketCustomFields,
+    ARGSRef         => \%ARGS,
+    &>
 </&>
 </div>
 <br />
@@ -327,9 +314,6 @@ if ($CloneTicket) {
         for grep { $CloneTicketObj->$_->Unix }
         map      { $_ . "Obj" } qw/Starts Started Due Resolved/;
 
-    my $members = $CloneTicketObj->Members;
-    my ( @members, @members_of, @refers, @refers_by, @depends, @depends_by );
-    my $refers = $CloneTicketObj->RefersTo;
     my $get_link_value = sub {
         my ($link, $type) = @_;
         my $uri_method = $type . 'URI';
@@ -342,6 +326,8 @@ if ($CloneTicket) {
 
         return $link->$local_method || $uri->URI;
     };
+    my (@refers, @refers_by);
+    my $refers = $CloneTicketObj->RefersTo;
     while ( my $refer = $refers->Next ) {
         my $refer_value = $get_link_value->($refer, 'Target');
         push @refers, $refer_value if defined $refer_value;
@@ -388,31 +374,7 @@ $QueueObj->Disabled && Abort(loc("Cannot create tickets in a disabled queue."));
 
 my $ticket = RT::Ticket->new($session{'CurrentUser'}); # empty ticket object
 
-# deal with deleting uploaded attachments
-foreach my $key (keys %ARGS) {
-    if ($key =~ m/^DeleteAttach-(.+)$/) {
-	delete $session{'Attachments'}{$1};
-    }
-    $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
-}
-
-# store the uploaded attachment in session
-if ( defined $ARGS{'Attach'} && length $ARGS{'Attach'} ) { # attachment?
-    my $attachment = MakeMIMEEntity(
-        AttachmentFieldName => 'Attach'
-    );
-
-    my $file_path = Encode::decode_utf8("$ARGS{'Attach'}");
-    $session{'Attachments'} = {
-        %{$session{'Attachments'} || {}},
-	$file_path => $attachment,
-    };
-}
-
-# delete temporary storage entry to make WebUI clean
-unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
-    delete $session{'Attachments'};
-}
+ProcessAttachments(ARGSRef => \%ARGS);
 
 my $checks_failure = 0;
 

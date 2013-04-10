@@ -34,7 +34,6 @@ FastCgiServer %%RT_SBIN_PATH%%/rt-server.fcgi \
     -initial-env RT_SITE_CONFIG=%%RT_SITE_CONFIG%% \
     -initial-env RT_TESTING=1
 
-Alias /NoAuth/images/ %%DOCUMENT_ROOT%%/NoAuth/images/
 ScriptAlias / %%RT_SBIN_PATH%%/rt-server.fcgi/
 
 DocumentRoot "%%DOCUMENT_ROOT%%"

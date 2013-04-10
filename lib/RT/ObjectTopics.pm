@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -69,8 +69,8 @@ sub LimitToTopic {
     my $self = shift;
     my $cf = shift;
     return ($self->Limit( FIELD => 'Topic',
-			  VALUE => $cf,
-			  OPERATOR => '='));
+                          VALUE => $cf,
+                          OPERATOR => '='));
 
 }
 
@@ -90,7 +90,7 @@ sub LimitToObject {
     my $object = shift;
 
     $self->Limit( FIELD => 'ObjectType',
-		  VALUE => ref($object));
+                  VALUE => ref($object));
     $self->Limit( FIELD => 'ObjectId',
                   VALUE => $object->Id);
 

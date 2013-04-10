@@ -97,5 +97,6 @@ diag "Walking through install screens setting defaults";
     ok $m->login(), 'logged in';
 }
 
+RT::Test::__drop_database();
 undef $m;
 done_testing;

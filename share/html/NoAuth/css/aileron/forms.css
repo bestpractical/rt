@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -68,7 +68,6 @@ div.results .titlebox-title .left {
 div.error .titlebox-title span.left {
     border: none;
     border-right: 2px solid #b00;
-    padding-left: 0.75em;
 }
 
 div.error .titlebox-content {
@@ -77,3 +76,5 @@ div.error .titlebox-content {
     border-right: 2px solid #a00;
     background-color: #fcc;
 }
+
+div.error .titlebox-title .widget a { background-position: center -7px; }

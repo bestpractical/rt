@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use RT::Test::GnuPG
-  tests         => 102,
+  tests         => 101,
   gnupg_options => {
     passphrase    => 'recipient',
     'trust-model' => 'always',
@@ -17,9 +17,9 @@ RT->Config->Set( CorrespondAddress => 'general@example.com');
 RT->Config->Set( DefaultSearchResultFormat => qq{
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
-   'OO-__OwnerName__-O',
+   'OO-__Owner__-O',
    'OR-__Requestors__-O',
-   'KO-__KeyOwnerName__-K',
+   'KO-__KeyOwner__-K',
    'KR-__KeyRequestors__-K',
    Status});
 
@@ -426,22 +426,32 @@ $m->get("$baseurl/Search/Simple.html?q=General");
 my $content = $m->content;
 $content =~ s/&#40;/(/g;
 $content =~ s/&#41;/)/g;
+$content =~ s/<a\b[^>]+>//g;
+$content =~ s/<\/a>//g;
+$content =~ s/&lt;/</g;
+$content =~ s/&gt;/>/g;
 
-like($content, qr/OO-Nobody-O/, "original OwnerName untouched");
-like($content, qr/OO-nokey-O/, "original OwnerName untouched");
-like($content, qr/OO-root-O/, "original OwnerName untouched");
+like($content, qr/OO-Nobody in particular-O/,
+     "original Owner untouched");
+like($content, qr/OO-nokey-O/,
+     "original Owner untouched");
+like($content, qr/OO-root \(Enoch Root\)-O/,
+     "original Owner untouched");
+like($content, qr/OR-<recipient\@example\.com>-O/,
+     "original Requestors untouched");
+like($content, qr/OR-nokey-O/,
+     "original Requestors untouched");
 
-like($content, qr/OR-recipient\@example.com-O/, "original Requestors untouched");
-like($content, qr/OR-nokey\@example.com-O/, "original Requestors untouched");
-
-like($content, qr/KO-root-K/, "KeyOwnerName does not issue no-pubkey warning for recipient");
-like($content, qr/KO-nokey \(no pubkey!\)-K/, "KeyOwnerName issues no-pubkey warning for root");
-like($content, qr/KO-Nobody \(no pubkey!\)-K/, "KeyOwnerName issues no-pubkey warning for nobody");
-
-like($content, qr/KR-recipient\@example.com-K/, "KeyRequestors does not issue no-pubkey warning for recipient\@example.com");
-
-like($content, qr/KR-general\@example.com-K/, "KeyRequestors does not issue no-pubkey warning for general\@example.com");
-like($content, qr/KR-nokey\@example.com \(no pubkey!\)-K/, "KeyRequestors DOES issue no-pubkey warning for nokey\@example.com");
+like($content, qr/KO-Nobody in particular \(no pubkey!\)-K/,
+     "KeyOwner issues no-pubkey warning for nobody");
+like($content, qr/KO-nokey \(no pubkey!\)-K/,
+     "KeyOwner issues no-pubkey warning for root");
+like($content, qr/KO-root \(Enoch Root\)-K/,
+     "KeyOwner does not issue no-pubkey warning for recipient");
+like($content, qr/KR-<recipient\@example\.com>-K/,
+     "KeyRequestors does not issue no-pubkey warning for recipient\@example.com");
+like($content, qr/KR-nokey \(no pubkey!\)-K/,
+     "KeyRequestors DOES issue no-pubkey warning for nokey\@example.com");
 
 $m->next_warning_like(qr/public key not found/);
 $m->next_warning_like(qr/public key not found/);

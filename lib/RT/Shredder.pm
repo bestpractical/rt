@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -709,7 +709,7 @@ sub GetFileName
 =head4 StoragePath
 
 Returns an absolute path to the storage dir.  See
-L<CONFIGURATION/$ShredderStoragePath>.
+L</$ShredderStoragePath>.
 
 See also description of the L</GetFileName> method.
 

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -136,11 +136,11 @@ A convoluted example:
 
     my $adminccs = RT::Users->new(RT->SystemUser);
     $adminccs->WhoHaveRight(
-	Right => "AdminGroup",
-	Object =>$groups->First,
-	IncludeSystemRights => undef,
-	IncludeSuperusers => 0,
-	IncludeSubgroupMembers => 0,
+        Right => "AdminGroup",
+        Object =>$groups->First,
+        IncludeSystemRights => undef,
+        IncludeSuperusers => 0,
+        IncludeSubgroupMembers => 0,
     );
 
      our @admins;

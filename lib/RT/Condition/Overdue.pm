@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -71,11 +71,11 @@ If the due date is before "now" return true
 sub IsApplicable {
     my $self = shift;
     if ($self->TicketObj->DueObj->Unix > 0 and
-	$self->TicketObj->DueObj->Unix < time())  {
-	return(1);
-    } 
+        $self->TicketObj->DueObj->Unix < time())  {
+        return(1);
+    }
     else {
-	return(undef);
+        return(undef);
     }
 }
 

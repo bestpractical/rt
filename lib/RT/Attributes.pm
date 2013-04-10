@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -68,10 +68,9 @@ package RT::Attributes;
 use strict;
 use warnings;
 
+use base 'RT::SearchBuilder';
 
 use RT::Attribute;
-
-use base 'RT::SearchBuilder';
 
 sub Table { 'Attributes'}
 

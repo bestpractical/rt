@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -56,21 +56,38 @@ my $display = RT::User->Format(
     Format      => $style,
 );
 
+# RT::User->Format does this itself, but we want to make sure we have a $User
+# if at all possible for the rest of our code below.
+if ($Address and not $User) {
+    $User = RT::User->new( $session{CurrentUser} );
+    $User->LoadByEmail( $Address->address );
+    undef $User unless $User->id;
+}
+
+my %system_user = (
+    RT->Nobody->id      => 1,
+    RT->SystemUser->id  => 1,
+);
+
 $m->callback(
     ARGSRef         => \%ARGS,
     User            => $User,
     Address         => $Address,
-    NoEscape        => \$NoEscape,
+    display         => \$display,
+    system_user     => \%system_user,
     CallbackName    => 'Modify',
 );
-
-$display = $m->interp->apply_escapes($display, 'h')
-    unless $NoEscape;
 </%INIT>
 <%ARGS>
 $User => undef
 $Address => undef
-$NoEscape => 0
 $style => undef
+$Link => 1
 </%ARGS>
-<% $display |n %>\
+% if ($Link and $User and $User->id and not $system_user{$User->id} and $session{CurrentUser}->Privileged) {
+<a href="<% RT->Config->Get("WebPath") %>/User/Summary.html?id=<% $User->id %>">\
+<% $display %>\
+</a>\
+% } else {
+<% $display %>\
+% }

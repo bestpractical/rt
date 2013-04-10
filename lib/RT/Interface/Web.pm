@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -100,6 +100,33 @@ sub SquishedJS {
     return $js;
 }
 
+=head2 JSFiles
+
+=cut
+
+sub JSFiles {
+    return qw/
+      jquery-1.9.1.min.js
+      jquery_noconflict.js
+      jquery-ui-1.10.0.custom.min.js
+      jquery-ui-timepicker-addon.js
+      jquery-ui-patch-datepicker.js
+      jquery.modal.min.js
+      jquery.modal-defaults.js
+      jquery.cookie.js
+      titlebox-state.js
+      util.js
+      userautocomplete.js
+      jquery.event.hover-1.0.js
+      superfish.js
+      supersubs.js
+      jquery.supposition.js
+      history-folding.js
+      event-registration.js
+      late.js
+      /, RT->Config->Get('JSFiles');
+}
+
 =head2 ClearSquished
 
 Removes the cached CSS and JS entries, forcing them to be regenerated
@@ -134,7 +161,10 @@ sub EscapeHTML {
 # Back-compat
 # XXX: Remove in 4.4
 sub EscapeUTF8 {
-    RT->Logger->warning("EscapeUTF8 is deprecated; use EscapeHTML at @{[join '/', caller]}");
+    RT->Deprecated(
+        Instead => "EscapeHTML",
+        Remove => "4.4",
+    );
     EscapeHTML(@_);
 }
 
@@ -266,6 +296,7 @@ sub HandleRequest {
         # make user info up to date
         $HTML::Mason::Commands::session{'CurrentUser'}
           ->Load( $HTML::Mason::Commands::session{'CurrentUser'}->id );
+        undef $HTML::Mason::Commands::session{'CurrentUser'}->{'LangHandle'};
     }
     else {
         $HTML::Mason::Commands::session{'CurrentUser'} = RT::CurrentUser->new();
@@ -285,6 +316,10 @@ sub HandleRequest {
     # Process per-page authentication callbacks
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Auth', CallbackPage => '/autohandler' );
 
+    if ( $ARGS->{'NotMobile'} ) {
+        $HTML::Mason::Commands::session{'NotMobile'} = 1;
+    }
+
     unless ( _UserLoggedIn() ) {
         _ForceLogout();
 
@@ -302,14 +337,14 @@ sub HandleRequest {
                 $m->out("\n$msg\n") if $msg;
                 $m->abort;
             }
-            elsif ( MobileClient() ) {
-                $m->comp('/m/login');
-                $m->abort;
-            }
-            # Specially handle /index.html so that we get a nicer URL
-            elsif ( $m->request_comp->path eq '/index.html' ) {
-                my $next = SetNextPage($ARGS);
-                $m->comp('/NoAuth/Login.html', next => $next, actions => [$msg]);
+            # Specially handle /index.html and /m/index.html so that we get a nicer URL
+            elsif ( $m->request_comp->path =~ m{^(/m)?/index\.html$} ) {
+                my $mobile = $1 ? 1 : 0;
+                my $next   = SetNextPage($ARGS);
+                $m->comp('/NoAuth/Login.html',
+                    next    => $next,
+                    actions => [$msg],
+                    mobile  => $mobile);
                 $m->abort;
             }
             else {
@@ -450,6 +485,10 @@ sub TangentForLoginURL {
     my $ARGS  = shift;
     my $hash  = SetNextPage($ARGS);
     my %query = (@_, next => $hash);
+
+    $query{mobile} = 1
+        if $HTML::Mason::Commands::m->request_comp->path =~ m{^/m(/|$)};
+
     my $login = RT->Config->Get('WebPath') . '/NoAuth/Login.html?';
     $login .= $HTML::Mason::Commands::m->comp('/Elements/QueryString', %query);
     return $login;
@@ -1311,15 +1350,17 @@ sub IsCompCSRFWhitelisted {
     # record.
     delete $args{id};
 
-    # If they have a valid results= from MaybeRedirectForResults, that's
-    # also fine.
-    delete $args{results} if $args{results}
-        and $HTML::Mason::Commands::session{"Actions"}->{$args{results}};
+    # If they have a results= from MaybeRedirectForResults, that's also fine.
+    delete $args{results};
 
     # The homepage refresh, which uses the Refresh header, doesn't send
     # a referer in most browsers; whitelist the one parameter it reloads
     # with, HomeRefreshInterval, which is safe
     delete $args{HomeRefreshInterval};
+
+    # The NotMobile flag is fine for any page; it's only used to toggle a flag
+    # in the session related to which interface you get.
+    delete $args{NotMobile};
 
     # If there are no arguments, then it's likely to be an idempotent
     # request, which are not susceptible to CSRF
@@ -1528,6 +1569,8 @@ sub PotentialPageAction {
 package HTML::Mason::Commands;
 
 use vars qw/$r $m %session/;
+
+use Scalar::Util qw(blessed);
 
 sub Menu {
     return $HTML::Mason::Commands::m->notes('menu');
@@ -2089,6 +2132,37 @@ sub _ProcessUpdateMessageRecipients {
     }
 }
 
+sub ProcessAttachments {
+    my %args = (
+        ARGSRef => {},
+        @_
+    );
+
+    my $ARGSRef = $args{ARGSRef} || {};
+    # deal with deleting uploaded attachments
+    foreach my $key ( keys %$ARGSRef ) {
+        if ( $key =~ m/^DeleteAttach-(.+)$/ ) {
+            delete $session{'Attachments'}{$1};
+        }
+        $session{'Attachments'} = { %{ $session{'Attachments'} || {} } };
+    }
+
+    # store the uploaded attachment in session
+    if ( defined $ARGSRef->{'Attach'} && length $ARGSRef->{'Attach'} )
+    {    # attachment?
+        my $attachment = MakeMIMEEntity( AttachmentFieldName => 'Attach' );
+
+        my $file_path = Encode::decode_utf8("$ARGSRef->{'Attach'}");
+        $session{'Attachments'} =
+          { %{ $session{'Attachments'} || {} }, $file_path => $attachment, };
+    }
+
+    # delete temporary storage entry to make WebUI clean
+    unless ( keys %{ $session{'Attachments'} } and $ARGSRef->{'UpdateAttach'} )
+    {
+        delete $session{'Attachments'};
+    }
+}
 
 
 =head2 MakeMIMEEntity PARAMHASH
@@ -2269,19 +2343,8 @@ sub ProcessACLs {
 
     # Check if we want to grant rights to a previously rights-less user
     for my $type (qw(user group)) {
-        my $key = "AddPrincipalForRights-$type";
-
-        next unless $ARGSref->{$key};
-
-        my $principal;
-        if ( $type eq 'user' ) {
-            $principal = RT::User->new( $session{'CurrentUser'} );
-            $principal->LoadByCol( Name => $ARGSref->{$key} );
-        }
-        else {
-            $principal = RT::Group->new( $session{'CurrentUser'} );
-            $principal->LoadUserDefinedGroup( $ARGSref->{$key} );
-        }
+        my $principal = _ParseACLNewPrincipal($ARGSref, $type)
+            or next;
 
         unless ($principal->PrincipalId) {
             push @results, loc("Couldn't load the specified principal");
@@ -2381,7 +2444,34 @@ sub ProcessACLs {
     return (@results);
 }
 
+=head2 _ParseACLNewPrincipal
 
+Takes a hashref of C<%ARGS> and a principal type (C<user> or C<group>).  Looks
+for the presence of rights being added on a principal of the specified type,
+and returns undef if no new principal is being granted rights.  Otherwise loads
+up an L<RT::User> or L<RT::Group> object and returns it.  Note that the object
+may not be successfully loaded, and you should check C<->id> yourself.
+
+=cut
+
+sub _ParseACLNewPrincipal {
+    my $ARGSref = shift;
+    my $type    = lc shift;
+    my $key     = "AddPrincipalForRights-$type";
+
+    return unless $ARGSref->{$key};
+
+    my $principal;
+    if ( $type eq 'user' ) {
+        $principal = RT::User->new( $session{'CurrentUser'} );
+        $principal->LoadByCol( Name => $ARGSref->{$key} );
+    }
+    elsif ( $type eq 'group' ) {
+        $principal = RT::Group->new( $session{'CurrentUser'} );
+        $principal->LoadUserDefinedGroup( $ARGSref->{$key} );
+    }
+    return $principal;
+}
 
 
 =head2 UpdateRecordObj ( ARGSRef => \%ARGS, Object => RT::Record, AttributesRef => \@attribs)
@@ -2556,7 +2646,7 @@ sub ProcessTicketReminders {
 
     if ( $args->{'update-reminders'} ) {
         while ( my $reminder = $reminder_collection->Next ) {
-            my $resolve_status = $reminder->Lifecycle->ReminderStatusOnResolve;
+            my $resolve_status = $reminder->LifecycleObj->ReminderStatusOnResolve;
             my ( $status, $msg, $old_subject, @subresults );
             if (   $reminder->Status ne $resolve_status
                 && $args->{ 'Complete-Reminder-' . $reminder->id } )
@@ -2619,8 +2709,7 @@ sub ProcessTicketReminders {
             }
 
             push @results, map {
-                loc( "Reminder '[_1]': ", $old_subject || $reminder->Subject )
-                  . $_
+                loc( "Reminder '[_1]': [_2]", $old_subject || $reminder->Subject, $_ )
             } @subresults;
         }
     }
@@ -2638,8 +2727,7 @@ sub ProcessTicketReminders {
         );
         if ( $status ) {
             push @results,
-              loc( "Reminder '[_1]': ", $args->{'NewReminder-Subject'} )
-              . loc("Created");
+              loc( "Reminder '[_1]': [_2]", $args->{'NewReminder-Subject'}, loc("Created") )
         }
         else {
             push @results, $msg;
@@ -2933,7 +3021,10 @@ sub ProcessObjectCustomFieldUpdatesForCreate {
 }
 
 sub _NormalizeObjectCustomFieldValue {
-    my %args    = (@_);
+    my %args    = (
+        Param   => "",
+        @_
+    );
     my $cf_type = $args{CustomField}->Type;
     my @values  = ();
 
@@ -2953,7 +3044,7 @@ sub _NormalizeObjectCustomFieldValue {
         }
         grep defined, @values;
 
-    if ($cf_type eq 'Image' or $cf_type eq 'Binary') {
+    if ($args{'Param'} =~ /-Upload$/ and $cf_type =~ /^(Image|Binary)$/) {
         @values = _UploadedFile( $args{'Param'} ) || ();
     }
 
@@ -3229,6 +3320,24 @@ sub ProcessLinksForCreate {
     return wantarray ? %links : \%links;
 }
 
+=head2 ProcessTransactionSquelching
+
+Takes a hashref of the submitted form arguments, C<%ARGS>.
+
+Returns a hash of squelched addresses.
+
+=cut
+
+sub ProcessTransactionSquelching {
+    my $args    = shift;
+    my %checked = map { $_ => 1 } grep { defined }
+        (    ref $args->{'TxnSendMailTo'} eq "ARRAY"  ? @{$args->{'TxnSendMailTo'}} :
+         defined $args->{'TxnSendMailTo'}             ?  ($args->{'TxnSendMailTo'}) :
+                                                                             () );
+    my %squelched = map { $_ => 1 } grep { not $checked{$_} } split /,/, ($args->{'TxnRecipients'}||'');
+    return %squelched;
+}
+
 =head2 _UploadedFile ( $arg );
 
 Takes a CGI parameter name; if a file is uploaded under that name,
@@ -3288,10 +3397,13 @@ sub ProcessColumnMapValue {
         } elsif ( UNIVERSAL::isa( $value, 'SCALAR' ) ) {
             return $$value;
         }
+    } else {
+        if ($args{'Escape'}) {
+            $value = $m->interp->apply_escapes( $value, 'h' );
+            $value =~ s/\n/<br>/g if defined $value;
+        }
+        return $value;
     }
-
-    return $m->interp->apply_escapes( $value, 'h' ) if $args{'Escape'};
-    return $value;
 }
 
 =head2 GetPrincipalsMap OBJECT, CATEGORIES
@@ -3334,12 +3446,29 @@ sub GetPrincipalsMap {
         }
         elsif (/Roles/) {
             my $roles = RT::Groups->new($session{'CurrentUser'});
-            $roles->LimitToRolesForObject($object);
-            $roles->OrderBy( FIELD => 'Type', ORDER => 'ASC' );
-            push @map, [
-                'Roles' => $roles,  # loc_left_pair
-                'Type'  => 1
-            ];
+
+            if ($object->isa("RT::CustomField")) {
+                # If we're a custom field, show the global roles for our LookupType.
+                my $class = $object->RecordClassFromLookupType;
+                if ($class and $class->DOES("RT::Record::Role::Roles")) {
+                    $roles->LimitToRolesForObject(RT->System);
+                    $roles->Limit( FIELD => "Type", VALUE => $_ )
+                        for $class->Roles;
+                } else {
+                    # No roles to show; so show nothing
+                    undef $roles;
+                }
+            } else {
+                $roles->LimitToRolesForObject($object);
+            }
+
+            if ($roles) {
+                $roles->OrderBy( FIELD => 'Type', ORDER => 'ASC' );
+                push @map, [
+                    'Roles' => $roles,  # loc_left_pair
+                    'Type'  => 1
+                ];
+            }
         }
         elsif (/Users/) {
             my $Users = RT->PrivilegedUsers->UserMembersObj();
@@ -3364,13 +3493,9 @@ sub GetPrincipalsMap {
             $Users->Limit( ALIAS => $groups, FIELD => 'Domain', VALUE => 'ACLEquivalence' );
             $Users->Limit( ALIAS => $groups, FIELD => 'Type', VALUE => 'UserEquiv' );
 
-
-            my $display = sub {
-                $m->scomp('/Elements/ShowUser', User => $_[0], NoEscape => 1)
-            };
             push @map, [
                 'Users' => $Users,  # loc_left_pair
-                $display => 0
+                'Format' => 0
             ];
         }
     }
@@ -3444,9 +3569,9 @@ our @SCRUBBER_ALLOWED_TAGS = qw(
 );
 
 our %SCRUBBER_ALLOWED_ATTRIBUTES = (
-    # Match http, ftp and relative urls
+    # Match http, https, ftp, mailto and relative urls
     # XXX: we also scrub format strings with this module then allow simple config options
-    href   => qr{^(?:http:|ftp:|https:|/|__Web(?:Path|HomePath|BaseURL|URL)__)}i,
+    href   => qr{^(?:https?:|ftp:|mailto:|/|__Web(?:Path|HomePath|BaseURL|URL)__)}i,
     face   => 1,
     size   => 1,
     target => 1,

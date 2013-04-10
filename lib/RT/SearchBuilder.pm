@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -64,24 +64,23 @@
 
 package RT::SearchBuilder;
 
-use RT::Base;
-use DBIx::SearchBuilder "1.40";
-
 use strict;
 use warnings;
 
-
 use base qw(DBIx::SearchBuilder RT::Base);
+
+use RT::Base;
+use DBIx::SearchBuilder "1.40";
 
 sub _Init  {
     my $self = shift;
     
     $self->{'user'} = shift;
     unless(defined($self->CurrentUser)) {
-	use Carp;
-	Carp::confess("$self was created without a CurrentUser");
-	$RT::Logger->err("$self was created without a CurrentUser");
-	return(0);
+        use Carp;
+        Carp::confess("$self was created without a CurrentUser");
+        $RT::Logger->err("$self was created without a CurrentUser");
+        return(0);
     }
     $self->SUPER::_Init( 'Handle' => $RT::Handle);
 }
@@ -198,7 +197,7 @@ Takes a paramhash of key/value pairs with the following keys:
 
 sub _SingularClass {
     my $self = shift;
-    my $class = ref($self);
+    my $class = ref($self) || $self;
     $class =~ s/s$// or die "Cannot deduce SingularClass for $class";
     return $class;
 }
@@ -279,7 +278,7 @@ sub Limit {
                                   |(NOT\s*)?(STARTS|ENDS)WITH
                                   |(NOT\s*)?MATCHES
                                   |IS(\s*NOT)?
-                                  |IN
+                                  |(NOT\s*)?IN
                                   |\@\@)$/ix) {
         $RT::Logger->crit("Possible SQL injection attack: $ARGS{FIELD} $ARGS{OPERATOR}");
         $self->SUPER::Limit(
@@ -363,10 +362,9 @@ algorithm that this code uses.
 =cut
 
 sub ColumnMapClassName {
-    my $self = shift;
-    my $Class = ref $self;
-    $Class =~ s/s$//;
-    $Class =~ s/:/_/g;
+    my $self  = shift;
+    my $Class = $self->_SingularClass;
+       $Class =~ s/:/_/g;
     return $Class;
 }
 

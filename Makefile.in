@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -86,10 +86,6 @@ LIBS_GROUP		=	@LIBS_GROUP@
 WEB_USER		=	@WEB_USER@
 WEB_GROUP		=	@WEB_GROUP@
 
-
-APACHECTL		=	@APACHECTL@
-
-
 # DESTDIR allows you to specify that RT be installed somewhere other than
 # where it will eventually reside. DESTDIR _must_ have a trailing slash
 # if it's defined.
@@ -108,11 +104,13 @@ RT_VAR_PATH		=	@RT_VAR_PATH_R@
 RT_DOC_PATH		=	@RT_DOC_PATH_R@
 RT_FONT_PATH		=	@RT_FONT_PATH_R@
 RT_LEXICON_PATH		=	@RT_LEXICON_PATH_R@
+RT_STATIC_PATH		=	@RT_STATIC_PATH_R@
 RT_LOCAL_PATH		=	@RT_LOCAL_PATH_R@
 LOCAL_PLUGIN_PATH	=	@RT_LOCAL_PATH_R@/plugins
 LOCAL_ETC_PATH		=	@LOCAL_ETC_PATH_R@
 LOCAL_LIB_PATH		=	@LOCAL_LIB_PATH_R@
 LOCAL_LEXICON_PATH	=	@LOCAL_LEXICON_PATH_R@
+LOCAL_STATIC_PATH	=	@LOCAL_STATIC_PATH_R@
 MASON_HTML_PATH		=	@MASON_HTML_PATH_R@
 MASON_LOCAL_HTML_PATH	=	@MASON_LOCAL_HTML_PATH_R@
 MASON_DATA_PATH		=	@MASON_DATA_PATH_R@
@@ -303,15 +301,21 @@ fixperms:
 	chmod -R  u+rwX,go-w,go+rX 	$(DESTDIR)$(MASON_HTML_PATH) \
 					$(DESTDIR)$(MASON_LOCAL_HTML_PATH) \
 					$(DESTDIR)$(RT_LEXICON_PATH) \
-					$(DESTDIR)$(LOCAL_LEXICON_PATH)
+					$(DESTDIR)$(LOCAL_LEXICON_PATH) \
+					$(DESTDIR)$(RT_STATIC_PATH) \
+					$(DESTDIR)$(LOCAL_STATIC_PATH)
 	chown -R $(LIBS_OWNER) 	$(DESTDIR)$(MASON_HTML_PATH) \
 				$(DESTDIR)$(MASON_LOCAL_HTML_PATH) \
 				$(DESTDIR)$(RT_LEXICON_PATH) \
-				$(DESTDIR)$(LOCAL_LEXICON_PATH)
+				$(DESTDIR)$(LOCAL_LEXICON_PATH) \
+				$(DESTDIR)$(RT_STATIC_PATH) \
+				$(DESTDIR)$(LOCAL_STATIC_PATH)
 	chgrp -R $(LIBS_GROUP) 	$(DESTDIR)$(MASON_HTML_PATH) \
 				$(DESTDIR)$(MASON_LOCAL_HTML_PATH) \
 				$(DESTDIR)$(RT_LEXICON_PATH) \
-				$(DESTDIR)$(LOCAL_LEXICON_PATH)
+				$(DESTDIR)$(LOCAL_LEXICON_PATH) \
+				$(DESTDIR)$(RT_STATIC_PATH) \
+				$(DESTDIR)$(LOCAL_STATIC_PATH)
 
 	# Make the web ui's data dir writable
 	chmod 0770  	$(DESTDIR)$(MASON_DATA_PATH) \
@@ -325,6 +329,7 @@ dirs:
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(RT_LOG_PATH)
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(RT_FONT_PATH)
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(RT_LEXICON_PATH)
+	$(INSTALL) -m 0755 -d $(DESTDIR)$(RT_STATIC_PATH)
 	$(INSTALL) -m 0770 -d $(DESTDIR)$(MASON_DATA_PATH)
 	$(INSTALL) -m 0770 -d $(DESTDIR)$(MASON_DATA_PATH)/cache
 	$(INSTALL) -m 0770 -d $(DESTDIR)$(MASON_DATA_PATH)/etc
@@ -336,10 +341,11 @@ dirs:
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(LOCAL_LIB_PATH)
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(LOCAL_PLUGIN_PATH)
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(LOCAL_LEXICON_PATH)
+	$(INSTALL) -m 0755 -d $(DESTDIR)$(LOCAL_STATIC_PATH)
 
 install: testdeps config-install dirs files-install fixperms instruct
 
-files-install: libs-install etc-install config-install bin-install sbin-install html-install local-install doc-install font-install po-install
+files-install: libs-install etc-install config-install bin-install sbin-install html-install local-install doc-install font-install po-install static-install
 
 config-install:
 @COMMENT_INPLACE_LAYOUT@	$(INSTALL) -m 0755 -o $(BIN_OWNER) -g $(RTGROUP) -d $(DESTDIR)$(CONFIG_FILE_PATH)
@@ -406,6 +412,14 @@ po-install:
 @COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -m 0644 "share/po/$$file" "$(DESTDIR)$(RT_LEXICON_PATH)/$$file" ; \
 @COMMENT_INPLACE_LAYOUT@	done
 
+static-install:
+@COMMENT_INPLACE_LAYOUT@	[ -d $(DESTDIR)$(RT_STATIC_PATH) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(RT_STATIC_PATH)
+@COMMENT_INPLACE_LAYOUT@	-( cd share/static && find . -type d -print ) | while read dir ; do \
+@COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -m 0755 -d "$(DESTDIR)$(RT_STATIC_PATH)/$$dir" ; \
+@COMMENT_INPLACE_LAYOUT@	done
+@COMMENT_INPLACE_LAYOUT@	-( cd share/static && find . -type f -print ) | while read file ; do \
+@COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -m 0644 "share/static/$$file" "$(DESTDIR)$(RT_STATIC_PATH)/$$file" ; \
+@COMMENT_INPLACE_LAYOUT@	done
 
 
 doc-install:
@@ -455,6 +469,12 @@ local-install:
 	-( cd local/po && find . -type f -print ) | while read file ; do \
 	    $(INSTALL) -m 0644 "local/po/$$file" "$(DESTDIR)$(LOCAL_LEXICON_PATH)/$$file" ; \
 	done
+	-( cd local/static && find . -type d -print ) | while read dir ; do \
+	    $(INSTALL) -m 0755 -d "$(DESTDIR)$(LOCAL_STATIC_PATH)/$$dir" ; \
+	done
+	-( cd local/static && find . -type f -print ) | while read file ; do \
+	    $(INSTALL) -m 0644 "local/static/$$file" "$(DESTDIR)$(LOCAL_STATIC_PATH)/$$file" ; \
+	done
 	-( cd local/etc && find . -type d -print ) | while read dir ; do \
 	    $(INSTALL) -m 0755 -d "$(DESTDIR)$(LOCAL_ETC_PATH)/$$dir" ; \
 	done
@@ -475,11 +495,6 @@ start-httpd:
 start-server:
 	$(PERL) sbin/rt-server &
 
-apachectl:
-	$(APACHECTL) stop
-	sleep 10
-	$(APACHECTL) start
-	sleep 5
 
 SNAPSHOT=$(shell git describe --tags)
 THIRD_PARTY=devel/third-party/
@@ -501,7 +516,7 @@ build-snapshot:
 	rm -fr "$(SNAPSHOT)/"
 
 clearsign-snapshot:
-	gpg --no-armor --detach-sign "$(SNAPSHOT).tar.gz"
+	gpg --armor --detach-sign "$(SNAPSHOT).tar.gz"
 
 build-third-party:
 	git archive --prefix "$(SNAPSHOT)/$(THIRD_PARTY)" HEAD:$(THIRD_PARTY) \
@@ -509,7 +524,7 @@ build-third-party:
 	rm -rf "$(SNAPSHOT)/$(THIRD_PARTY)"
 
 clearsign-third-party:
-	gpg --no-armor --detach-sign "$(SNAPSHOT)-third-party-source.tar.gz"
+	gpg --armor --detach-sign "$(SNAPSHOT)-third-party-source.tar.gz"
 
 snapshot-shasums:
 	sha1sum $(SNAPSHOT)*.tar.gz*
@@ -527,8 +542,8 @@ vessel-import: build-snapshot
      --skip cpan-capitalization,cpan-mod_perl,cpan-Encode,cpan-PPI,cpan-Test-Exception-LessClever,cpan-Test-Manifest,cpan-Test-Object,cpan-Test-Pod,cpan-Test-Requires,cpan-Test-SubCalls,cpan-Test-cpan-Tester,cpan-Test-Warn --skip-all-recommends
 	mv $(VESSEL)/scripts/RT/build  $(VESSEL)/scripts/RT/build.pl
 
-JSMIN_URL = http://download.bestpractical.com/mirror/jsmin-2011-01-22.c
-JSMIN_SHA = 8a6b3b980a52c028eb73aee4a82ebe060c1ee854
+JSMIN_URL = http://download.bestpractical.com/mirror/jsmin-2013-03-29.c
+JSMIN_SHA = 67dc8d73a8878f88cdaeb1a86775872eae5c3077
 
 jsmin: jsmin-checkcc jsmin-fetch jsmin-verify jsmin-confirm jsmin-build jsmin-install
 	@echo ""

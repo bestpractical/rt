@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -74,14 +74,11 @@ package RT::Groups;
 use strict;
 use warnings;
 
-
-
-use RT::Group;
-
 use base 'RT::SearchBuilder';
 
 sub Table { 'Groups'}
 
+use RT::Group;
 use RT::Users;
 
 # XXX: below some code is marked as subject to generalize in Groups, Users classes.
@@ -98,8 +95,8 @@ sub _Init {
   my @result = $self->SUPER::_Init(@_);
 
   $self->OrderBy( ALIAS => 'main',
-		  FIELD => 'Name',
-		  ORDER => 'ASC');
+                  FIELD => 'Name',
+                  ORDER => 'ASC');
 
   # XXX: this code should be generalized
   $self->{'princalias'} = $self->Join(
@@ -197,7 +194,10 @@ Limits the set of groups found to role groups for queue QUEUE_ID
 sub LimitToRolesForQueue {
     my $self = shift;
     my $queue = shift;
-    RT->Logger->warning("LimitToRolesForQueue is deprecated; please change code to use LimitToRolesForObject (caller @{[join '/', caller]})");
+    RT->Deprecated(
+        Instead => "LimitToRolesForObject",
+        Remove => "4.4",
+    );
     $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'RT::Queue-Role');
     $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => $queue);
 }
@@ -215,7 +215,10 @@ Limits the set of groups found to role groups for Ticket Ticket_ID
 sub LimitToRolesForTicket {
     my $self = shift;
     my $Ticket = shift;
-    RT->Logger->warning("LimitToRolesForTicket is deprecated; please change code to use LimitToRolesForObject (caller @{[join '/', caller]})");
+    RT->Deprecated(
+        Instead => "LimitToRolesForObject",
+        Remove => "4.4",
+    );
     $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'RT::Ticket-Role');
     $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => $Ticket);
 }
@@ -232,7 +235,10 @@ Limits the set of groups found to role groups for System System_ID
 
 sub LimitToRolesForSystem {
     my $self = shift;
-    RT->Logger->warning("LimitToRolesForSystem is deprecated; please change code to use LimitToRolesForObject (caller @{[join '/', caller]})");
+    RT->Deprecated(
+        Instead => "LimitToRolesForObject",
+        Remove => "4.4",
+    );
     $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'RT::System-Role');
 }
 
@@ -459,14 +465,14 @@ sub Next {
 
     my $Group = $self->SUPER::Next();
     if ((defined($Group)) and (ref($Group))) {
-	unless ($Group->CurrentUserHasRight('SeeGroup')) {
-	    return $self->Next();
-	}
-	
-	return $Group;
+        unless ($Group->CurrentUserHasRight('SeeGroup')) {
+            return $self->Next();
+        }
+
+        return $Group;
     }
     else {
-	return undef;
+        return undef;
     }
 }
 
@@ -474,14 +480,14 @@ sub Next {
 
 sub _DoSearch {
     my $self = shift;
-    
+
     #unless we really want to find disabled rows, make sure we're only finding enabled ones.
     unless($self->{'find_disabled_rows'}) {
-	$self->LimitToEnabled();
+        $self->LimitToEnabled();
     }
-    
+
     return($self->SUPER::_DoSearch(@_));
-    
+
 }
 
 

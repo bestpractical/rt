@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,10 +46,8 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <a href="<% $href %>">
-% if ($URI->IsLocal) {
 % my $member = $URI->Object;
-% my $has_name = UNIVERSAL::can($member, 'Name') || (UNIVERSAL::can($member, '_Accessible') && $member->_Accessible('Name', 'read'));
-% if (UNIVERSAL::isa($member, "RT::Ticket")) {
+% if (blessed($member) && $member->isa("RT::Ticket")) {
 % my $inactive = $member->QueueObj->IsInactiveStatus($member->Status);
 
 <span class="<% $inactive ? 'ticket-inactive' : '' %>">
@@ -57,13 +55,8 @@
 <%$member->Id%>: (<& /Elements/ShowUser, User => $member->OwnerObj &>) <%$member->Subject || ''%> [<% loc($member->Status) %>]
 </span>
 
-% } elsif ($has_name) {
-<%$URI->Resolver->AsString%>: <%$member->Name%>
 % } else {
-<%$URI->Resolver->AsString%>
-% }
-% } else {
-<%$URI->Resolver->AsString%>
+<%$URI->AsString%>
 % }
 </a>
 <%ARGS>
@@ -71,7 +64,7 @@ $URI => undef
 </%ARGS>
 
 <%INIT>
-my $href = $URI->Resolver->HREF;
+my $href = $URI->AsHREF;
 if ( $URI->IsLocal ) {
     my $base = RT->Config->Get('WebBaseURL');
     # URI->rel doesn't contain the leading '/'

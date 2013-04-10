@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -63,9 +63,9 @@
 %   while (my $link = $refersto->Next) {
 %     my $member = $link->TargetURI;
 <li>
-<input type="CHECKBOX" name="DeleteLink--<%$link->Type%>-<%$link->Target%>" />
+<input type="checkbox" name="DeleteLink--<%$link->Type%>-<%$link->Target%>" />
 %     if ($link->TargetURI->IsLocal) {
-<a href="<%$member->Resolver->HREF%>"><% loc($member->Object->ObjectTypeStr) %> <%$member->Object->Id%></a>: 
+<a href="<%$member->AsHREF%>"><% loc($member->Object->RecordType) %> <%$member->Object->Id%></a>: 
 %       if (UNIVERSAL::isa($member->Object, "RT::Article") or UNIVERSAL::can($member->Object, 'Name')) {
 <%$member->Object->Name%>
 %       } elsif (UNIVERSAL::isa($member->Object, "RT::Ticket") or UNIVERSAL::can($member->Object, 'Subject')) {
@@ -73,7 +73,7 @@
 %       }
 </a>
 %     } else {
-<a href="<%$member->Resolver->HREF%>"><%$link->Target%></a>
+<a href="<%$member->AsHREF%>"><%$link->Target%></a>
 %     }
 %   }
 % }
@@ -90,9 +90,9 @@
 %   while (my $link = $referredtoby->Next) {
 %     my $member = $link->BaseURI;
 <li>
-<input type="CHECKBOX" name="DeleteLink-<%$link->Base%>-<%$link->Type%>-" />
+<input type="checkbox" name="DeleteLink-<%$link->Base%>-<%$link->Type%>-" />
 %     if ($link->BaseURI->IsLocal) {
-<a href="<%$member->Resolver->HREF%>"><% loc($member->Object->ObjectTypeStr) %> <%$member->Object->Id%>: 
+<a href="<%$member->AsHREF%>"><% loc($member->Object->RecordType) %> <%$member->Object->Id%>: 
 %       if (UNIVERSAL::isa($member->Object, "RT::Article") or UNIVERSAL::can($member->Object, 'Name')) {
 <%$member->Object->Name%>
 %       } elsif (UNIVERSAL::isa($member->Object, "RT::Ticket") or UNIVERSAL::can($member->Object, 'Subject')) {
@@ -100,7 +100,7 @@
 %       }
 </a>
 %     } else {
-<a href="<%$member->Resolver->HREF%>"><%$link->Base%></a>
+<a href="<%$member->AsHREF%>"><%$link->Base%></a>
 %     }
 %   }
 % }

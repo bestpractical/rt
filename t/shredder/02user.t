@@ -28,7 +28,7 @@ $test->create_savepoint('aucreate'); # after user create
 {
     my $resolver = sub {
         my %args = (@_);
-        my $t =	$args{'TargetObject'};
+        my $t = $args{'TargetObject'};
         my $resolver_uid = RT->SystemUser->id;
         foreach my $method ( qw(Creator LastUpdatedBy) ) {
             next unless $t->_Accessible( $method => 'read' );

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -141,33 +141,33 @@ Returns true if everything is ok, otherwise false
 
 sub FromURI {
     my $self = shift;
-    my $uri = shift;    
+    my $uri = shift;
 
     return undef unless ($uri);
 
     my $scheme;
     # Special case: integers passed in as URIs must be ticket ids
     if ($uri =~ /^(\d+)$/) {
-	$scheme = "fsck.com-rt";
+        $scheme = "fsck.com-rt";
     } elsif ($uri =~ /^((?!javascript|data)(?:\w|\.|-)+?):/i) {
-	$scheme = $1;
+        $scheme = $1;
     }
     else {
         $self->{resolver} = RT::URI::base->new( $self->CurrentUser ); # clear resolver
         $RT::Logger->warning("Could not determine a URI scheme for $uri");
         return (undef);
     }
-     
-    # load up a resolver object for this scheme  
+
+    # load up a resolver object for this scheme
     $self->_GetResolver($scheme);
-    
+
     unless ($self->Resolver->ParseURI($uri)) {
         $RT::Logger->warning( "Resolver "
               . ref( $self->Resolver )
               . " could not parse $uri, maybe Organization config was changed?"
         );
         $self->{resolver} = RT::URI::base->new( $self->CurrentUser ); # clear resolver
-    	return (undef);
+        return (undef);
     }
 
     return(1);
@@ -283,6 +283,17 @@ Returns this URI's URI resolver object
 sub Resolver {
     my $self =shift;
     return ($self->{'resolver'});
+}
+
+=head2 AsString
+
+Returns a friendly display form of the object if Local, or the full URI
+
+=cut
+
+sub AsString {
+    my $self = shift;
+    return $self->Resolver->AsString;
 }
 
 RT::Base->_ImportOverlays();

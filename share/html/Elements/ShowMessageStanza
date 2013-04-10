@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -77,16 +77,16 @@ my $print_content = sub {
     $m->out($$ref);
 };
 
-if ( ref $Message ) {
-    $m->out('<pre>')
-        if (    $ContentType eq 'text/plain'
-             && $plain_text_pre
-             && !$Depth
-             && !$plain_text_mono );
-    $m->out(   '<div class="message-stanza'
-             . ( ($ContentType eq 'text/plain' &&  $plain_text_mono) ? ' plain-text-white-space' : '' ) . '"'
-             . '>' );
+$m->out('<pre>')
+    if (    $ContentType eq 'text/plain'
+         && $plain_text_pre
+         && !$Depth
+         && !$plain_text_mono );
+$m->out(   '<div class="message-stanza'
+         . ( ($ContentType eq 'text/plain' &&  $plain_text_mono) ? ' plain-text-white-space' : '' ) . '"'
+         . '>' );
 
+if ( ref $Message ) {
     my @stack;
     my $para = '';
     my $i    = 0;
@@ -170,16 +170,16 @@ AGAIN: foreach ( ; $i < @$Message; $i++ ) {
         $m->out('</div>');
         goto AGAIN;
     }
-
-    $m->out('</div>');
-    $m->out('</pre>')
-        if (    $ContentType eq 'text/plain'
-             && $plain_text_pre
-             && !$Depth
-             && !$plain_text_mono );
 } else {
     $print_content->( \$Message );
 }
+
+$m->out('</div>');
+$m->out('</pre>')
+    if (    $ContentType eq 'text/plain'
+         && $plain_text_pre
+         && !$Depth
+         && !$plain_text_mono );
 </%INIT>
 <%ARGS>
 $Message => undef

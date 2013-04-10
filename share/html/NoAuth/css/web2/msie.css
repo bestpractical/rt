@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -176,14 +176,6 @@ div#nav li.last {
     padding: 0.5em;
     margin-left: auto;
     margin-right: auto;
-}
-
-th.collection-as-table {
-    padding: 0.25em;
-}
-
-table.queue-summary td, td.collection-as-table {
-    padding: 0.25em;
 }
 
  .titlebox-title {

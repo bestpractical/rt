@@ -76,7 +76,7 @@ $m->field(WatcherTypeEmail => 'Requestor');
 $m->field(WatcherAddressEmail => 'root@localhost');
 $m->click('SubmitTicket');
 $m->text_contains(
-    "root is already a Requestor for this ticket",
+    "root is already a Requestor",
     'no duplicate watchers',
 );
 

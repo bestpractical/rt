@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -55,6 +55,7 @@ use MIME::Entity;
 use LWP::MediaTypes;
 use RT::Interface::REST;
 use File::Temp qw(tempfile);
+my @tmp_files;
 
 my $ticket = RT::Ticket->new($session{CurrentUser});
 my $object = $r->path_info;
@@ -122,6 +123,7 @@ foreach my $att (@atts) {
     if ($fh) {
         my $buf;
         my ($w, $tmp) = tempfile();
+        push @tmp_files, $tmp;
         my $info = $cgi->uploadInfo();
 
         while (sysread($fh, $buf, 8192)) {
@@ -174,6 +176,8 @@ if ($k->{Status}) {
 }
 
 OUTPUT:
+
+unlink @tmp_files;
 </%INIT>
 RT/<% $RT::VERSION %> <% $status %>
 

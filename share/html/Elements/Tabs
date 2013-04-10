@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -181,11 +181,11 @@ my $build_admin_menu = sub {
 
     my $cfs = $article_admin->child( 'custom-fields' =>
         title => loc('Custom Fields'),
-        path  => '/Admin/CustomFields/index.html?'.$m->comp('/Elements/QueryString', type => 'RT::Class-RT::Article'),
+        path  => '/Admin/CustomFields/index.html?'.$m->comp('/Elements/QueryString', Type => 'RT::Class-RT::Article'),
     );
     $cfs->child( select =>
         title => loc('Select'),
-        path => '/Admin/CustomFields/index.html?'.$m->comp('/Elements/QueryString', type => 'RT::Class-RT::Article'),
+        path => '/Admin/CustomFields/index.html?'.$m->comp('/Elements/QueryString', Type => 'RT::Class-RT::Article'),
     );
     $cfs->child( create =>
         title => loc('Create'),
@@ -305,7 +305,7 @@ my $build_admin_menu = sub {
 
                 $queue->child( 'group-rights' => title => loc('Group Rights'), path => "/Admin/Queues/GroupRights.html?id=".$id );
                 $queue->child( 'user-rights' => title => loc('User Rights'), path => "/Admin/Queues/UserRights.html?id=" . $id );
-
+                $queue->child( 'history' => title => loc('History'), path => "/Admin/Queues/History.html?id=" . $id );
 
                 $m->callback( CallbackName => 'PrivilegedQueue', queue_id => $id, page_menu => $queue);
             }
@@ -412,7 +412,7 @@ my $build_admin_menu = sub {
     if ( $request_path =~ m{^/Admin/Articles/Classes/} ) {
         my $tabs = PageMenu();
         if ( my $id = $DECODED_ARGS->{'id'} ) {
-            my $obj = RT::CustomField->new( $session{'CurrentUser'} );
+            my $obj = RT::Class->new( $session{'CurrentUser'} );
             $obj->Load($id);
 
             if ( $obj and $obj->id ) {
@@ -435,6 +435,9 @@ my $build_admin_menu = sub {
 };
 
 my $build_main_nav = sub {
+
+    PageWidgets()->child( simple_search => raw_html => $m->scomp('SimpleSearch') );
+    PageWidgets()->child( create_ticket => raw_html => $m->scomp('CreateTicket') );
 
     my $home = Menu->child( home => title => loc('Homepage'), path => '/' );
     unless ($session{'dashboards_in_menu'}) {
@@ -483,15 +486,20 @@ my $build_main_nav = sub {
         $dashes->child('dashboard_create' => title => loc('New Dashboard'), path => "/Dashboards/Modify.html?Create=1" );
     }
 
-    my $tickets = Menu->child( search => title => loc('Tickets'), path => '/Search/Build.html' );
+    my $search = Menu->child( search => title => loc('Search'), path => '/Search/' );
+
+    my $tickets = $search->child( tickets => title => loc('Tickets'), path => '/Search/Build.html' );
     $tickets->child( simple => title => loc('Simple Search'), path => "/Search/Simple.html" );
     $tickets->child( new    => title => loc('New Search'),    path => "/Search/Build.html?NewQuery=1" );
+
+    $search->child( articles => title => loc('Articles'),   path => "/Articles/Article/Search.html" );
+
+    $search->child( users => title => loc('Users'),   path => "/User/Search.html" );
 
 
     my $tools = Menu->child( tools => title => loc('Tools'), path => '/Tools/index.html' );
     my $articles = $tools->child( articles => title => loc('Articles'), path => "/Articles/index.html");
     $articles->child( articles => title => loc('Overview'), path => "/Articles/index.html" );
-    $articles->child( search   => title => loc('Search'),   path => "/Articles/Article/Search.html" );
     $articles->child( topics   => title => loc('Topics'),   path => "/Articles/Topics.html" );
 
     $tools->child( my_day =>
@@ -557,9 +565,9 @@ my $build_main_nav = sub {
 
         for my $search (@$searches) {
             $search_menu->child( "search-" . $i++ =>
-                title => $search->[0],
+                title => $search->[1],
                 path  => "/Prefs/Search.html?"
-                       . $query_string->( name => ref( $search->[1] ) . '-' . $search->[1]->Id ),
+                       . $query_string->( name => ref( $search->[2] ) . '-' . $search->[2]->Id ),
             );
 
         }
@@ -648,7 +656,7 @@ my $build_main_nav = sub {
                     && $obj->HasUnresolvedDependencies;
 
                 my $current   = $obj->Status;
-                my $lifecycle = $obj->Lifecycle;
+                my $lifecycle = $obj->LifecycleObj;
                 my $i         = 1;
                 foreach my $info ( $lifecycle->Actions($current) ) {
                     my $next = $info->{'to'};
@@ -710,7 +718,7 @@ my $build_main_nav = sub {
                         $session{"tickets"}->PrepForSerialization();
                     }
 
-                    my $search = Menu()->child('search');
+                    my $search = Menu()->child('search')->child('tickets');
                     # Don't display prev links if we're on the first ticket
                     if ( $item_map->{$id}->{prev} ) {
                         $search->child( first =>
@@ -739,7 +747,7 @@ my $build_main_nav = sub {
             && $DECODED_ARGS->{'q'} )
       )
     {
-        my $search = Menu()->child('search');
+        my $search = Menu()->child('search')->child('tickets');
         my $args      = '';
         my $has_query = '';
         my $current_search = $session{"CurrentSearchHash"} || {};
@@ -842,8 +850,8 @@ my $build_main_nav = sub {
                 &&                        #XXX TODO better abstraction
                 $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => RT->System )) {
                 my $shred_args = $query_string->(
-                    search          => 1,
-                    plugin          => 'Tickets',
+                    Search          => 1,
+                    Plugin          => 'Tickets',
                     'Tickets:query' => $rss_data{'Query'},
                     'Tickets:limit' => $QueryArgs->{'Rows'},
                 );
@@ -867,6 +875,10 @@ my $build_main_nav = sub {
     }
 
     if ( $request_path =~ m{^/Articles/} ) {
+        PageWidgets()->child( article_search => raw_html => $m->scomp('/Articles/Elements/GotoArticle') );
+        PageWidgets()->delete('create_ticket');
+        PageWidgets()->delete('simple_search');
+
         my $tabs = PageMenu();
         $tabs->child( search => title => loc("Search"),       path => "/Articles/Article/Search.html" );
         $tabs->child( create => title => loc("New Article" ), path => "/Articles/Article/PreCreate.html" );
@@ -890,12 +902,20 @@ my $build_main_nav = sub {
 
     }
 
+    if ( $request_path =~ m{^/User/Summary.html} ) {
+        my $admin = $session{'CurrentUser'}->HasRight(
+            Object => $RT::System, Right => 'AdminUsers'
+        );
+        my $config = $session{'CurrentUser'}->HasRight(
+            Object => $RT::System, Right => 'ShowConfigTab'
+        );
+        PageMenu()->child( edit => title => loc('Edit'), path => '/Admin/Users/Modify.html?id=' . $DECODED_ARGS->{'id'} )
+            if $admin && $config;
+    }
+
     if ( $request_path =~ /^\/(?:index.html|$)/ ) {
         PageMenu()->child( edit => title => loc('Edit'), path => '/Prefs/MyRT.html' );
     }
-
-    PageWidgets()->child( simple_search => raw_html => $m->scomp('SimpleSearch') );
-    PageWidgets()->child( create_ticket => raw_html => $m->scomp('CreateTicket') );
 
     $m->callback( CallbackName => 'Privileged' );
 };

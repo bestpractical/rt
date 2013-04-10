@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -73,6 +73,7 @@ if ($Object->Rules) {
     }
 }
 my %recips;
+my %squelched = ProcessTransactionSquelching( \%ARGS );
 </%init>
 <&|/Widgets/TitleBox, title => loc('Recipients'), id => 'recipients' &>
 <table>
@@ -82,7 +83,7 @@ my %recips;
 <td valign="top"><% $type %>:</td>
 <td valign="top">
 %     for my $addr (sort {$a->address cmp $b->address} values %{$headers{$type}}) {
-%         my $checked = 1;
+%         my $checked = not $squelched{$addr->address};
 %         $m->callback(CallbackName => 'BeforeAddress', Ticket => $TicketObj, Address => $addr, Type => $type, Checked => \$checked);
 %         $recips{$addr->address}++;
 <input type="checkbox" class="checkbox" name="TxnSendMailTo" <% $checked ? 'checked="checked"' : '' |n%> value="<%$addr->address%>" id="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>" />

@@ -1,58 +1,27 @@
-﻿/*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.html or http://ckeditor.com/license
-*/
+﻿/**
+ * @license Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.html or http://ckeditor.com/license
+ */
 
-(function()
-{
-	var flashFilenameRegex = /\.swf(?:$|\?)/i,
-		numberRegex = /^\d+(?:\.\d+)?$/;
+(function() {
+	var flashFilenameRegex = /\.swf(?:$|\?)/i;
 
-	function cssifyLength( length )
-	{
-		if ( numberRegex.test( length ) )
-			return length + 'px';
-		return length;
-	}
-
-	function isFlashEmbed( element )
-	{
+	function isFlashEmbed( element ) {
 		var attributes = element.attributes;
 
 		return ( attributes.type == 'application/x-shockwave-flash' || flashFilenameRegex.test( attributes.src || '' ) );
 	}
 
-	function createFakeElement( editor, realElement )
-	{
-		var fakeElement = editor.createFakeParserElement( realElement, 'cke_flash', 'flash', true ),
-			fakeStyle = fakeElement.attributes.style || '';
-
-		var width = realElement.attributes.width,
-			height = realElement.attributes.height;
-
-		if ( typeof width != 'undefined' )
-			fakeStyle = fakeElement.attributes.style = fakeStyle + 'width:' + cssifyLength( width ) + ';';
-
-		if ( typeof height != 'undefined' )
-			fakeStyle = fakeElement.attributes.style = fakeStyle + 'height:' + cssifyLength( height ) + ';';
-
-		return fakeElement;
+	function createFakeElement( editor, realElement ) {
+		return editor.createFakeParserElement( realElement, 'cke_flash', 'flash', true );
 	}
 
-	CKEDITOR.plugins.add( 'flash',
-	{
-		init : function( editor )
-		{
-			editor.addCommand( 'flash', new CKEDITOR.dialogCommand( 'flash' ) );
-			editor.ui.addButton( 'Flash',
-				{
-					label : editor.lang.common.flash,
-					command : 'flash'
-				});
-			CKEDITOR.dialog.add( 'flash', this.path + 'dialogs/flash.js' );
-
-			editor.addCss(
-				'img.cke_flash' +
+	CKEDITOR.plugins.add( 'flash', {
+		requires: 'dialog,fakeobjects',
+		lang: 'af,ar,bg,bn,bs,ca,cs,cy,da,de,el,en-au,en-ca,en-gb,en,eo,es,et,eu,fa,fi,fo,fr-ca,fr,gl,gu,he,hi,hr,hu,is,it,ja,ka,km,ko,ku,lt,lv,mk,mn,ms,nb,nl,no,pl,pt-br,pt,ro,ru,sk,sl,sr-latn,sr,sv,th,tr,ug,uk,vi,zh-cn,zh', // %REMOVE_LINE_CORE%
+		icons: 'flash', // %REMOVE_LINE_CORE%
+		onLoad: function() {
+			CKEDITOR.addCss( 'img.cke_flash' +
 				'{' +
 					'background-image: url(' + CKEDITOR.getUrl( this.path + 'images/placeholder.png' ) + ');' +
 					'background-position: center center;' +
@@ -63,112 +32,105 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 				'}'
 				);
 
+		},
+		init: function( editor ) {
+			editor.addCommand( 'flash', new CKEDITOR.dialogCommand( 'flash' ) );
+			editor.ui.addButton && editor.ui.addButton( 'Flash', {
+				label: editor.lang.common.flash,
+				command: 'flash',
+				toolbar: 'insert,20'
+			});
+			CKEDITOR.dialog.add( 'flash', this.path + 'dialogs/flash.js' );
+
 			// If the "menu" plugin is loaded, register the menu items.
-			if ( editor.addMenuItems )
-			{
-				editor.addMenuItems(
-					{
-						flash :
-						{
-							label : editor.lang.flash.properties,
-							command : 'flash',
-							group : 'flash'
-						}
-					});
+			if ( editor.addMenuItems ) {
+				editor.addMenuItems({
+					flash: {
+						label: editor.lang.flash.properties,
+						command: 'flash',
+						group: 'flash'
+					}
+				});
 			}
 
-			editor.on( 'doubleclick', function( evt )
-				{
-					var element = evt.data.element;
+			editor.on( 'doubleclick', function( evt ) {
+				var element = evt.data.element;
 
-					if ( element.is( 'img' ) && element.getAttribute( '_cke_real_element_type' ) == 'flash' )
-						evt.data.dialog = 'flash';
-				});
+				if ( element.is( 'img' ) && element.data( 'cke-real-element-type' ) == 'flash' )
+					evt.data.dialog = 'flash';
+			});
 
 			// If the "contextmenu" plugin is loaded, register the listeners.
-			if ( editor.contextMenu )
-			{
-				editor.contextMenu.addListener( function( element, selection )
-					{
-						if ( element && element.is( 'img' ) && !element.isReadOnly()
-								&& element.getAttribute( '_cke_real_element_type' ) == 'flash' )
-							return { flash : CKEDITOR.TRISTATE_OFF };
-					});
+			if ( editor.contextMenu ) {
+				editor.contextMenu.addListener( function( element, selection ) {
+					if ( element && element.is( 'img' ) && !element.isReadOnly() && element.data( 'cke-real-element-type' ) == 'flash' )
+						return { flash: CKEDITOR.TRISTATE_OFF };
+				});
 			}
 		},
 
-		afterInit : function( editor )
-		{
+		afterInit: function( editor ) {
 			var dataProcessor = editor.dataProcessor,
 				dataFilter = dataProcessor && dataProcessor.dataFilter;
 
-			if ( dataFilter )
-			{
-				dataFilter.addRules(
-					{
-						elements :
-						{
-							'cke:object' : function( element )
-							{
-								var attributes = element.attributes,
-									classId = attributes.classid && String( attributes.classid ).toLowerCase();
+			if ( dataFilter ) {
+				dataFilter.addRules({
+					elements: {
+						'cke:object': function( element ) {
+							var attributes = element.attributes,
+								classId = attributes.classid && String( attributes.classid ).toLowerCase();
 
-								if ( !classId )
-								{
-									// Look for the inner <embed>
-									for ( var i = 0 ; i < element.children.length ; i++ )
-									{
-										if ( element.children[ i ].name == 'cke:embed' )
-										{
-											if ( !isFlashEmbed( element.children[ i ] ) )
-												return null;
+							if ( !classId && !isFlashEmbed( element ) ) {
+								// Look for the inner <embed>
+								for ( var i = 0; i < element.children.length; i++ ) {
+									if ( element.children[ i ].name == 'cke:embed' ) {
+										if ( !isFlashEmbed( element.children[ i ] ) )
+											return null;
 
-											return createFakeElement( editor, element );
-										}
+										return createFakeElement( editor, element );
 									}
-									return null;
 								}
-
-								return createFakeElement( editor, element );
-							},
-
-							'cke:embed' : function( element )
-							{
-								if ( !isFlashEmbed( element ) )
-									return null;
-
-								return createFakeElement( editor, element );
+								return null;
 							}
-						}
-					},
-					5);
-			}
-		},
 
-		requires : [ 'fakeobjects' ]
+							return createFakeElement( editor, element );
+						},
+
+						'cke:embed': function( element ) {
+							if ( !isFlashEmbed( element ) )
+								return null;
+
+							return createFakeElement( editor, element );
+						}
+					}
+				}, 5 );
+			}
+		}
 	});
 })();
 
-CKEDITOR.tools.extend( CKEDITOR.config,
-{
+CKEDITOR.tools.extend( CKEDITOR.config, {
 	/**
-	 * Save as EMBED tag only. This tag is unrecommended.
-	 * @type Boolean
-	 * @default false
+	 * Save as `<embed>` tag only. This tag is unrecommended.
+	 *
+	 * @cfg {Boolean} [flashEmbedTagOnly=false]
+	 * @member CKEDITOR.config
 	 */
-	flashEmbedTagOnly : false,
+	flashEmbedTagOnly: false,
 
 	/**
-	 * Add EMBED tag as alternative: &lt;object&gt&lt;embed&gt&lt;/embed&gt&lt;/object&gt
-	 * @type Boolean
-	 * @default false
+	 * Add `<embed>` tag as alternative: `<object><embed></embed></object>`.
+	 *
+	 * @cfg {Boolean} [flashAddEmbedTag=false]
+	 * @member CKEDITOR.config
 	 */
-	flashAddEmbedTag : true,
+	flashAddEmbedTag: true,
 
 	/**
-	 * Use embedTagOnly and addEmbedTag values on edit.
-	 * @type Boolean
-	 * @default false
+	 * Use {@link #flashEmbedTagOnly} and {@link #flashAddEmbedTag} values on edit.
+	 *
+	 * @cfg {Boolean} [flashConvertOnEdit=false]
+	 * @member CKEDITOR.config
 	 */
-	flashConvertOnEdit : false
-} );
+	flashConvertOnEdit: false
+});

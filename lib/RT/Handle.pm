@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -257,17 +257,19 @@ sub CheckCompatibility {
             unless $version;
 
         ($version) = $version =~ /^(\d+\.\d+)/;
-        return (0, "RT is unsupported on MySQL versions before 4.0.x, it's $version")
-            if $version < 4;
+        return (0, "RT is unsupported on MySQL versions before 4.1.  Your version is $version.")
+            if $version < 4.1;
 
         # MySQL must have InnoDB support
-        my $innodb = ($dbh->selectrow_array("show variables like 'have_innodb'"))[1];
-        if ( lc $innodb eq "no" ) {
+        local $dbh->{FetchHashKeyName} = 'NAME_lc';
+        my $innodb = lc($dbh->selectall_hashref("SHOW ENGINES", "engine")->{InnoDB}{support} || "no");
+        if ( $innodb eq "no" ) {
             return (0, "RT requires that MySQL be compiled with InnoDB table support.\n".
-                "See http://dev.mysql.com/doc/mysql/en/InnoDB.html");
-        } elsif ( lc $innodb eq "disabled" ) {
+                "See <http://dev.mysql.com/doc/mysql/en/innodb-storage-engine.html>\n".
+                "and check that there are no 'skip-innodb' lines in your my.cnf.");
+        } elsif ( $innodb eq "disabled" ) {
             return (0, "RT requires that MySQL InnoDB table support be enabled.\n".
-                "Remove the 'skip-innodb' line from your my.cnf file, restart MySQL, and try again.\n");
+                "Remove the 'skip-innodb' or 'innodb = OFF' line from your my.cnf file, restart MySQL, and try again.\n");
         }
 
         if ( $state eq 'post' ) {
@@ -275,9 +277,8 @@ sub CheckCompatibility {
             unless ( $create_table =~ /(?:ENGINE|TYPE)\s*=\s*InnoDB/i ) {
                 return (0, "RT requires that all its tables be of InnoDB type. Upgrade RT tables.");
             }
-        }
-        if ( $version >= 4.1 && $state eq 'post' ) {
-            my $create_table = $dbh->selectrow_arrayref("SHOW CREATE TABLE Attachments")->[1];
+
+            $create_table = $dbh->selectrow_arrayref("SHOW CREATE TABLE Attachments")->[1];
             unless ( $create_table =~ /\bContent\b[^,]*BLOB/i ) {
                 return (0, "RT since version 3.8 has new schema for MySQL versions after 4.1.0\n"
                     ."Follow instructions in the UPGRADING.mysql file.");
@@ -573,7 +574,13 @@ sub cmp_version($$) {
         return $a[$i] <=> $b[$i] if $a[$i] <=> $b[$i];
     }
     return 0;
-}}
+}
+
+sub version_words {
+    return keys %word;
+}
+
+}
 
 
 =head2 InsertInitialData
@@ -767,6 +774,7 @@ sub InsertData {
         $RT::Logger->debug("Creating groups...");
         foreach my $item (@Groups) {
             my $new_entry = RT::Group->new( RT->SystemUser );
+            $item->{'Domain'} ||= 'UserDefined';
             my $member_of = delete $item->{'MemberOf'};
             my ( $return, $msg ) = $new_entry->_Create(%$item);
             unless ( $return ) {

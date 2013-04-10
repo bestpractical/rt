@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -306,15 +306,6 @@ our %META = (
     },
 
     # User overridable options for RT at a glance
-    DefaultSummaryRows => {
-        Section         => 'RT at a glance',    #loc
-        Overridable     => 1,
-        SortOrder       => 1,
-        Widget          => '/Widgets/Form/Integer',
-        WidgetArguments => {
-            Description => 'Number of search results',    #loc
-        },
-    },
     HomePageRefreshInterval => {
         Section         => 'RT at a glance',                       #loc
         Overridable     => 1,
@@ -366,13 +357,19 @@ our %META = (
             Description => 'Show oldest history first',    #loc
         },
     },
-    DeferTransactionLoading => {
+    ShowHistory => {
         Section         => 'Ticket display',
         Overridable     => 1,
         SortOrder       => 3,
-        Widget          => '/Widgets/Form/Boolean',
+        Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
-            Description => 'Hide ticket history by default',    #loc
+            Description => 'Show history',                #loc
+            Values      => [qw(delay click always)],
+            ValuesLabel => {
+                delay   => "after the rest of the page loads",  #loc
+                click   => "after clicking a link",             #loc
+                always  => "immediately",                       #loc
+            },
         },
     },
     ShowUnreadMessageNotifications => { 
@@ -590,6 +587,17 @@ our %META = (
             $self->Set( DisableGD => 1 );
         },
     },
+    MailCommand => {
+        Type    => 'SCALAR',
+        PostLoadCheck => sub {
+            my $self = shift;
+            my $value = $self->Get('MailCommand');
+            return if ref($value) eq "CODE"
+                or $value =~/^(sendmail|sendmailpipe|qmail|testfile)$/;
+            $RT::Logger->error("Unknown value for \$MailCommand: $value; defaulting to sendmailpipe");
+            $self->Set( MailCommand => 'sendmailpipe' );
+        },
+    },
     MailPlugins  => { Type => 'ARRAY' },
     GnuPG        => { Type => 'HASH' },
     GnuPGOptions => { Type => 'HASH',
@@ -756,20 +764,15 @@ our %META = (
         },
     },
     LogToScreen => {
-        PostSet => sub {
-            my $self  = shift;
-            my $value = shift;
-            $self->SetFromConfig(
-                Option => \'LogToSTDERR',
-                Value  => [$value],
-                %{$self->Meta('LogToScreen')->{'Source'}}
-            );
+        Deprecated => {
+            Instead => 'LogToSTDERR',
+            Remove  => '4.4',
         },
-        PostLoadCheck => sub {
-            my $self = shift;
-            # XXX: deprecated, remove in 4.4
-            $RT::Logger->info("You set \$LogToScreen in your config, but it's been renamed to \$LogToSTDERR.  Please update your config.")
-                if $self->Meta('LogToScreen')->{'Source'}{'Package'};
+    },
+    UserAutocompleteFields => {
+        Deprecated => {
+            Instead => 'UserSearchFields',
+            Remove  => '4.4',
         },
     },
     CustomFieldGroupings => {
@@ -1141,6 +1144,22 @@ sub Set {
     $META{$name}->{'Type'} = $type;
     $META{$name}->{'PostSet'}->($self, $OPTIONS{$name}, $old)
         if $META{$name}->{'PostSet'};
+    if ($META{$name}->{'Deprecated'}) {
+        my %deprecated = %{$META{$name}->{'Deprecated'}};
+        my $new_var = $deprecated{Instead} || '';
+        $self->SetFromConfig(
+            Option => \$new_var,
+            Value  => [$OPTIONS{$name}],
+            %{$self->Meta($name)->{'Source'}}
+        ) if $new_var;
+        $META{$name}->{'PostLoadCheck'} ||= sub {
+            RT->Deprecated(
+                Message => "Configuration option $name is deprecated",
+                Stack   => 0,
+                %deprecated,
+            );
+        };
+    }
     return $self->_ReturnValue( $old, $type );
 }
 

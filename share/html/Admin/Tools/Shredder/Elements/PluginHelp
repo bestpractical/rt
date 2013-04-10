@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -59,8 +59,8 @@ my %plugins = $plugin_obj->List;
 <%INIT>
 my $file = $plugins{ $Plugin };
 unless( $file ) {
-	$RT::Logger->error( "Couldn't find plugin '$Plugin'" );
-	return;
+    $RT::Logger->error( "Couldn't find plugin '$Plugin'" );
+    return;
 }
 
 use RT::Shredder::POD qw();

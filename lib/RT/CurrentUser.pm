@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -88,13 +88,12 @@ passed to Load method.
 
 package RT::CurrentUser;
 
-use RT::I18N;
-
 use strict;
 use warnings;
 
-
 use base qw/RT::User/;
+
+use RT::I18N;
 
 #The basic idea here is that $self->CurrentUser is always supposed
 # to be a CurrentUser object. but that's hard to do when we're trying to load
@@ -269,6 +268,10 @@ Return the current currentuser object
 
 sub CurrentUser {
     return shift;
+}
+
+sub CustomFieldLookupType {
+    return "RT::User";
 }
 
 RT::Base->_ImportOverlays();

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -53,6 +53,11 @@ use warnings;
 
 
 use base 'Test::More';
+
+BEGIN {
+    # Warn about role consumers overriding role methods so we catch it in tests.
+    $ENV{PERL_ROLE_OVERRIDE_WARN} = 1;
+}
 
 # We use the Test::NoWarnings catching and reporting functionality, but need to
 # wrap it in our own special handler because of the warn handler installed via
@@ -111,6 +116,8 @@ BEGIN {
 sub import {
     my $class = shift;
     my %args = %rttest_opt = @_;
+
+    $rttest_opt{'nodb'} = $args{'nodb'} = 1 if $^C;
 
     # Spit out a plan (if we got one) *before* we load modules
     if ( $args{'tests'} ) {
@@ -290,6 +297,7 @@ Set( \$WebPort,   $port);
 Set( \$WebPath,   "");
 Set( \@LexiconLanguages, qw(en zh_TW zh_CN fr ja));
 Set( \$RTAddressRegexp , qr/^bad_re_that_doesnt_match\$/i);
+Set( \$ShowHistory, "always");
 };
     if ( $ENV{'RT_TEST_DB_SID'} ) { # oracle case
         print $config "Set( \$DatabaseName , '$ENV{'RT_TEST_DB_SID'}' );\n";

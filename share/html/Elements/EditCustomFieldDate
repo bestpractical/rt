@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,11 +46,11 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % my $name = $NamePrefix.$CustomField->Id.'-Values';
-<& /Elements/SelectDate, Name => "$name", current => 0, ShowTime => 0 &> (<%$DateObj->AsString(Time => 0)%>)
+<& /Elements/SelectDate, Name => "$name", current => 0, ShowTime => 0 &> (<%$DateObj->AsString(Time => 0, Timezone => 'utc')%>)
 
 <%INIT>
 my $DateObj = RT::Date->new ( $session{'CurrentUser'} );
-$DateObj->Set( Format => 'unknown', Value => $Default );
+$DateObj->Set( Format => 'unknown', Value => $Default, Timezone => 'utc' );
 </%INIT>
 <%ARGS>
 $Object => undef

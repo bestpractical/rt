@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -50,8 +50,10 @@ use strict;
 use warnings;
 
 package RT::Article;
-
 use base 'RT::Record';
+
+use Role::Basic 'with';
+with "RT::Record::Role::Links" => { -excludes => ["AddLink", "_AddLinksOnCreate"] };
 
 use RT::Articles;
 use RT::ObjectTopics;
@@ -352,27 +354,11 @@ sub Children {
 
 =head2 AddLink
 
-Takes a paramhash of Type and one of Base or Target. Adds that link to this tick
-et.
+Takes a paramhash of Type and one of Base or Target. Adds that link to this article.
+
+Prevents the use of plain numbers to avoid confusing behaviour.
 
 =cut
-
-sub DeleteLink {
-    my $self = shift;
-    my %args = (
-        Target => '',
-        Base   => '',
-        Type   => '',
-        Silent => undef,
-        @_
-    );
-
-    unless ( $self->CurrentUserHasRight('ModifyArticle') ) {
-        return ( 0, $self->loc("Permission Denied") );
-    }
-
-    $self->_DeleteLink(%args);
-}
 
 sub AddLink {
     my $self = shift;
@@ -396,16 +382,6 @@ sub AddLink {
     {
         return ( 0, $self->loc("Cannot add link to plain number") );
     }
-
-    # Check that we're actually getting a valid URI
-    my $uri_obj = RT::URI->new( $self->CurrentUser );
-    $uri_obj->FromURI( $args{'Target'}||$args{'Base'} );
-    unless ( $uri_obj->Resolver && $uri_obj->Scheme ) {
-        my $msg = $self->loc( "Couldn't resolve '[_1]' into a Link.", $args{'Target'} );
-        $RT::Logger->warning( $msg );
-        return( 0, $msg );
-    }
-
 
     $self->_AddLink(%args);
 }
@@ -616,6 +592,8 @@ sub ACLEquivalenceObjects {
     return $self->ClassObj;
 }
 
+sub ModifyLinkRight { "ModifyArticle" }
+
 =head2 LoadByInclude Field Value
 
 Takes the name of a form field from "Include Article"
@@ -761,10 +739,10 @@ Returns the Class Object which has the id returned by Class
 =cut
 
 sub ClassObj {
-	my $self = shift;
-	my $Class =  RT::Class->new($self->CurrentUser);
-	$Class->Load($self->Class());
-	return($Class);
+    my $self = shift;
+    my $Class =  RT::Class->new($self->CurrentUser);
+    $Class->Load($self->Class());
+    return($Class);
 }
 
 =head2 Parent
@@ -844,27 +822,27 @@ sub _CoreAccessible {
     {
      
         id =>
-		{read => 1, type => 'int(11)', default => ''},
+                {read => 1, type => 'int(11)', default => ''},
         Name => 
-		{read => 1, write => 1, type => 'varchar(255)', default => ''},
+                {read => 1, write => 1, type => 'varchar(255)', default => ''},
         Summary => 
-		{read => 1, write => 1, type => 'varchar(255)', default => ''},
+                {read => 1, write => 1, type => 'varchar(255)', default => ''},
         SortOrder => 
-		{read => 1, write => 1, type => 'int(11)', default => '0'},
+                {read => 1, write => 1, type => 'int(11)', default => '0'},
         Class => 
-		{read => 1, write => 1, type => 'int(11)', default => '0'},
+                {read => 1, write => 1, type => 'int(11)', default => '0'},
         Parent => 
-		{read => 1, write => 1, type => 'int(11)', default => '0'},
+                {read => 1, write => 1, type => 'int(11)', default => '0'},
         URI => 
-		{read => 1, write => 1, type => 'varchar(255)', default => ''},
+                {read => 1, write => 1, type => 'varchar(255)', default => ''},
         Creator => 
-		{read => 1, auto => 1, type => 'int(11)', default => '0'},
+                {read => 1, auto => 1, type => 'int(11)', default => '0'},
         Created => 
-		{read => 1, auto => 1, type => 'datetime', default => ''},
+                {read => 1, auto => 1, type => 'datetime', default => ''},
         LastUpdatedBy => 
-		{read => 1, auto => 1, type => 'int(11)', default => '0'},
+                {read => 1, auto => 1, type => 'int(11)', default => '0'},
         LastUpdated => 
-		{read => 1, auto => 1, type => 'datetime', default => ''},
+                {read => 1, auto => 1, type => 'datetime', default => ''},
 
  }
 };

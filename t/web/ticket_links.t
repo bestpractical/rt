@@ -52,7 +52,7 @@ for my $type ( "DependsOn", "MemberOf", "RefersTo" ) {
 
             $m->submit;
             $m->content_like(qr/Ticket \d+ created/, 'created ticket');
-            $m->content_contains("Can&#39;t link to a deleted ticket");
+            $m->content_contains("Linking to a deleted ticket is not allowed");
             $id = RT::Test->last_ticket->id;
         }
 
@@ -75,7 +75,7 @@ for my $type ( "DependsOn", "MemberOf", "RefersTo" ) {
                 $m->field( "$type-$id", "$deleted_id $active_id $inactive_id" );
             }
             $m->submit;
-            $m->content_contains("Can&#39;t link to a deleted ticket");
+            $m->content_contains("Linking to a deleted ticket is not allowed");
 
             if ( $c eq 'base' ) {
                 $m->content_like(
@@ -165,7 +165,7 @@ for my $type ( "DependsOn", "MemberOf", "RefersTo" ) {
             $m->content_lacks('hello test reminder subject');
             if ($type eq 'RefersTo') {
                 $m->text_contains("$baseurl/test_ticket_reference");
-                $m->text_contains("Article " . $article->Id . ': test article');
+                $m->text_contains("Article #" . $article->Id . ': test article');
             }
         }
     }

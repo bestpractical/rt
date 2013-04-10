@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <form ACTION="<% RT->Config->Get('WebPath') %>/Articles/Article/Search.html">
 <input type="hidden" name="HideOptions" value="1" />
-<input size="12" name="q" accesskey="0" />
+<input size="12" name="q" accesskey="0" value="<&|/l&>Search Articles</&>..." onfocus="if (this.value=='<&|/l&>Search Articles</&>...') this.value=''"  />
 % if ($class or $topic) {
 <input type="hidden" name="ExpandTopics" value="1" />
 <select name="Topics">
@@ -65,7 +65,6 @@
 <option value="">in all topics</option>
 </select>
 % }
-<input type="submit" value="<&|/l&>Search Articles</&>" />&nbsp;
 </form>
 <%args>
 $topic => ""

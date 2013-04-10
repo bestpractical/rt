@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -168,18 +168,10 @@ sub Create {
         return ( 0, $self->loc("Must specify 'Name' attribute") );
     }
 
-    #SANITY CHECK THE NAME AND ABORT IF IT'S TAKEN
-    if (RT->SystemUser) {   #This only works if RT::SystemUser has been defined
-        my $TempUser = RT::User->new(RT->SystemUser);
-        $TempUser->Load( $args{'Name'} );
-        return ( 0, $self->loc('Name in use') ) if ( $TempUser->Id );
-
-        my ($val, $message) = $self->ValidateEmailAddress( $args{'EmailAddress'} );
-        return (0, $message) unless ( $val );
-    } else {
-        $RT::Logger->warning( "$self couldn't check for pre-existing users");
-    }
-
+    my ( $val, $msg ) = $self->ValidateName( $args{'Name'} );
+    return ( 0, $msg ) unless $val;
+    ( $val, $msg ) = $self->ValidateEmailAddress( $args{'EmailAddress'} );
+    return ( 0, $msg ) unless ($val);
 
     $RT::Handle->BeginTransaction();
     # Groups deal with principal ids, rather than user ids.
@@ -269,6 +261,30 @@ sub Create {
     $RT::Handle->Commit;
 
     return ( $id, $self->loc('User created') );
+}
+
+=head2 ValidateName STRING
+
+Returns either (0, "failure reason") or 1 depending on whether the given
+name is valid.
+
+=cut
+
+sub ValidateName {
+    my $self = shift;
+    my $name = shift;
+
+    return ( 0, $self->loc('empty name') ) unless defined $name && length $name;
+
+    my $TempUser = RT::User->new( RT->SystemUser );
+    $TempUser->Load($name);
+
+    if ( $TempUser->id && ( !$self->id || $TempUser->id != $self->id ) ) {
+        return ( 0, $self->loc('Name in use') );
+    }
+    else {
+        return 1;
+    }
 }
 
 =head2 ValidatePassword STRING
@@ -570,6 +586,25 @@ sub ValidateEmailAddress {
         return ( 0, $self->loc('Email address in use') );
     } else {    #it's a valid email address
         return (1);
+    }
+}
+
+=head2 SetName
+
+Check to make sure someone else isn't using this name already
+
+=cut
+
+sub SetName {
+    my $self  = shift;
+    my $Value = shift;
+
+    my ( $val, $message ) = $self->ValidateName($Value);
+    if ($val) {
+        return $self->_Set( Field => 'Name', Value => $Value );
+    }
+    else {
+        return ( 0, $message );
     }
 }
 
@@ -1624,9 +1659,23 @@ sub Format {
             "Either system config or user #" . $args{CurrentUser}->id .
             " picked UsernameFormat $args{Format}, but RT::User->$method doesn't exist"
         );
-        $formatter = $self->can("_FormatUserConcise");
+        $formatter = $self->can("_FormatUserRole");
     }
     return $formatter->( $self, map { $_ => $args{$_} } qw(User Address) );
+}
+
+sub _FormatUserRole {
+    my $self = shift;
+    my %args = @_;
+
+    my $user = $args{User};
+    return $self->_FormatUserVerbose(@_)
+        unless $user and $user->Privileged;
+
+    my $name = $user->Name;
+    $name .= " (".$user->RealName.")"
+        if $user->RealName and lc $user->RealName ne lc $user->Name;
+    return $name;
 }
 
 sub _FormatUserConcise {
@@ -1745,6 +1794,21 @@ sub SetPrivateKey {
     return ($status, $self->loc("Couldn't set private key"))
         unless $status;
     return ($status, $self->loc("Set private key"));
+}
+
+sub SetLang {
+    my $self = shift;
+    my ($lang) = @_;
+
+    unless ($self->CurrentUserCanModify('Lang')) {
+        return (0, $self->loc("Permission Denied"));
+    }
+
+    # Local hack to cause the result message to be in the _new_ language
+    # if we're updating ourselves
+    $self->CurrentUser->{LangHandle} = RT::I18N->get_handle( $lang )
+        if $self->CurrentUser->id == $self->id;
+    return $self->_Set( Field => 'Lang', Value => $lang );
 }
 
 sub BasicColumns {

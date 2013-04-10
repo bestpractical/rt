@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -58,16 +58,13 @@
 my $i = 0;
 for my $queue (@queues) {
     $i++;
-    my $name = $queue->{Name};
-    $name =~ s/(['\\])/\\$1/g;
-    my $queue_cond = "Queue = '$name' AND ";
     my $lifecycle = $lifecycle{ lc $queue->{'Lifecycle'} };
-    my $all_q = $queue_cond . '(' . join( " OR ", map "Status = '$_'", grep $lifecycle->IsValid($_), @statuses ) . ')';
+    my @queue_statuses = grep { $lifecycle->IsValid($_) } @statuses;
 </%PERL>
 <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
 
 <td>
-    <a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query=<% $all_q |u,n %>" title="<% $queue->{Description} %>"><% $queue->{Name} %></a>
+    <a href="<% $link_all->($queue, \@queue_statuses) %>" title="<% $queue->{Description} %>"><% $queue->{Name} %></a>
 </td>
 
 <%perl>
@@ -75,7 +72,7 @@ for my $queue (@queues) {
    if ( $lifecycle->IsValid( $status ) ) {
 </%perl>
 <td align="right">
-    <a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query=<% $queue_cond ."Status = '$status'" |u,n %>"><% $data->{$queue->{id}}->{$status } || '-' %></a>
+    <a href="<% $link_status->($queue, $status) %>"><% $data->{$queue->{id}}->{$status } || '-' %></a>
 </td>
 %   } else {
 <td align="right">-</td>
@@ -85,6 +82,31 @@ for my $queue (@queues) {
 % }
 </table>
 <%INIT>
+my $build_search_link = sub {
+    my ($queue_name, $extra_query) = @_;
+    $queue_name =~ s/(['\\])/\\$1/g; #'
+
+    return RT->Config->Get('WebPath')
+         . "/Search/Results.html?Query="
+         . $m->interp->apply_escapes("Queue = '$queue_name' AND $extra_query", 'u');
+};
+
+my $link_all = sub {
+    my ($queue, $all_statuses) = @_;
+    return $build_search_link->($queue->{Name}, "(".join(" OR ", map "Status = '$_'", @$all_statuses).")");
+};
+
+my $link_status = sub {
+    my ($queue, $status) = @_;
+    return $build_search_link->($queue->{Name}, "Status = '$status'");
+};
+
+$m->callback(
+    CallbackName        => 'LinkBuilders',
+    build_search_link   => \$build_search_link,
+    link_all            => \$link_all,
+    link_status         => \$link_status,
+);
 
 my $Queues = RT::Queues->new( $session{'CurrentUser'} );
 $Queues->UnLimit();
@@ -97,7 +119,7 @@ $m->callback( CallbackName => 'Filter', Queues => \@queues );
     {  id          => $_->Id,
        Name        => $_->Name,
        Description => $_->Description || '',
-       Lifecycle   => $_->Lifecycle->Name,
+       Lifecycle   => $_->Lifecycle,
     }
 } grep $_, @queues;
 

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -69,10 +69,9 @@ package RT::Queues;
 use strict;
 use warnings;
 
+use base 'RT::SearchBuilder';
 
 use RT::Queue;
-
-use base 'RT::SearchBuilder';
 
 sub Table { 'Queues'}
 
@@ -83,8 +82,8 @@ sub _Init {
 
   # By default, order by name
   $self->OrderBy( ALIAS => 'main',
-		  FIELD => 'Name',
-		  ORDER => 'ASC');
+                  FIELD => 'Name',
+                  ORDER => 'ASC');
 
   return ($self->SUPER::_Init(@_));
 }
@@ -92,7 +91,7 @@ sub _Init {
 sub Limit  {
   my $self = shift;
   my %args = ( ENTRYAGGREGATOR => 'AND',
-	       @_);
+               @_);
   $self->SUPER::Limit(%args);
 }
 

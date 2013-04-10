@@ -132,9 +132,9 @@ like($searches[1]->Name, qr/highest priority tickets I own/, "correct new search
 my $ticket = RT::Ticket->new(RT->SystemUser);
 $ticket->Create(
     Queue     => $queue->Id,
-	Requestor => [ $user_obj->Name ],
-	Owner     => $user_obj,
-	Subject   => 'dashboard test',
+    Requestor => [ $user_obj->Name ],
+    Owner     => $user_obj,
+    Subject   => 'dashboard test',
 );
 
 $m->follow_link_ok({id => 'page-show'});

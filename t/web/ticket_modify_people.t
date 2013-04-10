@@ -80,7 +80,7 @@ ok(
 $m->reload;
 ok(
     $m->find_link(
-        text      => 'Enoch Root',
+        text      => 'root (Enoch Root)',
         url_regex => qr!/Admin/Users/Modify\.html!,
     ),
     'got link to modify user'

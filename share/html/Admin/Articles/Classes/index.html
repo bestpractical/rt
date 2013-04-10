@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -65,7 +65,8 @@
 % }
 
 <form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Articles/Classes/index.html">
-<input type="checkbox" name="FindDisabledClasses" value="1" /><&|/l&>Include disabled classes in listing.</&><br />
+<input type="checkbox" id="FindDisabledClasses" name="FindDisabledClasses" value="1" />
+<label for="FindDisabledClasses"><&|/l&>Include disabled classes in listing.</&></label><br />
 <div align="right"><input type="submit" value="<&|/l&>Go!</&>" /></div> 
 </form>
 <%INIT>

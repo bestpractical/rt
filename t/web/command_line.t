@@ -124,7 +124,7 @@ ok($val,$msg);
     # text attachment
     check_attachment($test_email);
     # binary attachment
-    check_attachment($RT::MasonComponentRoot.'/NoAuth/images/bpslogo.png');
+    check_attachment($RT::StaticPath . '/images/bpslogo.png');
 
 # change a ticket's Owner
 expect_send("edit ticket/$ticket_id set owner=root", 'Changing owner...');
@@ -158,7 +158,7 @@ expect_send("show ticket/$ticket_id -f queue", 'Verifying change...');
 expect_like(qr/Queue: EditedQueue$$/, 'Verified change');
 # cannot move ticket to a nonexistent queue
 expect_send("edit ticket/$ticket_id set queue=nonexistent-$$", 'Changing to nonexistent queue...');
-expect_like(qr/queue does not exist/i, 'Errored out');
+expect_like(qr/Queue nonexistent-$$ does not exist/i, 'Errored out');
 expect_send("show ticket/$ticket_id -f queue", 'Verifying lack of change...');
 expect_like(qr/Queue: EditedQueue$$/, 'Verified lack of change');
 
@@ -401,9 +401,9 @@ expect_send("merge $merge_ticket_B $merge_ticket_A", 'Merging the tickets...');
 expect_like(qr/Merge completed/, 'Merged the tickets');
 
 expect_send("show ticket/$merge_ticket_A/history", 'Checking merge on first ticket');
-expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in first ticket');
+expect_like(qr/Merged into Ticket #$merge_ticket_A: CLIMergeTest1-$$ by root/, 'Merge recorded in first ticket');
 expect_send("show ticket/$merge_ticket_B/history", 'Checking merge on second ticket');
-expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in second ticket');
+expect_like(qr/Merged into Ticket #$merge_ticket_A: CLIMergeTest1-$$ by root/, 'Merge recorded in second ticket');
 
 {
     # create a user; give them privileges to take and steal

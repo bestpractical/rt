@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -62,14 +62,12 @@ package RT::Action::NotifyGroupAsComment;
 use strict;
 use warnings;
 
-use RT::Action::NotifyGroup;
-
 use base qw(RT::Action::NotifyGroup);
 
 sub SetReturnAddress {
-	my $self = shift;
-	$self->{'comment'} = 1;
-	return $self->SUPER::SetReturnAddress( @_, is_comment => 1 );
+    my $self = shift;
+    $self->{'comment'} = 1;
+    return $self->SUPER::SetReturnAddress( @_, is_comment => 1 );
 }
 
 =head1 AUTHOR

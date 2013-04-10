@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,6 +45,8 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% $m->callback( CallbackName => 'BeforeCustomFields', Object => $Object,
+%               Grouping => $Grouping, ARGSRef => \%ARGS );
 % if ( $WRAP ) {
 <<% $WRAP %> class="edit-custom-fields">
 % }
@@ -69,15 +71,22 @@
 %  if (my $msg = $m->notes('InvalidField-' . $CustomField->Id)) {
         <br />
         <span class="cfinvalidfield"><% $msg %></span>
+%  } elsif ($ShowHints and $CustomField->FriendlyPattern) {
+        <br>
+        <span class="cfhints">
+          <&|/l, $CustomField->FriendlyPattern &>Input must match [_1]</&>
+        </span>
 %  }
     </<% $CELL %>>
+% $m->callback( CallbackName => 'AfterCustomFieldValue', CustomField => $CustomField, Object => $Object, Grouping => $Grouping );
   </<% $FIELD %>>
 % }
 
 % if ( $WRAP ) {
 </<% $WRAP %>>
 % }
-% $m->callback( %ARGS, CallbackName => 'AfterCustomFields' );
+% $m->callback( CallbackName => 'AfterCustomFields', Object => $Object,
+%               Grouping => $Grouping, ARGSRef => \%ARGS );
 <%INIT>
 $CustomFields ||= $Object->CustomFields;
 
@@ -106,4 +115,5 @@ $CustomFields => undef
 $Grouping     => undef
 $AsTable => 1
 $InTable => 0
+$ShowHints => 1
 </%ARGS>

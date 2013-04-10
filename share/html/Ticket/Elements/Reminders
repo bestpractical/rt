@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -55,7 +55,7 @@ $ShowSave => 1
 <%init>
 
 $Ticket = LoadTicket($id) if ($id);
-my $resolve_status = $Ticket->Lifecycle->ReminderStatusOnResolve;
+my $resolve_status = $Ticket->LifecycleObj->ReminderStatusOnResolve;
 
 my $count_reminders = RT::Reminders->new($session{'CurrentUser'});
 $count_reminders->Ticket($Ticket->id);
@@ -85,7 +85,6 @@ my $reminder_collection = $count_reminders->Collection;
 % }
 </tr>
 % my $i = 0;
-
 % while ( my $reminder = $reminder_collection->Next ) {
 % $i++;
 % if ( $reminder->Status eq $resolve_status && !$ShowCompleted ) {
@@ -116,7 +115,7 @@ my $reminder_collection = $count_reminders->Collection;
 % }
 % }
 
-% if ( $Ticket->QueueObj->CurrentUserHasRight('CreateTicket') && $Ticket->CurrentUserHasRight('ModifyTicket') ) {
+% if ($Ticket->Status ne "deleted" and $Ticket->QueueObj->CurrentUserHasRight('CreateTicket') and $Ticket->CurrentUserHasRight('ModifyTicket') ) {
 <&|/l&>New reminder:</&>
 <& SELF:NewReminder, Ticket => $Ticket &>
 % $editable = 1;
@@ -154,10 +153,10 @@ $Index
 <td class="entry">
 % unless ( $Reminder->CurrentUserHasRight('ModifyTicket') ) {
 <input name="Complete-Reminder-<% $Reminder->id %>" type="hidden" 
-value=<% $Reminder->Status eq $Reminder->Lifecycle->ReminderStatusOnResolve ? 1 : 0 %> />
+value=<% $Reminder->Status eq $Reminder->LifecycleObj->ReminderStatusOnResolve ? 1 : 0 %> />
 % }
 
-<input type="checkbox" value="1" name="Complete-Reminder-<% $Reminder->id %>" <% $Reminder->Status eq $Reminder->Lifecycle->ReminderStatusOnResolve ? 'checked="checked"' : '' |n %>
+<input type="checkbox" value="1" name="Complete-Reminder-<% $Reminder->id %>" <% $Reminder->Status eq $Reminder->LifecycleObj->ReminderStatusOnResolve ? 'checked="checked"' : '' |n %>
 % unless ( $Reminder->CurrentUserHasRight('ModifyTicket') ) {
 disabled="disabled" 
 % }
@@ -197,14 +196,14 @@ $Index
 <td class="collection-as-table">
 % unless ( $Reminder->CurrentUserHasRight('ModifyTicket') ) {
 <input name="Complete-Reminder-<% $Reminder->id %>" type="hidden" 
-value=<% $Reminder->Status eq $Reminder->Lifecycle->ReminderStatusOnResolve ? 1 : 0 %> />
+value=<% $Reminder->Status eq $Reminder->LifecycleObj->ReminderStatusOnResolve ? 1 : 0 %> />
 % }
-<input type="checkbox" value="1" name="Complete-Reminder-<% $Reminder->id %>" <% $Reminder->Status eq $Reminder->Lifecycle->ReminderStatusOnResolve ? 'checked="checked"' : '' |n %>
+<input type="checkbox" value="1" id="Complete-Reminder-<% $Reminder->id %>" name="Complete-Reminder-<% $Reminder->id %>" <% $Reminder->Status eq $Reminder->LifecycleObj->ReminderStatusOnResolve ? 'checked="checked"' : '' |n %>
 % unless ( $Reminder->CurrentUserHasRight('ModifyTicket') ) {
 disabled="disabled" 
 % }
 /></td>
-<td class="collection-as-table"><% $Reminder->Subject %></td>
+<td class="collection-as-table"><label for="Complete-Reminder-<% $Reminder->id %>"><% $Reminder->Subject %></label></td>
 <td class="collection-as-table"><% $overdue ? '<span class="overdue">' : '' |n %><% $dueobj->AgeAsString || loc('Not set') %><% $overdue ? '</span>' : '' |n %></td>
 <td class="collection-as-table"><& /Elements/ShowUser, User => $Reminder->OwnerObj &></td>
 </tr>

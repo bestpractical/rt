@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -111,24 +111,25 @@ if ($Class =~ /::/) { # older passed in value
     $Class =~ s/:/_/g;
 }
 
-$m->out('<table class="' .
-	($Collection->isa('RT::Tickets') ? 'ticket-list' : 'collection') . ' collection-as-table">');
+$m->out('<table cellspacing="0" class="' .
+            ($Collection->isa('RT::Tickets') ? 'ticket-list' : 'collection') . ' collection-as-table">');
 
 if ( $ShowHeader ) {
-  $m->comp('/Elements/CollectionAsTable/Header',
-	   %ARGS,
-	   Class        => $Class,
-	   Format       => \@Format,
-	   FormatString => $Format,
-	   Order        => \@Order,
-	   OrderBy      => \@OrderBy,
-	   Rows         => $Rows,
-	   Page         => $Page,
-	   AllowSorting => $AllowSorting, 
-	   BaseURL      => $BaseURL,
-	   GenericQueryArgs => $GenericQueryArgs,
-	   maxitems     => $maxitems,
-	   );
+    $m->comp('/Elements/CollectionAsTable/Header',
+        %ARGS,
+        Class        => $Class,
+        Format       => \@Format,
+        FormatString => $Format,
+        Order        => \@Order,
+        OrderBy      => \@OrderBy,
+        Rows         => $Rows,
+        Page         => $Page,
+        AllowSorting => $AllowSorting,
+        BaseURL      => $BaseURL,
+        GenericQueryArgs => $GenericQueryArgs,
+        maxitems     => $maxitems,
+        PassArguments => \@PassArguments,
+    );
 }
 
 my ($i, $column_map) = (0, {});

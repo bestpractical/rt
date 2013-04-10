@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -146,11 +146,11 @@ sub Create {
         OldValue  => $args{'OldValue'},
         NewValue  => $args{'NewValue'},
         Created   => $args{'Created'},
-	ObjectType => $args{'ObjectType'},
-	ObjectId => $args{'ObjectId'},
-	ReferenceType => $args{'ReferenceType'},
-	OldReference => $args{'OldReference'},
-	NewReference => $args{'NewReference'},
+        ObjectType => $args{'ObjectType'},
+        ObjectId => $args{'ObjectId'},
+        ReferenceType => $args{'ReferenceType'},
+        OldReference => $args{'OldReference'},
+        NewReference => $args{'NewReference'},
     );
 
     # Parameters passed in during an import that we probably don't want to touch, otherwise
@@ -385,13 +385,24 @@ sub Content {
         }
 
         $content =~ s/^/> /gm;
-        $content = $self->loc("On [_1], [_2] wrote:", $self->CreatedAsString, $self->CreatorObj->Name)
-          . "\n$content\n\n";
+        $content = $self->QuoteHeader . "\n$content\n\n";
     }
 
     return ($content);
 }
 
+=head2 QuoteHeader
+
+Returns text prepended to content when transaction is quoted
+(see C<Quote> argument in L</Content>). By default returns
+localized "On <date> <user name> wrote:\n".
+
+=cut
+
+sub QuoteHeader {
+    my $self = shift;
+    return $self->loc("On [_1], [_2] wrote:", $self->CreatedAsString, $self->CreatorObj->Name);
+}
 
 
 =head2 Addresses
@@ -401,14 +412,14 @@ Returns a hashref of addresses related to this transaction. See L<RT::Attachment
 =cut
 
 sub Addresses {
-	my $self = shift;
+    my $self = shift;
 
-	if (my $attach = $self->Attachments->First) {	
-		return $attach->Addresses;
-	}
-	else {
-		return {};
-	}
+    if (my $attach = $self->Attachments->First) {
+        return $attach->Addresses;
+    }
+    else {
+        return {};
+    }
 
 }
 
@@ -634,34 +645,40 @@ sub BriefDescriptionAsHTML {
         return ( $self->loc("Permission Denied") );
     }
 
-    my $type = $self->Type;
+    my ($objecttype, $type, $field) = ($self->ObjectType, $self->Type, $self->Field);
 
     unless ( defined $type ) {
         return $self->loc("No transaction type specified");
     }
 
-    my ($template, @params) = (
-        "Default: [_1]/[_2] changed from [_3] to [_4]", #loc
-        $type,
-        $self->Field,
-        (
-            $self->OldValue
-            ? "'" . $self->OldValue . "'"
-            : $self->loc("(no value)")
-        ),
-        (
-            $self->NewValue
-            ? "'" . $self->NewValue . "'"
-            : $self->loc("(no value)")
-        ),
-    );
+    my ($template, @params);
 
-    if ( my $code = $_BriefDescriptions{$type} ) {
-        ($template, @params) = $code->($self);
+    my @code = grep { ref eq 'CODE' } map { $_BriefDescriptions{$_} }
+        ( $field
+            ? ("$objecttype-$type-$field", "$type-$field")
+            : () ),
+        "$objecttype-$type", $type;
+
+    if (@code) {
+        ($template, @params) = $code[0]->($self);
     }
 
     unless ($template) {
-        ($template, @params) = ("(No description)"); #loc
+        ($template, @params) = (
+            "Default: [_1]/[_2] changed from [_3] to [_4]", #loc
+            $type,
+            $field,
+            (
+                $self->OldValue
+                ? "'" . $self->OldValue . "'"
+                : $self->loc("(no value)")
+            ),
+            (
+                $self->NewValue
+                ? "'" . $self->NewValue . "'"
+                : $self->loc("(no value)")
+            ),
+        );
     }
     return $self->loc($template, $self->_ProcessReturnValues(@params));
 }
@@ -681,7 +698,7 @@ sub _FormatUser {
     my $self = shift;
     my $user = shift;
     return [
-        \'<span class="user" data-user-id="', $user->id, \'">',
+        \'<span class="user" data-replace="user" data-user-id="', $user->id, \'">',
         $user->Format,
         \'</span>'
     ];
@@ -829,6 +846,12 @@ sub _FormatUser {
         $principal->Load($self->OldValue);
         return ( "[_1] [_2] deleted", $self->loc($self->Field), $self->_FormatUser($principal->Object));  #loc
     },
+    SetWatcher => sub {
+        my $self = shift;
+        my $principal = RT::Principal->new($self->CurrentUser);
+        $principal->Load($self->NewValue);
+        return ( "[_1] set to [_2]", $self->loc($self->Field), $self->_FormatUser($principal->Object));  #loc
+    },
     Subject => sub {
         my $self = shift;
         return ( "Subject changed to [_1]", $self->Data );  #loc
@@ -838,11 +861,10 @@ sub _FormatUser {
         my $value;
         if ( $self->NewValue ) {
             my $URI = RT::URI->new( $self->CurrentUser );
-            $URI->FromURI( $self->NewValue );
-            if ( $URI->Resolver ) {
+            if ( $URI->FromURI( $self->NewValue ) ) {
                 $value = [
                     \'<a href="', $URI->AsHREF, \'">',
-                    $URI->Resolver->AsString,
+                    $URI->AsString,
                     \'</a>'
                 ];
             }
@@ -881,11 +903,10 @@ sub _FormatUser {
         my $value;
         if ( $self->OldValue ) {
             my $URI = RT::URI->new( $self->CurrentUser );
-            $URI->FromURI( $self->OldValue );
-            if ( $URI->Resolver ) {
+            if ( $URI->FromURI( $self->OldValue ) ) {
                 $value = [
                     \'<a href="', $URI->AsHREF, \'">',
-                    $URI->Resolver->AsString,
+                    $URI->AsString,
                     \'</a>'
                 ];
             }
@@ -991,6 +1012,20 @@ sub _FormatUser {
             return ( "[_1] changed from [_2] to [_3]",  #loc
                     $self->loc($self->Field),
                     ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'" );
+        }
+    },
+    "Set-TimeWorked" => sub {
+        my $self = shift;
+        my $old  = $self->OldValue || 0;
+        my $new  = $self->NewValue || 0;
+        my $duration = $new - $old;
+        if ($duration < 0) {
+            return ("Adjusted time worked by [quant,_1,minute,minutes]", $duration);
+        }
+        elsif ($duration < 60) {
+            return ("Worked [quant,_1,minute,minutes]", $duration);
+        } else {
+            return ("Worked [quant,_1,hour,hours] ([numf,_2] minutes)", sprintf("%.1f", $duration / 60), $duration);
         }
     },
     PurgeTransaction => sub {
@@ -1170,11 +1205,7 @@ sub TicketObj {
 
 sub OldValue {
     my $self = shift;
-    if ( my $type = $self->__Value('ReferenceType')
-         and my $id = $self->__Value('OldReference') )
-    {
-        my $Object = $type->new($self->CurrentUser);
-        $Object->Load( $id );
+    if ( my $Object = $self->OldReferenceObject ) {
         return $Object->Content;
     }
     else {
@@ -1184,11 +1215,7 @@ sub OldValue {
 
 sub NewValue {
     my $self = shift;
-    if ( my $type = $self->__Value('ReferenceType')
-         and my $id = $self->__Value('NewReference') )
-    {
-        my $Object = $type->new($self->CurrentUser);
-        $Object->Load( $id );
+    if ( my $Object = $self->NewReferenceObject ) {
         return $Object->Content;
     }
     else {
@@ -1201,6 +1228,37 @@ sub Object {
     my $Object = $self->__Value('ObjectType')->new($self->CurrentUser);
     $Object->Load($self->__Value('ObjectId'));
     return $Object;
+}
+
+=head2 NewReferenceObject
+
+=head2 OldReferenceObject
+
+Returns an object of the class specified by the column C<ReferenceType> and
+loaded with the id specified by the column C<NewReference> or C<OldReference>.
+C<ReferenceType> is assumed to be an L<RT::Record> subclass.
+
+The object may be unloaded (check C<< $object->id >>) if the reference is
+corrupt (such as if the referenced record was improperly deleted).
+
+Returns undef if either C<ReferenceType> or C<NewReference>/C<OldReference> is
+false.
+
+=cut
+
+sub NewReferenceObject { $_[0]->_ReferenceObject("New") }
+sub OldReferenceObject { $_[0]->_ReferenceObject("Old") }
+
+sub _ReferenceObject {
+    my $self  = shift;
+    my $which = shift;
+    my $type  = $self->__Value("ReferenceType");
+    my $id    = $self->__Value("${which}Reference");
+    return unless $type and $id;
+
+    my $object = $type->new($self->CurrentUser);
+    $object->Load( $id );
+    return $object;
 }
 
 sub FriendlyObjectType {
@@ -1232,8 +1290,7 @@ sub UpdateCustomFields {
     # while giving us something saner.
     my $args;
     if ($args{'ARGSRef'}) {
-        # XXX: deprecated, remove in 4.4
-        $RT::Logger->warning("Passing an ARGSRef to UpdateCustomFields is deprecated, and will be removed in RT 4.4; pass its contents instead");
+        RT->Deprecated( Arguments => "ARGSRef", Remove => "4.4" );
         $args = $args{ARGSRef};
     } else {
         $args = \%args;
@@ -1243,7 +1300,7 @@ sub UpdateCustomFields {
         next
           unless ( $arg =~
             /^(?:Object-RT::Transaction--)?CustomField-(\d+)/ );
-	next if $arg =~ /-Magic$/;
+        next if $arg =~ /-Magic$/;
         my $cfid   = $1;
         my $values = $args->{$arg};
         foreach
@@ -1654,33 +1711,33 @@ sub _CoreAccessible {
     {
 
         id =>
-		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+                {read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         ObjectType =>
-		{read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
+                {read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
         ObjectId =>
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+                {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         TimeTaken =>
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+                {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Type =>
-		{read => 1, write => 1, sql_type => 12, length => 20,  is_blob => 0,  is_numeric => 0,  type => 'varchar(20)', default => ''},
+                {read => 1, write => 1, sql_type => 12, length => 20,  is_blob => 0,  is_numeric => 0,  type => 'varchar(20)', default => ''},
         Field =>
-		{read => 1, write => 1, sql_type => 12, length => 40,  is_blob => 0,  is_numeric => 0,  type => 'varchar(40)', default => ''},
+                {read => 1, write => 1, sql_type => 12, length => 40,  is_blob => 0,  is_numeric => 0,  type => 'varchar(40)', default => ''},
         OldValue =>
-		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
+                {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         NewValue =>
-		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
+                {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         ReferenceType =>
-		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
+                {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         OldReference =>
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+                {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         NewReference =>
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+                {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         Data =>
-		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
+                {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         Creator =>
-		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+                {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Created =>
-		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+                {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
 
  }
 };

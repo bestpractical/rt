@@ -1,0 +1,6 @@
+UPDATE Transactions
+SET TimeTaken = (
+    (CASE WHEN NewValue~E'^-?\\d+$' THEN NewValue::integer ELSE 0 END)
+    - OldValue::integer
+)
+WHERE ObjectType = 'RT::Ticket' AND Type = 'Set' AND Field = 'TimeWorked';

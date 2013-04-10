@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -51,10 +51,9 @@ package RT::ObjectCustomFieldValues;
 use strict;
 use warnings;
 
+use base 'RT::SearchBuilder';
 
 use RT::ObjectCustomFieldValue;
-
-use base 'RT::SearchBuilder';
 
 sub Table { 'ObjectCustomFieldValues'}
 
@@ -63,12 +62,12 @@ sub _Init {
 
   # By default, order by SortOrder
   $self->OrderByCols(
-	 { ALIAS => 'main',
-	   FIELD => 'SortOrder',
-	   ORDER => 'ASC' },
-	 { ALIAS => 'main',
-	   FIELD => 'id',
-	   ORDER => 'ASC' },
+         { ALIAS => 'main',
+           FIELD => 'SortOrder',
+           ORDER => 'ASC' },
+         { ALIAS => 'main',
+           FIELD => 'id',
+           ORDER => 'ASC' },
      );
 
     return ( $self->SUPER::_Init(@_) );

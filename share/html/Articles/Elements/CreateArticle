@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,13 +45,13 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/TitleBoxStart, title => loc('Create an article') &>
+<& /Widgets/TitleBoxStart, title => loc('Create an article') &>
 <ul>
 % while (my $Class = $Classes->Next) {
 <li><a href="Article/Edit.html?Class=<%$Class->Id%>"><%$Class->Name%></a></li> 
 % } 
 </ul>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 <%init>
 my $Classes = RT::Classes->new($session{'CurrentUser'});
 $Classes->LimitToEnabled;

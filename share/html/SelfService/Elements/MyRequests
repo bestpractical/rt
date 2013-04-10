@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,15 +47,15 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => $title &>
 <& /Elements/CollectionList, Title   => $title,
-			 Format  => $Format, 
-			 Query   => $Query, 
-			 Order   => @Order, 
-			 OrderBy => @OrderBy,
-			 BaseURL => $BaseURL,
-			 AllowSorting => 1,
-			 Class   => 'RT::Tickets',
-             Rows    => $Rows,
-			 Page    => $Page &>
+  Format  => $Format,
+  Query   => $Query,
+  Order   => @Order,
+  OrderBy => @OrderBy,
+  BaseURL => $BaseURL,
+  AllowSorting => 1,
+  Class   => 'RT::Tickets',
+  Rows    => $Rows,
+  Page    => $Page &>
 </&>
 
 <%INIT>

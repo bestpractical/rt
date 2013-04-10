@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -55,16 +55,16 @@ use warnings;
 
 RT::Action::RecordCorrespondence - An Action which can be used from an
 external tool, or in any situation where a ticket transaction has not
-been started, to make a comment on the ticket.
+been started, to create a correspondence on the ticket.
 
 =head1 SYNOPSIS
 
-my $action_obj = RT::Action::RecordCorrespondence->new(
-			'TicketObj'   => $ticket_obj,
-			'TemplateObj' => $template_obj,
-			);
-my $result = $action_obj->Prepare();
-$action_obj->Commit() if $result;
+    my $action_obj = RT::Action::RecordCorrespondence->new(
+        'TicketObj'   => $ticket_obj,
+        'TemplateObj' => $template_obj,
+    );
+    my $result = $action_obj->Prepare();
+    $action_obj->Commit() if $result;
 
 =head1 METHODS
 
@@ -80,8 +80,8 @@ will give us a loop.
 sub Prepare {
     my $self = shift;
     if (defined $self->{'TransactionObj'} &&
-	$self->{'TransactionObj'}->Type =~ /^(Comment|Correspond)$/) {
-	return undef;
+        $self->{'TransactionObj'}->Type =~ /^(Comment|Correspond)$/) {
+        return undef;
     }
     return 1;
 }
@@ -104,14 +104,14 @@ sub CreateTransaction {
     my $self = shift;
 
     my ($result, $msg) = $self->{'TemplateObj'}->Parse(
-	TicketObj => $self->{'TicketObj'});
+        TicketObj => $self->{'TicketObj'});
     return undef unless $result;
-    
+
     my ($trans, $desc, $transaction) = $self->{'TicketObj'}->Correspond(
-	MIMEObj => $self->TemplateObj->MIMEObj);
+        MIMEObj => $self->TemplateObj->MIMEObj);
     $self->{'TransactionObj'} = $transaction;
 }
-    
+
 
 RT::Base->_ImportOverlays();
 

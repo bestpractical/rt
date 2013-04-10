@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -350,11 +350,10 @@ sub LoadTicketRoleGroup {
         Type => undef,
         @_,
     );
-    RT->Logger->warn(<<"    .");
-RT::Group->LoadTicketRoleGroup is DEPRECATED and will be removed in a future release.
-
-Please use RT::Group->LoadRoleGroup or RT::Ticket->RoleGroup instead at @{[join '/', caller]}.
-    .
+    RT->Deprecated(
+        Instead => "RT::Group->LoadRoleGroup or RT::Ticket->RoleGroup",
+        Remove => "4.4",
+    );
     $self->LoadByCols(
         Domain   => 'RT::Ticket-Role',
         Instance => $args{'Ticket'},
@@ -377,11 +376,10 @@ sub LoadQueueRoleGroup {
         Type => undef,
         @_,
     );
-    RT->Logger->warn(<<"    .");
-RT::Group->LoadQueueRoleGroup is DEPRECATED and will be removed in a future release.
-
-Please use RT::Group->LoadRoleGroup or RT::Queue->RoleGroup instead at @{[join '/', caller]}.
-    .
+    RT->Deprecated(
+        Instead => "RT::Group->LoadRoleGroup or RT::Queue->RoleGroup",
+        Remove => "4.4",
+    );
     $self->LoadByCols(
         Domain   => 'RT::Queue-Role',
         Instance => $args{'Queue'},
@@ -400,11 +398,10 @@ Deprecated in favor of L</LoadRoleGroup> or L<RT::Record/RoleGroup>.
 sub LoadSystemRoleGroup {
     my $self = shift;
     my $type = shift;
-    RT->Logger->warn(<<"    .");
-RT::Group->LoadSystemRoleGroup is DEPRECATED and will be removed in a future release.
-
-Please use RT::Group->LoadRoleGroup or RT::System->RoleGroup instead at @{[join '/', caller]}.
-    .
+    RT->Deprecated(
+        Instead => "RT::Group->LoadRoleGroup or RT::System->RoleGroup",
+        Remove => "4.4",
+    );
     $self->LoadByCols(
         Domain => 'RT::System-Role',
         Type => $type
@@ -558,8 +555,9 @@ sub _ValidateUserDefinedName {
 
     my $dupcheck = RT::Group->new(RT->SystemUser);
     $dupcheck->LoadUserDefinedGroup($value);
-    return (0, $self->loc("Group name '[_1]' is already in use", $value))
-        if $dupcheck->id;
+    if ( $dupcheck->id && ( !$self->id || $self->id != $dupcheck->id ) ) {
+        return ( 0, $self->loc( "Group name '[_1]' is already in use", $value ) );
+    }
     return 1;
 }
 
@@ -712,6 +710,7 @@ sub RoleClass {
     my $self = shift;
     my $domain = shift || $self->Domain;
     return unless $domain =~ /^(.+)-Role$/;
+    return unless $1->DOES("RT::Record::Role::Roles");
     return $1;
 }
 
@@ -729,7 +728,7 @@ sub ValidateRoleGroup {
     return 0 unless $args{Domain} and $args{Type};
 
     my $class = $self->RoleClass($args{Domain});
-    return 0 unless $class and $class->can('HasRole');
+    return 0 unless $class;
 
     return $class->HasRole($args{Type});
 }
@@ -742,15 +741,17 @@ sub SingleMemberRoleGroup {
     my $self = shift;
     my $class = $self->RoleClass;
     return unless $class;
-    return $class->_ROLES->{$self->Type}{Single};
+    return $class->Role($self->Type)->{Single};
 }
 
 sub SingleMemberRoleGroupColumn {
     my $self = shift;
     my ($class) = $self->Domain =~ /^(.+)-Role$/;
     return unless $class;
-    return unless $class->_ROLES->{$self->Type}{Class} eq $class;
-    return $class->_ROLES->{$self->Type}{Column};
+
+    my $role = $class->Role($self->Type);
+    return unless $role->{Class} eq $class;
+    return $role->{Column};
 }
 
 sub RoleGroupObject {
@@ -1030,8 +1031,8 @@ sub AddMember {
     # to modify group membership or the user is the principal in question
     # and the user has the right to modify his own membership
     unless ( ($new_member == $self->CurrentUser->PrincipalId &&
-	      $self->CurrentUserHasRight('ModifyOwnMembership') ) ||
-	      $self->CurrentUserHasRight('AdminGroupMembership') ) {
+              $self->CurrentUserHasRight('ModifyOwnMembership') ) ||
+              $self->CurrentUserHasRight('AdminGroupMembership') ) {
         #User has no permission to be doing this
         return ( 0, $self->loc("Permission Denied") );
     }
@@ -1043,7 +1044,7 @@ sub AddMember {
 # this should _ONLY_ ever be called from Ticket/Queue AddWatcher
 # when we want to deal with groups according to queue rights
 # In the dim future, this will all get factored out and life
-# will get better	
+# will get better
 
 # takes a paramhash of { PrincipalId => undef, InsideTransaction }
 
@@ -1053,6 +1054,11 @@ sub _AddMember {
                  InsideTransaction => undef,
                  RecordTransaction => 1,
                  @_);
+
+    # RecordSetTransaction is used by _DeleteMember to get one txn but not the other
+    $args{RecordSetTransaction} = $args{RecordTransaction}
+        unless exists $args{RecordSetTransaction};
+
     my $new_member = $args{'PrincipalId'};
 
     unless ($self->Id) {
@@ -1100,11 +1106,18 @@ sub _AddMember {
     return(0, $self->loc("Couldn't add member to group"))
         unless $id;
 
-    # Purge all previous members
+    # Purge all previous members (we're a single member role group)
+    my $old_member_id;
     for my $member (@purge) {
+        my $old_member = $member->MemberId;
         my ($ok, $msg) = $member->Delete();
         return(0, $self->loc("Couldn't remove previous member: [_1]", $msg))
             unless $ok;
+
+        # We remove all members in this loop, but there should only ever be one
+        # member.  Keep track of the last one successfully removed for the
+        # SetWatcher transaction below.
+        $old_member_id = $old_member;
     }
 
     # Update the column
@@ -1114,10 +1127,30 @@ sub _AddMember {
             Field    => $col,
             Value    => $new_member_obj->Id,
             CheckACL => 0,                  # don't check acl
-            RecordTransaction => $args{'RecordTransaction'},
+            RecordTransaction => $args{'RecordSetTransaction'},
         );
-        return (0, $self->loc("Could not update column $col: [_1]", $msg))
+        return (0, $self->loc("Could not update column [_1]: [_2]", $col, $msg))
             unless $ok;
+    }
+
+    # Record an Add/SetWatcher txn on the object if we're a role group
+    if ($args{RecordTransaction} and $self->RoleClass) {
+        my $obj = $args{Object} || $self->RoleGroupObject;
+
+        if ($self->SingleMemberRoleGroup) {
+            $obj->_NewTransaction(
+                Type     => 'SetWatcher',
+                OldValue => $old_member_id,
+                NewValue => $new_member_obj->Id,
+                Field    => $self->Type,
+            );
+        } else {
+            $obj->_NewTransaction(
+                Type     => 'AddWatcher', # use "watcher" for history's sake
+                NewValue => $new_member_obj->Id,
+                Field    => $self->Type,
+            );
+        }
     }
 
     return ( 1, $self->loc("Member added: [_1]", $new_member_obj->Object->Name) );
@@ -1216,6 +1249,8 @@ removes that GroupMember from this group.
 Returns a two value array. the first value is true on successful 
 addition or 0 on failure.  The second value is a textual status msg.
 
+Optionally takes a hash of key value flags, such as RecordTransaction.
+
 =cut
 
 sub DeleteMember {
@@ -1228,23 +1263,28 @@ sub DeleteMember {
     # and the user has the right to modify his own membership
 
     unless ( (($member_id == $self->CurrentUser->PrincipalId) &&
-	      $self->CurrentUserHasRight('ModifyOwnMembership') ) ||
-	      $self->CurrentUserHasRight('AdminGroupMembership') ) {
+              $self->CurrentUserHasRight('ModifyOwnMembership') ) ||
+              $self->CurrentUserHasRight('AdminGroupMembership') ) {
         #User has no permission to be doing this
         return ( 0, $self->loc("Permission Denied") );
     }
-    $self->_DeleteMember($member_id);
+    $self->_DeleteMember($member_id, @_);
 }
 
 # A helper subroutine for DeleteMember that bypasses the ACL checks
 # this should _ONLY_ ever be called from Ticket/Queue  DeleteWatcher
 # when we want to deal with groups according to queue rights
 # In the dim future, this will all get factored out and life
-# will get better	
+# will get better
 
 sub _DeleteMember {
     my $self = shift;
     my $member_id = shift;
+    my %args = (
+        RecordTransaction   => 1,
+        @_,
+    );
+
 
     my $member_obj =  RT::GroupMember->new( $self->CurrentUser );
     
@@ -1258,6 +1298,8 @@ sub _DeleteMember {
         return ( 0,$self->loc( "Group has no such member" ));
     }
 
+    my $old_member = $member_obj->MemberId;
+
     #Now that we've checked ACLs and sanity, delete the groupmember
     my $val = $member_obj->Delete();
 
@@ -1266,10 +1308,31 @@ sub _DeleteMember {
         return ( 0, $self->loc("Member not deleted" ));
     }
 
-    $self->_AddMember(
-        PrincipalId => RT->Nobody->Id,
-        RecordTransaction => 0,
-    ) if $self->SingleMemberRoleGroup;
+    if ($self->RoleClass) {
+        my %txn = (
+            OldValue => $old_member,
+            Field    => $self->Type,
+        );
+
+        if ($self->SingleMemberRoleGroup) {
+            # _AddMember creates the Set-Owner txn (for example) but we handle
+            # the SetWatcher-Owner txn below.
+            $self->_AddMember(
+                PrincipalId             => RT->Nobody->Id,
+                RecordTransaction       => 0,
+                RecordSetTransaction    => $args{RecordTransaction},
+            );
+            $txn{Type}     = "SetWatcher";
+            $txn{NewValue} = RT->Nobody->id;
+        } else {
+            $txn{Type} = "DelWatcher";
+        }
+
+        if ($args{RecordTransaction}) {
+            my $obj = $args{Object} || $self->RoleGroupObject;
+            $obj->_NewTransaction(%txn);
+        }
+    }
 
     return ( $val, $self->loc("Member deleted") );
 }
@@ -1281,20 +1344,20 @@ sub _Set {
     my %args = (
         Field => undef,
         Value => undef,
-	TransactionType   => 'Set',
-	RecordTransaction => 1,
+        TransactionType   => 'Set',
+        RecordTransaction => 1,
         @_
     );
 
     unless ( $self->CurrentUserHasRight('AdminGroup') ) {
-      	return ( 0, $self->loc('Permission Denied') );
-	}
+        return ( 0, $self->loc('Permission Denied') );
+        }
 
     my $Old = $self->SUPER::_Value("$args{'Field'}");
-    
+
     my ($ret, $msg) = $self->SUPER::_Set( Field => $args{'Field'},
-					  Value => $args{'Value'} );
-    
+                                          Value => $args{'Value'} );
+
     #If we can't actually set the field to the value, don't record
     # a transaction. instead, get out of here.
     if ( $ret == 0 ) { return ( 0, $msg ); }
@@ -1335,13 +1398,13 @@ sub CurrentUserHasRight {
 
 
 
-    if ($self->Id && 
-		$self->CurrentUser->HasRight( Object => $self,
-										   Right => $right )) {
+    if ($self->Id &&
+                $self->CurrentUser->HasRight( Object => $self,
+                                              Right => $right )) {
         return(1);
-   }
+    }
     elsif ( $self->CurrentUser->HasRight(Object => $RT::System, Right =>  $right )) {
-		return (1);
+        return (1);
     } else {
         return(undef);
     }
@@ -1421,8 +1484,8 @@ sub InstanceObj {
 
 sub BasicColumns {
     (
-	[ Name => 'Name' ],
-	[ Description => 'Description' ],
+        [ Name => 'Name' ],
+        [ Description => 'Description' ],
     );
 }
 
@@ -1581,25 +1644,25 @@ sub _CoreAccessible {
     {
 
         id =>
-		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+                {read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         Name =>
-		{read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => ''},
+                {read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => ''},
         Description =>
-		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
+                {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         Domain =>
-		{read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
+                {read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
         Type =>
-		{read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
+                {read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
         Instance =>
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+                {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         Creator =>
-		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+                {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Created =>
-		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+                {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
         LastUpdatedBy =>
-		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+                {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         LastUpdated =>
-		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+                {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
 
  }
 };

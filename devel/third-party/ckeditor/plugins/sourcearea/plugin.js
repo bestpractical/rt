@@ -1,207 +1,149 @@
-﻿/*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.html or http://ckeditor.com/license
-*/
+﻿/**
+ * @license Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.html or http://ckeditor.com/license
+ */
 
 /**
  * @fileOverview The "sourcearea" plugin. It registers the "source" editing
  *		mode, which displays the raw data being edited in the editor.
  */
 
-CKEDITOR.plugins.add( 'sourcearea',
-{
-	requires : [ 'editingblock' ],
+(function() {
+	CKEDITOR.plugins.add( 'sourcearea', {
+		lang: 'af,ar,bg,bn,bs,ca,cs,cy,da,de,el,en-au,en-ca,en-gb,en,eo,es,et,eu,fa,fi,fo,fr-ca,fr,gl,gu,he,hi,hr,hu,is,it,ja,ka,km,ko,ku,lt,lv,mk,mn,ms,nb,nl,no,pl,pt-br,pt,ro,ru,sk,sl,sr-latn,sr,sv,th,tr,ug,uk,vi,zh-cn,zh', // %REMOVE_LINE_CORE%
+		icons: 'source,source-rtl', // %REMOVE_LINE_CORE%
+		init: function( editor ) {
+			// Source mode isn't available in inline mode yet.
+			if ( editor.elementMode == CKEDITOR.ELEMENT_MODE_INLINE )
+				return;
 
-	init : function( editor )
-	{
-		var sourcearea = CKEDITOR.plugins.sourcearea,
-			win = CKEDITOR.document.getWindow();
+			var sourcearea = CKEDITOR.plugins.sourcearea;
 
-		editor.on( 'editingBlockReady', function()
-			{
-				var textarea,
-					onResize;
+			editor.addMode( 'source', function( callback ) {
+				var contentsSpace = editor.ui.space( 'contents' ),
+					textarea = contentsSpace.getDocument().createElement( 'textarea' );
 
-				editor.addMode( 'source',
-					{
-						load : function( holderElement, data )
-						{
-							if ( CKEDITOR.env.ie && CKEDITOR.env.version < 8 )
-								holderElement.setStyle( 'position', 'relative' );
+				textarea.setStyles(
+					CKEDITOR.tools.extend({
+						// IE7 has overflow the <textarea> from wrapping table cell.
+						width: CKEDITOR.env.ie7Compat ? '99%' : '100%',
+						height: '100%',
+						resize: 'none',
+						outline: 'none',
+						'text-align': 'left'
+					},
+					CKEDITOR.tools.cssVendorPrefix( 'tab-size', editor.config.sourceAreaTabSize || 4 ) ) );
 
-							// Create the source area <textarea>.
-							editor.textarea = textarea = new CKEDITOR.dom.element( 'textarea' );
-							textarea.setAttributes(
-								{
-									dir : 'ltr',
-									tabIndex : CKEDITOR.env.webkit ? -1 : editor.tabIndex,
-									'role' : 'textbox',
-									'aria-label' : editor.lang.editorTitle.replace( '%1', editor.name )
-								});
-							textarea.addClass( 'cke_source' );
-							textarea.addClass( 'cke_enable_context_menu' );
+				textarea.addClass( 'cke_source cke_reset cke_enable_context_menu' );
 
-							var styles =
-							{
-								// IE7 has overflow the <textarea> from wrapping table cell.
-								width	: CKEDITOR.env.ie7Compat ?  '99%' : '100%',
-								height	: '100%',
-								resize	: 'none',
-								outline	: 'none',
-								'text-align' : 'left'
-							};
+				editor.ui.space( 'contents' ).append( textarea );
 
-							// Having to make <textarea> fixed sized to conque the following bugs:
-							// 1. The textarea height/width='100%' doesn't constraint to the 'td' in IE6/7.
-							// 2. Unexpected vertical-scrolling behavior happens whenever focus is moving out of editor
-							// if text content within it has overflowed. (#4762)
-							if ( CKEDITOR.env.ie )
-							{
-								onResize = function()
-								{
-									// Holder rectange size is stretched by textarea,
-									// so hide it just for a moment.
-									textarea.hide();
-									textarea.setStyle( 'height', holderElement.$.clientHeight + 'px' );
-									textarea.setStyle( 'width', holderElement.$.clientWidth + 'px' );
-									// When we have proper holder size, show textarea again.
-									textarea.show();
-								};
+				var editable = editor.editable( new sourceEditable( editor, textarea ) );
 
-								editor.on( 'resize', onResize );
-								win.on( 'resize', onResize );
-								setTimeout( onResize, 0 );
-							}
-							else
-							{
-								// By some yet unknown reason, we must stop the
-								// mousedown propagation for the textarea,
-								// otherwise it's not possible to place the caret
-								// inside of it (non IE).
-								textarea.on( 'mousedown', function( evt )
-									{
-										evt.data.stopPropagation();
-									} );
-							}
+				// Fill the textarea with the current editor data.
+				editable.setData( editor.getData( 1 ) );
 
-							// Reset the holder element and append the
-							// <textarea> to it.
-							holderElement.setHtml( '' );
-							holderElement.append( textarea );
-							textarea.setStyles( styles );
+				// Having to make <textarea> fixed sized to conquer the following bugs:
+				// 1. The textarea height/width='100%' doesn't constraint to the 'td' in IE6/7.
+				// 2. Unexpected vertical-scrolling behavior happens whenever focus is moving out of editor
+				// if text content within it has overflowed. (#4762)
+				if ( CKEDITOR.env.ie ) {
+					editable.attachListener( editor, 'resize', onResize, editable );
+					editable.attachListener( CKEDITOR.document.getWindow(), 'resize', onResize, editable );
+					CKEDITOR.tools.setTimeout( onResize, 0, editable );
+				}
 
-							editor.fire( 'ariaWidget', textarea );
+				editor.fire( 'ariaWidget', this );
 
-							textarea.on( 'blur', function()
-								{
-									editor.focusManager.blur();
-								});
-
-							textarea.on( 'focus', function()
-								{
-									editor.focusManager.focus();
-								});
-
-							// The editor data "may be dirty" after this point.
-							editor.mayBeDirty = true;
-
-							// Set the <textarea> value.
-							this.loadData( data );
-
-							var keystrokeHandler = editor.keystrokeHandler;
-							if ( keystrokeHandler )
-								keystrokeHandler.attach( textarea );
-
-							setTimeout( function()
-							{
-								editor.mode = 'source';
-								editor.fire( 'mode' );
-							},
-							( CKEDITOR.env.gecko || CKEDITOR.env.webkit ) ? 100 : 0 );
-						},
-
-						loadData : function( data )
-						{
-							textarea.setValue( data );
-							editor.fire( 'dataReady' );
-						},
-
-						getData : function()
-						{
-							return textarea.getValue();
-						},
-
-						getSnapshotData : function()
-						{
-							return textarea.getValue();
-						},
-
-						unload : function( holderElement )
-						{
-							textarea.clearCustomData();
-							editor.textarea = textarea = null;
-
-							if ( onResize )
-							{
-								editor.removeListener( 'resize', onResize );
-								win.removeListener( 'resize', onResize );
-							}
-
-							if ( CKEDITOR.env.ie && CKEDITOR.env.version < 8 )
-								holderElement.removeStyle( 'position' );
-						},
-
-						focus : function()
-						{
-							textarea.focus();
-						}
-					});
+				callback();
 			});
 
-		editor.addCommand( 'source', sourcearea.commands.source );
+			editor.addCommand( 'source', sourcearea.commands.source );
 
-		if ( editor.ui.addButton )
-		{
-			editor.ui.addButton( 'Source',
-				{
-					label : editor.lang.source,
-					command : 'source'
+			if ( editor.ui.addButton ) {
+				editor.ui.addButton( 'Source', {
+					label: editor.lang.sourcearea.toolbar,
+					command: 'source',
+					toolbar: 'mode,10'
 				});
-		}
+			}
 
-		editor.on( 'mode', function()
-			{
-				editor.getCommand( 'source' ).setState(
-					editor.mode == 'source' ?
-						CKEDITOR.TRISTATE_ON :
-						CKEDITOR.TRISTATE_OFF );
+			editor.on( 'mode', function() {
+				editor.getCommand( 'source' ).setState( editor.mode == 'source' ? CKEDITOR.TRISTATE_ON : CKEDITOR.TRISTATE_OFF );
 			});
-	}
-});
 
-/**
- * Holds the definition of commands an UI elements included with the sourcearea
- * plugin.
- * @example
- */
-CKEDITOR.plugins.sourcearea =
-{
-	commands :
-	{
-		source :
-		{
-			modes : { wysiwyg:1, source:1 },
-			editorFocus : false,
+			function onResize() {
+				// Holder rectange size is stretched by textarea,
+				// so hide it just for a moment.
+				this.hide();
+				this.setStyle( 'height', this.getParent().$.clientHeight + 'px' );
+				this.setStyle( 'width', this.getParent().$.clientWidth + 'px' );
+				// When we have proper holder size, show textarea again.
+				this.show();
+			}
+		}
+	});
 
-			exec : function( editor )
-			{
+	var sourceEditable = CKEDITOR.tools.createClass({
+		base: CKEDITOR.editable,
+		proto: {
+			setData: function( data ) {
+				this.setValue( data );
+				this.editor.fire( 'dataReady' );
+			},
+
+			getData: function() {
+				return this.getValue();
+			},
+
+			// Insertions are not supported in source editable.
+			insertHtml: function() {},
+			insertElement: function() {},
+			insertText: function() {},
+
+			// Read-only support for textarea.
+			setReadOnly: function( isReadOnly ) {
+				this[ ( isReadOnly ? 'set' : 'remove' ) + 'Attribute' ]( 'readOnly', 'readonly' );
+			},
+
+			detach: function() {
+				sourceEditable.baseProto.detach.call( this );
+				this.clearCustomData();
+				this.remove();
+			}
+		}
+	});
+})();
+
+CKEDITOR.plugins.sourcearea = {
+	commands: {
+		source: {
+			modes: { wysiwyg:1,source:1 },
+			editorFocus: false,
+			readOnly: 1,
+			exec: function( editor ) {
 				if ( editor.mode == 'wysiwyg' )
 					editor.fire( 'saveSnapshot' );
 				editor.getCommand( 'source' ).setState( CKEDITOR.TRISTATE_DISABLED );
 				editor.setMode( editor.mode == 'source' ? 'wysiwyg' : 'source' );
 			},
 
-			canUndo : false
+			canUndo: false
 		}
 	}
 };
+
+/**
+ * Controls CSS tab-size property of the sourcearea view.
+ *
+ * **Note:** Works only with {@link #dataIndentationChars}
+ * set to `'\t'`. Please consider that not all browsers support CSS
+ * `tab-size` property yet.
+ *
+ *		// Set tab-size to 20 characters.
+ *		CKEDITOR.config.sourceAreaTabSize = 20;
+ *
+ * @cfg {Number} [sourceAreaTabSize=4]
+ * @member CKEDITOR.config
+ * @see CKEDITOR.config#dataIndentationChars
+ */

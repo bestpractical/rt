@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -151,33 +151,17 @@ sub Create {
                  @_ );
 
     my $base = RT::URI->new( $self->CurrentUser );
-    $base->FromURI( $args{'Base'} );
-
-    unless ( $base->Resolver && $base->Scheme ) {
-	my $msg = $self->loc("Couldn't resolve base '[_1]' into a URI.", 
-			     $args{'Base'});
+    unless ($base->FromURI( $args{'Base'} )) {
+        my $msg = $self->loc("Couldn't resolve base '[_1]' into a URI.", $args{'Base'});
         $RT::Logger->warning( "$self $msg" );
-
-	if (wantarray) {
-	    return(undef, $msg);
-	} else {
-	    return (undef);
-	}
+        return wantarray ? (undef, $msg) : undef;
     }
 
     my $target = RT::URI->new( $self->CurrentUser );
-    $target->FromURI( $args{'Target'} );
-
-    unless ( $target->Resolver ) {
-	my $msg = $self->loc("Couldn't resolve target '[_1]' into a URI.", 
-			     $args{'Target'});
+    unless ($target->FromURI( $args{'Target'} )) {
+        my $msg = $self->loc("Couldn't resolve target '[_1]' into a URI.", $args{'Target'});
         $RT::Logger->warning( "$self $msg" );
-
-	if (wantarray) {
-	    return(undef, $msg);
-	} else {
-	    return (undef);
-	}
+        return wantarray ? (undef, $msg) : undef;
     }
 
     my $base_id   = 0;
@@ -241,22 +225,21 @@ sub LoadByParams {
                  @_ );
 
     my $base = RT::URI->new($self->CurrentUser);
-    $base->FromURI( $args{'Base'} );
+    $base->FromURI( $args{'Base'} )
+        or return (0, $self->loc("Couldn't parse Base URI: [_1]", $args{Base}));
 
     my $target = RT::URI->new($self->CurrentUser);
-    $target->FromURI( $args{'Target'} );
-    
-    unless ($base->Resolver && $target->Resolver) {
-        return ( 0, $self->loc("Couldn't load link") );
-    }
-
+    $target->FromURI( $args{'Target'} )
+        or return (0, $self->loc("Couldn't parse Target URI: [_1]", $args{Target}));
 
     my ( $id, $msg ) = $self->LoadByCols( Base   => $base->URI,
                                           Type   => $args{'Type'},
                                           Target => $target->URI );
 
     unless ($id) {
-        return ( 0, $self->loc("Couldn't load link") );
+        return ( 0, $self->loc("Couldn't load link: [_1]", $msg) );
+    } else {
+        return ($id, $msg);
     }
 }
 
@@ -477,25 +460,25 @@ sub _CoreAccessible {
     {
 
         id =>
-		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+                {read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         Base =>
-		{read => 1, write => 1, sql_type => 12, length => 240,  is_blob => 0,  is_numeric => 0,  type => 'varchar(240)', default => ''},
+                {read => 1, write => 1, sql_type => 12, length => 240,  is_blob => 0,  is_numeric => 0,  type => 'varchar(240)', default => ''},
         Target =>
-		{read => 1, write => 1, sql_type => 12, length => 240,  is_blob => 0,  is_numeric => 0,  type => 'varchar(240)', default => ''},
+                {read => 1, write => 1, sql_type => 12, length => 240,  is_blob => 0,  is_numeric => 0,  type => 'varchar(240)', default => ''},
         Type =>
-		{read => 1, write => 1, sql_type => 12, length => 20,  is_blob => 0,  is_numeric => 0,  type => 'varchar(20)', default => ''},
+                {read => 1, write => 1, sql_type => 12, length => 20,  is_blob => 0,  is_numeric => 0,  type => 'varchar(20)', default => ''},
         LocalTarget =>
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+                {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         LocalBase =>
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+                {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         LastUpdatedBy =>
-		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+                {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         LastUpdated =>
-		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+                {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
         Creator =>
-		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+                {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Created =>
-		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+                {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
 
  }
 };

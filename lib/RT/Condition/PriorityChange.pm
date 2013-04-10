@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -62,10 +62,10 @@ the Priority Obj
 sub IsApplicable {
     my $self = shift;
     if ($self->TransactionObj->Field eq 'Priority') {
-	return(1);
-    } 
+        return(1);
+    }
     else {
-	return(undef);
+        return(undef);
     }
 }
 

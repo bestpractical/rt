@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -70,10 +70,10 @@ my @lines = (
             Type => 'component',
             Path => '/Elements/SelectBoolean',
             Arguments => {
-			    True => loc("matches"), 
-			    False => loc("doesn't match"), 
-			    TrueVal => 'LIKE',
-			    FalseVal => 'NOT LIKE',
+                True => loc("matches"), 
+                False => loc("doesn't match"), 
+                TrueVal => 'LIKE',
+                FalseVal => 'NOT LIKE',
             },
         },
         Value => { Type => 'text', Size => 20 },
@@ -89,7 +89,7 @@ my @lines = (
         Value => {
             Type => 'component',
             Path => '/Elements/SelectQueue',
-            Arguments => { NamedValues => 1, CheckQueueRight => 'ShowTicket' },
+            Arguments => { NamedValues => 1, },
         },
     },
     {

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-$RT::Logger->warning("DEPRECATED: use /Elements/EditCustomFields");
+RT->Deprecated( Remove => "4.4", Instead => "/Elements/EditCustomFields" );
 
 my $CustomFields;
 if ($TicketObj && !$OnCreate) {

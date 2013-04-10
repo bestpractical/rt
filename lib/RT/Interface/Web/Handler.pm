@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -210,11 +210,46 @@ sub HTML::Mason::Exception::as_rt_error {
     return "An internal RT error has occurred.  Your administrator can find more details in RT's log files.";
 }
 
+=head1 CheckModPerlHandler
+
+Make sure we're not running with SetHandler perl-script.
+
+=cut
+
+sub CheckModPerlHandler{
+    my $self = shift;
+    my $env = shift;
+
+    # Plack::Handler::Apache2 masks MOD_PERL, so use MOD_PERL_API_VERSION
+    return unless( $env->{'MOD_PERL_API_VERSION'}
+                   and $env->{'MOD_PERL_API_VERSION'} == 2);
+
+    my $handler = $env->{'psgi.input'}->handler;
+
+    return unless defined $handler && $handler eq 'perl-script';
+
+    $RT::Logger->critical(<<MODPERL);
+RT has problems when SetHandler is set to perl-script.
+Change SetHandler in your in httpd.conf to:
+
+    SetHandler modperl
+
+For a complete example mod_perl configuration, see:
+
+https://bestpractical.com/rt/docs/@{[$RT::VERSION =~ /^(\d\.\d)/]}/web_deployment.html#mod_perl-2.xx
+MODPERL
+
+    my $res = Plack::Response->new(500);
+    $res->content_type("text/plain");
+    $res->body("Server misconfiguration; see error log for details");
+    return $res;
+}
 
 # PSGI App
 
 use RT::Interface::Web::Handler;
 use CGI::Emulate::PSGI;
+use Plack::Builder;
 use Plack::Request;
 use Plack::Response;
 use Plack::Util;
@@ -230,8 +265,14 @@ sub PSGIApp {
 
     $self->InitSessionDir;
 
-    return sub {
+    my $mason = sub {
         my $env = shift;
+
+        {
+            my $res = $self->CheckModPerlHandler($env);
+            return $self->_psgi_response_cb( $res->finalize ) if $res;
+        }
+
         RT::ConnectToDatabase() unless RT->InstallMode;
 
         my $req = Plack::Request->new($env);
@@ -269,7 +310,45 @@ sub PSGIApp {
                                         sub {
                                             $self->CleanupRequest()
                                         });
-};
+    };
+    return $self->StaticWrap($mason);
+}
+
+sub StaticWrap {
+    my $self    = shift;
+    my $app     = shift;
+    my $builder = Plack::Builder->new;
+
+    for my $static ( RT->Config->Get('StaticRoots') ) {
+        if ( ref $static && ref $static eq 'HASH' ) {
+            $builder->add_middleware(
+                'Plack::Middleware::Static',
+                pass_through => 1,
+                %$static
+            );
+        }
+        else {
+            $RT::Logger->error(
+                "Invalid config StaticRoots: item can only be a hashref" );
+        }
+    }
+
+    my @system_static;
+    for my $plugin ( @{RT->Plugins} ) {
+        my $dir = $plugin->StaticDir;
+        push @system_static, $dir if -d $dir;
+    }
+    push @system_static, $RT::LocalStaticPath, $RT::StaticPath;
+    for my $root (grep {$_ and -d $_} @system_static) {
+        $builder->add_middleware(
+            'Plack::Middleware::Static',
+            path         => sub { s!^/static/!! },
+            root         => $root,
+            pass_through => 1,
+        );
+    }
+    return $builder->to_app($app);
+}
 
 sub _psgi_response_cb {
     my $self = shift;
@@ -293,7 +372,6 @@ sub _psgi_response_cb {
                      return $_[0];
                  };
              });
-    }
 }
 
 1;

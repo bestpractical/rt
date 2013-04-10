@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -63,9 +63,9 @@ $False => loc("isn't")
 my $TrueDefault  = '';
 my $FalseDefault = '';
 if ($Default && $Default !~ /true/i) {
-	$FalseDefault = 'selected="selected"';
+    $FalseDefault = 'selected="selected"';
 }
 else {
-	$TrueDefault = 'selected="selected"';
+    $TrueDefault = 'selected="selected"';
 }
 </%INIT>

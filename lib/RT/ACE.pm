@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -71,14 +71,16 @@ sub Table {'ACL'}
 use strict;
 use warnings;
 
-use RT::Principals;
-use RT::Queues;
-use RT::Groups;
+require RT::Principals;
+require RT::Queues;
+require RT::Groups;
 
 use vars qw (
   %LOWERCASERIGHTNAMES
   %OBJECT_TYPES
 );
+
+my (@_ACL_CACHE_HANDLERS);
 
 
 
@@ -95,16 +97,16 @@ Load an ACE by specifying a paramhash with the following fields:
 
               PrincipalId => undef,
               PrincipalType => undef,
-	      RightName => undef,
+              RightName => undef,
 
         And either:
 
-	      Object => undef,
+              Object => undef,
 
             OR
 
-	      ObjectType => undef,
-	      ObjectId => undef
+              ObjectType => undef,
+              ObjectId => undef
 
 =cut
 
@@ -139,7 +141,7 @@ sub LoadByValues {
 
     my ($object, $object_type, $object_id) = $self->_ParseObjectArg( %args );
     unless( $object ) {
-	return ( 0, $self->loc("System error. Right not granted.") );
+        return ( 0, $self->loc("System error. Right not granted.") );
     }
 
     $self->LoadByCols( PrincipalId   => $princ_obj->Id,
@@ -207,7 +209,7 @@ sub Create {
     }
     ($args{'Object'}, $args{'ObjectType'}, $args{'ObjectId'}) = $self->_ParseObjectArg( %args );
     unless( $args{'Object'} ) {
-	return ( 0, $self->loc("System error. Right not granted.") );
+        return ( 0, $self->loc("System error. Right not granted.") );
     }
 
     # Validate the principal
@@ -280,10 +282,12 @@ sub Create {
                                    ObjectId      => $args{'Object'}->id,
                                );
 
-    #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
-    RT::Principal->InvalidateACLCache();
-
     if ( $id ) {
+        RT::ACE->InvalidateCaches(
+            Action      => "Grant",
+            RightName   => $self->RightName,
+            ACE         => $self,
+        );
         return ( $id, $self->loc('Right Granted') );
     }
     else {
@@ -328,12 +332,12 @@ sub _Delete {
 
     $RT::Handle->BeginTransaction() unless $InsideTransaction;
 
+    my $right = $self->RightName;
+
     my ( $val, $msg ) = $self->SUPER::Delete(@_);
 
     if ($val) {
-	#Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
-	# TODO what about the groups key cache?
-	RT::Principal->InvalidateACLCache();
+        RT::ACE->InvalidateCaches( Action => "Revoke", RightName => $right );
         $RT::Handle->Commit() unless $InsideTransaction;
         return ( $val, $self->loc('Right revoked') );
     }
@@ -380,7 +384,67 @@ sub _BootstrapCreate {
 
 }
 
+=head2 InvalidateCaches
 
+Calls any registered ACL cache handlers (see L</RegisterCacheHandler>).
+
+Usually called from L</Create> and L</Delete>.
+
+=cut
+
+sub InvalidateCaches {
+    my $class = shift;
+
+    for my $handler (@_ACL_CACHE_HANDLERS) {
+        next unless ref($handler) eq "CODE";
+        $handler->(@_);
+    }
+}
+
+=head2 RegisterCacheHandler
+
+Class method.  Takes a coderef and adds it to the ACL cache handlers.  These
+handlers are called by L</InvalidateCaches>, usually called itself from
+L</Create> and L</Delete>.
+
+The handlers are passed a hash which may contain any (or none) of these
+optional keys:
+
+=over
+
+=item Action
+
+A string indicating the action that (may have) invalidated the cache.  Expected
+values are currently:
+
+=over
+
+=item Grant
+
+=item Revoke
+
+=back
+
+However, other values may be passed in the future.
+
+=item RightName
+
+The (canonicalized) right being granted or revoked.
+
+=item ACE
+
+The L<RT::ACE> object just created.
+
+=back
+
+Your handler should be flexible enough to account for additional arguments
+being passed in the future.
+
+=cut
+
+sub RegisterCacheHandler {
+    push @_ACL_CACHE_HANDLERS, $_[1];
+}
 
 sub RightName {
     my $self = shift;
@@ -547,21 +611,21 @@ sub _ParseObjectArg {
                  @_ );
 
     if( $args{'Object'} && ($args{'ObjectId'} || $args{'ObjectType'}) ) {
-	$RT::Logger->crit( "Method called with an ObjectType or an ObjectId and Object args" );
-	return ();
+        $RT::Logger->crit( "Method called with an ObjectType or an ObjectId and Object args" );
+        return ();
     } elsif( $args{'Object'} && ref($args{'Object'}) &&  !$args{'Object'}->can('id') ) {
-	$RT::Logger->crit( "Method called called Object that has no id method" );
-	return ();
+        $RT::Logger->crit( "Method called called Object that has no id method" );
+        return ();
     } elsif( $args{'Object'} ) {
-	my $obj = $args{'Object'};
-	return ($obj, ref $obj, $obj->id);
+        my $obj = $args{'Object'};
+        return ($obj, ref $obj, $obj->id);
     } elsif ( $args{'ObjectType'} ) {
-	my $obj =  $args{'ObjectType'}->new( $self->CurrentUser );
-	$obj->Load( $args{'ObjectId'} );
-	return ($obj, ref $obj, $obj->id);
+        my $obj =  $args{'ObjectType'}->new( $self->CurrentUser );
+        $obj->Load( $args{'ObjectId'} );
+        return ($obj, ref $obj, $obj->id);
     } else {
-	$RT::Logger->crit( "Method called with wrong args" );
-	return ();
+        $RT::Logger->crit( "Method called with wrong args" );
+        return ();
     }
 }
 
@@ -706,25 +770,25 @@ sub _CoreAccessible {
     {
 
         id =>
-		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+                {read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         PrincipalType =>
-		{read => 1, write => 1, sql_type => 12, length => 25,  is_blob => 0,  is_numeric => 0,  type => 'varchar(25)', default => ''},
+                {read => 1, write => 1, sql_type => 12, length => 25,  is_blob => 0,  is_numeric => 0,  type => 'varchar(25)', default => ''},
         PrincipalId =>
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+                {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         RightName =>
-		{read => 1, write => 1, sql_type => 12, length => 25,  is_blob => 0,  is_numeric => 0,  type => 'varchar(25)', default => ''},
+                {read => 1, write => 1, sql_type => 12, length => 25,  is_blob => 0,  is_numeric => 0,  type => 'varchar(25)', default => ''},
         ObjectType =>
-		{read => 1, write => 1, sql_type => 12, length => 25,  is_blob => 0,  is_numeric => 0,  type => 'varchar(25)', default => ''},
+                {read => 1, write => 1, sql_type => 12, length => 25,  is_blob => 0,  is_numeric => 0,  type => 'varchar(25)', default => ''},
         ObjectId =>
-		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+                {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Creator =>
-		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+                {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Created =>
-		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+                {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
         LastUpdatedBy =>
-		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+                {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         LastUpdated =>
-		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+                {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
 
  }
 };

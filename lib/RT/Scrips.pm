@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -69,10 +69,10 @@ package RT::Scrips;
 use strict;
 use warnings;
 
+use base 'RT::SearchBuilder';
+
 use RT::Scrip;
 use RT::ObjectScrips;
-
-use base 'RT::SearchBuilder';
 
 sub Table { 'Scrips'}
 
@@ -245,28 +245,28 @@ sub ApplySortOrder {
 Returns the next scrip that this user can see.
 
 =cut
-  
+
 sub Next {
     my $self = shift;
-    
-    
+
+
     my $Scrip = $self->SUPER::Next();
     if ((defined($Scrip)) and (ref($Scrip))) {
 
-	if ($Scrip->CurrentUserHasRight('ShowScrips')) {
-	    return($Scrip);
-	}
-	
-	#If the user doesn't have the right to show this scrip
-	else {	
-	    return($self->Next());
-	}
+        if ($Scrip->CurrentUserHasRight('ShowScrips')) {
+            return($Scrip);
+        }
+
+        #If the user doesn't have the right to show this scrip
+        else {
+            return($self->Next());
+        }
     }
     #if there never was any scrip
     else {
-	return(undef);
-    }	
-    
+        return(undef);
+    }
+
 }
 
 =head2 Apply
@@ -470,13 +470,13 @@ sub _FindScrips {
     #We only want things where the scrip applies to this sort of transaction
     # TransactionBatch stage can define list of transaction
     foreach( split /\s*,\s*/, ($args{'Type'} || '') ) {
-	$self->Limit(
-	    ALIAS           => $ConditionsAlias,
-	    FIELD           => 'ApplicableTransTypes',
-	    OPERATOR        => 'LIKE',
-	    VALUE           => $_,
-	    ENTRYAGGREGATOR => 'OR',
-	)
+        $self->Limit(
+            ALIAS           => $ConditionsAlias,
+            FIELD           => 'ApplicableTransTypes',
+            OPERATOR        => 'LIKE',
+            VALUE           => $_,
+            ENTRYAGGREGATOR => 'OR',
+        )
     }
 
     # Or where the scrip applies to any transaction

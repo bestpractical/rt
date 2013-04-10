@@ -5,7 +5,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -54,7 +54,7 @@ my $LICENSE  = <<'EOL';
 
 COPYRIGHT:
 
-This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
                                          <sales@bestpractical.com>
 
 (Except where explicitly superseded by other copyright notices)
@@ -254,7 +254,7 @@ sub another_license {
     my $name = shift;
     my $file = shift;
 
-    return 1 if ($name =~ /(?:FCKEditor|scriptaculous|superfish|tablesorter|farbtastic)/i);
+    return 1 if ($name =~ /(?:ckeditor|scriptaculous|superfish|tablesorter|farbtastic)/i);
 
     return 0 if $file =~ /Copyright\s+\(c\)\s+\d\d\d\d-\d\d\d\d Best Practical Solutions/i;
     return 1 if $file =~ /\b(copyright|GPL|Public Domain)\b/i; # common

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -60,6 +60,7 @@ my $dueobj = $reminder->DueObj;
 my $overdue = $dueobj->Unix > 0 && $dueobj->Diff < 0 ? 1 : 0;
 
 my $targets = RT::Tickets->new($session{'CurrentUser'});
+$targets->{'allow_deleted_search'} = 1;
 $targets->FromSQL( "ReferredToBy = " . $reminder->id );
 
 if ( my $ticket= $targets->First ) {

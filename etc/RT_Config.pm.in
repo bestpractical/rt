@@ -127,6 +127,26 @@ C<Set(@Plugins, (qw(Extension::QuickDelete RT::Extension::CommandByMail)));>
 
 Set(@Plugins, ());
 
+=item C<@StaticRoots>
+
+Set C<@StaticRoots> to serve extra paths with a static handler.  The
+contents of each hashref should be the the same arguments as
+L<Plack::Middleware::Static> takes.  These paths will be checked before
+any plugin or core static paths.
+
+Example:
+
+    Set( @StaticRoots,
+        {
+            path => qr{^/static/},
+            root => '/local/path/to/static/parent',
+        },
+    );
+
+=cut
+
+Set( @StaticRoots, () );
+
 =back
 
 
@@ -202,6 +222,15 @@ database.
 =cut
 
 Set($DatabaseRequireSSL, undef);
+
+=item <$DatabaseAdmin>
+
+The name of the database administrator to connect to the database as
+during upgrades.
+
+=cut
+
+Set($DatabaseAdmin, "@DB_DBA@");
 
 =back
 
@@ -451,7 +480,7 @@ accordingly.
 
 =cut
 
-Set($ExtractSubjectTagMatch, qr/\[.+? #\d+\]/);
+Set($ExtractSubjectTagMatch, qr/\[[^\]]+? #\d+\]/);
 Set($ExtractSubjectTagNoMatch, ( ${RT::EmailSubjectTagRegex}
        ? qr/\[(?:${RT::EmailSubjectTagRegex}) #\d+\]/
        : qr/\[\Q$RT::rtname\E #\d+\]/));
@@ -485,11 +514,8 @@ Set( $CheckMoreMSMailHeaders, 0);
 
 C<$MailCommand> defines which method RT will use to try to send mail.
 We know that 'sendmailpipe' works fairly well.  If 'sendmailpipe'
-doesn't work well for you, try 'sendmail'.  Other options are 'smtp'
-or 'qmail'.
-
-Note that you should remove the '-t' from C<$SendmailArguments> if you
-use 'sendmail' rather than 'sendmailpipe'
+doesn't work well for you, try 'sendmail'.  'qmail' is also a supported
+value.
 
 For testing purposes, or to simply disable sending mail out into the
 world, you can set C<$MailCommand> to 'testfile' which writes all mail
@@ -508,6 +534,8 @@ Correspond mail address of the ticket's queue.
 Warning: If you use this setting, bounced mails will appear to be
 incoming mail to the system, thus creating new tickets.
 
+This option only works if C<$MailCommand> is set to 'sendmailpipe'.
+
 =cut
 
 Set($SetOutgoingMailFrom, 0);
@@ -523,7 +551,8 @@ The option is a hash reference of queue name to email address.  If
 there is no ticket involved, then the value of the C<Default> key will
 be used.
 
-This option is irrelevant unless C<$SetOutgoingMailFrom> is set.
+This option only works if C<$SetOutgoingMailFrom> is enabled and
+C<$MailCommand> is set to 'sendmailpipe'.
 
 =cut
 
@@ -713,16 +742,14 @@ These options only take effect if C<$MailCommand> is 'sendmail' or
 =item C<$SendmailArguments>
 
 C<$SendmailArguments> defines what flags to pass to C<$SendmailPath>
-If you picked 'sendmailpipe', you MUST add a -t flag to
-C<$SendmailArguments> These options are good for most sendmail
-wrappers and work-a-likes.
+These options are good for most sendmail wrappers and work-a-likes.
 
 These arguments are good for sendmail brand sendmail 8 and newer:
-C<Set($SendmailArguments,"-oi -t -ODeliveryMode=b -OErrorMode=m");>
+C<Set($SendmailArguments,"-oi -ODeliveryMode=b -OErrorMode=m");>
 
 =cut
 
-Set($SendmailArguments, "-oi -t");
+Set($SendmailArguments, "-oi");
 
 
 =item C<$SendmailBounceArguments>
@@ -746,39 +773,6 @@ Set($SendmailPath, "/usr/sbin/sendmail");
 
 =back
 
-=head2 SMTP configuration
-
-These options only take effect if C<$MailCommand> is 'smtp'
-
-=over 4
-
-=item C<$SMTPServer>
-
-C<$SMTPServer> should be set to the hostname of the SMTP server to use
-
-=cut
-
-Set($SMTPServer, undef);
-
-=item C<$SMTPFrom>
-
-C<$SMTPFrom> should be set to the 'From' address to use, if not the
-email's 'From'
-
-=cut
-
-Set($SMTPFrom, undef);
-
-=item C<$SMTPDebug>
-
-C<$SMTPDebug> should be set to 1 to debug SMTP mail sending
-
-=cut
-
-Set($SMTPDebug, 0);
-
-=back
-
 =head2 Other mailers
 
 =over 4
@@ -786,7 +780,7 @@ Set($SMTPDebug, 0);
 =item C<@MailParams>
 
 C<@MailParams> defines a list of options passed to $MailCommand if it
-is not 'sendmailpipe', 'sendmail', or 'smtp'
+is not 'sendmailpipe' or 'sendmail';
 
 =cut
 
@@ -857,8 +851,12 @@ Set(@CustomFieldValuesSources, ());
 
 =item C<%CustomFieldGroupings>
 
-This option affects the display of ticket and user custom fields in the web
-interface.  A nested datastructure defines how to group together custom fields
+This option affects the display of ticket and user custom fields in the
+web interface. It does not address the sorting of custom fields. The
+order that custom fields are rendered is controlled by the Ticket
+Custom Fields tab in Queue Configuration in the Admin UI.
+
+A nested datastructure defines how to group together custom fields
 under a mix of built-in and arbitrary headings ("groupings").
 
 Set C<%CustomFieldGroupings> to a nested hash similar to the following:
@@ -879,7 +877,9 @@ are hashrefs.  The second level keys are the grouping names and the values are
 array refs containing a list of CF names.
 
 There are several special built-in groupings which RT displays in specific
-places (usually the collapsible box of the same title).
+places (usually the collapsible box of the same title). You may only
+append Custom Fields to the list in these boxes, not reorder or remove
+core fields.
 
 For C<RT::Ticket>, these groupings are: C<Basics>, C<Dates>, C<Links>, C<People>
 
@@ -906,32 +906,11 @@ Set($CanonicalizeRedirectURLs, 0);
 
 =item C<@JSFiles>
 
-A list of JavaScript files to be included in head.  Removing any of
-the default entries is not suggested.
-
-If you're a plugin author, refer to RT->AddJavaScript.
+A list of additional JavaScript files to be included in head.
 
 =cut
 
-Set(@JSFiles, qw/
-    jquery-1.4.2.min.js
-    jquery_noconflict.js
-    jquery-ui-1.8.4.custom.min.js
-    jquery-ui-timepicker-addon.js
-    jquery-ui-patch-datepicker.js
-    jquery.modal.min.js
-    jquery.modal-defaults.js
-    titlebox-state.js
-    util.js
-    userautocomplete.js
-    jquery.event.hover-1.0.js
-    superfish.js
-    supersubs.js
-    jquery.supposition.js
-    history-folding.js
-    event-registration.js
-    late.js
-/);
+Set(@JSFiles, qw//);
 
 =item C<$JSMinPath>
 
@@ -958,14 +937,73 @@ Set(@CSSFiles, qw//);
 
 =item C<$UsernameFormat>
 
-This determines how user info is displayed. 'concise' will show one of
-either NickName, RealName, Name or EmailAddress, depending on what
-exists and whether the user is privileged or not. 'verbose' will show
-RealName and EmailAddress.
+This determines how user info is displayed. 'concise' will show the
+first of RealName, Name or EmailAddress that has a value. 'verbose' will
+show EmailAddress, and the first of RealName or Name which is defined.
 
 =cut
 
-Set($UsernameFormat, "concise");
+Set($UsernameFormat, "role");
+
+=item C<$UserSearchResultFormat>
+
+This controls the display of lists of users returned from the User
+Summary Search. The display of users in the Admin interface is
+controlled by C<%AdminSearchResultFormat>.
+
+=cut
+
+Set($UserSearchResultFormat,
+         q{ '<a href="__WebPath__/User/Summary.html?id=__id__">__id__</a>/TITLE:#'}
+        .q{,'<a href="__WebPath__/User/Summary.html?id=__id__">__Name__</a>/TITLE:Name'}
+        .q{,__RealName__, __EmailAddress__}
+);
+
+=item C<@UserSummaryPortlets>
+
+A list of portlets to be displayed on the User Summary page.
+By default, we show all of the available portlets.
+Extensions may provide their own portlets for this page.
+
+=cut
+
+Set(@UserSummaryPortlets, (qw/ExtraInfo CreateTicket ActiveTickets InactiveTickets/));
+
+=item C<$UserSummaryExtraInfo>
+
+This controls what information is displayed on the User Summary
+portal. By default the user's Real Name, Email Address and Username
+are displayed. You can remove these or add more as needed. This
+expects a Format string of user attributes. Please note that not all
+the attributes are supported in this display because we're not
+building a table.
+
+=cut
+
+Set($UserSummaryExtraInfo, "RealName, EmailAddress, Name");
+
+=item C<$UserSummaryTicketListFormat>
+
+Control the appearance of the Active and Inactive ticket lists in the
+User Summary.
+
+=cut
+
+Set($UserSummaryTicketListFormat, q{
+       '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
+       '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
+       Status,
+       QueueName,
+       Owner,
+       Priority,
+       '__NEWLINE__',
+       '',
+       '<small>__Requestors__</small>',
+       '<small>__CreatedRelative__</small>',
+       '<small>__ToldRelative__</small>',
+       '<small>__LastUpdatedRelative__</small>',
+       '<small>__TimeLeft__</small>'
+});
 
 =item C<$WebBaseURL>, C<$WebURL>
 
@@ -999,7 +1037,7 @@ Define the directory name to be used for images in RT web documents.
 
 =cut
 
-Set($WebImagesURL, RT->Config->Get('WebPath') . "/NoAuth/images/");
+Set($WebImagesURL, RT->Config->Get('WebPath') . "/static/images/");
 
 =item C<$LogoURL>
 
@@ -1146,7 +1184,12 @@ user's customized homepage ("RT at a glance").
 
 =cut
 
-Set($HomepageComponents, [qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues MyReminders RefreshHomepage Dashboards SavedSearches)]);
+Set(
+    $HomepageComponents,
+    [
+        qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues MyReminders RefreshHomepage Dashboards SavedSearches) # loc_qw
+    ]
+);
 
 =back
 
@@ -1206,7 +1249,7 @@ Set ($DefaultSearchResultFormat, qq{
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
    Status,
    QueueName,
-   OwnerName,
+   Owner,
    Priority,
    '__NEWLINE__',
    '',
@@ -1228,7 +1271,7 @@ Set($DefaultSelfServiceSearchResultFormat, qq{
    '<B><A HREF="__WebPath__/SelfService/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
    Status,
    Requestors,
-   OwnerName});
+   Owner});
 
 =item C<%FullTextSearch>
 
@@ -1295,6 +1338,20 @@ Ticket/Display.html.  This option can be controlled by users also.
 =cut
 
 Set($MoreAboutRequestorTicketList, "Active");
+
+=item C<$MoreAboutRequestorTicketListFormat>
+
+Control the appearance of the ticket lists in the 'More About Requestors' box.
+
+=cut
+
+Set($MoreAboutRequestorTicketListFormat, q{
+       '<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>',
+       '(__Owner__)',
+       '<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>',
+       '__Status__',
+});
+
 
 =item C<$MoreAboutRequestorExtraInfo>
 
@@ -1371,7 +1428,9 @@ is ignored. Helpful when owners list is huge in the query builder.
 
 Set($AutocompleteOwnersForSearch, 0);
 
-=item C<$UserAutocompleteFields>
+=item C<$UserSearchFields>
+
+Used by the User Autocompleter as well as the User Search.
 
 Specifies which fields of L<RT::User> to match against and how to
 match each field when autocompleting users.  Valid match methods are
@@ -1379,7 +1438,7 @@ LIKE, STARTSWITH, ENDSWITH, =, and !=.
 
 =cut
 
-Set($UserAutocompleteFields, {
+Set($UserSearchFields, {
     EmailAddress => 'STARTSWITH',
     Name         => 'STARTSWITH',
     RealName     => 'LIKE',
@@ -1554,15 +1613,39 @@ option can be overridden by users in their preferences.
 
 Set($OldestTransactionsFirst, 1);
 
-=item C<$DeferTransactionLoading>
+=item C<$ShowHistory>
 
-When set, defers loading ticket history until the user clicks a link.
-This should end up serving pages to users quicker, since generating
-all the HTML for transaction history can be slow for long tickets.
+This option controls how history is shown on the ticket display page.  It
+accepts one of three possible modes and is overrideable on a per-user
+preference level.  If you regularly deal with long tickets and don't care much
+about the history, you may wish to change this option to C<click>.
+
+=over
+
+=item C<delay> (the default)
+
+When set to C<delay>, history is loaded via javascript after the rest of the
+page has been loaded.  This speeds up apparent page load times and generally
+provides a smoother experience.  You may notice slight delays before the ticket
+history appears on very long tickets.
+
+=item C<click>
+
+When set to C<click>, history is loaded on demand when a placeholder link is
+clicked.  This speeds up ticket display page loads and history is never loaded
+if not requested.
+
+=item C<always>
+
+When set to C<always>, history is loaded before showing the page.  This ensures
+history is always available immediately, but at the expense of longer page load
+times.  This behaviour was the default in RT 4.0.
+
+=back
 
 =cut
 
-# Set($DeferTransactionLoading, 1);
+Set($ShowHistory, 'delay');
 
 =item C<$ShowBccHeader>
 
@@ -1667,14 +1750,14 @@ provides two formats:
   link after the URL.
 
 * 'httpurl_overwrite': also detects URLs as 'httpurl' format, but
-  replaces the URL with a link.
+  replaces the URL with a link.  Enabled by default.
 
 See F<share/html/Elements/MakeClicky> for documentation on how to add
 your own styles of link detection.
 
 =cut
 
-Set(@Active_MakeClicky, qw());
+Set(@Active_MakeClicky, qw(httpurl_overwrite));
 
 =back
 
@@ -2693,7 +2776,7 @@ be added while the server is running.
 
 =cut
 
-Set($DevelMode, "@RT_DEVEL_MODE@");
+Set($DevelMode, 0);
 
 
 =item C<$RecordBaseClass>

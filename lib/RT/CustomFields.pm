@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -68,11 +68,11 @@ package RT::CustomFields;
 use strict;
 use warnings;
 
+use base 'RT::SearchBuilder';
+
 use DBIx::SearchBuilder::Unique;
 
 use RT::CustomField;
-
-use base 'RT::SearchBuilder';
 
 sub Table { 'CustomFields'}
 
@@ -81,15 +81,15 @@ sub _Init {
 
   # By default, order by SortOrder
   $self->OrderByCols(
-	 { ALIAS => 'main',
-	   FIELD => 'SortOrder',
-	   ORDER => 'ASC' },
-	 { ALIAS => 'main',
-	   FIELD => 'Name',
-	   ORDER => 'ASC' },
-	 { ALIAS => 'main',
-	   FIELD => 'id',
-	   ORDER => 'ASC' },
+         { ALIAS => 'main',
+           FIELD => 'SortOrder',
+           ORDER => 'ASC' },
+         { ALIAS => 'main',
+           FIELD => 'Name',
+           ORDER => 'ASC' },
+         { ALIAS => 'main',
+           FIELD => 'id',
+           ORDER => 'ASC' },
      );
     $self->{'with_disabled_column'} = 1;
 
@@ -209,12 +209,12 @@ sub LimitToGlobalOrObjectId {
 
 
     foreach my $id (@_) {
-	$self->Limit( ALIAS           => $self->_OCFAlias,
-		    FIELD           => 'ObjectId',
-		    OPERATOR        => '=',
-		    VALUE           => $id || 0,
-		    ENTRYAGGREGATOR => 'OR' );
-	$global_only = 0 if $id;
+        $self->Limit( ALIAS           => $self->_OCFAlias,
+                    FIELD           => 'ObjectId',
+                    OPERATOR        => '=',
+                    VALUE           => $id || 0,
+                    ENTRYAGGREGATOR => 'OR' );
+        $global_only = 0 if $id;
     }
 
     $self->Limit( ALIAS           => $self->_OCFAlias,
@@ -305,8 +305,8 @@ sub LimitToGlobal  {
 
   $self->Limit (ALIAS => $self->_OCFAlias,
                 ENTRYAGGREGATOR => 'OR',
-		FIELD => 'ObjectId',
-		VALUE => 0);
+                FIELD => 'ObjectId',
+                VALUE => 0);
   $self->LimitToLookupType( 'RT::Queue-RT::Ticket' );
 }
 

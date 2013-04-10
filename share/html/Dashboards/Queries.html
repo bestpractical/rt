@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -93,8 +93,8 @@ my @components = @{ RT->Config->Get('HomepageComponents') };
 
 for my $desc (@components) {
     my $name = "component-$desc";
-    push @items, [$name, $desc];
-    $desc_of{$name} = $desc;
+    push @items, [$name, loc($desc)];
+    $desc_of{$name} = loc($desc);
     $still_exists{$name} = 1;
 }
 
@@ -106,7 +106,8 @@ for my $dashboard (@dashboards) {
     next if $dashboard->Id == $Dashboard->Id;
 
     my $name = 'dashboard-' . $dashboard->Id . '-' . $dashboard->Privacy;
-    my $desc = "Dashboard: " . $dashboard->Name;
+    my $type = loc('Dashboard'); # loc
+    my $desc = "$type: " . $dashboard->Name;
     push @items, [$name, $desc];
     $desc_of{$name} = $desc;
     $still_exists{$name} = 1;
@@ -121,10 +122,12 @@ push @objs, RT::SavedSearch->new( $session{CurrentUser} )->ObjectsForLoading
 
 for my $object (@objs) {
     for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
-        my ($desc, $search) = @$_;
+        my ($desc, $loc_desc, $search) = @$_;
         my $SearchType = $search->Content->{'SearchType'} || 'Ticket';
-        my $type = ($SearchType eq 'Ticket') ? 'Saved Search' : $SearchType; # loc
-        $desc = "$type: $desc";
+        my $type = ( $SearchType eq 'Ticket' )
+          ? 'Saved Search'    # loc
+          : $SearchType;
+        $desc = loc($type) . ": $loc_desc";
         my $privacy = $Dashboard->_build_privacy($object);
         my $name = 'search-' . $search->Id . '-' . $privacy;
         push @items, [$name, $desc];

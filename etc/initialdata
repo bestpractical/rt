@@ -224,7 +224,7 @@ Greetings,
 
 This message has been automatically generated in response to the
 creation of a trouble ticket regarding:
-	"{$Ticket->Subject()}", 
+        "{$Ticket->Subject()}", 
 a summary of which appears below.
 
 There is no need to reply to this message right now.  Your ticket has been
@@ -474,10 +474,10 @@ Your new password is:
 }
     },
 
-	       {   Queue       => '0',
-		   Name        => 'Email Digest',    # loc
-		   Description => 'Email template for periodic notification digests',  # loc
-		   Content => q[Subject: RT Email Digest
+               {   Queue       => '0',
+                   Name        => 'Email Digest',    # loc
+                   Description => 'Email template for periodic notification digests',  # loc
+                   Content => q[Subject: RT Email Digest
 
 { $Argument }
 ],
@@ -604,22 +604,48 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
         OrderBy => 'LastUpdated',
         Order   => 'DESC' },
     },
-    { Name => 'HomepageSettings',
-      Description => 'HomepageSettings',
-      Content =>
-      { 'body' => # loc
-        [ { type => 'system', name => 'My Tickets' },
-          { type => 'system', name => 'Unowned Tickets' },
-          { type => 'system', name => 'Bookmarked Tickets' },
-          { type => 'component', name => 'QuickCreate' },
-        ],
-        'sidebar' => # loc
-        [
-          { type => 'component', name => 'MyReminders' },
-          { type => 'component', name => 'Quicksearch' },
-          { type => 'component', name => 'Dashboards' },
-          { type => 'component', name => 'RefreshHomepage' },
-        ],
-      },
+    {
+        Name        => 'HomepageSettings',
+        Description => 'HomepageSettings',
+        Content     => {
+            'body' =>    # loc
+              [
+                {
+                    type => 'system',
+                    name => 'My Tickets',           # loc
+                },
+                {
+                    type => 'system',
+                    name => 'Unowned Tickets'       # loc
+                },
+                {
+                    type => 'system',
+                    name => 'Bookmarked Tickets'    # loc
+                },
+                {
+                    type => 'component',
+                    name => 'QuickCreate'           # loc
+                },
+              ],
+            'sidebar' =>                            # loc
+              [
+                {
+                    type => 'component',
+                    name => 'MyReminders'           # loc
+                },
+                {
+                    type => 'component',
+                    name => 'Quicksearch'           # loc
+                },
+                {
+                    type => 'component',
+                    name => 'Dashboards'            # loc
+                },
+                {
+                    type => 'component',
+                    name => 'RefreshHomepage'       # loc
+                },
+              ],
+        },
     },
 );

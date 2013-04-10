@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -48,6 +48,7 @@
 <%ARGS>
 $Name => undef
 $Attr => undef
+$GenericMap => {}
 </%ARGS>
 
 
@@ -61,16 +62,49 @@ my $LinkCallback = sub {
     my $type            = $RT::Link::TYPEMAP{$method}{Type};
     my $other_mode      = ($mode eq "Target" ? "Base" : "Target");
     my $mode_uri        = $mode.'URI';
-    my $local_type      = 'Local'.$mode;
 
     return sub {
+        my $ObjectType = $_[2]||'';
         map {
             \'<a href="',
-            $_->$mode_uri->Resolver->HREF,
+            $_->$mode_uri->AsHREF,
             \'">',
-            ( $_->$mode_uri->IsLocal ? $_->$local_type : $_->$mode ),
+            ( $_->$mode_uri->AsString ),
             \'</a><br />',
-        } @{ $_[0]->Links($other_mode,$type)->ItemsArrayRef }
+        } # if someone says __RefersTo.{Ticket}__ filter for only local links that are tickets
+          grep { $ObjectType
+                    ? ( $_->$mode_uri->IsLocal
+                        && ( $_->$mode_uri->Object->RecordType eq $ObjectType ))
+                    : 1
+               }
+          @{ $_[0]->Links($other_mode,$type)->ItemsArrayRef }
+    }
+};
+
+my $linkUsers;
+$linkUsers = sub {
+    my ($what, $more) = @_;
+    if ($what->isa("RT::Group")) {
+        my @ret = map {$linkUsers->($_->[1], $more), ", "}
+            sort {$a->[0] cmp $b->[0]}
+            map {+[($_->EmailAddress||''), $_]}
+            @{ $what->UserMembersObj->ItemsArrayRef };
+        pop @ret; # Remove ending ", "
+        return @ret;
+    } else {
+        my @ret = \($m->scomp("/Elements/ShowUser", User => $what));
+        push @ret, $more->($what) if $more;
+        return @ret;
+    }
+};
+my $trustSub = sub {
+    my $user = shift;
+    require RT::Crypt::GnuPG;
+    my %key = RT::Crypt::GnuPG::GetKeyInfo($user->EmailAddress);
+    if (!defined $key{'info'}) {
+        return ' ' . loc("(no pubkey!)");
+    } elsif ($key{'info'}{'TrustLevel'} == 0) {
+        return ' ' . loc("(untrusted!)");
     }
 };
 
@@ -89,6 +123,11 @@ $COLUMN_MAP = {
         title     => 'Owner', # loc
         attribute => 'Owner',
         value     => sub { return $_[0]->OwnerObj->Name }
+    },
+    Owner => {
+        title     => 'Owner', # loc
+        attribute => 'Owner',
+        value     => sub { return $linkUsers->($_[0]->OwnerObj) }
     },
     Status => {
         title     => 'Status', # loc
@@ -172,17 +211,17 @@ $COLUMN_MAP = {
     Requestors => {
         title     => 'Requestors', # loc
         attribute => 'Requestor.EmailAddress',
-        value     => sub { return $_[0]->Requestors->MemberEmailAddressesAsString }
+        value     => sub { return $linkUsers->( $_[0]->Requestors ) }
     },
     Cc => {
         title     => 'Cc', # loc
         attribute => 'Cc.EmailAddress',
-        value     => sub { return $_[0]->Cc->MemberEmailAddressesAsString }
+        value     => sub { return $linkUsers->( $_[0]->Cc ) }
     },
     AdminCc => {
         title     => 'AdminCc', # loc
         attribute => 'AdminCc.EmailAddress',
-        value     => sub { return $_[0]->AdminCc->MemberEmailAddressesAsString }
+        value     => sub { return $linkUsers->( $_[0]->AdminCc ) }
     },
     StartsRelative => {
         title     => 'Starts', # loc
@@ -254,21 +293,7 @@ $COLUMN_MAP = {
     KeyRequestors => {
         title     => 'Requestors', # loc
         attribute => 'Requestor.EmailAddress',
-        value => sub {
-            my $t = shift;
-            my @requestors = $t->Requestors->MemberEmailAddresses;
-            for my $email (@requestors)
-            {
-                my %key = RT::Crypt::GnuPG::GetKeyInfo($email);
-                if (!defined $key{'info'}) {
-                    $email .= ' ' . loc("(no pubkey!)");
-                }
-                elsif ($key{'info'}{'TrustLevel'} == 0) {
-                    $email .= ' ' . loc("(untrusted!)");
-                }
-            }
-            return join ', ', @requestors;
-        }
+        value     => sub { return $linkUsers->($_[0]->Requestors, $trustSub); }
     },
     KeyOwnerName => {
         title     => 'Owner', # loc
@@ -286,6 +311,11 @@ $COLUMN_MAP = {
 
             return $name;
         }
+    },
+    KeyOwner => {
+        title     => 'Owner', # loc
+        attribute => 'Owner',
+        value     => sub { return $linkUsers->($_[0]->OwnerObj, $trustSub); }
     },
 
     # Everything from LINKTYPEMAP
@@ -326,8 +356,6 @@ else {
 }
 </%ONCE>
 <%init>
-$m->callback( COLUMN_MAP => $COLUMN_MAP, CallbackName => 'Once', CallbackOnce => 1 );
-# backward compatibility
-$m->callback( COLUMN_MAP => $COLUMN_MAP, CallbackName => 'ColumnMap' );
+$m->callback( GenericMap => $GenericMap, COLUMN_MAP => $COLUMN_MAP, CallbackName => 'Once', CallbackOnce => 1 );
 return GetColumnMapEntry( Map => $COLUMN_MAP, Name => $Name, Attribute => $Attr );
 </%init>

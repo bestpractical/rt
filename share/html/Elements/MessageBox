@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -62,7 +62,7 @@ if ( $QuoteTransaction ) {
 
 my $signature = '';
 if ( $IncludeSignature and my $text = $session{'CurrentUser'}->UserObj->Signature ) {
-	$signature = "-- \n". $text;
+    $signature = "-- \n". $text;
 }
 
 # wrap="something" seems to really break IE + richtext

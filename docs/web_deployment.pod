@@ -52,7 +52,6 @@ spontaneously logged in as other users in the system.
 
         AddDefaultCharset UTF-8
 
-        Alias /NoAuth/images/ /opt/rt4/share/html/NoAuth/images/
         ScriptAlias / /opt/rt4/sbin/rt-server.fcgi/
 
         DocumentRoot "/opt/rt4/share/html"
@@ -89,7 +88,6 @@ to return to the old default.
 
         AddDefaultCharset UTF-8
 
-        Alias /NoAuth/images/ /opt/rt4/share/html/NoAuth/images/
         ScriptAlias / /opt/rt4/sbin/rt-server.fcgi/
 
         DocumentRoot "/opt/rt4/share/html"
@@ -114,8 +112,9 @@ deployment if your privileged users are in a different timezone than the
 one the server is configured for.
 
 B<NOTE>: RT 3.8 and below suggested use of C<SetHandler perl-script>;
-this is incorrect for RT 4, and will lead to difficulties sending
-outgoing mail from RT.  Ensure that you use C<SetHandler modperl>.
+this is incorrect for RT 4, and (starting in RT 4.0.11) RT will refuse
+to start, to prevent difficulties sending mail from RT.  Change to
+C<SetHandler modperl>, as the example below uses.
 
     <VirtualHost rt.example.com>
         ### Optional apache logs for RT
@@ -186,10 +185,6 @@ With the nginx configuration:
             fastcgi_param  SERVER_NAME        $server_name;
             fastcgi_pass 127.0.0.1:9000;
         }
-
-        location /NoAuth/images {
-            root /opt/rt4/share/html;
-        }
     }
 
 
@@ -197,21 +192,16 @@ With the nginx configuration:
 
     server.modules += ( "mod_fastcgi" )
     $HTTP["host"] =~ "^rt.example.com" {
-        alias.url = (
-            "/NoAuth/images/" => "/opt/rt4/share/html/NoAuth/images/",
-        )
-        $HTTP["url"] !~ "^/NoAuth/images/" {
-            fastcgi.server = (
-                "/" => (
-                    "rt" => (
-                        "port"        => "9000",
-                        "bin-path"    => "/opt/rt4/sbin/rt-server.fcgi",
-                        "check-local" => "disable",
-                        "fix-root-scriptname" => "enable",
-                    )
+        fastcgi.server = (
+            "/" => (
+                "rt" => (
+                    "port"        => "9000",
+                    "bin-path"    => "/opt/rt4/sbin/rt-server.fcgi",
+                    "check-local" => "disable",
+                    "fix-root-scriptname" => "enable",
                 )
             )
-        }
+        )
     }
 
 
@@ -225,14 +215,13 @@ F<RT_SiteConfig.pm>:
     Set($WebPath, "/rt");
 
 Then you need to update your Apache configuration to match.  Prefix any RT
-related C<Alias>, C<ScriptAlias> and C<Location> directives with C</rt>.  You
+related C<ScriptAlias> and C<Location> directives with C</rt>.  You
 should also make sure C<DocumentRoot> is B<not> set to
 C</opt/rt4/share/html/>, otherwise RT's source will be served from C</>.
 
 For example: if you're using the sample FastCGI config above, you might change
 the relevant directives to:
 
-    Alias /rt/NoAuth/images/ /opt/rt4/share/html/NoAuth/images/
     ScriptAlias /rt /opt/rt4/sbin/rt-server.fcgi/
 
     # Set DocumentRoot as appropriate for the other content you want to serve

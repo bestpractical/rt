@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -69,9 +69,9 @@ package RT::GroupMembers;
 use strict;
 use warnings;
 
-use RT::GroupMember;
-
 use base 'RT::SearchBuilder';
+
+use RT::GroupMember;
 
 sub Table { 'GroupMembers'}
 
@@ -142,7 +142,7 @@ sub LimitToMembersOfGroup {
                          VALUE => $group,
                          FIELD => 'GroupId',
                          ENTRYAGGREGATOR => 'OR',
-			             QUOTEVALUE => 0
+                         QUOTEVALUE => 0
                          ));
 
 }

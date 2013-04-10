@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -65,6 +65,10 @@ use warnings;
 package RT::Squish::JS;
 use base 'RT::Squish';
 
+use HTTP::Message::PSGI;
+use HTTP::Request;
+use HTTP::Response;
+
 =head2 Squish
 
 not only concatenate files, but also minify them
@@ -73,14 +77,22 @@ not only concatenate files, but also minify them
 
 sub Squish {
     my $self    = shift;
-    my $content;
+    my $content = "";
+    my $static  = RT::Interface::Web::Handler->StaticWrap(
+        # Anything the static wrap doesn't handle gets 404'd.
+        sub { [404, [], []] }
+    );
 
-    for my $file ( RT->Config->Get('JSFiles') ) {
-        my $path = "/NoAuth/js/$file";
-        if ( $HTML::Mason::Commands::m->comp_exists($path) ) {
-            $content .= $HTML::Mason::Commands::m->scomp($path);
+    for my $file ( RT::Interface::Web->JSFiles ) {
+        my $uri = "/static/js/$file";
+        my $res = HTTP::Response->from_psgi(
+            $static->( HTTP::Request->new(GET => $uri)->to_psgi )
+        );
+
+        if ($res->is_success) {
+            $content .= $res->decoded_content;
         } else {
-            RT->Logger->error("Unable to open $path for JS Squishing");
+            RT->Logger->error("Unable to fetch $uri for JS Squishing: " . $res->status_line);
             next;
         }
     }

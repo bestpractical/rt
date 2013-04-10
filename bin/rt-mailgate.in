@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -344,10 +344,6 @@ is found.
 
 This flag tells the mail gateway where it can find your RT server. You should 
 probably use the same URL that users use to log into RT.  
-
-If your RT server uses SSL, you will need to install additional Perl
-libraries. RT will detect and install these dependencies if you pass the
-C<--enable-ssl-mailgate> flag to configure as documented in RT's README.
 
 If you have a self-signed SSL certificate, you may also need to pass
 C<--ca-file> or C<--no-verify-ssl>, below.

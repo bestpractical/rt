@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -61,13 +61,13 @@ else {
 $id
 $Toggle => 0
 </%ARGS>
-<span class="toggle-bookmark-<% $id %>">
+<span class="toggle-bookmark toggle-bookmark-<% $id %>">
 % my $url = RT->Config->Get('WebPath') ."/Helpers/Toggle/TicketBookmark?id=". $id;
-<a align="right" href="<% $url %>" onclick="jQuery('.toggle-bookmark-'+<% $id |n,j%>).load(<% $url |n,j %>); return false;" >
+<a align="right" href="<% $url %>" onclick="jQuery.get(<% $url |n,j %>, function(data){ jQuery('.toggle-bookmark-'+<% $id |n,j%>).replaceWith(data) }); return false;" >
 % if ( $is_bookmarked ) {
-<img src="<% RT->Config->Get('WebPath') %>/NoAuth/images/star.gif" alt="<% loc('Remove Bookmark') %>" style="border-style: none" />
+<img src="<% RT->Config->Get('WebPath') %>/static/images/star.gif" alt="<% loc('Remove Bookmark') %>" style="border-style: none" />
 % } else {
-<img src="<% RT->Config->Get('WebPath') %>/NoAuth/images/empty_star.gif" alt="<% loc('Add Bookmark') %>" style="border-style: none" />
+<img src="<% RT->Config->Get('WebPath') %>/static/images/empty_star.gif" alt="<% loc('Add Bookmark') %>" style="border-style: none" />
 % }
 </a>
 </span>

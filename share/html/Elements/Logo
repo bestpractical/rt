@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -67,7 +67,6 @@ if ( exists $ARGS{'show_name'} ) {
     $ShowName = delete $ARGS{'show_name'};
 }
 
-use Scalar::Util qw(blessed);
 my $user_logo = blessed $RT::System ? $RT::System->FirstAttribute('UserLogo') : undef;
 
 # If we have the attribute, but no content, we don't really have a user logo

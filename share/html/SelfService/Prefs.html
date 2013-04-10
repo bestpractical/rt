@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -59,7 +59,7 @@
 
 <br />
 <& /Elements/Submit, Label => loc('Save Changes') &>
-	  </form>
+</form>
 
 
 <%INIT>
@@ -79,8 +79,8 @@ if (defined $NewPass1 && length $NewPass1 ) {
 if ($Signature) {
     $Signature =~ s/(\r\n|\r)/\n/g;
     if ($Signature ne $user->Signature) {
-	my ($val, $msg) = $user->SetSignature($Signature);
-	push (@results, "Signature: ".$msg);
+        my ($val, $msg) = $user->SetSignature($Signature);
+        push (@results, "Signature: ".$msg);
     }
 }
 

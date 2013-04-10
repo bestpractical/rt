@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -80,8 +80,8 @@
 <table>
 <tr><td class="label"> <&|/l&>Make Owner</&>: </td>
 <td class="value"> <& /Elements/SelectOwner, Name => "Owner", Default => $ARGS{Owner} || '' &>
-(<input type="checkbox" class="checkbox" name="ForceOwnerChange"
- <% $ARGS{ForceOwnerChange} ? 'checked="checked"' : '' %> /> <&|/l&>Force change</&>) </td></tr>
+<label>(<input type="checkbox" class="checkbox" name="ForceOwnerChange"
+<% $ARGS{ForceOwnerChange} ? 'checked="checked"' : '' %> /> <&|/l&>Force change</&>)</label></td></tr>
 <tr><td class="label"> <&|/l&>Add Requestor</&>: </td>
 <td class="value"> <input name="AddRequestor" size="20" value="<% $ARGS{AddRequestor} || '' %>" /> </td></tr>
 <tr><td class="label"> <&|/l&>Remove Requestor</&>: </td>
@@ -111,7 +111,7 @@
 <tr><td class="label"> <&|/l&>Make date Started</&>: </td>
 <td class="value"> <& /Elements/SelectDate, Name => "Started_Date", Default => $ARGS{Started_Date} || '' &> </td></tr>
 <tr><td class="label"> <&|/l&>Make date Told</&>: </td>
-<td class="value"> <& /Elements/SelectDate, Name => "Told_Date", Default => $ARGS{Tole_Date} || '' &> </td></tr>
+<td class="value"> <& /Elements/SelectDate, Name => "Told_Date", Default => $ARGS{Told_Date} || '' &> </td></tr>
 <tr><td class="label"> <&|/l&>Make date Due</&>: </td>
 <td class="value"> <& /Elements/SelectDate, Name => "Due_Date", Default => $ARGS{Due_Date} || '' &> </td></tr>
 <tr><td class="label"> <&|/l&>Make date Resolved</&>: </td>
@@ -226,31 +226,7 @@ map ( $ARGS{$_} =~ /^$/ && ( delete $ARGS{$_} ), keys %ARGS );
 
 my (@results);
 
-# deal with deleting uploaded attachments
-foreach my $key (keys %ARGS) {
-    if ($key =~ m/^DeleteAttach-(.+)$/) {
-        delete $session{'Attachments'}{$1};
-    }
-    $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
-}
-
-# store the uploaded attachment in session
-if ( defined $ARGS{'Attach'} && length $ARGS{'Attach'} ) { # attachment?
-    my $attachment = MakeMIMEEntity(
-        AttachmentFieldName => 'Attach'
-    );
-
-    my $file_path = Encode::decode_utf8("$ARGS{'Attach'}");
-    $session{'Attachments'} = {
-        %{$session{'Attachments'} || {}},
-        $file_path => $attachment,
-    };
-}
-
-# delete temporary storage entry to make WebUI clean
-unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
-    delete $session{'Attachments'};
-}
+ProcessAttachments(ARGSRef => \%ARGS);
 
 $Page ||= 1;
 

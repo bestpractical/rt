@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -72,6 +72,9 @@ use warnings;
 
 use base qw/RT::Record/;
 
+use Role::Basic 'with';
+with "RT::Record::Role::Roles";
+
 use RT::ACL;
 use RT::ACE;
 
@@ -135,7 +138,7 @@ sub AvailableRights {
     # Only return rights on classes which support the role asked for
     if ($principal and $principal->IsRoleGroup) {
         my $role = $principal->Object->Type;
-        @types   = grep { $_->HasRole($role) } @types;
+        @types   = grep { $_->DOES('RT::Record::Role::Roles') and $_->HasRole($role) } @types;
         %rights  = ();
     }
 

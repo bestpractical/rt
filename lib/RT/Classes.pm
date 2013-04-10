@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -83,9 +83,7 @@ sub Next {
 
 }
 
-sub ColumnMapClassName {
-    return 'RT__Class';
-}
+sub _SingularClass { "RT::Class" }
 
 =head2 NewItem
 

@@ -10,10 +10,6 @@ RT is commercially-supported software. To purchase support, training,
 custom development, or professional services, please get in touch with
 us at <sales@bestpractical.com>.
 
-     Jesse Vincent
-     Best Practical Solutions, LLC
-     March, 2011
-
 
 REQUIRED PACKAGES
 -----------------
@@ -25,7 +21,7 @@ o   Perl 5.8.3 or later (http://www.perl.org).
 
 o   A supported SQL database
 
-        Currently supported:  Mysql 4.1 or later with InnoDB support.
+        Currently supported:  MySQL 4.1 or later with InnoDB support.
                               Postgres 8.1 or later.
                               Oracle 9iR2 or later.
                               SQLite 3.0. (Not recommended for production)
@@ -230,13 +226,6 @@ GENERAL INSTALLATION
 
            perldoc /opt/rt4/bin/rt-mailgate
 
-    If your webserver uses SSL, rt-mailgate will require several new
-    Perl libraries. RT can detect and install these for you automatically
-    if you include --enable-ssl-mailgate when running configure and then
-    run make fixdeps as described in step 4.  It is safe to rerun configure
-    and make fixdeps after you have installed RT, you should be sure to include
-    all the arguments you used in step 2 plus --enable-ssl-mailgate.
-
 
 GETTING HELP
 ------------
@@ -299,7 +288,7 @@ fix them.  To report a bug, send email to <rt-bugs@bestpractical.com>.
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)

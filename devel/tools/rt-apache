@@ -4,7 +4,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -330,12 +330,6 @@ DocumentRoot $RTHOME/share/html
     Allow from all
 </Directory>
 
-Alias $PATH/NoAuth/images/ $RTHOME/share/html/NoAuth/images/
-<Directory $RTHOME/share/html/NoAuth/images>
-    Order allow,deny
-    Allow from all
-</Directory>
-
 <IfDefine !RT3>
 ########## 4.0 mod_perl
 <IfDefine PERL>
@@ -402,10 +396,10 @@ Alias $PATH/NoAuth/images/ $RTHOME/share/html/NoAuth/images/
     FastCgiServer $RTHOME/bin/mason_handler.fcgi -processes $PROCESSES -idle-timeout 300
     ScriptAlias $PATH $RTHOME/bin/mason_handler.fcgi/
     <Location $PATH>
-	Order allow,deny
-	Allow from all
-	Options +ExecCGI
-	AddHandler fastcgi-script fcgi
+        Order allow,deny
+        Allow from all
+        Options +ExecCGI
+        AddHandler fastcgi-script fcgi
     </Location>
 </IfDefine>
 
@@ -416,10 +410,10 @@ Alias $PATH/NoAuth/images/ $RTHOME/share/html/NoAuth/images/
     FcgidMaxRequestLen 1073741824
     ScriptAlias $PATH $RTHOME/bin/mason_handler.fcgi/
     <Location $PATH>
-	Order allow,deny
-	Allow from all
-	Options +ExecCGI
-	AddHandler fcgid-script fcgi
+        Order allow,deny
+        Allow from all
+        Options +ExecCGI
+        AddHandler fcgid-script fcgi
     </Location>
 </IfDefine>
 </IfDefine>
@@ -433,7 +427,7 @@ Alias $PATH/NoAuth/images/ $RTHOME/share/html/NoAuth/images/
     SSLMutex file:$RTHOME/var/ssl_mutex
     <VirtualHost *:$SSL>
         SSLEngine on
-	SSLCertificateFile    $TOOLS/localhost.crt
-	SSLCertificateKeyFile $TOOLS/localhost.key
+        SSLCertificateFile    $TOOLS/localhost.crt
+        SSLCertificateKeyFile $TOOLS/localhost.key
     </VirtualHost>
 </IfDefine>

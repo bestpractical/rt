@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -213,15 +213,15 @@ if (!keys(%data)) {
     my ($time, $key, $val, @data);
 
     push @data, [ id    => "ticket/".$ticket->Id   ];
-    push @data, [ Queue => $ticket->QueueObj->Name ] 
-	if (!%$fields || exists $fields->{lc 'Queue'});
+    push @data, [ Queue => $ticket->QueueObj->Name ]
+        if (!%$fields || exists $fields->{lc 'Queue'});
     push @data, [ Owner => $ticket->OwnerObj->Name ]
-	if (!%$fields || exists $fields->{lc 'Owner'});
+        if (!%$fields || exists $fields->{lc 'Owner'});
     push @data, [ Creator => $ticket->CreatorObj->Name ]
-	if (!%$fields || exists $fields->{lc 'Creator'});
+        if (!%$fields || exists $fields->{lc 'Creator'});
 
     foreach (qw(Subject Status Priority InitialPriority FinalPriority)) {
-	next unless (!%$fields || (exists $fields->{lc $_}));
+        next unless (!%$fields || (exists $fields->{lc $_}));
         push @data, [$_ => $ticket->$_ ];
     }
 
@@ -232,14 +232,14 @@ if (!keys(%data)) {
 
     $time = RT::Date->new ($session{CurrentUser});
     foreach $key (@dates) {
-	next unless (!%$fields || (exists $fields->{lc $key}));
+        next unless (!%$fields || (exists $fields->{lc $key}));
         $time->Set(Format => 'sql', Value => $ticket->$key);
         push @data, [ $key => $time->AsString ];
     }
 
     $time = RT::Date->new ($session{CurrentUser});
     foreach $key (qw(TimeEstimated TimeWorked TimeLeft)) {
-	next unless (!%$fields || (exists $fields->{lc $key}));
+        next unless (!%$fields || (exists $fields->{lc $key}));
         $val = $ticket->$key || 0;
         $val = "$val minutes" if $val;
         push @data, [ $key => $val ];
@@ -376,21 +376,18 @@ else {
             else {
                 my $vals = $ticket->CustomFieldValues($cf->id);
 
-                if ( $cf->SingleValue ) {
-                    my $old = $vals->Next;
-                    if ( $old ) {
-                        if ( $val ne $old->Content ) {
-                            $old->Delete;
-                            ($n, $s) = $ticket->AddCustomFieldValue(
-                                 Field => $cf, Value => $val );
-                            $s =~ s/^# // if defined $s;
-                        }
-                    }
-                    else {
-                        ($n, $s) = $ticket->AddCustomFieldValue(
-                             Field => $cf, Value => $val );
+                if ( !defined $val || !length $val ) {
+                    while ( my $val = $vals->Next ) {
+                        ($n, $s) = $ticket->DeleteCustomFieldValue(
+                            Field => $cf, ValueId => $val->id,
+                        );
                         $s =~ s/^# // if defined $s;
                     }
+                }
+                elsif ( $cf->SingleValue ) {
+                    ($n, $s) = $ticket->AddCustomFieldValue(
+                         Field => $cf, Value => $val );
+                    $s =~ s/^# // if defined $s;
                 }
                 else {
                     my @new;
@@ -434,7 +431,7 @@ else {
                             $new{$c}--;
                         }
                         else {
-                            $v->Delete();
+                            $ticket->DeleteCustomFieldValue( Field => $cf, ValueId => $v->id );
                         }
                     }
                     for ( @new ) {

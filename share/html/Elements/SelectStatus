@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -71,7 +71,7 @@ if ( @Statuses ) {
     $statuses_by_lifecycle{''} = \@Statuses;
 } else {
     if ( $Object ) {
-        my $lifecycle = $Object->Lifecycle;
+        my $lifecycle = $Object->LifecycleObj;
         if ($Object->_Accessible("Status", "read")) {
             my $current = $Object->Status;
             my @status;

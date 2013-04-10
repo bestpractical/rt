@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -56,11 +56,7 @@
 
     <& /Elements/ShowCustomFieldCustomGroupings,
         Object       => $Ticket,
-        TitleBoxARGS => {
-            (($can_modify || $can_modify_cf)
-                ? (title_href => RT->Config->Get('WebPath')."/Ticket/Modify.html?id=".$Ticket->Id)
-                : ()),
-        },
+        title_href   => ($can_modify || $can_modify_cf) ? RT->Config->Get('WebPath')."/Ticket/Modify.html" : "",
         &>
 
     <&| /Widgets/TitleBox, title => loc('People'),

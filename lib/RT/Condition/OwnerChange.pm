@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -62,12 +62,16 @@ If we're changing the owner return true, otherwise return false
 
 sub IsApplicable {
     my $self = shift;
-    if ( ( $self->TransactionObj->Field || '' ) eq 'Owner' ) {
-	return(1);
-    } 
-    else {
-	return(undef);
-    }
+    return unless ( $self->TransactionObj->Field || '' ) eq 'Owner';
+
+    # For tickets, there is both a Set txn (for the column) and a
+    # SetWatcher txn (for the group); we fire on the former for
+    # historical consistency.  Non-ticket objects will not have a
+    # denormalized Owner column, and thus need fire on the SetWatcher.
+    return if $self->TransactionObj->Type eq "SetWatcher"
+          and $self->TransactionObj->ObjectType eq "RT::Ticket";
+
+    return(1);
 }
 
 RT::Base->_ImportOverlays();

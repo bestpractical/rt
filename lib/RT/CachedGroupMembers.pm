@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -69,10 +69,9 @@ package RT::CachedGroupMembers;
 use strict;
 use warnings;
 
+use base 'RT::SearchBuilder';
 
 use RT::CachedGroupMember;
-
-use base 'RT::SearchBuilder';
 
 sub Table { 'CachedGroupMembers'}
 
@@ -166,7 +165,7 @@ sub LimitToGroupsWithMember {
                          VALUE => $member || '0',
                          FIELD => 'MemberId',
                          ENTRYAGGREGATOR => 'OR',
-			            QUOTEVALUE => 0
+                         QUOTEVALUE => 0
                          ));
 
 }

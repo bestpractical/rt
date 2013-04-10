@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -48,8 +48,8 @@
 <%INIT>
  my $content = $Object->Content;
  my $DateObj = RT::Date->new ( $session{'CurrentUser'} );
- $DateObj->Set( Format => 'unknown', Value => $content );
- $content = $DateObj->AsString(Time => 0);
+ $DateObj->Set( Format => 'unknown', Value => $content, Timezone => 'utc'  );
+ $content = $DateObj->AsString(Time => 0, Timezone => 'utc');
 </%INIT>
 <%$content|n%>
 <%ARGS>

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -369,7 +369,7 @@ div#login-box input[type=text], div#login-box input[type=password] {
 
 #bpscredits #copyright {
     padding-top: 4em;
-    background: white url(<%RT->Config->Get('WebPath')%>/NoAuth/images/bpslogo.png) no-repeat top right;
+    background: white url(<%RT->Config->Get('WebPath')%>/static/images/bpslogo.png) no-repeat top right;
 }
 
 
@@ -488,4 +488,13 @@ textarea {
 
 a#fullsite {
     padding-left: 1em;
+}
+
+div.error .titlebox-title {
+    background-color: #f00;
+    color: #fff;
+}
+
+div.error div.error {
+    background-color: #fcc;
 }

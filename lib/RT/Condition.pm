@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -54,14 +54,14 @@
 
     use RT::Condition;
     my $foo = RT::Condition->new( 
-		TransactionObj => $tr, 
-		TicketObj => $ti, 
-		ScripObj => $scr, 
-		Argument => $arg, 
-		Type => $type);
+                TransactionObj => $tr, 
+                TicketObj => $ti, 
+                ScripObj => $scr, 
+                Argument => $arg, 
+                Type => $type);
 
     if ($foo->IsApplicable) {
- 	   # do something
+           # do something
     }
 
 
@@ -95,14 +95,14 @@ sub new  {
 sub _Init  {
   my $self = shift;
   my %args = ( TransactionObj => undef,
-	       TicketObj => undef,
-	       ScripObj => undef,
-	       TemplateObj => undef,
-	       Argument => undef,
-	       ApplicableTransTypes => undef,
+               TicketObj => undef,
+               ScripObj => undef,
+               TemplateObj => undef,
+               Argument => undef,
+               ApplicableTransTypes => undef,
            CurrentUser => undef,
-	       @_ );
-  
+               @_ );
+
   $self->{'Argument'} = $args{'Argument'};
   $self->{'ScripObj'} = $args{'ScripObj'};
   $self->{'TicketObj'} = $args{'TicketObj'};

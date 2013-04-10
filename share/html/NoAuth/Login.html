@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2012 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -49,4 +49,9 @@
 my ($good, $msg) = RT::Interface::Web::AttemptPasswordAuthentication(\%ARGS);
 $ARGS{'actions'} = [$msg] if not $good and $msg;
 </%init>
+
+% if ( RT::Interface::Web::MobileClient() || $ARGS{mobile} ) {
+<& /m/_elements/login, %ARGS &>
+% } else {
 <& /Elements/Login, %ARGS &>
+% }
