@@ -199,6 +199,8 @@ sub _GetResolver {
     if ($resolver) {
         $self->{'resolver'} = $resolver;
     } else {
+        RT->Logger->warning("Failed to create new resolver object for scheme '$scheme': $@")
+            if $@ !~ m{Can't locate RT/URI/\Q$scheme\E};
         $self->{'resolver'} = RT::URI::base->new($self->CurrentUser); 
     }
 
