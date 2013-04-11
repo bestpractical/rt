@@ -182,7 +182,7 @@ sub tag_makefile {
 
 sub tag_pm {
         my $pm = $_;
-        next unless $pm =~ /\.pm/s;
+        return unless $pm =~ /\.pm/s;
         open( FILE, '<', $pm ) or die "Failed to open $pm";
         my $file = (join "", <FILE>);
         close (FILE);
