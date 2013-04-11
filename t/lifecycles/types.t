@@ -3,10 +3,14 @@ use warnings;
 
 BEGIN {require  't/lifecycles/utils.pl'};
 
-is_deeply( [ RT::Lifecycle->List], [qw/ approvals default delivery /],
-       "Get the list of lifecycles (implicitly for for tickets)");
-is_deeply( [ RT::Lifecycle->List('ticket') ],  [qw/ approvals default delivery /],
-       "Get the list of lifecycles for tickets");
+is_deeply( [ RT::Lifecycle->ListAll ], [qw/ approvals default delivery /],
+       "Get the list of all lifecycles (implicitly for for tickets)");
+is_deeply( [ RT::Lifecycle->ListAll('ticket') ],  [qw/ approvals default delivery /],
+       "Get the list of all lifecycles for tickets");
+is_deeply( [ RT::Lifecycle->List], [qw/ default delivery /],
+       "Get the list of lifecycles without approvals (implicitly for for tickets)");
+is_deeply( [ RT::Lifecycle->List('ticket') ],  [qw/ default delivery /],
+       "Get the list of lifecycles without approvals for tickets");
 is_deeply( [ RT::Lifecycle->List('racecar') ], [qw/ racing /],
        "Get the list of lifecycles for other types");
 
