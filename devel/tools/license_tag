@@ -103,7 +103,10 @@ use File::Find;
 my @MAKE = qw(Makefile);
 
 File::Find::find({ no_chdir => 1, wanted => \&tag_pm}, 'lib');
-File::Find::find({ no_chdir => 1, wanted => \&tag_mason}, 'share/html');
+for my $masondir (qw( html share/html )) {
+    next unless -d $masondir;
+    File::Find::find({ no_chdir => 1, wanted => \&tag_mason}, $masondir);
+}
 File::Find::find({ no_chdir => 1, wanted => \&tag_script}, 'sbin');
 File::Find::find({ no_chdir => 1, wanted => \&tag_script}, 'bin');
 File::Find::find({ no_chdir => 1, wanted => \&tag_script}, 'etc/upgrade');
