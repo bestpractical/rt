@@ -206,6 +206,8 @@ CREATE TABLE GroupMembers (
   
 ) ;
 
+CREATE UNIQUE INDEX GroupMembers1 ON GroupMembers(GroupId, MemberId);
+
 --- }}}
 
 --- {{{ CachedGroupMembers
