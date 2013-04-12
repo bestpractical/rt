@@ -127,7 +127,7 @@ use RT::Test tests => 63;
     $dbh->do('DELETE FROM CachedGroupMembers WHERE GroupId = ?', {RaiseError => 1}, $group->id);
     DBIx::SearchBuilder::Record::Cachable->FlushCache;
 
-    my ($ecode, $res) = RT::Test->run_validator(resolve => 1);
+    my ($ecode, $res) = RT::Test->run_validator(resolve => 1, timeout => 30);
     ok $res;
 
     ($ecode, $res) = RT::Test->run_validator();
