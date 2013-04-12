@@ -298,6 +298,9 @@ Set( \$RTAddressRegexp , qr/^bad_re_that_doesnt_match\$/i);
         print $config "Set( \$DatabaseName , '$dbname');\n";
         print $config "Set( \$DatabaseUser , 'u${dbname}');\n";
     }
+    if ( $ENV{'RT_TEST_DB_HOST'} ) {
+        print $config "Set( \$DatabaseHost , '$ENV{'RT_TEST_DB_HOST'}');\n";
+    }
 
     if ( $args{'plugins'} ) {
         print $config "Set( \@Plugins, qw(". join( ' ', @{ $args{'plugins'} } ) .") );\n";
