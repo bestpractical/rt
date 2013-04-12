@@ -739,7 +739,7 @@ ok( $status, "successfuly granted right: $msg" );
 my $ace_id = $status;
 ok( $user->HasRight( Right => 'ReplyToTicket', Object => $tick ), "User can reply to ticket" );
 
-$m->next_warning_like(qr/Permission Denied/);
+$m->next_warning_like(qr/That user may not own tickets in that queue/);
 $m->next_warning_like(qr/Could not record email: Ticket not taken/);
 $m->no_leftover_warnings_ok;
 
@@ -758,7 +758,7 @@ DBIx::SearchBuilder::Record::Cachable->FlushCache;
 cmp_ok( $tick->Owner, '!=', $user->id, "we didn't change owner" );
 is( $tick->Transactions->Count, 3, "one transactions added" );
 
-$m->next_warning_like(qr/Permission Denied/);
+$m->next_warning_like(qr/That user may not own tickets in that queue/);
 $m->next_warning_like(qr/Could not record email: Ticket not taken/);
 $m->no_leftover_warnings_ok;
 
@@ -777,7 +777,7 @@ DBIx::SearchBuilder::Record::Cachable->FlushCache;
 cmp_ok( $tick->Owner, '!=', $user->id, "we didn't change owner" );
 is( $tick->Transactions->Count, 3, "no transactions added, user can't take ticket first" );
 
-$m->next_warning_like(qr/Permission Denied/);
+$m->next_warning_like(qr/That user may not own tickets in that queue/);
 $m->next_warning_like(qr/Could not record email: Ticket not taken/);
 $m->no_leftover_warnings_ok;
 

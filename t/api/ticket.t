@@ -215,8 +215,17 @@ my $t = RT::Ticket->new(RT->SystemUser);
 my ($val, $msg) = $t->Create( Subject => 'Owner test 1', Queue => 'General');
 ok( $t->Id, "Created a new ticket with id $val: $msg");
 
-$t->SetOwner('root');
+($val, $msg) = $t->SetOwner('bogususer');
+ok( !$val, "Can't set owner to bogus user");
+is( $msg, "That user does not exist", "Got message: $msg");
+
+($val, $msg) = $t->SetOwner('root');
 is ($t->OwnerObj->Name, 'root' , "Root owns the ticket");
+
+($val, $msg) = $t->SetOwner('root');
+ok( !$val, "User already owns ticket");
+is( $msg, "That user already owns that ticket", "Got message: $msg");
+
 $t->Steal();
 is ($t->OwnerObj->id, RT->SystemUser->id , "SystemUser owns the ticket");
 my $txns = RT::Transactions->new(RT->SystemUser);
