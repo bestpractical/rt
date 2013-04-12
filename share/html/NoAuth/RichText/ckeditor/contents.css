@@ -13,7 +13,7 @@ body
 	color: #222;
 
 	/* Remove the background color to make it transparent */
-	background-color: #fff;
+	background-color: transparent;
 }
 
 ol,ul,dl
