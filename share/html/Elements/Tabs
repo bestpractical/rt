@@ -604,7 +604,7 @@ my $build_main_nav = sub {
                 $tabs->child( history => title => loc('History'), path => "/Ticket/History.html?id=" . $id );
 
                 my %can = %{ $obj->CurrentUser->PrincipalObj->HasRights( Object => $obj ) };
-                $can{'_ModifyOwner'} = $can{'OwnTicket'} || $can{'TakeTicket'} || $can{'StealTicket'};
+                $can{'_ModifyOwner'} = $obj->CurrentUserCanSetOwner();
                 my $can = sub {
                     unless ($_[0] eq 'ExecuteCode') {
                         return $can{$_[0]} || $can{'SuperUser'};
@@ -686,17 +686,13 @@ my $build_main_nav = sub {
                     $actions->child( $key => title => loc( $key ), path => $url);
                 }
 
-                if ( $can->('OwnTicket') ) {
-                    if ( $obj->OwnerObj->Id == RT->Nobody->id
-                         && ( $can->('ModifyTicket') or $can->('TakeTicket') ) ) {
-                        $actions->child( take => title => loc('Take'), path => "/Ticket/Display.html?Action=Take;id=" . $id );
-                    }
-
-                    elsif (    $obj->OwnerObj->id != RT->Nobody->id
-                            && $obj->OwnerObj->id != $session{CurrentUser}->id
-                            && ( $can->('ModifyTicket') or $can->('StealTicket') ) ) {
-                        $actions->child( steal => title => loc('Steal'), path => "/Ticket/Display.html?Action=Steal;id=" . $id );
-                    }
+                my ($can_take, $tmsg) = $obj->CurrentUserCanSetOwner( Type => 'Take' );
+                my ($can_steal, $smsg) = $obj->CurrentUserCanSetOwner( Type => 'Steal' );
+                if ( $can_take ){
+                    $actions->child( take => title => loc('Take'), path => "/Ticket/Display.html?Action=Take;id=" . $id );
+                }
+                elsif ( $can_steal ){
+                    $actions->child( steal => title => loc('Steal'), path => "/Ticket/Display.html?Action=Steal;id=" . $id );
                 }
 
                 # TODO needs a "Can extract article into a class applied to this queue" check
