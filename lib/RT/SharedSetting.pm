@@ -210,11 +210,11 @@ sub Save {
         $self->{'Attribute'} = $object->Attributes->WithId($att_id);
         $self->{'Id'}        = $att_id;
         $self->{'Privacy'}   = $privacy;
-        return ( 1, $self->loc( "Saved [_1] [_2]", $self->ObjectName, $name ) );
+        return ( 1, $self->loc( "Saved [_1] [_2]", $self->loc( $self->ObjectName ), $name ) );
     }
     else {
         $RT::Logger->error($self->ObjectName . " save failure: $att_msg");
-        return ( 0, $self->loc("Failed to create [_1] attribute", $self->ObjectName) );
+        return ( 0, $self->loc("Failed to create [_1] attribute", $self->loc( $self->ObjectName ) ) );
     }
 }
 
