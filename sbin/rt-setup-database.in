@@ -128,7 +128,7 @@ if ( @actions > 1 && $args{'datafile'} ) {
     exit(-1);
 }
 foreach ( @actions ) {
-    unless ( /^(?:init|create|drop|schema|acl|coredata|insert|upgrade)$/ ) {
+    unless ( /^(?:init|create|drop|schema|acl|indexes|coredata|insert|upgrade)$/ ) {
         print STDERR "$0 called with an invalid --action parameter.\n";
         exit(-1);
     }
@@ -248,6 +248,17 @@ sub action_acl {
 
     print "Now inserting database ACLs.\n";
     return RT::Handle->InsertACL( $dbh, $args{'datafile'} || $args{'datadir'} );
+}
+
+sub action_indexes {
+    my %args = @_;
+    my $dbh = get_admin_dbh();
+    $RT::Handle = RT::Handle->new;
+    $RT::Handle->dbh( $dbh );
+    RT::InitLogging();
+
+    print "Now inserting database indexes.\n";
+    return RT::Handle->InsertIndexes( $dbh, $args{'datafile'} || $args{'datadir'} );
 }
 
 sub action_coredata {
@@ -436,6 +447,10 @@ sub action_upgrade {
         }
         if ( -e "$base_dir/$v/acl.$db_type" ) {
             ( $ret, $msg ) = action_acl( %tmp );
+            return ( $ret, $msg ) unless $ret;
+        }
+        if ( -e "$base_dir/$v/indexes" ) {
+            ( $ret, $msg ) = action_indexes( %tmp );
             return ( $ret, $msg ) unless $ret;
         }
         if ( -e "$base_dir/$v/content" ) {

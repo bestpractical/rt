@@ -531,6 +531,33 @@ sub InsertSchema {
     return (1);
 }
 
+sub InsertIndexes {
+    my $self      = shift;
+    my $dbh       = shift;
+    my $base_path = shift || $RT::EtcPath;
+
+    my $db_type = RT->Config->Get('DatabaseType');
+
+    $dbh = $self->dbh if !$dbh && ref $self;
+    return (0, "No DBI handle provided") unless $dbh;
+
+    return (0, "'$base_path' doesn't exist") unless -e $base_path;
+
+    my $path;
+    if ( -d $base_path ) {
+        $path = File::Spec->catfile( $base_path, "indexes");
+        return (0, "Couldn't find indexes file")
+            unless -e $path;
+    } else {
+        $path = $base_path;
+    }
+
+    local $@;
+    eval { require $path; 1 }
+        or return (0, "Couldn't execute '$path': " . $@);
+    return (1);
+}
+
 =head1 GetVersionFile
 
 Takes base name of the file as argument, scans for <base name>-<version> named
