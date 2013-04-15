@@ -267,7 +267,7 @@ sub _FieldToFunction {
         my $u_alias = $self->{"_sql_report_watcher_users_alias_$type"};
         unless ( $u_alias ) {
             my ($g_alias, $gm_alias);
-            ($g_alias, $gm_alias, $u_alias) = $self->_WatcherJoin( Type => $type );
+            ($g_alias, $gm_alias, $u_alias) = $self->_WatcherJoin( Name => $type );
             $self->{"_sql_report_watcher_users_alias_$type"} = $u_alias;
         }
         @args{qw(ALIAS FIELD)} = ($u_alias, $column);

@@ -11,7 +11,7 @@ push @Final, sub {
         my $group       = RT::Group->new( RT->SystemUser );
         my ($ok, $msg)  = $group->LoadRoleGroup(
             Object  => RT->System,
-            Type    => $role,
+            Name    => $role,
         );
 
         unless ($group->id) {

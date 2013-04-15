@@ -576,7 +576,7 @@ sub _HasRoleRightQuery {
     ;
 
     if ( $args{'Roles'} ) {
-        $query .= "AND (" . join( ' OR ', map "Groups.Type = '$_'", @{ $args{'Roles'} } ) . ")";
+        $query .= "AND (" . join( ' OR ', map "Groups.Name = '$_'", @{ $args{'Roles'} } ) . ")";
     }
 
     my (@object_clauses);
@@ -704,7 +704,7 @@ return that. if it has no type, return group.
 sub _GetPrincipalTypeForACL {
     my $self = shift;
     if ($self->IsRoleGroup) {
-        return $self->Object->Type;
+        return $self->Object->Name;
     } else {
         return $self->PrincipalType;
     }

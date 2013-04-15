@@ -139,7 +139,7 @@ sub AvailableRights {
 
     # Only return rights on classes which support the role asked for
     if ($principal and $principal->IsRoleGroup) {
-        my $role = $principal->Object->Type;
+        my $role = $principal->Object->Name;
         @types   = grep { $_->DOES('RT::Record::Role::Roles') and $_->HasRole($role) } @types;
         %rights  = ();
     }

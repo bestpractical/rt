@@ -3535,7 +3535,7 @@ sub GetPrincipalsMap {
             $system->OrderBy( FIELD => 'Type', ORDER => 'ASC' );
             push @map, [
                 'System' => $system,    # loc_left_pair
-                'Type'   => 1,
+                'Name'   => 1,
             ];
         }
         elsif (/Groups/) {
@@ -3564,7 +3564,7 @@ sub GetPrincipalsMap {
                 my $class = $object->RecordClassFromLookupType;
                 if ($class and $class->DOES("RT::Record::Role::Roles")) {
                     $roles->LimitToRolesForObject(RT->System);
-                    $roles->Limit( FIELD => "Type", VALUE => $_ )
+                    $roles->Limit( FIELD => "Name", VALUE => $_ )
                         for $class->Roles;
                 } else {
                     # No roles to show; so show nothing
@@ -3578,7 +3578,7 @@ sub GetPrincipalsMap {
                 $roles->OrderBy( FIELD => 'Type', ORDER => 'ASC' );
                 push @map, [
                     'Roles' => $roles,  # loc_left_pair
-                    'Type'  => 1
+                    'Name'  => 1
                 ];
             }
         }
@@ -3603,7 +3603,7 @@ sub GetPrincipalsMap {
                 FIELD2 => 'GroupId'
             );
             $Users->Limit( ALIAS => $groups, FIELD => 'Domain', VALUE => 'ACLEquivalence' );
-            $Users->Limit( ALIAS => $groups, FIELD => 'Type', VALUE => 'UserEquiv' );
+            $Users->Limit( ALIAS => $groups, FIELD => 'Name', VALUE => 'UserEquiv' );
 
             push @map, [
                 'Users' => $Users,  # loc_left_pair

@@ -293,13 +293,13 @@ L<RT::Group> object on failure.
 
 sub RoleGroup {
     my $self  = shift;
-    my $type  = shift;
+    my $name  = shift;
     my $group = RT::Group->new( $self->CurrentUser );
 
-    if ($self->HasRole($type)) {
+    if ($self->HasRole($name)) {
         $group->LoadRoleGroup(
             Object  => $self,
-            Type    => $type,
+            Name    => $name,
         );
     }
     return $group;
@@ -567,15 +567,15 @@ sub _ResolveRoles {
 sub _CreateRoleGroups {
     my $self = shift;
     my %args = (@_);
-    for my $type ($self->Roles) {
+    for my $name ($self->Roles) {
         my $type_obj = RT::Group->new($self->CurrentUser);
         my ($id, $msg) = $type_obj->CreateRoleGroup(
-            Type    => $type,
+            Name    => $name,
             Object  => $self,
             %args,
         );
         unless ($id) {
-            $RT::Logger->error("Couldn't create a role group of type '$type' for ".ref($self)." ".
+            $RT::Logger->error("Couldn't create a role group of type '$name' for ".ref($self)." ".
                                    $self->id.": ".$msg);
             return(undef);
         }

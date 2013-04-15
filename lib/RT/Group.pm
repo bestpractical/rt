@@ -190,23 +190,23 @@ sub SelfDescription {
         return $self->loc("group '[_1]'",$self->Name);
     }
     elsif ($self->Domain eq 'RT::System-Role') {
-        return $self->loc("system [_1]",$self->Type);
+        return $self->loc("system [_1]",$self->Name);
     }
     elsif ($self->Domain eq 'RT::Queue-Role') {
         my $queue = RT::Queue->new($self->CurrentUser);
         $queue->Load($self->Instance);
-        return $self->loc("queue [_1] [_2]",$queue->Name, $self->Type);
+        return $self->loc("queue [_1] [_2]",$queue->Name, $self->Name);
     }
     elsif ($self->Domain eq 'RT::Ticket-Role') {
-        return $self->loc("ticket #[_1] [_2]",$self->Instance, $self->Type);
+        return $self->loc("ticket #[_1] [_2]",$self->Instance, $self->Name);
     }
     elsif ($self->RoleClass) {
         my $class = lc $self->RoleClass;
            $class =~ s/^RT:://i;
-        return $self->loc("[_1] #[_2] [_3]", $self->loc($class), $self->Instance, $self->Type);
+        return $self->loc("[_1] #[_2] [_3]", $self->loc($class), $self->Instance, $self->Name);
     }
     elsif ($self->Domain eq 'SystemInternal') {
-        return $self->loc("system group '[_1]'",$self->Type);
+        return $self->loc("system group '[_1]'",$self->Name);
     }
     else {
         return $self->loc("undescribed group [_1]",$self->Id);
@@ -283,7 +283,7 @@ sub LoadACLEquivalenceGroup {
 
     return $self->LoadByCols(
         Domain   => 'ACLEquivalence',
-        Type     => 'UserEquiv',
+        Name     => 'UserEquiv',
         Instance => $principal,
     );
 }
@@ -305,13 +305,13 @@ sub LoadSystemInternalGroup {
 
     return $self->LoadByCols(
         Domain => 'SystemInternal',
-        Type   => $identifier,
+        Name   => $identifier,
     );
 }
 
 =head2 LoadRoleGroup
 
-Takes a paramhash of Object and Type and attempts to load the suitable role
+Takes a paramhash of Object and Name and attempts to load the suitable role
 group for said object.
 
 =cut
@@ -320,7 +320,7 @@ sub LoadRoleGroup {
     my $self = shift;
     my %args = (
         Object  => undef,
-        Type    => undef,
+        Name    => undef,
         @_
     );
 
@@ -337,7 +337,7 @@ sub LoadRoleGroup {
 }
 
 
-=head2 LoadTicketRoleGroup  { Ticket => TICKET_ID, Type => TYPE }
+=head2 LoadTicketRoleGroup  { Ticket => TICKET_ID, Name => TYPE }
 
 Deprecated in favor of L</LoadRoleGroup> or L<RT::Record/RoleGroup>.
 
@@ -347,17 +347,18 @@ sub LoadTicketRoleGroup {
     my $self = shift;
     my %args = (
         Ticket => '0',
-        Type => undef,
+        Name => undef,
         @_,
     );
     RT->Deprecated(
         Instead => "RT::Group->LoadRoleGroup or RT::Ticket->RoleGroup",
         Remove => "4.4",
     );
+    $args{'Name'} = $args{'Type'} if exists $args{'Type'};
     $self->LoadByCols(
         Domain   => 'RT::Ticket-Role',
         Instance => $args{'Ticket'},
-        Type     => $args{'Type'},
+        Name     => $args{'Name'},
     );
 }
 
@@ -373,23 +374,24 @@ sub LoadQueueRoleGroup {
     my $self = shift;
     my %args = (
         Queue => undef,
-        Type => undef,
+        Name => undef,
         @_,
     );
     RT->Deprecated(
         Instead => "RT::Group->LoadRoleGroup or RT::Queue->RoleGroup",
         Remove => "4.4",
     );
+    $args{'Name'} = $args{'Type'} if exists $args{'Type'};
     $self->LoadByCols(
         Domain   => 'RT::Queue-Role',
         Instance => $args{'Queue'},
-        Type     => $args{'Type'},
+        Name     => $args{'Name'},
     );
 }
 
 
 
-=head2 LoadSystemRoleGroup  Type
+=head2 LoadSystemRoleGroup  Name
 
 Deprecated in favor of L</LoadRoleGroup> or L<RT::Record/RoleGroup>.
 
@@ -404,8 +406,18 @@ sub LoadSystemRoleGroup {
     );
     $self->LoadByCols(
         Domain => 'RT::System-Role',
-        Type => $type
+        Name => $type
     );
+}
+
+sub LoadByCols {
+    my $self = shift;
+    my %args = ( @_ );
+    if ( exists $args{'Type'} ) {
+        RT->Deprecated( Instead => 'Name', Arguments => 'Type', Remove => '4.4' );
+        $args{'Name'} = $args{'Type'};
+    }
+    return $self->SUPER::LoadByCols( %args );
 }
 
 
@@ -439,12 +451,17 @@ sub _Create {
         Name        => undef,
         Description => undef,
         Domain      => undef,
-        Type        => undef,
         Instance    => '0',
         InsideTransaction => undef,
         _RecordTransaction => 1,
         @_
     );
+    if ( $args{'Type'} ) {
+        RT->Deprecated( Instead => 'Name', Arguments => 'Type', Remove => '4.4' );
+        $args{'Name'} = $args{'Type'};
+    } else {
+        $args{'Type'} = $args{'Name'};
+    }
 
     # Enforce uniqueness on user defined group names
     if ($args{'Domain'} and $args{'Domain'} eq 'UserDefined') {
@@ -522,7 +539,7 @@ sub CreateUserDefinedGroup {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    return($self->_Create( Domain => 'UserDefined', Type => '', Instance => '', @_));
+    return($self->_Create( Domain => 'UserDefined', Instance => '', @_));
 }
 
 =head2 ValidateName VALUE
@@ -576,8 +593,7 @@ sub _CreateACLEquivalenceGroup {
     my $princ = shift;
  
       my $id = $self->_Create( Domain => 'ACLEquivalence', 
-                           Type => 'UserEquiv',
-                           Name => 'User '. $princ->Object->Id,
+                           Name => 'UserEquiv',
                            Description => 'ACL equiv. for user '.$princ->Object->Id,
                            Instance => $princ->Id,
                            InsideTransaction => 1,
@@ -617,7 +633,7 @@ Takes a paramhash of:
 
 =over 4
 
-=item Type
+=item Name
 
 Required.  RT's core role types are C<Requestor>, C<Cc>, C<AdminCc>, and
 C<Owner>.  Extensions may add their own.
@@ -660,7 +676,7 @@ Message should contain an error string.
 sub CreateRoleGroup {
     my $self = shift;
     my %args = ( Instance => undef,
-                 Type     => undef,
+                 Name     => undef,
                  Domain   => undef,
                  Object   => undef,
                  InsideTransaction => 1,
@@ -678,10 +694,10 @@ sub CreateRoleGroup {
     }
 
     unless ($self->ValidateRoleGroup(%args)) {
-        return ( 0, $self->loc("Invalid Group Type and Domain") );
+        return ( 0, $self->loc("Invalid Group Name and Domain") );
     }
 
-    my %create = map { $_ => $args{$_} } qw(Domain Instance Type);
+    my %create = map { $_ => $args{$_} } qw(Domain Instance Name);
 
     my $duplicate = RT::Group->new( RT->SystemUser );
     $duplicate->LoadByCols( %create );
@@ -725,12 +741,12 @@ registered role on the specified Domain.  Otherwise returns false.
 sub ValidateRoleGroup {
     my $self = shift;
     my %args = (@_);
-    return 0 unless $args{Domain} and $args{Type};
+    return 0 unless $args{Domain} and ($args{Type} or $args{'Name'});
 
     my $class = $self->RoleClass($args{Domain});
     return 0 unless $class;
 
-    return $class->HasRole($args{Type});
+    return $class->HasRole($args{Type}||$args{'Name'});
 }
 
 =head2 SingleMemberRoleGroup
@@ -741,7 +757,7 @@ sub SingleMemberRoleGroup {
     my $self = shift;
     my $class = $self->RoleClass;
     return unless $class;
-    return $class->Role($self->Type)->{Single};
+    return $class->Role($self->Name)->{Single};
 }
 
 sub SingleMemberRoleGroupColumn {
@@ -749,7 +765,7 @@ sub SingleMemberRoleGroupColumn {
     my ($class) = $self->Domain =~ /^(.+)-Role$/;
     return unless $class;
 
-    my $role = $class->Role($self->Type);
+    my $role = $class->Role($self->Name);
     return unless $role->{Class} eq $class;
     return $role->{Column};
 }
@@ -761,6 +777,33 @@ sub RoleGroupObject {
     my $obj = $class->new( $self->CurrentUser );
     $obj->Load( $self->Instance );
     return $obj;
+}
+
+sub Type {
+    my $self = shift;
+    RT->Deprecated( Instead => 'Name', Remove => '4.4' );
+    return $self->_Value('Type', @_);
+}
+
+sub SetType {
+    my $self = shift;
+    RT->Deprecated( Instead => 'Name', Remove => '4.4' );
+    return $self->SetName(@_);
+}
+
+sub SetName {
+    my $self = shift;
+    my $value = shift;
+
+    my ($status, $msg) = $self->_Set( Field => 'Name', Value => $value );
+    return ($status, $msg) unless $status;
+
+    {
+        my ($status, $msg) = $self->__Set( Field => 'Type', Value => $value );
+        RT->Logger->error("Couldn't set Type: $msg") unless $status;
+    }
+
+    return ($status, $msg);
 }
 
 =head2 Delete
@@ -1142,13 +1185,13 @@ sub _AddMember {
                 Type     => 'SetWatcher',
                 OldValue => $old_member_id,
                 NewValue => $new_member_obj->Id,
-                Field    => $self->Type,
+                Field    => $self->Name,
             );
         } else {
             $obj->_NewTransaction(
                 Type     => 'AddWatcher', # use "watcher" for history's sake
                 NewValue => $new_member_obj->Id,
-                Field    => $self->Type,
+                Field    => $self->Name,
             );
         }
     }
@@ -1311,7 +1354,7 @@ sub _DeleteMember {
     if ($self->RoleClass) {
         my %txn = (
             OldValue => $old_member,
-            Field    => $self->Type,
+            Field    => $self->Name,
         );
 
         if ($self->SingleMemberRoleGroup) {
@@ -1554,7 +1597,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 Returns the current value of Type.
 (In the database, Type is stored as varchar(64).)
 
-
+Deprecated, use Name instead, will be removed in 4.4.
 
 =head2 SetType VALUE
 
@@ -1563,6 +1606,7 @@ Set Type to VALUE.
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 (In the database, Type will be stored as a varchar(64).)
 
+Deprecated, use SetName instead, will be removed in 4.4.
 
 =cut
 

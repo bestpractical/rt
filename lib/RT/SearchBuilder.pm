@@ -747,6 +747,12 @@ injection attacks when we pass through user specified values.
 
 =cut
 
+my %deprecated = (
+    groups => {
+        type => 'Name',
+    },
+);
+
 sub Limit {
     my $self = shift;
     my %ARGS = (
@@ -780,6 +786,20 @@ sub Limit {
             VALUE    => '0',
         );
     }
+
+    my $table;
+    ($table) = $ARGS{'ALIAS'} && $ARGS{'ALIAS'} ne 'main'
+        ? ($ARGS{'ALIAS'} =~ /^(.*)_\d+$/)
+        : $self->Table
+    ;
+
+    if ( $table and my $instead = $deprecated{ lc $table }{ lc $ARGS{'FIELD'} } ) {
+        RT->Deprecated(
+            Message => "$table.$ARGS{'FIELD'} column is deprecated",
+            Instead => $instead, Remove => '4.4'
+        );
+    }
+
     return $self->SUPER::Limit( %ARGS );
 }
 

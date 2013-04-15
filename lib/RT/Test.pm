@@ -931,7 +931,7 @@ sub store_rights {
     my @res;
     while ( my $ace = $acl->Next ) {
         my $obj = $ace->PrincipalObj->Object;
-        if ( $obj->isa('RT::Group') && $obj->Type eq 'UserEquiv' && $obj->Instance == RT->Nobody->id ) {
+        if ( $obj->isa('RT::Group') && $obj->Domain eq 'ACLEquivalence' && $obj->Instance == RT->Nobody->id ) {
             next;
         }
 
@@ -964,7 +964,7 @@ sub set_rights {
     $acl->Limit( FIELD => 'RightName', OPERATOR => '!=', VALUE => 'SuperUser' );
     while ( my $ace = $acl->Next ) {
         my $obj = $ace->PrincipalObj->Object;
-        if ( $obj->isa('RT::Group') && $obj->Type eq 'UserEquiv' && $obj->Instance == RT->Nobody->id ) {
+        if ( $obj->isa('RT::Group') && $obj->Domain eq 'ACLEquivalence' && $obj->Instance == RT->Nobody->id ) {
             next;
         }
         $ace->Delete;
@@ -988,7 +988,7 @@ sub add_rights {
                 $principal = RT::Group->new( RT->SystemUser );
                 $principal->LoadRoleGroup(
                     Object  => ($e->{'Object'} || RT->System),
-                    Type    => $type
+                    Name    => $type
                 );
             }
             die "Principal is not an object nor the name of a system or role group"

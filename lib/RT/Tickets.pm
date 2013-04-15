@@ -1233,7 +1233,7 @@ sub OrderByCols {
             my $users = $self->{_sql_u_watchers_alias_for_sort}{ $cache_key };
             unless ( $users ) {
                 $self->{_sql_u_watchers_alias_for_sort}{ $cache_key }
-                    = $users = ( $self->_WatcherJoin( Type => $meta->[1], Class => "RT::" . ($meta->[2] || 'Ticket') ) )[2];
+                    = $users = ( $self->_WatcherJoin( Name => $meta->[1], Class => "RT::" . ($meta->[2] || 'Ticket') ) )[2];
             }
             push @res, { %$row, ALIAS => $users, FIELD => $subkey };
        } elsif ( defined $meta->[0] && $meta->[0] eq 'CUSTOMFIELD' ) {
@@ -2459,7 +2459,7 @@ sub CurrentUserCanSee {
         my $groups = RT::Groups->new( RT->SystemUser );
         $groups->Limit( FIELD => 'Domain', VALUE => 'RT::Queue-Role' );
         foreach ( @tmp ) {
-            $groups->Limit( FIELD => 'Type', VALUE => $_ );
+            $groups->Limit( FIELD => 'Name', VALUE => $_ );
         }
         my $principal_alias = $groups->Join(
             ALIAS1 => 'main',
@@ -2562,7 +2562,7 @@ sub CurrentUserCanSee {
                 $self->Limit(
                     SUBCLAUSE       => 'ACL',
                     ALIAS           => $role_group_alias,
-                    FIELD           => 'Type',
+                    FIELD           => 'Name',
                     VALUE           => $role,
                     ENTRYAGGREGATOR => 'AND',
                 );
