@@ -67,7 +67,7 @@ my @dates  = qw(Created Starts Started Due Resolved Told LastUpdated);
 my @people = qw(Requestors Cc AdminCc);
 my @create = qw(Queue Requestor Subject Cc AdminCc Owner Status Priority
                 InitialPriority FinalPriority TimeEstimated TimeWorked
-                TimeLeft Starts Started Due Resolved);
+                TimeLeft Starts Started Due Resolved Content-Type);
 my @simple = qw(Subject Status Priority Disabled TimeEstimated TimeWorked
                 TimeLeft InitialPriority FinalPriority);
 my %dates  = map {lc $_ => $_} @dates;
@@ -190,6 +190,7 @@ else {
                     Subject => $v{Subject},
                     Data => $text,
                     'X-RT-Interface' => 'REST',
+                    'Content-Type' => $v{'Content-Type'} || 'text/plain',
                 );
         }
 
@@ -444,7 +445,7 @@ else {
                 }
             }
         }
-        elsif ($key ne 'id' && $key ne 'type' && $key ne 'creator') {
+        elsif ($key ne 'id' && $key ne 'type' && $key ne 'creator' && $key ne 'content-type' ) {
             $n = 0;
             $s = "Unknown field.";
         }
