@@ -411,8 +411,8 @@ sub Transitions {
     return %{ $self->{'data'}{'transitions'} || {} }
         unless @_;
 
-    my $status = shift;
-    return @{ $self->{'data'}{'transitions'}{ $status || '' } || [] };
+    my $status = shift || '';
+    return @{ $self->{'data'}{'transitions'}{ lc $status } || [] };
 }
 
 =head1 IsTransition
@@ -439,8 +439,8 @@ be checked on the ticket.
 
 sub CheckRight {
     my $self = shift;
-    my $from = shift;
-    my $to = shift;
+    my $from = lc shift;
+    my $to = lc shift;
     if ( my $rights = $self->{'data'}{'rights'} ) {
         my $check =
             $rights->{ $from .' -> '. $to }
@@ -536,6 +536,7 @@ pairs:
 sub Actions {
     my $self = shift;
     my $from = shift || return ();
+    $from = lc $from;
 
     $self->FillCache unless keys %LIFECYCLES_CACHE;
 

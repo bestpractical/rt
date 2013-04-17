@@ -298,6 +298,7 @@ sub Create {
         $args{'Status'} = $cycle->DefaultOnCreate;
     }
 
+    $args{'Status'} = lc $args{'Status'};
     unless ( $cycle->IsValid( $args{'Status'} ) ) {
         return ( 0, 0,
             $self->loc("Status '[_1]' isn't a valid status for tickets in this queue.",
@@ -3164,7 +3165,7 @@ sub SetStatus {
 
     my $lifecycle = $self->QueueObj->Lifecycle;
 
-    my $new = $args{'Status'};
+    my $new = lc $args{'Status'};
     unless ( $lifecycle->IsValid( $new ) ) {
         return (0, $self->loc("Status '[_1]' isn't a valid status for tickets in this queue.", $self->loc($new)));
     }
@@ -3212,7 +3213,7 @@ sub SetStatus {
     #Actually update the status
     my ($val, $msg)= $self->_Set(
         Field           => 'Status',
-        Value           => $args{Status},
+        Value           => $new,
         TimeTaken       => 0,
         CheckACL        => 0,
         TransactionType => 'Status',
