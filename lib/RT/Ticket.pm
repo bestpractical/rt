@@ -459,6 +459,9 @@ sub Create {
         }
     }
 
+    $args{'Type'} = lc $args{'Type'}
+        if $args{'Type'} =~ /^(ticket|approval|reminder)$/i;
+
     $RT::Handle->BeginTransaction();
 
     my %params = (
@@ -717,6 +720,15 @@ sub Create {
     }
 }
 
+sub SetType {
+    my $self = shift;
+    my $value = shift;
+
+    # Force lowercase on internal RT types
+    $value = lc $value
+        if $value =~ /^(ticket|approval|reminder)$/i;
+    return $self->_Set(Field => 'Type', Value => $value, @_);
+}
 
 
 

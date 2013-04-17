@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 87;
+use RT::Test tests => undef;
 
 
 {
@@ -254,3 +254,32 @@ ok(!$id,$msg);
 
 }
 
+diag("Test ticket types with different cases");
+{
+    my $t = RT::Ticket->new(RT->SystemUser);
+    my ($ok) = $t->Create(
+        Queue => 'general',
+        Subject => 'type test',
+        Type => 'Ticket',
+    );
+    ok($ok, "Ticket allows passing upper-case Ticket as type during Create");
+    is($t->Type, "ticket", "Ticket type is lowercased during create");
+
+    ($ok) = $t->SetType("REMINDER");
+    ok($ok, "Ticket allows passing upper-case REMINDER to SetType");
+    is($t->Type, "reminder", "Ticket type is lowercased during set");
+
+    ($ok) = $t->SetType("OTHER");
+    ok($ok, "Allows setting Type to non-RT types");
+    is($t->Type, "OTHER", "Non-RT types are case-insensitive");
+
+    ($ok) = $t->Create(
+        Queue => 'general',
+        Subject => 'type test',
+        Type => 'Approval',
+    );
+    ok($ok, "Tickets can be created with an upper-case Approval type");
+    is($t->Type, "approval", "Approvals, the third and final internal type, are also lc'd during Create");
+}
+
+done_testing;
