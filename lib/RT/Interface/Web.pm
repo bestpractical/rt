@@ -574,6 +574,7 @@ sub MaybeRejectPrivateComponentRequest {
             / # leading slash
             ( Elements    |
               _elements   | # mobile UI
+              Callbacks   |
               Widgets     |
               autohandler | # requesting this directly is suspicious
               l (_unsafe)? ) # loc component
