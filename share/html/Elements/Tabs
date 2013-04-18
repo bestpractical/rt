@@ -671,20 +671,13 @@ my $build_main_nav = sub {
 
                     my $action = $info->{'update'} || '';
                     my $url = '/Ticket/';
-                    if ($action) {
-                        $url .= "Update.html?"
-                            . $query_string->(
-                                Action        => $action,
-                                DefaultStatus => $next,
-                                id            => $id,
-                            );
-                    } else {
-                        $url .= "Display.html?"
-                            . $query_string->(
-                                Status => $next,
-                                id     => $id,
-                            );
-                    }
+                    $url .= "Update.html?". $query_string->(
+                        $action
+                            ? (Action        => $action)
+                            : (SubmitTicket  => 1, Status => $next),
+                        DefaultStatus => $next,
+                        id            => $id,
+                    );
                     my $key = $info->{'label'} || ucfirst($next);
                     $actions->child( $key => title => loc( $key ), path => $url);
                 }
