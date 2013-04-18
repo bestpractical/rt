@@ -182,8 +182,10 @@ $m->callback( COLUMN_MAP => $COLUMN_MAP, CallbackName => 'Once', CallbackOnce =>
 $m->callback( COLUMN_MAP => $COLUMN_MAP );
 
 # first deal with class specific things
-my $class_map = $m->comp("/Elements/$Class/ColumnMap", Attr => $Attr, Name => $Name );
-return $class_map if defined $class_map;
+if (RT::Interface::Web->ComponentPathIsSafe($Class) and $m->comp_exists("/Elements/$Class/ColumnMap")) {
+    my $class_map = $m->comp("/Elements/$Class/ColumnMap", Attr => $Attr, Name => $Name );
+    return $class_map if defined $class_map;
+}
 return GetColumnMapEntry( Map => $COLUMN_MAP, Name => $Name, Attribute => $Attr );
 
 </%INIT>
