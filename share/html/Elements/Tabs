@@ -486,7 +486,7 @@ my $build_main_nav = sub {
         $dashes->child('dashboard_create' => title => loc('New Dashboard'), path => "/Dashboards/Modify.html?Create=1" );
     }
 
-    my $search = Menu->child( search => title => loc('Search'), path => '/Search/' );
+    my $search = Menu->child( search => title => loc('Search'), path => '/Search/Simple.html' );
 
     my $tickets = $search->child( tickets => title => loc('Tickets'), path => '/Search/Build.html' );
     $tickets->child( simple => title => loc('Simple Search'), path => "/Search/Simple.html" );
