@@ -5,7 +5,7 @@ use RT::Test tests => 'no_declare';
 
 my (undef, $m) = RT::Test->started_ok;
 $m->login;
-$m->follow_link( id => 'tools-config-custom-fields-create' );
+$m->follow_link( id => 'admin-custom-fields-create' );
 $m->submit_form_ok({
     form_name => "ModifyCustomField",
     fields    => {

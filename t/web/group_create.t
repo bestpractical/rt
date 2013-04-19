@@ -13,7 +13,7 @@ my $group_name = 'test group';
 my $group_id;
 diag "Create a group";
 {
-    $m->follow_link( id => 'tools-config-groups-create');
+    $m->follow_link( id => 'admin-groups-create');
 
     # Test group form validation
     $m->submit_form(
