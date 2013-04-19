@@ -88,3 +88,10 @@ UPGRADING FROM RT 4.0.0 and greater
 
   This command deletes records from Transactions table. This script can only fix
   TimeWorked mismatch, but not TimeLeft or TimeEstimated.
+
+* The Articles menu is now a top-level menu item and display is controlled by
+  the right ShowArticlesMenu.  This right is only grantable globally to groups
+  or users.  During the upgrade, the new right will be automatically granted to
+  Privileged users so that the menu doesn't disappear for anyone previously
+  using it.  You may wish to revoke the right from Privileged and grant it
+  more selectively.
