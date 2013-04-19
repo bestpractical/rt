@@ -1428,7 +1428,7 @@ $user->WatchedQueues('Cc', 'AdminCc');
 sub WatchedQueues {
 
     my $self = shift;
-    my @roles = @_ || ('Cc', 'AdminCc');
+    my @roles = @_ ? @_ : ('Cc', 'AdminCc');
 
     $RT::Logger->debug('WatcheQueues got user ' . $self->Name);
 
