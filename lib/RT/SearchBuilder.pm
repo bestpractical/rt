@@ -751,6 +751,7 @@ my %deprecated = (
     groups => {
         type => 'Name',
     },
+    principals => { objectid => 'id' },
 );
 
 sub Limit {

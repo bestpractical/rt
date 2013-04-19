@@ -139,7 +139,7 @@ sub Object {
             $RT::Logger->crit("Found a principal (".$self->Id.") that was neither a user nor a group");
             return(undef);
         }
-        $self->{'object'}->Load( $self->ObjectId() );
+        $self->{'object'}->Load( $self->id );
     }
     return ($self->{'object'});
 
@@ -735,7 +735,20 @@ sub _ReferenceId {
     }
 }
 
+sub ObjectId {
+    my $self = shift;
+    RT->Deprecated( Instead => 'id', Remove => '4.4' );
+    return $self->_Value('ObjectId');
+}
 
+sub LoadByCols {
+    my $self = shift;
+    my %args = @_;
+    if ( exists $args{'ObjectId'} ) {
+        RT->Deprecated( Arguments => 'ObjectId', Instead => 'id', Remove => '4.4' );
+    }
+    return $self->SUPER::LoadByCols( %args );
+}
 
 
 

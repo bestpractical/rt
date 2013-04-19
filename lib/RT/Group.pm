@@ -1481,17 +1481,9 @@ The response is cached. PrincipalObj should never ever change.
 
 sub PrincipalObj {
     my $self = shift;
-    unless ( defined $self->{'PrincipalObj'} &&
-             defined $self->{'PrincipalObj'}->ObjectId &&
-            ($self->{'PrincipalObj'}->ObjectId == $self->Id) &&
-            (defined $self->{'PrincipalObj'}->PrincipalType && 
-                $self->{'PrincipalObj'}->PrincipalType eq 'Group')) {
-
-            $self->{'PrincipalObj'} = RT::Principal->new($self->CurrentUser);
-            $self->{'PrincipalObj'}->LoadByCols('ObjectId' => $self->Id,
-                                                'PrincipalType' => 'Group') ;
-            }
-    return($self->{'PrincipalObj'});
+    my $res = RT::Principal->new( $self->CurrentUser );
+    $res->Load( $self->id );
+    return $res;
 }
 
 

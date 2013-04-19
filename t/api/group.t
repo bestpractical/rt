@@ -88,7 +88,7 @@ is($group_3->HasMemberRecursively($principal_2), undef, "group 3 has member 2 re
 
 ok(my $u = RT::Group->new(RT->SystemUser));
 ok($u->Load(4), "Loaded the first user");
-is($u->PrincipalObj->ObjectId , 4, "user 4 is the fourth principal");
+is($u->PrincipalObj->id , 4, "user 4 is the fourth principal");
 is($u->PrincipalObj->PrincipalType , 'Group' , "Principal 4 is a group");
 
 
