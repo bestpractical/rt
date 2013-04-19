@@ -544,6 +544,7 @@ my $build_main_nav = sub {
     my $about_me = Menu->child( 'preferences' =>
         title        => loc('Logged in as [_1]', $username),
         escape_title => 0,
+        path         => '/User/Summary.html?id=' . $session{CurrentUser}->id,
         sort_order   => 99,
     );
 
