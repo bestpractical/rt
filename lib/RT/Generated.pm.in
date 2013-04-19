@@ -51,6 +51,7 @@ use warnings;
 use strict;
 
 our $VERSION = '@RT_VERSION_MAJOR@.@RT_VERSION_MINOR@.@RT_VERSION_PATCH@';
+our ($MAJOR_VERSION, $MINOR_VERSION, $REVISION) = $VERSION =~ /^(\d)\.(\d)\.(\d+)/;
 
 @DATABASE_ENV_PREF@
 
