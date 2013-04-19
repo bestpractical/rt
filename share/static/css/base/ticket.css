@@ -1,5 +1,12 @@
-#requestor-accordion h3 { clear: right }
-#requestor-accordion a.user-summary { float: right; }
+#requestor-accordion h3 {
+    position: relative;
+}
+#requestor-accordion a.user-summary {
+    position: absolute;
+    right: 0;
+    text-decoration: none;
+}
+#requestor-accordion a.user-summary:hover { text-decoration: underline }
 
 #requestor-accordion a.modify-user {
     font-size: 80%;
