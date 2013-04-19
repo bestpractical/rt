@@ -764,7 +764,6 @@ sub Limit {
 
     if ($ARGS{FUNCTION}) {
         ($ARGS{ALIAS}, $ARGS{FIELD}) = split /\./, delete $ARGS{FUNCTION}, 2;
-        $self->SUPER::Limit(%ARGS);
     } elsif ($ARGS{FIELD} =~ /\W/
           or $ARGS{OPERATOR} !~ /^(=|<|>|!=|<>|<=|>=
                                   |(NOT\s*)?LIKE
@@ -774,15 +773,14 @@ sub Limit {
                                   |(NOT\s*)?IN
                                   |\@\@)$/ix) {
         $RT::Logger->crit("Possible SQL injection attack: $ARGS{FIELD} $ARGS{OPERATOR}");
-        $self->SUPER::Limit(
+        %ARGS = (
             %ARGS,
             FIELD    => 'id',
             OPERATOR => '<',
             VALUE    => '0',
         );
-    } else {
-        $self->SUPER::Limit(%ARGS);
     }
+    return $self->SUPER::Limit( %ARGS );
 }
 
 =head2 ItemsOrderBy
