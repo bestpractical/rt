@@ -45,14 +45,10 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-#comp-Articles-Article-Search .label h2 {
-    text-align: left;
-}
-
-.articles-select-article select {
-    max-width: 20em;
-}
-
-#articles-needs-setup a {
-    text-decoration: underline;
-}
+<%init>
+my $Classes = RT::Classes->new( $session{'CurrentUser'} );
+$Classes->LimitToEnabled();
+$Classes->RowsPerPage(1);
+return if $Classes->First;
+</%init>
+<& NeedsSetup &>
