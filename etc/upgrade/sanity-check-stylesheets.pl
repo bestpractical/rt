@@ -59,20 +59,20 @@ use RT::Users;
 my $users = RT::Users->new( $RT::SystemUser );
 $users->UnLimit();
 
-my @comp_roots = RT::Interface::Web->ComponentRoots;
-my %comp_root_check_cache;
+my @static_roots = RT::Interface::Web->StaticRoots;
+my %static_root_check_cache;
 sub stylesheet_exists {
     my $stylesheet = shift;
 
-    return $comp_root_check_cache{$stylesheet}
-        if exists $comp_root_check_cache{$stylesheet};
+    return $static_root_check_cache{$stylesheet}
+        if exists $static_root_check_cache{$stylesheet};
 
-    for my $comp_root (@comp_roots) {
-        return ++$comp_root_check_cache{$stylesheet}
-            if -d "$comp_root/NoAuth/css/$stylesheet";
+    for my $static_root (@static_roots) {
+        return ++$static_root_check_cache{$stylesheet}
+            if -d "$static_root/css/$stylesheet";
     }
 
-    return $comp_root_check_cache{$stylesheet} = 0;
+    return $static_root_check_cache{$stylesheet} = 0;
 }
 
 my $system_stylesheet = RT->Config->Get('WebDefaultStylesheet');

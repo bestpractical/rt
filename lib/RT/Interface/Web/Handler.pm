@@ -333,13 +333,7 @@ sub StaticWrap {
         }
     }
 
-    my @system_static;
-    for my $plugin ( @{RT->Plugins} ) {
-        my $dir = $plugin->StaticDir;
-        push @system_static, $dir if -d $dir;
-    }
-    push @system_static, $RT::LocalStaticPath, $RT::StaticPath;
-    for my $root (grep {$_ and -d $_} @system_static) {
+    for my $root (RT::Interface::Web->StaticRoots) {
         $builder->add_middleware(
             'Plack::Middleware::Static',
             path         => sub { s!^/static/!! },

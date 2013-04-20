@@ -207,9 +207,9 @@ our %META = (
             my $self = shift;
             my $value = $self->Get('WebDefaultStylesheet');
 
-            my @comp_roots = RT::Interface::Web->ComponentRoots;
-            for my $comp_root (@comp_roots) {
-                return if -d $comp_root.'/NoAuth/css/'.$value;
+            my @roots = RT::Interface::Web->StaticRoots;
+            for my $root (@roots) {
+                return if -d "$root/css/$value";
             }
 
             $RT::Logger->warning(

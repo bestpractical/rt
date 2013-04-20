@@ -89,7 +89,7 @@ default CSS styles, via the C<@CSSFiles> configuration option.  To add
 an extra CSS file, for example F<my-site.css>, create the local overlay
 directory:
 
-    $ mkdir -p local/html/NoAuth/css/
+    $ mkdir -p local/static/css/
 
 And place your F<my-site.css> file in it.  Finally, adjust your
 C<@CSSFiles> in your F<RT_SiteConfig.pm>:
@@ -134,8 +134,8 @@ local modifications to RT. Run the following commands in your
 C</opt/rt4> directory (or wherever your RT is installed) to get
 started:
 
-    $ mkdir -p local/html/NoAuth/css/localstyle
-    $ cp -R share/html/NoAuth/css/aileron/* local/html/NoAuth/css/localstyle/
+    $ mkdir -p local/static/css/localstyle
+    $ cp -R share/static/css/aileron/* local/static/css/localstyle/
 
 You can call your "localstyle" directory whatever you want and you don't
 have to copy the aileron theme to start from, but it's a good place to
