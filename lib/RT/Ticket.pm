@@ -459,6 +459,8 @@ sub Create {
         }
     }
 
+    $args{'Subject'} =~ s/\n//g;
+
     $RT::Handle->BeginTransaction();
 
     my %params = (
@@ -1813,6 +1815,13 @@ sub QueueObj {
         my ($result) = $self->{_queue_obj}->Load( $self->__Value('Queue') );
     }
     return ($self->{_queue_obj});
+}
+
+sub SetSubject {
+    my $self = shift;
+    my $value = shift;
+    $value =~ s/\n//g;
+    return $self->_Set( Field => 'Subject', Value => $value );
 }
 
 =head2 SubjectTag
