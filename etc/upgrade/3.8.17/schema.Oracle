@@ -1,0 +1,1 @@
+UPDATE Tickets SET Subject = REPLACE(Subject,CHR(10),'');
