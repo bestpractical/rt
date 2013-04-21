@@ -1070,7 +1070,7 @@ sub _CustomFieldDecipher {
     elsif ( $field =~ /\D/ ) {
         $queue = '';
         my $cfs = RT::CustomFields->new( $self->CurrentUser );
-        $cfs->Limit( FIELD => 'Name', VALUE => $field );
+        $cfs->Limit( FIELD => 'Name', VALUE => $field, CASESENSITIVE => 0 );
         $cfs->LimitToLookupType('RT::Queue-RT::Ticket');
 
         # if there is more then one field the current user can

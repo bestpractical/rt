@@ -324,6 +324,7 @@ sub _CustomFieldJoinByName {
         LEFTJOIN        => $CFs,
         ENTRYAGGREGATOR => 'AND',
         FIELD           => 'Name',
+        CASESENSITIVE   => 0,
         VALUE           => $cf,
     );
 
@@ -749,6 +750,7 @@ injection attacks when we pass through user specified values.
 
 my %check_case_sensitivity = (
     groups => { 'name' => 1, domain => 1 },
+    customfields => { 'name' => 1 },
 );
 
 my %deprecated = (
@@ -805,7 +807,9 @@ sub Limit {
     }
 
     unless ( exists $ARGS{CASESENSITIVE} ) {
-        if ( $table && $check_case_sensitivity{ lc $table }{ lc $ARGS{'FIELD'} } ) {
+        if ( $ARGS{'OPERATOR'} !~ /IS/i
+            && $table && $check_case_sensitivity{ lc $table }{ lc $ARGS{'FIELD'} }
+        ) {
             RT->Logger->warning(
                 "Case sensitive search by $table.$ARGS{'FIELD'}"
                 ." at ". (caller)[1] . " line ". (caller)[2]

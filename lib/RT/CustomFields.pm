@@ -129,7 +129,7 @@ sub LimitToGrouping {
             return $self->Limit( FIELD => 'id', VALUE => 0, ENTRYAGGREGATOR => 'AND' );
         }
         foreach ( @$list ) {
-            $self->Limit( FIELD => 'Name', VALUE => $_ );
+            $self->Limit( FIELD => 'Name', VALUE => $_, CASESENSITIVE => 0 );
         }
     } else {
         my @list = map {@$_} grep defined && ref($_) eq 'ARRAY',
@@ -142,6 +142,7 @@ sub LimitToGrouping {
                 OPERATOR => '!=',
                 VALUE => $_,
                 ENTRYAGGREGATOR => 'AND',
+                CASESENSITIVE => 0,
             );
         }
 

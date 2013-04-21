@@ -1406,7 +1406,7 @@ sub LoadCustomFieldByIdentifier {
 
     my $CFs = RT::CustomFields->new( $self->CurrentUser );
     $CFs->SetContextObject( $self->Object );
-    $CFs->Limit( FIELD => 'Name', VALUE => $field );
+    $CFs->Limit( FIELD => 'Name', VALUE => $field, CASESENSITIVE => 0 );
     $CFs->LimitToLookupType($self->CustomFieldLookupType);
     $CFs->LimitToGlobalOrObjectId($self->Object->QueueObj->id);
     return $CFs->First || RT::CustomField->new( $self->CurrentUser );
