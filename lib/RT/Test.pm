@@ -726,7 +726,10 @@ sub load_or_create_user {
         my $groups_alias = $gms->Join(
             FIELD1 => 'GroupId', TABLE2 => 'Groups', FIELD2 => 'id',
         );
-        $gms->Limit( ALIAS => $groups_alias, FIELD => 'Domain', VALUE => 'UserDefined' );
+        $gms->Limit(
+            ALIAS => $groups_alias, FIELD => 'Domain', VALUE => 'UserDefined',
+            CASESENSITIVE => 0,
+        );
         $gms->Limit( FIELD => 'MemberId', VALUE => $obj->id );
         while ( my $group_member_record = $gms->Next ) {
             $group_member_record->Delete;

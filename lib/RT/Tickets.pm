@@ -977,7 +977,8 @@ sub _WatcherMembershipLimit {
         ALIAS           => $groups,
         FIELD           => 'Domain',
         VALUE           => 'RT::Ticket-Role',
-        ENTRYAGGREGATOR => 'AND'
+        ENTRYAGGREGATOR => 'AND',
+        CASESENSITIVE   => 0,
     );
 
     $self->Join(
@@ -2457,7 +2458,7 @@ sub CurrentUserCanSee {
     if ( my @tmp = grep $_ ne 'Owner' && !ref $roles{ $_ }, keys %roles ) {
 
         my $groups = RT::Groups->new( RT->SystemUser );
-        $groups->Limit( FIELD => 'Domain', VALUE => 'RT::Queue-Role' );
+        $groups->Limit( FIELD => 'Domain', VALUE => 'RT::Queue-Role', CASESENSITIVE => 0 );
         foreach ( @tmp ) {
             $groups->Limit( FIELD => 'Name', VALUE => $_, CASESENSITIVE => 0 );
         }

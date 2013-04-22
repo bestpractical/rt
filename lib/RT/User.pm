@@ -1456,6 +1456,7 @@ sub WatchedQueues {
                             FIELD => 'Domain',
                             VALUE => 'RT::Queue-Role',
                             ENTRYAGGREGATOR => 'AND',
+                            CASESENSITIVE => 0,
                           );
     if (grep { $_ eq 'Cc' } @roles) {
         $watched_queues->Limit(

@@ -35,7 +35,8 @@ our @Initial = (
         my $groups = RT::Groups->new(RT->SystemUser);
         $groups->Limit( FIELD    => 'Domain',
                         OPERATOR => '=',
-                        VALUE    => 'Personal'
+                        VALUE    => 'Personal',
+                        CASESENSITIVE => 0,
                       );
         $groups->LimitToDeleted;
         while ( my $group = $groups->Next ) {

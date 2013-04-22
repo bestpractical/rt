@@ -76,6 +76,7 @@ $txns->Limit(
     FIELD => 'Domain',
     OPERATOR => '=',
     VALUE => 'ACLEquivalence',
+    CASESENSITIVE => 0,
     QUOTEVALUE => 1,
     ENTRYAGGREGATOR => 'AND',
 );
