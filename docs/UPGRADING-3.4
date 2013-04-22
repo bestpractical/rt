@@ -9,3 +9,10 @@ changed to "ModifyCustomField"
 Custom Fields now have an additional right, "ModifyCustomField".  This right
 governs whether a user can modify an object's custom field values for a
 particular custom field. This includes adding, deleting and changing values.
+
+=head1 UPGRADING FROM 3.3.2 AND EARLIER
+
+Viewing custom fields now requires the "SeeCustomField" right either globally
+or on a per-queue basis.  Global CFs are no longer visible to everyone and
+SeeQueue is no longer sufficient to view queue-level CFs.  You must grant the
+"SeeCustomField" right manually after upgrade.
