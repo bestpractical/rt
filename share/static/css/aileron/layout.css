@@ -3,7 +3,7 @@
 body {
     padding:0;
     margin:0;
-    background: #547CCC url(<%RT->Config->Get('WebPath')%>/static/css/web2/images/background-gradient.png) top left repeat-x ;
+    background: #547CCC url(<%RT->Config->Get('WebPath')%>/static/css/images/background-gradient.png) top left repeat-x ;
     font-family: arial, helvetica, sans-serif;
     color: #000000;
 }
