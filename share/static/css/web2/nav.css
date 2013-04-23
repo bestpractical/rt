@@ -17,7 +17,7 @@
 }
 
 .sf-sub-indicator {
-    background-image: url(<%RT->Config->Get('WebPath')%>/static/css/images/arrows-grey.png);
+    background-image: url(../../../static/css/images/arrows-grey.png);
     margin-top: -3px;
 }
 
@@ -51,7 +51,7 @@
 }
 
 #prefs-menu .sf-sub-indicator {
-    background-image: url(<%RT->Config->Get('WebPath')%>/static/css/images/arrows-grey.png);
+    background-image: url(../../../static/css/images/arrows-grey.png);
     margin-top: 0;
 }
 
