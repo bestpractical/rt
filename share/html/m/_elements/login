@@ -46,11 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, CallbackName => 'Header' );
-<&| /m/_elements/wrapper, show_home_button => 0 &>
-<style>
-<& /m/_elements/raw_style &>
-</style>
-<h1><&|/l, RT->Config->Get('rtname') &>RT for [_1]</&></h1>
+<&| /m/_elements/wrapper, title => loc('RT for [_1]', RT->Config->Get('rtname')), show_home_button => 0 &>
 <div id="body" class="login-body">
 
 <& /Elements/ListActions,
