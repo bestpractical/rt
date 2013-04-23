@@ -60,7 +60,7 @@ RT::Action::CreateTickets - Create one or more tickets according to an externall
 
 =head1 SYNOPSIS
 
- ===Create-Ticket codereview
+ ===Create-Ticket: codereview
  Subject: Code review for {$Tickets{'TOP'}->Subject}
  Depended-On-By: TOP
  Content: Someone has created a ticket. you should review and approve it,
@@ -568,7 +568,7 @@ sub Parse {
 
 Parses mulitline templates. Things like:
 
- ===Create-Ticket ...
+ ===Create-Ticket: ...
 
 Takes the same arguments as L</Parse>.
 
