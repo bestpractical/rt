@@ -76,7 +76,7 @@ div.titlebox-title .left {
 }
 
 .titlebox.rolled-up .titlebox-title .left:after {
-    content: " (<&|/l&>collapsed</&>)";
+    content: " [-]";
     font-weight: normal;
 }
 
