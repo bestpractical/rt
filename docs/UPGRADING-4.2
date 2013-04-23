@@ -88,3 +88,9 @@ UPGRADING FROM RT 4.0.0 and greater
 
   This command deletes records from Transactions table. This script can only fix
   TimeWorked mismatch, but not TimeLeft or TimeEstimated.
+
+* CSS is no longer processed through Mason; it's served by a proper static file
+  handler.  If you used the Begin or End callbacks of main.css in the aileron,
+  web2, or ballard themes, you should transition to the @CSSFiles config
+  option.  See docs/customizing/styling_rt.pd for more information on custom
+  styles.

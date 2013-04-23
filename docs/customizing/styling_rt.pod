@@ -96,30 +96,10 @@ C<@CSSFiles> in your F<RT_SiteConfig.pm>:
 
     Set( @CSSFiles, ('my-site.css') );
 
-This technique is preferred to callbacks (below) because CSS included
-via this way will be minified.  It is also included across all styles,
-unlike the callback technique.
+CSS added this way is included across all themes.
 
 If you are writing an extension, see L<RT/AddStyleSheets> for how to
 simply and programmatically add values to C<@CSSFiles>.
-
-=head2 Callbacks
-
-RT's CSS files are also Mason templates and the main CSS file,
-conveniently called C<main.css>, has a C<Begin> and C<End> callback
-allowing you to inject custom CSS.
-
-To create an End callback, create the callback directory and an
-End file in that directory:
-
-    $ mkdir -p local/html/Callbacks/MyRT/NoAuth/css/aileron/main.css
-    $ touch local/html/Callbacks/MyRT/NoAuth/css/aileron/main.css/End
-
-You can use any name you want for the C<MyRT> directory and the theme
-directory should correspond with the theme you want to change.
-
-RT will now evaluate the contents of that file after it processes all
-of the C<@import> statements in C<main.css>.
 
 
 =head1 Designing Your Own Theme

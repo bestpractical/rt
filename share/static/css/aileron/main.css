@@ -1,5 +1,3 @@
-% $m->callback(CallbackName => 'Begin');
-
 @import "../base/main.css";
 
 @import "base.css";
@@ -12,5 +10,3 @@
 @import "ticket-search.css";
 @import "ticket.css";
 @import "misc.css";
-
-% $m->callback(CallbackName => 'End');
