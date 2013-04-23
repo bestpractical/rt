@@ -50,7 +50,7 @@ my $squisher;
 </%ONCE>
 <%INIT>
 my $arg = $m->dhandler_arg;
-if ( $arg =~ m{(.*)-squished-[0-9a-f]{32}\.css$} ) {
+if ( $arg =~ m{(.*)/squished-[0-9a-f]{32}\.css$} ) {
     my $style = $1;
     my $squished = RT::Interface::Web::SquishedCSS( $style );
     # Don't send Last-Modified since we don't handle If-Modified-Since

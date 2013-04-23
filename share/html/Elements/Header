@@ -129,7 +129,7 @@ if ( RT->Config->Get('DevelMode') ) {
 else {
     my $key =
       RT::Interface::Web::SquishedCSS( $style )->Key;
-    @css_files = "/NoAuth/css/$style-squished-$key.css";
+    @css_files = "/NoAuth/css/$style/squished-$key.css";
 }
 
 </%INIT>
