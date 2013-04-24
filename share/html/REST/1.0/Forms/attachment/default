@@ -67,8 +67,10 @@ unless ( $attachment->Id eq $id ) {
 my @arglist = split( '/', $args || "" );
 my $content;
 
-if ( @argslist and $arglist[0] eq 'content' ) {
+if ( @arglist and $arglist[0] eq 'content' ) {
     $c = $attachment->OriginalContent;
+    $r->content_type($attachment->ContentType)
+        if $attachment->ContentType !~ /^text\//;
 } else {
     my @data;
     push @data, [ id              => "attachment/" . $attachment->Id ];
