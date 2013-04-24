@@ -328,6 +328,7 @@ $deps{'DASHBOARDS'} = [ text_to_hash( << '.') ];
 HTML::RewriteAttributes 0.05
 MIME::Types
 URI 1.59
+URI::QueryParam
 .
 
 $deps{'GRAPHVIZ'} = [ text_to_hash( << '.') ];

@@ -60,6 +60,7 @@ use RT::Interface::Web::Handler;
 use RT::Interface::Web;
 use File::Temp 'tempdir';
 use HTML::Scrubber;
+use URI::QueryParam;
 
 sub MailDashboards {
     my $self = shift;
@@ -547,26 +548,10 @@ sub GetResource {
     $HTML::Mason::Commands::r->path_info($path);
 
     # grab the query arguments
-    my %args;
-    for (split /&/, ($uri->query||'')) {
-        my ($k, $v) = /^(.*?)=(.*)$/
-            or die "Unable to parse query parameter '$_'";
-
-        for ($k, $v) { s/%(..)/chr hex $1/ge }
-
-        # no value yet, simple key=value
-        if (!exists $args{$k}) {
-            $args{$k} = $v;
-        }
-        # already have key=value, need to upgrade it to key=[value1, value2]
-        elsif (!ref($args{$k})) {
-            $args{$k} = [$args{$k}, $v];
-        }
-        # already key=[value1, value2], just add the new value
-        else {
-            push @{ $args{$k} }, $v;
-        }
-    }
+    my %args = map { $_ => [ $uri->query_param($_) ] } $uri->query_param;
+    # Convert empty and single element arrayrefs to a non-ref scalar
+    @$_ < 2 and $_ = $_->[0]
+        for values %args;
 
     $RT::Logger->debug("Running component '$path'");
     $content = RunComponent($path, %args);
