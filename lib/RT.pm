@@ -100,8 +100,10 @@ You have the option of handling the timing of config loading and the actual
 init sequence yourself with:
 
     use RT;
-    RT->LoadConfig;
-    RT->Init;
+    BEGIN {
+        RT->LoadConfig;
+        RT->Init;
+    }
 
 or you can let RT do it all:
 
