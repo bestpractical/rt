@@ -381,8 +381,10 @@ sub BuildEmail {
             # already attached this object
             return "cid:$cid_of{$uri}" if $cid_of{$uri};
 
-            $cid_of{$uri} = time() . $$ . int(rand(1e6));
             my ($data, $filename, $mimetype, $encoding) = GetResource($uri);
+            return $uri unless defined $data;
+
+            $cid_of{$uri} = time() . $$ . int(rand(1e6));
 
             # downgrade non-text strings, because all strings are utf8 by
             # default, which is wrong for non-text strings.
@@ -405,7 +407,7 @@ sub BuildEmail {
         inline_css => sub {
             my $uri = shift;
             my ($content) = GetResource($uri);
-            return $content;
+            return defined $content ? $content : "";
         },
         inline_imports => 1,
     );
@@ -524,6 +526,12 @@ sub BuildEmail {
 sub GetResource {
     my $uri = URI->new(shift);
     my ($content, $filename, $mimetype, $encoding);
+
+    # Avoid trying to inline any remote URIs.  We absolutified all URIs
+    # using WebURL in SendDashboard() above, so choose the simpler match on
+    # that rather than testing a bunch of URI accessors.
+    my $WebURL = RT->Config->Get("WebURL");
+    return unless $uri =~ /^\Q$WebURL/;
 
     $RT::Logger->debug("Getting resource $uri");
 
