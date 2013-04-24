@@ -526,7 +526,7 @@ sub BuildEmail {
 
 sub GetResource {
     my $uri = URI->new(shift);
-    my ($content, $filename, $mimetype, $encoding);
+    my ($content, $content_type, $filename, $mimetype, $encoding);
 
     # Avoid trying to inline any remote URIs.  We absolutified all URIs
     # using WebURL in SendDashboard() above, so choose the simpler match on
@@ -545,16 +545,27 @@ sub GetResource {
     $path = "/$path"
         unless $path =~ m{^/};
 
-    $HTML::Mason::Commands::r->path_info($path);
+    # Try the static handler first for non-Mason CSS, JS, etc.
+    my $res = RT::Interface::Web::Handler->GetStatic($path);
+    if ($res->is_success) {
+        RT->Logger->debug("Fetched '$path' from the static handler");
+        $content      = $res->decoded_content;
+        $content_type = $res->headers->content_type;
+    } else {
+        # Try it through Mason instead...
+        $HTML::Mason::Commands::r->path_info($path);
 
-    # grab the query arguments
-    my %args = map { $_ => [ $uri->query_param($_) ] } $uri->query_param;
-    # Convert empty and single element arrayrefs to a non-ref scalar
-    @$_ < 2 and $_ = $_->[0]
-        for values %args;
+        # grab the query arguments
+        my %args = map { $_ => [ $uri->query_param($_) ] } $uri->query_param;
+        # Convert empty and single element arrayrefs to a non-ref scalar
+        @$_ < 2 and $_ = $_->[0]
+            for values %args;
 
-    $RT::Logger->debug("Running component '$path'");
-    $content = RunComponent($path, %args);
+        $RT::Logger->debug("Running component '$path'");
+        $content = RunComponent($path, %args);
+
+        $content_type = $HTML::Mason::Commands::r->content_type;
+    }
 
     # guess at the filename from the component name
     $filename = $1 if $path =~ m{^.*/(.*?)$};
@@ -562,7 +573,6 @@ sub GetResource {
     # the rest of this was taken from Email::MIME::CreateHTML::Resolver::LWP
     ($mimetype, $encoding) = MIME::Types::by_suffix($filename);
 
-    my $content_type = $HTML::Mason::Commands::r->content_type;
     if ($content_type) {
         $mimetype = $content_type;
 
