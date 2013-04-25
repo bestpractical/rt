@@ -24,8 +24,8 @@ and process the approval or rejection.
 Since this example will use a change management queue as the
 queue where tickets need approval, first we'll set up the queue.
 
-Login into UI as the 'root' user. Go to Tools -> Configuration ->
-Queues and create a new 'Change requests' queue.
+Login into UI as the 'root' user. Go to Admin -> Queues and create a new
+'Change requests' queue.
 
 When you set up this queue, do not select the "approvals" Lifecycle.
 That selection is for the ___Approvals queue itself, not for queues that
@@ -94,7 +94,7 @@ queue.
 
 ___Approvals is a special queue where all approvals are created. The queue
 is disabled and is not shown in until you search for it.
-Go to Tools -> Configuration -> Queues, leave "Name is" in the search
+Go to Admin -> Queues, leave "Name is" in the search
 area and enter ___Approvals into the search
 field. Check 'Include disabled queues in listing.' and click Go!
 You should now see the ___Approvals queue configuration page.
