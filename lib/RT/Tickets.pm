@@ -378,6 +378,8 @@ sub _EnumLimit {
         my $o     = $class->new( $sb->CurrentUser );
         $o->Load($value);
         $value = $o->Id || 0;
+    } elsif ( $field eq "Type" ) {
+        $value = lc $value if $value =~ /^(ticket|approval|reminder)$/i;
     }
     $sb->_SQLLimit(
         FIELD    => $field,
