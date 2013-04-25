@@ -57,7 +57,7 @@ my $escaper = sub {
 my %actions = (
     default => sub {
         my %args = @_;
-        return $args{value};
+        return $escaper->($args{value});
     },
     url => sub {
         my %args = @_;
