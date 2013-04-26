@@ -134,7 +134,6 @@ sub _OrderByCF {
         FIELD      => 'Name',
         OPERATOR   => 'IS NOT',
         VALUE      => 'NULL',
-        QUOTEVALUE => 1,
         ENTRYAGGREGATOR => 'AND',
     ) if $CFs;
     unless (blessed($cf)) {
@@ -500,7 +499,6 @@ sub _LimitCustomField {
             FIELD      => 'Name',
             OPERATOR   => 'IS NOT',
             VALUE      => 'NULL',
-            QUOTEVALUE => 0,
             ENTRYAGGREGATOR => 'AND',
             SUBCLAUSE  => $args{SUBCLAUSE},
         ) if $CFs;
@@ -715,7 +713,6 @@ sub _LimitCustomField {
                 FIELD           => 'Name',
                 OPERATOR        => 'IS NOT',
                 VALUE           => 'NULL',
-                QUOTEVALUE      => 0,
                 ENTRYAGGREGATOR => 'AND',
                 SUBCLAUSE       => $args{SUBCLAUSE},
             ) if $CFs;
@@ -727,7 +724,6 @@ sub _LimitCustomField {
                     FIELD           => $column || 'Content',
                     OPERATOR        => 'IS',
                     VALUE           => 'NULL',
-                    QUOTEVALUE      => 0,
                     ENTRYAGGREGATOR => 'OR',
                     SUBCLAUSE       => $args{SUBCLAUSE},
                 );
@@ -771,7 +767,6 @@ sub _LimitCustomField {
             FIELD      => 'id',
             OPERATOR   => 'IS',
             VALUE      => 'NULL',
-            QUOTEVALUE => 0,
         );
     }
 }
