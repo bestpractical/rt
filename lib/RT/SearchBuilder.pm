@@ -465,11 +465,11 @@ sub _LimitCustomField {
         my ($ocfvalias, $CFs) = $self->_CustomFieldJoin( $cfkey, $cf );
         $self->_OpenParen;
         $self->Limit(
+            %args,
             ALIAS    => $ocfvalias,
             FIELD    => 'id',
             OPERATOR => $op,
             VALUE    => $value,
-            %args
         );
         $self->Limit(
             ALIAS      => $CFs,
@@ -487,18 +487,18 @@ sub _LimitCustomField {
         $self->_OpenParen;
         if ( $op !~ /NOT|!=|<>/i ) { # positive equation
             $self->_LimitCustomField(
+                %args,
                 OPERATOR    => '<=',
                 VALUE       => $end_ip,
                 CUSTOMFIELD => $cf,
                 COLUMN      => 'Content',
-                %args,
             );
             $self->_LimitCustomField(
+                %args,
                 OPERATOR    => '>=',
                 VALUE       => $start_ip,
                 CUSTOMFIELD => $cf,
                 COLUMN      => 'LargeContent',
-                %args,
                 ENTRYAGGREGATOR => 'AND',
             );
             # as well limit borders so DB optimizers can use better
@@ -517,18 +517,18 @@ sub _LimitCustomField {
         }       
         else { # negative equation
             $self->_LimitCustomField(
+                %args,
                 OPERATOR    => '>',
                 VALUE       => $end_ip,
                 CUSTOMFIELD => $cf,
                 COLUMN      => 'Content',
-                %args,
             );
             $self->_LimitCustomField(
+                %args,
                 OPERATOR    => '<',
                 VALUE       => $start_ip,
                 CUSTOMFIELD => $cf,
                 COLUMN      => 'LargeContent',
-                %args,
                 ENTRYAGGREGATOR => 'OR',
             );
             # TODO: as well limit borders so DB optimizers can use better
@@ -550,12 +550,12 @@ sub _LimitCustomField {
         # otherwise search in Content and in LargeContent
         if ( $column ) {
             $self->Limit( $fix_op->(
+                %args,
                 ALIAS      => $ocfvalias,
                 FIELD      => $column,
                 OPERATOR   => $op,
                 VALUE      => $value,
                 CASESENSITIVE => 0,
-                %args
             ) );
             $self->_CloseParen;
             $self->_CloseParen;
@@ -576,19 +576,19 @@ sub _LimitCustomField {
                 $self->_OpenParen;
 
                 $self->Limit(
+                    %args,
                     ALIAS    => $ocfvalias,
                     FIELD    => 'Content',
                     OPERATOR => ">=",
                     VALUE    => $daystart,
-                    %args,
                 );
 
                 $self->Limit(
+                    %args,
                     ALIAS    => $ocfvalias,
                     FIELD    => 'Content',
                     OPERATOR => "<",
                     VALUE    => $dayend,
-                    %args,
                     ENTRYAGGREGATOR => 'AND',
                 );
 
@@ -597,12 +597,12 @@ sub _LimitCustomField {
             elsif ( $op eq '=' || $op eq '!=' || $op eq '<>' ) {
                 if ( length( Encode::encode_utf8($value) ) < 256 ) {
                     $self->Limit(
+                        %args,
                         ALIAS    => $ocfvalias,
                         FIELD    => 'Content',
                         OPERATOR => $op,
                         VALUE    => $value,
                         CASESENSITIVE => 0,
-                        %args
                     );
                 }
                 else {
@@ -634,12 +634,12 @@ sub _LimitCustomField {
             }
             else {
                 $self->Limit(
+                    %args,
                     ALIAS    => $ocfvalias,
                     FIELD    => 'Content',
                     OPERATOR => $op,
                     VALUE    => $value,
                     CASESENSITIVE => 0,
-                    %args
                 );
 
                 $self->_OpenParen;
