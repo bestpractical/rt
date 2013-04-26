@@ -70,8 +70,6 @@ use warnings;
 
 use base 'RT::SearchBuilder';
 
-use DBIx::SearchBuilder::Unique;
-
 use RT::CustomField;
 
 sub Table { 'CustomFields'}

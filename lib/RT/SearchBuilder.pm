@@ -136,16 +136,6 @@ sub _OrderByCF {
         VALUE      => 'NULL',
         ENTRYAGGREGATOR => 'AND',
     ) if $CFs;
-    unless (blessed($cf)) {
-        # For those cases where we are doing a join against the
-        # CF name, and don't have a CFid, use Unique to make sure
-        # we don't show duplicate tickets.  NOTE: I'm pretty sure
-        # this will stay mixed in for the life of the
-        # class/package, and not just for the life of the object.
-        # Potential performance issue.
-        require DBIx::SearchBuilder::Unique;
-        DBIx::SearchBuilder::Unique->import;
-    }
     my $CFvs = $self->Join(
         TYPE   => 'LEFT',
         ALIAS1 => $ocfvs,

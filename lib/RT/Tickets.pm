@@ -94,7 +94,6 @@ use RT::SQL;
 sub Table { 'Tickets'}
 
 use RT::CustomFields;
-use DBIx::SearchBuilder::Unique;
 
 # Configuration Tables:
 
