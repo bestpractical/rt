@@ -555,8 +555,6 @@ sub _LimitCustomField {
         my ($ocfvalias, $CFs) = $self->_CustomFieldJoin( $cfkey, $cf );
 
         $self->_OpenParen( $args{SUBCLAUSE} );
-        $self->_OpenParen( $args{SUBCLAUSE} );
-        $self->_OpenParen( $args{SUBCLAUSE} );
         # if column is defined then deal only with it
         # otherwise search in Content and in LargeContent
         if ( $column ) {
@@ -568,11 +566,10 @@ sub _LimitCustomField {
                 VALUE      => $value,
                 CASESENSITIVE => 0,
             ) );
-            $self->_CloseParen( $args{SUBCLAUSE} );
-            $self->_CloseParen( $args{SUBCLAUSE} );
-            $self->_CloseParen( $args{SUBCLAUSE} );
         }
         else {
+            $self->_OpenParen( $args{SUBCLAUSE} );
+            $self->_OpenParen( $args{SUBCLAUSE} );
             # need special treatment for Date
             if ( blessed($cf) and $cf->Type eq 'DateTime' and $op eq '=' && $value !~ /:/ ) {
                 # no time specified, that means we want everything on a
@@ -708,20 +705,20 @@ sub _LimitCustomField {
                 SUBCLAUSE       => $args{SUBCLAUSE},
             ) if $CFs;
             $self->_CloseParen( $args{SUBCLAUSE} );
-
-            if ($negative_op) {
-                $self->Limit(
-                    ALIAS           => $ocfvalias,
-                    FIELD           => $column || 'Content',
-                    OPERATOR        => 'IS',
-                    VALUE           => 'NULL',
-                    ENTRYAGGREGATOR => 'OR',
-                    SUBCLAUSE       => $args{SUBCLAUSE},
-                );
-            }
-
-            $self->_CloseParen( $args{SUBCLAUSE} );
         }
+
+        if ($negative_op and not $null_op) {
+            $self->Limit(
+                ALIAS           => $ocfvalias,
+                FIELD           => $column || 'Content',
+                OPERATOR        => 'IS',
+                VALUE           => 'NULL',
+                ENTRYAGGREGATOR => 'OR',
+                SUBCLAUSE       => $args{SUBCLAUSE},
+            );
+        }
+        $self->_CloseParen( $args{SUBCLAUSE} );
+
     }
     else {
         $cfkey .= '.'. $self->{'_sql_multiple_cfs_index'}++;

@@ -45,14 +45,22 @@ my @tests = (
     "'CF.$queue.{$cf_name}' IS NOT NULL"  => { '-' => 0, x => 1, y => 1, z => 1 },
 
     "CF.{$cf_id} = 'x'"                   => { '-' => 0, x => 1, y => 0, z => 0 },
+    "CF.{$cf_id}.Content = 'x'"           => { '-' => 0, x => 1, y => 0, z => 0 },
     "'CF.{$cf_name}' = 'x'"               => { '-' => 0, x => 1, y => 0, z => 0 },
+    "'CF.{$cf_name}.Content' = 'x'"       => { '-' => 0, x => 1, y => 0, z => 0 },
     "'CF.$queue.{$cf_id}' = 'x'"          => { '-' => 0, x => 1, y => 0, z => 0 },
+    "'CF.$queue.{$cf_id}.Content' = 'x'"  => { '-' => 0, x => 1, y => 0, z => 0 },
     "'CF.$queue.{$cf_name}' = 'x'"        => { '-' => 0, x => 1, y => 0, z => 0 },
+    "'CF.$queue.{$cf_name}.Content' = 'x'" => { '-' => 0, x => 1, y => 0, z => 0 },
 
     "CF.{$cf_id} != 'x'"                  => { '-' => 1, x => 0, y => 1, z => 1 },
+    "CF.{$cf_id}.Content != 'x'"          => { '-' => 1, x => 0, y => 1, z => 1 },
     "'CF.{$cf_name}' != 'x'"              => { '-' => 1, x => 0, y => 1, z => 1 },
+    "'CF.{$cf_name}.Content' != 'x'"      => { '-' => 1, x => 0, y => 1, z => 1 },
     "'CF.$queue.{$cf_id}' != 'x'"         => { '-' => 1, x => 0, y => 1, z => 1 },
+    "'CF.$queue.{$cf_id}.Content' != 'x'" => { '-' => 1, x => 0, y => 1, z => 1 },
     "'CF.$queue.{$cf_name}' != 'x'"       => { '-' => 1, x => 0, y => 1, z => 1 },
+    "'CF.$queue.{$cf_name}.Content' != 'x'" => { '-' => 1, x => 0, y => 1, z => 1 },
 
     "CF.{$cf_id} = 'x' OR CF.{$cf_id} = 'y'"                        => { '-' => 0, x => 1, y => 1, z => 0 },
     "'CF.{$cf_name}' = 'x' OR 'CF.{$cf_name}' = 'y'"                => { '-' => 0, x => 1, y => 1, z => 0 },
