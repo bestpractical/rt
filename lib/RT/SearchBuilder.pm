@@ -364,6 +364,15 @@ sub _LimitCustomField {
     my $cfkey  = delete $args{KEY};
     if (blessed($cf) and $cf->id) {
         $cfkey ||= $cf->id;
+    } elsif ($cf =~ /^\d+$/) {
+        my $obj = RT::CustomField->new( $self->CurrentUser );
+        $obj->Load($cf);
+        if ($obj->id) {
+            $cf = $obj;
+            $cfkey ||= $cf->id;
+        } else {
+            $cfkey ||= $cf;
+        }
     } else {
         $cfkey ||= $cf;
     }
