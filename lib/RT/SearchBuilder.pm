@@ -472,16 +472,16 @@ sub _LimitCustomField {
 
     my $single_value = !blessed($cf) || $cf->SingleValue;
 
-    if ( $null_op && !$column ) {
-        # IS[ NOT] NULL without column is the same as has[ no] any CF value,
-        # we can reuse our default joins for this operation
-        # with column specified we have different situation
+    if ( $null_op ) {
+        # IS NULL is the same as lacks a CF value, and IS NOT NULL means
+        # has any value.  We can reuse our default joins for this
+        # operation.
         my ($ocfvalias, $CFs) = $self->_CustomFieldJoin( $cfkey, $cf );
         $self->_OpenParen( $args{SUBCLAUSE} );
         $self->Limit(
             %args,
             ALIAS    => $ocfvalias,
-            FIELD    => 'id',
+            FIELD    => ($column || 'id'),
             OPERATOR => $op,
             VALUE    => $value,
         );
@@ -707,7 +707,7 @@ sub _LimitCustomField {
             $self->_CloseParen( $args{SUBCLAUSE} );
         }
 
-        if ($negative_op and not $null_op) {
+        if ($negative_op) {
             $self->Limit(
                 ALIAS           => $ocfvalias,
                 FIELD           => $column || 'Content',
