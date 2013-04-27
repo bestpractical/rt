@@ -171,6 +171,35 @@ sub _parser {
     my @bundle;
     my $ea = '';
 
+    # Bundling of joins is implemented by dynamically tracking a parallel query
+    # tree in %sub_tree as the TicketSQL is parsed.  Don't be fooled by
+    # _close_bundle(), @bundle, and %can_bundle; they are completely unused for
+    # quite a long time and removed in RT 4.2.  For now they stay, a useless
+    # relic.
+    #
+    # Only positive, OR'd watcher conditions are bundled currently.  Each key
+    # in %sub_tree is a watcher type (Requestor, Cc, AdminCc) or the generic
+    # "Watcher" for any watcher type.  Owner is not bundled because it is
+    # denormalized into a Tickets column and doesn't need a join.  AND'd
+    # conditions are not bundled since a record may have multiple watchers
+    # which independently match the conditions, thus necessitating two joins.
+    #
+    # The values of %sub_tree are arrayrefs made up of:
+    #
+    #   * Open parentheses "(" pushed on by the OpenParen callback
+    #   * Arrayrefs of bundled join aliases pushed on by the Condition callback
+    #   * Entry aggregators (AND/OR) pushed on by the EntryAggregator callback
+    #
+    # The CloseParen callback takes care of backing off the query trees until
+    # outside of the just-closed parenthetical, thus restoring the tree state
+    # an equivalent of before the parenthetical was entered.
+    #
+    # The Condition callback handles starting a new subtree or extending an
+    # existing one, determining if bundling the current condition with any
+    # subtree is possible, and pruning any dangling entry aggregators from
+    # trees.
+    #
+
     my %sub_tree;
     my $depth = 0;
 
@@ -257,7 +286,12 @@ sub _parser {
                   }
                 }
             }
+
+            # Remove our aggregator from subtrees where our condition didn't get added
             pop @$_ foreach grep @$_ && $_->[-1] =~ /^(?:AND|OR)$/i, values %sub_tree;
+
+            # A reference to @res may be pushed onto $sub_tree{$key} from
+            # above, and we fill it here.
             @res = $sub->( $self, $key, $op, $value,
                     SUBCLAUSE       => '',  # don't need anymore
                     ENTRYAGGREGATOR => $ea,
