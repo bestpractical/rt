@@ -91,6 +91,7 @@ UPGRADING FROM RT 4.0.0 and greater
 
 * CSS is no longer processed through Mason; it's served by a proper static file
   handler.  If you used the Begin or End callbacks of main.css in the aileron,
-  web2, or ballard themes, you should transition to the @CSSFiles config
-  option.  See docs/customizing/styling_rt.pd for more information on custom
-  styles.
+  web2, or ballard themes, you should transition to the @CSSFiles config option.
+  If you need to target specific themes, you can use the class set on the <body>
+  element (for example: body.aileron).  See docs/customizing/styling_rt.pd for
+  more information on custom styles.
