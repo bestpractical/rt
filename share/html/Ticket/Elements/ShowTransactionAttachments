@@ -216,8 +216,17 @@ my $render_attachment = sub {
                     ticket  => $Ticket,
                 );
 
-                require HTML::Quoted;
-                $content = HTML::Quoted->extract($content) unless length $name;
+                unless (length $name) {
+                    eval {
+                        require HTML::Quoted;
+                        $content = HTML::Quoted->extract($content)
+                    };
+                    if ($@) {
+                        RT->Logger->error(
+                            "HTML::Quoted couldn't process attachment #@{[$message->id]}: $@."
+                          . "  This is a bug, please report it to rt-bugs\@bestpractical.com.");
+                    }
+                }
 
                 $m->comp(
                     'ShowMessageStanza',
@@ -235,8 +244,15 @@ my $render_attachment = sub {
             # It's a text type we don't have special handling for
             else {
                 unless ( length $name ) {
-                    eval { require Text::Quoted;  $content = Text::Quoted::extract($content); };
-                    if ($@) { $RT::Logger->warning( "Text::Quoted failed: $@" ) }
+                    eval {
+                        require Text::Quoted;
+                        $content = Text::Quoted::extract($content);
+                    };
+                    if ($@) {
+                        RT->Logger->error(
+                            "Text::Quoted couldn't process attachment #@{[$message->id]}: $@."
+                          . "  This is a bug, please report it to rt-bugs\@bestpractical.com.");
+                    }
                 }
 
                 $m->comp(
