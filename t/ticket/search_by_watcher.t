@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 2108;
+use RT::Test nodata => 1, tests => undef;
 use RT::Ticket;
 
 my $q = RT::Test->load_or_create_queue( Name => 'Regression' );
@@ -101,40 +101,41 @@ sub run_auto_tests {
             run_test( $query, %checks );
         } }
     }
-# XXX: It
-#    @queries = (
-#        '? AND ? AND ?'  => sub { $_[0] and $_[1] and $_[2] },
-#        '(? OR ?) AND ?' => sub { return (($_[0] or $_[1]) and $_[2]) },
-#        '? OR (? AND ?)' => sub { $_[0] or ($_[1] and $_[2]) },
-#        '(? AND ?) OR ?' => sub { ($_[0] and $_[1]) or $_[2] },
-#        '? AND (? OR ?)' => sub { $_[0] and ($_[1] or $_[2]) },
-#        '? OR ? OR ?'    => sub { $_[0] or $_[1] or $_[2] },
-#    );
-#    while ( my ($template, $t_cb) = splice @queries, 0, 2 ) {
-#        my @atmp = @conditions;
-#        while ( my ($a, $a_cb) = splice @atmp, 0, 2 ) {
-#        my @btmp = @conditions;
-#        while ( my ($b, $b_cb) = splice @btmp, 0, 2 ) {
-#        next if $a eq $b;
-#        my @ctmp = @conditions;
-#        while ( my ($c, $c_cb) = splice @ctmp, 0, 2 ) {
-#        next if $a eq $c;
-#        next if $b eq $c;
-#
-#            my %checks = ();
-#            foreach my $ticket ( @tickets ) {
-#                my $s = $ticket->Subject;
-#                $checks{ $s } = $t_cb->( scalar $a_cb->($s), scalar $b_cb->($s), scalar $c_cb->($s) );
-#            }
-#
-#            my $query = $template;
-#            foreach my $tmp ($a, $b, $c) {
-#                $query =~ s/\?/$tmp/;
-#            }
-#
-#            run_test( $query, %checks );
-#        } } }
-#    }
+    return unless $ENV{'RT_TEST_HEAVY'};
+
+    @queries = (
+        '? AND ? AND ?'  => sub { $_[0] and $_[1] and $_[2] },
+        '(? OR ?) AND ?' => sub { return (($_[0] or $_[1]) and $_[2]) },
+        '? OR (? AND ?)' => sub { $_[0] or ($_[1] and $_[2]) },
+        '(? AND ?) OR ?' => sub { ($_[0] and $_[1]) or $_[2] },
+        '? AND (? OR ?)' => sub { $_[0] and ($_[1] or $_[2]) },
+        '? OR ? OR ?'    => sub { $_[0] or $_[1] or $_[2] },
+    );
+    while ( my ($template, $t_cb) = splice @queries, 0, 2 ) {
+        my @atmp = @conditions;
+        while ( my ($a, $a_cb) = splice @atmp, 0, 2 ) {
+        my @btmp = @conditions;
+        while ( my ($b, $b_cb) = splice @btmp, 0, 2 ) {
+        next if $a eq $b;
+        my @ctmp = @conditions;
+        while ( my ($c, $c_cb) = splice @ctmp, 0, 2 ) {
+        next if $a eq $c;
+        next if $b eq $c;
+
+            my %checks = ();
+            foreach my $ticket ( @tickets ) {
+                my $s = $ticket->Subject;
+                $checks{ $s } = $t_cb->( scalar $a_cb->($s), scalar $b_cb->($s), scalar $c_cb->($s) );
+            }
+
+            my $query = $template;
+            foreach my $tmp ($a, $b, $c) {
+                $query =~ s/\?/$tmp/;
+            }
+
+            run_test( $query, %checks );
+        } } }
+    }
 
 }
 
@@ -266,4 +267,4 @@ my $nobody = RT::Nobody();
 }
 
 @tickets = ();
-
+done_testing();
