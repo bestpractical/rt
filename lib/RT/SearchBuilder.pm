@@ -379,7 +379,6 @@ sub _LimitCustomField {
 
     $args{SUBCLAUSE} ||= "cf-$cfkey";
 
-    my $negative_op = ($op eq '!=' || $op =~ /\bNOT\b/i);
 
     my $fix_op = sub {
         return @_ unless RT->Config->Get('DatabaseType') eq 'Oracle';
@@ -531,8 +530,6 @@ sub _LimitCustomField {
         }
     }
 
-    my $single_value = !blessed($cf) || $cf->SingleValue;
-
     ########## Limits
     # IS NULL and IS NOT NULL checks
     if ( $op =~ /^IS( NOT)?$/i ) {
@@ -557,6 +554,10 @@ sub _LimitCustomField {
         $self->_CloseParen( $args{SUBCLAUSE} );
         return;
     }
+
+    my $single_value = !blessed($cf) || $cf->SingleValue;
+    my $negative_op = ($op eq '!=' || $op =~ /\bNOT\b/i);
+
     if ( !$negative_op || $single_value ) {
         $cfkey .= '.'. $self->{'_sql_multiple_cfs_index'}++ if not $single_value and not $op =~ /^[<>]=?$/;
         my ($ocfvalias, $CFs) = $self->_CustomFieldJoin( $cfkey, $cf );
