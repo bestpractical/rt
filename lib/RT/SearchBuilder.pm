@@ -567,28 +567,14 @@ sub _LimitCustomField {
         # Reverse the limit we apply to the join, and check IS NULL
         $op =~ s/!|NOT\s+//i;
 
-        # if column is defined then deal only with it
-        # otherwise search in Content and in LargeContent
-        if ( $column ) {
-            $self->Limit( $fix_op->(
-                LEFTJOIN   => $ocfvalias,
-                ALIAS      => $ocfvalias,
-                FIELD      => $column,
-                OPERATOR   => $op,
-                VALUE      => $value,
-                CASESENSITIVE => 0,
-            ) );
-        }
-        else {
-            $self->Limit(
-                LEFTJOIN   => $ocfvalias,
-                ALIAS      => $ocfvalias,
-                FIELD      => 'Content',
-                OPERATOR   => $op,
-                VALUE      => $value,
-                CASESENSITIVE => 0,
-            );
-        }
+        $self->Limit( $fix_op->(
+            LEFTJOIN   => $ocfvalias,
+            ALIAS      => $ocfvalias,
+            FIELD      => ($column || 'Content'),
+            OPERATOR   => $op,
+            VALUE      => $value,
+            CASESENSITIVE => 0,
+        ) );
         $self->Limit(
             %args,
             ALIAS      => $ocfvalias,
