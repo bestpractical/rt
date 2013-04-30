@@ -135,6 +135,7 @@ sub _OrderByCF {
         OPERATOR   => 'IS NOT',
         VALUE      => 'NULL',
         ENTRYAGGREGATOR => 'AND',
+        SUBCLAUSE  => ".ordering",
     ) if $CFs;
     my $CFvs = $self->Join(
         TYPE   => 'LEFT',
