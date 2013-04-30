@@ -586,10 +586,9 @@ sub _LimitCustomField {
         return;
     }
 
-    $self->_OpenParen( $args{SUBCLAUSE} );
-    # if column is defined then deal only with it
-    # otherwise search in Content and in LargeContent
+    # If column is defined, then we just search it that, with no magic
     if ( $column ) {
+        $self->_OpenParen( $args{SUBCLAUSE} );
         $self->Limit( $fix_op->(
             %args,
             ALIAS      => $ocfvalias,
@@ -598,8 +597,18 @@ sub _LimitCustomField {
             VALUE      => $value,
             CASESENSITIVE => 0,
         ) );
+        $self->Limit(
+            ALIAS           => $ocfvalias,
+            FIELD           => $column,
+            OPERATOR        => 'IS',
+            VALUE           => 'NULL',
+            ENTRYAGGREGATOR => 'OR',
+            SUBCLAUSE       => $args{SUBCLAUSE},
+        ) if $negative_op;
+        $self->_CloseParen( $args{SUBCLAUSE} );
     }
     else {
+        $self->_OpenParen( $args{SUBCLAUSE} );
         $self->_OpenParen( $args{SUBCLAUSE} );
         $self->_OpenParen( $args{SUBCLAUSE} );
         if ( $op eq '=' || $op eq '!=' || $op eq '<>' ) {
@@ -705,19 +714,19 @@ sub _LimitCustomField {
             SUBCLAUSE       => $args{SUBCLAUSE},
         ) if $CFs;
         $self->_CloseParen( $args{SUBCLAUSE} );
+        if ($negative_op) {
+            $self->Limit(
+                ALIAS           => $ocfvalias,
+                FIELD           => $column || 'Content',
+                OPERATOR        => 'IS',
+                VALUE           => 'NULL',
+                ENTRYAGGREGATOR => 'OR',
+                SUBCLAUSE       => $args{SUBCLAUSE},
+            );
+        }
+        $self->_CloseParen( $args{SUBCLAUSE} );
     }
 
-    if ($negative_op) {
-        $self->Limit(
-            ALIAS           => $ocfvalias,
-            FIELD           => $column || 'Content',
-            OPERATOR        => 'IS',
-            VALUE           => 'NULL',
-            ENTRYAGGREGATOR => 'OR',
-            SUBCLAUSE       => $args{SUBCLAUSE},
-        );
-    }
-    $self->_CloseParen( $args{SUBCLAUSE} );
 }
 
 =head2 Limit PARAMHASH
