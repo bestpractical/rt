@@ -406,67 +406,60 @@ sub _LimitCustomField {
         return %args;
     };
 
-    if ( blessed($cf) && $cf->Type eq 'IPAddress' ) {
-        my $parsed = RT::ObjectCustomFieldValue->ParseIP($value);
-        if ($parsed) {
-            $value = $parsed;
-        }
-        else {
-            $RT::Logger->warn("$value is not a valid IPAddress");
-        }
-    }
-
-    if ( blessed($cf) && $cf->Type eq 'IPAddressRange' ) {
-
-        if ( $value =~ /^\s*$RE{net}{CIDR}{IPv4}{-keep}\s*$/o ) {
-
-            # convert incomplete 192.168/24 to 192.168.0.0/24 format
-            $value =
-              join( '.', map $_ || 0, ( split /\./, $1 )[ 0 .. 3 ] ) . "/$2"
-              || $value;
+    ########## Content pre-parsing if we know things about the CF
+    if ( blessed($cf) ) {
+        if ( $cf->Type eq 'IPAddress' ) {
+            my $parsed = RT::ObjectCustomFieldValue->ParseIP($value);
+            if ($parsed) {
+                $value = $parsed;
+            } else {
+                $RT::Logger->warn("$value is not a valid IPAddress");
+            }
         }
 
-        my ( $start_ip, $end_ip ) =
-          RT::ObjectCustomFieldValue->ParseIPRange($value);
-        if ( $start_ip && $end_ip ) {
-            if ( $op =~ /^([<>])=?$/ ) {
-                my $is_less = $1 eq '<' ? 1 : 0;
-                if ( $is_less ) {
+        if ( $cf->Type eq 'IPAddressRange' ) {
+            if ( $value =~ /^\s*$RE{net}{CIDR}{IPv4}{-keep}\s*$/o ) {
+                # convert incomplete 192.168/24 to 192.168.0.0/24 format
+                $value =
+                  join( '.', map $_ || 0, ( split /\./, $1 )[ 0 .. 3 ] ) . "/$2"
+                  || $value;
+            }
+
+            my ( $start_ip, $end_ip ) =
+              RT::ObjectCustomFieldValue->ParseIPRange($value);
+            if ( $start_ip && $end_ip ) {
+                if ( $op =~ /^<=?$/ ) {
                     $value = $start_ip;
-                }
-                else {
+                } elsif ($op =~ /^>=?$/ ) {
                     $value = $end_ip;
+                } else {
+                    $value = join '-', $start_ip, $end_ip;
                 }
-            }
-            else {
-                $value = join '-', $start_ip, $end_ip;
+            } else {
+                $RT::Logger->warn("$value is not a valid IPAddressRange");
             }
         }
-        else {
-            $RT::Logger->warn("$value is not a valid IPAddressRange");
-        }
-    }
 
-    if ( blessed($cf) && $cf->Type =~ /^Date(?:Time)?$/ ) {
-        my $date = RT::Date->new( $self->CurrentUser );
-        $date->Set( Format => 'unknown', Value => $value );
-        if ( $date->Unix ) {
-
-            if (
-                   $cf->Type eq 'Date'
-                || $value =~ /^\s*(?:today|tomorrow|yesterday)\s*$/i
-                || (   $value !~ /midnight|\d+:\d+:\d+/i
-                    && $date->Time( Timezone => 'user' ) eq '00:00:00' )
-              )
-            {
-                $value = $date->Date( Timezone => 'user' );
+        if ( $cf->Type =~ /^Date(?:Time)?$/ ) {
+            my $date = RT::Date->new( $self->CurrentUser );
+            $date->Set( Format => 'unknown', Value => $value );
+            if ( $date->Unix ) {
+                if (
+                       $cf->Type eq 'Date'
+                           # Heuristics to determine if a date, and not
+                           # a datetime, was entered:
+                    || $value =~ /^\s*(?:today|tomorrow|yesterday)\s*$/i
+                    || (   $value !~ /midnight|\d+:\d+:\d+/i
+                        && $date->Time( Timezone => 'user' ) eq '00:00:00' )
+                  )
+                {
+                    $value = $date->Date( Timezone => 'user' );
+                } else {
+                    $value = $date->DateTime;
+                }
+            } else {
+                $RT::Logger->warn("$value is not a valid date string");
             }
-            else {
-                $value = $date->DateTime;
-            }
-        }
-        else {
-            $RT::Logger->warn("$value is not a valid date string");
         }
     }
 
