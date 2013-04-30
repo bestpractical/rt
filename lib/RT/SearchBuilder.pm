@@ -558,12 +558,13 @@ sub _LimitCustomField {
     my $single_value = !blessed($cf) || $cf->SingleValue;
     my $negative_op = ($op eq '!=' || $op =~ /\bNOT\b/i);
 
+    $cfkey .= '.'. $self->{'_sql_multiple_cfs_index'}++
+        if not $single_value and $op =~ /^(!?=|(NOT )?LIKE)$/i;
+    my ($ocfvalias, $CFs) = $self->_CustomFieldJoin( $cfkey, $cf );
+
     # A negative limit on a multi-value CF means _none_ of the values
     # are the given value
     if ( $negative_op and not $single_value ) {
-        $cfkey .= '.'. $self->{'_sql_multiple_cfs_index'}++;
-        my ($ocfvalias, $CFs) = $self->_CustomFieldJoin( $cfkey, $cf );
-
         # Reverse the limit we apply to the join, and check IS NULL
         $op =~ s/!|NOT\s+//i;
 
@@ -583,8 +584,6 @@ sub _LimitCustomField {
             VALUE      => 'NULL',
         );
     } else {
-        $cfkey .= '.'. $self->{'_sql_multiple_cfs_index'}++ if not $single_value and not $op =~ /^[<>]=?$/;
-        my ($ocfvalias, $CFs) = $self->_CustomFieldJoin( $cfkey, $cf );
 
         $self->_OpenParen( $args{SUBCLAUSE} );
         # if column is defined then deal only with it
