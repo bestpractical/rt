@@ -608,51 +608,13 @@ sub _LimitCustomField {
         $self->_CloseParen( $args{SUBCLAUSE} );
         return;
     }
-    $self->_OpenParen( $args{SUBCLAUSE} );
-    $self->_OpenParen( $args{SUBCLAUSE} );
-    $self->_OpenParen( $args{SUBCLAUSE} );
-    if ( $op eq '=' || $op eq '!=' || $op eq '<>' ) {
-        if ( length( Encode::encode_utf8($value) ) < 256 ) {
-            $self->Limit(
-                %args,
-                ALIAS    => $ocfvalias,
-                FIELD    => 'Content',
-                OPERATOR => $op,
-                VALUE    => $value,
-                CASESENSITIVE => 0,
-            );
-        }
-        else {
-            $self->_OpenParen( $args{SUBCLAUSE} );
-            $self->Limit(
-                ALIAS           => $ocfvalias,
-                FIELD           => 'Content',
-                OPERATOR        => '=',
-                VALUE           => '',
-                ENTRYAGGREGATOR => 'OR',
-                SUBCLAUSE       => $args{SUBCLAUSE},
-            );
-            $self->Limit(
-                ALIAS           => $ocfvalias,
-                FIELD           => 'Content',
-                OPERATOR        => 'IS',
-                VALUE           => 'NULL',
-                ENTRYAGGREGATOR => 'OR',
-                SUBCLAUSE       => $args{SUBCLAUSE},
-            );
-            $self->_CloseParen( $args{SUBCLAUSE} );
-            $self->Limit( $fix_op->(
-                ALIAS           => $ocfvalias,
-                FIELD           => 'LargeContent',
-                OPERATOR        => $op,
-                VALUE           => $value,
-                ENTRYAGGREGATOR => 'AND',
-                SUBCLAUSE       => $args{SUBCLAUSE},
-                CASESENSITIVE => 0,
-            ) );
-        }
-    }
-    else {
+
+    $self->_OpenParen( $args{SUBCLAUSE} ); # For negative_op "OR it is null" clause
+    $self->_OpenParen( $args{SUBCLAUSE} ); # NAME IS NOT NULL clause
+
+    my $value_is_long = (length( Encode::encode_utf8($value)) > 255) ? 1 : 0;
+    $self->_OpenParen( $args{SUBCLAUSE} ); # Check Content / LargeContent
+    unless ($value_is_long and $op =~ /^(=|!=|<>)$/) {
         $self->Limit(
             %args,
             ALIAS    => $ocfvalias,
@@ -661,26 +623,27 @@ sub _LimitCustomField {
             VALUE    => $value,
             CASESENSITIVE => 0,
         );
-
-        $self->_OpenParen( $args{SUBCLAUSE} );
-        $self->_OpenParen( $args{SUBCLAUSE} );
+    }
+    unless (!$value_is_long and $op =~ /^(=|!=|<>)$/) {
+        $self->_OpenParen( $args{SUBCLAUSE} ); # LargeContent check
+        $self->_OpenParen( $args{SUBCLAUSE} ); # Content is null?
         $self->Limit(
             ALIAS           => $ocfvalias,
             FIELD           => 'Content',
             OPERATOR        => '=',
             VALUE           => '',
+            ENTRYAGGREGATOR => 'OR',
             SUBCLAUSE       => $args{SUBCLAUSE},
-            ENTRYAGGREGATOR => 'OR'
         );
         $self->Limit(
             ALIAS           => $ocfvalias,
             FIELD           => 'Content',
             OPERATOR        => 'IS',
             VALUE           => 'NULL',
+            ENTRYAGGREGATOR => 'OR',
             SUBCLAUSE       => $args{SUBCLAUSE},
-            ENTRYAGGREGATOR => 'OR'
         );
-        $self->_CloseParen( $args{SUBCLAUSE} );
+        $self->_CloseParen( $args{SUBCLAUSE} ); # Content is null?
         $self->Limit( $fix_op->(
             ALIAS           => $ocfvalias,
             FIELD           => 'LargeContent',
@@ -690,9 +653,10 @@ sub _LimitCustomField {
             SUBCLAUSE       => $args{SUBCLAUSE},
             CASESENSITIVE => 0,
         ) );
-        $self->_CloseParen( $args{SUBCLAUSE} );
+        $self->_CloseParen( $args{SUBCLAUSE} ); # LargeContent check
     }
-    $self->_CloseParen( $args{SUBCLAUSE} );
+
+    $self->_CloseParen( $args{SUBCLAUSE} ); # Check Content/LargeContent
 
     # XXX: if we join via CustomFields table then
     # because of order of left joins we get NULLs in
@@ -713,18 +677,19 @@ sub _LimitCustomField {
         ENTRYAGGREGATOR => 'AND',
         SUBCLAUSE       => $args{SUBCLAUSE},
     ) if $CFs;
-    $self->_CloseParen( $args{SUBCLAUSE} );
-    if ($negative_op) {
-        $self->Limit(
-            ALIAS           => $ocfvalias,
-            FIELD           => $column || 'Content',
-            OPERATOR        => 'IS',
-            VALUE           => 'NULL',
-            ENTRYAGGREGATOR => 'OR',
-            SUBCLAUSE       => $args{SUBCLAUSE},
-        );
-    }
-    $self->_CloseParen( $args{SUBCLAUSE} );
+    $self->_CloseParen( $args{SUBCLAUSE} ); # Name IS NOT NULL clause
+
+    # If we were looking for != or NOT LIKE, we need to include the
+    # possibility that the row had no value.
+    $self->Limit(
+        ALIAS           => $ocfvalias,
+        FIELD           => $column || 'Content',
+        OPERATOR        => 'IS',
+        VALUE           => 'NULL',
+        ENTRYAGGREGATOR => 'OR',
+        SUBCLAUSE       => $args{SUBCLAUSE},
+    ) if $negative_op;
+    $self->_CloseParen( $args{SUBCLAUSE} ); # negative_op clause
 }
 
 =head2 Limit PARAMHASH
