@@ -379,11 +379,6 @@ sub _LimitCustomField {
 
     $args{SUBCLAUSE} ||= "cf-$cfkey";
 
-# If we're trying to find custom fields that don't match something, we
-# want tickets where the custom field has no value at all.  Note that
-# we explicitly don't include the "IS NULL" case, since we would
-# otherwise end up with a redundant clause.
-
     my $negative_op = ($op eq '!=' || $op =~ /\bNOT\b/i);
     my $null_op = ( 'is not' eq lc($op) || 'is' eq lc($op) );
 
@@ -392,7 +387,7 @@ sub _LimitCustomField {
 
         my %args = @_;
         return %args unless $args{'FIELD'} eq 'LargeContent';
-        
+
         my $op = $args{'OPERATOR'};
         if ( $op eq '=' ) {
             $args{'OPERATOR'} = 'MATCHES';
