@@ -583,66 +583,27 @@ sub _LimitCustomField {
             OPERATOR   => 'IS',
             VALUE      => 'NULL',
         );
-    } else {
+        return;
+    }
 
+    $self->_OpenParen( $args{SUBCLAUSE} );
+    # if column is defined then deal only with it
+    # otherwise search in Content and in LargeContent
+    if ( $column ) {
+        $self->Limit( $fix_op->(
+            %args,
+            ALIAS      => $ocfvalias,
+            FIELD      => $column,
+            OPERATOR   => $op,
+            VALUE      => $value,
+            CASESENSITIVE => 0,
+        ) );
+    }
+    else {
         $self->_OpenParen( $args{SUBCLAUSE} );
-        # if column is defined then deal only with it
-        # otherwise search in Content and in LargeContent
-        if ( $column ) {
-            $self->Limit( $fix_op->(
-                %args,
-                ALIAS      => $ocfvalias,
-                FIELD      => $column,
-                OPERATOR   => $op,
-                VALUE      => $value,
-                CASESENSITIVE => 0,
-            ) );
-        }
-        else {
-            $self->_OpenParen( $args{SUBCLAUSE} );
-            $self->_OpenParen( $args{SUBCLAUSE} );
-            if ( $op eq '=' || $op eq '!=' || $op eq '<>' ) {
-                if ( length( Encode::encode_utf8($value) ) < 256 ) {
-                    $self->Limit(
-                        %args,
-                        ALIAS    => $ocfvalias,
-                        FIELD    => 'Content',
-                        OPERATOR => $op,
-                        VALUE    => $value,
-                        CASESENSITIVE => 0,
-                    );
-                }
-                else {
-                    $self->_OpenParen( $args{SUBCLAUSE} );
-                    $self->Limit(
-                        ALIAS           => $ocfvalias,
-                        FIELD           => 'Content',
-                        OPERATOR        => '=',
-                        VALUE           => '',
-                        ENTRYAGGREGATOR => 'OR',
-                        SUBCLAUSE       => $args{SUBCLAUSE},
-                    );
-                    $self->Limit(
-                        ALIAS           => $ocfvalias,
-                        FIELD           => 'Content',
-                        OPERATOR        => 'IS',
-                        VALUE           => 'NULL',
-                        ENTRYAGGREGATOR => 'OR',
-                        SUBCLAUSE       => $args{SUBCLAUSE},
-                    );
-                    $self->_CloseParen( $args{SUBCLAUSE} );
-                    $self->Limit( $fix_op->(
-                        ALIAS           => $ocfvalias,
-                        FIELD           => 'LargeContent',
-                        OPERATOR        => $op,
-                        VALUE           => $value,
-                        ENTRYAGGREGATOR => 'AND',
-                        SUBCLAUSE       => $args{SUBCLAUSE},
-                        CASESENSITIVE => 0,
-                    ) );
-                }
-            }
-            else {
+        $self->_OpenParen( $args{SUBCLAUSE} );
+        if ( $op eq '=' || $op eq '!=' || $op eq '<>' ) {
+            if ( length( Encode::encode_utf8($value) ) < 256 ) {
                 $self->Limit(
                     %args,
                     ALIAS    => $ocfvalias,
@@ -651,24 +612,24 @@ sub _LimitCustomField {
                     VALUE    => $value,
                     CASESENSITIVE => 0,
                 );
-
-                $self->_OpenParen( $args{SUBCLAUSE} );
+            }
+            else {
                 $self->_OpenParen( $args{SUBCLAUSE} );
                 $self->Limit(
                     ALIAS           => $ocfvalias,
                     FIELD           => 'Content',
                     OPERATOR        => '=',
                     VALUE           => '',
+                    ENTRYAGGREGATOR => 'OR',
                     SUBCLAUSE       => $args{SUBCLAUSE},
-                    ENTRYAGGREGATOR => 'OR'
                 );
                 $self->Limit(
                     ALIAS           => $ocfvalias,
                     FIELD           => 'Content',
                     OPERATOR        => 'IS',
                     VALUE           => 'NULL',
+                    ENTRYAGGREGATOR => 'OR',
                     SUBCLAUSE       => $args{SUBCLAUSE},
-                    ENTRYAGGREGATOR => 'OR'
                 );
                 $self->_CloseParen( $args{SUBCLAUSE} );
                 $self->Limit( $fix_op->(
@@ -680,45 +641,83 @@ sub _LimitCustomField {
                     SUBCLAUSE       => $args{SUBCLAUSE},
                     CASESENSITIVE => 0,
                 ) );
-                $self->_CloseParen( $args{SUBCLAUSE} );
             }
-            $self->_CloseParen( $args{SUBCLAUSE} );
-
-            # XXX: if we join via CustomFields table then
-            # because of order of left joins we get NULLs in
-            # CF table and then get nulls for those records
-            # in OCFVs table what result in wrong results
-            # as decifer method now tries to load a CF then
-            # we fall into this situation only when there
-            # are more than one CF with the name in the DB.
-            # the same thing applies to order by call.
-            # TODO: reorder joins T <- OCFVs <- CFs <- OCFs if
-            # we want treat IS NULL as (not applies or has
-            # no value)
-            $self->Limit(
-                ALIAS           => $CFs,
-                FIELD           => 'Name',
-                OPERATOR        => 'IS NOT',
-                VALUE           => 'NULL',
-                ENTRYAGGREGATOR => 'AND',
-                SUBCLAUSE       => $args{SUBCLAUSE},
-            ) if $CFs;
-            $self->_CloseParen( $args{SUBCLAUSE} );
         }
+        else {
+            $self->Limit(
+                %args,
+                ALIAS    => $ocfvalias,
+                FIELD    => 'Content',
+                OPERATOR => $op,
+                VALUE    => $value,
+                CASESENSITIVE => 0,
+            );
 
-        if ($negative_op) {
+            $self->_OpenParen( $args{SUBCLAUSE} );
+            $self->_OpenParen( $args{SUBCLAUSE} );
             $self->Limit(
                 ALIAS           => $ocfvalias,
-                FIELD           => $column || 'Content',
+                FIELD           => 'Content',
+                OPERATOR        => '=',
+                VALUE           => '',
+                SUBCLAUSE       => $args{SUBCLAUSE},
+                ENTRYAGGREGATOR => 'OR'
+            );
+            $self->Limit(
+                ALIAS           => $ocfvalias,
+                FIELD           => 'Content',
                 OPERATOR        => 'IS',
                 VALUE           => 'NULL',
-                ENTRYAGGREGATOR => 'OR',
                 SUBCLAUSE       => $args{SUBCLAUSE},
+                ENTRYAGGREGATOR => 'OR'
             );
+            $self->_CloseParen( $args{SUBCLAUSE} );
+            $self->Limit( $fix_op->(
+                ALIAS           => $ocfvalias,
+                FIELD           => 'LargeContent',
+                OPERATOR        => $op,
+                VALUE           => $value,
+                ENTRYAGGREGATOR => 'AND',
+                SUBCLAUSE       => $args{SUBCLAUSE},
+                CASESENSITIVE => 0,
+            ) );
+            $self->_CloseParen( $args{SUBCLAUSE} );
         }
         $self->_CloseParen( $args{SUBCLAUSE} );
 
+        # XXX: if we join via CustomFields table then
+        # because of order of left joins we get NULLs in
+        # CF table and then get nulls for those records
+        # in OCFVs table what result in wrong results
+        # as decifer method now tries to load a CF then
+        # we fall into this situation only when there
+        # are more than one CF with the name in the DB.
+        # the same thing applies to order by call.
+        # TODO: reorder joins T <- OCFVs <- CFs <- OCFs if
+        # we want treat IS NULL as (not applies or has
+        # no value)
+        $self->Limit(
+            ALIAS           => $CFs,
+            FIELD           => 'Name',
+            OPERATOR        => 'IS NOT',
+            VALUE           => 'NULL',
+            ENTRYAGGREGATOR => 'AND',
+            SUBCLAUSE       => $args{SUBCLAUSE},
+        ) if $CFs;
+        $self->_CloseParen( $args{SUBCLAUSE} );
     }
+
+    if ($negative_op) {
+        $self->Limit(
+            ALIAS           => $ocfvalias,
+            FIELD           => $column || 'Content',
+            OPERATOR        => 'IS',
+            VALUE           => 'NULL',
+            ENTRYAGGREGATOR => 'OR',
+            SUBCLAUSE       => $args{SUBCLAUSE},
+        );
+    }
+    $self->_CloseParen( $args{SUBCLAUSE} );
 }
 
 =head2 Limit PARAMHASH
