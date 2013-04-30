@@ -380,7 +380,6 @@ sub _LimitCustomField {
     $args{SUBCLAUSE} ||= "cf-$cfkey";
 
     my $negative_op = ($op eq '!=' || $op =~ /\bNOT\b/i);
-    my $null_op = ( 'is not' eq lc($op) || 'is' eq lc($op) );
 
     my $fix_op = sub {
         return @_ unless RT->Config->Get('DatabaseType') eq 'Oracle';
@@ -534,10 +533,9 @@ sub _LimitCustomField {
 
     my $single_value = !blessed($cf) || $cf->SingleValue;
 
-    if ( $null_op ) {
-        # IS NULL is the same as lacks a CF value, and IS NOT NULL means
-        # has any value.  We can reuse our default joins for this
-        # operation.
+    ########## Limits
+    # IS NULL and IS NOT NULL checks
+    if ( $op =~ /^IS( NOT)?$/i ) {
         my ($ocfvalias, $CFs) = $self->_CustomFieldJoin( $cfkey, $cf );
         $self->_OpenParen( $args{SUBCLAUSE} );
         $self->Limit(
@@ -547,6 +545,7 @@ sub _LimitCustomField {
             OPERATOR => $op,
             VALUE    => $value,
         );
+        # See below for an explanation of this limit
         $self->Limit(
             ALIAS      => $CFs,
             FIELD      => 'Name',
@@ -556,8 +555,9 @@ sub _LimitCustomField {
             SUBCLAUSE  => $args{SUBCLAUSE},
         ) if $CFs;
         $self->_CloseParen( $args{SUBCLAUSE} );
+        return;
     }
-    elsif ( !$negative_op || $single_value ) {
+    if ( !$negative_op || $single_value ) {
         $cfkey .= '.'. $self->{'_sql_multiple_cfs_index'}++ if not $single_value and not $op =~ /^[<>]=?$/;
         my ($ocfvalias, $CFs) = $self->_CustomFieldJoin( $cfkey, $cf );
 
