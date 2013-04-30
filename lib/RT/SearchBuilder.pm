@@ -438,6 +438,50 @@ sub _LimitCustomField {
             } else {
                 $RT::Logger->warn("$value is not a valid IPAddressRange");
             }
+
+            # Recurse if they want a range comparison
+            if ( $op !~ /^[<>]=?$/ ) {
+                my ($start_ip, $end_ip) = split /-/, $value;
+                $self->_OpenParen( $args{SUBCLAUSE} );
+                # Ideally we would limit >= 000.000.000.000 and <=
+                # 255.255.255.255 so DB optimizers could use better
+                # estimations and scan less rows, but this breaks with IPv6.
+                if ( $op !~ /NOT|!=|<>/i ) { # positive equation
+                    $self->_LimitCustomField(
+                        %args,
+                        OPERATOR    => '<=',
+                        VALUE       => $end_ip,
+                        CUSTOMFIELD => $cf,
+                        COLUMN      => 'Content',
+                    );
+                    $self->_LimitCustomField(
+                        %args,
+                        OPERATOR    => '>=',
+                        VALUE       => $start_ip,
+                        CUSTOMFIELD => $cf,
+                        COLUMN      => 'LargeContent',
+                        ENTRYAGGREGATOR => 'AND',
+                    );
+                } else { # negative equation
+                    $self->_LimitCustomField(
+                        %args,
+                        OPERATOR    => '>',
+                        VALUE       => $end_ip,
+                        CUSTOMFIELD => $cf,
+                        COLUMN      => 'Content',
+                    );
+                    $self->_LimitCustomField(
+                        %args,
+                        OPERATOR    => '<',
+                        VALUE       => $start_ip,
+                        CUSTOMFIELD => $cf,
+                        COLUMN      => 'LargeContent',
+                        ENTRYAGGREGATOR => 'OR',
+                    );
+                }
+                $self->_CloseParen( $args{SUBCLAUSE} );
+                return;
+            }
         }
 
         if ( $cf->Type =~ /^Date(?:Time)?$/ ) {
@@ -488,61 +532,6 @@ sub _LimitCustomField {
         ) if $CFs;
         $self->_CloseParen( $args{SUBCLAUSE} );
     }
-    elsif ( $op !~ /^[<>]=?$/ && (  blessed($cf) && $cf->Type eq 'IPAddressRange')) {
-        my ($start_ip, $end_ip) = split /-/, $value;
-        $self->_OpenParen( $args{SUBCLAUSE} );
-        if ( $op !~ /NOT|!=|<>/i ) { # positive equation
-            $self->_LimitCustomField(
-                %args,
-                OPERATOR    => '<=',
-                VALUE       => $end_ip,
-                CUSTOMFIELD => $cf,
-                COLUMN      => 'Content',
-            );
-            $self->_LimitCustomField(
-                %args,
-                OPERATOR    => '>=',
-                VALUE       => $start_ip,
-                CUSTOMFIELD => $cf,
-                COLUMN      => 'LargeContent',
-                ENTRYAGGREGATOR => 'AND',
-            );
-            # as well limit borders so DB optimizers can use better
-            # estimations and scan less rows
-# have to disable this tweak because of ipv6
-#            $self->_CustomFieldLimit(
-#                $field, '>=', '000.000.000.000', %rest,
-#                SUBKEY          => $rest{'SUBKEY'}. '.Content',
-#                ENTRYAGGREGATOR => 'AND',
-#            );
-#            $self->_CustomFieldLimit(
-#                $field, '<=', '255.255.255.255', %rest,
-#                SUBKEY          => $rest{'SUBKEY'}. '.LargeContent',
-#                ENTRYAGGREGATOR => 'AND',
-#            );  
-        }       
-        else { # negative equation
-            $self->_LimitCustomField(
-                %args,
-                OPERATOR    => '>',
-                VALUE       => $end_ip,
-                CUSTOMFIELD => $cf,
-                COLUMN      => 'Content',
-            );
-            $self->_LimitCustomField(
-                %args,
-                OPERATOR    => '<',
-                VALUE       => $start_ip,
-                CUSTOMFIELD => $cf,
-                COLUMN      => 'LargeContent',
-                ENTRYAGGREGATOR => 'OR',
-            );
-            # TODO: as well limit borders so DB optimizers can use better
-            # estimations and scan less rows, but it's harder to do
-            # as we have OR aggregator
-        }
-        $self->_CloseParen( $args{SUBCLAUSE} );
-    } 
     elsif ( !$negative_op || $single_value ) {
         $cfkey .= '.'. $self->{'_sql_multiple_cfs_index'}++ if not $single_value and not $op =~ /^[<>]=?$/;
         my ($ocfvalias, $CFs) = $self->_CustomFieldJoin( $cfkey, $cf );
