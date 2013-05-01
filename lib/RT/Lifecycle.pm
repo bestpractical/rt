@@ -638,7 +638,7 @@ sub CanonicalCase {
     my $self = shift;
     my ($status) = @_;
     return undef unless defined $status;
-    return $self->{data}{canonical_case}{lc $status};
+    return($self->{data}{canonical_case}{lc $status} || lc $status);
 }
 
 sub FillCache {
@@ -663,7 +663,11 @@ sub FillCache {
         $lifecycle->{canonical_case} = {};
         foreach my $type ( qw(initial active inactive) ) {
             for my $status (@{ $lifecycle->{ $type } || [] }) {
-                $lifecycle->{canonical_case}{lc $status} = $status;
+                if (exists $lifecycle->{canonical_case}{lc $status}) {
+                    warn "Duplicate status @{[lc $status]} in lifecycle $name";
+                } else {
+                    $lifecycle->{canonical_case}{lc $status} = $status;
+                }
                 push @{ $all{ $type } }, $status;
                 push @statuses, $status;
             }
@@ -673,17 +677,32 @@ sub FillCache {
         # ->{actions} are handled below
         for my $state (keys %{ $lifecycle->{defaults} || {} }) {
             my $status = $lifecycle->{defaults}{$state};
+            warn "Nonexistant status @{[lc $status]} in default states in $name lifecycle"
+                unless $lifecycle->{canonical_case}{lc $status};
             $lifecycle->{defaults}{$state} =
-                $lifecycle->{canonical_case}{lc $status};
+                $lifecycle->{canonical_case}{lc $status} || lc $status;
         }
         for my $from (keys %{ $lifecycle->{transitions} || {} }) {
+            warn "Nonexistant status @{[lc $from]} in transitions in $name lifecycle"
+                unless $from eq '' or $lifecycle->{canonical_case}{lc $from};
             for my $status ( @{delete($lifecycle->{transitions}{$from}) || []} ) {
+                warn "Nonexistant status @{[lc $status]} in transitions in $name lifecycle"
+                    unless $lifecycle->{canonical_case}{lc $status};
                 push @{ $lifecycle->{transitions}{lc $from} },
-                    $lifecycle->{canonical_case}{lc $status};
+                    $lifecycle->{canonical_case}{lc $status} || lc $status;
             }
         }
         for my $schema (keys %{ $lifecycle->{rights} || {} }) {
-            $lifecycle->{rights}{lc $schema}
+            my ($from, $to) = split /\s*->\s*/, $schema, 2;
+            unless ($from and $to) {
+                warn "Invalid right transition $schema in $name lifecycle";
+                next;
+            }
+            warn "Nonexistant status @{[lc $from]} in right transition in $name lifecycle"
+                unless $from eq '*' or $lifecycle->{canonical_case}{lc $from};
+            warn "Nonexistant status @{[lc $to]} in right transition in $name lifecycle"
+                unless $to eq '*' or $lifecycle->{canonical_case}{lc $to};
+            $lifecycle->{rights}{lc($from) . " -> " .lc($to)}
                 = delete $lifecycle->{rights}{$schema};
         }
 
@@ -707,17 +726,41 @@ sub FillCache {
         $lifecycle->{'actions'} = [];
         while ( my ($transition, $info) = splice @actions, 0, 2 ) {
             my ($from, $to) = split /\s*->\s*/, $transition, 2;
+            unless ($from and $to) {
+                warn "Invalid action status change $transition in $name lifecycle";
+                next;
+            }
+            warn "Nonexistant status @{[lc $from]} in action in $name lifecycle"
+                unless $from eq '*' or $lifecycle->{canonical_case}{lc $from};
+            warn "Nonexistant status @{[lc $to]} in action in $name lifecycle"
+                unless $to eq '*' or $lifecycle->{canonical_case}{lc $to};
             push @{ $lifecycle->{'actions'} },
                 { %$info,
-                  from => $lifecycle->{canonical_case}{lc $from},
-                  to   => $lifecycle->{canonical_case}{lc $to} };
+                  from => ($lifecycle->{canonical_case}{lc $from} || lc $from),
+                  to   => ($lifecycle->{canonical_case}{lc $to}   || lc $to),   };
         }
     }
 
     # Lower-case the transition maps
     for my $mapname (keys %{ $LIFECYCLES_CACHE{'__maps__'} || {} }) {
-        my $map = $LIFECYCLES_CACHE{'__maps__'}{$mapname};
+        my ($from, $to) = split /\s*->\s*/, $mapname, 2;
+        unless ($from and $to) {
+            warn "Invalid lifecycle mapping $mapname";
+            next;
+        }
+        warn "Nonexistant lifecycle $from in $mapname lifecycle map"
+            unless $LIFECYCLES_CACHE{$from};
+        warn "Nonexistant lifecycle $to in $mapname lifecycle map"
+            unless $LIFECYCLES_CACHE{$to};
+        my $map = delete $LIFECYCLES_CACHE{'__maps__'}{$mapname};
+        $LIFECYCLES_CACHE{'__maps__'}{"$from -> $to"} = $map;
         for my $status (keys %{ $map }) {
+            warn "Nonexistant status @{[lc $status]} in $from in $mapname lifecycle map"
+                if $LIFECYCLES_CACHE{$from}
+                    and not $LIFECYCLES_CACHE{$from}{canonical_case}{lc $status};
+            warn "Nonexistant status @{[lc $map->{$status}]} in $from in $mapname lifecycle map"
+                if $LIFECYCLES_CACHE{$to}
+                    and not $LIFECYCLES_CACHE{$to}{canonical_case}{lc $map->{$status}};
             $map->{lc $status} = lc delete $map->{$status};
         }
     }
