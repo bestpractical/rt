@@ -231,7 +231,7 @@ sub cleanup_headers {
     # strip id from subject to create new ticket
     $mail =~ s/^(Subject:)\s*\[.*?\s+#\d+\]\s*/$1 /m;
     # strip several headers
-    foreach my $field ( qw(Message-ID X-RT-Original-Encoding RT-Originator RT-Ticket X-RT-Loop-Prevention) ) {
+    foreach my $field ( qw(Message-ID RT-Originator RT-Ticket X-RT-Loop-Prevention) ) {
         $mail =~ s/^$field:.*?\n(?! |\t)//gmsi;
     }
     return $mail;
