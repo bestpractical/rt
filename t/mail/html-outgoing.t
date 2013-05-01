@@ -43,7 +43,7 @@ mail_ok {
     to      => 'enduser@example.com',
     subject => qr/\Q[example.com #1] AutoReply: The internet is broken\E/,
     body    => parts_regex(
-        'trouble ticket regarding "The internet is broken"',
+        'trouble ticket regarding The internet is broken',
         'trouble ticket regarding <b>The internet is broken</b>'
     ),
     'Content-Type' => qr{multipart},
@@ -70,7 +70,7 @@ mail_ok {
     subject => qr/\Q[example.com #1] The internet is broken\E/,
     body    => parts_regex(
         'Ticket URL: http://localhost:\d+/Ticket/Display\.html\?id=1.+?'.
-        'This is a test of "HTML" correspondence\.',
+        'This is a test of HTML correspondence\.',
         'Ticket URL: <a href="(http://localhost:\d+/Ticket/Display\.html\?id=1)">\1</a>.+?'.
         '<p>This is a test of <b>HTML</b> correspondence\.</p>'
     ),
@@ -79,7 +79,7 @@ mail_ok {
     to      => 'enduser@example.com',
     subject => qr/\Q[example.com #1] The internet is broken\E/,
     body    => parts_regex(
-        'This is a test of "HTML" correspondence\.',
+        'This is a test of HTML correspondence\.',
         '<p>This is a test of <b>HTML</b> correspondence\.</p>'
     ),
     'Content-Type' => qr{multipart},
@@ -100,7 +100,7 @@ mail_ok {
     body    => parts_regex(
         'This is a comment about ticket 1 \(http://localhost:\d+/Ticket/Display\.html\?id=1\)\..+?'.
         'It is not sent to the Requestor\(s\):.+?'.
-        'Comment test, "please!"',
+        'Comment test, please!',
 
         '<p>This is a comment about <a href="http://localhost:\d+/Ticket/Display\.html\?id=1">ticket 1</a>\. '.
         'It is not sent to the Requestor\(s\):</p>.+?'.

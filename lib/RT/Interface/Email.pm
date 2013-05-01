@@ -1898,9 +1898,7 @@ sub ConvertHTMLToText {
             after_link      => ' (%l)',
             footnote        => '',
             skip_linked_urls => 1,
-            with_emphasis   => 1,
-            bold_marker     => '"',
-            italic_marker   => '"',
+            with_emphasis   => 0,
         }
     );
 }
