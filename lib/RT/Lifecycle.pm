@@ -648,45 +648,50 @@ sub FillCache {
         active => [],
         inactive => [],
     );
-    foreach my $lifecycle ( values %LIFECYCLES_CACHE ) {
-        my @res;
+    foreach my $name ( keys %LIFECYCLES_CACHE ) {
+        next if $name eq "__maps__";
+        my $lifecycle = $LIFECYCLES_CACHE{$name};
+
+        my @statuses;
         foreach my $type ( qw(initial active inactive) ) {
-            push @{ $all{ $type } }, @{ $lifecycle->{ $type } || [] };
-            push @res,               @{ $lifecycle->{ $type } || [] };
+            for my $status (@{ $lifecycle->{ $type } || [] }) {
+                push @{ $all{ $type } }, $status;
+                push @statuses, $status;
+            }
         }
 
         my %seen;
-        @res = grep !$seen{ lc $_ }++, @res;
-        $lifecycle->{''} = \@res;
+        @statuses = grep !$seen{ $_ }++, @statuses;
+        $lifecycle->{''} = \@statuses;
 
         unless ( $lifecycle->{'transitions'}{''} ) {
-            $lifecycle->{'transitions'}{''} = [ grep $_ ne 'deleted', @res ];
+            $lifecycle->{'transitions'}{''} = [ grep $_ ne 'deleted', @statuses ];
+        }
+
+        my @actions;
+        if ( ref $lifecycle->{'actions'} eq 'HASH' ) {
+            foreach my $k ( sort keys %{ $lifecycle->{'actions'} } ) {
+                push @actions, $k, $lifecycle->{'actions'}{ $k };
+            }
+        } elsif ( ref $lifecycle->{'actions'} eq 'ARRAY' ) {
+            @actions = @{ $lifecycle->{'actions'} };
+        }
+
+        $lifecycle->{'actions'} = [];
+        while ( my ($transition, $info) = splice @actions, 0, 2 ) {
+            my ($from, $to) = split /\s*->\s*/, $transition, 2;
+            push @{ $lifecycle->{'actions'} },
+                { %$info, from => $from, to => $to };
         }
     }
+
     foreach my $type ( qw(initial active inactive), '' ) {
         my %seen;
-        @{ $all{ $type } } = grep !$seen{ lc $_ }++, @{ $all{ $type } };
+        @{ $all{ $type } } = grep !$seen{ $_ }++, @{ $all{ $type } };
         push @{ $all{''} }, @{ $all{ $type } } if $type;
     }
     $LIFECYCLES_CACHE{''} = \%all;
 
-    foreach my $lifecycle ( values %LIFECYCLES_CACHE ) {
-        my @res;
-        if ( ref $lifecycle->{'actions'} eq 'HASH' ) {
-            foreach my $k ( sort keys %{ $lifecycle->{'actions'} } ) {
-                push @res, $k, $lifecycle->{'actions'}{ $k };
-            }
-        } elsif ( ref $lifecycle->{'actions'} eq 'ARRAY' ) {
-            @res = @{ $lifecycle->{'actions'} };
-        }
-
-        my @tmp = splice @res;
-        while ( my ($transition, $info) = splice @tmp, 0, 2 ) {
-            my ($from, $to) = split /\s*->\s*/, $transition, 2;
-            push @res, { %$info, from => $from, to => $to };
-        }
-        $lifecycle->{'actions'} = \@res;
-    }
     return;
 }
 
