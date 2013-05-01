@@ -540,7 +540,7 @@ sub Actions {
 
     $self->FillCache unless keys %LIFECYCLES_CACHE;
 
-    my @res = grep $_->{'from'} eq $from || ( $_->{'from'} eq '*' && $_->{'to'} ne $from ),
+    my @res = grep lc $_->{'from'} eq $from || ( $_->{'from'} eq '*' && lc $_->{'to'} ne $from ),
         @{ $self->{'data'}{'actions'} };
 
     # skip '* -> x' if there is '$from -> x'
@@ -634,6 +634,13 @@ sub ForLocalization {
 
 sub loc { return RT->SystemUser->loc( @_ ) }
 
+sub CanonicalCase {
+    my $self = shift;
+    my ($status) = @_;
+    return undef unless defined $status;
+    return $self->{data}{canonical_case}{lc $status};
+}
+
 sub FillCache {
     my $self = shift;
 
@@ -653,21 +660,26 @@ sub FillCache {
         my $lifecycle = $LIFECYCLES_CACHE{$name};
 
         my @statuses;
+        $lifecycle->{canonical_case} = {};
         foreach my $type ( qw(initial active inactive) ) {
             for my $status (@{ $lifecycle->{ $type } || [] }) {
-                push @{ $all{ $type } }, lc $status;
-                push @statuses, lc $status;
+                $lifecycle->{canonical_case}{lc $status} = $status;
+                push @{ $all{ $type } }, $status;
+                push @statuses, $status;
             }
         }
 
         # Lower-case for consistency
         # ->{actions} are handled below
         for my $state (keys %{ $lifecycle->{defaults} || {} }) {
-            $lifecycle->{defaults}{$state} = lc $lifecycle->{defaults}{$state};
+            my $status = $lifecycle->{defaults}{$state};
+            $lifecycle->{defaults}{$state} =
+                $lifecycle->{canonical_case}{lc $status};
         }
         for my $from (keys %{ $lifecycle->{transitions} || {} }) {
             for my $status ( @{delete($lifecycle->{transitions}{$from}) || []} ) {
-                push @{ $lifecycle->{transitions}{lc $from} }, lc $status;
+                push @{ $lifecycle->{transitions}{lc $from} },
+                    $lifecycle->{canonical_case}{lc $status};
             }
         }
         for my $schema (keys %{ $lifecycle->{rights} || {} }) {
@@ -696,7 +708,9 @@ sub FillCache {
         while ( my ($transition, $info) = splice @actions, 0, 2 ) {
             my ($from, $to) = split /\s*->\s*/, $transition, 2;
             push @{ $lifecycle->{'actions'} },
-                { %$info, from => lc $from, to => lc $to };
+                { %$info,
+                  from => $lifecycle->{canonical_case}{lc $from},
+                  to   => $lifecycle->{canonical_case}{lc $to} };
         }
     }
 

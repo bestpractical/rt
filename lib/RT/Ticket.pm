@@ -1731,7 +1731,7 @@ sub SetQueue {
         unless ( $old_lifecycle->HasMoveMap( $new_lifecycle ) ) {
             return ( 0, $self->loc("There is no mapping for statuses between these queues. Contact your system administrator.") );
         }
-        $new_status = $old_lifecycle->MoveMap( $new_lifecycle )->{ $self->Status };
+        $new_status = $old_lifecycle->MoveMap( $new_lifecycle )->{ lc $self->Status };
         return ( 0, $self->loc("Mapping between queues' lifecycles is incomplete. Contact your system administrator.") )
             unless $new_status;
     }
@@ -3135,7 +3135,12 @@ sub ValidateStatus {
     return 0;
 }
 
-
+sub Status {
+    my $self = shift;
+    my $value = $self->_Value( 'Status' );
+    return $value unless $self->QueueObj;
+    return $self->QueueObj->Lifecycle->CanonicalCase( $value );
+}
 
 =head2 SetStatus STATUS
 
