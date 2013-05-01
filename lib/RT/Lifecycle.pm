@@ -655,9 +655,24 @@ sub FillCache {
         my @statuses;
         foreach my $type ( qw(initial active inactive) ) {
             for my $status (@{ $lifecycle->{ $type } || [] }) {
-                push @{ $all{ $type } }, $status;
-                push @statuses, $status;
+                push @{ $all{ $type } }, lc $status;
+                push @statuses, lc $status;
             }
+        }
+
+        # Lower-case for consistency
+        # ->{actions} are handled below
+        for my $state (keys %{ $lifecycle->{defaults} || {} }) {
+            $lifecycle->{defaults}{$state} = lc $lifecycle->{defaults}{$state};
+        }
+        for my $from (keys %{ $lifecycle->{transitions} || {} }) {
+            for my $status ( @{delete($lifecycle->{transitions}{$from}) || []} ) {
+                push @{ $lifecycle->{transitions}{lc $from} }, lc $status;
+            }
+        }
+        for my $schema (keys %{ $lifecycle->{rights} || {} }) {
+            $lifecycle->{rights}{lc $schema}
+                = delete $lifecycle->{rights}{$schema};
         }
 
         my %seen;
@@ -681,7 +696,15 @@ sub FillCache {
         while ( my ($transition, $info) = splice @actions, 0, 2 ) {
             my ($from, $to) = split /\s*->\s*/, $transition, 2;
             push @{ $lifecycle->{'actions'} },
-                { %$info, from => $from, to => $to };
+                { %$info, from => lc $from, to => lc $to };
+        }
+    }
+
+    # Lower-case the transition maps
+    for my $mapname (keys %{ $LIFECYCLES_CACHE{'__maps__'} || {} }) {
+        my $map = $LIFECYCLES_CACHE{'__maps__'}{$mapname};
+        for my $status (keys %{ $map }) {
+            $map->{lc $status} = lc delete $map->{$status};
         }
     }
 
