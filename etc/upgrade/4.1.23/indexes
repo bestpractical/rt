@@ -31,4 +31,38 @@ use warnings;
     RT->Logger->info($msg);
 }
 
+# a few case insensitive and unique indexes
+{
+    my @list = (
+        { Table => 'Queues', Column => 'Name' },
+        { Table => 'Users', Column => 'Name' },
+    );
+    foreach my $e (@list) {
+        RT->Logger->info("Checking index on ". $e->{'Column'} ." in ". $e->{'Table'} );
+        my ($index) = $RT::Handle->IndexesThatBeginWith(
+            Table => $e->{'Table'}, Columns => [$e->{'Column'}]
+        );
+        $index = undef if $index && @{$index->{'Columns'}}>1;
+        if (
+            $index && $index->{'Unique'}
+            && ($RT::Handle->CaseSensitive? $index->{'CaseInsensitive'}{ lc $e->{'Column'} } : 1 )
+        ) {
+            RT->Logger->info("Required index exists. Skipping.");
+            next;
+        }
+        if ( $index ) {
+            my ($status, $msg) = $RT::Handle->DropIndex(
+                Table => $e->{'Table'}, Name => $index->{'Name'},
+            );
+            RT->Logger->info($msg);
+        }
+
+        my ($status, $msg) = $RT::Handle->CreateIndex(
+            Table => $e->{'Table'}, Columns => [$e->{'Column'}],
+            Unique => 1, CaseInsensitive => { lc $e->{'Column'} => 1 },
+        );
+        RT->Logger->info($msg);
+    }
+}
+
 1;
