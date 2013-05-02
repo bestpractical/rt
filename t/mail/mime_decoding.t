@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Test nodb => 1, tests => 13;
+use RT::Test nodb => 1, tests => 14;
 
 use_ok('RT::I18N');
 
@@ -32,6 +32,16 @@ diag q{'=' char in a trailing part after an encoded part};
         'attachment; filename="мой_файл.bin"; some_prop="value"',
         "right decoding"
     );
+}
+
+diag q{adding quotes around mime words containing specials when word is already quoted};
+{
+    my $str = <<"END";
+Content-Disposition: attachment; filename="=?iso-8859-1?Q?foobar,_?=
+ =?iso-8859-1?Q?barfoo.docx?="
+END
+    my $decoded = 'Content-Disposition: attachment; filename="foobar, barfoo.docx"';
+    is( RT::I18N::DecodeMIMEWordsToUTF8($str), $decoded, "No added quotes" );
 }
 
 diag q{regression test for #5248 from rt3.fsck.com};
