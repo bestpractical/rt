@@ -61,6 +61,9 @@ my @tests = (
     "CF.{$cf_id} = '$ylong'"              => { '-' => 0, x => 0, y => 0, z => 0, xy => 0, xz => 0, yz => 0, x_ylong => 1, ylong => 1 },
     "CF.{$cf_id}.Content = '$ylong'"      => { '-' => 0, x => 0, y => 0, z => 0, xy => 0, xz => 0, yz => 0, x_ylong => 0, ylong => 0 },
     "CF.{$cf_id}.LargeContent = '$ylong'" => { '-' => 0, x => 0, y => 0, z => 0, xy => 0, xz => 0, yz => 0, x_ylong => 1, ylong => 1 },
+    "CF.{$cf_id} LIKE 'yyy'"              => { '-' => 0, x => 0, y => 0, z => 0, xy => 0, xz => 0, yz => 0, x_ylong => 1, ylong => 1 },
+    "CF.{$cf_id}.Content LIKE 'yyy'"      => { '-' => 0, x => 0, y => 0, z => 0, xy => 0, xz => 0, yz => 0, x_ylong => 0, ylong => 0 },
+    "CF.{$cf_id}.LargeContent LIKE 'yyy'" => { '-' => 0, x => 0, y => 0, z => 0, xy => 0, xz => 0, yz => 0, x_ylong => 1, ylong => 1 },
     "'CF.{$cf_name}' = 'x'"               => { '-' => 0, x => 1, y => 0, z => 0, xy => 1, xz => 1, yz => 0, x_ylong => 1, ylong => 0 },
     "'CF.{$cf_name}.Content' = 'x'"       => { '-' => 0, x => 1, y => 0, z => 0, xy => 1, xz => 1, yz => 0, x_ylong => 1, ylong => 0 },
     "'CF.{$cf_name}.LargeContent' = 'x'"  => { '-' => 0, x => 0, y => 0, z => 0, xy => 0, xz => 0, yz => 0, x_ylong => 0, ylong => 0 },
@@ -73,6 +76,9 @@ my @tests = (
     "CF.{$cf_id} != '$ylong'"              => { '-' => 1, x => 1, y => 1, z => 1, xy => 1, xz => 1, yz => 1, x_ylong => 0, ylong => 0 },
     "CF.{$cf_id}.Content != '$ylong'"      => { '-' => 1, x => 1, y => 1, z => 1, xy => 1, xz => 1, yz => 1, x_ylong => 1, ylong => 1 },
     "CF.{$cf_id}.LargeContent != '$ylong'" => { '-' => 1, x => 1, y => 1, z => 1, xy => 1, xz => 1, yz => 1, x_ylong => 0, ylong => 0 },
+"TODO: CF.{$cf_id} NOT LIKE 'yyy'"         => { '-' => 1, x => 1, y => 1, z => 1, xy => 1, xz => 1, yz => 1, x_ylong => 0, ylong => 0 },
+    "CF.{$cf_id}.Content NOT LIKE 'yyy'"   => { '-' => 1, x => 1, y => 1, z => 1, xy => 1, xz => 1, yz => 1, x_ylong => 1, ylong => 1 },
+    "CF.{$cf_id}.LargeContent NOT LIKE 'yyy'" => { '-' => 1, x => 1, y => 1, z => 1, xy => 1, xz => 1, yz => 1, x_ylong => 0, ylong => 0 },
     "'CF.{$cf_name}' != 'x'"               => { '-' => 1, x => 0, y => 1, z => 1, xy => 0, xz => 0, yz => 1, x_ylong => 0, ylong => 1 },
     "'CF.{$cf_name}.Content' != 'x'"       => { '-' => 1, x => 0, y => 1, z => 1, xy => 0, xz => 0, yz => 1, x_ylong => 0, ylong => 1 },
     "'CF.{$cf_name}.LargeContent' != 'x'"  => { '-' => 1, x => 1, y => 1, z => 1, xy => 1, xz => 1, yz => 1, x_ylong => 1, ylong => 1 },
@@ -122,6 +128,7 @@ sub run_tests {
     while (@tests) {
         my $query = shift @tests;
         my %results = %{ shift @tests };
+        local $TODO = "Not implemented correctly" if $query =~ s/^TODO:\s*//;
         subtest $query => sub {
             my $tix = RT::Tickets->new(RT->SystemUser);
             $tix->FromSQL( "$query" );

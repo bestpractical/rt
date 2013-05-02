@@ -557,6 +557,7 @@ sub _LimitCustomField {
 
     my $single_value = !blessed($cf) || $cf->SingleValue;
     my $negative_op = ($op eq '!=' || $op =~ /\bNOT\b/i);
+    my $value_is_long = (length( Encode::encode_utf8($value)) > 255) ? 1 : 0;
 
     $cfkey .= '.'. $self->{'_sql_multiple_cfs_index'}++
         if not $single_value and $op =~ /^(!?=|(NOT )?LIKE)$/i;
@@ -568,10 +569,17 @@ sub _LimitCustomField {
         # Reverse the limit we apply to the join, and check IS NULL
         $op =~ s/!|NOT\s+//i;
 
+        # Ideally we would check both Content and LargeContent here, as
+        # the positive searches do below -- however, we cannot place
+        # complex limits inside LEFTJOINs due to searchbuilder
+        # limitations.  Guessing which to check based on the value's
+        # string length is sufficient for !=, but sadly insufficient for
+        # NOT LIKE checks, giving false positives.
+        $column ||= $value_is_long ? 'LargeContent' : 'Content';
         $self->Limit( $fix_op->(
             LEFTJOIN   => $ocfvalias,
             ALIAS      => $ocfvalias,
-            FIELD      => ($column || 'Content'),
+            FIELD      => $column,
             OPERATOR   => $op,
             VALUE      => $value,
             CASESENSITIVE => 0,
@@ -612,7 +620,6 @@ sub _LimitCustomField {
     $self->_OpenParen( $args{SUBCLAUSE} ); # For negative_op "OR it is null" clause
     $self->_OpenParen( $args{SUBCLAUSE} ); # NAME IS NOT NULL clause
 
-    my $value_is_long = (length( Encode::encode_utf8($value)) > 255) ? 1 : 0;
     $self->_OpenParen( $args{SUBCLAUSE} ); # Check Content / LargeContent
     if ($value_is_long and $op eq "=") {
         # Doesn't matter what Content contains, as it cannot match the
