@@ -711,7 +711,7 @@ sub _LimitCustomField {
     # possibility that the row had no value.
     $self->Limit(
         ALIAS           => $ocfvalias,
-        FIELD           => $column || 'Content',
+        FIELD           => 'id',
         OPERATOR        => 'IS',
         VALUE           => 'NULL',
         ENTRYAGGREGATOR => 'OR',
