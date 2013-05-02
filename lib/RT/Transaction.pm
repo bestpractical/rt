@@ -646,11 +646,14 @@ sub BriefDescription {
                 return ( $self->loc( "[_1] deleted", $obj_type ) );
             }
             else {
+                my $canon = $self->Object->can("QueueObj")
+                    ? sub { $self->Object->QueueObj->Lifecycle->CanonicalCase(@_) }
+                    : sub { return $_[0] };
                 return (
                     $self->loc(
                         "Status changed from [_1] to [_2]",
-                        "'" . $self->loc( $self->OldValue ) . "'",
-                        "'" . $self->loc( $self->NewValue ) . "'"
+                        "'" . $self->loc( $canon->($self->OldValue) ) . "'",
+                        "'" . $self->loc( $canon->($self->NewValue) ) . "'"
                     )
                 );
 
