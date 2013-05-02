@@ -198,7 +198,7 @@ foreach my $action ( @actions ) {
 sub action_create {
     my %args = @_;
     my $dbh = get_system_dbh();
-    my ($status, $msg) = RT::Handle->CheckCompatibility( $dbh, 'pre' );
+    my ($status, $msg) = RT::Handle->CheckCompatibility( $dbh, 'create' );
     return ($status, $msg) unless $status;
 
     print "Now creating a $db_type database $db_name for RT.\n";
@@ -226,7 +226,7 @@ END
 sub action_schema {
     my %args = @_;
     my $dbh = get_admin_dbh();
-    my ($status, $msg) = RT::Handle->CheckCompatibility( $dbh, 'pre' );
+    my ($status, $msg) = RT::Handle->CheckCompatibility( $dbh, 'schema' );
     return ($status, $msg) unless $status;
 
     print "Now populating database schema.\n";
@@ -236,7 +236,7 @@ sub action_schema {
 sub action_acl {
     my %args = @_;
     my $dbh = get_admin_dbh();
-    my ($status, $msg) = RT::Handle->CheckCompatibility( $dbh, 'pre' );
+    my ($status, $msg) = RT::Handle->CheckCompatibility( $dbh, 'acl' );
     return ($status, $msg) unless $status;
 
     print "Now inserting database ACLs.\n";
@@ -249,7 +249,7 @@ sub action_coredata {
     $RT::Handle->dbh( undef );
     RT::ConnectToDatabase();
     RT::InitLogging();
-    my ($status, $msg) = RT::Handle->CheckCompatibility( $RT::Handle->dbh, 'pre' );
+    my ($status, $msg) = RT::Handle->CheckCompatibility( $RT::Handle->dbh, 'coredata' );
     return ($status, $msg) unless $status;
 
     print "Now inserting RT core system objects.\n";
@@ -260,7 +260,7 @@ sub action_insert {
     my %args = @_;
     $RT::Handle = RT::Handle->new;
     RT::Init();
-    my ($status, $msg) = RT::Handle->CheckCompatibility( $RT::Handle->dbh, 'pre' );
+    my ($status, $msg) = RT::Handle->CheckCompatibility( $RT::Handle->dbh, 'insert' );
     return ($status, $msg) unless $status;
 
     print "Now inserting data.\n";

@@ -62,7 +62,15 @@ checked="checked"
 </li>
 % }
 </ul>
-<& /Elements/Submit, CheckAll => 1, ClearAll => 1, Caption => loc("Save Changes"), Label => loc('Save'), Name => 'Save'&>
+<& /Elements/Submit,
+    Caption             => loc("Save Changes"),
+    Label               => loc('Save'),
+    Name                => 'Save',
+    Reset               => 1,
+    CheckAll            => 1,
+    ClearAll            => 1,
+    CheckboxNameRegex   => '/^Want-/',
+    &>
 
 </form>
 

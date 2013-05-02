@@ -217,8 +217,8 @@ sub _ClearOldDir {
 
     foreach my $id( @{ $self->Ids } ) {
         if( int $older_than ) {
-            my $ctime = (stat(File::Spec->catfile($dir,$id)))[9];
-            if( $ctime > $now - $older_than ) {
+            my $mtime = (stat(File::Spec->catfile($dir,$id)))[9];
+            if( $mtime > $now - $older_than ) {
                 $RT::Logger->debug("skipped session '$id', isn't old");
                 next;
             }

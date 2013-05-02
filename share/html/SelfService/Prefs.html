@@ -50,6 +50,23 @@
 <& /Elements/ListActions, actions => \@results &>
 <form method="post">
 
+<table width="100%" border="0">
+<tr>
+<td valign="top" class="boxcontainer" width=50%>
+<&| /Widgets/TitleBox, title => loc('Locale'), id => "user-prefs-identity" &>
+<table cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="label"><&|/l&>Language</&>:</td>
+    <td class="value"><& /Elements/SelectLang, Name => 'Lang', Default => $user->Lang &></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Timezone</&>:</td>
+    <td class="value"><& /Elements/SelectTimezone, Name => 'Timezone', Default => $user->Timezone &></td>
+  </tr>
+</table>
+</&>
+</td>
+<td valign="top">
 <&| /Widgets/TitleBox, title => loc('Change password')  &>
 <& /Elements/EditPassword,
     User => $user,
@@ -57,6 +74,7 @@
 &>
 </&>
 
+</td></tr></table>
 <br />
 <& /Elements/Submit, Label => loc('Save Changes') &>
 </form>
@@ -76,6 +94,29 @@ if (defined $NewPass1 && length $NewPass1 ) {
     push @results, loc("Password: [_1]", $msg);
 }
 
+my @fields = qw(
+        Lang Timezone
+    );
+
+$m->callback(
+    CallbackName => 'UpdateLogic',
+    fields       => \@fields,
+    results      => \@results,
+    UserObj      => $user,
+    ARGSRef      => \%ARGS,
+);
+
+push @results, UpdateRecordObject (
+    AttributesRef => \@fields,
+    Object => $user,
+    ARGSRef => \%ARGS,
+);
+
+if ( $Lang ) {
+    $session{'CurrentUser'}->LanguageHandle($Lang);
+    $session{'CurrentUser'} = $session{'CurrentUser'}; # force writeback
+}
+
 if ($Signature) {
     $Signature =~ s/(\r\n|\r)/\n/g;
     if ($Signature ne $user->Signature) {
@@ -93,4 +134,5 @@ $Signature => undef
 $CurrentPass => undef
 $NewPass1 => undef
 $NewPass2 => undef
+$Lang => undef
 </%ARGS>

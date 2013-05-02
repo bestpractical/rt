@@ -177,3 +177,15 @@ If you have @JSFiles set in your RT_SiteConfig.pm but it appears to be
 the same as RT_Config.pm (no local js files added) you can safely remove
 the whole setting from RT_SiteConfig.pm and allow our default to be
 used.
+
+=head1 UPGRADING FROM 4.0.11 AND EARLIER
+
+=head2 Data Upgrades
+
+Previous versions of RT allowed you to create Tickets with a Type of
+'Ticket', 'Approval' or 'Reminder' instead of the correct 'ticket'.
+Existing Types are updated in the database and the RT API now corrects
+these types before insertion.
+
+Site-specific custom types (anything but ticket, reminder or approval)
+are not affected by these changes.

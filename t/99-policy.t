@@ -7,7 +7,7 @@ use IPC::Run3;
 
 my @files;
 find( sub { push @files, $File::Find::name if -f },
-      qw{lib share t bin sbin devel/tools etc} );
+      qw{etc lib share t bin sbin devel/tools} );
 if ( my $dir = `git rev-parse --git-dir 2>/dev/null` ) {
     # We're in a git repo, use the ignore list
     chomp $dir;
@@ -118,6 +118,9 @@ check( $_, exec => -1 )
 
 check( $_, exec => -1 )
     for grep {m{^t/data/}} @files;
+
+check( $_, exec => -1, bps_tag => -1 )
+    for grep {m{^etc/upgrade/[^/]+/}} @files;
 
 check( $_, warnings => 1, strict => 1, compile => 1, no_tabs => 1 )
     for grep {m{^etc/upgrade/.*/content$}} @files;

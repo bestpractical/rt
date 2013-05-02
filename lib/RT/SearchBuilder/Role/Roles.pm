@@ -252,13 +252,18 @@ sub RoleLimit {
 
     $args{FIELD} ||= 'EmailAddress';
 
-    my $groups = $self->_RoleGroupsJoin( Type => $type, Class => $class, New => !$type );
+    my ($groups, $group_members, $users);
+    if ( $args{'BUNDLE'} ) {
+        ($groups, $group_members, $users) = @{ $args{'BUNDLE'} };
+    } else {
+        $groups = $self->_RoleGroupsJoin( Type => $type, Class => $class, New => !$type );
+    }
 
     $self->_OpenParen( $args{SUBCLAUSE} ) if $args{SUBCLAUSE};
     if ( $args{OPERATOR} =~ /^IS(?: NOT)?$/i ) {
         # is [not] empty case
 
-        my $group_members = $self->_GroupMembersJoin( GroupsAlias => $groups );
+        $group_members ||= $self->_GroupMembersJoin( GroupsAlias => $groups );
         # to avoid joining the table Users into the query, we just join GM
         # and make sure we don't match records where group is member of itself
         $self->Limit(
@@ -296,7 +301,7 @@ sub RoleLimit {
         $users_obj->RowsPerPage(2);
         my @users = @{ $users_obj->ItemsArrayRef };
 
-        my $group_members = $self->_GroupMembersJoin( GroupsAlias => $groups );
+        $group_members ||= $self->_GroupMembersJoin( GroupsAlias => $groups );
         if ( @users <= 1 ) {
             my $uid = 0;
             $uid = $users[0]->id if @users;
@@ -321,7 +326,7 @@ sub RoleLimit {
                 VALUE      => "$group_members.MemberId",
                 QUOTEVALUE => 0,
             );
-            my $users = $self->Join(
+            $users ||= $self->Join(
                 TYPE            => 'LEFT',
                 ALIAS1          => $group_members,
                 FIELD1          => 'MemberId',
@@ -347,10 +352,10 @@ sub RoleLimit {
     } else {
         # positive condition case
 
-        my $group_members = $self->_GroupMembersJoin(
+        $group_members ||= $self->_GroupMembersJoin(
             GroupsAlias => $groups, New => 1, Left => 0
         );
-        my $users = $self->Join(
+        $users ||= $self->Join(
             TYPE            => 'LEFT',
             ALIAS1          => $group_members,
             FIELD1          => 'MemberId',
@@ -367,6 +372,7 @@ sub RoleLimit {
         );
     }
     $self->_CloseParen( $args{SUBCLAUSE} ) if $args{SUBCLAUSE};
+    return ($groups, $group_members, $users);
 }
 
 1;

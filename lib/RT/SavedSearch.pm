@@ -77,7 +77,7 @@ An object of this class is called "search"
 
 =cut
 
-sub ObjectName { "search" }
+sub ObjectName { "search" } # loc
 
 sub PostLoad {
     my $self = shift;
