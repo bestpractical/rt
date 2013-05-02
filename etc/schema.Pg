@@ -144,8 +144,9 @@ CREATE TABLE Groups (
   PRIMARY KEY (id)
 
 );
-CREATE UNIQUE INDEX Groups1 ON Groups (Domain,Instance,Type,id, Name);
-CREATE INDEX Groups2 On Groups  (Type, Instance, Domain);
+CREATE INDEX Groups1 ON Groups (LOWER(Domain), LOWER(Type), Instance);
+CREATE INDEX Groups2 ON Groups (LOWER(Domain), LOWER(Name), Instance);
+CREATE INDEX Groups3 On Groups (Instance);
 
 
 

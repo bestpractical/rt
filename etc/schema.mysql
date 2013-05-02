@@ -88,10 +88,9 @@ CREATE TABLE Groups (
   PRIMARY KEY (id)
 ) ENGINE=InnoDB CHARACTER SET utf8;
 
-CREATE INDEX Groups1 ON Groups (Domain,Instance,Type,id);
-CREATE INDEX Groups2 On Groups (Type, Instance);
-
-
+CREATE INDEX Groups1 ON Groups (Domain, Type, Instance);
+CREATE INDEX Groups2 ON Groups (Domain, Name, Instance);
+CREATE INDEX Groups3 On Groups (Instance);
 
 CREATE TABLE ScripConditions (
   id INTEGER NOT NULL  AUTO_INCREMENT,

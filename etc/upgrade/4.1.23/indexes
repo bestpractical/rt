@@ -1,0 +1,34 @@
+use strict;
+use warnings;
+
+# groups table
+{
+    foreach my $name ( qw(Groups1 Groups2 Groups3) ) {
+        my ($status, $msg) = $RT::Handle->DropIndexIfExists(
+            Table => 'Groups', Name => $name,
+        );
+        RT->Logger->info($msg);
+    }
+
+    my ($name, $msg) = $RT::Handle->CreateIndex(
+        Table => 'Groups',
+        Columns => [qw(Domain Type Instance)],
+        CaseInsensitive => { domain => 1, type => 1 },
+    );
+    RT->Logger->info($msg);
+
+    ($name, $msg) = $RT::Handle->CreateIndex(
+        Table => 'Groups',
+        Columns => [qw(Domain Name Instance)],
+        CaseInsensitive => { domain => 1, name => 1 },
+    );
+    RT->Logger->info($msg);
+
+    ($name, $msg) = $RT::Handle->CreateIndex(
+        Table => 'Groups',
+        Columns => [qw(Instance)],
+    );
+    RT->Logger->info($msg);
+}
+
+1;

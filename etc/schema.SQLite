@@ -92,7 +92,9 @@ CREATE TABLE Groups (
   
 ) ;
 
-CREATE UNIQUE INDEX Groups1 ON Groups (Name,Domain,Type,Instance) ;
+CREATE INDEX Groups1 ON Groups (Domain,Type,Instance);
+CREATE INDEX Groups2 ON Groups (Domain,Name,Instance);
+CREATE INDEX Groups3 ON Groups (Instance);
 
 --- }}}
 
