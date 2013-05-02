@@ -257,12 +257,13 @@ my $render_attachment = sub {
         }
 
         my $filename =  length $name ? $name : loc('(untitled)');
+        my $efilename = $m->interp->apply_escapes( $filename, 'h' );
         $m->out('<img'
               . ' alt="'
-              . $filename
+              . $efilename
               . '"' 
               . ' title="'
-              . $filename
+              . $efilename
               . '"' 
               . ' src="'
               . $AttachPath . '/'
