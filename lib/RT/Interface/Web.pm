@@ -947,15 +947,15 @@ sub StaticFileHeaders {
 Takes C<PATH> and returns a boolean indicating that the user-specified partial
 component path is safe.
 
-Currently "safe" means that the path does not start with a dot (C<.>) and does
-not contain a slash-dot C</.>.
+Currently "safe" means that the path does not start with a dot (C<.>), does
+not contain a slash-dot C</.>, and does not contain any nulls.
 
 =cut
 
 sub ComponentPathIsSafe {
     my $self = shift;
     my $path = shift;
-    return $path !~ m{(?:^|/)\.};
+    return $path !~ m{(?:^|/)\.} and $path !~ m{\0};
 }
 
 =head2 PathIsSafe
