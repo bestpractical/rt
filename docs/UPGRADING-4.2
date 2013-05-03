@@ -88,3 +88,11 @@ UPGRADING FROM RT 4.0.0 and greater
 
   This command deletes records from Transactions table. This script can only fix
   TimeWorked mismatch, but not TimeLeft or TimeEstimated.
+
+* A new action, "Open Inactive Tickets", has been added, and on new
+  installs the default scrip "On Correspond Open Tickets" has been
+  replaced by "On Correspond Open Inactive Tickets".  The key difference
+  between "Open Tickets" and "Open Inactive Tickets" is that the latter
+  will not adjust the status of a ticket if it is already active.  This
+  is particularly useful when creating complex workflows using
+  Lifecycles.

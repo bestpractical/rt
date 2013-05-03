@@ -46,7 +46,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-package RT::Action::AutoOpen;
+package RT::Action::AutoOpenInactive;
 
 use strict;
 use warnings;
@@ -54,26 +54,16 @@ use base qw(RT::Action);
 
 =head1 DESCRIPTION
 
-This action automatically moves a ticket to an active status.
+This action automatically moves an inactive ticket to an active status.
 
 Status is not changed if there is no active statuses in the lifecycle.
 
-Status is not changed if the current status is first active for ticket's status
-lifecycle. For example if ticket's status is 'processing' and active statuses are
-'processing', 'on hold' and 'waiting' then status is not changed, but for ticket
-with status 'on hold' other rules are checked.
+Status is not changed if message's head has field C<RT-Control> with
+C<no-autoopen> substring.
 
-Status is not changed if it's in the list of C<initial> statuses for the
-current scheme and creator of the current transaction
-is one of the ticket's requestors.
-
-Status is not changed if message's head has field C<RT-Control> with C<no-autoopen>
-substring.
-
-Status is set to the first possible active status. If the ticket's
-status is C<Stalled> then RT finds all possible transitions from C<Stalled>
-status and selects first one that results in the ticket having an
-active status.
+Status is set to the first possible active status. If the ticket's status is
+C<Resolved> then RT finds all possible transitions from C<Resolved> status and
+selects first one that results in the ticket having an active status.
 
 =cut
 
@@ -81,17 +71,16 @@ sub Prepare {
     my $self = shift;
 
     my $ticket = $self->TicketObj;
-    my $next = $ticket->FirstActiveStatus;
-    return 1 unless defined $next;
-
-    # no change if the ticket is in initial status and the message is a mail
-    # from a requestor
-    return 1 if $ticket->LifecycleObj->IsInitial($ticket->Status)
-        && $self->TransactionObj->IsInbound;
+    return 0 if $ticket->LifecycleObj->IsActive( $ticket->Status );
 
     if ( my $msg = $self->TransactionObj->Message->First ) {
-        return 1 if ($msg->GetHeader('RT-Control') || '') =~ /\bno-autoopen\b/i;
+        return 0
+          if ( $msg->GetHeader('RT-Control') || '' ) =~
+          /\bno-autoopen\b/i;
     }
+
+    my $next = $ticket->FirstActiveStatus;
+    return 0 unless defined $next;
 
     $self->{'set_status_to'} = $next;
 
@@ -105,7 +94,7 @@ sub Commit {
 
     my ($val, $msg) = $self->TicketObj->SetStatus( $new_status );
     unless ( $val ) {
-        $RT::Logger->error( "Couldn't auto-open ticket: ". $msg );
+        $RT::Logger->error( "Couldn't auto-open-inactive ticket: ". $msg );
         return 0;
     }
     return 1;
