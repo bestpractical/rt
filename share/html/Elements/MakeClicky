@@ -48,22 +48,29 @@
 <%ONCE>
 use Regexp::Common qw(URI);
 
+my $escaper = sub {
+    my $content = shift;
+    RT::Interface::Web::EscapeUTF8( \$content );
+    return $content;
+};
+
 my %actions = (
     default => sub {
         my %args = @_;
-        return $args{value};
+        return $escaper->($args{value});
     },
     url => sub {
         my %args = @_;
+        $args{value} = $escaper->($args{value});
         my $result = qq{[<a target="new" href="$args{value}">}. loc('Open URL') .qq{</a>]};
         return $args{value} . qq{ <span class="clickylink">$result</span>};
     },
     url_overwrite => sub {
         my %args = @_;
-        my $result = qq{<a target="new" href="$args{'value'}">};
+        my $result = qq{<a target="new" href="} . $escaper->($args{'value'}) . q{">};
         #XXX: use spaces here. &shy; <wbr> are not well supported :(
         $args{'value'} =~ s/(\S{30})/$1 /g;
-        $result .= qq{$args{'value'}</a>};
+        $result .= $escaper->($args{value}).qq{</a>};
         return qq{<span class="clickylink">$result</span>};
     },
 );
@@ -89,12 +96,6 @@ my $handle = sub {
             all_matches => [ $args{value}, $1, $2, $3, $4, $5, $6, $7, $8, $9 ],
         ) if $args{value} =~ $rec->{regex};
     }
-};
-
-my $escaper = sub {
-    my $content = shift;
-    RT::Interface::Web::EscapeUTF8( \$content );
-    return $content;
 };
 
 # Hook to add more Clicky types
