@@ -215,6 +215,7 @@ create table CachedGroupMembers (
 ) ENGINE=InnoDB CHARACTER SET utf8;
 
 CREATE INDEX DisGrouMem  on CachedGroupMembers (GroupId,MemberId,Disabled);
+CREATE INDEX CachedGroupMembers2 on CachedGroupMembers (MemberId, GroupId, Disabled);
 CREATE INDEX CachedGroupMembers3 on CachedGroupMembers (MemberId, ImmediateParentId);
 
 

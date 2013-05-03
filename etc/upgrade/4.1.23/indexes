@@ -65,4 +65,90 @@ use warnings;
     }
 }
 
+# cached group members
+{
+    MakeSureIndexExists(
+        Table => 'CachedGroupMembers',
+        Columns => ['MemberId', 'ImmediateParentId'],
+    );
+    MakeSureIndexExists(
+        Table => 'CachedGroupMembers',
+        Columns => ['MemberId', 'GroupId'],
+        Optional => ['Disabled'],
+    );
+    DropIndexesThatArePrefix(
+        Table => 'CachedGroupMembers',
+        Columns => ['MemberId', 'GroupId', 'Disabled'],
+    );
+    MakeSureIndexExists(
+        Table => 'CachedGroupMembers',
+        Columns => ['GroupId', 'MemberId'],
+        Optional => ['Disabled'],
+    );
+    DropIndexesThatArePrefix(
+        Table => 'CachedGroupMembers',
+        Columns => ['GroupId', 'MemberId', 'Disabled'],
+    );
+}
+
+
+sub MakeSureIndexExists {
+    my %args = ( Table => undef, Columns => [], Optional => [], @_ );
+
+    my @list = $RT::Handle->IndexesThatBeginWith(
+        Table => $args{'Table'}, Columns => [@{$args{'Columns'}}, @{$args{'Optional'}}],
+    );
+    if (@list) {
+        RT->Logger->info( ucfirst $RT::Handle->IndexDescription(
+            Table => $args{'Table'}, Columns => [@{$args{'Columns'}}, @{$args{'Optional'}}],
+        ). ' exists.' );
+        return;
+    }
+
+    @list = $RT::Handle->IndexesThatBeginWith(
+        Table => $args{'Table'}, Columns => $args{'Columns'},
+    );
+    if ( !@list ) {
+        my ($status, $msg) = $RT::Handle->CreateIndex(
+            Table => $args{'Table'}, Columns => [@{$args{'Columns'}}, @{$args{'Optional'}}],
+        );
+        RT->Logger->info($msg);
+    }
+    else {
+        RT->Logger->info(
+            ucfirst $RT::Handle->IndexDescription(
+                %{$list[0]}
+            )
+            .' exists, you may consider replacing it with '
+            . $RT::Handle->IndexDescription(
+                Table => $args{'Table'}, Columns => [@{$args{'Columns'}}, @{$args{'Optional'}}],
+            )
+        );
+    }
+}
+
+sub DropIndexesThatArePrefix {
+    my %args = ( Table => undef, Columns => [], @_ );
+
+    my @list = $RT::Handle->IndexesThatBeginWith(
+        Table => $args{'Table'}, Columns => [$args{'Columns'}[0]],
+    );
+
+    my $checking = join ',', map lc $_, @{ $args{'Columns'} }, '';
+    foreach my $i ( splice @list ) {
+        my $columns = join ',', @{ $i->{'Columns'} }, '';
+        next unless $checking =~ /^\Q$columns/i;
+
+        push @list, $i;
+    }
+    pop @list;
+
+    foreach my $i ( @list ) {
+        my ($status, $msg) = $RT::Handle->DropIndex(
+            Table => $i->{'Table'}, Name => $i->{'Name'},
+        );
+        RT->Logger->info($msg);
+    }
+}
+
 1;
