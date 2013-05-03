@@ -51,10 +51,11 @@
 
 % $m->callback(CallbackName => 'BeforeForm', %ARGS, ARGSRef => \%ARGS, Ticket => $Ticket );
 
-<form action="Update.html" method="post" enctype="multipart/form-data">
+<form action="Update.html" method="post" enctype="multipart/form-data" name="TicketUpdate">
 <input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction}||'' %>" />
 <input type="hidden" class="hidden" name="UpdateType" value="response" />
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->Id%>" />
+<input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
 <table width="100%">
     <tr>
         <td class="label">

@@ -48,8 +48,9 @@
 <& Elements/Header, Title => loc("Create a ticket") &>
 
 <& /Elements/ListActions, actions => \@results &>
-<form action="Create.html" method="post" enctype="multipart/form-data">
+<form action="Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">
 <input type="hidden" class="hidden" name="id" value="new" />
+<input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
 
 <table width="100%">
 <tr>

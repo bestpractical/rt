@@ -54,6 +54,7 @@
 
 <form action="<% RT->Config->Get('WebPath') %>/Ticket/Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">
   <input type="hidden" class="hidden" name="id" value="new" />
+  <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
   
 % $m->callback( CallbackName => 'FormStart', QueueObj => $QueueObj, ARGSRef => \%ARGS );
 

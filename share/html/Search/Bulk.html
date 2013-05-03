@@ -50,7 +50,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 <form method="post" action="<% RT->Config->Get('WebPath') %>/Search/Bulk.html" enctype="multipart/form-data" name="BulkUpdate" id="BulkUpdate">
-% foreach my $var (qw(Query Format OrderBy Order Rows Page SavedChartSearchId)) {
+% foreach my $var (qw(Query Format OrderBy Order Rows Page SavedChartSearchId Token)) {
 <input type="hidden" class="hidden" name="<%$var%>" value="<%$ARGS{$var} || ''%>" />
 %}
 <& /Elements/CollectionList, 
@@ -276,9 +276,6 @@ my %queues;
 $Tickets->RedoSearch();
 
 unless ( $ARGS{'AddMoreAttach'} ) {
-    # Add session attachments if any to be processed by ProcessUpdateMessage
-    $ARGS{'UpdateAttachments'} = $session{'Attachments'} if ( $session{'Attachments'} );
-
     while ( my $Ticket = $Tickets->Next ) {
         next unless ( $ARGS{ "UpdateTicket" . $Ticket->Id } );
 
@@ -287,9 +284,10 @@ unless ( $ARGS{'AddMoreAttach'} ) {
         $queues{ $Ticket->QueueObj->Id }++;
 
         my @updateresults = ProcessUpdateMessage(
-                TicketObj => $Ticket,
-                ARGSRef   => \%ARGS,
-            );
+            TicketObj       => $Ticket,
+            ARGSRef         => \%ARGS,
+            KeepAttachments => 1,
+        );
 
         #Update the basics.
         my @basicresults =
@@ -359,8 +357,7 @@ unless ( $ARGS{'AddMoreAttach'} ) {
         @results = ( @results, @tempresults );
     }
 
-    # Cleanup WebUI
-    delete $session{'Attachments'};
+    delete $session{'Attachments'}{ $ARGS{'Token'} };
 }
 
 my $TxnCFs = RT::CustomFields->new( $session{CurrentUser} );

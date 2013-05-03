@@ -809,7 +809,10 @@ sub create_ticket {
     my $self = shift;
     my %args = @_;
 
-    if ($args{Queue} && $args{Queue} =~ /\D/) {
+    if ( blessed $args{'Queue'} ) {
+        $args{Queue} = $args{'Queue'}->id;
+    }
+    elsif ($args{Queue} && $args{Queue} =~ /\D/) {
         my $queue = RT::Queue->new(RT->SystemUser);
         if (my $id = $queue->Load($args{Queue}) ) {
             $args{Queue} = $id;

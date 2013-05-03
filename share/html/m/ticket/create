@@ -214,6 +214,7 @@ if ((!exists $ARGS{'AddMoreAttach'}) and (defined($ARGS{'id'}) and $ARGS{'id'} e
 <& /Elements/ListActions, actions => \@results  &>
 <form action="<% RT->Config->Get('WebPath') %>/m/ticket/create" method="post" enctype="multipart/form-data" name="TicketCreate" id="ticket-create">
 <input type="hidden" class="hidden" name="id" value="new" />
+<input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
 % $m->callback( CallbackName => 'FormStart', QueueObj => $QueueObj, ARGSRef => \%ARGS );
 % if ($gnupg_widget) {
 <& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
@@ -302,14 +303,14 @@ $showrows->(
     &>
 <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, QueueObj => $QueueObj &>
 
-% if (exists $session{'Attachments'}) {
+% if ( my $attachments = $session{'Attachments'}{ $ARGS{'Token'} }) {
 
 <%loc("Attached file") %>
 
 <%loc("Check box to delete")%><br />
-% foreach my $attach_name (keys %{$session{'Attachments'}}) {
-<input type="checkbox" class="checkbox" id="DeleteAttach-<%$attach_name%>" name="DeleteAttach-<%$attach_name%>" value="1" />
-<label for="DeleteAttach-<%$attach_name%>"><%$attach_name%></label><br />
+% foreach my $attach_name ( keys %$attachments ) {
+<input type="checkbox" class="checkbox" name="DeleteAttach" value="<% $attach_name %>" id="DeleteAttach-<% $attach_name %>" />
+<label for="DeleteAttach-<% $attach_name %>"><% $attach_name %></label><br />
 % } # end of foreach
 
 
