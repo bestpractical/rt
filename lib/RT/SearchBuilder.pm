@@ -86,6 +86,8 @@ sub _Init  {
     $self->SUPER::_Init( 'Handle' => $RT::Handle);
 }
 
+sub _Handle { return $RT::Handle }
+
 sub CleanSlate {
     my $self = shift;
     $self->{'_sql_aliases'} = {};
