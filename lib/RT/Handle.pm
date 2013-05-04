@@ -114,6 +114,7 @@ sub Connect {
     $self->SUPER::Connect(
         User => RT->Config->Get('DatabaseUser'),
         Password => RT->Config->Get('DatabasePassword'),
+        DisconnectHandleOnDestroy => 1,
         %args,
     );
 
@@ -161,7 +162,6 @@ sub BuildDSN {
         Port       => $db_port,
         Driver     => $db_type,
         RequireSSL => RT->Config->Get('DatabaseRequireSSL'),
-        DisconnectHandleOnDestroy => 1,
     );
     if ( $db_type eq 'Oracle' && $db_host ) {
         $args{'SID'} = delete $args{'Database'};
