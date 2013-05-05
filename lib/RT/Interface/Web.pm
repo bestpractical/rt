@@ -662,6 +662,15 @@ sub ShowRequestedPage {
     # precache all system level rights for the current user
     $HTML::Mason::Commands::session{CurrentUser}->PrincipalObj->HasRights( Object => RT->System );
 
+    if ( $HTML::Mason::Commands::r->path_info =~ m{^(/+)User/Prefs.html} ) {
+        RT->Deprecated(
+            Message => '/User/Prefs.html is deprecated',
+            Instead => "/Prefs/AboutMe.html",
+            Stack   => 0,
+        );
+        RT::Interface::Web::Redirect( RT->Config->Get('WebURL') . 'Prefs/AboutMe.html' );
+    }
+
     # If the user isn't privileged, they can only see SelfService
     unless ( $HTML::Mason::Commands::session{'CurrentUser'}->Privileged ) {
 
