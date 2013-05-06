@@ -204,6 +204,7 @@ HTML::FormatText
 HTML::Mason 1.43
 HTML::Mason::PSGIHandler 0.52
 HTML::Quoted
+HTML::RewriteAttributes 0.05
 HTML::Scrubber 0.08
 HTML::TreeBuilder
 HTTP::Message 6.0
@@ -325,7 +326,6 @@ Data::ICal
 .
 
 $deps{'DASHBOARDS'} = [ text_to_hash( << '.') ];
-HTML::RewriteAttributes 0.05
 MIME::Types
 URI 1.59
 .

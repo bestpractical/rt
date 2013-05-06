@@ -1719,6 +1719,19 @@ behavior.
 
 Set($ShowTransactionImages, 1);
 
+=item C<$ShowRemoteImages>
+
+By default, RT doesn't show remote images attached to incoming (and outgoing)
+ticket updates inline.  Set this variable to 1 if you'd like to enable remote
+image display.  Showing remote images may allow spammers and other senders to
+track when messages are viewed and see referer information.
+
+Note that this setting is independent of L</$ShowTransactionImages> above.
+
+=cut
+
+Set($ShowRemoteImages, 0);
+
 =item C<$PlainTextPre>
 
 Normally plaintext attachments are displayed as HTML with line breaks
