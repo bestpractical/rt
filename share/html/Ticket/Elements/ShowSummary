@@ -60,7 +60,7 @@
     &><& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket &></&>
 
     <&| /Widgets/TitleBox, title => loc('People'),
-        (($can_modify || $can_modify_owner) ? (title_href => RT->Config->Get('WebPath')."/Ticket/ModifyPeople.html?id=".$Ticket->Id) : ()),
+        (($can_modify || $can_modify_owner || $can_modify_people) ? (title_href => RT->Config->Get('WebPath')."/Ticket/ModifyPeople.html?id=".$Ticket->Id) : ()),
         class => 'ticket-info-people',
     &><& /Ticket/Elements/ShowPeople, Ticket => $Ticket &></&>
     <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket, Attachments => $Attachments &>
@@ -109,4 +109,6 @@ my $can_modify_cf = $Ticket->CurrentUserHasRight('ModifyCustomField');
 my $can_modify_owner = $Ticket->CurrentUserHasRight('OwnTicket')
                     || $Ticket->CurrentUserHasRight('TakeTicket')
                     || $Ticket->CurrentUserHasRight('StealTicket');
+my $can_modify_people = $Ticket->CurrentUserHasRight('Watch')
+                     || $Ticket->CurrentUserHasRight('WatchAsAdminCc');
 </%INIT>
