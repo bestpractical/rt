@@ -286,8 +286,6 @@ CREATE TABLE Tickets (
 );
 CREATE INDEX Tickets1 ON Tickets (Queue, Status);
 CREATE INDEX Tickets2 ON Tickets (Owner);
-CREATE INDEX Tickets4 ON Tickets (id, Status);
-CREATE INDEX Tickets5 ON Tickets (id, EffectiveId);
 CREATE INDEX Tickets6 ON Tickets (EffectiveId, Type);
 
 

@@ -91,6 +91,21 @@ use warnings;
     );
 }
 
+# drop indexes that start with 'id' column
+foreach my $table ('Users', 'Tickets') {
+    my @list = $RT::Handle->IndexesThatBeginWith(
+        Table => $table, Columns => ['id'],
+    );
+    @list = grep @{ $_->{'Columns'} } > 1, @list;
+
+    foreach my $index (@list) {
+        my ($status, $msg) = $RT::Handle->DropIndex(
+            Table => $table, Name => $index->{'Name'},
+        );
+        RT->Logger->info($msg);
+    }
+}
+
 
 sub MakeSureIndexExists {
     my %args = ( Table => undef, Columns => [], Optional => [], @_ );
