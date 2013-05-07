@@ -24,7 +24,7 @@ ok $m->login, 'logged in';
 my $docroot = join '/', qw(share html);
 
 # find endpoints to loop over
-my @endpoints = ('/NoAuth/css/print.css');
+my @endpoints = ("/NoAuth/css/aileron/squished-".("0"x32).".css");
 find({
   wanted => sub {
     if ( -f $_ && $_ !~ m|autohandler$| ) {
