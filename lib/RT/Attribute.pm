@@ -148,7 +148,7 @@ sub Create {
 		  @_);
 
     if ($args{Object} and UNIVERSAL::can($args{Object}, 'Id')) {
-	    $args{ObjectType} = ref($args{Object});
+	    $args{ObjectType} = $args{Object}->isa("RT::CurrentUser") ? "RT::User" : ref($args{Object});
 	    $args{ObjectId} = $args{Object}->Id;
     } else {
         return(0, $self->loc("Required parameter '[_1]' not specified", 'Object'));
