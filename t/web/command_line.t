@@ -401,9 +401,9 @@ expect_send("merge $merge_ticket_B $merge_ticket_A", 'Merging the tickets...');
 expect_like(qr/Merge completed/, 'Merged the tickets');
 
 expect_send("show ticket/$merge_ticket_A/history", 'Checking merge on first ticket');
-expect_like(qr/Merged into Ticket #$merge_ticket_A: CLIMergeTest1-$$ by root/, 'Merge recorded in first ticket');
+expect_like(qr/Merged into #$merge_ticket_A: CLIMergeTest1-$$ by root/, 'Merge recorded in first ticket');
 expect_send("show ticket/$merge_ticket_B/history", 'Checking merge on second ticket');
-expect_like(qr/Merged into Ticket #$merge_ticket_A: CLIMergeTest1-$$ by root/, 'Merge recorded in second ticket');
+expect_like(qr/Merged into #$merge_ticket_A: CLIMergeTest1-$$ by root/, 'Merge recorded in second ticket');
 
 {
     # create a user; give them privileges to take and steal
