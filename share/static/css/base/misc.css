@@ -1,0 +1,69 @@
+.hide, .hidden { display: none !important; }
+
+.clear { clear: both; }
+
+* html .clearfix {
+    height: 1%; /* IE5-6 */
+}
+.clearfix {
+    display: inline-block; /* IE7xhtml*/
+}
+html[xmlns] .clearfix { /* O */
+    display: block;
+}
+.clearfix:after { /* FF, O, etc. */
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+hr.clear {
+    visibility: hidden;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+    font-size: 1px;
+}
+
+/* Custom fields */
+
+/* Only apply these when we're not rendering in a table, hence the leading div. */
+div.edit-custom-field {
+    width: 48%;
+    float: left;
+    margin: 0.5em;
+}
+
+div.edit-custom-field .cflabel {
+    float: left;
+    padding-right: 0.5em;
+}
+
+div.edit-custom-field .entry {
+    margin-left: 10em;
+}
+
+.cflabel .name { font-weight: bold; }
+.cflabel .type { font-style: italic; }
+
+fieldset.cfedit {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+.query-stacktrace-toggle {
+    float: right;
+}
+
+/* jQuery UI overrides */
+.ui-widget {
+    font-family: arial,helvetica,sans-serif !important;
+}
+
+.datepicker {
+    width: 17em;
+}

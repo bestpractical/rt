@@ -328,6 +328,7 @@ Data::ICal
 $deps{'DASHBOARDS'} = [ text_to_hash( << '.') ];
 MIME::Types
 URI 1.59
+URI::QueryParam
 .
 
 $deps{'GRAPHVIZ'} = [ text_to_hash( << '.') ];

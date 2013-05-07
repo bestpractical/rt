@@ -1,0 +1,33 @@
+/* These override the base titlebox rules in base/forms.css. They try not to
+   duplicate properties. */
+
+div.results .titlebox, div.error div.error {
+    border: none;
+    background: none;
+}
+
+div.results .titlebox-content {
+    border: 1px solid #aa9;
+    border-bottom: 2px solid #990;
+    border-right: 2px solid #990;
+    background: #ffc;
+}
+
+div.results .titlebox-title .left {
+    border: solid #aa9;
+    border-width: 1px 1px 0 1px;
+}
+
+div.error .titlebox-title span.left {
+    border: none;
+    border-right: 2px solid #b00;
+}
+
+div.error .titlebox-content {
+    border: 1px solid #b00;
+    border-bottom: 2px solid #a00;
+    border-right: 2px solid #a00;
+    background-color: #fcc;
+}
+
+div.error .titlebox-title .widget a { background-position: center -7px; }

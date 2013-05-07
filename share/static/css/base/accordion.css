@@ -1,0 +1,36 @@
+.rt-accordion {
+    margin: 0;
+}
+
+.rt-accordion .ui-accordion-content {
+    padding: 0 0 0 20px;
+    margin: 0 0 0.5em 0;
+    border: none;
+    background: none;
+    color: black;
+}
+
+.rt-accordion .ui-accordion-header .ui-icon {
+    background-image: url(../../../static/images/jquery_ui/ui-icons_2e83ff_256x240.png);
+    left: 0;
+}
+
+.rt-accordion .ui-accordion-header {
+    padding: 0;
+    background: none;
+}
+
+.rt-accordion .ui-accordion-header, .rt-accordion .ui-accordion-header a {
+    color: black;
+    border: none;
+    margin: 0;
+}
+
+.rt-accordion .ui-accordion-header a {
+    padding: 0 0 0.25em 20px;
+}
+
+.rt-accordion .ui-accordion-header a:hover,
+.rt-accordion .ui-accordion-header.ui-state-active a {
+    text-decoration: underline;
+}

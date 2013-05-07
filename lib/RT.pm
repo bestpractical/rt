@@ -824,8 +824,8 @@ file:
 
     RT->AddStyleSheets( 'foo.css', 'bar.css' ); 
 
-Files are expected to be in a Mason root in a F<NoAuth/css/> directory, such as
-F<html/NoAuth/css/> in your extension or F<local/html/NoAuth/css/> for local
+Files are expected to be in a static root in a F<css/> directory, such as
+F<static/css/> in your extension or F<local/static/css/> for local
 overlays.
 
 =cut

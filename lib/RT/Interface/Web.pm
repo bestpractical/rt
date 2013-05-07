@@ -1325,6 +1325,16 @@ sub ComponentRoots {
     return @roots;
 }
 
+sub StaticRoots {
+    my $self   = shift;
+    my @static = (
+        $RT::LocalStaticPath,
+        (map { $_->StaticDir } @{RT->Plugins}),
+        $RT::StaticPath,
+    );
+    return grep { $_ and -d $_ } @static;
+}
+
 our %is_whitelisted_component = (
     # The RSS feed embeds an auth token in the path, but query
     # information for the search.  Because it's a straight-up read, in

@@ -1,0 +1,17 @@
+.sf-menu li.active > .menu-item {
+    font-weight: bold;
+}
+
+#topactions input[type="submit"], #topactions input.button {
+    width: auto;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+
+#topactions form {
+    display: block;
+    float: right;
+    margin-left: 1em;
+    text-align: right;
+}
+

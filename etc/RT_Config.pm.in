@@ -802,7 +802,7 @@ RT ships with several themes by default:
   aileron         The default layout for RT 4.0
   ballard         Theme which doesn't rely on JavaScript for menuing
 
-This value actually specifies a directory in F<share/html/NoAuth/css/>
+This value actually specifies a directory in F<share/static/css/>
 from which RT will try to load the file main.css (which should @import
 any other files the stylesheet needs).  This allows you to easily and
 cleanly create your own stylesheets to apply to RT.  This option can

@@ -62,6 +62,9 @@ use RT::Interface::Web::Request;
 use File::Path qw( rmtree );
 use File::Glob qw( bsd_glob );
 use File::Spec::Unix;
+use HTTP::Message::PSGI;
+use HTTP::Request;
+use HTTP::Response;
 
 sub DefaultHandlerArgs  { (
     comp_root            => [
@@ -333,13 +336,7 @@ sub StaticWrap {
         }
     }
 
-    my @system_static;
-    for my $plugin ( @{RT->Plugins} ) {
-        my $dir = $plugin->StaticDir;
-        push @system_static, $dir if -d $dir;
-    }
-    push @system_static, $RT::LocalStaticPath, $RT::StaticPath;
-    for my $root (grep {$_ and -d $_} @system_static) {
+    for my $root (RT::Interface::Web->StaticRoots) {
         $builder->add_middleware(
             'Plack::Middleware::Static',
             path         => sub { s!^/static/!! },
@@ -372,6 +369,19 @@ sub _psgi_response_cb {
                      return $_[0];
                  };
              });
+}
+
+sub GetStatic {
+    my $class  = shift;
+    my $path   = shift;
+    my $static = $class->StaticWrap(
+        # Anything the static wrap doesn't handle gets 404'd.
+        sub { [404, [], []] }
+    );
+    my $response = HTTP::Response->from_psgi(
+        $static->( HTTP::Request->new(GET => $path)->to_psgi )
+    );
+    return $response;
 }
 
 1;

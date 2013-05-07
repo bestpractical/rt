@@ -5,7 +5,7 @@ use RT::Test tests => 159;
 
 use constant LogoFile => $RT::StaticPath .'/images/bpslogo.png';
 use constant FaviconFile => $RT::StaticPath .'/images/favicon.png';
-use constant TextFile => $RT::MasonComponentRoot .'/NoAuth/css/print.css';
+use constant TextFile => $RT::StaticPath .'/css/print.css';
 
 my ($url, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in';

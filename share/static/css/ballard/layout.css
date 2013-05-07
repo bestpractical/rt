@@ -1,0 +1,130 @@
+/* body */
+
+body {
+    padding:0;
+    margin:0;
+    background: #547CCC url(../../../static/css/images/background-gradient.png) top left repeat-x ;
+    font-family: arial, helvetica, sans-serif;
+    color: #000000;
+}
+
+div#body {
+    position: relative;
+    padding: 1.8em 1em 1em 1em;
+    -moz-border-radius-topleft: 0.5em;
+    -webkit-border-top-left-radius: 0.5em;
+    border-top-left-radius: 0.5em;
+    -moz-border-radius-bottomleft: 0.5em;
+    -webkit-border-bottom-left-radius: 0.5em;
+    border-bottom-left-radius: 0.5em;
+    margin-left: 10em;
+    margin-top: 3em;
+    margin-right: 0;
+    margin-bottom: 0em;
+    min-height: 10%;
+    background: #fff;
+    border-top: 2px solid #ccc;
+    border-left: 2px solid #ccc;
+    z-index:1;
+
+
+}
+
+div#footer {
+ position: absolute;
+ right: 0;
+ text-align: right;
+ font-size: 0.9em;
+ margin-top: 2em;
+ background: #fff;
+ margin-bottom: 0;
+ padding-left: 3em;
+ padding-right: 1em;
+ border-top: 2px solid #aaa;
+ border-left: 2px solid #aaa;
+ -moz-border-radius-topleft: 0.5em;
+ -webkit-border-top-left-radius: 0.5em;
+ border-top-left-radius: 0.5em;
+ -moz-border-radius-bottomleft: 0.5em;
+ -webkit-border-bottom-left-radius: 0.5em;
+ border-bottom-left-radius: 0.5em;
+}
+
+div#footer #time {
+    display: none ;
+}
+
+div#footer #bpscredits {
+ text-align: right;
+ background: url(../../../static/images/bpslogo.png) no-repeat top right;
+ padding-top: 4em;
+}
+
+
+/* logo stuff */
+
+div#logo {
+    position: absolute;
+    right: 2px;
+    top: 0;
+    height: 2.3em;
+}
+
+div#logo a img {
+    border: 0;
+    height: 100% !important;
+    width: auto !important;
+    float: right;
+}
+
+div#logo .rtname {
+    position: relative;
+    font-weight: bold;
+    text-align: center;
+    top: 0.7em;
+    padding-right: 1em;
+    float:left;
+}
+
+
+div#quickbar, div#logo {
+    font-size: 0.9em;
+}
+div#quickbar a, div#logo a { 
+    color: #000;
+}
+
+
+div#quickbar {
+ background: #eaeaea;
+ padding-top: 1em;
+ padding-left: 1em;
+ padding-bottom: 0.5em;
+ height: 1em;
+ border-bottom: 1px solid #ccc;
+
+}
+
+div#header h1 {
+ position: absolute;
+ left: 0.5em;
+ right: 20em;
+ top: 1.6em;
+ overflow: hidden;
+ height: 1em;
+ font-size: 1.4em;
+ margin-top: 0.4em;
+ padding: 0.25em;
+ color: #fff;
+}
+
+/* in multi-column layouts, make sure we have an internal gutter */
+
+tr .boxcontainer {
+      padding-right: 1em;
+}
+
+tr .boxcontainer:last-child {
+      padding-right: 0;
+}
+
