@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 4;
+use RT::Test tests => 4, config => q{Set($CorrespondAddress, 'rt@example.com');};
 use RT::Test::Email;
 
 my $queue = RT::Test->load_or_create_queue( Name => 'General' );
