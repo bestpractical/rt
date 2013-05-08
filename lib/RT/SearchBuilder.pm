@@ -95,6 +95,17 @@ sub CleanSlate {
     return $self->SUPER::CleanSlate(@_);
 }
 
+sub Join {
+    my $self = shift;
+    my %args = @_;
+
+    $args{'DISTINCT'} = 1 if
+        !exists $args{'DISTINCT'}
+        && $args{'TABLE2'} && lc($args{'FIELD2'}||'') eq 'id';
+
+    return $self->SUPER::Join( %args );
+}
+
 sub JoinTransactions {
     my $self = shift;
     my %args = ( New => 0, @_ );
