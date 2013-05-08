@@ -15,7 +15,7 @@ SKIP:{
       if $Email::Address::VERSION < 1.893;
 
     my $mail = encode( 'iso-8859-1', <<'.' );
-From: René@example.com>
+From: <René@example.com>
 Reply-To: =?iso-8859-1?Q?Ren=E9?= <René@example.com>
 Subject: testing non-ASCII From
 Content-Type: text/plain; charset=iso-8859-1
