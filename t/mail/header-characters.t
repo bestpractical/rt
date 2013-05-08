@@ -8,7 +8,7 @@ use Encode;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
-diag "Testing non-ASCII in From: header";
+diag "Testing non-ASCII latin1 in From: header";
 SKIP:{
     skip "Test requires Email::Address 1.893 or later, "
       . "you have $Email::Address::VERSION", 3,
@@ -36,7 +36,7 @@ here's some content
       }
 }
 
-diag "Testing iso-8859-1 encoded non-ASCII in From: header";
+diag "Testing non-ASCII latin1 in From: header with MIME-word-encoded phrase";
 SKIP:{
     skip "Test requires Email::Address 1.893 or later, "
       . "you have $Email::Address::VERSION", 3,
