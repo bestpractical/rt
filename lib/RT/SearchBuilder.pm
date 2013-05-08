@@ -265,6 +265,7 @@ sub _CustomFieldJoin {
             FIELD1 => 'id',
             TABLE2 => 'ObjectCustomFieldValues',
             FIELD2 => 'ObjectId',
+            $cf->SingleValue? (DISTINCT => 1) : (),
         );
         $self->Limit(
             LEFTJOIN        => $ocfvalias,

@@ -255,15 +255,15 @@ sub WithMember {
     my %args = ( PrincipalId => undef,
                  Recursively => undef,
                  @_);
-    my $members;
-
-    if ($args{'Recursively'}) {
-        $members = $self->NewAlias('CachedGroupMembers');
-    } else {
-        $members = $self->NewAlias('GroupMembers');
-    }
-    $self->Join(ALIAS1 => 'main', FIELD1 => 'id',
-                ALIAS2 => $members, FIELD2 => 'GroupId');
+    my $members = $self->Join(
+        ALIAS1 => 'main', FIELD1 => 'id',
+        $args{'Recursively'}
+            ? (TABLE2 => 'CachedGroupMembers')
+            # (GroupId, MemberId) is unique in GM table
+            : (TABLE2 => 'GroupMembers', DISTINCT => 1)
+        ,
+        FIELD2 => 'GroupId',
+    );
 
     $self->Limit(ALIAS => $members, FIELD => 'MemberId', OPERATOR => '=', VALUE => $args{'PrincipalId'});
     $self->Limit(ALIAS => $members, FIELD => 'Disabled', VALUE => 0)
@@ -286,6 +286,7 @@ sub WithoutMember {
         FIELD1 => 'id',
         TABLE2 => $members,
         FIELD2 => 'GroupId',
+        DISTINCT => $members eq 'GroupMembers',
     );
     $self->Limit(
         LEFTJOIN => $members_alias,
