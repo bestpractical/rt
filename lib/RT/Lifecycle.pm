@@ -758,7 +758,7 @@ sub FillCache {
             warn "Nonexistant status @{[lc $status]} in $from in $mapname lifecycle map"
                 if $LIFECYCLES_CACHE{$from}
                     and not $LIFECYCLES_CACHE{$from}{canonical_case}{lc $status};
-            warn "Nonexistant status @{[lc $map->{$status}]} in $from in $mapname lifecycle map"
+            warn "Nonexistant status @{[lc $map->{$status}]} in $to in $mapname lifecycle map"
                 if $LIFECYCLES_CACHE{$to}
                     and not $LIFECYCLES_CACHE{$to}{canonical_case}{lc $map->{$status}};
             $map->{lc $status} = lc delete $map->{$status};
