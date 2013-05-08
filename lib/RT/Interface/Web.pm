@@ -3593,12 +3593,11 @@ sub GetPrincipalsMap {
             );
 
             # Limit to UserEquiv groups
-            my $groups = $Users->NewAlias('Groups');
-            $Users->Join(
-                ALIAS1 => $groups,
-                FIELD1 => 'id',
-                ALIAS2 => $group_members,
-                FIELD2 => 'GroupId'
+            my $groups = $Users->Join(
+                ALIAS1 => $group_members,
+                FIELD1 => 'GroupId',
+                TABLE2 => 'Groups',
+                FIELD2 => 'id',
             );
             $Users->Limit( ALIAS => $groups, FIELD => 'Domain', VALUE => 'ACLEquivalence' );
             $Users->Limit( ALIAS => $groups, FIELD => 'Type', VALUE => 'UserEquiv' );
