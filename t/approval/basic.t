@@ -33,7 +33,6 @@ my $approvals =
 Queue: ___Approvals
 Type: approval
 Owner: CFO
-Requestors: {$Tickets{"TOP"}->Requestors}
 Refers-To: TOP
 Subject: CFO Approval for PO: {$Tickets{"TOP"}->Id} - {$Tickets{"TOP"}->Subject}
 Due: {time + 86400}
@@ -46,7 +45,6 @@ ENDOFCONTENT
 Queue: ___Approvals
 Type: approval
 Owner: CEO
-Requestors: {$Tickets{"TOP"}->Requestors}
 Subject: PO approval request for {$Tickets{"TOP"}->Subject}
 Refers-To: TOP
 Depends-On: for-CFO

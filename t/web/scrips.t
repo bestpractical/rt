@@ -85,7 +85,7 @@ sub prepare_code_with_value {
     $m->submit_form(
         form_name => 'ForwardMessage',
         fields    => {
-            To => 'rt-test, rt-to@example.com',
+            To => 'rt-test@example.com, rt-to@example.com',
         },
         button => 'ForwardAndReturn'
     );
@@ -101,7 +101,7 @@ sub prepare_code_with_value {
     $m->submit_form(
         form_name => 'ForwardMessage',
         fields    => {
-            To => 'rt-test, rt-to@example.com',
+            To => 'rt-test@example.com, rt-to@example.com',
         },
         button => 'ForwardAndReturn'
     );

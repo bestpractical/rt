@@ -195,7 +195,8 @@ Devel::StackTrace 1.19
 Digest::base
 Digest::MD5 2.27
 Digest::SHA
-Email::Address
+Email::Address 1.897
+Email::Address::List
 Encode 2.39
 Errno
 File::Glob
@@ -220,7 +221,7 @@ Locale::Maketext::Fuzzy 0.11
 Locale::Maketext::Lexicon 0.32
 Log::Dispatch 2.30
 Mail::Mailer 1.57
-MIME::Entity 5.425
+MIME::Entity 5.504
 Module::Refresh 0.03
 Module::Versions::Report 1.05
 Net::CIDR
@@ -356,7 +357,6 @@ Pod::Simple 3.24
 
 my %AVOID = (
     'DBD::Oracle' => [qw(1.23)],
-    'Email::Address' => [qw(1.893 1.894)],
     'Devel::StackTrace' => [qw(1.28 1.29)],
 );
 

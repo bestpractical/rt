@@ -42,7 +42,6 @@ Queue: ___Approvals
 Type: approval
 Owner: CTO
 AdminCCs: COO, CEO
-Requestors: {$Tickets{"TOP"}->Requestors}
 DependedOnBy: TOP
 Subject: CTO Approval for PO: {$Tickets{"TOP"}->Id} - {$Tickets{"TOP"}->Subject}
 Due: {time + 86400}

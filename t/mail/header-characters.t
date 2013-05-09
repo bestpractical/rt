@@ -8,14 +8,10 @@ use Encode;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
-diag "Testing non-ASCII in From: header";
-SKIP:{
-    skip "Test requires Email::Address 1.893 or later, "
-      . "you have $Email::Address::VERSION", 3,
-      if $Email::Address::VERSION < 1.893;
-
+diag "Testing non-ASCII latin1 in From: header";
+{
     my $mail = encode( 'iso-8859-1', <<'.' );
-From: René@example.com>
+From: <René@example.com>
 Reply-To: =?iso-8859-1?Q?Ren=E9?= <René@example.com>
 Subject: testing non-ASCII From
 Content-Type: text/plain; charset=iso-8859-1
@@ -25,7 +21,7 @@ here's some content
 
     my ($status, $id);
     warnings_like { ( $status, $id ) = RT::Test->send_via_mailgate($mail) }
-        [qr/Failed to parse Reply-To:.*, From:/,
+        [(qr/Unable to parse an email address from/) x 2,
          qr/Couldn't parse or find sender's address/
         ],
         'Got parse error for non-ASCII in From';
@@ -36,12 +32,8 @@ here's some content
       }
 }
 
-diag "Testing iso-8859-1 encoded non-ASCII in From: header";
-SKIP:{
-    skip "Test requires Email::Address 1.893 or later, "
-      . "you have $Email::Address::VERSION", 3,
-      if $Email::Address::VERSION < 1.893;
-
+diag "Testing non-ASCII latin1 in From: header with MIME-word-encoded phrase";
+{
     my $mail = encode( 'iso-8859-1', <<'.' );
 From: =?iso-8859-1?Q?Ren=E9?= <René@example.com>
 Reply-To: =?iso-8859-1?Q?Ren=E9?= <René@example.com>
@@ -53,7 +45,7 @@ here's some content
 
     my ($status, $id);
     warnings_like { ( $status, $id ) = RT::Test->send_via_mailgate($mail) }
-        [qr/Failed to parse Reply-To:.*, From:/,
+        [(qr/Unable to parse an email address from/) x 2,
          qr/Couldn't parse or find sender's address/
         ],
         'Got parse error for iso-8859-1 in From';
