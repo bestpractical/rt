@@ -426,8 +426,8 @@ $m->get("$baseurl/Search/Simple.html?q=General");
 my $content = $m->content;
 $content =~ s/&#40;/(/g;
 $content =~ s/&#41;/)/g;
-$content =~ s/<a\b[^>]+>//g;
-$content =~ s/<\/a>//g;
+$content =~ s/<(a|span)\b[^>]+>//g;
+$content =~ s/<\/(a|span)>//g;
 $content =~ s/&lt;/</g;
 $content =~ s/&gt;/>/g;
 

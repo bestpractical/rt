@@ -34,7 +34,7 @@ function ReplaceUserReferences() {
                 if (!json[uid])
                     return
                 user.removeAttr("data-replace")
-                    .html( json[uid]._html );
+                    .html( jQuery(json[uid]._html).html() );
             });
         }
     );

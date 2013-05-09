@@ -390,10 +390,12 @@ diag
         fields    => { Owner => $user_a->id },
         button => 'SubmitTicket',
     );
-    $agent_a->content_like( qr{<a\b[^>]+>user_a</a>\s+-\s+Taken}, 'got user_a Taken message' );
+    like($agent_a->dom->at('.transaction.people .description')->all_text,
+         qr/user_a\s*-\s*Taken/, 'got user_a Taken message' );
 
     $agent_b->goto_ticket($id);
-    $agent_b->content_like( qr{<a\b[^>]+>user_a</a>\s+-\s+Taken}, 'got user_a Taken message for user b ' );
+    like($agent_b->dom->at('.transaction.people .description')->all_text,
+         qr/user_a\s*-\s*Taken/, 'got user_a Taken message for user b' );
 }
 
 diag
@@ -417,10 +419,12 @@ diag
     $agent_a->content_contains( 'Owner changed from Nobody to user_a',
         'got set message in Basics' );
     $agent_a->goto_ticket($id);
-    $agent_a->content_like( qr{<a\b[^>]+>user_a</a>\s+-\s+Taken}, 'got user_a Taken message' );
+    like($agent_a->dom->at('.transaction.people .description')->all_text,
+         qr/user_a\s*-\s*Taken/, 'got user_a Taken message' );
 
     $agent_b->goto_ticket($id);
-    $agent_b->content_like( qr{<a\b[^>]+>user_a</a>\s+-\s+Taken}, 'got user_a Taken message for user b ' );
+    like($agent_b->dom->at('.transaction.people .description')->all_text,
+         qr/user_a\s*-\s*Taken/, 'got user_a Taken message for user b' );
 }
 
 my $agent_c = RT::Test::Web->new;
@@ -446,7 +450,8 @@ diag "user can assign ticket to new owner with ReassignTicket right";
     $agent_a->content_contains( 'Owner changed from Nobody to user_a',
         'got set message in Basics' );
     $agent_a->goto_ticket($id);
-    $agent_a->content_like( qr{<a\b[^>]+>user_a</a>\s+-\s+Taken}, 'got user_a Taken message' );
+    like($agent->dom->at('.transaction.people .description')->all_text,
+         qr{user_a\s*-\s*Taken}, 'got user_a Taken message' );
 
     $agent_c->goto_ticket($id);
     $agent_c->follow_link_ok( { text => 'Basics' }, 'Ticket -> Basics' );
