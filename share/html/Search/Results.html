@@ -55,7 +55,7 @@
 % unless ($ok) {
 %     $msg =~ s{ at .*? line .*}{}s;
 <p><&|/l_unsafe, "<i>".$m->interp->apply_escapes($msg, "h")."</i>" &>There was an error parsing your search query: [_1].  Your RT admin can find more information in the error logs.</&></p>
-% }
+% } else {
 
 <& /Elements/CollectionList, 
     Query => $Query,
@@ -70,6 +70,7 @@
     BaseURL => $BaseURL
 
    &>
+% }
 % $m->callback( ARGSRef => \%ARGS, CallbackName => 'AfterResults' );
 
 % my %hiddens = (Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order, HideResults => $HideResults, Page => $Page, SavedChartSearchId => $SavedChartSearchId );
