@@ -9,11 +9,7 @@ use Encode;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 diag "Testing non-ASCII latin1 in From: header";
-SKIP:{
-    skip "Test requires Email::Address 1.893 or later, "
-      . "you have $Email::Address::VERSION", 3,
-      if $Email::Address::VERSION < 1.893;
-
+{
     my $mail = encode( 'iso-8859-1', <<'.' );
 From: <René@example.com>
 Reply-To: =?iso-8859-1?Q?Ren=E9?= <René@example.com>
@@ -37,11 +33,7 @@ here's some content
 }
 
 diag "Testing non-ASCII latin1 in From: header with MIME-word-encoded phrase";
-SKIP:{
-    skip "Test requires Email::Address 1.893 or later, "
-      . "you have $Email::Address::VERSION", 3,
-      if $Email::Address::VERSION < 1.893;
-
+{
     my $mail = encode( 'iso-8859-1', <<'.' );
 From: =?iso-8859-1?Q?Ren=E9?= <René@example.com>
 Reply-To: =?iso-8859-1?Q?Ren=E9?= <René@example.com>
