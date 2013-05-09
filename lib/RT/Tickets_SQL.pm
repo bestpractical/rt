@@ -293,7 +293,7 @@ sub FromSQL {
     eval { $self->_parser( $query ); };
     if ( $@ ) {
         my $error = "$@";
-        $RT::Logger->error("Couldn't parse << $query >>: $error");
+        $RT::Logger->error("Couldn't parse query: $error");
         return (0, $error);
     }
 
