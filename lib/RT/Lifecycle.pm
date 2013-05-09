@@ -475,7 +475,8 @@ sub RegisterRights {
     my $RIGHTS = $RT::Queue::RIGHTS;
 
     while ( my ($right, $description) = each %rights ) {
-        next if exists $RIGHTS->{ $right };
+        next if exists $RIGHTS->{ $right }
+            or $RT::System::RIGHTS->{ $right };
 
         $RIGHTS->{ $right } = $description;
         RT::Queue->AddRightCategories( $right => 'Status' );
