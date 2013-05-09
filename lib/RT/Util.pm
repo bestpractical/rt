@@ -65,8 +65,11 @@ sub safe_run_child (&) {
     # values. Instead we set values, eval code, check pid
     # on failure and reset values only in our original
     # process
+    my ($oldv_dbh, $oldv_rth);
     my $dbh = $RT::Handle->dbh;
+    $oldv_dbh = $dbh->{'InactiveDestroy'} if $dbh;
     $dbh->{'InactiveDestroy'} = 1 if $dbh;
+    $oldv_rth = $RT::Handle->{'DisconnectHandleOnDestroy'};
     $RT::Handle->{'DisconnectHandleOnDestroy'} = 0;
 
     my ($reader, $writer);
@@ -90,8 +93,8 @@ sub safe_run_child (&) {
         my $err = $@;
         $err =~ s/^Stack:.*$//ms;
         if ( $our_pid == $$ ) {
-            $dbh->{'InactiveDestroy'} = 0 if $dbh;
-            $RT::Handle->{'DisconnectHandleOnDestroy'} = 1;
+            $dbh->{'InactiveDestroy'} = $oldv_dbh if $dbh;
+            $RT::Handle->{'DisconnectHandleOnDestroy'} = $oldv_rth;
             die "System Error: $err";
         } else {
             print $writer "System Error: $err";
@@ -104,8 +107,8 @@ sub safe_run_child (&) {
     my ($response) = $reader->getline;
     warn $response if $response;
 
-    $dbh->{'InactiveDestroy'} = 0 if $dbh;
-    $RT::Handle->{'DisconnectHandleOnDestroy'} = 1;
+    $dbh->{'InactiveDestroy'} = $oldv_dbh if $dbh;
+    $RT::Handle->{'DisconnectHandleOnDestroy'} = $oldv_rth;
     return $want? (@res) : $res[0];
 }
 
