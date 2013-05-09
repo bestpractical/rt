@@ -396,6 +396,13 @@ sub SendEmail {
         $TicketObj = $TransactionObj->Object;
     }
 
+    unless ( $args{'Entity'}->head->get('Date') ) {
+        require RT::Date;
+        my $date = RT::Date->new( RT->SystemUser );
+        $date->SetToNow;
+        $args{'Entity'}->head->set( 'Date', $date->RFC2822( Timezone => 'server' ) );
+    }
+
     if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
         %args = WillSignEncrypt(
             %args,
@@ -404,13 +411,6 @@ sub SendEmail {
         );
         my $res = SignEncrypt( %args );
         return $res unless $res > 0;
-    }
-
-    unless ( $args{'Entity'}->head->get('Date') ) {
-        require RT::Date;
-        my $date = RT::Date->new( RT->SystemUser );
-        $date->SetToNow;
-        $args{'Entity'}->head->set( 'Date', $date->RFC2822( Timezone => 'server' ) );
     }
 
     my $mail_command = RT->Config->Get('MailCommand');
