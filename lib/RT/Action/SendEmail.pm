@@ -179,12 +179,6 @@ sub Prepare {
             && !$MIMEObj->head->get('To')
             && ( $MIMEObj->head->get('Cc') or $MIMEObj->head->get('Bcc') );
 
-    # We should never have to set the MIME-Version header
-    $self->SetHeader( 'MIME-Version', '1.0' );
-
-    # fsck.com #5959: Since RT sends 8bit mail, we should say so.
-    $self->SetHeader( 'Content-Transfer-Encoding', '8bit' );
-
     # For security reasons, we only send out textual mails.
     foreach my $part ( grep !$_->is_multipart, $MIMEObj->parts_DFS ) {
         my $type = $part->mime_type || 'text/plain';
