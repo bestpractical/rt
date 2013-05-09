@@ -1,0 +1,229 @@
+=head1 Automating Tasks in RT
+
+As RT tickets are created, worked on, and resolved, there are sometimes
+updates or notifications that have defined rules and could be automatic.
+These might include increasing ticket priority over time so tickets don't
+get lost, resolving old tickets that haven't had any activity for a period of
+time, or sending email notifications based on some ticket criteria like
+being 3 days old and still having a status of new.
+
+The tool for automating RT tasks is L<rt-crontool>. It's designed to be run
+from the cron scheduler and accepts a set of parameters that define what RT
+objects it should operate on and what it should do. The sections below give
+describe some common L<rt-crontool> tasks to serve as usable commands and
+as examples of the different ways you can automate tasks.
+
+All of the options for L<rt-crontool> are documented with the tool itself:
+
+    $ perldoc bin/rt-crontool
+
+and on the Best Practical web site.
+
+=head2 Running C<rt-crontool>
+
+As you'll see in the examples below, this tool gives full access to RT.
+To manage the scope of changes that could be performed by the tool, we
+recommended creating a dedicated unix user with limited privileges for
+this purpose. Then create a user in RT with just enough access to perform
+the changes you need to automate and set the Unix login field to the unix
+user you created. See the L<rt-crontool> documentation for more information.
+
+=head2 Testing Tips
+
+When setting up a new automated crontool job, keep in mind that you might be
+modifying a large number of tickets, especially the first time you run it.
+Changes to tickets can trigger scrips just like the same change made via
+the user interface. For example, changing the status to resolved will trigger
+the 'On Resolve' scrips which often means sending email. Depending on the
+modification, you could end up sending a lot of email or triggering other
+actions.
+
+You can test your search queries in the RT search tools and use bulk update
+if you want to prepare things for your new automated job. You can also
+disable functionality by disabling certain scrips or turning off mail
+with the L<RT_Config.pm/"$MailCommand"> option. This can be useful if you
+want to clean up older tickets without sending notifications to people for
+tickets that were resolved years ago.
+
+To help with debugging, the C<--verbose> option will give you more output.
+The C<--log> option accepts all of the valid log levels for RT and allows
+you to change the logging level just for the automated job. While testing,
+it's often convenient to set:
+
+    --log debug
+
+to see what's happening.
+
+=head1 A Simple Search
+
+Starting with a simple example, this command performs a search and
+displays output, but doesn't do anything to the returned tickets.
+This can be useful for safely testing search criteria.
+
+    bin/rt-crontool --search RT::Search::FromSQL \
+        --search-arg "Owner = 'root'" \
+        --action RT::Action \
+        --verbose \
+        --log debug
+
+The C<--search> argument sets the search module RT should use, in this
+case L<RT::Search::FromSQL> which processes TicketSQL. The second
+argument, C<--search-arg>, is the search query to use. These are
+the same queries you create in the RT search interface, so can use
+the RT web UI to refine your queries before setting up your job.
+
+The C<--action> argument is set to L<RT::Action> which is the base
+class for RT actions. Since it doesn't perform any action itself, this
+command will just output the results of the TicketSQL.
+
+=head1 Auto-resolve Aged Tickets
+
+You can auto-set status based on any criteria you can define in
+a TicketSQL statement. For example, this command will resolve all
+active tickets that haven't been acted on in a month or more:
+
+    bin/rt-crontool --search RT::Search::FromSQL \
+        --search-arg "(Status != 'resolved' AND Status != 'rejected') \
+                       AND LastUpdated <= '1 month ago'" \
+        --action RT::Action::SetStatus \
+        --action-arg resolved
+
+The search is similar to the previous example with a slightly more
+complicated search argument. The C<--action> in this case uses the
+L<RT::Action::SetStatus> module with an C<--action-arg> of C<resolved>.
+For each of the tickets returned from the search query, the status is
+set to resolved. When setting up automated tasks, you can use
+actions provided as part of RT, actions available from extensions,
+or actions you create yourself.
+
+As noted previously, the normal RT rules apply when running actions
+with L<rt-crontool>, so for this example applicable 'On Resolve'
+scrips will run. If a ticket has unresolved dependencies, it will
+log an error since tickets can't be resolved until dependencies are
+resolved. Also, the status argument must be valid for the lifecycle of
+the selected tickets.
+
+=head1 Commenting and Corresponding on a Ticket
+
+The following command records a comment on all tickets returned
+from the query, in this case tickets that are new and unowned
+after 3 days.
+
+    bin/rt-crontool --search RT::Search::FromSQL \
+        --search-arg "Owner = 'Nobody' AND Status = 'new' \
+                      AND Created < '3 days ago'" \
+        --action RT::Action::RecordComment \
+        --template 'Unowned tickets'
+
+The L<RT::Action::RecordComment> action does just that, it records a
+comment just like replying to a comment email or commenting in the
+RT UI. It uses the global RT template defined by C<--template>, so you
+could put whatever you like in that template. For example:
+
+    Subject: {$Ticket->id} new and unowned
+    RT-Send-Cc: support-backup@example.com
+
+    Ticket {$Ticket->id} is still new and unowned after 3 days!
+
+You can set up a similar command to record a reply using the
+L<RT::Action::RecordCorrespondence> module.
+
+=head1 Sending Notifications
+
+While the example above sends notifications as a side-effect of recording
+a comment, you can also send notifications directly.
+
+    bin/rt-crontool --search RT::Search::FromSQL \
+        --search-arg "(Status != 'resolved' AND Status != 'rejected') \
+                      AND Queue = 'Project Work'" \
+        --condition RT::Condition::Overdue \
+        --action RT::Action::NotifyGroup \
+        --action-arg 'project-manager@example.com' \
+        --template 'Overdue task'
+
+This example shows the C<--condition> argument and the
+L<RT::Condition::Overdue> module, which returns true if the current
+time (the time the cron job is running) is past the Due date on the
+ticket. Like the C<--action> argument, you can use conditions
+provided with RT, added from extensions, or conditions you have
+created.
+
+L<RT::Action::NotifyGroup>, despite the "Group" in the name, can accept a
+bare email address or list of addresses as the action argument and it will
+send mail to them. A combination of email addresses and group names separated
+by commas also works. RT usernames are valid unless they conflict with group
+names.
+
+The action sends email, but unlike comment and correspond above, it
+doesn't record a transaction in the ticket history.
+
+=head1 Escalating Priority
+
+RT has a built-in ticket priority system with priority values from
+0 to 99. Depending on how you configure your queues, you can set 1 as the
+top priority with lower numbers meaning more important, or 99 can be the
+top priority with higher numbers meaning more important. You can set this
+in your queue configuration at Tools -> Configuration -> Queues. On the queue
+configuration page, set "Priority starts at" and "Over time, priority moves
+toward".
+
+Whichever scheme you choose, RT has an action that can escalate priority
+over time so tickets that are closer to their due date and are still not
+resolved have priority escalated automatically.
+
+This command escalates tickets in a designated queue:
+
+    bin/rt-crontool --search RT::Search::ActiveTicketsInQueue \
+        --search-arg "General" \
+        --action RT::Action::EscalatePriority
+
+The C<--search-arg> is the name of the queue in which to escalate tickets.
+As shown in previous examples, you can also set your criteria using a
+TicketSQL query as well:
+
+    bin/rt-crontool --search RT::Search::FromSQL \
+        --search-arg "(Status='new' OR Status='open') AND Due > 'Jan 1, 1970'" \
+        --action RT::Action::EscalatePriority
+
+This example will find new and open tickets in all queues, but will skip tickets
+with no explicit due dates set. Maybe you only want to bump the priority on tasks
+that have to be done by a certain date.
+
+L<RT::Action::LinearEscalate> is an alternative escalation module that
+handles the "Due date not set" condition for you. It also offers some
+configuration options to control whether a transaction is recorded on the
+ticket and whether LastUpdated is modified.
+
+=head1 Transactions
+
+Many actions and conditions are also used in RT in scrips and may require
+a transaction in addition to a ticket. For such cases, L<rt-crontool>
+provides a C<--transaction> argument to designate a transaction. Valid
+values are C<first>, C<last>, and C<all> and these are relative to the
+current ticket being processed. C<first> and C<last> are the first and
+last transaction on the ticket. Be careful with the C<all> option since
+it will run the action on all transactions for the ticket.
+
+Since actions and conditions can be used in different contexts, you
+may need to provide a transaction object even if it doesn't seem
+necessary for your automated job. If you're seeing errors about
+a missing transaction, setting C<--transaction> to C<first> or
+C<last> is usually safe and will resolve the error.
+
+You can also target specific transaction types with C<--transation-type>.
+This argument accepts one or more transaction types as a comma-separated
+list.
+
+Using these options together, you can set up a command that sets the
+appropriate transaction object for your conditions and actions. For
+example, if you had an action you wanted to perform based on the content
+of the last reply on stalled tickets, you could do something like:
+
+    bin/rt-crontool --search RT::Search::FromSQL \
+        --search-arg "Status = 'stalled' AND Queue = 'General'" \
+        --action RT::Action::CheckLastCorrespond \
+        --transaction last \
+        --transaction-type Correspond
+
+
+=cut
