@@ -450,7 +450,7 @@ diag "user can assign ticket to new owner with ReassignTicket right";
     $agent_a->content_contains( 'Owner changed from Nobody to user_a',
         'got set message in Basics' );
     $agent_a->goto_ticket($id);
-    like($agent->dom->at('.transaction.people .description')->all_text,
+    like($agent_a->dom->at('.transaction.people .description')->all_text,
          qr{user_a\s*-\s*Taken}, 'got user_a Taken message' );
 
     $agent_c->goto_ticket($id);
