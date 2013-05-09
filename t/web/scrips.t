@@ -195,32 +195,19 @@ note "check templates in scrip's admin interface";
     my ($status, $msg) = $template->Create( Queue => $queue_g->id, Name => 'foo' );
     ok $status, 'created a template';
 
+    my $templates = RT::Templates->new( RT->SystemUser );
+    $templates->LimitToGlobal;
+
     my @default = (
           '',
-          'Admin Comment',
-          'Admin Correspondence',
-          'Autoreply',
-          'Blank',
-          'Correspondence',
-          'Email Digest',
-          'Error to RT owner: public key',
-          'Error: bad GnuPG data',
-          'Error: Missing dashboard',
-          'Error: no private key',
-          'Error: public key',
-          'Forward',
-          'Forward Ticket',
-          'PasswordChange',
-          'Resolved',
-          'Status Change',
-          'Transaction'
+          map $_->Name, @{$templates->ItemsArrayRef}
     );
 
     $m->follow_link_ok( { id => 'tools-config-global-scrips-create' } );
     ok $m->form_name('CreateScrip');
     my @templates = ($m->find_all_inputs( type => 'option', name => 'Template' ))[0]
         ->possible_values;
-    is_deeply(\@templates, \@default);
+    is_deeply([sort @templates], [sort @default]);
 
     $m->follow_link_ok( { id => 'tools-config-queues' } );
     $m->follow_link_ok( { text => 'General' } );

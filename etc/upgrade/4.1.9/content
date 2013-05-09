@@ -1,0 +1,190 @@
+use strict;
+use warnings;
+
+# New HTML templates
+
+our @Templates = (
+    {  Queue       => '0',
+       Name        => 'Autoreply in HTML',                              # loc
+       Description => 'HTML Autoresponse template',                     # loc
+       Content     => q[Subject: AutoReply: {$Ticket->Subject}
+Content-Type: text/html
+
+<p>Greetings,</p>
+
+<p>This message has been automatically generated in response to the
+creation of a trouble ticket regarding <b>{$Ticket->Subject()}</b>,
+a summary of which appears below.</p>
+
+<p>There is no need to reply to this message right now.  Your ticket has been
+assigned an ID of <b>{$Ticket->SubjectTag}</b>.</p>
+
+<p>Please include the string <b>{$Ticket->SubjectTag}</b>
+in the subject line of all future correspondence about this issue. To do so,
+you may reply to this message.</p>
+
+<p>Thank you,<br/>
+{$Ticket->QueueObj->CorrespondAddress()}</p>
+
+<hr/>
+{$Transaction->Content(Type => 'text/html')}
+],
+    },
+    {  Queue       => '0',
+       Name        => 'Transaction in HTML',          # loc
+       Description => 'HTML transaction template',    # loc
+       Content     => 'RT-Attach-Message: yes
+Content-Type: text/html
+
+<b>{$Transaction->CreatedAsString}: Request <a href="{RT->Config->Get("WebURL")}Ticket/Display.html?id={$Ticket->id}">{$Ticket->id}</a> was acted upon by {$Transaction->CreatorObj->Name}.</b>
+<br>
+<table border="0">
+<tr><td align="right"><b>Transaction:</b></td><td>{$Transaction->Description}</td></tr>
+<tr><td align="right"><b>Queue:</b></td><td>{$Ticket->QueueObj->Name}</td></tr>
+<tr><td align="right"><b>Subject:</b></td><td>{$Transaction->Subject || $Ticket->Subject || "(No subject given)"} </td></tr>
+<tr><td align="right"><b>Owner:</b></td><td>{$Ticket->OwnerObj->Name}</td></tr>
+<tr><td align="right"><b>Requestors:</b></td><td>{$Ticket->RequestorAddresses}</td></tr>
+<tr><td align="right"><b>Status:</b></td><td>{$Ticket->Status}</td></tr>
+<tr><td align="right"><b>Ticket URL:</b></td><td><a href="{RT->Config->Get("WebURL")}Ticket/Display.html?id={$Ticket->id}">{RT->Config->Get("WebURL")}Ticket/Display.html?id={$Ticket->id}</a></td></tr>
+</table>
+<br/>
+<br/>
+{$Transaction->Content( Type => "text/html")}
+'
+    },
+    {  Queue       => '0',
+       Name        => 'Admin Correspondence in HTML',                     # loc
+       Description => 'HTML admin correspondence template',    # loc
+       Content     => 'RT-Attach-Message: yes
+Content-Type: text/html
+
+Ticket URL: <a href="{RT->Config->Get("WebURL")}Ticket/Display.html?id={$Ticket->id}">{RT->Config->Get("WebURL")}Ticket/Display.html?id={$Ticket->id}</a>
+<br />
+<br />
+{$Transaction->Content(Type => "text/html");}
+'
+    },
+    {  Queue       => '0',
+       Name        => 'Correspondence in HTML',                 # loc
+       Description => 'HTML correspondence template',           # loc
+       Content     => 'RT-Attach-Message: yes
+Content-Type: text/html
+
+{$Transaction->Content( Type => "text/html")}
+'
+    },
+    {  Queue       => '0',
+       Name        => 'Admin Comment in HTML',                  # loc
+       Description => 'HTML admin comment template',            # loc
+       Content     => 
+'Subject: [Comment] {my $s=($Transaction->Subject||$Ticket->Subject); $s =~ s/\\[Comment\\]\\s*//g; $s =~ s/^Re:\\s*//i; $s;}
+RT-Attach-Message: yes
+Content-Type: text/html
+
+<p>This is a comment about <a href="{RT->Config->Get("WebURL")}Ticket/Display.html?id={$Ticket->id}">ticket {$Ticket->id}</a>. It is not sent to the Requestor(s):</p>
+
+{$Transaction->Content(Type => "text/html")}
+'
+    },
+    {  Queue       => '0',
+       Name        => 'Status Change in HTML',              # loc
+       Description => 'HTML Ticket status changed',              # loc
+       Content     => 'Subject: Status Changed to: {$Transaction->NewValue}
+Content-Type: text/html
+
+<a href="{RT->Config->Get("WebURL")}Ticket/Display.html?id={$Ticket->id}">{RT->Config->Get("WebURL")}Ticket/Display.html?id={$Ticket->id}</a>
+<br/>
+<br/>
+{$Transaction->Content(Type => "text/html")}
+'
+    },
+    {  Queue       => '0',
+       Name        => 'Resolved in HTML',               # loc
+       Description => 'HTML Ticket Resolved',           # loc
+       Content     => 'Subject: Resolved: {$Ticket->Subject}
+Content-Type: text/html
+
+<p>According to our records, your request has been resolved.  If you have any further questions or concerns, please respond to this message.</p>
+'
+    },
+    {  Queue       => '___Approvals',
+       Name        => "New Pending Approval in HTML",                                   # loc
+       Description => "Notify Owners and AdminCcs of new items pending their approval", # loc
+       Content     => 'Subject: New Pending Approval: {$Ticket->Subject}
+Content-Type: text/html
+
+<p>Greetings,</p>
+
+<p>There is a new item pending your approval: <b>{$Ticket->Subject()}</b>,
+a summary of which appears below.</p>
+
+<p>Please <a href="{RT->Config->Get(\'WebURL\')}Approvals/Display.html?id={$Ticket->id}">approve
+or reject this ticket</a>, or visit the <a href="{RT->Config->Get(\'WebURL\')}Approvals/">approvals
+overview</a> to batch-process all your pending approvals.</p>
+
+<hr />
+{$Transaction->Content()}
+'
+    },
+    {  Queue       => '___Approvals',
+       Name        => "Approval Passed in HTML",    # loc
+       Description =>
+         "Notify Requestor of their ticket has been approved by some approver", # loc
+       Content => 'Subject: Ticket Approved: {$Ticket->Subject}
+Content-Type: text/html
+
+<p>Greetings,</p>
+
+<p>Your ticket has been approved by <b>{ eval { $Approver->Name } }</b>.
+Other approvals may be pending.</p>
+
+<p>Approver\'s notes:</p>
+<blockquote>{ $Notes }</blockquote>
+'
+    },
+    {  Queue       => '___Approvals',
+       Name        => "All Approvals Passed in HTML",    # loc
+       Description =>
+         "Notify Requestor of their ticket has been approved by all approvers", # loc
+       Content => 'Subject: Ticket Approved: {$Ticket->Subject}
+Content-Type: text/html
+
+<p>Greetings,</p>
+
+<p>Your ticket has been approved by <b>{ eval { $Approver->Name } }</b>.
+Its Owner may now start to act on it.</p>
+
+<p>Approver\'s notes:</p>
+<blockquote>{ $Notes }</blockquote>
+'
+    },
+    {  Queue       => '___Approvals',
+       Name        => "Approval Rejected in HTML",    # loc
+       Description =>
+         "Notify Owner of their rejected ticket", # loc
+       Content => 'Subject: Ticket Rejected: {$Ticket->Subject}
+Content-Type: text/html
+
+<p>Greetings,</p>
+
+<p>Your ticket has been rejected by <b>{ eval { $Approver->Name } }</b>.</p>
+
+<p>Approver\'s notes:</p>
+<blockquote>{ $Notes }</blockquote>
+'
+    },
+    {  Queue       => '___Approvals',
+       Name        => "Approval Ready for Owner in HTML",    # loc
+       Description =>
+         "Notify Owner of their ticket has been approved and is ready to be acted on", # loc
+       Content => 'Subject: Ticket Approved: {$Ticket->Subject}
+Content-Type: text/html
+
+<p>Greetings,</p>
+
+<p>The ticket has been approved, you may now start to act on it.</p>
+
+'
+    },
+);
+

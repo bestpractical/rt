@@ -89,19 +89,6 @@ my $cfs = $class->ArticleCustomFields;
 $include{"CF-Title-".$_->Id} = $include{"CF-Value-".$_->Id} = 1 while $_ = $cfs->Next;
 $include{$_} = not $class->FirstAttribute("Skip-$_") for keys %include;
 
-my $de_htmlify = sub {
-    my $content = shift;
-    require HTML::TreeBuilder;
-    my $tree = HTML::TreeBuilder->new;
-    $tree->parse($content);
-    $tree->eof();
-
-    require HTML::FormatText;
-    my $formatter = HTML::FormatText->new(leftmargin => 0, rightmargin => 50);
-    $content = $formatter->format($tree);
-    return $content;
-};
-
 my $get_content = sub {
     my $value = shift;
     return '' unless $value;
@@ -116,7 +103,7 @@ my $get_content = sub {
     );
 
     if ( $content =~ /<.{1,5}>/ ) {
-        $content = $de_htmlify->( $content );
+        $content = RT::Interface::Email::ConvertHTMLToText( $content );
     }
     return $content;
 };

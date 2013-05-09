@@ -82,8 +82,7 @@ use RT::Attachments;
 use RT::Scrips;
 use RT::Ruleset;
 
-use HTML::FormatText;
-use HTML::TreeBuilder;
+use HTML::FormatText::WithLinks::AndTables;
 use HTML::Scrubber;
 
 # For EscapeHTML() and decode_entities()
@@ -341,12 +340,7 @@ sub Content {
             $content =~ s/<p>--\s+<br \/>.*?$//s if $args{'Quote'};
 
             if ($args{Type} ne 'text/html') {
-                my $tree = HTML::TreeBuilder->new_from_content( $content );
-                $content = HTML::FormatText->new(
-                    leftmargin  => 0,
-                    rightmargin => 78,
-                )->format( $tree);
-                $tree->delete;
+                $content = RT::Interface::Email::ConvertHTMLToText($content);
             }
         }
         else {

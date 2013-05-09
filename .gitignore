@@ -8,6 +8,7 @@
 /etc/upgrade/generate-rtaddressregexp
 /etc/upgrade/upgrade-articles
 /etc/upgrade/vulnerable-passwords
+/etc/upgrade/switch-templates-to
 /lib/RT/Generated.pm
 /Makefile
 /t/data/gnupg/keyrings/random_seed
