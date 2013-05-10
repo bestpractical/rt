@@ -614,7 +614,20 @@ sub _LimitCustomField {
 
     my $value_is_long = (length( Encode::encode_utf8($value)) > 255) ? 1 : 0;
     $self->_OpenParen( $args{SUBCLAUSE} ); # Check Content / LargeContent
-    unless ($value_is_long and $op =~ /^(=|!=|<>)$/) {
+    if ($value_is_long and $op eq "=") {
+        # Doesn't matter what Content contains, as it cannot match the
+        # too-long value; we just look in LargeContent, below.
+    } elsif ($value_is_long and $op =~ /^(!=|<>)$/) {
+        # If Content is non-null, that's a valid way to _not_ contain the too-long value.
+        $self->Limit(
+            %args,
+            ALIAS    => $ocfvalias,
+            FIELD    => 'Content',
+            OPERATOR => 'IS NOT',
+            VALUE    => 'NULL',
+        );
+    } else {
+        # Otherwise, go looking at the Content
         $self->Limit(
             %args,
             ALIAS    => $ocfvalias,
@@ -624,7 +637,22 @@ sub _LimitCustomField {
             CASESENSITIVE => 0,
         );
     }
-    unless (!$value_is_long and $op =~ /^(=|!=|<>)$/) {
+
+    if (!$value_is_long and $op eq "=") {
+        # Doesn't matter what LargeContent contains, as it cannot match
+        # the short value.
+    } elsif (!$value_is_long and $op =~ /^(!=|<>)$/) {
+        # If LargeContent is non-null, that's a valid way to _not_
+        # contain the too-short value.
+        $self->Limit(
+            %args,
+            ALIAS    => $ocfvalias,
+            FIELD    => 'LargeContent',
+            OPERATOR => 'IS NOT',
+            VALUE    => 'NULL',
+            ENTRYAGGREGATOR => 'OR',
+        );
+    } else {
         $self->_OpenParen( $args{SUBCLAUSE} ); # LargeContent check
         $self->_OpenParen( $args{SUBCLAUSE} ); # Content is null?
         $self->Limit(
