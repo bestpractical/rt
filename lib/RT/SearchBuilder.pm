@@ -355,6 +355,7 @@ sub _LimitCustomField {
                  CUSTOMFIELD  => undef,
                  OPERATOR     => '=',
                  KEY          => undef,
+                 PREPARSE     => 1,
                  @_ );
 
     my $op     = delete $args{OPERATOR};
@@ -400,7 +401,7 @@ sub _LimitCustomField {
     };
 
     ########## Content pre-parsing if we know things about the CF
-    if ( blessed($cf) ) {
+    if ( blessed($cf) and delete $args{PREPARSE} ) {
         my $type = $cf->Type;
         if ( $type eq 'IPAddress' ) {
             my $parsed = RT::ObjectCustomFieldValue->ParseIP($value);
@@ -445,6 +446,7 @@ sub _LimitCustomField {
                         VALUE       => $end_ip,
                         CUSTOMFIELD => $cf,
                         COLUMN      => 'Content',
+                        PREPARSE    => 0,
                     );
                     $self->_LimitCustomField(
                         %args,
@@ -453,6 +455,7 @@ sub _LimitCustomField {
                         CUSTOMFIELD => $cf,
                         COLUMN      => 'LargeContent',
                         ENTRYAGGREGATOR => 'AND',
+                        PREPARSE    => 0,
                     );
                 } else { # negative equation
                     $self->_LimitCustomField(
@@ -461,6 +464,7 @@ sub _LimitCustomField {
                         VALUE       => $end_ip,
                         CUSTOMFIELD => $cf,
                         COLUMN      => 'Content',
+                        PREPARSE    => 0,
                     );
                     $self->_LimitCustomField(
                         %args,
@@ -469,6 +473,7 @@ sub _LimitCustomField {
                         CUSTOMFIELD => $cf,
                         COLUMN      => 'LargeContent',
                         ENTRYAGGREGATOR => 'OR',
+                        PREPARSE    => 0,
                     );
                 }
                 $self->_CloseParen( $args{SUBCLAUSE} );
@@ -511,6 +516,7 @@ sub _LimitCustomField {
                     CUSTOMFIELD     => $cf,
                     COLUMN          => 'Content',
                     ENTRYAGGREGATOR => 'AND',
+                    PREPARSE        => 0,
                 );
 
                 $self->_LimitCustomField(
@@ -520,6 +526,7 @@ sub _LimitCustomField {
                     CUSTOMFIELD     => $cf,
                     COLUMN          => 'Content',
                     ENTRYAGGREGATOR => 'AND',
+                    PREPARSE        => 0,
                 );
                 $self->_CloseParen( $args{SUBCLAUSE} );
                 return;
