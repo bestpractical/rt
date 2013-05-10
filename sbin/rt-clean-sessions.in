@@ -95,9 +95,9 @@ require RT;
 RT::LoadConfig();
 
 if( $opt{'debug'} ) {
-    RT->Config->Set( LogToScreen => 'debug' );
+    RT->Config->Set( LogToSTDERR => 'debug' );
 } else {
-    RT->Config->Set( LogToScreen => undef );
+    RT->Config->Set( LogToSTDERR => undef );
 }
 
 RT::ConnectToDatabase();

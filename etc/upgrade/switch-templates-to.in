@@ -67,7 +67,7 @@ if ($to =~ /html|text/i) {
 }
 
 RT::LoadConfig();
-RT->Config->Set('LogToScreen' => 'info');
+RT->Config->Set('LogToSTDERR' => 'info');
 RT::Init();
 
 $| = 1;
