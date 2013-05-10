@@ -401,16 +401,15 @@ sub _LimitCustomField {
 
     ########## Content pre-parsing if we know things about the CF
     if ( blessed($cf) ) {
-        if ( $cf->Type eq 'IPAddress' ) {
+        my $type = $cf->Type;
+        if ( $type eq 'IPAddress' ) {
             my $parsed = RT::ObjectCustomFieldValue->ParseIP($value);
             if ($parsed) {
                 $value = $parsed;
             } else {
                 $RT::Logger->warn("$value is not a valid IPAddress");
             }
-        }
-
-        if ( $cf->Type eq 'IPAddressRange' ) {
+        } elsif ( $type eq 'IPAddressRange' ) {
             if ( $value =~ /^\s*$RE{net}{CIDR}{IPv4}{-keep}\s*$/o ) {
                 # convert incomplete 192.168/24 to 192.168.0.0/24 format
                 $value =
@@ -475,9 +474,7 @@ sub _LimitCustomField {
                 $self->_CloseParen( $args{SUBCLAUSE} );
                 return;
             }
-        }
-
-        if ( $cf->Type =~ /^Date(?:Time)?$/ ) {
+        } elsif ( $type =~ /^Date(?:Time)?$/ ) {
             my $date = RT::Date->new( $self->CurrentUser );
             $date->Set( Format => 'unknown', Value => $value );
             if ( $date->Unix ) {
