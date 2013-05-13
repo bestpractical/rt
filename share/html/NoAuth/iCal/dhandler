@@ -89,12 +89,14 @@ while (my $t = $tickets->Next) {
     next unless $t->DueObj->Unix > 0;
 
     my $starttime = $t->StartsObj->Unix > 0 ? $t->StartsObj : $t->CreatedObj;
+    my $url = RT->Config->Get('WebURL') . "Ticket/Display.html?id=".$t->id,
 
     my $now = RT::Date->new( $cu ); $now->SetToNow;
     my $start = Data::ICal::Entry::Event->new;
     my $end   = Data::ICal::Entry::Event->new;
     $_->add_properties(
-        url       => RT->Config->Get('WebURL') . "Ticket/Display.html?id=".$t->id,
+        url       => $url,
+        description => $url,
         organizer => $t->OwnerObj->Name,
         dtstamp   => $now->iCal,
         created   => $t->CreatedObj->iCal,
