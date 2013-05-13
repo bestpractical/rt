@@ -136,14 +136,14 @@ is( $c_susp, 1, "correct number of suspended messages" );
 # the first time get the content
 email_digest_like( '--mode daily --print', qr/in the last day/ );
 # The second time run it for real so we make sure that we get RT to mark the txn as sent
-email_digest_like( '--mode daily', qr/maildaily\@/ );
+email_digest_like( '--mode daily --verbose', qr/maildaily\@/ );
 # now we should have nothing to do, so no content.
 email_digest_like( '--mode daily --print', '' );
 
 # the first time get the content
 email_digest_like( '--mode weekly --print', qr/in the last seven days/ );
 # The second time run it for real so we make sure that we get RT to mark the txn as sent
-email_digest_like( '--mode weekly', qr/mailweekly\@/ );
+email_digest_like( '--mode weekly --verbose', qr/mailweekly\@/ );
 # now we should have nothing to do, so no content.
 email_digest_like( '--mode weekly --print', '' );
 
