@@ -136,6 +136,7 @@ foreach ( $SearchArg, $ProcessedSearchArg ) {
             Remove  => "4.4",
             Instead => "id = '__Bookmarked__'",
             Message => "The __Bookmarks__ query syntax is deprecated",
+            Object  => $search,
         );
 
         my @bookmarks = $session{'CurrentUser'}->UserObj->Bookmarks;
