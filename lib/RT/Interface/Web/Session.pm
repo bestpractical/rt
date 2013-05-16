@@ -192,7 +192,7 @@ sub _ClearOldDB {
         die "couldn't execute query: ". $dbh->errstr unless defined $rows;
     }
 
-    $RT::Logger->info("successfuly deleted $rows sessions");
+    $RT::Logger->info("successfully deleted $rows sessions");
     return;
 }
 
@@ -222,7 +222,7 @@ sub _ClearOldDir {
             next;
         }
         tied(%session)->delete;
-        $RT::Logger->info("successfuly deleted session '$id'");
+        $RT::Logger->info("successfully deleted session '$id'");
     }
 
     my $lock = Apache::Session::Lock::File->new;
@@ -259,7 +259,7 @@ sub ClearByUser {
             }
         }
         tied(%session)->delete;
-        $RT::Logger->info("successfuly deleted session '$id'");
+        $RT::Logger->info("successfully deleted session '$id'");
     }
 }
 
