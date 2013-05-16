@@ -225,10 +225,48 @@ sub _ClearOldDir {
         $RT::Logger->info("successfully deleted session '$id'");
     }
 
+    # Apache::Session::Lock::File will clean out locks older than X, but it
+    # leaves around bogus locks if they're too new, even though they're
+    # guaranteed dead.  On even just largeish installs, the accumulated number
+    # of them may bump into ext3/4 filesystem limits since Apache::Session
+    # doesn't use a fan-out tree.
     my $lock = Apache::Session::Lock::File->new;
     $lock->clean( $dir, $older_than );
 
+    # Take matters into our own hands and clear bogus locks hanging around
+    # regardless of how recent they are.
+    $self->ClearOrphanLockFiles($dir);
+
     return;
+}
+
+=head3 ClearOrphanLockFiles
+
+Takes a directory in which to look for L<Apache::Session::Lock::File> locks
+which no longer have a corresponding session file.  If not provided, the
+directory is taken from the session configuration data.
+
+=cut
+
+sub ClearOrphanLockFiles {
+    my $class = shift;
+    my $dir   = shift || $class->Attributes->{Directory}
+        or return;
+
+    if (opendir my $dh, $dir) {
+        for (readdir $dh) {
+            next unless /^Apache-Session-([0-9a-f]{32})\.lock$/;
+            next if -e "$dir/$1";
+
+            RT->Logger->debug("deleting orphaned session lockfile '$_'");
+
+            unlink "$dir/$_"
+                or warn "Failed to unlink session lockfile $dir/$_: $!";
+        }
+        closedir $dh;
+    } else {
+        warn "Unable to open directory '$dir' for reading: $!";
+    }
 }
 
 =head3 ClearByUser
@@ -243,6 +281,7 @@ sub ClearByUser {
     my $class = $self->Class;
     my $attrs = $self->Attributes;
 
+    my $deleted;
     my %seen = ();
     foreach my $id( @{ $self->Ids } ) {
         my %session;
@@ -260,7 +299,9 @@ sub ClearByUser {
         }
         tied(%session)->delete;
         $RT::Logger->info("successfully deleted session '$id'");
+        $deleted++;
     }
+    $self->ClearOrphanLockFiles if $deleted;
 }
 
 sub TIEHASH {
