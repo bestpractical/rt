@@ -571,12 +571,12 @@ sub download_mods {
 
 sub check_perl_version {
   section("perl");
-  eval {require 5.008003};
+  eval {require 5.010_001};
   if ($@) {
-    print_found("5.8.3", 0,"RT is known to be non-functional on versions of perl older than 5.8.3. Please upgrade to 5.8.3 or newer.");
+    print_found("5.10.1", 0, sprintf("RT requires Perl v5.10.1 or newer. Your current Perl is v%vd", $^V));
     exit(1);
   } else {
-    print_found( sprintf(">=5.8.3(%vd)", $^V), 1 );
+    print_found( sprintf(">=5.10.1(%vd)", $^V), 1 );
   }
 }
 

@@ -397,8 +397,9 @@ sub InitSignalHandlers {
 
 
 sub CheckPerlRequirements {
-    if ($^V < 5.008003) {
-        die sprintf "RT requires Perl v5.8.3 or newer.  Your current Perl is v%vd\n", $^V;
+    eval {require 5.010_001};
+    if ($@) {
+        die sprintf "RT requires Perl v5.10.1 or newer.  Your current Perl is v%vd\n", $^V;
     }
 
     # use $error here so the following "die" can still affect the global $@
