@@ -54,6 +54,7 @@ package RT;
 
 use File::Spec ();
 use Cwd ();
+use Scalar::Util qw(blessed);
 
 use vars qw($Config $System $SystemUser $Nobody $Handle $Logger $_Privileged $_Unprivileged $_INSTALL_MODE);
 
@@ -885,6 +886,12 @@ calling it; names the arguments which are deprecated.
 Overrides the auto-built phrasing of C<Calling function ____ is
 deprecated> with a custom message.
 
+=item Object
+
+An L<RT::Record> object to print the class and numeric id of.  Useful if the
+admin will need to hunt down a particular object to fix the deprecation
+warning.
+
 =back
 
 =cut
@@ -928,6 +935,9 @@ sub Deprecated {
 
     $msg .= "  You should use $args{Instead} instead."
         if $args{Instead};
+
+    $msg .= sprintf "  Object: %s #%d.", blessed($args{Object}), $args{Object}->id
+        if $args{Object};
 
     $msg .= "  Call stack:\n$stack" if $args{Stack};
     RT->Logger->warn($msg);
