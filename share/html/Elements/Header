@@ -96,7 +96,7 @@
 % $m->callback( %ARGS, CallbackName => 'Head' );
 
 </head>
-  <body class="<% lc $style %><% RT->Config->Get("UseSideBySideLayout", $session{'CurrentUser'}) ? ' sidebyside' : '' %>" <% $id && qq[id="comp-$id"] |n %>>
+  <body class="<% join " ", @classes %>" <% $id && qq[id="comp-$id"] |n %>>
 
 % if ($ShowBar) {
 <& /Elements/Logo, %ARGS &>
@@ -121,6 +121,12 @@ $id =~ s|-$||g;
 my $style = $session{'CurrentUser'}
           ? $session{'CurrentUser'}->Stylesheet
           : RT->Config->Get('WebDefaultStylesheet');
+
+my @classes = (lc $style);
+push @classes, "sidebyside" if RT->Config->Get("UseSideBySideLayout", $session{'CurrentUser'});
+for my $pref (qw(FoldQuotedContent)) {
+    push @classes, $pref if RT->Config->Get($pref, $session{CurrentUser});
+}
 
 my @css_files;
 if ( RT->Config->Get('DevelMode') ) {

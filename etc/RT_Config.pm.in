@@ -1784,6 +1784,19 @@ your own styles of link detection.
 
 Set(@Active_MakeClicky, qw(httpurl_overwrite));
 
+=item C<$FoldQuotedContent>
+
+If C<$FoldQuotedContent> is set to 0, transaction content (replies/comments) in
+ticket history will not automatically fold (hide) any quoted content (lines
+beginning with C<< E<gt> >> or HTML blockquotes) that is detected.
+
+Quote folding is enabled by default to decrease the amount of repetitive text
+on long ticket conversations.
+
+=cut
+
+Set($FoldQuotedContent, 1);
+
 =back
 
 

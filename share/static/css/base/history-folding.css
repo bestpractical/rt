@@ -1,19 +1,28 @@
-.message-stanza-folder {
+.message-stanza-folder, .message-stanza-folder + br {
+    display: none;
+}
+
+.FoldQuotedContent .message-stanza-folder {
+    display: inline;
     color: #500050;
     font-size: 0.9em;
     padding: 0.2em;
     cursor: pointer;
 }
 
-.message-stanza-folder.open {
+.FoldQuotedContent .message-stanza-folder + br {
+    display: inline;
+}
+
+.FoldQuotedContent .message-stanza-folder.open {
     color: #ccc;
 }
 
-.message-stanza-folder:before, .message-stanza-folder:after {
+.FoldQuotedContent .message-stanza-folder:before, .FoldQuotedContent .message-stanza-folder:after {
     content: " - ";
 }
 
-.message-stanza.closed {
+.FoldQuotedContent .message-stanza.closed {
     display: none;
 }
 
