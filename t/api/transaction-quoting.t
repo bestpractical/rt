@@ -222,7 +222,7 @@ EXPECTED
 > > Line after a line break.
 EXPECTED
 
-    my $result = $txn->ApplyQuoteWrap( content => $result, cols => 70 );
+    $result = $txn->ApplyQuoteWrap( content => $result, cols => 70 );
     is( $result, $expected, 'Text quoted properly after two quotings');
 
     # Wrapping is only triggered over 76 chars, so quote until 76 is exceeded
