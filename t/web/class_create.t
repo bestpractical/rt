@@ -13,7 +13,7 @@ my $class_name = 'test class';
 my $class_id;
 diag "Create a class";
 {
-    $m->follow_link( id => 'tools-config-articles-classes-create');
+    $m->follow_link( id => 'admin-articles-classes-create');
 
     # Test class form validation
     $m->submit_form(

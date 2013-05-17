@@ -32,7 +32,7 @@ ok($ret, "Test class created");
 my ($url, $m) = RT::Test->started_ok;
 isa_ok($m, 'Test::WWW::Mechanize');
 ok($m->login, 'logged in');
-$m->follow_link_ok( { text => 'Configuration' } );
+$m->follow_link_ok( { text => 'Admin' } );
 $m->title_is(q/RT Administration/, 'admin screen');
 $m->follow_link_ok( { text => 'Custom Fields' } );
 $m->title_is(q/Select a Custom Field/, 'admin-cf screen');

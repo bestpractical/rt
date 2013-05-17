@@ -8,7 +8,7 @@ ok $m->login, 'logged in';
 
 diag "Create a queue CF";
 {
-    $m->follow_link( id => 'tools-config-custom-fields-create');
+    $m->follow_link( id => 'admin-custom-fields-create');
     $m->submit_form(
         form_name => "ModifyCustomField",
         fields => {

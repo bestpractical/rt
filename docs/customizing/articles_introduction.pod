@@ -8,11 +8,16 @@ RT.  They are organized into classes and topics.
 
 =head2 UI
 
-The user interface to Articles is available from the Tools -> Articles
-menu.  Admin functionality can be found under Tools -> Configuration ->
-Articles.  Once configured, articles will become available for searching
-on the Reply/Comment page on tickets.  There are L</"Configuration Options">
-to make Articles available on ticket creation.
+The user interface to Articles is available from the Articles menu.  Admin
+functionality can be found under Admin -> Articles.  Once configured, articles
+will become available for searching on the Reply/Comment page on tickets.
+There are L</"Configuration Options"> to make Articles available on ticket
+creation.
+
+For the Articles menu to be visible to your Privileged users, you must grant
+Privileged the ShowArticlesMenu right globally (Admin -> Global -> Group
+Rights).  You may grant the right as selectively as you wish if, for example,
+you only want a certain group of your users to use articles.
 
 =head2 Basics
 
@@ -27,7 +32,7 @@ Classes can be made available globally or on a per-Queue basis.
 =head3 Classes
 
 Classes are equivalent to RT's queues.  They can be created by going
-to Tools -> Configuration -> Articles -> Classes -> New Class.  Articles
+to Admin -> Articles -> Classes -> New Class.  Articles
 are assigned to one Class.  When you create Custom Fields for use with
 Articles, they will be applied Globally or to a Class, like Custom
 Fields are applied to a Queue in RT.
@@ -40,7 +45,7 @@ when inserting the Article in a reply. You can control this behavior on
 the Class configuration page.
 
 Classes need to be Applied, just like a Custom Field, by using the
-Applies To link on the Modify Class page (Tools -> Configuration ->
+Applies To link on the Modify Class page (Admin ->
 Articles -> Classes, select the class to modify).  You can apply
 them globally or on a queue-by-queue basis.
 
@@ -48,7 +53,7 @@ them globally or on a queue-by-queue basis.
 
 You can also use Topics to organize your Articles.  While editing a
 Class, there is a Topics tab for Class-specific Topics.  You can create
-global Topics from the Global tab under Tools -> Configuration.
+global Topics from the Global tab under Admin.
 
 When editing Topics, type the name (and optionally description) of the
 Topic, and then click the button at the appropriate location in the

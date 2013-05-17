@@ -2694,7 +2694,7 @@ Set(%Lifecycles,
 
 RT can show administrators a feed of recent RT releases and other
 related announcements and information from Best Practical on the top
-level Configuration page.  This feature helps you stay up to date on
+level Admin page.  This feature helps you stay up to date on
 RT security announcements and version updates.
 
 RT provides this feature using an "iframe" on C</Admin/index.html>
@@ -2837,7 +2837,7 @@ C<$StatementLog> to be the level that you wish SQL statements to be
 logged at.
 
 Enabling this option will also expose the SQL Queries page in the
-Configuration -> Tools menu for SuperUsers.
+Admin -> Tools menu for SuperUsers.
 
 =cut
 

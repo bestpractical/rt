@@ -9,7 +9,7 @@ authentication systems.
 RT's native internal authentication system provides administration tools to
 manage usernames and passwords.  If you plan to run your RT as a stand-alone
 system and don't need to use accounts associated with any other system, this
-may be all you need.  The administration pages under Configuration → Users
+may be all you need.  The administration pages under Admin → Users
 provide new user creation as well as password setting and control of RT's
 privileged flag for existing users.
 

@@ -39,7 +39,7 @@ Logged in as -> Settings -> Options and selecting a different theme.
 
 RT has some built-in controls to manage the look of the theme you select.
 To use the Theme Editor, log in as a SuperUser (like root), and navigate
-to Tools -> Configuration -> Tools -> Theme.
+to Admin -> Tools -> Theme.
 
 =for html <img alt="RT theme editor, defaults" src="../images/theme_editor_defaults.png">
 

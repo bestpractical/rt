@@ -29,7 +29,7 @@ $agent->login( $user_obj->Name, 'customer');
 
 # Test for absence of Configure and Preferences tabs.
 ok(!$agent->find_link( url => "$RT::WebPath/Admin/",
-                       text => 'Configuration'), "No config tab" );
+                       text => 'Admin'), "No admin tab" );
 ok(!$agent->find_link( url => "$RT::WebPath/User/Prefs.html",
                        text => 'Preferences'), "No prefs pane" );
 
@@ -43,7 +43,7 @@ $agent->reload;
 
 $agent->content_contains('Logout', "Reloaded page successfully");
 ok($agent->find_link( url => "$RT::WebPath/Admin/",
-                       text => 'Configuration'), "Found config tab" );
+                       text => 'Admin'), "Found admin tab" );
 my ($revokeid,$revokemsg) =$user_obj->PrincipalObj->RevokeRight(Right => 'ShowConfigTab');
 ok ($revokeid,$revokemsg);
 ($grantid,$grantmsg) =$user_obj->PrincipalObj->GrantRight(Right => 'ModifySelf');

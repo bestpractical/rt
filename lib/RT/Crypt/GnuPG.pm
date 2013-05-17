@@ -216,7 +216,7 @@ Read `man gpg` to get list of all options this program support.
 =head2 Per-queue options
 
 Using the web interface it's possible to enable signing and/or encrypting by
-default. As an administrative user of RT, open 'Configuration' then 'Queues',
+default. As an administrative user of RT, open 'Admin' then 'Queues',
 and select a queue. On the page you can see information about the queue's keys 
 at the bottom and two checkboxes to choose default actions.
 

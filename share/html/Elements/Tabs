@@ -61,7 +61,7 @@ my $query_string = sub {
 
 my $build_admin_menu = sub {
     my $top = shift;
-    my $admin = $top->child( config => title => loc('Configuration'), path => '/Admin/', sort_order => 99 );
+    my $admin = $top->child( admin => title => loc('Admin'), path => '/Admin/' );
     if ( $session{'CurrentUser'}->HasRight( Object => RT->System, Right => 'AdminUsers' ) ) {
         my $users = $admin->child( users =>
             title       => loc('Users'),
@@ -486,7 +486,7 @@ my $build_main_nav = sub {
         $dashes->child('dashboard_create' => title => loc('New Dashboard'), path => "/Dashboards/Modify.html?Create=1" );
     }
 
-    my $search = Menu->child( search => title => loc('Search'), path => '/Search/' );
+    my $search = Menu->child( search => title => loc('Search'), path => '/Search/Simple.html' );
 
     my $tickets = $search->child( tickets => title => loc('Tickets'), path => '/Search/Build.html' );
     $tickets->child( simple => title => loc('Simple Search'), path => "/Search/Simple.html" );
@@ -496,11 +496,15 @@ my $build_main_nav = sub {
 
     $search->child( users => title => loc('Users'),   path => "/User/Search.html" );
 
+    if ($session{CurrentUser}->HasRight( Right => 'ShowArticlesMenu', Object => RT->System )) {
+        my $articles = Menu->child( articles => title => loc('Articles'), path => "/Articles/index.html");
+        $articles->child( articles => title => loc('Overview'), path => "/Articles/index.html" );
+        $articles->child( topics   => title => loc('Topics'),   path => "/Articles/Topics.html" );
+        $articles->child( create   => title => loc('Create'),   path => "/Articles/Article/PreCreate.html" );
+        $articles->child( search   => title => loc('Search'),   path => "/Articles/Article/Search.html" );
+    }
 
     my $tools = Menu->child( tools => title => loc('Tools'), path => '/Tools/index.html' );
-    my $articles = $tools->child( articles => title => loc('Articles'), path => "/Articles/index.html");
-    $articles->child( articles => title => loc('Overview'), path => "/Articles/index.html" );
-    $articles->child( topics   => title => loc('Topics'),   path => "/Articles/Topics.html" );
 
     $tools->child( my_day =>
         title       => loc('My Day'),
@@ -532,7 +536,7 @@ my $build_main_nav = sub {
 
     if ( $session{'CurrentUser'}->HasRight( Right => 'ShowConfigTab', Object => RT->System ) )
     {
-        $build_admin_menu->($tools);
+        $build_admin_menu->(Menu());
     }
 
     my $username = '<span class="current-user">'
@@ -541,6 +545,7 @@ my $build_main_nav = sub {
     my $about_me = Menu->child( 'preferences' =>
         title        => loc('Logged in as [_1]', $username),
         escape_title => 0,
+        path         => '/User/Summary.html?id=' . $session{CurrentUser}->id,
         sort_order   => 99,
     );
 

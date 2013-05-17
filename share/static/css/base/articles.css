@@ -5,3 +5,7 @@
 .articles-select-article select {
     max-width: 20em;
 }
+
+#articles-needs-setup a {
+    text-decoration: underline;
+}

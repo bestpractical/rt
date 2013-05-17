@@ -88,6 +88,16 @@ div.results .titlebox-content {
   padding: 0;
 }
 
+.results .titlebox-content > p:first-child,
+.error .titlebox-content > p:first-child {
+    margin-top: 0;
+}
+
+.results .titlebox-content > p:last-child,
+.error .titlebox-content > p:last-of-type {
+    margin-bottom: 0;
+}
+
 
 .label, .labeltop {
  text-align: right;
