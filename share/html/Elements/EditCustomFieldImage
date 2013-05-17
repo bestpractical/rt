@@ -49,6 +49,11 @@
 <input type="checkbox" class="checkbox" name="<%$NamePrefix%><%$CustomField->Id%>-DeleteValueIds" class="CF-<%$CustomField->id%>-Edit" value="<% $value->Id %>" /><& ShowCustomFieldImage, Object => $value &>
 <br />
 % }
+% if ($MaxValues && $Values && $Values->Count >= $MaxValues ) {
+<div class="hints">
+<&|/l&>Reached maximum number, so new values will override old ones.</&>
+</div>
+% }
 <input type="file" name="<%$NamePrefix%><%$CustomField->Id%>-Upload" class="CF-<%$CustomField->id%>-Edit" />
 <%ARGS>
 $Object => undef
