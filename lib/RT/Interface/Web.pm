@@ -2590,18 +2590,23 @@ sub ProcessTicketReminders {
         while ( my $reminder = $reminder_collection->Next ) {
             my $resolve_status = $reminder->QueueObj->Lifecycle->ReminderStatusOnResolve;
             if (   $reminder->Status ne $resolve_status && $args->{ 'Complete-Reminder-' . $reminder->id } ) {
-                $Ticket->Reminders->Resolve($reminder);
+                my ($status, $msg) = $Ticket->Reminders->Resolve($reminder);
+                push @results, loc("Reminder #[_1]: [_2]", $reminder->id, $msg);
+
             }
             elsif ( $reminder->Status eq $resolve_status && !$args->{ 'Complete-Reminder-' . $reminder->id } ) {
-                $Ticket->Reminders->Open($reminder);
+                my ($status, $msg) = $Ticket->Reminders->Open($reminder);
+                push @results, loc("Reminder #[_1]: [_2]", $reminder->id, $msg);
             }
 
             if ( exists( $args->{ 'Reminder-Subject-' . $reminder->id } ) && ( $reminder->Subject ne $args->{ 'Reminder-Subject-' . $reminder->id } )) {
-                $reminder->SetSubject( $args->{ 'Reminder-Subject-' . $reminder->id } ) ;
+                my ($status, $msg) = $reminder->SetSubject( $args->{ 'Reminder-Subject-' . $reminder->id } ) ;
+                push @results, loc("Reminder #[_1]: [_2]", $reminder->id, $msg);
             }
 
             if ( exists( $args->{ 'Reminder-Owner-' . $reminder->id } ) && ( $reminder->Owner != $args->{ 'Reminder-Owner-' . $reminder->id } )) {
-                $reminder->SetOwner( $args->{ 'Reminder-Owner-' . $reminder->id } , "Force" ) ;
+                my ($status, $msg) = $reminder->SetOwner( $args->{ 'Reminder-Owner-' . $reminder->id } , "Force" ) ;
+                push @results, loc("Reminder #[_1]: [_2]", $reminder->id, $msg);
             }
 
             if ( exists( $args->{ 'Reminder-Due-' . $reminder->id } ) && $args->{ 'Reminder-Due-' . $reminder->id } ne '' ) {
@@ -2611,7 +2616,8 @@ sub ProcessTicketReminders {
                     Value  => $args->{ 'Reminder-Due-' . $reminder->id }
                 );
                 if ( defined $DateObj->Unix && $DateObj->Unix != $reminder->DueObj->Unix ) {
-                    $reminder->SetDue( $DateObj->ISO );
+                    my ($status, $msg) = $reminder->SetDue( $DateObj->ISO );
+                    push @results, loc("Reminder #[_1]: [_2]", $reminder->id, $msg);
                 }
             }
         }
