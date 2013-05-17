@@ -287,7 +287,6 @@ Create takes a hash of values and creates a row in the database:
   varchar(200) 'Type'.
   int(11) 'MaxValues'.
   varchar(255) 'Pattern'.
-  smallint(6) 'Repeated'.
   varchar(255) 'Description'.
   int(11) 'SortOrder'.
   varchar(255) 'LookupType'.
@@ -308,7 +307,6 @@ sub Create {
         Description => '',
         Disabled    => 0,
         LookupType  => '',
-        Repeated    => 0,
         LinkValueTo => '',
         IncludeContentForValue => '',
         @_,
@@ -393,7 +391,6 @@ sub Create {
         Description => $args{'Description'},
         Disabled    => $args{'Disabled'},
         LookupType  => $args{'LookupType'},
-        Repeated    => $args{'Repeated'},
     );
 
     if ($rv) {
@@ -1978,24 +1975,6 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=head2 Repeated
-
-Returns the current value of Repeated. 
-(In the database, Repeated is stored as smallint(6).)
-
-
-
-=head2 SetRepeated VALUE
-
-
-Set Repeated to VALUE. 
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Repeated will be stored as a smallint(6).)
-
-
-=cut
-
-
 =head2 BasedOn
 
 Returns the current value of BasedOn. 
@@ -2138,8 +2117,6 @@ sub _CoreAccessible {
         {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         Pattern => 
         {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
-        Repeated => 
-        {read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '0'},
         ValuesClass => 
         {read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
         BasedOn => 

@@ -3021,7 +3021,7 @@ sub _ProcessObjectCustomFieldUpdates {
                 );
                 push( @results, $msg );
             }
-        } elsif ( $arg eq 'Values' && !$cf->Repeated ) {
+        } elsif ( $arg eq 'Values' ) {
             my $cf_values = $args{'Object'}->CustomFieldValues( $cf->id );
 
             my %values_hash;
@@ -3049,29 +3049,6 @@ sub _ProcessObjectCustomFieldUpdates {
                 my ( $val, $msg ) = $args{'Object'}->DeleteCustomFieldValue(
                     Field   => $cf,
                     ValueId => $cf_value->id
-                );
-                push( @results, $msg );
-            }
-        } elsif ( $arg eq 'Values' ) {
-            my $cf_values = $args{'Object'}->CustomFieldValues( $cf->id );
-
-            # keep everything up to the point of difference, delete the rest
-            my $delete_flag;
-            foreach my $old_cf ( @{ $cf_values->ItemsArrayRef } ) {
-                if ( !$delete_flag and @values and $old_cf->Content eq $values[0] ) {
-                    shift @values;
-                    next;
-                }
-
-                $delete_flag ||= 1;
-                $old_cf->Delete;
-            }
-
-            # now add/replace extra things, if any
-            foreach my $value (@values) {
-                my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue(
-                    Field => $cf,
-                    Value => $value
                 );
                 push( @results, $msg );
             }

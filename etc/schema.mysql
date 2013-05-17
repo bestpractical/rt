@@ -372,7 +372,6 @@ CREATE TABLE CustomFields (
   RenderType varchar(64) CHARACTER SET ascii NULL  ,
   MaxValues integer,            # New -- was 'Single'(1) and 'Multiple'(0)
   Pattern TEXT NULL  ,  # New -- Must validate against this
-  Repeated int2 NOT NULL DEFAULT 0 , # New -- repeated table entry
   BasedOn INTEGER NULL,
   ValuesClass varchar(64) CHARACTER SET ascii NULL  ,
   Description varchar(255) NULL  ,
