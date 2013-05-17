@@ -1,1 +1,15 @@
-RT::ACE         LastUpdated LastUpdatedBy Creator Created
+my ($upgrade) = @_;
+
+my %removed;
+my @fields = qw/LastUpdated LastUpdatedBy Creator Created/;
+
+RT::ACE->_BuildTableAttributes;
+$RT::Logger->debug("Temporarily removing @fields from RT::ACE");
+$removed{$_} = delete $RT::Record::_TABLE_ATTR->{"RT::ACE"}{$_}
+    for @fields;
+
+$upgrade->();
+
+# Put back the fields we chopped off
+$RT::Record::_TABLE_ATTR->{"RT::ACE"}{$_} = $removed{$_}
+    for @fields;

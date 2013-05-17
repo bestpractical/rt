@@ -268,29 +268,22 @@ sub action_insert {
     $file = $RT::EtcPath . "/initialdata" if $init && !$file;
     $file ||= $args{'datadir'}."/content";
 
-    # Slurp in backcompat
-    my %removed;
-    my @back = @{$args{backcompat} || []};
-    if (@back) {
-        my @lines = do {local @ARGV = @back; <>};
-        for (@lines) {
-            s/\#.*//;
-            next unless /\S/;
-            my ($class, @fields) = split;
-            $class->_BuildTableAttributes;
-            $RT::Logger->debug("Temporarily removing @fields from $class");
-            $removed{$class}{$_} = delete $RT::Record::_TABLE_ATTR->{$class}{$_}
-                for @fields;
+    my @ret;
+
+    my $upgrade = sub { @ret = $RT::Handle->InsertData( $file, $root_password ) };
+
+    for my $file (@{$args{backcompat} || []}) {
+        my $lines = do {local $/; local @ARGV = ($file); <>};
+        my $sub = eval "sub {\n$lines\n}";
+        unless ($sub) {
+            warn "Failed to load backcompat $file: $@";
+            next;
         }
+        my $current = $upgrade;
+        $upgrade = sub { $sub->($current) };
     }
 
-    my @ret = $RT::Handle->InsertData( $file, $root_password );
-
-    # Put back the fields we chopped off
-    for my $class (keys %removed) {
-        $RT::Record::_TABLE_ATTR->{$class}{$_} = $removed{$class}{$_}
-            for keys %{$removed{$class}};
-    }
+    $upgrade->();
 
     my $content;
     open my $handle, '<', $file or warn "Unable to open $file: $!";
