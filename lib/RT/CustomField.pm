@@ -1276,10 +1276,14 @@ sub Groupings {
     my @groups;
     if ( $record_class ) {
         push @groups, sort {lc($a) cmp lc($b)} keys %{ $BUILTIN_GROUPINGS{$record_class} || {} };
-        my @order = @{ $config->{$record_class} || [] };
-        while (@order) {
-            push @groups, shift(@order);
-            shift(@order);
+        if ( ref($config->{$record_class} ||= []) eq "ARRAY") {
+            my @order = @{ $config->{$record_class} };
+            while (@order) {
+                push @groups, shift(@order);
+                shift(@order);
+            }
+        } else {
+            @groups = sort {lc($a) cmp lc($b)} keys %{ $config->{$record_class} };
         }
     } else {
         my %all = (%$config, %BUILTIN_GROUPINGS);
