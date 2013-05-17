@@ -175,7 +175,7 @@ if ($chart_class eq "GD::Graph::bars") {
         : $count > 10 ? 3
         : 5
     ;
-    if ( my $code = $report->First->LabelCode( $columns{'Functions'}[0] ) ) {
+    if ( my $code = $report->LabelValueCode( $columns{'Functions'}[0] ) ) {
         my %info = %{ $report->ColumnInfo( $columns{'Functions'}[0] ) };
         $args{'values_format'} = $args{'y_number_format'} = sub {
             return $code->($report, %info, VALUE => shift );

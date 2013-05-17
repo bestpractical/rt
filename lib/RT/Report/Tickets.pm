@@ -54,6 +54,8 @@ use RT::Report::Tickets::Entry;
 use strict;
 use warnings;
 
+use Scalar::Util qw(weaken);
+
 our @GROUPINGS = (
     Status => 'Enum',
 
@@ -566,7 +568,8 @@ sub Next {
 sub NewItem {
     my $self = shift;
     my $res = RT::Report::Tickets::Entry->new($self->CurrentUser);
-    $res->{'column_info'} = $self->{'column_info'};
+    $res->{'report'} = $self;
+    weaken $res->{'report'};
     return $res;
 }
 

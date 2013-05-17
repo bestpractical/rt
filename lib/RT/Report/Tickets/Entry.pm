@@ -56,19 +56,6 @@ use base qw/RT::Record/;
 # XXX TODO: how the heck do we acl a report?
 sub CurrentUserHasRight {1}
 
-sub ColumnInfo {
-    my $self = shift;
-    my $column = shift;
-
-    return $self->{'column_info'}{$column};
-}
-
-sub ColumnsList {
-    my $self = shift;
-    return keys %{ $self->{'column_info'} || {} };
-}
-
-
 =head2 LabelValue
 
 If you're pulling a value out of this collection and using it as a label,
@@ -83,16 +70,16 @@ sub LabelValue {
 
     my $raw = $self->RawValue( $name, @_ );
 
-    if ( my $code = $self->LabelCode( $name ) ) {
-        return $code->( $self, %{ $self->ColumnInfo( $name ) }, VALUE => $raw );
+    if ( my $code = $self->Report->LabelValueCode( $name ) ) {
+        return $code->( $self, %{ $self->Report->ColumnInfo( $name ) }, VALUE => $raw );
     }
 
     unless ( ref $raw ) {
         return $self->loc('(no value)') unless defined $raw && length $raw;
-        return $self->loc($raw) if $self->ColumnInfo( $name )->{'META'}{'Localize'};
+        return $self->loc($raw) if $self->Report->ColumnInfo( $name )->{'META'}{'Localize'};
         return $raw;
     } else {
-        my $loc = $self->ColumnInfo( $name )->{'META'}{'Localize'};
+        my $loc = $self->Report->ColumnInfo( $name )->{'META'}{'Localize'};
         my %res = %$raw;
         if ( $loc ) {
             $res{ $self->loc($_) } = delete $res{ $_ } foreach keys %res;
@@ -115,12 +102,12 @@ sub Query {
     my $self = shift;
 
     my @parts;
-    foreach my $column ( $self->ColumnsList ) {
-        my $info = $self->ColumnInfo( $column );
+    foreach my $column ( $self->Report->ColumnsList ) {
+        my $info = $self->Report->ColumnInfo( $column );
         next unless $info->{'TYPE'} eq 'grouping';
 
         my $custom = $info->{'META'}{'Query'};
-        if ( $custom and my $code = $self->FindImplementationCode( $custom ) ) {
+        if ( $custom and my $code = $self->Report->FindImplementationCode( $custom ) ) {
             push @parts, $code->( $self, COLUMN => $column, %$info );
         }
         else {
@@ -143,12 +130,8 @@ sub Query {
     return join ' AND ', map "($_)", grep defined && length, @parts;
 }
 
-sub LabelCode {
-    return RT::Report::Tickets->can('LabelValueCode')->(@_);
-}
-
-sub FindImplementationCode {
-    return RT::Report::Tickets->can('FindImplementationCode')->(@_);
+sub Report {
+    return $_[0]->{'report'};
 }
 
 RT::Base->_ImportOverlays();
