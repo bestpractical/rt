@@ -58,7 +58,7 @@
 </select>
 % }
 % else {
-<input name="<%$Name%>" size="20" value="<% $Default %>" />
+<input name="<%$Name%>" size="20" value="<% $Default %>" type="text" />
 % }
 <%args>
 $Name => undef
