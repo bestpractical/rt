@@ -60,6 +60,7 @@ while ( my $CF = $CustomFields->Next ) {
     # submitting a field.
     next if not $ValidateUnsubmitted
         and not exists $submitted->{"Value"}
+        and not exists $submitted->{"Upload"}
         and not exists $submitted->{"Values"}
         and not $submitted->{"Values-Magic"};
 
@@ -71,7 +72,7 @@ while ( my $CF = $CustomFields->Next ) {
 
     my @values = _NormalizeObjectCustomFieldValue(
         CustomField => $CF,
-        Value       => $submitted->{Values} || $submitted->{Value},
+        Value       => $submitted->{Values} || $submitted->{Value} || $submitted->{Upload},
     );
     push @values, '' unless @values;
 
