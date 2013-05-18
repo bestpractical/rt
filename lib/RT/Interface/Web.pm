@@ -1754,7 +1754,7 @@ sub CreateTicket {
         $RT::Logger->error("Couldn't make multipart message")
             if !$rv || $rv !~ /^(?:DONE|ALREADY)$/;
 
-        foreach ( values %{ $ARGS{'Attachments'} } ) {
+        foreach ( map $ARGS{Attachments}->{$_}, sort keys %{ $ARGS{'Attachments'} } ) {
             unless ($_) {
                 $RT::Logger->error("Couldn't add empty attachemnt");
                 next;
@@ -1987,7 +1987,8 @@ sub ProcessUpdateMessage {
 
     if ( $args{ARGSRef}->{'UpdateAttachments'} ) {
         $Message->make_multipart;
-        $Message->add_part($_) foreach values %{ $args{ARGSRef}->{'UpdateAttachments'} };
+        $Message->add_part($_) foreach map $args{ARGSRef}->{UpdateAttachments}{$_},
+                                  sort keys %{ $args{ARGSRef}->{'UpdateAttachments'} };
     }
 
     if ( $args{ARGSRef}->{'AttachTickets'} ) {
