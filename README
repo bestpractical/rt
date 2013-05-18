@@ -14,10 +14,9 @@ us at <sales@bestpractical.com>.
 REQUIRED PACKAGES
 -----------------
 
-o   Perl 5.8.3 or later (http://www.perl.org).
+o   Perl 5.10.1 or later (http://www.perl.org).
 
-        Perl versions prior to 5.8.3 contain bugs that could result in
-        data corruption. RT won't start on older versions.
+        RT won't start on versions of Perl older than 5.10.1.
 
 o   A supported SQL database
 

@@ -1,0 +1,163 @@
+=head1 Perl for RT
+
+RT runs on Perl and there are many different approaches to installing
+and maintaining your Perl installation. This document reviews some of the
+options and pros and cons of different approaches.
+
+Perl has been around for a long time, so many different versions are
+installed on systems everywhere. We try to maintain a reasonable
+timeframe for backward compatibility, but beyond a certain age, running
+old versions of Perl is no longer safe or even possible with modern
+applications. We currently require at least version 5.10.1 which is
+old enough to be default on OSes from many years ago, but sufficiently
+new to support RT and the modules RT depends on.
+
+=head1 Default System Perls
+
+All Linux and Unix-type variants come with a version of Perl installed
+and many provide Perl and many CPAN modules as packages for easier
+maintenance and management. You can run RT on the vendor Perl on your
+system as long as it meets the minimum version requirement.
+
+When you run C<make testdeps> as part of your RT installation,
+you'll likely find that the RT will require you to upgrade some of the
+dependent modules to newer versions than those provided in the
+vendor packages. If you have any IT policy requirements to only use
+vendor packaged versions of software, this might be an issue. If
+so, you can consider installing an RT-only version of Perl.
+See L<"Stand-alone Perl">.
+
+Occasionally vendors introduce their own changes to their packaged version
+of Perl or modules and these might create issues when running RT.
+Also, the system Perl is also often used by other utilities on the system
+and modifying the default Perl too heavily can introduce issues for these
+other applications which might rely on an older version of a module, for
+example. Consider these factors before modifying your system Perl.
+
+Many packaging systems restore the system to the official packaged
+version of software when updates are applied. Since a Perl update is
+likely to have many or all packaged Perl modules as dependencies, this
+means an update to the vendor Perl will restore all of the modules you
+upgraded to their previous version. Therefore, if you decide to use
+the vendor Perl on your system, you need to note somewhere that you'll
+need to upgrade RT's dependencies any time the system Perl packages are
+updated. The L<rt-test-dependencies> tool provided in RT's sbin
+directory can help with this.
+
+=head1 Stand-alone Perl
+
+To avoid having modules unexpectedly downgraded as described above,
+we typically recommend installing a separate Perl to run RT. In doing so
+you take on the extra responsibility to patch that Perl if necessary,
+but you can plan this work as necessary rather than being surprised if
+RT has issues after a security package update is applied.
+
+Having a Perl version installed specifically for RT gives you the flexibility
+to upgrade or install a new module if needed to add a new extension or address
+a bug. You can then test just RT and not worry about possible side-effects
+on your system.
+
+You can install this Perl in an alternate location like C</opt/perl>, or
+to make it clear it's for RT, even C</opt/rt4/perl>. To make future
+upgrades easier, install in a version-specific directory like
+C</opt/perl-5.14.2>, then symlink C</opt/perl> to that directory. This
+makes it easy to switch to a newer version of Perl later by installing
+and just moving the symlink.
+
+If you install a stand-alone Perl, update your shell to put the path
+of the new C<perl> executable before the system Perl. You may want
+to set this in your shell profile for the user account you use to manage
+RT so you don't accidentally run commands or install modules in the
+wrong Perl installation.
+
+The following sections describe several approaches to installing a
+stand-alone Perl.
+
+=head2 Install from Source
+
+You can download Perl directly from L<http://www.perl.org> and follow
+the installation instructions. Typically this involves running C<Configure>,
+then C<make && make test && sudo make install>. For most installations,
+this C<Configure> command should be sufficient:
+
+    ./Configure -d -Dprefix=/opt/perl
+
+You can set the prefix to wherever you want Perl installed. Read the
+documentation provided with the distribution for more options.
+
+=head2 Perlbrew
+
+L<Perlbrew|http://perlbrew.pl> is a tool that makes it easy to manage multiple
+Perl installations. Once installed, the C<perlbrew> command provides options to
+build various versions of Perl, switch between version, update installed
+versions, and more.
+
+By default, C<perlbrew> installs all of its Perls in your C<$HOME> directory. If
+you want to install in an alternate location, you can set the C<PERLBREW_ROOT>
+environment variable:
+
+    export PERLBREW_ROOT=/opt/perl5
+    curl -kL http://install.perlbrew.pl | bash
+
+Since C<perlbrew> has a C<switch> command to use different installed Perl
+versions, you don't need to manually manage symlinks as described above.
+
+=head2 mod_perl
+
+If you plan to run RT with L<mod_perl|http://perl.apache.org> on a 64-bit system, you
+may need to run Configure with these options:
+
+    ./Configure -d -Dprefix=/opt/perl -A ccflags=-fPIC
+
+Then make sure you use your stand-alone perl when building and installing
+mod_perl. You find more details on these flags in the
+L<mod_perl installation documentation|http://perl.apache.org/docs/2.0/user/install/install.html#Prerequisites>.
+
+=head1 CPAN Modules
+
+RT requires modules from the
+L<Comprehensive Perl Archive Network|http://www.cpan.org> to run.
+Below are a few of the tools available to help download and install
+these modules from CPAN. These tools can work with RT's L<rt-test-dependencies>
+tool and the C<make testdeps> and C<make fixdeps> part of the installation
+process to get these modules installed.
+
+=head2 CPAN Shell
+
+The traditional tool for managing Perl modules is the CPAN shell,
+accessed with the C<cpan> command installed as part of Perl. To set up
+C<cpan> on an initial install, run the C<cpan> command and follow the
+prompts to set the initial configuration. You can set each option or allow
+it to automatically set some sensible defaults.
+
+The main options you'll need to set are the list of download servers and
+options for C<make install>. For download servers, you'll typically want to
+select some mirrors geographically close to you. If you typically run installs
+using C<sudo>, set C<make_install_make_command> to C<'sudo make'> and
+C<mbuild_install_build_command> to C<'sudo ./Build'>. Then install
+the CPAN bundle:
+
+    cpan>install Bundle::CPAN
+
+This installs some additional modules to add features to C<cpan>.
+
+Once you finish this initialization, RT's C<make fixdeps> should be able
+to handle the rest. Any time you need to install a new module or upgrade
+a module, you can just type C<cpan> and manage it from the cpan shell.
+
+=head2 cpanminus
+
+C<cpanminus>, or C<cpanm>, is a utility built to make it as easy as possible
+to install modules from CPAN. You can install the L<App::cpanminus> module
+itself from CPAN, or have it install itself:
+
+    curl -L http://cpanmin.us | perl - --sudo App::cpanminus
+
+Once installed, set the C<RT_FIX_DEPS_CMD> environment variable to
+have RT use C<cpanm> to install modules:
+
+    export RT_FIX_DEPS_CMD=/opt/perl/bin/cpanm
+
+Then run C<make fixdeps> and let RT install all of its dependencies.
+
+=cut

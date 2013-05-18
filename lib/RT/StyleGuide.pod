@@ -40,8 +40,7 @@ We hope to add any significant changes at the bottom of the document.
 
 =head2 Perl Version
 
-We code everything to perl 5.8.3 or higher.  Complete unicode support
-requires bugfixes found in 5.8.3.
+We code everything to Perl 5.10.1 or higher.
 
 =head2 Documentation
 
