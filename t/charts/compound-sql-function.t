@@ -48,7 +48,7 @@ use_ok 'RT::Report::Tickets';
                                { 'value' => 'Minimum', 'type' => 'head' },
                                { 'value' => 'Average', 'type' => 'head' },
                                { 'value' => 'Maximum', 'type' => 'head' },
-                               { 'value' => 'Summary', 'type' => 'head' }
+                               { 'value' => 'Total', 'type' => 'head' }
                              ]
                         }
                       ],

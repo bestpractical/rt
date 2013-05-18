@@ -257,7 +257,7 @@ our %STATISTICS_META = (
         Display => 'DurationAsString',
     },
     TimeAll => {
-        SubValues => sub { return ('Minimum', 'Average', 'Maximum', 'Summary') },
+        SubValues => sub { return ('Minimum', 'Average', 'Maximum', 'Total') },
         Function => sub {
             my $self = shift;
             my $field = shift;
@@ -265,7 +265,7 @@ our %STATISTICS_META = (
                 Minimum => { FUNCTION => "MIN(?)*60", FIELD => $field },
                 Average => { FUNCTION => "AVG(?)*60", FIELD => $field },
                 Maximum => { FUNCTION => "MAX(?)*60", FIELD => $field },
-                Summary => { FUNCTION => "SUM(?)*60", FIELD => $field },
+                Total   => { FUNCTION => "SUM(?)*60", FIELD => $field },
             );
         },
         Display => 'DurationAsString',
@@ -285,7 +285,7 @@ our %STATISTICS_META = (
         Display => 'DurationAsString',
     },
     DateTimeIntervalAll => {
-        SubValues => sub { return ('Minimum', 'Average', 'Maximum', 'Summary') },
+        SubValues => sub { return ('Minimum', 'Average', 'Maximum', 'Total') },
         Function => sub {
             my $self = shift;
             my ($from, $to) = @_;
@@ -299,7 +299,7 @@ our %STATISTICS_META = (
                 Minimum => { FUNCTION => "MIN($interval)" },
                 Average => { FUNCTION => "AVG($interval)" },
                 Maximum => { FUNCTION => "MAX($interval)" },
-                Summary => { FUNCTION => "SUM($interval)" },
+                Total   => { FUNCTION => "SUM($interval)" },
             );
         },
         Display => 'DurationAsString',
