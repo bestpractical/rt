@@ -227,24 +227,6 @@ foreach my $pair (qw(
 
 our %STATISTICS;
 
-my $duration_to_string_cb = sub {
-    my $self = shift;
-    my %args = @_;
-    my $v = $args{'VALUE'};
-    unless ( ref $v ) {
-        return $self->loc("(no value)") unless defined $v && length $v;
-        return RT::Date->new( $self->CurrentUser )->DurationAsString( $v );
-    }
-
-    my $date = RT::Date->new( $self->CurrentUser );
-    my %res = %$v;
-    foreach my $e ( values %res ) {
-        $e = $date->DurationAsString( $e ) if defined $e && length $e;
-        $e = $self->loc("(no value)") unless defined $e && length $e;
-    }
-    return \%res;
-};
-
 our %STATISTICS_META = (
     Count => {
         Function => sub {
@@ -272,7 +254,7 @@ our %STATISTICS_META = (
             my ($function, $field) = @_;
             return (FUNCTION => "$function(?)*60", FIELD => $field);
         },
-        Display => $duration_to_string_cb,
+        Display => 'DurationAsString',
     },
     TimeAll => {
         SubValues => sub { return ('Minimum', 'Average', 'Maximum', 'Summary') },
@@ -286,7 +268,7 @@ our %STATISTICS_META = (
                 Summary => { FUNCTION => "SUM(?)*60", FIELD => $field },
             );
         },
-        Display => $duration_to_string_cb,
+        Display => 'DurationAsString',
     },
     DateTimeInterval => {
         Function => sub {
@@ -300,7 +282,7 @@ our %STATISTICS_META = (
 
             return (FUNCTION => "$function($interval)");
         },
-        Display => $duration_to_string_cb,
+        Display => 'DurationAsString',
     },
     DateTimeIntervalAll => {
         SubValues => sub { return ('Minimum', 'Average', 'Maximum', 'Summary') },
@@ -320,7 +302,7 @@ our %STATISTICS_META = (
                 Summary => { FUNCTION => "SUM($interval)" },
             );
         },
-        Display => $duration_to_string_cb,
+        Display => 'DurationAsString',
     },
 );
 
@@ -765,6 +747,23 @@ sub GenerateWatcherFunction {
     return %args;
 }
 
+sub DurationAsString {
+    my $self = shift;
+    my %args = @_;
+    my $v = $args{'VALUE'};
+    unless ( ref $v ) {
+        return $self->loc("(no value)") unless defined $v && length $v;
+        return RT::Date->new( $self->CurrentUser )->DurationAsString( $v );
+    }
+
+    my $date = RT::Date->new( $self->CurrentUser );
+    my %res = %$v;
+    foreach my $e ( values %res ) {
+        $e = $date->DurationAsString( $e ) if defined $e && length $e;
+        $e = $self->loc("(no value)") unless defined $e && length $e;
+    }
+    return \%res;
+}
 
 sub LabelValueCode {
     my $self = shift;
