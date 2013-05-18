@@ -468,7 +468,7 @@ sub SetupGroupings {
                 $e->{'NAME'} = $self->Column( FUNCTION => 'NULL' );
             }
             elsif ( $e->{'META'}{'SubValues'} ) {
-                my %tmp = $code->( $self, @{ $e->{INFO} }[2 .. scalar @{ $e->{INFO} } -1 ] );
+                my %tmp = $code->( $self, @{ $e->{INFO} }[2 .. $#{$e->{INFO}}] );
                 $e->{'NAME'} = 'postfunction'. $self->{'postfunctions'}++;
                 while ( my ($k, $v) = each %tmp ) {
                     $e->{'MAP'}{ $k }{'NAME'} = $self->Column( %$v );
@@ -477,7 +477,7 @@ sub SetupGroupings {
                 }
             }
             else {
-                my %tmp = $code->( $self, @{ $e->{INFO} }[2 .. scalar @{ $e->{INFO} } -1 ] );
+                my %tmp = $code->( $self, @{ $e->{INFO} }[2 .. $#{$e->{INFO}}] );
                 $e->{'NAME'} = $self->Column( %tmp );
                 @{ $e }{'FUNCTION', 'ALIAS', 'FIELD'} = @tmp{'FUNCTION', 'ALIAS', 'FIELD'};
             }
