@@ -1,0 +1,1 @@
+UPDATE ObjectCustomFieldValues SET Content = NULL WHERE LargeContent IS NOT NULL AND Content = '';

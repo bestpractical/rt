@@ -246,7 +246,7 @@ sub _FieldToFunction {
         unless ( $cf->id ) {
             $RT::Logger->error("Couldn't load CustomField #$cf_name");
         } else {
-            my ($ticket_cf_alias, $cf_alias) = $self->_CustomFieldJoin($cf->id, $cf->id, $cf_name);
+            my ($ticket_cf_alias, $cf_alias) = $self->_CustomFieldJoin($cf->id, $cf);
             @args{qw(ALIAS FIELD)} = ($ticket_cf_alias, 'Content');
         }
     } elsif ( $field =~ /^(?:(Owner|Creator|LastUpdatedBy))(?:\.(.*))?$/ ) {
@@ -273,15 +273,6 @@ sub _FieldToFunction {
         @args{qw(ALIAS FIELD)} = ($u_alias, $column);
     }
     return %args;
-}
-
-
-# Override the AddRecord from DBI::SearchBuilder::Unique. id isn't id here
-# wedon't want to disambiguate all the items with a count of 1.
-sub AddRecord {
-    my $self = shift;
-    my $record = shift;
-    push @{$self->{'items'}}, $record;
 }
 
 1;
