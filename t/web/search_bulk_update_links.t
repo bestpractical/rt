@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 47;
+use RT::Test tests => 46;
 my ( $url, $m ) = RT::Test->started_ok;
 ok( $m->login, 'logged in' );
 
@@ -79,7 +79,7 @@ $m->content_lacks( 'DeleteLink--', 'no delete link stuff' );
 $m->form_name('BulkUpdate');
 my @fields = qw/Owner AddRequestor DeleteRequestor AddCc DeleteCc AddAdminCc
 DeleteAdminCc Subject Priority Queue Status Starts_Date Told_Date Due_Date
-Resolved_Date UpdateSubject UpdateContent/;
+UpdateSubject UpdateContent/;
 for my $field ( @fields ) {
     is( $m->value($field), '', "default $field is empty" );
 }

@@ -3265,7 +3265,6 @@ sub ProcessTicketDates {
     # Set date fields
     my @date_fields = qw(
         Told
-        Resolved
         Starts
         Started
         Due
