@@ -330,6 +330,7 @@ my $build_admin_menu = sub {
                 if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
                     $tabs->child( pgp     => title => loc('GnuPG'),          path => "/Admin/Users/GnuPG.html?id=" . $id );
                 }
+                $tabs->child( 'summary'   => title => loc('User Summary'),   path => "/User/Summary.html?id=" . $id );
             }
         }
 
