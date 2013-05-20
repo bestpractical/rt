@@ -545,7 +545,14 @@ sub _DateLimit {
     if ( my $subkey = $rest{SUBKEY} ) {
         if ( $subkey eq 'DayOfWeek' && $op !~ /IS/i && $value =~ /[^0-9]/ ) {
             for ( my $i = 0; $i < @RT::Date::DAYS_OF_WEEK; $i++ ) {
-                next unless lc $RT::Date::DAYS_OF_WEEK[ $i ] eq lc $value;
+                # Use a case-insensitive regex for better matching across
+                # locales since we don't have fc() and lc() is worse.  Really
+                # we should be doing Unicode normalization too, but we don't do
+                # that elsewhere in RT.
+                # 
+                # XXX I18N: Replace the regex with fc() once we're guaranteed 5.16.
+                next unless lc $RT::Date::DAYS_OF_WEEK[ $i ] eq lc $value
+                         or $sb->CurrentUser->loc($RT::Date::DAYS_OF_WEEK[ $i ]) =~ /^\Q$value\E$/i;
 
                 $value = $i; last;
             }
@@ -554,7 +561,14 @@ sub _DateLimit {
         }
         elsif ( $subkey eq 'Month' && $op !~ /IS/i && $value =~ /[^0-9]/ ) {
             for ( my $i = 0; $i < @RT::Date::MONTHS; $i++ ) {
-                next unless lc $RT::Date::MONTHS[ $i ] eq lc $value;
+                # Use a case-insensitive regex for better matching across
+                # locales since we don't have fc() and lc() is worse.  Really
+                # we should be doing Unicode normalization too, but we don't do
+                # that elsewhere in RT.
+                # 
+                # XXX I18N: Replace the regex with fc() once we're guaranteed 5.16.
+                next unless lc $RT::Date::MONTHS[ $i ] eq lc $value
+                         or $sb->CurrentUser->loc($RT::Date::MONTHS[ $i ]) =~ /^\Q$value\E$/i;
 
                 $value = $i + 1; last;
             }
