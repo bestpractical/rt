@@ -2676,6 +2676,7 @@ sub ProcessObjectCustomFieldUpdates {
     # For each of those objects
     foreach my $class ( keys %custom_fields_to_mod ) {
         foreach my $id ( keys %{ $custom_fields_to_mod{$class} } ) {
+            next unless $id;
             my $Object = $args{'Object'};
             $Object = $class->new( $session{'CurrentUser'} )
                 unless $Object && ref $Object eq $class;
