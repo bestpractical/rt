@@ -688,6 +688,16 @@ sub _ProcessReturnValues {
     } @values;
 }
 
+sub _FormatPrincipal {
+    my $self = shift;
+    my $principal = shift;
+    if ($principal->IsUser) {
+        return $self->_FormatUser( $principal->Object );
+    } else {
+        return $self->loc("group [_1]", $principal->Object->Name);
+    }
+}
+
 sub _FormatUser {
     my $self = shift;
     my $user = shift;
@@ -832,19 +842,19 @@ sub _FormatUser {
         my $self = shift;
         my $principal = RT::Principal->new($self->CurrentUser);
         $principal->Load($self->NewValue);
-        return ( "[_1] [_2] added", $self->loc($self->Field), $self->_FormatUser($principal->Object));    #loc
+        return ( "[_1] [_2] added", $self->loc($self->Field), $self->_FormatPrincipal($principal));    #loc
     },
     DelWatcher => sub {
         my $self = shift;
         my $principal = RT::Principal->new($self->CurrentUser);
         $principal->Load($self->OldValue);
-        return ( "[_1] [_2] deleted", $self->loc($self->Field), $self->_FormatUser($principal->Object));  #loc
+        return ( "[_1] [_2] deleted", $self->loc($self->Field), $self->_FormatPrincipal($principal));  #loc
     },
     SetWatcher => sub {
         my $self = shift;
         my $principal = RT::Principal->new($self->CurrentUser);
         $principal->Load($self->NewValue);
-        return ( "[_1] set to [_2]", $self->loc($self->Field), $self->_FormatUser($principal->Object));  #loc
+        return ( "[_1] set to [_2]", $self->loc($self->Field), $self->_FormatPrincipal($principal));  #loc
     },
     Subject => sub {
         my $self = shift;
