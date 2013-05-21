@@ -91,6 +91,8 @@ sub _Handle { return $RT::Handle }
 sub CleanSlate {
     my $self = shift;
     $self->{'_sql_aliases'} = {};
+    delete $self->{'handled_disabled_column'};
+    delete $self->{'find_disabled_rows'};
     return $self->SUPER::CleanSlate(@_);
 }
 
