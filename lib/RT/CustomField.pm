@@ -1275,16 +1275,23 @@ sub Groupings {
 
     my @groups;
     if ( $record_class ) {
-        push @groups, keys %{ $config->{$record_class} || {} };
-        push @groups, keys %{ $BUILTIN_GROUPINGS{$record_class} || {} };
+        push @groups, sort {lc($a) cmp lc($b)} keys %{ $BUILTIN_GROUPINGS{$record_class} || {} };
+        if ( ref($config->{$record_class} ||= []) eq "ARRAY") {
+            my @order = @{ $config->{$record_class} };
+            while (@order) {
+                push @groups, shift(@order);
+                shift(@order);
+            }
+        } else {
+            @groups = sort {lc($a) cmp lc($b)} keys %{ $config->{$record_class} };
+        }
     } else {
-        push @groups, map { keys %$_ } values %$config;
-        push @groups, map { keys %$_ } values %BUILTIN_GROUPINGS;
+        my %all = (%$config, %BUILTIN_GROUPINGS);
+        @groups = sort {lc($a) cmp lc($b)} map {$self->Groupings($_)} grep {$_} keys(%all);
     }
 
     my %seen;
     return
-        sort { lc($a) cmp lc($b) }
         grep defined && length && !$seen{lc $_}++,
         @groups;
 }

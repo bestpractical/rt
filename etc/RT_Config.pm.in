@@ -852,34 +852,37 @@ Set(@CustomFieldValuesSources, ());
 =item C<%CustomFieldGroupings>
 
 This option affects the display of ticket and user custom fields in the
-web interface. It does not address the sorting of custom fields. The
-order that custom fields are rendered is controlled by the Ticket
-Custom Fields tab in Queue Configuration in the Admin UI.
+web interface. It does not address the sorting of custom fields within
+the groupings; which is controlled by the Ticket Custom Fields tab in
+Queue Configuration in the Admin UI.
 
 A nested datastructure defines how to group together custom fields
 under a mix of built-in and arbitrary headings ("groupings").
 
-Set C<%CustomFieldGroupings> to a nested hash similar to the following:
+Set C<%CustomFieldGroupings> to a nested structure similar to the following:
 
     Set(%CustomFieldGroupings,
-        'RT::Ticket' => {
+        'RT::Ticket' => [
             'Grouping Name'     => ['CF Name', 'Another CF'],
             'Another Grouping'  => ['Some CF'],
             'Dates'             => ['Shipped date'],
-        },
-        'RT::User' => {
+        ],
+        'RT::User' => [
             'Phones' => ['Fax number'],
-        },
+        ],
     );
 
-The first level keys are record types for which CFs may be used, and the values
-are hashrefs.  The second level keys are the grouping names and the values are
-array refs containing a list of CF names.
+The first level keys are record types for which CFs may be used, and the
+values are either hashrefs or arrayrefs -- if arrayrefs, then the
+ordering is preserved during display, otherwise groupings are displayed
+alphabetically.  The second level keys are the grouping names and the
+values are array refs containing a list of CF names.
 
-There are several special built-in groupings which RT displays in specific
-places (usually the collapsible box of the same title). You may only
-append Custom Fields to the list in these boxes, not reorder or remove
-core fields.
+There are several special built-in groupings which RT displays in
+specific places (usually the collapsible box of the same title).  The
+ordering of these standard groupings cannot be modified.  You may also
+only append Custom Fields to the list in these boxes, not reorder or
+remove core fields.
 
 For C<RT::Ticket>, these groupings are: C<Basics>, C<Dates>, C<Links>, C<People>
 

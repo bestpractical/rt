@@ -788,15 +788,26 @@ our %META = (
             }
 
             for my $class (keys %$groups) {
-                unless (ref($groups->{$class}) eq 'HASH') {
-                    RT->Logger->error("Config option \%CustomFieldGroupings{$class} is not a HASH; ignoring");
+                my @h;
+                if (ref($groups->{$class}) eq 'HASH') {
+                    push @h, $_, $groups->{$class}->{$_}
+                        for sort {lc($a) cmp lc($b)} keys %{ $groups->{$class} };
+                } elsif (ref($groups->{$class}) eq 'ARRAY') {
+                    @h = @{ $groups->{$class} };
+                } else {
+                    RT->Logger->error("Config option \%CustomFieldGroupings{$class} is not a HASH or ARRAY; ignoring");
                     delete $groups->{$class};
                     next;
                 }
-                for my $group (keys %{ $groups->{$class} }) {
-                    unless (ref($groups->{$class}{$group}) eq 'ARRAY') {
+
+                $groups->{$class} = [];
+                while (@h) {
+                    my $group = shift @h;
+                    my $ref   = shift @h;
+                    if (ref($ref) eq 'ARRAY') {
+                        push @{$groups->{$class}}, $group => $ref;
+                    } else {
                         RT->Logger->error("Config option \%CustomFieldGroupings{$class}{$group} is not an ARRAY; ignoring");
-                        delete $groups->{$class}{$group};
                     }
                 }
             }
