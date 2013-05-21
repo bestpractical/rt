@@ -58,7 +58,7 @@ my $login_url = $m->interp->apply_escapes(RT::Interface::Web::TangentForLoginURL
   </head>
   <body>
     <h1><% $Title %></h1>
-    <!-- WebExternalAuth error: <% $Error %> -->
+    <!-- WebRemoteUserAuth error: <% $Error %> -->
     <% $m->content |n%>
 
     <p id="contact-admin">
@@ -70,7 +70,7 @@ my $login_url = $m->interp->apply_escapes(RT::Interface::Web::TangentForLoginURL
 % }
     </p>
 
-% if (RT->Config->Get('WebExternalAuth') and RT->Config->Get('WebFallbackToInternalAuth')) {
+% if (RT->Config->Get('WebRemoteUserAuth') and RT->Config->Get('WebFallbackToRTLogin')) {
     <p id="internal-auth">
       <&|/l_unsafe, qq[<a href="$login_url">], '</a>' &>If you have an internal RT login, you may [_1]try it instead[_2].</&>
     </p>

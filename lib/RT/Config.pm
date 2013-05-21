@@ -821,6 +821,12 @@ our %META = (
             $config->Set( CustomFieldGroupings => %$groups );
         },
     },
+    WebExternalAuth           => { Deprecated => { Instead => 'WebRemoteUserAuth',             Remove => '4.4' }},
+    WebExternalAuthContinuous => { Deprecated => { Instead => 'WebRemoteUserContinuous',       Remove => '4.4' }},
+    WebFallbackToInternalAuth => { Deprecated => { Instead => 'WebFallbackToRTLogin',          Remove => '4.4' }},
+    WebExternalGecos          => { Deprecated => { Instead => 'WebRemoteUserGecos',            Remove => '4.4' }},
+    WebExternalAuto           => { Deprecated => { Instead => 'WebRemoteUserAutocreate',       Remove => '4.4' }},
+    AutoCreate                => { Deprecated => { Instead => 'UserAutocreateDefaultsOnLogin', Remove => '4.4' }},
 );
 my %OPTIONS = ();
 my @LOADED_CONFIGS = ();

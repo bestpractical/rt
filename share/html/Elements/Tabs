@@ -579,8 +579,8 @@ my $build_main_nav = sub {
         }
     }
     if ( $session{'CurrentUser'}->Name
-         && (   !RT->Config->Get('WebExternalAuth')
-              || RT->Config->Get('WebFallbackToInternalAuth') )) {
+         && (   !RT->Config->Get('WebRemoteUserAuth')
+              || RT->Config->Get('WebFallbackToRTLogin') )) {
         $about_me->child( logout => title => loc('Logout'), path => '/NoAuth/Logout.html' );
     }
     if ( $request_path =~ m{^/Dashboards/(\d+)?}) {
@@ -954,8 +954,8 @@ my $build_selfservice_nav = sub {
     }
 
     if ( $session{'CurrentUser'}->Name
-         && (   !RT->Config->Get('WebExternalAuth')
-              || RT->Config->Get('WebFallbackToInternalAuth') )) {
+         && (   !RT->Config->Get('WebRemoteUserAuth')
+              || RT->Config->Get('WebFallbackToRTLogin') )) {
         $about_me->child( logout => title => loc('Logout'), path => '/NoAuth/Logout.html' );
     }
 

@@ -129,3 +129,15 @@ UPGRADING FROM RT 4.0.0 and greater
   and granting Everyone the OwnTicket right is a common cause of
   performance problems.  Unprivileged Owners (if they exist) may still
   be set using the Autocompleter.
+
+* Configuration options dealing with "external authentication" have been
+  renamed to reduce confusion with the common extension
+  RT::Authen::ExternalAuth.  The old names will work, but produce
+  deprecation warnings.  The old names, and their new counterparts, are:
+
+      WebExternalAuth           => WebRemoteUserAuth
+      WebExternalAuthContinuous => WebRemoteUserContinuous
+      WebFallbackToInternalAuth => WebFallbackToRTLogin
+      WebExternalGecos          => WebRemoteUserGecos
+      WebExternalAuto           => WebRemoteUserAutocreate
+      AutoCreate                => UserAutocreateDefaultsOnLogin

@@ -228,21 +228,21 @@ sub WebCanonicalizeInfo {
 
 
 
-=head2 WebExternalAutoInfo($user);
+=head2 WebRemoteUserAutocreateInfo($user);
 
-Returns a hash of user attributes, used when WebExternalAuto is set.
+Returns a hash of user attributes, used when WebRemoteUserAutocreate is set.
 
 =cut
 
-sub WebExternalAutoInfo {
+sub WebRemoteUserAutocreateInfo {
     my $user = shift;
 
     my %user_info;
 
     # default to making Privileged users, even if they specify
     # some other default Attributes
-    if ( !$RT::AutoCreate
-        || ( ref($RT::AutoCreate) && not exists $RT::AutoCreate->{Privileged} ) )
+    if ( !$RT::UserAutocreateDefaultsOnLogin
+        || ( ref($RT::UserAutocreateDefaultsOnLogin) && not exists $RT::UserAutocreateDefaultsOnLogin->{Privileged} ) )
     {
         $user_info{'Privileged'} = 1;
     }
@@ -309,7 +309,7 @@ sub HandleRequest {
 
     MaybeShowNoAuthPage($ARGS);
 
-    AttemptExternalAuth($ARGS) if RT->Config->Get('WebExternalAuthContinuous') or not _UserLoggedIn();
+    AttemptExternalAuth($ARGS) if RT->Config->Get('WebRemoteUserContinuous') or not _UserLoggedIn();
 
     _ForceLogout() unless _UserLoggedIn();
 
@@ -682,7 +682,7 @@ sub ShowRequestedPage {
 sub AttemptExternalAuth {
     my $ARGS = shift;
 
-    return unless ( RT->Config->Get('WebExternalAuth') );
+    return unless ( RT->Config->Get('WebRemoteUserAuth') );
 
     my $user = $ARGS->{user};
     my $m    = $HTML::Mason::Commands::m;
@@ -699,9 +699,9 @@ sub AttemptExternalAuth {
         and (not _UserLoggedIn() or $logged_in_external_user) )
     {
         $user = RT::Interface::Web::WebCanonicalizeInfo();
-        my $load_method = RT->Config->Get('WebExternalGecos') ? 'LoadByGecos' : 'Load';
+        my $load_method = RT->Config->Get('WebRemoteUserGecos') ? 'LoadByGecos' : 'Load';
 
-        if ( $^O eq 'MSWin32' and RT->Config->Get('WebExternalGecos') ) {
+        if ( $^O eq 'MSWin32' and RT->Config->Get('WebRemoteUserGecos') ) {
             my $NodeName = Win32::NodeName();
             $user =~ s/^\Q$NodeName\E\\//i;
         }
@@ -712,12 +712,12 @@ sub AttemptExternalAuth {
         $HTML::Mason::Commands::session{'CurrentUser'} = RT::CurrentUser->new();
         $HTML::Mason::Commands::session{'CurrentUser'}->$load_method($user);
 
-        if ( RT->Config->Get('WebExternalAuto') and not _UserLoggedIn() ) {
+        if ( RT->Config->Get('WebRemoteUserAutocreate') and not _UserLoggedIn() ) {
 
             # Create users on-the-fly
             my $UserObj = RT::User->new(RT->SystemUser);
             my ( $val, $msg ) = $UserObj->Create(
-                %{ ref RT->Config->Get('AutoCreate') ? RT->Config->Get('AutoCreate') : {} },
+                %{ ref RT->Config->Get('UserAutocreateDefaultsOnLogin') ? RT->Config->Get('UserAutocreateDefaultsOnLogin') : {} },
                 Name  => $user,
                 Gecos => $user,
             );
@@ -725,7 +725,7 @@ sub AttemptExternalAuth {
             if ($val) {
 
                 # now get user specific information, to better create our user.
-                my $new_user_info = RT::Interface::Web::WebExternalAutoInfo($user);
+                my $new_user_info = RT::Interface::Web::WebRemoteUserAutocreateInfo($user);
 
                 # set the attributes that have been defined.
                 foreach my $attribute ( $UserObj->WritableAttributes, qw(Privileged Disabled) ) {
@@ -741,8 +741,8 @@ sub AttemptExternalAuth {
                 }
                 $HTML::Mason::Commands::session{'CurrentUser'}->Load($user);
             } else {
-                RT->Logger->error("Couldn't auto-create user '$user' when attempting WebExternalAuth: $msg");
-                AbortExternalAuth( Error => "AutoCreate" );
+                RT->Logger->error("Couldn't auto-create user '$user' when attempting WebRemoteUser: $msg");
+                AbortExternalAuth( Error => "UserAutocreateDefaultsOnLogin" );
             }
         }
 
@@ -761,7 +761,7 @@ sub AttemptExternalAuth {
         } else {
             # Couldn't auth with the REMOTE_USER provided because an RT
             # user doesn't exist and we're configured not to create one.
-            RT->Logger->error("Couldn't find internal user for '$user' when attempting WebExternalAuth and RT is not configured for auto-creation. Refer to `perldoc $RT::BasePath/docs/authentication.pod` if you want to allow auto-creation.");
+            RT->Logger->error("Couldn't find internal user for '$user' when attempting WebRemoteUser and RT is not configured for auto-creation. Refer to `perldoc $RT::BasePath/docs/authentication.pod` if you want to allow auto-creation.");
             AbortExternalAuth(
                 Error => "NoInternalUser",
                 User  => $user,
@@ -773,7 +773,7 @@ sub AttemptExternalAuth {
         # should kick them out.
         AbortExternalAuth( Error => "Deauthorized" );
     }
-    elsif (not RT->Config->Get('WebFallbackToInternalAuth')) {
+    elsif (not RT->Config->Get('WebFallbackToRTLogin')) {
         # Abort if we don't want to fallback internally
         AbortExternalAuth( Error => "NoRemoteUser" );
     }
@@ -781,7 +781,7 @@ sub AttemptExternalAuth {
 
 sub AbortExternalAuth {
     my %args  = @_;
-    my $error = $args{Error} ? "/Errors/WebExternalAuth/$args{Error}" : undef;
+    my $error = $args{Error} ? "/Errors/WebRemoteUser/$args{Error}" : undef;
     my $m     = $HTML::Mason::Commands::m;
     my $r     = $HTML::Mason::Commands::r;
 

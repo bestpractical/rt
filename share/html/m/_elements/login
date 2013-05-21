@@ -62,7 +62,7 @@
 
 <& /Elements/LoginRedirectWarning, %ARGS &>
 
-% unless (RT->Config->Get('WebExternalAuth') and !RT->Config->Get('WebFallbackToInternalAuth')) {
+% unless (RT->Config->Get('WebRemoteUserAuth') and !RT->Config->Get('WebFallbackToRTLogin')) {
 <form id="login" name="login" method="post" action="<% RT->Config->Get("WebPath") %>/NoAuth/Login.html">
 
 <div class="entry">
