@@ -55,7 +55,6 @@ package RT::Lifecycle;
 our %LIFECYCLES;
 our %LIFECYCLES_CACHE;
 our %LIFECYCLES_TYPES;
-__PACKAGE__->RegisterRights;
 
 # cache structure:
 #    {
@@ -457,34 +456,7 @@ sub CheckRight {
     return $to eq 'deleted' ? 'DeleteTicket' : 'ModifyTicket';
 }
 
-=head3 RegisterRights
-
-Registers all defined rights in the system, so they can be addigned
-to users. No need to call it, as it's called when module is loaded.
-
-=cut
-
-sub RegisterRights {
-    my $self = shift;
-
-    my %rights = $self->RightsDescription;
-
-    require RT::ACE;
-
-    require RT::Queue;
-    my $RIGHTS = $RT::Queue::RIGHTS;
-
-    while ( my ($right, $description) = each %rights ) {
-        next if exists $RIGHTS->{ $right }
-            or $RT::System::RIGHTS->{ $right };
-
-        $RIGHTS->{ $right } = $description;
-        RT::Queue->AddRightCategories( $right => 'Status' );
-        $RT::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
-    }
-}
-
-=head3 RightsDescription
+=head3 RightsDescription [TYPE]
 
 Returns hash with description of rights that are defined for
 particular transitions.
@@ -493,12 +465,14 @@ particular transitions.
 
 sub RightsDescription {
     my $self = shift;
+    my $type = shift;
 
     $self->FillCache unless keys %LIFECYCLES_CACHE;
 
     my %tmp;
     foreach my $lifecycle ( values %LIFECYCLES_CACHE ) {
         next unless exists $lifecycle->{'rights'};
+        next if $type and $lifecycle->{type} ne $type;
         while ( my ($transition, $right) = each %{ $lifecycle->{'rights'} } ) {
             push @{ $tmp{ $right } ||=[] }, $transition;
         }
@@ -681,6 +655,10 @@ sub FillCache {
             push @{ $LIFECYCLES_TYPES{$type}{''} },
                 @{ $LIFECYCLES_TYPES{$type}{$category} } if $category;
         }
+
+        my $class = "RT::Lifecycle::".ucfirst($type);
+        $class->RegisterRights if $class->require
+            and $class->can("RegisterRights");
     }
 
     foreach my $lifecycle ( values %LIFECYCLES_CACHE ) {
