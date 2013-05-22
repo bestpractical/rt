@@ -499,25 +499,6 @@ sub DeleteTopic {
     }
 }
 
-=head2 CurrentUserHasRight
-
-Returns true if the current user has the right for this article, for the whole system or for this article's class
-
-=cut
-
-sub CurrentUserHasRight {
-    my $self  = shift;
-    my $right = shift;
-
-    return (
-        $self->CurrentUser->HasRight(
-            Right        => $right,
-            Object       => $self,
-        )
-    );
-
-}
-
 =head2 CurrentUserCanSee
 
 Returns true if the current user can see the article, using ShowArticle

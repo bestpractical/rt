@@ -669,25 +669,6 @@ sub _Value {
     return $self->__Value(@_);
 }
 
-
-
-=head2 CurrentUserHasRight
-
-Helper menthod for HasRight. Presets Principal to CurrentUser then 
-calls HasRight.
-
-=cut
-
-sub CurrentUserHasRight {
-    my $self  = shift;
-    my $right = shift;
-    return ( $self->HasRight( Principal => $self->CurrentUser->UserObj,
-                              Right     => $right ) );
-
-}
-
-
-
 =head2 HasRight
 
 Takes a param-hash consisting of "Right" and "Principal"  Principal is 
@@ -701,6 +682,8 @@ sub HasRight {
     my %args = ( Right     => undef,
                  Principal => undef,
                  @_ );
+
+    $args{Principal} ||= $self->CurrentUser->PrincipalObj;
 
     my $queues = $self->AddedTo;
     my $found = 0;

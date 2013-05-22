@@ -2864,28 +2864,6 @@ sub _UpdateTimeTaken {
     return ($Total);
 }
 
-
-
-
-
-=head2 CurrentUserHasRight
-
-  Takes the textual name of a Ticket scoped right (from RT::ACE) and returns
-1 if the user has that right. It returns 0 if the user doesn't have that right.
-
-=cut
-
-sub CurrentUserHasRight {
-    my $self  = shift;
-    my $right = shift;
-
-    return $self->CurrentUser->PrincipalObj->HasRight(
-        Object => $self,
-        Right  => $right,
-    )
-}
-
-
 =head2 CurrentUserCanSee
 
 Returns true if the current user can see the ticket, using ShowTicket
@@ -2896,41 +2874,6 @@ sub CurrentUserCanSee {
     my $self = shift;
     return $self->CurrentUserHasRight('ShowTicket');
 }
-
-=head2 HasRight
-
- Takes a paramhash with the attributes 'Right' and 'Principal'
-  'Right' is a ticket-scoped textual right from RT::ACE 
-  'Principal' is an RT::User object
-
-  Returns 1 if the principal has the right. Returns undef if not.
-
-=cut
-
-sub HasRight {
-    my $self = shift;
-    my %args = (
-        Right     => undef,
-        Principal => undef,
-        @_
-    );
-
-    unless ( ( defined $args{'Principal'} ) and ( ref( $args{'Principal'} ) ) )
-    {
-        Carp::cluck("Principal attrib undefined for Ticket::HasRight");
-        $RT::Logger->crit("Principal attrib undefined for Ticket::HasRight");
-        return(undef);
-    }
-
-    return (
-        $args{'Principal'}->HasRight(
-            Object => $self,
-            Right     => $args{'Right'}
-          )
-    );
-}
-
-
 
 =head2 Reminders
 

@@ -1132,23 +1132,6 @@ sub _Value {
 }
 
 
-
-=head2 CurrentUserHasRight RIGHT
-
-Calls $self->CurrentUser->HasQueueRight for the right passed in here.
-passed in here.
-
-=cut
-
-sub CurrentUserHasRight {
-    my $self  = shift;
-    my $right = shift;
-    return $self->CurrentUser->HasRight(
-        Right  => $right,
-        Object => $self->Object
-    );
-}
-
 =head2 CurrentUserCanSee
 
 Returns true if current user has rights to see this particular transaction.

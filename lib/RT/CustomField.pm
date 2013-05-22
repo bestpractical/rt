@@ -850,22 +850,6 @@ sub UnlimitedValues {
 }
 
 
-=head2 CurrentUserHasRight RIGHT
-
-Helper function to call the custom field's queue's CurrentUserHasRight with the passed in args.
-
-=cut
-
-sub CurrentUserHasRight {
-    my $self  = shift;
-    my $right = shift;
-
-    return $self->CurrentUser->HasRight(
-        Object => $self,
-        Right  => $right,
-    );
-}
-
 =head2 ACLEquivalenceObjects
 
 Returns list of objects via which users can get rights on this custom field. For custom fields

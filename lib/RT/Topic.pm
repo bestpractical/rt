@@ -212,18 +212,24 @@ sub _Set {
 # }}}
 
 
-# {{{ CurrentUserHasRight
+# {{{ HasRight
 
-=head2 CurrentUserHasRight
+=head2 HasRight Principal => [...], Right => [...]
 
-Returns true if the current user has the right for this topic, for the
-whole system or for whatever object this topic is associated with
+Returns true if the given principal has the right for this topic, for
+the whole system or for whatever object this topic is associated with
 
 =cut
 
-sub CurrentUserHasRight {
+sub HasRight {
     my $self  = shift;
-    my $right = shift;
+    my %args = (
+        Right     => undef,
+        Principal => undef,
+        @_,
+    );
+
+    $args{Principal} ||= $self->CurrentUser->PrincipalObj;
 
     my $equiv = [ $RT::System ];
     if ($self->ObjectId) {
@@ -233,18 +239,18 @@ sub CurrentUserHasRight {
     }
     if ($self->Id) {
         return ( $self->CurrentUser->HasRight(
-                                              Right        => $right,
-                                              Object       => $self,
-                                              EquivObjects => $equiv,
-                                             ) );
+            @_,
+            Object       => $self,
+            EquivObjects => $equiv,
+        ) );
     } else {
         # If we don't have an ID, we don't even know what object we're
         # attached to -- so the only thing we can fall back on is the
         # system object.
         return ( $self->CurrentUser->HasRight(
-                                              Right        => $right,
-                                              Object       => $RT::System,
-                                             ) );
+            @_,
+            Object       => $RT::System,
+        ) );
     }
     
 

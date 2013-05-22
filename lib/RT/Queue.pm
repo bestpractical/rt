@@ -905,29 +905,6 @@ sub _Value {
     return ( $self->__Value(@_) );
 }
 
-
-
-=head2 CurrentUserHasRight
-
-Takes one argument. A textual string with the name of the right we want to check.
-Returns true if the current user has that right for this queue.
-Returns undef otherwise.
-
-=cut
-
-sub CurrentUserHasRight {
-    my $self  = shift;
-    my $right = shift;
-
-    return (
-        $self->HasRight(
-            Principal => $self->CurrentUser,
-            Right     => "$right"
-          )
-    );
-
-}
-
 =head2 CurrentUserCanSee
 
 Returns true if the current user can see the queue, using SeeQueue
@@ -939,39 +916,6 @@ sub CurrentUserCanSee {
 
     return $self->CurrentUserHasRight('SeeQueue');
 }
-
-
-=head2 HasRight
-
-Takes a param hash with the fields 'Right' and 'Principal'.
-Principal defaults to the current user.
-Returns true if the principal has that right for this queue.
-Returns undef otherwise.
-
-=cut
-
-# TAKES: Right and optional "Principal" which defaults to the current user
-sub HasRight {
-    my $self = shift;
-    my %args = (
-        Right     => undef,
-        Principal => $self->CurrentUser,
-        @_
-    );
-    my $principal = delete $args{'Principal'};
-    unless ( $principal ) {
-        $RT::Logger->error("Principal undefined in Queue::HasRight");
-        return undef;
-    }
-
-    return $principal->HasRight(
-        %args,
-        Object => ($self->Id ? $self : $RT::System),
-    );
-}
-
-
-
 
 =head2 id
 

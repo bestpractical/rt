@@ -2226,6 +2226,37 @@ sub LoadCustomFieldByIdentifier {
 
 sub ACLEquivalenceObjects { } 
 
+=head2 HasRight
+
+ Takes a paramhash with the attributes 'Right' and 'Principal'
+  'Right' is a ticket-scoped textual right from RT::ACE 
+  'Principal' is an RT::User object
+
+  Returns 1 if the principal has the right. Returns undef if not.
+
+=cut
+
+sub HasRight {
+    my $self = shift;
+    my %args = (
+        Right     => undef,
+        Principal => undef,
+        @_
+    );
+
+    $args{Principal} ||= $self->CurrentUser->PrincipalObj;
+
+    return $args{'Principal'}->HasRight(
+        Object => $self->Id ? $self : $RT::System,
+        Right  => $args{'Right'}
+    );
+}
+
+sub CurrentUserHasRight {
+    my $self = shift;
+    return $self->HasRight( Right => @_ );
+}
+
 sub ModifyLinkRight { }
 
 =head2 ColumnMapClassName

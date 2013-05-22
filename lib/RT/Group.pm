@@ -1378,40 +1378,6 @@ sub _Set {
     }
 }
 
-
-
-
-
-=head2 CurrentUserHasRight RIGHTNAME
-
-Returns true if the current user has the specified right for this group.
-
-
-    TODO: we don't deal with membership visibility yet
-
-=cut
-
-
-sub CurrentUserHasRight {
-    my $self = shift;
-    my $right = shift;
-
-
-
-    if ($self->Id &&
-                $self->CurrentUser->HasRight( Object => $self,
-                                              Right => $right )) {
-        return(1);
-    }
-    elsif ( $self->CurrentUser->HasRight(Object => $RT::System, Right =>  $right )) {
-        return (1);
-    } else {
-        return(undef);
-    }
-
-}
-
-
 =head2 CurrentUserCanSee
 
 Always returns 1; unfortunately, for historical reasons, users have

@@ -255,19 +255,6 @@ sub _Value {
 
 # }}}
 
-sub CurrentUserHasRight {
-    my $self  = shift;
-    my $right = shift;
-
-    return (
-        $self->CurrentUser->HasRight(
-            Right        => $right,
-            Object       => ( $self->Id ? $self : RT->System ),
-        )
-    );
-
-}
-
 sub ArticleCustomFields {
     my $self = shift;
 
