@@ -231,12 +231,13 @@ my $render_attachment = sub {
         }
 
         my $filename =  $message->Filename || loc('(untitled)');
+        my $efilename = $m->interp->apply_escapes( $filename, 'h' );
         $m->out('<img'
               . ' alt="'
-              . $filename
+              . $efilename
               . '"' 
               . ' title="'
-              . $filename
+              . $efilename
               . '"' 
               . ' src="'
               . $AttachPath . '/'

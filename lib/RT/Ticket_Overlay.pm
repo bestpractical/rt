@@ -450,6 +450,8 @@ sub Create {
         }
     }
 
+    $args{'Subject'} =~ s/\n//g;
+
     $RT::Handle->BeginTransaction();
 
     my %params = (
@@ -1770,6 +1772,13 @@ sub QueueObj {
     #We call __Value so that we can avoid the ACL decision and some deep recursion
     my ($result) = $queue_obj->Load( $self->__Value('Queue') );
     return ($queue_obj);
+}
+
+sub SetSubject {
+    my $self = shift;
+    my $value = shift;
+    $value =~ s/\n//g;
+    return $self->_Set( Field => 'Subject', Value => $value );
 }
 
 # }}}

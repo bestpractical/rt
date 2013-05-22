@@ -61,6 +61,7 @@ use HTTP::Request::Common;
 use HTTP::Headers;
 use Term::ReadLine;
 use Time::Local; # used in prettyshow
+use File::Temp;
 
 # strong (GSSAPI based) authentication is supported if the server does provide
 # it and the perl modules GSSAPI and LWP::Authen::Negotiate are installed
@@ -1473,16 +1474,19 @@ sub read_passwd {
 
 sub vi {
     my ($text) = @_;
-    my $file = "/tmp/rt.form.$$";
     my $editor = $ENV{EDITOR} || $ENV{VISUAL} || "vi";
 
-    local *F;
     local $/ = undef;
 
-    open(F, '>', $file) or die "$file: $!\n"; print F $text; close(F);
-    system($editor, $file) && die "Couldn't run $editor.\n";
-    open(F, '<', $file) or die "$file: $!\n"; $text = <F>; close(F);
-    unlink($file);
+    my $handle = File::Temp->new;
+    print $handle $text;
+    close($handle);
+
+    system($editor, $handle->filename) && die "Couldn't run $editor.\n";
+
+    open( $handle, '<', $handle->filename ) or die "$handle: $!\n";
+    $text = <$handle>;
+    close($handle);
 
     return $text;
 }
