@@ -838,19 +838,6 @@ sub _Init {
     return;
 }
 
-=head2 InitConfig
-
-Do nothin right now.
-
-=cut
-
-sub InitConfig {
-    my $self = shift;
-    my %args = ( File => '', @_ );
-    $args{'File'} =~ s/(?<=Config)(?=\.pm$)/Meta/;
-    return 1;
-}
-
 =head2 LoadConfigs
 
 Load all configs. First of all load RT's config then load
@@ -862,11 +849,9 @@ Takes no arguments.
 sub LoadConfigs {
     my $self    = shift;
 
-    $self->InitConfig( File => 'RT_Config.pm' );
     $self->LoadConfig( File => 'RT_Config.pm' );
 
     my @configs = $self->Configs;
-    $self->InitConfig( File => $_ ) foreach @configs;
     $self->LoadConfig( File => $_ ) foreach @configs;
     return;
 }
