@@ -1155,6 +1155,7 @@ sub send_via_mailgate {
 
 
 sub open_mailgate_ok {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
     my $class   = shift;
     my $baseurl = shift;
     my $queue   = shift || 'general';
@@ -1165,6 +1166,7 @@ sub open_mailgate_ok {
 
 
 sub close_mailgate_ok {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
     my $class = shift;
     my $mail  = shift;
     close $mail;
@@ -1172,6 +1174,7 @@ sub close_mailgate_ok {
 }
 
 sub mailsent_ok {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
     my $class = shift;
     my $expected  = shift;
 
@@ -1577,6 +1580,7 @@ sub test_app {
 }
 
 sub start_plack_server {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
     my $self = shift;
 
     require Plack::Loader;
@@ -1627,6 +1631,7 @@ sub start_plack_server {
 
 our $TEST_APP;
 sub start_inline_server {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
     my $self = shift;
 
     require Test::WWW::Mechanize::PSGI;
@@ -1644,6 +1649,7 @@ sub start_inline_server {
 }
 
 sub start_apache_server {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
     my $self = shift;
     my %server_opt = @_;
     $server_opt{variant} ||= 'mod_perl';
