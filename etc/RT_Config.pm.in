@@ -1429,6 +1429,12 @@ builder are replaced by text fields that autocomplete.  This can
 alleviate the sometimes huge owner list for installations where many
 users have the OwnTicket right.
 
+Autocompleter is automatically turned on if list contains more than
+50 users, but penalty of executing potentially slow query is still paid.
+
+Drop down doesn't show unprivileged users. If your setup allows unprivileged
+to own ticket then you have to enable autocompleting.
+
 =cut
 
 Set($AutocompleteOwners, 0);
