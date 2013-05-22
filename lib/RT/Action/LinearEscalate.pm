@@ -140,8 +140,6 @@ use strict;
 use warnings;
 use base qw(RT::Action);
 
-our $VERSION = '0.06';
-
 #Do what we need to do and send it out.
 
 #What does this type of Action does
