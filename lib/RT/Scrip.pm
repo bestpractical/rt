@@ -669,36 +669,17 @@ sub _Value {
     return $self->__Value(@_);
 }
 
-=head2 HasRight
+=head2 ACLEquivalenceObjects
 
-Takes a param-hash consisting of "Right" and "Principal"  Principal is 
-an RT::User object or an RT::CurrentUser object. "Right" is a textual
-Right string that applies to Scrips.
+Having rights on any of the queues the scrip applies to is equivalent to
+having rights on the scrip.
 
 =cut
 
-sub HasRight {
+sub ACLEquivalenceObjects {
     my $self = shift;
-    my %args = ( Right     => undef,
-                 Principal => undef,
-                 @_ );
-
-    $args{Principal} ||= $self->CurrentUser->PrincipalObj;
-
-    my $queues = $self->AddedTo;
-    my $found = 0;
-    while ( my $queue = $queues->Next ) {
-        return 1 if $args{'Principal'}->HasRight(
-            Right  => $args{'Right'},
-            Object => $queue,
-        );
-        $found = 1;
-    }
-    return $args{'Principal'}->HasRight(
-        Object => $RT::System,
-        Right  => $args{'Right'},
-    ) unless $found;
-    return 0;
+    return unless $self->id;
+    return @{ $self->AddedTo->ItemsArrayRef };
 }
 
 
