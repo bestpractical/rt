@@ -1,10 +1,10 @@
 use strict;
 use warnings;
 
-our @ACL = (
+our @ACL = ( {
     Right       => 'ShowArticlesMenu',
     GroupDomain => 'SystemInternal',
     GroupType   => 'Privileged',
-);
+} );
 
 1;
