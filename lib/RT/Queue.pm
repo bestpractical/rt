@@ -72,7 +72,8 @@ use base 'RT::Record';
 use Role::Basic 'with';
 with "RT::Record::Role::Lifecycle",
      "RT::Record::Role::Links" => { -excludes => ["_AddLinksOnCreate"] },
-     "RT::Record::Role::Roles";
+     "RT::Record::Role::Roles",
+     "RT::Record::Role::Rights";
 
 sub Table {'Queues'}
 
@@ -105,129 +106,37 @@ use RT::Interface::Email;
 # $self->loc('rejected'); # For the string extractor to get a string to localize
 # $self->loc('deleted'); # For the string extractor to get a string to localize
 
+__PACKAGE__->AddRight( General => SeeQueue            => 'View queue' ); # loc_pair
+__PACKAGE__->AddRight( Admin   => AdminQueue          => 'Create, modify and delete queue' ); # loc_pair
+__PACKAGE__->AddRight( Admin   => ShowACL             => 'Display Access Control List' ); # loc_pair
+__PACKAGE__->AddRight( Admin   => ModifyACL           => 'Create, modify and delete Access Control List entries' ); # loc_pair
+__PACKAGE__->AddRight( Admin   => ModifyQueueWatchers => 'Modify queue watchers' ); # loc_pair
+__PACKAGE__->AddRight( General => SeeCustomField      => 'View custom field values' ); # loc_pair
+__PACKAGE__->AddRight( Staff   => ModifyCustomField   => 'Modify custom field values' ); # loc_pair
+__PACKAGE__->AddRight( Admin   => AssignCustomFields  => 'Assign and remove queue custom fields' ); # loc_pair
+__PACKAGE__->AddRight( Admin   => ModifyTemplate      => 'Modify Scrip templates' ); # loc_pair
+__PACKAGE__->AddRight( Admin   => ShowTemplate        => 'View Scrip templates' ); # loc_pair
 
-our $RIGHTS = {
-    SeeQueue            => 'View queue',                                                # loc_pair
-    AdminQueue          => 'Create, modify and delete queue',                           # loc_pair
-    ShowACL             => 'Display Access Control List',                               # loc_pair
-    ModifyACL           => 'Create, modify and delete Access Control List entries',     # loc_pair
-    ModifyQueueWatchers => 'Modify queue watchers',                                     # loc_pair
-    SeeCustomField      => 'View custom field values',                                  # loc_pair
-    ModifyCustomField   => 'Modify custom field values',                                # loc_pair
-    AssignCustomFields  => 'Assign and remove queue custom fields',                     # loc_pair
-    ModifyTemplate      => 'Modify Scrip templates',                                    # loc_pair
-    ShowTemplate        => 'View Scrip templates',                                      # loc_pair
+__PACKAGE__->AddRight( Admin   => ModifyScrips        => 'Modify Scrips' ); # loc_pair
+__PACKAGE__->AddRight( Admin   => ShowScrips          => 'View Scrips' ); # loc_pair
 
-    ModifyScrips        => 'Modify Scrips',                                             # loc_pair
-    ShowScrips          => 'View Scrips',                                               # loc_pair
+__PACKAGE__->AddRight( General => ShowTicket          => 'View ticket summaries' ); # loc_pair
+__PACKAGE__->AddRight( Staff   => ShowTicketComments  => 'View ticket private commentary' ); # loc_pair
+__PACKAGE__->AddRight( Staff   => ShowOutgoingEmail   => 'View exact outgoing email messages and their recipients' ); # loc_pair
 
-    ShowTicket          => 'View ticket summaries',                                     # loc_pair
-    ShowTicketComments  => 'View ticket private commentary',                            # loc_pair
-    ShowOutgoingEmail   => 'View exact outgoing email messages and their recipients',   # loc_pair
+__PACKAGE__->AddRight( General => Watch               => 'Sign up as a ticket Requestor or ticket or queue Cc' ); # loc_pair
+__PACKAGE__->AddRight( Staff   => WatchAsAdminCc      => 'Sign up as a ticket or queue AdminCc' ); # loc_pair
+__PACKAGE__->AddRight( General => CreateTicket        => 'Create tickets' ); # loc_pair
+__PACKAGE__->AddRight( General => ReplyToTicket       => 'Reply to tickets' ); # loc_pair
+__PACKAGE__->AddRight( General => CommentOnTicket     => 'Comment on tickets' ); # loc_pair
+__PACKAGE__->AddRight( Staff   => OwnTicket           => 'Own tickets' ); # loc_pair
+__PACKAGE__->AddRight( Staff   => ModifyTicket        => 'Modify tickets' ); # loc_pair
+__PACKAGE__->AddRight( Staff   => DeleteTicket        => 'Delete tickets' ); # loc_pair
+__PACKAGE__->AddRight( Staff   => TakeTicket          => 'Take tickets' ); # loc_pair
+__PACKAGE__->AddRight( Staff   => StealTicket         => 'Steal tickets' ); # loc_pair
+__PACKAGE__->AddRight( Staff   => ReassignTicket      => 'Modify ticket owner on owned tickets' ); # loc_pair
 
-    Watch               => 'Sign up as a ticket Requestor or ticket or queue Cc',       # loc_pair
-    WatchAsAdminCc      => 'Sign up as a ticket or queue AdminCc',                      # loc_pair
-    CreateTicket        => 'Create tickets',                                            # loc_pair
-    ReplyToTicket       => 'Reply to tickets',                                          # loc_pair
-    CommentOnTicket     => 'Comment on tickets',                                        # loc_pair
-    OwnTicket           => 'Own tickets',                                               # loc_pair
-    ModifyTicket        => 'Modify tickets',                                            # loc_pair
-    DeleteTicket        => 'Delete tickets',                                            # loc_pair
-    TakeTicket          => 'Take tickets',                                              # loc_pair
-    StealTicket         => 'Steal tickets',                                             # loc_pair
-    ReassignTicket      => 'Modify ticket owner on owned tickets',                      # loc_pair
-
-    ForwardMessage      => 'Forward messages outside of RT',                            # loc_pair
-};
-
-our $RIGHT_CATEGORIES = {
-    SeeQueue            => 'General',
-    AdminQueue          => 'Admin',
-    ShowACL             => 'Admin',
-    ModifyACL           => 'Admin',
-    ModifyQueueWatchers => 'Admin',
-    SeeCustomField      => 'General',
-    ModifyCustomField   => 'Staff',
-    AssignCustomFields  => 'Admin',
-    ModifyTemplate      => 'Admin',
-    ShowTemplate        => 'Admin',
-    ModifyScrips        => 'Admin',
-    ShowScrips          => 'Admin',
-    ShowTicket          => 'General',
-    ShowTicketComments  => 'Staff',
-    ShowOutgoingEmail   => 'Staff',
-    Watch               => 'General',
-    WatchAsAdminCc      => 'Staff',
-    CreateTicket        => 'General',
-    ReplyToTicket       => 'General',
-    CommentOnTicket     => 'General',
-    OwnTicket           => 'Staff',
-    ModifyTicket        => 'Staff',
-    DeleteTicket        => 'Staff',
-    TakeTicket          => 'Staff',
-    StealTicket         => 'Staff',
-    ReassignTicket      => 'Staff',
-    ForwardMessage      => 'Staff',
-};
-
-# Tell RT::ACE that this sort of object can get acls granted
-$RT::ACE::OBJECT_TYPES{'RT::Queue'} = 1;
-
-# TODO: This should be refactored out into an RT::ACLedObject or something
-# stuff the rights into a hash of rights that can exist.
-
-__PACKAGE__->AddRights(%$RIGHTS);
-__PACKAGE__->AddRightCategories(%$RIGHT_CATEGORIES);
-
-=head2 AddRights C<RIGHT>, C<DESCRIPTION> [, ...]
-
-Adds the given rights to the list of possible rights.  This method
-should be called during server startup, not at runtime.
-
-=cut
-
-sub AddRights {
-    my $self = shift;
-    my %new = @_;
-    $RIGHTS = { %$RIGHTS, %new };
-    %RT::ACE::LOWERCASERIGHTNAMES = ( %RT::ACE::LOWERCASERIGHTNAMES,
-                                      map { lc($_) => $_ } keys %new);
-}
-
-=head2 AddRightCategories C<RIGHT>, C<CATEGORY> [, ...]
-
-Adds the given right and category pairs to the list of right categories.  This
-method should be called during server startup, not at runtime.
-
-=cut
-
-sub AddRightCategories {
-    my $self = shift if ref $_[0] or $_[0] eq __PACKAGE__;
-    my %new = @_;
-    $RIGHT_CATEGORIES = { %$RIGHT_CATEGORIES, %new };
-}
-
-=head2 AvailableRights
-
-Returns a hash of available rights for this object. The keys are the right names and the values are a description of what the rights do
-
-=cut
-
-sub AvailableRights {
-    my $self = shift;
-    return($RIGHTS);
-}
-
-=head2 RightCategories
-
-Returns a hashref where the keys are rights for this type of object and the
-values are the category (General, Staff, Admin) the right falls into.
-
-=cut
-
-sub RightCategories {
-    return $RIGHT_CATEGORIES;
-}
+__PACKAGE__->AddRight( Staff   => ForwardMessage      => 'Forward messages outside of RT' ); # loc_pair
 
 =head2 Create(ARGS)
 

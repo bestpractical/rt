@@ -75,10 +75,7 @@ require RT::Principals;
 require RT::Queues;
 require RT::Groups;
 
-use vars qw (
-  %LOWERCASERIGHTNAMES
-  %OBJECT_TYPES
-);
+our %RIGHTS;
 
 my (@_ACL_CACHE_HANDLERS);
 
@@ -468,10 +465,14 @@ the correct case. If it's not found, will return undef.
 =cut
 
 sub CanonicalizeRightName {
-    my $self  = shift;
-    return $LOWERCASERIGHTNAMES{ lc shift };
+    my $self = shift;
+    my $name = shift;
+    for my $class (sort keys %RIGHTS) {
+        return $RIGHTS{$class}{ lc $name }{Name}
+            if $RIGHTS{$class}{ lc $name };
+    }
+    return undef;
 }
-
 
 
 
@@ -493,7 +494,7 @@ sub Object {
 
     my $appliesto_obj;
 
-    if ($self->__Value('ObjectType') && $OBJECT_TYPES{$self->__Value('ObjectType')} ) {
+    if ($self->__Value('ObjectType') && $self->__Value('ObjectType')->DOES('RT::Record::Role::Rights') ) {
         $appliesto_obj =  $self->__Value('ObjectType')->new($self->CurrentUser);
         unless (ref( $appliesto_obj) eq $self->__Value('ObjectType')) {
             return undef;

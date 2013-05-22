@@ -55,6 +55,9 @@ use warnings;
 
 use base 'RT::Record';
 
+use Role::Basic 'with';
+with "RT::Record::Role::Rights";
+
 sub Table {'CustomFields'}
 
 use Scalar::Util qw(blessed);
@@ -207,69 +210,10 @@ __PACKAGE__->RegisterBuiltInGroupings(
     'RT::User'      => [ 'Identity', 'Access control', 'Location', 'Phones' ],
 );
 
-our $RIGHTS = {
-    SeeCustomField            => 'View custom fields',                                    # loc_pair
-    AdminCustomField          => 'Create, modify and delete custom fields',               # loc_pair
-    AdminCustomFieldValues    => 'Create, modify and delete custom fields values',        # loc_pair
-    ModifyCustomField         => 'Add, modify and delete custom field values for objects' # loc_pair
-};
-
-our $RIGHT_CATEGORIES = {
-    SeeCustomField          => 'General',
-    AdminCustomField        => 'Admin',
-    AdminCustomFieldValues  => 'Admin',
-    ModifyCustomField       => 'Staff',
-};
-
-# Tell RT::ACE that this sort of object can get acls granted
-$RT::ACE::OBJECT_TYPES{'RT::CustomField'} = 1;
-
-__PACKAGE__->AddRights(%$RIGHTS);
-__PACKAGE__->AddRightCategories(%$RIGHT_CATEGORIES);
-
-=head2 AddRights C<RIGHT>, C<DESCRIPTION> [, ...]
-
-Adds the given rights to the list of possible rights.  This method
-should be called during server startup, not at runtime.
-
-=cut
-
-sub AddRights {
-    my $self = shift;
-    my %new = @_;
-    $RIGHTS = { %$RIGHTS, %new };
-    %RT::ACE::LOWERCASERIGHTNAMES = ( %RT::ACE::LOWERCASERIGHTNAMES,
-                                      map { lc($_) => $_ } keys %new);
-}
-
-sub AvailableRights {
-    my $self = shift;
-    return $RIGHTS;
-}
-
-=head2 RightCategories
-
-Returns a hashref where the keys are rights for this type of object and the
-values are the category (General, Staff, Admin) the right falls into.
-
-=cut
-
-sub RightCategories {
-    return $RIGHT_CATEGORIES;
-}
-
-=head2 AddRightCategories C<RIGHT>, C<CATEGORY> [, ...]
-
-Adds the given right and category pairs to the list of right categories.  This
-method should be called during server startup, not at runtime.
-
-=cut
-
-sub AddRightCategories {
-    my $self = shift if ref $_[0] or $_[0] eq __PACKAGE__;
-    my %new = @_;
-    $RIGHT_CATEGORIES = { %$RIGHT_CATEGORIES, %new };
-}
+__PACKAGE__->AddRight( General => SeeCustomField         => 'View custom fields'); # loc_pair
+__PACKAGE__->AddRight( Admin   => AdminCustomField       => 'Create, modify and delete custom fields'); # loc_pair
+__PACKAGE__->AddRight( Admin   => AdminCustomFieldValues => 'Create, modify and delete custom fields values'); # loc_pair
+__PACKAGE__->AddRight( Staff   => ModifyCustomField      => 'Add, modify and delete custom field values for objects'); # loc_pair
 
 =head1 NAME
 

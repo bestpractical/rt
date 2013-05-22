@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use RT::Test tests => 10;
 
-RT::System->AddRights(
+RT::System->AddRight( General =>
     'RTxUserRight' => 'Just a right for testing rights',
 );
 

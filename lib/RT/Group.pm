@@ -73,6 +73,9 @@ use warnings;
 
 use base 'RT::Record';
 
+use Role::Basic 'with';
+with "RT::Record::Role::Rights";
+
 sub Table {'Groups'}
 
 
@@ -82,96 +85,18 @@ use RT::GroupMembers;
 use RT::Principals;
 use RT::ACL;
 
-use vars qw/$RIGHTS $RIGHT_CATEGORIES/;
-
-$RIGHTS = {
-    AdminGroup              => 'Modify group metadata or delete group',     # loc_pair
-    AdminGroupMembership    => 'Modify group membership roster',            # loc_pair
-    ModifyOwnMembership     => 'Join or leave group',                       # loc_pair
-    EditSavedSearches       => 'Create, modify and delete saved searches',  # loc_pair
-    ShowSavedSearches       => 'View saved searches',                       # loc_pair
-    SeeGroup                => 'View group',                                # loc_pair
-    SeeGroupDashboard       => 'View group dashboards',                     # loc_pair
-    CreateGroupDashboard    => 'Create group dashboards',                   # loc_pair
-    ModifyGroupDashboard    => 'Modify group dashboards',                   # loc_pair
-    DeleteGroupDashboard    => 'Delete group dashboards',                   # loc_pair
-};
-
-$RIGHT_CATEGORIES = {
-    AdminGroup              => 'Admin',
-    AdminGroupMembership    => 'Admin',
-    ModifyOwnMembership     => 'Staff',
-    EditSavedSearches       => 'Admin',
-    ShowSavedSearches       => 'Staff',
-    SeeGroup                => 'Staff',
-    SeeGroupDashboard       => 'Staff',
-    CreateGroupDashboard    => 'Admin',
-    ModifyGroupDashboard    => 'Admin',
-    DeleteGroupDashboard    => 'Admin',
-};
-
-# Tell RT::ACE that this sort of object can get acls granted
-$RT::ACE::OBJECT_TYPES{'RT::Group'} = 1;
-
-# TODO: This should be refactored out into an RT::ACLedObject or something
-# stuff the rights into a hash of rights that can exist.
-
-__PACKAGE__->AddRights(%$RIGHTS);
-__PACKAGE__->AddRightCategories(%$RIGHT_CATEGORIES);
+__PACKAGE__->AddRight( Admin => AdminGroup           => 'Modify group metadata or delete group'); # loc_pair
+__PACKAGE__->AddRight( Admin => AdminGroupMembership => 'Modify group membership roster'); # loc_pair
+__PACKAGE__->AddRight( Staff => ModifyOwnMembership  => 'Join or leave group'); # loc_pair
+__PACKAGE__->AddRight( Admin => EditSavedSearches    => 'Create, modify and delete saved searches'); # loc_pair
+__PACKAGE__->AddRight( Staff => ShowSavedSearches    => 'View saved searches'); # loc_pair
+__PACKAGE__->AddRight( Staff => SeeGroup             => 'View group'); # loc_pair
+__PACKAGE__->AddRight( Staff => SeeGroupDashboard    => 'View group dashboards'); # loc_pair
+__PACKAGE__->AddRight( Admin => CreateGroupDashboard => 'Create group dashboards'); # loc_pair
+__PACKAGE__->AddRight( Admin => ModifyGroupDashboard => 'Modify group dashboards'); # loc_pair
+__PACKAGE__->AddRight( Admin => DeleteGroupDashboard => 'Delete group dashboards'); # loc_pair
 
 =head1 METHODS
-
-=head2 AddRights C<RIGHT>, C<DESCRIPTION> [, ...]
-
-Adds the given rights to the list of possible rights.  This method
-should be called during server startup, not at runtime.
-
-=cut
-
-sub AddRights {
-    my $self = shift;
-    my %new = @_;
-    $RIGHTS = { %$RIGHTS, %new };
-    %RT::ACE::LOWERCASERIGHTNAMES = ( %RT::ACE::LOWERCASERIGHTNAMES,
-                                      map { lc($_) => $_ } keys %new);
-}
-
-=head2 AvailableRights
-
-Returns a hash of available rights for this object. The keys are the right names and the values are a description of what the rights do
-
-=cut
-
-sub AvailableRights {
-    my $self = shift;
-    return($RIGHTS);
-}
-
-=head2 RightCategories
-
-Returns a hashref where the keys are rights for this type of object and the
-values are the category (General, Staff, Admin) the right falls into.
-
-=cut
-
-sub RightCategories {
-    return $RIGHT_CATEGORIES;
-}
-
-=head2 AddRightCategories C<RIGHT>, C<CATEGORY> [, ...]
-
-Adds the given right and category pairs to the list of right categories.  This
-method should be called during server startup, not at runtime.
-
-=cut
-
-sub AddRightCategories {
-    my $self = shift if ref $_[0] or $_[0] eq __PACKAGE__;
-    my %new = @_;
-    $RIGHT_CATEGORIES = { %$RIGHT_CATEGORIES, %new };
-}
-
-
 
 =head2 SelfDescription
 
