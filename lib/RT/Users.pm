@@ -610,13 +610,24 @@ sub SimpleSearch {
         $op = 'STARTSWITH'
         unless $op =~ /^(?:LIKE|(?:START|END)SWITH|=|!=)$/i;
 
-        $self->Limit(
-            FIELD           => $name,
-            OPERATOR        => $op,
-            VALUE           => $args{Term},
-            ENTRYAGGREGATOR => 'OR',
-            SUBCLAUSE       => 'autocomplete',
-        );
+        if ($name =~ /^CF\.\{(.*)}$/) {
+            my $cfname = $1;
+            $self->LimitCustomField(
+                CUSTOMFIELD     => $cfname,
+                OPERATOR        => $op,
+                VALUE           => $args{Term},
+                ENTRYAGGREGATOR => 'OR',
+                SUBCLAUSE       => 'autocomplete',
+            );
+        } else {
+            $self->Limit(
+                FIELD           => $name,
+                OPERATOR        => $op,
+                VALUE           => $args{Term},
+                ENTRYAGGREGATOR => 'OR',
+                SUBCLAUSE       => 'autocomplete',
+            );
+        }
     }
 
     # Exclude users we don't want
