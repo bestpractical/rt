@@ -634,7 +634,7 @@ sub Create {
                 }
             }
 
-            if ( $obj && $obj->Status eq 'deleted' ) {
+            if ( $obj && lc $obj->Status eq 'deleted' ) {
                 push @non_fatal_errors,
                   $self->loc("Linking. Can't link to a deleted ticket");
                 next;
@@ -2591,7 +2591,7 @@ sub AddLink {
     }
 
     return ( 0, "Can't link to a deleted ticket" )
-      if $other_ticket && $other_ticket->Status eq 'deleted';
+      if $other_ticket && lc $other_ticket->Status eq 'deleted';
 
     return $self->_AddLink(%args);
 }

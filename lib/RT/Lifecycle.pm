@@ -707,11 +707,11 @@ sub FillCache {
         }
 
         my %seen;
-        @statuses = grep !$seen{ $_ }++, @statuses;
+        @statuses = grep !$seen{ lc $_ }++, @statuses;
         $lifecycle->{''} = \@statuses;
 
         unless ( $lifecycle->{'transitions'}{''} ) {
-            $lifecycle->{'transitions'}{''} = [ grep $_ ne 'deleted', @statuses ];
+            $lifecycle->{'transitions'}{''} = [ grep lc $_ ne 'deleted', @statuses ];
         }
 
         my @actions;
@@ -767,7 +767,7 @@ sub FillCache {
 
     foreach my $type ( qw(initial active inactive), '' ) {
         my %seen;
-        @{ $all{ $type } } = grep !$seen{ $_ }++, @{ $all{ $type } };
+        @{ $all{ $type } } = grep !$seen{ lc $_ }++, @{ $all{ $type } };
         push @{ $all{''} }, @{ $all{ $type } } if $type;
     }
     $LIFECYCLES_CACHE{''} = \%all;
