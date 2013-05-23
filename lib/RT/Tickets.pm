@@ -150,6 +150,7 @@ our %FIELD_METADATA = (
     CustomField      => [ 'CUSTOMFIELD', ], #loc_left_pair
     CF               => [ 'CUSTOMFIELD', ], #loc_left_pair
     Updated          => [ 'TRANSDATE', ], #loc_left_pair
+    OwnerGroup       => [ 'MEMBERSHIPFIELD' => 'Owner', ], #loc_left_pair
     RequestorGroup   => [ 'MEMBERSHIPFIELD' => 'Requestor', ], #loc_left_pair
     CCGroup          => [ 'MEMBERSHIPFIELD' => 'Cc', ], #loc_left_pair
     AdminCCGroup     => [ 'MEMBERSHIPFIELD' => 'AdminCc', ], #loc_left_pair
@@ -952,90 +953,49 @@ LIMIT 25
 =cut
 
 sub _WatcherMembershipLimit {
-    my ( $self, $field, $op, $value, @rest ) = @_;
-    my %rest = @rest;
+    my ( $self, $field, $op, $value, %rest ) = @_;
 
-    $self->_OpenParen;
+    # we don't support anything but '='
+    die "Invalid $field Op: $op"
+        unless $op =~ /^=$/;
 
-    my $groups       = $self->NewAlias('Groups');
-    my $groupmembers = $self->NewAlias('CachedGroupMembers');
-    my $users        = $self->NewAlias('Users');
-    my $memberships  = $self->NewAlias('CachedGroupMembers');
+    unless ( $value =~ /^\d+$/ ) {
+        my $group = RT::Group->new( $self->CurrentUser );
+        $group->LoadUserDefinedGroup( $value );
+        $value = $group->id || 0;
+    }
+
+    my $meta = $FIELD_METADATA{$field};
+    my $type = $meta->[1] || '';
+
+    my ($members_alias, $members_column);
+    if ( $type eq 'Owner' ) {
+        ($members_alias, $members_column) = ('main', 'Owner');
+    } else {
+        (undef, undef, $members_alias) = $self->_WatcherJoin( New => 1, Type => $type );
+        $members_column = 'id';
+    }
+
+    my $cgm_alias = $self->Join(
+        ALIAS1          => $members_alias,
+        FIELD1          => $members_column,
+        TABLE2          => 'CachedGroupMembers',
+        FIELD2          => 'MemberId',
+    );
+    $self->Limit(
+        LEFTJOIN => $cgm_alias,
+        ALIAS => $cgm_alias,
+        FIELD => 'Disabled',
+        VALUE => 0,
+    );
 
     $self->Limit(
-        ALIAS    => $memberships,
+        ALIAS    => $cgm_alias,
         FIELD    => 'GroupId',
         VALUE    => $value,
         OPERATOR => $op,
-        @rest,
+        %rest,
     );
-
-    # Tie to groups for tickets we care about
-    $self->Limit(
-        ALIAS           => $groups,
-        FIELD           => 'Domain',
-        VALUE           => 'RT::Ticket-Role',
-        ENTRYAGGREGATOR => 'AND'
-    );
-
-    $self->Join(
-        ALIAS1 => $groups,
-        FIELD1 => 'Instance',
-        ALIAS2 => 'main',
-        FIELD2 => 'id'
-    );
-
-    # }}}
-
-    # If we care about which sort of watcher
-    my $meta = $FIELD_METADATA{$field};
-    my $type = ( defined $meta->[1] ? $meta->[1] : undef );
-
-    if ($type) {
-        $self->Limit(
-            ALIAS           => $groups,
-            FIELD           => 'Type',
-            VALUE           => $type,
-            ENTRYAGGREGATOR => 'AND'
-        );
-    }
-
-    $self->Join(
-        ALIAS1 => $groups,
-        FIELD1 => 'id',
-        ALIAS2 => $groupmembers,
-        FIELD2 => 'GroupId'
-    );
-
-    $self->Join(
-        ALIAS1 => $groupmembers,
-        FIELD1 => 'MemberId',
-        ALIAS2 => $users,
-        FIELD2 => 'id'
-    );
-
-    $self->Limit(
-        ALIAS => $groupmembers,
-        FIELD => 'Disabled',
-        VALUE => 0,
-    );
-
-    $self->Join(
-        ALIAS1 => $memberships,
-        FIELD1 => 'MemberId',
-        ALIAS2 => $users,
-        FIELD2 => 'id'
-    );
-
-    $self->Limit(
-        ALIAS => $memberships,
-        FIELD => 'Disabled',
-        VALUE => 0,
-    );
-
-
-    $self->_CloseParen;
-
 }
 
 =head2 _CustomFieldDecipher
