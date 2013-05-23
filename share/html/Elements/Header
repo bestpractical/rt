@@ -138,9 +138,7 @@ else {
 #$Focus => 'focus'
 $Focus => ''
 $Title =>  'RT'
-$Code => undef
 $Refresh => 0
-$Why => undef
 $ShowBar => 1
 $URL => undef
 $RSSAutoDiscovery => undef

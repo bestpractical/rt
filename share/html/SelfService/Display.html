@@ -99,25 +99,18 @@ my $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
 if ( ($id[0]||'') eq 'new' ) {
 
     my $Queue = RT::Queue->new( $session{'CurrentUser'} );
-    unless ( $Queue->Load( $ARGS{'Queue'} ) ) {
-        Abort( loc('Queue not found') );
-    }
+    Abort( loc('Queue not found') ) unless $Queue->Load( $ARGS{'Queue'} );
 
-    unless ( $Queue->CurrentUserHasRight('CreateTicket') ) {
-        Abort( loc('You have no permission to create tickets in that queue.') );
-    }
-
+    Abort( loc('You have no permission to create tickets in that queue.') )
+        unless $Queue->CurrentUserHasRight('CreateTicket');
 
     ( $Ticket, @results ) = CreateTicket( %ARGS );
 
-    unless ( $Ticket->id ) {
-        Abort( join "\n", @results );
-    }
+    Abort( join("\n", @results ) ) unless $Ticket->id;
+
 }
 else {
-    unless ( $Ticket->Load( $id[0] ) ) {
-        Abort( loc( "Couldn't load ticket '[_1]'", $id ) );
-    }
+    $Ticket = LoadTicket($ARGS{'id'});
 
     push @results, ProcessUpdateMessage(
         ARGSRef   => \%ARGS,
