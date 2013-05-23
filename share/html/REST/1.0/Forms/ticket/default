@@ -82,7 +82,7 @@ if ($id ne 'new') {
         return [ "# Ticket $id does not exist.", [], {}, 1 ];
     }
     elsif ( %data ) {
-        if ( $data{status} && $data{status} eq 'deleted' && ! grep { $_ ne 'id' && $_ ne 'status' } keys %data ) {
+        if ( $data{status} && lc $data{status} eq 'deleted' && ! grep { $_ ne 'id' && $_ ne 'status' } keys %data ) {
             if ( !$ticket->CurrentUserHasRight('DeleteTicket') ) {
                 return [ "# You are not allowed to delete ticket $id.", [], {}, 1 ];
             }

@@ -370,6 +370,8 @@ sub _EnumLimit {
         $value = $o->Id || 0;
     } elsif ( $field eq "Type" ) {
         $value = lc $value if $value =~ /^(ticket|approval|reminder)$/i;
+    } elsif ($field eq "Status") {
+        $value = lc $value;
     }
     $sb->Limit(
         FIELD    => $field,
@@ -2970,8 +2972,9 @@ sub FromSQL {
         $self->_parser( $query );
     };
     if ( $@ ) {
-        $RT::Logger->error( $@ );
-        return (0, $@);
+        my $error = "$@";
+        $RT::Logger->error("Couldn't parse query: $error");
+        return (0, $error);
     }
 
     # We only want to look at EffectiveId's (mostly) for these searches.

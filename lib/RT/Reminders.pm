@@ -122,7 +122,7 @@ sub Add {
         return ( 0, $self->loc( "Failed to load ticket [_1]", $self->Ticket ) );
     }
 
-    if ( $ticket->Status eq 'deleted' ) {
+    if ( lc $ticket->Status eq 'deleted' ) {
         return ( 0, $self->loc("Can't link to a deleted ticket") );
     }
 

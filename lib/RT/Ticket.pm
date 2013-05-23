@@ -279,6 +279,7 @@ sub Create {
         $args{'Status'} = $cycle->DefaultOnCreate;
     }
 
+    $args{'Status'} = lc $args{'Status'};
     unless ( $cycle->IsValid( $args{'Status'} ) ) {
         return ( 0, 0,
             $self->loc("Status '[_1]' isn't a valid status for tickets in this queue.",
@@ -366,6 +367,8 @@ sub Create {
 
     $args{'Type'} = lc $args{'Type'}
         if $args{'Type'} =~ /^(ticket|approval|reminder)$/i;
+
+    $args{'Subject'} =~ s/\n//g;
 
     $RT::Handle->BeginTransaction();
 
@@ -1178,6 +1181,13 @@ sub QueueObj {
         my ($result) = $self->{_queue_obj}->Load( $self->__Value('Queue') );
     }
     return ($self->{_queue_obj});
+}
+
+sub SetSubject {
+    my $self = shift;
+    my $value = shift;
+    $value =~ s/\n//g;
+    return $self->_Set( Field => 'Subject', Value => $value );
 }
 
 =head2 SubjectTag
@@ -2382,6 +2392,7 @@ sub _SetStatus {
         Lifecycle => $self->LifecycleObj,
         @_,
     );
+    $args{Status} = lc $args{Status} if defined $args{Status};
     $args{NewLifecycle} ||= $args{Lifecycle};
 
     my $now = RT::Date->new( $self->CurrentUser );

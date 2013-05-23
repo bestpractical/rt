@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 11;
+use RT::Test tests => 19;
 
 
 {
@@ -35,5 +35,29 @@ is_deeply(\@items_ids, \@sorted_ids, "ItemsArrayRef sorts alphabetically by name
 
 
 
+}
+
+#20767: CleanSlate doesn't clear RT::SearchBuilder's flags for handling Disabled columns
+{
+  my $items;
+
+  ok(my $queues = RT::Queues->new(RT->SystemUser), 'Created a queues object');
+  ok( $queues->UnLimit(),'Unlimited the result set of the queues object');
+
+  # sanity check
+  is( $queues->{'handled_disabled_column'} => undef, 'handled_disabled_column IS NOT set' );
+  is( $queues->{'find_disabled_rows'}      => undef, 'find_disabled_rows IS NOT set ' );
+
+  $queues->LimitToDeleted;
+
+  # sanity check
+  ok( $queues->{'handled_disabled_column'}, 'handled_disabled_column IS set' );
+  ok( $queues->{'find_disabled_rows'},      'find_disabled_rows IS set ' );
+
+  $queues->CleanSlate;
+
+  # these fail without the overloaded CleanSlate method
+  is( $queues->{'handled_disabled_column'} => undef, 'handled_disabled_column IS NOT set' );
+  is( $queues->{'find_disabled_rows'}      => undef, 'find_disabled_rows IS NOT set ' );
 }
 

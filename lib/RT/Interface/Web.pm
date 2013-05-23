@@ -616,6 +616,7 @@ sub MaybeRejectPrivateComponentRequest {
             / # leading slash
             ( Elements    |
               _elements   | # mobile UI
+              Callbacks   |
               Widgets     |
               autohandler | # requesting this directly is suspicious
               l (_unsafe)? ) # loc component
@@ -857,7 +858,7 @@ sub LoadSessionFromCookie {
     my $SessionCookie = ( $cookies{$cookiename} ? $cookies{$cookiename}->value : undef );
     tie %HTML::Mason::Commands::session, 'RT::Interface::Web::Session', $SessionCookie;
     unless ( $SessionCookie && $HTML::Mason::Commands::session{'_session_id'} eq $SessionCookie ) {
-        undef $cookies{$cookiename};
+        InstantiateNewSession();
     }
     if ( int RT->Config->Get('AutoLogoff') ) {
         my $now = int( time / 60 );
@@ -1005,15 +1006,15 @@ sub StaticFileHeaders {
 Takes C<PATH> and returns a boolean indicating that the user-specified partial
 component path is safe.
 
-Currently "safe" means that the path does not start with a dot (C<.>) and does
-not contain a slash-dot C</.>.
+Currently "safe" means that the path does not start with a dot (C<.>), does
+not contain a slash-dot C</.>, and does not contain any nulls.
 
 =cut
 
 sub ComponentPathIsSafe {
     my $self = shift;
     my $path = shift;
-    return $path !~ m{(?:^|/)\.};
+    return $path !~ m{(?:^|/)\.} and $path !~ m{\0};
 }
 
 =head2 PathIsSafe
@@ -1985,7 +1986,7 @@ sub CreateTicket {
 
     my @attachments;
     if ( my $tmp = $session{'Attachments'}{ $ARGS{'Token'} || '' } ) {
-        push @attachments, grep $_, values %$tmp;
+        push @attachments, grep $_, map $tmp->{$_}, sort keys %$tmp;
 
         delete $session{'Attachments'}{ $ARGS{'Token'} || '' }
             unless $ARGS{'KeepAttachments'};
@@ -1993,7 +1994,7 @@ sub CreateTicket {
             if @attachments;
     }
     if ( $ARGS{'Attachments'} ) {
-        push @attachments, grep $_, values %{ $ARGS{'Attachments'} };
+        push @attachments, grep $_, map $ARGS{Attachments}->{$_}, sort keys %{ $ARGS{'Attachments'} };
     }
     if ( @attachments ) {
         $MIMEObj->make_multipart;
@@ -2115,7 +2116,7 @@ sub ProcessUpdateMessage {
 
     my @attachments;
     if ( my $tmp = $session{'Attachments'}{ $args{'ARGSRef'}{'Token'} || '' } ) {
-        push @attachments, grep $_, values %$tmp;
+        push @attachments, grep $_, map $tmp->{$_}, sort keys %$tmp;
 
         delete $session{'Attachments'}{ $args{'ARGSRef'}{'Token'} || '' }
             unless $args{'KeepAttachments'};
@@ -2123,7 +2124,8 @@ sub ProcessUpdateMessage {
             if @attachments;
     }
     if ( $args{ARGSRef}{'UpdateAttachments'} ) {
-        push @attachments, grep $_, values %{ $args{ARGSRef}{'UpdateAttachments'} };
+        push @attachments, grep $_, map $args{ARGSRef}->{UpdateAttachments}{$_},
+                                   sort keys %{ $args{ARGSRef}->{'UpdateAttachments'} };
     }
 
     # Strip the signature
