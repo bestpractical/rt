@@ -383,13 +383,20 @@ our %META = (
 
     },
     PlainTextPre => {
-        Section         => 'Ticket display',
-        Overridable     => 1,
-        SortOrder       => 5,
-        Widget          => '/Widgets/Form/Boolean',
-        WidgetArguments => {
-            Description => 'add <pre> tag around plain text attachments', #loc
-            Hints       => "Use this to protect the format of plain text" #loc
+        PostSet => sub {
+            my $self  = shift;
+            my $value = shift;
+            $self->SetFromConfig(
+                Option => \'PlainTextMono',
+                Value  => [$value],
+                %{$self->Meta('PlainTextPre')->{'Source'}}
+            );
+        },
+        PostLoadCheck => sub {
+            my $self = shift;
+            # XXX: deprecated, remove in 4.4
+            $RT::Logger->info("You set \$PlainTextPre in your config, which has been removed in favor of \$PlainTextMono.  Please update your config.")
+                if $self->Meta('PlainTextPre')->{'Source'}{'Package'};
         },
     },
     PlainTextMono => {
@@ -398,8 +405,8 @@ our %META = (
         SortOrder       => 5,
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
-            Description => 'display wrapped and formatted plain text attachments', #loc
-            Hints => 'Use css rules to display text monospaced and with formatting preserved, but wrap as needed.  This does not work well with IE6 and you should use the previous option', #loc
+            Description => 'Display plain-text attachments in fixed-width font', #loc
+            Hints => 'Display all plain-text attachments in a monospace font with formatting preserved, but wrapping as needed.', #loc
         },
     },
     MoreAboutRequestorTicketList => {
