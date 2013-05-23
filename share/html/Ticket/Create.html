@@ -365,7 +365,7 @@ my @results;
 my $title = loc("Create a new ticket");
 
 my $QueueObj = RT::Queue->new($session{'CurrentUser'});
-$QueueObj->Load($Queue) || Abort(loc("Queue [_1] could not be loaded.", $Queue));
+$QueueObj->Load($Queue) || Abort(loc("Queue [_1] could not be loaded.", $Queue||''));
 
 $m->callback( QueueObj => $QueueObj, title => \$title, results => \@results, ARGSRef => \%ARGS );
 
