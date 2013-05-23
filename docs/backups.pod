@@ -33,7 +33,7 @@ RT. :)
 
     ( mysqldump rt4 --tables sessions --no-data; \
       mysqldump rt4 --ignore-table rt4.sessions --single-transaction ) \
-        | gzip > rt-`date +%Y%M%d`.sql.gz
+        | gzip > rt-`date +%Y%m%d`.sql.gz
 
 If you're using a MySQL version older than 4.1.2 (only supported on RT 3.8.x
 and older), you should be also pass the C<--default-character-set=binary>
@@ -54,7 +54,7 @@ but lets you take backups without putting load on your production server.
 
     ( pg_dump rt4 --table=sessions --schema-only; \
       pg_dump rt4 --exclude-table=sessions ) \
-        | gzip > rt-`date +%Y%M%d`.sql.gz
+        | gzip > rt-`date +%Y%m%d`.sql.gz
 
 =head2 FILESYSTEM
 
@@ -102,7 +102,7 @@ recreate those.
 
 Simply saving a tarball should be sufficient, with something like:
 
-    tar czvpf rt-backup-`date +%Y%M%d`.tar.gz /opt/rt4 /etc/aliases /etc/httpd ...
+    tar czvpf rt-backup-`date +%Y%m%d`.tar.gz /opt/rt4 /etc/aliases /etc/httpd ...
 
 Be sure to include all the directories and files you enumerated above!
 
