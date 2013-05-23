@@ -711,7 +711,7 @@ sub FillCache {
         $lifecycle->{''} = \@statuses;
 
         unless ( $lifecycle->{'transitions'}{''} ) {
-            $lifecycle->{'transitions'}{''} = [ grep $_ ne 'deleted', @statuses ];
+            $lifecycle->{'transitions'}{''} = [ grep lc $_ ne 'deleted', @statuses ];
         }
 
         my @actions;

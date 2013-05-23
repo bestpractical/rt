@@ -112,11 +112,11 @@ my $visible = 0;
 % }
 % }
 
-% if ($Ticket->Status ne "deleted") {
+% if (lc $Ticket->Status ne "deleted") {
 <&|/l&>New reminder:</&>
 <& SELF:NewReminder, Ticket => $Ticket &>
 % }
-% return($Ticket->Status ne "deleted" or $visible);
+% return(lc $Ticket->Status ne "deleted" or $visible);
 <%method NewReminder>
 <%args>
 $Ticket
