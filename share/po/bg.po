@@ -2956,6 +2956,10 @@ msgstr ""
 msgid "Display saved searches for this group"
 msgstr "Показване на съхранени търсения за тази група"
 
+#: lib/RT/Config.pm:443
+msgid "Display ticket after \"Quick Create\""
+msgstr ""
+
 #: share/html/Elements/Footer:59
 #. ('<a href="http://www.gnu.org/licenses/gpl-2.0.html">', '</a>')
 msgid "Distributed under %1version 2 of the GNU GPL%2."
@@ -6643,10 +6647,6 @@ msgstr "Опашки, които администрирам"
 msgid "Queues I'm an AdminCc for"
 msgstr "Опашки, от които получавам административни копия"
 
-#: lib/RT/Config.pm:443
-msgid "Quick Create"
-msgstr ""
-
 #: share/html/Articles/Elements/QuickSearch:48 share/html/Elements/Quicksearch:50 share/html/Elements/Tabs:565 share/html/Prefs/Quicksearch.html:79
 msgid "Quick search"
 msgstr "Бързо търсене"
@@ -7816,6 +7816,10 @@ msgstr ""
 #: share/html/Approvals/Elements/PendingMyApproval:71
 msgid "Show requests awaiting other approvals"
 msgstr "Показване на заявки, които очакват други одобрения"
+
+#: lib/RT/Config.pm:434
+msgid "Show simplified recipient list on ticket update"
+msgstr ""
 
 #: lib/RT/Config.pm:421
 msgid "Show the Requestor's 10 highest priority active tickets"
@@ -9529,6 +9533,10 @@ msgstr "Какво правих днес"
 #: share/html/Install/index.html:67
 msgid "What is RT?"
 msgstr "Какво е RT"
+
+#: lib/RT/Config.pm:418
+msgid "What tickets to display in the \"More about requestor\" box"
+msgstr ""
 
 #: lib/RT/Installer.pm:166
 msgid "When RT can't handle an email message, where should it be forwarded?"

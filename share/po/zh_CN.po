@@ -4199,6 +4199,10 @@ msgstr "显示此群组的已存搜索"
 msgid "Display ticket #%1"
 msgstr "显示第%1号申请单"
 
+#: lib/RT/Config.pm:443
+msgid "Display ticket after \"Quick Create\""
+msgstr ""
+
 #: share/html/Elements/Footer:59
 #. ('<a href="http://www.gnu.org/licenses/gpl-2.0.html">', '</a>')
 msgid "Distributed under %1version 2 of the GNU GPL%2."
@@ -9206,7 +9210,7 @@ msgstr "由我管理的队列"
 msgid "Queues I'm an AdminCc for"
 msgstr "我作为管理员抄送人的队列"
 
-#: lib/RT/Config.pm:443
+#: NOT FOUND IN SOURCE
 msgid "Quick Create"
 msgstr "快速创建"
 
@@ -10735,6 +10739,10 @@ msgstr "显示引用文本"
 #: share/html/Approvals/Elements/PendingMyApproval:71
 msgid "Show requests awaiting other approvals"
 msgstr "显示尚待他人批准请求的批准请求单"
+
+#: lib/RT/Config.pm:434
+msgid "Show simplified recipient list on ticket update"
+msgstr ""
 
 #: lib/RT/Config.pm:421
 msgid "Show the Requestor's 10 highest priority active tickets"
@@ -12896,6 +12904,10 @@ msgstr "今日工作一览"
 #: share/html/Install/index.html:67
 msgid "What is RT?"
 msgstr "RT是什么？"
+
+#: lib/RT/Config.pm:418
+msgid "What tickets to display in the \"More about requestor\" box"
+msgstr ""
 
 #: lib/RT/Installer.pm:166
 msgid "When RT can't handle an email message, where should it be forwarded?"

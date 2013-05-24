@@ -2704,6 +2704,10 @@ msgstr ""
 msgid "Display plain-text attachments in fixed-width font"
 msgstr ""
 
+#: lib/RT/Config.pm:443
+msgid "Display ticket after \"Quick Create\""
+msgstr ""
+
 #: share/html/Elements/Footer:59
 #. ('<a href="http://www.gnu.org/licenses/gpl-2.0.html">', '</a>')
 msgid "Distributed under %1version 2 of the GNU GPL%2."
@@ -6047,7 +6051,7 @@ msgstr ""
 msgid "Queues I'm an AdminCc for"
 msgstr ""
 
-#: lib/RT/Config.pm:443
+#: NOT FOUND IN SOURCE
 msgid "Quick Create"
 msgstr "Rýchle vytvorenie"
 
@@ -7075,6 +7079,10 @@ msgstr "Zobraziť citovaný text"
 
 #: share/html/Approvals/Elements/PendingMyApproval:71
 msgid "Show requests awaiting other approvals"
+msgstr ""
+
+#: lib/RT/Config.pm:434
+msgid "Show simplified recipient list on ticket update"
 msgstr ""
 
 #: lib/RT/Config.pm:421
@@ -8648,6 +8656,10 @@ msgstr "Čo som dnes robil"
 
 #: share/html/Install/index.html:67
 msgid "What is RT?"
+msgstr ""
+
+#: lib/RT/Config.pm:418
+msgid "What tickets to display in the \"More about requestor\" box"
 msgstr ""
 
 #: lib/RT/Installer.pm:166

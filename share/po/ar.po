@@ -2680,6 +2680,10 @@ msgstr ""
 msgid "Display plain-text attachments in fixed-width font"
 msgstr ""
 
+#: lib/RT/Config.pm:443
+msgid "Display ticket after \"Quick Create\""
+msgstr ""
+
 #: share/html/Elements/Footer:59
 #. ('<a href="http://www.gnu.org/licenses/gpl-2.0.html">', '</a>')
 msgid "Distributed under %1version 2 of the GNU GPL%2."
@@ -6011,10 +6015,6 @@ msgstr "الطوابير التي أديرها"
 msgid "Queues I'm an AdminCc for"
 msgstr "الطوابير التي أشارك في إدارتها (AdminCC)"
 
-#: lib/RT/Config.pm:443
-msgid "Quick Create"
-msgstr ""
-
 #: share/html/Articles/Elements/QuickSearch:48 share/html/Elements/Quicksearch:50 share/html/Elements/Tabs:565 share/html/Prefs/Quicksearch.html:79
 msgid "Quick search"
 msgstr "بحث سريع"
@@ -7039,6 +7039,10 @@ msgstr ""
 
 #: share/html/Approvals/Elements/PendingMyApproval:71
 msgid "Show requests awaiting other approvals"
+msgstr ""
+
+#: lib/RT/Config.pm:434
+msgid "Show simplified recipient list on ticket update"
 msgstr ""
 
 #: lib/RT/Config.pm:421
@@ -8616,6 +8620,10 @@ msgstr ""
 
 #: share/html/Install/index.html:67
 msgid "What is RT?"
+msgstr ""
+
+#: lib/RT/Config.pm:418
+msgid "What tickets to display in the \"More about requestor\" box"
 msgstr ""
 
 #: lib/RT/Installer.pm:166
