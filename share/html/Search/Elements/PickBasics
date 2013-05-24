@@ -141,6 +141,19 @@ my @lines = (
         Value => { Type => 'text', Size => 20 }
     },
     {
+        Name => 'WatcherGroup',
+        Field => {
+            Type => 'component',
+            Path => 'SelectPersonType',
+            Arguments => { Default => 'Owner', Suffix => 'Group' },
+        },
+        Op => {
+            Type => 'select',
+            Options => [ '=' => loc('is') ],
+        },
+        Value => { Type => 'text', Size => 20 }
+    },
+    {
         Name => 'Date',
         Field => {
             Type => 'component',
