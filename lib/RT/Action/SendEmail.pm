@@ -400,6 +400,11 @@ sub AddAttachment {
     my $disp = ($attach->GetHeader('Content-Disposition') || '')
                     =~ /^\s*(inline|attachment)/i ? $1 : undef;
 
+    # Copy the content id, if one exists
+    my @cid = $attach->GetHeader("Content-ID") ?
+            ('Content-ID:' => $attach->GetHeader("Content-ID")) :
+            ();
+
     $MIMEObj->attach(
         Type        => $attach->ContentType,
         Charset     => $attach->OriginalEncoding,
@@ -410,6 +415,7 @@ sub AddAttachment {
             . $self->TransactionObj->Id . "/"
             . $attach->id,
         Encoding => '-SUGGEST',
+        @cid,
     );
 }
 
