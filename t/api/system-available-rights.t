@@ -12,7 +12,7 @@ local $SIG{__WARN__} = sub {
 my $requestor = RT::Group->new( RT->SystemUser );
 $requestor->LoadRoleGroup(
     Object  => RT->System,
-    Type    => "Requestor",
+    Name    => "Requestor",
 );
 ok $requestor->id, "Loaded global requestor role group";
 

@@ -440,7 +440,7 @@ sub WhoHaveRoleRight
                   VALUE => RT->SystemUser->id
                 );
 
-    $self->_AddSubClause( "WhichRole", "(". join( ' OR ', map "$groups.Type = '$_'", @roles ) .")" );
+    $self->_AddSubClause( "WhichRole", "(". join( ' OR ', map "$groups.Name = '$_'", @roles ) .")" );
 
     my @groups_clauses = $self->_RoleClauses( $groups, @objects );
     $self->_AddSubClause( "WhichObject", "(". join( ' OR ', @groups_clauses ) .")" )

@@ -97,12 +97,18 @@ sub _RoleGroupClass {
 
 sub _RoleGroupsJoin {
     my $self = shift;
-    my %args = (New => 0, Class => '', Type => '', @_);
+    my %args = (New => 0, Class => '', Name => '', @_);
 
     $args{'Class'} ||= $self->_RoleGroupClass;
 
-    return $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $args{'Type'} }
-        if $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $args{'Type'} }
+    my $name = $args{'Name'};
+    if ( exists $args{'Type'} ) {
+        RT->Deprecated( Arguments => 'Type', Instead => 'Name', Remove => '4.4' );
+        $name = $args{'Type'};
+    }
+
+    return $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $name }
+        if $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $name }
            && !$args{'New'};
 
     # If we're looking at a role group on a class that "contains" this record
@@ -129,11 +135,11 @@ sub _RoleGroupsJoin {
     $self->Limit(
         LEFTJOIN        => $groups,
         ALIAS           => $groups,
-        FIELD           => 'Type',
-        VALUE           => $args{'Type'},
-    ) if $args{'Type'};
+        FIELD           => 'Name',
+        VALUE           => $name,
+    ) if $name;
 
-    $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $args{'Type'} } = $groups
+    $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $name } = $groups
         unless $args{'New'};
 
     return $groups;
@@ -256,7 +262,7 @@ sub RoleLimit {
     if ( $args{'BUNDLE'} ) {
         ($groups, $group_members, $users) = @{ $args{'BUNDLE'} };
     } else {
-        $groups = $self->_RoleGroupsJoin( Type => $type, Class => $class, New => !$type );
+        $groups = $self->_RoleGroupsJoin( Name => $type, Class => $class, New => !$type );
     }
 
     $self->_OpenParen( $args{SUBCLAUSE} ) if $args{SUBCLAUSE};

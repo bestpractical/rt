@@ -747,6 +747,12 @@ injection attacks when we pass through user specified values.
 
 =cut
 
+my %deprecated = (
+    groups => {
+        type => 'Name',
+    },
+);
+
 sub Limit {
     my $self = shift;
     my %ARGS = (
@@ -764,7 +770,6 @@ sub Limit {
 
     if ($ARGS{FUNCTION}) {
         ($ARGS{ALIAS}, $ARGS{FIELD}) = split /\./, delete $ARGS{FUNCTION}, 2;
-        $self->SUPER::Limit(%ARGS);
     } elsif ($ARGS{FIELD} =~ /\W/
           or $ARGS{OPERATOR} !~ /^(=|<|>|!=|<>|<=|>=
                                   |(NOT\s*)?LIKE
@@ -774,15 +779,28 @@ sub Limit {
                                   |(NOT\s*)?IN
                                   |\@\@)$/ix) {
         $RT::Logger->crit("Possible SQL injection attack: $ARGS{FIELD} $ARGS{OPERATOR}");
-        $self->SUPER::Limit(
+        %ARGS = (
             %ARGS,
             FIELD    => 'id',
             OPERATOR => '<',
             VALUE    => '0',
         );
-    } else {
-        $self->SUPER::Limit(%ARGS);
     }
+
+    my $table;
+    ($table) = $ARGS{'ALIAS'} && $ARGS{'ALIAS'} ne 'main'
+        ? ($ARGS{'ALIAS'} =~ /^(.*)_\d+$/)
+        : $self->Table
+    ;
+
+    if ( $table and my $instead = $deprecated{ lc $table }{ lc $ARGS{'FIELD'} } ) {
+        RT->Deprecated(
+            Message => "$table.$ARGS{'FIELD'} column is deprecated",
+            Instead => $instead, Remove => '4.4'
+        );
+    }
+
+    return $self->SUPER::Limit( %ARGS );
 }
 
 =head2 ItemsOrderBy
