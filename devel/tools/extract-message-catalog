@@ -51,6 +51,9 @@
 use strict;
 use warnings;
 
+use utf8;
+use open qw/ :std :encoding(UTF-8) /;
+
 use File::Find;
 use File::Copy;
 use Regexp::Common;
@@ -190,7 +193,7 @@ sub extract_strings_from_code {
         my ( $all, $str ) = ( $1, $2 );
         $line += ( $all =~ tr/\n/\n/ );
         unless ( defined $str ) {
-            warn "Couldn't process loc at $filename:$line";
+            warn "Couldn't process loc at $filename:$line:\n  str«$str»\n";
             next;
         }
         $str = substr($str, 1, -1);
@@ -205,7 +208,7 @@ sub extract_strings_from_code {
         my ( $all, $str ) = ( $1, $2 );
         $line += ( $all =~ tr/\n/\n/ );
         unless ( defined $str ) {
-            warn "Couldn't process loc_qw at $filename:$line";
+            warn "Couldn't process loc_qw at $filename:$line:\n  str«$str»\n";
             next;
         }
         foreach my $value (split ' ', $str) {
@@ -220,7 +223,7 @@ sub extract_strings_from_code {
         my ( $all, $key ) = ( $1, $2 );
         $line += ( $all =~ tr/\n/\n/ );
         unless ( defined $key ) {
-            warn "Couldn't process loc_left_pair at $filename:$line";
+            warn "Couldn't process loc_left_pair at $filename:$line:\n  key«$key»\n";
             next;
         }
         $key  =~ s/\\'/\'/g;
@@ -234,7 +237,7 @@ sub extract_strings_from_code {
         my ( $all, $key, $val ) = ( $1, $2, $3 );
         $line += ( $all =~ tr/\n/\n/ );
         unless ( defined $key && defined $val ) {
-            warn "Couldn't process loc_pair at $filename:$line";
+            warn "Couldn't process loc_pair at $filename:$line:\n  key«$key»\n  val«$val»\n";
             next;
         }
         $val = substr($val, 1, -1);
