@@ -163,7 +163,7 @@ that email address
 sub LimitToEmail {
     my $self = shift;
     my $addr = shift;
-    $self->Limit( FIELD => 'EmailAddress', VALUE => "$addr" );
+    $self->Limit( FIELD => 'EmailAddress', VALUE => $addr, CASESENSITIVE => 0 );
 }
 
 

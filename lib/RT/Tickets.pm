@@ -1219,7 +1219,7 @@ sub OrderByCols {
                     TABLE2 => 'Users',
                     FIELD2 => 'id',
                 );
-                push @res, { %$row, ALIAS => $alias, FIELD => "Name" };
+                push @res, { %$row, ALIAS => $alias, FIELD => "Name", CASESENSITIVE => 0 };
             } else {
                 push @res, $row;
             }
