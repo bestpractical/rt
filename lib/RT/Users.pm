@@ -226,7 +226,7 @@ sub LimitToUnprivileged {
 sub Limit {
     my $self = shift;
     my %args = @_;
-    $args{'CASESENSITIVE'} = 0 unless exists $args{'CASESENSITIVE'};
+    $args{'CASESENSITIVE'} = 0 unless exists $args{'CASESENSITIVE'} or $args{'ALIAS'};
     return $self->SUPER::Limit( %args );
 }
 
