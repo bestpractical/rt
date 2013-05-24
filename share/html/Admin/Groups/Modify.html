@@ -136,7 +136,7 @@ if ($Group->Id) {
     # Warn about duplicate groups
     my $dupcheck = RT::Groups->new(RT->SystemUser);
     $dupcheck->LimitToUserDefinedGroups();
-    $dupcheck->Limit( FIELD => 'Name', VALUE => $Group->Name );
+    $dupcheck->Limit( FIELD => 'Name', VALUE => $Group->Name, CASESENSITIVE => 0 );
     if ($dupcheck->Count > 1) {
         push @warnings, loc("There is more than one group with the name '[_1]'.  This may cause inconsistency in parts of the admin interface, and therefore it's recommended you rename the conflicting groups.", $Group->Name);
     }

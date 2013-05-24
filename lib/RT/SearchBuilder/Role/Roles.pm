@@ -137,6 +137,7 @@ sub _RoleGroupsJoin {
         ALIAS           => $groups,
         FIELD           => 'Name',
         VALUE           => $name,
+        CASESENSITIVE   => 0,
     ) if $name;
 
     $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $name } = $groups

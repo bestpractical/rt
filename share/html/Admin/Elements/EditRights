@@ -175,7 +175,7 @@ for my $category (@$Principals) {
 if ($obj->isa('RT::Group') and $obj->Domain eq 'UserDefined') {
     my $subgroups = $obj->GroupMembersObj( Recursively => 1 );
     $subgroups->LimitToUserDefinedGroups;
-    $subgroups->Limit( FIELD => 'Name', OPERATOR => '!=', VALUE => $obj->Name );
+    $subgroups->Limit( FIELD => 'Name', OPERATOR => '!=', VALUE => $obj->Name, CASESENSITIVE => 0 );
 
     if ( $subgroups->Count ) {
         my $inc = join ", ", map $_->Name, @{$subgroups->ItemsArrayRef};

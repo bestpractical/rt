@@ -2459,7 +2459,7 @@ sub CurrentUserCanSee {
         my $groups = RT::Groups->new( RT->SystemUser );
         $groups->Limit( FIELD => 'Domain', VALUE => 'RT::Queue-Role' );
         foreach ( @tmp ) {
-            $groups->Limit( FIELD => 'Name', VALUE => $_ );
+            $groups->Limit( FIELD => 'Name', VALUE => $_, CASESENSITIVE => 0 );
         }
         my $principal_alias = $groups->Join(
             ALIAS1 => 'main',
@@ -2565,6 +2565,7 @@ sub CurrentUserCanSee {
                     FIELD           => 'Name',
                     VALUE           => $role,
                     ENTRYAGGREGATOR => 'AND',
+                    CASESENSITIVE   => 0,
                 );
             }
             $limit_queues->( 'AND', @$queues ) if ref $queues;
