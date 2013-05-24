@@ -686,10 +686,6 @@ msgstr "--transaction argümanı sadece 'first' veya 'last' olabilir"
 msgid "--transaction argument could be only 'first', 'last' or 'all'"
 msgstr ""
 
-#: share/html/Ticket/Elements/EditBasics:135
-msgid "<% $field->{'name'} %>"
-msgstr ""
-
 #: NOT FOUND IN SOURCE
 msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
 msgstr "<input type=\"submit\" class=\"button\" value=\"Yeni bilet:\" />&nbsp;%1"
@@ -1872,7 +1868,8 @@ msgid "Could not delete search %1: %2"
 msgstr ""
 
 #: lib/RT/Record/Role/Roles.pm:397
-msgid "Could not find group '$name'"
+#. ($name)
+msgid "Could not find group '%1'"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
@@ -1880,7 +1877,8 @@ msgid "Could not find or create that user"
 msgstr "Bu kullanıcı bulunamıyor veya oluşturulamıyor"
 
 #: lib/RT/Record/Role/Roles.pm:387
-msgid "Could not find or create user '$name'"
+#. ($name)
+msgid "Could not find or create user '%1'"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
@@ -1920,7 +1918,8 @@ msgid "Could not load search attribute"
 msgstr "Arama özniteliği yüklenemiyor"
 
 #: lib/RT/Record/Role/Roles.pm:470
-msgid "Could not load user '$args{User}'"
+#. ($args{User})
+msgid "Could not load user '%1'"
 msgstr ""
 
 #: lib/RT/Record/Role/Roles.pm:423
@@ -7250,12 +7249,10 @@ msgstr ""
 msgid "Rights for Staff"
 msgstr ""
 
-#: lib/RT/Record/Role/Roles.pm:486
-msgid "Role group '$args{Type}' not found"
-msgstr ""
-
-#: lib/RT/Record/Role/Roles.pm:411
-msgid "Role group '$type' not found"
+#: lib/RT/Record/Role/Roles.pm:411 lib/RT/Record/Role/Roles.pm:486
+#. ($args{Type})
+#. ($type)
+msgid "Role group '%1' not found"
 msgstr ""
 
 #: lib/RT/Group.pm:689

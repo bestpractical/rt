@@ -384,7 +384,7 @@ sub AddRoleMember {
             unless ($user->Id) {
                 # If we can't find this watcher, we need to bail.
                 $RT::Logger->error("Could not load or create a user '$name' to add as a watcher: $msg");
-                return (0, $self->loc("Could not find or create user '$name'"));
+                return (0, $self->loc("Could not find or create user '[_1]'", $name));
             }
             $args{PrincipalId} = $user->PrincipalId;
         }
@@ -394,7 +394,7 @@ sub AddRoleMember {
             $group->LoadUserDefinedGroup($name);
             unless ($group->id) {
                 $RT::Logger->error("Could not load group '$name' to add as a watcher");
-                return (0, $self->loc("Could not find group '$name'"));
+                return (0, $self->loc("Could not find group '[_1]'", $name));
             }
             $args{PrincipalId} = $group->PrincipalObj->id;
         }
@@ -408,7 +408,7 @@ sub AddRoleMember {
         if $acl and not $acl->($type => $principal);
 
     my $group = $self->RoleGroup( $type );
-    return (0, $self->loc("Role group '$type' not found"))
+    return (0, $self->loc("Role group '[_1]' not found", $type))
         unless $group->id;
 
     return (0, $self->loc('[_1] is already a [_2]',
@@ -467,7 +467,7 @@ sub DeleteRoleMember {
         my $user = RT::User->new( $self->CurrentUser );
         $user->LoadByEmail( $args{User} );
         $user->Load( $args{User} ) unless $user->id;
-        return (0, $self->loc("Could not load user '$args{User}'") )
+        return (0, $self->loc("Could not load user '[_1]'", $args{User}) )
             unless $user->id;
         $args{PrincipalId} = $user->PrincipalId;
     }
@@ -483,7 +483,7 @@ sub DeleteRoleMember {
         if $acl and not $acl->($principal);
 
     my $group = $self->RoleGroup( $args{Type} );
-    return (0, $self->loc("Role group '$args{Type}' not found"))
+    return (0, $self->loc("Role group '[_1]' not found", $args{Type}))
         unless $group->id;
 
     return ( 0, $self->loc( '[_1] is not a [_2]',
