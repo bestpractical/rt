@@ -524,22 +524,6 @@ msgstr ""
 msgid "'%1' isn't a valid class identifier"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3580
-msgid "'Roles'"
-msgstr ""
-
-#: lib/RT/Interface/Web.pm:3537
-msgid "'System'"
-msgstr ""
-
-#: lib/RT/Interface/Web.pm:3555
-msgid "'User Groups'"
-msgstr ""
-
-#: lib/RT/Interface/Web.pm:3609
-msgid "'Users'"
-msgstr ""
-
 #: share/html/Ticket/Elements/Reminders:105
 msgid "(Check box to complete)"
 msgstr ""
@@ -7301,7 +7285,7 @@ msgstr ""
 msgid "Role group exists already"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
+#: lib/RT/Interface/Web.pm:3580
 msgid "Roles"
 msgstr "Roller"
 
@@ -8300,6 +8284,10 @@ msgstr "Superbrukar"
 #: lib/RT/Config.pm:506
 msgid "Suspended"
 msgstr "Stoppa"
+
+#: lib/RT/Interface/Web.pm:3537
+msgid "System"
+msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:50 share/html/Elements/Tabs:227
 msgid "System Configuration"
@@ -9374,6 +9362,10 @@ msgstr "Brukardefinerte vilkår og handlingar"
 msgid "User Defined conditions and results"
 msgstr ""
 
+#: lib/RT/Interface/Web.pm:3555
+msgid "User Groups"
+msgstr ""
+
 #: share/html/User/Elements/Portlets/ExtraInfo:48
 msgid "User Information"
 msgstr ""
@@ -9445,7 +9437,7 @@ msgstr "Brukarnamn"
 msgid "Username format"
 msgstr "Format på brukarnamn"
 
-#: lib/RT/CustomField.pm:1759 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:498 share/html/Elements/Tabs:67
+#: lib/RT/CustomField.pm:1759 lib/RT/Interface/Web.pm:3609 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:498 share/html/Elements/Tabs:67
 msgid "Users"
 msgstr "Brukarar"
 

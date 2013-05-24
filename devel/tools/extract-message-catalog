@@ -226,6 +226,7 @@ sub extract_strings_from_code {
             warn "Couldn't process loc_left_pair at $filename:$line:\n  key«$key»\n";
             next;
         }
+        $key  =~ s/^(['"])(.*)\1$/$2/g; # dequote potentially quoted string
         $key  =~ s/\\'/\'/g;
         push @{ $FILECAT{$key} }, [ $filename, $line, '' ];
     }
@@ -240,7 +241,8 @@ sub extract_strings_from_code {
             warn "Couldn't process loc_pair at $filename:$line:\n  key«$key»\n  val«$val»\n";
             next;
         }
-        $val = substr($val, 1, -1);
+        $key =~ s/^(['"])(.*)\1$/$2/g; # dequote potentially quoted string
+        $val = substr($val, 1, -1);    # dequote always quoted string
         $key  =~ s/\\'/\'/g;
         $val  =~ s/\\'/\'/g;
         push @{ $FILECAT{$key} }, [ $filename, $line, '' ];

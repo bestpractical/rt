@@ -536,19 +536,19 @@ msgstr ""
 msgid "'%1' isn't a valid class identifier"
 msgstr "'%1' nėra tesingas klasės identifikatorius"
 
-#: lib/RT/Interface/Web.pm:3580
+#: NOT FOUND IN SOURCE
 msgid "'Roles'"
 msgstr "'Rolės'"
 
-#: lib/RT/Interface/Web.pm:3537
+#: NOT FOUND IN SOURCE
 msgid "'System'"
 msgstr "'Sistema'"
 
-#: lib/RT/Interface/Web.pm:3555
+#: NOT FOUND IN SOURCE
 msgid "'User Groups'"
 msgstr "'Naudotojo grupės'"
 
-#: lib/RT/Interface/Web.pm:3609
+#: NOT FOUND IN SOURCE
 msgid "'Users'"
 msgstr "'Naudotojai'"
 
@@ -7413,7 +7413,7 @@ msgstr ""
 msgid "Role group exists already"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
+#: lib/RT/Interface/Web.pm:3580
 msgid "Roles"
 msgstr "Rolės"
 
@@ -8448,6 +8448,10 @@ msgstr "Išjungti automatinį prašymo būsenos pakeitimą iš naujo į atidaryt
 #: lib/RT/Config.pm:506
 msgid "Suspended"
 msgstr "Pristabdytas"
+
+#: lib/RT/Interface/Web.pm:3537
+msgid "System"
+msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:50 share/html/Elements/Tabs:227
 msgid "System Configuration"
@@ -9537,6 +9541,10 @@ msgstr "Naudotojo nustatytos sąlygos ir veiksmai"
 msgid "User Defined conditions and results"
 msgstr ""
 
+#: lib/RT/Interface/Web.pm:3555
+msgid "User Groups"
+msgstr ""
+
 #: share/html/User/Elements/Portlets/ExtraInfo:48
 msgid "User Information"
 msgstr ""
@@ -9608,7 +9616,7 @@ msgstr "Naudotojo vardas"
 msgid "Username format"
 msgstr "Naudotojo vardo formatas"
 
-#: lib/RT/CustomField.pm:1759 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:498 share/html/Elements/Tabs:67
+#: lib/RT/CustomField.pm:1759 lib/RT/Interface/Web.pm:3609 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:498 share/html/Elements/Tabs:67
 msgid "Users"
 msgstr "Naudotojai"
 

@@ -665,19 +665,19 @@ msgstr "'%1' 不是一個有效的類型識別字"
 msgid "'%1' not a recognized action. "
 msgstr "'%1'為無法辨識的動作。 "
 
-#: lib/RT/Interface/Web.pm:3580
+#: NOT FOUND IN SOURCE
 msgid "'Roles'"
 msgstr "'角色'"
 
-#: lib/RT/Interface/Web.pm:3537
+#: NOT FOUND IN SOURCE
 msgid "'System'"
 msgstr "'系統'"
 
-#: lib/RT/Interface/Web.pm:3555
+#: NOT FOUND IN SOURCE
 msgid "'User Groups'"
 msgstr "'使用者群組'"
 
-#: lib/RT/Interface/Web.pm:3609
+#: NOT FOUND IN SOURCE
 msgid "'Users'"
 msgstr "'使用者'"
 
@@ -9985,7 +9985,7 @@ msgstr ""
 msgid "Role group exists already"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
+#: lib/RT/Interface/Web.pm:3580
 msgid "Roles"
 msgstr "角色"
 
@@ -11237,7 +11237,7 @@ msgstr "自動同步104HRMS"
 msgid "Synchronizing HRMS data.  This may take a while..."
 msgstr "正在同步化 HRMS 人事系統資料。請稍待..."
 
-#: NOT FOUND IN SOURCE
+#: lib/RT/Interface/Web.pm:3537
 msgid "System"
 msgstr "系統"
 
@@ -12597,6 +12597,10 @@ msgstr "使用者自訂的條件及動作"
 msgid "User Defined conditions and results"
 msgstr ""
 
+#: lib/RT/Interface/Web.pm:3555
+msgid "User Groups"
+msgstr ""
+
 #: NOT FOUND IN SOURCE
 msgid "User ID"
 msgstr "使用者 ID"
@@ -12712,7 +12716,7 @@ msgstr "帳號"
 msgid "Username format"
 msgstr "使用者名格式"
 
-#: lib/RT/CustomField.pm:1759 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:498 share/html/Elements/Tabs:67
+#: lib/RT/CustomField.pm:1759 lib/RT/Interface/Web.pm:3609 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:498 share/html/Elements/Tabs:67
 msgid "Users"
 msgstr "使用者"
 

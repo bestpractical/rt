@@ -582,19 +582,19 @@ msgstr ""
 msgid "'%1' not a recognized action. "
 msgstr "'%1' ei ole tunnettu tapahtuma. "
 
-#: lib/RT/Interface/Web.pm:3580
+#: NOT FOUND IN SOURCE
 msgid "'Roles'"
 msgstr "Roolit"
 
-#: lib/RT/Interface/Web.pm:3537
+#: NOT FOUND IN SOURCE
 msgid "'System'"
 msgstr "'Järjestelmä'"
 
-#: lib/RT/Interface/Web.pm:3555
+#: NOT FOUND IN SOURCE
 msgid "'User Groups'"
 msgstr "'Käyttäjäryhmät'"
 
-#: lib/RT/Interface/Web.pm:3609
+#: NOT FOUND IN SOURCE
 msgid "'Users'"
 msgstr "'Käyttäjät'"
 
@@ -7946,7 +7946,7 @@ msgstr ""
 msgid "Role group exists already"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
+#: lib/RT/Interface/Web.pm:3580
 msgid "Roles"
 msgstr "Roolit"
 
@@ -8998,7 +8998,7 @@ msgstr ""
 msgid "Suspended"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
+#: lib/RT/Interface/Web.pm:3537
 msgid "System"
 msgstr "Järjestelmä"
 
@@ -10202,6 +10202,10 @@ msgstr ""
 msgid "User Defined conditions and results"
 msgstr ""
 
+#: lib/RT/Interface/Web.pm:3555
+msgid "User Groups"
+msgstr ""
+
 #: NOT FOUND IN SOURCE
 msgid "User ID"
 msgstr "Käyttäjätunnus"
@@ -10289,7 +10293,7 @@ msgstr "Käyttäjätunnus"
 msgid "Username format"
 msgstr "Käyttäjänimen esitystapa"
 
-#: lib/RT/CustomField.pm:1759 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:498 share/html/Elements/Tabs:67
+#: lib/RT/CustomField.pm:1759 lib/RT/Interface/Web.pm:3609 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:498 share/html/Elements/Tabs:67
 msgid "Users"
 msgstr "Käyttäjät"
 

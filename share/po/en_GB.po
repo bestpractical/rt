@@ -5359,7 +5359,7 @@ msgstr "Right revoked"
 msgid "Rights could not be granted for %1"
 msgstr "Rights could not be granted for %1"
 
-#: NOT FOUND IN SOURCE
+#: lib/RT/Interface/Web.pm:3580
 msgid "Roles"
 msgstr "Roles"
 
@@ -6861,7 +6861,7 @@ msgstr "Username"
 msgid "Username format"
 msgstr "Username format"
 
-#: lib/RT/CustomField.pm:1759 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:498 share/html/Elements/Tabs:67
+#: lib/RT/CustomField.pm:1759 lib/RT/Interface/Web.pm:3609 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:498 share/html/Elements/Tabs:67
 msgid "Users"
 msgstr "Users"
 

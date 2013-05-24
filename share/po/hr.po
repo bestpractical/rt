@@ -553,19 +553,15 @@ msgstr ""
 msgid "'%1' isn't a valid class identifier"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3580
-msgid "'Roles'"
-msgstr ""
-
-#: lib/RT/Interface/Web.pm:3537
+#: NOT FOUND IN SOURCE
 msgid "'System'"
 msgstr "'Sustav'"
 
-#: lib/RT/Interface/Web.pm:3555
+#: NOT FOUND IN SOURCE
 msgid "'User Groups'"
 msgstr "'Grupe korisnika'"
 
-#: lib/RT/Interface/Web.pm:3609
+#: NOT FOUND IN SOURCE
 msgid "'Users'"
 msgstr "'Korisnici'"
 
@@ -7885,7 +7881,7 @@ msgstr ""
 msgid "Role group exists already"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
+#: lib/RT/Interface/Web.pm:3580
 msgid "Roles"
 msgstr "Uloge"
 
@@ -8993,7 +8989,7 @@ msgstr "Superkorisnik"
 msgid "Suspended"
 msgstr "Isključeno"
 
-#: NOT FOUND IN SOURCE
+#: lib/RT/Interface/Web.pm:3537
 msgid "System"
 msgstr "Sistem"
 
@@ -10205,6 +10201,10 @@ msgstr "Uvjeti i radnje definirani od korisnika"
 msgid "User Defined conditions and results"
 msgstr ""
 
+#: lib/RT/Interface/Web.pm:3555
+msgid "User Groups"
+msgstr ""
+
 #: NOT FOUND IN SOURCE
 msgid "User ID"
 msgstr "Korisnički ID"
@@ -10288,7 +10288,7 @@ msgstr "Korisničko ime"
 msgid "Username format"
 msgstr "Format korisničkog imena"
 
-#: lib/RT/CustomField.pm:1759 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:498 share/html/Elements/Tabs:67
+#: lib/RT/CustomField.pm:1759 lib/RT/Interface/Web.pm:3609 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:498 share/html/Elements/Tabs:67
 msgid "Users"
 msgstr "Korisnici"
 
