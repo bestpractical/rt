@@ -233,7 +233,7 @@ sub extract_strings_from_code {
     # Comment-based pair mark: "..." => "..." # loc_pair
     $line = 1;
     pos($_) = 0;
-    while (m/\G(.*?(?:(\w+)\s*=>\s*($re_delim)[\}\)\],;]*)?$re_loc_pair_suffix)/smgo) {
+    while (m/\G(.*?(?:(\w+)\s*=>\s*($re_delim)[\s\}\)\],;]*)?$re_loc_pair_suffix)/smgo) {
         my ( $all, $key, $val ) = ( $1, $2, $3 );
         $line += ( $all =~ tr/\n/\n/ );
         unless ( defined $key && defined $val ) {
