@@ -106,7 +106,7 @@ ok($user->Privileged, "User 'root' is privileged again");
 
 ok(my $u = RT::User->new(RT->SystemUser));
 ok($u->Load(1), "Loaded the first user");
-is($u->PrincipalObj->ObjectId , 1, "user 1 is the first principal");
+is($u->PrincipalObj->id , 1, "user 1 is the first principal");
 is($u->PrincipalObj->PrincipalType, 'User' , "Principal 1 is a user, not a group");
 
 
