@@ -750,6 +750,7 @@ injection attacks when we pass through user specified values.
 
 my %check_case_sensitivity = (
     groups => { 'name' => 1, domain => 1 },
+    queues => { 'name' => 1 },
     customfields => { 'name' => 1 },
 );
 

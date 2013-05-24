@@ -1208,7 +1208,7 @@ sub OrderByCols {
                     TABLE2 => 'Queues',
                     FIELD2 => 'id',
                 );
-                push @res, { %$row, ALIAS => $alias, FIELD => "Name" };
+                push @res, { %$row, ALIAS => $alias, FIELD => "Name", CASESENSITIVE => 0 };
             } elsif ( ( $meta->[0] eq 'ENUM' && ($meta->[1]||'') eq 'User' )
                 || ( $meta->[0] eq 'WATCHERFIELD' && ($meta->[1]||'') eq 'Owner' )
             ) {
