@@ -74,7 +74,7 @@ foreach my $str ( sort keys %FILECAT ) {
     my $oldstr = $str;
 
     $str =~ s/\\/\\\\/g;
-    $str =~ s/\"/\\"/g;
+    $str =~ s/"/\\"/g;
     $str =~ s/((?<!~)(?:~~)*)\[_(\d+)\]/$1%$2/g;
     $str =~ s/((?<!~)(?:~~)*)\[([A-Za-z#*]\w*),([^\]]+)\]/"$1%$2(".escape($3).")"/eg;
     $str =~ s/~([\[\]])/$1/g;
@@ -157,7 +157,7 @@ sub extract_strings_from_code {
         my ( $all, $vars, $str ) = ( $1, $2, $3 );
         $vars =~ s/[\n\r]//g;
         $line += ( $all =~ tr/\n/\n/ );
-        $str =~ s/\\'/\'/g;
+        $str =~ s/\\(['"])/$1/g;
         #print "STR IS $str\n";
         push @{ $FILECAT{$str} }, [ $filename, $line, $vars ];
     }
@@ -181,7 +181,7 @@ sub extract_strings_from_code {
         }
 
         $vars =~ s/[\n\r]//g;
-        $str  =~ s/\\'/\'/g;
+        $str  =~ s/\\(['"])/$1/g;
 
         push @{ $FILECAT{$str} }, [ $filename, $line, $vars ];
     }
@@ -197,7 +197,7 @@ sub extract_strings_from_code {
             next;
         }
         $str = substr($str, 1, -1);
-        $str =~ s/\\'/\'/g;
+        $str =~ s/\\(['"])/$1/g;
         push @{ $FILECAT{$str} }, [ $filename, $line, '' ];
     }
 
@@ -227,7 +227,7 @@ sub extract_strings_from_code {
             next;
         }
         $key  =~ s/^(['"])(.*)\1$/$2/g; # dequote potentially quoted string
-        $key  =~ s/\\'/\'/g;
+        $key  =~ s/\\(['"])/$1/g;
         push @{ $FILECAT{$key} }, [ $filename, $line, '' ];
     }
 
@@ -243,8 +243,8 @@ sub extract_strings_from_code {
         }
         $key =~ s/^(['"])(.*)\1$/$2/g; # dequote potentially quoted string
         $val = substr($val, 1, -1);    # dequote always quoted string
-        $key  =~ s/\\'/\'/g;
-        $val  =~ s/\\'/\'/g;
+        $key  =~ s/\\(['"])/$1/g;
+        $val  =~ s/\\(['"])/$1/g;
         push @{ $FILECAT{$key} }, [ $filename, $line, '' ];
         push @{ $FILECAT{$val} }, [ $filename, $line, '' ];
     }
