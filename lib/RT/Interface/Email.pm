@@ -1192,7 +1192,7 @@ sub SetInReplyTo {
         my $pseudo_ref = PseudoReference( $args{'Ticket'} );
         push @references, $pseudo_ref unless grep $_ eq $pseudo_ref, @references;
     }
-    @references = splice @references, 4, -6
+    splice @references, 4, -6
         if @references > 10;
 
     my $mail = $args{'Message'};
