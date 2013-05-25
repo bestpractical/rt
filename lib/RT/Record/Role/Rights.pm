@@ -49,77 +49,85 @@
 use strict;
 use warnings;
 
-package RT::Lifecycle::Ticket;
+package RT::Record::Role::Rights;
+use Role::Basic;
+use Scalar::Util qw(blessed);
 
-use base qw(RT::Lifecycle);
+=head1 NAME
 
-=head2 Queues
+RT::Record::Role::Rights - Common methods for records which can provide rights
 
-Returns L<RT::Queues> collection with queues that use this lifecycle.
+=head1 DESCRIPTION
 
-=cut
+=head1 REQUIRES
 
-sub Queues {
-    my $self = shift;
-    require RT::Queues;
-    my $queues = RT::Queues->new( RT->SystemUser );
-    $queues->Limit( FIELD => 'Lifecycle', VALUE => $self->Name );
-    return $queues;
-}
-
-=head3 DefaultOnMerge
-
-Returns the status that should be used when tickets
-are merged.
+=head2 L<RT::Record::Role>
 
 =cut
 
-sub DefaultOnMerge {
-    my $self = shift;
-    return $self->DefaultStatus('on_merge');
-}
+with 'RT::Record::Role';
 
-=head3 ReminderStatusOnOpen
-
-Returns the status that should be used when reminders are opened.
+=head1 PROVIDES
 
 =cut
 
-sub ReminderStatusOnOpen {
-    my $self = shift;
-    return $self->DefaultStatus('reminder_on_open') || 'open';
-}
+=head2 AddRight C<CATEGORY>, C<RIGHT>, C<DESCRIPTION>
 
-=head3 ReminderStatusOnResolve
-
-Returns the status that should be used when reminders are resolved.
+Adds the given rights to the list of possible rights.  This method
+should be called during server startup, not at runtime.
 
 =cut
 
-sub ReminderStatusOnResolve {
-    my $self = shift;
-    return $self->DefaultStatus('reminder_on_resolve') || 'resolved';
-}
-
-=head2 RegisterRights
-
-Ticket lifecycle rights are registered (and thus grantable) at the queue
-level.
-
-=cut
-
-sub RegisterRights {
-    my $self = shift;
-
-    my %rights = $self->RightsDescription( 'ticket' );
+sub AddRight {
+    my $class = shift;
+    $class = ref($class) || $class;
+    my ($category, $name, $description) = @_;
 
     require RT::ACE;
-
-    while ( my ($right, $description) = each %rights ) {
-        next if RT::ACE->CanonicalizeRightName( $right );
-
-        RT::Queue->AddRight( Status => $right => $description );
+    if (exists $RT::ACE::RIGHTS{$class}{lc $name}) {
+        warn "Duplicate right '$name' found";
+        return;
     }
+
+    $RT::ACE::RIGHTS{$class}{lc $name} = {
+        Name        => $name,
+        Category    => $category,
+        Description => $description,
+    };
+}
+
+=head2 AvailableRights
+
+Returns a hashref of available rights for this object. The keys are the
+right names and the values are a description of what the rights do.
+
+=cut
+
+sub AvailableRights {
+    my $self = shift;
+    my $class = ref($self) || $self;
+
+    my %rights;
+    $rights{$_->{Name}} = $_->{Description}
+        for values %{$RT::ACE::RIGHTS{$class} || {} };
+    return \%rights;
+}
+
+=head2 RightCategories
+
+Returns a hashref where the keys are rights for this type of object and the
+values are the category (General, Staff, Admin) the right falls into.
+
+=cut
+
+sub RightCategories {
+    my $self = shift;
+    my $class = ref($self) || $self;
+
+    my %rights;
+    $rights{$_->{Name}} = $_->{Category}
+        for values %{ $RT::ACE::RIGHTS{$class} || {} };
+    return \%rights;
 }
 
 1;

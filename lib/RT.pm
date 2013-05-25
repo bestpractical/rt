@@ -197,7 +197,7 @@ sub Init {
     InitPlugins();
     RT::I18N->Init;
     RT->Config->PostLoadCheck;
-
+    RT::Lifecycle->new->FillCache;
 }
 
 =head2 ConnectToDatabase

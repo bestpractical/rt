@@ -11,7 +11,7 @@ BEGIN{
 # Skipping most of the methods added just to make RT::System
 # look like RT::Record.
 
-can_ok('RT::System', qw( AvailableRights RightCategories AddRights AddRightCategories
+can_ok('RT::System', qw( AvailableRights RightCategories AddRight
                          id Id SubjectTag Name QueueCacheNeedsUpdate AddUpgradeHistory
                          UpgradeHistory ));
 

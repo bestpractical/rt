@@ -2432,7 +2432,7 @@ sub ProcessACLChanges {
         my $obj;
         if ( $object_type eq 'RT::System' ) {
             $obj = $RT::System;
-        } elsif ( $RT::ACE::OBJECT_TYPES{$object_type} ) {
+        } elsif ( $object_type->DOES('RT::Record::Role::Rights') ) {
             $obj = $object_type->new( $session{'CurrentUser'} );
             $obj->Load($object_id);
             unless ( $obj->id ) {
@@ -2532,7 +2532,7 @@ sub ProcessACLs {
         my $obj;
         if ( $object_type eq 'RT::System' ) {
             $obj = $RT::System;
-        } elsif ( $RT::ACE::OBJECT_TYPES{$object_type} ) {
+        } elsif ( $object_type->DOES('RT::Record::Role::Rights') ) {
             $obj = $object_type->new( $session{'CurrentUser'} );
             $obj->Load($object_id);
             unless ( $obj->id ) {
