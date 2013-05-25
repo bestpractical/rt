@@ -63,6 +63,46 @@ my %commands = (
     extract => { },
 );
 
+sub usage {
+    warn @_, "\n\n" if @_;
+    warn <<'    USAGE';
+usages:
+
+    rt-message-catalog stats [po-directory]
+    rt-message-catalog shrink [--no-update] [--keep CLASS] [po-directory]
+    rt-message-catalog clean [--no-update] [po-directory]
+    rt-message-catalog rosetta [--boundary PERCENT] download-url
+    rt-message-catalog extract [po-file ...]
+
+stats: Print stats for each translation.
+
+shrink: Reduce translations, optionally keeping classes of strings.
+
+    --no-update     Just report what could be shrunk.
+    --keep CLASS    Don't remove strings in the specified class:
+                        not-referenced, not-translated, equal
+
+                    May be specified more than once.
+
+clean: Equivalent to `shrink --keep not-translated --keep equal`
+
+rosetta: Merge translations from Launchpad's Rosetta.
+
+    Requires a Launchpad translations export url.
+
+    --boundary PERCENT      Acceptable threshold of percentage of strings
+                            translated.  Translations with less than this are
+                            discarded.  Default is 20.
+
+extract: Extract message catalogs from source code and report common errors.
+
+    If passed a specific translation file, only that file is updated.
+    (Not recommended except for debugging.)
+
+    USAGE
+    exit 1;
+}
+
 my $command = shift;
 usage() unless $command;
 usage("Unknown command '$command'")
