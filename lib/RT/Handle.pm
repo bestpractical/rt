@@ -972,18 +972,28 @@ sub InsertData {
                 $object = RT::CustomField->new( RT->SystemUser );
                 my @columns = ( Name => $item->{'CF'} );
                 push @columns, Queue => $item->{'Queue'} if $item->{'Queue'} and not ref $item->{'Queue'};
-                $object->LoadByName( @columns );
+                my ($ok, $msg) = $object->LoadByName( @columns );
+                unless ( $ok ) {
+                    RT->Logger->error("Unable to load CF ".$item->{CF}.": $msg");
+                    next;
+                }
             } elsif ( $item->{'Queue'} ) {
                 $object = RT::Queue->new(RT->SystemUser);
-                $object->Load( $item->{'Queue'} );
+                my ($ok, $msg) = $object->Load( $item->{'Queue'} );
+                unless ( $ok ) {
+                    RT->Logger->error("Unable to load queue ".$item->{Queue}.": $msg");
+                    next;
+                }
             } elsif ( $item->{ObjectType} and $item->{ObjectId}) {
                 $object = $item->{ObjectType}->new(RT->SystemUser);
-                $object->Load( $item->{ObjectId} );
+                my ($ok, $msg) = $object->Load( $item->{ObjectId} );
+                unless ( $ok ) {
+                    RT->Logger->error("Unable to load ".$item->{ObjectType}." ".$item->{ObjectId}.": $msg");
+                    next;
+                }
             } else {
                 $object = $RT::System;
             }
-
-            $RT::Logger->error("Couldn't load object") and next unless $object and $object->Id;
 
             # Group rights or user rights?
             if ( $item->{'GroupDomain'} ) {
