@@ -415,7 +415,7 @@ our %META = (
         SortOrder       => 6,
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
-            Description => q|What tickets to display in the 'More about requestor' box|,                #loc
+            Description => 'What tickets to display in the "More about requestor" box',                #loc
             Values      => [qw(Active Inactive All None)],
             ValuesLabel => {
                 Active   => "Show the Requestor's 10 highest priority active tickets",                  #loc
@@ -431,7 +431,7 @@ our %META = (
         SortOrder       => 7,
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
-            Description => q|Show simplified recipient list on ticket update|,                #loc
+            Description => "Show simplified recipient list on ticket update",                #loc
         },
     },
     DisplayTicketAfterQuickCreate => {
@@ -440,7 +440,7 @@ our %META = (
         SortOrder       => 8,
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
-            Description => q{Display ticket after "Quick Create"}, #loc
+            Description => 'Display ticket after "Quick Create"', #loc
         },
     },
 

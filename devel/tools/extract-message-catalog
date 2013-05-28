@@ -51,6 +51,9 @@
 use strict;
 use warnings;
 
+use utf8;
+use open qw/ :std :encoding(UTF-8) /;
+
 use File::Find;
 use File::Copy;
 use Regexp::Common;
@@ -71,7 +74,7 @@ foreach my $str ( sort keys %FILECAT ) {
     my $oldstr = $str;
 
     $str =~ s/\\/\\\\/g;
-    $str =~ s/\"/\\"/g;
+    $str =~ s/"/\\"/g;
     $str =~ s/((?<!~)(?:~~)*)\[_(\d+)\]/$1%$2/g;
     $str =~ s/((?<!~)(?:~~)*)\[([A-Za-z#*]\w*),([^\]]+)\]/"$1%$2(".escape($3).")"/eg;
     $str =~ s/~([\[\]])/$1/g;
@@ -154,7 +157,7 @@ sub extract_strings_from_code {
         my ( $all, $vars, $str ) = ( $1, $2, $3 );
         $vars =~ s/[\n\r]//g;
         $line += ( $all =~ tr/\n/\n/ );
-        $str =~ s/\\'/\'/g;
+        $str =~ s/\\(['"])/$1/g;
         #print "STR IS $str\n";
         push @{ $FILECAT{$str} }, [ $filename, $line, $vars ];
     }
@@ -178,7 +181,7 @@ sub extract_strings_from_code {
         }
 
         $vars =~ s/[\n\r]//g;
-        $str  =~ s/\\'/\'/g;
+        $str  =~ s/\\(['"])/$1/g;
 
         push @{ $FILECAT{$str} }, [ $filename, $line, $vars ];
     }
@@ -190,11 +193,11 @@ sub extract_strings_from_code {
         my ( $all, $str ) = ( $1, $2 );
         $line += ( $all =~ tr/\n/\n/ );
         unless ( defined $str ) {
-            warn "Couldn't process loc at $filename:$line";
+            warn "Couldn't process loc at $filename:$line:\n  str«$str»\n";
             next;
         }
         $str = substr($str, 1, -1);
-        $str =~ s/\\'/\'/g;
+        $str =~ s/\\(['"])/$1/g;
         push @{ $FILECAT{$str} }, [ $filename, $line, '' ];
     }
 
@@ -205,7 +208,7 @@ sub extract_strings_from_code {
         my ( $all, $str ) = ( $1, $2 );
         $line += ( $all =~ tr/\n/\n/ );
         unless ( defined $str ) {
-            warn "Couldn't process loc_qw at $filename:$line";
+            warn "Couldn't process loc_qw at $filename:$line:\n  str«$str»\n";
             next;
         }
         foreach my $value (split ' ', $str) {
@@ -220,26 +223,28 @@ sub extract_strings_from_code {
         my ( $all, $key ) = ( $1, $2 );
         $line += ( $all =~ tr/\n/\n/ );
         unless ( defined $key ) {
-            warn "Couldn't process loc_left_pair at $filename:$line";
+            warn "Couldn't process loc_left_pair at $filename:$line:\n  key«$key»\n";
             next;
         }
-        $key  =~ s/\\'/\'/g;
+        $key  =~ s/^(['"])(.*)\1$/$2/g; # dequote potentially quoted string
+        $key  =~ s/\\(['"])/$1/g;
         push @{ $FILECAT{$key} }, [ $filename, $line, '' ];
     }
 
     # Comment-based pair mark: "..." => "..." # loc_pair
     $line = 1;
     pos($_) = 0;
-    while (m/\G(.*?(?:(\w+)\s*=>\s*($re_delim)[\}\)\],;]*)?$re_loc_pair_suffix)/smgo) {
-        my ( $all, $key, $val ) = ( $1, $2, $3 );
+    while (m/\G(.*?(?:(\w+|$re_delim)\s*=>\s*($re_delim)[\s\}\)\],;]*)?$re_loc_pair_suffix)/smgo) {
+        my ( $all, $key, $val ) = ( $1, $2, $10 );
         $line += ( $all =~ tr/\n/\n/ );
         unless ( defined $key && defined $val ) {
-            warn "Couldn't process loc_pair at $filename:$line";
+            warn "Couldn't process loc_pair at $filename:$line:\n  key«$key»\n  val«$val»\n";
             next;
         }
-        $val = substr($val, 1, -1);
-        $key  =~ s/\\'/\'/g;
-        $val  =~ s/\\'/\'/g;
+        $key =~ s/^(['"])(.*)\1$/$2/g; # dequote potentially quoted string
+        $val = substr($val, 1, -1);    # dequote always quoted string
+        $key  =~ s/\\(['"])/$1/g;
+        $val  =~ s/\\(['"])/$1/g;
         push @{ $FILECAT{$key} }, [ $filename, $line, '' ];
         push @{ $FILECAT{$val} }, [ $filename, $line, '' ];
     }
