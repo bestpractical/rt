@@ -218,6 +218,7 @@ is for Tickets, Transactions, Users, Groups, or Queues.  Possible values:
     RT::User                                # Users
     RT::Group                               # Groups
     RT::Queue                               # Queues
+    RT::Class-RT::Article                   # Articles
 
 Ticket CFs are the most common, meaning C<RT::Queue-RT::Ticket> is the most
 common C<LookupType>.
