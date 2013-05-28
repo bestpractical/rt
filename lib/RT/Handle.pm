@@ -889,12 +889,15 @@ sub InsertData {
             my $new_entry = RT::CustomField->new( RT->SystemUser );
             my $values    = delete $item->{'Values'};
 
-            my @queues;
-            # if ref then it's list of queues, so we do things ourself
-            if ( exists $item->{'Queue'} && ref $item->{'Queue'} ) {
+            # Back-compat for the old "Queue" argument
+            if ( exists $item->{'Queue'} ) {
                 $item->{'LookupType'} ||= 'RT::Queue-RT::Ticket';
-                @queues = @{ delete $item->{'Queue'} };
+                $RT::Logger->warn("Queue provided for non-ticket custom field")
+                    unless $item->{'LookupType'} =~ /^RT::Queue-/;
+                $item->{'ApplyTo'} = delete $item->{'Queue'};
             }
+
+            my $apply_to = delete $item->{'ApplyTo'};
 
             if ( $item->{'BasedOn'} ) {
                 if ( $item->{'LookupType'} ) {
@@ -921,29 +924,38 @@ sub InsertData {
             }
 
             foreach my $value ( @{$values} ) {
-                my ( $return, $msg ) = $new_entry->AddValue(%$value);
+                ( $return, $msg ) = $new_entry->AddValue(%$value);
                 $RT::Logger->error( $msg ) unless $return;
             }
 
-            # apply by default
-            if ( !@queues && !exists $item->{'Queue'} && $item->{LookupType} ) {
-                my $ocf = RT::ObjectCustomField->new(RT->SystemUser);
-                $ocf->Create( CustomField => $new_entry->Id );
-            }
-
-            for my $q (@queues) {
-                my $q_obj = RT::Queue->new(RT->SystemUser);
-                $q_obj->Load($q);
-                unless ( $q_obj->Id ) {
-                    $RT::Logger->error("Could not find queue ". $q );
-                    next;
+            my $class = $new_entry->RecordClassFromLookupType;
+            if ($class) {
+                if ($new_entry->IsOnlyGlobal and $apply_to) {
+                    $RT::Logger->warn("ApplyTo provided for global custom field ".$new_entry->Name );
+                    undef $apply_to;
                 }
-                my $OCF = RT::ObjectCustomField->new(RT->SystemUser);
-                ( $return, $msg ) = $OCF->Create(
-                    CustomField => $new_entry->Id,
-                    ObjectId    => $q_obj->Id,
-                );
-                $RT::Logger->error( $msg ) unless $return and $OCF->Id;
+                if ( !$apply_to ) {
+                    # Apply to all by default
+                    my $ocf = RT::ObjectCustomField->new(RT->SystemUser);
+                    ( $return, $msg) = $ocf->Create( CustomField => $new_entry->Id );
+                    $RT::Logger->error( $msg ) unless $return and $ocf->Id;
+                } else {
+                    $apply_to = [ $apply_to ] unless ref $apply_to;
+                    for my $name ( @{ $apply_to } ) {
+                        my $obj = $class->new(RT->SystemUser);
+                        $obj->Load($name);
+                        if ( $obj->Id ) {
+                            my $ocf = RT::ObjectCustomField->new(RT->SystemUser);
+                            ( $return, $msg ) = $ocf->Create(
+                                CustomField => $new_entry->Id,
+                                ObjectId    => $obj->Id,
+                            );
+                            $RT::Logger->error( $msg ) unless $return and $ocf->Id;
+                        } else {
+                            $RT::Logger->error("Could not find $class $name to apply ".$new_entry->Name." to" );
+                        }
+                    }
+                }
             }
         }
 
