@@ -976,6 +976,9 @@ sub InsertData {
             } elsif ( $item->{'Queue'} ) {
                 $object = RT::Queue->new(RT->SystemUser);
                 $object->Load( $item->{'Queue'} );
+            } elsif ( $item->{ObjectType} and $item->{ObjectId}) {
+                $object = $item->{ObjectType}->new(RT->SystemUser);
+                $object->Load( $item->{ObjectId} );
             } else {
                 $object = $RT::System;
             }

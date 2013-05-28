@@ -314,6 +314,11 @@ granted.  This is B<different> than the user/group/role receiving the right.
     CF      => 'Name',
     Queue   => 'Name',
 
+=item Granted on some other object (article Classes, etc)
+
+    ObjectType => 'RT::Class',
+    ObjectId   => 'Name',
+
 =item Granted globally
 
 Specifying none of the above will get you a global right.
