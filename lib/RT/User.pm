@@ -1461,7 +1461,7 @@ sub WatchedQueues {
         $watched_queues->Limit(
                                 SUBCLAUSE => 'LimitToWatchers',
                                 ALIAS => $group_alias,
-                                FIELD => 'Type',
+                                FIELD => 'Name',
                                 VALUE => 'Cc',
                                 ENTRYAGGREGATOR => 'OR',
                               );
@@ -1470,7 +1470,7 @@ sub WatchedQueues {
         $watched_queues->Limit(
                                 SUBCLAUSE => 'LimitToWatchers',
                                 ALIAS => $group_alias,
-                                FIELD => 'Type',
+                                FIELD => 'Name',
                                 VALUE => 'AdminCc',
                                 ENTRYAGGREGATOR => 'OR',
                               );
