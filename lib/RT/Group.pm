@@ -697,6 +697,11 @@ sub CreateRoleGroup {
         return ( 0, $self->loc("Invalid Group Name and Domain") );
     }
 
+    if ( exists $args{'Type'} ) {
+        RT->Deprecated( Instead => 'Name', Arguments => 'Type', Remove => '4.4' );
+        $args{'Name'} = $args{'Type'};
+    }
+
     my %create = map { $_ => $args{$_} } qw(Domain Instance Name);
 
     my $duplicate = RT::Group->new( RT->SystemUser );
