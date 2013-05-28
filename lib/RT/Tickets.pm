@@ -996,7 +996,7 @@ sub _WatcherMembershipLimit {
     if ($type) {
         $self->Limit(
             ALIAS           => $groups,
-            FIELD           => 'Type',
+            FIELD           => 'Name',
             VALUE           => $type,
             ENTRYAGGREGATOR => 'AND'
         );

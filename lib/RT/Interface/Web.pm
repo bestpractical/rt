@@ -3532,7 +3532,7 @@ sub GetPrincipalsMap {
         if (/System/) {
             my $system = RT::Groups->new($session{'CurrentUser'});
             $system->LimitToSystemInternalGroups();
-            $system->OrderBy( FIELD => 'Type', ORDER => 'ASC' );
+            $system->OrderBy( FIELD => 'Name', ORDER => 'ASC' );
             push @map, [
                 'System' => $system,    # loc_left_pair
                 'Name'   => 1,
@@ -3575,7 +3575,7 @@ sub GetPrincipalsMap {
             }
 
             if ($roles) {
-                $roles->OrderBy( FIELD => 'Type', ORDER => 'ASC' );
+                $roles->OrderBy( FIELD => 'Name', ORDER => 'ASC' );
                 push @map, [
                     'Roles' => $roles,  # loc_left_pair
                     'Name'  => 1
