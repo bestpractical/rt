@@ -1456,8 +1456,8 @@ Used by the User Autocompleter as well as the User Search.
 Specifies which fields of L<RT::User> to match against and how to match
 each field when autocompleting users.  Valid match methods are LIKE,
 STARTSWITH, ENDSWITH, =, and !=.  Valid search fields are the core User
-fields, as well as custom fields, which are specified as "CF.{1234}" or
-"CF.{Name}"
+fields, as well as custom fields, which are specified as "CF.1234" or
+"CF.Name"
 
 =cut
 

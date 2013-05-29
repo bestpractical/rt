@@ -610,8 +610,8 @@ sub SimpleSearch {
         $op = 'STARTSWITH'
         unless $op =~ /^(?:LIKE|(?:START|END)SWITH|=|!=)$/i;
 
-        if ($name =~ /^CF\.\{(.*)}$/) {
-            my $cfname = $1;
+        if ($name =~ /^CF\.(?:\{(.*)}|(.*))$/) {
+            my $cfname = $1 || $2;
             $self->LimitCustomField(
                 CUSTOMFIELD     => $cfname,
                 OPERATOR        => $op,
