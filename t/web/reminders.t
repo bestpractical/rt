@@ -51,10 +51,10 @@ is($col->Count, 1, 'got a reminder');
 my $reminder = $col->First;
 is($reminder->Subject, "baby's first reminder");
 my $reminder_id = $reminder->id;
-is($reminder->Status, 'new');
+is($reminder->Status, 'open');
 
-$ticket->SetStatus('new');
-is( $ticket->Status, 'new', 'changed back to new' );
+$ticket->SetStatus('open');
+is( $ticket->Status, 'open', 'changed back to new' );
 
 $m->goto_ticket($ticket->id);
 $m->text_contains('New reminder:', "can create a new reminder");
@@ -72,7 +72,7 @@ DBIx::SearchBuilder::Record::Cachable->FlushCache;
 $reminder = RT::Ticket->new($user);
 $reminder->Load($reminder_id);
 is($reminder->Subject, 'changed the subject');
-is($reminder->Status, 'new');
+is($reminder->Status, 'open');
 
 $m->goto_ticket($ticket->id);
 $m->form_name('UpdateReminders');
