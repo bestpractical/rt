@@ -84,13 +84,6 @@ my $CurrentUser = $session{'CurrentUser'};
 $m->abort unless $CurrentUser->Privileged
               or RT->Config->Get('AllowUserAutocompleteForUnprivileged');
 
-my %fields = %{ RT->Config->Get('UserSearchFields')
-                || { EmailAddress => 1, Name => 1, RealName => 'LIKE' } };
-
-# If an operator is provided, check against only the returned field
-# using that operator
-%fields = ( $return => $op ) if $op;
-
 # the API wants a list of ids
 my @exclude = split /\s*,\s*/, $exclude;
 push @exclude, RT->SystemUser->id, RT->Nobody->id;
@@ -101,7 +94,9 @@ $users->SimpleSearch( Privileged => $privileged,
                       Term       => $term,
                       Max        => $max,
                       Exclude    => \@exclude,
-                      Fields     => \%fields,
+                      # If an operator is provided, check against only
+                      # the returned field using that operator
+                      $op ? ( Fields => { $return => $op } ) : (),
                     );
 
 my @suggestions;

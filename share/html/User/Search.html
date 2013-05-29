@@ -92,6 +92,12 @@ $users->SimpleSearch( Return    => 'Name',
                       Max       => 100,
                       Exclude   => $exclude );
 
+my $first = $users->First;
+RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."User/Summary.html?id=".$first->Id)
+    if $users->Count == 1;
+
+$users->GotoFirstItem;
+
 my $Format = RT->Config->Get('UserSearchResultFormat');
 
 my $search_fields = join ", ", map loc($_), keys %{RT->Config->Get('UserSearchFields')};
