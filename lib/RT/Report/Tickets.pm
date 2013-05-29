@@ -95,7 +95,7 @@ our %GROUPINGS_META = (
         Localize => 1,
     },
     User => {
-        SubFields => [qw(
+        SubFields => [grep RT::User->_Accessible($_, "public"), qw(
             Name RealName NickName
             EmailAddress
             Organization
@@ -104,7 +104,7 @@ our %GROUPINGS_META = (
         Function => 'GenerateUserFunction',
     },
     Watcher => {
-        SubFields => [qw(
+        SubFields => [grep RT::User->_Accessible($_, "public"), qw(
             Name RealName NickName
             EmailAddress
             Organization
