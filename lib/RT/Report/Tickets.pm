@@ -691,7 +691,7 @@ sub CalculatePostFunction {
 
     my $column = $info->{'NAME'};
 
-    my $base_query = $self->{'_sql_query'};
+    my $base_query = $self->Query;
     foreach my $item ( @{ $self->{'items'} } ) {
         $item->{'values'}{$column} = $code->(
             $self,
