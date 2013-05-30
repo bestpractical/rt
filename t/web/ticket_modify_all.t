@@ -19,7 +19,7 @@ $m->submit_form(
     button      => 'SubmitTicket',
 );
 
-$m->content_contains("Message recorded", 'updated ticket');
+$m->content_contains("Comments added", 'updated ticket');
 $m->content_lacks("this is update content", 'textarea is clear');
 
 $m->get_ok($url . '/Ticket/Display.html?id=' . $ticket->id );

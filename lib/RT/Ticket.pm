@@ -2318,7 +2318,14 @@ sub _RecordNote {
         return ( $Trans, $self->loc("Message could not be recorded"), undef );
     }
 
-    return ( $Trans, $self->loc("Message recorded"), $TransObj );
+=for loc
+
+    "Comments added" # loc
+    "Correspondence added" # loc
+
+=cut
+
+    return ( $Trans, $self->loc( $args{'NoteType'} eq 'Comment' ? 'Comments added' : 'Correspondence added' ), $TransObj );
 }
 
 
