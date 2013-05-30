@@ -101,7 +101,7 @@ $users->GotoFirstItem;
 my $Format = RT->Config->Get('UserSearchResultFormat');
 
 my $search_fields = join ", ",
-  map {s/^CF\.(?:\{(.*)}|(.*))/$1 || $2/e; loc($_)}
+  sort map {s/^CF\.(?:\{(.*)}|(.*))/$1 || $2/e; loc($_)}
   keys %{RT->Config->Get('UserSearchFields')};
 
 </%INIT>
