@@ -470,13 +470,20 @@ sub SetupGroupings {
 
     my @group_by = grep defined && length,
         ref( $args{'GroupBy'} )? @{ $args{'GroupBy'} } : ($args{'GroupBy'});
-    foreach my $e ( @group_by ) {
+    @group_by = ('Queue') unless @group_by;
+
+    foreach my $e ( splice @group_by ) {
+        unless ($self->IsValidGrouping( Query => $args{Query}, GroupBy => $e )) {
+            RT->Logger->error("'$e' is not a valid grouping for reports; skipping");
+            next;
+        }
         my ($key, $subkey) = split /\./, $e, 2;
         $e = { $self->_FieldToFunction( KEY => $key, SUBKEY => $subkey ) };
         $e->{'TYPE'} = 'grouping';
         $e->{'INFO'} = $GROUPINGS{ $key };
         $e->{'META'} = $GROUPINGS_META{ $e->{'INFO'} };
         $e->{'POSITION'} = $i++;
+        push @group_by, $e;
     }
     $self->GroupBy( map { {
         ALIAS    => $_->{'ALIAS'},

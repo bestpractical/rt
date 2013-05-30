@@ -48,7 +48,7 @@
 <%args>
 $Cache => undef
 $Query => "id > 0"
-@GroupBy => 'Queue'
+@GroupBy => ()
 $ChartStyle => 'bars'
 @ChartFunction => 'COUNT'
 </%args>
@@ -65,13 +65,6 @@ if ( $Cache and my $data = delete $session{'charts_cache'}{ $Cache } ) {
     $report->Deserialize( $data->{'report'} );
     $session{'i'}++;
 } else {
-    foreach my $e ( splice @GroupBy ) {
-        next unless defined $e && length $e;
-        next unless $report->IsValidGrouping( Query => $Query, GroupBy => $e );
-        push @GroupBy, $e;
-    }
-    @GroupBy = ('Queue') unless @GroupBy;
-
     %columns = $report->SetupGroupings(
         Query => $Query,
         GroupBy => \@GroupBy,
