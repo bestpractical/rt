@@ -136,7 +136,7 @@ if (keys %data == 0) {
 }
 else {
     my ($get, $set, $key, $val, $n, $s);
-
+    my $updated;
     foreach $key (keys %data) {
         $val = $data{$key};
         $key = lc $key;
@@ -177,9 +177,12 @@ else {
                 $k = $changes;
             }
         }
+        else {
+            $updated ||= 1;
+        }
     }
 
-    push(@comments, "# User $id updated.") unless $n == 0;
+    push(@comments, "# User $id updated.") if $updated;
 }
 
 DONE:

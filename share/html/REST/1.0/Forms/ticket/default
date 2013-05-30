@@ -279,6 +279,7 @@ if (!keys(%data)) {
 }
 else {
     my ($get, $set, $key, $val, $n, $s);
+    my $updated;
 
     foreach $key (keys %data) {
         $val = $data{$key};
@@ -469,8 +470,11 @@ else {
                 $k = $changes;
             }
         }
+        else {
+            $updated ||= 1;
+        }
     }
-    push(@comments, "# Ticket ".$ticket->id." updated.") unless $n == 0;
+    push(@comments, "# Ticket ".$ticket->id." updated.") if $updated;
 }
 
 DONE:
