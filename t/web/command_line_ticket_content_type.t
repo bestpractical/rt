@@ -38,7 +38,7 @@ for my $content_type ( 'text/plain', 'text/html' ) {
         qq{comment ticket/$id -ct $content_type -m bar},
         "commenting a ticket with content-type $content_type"
     );
-    expect_like( qr/Message recorded/, "commented the ticket" );
+    expect_like( qr/Comments added/, "commented the ticket" );
 
     $m->goto_ticket($id);
     $m->follow_link_ok( { text => 'with headers', n => 2 } );

@@ -166,7 +166,7 @@ sub update_ticket {
 
     $m->click('SubmitTicket');
     is $m->status, 200, "request successful";
-    $m->content_contains("Message recorded", 'Message recorded') or diag $m->content;
+    $m->content_contains("Correspondence added", 'Correspondence added') or diag $m->content;
 
 
     my @mail = RT::Test->fetch_caught_mails;

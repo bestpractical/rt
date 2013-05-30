@@ -290,7 +290,7 @@ sub update_ticket {
 
     $m->click('SubmitTicket');
     is $m->status, 200, "request successful";
-    $m->content_like(qr/Message recorded/, 'Message recorded');# or diag $m->content;
+    $m->content_like(qr/Correspondence added/, 'Correspondence added');# or diag $m->content;
 
     $m->get_ok('/'); # ensure that the mail has been processed
 
