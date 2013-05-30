@@ -57,28 +57,28 @@ use warnings;
 use Scalar::Util qw(weaken);
 
 our @GROUPINGS = (
-    Status => 'Enum',
+    Status => 'Enum',                   #loc_left_pair
 
-    Queue  => 'Queue',
+    Queue  => 'Queue',                  #loc_left_pair
 
-    Owner         => 'User',
-    Creator       => 'User',
-    LastUpdatedBy => 'User',
+    Owner         => 'User',            #loc_left_pair
+    Creator       => 'User',            #loc_left_pair
+    LastUpdatedBy => 'User',            #loc_left_pair
 
-    Requestor     => 'Watcher',
-    Cc            => 'Watcher',
-    AdminCc       => 'Watcher',
-    Watcher       => 'Watcher',
+    Requestor     => 'Watcher',         #loc_left_pair
+    Cc            => 'Watcher',         #loc_left_pair
+    AdminCc       => 'Watcher',         #loc_left_pair
+    Watcher       => 'Watcher',         #loc_left_pair
 
-    Created       => 'Date',
-    Starts        => 'Date',
-    Started       => 'Date',
-    Resolved      => 'Date',
-    Due           => 'Date',
-    Told          => 'Date',
-    LastUpdated   => 'Date',
+    Created       => 'Date',            #loc_left_pair
+    Starts        => 'Date',            #loc_left_pair
+    Started       => 'Date',            #loc_left_pair
+    Resolved      => 'Date',            #loc_left_pair
+    Due           => 'Date',            #loc_left_pair
+    Told          => 'Date',            #loc_left_pair
+    LastUpdated   => 'Date',            #loc_left_pair
 
-    CF            => 'CustomField',
+    CF            => 'CustomField',     #loc_left_pair
 );
 our %GROUPINGS;
 
@@ -191,8 +191,58 @@ our %GROUPINGS_META = (
     },
 );
 
+# loc'able strings below generated with:
+#   perl -MRT=-init -MRT::Report::Tickets -E 'say qq{\# loc("$_->[0]")} while $_ = splice @RT::Report::Tickets::STATISTICS, 0, 2'
+#
+# loc("Tickets")
+# loc("Summary of time worked")
+# loc("Total time worked")
+# loc("Average time worked")
+# loc("Minimum time worked")
+# loc("Maximum time worked")
+# loc("Summary of time estimated")
+# loc("Total time estimated")
+# loc("Average time estimated")
+# loc("Minimum time estimated")
+# loc("Maximum time estimated")
+# loc("Summary of time left")
+# loc("Total time left")
+# loc("Average time left")
+# loc("Minimum time left")
+# loc("Maximum time left")
+# loc("Summary of Created-Started")
+# loc("Total Created-Started")
+# loc("Average Created-Started")
+# loc("Minimum Created-Started")
+# loc("Maximum Created-Started")
+# loc("Summary of Created-Resolved")
+# loc("Total Created-Resolved")
+# loc("Average Created-Resolved")
+# loc("Minimum Created-Resolved")
+# loc("Maximum Created-Resolved")
+# loc("Summary of Created-LastUpdated")
+# loc("Total Created-LastUpdated")
+# loc("Average Created-LastUpdated")
+# loc("Minimum Created-LastUpdated")
+# loc("Maximum Created-LastUpdated")
+# loc("Summary of Starts-Started")
+# loc("Total Starts-Started")
+# loc("Average Starts-Started")
+# loc("Minimum Starts-Started")
+# loc("Maximum Starts-Started")
+# loc("Summary of Due-Resolved")
+# loc("Total Due-Resolved")
+# loc("Average Due-Resolved")
+# loc("Minimum Due-Resolved")
+# loc("Maximum Due-Resolved")
+# loc("Summary of Started-Resolved")
+# loc("Total Started-Resolved")
+# loc("Average Started-Resolved")
+# loc("Minimum Started-Resolved")
+# loc("Maximum Started-Resolved")
+
 our @STATISTICS = (
-    COUNT             => ['Tickets', 'Count', 'id'],
+    COUNT => ['Tickets', 'Count', 'id'],
 );
 
 foreach my $field (qw(TimeWorked TimeEstimated TimeLeft)) {
