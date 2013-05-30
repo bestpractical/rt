@@ -56,7 +56,7 @@ jQuery(function(){
             document.location = RT.Config.WebPath + "/User/Summary.html?id="
                 + ui.item.id;
         }
-    });
+    }).addClass("autocompletes-user");
 });
 </script>
 <input type="submit" name="UserSearch" value="<&|/l&>Search</&>" class="button" />
