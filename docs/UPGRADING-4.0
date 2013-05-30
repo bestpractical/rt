@@ -189,3 +189,19 @@ these types before insertion.
 
 Site-specific custom types (anything but ticket, reminder or approval)
 are not affected by these changes.
+
+=head1 UPGRADING FROM 4.0.13 AND EARLIER
+
+The "Default" key of the C<$OverrideOutgoingMailFrom> config option now,
+as previously documented, only applies when no ticket is involved.
+Previously it was also used when a ticket was involved but the
+associated queue had no specific correspond address.  In such cases the
+global correspond address is now used.
+
+The config option C<$SetOutgoingMailFrom> now accepts an email address
+as a value which will act as a global default.  This covers the simple
+case of sending all bounces to a specific address, without the previous
+solution of resorting to defining all queues in
+$OverrideOutgoingMailFrom.  Any definitions in the Override option
+(including Default) still take precedence.  See
+L<RT_Config/$SetOutgoingMailFrom> for more information.
