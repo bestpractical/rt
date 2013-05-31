@@ -51,6 +51,8 @@ $Query => "id > 0"
 @GroupBy => ()
 $ChartStyle => 'bars'
 @ChartFunction => 'COUNT'
+$Width  => 600
+$Height => ($ChartStyle eq 'pie' ? $Width : 400)
 </%args>
 <%init>
 use GD;
@@ -127,12 +129,14 @@ my %font_config = RT->Config->Get('ChartFont');
 my $font = $font_config{ $session{CurrentUser}->UserObj->Lang || '' }
     || $font_config{'others'};
 
+s/\D//g for $Width, $Height;
+
 # Pie charts don't like having no input, so we show a special image
 # that indicates an error message. Because this is used in an <img>
 # context, it can't be a simple error message. Without this check,
 # the chart will just be a non-loading image.
 unless ( $report->Count ) {
-    my $plot = GD::Image->new(600 => 400);
+    my $plot = GD::Image->new($Width => $Height);
     $plot->colorAllocate(255, 255, 255); # background
     my $black = $plot->colorAllocate(0, 0, 0);
 
@@ -147,8 +151,8 @@ unless ( $report->Count ) {
     $m->comp( 'SELF:Plot', plot => $plot, %ARGS );
 }
 
-my $chart = $chart_class->new( 600 => 400 );
-$chart->set( pie_height => 60 ) if $chart_class eq 'GD::Graph::pie';
+my $chart = $chart_class->new( $Width => $Height );
+$chart->set( '3d' => 0 ) if $chart_class eq 'GD::Graph::pie';
 $chart->set_title_font( $font, 16 ) if $chart->can('set_title_font');
 $chart->set_legend_font( $font, 16 ) if $chart->can('set_legend_font');
 $chart->set_x_label_font( $font, 14 ) if $chart->can('set_x_label_font');
