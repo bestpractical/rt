@@ -90,7 +90,9 @@ $users->GotoFirstItem;
 
 my $Format = RT->Config->Get('UserSearchResultFormat');
 
-my $search_fields = join ", ", map loc($_), keys %{RT->Config->Get('UserSearchFields')};
+my $search_fields = join ", ",
+  sort map {s/^CF\.(?:\{(.*)}|(.*))/$1 || $2/e; loc($_)}
+  keys %{RT->Config->Get('UserSearchFields')};
 
 </%INIT>
 <%ARGS>
