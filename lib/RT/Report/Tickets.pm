@@ -470,7 +470,7 @@ sub SetupGroupings {
 
     my @group_by = grep defined && length,
         ref( $args{'GroupBy'} )? @{ $args{'GroupBy'} } : ($args{'GroupBy'});
-    @group_by = ('Queue') unless @group_by;
+    @group_by = ('Status') unless @group_by;
 
     foreach my $e ( splice @group_by ) {
         unless ($self->IsValidGrouping( Query => $args{Query}, GroupBy => $e )) {
