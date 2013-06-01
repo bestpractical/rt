@@ -51,8 +51,8 @@ $Query => "id > 0"
 @GroupBy => ()
 $ChartStyle => 'bars'
 @ChartFunction => 'COUNT'
-$Width  => 600
-$Height => ($ChartStyle eq 'pie' ? $Width : 400)
+$Width  => undef
+$Height => undef
 </%args>
 <%init>
 use GD;
@@ -63,6 +63,8 @@ my $font = $font_config{ $session{CurrentUser}->UserObj->Lang || '' }
     || $font_config{'others'};
 
 s/\D//g for $Width, $Height;
+$Width  ||= 600;
+$Height ||= ($ChartStyle eq 'pie' ? $Width : 400);
 
 my $plot_error = sub {
     my $text = shift;

@@ -50,6 +50,8 @@
 $ChartStyle => 'bars'
 @ChartFunction => ('COUNT')
 $Description => undef
+$Width => undef
+$Height => undef
 </%args>
 <%init>
 $ARGS{Query} ||= 'id > 0';
@@ -58,7 +60,7 @@ my $title = loc( "Grouped search results");
 
 my $saved_search = $m->comp( '/Widgets/SavedSearch:new',
     SearchType   => 'Chart',
-    SearchFields => [qw(Query GroupBy ChartStyle ChartFunction)] );
+    SearchFields => [qw(Query GroupBy ChartStyle ChartFunction Width Height)] );
 
 my @actions = $m->comp( '/Widgets/SavedSearch:process', args => \%ARGS, self => $saved_search );
 
@@ -136,7 +138,9 @@ my %query;
 </&>
 
 <&| /Widgets/TitleBox, title => loc('Picture') &>
-<% loc('Style') %> <& Elements/SelectChartType, Default => $ChartStyle, Name => 'ChartStyle' &>
+<label><% loc('Style') %> <& Elements/SelectChartType, Default => $ChartStyle, Name => 'ChartStyle' &></label>
+<label><% loc("Width") %> <input type="text" name="Width" value="<% $Width || "" %>" size=4></label>
+<label><% loc("Height") %> <input type="text" name="Height" value="<% $Height || "" %>" size=4></label>
 </&>
 
 <& /Elements/Submit, Label => loc('Update Chart'), Name => 'Update' &>
