@@ -58,6 +58,31 @@ $Height => ($ChartStyle eq 'pie' ? $Width : 400)
 use GD;
 use GD::Text;
 
+my %font_config = RT->Config->Get('ChartFont');
+my $font = $font_config{ $session{CurrentUser}->UserObj->Lang || '' }
+    || $font_config{'others'};
+
+s/\D//g for $Width, $Height;
+
+my $plot_error = sub {
+    my $text = shift;
+    my $plot = GD::Image->new($Width => $Height);
+    $plot->colorAllocate(255, 255, 255); # background
+    my $black = $plot->colorAllocate(0, 0, 0);
+
+    require GD::Text::Wrap;
+    my $error = GD::Text::Wrap->new($plot,
+        color       => $black,
+        text        => $text,
+        align       => "left",
+        preserve_nl => 1,
+    );
+    $error->set_font( $font, 16 );
+    $error->draw(0, 0);
+
+    $m->comp( 'SELF:Plot', plot => $plot, %ARGS );
+};
+
 use RT::Report::Tickets;
 my $report = RT::Report::Tickets->new( $session{'CurrentUser'} );
 
@@ -125,30 +150,12 @@ if ($ChartStyle eq 'pie') {
     $chart_class = "GD::Graph::bars";
 }
 
-my %font_config = RT->Config->Get('ChartFont');
-my $font = $font_config{ $session{CurrentUser}->UserObj->Lang || '' }
-    || $font_config{'others'};
-
-s/\D//g for $Width, $Height;
-
 # Pie charts don't like having no input, so we show a special image
 # that indicates an error message. Because this is used in an <img>
 # context, it can't be a simple error message. Without this check,
 # the chart will just be a non-loading image.
 unless ( $report->Count ) {
-    my $plot = GD::Image->new($Width => $Height);
-    $plot->colorAllocate(255, 255, 255); # background
-    my $black = $plot->colorAllocate(0, 0, 0);
-
-    require GD::Text::Wrap;
-    my $error = GD::Text::Wrap->new($plot,
-        color => $black,
-        text  => loc("No tickets found."),
-    );
-    $error->set_font( $font, 16 );
-    $error->draw(0, 0);
-
-    $m->comp( 'SELF:Plot', plot => $plot, %ARGS );
+    return $plot_error->(loc("No tickets found."));
 }
 
 my $chart = $chart_class->new( $Width => $Height );
@@ -215,8 +222,12 @@ $chart->{dclrs} = [
     };
 }
 
-my $plot = $chart->plot( \@data ) or die $chart->error;
-$m->comp( 'SELF:Plot', plot => $plot, %ARGS );
+if (my $plot = eval { $chart->plot( \@data ) }) {
+    $m->comp( 'SELF:Plot', plot => $plot, %ARGS );
+} else {
+    my $error = join "\n", grep defined && length, $chart->error, $@;
+    $plot_error->(loc("Error plotting chart: [_1]", $error));
+}
 </%init>
 
 <%METHOD Plot>
