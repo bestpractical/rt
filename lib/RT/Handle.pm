@@ -1203,6 +1203,21 @@ sub _LogSQLStatement {
     push @{$self->{'StatementLog'}} , ([Time::HiRes::time(), $statement, [@bind], $duration, HTML::Mason::Exception->new->as_string]);
 }
 
+
+sub _TableNames {
+    my $self = shift;
+    my $dbh = shift || $self->dbh;
+
+    my @res;
+
+    my $sth = $dbh->table_info( '', undef, undef, "'TABLE'");
+    while ( my $table = $sth->fetchrow_hashref ) {
+        push @res, $table->{TABLE_NAME} || $table->{table_name};
+    }
+
+    return @res;
+}
+
 __PACKAGE__->FinalizeDatabaseType;
 
 RT::Base->_ImportOverlays();
