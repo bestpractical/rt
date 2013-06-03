@@ -144,7 +144,6 @@ L<RT::Queue/Create> for the fields you can use.
 =head2 C<@CustomFields>
 
     push @CustomFields, {
-        Queue       => 0,
         Name        => 'Favorite color',
         Type        => 'FreeformSingle',
         LookupType  => 'RT::Queue-RT::Ticket',
@@ -163,10 +162,15 @@ The name of this CF as displayed in RT.
 
 A short summary of what this CF is for.
 
-=item C<Queue>
+=item C<ApplyTo>
 
-May be a Name or ID.  The single queue or array ref of queues to apply this CF
-to.  This does not apply when C<LookupType> does not start with C<RT::Queue>.
+May be a single value, or an array reference of such; each should be
+either an ID or Name.  If omitted, the CF is applied globally.  This
+should not be used for User or Group custom fields.
+
+This argument may also be passed via C<Queue>, for backwards
+compatibility, which also defaults the C<LookupType> to
+C<RT::Queue-RT::Ticket>.
 
 =item C<Type>
 
@@ -214,6 +218,7 @@ is for Tickets, Transactions, Users, Groups, or Queues.  Possible values:
     RT::User                                # Users
     RT::Group                               # Groups
     RT::Queue                               # Queues
+    RT::Class-RT::Article                   # Articles
 
 Ticket CFs are the most common, meaning C<RT::Queue-RT::Ticket> is the most
 common C<LookupType>.
@@ -246,7 +251,6 @@ field.  This only makes sense for "Select" CFs.  An example:
 
     my $i = 1;
     push @CustomFields, {
-        Queue       => 0,                       # Globally applied
         LookupType  => 'RT::Queue-RT::Ticket',  # for Tickets
         Name        => 'Type of food',
         Type        => 'SelectSingle',  # SelectSingle is the same as: Type => 'Select', MaxValues => 1
@@ -309,6 +313,11 @@ granted.  This is B<different> than the user/group/role receiving the right.
 
     CF      => 'Name',
     Queue   => 'Name',
+
+=item Granted on some other object (article Classes, etc)
+
+    ObjectType => 'RT::Class',
+    ObjectId   => 'Name',
 
 =item Granted globally
 
