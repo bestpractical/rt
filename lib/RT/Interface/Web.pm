@@ -3564,7 +3564,7 @@ sub GetPrincipalsMap {
                 my $class = $object->RecordClassFromLookupType;
                 if ($class and $class->DOES("RT::Record::Role::Roles")) {
                     $roles->LimitToRolesForObject(RT->System);
-                    $roles->Limit( FIELD => "Name", VALUE => $_ )
+                    $roles->Limit( FIELD => "Name", VALUE => $_, CASESENSITIVE => 0 )
                         for $class->Roles;
                 } else {
                     # No roles to show; so show nothing
@@ -3602,8 +3602,8 @@ sub GetPrincipalsMap {
                 ALIAS2 => $group_members,
                 FIELD2 => 'GroupId'
             );
-            $Users->Limit( ALIAS => $groups, FIELD => 'Domain', VALUE => 'ACLEquivalence' );
-            $Users->Limit( ALIAS => $groups, FIELD => 'Name', VALUE => 'UserEquiv' );
+            $Users->Limit( ALIAS => $groups, FIELD => 'Domain', VALUE => 'ACLEquivalence', CASESENSITIVE => 0 );
+            $Users->Limit( ALIAS => $groups, FIELD => 'Name', VALUE => 'UserEquiv', CASESENSITIVE => 0 );
 
             push @map, [
                 'Users' => $Users,  # loc_left_pair

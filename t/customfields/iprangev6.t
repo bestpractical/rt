@@ -21,7 +21,7 @@ my $cf;
 diag "load and check basic properties of the IP CF" if $ENV{'TEST_VERBOSE'};
 {
     my $cfs = RT::CustomFields->new( $RT::SystemUser );
-    $cfs->Limit( FIELD => 'Name', VALUE => 'IP' );
+    $cfs->Limit( FIELD => 'Name', VALUE => 'IP', CASESENSITIVE => 0 );
     is( $cfs->Count, 1, "found one CF with name 'IP'" );
 
     $cf = $cfs->First;

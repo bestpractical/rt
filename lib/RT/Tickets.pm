@@ -977,7 +977,8 @@ sub _WatcherMembershipLimit {
         ALIAS           => $groups,
         FIELD           => 'Domain',
         VALUE           => 'RT::Ticket-Role',
-        ENTRYAGGREGATOR => 'AND'
+        ENTRYAGGREGATOR => 'AND',
+        CASESENSITIVE   => 0,
     );
 
     $self->Join(
@@ -1069,7 +1070,7 @@ sub _CustomFieldDecipher {
     elsif ( $field =~ /\D/ ) {
         $queue = '';
         my $cfs = RT::CustomFields->new( $self->CurrentUser );
-        $cfs->Limit( FIELD => 'Name', VALUE => $field );
+        $cfs->Limit( FIELD => 'Name', VALUE => $field, CASESENSITIVE => 0 );
         $cfs->LimitToLookupType('RT::Queue-RT::Ticket');
 
         # if there is more then one field the current user can
@@ -1207,7 +1208,7 @@ sub OrderByCols {
                     TABLE2 => 'Queues',
                     FIELD2 => 'id',
                 );
-                push @res, { %$row, ALIAS => $alias, FIELD => "Name" };
+                push @res, { %$row, ALIAS => $alias, FIELD => "Name", CASESENSITIVE => 0 };
             } elsif ( ( $meta->[0] eq 'ENUM' && ($meta->[1]||'') eq 'User' )
                 || ( $meta->[0] eq 'WATCHERFIELD' && ($meta->[1]||'') eq 'Owner' )
             ) {
@@ -1218,7 +1219,7 @@ sub OrderByCols {
                     TABLE2 => 'Users',
                     FIELD2 => 'id',
                 );
-                push @res, { %$row, ALIAS => $alias, FIELD => "Name" };
+                push @res, { %$row, ALIAS => $alias, FIELD => "Name", CASESENSITIVE => 0 };
             } else {
                 push @res, $row;
             }
@@ -2457,9 +2458,9 @@ sub CurrentUserCanSee {
     if ( my @tmp = grep $_ ne 'Owner' && !ref $roles{ $_ }, keys %roles ) {
 
         my $groups = RT::Groups->new( RT->SystemUser );
-        $groups->Limit( FIELD => 'Domain', VALUE => 'RT::Queue-Role' );
+        $groups->Limit( FIELD => 'Domain', VALUE => 'RT::Queue-Role', CASESENSITIVE => 0 );
         foreach ( @tmp ) {
-            $groups->Limit( FIELD => 'Name', VALUE => $_ );
+            $groups->Limit( FIELD => 'Name', VALUE => $_, CASESENSITIVE => 0 );
         }
         my $principal_alias = $groups->Join(
             ALIAS1 => 'main',
@@ -2565,6 +2566,7 @@ sub CurrentUserCanSee {
                     FIELD           => 'Name',
                     VALUE           => $role,
                     ENTRYAGGREGATOR => 'AND',
+                    CASESENSITIVE   => 0,
                 );
             }
             $limit_queues->( 'AND', @$queues ) if ref $queues;

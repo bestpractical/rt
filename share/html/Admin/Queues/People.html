@@ -174,10 +174,7 @@ if ( $ARGS{'UserString'} ) {
 
 if ( $ARGS{'GroupString'} ) {
     $Groups = RT::Groups->new( $session{'CurrentUser'} );
-    $Groups->Limit( FIELD    => 'Domain',
-                    OPERATOR => '=',
-                    VALUE    => 'UserDefined'
-                  );
+    $Groups->LimitToUserDefinedGroups;
     $Groups->Limit( FIELD    => $ARGS{'GroupField'},
                     VALUE    => $ARGS{'GroupString'},
                     OPERATOR => $ARGS{'GroupOp'}

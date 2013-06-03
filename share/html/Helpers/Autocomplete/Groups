@@ -73,6 +73,7 @@ $groups->Limit(
     FIELD           => 'Name',
     OPERATOR        => $op,
     VALUE           => $term,
+    CASESENSITIVE   => 0,
 );
 
 # Exclude groups we don't want

@@ -163,7 +163,7 @@ that email address
 sub LimitToEmail {
     my $self = shift;
     my $addr = shift;
-    $self->Limit( FIELD => 'EmailAddress', VALUE => "$addr" );
+    $self->Limit( FIELD => 'EmailAddress', VALUE => $addr, CASESENSITIVE => 0 );
 }
 
 
@@ -226,7 +226,7 @@ sub LimitToUnprivileged {
 sub Limit {
     my $self = shift;
     my %args = @_;
-    $args{'CASESENSITIVE'} = 0 unless exists $args{'CASESENSITIVE'};
+    $args{'CASESENSITIVE'} = 0 unless exists $args{'CASESENSITIVE'} or $args{'ALIAS'};
     return $self->SUPER::Limit( %args );
 }
 
@@ -440,7 +440,9 @@ sub WhoHaveRoleRight
                   VALUE => RT->SystemUser->id
                 );
 
-    $self->_AddSubClause( "WhichRole", "(". join( ' OR ', map "$groups.Name = '$_'", @roles ) .")" );
+    $self->_AddSubClause( "WhichRole", "(". join( ' OR ',
+        map $RT::Handle->__MakeClauseCaseInsensitive("$groups.Name", '=', "'$_'"), @roles
+    ) .")" );
 
     my @groups_clauses = $self->_RoleClauses( $groups, @objects );
     $self->_AddSubClause( "WhichObject", "(". join( ' OR ', @groups_clauses ) .")" )
@@ -460,7 +462,7 @@ sub _RoleClauses {
         my $id;
         $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
 
-        my $role_clause = "$groups.Domain = '$type-Role'";
+        my $role_clause = $RT::Handle->__MakeClauseCaseInsensitive("$groups.Domain", '=', "'$type-Role'");
         $role_clause   .= " AND $groups.Instance = $id" if $id;
         push @groups_clauses, "($role_clause)";
     }

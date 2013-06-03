@@ -53,7 +53,7 @@
 
 <%INIT>
 my $groups = RT::Groups->new($session{'CurrentUser'});
-$groups->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => $Domain);
+$groups->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => $Domain, CASESENSITIVE => 0 );
 
 </%INIT>
 <%ARGS>

@@ -314,7 +314,8 @@ sub LimitCustomField {
             $self->Limit( ALIAS => $fields,
                           FIELD => 'Name',
                           VALUE => $args{'FIELD'},
-                          ENTRYAGGREGATOR  => 'OR');
+                          ENTRYAGGREGATOR  => 'OR',
+                          CASESENSITIVE => 0);
             $self->Limit(
                 ALIAS => $fields,
                 FIELD => 'LookupType',

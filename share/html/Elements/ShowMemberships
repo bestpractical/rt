@@ -71,12 +71,14 @@ $GroupMembers->Limit(
     FIELD      => 'Domain',
     OPERATOR   => '=',
     VALUE      => 'SystemInternal',
+    CASESENSITIVE => 0,
 );
 $GroupMembers->Limit(
     ALIAS      => $alias,
     FIELD      => 'Domain',
     OPERATOR   => '=',
     VALUE      => 'UserDefined',
+    CASESENSITIVE => 0,
 );
 $GroupMembers->OrderByCols(
     { ALIAS => $alias, FIELD => 'Domain' },

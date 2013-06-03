@@ -183,6 +183,7 @@ sub Run
         $objs->Limit( FIELD => 'Name',
                   OPERATOR => 'MATCHES',
                   VALUE => $self->{'opt'}{'name'},
+                  CASESENSITIVE => 0,
                 );
     }
     if( $self->{'opt'}{'member_of'} ) {

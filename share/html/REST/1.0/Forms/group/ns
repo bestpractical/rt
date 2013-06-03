@@ -54,7 +54,7 @@ $id
 use RT::Groups;
 
 my $groups = RT::Groups->new($session{CurrentUser});
-$groups->Limit(FIELD => 'Name', OPERATOR => '=', VALUE => $id);
+$groups->Limit(FIELD => 'Name', OPERATOR => '=', VALUE => $id, CASESENSITIVE => 0);
 if ($groups->Count == 0) {
     return (0, "No group named $id exists.");
 }

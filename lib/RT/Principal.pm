@@ -576,14 +576,17 @@ sub _HasRoleRightQuery {
     ;
 
     if ( $args{'Roles'} ) {
-        $query .= "AND (" . join( ' OR ', map "Groups.Name = '$_'", @{ $args{'Roles'} } ) . ")";
+        $query .= "AND (" . join( ' OR ',
+            map $RT::Handle->__MakeClauseCaseInsensitive('Groups.Name', '=', "'$_'"),
+            @{ $args{'Roles'} }
+        ) . ")";
     }
 
     my (@object_clauses);
     foreach my $obj ( @{ $args{'EquivObjects'} } ) {
         my $type = ref($obj) ? ref($obj) : $obj;
 
-        my $clause = "Groups.Domain = '$type-Role'";
+        my $clause = $RT::Handle->__MakeClauseCaseInsensitive('Groups.Domain', '=', "'$type-Role'");
 
         if ( my $id = eval { $obj->id } ) {
             $clause .= " AND Groups.Instance = $id";

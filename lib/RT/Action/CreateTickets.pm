@@ -129,7 +129,7 @@ A convoluted example:
 
     my $groups = RT::Groups->new(RT->SystemUser);
     $groups->LimitToUserDefinedGroups();
-    $groups->Limit(FIELD => "Name", OPERATOR => "=", VALUE => "$name");
+    $groups->Limit(FIELD => "Name", OPERATOR => "=", VALUE => $name, CASESENSITIVE => 0);
     $groups->WithMember($TransactionObj->CreatorObj->Id);
 
     my $groupid = $groups->First->Id;

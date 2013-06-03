@@ -16,6 +16,7 @@ our @Initial = (
                      FIELD           => 'Domain',
                      OPERATOR        => '=',
                      VALUE           => 'Personal',
+                     CASESENSITIVE   => 0,
                     );
 
         while ( my $ace = $acl->Next ) {
@@ -29,7 +30,8 @@ our @Initial = (
         my $groups = RT::Groups->new(RT->SystemUser);
         $groups->Limit( FIELD    => 'Domain',
                         OPERATOR => '=',
-                        VALUE    => 'Personal'
+                        VALUE    => 'Personal',
+                        CASESENSITIVE   => 0,
                       );
         while ( my $group = $groups->Next ) {
             my $members = $group->MembersObj();

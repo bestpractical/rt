@@ -122,7 +122,7 @@ diag "Check WithMember and WithoutMember recursively";
 {
     my $with = RT::Groups->new( RT->SystemUser );
     $with->WithMember( PrincipalId => $user->PrincipalObj->Id, Recursively => 1 );
-    $with->Limit( FIELD => 'domain', OPERATOR => '=', VALUE => 'UserDefined' );
+    $with->LimitToUserDefinedGroups;
     is_deeply(
         [map {$_->Name} @{$with->ItemsArrayRef}],
         ['Disabled Group','Supergroup'],
@@ -131,7 +131,7 @@ diag "Check WithMember and WithoutMember recursively";
 
     my $without = RT::Groups->new( RT->SystemUser );
     $without->WithoutMember( PrincipalId => $user->PrincipalObj->Id, Recursively => 1 );
-    $without->Limit( FIELD => 'domain', OPERATOR => '=', VALUE => 'UserDefined' );
+    $without->LimitToUserDefinedGroups;
     is_deeply(
         [map {$_->Name} @{$without->ItemsArrayRef}],
         [],

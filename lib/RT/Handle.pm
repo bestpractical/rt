@@ -1259,6 +1259,14 @@ sub _LogSQLStatement {
     push @{$self->{'StatementLog'}} , ([Time::HiRes::time(), $statement, [@bind], $duration, HTML::Mason::Exception->new->as_string]);
 }
 
+# helper in a few cases where we do SQL by hand
+sub __MakeClauseCaseInsensitive {
+    my $self = shift;
+    return join ' ', @_ unless $self->CaseSensitive;
+    my ($field, $op, $value) = $self->_MakeClauseCaseInsensitive(@_);
+    return "$field $op $value";
+}
+
 __PACKAGE__->FinalizeDatabaseType;
 
 RT::Base->_ImportOverlays();
