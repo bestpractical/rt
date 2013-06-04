@@ -912,7 +912,7 @@ my $build_main_nav = sub {
         PageMenu()->child( edit => title => loc('Edit'), path => '/Prefs/MyRT.html' );
     }
 
-    $m->callback( CallbackName => 'Privileged' );
+    $m->callback( CallbackName => 'Privileged', Path => $request_path );
 };
 
 my $build_selfservice_nav = sub {
@@ -965,7 +965,7 @@ my $build_selfservice_nav = sub {
 
     PageWidgets->child( goto => raw_html => $m->scomp('/SelfService/Elements/GotoTicket') );
 
-    $m->callback( CallbackName => 'SelfService' );
+    $m->callback( CallbackName => 'SelfService', Path => $request_path );
 };
 
 
