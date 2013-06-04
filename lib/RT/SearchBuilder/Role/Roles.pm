@@ -125,6 +125,7 @@ sub _RoleGroupsJoin {
         TABLE2          => 'Groups',
         FIELD2          => 'Instance',
         ENTRYAGGREGATOR => 'AND',
+        DISTINCT        => !!$args{'Type'},
     );
     $self->Limit(
         LEFTJOIN        => $groups,

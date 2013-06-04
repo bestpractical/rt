@@ -88,9 +88,10 @@ groups from users for display purposes
 sub LimitToUsers {
     my $self = shift;
 
-    my $principals = $self->NewAlias('Principals');
-    $self->Join( ALIAS1 => 'main', FIELD1 => 'MemberId',
-                 ALIAS2 => $principals, FIELD2 =>'id');
+    my $principals = $self->Join(
+        ALIAS1 => 'main', FIELD1 => 'MemberId',
+        TABLE2 => 'Principals', FIELD2 =>'id'
+    );
 
     $self->Limit(       ALIAS => $principals,
                          FIELD => 'PrincipalType',
@@ -113,9 +114,11 @@ groups from users for display purposes
 sub LimitToGroups {
     my $self = shift;
 
-    my $principals = $self->NewAlias('Principals');
-    $self->Join( ALIAS1 => 'main', FIELD1 => 'MemberId',
-                 ALIAS2 => $principals, FIELD2 =>'id');
+    my $principals = $self->Join(
+        ALIAS1 => 'main', FIELD1 => 'MemberId',
+        TABLE2 => 'Principals', FIELD2 =>'id'
+    );
+
 
     $self->Limit(       ALIAS => $principals,
                          FIELD => 'PrincipalType',

@@ -86,12 +86,11 @@ sub _Init {
                     FIELD => 'Name',
                     ORDER => 'ASC' );
 
-    $self->{'princalias'} = $self->NewAlias('Principals');
-
     # XXX: should be generalized
-    $self->Join( ALIAS1 => 'main',
+    $self->{'princalias'} = $self->Join(
+                 ALIAS1 => 'main',
                  FIELD1 => 'id',
-                 ALIAS2 => $self->{'princalias'},
+                 TABLE2 => 'Principals',
                  FIELD2 => 'id' );
     $self->Limit( ALIAS => $self->{'princalias'},
                   FIELD => 'PrincipalType',
