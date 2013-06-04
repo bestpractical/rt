@@ -438,10 +438,6 @@ sub _LinkLimit {
     my $is_null = 0;
     $is_null = 1 if !$value || $value =~ /^null$/io;
 
-    unless ($is_null) {
-        $value = RT::URI->new( $sb->CurrentUser )->CanonicalizeURI( $value );
-    }
-
     my $direction = $meta->[1] || '';
     my ($matchfield, $linkfield) = ('', '');
     if ( $direction eq 'To' ) {
@@ -468,6 +464,7 @@ sub _LinkLimit {
         $op = ($op =~ /^(=|IS)$/i)? 'IS': 'IS NOT';
     }
     elsif ( $value =~ /\D/ ) {
+        $value = RT::URI->new( $sb->CurrentUser )->CanonicalizeURI( $value );
         $is_local = 0;
     }
     $matchfield = "Local$matchfield" if $is_local;
