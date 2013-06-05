@@ -189,6 +189,27 @@ if ($chart_class eq "GD::Graph::bars") {
     }
     $report->GotoFirstItem;
 
+    # normalize min/max values to graph boundaries
+    {
+        my $integer = 1;
+        $integer = 0 for grep $_ ne int $_, $min_value, $max_value;
+
+        $max_value *= $max_value > 0 ? 1.1 : 0.9
+            if $max_value;
+        $min_value *= $min_value > 0 ? 0.9 : 1.1
+            if $min_value;
+
+        if ($integer) {
+            $max_value = int($max_value + ($max_value > 0? 1 : 0) );
+            $min_value = int($min_value + ($min_value < 0? -1 : 0) );
+
+            my $span = abs($max_value - $min_value);
+            $max_value += 5 - ($span % 5);
+        }
+        $args{'y_label_skip'} = 2;
+        $args{'y_tick_number'} = 10;
+    }
+
     $chart->set(
         %args,
         x_label => join( ' - ', map $report->Label( $_ ), @{ $columns{'Groups'} } ),
@@ -200,8 +221,8 @@ if ($chart_class eq "GD::Graph::bars") {
 # use a top margin enough to display values over the top line if needed
         t_margin => 18,
 # the following line to make sure there's enough space for values to show
-        y_max_value => $max_value * 1.10,
-        y_min_value => $min_value * 0.9,
+        y_max_value => $max_value,
+        y_min_value => $min_value,
 # if there're too many bars or at least one key is too long, use vertical
         x_labels_vertical => ( $count * $max_key_length > 60 ) ? 1 : 0,
         bargroup_spacing => $args{'bar_spacing'}*5,
