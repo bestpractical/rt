@@ -168,8 +168,8 @@ msgstr "%1 (em %2) às %3"
 
 #: bin/rt-crontool:345
 #. ("--log")
-msgid "%1 - Adjust LogToScreen config option"
-msgstr "%1 - Ajustar opção de configuração LogToScreen"
+msgid "%1 - Adjust LogToSTDERR config option"
+msgstr "%1 - Ajustar opção de configuração LogToSTDERR"
 
 #: bin/rt-crontool:320 bin/rt-crontool:327 bin/rt-crontool:333
 #. ("--action-arg", "--action")

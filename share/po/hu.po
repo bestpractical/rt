@@ -136,7 +136,7 @@ msgstr ""
 
 #: bin/rt-crontool:345
 #. ("--log")
-msgid "%1 - Adjust LogToScreen config option"
+msgid "%1 - Adjust LogToSTDERR config option"
 msgstr ""
 
 #: bin/rt-crontool:320 bin/rt-crontool:327 bin/rt-crontool:333
