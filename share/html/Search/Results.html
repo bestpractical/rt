@@ -69,9 +69,11 @@
     Page => $Page,
     Format => $Format,
     Class => 'RT::Tickets',
-    BaseURL => $BaseURL
-
-   &>
+    BaseURL => $BaseURL,
+    SavedSearchId => $ARGS{'SavedSearchId'},
+    SavedChartSearchId => $ARGS{'SavedChartSearchId'},
+    PassArguments => [qw(Query Format Rows Page Order OrderBy SavedSearchId SavedChartSearchId)],
+&>
 % }
 % $m->callback( ARGSRef => \%ARGS, CallbackName => 'AfterResults' );
 
