@@ -49,9 +49,6 @@
 %# 
 %# SYNOPSIS
 %#
-%# include javascript:
-%# <& /Widgets/SelectionBox:header &>
-%#
 %# <%init>:
 %# my $sel = $m->comp ('/Widgets/SelectionBox:new',
 %#                Action => me.html',
@@ -71,17 +68,7 @@
 %# <& /Widgets/SelectionBox:show, self => $sel &>
 %#
 %# if the SelectionBox is created with AutoSave option, OnSubmit will be called
-%# on every button clicked in non-js mode.
-<%method header>
-% unless ($nojs) {
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/class.js"></script>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/list.js"></script>
-% }
-<%ARGS>
-$nojs => 0
-</%ARGS>
-</%method>
-
+%# on every button clicked
 <%method new>
 <%init>
 $ARGS{_item_map} = {map {$_->[0] => $_->[1]} @{$ARGS{Available}}};
@@ -103,56 +90,51 @@ if ($self->{Selected} && !ref($self->{Selected})) {
     $self->{Selected} = [$self->{Selected}];
 }
 
-if ($ARGS{fromjs}) {
-    $self->{Current} = $self->{Selected};
+my $current = $self->{Current} = $ARGS{$self->{Name}.'-Current'};
+if ($current && !ref ($current)) {
+    $current = [$current];
 }
-else {
-    my $current = $self->{Current} = $ARGS{$self->{Name}.'-Current'};
-    if ($current && !ref ($current)) {
-        $current = [$current];
+
+unless ($self->{ReadOnly}) {
+    ++$self->{Modified};
+    if ($ARGS{add}) {
+        my $choosed = $ARGS{$self->{Name}.'-Available'};
+        for my $add (ref($choosed) ? @$choosed : $choosed) {
+            next if grep { $_ eq $add } @$current;
+            push @$current, $add;
+        }
     }
 
-    unless ($self->{ReadOnly}) {
-        ++$self->{Modified};
-        if ($ARGS{add}) {
-            my $choosed = $ARGS{$self->{Name}.'-Available'};
-            for my $add (ref($choosed) ? @$choosed : $choosed) {
-                next if grep { $_ eq $add } @$current;
-                push @$current, $add;
-            }
+    if ($ARGS{remove}) {
+        my $choosed = $ARGS{$self->{Name}.'-Selected'};
+        for my $del (ref($choosed) ? @$choosed : $choosed) {
+            @$current = map { $_ eq $del ? () : $_ } @$current;
         }
-
-        if ($ARGS{remove}) {
-            my $choosed = $ARGS{$self->{Name}.'-Selected'};
-            for my $del (ref($choosed) ? @$choosed : $choosed) {
-                @$current = map { $_ eq $del ? () : $_ } @$current;
-            }
-        }
-
-        if ($ARGS{moveup} or $ARGS{movedown}) {
-            my $offset = $ARGS{moveup} ? 1 : 0;
-            my $choosed = $ARGS{$self->{Name}.'-Selected'};
-            $choosed = [$choosed] unless ref ($choosed);
-            my $canmove = 0; # not in the cornor
-            for my $i ($ARGS{moveup} ? 0..$#{$current} : reverse 0..$#{$current}) {
-                if (grep {$_ eq $current->[$i]} @$choosed) {
-                if ($canmove) {
-                    splice (@$current, $i-$offset, 2,
-                        @{$current}[$i+1-$offset,$i-$offset]);
-                }
-                }
-                else {
-                ++$canmove;
-                }
-            }
-        }
-
-        if ($ARGS{clear}) {
-            $current = [];
-        }
-
-        $self->{Current} = $current;
     }
+
+    if ($ARGS{moveup} or $ARGS{movedown}) {
+        my $offset = $ARGS{moveup} ? 1 : 0;
+        my $choosed = $ARGS{$self->{Name}.'-Selected'};
+        $choosed = [$choosed] unless ref ($choosed);
+        my $canmove = 0; # not in the cornor
+        for my $i ($ARGS{moveup} ? 0..$#{$current} : reverse 0..$#{$current}) {
+            if (grep {$_ eq $current->[$i]} @$choosed) {
+            if ($canmove) {
+                splice (@$current, $i-$offset, 2,
+                    @{$current}[$i+1-$offset,$i-$offset]);
+            }
+            }
+            else {
+            ++$canmove;
+            }
+        }
+    }
+
+    if ($ARGS{clear}) {
+        $current = [];
+    }
+
+    $self->{Current} = $current;
 }
 
 @{$self->{Current}} = grep { exists $self->{_item_map}{$_} } @{$self->{Current}};
@@ -182,14 +164,9 @@ $self => undef
 </%method>
 
 <%method show>
-<form method="post" action="<%$self->{Action}%>" name="SelectionBox-<% $name %>" id="SelectionBox-<% $name %>"
-% unless ($nojs) {
-onsubmit="list_<% $name %>.selectAll();"
-% }
->
+<form method="post" action="<%$self->{Action}%>" name="SelectionBox-<% $name %>" id="SelectionBox-<% $name %>">
 <input type="hidden" class="hidden" name="<% $self->{Name} %>-Submit" value="1" />
 <& SelectionBox:current, self => $self &>
-<input type="hidden" class="hidden" name="fromjs" value="0" />
 <&|/l&>Available</&>:
 <br />
 <select name="<%$name%>-Available" id="<%$name%>-Available" size="<%$size%>" multiple="multiple">
@@ -234,17 +211,9 @@ selected="selected"
 % }
 </form>
 
-% unless ($nojs) {
-<script type="text/javascript">
-//<![CDATA[
-var list_<%$name%> = new list(document.getElementById("SelectionBox-<% $name %>"), 0, "list_<%$name%>");
-//]]>
-</script>
-% }
 <%ARGS>
 $self => undef
 $size => 10
-$nojs => 0
 </%ARGS>
 <%INIT>
 my $name = $self->{Name};
