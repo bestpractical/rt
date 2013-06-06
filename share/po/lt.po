@@ -161,7 +161,7 @@ msgstr "%1 (iš panelės %2)"
 
 #: bin/rt-crontool:337
 #. ("--log")
-msgid "%1 - Adjust LogToScreen config option"
+msgid "%1 - Adjust LogToSTDERR config option"
 msgstr "%1 - Derinti prisijungimo ekrano nustatymus"
 
 #: bin/rt-crontool:312 bin/rt-crontool:319 bin/rt-crontool:325

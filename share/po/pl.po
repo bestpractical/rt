@@ -171,7 +171,7 @@ msgstr "wyświetlone %1 - %2"
 
 #: bin/rt-crontool:337
 #. ("--log")
-msgid "%1 - Adjust LogToScreen config option"
+msgid "%1 - Adjust LogToSTDERR config option"
 msgstr "%1 - Ustaw \"Zaloguj się do\" w opcjach konfiguracji"
 
 #: bin/rt-crontool:312 bin/rt-crontool:319 bin/rt-crontool:325

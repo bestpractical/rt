@@ -50,7 +50,7 @@ use warnings;
 
 use RT;
 RT::LoadConfig();
-RT->Config->Set('LogToScreen' => 'debug');
+RT->Config->Set('LogToSTDERR' => 'debug');
 RT::Init();
 
 $| = 1;

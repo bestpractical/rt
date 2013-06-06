@@ -186,8 +186,8 @@ msgstr "Mostrati da %1 a %2"
 
 #: bin/rt-crontool:337
 #. ("--log")
-msgid "%1 - Adjust LogToScreen config option"
-msgstr "%1 - Regola l'opzione LogToScreen"
+msgid "%1 - Adjust LogToSTDERR config option"
+msgstr "%1 - Regola l'opzione LogToSTDERR"
 
 #: bin/rt-crontool:312 bin/rt-crontool:319 bin/rt-crontool:325
 #. ("--action-arg", "--action")

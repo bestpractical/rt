@@ -162,8 +162,8 @@ msgstr "%1 (от панел %2)"
 
 #: bin/rt-crontool:337
 #. ("--log")
-msgid "%1 - Adjust LogToScreen config option"
-msgstr "%1 - Регулирайте LogToScreen опция в конфигурацията"
+msgid "%1 - Adjust LogToSTDERR config option"
+msgstr "%1 - Регулирайте LogToSTDERR опция в конфигурацията"
 
 #: bin/rt-crontool:312 bin/rt-crontool:319 bin/rt-crontool:325
 #. ("--action-arg", "--action")

@@ -158,8 +158,8 @@ msgstr "%1 (iz razdelka %2)"
 
 #: bin/rt-crontool:337
 #. ("--log")
-msgid "%1 - Adjust LogToScreen config option"
-msgstr "%1 - Nastavi 'LogToScreen' konfiguracijsko možnost"
+msgid "%1 - Adjust LogToSTDERR config option"
+msgstr "%1 - Nastavi 'LogToSTDERR' konfiguracijsko možnost"
 
 #: bin/rt-crontool:312 bin/rt-crontool:319 bin/rt-crontool:325
 #. ("--action-arg", "--action")

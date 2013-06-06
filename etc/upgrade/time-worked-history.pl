@@ -52,7 +52,7 @@ use warnings;
 
 use RT;
 RT::LoadConfig();
-RT->Config->Set('LogToScreen' => 'info');
+RT->Config->Set('LogToSTDERR' => 'info');
 RT::Init();
 
 my $dbh = $RT::Handle->dbh;

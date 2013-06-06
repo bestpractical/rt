@@ -183,8 +183,8 @@ msgstr "%1 - %2 vist"
 
 #: bin/rt-crontool:337
 #. ("--log")
-msgid "%1 - Adjust LogToScreen config option"
-msgstr "%1 – endre innstillingen «LogToScreen»"
+msgid "%1 - Adjust LogToSTDERR config option"
+msgstr "%1 – endre innstillingen «LogToSTDERR»"
 
 #: bin/rt-crontool:312 bin/rt-crontool:319 bin/rt-crontool:325
 #. ("--action-arg", "--action")

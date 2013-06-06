@@ -194,7 +194,7 @@ msgstr "%1 - %2 apresentados"
 
 #: bin/rt-crontool:337
 #. ("--log")
-msgid "%1 - Adjust LogToScreen config option"
+msgid "%1 - Adjust LogToSTDERR config option"
 msgstr "%1 - Ajustar opção de configuração LogParaTela"
 
 #: bin/rt-crontool:312 bin/rt-crontool:319 bin/rt-crontool:325

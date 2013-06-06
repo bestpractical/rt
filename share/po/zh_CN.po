@@ -205,8 +205,8 @@ msgstr "显示第 %1 - %2 笔"
 
 #: bin/rt-crontool:337
 #. ("--log")
-msgid "%1 - Adjust LogToScreen config option"
-msgstr "%1 - 调整LogToScreen配置选项"
+msgid "%1 - Adjust LogToSTDERR config option"
+msgstr "%1 - 调整LogToSTDERR配置选项"
 
 #: bin/rt-crontool:312 bin/rt-crontool:319 bin/rt-crontool:325
 #. ("--action-arg", "--action")

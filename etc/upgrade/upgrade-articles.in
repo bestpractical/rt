@@ -54,7 +54,7 @@ use lib "@RT_LIB_PATH@";
 
 use RT;
 RT::LoadConfig();
-RT->Config->Set('LogToScreen' => 'debug');
+RT->Config->Set('LogToSTDERR' => 'debug');
 RT::Init();
 
 $| = 1;
