@@ -74,8 +74,6 @@ GetOptions(
     'with-USERLOGO',
     'with-HTML-DOC',
 
-    'download=s',
-    'repository=s',
     'list-deps',
     'help|h',
 );
@@ -181,7 +179,6 @@ CGI::Cookie 1.20
 CGI::Emulate::PSGI
 CGI::PSGI 0.12
 Class::Accessor 0.34
-Class::ReturnValue 0.40
 CSS::Squish 0.06
 Date::Extract 0.02
 Date::Manip
@@ -270,8 +267,6 @@ Text::ParseWords
 $deps{'DEVELOPER'} = [ text_to_hash( << '.') ];
 Email::Abstract
 File::Find
-HTML::Form
-HTML::TokeParser
 Log::Dispatch::Perl
 Mojo::DOM
 Plack::Middleware::Test::StashWarnings 0.06
@@ -527,47 +522,6 @@ END
     }
     print "\t\tcommand: '$ext'\n";
     return scalar `$ext 1>&2`;
-}
-
-sub download_mods {
-    my %modules;
-    use CPAN;
-    
-    foreach my $key (keys %deps) {
-        my @deps = (@{$deps{$key}});
-        while (@deps) {
-            my $mod = shift @deps;
-            my $ver = shift @deps;
-            next if ($mod =~ /^(DBD-|Apache-Request)/);
-            $modules{$mod} = $ver;
-        }
-    }
-    my @mods = keys %modules;
-    CPAN::get();
-    my $moddir = $args{'download'};
-    foreach my $mod (@mods) {
-        $CPAN::Config->{'build_dir'} = $moddir;
-        CPAN::get($mod);
-    }
-
-    opendir(DIR, $moddir);
-    while ( my $dir = readdir(DIR)) {
-        print "Dir is $dir\n";
-        next if ( $dir =~ /^\.\.?$/);
-
-        # Skip things we've previously tagged
-        my $out = `svn ls $args{'repository'}/tags/$dir`;
-        next if ($out);
-
-        if ($dir =~ /^(.*)-(.*?)$/) {
-            `svn_load_dirs -no_user_input -t tags/$dir -v $args{'repository'} dists/$1 $moddir/$dir`;
-            `rm -rf $moddir/$dir`;
-
-        }
-
-    }
-    closedir(DIR);
-    exit;
 }
 
 sub check_perl_version {
