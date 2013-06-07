@@ -83,12 +83,13 @@ $| = 1; # unbuffer all output.
 
 my %args = (
     dba => '@DB_DBA@',
+    package => 'RT',
 );
 GetOptions(
     \%args,
     'action=s',
     'force', 'debug',
-    'dba=s', 'dba-password=s', 'prompt-for-dba-password',
+    'dba=s', 'dba-password=s', 'prompt-for-dba-password', 'package=s',
     'datafile=s', 'datadir=s', 'skip-create', 'root-password-file=s',
     'help|h',
 );
@@ -312,7 +313,7 @@ sub action_upgrade {
         if ( defined $upgrading_from ) {
             print "Doesn't match #.#.#: ";
         } else {
-            print "Enter RT version you're upgrading from: ";
+            print "Enter $args{package} version you're upgrading from: ";
         }
         $upgrading_from = scalar <STDIN>;
         chomp $upgrading_from;
@@ -345,7 +346,7 @@ sub action_upgrade {
             if ( defined $custom_upgrading_to ) {
                 print "Doesn't match #.#.#: ";
             } else {
-                print "\nEnter RT version if you want to stop upgrade at some point,\n";
+                print "\nEnter $args{package} version if you want to stop upgrade at some point,\n";
                 print "  or leave it blank if you want apply above upgrades: ";
             }
             $custom_upgrading_to = scalar <STDIN>;
