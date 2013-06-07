@@ -85,10 +85,16 @@ my $linkUsers;
 $linkUsers = sub {
     my ($what, $more) = @_;
     if ($what->isa("RT::Group")) {
+        # Link the users (non-recursively)
         my @ret = map {$linkUsers->($_->[1], $more), ", "}
             sort {$a->[0] cmp $b->[0]}
             map {+[($_->EmailAddress||''), $_]}
-            @{ $what->UserMembersObj->ItemsArrayRef };
+            @{ $what->UserMembersObj( Recursively => 0 )->ItemsArrayRef };
+
+        # But don't link the groups
+        push @ret, map {+("Group: $_", ",")}
+            sort map {$_->Name} @{ $what->GroupMembersObj( Recursively => 0)->ItemsArrayRef };
+
         pop @ret; # Remove ending ", "
         return @ret;
     } else {
