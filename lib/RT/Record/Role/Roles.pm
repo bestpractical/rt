@@ -415,6 +415,9 @@ sub AddRoleMember {
                           $principal->Object->Name, $self->loc($type)) )
             if $group->HasMember( $principal );
 
+    return (0, $self->loc('[_1] cannot be a group', $self->loc($type)) )
+                if $group->SingleMemberRoleGroup and $principal->IsGroup;
+
     my ( $ok, $msg ) = $group->_AddMember( %args, RecordTransaction => !$args{Silent} );
     unless ($ok) {
         $RT::Logger->error("Failed to add $args{PrincipalId} as a member of group ".$group->Id.": ".$msg);
