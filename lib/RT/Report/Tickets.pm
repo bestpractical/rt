@@ -194,7 +194,7 @@ our %GROUPINGS_META = (
 # loc'able strings below generated with:
 #   perl -MRT=-init -MRT::Report::Tickets -E 'say qq{\# loc("$_->[0]")} while $_ = splice @RT::Report::Tickets::STATISTICS, 0, 2'
 #
-# loc("Tickets")
+# loc("Ticket count")
 # loc("Summary of time worked")
 # loc("Total time worked")
 # loc("Average time worked")
@@ -242,7 +242,7 @@ our %GROUPINGS_META = (
 # loc("Maximum Started-Resolved")
 
 our @STATISTICS = (
-    COUNT => ['Tickets', 'Count', 'id'],
+    COUNT => ['Ticket count', 'Count', 'id'],
 );
 
 foreach my $field (qw(TimeWorked TimeEstimated TimeLeft)) {
