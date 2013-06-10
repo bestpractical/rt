@@ -189,3 +189,13 @@ these types before insertion.
 
 Site-specific custom types (anything but ticket, reminder or approval)
 are not affected by these changes.
+
+=head1 UPGRADING FROM 4.0.13 AND EARLIER
+
+=head2 Bookmarks
+
+Previously, the list of Bookmarks on your homepage was unlimited (if you
+had 100 bookmarked tickets, you would see a 100 item list on your RT at
+a Glance).  'Bookmarked Tickets' now uses the same size limits as any
+other search on your homepage.  This can be customized using the 'Rows
+per box' setting on your RT at a Glance configuration page.
