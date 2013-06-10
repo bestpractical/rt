@@ -506,7 +506,7 @@ you can find the files in the location noted in the log file. If you run
 a tool like C<rt-crontool> however, or if you look after stopping the server,
 the files will have been deleted when the process completed. If you need to
 keep the files for development or debugging, you can manually set
-C<UNLINK => 0> where the testfile config is processed in
+C<< UNLINK => 0 >> where the testfile config is processed in
 C<lib/RT/Interface/Emai.pm>.
 
 =cut
