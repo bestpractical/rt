@@ -123,12 +123,12 @@ sub resolve_local_link {
         : '';
 
     my $local;
-    if ($name =~ /^RT::/) {
+    if ($name =~ /^RT(::|$)/) {
         $local = join "/",
                   map { $self->encode_entities($_) }
                 split /::/, $name;
     }
-    elsif ($name =~ /^rt[-_]/) {
+    elsif ($name =~ /^rt([-_]|$)/) {
         $local = $self->encode_entities($name);
     }
     elsif ($name eq "RT_Config" or $name eq "RT_Config.pm") {
