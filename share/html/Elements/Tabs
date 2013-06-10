@@ -493,7 +493,8 @@ my $build_main_nav = sub {
     $tickets->child( simple => title => loc('Simple Search'), path => "/Search/Simple.html" );
     $tickets->child( new    => title => loc('New Search'),    path => "/Search/Build.html?NewQuery=1" );
 
-    $search->child( articles => title => loc('Articles'),   path => "/Articles/Article/Search.html" );
+    $search->child( articles => title => loc('Articles'),   path => "/Articles/Article/Search.html" )
+        if $session{CurrentUser}->HasRight( Right => 'ShowArticlesMenu', Object => RT->System );
 
     $search->child( users => title => loc('Users'),   path => "/User/Search.html" );
 
@@ -701,7 +702,7 @@ my $build_main_nav = sub {
                 $actions->child( 'extract-article' =>
                     title => loc('Extract Article'),
                     path  => "/Articles/Article/ExtractIntoClass.html?Ticket=".$obj->id,
-                );
+                ) if $session{CurrentUser}->HasRight( Right => 'ShowArticlesMenu', Object => RT->System );
 
                 if ( defined $session{"tickets"} ) {
                     # we have to update session data if we get new ItemMap
