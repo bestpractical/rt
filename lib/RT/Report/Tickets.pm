@@ -616,13 +616,6 @@ sub NewItem {
 # correct class.  However, since we're abusing a subclass, it's incorrect.
 sub _RoleGroupClass { "RT::Ticket" }
 
-{ our @SORT_OPS;
-sub __sort_function_we_need_named($$) {
-    for my $f ( @SORT_OPS ) {
-        my $r = $f->($_[0], $_[1]);
-        return $r if $r;
-    }
-}
 sub SortEntries {
     my $self = shift;
 
@@ -635,7 +628,13 @@ sub SortEntries {
         $self->ColumnsList;
     return unless @groups;
 
-    local @SORT_OPS;
+    my @SORT_OPS;
+    my $by_multiple = sub ($$) {
+        for my $f ( @SORT_OPS ) {
+            my $r = $f->($_[0], $_[1]);
+            return $r if $r;
+        }
+    };
     my @data = map [$_], @{ $self->{'items'} };
 
     for ( my $i = 0; $i < @groups; $i++ ) {
@@ -667,9 +666,9 @@ sub SortEntries {
     }
     $self->{'items'} = [
         map $_->[0],
-        sort __sort_function_we_need_named @data
+        sort $by_multiple @data
     ];
-} }
+}
 
 sub PostProcessRecords {
     my $self = shift;
