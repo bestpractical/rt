@@ -172,41 +172,47 @@ sub Create {
         Content => RT::User->CanonicalizeEmailAddress($_)
     ) for @{$args{'SquelchMailTo'} || []};
 
-    #Provide a way to turn off scrips if we need to
-        $RT::Logger->debug('About to think about scrips for transaction #' .$self->Id);
-    if ( $args{'ActivateScrips'} and $args{'ObjectType'} eq 'RT::Ticket' ) {
-       $self->{'scrips'} = RT::Scrips->new(RT->SystemUser);
+    my @return = ( $id, $self->loc("Transaction Created") );
 
-        $RT::Logger->debug('About to prepare scrips for transaction #' .$self->Id); 
+    return @return unless $args{'ObjectType'} eq 'RT::Ticket';
 
-        $self->{'scrips'}->Prepare(
-            Stage       => 'TransactionCreate',
-            Type        => $args{'Type'},
-            Ticket      => $args{'ObjectId'},
-            Transaction => $self->id,
-        );
-
-       # Entry point of the rule system
-       my $ticket = RT::Ticket->new(RT->SystemUser);
-       $ticket->Load($args{'ObjectId'});
-       my $txn = RT::Transaction->new($RT::SystemUser);
-       $txn->Load($self->id);
-
-       my $rules = $self->{rules} = RT::Ruleset->FindAllRules(
-            Stage       => 'TransactionCreate',
-            Type        => $args{'Type'},
-            TicketObj   => $ticket,
-            TransactionObj => $txn,
-       );
-
-        if ($args{'CommitScrips'} ) {
-            $RT::Logger->debug('About to commit scrips for transaction #' .$self->Id);
-            $self->{'scrips'}->Commit();
-            RT::Ruleset->CommitRules($rules);
-        }
+    # Provide a way to turn off scrips if we need to
+    unless ( $args{'ActivateScrips'} ) {
+        $RT::Logger->debug('Skipping scrips for transaction #' .$self->Id);
+        return @return;
     }
 
-    return ( $id, $self->loc("Transaction Created") );
+    $self->{'scrips'} = RT::Scrips->new(RT->SystemUser);
+
+    $RT::Logger->debug('About to prepare scrips for transaction #' .$self->Id); 
+
+    $self->{'scrips'}->Prepare(
+        Stage       => 'TransactionCreate',
+        Type        => $args{'Type'},
+        Ticket      => $args{'ObjectId'},
+        Transaction => $self->id,
+    );
+
+   # Entry point of the rule system
+   my $ticket = RT::Ticket->new(RT->SystemUser);
+   $ticket->Load($args{'ObjectId'});
+   my $txn = RT::Transaction->new($RT::SystemUser);
+   $txn->Load($self->id);
+
+   my $rules = $self->{rules} = RT::Ruleset->FindAllRules(
+        Stage       => 'TransactionCreate',
+        Type        => $args{'Type'},
+        TicketObj   => $ticket,
+        TransactionObj => $txn,
+   );
+
+    if ($args{'CommitScrips'} ) {
+        $RT::Logger->debug('About to commit scrips for transaction #' .$self->Id);
+        $self->{'scrips'}->Commit();
+        RT::Ruleset->CommitRules($rules);
+    }
+
+    return @return;
 }
 
 
