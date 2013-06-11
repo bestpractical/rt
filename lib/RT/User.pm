@@ -1252,26 +1252,29 @@ public, ourself, or we have AdminUsers
 
 sub CurrentUserCanSee {
     my $self = shift;
-    my ($what) = @_;
+    my ($what, $txn) = @_;
 
-    # If it's public, fine.  Note that $what may be "transaction", which
-    # doesn't have an Accessible value, and thus falls through below.
-    if ( $self->_Accessible( $what, 'public' ) ) {
-        return 1;
-    }
+    # If it's a public property, fine
+    return 1 if $self->_Accessible( $what, 'public' );
 
-    # Users can see their own properties
-    elsif ( defined($self->Id) && $self->CurrentUser->Id == $self->Id ) {
-        return 1;
-    }
+    # Users can see all of their own properties
+    return 1 if defined($self->Id) and $self->CurrentUser->Id == $self->Id;
 
     # If the user has the admin users right, that's also enough
-    elsif ( $self->CurrentUser->HasRight( Right => 'AdminUsers', Object => $RT::System) ) {
-        return 1;
+    return 1 if $self->CurrentUserHasRight( 'AdminUsers' );
+
+    # Transactions of public properties are visible to users with ShowUserHistory
+    if ($what eq "Transaction" and $self->CurrentUserHasRight( 'ShowUserHistory' )) {
+        my $type = $txn->__Value('Type');
+        my $field = $txn->__Value('Field');
+        return 1 if $type eq "Set" and $self->_Accessible( $field, 'public' );
+
+        # RT::Transaction->CurrentUserCanSee deals with ensuring we meet
+        # the ACLs on CFs, so allow them here
+        return 1 if $type eq "CustomField";
     }
-    else {
-        return 0;
-    }
+
+    return 0;
 }
 
 =head2 CurrentUserCanModify RIGHT
