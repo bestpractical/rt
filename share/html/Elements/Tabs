@@ -898,8 +898,12 @@ my $build_main_nav = sub {
 
     }
 
-    if ( $request_path =~ m{^/User/(Summary|History)\.html} and not PageMenu()->child('summary') ) {
-        if ( $session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'ShowUserHistory' ) ) {
+    if ( $request_path =~ m{^/User/(Summary|History)\.html} ) {
+        if (PageMenu()->child('summary')) {
+            # Already set up from having AdminUser and ShowConfigTab;
+            # but rename "Basics" to "Edit" in this context
+            PageMenu()->child( 'basics' )->title( loc('Edit') );
+        } elsif ( $session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'ShowUserHistory' ) ) {
             PageMenu()->child( display => title => loc('Summary'), path => '/User/Summary.html?id=' . $DECODED_ARGS->{'id'} );
             PageMenu()->child( history => title => loc('History'), path => '/User/History.html?id=' . $DECODED_ARGS->{'id'} );
         }
