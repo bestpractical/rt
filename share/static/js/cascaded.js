@@ -1,7 +1,10 @@
-function filter_cascade (id, val, is_hierarchical) {
+function filter_cascade_by_id (id, val, is_hierarchical) {
     var select = document.getElementById(id);
     var complete_select = document.getElementById(id + "-Complete" );
+    return filter_cascade(select, complete_select, val, is_hierarchical);
+}
 
+function filter_cascade (select, complete_select, val, is_hierarchical) {
     if (!select) { return };
     var i;
     var children = select.childNodes;
