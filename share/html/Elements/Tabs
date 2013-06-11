@@ -311,7 +311,7 @@ my $build_admin_menu = sub {
             }
         }
     }
-    if ( $request_path =~ m{^(/Admin/Users|/User/(Summary|History)\.html)} ) {
+    if ( $request_path =~ m{^(/Admin/Users|/User/(Summary|History)\.html)} and $admin->child("users") ) {
         if ( $DECODED_ARGS->{'id'} && $DECODED_ARGS->{'id'} =~ /^\d+$/ ) {
             my $id = $DECODED_ARGS->{'id'};
             my $obj = RT::User->new( $session{'CurrentUser'} );
