@@ -1,11 +1,7 @@
-move abuse protection code from callers to SetupGrouping
-    IsValidGrouping, etc.
+Example dashboard + saved charts in initialdata for slick demo out of the box
 
-protect Function in SetupGrouping from abuse
 
-upgrade script for saved charts
-* switch from space separator to dot
-* switch from PrimaryGroupBy to GroupBy name
+== Nice to have ==
 
 it'd be nice if full day and month names worked in 
 "Created.DayOfWeek = 'Thu'" searches.
@@ -34,21 +30,3 @@ for newely created tickets. It's either bug or just
 operation is long enough to span over two seconds. It
 would be nice to ignore difference up to 3 seconds or
 something like that.
-
-During rebase localization of "group by" was lost
-
-Check for abusable ->Column and ->GroupBy calls
-
-@SORT_OPTS and associated ugly function needs to be better
-
-Look at Excel/OO for how it does multiple groupings/sortings?
-
-Option groups for groupings/count
-
-Chart labels can go haywire
-
-Fix max width problems
-
-Configurable default grouping since Queue is outrageous on rt.cpan.org
-
-Integer y-axis ticks, rounded to nearest multiple of 5?
