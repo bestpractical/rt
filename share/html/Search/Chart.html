@@ -138,11 +138,17 @@ my %query;
 </fieldset>
 </&>
 
-<&| /Widgets/TitleBox, title => loc("Calculate") &>
+<&| /Widgets/TitleBox, title => loc("Calculate"), class => "chart-calculate" &>
 
-<% loc('Calculate') %> <& Elements/SelectChartFunction, Default => $ChartFunction[0] &>
+<fieldset><legend><% loc('Calculate values of') %></legend>
+<& Elements/SelectChartFunction, Default => $ChartFunction[0] &>
+</fieldset>
+<fieldset><legend><% loc('and then') %></legend>
 <& Elements/SelectChartFunction, Default => $ChartFunction[1], ShowEmpty => 1 &>
-<& Elements/SelectChartFunction, Default => $ChartFunction[2], ShowEmpty => 1 &><br />
+</fieldset>
+<fieldset><legend><% loc('and then') %></legend>
+<& Elements/SelectChartFunction, Default => $ChartFunction[2], ShowEmpty => 1 &>
+</fieldset>
 
 </&>
 

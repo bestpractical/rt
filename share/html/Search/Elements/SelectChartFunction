@@ -45,12 +45,27 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<% $Name %>">
+<select name="<% $Name %>" class="cascade-by-optgroup">
 % if ( $ShowEmpty ) {
 <option value="">&nbsp;</option>
 % }
-% while ( my ($value, $display) = splice @functions, 0, 2 ) {
+<%perl>
+my $in_optgroup = "";
+while ( my ($value, $display) = splice @functions, 0, 2 ) {
+    my $optgroup = $value =~ /\((.+)\)$/ ? $1 : $display;
+    if ($in_optgroup ne $optgroup) {
+        $m->out("</optgroup>\n") if $in_optgroup;
+
+        my $name = $m->interp->apply_escapes(loc($optgroup), 'h');
+        $m->out(qq[<optgroup label="$name">\n]);
+
+        $in_optgroup = $optgroup;
+    }
+</%perl>
 <option value="<% $value %>"<% $value eq $Default ? qq[ selected="selected"] : '' |n %>><% loc( $display ) %></option>
+% }
+% if ($in_optgroup) {
+  </optgroup>
 % }
 </select>
 <%ARGS>
