@@ -1,4 +1,4 @@
-function filter_cascade (id, val) {
+function filter_cascade (id, val, is_hierarchical) {
     var select = document.getElementById(id);
     var complete_select = document.getElementById(id + "-Complete" );
 
@@ -13,7 +13,7 @@ function filter_cascade (id, val) {
 
         var complete_children = complete_select.childNodes;
 
-        if ( val == '' && arguments.length == 3 ) {
+        if ( val == '' && is_hierarchical ) {
             // no category, and the category is from a hierchical cf;
             // leave this set of options empty
         } else if ( val == '' ) {
@@ -43,7 +43,7 @@ function filter_cascade (id, val) {
 // for back compatibility
         for (i in children) {
             if (!children[i].label) { continue };
-            if ( val == '' && arguments.length == 3 ) {
+            if ( val == '' && is_hierarchical ) {
                 hide(children[i]);
                 continue;
             }

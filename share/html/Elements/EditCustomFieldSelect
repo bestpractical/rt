@@ -73,7 +73,7 @@ jQuery(  function () {
             filter_cascade(
                 <% "$id-Values" |n,j%>,
                 basedon.value,
-                1
+                true
             );
             if (oldchange != null)
                 oldchange();
