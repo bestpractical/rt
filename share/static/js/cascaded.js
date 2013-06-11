@@ -33,7 +33,7 @@ function filter_cascade (select, complete_select, val, is_hierarchical) {
                 if (!complete_children[i].label ||
                       (complete_children[i].hasAttribute &&
                             !complete_children[i].hasAttribute('label') ) ||
-                        complete_children[i].label.substr(0, val.length) == val ) {
+                        complete_children[i].label === val ) {
                     if ( complete_children[i].cloneNode ) {
                         new_option = complete_children[i].cloneNode(true);
                         select.appendChild(new_option);
