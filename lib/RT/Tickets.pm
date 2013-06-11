@@ -584,6 +584,7 @@ sub _DateLimit {
                 if $to && lc $to ne 'utc';
         }
 
+        # $subkey is validated by DateTimeFunction
         my $function = $RT::Handle->DateTimeFunction(
             Type     => $subkey,
             Field    => $sb->NotSetDateToNullFunction,
