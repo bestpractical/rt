@@ -1,0 +1,9 @@
+.chart-group-by fieldset {
+    border-width: 1px 0 0 0;
+    border-style: solid;
+    border-color: #aaa;
+}
+
+.chart-group-by fieldset legend {
+    padding: 0 1em;
+}

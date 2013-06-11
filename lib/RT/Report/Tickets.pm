@@ -167,7 +167,7 @@ our %GROUPINGS_META = (
             }
             $CustomFields->LimitToGlobal;
             while ( my $CustomField = $CustomFields->Next ) {
-                push @res, "Custom field '". $CustomField->Name ."'", "CF.{". $CustomField->id ."}";
+                push @res, ["Custom field", $CustomField->Name], "CF.{". $CustomField->id ."}";
             }
             return @res;
         },
@@ -366,10 +366,10 @@ sub Groupings {
     while ( my ($field, $type) = splice @tmp, 0, 2 ) {
         my $meta = $GROUPINGS_META{ $type } || {};
         unless ( $meta->{'SubFields'} ) {
-            push @fields, $field, $field;
+            push @fields, [$field, $field], $field;
         }
         elsif ( ref( $meta->{'SubFields'} ) eq 'ARRAY' ) {
-            push @fields, map { ("$field $_", "$field.$_") } @{ $meta->{'SubFields'} };
+            push @fields, map { ([$field, $_], "$field.$_") } @{ $meta->{'SubFields'} };
         }
         elsif ( my $code = $self->FindImplementationCode( $meta->{'SubFields'} ) ) {
             push @fields, $code->( $self, \%args );

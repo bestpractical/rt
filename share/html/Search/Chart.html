@@ -112,24 +112,33 @@ my %query;
 <input type="hidden" class="hidden" name="Query" value="<% $ARGS{Query} %>" />
 <input type="hidden" class="hidden" name="SavedChartSearchId" value="<% $saved_search->{SearchId} || 'new' %>" />
 
-<&| /Widgets/TitleBox, title => loc('Properties') &>
-<% loc('Group by') %> <& Elements/SelectGroupBy,
+<&| /Widgets/TitleBox, title => loc('Group by'), class => "chart-group-by" &>
+<fieldset><legend><% loc('Group tickets by') %></legend>
+<& Elements/SelectGroupBy,
     Name => 'GroupBy',
     Query => $ARGS{Query},
     Default => $GroupBy[0],
-&>
+    &>
+</fieldset>
+<fieldset><legend><% loc('and then') %></legend>
 <& Elements/SelectGroupBy,
     Name => 'GroupBy',
     Query => $ARGS{Query},
     Default => $GroupBy[1],
     ShowEmpty => 1,
-&>
+    &>
+</fieldset>
+<fieldset><legend><% loc('and then') %></legend>
 <& Elements/SelectGroupBy,
     Name => 'GroupBy',
     Query => $ARGS{Query},
     Default => $GroupBy[2],
     ShowEmpty => 1,
-&><br />
+    &>
+</fieldset>
+</&>
+
+<&| /Widgets/TitleBox, title => loc("Calculate") &>
 
 <% loc('Calculate') %> <& Elements/SelectChartFunction, Default => $ChartFunction[0] &>
 <& Elements/SelectChartFunction, Default => $ChartFunction[1], ShowEmpty => 1 &>
