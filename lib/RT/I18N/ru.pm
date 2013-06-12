@@ -75,7 +75,7 @@ sub numerate {
     } else {
         $form = 2;
     }
-    return $forms[$form];
+    return $forms[$form] || (grep defined, @forms)[0];
 }
 
 RT::Base->_ImportOverlays();
