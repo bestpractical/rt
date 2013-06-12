@@ -33,7 +33,7 @@ use_ok 'RT::Report::Tickets';
         'thead' => [ {
                 'cells' => [
                     { 'value' => 'Status', 'type' => 'head' },
-                    { 'rowspan' => 1, 'value' => 'Tickets', 'type' => 'head' },
+                    { 'rowspan' => 1, 'value' => 'Ticket count', 'type' => 'head' },
                 ],
         } ],
        'tfoot' => [ {
