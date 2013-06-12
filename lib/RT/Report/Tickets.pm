@@ -809,13 +809,16 @@ sub DurationAsString {
     my $v = $args{'VALUE'};
     unless ( ref $v ) {
         return $self->loc("(no value)") unless defined $v && length $v;
-        return RT::Date->new( $self->CurrentUser )->DurationAsString( $v );
+        return RT::Date->new( $self->CurrentUser )->DurationAsString(
+            $v, Show => 3, Short => 1
+        );
     }
 
     my $date = RT::Date->new( $self->CurrentUser );
     my %res = %$v;
     foreach my $e ( values %res ) {
-        $e = $date->DurationAsString( $e ) if defined $e && length $e;
+        $e = $date->DurationAsString( $e, Short => 1, Show => 3 )
+            if defined $e && length $e;
         $e = $self->loc("(no value)") unless defined $e && length $e;
     }
     return \%res;
