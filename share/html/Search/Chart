@@ -62,7 +62,7 @@ my %font_config = RT->Config->Get('ChartFont');
 my $font = $font_config{ $session{CurrentUser}->UserObj->Lang || '' }
     || $font_config{'others'};
 
-s/\D//g for $Width, $Height;
+s/\D//g for grep defined, $Width, $Height;
 $Width  ||= 600;
 $Height ||= ($ChartStyle eq 'pie' ? $Width : 400);
 
