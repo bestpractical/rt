@@ -108,11 +108,6 @@ $COLUMN_MAP = {
         attribute => 'Owner',
         value     => sub { return $_[0]->OwnerObj->Name }
     },
-    Owner => {
-        title     => 'Owner', # loc
-        attribute => 'Owner',
-        value     => sub { return \($m->scomp("/Elements/ShowPrincipal", Object => $_[0]->OwnerObj ) ) }
-    },
     Status => {
         title     => 'Status', # loc
         attribute => 'Status',
@@ -191,21 +186,6 @@ $COLUMN_MAP = {
         attribute => 'TimeEstimated',
         title     => 'Time Estimated', # loc
         value     => sub { return $_[0]->TimeEstimated }
-    },
-    Requestors => {
-        title     => 'Requestors', # loc
-        attribute => 'Requestor.EmailAddress',
-        value     => sub { return \($m->scomp("/Elements/ShowPrincipal", Object => $_[0]->Requestor ) ) }
-    },
-    Cc => {
-        title     => 'Cc', # loc
-        attribute => 'Cc.EmailAddress',
-        value     => sub { return \($m->scomp("/Elements/ShowPrincipal", Object => $_[0]->Cc ) ) }
-    },
-    AdminCc => {
-        title     => 'AdminCc', # loc
-        attribute => 'AdminCc.EmailAddress',
-        value     => sub { return \($m->scomp("/Elements/ShowPrincipal", Object => $_[0]->AdminCc ) ) }
     },
     StartsRelative => {
         title     => 'Starts', # loc

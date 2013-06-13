@@ -213,6 +213,25 @@ if (RT::Interface::Web->ComponentPathIsSafe($Class) and $m->comp_exists("/Elemen
     my $class_map = $m->comp("/Elements/$Class/ColumnMap", Attr => $Attr, Name => $Name, GenericMap => $COLUMN_MAP );
     return $class_map if defined $class_map;
 }
+
+# Check for roles, if not handled already
+$Class =~ s/_/:/g;
+if ($Class->DOES("RT::Record::Role::Roles")) {
+    my $ROLE_MAP = {};
+    for my $role ($Class->Roles) {
+        my $attrs = $Class->Role($role);
+        $ROLE_MAP->{$role} = {
+            title => $role,
+            attribute => $attrs->{Column} || "$role.EmailAddress",
+            value => sub { return \($m->scomp("/Elements/ShowPrincipal", Object => $_[0]->RoleGroup($role) ) ) },
+        };
+        $ROLE_MAP->{$role . "s"} = $ROLE_MAP->{$role}
+            unless $attrs->{Single};
+    }
+    my $role_entry = GetColumnMapEntry( Map => $ROLE_MAP, Name => $Name, Attribute => $Attr );
+    return $role_entry if defined $role_entry;
+}
+
 return GetColumnMapEntry( Map => $COLUMN_MAP, Name => $Name, Attribute => $Attr );
 
 </%INIT>
