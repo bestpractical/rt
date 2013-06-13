@@ -46,22 +46,15 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 %# Released under the terms of version 2 of the GNU Public License
-
-% my $Users = $Group->UserMembersObj( Recursively => $Recursively );
-% while ( my $user = $Users->Next ) {
-<& /Elements/ShowUser, User => $user, Ticket => $Ticket &>
-<& /Elements/ShowUserEmailFrequency, User => $user, Ticket => $Ticket &>
-% $m->callback( User => $user, Ticket => $Ticket, %ARGS, CallbackName => 'AboutThisUser' );
-<br />
-% }
-% my $Groups = $Group->GroupMembersObj( Recursively => $Recursively );
-% $Groups->LimitToUserDefinedGroups;
-% while (my $group = $Groups->Next) {
-<&|/l&>Group</&>: <% $group->Name %><br />
-% }
-
+<%init>
+my $post_user = sub {
+    my $user = shift;
+    $m->comp("/Elements/ShowUserEmailFrequency", User => $user, Ticket => $Ticket);
+    $m->callback( User => $user, Ticket => $Ticket, %ARGS, CallbackName => 'AboutThisUser' );
+};
+$m->comp("/Elements/ShowPrincipal", Object => $Group, Separator => "<br />", PostUser => $post_user);
+</%init>
 <%ARGS>
 $Group       => undef
-$Recursively => 0,
 $Ticket      => undef
 </%ARGS>
