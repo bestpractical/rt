@@ -155,6 +155,7 @@ foreach my $key(qw(Type Host Name User Password)) {
 
 my $db_type = RT->Config->Get('DatabaseType') || '';
 my $db_host = RT->Config->Get('DatabaseHost') || '';
+my $db_port = RT->Config->Get('DatabasePort') || '';
 my $db_name = RT->Config->Get('DatabaseName') || '';
 my $db_user = RT->Config->Get('DatabaseUser') || '';
 my $db_pass = RT->Config->Get('DatabasePassword') || '';
@@ -181,7 +182,7 @@ if ($args{'skip-create'}) {
 }
 
 print "Working with:\n"
-    ."Type:\t$db_type\nHost:\t$db_host\nName:\t$db_name\n"
+    ."Type:\t$db_type\nHost:\t$db_host\nPort:\t$db_port\nName:\t$db_name\n"
     ."User:\t$db_user\nDBA:\t$dba_user" . ($args{'skip-create'} ? ' (No DBA)' : '') . "\n";
 
 my $package = $args{'package'} || 'RT';
@@ -212,7 +213,7 @@ sub action_drop {
     unless ( $args{'force'} ) {
         print <<END;
 
-About to drop $db_type database $db_name on $db_host.
+About to drop $db_type database $db_name on $db_host (port '$db_port').
 WARNING: This will erase all data in $db_name.
 
 END
@@ -490,7 +491,7 @@ sub error {
 sub get_dba_password {
     print "In order to create or update your RT database,"
         . " this script needs to connect to your "
-        . " $db_type instance on $db_host as $dba_user\n";
+        . " $db_type instance on $db_host (port '$db_port') as $dba_user\n";
     print "Please specify that user's database password below. If the user has no database\n";
     print "password, just press return.\n\n";
     print "Password: ";

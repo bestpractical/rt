@@ -520,6 +520,15 @@ world, you can set C<$MailCommand> to 'testfile' which writes all mail
 to a temporary file.  RT will log the location of the temporary file
 so you can extract mail from it afterward.
 
+On shutdown, RT will clean up the temporary file created when using
+the 'testfile' option. If testing while the RT server is still running,
+you can find the files in the location noted in the log file. If you run
+a tool like C<rt-crontool> however, or if you look after stopping the server,
+the files will have been deleted when the process completed. If you need to
+keep the files for development or debugging, you can manually set
+C<< UNLINK => 0 >> where the testfile config is processed in
+F<lib/RT/Interface/Email.pm>.
+
 =cut
 
 Set($MailCommand, "sendmailpipe");
@@ -531,6 +540,12 @@ Correspond mail address of the ticket's queue.
 
 Warning: If you use this setting, bounced mails will appear to be
 incoming mail to the system, thus creating new tickets.
+
+If the value contains an C<@>, it is assumed to be an email address and used as
+a global envelope sender.  Expected usage in this case is to simply set the
+same envelope sender on all mail from RT, without defining
+C<$OverrideOutgoingMailFrom>.  If you do define C<$OverrideOutgoingMailFrom>,
+anything specified there overrides the global value (including Default).
 
 This option only works if C<$MailCommand> is set to 'sendmailpipe'.
 
