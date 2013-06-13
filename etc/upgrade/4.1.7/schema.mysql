@@ -1,2 +1,5 @@
-UPDATE Transactions SET TimeTaken = NewValue - OldValue
+UPDATE Transactions
+SET TimeTaken
+    = COALESCE(NewValue,0)
+    - COALESCE(OldValue,0)
 WHERE ObjectType = 'RT::Ticket' AND Type = 'Set' AND Field = 'TimeWorked';
