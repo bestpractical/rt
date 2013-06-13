@@ -78,6 +78,7 @@ sub Table { 'Principals'}
 
 sub _Init {
     my $self = shift;
+    $self->{'with_disabled_column'} = 1;
     return ( $self->SUPER::_Init(@_) );
 }
 
