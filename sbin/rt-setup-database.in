@@ -275,7 +275,7 @@ sub action_insert {
 
     for my $file (@{$args{backcompat} || []}) {
         my $lines = do {local $/; local @ARGV = ($file); <>};
-        my $sub = eval "sub {\n$lines\n}";
+        my $sub = eval "sub {\n# line 1 $file\n$lines\n}";
         unless ($sub) {
             warn "Failed to load backcompat $file: $@";
             next;
