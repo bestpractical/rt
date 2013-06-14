@@ -192,6 +192,8 @@ are not affected by these changes.
 
 =head1 UPGRADING FROM 4.0.13 AND EARLIER
 
+=head2 Outgoing mail From: header
+
 The "Default" key of the C<$OverrideOutgoingMailFrom> config option now,
 as previously documented, only applies when no ticket is involved.
 Previously it was also used when a ticket was involved but the
@@ -205,3 +207,12 @@ solution of resorting to defining all queues in
 $OverrideOutgoingMailFrom.  Any definitions in the Override option
 (including Default) still take precedence.  See
 L<RT_Config/$SetOutgoingMailFrom> for more information.
+
+=head2 Reminder statuses
+
+New reminders are now created in the "reminder_on_open" status defined in your
+lifecycles.  For the default lifecycle, this means reminders will start as
+"open" instead of "new".  This change is for consistency when a completed
+reminder is reopened at a later date.  If you use custom lifecycles and added
+further transition restrictions, you may need to adjust the L<"reminder_on_open"
+setting|RT_Config/reminder_on_open> in your lifecycles.
