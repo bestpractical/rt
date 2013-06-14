@@ -103,12 +103,15 @@ use File::Find;
 my @MAKE = qw(Makefile);
 
 File::Find::find({ no_chdir => 1, wanted => \&tag_pm}, 'lib');
-File::Find::find({ no_chdir => 1, wanted => \&tag_mason}, 'share/html');
-File::Find::find({ no_chdir => 1, wanted => \&tag_script}, 'sbin');
-File::Find::find({ no_chdir => 1, wanted => \&tag_script}, 'bin');
-File::Find::find({ no_chdir => 1, wanted => \&tag_script}, 'etc/upgrade');
-File::Find::find({ no_chdir => 1, wanted => \&tag_script}, 'devel/tools');
-tag_makefile ('Makefile.in');
+for my $masondir (qw( html share/html )) {
+    next unless -d $masondir;
+    File::Find::find({ no_chdir => 1, wanted => \&tag_mason}, $masondir);
+}
+for my $bindir (qw( sbin bin etc/upgrade devel/tools )) {
+    next unless -d $bindir;
+    File::Find::find({ no_chdir => 1, wanted => \&tag_script}, $bindir);
+}
+tag_makefile ('Makefile.in') if -f 'Makefile.in';
 tag_makefile ('README');
 
 
@@ -182,7 +185,7 @@ sub tag_makefile {
 
 sub tag_pm {
         my $pm = $_;
-        next unless $pm =~ /\.pm/s;
+        return unless $pm =~ /\.pm/s;
         open( FILE, '<', $pm ) or die "Failed to open $pm";
         my $file = (join "", <FILE>);
         close (FILE);
