@@ -50,7 +50,7 @@ diag "reorder CFs: C, A and B";
 {
     $m->get( '/Admin/Queues/' );
     $m->follow_link_ok( {text => $queue->id} );
-    $m->follow_link_ok( {id  => 'page-ticket-custom-fields'} );
+    $m->follow_link_ok( {id  => 'page-custom-fields-tickets'} );
     my @tmp = ($m->content =~ /(CF [ABC])/g);
     is_deeply(\@tmp, ['CF B', 'CF A', 'CF C']);
 
