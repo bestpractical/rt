@@ -820,7 +820,7 @@ sub Limit {
         );
     }
 
-    unless ( exists $ARGS{CASESENSITIVE} ) {
+    unless ( exists $ARGS{CASESENSITIVE} or (exists $ARGS{QUOTEVALUE} and not $ARGS{QUOTEVALUE}) ) {
         if ( $ARGS{'OPERATOR'} !~ /IS/i
             && $table && $check_case_sensitivity{ lc $table }{ lc $ARGS{'FIELD'} }
         ) {

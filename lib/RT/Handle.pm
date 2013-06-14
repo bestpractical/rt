@@ -60,9 +60,9 @@ RT::Handle - RT's database handle
 
 C<RT::Handle> is RT specific wrapper over one of L<DBIx::SearchBuilder::Handle>
 classes. As RT works with different types of DBs we subclass repsective handler
-from L<DBIx::SerachBuilder>. Type of the DB is defined by C<DatabasseType> RT's
-config option. You B<must> load this module only when the configs have been
-loaded.
+from L<DBIx::SearchBuilder>. Type of the DB is defined by L<RT's DatabaseType
+config option|RT_Config/DatabaseType>. You B<must> load this module only when
+the configs have been loaded.
 
 =cut
 
