@@ -87,10 +87,19 @@ sub FinalizeDatabaseType {
         use base "DBIx::SearchBuilder::Handle::". RT->Config->Get('DatabaseType');
     };
 
+    my $db_type = RT->Config->Get('DatabaseType');
     if ($@) {
-        die "Unable to load DBIx::SearchBuilder database handle for '". RT->Config->Get('DatabaseType') ."'.\n".
+        die "Unable to load DBIx::SearchBuilder database handle for '$db_type'.\n".
             "Perhaps you've picked an invalid database type or spelled it incorrectly.\n".
             $@;
+    }
+
+    # We use COLLATE NOCASE to enforce case insensitivity on the normally
+    # case-sensitive SQLite, LOWER() approach works, but lucks performance
+    # due to absence of functional indexes
+    if ($db_type eq 'SQLite') {
+        no strict 'refs'; no warnings 'redefine';
+        *DBIx::SearchBuilder::Handle::SQLite::CaseSensitive = sub {0};
     }
 }
 

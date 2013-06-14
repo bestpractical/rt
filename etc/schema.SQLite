@@ -4,13 +4,13 @@ CREATE TABLE Attachments (
   id INTEGER PRIMARY KEY  ,
   TransactionId INTEGER  ,
   Parent integer NULL DEFAULT 0 ,
-  MessageId varchar(160) NULL  ,
-  Subject varchar(255) NULL  ,
-  Filename varchar(255) NULL  ,
-  ContentType varchar(80) NULL  ,
-  ContentEncoding varchar(80) NULL  ,
-  Content LONGTEXT NULL  ,
-  Headers LONGTEXT NULL  ,
+  MessageId varchar(160) collate NOCASE NULL  ,
+  Subject varchar(255) collate NOCASE NULL  ,
+  Filename varchar(255) collate NOCASE NULL  ,
+  ContentType varchar(80) collate NOCASE NULL  ,
+  ContentEncoding varchar(80) collate NOCASE NULL  ,
+  Content LONGTEXT collate NOCASE NULL  ,
+  Headers LONGTEXT collate NOCASE NULL  ,
   Creator integer NULL DEFAULT 0 ,
   Created DATETIME NULL 
   
@@ -24,12 +24,12 @@ CREATE INDEX Attachments3 ON Attachments (Parent, TransactionId) ;
 --- {{{ Queues
 CREATE TABLE Queues (
   id INTEGER PRIMARY KEY  ,
-  Name varchar(200) NOT NULL  ,
-  Description varchar(255) NULL  ,
-  CorrespondAddress varchar(120) NULL  ,
-  CommentAddress varchar(120) NULL  ,
-  Lifecycle varchar(32) NULL  ,
-  SubjectTag varchar(120) NULL  ,
+  Name varchar(200) collate NOCASE NOT NULL  ,
+  Description varchar(255) collate NOCASE NULL  ,
+  CorrespondAddress varchar(120) collate NOCASE NULL  ,
+  CommentAddress varchar(120) collate NOCASE NULL  ,
+  Lifecycle varchar(32) collate NOCASE NULL  ,
+  SubjectTag varchar(120) collate NOCASE NULL  ,
   InitialPriority integer NULL DEFAULT 0 ,
   FinalPriority integer NULL DEFAULT 0 ,
   DefaultDueIn integer NULL DEFAULT 0 ,
@@ -48,9 +48,9 @@ CREATE UNIQUE INDEX Queues1 ON Queues (Name) ;
 
 CREATE TABLE Links (
   id INTEGER PRIMARY KEY  ,
-  Base varchar(240) NULL  ,
-  Target varchar(240) NULL  ,
-  Type varchar(20) NOT NULL  ,
+  Base varchar(240) collate NOCASE NULL  ,
+  Target varchar(240) collate NOCASE NULL  ,
+  Type varchar(20) collate NOCASE NOT NULL  ,
   LocalTarget integer NULL DEFAULT 0 ,
   LocalBase integer NULL DEFAULT 0 ,
   LastUpdatedBy integer NULL DEFAULT 0 ,
@@ -68,7 +68,7 @@ CREATE INDEX Links4 ON Links(Type,LocalBase);
 
 CREATE TABLE Principals (
         id INTEGER PRIMARY KEY,
-        PrincipalType VARCHAR(16) not null,
+        PrincipalType VARCHAR(16) collate NOCASE not null,
         ObjectId integer,
         Disabled int2 NOT NULL DEFAULT 0 
         
@@ -80,10 +80,10 @@ CREATE TABLE Principals (
 
 CREATE TABLE Groups (
   id INTEGER ,
-  Name varchar(200) NULL  ,
-  Description varchar(255) NULL  ,
-  Domain varchar(64),
-  Type varchar(64),
+  Name varchar(200) collate NOCASE NULL  ,
+  Description varchar(255) collate NOCASE NULL  ,
+  Domain varchar(64) collate NOCASE,
+  Type varchar(64) collate NOCASE,
   Instance integer,
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
@@ -100,11 +100,11 @@ CREATE UNIQUE INDEX Groups1 ON Groups (Name,Domain,Type,Instance) ;
 
 CREATE TABLE ScripConditions (
   id INTEGER PRIMARY KEY  ,
-  Name varchar(200) NULL  ,
-  Description varchar(255) NULL  ,
-  ExecModule varchar(60) NULL  ,
-  Argument varchar(255) NULL  ,
-  ApplicableTransTypes varchar(60) NULL  ,
+  Name varchar(200) collate NOCASE NULL  ,
+  Description varchar(255) collate NOCASE NULL  ,
+  ExecModule varchar(60) collate NOCASE NULL  ,
+  Argument varchar(255) collate NOCASE NULL  ,
+  ApplicableTransTypes varchar(60) collate NOCASE NULL  ,
 
   Creator integer NULL DEFAULT 0 ,
   Created DATETIME NULL  ,
@@ -118,17 +118,17 @@ CREATE TABLE ScripConditions (
 --- {{{ Transactions
 CREATE TABLE Transactions (
   id INTEGER PRIMARY KEY  ,
-  ObjectType varchar(255) NULL  ,
+  ObjectType varchar(255) collate NOCASE NULL  ,
   ObjectId integer NULL DEFAULT 0 ,
   TimeTaken integer NULL DEFAULT 0 ,
-  Type varchar(20) NULL  ,
-  Field varchar(40) NULL  ,
-  OldValue varchar(255) NULL  ,
-  NewValue varchar(255) NULL  ,
-  ReferenceType varchar(255) NULL  ,
+  Type varchar(20) collate NOCASE NULL  ,
+  Field varchar(40) collate NOCASE NULL  ,
+  OldValue varchar(255) collate NOCASE NULL  ,
+  NewValue varchar(255) collate NOCASE NULL  ,
+  ReferenceType varchar(255) collate NOCASE NULL  ,
   OldReference integer NULL  ,
   NewReference integer NULL  ,
-  Data varchar(255) NULL  ,
+  Data varchar(255) collate NOCASE NULL  ,
 
   Creator integer NULL DEFAULT 0 ,
   Created DATETIME NULL  
@@ -142,14 +142,14 @@ CREATE INDEX Transactions1 ON Transactions (ObjectType, ObjectId);
 
 CREATE TABLE Scrips (
   id INTEGER PRIMARY KEY  ,
-  Description varchar(255),
+  Description varchar(255) collate NOCASE,
   ScripCondition integer NULL DEFAULT 0 ,
   ScripAction integer NULL DEFAULT 0 ,
-  CustomIsApplicableCode text NULL  ,
-  CustomPrepareCode text NULL  ,
-  CustomCommitCode text NULL  ,
+  CustomIsApplicableCode text collate NOCASE NULL  ,
+  CustomPrepareCode text collate NOCASE NULL  ,
+  CustomCommitCode text collate NOCASE NULL  ,
   Disabled int2 NOT NULL DEFAULT 0 ,
-  Template varchar(200) NOT NULL ,
+  Template varchar(200) collate NOCASE NOT NULL ,
   Creator integer NULL DEFAULT 0 ,
   Created DATETIME NULL  ,
   LastUpdatedBy integer NULL DEFAULT 0 ,
@@ -162,7 +162,7 @@ CREATE TABLE Scrips (
 CREATE TABLE ObjectScrips (
   id INTEGER NOT NULL  ,
   Scrip int NOT NULL  ,
-  Stage varchar(32) NOT NULL DEFAULT 'TransactionCreate' ,
+  Stage varchar(32) collate NOCASE NOT NULL DEFAULT 'TransactionCreate' ,
   ObjectId integer NOT NULL,
   SortOrder integer NOT NULL DEFAULT 0  ,
 
@@ -177,11 +177,11 @@ CREATE UNIQUE INDEX ObjectScrips1 ON ObjectScrips (ObjectId, Scrip);
 --- {{{ ACL
 CREATE TABLE ACL (
   id INTEGER PRIMARY KEY  ,
-  PrincipalType varchar(25) NOT NULL,
+  PrincipalType varchar(25) collate NOCASE NOT NULL,
 
   PrincipalId INTEGER DEFAULT 0,
-  RightName varchar(25) NOT NULL  ,
-  ObjectType varchar(25) NOT NULL  ,
+  RightName varchar(25) collate NOCASE NOT NULL  ,
+  ObjectType varchar(25) collate NOCASE NOT NULL  ,
   ObjectId INTEGER default 0,
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
@@ -231,36 +231,36 @@ create table CachedGroupMembers (
 
 CREATE TABLE Users (
   id INTEGER ,
-  Name varchar(200) NOT NULL  ,
-  Password varchar(256) NULL  ,
-  AuthToken varchar(16) NULL  ,
+  Name varchar(200) collate NOCASE NOT NULL  ,
+  Password varchar(256) collate NOCASE NULL  ,
+  AuthToken varchar(16) collate NOCASE NULL  ,
   Comments blob NULL  ,
   Signature blob NULL  ,
-  EmailAddress varchar(120) NULL  ,
+  EmailAddress varchar(120) collate NOCASE NULL  ,
   FreeformContactInfo blob NULL  ,
-  Organization varchar(200) NULL  ,
-  RealName varchar(120) NULL  ,
-  NickName varchar(16) NULL  ,
-  Lang varchar(16) NULL  ,
-  EmailEncoding varchar(16) NULL  ,
-  WebEncoding varchar(16) NULL  ,
-  ExternalContactInfoId varchar(100) NULL  ,
-  ContactInfoSystem varchar(30) NULL  ,
-  ExternalAuthId varchar(100) NULL  ,
-  AuthSystem varchar(30) NULL  ,
-  Gecos varchar(16) NULL  ,
-  HomePhone varchar(30) NULL  ,
-  WorkPhone varchar(30) NULL  ,
-  MobilePhone varchar(30) NULL  ,
-  PagerPhone varchar(30) NULL  ,
-  Address1 varchar(200) NULL  ,
-  Address2 varchar(200) NULL  ,
-  City varchar(100) NULL  ,
-  State varchar(100) NULL  ,
-  Zip varchar(16) NULL  ,
-  Country varchar(50) NULL  ,
+  Organization varchar(200) collate NOCASE NULL  ,
+  RealName varchar(120) collate NOCASE NULL  ,
+  NickName varchar(16) collate NOCASE NULL  ,
+  Lang varchar(16) collate NOCASE NULL  ,
+  EmailEncoding varchar(16) collate NOCASE NULL  ,
+  WebEncoding varchar(16) collate NOCASE NULL  ,
+  ExternalContactInfoId varchar(100) collate NOCASE NULL  ,
+  ContactInfoSystem varchar(30) collate NOCASE NULL  ,
+  ExternalAuthId varchar(100) collate NOCASE NULL  ,
+  AuthSystem varchar(30) collate NOCASE NULL  ,
+  Gecos varchar(16) collate NOCASE NULL  ,
+  HomePhone varchar(30) collate NOCASE NULL  ,
+  WorkPhone varchar(30) collate NOCASE NULL  ,
+  MobilePhone varchar(30) collate NOCASE NULL  ,
+  PagerPhone varchar(30) collate NOCASE NULL  ,
+  Address1 varchar(200) collate NOCASE NULL  ,
+  Address2 varchar(200) collate NOCASE NULL  ,
+  City varchar(100) collate NOCASE NULL  ,
+  State varchar(100) collate NOCASE NULL  ,
+  Zip varchar(16) collate NOCASE NULL  ,
+  Country varchar(50) collate NOCASE NULL  ,
   Timezone char(50) NULL  ,
-  PGPKey text NULL,
+  PGPKey text collate NOCASE NULL,
 
   Creator integer NULL DEFAULT 0 ,
   Created DATETIME NULL  ,
@@ -285,17 +285,17 @@ CREATE TABLE Tickets (
   EffectiveId integer NULL DEFAULT 0 ,
   IsMerged int2 NULL DEFAULT NULL,
   Queue integer NULL DEFAULT 0 ,
-  Type varchar(16) NULL  ,
+  Type varchar(16) collate NOCASE NULL  ,
   IssueStatement integer NULL DEFAULT 0 ,
   Resolution integer NULL DEFAULT 0 ,
   Owner integer NULL DEFAULT 0 ,
-  Subject varchar(200) NULL DEFAULT '[no subject]' ,
+  Subject varchar(200) collate NOCASE NULL DEFAULT '[no subject]' ,
   InitialPriority integer NULL DEFAULT 0 ,
   FinalPriority integer NULL DEFAULt 0 ,
   Priority integer NULL DEFAULT 0 ,
   TimeEstimated integer NULL DEFAULT 0 ,
   TimeWorked integer NULL DEFAULT 0 ,
-  Status varchar(64) NULL  ,
+  Status varchar(64) collate NOCASE NULL  ,
   TimeLeft integer NULL DEFAULT 0 ,
   Told DATETIME NULL  ,
   Starts DATETIME NULL  ,
@@ -324,10 +324,10 @@ CREATE INDEX Tickets5 ON Tickets (id, EffectiveId) ;
 
 CREATE TABLE ScripActions (
   id INTEGER PRIMARY KEY  ,
-  Name varchar(200) NULL  ,
-  Description varchar(255) NULL  ,
-  ExecModule varchar(60) NULL  ,
-  Argument varchar(255) NULL  ,
+  Name varchar(200) collate NOCASE NULL  ,
+  Description varchar(255) collate NOCASE NULL  ,
+  ExecModule varchar(60) collate NOCASE NULL  ,
+  Argument varchar(255) collate NOCASE NULL  ,
   Creator integer NULL DEFAULT 0 ,
   Created DATETIME NULL  ,
   LastUpdatedBy integer NULL DEFAULT 0 ,
@@ -342,10 +342,10 @@ CREATE TABLE ScripActions (
 CREATE TABLE Templates (
   id INTEGER PRIMARY KEY  ,
   Queue integer NOT NULL DEFAULT 0 ,
-  Name varchar(200) NOT NULL  ,
-  Description varchar(255) NULL  ,
-  Type varchar(16) NULL  ,
-  Language varchar(16) NULL  ,
+  Name varchar(200) collate NOCASE NOT NULL  ,
+  Description varchar(255) collate NOCASE NULL  ,
+  Type varchar(16) collate NOCASE NULL  ,
+  Language varchar(16) collate NOCASE NULL  ,
   TranslationOf integer NULL DEFAULT 0 ,
   Content blob NULL  ,
   LastUpdated DATETIME NULL  ,
@@ -363,14 +363,14 @@ CREATE TABLE Templates (
 CREATE TABLE ObjectCustomFieldValues (
   id INTEGER NOT NULL  ,
   CustomField int NOT NULL  ,
-  ObjectType varchar(255) NOT NULL,         # Final target of the Object
+  ObjectType varchar(255) collate NOCASE NOT NULL,         # Final target of the Object
   ObjectId int NOT NULL  ,                  # New -- Replaces Ticket
   SortOrder integer NOT NULL DEFAULT 0  ,
 
-  Content varchar(255) NULL  ,
-  LargeContent LONGTEXT NULL,               # New -- to hold 255+ strings
-  ContentType varchar(80) NULL,             # New -- only text/* gets searched
-  ContentEncoding varchar(80) NULL  ,       # New -- for binary Content
+  Content varchar(255) collate NOCASE NULL  ,
+  LargeContent LONGTEXT collate NOCASE NULL,               # New -- to hold 255+ strings
+  ContentType varchar(80) collate NOCASE NULL,             # New -- only text/* gets searched
+  ContentEncoding varchar(80) collate NOCASE NULL  ,       # New -- for binary Content
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
@@ -387,16 +387,16 @@ CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,Ob
 
 CREATE TABLE CustomFields (
   id INTEGER NOT NULL  ,
-  Name varchar(200) NULL  ,
-  Type varchar(200) NULL  ,     # Changed -- 'Single' and 'Multiple' is moved out
-  RenderType varchar(64) NULL  ,
+  Name varchar(200) collate NOCASE NULL  ,
+  Type varchar(200) collate NOCASE NULL  ,     # Changed -- 'Single' and 'Multiple' is moved out
+  RenderType varchar(64) collate NOCASE NULL  ,
   MaxValues integer,            # New -- was 'Single'(1) and 'Multiple'(0)
-  Pattern varchar(65536) NULL  ,        # New -- Must validate against this
+  Pattern varchar(65536) collate NOCASE NULL  ,        # New -- Must validate against this
   BasedOn INTEGER NULL,
-  ValuesClass varchar(64) NULL  ,
-  Description varchar(255) NULL  ,
+  ValuesClass varchar(64) collate NOCASE NULL  ,
+  Description varchar(255) collate NOCASE NULL  ,
   SortOrder integer NOT NULL DEFAULT 0  ,
-  LookupType varchar(255) NOT NULL,
+  LookupType varchar(255) collate NOCASE NOT NULL,
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
@@ -426,10 +426,10 @@ CREATE TABLE ObjectCustomFields (
 CREATE TABLE CustomFieldValues (
   id INTEGER NOT NULL  ,
   CustomField int NOT NULL  ,
-  Name varchar(200) NULL  ,
-  Description varchar(255) NULL  ,
+  Name varchar(200) collate NOCASE NULL  ,
+  Description varchar(255) collate NOCASE NULL  ,
   SortOrder integer NOT NULL DEFAULT 0  ,
-  Category varchar(255) NULL  ,
+  Category varchar(255) collate NOCASE NULL  ,
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
@@ -444,11 +444,11 @@ CREATE INDEX CustomFieldValues1 ON CustomFieldValues (CustomField);
 --- {{{ Attributes
 CREATE TABLE Attributes (
   id INTEGER PRIMARY KEY  ,
-  Name varchar(255) NOT NULL  ,
-  Description varchar(255) NULL  ,
-  Content LONGTEXT NULL  ,
-  ContentType varchar(16),
-  ObjectType varchar(25) NOT NULL  ,
+  Name varchar(255) collate NOCASE NOT NULL  ,
+  Description varchar(255) collate NOCASE NULL  ,
+  Content LONGTEXT collate NOCASE NULL  ,
+  ContentType varchar(16) collate NOCASE,
+  ObjectType varchar(25) collate NOCASE NOT NULL  ,
   ObjectId INTEGER ,
   Creator integer NULL DEFAULT 0 ,
   Created DATETIME NULL  ,
@@ -463,8 +463,8 @@ CREATE INDEX Attributes2 on Attributes(ObjectType, ObjectId);
 
 CREATE TABLE Classes (
 id INTEGER PRIMARY KEY,
-Name varchar(255) NOT NULL DEFAULT '',
-Description varchar(255) NOT NULL DEFAULT '',
+Name varchar(255) collate NOCASE NOT NULL DEFAULT '',
+Description varchar(255) collate NOCASE NOT NULL DEFAULT '',
 SortOrder integer NOT NULL DEFAULT 0,
 Disabled smallint NOT NULL DEFAULT 0,
 Creator integer NOT NULL DEFAULT 0,
@@ -476,12 +476,12 @@ HotList smallint NOT NULL DEFAULT 0
 
 CREATE TABLE Articles (
 id INTEGER PRIMARY KEY,
-Name varchar(255) NOT NULL DEFAULT '',
-Summary varchar(255) NOT NULL DEFAULT '',
+Name varchar(255) collate NOCASE NOT NULL DEFAULT '',
+Summary varchar(255) collate NOCASE NOT NULL DEFAULT '',
 SortOrder integer NOT NULL DEFAULT 0,
 Class integer NOT NULL DEFAULT 0,
 Parent integer NOT NULL DEFAULT 0,
-URI varchar(255),
+URI varchar(255) collate NOCASE,
 Creator integer NOT NULL DEFAULT 0,
 Created TIMESTAMP NULL,
 LastUpdatedBy integer NOT NULL DEFAULT 0,
@@ -492,9 +492,9 @@ LastUpdated TIMESTAMP NULL
 CREATE TABLE Topics (
 id INTEGER PRIMARY KEY,
 Parent integer NOT NULL DEFAULT 0,
-Name varchar(255) NOT NULL DEFAULT '',
-Description varchar(255) NOT NULL DEFAULT '',
-ObjectType varchar(64) NOT NULL DEFAULT '',
+Name varchar(255) collate NOCASE NOT NULL DEFAULT '',
+Description varchar(255) collate NOCASE NOT NULL DEFAULT '',
+ObjectType varchar(64) collate NOCASE NOT NULL DEFAULT '',
 ObjectId integer NOT NULL DEFAULT 0
 );
 
@@ -502,14 +502,14 @@ ObjectId integer NOT NULL DEFAULT 0
 CREATE TABLE ObjectTopics (
 id INTEGER PRIMARY KEY,
 Topic integer NOT NULL DEFAULT 0,
-ObjectType varchar(64) NOT NULL DEFAULT '',
+ObjectType varchar(64) collate NOCASE NOT NULL DEFAULT '',
 ObjectId integer NOT NULL DEFAULT 0
 );
 
 CREATE TABLE ObjectClasses (
 id INTEGER PRIMARY KEY,
 Class integer NOT NULL DEFAULT 0,
-ObjectType varchar(64) NOT NULL DEFAULT '',
+ObjectType varchar(64) collate NOCASE NOT NULL DEFAULT '',
 ObjectId integer NOT NULL DEFAULT 0,
 Creator integer NOT NULL DEFAULT 0,
 Created TIMESTAMP NULL,
