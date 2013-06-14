@@ -136,8 +136,6 @@ CREATE TABLE Scrips (
         Description     VARCHAR2(255),
         ScripCondition  NUMBER(11,0) DEFAULT 0 NOT NULL,
         ScripAction     NUMBER(11,0) DEFAULT 0 NOT NULL,
-        ConditionRules  CLOB,
-        ActionRules     CLOB,
         CustomIsApplicableCode  CLOB,
         CustomPrepareCode       CLOB,
         CustomCommitCode        CLOB,
