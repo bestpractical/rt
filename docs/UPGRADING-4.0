@@ -189,3 +189,14 @@ these types before insertion.
 
 Site-specific custom types (anything but ticket, reminder or approval)
 are not affected by these changes.
+
+=head1 UPGRADING FROM 4.0.13 AND EARLIER
+
+=head2 Reminder statuses
+
+New reminders are now created in the "reminder_on_open" status defined in your
+lifecycles.  For the default lifecycle, this means reminders will start as
+"open" instead of "new".  This change is for consistency when a completed
+reminder is reopened at a later date.  If you use custom lifecycles and added
+further transition restrictions, you may need to adjust the L<"reminder_on_open"
+setting|RT_Config/reminder_on_open> in your lifecycles.
