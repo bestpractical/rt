@@ -55,8 +55,8 @@
 %}
 <& /Elements/CollectionList, 
     Query => $Query,
-    DisplayFormat => $Format,
-    Format => $ARGS{'Format'},
+    DisplayFormat => $DisplayFormat,
+    Format => $Format,
     Verbatim => 1,
     AllowSorting => 1,
     OrderBy => $OrderBy,
@@ -71,7 +71,7 @@
 
 <hr />
 
-<& /Elements/Submit, Label => loc('Update'), CheckboxNameRegex => '/^UpdateTicket\d+$/', CheckAll => 1, ClearAll => 1 &>
+<& /Elements/Submit, Label => loc('Update'), CheckboxNameRegex => '/^UpdateTicket(All)?$/', CheckAll => 1, ClearAll => 1 &>
 <br />
 <&|/Widgets/TitleBox, title => $title &>
 <table>
@@ -230,8 +230,10 @@ $Page ||= 1;
 
 $Format ||= RT->Config->Get('DefaultSearchResultFormat');
 
-# inject _CHECKBOX to the first field.
-$Format =~ s/'?([^']+)'?,/'___CHECKBOX__$1',/;
+my $DisplayFormat = "'__CheckBox.{UpdateTicket}__',". $Format;
+$DisplayFormat =~ s/\s*,\s*('?__NEWLINE__'?)/,$1,''/gi;
+
+$DECODED_ARGS->{'UpdateTicketAll'} = 1 unless @UpdateTicket;
 
 my $Tickets = RT::Tickets->new( $session{'CurrentUser'} );
 $Tickets->FromSQL($Query);
@@ -275,7 +277,8 @@ $Tickets->RedoSearch();
 
 unless ( $ARGS{'AddMoreAttach'} ) {
     while ( my $Ticket = $Tickets->Next ) {
-        next unless ( $ARGS{ "UpdateTicket" . $Ticket->Id } );
+        my $tid = $Ticket->id;
+        next unless grep $tid == $_, @UpdateTicket;
 
         #Update the links
         $ARGS{'id'} = $Ticket->id;
@@ -371,4 +374,5 @@ $RowsPerPage => undef
 $Order => 'ASC'
 $OrderBy => 'id'
 $Query => undef
+@UpdateTicket => ()
 </%args>
