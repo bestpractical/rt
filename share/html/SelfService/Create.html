@@ -68,7 +68,7 @@
 <&|/l&>Requestors</&>:
 </td>
 <td class="value">
-<& /Elements/EmailInput, Name => 'Requestors', Size => '20', Default => $ARGS{Requestors} || $session{CurrentUser}->EmailAddress &>
+<& /Elements/EmailInput, Name => 'Requestors', Size => '20', Default => $ARGS{Requestors} || $session{CurrentUser}->EmailAddress, AutocompleteMultiple => 1 &>
 </td>
 </tr>
 <tr>

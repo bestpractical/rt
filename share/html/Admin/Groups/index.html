@@ -53,16 +53,12 @@
 <input type="hidden" name="GroupField" value="Name" />
 <input type="hidden" name="GroupOp" value="LIKE" />
 <&|/l&>Go to group</&>
-<input type="text" name="GroupString" value="" id="autocomplete-GroupString" />
+<input type="text" name="GroupString" value="" data-autocomplete="Groups" id="autocomplete-GroupString" />
 <script type="text/javascript">
 jQuery(function(){
-    jQuery("#autocomplete-GroupString").autocomplete({
-        source: RT.Config.WebPath + "/Helpers/Autocomplete/Groups",
-        // Jump directly to the page if a group is chosen
-        select: function( event, ui ) {
-            document.location = RT.Config.WebPath + "/Admin/Groups/Modify.html?id="
-                + ui.item.id;
-        }
+    // Jump directly to the page if a group is chosen
+    jQuery("#autocomplete-GroupString").on("autocompleteselect", function( event, ui ) {
+        document.location = RT.Config.WebPath + "/Admin/Groups/Modify.html?id=" + ui.item.id;
     });
 });
 </script>

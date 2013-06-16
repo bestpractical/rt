@@ -1,44 +1,32 @@
 jQuery(function() {
-    // inputs that accept multiple email addresses
-    var multipleCompletion = new Array("Requestors", "To", "Bcc", "Cc", "AdminCc", "WatcherAddressEmail[123]", "UpdateCc", "UpdateBcc");
 
-    // inputs with only a single email address allowed
-    var singleCompletion   = new Array("(Add|Delete)Requestor", "(Add|Delete)Cc", "(Add|Delete)AdminCc");
+    var cssClassMap = {
+        Users: 'user',
+        Groups: 'group'
+    };
 
-    // inputs for only privileged users
-    var privilegedCompletion = new Array("AddPrincipalForRights-user");
+    jQuery("input[data-autocomplete]").each(function(){
+        var input = jQuery(this);
+        var what  = input.attr("data-autocomplete");
+        var wants = input.attr("data-autocomplete-return");
 
-    // build up the regexps we'll use to match
-    var applyto  = new RegExp('^(' + multipleCompletion.concat(singleCompletion, privilegedCompletion).join('|') + ')$');
-    var acceptsMultiple = new RegExp('^(' + multipleCompletion.join('|') + ')$');
-    var onlyPrivileged = new RegExp('^(' + privilegedCompletion.join('|') + ')$');
-
-    var inputs = document.getElementsByTagName("input");
-
-    for (var i = 0; i < inputs.length; i++) {
-        var input = inputs[i];
-        var inputName = input.getAttribute("name");
-
-        if (!inputName || !inputName.match(applyto))
-            continue;
-
-        var options = {
-            source: RT.Config.WebHomePath + "/Helpers/Autocomplete/Users"
-        };
+        if (!what || !what.match(/^(Users|Groups)$/))
+            return;
 
         var queryargs = [];
+        var options = {
+            source: RT.Config.WebHomePath + "/Helpers/Autocomplete/" + what
+        };
 
-        if (inputName.match("AddPrincipalForRights-user")) {
-            queryargs.push("return=Name");
-            options.select = addprincipal_onselect;
-            options.change = addprincipal_onchange;
+        if ( wants ) {
+            queryargs.push("return=" + wants);
         }
 
-        if (inputName.match(onlyPrivileged)) {
+        if (input.is('[data-autocomplete-privileged]')) {
             queryargs.push("privileged=1");
         }
 
-        if (inputName.match(acceptsMultiple)) {
+        if (input.is('[data-autocomplete-multiple]')) {
             queryargs.push("delim=,");
 
             options.focus = function () {
@@ -55,11 +43,15 @@ jQuery(function() {
             }
         }
 
+        var exclude = input.attr('data-autocomplete-exclude');
+        if (exclude) {
+            queryargs.push("exclude="+exclude);
+        }
+
         if (queryargs.length)
             options.source += "?" + queryargs.join("&");
 
-        jQuery(input)
-            .addClass('autocompletes-user')
+        input.addClass('autocompletes-' + cssClassMap[what] )
             .autocomplete(options)
             .data("ui-autocomplete")
             ._renderItem = function(ul, item) {
@@ -75,20 +67,5 @@ jQuery(function() {
                     .append( rendered )
                     .appendTo( ul );
             };
-    }
-
-    jQuery("input[data-autocomplete]:not(.ui-autocomplete-input)").each(function(){
-        var input = jQuery(this);
-        var what  = input.attr("data-autocomplete");
-        var wants = input.attr("data-autocomplete-return");
-
-        if (!what || !what.match(/^(Users|Groups)$/))
-            return;
-
-        input.autocomplete({
-            source: RT.Config.WebPath + "/Helpers/Autocomplete/" + what
-                    + (wants ? "?return=" + wants : "")
-        });
     });
-
 });
