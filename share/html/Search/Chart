@@ -77,10 +77,26 @@ my $plot_error = sub {
         color       => $black,
         text        => $text,
         align       => "left",
+        width       => $Width - 20,
         preserve_nl => 1,
     );
     $error->set_font( $font, 16 );
-    $error->draw(0, 0);
+
+    my $text_height = ($error->get_bounds(0, 0))[3];
+
+    $plot = GD::Image->new($Width => $text_height+20);
+    $plot->colorAllocate(255, 255, 255); # background
+    $black = $plot->colorAllocate(0, 0, 0);
+
+    $error = GD::Text::Wrap->new($plot,
+        color       => $black,
+        text        => $text,
+        align       => "left",
+        width       => $Width - 20,
+        preserve_nl => 1,
+    );
+    $error->set_font( $font, 16 );
+    $error->draw(10, 10);
 
     $m->comp( 'SELF:Plot', plot => $plot, %ARGS );
 };
