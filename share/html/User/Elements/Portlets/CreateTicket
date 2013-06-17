@@ -45,8 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="quick-create user">
-<&| /Widgets/TitleBox, title => loc('Quick ticket creation') &>
+<&| /Widgets/TitleBox, title => loc('Quick ticket creation'), class => "user create-ticket" &>
 <form action="<%RT->Config->Get('WebPath')%>/Ticket/Create.html">
 <&|/l&>Create a ticket with this user as the Requestor in Queue</&>
 <input type="hidden" name="Requestors" value="<%$User->EmailAddress%>">
@@ -54,7 +53,6 @@
 <input type="submit" name="Create">
 </form>
 </&>
-</div>
 <%ARGS>
 $User
 </%ARGS>
