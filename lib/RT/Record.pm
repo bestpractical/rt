@@ -1304,7 +1304,7 @@ sub _AddLink {
 
     if ( $args{'Base'} and $args{'Target'} ) {
         $RT::Logger->debug( "$self tried to create a link. both base and target were specified" );
-        return ( 0, $self->loc("Can't specifiy both base and target") );
+        return ( 0, $self->loc("Can't specify both base and target") );
     }
     elsif ( $args{'Base'} ) {
         $args{'Target'} = $self->URI();
@@ -1382,7 +1382,7 @@ sub _DeleteLink {
 
     if ( $args{'Base'} and $args{'Target'} ) {
         $RT::Logger->debug("$self ->_DeleteLink. got both Base and Target");
-        return ( 0, $self->loc("Can't specifiy both base and target") );
+        return ( 0, $self->loc("Can't specify both base and target") );
     }
     elsif ( $args{'Base'} ) {
         $args{'Target'} = $self->URI();
