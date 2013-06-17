@@ -50,7 +50,7 @@
 <&|/l&>Create a ticket with this user as the Requestor in Queue</&>
 <input type="hidden" name="Requestors" value="<%$User->EmailAddress%>">
 <& /Elements/SelectNewTicketQueue &>
-<input type="submit" name="Create">
+<input type="submit" value="Create">
 </form>
 </&>
 <%ARGS>
