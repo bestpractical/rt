@@ -51,6 +51,7 @@ jQuery(function() {
         var complete = jQuery(this)
             .clone(true, true)
             .attr("name", name + "-Complete")
+            .attr("disabled", "disabled")
             .hide()
             .insertAfter(this);
 
