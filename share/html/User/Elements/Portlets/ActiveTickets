@@ -50,6 +50,7 @@
     conditions => $conditions,
     Rows => $Rows,
     WatcherTypes => [qw(Watcher)],
+    Class => "user active-tickets",
     Title => loc('Active Tickets'),
     TitleBox => 1,
     ShowHeader => 1,
