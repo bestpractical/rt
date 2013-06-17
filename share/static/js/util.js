@@ -75,11 +75,6 @@ function set_rollup_state(e,e2,state) {
 
 /* other utils */
 
-function focusElementById(id) {
-    var e = jQuery('#'+id);
-    if (e) e.focus();
-}
-
 function setCheckbox(input, name, val) {
     if (val == null) val = input.checked;
 
