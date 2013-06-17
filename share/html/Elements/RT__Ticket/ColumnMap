@@ -68,7 +68,7 @@ my $LinkCallback = sub {
             \'<a href="',
             $_->$mode_uri->Resolver->HREF,
             \'">',
-            ( $_->$mode_uri->IsLocal ? $_->$local_type : $_->$mode ),
+            ( $_->$mode_uri->IsLocal && $_->$local_type ? $_->$local_type : $_->$mode_uri->Resolver->AsString ),
             \'</a><br />',
         } @{ $_[0]->Links($other_mode,$type)->ItemsArrayRef }
     }
