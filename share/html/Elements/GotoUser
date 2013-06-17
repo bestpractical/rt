@@ -46,17 +46,13 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <form name="UserSearch" method="post" action="<% RT->Config->Get('WebPath') %>/User/Search.html">
-<input type="text" name="UserString" value="<% $Default %>" id="autocomplete-UserString" />
+<input type="text" name="UserString" value="<% $Default %>" data-autocomplete="Users" data-autocomplete-return="Name" id="autocomplete-UserString" />
 <script type="text/javascript">
 jQuery(function(){
-    jQuery("#autocomplete-UserString").autocomplete({
-        source: RT.Config.WebPath + "/Helpers/Autocomplete/Users?return=Name",
-        // Jump directly to the page if a user is chosen
-        select: function( event, ui ) {
-            document.location = RT.Config.WebPath + "/User/Summary.html?id="
-                + ui.item.id;
-        }
-    }).addClass("autocompletes-user");
+    // Jump directly to the page if a user is chosen
+    jQuery("#autocomplete-UserString").on("autocompleteselect", function( event, ui ) {
+        document.location = RT.Config.WebPath + "/User/Summary.html?id=" + ui.item.id;
+    });
 });
 </script>
 <input type="submit" name="UserSearch" value="<&|/l&>Search</&>" class="button" />

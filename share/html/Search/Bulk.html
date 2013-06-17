@@ -83,17 +83,17 @@
 <label>(<input type="checkbox" class="checkbox" name="ForceOwnerChange"
 <% $ARGS{ForceOwnerChange} ? 'checked="checked"' : '' %> /> <&|/l&>Force change</&>)</label></td></tr>
 <tr><td class="label"> <&|/l&>Add Requestor</&>: </td>
-<td class="value"> <input name="AddRequestor" size="20" value="<% $ARGS{AddRequestor} || '' %>" /> </td></tr>
+<td class="value"> <& /Elements/EmailInput, Name => "AddRequestor", Size=> 20, Default => $ARGS{AddRequestor} &> </td></tr>
 <tr><td class="label"> <&|/l&>Remove Requestor</&>: </td>
-<td class="value"> <input name="DeleteRequestor" size="20" value="<% $ARGS{DeleteRequestor} || '' %>"/> </td></tr>
+<td class="value"> <& /Elements/EmailInput, Name => "DeleteRequestor", Size=> 20, Default => $ARGS{DeleteRequestor} &> </td></tr>
 <tr><td class="label"> <&|/l&>Add Cc</&>: </td>
-<td class="value"> <input name="AddCc" size="20" value="<% $ARGS{AddCc} || '' %>" /> </td></tr>
+<td class="value"> <& /Elements/EmailInput, Name => "AddCc", Size=> 20, Default => $ARGS{AddCc} &> </td></tr>
 <tr><td class="label"> <&|/l&>Remove Cc</&>: </td>
-<td class="value"> <input name="DeleteCc" size="20" value="<% $ARGS{DeleteCc} || '' %>" /> </td></tr>
+<td class="value"> <& /Elements/EmailInput, Name => "DeleteCc", Size=> 20, Default => $ARGS{DeleteCc} &> </td></tr>
 <tr><td class="label"> <&|/l&>Add AdminCc</&>: </td>
-<td class="value"> <input name="AddAdminCc" size="20" value="<% $ARGS{AddAdminCc} || '' %>" /> </td></tr>
+<td class="value"> <& /Elements/EmailInput, Name => "AddAdminCc", Size=> 20, Default => $ARGS{AddAdminCc} &> </td></tr>
 <tr><td class="label"> <&|/l&>Remove AdminCc</&>: </td>
-<td class="value"> <input name="DeleteAdminCc" size="20" value="<% $ARGS{DeleteAdminCc} || '' %>" /> </td></tr>
+<td class="value"> <& /Elements/EmailInput, Name => "DeleteAdminCc", Size=> 20, Default => $ARGS{DeleteAdminCc} &> </td></tr>
 </table>
 </td>
 <td valign="top">
