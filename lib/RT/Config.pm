@@ -1220,6 +1220,7 @@ sub SetFromConfig {
             $ref_type = 'SCALAR' if $ref_type eq 'REF';
 
             my $entry_ref = *{$entry}{ $ref_type };
+            next if ref $entry_ref && ref $entry_ref ne ref $ref;
             next unless $entry_ref;
 
             # if references are equal then we've found
