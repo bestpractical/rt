@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 14;
+use RT::Test tests => undef;
 my ( $baseurl, $m ) = RT::Test->started_ok;
 
 my $ticket = RT::Test->create_ticket(
@@ -58,3 +58,6 @@ is( $ref->text, $ticket2->Id, $ticket2->Id . " is displayed" );
 $ref = $m->find_link( url_regex => qr!/Article/Display.html! );
 ok( $ref, "found article link" );
 is( $ref->text, $article->URIObj->Resolver->AsString, $article->URIObj->Resolver->AsString . " is displayed" );
+
+undef $m;
+done_testing;
