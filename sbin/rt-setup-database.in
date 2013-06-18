@@ -412,6 +412,9 @@ sub get_versions_from_to {
     my @versions = grep -d "$base_dir/$_" && /^\d+\.\d+\.\d+$/, readdir $dh;
     closedir $dh;
 
+    die "\nERROR: No upgrade data found in '$base_dir'!  Perhaps you specified the wrong --datadir?\n"
+        unless @versions;
+
     return
         grep defined $to ? RT::Handle::cmp_version($_, $to) <= 0 : 1,
         grep RT::Handle::cmp_version($_, $from) > 0,
