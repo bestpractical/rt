@@ -70,6 +70,49 @@ run_tests(
     { Query => "CF.{$other_name} != 'za'", Count => 3, Order => "CF.$queue_name.{$cf_name}" },
 );
 
+# And then add a CF with a duplicate name, on a different queue
+{
+    my $other_queue = RT::Test->load_or_create_queue( Name => "other_queue" );
+    ok $other_queue && $other_queue->id, "Created queue";
+
+    my $dup = RT::CustomField->new( RT->SystemUser );
+    my ($ret, $msg) = $dup->Create(
+        Name  => $cf_name,
+        Queue => $other_queue->id,
+        Type  => 'FreeformSingle',
+    );
+    ok($ret, "Custom Field created");
+}
+
+my $cf_id = $cf->id;
+run_tests(
+    [
+        { Subject => '-', },
+        { Subject => 'aa', "CustomField-" . $cf->id => 'aa', "CustomField-" . $other_cf->id => 'za' },
+        { Subject => 'bb', "CustomField-" . $cf->id => 'bb', "CustomField-" . $other_cf->id => 'ya' },
+        { Subject => 'cc', "CustomField-" . $cf->id => 'cc', "CustomField-" . $other_cf->id => 'xa' },
+    ],
+    {                                                Count => 4, Order => "CF.{$cf_name}"             },
+    {                                                Count => 4, Order => "CF.$queue_name.{$cf_name}" },
+    { Query => "CF.{$cf_id} LIKE 'a'",               Count => 1, Order => "CF.{$cf_name}"             },
+    { Query => "CF.{$cf_id} LIKE 'a'",               Count => 1, Order => "CF.$queue_name.{$cf_name}" },
+    { Query => "CF.{$cf_id} != 'cc'",                Count => 3, Order => "CF.{$cf_name}"             },
+    { Query => "CF.{$cf_id} != 'cc'",                Count => 3, Order => "CF.$queue_name.{$cf_name}" },
+    { Query => "CF.$queue_name.{$cf_name} LIKE 'a'", Count => 1, Order => "CF.{$cf_name}"             },
+    { Query => "CF.$queue_name.{$cf_name} LIKE 'a'", Count => 1, Order => "CF.$queue_name.{$cf_name}" },
+    { Query => "CF.$queue_name.{$cf_name} != 'cc'",  Count => 3, Order => "CF.{$cf_name}"             },
+    { Query => "CF.$queue_name.{$cf_name} != 'cc'",  Count => 3, Order => "CF.$queue_name.{$cf_name}" },
+    { Query => "CF.{$other_name} != 'za'",           Count => 3, Order => "CF.{$cf_name}"             },
+    { Query => "CF.{$other_name} != 'za'",           Count => 3, Order => "CF.$queue_name.{$cf_name}" },
+
+    { Query => "CF.{$cf_id} != 'cc'",                Count => 3, Order => "CF.{$cf_id}"               },
+    { Query => "CF.{$cf_id} != 'cc'",                Count => 3, Order => "CF.$queue_name.{$cf_id}"   },
+    { Query => "CF.$queue_name.{$cf_name} != 'cc'",  Count => 3, Order => "CF.{$cf_id}"               },
+    { Query => "CF.$queue_name.{$cf_name} != 'cc'",  Count => 3, Order => "CF.$queue_name.{$cf_id}"   },
+    { Query => "CF.{$other_name} != 'za'",           Count => 3, Order => "CF.{$cf_id}"               },
+    { Query => "CF.{$other_name} != 'za'",           Count => 3, Order => "CF.$queue_name.{$cf_id}"   },
+);
+
 sub run_tests {
     my $tickets = shift;
     my @tickets = RT::Test->create_tickets( { Queue => $queue->id, RandomOrder => 1 }, @{ $tickets });
