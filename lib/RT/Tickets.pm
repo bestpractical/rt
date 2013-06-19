@@ -919,36 +919,7 @@ Handle watcher membership limits, i.e. whether the watcher belongs to a
 specific group or not.
 
 Meta Data:
-  1: Field to query on
-
-SELECT DISTINCT main.*
-FROM
-    Tickets main,
-    Groups Groups_1,
-    CachedGroupMembers CachedGroupMembers_2,
-    Users Users_3
-WHERE (
-    (main.EffectiveId = main.id)
-) AND (
-    (main.Status != 'deleted')
-) AND (
-    (main.Type = 'ticket')
-) AND (
-    (
-        (Users_3.EmailAddress = '22')
-            AND
-        (Groups_1.Domain = 'RT::Ticket-Role')
-            AND
-        (Groups_1.Type = 'RequestorGroup')
-    )
-) AND
-    Groups_1.Instance = main.id
-AND
-    Groups_1.id = CachedGroupMembers_2.GroupId
-AND
-    CachedGroupMembers_2.MemberId = Users_3.id
-ORDER BY main.id ASC
-LIMIT 25
+  1: Role to query on
 
 =cut
 
