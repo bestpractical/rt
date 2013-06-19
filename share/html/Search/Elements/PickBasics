@@ -151,7 +151,7 @@ my @lines = (
             Type => 'select',
             Options => [ '=' => loc('is') ],
         },
-        Value => { Type => 'text', Size => 20 }
+        Value => { Type => 'text', Size => 20, "data-autocomplete" => "Groups" }
     },
     {
         Name => 'Date',
