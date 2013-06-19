@@ -7,3 +7,16 @@ our @ScripActions = (
       ExecModule  => 'Notify',
       Argument    => 'Owner,AdminCc' },
 );
+
+our @Templates = (
+    # Shadow the global templates of the same name to suppress duplicate
+    # notifications until rules is ripped out.
+    { Queue     => "___Approvals",
+      Name      => "Transaction in HTML",
+      Content   => "",
+    },
+    { Queue     => "___Approvals",
+      Name      => "Transaction",
+      Content   => "",
+    },
+);

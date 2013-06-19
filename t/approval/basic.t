@@ -4,7 +4,6 @@ use RT::Test tests => undef;
 BEGIN {
     plan skip_all => 'Email::Abstract and Test::Email required.'
         unless eval { require Email::Abstract; require Test::Email; 1 };
-    plan tests => 38;
 }
 
 use RT::Test::Email;
@@ -88,6 +87,9 @@ mail_ok {
     to => 'minion@company.com',
     subject => qr/PO for stationary/,
     body => qr/automatically generated in response/
+},{ from => qr/RT System/,
+    to => 'root@localhost',
+    subject => qr/PO for stationary/,
 }, { from => qr/RT System/,
     to => 'cfo@company.com',
     subject => qr/New Pending Approval: CFO Approval/,
@@ -135,6 +137,9 @@ mail_ok {
     subject => qr/New Pending Approval: PO approval request for PO/,
     body => qr/pending your approval.*CFO approved.*ok with that\?/s
 },{ from => qr/RT System/,
+    to => 'root@localhost',
+    subject => qr/Ticket Approved:/,
+},{ from => qr/RT System/,
     to => 'minion@company.com',
     subject => qr/Ticket Approved:/,
     body => qr/approved by CFO.*notes: Resources exist to be consumed/s
@@ -163,10 +168,14 @@ mail_ok {
     ok($ok, "ceo can approve - $msg");
 
 } { from => qr/RT System/,
+    to => 'root@localhost',
+    subject => qr/Ticket Approved:/,
+    body => qr/approved by CEO.*Its Owner may now start to act on it.*notes: And consumed they will be/s,
+},{ from => qr/RT System/,
     to => 'minion@company.com',
     subject => qr/Ticket Approved:/,
     body => qr/approved by CEO.*Its Owner may now start to act on it.*notes: And consumed they will be/s,
-}, { from => qr/CEO via RT/,
+},{ from => qr/CEO via RT/,
      to => 'root@localhost',
      subject => qr/Ticket Approved/,
      body => qr/The ticket has been approved, you may now start to act on it/,
@@ -201,6 +210,10 @@ mail_ok {
     ok($ok, "cfo can approve - $msg");
 
 } { from => qr/RT System/,
+    to => 'root@localhost',
+    subject => qr/Ticket Rejected: PO for stationary/,
+    body => qr/rejected by CFO.*out of resources/s,
+},{ from => qr/RT System/,
     to => 'minion@company.com',
     subject => qr/Ticket Rejected: PO for stationary/,
     body => qr/rejected by CFO.*out of resources/s,
@@ -210,3 +223,4 @@ $t->Load($t->id);$dependson_ceo->Load($dependson_ceo->id);
 is_deeply([ $t->Status, $dependson_cfo->Status, $dependson_ceo->Status ],
           [ 'rejected', 'rejected', 'deleted'], 'ticket state after cfo rejection');
 
+done_testing;

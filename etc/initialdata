@@ -317,6 +317,16 @@ Content-Type: text/html
 {$Transaction->Content( Type => "text/html")}
 '
     },
+    # Shadow the global templates of the same name to suppress duplicate
+    # notifications until rules is ripped out.
+    { Queue     => "___Approvals",
+      Name      => "Transaction in HTML",
+      Content   => "",
+    },
+    { Queue     => "___Approvals",
+      Name      => "Transaction",
+      Content   => "",
+    },
     {
 
       Queue       => '0',
