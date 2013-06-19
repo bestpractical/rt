@@ -51,7 +51,7 @@
 % }
 % for my $option (@types) {
 %  if ($Suffix) {
-<option value="<% $option %><% $Suffix %>"<%$option eq $Default && qq[ selected="selected"] |n %> ><%loc($option)%></option>
+<option value="<% $option %><% $Suffix %>"<%$option eq $Default && qq[ selected="selected"] |n %> ><% loc($option) %> <% loc('Group') %></option>
 %   next;
 %  }
 %  foreach my $subtype (@subtypes) {
@@ -66,7 +66,7 @@ if ($Scope =~ /queue/) {
    @types = qw(Cc AdminCc);
 }
 elsif ($Suffix eq 'Group') {
-   @types = qw(Requestor Cc AdminCc Watcher);
+   @types = qw(Owner Requestor Cc AdminCc Watcher);
 }
 else { 
    @types = qw(Requestor Cc AdminCc Watcher Owner QueueCc QueueAdminCc QueueWatcher);
