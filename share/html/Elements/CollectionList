@@ -68,9 +68,10 @@ if ( $Rows ) {
 # collection is ordered or not
 if ( @OrderBy && ($AllowSorting || !$Collection->{'order_by'}) ) {
     if ( $OrderBy[0] =~ /\|/ ) {
-        @OrderBy = grep length($_), split /\|/, $OrderBy[0];
+        @OrderBy = split /\|/, $OrderBy[0];
         @Order = split /\|/,$Order[0];
     }
+    @OrderBy = grep length, @OrderBy;
     $Collection->OrderByCols(
         map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } }
         ( 0 .. $#OrderBy )
