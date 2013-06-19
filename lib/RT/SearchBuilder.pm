@@ -138,9 +138,8 @@ sub JoinTransactions {
 
 sub _OrderByCF {
     my $self = shift;
-    my ($row, $cf) = @_;
+    my ($row, $cfkey, $cf) = @_;
 
-    my $cfkey = blessed($cf) ? $cf->id : $cf;
     $cfkey .= ".ordering" if !blessed($cf) || ($cf->MaxValues||0) != 1;
     my ($ocfvs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cf );
     # this is described in _LimitCustomField

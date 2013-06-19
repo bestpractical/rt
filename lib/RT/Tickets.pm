@@ -1239,7 +1239,8 @@ sub OrderByCols {
             push @res, { %$row, ALIAS => $users, FIELD => $subkey };
        } elsif ( defined $meta->[0] && $meta->[0] eq 'CUSTOMFIELD' ) {
            my ($queue, $field, $cf, $column) = $self->_CustomFieldDecipher( $subkey );
-           push @res, $self->_OrderByCF( $row, ($cf || "$queue.$field") );
+           my $cfkey = $cf ? $cf->id : "$queue.$field";
+           push @res, $self->_OrderByCF( $row, $cfkey, ($cf || $field) );
        } elsif ( $field eq "Custom" && $subkey eq "Ownership") {
            # PAW logic is "reversed"
            my $order = "ASC";
