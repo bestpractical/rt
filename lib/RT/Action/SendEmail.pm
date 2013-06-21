@@ -382,7 +382,7 @@ sub AddAttachments {
 
 =head2 AddAttachment $attachment
 
-Takes one attachment object of L<RT::Attachmment> class and attaches it to the message
+Takes one attachment object of L<RT::Attachment> class and attaches it to the message
 we're building.
 
 =cut
