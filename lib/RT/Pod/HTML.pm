@@ -157,7 +157,7 @@ sub resolve_local_link {
         my $found = $self->batch->found($name);
         my $depth = $self->batch_mode_current_level;
         $depth-- if $found;
-        return ($depth ? "../" x $depth : "") . ($found ? "" : "rt/") . "$local.html$section";
+        return ($depth ? "../" x $depth : "") . ($found ? "" : "rt/latest/") . "$local.html$section";
     } else {
         return;
     }
