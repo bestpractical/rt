@@ -61,7 +61,7 @@ my %opts;
 GetOptions(
     \%opts,
     "help|h",
-    "rt=s",
+    "source=s",
     "to=s",
 );
 
@@ -80,13 +80,13 @@ die "--to MUST be a directory\n"    unless -d $opts{to};
 
 # Unpack the tarball, if that's what we're given.
 my $tmpdir;
-if (($opts{rt} || '') =~ /\.tar\.gz$/ and -f $opts{rt}) {
+if (($opts{source} || '') =~ /\.tar\.gz$/ and -f $opts{source}) {
     $tmpdir = File::Temp->newdir();
 
-    system("tar", "xzpf", $opts{rt}, "-C", $tmpdir);
-    $opts{rt} = <$tmpdir/rt-*>;
+    system("tar", "xzpf", $opts{source}, "-C", $tmpdir);
+    $opts{source} = <$tmpdir/rt-*>;
 }
-chdir $opts{rt} if $opts{rt};
+chdir $opts{source} if $opts{source};
 
 my @dirs = (
     qw(
@@ -187,7 +187,7 @@ rt-static-docs - generate doc shipped with RT
 
 =head1 SYNOPSIS
 
-    rt-static-docs --to /path/to/output [--rt /path/to/rt]
+    rt-static-docs --to /path/to/output [--source /path/to/rt]
 
 =head1 DESCRIPTION
 
@@ -207,7 +207,7 @@ L<http://bestpractical.com/rt/docs/>.
 
 Set the destination directory for the output files.
 
-=item --rt
+=item --source
 
 Set the RT base directory to search under.  Defaults to the current working
 directory, which is fine if you're running this script as
