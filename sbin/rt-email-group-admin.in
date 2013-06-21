@@ -296,8 +296,9 @@ sub __create_empty {
 
 sub _check_groups
 {
-    return grep { $_ ? 1: do { print STDERR "Group '$_' skipped, doesn't exist\n"; 0; } }
-        map { __check_group($_) } @_;
+    return map {$_->[1]}
+        grep { $_->[1] ? 1: do { print STDERR "Group '$_->[0]' skipped, doesn't exist\n"; 0; } }
+        map { [$_, __check_group($_)] } @_;
 }
 
 sub __check_group
@@ -311,8 +312,9 @@ sub __check_group
 
 sub _check_users
 {
-    return grep { $_ ? 1: do { print STDERR "User '$_' skipped, doesn't exist\n"; 0; } }
-        map { __check_user($_) } @_;
+    return map {$_->[1]}
+        grep { $_->[1] ? 1: do { print STDERR "User '$_->[0]' skipped, doesn't exist\n"; 0; } }
+        map { [$_, __check_user($_)] } @_;
 }
 
 sub __check_user
