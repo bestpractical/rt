@@ -248,7 +248,8 @@ sub _list {
 =head2 create NAME [--comment] [--group GNAME] [--user UNAME]
 
 Creates new action with NAME and adds users and/or groups to its
-recipient list. Would be notify as comment if --comment specified.
+recipient list. Would be notify as comment if --comment specified.  The
+user, if specified, must already exist in RT.
 
 =cut
 
@@ -325,7 +326,8 @@ sub __check_user
 
 =head2 add NAME [--group GNAME] [--user UNAME]
 
-Adds groups and/or users to recipients of the action NAME.
+Adds groups and/or users to recipients of the action NAME.  The user, if
+specified, must already exist in RT.
 
 =cut
 
