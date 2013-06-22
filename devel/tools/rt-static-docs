@@ -63,6 +63,7 @@ GetOptions(
     "help|h",
     "source=s",
     "to=s",
+    "extension=s",
 );
 
 if ( $opts{'help'} ) {
@@ -130,7 +131,8 @@ elsif (-x "configure") {
     generate_configure_help("configure");
 }
 else {
-    warn "Unable to generate a page for ./configure --help!\n";
+    warn "Unable to generate a page for ./configure --help!\n"
+        unless $opts{extension};
 }
 
 # Manually "convert" README* and 3.8-era UPGRADING* to HTML and push them into
@@ -215,6 +217,12 @@ C<devel/tools/rt-static-docs>.
 
 May also point to a tarball (a file ending in C<.tar.gz>) which will be
 unpacked into a temporary directory and used as the RT base directory.
+
+=item --extension=RTx::Foo
+
+Indicates when C<--source> is an RT extension, such as RT::IR.  Takes an
+extension name for future use, but currently it only acts as a flag to suppress
+a warning about not finding ./configure.
 
 =item --help
 
