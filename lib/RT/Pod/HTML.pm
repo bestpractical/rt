@@ -155,8 +155,8 @@ sub resolve_local_link {
     if ($local) {
         # Resolve links correctly by going up
         my $found = $self->batch->found($name);
-        my $depth = $self->batch_mode_current_level;
-        $depth-- if $found;
+        my $depth = $self->batch_mode_current_level
+                  + ($found ? -1 : 1);
         return ($depth ? "../" x $depth : "") . ($found ? "" : "rt/latest/") . "$local.html$section";
     } else {
         return;
