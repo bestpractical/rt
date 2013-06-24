@@ -480,6 +480,30 @@ sub InitClasses {
     require RT::Topic;
     require RT::Topics;
 
+    $self->_BuildTableAttributes;
+
+    if ( $args{'Heavy'} ) {
+        # load scrips' modules
+        my $scrips = RT::Scrips->new(RT->SystemUser);
+        while ( my $scrip = $scrips->Next ) {
+            local $@;
+            eval { $scrip->LoadModules } or
+                $RT::Logger->error("Invalid Scrip ".$scrip->Id.".  Unable to load the Action or Condition.  ".
+                                   "You should delete or repair this Scrip in the admin UI.\n$@\n");
+        }
+
+        foreach my $class ( grep $_, RT->Config->Get('CustomFieldValuesSources') ) {
+            local $@;
+            eval "require $class; 1" or $RT::Logger->error(
+                "Class '$class' is listed in CustomFieldValuesSources option"
+                ." in the config, but we failed to load it:\n$@\n"
+            );
+        }
+
+    }
+}
+
+sub _BuildTableAttributes {
     # on a cold server (just after restart) people could have an object
     # in the session, as we deserialize it so we never call constructor
     # of the class, so the list of accessible fields is empty and we die
@@ -513,26 +537,6 @@ sub InitClasses {
         RT::ObjectTopic
         RT::Topic
     );
-
-    if ( $args{'Heavy'} ) {
-        # load scrips' modules
-        my $scrips = RT::Scrips->new(RT->SystemUser);
-        while ( my $scrip = $scrips->Next ) {
-            local $@;
-            eval { $scrip->LoadModules } or
-                $RT::Logger->error("Invalid Scrip ".$scrip->Id.".  Unable to load the Action or Condition.  ".
-                                   "You should delete or repair this Scrip in the admin UI.\n$@\n");
-        }
-
-        foreach my $class ( grep $_, RT->Config->Get('CustomFieldValuesSources') ) {
-            local $@;
-            eval "require $class; 1" or $RT::Logger->error(
-                "Class '$class' is listed in CustomFieldValuesSources option"
-                ." in the config, but we failed to load it:\n$@\n"
-            );
-        }
-
-    }
 }
 
 =head2 InitSystemObjects
