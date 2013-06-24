@@ -195,6 +195,7 @@ sub Init {
     InitClasses();
     InitLogging();
     InitPlugins();
+    _BuildTableAttributes();
     RT::I18N->Init;
     RT->Config->PostLoadCheck;
     RT::Lifecycle->new->FillCache;
@@ -480,7 +481,7 @@ sub InitClasses {
     require RT::Topic;
     require RT::Topics;
 
-    $self->_BuildTableAttributes;
+    _BuildTableAttributes();
 
     if ( $args{'Heavy'} ) {
         # load scrips' modules
