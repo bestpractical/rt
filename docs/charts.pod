@@ -17,8 +17,9 @@ came in RT 4.2. If you're running a version of RT earlier than
 While charts is a core part of RT, you do need to enable it using
 the C<--enable-gd> option and install the required dependencies when
 you install RT. If you didn't originally install with this flag, you can
-enable it by rerunning the L<< C<configure> >> script from the RT
-distribution or doing the following in your current install:
+enable it by re-running the L<< C<configure> >> script from the RT
+distribution (including all previous options passed to it originally)
+or doing the following in your current install:
 
 =over
 
