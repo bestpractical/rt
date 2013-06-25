@@ -204,7 +204,7 @@ all of the queues we selected.
 
 =for :man [Queue Created Started Chart F<docs/images/queue-created-started-chart.png>]
 
-Now assume we also want to see how long tickets say active. In the Calculate
+Now perhaps we also want to see how long tickets stay active. In the Calculate
 section you can add Started-Resolved to the first "and then" and select
 "Average Started-Resolved" from the second dropdown. Click "Update Chart"
 and you've now got a graphical view of how long, on average, tickets are
