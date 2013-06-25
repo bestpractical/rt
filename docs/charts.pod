@@ -54,14 +54,16 @@ Install Perl GD modules:
 
 =head2 Chart Configuration Options
 
-By default, GD doesn't have full Unicode support, but RT has a configuration
-option, C<%ChartFont>, to enable additional fonts.
+By default, RT is configured to use the "Droid Sans" font for Unicode support
+across English, many western european languages, Chinese (Traditional and
+Simplified), and Japanese.  If you prefer to use a different font, you can
+change the L<< "C<%ChartFont>"|RT_Config/ChartFont >> option.
 
 There is also an option to use database timezone conversion for PostgreSQL
 and MySQL to enable timezone conversion for time-based reports. See
 F<docs/customizing/timezones_in_charts.pod> for details.
 
-Search for 'Chart' entries in L<< C<RT_Config> >> for more information on these
+Search for "Chart" entries in L<< C<RT_Config> >> for more information on these
 options.
 
 =head1 Basic Charting
