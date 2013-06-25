@@ -68,9 +68,9 @@ options.
 
 =head1 Basic Charting
 
-Charts are based on the set of tickets defined by a search, so every chart starts
-with a search on your RT tickets. When constructing your search, think about
-the report you need to generate and try to narrow the result set to the set
+Charts are based on the set of tickets returned by a search, so every chart starts
+with a search of your RT tickets. When constructing your search, think about
+the report you need to generate and try to narrow the results to the set
 of tickets that will have the information you want.
 
 =head2 Basic Ticket Search
