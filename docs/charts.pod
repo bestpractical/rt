@@ -80,17 +80,17 @@ the General queue. First use the Query Builder to build a query with
 something like:
 
     Queue = 'General'
-    AND Created > '2012-06-30'
-    AND Created < '2012-08-01'
+    AND Created >= '2012-07-01'
+    AND Created <= '2012-07-31'
 
 This search will give you tickets for July because the criteria uses before
-and after for the dates. You could also use C<< >= >> and C<< <= >> if you wanted
-to use the first and last days of the month.
+and after for the dates.
 
 This search shows one of the initial things you'll want to consider, which is
 the element of ticket metadata you want to use as the basis for time. In
 the example we're using Created, but depending on what you are reporting
 on you might want Started, Resolved, or any of the other ticket time values.
+
 When selecting the criteria for the time search, make sure it
 is appropriate to the report you want to see and be consistent so you
 are looking at the right set of tickets in the search and the resulting
