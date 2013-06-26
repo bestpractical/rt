@@ -145,6 +145,8 @@ our %FIELD_METADATA = (
     CustomFieldValue => [ 'CUSTOMFIELD' => 'Ticket' ], #loc_left_pair
     CustomField      => [ 'CUSTOMFIELD' => 'Ticket' ], #loc_left_pair
     CF               => [ 'CUSTOMFIELD' => 'Ticket' ], #loc_left_pair
+    TxnCF            => [ 'CUSTOMFIELD' => 'Transaction' ], #loc_left_pair
+    TransactionCF    => [ 'CUSTOMFIELD' => 'Transaction' ], #loc_left_pair
     Updated          => [ 'TRANSDATE', ], #loc_left_pair
     RequestorGroup   => [ 'MEMBERSHIPFIELD' => 'Requestor', ], #loc_left_pair
     CCGroup          => [ 'MEMBERSHIPFIELD' => 'Cc', ], #loc_left_pair
@@ -1379,6 +1381,7 @@ Factor out the Join of custom fields so we can use it for sorting too
 
 our %JOIN_ALIAS_FOR_LOOKUP_TYPE = (
     RT::Ticket->CustomFieldLookupType      => sub { "main" },
+    RT::Transaction->CustomFieldLookupType => sub { $_[0]->JoinTransactions },
 );
 
 sub _CustomFieldJoin {
