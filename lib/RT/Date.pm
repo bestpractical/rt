@@ -372,6 +372,10 @@ sub DurationAsString {
     my $duration = int shift;
     my %args = ( Show => 1, Short => 0, @_ );
 
+    unless ( $duration ) {
+        return $args{Short}? $self->loc("0s") : $self->loc("0 seconds");
+    }
+
     my $negative;
     $negative = 1 if $duration < 0;
     $duration = abs $duration;
