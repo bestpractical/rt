@@ -110,7 +110,7 @@ else {
         return [
             "# Required: id, Queue",
             [ qw(id Queue Requestor Subject Cc AdminCc Owner Status Priority
-                 InitialPriority FinalPriority TimeEstimated Starts Due Text) ],
+                 InitialPriority FinalPriority TimeEstimated Starts Due Attachment Text) ],
             {
                 id               => "ticket/new",
                 Queue            => $queue->Name,
@@ -126,6 +126,7 @@ else {
                 TimeEstimated    => 0,
                 Starts           => $starts->ISO,
                 Due              => $due->ISO,
+                Attachment       => '',
                 Text             => "",
             },
             0
@@ -134,7 +135,7 @@ else {
     else {
         # We'll create a new ticket, and fall through to set fields that
         # can't be set in the call to Create().
-        my (%v, $text);
+        my (%v, $text, @atts);
 
         foreach my $k (keys %data) {
             # flexibly parse any dates
@@ -167,6 +168,9 @@ else {
             elsif (lc $k eq 'text') {
                 $text = delete $data{$k};
             }
+            elsif (lc $k eq 'attachment') {
+                push @atts, @{ vsplit(delete $data{$k}) };
+            }
             elsif ( $k !~ /^(?:id|requestors)$/i ) {
                 $e = 1;
                 push @$o, $k;
@@ -183,14 +187,21 @@ else {
         # people fields allow multiple values
         $v{$_} = vsplit($v{$_}) foreach ( grep $create{lc $_}, @people );
 
-        if ($text) {
+        if ($text || @atts) {
             $v{MIMEObj} =
                 MIME::Entity->build(
+                    Type => "multipart/mixed",
                     From => $session{CurrentUser}->EmailAddress,
                     Subject => $v{Subject},
-                    Data => $text,
                     'X-RT-Interface' => 'REST',
                 );
+            $v{MIMEObj}->attach( Data => $text ) if $text;
+            my ($status, $msg) = process_attachments($v{'MIMEObj'}, @atts);
+            unless ($status) {
+                push(@comments, "# $msg");
+                goto DONE;
+            }
+            $v{MIMEObj}->make_singlepart;
         }
 
         my($tid,$trid,$terr) = $ticket->Create(%v);    

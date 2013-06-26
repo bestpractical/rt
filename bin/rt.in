@@ -655,15 +655,38 @@ sub edit {
         return 0;
     }
 
+    my @files;
+    @files = @{ vsplit($set{'attachment'}) } if exists $set{'attachment'};
+
     my $synerr = 0;
 
 EDIT:
     # We'll let the user edit the form before sending it to the server,
     # unless we have enough information to submit it non-interactively.
     if ($edit || (!$input && !$cl)) {
-        my $newtext = vi($text);
+        my ($newtext) = vi_form_while(
+            $text,
+            sub {
+                my ($text, $form) = @_;
+                return 1 unless exists $form->[2]{'Attachment'};
+
+                foreach my $f ( @{ vsplit($form->[2]{'Attachment'}) } ) {
+                    return (0, "File '$f' doesn't exist") unless -f $f;
+                }
+                @files = @{ vsplit($form->[2]{'Attachment'}) };
+                return 1;
+            },
+        );
+        return $newtext unless $newtext;
         # We won't resubmit a bad form unless it was changed.
         $text = ($synerr && $newtext eq $text) ? undef : $newtext;
+    }
+
+    delete @data{ grep /^attachment_\d+$/, keys %data };
+    my $i = 1;
+    foreach my $file (@files) {
+        $data{"attachment_$i"} = bless([ $file ], "Attachment");
+        $i++;
     }
 
     if ($text) {
