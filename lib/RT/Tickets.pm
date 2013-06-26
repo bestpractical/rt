@@ -1377,8 +1377,14 @@ Factor out the Join of custom fields so we can use it for sorting too
 
 =cut
 
+our %JOIN_ALIAS_FOR_LOOKUP_TYPE = (
+    RT::Ticket->CustomFieldLookupType      => sub { "main" },
+);
+
 sub _CustomFieldJoin {
-    my ($self, $cfkey, $cfid, $field) = @_;
+    my ($self, $cfkey, $cfid, $field, $type) = @_;
+    $type ||= RT::Ticket->CustomFieldLookupType;
+
     # Perform one Join per CustomField
     if ( $self->{_sql_object_cfv_alias}{$cfkey} ||
          $self->{_sql_cf_alias}{$cfkey} )
@@ -1387,11 +1393,15 @@ sub _CustomFieldJoin {
                  $self->{_sql_cf_alias}{$cfkey} );
     }
 
+    my $ObjectAlias = $JOIN_ALIAS_FOR_LOOKUP_TYPE{$type}
+        ? $JOIN_ALIAS_FOR_LOOKUP_TYPE{$type}->($self)
+        : die "We don't know how to join on $type";
+
     my ($ObjectCFs, $CFs);
     if ( $cfid ) {
         $ObjectCFs = $self->{_sql_object_cfv_alias}{$cfkey} = $self->Join(
             TYPE   => 'LEFT',
-            ALIAS1 => 'main',
+            ALIAS1 => $ObjectAlias,
             FIELD1 => 'id',
             TABLE2 => 'ObjectCustomFieldValues',
             FIELD2 => 'ObjectId',
@@ -1429,7 +1439,7 @@ sub _CustomFieldJoin {
             LEFTJOIN        => $CFs,
             ENTRYAGGREGATOR => 'AND',
             FIELD           => 'LookupType',
-            VALUE           => 'RT::Queue-RT::Ticket',
+            VALUE           => $type,
         );
         $self->SUPER::Limit(
             LEFTJOIN        => $CFs,
@@ -1448,15 +1458,16 @@ sub _CustomFieldJoin {
         $self->SUPER::Limit(
             LEFTJOIN        => $ObjectCFs,
             FIELD           => 'ObjectId',
-            VALUE           => 'main.id',
+            VALUE           => "$ObjectAlias.id",
             QUOTEVALUE      => 0,
             ENTRYAGGREGATOR => 'AND',
         );
     }
+
     $self->SUPER::Limit(
         LEFTJOIN        => $ObjectCFs,
         FIELD           => 'ObjectType',
-        VALUE           => 'RT::Ticket',
+        VALUE           => RT::CustomField->ObjectTypeFromLookupType($type),
         ENTRYAGGREGATOR => 'AND'
     );
     $self->SUPER::Limit(
