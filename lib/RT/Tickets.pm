@@ -95,6 +95,10 @@ sub Table { 'Tickets'}
 
 use RT::CustomFields;
 
+__PACKAGE__->RegisterCustomFieldJoin(
+    "RT::Transaction" => sub { $_[0]->JoinTransactions }
+);
+
 # Configuration Tables:
 
 # FIELD_METADATA is a mapping of searchable Field name, to Type, and other
@@ -149,6 +153,8 @@ our %FIELD_METADATA = (
     CustomFieldValue => [ 'CUSTOMFIELD' => 'Ticket' ], #loc_left_pair
     CustomField      => [ 'CUSTOMFIELD' => 'Ticket' ], #loc_left_pair
     CF               => [ 'CUSTOMFIELD' => 'Ticket' ], #loc_left_pair
+    TxnCF            => [ 'CUSTOMFIELD' => 'Transaction' ], #loc_left_pair
+    TransactionCF    => [ 'CUSTOMFIELD' => 'Transaction' ], #loc_left_pair
     Updated          => [ 'TRANSDATE', ], #loc_left_pair
     OwnerGroup       => [ 'MEMBERSHIPFIELD' => 'Owner', ], #loc_left_pair
     RequestorGroup   => [ 'MEMBERSHIPFIELD' => 'Requestor', ], #loc_left_pair
