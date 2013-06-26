@@ -48,6 +48,8 @@ results_are("TxnCF.Who NOT LIKE 'e' and TxnCF.Who IS NOT NULL", [qw( Stacks )]);
 done_testing;
 
 sub results_are {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
     my $query    = shift;
     my $expected = shift;
     my %expected = map { $_ => 1 } @$expected;
