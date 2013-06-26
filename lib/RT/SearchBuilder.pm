@@ -66,6 +66,7 @@ package RT::SearchBuilder;
 
 use strict;
 use warnings;
+use 5.010;
 
 use base qw(DBIx::SearchBuilder RT::Base);
 
@@ -265,6 +266,85 @@ sub RecordClass {
     $_[0]->_SingularClass
 }
 
+=head2 RegisterCustomFieldJoin
+
+Takes a pair of arguments, the first a class name and the second a callback
+function.  The class will be used to call
+L<RT::Record/CustomFieldLookupType>.  The callback will be called when
+limiting a collection of the caller's class by a CF of the passed class's
+lookup type.
+
+The callback is passed a single argument, the current collection object (C<$self>).
+
+An example from L<RT::Tickets>:
+
+    __PACKAGE__->RegisterCustomFieldJoin(
+        "RT::Transaction" => sub { $_[0]->JoinTransactions }
+    );
+
+Returns true on success, undef on failure.
+
+=cut
+
+sub RegisterCustomFieldJoin {
+    my $class = shift;
+    my ($type, $callback) = @_;
+
+    $type = $type->CustomFieldLookupType if $type;
+
+    die "Unknown LookupType '$type'"
+        unless $type and grep { $_ eq $type } RT::CustomField->LookupTypes;
+
+    die "Custom field join callbacks must be CODE references"
+        unless ref($callback) eq 'CODE';
+
+    warn "Another custom field join callback is already registered for '$type'"
+        if $class->_JOINS_FOR_LOOKUP_TYPES->{$type};
+
+    # Stash the callback on ourselves
+    $class->_JOINS_FOR_LOOKUP_TYPES->{ $type } = $callback;
+
+    return 1;
+}
+
+=head2 _JoinForLookupType
+
+Takes an L<RT::CustomField> LookupType and joins this collection as
+appropriate to reach the object records to which LookupType applies.  The
+object records will be of the class returned by
+L<RT::CustomField/ObjectTypeFromLookupType>.
+
+Returns the join alias suitable for further limiting against object
+properties.
+
+Returns undef on failure.
+
+Used by L</_CustomFieldJoin>.
+
+=cut
+
+sub _JoinForLookupType {
+    my $self = shift;
+    my $type = shift or return;
+
+    # Convenience shortcut so that classes don't need to register a handler
+    # for their native lookup type
+    return "main" if $type eq $self->RecordClass->CustomFieldLookupType
+        and grep { $_ eq $type } RT::CustomField->LookupTypes;
+
+    my $JOINS = $self->_JOINS_FOR_LOOKUP_TYPES;
+    return $JOINS->{$type}->($self)
+        if ref $JOINS->{$type} eq 'CODE';
+
+    return;
+}
+
+sub _JOINS_FOR_LOOKUP_TYPES {
+    my $class = blessed($_[0]) || $_[0];
+    state %JOINS;
+    return $JOINS{$class} ||= {};
+}
+
 =head2 _CustomFieldJoin
 
 Factor out the Join of custom fields so we can use it for sorting too
@@ -272,7 +352,9 @@ Factor out the Join of custom fields so we can use it for sorting too
 =cut
 
 sub _CustomFieldJoin {
-    my ($self, $cfkey, $cf) = @_;
+    my ($self, $cfkey, $cf, $type) = @_;
+    $type ||= $self->RecordClass->CustomFieldLookupType;
+
     # Perform one Join per CustomField
     if ( $self->{_sql_object_cfv_alias}{$cfkey} ||
          $self->{_sql_cf_alias}{$cfkey} )
@@ -281,11 +363,14 @@ sub _CustomFieldJoin {
                  $self->{_sql_cf_alias}{$cfkey} );
     }
 
+    my $ObjectAlias = $self->_JoinForLookupType($type)
+        or die "We don't know how to join for LookupType $type";
+
     my ($ocfvalias, $CFs);
     if ( blessed($cf) ) {
         $ocfvalias = $self->{_sql_object_cfv_alias}{$cfkey} = $self->Join(
             TYPE   => 'LEFT',
-            ALIAS1 => 'main',
+            ALIAS1 => $ObjectAlias,
             FIELD1 => 'id',
             TABLE2 => 'ObjectCustomFieldValues',
             FIELD2 => 'ObjectId',
@@ -299,14 +384,14 @@ sub _CustomFieldJoin {
         );
     }
     else {
-        ($ocfvalias, $CFs) = $self->_CustomFieldJoinByName( $cf );
+        ($ocfvalias, $CFs) = $self->_CustomFieldJoinByName( $ObjectAlias, $cf, $type );
         $self->{_sql_cf_alias}{$cfkey} = $CFs;
         $self->{_sql_object_cfv_alias}{$cfkey} = $ocfvalias;
     }
     $self->Limit(
         LEFTJOIN        => $ocfvalias,
         FIELD           => 'ObjectType',
-        VALUE           => ref($self->NewItem),
+        VALUE           => RT::CustomField->ObjectTypeFromLookupType($type),
         ENTRYAGGREGATOR => 'AND'
     );
     $self->Limit(
@@ -322,7 +407,7 @@ sub _CustomFieldJoin {
 
 sub _CustomFieldJoinByName {
     my $self = shift;
-    my ($cf) = @_;
+    my ($ObjectAlias, $cf, $type) = @_;
     my $ocfalias = $self->Join(
         TYPE       => 'LEFT',
         EXPRESSION => q|'0'|,
@@ -341,7 +426,7 @@ sub _CustomFieldJoinByName {
         LEFTJOIN        => $CFs,
         ENTRYAGGREGATOR => 'AND',
         FIELD           => 'LookupType',
-        VALUE           => $self->RecordClass->CustomFieldLookupType,
+        VALUE           => $type,
     );
     $self->Limit(
         LEFTJOIN        => $CFs,
@@ -361,7 +446,7 @@ sub _CustomFieldJoinByName {
     $self->Limit(
         LEFTJOIN        => $ocfvalias,
         FIELD           => 'ObjectId',
-        VALUE           => 'main.id',
+        VALUE           => "$ObjectAlias.id",
         QUOTEVALUE      => 0,
         ENTRYAGGREGATOR => 'AND',
     );

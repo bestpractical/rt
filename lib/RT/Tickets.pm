@@ -1124,9 +1124,9 @@ sub _CustomFieldLimit {
 
 sub _CustomFieldJoinByName {
     my $self = shift;
-    my ($cf) = @_;
+    my ($ObjectAlias, $cf, $type) = @_;
 
-    my ($ocfvalias, $CFs, $ocfalias) = $self->SUPER::_CustomFieldJoinByName($cf);
+    my ($ocfvalias, $CFs, $ocfalias) = $self->SUPER::_CustomFieldJoinByName(@_);
     $self->Limit(
         LEFTJOIN        => $ocfalias,
         ENTRYAGGREGATOR => 'OR',
