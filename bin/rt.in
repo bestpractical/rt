@@ -809,30 +809,19 @@ sub comment {
     my $text = Form::compose([ $form ]);
 
     if ($edit || !$msg) {
-        my $error = 0;
-        my ($c, $o, $k, $e);
-
-        do {
-            my $ntext = vi($text);
-            return if ($error && $ntext eq $text);
-            $text = $ntext;
-            $form = Form::parse($text);
-            $error = 0;
-
-            ($c, $o, $k, $e) = @{ $form->[0] };
-            if ($e) {
-                $error = 1;
-                $c = "# Syntax error.";
-                goto NEXT;
-            }
-            elsif (!@$o) {
-                return 0;
-            }
-            @files = @{ vsplit($k->{Attachment}) };
-
-        NEXT:
-            $text = Form::compose([[$c, $o, $k, $e]]);
-        } while ($error);
+        my ($tmp) = vi_form_while(
+            $text,
+            sub {
+                my ($text, $form) = @_;
+                foreach my $f ( @{ vsplit($form->[2]{'Attachment'}) } ) {
+                    return (0, "File '$f' doesn't exist") unless -f $f;
+                }
+                @files = @{ vsplit($form->[2]{'Attachment'}) };
+                return 1;
+            },
+        );
+        return $tmp unless $tmp;
+        $text = $tmp;
     }
 
     my $i = 1;
@@ -1464,6 +1453,43 @@ sub read_passwd {
     print "\n";
 
     return $passwd;
+}
+
+sub vi_form_while {
+    my $text = shift;
+    my $cb = shift;
+
+    my $error = 0;
+    my ($c, $o, $k, $e);
+    do {
+        my $ntext = vi($text);
+        return undef if ($error && $ntext eq $text);
+
+        $text = $ntext;
+
+        my $form = Form::parse($text);
+        $error = 0;
+        ($c, $o, $k, $e) = @{ $form->[0] };
+        if ( $e ) {
+            $error = 1;
+            $c = "# Syntax error.";
+            goto NEXT;
+        }
+        elsif (!@$o) {
+            return 0;
+        }
+
+        my ($status, $msg) = $cb->( $text, [$c, $o, $k, $e] );
+        unless ( $status ) {
+            $error = 1;
+            $c = "# $msg";
+        }
+
+    NEXT:
+        $text = Form::compose([[$c, $o, $k, $e]]);
+    } while ($error);
+
+    return $text;
 }
 
 sub vi {
