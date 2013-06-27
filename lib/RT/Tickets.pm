@@ -1034,33 +1034,44 @@ sub _WatcherMembershipLimit {
 
 Try and turn a CF descriptor into (cfid, cfname) object pair.
 
+Takes an optional second parameter of the CF LookupType, defaults to Ticket CFs.
+
 =cut
 
 sub _CustomFieldDecipher {
-    my ($self, $string) = @_;
+    my ($self, $string, $lookuptype) = @_;
+    $lookuptype ||= $self->_SingularClass->CustomFieldLookupType;
 
-    my ($queue, $field, $column) = ($string =~ /^(?:(.+?)\.)?\{(.+)\}(?:\.(Content|LargeContent))?$/);
+    my ($object, $field, $column) = ($string =~ /^(?:(.+?)\.)?\{(.+)\}(?:\.(Content|LargeContent))?$/);
     $field ||= ($string =~ /^\{(.*?)\}$/)[0] || $string;
 
-    my $cf;
-    if ( $queue ) {
-        my $q = RT::Queue->new( $self->CurrentUser );
-        $q->Load( $queue );
+    my ($cf, $applied_to);
 
-        if ( $q->id ) {
-            # $queue = $q->Name; # should we normalize the queue?
-            $cf = $q->CustomField( $field );
+    if ( $object ) {
+        my $record_class = RT::CustomField->RecordClassFromLookupType($lookuptype);
+        $applied_to = $record_class->new( $self->CurrentUser );
+        $applied_to->Load( $object );
+
+        if ( $applied_to->id ) {
+            RT->Logger->debug("Limiting to CFs identified by '$field' applied to $record_class #@{[$applied_to->id]} (loaded via '$object')");
         }
         else {
-            $RT::Logger->warning("Queue '$queue' doesn't exist, parsed from '$string'");
-            $queue = 0;
+            RT->Logger->warning("$record_class '$object' doesn't exist, parsed from '$string'");
+            $object = 0;
+            undef $applied_to;
         }
     }
-    elsif ( $field =~ /\D/ ) {
-        $queue = '';
+
+    if ( $field =~ /\D/ ) {
+        $object ||= '';
         my $cfs = RT::CustomFields->new( $self->CurrentUser );
         $cfs->Limit( FIELD => 'Name', VALUE => $field, CASESENSITIVE => 0 );
-        $cfs->LimitToLookupType('RT::Queue-RT::Ticket');
+        $cfs->LimitToLookupType($lookuptype);
+
+        if ($applied_to) {
+            $cfs->SetContextObject($applied_to);
+            $cfs->LimitToObjectId($applied_to->id);
+        }
 
         # if there is more then one field the current user can
         # see with the same name then we shouldn't return cf object
@@ -1073,9 +1084,11 @@ sub _CustomFieldDecipher {
     else {
         $cf = RT::CustomField->new( $self->CurrentUser );
         $cf->Load( $field );
+        $cf->SetContextObject($applied_to)
+            if $cf->id and $applied_to;
     }
 
-    return ($queue, $field, $cf, $column);
+    return ($object, $field, $cf, $column);
 }
 
 =head2 _CustomFieldLimit
@@ -1092,16 +1105,16 @@ sub _CustomFieldLimit {
 
     my $field = $rest{'SUBKEY'} || die "No field specified";
 
-    # For our sanity, we can only limit on one queue at a time
+    # For our sanity, we can only limit on one object at a time
 
-    my ($queue, $cfid, $cf, $column);
-    ($queue, $field, $cf, $column) = $self->_CustomFieldDecipher( $field );
+    my ($object, $cfid, $cf, $column);
+    ($object, $field, $cf, $column) = $self->_CustomFieldDecipher( $field );
 
 
     $self->_LimitCustomField(
         %rest,
         CUSTOMFIELD => $cf || $field,
-        KEY      => $cf ? $cf->id : "$queue.$field",
+        KEY      => $cf ? $cf->id : "$object.$field",
         OPERATOR => $op,
         VALUE    => $value,
         COLUMN   => $column,
@@ -1227,8 +1240,8 @@ sub OrderByCols {
             }
             push @res, { %$row, ALIAS => $users, FIELD => $subkey };
        } elsif ( defined $meta->[0] && $meta->[0] eq 'CUSTOMFIELD' ) {
-           my ($queue, $field, $cf, $column) = $self->_CustomFieldDecipher( $subkey );
-           my $cfkey = $cf ? $cf->id : "$queue.$field";
+           my ($object, $field, $cf, $column) = $self->_CustomFieldDecipher( $subkey );
+           my $cfkey = $cf ? $cf->id : "$object.$field";
            push @res, $self->_OrderByCF( $row, $cfkey, ($cf || $field) );
        } elsif ( $field eq "Custom" && $subkey eq "Ownership") {
            # PAW logic is "reversed"
