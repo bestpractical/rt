@@ -142,9 +142,9 @@ our %FIELD_METADATA = (
     QueueCc          => [ 'WATCHERFIELD'    => 'Cc'      => 'Queue', ], #loc_left_pair
     QueueAdminCc     => [ 'WATCHERFIELD'    => 'AdminCc' => 'Queue', ], #loc_left_pair
     QueueWatcher     => [ 'WATCHERFIELD'    => undef     => 'Queue', ], #loc_left_pair
-    CustomFieldValue => [ 'CUSTOMFIELD', ], #loc_left_pair
-    CustomField      => [ 'CUSTOMFIELD', ], #loc_left_pair
-    CF               => [ 'CUSTOMFIELD', ], #loc_left_pair
+    CustomFieldValue => [ 'CUSTOMFIELD' => 'Ticket' ], #loc_left_pair
+    CustomField      => [ 'CUSTOMFIELD' => 'Ticket' ], #loc_left_pair
+    CF               => [ 'CUSTOMFIELD' => 'Ticket' ], #loc_left_pair
     Updated          => [ 'TRANSDATE', ], #loc_left_pair
     RequestorGroup   => [ 'MEMBERSHIPFIELD' => 'Requestor', ], #loc_left_pair
     CCGroup          => [ 'MEMBERSHIPFIELD' => 'Cc', ], #loc_left_pair
@@ -1497,12 +1497,16 @@ use Regexp::Common::net::CIDR;
 sub _CustomFieldLimit {
     my ( $self, $_field, $op, $value, %rest ) = @_;
 
+    my $meta  = $FIELD_METADATA{ $_field };
+    my $class = $meta->[1] || 'Ticket';
+    my $type  = "RT::$class"->CustomFieldLookupType;
+
     my $field = $rest{'SUBKEY'} || die "No field specified";
 
     # For our sanity, we can only limit on one queue at a time
 
     my ($object, $cfid, $cf, $column);
-    ($object, $field, $cf, $column) = $self->_CustomFieldDecipher( $field );
+    ($object, $field, $cf, $column) = $self->_CustomFieldDecipher( $field, $type );
     $cfid = $cf ? $cf->id  : 0 ;
 
 # If we're trying to find custom fields that don't match something, we
@@ -1598,13 +1602,13 @@ sub _CustomFieldLimit {
 
     my $single_value = !$cf || !$cfid || $cf->SingleValue;
 
-    my $cfkey = $cfid ? $cfid : "$object.$field";
+    my $cfkey = $cfid ? $cfid : "$type-$object.$field";
 
     if ( $null_op && !$column ) {
         # IS[ NOT] NULL without column is the same as has[ no] any CF value,
         # we can reuse our default joins for this operation
         # with column specified we have different situation
-        my ($ObjectCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
+        my ($ObjectCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field, $type );
         $self->_OpenParen;
         $self->_SQLLimit(
             ALIAS    => $ObjectCFs,
@@ -1630,11 +1634,11 @@ sub _CustomFieldLimit {
         $self->_OpenParen;
         if ( $op !~ /NOT|!=|<>/i ) { # positive equation
             $self->_CustomFieldLimit(
-                'CF', '<=', $end_ip, %rest,
+                $_field, '<=', $end_ip, %rest,
                 SUBKEY => $rest{'SUBKEY'}. '.Content',
             );
             $self->_CustomFieldLimit(
-                'CF', '>=', $start_ip, %rest,
+                $_field, '>=', $start_ip, %rest,
                 SUBKEY          => $rest{'SUBKEY'}. '.LargeContent',
                 ENTRYAGGREGATOR => 'AND',
             ); 
@@ -1642,20 +1646,20 @@ sub _CustomFieldLimit {
             # estimations and scan less rows
 # have to disable this tweak because of ipv6
 #            $self->_CustomFieldLimit(
-#                $field, '>=', '000.000.000.000', %rest,
+#                $_field, '>=', '000.000.000.000', %rest,
 #                SUBKEY          => $rest{'SUBKEY'}. '.Content',
 #                ENTRYAGGREGATOR => 'AND',
 #            );
 #            $self->_CustomFieldLimit(
-#                $field, '<=', '255.255.255.255', %rest,
+#                $_field, '<=', '255.255.255.255', %rest,
 #                SUBKEY          => $rest{'SUBKEY'}. '.LargeContent',
 #                ENTRYAGGREGATOR => 'AND',
 #            );  
         }       
         else { # negative equation
-            $self->_CustomFieldLimit($field, '>', $end_ip, %rest);
+            $self->_CustomFieldLimit($_field, '>', $end_ip, %rest);
             $self->_CustomFieldLimit(
-                $field, '<', $start_ip, %rest,
+                $_field, '<', $start_ip, %rest,
                 SUBKEY          => $rest{'SUBKEY'}. '.LargeContent',
                 ENTRYAGGREGATOR => 'OR',
             );  
@@ -1667,7 +1671,7 @@ sub _CustomFieldLimit {
     } 
     elsif ( !$negative_op || $single_value ) {
         $cfkey .= '.'. $self->{'_sql_multiple_cfs_index'}++ if !$single_value && !$range_op;
-        my ($ObjectCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
+        my ($ObjectCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field, $type );
 
         $self->_OpenParen;
 
@@ -1836,7 +1840,7 @@ sub _CustomFieldLimit {
     }
     else {
         $cfkey .= '.'. $self->{'_sql_multiple_cfs_index'}++;
-        my ($ObjectCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
+        my ($ObjectCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field, $type );
 
         # reverse operation
         $op =~ s/!|NOT\s+//i;
