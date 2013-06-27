@@ -473,6 +473,7 @@ sub _LimitCustomField {
 
     my $op     = delete $args{OPERATOR};
     my $value  = delete $args{VALUE};
+    my $ltype  = delete $args{LOOKUPTYPE} || $self->RecordClass->CustomFieldLookupType;
     my $cf     = delete $args{CUSTOMFIELD};
     my $column = delete $args{COLUMN};
     my $cfkey  = delete $args{KEY};
@@ -485,10 +486,10 @@ sub _LimitCustomField {
             $cf = $obj;
             $cfkey ||= $cf->id;
         } else {
-            $cfkey ||= $cf;
+            $cfkey ||= "$ltype-$cf";
         }
     } else {
-        $cfkey ||= $cf;
+        $cfkey ||= "$ltype-$cf";
     }
 
     $args{SUBCLAUSE} ||= "cf-$cfkey";
@@ -557,6 +558,7 @@ sub _LimitCustomField {
                         %args,
                         OPERATOR    => '<=',
                         VALUE       => $end_ip,
+                        LOOKUPTYPE  => $ltype,
                         CUSTOMFIELD => $cf,
                         COLUMN      => 'Content',
                         PREPARSE    => 0,
@@ -565,6 +567,7 @@ sub _LimitCustomField {
                         %args,
                         OPERATOR    => '>=',
                         VALUE       => $start_ip,
+                        LOOKUPTYPE  => $ltype,
                         CUSTOMFIELD => $cf,
                         COLUMN      => 'LargeContent',
                         ENTRYAGGREGATOR => 'AND',
@@ -575,6 +578,7 @@ sub _LimitCustomField {
                         %args,
                         OPERATOR    => '>',
                         VALUE       => $end_ip,
+                        LOOKUPTYPE  => $ltype,
                         CUSTOMFIELD => $cf,
                         COLUMN      => 'Content',
                         PREPARSE    => 0,
@@ -583,6 +587,7 @@ sub _LimitCustomField {
                         %args,
                         OPERATOR    => '<',
                         VALUE       => $start_ip,
+                        LOOKUPTYPE  => $ltype,
                         CUSTOMFIELD => $cf,
                         COLUMN      => 'LargeContent',
                         ENTRYAGGREGATOR => 'OR',
@@ -626,6 +631,7 @@ sub _LimitCustomField {
                     %args,
                     OPERATOR        => ">=",
                     VALUE           => $daystart,
+                    LOOKUPTYPE      => $ltype,
                     CUSTOMFIELD     => $cf,
                     COLUMN          => 'Content',
                     ENTRYAGGREGATOR => 'AND',
@@ -636,6 +642,7 @@ sub _LimitCustomField {
                     %args,
                     OPERATOR        => "<",
                     VALUE           => $dayend,
+                    LOOKUPTYPE      => $ltype,
                     CUSTOMFIELD     => $cf,
                     COLUMN          => 'Content',
                     ENTRYAGGREGATOR => 'AND',
@@ -650,7 +657,7 @@ sub _LimitCustomField {
     ########## Limits
     # IS NULL and IS NOT NULL checks
     if ( $op =~ /^IS( NOT)?$/i ) {
-        my ($ocfvalias, $CFs) = $self->_CustomFieldJoin( $cfkey, $cf );
+        my ($ocfvalias, $CFs) = $self->_CustomFieldJoin( $cfkey, $cf, $ltype );
         $self->_OpenParen( $args{SUBCLAUSE} );
         $self->Limit(
             %args,
@@ -678,7 +685,7 @@ sub _LimitCustomField {
 
     $cfkey .= '.'. $self->{'_sql_multiple_cfs_index'}++
         if not $single_value and $op =~ /^(!?=|(NOT )?LIKE)$/i;
-    my ($ocfvalias, $CFs) = $self->_CustomFieldJoin( $cfkey, $cf );
+    my ($ocfvalias, $CFs) = $self->_CustomFieldJoin( $cfkey, $cf, $ltype );
 
     # A negative limit on a multi-value CF means _none_ of the values
     # are the given value

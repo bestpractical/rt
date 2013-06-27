@@ -146,9 +146,9 @@ our %FIELD_METADATA = (
     QueueCc          => [ 'WATCHERFIELD'    => 'Cc'      => 'Queue', ], #loc_left_pair
     QueueAdminCc     => [ 'WATCHERFIELD'    => 'AdminCc' => 'Queue', ], #loc_left_pair
     QueueWatcher     => [ 'WATCHERFIELD'    => undef     => 'Queue', ], #loc_left_pair
-    CustomFieldValue => [ 'CUSTOMFIELD', ], #loc_left_pair
-    CustomField      => [ 'CUSTOMFIELD', ], #loc_left_pair
-    CF               => [ 'CUSTOMFIELD', ], #loc_left_pair
+    CustomFieldValue => [ 'CUSTOMFIELD' => 'Ticket' ], #loc_left_pair
+    CustomField      => [ 'CUSTOMFIELD' => 'Ticket' ], #loc_left_pair
+    CF               => [ 'CUSTOMFIELD' => 'Ticket' ], #loc_left_pair
     Updated          => [ 'TRANSDATE', ], #loc_left_pair
     OwnerGroup       => [ 'MEMBERSHIPFIELD' => 'Owner', ], #loc_left_pair
     RequestorGroup   => [ 'MEMBERSHIPFIELD' => 'Requestor', ], #loc_left_pair
@@ -1103,18 +1103,23 @@ Meta Data:
 sub _CustomFieldLimit {
     my ( $self, $_field, $op, $value, %rest ) = @_;
 
+    my $meta  = $FIELD_METADATA{ $_field };
+    my $class = $meta->[1] || 'Ticket';
+    my $type  = "RT::$class"->CustomFieldLookupType;
+
     my $field = $rest{'SUBKEY'} || die "No field specified";
 
     # For our sanity, we can only limit on one object at a time
 
     my ($object, $cfid, $cf, $column);
-    ($object, $field, $cf, $column) = $self->_CustomFieldDecipher( $field );
+    ($object, $field, $cf, $column) = $self->_CustomFieldDecipher( $field, $type );
 
 
     $self->_LimitCustomField(
         %rest,
+        LOOKUPTYPE  => $type,
         CUSTOMFIELD => $cf || $field,
-        KEY      => $cf ? $cf->id : "$object.$field",
+        KEY      => $cf ? $cf->id : "$type-$object.$field",
         OPERATOR => $op,
         VALUE    => $value,
         COLUMN   => $column,
