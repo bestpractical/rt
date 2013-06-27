@@ -195,6 +195,25 @@ sub LimitToParentType  {
     $self->Limit( FIELD => 'LookupType', STARTSWITH => "$lookup" );
 }
 
+=head2 LimitToObjectId
+
+Takes an ObjectId and limits the collection to CFs applied to said object.
+
+When called multiple times the ObjectId limits are joined with OR.
+
+=cut
+
+sub LimitToObjectId {
+    my $self = shift;
+    my $id = shift;
+    $self->Limit(
+        ALIAS           => $self->_OCFAlias,
+        FIELD           => 'ObjectId',
+        OPERATOR        => '=',
+        VALUE           => $id || 0,
+        ENTRYAGGREGATOR => 'OR'
+    );
+}
 
 =head2 LimitToGlobalOrObjectId
 
@@ -209,19 +228,11 @@ sub LimitToGlobalOrObjectId {
 
 
     foreach my $id (@_) {
-        $self->Limit( ALIAS           => $self->_OCFAlias,
-                    FIELD           => 'ObjectId',
-                    OPERATOR        => '=',
-                    VALUE           => $id || 0,
-                    ENTRYAGGREGATOR => 'OR' );
+        $self->LimitToObjectId($id);
         $global_only = 0 if $id;
     }
 
-    $self->Limit( ALIAS           => $self->_OCFAlias,
-                 FIELD           => 'ObjectId',
-                 OPERATOR        => '=',
-                 VALUE           => 0,
-                 ENTRYAGGREGATOR => 'OR' ) unless $global_only;
+    $self->LimitToObjectId(0) unless $global_only;
 }
 
 =head2 LimitToNotAdded
