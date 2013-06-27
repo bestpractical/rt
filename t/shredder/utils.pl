@@ -8,8 +8,14 @@ require RT::Test;
 
 BEGIN {
 ### after:     push @INC, qw(@RT_LIB_PATH@);
+
+    use RT;
+    RT->LoadConfig;
+    RT->InitPluginPaths;
+    RT->InitClasses;
 }
-use RT::Shredder;
+
+require RT::Shredder;
 
 =head1 DESCRIPTION
 
