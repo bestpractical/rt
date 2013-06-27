@@ -253,6 +253,17 @@ sub _SingularClass {
     return $class;
 }
 
+=head2 RecordClass
+
+Returns class name of records in this collection. This generic implementation
+just strips trailing 's'.
+
+=cut
+
+sub RecordClass {
+    $_[0]->_SingularClass
+}
+
 =head2 _CustomFieldJoin
 
 Factor out the Join of custom fields so we can use it for sorting too

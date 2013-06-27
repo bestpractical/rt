@@ -84,19 +84,6 @@ sub _Init {
     return $self->SUPER::_Init(@_);
 }
 
-=head2 RecordClass
-
-Returns class name of records in this collection. This generic implementation
-just strips trailing 's'.
-
-=cut
-
-sub RecordClass {
-    my $class = ref($_[0]) || $_[0];
-    $class =~ s/s$// or return undef;
-    return $class;
-}
-
 =head2 LimitToObjectId
 
 Takes id of an object and limits collection.
