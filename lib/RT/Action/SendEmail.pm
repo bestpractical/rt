@@ -397,14 +397,15 @@ sub AddAttachment {
               and $attach->TransactionObj->CurrentUserCanSee;
 
     # ->attach expects just the disposition type; extract it if we have the header
+    # or default to "attachment"
     my $disp = ($attach->GetHeader('Content-Disposition') || '')
-                    =~ /^\s*(inline|attachment)/i ? $1 : undef;
+                    =~ /^\s*(inline|attachment)/i ? $1 : "attachment";
 
     $MIMEObj->attach(
         Type        => $attach->ContentType,
         Charset     => $attach->OriginalEncoding,
         Data        => $attach->OriginalContent,
-        Disposition => $disp, # a false value defaults to inline in MIME::Entity
+        Disposition => $disp,
         Filename    => $self->MIMEEncodeString( $attach->Filename ),
         'RT-Attachment:' => $self->TicketObj->Id . "/"
             . $self->TransactionObj->Id . "/"
