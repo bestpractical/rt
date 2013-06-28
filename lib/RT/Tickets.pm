@@ -95,9 +95,18 @@ sub Table { 'Tickets'}
 
 use RT::CustomFields;
 
-__PACKAGE__->RegisterCustomFieldJoin(
-    "RT::Transaction" => sub { $_[0]->JoinTransactions }
-);
+__PACKAGE__->RegisterCustomFieldJoin(@$_) for
+    [ "RT::Transaction" => sub { $_[0]->JoinTransactions } ],
+    [ "RT::Queue"       => sub {
+            # XXX: Could avoid join and use main.Queue with some refactoring?
+            return $_[0]->{_sql_aliases}{queues} ||= $_[0]->Join(
+                ALIAS1 => 'main',
+                FIELD1 => 'Queue',
+                TABLE2 => 'Queues',
+                FIELD2 => 'id',
+            );
+        }
+    ];
 
 # Configuration Tables:
 
@@ -155,6 +164,7 @@ our %FIELD_METADATA = (
     CF               => [ 'CUSTOMFIELD' => 'Ticket' ], #loc_left_pair
     TxnCF            => [ 'CUSTOMFIELD' => 'Transaction' ], #loc_left_pair
     TransactionCF    => [ 'CUSTOMFIELD' => 'Transaction' ], #loc_left_pair
+    QueueCF          => [ 'CUSTOMFIELD' => 'Queue' ], #loc_left_pair
     Updated          => [ 'TRANSDATE', ], #loc_left_pair
     OwnerGroup       => [ 'MEMBERSHIPFIELD' => 'Owner', ], #loc_left_pair
     RequestorGroup   => [ 'MEMBERSHIPFIELD' => 'Requestor', ], #loc_left_pair
