@@ -147,6 +147,7 @@ our %FIELD_METADATA = (
     CF               => [ 'CUSTOMFIELD' => 'Ticket' ], #loc_left_pair
     TxnCF            => [ 'CUSTOMFIELD' => 'Transaction' ], #loc_left_pair
     TransactionCF    => [ 'CUSTOMFIELD' => 'Transaction' ], #loc_left_pair
+    QueueCF          => [ 'CUSTOMFIELD' => 'Queue' ], #loc_left_pair
     Updated          => [ 'TRANSDATE', ], #loc_left_pair
     RequestorGroup   => [ 'MEMBERSHIPFIELD' => 'Requestor', ], #loc_left_pair
     CCGroup          => [ 'MEMBERSHIPFIELD' => 'Cc', ], #loc_left_pair
@@ -1382,6 +1383,14 @@ Factor out the Join of custom fields so we can use it for sorting too
 our %JOIN_ALIAS_FOR_LOOKUP_TYPE = (
     RT::Ticket->CustomFieldLookupType      => sub { "main" },
     RT::Transaction->CustomFieldLookupType => sub { $_[0]->JoinTransactions },
+    RT::Queue->CustomFieldLookupType       => sub {
+        return $_[0]->{_sql_aliases}{queues} ||= $_[0]->Join(
+            ALIAS1 => 'main',
+            FIELD1 => 'Queue',
+            TABLE2 => 'Queues',
+            FIELD2 => 'id',
+        );
+    },
 );
 
 sub _CustomFieldJoin {
@@ -1402,6 +1411,7 @@ sub _CustomFieldJoin {
 
     my ($ObjectCFs, $CFs);
     if ( $cfid ) {
+        # XXX: Could avoid join and use main.Queue instead?
         $ObjectCFs = $self->{_sql_object_cfv_alias}{$cfkey} = $self->Join(
             TYPE   => 'LEFT',
             ALIAS1 => $ObjectAlias,
@@ -1461,6 +1471,7 @@ sub _CustomFieldJoin {
         $self->SUPER::Limit(
             LEFTJOIN        => $ObjectCFs,
             FIELD           => 'ObjectId',
+            # XXX: Could avoid join and use main.Queue instead?
             VALUE           => "$ObjectAlias.id",
             QUOTEVALUE      => 0,
             ENTRYAGGREGATOR => 'AND',
