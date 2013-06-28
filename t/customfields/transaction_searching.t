@@ -8,15 +8,13 @@ my ($rv, $msg) = RT->DatabaseHandle->InsertData( $initialdata, undef, disconnect
 ok($rv, "Inserted test data from $initialdata")
     or diag "Error: $msg";
 
-my %ticket = (
+create_tickets(
     Spam        => {  },
     Coffee      => { Billable   => "No", },
     Phone       => { Billable   => "Yes", Who => ["Telecom", "Information Technology"], When => "2013-06-25", Location => "Geology" },
     Stacks      => { Billable   => "Yes", Who => "Library", When => "2013-06-01" },
     Benches     => { Billable   => "Yes", Location => "Outdoors" },
 );
-
-create_tickets();
 
 # Sanity check
 results_are("CF.Location IS NOT NULL", [qw( Phone Benches )]);
@@ -48,9 +46,26 @@ results_are("TxnCF.Who LIKE 'e'", [qw( Phone )]);
 
 results_are("TxnCF.Who NOT LIKE 'e' and TxnCF.Who IS NOT NULL", [qw( Stacks )]);
 
-# XXX TODO:
+
+# Multiple CFs with same name applied to different queues
+clear_tickets();
+create_tickets(
+    BlueNone    => { Queue => "Blues" },
+    PurpleNone  => { Queue => "Purples" },
+
+    Blue        => { Queue => "Blues",   Color => "Blue" },
+    Purple      => { Queue => "Purples", Color => "Purple" },
+);
+
 # Queue-specific txn CFs
+results_are("TxnCF.Blues.{Color} = 'Blue'", [qw( Blue )]);
+results_are("TxnCF.Blues.{Color} = 'Purple'", []);
+
 # Multiple transaction CFs by name
+results_are("TxnCF.{Color} IS NOT NULL", [qw( Blue Purple )]);
+results_are("TxnCF.{Color} = 'Blue'", [qw( Blue )]);
+results_are("TxnCF.{Color} = 'Purple'", [qw( Purple )]);
+results_are("TxnCF.{Color} LIKE 'e'", [qw( Blue Purple )]);
 
 done_testing;
 
@@ -66,7 +81,7 @@ sub results_are {
     my ($ok, $msg) = $tickets->FromSQL($query);
     ok($ok, "Searched: $query")
         or return diag $msg;
-    for my $t (@{$tickets->ItemsArrayRef}) {
+    for my $t (@{$tickets->ItemsArrayRef || []}) {
         if (delete $expected{$t->Subject}) {
             ok(1, "Found expected ticket ".$t->Subject);
         } else {
@@ -80,13 +95,15 @@ sub results_are {
 }
 
 sub create_tickets {
+    my %ticket = @_;
     for my $subject (sort keys %ticket) {
-        my %cfs = %{$ticket{$subject}};
-        my $location = delete $cfs{Location};
+        my %data = %{$ticket{$subject}};
+        my $location = delete $data{Location};
+        my $queue    = delete $data{Queue} || "General";
 
         my $ticket = RT::Ticket->new( RT->SystemUser );
         my ($ok, $msg) = $ticket->Create(
-            Queue   => "General",
+            Queue   => $queue,
             Subject => $subject,
         );
         ok($ticket->id, "Created ticket: $msg") or next;
@@ -101,17 +118,23 @@ sub create_tickets {
             RT->Logger->error("Unable to correspond on ticket $ok: $txnmsg");
             next;
         }
-        for my $name (sort keys %cfs) {
-            my $values = ref $cfs{$name} ? $cfs{$name} : [$cfs{$name}];
+        for my $name (sort keys %data) {
+            my $values = ref $data{$name} ? $data{$name} : [$data{$name}];
             for my $v (@$values) {
                 ($ok, $msg) = $txn->_AddCustomFieldValue(
                     Field => $name,
                     Value => $v,
                     RecordTransaction => 0
                 );
-                RT->Logger->error("Unable to add value '$v' to CF '$name': $msg")
-                    unless $ok;
+                ok($ok, "Added txn CF $name value '$v'")
+                    or diag $msg;
             }
         }
     }
+}
+
+sub clear_tickets {
+    my $tickets = RT::Tickets->new( RT->SystemUser );
+    $tickets->FromSQL("id > 0");
+    $_->SetStatus("deleted") for @{$tickets->ItemsArrayRef};
 }

@@ -1,6 +1,11 @@
 use strict;
 use warnings;
 
+our @Queues = (
+    { Name  => "Blues" },
+    { Name  => "Purples" },
+);
+
 our @CustomFields = (
     map +{
         LookupType  => RT::Transaction->CustomFieldLookupType,
@@ -27,6 +32,17 @@ our @CustomFields = (
     },
     {   Name    => "When",
         Type    => "Date",
+    },
+
+    # Two CFs named the same, but each applied to only one queue
+    # Note: Queue => ref forces RT::Handle to apply rather than
+    # RT::CustomField->Create; the former respects LookupType, the latter
+    # doesn't.
+    {   Name    => "Color",
+        Queue   => ["Blues"],
+    },
+    {   Name    => "Color",
+        Queue   => ["Purples"],
     },
 
     # Some ticket CFs to test mixed searches
