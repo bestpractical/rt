@@ -50,9 +50,10 @@
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
 
 
-
+% $m->callback( %ARGS, CallbackName => "BeforeBasics" );
 <& PickBasics, queues => \%queues &>
 <& PickCFs, queues => \%queues &>
+% $m->callback( %ARGS, CallbackName => "AfterCFs" );
 
 <tr class="separator"><td colspan="3"><hr /></td></tr>
 <tr>
