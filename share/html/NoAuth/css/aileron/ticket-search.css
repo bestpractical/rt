@@ -49,6 +49,17 @@
     position: relative;
 }
 
+#pick-criteria tr.separator td {
+    position: relative;
+}
+#pick-criteria tr.separator td em {
+    position: absolute;
+    right: 0;
+
+    font-weight: normal;
+    font-variant: italic;
+}
+
 #pick-criteria select {
     width: 8em;
 }
