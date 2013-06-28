@@ -387,6 +387,7 @@ if ($chart_class eq "GD::Graph::bars") {
                 $chart_options{'hide_overlapping_values'} = 1;
             }
         }
+        $chart_options{'hide_overlapping_values'} = 1;
     }
 
     %chart_options = (
