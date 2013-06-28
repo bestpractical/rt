@@ -129,3 +129,9 @@ UPGRADING FROM RT 4.0.0 and greater
   and granting Everyone the OwnTicket right is a common cause of
   performance problems.  Unprivileged Owners (if they exist) may still
   be set using the Autocompleter.
+
+* On Oracle, sessions are now stored in the database by default instead of
+  on-disk.  If you wish to preserve the original behaviour, ensure the
+  following is in your RT_SiteConfig.pm:
+
+    Set($WebSessionClass, "Apache::Session::File");
