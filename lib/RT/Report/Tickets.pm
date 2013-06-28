@@ -699,13 +699,13 @@ sub CalculatePostFunction {
 
     my $base_query = $self->Query;
     foreach my $item ( @{ $self->{'items'} } ) {
-        $item->{'values'}{$column} = $code->(
+        $item->{'values'}{ lc $column } = $code->(
             $self,
             Query => join(
                 ' AND ', map "($_)", grep defined && length, $base_query, $item->Query,
             ),
         );
-        $item->{'fetched'}{$column} = 1;
+        $item->{'fetched'}{ lc $column } = 1;
     }
 }
 
@@ -717,15 +717,15 @@ sub MapSubValues {
     my $map = $info->{'MAP'};
 
     foreach my $item ( @{ $self->{'items'} } ) {
-        my $dst = $item->{'values'}{ $to } = { };
+        my $dst = $item->{'values'}{ lc $to } = { };
         while (my ($k, $v) = each %{ $map } ) {
-            $dst->{ $k } = delete $item->{'values'}{ $v->{'NAME'} };
+            $dst->{ $k } = delete $item->{'values'}{ lc $v->{'NAME'} };
             utf8::decode( $dst->{ $k } )
                 if defined $dst->{ $k }
                and not utf8::is_utf8( $dst->{ $k } );
-            delete $item->{'fetched'}{ $v->{'NAME'} };
+            delete $item->{'fetched'}{ lc $v->{'NAME'} };
         }
-        $item->{'fetched'}{ $to } = 1;
+        $item->{'fetched'}{ lc $to } = 1;
     }
 }
 
