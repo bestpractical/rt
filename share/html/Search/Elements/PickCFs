@@ -49,14 +49,6 @@
 <& ConditionRow, Condition => $_ &>
 % }
 <%INIT>
-my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
-foreach my $id (keys %queues) {
-    # Gotta load up the $queue object, since queues get stored by name now.
-    my $queue = RT::Queue->new($session{'CurrentUser'});
-    $queue->Load($id);
-    $CustomFields->LimitToQueue($queue->Id) if $queue->Id;
-}
-$CustomFields->LimitToGlobal;
 $m->callback(
     CallbackName => 'MassageCustomFields',
     CustomFields => $CustomFields,
@@ -66,7 +58,7 @@ $m->callback(
 my @lines;
 while ( my $CustomField = $CustomFields->Next ) {
     my %line;
-    $line{'Name'} = "'CF.{" . $CustomField->Name . "}'";
+    $line{'Name'} = "'$TicketSQLField.{" . $CustomField->Name . "}'";
     $line{'Field'} = $CustomField->Name;
 
     # Op
@@ -120,4 +112,6 @@ $m->callback( Conditions => \@lines, Queues => \%queues );
 
 <%ARGS>
 %queues => ()
+$CustomFields
+$TicketSQLField => 'CF'
 </%ARGS>
