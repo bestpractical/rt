@@ -45,29 +45,18 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => loc('Add Criteria')&>
-
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-
-
-% $m->callback( %ARGS, CallbackName => "BeforeBasics" );
-<& PickBasics, queues => \%queues &>
-<& PickTicketCFs, queues => \%queues &>
-% $m->callback( %ARGS, CallbackName => "AfterCFs" );
-
-<tr class="separator"><td colspan="3"><hr /></td></tr>
-<tr>
-<td class="label"><&|/l&>Aggregator</&></td>
-<td class="operator" colspan="2"><& SelectAndOr, Name => "AndOr" &></td>
-
-</tr>
-
-</table>
-
-</&>
-
 <%ARGS>
-$addquery => 0
-$query => undef
 %queues => ()
 </%ARGS>
+<%init>
+my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
+foreach my $id (keys %queues) {
+    # Gotta load up the $queue object, since queues get stored by name now.
+    my $queue = RT::Queue->new($session{'CurrentUser'});
+    $queue->Load($id);
+    $CustomFields->LimitToQueue($queue->Id) if $queue->Id;
+}
+$CustomFields->LimitToGlobal;
+$CustomFields->OrderBy( FIELD => 'Name', ORDER => 'ASC' );
+</%init>
+<& PickCFs, %ARGS, TicketSQLField => 'CF', CustomFields => $CustomFields &>
