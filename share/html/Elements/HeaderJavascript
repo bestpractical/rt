@@ -61,7 +61,7 @@ $onload => undef
 <script type="text/javascript"><!--
 jQuery( loadTitleBoxStates );
 % if ( $focus ) {
-    jQuery(function () { focusElementById(<% $focus |n,j%>) });
+    jQuery(function () { jQuery(<% $focus |n,j%>).focus() });
 % }
 % if ( $onload ) {
     jQuery( <% $onload |n %> );
