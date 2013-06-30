@@ -41,7 +41,9 @@ Install GD libraries
 
 GD is an open source graphics library and it is available as a package
 for most Linux systems. The package might be called C<gd>, C<gd2>, C<libgd2>,
-or something similar.
+or something similar. On some systems you will also need additional package
+required to compile code using the library. The package might be called
+C<gd-devel>, C<gd2-dev>, or something similar.
 
 =item 4
 
