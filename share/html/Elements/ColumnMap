@@ -203,6 +203,8 @@ $COLUMN_MAP = {
 
 $COLUMN_MAP->{'CF'} = $COLUMN_MAP->{'CustomField'};
 
+my $ROLE_MAP = {};
+
 </%ONCE>
 <%INIT>
 $m->callback( COLUMN_MAP => $COLUMN_MAP, CallbackName => 'Once', CallbackOnce => 1 );
@@ -217,18 +219,19 @@ if (RT::Interface::Web->ComponentPathIsSafe($Class) and $m->comp_exists("/Elemen
 # Check for roles, if not handled already
 $Class =~ s/_/:/g;
 if ($Class->DOES("RT::Record::Role::Roles")) {
-    my $ROLE_MAP = {};
-    for my $role ($Class->Roles) {
-        my $attrs = $Class->Role($role);
-        $ROLE_MAP->{$role} = {
-            title => $role,
-            attribute => $attrs->{Column} || "$role.EmailAddress",
-            value => sub { return \($m->scomp("/Elements/ShowPrincipal", Object => $_[0]->RoleGroup($role) ) ) },
-        };
-        $ROLE_MAP->{$role . "s"} = $ROLE_MAP->{$role}
-            unless $attrs->{Single};
+    unless ($ROLE_MAP->{$Class}) {
+        for my $role ($Class->Roles) {
+            my $attrs = $Class->Role($role);
+            $ROLE_MAP->{$Class}{$role} = {
+                title => $role,
+                attribute => $attrs->{Column} || "$role.EmailAddress",
+                value => sub { return \($m->scomp("/Elements/ShowPrincipal", Object => $_[0]->RoleGroup($role) ) ) },
+            };
+            $ROLE_MAP->{$Class}{$role . "s"} = $ROLE_MAP->{$Class}{$role}
+                unless $attrs->{Single};
+        }
     }
-    my $role_entry = GetColumnMapEntry( Map => $ROLE_MAP, Name => $Name, Attribute => $Attr );
+    my $role_entry = GetColumnMapEntry( Map => $ROLE_MAP->{$Class}, Name => $Name, Attribute => $Attr );
     return $role_entry if defined $role_entry;
 }
 
