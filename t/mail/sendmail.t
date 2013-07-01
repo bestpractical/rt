@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use File::Spec ();
 
-use RT::Test tests => 174;
+use RT::Test tests => undef;
 
 use RT::EmailParser;
 use RT::Tickets;
@@ -61,7 +61,7 @@ like (first_txn($tick)->Content , qr/The original message was received/, "It's t
 
 
 # make sure it fires scrips.
-is ($#scrips_fired, 1, "Fired 2 scrips on ticket creation");
+is (scalar @scrips_fired, 4, "Fired 4 scrips on ticket creation");
 
 undef @scrips_fired;
 
@@ -89,7 +89,7 @@ ok ($tick->Id, "found ticket ".$tick->Id);
 is ($tick->Subject , 'I18NTest', "failed to create the new ticket from an unprivileged account");
 
 # make sure it fires scrips.
-is ($#scrips_fired, 1, "Fired 2 scrips on ticket creation");
+is (scalar @scrips_fired, 4, "Fired 4 scrips on ticket creation");
 # make sure it sends an autoreply
 # make sure it sends a notification to adminccs
 
@@ -124,7 +124,7 @@ like (first_txn($tick)->Content , qr/H\x{e5}vard/, "It's signed by havard. yay")
 
 
 # make sure it fires scrips.
-is ($#scrips_fired, 1, "Fired 2 scrips on ticket creation");
+is (scalar @scrips_fired, 4, "Fired 4 scrips on ticket creation");
 # make sure it sends an autoreply
 
 
@@ -166,7 +166,7 @@ like (first_txn($tick)->Content , qr/H\x{e5}vard/, "It's signed by havard. yay")
 
 
 # make sure it fires scrips.
-is ($#scrips_fired, 1, "Fired 2 scrips on ticket creation");
+is (scalar @scrips_fired, 4, "Fired 4 scrips on ticket creation");
 # make sure it sends an autoreply
 
 
@@ -556,3 +556,5 @@ diag q{regression test for #5248 from rt3.fsck.com};
 
 # Don't taint the environment
 $everyone->PrincipalObj->RevokeRight(Right =>'SuperUser');
+
+done_testing;

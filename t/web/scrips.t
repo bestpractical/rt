@@ -60,8 +60,8 @@ sub prepare_code_with_value {
         $m->form_name('CreateScrip');
         $m->set_fields(
             'ScripCondition'    => $condition,
-            'ScripAction'       => 15, # User Defined
-            'Template'          => 1,  # Blank
+            'ScripAction'       => 'User Defined',
+            'Template'          => 'Blank',
             'CustomPrepareCode' => $prepare_code,
         );
         $m->click('Create');

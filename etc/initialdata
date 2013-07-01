@@ -58,7 +58,10 @@
       Description => 'Sends mail to the administrative Ccs',              # loc
       ExecModule  => 'Notify',
       Argument    => 'AdminCc' },
-
+    { Name        => 'Notify Owner and AdminCcs',                         # loc
+      Description => 'Sends mail to the Owner and administrative Ccs',    # loc
+      ExecModule  => 'Notify',
+      Argument    => 'Owner,AdminCc' },
     { Name        => 'Notify Requestors and Ccs as Comment',              # loc
       Description => 'Send mail to requestors and Ccs as a comment',      # loc
       ExecModule  => 'NotifyAsComment',
@@ -313,6 +316,16 @@ Content-Type: text/html
 <br/>
 {$Transaction->Content( Type => "text/html")}
 '
+    },
+    # Shadow the global templates of the same name to suppress duplicate
+    # notifications until rules is ripped out.
+    { Queue     => "___Approvals",
+      Name      => "Transaction in HTML",
+      Content   => "",
+    },
+    { Queue     => "___Approvals",
+      Name      => "Transaction",
+      Content   => "",
     },
     {
 
@@ -710,9 +723,9 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
        ScripCondition => 'On Comment',
        ScripAction    => 'Notify Other Recipients As Comment',
        Template       => 'Correspondence in HTML' },
-    {  Description    => 'On Correspond Notify AdminCcs',
+    {  Description    => 'On Correspond Notify Owner and AdminCcs',
        ScripCondition => 'On Correspond',
-       ScripAction    => 'Notify AdminCcs',
+       ScripAction    => 'Notify Owner and AdminCcs',
        Template       => 'Admin Correspondence in HTML' },
     {  Description    => 'On Correspond Notify Other Recipients',
        ScripCondition => 'On Correspond',
@@ -730,10 +743,18 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
        ScripCondition => 'On Create',
        ScripAction    => 'AutoReply To Requestors',
        Template       => 'AutoReply in HTML' },
-    {  Description    => 'On Create Notify AdminCcs',
+    {  Description    => 'On Create Notify Owner and AdminCcs',
        ScripCondition => 'On Create',
-       ScripAction    => 'Notify AdminCcs',
+       ScripAction    => 'Notify Owner and AdminCcs',
        Template       => 'Transaction in HTML' },
+    {  Description    => 'On Create Notify Ccs',
+       ScripCondition => 'On Create',
+       ScripAction    => 'Notify Ccs',
+       Template       => 'Correspondence in HTML' },
+    {  Description    => 'On Create Notify Other Recipients',
+       ScripCondition => 'On Create',
+       ScripAction    => 'Notify Other Recipients',
+       Template       => 'Correspondence in HTML' },
     {  Description    => 'On Owner Change Notify Owner',
        ScripCondition => 'On Owner Change',
        ScripAction    => 'Notify Owner',
