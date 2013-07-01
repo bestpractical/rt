@@ -96,17 +96,6 @@ sub LimitToObjectId {
     $self->Limit( FIELD => 'ObjectId', VALUE => $id );
 }
 
-=head2 NewItem
-
-Returns an empty new collection's item
-
-=cut
-
-sub NewItem {
-    my $self = shift;
-    return $self->RecordClass->new( $self->CurrentUser );
-}
-
 =head1 METHODS FOR TARGETS
 
 Rather than implementing a base class for targets (L<RT::Scrip>,

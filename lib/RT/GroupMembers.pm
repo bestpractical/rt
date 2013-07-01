@@ -149,18 +149,6 @@ sub LimitToMembersOfGroup {
 
 }
 
-
-
-=head2 NewItem
-
-Returns an empty new RT::GroupMember item
-
-=cut
-
-sub NewItem {
-    my $self = shift;
-    return(RT::GroupMember->new($self->CurrentUser));
-}
 RT::Base->_ImportOverlays();
 
 1;

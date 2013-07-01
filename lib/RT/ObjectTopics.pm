@@ -98,18 +98,6 @@ sub LimitToObject {
 
 # }}}
 
-=head2 NewItem
-
-Returns an empty new RT::ObjectTopic item
-
-=cut
-
-sub NewItem {
-    my $self = shift;
-    return(RT::ObjectTopic->new($self->CurrentUser));
-}
-
-
 RT::Base->_ImportOverlays();
 
 1;

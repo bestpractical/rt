@@ -94,18 +94,6 @@ sub Next {
 
 sub _SingularClass { "RT::Class" }
 
-=head2 NewItem
-
-Returns an empty new RT::Class item
-
-=cut
-
-sub NewItem {
-    my $self = shift;
-    return(RT::Class->new($self->CurrentUser));
-}
-
-
 RT::Base->_ImportOverlays();
 
 1;

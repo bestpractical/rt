@@ -175,16 +175,6 @@ sub LimitToGroupsWithMember {
 # }}}
 
 
-=head2 NewItem
-
-Returns an empty new RT::CachedGroupMember item
-
-=cut
-
-sub NewItem {
-    my $self = shift;
-    return(RT::CachedGroupMember->new($self->CurrentUser));
-}
 RT::Base->_ImportOverlays();
 
 1;

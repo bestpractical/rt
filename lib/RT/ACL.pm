@@ -218,17 +218,6 @@ sub Next {
 
 }
 
-=head2 NewItem
-
-Returns an empty new RT::ACE item
-
-=cut
-
-sub NewItem {
-    my $self = shift;
-    return(RT::ACE->new($self->CurrentUser));
-}
-
 # The singular of ACL is ACE.
 sub _SingularClass { "RT::ACE" }
 

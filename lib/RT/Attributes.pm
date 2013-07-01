@@ -197,18 +197,6 @@ sub LimitToObject {
 
 }
 
-
-
-=head2 NewItem
-
-Returns an empty new RT::Attribute item
-
-=cut
-
-sub NewItem {
-    my $self = shift;
-    return(RT::Attribute->new($self->CurrentUser));
-}
 RT::Base->_ImportOverlays();
 
 1;

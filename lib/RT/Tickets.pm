@@ -2975,17 +2975,6 @@ sub _check_bundling_possibility {
     return undef;
 }
 
-
-=head2 NewItem
-
-Returns an empty new RT::Ticket item
-
-=cut
-
-sub NewItem {
-    my $self = shift;
-    return(RT::Ticket->new($self->CurrentUser));
-}
 RT::Base->_ImportOverlays();
 
 1;

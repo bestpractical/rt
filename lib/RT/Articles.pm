@@ -908,22 +908,6 @@ sub Search {
     return 1;
 }
 
-
-=head2 NewItem
-
-Returns an empty new RT::Article item
-
-=cut
-
-sub NewItem {
-    my $self = shift;
-    return(RT::Article->new($self->CurrentUser));
-}
-
-
-
 RT::Base->_ImportOverlays();
-
-1;
 
 1;

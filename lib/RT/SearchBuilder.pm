@@ -922,6 +922,17 @@ sub ColumnMapClassName {
     return $Class;
 }
 
+=head2 NewItem
+
+Returns a new item based on L</RecordClass> using the current user.
+
+=cut
+
+sub NewItem {
+    my $self = shift;
+    return $self->RecordClass->new($self->CurrentUser);
+}
+
 RT::Base->_ImportOverlays();
 
 1;
