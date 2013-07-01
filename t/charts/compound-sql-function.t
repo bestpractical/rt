@@ -55,10 +55,10 @@ use_ok 'RT::Report::Tickets';
                         {
                           'cells' => [
                                { 'colspan' => 1, 'value' => 'Total', 'type' => 'label' },
-                               { 'value' => '10 min', 'type' => 'value' },
-                               { 'value' => '9 months', 'type' => 'value' },
-                               { 'value' => '3 years', 'type' => 'value' },
-                               { 'value' => '4 years', 'type' => 'value' }
+                               { 'value' => '10m', 'type' => 'value' },
+                               { 'value' => '8M 2W 3d', 'type' => 'value' },
+                               { 'value' => '2Y 8M 2W', 'type' => 'value' },
+                               { 'value' => '3Y 6M 3W', 'type' => 'value' }
                              ],
                           'even' => 1
                         }
@@ -67,26 +67,25 @@ use_ok 'RT::Report::Tickets';
                         {
                           'cells' => [
                                { 'value' => 'One', 'type' => 'label' },
-                               { 'query' => '(Queue = 3)', 'value' => '3 min', 'type' => 'value' },
-                               { 'query' => '(Queue = 3)', 'value' => '2 months', 'type' => 'value' },
-                               { 'query' => '(Queue = 3)', 'value' => '9 months', 'type' => 'value' },
-                               { 'query' => '(Queue = 3)', 'value' => '12 months', 'type' => 'value' }
+                               { 'query' => '(Queue = 3)', 'value' => '3m', 'type' => 'value' },
+                               { 'query' => '(Queue = 3)', 'value' => '2M 1W 5d', 'type' => 'value' },
+                               { 'query' => '(Queue = 3)', 'value' => '8M 3W 6d', 'type' => 'value' },
+                               { 'query' => '(Queue = 3)', 'value' => '11M 4W 8h', 'type' => 'value' }
                              ],
                           'even' => 1
                         },
                         {
                           'cells' => [
                                { 'value' => 'Two', 'type' => 'label' },
-                               { 'query' => '(Queue = 4)', 'value' => '7 min', 'type' => 'value' },
-                               { 'query' => '(Queue = 4)', 'value' => '6 months', 'type' => 'value' },
-                               { 'query' => '(Queue = 4)', 'value' => '2 years', 'type' => 'value' },
-                               { 'query' => '(Queue = 4)', 'value' => '3 years', 'type' => 'value' }
+                               { 'query' => '(Queue = 4)', 'value' => '7m', 'type' => 'value' },
+                               { 'query' => '(Queue = 4)', 'value' => '6M 4d 20h', 'type' => 'value' },
+                               { 'query' => '(Queue = 4)', 'value' => '1Y 11M 3W', 'type' => 'value' },
+                               { 'query' => '(Queue = 4)', 'value' => '2Y 6M 3W', 'type' => 'value' }
                              ],
                           'even' => 0
                         }
                       ]
          };
-
 
     my %table = $report->FormatTable( %columns );
     is_deeply( \%table, $expected, "basic table" );
