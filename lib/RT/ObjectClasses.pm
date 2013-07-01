@@ -81,6 +81,8 @@ sub NewItem {
     return(RT::ObjectClass->new($self->CurrentUser));
 }
 
+sub _SingularClass { "RT::ObjectClass" }
+
 
 RT::Base->_ImportOverlays();
 
