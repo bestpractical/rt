@@ -129,7 +129,7 @@ sub resolve_local_link {
         : '';
 
     my $local;
-    if ($name =~ /^RT(::|$)/) {
+    if ($name =~ /^RT(::(?!Extension::|Authen::)|$)/) {
         $local = join "/",
                   map { $self->encode_entities($_) }
                 split /::/, $name;
