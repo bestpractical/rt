@@ -308,18 +308,18 @@ $COLUMN_MAP = {
         },
     },
 };
-
+</%ONCE>
+<%init>
 # if no GPG support, then KeyOwnerName and KeyRequestors fall back to the regular
 # versions
 if (RT->Config->Get('GnuPG')->{'Enable'}) {
     require RT::Crypt::GnuPG;
 }
 else {
-    $COLUMN_MAP->{KeyOwnerName} = $COLUMN_MAP->{OwnerName};
-    $COLUMN_MAP->{KeyRequestors} = $COLUMN_MAP->{Requestors};
+    $COLUMN_MAP->{KeyOwnerName}  = $COLUMN_MAP->{OwnerName};
+    $COLUMN_MAP->{KeyRequestors} = $GenericMap->{Requestors};
 }
-</%ONCE>
-<%init>
+
 $m->callback( GenericMap => $GenericMap, COLUMN_MAP => $COLUMN_MAP, CallbackName => 'Once', CallbackOnce => 1 );
 return GetColumnMapEntry( Map => $COLUMN_MAP, Name => $Name, Attribute => $Attr );
 </%init>
