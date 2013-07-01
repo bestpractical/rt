@@ -1,0 +1,67 @@
+=head1 Reminders
+
+Reminders can be attached to a ticket to notify you take some action
+on the ticket. Although there are fields like "Due" on tickets, some
+tickets have dependencies or sub-tasks that need to be completed before you
+can do the ticket. For a "Deploy New Certificate" ticket, for example, you may
+need to remind yourself to order the new cert first.
+
+Reminders are sort of mini-tickets and in fact they are implemented as
+tickets themselves.
+
+Each Reminder has:
+
+=over
+
+=item * Subject
+
+=item * Owner
+
+=item * Due date
+
+=item * Status (new, open, resolved, ...)
+
+=back
+
+=head1 Creating a Reminder
+
+Reminders are attached to tickets, so you create them in the Reminders section of
+the ticket display. Once you give it an Owner and a Due date, the Reminder will
+appear on the Owner's "At-a-glance" page by default.
+
+If you don't see reminders, it may be turned off. Display of reminders can be
+disabled with the C<$EnableReminders> flag in C<RT_SiteConfig.pm>. By default,
+reminders are turned on.
+
+=head1 Email Reminders
+
+While seeing reminders in the web display is handy, you may also want to send out
+email based on reminders that are due or are soon to be due. You can use the
+C<rt-crontool> utility to schedule a job to send these emails for you.
+
+To schedule the reminders, add a line like the following to your RT crontab:
+
+    0 6 * * * root /opt/rt4/bin/rt-crontool \
+                   --search RT::Search::FromSQL \
+                   --search-arg 'Type = "reminder" and (Status = "open" or Status = "new")' \
+                   --condition RT::Condition::BeforeDue \
+                   --condition-arg 2d \
+                   --action RT::Action::SendEmail \
+                   --action-arg Owner,AlwaysNotifyActor \
+                   --transaction first \
+                   --template 'Reminder'
+
+If you have modified the status values for reminders such that you have more
+active statuses than "open" and "new" you should add them as part of your
+"FromSQL" query. You typically won't want to send out email on "resolved"
+reminders, but you could add that to the query as well.
+
+The argument to C<RT::Condition::BeforeDue> is an amount of time in the form
+"1d2h3m4s" for 1 day and 2 hours and 3 minutes and 4 seconds. As shown in the
+example, single values can also be passed. The run frequency in your crontab
+should be consistent with the time period you set to avoid missing reminders.
+
+The template value refers to a Template in your RT system. You can use the
+default Reminder template or create your own in Admin > Global > Templates >
+Create. You can look at the default template for examples of the values
+you can use to populate the email.
