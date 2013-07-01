@@ -208,33 +208,38 @@ my $ROLE_MAP = {};
 </%ONCE>
 <%INIT>
 $m->callback( COLUMN_MAP => $COLUMN_MAP, CallbackName => 'Once', CallbackOnce => 1 );
-$m->callback( COLUMN_MAP => $COLUMN_MAP );
 
-# first deal with class specific things
-if (RT::Interface::Web->ComponentPathIsSafe($Class) and $m->comp_exists("/Elements/$Class/ColumnMap")) {
-    my $class_map = $m->comp("/Elements/$Class/ColumnMap", Attr => $Attr, Name => $Name, GenericMap => $COLUMN_MAP );
-    return $class_map if defined $class_map;
-}
+my $generic_with_roles;
 
-# Check for roles, if not handled already
-$Class =~ s/_/:/g;
-if ($Class->DOES("RT::Record::Role::Roles")) {
-    unless ($ROLE_MAP->{$Class}) {
-        for my $role ($Class->Roles) {
-            my $attrs = $Class->Role($role);
-            $ROLE_MAP->{$Class}{$role} = {
+# Add in roles
+my $RecordClass = $Class;
+$RecordClass =~ s/_/:/g;
+if ($RecordClass->DOES("RT::Record::Role::Roles")) {
+    unless ($ROLE_MAP->{$RecordClass}) {
+        for my $role ($RecordClass->Roles) {
+            my $attrs = $RecordClass->Role($role);
+            $ROLE_MAP->{$RecordClass}{$role} = {
                 title => $role,
                 attribute => $attrs->{Column} || "$role.EmailAddress",
                 value => sub { return \($m->scomp("/Elements/ShowPrincipal", Object => $_[0]->RoleGroup($role) ) ) },
             };
-            $ROLE_MAP->{$Class}{$role . "s"} = $ROLE_MAP->{$Class}{$role}
+            $ROLE_MAP->{$RecordClass}{$role . "s"} = $ROLE_MAP->{$RecordClass}{$role}
                 unless $attrs->{Single};
         }
     }
-    my $role_entry = GetColumnMapEntry( Map => $ROLE_MAP->{$Class}, Name => $Name, Attribute => $Attr );
-    return $role_entry if defined $role_entry;
+    $generic_with_roles = { %{$COLUMN_MAP}, %{$ROLE_MAP->{$RecordClass}} };
+} else {
+    $generic_with_roles = { %{$COLUMN_MAP} };
 }
 
-return GetColumnMapEntry( Map => $COLUMN_MAP, Name => $Name, Attribute => $Attr );
+$m->callback( COLUMN_MAP => $generic_with_roles );
+
+# first deal with class specific things
+if (RT::Interface::Web->ComponentPathIsSafe($Class) and $m->comp_exists("/Elements/$Class/ColumnMap")) {
+    my $class_map = $m->comp("/Elements/$Class/ColumnMap", Attr => $Attr, Name => $Name, GenericMap => $generic_with_roles );
+    return $class_map if defined $class_map;
+}
+
+return GetColumnMapEntry( Map => $generic_with_roles, Name => $Name, Attribute => $Attr );
 
 </%INIT>
