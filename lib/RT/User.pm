@@ -1267,7 +1267,7 @@ sub CurrentUserCanSee {
     if ($what eq "Transaction" and $self->CurrentUserHasRight( 'ShowUserHistory' )) {
         my $type = $txn->__Value('Type');
         my $field = $txn->__Value('Field');
-        return 1 if $type eq "Set" and $self->_Accessible( $field, 'public' );
+        return 1 if $type eq "Set" and $self->CurrentUserCanSee($field, $txn);
 
         # RT::Transaction->CurrentUserCanSee deals with ensuring we meet
         # the ACLs on CFs, so allow them here
