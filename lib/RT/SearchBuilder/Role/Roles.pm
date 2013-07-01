@@ -83,7 +83,7 @@ limiting on L<RT::Queue> roles while searching for L<RT::Ticket>s.
 
 The default implementation is:
 
-    blessed($self->NewItem)
+    $self->RecordClass
 
 which is the class that this collection object searches and instatiates objects
 for.  If you're doing something hinky, you may need to override this method.
@@ -92,7 +92,7 @@ for.  If you're doing something hinky, you may need to override this method.
 
 sub _RoleGroupClass {
     my $self = shift;
-    return blessed($self->NewItem);
+    return $self->RecordClass;
 }
 
 sub _RoleGroupsJoin {

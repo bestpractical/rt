@@ -122,6 +122,7 @@ sub JoinTransactions {
         FIELD2 => 'ObjectId',
     );
 
+    # NewItem is necessary here because of RT::Report::Tickets and RT::Report::Tickets::Entry
     my $item = $self->NewItem;
     my $object_type = $item->can('ObjectType') ? $item->ObjectType : ref $item;
 
@@ -340,7 +341,7 @@ sub _CustomFieldJoinByName {
         LEFTJOIN        => $CFs,
         ENTRYAGGREGATOR => 'AND',
         FIELD           => 'LookupType',
-        VALUE           => $self->NewItem->CustomFieldLookupType,
+        VALUE           => $self->RecordClass->CustomFieldLookupType,
     );
     $self->Limit(
         LEFTJOIN        => $CFs,
@@ -858,10 +859,10 @@ sub ItemsOrderBy {
     my $self = shift;
     my $items = shift;
   
-    if ($self->NewItem()->_Accessible('SortOrder','read')) {
+    if ($self->RecordClass->_Accessible('SortOrder','read')) {
         $items = [ sort { $a->SortOrder <=> $b->SortOrder } @{$items} ];
     }
-    elsif ($self->NewItem()->_Accessible('Name','read')) {
+    elsif ($self->RecordClass->_Accessible('Name','read')) {
         $items = [ sort { lc($a->Name) cmp lc($b->Name) } @{$items} ];
     }
 
