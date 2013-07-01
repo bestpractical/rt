@@ -1,0 +1,16 @@
+use strict;
+use warnings;
+
+our @Templates = (
+    {  Queue       => '0',
+       Name        => 'Reminder',                           # loc
+       Description => 'Default reminder template',          # loc
+       Content     =>
+'Subject:{$Ticket->Subject} is due {$Ticket->DueObj->AsString}
+
+This reminder is for ticket #{$Target = $Ticket->RefersTo->First->TargetObj;$Target->Id}.
+
+{RT->Config->Get(\'WebURL\')}Ticket/Display.html?id={$Target->Id}
+'
+    },
+);
