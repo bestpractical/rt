@@ -1217,26 +1217,9 @@ custom implementations.
 sub CurrentUserCanSee {
     my $self = shift;
 
-    # If it's a comment, we need to be extra special careful
-    my $type = $self->__Value('Type');
-    if ( $type eq 'Comment' ) {
-        unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
-            return 0;
-        }
-    }
-    elsif ( $type eq 'CommentEmailRecord' ) {
-        unless ( $self->CurrentUserHasRight('ShowTicketComments')
-            && $self->CurrentUserHasRight('ShowOutgoingEmail') ) {
-            return 0;
-        }
-    }
-    elsif ( $type eq 'EmailRecord' ) {
-        unless ( $self->CurrentUserHasRight('ShowOutgoingEmail') ) {
-            return 0;
-        }
-    }
     # Make sure the user can see the custom field before showing that it changed
-    elsif ( $type eq 'CustomField' and my $cf_id = $self->__Value('Field') ) {
+    my $type = $self->__Value('Type');
+    if ( $type eq 'CustomField' and my $cf_id = $self->__Value('Field') ) {
         my $cf = RT::CustomField->new( $self->CurrentUser );
         $cf->SetContextObject( $self->Object );
         $cf->Load( $cf_id );
@@ -1248,7 +1231,7 @@ sub CurrentUserCanSee {
     return 1 if $self->{ _object_is_readable };
 
     # Defer to the object in question
-    return $self->Object->CurrentUserCanSee("Transaction");
+    return $self->Object->CurrentUserCanSee("Transaction", $self);
 }
 
 

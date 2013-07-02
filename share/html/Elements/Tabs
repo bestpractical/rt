@@ -312,7 +312,7 @@ my $build_admin_menu = sub {
             }
         }
     }
-    if ( $request_path =~ m{^/Admin/Users} ) {
+    if ( $request_path =~ m{^(/Admin/Users|/User/(Summary|History)\.html)} and $admin->child("users") ) {
         if ( $DECODED_ARGS->{'id'} && $DECODED_ARGS->{'id'} =~ /^\d+$/ ) {
             my $id = $DECODED_ARGS->{'id'};
             my $obj = RT::User->new( $session{'CurrentUser'} );
@@ -899,15 +899,15 @@ my $build_main_nav = sub {
 
     }
 
-    if ( $request_path =~ m{^/User/Summary.html} ) {
-        my $admin = $session{'CurrentUser'}->HasRight(
-            Object => $RT::System, Right => 'AdminUsers'
-        );
-        my $config = $session{'CurrentUser'}->HasRight(
-            Object => $RT::System, Right => 'ShowConfigTab'
-        );
-        PageMenu()->child( edit => title => loc('Edit'), path => '/Admin/Users/Modify.html?id=' . $DECODED_ARGS->{'id'} )
-            if $admin && $config;
+    if ( $request_path =~ m{^/User/(Summary|History)\.html} ) {
+        if (PageMenu()->child('summary')) {
+            # Already set up from having AdminUser and ShowConfigTab;
+            # but rename "Basics" to "Edit" in this context
+            PageMenu()->child( 'basics' )->title( loc('Edit') );
+        } elsif ( $session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'ShowUserHistory' ) ) {
+            PageMenu()->child( display => title => loc('Summary'), path => '/User/Summary.html?id=' . $DECODED_ARGS->{'id'} );
+            PageMenu()->child( history => title => loc('History'), path => '/User/History.html?id=' . $DECODED_ARGS->{'id'} );
+        }
     }
 
     if ( $request_path =~ /^\/(?:index.html|$)/ ) {

@@ -2883,7 +2883,28 @@ Returns true if the current user can see the ticket, using ShowTicket
 
 sub CurrentUserCanSee {
     my $self = shift;
-    return $self->CurrentUserHasRight('ShowTicket');
+    my ($what, $txn) = @_;
+    return 0 unless $self->CurrentUserHasRight('ShowTicket');
+
+    return 1 if $what ne "Transaction";
+
+    # If it's a comment, we need to be extra special careful
+    my $type = $txn->__Value('Type');
+    if ( $type eq 'Comment' ) {
+        unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
+            return 0;
+        }
+    } elsif ( $type eq 'CommentEmailRecord' ) {
+        unless ( $self->CurrentUserHasRight('ShowTicketComments')
+            && $self->CurrentUserHasRight('ShowOutgoingEmail') ) {
+            return 0;
+        }
+    } elsif ( $type eq 'EmailRecord' ) {
+        unless ( $self->CurrentUserHasRight('ShowOutgoingEmail') ) {
+            return 0;
+        }
+    }
+    return 1;
 }
 
 =head2 Reminders
