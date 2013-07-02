@@ -9,3 +9,9 @@
 .chart-calculate fieldset legend {
     padding: 0 1em;
 }
+
+.chart-picture input[name=Width],
+.chart-picture input[name=Height] {
+    width: 3em;
+    text-align: right;
+}

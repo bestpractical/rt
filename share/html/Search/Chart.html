@@ -152,11 +152,20 @@ my %query;
 
 </&>
 
-<&| /Widgets/TitleBox, title => loc('Picture') &>
+<&| /Widgets/TitleBox, title => loc('Picture'), class => "chart-picture" &>
 <label><% loc('Style') %> <& Elements/SelectChartType, Default => $ChartStyle, Name => 'ChartStyle' &></label>
-<label><% loc("Width") %> <input type="text" name="Width" value="<% $Width || "" %>" size=4></label>
-<label><% loc("Height") %> <input type="text" name="Height" value="<% $Height || "" %>" size=4></label>
+<label><% loc("Width") %> <input type="text" name="Width" value="<% $Width || "" %>"> <% loc("px") %></label>
+<span class="height">
+  &#x00d7;
+  <label><% loc("Height") %> <input type="text" name="Height" value="<% $Height || "" %>"> <% loc("px") %></label>
+</span>
 </&>
+<script type="text/javascript">
+jQuery(".chart-picture [name=ChartStyle]").change(function(){
+    var t = jQuery(this);
+    t.closest("form").find("[name=Height]").closest(".height").toggle( t.val() !== "pie" );
+}).change();
+</script>
 
 <& /Elements/Submit, Label => loc('Update Chart'), Name => 'Update' &>
 </form>

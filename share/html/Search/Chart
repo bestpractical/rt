@@ -65,6 +65,7 @@ my $font = $font_config{ $session{CurrentUser}->UserObj->Lang || '' }
 s/\D//g for grep defined, $Width, $Height;
 $Width  ||= 600;
 $Height ||= ($ChartStyle eq 'pie' ? $Width : 400);
+$Height = $Width if $ChartStyle eq 'pie';
 
 my $plot_error = sub {
     my $text = shift;
