@@ -137,3 +137,9 @@ UPGRADING FROM RT 4.0.0 and greater
 * Notifications to AdminCcs on approvals are now handled via the New Pending
   Approval template in the hidden ___Approvals queue.  If you customized the
   Transaction template, you should port your changes to New Pending Approval.
+
+* On Oracle, sessions are now stored in the database by default instead of
+  on-disk.  If you wish to preserve the original behaviour, ensure the
+  following is in your RT_SiteConfig.pm:
+
+    Set($WebSessionClass, "Apache::Session::File");

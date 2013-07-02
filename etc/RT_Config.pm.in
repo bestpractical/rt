@@ -2030,10 +2030,10 @@ Set($AutoCreate, undef);
 
 =item C<$WebSessionClass>
 
-C<$WebSessionClass> is the class you wish to use for managing Sessions.
-On mysql and Pg it defaults to use your database, in other cases
-sessions are stored in files using L<Apache::Session::File>. Other
-installed Apache:Session::* modules can be used to store sessions.
+C<$WebSessionClass> is the class you wish to use for storing sessions.  On
+MySQL, Pg, and Oracle it defaults to using your database, in other cases
+sessions are stored in files using L<Apache::Session::File>. Other installed
+Apache:Session::* modules can be used to store sessions.
 
     Set($WebSessionClass, "Apache::Session::File");
 
