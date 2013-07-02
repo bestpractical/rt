@@ -338,7 +338,7 @@ IPC::Run 0.90
 
 $deps{'GD'} = [ text_to_hash( << '.') ];
 GD
-GD::Graph
+GD::Graph 1.47
 GD::Text
 .
 
