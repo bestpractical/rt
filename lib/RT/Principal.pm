@@ -583,17 +583,7 @@ sub _HasRoleRightQuery {
         ) . ")";
     }
 
-    my (@object_clauses);
-    foreach my $obj ( @{ $args{'EquivObjects'} } ) {
-        my $type = ref($obj) ? ref($obj) : $obj;
-
-        my $clause = $RT::Handle->__MakeClauseCaseInsensitive('Groups.Domain', '=', "'$type-Role'");
-
-        if ( my $id = eval { $obj->id } ) {
-            $clause .= " AND Groups.Instance = $id";
-        }
-        push @object_clauses, "($clause)";
-    }
+    my @object_clauses = RT::Users->_RoleClauses( Groups => @{ $args{'EquivObjects'} } );
     $query .= " AND (" . join( ' OR ', @object_clauses ) . ")";
     return $query;
 }
