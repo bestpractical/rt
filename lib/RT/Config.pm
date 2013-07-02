@@ -821,6 +821,9 @@ our %META = (
             $config->Set( CustomFieldGroupings => %$groups );
         },
     },
+    ChartColors => {
+        Type    => 'ARRAY',
+    },
 );
 my %OPTIONS = ();
 my @LOADED_CONFIGS = ();

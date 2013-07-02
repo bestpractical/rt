@@ -438,12 +438,7 @@ foreach my $opt ( grep /_font$/, keys %chart_options ) {
 }
 $chart->set(%chart_options) if keys %chart_options;
 
-# refine values' colors, with both Color::Scheme's help and my own tweak
-$chart->{dclrs} = [
-    '66cc66', 'ff6666', 'ffcc66', '663399',
-    '3333cc', '339933', '993333', '996633',
-    '33cc33', 'cc3333', 'cc9933', '6633cc',
-];
+$chart->{dclrs} = [ RT->Config->Get("ChartColors") ];
 
 {
     no warnings 'redefine';

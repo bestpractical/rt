@@ -1167,6 +1167,19 @@ At this time, this feature only applies to MySQL and PostgreSQL.
 
 Set($ChartsTimezonesInDB, 0);
 
+=item C<@ChartColors>
+
+An array of 6-digit hexadecimal RGB color values used for chart series.  By
+default there are 12 distinct colors.
+
+=cut
+
+Set(@ChartColors, qw(
+    66cc66 ff6666 ffcc66 663399
+    3333cc 339933 993333 996633
+    33cc33 cc3333 cc9933 6633cc
+));
+
 =back
 
 
