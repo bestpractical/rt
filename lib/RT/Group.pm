@@ -330,8 +330,9 @@ sub LoadSystemRoleGroup {
         Remove => "4.4",
     );
     $self->LoadByCols(
-        Domain => 'RT::System-Role',
-        Name => $type
+        Domain   => 'RT::System-Role',
+        Instance => RT::System->Id,
+        Name     => $type
     );
 }
 
