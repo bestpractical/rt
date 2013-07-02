@@ -137,9 +137,9 @@ sub resolve_local_link {
     elsif ($name =~ /^rt([-_]|$)/) {
         $local = $self->encode_entities($name);
     }
-    elsif ($name eq "RT_Config" or $name eq "RT_Config.pm") {
-        $name  = "RT_Config";
-        $local = "RT_Config";
+    elsif ($name =~ /^(\w+)_Config(\.pm)?$/) {
+        $name  = "$1_Config";
+        $local = "$1_Config";
     }
     # These matches handle links that look like filenames, such as those we
     # parse out of F<> tags.
