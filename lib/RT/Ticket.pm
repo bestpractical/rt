@@ -851,18 +851,23 @@ sub CcAddresses {
 
 
 
-=head2 Requestors
+=head2 Requestor
 
 Takes nothing.
 Returns this ticket's Requestors as an RT::Group object
 
 =cut
 
-sub Requestors {
+sub Requestor {
     my $self = shift;
     return RT::Group->new($self->CurrentUser)
         unless $self->CurrentUserHasRight('ShowTicket');
     return $self->RoleGroup( 'Requestor' );
+}
+
+sub Requestors {
+    my $self = shift;
+    return $self->Requestor;
 }
 
 

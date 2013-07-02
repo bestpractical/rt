@@ -46,15 +46,26 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 %# Released under the terms of version 2 of the GNU Public License
+<%args>
+$Object
+$PostUser => undef
+$Separator => ", "
+</%args>
 <%init>
-my $post_user = sub {
-    my $user = shift;
-    $m->comp("/Elements/ShowUserEmailFrequency", User => $user, Ticket => $Ticket);
-    $m->callback( User => $user, Ticket => $Ticket, %ARGS, CallbackName => 'AboutThisUser' );
-};
-$m->comp("/Elements/ShowPrincipal", Object => $Group, Separator => "<br />", PostUser => $post_user);
+if ($Object->isa("RT::Group")) {
+    # Link the users (non-recursively)
+    my @ret = map {$m->scomp("ShowPrincipal", Object => $_->[1], PostUser => $PostUser)}
+        sort {$a->[0] cmp $b->[0]}
+        map {+[($_->EmailAddress||''), $_]}
+        @{ $Object->UserMembersObj( Recursively => 0 )->ItemsArrayRef };
+
+    # But don't link the groups
+    push @ret, sort map {$m->interp->apply_escapes( loc("Group: [_1]", $_->Name), 'h' )}
+        @{ $Object->GroupMembersObj( Recursively => 0)->ItemsArrayRef };
+
+    $m->out( join($Separator, @ret) );
+} else {
+    $m->comp("/Elements/ShowUser", User => $Object);
+    $m->out( $PostUser->($Object) ) if $PostUser;
+}
 </%init>
-<%ARGS>
-$Group       => undef
-$Ticket      => undef
-</%ARGS>
