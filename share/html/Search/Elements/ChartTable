@@ -85,6 +85,9 @@ foreach my $section (qw(thead tbody tfoot)) {
                 my $value = int $cell->{ $dir };
                 $m->out(qq{ $dir="$value"});
             }
+            $m->out(' style="background-color: #'. $m->interp->apply_escapes($cell->{color}) .'"')
+                if $cell->{color};
+
             $m->out('>');
             if ( defined $cell->{'value'} ) {
                 if ( my $q = $cell->{'query'} ) {

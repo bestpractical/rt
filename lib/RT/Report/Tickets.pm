@@ -936,6 +936,12 @@ sub FormatTable {
         colspan => scalar @{ $columns{'Groups'} },
     };
 
+    my $pick_color = do {
+        my @colors = RT->Config->Get("ChartColors");
+        sub { $colors[ $_[0] % @colors - 1 ] }
+    };
+
+    my $function_count = 0;
     foreach my $column ( @{ $columns{'Functions'} } ) {
         $i = 0;
 
@@ -973,6 +979,7 @@ sub FormatTable {
                 type => 'head',
                 value => $label,
                 rowspan => scalar @head,
+                color => $pick_color->(++$function_count),
             };
             push @{ $footer[0]{'cells'} }, { type => 'value', value => undef };
             next;
@@ -987,10 +994,11 @@ sub FormatTable {
                 type => 'head',
                 value => $label,
                 rowspan => scalar @head,
+                color => $pick_color->(++$function_count),
             };
         } else {
             push @{ $head[0]{'cells'} }, { type => 'head', value => $label, colspan => scalar @subs };
-            push @{ $head[1]{'cells'} }, { type => 'head', value => $_ }
+            push @{ $head[1]{'cells'} }, { type => 'head', value => $_, color => $pick_color->(++$function_count) }
                 foreach @subs;
         }
 

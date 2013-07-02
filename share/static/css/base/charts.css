@@ -15,3 +15,7 @@
     width: 3em;
     text-align: right;
 }
+
+.chart-wrapper .collection-as-table th {
+    text-shadow: 0 0 3px #ddd;
+}

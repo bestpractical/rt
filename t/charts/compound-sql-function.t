@@ -34,6 +34,7 @@ use_ok 'RT::Report::Tickets';
         Function => ['ALL(Created-Resolved)'],
     );
 
+    my @colors = RT->Config->Get("ChartColors");
     my $expected = {
            'thead' => [
                         {
@@ -44,10 +45,10 @@ use_ok 'RT::Report::Tickets';
                         },
                         {
                           'cells' => [
-                               { 'value' => 'Minimum', 'type' => 'head' },
-                               { 'value' => 'Average', 'type' => 'head' },
-                               { 'value' => 'Maximum', 'type' => 'head' },
-                               { 'value' => 'Total', 'type' => 'head' }
+                               { 'value' => 'Minimum', 'type' => 'head', 'color' => $colors[0] },
+                               { 'value' => 'Average', 'type' => 'head', 'color' => $colors[1] },
+                               { 'value' => 'Maximum', 'type' => 'head', 'color' => $colors[2] },
+                               { 'value' => 'Total', 'type' => 'head', 'color' => $colors[3] }
                              ]
                         }
                       ],

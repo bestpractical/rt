@@ -27,11 +27,12 @@ use_ok 'RT::Report::Tickets';
         Function => ['COUNT'],
     );
 
+    my @colors = RT->Config->Get("ChartColors");
     my $expected = {
         'thead' => [ {
                 'cells' => [
                     { 'value' => 'Status', 'type' => 'head' },
-                    { 'rowspan' => 1, 'value' => 'Ticket count', 'type' => 'head' },
+                    { 'rowspan' => 1, 'value' => 'Ticket count', 'type' => 'head', 'color' => $colors[0] },
                 ],
         } ],
        'tfoot' => [ {
