@@ -84,19 +84,6 @@ sub _Init {
     return $self->SUPER::_Init(@_);
 }
 
-=head2 RecordClass
-
-Returns class name of records in this collection. This generic implementation
-just strips trailing 's'.
-
-=cut
-
-sub RecordClass {
-    my $class = ref($_[0]) || $_[0];
-    $class =~ s/s$// or return undef;
-    return $class;
-}
-
 =head2 LimitToObjectId
 
 Takes id of an object and limits collection.
@@ -107,17 +94,6 @@ sub LimitToObjectId {
     my $self = shift;
     my $id = shift || 0;
     $self->Limit( FIELD => 'ObjectId', VALUE => $id );
-}
-
-=head2 NewItem
-
-Returns an empty new collection's item
-
-=cut
-
-sub NewItem {
-    my $self = shift;
-    return $self->RecordClass->new( $self->CurrentUser );
 }
 
 =head1 METHODS FOR TARGETS

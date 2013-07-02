@@ -122,6 +122,7 @@ sub JoinTransactions {
         FIELD2 => 'ObjectId',
     );
 
+    # NewItem is necessary here because of RT::Report::Tickets and RT::Report::Tickets::Entry
     my $item = $self->NewItem;
     my $object_type = $item->can('ObjectType') ? $item->ObjectType : ref $item;
 
@@ -253,6 +254,17 @@ sub _SingularClass {
     return $class;
 }
 
+=head2 RecordClass
+
+Returns class name of records in this collection. This generic implementation
+just strips trailing 's'.
+
+=cut
+
+sub RecordClass {
+    $_[0]->_SingularClass
+}
+
 =head2 _CustomFieldJoin
 
 Factor out the Join of custom fields so we can use it for sorting too
@@ -329,7 +341,7 @@ sub _CustomFieldJoinByName {
         LEFTJOIN        => $CFs,
         ENTRYAGGREGATOR => 'AND',
         FIELD           => 'LookupType',
-        VALUE           => $self->NewItem->CustomFieldLookupType,
+        VALUE           => $self->RecordClass->CustomFieldLookupType,
     );
     $self->Limit(
         LEFTJOIN        => $CFs,
@@ -847,10 +859,10 @@ sub ItemsOrderBy {
     my $self = shift;
     my $items = shift;
   
-    if ($self->NewItem()->_Accessible('SortOrder','read')) {
+    if ($self->RecordClass->_Accessible('SortOrder','read')) {
         $items = [ sort { $a->SortOrder <=> $b->SortOrder } @{$items} ];
     }
-    elsif ($self->NewItem()->_Accessible('Name','read')) {
+    elsif ($self->RecordClass->_Accessible('Name','read')) {
         $items = [ sort { lc($a->Name) cmp lc($b->Name) } @{$items} ];
     }
 
@@ -908,6 +920,17 @@ sub ColumnMapClassName {
     my $Class = $self->_SingularClass;
        $Class =~ s/:/_/g;
     return $Class;
+}
+
+=head2 NewItem
+
+Returns a new item based on L</RecordClass> using the current user.
+
+=cut
+
+sub NewItem {
+    my $self = shift;
+    return $self->RecordClass->new($self->CurrentUser);
 }
 
 RT::Base->_ImportOverlays();

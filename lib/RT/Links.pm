@@ -139,17 +139,6 @@ sub LimitReferredToBy {
 
 # }}}
 
-=head2 NewItem
-
-Returns an empty new RT::Link item
-
-=cut
-
-sub NewItem {
-    my $self = shift;
-    return(RT::Link->new($self->CurrentUser));
-}
-
 sub AddRecord {
     my $self = shift;
     my $record = shift;

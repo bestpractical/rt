@@ -70,17 +70,7 @@ sub LimitToClass {
 
 }
 
-=head2 NewItem
-
-Returns an empty new RT::ObjectClass item
-
-=cut
-
-sub NewItem {
-    my $self = shift;
-    return(RT::ObjectClass->new($self->CurrentUser));
-}
-
+sub _SingularClass { "RT::ObjectClass" }
 
 RT::Base->_ImportOverlays();
 

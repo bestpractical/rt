@@ -20,7 +20,7 @@ ok( $queues->UnLimit(),'Unlimited the result set of the queues object');
 my $items = $queues->ItemsArrayRef();
 my @items = @{$items};
 
-ok($queues->NewItem->_Accessible('Name','read'));
+ok($queues->RecordClass->_Accessible('Name','read'));
 my @sorted = sort {lc($a->Name) cmp lc($b->Name)} @items;
 ok (@sorted, "We have an array of queues, sorted". join(',',map {$_->Name} @sorted));
 

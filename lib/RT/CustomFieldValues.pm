@@ -93,19 +93,6 @@ sub LimitToCustomField {
     );
 }
 
-
-
-
-=head2 NewItem
-
-Returns an empty new RT::CustomFieldValue item
-
-=cut
-
-sub NewItem {
-    my $self = shift;
-    return(RT::CustomFieldValue->new($self->CurrentUser));
-}
 RT::Base->_ImportOverlays();
 
 1;

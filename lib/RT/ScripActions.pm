@@ -97,16 +97,6 @@ sub LimitToType  {
 
 }
 
-=head2 NewItem
-
-Returns an empty new RT::ScripAction item
-
-=cut
-
-sub NewItem {
-    my $self = shift;
-    return(RT::ScripAction->new($self->CurrentUser));
-}
 RT::Base->_ImportOverlays();
 
 1;

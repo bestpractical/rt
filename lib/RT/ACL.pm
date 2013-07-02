@@ -218,16 +218,9 @@ sub Next {
 
 }
 
-=head2 NewItem
+# The singular of ACL is ACE.
+sub _SingularClass { "RT::ACE" }
 
-Returns an empty new RT::ACE item
-
-=cut
-
-sub NewItem {
-    my $self = shift;
-    return(RT::ACE->new($self->CurrentUser));
-}
 RT::Base->_ImportOverlays();
 
 1;

@@ -214,6 +214,10 @@ sub LimitToCustomField {
     return $self->SUPER::LimitToCustomField( @_ );
 }
 
+sub _SingularClass {
+    "RT::CustomFieldValue"
+}
+
 RT::Base->_ImportOverlays();
 
 1;

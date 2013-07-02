@@ -656,17 +656,6 @@ sub SimpleSearch {
     return $self;
 }
 
-
-=head2 NewItem
-
-Returns an empty new RT::User item
-
-=cut
-
-sub NewItem {
-    my $self = shift;
-    return(RT::User->new($self->CurrentUser));
-}
 RT::Base->_ImportOverlays();
 
 1;

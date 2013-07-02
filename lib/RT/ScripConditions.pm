@@ -93,17 +93,6 @@ sub LimitToType  {
 
 }
 
-
-=head2 NewItem
-
-Returns an empty new RT::ScripCondition item
-
-=cut
-
-sub NewItem {
-    my $self = shift;
-    return(RT::ScripCondition->new($self->CurrentUser));
-}
 RT::Base->_ImportOverlays();
 
 1;

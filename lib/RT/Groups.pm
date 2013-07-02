@@ -491,18 +491,6 @@ sub _DoSearch {
 
 }
 
-
-
-=head2 NewItem
-
-Returns an empty new RT::Group item
-
-=cut
-
-sub NewItem {
-    my $self = shift;
-    return(RT::Group->new($self->CurrentUser));
-}
 RT::Base->_ImportOverlays();
 
 1;

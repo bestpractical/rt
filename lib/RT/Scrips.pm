@@ -500,19 +500,6 @@ sub _FindScrips {
     );
 }
 
-
-
-
-=head2 NewItem
-
-Returns an empty new RT::Scrip item
-
-=cut
-
-sub NewItem {
-    my $self = shift;
-    return(RT::Scrip->new($self->CurrentUser));
-}
 RT::Base->_ImportOverlays();
 
 1;
