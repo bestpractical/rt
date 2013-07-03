@@ -206,6 +206,44 @@ if ($chart_class eq "GD::Graph::bars") {
         $chart_options{'y_label_skip'} = 2;
         $chart_options{'y_tick_number'} = 10;
     }
+    my $text_size = sub {
+        my ($size, $text) = (@_);
+        my $font_handle = GD::Text::Align->new(
+            $chart->get('graph'), valign => 'top', 'halign' => 'center',
+        );
+        $font_handle->set_font($font, $size);
+        $font_handle->set_text($text);
+        return $font_handle;
+    };
+
+    my $fitter = sub {
+        my %args = @_;
+
+        foreach my $font_size ( @{$args{'sizes'}} ) {
+            my $line_height = $text_size->($font_size, 'Q')->get('height');
+
+            my $keyset_height = $line_height;
+            if ( ref $args{data}->[0] ) {
+                $keyset_height = $text_size->($font_size, join "\n", ('Q')x scalar @{ $args{data}->[0] })
+                    ->get('height');
+            }
+
+            my $status = 1;
+            foreach my $e ( @{ $args{data} } ) {
+                $status = $args{'cb'}->(
+                    element => $e,
+                    size => $font_size,
+                    line_height => $line_height,
+                    keyset_height => $keyset_height,
+                );
+                last unless $status;
+            }
+            next unless $status;
+
+            return $font_size;
+        }
+        return 0;
+    };
 
     # try to fit in labels on X axis values, aka key
     {
@@ -214,58 +252,50 @@ if ($chart_class eq "GD::Graph::bars") {
         # 2) horizontal, multi-line - doesn't work, GD::Chart bug
         # 3) vertical, one line
         # 4) vertical, multi-line
-
-        my $found_solution = 0;
+        my %can = (
+            'horizontal, one line' => 1,
+            'vertical, one line' => 1,
+            'vertical, multi line' => @{$data[0][0]} > 1,
+        );
 
         my $x_space_for_label = $Width*0.8/($count+1.5);
         my $y_space_for_label = $Height*0.4;
-        foreach my $font_size ( 12, 11, 10 ) {
-            my $font_handle = GD::Text::Align->new(
-                $chart->get('graph'), valign => 'top', 'halign' => 'center',
-            );
-            $font_handle->set_font($font, $font_size);
 
-            $font_handle->set_text('Q');
-            my $line_height = $font_handle->get('height');
+        my $found_solution = $fitter->(
+            sizes => [12,11,10],
+            data  => $data[0],
+            cb => sub {
+                my %args = @_;
 
-            $font_handle->set_text(join "\n", ('Q')x scalar @{ $data[0][0] });
-            my $keyset_height = $font_handle->get('height');
+                # if horizontal space doesn't allow us to fit one vertical line,
+                # then we need smaller font
+                return 0 if $args{'line_height'} > $x_space_for_label;
 
-            # if horizontal space doesn't allow us to fit one vertical line,
-            # then we need smaller font
-            next if $line_height > $x_space_for_label;
+                my $width = $text_size->( $args{'size'}, join ' - ', @{ $args{'element'} } )
+                    ->get('width');
 
-            my %can = (
-                'horizontal, one line' => 1,
-                'vertical, one line' => 1,
-                'vertical, multi line'
-                    => @{$data[0][0]} > 1 && $keyset_height < $x_space_for_label,
-            );
-
-            foreach my $key ( @{ $data[0] } ) {
-                $font_handle->set_text( join ' - ', @$key );
-                my $width = $font_handle->get('width');
                 if ( $width > $x_space_for_label ) {
                     $can{'horizontal, one line'} = 0;
                 }
                 if ( $width > $y_space_for_label ) {
                     $can{'vertical, one line'} = 0;
                 }
+                if ( $args{'keyset_height'} >= $x_space_for_label ) {
+                    $can{'vertical, multi line'} = 0;
+                }
                 if ( $can{'vertical, multi line'} ) {
-                    $font_handle->set_text( join "\n", @$key );
-                    my $width = $font_handle->get('width');
+                    my $width = $text_size->( $args{'size'}, join "\n", @{ $args{'element'} } )
+                        ->get('width');
                     if ( $width > $y_space_for_label ) {
                         $can{'vertical, multi line'} = 0;
                     }
                 }
-
-                last unless grep $_, values %can;
-            }
-            next unless grep $_, values %can;
-
-            $found_solution = 1;
-
-            $chart_options{'x_axis_font'} = [$font, $font_size];
+                return 0 unless grep $_, values %can;
+                return 1;
+            },
+        );
+        if ( $found_solution ) {
+            $chart_options{'x_axis_font'} = [$font, $found_solution];
 
             if ( $can{'horizontal, one line'} ) {
                 $chart_options{'x_labels_vertical'} = 0;
@@ -279,15 +309,9 @@ if ($chart_class eq "GD::Graph::bars") {
                 $chart_options{'x_labels_vertical'} = 1;
                 $_ = join " - ", @$_ foreach @{$data[0]};
             }
-            last;
         }
-        unless ( $found_solution ) {
-            my $font_handle = GD::Text::Align->new(
-                $chart->get('graph'), valign => 'top', 'halign' => 'center',
-            );
-            $font_handle->set_font($font, 10);
-            $font_handle->set_text('Q');
-
+        else {
+            my $font_handle = $text_size->(10, 'Q');
             my $line_height = $font_handle->get('height');
             if ( $line_height > $x_space_for_label ) {
                 $Width *= $line_height/$x_space_for_label;
@@ -318,77 +342,56 @@ if ($chart_class eq "GD::Graph::bars") {
 
     # try to fit in values above bars
     {
-        my $found_solution = 0;
-
         # 0.8 is guess, labels for ticks on Y axis can be wider
         # 1.5 for paddings around bars that GD::Graph adds
         my $x_space_for_label = $Width*0.8/($count*(@data - 1)+1.5);
-        foreach my $font_size ( grep $_ >= $chart_options{'x_axis_font'}[1], 12, 11, 10, 9 ) {
-            my $font_handle = GD::Text::Align->new(
-                $chart->get('graph'), valign => 'top', 'halign' => 'center',
-            );
-            $font_handle->set_font($font, $font_size);
 
-            $font_handle->set_text('Q');
-            my $line_height = $font_handle->get('height');
+        my %can = (
+            'horizontal, one line' => 1,
+            'vertical, one line' => 1,
+        );
 
-            # if horizontal space doesn't allow us to fit one vertical line,
-            # then we need smaller font
-            next if $line_height > $x_space_for_label;
+        my %seen;
+        my $found_solution = $fitter->(
+            sizes => [ grep $_ <= $chart_options{'x_axis_font'}[1], 12, 11, 10, 9 ],
+            data => [ map {@$_} @data[1..(@data-1)] ],
+            cb => sub {
+                my %args = @_;
 
-            my %can = (
-                'horizontal, one line' => 1,
-                'vertical, one line' => 1,
-            );
+                # if horizontal space doesn't allow us to fit one vertical line,
+                # then we need smaller font
+                return 0 if $args{'line_height'} > $x_space_for_label;
 
-            my %seen;
-            foreach my $raw ( map {@$_} @data[1..(@data-1)] ) {
-                my $value = $raw;
+                my $value = $args{'element'};
                 $value = $chart_options{'values_format'}->($value)
                     if $chart_options{'values_format'};
-                next if $seen{$value}++;
+                return 1 if $seen{$value}++;
 
-                $font_handle->set_text( $value );
-                my $width = $font_handle->get('width');
+                my $width = $text_size->( $args{'size'}, $value )->get('width');
                 if ( $width > $x_space_for_label ) {
                     $can{'horizontal, one line'} = 0;
                 }
                 my $y_space_for_label = $Height * 0.6
-                    *( 1 - ($raw-$min_value)/($max_value-$min_value) );
+                    *( 1 - ($args{'element'}-$min_value)/($max_value-$min_value) );
                 if ( $width > $y_space_for_label ) {
                     $can{'vertical, one line'} = 0;
                 }
-
-                last unless grep $_, values %can;
-            }
-            next unless grep $_, values %can;
-
-            $found_solution = 1;
-
-            $chart_options{'values_font'} = [ $font, $font_size ],
-            $chart_options{'show_values'} = 1;
-            $chart_options{'values_space'} = 2;
-
-            if ( $can{'horizontal, one line'} ) {
-                $chart_options{'values_vertical'} = 0;
-            }
-            else {
-                $chart_options{'values_vertical'} = 1;
-            }
-            last;
-        }
-        unless ( $found_solution ) {
-            $chart_options{'show_values'} = 0;
-
-            if ( do { local $@; eval { GD::Graph->VERSION("1.47") } } ) {
-                $chart_options{'values_font'} = [ $font, 9 ],
-                $chart_options{'show_values'} = 1;
-                $chart_options{'values_space'} = 2;
-                $chart_options{'values_vertical'} = 1;
-                $chart_options{'hide_overlapping_values'} = 1;
-            }
-        }
+                return 0 unless grep $_, values %can;
+                return 1;
+            },
+        );
+        $chart_options{'show_values'} = 1;
         $chart_options{'hide_overlapping_values'} = 1;
+        if ( $found_solution ) {
+            $chart_options{'values_font'} = [ $font, $found_solution ],
+            $chart_options{'values_space'} = 2;
+            $chart_options{'values_vertical'} =
+                $can{'horizontal, one line'} ? 0 : 1;
+        } else {
+            $chart_options{'values_font'} = [ $font, 9 ],
+            $chart_options{'values_space'} = 1;
+            $chart_options{'values_vertical'} = 1;
+        }
     }
 
     %chart_options = (
