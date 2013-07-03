@@ -186,7 +186,7 @@ DateTime 0.44
 DateTime::Format::Natural 0.67
 DateTime::Locale 0.40
 DBI 1.37
-DBIx::SearchBuilder 1.63
+DBIx::SearchBuilder 1.65
 Devel::GlobalDestruction
 Devel::StackTrace 1.19
 Digest::base
