@@ -293,6 +293,7 @@ if (!keys(%data)) {
 }
 else {
     my ($get, $set, $key, $val, $n, $s);
+    my $updated;
 
     foreach $key (keys %data) {
         $val = $data{$key};
@@ -430,14 +431,14 @@ else {
                             $s =~ s/\\'/'/g;
                             push @new, $s;
                         }
-                        elsif ( $a =~ /^q{/ ) {
+                        elsif ( $a =~ /^q\{/ ) {
                             my $s = $a;
-                            while ( $a !~ /}$/ ) {
+                            while ( $a !~ /\}$/ ) {
                                 ( $a, $b ) = split /\s*,\s*/, $b, 2;
                                 $s .= ',' . $a;
                             }
-                            $s =~ s/^q{//;
-                            $s =~ s/}//;
+                            $s =~ s/^q\{//;
+                            $s =~ s/\}//;
                             push @new, $s;
                         }
                         else {
@@ -483,8 +484,11 @@ else {
                 $k = $changes;
             }
         }
+        else {
+            $updated ||= 1;
+        }
     }
-    push(@comments, "# Ticket ".$ticket->id." updated.") unless $n == 0;
+    push(@comments, "# Ticket ".$ticket->id." updated.") if $updated;
 }
 
 DONE:

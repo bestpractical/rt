@@ -58,9 +58,9 @@ sub check {
                 and ($content =~ /\b(copyright|GPL|Public Domain)\b/i
                   or /\(c\)\s+\d\d\d\d(?:-\d\d\d\d)?/i);
         if ($check{bps_tag} == 1) {
-            like( $content, qr/[B]EGIN BPS TAGGED BLOCK {{{/, "$file has BPS license tag");
+            like( $content, qr/[B]EGIN BPS TAGGED BLOCK \{\{\{/, "$file has BPS license tag");
         } elsif ($check{bps_tag} == -1) {
-            unlike( $content, qr/[B]EGIN BPS TAGGED BLOCK {{{/, "$file has no BPS license tag");
+            unlike( $content, qr/[B]EGIN BPS TAGGED BLOCK \{\{\{/, "$file has no BPS license tag");
         }
     }
 

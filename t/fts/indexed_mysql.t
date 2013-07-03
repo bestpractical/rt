@@ -41,7 +41,7 @@ sub setup_indexing {
     mkdir $tmp;
 
     my $sphinx_conf = $output;
-    $sphinx_conf =~ s/.*?source rt {/source rt {/ms;
+    $sphinx_conf =~ s/.*?source rt \{/source rt {/ms;
     $sphinx_conf =~ s{\Q$RT::VarPath\E/sphinx/}{$tmp/}g;
 
     $sphinx{'config'} = File::Spec->catfile( $tmp, 'sphinx.conf' );

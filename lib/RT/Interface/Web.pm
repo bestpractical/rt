@@ -3150,7 +3150,7 @@ sub GetColumnMapEntry {
     }
 
     # complex things
-    elsif ( my ( $mainkey, $subkey ) = $args{'Name'} =~ /^(.*?)\.{(.+)}$/ ) {
+    elsif ( my ( $mainkey, $subkey ) = $args{'Name'} =~ /^(.*?)\.\{(.+)\}$/ ) {
         return undef unless $args{'Map'}->{$mainkey};
         return $args{'Map'}{$mainkey}{ $args{'Attribute'} }
             unless ref $args{'Map'}{$mainkey}{ $args{'Attribute'} } eq 'CODE';

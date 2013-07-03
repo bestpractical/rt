@@ -128,16 +128,16 @@ sub tag_mason {
         my $pmlic = $LICENSE;
         $pmlic =~ s/^/%# /mg;
         $pmlic =~ s/\s*$//mg;
-        if ($file =~ /^%# BEGIN BPS TAGGED BLOCK {{{/ms) {
+        if ($file =~ /^%# BEGIN BPS TAGGED BLOCK \{\{\{/ms) {
                 print "has license section";
-             $file =~ s/^%# BEGIN BPS TAGGED BLOCK {{{(.*?)%# END BPS TAGGED BLOCK }}}/%# BEGIN BPS TAGGED BLOCK {{{\n$pmlic\n%# END BPS TAGGED BLOCK }}}/ms;
+             $file =~ s/^%# BEGIN BPS TAGGED BLOCK \{\{\{(.*?)%# END BPS TAGGED BLOCK \}\}\}/%# BEGIN BPS TAGGED BLOCK {{{\n$pmlic\n%# END BPS TAGGED BLOCK }}}/ms;
 
 
         } else {
                 print "no license section";
              $file ="%# BEGIN BPS TAGGED BLOCK {{{\n$pmlic\n%# END BPS TAGGED BLOCK }}}\n". $file;
         }
-        $file =~ s/%# END BPS TAGGED BLOCK }}}(\n+)/%# END BPS TAGGED BLOCK }}}\n/mg;
+        $file =~ s/%# END BPS TAGGED BLOCK \}\}\}(\n+)/%# END BPS TAGGED BLOCK }}}\n/mg;
         print "\n";
 
 
@@ -161,16 +161,16 @@ sub tag_makefile {
         my $pmlic = $LICENSE;
         $pmlic =~ s/^/# /mg;
         $pmlic =~ s/\s*$//mg;
-        if ($file =~ /^# BEGIN BPS TAGGED BLOCK {{{/ms) {
+        if ($file =~ /^# BEGIN BPS TAGGED BLOCK \{\{\{/ms) {
                 print "has license section";
-             $file =~ s/^# BEGIN BPS TAGGED BLOCK {{{(.*?)# END BPS TAGGED BLOCK }}}/# BEGIN BPS TAGGED BLOCK {{{\n$pmlic\n# END BPS TAGGED BLOCK }}}/ms;
+             $file =~ s/^# BEGIN BPS TAGGED BLOCK \{\{\{(.*?)# END BPS TAGGED BLOCK \}\}\}/# BEGIN BPS TAGGED BLOCK {{{\n$pmlic\n# END BPS TAGGED BLOCK }}}/ms;
 
 
         } else {
                 print "no license section";
              $file ="# BEGIN BPS TAGGED BLOCK {{{\n$pmlic\n# END BPS TAGGED BLOCK }}}\n". $file;
         }
-        $file =~ s/# END BPS TAGGED BLOCK }}}(\n+)/# END BPS TAGGED BLOCK }}}\n/mg;
+        $file =~ s/# END BPS TAGGED BLOCK \}\}\}(\n+)/# END BPS TAGGED BLOCK }}}\n/mg;
         print "\n";
 
 
@@ -195,16 +195,16 @@ sub tag_pm {
         my $pmlic = $LICENSE;
         $pmlic =~ s/^/# /mg;
         $pmlic =~ s/\s*$//mg;
-        if ($file =~ /^# BEGIN BPS TAGGED BLOCK {{{/ms) {
+        if ($file =~ /^# BEGIN BPS TAGGED BLOCK \{\{\{/ms) {
                 print "has license section";
-             $file =~ s/^# BEGIN BPS TAGGED BLOCK {{{(.*?)# END BPS TAGGED BLOCK }}}/# BEGIN BPS TAGGED BLOCK {{{\n$pmlic\n# END BPS TAGGED BLOCK }}}/ms;
+             $file =~ s/^# BEGIN BPS TAGGED BLOCK \{\{\{(.*?)# END BPS TAGGED BLOCK \}\}\}/# BEGIN BPS TAGGED BLOCK {{{\n$pmlic\n# END BPS TAGGED BLOCK }}}/ms;
 
 
         } else {
                 print "no license section";
              $file ="# BEGIN BPS TAGGED BLOCK {{{\n$pmlic\n# END BPS TAGGED BLOCK }}}\n". $file;
         }
-        $file =~ s/# END BPS TAGGED BLOCK }}}(\n+)/# END BPS TAGGED BLOCK }}}\n\n/mg;
+        $file =~ s/# END BPS TAGGED BLOCK \}\}\}(\n+)/# END BPS TAGGED BLOCK }}}\n\n/mg;
         print "\n";
 
 
@@ -229,9 +229,9 @@ sub tag_script {
         my $pmlic = $LICENSE;
         $pmlic =~ s/^/# /msg;
         $pmlic =~ s/\s*$//mg;
-        if ($file =~ /^# BEGIN BPS TAGGED BLOCK {{{/ms) {
+        if ($file =~ /^# BEGIN BPS TAGGED BLOCK \{\{\{/ms) {
                 print "has license section";
-             $file =~ s/^# BEGIN BPS TAGGED BLOCK {{{(.*?)# END BPS TAGGED BLOCK }}}/# BEGIN BPS TAGGED BLOCK {{{\n$pmlic\n# END BPS TAGGED BLOCK }}}/ms;
+             $file =~ s/^# BEGIN BPS TAGGED BLOCK \{\{\{(.*?)# END BPS TAGGED BLOCK \}\}\}/# BEGIN BPS TAGGED BLOCK {{{\n$pmlic\n# END BPS TAGGED BLOCK }}}/ms;
 
 
         } else {
@@ -243,7 +243,7 @@ sub tag_script {
 
                 }
         }
-        $file =~ s/# END BPS TAGGED BLOCK }}}(\n+)/# END BPS TAGGED BLOCK }}}\n/mg;
+        $file =~ s/# END BPS TAGGED BLOCK \}\}\}(\n+)/# END BPS TAGGED BLOCK }}}\n/mg;
         print "\n";
 
 

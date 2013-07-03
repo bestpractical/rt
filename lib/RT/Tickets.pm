@@ -1319,8 +1319,8 @@ Try and turn a CF descriptor into (cfid, cfname) object pair.
 sub _CustomFieldDecipher {
     my ($self, $string) = @_;
 
-    my ($queue, $field, $column) = ($string =~ /^(?:(.+?)\.)?{(.+)}(?:\.(Content|LargeContent))?$/);
-    $field ||= ($string =~ /^{(.*?)}$/)[0] || $string;
+    my ($queue, $field, $column) = ($string =~ /^(?:(.+?)\.)?\{(.+)\}(?:\.(Content|LargeContent))?$/);
+    $field ||= ($string =~ /^\{(.*?)\}$/)[0] || $string;
 
     my $cf;
     if ( $queue ) {
