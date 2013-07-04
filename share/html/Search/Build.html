@@ -190,7 +190,7 @@ my @new_values = ();
 
 # Try to find if we're adding a clause
 foreach my $arg ( keys %ARGS ) {
-    next unless $arg =~ m/^ValueOf(\w+|CF.{.*?})$/
+    next unless $arg =~ m/^ValueOf(\w+|CF.\{.*?\})$/
                 && ( ref $ARGS{$arg} eq "ARRAY"
                      ? grep $_ ne '', @{ $ARGS{$arg} }
                      : $ARGS{$arg} ne '' );

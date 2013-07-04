@@ -161,7 +161,7 @@ $COLUMN_MAP = {
             my $arg = $DECODED_ARGS->{ $name };
             my $checked = '';
             if ( $arg && ref $arg ) {
-                $checked = 'checked="checked"' if grep $_ == $id, @$arg;
+                $checked = 'checked="checked"' if grep $_ == $id, grep { defined and length } @$arg;
             }
             elsif ( $arg ) {
                 $checked = 'checked="checked"' if $arg == $id;

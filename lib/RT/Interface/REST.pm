@@ -52,7 +52,7 @@ use warnings;
 use RT;
 
 use base 'Exporter';
-our @EXPORT = qw(expand_list form_parse form_compose vpush vsplit);
+our @EXPORT = qw(expand_list form_parse form_compose vpush vsplit process_attachments);
 
 sub custom_field_spec {
     my $self    = shift;
@@ -294,6 +294,45 @@ sub vsplit {
     }
 
     return \@words;
+}
+
+sub process_attachments {
+    my $entity = shift;
+    my @list = @_;
+    return 1 unless @list;
+
+    my $m = $HTML::Mason::Commands::m;
+    my $cgi = $m->cgi_object;
+
+    my $i = 1;
+    foreach my $e ( @list ) {
+
+        my $fh = $cgi->upload("attachment_$i");
+        return (0, "No attachment for $e") unless $fh;
+
+        local $/=undef;
+
+        my $file = $e;
+        $file =~ s#^.*[\\/]##;
+
+        my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
+
+        my $buf;
+        while (sysread($fh, $buf, 8192)) {
+            syswrite($tmp_fh, $buf);
+        }
+
+        my $info = $cgi->uploadInfo($fh);
+        my $new_entity = $entity->attach(
+            Path => $tmp_fn,
+            Type => $info->{'Content-Type'} || guess_media_type($tmp_fn),
+            Filename => $file,
+            Disposition => "attachment",
+        );
+        $new_entity->bodyhandle->{'_dirty_hack_to_save_a_ref_tmp_fh'} = $tmp_fh;
+        $i++;
+    }
+    return (1);
 }
 
 RT::Base->_ImportOverlays();

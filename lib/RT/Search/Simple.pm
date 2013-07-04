@@ -197,6 +197,7 @@ our @GUESS = (
     [ 10 => sub { return "subject" if $_[1] } ],
     [ 20 => sub { return "id" if /^#?\d+$/ } ],
     [ 30 => sub { return "requestor" if /\w+@\w+/} ],
+    [ 35 => sub { return "domain" if /^@\w+/} ],
     [ 40 => sub {
           return "status" if RT::Queue->new( $_[2] )->IsValidStatus( $_ )
       }],
@@ -260,6 +261,7 @@ sub HandleWatcher     {
     return watcher => (!$_[2] and $_[1] eq "me") ? "Watcher.id = '__CurrentUser__'" : "Watcher = '$_[1]'";
 }
 sub HandleRequestor { return requestor => "Requestor STARTSWITH '$_[1]'";  }
+sub HandleDomain    { $_[1] =~ s/^@?/@/; return requestor => "Requestor ENDSWITH '$_[1]'";  }
 sub HandleQueue     { return queue     => "Queue = '$_[1]'";      }
 sub HandleQ         { return queue     => "Queue = '$_[1]'";      }
 sub HandleCf        { return "cf.$_[3]" => "'CF.{$_[3]}' LIKE '$_[1]'"; }

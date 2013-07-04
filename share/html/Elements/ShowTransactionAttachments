@@ -212,8 +212,17 @@ my $render_attachment = sub {
                     $displayed_inline->{$_}++ for @rewritten;
                 }
 
-                require HTML::Quoted;
-                $content = HTML::Quoted->extract($content) unless length $name;
+                unless (length $name) {
+                    eval {
+                        require HTML::Quoted;
+                        $content = HTML::Quoted->extract($content)
+                    };
+                    if ($@) {
+                        RT->Logger->error(
+                            "HTML::Quoted couldn't process attachment #@{[$message->id]}: $@."
+                          . "  This is a bug, please report it to rt-bugs\@bestpractical.com.");
+                    }
+                }
 
                 $m->comp(
                     'ShowMessageStanza',
@@ -231,8 +240,18 @@ my $render_attachment = sub {
             # It's a text type we don't have special handling for
             else {
                 unless ( length $name ) {
-                    eval { require Text::Quoted;  $content = Text::Quoted::extract($content); };
-                    if ($@) { $RT::Logger->warning( "Text::Quoted failed: $@" ) }
+                    eval {
+                        require Text::Quoted;
+                        # XXX: Deprecate ->can check in 4.2 and simply bump version requirement.
+                        Text::Quoted::set_quote_characters(undef) # only use >
+                            if Text::Quoted->can("set_quote_characters");
+                        $content = Text::Quoted::extract($content);
+                    };
+                    if ($@) {
+                        RT->Logger->error(
+                            "Text::Quoted couldn't process attachment #@{[$message->id]}: $@."
+                          . "  This is a bug, please report it to rt-bugs\@bestpractical.com.");
+                    }
                 }
 
                 $m->comp(

@@ -73,12 +73,14 @@ use Getopt::Long;
 
 $| = 1; # unbuffer all output.
 
-my %args;
+my %args = (
+    package => 'RT',
+);
 GetOptions(
     \%args,
     'action=s',
     'force', 'debug',
-    'dba=s', 'dba-password=s', 'prompt-for-dba-password',
+    'dba=s', 'dba-password=s', 'prompt-for-dba-password', 'package=s',
     'datafile=s', 'datadir=s', 'skip-create', 'root-password-file=s',
     'package=s', 'ext-version=s',
     'help|h',
@@ -327,7 +329,7 @@ sub action_upgrade {
         if ( defined $upgrading_from ) {
             print "Doesn't match #.#.#: ";
         } else {
-            print "Enter RT version you're upgrading from: ";
+            print "Enter $args{package} version you're upgrading from: ";
         }
         $upgrading_from = scalar <STDIN>;
         chomp $upgrading_from;
@@ -360,7 +362,7 @@ sub action_upgrade {
             if ( defined $custom_upgrading_to ) {
                 print "Doesn't match #.#.#: ";
             } else {
-                print "\nEnter RT version if you want to stop upgrade at some point,\n";
+                print "\nEnter $args{package} version if you want to stop upgrade at some point,\n";
                 print "  or leave it blank if you want apply above upgrades: ";
             }
             $custom_upgrading_to = scalar <STDIN>;
@@ -472,8 +474,11 @@ sub get_versions_from_to {
     my ($base_dir, $from, $to) = @_;
 
     opendir( my $dh, $base_dir ) or die "couldn't open dir: $!";
-    my @versions = grep -d "$base_dir/$_" && /\d+\.\d+\.\d+/, readdir $dh;
+    my @versions = grep -d "$base_dir/$_" && /^\d+\.\d+\.\d+$/, readdir $dh;
     closedir $dh;
+
+    die "\nERROR: No upgrade data found in '$base_dir'!  Perhaps you specified the wrong --datadir?\n"
+        unless @versions;
 
     return
         grep defined $to ? RT::Handle::cmp_version($_, $to) <= 0 : 1,

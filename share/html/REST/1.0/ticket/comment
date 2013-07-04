@@ -54,8 +54,6 @@ $content
 use MIME::Entity;
 use LWP::MediaTypes;
 use RT::Interface::REST;
-use File::Temp qw(tempfile);
-my @tmp_files;
 
 my $ticket = RT::Ticket->new($session{CurrentUser});
 my $object = $r->path_info;
@@ -113,37 +111,13 @@ my $ent = MIME::Entity->build(
 );
 $ent->attach(Data => $k->{Text}) if $k->{Text};
 
-my $i = 1;
-foreach my $att (@atts) {
-    local $/=undef;
-    my $file = $att;
-    $file =~ s#^.*[\\/]##;
-
-    my $fh = $cgi->upload("attachment_$i");
-    if ($fh) {
-        my $buf;
-        my ($w, $tmp) = tempfile();
-        push @tmp_files, $tmp;
-        my $info = $cgi->uploadInfo();
-
-        while (sysread($fh, $buf, 8192)) {
-            syswrite($w, $buf);
-        }
-
-        $ent->attach(
-            Path => $tmp,
-            Type => $info->{'Content-Type'} || guess_media_type($tmp),
-            Filename => $file,
-            Disposition => "attachment"
-        );
-    }
-    else {
+{
+    my ($res, $msg) = process_attachments($ent, @atts);
+    unless ( $res ) {
         $status = "400 Bad Request";
-        $output = "No attachment for $att.\n";
+        $output = "$msg\n";
         goto OUTPUT;
     }
-
-    $i++;
 }
 
 $ticket->Load($object);
@@ -177,7 +151,6 @@ if ($k->{Status}) {
 
 OUTPUT:
 
-unlink @tmp_files;
 </%INIT>
 RT/<% $RT::VERSION %> <% $status %>
 

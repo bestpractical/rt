@@ -176,7 +176,7 @@ our %GROUPINGS_META = (
             my $self = shift;
             my %args = (@_);
 
-            my ($cf) = ( $args{'SUBKEY'} =~ /^{(.*)}$/ );
+            my ($cf) = ( $args{'SUBKEY'} =~ /^\{(.*)\}$/ );
             if ( $cf =~ /^\d+$/ ) {
                 my $obj = RT::CustomField->new( $self->CurrentUser );
                 $obj->Load( $cf );
@@ -754,7 +754,7 @@ sub GenerateCustomFieldFunction {
     my $self = shift;
     my %args = @_;
 
-    my ($name) = ( $args{'SUBKEY'} =~ /^\.{(.*)}$/ );
+    my ($name) = ( $args{'SUBKEY'} =~ /^\.\{(.*)\}$/ );
     my $cf = RT::CustomField->new( $self->CurrentUser );
     $cf->Load($name);
     unless ( $cf->id ) {

@@ -110,7 +110,7 @@ sub SmartParseMIMEEntityFromScalar {
             # accommodate this by pausing and retrying.
             last
               if ( $fh, $temp_file ) =
-              eval { File::Temp::tempfile( undef, UNLINK => 0 ) };
+              eval { File::Temp::tempfile( UNLINK => 0 ) };
             sleep 1;
         }
         if ($fh) {

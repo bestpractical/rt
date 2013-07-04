@@ -145,6 +145,7 @@ sub Add {
         RefersTo => $self->Ticket,
         Type => 'reminder',
         Queue => $self->TicketObj->Queue,
+        Status => $self->TicketObj->QueueObj->LifecycleObj->ReminderStatusOnOpen,
     );
     $self->TicketObj->_NewTransaction(
         Type => 'AddReminder',
