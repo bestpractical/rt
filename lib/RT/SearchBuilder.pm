@@ -908,6 +908,19 @@ sub ColumnMapClassName {
     return $Class;
 }
 
+=head2 NotSetDateToNullFunction
+
+Takes a paramhash with an optional FIELD key whose value is the name of a date
+column.  If no FIELD is provided, a literal C<?> placeholder is used so the
+caller can fill in the field later.
+
+Returns a SQL function which evaluates to C<NULL> if the FIELD is set to the
+Unix epoch; otherwise it evaluates to FIELD.  This is useful because RT
+currently stores unset dates as a Unix epoch timestamp instead of NULL, but
+NULLs are often more desireable.
+
+=cut
+
 sub NotSetDateToNullFunction {
     my $self = shift;
     my %args = ( FIELD => undef, @_ );
