@@ -45,13 +45,11 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => loc('User Information') &>
-<div class="details">
+<&| /Widgets/TitleBox, title => loc('User Information'), class => "user extra-info" &>
 
 % $m->callback( User => $User, CallbackName => 'BeforeExtraInfo' );
 <& /User/Elements/UserInfo, User => $User, FormatConfig => 'UserSummaryExtraInfo', ClassPrefix => 'user-summary' &>
 
-</div>
 </&>
 <%ARGS>
 $User
