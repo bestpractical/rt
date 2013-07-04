@@ -104,7 +104,9 @@ sub _OverlayAccessible {
           Gecos                 => { public => 1,  admin => 1 },
           PGPKey                => { public => 1,  admin => 1 },
           PrivateKey            => {               admin => 1 },
-
+          City                  => { public => 1 },
+          Country               => { public => 1 },
+          Timezone              => { public => 1 },
     }
 }
 

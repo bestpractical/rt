@@ -49,11 +49,29 @@
 $Name => 'GroupBy'
 $Default => 'Status'
 $Query   => ''
+$ShowEmpty => 0
 </%args>
-<select id="<% $Name %>" name="<% $Name %>">
-% while (@options) {
-% my ($text, $value) = (shift @options, shift @options);
-<option value="<% $value %>" <% $value eq $Default ? 'selected="selected"' : '' |n%>><% $text %></option>
+<select name="<% $Name %>" class="cascade-by-optgroup">
+% if ( $ShowEmpty ) {
+<option value="">&nbsp;</option>
+% }
+<%perl>
+my $in_optgroup = "";
+while ( my ($label, $value) = splice @options, 0, 2 ) {
+    my ($optgroup, $text) = @$label;
+    if ($in_optgroup ne $optgroup) {
+        $m->out("</optgroup>\n") if $in_optgroup;
+
+        my $name = $m->interp->apply_escapes(loc($optgroup), 'h');
+        $m->out(qq[<optgroup label="$name">\n]);
+
+        $in_optgroup = $optgroup;
+    }
+</%perl>
+<option value="<% $value %>" <% $value eq ($Default||'') ? 'selected="selected"' : '' |n %>><% loc($text) %></option>
+% }
+% if ($in_optgroup) {
+  </optgroup>
 % }
 </select>
 <%init>

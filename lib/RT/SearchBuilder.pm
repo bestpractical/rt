@@ -799,9 +799,7 @@ sub Limit {
         $ARGS{'VALUE'} = 'NULL';
     }
 
-    if ($ARGS{FUNCTION}) {
-        ($ARGS{ALIAS}, $ARGS{FIELD}) = split /\./, delete $ARGS{FUNCTION}, 2;
-    } elsif ($ARGS{FIELD} =~ /\W/
+    if ($ARGS{FIELD} =~ /\W/
           or $ARGS{OPERATOR} !~ /^(=|<|>|!=|<>|<=|>=
                                   |(NOT\s*)?LIKE
                                   |(NOT\s*)?(STARTS|ENDS)WITH
@@ -931,6 +929,30 @@ Returns a new item based on L</RecordClass> using the current user.
 sub NewItem {
     my $self = shift;
     return $self->RecordClass->new($self->CurrentUser);
+}
+
+=head2 NotSetDateToNullFunction
+
+Takes a paramhash with an optional FIELD key whose value is the name of a date
+column.  If no FIELD is provided, a literal C<?> placeholder is used so the
+caller can fill in the field later.
+
+Returns a SQL function which evaluates to C<NULL> if the FIELD is set to the
+Unix epoch; otherwise it evaluates to FIELD.  This is useful because RT
+currently stores unset dates as a Unix epoch timestamp instead of NULL, but
+NULLs are often more desireable.
+
+=cut
+
+sub NotSetDateToNullFunction {
+    my $self = shift;
+    my %args = ( FIELD => undef, @_ );
+
+    my $res = "CASE WHEN ? BETWEEN '1969-12-31 11:59:59' AND '1970-01-01 12:00:01' THEN NULL ELSE ? END";
+    if ( $args{FIELD} ) {
+        $res = $self->CombineFunctionWithField( %args, FUNCTION => $res );
+    }
+    return $res;
 }
 
 RT::Base->_ImportOverlays();

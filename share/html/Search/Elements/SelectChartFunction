@@ -45,38 +45,35 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%args>
-$Query => "id > 0"
-@GroupBy => ()
-$ChartStyle => 'bars'
-@ChartFunction => 'COUNT'
-</%args>
-<%init>
-use RT::Report::Tickets;
-
-my $report = RT::Report::Tickets->new( $session{'CurrentUser'} );
-
-my %columns = $report->SetupGroupings(
-    Query => $Query,
-    GroupBy => \@GroupBy,
-    Function => \@ChartFunction,
-);
-
-$report->SortEntries;
-
-my $query_string = $m->comp('/Elements/QueryString', %ARGS, GroupBy => \@GroupBy );
-</%init>
-<div class="chart-wrapper">
-<span class="chart image">
-% if (RT->Config->Get('DisableGD')) {
-<% loc('Graphical charts are not available.') %><br />
-% } else {
-% my $key = Digest::MD5::md5_hex( rand(1024) );
-% $session{'charts_cache'}{$key} = { columns => \%columns, report => $report->Serialize };
-% $session{'i'}++;
-<img src="<% RT->Config->Get('WebPath') %>/Search/Chart?Cache=<% $key |un %>&<% $query_string |n %>" />
+<select name="<% $Name %>" class="cascade-by-optgroup">
+% if ( $ShowEmpty ) {
+<option value="">&nbsp;</option>
 % }
-</span>
-<& ChartTable, %ARGS, Table => { $report->FormatTable( %columns ) } &>
-<div class="query"><span class="label"><% loc('Query') %>:</span><span class="value"><% $Query %></span></div>
-</div>
+<%perl>
+my $in_optgroup = "";
+while ( my ($value, $display) = splice @functions, 0, 2 ) {
+    my $optgroup = $value =~ /\((.+)\)$/ ? $1 : $display;
+    if ($in_optgroup ne $optgroup) {
+        $m->out("</optgroup>\n") if $in_optgroup;
+
+        my $name = $m->interp->apply_escapes(loc($optgroup), 'h');
+        $m->out(qq[<optgroup label="$name">\n]);
+
+        $in_optgroup = $optgroup;
+    }
+</%perl>
+<option value="<% $value %>"<% $value eq $Default ? qq[ selected="selected"] : '' |n %>><% loc( $display ) %></option>
+% }
+% if ($in_optgroup) {
+  </optgroup>
+% }
+</select>
+<%ARGS>
+$Name => 'ChartFunction'
+$Default => 'COUNT'
+$ShowEmpty => 0
+</%ARGS>
+<%INIT>
+my @functions = RT::Report::Tickets->Statistics;
+$Default = '' unless defined $Default;
+</%INIT>

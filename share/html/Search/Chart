@@ -46,15 +46,111 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%args>
+$Cache => undef
 $Query => "id > 0"
-$PrimaryGroupBy => 'Queue'
+@GroupBy => ()
 $ChartStyle => 'bars'
+@ChartFunction => 'COUNT'
+$Width  => undef
+$Height => undef
 </%args>
 <%init>
-my $chart_class;
 use GD;
 use GD::Text;
 
+my %font_config = RT->Config->Get('ChartFont');
+my $font = $font_config{ $session{CurrentUser}->UserObj->Lang || '' }
+    || $font_config{'others'};
+
+s/\D//g for grep defined, $Width, $Height;
+$Width  ||= 600;
+$Height ||= ($ChartStyle eq 'pie' ? $Width : 400);
+$Height = $Width if $ChartStyle eq 'pie';
+
+my $plot_error = sub {
+    my $text = shift;
+    my ($plot, $error);
+
+    my $create_plot = sub {
+        my ($width, $height) = @_;
+
+        my $plot = GD::Image->new($width => $height);
+        $plot->colorAllocate(255, 255, 255); # background
+        my $black = $plot->colorAllocate(0, 0, 0);
+
+        require GD::Text::Wrap;
+        my $error = GD::Text::Wrap->new($plot,
+            color       => $black,
+            text        => $text,
+            align       => "left",
+            width       => $width - 20,
+            preserve_nl => 1,
+        );
+        $error->set_font( $font, 16 );
+        return ($plot, $error);
+    };
+
+    ($plot, $error) = $create_plot->($Width, $Height);
+    my $text_height = ($error->get_bounds(0, 0))[3];
+
+    # GD requires us to replot it all with the new height
+    ($plot, $error) = $create_plot->($Width, $text_height + 20);
+
+    $error->draw(10, 10);
+    $m->comp( 'SELF:Plot', plot => $plot, %ARGS );
+};
+
+use RT::Report::Tickets;
+my $report = RT::Report::Tickets->new( $session{'CurrentUser'} );
+
+my %columns;
+if ( $Cache and my $data = delete $session{'charts_cache'}{ $Cache } ) {
+    %columns = %{ $data->{'columns'} };
+    $report->Deserialize( $data->{'report'} );
+    $session{'i'}++;
+} else {
+    %columns = $report->SetupGroupings(
+        Query => $Query,
+        GroupBy => \@GroupBy,
+        Function => \@ChartFunction,
+    );
+
+    $report->SortEntries;
+}
+
+my @data = ([],[]);
+my $max_value = 0;
+my $min_value;
+my $max_key_length = 0;
+while ( my $entry = $report->Next ) {
+    push @{ $data[0] }, [ map $entry->LabelValue( $_ ), @{ $columns{'Groups'} } ];
+
+    my @values;
+    foreach my $column ( @{ $columns{'Functions'} } ) {
+        my $v = $entry->RawValue( $column );
+        unless ( ref $v ) {
+            push @values, $v;
+            next;
+        }
+
+        my @subs = $report->FindImplementationCode(
+            $report->ColumnInfo( $column )->{'META'}{'SubValues'}
+        )->( $report );
+        push @values, map $v->{$_}, @subs;
+    }
+
+    my $i = 0;
+    push @{ $data[++$i] }, $_ foreach @values;
+
+    foreach my $v ( @values ) {
+        $max_value = $v if $max_value < $v;
+        $min_value = $v if !defined $min_value || $min_value > $v;
+    }
+}
+
+$ChartStyle = 'bars' if @data > 2;
+
+my $chart_class;
 if ($ChartStyle eq 'pie') {
     require GD::Graph::pie;
     $chart_class = "GD::Graph::pie";
@@ -63,115 +159,289 @@ if ($ChartStyle eq 'pie') {
     $chart_class = "GD::Graph::bars";
 }
 
-use RT::Report::Tickets;
-my $tix = RT::Report::Tickets->new( $session{'CurrentUser'} );
-my %AllowedGroupings = reverse $tix->Groupings( Query => $Query );
-$PrimaryGroupBy = 'Queue' unless exists $AllowedGroupings{$PrimaryGroupBy};
-my ($count_name, $value_name) = $tix->SetupGroupings(
-    Query => $Query, GroupBy => $PrimaryGroupBy,
-);
-
-my %class = (
-    Queue => 'RT::Queue',
-    Owner => 'RT::User',
-    Creator => 'RT::User',
-    LastUpdatedBy => 'RT::User',
-);
-my $class = $class{ $PrimaryGroupBy };
-
-my %data;
-my $max_value = 0;
-my $max_key_length = 0;
-while ( my $entry = $tix->Next ) {
-    my $key;
-    if ( $class ) {
-        my $q = $class->new( $session{'CurrentUser'} );
-        $q->Load( $entry->LabelValue( $value_name ) );
-        $key = $q->Name;
-    }
-    else {
-        $key = $entry->LabelValue($value_name);
-    }
-    $key ||= '(no value)';
-    
-    my $value = $entry->__Value( $count_name );
-    if ($chart_class eq 'GD::Graph::pie') {
-        $key = loc($key) ." - ". $value;
-    } else {
-        $key = loc($key);
-    }
-    $data{ $key } = $value;
-    $max_value = $value if $max_value < $value;
-    $max_key_length = length $key if $max_key_length < length $key;
-}
-
-unless (keys %data) {
-    $data{''} = 0;
-}
-
-
-my $chart = $chart_class->new( 600 => 400 );
-$chart->set( pie_height => 60 ) if $chart_class eq 'GD::Graph::pie';
-my %font_config = RT->Config->Get('ChartFont');
-my $font = $font_config{ $session{CurrentUser}->UserObj->Lang || '' }
-  || $font_config{'others'};
-$chart->set_title_font( $font, 16 ) if $chart->can('set_title_font');
-$chart->set_legend_font( $font, 16 ) if $chart->can('set_legend_font');
-$chart->set_x_label_font( $font, 14 ) if $chart->can('set_x_label_font');
-$chart->set_y_label_font( $font, 14 ) if $chart->can('set_y_label_font');
-$chart->set_label_font( $font, 14 ) if $chart->can('set_label_font');
-$chart->set_x_axis_font( $font, 12 ) if $chart->can('set_x_axis_font');
-$chart->set_y_axis_font( $font, 12 ) if $chart->can('set_y_axis_font');
-$chart->set_values_font( $font, 12 ) if $chart->can('set_values_font');
-$chart->set_value_font( $font, 12 ) if $chart->can('set_value_font');
-
 # Pie charts don't like having no input, so we show a special image
 # that indicates an error message. Because this is used in an <img>
 # context, it can't be a simple error message. Without this check,
 # the chart will just be a non-loading image.
-if ($tix->Count == 0) {
-    my $plot = GD::Image->new(600 => 400);
-    $plot->colorAllocate(255, 255, 255); # background
-    my $black = $plot->colorAllocate(0, 0, 0);
-
-    require GD::Text::Wrap;
-    my $error = GD::Text::Wrap->new($plot,
-        color => $black,
-        text  => loc("No tickets found."),
-    );
-    $error->set_font( $font, 16 );
-    $error->draw(0, 0);
-
-    $m->comp( 'SELF:Plot', plot => $plot, %ARGS );
+unless ( $report->Count ) {
+    return $plot_error->(loc("No tickets found."));
 }
 
+my $chart = $chart_class->new( $Width => $Height );
+
+my %chart_options;
 if ($chart_class eq "GD::Graph::bars") {
-    my $count = keys %data;
-    $chart->set(
-        x_label => $tix->Label( $PrimaryGroupBy ),
-        y_label => loc('Tickets'),
-        show_values => 1,
+    my $count = @{ $data[0] };
+    $chart_options{'bar_spacing'} =
+        $count > 30 ? 1
+        : $count > 20 ? 2
+        : $count > 10 ? 3
+        : 5
+    ;
+    if ( my $code = $report->LabelValueCode( $columns{'Functions'}[0] ) ) {
+        my %info = %{ $report->ColumnInfo( $columns{'Functions'}[0] ) };
+        $chart_options{'values_format'} = $chart_options{'y_number_format'} = sub {
+            return $code->($report, %info, VALUE => shift );
+        };
+    }
+    $report->GotoFirstItem;
+
+    # normalize min/max values to graph boundaries
+    {
+        my $integer = 1;
+        $integer = 0 for grep $_ ne int $_, $min_value, $max_value;
+
+        $max_value *= $max_value > 0 ? 1.1 : 0.9
+            if $max_value;
+        $min_value *= $min_value > 0 ? 0.9 : 1.1
+            if $min_value;
+
+        if ($integer) {
+            $max_value = int($max_value + ($max_value > 0? 1 : 0) );
+            $min_value = int($min_value + ($min_value < 0? -1 : 0) );
+
+            my $span = abs($max_value - $min_value);
+            $max_value += 5 - ($span % 5);
+        }
+        $chart_options{'y_label_skip'} = 2;
+        $chart_options{'y_tick_number'} = 10;
+    }
+    my $text_size = sub {
+        my ($size, $text) = (@_);
+        my $font_handle = GD::Text::Align->new(
+            $chart->get('graph'), valign => 'top', 'halign' => 'center',
+        );
+        $font_handle->set_font($font, $size);
+        $font_handle->set_text($text);
+        return $font_handle;
+    };
+
+    my $fitter = sub {
+        my %args = @_;
+
+        foreach my $font_size ( @{$args{'sizes'}} ) {
+            my $line_height = $text_size->($font_size, 'Q')->get('height');
+
+            my $keyset_height = $line_height;
+            if ( ref $args{data}->[0] ) {
+                $keyset_height = $text_size->($font_size, join "\n", ('Q')x scalar @{ $args{data}->[0] })
+                    ->get('height');
+            }
+
+            my $status = 1;
+            foreach my $e ( @{ $args{data} } ) {
+                $status = $args{'cb'}->(
+                    element => $e,
+                    size => $font_size,
+                    line_height => $line_height,
+                    keyset_height => $keyset_height,
+                );
+                last unless $status;
+            }
+            next unless $status;
+
+            return $font_size;
+        }
+        return 0;
+    };
+
+    # try to fit in labels on X axis values, aka key
+    {
+        # we have several labels layouts:
+        # 1) horizontal, one line per label
+        # 2) horizontal, multi-line - doesn't work, GD::Chart bug
+        # 3) vertical, one line
+        # 4) vertical, multi-line
+        my %can = (
+            'horizontal, one line' => 1,
+            'vertical, one line' => 1,
+            'vertical, multi line' => @{$data[0][0]} > 1,
+        );
+
+        my $x_space_for_label = $Width*0.8/($count+1.5);
+        my $y_space_for_label = $Height*0.4;
+
+        my $found_solution = $fitter->(
+            sizes => [12,11,10],
+            data  => $data[0],
+            cb => sub {
+                my %args = @_;
+
+                # if horizontal space doesn't allow us to fit one vertical line,
+                # then we need smaller font
+                return 0 if $args{'line_height'} > $x_space_for_label;
+
+                my $width = $text_size->( $args{'size'}, join ' - ', @{ $args{'element'} } )
+                    ->get('width');
+
+                if ( $width > $x_space_for_label ) {
+                    $can{'horizontal, one line'} = 0;
+                }
+                if ( $width > $y_space_for_label ) {
+                    $can{'vertical, one line'} = 0;
+                }
+                if ( $args{'keyset_height'} >= $x_space_for_label ) {
+                    $can{'vertical, multi line'} = 0;
+                }
+                if ( $can{'vertical, multi line'} ) {
+                    my $width = $text_size->( $args{'size'}, join "\n", @{ $args{'element'} } )
+                        ->get('width');
+                    if ( $width > $y_space_for_label ) {
+                        $can{'vertical, multi line'} = 0;
+                    }
+                }
+                return 0 unless grep $_, values %can;
+                return 1;
+            },
+        );
+        if ( $found_solution ) {
+            $chart_options{'x_axis_font'} = [$font, $found_solution];
+
+            if ( $can{'horizontal, one line'} ) {
+                $chart_options{'x_labels_vertical'} = 0;
+                $_ = join ' - ', @$_ foreach @{$data[0]};
+            }
+            elsif ( $can{'vertical, multi line'} ) {
+                $chart_options{'x_labels_vertical'} = 1;
+                $_ = join "\n", @$_ foreach @{$data[0]};
+            }
+            else {
+                $chart_options{'x_labels_vertical'} = 1;
+                $_ = join " - ", @$_ foreach @{$data[0]};
+            }
+        }
+        else {
+            my $font_handle = $text_size->(10, 'Q');
+            my $line_height = $font_handle->get('height');
+            if ( $line_height > $x_space_for_label ) {
+                $Width *= $line_height/$x_space_for_label;
+                $Width = int( $Width+1 );
+            }
+
+            $_ = join " - ", @$_ foreach @{$data[0]};
+
+            my $max_text_width = 0;
+            foreach (@{$data[0]}) {
+                $font_handle->set_text($_);
+                my $width = $font_handle->get('width');
+                $max_text_width = $width if $width > $max_text_width;
+            }
+            if ( $max_text_width > $Height*0.4 ) {
+                $Height = int($max_text_width / 0.4 + 1);
+            }
+
+            $chart_options{'x_labels_vertical'} = 1;
+            $chart_options{'x_axis_font'} = [$font, 10];
+        }
+    }
+
+    # use the same size for y axis labels
+    {
+        $chart_options{'y_axis_font'} = $chart_options{'x_axis_font'};
+    }
+
+    # try to fit in values above bars
+    {
+        # 0.8 is guess, labels for ticks on Y axis can be wider
+        # 1.5 for paddings around bars that GD::Graph adds
+        my $x_space_for_label = $Width*0.8/($count*(@data - 1)+1.5);
+
+        my %can = (
+            'horizontal, one line' => 1,
+            'vertical, one line' => 1,
+        );
+
+        my %seen;
+        my $found_solution = $fitter->(
+            sizes => [ grep $_ <= $chart_options{'x_axis_font'}[1], 12, 11, 10, 9 ],
+            data => [ map {@$_} @data[1..(@data-1)] ],
+            cb => sub {
+                my %args = @_;
+
+                # if horizontal space doesn't allow us to fit one vertical line,
+                # then we need smaller font
+                return 0 if $args{'line_height'} > $x_space_for_label;
+
+                my $value = $args{'element'};
+                $value = $chart_options{'values_format'}->($value)
+                    if $chart_options{'values_format'};
+                return 1 if $seen{$value}++;
+
+                my $width = $text_size->( $args{'size'}, $value )->get('width');
+                if ( $width > $x_space_for_label ) {
+                    $can{'horizontal, one line'} = 0;
+                }
+                my $y_space_for_label = $Height * 0.6
+                    *( 1 - ($args{'element'}-$min_value)/($max_value-$min_value) );
+                if ( $width > $y_space_for_label ) {
+                    $can{'vertical, one line'} = 0;
+                }
+                return 0 unless grep $_, values %can;
+                return 1;
+            },
+        );
+        $chart_options{'show_values'} = 1;
+        $chart_options{'hide_overlapping_values'} = 1;
+        if ( $found_solution ) {
+            $chart_options{'values_font'} = [ $font, $found_solution ],
+            $chart_options{'values_space'} = 2;
+            $chart_options{'values_vertical'} =
+                $can{'horizontal, one line'} ? 0 : 1;
+        } else {
+            $chart_options{'values_font'} = [ $font, 9 ],
+            $chart_options{'values_space'} = 1;
+            $chart_options{'values_vertical'} = 1;
+        }
+    }
+
+    %chart_options = (
+        %chart_options,
+        x_label => join( ' - ', map $report->Label( $_ ), @{ $columns{'Groups'} } ),
         x_label_position => 0.6,
+        y_label => $report->Label( $columns{'Functions'}[0] ),
         y_label_position => 0.6,
-        values_space => -1,
 # use a top margin enough to display values over the top line if needed
         t_margin => 18,
 # the following line to make sure there's enough space for values to show
-        y_max_value => 5*(int($max_value/5) + 2),
+        y_max_value => $max_value,
+        y_min_value => $min_value,
 # if there're too many bars or at least one key is too long, use vertical
-        x_labels_vertical => ( $count * $max_key_length > 60 ) ? 1 : 0,
-        $count > 30 ? ( bar_spacing => 1 ) : ( $count > 20 ? ( bar_spacing => 2 ) : 
-            ( $count > 10 ? ( bar_spacing => 3 ) : ( bar_spacing => 5 ) )
-        ),
+        bargroup_spacing => $chart_options{'bar_spacing'}*5,
     );
 }
+else {
+    my $i = 0;
+    while ( my $entry = $report->Next ) {
+        push @{ $data[0][$i++] }, $entry->LabelValue( $columns{'Functions'}[0] );
+    }
+    $_ = join ' - ', @$_ foreach @{$data[0]};
+}
 
-# refine values' colors, with both Color::Scheme's help and my own tweak
-$chart->{dclrs} = [
-    '66cc66', 'ff6666', 'ffcc66', '663399',
-    '3333cc', '339933', '993333', '996633',
-    '33cc33', 'cc3333', 'cc9933', '6633cc',
-];
+if ($chart->get('width') != $Width || $chart->get('height') != $Height ) {
+    $chart = $chart_class->new( $Width => $Height );
+}
+
+%chart_options = (
+    '3d'         => 0,
+    title_font   => [ $font, 16 ],
+    legend_font  => [ $font, 16 ],
+    x_label_font => [ $font, 14 ],
+    y_label_font => [ $font, 14 ],
+    label_font   => [ $font, 14 ],
+    y_axis_font  => [ $font, 12 ],
+    values_font  => [ $font, 12 ],
+    %chart_options,
+);
+
+foreach my $opt ( grep /_font$/, keys %chart_options ) {
+    my $v = delete $chart_options{$opt};
+    next unless my $can = $chart->can("set_$opt");
+
+    $can->($chart, @$v);
+}
+$chart->set(%chart_options) if keys %chart_options;
+
+$chart->{dclrs} = [ RT->Config->Get("ChartColors") ];
 
 {
     no warnings 'redefine';
@@ -182,8 +452,12 @@ $chart->{dclrs} = [
     };
 }
 
-my $plot = $chart->plot( [ [sort keys %data], [map $data{$_}, sort keys %data] ] ) or die $chart->error;
-$m->comp( 'SELF:Plot', plot => $plot, %ARGS );
+if (my $plot = eval { $chart->plot( \@data ) }) {
+    $m->comp( 'SELF:Plot', plot => $plot, %ARGS );
+} else {
+    my $error = join "\n", grep defined && length, $chart->error, $@;
+    $plot_error->(loc("Error plotting chart: [_1]", $error));
+}
 </%init>
 
 <%METHOD Plot>

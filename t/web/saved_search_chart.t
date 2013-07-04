@@ -58,7 +58,7 @@ $m->submit_form(
     form_name => 'SaveSearch',
     fields    => {
         Query          => 'id=2',
-        PrimaryGroupBy => 'Status',
+        GroupBy        => 'Status',
         ChartStyle     => 'pie',
     },
     button => 'SavedSearchSave',
@@ -67,13 +67,13 @@ $m->submit_form(
 $m->content_contains("Chart first chart updated", 'found updated message' );
 $m->content_contains("id=2",                      'Query is updated' );
 $m->content_like( qr/value="Status"\s+selected="selected"/,
-    'PrimaryGroupBy is updated' );
+    'GroupBy is updated' );
 $m->content_like( qr/value="pie"\s+selected="selected"/,
     'ChartType is updated' );
 ok( $search->Load($id) );
 is( $search->SubValue('Query'), 'id=2', 'Query is indeed updated' );
-is( $search->SubValue('PrimaryGroupBy'),
-    'Status', 'PrimaryGroupBy is indeed updated' );
+is( $search->SubValue('GroupBy'),
+    'Status', 'GroupBy is indeed updated' );
 is( $search->SubValue('ChartStyle'), 'pie', 'ChartStyle is indeed updated' );
 
 # finally, let's test delete

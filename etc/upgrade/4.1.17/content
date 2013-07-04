@@ -1,0 +1,26 @@
+use strict;
+use warnings;
+
+our @Initial = (sub {
+    my $searches = RT::Attributes->new(RT->SystemUser);
+    $searches->Limit( FIELD => 'Name', VALUE => 'SavedSearch' );
+    $searches->OrderBy( FIELD => 'id' );
+
+    while (my $search = $searches->Next) {
+        my $content = $search->Content;
+        next unless ref $content eq 'HASH';
+        next unless ($content->{SearchType} || '') eq 'Chart';
+
+        # Switch from PrimaryGroupBy to GroupBy name
+        # Switch from "CreatedMonthly" to "Created.Monthly"
+        $content->{GroupBy} ||= [delete $content->{PrimaryGroupBy}];
+        for (@{$content->{GroupBy}}) {
+            next if /\./;
+            s/(?<=[a-z])(?=[A-Z])/./;
+        }
+
+        my ($ok, $msg) = $search->SetContent($content);
+        RT->Logger->error("Unable to upgrade saved chart #@{[$search->id]}: $msg")
+            unless $ok;
+    }
+});
