@@ -242,9 +242,7 @@ my $render_attachment = sub {
                 unless ( length $name ) {
                     eval {
                         require Text::Quoted;
-                        # XXX: Deprecate ->can check in 4.2 and simply bump version requirement.
-                        Text::Quoted::set_quote_characters(undef) # only use >
-                            if Text::Quoted->can("set_quote_characters");
+                        Text::Quoted::set_quote_characters(undef);
                         $content = Text::Quoted::extract($content);
                     };
                     if ($@) {
