@@ -917,13 +917,16 @@ sub FormatTable {
     }
     @footer = ({ even => ++$i%2, cells => []});
 
+    my $g = 0;
     foreach my $column ( @{ $columns{'Groups'} } ) {
         $i = 0;
         my $last;
         while ( my $entry = $self->Next ) {
             my $value = $entry->LabelValue( $column );
             if ( !$last || $last->{'value'} ne $value ) {
-                push @{ $body[ $i++ ]{'cells'} }, $last = { type => 'label', value => $value, };
+                push @{ $body[ $i++ ]{'cells'} }, $last = { type => 'label', value => $value };
+                $last->{even} = $g++ % 2
+                    unless $column eq $columns{'Groups'}[-1];
             }
             else {
                 $i++;
