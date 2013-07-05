@@ -55,7 +55,7 @@ $request_path =~ s!/{2,}!/!g;
 my $query_string = sub {
     my %args = @_;
     my $u    = URI->new();
-    $u->query_form(%args);
+    $u->query_form(map { $_ => $args{$_} } sort keys %args);
     return $u->query;
 };
 
