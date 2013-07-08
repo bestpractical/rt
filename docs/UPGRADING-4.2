@@ -143,3 +143,15 @@ UPGRADING FROM RT 4.0.0 and greater
   following is in your RT_SiteConfig.pm:
 
     Set($WebSessionClass, "Apache::Session::File");
+
+* Configuration options dealing with "external authentication" have been
+  renamed to reduce confusion with the common extension
+  RT::Authen::ExternalAuth.  The old names will work, but produce
+  deprecation warnings.  The old names, and their new counterparts, are:
+
+      WebExternalAuth           => WebRemoteUserAuth
+      WebExternalAuthContinuous => WebRemoteUserContinuous
+      WebFallbackToInternalAuth => WebFallbackToRTLogin
+      WebExternalGecos          => WebRemoteUserGecos
+      WebExternalAuto           => WebRemoteUserAutocreate
+      AutoCreate                => UserAutocreateDefaultsOnLogin

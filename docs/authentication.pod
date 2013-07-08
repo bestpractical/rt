@@ -21,7 +21,7 @@ username and password into RT's login form, and in the other your web server
 user logged in.
 
 The second is supported by RT out of the box under the configuration option
-C<$WebExternalAuth> and other related options.  The first is supported by an RT
+C<$WebRemoteUserAuth> and other related options.  The first is supported by an RT
 extension named L</RT::Authen::ExternalAuth>.  These two types may be used
 independently or together, and both can fallback to RT's internal
 authentication.
@@ -39,7 +39,7 @@ OpenLDAP or Active Directory server, as the authoritative repository and keeps
 RT up to date accordingly.  This can be used in tandem with any of the external
 authentication options as it does not provide any authentication itself.
 
-=head2 Via your web server, aka C<$WebExternalAuth>, aka C<REMOTE_USER>
+=head2 Via your web server, aka C<$WebRemoteUserAuth>, aka C<REMOTE_USER>
 
 This type of external authentication is built-in to RT and bypasses the RT
 login form.  Instead, RT defers authentication to the web server which is
@@ -48,10 +48,10 @@ checks the value of C<REMOTE_USER> against its internal database and logs in
 the matched user.
 
 It is often used to provide single sign-on (SSO) support via Apache modules
-such as C<mod_auth_kerb> (to talk to Active Directory).  C<$WebExternalAuth> is
+such as C<mod_auth_kerb> (to talk to Active Directory).  C<$WebRemoteUserAuth> is
 widely used by organizations with existing authentication standards for web
 services that leverge web server modules for central authentication services.
-The flexibility of RT's C<$WebExternalAuth> support means that it can be setup
+The flexibility of RT's C<$WebRemoteUserAuth> support means that it can be setup
 with almost any authentication system.
 
 In order to keep user data in sync, this type of external auth is almost always
@@ -68,12 +68,12 @@ and you can read the documentation by running C<perldoc /opt/rt4/etc/RT_Config.p
 The list below is meant to make you aware of what's available.  You should read
 the full documentation as described above.
 
-=head4 C<$WebExternalAuth>
+=head4 C<$WebRemoteUserAuth>
 
 Enables or disables RT's expectation that the web server will provide
 authentication using the C<REMOTE_USER> environment variable.
 
-=head4 C<$WebExternalAuthContinuous>
+=head4 C<$WebRemoteUserContinuous>
 
 Check C<REMOTE_USER> on every request rather than the initial request.
 
@@ -81,25 +81,25 @@ When this is off, users will remain logged into RT even after C<REMOTE_USER> is
 no longer provided.  This provides a separation of sessions, but it may not be
 desirable in all cases.  For example, if a user logs out of the external
 authentication system their RT session will remain active unless
-C<$WebExternalAuthContinuous> is on.
+C<$WebRemoteUserContinuous> is on.
 
-=head4 C<$WebFallbackToInternalAuth>
+=head4 C<$WebFallbackToRTLogin>
 
 If true, allows internal logins as well as C<REMOTE_USER> by providing a login
 form if external authentication fails. This is useful to provide local admin
 access (usually as root) or self service access for people without external
 user accounts.
 
-=head4 C<$WebExternalAuto>
+=head4 C<$WebRemoteUserAutocreate>
 
 Enables or disables auto-creation of RT users when a new C<REMOTE_USER> is
 encountered.
 
-=head4 C<$AutoCreate>
+=head4 C<$UserAutocreateDefaultsOnLogin>
 
 Specifies the default properties of auto-created users.
 
-=head4 C<$WebExternalGecos>
+=head4 C<$WebRemoteUserGecos>
 
 Tells RT to compare C<REMOTE_USER> to the C<Gecos> field of RT users instead of
 the C<Name> field.
@@ -110,7 +110,7 @@ L<RT::Authen::ExternalAuth> is an RT extension which provides authentication
 B<using> RT's login form.  It can be configured to talk to an LDAP source (such
 as Active Directory), an external database, or an SSO cookie.
 
-The key difference between C<$WebExternalAuth> and L<RT::Authen::ExternalAuth>
+The key difference between C<$WebRemoteUserAuth> and L<RT::Authen::ExternalAuth>
 is the use of the RT login form and what part of the system talks to your
 authentication source (your web server vs. RT itself).
 
@@ -122,7 +122,7 @@ also get their information pulled and updated from your external source.
 
 Auth-only configurations are rare, and generally not as useful.
 
-Info-only configurations are commonly setup in tandem with C<$WebExternalAuth>.
+Info-only configurations are commonly setup in tandem with C<$WebRemoteUserAuth>.
 This lets your web server handle authentication (usually for SSO) and
 C<RT::Authen::ExternalAuth> ensures user data is updated every time someone
 logs in.

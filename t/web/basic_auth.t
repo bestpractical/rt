@@ -4,7 +4,7 @@ use RT;
 use RT::Test tests => 9;
 
 RT->Config->Set( DevelMode => 0 );
-RT->Config->Set( WebExternalAuth => 1 );
+RT->Config->Set( WebRemoteUserAuth => 1 );
 
 my ( $url, $m ) = RT::Test->started_ok( basic_auth => 1 );
 
@@ -23,7 +23,7 @@ $m->content_like(
     qr{<span class="current-user">\Qroot\E</span>}i,
     "Has user on the page"
 );
-$m->content_unlike(qr/Logout/i, "Has no logout button, no WebFallbackToInternalAuth");
+$m->content_unlike(qr/Logout/i, "Has no logout button, no WebFallbackToRTLogin");
 
 # Again, testing the plack middleware
 $m->get($url);

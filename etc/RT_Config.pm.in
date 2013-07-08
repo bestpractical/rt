@@ -1982,64 +1982,66 @@ Set(@ReferrerWhitelist, qw());
 
 =over 4
 
-=item C<$WebExternalAuth>
+=item C<$WebRemoteUserAuth>
 
-If C<$WebExternalAuth> is defined, RT will defer to the environment's
-REMOTE_USER variable.
+If C<$WebRemoteUserAuth> is defined, RT will defer to the environment's
+REMOTE_USER variable, which should be set by the webserver's
+authentication layer.
 
 =cut
 
-Set($WebExternalAuth, undef);
+Set($WebRemoteUserAuth, undef);
 
-=item C<$WebExternalAuthContinuous>
+=item C<$WebRemoteUserContinuous>
 
-If C<$WebExternalAuthContinuous> is defined, RT will check for the
+If C<$WebRemoteUserContinuous> is defined, RT will check for the
 REMOTE_USER on each access.  If you would prefer this to only happen
 once (at initial login) set this to a false value.  The default
-setting will help ensure that if your external authentication system
+setting will help ensure that if your webserver's authentication layer
 deauthenticates a user, RT notices as soon as possible.
 
 =cut
 
-Set($WebExternalAuthContinuous, 1);
+Set($WebRemoteUserContinuous, 1);
 
-=item C<$WebFallbackToInternalAuth>
+=item C<$WebFallbackToRTLogin>
 
-If C<$WebFallbackToInternalAuth> is defined, the user is allowed a
+If C<$WebFallbackToRTLogin> is defined, the user is allowed a
 chance of fallback to the login screen, even if REMOTE_USER failed.
 
 =cut
 
-Set($WebFallbackToInternalAuth, undef);
+Set($WebFallbackToRTLogin, undef);
 
-=item C<$WebExternalGecos>
+=item C<$WebRemoteUserGecos>
 
-C<$WebExternalGecos> means to match 'gecos' field as the user
-identity); useful with mod_auth_pwcheck and IIS Integrated Windows
+C<$WebRemoteUserGecos> means to match 'gecos' field as the user
+identity; useful with C<mod_auth_pwcheck> and IIS Integrated Windows
 logon.
 
 =cut
 
-Set($WebExternalGecos, undef);
+Set($WebRemoteUserGecos, undef);
 
-=item C<$WebExternalAuto>
+=item C<$WebRemoteUserAutocreate>
 
-C<$WebExternalAuto> will create users under the same name as
-REMOTE_USER upon login, if it's missing in the Users table.
-
-=cut
-
-Set($WebExternalAuto, undef);
-
-=item C<$AutoCreate>
-
-If C<$WebExternalAuto> is set to 1, C<$AutoCreate> will be passed to
-User's Create method.  Use it to set defaults, such as creating
-Unprivileged users with C<{ Privileged => 0 }> This must be a hashref.
+C<$WebRemoteUserAutocreate> will create users under the same name as
+REMOTE_USER upon login, if they are missing from the Users table.
 
 =cut
 
-Set($AutoCreate, undef);
+Set($WebRemoteUserAutocreate, undef);
+
+=item C<$UserAutocreateDefaultsOnLogin>
+
+If C<$WebRemoteUserAutocreate> is set to 1, C<$UserAutocreateDefaultsOnLogin>
+will be passed to L<RT::User/Create>.  Use it to set defaults, such as
+creating unprivileged users with C<<{ Privileged => 0 }>>.  This must be
+a hashref.
+
+=cut
+
+Set($UserAutocreateDefaultsOnLogin, undef);
 
 =item C<$WebSessionClass>
 
