@@ -205,3 +205,15 @@ solution of resorting to defining all queues in
 $OverrideOutgoingMailFrom.  Any definitions in the Override option
 (including Default) still take precedence.  See
 L<RT_Config/$SetOutgoingMailFrom> for more information.
+
+If you are upgrading an RT from 3.8 (or earlier) to 4.0 on PostgreSQL
+9.2, you should make sure that you have installed DBD::Pg 2.19.3 or
+higher.  If you start your upgrade without installing a recent-enough
+version of DBD::Pg RT will stop the upgrade during the 3.9.8 step and
+remind you to upgrade DBD::Pg.  If this happens, you can re-start your
+upgrade by running:
+
+   ./sbin/rt-setup-database --action insert --datadir etc/upgrade/3.9.8/
+
+Followed by re-running make upgrade-database and answering 3.9.8 when
+prompted for which RT version you're upgrading from.
