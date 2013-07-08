@@ -1503,6 +1503,23 @@ your users.
 
 Set($AllowUserAutocompleteForUnprivileged, 0);
 
+=item C<$TicketAutocompleteFields>
+
+Specifies which fields of L<RT::Ticket> to match against and how to match each
+field when autocompleting users.  Valid match methods are LIKE, STARTSWITH,
+ENDSWITH, C<=>, and C<!=>.
+
+Not all Ticket fields are publically accessible and hence won't work for
+autocomplete unless you override their accessibility using a local overlay or a
+plugin.  Out of the box the following fields are public: id, Subject.
+
+=cut
+
+Set( $TicketAutocompleteFields, {
+    id      => 'STARTSWITH',
+    Subject => 'LIKE',
+});
+
 =item C<$DisplayTicketAfterQuickCreate>
 
 Enable this to redirect to the created ticket display page
