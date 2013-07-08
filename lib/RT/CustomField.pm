@@ -51,7 +51,7 @@ package RT::CustomField;
 use strict;
 use warnings;
 
-
+use Scalar::Util 'blessed';
 
 use base 'RT::Record';
 
@@ -1205,14 +1205,57 @@ sub FriendlyLookupType {
     return ( $self->loc( $FriendlyObjectTypes[$#types], @types ) );
 }
 
+=head1 RecordClassFromLookupType
+
+Returns the type of Object referred to by ObjectCustomFields' ObjectId column
+
+Optionally takes a LookupType to use instead of using the value on the loaded
+record.  In this case, the method may be called on the class instead of an
+object.
+
+=cut
+
 sub RecordClassFromLookupType {
     my $self = shift;
-    my ($class) = ($self->LookupType =~ /^([^-]+)/);
+    my $type = shift || $self->LookupType;
+    my ($class) = ($type =~ /^([^-]+)/);
     unless ( $class ) {
-        $RT::Logger->error(
-            "Custom Field #". $self->id 
-            ." has incorrect LookupType '". $self->LookupType ."'"
-        );
+        if (blessed($self) and $self->LookupType eq $type) {
+            $RT::Logger->error(
+                "Custom Field #". $self->id
+                ." has incorrect LookupType '$type'"
+            );
+        } else {
+            RT->Logger->error("Invalid LookupType passed as argument: $type");
+        }
+        return undef;
+    }
+    return $class;
+}
+
+=head1 ObjectTypeFromLookupType
+
+Returns the ObjectType used in ObjectCustomFieldValues rows for this CF
+
+Optionally takes a LookupType to use instead of using the value on the loaded
+record.  In this case, the method may be called on the class instead of an
+object.
+
+=cut
+
+sub ObjectTypeFromLookupType {
+    my $self = shift;
+    my $type = shift || $self->LookupType;
+    my ($class) = ($type =~ /([^-]+)$/);
+    unless ( $class ) {
+        if (blessed($self) and $self->LookupType eq $type) {
+            $RT::Logger->error(
+                "Custom Field #". $self->id
+                ." has incorrect LookupType '$type'"
+            );
+        } else {
+            RT->Logger->error("Invalid LookupType passed as argument: $type");
+        }
         return undef;
     }
     return $class;
