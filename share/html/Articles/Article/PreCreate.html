@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => loc('Create an article in class...') &>
-<& /Elements/Tabs, Title => loc('Create an article in class...') &>
+<& /Elements/Tabs &>
 <ul>
 % my $Classes = RT::Classes->new($session{'CurrentUser'});
 % $Classes->LimitToEnabled();
