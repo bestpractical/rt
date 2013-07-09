@@ -84,7 +84,7 @@
 <tr><td>
 <&/Elements/SelectWatcherType, Name => "WatcherTypeEmail".$counter &>
 </td><td>
-<input type="hidden" name="WatcherAddressEmail<%$counter%>" value="<%$email->address%>">
+<input type="hidden" name="WatcherAddressEmail<%$counter%>" value="<%$email->format%>">
 <%$email->format%>
 </td></tr>
 % }
