@@ -395,8 +395,18 @@ Meta Data:
 sub _IntLimit {
     my ( $sb, $field, $op, $value, @rest ) = @_;
 
-    die "Invalid Operator $op for $field"
-        unless $op =~ /^(=|!=|>|<|>=|<=)$/;
+    my $is_a_like = $op =~ /MATCHES|ENDSWITH|STARTSWITH|LIKE/i;
+
+    # We want to support <id LIKE '1%'> for ticket autocomplete,
+    # but we need to explicitly typecast on Postgres
+    if ( $is_a_like && RT->Config->Get('DatabaseType') eq 'Pg' ) {
+        return $sb->_SQLLimit(
+            FUNCTION => "CAST(main.$field AS TEXT)",
+            OPERATOR => $op,
+            VALUE    => $value,
+            @rest,
+        );
+    }
 
     $sb->Limit(
         FIELD    => $field,

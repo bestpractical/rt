@@ -10,7 +10,7 @@ jQuery(function() {
         var what  = input.attr("data-autocomplete");
         var wants = input.attr("data-autocomplete-return");
 
-        if (!what || !what.match(/^(Users|Groups)$/))
+        if (!what || !what.match(/^(Users|Groups|Tickets)$/))
             return;
 
         var queryargs = [];
@@ -27,7 +27,9 @@ jQuery(function() {
         }
 
         if (input.is('[data-autocomplete-multiple]')) {
-            queryargs.push("delim=,");
+            if ( what != 'Tickets' ) {
+                queryargs.push("delim=,");
+            }
 
             options.focus = function () {
                 // prevent value inserted on focus
@@ -35,10 +37,18 @@ jQuery(function() {
             }
 
             options.select = function(event, ui) {
-                var terms = this.value.split(/,\s*/);
+                var terms = this.value.split(what == 'Tickets' ? /\s+/ : /,\s*/);
                 terms.pop();                    // remove current input
                 terms.push( ui.item.value );    // add selected item
-                this.value = terms.join(", ");
+                if ( what == 'Tickets' ) {
+                    // remove non-integers in case subject search with spaces in (like "foo bar")
+                    terms = jQuery.grep(terms, function(term) {
+                        var str = term + ''; // stringify integers to call .match
+                        return str.match(/^\d+$/);
+                    } );
+                    terms.push(''); // add trailing space so user can input another ticket id directly
+                }
+                this.value = terms.join(what == 'Tickets' ? ' ' : ", ");
                 return false;
             }
         }
