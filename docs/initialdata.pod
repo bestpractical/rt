@@ -90,7 +90,7 @@ the admin interface.  B<Do not> omit the C<< Domain => 'UserDefined' >> line.
 Additionally, the C<MemberOf> field is specially handled to make it easier to
 add the new group to other groups.  C<MemberOf> may be a single value or an
 array ref.  Each value should be a user-defined group name or hashref to pass
-into L<< RT::Group->LoadByCols >>.  Each group found will have the new group
+into L<RT::Group/LoadByCols>.  Each group found will have the new group
 added as a member.
 
 Unfortunately you can't specify the I<members> of a group at this time.  As a
