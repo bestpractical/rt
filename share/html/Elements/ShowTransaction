@@ -126,7 +126,7 @@ if ( $Object->id != $Transaction->ObjectId ) {
     # merged objects
     $desc = join " - ",
         $m->interp->apply_escapes(
-            loc("[_1] #[_1]:", loc($record_type), $Transaction->ObjectId), 'h'),
+            loc("[_1] #[_2]:", loc($record_type), $Transaction->ObjectId), 'h'),
         $desc;
 }
 
