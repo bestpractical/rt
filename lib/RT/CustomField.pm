@@ -405,6 +405,7 @@ sub LoadByName {
     my %args = (
         Queue => undef,
         Name  => undef,
+        LookupType => undef,
         @_,
     );
 
@@ -428,6 +429,20 @@ sub LoadByName {
     $CFs->SetContextObject( $self->ContextObject );
     my $field = $args{'Name'} =~ /\D/? 'Name' : 'id';
     $CFs->Limit( FIELD => $field, VALUE => $args{'Name'}, CASESENSITIVE => 0);
+
+    # The context object may be a ticket, for example, as context for a
+    # queue CF.  The valid lookup types are thus the entire set of
+    # ACLEquivalenceObjects for the context object.
+    $args{LookupType} ||= [
+        map {$_->CustomFieldLookupType}
+            ($self->ContextObject, $self->ContextObject->ACLEquivalenceObjects) ]
+        if $self->ContextObject;
+
+    $args{LookupType} = [ $args{LookupType} ]
+        if $args{LookupType} and not ref($args{LookupType});
+    $CFs->Limit( FIELD => "LookupType", OPERATOR => "IN", VALUE => $args{LookupType} )
+        if $args{LookupType};
+
     # Don't limit to queue if queue is 0.  Trying to do so breaks
     # RT::Group type CFs.
     if ( defined $args{'Queue'} ) {

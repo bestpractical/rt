@@ -304,6 +304,7 @@ granted.  This is B<different> than the user/group/role receiving the right.
 =item Granted on a custom field by name (or ID), potentially a global or queue
 
     CF => 'Name',
+    LookupType => 'RT::User',  # optional, in case you need to disambiguate
 
 =item Granted on a queue
 
