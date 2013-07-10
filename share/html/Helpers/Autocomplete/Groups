@@ -83,6 +83,6 @@ foreach (split /\s*,\s*/, $exclude) {
 my @suggestions;
 
 while ( my $group = $groups->Next ) {
-    push @suggestions, $group->Name;
+    push @suggestions, { label => $group->Name, value => $group->Name, id => $group->id };
 }
 </%INIT>
