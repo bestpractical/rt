@@ -79,6 +79,8 @@ foreach my $section (qw(thead tbody tfoot)) {
 
             my @class = ('collection-as-table');
             push @class, ($cell->{'type'}) unless $cell->{'type'} eq 'head';
+            push @class, $cell->{'even'} ? 'evenline' : 'oddline'
+                if defined $cell->{'even'};
             $m->out(' class="'. $eh->( join ' ', @class ) .'"');
 
             foreach my $dir ( grep $cell->{$_}, qw(rowspan colspan) ) {
