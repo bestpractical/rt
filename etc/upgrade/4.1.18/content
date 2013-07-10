@@ -1,0 +1,16 @@
+use strict;
+use warnings;
+
+# Ticket-level notifications
+our @ScripActions = ({
+    Name        => 'On SetStarted Open Ticket',
+    Description => 'When Started is Updated Set Ticket Status to Open',
+    ExecModule  => 'OpenOnStarted',
+});
+
+our @Scrips = ({
+    Description    => "On transaction and SetStarted Open Ticket",
+    ScripCondition => 'On Transaction',
+    ScripAction    => 'On SetStarted Open Ticket',
+    Template       => 'Blank'
+});
