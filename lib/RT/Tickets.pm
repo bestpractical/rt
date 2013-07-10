@@ -45,18 +45,6 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
-# Major Changes:
-
-# - Decimated ProcessRestrictions and broke it into multiple
-# functions joined by a LUT
-# - Semi-Generic SQL stuff moved to another file
-
-# Known Issues: FIXME!
-
-# - ClearRestrictions and Reinitialization is messy and unclear.  The
-# only good way to do it is to create a new RT::Tickets object.
-
 =head1 NAME
 
   RT::Tickets - A collection of Ticket objects
