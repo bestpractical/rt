@@ -1,18 +1,3 @@
-#requestor-accordion h3 {
-    position: relative;
-}
-#requestor-accordion a.user-summary {
-    position: absolute;
-    right: 0;
-    text-decoration: none;
-}
-#requestor-accordion a.user-summary:hover { text-decoration: underline }
-
-#requestor-accordion a.modify-user {
-    font-size: 80%;
-    color: black !important;
-}
-
 /* More about requestor ticket lists */
 
 .more-about-requestor-tickets {

@@ -323,3 +323,18 @@ function addprincipal_onchange(ev, ui) {
 function escapeCssSelector(str) {
     return str.replace(/([^A-Za-z0-9_-])/g,'\\$1');
 }
+
+
+jQuery(function() {
+    jQuery(".user-accordion").each(function(){
+        jQuery(this).accordion({
+            active: (jQuery(this).find("h3").length == 1 ? 0 : false),
+            collapsible: true,
+            heightStyle: "content",
+            header: "h3"
+        }).find("h3 a.user-summary").click(function(ev){
+            ev.stopPropagation();
+            return true;
+        });
+    });
+});
