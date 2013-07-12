@@ -192,13 +192,6 @@ my $render_attachment = sub {
             if ( $content_type eq 'text/html' ) {
                 $content = $m->comp( '/Elements/ScrubHTML', Content => $content );
 
-                $m->comp(
-                    '/Elements/MakeClicky',
-                    content => \$content,
-                    html    => 1,
-                    object  => $Object,
-                );
-
                 if (RT->Config->Get('ShowTransactionImages')) {
                     my @rewritten = RT::Interface::Web::RewriteInlineImages(
                         Content         => \$content,
@@ -211,6 +204,13 @@ my $render_attachment = sub {
                     );
                     $displayed_inline->{$_}++ for @rewritten;
                 }
+
+                $m->comp(
+                    '/Elements/MakeClicky',
+                    content => \$content,
+                    html    => 1,
+                    object  => $Object,
+                );
 
                 unless (length $name) {
                     eval {
