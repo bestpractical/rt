@@ -139,7 +139,7 @@ unless ( $regexp ) {
 my $pos = 0;
 while ( $$content =~ /($regexp)/gsio ) {
     my $match = $1;
-    next if $` =~ /(?:href|src)=(?:&quot;|")$/;
+    next if $` =~ /\w+=(?:&quot;|")$/;
     my $skipped_len = pos($$content) - $pos - length($match);
     if ( $skipped_len > 0 ) {
         my $plain;
