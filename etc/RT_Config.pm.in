@@ -1388,7 +1388,7 @@ Control the appearance of the ticket lists in the 'More About Requestors' box.
 
 Set($MoreAboutRequestorTicketListFormat, q{
        '<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>',
-       '(__Owner__)',
+       '__Owner__',
        '<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>',
        '__Status__',
 });
