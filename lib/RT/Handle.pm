@@ -1553,6 +1553,67 @@ sub IndexDescription {
     return $desc;
 }
 
+sub MakeSureIndexExists {
+    my $self = shift;
+    my %args = ( Table => undef, Columns => [], Optional => [], @_ );
+
+    my @list = $self->IndexesThatBeginWith(
+        Table => $args{'Table'}, Columns => [@{$args{'Columns'}}, @{$args{'Optional'}}],
+    );
+    if (@list) {
+        RT->Logger->info( ucfirst $self->IndexDescription(
+            Table => $args{'Table'}, Columns => [@{$args{'Columns'}}, @{$args{'Optional'}}],
+        ). ' exists.' );
+        return;
+    }
+
+    @list = $self->IndexesThatBeginWith(
+        Table => $args{'Table'}, Columns => $args{'Columns'},
+    );
+    if ( !@list ) {
+        my ($status, $msg) = $self->CreateIndex(
+            Table => $args{'Table'}, Columns => [@{$args{'Columns'}}, @{$args{'Optional'}}],
+        );
+        RT->Logger->info($msg);
+    }
+    else {
+        RT->Logger->info(
+            ucfirst $self->IndexDescription(
+                %{$list[0]}
+            )
+            .' exists, you may consider replacing it with '
+            . $self->IndexDescription(
+                Table => $args{'Table'}, Columns => [@{$args{'Columns'}}, @{$args{'Optional'}}],
+            )
+        );
+    }
+}
+
+sub DropIndexesThatArePrefix {
+    my $self = shift;
+    my %args = ( Table => undef, Columns => [], @_ );
+
+    my @list = $self->IndexesThatBeginWith(
+        Table => $args{'Table'}, Columns => [$args{'Columns'}[0]],
+    );
+
+    my $checking = join ',', map lc $_, @{ $args{'Columns'} }, '';
+    foreach my $i ( splice @list ) {
+        my $columns = join ',', @{ $i->{'Columns'} }, '';
+        next unless $checking =~ /^\Q$columns/i;
+
+        push @list, $i;
+    }
+    pop @list;
+
+    foreach my $i ( @list ) {
+        my ($status, $msg) = $self->DropIndex(
+            Table => $i->{'Table'}, Name => $i->{'Name'},
+        );
+        RT->Logger->info($msg);
+    }
+}
+
 # log a mason stack trace instead of a Carp::longmess because it's less painful
 # and uses mason component paths properly
 sub _LogSQLStatement {
