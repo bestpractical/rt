@@ -55,6 +55,7 @@ use File::Spec;
 use File::Path qw(make_path rmtree);
 use File::Copy qw(copy);
 use HTML::Entities qw(encode_entities);
+use List::Util qw(first);
 use RT::Pod::HTMLBatch;
 
 my %opts;
@@ -85,7 +86,10 @@ if (($opts{source} || '') =~ /\.tar\.gz$/ and -f $opts{source}) {
     $tmpdir = File::Temp->newdir();
 
     system("tar", "xzpf", $opts{source}, "-C", $tmpdir);
-    $opts{source} = <$tmpdir/rt-*>;
+    $opts{source} = first { -d $_ } <$tmpdir/*>;
+
+    die "Can't find directory to chdir into after unpacking tarball"
+        unless $opts{source};
 }
 chdir $opts{source} if $opts{source};
 
