@@ -50,8 +50,9 @@ package RT::CustomField;
 
 use strict;
 use warnings;
+use 5.010;
 
-
+use Scalar::Util 'blessed';
 
 use base 'RT::Record';
 
@@ -196,14 +197,13 @@ our %FieldTypes = (
 
 
 my %BUILTIN_GROUPINGS;
-our %FRIENDLY_OBJECT_TYPES =  ();
+my %FRIENDLY_LOOKUP_TYPES = ();
 
-RT::CustomField->_ForObjectType( 'RT::Queue-RT::Ticket' => "Tickets", );    #loc
-RT::CustomField->_ForObjectType(
-    'RT::Queue-RT::Ticket-RT::Transaction' => "Ticket Transactions", );    #loc
-RT::CustomField->_ForObjectType( 'RT::User'  => "Users", );                           #loc
-RT::CustomField->_ForObjectType( 'RT::Queue'  => "Queues", );                         #loc
-RT::CustomField->_ForObjectType( 'RT::Group' => "Groups", );                          #loc
+__PACKAGE__->RegisterLookupType( 'RT::Queue-RT::Ticket' => "Tickets", );    #loc
+__PACKAGE__->RegisterLookupType( 'RT::Queue-RT::Ticket-RT::Transaction' => "Ticket Transactions", ); #loc
+__PACKAGE__->RegisterLookupType( 'RT::User'  => "Users", );                           #loc
+__PACKAGE__->RegisterLookupType( 'RT::Queue'  => "Queues", );                         #loc
+__PACKAGE__->RegisterLookupType( 'RT::Group' => "Groups", );                          #loc
 
 __PACKAGE__->RegisterBuiltInGroupings(
     'RT::Ticket'    => [ qw(Basics Dates Links People) ],
@@ -1132,14 +1132,8 @@ Returns an array of LookupTypes available
 
 sub LookupTypes {
     my $self = shift;
-    return keys %FRIENDLY_OBJECT_TYPES;
+    return keys %FRIENDLY_LOOKUP_TYPES;
 }
-
-my @FriendlyObjectTypes = (
-    "[_1] objects",            # loc
-    "[_1]'s [_2] objects",        # loc
-    "[_1]'s [_2]'s [_3] objects",   # loc
-);
 
 =head2 FriendlyLookupType
 
@@ -1150,25 +1144,74 @@ Returns a localized description of the type of this custom field
 sub FriendlyLookupType {
     my $self = shift;
     my $lookup = shift || $self->LookupType;
-   
-    return ($self->loc( $FRIENDLY_OBJECT_TYPES{$lookup} ))
-                     if (defined  $FRIENDLY_OBJECT_TYPES{$lookup} );
+
+    return ($self->loc( $FRIENDLY_LOOKUP_TYPES{$lookup} ))
+        if defined $FRIENDLY_LOOKUP_TYPES{$lookup};
 
     my @types = map { s/^RT::// ? $self->loc($_) : $_ }
       grep { defined and length }
       split( /-/, $lookup )
       or return;
-    return ( $self->loc( $FriendlyObjectTypes[$#types], @types ) );
+
+    state $LocStrings = [
+        "[_1] objects",            # loc
+        "[_1]'s [_2] objects",        # loc
+        "[_1]'s [_2]'s [_3] objects",   # loc
+    ];
+    return ( $self->loc( $LocStrings->[$#types], @types ) );
 }
+
+=head1 RecordClassFromLookupType
+
+Returns the type of Object referred to by ObjectCustomFields' ObjectId column
+
+Optionally takes a LookupType to use instead of using the value on the loaded
+record.  In this case, the method may be called on the class instead of an
+object.
+
+=cut
 
 sub RecordClassFromLookupType {
     my $self = shift;
-    my ($class) = ($self->LookupType =~ /^([^-]+)/);
+    my $type = shift || $self->LookupType;
+    my ($class) = ($type =~ /^([^-]+)/);
     unless ( $class ) {
-        $RT::Logger->error(
-            "Custom Field #". $self->id 
-            ." has incorrect LookupType '". $self->LookupType ."'"
-        );
+        if (blessed($self) and $self->LookupType eq $type) {
+            $RT::Logger->error(
+                "Custom Field #". $self->id
+                ." has incorrect LookupType '$type'"
+            );
+        } else {
+            RT->Logger->error("Invalid LookupType passed as argument: $type");
+        }
+        return undef;
+    }
+    return $class;
+}
+
+=head1 ObjectTypeFromLookupType
+
+Returns the ObjectType used in ObjectCustomFieldValues rows for this CF
+
+Optionally takes a LookupType to use instead of using the value on the loaded
+record.  In this case, the method may be called on the class instead of an
+object.
+
+=cut
+
+sub ObjectTypeFromLookupType {
+    my $self = shift;
+    my $type = shift || $self->LookupType;
+    my ($class) = ($type =~ /([^-]+)$/);
+    unless ( $class ) {
+        if (blessed($self) and $self->LookupType eq $type) {
+            $RT::Logger->error(
+                "Custom Field #". $self->id
+                ." has incorrect LookupType '$type'"
+            );
+        } else {
+            RT->Logger->error("Invalid LookupType passed as argument: $type");
+        }
         return undef;
     }
     return $class;
@@ -1691,9 +1734,10 @@ sub ValuesForObject {
 }
 
 
-=head2 _ForObjectType PATH FRIENDLYNAME
+=head2 RegisterLookupType LOOKUPTYPE FRIENDLYNAME
 
-Tell RT that a certain object accepts custom fields
+Tell RT that a certain object accepts custom fields via a lookup type and
+provide a friendly name for such CFs.
 
 Examples:
 
@@ -1707,13 +1751,21 @@ This is a class method.
 
 =cut
 
-sub _ForObjectType {
+sub RegisterLookupType {
     my $self = shift;
     my $path = shift;
     my $friendly_name = shift;
 
-    $FRIENDLY_OBJECT_TYPES{$path} = $friendly_name;
+    $FRIENDLY_LOOKUP_TYPES{$path} = $friendly_name;
+}
 
+sub _ForObjectType {
+    RT->Deprecated(
+        Instead => 'RegisterLookupType',
+        Remove  => '4.4',
+    );
+    my $self = shift;
+    $self->RegisterLookupType(@_);
 }
 
 

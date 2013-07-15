@@ -45,31 +45,30 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => loc('Add Criteria')&>
-
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-
-
-% $m->callback( %ARGS, CallbackName => "BeforeBasics" );
-<& PickBasics, queues => \%queues &>
-<& PickTicketCFs, queues => \%queues &>
-<& PickObjectCFs, Class => 'Transaction', queues => \%queues &>
-<& PickObjectCFs, Class => 'Queue', queues => \%queues &>
-% $m->callback( %ARGS, CallbackName => "AfterCFs" );
-
-<tr class="separator"><td colspan="3"><hr /></td></tr>
-<tr>
-<td class="label"><&|/l&>Aggregator</&></td>
-<td class="operator" colspan="2"><& SelectAndOr, Name => "AndOr" &></td>
-
-</tr>
-
-</table>
-
-</&>
-
 <%ARGS>
-$addquery => 0
-$query => undef
+$Class
 %queues => ()
 </%ARGS>
+<%init>
+my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'} );
+$CustomFields->ApplySortOrder;
+$CustomFields->LimitToLookupType( "RT::$Class"->CustomFieldLookupType );
+$CustomFields->LimitToObjectId(0);
+
+foreach my $name (keys %queues) {
+    my $queue = RT::Queue->new($session{'CurrentUser'});
+    $queue->Load($name);
+    $CustomFields->LimitToObjectId($queue->Id) if $queue->Id;
+}
+
+my $has_cf = $CustomFields->First ? 1 : 0;
+$CustomFields->GotoFirstItem;
+</%init>
+% if ($has_cf) {
+<tr class="separator">
+  <td colspan="3">
+    <hr><em><% loc("[_1] CFs", loc($Class)) %></em>
+  </td>
+</tr>
+% }
+<& PickCFs, %ARGS, TicketSQLField => "${Class}CF", CustomFields => $CustomFields &>

@@ -69,8 +69,7 @@ sub Table {'Articles'}
 # This object takes custom fields
 
 use RT::CustomField;
-RT::CustomField->_ForObjectType( CustomFieldLookupType() => 'Articles' )
-  ;    #loc
+RT::CustomField->RegisterLookupType( CustomFieldLookupType() => 'Articles' );    #loc
 
 # {{{ Create
 

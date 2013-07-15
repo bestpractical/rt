@@ -1,0 +1,52 @@
+use strict;
+use warnings;
+
+our @Queues = (
+    { Name  => "Blues" },
+    { Name  => "Purples" },
+);
+
+our @CustomFields = (
+    map +{
+        LookupType  => RT::Transaction->CustomFieldLookupType,
+        MaxValues   => 1,
+        Type        => "Freeform",
+        %$_
+    },
+    {   Name    => "Billable",
+        Type    => "Select",
+        Values  => [
+            { Name => "Yes", SortOrder => 1 },
+            { Name => "No",  SortOrder => 2 },
+        ],
+    },
+    {   Name    => "Who",
+        Type    => "SelectMultiple",
+        Values  => [
+            map +{ Name => $_ },
+                "Facilities",
+                "Information Technology",
+                "Library",
+                "Telecom",
+        ],
+    },
+    {   Name    => "When",
+        Type    => "Date",
+    },
+
+    # Two CFs named the same, but each applied to only one queue
+    # Note: Queue => ref forces RT::Handle to apply rather than
+    # RT::CustomField->Create; the former respects LookupType, the latter
+    # doesn't.
+    {   Name    => "Color",
+        Queue   => ["Blues"],
+    },
+    {   Name    => "Color",
+        Queue   => ["Purples"],
+    },
+
+    # Some ticket CFs to test mixed searches
+    {   Name        => "Location",
+        LookupType  => RT::Ticket->CustomFieldLookupType,
+    },
+);
