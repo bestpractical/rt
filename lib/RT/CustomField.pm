@@ -1176,7 +1176,7 @@ Returns an array of LookupTypes available
 
 sub LookupTypes {
     my $self = shift;
-    return keys %FRIENDLY_OBJECT_TYPES;
+    return sort keys %FRIENDLY_OBJECT_TYPES;
 }
 
 my @FriendlyObjectTypes = (
