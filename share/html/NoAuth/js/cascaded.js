@@ -45,9 +45,12 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-function filter_cascade (id, val) {
+function filter_cascade (id, vals) {
     var select = document.getElementById(id);
     var complete_select = document.getElementById(id + "-Complete" );
+    if ( !( vals instanceof Array ) ) {
+        vals = [vals];
+    }
 
     if (!select) { return };
     var i;
@@ -60,6 +63,10 @@ function filter_cascade (id, val) {
 
         var complete_children = complete_select.childNodes;
 
+        var cloned_labels = {};
+        var cloned_empty_label;
+        for ( i in vals ) {
+        val = vals[i];
         if ( val == '' && arguments.length == 3 ) {
             // no category, and the category is from a hierchical cf;
             // leave this set of options empty
@@ -71,19 +78,42 @@ function filter_cascade (id, val) {
                     select.appendChild(new_option);
                 }
             }
+            break;
         }
         else {
+            var labels_to_clone = {};
             for (i in complete_children) {
                 if (!complete_children[i].label ||
                       (complete_children[i].hasAttribute &&
-                            !complete_children[i].hasAttribute('label') ) ||
-                        complete_children[i].label.substr(0, val.length) == val ) {
-                    if ( complete_children[i].cloneNode ) {
-                        new_option = complete_children[i].cloneNode(true);
-                        select.appendChild(new_option);
+                            !complete_children[i].hasAttribute('label') ) ) {
+                    if ( cloned_empty_label ) {
+                        continue;
                     }
                 }
+                else if ( complete_children[i].label.substr(0, val.length) == val ) {
+                    if ( cloned_labels[complete_children[i].label] ) {
+                        continue;
+                    }
+                    labels_to_clone[complete_children[i].label] = true;
+                }
+                else {
+                    continue;
+                }
+
+                if ( complete_children[i].cloneNode ) {
+                    new_option = complete_children[i].cloneNode(true);
+                    select.appendChild(new_option);
+                }
             }
+
+            if ( !cloned_empty_label )
+                cloned_empty_label = true;
+
+            for ( label in labels_to_clone ) {
+                if ( !cloned_labels[label] )
+                    cloned_labels[label] = true;
+            }
+        }
         }
     }
     else {
