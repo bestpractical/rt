@@ -1452,6 +1452,8 @@ sub Gateway {
 
     my $head = $Message->head;
     my $ErrorsTo = ParseErrorsToAddressFromHead( $head );
+    my $From = $head->get("From");
+    chomp $From if defined $From;
 
     my $MessageId = $head->get('Message-ID')
         || "<no-message-id-". time . rand(2000) .'@'. RT->Config->Get('Organization') .'>';
@@ -1583,7 +1585,7 @@ sub Gateway {
                 Explanation => $ErrStr,
                 MIMEObj     => $Message
             );
-            return ( 0, "Ticket creation failed: $ErrStr", $Ticket );
+            return ( 0, "Ticket creation From: $From failed: $ErrStr", $Ticket );
         }
 
         # strip comments&corresponds from the actions we don't need
@@ -1628,7 +1630,7 @@ sub Gateway {
                     Explanation => $msg,
                     MIMEObj     => $Message
                 );
-                return ( 0, "Message not recorded: $msg", $Ticket );
+                return ( 0, "Message From: $From not recorded: $msg", $Ticket );
             }
         } elsif ($unsafe_actions) {
             my ( $status, $msg ) = _RunUnsafeAction(
@@ -1727,6 +1729,8 @@ sub _RunUnsafeAction {
         @_
     );
 
+    my $From = $args{Message}->head->get("From");
+
     if ( $args{'Action'} =~ /^take$/i ) {
         my ( $status, $msg ) = $args{'Ticket'}->SetOwner( $args{'CurrentUser'}->id );
         unless ($status) {
@@ -1736,7 +1740,7 @@ sub _RunUnsafeAction {
                 Explanation => $msg,
                 MIMEObj     => $args{'Message'}
             );
-            return ( 0, "Ticket not taken" );
+            return ( 0, "Ticket not taken, by email From: $From" );
         }
     } elsif ( $args{'Action'} =~ /^resolve$/i ) {
         my $new_status = $args{'Ticket'}->FirstInactiveStatus;
@@ -1751,11 +1755,11 @@ sub _RunUnsafeAction {
                     Explanation => $msg,
                     MIMEObj     => $args{'Message'}
                 );
-                return ( 0, "Ticket not resolved" );
+                return ( 0, "Ticket not resolved, by email From: $From" );
             }
         }
     } else {
-        return ( 0, "Not supported unsafe action $args{'Action'}", $args{'Ticket'} );
+        return ( 0, "Not supported unsafe action $args{'Action'}, by email From: $From", $args{'Ticket'} );
     }
     return ( 1, "Success" );
 }
