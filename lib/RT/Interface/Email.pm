@@ -1583,7 +1583,7 @@ sub Gateway {
                 Explanation => $ErrStr,
                 MIMEObj     => $Message
             );
-            return ( 0, "Ticket creation failed: $ErrStr", $Ticket );
+            return ( 0, "Ticket creation from $ErrorsTo failed: $ErrStr", $Ticket );
         }
 
         # strip comments&corresponds from the actions we don't need
@@ -1628,7 +1628,7 @@ sub Gateway {
                     Explanation => $msg,
                     MIMEObj     => $Message
                 );
-                return ( 0, "Message not recorded: $msg", $Ticket );
+                return ( 0, "Message from $ErrorsTo not recorded: $msg", $Ticket );
             }
         } elsif ($unsafe_actions) {
             my ( $status, $msg ) = _RunUnsafeAction(
@@ -1736,7 +1736,7 @@ sub _RunUnsafeAction {
                 Explanation => $msg,
                 MIMEObj     => $args{'Message'}
             );
-            return ( 0, "Ticket not taken" );
+            return ( 0, "Ticket not taken by email from $args{'ErrorsTo'}" );
         }
     } elsif ( $args{'Action'} =~ /^resolve$/i ) {
         my $new_status = $args{'Ticket'}->FirstInactiveStatus;
@@ -1751,11 +1751,11 @@ sub _RunUnsafeAction {
                     Explanation => $msg,
                     MIMEObj     => $args{'Message'}
                 );
-                return ( 0, "Ticket not resolved" );
+                return ( 0, "Ticket not resolved by email from $args{'ErrorsTo'}" );
             }
         }
     } else {
-        return ( 0, "Not supported unsafe action $args{'Action'}", $args{'Ticket'} );
+        return ( 0, "Not supported unsafe action $args{'Action'} by email from $args{'ErrorsTo'}", $args{'Ticket'} );
     }
     return ( 1, "Success" );
 }
