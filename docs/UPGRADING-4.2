@@ -130,6 +130,11 @@ UPGRADING FROM RT 4.0.0 and greater
   performance problems.  Unprivileged Owners (if they exist) may still
   be set using the Autocompleter.
 
+* The functionality that changed the ticket status to Open when the Started
+  date is set has been moved to a Scrip called 'On transaction and SetStarted
+  Open Ticket'. If you do not depend on this functionality, the Scrip can
+  be deleted.
+
 * New installs will notify Ccs and one-time Ccs/Bccs on create and Owners on
   create and correspond.  Upgraded installations will not.  If you'd like to
   adjust your scrips, the actions are available from the admin scrip pages.
