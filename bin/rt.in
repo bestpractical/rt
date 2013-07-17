@@ -671,7 +671,7 @@ EDIT:
             # If we submitted a bad form, we'll give the user a chance
             # to correct it and resubmit.
             if ($edit || (!$input && !$cl)) {
-                my $content = $r->content;
+                my $content = $r->content . "\n";
                 $content =~ s/^(?!#)/#     /mg;
                 $text = $content . $text;
                 $synerr = 1;
