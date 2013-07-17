@@ -248,7 +248,8 @@ sub _list {
 =head2 create NAME [--comment] [--group GNAME] [--user UNAME]
 
 Creates new action with NAME and adds users and/or groups to its
-recipient list. Would be notify as comment if --comment specified.
+recipient list. Would be notify as comment if --comment specified.  The
+user, if specified, must already exist in RT.
 
 =cut
 
@@ -295,8 +296,9 @@ sub __create_empty {
 
 sub _check_groups
 {
-    return grep { $_ ? 1: do { print STDERR "Group '$_' skipped, doesn't exist\n"; 0; } }
-        map { __check_group($_) } @_;
+    return map {$_->[1]}
+        grep { $_->[1] ? 1: do { print STDERR "Group '$_->[0]' skipped, doesn't exist\n"; 0; } }
+        map { [$_, __check_group($_)] } @_;
 }
 
 sub __check_group
@@ -310,8 +312,9 @@ sub __check_group
 
 sub _check_users
 {
-    return grep { $_ ? 1: do { print STDERR "User '$_' skipped, doesn't exist\n"; 0; } }
-        map { __check_user($_) } @_;
+    return map {$_->[1]}
+        grep { $_->[1] ? 1: do { print STDERR "User '$_->[0]' skipped, doesn't exist\n"; 0; } }
+        map { [$_, __check_user($_)] } @_;
 }
 
 sub __check_user
@@ -325,7 +328,8 @@ sub __check_user
 
 =head2 add NAME [--group GNAME] [--user UNAME]
 
-Adds groups and/or users to recipients of the action NAME.
+Adds groups and/or users to recipients of the action NAME.  The user, if
+specified, must already exist in RT.
 
 =cut
 
