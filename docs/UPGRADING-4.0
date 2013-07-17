@@ -126,6 +126,13 @@ database level.
 =back
 
 
+=head2 Full text search
+
+Since 4.0.0, RT full text search is disabled by default. For details on how to
+re-enable it and on how to speed this up with full text indexing, see
+L<full_text_indexing.pod>.
+
+
 
 =head1 UPGRADING FROM 4.0.5 AND EARLIER
 
