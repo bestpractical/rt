@@ -67,7 +67,7 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 
 }
 
-BEGIN { # BEGIN RT CMD BOILERPLATE
+BEGIN {
     use RT;
     RT::LoadConfig();
     RT::Init();
