@@ -139,7 +139,7 @@ while ( my $user = $users->Next ) {
 
     my $formatted = $m->scomp('/Elements/ShowUser', User => $user, NoEscape => 1);
     $formatted =~ s/\n//g;
-    my $suggestion = { label => $formatted, value => $user->$return };
+    my $suggestion = { label => $formatted, value => $user->$return, id => $user->id };
     $m->callback( CallbackName => "ModifySuggestion", suggestion => $suggestion, user => $user );
     push @suggestions, $suggestion;
 }
