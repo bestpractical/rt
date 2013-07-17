@@ -112,10 +112,13 @@ my $COLUMN_MAP = {
             # Display custom field contents, separated by newlines.
             # For Image custom fields we also show a thumbnail here.
             my $values = $cf->ValuesForObject( $_[0] );
+
+            my %types = map { $_ => 1 } qw/Image Date DateTime/;
+
             my @values = map {
                 (
-                    ($cf->Type eq 'Image')
-                        ? \($m->scomp( '/Elements/ShowCustomFieldImage', Object => $_ ))
+                    $types{$cf->Type} ?
+                        \($m->scomp( '/Elements/ShowCustomField' . $cf->Type, Object => $_ ))
                         : $_->Content
                 ),
                 \'<br />',

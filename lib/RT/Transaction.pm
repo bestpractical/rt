@@ -783,8 +783,9 @@ sub BriefDescription {
         my $self = shift;
         my $field = $self->loc('CustomField');
 
+        my $cf;
         if ( $self->Field ) {
-            my $cf = RT::CustomField->new( $self->CurrentUser );
+            $cf = RT::CustomField->new( $self->CurrentUser );
             $cf->SetContextObject( $self->Object );
             $cf->Load( $self->Field );
             $field = $cf->Name();
@@ -793,6 +794,44 @@ sub BriefDescription {
 
         my $new = $self->NewValue;
         my $old = $self->OldValue;
+
+        if ( $cf ) {
+
+            if ( $cf->Type eq 'DateTime' ) {
+                if ($old) {
+                    my $date = RT::Date->new( $self->CurrentUser );
+                    $date->Set( Format => 'ISO', Value => $old );
+                    $old = $date->AsString;
+                }
+
+                if ($new) {
+                    my $date = RT::Date->new( $self->CurrentUser );
+                    $date->Set( Format => 'ISO', Value => $new );
+                    $new = $date->AsString;
+                }
+            }
+            elsif ( $cf->Type eq 'Date' ) {
+                if ($old) {
+                    my $date = RT::Date->new( $self->CurrentUser );
+                    $date->Set(
+                        Format   => 'unknown',
+                        Value    => $old,
+                        Timezone => 'UTC',
+                    );
+                    $old = $date->AsString( Time => 0, Timezone => 'UTC' );
+                }
+
+                if ($new) {
+                    my $date = RT::Date->new( $self->CurrentUser );
+                    $date->Set(
+                        Format   => 'unknown',
+                        Value    => $new,
+                        Timezone => 'UTC',
+                    );
+                    $new = $date->AsString( Time => 0, Timezone => 'UTC' );
+                }
+            }
+        }
 
         if ( !defined($old) || $old eq '' ) {
             return $self->loc("[_1] [_2] added", $field, $new);
