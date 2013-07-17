@@ -65,14 +65,14 @@ function filter_cascade (id, vals) {
 
         var cloned_labels = {};
         var cloned_empty_label;
-        for ( i in vals ) {
-            val = vals[i];
+        for ( var j = 0; j < vals.length; j++ ) {
+            val = vals[j];
             if ( val == '' && arguments.length == 3 ) {
                 // no category, and the category is from a hierchical cf;
                 // leave this set of options empty
             } else if ( val == '' ) {
                 // no category, let's clone all node
-                for (i in complete_children) {
+                for (i = 0; i < complete_children.length; i++) {
                     if ( complete_children[i].cloneNode ) {
                         new_option = complete_children[i].cloneNode(true);
                         select.appendChild(new_option);
@@ -82,7 +82,7 @@ function filter_cascade (id, vals) {
             }
             else {
                 var labels_to_clone = {};
-                for (i in complete_children) {
+                for (i = 0; i < complete_children.length; i++) {
                     if (!complete_children[i].label ||
                           (complete_children[i].hasAttribute &&
                                 !complete_children[i].hasAttribute('label') ) ) {
@@ -118,7 +118,7 @@ function filter_cascade (id, vals) {
     }
     else {
 // for back compatibility
-        for (i in children) {
+        for (i = 0; i < children.length; i++) {
             if (!children[i].label) { continue };
             if ( val == '' && arguments.length == 3 ) {
                 hide(children[i]);
