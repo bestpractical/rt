@@ -80,6 +80,8 @@
 </div>
 % }
 
+% $m->callback( requestor => $requestor, %ARGS, CallbackName => 'AfterComments' );
+
 % if ( $ShowTickets ) {
 <div class="more-about-requestor-tickets ui-tabs" id="more-about-requestor-tickets-<%$requestor->Id%>">
   <ul>
@@ -130,6 +132,8 @@
   </div>
 % }
 %# end of requestors loop
+
+% $m->callback( %ARGS, CallbackName => 'AfterRequestors' );
 
 </div>
 </&>
