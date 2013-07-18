@@ -523,12 +523,6 @@ my $build_main_nav = sub {
         );
     }
 
-    $tools->child( offline =>
-        title       => loc('Offline'),
-        description => loc('Create tickets offline'),
-        path        => '/Tools/Offline.html',
-    );
-
     if ( $session{'CurrentUser'}->HasRight( Right => 'ShowApprovalsTab', Object => RT->System ) ) {
         $tools->child( approval =>
             title       => loc('Approval'),
