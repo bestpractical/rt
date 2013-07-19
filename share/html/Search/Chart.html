@@ -97,8 +97,8 @@ my %query;
     );
 
     for(@session_fields) {
-        $query{$_} = $current->{$_} unless defined $query{$_};
         $query{$_} = $DECODED_ARGS->{$_} unless defined $query{$_};
+        $query{$_} = $current->{$_} unless defined $query{$_};
     }
 
     if ($DECODED_ARGS->{'SavedSearchLoadSubmit'}) {
