@@ -1676,7 +1676,7 @@ sub RewriteInlineImages {
                           and $cid =~ s/^cid://i;
 
         for my $attach (@{$args{Related}}) {
-            if (($attach->GetHeader('Content-ID') || '') eq "<$cid>") {
+            if (($attach->GetHeader('Content-ID') || '') =~ /^(<)?\Q$cid\E(?(1)>)$/) {
                 push @rewritten, $attach->Id;
                 return "$args{AttachmentPath}/" . $attach->TransactionId . '/' . $attach->Id;
             }
