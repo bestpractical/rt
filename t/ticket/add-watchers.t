@@ -1,4 +1,4 @@
-use RT::Test nodata => 1, tests => 32;
+use RT::Test nodata => 1, tests => 34;
 
 use strict;
 use warnings;
@@ -86,6 +86,13 @@ ok( $rv, "watcher removed by Email" );
 ok(  $rv, "user can add self as Cc by username" );
 ($rv, $msg) = $ticket2->AddWatcher( Type => 'Requestor', Email => $user->Name );
 ok(  $rv, "user can add self as Requestor by username" );
+
+# Add an email address with a phrase
+($rv, $msg) = $ticket->AddWatcher( Type => 'Cc', Email => q["Foo Bar" <foo@example.com>] );
+ok $rv, "Added email address with phrase" or diag $msg;
+
+my $foo = RT::Test->load_or_create_user( EmailAddress => 'foo@example.com' );
+is $foo->RealName, "Foo Bar", "RealName matches";
 
 # Queue watcher tests
 $principal->RevokeRight( Right => 'Watch'  , Object => $queue );
