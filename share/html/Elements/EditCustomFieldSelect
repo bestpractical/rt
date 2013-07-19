@@ -72,7 +72,7 @@ jQuery(  function () {
         basedon.onchange = function () {
             filter_cascade(
                 <% "$id-Values" |n,j%>,
-                basedon.value,
+                jQuery(basedon).val(),
                 1
             );
             if (oldchange != null)
