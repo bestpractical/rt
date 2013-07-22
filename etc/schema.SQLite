@@ -345,8 +345,6 @@ CREATE TABLE Templates (
   Name varchar(200) collate NOCASE NOT NULL  ,
   Description varchar(255) collate NOCASE NULL  ,
   Type varchar(16) collate NOCASE NULL  ,
-  Language varchar(16) collate NOCASE NULL  ,
-  TranslationOf integer NULL DEFAULT 0 ,
   Content blob NULL  ,
   LastUpdated DATETIME NULL  ,
   LastUpdatedBy integer NULL DEFAULT 0 ,

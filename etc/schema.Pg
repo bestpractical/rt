@@ -492,8 +492,6 @@ CREATE TABLE Templates (
   Name varchar(200) NOT NULL  ,
   Description varchar(255) NULL  ,
   Type varchar(16) NULL  ,
-  Language varchar(16) NULL  ,
-  TranslationOf integer NOT NULL DEFAULT 0  ,
   Content text NULL  ,
   LastUpdated TIMESTAMP NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
