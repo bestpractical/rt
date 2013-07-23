@@ -1,3 +1,5 @@
+=encoding utf-8
+
 =head1 Feeds
 
 RT offers several feeds that provide RT data in formats suitable for
@@ -82,16 +84,15 @@ generate a single event using the Start and Due dates/times as the
 start and end values for the event. This is useful if you have tickets
 with shorter durations, like for scheduled maintenance for example.
 
-=head3 Secret Token
+=head2 Secret Tokens
 
-All of your iCal feeds embed a secret token that is specific to your
-RT user account. If you ever need to change this token, for example
-if someone got access to one of your iCal feed links allowing them
-to see tickets with your permissions, you can reset it. Log into
-RT and go to Logged in as > Settings > About me. In the lower
-right-hand corner, there is a link "I want to reset my secret token"
-and it does just that.
+All of your RSS and iCal feeds embed a secret token that is specific to your RT
+user account.  You should never share your feed urls with other people,
+otherwise they can see tickets as your user.  If one of your feed urls is
+accidentally shared, you can reset your token to disable all old feed urls.  To
+do so, start by logging into RT and go to Logged in as … > Settings > About me.
+In the lower right-hand corner, there is a link "I want to reset my secret
+token" and it does just that.
 
 Note that this will disable all of your existing feeds. After updating
-the token, you'll need to update all of your feeds with the new
-token.
+the token, you'll need to update all of your feed urls.
