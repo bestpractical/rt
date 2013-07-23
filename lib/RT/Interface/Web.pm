@@ -115,6 +115,7 @@ sub JSFiles {
       jquery.modal-defaults.js
       jquery.cookie.js
       titlebox-state.js
+      i18n.js
       util.js
       autocomplete.js
       jquery.event.hover-1.0.js

@@ -94,7 +94,7 @@ jQuery( function() {
             } else {
                 input.val("");
                 jQuery("<span class='invalid'>")
-                    .text("Filenames with double quotes are not supported.")
+                    .text(loc_key("quote_in_filename"))
                     .insertAfter(input);
             }
         }
