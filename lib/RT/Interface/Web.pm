@@ -186,13 +186,13 @@ sub EscapeURI {
 
 =head2 EncodeJSON SCALAR
 
-Encodes the SCALAR to JSON and returns a JSON string.  SCALAR may be a simple
-value or a reference.
+Encodes the SCALAR to JSON and returns a JSON Unicode (B<not> UTF-8) string.
+SCALAR may be a simple value or a reference.
 
 =cut
 
 sub EncodeJSON {
-    my $s = JSON::to_json(shift, { utf8 => 1, allow_nonref => 1 });
+    my $s = JSON::to_json(shift, { allow_nonref => 1 });
     $s =~ s{/}{\\/}g;
     return $s;
 }
