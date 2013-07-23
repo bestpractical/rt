@@ -364,21 +364,33 @@ sub RoleLimit {
         $group_members ||= $self->_GroupMembersJoin(
             GroupsAlias => $groups, New => 1, Left => 0
         );
-        $users ||= $self->Join(
-            TYPE            => 'LEFT',
-            ALIAS1          => $group_members,
-            FIELD1          => 'MemberId',
-            TABLE2          => 'Users',
-            FIELD2          => 'id',
-        );
-        $self->Limit(
-            %args,
-            ALIAS           => $users,
-            FIELD           => $args{FIELD},
-            OPERATOR        => $args{OPERATOR},
-            VALUE           => $args{VALUE},
-            CASESENSITIVE   => 0,
-        );
+        if ($args{FIELD} eq "id") {
+            # Save a left join to Users, if possible
+            $self->Limit(
+                %args,
+                ALIAS           => $group_members,
+                FIELD           => "MemberId",
+                OPERATOR        => $args{OPERATOR},
+                VALUE           => $args{VALUE},
+                CASESENSITIVE   => 0,
+            );
+        } else {
+            $users ||= $self->Join(
+                TYPE            => 'LEFT',
+                ALIAS1          => $group_members,
+                FIELD1          => 'MemberId',
+                TABLE2          => 'Users',
+                FIELD2          => 'id',
+            );
+            $self->Limit(
+                %args,
+                ALIAS           => $users,
+                FIELD           => $args{FIELD},
+                OPERATOR        => $args{OPERATOR},
+                VALUE           => $args{VALUE},
+                CASESENSITIVE   => 0,
+            );
+        }
     }
     $self->_CloseParen( $args{SUBCLAUSE} ) if $args{SUBCLAUSE};
     return ($groups, $group_members, $users);
