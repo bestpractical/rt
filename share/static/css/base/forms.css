@@ -225,6 +225,11 @@ form div.submit div.buttons div.next {
     width: 50%;
 }
 
+.invalid {
+    font-style: italic;
+    color: red;
+}
+
 /* query builder */
 
 #formatbuttons {

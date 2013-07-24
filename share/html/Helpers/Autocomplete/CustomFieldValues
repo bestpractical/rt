@@ -54,7 +54,7 @@ my $term = (split /\n/, $ARGS{term} || '')[-1];
 
 my $abort = sub {
     $r->content_type('application/json; charset=utf-8');
-    $m->out(JSON::to_json( [] ));
+    $m->out(JSON( [] ));
     $m->abort;
 };
 

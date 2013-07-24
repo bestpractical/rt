@@ -80,3 +80,23 @@ jQuery(function() {
         }).change();
     });
 });
+
+jQuery( function() {
+    jQuery("input[type=file]").change( function() {
+        var input = jQuery(this);
+        var warning = input.next(".invalid");
+
+        if ( !input.val().match(/"/) ) {
+            warning.hide();
+        } else {
+            if (warning.length) {
+                warning.show();
+            } else {
+                input.val("");
+                jQuery("<span class='invalid'>")
+                    .text(loc_key("quote_in_filename"))
+                    .insertAfter(input);
+            }
+        }
+    });
+});
