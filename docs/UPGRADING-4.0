@@ -246,4 +246,3 @@ upgrade by running:
 
 Followed by re-running make upgrade-database and answering 3.9.8 when
 prompted for which RT version you're upgrading from.
->>>>>>> 4.0/pg-9.2-compatibility
