@@ -795,7 +795,7 @@ sub _EncodeLOB {
                                    . length($Body));
                 $RT::Logger->info( "It started: " . substr( $Body, 0, 60 ) );
                 $Filename .= ".txt" if $Filename;
-                return ("none", "Large attachment dropped", "plain/text", $Filename );
+                return ("none", "Large attachment dropped", "text/plain", $Filename );
             }
         }
 

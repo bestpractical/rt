@@ -87,6 +87,7 @@ sub usage {
     print "\t-p, --print\t"
         . loc("Print the resulting digest messages to STDOUT; don't mail them. Do not mark them as sent")
         . "\n";
+    print "\t-v, --verbose\t" . loc("Give output even on messages successfully sent") . "\n";
     print "\t-h, --help\t" . loc("Print this message") . "\n";
 
     if ( $error eq 'help' ) {
@@ -97,10 +98,11 @@ sub usage {
     }
 }
 
-my ( $frequency, $print, $help ) = ( '', '', '' );
+my ( $frequency, $print, $verbose, $help ) = ( '', '', '', '' );
 GetOptions(
     'mode=s' => \$frequency,
     'print'  => \$print,
+    'verbose' => \$verbose,
     'help'   => \$help,
 );
 
@@ -126,7 +128,7 @@ sub run {
         my ( $contents_list, $contents_body ) = build_digest_for_user( $user, $all_digest->{$user} );
         # Now we have a content head and a content body.  We can send a message.
         if ( send_digest( $user, $contents_list, $contents_body ) ) {
-            print "Sent message to $user\n";
+            print "Sent message to $user\n" if $verbose;
             mark_transactions_sent( $frequency, $user, values %{$sent_transactions->{$user}} ) unless ($print);
         } else {
             print "Failed to send message to $user\n";

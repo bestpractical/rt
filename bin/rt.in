@@ -665,8 +665,8 @@ EDIT:
     # We'll let the user edit the form before sending it to the server,
     # unless we have enough information to submit it non-interactively.
     if ( $type && $type eq 'ticket' && $text !~ /^Content-Type:/m ) {
-        $content_type ||= 'text/plain';
-        $text .= "Content-Type: $content_type\n";
+        $text .= "Content-Type: $content_type\n"
+            if $content_type and $content_type ne "text/plain";
     }
 
     if ($edit || (!$input && !$cl)) {
@@ -701,7 +701,9 @@ EDIT:
             # If we submitted a bad form, we'll give the user a chance
             # to correct it and resubmit.
             if ($edit || (!$input && !$cl)) {
-                $text = $r->content;
+                my $content = $r->content . "\n";
+                $content =~ s/^(?!#)/#     /mg;
+                $text = $content . $text;
                 $synerr = 1;
                 goto EDIT;
             }

@@ -276,8 +276,9 @@ sub HasRight {
         return 1;
     }
 
-    $args{'Right'} = RT::ACE->CanonicalizeRightName( $args{'Right'} );
-    unless ( $args{'Right'} ) {
+    if ( my $right = RT::ACE->CanonicalizeRightName( $args{'Right'} ) ) {
+        $args{'Right'} = $right;
+    } else {
         $RT::Logger->error(
                "Invalid right. Couldn't canonicalize right '$args{'Right'}'");
         return undef;

@@ -1132,7 +1132,7 @@ Returns an array of LookupTypes available
 
 sub LookupTypes {
     my $self = shift;
-    return keys %FRIENDLY_LOOKUP_TYPES;
+    return sort keys %FRIENDLY_LOOKUP_TYPES;
 }
 
 =head2 FriendlyLookupType

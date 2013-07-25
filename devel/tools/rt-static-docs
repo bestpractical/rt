@@ -61,8 +61,9 @@ my %opts;
 GetOptions(
     \%opts,
     "help|h",
-    "rt=s",
+    "source=s",
     "to=s",
+    "extension=s",
 );
 
 if ( $opts{'help'} ) {
@@ -80,13 +81,13 @@ die "--to MUST be a directory\n"    unless -d $opts{to};
 
 # Unpack the tarball, if that's what we're given.
 my $tmpdir;
-if (($opts{rt} || '') =~ /\.tar\.gz$/ and -f $opts{rt}) {
+if (($opts{source} || '') =~ /\.tar\.gz$/ and -f $opts{source}) {
     $tmpdir = File::Temp->newdir();
 
-    system("tar", "xzpf", $opts{rt}, "-C", $tmpdir);
-    $opts{rt} = <$tmpdir/rt-*>;
+    system("tar", "xzpf", $opts{source}, "-C", $tmpdir);
+    $opts{source} = <$tmpdir/rt-*>;
 }
-chdir $opts{rt} if $opts{rt};
+chdir $opts{source} if $opts{source};
 
 my @dirs = (
     qw(
@@ -130,7 +131,8 @@ elsif (-x "configure") {
     generate_configure_help("configure");
 }
 else {
-    warn "Unable to generate a page for ./configure --help!\n";
+    warn "Unable to generate a page for ./configure --help!\n"
+        unless $opts{extension};
 }
 
 # Manually "convert" README* and 3.8-era UPGRADING* to HTML and push them into
@@ -187,7 +189,7 @@ rt-static-docs - generate doc shipped with RT
 
 =head1 SYNOPSIS
 
-    rt-static-docs --to /path/to/output [--rt /path/to/rt]
+    rt-static-docs --to /path/to/output [--source /path/to/rt]
 
 =head1 DESCRIPTION
 
@@ -207,7 +209,7 @@ L<http://bestpractical.com/rt/docs/>.
 
 Set the destination directory for the output files.
 
-=item --rt
+=item --source
 
 Set the RT base directory to search under.  Defaults to the current working
 directory, which is fine if you're running this script as
@@ -215,6 +217,12 @@ C<devel/tools/rt-static-docs>.
 
 May also point to a tarball (a file ending in C<.tar.gz>) which will be
 unpacked into a temporary directory and used as the RT base directory.
+
+=item --extension=RTx::Foo
+
+Indicates when C<--source> is an RT extension, such as RT::IR.  Takes an
+extension name for future use, but currently it only acts as a flag to suppress
+a warning about not finding ./configure.
 
 =item --help
 

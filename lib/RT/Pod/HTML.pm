@@ -54,6 +54,10 @@ use base 'Pod::Simple::XHTML';
 
 use HTML::Entities qw//;
 
+__PACKAGE__->_accessorize(
+    "batch"
+);
+
 sub new {
     my $self = shift->SUPER::new(@_);
     $self->index(1);
@@ -118,12 +122,14 @@ sub resolve_local_link {
     my $self = shift;
     my ($name, $section) = @_;
 
+    $name .= ""; # stringify name, it may be an object
+
     $section = defined $section
         ? '#' . $self->idify($section, 1)
         : '';
 
     my $local;
-    if ($name =~ /^RT(::|$)/) {
+    if ($name =~ /^RT(::(?!Extension::|Authen::)|$)/ or $self->batch->found($name)) {
         $local = join "/",
                   map { $self->encode_entities($_) }
                 split /::/, $name;
@@ -131,14 +137,16 @@ sub resolve_local_link {
     elsif ($name =~ /^rt([-_]|$)/) {
         $local = $self->encode_entities($name);
     }
-    elsif ($name eq "RT_Config" or $name eq "RT_Config.pm") {
-        $local = "RT_Config";
+    elsif ($name =~ /^(\w+)_Config(\.pm)?$/) {
+        $name  = "$1_Config";
+        $local = "$1_Config";
     }
     # These matches handle links that look like filenames, such as those we
     # parse out of F<> tags.
     elsif (   $name =~ m{^(?:lib/)(RT/[\w/]+?)\.pm$}
            or $name =~ m{^(?:docs/)(.+?)\.pod$})
     {
+        $name  = join "::", split '/', $1;
         $local = join "/",
                   map { $self->encode_entities($_) }
                 split /\//, $1;
@@ -146,11 +154,20 @@ sub resolve_local_link {
 
     if ($local) {
         # Resolve links correctly by going up
-        my $depth = $self->batch_mode_current_level - 1;
-        return ($depth ? "../" x $depth : "") . "$local.html$section";
+        my $found = $self->batch->found($name);
+        my $depth = $self->batch_mode_current_level
+                  + ($found ? -1 : 1);
+        return ($depth ? "../" x $depth : "") . ($found ? "" : "rt/latest/") . "$local.html$section";
     } else {
         return;
     }
+}
+
+sub batch_mode_page_object_init {
+    my ($self, $batch, $module, $infile, $outfile, $depth) = @_;
+    $self->SUPER::batch_mode_page_object_init(@_[1..$#_]);
+    $self->batch( $batch );
+    return $self;
 }
 
 1;

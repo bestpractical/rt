@@ -57,6 +57,8 @@ use List::MoreUtils qw/all/;
 use RT::Pod::Search;
 use RT::Pod::HTML;
 
+my $MOD2PATH;
+
 sub new {
     my $self = shift->SUPER::new(@_);
     $self->verbose(0);
@@ -84,7 +86,7 @@ sub classify {
         my %page = @_;
         local $_ = $page{name};
         return 1 if /^(README|UPGRADING)/;
-        return 1 if $_ eq "RT_Config";
+        return 1 if /^RT\w*?_Config$/;
         return 1 if $_ eq "web_deployment";
         return 1 if $page{infile} =~ m{^configure(\.ac)?$};
         return 0;
@@ -174,6 +176,17 @@ sub write_contents_file {
 
 sub esc {
     Pod::Simple::HTMLBatch::esc(@_);
+}
+
+sub find_all_pods {
+    my $self = shift;
+    $MOD2PATH = $self->SUPER::find_all_pods(@_);
+    return $MOD2PATH;
+}
+
+sub found {
+    my ($self, $module) = @_;
+    return(exists $MOD2PATH->{$module} and defined $MOD2PATH->{$module});
 }
 
 1;

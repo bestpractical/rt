@@ -288,6 +288,16 @@ function update_addprincipal_title(title) {
 
 // when a value is selected from the autocompleter
 function addprincipal_onselect(ev, ui) {
+
+    // if principal link exists, we shall go there instead
+    var principal_link = jQuery(ev.target).closest('form').find('ul.ui-tabs-nav a[href="#acl-' + ui.item.id + '"]:first');
+    if (principal_link.size()) {
+        jQuery(this).val('').blur();
+        update_addprincipal_title( '' ); // reset title to blank for #acl-AddPrincipal
+        principal_link.click();
+        return false;
+    }
+
     // pass the item's value along as the title since the input's value
     // isn't actually updated yet
     toggle_addprincipal_validity(this, true, ui.item.value);
