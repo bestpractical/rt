@@ -260,7 +260,7 @@ sub InitLogging {
             my ($package, $filename, $line) = caller($frame);
 
             $p{'message'} =~ s/(?:\r*\n)+$//;
-            return "[". gmtime(time) ."] [". $p{'level'} ."]: "
+            return "[$$] [". gmtime(time) ."] [". $p{'level'} ."]: "
                 . $p{'message'} ." ($filename:$line)\n";
         };
 
@@ -279,9 +279,9 @@ sub InitLogging {
 
             $p{message} =~ s/(?:\r*\n)+$//;
             if ($p{level} eq 'debug') {
-                return "$p{message}\n";
+                return "[$$] $p{message} ($filename:$line)\n";
             } else {
-                return "$p{message} ($filename:$line)\n";
+                return "[$$] $p{message}\n";
             }
         };
 
