@@ -92,6 +92,7 @@ if (window.location.hash) {
 </form>
 % }
 </&>
+<& /Elements/LoginHelp &>
 </div><!-- #login-box -->
 
 % $m->callback( %ARGS, CallbackName => 'AfterForm' );

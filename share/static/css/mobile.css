@@ -311,6 +311,12 @@ div#login-box input[type=text], div#login-box input[type=password] {
     width: 100%;
 }
 
+div#login-box div.login-help {
+    text-align: center;
+    /* don't be too close to the following "Not using a mobile ..." link */
+    margin-bottom: 1em;
+}
+
 #bpscredits {
     float: right;
     clear: right;
