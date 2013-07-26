@@ -84,11 +84,13 @@
 % my $edit = RT->Config->Get('WebPath') . '/Dashboards/Modify.html?id='.$id;
 % my $subscription = RT->Config->Get('WebPath') . '/Dashboards/Subscription.html?id='.$id;
 <p><&|/l, $edit, $subscription &>You <a href="[_1]">may edit this dashboard</a> and <a href="[_2]">your subscription</a> to it in RT.</&></p>
-% }
 
-%# Matches the closing div in /Elements/Footer that it expects
-%# from PageLayout (which we don't use here)
-<div>
+%# We disable autohandlers when mailing (!$Preview) so /Elements/Footer isn't
+%# run for us.  Tidy up the end of the HTML.  We don't use /Elements/Tabs (and
+%# hence PageLayout) so we don't need to close any other tags.
+  </body>
+</html>
+% }
 
 <%INIT>
 
