@@ -313,7 +313,7 @@ sub Delete {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    if ( $self->UsedBy->Count ) {
+    if ( !$self->IsOverride && $self->UsedBy->Count ) {
         return ( 0, $self->loc('Template is in use') );
     }
 
@@ -348,6 +348,23 @@ sub IsEmpty {
     return 0 if defined $content && length $content;
     return 1;
 }
+
+=head2 IsOverride
+
+Returns true if it's queue specific template and there is global
+template with the same name.
+
+=cut
+
+sub IsOverride {
+    my $self = shift;
+    return 0 unless $self->Queue;
+
+    my $template = RT::Template->new( $self->CurrentUser );
+    $template->LoadGlobalTemplate( $self->Name );
+    return $template->id;
+}
+
 
 =head2 MIMEObj
 
