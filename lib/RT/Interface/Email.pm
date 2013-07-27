@@ -1192,15 +1192,20 @@ sub SetInReplyTo {
     }
     push @references, @id, @rtid;
     if ( $args{'Ticket'} ) {
-        my $pseudo_ref =  '<RT-Ticket-'. $args{'Ticket'}->id .'@'. RT->Config->Get('Organization') .'>';
+        my $pseudo_ref = PseudoReference( $args{'Ticket'} );
         push @references, $pseudo_ref unless grep $_ eq $pseudo_ref, @references;
     }
-    @references = splice @references, 4, -6
+    splice @references, 4, -6
         if @references > 10;
 
     my $mail = $args{'Message'};
     $mail->head->set( 'In-Reply-To' => Encode::encode_utf8(join ' ', @rtid? (@rtid) : (@id)) ) if @id || @rtid;
     $mail->head->set( 'References' => Encode::encode_utf8(join ' ', @references) );
+}
+
+sub PseudoReference {
+    my $ticket = shift;
+    return '<RT-Ticket-'. $ticket->id .'@'. RT->Config->Get('Organization') .'>';
 }
 
 sub ExtractTicketId {

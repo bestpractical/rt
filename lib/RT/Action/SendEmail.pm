@@ -1122,13 +1122,8 @@ Returns a fake Message-ID: header for the ticket to allow a base level of thread
 =cut
 
 sub PseudoReference {
-
     my $self = shift;
-    my $pseudo_ref
-        = '<RT-Ticket-'
-        . $self->TicketObj->id . '@'
-        . RT->Config->Get('Organization') . '>';
-    return $pseudo_ref;
+    return RT::Interface::Email::PseudoReference( $self->TicketObj );
 }
 
 =head2 SetHeaderAsEncoding($field_name, $charset_encoding)

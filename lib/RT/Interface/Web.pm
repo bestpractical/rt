@@ -2174,7 +2174,8 @@ sub ProcessUpdateMessage {
     if ( my $msg = $old_txn->Message->First ) {
         RT::Interface::Email::SetInReplyTo(
             Message   => $Message,
-            InReplyTo => $msg
+            InReplyTo => $msg,
+            Ticket    => $args{'TicketObj'},
         );
     }
 
