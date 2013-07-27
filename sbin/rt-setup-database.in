@@ -102,6 +102,7 @@ RT->InitClasses();
 RT->Config->Set( LogToSTDERR => 'warning')
     unless ( RT->Config->Get( 'LogToSTDERR' )
              && RT->Config->Get( 'LogToSTDERR' ) =~ /^(debug|info|notice)$/ );
+RT::InitLogging();
 
 # get customized root password
 my $root_password;
@@ -251,7 +252,6 @@ sub action_coredata {
     $RT::Handle = RT::Handle->new;
     $RT::Handle->dbh( undef );
     RT::ConnectToDatabase();
-    RT::InitLogging();
     my ($status, $msg) = RT::Handle->CheckCompatibility( $RT::Handle->dbh, 'coredata' );
     return ($status, $msg) unless $status;
 
@@ -400,7 +400,6 @@ sub action_upgrade {
     _yesno() or exit(-2) unless $args{'force'};
 
     RT->ConnectToDatabase();
-    RT->InitLogging();
     RT->InitSystemObjects();
 
     RT->System->AddUpgradeHistory($package => {
