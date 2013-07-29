@@ -57,6 +57,13 @@ diag q{'=' char in a trailing part after an encoded part};
     );
 }
 
+diag q{adding quotes around mime words containing specials when word is already quoted};
+{
+    my $str = 'attachment; filename="=?iso-8859-1?Q?foobar,_?=' . "\n" . '=?iso-8859-1?Q?barfoo.docx?="';
+    my $decoded = 'attachment; filename="foobar, barfoo.docx"';
+    is( RT::I18N::DecodeMIMEWordsToUTF8($str, 'content-disposition'), $decoded, "No added quotes" );
+}
+
 diag q{regression test for #5248 from rt3.fsck.com};
 {
     my $str = qq{Subject: =?ISO-8859-1?Q?Re=3A_=5BXXXXXX=23269=5D_=5BComment=5D_Frag?=}

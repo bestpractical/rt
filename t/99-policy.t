@@ -35,17 +35,19 @@ sub check {
         open my $fh, '<', $file or die $!;
         my $content = <$fh>;
 
-        like(
-            $content,
-            qr/^use strict(?:;|\s+)/m,
-            "$file has 'use strict'"
-        ) if $check{strict};
+        unless ($check{shebang} != -1 and $content =~ /^#!(?!.*perl)/i) {
+            like(
+                $content,
+                qr/^use strict(?:;|\s+)/m,
+                "$file has 'use strict'"
+            ) if $check{strict};
 
-        like(
-            $content,
-            qr/^use warnings(?:;|\s+)/m,
-            "$file has 'use warnings'"
-        ) if $check{warnings};
+            like(
+                $content,
+                qr/^use warnings(?:;|\s+)/m,
+                "$file has 'use warnings'"
+            ) if $check{warnings};
+        }
 
         if ($check{shebang} == 1) {
             like( $content, qr/^#!/, "$file has shebang" );
