@@ -135,7 +135,10 @@ BEGIN {
 
 }
 
-use RT::Shredder ();
+use RT -init;
+
+require RT::Shredder;
+
 use Getopt::Long qw(GetOptions);
 use File::Spec ();
 
@@ -146,7 +149,6 @@ our %plugins = RT::Shredder::Plugin->List;
 our %opt;
 parse_args();
 
-RT::Shredder::Init( %opt );
 my $shredder = RT::Shredder->new;
 
 {
