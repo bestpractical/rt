@@ -758,168 +758,246 @@ sub SignEncryptContent {
 
 sub FindProtectedParts {
     my $self = shift;
-    my %args = ( Entity => undef, CheckBody => 1, @_ );
+    my %args = (
+        Entity => undef,
+        Skip => {},
+        Scattered => 1,
+        @_
+    );
+
+    my $entity = $args{'Entity'};
+    return () if $args{'Skip'}{ $entity };
+
+    my %info = $self->CheckIfProtected( Entity => $entity );
+    if (keys %info) {
+        $args{'Skip'}{ $entity } = 1;
+        return \%info;
+    }
+
+    my @res;
+
+    # not protected itself, look inside
+    push @res, $self->FindProtectedParts(
+        %args, Entity => $_, Scattered => 0,
+    ) foreach grep !$args{'Skip'}{$_}, $entity->parts;
+
+    if ( $args{'Scattered'} ) {
+        my %parent;
+        my $filter; $filter = sub {
+            $parent{$_[0]} = $_[1];
+            unless ( $_[0]->is_multipart ) {
+                return () if $args{'Skip'}{$_[0]};
+                return $_[0];
+            }
+            return map $filter->($_, $_[0]), grep !$args{'Skip'}{$_}, $_[0]->parts;
+        };
+        my @parts = $filter->($entity);
+        return @res unless @parts;
+
+        my @list = $self->FindScatteredParts( Parts => \@parts, Parents => \%parent, Skip => $args{'Skip'} );
+        if (@list) {
+            push @res, @list;
+            @parts = grep !$args{'Skip'}{$_}, @parts;
+        }
+    }
+
+    return @res;
+}
+
+sub CheckIfProtected {
+    my $self = shift;
+    my %args = ( Entity => undef, @_ );
+
     my $entity = $args{'Entity'};
 
-    # inline PGP block, only in singlepart
-    unless ( $entity->is_multipart ) {
-        my $file = ($entity->head->recommended_filename||'') =~ /\.${RE_FILE_EXTENSIONS}$/;
+    # we check inline PGP block later in another sub
+    return () unless $entity->is_multipart;
 
-        my $io = $entity->open('r');
-        unless ( $io ) {
-            $RT::Logger->warning( "Entity of type ". $entity->effective_type ." has no body" );
-            return ();
-        }
+    # RFC3156, multipart/{signed,encrypted}
+    my $type = $entity->effective_type;
+    return () unless $type =~ /^multipart\/(?:encrypted|signed)$/;
 
-        # Deal with "partitioned" PGP mail, which (contrary to common
-        # sense) unnecessarily applies a base64 transfer encoding to PGP
-        # mail (whose content is already base64-encoded).
-        if ( $entity->bodyhandle->is_encoded and $entity->head->mime_encoding ) {
-            my $decoder = MIME::Decoder->new( $entity->head->mime_encoding );
-            if ($decoder) {
-                local $@;
-                eval {
-                    my $buf = '';
-                    open my $fh, '>', \$buf
-                        or die "Couldn't open scalar for writing: $!";
-                    binmode $fh, ":raw";
-                    $decoder->decode($io, $fh);
-                    close $fh or die "Couldn't close scalar: $!";
-
-                    open $fh, '<', \$buf
-                        or die "Couldn't re-open scalar for reading: $!";
-                    binmode $fh, ":raw";
-                    $io = $fh;
-                    1;
-                } or do {
-                    $RT::Logger->error("Couldn't decode body: $@");
-                }
-            }
-        }
-
-        while ( defined($_ = $io->getline) ) {
-            next unless /^-----BEGIN PGP (SIGNED )?MESSAGE-----/;
-            my $type = $1? 'signed': 'encrypted';
-            $RT::Logger->debug("Found $type inline part");
-            return {
-                Type    => $type,
-                Format  => !$file || $type eq 'signed'? 'Inline' : 'Attachment',
-                Data    => $entity,
-            };
-        }
-        $io->close;
+    unless ( $entity->parts == 2 ) {
+        $RT::Logger->error( "Encrypted or signed entity must has two subparts. Skipped" );
         return ();
     }
 
-    # RFC3156, multipart/{signed,encrypted}
-    if ( ( my $type = $entity->effective_type ) =~ /^multipart\/(?:encrypted|signed)$/ ) {
-        unless ( $entity->parts == 2 ) {
-            $RT::Logger->error( "Encrypted or signed entity must has two subparts. Skipped" );
-            return ();
-        }
-
-        my $protocol = $entity->head->mime_attr( 'Content-Type.protocol' );
-        unless ( $protocol ) {
-            $RT::Logger->error( "Entity is '$type', but has no protocol defined. Skipped" );
-            return ();
-        }
-
-        if ( $type eq 'multipart/encrypted' ) {
-            unless ( $protocol eq 'application/pgp-encrypted' ) {
-                $RT::Logger->info( "Skipping protocol '$protocol', only 'application/pgp-encrypted' is supported" );
-                return ();
-            }
-            $RT::Logger->debug("Found encrypted according to RFC3156 part");
-            return {
-                Type    => 'encrypted',
-                Format  => 'RFC3156',
-                Top   => $entity,
-                Data  => $entity->parts(1),
-                Info    => $entity->parts(0),
-            };
-        } else {
-            unless ( $protocol eq 'application/pgp-signature' ) {
-                $RT::Logger->info( "Skipping protocol '$protocol', only 'application/pgp-signature' is supported" );
-                return ();
-            }
-            $RT::Logger->debug("Found signed according to RFC3156 part");
-            return {
-                Type      => 'signed',
-                Format    => 'RFC3156',
-                Top     => $entity,
-                Data    => $entity->parts(0),
-                Signature => $entity->parts(1),
-            };
-        }
+    my $protocol = $entity->head->mime_attr( 'Content-Type.protocol' );
+    unless ( $protocol ) {
+        $RT::Logger->error( "Entity is '$type', but has no protocol defined. Skipped" );
+        return ();
     }
+
+    if ( $type eq 'multipart/encrypted' ) {
+        unless ( $protocol eq 'application/pgp-encrypted' ) {
+            $RT::Logger->info( "Skipping protocol '$protocol', only 'application/pgp-encrypted' is supported" );
+            return ();
+        }
+        $RT::Logger->debug("Found part encrypted according to RFC3156");
+        return (
+            Type   => 'encrypted',
+            Format => 'RFC3156',
+            Top    => $entity,
+            Data   => $entity->parts(1),
+            Info   => $entity->parts(0),
+        );
+    } else {
+        unless ( $protocol eq 'application/pgp-signature' ) {
+            $RT::Logger->info( "Skipping protocol '$protocol', only 'application/pgp-signature' is supported" );
+            return ();
+        }
+        $RT::Logger->debug("Found part signed according to RFC3156");
+        return (
+            Type      => 'signed',
+            Format    => 'RFC3156',
+            Top       => $entity,
+            Data      => $entity->parts(0),
+            Signature => $entity->parts(1),
+        );
+    }
+    return ();
+}
+
+
+sub FindScatteredParts {
+    my $self = shift;
+    my %args = ( Parts => [], Skip => {}, @_ );
+
+    my @res;
+
+    my @parts = @{ $args{'Parts'} };
 
     # attachments signed with signature in another part
-    my @file_indices;
-    foreach my $i ( 0 .. $entity->parts - 1 ) {
-        my $part = $entity->parts($i);
+    {
+        my @file_indices;
+        for (my $i = 0; $i < @parts; $i++ ) {
+            my $part = $parts[ $i ];
 
-        # we can not associate a signature within an attachment
-        # without file names
-        my $fname = $part->head->recommended_filename;
-        next unless $fname;
+            # we can not associate a signature within an attachment
+            # without file names
+            my $fname = $part->head->recommended_filename;
+            next unless $fname;
 
-        if ( $part->effective_type eq 'application/pgp-signature' ) {
-            push @file_indices, $i;
+            my $type = $part->effective_type;
+
+            if ( $type eq 'application/pgp-signature' ) {
+                push @file_indices, $i;
+            }
+            elsif ( $type eq 'application/octet-stream' && $fname =~ /\.sig$/i ) {
+                push @file_indices, $i;
+            }
         }
-        elsif ( $fname =~ /\.sig$/i && $part->effective_type eq 'application/octet-stream' ) {
-            push @file_indices, $i;
+
+        foreach my $i ( @file_indices ) {
+            my $sig_part = $parts[ $i ];
+            my $sig_name = $sig_part->head->recommended_filename;
+            my ($file_name) = $sig_name =~ /^(.*?)(?:\.sig)?$/;
+
+            my ($data_part_idx) =
+                grep $file_name eq ($parts[$_]->head->recommended_filename||''),
+                grep $sig_part  ne  $parts[$_],
+                    0 .. @parts - 1;
+            unless ( defined $data_part_idx ) {
+                $RT::Logger->error("Found $sig_name attachment, but didn't find $file_name");
+                next;
+            }
+
+            my $data_part_in = $parts[ $data_part_idx ];
+
+            $RT::Logger->debug("Found signature (in '$sig_name') of attachment '$file_name'");
+
+            $args{'Skip'}{$data_part_in} = 1;
+            $args{'Skip'}{$sig_part} = 1;
+            push @res, {
+                Type      => 'signed',
+                Format    => 'Attachment',
+                Top       => $args{'Parents'}{$data_part_in},
+                Data      => $data_part_in,
+                Signature => $sig_part,
+            };
         }
-    }
-
-    my (@res, %skip);
-    foreach my $i ( @file_indices ) {
-        my $sig_part = $entity->parts($i);
-        $skip{"$sig_part"}++;
-        my $sig_name = $sig_part->head->recommended_filename;
-        my ($file_name) = $sig_name =~ /^(.*?)(?:\.sig)?$/;
-
-        my ($data_part_idx) =
-            grep $file_name eq ($entity->parts($_)->head->recommended_filename||''),
-            grep $sig_part  ne  $entity->parts($_),
-                0 .. $entity->parts - 1;
-        unless ( defined $data_part_idx ) {
-            $RT::Logger->error("Found $sig_name attachment, but didn't find $file_name");
-            next;
-        }
-        my $data_part_in = $entity->parts($data_part_idx);
-
-        $skip{"$data_part_in"}++;
-        $RT::Logger->debug("Found signature (in '$sig_name') of attachment '$file_name'");
-        push @res, {
-            Type      => 'signed',
-            Format    => 'Attachment',
-            Top       => $entity,
-            Data      => $data_part_in,
-            Signature => $sig_part,
-        };
     }
 
     # attachments with inline encryption
-    my @encrypted_indices =
-        grep {($entity->parts($_)->head->recommended_filename || '') =~ /\.${RE_FILE_EXTENSIONS}$/}
-            0 .. $entity->parts - 1;
+    foreach my $part ( @parts ) {
+        next if $args{'Skip'}{$part};
 
-    foreach my $i ( @encrypted_indices ) {
-        my $part = $entity->parts($i);
-        $skip{"$part"}++;
-        $RT::Logger->debug("Found encrypted attachment '". $part->head->recommended_filename ."'");
+        my $fname = $part->head->recommended_filename || '';
+        next unless $fname =~ /\.${RE_FILE_EXTENSIONS}$/;
+
+        $RT::Logger->debug("Found encrypted attachment '$fname'");
+
+        $args{'Skip'}{$part} = 1;
         push @res, {
-            Type      => 'encrypted',
-            Format    => 'Attachment',
-            Top     => $entity,
+            Type    => 'encrypted',
+            Format  => 'Attachment',
+            Top     => $args{'Parents'}{$part},
             Data    => $part,
         };
     }
 
-    push @res, $self->FindProtectedParts( Entity => $_ )
-        foreach grep !$skip{"$_"}, $entity->parts;
+    # inline PGP block
+    foreach my $part ( @parts ) {
+        next if $args{'Skip'}{$part};
+
+        my $type = $self->_CheckIfProtectedInline( $part );
+        next unless $type;
+
+        my $file = ($part->head->recommended_filename||'') =~ /\.${RE_FILE_EXTENSIONS}$/;
+
+        $args{'Skip'}{$part} = 1;
+        push @res, {
+            Type      => $type,
+            Format    => !$file || $type eq 'signed'? 'Inline' : 'Attachment',
+            Data      => $part,
+        };
+    }
 
     return @res;
+}
+
+sub _CheckIfProtectedInline {
+    my $self = shift;
+    my $entity = shift;
+
+    my $io = $entity->open('r');
+    unless ( $io ) {
+        $RT::Logger->warning( "Entity of type ". $entity->effective_type ." has no body" );
+        return '';
+    }
+
+    # Deal with "partitioned" PGP mail, which (contrary to common
+    # sense) unnecessarily applies a base64 transfer encoding to PGP
+    # mail (whose content is already base64-encoded).
+    if ( $entity->bodyhandle->is_encoded and $entity->head->mime_encoding ) {
+        my $decoder = MIME::Decoder->new( $entity->head->mime_encoding );
+        if ($decoder) {
+            local $@;
+            eval {
+                my $buf = '';
+                open my $fh, '>', \$buf
+                    or die "Couldn't open scalar for writing: $!";
+                binmode $fh, ":raw";
+                $decoder->decode($io, $fh);
+                close $fh or die "Couldn't close scalar: $!";
+
+                open $fh, '<', \$buf
+                    or die "Couldn't re-open scalar for reading: $!";
+                binmode $fh, ":raw";
+                $io = $fh;
+                1;
+            } or do {
+                $RT::Logger->error("Couldn't decode body: $@");
+            }
+        }
+    }
+
+    while ( defined($_ = $io->getline) ) {
+        next unless /^-----BEGIN PGP (SIGNED )?MESSAGE-----/;
+        return $1? 'signed': 'encrypted';
+    }
+    $io->close;
+    return '';
 }
 
 =head2 VerifyDecrypt Entity => undef, [ Detach => 1, Passphrase => undef, SetStatus => 1 ]
