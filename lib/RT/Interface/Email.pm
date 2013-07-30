@@ -1452,6 +1452,7 @@ sub Gateway {
 
     my $head = $Message->head;
     my $ErrorsTo = ParseErrorsToAddressFromHead( $head );
+    my $Sender = (ParseSenderAddressFromHead( $head ))[0];
     my $From = $head->get("From");
     chomp $From if defined $From;
 
@@ -1538,7 +1539,8 @@ sub Gateway {
         );
         return (
             0,
-            "$ErrorsTo tried to submit a message to "
+            ($CurrentUser->EmailAddress || $CurrentUser->Name)
+            . " ($Sender) tried to submit a message to "
                 . $args{'Queue'}
                 . " without permission.",
             undef
