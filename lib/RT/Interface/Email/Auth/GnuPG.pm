@@ -65,7 +65,7 @@ you care about and specify the following in your SiteConfig.pm
 
 sub ApplyBeforeDecode { return 1 }
 
-use RT::Crypt::GnuPG;
+use RT::Crypt;
 use RT::EmailParser ();
 
 sub GetCurrentUser {
@@ -232,7 +232,7 @@ sub VerifyDecrypt {
         @_
     );
 
-    my @res = RT::Crypt::GnuPG->VerifyDecrypt( %args );
+    my @res = RT::Crypt->VerifyDecrypt( %args );
     unless ( @res ) {
         $RT::Logger->debug("No more encrypted/signed parts");
         return 1;

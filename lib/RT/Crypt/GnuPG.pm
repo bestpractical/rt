@@ -978,36 +978,33 @@ sub _CheckIfProtectedInline {
     return '';
 }
 
-=head2 VerifyDecrypt Entity => undef, [ Detach => 1, Passphrase => undef, SetStatus => 1 ]
-
-=cut
-
 sub VerifyDecrypt {
     my $self = shift;
     my %args = (
-        Entity    => undef,
+        Info      => undef,
         Detach    => 1,
         SetStatus => 1,
         AddStatus => 0,
         @_
     );
-    my @protected = RT::Crypt->FindProtectedParts( Entity => $args{'Entity'} );
-    my @res;
-    # XXX: detaching may brake nested signatures
-    foreach my $item( grep $_->{'Type'} eq 'signed', @protected ) {
+
+    my %res;
+
+    my $item = $args{'Info'};
+    if ( $item->{'Type'} eq 'signed' ) {
         my $status_on;
         if ( $item->{'Format'} eq 'RFC3156' ) {
-            push @res, { $self->VerifyRFC3156( %$item, SetStatus => $args{'SetStatus'} ) };
+            %res = $self->VerifyRFC3156( %$item, SetStatus => $args{'SetStatus'} );
             if ( $args{'Detach'} ) {
                 $item->{'Top'}->parts( [ $item->{'Data'} ] );
                 $item->{'Top'}->make_singlepart;
             }
             $status_on = $item->{'Top'};
         } elsif ( $item->{'Format'} eq 'Inline' ) {
-            push @res, { $self->VerifyInline( %$item ) };
+            %res = $self->VerifyInline( %$item );
             $status_on = $item->{'Data'};
         } elsif ( $item->{'Format'} eq 'Attachment' ) {
-            push @res, { $self->VerifyAttachment( %$item ) };
+            %res = $self->VerifyAttachment( %$item );
             if ( $args{'Detach'} ) {
                 $item->{'Top'}->parts( [
                     grep "$_" ne $item->{'Signature'}, $item->{'Top'}->parts
@@ -1015,6 +1012,8 @@ sub VerifyDecrypt {
                 $item->{'Top'}->make_singlepart;
             }
             $status_on = $item->{'Data'};
+        } else {
+            die "Unknown format '".$item->{'Format'} . "' of GnuPG signed part";
         }
         if ( $args{'SetStatus'} || $args{'AddStatus'} ) {
             my $method = $args{'AddStatus'} ? 'add' : 'set';
@@ -1022,22 +1021,23 @@ sub VerifyDecrypt {
             my $modify = $status_on->head->modify;
             $status_on->head->modify(1);
             $status_on->head->$method(
-                'X-RT-GnuPG-Status' => $res[-1]->{'status'}
+                'X-RT-GnuPG-Status' => $res{'status'}
             );
             $status_on->head->modify($modify);
         }
-    }
-    foreach my $item( grep $_->{'Type'} eq 'encrypted', @protected ) {
+    } elsif ( $item->{'Type'} eq 'encrypted' ) {
         my $status_on;
         if ( $item->{'Format'} eq 'RFC3156' ) {
-            push @res, { $self->DecryptRFC3156( %$item ) };
+            %res = $self->DecryptRFC3156( %$item );
             $status_on = $item->{'Top'};
         } elsif ( $item->{'Format'} eq 'Inline' ) {
-            push @res, { $self->DecryptInline( %$item ) };
+            %res = $self->DecryptInline( %$item );
             $status_on = $item->{'Data'};
         } elsif ( $item->{'Format'} eq 'Attachment' ) {
-            push @res, { $self->DecryptAttachment( %$item ) };
+            %res = $self->DecryptAttachment( %$item );
             $status_on = $item->{'Data'};
+        } else {
+            die "Unknown format '".$item->{'Format'} . "' of GnuPG encrypted part";
         }
         if ( $args{'SetStatus'} || $args{'AddStatus'} ) {
             my $method = $args{'AddStatus'} ? 'add' : 'set';
@@ -1045,12 +1045,14 @@ sub VerifyDecrypt {
             my $modify = $status_on->head->modify;
             $status_on->head->modify(1);
             $status_on->head->$method(
-                'X-RT-GnuPG-Status' => $res[-1]->{'status'}
+                'X-RT-GnuPG-Status' => $res{'status'}
             );
             $status_on->head->modify($modify);
         }
+    } else {
+        die "Unknown type '".$item->{'Type'} . "' of protected item";
     }
-    return @res;
+    return %res;
 }
 
 sub VerifyInline { return (shift)->DecryptInline( @_ ) }

@@ -43,7 +43,7 @@ diag 'only signing. correct passphrase';
     is( $parts[0]->{'Format'}, 'RFC3156', "RFC3156 format" );
     is( $parts[0]->{'Top'}, $entity, "it's the same entity" );
 
-    my @res = RT::Crypt::GnuPG->VerifyDecrypt( Entity => $entity );
+    my @res = RT::Crypt->VerifyDecrypt( Entity => $entity );
     is scalar @res, 1, 'one operation';
     @status = RT::Crypt::GnuPG->ParseStatus( $res[0]{'status'} );
     is( scalar @status, 1, 'one record');
@@ -327,7 +327,7 @@ diag 'verify inline and in attachment signatures';
     is( $parts[0]->{'Data'}, $entity->parts(1), "data in second part" );
     is( $parts[0]->{'Signature'}, $entity->parts(2), "file's signature in third part" );
 
-    my @res = RT::Crypt::GnuPG->VerifyDecrypt( Entity => $entity );
+    my @res = RT::Crypt->VerifyDecrypt( Entity => $entity );
     my @status = RT::Crypt::GnuPG->ParseStatus( $res[0]->{'status'} );
     is( scalar @status, 1, 'one record');
     is( $status[0]->{'Operation'}, 'Verify', 'operation is correct');

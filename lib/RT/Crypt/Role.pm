@@ -80,6 +80,30 @@ C<Protocol>.
 
 requires 'SignEncrypt';
 
+=head2 VerifyDecrypt Info => HASHREF, [ Passphrase => undef ]
+
+The C<Info> key is a hashref as returned from L</FindScatteredParts> or
+L</CheckIfProtected>.  This method should alter the mime objects
+in-place as necessary during signing and decryption.
+
+Returns a hash with at least the following keys:
+
+=over
+
+=item exit_code
+
+True if there was an error encrypting or signing.
+
+=item message
+
+An un-localized error message desribing the problem.
+
+=back
+
+=cut
+
+requires 'VerifyDecrypt';
+
 =head2 FindScatteredParts Parts => ARRAYREF, Parents => HASHREF, Skip => HASHREF
 
 Passed the list of unclaimed L<MIME::Entity> objects in C<Parts>, this

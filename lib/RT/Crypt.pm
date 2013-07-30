@@ -256,6 +256,44 @@ sub SignEncrypt {
     return %res;
 }
 
+=head2 VerifyDecrypt Entity => ENTITY [, Passphrase => undef ]
+
+Locates all protected parts of the L<MIME::Entity> object C<ENTITY>, as
+found by L</FindProtectedParts>, and calls
+L<RT::Crypt::Role/VerifyDecrypt> from the appropriate L<RT::Crypt::Role>
+class on each.
+
+C<Passphrase>, if not provided, will be retrieved using
+L<RT::Crypt::Role/GetPassphrase>.
+
+Returns a list of the hash references returned from
+L<RT::Crypt::Role/VerifyDecrypt>.
+
+=cut
+
+sub VerifyDecrypt {
+    my $self = shift;
+    my %args = (
+        Entity    => undef,
+        Detach    => 1,
+        SetStatus => 1,
+        AddStatus => 0,
+        @_
+    );
+
+    my @res;
+
+    my @protected = $self->FindProtectedParts( Entity => $args{'Entity'} );
+    foreach my $protected ( @protected ) {
+        my $protocol = $protected->{'Protocol'};
+        my $class = $self->LoadImplementation( $protocol );
+        my %res = $class->VerifyDecrypt( %args, Info => $protected );
+        $res{'Protocol'} = $protocol;
+        push @res, \%res;
+    }
+    return @res;
+}
+
 =head2 UseKeyForSigning [KEY]
 
 Returns or sets the identifier of the key that should be used for
