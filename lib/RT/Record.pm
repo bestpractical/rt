@@ -1357,6 +1357,17 @@ sub _AddLink {
         return ( $old_link->id, $self->loc("Link already exists"), 1 );
     }
 
+    if ( $args{'Type'} =~ /^(?:DependsOn|MemberOf)$/ ) {
+
+        my @tickets = $self->_AllLinkedTickets(
+            LinkType  => $args{'Type'},
+            Direction => $direction eq 'Target' ? 'Base' : 'Target',
+        );
+        if ( grep { $_->id == ( $direction eq 'Target' ? $args{'Base'} : $args{'Target'} ) } @tickets ) {
+            return ( 0, $self->loc("Refused to add link which would create a circular relationship") );
+        }
+    }
+
     # Storing the link in the DB.
     my $link = RT::Link->new( $self->CurrentUser );
     my ($linkid, $linkmsg) = $link->Create( Target => $args{Target},
