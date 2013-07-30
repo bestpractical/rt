@@ -187,7 +187,7 @@ RT::Test->close_mailgate_ok($mail);
         'recorded incoming mail that is encrypted'
     );
     is( $msg->GetHeader('X-RT-Privacy'),
-        'PGP',
+        'GnuPG',
         'recorded incoming mail that is encrypted'
     );
     like( $attach->Content, qr/orz/);
@@ -224,7 +224,7 @@ RT::Test->close_mailgate_ok($mail);
         'recorded incoming mail that is encrypted'
     );
     is( $msg->GetHeader('X-RT-Privacy'),
-        'PGP',
+        'GnuPG',
         'recorded incoming mail that is encrypted'
     );
     like( $attach->Content, qr/orz/);

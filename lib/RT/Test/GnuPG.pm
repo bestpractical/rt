@@ -276,7 +276,7 @@ sub send_email_and_check_transaction {
           "RT's outgoing mail looks not signed";
     }
     elsif ( $type eq 'signed' ) {
-        is $msg->GetHeader('X-RT-Privacy'), 'PGP',
+        is $msg->GetHeader('X-RT-Privacy'), 'GnuPG',
           "RT's outgoing mail has crypto";
         is $msg->GetHeader('X-RT-Incoming-Encryption'), 'Not encrypted',
           "RT's outgoing mail looks not encrypted";
@@ -285,7 +285,7 @@ sub send_email_and_check_transaction {
           "RT's outgoing mail looks signed";
     }
     elsif ( $type eq 'encrypted' ) {
-        is $msg->GetHeader('X-RT-Privacy'), 'PGP',
+        is $msg->GetHeader('X-RT-Privacy'), 'GnuPG',
           "RT's outgoing mail has crypto";
         is $msg->GetHeader('X-RT-Incoming-Encryption'), 'Success',
           "RT's outgoing mail looks encrypted";
@@ -294,7 +294,7 @@ sub send_email_and_check_transaction {
 
     }
     elsif ( $type eq 'signed_encrypted' ) {
-        is $msg->GetHeader('X-RT-Privacy'), 'PGP',
+        is $msg->GetHeader('X-RT-Privacy'), 'GnuPG',
           "RT's outgoing mail has crypto";
         is $msg->GetHeader('X-RT-Incoming-Encryption'), 'Success',
           "RT's outgoing mail looks encrypted";

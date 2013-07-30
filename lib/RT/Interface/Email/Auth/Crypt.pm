@@ -95,12 +95,16 @@ sub GetCurrentUser {
         @_
     );
 
-    foreach my $p ( $args{'Message'}->parts_DFS ) {
-        $p->head->delete($_) for qw(
-            X-RT-GnuPG-Status X-RT-Incoming-Encryption
+    # we clean all possible headers
+    my @headers =
+        qw(
+            X-RT-Incoming-Encryption
             X-RT-Incoming-Signature X-RT-Privacy
             X-RT-Sign X-RT-Encrypt
-        );
+        ),
+        map "X-RT-$_-Status", RT::Crypt->Protocols;
+    foreach my $p ( $args{'Message'}->parts_DFS ) {
+        $p->head->delete($_) for @headers;
     }
 
     my $msg = $args{'Message'}->dup;
@@ -116,9 +120,6 @@ sub GetCurrentUser {
         return 1;
     }
 
-    # FIXME: Check if the message is encrypted to the address of
-    # _this_ queue. send rejecting mail otherwise.
-
     unless ( $status ) {
         $RT::Logger->error("Had a problem during decrypting and verifying");
         my $reject = HandleErrors( Message => $args{'Message'}, Result => \@res );
@@ -133,14 +134,18 @@ sub GetCurrentUser {
         Data        => ${ $args{'RawMessageRef'} },
     );
 
-    $args{'Message'}->head->replace( 'X-RT-Privacy' => 'PGP' );
-
+    my @found;
+    my @check_protocols = RT::Crypt->EnabledOnIncoming;
     foreach my $part ( $args{'Message'}->parts_DFS ) {
         my $decrypted;
 
-        my $status = $part->head->get( 'X-RT-GnuPG-Status' );
-        if ( $status ) {
-            for ( RT::Crypt::GnuPG->ParseStatus( $status ) ) {
+        foreach my $protocol ( @check_protocols ) {
+            my $status = $part->head->get( "X-RT-$protocol-Status" );
+            next unless $status;
+
+            push @found, $protocol;
+
+            for ( RT::Crypt->ParseStatus( Protocol => $protocol, Status => $status ) ) {
                 if ( $_->{Operation} eq 'Decrypt' && $_->{Status} eq 'DONE' ) {
                     $decrypted = 1;
                 }
@@ -158,6 +163,10 @@ sub GetCurrentUser {
         );
     }
 
+    my %seen;
+    $args{'Message'}->head->replace( 'X-RT-Privacy' => $_ )
+        foreach grep !$seen{$_}++, @found;
+
     return 1;
 }
 
@@ -172,7 +181,7 @@ sub HandleErrors {
 
     my %sent_once = ();
     foreach my $run ( @{ $args{'Result'} } ) {
-        my @status = RT::Crypt::GnuPG->ParseStatus( $run->{'status'} );
+        my @status = RT::Crypt->ParseStatus( Protocol => $run->{'Protocol'}, Status => $run->{'status'} );
         unless ( $sent_once{'NoPrivateKey'} ) {
             unless ( CheckNoPrivateKey( Message => $args{'Message'}, Status => \@status ) ) {
                 $sent_once{'NoPrivateKey'}++;
@@ -258,7 +267,7 @@ sub VerifyDecrypt {
         return 1;
     }
 
-    $RT::Logger->debug('Found GnuPG protected parts');
+    $RT::Logger->debug('Found encrypted/signed parts');
 
     # return on any error
     if ( grep $_->{'exit_code'}, @res ) {
