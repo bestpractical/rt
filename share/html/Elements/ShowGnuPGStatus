@@ -105,8 +105,8 @@ my $reverify_cb = sub {
         return (0, "Couldn't parse content of attachment #". $original->id);
     }
 
-    use RT::Interface::Email::Auth::GnuPG;
-    my ($status, @res) = RT::Interface::Email::Auth::GnuPG::VerifyDecrypt( Entity => $entity );
+    use RT::Interface::Email::Auth::Crypt;
+    my ($status, @res) = RT::Interface::Email::Auth::Crypt::VerifyDecrypt( Entity => $entity );
     if ( $status && !@res ) {
         # imposible in this situation
         return (0, "Content of attachment #". $original->id ." is not signed and/or encrypted");
