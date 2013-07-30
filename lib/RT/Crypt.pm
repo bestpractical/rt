@@ -101,6 +101,61 @@ sub LoadImplementation {
     }
 }
 
+=head2 SignEncrypt Entity => ENTITY, [Sign => 1], [Encrypt => 1],
+[Recipients => ARRAYREF], [Signer => NAME], [Protocol => NAME],
+[Passphrase => VALUE]
+
+Takes a L<MIME::Entity> object, and signs and/or encrypts it using the
+given C<Protocol>.  If not set, C<Recipients> for encryption will be set
+by examining the C<To>, C<Cc>, and C<Bcc> headers of the MIME entity.
+If not set, C<Signer> defaults to the C<From> of the MIME entity.
+
+C<Passphrase>, if not provided, will be retrieved using
+L<RT::Crypt::Role/GetPassphrase>.
+
+Returns a hash with at least the following keys:
+
+=over
+
+=item exit_code
+
+True if there was an error encrypting or signing.
+
+=item message
+
+An un-localized error message desribing the problem.
+
+=back
+
+=cut
+
+sub SignEncrypt {
+    my $self = shift;
+    my %args = (@_);
+
+    my $entity = $args{'Entity'};
+    if ( $args{'Sign'} && !defined $args{'Signer'} ) {
+        $args{'Signer'} =
+            $self->UseKeyForSigning
+            || (Email::Address->parse( $entity->head->get( 'From' ) ))[0]->address;
+    }
+    if ( $args{'Encrypt'} && !$args{'Recipients'} ) {
+        my %seen;
+        $args{'Recipients'} = [
+            grep $_ && !$seen{ $_ }++, map $_->address,
+            map Email::Address->parse( $entity->head->get( $_ ) ),
+            qw(To Cc Bcc)
+        ];
+    }
+
+    my $protocol = delete $args{'Protocol'} || 'GnuPG';
+    my $class = $self->LoadImplementation( $protocol );
+
+    my %res = $class->SignEncrypt( %args );
+    $res{'Protocol'} = $protocol;
+    return %res;
+}
+
 =head2 UseKeyForSigning [KEY]
 
 Returns or sets the identifier of the key that should be used for

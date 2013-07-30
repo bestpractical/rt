@@ -70,4 +70,14 @@ sub GetPassphrase {
     return '';
 }
 
+=head2 SignEncrypt Entity => MIME::Entity, [ Encrypt => 1, Sign => 1, ... ]
+
+Signs and/or encrypts a MIME entity.  All arguments and return values
+are identical to L<RT::Crypt/SignEncrypt>, with the omission of
+C<Protocol>.
+
+=cut
+
+requires 'SignEncrypt';
+
 1;

@@ -648,8 +648,8 @@ sub GetForwardAttachments {
 
 =head2 SignEncrypt Entity => undef, Sign => 0, Encrypt => 0
 
-Signs and encrypts message using L<RT::Crypt::GnuPG>, but as well
-handle errors with users' keys.
+Signs and encrypts message using L<RT::Crypt>, but as well handle errors
+with users' keys.
 
 If a recipient has no key or has other problems with it, then the
 unction sends a error to him using 'Error: public key' template.
@@ -678,7 +678,7 @@ sub SignEncrypt {
     $RT::Logger->debug("$msgid Encrypting message") if $args{'Encrypt'};
 
     require RT::Crypt;
-    my %res = RT::Crypt::GnuPG->SignEncrypt( %args );
+    my %res = RT::Crypt->SignEncrypt( %args );
     return 1 unless $res{'exit_code'};
 
     my @status = RT::Crypt::GnuPG->ParseStatus( $res{'status'} );
@@ -745,7 +745,7 @@ sub SignEncrypt {
     }
 
     # redo without broken recipients
-    %res = RT::Crypt::GnuPG->SignEncrypt( %args );
+    %res = RT::Crypt->SignEncrypt( %args );
     return 0 if $res{'exit_code'};
 
     return 1;

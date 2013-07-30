@@ -481,61 +481,14 @@ sub CallGnuPG {
     return %res;
 }
 
-=head2 SignEncrypt Entity => MIME::Entity, [ Encrypt => 1, Sign => 1, ... ]
-
-Signs and/or encrypts an email message with GnuPG utility.
-
-=over
-
-=item Signing
-
-During signing you can pass C<Signer> argument to set key we sign with this option
-overrides gnupg's C<default-key> option. If C<Signer> argument is not provided
-then address of a message sender is used.
-
-As well you can pass C<Passphrase>, but if value is undefined then L</GetPassphrase>
-called to get it.
-
-=item Encrypting
-
-During encryption you can pass a C<Recipients> array, otherwise C<To>, C<Cc> and
-C<Bcc> fields of the message are used to fetch the list.
-
-=back
-
-Returns a hash with the following keys:
-
-* exit_code
-* error
-* logger
-* status
-* message
-
-=cut
-
 sub SignEncrypt {
     my $self = shift;
-    my %args = (@_);
 
-    my $entity = $args{'Entity'};
-    if ( $args{'Sign'} && !defined $args{'Signer'} ) {
-        $args{'Signer'} = RT::Crypt->UseKeyForSigning()
-            || (Email::Address->parse( $entity->head->get( 'From' ) ))[0]->address;
-    }
-    if ( $args{'Encrypt'} && !$args{'Recipients'} ) {
-        my %seen;
-        $args{'Recipients'} = [
-            grep $_ && !$seen{ $_ }++, map $_->address,
-            map Email::Address->parse( $entity->head->get( $_ ) ),
-            qw(To Cc Bcc)
-        ];
-    }
-    
     my $format = lc RT->Config->Get('GnuPG')->{'OutgoingMessagesFormat'} || 'RFC';
     if ( $format eq 'inline' ) {
-        return $self->SignEncryptInline( %args );
+        return $self->SignEncryptInline( @_ );
     } else {
-        return $self->SignEncryptRFC3156( %args );
+        return $self->SignEncryptRFC3156( @_ );
     }
 }
 
