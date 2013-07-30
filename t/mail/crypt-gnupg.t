@@ -36,7 +36,7 @@ diag 'only signing. correct passphrase';
     ok( $entity->is_multipart, 'signed message is multipart' );
     is( $entity->parts, 2, 'two parts' );
 
-    my @parts = RT::Crypt::GnuPG->FindProtectedParts( Entity => $entity );
+    my @parts = RT::Crypt->FindProtectedParts( Entity => $entity );
     is( scalar @parts, 1, 'one protected part' );
     is( $parts[0]->{'Type'}, 'signed', "have signed part" );
     is( $parts[0]->{'Format'}, 'RFC3156', "RFC3156 format" );
@@ -120,7 +120,7 @@ diag 'encryption only';
 
     ok($entity, 'get an encrypted part');
 
-    my @parts = RT::Crypt::GnuPG->FindProtectedParts( Entity => $entity );
+    my @parts = RT::Crypt->FindProtectedParts( Entity => $entity );
     is( scalar @parts, 1, 'one protected part' );
     is( $parts[0]->{'Type'}, 'encrypted', "have encrypted part" );
     is( $parts[0]->{'Format'}, 'RFC3156', "RFC3156 format" );
@@ -175,7 +175,7 @@ diag 'encryption and signing with combined method';
 
     ok($entity, 'get an encrypted and signed part');
 
-    my @parts = RT::Crypt::GnuPG->FindProtectedParts( Entity => $entity );
+    my @parts = RT::Crypt->FindProtectedParts( Entity => $entity );
     is( scalar @parts, 1, 'one protected part' );
     is( $parts[0]->{'Type'}, 'encrypted', "have encrypted part" );
     is( $parts[0]->{'Format'}, 'RFC3156', "RFC3156 format" );
@@ -197,7 +197,7 @@ diag 'encryption and signing with cascading, sign on encrypted';
     ok( !$res{'exit_code'}, 'successful signing' );
     ok( !$res{'logger'}, "no records in logger" );
 
-    my @parts = RT::Crypt::GnuPG->FindProtectedParts( Entity => $entity );
+    my @parts = RT::Crypt->FindProtectedParts( Entity => $entity );
     is( scalar @parts, 1, 'one protected part, top most' );
     is( $parts[0]->{'Type'}, 'signed', "have signed part" );
     is( $parts[0]->{'Format'}, 'RFC3156', "RFC3156 format" );
@@ -220,7 +220,7 @@ diag 'find signed/encrypted part deep inside';
         Data => ['-'x76, 'this is mailing list'],
     );
 
-    my @parts = RT::Crypt::GnuPG->FindProtectedParts( Entity => $entity );
+    my @parts = RT::Crypt->FindProtectedParts( Entity => $entity );
     is( scalar @parts, 1, 'one protected part' );
     is( $parts[0]->{'Type'}, 'encrypted', "have encrypted part" );
     is( $parts[0]->{'Format'}, 'RFC3156', "RFC3156 format" );
@@ -246,7 +246,7 @@ diag 'wrong signed/encrypted parts: no protocol';
 
     my @parts;
     warning_like {
-        @parts = RT::Crypt::GnuPG->FindProtectedParts( Entity => $entity );
+        @parts = RT::Crypt->FindProtectedParts( Entity => $entity );
     } qr{Entity is 'multipart/encrypted', but has no protocol defined. Skipped};
 
     is( scalar @parts, 0, 'no protected parts' );
@@ -271,7 +271,7 @@ diag 'wrong signed/encrypted parts: not enought parts';
 
     my @parts;
     warning_like {
-        @parts = RT::Crypt::GnuPG->FindProtectedParts( Entity => $entity );
+        @parts = RT::Crypt->FindProtectedParts( Entity => $entity );
     } qr/Encrypted or signed entity must has two subparts. Skipped/;
     is( scalar @parts, 0, 'no protected parts' );
 }
@@ -288,7 +288,7 @@ diag 'wrong signed/encrypted parts: wrong proto';
     ok( !$res{'exit_code'}, 'success' );
     $entity->head->mime_attr( 'Content-Type.protocol' => 'application/bad-proto' );
 
-    my @parts = RT::Crypt::GnuPG->FindProtectedParts( Entity => $entity );
+    my @parts = RT::Crypt->FindProtectedParts( Entity => $entity );
     is( scalar @parts, 0, 'no protected parts' );
 }
 
@@ -304,7 +304,7 @@ diag 'wrong signed/encrypted parts: wrong proto';
     ok( !$res{'exit_code'}, 'success' );
     $entity->head->mime_attr( 'Content-Type.protocol' => 'application/bad-proto' );
 
-    my @parts = RT::Crypt::GnuPG->FindProtectedParts( Entity => $entity );
+    my @parts = RT::Crypt->FindProtectedParts( Entity => $entity );
     is( scalar @parts, 0, 'no protected parts' );
 }
 
@@ -314,7 +314,7 @@ diag 'verify inline and in attachment signatures';
     my $parser = new MIME::Parser;
     my $entity = $parser->parse( $fh );
 
-    my @parts = RT::Crypt::GnuPG->FindProtectedParts( Entity => $entity );
+    my @parts = RT::Crypt->FindProtectedParts( Entity => $entity );
     is( scalar @parts, 2, 'two protected parts' );
     is( $parts[1]->{'Type'}, 'signed', "have signed part" );
     is( $parts[1]->{'Format'}, 'Inline', "inline format" );

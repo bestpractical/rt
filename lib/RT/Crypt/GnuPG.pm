@@ -756,54 +756,6 @@ sub SignEncryptContent {
     return %res;
 }
 
-sub FindProtectedParts {
-    my $self = shift;
-    my %args = (
-        Entity => undef,
-        Skip => {},
-        Scattered => 1,
-        @_
-    );
-
-    my $entity = $args{'Entity'};
-    return () if $args{'Skip'}{ $entity };
-
-    my %info = $self->CheckIfProtected( Entity => $entity );
-    if (keys %info) {
-        $args{'Skip'}{ $entity } = 1;
-        return \%info;
-    }
-
-    my @res;
-
-    # not protected itself, look inside
-    push @res, $self->FindProtectedParts(
-        %args, Entity => $_, Scattered => 0,
-    ) foreach grep !$args{'Skip'}{$_}, $entity->parts;
-
-    if ( $args{'Scattered'} ) {
-        my %parent;
-        my $filter; $filter = sub {
-            $parent{$_[0]} = $_[1];
-            unless ( $_[0]->is_multipart ) {
-                return () if $args{'Skip'}{$_[0]};
-                return $_[0];
-            }
-            return map $filter->($_, $_[0]), grep !$args{'Skip'}{$_}, $_[0]->parts;
-        };
-        my @parts = $filter->($entity);
-        return @res unless @parts;
-
-        my @list = $self->FindScatteredParts( Parts => \@parts, Parents => \%parent, Skip => $args{'Skip'} );
-        if (@list) {
-            push @res, @list;
-            @parts = grep !$args{'Skip'}{$_}, @parts;
-        }
-    }
-
-    return @res;
-}
-
 sub CheckIfProtected {
     my $self = shift;
     my %args = ( Entity => undef, @_ );
@@ -1013,7 +965,7 @@ sub VerifyDecrypt {
         AddStatus => 0,
         @_
     );
-    my @protected = $self->FindProtectedParts( Entity => $args{'Entity'} );
+    my @protected = RT::Crypt->FindProtectedParts( Entity => $args{'Entity'} );
     my @res;
     # XXX: detaching may brake nested signatures
     foreach my $item( grep $_->{'Type'} eq 'signed', @protected ) {

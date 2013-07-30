@@ -79,6 +79,19 @@ sub Protocols {
     return @PROTOCOLS;
 }
 
+=head2 EnabledOnIncoming
+
+Returns the list of encryption protocols that should be used for
+decryption and verification of incoming email.  This list is irrelevant
+unless L<RT::Interface::Email::Auth::Crypt> is enabled in
+L<RT_Config/@MailPlugins>.
+
+=cut
+
+sub EnabledOnIncoming {
+    return 'GnuPG';
+}
+
 =head2 LoadImplementation CLASS
 
 Given the name of an encryption implementation (e.g. "GnuPG"), loads the
@@ -99,6 +112,83 @@ sub LoadImplementation {
         RT->Logger->warn( "Could not load $class: $@" );
         return $cache{ $class } = undef;
     }
+}
+
+=head2 FindProtectedParts Entity => MIME::Entity
+
+Looks for encrypted or signed parts of the given C<Entity>, using all
+L</EnabledOnIncoming> encryption protocols.  For each node in the MIME
+hierarchy, L<RT::Crypt::Role/CheckIfProtected> for that L<MIME::Entity>
+is called on each L</EnabledOnIncoming> protocol.  Any multipart nodes
+not claimed by those protocols are recursed into.
+
+Finally, L<RT::Crypt::Role/FindScatteredParts> is called on the top-most
+entity for each L</EnabledOnIncoming> protocol.
+
+Returns a list of hash references; each hash reference is guaranteed to
+contain a C<Protocol> key describing the protocol of the found part, and
+a C<Type> which is either C<encrypted> or C<signed>.  The remaining keys
+are protocol-dependent; the hashref will be provided to
+L</VerifyDecrypt>.
+
+=cut
+
+sub FindProtectedParts {
+    my $self = shift;
+    my %args = (
+        Entity => undef,
+        Skip => {},
+        Scattered => 1,
+        @_
+    );
+
+    my $entity = $args{'Entity'};
+    return () if $args{'Skip'}{ $entity };
+
+    my @protocols = $self->EnabledOnIncoming;
+
+    foreach my $protocol ( @protocols ) {
+        my $class = $self->LoadImplementation( $protocol );
+        my %info = $class->CheckIfProtected( Entity => $entity );
+        next unless keys %info;
+
+        $args{'Skip'}{ $entity } = 1;
+        $info{'Protocol'} = $protocol;
+        return \%info;
+    }
+
+    my @res;
+
+    # not protected itself, look inside
+    push @res, $self->FindProtectedParts(
+        %args, Entity => $_, Scattered => 0,
+    ) foreach grep !$args{'Skip'}{$_}, $entity->parts;
+
+    if ( $args{'Scattered'} ) {
+        my %parent;
+        my $filter; $filter = sub {
+            $parent{$_[0]} = $_[1];
+            unless ( $_[0]->is_multipart ) {
+                return () if $args{'Skip'}{$_[0]};
+                return $_[0];
+            }
+            return map $filter->($_, $_[0]), grep !$args{'Skip'}{$_}, $_[0]->parts;
+        };
+        my @parts = $filter->($entity);
+        return @res unless @parts;
+
+        foreach my $protocol ( @protocols ) {
+            my $class = $self->LoadImplementation( $protocol );
+            my @list = $class->FindScatteredParts( Parts => \@parts, Parents => \%parent, Skip => $args{'Skip'} );
+            next unless @list;
+
+            $_->{'Protocol'} = $protocol foreach @list;
+            push @res, @list;
+            @parts = grep !$args{'Skip'}{$_}, @parts;
+        }
+    }
+
+    return @res;
 }
 
 =head2 SignEncrypt Entity => ENTITY, [Sign => 1], [Encrypt => 1],

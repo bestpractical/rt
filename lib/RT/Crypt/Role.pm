@@ -80,4 +80,35 @@ C<Protocol>.
 
 requires 'SignEncrypt';
 
+=head2 FindScatteredParts Parts => ARRAYREF, Parents => HASHREF, Skip => HASHREF
+
+Passed the list of unclaimed L<MIME::Entity> objects in C<Parts>, this
+method should examine them as a whole to determine if there are any that
+could not be claimed by the single-entity-at-a-time L</CheckIfProtected>
+method.  This is generally only necessary in the case of signatures
+manually attached in parallel, and the like.
+
+If found, the relevant entities should be inserted into C<Skip> with a
+true value, to signify to other encryption protols that they have been
+claimed.  The method should return a list of hash references, each
+containing a C<Type> key which is either C<signed> or C<encrypted>.  The
+remaining keys are protocol-dependent; the hashref will be provided to
+L</VerifyDecrypt>.
+
+=cut
+
+requires 'FindScatteredParts';
+
+=head2 CheckIfProtected Entity => MIME::Entity
+
+Examines the provided L<MIME::Entity>, and returns an empty list if it
+is not signed or encrypted using the protocol.  If it is, returns a hash
+reference containing a C<Type> which is either C<encrypted> or
+C<signed>.  The remaining keys are protocol-dependent; the hashref will
+be provided to L</VerifyDecrypt>.
+
+=cut
+
+requires 'CheckIfProtected';
+
 1;
