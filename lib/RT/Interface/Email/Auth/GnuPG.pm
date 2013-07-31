@@ -120,7 +120,7 @@ sub GetCurrentUser {
 
         my $status = $part->head->get( 'X-RT-GnuPG-Status' );
         if ( $status ) {
-            for ( RT::Crypt::GnuPG::ParseStatus( $status ) ) {
+            for ( RT::Crypt::GnuPG->ParseStatus( $status ) ) {
                 if ( $_->{Operation} eq 'Decrypt' && $_->{Status} eq 'DONE' ) {
                     $decrypted = 1;
                 }
@@ -152,7 +152,7 @@ sub HandleErrors {
 
     my %sent_once = ();
     foreach my $run ( @{ $args{'Result'} } ) {
-        my @status = RT::Crypt::GnuPG::ParseStatus( $run->{'status'} );
+        my @status = RT::Crypt::GnuPG->ParseStatus( $run->{'status'} );
         unless ( $sent_once{'NoPrivateKey'} ) {
             unless ( CheckNoPrivateKey( Message => $args{'Message'}, Status => \@status ) ) {
                 $sent_once{'NoPrivateKey'}++;
@@ -232,7 +232,7 @@ sub VerifyDecrypt {
         @_
     );
 
-    my @res = RT::Crypt::GnuPG::VerifyDecrypt( %args );
+    my @res = RT::Crypt::GnuPG->VerifyDecrypt( %args );
     unless ( @res ) {
         $RT::Logger->debug("No more encrypted/signed parts");
         return 1;

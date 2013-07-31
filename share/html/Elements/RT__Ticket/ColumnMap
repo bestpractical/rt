@@ -84,7 +84,7 @@ my $LinkCallback = sub {
 my $trustSub = sub {
     my $user = shift;
     require RT::Crypt::GnuPG;
-    my %key = RT::Crypt::GnuPG::GetKeyInfo($user->EmailAddress);
+    my %key = RT::Crypt::GnuPG->GetKeyInfo($user->EmailAddress);
     if (!defined $key{'info'}) {
         return $m->interp->apply_escapes(' ' . loc("(no pubkey!)"), "h");
     } elsif ($key{'info'}{'TrustLevel'} == 0) {
@@ -265,7 +265,7 @@ $COLUMN_MAP = {
         value     => sub {
             my $t = shift;
             my $name = $t->OwnerObj->Name;
-            my %key = RT::Crypt::GnuPG::GetKeyInfo($t->OwnerObj->EmailAddress);
+            my %key = RT::Crypt::GnuPG->GetKeyInfo($t->OwnerObj->EmailAddress);
             if (!defined $key{'info'}) {
                 $name .= ' '. loc("(no pubkey!)");
             }

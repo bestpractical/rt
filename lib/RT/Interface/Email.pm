@@ -678,10 +678,10 @@ sub SignEncrypt {
     $RT::Logger->debug("$msgid Encrypting message") if $args{'Encrypt'};
 
     require RT::Crypt::GnuPG;
-    my %res = RT::Crypt::GnuPG::SignEncrypt( %args );
+    my %res = RT::Crypt::GnuPG->SignEncrypt( %args );
     return 1 unless $res{'exit_code'};
 
-    my @status = RT::Crypt::GnuPG::ParseStatus( $res{'status'} );
+    my @status = RT::Crypt::GnuPG->ParseStatus( $res{'status'} );
 
     my @bad_recipients;
     foreach my $line ( @status ) {
@@ -745,7 +745,7 @@ sub SignEncrypt {
     }
 
     # redo without broken recipients
-    %res = RT::Crypt::GnuPG::SignEncrypt( %args );
+    %res = RT::Crypt::GnuPG->SignEncrypt( %args );
     return 0 if $res{'exit_code'};
 
     return 1;

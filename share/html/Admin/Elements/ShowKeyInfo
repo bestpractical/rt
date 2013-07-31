@@ -81,7 +81,7 @@ $Type => 'public'
 </%ARGS>
 <%INIT>
 require RT::Crypt::GnuPG;
-my %res = RT::Crypt::GnuPG::GetKeyInfo( $EmailAddress, $Type );
+my %res = RT::Crypt::GnuPG->GetKeyInfo( $EmailAddress, $Type );
 
 my $title;
 unless ( $Type eq 'private' ) {

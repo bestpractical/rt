@@ -366,6 +366,7 @@ our $RE_FILE_EXTENSIONS = qr/pgp|asc/i;
 #        );
 
 sub CallGnuPG {
+    my $self = shift;
     my %args = (
         Options     => undef,
         Signer      => undef,
@@ -408,13 +409,13 @@ sub CallGnuPG {
 
     my %seen;
     $gnupg->options->push_recipients( $_ ) for
-        map { UseKeyForEncryption($_) || $_ }
+        map { $self->UseKeyForEncryption($_) || $_ }
         grep { !$seen{ $_ }++ }
             @{ $args{Recipients} || [] };
 
     $args{Passphrase} = $GnuPGOptions{passphrase}
         unless defined $args{'Passphrase'};
-    $args{Passphrase} = GetPassphrase( Address => $args{Signer} )
+    $args{Passphrase} = $self->GetPassphrase( Address => $args{Signer} )
         unless defined $args{'Passphrase'};
     $gnupg->passphrase( $args{'Passphrase'} )
         if defined $args{Passphrase};
@@ -510,11 +511,12 @@ Returns a hash with the following keys:
 =cut
 
 sub SignEncrypt {
+    my $self = shift;
     my %args = (@_);
 
     my $entity = $args{'Entity'};
     if ( $args{'Sign'} && !defined $args{'Signer'} ) {
-        $args{'Signer'} = UseKeyForSigning()
+        $args{'Signer'} = $self->UseKeyForSigning()
             || (Email::Address->parse( $entity->head->get( 'From' ) ))[0]->address;
     }
     if ( $args{'Encrypt'} && !$args{'Recipients'} ) {
@@ -528,13 +530,14 @@ sub SignEncrypt {
     
     my $format = lc RT->Config->Get('GnuPG')->{'OutgoingMessagesFormat'} || 'RFC';
     if ( $format eq 'inline' ) {
-        return SignEncryptInline( %args );
+        return $self->SignEncryptInline( %args );
     } else {
-        return SignEncryptRFC3156( %args );
+        return $self->SignEncryptRFC3156( %args );
     }
 }
 
 sub SignEncryptRFC3156 {
+    my $self = shift;
     my %args = (
         Entity => undef,
 
@@ -565,7 +568,7 @@ sub SignEncryptRFC3156 {
         my @signature;
         # We use RT::Crypt::GnuPG::CRLFHandle to canonicalize the
         # MIME::Entity output to use \r\n instead of \n for its newlines
-        %res = CallGnuPG(
+        %res = $self->CallGnuPG(
             Signer     => $args{'Signer'},
             Command    => "detach_sign",
             Handles    => { stdin => RT::Crypt::GnuPG::CRLFHandle->new },
@@ -598,7 +601,7 @@ sub SignEncryptRFC3156 {
         binmode $tmp_fh, ':raw';
 
         $entity->make_multipart( 'mixed', Force => 1 );
-        %res = CallGnuPG(
+        %res = $self->CallGnuPG(
             Signer     => $args{'Signer'},
             Recipients => \@recipients,
             Command    => ( $args{'Sign'} ? "sign_and_encrypt" : "encrypt" ),
@@ -631,6 +634,7 @@ sub SignEncryptRFC3156 {
 }
 
 sub SignEncryptInline {
+    my $self = shift;
     my %args = ( @_ );
 
     my $entity = $args{'Entity'};
@@ -639,19 +643,20 @@ sub SignEncryptInline {
     $entity->make_singlepart;
     if ( $entity->is_multipart ) {
         foreach ( $entity->parts ) {
-            %res = SignEncryptInline( @_, Entity => $_ );
+            %res = $self->SignEncryptInline( @_, Entity => $_ );
             return %res if $res{'exit_code'};
         }
         return %res;
     }
 
-    return _SignEncryptTextInline( @_ )
+    return $self->_SignEncryptTextInline( @_ )
         if $entity->effective_type =~ /^text\//i;
 
-    return _SignEncryptAttachmentInline( @_ );
+    return $self->_SignEncryptAttachmentInline( @_ );
 }
 
 sub _SignEncryptTextInline {
+    my $self = shift;
     my %args = (
         Entity => undef,
 
@@ -670,7 +675,7 @@ sub _SignEncryptTextInline {
     binmode $tmp_fh, ':raw';
 
     my $entity = $args{'Entity'};
-    my %res = CallGnuPG(
+    my %res = $self->CallGnuPG(
         Signer     => $args{'Signer'},
         Recipients => $args{'Recipients'},
         Command    => ( $args{'Sign'} && $args{'Encrypt'}
@@ -691,6 +696,7 @@ sub _SignEncryptTextInline {
 }
 
 sub _SignEncryptAttachmentInline {
+    my $self = shift;
     my %args = (
         Entity => undef,
 
@@ -711,7 +717,7 @@ sub _SignEncryptAttachmentInline {
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
     binmode $tmp_fh, ':raw';
 
-    my %res = CallGnuPG(
+    my %res = $self->CallGnuPG(
         Signer     => $args{'Signer'},
         Recipients => $args{'Recipients'},
         Command    => ( $args{'Sign'} && $args{'Encrypt'}
@@ -747,6 +753,7 @@ sub _SignEncryptAttachmentInline {
 }
 
 sub SignEncryptContent {
+    my $self = shift;
     my %args = (
         Content => undef,
 
@@ -764,7 +771,7 @@ sub SignEncryptContent {
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
     binmode $tmp_fh, ':raw';
 
-    my %res = CallGnuPG(
+    my %res = $self->CallGnuPG(
         Signer     => $args{'Signer'},
         Recipients => $args{'Recipients'},
         Command    => ( $args{'Sign'} && $args{'Encrypt'}
@@ -794,6 +801,7 @@ sub SignEncryptContent {
 }
 
 sub FindProtectedParts {
+    my $self = shift;
     my %args = ( Entity => undef, CheckBody => 1, @_ );
     my $entity = $args{'Entity'};
 
@@ -952,7 +960,7 @@ sub FindProtectedParts {
         };
     }
 
-    push @res, FindProtectedParts( Entity => $_ )
+    push @res, $self->FindProtectedParts( Entity => $_ )
         foreach grep !$skip{"$_"}, $entity->parts;
 
     return @res;
@@ -963,6 +971,7 @@ sub FindProtectedParts {
 =cut
 
 sub VerifyDecrypt {
+    my $self = shift;
     my %args = (
         Entity    => undef,
         Detach    => 1,
@@ -970,23 +979,23 @@ sub VerifyDecrypt {
         AddStatus => 0,
         @_
     );
-    my @protected = FindProtectedParts( Entity => $args{'Entity'} );
+    my @protected = $self->FindProtectedParts( Entity => $args{'Entity'} );
     my @res;
     # XXX: detaching may brake nested signatures
     foreach my $item( grep $_->{'Type'} eq 'signed', @protected ) {
         my $status_on;
         if ( $item->{'Format'} eq 'RFC3156' ) {
-            push @res, { VerifyRFC3156( %$item, SetStatus => $args{'SetStatus'} ) };
+            push @res, { $self->VerifyRFC3156( %$item, SetStatus => $args{'SetStatus'} ) };
             if ( $args{'Detach'} ) {
                 $item->{'Top'}->parts( [ $item->{'Data'} ] );
                 $item->{'Top'}->make_singlepart;
             }
             $status_on = $item->{'Top'};
         } elsif ( $item->{'Format'} eq 'Inline' ) {
-            push @res, { VerifyInline( %$item ) };
+            push @res, { $self->VerifyInline( %$item ) };
             $status_on = $item->{'Data'};
         } elsif ( $item->{'Format'} eq 'Attachment' ) {
-            push @res, { VerifyAttachment( %$item ) };
+            push @res, { $self->VerifyAttachment( %$item ) };
             if ( $args{'Detach'} ) {
                 $item->{'Top'}->parts( [
                     grep "$_" ne $item->{'Signature'}, $item->{'Top'}->parts
@@ -1009,13 +1018,13 @@ sub VerifyDecrypt {
     foreach my $item( grep $_->{'Type'} eq 'encrypted', @protected ) {
         my $status_on;
         if ( $item->{'Format'} eq 'RFC3156' ) {
-            push @res, { DecryptRFC3156( %$item ) };
+            push @res, { $self->DecryptRFC3156( %$item ) };
             $status_on = $item->{'Top'};
         } elsif ( $item->{'Format'} eq 'Inline' ) {
-            push @res, { DecryptInline( %$item ) };
+            push @res, { $self->DecryptInline( %$item ) };
             $status_on = $item->{'Data'};
         } elsif ( $item->{'Format'} eq 'Attachment' ) {
-            push @res, { DecryptAttachment( %$item ) };
+            push @res, { $self->DecryptAttachment( %$item ) };
             $status_on = $item->{'Data'};
         }
         if ( $args{'SetStatus'} || $args{'AddStatus'} ) {
@@ -1032,9 +1041,10 @@ sub VerifyDecrypt {
     return @res;
 }
 
-sub VerifyInline { return DecryptInline( @_ ) }
+sub VerifyInline { return (shift)->DecryptInline( @_ ) }
 
 sub VerifyAttachment {
+    my $self = shift;
     my %args = ( Data => undef, Signature => undef, Top => undef, @_ );
 
     foreach ( $args{'Data'}, $args{'Signature'} ) {
@@ -1049,7 +1059,7 @@ sub VerifyAttachment {
     $args{'Data'}->bodyhandle->print( $tmp_fh );
     $tmp_fh->flush;
 
-    return CallGnuPG(
+    return $self->CallGnuPG(
         Command     => "verify",
         CommandArgs => [ '-', $tmp_fn ],
         Passphrase  => $args{'Passphrase'},
@@ -1058,6 +1068,7 @@ sub VerifyAttachment {
 }
 
 sub VerifyRFC3156 {
+    my $self = shift;
     my %args = ( Data => undef, Signature => undef, Top => undef, @_ );
 
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
@@ -1065,7 +1076,7 @@ sub VerifyRFC3156 {
     $args{'Data'}->print( $tmp_fh );
     $tmp_fh->flush;
 
-    return CallGnuPG(
+    return $self->CallGnuPG(
         Command     => "verify",
         CommandArgs => [ '-', $tmp_fn ],
         Passphrase  => $args{'Passphrase'},
@@ -1074,6 +1085,7 @@ sub VerifyRFC3156 {
 }
 
 sub DecryptRFC3156 {
+    my $self = shift;
     my %args = (
         Data => undef,
         Info => undef,
@@ -1090,7 +1102,7 @@ sub DecryptRFC3156 {
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
     binmode $tmp_fh, ':raw';
 
-    my %res = CallGnuPG(
+    my %res = $self->CallGnuPG(
         Command     => "decrypt",
         Handles     => { stdout => $tmp_fh },
         Passphrase  => $args{'Passphrase'},
@@ -1115,6 +1127,7 @@ sub DecryptRFC3156 {
 }
 
 sub DecryptInline {
+    my $self = shift;
     my %args = (
         Data => undef,
         Passphrase => undef,
@@ -1149,7 +1162,7 @@ sub DecryptInline {
             seek $block_fh, 0, 0;
 
             my ($res_fh, $res_fn);
-            ($res_fh, $res_fn, %res) = _DecryptInlineBlock(
+            ($res_fh, $res_fn, %res) = $self->_DecryptInlineBlock(
                 %args,
                 BlockHandle => $block_fh,
             );
@@ -1185,7 +1198,7 @@ sub DecryptInline {
         seek $block_fh, 0, 0;
 
         my ($res_fh, $res_fn);
-        ($res_fh, $res_fn, %res) = _DecryptInlineBlock(
+        ($res_fh, $res_fn, %res) = $self->_DecryptInlineBlock(
             %args,
             BlockHandle => $block_fh,
         );
@@ -1205,6 +1218,7 @@ sub DecryptInline {
 }
 
 sub _DecryptInlineBlock {
+    my $self = shift;
     my %args = (
         BlockHandle => undef,
         Passphrase => undef,
@@ -1214,7 +1228,7 @@ sub _DecryptInlineBlock {
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
     binmode $tmp_fh, ':raw';
 
-    my %res = CallGnuPG(
+    my %res = $self->CallGnuPG(
         Command     => "decrypt",
         Handles     => { stdout => $tmp_fh, stdin => $args{'BlockHandle'} },
         Passphrase  => $args{'Passphrase'},
@@ -1232,6 +1246,7 @@ sub _DecryptInlineBlock {
 }
 
 sub DecryptAttachment {
+    my $self = shift;
     my %args = (
         Top  => undef,
         Data => undef,
@@ -1249,7 +1264,7 @@ sub DecryptAttachment {
     $args{'Data'}->bodyhandle->print( $tmp_fh );
     seek $tmp_fh, 0, 0;
 
-    my ($res_fh, $res_fn, %res) = _DecryptInlineBlock(
+    my ($res_fh, $res_fn, %res) = $self->_DecryptInlineBlock(
         %args,
         BlockHandle => $tmp_fh,
     );
@@ -1274,6 +1289,7 @@ sub DecryptAttachment {
 }
 
 sub DecryptContent {
+    my $self = shift;
     my %args = (
         Content => undef,
         Passphrase => undef,
@@ -1283,7 +1299,7 @@ sub DecryptContent {
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
     binmode $tmp_fh, ':raw';
 
-    my %res = CallGnuPG(
+    my %res = $self->CallGnuPG(
         Command     => "decrypt",
         Handles     => { stdout => $tmp_fh },
         Passphrase  => $args{'Passphrase'},
@@ -1319,6 +1335,7 @@ Returns passphrase, called whenever it's required with Address as a named argume
 =cut
 
 sub GetPassphrase {
+    my $self = shift;
     my %args = ( Address => undef, @_ );
     return 'test';
 }
@@ -1429,6 +1446,7 @@ my %ignore_keyword = map { $_ => 1 } qw(
 );
 
 sub ParseStatus {
+    my $self = shift;
     my $status = shift;
     return () unless $status;
 
@@ -1677,6 +1695,7 @@ sub _PrepareGnuPGOptions {
 # one arg -> return preferred key
 # many -> set
 sub UseKeyForEncryption {
+    my $self = shift;
     unless ( @_ ) {
         %key = ();
     } elsif ( @_ > 1 ) {
@@ -1700,6 +1719,7 @@ Sets new value when called with one argument and unsets if it's undef.
 
 { my $key;
 sub UseKeyForSigning {
+    my $self = shift;
     if ( @_ ) {
         $key = $_[0];
     }
@@ -1716,8 +1736,9 @@ also listed.
 =cut
 
 sub GetKeysForEncryption {
+    my $self = shift;
     my $key_id = shift;
-    my %res = GetKeysInfo( $key_id, 'public', @_ );
+    my %res = $self->GetKeysInfo( $key_id, 'public', @_ );
     return %res if $res{'exit_code'};
     return %res unless $res{'info'};
 
@@ -1737,18 +1758,20 @@ sub GetKeysForEncryption {
 }
 
 sub GetKeysForSigning {
+    my $self = shift;
     my $key_id = shift;
-    return GetKeysInfo( $key_id, 'private', @_ );
+    return $self->GetKeysInfo( $key_id, 'private', @_ );
 }
 
 sub CheckRecipients {
+    my $self = shift;
     my @recipients = (@_);
 
     my ($status, @issues) = (1, ());
 
     my %seen;
     foreach my $address ( grep !$seen{ lc $_ }++, map $_->address, @recipients ) {
-        my %res = GetKeysForEncryption( $address );
+        my %res = $self->GetKeysForEncryption( $address );
         if ( $res{'info'} && @{ $res{'info'} } == 1 && $res{'info'}[0]{'TrustLevel'} > 0 ) {
             # good, one suitable and trusted key 
             next;
@@ -1758,7 +1781,7 @@ sub CheckRecipients {
         # it's possible that we have no User record with the email
         $user = undef unless $user->id;
 
-        if ( my $fpr = UseKeyForEncryption( $address ) ) {
+        if ( my $fpr = $self->UseKeyForEncryption( $address ) ) {
             if ( $res{'info'} && @{ $res{'info'} } ) {
                 next if
                     grep lc $_->{'Fingerprint'} eq lc $fpr,
@@ -1807,20 +1830,24 @@ sub CheckRecipients {
 }
 
 sub GetPublicKeyInfo {
-    return GetKeyInfo( shift, 'public', @_ );
+    my $self = shift;
+    return $self->GetKeyInfo( shift, 'public', @_ );
 }
 
 sub GetPrivateKeyInfo {
-    return GetKeyInfo( shift, 'private', @_ );
+    my $self = shift;
+    return $self->GetKeyInfo( shift, 'private', @_ );
 }
 
 sub GetKeyInfo {
-    my %res = GetKeysInfo(@_);
+    my $self = shift;
+    my %res = $self->GetKeysInfo(@_);
     $res{'info'} = $res{'info'}->[0];
     return %res;
 }
 
 sub GetKeysInfo {
+    my $self = shift;
     my $email = shift;
     my $type = shift || 'public';
     my $force = shift;
@@ -1831,7 +1858,7 @@ sub GetKeysInfo {
 
     my @info;
     my $method = $type eq 'private'? 'list_secret_keys': 'list_public_keys';
-    my %res = CallGnuPG(
+    my %res = $self->CallGnuPG(
         Options     => {
             'with-colons'     => undef, # parseable format
             'fingerprint'     => undef, # show fingerprint
@@ -1843,12 +1870,13 @@ sub GetKeysInfo {
     );
     return %res if $res{'message'};
 
-    @info = ParseKeysInfo( @info );
+    @info = $self->ParseKeysInfo( @info );
     $res{'info'} = \@info;
     return %res;
 }
 
 sub ParseKeysInfo {
+    my $self = shift;
     my @lines = @_;
 
     my %gpg_opt = RT->Config->Get('GnuPGOptions');
@@ -1998,9 +2026,10 @@ sub _ParseDate {
 }
 
 sub DeleteKey {
+    my $self = shift;
     my $key = shift;
 
-    return CallGnuPG(
+    return $self->CallGnuPG(
         Command     => "--delete-secret-and-public-key",
         CommandArgs => ["--", $key],
         Callback    => sub {
@@ -2015,9 +2044,10 @@ sub DeleteKey {
 }
 
 sub ImportKey {
+    my $self = shift;
     my $key = shift;
 
-    return CallGnuPG(
+    return $self->CallGnuPG(
         Command     => "import_keys",
         Content     => $key,
     );
@@ -2034,6 +2064,7 @@ Returns a true value if all went well.
 =cut
 
 sub DrySign {
+    my $self = shift;
     my $from = shift;
 
     my $mime = MIME::Entity->build(
@@ -2044,7 +2075,7 @@ sub DrySign {
         Data    => ['t'],
     );
 
-    my %res = SignEncrypt(
+    my %res = $self->SignEncrypt(
         Sign    => 1,
         Encrypt => 0,
         Entity  => $mime,
@@ -2066,6 +2097,7 @@ properly (and false otherwise).
 
 
 sub Probe {
+    my $self = shift;
     my $gnupg = GnuPG::Interface->new;
     $gnupg->options->hash_init(
         _PrepareGnuPGOptions( RT->Config->Get('GnuPGOptions') )
