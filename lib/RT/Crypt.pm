@@ -65,6 +65,19 @@ messages, as well as the decryption and verification of incoming email.
 
 =head1 METHODS
 
+=head2 Protocols
+
+Returns the complete set of encryption protocols that RT implements; not
+all may be supported by this installation.
+
+=cut
+
+our @PROTOCOLS = ('GnuPG');
+
+sub Protocols {
+    return @PROTOCOLS;
+}
+
 =head2 LoadImplementation CLASS
 
 Given the name of an encryption implementation (e.g. "GnuPG"), loads the
