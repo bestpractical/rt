@@ -1651,7 +1651,7 @@ sub GetKeysForEncryption {
         next if $key->{'Capabilities'} =~ /D/;
         # skip keys not suitable for encryption
         next unless $key->{'Capabilities'} =~ /e/i;
-        # skip disabled, expired, revoke and keys with no trust,
+        # skip disabled, expired, revoked and keys with no trust,
         # but leave keys with unknown trust level
         next if $key->{'TrustLevel'} < 0;
 
