@@ -1348,6 +1348,21 @@ sub get_relocatable_file {
     return File::Spec->catfile(get_relocatable_dir(@_), $file);
 }
 
+sub find_relocatable_path {
+    my @path = @_;
+
+    # A simple strategy to find e.g., t/data/gnupg/keys, from the dir
+    # where test file lives. We try up to 3 directories up
+    my $path = File::Spec->catfile( @path );
+    for my $up ( 0 .. 2 ) {
+        my $p = get_relocatable_dir($path);
+        return $p if -e $p;
+
+        $path = File::Spec->catfile( File::Spec->updir(), $path );
+    }
+    return undef;
+}
+
 sub get_abs_relocatable_dir {
     (my $volume, my $directories, my $file) = File::Spec->splitpath($0);
     if (File::Spec->file_name_is_absolute($directories)) {
@@ -1373,28 +1388,14 @@ sub import_gnupg_key {
     $key =~ s/\@/-at-/g;
     $key .= ".$type.key";
 
-    # simple strategy find data/gnupg/keys, from the dir where test file lives
-    # to updirs, try 3 times in total
-    my $path = File::Spec->catfile( 'data', 'gnupg', 'keys' );
-    my $abs_path;
-    for my $up ( 0 .. 2 ) {
-        my $p = get_relocatable_dir($path);
-        if ( -e $p ) {
-            $abs_path = $p;
-            last;
-        }
-        else {
-            $path = File::Spec->catfile( File::Spec->updir(), $path );
-        }
-    }
+    my $path = find_relocatable_path( 'data', 'gnupg', 'keys' );
 
     die "can't find the dir where gnupg keys are stored"
-      unless $abs_path;
+      unless $path;
 
     return RT::Crypt::GnuPG->ImportKey(
-        RT::Test->file_content( [ $abs_path, $key ] ) );
+        RT::Test->file_content( [ $path, $key ] ) );
 }
-
 
 sub lsign_gnupg_key {
     my $self = shift;
