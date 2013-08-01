@@ -1945,40 +1945,6 @@ sub ImportKey {
     );
 }
 
-=head2 KEY
-
-Signs a small message with the key, to make sure the key exists and 
-we have a useable passphrase. The first argument MUST be a key identifier
-of the signer: either email address, key id or finger print.
-
-Returns a true value if all went well.
-
-=cut
-
-sub DrySign {
-    my $self = shift;
-    my $from = shift;
-
-    my $mime = MIME::Entity->build(
-        Type    => "text/plain",
-        From    => 'nobody@localhost',
-        To      => 'nobody@localhost',
-        Subject => "dry sign",
-        Data    => ['t'],
-    );
-
-    my %res = $self->SignEncrypt(
-        Sign    => 1,
-        Encrypt => 0,
-        Entity  => $mime,
-        Signer  => $from,
-    );
-
-    return $res{exit_code} == 0;
-}
-
-1;
-
 =head2 Probe
 
 This routine returns true if RT's GnuPG support is configured and working 

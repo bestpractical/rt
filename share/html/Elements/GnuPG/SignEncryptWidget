@@ -138,7 +138,7 @@ if ( $self->{'Sign'} ) {
     if ($address ne $private and $address ne $queue) {
         push @{ $self->{'GnuPGCanNotSignAs'} ||= [] }, $address;
         $checks_failure = 1;
-    } elsif ( not RT::Crypt::GnuPG->DrySign( $address ) ) {
+    } elsif ( not RT::Crypt->DrySign( Signer => $address ) ) {
         push @{ $self->{'GnuPGCanNotSignAs'} ||= [] }, $address;
         $checks_failure = 1;
     } else {

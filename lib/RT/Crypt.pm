@@ -256,6 +256,37 @@ sub SignEncrypt {
     return %res;
 }
 
+=head2 DrySign Signer => KEY
+
+Signs a small message with the key, to make sure the key exists and we
+have a useable passphrase. The Signer argument MUST be a key identifier
+of the signer: either email address, key id or finger print.
+
+Returns a true value if all went well.
+
+=cut
+
+sub DrySign {
+    my $self = shift;
+
+    my $mime = MIME::Entity->build(
+        Type    => "text/plain",
+        From    => 'nobody@localhost',
+        To      => 'nobody@localhost',
+        Subject => "dry sign",
+        Data    => ['t'],
+    );
+
+    my %res = $self->SignEncrypt(
+        @_,
+        Sign    => 1,
+        Encrypt => 0,
+        Entity  => $mime,
+    );
+
+    return $res{exit_code} == 0;
+}
+
 =head2 VerifyDecrypt Entity => ENTITY [, Passphrase => undef ]
 
 Locates all protected parts of the L<MIME::Entity> object C<ENTITY>, as
