@@ -51,6 +51,9 @@ use warnings;
 
 package RT::Crypt::GnuPG;
 
+use Role::Basic 'with';
+with 'RT::Crypt::Role';
+
 use IO::Handle;
 use RT::Crypt::GnuPG::CRLFHandle;
 use GnuPG::Interface;
