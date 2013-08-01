@@ -695,6 +695,15 @@ our %META;
                 $gpg->{'Enable'} = 0;
                 return;
             }
+
+            if ( grep exists $gpg->{$_}, qw(RejectOnMissingPrivateKey RejectOnBadData) ) {
+                $RT::Logger->warning(
+                    "RejectOnMissingPrivateKey and RejectOnBadData GnuPG options"
+                    ." are now properties of the generic Crypt configuration. You"
+                    ." should set them there instead."
+                );
+                delete $gpg->{$_} for qw(RejectOnMissingPrivateKey RejectOnBadData);
+            }
         }
     },
     GnuPGOptions => { Type => 'HASH' },
