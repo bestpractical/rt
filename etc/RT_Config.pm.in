@@ -387,9 +387,10 @@ already, you can generate a naive first pass regexp by using:
 
     perl etc/upgrade/generate-rtaddressregexp
 
-If left blank, RT will generate a regexp for you, based on your
-comment and correspond address settings on your queues; this comes at
-a small cost in start-up speed.
+If left blank, RT will compare each address to your configured
+C<$CorrespondAddress> and C<$CommentAddress> before searching for a
+Queue configured with a matching "Reply Address" or "Comment Address"
+on the Queue Admin page.
 
 =cut
 
