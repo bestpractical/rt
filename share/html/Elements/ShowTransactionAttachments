@@ -50,7 +50,7 @@
 # For each of these attachments
 foreach my $message ( @{ $Attachments->{ $Parent || 0 } || [] } ) {
 
-    if (RT->Config->Get('GnuPG')->{'Enable'}) {
+    if (RT->Config->Get('Crypt')->{'Enable'}) {
         $m->comp( 'ShowGnuPGStatus', Attachment => $message, WarnUnsigned => $WarnUnsigned );
     }
 

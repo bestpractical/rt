@@ -309,9 +309,9 @@ $COLUMN_MAP = {
 };
 </%ONCE>
 <%init>
-# if no GPG support, then KeyOwnerName and KeyRequestors fall back to the regular
+# if no encryption support, then KeyOwnerName and KeyRequestors fall back to the regular
 # versions
-unless (RT->Config->Get('GnuPG')->{'Enable'}) {
+unless (RT->Config->Get('Crypt')->{'Enable'}) {
     $COLUMN_MAP->{KeyOwnerName}  = $COLUMN_MAP->{OwnerName};
     $COLUMN_MAP->{KeyRequestors} = $GenericMap->{Requestors};
 }

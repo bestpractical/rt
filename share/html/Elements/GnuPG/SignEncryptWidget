@@ -70,7 +70,7 @@ return unless $self;
 $Arguments => {}
 </%ARGS>
 <%INIT>
-return undef unless RT->Config->Get('GnuPG')->{'Enable'};
+return undef unless RT->Config->Get('Crypt')->{'Enable'};
 return { %$Arguments };
 </%INIT>
 </%METHOD>

@@ -323,7 +323,7 @@ sub WillSignEncrypt {
     my $attachment = delete $args{Attachment};
     my $ticket     = delete $args{Ticket};
 
-    if ( not RT->Config->Get('GnuPG')->{'Enable'} ) {
+    if ( not RT->Config->Get('Crypt')->{'Enable'} ) {
         $args{Sign} = $args{Encrypt} = 0;
         return wantarray ? %args : 0;
     }
@@ -409,7 +409,7 @@ sub SendEmail {
         $head->set( 'Content-Transfer-Encoding', '8bit' );
     }
 
-    if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
+    if ( RT->Config->Get('Crypt')->{'Enable'} ) {
         %args = WillSignEncrypt(
             %args,
             Attachment => $TransactionObj ? $TransactionObj->Attachments->First : undef,

@@ -111,7 +111,7 @@
 </td></tr>
 % }
 
-% if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
+% if ( RT->Config->Get('Crypt')->{'Enable'} ) {
 <tr><td align="right"><input type="checkbox" class="checkbox" id="Sign" name="Sign" value="1" <% $QueueObj->Sign? 'checked="checked"': '' |n%> /></td>
 <td><label for="Sign"><&|/l&>Sign by default</&></label></td>
 <td align="right"><input type="checkbox" class="checkbox" id="Encrypt" name="Encrypt" value="1" <% $QueueObj->Encrypt? 'checked="checked"': '' |n%> /></td>
@@ -126,7 +126,7 @@
 % $m->callback( %ARGS, QueueObj => $QueueObj, results => \@results );
 </td></tr>
 
-% if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
+% if ( RT->Config->Get('Crypt')->{'Enable'} ) {
 <tr><td colspan="4">
 % if ( my $email = $QueueObj->CorrespondAddress || RT->Config->Get('CorrespondAddress') ) {
 <& /Admin/Elements/ShowKeyInfo, Type => 'private', EmailAddress => $email &>

@@ -58,7 +58,7 @@ $Name => 'SignUsing',
 $User => undef,
 </%ARGS>
 <%INIT>
-return unless RT->Config->Get('GnuPG')->{'Enable'};
+return unless RT->Config->Get('Crypt')->{'Enable'};
 
 my $user_key = $User->PrivateKey;
 </%INIT>
