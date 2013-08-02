@@ -1779,6 +1779,14 @@ sub RenderMenu {
             if ( $tmp = $child->target ) {
                 $res .= ' target="'. $interp->apply_escapes($tmp, 'h') .'"'
             }
+
+            if ($child->attributes) {
+                for my $key (keys %{$child->attributes}) {
+                    my ($name, $value) = map { $interp->apply_escapes($_, 'h') }
+                                             $key, $child->attributes->{$key};
+                    $res .= " $name=\"$value\"";
+                }
+            }
             $res .= '>';
 
             if ( $child->escape_title ) {

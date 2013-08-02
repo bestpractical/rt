@@ -57,7 +57,7 @@ use URI;
 use Scalar::Util qw(weaken);
 
 __PACKAGE__->mk_accessors(qw(
-    key title description raw_html escape_title sort_order target class
+    key title description raw_html escape_title sort_order target class attributes
 ));
 
 =head1 NAME
@@ -70,9 +70,9 @@ RT::Interface::Web::Menu - Handle the API for menu navigation
 
 Creates a new L<RT::Interface::Web::Menu> object.  Possible keys in the
 I<PARAMHASH> are L</parent>, L</title>, L</description>, L</path>,
-L</raw_html>, L<escape_title>, L</sort_order>, L</class>, L</target> and
-L</active>.  See the subroutines with the respective name below for
-each option's use.
+L</raw_html>, L<escape_title>, L</sort_order>, L</class>, L</target>,
+L<attributes>, and L</active>.  See the subroutines with the respective name
+below for each option's use.
 
 =cut
 
@@ -138,6 +138,12 @@ Get or set the frame or pseudo-target for this link. something like L<_blank>
 
 Gets or sets the CSS class the menu item should have in addition to the default
 classes.  This is only used if L</raw_html> isn't specified.
+
+=head2 attributes [HASHREF]
+
+Gets or sets a hashref of HTML attribute name-value pairs that the menu item
+should have in addition to the attributes which have their own accessor, like
+L</class> and L</target>.  This is only used if L</raw_html> isn't specified.
 
 =head2 path
 
