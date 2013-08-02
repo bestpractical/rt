@@ -409,7 +409,7 @@ sub CallGnuPG {
 
     my %seen;
     $gnupg->options->push_recipients( $_ ) for
-        map { $self->UseKeyForEncryption($_) || $_ }
+        map { RT::Crypt->UseKeyForEncryption($_) || $_ }
         grep { !$seen{ $_ }++ }
             @{ $args{Recipients} || [] };
 
@@ -516,7 +516,7 @@ sub SignEncrypt {
 
     my $entity = $args{'Entity'};
     if ( $args{'Sign'} && !defined $args{'Signer'} ) {
-        $args{'Signer'} = $self->UseKeyForSigning()
+        $args{'Signer'} = RT::Crypt->UseKeyForSigning()
             || (Email::Address->parse( $entity->head->get( 'From' ) ))[0]->address;
     }
     if ( $args{'Encrypt'} && !$args{'Recipients'} ) {
@@ -1690,42 +1690,6 @@ sub _PrepareGnuPGOptions {
     return %res;
 }
 
-{ my %key;
-# no args -> clear
-# one arg -> return preferred key
-# many -> set
-sub UseKeyForEncryption {
-    my $self = shift;
-    unless ( @_ ) {
-        %key = ();
-    } elsif ( @_ > 1 ) {
-        %key = (%key, @_);
-        $key{ lc($_) } = delete $key{ $_ } foreach grep lc ne $_, keys %key;
-    } else {
-        return $key{ $_[0] };
-    }
-    return ();
-} }
-
-=head2 UseKeyForSigning
-
-Returns or sets identifier of the key that should be used for signing.
-
-Returns the current value when called without arguments.
-
-Sets new value when called with one argument and unsets if it's undef.
-
-=cut
-
-{ my $key;
-sub UseKeyForSigning {
-    my $self = shift;
-    if ( @_ ) {
-        $key = $_[0];
-    }
-    return $key;
-} }
-
 =head2 GetKeysForEncryption
 
 Takes identifier and returns keys suitable for encryption.
@@ -1781,7 +1745,7 @@ sub CheckRecipients {
         # it's possible that we have no User record with the email
         $user = undef unless $user->id;
 
-        if ( my $fpr = $self->UseKeyForEncryption( $address ) ) {
+        if ( my $fpr = RT::Crypt->UseKeyForEncryption( $address ) ) {
             if ( $res{'info'} && @{ $res{'info'} } ) {
                 next if
                     grep lc $_->{'Fingerprint'} eq lc $fpr,

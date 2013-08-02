@@ -186,8 +186,8 @@ sub CleanupRequest {
     
     if (RT->Config->Get('GnuPG')->{'Enable'}) {
         require RT::Crypt;
-        RT::Crypt::GnuPG->UseKeyForEncryption();
-        RT::Crypt::GnuPG->UseKeyForSigning( undef );
+        RT::Crypt->UseKeyForEncryption();
+        RT::Crypt->UseKeyForSigning( undef );
     }
 
     %RT::Ticket::MERGE_CACHE = ( effective => {}, merged => {} );

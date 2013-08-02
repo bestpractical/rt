@@ -50,6 +50,7 @@ use strict;
 use warnings;
 
 package RT::Crypt;
+use 5.010;
 
 require RT::Crypt::GnuPG;
 
@@ -62,6 +63,50 @@ RT::Crypt - encrypt/decrypt and sign/verify subsystem for RT
 This module provides support for encryption and signing of outgoing
 messages, as well as the decryption and verification of incoming email.
 
+=head1 METHODS
+
+=head2 UseKeyForSigning [KEY]
+
+Returns or sets the identifier of the key that should be used for
+signing.  Returns the current value when called without arguments; sets
+the new value when called with one argument and unsets if it's undef.
+
+This cache is cleared at the end of every request.
+
 =cut
+
+sub UseKeyForSigning {
+    my $self = shift;
+    state $key;
+    if ( @_ ) {
+        $key = $_[0];
+    }
+    return $key;
+}
+
+=head2 UseKeyForEncryption [KEY [, VALUE]]
+
+Gets or sets keys to use for encryption.  When passed no arguments,
+clears the cache.  When passed just a key, returns the encryption key
+previously stored for that key.  When passed two (or more) keys, stores
+them associatively.
+
+This cache is reset at the end of every request.
+
+=cut
+
+sub UseKeyForEncryption {
+    my $self = shift;
+    state %key;
+    unless ( @_ ) {
+        %key = ();
+    } elsif ( @_ > 1 ) {
+        %key = (%key, @_);
+        $key{ lc($_) } = delete $key{ $_ } foreach grep lc ne $_, keys %key;
+    } else {
+        return $key{ $_[0] };
+    }
+    return ();
+}
 
 1;
