@@ -894,6 +894,30 @@ sub SendSessionCookie {
     $HTML::Mason::Commands::r->err_headers_out->{'Set-Cookie'} = $cookie->as_string;
 }
 
+=head2 GetWebURLFromRequest
+
+People may use different web urls instead of C<$WebURL> in config.
+Return the web url current user is using.
+
+=cut
+
+sub GetWebURLFromRequest {
+
+    my $uri = URI->new( RT->Config->Get('WebURL') );
+
+    if ( defined $ENV{HTTPS} and $ENV{'HTTPS'} eq 'on' ) {
+        $uri->scheme('https');
+    }
+    else {
+        $uri->scheme('http');
+    }
+
+    # [rt3.fsck.com #12716] Apache recommends use of $SERVER_HOST
+    $uri->host( $ENV{'SERVER_HOST'} || $ENV{'HTTP_HOST'} || $ENV{'SERVER_NAME'} );
+    $uri->port( $ENV{'SERVER_PORT'} );
+    return "$uri"; # stringify to be consistent with WebURL in config
+}
+
 =head2 Redirect URL
 
 This routine ells the current user's browser to redirect to URL.  
@@ -924,15 +948,10 @@ sub Redirect {
         && $uri->host eq $server_uri->host
         && $uri->port eq $server_uri->port )
     {
-        if ( defined $ENV{HTTPS} and $ENV{'HTTPS'} eq 'on' ) {
-            $uri->scheme('https');
-        } else {
-            $uri->scheme('http');
-        }
-
-        # [rt3.fsck.com #12716] Apache recommends use of $SERVER_HOST
-        $uri->host( $ENV{'SERVER_HOST'} || $ENV{'HTTP_HOST'} || $ENV{'SERVER_NAME'});
-        $uri->port( $ENV{'SERVER_PORT'} );
+        my $env_uri = URI->new(GetWebURLFromRequest());
+        $uri->scheme($env_uri->scheme);
+        $uri->host($env_uri->host);
+        $uri->port($env_uri->port);
     }
 
     # not sure why, but on some systems without this call mason doesn't
