@@ -76,3 +76,20 @@ $m->content_like(qr{<img src="/Search/Chart\?}, "Found image");
 $m->get_ok( "/Search/Chart?Query=id>0&PrimaryGroupBy=Requestor.Phone" );
 is( $m->content_type, "image/png" );
 ok( length($m->content), "Has content" );
+
+diag "Confirm subnav links use Query param before saved search in session.";
+
+$m->get_ok( "/Search/Chart.html?Query=id>0" );
+my $advanced = $m->find_link( text => 'Advanced' )->URI->equery;
+like( $advanced, qr{Query=id%3E0},
+      'Advanced link has Query param with id search'
+    );
+
+# Load the session with another search.
+$m->get_ok( "/Search/Results.html?Query=Queue='General'" );
+
+$m->get_ok( "/Search/Chart.html?Query=id>0" );
+$advanced = $m->find_link( text => 'Advanced' )->URI->equery;
+like( $advanced, qr{Query=id%3E0},
+      'Advanced link still has Query param with id search'
+    );
