@@ -48,6 +48,7 @@
 
 use strict;
 use warnings;
+use 5.010;
 
 package RT;
 
@@ -647,14 +648,17 @@ You can define plugins by adding them to the @Plugins list in your RT_SiteConfig
 
 =cut
 
-our @PLUGINS = ();
 sub Plugins {
+    state @PLUGINS;
+    state $DID_INIT = 0;
+
     my $self = shift;
-    unless (@PLUGINS) {
+    unless ($DID_INIT) {
         $self->InitPluginPaths;
         @PLUGINS = $self->InitPlugins;
+        $DID_INIT++;
     }
-    return \@PLUGINS;
+    return [@PLUGINS];
 }
 
 =head2 PluginDirs
