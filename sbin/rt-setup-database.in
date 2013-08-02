@@ -191,6 +191,9 @@ if ($args{'skip-create'}) {
     }
 }
 
+my $version_word_regex = join '|', RT::Handle->version_words;
+my $version_dir = qr/^\d+\.\d+\.\d+(?:$version_word_regex)?\d*$/;
+
 print "Working with:\n"
     ."Type:\t$db_type\nHost:\t$db_host\nPort:\t$db_port\nName:\t$db_name\n"
     ."User:\t$db_user\nDBA:\t$dba_user" . ($args{'skip-create'} ? ' (No DBA)' : '') . "\n";
@@ -308,7 +311,6 @@ sub action_upgrade {
     return (0, "Couldn't read dir '$base_dir' with upgrade data")
         unless -d $base_dir || -r _;
 
-    my $version_word_regex = join '|', RT::Handle->version_words;
     my $upgrading_from = undef;
     do {
         if ( defined $upgrading_from ) {
@@ -319,7 +321,7 @@ sub action_upgrade {
         $upgrading_from = scalar <STDIN>;
         chomp $upgrading_from;
         $upgrading_from =~ s/\s+//g;
-    } while $upgrading_from !~ /^\d+\.\d+\.\d+(?:$version_word_regex)?\d*$/;
+    } while $upgrading_from !~ /$version_dir/;
 
     my $upgrading_to = $RT::VERSION;
     return (0, "The current version $upgrading_to is lower than $upgrading_from")
@@ -354,7 +356,7 @@ sub action_upgrade {
             chomp $custom_upgrading_to;
             $custom_upgrading_to =~ s/\s+//g;
             last unless $custom_upgrading_to;
-        } while $custom_upgrading_to !~ /^\d+\.\d+\.\d+(?:$version_word_regex)?\d*$/;
+        } while $custom_upgrading_to !~ /$version_dir/;
 
         if ( $custom_upgrading_to ) {
             return (
@@ -410,7 +412,7 @@ sub get_versions_from_to {
     my ($base_dir, $from, $to) = @_;
 
     opendir( my $dh, $base_dir ) or die "couldn't open dir: $!";
-    my @versions = grep -d "$base_dir/$_" && /^\d+\.\d+\.\d+$/, readdir $dh;
+    my @versions = grep -d "$base_dir/$_" && /$version_dir/, readdir $dh;
     closedir $dh;
 
     die "\nERROR: No upgrade data found in '$base_dir'!  Perhaps you specified the wrong --datadir?\n"
