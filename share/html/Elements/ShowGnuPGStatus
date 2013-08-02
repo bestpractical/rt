@@ -62,7 +62,7 @@ $Reverify     => 1
 my @runs;
 my $needs_unsigned_warning = $WarnUnsigned;
 
-my @protocols = RT::Crypt->Protocols;
+my @protocols = RT::Crypt->EnabledProtocols;
 my $re_protocols = join '|', map "\Q$_\E", @protocols;
 
 foreach ( $Attachment->SplitHeaders ) {

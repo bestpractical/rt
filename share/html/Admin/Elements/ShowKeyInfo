@@ -94,7 +94,7 @@ $EmailAddress
 $Type => 'public'
 </%ARGS>
 <%INIT>
-my @protocols = RT::Crypt->Protocols;
+my @protocols = RT::Crypt->EnabledProtocols;
 
 my $title;
 unless ( $Type eq 'private' ) {
