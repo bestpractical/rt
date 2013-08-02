@@ -64,7 +64,7 @@ my $needs_unsigned_warning = $WarnUnsigned;
 
 foreach ( $Attachment->SplitHeaders ) {
     if ( s/^X-RT-GnuPG-Status:\s*//i ) {
-        require RT::Crypt::GnuPG;
+        require RT::Crypt;
         push @runs, [ RT::Crypt::GnuPG->ParseStatus( $_ ) ];
     }
 
@@ -110,7 +110,7 @@ my $reverify_cb = sub {
         return (0, "Content of attachment #". $original->id ." is not signed and/or encrypted");
     }
     elsif ( @res ) {
-        require RT::Crypt::GnuPG;
+        require RT::Crypt;
 
         $top->DelHeader('X-RT-GnuPG-Status');
         $top->AddHeader(map { ('X-RT-GnuPG-Status' => $_->{'status'} ) } @res);

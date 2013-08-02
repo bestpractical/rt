@@ -56,7 +56,7 @@
 % }
 
 <%INIT>
-require RT::Crypt::GnuPG;
+require RT::Crypt;
 my $d;
 
 my %res = RT::Crypt::GnuPG->GetKeysForEncryption($EmailAddress);

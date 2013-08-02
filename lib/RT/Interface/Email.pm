@@ -677,7 +677,7 @@ sub SignEncrypt {
     $RT::Logger->debug("$msgid Signing message") if $args{'Sign'};
     $RT::Logger->debug("$msgid Encrypting message") if $args{'Encrypt'};
 
-    require RT::Crypt::GnuPG;
+    require RT::Crypt;
     my %res = RT::Crypt::GnuPG->SignEncrypt( %args );
     return 1 unless $res{'exit_code'};
 

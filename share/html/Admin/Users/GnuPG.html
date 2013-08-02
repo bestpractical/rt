@@ -79,7 +79,7 @@ $Update     => undef
 <%INIT>
 return unless RT->Config->Get('GnuPG')->{'Enable'};
 
-require RT::Crypt::GnuPG;
+require RT::Crypt;
 
 my @results;
 

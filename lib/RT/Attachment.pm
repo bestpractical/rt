@@ -742,7 +742,7 @@ sub Encrypt {
     return (0, $self->loc('Attachments encryption is disabled'))
         unless RT->Config->Get('GnuPG')->{'AllowEncryptDataInDB'};
 
-    require RT::Crypt::GnuPG;
+    require RT::Crypt;
 
     my $type = $self->ContentType;
     if ( $type =~ /^x-application-rt\/gpg-encrypted/i ) {
@@ -802,7 +802,7 @@ sub Decrypt {
     return (0, $self->loc('GnuPG integration is disabled'))
         unless RT->Config->Get('GnuPG')->{'Enable'};
 
-    require RT::Crypt::GnuPG;
+    require RT::Crypt;
 
     my $type = $self->ContentType;
     if ( $type =~ /^x-application-rt\/gpg-encrypted/i ) {

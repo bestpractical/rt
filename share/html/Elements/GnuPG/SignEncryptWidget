@@ -72,7 +72,7 @@ $Arguments => {}
 <%INIT>
 return undef unless RT->Config->Get('GnuPG')->{'Enable'};
 
-require RT::Crypt::GnuPG;
+require RT::Crypt;
 return { %$Arguments };
 </%INIT>
 </%METHOD>

@@ -80,7 +80,7 @@ $EmailAddress
 $Type => 'public'
 </%ARGS>
 <%INIT>
-require RT::Crypt::GnuPG;
+require RT::Crypt;
 my %res = RT::Crypt::GnuPG->GetKeyInfo( $EmailAddress, $Type );
 
 my $title;
