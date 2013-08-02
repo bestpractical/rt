@@ -61,7 +61,7 @@ RT::Crypt - encrypt/decrypt and sign/verify subsystem for RT
 This module provides support for encryption and signing of outgoing
 messages, as well as the decryption and verification of incoming emails
 using various encryption standards. Currently, L<GnuPG|RT::Crypt::GnuPG>
-is supported.
+and L<SMIME|RT::Crypt::SMIME> protocols are supported.
 
 =head1 CONFIGURATION
 
@@ -219,7 +219,7 @@ all may be supported by this installation.
 
 =cut
 
-our @PROTOCOLS = ('GnuPG');
+our @PROTOCOLS = ('GnuPG', 'SMIME');
 our %PROTOCOLS = map { lc $_ => $_ } @PROTOCOLS;
 
 sub Protocols {

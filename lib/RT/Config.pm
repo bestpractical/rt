@@ -676,6 +676,7 @@ our %META;
             }
         },
     },
+    SMIME        => { Type => 'HASH' },
     GnuPG        => {
         Type => 'HASH',
         PostLoadCheck => sub {

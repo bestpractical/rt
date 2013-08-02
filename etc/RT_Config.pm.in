@@ -2293,7 +2293,8 @@ Set($TimeInICal, 0);
 =head1 Cryptography
 
 A complete description of RT's cryptography capabilities can be found in
-L<RT::Crypt>. At this moment, only GnuPG (PGP) is supported.
+L<RT::Crypt>. At this moment, GnuPG (PGP) and SMIME security protocols are
+supported.
 
 =over 4
 
@@ -2327,13 +2328,35 @@ set C<AllowEncryptDataInDB> to 1.
 =cut
 
 Set( %Crypt,
-    Incoming                  => undef, # ['GnuPG']
-    Outgoing                  => undef, # 'GnuPG'
+    Incoming                  => undef, # ['GnuPG', 'SMIME']
+    Outgoing                  => undef, # 'SMIME'
 
     RejectOnMissingPrivateKey => 1,
     RejectOnBadData           => 1,
 
     AllowEncryptDataInDB      => 0,
+);
+
+=head2 SMIME configuration
+
+A full description of the SMIME integration can be found in
+L<RT::Crypt::SMIME>.
+
+=over 4
+
+=item C<%SMIME>
+
+Set C<Enable> to false or true value to disable or enable SMIME for
+encrypting and signing messages.
+
+See L<RT::Crypt::SMIME> for details.
+
+=back
+
+=cut
+
+Set( %SMIME,
+    Enable => @RT_SMIME@,
 );
 
 =head2 GnuPG configuration
