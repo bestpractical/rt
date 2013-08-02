@@ -326,8 +326,6 @@ CREATE TABLE Templates (
   Name varchar(200) NOT NULL  ,
   Description varchar(255) NULL  ,
   Type varchar(16) CHARACTER SET ascii NULL  ,
-  Language varchar(16) CHARACTER SET ascii NULL  ,
-  TranslationOf integer NOT NULL DEFAULT 0  ,
   Content TEXT NULL  ,
   LastUpdated DATETIME NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,

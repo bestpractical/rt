@@ -95,11 +95,6 @@ my %Ignore = (
             id Created Creator LastUpdated LastUpdatedBy
             )
            ],
-    Templates => [
-        qw(
-            TranslationOf
-            )
-    ],
 );
 
 my $SystemUserId = RT->SystemUser->Id;

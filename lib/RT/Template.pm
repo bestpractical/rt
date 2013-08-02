@@ -937,42 +937,6 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=head2 Language
-
-Returns the current value of Language.
-(In the database, Language is stored as varchar(16).)
-
-
-
-=head2 SetLanguage VALUE
-
-
-Set Language to VALUE.
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Language will be stored as a varchar(16).)
-
-
-=cut
-
-
-=head2 TranslationOf
-
-Returns the current value of TranslationOf.
-(In the database, TranslationOf is stored as int(11).)
-
-
-
-=head2 SetTranslationOf VALUE
-
-
-Set TranslationOf to VALUE.
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, TranslationOf will be stored as a int(11).)
-
-
-=cut
-
-
 =head2 Content
 
 Returns the current value of Content.
@@ -1041,10 +1005,6 @@ sub _CoreAccessible {
                 {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         Type =>
                 {read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
-        Language =>
-                {read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
-        TranslationOf =>
-                {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Content =>
                 {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
         LastUpdated =>
