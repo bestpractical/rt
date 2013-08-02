@@ -410,7 +410,8 @@ sub get_versions_from_to {
     my ($base_dir, $from, $to) = @_;
 
     opendir( my $dh, $base_dir ) or die "couldn't open dir: $!";
-    my @versions = grep -d "$base_dir/$_" && /^\d+\.\d+\.\d+$/, readdir $dh;
+    my $version_word_regex = join '|', RT::Handle->version_words;
+    my @versions = grep -d "$base_dir/$_" && /^\d+\.\d+\.\d+(?:$version_word_regex)?\d*$/, readdir $dh;
     closedir $dh;
 
     die "\nERROR: No upgrade data found in '$base_dir'!  Perhaps you specified the wrong --datadir?\n"
