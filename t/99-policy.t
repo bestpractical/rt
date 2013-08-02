@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodb => 1, tests => undef;
+use RT::Test tests => undef;
 use File::Find;
 use IPC::Run3;
 
@@ -26,7 +26,7 @@ sub check {
         shebang  => 0,
         exec     => 0,
         bps_tag  => 0,
-        compile  => 0,
+        compile_perl => 0,
         @_,
     );
 
@@ -87,7 +87,7 @@ sub check {
         ok( !$executable, "$file permission is u-x" );
     }
 
-    if ($check{compile}) {
+    if ($check{compile_perl}) {
         my ($input, $output, $error) = ('', '', '');
         run3(
             [$^X, '-Ilib', '-Mstrict', '-Mwarnings', '-c', $file],
@@ -105,6 +105,9 @@ check( $_, shebang => -1, exec => -1, warnings => 1, strict => 1, bps_tag => -1,
 
 check( $_, shebang => 1, exec => 1, warnings => 1, strict => 1, bps_tag => 1, no_tabs => 1 )
     for grep {m{^s?bin/}} @files;
+
+check( $_, compile_perl => 1 )
+    for grep { -f $_ } map { s/\.in$//; $_ } grep {m{^s?bin/}} @files;
 
 check( $_, shebang => 1, exec => 1, warnings => 1, strict => 1, bps_tag => 1, no_tabs => 1 )
     for grep {m{^devel/tools/} and not m{/(localhost\.(crt|key)|mime\.types)$}} @files;
@@ -124,7 +127,7 @@ check( $_, exec => -1 )
 check( $_, exec => -1, bps_tag => -1 )
     for grep {m{^etc/upgrade/[^/]+/}} @files;
 
-check( $_, warnings => 1, strict => 1, compile => 1, no_tabs => 1 )
+check( $_, warnings => 1, strict => 1, compile_perl => 1, no_tabs => 1 )
     for grep {m{^etc/upgrade/.*/content$}} @files;
 
 done_testing;

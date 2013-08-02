@@ -1851,9 +1851,11 @@ Set(@Active_MakeClicky, qw(httpurl_overwrite));
 
 If C<$ParseNewMessageForTicketCcs> is set to 1, RT will attempt to
 divine Ticket 'Cc' watchers from the To and Cc lines of incoming
-messages.  Be forewarned that if you have I<any> addresses which forward
-mail to RT automatically and you enable this option without modifying
-C<$RTAddressRegexp> below, you will get yourself into a heap of trouble.
+messages that create new Tickets. This option does not apply to replies
+or comments on existing Tickets. Be forewarned that if you have I<any>
+addresses which forward mail to RT automatically and you enable this
+option without modifying C<$RTAddressRegexp> below, you will get
+yourself into a heap of trouble.
 
 =cut
 
