@@ -637,6 +637,23 @@ our %META = (
             }
         },
     },
+    Crypt        => {
+        Type => 'HASH',
+        PostLoadCheck => sub {
+            my $self = shift;
+            require RT::Crypt;
+
+            my $opt = $self->Get('Crypt');
+            my @enabled = RT::Crypt->EnabledProtocols;
+            $opt->{'Enable'} = scalar @enabled;;
+            unless ( $opt->{'Incoming'} && @{ $opt->{'Incoming'} } ) {
+                $opt->{'Incoming'} = \@enabled;
+            }
+            unless ( $opt->{'Outgoing'} ) {
+                $opt->{'Outgoing'} = $enabled[0];
+            }
+        },
+    },
     GnuPG        => { Type => 'HASH' },
     GnuPGOptions => { Type => 'HASH',
         PostLoadCheck => sub {

@@ -2290,8 +2290,39 @@ Set($TimeInICal, 0);
 
 
 
+=head1 Cryptography
 
-=head1 GnuPG integration
+A complete description of RT's cryptography capabilities can be found in
+L<RT::Crypt>. At this moment, only GnuPG (PGP) is supported.
+
+=over 4
+
+=item C<%Crypt>
+
+The following options apply to all cryptography protocols.
+
+By default, all enabled security protocols will analyze each incoming
+email. You may set C<Incoming> to a subset of this list, if some enabled
+protocols do not apply to incoming mail; however, this is usually
+unnecessary. Note that for any verification or decryption to occur for
+incoming mail, the C<Auth::Crypt> mail plugin must be added to
+L</@MailPlugins>.
+
+For outgoing emails, the first security protocol from the above list is
+used. Use the C<Outgoing> option to set a security protocol that should
+be used in outgoing emails.  At this moment, only one protocol can be
+used to protect outgoing emails.
+
+=back
+
+=cut
+
+Set( %Crypt,
+    Incoming                  => undef, # ['GnuPG']
+    Outgoing                  => undef, # 'GnuPG'
+);
+
+=head2 GnuPG configuration
 
 A full description of the (somewhat extensive) GnuPG integration can
 be found by running the command `perldoc L<RT::Crypt::GnuPG>` (or
@@ -2300,6 +2331,9 @@ be found by running the command `perldoc L<RT::Crypt::GnuPG>` (or
 =over 4
 
 =item C<%GnuPG>
+
+Set C<Enable> to false or true value to disable or enable GnuPG interfaces
+for encrypting and signing outgoing messages.
 
 Set C<OutgoingMessagesFormat> to 'inline' to use inline encryption and
 signatures instead of 'RFC' (GPG/MIME: RFC3156 and RFC1847) format.
@@ -2316,7 +2350,7 @@ with incorrect GnuPG data.
 =cut
 
 Set(%GnuPG,
-    Enable => @RT_GPG@,
+    Enable                 => @RT_GPG@,
     OutgoingMessagesFormat => "RFC", # Inline
     AllowEncryptDataInDB   => 0,
 

@@ -61,7 +61,63 @@ RT::Crypt - encrypt/decrypt and sign/verify subsystem for RT
 =head1 DESCRIPTION
 
 This module provides support for encryption and signing of outgoing
-messages, as well as the decryption and verification of incoming email.
+messages, as well as the decryption and verification of incoming emails
+using various encryption standards. Currently, L<GnuPG|RT::Crypt::GnuPG>
+is supported.
+
+=head1 CONFIGURATION
+
+You can control the configuration of this subsystem from RT's configuration file.
+Some options are available via the web interface, but to enable this functionality,
+you MUST start in the configuration file.
+
+For each protocol there is a hash with the same name in the configuration file.
+This hash controls RT-specific options regarding the protocol. It allows you to
+enable/disable each facility or change the format of messages; for example, GnuPG
+uses the following config:
+
+    Set( %GnuPG,
+        Enable => 1,
+        ... other options ...
+    );
+
+C<Enable> is the only key that is generic for all protocols. A protocol may have
+additional options to fine-tune behaviour.
+
+However, note that you B<must> add the
+L<Auth::Crypt|RT::Interface::Email::Auth::Crypt> email filter to enable
+the handling of incoming encrypted/signed messages.
+
+=head2 %Crypt
+
+This config option hash chooses which protocols are decrypted and
+verified in incoming messages, which protocol is used for outgoing
+emails, and RT's behaviour on errors during decrypting and verification.
+
+RT will provide sane defaults for all of these options.  By default, all
+enabled encryption protocols are decrypted on incoming mail; if you wish
+to limit this to a subset, you may, via:
+
+    Set( %Crypt,
+        ...
+        Incoming => ['SMIME'],
+        ...
+    );
+
+RT can currently only use one protocol to encrypt and sign outgoing
+email; this defaults to the first enabled protocol.  You many specify it
+explicitly via:
+
+    Set( %Crypt,
+        ...
+        Outgoing => 'GnuPG',
+        ...
+    );
+
+You can allow users to encrypt data in the database by setting the
+C<AllowEncryptDataInDB> key to a true value; by default, this is
+disabled.  Be aware that users must have rights to see and modify
+tickets to use this feature.
 
 =head1 METHODS
 
@@ -79,17 +135,39 @@ sub Protocols {
     return @PROTOCOLS;
 }
 
+=head2 EnabledProtocols
+
+Returns the set of enabled and available encryption protocols.
+
+=cut
+
+sub EnabledProtocols {
+    my $self = shift;
+    return grep RT->Config->Get($_)->{'Enable'}, $self->Protocols;
+}
+
+=head2 UseForOutgoing
+
+Returns the configured outgoing encryption protocol; see
+L<RT_Config/Crypt>.
+
+=cut
+
+sub UseForOutgoing {
+    return RT->Config->Get('Crypt')->{'Outgoing'};
+}
+
 =head2 EnabledOnIncoming
 
 Returns the list of encryption protocols that should be used for
-decryption and verification of incoming email.  This list is irrelevant
-unless L<RT::Interface::Email::Auth::Crypt> is enabled in
-L<RT_Config/@MailPlugins>.
+decryption and verification of incoming email; see L<RT_Config/Crypt>.
+This list is irrelevant unless L<RT::Interface::Email::Auth::Crypt> is
+enabled in L<RT_Config/@MailPlugins>.
 
 =cut
 
 sub EnabledOnIncoming {
-    return 'GnuPG';
+    return @{ scalar RT->Config->Get('Crypt')->{'Incoming'} };
 }
 
 =head2 LoadImplementation CLASS
