@@ -306,8 +306,6 @@ my $year = (localtime(time))[5] + 1900;
 
 { # set+datemanip format(Time::ParseDate)
     my $date = RT::Date->new(RT->SystemUser);
-    $date->Set(Format => 'unknown', Value => 'weird date');
-    is($date->Unix, 0, "date was wrong");
 
     RT->Config->Set( Timezone => 'Europe/Moscow' );
     $date->Set(Format => 'datemanip', Value => '2005-11-28 15:10:00');
@@ -325,7 +323,9 @@ my $year = (localtime(time))[5] + 1900;
 
 { # set+unknown format(Time::ParseDate)
     my $date = RT::Date->new(RT->SystemUser);
-    $date->Set(Format => 'unknown', Value => 'weird date');
+    warnings_like {
+        $date->Set(Format => 'unknown', Value => 'weird date');
+    } qr{Couldn't parse date 'weird date' by Time::ParseDate};
     is($date->Unix, 0, "date was wrong");
 
     RT->Config->Set( Timezone => 'Europe/Moscow' );

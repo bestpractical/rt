@@ -597,7 +597,11 @@ sub Search {
     require Time::ParseDate;
     foreach my $date (qw(Created< Created> LastUpdated< LastUpdated>)) {
         next unless ( $args{$date} );
-        my $seconds = Time::ParseDate::parsedate( $args{$date}, FUZZY => 1, PREFER_PAST => 1 );
+        my ($seconds, $error) = Time::ParseDate::parsedate( $args{$date}, FUZZY => 1, PREFER_PAST => 1 );
+        unless ( defined $seconds ) {
+            $RT::Logger->warning(
+                "Couldn't parse date '$args{$date}' by Time::ParseDate" );
+        }
         my $date_obj = RT::Date->new( $self->CurrentUser );
         $date_obj->Set( Format => 'unix', Value => $seconds );
         $dates->{$date} = $date_obj;
