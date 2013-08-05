@@ -45,10 +45,11 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% $m->out($$_) for grep {ref $_} @actions;
 <div class="results">
 <&| /Widgets/TitleBox, title => loc('Results'), %{$titlebox || {}} &>
   <ul class="action-results">
-% foreach my $action (@actions) {
+% foreach my $action (grep {not ref $_} @actions) {
     <li><%$action%></li>
 % }
   </ul>
