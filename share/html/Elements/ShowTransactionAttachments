@@ -212,7 +212,7 @@ my $render_attachment = sub {
                     $displayed_inline->{$_}++ for @rewritten;
                 }
 
-                unless (length $name) {
+                if ( !length $name && RT->Config->Get( 'QuoteFolding', $session{CurrentUser} ) ) {
                     eval {
                         require HTML::Quoted;
                         $content = HTML::Quoted->extract($content)
@@ -239,7 +239,7 @@ my $render_attachment = sub {
 
             # It's a text type we don't have special handling for
             else {
-                unless ( length $name ) {
+                if ( !length $name && RT->Config->Get( 'QuoteFolding', $session{CurrentUser} ) ) {
                     eval {
                         require Text::Quoted;
                         Text::Quoted::set_quote_characters(undef);

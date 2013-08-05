@@ -1839,6 +1839,15 @@ your own styles of link detection.
 
 Set(@Active_MakeClicky, qw(httpurl_overwrite));
 
+=item C<$QuoteFolding>
+
+Quote folding is the hiding of old replies in transaction history.
+It defaults to on.  Set this to 0 to disable it.
+
+=cut
+
+Set($QuoteFolding, 1);
+
 =back
 
 
