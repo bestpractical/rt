@@ -298,16 +298,8 @@ unless ( $ARGS{'AddMoreAttach'} ) {
         my @watchresults =
           ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
-        foreach my $type (qw(MergeInto DependsOn MemberOf RefersTo)) {
-            $ARGS{ $Ticket->id . "-" . $type } = $ARGS{"Ticket-$type"};
-            $ARGS{ $type . "-" . $Ticket->id } = $ARGS{"$type-Ticket"};
-        }
         @linkresults =
-          ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS );
-        foreach my $type (qw(MergeInto DependsOn MemberOf RefersTo)) {
-            delete $ARGS{ $type . "-" . $Ticket->id };
-            delete $ARGS{ $Ticket->id . "-" . $type };
-        }
+            ProcessTicketLinks( TicketObj => $Ticket, TicketId => 'Ticket', ARGSRef => \%ARGS );
 
         my @cfresults;
 
