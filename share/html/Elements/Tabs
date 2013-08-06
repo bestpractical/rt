@@ -550,7 +550,7 @@ my $build_main_nav = sub {
     if ( $session{'CurrentUser'}->UserObj
          && $session{'CurrentUser'}->HasRight( Right => 'ModifySelf', Object => RT->System )) {
         my $settings = $about_me->child( settings => title => loc('Settings'), path => '/Prefs/Other.html' );
-        $settings->child( options        => title => loc('Options'),        path => '/Prefs/Other.html' );
+        $settings->child( options        => title => loc('Preferences'),        path => '/Prefs/Other.html' );
         $settings->child( about_me       => title => loc('About me'),       path => '/User/Prefs.html' );
         $settings->child( search_options => title => loc('Search options'), path => '/Prefs/SearchOptions.html' );
         $settings->child( myrt           => title => loc('RT at a glance'), path => '/Prefs/MyRT.html' );
