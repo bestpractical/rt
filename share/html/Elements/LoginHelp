@@ -45,65 +45,12 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $m->callback( %ARGS, CallbackName => 'Header' );
-<& /Elements/Header, Title => loc('Login'), Focus => '#user', RichText => 0 &>
-
-<div id="body" class="login-body">
-
-<& /Elements/ListActions,
-    title       => loc('Error'),
-    titlebox    => { class => 'error', hideable => 0 },
-    actions     => $actions
-&>
-
-% $m->callback( %ARGS, CallbackName => 'BeforeForm' );
-
-<div id="login-box">
-<&| /Widgets/TitleBox, title => loc('Login'), titleright => $RT::VERSION, hideable => 0 &>
-
-<& LoginRedirectWarning, %ARGS &>
-
-% unless (RT->Config->Get('WebRemoteUserAuth') and !RT->Config->Get('WebFallbackToRTLogin')) {
-<form id="login" name="login" method="post" action="<% RT->Config->Get('WebPath') %>/NoAuth/Login.html">
-
-<div class="input-row">
-    <span class="label"><&|/l&>Username</&>:</span>
-    <span class="input"><input name="user" value="<%$user%>" id="user" /></span>
-</div>
-
-<div class="input-row">
-    <span class="label"><&|/l&>Password</&>:</span>
-    <span class="input"><input type="password" name="pass" autocomplete="off" /></span>
-</div>
-
-<input type="hidden" name="next" value="<% $next %>" />
-
-<script type="text/javascript">
-jQuery(function(){
-    if (window.location.hash) {
-        var form = jQuery("form[name=login]");
-        form.attr('action', form.attr('action') + '#' + window.location.hash.replace(/^#/, ''));
-    }
-});
-</script>
-
-<div class="button-row">
-    <span class="input"><input type="submit" class="button" value="<&|/l&>Login</&>" /></span>
-</div>
-
-%# Give callbacks a chance to add more control elements
-% $m->callback( %ARGS );
-
-</form>
-% }
+<div class="login-help">
+<&|/l, RT->Config->Get('OwnerEmail')&>
+For local help, please contact [_1]
 </&>
-<& /Elements/LoginHelp &>
-</div><!-- #login-box -->
-% $m->callback( %ARGS, CallbackName => 'AfterForm' );
-</div><!-- #login-body -->
-<& /Elements/Footer, Menu => 0 &>
-<%ARGS>
-$next => ''
-$user => ""
-$actions => undef
-</%ARGS>
+</div>
+<%init>
+my $source = RT->Config->Meta('OwnerEmail')->{Source};
+return unless $source->{SiteConfig} or $source->{Extension};
+</%init>

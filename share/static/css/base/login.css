@@ -65,3 +65,7 @@ margin-right:auto;margin-left:auto;
     text-overflow: ellipsis;
     width: 90%;
 }
+
+#login-box div.login-help {
+    text-align: center;
+}
