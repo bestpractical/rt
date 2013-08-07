@@ -141,6 +141,10 @@ sub resolve_local_link {
         $name  = "$1_Config";
         $local = "$1_Config";
     }
+    elsif ($name eq 'README') {
+        # We process README separately in devel/tools/rt-static-docs
+        $local = $name;
+    }
     # These matches handle links that look like filenames, such as those we
     # parse out of F<> tags.
     elsif (   $name =~ m{^(?:lib/)(RT/[\w/]+?)\.pm$}
