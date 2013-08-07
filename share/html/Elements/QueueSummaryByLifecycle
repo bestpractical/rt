@@ -75,7 +75,7 @@ for my $queue (@queues) {
 
 %   for my $status (@cur_statuses) {
 <td align="right">
-    <a href="<% $link_status->($queue, $status) %>"><% $data->{$queue->{id}}->{$status } || '-' %></a>
+    <a href="<% $link_status->($queue, $status) %>"><% $data->{$queue->{id}}->{lc $status} || '-' %></a>
 </td>
 %   }
 </tr>
