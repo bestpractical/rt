@@ -1,9 +1,7 @@
 @media print {
 	    
 	* {
-	    float: none;
 	    position: static;
-	    background: transparent !important;
 	    overflow: visible !important;
 	}
 	
@@ -15,15 +13,21 @@
 	}
 	
 	div#body {
-	    margin: 0;
-	    margin-top: 0;
-	    padding: 0;
-	    border-style: none;
+        background: transparent;
+        margin-top: 3em !important;
+	    margin: 0 !important;
+	    padding: 0 !important;
+	    border-style: none !important;
+        border: none !important;
+        -webkit-border-radius: none !important;
+        -moz-border-radius: none !important;
+        border-radius: none !important;
 	}
 	
 	div#header h1 {
-	    margin-bottom: 1em;
-	    position: static;
+	    margin-bottom: 1em !important;
+        padding-left: 1em !important;
+	    position: static !important;
 	    height: auto;
 	    width: auto;
 	    overflow: visible;
@@ -33,6 +37,7 @@
 	
 	#header {
 	    padding: 0 !important;
+        background: transparent !important;
 	}
 	
 	#quickbar,
@@ -43,15 +48,14 @@
 	.titlebox-title .widget,
 	.titlebox-title .right,
 	.ticket-info-links .titlebox-content .create,
-	.transaction .metadata .actions,
-	.transaction .content .downloadattachment,
+	div.transaction div.metadata span.actions,
+	div.transaction div.content div.downloadattachment,
 	#comp-Search-Results #body .refresh,
 	.search-result-actions,
 	#comp-Search-Chart .chart-meta,
 	#footer,
 	#topactions,
 	#logo,
-	form,
 	div.summary + br
 	{
 	    display: none;
@@ -75,6 +79,7 @@
 	    color: black !important;
 	    margin: 0 !important;
 	    padding-left: 0 !important;
+        background-color: transparent !important;
 	}
 	
 	.titlebox.rolled-up .titlebox-title .left:after {
@@ -82,14 +87,10 @@
 	    font-weight: normal;
 	}
 	
-	div.titlebox-content {
-	    border: 0 !important;
-	    padding-top: 0.5em !important;
-	}
 	
 	/* outer Ticket Metadata titlebox gets no padding, but inside ones do below */
 	.summary .titlebox-content {
-	    padding: 0 !important;
+        background: transparent !important;
 	}
 	
 	div.summary .ticket-summary div.titlebox-content {
@@ -98,13 +99,20 @@
 	
 	div.titlebox-title .left * {
 	    color: black !important;
+        background: transparent !important;
 	}
 	
 	div.messagebody a[href]:after {
 	    text-decoration: underline !important;
 	    content: " (" attr(href) ") ";
 	}
-	
+
+
+    div.results {
+        background: #ccc;
+
+    }
+
 	.messagebody {
 	    orphans: 2;
 	    widows: 2;
@@ -160,6 +168,7 @@
 	/* form elements */
 	input, select, option {
 	    background: white !important;
+        color: black !important;
 	    border: 1px solid #666 !important;
 	}
 	
@@ -171,5 +180,5 @@
 	    font-weight: bold !important;
 	}
 	
-	
+
 }
