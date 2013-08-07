@@ -1,3 +1,5 @@
+@media print {
+    
 * {
     float: none;
     position: static;
@@ -169,3 +171,5 @@ option[selected] {
     font-weight: bold !important;
 }
 
+
+}
