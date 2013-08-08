@@ -1,17 +1,23 @@
-jQuery(function() {
+if (!window.RT)              window.RT = {}
+if (!window.RT.Autocomplete) window.RT.Autocomplete = {}
 
+window.RT.Autocomplete.bind = function(from) {
     var cssClassMap = {
         Users: 'user',
         Groups: 'group',
         Tickets: 'tickets'
     };
 
-    jQuery("input[data-autocomplete]").each(function(){
+    jQuery("input[data-autocomplete]", from).each(function(){
         var input = jQuery(this);
         var what  = input.attr("data-autocomplete");
         var wants = input.attr("data-autocomplete-return");
 
         if (!what || !what.match(/^(Users|Groups|Tickets)$/)) // Did you update cssClassMap above?
+            return;
+
+        // Don't re-bind the autocompleter
+        if (input.data("ui-autocomplete"))
             return;
 
         var queryargs = [];
@@ -79,4 +85,5 @@ jQuery(function() {
                     .appendTo( ul );
             };
     });
-});
+};
+jQuery(function(){ RT.Autocomplete.bind(document) });
