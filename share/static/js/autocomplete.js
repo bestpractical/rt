@@ -2,7 +2,8 @@ jQuery(function() {
 
     var cssClassMap = {
         Users: 'user',
-        Groups: 'group'
+        Groups: 'group',
+        Tickets: 'tickets'
     };
 
     jQuery("input[data-autocomplete]").each(function(){
@@ -10,7 +11,7 @@ jQuery(function() {
         var what  = input.attr("data-autocomplete");
         var wants = input.attr("data-autocomplete-return");
 
-        if (!what || !what.match(/^(Users|Groups|Tickets)$/))
+        if (!what || !what.match(/^(Users|Groups|Tickets)$/)) // Did you update cssClassMap above?
             return;
 
         var queryargs = [];
