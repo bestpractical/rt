@@ -1358,7 +1358,7 @@ sub Sections {
 sub Options {
     my $self = shift;
     my %args = ( Section => undef, Overridable => 1, Sorted => 1, @_ );
-    my @res  = keys %META;
+    my @res  = sort keys %META;
     
     @res = grep( ( $META{$_}->{'Section'} || 'General' ) eq $args{'Section'},
         @res 
