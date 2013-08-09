@@ -138,7 +138,8 @@ can be set for each config optin:
 
 =cut
 
-our %META = (
+our %META;
+%META = (
     # General user overridable options
     DefaultQueue => {
         Section         => 'General',
@@ -643,15 +644,34 @@ our %META = (
             my $self = shift;
             require RT::Crypt;
 
+            for my $proto (RT::Crypt->EnabledProtocols) {
+                my $opt = $self->Get($proto);
+                if (not RT::Crypt->LoadImplementation($proto)) {
+                    $RT::Logger->error("You enabled $proto, but we couldn't load module RT::Crypt::$proto");
+                    $opt->{'Enable'} = 0;
+                } elsif (not RT::Crypt->LoadImplementation($proto)->Probe) {
+                    $opt->{'Enable'} = 0;
+                } elsif ($META{$proto}{'PostLoadCheck'}) {
+                    $META{$proto}{'PostLoadCheck'}->( $self, $self->Get( $proto ) );
+                }
+
+            }
+
             my $opt = $self->Get('Crypt');
             my @enabled = RT::Crypt->EnabledProtocols;
-            $opt->{'Enable'} = scalar @enabled;;
+            my %enabled;
+            $enabled{$_} = 1 for @enabled;
+            $opt->{'Enable'} = scalar @enabled;
             $opt->{'Incoming'} = [ $opt->{'Incoming'} ]
                 if $opt->{'Incoming'} and not ref $opt->{'Incoming'};
-            unless ( $opt->{'Incoming'} && @{ $opt->{'Incoming'} } ) {
+            if ( $opt->{'Incoming'} && @{ $opt->{'Incoming'} } ) {
+                $opt->{'Incoming'} = [ grep {$enabled{$_}} @{$opt->{'Incoming'}} ];
+            } else {
                 $opt->{'Incoming'} = \@enabled;
             }
-            unless ( $opt->{'Outgoing'} ) {
+            if ( $opt->{'Outgoing'} ) {
+                $opt->{'Outgoing'} = $enabled[0] unless $enabled{$opt->{'Outgoing'}};
+            } else {
                 $opt->{'Outgoing'} = $enabled[0];
             }
         },
@@ -674,14 +694,6 @@ our %META = (
                     ."). GnuPG support has been disabled");
                 $gpg->{'Enable'} = 0;
                 return;
-            }
-
-            require RT::Crypt::GnuPG;
-            unless (RT::Crypt::GnuPG->Probe()) {
-                $RT::Logger->debug(
-                    "RT's GnuPG libraries couldn't successfully execute gpg.".
-                    " PGP support has been disabled");
-                $gpg->{'Enable'} = 0;
             }
         }
     },

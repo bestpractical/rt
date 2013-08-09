@@ -1887,6 +1887,9 @@ sub Probe {
         waitpid $pid, 0;
     };
     if ( $@ ) {
+        $RT::Logger->warning(
+            "RT's GnuPG libraries couldn't successfully execute gpg.".
+                " GnuPG support has been disabled");
         $RT::Logger->debug(
             "Probe for GPG failed."
             ." Couldn't run `gpg --version`: ". $@
@@ -1908,6 +1911,9 @@ sub Probe {
             close $handle{$_} or $tmp .= "\nFailed to close: $!";
             $msg .= "\n$_:\n$tmp\n";
         }
+        $RT::Logger->warning(
+            "RT's GnuPG libraries couldn't successfully execute gpg.".
+                " GnuPG support has been disabled");
         $RT::Logger->debug( $msg );
         return 0;
     }

@@ -61,7 +61,9 @@ RT::Crypt::Role - Common requirements for encryption implementations
 =head2 Probe
 
 This routine is called only if the protocol is enabled, and should
-return true if all binaries required by the protocol are installed.
+return true if all binaries required by the protocol are installed.  It
+should produce any warnings necessary to describe any issues it
+encounters.
 
 =cut
 
