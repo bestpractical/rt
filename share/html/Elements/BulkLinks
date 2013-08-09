@@ -120,36 +120,38 @@
 </td>
 <td valign="top">
 <h3><&|/l&>New Links</&></h3>
-<i><&|/l&>Enter tickets or URIs to link tickets to. Separate multiple entries with spaces.</&>
-</i><br />
+<em><&|/l&>Enter Enter tickets or URIs to link to. Separate multiple entries with spaces.</&>
+</em><br />
 <table>
+% if ($Collection->isa('RT::Tickets') || $ShowMerge ) {
   <tr>
     <td class="label"><&|/l&>Merge into</&>:</td>
-    <td class="entry"><input name="Ticket-MergeInto" value="<% $ARGS{'Ticket-MergeInto'} || '' %>" /> <i><&|/l&>(only one ticket)</&></i></td>
+    <td class="entry"><input name="<% $record_type %>-MergeInto" value="<% $ARGS{ $record_type .'-MergeInto' } || '' %>" /> <i><&|/l&>(only one ticket)</&></i></td>
   </tr>
+% }
   <tr>
     <td class="label"><&|/l&>Depends on</&>:</td>
-    <td class="entry"><input name="Ticket-DependsOn" value="<% $ARGS{'Ticket-DependsOn'} || '' %>" /></td>
+    <td class="entry"><input name="<% $record_type %>-DependsOn" value="<% $ARGS{ $record_type .'-DependsOn' } || '' %>" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Depended on by</&>:</td>
-    <td class="entry"><input name="DependsOn-Ticket" value="<% $ARGS{'DependsOn-Ticket'} || '' %>" /></td>
+    <td class="entry"><input name="DependsOn-<% $record_type %>" value="<% $ARGS{ 'DependsOn-'. $record_type } || '' %>" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Parents</&>:</td>
-    <td class="entry"><input name="Ticket-MemberOf" value="<% $ARGS{'Ticket-MemberOf'} || '' %>" /></td>
+    <td class="entry"><input name="<% $record_type %>-MemberOf" value="<% $ARGS{ $record_type .'-MemberOf'} || '' %>" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Children</&>:</td>
-    <td class="entry"> <input name="MemberOf-Ticket" value="<% $ARGS{'MemberOf-Ticket'} || '' %>" /></td>
+    <td class="entry"> <input name="MemberOf-<% $record_type %>" value="<% $ARGS{ 'MemberOf-'. $record_type } || '' %>" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Refers to</&>:</td>
-    <td class="entry"><input name="Ticket-RefersTo" value="<% $ARGS{'Ticket-RefersTo'} || '' %>" /></td>
+    <td class="entry"><input name="<% $record_type %>-RefersTo" value="<% $ARGS{ $record_type .'-RefersTo'} || '' %>" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Referred to by</&>:</td>
-    <td class="entry"> <input name="RefersTo-Ticket" value="<% $ARGS{'RefersTo-Ticket'} || '' %>" /></td>
+    <td class="entry"> <input name="RefersTo-<% $record_type %>" value="<% $ARGS{ 'RefersTo-'. $record_type } || '' %>" /></td>
   </tr>
 </table>
 </td>
@@ -157,32 +159,39 @@
 </table>
 
 <%ARGS>
-$Tickets => undef
+$Collection
+$ShowMerge => 0
 </%ARGS>
 
 <%INIT>
+
+my @types = qw/DependsOn DependedOnBy Members MemberOf RefersTo ReferredToBy/;
+
+my $record_type = $Collection->RecordClass;
+$record_type =~ s/^RT:://; $record_type =~ s/::/-/g;
+
 my %hash;
-if ( $Tickets && $Tickets->Count ) {
-    my $first_ticket = $Tickets->Next;
-    # we only show current links that eixst on all the tickets
-    for my $type ( qw/DependsOn DependedOnBy Members MemberOf RefersTo
-            ReferredToBy/ ) {
+if ( $Collection->Count ) {
+    my $first_record = $Collection->Next;
+    # we only show current links that exist on all the records
+    for my $type ( @types ) {
         my $target_or_base =
             $type =~ /DependsOn|MemberOf|RefersTo/ ? 'Target' : 'Base';
-        while ( my $link = $first_ticket->$type->Next ) {
+        my $links = $first_record->$type;
+        while ( my $link = $links->Next ) {
             $hash{$type}{$link->$target_or_base} = $link;
         }
     }
 
-    while ( my $ticket = $Tickets->Next ) {
-        for my $type ( qw/DependsOn DependedOnBy Members MemberOf RefersTo
-                ReferredToBy/ ) {
+    while ( my $record = $Collection->Next ) {
+        for my $type ( @types ) {
             my $target_or_base =
                 $type =~ /DependsOn|MemberOf|RefersTo/ ? 'Target' : 'Base';
             # if $hash{$type} is empty, no need to check any more
             next unless $hash{$type} && keys %{$hash{$type}};
+
             my %exists;
-            while ( my $link = $ticket->$type->Next ) {
+            while ( my $link = $record->$type->Next ) {
                 $exists{$link->$target_or_base}++;
             }
 
