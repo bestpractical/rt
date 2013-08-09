@@ -70,6 +70,7 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 
 use Term::ReadKey;
 use Getopt::Long;
+use Data::GUID;
 
 $| = 1; # unbuffer all output.
 
@@ -193,6 +194,7 @@ print "Working with:\n"
 
 my $package = $args{'package'} || 'RT';
 my $ext_version = $args{'ext-version'};
+my $full_id = Data::GUID->new->as_string;
 
 foreach my $action ( @actions ) {
     no strict 'refs';
@@ -285,6 +287,7 @@ sub action_insert {
     $file = $RT::EtcPath . "/initialdata" if $init && !$file;
     $file ||= $args{'datadir'}."/content";
 
+    my $individual_id = Data::GUID->new->as_string();
     my @ret;
 
     my $upgrade = sub { @ret = $RT::Handle->InsertData( $file, $root_password ) };
@@ -319,7 +322,10 @@ sub action_insert {
         action   => 'insert',
         filename => Cwd::abs_path($file),
         content  => $content,
-        stage    => 'after',);
+        stage    => 'after',
+        type     => 'process initialdata',
+        full_id => $full_id,
+        individual_id => $individual_id );
 
     $upgrade_data{'ext_version'} = $ext_version if $ext_version;
 
@@ -422,12 +428,16 @@ sub action_upgrade {
         from      => $upgrading_from,
         to        => $upgrading_to,
         versions  => [@versions],
+        full_id => $full_id,
+        individual_id => $full_id
     });
 
     my $previous = $upgrading_from;
     my ( $ret, $msg );
     foreach my $n ( 0..$#versions ) {
         my $v = $versions[$n];
+        my $individual_id = Data::GUID->new->as_string();
+
         my @back = grep {-e $_} map {"$base_dir/$versions[$_]/backcompat"} $n+1..$#versions;
         print "Processing $v\n";
 
@@ -437,6 +447,8 @@ sub action_upgrade {
             stage  => 'before',
             from   => $previous,
             to     => $v,
+            full_id => $full_id,
+            individual_id => $individual_id,
         });
 
         my %tmp = (%args, datadir => "$base_dir/$v", datafile => undef, backcompat => \@back);
@@ -469,6 +481,8 @@ sub action_upgrade {
             stage  => 'after',
             from   => $previous,
             to     => $v,
+            full_id => $full_id,
+            individual_id => $individual_id,
         });
 
         $previous = $v;
@@ -481,6 +495,8 @@ sub action_upgrade {
         from      => $upgrading_from,
         to        => $upgrading_to,
         versions  => [@versions],
+        full_id => $full_id,
+        individual_id => $full_id,
     });
 
     return 1;

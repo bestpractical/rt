@@ -182,6 +182,7 @@ CGI::PSGI 0.12
 Class::Accessor 0.34
 Crypt::Eksblowfish
 CSS::Squish 0.06
+Data::GUID
 Date::Extract 0.02
 Date::Manip
 DateTime 0.44
