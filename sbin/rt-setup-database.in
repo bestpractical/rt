@@ -288,6 +288,19 @@ sub action_insert {
     $file ||= $args{'datadir'}."/content";
 
     my $individual_id = Data::GUID->new->as_string();
+
+    my %upgrade_data = (
+        action   => 'insert',
+        filename => Cwd::abs_path($file),
+        stage    => 'before',
+        type     => 'process initialdata',
+        full_id => $full_id,
+        individual_id => $individual_id );
+
+    $upgrade_data{'ext_version'} = $ext_version if $ext_version;
+
+    RT->System->AddUpgradeHistory($package => \%upgrade_data);
+
     my @ret;
 
     my $upgrade = sub { @ret = $RT::Handle->InsertData( $file, $root_password ) };
@@ -318,12 +331,13 @@ sub action_insert {
 
     RT->ConnectToDatabase();
 
-    my %upgrade_data = (
+    %upgrade_data = (
         action   => 'insert',
         filename => Cwd::abs_path($file),
         content  => $content,
         stage    => 'after',
         type     => 'process initialdata',
+        return_value => join (', ', @ret),
         full_id => $full_id,
         individual_id => $individual_id );
 
