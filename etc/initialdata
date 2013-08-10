@@ -622,6 +622,15 @@ Content-Type: text/html
 }
     },
     {  Queue       => 0,
+       Name        => "Error: unencrypted message",    # loc
+       Description =>
+         "Inform user that their unencrypted mail has been rejected", # loc
+       Content => q{Subject: RT requires that all incoming mail be encrypted
+
+You received this message because RT received mail from you that was not encrypted.  As such, it has been rejected.
+}
+    },
+    {  Queue       => 0,
        Name        => "Error: public key",    # loc
        Description =>
          "Inform user that he has problems with public key and couldn't recieve encrypted content", # loc

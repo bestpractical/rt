@@ -2314,6 +2314,9 @@ used. Use the C<Outgoing> option to set a security protocol that should
 be used in outgoing emails.  At this moment, only one protocol can be
 used to protect outgoing emails.
 
+Set C<RejectOnUnencrypted> to true if all incoming email must be
+properly encrypted.  All unencrypted emails will be rejected by RT.
+
 Set C<RejectOnMissingPrivateKey> to false if you don't want to reject
 emails encrypted for key RT doesn't have and can not decrypt.
 
@@ -2331,6 +2334,7 @@ Set( %Crypt,
     Incoming                  => undef, # ['GnuPG', 'SMIME']
     Outgoing                  => undef, # 'SMIME'
 
+    RejectOnUnencrypted       => 0,
     RejectOnMissingPrivateKey => 1,
     RejectOnBadData           => 1,
 

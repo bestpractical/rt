@@ -130,10 +130,19 @@ sub GetCurrentUser {
         Entity => $args{'Message'},
     );
     if ( !@res ) {
-        $args{'Message'}->head->replace(
-            'X-RT-Incoming-Encryption' => 'Not encrypted'
-        );
-
+        if (RT->Config->Get('Crypt')->{'RejectOnUnencrypted'}) {
+            EmailErrorToSender(
+                %args,
+                Template  => 'Error: unencrypted message',
+                Arguments => { Message  => $args{'Message'} },
+            );
+            return (-1, 'rejected because the message is unencrypted with RejectOnUnencrypted enabled');
+        }
+        else {
+            $args{'Message'}->head->replace(
+                'X-RT-Incoming-Encryption' => 'Not encrypted'
+            );
+        }
         return 1;
     }
 

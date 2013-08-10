@@ -71,3 +71,15 @@ our @Initial = (
         return 1;
     },
 );
+
+our @Templates = (
+    {  Queue       => 0,
+       Name        => "Error: unencrypted message",    # loc
+       Description =>
+         "Inform user that their unencrypted mail has been rejected", # loc
+       Content => q{Subject: RT requires that all incoming mail be encrypted
+
+You received this message because RT received mail from you that was not encrypted.  As such, it has been rejected.
+}
+    },
+);
