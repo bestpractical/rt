@@ -137,7 +137,34 @@ UPGRADING FROM RT 4.0.0 and greater
 
 * New installs will notify Ccs and one-time Ccs/Bccs on create and Owners on
   create and correspond.  Upgraded installations will not.  If you'd like to
-  adjust your scrips, the actions are available from the admin scrip pages.
+  adjust your scrips to match the new install behavior, create and edit the
+  following scrips from the admin scrip page:
+
+  To notify Ccs on create, on the 'Create a global scrip' page:
+
+    Description: On Create Notify Ccs
+    Condition:   On Create
+    Action:      Notify Ccs
+    Template:    Correspondence in HTML
+
+  To notify one-time Ccs/Bccs on create, on the 'Create a global scrip' page:
+
+    Description: On Create Notify Other Recipients
+    Condition:   On Create
+    Action:      Notify Other Recipients
+    Template:    Correspondence in HTML
+
+  To notify Owners on create, click 'On Create Notify AdminCcs'. Change the
+  fields listed below to their corresponding values:
+
+    Description: On Create Notify Owner and AdminCcs
+    Action:      Notify Owner and AdminCcs
+
+  To notify Owners on correspond, click 'On Correspond Notify AdminCcs'. Change
+  the fields listed below to their corresponding values:
+
+    Description: On Correspond Notify Owner and AdminCcs
+    Action:      Notify Owner and AdminCcs
 
 * Notifications to AdminCcs on approvals are now handled via the New Pending
   Approval template in the hidden ___Approvals queue.  If you customized the
