@@ -3341,19 +3341,24 @@ Returns an array of results messages.
 sub ProcessTicketLinks {
     my %args = (
         TicketObj => undef,
+        TicketId  => undef,
         ARGSRef   => undef,
         @_
     );
 
     my $Ticket  = $args{'TicketObj'};
+    my $TicketId = $args{'TicketId'} || $Ticket->Id;
     my $ARGSRef = $args{'ARGSRef'};
 
-    my (@results) = ProcessRecordLinks( RecordObj => $Ticket, ARGSRef => $ARGSRef );
+    my (@results) = ProcessRecordLinks(
+        %args, RecordObj => $Ticket, RecordId => $TicketId, ARGSRef => $ARGSRef,
+    );
 
     #Merge if we need to
-    if ( $ARGSRef->{ $Ticket->Id . "-MergeInto" } ) {
-        $ARGSRef->{ $Ticket->Id . "-MergeInto" } =~ s/\s+//g;
-        my ( $val, $msg ) = $Ticket->MergeInto( $ARGSRef->{ $Ticket->Id . "-MergeInto" } );
+    my $input = $TicketId .'-MergeInto';
+    if ( $ARGSRef->{ $input } ) {
+        $ARGSRef->{ $input } =~ s/\s+//g;
+        my ( $val, $msg ) = $Ticket->MergeInto( $ARGSRef->{ $input } );
         push @results, $msg;
     }
 
@@ -3364,11 +3369,13 @@ sub ProcessTicketLinks {
 sub ProcessRecordLinks {
     my %args = (
         RecordObj => undef,
+        RecordId  => undef,
         ARGSRef   => undef,
         @_
     );
 
     my $Record  = $args{'RecordObj'};
+    my $RecordId = $args{'RecordId'} || $Record->Id;
     my $ARGSRef = $args{'ARGSRef'};
 
     my (@results);
@@ -3395,11 +3402,12 @@ sub ProcessRecordLinks {
     my @linktypes = qw( DependsOn MemberOf RefersTo );
 
     foreach my $linktype (@linktypes) {
-        if ( $ARGSRef->{ $Record->Id . "-$linktype" } ) {
-            $ARGSRef->{ $Record->Id . "-$linktype" } = join( ' ', @{ $ARGSRef->{ $Record->Id . "-$linktype" } } )
-                if ref( $ARGSRef->{ $Record->Id . "-$linktype" } );
+        my $input = $RecordId .'-'. $linktype;
+        if ( $ARGSRef->{ $input } ) {
+            $ARGSRef->{ $input } = join( ' ', @{ $ARGSRef->{ $input } } )
+                if ref $ARGSRef->{ $input };
 
-            for my $luri ( split( / /, $ARGSRef->{ $Record->Id . "-$linktype" } ) ) {
+            for my $luri ( split( / /, $ARGSRef->{ $input } ) ) {
                 next unless $luri;
                 $luri =~ s/\s+$//;    # Strip trailing whitespace
                 my ( $val, $msg ) = $Record->AddLink(
@@ -3409,11 +3417,12 @@ sub ProcessRecordLinks {
                 push @results, $msg;
             }
         }
-        if ( $ARGSRef->{ "$linktype-" . $Record->Id } ) {
-            $ARGSRef->{ "$linktype-" . $Record->Id } = join( ' ', @{ $ARGSRef->{ "$linktype-" . $Record->Id } } )
-                if ref( $ARGSRef->{ "$linktype-" . $Record->Id } );
+        $input = $linktype .'-'. $RecordId;
+        if ( $ARGSRef->{ $input } ) {
+            $ARGSRef->{ $input } = join( ' ', @{ $ARGSRef->{ $input } } )
+                if ref $ARGSRef->{ $input };
 
-            for my $luri ( split( / /, $ARGSRef->{ "$linktype-" . $Record->Id } ) ) {
+            for my $luri ( split( / /, $ARGSRef->{ $input } ) ) {
                 next unless $luri;
                 my ( $val, $msg ) = $Record->AddLink(
                     Base => $luri,
