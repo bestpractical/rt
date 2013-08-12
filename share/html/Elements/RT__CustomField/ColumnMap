@@ -104,7 +104,7 @@ my $COLUMN_MAP = {
                 $res .= ', ' if $res;
 
                 my $id = '';
-                $id = $record->Name if $record->can('Name');
+                $id = $record->Name if $record->_Accessible('Name','read');
                 $id ||= "#". $record->id;
                 $res .= $id;
 
