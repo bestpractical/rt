@@ -884,7 +884,7 @@ sub FindScatteredParts {
             push @res, {
                 Type      => 'signed',
                 Format    => 'Attachment',
-                Top       => $args{'Parents'}{$data_part_in},
+                Top       => $args{'Parents'}{$sig_part},
                 Data      => $data_part_in,
                 Signature => $sig_part,
             };
