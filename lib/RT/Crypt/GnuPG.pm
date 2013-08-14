@@ -990,8 +990,8 @@ sub VerifyDecrypt {
     my %res;
 
     my $item = $args{'Info'};
+    my $status_on;
     if ( $item->{'Type'} eq 'signed' ) {
-        my $status_on;
         if ( $item->{'Format'} eq 'RFC3156' ) {
             %res = $self->VerifyRFC3156( %$item, SetStatus => $args{'SetStatus'} );
             if ( $args{'Detach'} ) {
@@ -1014,18 +1014,7 @@ sub VerifyDecrypt {
         } else {
             die "Unknown format '".$item->{'Format'} . "' of GnuPG signed part";
         }
-        if ( $args{'SetStatus'} || $args{'AddStatus'} ) {
-            my $method = $args{'AddStatus'} ? 'add' : 'set';
-            # Let the header be modified so continuations are handled
-            my $modify = $status_on->head->modify;
-            $status_on->head->modify(1);
-            $status_on->head->$method(
-                'X-RT-GnuPG-Status' => $res{'status'}
-            );
-            $status_on->head->modify($modify);
-        }
     } elsif ( $item->{'Type'} eq 'encrypted' ) {
-        my $status_on;
         if ( $item->{'Format'} eq 'RFC3156' ) {
             %res = $self->DecryptRFC3156( %$item );
             $status_on = $item->{'Top'};
@@ -1038,18 +1027,19 @@ sub VerifyDecrypt {
         } else {
             die "Unknown format '".$item->{'Format'} . "' of GnuPG encrypted part";
         }
-        if ( $args{'SetStatus'} || $args{'AddStatus'} ) {
-            my $method = $args{'AddStatus'} ? 'add' : 'set';
-            # Let the header be modified so continuations are handled
-            my $modify = $status_on->head->modify;
-            $status_on->head->modify(1);
-            $status_on->head->$method(
-                'X-RT-GnuPG-Status' => $res{'status'}
-            );
-            $status_on->head->modify($modify);
-        }
     } else {
         die "Unknown type '".$item->{'Type'} . "' of protected item";
+    }
+
+    if ( $args{'SetStatus'} || $args{'AddStatus'} ) {
+        my $method = $args{'AddStatus'} ? 'add' : 'set';
+        # Let the header be modified so continuations are handled
+        my $modify = $status_on->head->modify;
+        $status_on->head->modify(1);
+        $status_on->head->$method(
+            'X-RT-GnuPG-Status' => $res{'status'}
+        );
+        $status_on->head->modify($modify);
     }
     return %res;
 }
