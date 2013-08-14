@@ -904,7 +904,6 @@ sub FindScatteredParts {
         push @res, {
             Type    => 'encrypted',
             Format  => 'Attachment',
-            Top     => $args{'Parents'}{$part},
             Data    => $part,
         };
     }
@@ -1059,7 +1058,7 @@ sub VerifyInline { return (shift)->DecryptInline( @_ ) }
 
 sub VerifyAttachment {
     my $self = shift;
-    my %args = ( Data => undef, Signature => undef, Top => undef, @_ );
+    my %args = ( Data => undef, Signature => undef, @_ );
 
     foreach ( $args{'Data'}, $args{'Signature'} ) {
         next unless $_->bodyhandle->is_encoded;
@@ -1083,7 +1082,7 @@ sub VerifyAttachment {
 
 sub VerifyRFC3156 {
     my $self = shift;
-    my %args = ( Data => undef, Signature => undef, Top => undef, @_ );
+    my %args = ( Data => undef, Signature => undef, @_ );
 
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
     binmode $tmp_fh, ':raw:eol(CRLF?)';
@@ -1262,7 +1261,6 @@ sub _DecryptInlineBlock {
 sub DecryptAttachment {
     my $self = shift;
     my %args = (
-        Top  => undef,
         Data => undef,
         Passphrase => undef,
         @_
