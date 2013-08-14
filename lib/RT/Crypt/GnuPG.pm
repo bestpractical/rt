@@ -992,7 +992,7 @@ sub VerifyDecrypt {
     my $status_on;
     if ( $item->{'Type'} eq 'signed' ) {
         if ( $item->{'Format'} eq 'RFC3156' ) {
-            %res = $self->VerifyRFC3156( %$item, SetStatus => $args{'SetStatus'} );
+            %res = $self->VerifyRFC3156( %$item );
             $item->{'Top'}->parts( [ $item->{'Data'} ] );
             $item->{'Top'}->make_singlepart;
             $status_on = $item->{'Top'};
