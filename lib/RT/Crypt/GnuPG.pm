@@ -991,18 +991,12 @@ sub VerifyDecrypt {
     if ( $item->{'Type'} eq 'signed' ) {
         if ( $item->{'Format'} eq 'RFC3156' ) {
             %res = $self->VerifyRFC3156( %$item );
-            $item->{'Top'}->parts( [ $item->{'Data'} ] );
-            $item->{'Top'}->make_singlepart;
             $status_on = $item->{'Top'};
         } elsif ( $item->{'Format'} eq 'Inline' ) {
             %res = $self->VerifyInline( %$item );
             $status_on = $item->{'Data'};
         } elsif ( $item->{'Format'} eq 'Attachment' ) {
             %res = $self->VerifyAttachment( %$item );
-            $item->{'Top'}->parts( [
-                grep "$_" ne $item->{'Signature'}, $item->{'Top'}->parts
-            ] );
-            $item->{'Top'}->make_singlepart;
             $status_on = $item->{'Data'};
         } else {
             die "Unknown format '".$item->{'Format'} . "' of GnuPG signed part";
@@ -1045,12 +1039,19 @@ sub VerifyAttachment {
     $args{'Data'}->bodyhandle->print( $tmp_fh );
     $tmp_fh->flush;
 
-    return $self->CallGnuPG(
+    my %res = $self->CallGnuPG(
         Command     => "verify",
         CommandArgs => [ '-', $tmp_fn ],
         Passphrase  => $args{'Passphrase'},
         Content     => $args{'Signature'}->bodyhandle,
     );
+
+    $args{'Top'}->parts( [
+        grep "$_" ne $args{'Signature'}, $args{'Top'}->parts
+    ] );
+    $args{'Top'}->make_singlepart;
+
+    return %res;
 }
 
 sub VerifyRFC3156 {
@@ -1062,12 +1063,17 @@ sub VerifyRFC3156 {
     $args{'Data'}->print( $tmp_fh );
     $tmp_fh->flush;
 
-    return $self->CallGnuPG(
+    my %res = $self->CallGnuPG(
         Command     => "verify",
         CommandArgs => [ '-', $tmp_fn ],
         Passphrase  => $args{'Passphrase'},
         Content     => $args{'Signature'}->bodyhandle,
     );
+
+    $args{'Top'}->parts( [ $args{'Data'} ] );
+    $args{'Top'}->make_singlepart;
+
+    return %res;
 }
 
 sub DecryptRFC3156 {
@@ -1106,9 +1112,10 @@ sub DecryptRFC3156 {
     my $parser = RT::EmailParser->new();
     my $decrypted = $parser->ParseMIMEEntityFromFileHandle( $tmp_fh, 0 );
     $decrypted->{'__store_link_to_object_to_avoid_early_cleanup'} = $parser;
-    $args{'Top'}->parts( [] );
-    $args{'Top'}->add_part( $decrypted );
+
+    $args{'Top'}->parts( [$decrypted] );
     $args{'Top'}->make_singlepart;
+
     return %res;
 }
 
