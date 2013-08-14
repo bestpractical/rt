@@ -981,7 +981,6 @@ sub VerifyDecrypt {
     my $self = shift;
     my %args = (
         Info      => undef,
-        Detach    => 1,
         SetStatus => 1,
         AddStatus => 0,
         @_
@@ -994,22 +993,18 @@ sub VerifyDecrypt {
     if ( $item->{'Type'} eq 'signed' ) {
         if ( $item->{'Format'} eq 'RFC3156' ) {
             %res = $self->VerifyRFC3156( %$item, SetStatus => $args{'SetStatus'} );
-            if ( $args{'Detach'} ) {
-                $item->{'Top'}->parts( [ $item->{'Data'} ] );
-                $item->{'Top'}->make_singlepart;
-            }
+            $item->{'Top'}->parts( [ $item->{'Data'} ] );
+            $item->{'Top'}->make_singlepart;
             $status_on = $item->{'Top'};
         } elsif ( $item->{'Format'} eq 'Inline' ) {
             %res = $self->VerifyInline( %$item );
             $status_on = $item->{'Data'};
         } elsif ( $item->{'Format'} eq 'Attachment' ) {
             %res = $self->VerifyAttachment( %$item );
-            if ( $args{'Detach'} ) {
-                $item->{'Top'}->parts( [
-                    grep "$_" ne $item->{'Signature'}, $item->{'Top'}->parts
-                ] );
-                $item->{'Top'}->make_singlepart;
-            }
+            $item->{'Top'}->parts( [
+                grep "$_" ne $item->{'Signature'}, $item->{'Top'}->parts
+            ] );
+            $item->{'Top'}->make_singlepart;
             $status_on = $item->{'Data'};
         } else {
             die "Unknown format '".$item->{'Format'} . "' of GnuPG signed part";
