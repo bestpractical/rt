@@ -58,6 +58,15 @@ RT::Crypt::Role - Common requirements for encryption implementations
 
 =head1 METHODS
 
+=head2 Probe
+
+This routine is called only if the protocol is enabled, and should
+return true if all binaries required by the protocol are installed.
+
+=cut
+
+requires 'Probe';
+
 =head2 GetPassphrase Address => ADDRESS
 
 Returns the passphrase for the given address.

@@ -1863,15 +1863,6 @@ sub ImportKey {
     );
 }
 
-=head2 Probe
-
-This routine returns true if RT's GnuPG support is configured and working 
-properly (and false otherwise).
-
-
-=cut
-
-
 sub Probe {
     my $self = shift;
     my $gnupg = GnuPG::Interface->new;
