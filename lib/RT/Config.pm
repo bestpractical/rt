@@ -656,12 +656,13 @@ our %META = (
             }
         },
     },
-    GnuPG        => { Type => 'HASH' },
-    GnuPGOptions => { Type => 'HASH',
+    GnuPG        => {
+        Type => 'HASH',
         PostLoadCheck => sub {
             my $self = shift;
             my $gpg = $self->Get('GnuPG');
             return unless $gpg->{'Enable'};
+
             my $gpgopts = $self->Get('GnuPGOptions');
             unless (-d $gpgopts->{homedir}  && -r _ ) { # no homedir, no gpg
                 $RT::Logger->debug(
@@ -672,7 +673,6 @@ our %META = (
                 return;
             }
 
-
             require RT::Crypt::GnuPG;
             unless (RT::Crypt::GnuPG->Probe()) {
                 $RT::Logger->debug(
@@ -682,6 +682,7 @@ our %META = (
             }
         }
     },
+    GnuPGOptions => { Type => 'HASH' },
     ReferrerWhitelist => { Type => 'ARRAY' },
     WebPath => {
         PostLoadCheck => sub {
