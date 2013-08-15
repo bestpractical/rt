@@ -185,7 +185,6 @@ sub CleanupRequest {
     RT::Action::SendEmail->CleanSlate;
     
     if (RT->Config->Get('GnuPG')->{'Enable'}) {
-        require RT::Crypt;
         RT::Crypt->UseKeyForEncryption();
         RT::Crypt->UseKeyForSigning( undef );
     }

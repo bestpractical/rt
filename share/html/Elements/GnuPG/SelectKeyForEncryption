@@ -56,7 +56,6 @@
 % }
 
 <%INIT>
-require RT::Crypt;
 my $d;
 
 my %res = RT::Crypt->GetKeysForEncryption($EmailAddress);

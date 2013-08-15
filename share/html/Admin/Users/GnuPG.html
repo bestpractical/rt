@@ -79,8 +79,6 @@ $Update     => undef
 <%INIT>
 return unless RT->Config->Get('GnuPG')->{'Enable'};
 
-require RT::Crypt;
-
 my @results;
 
 my $UserObj = RT::User->new( $session{'CurrentUser'} );

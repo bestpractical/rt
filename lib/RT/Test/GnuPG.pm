@@ -70,7 +70,6 @@ sub import {
       unless RT::Test->find_executable('gpg');
 
     $class->SUPER::import(%args);
-    require RT::Crypt;
     return $class->export_to_level(1)
         if $^C;
 

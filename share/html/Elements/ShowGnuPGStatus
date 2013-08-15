@@ -105,7 +105,6 @@ my $reverify_cb = sub {
         return (0, "Couldn't parse content of attachment #". $original->id);
     }
 
-    require RT::Crypt;
     my @res = RT::Crypt->VerifyDecrypt( Entity => $entity );
     return (0, "Content of attachment #". $original->id ." is not signed and/or encrypted")
         unless @res;

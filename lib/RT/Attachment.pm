@@ -742,8 +742,6 @@ sub Encrypt {
     return (0, $self->loc('Attachments encryption is disabled'))
         unless RT->Config->Get('GnuPG')->{'AllowEncryptDataInDB'};
 
-    require RT::Crypt;
-
     my $type = $self->ContentType;
     if ( $type =~ /^x-application-rt\/gpg-encrypted/i ) {
         return (1, $self->loc('Already encrypted'));
@@ -801,8 +799,6 @@ sub Decrypt {
         unless $txn->TicketObj->CurrentUserHasRight('ModifyTicket');
     return (0, $self->loc('GnuPG integration is disabled'))
         unless RT->Config->Get('GnuPG')->{'Enable'};
-
-    require RT::Crypt;
 
     my $type = $self->ContentType;
     if ( $type =~ /^x-application-rt\/gpg-encrypted/i ) {

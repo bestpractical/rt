@@ -83,7 +83,6 @@ my $LinkCallback = sub {
 
 my $trustSub = sub {
     my $user = shift;
-    require RT::Crypt;
     my %key = RT::Crypt->GetKeyInfo( Key => $user->EmailAddress );
     if (!defined $key{'info'}) {
         return $m->interp->apply_escapes(' ' . loc("(no pubkey!)"), "h");
@@ -312,10 +311,7 @@ $COLUMN_MAP = {
 <%init>
 # if no GPG support, then KeyOwnerName and KeyRequestors fall back to the regular
 # versions
-if (RT->Config->Get('GnuPG')->{'Enable'}) {
-    require RT::Crypt;
-}
-else {
+unless (RT->Config->Get('GnuPG')->{'Enable'}) {
     $COLUMN_MAP->{KeyOwnerName}  = $COLUMN_MAP->{OwnerName};
     $COLUMN_MAP->{KeyRequestors} = $GenericMap->{Requestors};
 }
