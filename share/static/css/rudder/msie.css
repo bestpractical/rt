@@ -1,3 +1,44 @@
+div#body {
+}
+
+div#logo .rtname {
+    float: none;
+    right: 12em;
+    position: absolute;
+}
+
+
+.topaction form * {
+    vertical-align: top;
+}
+
+.topaction form button, .topaction form input {
+   height: 2em;
+}
+
+.topaction form input.field {
+   height: 1.6em;
+}
+
+.topaction .select-queue {
+    margin-top: 0.2em;
+}
+
+#pick-criteria td.label select {
+    width: 10em;
+}
+
+
+#editquery {
+  margin-top: 0.2em;
+  width: 39%;
+  left: 60%;
+}
+
+div#nav li.first {
+    margin-top: 0.75em;
+    border-top: none;
+}
 div#nav ul ul li.first {
     border-top: 1px solid #cccccc;
     margin-top: 0.25em;
@@ -31,29 +72,7 @@ div#nav li.last {
 }
 
 
-.titlebox .titlebox-content {
-    padding-top: 2.2em;
-}
 
-
-.titlebox table.collection-as-table, .titlebox table.queue-summary {
-    width: 95%;
-    padding: 0.5em;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-th.collection-as-table {
-    padding: 0.25em;
-}
-
-table.queue-summary td, td.collection-as-table {
-    padding: 0.25em;
-}
-
-.titlebox-title {
-    position: relative;
-}
 
 /* nested things. like the ticket dates tab */
 .titlebox .titlebox .titlebox-title .right{
