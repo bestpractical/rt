@@ -275,8 +275,6 @@ sub VerifyDecrypt {
     my $self = shift;
     my %args = (
         Entity    => undef,
-        SetStatus => 1,
-        AddStatus => 0,
         @_
     );
 

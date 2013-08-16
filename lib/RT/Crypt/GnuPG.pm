@@ -981,8 +981,6 @@ sub VerifyDecrypt {
     my $self = shift;
     my %args = (
         Info      => undef,
-        SetStatus => 1,
-        AddStatus => 0,
         @_
     );
 
@@ -1026,16 +1024,13 @@ sub VerifyDecrypt {
         die "Unknown type '".$item->{'Type'} . "' of protected item";
     }
 
-    if ( $args{'SetStatus'} || $args{'AddStatus'} ) {
-        my $method = $args{'AddStatus'} ? 'add' : 'set';
-        # Let the header be modified so continuations are handled
-        my $modify = $status_on->head->modify;
-        $status_on->head->modify(1);
-        $status_on->head->$method(
-            'X-RT-GnuPG-Status' => $res{'status'}
-        );
-        $status_on->head->modify($modify);
-    }
+    # Let the header be modified so continuations are handled
+    my $modify = $status_on->head->modify;
+    $status_on->head->modify(1);
+    $status_on->head->add(
+        'X-RT-GnuPG-Status' => $res{'status'}
+    );
+    $status_on->head->modify($modify);
     return %res;
 }
 

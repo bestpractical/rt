@@ -86,7 +86,7 @@ sub GetCurrentUser {
     my $msg = $args{'Message'}->dup;
 
     my ($status, @res) = VerifyDecrypt(
-        Entity => $args{'Message'}, AddStatus => 1,
+        Entity => $args{'Message'},
     );
     if ( $status && !@res ) {
         $args{'Message'}->head->replace(
