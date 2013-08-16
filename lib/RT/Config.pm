@@ -676,7 +676,27 @@ our %META;
             }
         },
     },
-    SMIME        => { Type => 'HASH' },
+    SMIME        => {
+        Type => 'HASH',
+        PostLoadCheck => sub {
+            my $self = shift;
+            my $opt = $self->Get('SMIME');
+            return unless $opt->{'Enable'};
+
+            if (exists $opt->{Keyring}) {
+                unless ( File::Spec->file_name_is_absolute( $opt->{Keyring} ) ) {
+                    $opt->{Keyring} = File::Spec->catfile( $RT::BasePath, $opt->{Keyring} );
+                }
+                unless (-d $opt->{Keyring} and -r _) {
+                    $RT::Logger->info(
+                        "RT's SMIME libraries couldn't successfully read your".
+                        " configured SMIME keyring directory (".$opt->{Keyring}
+                        .").");
+                    delete $opt->{Keyring};
+                }
+            }
+        },
+    },
     GnuPG        => {
         Type => 'HASH',
         PostLoadCheck => sub {
