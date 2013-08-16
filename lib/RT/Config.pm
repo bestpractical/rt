@@ -664,11 +664,14 @@ our %META = (
             return unless $gpg->{'Enable'};
 
             my $gpgopts = $self->Get('GnuPGOptions');
+            unless ( File::Spec->file_name_is_absolute( $gpgopts->{homedir} ) ) {
+                $gpgopts->{homedir} = File::Spec->catfile( $RT::BasePath, $gpgopts->{homedir} );
+            }
             unless (-d $gpgopts->{homedir}  && -r _ ) { # no homedir, no gpg
                 $RT::Logger->debug(
                     "RT's GnuPG libraries couldn't successfully read your".
                     " configured GnuPG home directory (".$gpgopts->{homedir}
-                    ."). PGP support has been disabled");
+                    ."). GnuPG support has been disabled");
                 $gpg->{'Enable'} = 0;
                 return;
             }
