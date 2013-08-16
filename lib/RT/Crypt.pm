@@ -286,6 +286,15 @@ sub VerifyDecrypt {
         my $class = $self->LoadImplementation( $protocol );
         my %res = $class->VerifyDecrypt( %args, Info => $protected );
         $res{'Protocol'} = $protocol;
+
+        # Let the header be modified so continuations are handled
+        my $modify = $res{status_on}->head->modify;
+        $res{status_on}->head->modify(1);
+        $res{status_on}->head->add(
+            "X-RT-" . $protected->{'Protocol'} . "-Status" => $res{'status'}
+        );
+        $res{status_on}->head->modify($modify);
+
         push @res, \%res;
     }
     return @res;

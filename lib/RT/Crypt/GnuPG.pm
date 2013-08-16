@@ -1024,14 +1024,7 @@ sub VerifyDecrypt {
         die "Unknown type '".$item->{'Type'} . "' of protected item";
     }
 
-    # Let the header be modified so continuations are handled
-    my $modify = $status_on->head->modify;
-    $status_on->head->modify(1);
-    $status_on->head->add(
-        'X-RT-GnuPG-Status' => $res{'status'}
-    );
-    $status_on->head->modify($modify);
-    return %res;
+    return (%res, status_on => $status_on);
 }
 
 sub VerifyInline { return (shift)->DecryptInline( @_ ) }
