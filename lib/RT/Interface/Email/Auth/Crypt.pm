@@ -107,8 +107,6 @@ sub GetCurrentUser {
         $p->head->delete($_) for @headers;
     }
 
-    my $msg = $args{'Message'}->dup;
-
     my (@res) = RT::Crypt->VerifyDecrypt(
         Entity => $args{'Message'},
     );
