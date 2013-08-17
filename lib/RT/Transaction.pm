@@ -1387,7 +1387,10 @@ sub UpdateCustomFields {
         foreach
           my $value ( UNIVERSAL::isa( $values, 'ARRAY' ) ? @$values : $values )
         {
-            next unless (defined($value) && length($value));
+            next if $self->CustomFieldValueIsEmpty(
+                Field => $cfid,
+                Value => $value,
+            );
             $self->_AddCustomFieldValue(
                 Field             => $cfid,
                 Value             => $value,

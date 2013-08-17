@@ -3041,6 +3041,10 @@ sub _ProcessObjectCustomFieldUpdates {
 
         if ( $arg eq 'AddValue' || $arg eq 'Value' ) {
             foreach my $value (@values) {
+                next if $args{'Object'}->CustomFieldValueIsEmpty(
+                    Field => $cf->id,
+                    Value => $value,
+                );
                 my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue(
                     Field => $cf->id,
                     Value => $value
@@ -3082,6 +3086,11 @@ sub _ProcessObjectCustomFieldUpdates {
                     $values_hash{ $entry->id } = 1;
                     next;
                 }
+
+                next if $args{'Object'}->CustomFieldValueIsEmpty(
+                    Field => $cf,
+                    Value => $value,
+                );
 
                 my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue(
                     Field => $cf,
@@ -3580,6 +3589,11 @@ sub ProcessRecordBulkCustomFields {
         }
         foreach my $value ( @{ $data->{'Add'} || [] } ) {
             next if $current_values->HasEntry($value);
+
+            next if $args{'RecordObj'}->CustomFieldValueIsEmpty(
+                Field => $cfid,
+                Value => $value,
+            );
 
             my ( $id, $msg ) = $args{'RecordObj'}->AddCustomFieldValue(
                 Field => $cfid,
