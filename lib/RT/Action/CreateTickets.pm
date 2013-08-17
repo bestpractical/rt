@@ -1128,7 +1128,10 @@ sub UpdateCustomFields {
         }
 
         foreach my $value (@values) {
-            next unless length($value);
+            next if $ticket->CustomFieldValueIsEmpty(
+                Field => $cf,
+                Value => $value,
+            );
             my ( $val, $msg ) = $ticket->AddCustomFieldValue(
                 Field => $cf,
                 Value => $value

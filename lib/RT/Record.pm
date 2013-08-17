@@ -2070,7 +2070,41 @@ sub _AddCustomFieldValue {
     }
 }
 
+=head2 CustomFieldValueIsEmpty { Field => FIELD, Value => VALUE }
 
+Check if the custom field value is empty.
+
+Some custom fields could have other special empty values, e.g. "1970-01-01" is empty for Date cf
+
+Return 1 if it is empty, 0 otherwise.
+
+=cut
+
+
+sub CustomFieldValueIsEmpty {
+    my $self = shift;
+    my %args = (
+        Field => undef,
+        Value => undef,
+        @_
+    );
+    my $value = $args{Value};
+    return 1 unless defined $value  && length $value;
+
+    my $cf = $self->LoadCustomFieldByIdentifier( $args{'Field'} );
+    if ($cf) {
+        if ( $cf->Type =~ /^Date(?:Time)?$/ ) {
+            my $DateObj = RT::Date->new( $self->CurrentUser );
+            $DateObj->Set(
+                Format => 'unknown',
+                Value  => $value,
+                $cf->Type eq 'Date' ? ( Timezone => 'UTC' ) : (),
+            );
+            return 1 unless $DateObj->Unix;
+        }
+    }
+    return 0;
+}
 
 =head2 DeleteCustomFieldValue { Field => FIELD, Value => VALUE }
 

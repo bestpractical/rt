@@ -134,6 +134,10 @@ sub Create {
         my $cf   = $1;
         my @vals = ref( $args{$key} ) eq 'ARRAY' ? @{ $args{$key} } : ( $args{$key} );
         foreach my $value (@vals) {
+            next if $self->CustomFieldValueIsEmpty(
+                Field => $cf,
+                Value => $value,
+            );
 
             my ( $cfid, $cfmsg ) = $self->_AddCustomFieldValue(
                 (UNIVERSAL::isa( $value => 'HASH' )
