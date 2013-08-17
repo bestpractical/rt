@@ -107,24 +107,24 @@ my $reverify_cb = sub {
 
     require RT::Crypt;
     my @res = RT::Crypt->VerifyDecrypt( Entity => $entity );
-    if ( !@res ) {
-        # imposible in this situation
-        return (0, "Content of attachment #". $original->id ." is not signed and/or encrypted");
-    } else {
-        $top->DelHeader('X-RT-GnuPG-Status');
-        $top->AddHeader(map { ('X-RT-GnuPG-Status' => $_->{'status'} ) } @res);
-        $top->SetHeader('X-RT-Privacy' => 'GnuPG' );
-        $top->DelHeader('X-RT-Incoming-Signature');
+    return (0, "Content of attachment #". $original->id ." is not signed and/or encrypted")
+        unless @res;
 
-        my @status = RT::Crypt->ParseStatus(
-            Protocol => $res[0]{'Protocol'},
-            Status => $res[0]{'status'},
-        );
-        for ( @status ) {
-            if ( $_->{'Operation'} eq 'Verify' && $_->{'Status'} eq 'DONE' ) {
-                $top->AddHeader( 'X-RT-Incoming-Signature' => $_->{'UserString'} );
-                $needs_unsigned_warning = 0;
-            }
+    $top->DelHeader("X-RT-$_-Status") for RT::Crypt->Protocols;
+    $top->AddHeader(map { ("X-RT-". $_->{Protocol} ."-Status" => $_->{'status'} ) } @res);
+    $top->DelHeader("X-RT-Privacy");
+    my %protocols; $protocols{$_->{Protocol}}++ for @res;
+    $top->AddHeader('X-RT-Privacy' => $_ ) for sort keys %protocols;
+
+    $top->DelHeader('X-RT-Incoming-Signature');
+    my @status = RT::Crypt->ParseStatus(
+        Protocol => $res[0]{'Protocol'},
+        Status => $res[0]{'status'},
+    );
+    for ( @status ) {
+        if ( $_->{'Operation'} eq 'Verify' && $_->{'Status'} eq 'DONE' ) {
+            $top->AddHeader( 'X-RT-Incoming-Signature' => $_->{'UserString'} );
+            $needs_unsigned_warning = 0;
         }
     }
     return (1, "Reverified original message");
