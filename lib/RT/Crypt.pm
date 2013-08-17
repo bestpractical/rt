@@ -306,6 +306,7 @@ sub VerifyDecrypt {
     my $self = shift;
     my %args = (
         Entity    => undef,
+        Recursive => 1,
         @_
     );
 
@@ -328,6 +329,10 @@ sub VerifyDecrypt {
 
         push @res, \%res;
     }
+
+    push @res, $self->VerifyDecrypt( %args )
+        if $args{Recursive} and @res and not grep {$_->{'exit_code'}} @res;
+
     return @res;
 }
 

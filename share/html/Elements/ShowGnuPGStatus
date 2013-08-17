@@ -105,15 +105,12 @@ my $reverify_cb = sub {
         return (0, "Couldn't parse content of attachment #". $original->id);
     }
 
-    use RT::Interface::Email::Auth::Crypt;
-    my ($status, @res) = RT::Interface::Email::Auth::Crypt::VerifyDecrypt( Entity => $entity );
-    if ( $status && !@res ) {
+    require RT::Crypt;
+    my @res = RT::Crypt->VerifyDecrypt( Entity => $entity );
+    if ( !@res ) {
         # imposible in this situation
         return (0, "Content of attachment #". $original->id ." is not signed and/or encrypted");
-    }
-    elsif ( @res ) {
-        require RT::Crypt;
-
+    } else {
         $top->DelHeader('X-RT-GnuPG-Status');
         $top->AddHeader(map { ('X-RT-GnuPG-Status' => $_->{'status'} ) } @res);
         $top->SetHeader('X-RT-Privacy' => 'GnuPG' );

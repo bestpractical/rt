@@ -109,10 +109,10 @@ sub GetCurrentUser {
 
     my $msg = $args{'Message'}->dup;
 
-    my ($status, @res) = VerifyDecrypt(
+    my (@res) = RT::Crypt->VerifyDecrypt(
         Entity => $args{'Message'},
     );
-    if ( $status && !@res ) {
+    if ( !@res ) {
         $args{'Message'}->head->replace(
             'X-RT-Incoming-Encryption' => 'Not encrypted'
         );
@@ -120,7 +120,7 @@ sub GetCurrentUser {
         return 1;
     }
 
-    unless ( $status ) {
+    if ( grep {$_->{'exit_code'}} @res ) {
         $RT::Logger->error("Had a problem during decrypting and verifying");
         my $reject = HandleErrors( Message => $args{'Message'}, Result => \@res );
         return (0, 'rejected because of problems during decrypting and verifying')
@@ -253,31 +253,6 @@ sub CheckBadData {
         $RT::Logger->error("Couldn't send 'Error: bad GnuPG data'");
     }
     return 0;
-}
-
-sub VerifyDecrypt {
-    my %args = (
-        Entity => undef,
-        @_
-    );
-
-    my @res = RT::Crypt->VerifyDecrypt( %args );
-    unless ( @res ) {
-        $RT::Logger->debug("No more encrypted/signed parts");
-        return 1;
-    }
-
-    $RT::Logger->debug('Found encrypted/signed parts');
-
-    # return on any error
-    if ( grep $_->{'exit_code'}, @res ) {
-        $RT::Logger->debug("Error during verify/decrypt operation");
-        return (0, @res);
-    }
-
-    # nesting
-    my ($status, @nested) = VerifyDecrypt( %args );
-    return $status, @res, @nested;
 }
 
 RT::Base->_ImportOverlays();
