@@ -325,6 +325,7 @@ PerlIO::eol
 
 $deps{'SMIME'} = [ text_to_hash( << '.') ];
 Crypt::X509
+String::ShellQuote
 .
 
 $deps{'ICAL'} = [ text_to_hash( << '.') ];

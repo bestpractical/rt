@@ -59,6 +59,7 @@ use RT::Crypt;
 use IPC::Run3 0.036 'run3';
 use RT::Util 'safe_run_child';
 use Crypt::X509;
+use String::ShellQuote 'shell_quote';
 
 =head1 NAME
 
@@ -189,7 +190,126 @@ sub SignEncrypt {
         @_
     );
 
-    return ( exit_code => 1 );
+    my $entity = $args{'Entity'};
+
+    my %res = (exit_code => 0, status => '');
+
+    my @keys;
+    if ( $args{'Encrypt'} ) {
+        my @addresses =
+            grep !$seen{$_}++, map $_->address, map Email::Address->parse($_),
+            grep defined && length, map $entity->head->get($_), qw(To Cc Bcc);
+
+        foreach my $address ( @addresses ) {
+            $RT::Logger->debug( "Considering encrypting message to " . $address );
+
+            my %key_info = $self->GetKeysInfo( Key => $address );
+            unless ( defined $key_info{'info'} ) {
+                $res{'exit_code'} = 1;
+                my $reason = 'Key not found';
+                $res{'status'} .= $self->FormatStatus({
+                    Operation => "RecipientsCheck", Status => "ERROR",
+                    Message => "Recipient '$address' is unusable, the reason is '$reason'",
+                    Recipient => $address,
+                    Reason => $reason,
+                });
+                next;
+            }
+
+            if ( not $key_info{'info'}[0]{'Expire'} ) {
+                # we continue here as it's most probably a problem with the key,
+                # so later during encryption we'll get verbose errors
+                $RT::Logger->error(
+                    "Trying to send an encrypted message to ". $address
+                    .", but we couldn't get expiration date of the key."
+                );
+            }
+            elsif ( $key_info{'info'}[0]{'Expire'}->Diff( time ) < 0 ) {
+                $res{'exit_code'} = 1;
+                my $reason = 'Key expired';
+                $res{'status'} .= $self->FormatStatus({
+                    Operation => "RecipientsCheck", Status => "ERROR",
+                    Message => "Recipient '$address' is unusable, the reason is '$reason'",
+                    Recipient => $address,
+                    Reason => $reason,
+                });
+                next;
+            }
+            push @keys, $key_info{'info'}[0]{'Content'};
+        }
+    }
+    return %res if $res{'exit_code'};
+
+    my $opts = RT->Config->Get('SMIME');
+
+    my @command;
+    if ( $args{'Sign'} ) {
+        my $file = $self->CheckKeyring( Key => $args{'Signer'} );
+        unless ($file) {
+            $res{'status'} .= $self->FormatStatus({
+                Operation => "KeyCheck", Status => "MISSING",
+                Message   => "Secret key for $args{Signer} is not available",
+                Key       => $args{Signer},
+                KeyType   => "secret",
+            });
+            $res{exit_code} = 1;
+            return %res;
+        }
+        $args{'Passphrase'} = $self->GetPassphrase( Address => $args{'Signer'} )
+            unless defined $args{'Passphrase'};
+
+        push @command, join ' ', shell_quote(
+            $self->OpenSSLPath, qw(smime -sign -passin env:SMIME_PASS),
+            -signer => $file,
+            -inkey  => $file,
+        );
+    }
+    if ( $args{'Encrypt'} ) {
+        foreach my $key ( @keys ) {
+            my $key_file = File::Temp->new;
+            print $key_file $key;
+            close $key_file;
+            $key = $key_file;
+        }
+        push @command, join ' ', shell_quote(
+            $self->OpenSSLPath, qw(smime -encrypt -des3),
+            map { $_->filename } @keys
+        );
+    }
+
+    $entity->make_multipart('mixed', Force => 1);
+    my ($buf, $err) = ('', '');
+    {
+        local $ENV{'SMIME_PASS'} = $args{'Passphrase'};
+        local $SIG{'CHLD'} = 'DEFAULT';
+        safe_run_child { run3(
+            join( ' | ', @command ),
+            \$entity->parts(0)->stringify,
+            \$buf, \$err
+        ) };
+    }
+    $RT::Logger->debug( "openssl stderr: " . $err ) if length $err;
+
+    if ($buf) {
+        $res{'status'} .= $self->FormatStatus({
+            Operation => "Sign", Status => "DONE",
+            Message => "Signed message",
+        }) if $args{'Sign'};
+        $res{'status'} .= $self->FormatStatus({
+            Operation => "Encrypt", Status => "DONE",
+            Message => "Data has been encrypted",
+        }) if $args{'Encrypt'};
+    }
+
+    my $tmpdir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
+    my $parser = MIME::Parser->new();
+    $parser->output_dir($tmpdir);
+    my $newmime = $parser->parse_data($buf);
+
+    $entity->parts([$newmime]);
+    $entity->make_singlepart;
+
+    return %res;
 }
 
 sub SignEncryptContent {
