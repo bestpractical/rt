@@ -79,6 +79,16 @@ Read also: L<RT::Crypt> and L<RT::Crypt::GnuPG>.
 
 =head3 SMIME
 
+To use the SMIME-secured mail gateway, you need to do the following:
+
+Set up a SMIME key directory with files containing keys for queues'
+addresses and specify the following in your SiteConfig.pm
+
+    Set(%SMIME,
+        Enable => 1,
+        OpenSSL => '/usr/bin/openssl',
+    );
+
 Read also: L<RT::Crypt> and L<RT::Crypt::SMIME>.
 
 =cut

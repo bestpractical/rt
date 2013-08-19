@@ -2349,6 +2349,8 @@ L<RT::Crypt::SMIME>.
 Set C<Enable> to false or true value to disable or enable SMIME for
 encrypting and signing messages.
 
+Set C<OpenSSL> to path to F<openssl> executable.
+
 See L<RT::Crypt::SMIME> for details.
 
 =back
@@ -2357,6 +2359,7 @@ See L<RT::Crypt::SMIME> for details.
 
 Set( %SMIME,
     Enable => @RT_SMIME@,
+    OpenSSL => '/usr/bin/openssl',
 );
 
 =head2 GnuPG configuration

@@ -61,7 +61,27 @@ use RT::Crypt;
 
 RT::Crypt::SMIME - encrypt/decrypt and sign/verify email messages with the SMIME
 
+=head1 CONFIGURATION
+
+You should start from reading L<RT::Crypt>.
+
+=head2 %SMIME
+
+    Set( %SMIME,
+        Enable => 1,
+        OpenSSL => '/usr/bin/openssl',
+    );
+
+=head3 OpenSSL
+
+Path to openssl executable.
+
 =cut
+
+sub OpenSSLPath {
+    state $cache = RT->Config->Get('SMIME')->{'OpenSSL'};
+    return $cache;
+}
 
 sub Probe {
     my $self = shift;
