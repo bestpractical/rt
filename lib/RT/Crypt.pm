@@ -117,6 +117,99 @@ C<AllowEncryptDataInDB> key to a true value; by default, this is
 disabled.  Be aware that users must have rights to see and modify
 tickets to use this feature.
 
+=head2 Per-queue options
+
+Using the web interface, it is possible to enable signing and/or
+encrypting by default. As an administrative user of RT, navigate to the
+'Admin' and 'Queues' menus, and select a queue.  If at least one
+encryption protocol is enabled, information concerning available keys
+will be displayed, as well as options to enable signing and encryption.
+
+=head2 Handling incoming messages
+
+To enable handling of encrypted and signed message in the RT you must
+enable the L<RT::Interface::Email::Auth::Crypt> mail plugin:
+
+    Set(@MailPlugins, 'Auth::MailFrom', 'Auth::Crypt', ...other filter...);
+
+=head2 Error handling
+
+There are several global templates created in the database by
+default. RT uses these templates to send error messages to users or RT's
+owner. These templates have an 'Error:' or 'Error to RT owner:' prefix
+in the name. You can adjust the text of the messages using the web
+interface.
+
+Note that while C<$TicketObj>, C<$TransactionObj> and other variables
+usually available in RT's templates are not available in these
+templates, but each is passed alternate data structures can be used to
+build better messages; see the default templates and descriptions below.
+
+You can disable any particular notification by simply deleting the
+content of a template.  Deleting the templates entirely is not
+suggested, as RT will log error messages when attempting to send mail
+usign them.
+
+=head3 Problems with public keys
+
+The 'Error: public key' template is used to inform the user that RT had
+problems with their public key, and thus will not be able to send
+encrypted content. There are several reasons why RT might fail to use a
+key; by default, the actual reason is not sent to the user, but sent to
+the RT owner using the 'Error to RT owner: public key' template.
+
+Possible reasons include "Not Found", "Ambiguous specification", "Wrong
+key usage", "Key revoked", "Key expired", "No CRL known", "CRL too old",
+"Policy mismatch", "Not a secret key", "Key not trusted" or "No specific
+reason given".
+
+In the 'Error: public key' template there are a few additional variables
+available:
+
+=over 4
+
+=item $Message - user friendly error message
+
+=item $Reason - short reason as listed above
+
+=item $Recipient - recipient's identification
+
+=item $AddressObj - L<Email::Address> object containing recipient's email address
+
+=back
+
+As a message may have several invalid recipients, to avoid sending many
+emails to the RT owner, the system sends one message to the owner,
+grouped by recipient. In the 'Error to RT owner: public key' template a
+C<@BadRecipients> array is available where each element is a hash
+reference that describes one recipient using the same fields as
+described above:
+
+    @BadRecipients = (
+        { Message => '...', Reason => '...', Recipient => '...', ...},
+        { Message => '...', Reason => '...', Recipient => '...', ...},
+        ...
+    )
+
+=head3 Private key doesn't exist
+
+The 'Error: no private key' template is used to inform the user that
+they sent an encrypted email to RT, but RT does not have the private key
+to decrypt it.
+
+In this template L<MIME::Entity> object C<$Message> is available, which
+is the originally received message.
+
+=head3 Invalid data
+
+The 'Error: bad encrypted data' template is used to inform the user that
+a message they sent had invalid data, and could not be handled.  There
+are several possible reasons for this error, but most of them are data
+corruption or absence of expected information.
+
+In this template, the C<@Messages> array is available, and will contain
+a list of error messages.
+
 =head1 METHODS
 
 =head2 Protocols

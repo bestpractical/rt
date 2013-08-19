@@ -237,82 +237,10 @@ To enable handling of encrypted and signed message in the RT you should add
 
 See also `perldoc lib/RT/Interface/Email/Auth/Crypt.pm`.
 
-=head2 Errors handling
-
-There are several global templates created in the database by default. RT
-uses these templates to send error messages to users or RT's owner. These 
-templates have 'Error:' or 'Error to RT owner:' prefix in the name. You can 
-adjust the text of the messages using the web interface.
-
-Note that C<$TicketObj>, C<$TransactionObj> and other variable usually available
-in RT's templates are not available in these templates, but each template
-used for errors reporting has set of available data structures you can use to
-build better messages. See default templates and descriptions below.
-
-As well, you can disable particular notification by deleting content of
-a template. You can delete a template too, but in this case you'll see
-error messages in the logs when RT can not load template you've deleted.
-
-=head3 Problems with public keys
-
-Template 'Error: public key' is used to inform the user that RT has problems with
-his public key and won't be able to send him encrypted content. There are several 
-reasons why RT can't use a key. However, the actual reason is not sent to the user, 
-but sent to RT owner using 'Error to RT owner: public key'.
-
-The possible reasons: "Not Found", "Ambiguous specification", "Wrong
-key usage", "Key revoked", "Key expired", "No CRL known", "CRL too
-old", "Policy mismatch", "Not a secret key", "Key not trusted" or
-"No specific reason given".
+=head2 Encrypting to untrusted keys
 
 Due to limitations of GnuPG, it's impossible to encrypt to an untrusted key,
 unless 'always trust' mode is enabled.
-
-In the 'Error: public key' template there are a few additional variables available:
-
-=over 4
-
-=item $Message - user friendly error message
-
-=item $Reason - short reason as listed above
-
-=item $Recipient - recipient's identification
-
-=item $AddressObj - L<Email::Address> object containing recipient's email address
-
-=back
-
-A message can have several invalid recipients, to avoid sending many emails
-to the RT owner the system sends one message to the owner, grouped by
-recipient. In the 'Error to RT owner: public key' template a C<@BadRecipients>
-array is available where each element is a hash reference that describes one
-recipient using the same fields as described above. So it's something like:
-
-    @BadRecipients = (
-        { Message => '...', Reason => '...', Recipient => '...', ...},
-        { Message => '...', Reason => '...', Recipient => '...', ...},
-        ...
-    )
-
-=head3 Private key doesn't exist
-
-Template 'Error: no private key' is used to inform the user that
-he sent an encrypted email, but we have no private key to decrypt
-it.
-
-In this template C<$Message> object of L<MIME::Entity> class
-available. It's the message RT received.
-
-=head3 Invalid data
-
-Template 'Error: bad GnuPG data' used to inform the user that a
-message he sent has invalid data and can not be handled.
-
-There are several reasons for this error, but most of them are data
-corruption or absence of expected information.
-
-In this template C<@Messages> array is available and contains list
-of error messages.
 
 =head1 FOR DEVELOPERS
 
