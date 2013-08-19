@@ -87,6 +87,7 @@ addresses and specify the following in your SiteConfig.pm
     Set(%SMIME,
         Enable => 1,
         OpenSSL => '/usr/bin/openssl',
+        Keyring => '/opt/rt4/var/data/smime',
     );
 
 Read also: L<RT::Crypt> and L<RT::Crypt::SMIME>.

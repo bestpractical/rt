@@ -91,6 +91,7 @@ my %default = (
     'with-MAILGATE' => 1, 
     'with-DEVELOPER' => @RT_DEVELOPER@,
     'with-GPG' => @RT_GPG@,
+    'with-SMIME' => @RT_SMIME@,
     'with-ICAL' => 1,
     'with-GRAPHVIZ' => @RT_GRAPHVIZ@,
     'with-GD' => @RT_GD@,
@@ -320,6 +321,10 @@ DBD::SQLite 1.00
 $deps{'GPG'} = [ text_to_hash( << '.') ];
 GnuPG::Interface
 PerlIO::eol
+.
+
+$deps{'SMIME'} = [ text_to_hash( << '.') ];
+Crypt::X509
 .
 
 $deps{'ICAL'} = [ text_to_hash( << '.') ];

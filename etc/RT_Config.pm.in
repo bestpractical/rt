@@ -2351,6 +2351,10 @@ encrypting and signing messages.
 
 Set C<OpenSSL> to path to F<openssl> executable.
 
+Set C<Keyring> to directory with key files.  Key and certificates should
+be stored in a PEM file in this directory named named, e.g.,
+F<email.address@example.com.pem>.
+
 See L<RT::Crypt::SMIME> for details.
 
 =back
@@ -2360,6 +2364,7 @@ See L<RT::Crypt::SMIME> for details.
 Set( %SMIME,
     Enable => @RT_SMIME@,
     OpenSSL => '/usr/bin/openssl',
+    Keyring => q{@RT_VAR_PATH@/data/smime},
 );
 
 =head2 GnuPG configuration

@@ -58,6 +58,7 @@ with 'RT::Crypt::Role';
 use RT::Crypt;
 use IPC::Run3 0.036 'run3';
 use RT::Util 'safe_run_child';
+use Crypt::X509;
 
 =head1 NAME
 
@@ -72,11 +73,36 @@ You should start from reading L<RT::Crypt>.
     Set( %SMIME,
         Enable => 1,
         OpenSSL => '/usr/bin/openssl',
+        Keyring => '/opt/rt4/var/data/smime',
     );
 
 =head3 OpenSSL
 
 Path to openssl executable.
+
+=head3 Keyring
+
+Path to directory with keys and certificates for queues. Key and
+certificates should be stored in a PEM file named, e.g.,
+F<email.address@example.com.pem>.  See L</Keyring configuration>.
+
+=head2 Keyring configuration
+
+RT looks for keys in the directory configured in the L</Keyring> option
+of the L<RT_Config/%SMIME>.  While public certificates are also stored
+on users, private SSL keys are only loaded from disk.  Keys and
+certificates should be concatenated, in in PEM format, in files named
+C<email.address@example.com.pem>, for example.
+
+These files need be readable by the web server user which is running
+RT's web interface; however, if you are running cronjobs or other
+utilities that access RT directly via API, and may generate
+encrypted/signed notifications, then the users you execute these scripts
+under must have access too.
+
+The keyring on disk will be checked before the user with the email
+address is examined.  If the file exists, it will be used in preference
+to the certificate on the user.
 
 =cut
 
@@ -304,7 +330,97 @@ sub GetKeysInfo {
         @_
     );
 
-    return (exit_code => 1);
+    my $email = $args{'Key'};
+    unless ( $email ) {
+        return (exit_code => 0); # unless $args{'Force'};
+    }
+
+    my $key = $self->GetKeyContent( %args );
+    return (exit_code => 0) unless $key;
+
+    return $self->GetCertificateInfo( Certificate => $key );
+}
+
+sub GetKeyContent {
+    my $self = shift;
+    my %args = ( Key => undef, @_ );
+
+    my $file = $self->CheckKeyring( %args );
+    return unless $file;
+    open my $fh, '<:raw', $file
+        or die "Couldn't open file '$file': $!";
+    my $key = do { local $/; readline $fh };
+    close $fh;
+    return $key;
+}
+
+sub CheckKeyring {
+    my $self = shift;
+    my %args = (
+        Key => undef,
+        @_,
+    );
+    my $keyring = RT->Config->Get('SMIME')->{'Keyring'};
+    return undef unless $keyring;
+
+    my $file = File::Spec->catfile( $keyring, $args{'Key'} .'.pem' );
+    return undef unless -f $file;
+
+    return $file;
+}
+
+sub GetCertificateInfo {
+    my $self = shift;
+    my %args = (
+        Certificate => undef,
+        @_,
+    );
+
+    if ($args{Certificate} =~ /^-----BEGIN \s+ CERTIFICATE-----$
+                                (.*?)
+                               ^-----END \s+ CERTIFICATE-----$/smx) {
+        $args{Certificate} = MIME::Base64::decode_base64($1);
+    }
+
+    my $cert = Crypt::X509->new( cert => $args{Certificate} );
+    return ( exit_code => 1, stderr => $cert->error ) if $cert->error;
+
+    my %USER_MAP = (
+        Country          => 'country',
+        StateOrProvince  => 'state',
+        Organization     => 'org',
+        OrganizationUnit => 'ou',
+        Name             => 'cn',
+        EmailAddress     => 'email',
+    );
+    my $canonicalize = sub {
+        my $type = shift;
+        my %data;
+        for (keys %USER_MAP) {
+            my $method = $type . "_" . $USER_MAP{$_};
+            $data{$_} = $cert->$method if $cert->can($method);
+        }
+        $data{String} = Email::Address->new( @data{'Name', 'EmailAddress'} )->format
+            if $data{EmailAddress};
+        return \%data;
+    };
+
+    my $PEM = "-----BEGIN CERTIFICATE-----\n"
+        . MIME::Base64::encode_base64( $args{Certificate} )
+        . "-----END CERTIFICATE-----\n";
+
+    my %data = (
+        Content         => $PEM,
+        TrustLevel      => 1,
+        Fingerprint     => Digest::SHA::sha1_hex($args{Certificate}),
+        'Serial Number' => $cert->serial,
+        Created         => $self->ParseDate( $cert->not_before ),
+        Expire          => $self->ParseDate( $cert->not_after ),
+        Version         => sprintf("%d (0x%x)",hex($cert->version || 0)+1, hex($cert->version || 0)),
+        Issuer          => [ $canonicalize->( 'issuer' ) ],
+        User            => [ $canonicalize->( 'subject' ) ],
+    );
+    return ( exit_code => 0, info => [ \%data ], stderr => '' );
 }
 
 1;
