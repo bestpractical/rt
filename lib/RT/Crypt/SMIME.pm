@@ -173,7 +173,79 @@ sub VerifyDecrypt {
     my $self = shift;
     my %args = ( Info => undef, @_ );
 
-    return ( exit_code => 1 );
+    my %res;
+    my $item = $args{'Info'};
+    if ( $item->{'Type'} eq 'signed' ) {
+        %res = $self->Verify( %$item );
+    } elsif ( $item->{'Type'} eq 'encrypted' ) {
+        %res = ( exit_code => 1 );
+    } else {
+        die "Unknown type '". $item->{'Type'} ."' of protected item";
+    }
+
+    return (%res, status_on => $item->{'Data'});
+}
+
+sub Verify {
+    my $self = shift;
+    my %args = (Data => undef, @_ );
+
+    my $msg = $args{'Data'}->as_string;
+
+    my %res;
+    my $buf;
+    my $keyfh = File::Temp->new;
+    {
+        local $SIG{CHLD} = 'DEFAULT';
+        my $cmd = [
+            $self->OpenSSLPath, qw(smime -verify -noverify),
+            '-signer', $keyfh->filename,
+        ];
+        safe_run_child { run3( $cmd, \$msg, \$buf, \$res{'stderr'} ) };
+        $res{'exit_code'} = $?;
+    }
+    if ( $res{'exit_code'} ) {
+        if ($res{stderr} =~ /(signature|digest) failure/) {
+            $res{'message'} = "Validation failed";
+            $res{'status'} = $self->FormatStatus({
+                Operation => "Verify", Status => "BAD",
+                Message => "The signature did not verify",
+            });
+        } else {
+            $res{'message'} = "openssl exited with error code ". ($? >> 8)
+                ." and error: $res{stderr}";
+            $res{'status'} = $self->FormatStatus({
+                Operation => "Verify", Status => "ERROR",
+                Message => "There was an error verifying: $res{stderr}",
+            });
+            $RT::Logger->error($res{'message'});
+        }
+        return %res;
+    }
+
+    my $res_entity = _extract_msg_from_buf( \$buf );
+    unless ( $res_entity ) {
+        $res{'exit_code'} = 1;
+        $res{'message'} = "verified message, but couldn't parse result";
+        $res{'status'} = $self->FormatStatus({
+            Operation => "Verify", Status => "DONE",
+            Message => "The signature is good",
+        });
+        return %res;
+    }
+
+    $res_entity->make_multipart( 'mixed', Force => 1 );
+
+    $args{'Data'}->make_multipart( 'mixed', Force => 1 );
+    $args{'Data'}->parts([ $res_entity->parts ]);
+    $args{'Data'}->make_singlepart;
+
+    $res{'status'} = $self->FormatStatus({
+        Operation => "Verify", Status => "DONE",
+        Message => "The signature is good",
+    });
+
+    return %res;
 }
 
 sub DecryptContent {
@@ -213,6 +285,26 @@ sub ParseStatus {
     }
 
     return @status;
+}
+
+sub _extract_msg_from_buf {
+    my $buf = shift;
+    my $rtparser = RT::EmailParser->new();
+    my $parser   = MIME::Parser->new();
+    $rtparser->_SetupMIMEParser($parser);
+    $parser->decode_bodies(0);
+    $parser->output_to_core(1);
+    unless ( $rtparser->{'entity'} = $parser->parse_data($$buf) ) {
+        $RT::Logger->crit("Couldn't parse MIME stream and extract the submessages");
+
+        # Try again, this time without extracting nested messages
+        $parser->extract_nested_messages(0);
+        unless ( $rtparser->{'entity'} = $parser->parse_data($$buf) ) {
+            $RT::Logger->crit("couldn't parse MIME stream");
+            return (undef);
+        }
+    }
+    return $rtparser->Entity;
 }
 
 sub FindScatteredParts { return () }
