@@ -75,6 +75,10 @@ You should start from reading L<RT::Crypt>.
         OpenSSL => '/usr/bin/openssl',
         Keyring => '/opt/rt4/var/data/smime',
         CAPath  => '/opt/rt4/var/data/smime/signing-ca.pem',
+        Passphrase => {
+            'queue.address@example.com' => 'passphrase',
+            '' => 'fallback',
+        },
     );
 
 =head3 OpenSSL
@@ -103,6 +107,12 @@ Such mails will be marked as untrusted, but signed; C<CAPath> will be
 used to mark which mails are signed by trusted certificate authorities.
 This configuration is generally insecure, as it allows the possibility
 of accepting forged mail signed by an untrusted certificate authority.
+
+=head3 Passphrase
+
+C<Passphrase> may be set to a scalar (to use for all keys), an anonymous
+function, or a hash (to look up by address).  If the hash is used, the
+'' key is used as a default.
 
 =head2 Keyring configuration
 

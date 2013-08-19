@@ -89,6 +89,10 @@ addresses and specify the following in your SiteConfig.pm
         OpenSSL => '/usr/bin/openssl',
         Keyring => '/opt/rt4/var/data/smime',
         CAPath  => '/opt/rt4/var/data/smime/signing-ca.pem',
+        Passphrase => {
+            'queue.address@example.com' => 'passphrase',
+            '' => 'fallback',
+        },
     );
 
 Read also: L<RT::Crypt> and L<RT::Crypt::SMIME>.

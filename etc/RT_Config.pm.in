@@ -2369,6 +2369,10 @@ trusted certificate authorities.  This configuration is generally
 insecure, as it allows the possibility of accepting forged mail signed
 by an untrusted certificate authority.
 
+Set C<Passphrase> to a scalar (to use for all keys), an anonymous
+function, or a hash (to look up by address).  If the hash is used, the
+'' key is used as a default.
+
 See L<RT::Crypt::SMIME> for details.
 
 =back
@@ -2381,6 +2385,7 @@ Set( %SMIME,
     Keyring => q{@RT_VAR_PATH@/data/smime},
     CAPath => undef,
     AcceptUntrustedCAs => undef,
+    Passphrase => undef,
 );
 
 =head2 GnuPG configuration
