@@ -56,6 +56,8 @@ use Role::Basic 'with';
 with 'RT::Crypt::Role';
 
 use RT::Crypt;
+use IPC::Run3 0.036 'run3';
+use RT::Util 'safe_run_child';
 
 =head1 NAME
 
@@ -85,7 +87,37 @@ sub OpenSSLPath {
 
 sub Probe {
     my $self = shift;
-    return 0;
+    my $bin = $self->OpenSSLPath();
+    return 0 unless $bin;
+
+    if ($bin =~ m{^/}) {
+        return 0 unless -f $bin;
+        return 0 unless -x _;
+    }
+
+    {
+        my ($buf, $err) = ('', '');
+
+        local $SIG{'CHLD'} = 'DEFAULT';
+        safe_run_child { run3( [$bin, "list-standard-commands"],
+            \undef,
+            \$buf, \$err
+        ) };
+
+        if ($? or $err) {
+            $RT::Logger->warning(
+                "RT's SMIME libraries couldn't successfully execute openssl.".
+                    " SMIME support has been disabled") ;
+            return;
+        } elsif ($buf !~ /\bsmime\b/) {
+            $RT::Logger->warning(
+                "openssl does not include smime support.".
+                    " SMIME support has been disabled");
+            return;
+        } else {
+            return 1;
+        }
+    }
 }
 
 sub SignEncrypt {
