@@ -244,7 +244,7 @@ sub CheckBadData {
     my $address = (RT::Interface::Email::ParseSenderAddressFromHead( $args{'Message'}->head ))[0];
     my ($status) = RT::Interface::Email::SendEmailUsingTemplate(
         To        => $address,
-        Template  => 'Error: bad GnuPG data',
+        Template  => 'Error: bad encrypted data',
         Arguments => {
             Messages  => [ @bad_data_messages ],
             TicketObj => $args{'Ticket'},
@@ -252,7 +252,7 @@ sub CheckBadData {
         InReplyTo => $args{'Message'},
     );
     unless ( $status ) {
-        $RT::Logger->error("Couldn't send 'Error: bad GnuPG data'");
+        $RT::Logger->error("Couldn't send 'Error: bad encrypted data'");
     }
     return 0;
 }

@@ -1,0 +1,27 @@
+use strict;
+use warnings;
+
+our @Initial = (
+    sub {
+        my $template = RT::Template->new( RT->SystemUser );
+        $template->Load("Error: bad GnuPG data");
+        unless ($template->id) {
+            RT->Logger->error( "Couldn't find 'Error: bad GnuPG data' template to rename" );
+            return;
+        }
+
+        my ($ok, $msg) = $template->SetName("Error: bad encrypted data");
+        RT->Logger->error( "Couldn't rename 'Error: bad GnuPG data' template: $msg")
+            unless $ok;
+
+        ($ok, $msg) = $template->SetDescription("Inform user that a message he sent has invalid encryption data");
+        RT->Logger->error( "Couldn't update 'Error: bad encrypted data' template description: $msg")
+            unless $ok;
+
+        my $content = $template->Content;
+        $content =~ s/GnuPG signature/signature/g;
+        ($ok, $msg) = $template->SetContent( $content );
+        RT->Logger->error( "Couldn't update 'Error: bad encrypted data' template content: $msg")
+            unless $ok;
+    },
+);
