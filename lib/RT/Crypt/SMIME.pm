@@ -345,12 +345,18 @@ sub GetKeyContent {
     my $self = shift;
     my %args = ( Key => undef, @_ );
 
-    my $file = $self->CheckKeyring( %args );
-    return unless $file;
-    open my $fh, '<:raw', $file
-        or die "Couldn't open file '$file': $!";
-    my $key = do { local $/; readline $fh };
-    close $fh;
+    my $key;
+    if ( my $file = $self->CheckKeyring( %args ) ) {
+        open my $fh, '<:raw', $file
+            or die "Couldn't open file '$file': $!";
+        $key = do { local $/; readline $fh };
+        close $fh;
+    }
+    else {
+        my $user = RT::User->new( RT->SystemUser );
+        $user->LoadByEmail( $args{'Key'} );
+        $key = $user->SMIMECertificate if $user->id;
+    }
     return $key;
 }
 

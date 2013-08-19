@@ -135,7 +135,7 @@ my $i = 0;
 my %sorted = map { $_ => $i++ } qw(
     Name EmailAddress RealName Organization NickName WorkPhone HomePhone
     MobilePhone PagerPhone Address1 Address2 City State Zip Country
-    Timezone Lang Gecos Comments
+    Timezone Lang Gecos SMIMECertificate Comments
 );
 
 my @attrs = sort { $sorted{$a} <=> $sorted{$b} }
