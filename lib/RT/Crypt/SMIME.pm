@@ -223,6 +223,23 @@ sub Verify {
         return %res;
     }
 
+    my $signer;
+    if ( my $key = do { $keyfh->seek(0, 0); local $/; readline $keyfh } ) {{
+        my %info = $self->GetCertificateInfo( Certificate => $key );
+
+        $signer = $info{info}[0]{User}[0]{String};
+        last unless $signer;
+
+        my $user = RT::User->new( $RT::SystemUser );
+        $user->LoadOrCreateByEmail( $signer );
+        my $current_key = $user->SMIMECertificate;
+        last if $current_key && $current_key eq $key;
+
+        my ($status, $msg) = $user->SetSMIMECertificate( $key );
+        $RT::Logger->error("Couldn't set SMIME certificate for user #". $user->id .": $msg")
+            unless $status;
+    }}
+
     my $res_entity = _extract_msg_from_buf( \$buf );
     unless ( $res_entity ) {
         $res{'exit_code'} = 1;
@@ -242,7 +259,8 @@ sub Verify {
 
     $res{'status'} = $self->FormatStatus({
         Operation => "Verify", Status => "DONE",
-        Message => "The signature is good",
+        Message => "The signature is good, signed by $signer",
+        UserString => $signer,
     });
 
     return %res;
