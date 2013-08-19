@@ -206,7 +206,7 @@ sub VerifyDecrypt {
     if ( $item->{'Type'} eq 'signed' ) {
         %res = $self->Verify( %$item );
     } elsif ( $item->{'Type'} eq 'encrypted' ) {
-        %res = ( exit_code => 1 );
+        %res = $self->Decrypt( %args, %$item );
     } else {
         die "Unknown type '". $item->{'Type'} ."' of protected item";
     }
@@ -307,6 +307,71 @@ sub Verify {
         Message => "The signature is good, signed by ".$signer->{User}[0]{String}.", trust is ".$signer->{TrustTerse},
         UserString => $signer->{User}[0]{String},
         Trust => uc($signer->{TrustTerse}),
+    });
+
+    return %res;
+}
+
+sub Decrypt {
+    my $self = shift;
+    my %args = (Data => undef, Queue => undef, @_ );
+
+    my $msg = $args{'Data'}->as_string;
+
+    my $action = 'correspond';
+    $action = 'comment' if grep defined && $_ eq 'comment', @{ $args{'Actions'}||[] };
+
+    my $address = $action eq 'correspond'
+        ? $args{'Queue'}->CorrespondAddress || RT->Config->Get('CorrespondAddress')
+        : $args{'Queue'}->CommentAddress    || RT->Config->Get('CommentAddress');
+
+    my %res;
+    my $file = $self->CheckKeyring( Key => $address );
+    unless ($file) {
+        $res{'status'} .= $self->FormatStatus({
+            Operation => "KeyCheck", Status => "MISSING",
+            Message   => "Secret key for $address is not available",
+            Key       => $address,
+            KeyType   => "secret",
+        });
+        $res{exit_code} = 1;
+        return %res;
+    }
+
+    my $buf;
+    {
+        local $ENV{SMIME_PASS} = $self->GetPassphrase( Address => $address );
+        local $SIG{CHLD} = 'DEFAULT';
+        my $cmd = [
+            $self->OpenSSLPath,
+            qw(smime -decrypt -passin env:SMIME_PASS),
+            -recip => $file,
+        ];
+        safe_run_child { run3( $cmd, \$msg, \$buf, \$res{'stderr'} ) };
+        $res{'exit_code'} = $?;
+    }
+    if ( $res{'exit_code'} ) {
+        $res{'message'} = "openssl exited with error code ". ($? >> 8)
+            ." and error: $res{stderr}";
+        $res{'status'} = $self->FormatStatus({
+            Operation => 'Decrypt', Status => 'ERROR',
+            Message => 'Decryption failed',
+            EncryptedTo => $address,
+        });
+        return %res;
+    }
+
+    my $res_entity = _extract_msg_from_buf( \$buf );
+    $res_entity->make_multipart( 'mixed', Force => 1 );
+
+    $args{'Data'}->make_multipart( 'mixed', Force => 1 );
+    $args{'Data'}->parts([ $res_entity->parts ]);
+    $args{'Data'}->make_singlepart;
+
+    $res{'status'} = $self->FormatStatus({
+        Operation => 'Decrypt', Status => 'DONE',
+        Message => 'Decryption process succeeded',
+        EncryptedTo => $address,
     });
 
     return %res;
