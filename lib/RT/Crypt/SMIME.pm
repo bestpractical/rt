@@ -167,6 +167,91 @@ sub CheckIfProtected {
     my $self = shift;
     my %args = ( Entity => undef, @_ );
 
+    my $entity = $args{'Entity'};
+
+    my $type = $entity->effective_type;
+    if ( $type =~ m{^application/(?:x-)?pkcs7-mime$} || $type eq 'application/octet-stream' ) {
+        # RFC3851 ch.3.9 variant 1 and 3
+
+        my $security_type;
+
+        my $smime_type = $entity->head->mime_attr('Content-Type.smime-type');
+        if ( $smime_type ) { # it's optional according to RFC3851
+            if ( $smime_type eq 'enveloped-data' ) {
+                $security_type = 'encrypted';
+            }
+            elsif ( $smime_type eq 'signed-data' ) {
+                $security_type = 'signed';
+            }
+            elsif ( $smime_type eq 'certs-only' ) {
+                $security_type = 'certificate management';
+            }
+            elsif ( $smime_type eq 'compressed-data' ) {
+                $security_type = 'compressed';
+            }
+            else {
+                $security_type = $smime_type;
+            }
+        }
+
+        unless ( $security_type ) {
+            my $fname = $entity->head->recommended_filename || '';
+            if ( $fname =~ /\.p7([czsm])$/ ) {
+                my $type_char = $1;
+                if ( $type_char eq 'm' ) {
+                    # RFC3851, ch3.4.2
+                    # it can be both encrypted and signed
+                    $security_type = 'encrypted';
+                }
+                elsif ( $type_char eq 's' ) {
+                    # RFC3851, ch3.4.3, multipart/signed, XXX we should never be here
+                    # unless message is changed by some gateway
+                    $security_type = 'signed';
+                }
+                elsif ( $type_char eq 'c' ) {
+                    # RFC3851, ch3.7
+                    $security_type = 'certificate management';
+                }
+                elsif ( $type_char eq 'z' ) {
+                    # RFC3851, ch3.5
+                    $security_type = 'compressed';
+                }
+            }
+        }
+        return () unless $security_type;
+
+        return (
+            Type   => $security_type,
+            Format => 'RFC3851',
+            Data   => $entity,
+        );
+    }
+    elsif ( $type eq 'multipart/signed' ) {
+        # RFC3156, multipart/signed
+        # RFC3851, ch.3.9 variant 2
+
+        unless ( $entity->parts == 2 ) {
+            $RT::Logger->error( "Encrypted or signed entity must has two subparts. Skipped" );
+            return ();
+        }
+
+        my $protocol = $entity->head->mime_attr( 'Content-Type.protocol' );
+        unless ( $protocol ) {
+            $RT::Logger->error( "Entity is '$type', but has no protocol defined. Skipped" );
+            return ();
+        }
+
+        unless ( $protocol =~ m{^application/(x-)?pkcs7-signature$} ) {
+            $RT::Logger->info( "Skipping protocol '$protocol', only 'application/x-pkcs7-signature' is supported" );
+            return ();
+        }
+        $RT::Logger->debug("Found part signed according to RFC3156");
+        return (
+            Type      => 'signed',
+            Format    => 'RFC3156',
+            Data      => $entity,
+        );
+    }
     return ();
 }
 
