@@ -62,24 +62,23 @@ use RT::Util 'safe_run_child', 'mime_recommended_filename';
 
 =head1 NAME
 
-RT::Crypt::GnuPG - encrypt/decrypt and sign/verify email messages with the GNU Privacy Guard (GPG)
+RT::Crypt::GnuPG - GNU Privacy Guard encryption/decryption/verification/signing
 
 =head1 DESCRIPTION
 
-This module provides support for encryption and signing of outgoing messages, 
-as well as the decryption and verification of incoming email.
+This module provides support for encryption and signing of outgoing
+messages using GnuPG, as well as the decryption and verification of
+incoming email.
 
 =head1 CONFIGURATION
 
-You can control the configuration of this subsystem from RT's configuration file.
-Some options are available via the web interface, but to enable this functionality, you
-MUST start in the configuration file.
-
-There are two hashes, GnuPG and GnuPGOptions in the configuration file. The 
-first one controls RT specific options. It enables you to enable/disable facility 
-or change the format of messages. The second one is a hash with options for the 
-'gnupg' utility. You can use it to define a keyserver, enable auto-retrieval keys 
-and set almost any option 'gnupg' supports on your system.
+There are two reveant configuration options, both of which are hashes:
+C<GnuPG> and C<GnuPGOptions>. The first one controls RT specific
+options; it enables you to enable/disable the GPG protocol or change the
+format of messages. The second one is a hash with options which are
+passed to the C<gnupg> utility. You can use it to define a keyserver,
+enable auto-retrieval of keys, or set almost any option which C<gnupg>
+supports on your system.
 
 =head2 %GnuPG
 
@@ -97,8 +96,8 @@ the handling of incoming encrypted/signed messages.
 
 =head3 Format of outgoing messages
 
-Format of outgoing messages can be controlled using the 'OutgoingMessagesFormat'
-option in the RT config:
+The format of outgoing messages can be controlled using the
+C<OutgoingMessagesFormat> option in the RT config:
 
     Set( %GnuPG,
         ... other options ...
@@ -114,30 +113,28 @@ or
         ... other options ...
     );
 
-This framework implements two formats of signing and encrypting of email messages:
+The two formats for GPG mail are as follows:
 
 =over
 
 =item RFC
 
-This format is also known as GPG/MIME and described in RFC3156 and RFC1847.
-Technique described in these RFCs is well supported by many mail user
-agents (MUA), but some MUAs support only inline signatures and encryption,
-so it's possible to use inline format (see below).
+This format, the default, is also known as GPG/MIME, and is described in
+RFC3156 and RFC1847.  The technique described in these RFCs is well
+supported by many mail user agents (MUA); however, some older MUAs only
+support inline signatures and encryption.
 
 =item Inline
 
-This format doesn't take advantage of MIME, but some mail clients do
-not support GPG/MIME.
+This format doesn't take advantage of MIME, but some mail clients do not
+support GPG/MIME.  In general, this format is discouraged because modern
+mail clients typically do not support it well.
 
-We sign text parts using clear signatures. For each attachments another
-attachment with a signature is added with '.sig' extension.
-
-Encryption of text parts is implemented using inline format, other parts
-are replaced with attachments with the filename extension '.pgp'.
-
-This format is discouraged because modern mail clients typically don't support
-it well.
+Text parts are signed using clear-text signatures. For each attachment,
+the signature is attached separately as a file with a '.sig' extension
+added to the filename.  Encryption of text parts is implemented using
+inline format, while other parts are replaced with attachments with the
+filename extension '.pgp'.
 
 =back
 
@@ -150,14 +147,15 @@ default.
 
 =head2 %GnuPGOptions
 
-Use this hash to set options of the 'gnupg' program. You can define almost any
-option you want which  gnupg supports, but never try to set options which
-change output format or gnupg's commands, such as --sign (command),
---list-options (option) and other.
+Use this hash to set additional options of the 'gnupg' program.  The
+only options which are diallowed are options which alter the output
+format or attempt to run commands; thiss includes C<--sign>,
+C<--list-options>, etc.
 
-Some GnuPG options take arguments while others take none. (Such as  --use-agent).
-For options without specific value use C<undef> as hash value.
-To disable these option just comment them out or delete them from the hash
+Some GnuPG options take arguments, while others take none. (Such as
+C<--use-agent>).  For options without specific value use C<undef> as
+hash value.  To disable these options, you may comment them out or
+delete them from the hash:
 
     Set(%GnuPGOptions,
         'option-with-value' => 'value',
@@ -165,55 +163,62 @@ To disable these option just comment them out or delete them from the hash
         # 'commented-option' => 'value or undef',
     );
 
-B<NOTE> that options may contain '-' character and such options B<MUST> be
-quoted, otherwise you can see quite cryptic error 'gpg: Invalid option "--0"'.
+B<NOTE> that options may contain the '-' character and such options
+B<MUST> be quoted, otherwise you will see the quite cryptic error C<gpg:
+Invalid option "--0">.
+
+Common options include:
 
 =over
 
 =item --homedir
 
-The GnuPG home directory, by default it is set to F</opt/rt4/var/data/gpg>.
+The GnuPG home directory where the keyrings are stored; by default it is
+set to F</opt/rt4/var/data/gpg>.
 
-You can manage this data with the 'gpg' commandline utility 
-using the GNUPGHOME environment variable or --homedir option. 
-Other utilities may be used as well.
+You can manage this data with the 'gpg' commandline utility using the
+GNUPGHOME environment variable or C<--homedir> option.  Other utilities may
+be used as well.
 
-In a standard installation, access to this directory should be granted to
-the web server user which is running RT's web interface, but if you're running
-cronjobs or other utilities that access RT directly via API and may generate
-encrypted/signed notifications then the users you execute these scripts under
-must have access too. 
+In a standard installation, access to this directory should be granted
+to the web server user which is running RT's web interface; however, if
+you are running cronjobs or other utilities that access RT directly via
+API, and may generate encrypted/signed notifications, then the users you
+execute these scripts under must have access too.
 
-However, granting access to the dir to many users makes your setup less secure,
-some features, such as auto-import of keys, may not be available if you do not.
-To enable this features and suppress warnings about permissions on
-the dir use --no-permission-warning.
+Be aware that granting access to the directory to many users makes the
+keys less secure -- and some features, such as auto-import of keys, may
+not be available if directory permissions are too permissive.  To enable
+these features and suppress warnings about permissions on the directory,
+add the C<--no-permission-warning> option to C<GnuPGOptions>.
 
 =item --digest-algo
 
-This option is required in advance when RFC format for outgoing messages is
-used. We can not get default algorithm from gpg program so RT uses 'SHA1' by
-default. You may want to override it. You can use MD5, SHA1, RIPEMD160,
-SHA256 or other, however use `gpg --version` command to get information about
-supported algorithms by your gpg. These algorithms are listed as hash-functions.
+This option is required when the C<RFC> format for outgoing messages is
+used.  RT defaults to 'SHA1' by default, but you may wish to override
+it.  C<gnupng --version> will list the algorithms supported by your
+C<gnupg> installation under 'hash functions'; these generally include
+MD5, SHA1, RIPEMD160, and SHA256.
 
 =item --use-agent
 
-This option lets you use GPG Agent to cache the passphrase of RT's key. See
+This option lets you use GPG Agent to cache the passphrase of secret
+keys. See
 L<http://www.gnupg.org/documentation/manuals/gnupg/Invoking-GPG_002dAGENT.html>
 for information about GPG Agent.
 
 =item --passphrase
 
-This option lets you set the passphrase of RT's key directly. This option is
-special in that it isn't passed directly to GPG, but is put into a file that
-GPG then reads (which is more secure). The downside is that anyone who has read
-access to your RT_SiteConfig.pm file can see the passphrase, thus we recommend
-the --use-agent option instead.
+This option lets you set the passphrase of RT's key directly. This
+option is special in that it is not passed directly to GPG; rather, it
+is put into a file that GPG then reads (which is more secure). The
+downside is that anyone who has read access to your RT_SiteConfig.pm
+file can see the passphrase -- thus we recommend the --use-agent option
+whenever possible.
 
 =item other
 
-Read `man gpg` to get list of all options this program support.
+Read C<man gpg> to get list of all options this program supports.
 
 =back
 
@@ -246,12 +251,20 @@ unless 'always trust' mode is enabled.
 
 =head2 Documentation and references
 
-* RFC1847 - Security Multiparts for MIME: Multipart/Signed and Multipart/Encrypted.
-Describes generic MIME security framework, "mulitpart/signed" and "multipart/encrypted"
-MIME types.
+=over
 
-* RFC3156 - MIME Security with Pretty Good Privacy (PGP),
-updates RFC2015.
+=item RFC1847
+
+Security Multiparts for MIME: Multipart/Signed and Multipart/Encrypted.
+Describes generic MIME security framework, "mulitpart/signed" and
+"multipart/encrypted" MIME types.
+
+
+=item RFC3156
+
+MIME Security with Pretty Good Privacy (PGP), updates RFC2015.
+
+=back
 
 =cut
 
