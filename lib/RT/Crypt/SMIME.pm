@@ -155,10 +155,38 @@ sub DecryptContent {
     return ( exit_code => 1 );
 }
 
+sub FormatStatus {
+    my $self = shift;
+    my @status = @_;
+
+    my $res = '';
+    foreach ( @status ) {
+        while ( my ($k, $v) = each %$_ ) {
+            $res .= "[SMIME:]". $k .": ". $v ."\n";
+        }
+        $res .= "[SMIME:]\n";
+    }
+
+    return $res;
+}
+
 sub ParseStatus {
     my $self = shift;
     my $status = shift;
-    return ();
+    return () unless $status;
+
+    my @status = split /\s*(?:\[SMIME:\]\s*){2}/, $status;
+    foreach my $block ( grep length, @status ) {
+        chomp $block;
+        $block = { map { s/^\s+//; s/\s+$//; $_ } map split(/:/, $_, 2), split /\s*\[SMIME:\]/, $block };
+    }
+    foreach my $block ( grep $_->{'EncryptedTo'}, @status ) {
+        $block->{'EncryptedTo'} = [{
+            EmailAddress => $block->{'EncryptedTo'},  
+        }];
+    }
+
+    return @status;
 }
 
 sub FindScatteredParts { return () }
