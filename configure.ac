@@ -407,7 +407,6 @@ dnl Configure the output files, and generate them.
 
 dnl Binaries that should be +x
 AC_CONFIG_FILES([
-                 etc/upgrade/3.8-branded-queues-extension
                  etc/upgrade/3.8-ical-extension
                  etc/upgrade/split-out-cf-categories
                  etc/upgrade/generate-rtaddressregexp
