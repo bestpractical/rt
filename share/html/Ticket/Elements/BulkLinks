@@ -124,10 +124,6 @@
 </i><br />
 <table>
   <tr>
-    <td class="label"><&|/l&>Merge into</&>:</td>
-    <td class="entry"><input name="Ticket-MergeInto" value="<% $ARGS{'Ticket-MergeInto'} || '' %>" /> <i><&|/l&>(only one ticket)</&></i></td>
-  </tr>
-  <tr>
     <td class="label"><&|/l&>Depends on</&>:</td>
     <td class="entry"><input name="Ticket-DependsOn" value="<% $ARGS{'Ticket-DependsOn'} || '' %>" /></td>
   </tr>

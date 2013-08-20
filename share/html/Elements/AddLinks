@@ -48,7 +48,6 @@
 <%args>
 $Object         => undef
 $CustomFields   => undef
-$Merge          => 0
 $ARGSRef        => $DECODED_ARGS
 </%args>
 <%init>
@@ -68,12 +67,6 @@ my $id = ($Object and $Object->id)
 <i><&|/l&>Enter objects or URIs to link objects to. Separate multiple entries with spaces.</&></i><br />
 % }
 <table>
-% if ($Merge) {
-  <tr>
-    <td class="label"><&|/l&>Merge into</&>:</td>
-    <td class="entry"><input name="<%$id%>-MergeInto" value="<% $ARGSRef->{"$id-MergeInto"} || '' %>" data-autocomplete="Tickets" data-autocomplete-exclude="<% $id %>" /> <i><&|/l&>(only one ticket)</&></i></td>
-  </tr>
-% }
   <tr>
     <td class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Depends on').':', Relation => 'DependsOn' &></td>
     <td class="entry"><input name="<%$id%>-DependsOn" value="<% $ARGSRef->{"$id-DependsOn"} || '' %>" data-autocomplete="Tickets" data-autocomplete-exclude="<% $id %>" data-autocomplete-multiple="1" /></td>

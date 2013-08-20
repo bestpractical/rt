@@ -206,6 +206,10 @@ $cfs->LimitToQueue($_) for keys %$seen_queues;
 <& /Ticket/Elements/BulkLinks, Tickets => $Tickets, $ARGS{'AddMoreAttach'} ? %ARGS : () &>
 </&>
 
+<&| /Widgets/TitleBox, title => loc('Merge'), color => '#336633' &>
+<& /Ticket/Elements/EditMerge, Tickets => $Tickets, %ARGS &>
+</&>
+
 <& /Elements/Submit, Label => loc('Update') &>
 
 

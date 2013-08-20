@@ -45,47 +45,36 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc("Link ticket #[_1]", $Ticket->Id) &>
-<& /Elements/Tabs &>
 
-% $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $Ticket);
-<& /Elements/ListActions, actions => \@results &>
+<i>
+<&|/l&>Warning: merging is a non-reversible action! Enter a single ticket number to be merged into.</&>
+</i>
 
-<form action="ModifyLinks.html" name="ModifyLinks" method="post">
-<input type="hidden" class="hidden" name="id" value="<%$Ticket->id%>" />
-% $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
-% my (@extra);
-% push @extra, titleright_raw => '<a href="'. RT->Config->Get('WebPath') . '/Ticket/Graphs/index.html?id='.$Ticket->id.'">'.loc('Graph').'</a>' unless RT->Config->Get('DisableGraphViz');
-<&| /Widgets/TitleBox, title => loc('Edit Links'), class=>'ticket-info-links', @extra &>
-<& /Elements/EditLinks, Object => $Ticket &>
-</&>
-
-<&| /Widgets/TitleBox, title => loc('Merge'), class=>'ticket-info-merge' &>
-<& Elements/EditMerge, Ticket => $Ticket, %ARGS &>
-</&>
-
-<& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes') &>
-</form>
-
-
-
+<table>
+  <tr>
+    <td class="label"><&|/l&>Merge into</&>:</td>
+    <td class="entry"><input name="<% $Name %>" value="<% $Default || '' %>" data-autocomplete="Tickets" data-autocomplete-exclude="<% join( ' ', @excludes) || '' %>" /></td>
+  </tr>
+</table>
 
 <%INIT>
-my $Ticket = LoadTicket($id);
-
-my @results;  
-$m->callback( TicketObj => $Ticket, ARGSRef => \%ARGS, Results => \@results );
-push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS );
-push @results, ProcessObjectCustomFieldUpdates( TicketObj => $Ticket, ARGSRef => \%ARGS );
-$Ticket->ApplyTransactionBatch;
-
-MaybeRedirectForResults(
-    Actions     => \@results,
-    Arguments   => { id => $id },
-);
+my @excludes;
+if ( $Ticket ) {
+    $Name ||= $Ticket->id . '-MergeInto';
+    @excludes = $Ticket->id;
+}
+elsif ( $Tickets ) {
+    $Name ||= 'Ticket-MergeInto';
+    while ( my $ticket = $Tickets->Next ) {
+        push @excludes, $ticket->id;
+    }
+}
+$Default ||= $ARGS{$Name};
 </%INIT>
-      
-      
+
 <%ARGS>
-$id => undef
+$Ticket => undef
+$Tickets => undef
+$Name => ''
+$Default => ''
 </%ARGS>
