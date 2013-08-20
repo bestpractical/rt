@@ -160,50 +160,15 @@ $cfs->LimitToGlobal();
 $cfs->LimitToQueue($_) for keys %$seen_queues;
 </%perl>
 
-% if ($cfs->Count) {
-<&|/Widgets/TitleBox, title => loc('Edit Custom Fields'), color => "#336633"&>
-<table>
-<tr>
-<th><&|/l&>Name</&></th>
-<th><&|/l&>Add values</&></th>
-<th><&|/l&>Delete values</&></th>
-</tr>
-% while (my $cf = $cfs->Next()) {
-<tr>
-<td class="label"><% loc($cf->Name) %><br />
-<em>(<%$cf->FriendlyType%>)</em></td>
-% my $rows = 5;
-% my $cf_id = $cf->id;
-% my @add = (NamePrefix => 'Bulk-Add-CustomField-', CustomField => $cf, Rows => $rows,
-%   Multiple => ($cf->MaxValues ==1 ? 0 : 1) , Cols => 25, 
-%   Default => $ARGS{"Bulk-Add-CustomField-$cf_id-Values"} || $ARGS{"Bulk-Add-CustomField-$cf_id-Value"}, );
-% my @del = (NamePrefix => 'Bulk-Delete-CustomField-', CustomField => $cf,
-%   Rows => $rows, Multiple => 1, Cols => 25,
-%   Default => $ARGS{"Bulk-Delete-CustomField-$cf_id-Values"} || $ARGS{"Bulk-Delete-CustomField-$cf_id-Value"}, );
-% if ($cf->Type eq 'Select') {
-<td><& /Elements/EditCustomFieldSelect, @add &></td>
-<td><& /Elements/EditCustomFieldSelect, @del &></td>
-% } elsif ($cf->Type eq 'Combobox') {
-<td><& /Elements/EditCustomFieldCombobox, @add &></td>
-<td><& /Elements/EditCustomFieldCombobox, @del &></td>
-% } elsif ($cf->Type eq 'Freeform') {
-<td><& /Elements/EditCustomFieldFreeform, @add &></td>
-<td><& /Elements/EditCustomFieldFreeform, @del &></td>
-% } elsif ($cf->Type eq 'Text') {
-<td><& /Elements/EditCustomFieldText, @add &></td>
-<td>&nbsp;</td>
-% } else {
-%   $RT::Logger->crit("Unknown CustomField type: " . $cf->Type);
-% }
-</tr>
-% }
-</table>
+% if ( $cfs->Count ) {
+<&|/Widgets/TitleBox, title => loc('Edit Custom Fields') &>
+<& /Elements/BulkCustomFields, $ARGS{'AddMoreAttach'} ? %ARGS : (), CustomFields => $cfs &>
 </&>
 % }
 
 <&|/Widgets/TitleBox, title => loc('Edit Links'), color => "#336633"&>
 <em><&|/l&>Enter tickets or URIs to link tickets to. Separate multiple entries with spaces.</&></em><br />
-<& /Ticket/Elements/BulkLinks, Tickets => $Tickets, $ARGS{'AddMoreAttach'} ? %ARGS : () &>
+<& /Elements/BulkLinks, Collection => $Tickets, $ARGS{'AddMoreAttach'} ? %ARGS : () &>
 </&>
 
 <& /Elements/Submit, Label => loc('Update') &>
@@ -301,42 +266,8 @@ unless ( $ARGS{'AddMoreAttach'} ) {
         @linkresults =
             ProcessTicketLinks( TicketObj => $Ticket, TicketId => 'Ticket', ARGSRef => \%ARGS );
 
-        my @cfresults;
+        my @cfresults = ProcessRecordBulkCustomFields( RecordObj => $Ticket, ARGSRef => \%ARGS );
 
-        foreach my $key ( keys %ARGS ) {
-            next unless $key =~ /^Bulk-(Add|Delete)-CustomField-(\d+)-(.*)$/;
-            my ($op,$cfid,$rest) = ($1, $2, $3);
-            next if $rest eq "Category";
-
-            my $cf = RT::CustomField->new( $session{'CurrentUser'} );
-            $cf->Load($cfid);
-            next unless $cf->Id;
-
-            my @values = _NormalizeObjectCustomFieldValue(
-                CustomField => $cf,
-                Value => $ARGS{$key},
-                Param => $key,
-            );
-
-            my $current_values = $Ticket->CustomFieldValues($cfid);
-            foreach my $value (@values) {
-                if ( $op eq 'Delete' && $current_values->HasEntry($value) ) {
-                    my ( $id, $msg ) = $Ticket->DeleteCustomFieldValue(
-                        Field => $cfid,
-                        Value => $value
-                    );
-                    push @cfresults, $msg;
-                }
-
-                elsif ( $op eq 'Add' && !$current_values->HasEntry($value) ) {
-                    my ( $id, $msg ) = $Ticket->AddCustomFieldValue(
-                        Field => $cfid,
-                        Value => $value
-                    );
-                    push @cfresults, $msg;
-                }
-            }
-        }
         my @tempresults = (
             @watchresults,  @basicresults, @dateresults,
             @updateresults, @linkresults,  @cfresults

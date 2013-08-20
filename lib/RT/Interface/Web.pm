@@ -3490,6 +3490,49 @@ sub ProcessTransactionSquelching {
     return %squelched;
 }
 
+sub ProcessRecordBulkCustomFields {
+    my %args = (RecordObj => undef, ARGSRef => {}, @_);
+
+    my $ARGSRef = $args{'ARGSRef'};
+
+    my @results;
+    foreach my $key ( keys %$ARGSRef ) {
+        next unless $key =~ /^Bulk-(Add|Delete)-CustomField-(\d+)-(.*)$/;
+        my ($op, $cfid, $rest) = ($1, $2, $3);
+        next if $rest eq "Category";
+
+        my $cf = RT::CustomField->new( $session{'CurrentUser'} );
+        $cf->Load( $cfid );
+        next unless $cf->Id;
+
+        my @values = _NormalizeObjectCustomFieldValue(
+            CustomField => $cf,
+            Value => $ARGSRef->{$key},
+            Param => $key,
+        );
+
+        my $current_values = $args{'RecordObj'}->CustomFieldValues( $cfid );
+        foreach my $value (@values) {
+            if ( $op eq 'Delete' && $current_values->HasEntry($value) ) {
+                my ( $id, $msg ) = $args{'RecordObj'}->DeleteCustomFieldValue(
+                    Field => $cfid,
+                    Value => $value
+                );
+                push @results, $msg;
+            }
+
+            elsif ( $op eq 'Add' && !$current_values->HasEntry($value) ) {
+                my ( $id, $msg ) = $args{'RecordObj'}->AddCustomFieldValue(
+                    Field => $cfid,
+                    Value => $value
+                );
+                push @results, $msg;
+            }
+        }
+    }
+    return @results;
+}
+
 =head2 _UploadedFile ( $arg );
 
 Takes a CGI parameter name; if a file is uploaded under that name,
