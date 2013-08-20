@@ -405,7 +405,7 @@ sub _IntLimit {
     # We want to support <id LIKE '1%'> for ticket autocomplete,
     # but we need to explicitly typecast on Postgres
     if ( $is_a_like && RT->Config->Get('DatabaseType') eq 'Pg' ) {
-        return $sb->_SQLLimit(
+        return $sb->Limit(
             FUNCTION => "CAST(main.$field AS TEXT)",
             OPERATOR => $op,
             VALUE    => $value,
