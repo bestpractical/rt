@@ -443,6 +443,15 @@ our %META = (
             Description => 'Display ticket after "Quick Create"', #loc
         },
     },
+    QuoteFolding => {
+        Section => 'Ticket display',
+        Overridable => 1,
+        SortOrder => 9,
+        Widget => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Enable quote folding?' # loc
+        }
+    },
 
     # User overridable locale options
     DateTimeFormat => {
