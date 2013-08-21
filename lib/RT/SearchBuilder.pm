@@ -480,7 +480,11 @@ sub _LimitCustomField {
     if (blessed($cf) and $cf->id) {
         $cfkey ||= $cf->id;
     } elsif ($cf =~ /^\d+$/) {
-        my $obj = RT::CustomField->new( $self->CurrentUser );
+        # Intentionally load as the system user, so we can build better
+        # queries; this is necessary as we don't have a context object
+        # which might grant the user rights to see the CF.  This object
+        # is only used to inspect the properties of the CF itself.
+        my $obj = RT::CustomField->new( RT->SystemUser );
         $obj->Load($cf);
         if ($obj->id) {
             $cf = $obj;
