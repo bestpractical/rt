@@ -602,7 +602,7 @@ sub _LimitCustomField {
             $date->Set( Format => 'unknown', Value => $value );
             if ( $date->Unix ) {
                 if (
-                       $cf->Type eq 'Date'
+                       $type eq 'Date'
                            # Heuristics to determine if a date, and not
                            # a datetime, was entered:
                     || $value =~ /^\s*(?:today|tomorrow|yesterday)\s*$/i
@@ -619,7 +619,7 @@ sub _LimitCustomField {
             }
 
             # Recurse if day equality is being checked on a datetime
-            if ( $cf->Type eq 'DateTime' and $op eq '=' && $value !~ /:/ ) {
+            if ( $type eq 'DateTime' and $op eq '=' && $value !~ /:/ ) {
                 my $date = RT::Date->new( $self->CurrentUser );
                 $date->Set( Format => 'unknown', Value => $value );
                 my $daystart = $date->ISO;
