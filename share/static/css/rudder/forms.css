@@ -61,7 +61,7 @@ input.button:active, button:active, input[type=reset]:active, input[type=submit]
     -webkit-border-radius: 3px;
     border-radius: 3px;
     padding-left: 0.75em;
-    padding-right: 0.7a5em;
+    padding-right: 0.75em;
  }
 
  .value {
