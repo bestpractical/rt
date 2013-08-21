@@ -1,0 +1,206 @@
+=head1 Dashboards
+
+RT's dashboard feature provides a convenient way to create your own pages 
+focused on the tickets and charts you need. Dashboards are available right from 
+the Home menu, can be set up individually or shared, and can even be sent out 
+via email on a schedule. To show some of the dashboard features, we'll set up a 
+dashboard and notifications to track outstanding invoice tickets.
+
+There are several different rights you can grant to allow users access to the 
+features described here. These rights are described in L</"Dashboard Rights">.
+
+=head2 Creating a Personal Dashboard
+
+Saved searches and charts are the building blocks of dashboards, so to set up a 
+new dashboard you first need to create and save a search that displays the 
+ticket data you want. We want to view new and open invoice tickets and, for our 
+example, assume we have an Accounts Receivable queue. On the ticket search 
+page, we create a new search with this query:
+
+    Queue = 'Accounts Receivable'
+    AND (
+        Status = 'new'
+        OR Status = 'open' )
+
+We also want to modify the sort order of the search to use Due rather than the 
+default id. In the Sorting section, we select Due for the initial sort, then 
+add Created as the second sort value. Finally, we set Rows per page to 
+Unlimited so we don't miss any invoices.
+
+=for html <img alt="Dashboard search sorting" 
+src="images/dashboard-search-sorting.png">
+
+=for :text [Search sorting F<docs/images/dashboard-search-sorting.png>]
+
+=for :man [Search sorting F<docs/images/dashboard-search-sorting.png>]
+
+Once you have those set, you can click "Add these terms and Search" or "Update 
+format and Search" to see the results. If it's still not quite right, you can 
+click "Edit Search" in the submenu and continue to refine things.
+
+When you're finished tweaking the search, return to Query Builder page again so 
+you can save it. Under the "Saved Searches" box, type "Outstanding Invoices" 
+in the Description box. For now, leave Privacy set to "My saved searches" and 
+click Save. You now have a saved search you can use for your dashboard.
+
+To create the dashboard, select Home > New Dashboard. Type "Outstanding 
+Invoices" for the name and leave the privacy set to "My Dashboards". Click 
+Create and the new dashboard is created.
+
+Now we want to populate the new dashboard with the saved search we created. 
+Click Content in the submenu to go to the content selection page. Dashboards 
+allow you to put content in the main body or the sidebar, much like the default 
+RT homepage, so you'll see a Body section and a Sidebar section to set the 
+content. Find your saved "Outstanding Invoices" search, select it, and click 
+the arrow to move it to the righthand box and add it to the dashboard.
+
+=for html <img alt="Adding dashboard content" 
+src="images/dashboard-content-invoices.png">
+
+=for :text [Adding dashboard content 
+F<docs/images/dashboard-content-invoices.png>]
+
+=for :man [Adding dashboard content 
+F<docs/images/dashboard-content-invoices.png>]
+
+Click Show in the submenu and you'll see your new dashboard. Click Home to 
+return to the "RT at a glance" page and you'll see your new dashboard is in the 
+Dashboards portlet on the right side of the page.
+
+On dashboard pages, you can click on the title of any section and go to the 
+search results page for the saved search. This makes it easy to find the saved 
+search and update it, or modify it ad-hoc for a one-off search based on the 
+saved dashboard search.
+
+In this example we're only adding one search, but you can add multiple searches 
+to each individual dashboard to track different types of interrelated 
+information and see it at a glance. For instance, two queries, "outstanding 
+invoices" and "overdue invoices," could form a dashboard called "all 
+outstanding invoices." Software engineers using RT might combine three queries, 
+"bug fixes," "feature requests," and "documentation," into a dashboard 
+called "our new release."
+
+=head2 Charts in Dashboards
+
+You can also display saved charts in dashboards, creating a powerful visual of 
+ticket data in a convenient page. To add a chart, start with a search, refine 
+your query, then click Chart in the submenu in the Query Builder or Search 
+Results page. Configure your chart as described in L<Charts>, select a Privacy 
+setting, name it "Outstanding Invoices", and click Save.
+
+Return to the dashboard, click Content, and you'll see a new "Chart: 
+Outstanding Invoices" option in the Available column. Select it and click the 
+arrow to add it to the dashboard. Now when you load the dashboard, the chart 
+will be rendered right below the saved search.
+
+=for html <img alt="Dashboard chart" src="images/dashboard-chart.png">
+
+=for :text [Dashboard chart F<docs/images/dashboard-chart.png>]
+
+=for :man [Dashboard chart F<docs/images/dashboard-chart.png>]
+
+=head2 Dashboard Menu Entries
+
+In addition to having dashboards available on the "RT at a glance" page, you 
+can also add them to the Home menu. To modify the Home menu, select Home > 
+"Update This Menu" or "Logged in as" > Settings > "Dashboards in menu". You'll 
+see the Customize dashboard page which is similar to the Dashboard Content page.
+
+=for html <img alt="Customize dashboard menu" 
+src="images/customize-dashboards-menu.png">
+
+=for :text [Customize dashboard menu 
+F<docs/images/customize-dashboards-menu.png>]
+
+=for :man [Customize dashboard menu F<docs/images/customize-dashboards-menu.png>]
+
+Select the dashboard you want, click the arrow to move it to the righthand 
+column, then check your Home menu. You'll see your dashboard is now available 
+from the menu.
+
+As an RT administrator, you can populate the dashboard menu for other users on 
+the system. Find a user using Search > Users or Admin > Users > Select, then 
+click on the user to open the modify user page. In the submenu, you'll see a 
+"Dashboards in menu" option, and it works the same as the personal setting.
+
+=head2 Group Dashboards
+
+You're enjoying your new dashboard but it's time for some vacation and it would 
+be nice for someone else in the accounting department to be able to use your 
+dashboard while you're gone. RT makes this easy with group-level dashboards.
+
+As we've seen, the dashboard is based on a saved search, so you first need to 
+make that available. Go to the ticket search page (Query Builder), find your 
+saved search in the "Load saved search" dropdown, and click Load. If you are in 
+a group, like the Accounting group, there will be an option in the Privacy 
+dropdown called "Accounting's saved searches". Select that option and click 
+Update to make the search available to the Accounting group.
+
+To update your dashboard, select it from the menu to view it, then click Basics 
+in the submenu. Like on Query Builder page, you'll see your group listed in the 
+Privacy dropdown. Assuming your group is Accounting, select "Accounting's 
+Dashboards" and click Save Changes.
+
+Click on Content and you'll see a message that a query has been deleted and 
+removed from the dashboard. This is because RT has detected that you have moved 
+the saved search from personal to group privacy. Select "Outstanding Invoices" 
+from the Available column and click the arrow to add the group-based search to 
+the dashboard.
+
+All members of the Accounting group should now have access to your dashboard. 
+They can now add it to their Home menu if they want. If other members can't see 
+it, make sure you have granted sufficent rights to the group (see L</"Dashboard 
+Rights">).
+
+=head2 System-wide Dashboards
+
+You can also set up dashboards for all users on your RT system. Follow the 
+steps above for group dashboards, but for Privacy, select "RT System" for the 
+saved search and dashboard.
+
+If you want to make sure everyone has the dashboard in their Home menu, you can 
+set this globally as well if you are the RT administrator. The Admin > Global > 
+"Dashboards in menu" opens a page similar to the personal dashboard menu page, 
+but it puts the selected dashboards into everyone's dashboard menu.
+
+=head2 Dashboard Subscriptions
+
+RT's dashboard subscription feature allows you to email dashboards based on a 
+schedule you set. These scheduled dashboards can be particularly useful for 
+time-based reports that you want to see on a regular basis.
+
+To set up a subscription, go to the dashboard you'd like to have emailed and 
+click on Subscription in the submenu. This will take you to the subscription 
+page.
+
+=for html <img alt="Dashboard subscription" 
+src="images/dashboard-subscription.png">
+
+=for :text [Dashboard subscription F<docs/images/dashboard-subscription.png>]
+
+=for :man [Dashboard subscription F<docs/images/dashboard-subscription.png>]
+
+Select the frequency and timing you want and enter the email address the 
+dashboard should go to. You can leave it blank to send mail to your RT email 
+address. Click Subscribe and that's it, you'll start getting dashboards via 
+email.
+
+This feature requires the F<rt-email-dashboards> script to be scheduled in 
+C<cron> as described in RT's F<README> file.
+
+=head2 Dashboard Rights
+
+There are several rights you can selectively grant to allow users access to 
+dashboard features. As with any RT rights, you can grant these to individual 
+users (usually difficult to maintain over time), to system roles like 
+Privileged, or to groups you define.
+
+Since dashboards rely on saved searches, you need to grant "Allow loading of 
+saved searches" (LoadSavedSearch) for users to see the searches. You may want 
+to also grant "Allow creation of saved searches" (CreateSavedSearch) to allow 
+users to create their own and "View saved searches" (ShowSavedSearches)
+
+For dashboards themselves, there are See, Create, Modify, and Delete rights for 
+each of personal, group, and system dashboards. This allows you to select the 
+right combination of rights for users and groups on your system. For 
+subscriptions, there is a "Subscribe to dashboards" (SubscribeDashboard) right.
