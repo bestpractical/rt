@@ -891,7 +891,7 @@ sub Limit {
         $ARGS{'VALUE'} = 'NULL';
     }
 
-    if ($ARGS{FIELD} =~ /\W/
+    if (($ARGS{FIELD}||'') =~ /\W/
           or $ARGS{OPERATOR} !~ /^(=|<|>|!=|<>|<=|>=
                                   |(NOT\s*)?LIKE
                                   |(NOT\s*)?(STARTS|ENDS)WITH
@@ -914,7 +914,7 @@ sub Limit {
         : $self->Table
     ;
 
-    if ( $table and my $instead = $deprecated{ lc $table }{ lc $ARGS{'FIELD'} } ) {
+    if ( $table and $ARGS{FIELD} and my $instead = $deprecated{ lc $table }{ lc $ARGS{'FIELD'} } ) {
         RT->Deprecated(
             Message => "$table.$ARGS{'FIELD'} column is deprecated",
             Instead => $instead, Remove => '4.4'
@@ -922,7 +922,7 @@ sub Limit {
     }
 
     unless ( exists $ARGS{CASESENSITIVE} or (exists $ARGS{QUOTEVALUE} and not $ARGS{QUOTEVALUE}) ) {
-        if ( $ARGS{'OPERATOR'} !~ /IS/i
+        if ( $ARGS{FIELD} and $ARGS{'OPERATOR'} !~ /IS/i
             && $table && $check_case_sensitivity{ lc $table }{ lc $ARGS{'FIELD'} }
         ) {
             RT->Logger->warning(

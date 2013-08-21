@@ -405,7 +405,7 @@ sub _IntLimit {
     # We want to support <id LIKE '1%'> for ticket autocomplete,
     # but we need to explicitly typecast on Postgres
     if ( $is_a_like && RT->Config->Get('DatabaseType') eq 'Pg' ) {
-        return $sb->_SQLLimit(
+        return $sb->Limit(
             FUNCTION => "CAST(main.$field AS TEXT)",
             OPERATOR => $op,
             VALUE    => $value,
@@ -1339,7 +1339,7 @@ sub Limit {
         if $self->{parsing_ticketsql} and not $args{LEFTJOIN};
 
     $self->{_sql_looking_at}{ lc $args{FIELD} } = 1
-        if (not $args{ALIAS} or $args{ALIAS} eq "main");
+        if $args{FIELD} and (not $args{ALIAS} or $args{ALIAS} eq "main");
 
     $self->SUPER::Limit(%args);
 }
