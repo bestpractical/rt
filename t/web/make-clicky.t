@@ -27,9 +27,11 @@ diag "Trailing punctuation";
 diag "Punctuation as part of the url";
 {
     my $url = 'http://bestpractical.com/rt/download.html?foo=bar,baz&bat=1.2';
+    my $escaped_url = $url;
+    RT::Interface::Web::EscapeUTF8( \$escaped_url );
     is_string(
         make_clicky($m, "Refer to $url.  A following sentence."),
-        qq[Refer to <span class="clickylink"><a target="new" href="$url">$url</a></span>.  A following sentence.],
+        qq[Refer to <span class="clickylink"><a target="new" href="$escaped_url">$escaped_url</a></span>.  A following sentence.],
         "Punctuation in middle of URL",
     );
 }
@@ -43,4 +45,5 @@ sub make_clicky {
     return $m->success ? $m->content : "";
 }
 
-1;
+undef $m;
+done_testing();
