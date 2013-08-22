@@ -261,6 +261,14 @@ deprecation warnings.  The old names, and their new counterparts, are:
 Due to many long-standing bugs and limitations, the "Offline Tool" was
 removed.
 
+=item *
+
+To increase security againt offline brute-force attacks, RT's default
+password encryption has been switched to the popular bcrypt() key
+derivation function.  Passwords cannot be automatically bulk upgraded to
+the new format, but will be replaced with bcrypt versions upon the first
+successful login.
+
 =back
 
 =item *

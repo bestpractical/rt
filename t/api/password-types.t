@@ -4,16 +4,21 @@ use warnings;
 use RT::Test;
 use Digest::MD5;
 
-my $default = "sha512";
+my $default = "bcrypt";
 
 my $root = RT::User->new(RT->SystemUser);
 $root->Load("root");
 
-# Salted SHA-512 (default)
+# bcrypt (default)
 my $old = $root->__Value("Password");
 like($old, qr/^\!$default\!/, "Stored as salted $default");
 ok($root->IsPassword("password"));
 is($root->__Value("Password"), $old, "Unchanged after password check");
+
+# Salted SHA-512, one round
+$root->_Set( Field => "Password", Value => RT::User->_GeneratePassword_sha512("other", "salt") );
+ok($root->IsPassword("other"), "SHA-512 password works");
+like($root->__Value("Password"), qr/^\!$default\!/, "And is now upgraded to salted $default");
 
 # Crypt
 $root->_Set( Field => "Password", Value => crypt("something", "salt"));
