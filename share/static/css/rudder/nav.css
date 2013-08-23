@@ -164,13 +164,13 @@
 
 /* Pin page menu to top left corner once you scroll past it */
 
-#page-menu.pinned {
+#page-navigation #page-menu.pinned {
     position: fixed;
     top:    0;
     right:  0;
     left:   auto;
     width:  auto;
-
+    margin-top: 0;
     background:     white;
     border-left:    1px #aaa solid;
     border-bottom:  1px #aaa solid;
