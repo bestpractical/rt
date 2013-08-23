@@ -1,0 +1,64 @@
+use strict;
+use warnings;
+
+sub dashboards_for_object {
+    my $object = shift;
+    my $user   = shift;
+    my %dashboards;
+    my $privacy = RT::Dashboard->_build_privacy($object);
+
+    while ( my $attr = $object->Attributes->Next ) {
+        if ( $attr->Name =~ /^Dashboard\b/ ) {
+            my $dashboard = RT::Dashboard->new($user);
+            my ( $ok, $msg ) = $dashboard->Load( $privacy, $attr->id );
+            next unless $ok;
+
+            if ( $object->isa('RT::System') ) {
+                push @{ $dashboards{system} }, $dashboard;
+            }
+            elsif ( $object->isa('RT::User') ) {
+                push @{ $dashboards{personal} }, $dashboard;
+            }
+            elsif ( $object->isa('RT::Group') ) {
+                push @{ $dashboards{group}{ $object->Name } }, $dashboard;
+            }
+        }
+    }
+    return \%dashboards;
+}
+
+our @Final = (
+    sub {
+        my $users = RT::Users->new( RT->SystemUser );
+        $users->LimitToPrivileged();
+        while ( my $user = $users->Next ) {
+            my @objs = RT::Dashboard->new($user)->ObjectsForLoading( IncludeSuperuserGroups => 0 );
+
+            my %dashboard_map;
+
+            for my $object (@objs) {
+                my $dashboards = dashboards_for_object( $object, $user );
+                push @{ $dashboard_map{$_} }, @{ $dashboards->{$_} || [] } for qw/personal system/;
+
+                push @{ $dashboard_map{group}{$_} }, @{ $dashboards->{group}{$_} }
+                    for keys %{ $dashboards->{group} || {} };
+            }
+
+            my @dashboards = (
+                ( sort { $a->Id <=> $b->Id } @{ $dashboard_map{personal} || [] } ),
+                ( sort { $a->Id <=> $b->Id } @{ $dashboard_map{system}   || [] } ),
+
+                map {
+                    sort { $a->Id <=> $b->Id }
+                        @{ $dashboard_map{group}{$_} }
+                    }
+                    keys %{ $dashboard_map{group} || {} },
+            );
+
+            splice @dashboards, 7 if @dashboards > 7;
+            @dashboards = map { $_->id } @dashboards;
+            my ( $ret, $msg ) = $user->SetPreferences( 'DashboardsInMenu', { dashboards => \@dashboards } );
+            RT->Logger->error( $msg ) unless $ret;
+        }
+    },
+);
