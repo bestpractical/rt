@@ -118,14 +118,18 @@
 #topactions input[type=submit],
 #topactions button {
     font-size: 1em;
-    padding-top: 0.2em;    
-    padding-bottom: 0.3em;  
+    padding-top: 0.25em;    
+    padding-bottom: 0.25em;  
     padding-left: 0.5em;
     padding-right: 0.5em;
     width: 8em;
     vertical-align: middle;
     
 
+}
+
+#topactions .select-queue {
+    padding-right: 0;
 }
 
 #topactions #simple-search .field{
