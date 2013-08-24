@@ -71,14 +71,36 @@ requires 'Probe';
 
 =head2 GetPassphrase Address => ADDRESS
 
-Returns the passphrase for the given address.
+Returns the passphrase for the given address.  It looks at the relevant
+configuration option for the encryption protocol
+(e.g. L<RT_Config/GnuPG> for GnuPG), and examines the Passphrase key.
+It it does not exist, returns the empty string.  If it is a scalar, it
+returns that value.  If it is an anonymous subroutine, it calls it.  If
+it is a hash, it looks up the address (using '' as a fallback key).
 
 =cut
 
 sub GetPassphrase {
     my $self = shift;
     my %args = ( Address => undef, @_ );
-    return '';
+
+    my $class = ref($self) || $self;
+    $class =~ s/^RT::Crypt:://;
+
+    my $config = RT->Config->Get($class)->{Passphrase};
+
+    return '' unless defined $config;
+
+    if (not ref $config) {
+        return $config;
+    } elsif (ref $config eq "HASH") {
+        return $config->{$args{Address}}
+            || $config->{''};
+    } elsif (ref $config eq "CODE") {
+        return $config->( @_ );
+    } else {
+        warn "Unknown Passphrase type for $class: ".ref($config);
+    }
 }
 
 =head2 SignEncrypt Entity => MIME::Entity, [ Encrypt => 1, Sign => 1, ... ]

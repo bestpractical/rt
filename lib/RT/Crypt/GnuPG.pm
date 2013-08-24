@@ -148,6 +148,13 @@ option C<AllowEncryptDataInDB>. By default it's disabled.
 Users must have rights to see and modify tickets to use
 this feature.
 
+=head3 Passphrases
+
+Passphrases for keys may be set by passing C<Passphrase>.  It may be set
+to a scalar (to use for all keys), an anonymous function, or a hash (to
+look up by address).  If the hash is used, the '' key is used as a
+default.
+
 =head2 %GnuPGOptions
 
 Use this hash to set options of the 'gnupg' program. You can define almost any
