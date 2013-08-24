@@ -56,6 +56,18 @@ use Role::Basic;
 
 RT::Crypt::Role - Common requirements for encryption implementations
 
+=head1 METHODS
+
+=head2 GetPassphrase Address => ADDRESS
+
+Returns the passphrase for the given address.
+
 =cut
+
+sub GetPassphrase {
+    my $self = shift;
+    my %args = ( Address => undef, @_ );
+    return '';
+}
 
 1;

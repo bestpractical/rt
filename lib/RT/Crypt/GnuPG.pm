@@ -1331,18 +1331,6 @@ sub DecryptContent {
     return %res;
 }
 
-=head2 GetPassphrase [ Address => undef ]
-
-Returns passphrase, called whenever it's required with Address as a named argument.
-
-=cut
-
-sub GetPassphrase {
-    my $self = shift;
-    my %args = ( Address => undef, @_ );
-    return 'test';
-}
-
 =head2 ParseStatus
 
 Takes a string containing output of gnupg status stream. Parses it and returns
