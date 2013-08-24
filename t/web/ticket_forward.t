@@ -96,7 +96,7 @@ diag "Forward Ticket without content" if $ENV{TEST_VERBOSE};
         button    => 'ForwardAndReturn'
     );
     my ($mail) = RT::Test->fetch_caught_mails;
-    like( $mail, qr/Subject: Fwd: \[example\.com #\d\] test forward without content/, 'Subject field' );
+    like( $mail, qr/Subject: \[example\.com #\d\] Fwd: test forward without content/, 'Subject field' );
     like( $mail, qr/To: rt-test\@example\.com/,             'To field' );
     like( $mail, qr/This is a forward of ticket #\d/,       'content' );
 }
@@ -209,7 +209,7 @@ diag "Forward Transaction with attachments but no 'content' part" if $ENV{TEST_V
     $m->content_like( qr/Forwarded Ticket to &lt;rt-test\@example\.com&gt;/, 'txn msg' );
 
     my ($forward_txn, $forward_ticket) = RT::Test->fetch_caught_mails;
-    my $tag = qr/Fwd: \[example\.com #\d+\]/;
+    my $tag = qr/\[example\.com #\d+\] Fwd:/;
     like( $forward_txn, qr/Subject: $tag attachments for everyone/, 'Subject field is from txn' );
     like( $forward_txn, qr/This is a forward of transaction/, 'forward description' );
     like( $forward_ticket, qr/Subject: $tag test forward, attachments but no "content"/, 'Subject field is from ticket' );
@@ -257,7 +257,7 @@ diag "Forward Ticket Template with a Subject: line" if $ENV{TEST_VERBOSE};
     );
 
     my ($mail) = RT::Test->fetch_caught_mails;
-    like($mail, qr/Subject: OVERRIDING SUBJECT/);
+    like($mail, qr/Subject: \[example.com #\d+\] OVERRIDING SUBJECT/);
 }
 
 undef $m;
