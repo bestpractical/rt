@@ -120,7 +120,7 @@ sub LoadByValues {
     if ( $args{'RightName'} ) {
         my $canonic_name = $self->CanonicalizeRightName( $args{'RightName'} );
         unless ( $canonic_name ) {
-            return ( 0, $self->loc("Invalid right. Couldn't canonicalize right '[_1]'", $args{'RightName'}) );
+            return wantarray ? ( 0, $self->loc("Invalid right. Couldn't canonicalize right '[_1]'", $args{'RightName'}) ) : 0;
         }
         $args{'RightName'} = $canonic_name;
     }
@@ -131,14 +131,14 @@ sub LoadByValues {
                                      $args{'PrincipalType'} );
 
     unless ( $princ_obj->id ) {
-        return ( 0,
+        return wantarray ? ( 0,
                  $self->loc( 'Principal [_1] not found.', $args{'PrincipalId'} )
-        );
+        ) : 0;
     }
 
     my ($object, $object_type, $object_id) = $self->_ParseObjectArg( %args );
     unless( $object ) {
-        return ( 0, $self->loc("System error. Right not granted.") );
+        return wantarray ? ( 0, $self->loc("System error. Right not granted.")) : 0;
     }
 
     $self->LoadByCols( PrincipalId   => $princ_obj->Id,
@@ -149,11 +149,11 @@ sub LoadByValues {
 
     #If we couldn't load it.
     unless ( $self->Id ) {
-        return ( 0, $self->loc("ACE not found") );
+        return wantarray ? ( 0, $self->loc("ACE not found") ) : 0;
     }
 
     # if we could
-    return ( $self->Id, $self->loc("Right Loaded") );
+    return wantarray ? ( $self->Id, $self->loc("Right Loaded") ) : $self->Id;
 
 }
 

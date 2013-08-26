@@ -610,11 +610,11 @@ sub LoadByInclude {
     }
 
     unless ($ok) { # load failed, don't check Class
-        return ($ok, $msg);
+        return wantarray ? ($ok, $msg) : $ok;
     }
 
     unless ($Queue) { # we haven't requested extra sanity checking
-        return ($ok, $msg);
+        return wantarray ? ($ok, $msg) : $ok;
     }
 
     # ensure that this article is available for the Queue we're
@@ -622,10 +622,10 @@ sub LoadByInclude {
     my $class = $self->ClassObj;
     unless ($class->IsApplied(0) || $class->IsApplied($Queue)) {
         $self->LoadById(0);
-        return (0, $self->loc("The Class of the Article identified by [_1] is not applied to the current Queue",$Value));
+        return wantarray ? (0, $self->loc("The Class of the Article identified by [_1] is not applied to the current Queue",$Value)) : 0;
     }
 
-    return ($ok, $msg);
+    return wantarray ? ($ok, $msg) : $ok;
 
 }
 

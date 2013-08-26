@@ -251,7 +251,7 @@ sub LoadRoleGroup {
 
     my $object = delete $args{Object};
 
-    return (0, $self->loc("Object passed is not loaded"))
+    return wantarray ? (0, $self->loc("Object passed is not loaded")) : 0
        unless $object->id;
 
     # Translate Object to Domain + Instance

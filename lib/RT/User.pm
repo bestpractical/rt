@@ -554,8 +554,8 @@ sub LoadOrCreateByEmail {
             }
         }
     }
-    return (0, $message) unless $self->id;
-    return ($self->Id, $message);
+    return wantarray ? (0, $message) : 0 unless $self->id;
+    return wantarray ? ($self->Id, $message) : $self->Id;
 }
 
 =head2 ValidateEmailAddress ADDRESS
