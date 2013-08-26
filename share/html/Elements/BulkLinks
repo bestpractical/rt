@@ -123,12 +123,6 @@
 <em><&|/l&>Enter Enter tickets or URIs to link to. Separate multiple entries with spaces.</&>
 </em><br />
 <table>
-% if ($Collection->isa('RT::Tickets') || $ShowMerge ) {
-  <tr>
-    <td class="label"><&|/l&>Merge into</&>:</td>
-    <td class="entry"><input name="<% $record_type %>-MergeInto" value="<% $ARGS{ $record_type .'-MergeInto' } || '' %>" /> <i><&|/l&>(only one ticket)</&></i></td>
-  </tr>
-% }
   <tr>
     <td class="label"><&|/l&>Depends on</&>:</td>
     <td class="entry"><input name="<% $record_type %>-DependsOn" value="<% $ARGS{ $record_type .'-DependsOn' } || '' %>" /></td>

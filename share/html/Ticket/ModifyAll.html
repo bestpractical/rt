@@ -79,7 +79,13 @@
 <br />
 
 <&| /Widgets/TitleBox, title => loc('Links'), class=>'ticket-info-links' &>
-<& /Elements/EditLinks, Object => $Ticket, Merge => 1 &>
+<& /Elements/EditLinks, Object => $Ticket &>
+</&>
+
+<br />
+
+<&| /Widgets/TitleBox, title => loc('Merge'), class=>'ticket-info-merge' &>
+<& Elements/EditMerge, Ticket => $Ticket, %ARGS &>
 </&>
 
 <br />
