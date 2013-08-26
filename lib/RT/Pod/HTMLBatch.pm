@@ -57,8 +57,6 @@ use List::MoreUtils qw/all/;
 use RT::Pod::Search;
 use RT::Pod::HTML;
 
-my $MOD2PATH;
-
 sub new {
     my $self = shift->SUPER::new(@_);
     $self->verbose(0);
@@ -178,15 +176,9 @@ sub esc {
     Pod::Simple::HTMLBatch::esc(@_);
 }
 
-sub find_all_pods {
-    my $self = shift;
-    $MOD2PATH = $self->SUPER::find_all_pods(@_);
-    return $MOD2PATH;
-}
-
 sub found {
     my ($self, $module) = @_;
-    return(exists $MOD2PATH->{$module} and defined $MOD2PATH->{$module});
+    return grep { $_->[0] eq $module } @{$self->_contents};
 }
 
 1;

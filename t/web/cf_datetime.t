@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 51;
+use RT::Test tests => undef;
 
 RT->Config->Set( 'Timezone' => 'EST5EDT' ); # -04:00
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -209,6 +209,10 @@ diag 'check invalid inputs';
 
     $m->content_contains('test cf datetime:', 'has cf datetime field on the page');
     $m->content_lacks('foodate', 'invalid dates not set');
+
+    my @warnings = $m->get_warnings;
+    chomp @warnings;
+    is_deeply( @warnings, q{Couldn't parse date 'foodate' by Time::ParseDate} );
 }
 
 sub is_results_number {
@@ -232,3 +236,4 @@ sub is_results_number {
 # to make $m->DESTROY happy
 undef $m;
 
+done_testing;

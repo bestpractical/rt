@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 35;
+use RT::Test tests => undef;
 
 my ( $baseurl, $m ) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
@@ -183,4 +183,10 @@ diag 'check invalid inputs';
 
     $m->content_contains('test cf date:', 'has no cf date field on the page' );
     $m->content_lacks('foodate', 'invalid dates not set' );
+
+    my @warnings = $m->get_warnings;
+    chomp @warnings;
+    is_deeply( @warnings, q{Couldn't parse date 'foodate' by Time::ParseDate} );
 }
+
+done_testing;

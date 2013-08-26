@@ -83,4 +83,22 @@ $m->warning_like( qr{'Requestor\.Phone' is not a valid grouping for reports} );
 is( $m->content_type, "image/png" );
 ok( length($m->content), "Has content" );
 
-done_testing();
+diag "Confirm subnav links use Query param before saved search in session.";
+
+$m->get_ok( "/Search/Chart.html?Query=id>0" );
+my $advanced = $m->find_link( text => 'Advanced' )->URI->equery;
+like( $advanced, qr{Query=id%3E0},
+      'Advanced link has Query param with id search'
+    );
+
+# Load the session with another search.
+$m->get_ok( "/Search/Results.html?Query=Queue='General'" );
+
+$m->get_ok( "/Search/Chart.html?Query=id>0" );
+$advanced = $m->find_link( text => 'Advanced' )->URI->equery;
+like( $advanced, qr{Query=id%3E0},
+      'Advanced link still has Query param with id search'
+    );
+
+undef $m;
+done_testing;

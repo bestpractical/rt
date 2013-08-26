@@ -6,7 +6,8 @@ use File::Find;
 use IPC::Run3;
 
 my @files;
-find( sub { push @files, $File::Find::name if -f },
+find( { wanted   => sub { push @files, $File::Find::name if -f },
+        no_chdir => 1 },
       qw{etc lib share t bin sbin devel/tools} );
 if ( my $dir = `git rev-parse --git-dir 2>/dev/null` ) {
     # We're in a git repo, use the ignore list
