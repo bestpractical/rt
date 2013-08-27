@@ -76,7 +76,6 @@ input[type=reset]:active,
 input[type=submit]:active,
 input[class=button]:active {
     background: #1D3B7D;
-    //   background: #3D5B9D;
 }
 
 input[type=reset],
