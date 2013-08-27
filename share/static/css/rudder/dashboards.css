@@ -1,7 +1,7 @@
 table.dashboard {
-    margin-top: 6em;
+    margin-top: 6em
 }
 
 #body>table.dashboard {
-    margin-top: inherit;
+    margin-top: inherit
 }

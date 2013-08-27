@@ -1,4 +1,5 @@
 .sidebyside #ticket-create-message .button[name="AddMoreAttach"],
 .sidebyside #ticket-update-message .button[name="AddMoreAttach"] {
-    margin-right: -0.25em; // right align with the button in the outer div
+    margin-right: -0.25em;
+    // right align with the button in the outer div: ;
 }

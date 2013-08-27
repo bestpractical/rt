@@ -1,7 +1,6 @@
 .comment {
- padding-left: 0.5em;
- color: #999;
-
+    padding-left: 0.5em;
+    color: #999;
 }
 
 #comp-Ticket-ShowEmailRecord #body {
@@ -10,17 +9,19 @@
     overflow: auto;
 }
 
-span.label, span.labeltop,
-td.label, td.labeltop {
+span.label,
+span.labeltop,
+td.label,
+td.labeltop {
     font-weight: bold;
     color: #666;
     font-size: 1em;
 }
 
 table.myday h2 {
-    display: inline;
+    display: inline
 }
 
 table.myday td {
-    padding: 0.25em;
+    padding: 0.25em
 }
