@@ -217,7 +217,7 @@ if ( $ShowActions ) {
             && RT->Config->Get('Crypt')->{'AllowEncryptDataInDB'}
         ) {
             push @actions, {
-                class  => "gpg-link",
+                class  => "encryption-link",
                 title  => loc('Encrypt/Decrypt'),
                 path   => $EncryptionPath
                     .'?id='. $Transaction->id

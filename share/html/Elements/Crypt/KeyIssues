@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if ( @$Issues || @$SignAddresses ) {
-<&| /Widgets/TitleBox, title => loc('GnuPG issues') &>
+<&| /Widgets/TitleBox, title => loc('[_1] issues', RT->Config->Get('Crypt')->{'Outgoing'}) &>
 
 % if ( @$SignAddresses ) {
 <% loc("The system is unable to sign outgoing email messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately. The problem addresses are:") %>
@@ -58,9 +58,9 @@
 % }
 
 % if (@$Issues == 1) {
-<% loc("You are going to encrypt outgoing email messages, but there is a problem with a recipient's public key. You have to fix the problem with the key, disable sending a message to that recipient, or disable encryption.") %>
+<% loc("You are going to encrypt outgoing email messages, but there is a problem with a recipient's public key/certificate. You have to fix the problem with the key/certificate, disable sending a message to that recipient, or disable encryption.") %>
 % } elsif (@$Issues > 1) {
-<% loc("You are going to encrypt outgoing email messages, but there are problems with recipients' public keys. You have to fix the problems with the keys, disable sending a message to the recipients with key problems, or disable encryption.") %>
+<% loc("You are going to encrypt outgoing email messages, but there are problems with recipients' public keys/certificates. You have to fix the problems with the keys/certificates, disable sending a message to the recipients with problems, or disable encryption.") %>
 % }
 
 <ul>
@@ -69,11 +69,11 @@
 % if ( $issue->{'User'} ) {
 User <a href="<% RT->Config->Get('WebPath') %>/Admin/Users/Modify.html?id=<% $issue->{'User'}->id %>"><&/Elements/ShowUser, User => $issue->{'User'} &></a> has a problem.
 % } else {
-There is a problem with key(s) for address <% $issue->{'EmailAddress'} %>, but there is no user in the DB for this address.
+There is a problem with key/certificate(s) for address <% $issue->{'EmailAddress'} %>, but there is no user in the DB for this address.
 % }
 <% $issue->{'Message'} %>
 <br />
-Select a key you want to use for encryption:
+Select a key/certificate you want to use for encryption:
 <& /Elements/Crypt/SelectKeyForEncryption,
     Name         => 'UseKey-'. $issue->{'EmailAddress'},
     EmailAddress => $issue->{'EmailAddress'},

@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <table class="crypt-runs">
-<tr><td align="right" class="labeltop" rowspan="<% scalar @messages %>">GnuPG:</td>
+<tr><td align="right" class="labeltop" rowspan="<% scalar @messages %>">Encryption:</td>
 <td><% shift @messages %></td></tr>
 
 % foreach my $msg( @messages ) {
