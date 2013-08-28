@@ -56,17 +56,17 @@
 
 <h1><&|/l&>Select table preferences</&></h1>
 
-<label><input type="checkbox" class="checkbox" name="ShowEmptyRows" value="1" \
-% if ( $preference->{'ShowEmptyRows'} ) {
+<label><input type="checkbox" class="checkbox" name="HideEmptyRows" value="1" \
+% if ( $preference->{'HideEmptyRows'} ) {
 checked="checked" \
 % }
-/><&|/l&>Show rows with all zeros</&></label><br />
+/><&|/l&>Hide rows with all zeros</&></label><br />
 
-<label><input type="checkbox" class="checkbox" name="ShowEmptyColumns" value="1" \
-% if ( $preference->{'ShowEmptyColumns'} ) {
+<label><input type="checkbox" class="checkbox" name="HideEmptyColumns" value="1" \
+% if ( $preference->{'HideEmptyColumns'} ) {
 checked="checked" \
 % }
-/><&|/l&>Show columns with all zeros</&></label><br />
+/><&|/l&>Hide columns with all zeros</&></label><br />
 
 <label><input type="checkbox" class="checkbox" name="NoSplitByLifecycle" value="1" \
 % if ( $preference->{'NoSplitByLifecycle'} ) {
@@ -131,8 +131,8 @@ if ( $Save ) {
 
     $preference->{$_} = $ARGS{$_} foreach qw(
         NoSplitByLifecycle
-        ShowEmptyRows
-        ShowEmptyColumns
+        HideEmptyRows
+        HideEmptyColumns
     );
 
     my ($ok, $msg) = $user->SetPreferences( $Pref => $preference );
