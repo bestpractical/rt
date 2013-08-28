@@ -56,10 +56,10 @@
 <h2><% loc("User has empty email address") %></h2>
 % }
 
-% if (RT::Crypt->UseForOutgoing eq 'GnuPG') {
 <form action="<%RT->Config->Get('WebPath')%>/Admin/Users/GnuPG.html" method="post" enctype="multipart/form-data">
 <input type="hidden" class="hidden" name="id" value="<% $UserObj->Id %>" />
 
+% if (RT::Crypt->UseForOutgoing eq 'GnuPG') {
 <&|/Widgets/TitleBox, title => 'GnuPG private key'&>
 <& /Widgets/Form/Select,
     Name         => 'PrivateKey',
@@ -69,10 +69,16 @@
     DefaultLabel => loc('No private key'),
 &>
 </&>
+% }
+
+% if (RT::Crypt->UseForOutgoing eq 'SMIME') {
+<&|/Widgets/TitleBox, title => 'SMIME Certificate' &>
+<textarea name="SMIMECertificate"><% $UserObj->SMIMECertificate || '' %></textarea>
+</&>
+% }
 
 <& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>
 </form>
-% }
 
 <%ARGS>
 $id         => undef
@@ -112,6 +118,13 @@ if (RT::Crypt->UseForOutgoing eq 'GnuPG') {
         } else {
             push @results, loc("Invalid key [_1] for address '[_2]'", $ARGS{'PrivateKey'}, $email);
         }
+    }
+}
+
+if (RT::Crypt->UseForOutgoing eq 'SMIME') {
+    if ( $Update and ($ARGS{'SMIMECertificate'}||'') ne ($UserObj->SMIMECertificate||'') ) {
+        my ($status, $msg) = $UserObj->SetSMIMECertificate( $ARGS{'SMIMECertificate'} );
+        push @results, $msg;
     }
 }
 

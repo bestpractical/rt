@@ -56,3 +56,8 @@ ul.list-menu ul li {
 h2 + .admin-hint {
     margin-top: -1em;
 }
+
+textarea[name="SMIMECertificate"] {
+    width: 50em;
+    height: 25em;
+}
