@@ -99,10 +99,10 @@ while ( my $entry = $report->Next ) {
     $data_has_status{ $status } = 1;
 }
 
-unless ( $preference->{'ShowEmptyColumns'} ) {
+if ( $preference->{'HideEmptyColumns'} ) {
     @statuses = grep $data_has_status{$_}, @statuses;
 }
-unless ( $preference->{'ShowEmptyRows'} ) {
+if ( $preference->{'HideEmptyRows'} ) {
     @queues = grep $data{ $_->id }{''}, @queues;
 }
 
