@@ -1635,6 +1635,13 @@ sub GetKeysInfo {
         ( $email ? (CommandArgs => ['--', $email]) : () ),
         Output      => \@info,
     );
+
+    # Asking for a non-existent key is not an error
+    if ($res{message} and $res{logger} =~ /(secret key not available|public key not found)/) {
+        delete $res{exit_code};
+        delete $res{message};
+    }
+
     return %res if $res{'message'};
 
     @info = $self->ParseKeysInfo( @info );
