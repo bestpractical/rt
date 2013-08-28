@@ -646,6 +646,8 @@ our %META = (
             my $opt = $self->Get('Crypt');
             my @enabled = RT::Crypt->EnabledProtocols;
             $opt->{'Enable'} = scalar @enabled;;
+            $opt->{'Incoming'} = [ $opt->{'Incoming'} ]
+                if $opt->{'Incoming'} and not ref $opt->{'Incoming'};
             unless ( $opt->{'Incoming'} && @{ $opt->{'Incoming'} } ) {
                 $opt->{'Incoming'} = \@enabled;
             }
