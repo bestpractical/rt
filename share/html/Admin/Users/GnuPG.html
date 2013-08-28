@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => $title  &>
+<& /Admin/Elements/Header, Title => loc("[_1]'s encryption keys",$UserObj->Name)  &>
 <& /Elements/Tabs &>
 
 <& /Elements/ListActions, actions => \@results &>
@@ -85,7 +85,7 @@ $id         => undef
 $Update     => undef
 </%ARGS>
 <%INIT>
-return unless RT->Config->Get('GnuPG')->{'Enable'};
+return unless RT->Config->Get('Crypt')->{'Enable'};
 
 my @results;
 
@@ -127,7 +127,5 @@ if (RT::Crypt->UseForOutgoing eq 'SMIME') {
         push @results, $msg;
     }
 }
-
-my $title = loc("[_1]'s GnuPG keys",$UserObj->Name);
 
 </%INIT>
