@@ -62,9 +62,9 @@ $preference = $preference
     : {}
 ;
 
-my $comp = '/Elements/QueueSummaryByStatus';
-if ( $preference->{'SplitByLifecycle'} ) {
-    $comp = '/Elements/QueueSummaryByLifecycle';
+my $comp = '/Elements/QueueSummaryByLifecycle';
+if ( $preference->{'NoSplitByLifecycle'} ) {
+    $comp = '/Elements/QueueSummaryByStatus';
 }
 if ( $preference->{'Unwanted'} && keys %{ $preference->{'Unwanted'} } ) {
     @queues = grep !$preference->{'Unwanted'}{ $_->Name }, @queues;

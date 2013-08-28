@@ -68,11 +68,11 @@ checked="checked" \
 % }
 /><&|/l&>Show columns with all zeros</&></label><br />
 
-<label><input type="checkbox" class="checkbox" name="SplitByLifecycle" value="1" \
-% if ( $preference->{'SplitByLifecycle'} ) {
+<label><input type="checkbox" class="checkbox" name="NoSplitByLifecycle" value="1" \
+% if ( $preference->{'NoSplitByLifecycle'} ) {
 checked="checked" \
 % }
-/><&|/l&>Split into groups with different status sets (lifecycles)</&></label><br />
+/><&|/l&>Don't split into groups with different status sets (lifecycles)</&></label><br />
 
 % if ( $EditUnwanted ) {
 <h1><&|/l&>Select queues to be displayed</&></h1>
@@ -130,7 +130,7 @@ if ( $Save ) {
     $preference->{'Unwanted'} = { map { $_ => 1 } grep !$Want{ $_ }, map $_->Name, @queues };
 
     $preference->{$_} = $ARGS{$_} foreach qw(
-        SplitByLifecycle
+        NoSplitByLifecycle
         ShowEmptyRows
         ShowEmptyColumns
     );
