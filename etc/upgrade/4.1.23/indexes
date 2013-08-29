@@ -31,6 +31,57 @@ use warnings;
     RT->Logger->info($msg);
 }
 
+my $dedup = sub {
+    my ($table, $column) = (@_);
+
+    my $collection_class = "RT::$table";
+    my $record_class = $collection_class;
+    $record_class =~ s/s$//;
+
+    my $sql;
+
+    my $cs = $RT::Handle->CaseSensitive;
+    if ($cs) {
+        $sql = "SELECT DISTINCT LOWER(t1.$column) FROM $table t1, $table t2"
+        ." WHERE LOWER(t1.$column) = LOWER(t2.$column)"
+        .' AND t1.id != t2.id';
+    } else {
+        $sql = "SELECT DISTINCT t1.$column FROM $table t1, $table t2"
+        ." WHERE t1.$column = t2.$column"
+        .' AND t1.id != t2.id';
+    }
+
+    my $dbh = $RT::Handle->dbh;
+    my $sth = $dbh->prepare($sql);
+    $sth->execute;
+
+    my $found = 0;
+    while ( my ($value) = $sth->fetchrow_array ) {
+        $found = 1;
+
+        my $ids = $dbh->selectcol_arrayref(
+            "SELECT id FROM $table WHERE ". ($cs? "LOWER($column)" : $column) ." = LOWER(?)",
+            undef,
+            $value
+        );
+
+        # skip first
+        shift @$ids;
+
+        foreach my $id ( @$ids ) {
+            RT->Logger->debug("Changing $column of $record_class #". $id );
+            $dbh->do("UPDATE $table SET $column = ? WHERE id = ?", undef,  $value . '-dup-'.$id, $id);
+        }
+    }
+
+    if ( $found ) {
+        RT->Logger->warning(
+            "Records in $table table had non-unique values in $column column."
+            ." $column has been changed for such records, and now matches '%-dup-%'"
+        );
+    }
+};
+
 # a few case insensitive and unique indexes
 {
     my @list = (
@@ -50,6 +101,9 @@ use warnings;
             RT->Logger->info("Required index exists. Skipping.");
             next;
         }
+
+        $dedup->( $e->{'Table'}, $e->{'Column'} );
+
         if ( $index ) {
             my ($status, $msg) = $RT::Handle->DropIndex(
                 Table => $e->{'Table'}, Name => $index->{'Name'},
