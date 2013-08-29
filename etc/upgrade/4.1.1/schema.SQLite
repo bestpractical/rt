@@ -5,7 +5,6 @@ CREATE TABLE ObjectScrips (
   Stage varchar(32) NOT NULL DEFAULT 'TransactionCreate' ,
   ObjectId integer NOT NULL,
   SortOrder integer NOT NULL DEFAULT 0  ,
-  Disabled int2 NOT NULL DEFAULT 0 ,
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
