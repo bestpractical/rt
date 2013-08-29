@@ -50,7 +50,8 @@
 % foreach my $header (@headers) {
   <tr>
     <td align="right" class="message-header-key"><% $header->{'Tag'} %>:</td>
-    <td class="message-header-value"><% $header->{'Value'} | n %></td>
+    <td class="message-header-value <% join(' ', map {CSSClass($_)} @{$header->{Classes} || []}) %>">
+      <% $header->{'Value'} | n %></td>
   </tr>
 % }
 </table>
@@ -80,6 +81,8 @@ foreach my $f (@headers) {
     $m->comp('/Elements/MakeClicky', content => \$f->{'Value'}, object => $object, %ARGS);
 }
 
+unshift @headers, $m->comp( 'CryptStatus', Message => $Message, WarnUnsigned => $WarnUnsigned );
+
 $m->callback(
     CallbackName => 'BeforeLocalization',
     headers      => \@headers,
@@ -90,6 +93,7 @@ if ( $Localize ) {
 }
 </%INIT>
 <%ARGS>
+$WarnUnsigned => 0
 $Message => undef
 $Localize => 1
 @DisplayHeaders => ('_all')

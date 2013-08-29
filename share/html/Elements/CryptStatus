@@ -45,16 +45,8 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table class="crypt-runs">
-<tr><td align="right" class="labeltop" rowspan="<% scalar @messages %>">Encryption:</td>
-<td><% shift @messages %></td></tr>
-
-% foreach my $msg( @messages ) {
-<tr><td><% $msg %></td></tr>
-% }
-</table>
 <%ARGS>
-$Attachment
+$Message
 $WarnUnsigned => undef
 $Reverify     => 1
 </%ARGS>
@@ -65,7 +57,7 @@ my $needs_unsigned_warning = $WarnUnsigned;
 my @protocols = RT::Crypt->EnabledProtocols;
 my $re_protocols = join '|', map "\Q$_\E", @protocols;
 
-foreach ( $Attachment->SplitHeaders ) {
+foreach ( $Message->SplitHeaders ) {
     if ( s/^X-RT-($re_protocols)-Status:\s*//io ) {
         push @runs, [ $1, RT::Crypt->ParseStatus( Protocol => "$1", Status => $_ ) ];
     }
@@ -132,6 +124,7 @@ my $reverify_cb = sub {
 my @messages;
 foreach my $run ( @runs ) {
     my $protocol = shift @$run;
+    $protocol = $RT::Crypt::PROTOCOLS{lc $protocol};
     foreach my $line ( @$run ) {
         if ( $line->{'Operation'} eq 'KeyCheck' ) {
             next unless $Reverify;
@@ -143,7 +136,7 @@ foreach my $run ( @runs ) {
                 Protocol => $protocol, Key => $line->{'Key'}
             );
             if ( $key{'info'} ) {
-                my ($status, $msg) = $reverify_cb->($Attachment);
+                my ($status, $msg) = $reverify_cb->($Message);
                 unless ($status) {
                     $RT::Logger->error($msg);
                 } else {
@@ -151,31 +144,52 @@ foreach my $run ( @runs ) {
                 }
             }
             else {
-                push @messages, loc( "Public key '0x[_1]' is required to verify signature", $line->{'Key'} );
+                push @messages, {
+                    Tag     => $protocol,
+                    Classes => [qw/keycheck bad/],
+                    Value   => loc( "Public key '0x[_1]' is required to verify signature", $line->{'Key'} ),
+                };
             }
         }
         elsif ( $line->{'Operation'} eq 'PassphraseCheck' ) {
             next if $line->{'Status'} eq 'DONE';
-            push @messages, loc( $line->{'Message'} );
+            push @messages, {
+                Tag     => $protocol,
+                Classes => ['passphrasecheck', lc $line->{Status}],
+                Value   => loc( $line->{'Message'} ),
+            };
         }
         elsif ( $line->{'Operation'} eq 'Decrypt' ) {
-            push @messages, loc( $line->{'Message'} );
+            push @messages, {
+                Tag     => $protocol,
+                Classes => ['decrypt', lc $line->{Status}],
+                Value   => loc( $line->{'Message'} ),
+            };
         }
         elsif ( $line->{'Operation'} eq 'Verify' ) {
-            push @messages, loc( $line->{'Message'} );
+            push @messages, {
+                Tag     => $protocol,
+                Classes => ['verify', lc $line->{Status}, 'trust-'.($line->{Trust} || 'UNKNOWN')],
+                Value   => loc( $line->{'Message'} ),
+            };
         }
         else {
             next if $line->{'Status'} eq 'DONE';
-            push @messages, loc( $line->{'Message'} );
+            push @messages, {
+                Tag     => $protocol,
+                Classes => [lc $line->{Operation}, lc $line->{Status}],
+                Value   => loc( $line->{'Message'} ),
+            }
         }
     }
 }
 
-push @messages, loc('Warning! This is NOT signed!')
+push @messages, { Tag => "Signing", Classes => ['verify', 'bad'], Value => loc('Warning! This is NOT signed!') }
     if $needs_unsigned_warning;
 return unless @messages;
 
 my %seen;
-@messages = grep !$seen{$_}++, @messages;
+@messages = grep !$seen{$_->{Value}}++, @messages;
 
+return @messages;
 </%INIT>

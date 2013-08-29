@@ -49,12 +49,8 @@
 # Find all the attachments which have parent $Parent
 # For each of these attachments
 foreach my $message ( @{ $Attachments->{ $Parent || 0 } || [] } ) {
-
-    if (RT->Config->Get('Crypt')->{'Enable'}) {
-        $m->comp( 'ShowCryptStatus', Attachment => $message, WarnUnsigned => $WarnUnsigned );
-    }
-
     $m->comp( 'ShowMessageHeaders',
+              WarnUnsigned   => $WarnUnsigned,
               Message        => $message,
               DisplayHeaders => \@DisplayHeaders,
             );
