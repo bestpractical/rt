@@ -1872,7 +1872,7 @@ sub FindDependencies {
     } elsif ($type =~ /^(Add|Open|Resolve)Reminder$/) {
         my $ticket = RT::Ticket->new( RT->SystemUser );
         $ticket->Load( $self->NewValue );
-	$deps->Add( out => $ticket );
+        $deps->Add( out => $ticket );
     }
 }
 
