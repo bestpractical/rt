@@ -5,7 +5,7 @@ use RT::Test tests => 159;
 
 use constant LogoFile => $RT::StaticPath .'/images/bpslogo.png';
 use constant FaviconFile => $RT::StaticPath .'/images/favicon.png';
-use constant TextFile => $RT::StaticPath .'/css/print.css';
+use constant TextFile => $RT::StaticPath .'/css/mobile.css';
 
 my ($url, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in';
@@ -449,7 +449,7 @@ diag "check content type and content";
     $m->content_contains('Attachments test', 'we have subject on the page');
     $m->content_contains('Some content', 'and content');
     $m->content_contains('Download bpslogo.png', 'page has file name');
-    $m->content_contains('Download print.css', 'page has file name');
+    $m->content_contains('Download mobile.css', 'page has file name');
 
     $m->follow_link_ok({text => "Download bpslogo.png"});
     is($m->response->header('Content-Type'), 'image/png', 'Content-Type of png lacks charset' );
@@ -457,7 +457,7 @@ diag "check content type and content";
     is($m->content, RT::Test->file_content(LogoFile), "Binary content matches");
     $m->back;
 
-    $m->follow_link_ok( { text => 'Download print.css' } );
+    $m->follow_link_ok( { text => 'Download mobile.css' } );
     is( $m->response->header('Content-Type'),
         'text/css;charset=UTF-8',
         'Content-Type of text has charset',

@@ -814,8 +814,9 @@ Set(@MailParams, ());
 This determines the default stylesheet the RT web interface will use.
 RT ships with several themes by default:
 
-  web2            The default layout for RT 3.8
+  rudder          The default theme for RT 4.2
   aileron         The default layout for RT 4.0
+  web2            The default layout for RT 3.8
   ballard         Theme which doesn't rely on JavaScript for menuing
 
 This value actually specifies a directory in F<share/static/css/>
@@ -826,7 +827,7 @@ be overridden by users in their preferences.
 
 =cut
 
-Set($WebDefaultStylesheet, "aileron");
+Set($WebDefaultStylesheet, "rudder");
 
 =item C<$DefaultQueue>
 

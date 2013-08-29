@@ -1,0 +1,109 @@
+div#body {
+
+}
+
+div#logo .rtname {
+    float: none;
+    right: 12em;
+    position: absolute;
+}
+
+.topaction form * {
+    vertical-align: top
+}
+
+.topaction form button,
+.topaction form input {
+    height: 2em
+}
+
+.topaction form input.field {
+    height: 1.6em
+}
+
+.topaction .select-queue {
+    margin-top: 0.2em
+}
+
+#pick-criteria td.label select {
+    width: 10em
+}
+
+#editquery {
+    margin-top: 0.2em;
+    width: 39%;
+    left: 60%;
+}
+
+div#nav li.first {
+    margin-top: 0.75em;
+    border-top: none;
+}
+
+div#nav ul ul li.first {
+    border-top: 1px solid #cccccc;
+    margin-top: 0.25em;
+}
+
+div#nav li.last {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+.transaction .type a {
+    font-weight: normal;
+    text-decoration: none;
+    color: #fff;
+}
+
+/* IE's box model is wrong */
+
+.titlebox .titlebox-title .widget a {
+    padding-top: 0;
+    height: 7px;
+    top: 0.75em;
+}
+
+.titlebox .titlebox-title .right {
+    display: block;
+    margin-top: 0.4em;
+    padding-right: 0.3em;
+}
+
+/* nested things. like the ticket dates tab */
+
+.titlebox .titlebox .titlebox-title .right {
+    top: 0.25em
+}
+
+.combobox {
+    float: left
+}
+
+.combobox .combo-button {
+    color: ButtonText;
+    padding: 0;
+}
+
+.combobox .combo-list {
+    margin-top: 0.5em;
+    margin-left: -0.2em;
+}
+
+#pick-criteria td.label {
+    width: auto
+}
+
+#pick-criteria td.operator {
+    width: 7.5em
+}
+
+.plain-text-white-space {
+    word-wrap: break-word; /* Internet Explorer 5.5+ */
+    white-space: pre; /* IE only hack to re-specify in addition to word-wrap  */
+}
+
+#rt-portal .titlebox-content {
+    height: 23em
+}
