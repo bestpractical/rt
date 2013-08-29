@@ -505,6 +505,118 @@ s!(?<=Your ticket has been (?:approved|rejected) by { eval { )\$Approval->OwnerO
             $ref->{IsMerged} = 1 if $ref->{id} != $ref->{EffectiveId};
         },
     },
+
+    '4.1.10' => {
+        'RT::ObjectcustomFieldValue' => sub {
+            my ($ref) = @_;
+            $ref->{Content} = undef if defined $ref->{LargeContent}
+                and defined $ref->{Content} and $ref->{Content} eq '';
+        },
+    },
+
+    '4.1.11' => {
+        'RT::CustomField' => sub {
+            my ($ref) = @_;
+            delete $ref->{Repeated};
+        },
+    },
+
+    '4.1.13' => {
+        'RT::Group' => sub {
+            my ($ref) = @_;
+            $ref->{Name} = $ref->{Type}
+                if $ref->Domain =~ /^(ACLEquivalence|SystemInternal|.*-Role)$/;
+        },
+    },
+
+    '4.1.14' => {
+        'RT::Scrip' => sub {
+            my ($ref) = @_;
+            delete $ref->{ConditionRules};
+            delete $ref->{ActionRules};
+        },
+    },
+
+    '4.1.17' => {
+        'RT::Attribute' => sub {
+            my ($ref) = @_;
+            return unless $ref->{Name} eq 'SavedSearch';
+            my $v = eval {
+                Storable::thaw(MIME::Base64::decode_base64($ref->{Content}))
+              };
+            return unless $v and ref $v and ($v->{SearchType}||'') eq 'Chart';
+
+            # Switch from PrimaryGroupBy to GroupBy name
+            # Switch from "CreatedMonthly" to "Created.Monthly"
+            $v->{GroupBy} ||= [delete $v->{PrimaryGroupBy}];
+            for (@{$v->{GroupBy}}) {
+                next if /\./;
+                s/(?<=[a-z])(?=[A-Z])/./;
+            }
+            $ref->{Content} = MIME::Base64::encode_base64(
+                Storable::nfreeze($v) );
+        },
+    },
+
+    '4.1.19' => {
+        'RT::Template' => sub {
+            my ($ref) = @_;
+            delete $ref->{Language};
+            delete $ref->{TranslationOf};
+        },
+    },
+
+    '4.1.20' => {
+        'RT::Template' => sub {
+            my ($ref) = @_;
+            if ($ref->{Name} eq 'Forward') {
+                $ref->{Description} = 'Forwarded message';
+                if ( $ref->{Content} eq q{
+This is a forward of transaction #{$Transaction->id} of ticket #{ $Ticket->id }
+} ) {
+                    $ref->{Content} = q{
+{ $ForwardTransaction->Content =~ /\S/ ? $ForwardTransaction->Content : "This is a forward of transaction #".$Transaction->id." of ticket #". $Ticket->id }
+};
+                } else {
+                    RT->Logger->error('Current "Forward" template is not the default version, please check docs/4.2-UPGRADING');
+                }
+            } elsif ($ref->{Name} eq 'Forward Ticket') {
+                $ref->{Description} = 'Forwarded ticket message';
+                if ( $ref->{Content} eq q{
+
+This is a forward of ticket #{ $Ticket->id }
+} ) {
+                    $ref->{Content} = q{
+{ $ForwardTransaction->Content =~ /\S/ ? $ForwardTransaction->Content : "This is a forward of ticket #". $Ticket->id }
+};
+                } else {
+                    RT->Logger->error('Current "Forward Ticket" template is not the default version, please check docs/4.2-UPGRADING');
+                }
+            }
+        },
+    },
+
+    '4.1.21' => {
+        # XXX User dashboards
+    },
+
+    '4.1.22' => {
+        'RT::Template' => sub {
+            my ($ref) = @_;
+            return unless $ref->{Name} eq 'Error: bad GnuPG data';
+            $ref->{Name} = 'Error: bad encrypted data';
+            $ref->{Description} =
+                'Inform user that a message he sent has invalid encryption data';
+            $ref->{Content} =~ s/GnuPG signature/signature/g;
+        },
+        # XXX SMIME keys
+        'RT::Attribute' => sub {
+            my ($ref, $classref) = @_;
+            if ($ref->{ObjectType} eq "RT::User" and $ref->{Name} eq "SMIMEKeyNotAfter") {
+                $$classref = undef;
+            }
+        },
+    },
 );
 
 1;
