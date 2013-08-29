@@ -93,7 +93,16 @@ C<CAPath> should be set to either a PEM-formatted certificate of a
 single signing certificate authority, or a directory of such (including
 hash symlinks as created by the openssl tool C<c_rehash>).  Only SMIME
 certificates signed by these certificate authorities will be treated as
-valid signatures.  If left unset, no signatures will be marked as valid!
+valid signatures.  If left unset (and C<AcceptUntrustedCAs> is unset, as
+it is by default), no signatures will be marked as valid!
+
+=head3 AcceptUntrustedCAs
+
+Allows arbitrary SMIME certificates, no matter their signing entities.
+Such mails will be marked as untrusted, but signed; C<CAPath> will be
+used to mark which mails are signed by trusted certificate authorities.
+This configuration is generally insecure, as it allows the possibility
+of accepting forged mail signed by an untrusted certificate authority.
 
 =head2 Keyring configuration
 
@@ -239,7 +248,7 @@ sub Verify {
         $signer = $info{info}[0];
         last unless $signer and $signer->{User}[0]{String};
 
-        unless ( $info{info}[0]{TrustLevel} > 0) {
+        unless ( $info{info}[0]{TrustLevel} > 0 or RT->Config->Get('SMIME')->{AcceptUntrustedCAs}) {
             # We don't trust it; give it the finger
             $res{exit_code} = 1;
             $res{'message'} = "Validation failed";
@@ -256,6 +265,9 @@ sub Verify {
         $user->LoadOrCreateByEmail( $signer->{User}[0]{String} );
         my $current_key = $user->SMIMECertificate;
         last if $current_key && $current_key eq $key;
+
+        # Never over-write existing keys with untrusted ones.
+        last if $current_key and not $info{info}[0]{TrustLevel} > 0;
 
         my ($status, $msg) = $user->SetSMIMECertificate( $key );
         $RT::Logger->error("Couldn't set SMIME certificate for user #". $user->id .": $msg")

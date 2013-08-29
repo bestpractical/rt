@@ -2359,7 +2359,15 @@ Set C<CAPath> to either a PEM-formatted certificate of a single signing
 certificate authority, or a directory of such (including hash symlinks
 as created by the openssl tool C<c_rehash>).  Only SMIME certificates
 signed by these certificate authorities will be treated as valid
-signatures.  If left unset, no signatures will be marked as valid!
+signatures.  If left unset (and C<AcceptUntrustedCAs> is unset, as it is
+by default), no signatures will be marked as valid!
+
+Set C<AcceptUntrustedCAs> to allow arbitrary SMIME certificates, no
+matter their signing entities.  Such mails will be marked as untrusted,
+but signed; C<CAPath> will be used to mark which mails are signed by
+trusted certificate authorities.  This configuration is generally
+insecure, as it allows the possibility of accepting forged mail signed
+by an untrusted certificate authority.
 
 See L<RT::Crypt::SMIME> for details.
 
@@ -2372,6 +2380,7 @@ Set( %SMIME,
     OpenSSL => '/usr/bin/openssl',
     Keyring => q{@RT_VAR_PATH@/data/smime},
     CAPath => undef,
+    AcceptUntrustedCAs => undef,
 );
 
 =head2 GnuPG configuration
