@@ -50,10 +50,14 @@ package RT::CustomField;
 
 use strict;
 use warnings;
+use 5.010;
 
-
+use Scalar::Util 'blessed';
 
 use base 'RT::Record';
+
+use Role::Basic 'with';
+with "RT::Record::Role::Rights";
 
 sub Table {'CustomFields'}
 
@@ -193,83 +197,23 @@ our %FieldTypes = (
 
 
 my %BUILTIN_GROUPINGS;
-our %FRIENDLY_OBJECT_TYPES =  ();
+my %FRIENDLY_LOOKUP_TYPES = ();
 
-RT::CustomField->_ForObjectType( 'RT::Queue-RT::Ticket' => "Tickets", );    #loc
-RT::CustomField->_ForObjectType(
-    'RT::Queue-RT::Ticket-RT::Transaction' => "Ticket Transactions", );    #loc
-RT::CustomField->_ForObjectType( 'RT::User'  => "Users", );                           #loc
-RT::CustomField->_ForObjectType( 'RT::Queue'  => "Queues", );                         #loc
-RT::CustomField->_ForObjectType( 'RT::Group' => "Groups", );                          #loc
+__PACKAGE__->RegisterLookupType( 'RT::Queue-RT::Ticket' => "Tickets", );    #loc
+__PACKAGE__->RegisterLookupType( 'RT::Queue-RT::Ticket-RT::Transaction' => "Ticket Transactions", ); #loc
+__PACKAGE__->RegisterLookupType( 'RT::User'  => "Users", );                           #loc
+__PACKAGE__->RegisterLookupType( 'RT::Queue'  => "Queues", );                         #loc
+__PACKAGE__->RegisterLookupType( 'RT::Group' => "Groups", );                          #loc
 
 __PACKAGE__->RegisterBuiltInGroupings(
     'RT::Ticket'    => [ qw(Basics Dates Links People) ],
     'RT::User'      => [ 'Identity', 'Access control', 'Location', 'Phones' ],
 );
 
-our $RIGHTS = {
-    SeeCustomField            => 'View custom fields',                                    # loc_pair
-    AdminCustomField          => 'Create, modify and delete custom fields',               # loc_pair
-    AdminCustomFieldValues    => 'Create, modify and delete custom fields values',        # loc_pair
-    ModifyCustomField         => 'Add, modify and delete custom field values for objects' # loc_pair
-};
-
-our $RIGHT_CATEGORIES = {
-    SeeCustomField          => 'General',
-    AdminCustomField        => 'Admin',
-    AdminCustomFieldValues  => 'Admin',
-    ModifyCustomField       => 'Staff',
-};
-
-# Tell RT::ACE that this sort of object can get acls granted
-$RT::ACE::OBJECT_TYPES{'RT::CustomField'} = 1;
-
-__PACKAGE__->AddRights(%$RIGHTS);
-__PACKAGE__->AddRightCategories(%$RIGHT_CATEGORIES);
-
-=head2 AddRights C<RIGHT>, C<DESCRIPTION> [, ...]
-
-Adds the given rights to the list of possible rights.  This method
-should be called during server startup, not at runtime.
-
-=cut
-
-sub AddRights {
-    my $self = shift;
-    my %new = @_;
-    $RIGHTS = { %$RIGHTS, %new };
-    %RT::ACE::LOWERCASERIGHTNAMES = ( %RT::ACE::LOWERCASERIGHTNAMES,
-                                      map { lc($_) => $_ } keys %new);
-}
-
-sub AvailableRights {
-    my $self = shift;
-    return $RIGHTS;
-}
-
-=head2 RightCategories
-
-Returns a hashref where the keys are rights for this type of object and the
-values are the category (General, Staff, Admin) the right falls into.
-
-=cut
-
-sub RightCategories {
-    return $RIGHT_CATEGORIES;
-}
-
-=head2 AddRightCategories C<RIGHT>, C<CATEGORY> [, ...]
-
-Adds the given right and category pairs to the list of right categories.  This
-method should be called during server startup, not at runtime.
-
-=cut
-
-sub AddRightCategories {
-    my $self = shift if ref $_[0] or $_[0] eq __PACKAGE__;
-    my %new = @_;
-    $RIGHT_CATEGORIES = { %$RIGHT_CATEGORIES, %new };
-}
+__PACKAGE__->AddRight( General => SeeCustomField         => 'View custom fields'); # loc_pair
+__PACKAGE__->AddRight( Admin   => AdminCustomField       => 'Create, modify and delete custom fields'); # loc_pair
+__PACKAGE__->AddRight( Admin   => AdminCustomFieldValues => 'Create, modify and delete custom fields values'); # loc_pair
+__PACKAGE__->AddRight( Staff   => ModifyCustomField      => 'Add, modify and delete custom field values for objects'); # loc_pair
 
 =head1 NAME
 
@@ -287,7 +231,6 @@ Create takes a hash of values and creates a row in the database:
   varchar(200) 'Type'.
   int(11) 'MaxValues'.
   varchar(255) 'Pattern'.
-  smallint(6) 'Repeated'.
   varchar(255) 'Description'.
   int(11) 'SortOrder'.
   varchar(255) 'LookupType'.
@@ -308,7 +251,6 @@ sub Create {
         Description => '',
         Disabled    => 0,
         LookupType  => '',
-        Repeated    => 0,
         LinkValueTo => '',
         IncludeContentForValue => '',
         @_,
@@ -393,7 +335,6 @@ sub Create {
         Description => $args{'Description'},
         Disabled    => $args{'Disabled'},
         LookupType  => $args{'LookupType'},
-        Repeated    => $args{'Repeated'},
     );
 
     if ($rv) {
@@ -464,6 +405,7 @@ sub LoadByName {
     my %args = (
         Queue => undef,
         Name  => undef,
+        LookupType => undef,
         @_,
     );
 
@@ -487,6 +429,20 @@ sub LoadByName {
     $CFs->SetContextObject( $self->ContextObject );
     my $field = $args{'Name'} =~ /\D/? 'Name' : 'id';
     $CFs->Limit( FIELD => $field, VALUE => $args{'Name'}, CASESENSITIVE => 0);
+
+    # The context object may be a ticket, for example, as context for a
+    # queue CF.  The valid lookup types are thus the entire set of
+    # ACLEquivalenceObjects for the context object.
+    $args{LookupType} ||= [
+        map {$_->CustomFieldLookupType}
+            ($self->ContextObject, $self->ContextObject->ACLEquivalenceObjects) ]
+        if $self->ContextObject;
+
+    $args{LookupType} = [ $args{LookupType} ]
+        if $args{LookupType} and not ref($args{LookupType});
+    $CFs->Limit( FIELD => "LookupType", OPERATOR => "IN", VALUE => $args{LookupType} )
+        if $args{LookupType};
+
     # Don't limit to queue if queue is 0.  Trying to do so breaks
     # RT::Group type CFs.
     if ( defined $args{'Queue'} ) {
@@ -853,22 +809,6 @@ sub UnlimitedValues {
 }
 
 
-=head2 CurrentUserHasRight RIGHT
-
-Helper function to call the custom field's queue's CurrentUserHasRight with the passed in args.
-
-=cut
-
-sub CurrentUserHasRight {
-    my $self  = shift;
-    my $right = shift;
-
-    return $self->CurrentUser->HasRight(
-        Object => $self,
-        Right  => $right,
-    );
-}
-
 =head2 ACLEquivalenceObjects
 
 Returns list of objects via which users can get rights on this custom field. For custom fields
@@ -1192,14 +1132,8 @@ Returns an array of LookupTypes available
 
 sub LookupTypes {
     my $self = shift;
-    return keys %FRIENDLY_OBJECT_TYPES;
+    return sort keys %FRIENDLY_LOOKUP_TYPES;
 }
-
-my @FriendlyObjectTypes = (
-    "[_1] objects",            # loc
-    "[_1]'s [_2] objects",        # loc
-    "[_1]'s [_2]'s [_3] objects",   # loc
-);
 
 =head2 FriendlyLookupType
 
@@ -1210,25 +1144,74 @@ Returns a localized description of the type of this custom field
 sub FriendlyLookupType {
     my $self = shift;
     my $lookup = shift || $self->LookupType;
-   
-    return ($self->loc( $FRIENDLY_OBJECT_TYPES{$lookup} ))
-                     if (defined  $FRIENDLY_OBJECT_TYPES{$lookup} );
+
+    return ($self->loc( $FRIENDLY_LOOKUP_TYPES{$lookup} ))
+        if defined $FRIENDLY_LOOKUP_TYPES{$lookup};
 
     my @types = map { s/^RT::// ? $self->loc($_) : $_ }
       grep { defined and length }
       split( /-/, $lookup )
       or return;
-    return ( $self->loc( $FriendlyObjectTypes[$#types], @types ) );
+
+    state $LocStrings = [
+        "[_1] objects",            # loc
+        "[_1]'s [_2] objects",        # loc
+        "[_1]'s [_2]'s [_3] objects",   # loc
+    ];
+    return ( $self->loc( $LocStrings->[$#types], @types ) );
 }
+
+=head1 RecordClassFromLookupType
+
+Returns the type of Object referred to by ObjectCustomFields' ObjectId column
+
+Optionally takes a LookupType to use instead of using the value on the loaded
+record.  In this case, the method may be called on the class instead of an
+object.
+
+=cut
 
 sub RecordClassFromLookupType {
     my $self = shift;
-    my ($class) = ($self->LookupType =~ /^([^-]+)/);
+    my $type = shift || $self->LookupType;
+    my ($class) = ($type =~ /^([^-]+)/);
     unless ( $class ) {
-        $RT::Logger->error(
-            "Custom Field #". $self->id 
-            ." has incorrect LookupType '". $self->LookupType ."'"
-        );
+        if (blessed($self) and $self->LookupType eq $type) {
+            $RT::Logger->error(
+                "Custom Field #". $self->id
+                ." has incorrect LookupType '$type'"
+            );
+        } else {
+            RT->Logger->error("Invalid LookupType passed as argument: $type");
+        }
+        return undef;
+    }
+    return $class;
+}
+
+=head1 ObjectTypeFromLookupType
+
+Returns the ObjectType used in ObjectCustomFieldValues rows for this CF
+
+Optionally takes a LookupType to use instead of using the value on the loaded
+record.  In this case, the method may be called on the class instead of an
+object.
+
+=cut
+
+sub ObjectTypeFromLookupType {
+    my $self = shift;
+    my $type = shift || $self->LookupType;
+    my ($class) = ($type =~ /([^-]+)$/);
+    unless ( $class ) {
+        if (blessed($self) and $self->LookupType eq $type) {
+            $RT::Logger->error(
+                "Custom Field #". $self->id
+                ." has incorrect LookupType '$type'"
+            );
+        } else {
+            RT->Logger->error("Invalid LookupType passed as argument: $type");
+        }
         return undef;
     }
     return $class;
@@ -1278,16 +1261,23 @@ sub Groupings {
 
     my @groups;
     if ( $record_class ) {
-        push @groups, keys %{ $config->{$record_class} || {} };
-        push @groups, keys %{ $BUILTIN_GROUPINGS{$record_class} || {} };
+        push @groups, sort {lc($a) cmp lc($b)} keys %{ $BUILTIN_GROUPINGS{$record_class} || {} };
+        if ( ref($config->{$record_class} ||= []) eq "ARRAY") {
+            my @order = @{ $config->{$record_class} };
+            while (@order) {
+                push @groups, shift(@order);
+                shift(@order);
+            }
+        } else {
+            @groups = sort {lc($a) cmp lc($b)} keys %{ $config->{$record_class} };
+        }
     } else {
-        push @groups, map { keys %$_ } values %$config;
-        push @groups, map { keys %$_ } values %BUILTIN_GROUPINGS;
+        my %all = (%$config, %BUILTIN_GROUPINGS);
+        @groups = sort {lc($a) cmp lc($b)} map {$self->Groupings($_)} grep {$_} keys(%all);
     }
 
     my %seen;
     return
-        sort { lc($a) cmp lc($b) }
         grep defined && length && !$seen{lc $_}++,
         @groups;
 }
@@ -1744,9 +1734,10 @@ sub ValuesForObject {
 }
 
 
-=head2 _ForObjectType PATH FRIENDLYNAME
+=head2 RegisterLookupType LOOKUPTYPE FRIENDLYNAME
 
-Tell RT that a certain object accepts custom fields
+Tell RT that a certain object accepts custom fields via a lookup type and
+provide a friendly name for such CFs.
 
 Examples:
 
@@ -1760,13 +1751,21 @@ This is a class method.
 
 =cut
 
-sub _ForObjectType {
+sub RegisterLookupType {
     my $self = shift;
     my $path = shift;
     my $friendly_name = shift;
 
-    $FRIENDLY_OBJECT_TYPES{$path} = $friendly_name;
+    $FRIENDLY_LOOKUP_TYPES{$path} = $friendly_name;
+}
 
+sub _ForObjectType {
+    RT->Deprecated(
+        Instead => 'RegisterLookupType',
+        Remove  => '4.4',
+    );
+    my $self = shift;
+    $self->RegisterLookupType(@_);
 }
 
 
@@ -1978,24 +1977,6 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=head2 Repeated
-
-Returns the current value of Repeated. 
-(In the database, Repeated is stored as smallint(6).)
-
-
-
-=head2 SetRepeated VALUE
-
-
-Set Repeated to VALUE. 
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Repeated will be stored as a smallint(6).)
-
-
-=cut
-
-
 =head2 BasedOn
 
 Returns the current value of BasedOn. 
@@ -2138,8 +2119,6 @@ sub _CoreAccessible {
         {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         Pattern => 
         {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
-        Repeated => 
-        {read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '0'},
         ValuesClass => 
         {read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
         BasedOn => 

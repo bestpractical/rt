@@ -237,10 +237,11 @@ sub _list {
     return;
 }
 
-=head2 create NAME [--comment] [--group GNAME] [--user UNAME]
+=head2 create NAME [--comment] [--group GNAME] [--user NAME-OR-EMAIL]
 
 Creates new action with NAME and adds users and/or groups to its
-recipient list. Would be notify as comment if --comment specified.
+recipient list. Would be notify as comment if --comment specified.  The
+user, if specified, will be autocreated if necessary.
 
 =cut
 
@@ -287,8 +288,9 @@ sub __create_empty {
 
 sub _check_groups
 {
-    return grep { $_ ? 1: do { print STDERR "Group '$_' skipped, doesn't exist\n"; 0; } }
-        map { __check_group($_) } @_;
+    return map {$_->[1]}
+        grep { $_->[1] ? 1: do { print STDERR "Group '$_->[0]' skipped, doesn't exist\n"; 0; } }
+        map { [$_, __check_group($_)] } @_;
 }
 
 sub __check_group
@@ -302,8 +304,9 @@ sub __check_group
 
 sub _check_users
 {
-    return grep { $_ ? 1: do { print STDERR "User '$_' skipped, doesn't exist\n"; 0; } }
-        map { __check_user($_) } @_;
+    return map {$_->[1]}
+        grep { $_->[1] ? 1: do { print STDERR "User '$_->[0]' skipped, doesn't exist and couldn't autocreate\n"; 0; } }
+        map { [$_, __check_user($_)] } @_;
 }
 
 sub __check_user
@@ -312,12 +315,27 @@ sub __check_user
     require RT::User;
     my $obj = RT::User->new( RT->SystemUser );
     $obj->Load( $instance );
+    $obj->LoadByEmail( $instance )
+        if not $obj->id and $instance =~ /@/;
+
+    unless ($obj->id) {
+        my ($ok, $msg) = $obj->Create(
+            Name         => $instance,
+            EmailAddress => $instance,
+            Privileged   => 0,
+            Comments     => 'Autocreated when added to notify action via rt-email-group-admin',
+        );
+        print STDERR "Autocreate of user '$instance' failed: $msg\n"
+            unless $ok;
+    }
+
     return $obj->id ? $obj : undef;
 }
 
-=head2 add NAME [--group GNAME] [--user UNAME]
+=head2 add NAME [--group GNAME] [--user NAME-OR-EMAIL]
 
-Adds groups and/or users to recipients of the action NAME.
+Adds groups and/or users to recipients of the action NAME.  The user, if
+specified, will be autocreated if necessary.
 
 =cut
 

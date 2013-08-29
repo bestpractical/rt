@@ -72,7 +72,7 @@
 </tr>
 </table>
 
-
+% $m->callback(CallbackName => 'BeforeShowHistory', ARGSRef=> \%ARGS, Ticket => $Ticket );
 
 <& /Elements/ShowHistory,
       Object => $Ticket,
@@ -96,97 +96,57 @@ my @id = ( ref $id eq 'ARRAY' ) ? @{$id} : ($id);
 
 my $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
 
-if ( defined ($id[0]) && $id[0] eq 'new' ) {
-
-    # {{{ Create a new ticket
+if ( ($id[0]||'') eq 'new' ) {
 
     my $Queue = RT::Queue->new( $session{'CurrentUser'} );
-    unless ( $Queue->Load( $ARGS{'Queue'} ) ) {
-        $m->comp( 'Error.html', Why => loc('Queue not found') );
-        $m->abort;
-    }
+    Abort( loc('Queue not found') ) unless $Queue->Load( $ARGS{'Queue'} );
 
-    unless ( $Queue->CurrentUserHasRight('CreateTicket') ) {
-        $m->comp( 'Error.html',
-            Why =>
-              loc('You have no permission to create tickets in that queue.') );
-        $m->abort;
-    }
+    Abort( loc('You have no permission to create tickets in that queue.') )
+        unless $Queue->CurrentUserHasRight('CreateTicket');
 
+    ( $Ticket, @results ) = CreateTicket( %ARGS );
 
-    ( $Ticket, @results ) =
-    CreateTicket( Attachments => delete $session{'Attachments'}, %ARGS );
+    Abort( join("\n", @results ) ) unless $Ticket->id;
 
-    unless ( $Ticket->id ) {
-        $m->comp( 'Error.html', Why => join( "\n", @results ));
-              $m->abort();
-        }
-    }
-    else {
-        unless ( $Ticket->Load( $id[0] ) ) {
-            $m->comp( 'Error.html',
-                Why => loc( "Couldn't load ticket '[_1]'", $id ) );
-            $m->abort();
-        }
+}
+else {
+    $Ticket = LoadTicket($ARGS{'id'});
 
-    my ( $code, $msg );
-
-
-    if (
-        $session{'Attachments'}
-        || ( defined $ARGS{'UpdateContent'}
-            && $ARGS{'UpdateContent'} ne ''
-            && $ARGS{'UpdateContent'} ne "-- \n"
-            . $session{'CurrentUser'}->UserObj->Signature )
-      )
-    {
-        $ARGS{UpdateAttachments} = $session{'Attachments'};
-    }
     push @results, ProcessUpdateMessage(
         ARGSRef   => \%ARGS,
         TicketObj => $Ticket
     );
-    delete $session{'Attachments'};
 
     my @cfupdates = ProcessObjectCustomFieldUpdates(Object => $Ticket, ARGSRef => \%ARGS);
     push (@results, @cfupdates);
-
 
     #Update the status
     if (    ( defined $ARGS{'Status'} )
         and $ARGS{'Status'}
         and ( $ARGS{'Status'} ne $Ticket->Status ) )
     {
-        ( $code, $msg ) = $Ticket->SetStatus( $ARGS{'Status'} );
+        my ($code, $msg) = $Ticket->SetStatus( $ARGS{'Status'} );
         push @results, "$msg";
     }
 
+}
 
-    }
+# This code does automatic redirection if any updates happen.
 
-    # This code does automatic redirection if any updates happen.
+unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
+    Abort( loc("No permission to display that ticket") );
+}
 
-    unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
-        $m->comp( 'Error.html',
-            Why => loc("No permission to display that ticket") );
-        # XXX: Why abort? then we loose footer //ruz
-        $m->abort();
-    }
+MaybeRedirectForResults(
+    Actions   => \@results,
+    Path      => '/SelfService/Display.html',
+    Arguments => { 'id' => $Ticket->id },
+);
 
-    if (@results) {
-        # We've done something, so we need to clear the decks to avoid
-        # resubmission on refresh.
-        # But we need to store Actions somewhere too, so we don't lose them.
-        my $key = Digest::MD5::md5_hex(rand(1024));
-        push @{ $session{"Actions"}->{$key}  ||= [] }, @results;
-        $session{'i'}++;
-        RT::Interface::Web::Redirect( RT->Config->Get('WebURL') ."SelfService/Display.html?id=". $Ticket->id."&results=".$key);
-    }
-
-    my $LinkBasicsTitle = $Ticket->CurrentUserHasRight('ModifyTicket')
-                          || $Ticket->CurrentUserHasRight('ReplyToTicket');
-    my $title_box_link = RT->Config->Get('WebPath')."/SelfService/Update.html?id=".$Ticket->Id;
-    $m->callback(CallbackName => 'BeforeDisplay', Ticket => \$Ticket, ARGSRef => \%ARGS, title_box_link => \$title_box_link);
+my $LinkBasicsTitle = $Ticket->CurrentUserHasRight('ModifyTicket')
+                      || $Ticket->CurrentUserHasRight('ReplyToTicket');
+my $title_box_link = RT->Config->Get('WebPath')."/SelfService/Update.html?id=".$Ticket->Id;
+$m->callback(CallbackName => 'BeforeDisplay', Ticket => \$Ticket, ARGSRef => \%ARGS, title_box_link => \$title_box_link);
 </%INIT>
 
 

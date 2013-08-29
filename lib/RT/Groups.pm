@@ -141,7 +141,7 @@ Return only SystemInternal Groups, such as "privileged" "unprivileged" and "ever
 
 sub LimitToSystemInternalGroups {
     my $self = shift;
-    $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'SystemInternal');
+    $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'SystemInternal', CASESENSITIVE => 0 );
     # All system internal groups have the same instance. No reason to limit down further
     #$self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => '0');
 }
@@ -158,7 +158,7 @@ Return only UserDefined Groups
 
 sub LimitToUserDefinedGroups {
     my $self = shift;
-    $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'UserDefined');
+    $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'UserDefined', CASESENSITIVE => 0 );
     # All user-defined groups have the same instance. No reason to limit down further
     #$self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => '');
 }
@@ -178,7 +178,7 @@ L</LimitToRolesForSystem>.
 sub LimitToRolesForObject {
     my $self   = shift;
     my $object = shift;
-    $self->Limit(FIELD => 'Domain',   OPERATOR => '=', VALUE => ref($object) . "-Role");
+    $self->Limit(FIELD => 'Domain',   OPERATOR => '=', VALUE => ref($object) . "-Role", CASESENSITIVE => 0 );
     $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => $object->id)
         if $object->id and not ref($object) eq "RT::System";
 }
@@ -198,7 +198,7 @@ sub LimitToRolesForQueue {
         Instead => "LimitToRolesForObject",
         Remove => "4.4",
     );
-    $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'RT::Queue-Role');
+    $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'RT::Queue-Role', CASESENSITIVE => 0 );
     $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => $queue);
 }
 
@@ -219,7 +219,7 @@ sub LimitToRolesForTicket {
         Instead => "LimitToRolesForObject",
         Remove => "4.4",
     );
-    $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'RT::Ticket-Role');
+    $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'RT::Ticket-Role', CASESENSITIVE => 0 );
     $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => $Ticket);
 }
 
@@ -239,7 +239,7 @@ sub LimitToRolesForSystem {
         Instead => "LimitToRolesForObject",
         Remove => "4.4",
     );
-    $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'RT::System-Role');
+    $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'RT::System-Role', CASESENSITIVE => 0 );
 }
 
 
@@ -255,15 +255,15 @@ sub WithMember {
     my %args = ( PrincipalId => undef,
                  Recursively => undef,
                  @_);
-    my $members;
-
-    if ($args{'Recursively'}) {
-        $members = $self->NewAlias('CachedGroupMembers');
-    } else {
-        $members = $self->NewAlias('GroupMembers');
-    }
-    $self->Join(ALIAS1 => 'main', FIELD1 => 'id',
-                ALIAS2 => $members, FIELD2 => 'GroupId');
+    my $members = $self->Join(
+        ALIAS1 => 'main', FIELD1 => 'id',
+        $args{'Recursively'}
+            ? (TABLE2 => 'CachedGroupMembers')
+            # (GroupId, MemberId) is unique in GM table
+            : (TABLE2 => 'GroupMembers', DISTINCT => 1)
+        ,
+        FIELD2 => 'GroupId',
+    );
 
     $self->Limit(ALIAS => $members, FIELD => 'MemberId', OPERATOR => '=', VALUE => $args{'PrincipalId'});
     $self->Limit(ALIAS => $members, FIELD => 'Disabled', VALUE => 0)
@@ -286,6 +286,7 @@ sub WithoutMember {
         FIELD1 => 'id',
         TABLE2 => $members,
         FIELD2 => 'GroupId',
+        DISTINCT => $members eq 'GroupMembers',
     );
     $self->Limit(
         LEFTJOIN => $members_alias,
@@ -490,18 +491,6 @@ sub _DoSearch {
 
 }
 
-
-
-=head2 NewItem
-
-Returns an empty new RT::Group item
-
-=cut
-
-sub NewItem {
-    my $self = shift;
-    return(RT::Group->new($self->CurrentUser));
-}
 RT::Base->_ImportOverlays();
 
 1;

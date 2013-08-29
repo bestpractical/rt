@@ -46,13 +46,13 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-use 5.8.3;
+use 5.10.1;
 use strict;
 use warnings;
 
 use RT;
 RT::LoadConfig();
-RT->Config->Set('LogToScreen' => 'info');
+RT->Config->Set('LogToSTDERR' => 'info');
 RT::Init();
 
 my $dbh = $RT::Handle->dbh;

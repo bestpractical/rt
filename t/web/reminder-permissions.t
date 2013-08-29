@@ -86,7 +86,7 @@ qr!<input[^/]+name="Complete-Reminder-$root_reminder_id"[^/]+disabled="disabled"
     $m_a->tick( "Complete-Reminder-$user_a_reminder_id" => 1 );
     $m_a->submit;
     $m_a->text_contains(
-        "Reminder 'user_a reminder': Status changed from 'new' to 'resolved'",
+        "Reminder 'user_a reminder': Status changed from 'open' to 'resolved'",
         'complete user_a reminder' );
 
     $m_a->follow_link_ok( { id => 'page-reminders' } );
@@ -160,7 +160,7 @@ qr!<input[^/]+name="Complete-Reminder-$root_reminder_id"[^/]+disabled="disabled"
     $m_a->tick( "Complete-Reminder-$root_reminder_id" => 1 );
     $m_a->submit;
     $m_a->text_contains(
-        "Reminder 'root reminder': Status changed from 'new' to 'resolved'",
+        "Reminder 'root reminder': Status changed from 'open' to 'resolved'",
         'complete root reminder' );
 
     $m_a->follow_link_ok( { id => 'page-reminders' } );

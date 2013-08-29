@@ -57,8 +57,13 @@
 % my (@extra);
 % push @extra, titleright_raw => '<a href="'. RT->Config->Get('WebPath') . '/Ticket/Graphs/index.html?id='.$Ticket->id.'">'.loc('Graph').'</a>' unless RT->Config->Get('DisableGraphViz');
 <&| /Widgets/TitleBox, title => loc('Edit Links'), class=>'ticket-info-links', @extra &>
-<& /Elements/EditLinks, Object => $Ticket, Merge => 1 &>
+<& /Elements/EditLinks, Object => $Ticket &>
 </&>
+
+<&| /Widgets/TitleBox, title => loc('Merge'), class=>'ticket-info-merge' &>
+<& Elements/EditMerge, Ticket => $Ticket, %ARGS &>
+</&>
+
 <& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes') &>
 </form>
 

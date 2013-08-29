@@ -1,0 +1,2 @@
+UPDATE Tickets SET Subject = REPLACE(Subject,'\n',''), Status = LOWER(Status);
+UPDATE Transactions SET OldValue = LOWER(OldValue), NewValue = LOWER(NewValue) WHERE Type = 'Status' AND Field = 'Status';

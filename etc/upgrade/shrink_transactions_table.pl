@@ -46,7 +46,7 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-use 5.8.3;
+use 5.10.1;
 use strict;
 use warnings;
 
@@ -76,6 +76,7 @@ $txns->Limit(
     FIELD => 'Domain',
     OPERATOR => '=',
     VALUE => 'ACLEquivalence',
+    CASESENSITIVE => 0,
     QUOTEVALUE => 1,
     ENTRYAGGREGATOR => 'AND',
 );

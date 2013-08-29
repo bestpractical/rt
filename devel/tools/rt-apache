@@ -148,6 +148,7 @@ my @opts = ("-f", $conf, "-D" . uc($mod) );
 push @opts, "-DSSL" if $opt{ssl};
 push @opts, "-DRT3" if $opt{rt3};
 push @opts, "-DSINGLE" if $opt{single};
+push @opts, "-DREDIRECT" if $path;
 
 # Wait for a previous run to terminate
 if ( open( PIDFILE, "<", "$opt{root}/var/apache2.pid") ) {
@@ -329,6 +330,12 @@ DocumentRoot $RTHOME/share/html
     Order allow,deny
     Allow from all
 </Directory>
+
+<IfDefine REDIRECT>
+    LoadModule rewrite_module $MODULES/mod_rewrite.so
+    RewriteEngine on
+    RewriteRule ^(?!\Q$PATH\E) - [R=404]
+</IfDefine>
 
 <IfDefine !RT3>
 ########## 4.0 mod_perl

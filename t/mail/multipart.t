@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 4;
+use RT::Test tests => 4, config => q{Set($CorrespondAddress, 'rt@example.com');};
 use RT::Test::Email;
 
 my $queue = RT::Test->load_or_create_queue( Name => 'General' );
@@ -37,4 +37,4 @@ is(@msgs,2,"sent 2 emails");
 diag("We're skipping any testing of the autoreply");
 
 my $entity = parse_mail($msgs[1]);
-is($entity->parts, 0, "only one entity");
+is($entity->parts, 2, "only two parts");

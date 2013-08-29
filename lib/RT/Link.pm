@@ -226,20 +226,20 @@ sub LoadByParams {
 
     my $base = RT::URI->new($self->CurrentUser);
     $base->FromURI( $args{'Base'} )
-        or return (0, $self->loc("Couldn't parse Base URI: [_1]", $args{Base}));
+        or return wantarray ? (0, $self->loc("Couldn't parse Base URI: [_1]", $args{Base})) : 0;
 
     my $target = RT::URI->new($self->CurrentUser);
     $target->FromURI( $args{'Target'} )
-        or return (0, $self->loc("Couldn't parse Target URI: [_1]", $args{Target}));
+        or return wantarray ? (0, $self->loc("Couldn't parse Target URI: [_1]", $args{Target})) : 0;
 
     my ( $id, $msg ) = $self->LoadByCols( Base   => $base->URI,
                                           Type   => $args{'Type'},
                                           Target => $target->URI );
 
     unless ($id) {
-        return ( 0, $self->loc("Couldn't load link: [_1]", $msg) );
+        return wantarray ? ( 0, $self->loc("Couldn't load link: [_1]", $msg) ) : 0;
     } else {
-        return ($id, $msg);
+        return wantarray ? ($id, $msg) : $id;
     }
 }
 
@@ -259,14 +259,14 @@ sub Load {
 
 
     if ( $identifier !~ /^\d+$/ ) {
-        return ( 0, $self->loc("That's not a numerical id") );
+        return wantarray ? ( 0, $self->loc("That's not a numerical id") ) : 0;
     }
     else {
         my ( $id, $msg ) = $self->LoadById($identifier);
         unless ( $self->Id ) {
-            return ( 0, $self->loc("Couldn't load link") );
+            return wantarray ? ( 0, $self->loc("Couldn't load link") ) : 0;
         }
-        return ( $id, $msg );
+        return wantarray ? ( $id, $msg ) : $id;
     }
 }
 

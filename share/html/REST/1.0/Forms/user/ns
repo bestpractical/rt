@@ -57,7 +57,7 @@ my $field = "Name";
 $field = "EmailAddress" if $id =~ /\@/;
 
 my $users = RT::Users->new($session{CurrentUser});
-$users->Limit(FIELD => $field, OPERATOR => '=', VALUE => $id);
+$users->Limit(FIELD => $field, OPERATOR => '=', VALUE => $id, CASESENSITIVE => 0);
 if ($users->Count == 0) {
     return (0, "No user named $id exists.");
 }

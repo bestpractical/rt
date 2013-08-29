@@ -132,10 +132,7 @@ if ($ARGS{'id'} eq 'new') {
         Abort('You have no permission to create tickets in that queue.');
     }
 
-    ($TicketObj, @Actions) = CreateTicket(
-        Attachments => delete $session{'Attachments'},
-        %ARGS,
-    );
+    ($TicketObj, @Actions) = CreateTicket( %ARGS );
     unless ( $TicketObj->CurrentUserHasRight('ShowTicket') ) {
         Abort("No permission to view newly created ticket #".$TicketObj->id.".");
     }
@@ -165,14 +162,11 @@ if ($ARGS{'id'} eq 'new') {
                 ARGSRef => \%ARGS, 
                 Actions => \@Actions);
         
-        $ARGS{UpdateAttachments} = $session{'Attachments'};
-        push @Actions,
-            ProcessUpdateMessage(
+        push @Actions, ProcessUpdateMessage(
             ARGSRef   => \%ARGS,
             Actions   => \@Actions,
             TicketObj => $TicketObj,
-            );
-        delete $session{'Attachments'};
+        );
 
         #Process status updates
         push @Actions, ProcessTicketWatchers(ARGSRef => \%ARGS, TicketObj => $TicketObj );

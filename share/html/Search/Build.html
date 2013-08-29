@@ -188,9 +188,15 @@ my @options = $tree->GetDisplayedNodes;
 my @current_values = grep defined, @options[@clauses];
 my @new_values = ();
 
+my $cf_field_names =
+    join "|",
+     map quotemeta,
+    grep { $RT::Tickets::FIELD_METADATA{$_}->[0] eq 'CUSTOMFIELD' }
+    sort keys %RT::Tickets::FIELD_METADATA;
+
 # Try to find if we're adding a clause
 foreach my $arg ( keys %ARGS ) {
-    next unless $arg =~ m/^ValueOf(\w+|CF.{.*?})$/
+    next unless $arg =~ m/^ValueOf(\w+|($cf_field_names).\{.*?\})$/
                 && ( ref $ARGS{$arg} eq "ARRAY"
                      ? grep $_ ne '', @{ $ARGS{$arg} }
                      : $ARGS{$arg} ne '' );

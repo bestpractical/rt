@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => loc('RT Administration') &>
 <& /Elements/Tabs &>
-<& /Elements/ListMenu, menu => Menu()->child('tools')->child('config')  &>
+<& /Elements/ListMenu, menu => Menu()->child('admin')  &>
 % if (RT->Config->Get('ShowRTPortal')) {
 <& /Admin/Elements/Portal &>
 % }

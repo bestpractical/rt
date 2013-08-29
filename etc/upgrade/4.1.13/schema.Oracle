@@ -1,0 +1,3 @@
+UPDATE Groups SET Name = Type
+WHERE LOWER(Domain) IN ('aclequivalence', 'systeminternal') OR LOWER(Domain) LIKE '%-role';
+

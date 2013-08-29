@@ -75,10 +75,7 @@ require RT::Principals;
 require RT::Queues;
 require RT::Groups;
 
-use vars qw (
-  %LOWERCASERIGHTNAMES
-  %OBJECT_TYPES
-);
+our %RIGHTS;
 
 my (@_ACL_CACHE_HANDLERS);
 
@@ -123,7 +120,7 @@ sub LoadByValues {
     if ( $args{'RightName'} ) {
         my $canonic_name = $self->CanonicalizeRightName( $args{'RightName'} );
         unless ( $canonic_name ) {
-            return ( 0, $self->loc("Invalid right. Couldn't canonicalize right '[_1]'", $args{'RightName'}) );
+            return wantarray ? ( 0, $self->loc("Invalid right. Couldn't canonicalize right '[_1]'", $args{'RightName'}) ) : 0;
         }
         $args{'RightName'} = $canonic_name;
     }
@@ -134,14 +131,14 @@ sub LoadByValues {
                                      $args{'PrincipalType'} );
 
     unless ( $princ_obj->id ) {
-        return ( 0,
+        return wantarray ? ( 0,
                  $self->loc( 'Principal [_1] not found.', $args{'PrincipalId'} )
-        );
+        ) : 0;
     }
 
     my ($object, $object_type, $object_id) = $self->_ParseObjectArg( %args );
     unless( $object ) {
-        return ( 0, $self->loc("System error. Right not granted.") );
+        return wantarray ? ( 0, $self->loc("System error. Right not granted.")) : 0;
     }
 
     $self->LoadByCols( PrincipalId   => $princ_obj->Id,
@@ -152,11 +149,11 @@ sub LoadByValues {
 
     #If we couldn't load it.
     unless ( $self->Id ) {
-        return ( 0, $self->loc("ACE not found") );
+        return wantarray ? ( 0, $self->loc("ACE not found") ) : 0;
     }
 
     # if we could
-    return ( $self->Id, $self->loc("Right Loaded") );
+    return wantarray ? ( $self->Id, $self->loc("Right Loaded") ) : $self->Id;
 
 }
 
@@ -468,10 +465,14 @@ the correct case. If it's not found, will return undef.
 =cut
 
 sub CanonicalizeRightName {
-    my $self  = shift;
-    return $LOWERCASERIGHTNAMES{ lc shift };
+    my $self = shift;
+    my $name = shift;
+    for my $class (sort keys %RIGHTS) {
+        return $RIGHTS{$class}{ lc $name }{Name}
+            if $RIGHTS{$class}{ lc $name };
+    }
+    return undef;
 }
-
 
 
 
@@ -493,7 +494,7 @@ sub Object {
 
     my $appliesto_obj;
 
-    if ($self->__Value('ObjectType') && $OBJECT_TYPES{$self->__Value('ObjectType')} ) {
+    if ($self->__Value('ObjectType') && $self->__Value('ObjectType')->DOES('RT::Record::Role::Rights') ) {
         $appliesto_obj =  $self->__Value('ObjectType')->new($self->CurrentUser);
         unless (ref( $appliesto_obj) eq $self->__Value('ObjectType')) {
             return undef;

@@ -56,7 +56,8 @@
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS, Ticket => $TicketObj, CanRespond => $CanRespond, CanComment => $CanComment, ResponseDefault => $ResponseDefault, CommentDefault => $CommentDefault );
 <input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction}||'' %>" />
 <input type="hidden" class="hidden" name="DefaultStatus" value="<% $DefaultStatus ||''%>" />
-<input type="hidden" class="hidden" name="Action" value="<% $ARGS{Action}||'' %>" />
+<input type="hidden" class="hidden" name="Action" value="<% $Action %>" />
+<input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
 
 <& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
@@ -229,8 +230,8 @@ if ($Action ne 'Respond') {
 }
 
 my $type =             $ARGS{'UpdateType'} ? $ARGS{'UpdateType'} :
-           lc $ARGS{'Action'} eq 'respond' ? 'response'          :
-           lc $ARGS{'Action'} eq 'comment' ? 'private'           :
+           lc $Action eq 'respond' ? 'response'          :
+           lc $Action eq 'comment' ? 'private'           :
                                              'none'              ;
 
 
@@ -239,7 +240,6 @@ $CanRespond = 1 if ( $TicketObj->CurrentUserHasRight('ReplyToTicket') or
 
 $CanComment = 1 if ( $TicketObj->CurrentUserHasRight('CommentOnTicket') or
                      $TicketObj->CurrentUserHasRight('ModifyTicket') ); 
-
 
 ProcessAttachments(ARGSRef => \%ARGS);
 
@@ -298,6 +298,6 @@ if ( !$checks_failure && !$skip_update && exists $ARGS{SubmitTicket} ) {
 
 <%ARGS>
 $id => undef
-$Action => undef
+$Action => ''
 $DefaultStatus => undef
 </%ARGS>

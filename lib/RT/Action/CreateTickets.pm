@@ -61,7 +61,7 @@ RT::Action::CreateTickets - Create one or more tickets according to an externall
 
 =head1 SYNOPSIS
 
- ===Create-Ticket codereview
+ ===Create-Ticket: codereview
  Subject: Code review for {$Tickets{'TOP'}->Subject}
  Depended-On-By: TOP
  Content: Someone has created a ticket. you should review and approve it,
@@ -129,7 +129,7 @@ A convoluted example:
 
     my $groups = RT::Groups->new(RT->SystemUser);
     $groups->LimitToUserDefinedGroups();
-    $groups->Limit(FIELD => "Name", OPERATOR => "=", VALUE => "$name");
+    $groups->Limit(FIELD => "Name", OPERATOR => "=", VALUE => $name, CASESENSITIVE => 0);
     $groups->WithMember($TransactionObj->CreatorObj->Id);
 
     my $groupid = $groups->First->Id;
@@ -524,7 +524,7 @@ sub Parse {
 
 Parses mulitline templates. Things like:
 
- ===Create-Ticket ...
+ ===Create-Ticket: ...
 
 Takes the same arguments as L</Parse>.
 

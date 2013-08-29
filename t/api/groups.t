@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use RT::Test nodata => 1, tests => 27;
 
-RT::Group->AddRights(
+RT::Group->AddRight( General =>
     'RTxGroupRight' => 'Just a right for testing rights',
 );
 

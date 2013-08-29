@@ -81,30 +81,14 @@ my $LinkCallback = sub {
     }
 };
 
-my $linkUsers;
-$linkUsers = sub {
-    my ($what, $more) = @_;
-    if ($what->isa("RT::Group")) {
-        my @ret = map {$linkUsers->($_->[1], $more), ", "}
-            sort {$a->[0] cmp $b->[0]}
-            map {+[($_->EmailAddress||''), $_]}
-            @{ $what->UserMembersObj->ItemsArrayRef };
-        pop @ret; # Remove ending ", "
-        return @ret;
-    } else {
-        my @ret = \($m->scomp("/Elements/ShowUser", User => $what));
-        push @ret, $more->($what) if $more;
-        return @ret;
-    }
-};
 my $trustSub = sub {
     my $user = shift;
     require RT::Crypt::GnuPG;
     my %key = RT::Crypt::GnuPG::GetKeyInfo($user->EmailAddress);
     if (!defined $key{'info'}) {
-        return ' ' . loc("(no pubkey!)");
+        return $m->interp->apply_escapes(' ' . loc("(no pubkey!)"), "h");
     } elsif ($key{'info'}{'TrustLevel'} == 0) {
-        return ' ' . loc("(untrusted!)");
+        return $m->interp->apply_escapes(' ' . loc("(untrusted!)"), "h");
     }
 };
 
@@ -123,11 +107,6 @@ $COLUMN_MAP = {
         title     => 'Owner', # loc
         attribute => 'Owner',
         value     => sub { return $_[0]->OwnerObj->Name }
-    },
-    Owner => {
-        title     => 'Owner', # loc
-        attribute => 'Owner',
-        value     => sub { return $linkUsers->($_[0]->OwnerObj) }
     },
     Status => {
         title     => 'Status', # loc
@@ -208,21 +187,6 @@ $COLUMN_MAP = {
         title     => 'Time Estimated', # loc
         value     => sub { return $_[0]->TimeEstimated }
     },
-    Requestors => {
-        title     => 'Requestors', # loc
-        attribute => 'Requestor.EmailAddress',
-        value     => sub { return $linkUsers->( $_[0]->Requestors ) }
-    },
-    Cc => {
-        title     => 'Cc', # loc
-        attribute => 'Cc.EmailAddress',
-        value     => sub { return $linkUsers->( $_[0]->Cc ) }
-    },
-    AdminCc => {
-        title     => 'AdminCc', # loc
-        attribute => 'AdminCc.EmailAddress',
-        value     => sub { return $linkUsers->( $_[0]->AdminCc ) }
-    },
     StartsRelative => {
         title     => 'Starts', # loc
         attribute => 'Starts',
@@ -293,7 +257,7 @@ $COLUMN_MAP = {
     KeyRequestors => {
         title     => 'Requestors', # loc
         attribute => 'Requestor.EmailAddress',
-        value     => sub { return $linkUsers->($_[0]->Requestors, $trustSub); }
+        value     => sub { return \($m->scomp("/Elements/ShowPrincipal", Object => $_[0]->Requestor, PostUser => $trustSub ) ) }
     },
     KeyOwnerName => {
         title     => 'Owner', # loc
@@ -315,7 +279,7 @@ $COLUMN_MAP = {
     KeyOwner => {
         title     => 'Owner', # loc
         attribute => 'Owner',
-        value     => sub { return $linkUsers->($_[0]->OwnerObj, $trustSub); }
+        value     => sub { return \($m->scomp("/Elements/ShowPrincipal", Object => $_[0]->OwnerObj, PostUser => $trustSub ) ) }
     },
 
     # Everything from LINKTYPEMAP
@@ -344,18 +308,18 @@ $COLUMN_MAP = {
         },
     },
 };
-
+</%ONCE>
+<%init>
 # if no GPG support, then KeyOwnerName and KeyRequestors fall back to the regular
 # versions
 if (RT->Config->Get('GnuPG')->{'Enable'}) {
     require RT::Crypt::GnuPG;
 }
 else {
-    $COLUMN_MAP->{KeyOwnerName} = $COLUMN_MAP->{OwnerName};
-    $COLUMN_MAP->{KeyRequestors} = $COLUMN_MAP->{Requestors};
+    $COLUMN_MAP->{KeyOwnerName}  = $COLUMN_MAP->{OwnerName};
+    $COLUMN_MAP->{KeyRequestors} = $GenericMap->{Requestors};
 }
-</%ONCE>
-<%init>
+
 $m->callback( GenericMap => $GenericMap, COLUMN_MAP => $COLUMN_MAP, CallbackName => 'Once', CallbackOnce => 1 );
 return GetColumnMapEntry( Map => $COLUMN_MAP, Name => $Name, Attribute => $Attr );
 </%init>

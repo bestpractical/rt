@@ -78,20 +78,10 @@ sub Table { 'Principals'}
 
 sub _Init {
     my $self = shift;
+    $self->{'with_disabled_column'} = 1;
     return ( $self->SUPER::_Init(@_) );
 }
 
-
-=head2 NewItem
-
-Returns an empty new RT::Principal item
-
-=cut
-
-sub NewItem {
-    my $self = shift;
-    return(RT::Principal->new($self->CurrentUser));
-}
 RT::Base->_ImportOverlays();
 
 1;

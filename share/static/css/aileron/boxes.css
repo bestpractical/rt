@@ -1,0 +1,133 @@
+.titlebox {
+ margin-top: 1em;
+ margin-left: 1em;
+    margin-bottom: 2em;
+}
+
+.titlebox .titlebox-content {
+    border-left: 1px solid #ccc;
+    border-top: 1px solid #ccc;
+    background-color: #efefef;
+    -moz-border-radius: 0.5em;
+    -webkit-border-radius: 0.5em;
+    border-bottom: 2px solid #aaa;
+    border-right: 2px solid #aaa;
+    border-radius: 0.5em;
+    padding: 1.5em 1em 1em 1em;
+}
+
+* html .titlebox {
+ border-top: none;
+ border-left: none;
+}
+
+.titlebox .titlebox {
+
+ margin-top: 1em;
+ margin-right: 0.25em;
+
+}
+
+.titlebox .titlebox .titlebox-content {
+    background-color: white;
+}
+
+
+.titlebox {
+ margin-left: 0em;
+ margin-right: 0em;
+ min-height: 1.25em;
+
+}
+
+
+
+.titlebox .titlebox-title {
+ position: relative;
+}
+
+.titlebox .titlebox-title a {
+ text-decoration: none;
+ color: black;
+
+}
+
+.titlebox .titlebox-title a:hover {
+ text-decoration: underline;
+
+}
+
+.titlebox.rolled-up .titlebox-title {
+    border-bottom: 1px solid #ccc;
+}
+
+.titlebox.rolled-up .titlebox-title .right {
+    display: none;
+}
+
+.titlebox .titlebox-title .left {
+    font-weight: bold;
+    background: #ccc;
+    margin-left: 1em;
+    padding: 0.25em 0.75em 0.25em 2em;
+    line-height: 1.5em;
+    -webkit-border-top-left-radius: 0.3em;
+    -webkit-border-top-right-radius: 0.3em;
+    -moz-border-radius-topleft: 0.3em;
+    -moz-border-radius-topright: 0.3em;
+    border-radius: 0.3em 0.3em 0 0;
+    border-right: 2px solid #aaa;
+}
+
+.titlebox .titlebox-title .right-empty {
+ display:none;
+}
+
+.titlebox .titlebox-title .right {
+  position: absolute;
+   right: 2px;
+   top: 1.75em;
+  font-size: 0.9em;
+  background: #dedede;
+  border-left: 1px solid #ccc;
+ border-bottom: 1px solid #ccc;
+ padding-right: 0.4em;
+ padding-left: 0.4em;
+ padding-bottom: 0.2em;
+ padding-top: 0.5em;
+ -moz-border-radius-bottomleft: 0.25em;
+ -webkit-border-bottom-left-radius: 0.25em;
+
+
+ -moz-border-radius-topright: 0.25em;
+ -webkit-border-top-right-radius: 0.25em;
+
+  border-radius: 0 0.25em 0 0.25em;
+
+
+}
+
+.titlebox .titlebox-title .right a,
+.titlebox .titlebox-title .right a:visited {
+ color: #000;
+}
+
+.titlebox .titlebox-title .widget a {
+  display: block;
+  margin: 0;
+  width: 20px;
+
+  background: url(../../../static/images/css/rollup-arrow.gif) no-repeat;
+  background-position: center 0;
+  
+  position: absolute;
+  top: 0.5em;
+  left: 1.2em;
+  
+  padding: 7px 0 0 0;
+  overflow: hidden;
+}
+
+.titlebox.rolled-up .titlebox-title .widget a {
+    background-image: url(../../../static/images/css/rolldown-arrow.gif);
+}

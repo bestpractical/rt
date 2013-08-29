@@ -46,7 +46,7 @@ my %location = (
 );
 {
     note "testing Create";
-    $m->follow_link_ok({id => 'tools-config-users-create'}, 'Create ');
+    $m->follow_link_ok({id => 'admin-users-create'}, 'Create ');
 
     my $dom = $m->dom;
     $m->form_name('UserCreate');

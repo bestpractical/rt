@@ -101,4 +101,25 @@ sub ReminderStatusOnResolve {
     return $self->DefaultStatus('reminder_on_resolve') || 'resolved';
 }
 
+=head2 RegisterRights
+
+Ticket lifecycle rights are registered (and thus grantable) at the queue
+level.
+
+=cut
+
+sub RegisterRights {
+    my $self = shift;
+
+    my %rights = $self->RightsDescription( 'ticket' );
+
+    require RT::ACE;
+
+    while ( my ($right, $description) = each %rights ) {
+        next if RT::ACE->CanonicalizeRightName( $right );
+
+        RT::Queue->AddRight( Status => $right => $description );
+    }
+}
+
 1;

@@ -39,7 +39,7 @@ Logged in as -> Settings -> Options and selecting a different theme.
 
 RT has some built-in controls to manage the look of the theme you select.
 To use the Theme Editor, log in as a SuperUser (like root), and navigate
-to Tools -> Configuration -> Tools -> Theme.
+to Admin -> Tools -> Theme.
 
 =for html <img alt="RT theme editor, defaults" src="../images/theme_editor_defaults.png">
 
@@ -89,37 +89,17 @@ default CSS styles, via the C<@CSSFiles> configuration option.  To add
 an extra CSS file, for example F<my-site.css>, create the local overlay
 directory:
 
-    $ mkdir -p local/html/NoAuth/css/
+    $ mkdir -p local/static/css/
 
 And place your F<my-site.css> file in it.  Finally, adjust your
 C<@CSSFiles> in your F<RT_SiteConfig.pm>:
 
     Set( @CSSFiles, ('my-site.css') );
 
-This technique is preferred to callbacks (below) because CSS included
-via this way will be minified.  It is also included across all styles,
-unlike the callback technique.
+CSS added this way is included across all themes.
 
 If you are writing an extension, see L<RT/AddStyleSheets> for how to
 simply and programmatically add values to C<@CSSFiles>.
-
-=head2 Callbacks
-
-RT's CSS files are also Mason templates and the main CSS file,
-conveniently called C<main.css>, has a C<Begin> and C<End> callback
-allowing you to inject custom CSS.
-
-To create an End callback, create the callback directory and an
-End file in that directory:
-
-    $ mkdir -p local/html/Callbacks/MyRT/NoAuth/css/aileron/main.css
-    $ touch local/html/Callbacks/MyRT/NoAuth/css/aileron/main.css/End
-
-You can use any name you want for the C<MyRT> directory and the theme
-directory should correspond with the theme you want to change.
-
-RT will now evaluate the contents of that file after it processes all
-of the C<@import> statements in C<main.css>.
 
 
 =head1 Designing Your Own Theme
@@ -134,8 +114,8 @@ local modifications to RT. Run the following commands in your
 C</opt/rt4> directory (or wherever your RT is installed) to get
 started:
 
-    $ mkdir -p local/html/NoAuth/css/localstyle
-    $ cp -R share/html/NoAuth/css/aileron/* local/html/NoAuth/css/localstyle/
+    $ mkdir -p local/static/css/localstyle
+    $ cp -R share/static/css/aileron/* local/static/css/localstyle/
 
 You can call your "localstyle" directory whatever you want and you don't
 have to copy the aileron theme to start from, but it's a good place to

@@ -55,13 +55,13 @@ $request_path =~ s!/{2,}!/!g;
 my $query_string = sub {
     my %args = @_;
     my $u    = URI->new();
-    $u->query_form(%args);
+    $u->query_form(map { $_ => $args{$_} } sort keys %args);
     return $u->query;
 };
 
 my $build_admin_menu = sub {
     my $top = shift;
-    my $admin = $top->child( config => title => loc('Configuration'), path => '/Admin/', sort_order => 99 );
+    my $admin = $top->child( admin => title => loc('Admin'), path => '/Admin/' );
     if ( $session{'CurrentUser'}->HasRight( Object => RT->System, Right => 'AdminUsers' ) ) {
         my $users = $admin->child( users =>
             title       => loc('Users'),
@@ -297,10 +297,11 @@ my $build_admin_menu = sub {
                 $scrips->child( select => title => loc('Select'), path => "/Admin/Queues/Scrips.html?id=" . $id );
                 $scrips->child( create => title => loc('Create'), path => "/Admin/Scrips/Create.html?Queue=" . $id);
 
-                my $ticket_cfs = $queue->child( 'ticket-custom-fields' => title => loc('Ticket Custom Fields'),
+                my $cfs = $queue->child( 'custom-fields' => title => loc('Custom Fields') );
+                my $ticket_cfs = $cfs->child( 'tickets' => title => loc('Tickets'),
                     path => '/Admin/Queues/CustomFields.html?SubType=RT::Ticket&id=' . $id );
 
-                my $txn_cfs = $queue->child( 'transaction-custom-fields' => title => loc('Transaction Custom Fields'),
+                my $txn_cfs = $cfs->child( 'transactions' => title => loc('Transactions'),
                     path => '/Admin/Queues/CustomFields.html?SubType=RT::Ticket-RT::Transaction&id='.$id );
 
                 $queue->child( 'group-rights' => title => loc('Group Rights'), path => "/Admin/Queues/GroupRights.html?id=".$id );
@@ -311,7 +312,7 @@ my $build_admin_menu = sub {
             }
         }
     }
-    if ( $request_path =~ m{^/Admin/Users} ) {
+    if ( $request_path =~ m{^(/Admin/Users|/User/(Summary|History)\.html)} and $admin->child("users") ) {
         if ( $DECODED_ARGS->{'id'} && $DECODED_ARGS->{'id'} =~ /^\d+$/ ) {
             my $id = $DECODED_ARGS->{'id'};
             my $obj = RT::User->new( $session{'CurrentUser'} );
@@ -330,6 +331,7 @@ my $build_admin_menu = sub {
                 if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
                     $tabs->child( pgp     => title => loc('GnuPG'),          path => "/Admin/Users/GnuPG.html?id=" . $id );
                 }
+                $tabs->child( 'summary'   => title => loc('User Summary'),   path => "/User/Summary.html?id=" . $id );
             }
         }
 
@@ -486,21 +488,26 @@ my $build_main_nav = sub {
         $dashes->child('dashboard_create' => title => loc('New Dashboard'), path => "/Dashboards/Modify.html?Create=1" );
     }
 
-    my $search = Menu->child( search => title => loc('Search'), path => '/Search/' );
+    my $search = Menu->child( search => title => loc('Search'), path => '/Search/Simple.html' );
 
     my $tickets = $search->child( tickets => title => loc('Tickets'), path => '/Search/Build.html' );
     $tickets->child( simple => title => loc('Simple Search'), path => "/Search/Simple.html" );
     $tickets->child( new    => title => loc('New Search'),    path => "/Search/Build.html?NewQuery=1" );
 
-    $search->child( articles => title => loc('Articles'),   path => "/Articles/Article/Search.html" );
+    $search->child( articles => title => loc('Articles'),   path => "/Articles/Article/Search.html" )
+        if $session{CurrentUser}->HasRight( Right => 'ShowArticlesMenu', Object => RT->System );
 
     $search->child( users => title => loc('Users'),   path => "/User/Search.html" );
 
+    if ($session{CurrentUser}->HasRight( Right => 'ShowArticlesMenu', Object => RT->System )) {
+        my $articles = Menu->child( articles => title => loc('Articles'), path => "/Articles/index.html");
+        $articles->child( articles => title => loc('Overview'), path => "/Articles/index.html" );
+        $articles->child( topics   => title => loc('Topics'),   path => "/Articles/Topics.html" );
+        $articles->child( create   => title => loc('Create'),   path => "/Articles/Article/PreCreate.html" );
+        $articles->child( search   => title => loc('Search'),   path => "/Articles/Article/Search.html" );
+    }
 
     my $tools = Menu->child( tools => title => loc('Tools'), path => '/Tools/index.html' );
-    my $articles = $tools->child( articles => title => loc('Articles'), path => "/Articles/index.html");
-    $articles->child( articles => title => loc('Overview'), path => "/Articles/index.html" );
-    $articles->child( topics   => title => loc('Topics'),   path => "/Articles/Topics.html" );
 
     $tools->child( my_day =>
         title       => loc('My Day'),
@@ -516,12 +523,6 @@ my $build_main_nav = sub {
         );
     }
 
-    $tools->child( offline =>
-        title       => loc('Offline'),
-        description => loc('Create tickets offline'),
-        path        => '/Tools/Offline.html',
-    );
-
     if ( $session{'CurrentUser'}->HasRight( Right => 'ShowApprovalsTab', Object => RT->System ) ) {
         $tools->child( approval =>
             title       => loc('Approval'),
@@ -532,7 +533,7 @@ my $build_main_nav = sub {
 
     if ( $session{'CurrentUser'}->HasRight( Right => 'ShowConfigTab', Object => RT->System ) )
     {
-        $build_admin_menu->($tools);
+        $build_admin_menu->(Menu());
     }
 
     my $username = '<span class="current-user">'
@@ -541,6 +542,7 @@ my $build_main_nav = sub {
     my $about_me = Menu->child( 'preferences' =>
         title        => loc('Logged in as [_1]', $username),
         escape_title => 0,
+        path         => '/User/Summary.html?id=' . $session{CurrentUser}->id,
         sort_order   => 99,
     );
 
@@ -573,8 +575,8 @@ my $build_main_nav = sub {
         }
     }
     if ( $session{'CurrentUser'}->Name
-         && (   !RT->Config->Get('WebExternalAuth')
-              || RT->Config->Get('WebFallbackToInternalAuth') )) {
+         && (   !RT->Config->Get('WebRemoteUserAuth')
+              || RT->Config->Get('WebFallbackToRTLogin') )) {
         $about_me->child( logout => title => loc('Logout'), path => '/NoAuth/Logout.html' );
     }
     if ( $request_path =~ m{^/Dashboards/(\d+)?}) {
@@ -607,7 +609,7 @@ my $build_main_nav = sub {
                 $tabs->child( history => title => loc('History'), path => "/Ticket/History.html?id=" . $id );
 
                 my %can = %{ $obj->CurrentUser->PrincipalObj->HasRights( Object => $obj ) };
-                $can{'_ModifyOwner'} = $can{'OwnTicket'} || $can{'TakeTicket'} || $can{'StealTicket'};
+                $can{'_ModifyOwner'} = $obj->CurrentUserCanSetOwner();
                 my $can = sub {
                     unless ($_[0] eq 'ExecuteCode') {
                         return $can{$_[0]} || $can{'SuperUser'};
@@ -671,42 +673,31 @@ my $build_main_nav = sub {
 
                     my $action = $info->{'update'} || '';
                     my $url = '/Ticket/';
-                    if ($action) {
-                        $url .= "Update.html?"
-                            . $query_string->(
-                                Action        => $action,
-                                DefaultStatus => $next,
-                                id            => $id,
-                            );
-                    } else {
-                        $url .= "Display.html?"
-                            . $query_string->(
-                                Status => $next,
-                                id     => $id,
-                            );
-                    }
+                    $url .= "Update.html?". $query_string->(
+                        $action
+                            ? (Action        => $action)
+                            : (SubmitTicket  => 1, Status => $next),
+                        DefaultStatus => $next,
+                        id            => $id,
+                    );
                     my $key = $info->{'label'} || ucfirst($next);
                     $actions->child( $key => title => loc( $key ), path => $url);
                 }
 
-                if ( $can->('OwnTicket') ) {
-                    if ( $obj->OwnerObj->Id == RT->Nobody->id
-                         && ( $can->('ModifyTicket') or $can->('TakeTicket') ) ) {
-                        $actions->child( take => title => loc('Take'), path => "/Ticket/Display.html?Action=Take;id=" . $id );
-                    }
-
-                    elsif (    $obj->OwnerObj->id != RT->Nobody->id
-                            && $obj->OwnerObj->id != $session{CurrentUser}->id
-                            && ( $can->('ModifyTicket') or $can->('StealTicket') ) ) {
-                        $actions->child( steal => title => loc('Steal'), path => "/Ticket/Display.html?Action=Steal;id=" . $id );
-                    }
+                my ($can_take, $tmsg) = $obj->CurrentUserCanSetOwner( Type => 'Take' );
+                my ($can_steal, $smsg) = $obj->CurrentUserCanSetOwner( Type => 'Steal' );
+                if ( $can_take ){
+                    $actions->child( take => title => loc('Take'), path => "/Ticket/Display.html?Action=Take;id=" . $id );
+                }
+                elsif ( $can_steal ){
+                    $actions->child( steal => title => loc('Steal'), path => "/Ticket/Display.html?Action=Steal;id=" . $id );
                 }
 
                 # TODO needs a "Can extract article into a class applied to this queue" check
                 $actions->child( 'extract-article' =>
                     title => loc('Extract Article'),
                     path  => "/Articles/Article/ExtractIntoClass.html?Ticket=".$obj->id,
-                );
+                ) if $session{CurrentUser}->HasRight( Right => 'ShowArticlesMenu', Object => RT->System );
 
                 if ( defined $session{"tickets"} ) {
                     # we have to update session data if we get new ItemMap
@@ -902,22 +893,22 @@ my $build_main_nav = sub {
 
     }
 
-    if ( $request_path =~ m{^/User/Summary.html} ) {
-        my $admin = $session{'CurrentUser'}->HasRight(
-            Object => $RT::System, Right => 'AdminUsers'
-        );
-        my $config = $session{'CurrentUser'}->HasRight(
-            Object => $RT::System, Right => 'ShowConfigTab'
-        );
-        PageMenu()->child( edit => title => loc('Edit'), path => '/Admin/Users/Modify.html?id=' . $DECODED_ARGS->{'id'} )
-            if $admin && $config;
+    if ( $request_path =~ m{^/User/(Summary|History)\.html} ) {
+        if (PageMenu()->child('summary')) {
+            # Already set up from having AdminUser and ShowConfigTab;
+            # but rename "Basics" to "Edit" in this context
+            PageMenu()->child( 'basics' )->title( loc('Edit') );
+        } elsif ( $session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'ShowUserHistory' ) ) {
+            PageMenu()->child( display => title => loc('Summary'), path => '/User/Summary.html?id=' . $DECODED_ARGS->{'id'} );
+            PageMenu()->child( history => title => loc('History'), path => '/User/History.html?id=' . $DECODED_ARGS->{'id'} );
+        }
     }
 
     if ( $request_path =~ /^\/(?:index.html|$)/ ) {
         PageMenu()->child( edit => title => loc('Edit'), path => '/Prefs/MyRT.html' );
     }
 
-    $m->callback( CallbackName => 'Privileged' );
+    $m->callback( CallbackName => 'Privileged', Path => $request_path );
 };
 
 my $build_selfservice_nav = sub {
@@ -959,8 +950,8 @@ my $build_selfservice_nav = sub {
     }
 
     if ( $session{'CurrentUser'}->Name
-         && (   !RT->Config->Get('WebExternalAuth')
-              || RT->Config->Get('WebFallbackToInternalAuth') )) {
+         && (   !RT->Config->Get('WebRemoteUserAuth')
+              || RT->Config->Get('WebFallbackToRTLogin') )) {
         $about_me->child( logout => title => loc('Logout'), path => '/NoAuth/Logout.html' );
     }
 
@@ -970,7 +961,7 @@ my $build_selfservice_nav = sub {
 
     PageWidgets->child( goto => raw_html => $m->scomp('/SelfService/Elements/GotoTicket') );
 
-    $m->callback( CallbackName => 'SelfService' );
+    $m->callback( CallbackName => 'SelfService', Path => $request_path );
 };
 
 

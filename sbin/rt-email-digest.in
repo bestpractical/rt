@@ -87,6 +87,7 @@ sub usage {
     print "\t-p, --print\t"
         . loc("Print the resulting digest messages to STDOUT; don't mail them. Do not mark them as sent")
         . "\n";
+    print "\t-v, --verbose\t" . loc("Give output even on messages successfully sent") . "\n";
     print "\t-h, --help\t" . loc("Print this message") . "\n";
 
     if ( $error eq 'help' ) {
@@ -97,10 +98,11 @@ sub usage {
     }
 }
 
-my ( $frequency, $print, $help ) = ( '', '', '' );
+my ( $frequency, $print, $verbose, $help ) = ( '', '', '', '' );
 GetOptions(
     'mode=s' => \$frequency,
     'print'  => \$print,
+    'verbose' => \$verbose,
     'help'   => \$help,
 );
 
@@ -126,7 +128,7 @@ sub run {
         my ( $contents_list, $contents_body ) = build_digest_for_user( $user, $all_digest->{$user} );
         # Now we have a content head and a content body.  We can send a message.
         if ( send_digest( $user, $contents_list, $contents_body ) ) {
-            print "Sent message to $user\n";
+            print "Sent message to $user\n" if $verbose;
             mark_transactions_sent( $frequency, $user, values %{$sent_transactions->{$user}} ) unless ($print);
         } else {
             print "Failed to send message to $user\n";
@@ -256,7 +258,7 @@ sub find_transactions {
         my $queue  = $txn->TicketObj->QueueObj->Name;
         # Xxx todo - may clobber if two queues have the same name
         foreach my $user ( $txn->DeferredRecipients($frequency) ) {
-            $all_digest->{$user}->{$queue}->{$ticket}->{ $txn->id } = $txn->ContentObj;
+            $all_digest->{$user}->{$queue}->{$ticket}->{ $txn->id } = $txn;
             $sent_transactions->{$user}->{ $txn->id } = $txn;
         }
     }
@@ -300,12 +302,14 @@ sub build_digest_for_user {
             # Spit out the messages for the transactions on this ticket.
             $contents_body .= "\n== $ticket_title\n";
             foreach my $txn ( sort keys %$tkt_txns ) {
-                my $msg = $tkt_txns->{$txn};
+                my $top = $tkt_txns->{$txn}->Attachments->First;
 
-                # $msg contains an RT::Attachment with our outgoing
-                # message.  Print a few headers for clarity's sake.
-                $contents_body .= "From: " . $msg->GetHeader('From') . "\n";
-                my $date = $msg->GetHeader('Date ');
+                # $top contains the top-most RT::Attachment with our
+                # outgoing message.  It may not be the MIME part with
+                # the content.  Print a few headers from it for
+                # clarity's sake.
+                $contents_body .= "From: " . $top->GetHeader('From') . "\n";
+                my $date = $top->GetHeader('Date ');
                 unless ($date) {
                     my $txn_obj = RT::Transaction->new( RT->SystemUser );
                     $txn_obj->Load($txn);
@@ -318,7 +322,7 @@ sub build_digest_for_user {
                         @{ [ localtime( $date_obj->Unix ) ] } );
                 }
                 $contents_body .= "Date: $date\n\n";
-                $contents_body .= $msg->Content . "\n";
+                $contents_body .= $tkt_txns->{$txn}->ContentObj->Content . "\n";
                 $contents_body .= "-------\n";
             }    # foreach transaction
         }    # foreach ticket

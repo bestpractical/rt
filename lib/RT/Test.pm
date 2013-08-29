@@ -51,6 +51,7 @@ package RT::Test;
 use strict;
 use warnings;
 
+BEGIN { $^W = 1 };
 
 use base 'Test::More';
 
@@ -151,8 +152,6 @@ sub import {
 
     RT::LoadConfig;
 
-    if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
-
     RT::InitPluginPaths();
     RT::InitClasses();
 
@@ -187,6 +186,12 @@ sub import {
     while ( my ($package) = caller($level-1) ) {
         last unless $package =~ /Test/;
         $level++;
+    }
+
+    # By default we test HTML templates, but text templates are
+    # available on request
+    if ( $args{'text_templates'} ) {
+        $class->switch_templates_ok('text');
     }
 
     Test::More->export_to_level($level);
@@ -305,6 +310,9 @@ Set( \$ShowHistory, "always");
     } else {
         print $config "Set( \$DatabaseName , '$dbname');\n";
         print $config "Set( \$DatabaseUser , 'u${dbname}');\n";
+    }
+    if ( $ENV{'RT_TEST_DB_HOST'} ) {
+        print $config "Set( \$DatabaseHost , '$ENV{'RT_TEST_DB_HOST'}');\n";
     }
 
     if ( $args{'plugins'} ) {
@@ -717,7 +725,10 @@ sub load_or_create_user {
         my $groups_alias = $gms->Join(
             FIELD1 => 'GroupId', TABLE2 => 'Groups', FIELD2 => 'id',
         );
-        $gms->Limit( ALIAS => $groups_alias, FIELD => 'Domain', VALUE => 'UserDefined' );
+        $gms->Limit(
+            ALIAS => $groups_alias, FIELD => 'Domain', VALUE => 'UserDefined',
+            CASESENSITIVE => 0,
+        );
         $gms->Limit( FIELD => 'MemberId', VALUE => $obj->id );
         while ( my $group_member_record = $gms->Next ) {
             $group_member_record->Delete;
@@ -806,7 +817,10 @@ sub create_ticket {
     my $self = shift;
     my %args = @_;
 
-    if ($args{Queue} && $args{Queue} =~ /\D/) {
+    if ( blessed $args{'Queue'} ) {
+        $args{Queue} = $args{'Queue'}->id;
+    }
+    elsif ($args{Queue} && $args{Queue} =~ /\D/) {
         my $queue = RT::Queue->new(RT->SystemUser);
         if (my $id = $queue->Load($args{Queue}) ) {
             $args{Queue} = $id;
@@ -919,7 +933,7 @@ sub store_rights {
     my @res;
     while ( my $ace = $acl->Next ) {
         my $obj = $ace->PrincipalObj->Object;
-        if ( $obj->isa('RT::Group') && $obj->Type eq 'UserEquiv' && $obj->Instance == RT->Nobody->id ) {
+        if ( $obj->isa('RT::Group') && $obj->Domain eq 'ACLEquivalence' && $obj->Instance == RT->Nobody->id ) {
             next;
         }
 
@@ -952,7 +966,7 @@ sub set_rights {
     $acl->Limit( FIELD => 'RightName', OPERATOR => '!=', VALUE => 'SuperUser' );
     while ( my $ace = $acl->Next ) {
         my $obj = $ace->PrincipalObj->Object;
-        if ( $obj->isa('RT::Group') && $obj->Type eq 'UserEquiv' && $obj->Instance == RT->Nobody->id ) {
+        if ( $obj->isa('RT::Group') && $obj->Domain eq 'ACLEquivalence' && $obj->Instance == RT->Nobody->id ) {
             next;
         }
         $ace->Delete;
@@ -976,7 +990,7 @@ sub add_rights {
                 $principal = RT::Group->new( RT->SystemUser );
                 $principal->LoadRoleGroup(
                     Object  => ($e->{'Object'} || RT->System),
-                    Type    => $type
+                    Name    => $type
                 );
             }
             die "Principal is not an object nor the name of a system or role group"
@@ -994,6 +1008,46 @@ sub add_rights {
         }
     }
     return 1;
+}
+
+=head2 switch_templates_to TYPE
+
+This runs etc/upgrade/switch-templates-to in order to change the templates from
+HTML to text or vice versa.  TYPE is the type to switch to, either C<html> or
+C<text>.
+
+=cut
+
+sub switch_templates_to {
+    my $self = shift;
+    my $type = shift;
+
+    return $self->run_and_capture(
+        command => "$RT::EtcPath/upgrade/switch-templates-to",
+        args    => $type,
+    );
+}
+
+=head2 switch_templates_ok TYPE
+
+Calls L<switch_template_to> and tests the return values.
+
+=cut
+
+sub switch_templates_ok {
+    my $self = shift;
+    my $type = shift;
+
+    my ($exit, $output) = $self->switch_templates_to($type);
+    
+    if ($exit >> 8) {
+        Test::More::fail("Switched templates to $type cleanly");
+        diag("**** etc/upgrade/switch-templates-to exited with ".($exit >> 8).":\n$output");
+    } else {
+        Test::More::pass("Switched templates to $type cleanly");
+    }
+
+    return ($exit, $output);
 }
 
 sub run_mailgate {
@@ -1034,10 +1088,13 @@ sub run_and_capture {
 
     $cmd .= ' --debug' if delete $args{'debug'};
 
+    my $args = delete $args{'args'};
+
     while( my ($k,$v) = each %args ) {
         next unless $v;
         $cmd .= " --$k '$v'";
     }
+    $cmd .= " $args" if defined $args;
     $cmd .= ' 2>&1';
 
     DBIx::SearchBuilder::Record::Cachable->FlushCache;
@@ -1100,6 +1157,7 @@ sub send_via_mailgate {
 
 
 sub open_mailgate_ok {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
     my $class   = shift;
     my $baseurl = shift;
     my $queue   = shift || 'general';
@@ -1110,6 +1168,7 @@ sub open_mailgate_ok {
 
 
 sub close_mailgate_ok {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
     my $class = shift;
     my $mail  = shift;
     close $mail;
@@ -1117,6 +1176,7 @@ sub close_mailgate_ok {
 }
 
 sub mailsent_ok {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
     my $class = shift;
     my $expected  = shift;
 
@@ -1522,6 +1582,7 @@ sub test_app {
 }
 
 sub start_plack_server {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
     my $self = shift;
 
     require Plack::Loader;
@@ -1572,6 +1633,7 @@ sub start_plack_server {
 
 our $TEST_APP;
 sub start_inline_server {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
     my $self = shift;
 
     require Test::WWW::Mechanize::PSGI;
@@ -1589,6 +1651,7 @@ sub start_inline_server {
 }
 
 sub start_apache_server {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
     my $self = shift;
     my %server_opt = @_;
     $server_opt{variant} ||= 'mod_perl';

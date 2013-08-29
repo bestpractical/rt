@@ -105,7 +105,7 @@ See also 'rt-shredder --help'.
 =head2 Web based interface (WebUI)
 
 Shredder's WebUI integrates into RT's WebUI.  You can find it in the
-Configuration->Tools->Shredder tab.  The interface is similar to the
+Admin->Tools->Shredder tab.  The interface is similar to the
 CLI and gives you the same functionality. You can find 'Shredder' link
 at the bottom of tickets search results, so you could wipeout tickets
 in the way similar to the bulk update.
@@ -195,7 +195,6 @@ objects in the cache and backups storage.
 
 =cut
 
-our $VERSION = '0.04';
 use File::Spec ();
 
 

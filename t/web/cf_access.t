@@ -12,7 +12,7 @@ ok $m->login, 'logged in';
 
 diag "Create a CF";
 {
-    $m->follow_link( id => 'tools-config-custom-fields-create');
+    $m->follow_link( id => 'admin-custom-fields-create');
 
     # Test form validation
     $m->submit_form(
@@ -94,10 +94,10 @@ diag "apply the CF to General queue";
 my ( $cf, $cfid, $tid );
 {
     $m->title_is(q/Editing CustomField img/, 'admin-cf created');
-    $m->follow_link( id => 'tools-config-queues');
+    $m->follow_link( id => 'admin-queues');
     $m->follow_link( text => 'General' );
     $m->title_is(q/Configuration for queue General/, 'admin-queue: general');
-    $m->follow_link( id => 'page-ticket-custom-fields');
+    $m->follow_link( id => 'page-custom-fields-tickets');
     $m->title_is(q/Custom Fields for queue General/, 'admin-queue: general cfid');
     $m->form_name('EditCustomFields');
 

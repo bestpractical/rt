@@ -65,10 +65,6 @@ use warnings;
 package RT::Squish::JS;
 use base 'RT::Squish';
 
-use HTTP::Message::PSGI;
-use HTTP::Request;
-use HTTP::Response;
-
 =head2 Squish
 
 not only concatenate files, but also minify them
@@ -78,16 +74,10 @@ not only concatenate files, but also minify them
 sub Squish {
     my $self    = shift;
     my $content = "";
-    my $static  = RT::Interface::Web::Handler->StaticWrap(
-        # Anything the static wrap doesn't handle gets 404'd.
-        sub { [404, [], []] }
-    );
 
     for my $file ( RT::Interface::Web->JSFiles ) {
         my $uri = "/static/js/$file";
-        my $res = HTTP::Response->from_psgi(
-            $static->( HTTP::Request->new(GET => $uri)->to_psgi )
-        );
+        my $res = RT::Interface::Web::Handler->GetStatic($uri);
 
         if ($res->is_success) {
             $content .= $res->decoded_content;

@@ -1,0 +1,145 @@
+=encoding utf-8
+
+=head1 Feeds
+
+RT offers several feeds that provide RT data in formats suitable for
+integrating with external applications. This document describes the
+available feeds and some ways they can be used.
+
+The feeds are based on a ticket search you create using the RT Query
+Builder, available at Tickets > New Search or, starting in RT 4.2,
+Search > Tickets > New Search. After you create your search, the
+search results page has a Feeds menu in the upper right-hand corner.
+That menu contains the feeds described below.
+
+=head2 Spreadsheet
+
+If you click the Spreadsheet link, a tab-separated values (.tsv) file is
+downloaded containing the results from the search you performed in the
+browser. You can then import the file into a spreadsheet application like
+the OpenOffice spreadsheet or Microsoft Excel.
+
+Pulling ticket data into a spreadsheet can be handy if you want to
+manipulate a subset of your ticket data outside of RT. Depending on
+what you're doing with the data, once you have it in the form
+you need (sorted, summed, etc.) you can sometimes reproduce the report
+back in RT. This has the advatage of making it dynamic and you can share
+the resulting report with other users as a shared search or dashboard.
+
+Depending on your browser brand and settings, the downloaded spreadsheet
+may be given a .xls extension, a .tsv extension, or no extension at all.
+If it gets a .xls extension, the spreadsheet file will likely already be
+associated with a spreadsheet application. In this case, you can
+double-click on the file to open it. You may see a warning about the file
+format, since it is a tsv file and not a .xls file, and then the application
+will either convert the file automatically or open a dialog to guide you.
+
+If your system doesn't automatically associate the tsv file, the following
+sections describe how to manually import a tsv file in some common
+applications.
+
+=head3 Importing into Microsoft Excel
+
+If the file is given a .tsv extension or no extension, here's how to open
+it in Excel 2010:
+
+=over
+
+=item 1.
+
+Select File > Open, locate the file on your system and click Open.
+
+=item 2.
+
+In the Text Import Wizard, select Delimited, import starting at row 1,
+and leave the default File origin. Click Next.
+
+=item 3.
+
+In the Delimiters section, select Tab if it isn't selected by default.
+Leave the other settings with default values. Click Next.
+
+=item 4.
+
+The last dialog lets you define the column formats for the imported columns.
+You can also exclude some columns from the import. 'General' will try to
+guess for you. Click Finish.
+
+=back
+
+=head3 Importing into OpenOffice
+
+If OpenOffice doesn't automatically open the Text Import dialog when
+you try to open the file, here's how to open a tsv manually:
+
+=over
+
+=item 1.
+
+Open a new Spreadsheet document
+
+=item 2.
+
+Select Insert > Sheet From File...
+
+=item 3.
+
+In the file selection dialog, find the file downloaded from RT. By default,
+the name is Results.
+
+=item 4.
+
+In the Separator options, click the checkbox Separated by: Tab. Uncheck any
+other options that might be checked. Click OK.
+
+=item 5.
+
+On the Insert Sheet dialog, select where you want to put the new sheet and
+click OK.
+
+=back
+
+=head2 RSS
+
+You can use the RSS feed to subscribe using your RSS feed reader of
+choice. The feed entries provide the ticket subject, a link to the
+ticket, and the content of the first transaction on the ticket.
+
+=head2 iCal
+
+The iCal link uses your search to provide a feed suitable
+for subscribing to from a calendaring application like Mozilla Lightning
+(the Thunderbird calendar), Google Calendar, Microsoft Outlook, or Apple
+iCal. You can copy the link and use your calendar application's subscribe
+feature to pull in and display ticket dates.
+
+The feed provides Starts and Due dates from the selected tickets. In
+RT 4.0, the calendar events are day-long events, which can be handled
+differently in different calendar applications. The events also contain
+a URL linking to the ticket and some calendars will display this link
+with the event.
+
+RT 4.2 adds the L<RT_Config/$TimeInICal> option, which will include times
+in the iCal feed so you can have calendar events at a specific time. In
+addition, you can provide C<SingleEvent=1> as an additional query parameter
+to have tickets generate a single event using the Start and Due dates/times
+as the start and end values for the event. You can put the parameter on the
+end of the iCal feed URL, for example:
+
+    https://myrt.example.com/NoAuth/iCal/user/...?SingleEvent=1
+
+This is useful if you have tickets with shorter durations, like scheduled
+maintenance for example.
+
+=head2 Secret Tokens
+
+All of your RSS and iCal feeds embed a secret token that is specific to your RT
+user account.  You should never share your feed urls with other people,
+otherwise they can see tickets as your user.  If one of your feed urls is
+accidentally shared, you can reset your token to disable all old feed urls.  To
+do so, start by logging into RT and go to Logged in as … > Settings > About me.
+In the lower right-hand corner, there is a link "I want to reset my secret
+token" and it does just that.
+
+Note that this will disable all of your existing feeds. After updating
+the token, you'll need to update all of your feed urls.

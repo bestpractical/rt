@@ -279,6 +279,7 @@ sub Create {
         $args{'Status'} = $cycle->DefaultOnCreate;
     }
 
+    $args{'Status'} = lc $args{'Status'};
     unless ( $cycle->IsValid( $args{'Status'} ) ) {
         return ( 0, 0,
             $self->loc("Status '[_1]' isn't a valid status for tickets in this queue.",
@@ -363,6 +364,11 @@ sub Create {
     # Figure out users for roles
     my $roles = {};
     push @non_fatal_errors, $self->_ResolveRoles( $roles, %args );
+
+    $args{'Type'} = lc $args{'Type'}
+        if $args{'Type'} =~ /^(ticket|approval|reminder)$/i;
+
+    $args{'Subject'} =~ s/\n//g;
 
     $RT::Handle->BeginTransaction();
 
@@ -566,66 +572,14 @@ sub Create {
     }
 }
 
+sub SetType {
+    my $self = shift;
+    my $value = shift;
 
-
-
-=head2 _Parse822HeadersForAttributes Content
-
-Takes an RFC822 style message and parses its attributes into a hash.
-
-=cut
-
-sub _Parse822HeadersForAttributes {
-    my $self    = shift;
-    my $content = shift;
-    my %args;
-
-    my @lines = ( split ( /\n/, $content ) );
-    while ( defined( my $line = shift @lines ) ) {
-        if ( $line =~ /^(.*?):(?:\s+(.*))?$/ ) {
-            my $value = $2;
-            my $tag   = lc($1);
-
-            $tag =~ s/-//g;
-            if ( defined( $args{$tag} ) )
-            {    #if we're about to get a second value, make it an array
-                $args{$tag} = [ $args{$tag} ];
-            }
-            if ( ref( $args{$tag} ) )
-            {    #If it's an array, we want to push the value
-                push @{ $args{$tag} }, $value;
-            }
-            else {    #if there's nothing there, just set the value
-                $args{$tag} = $value;
-            }
-        } elsif ($line =~ /^$/) {
-
-            #TODO: this won't work, since "" isn't of the form "foo:value"
-
-                while ( defined( my $l = shift @lines ) ) {
-                    push @{ $args{'content'} }, $l;
-                }
-            }
-        
-    }
-
-    foreach my $date (qw(due starts started resolved)) {
-        my $dateobj = RT::Date->new(RT->SystemUser);
-        if ( defined ($args{$date}) and $args{$date} =~ /^\d+$/ ) {
-            $dateobj->Set( Format => 'unix', Value => $args{$date} );
-        }
-        else {
-            $dateobj->Set( Format => 'unknown', Value => $args{$date} );
-        }
-        $args{$date} = $dateobj->ISO;
-    }
-    $args{'mimeobj'} = MIME::Entity->new();
-    $args{'mimeobj'}->build(
-        Type => ( $args{'contenttype'} || 'text/plain' ),
-        Data => ($args{'content'} || '')
-    );
-
-    return (%args);
+    # Force lowercase on internal RT types
+    $value = lc $value
+        if $value =~ /^(ticket|approval|reminder)$/i;
+    return $self->_Set(Field => 'Type', Value => $value, @_);
 }
 
 =head2 OwnerGroup
@@ -836,18 +790,23 @@ sub CcAddresses {
 
 
 
-=head2 Requestors
+=head2 Requestor
 
 Takes nothing.
 Returns this ticket's Requestors as an RT::Group object
 
 =cut
 
-sub Requestors {
+sub Requestor {
     my $self = shift;
     return RT::Group->new($self->CurrentUser)
         unless $self->CurrentUserHasRight('ShowTicket');
     return $self->RoleGroup( 'Requestor' );
+}
+
+sub Requestors {
+    my $self = shift;
+    return $self->Requestor;
 }
 
 
@@ -1168,6 +1127,13 @@ sub QueueObj {
     return ($self->{_queue_obj});
 }
 
+sub SetSubject {
+    my $self = shift;
+    my $value = shift;
+    $value =~ s/\n//g;
+    return $self->_Set( Field => 'Subject', Value => $value );
+}
+
 =head2 SubjectTag
 
 Takes nothing. Returns SubjectTag for this ticket. Includes
@@ -1322,16 +1288,6 @@ sub SetStarted {
     else {
         $time_obj->SetToNow();
     }
-
-    # We need $TicketAsSystem, in case the current user doesn't have
-    # ShowTicket
-    my $TicketAsSystem = RT::Ticket->new(RT->SystemUser);
-    $TicketAsSystem->Load( $self->Id );
-    # Now that we're starting, open this ticket
-    # TODO: do we really want to force this as policy? it should be a scrip
-    my $next = $TicketAsSystem->FirstActiveStatus;
-
-    $self->SetStatus( $next ) if defined $next;
 
     return ( $self->_Set( Field => 'Started', Value => $time_obj->ISO ) );
 
@@ -2067,17 +2023,11 @@ sub SetOwner {
 
     my $NewOwnerObj = RT::User->new( $self->CurrentUser );
     $NewOwnerObj->Load( $NewOwner );
-    unless ( $NewOwnerObj->Id ) {
-        $RT::Handle->Rollback();
-        return ( 0, $self->loc("That user does not exist") );
-    }
 
-    if ( !$self->_CurrentUserHasRightToSetOwner ) {
-        $RT::Handle->Rollback();
-        return ( 0, $self->loc("Permission Denied") );
-    }
+    my ( $val, $msg ) = $self->CurrentUserCanSetOwner(
+                            NewOwnerObj => $NewOwnerObj,
+                            Type        => $Type );
 
-    my ( $val, $msg ) = $self->_IsProposedOwnerChangeValid( $NewOwnerObj, $Type );
     unless ($val) {
         $RT::Handle->Rollback();
         return ( $val, $msg );
@@ -2101,67 +2051,179 @@ sub SetOwner {
     return ( $val, $msg );
 }
 
-sub _CurrentUserHasRightToSetOwner {
+=head2 CurrentUserCanSetOwner
+
+Confirm the current user can set the owner of the current ticket.
+
+There are several different rights to manage owner changes and
+this method evaluates these rights, guided by parameters provided.
+
+This method evaluates these rights in the context of the state of
+the current ticket. For example, it evaluates Take for tickets that
+are owned by Nobody because that is the context appropriate for the
+TakeTicket right. If you need to strictly test a user for a right,
+use HasRight to check for the right directly.
+
+=head3 Rights to Set Owner
+
+The current user can set or change the Owner field in the following
+cases:
+
+=over
+
+=item *
+
+ReassignTicket unconditionally grants the right to set the owner
+to any user who has OwnTicket. This can be used to break an
+Owner lock held by another user (see below) and can be a convenient
+right for managers or administrators who need to assign tickets
+without necessarily owning them.
+
+=item *
+
+ModifyTicket grants the right to set the owner to any user who
+has OwnTicket, provided the ticket is currently owned by the current
+user or is not owned (owned by Nobody). (See the details on the Force
+parameter below for exceptions to this.)
+
+=item *
+
+If the ticket is currently not owned (owned by Nobody),
+TakeTicket is sufficient to set the owner to yourself (but not
+an arbitrary person), but only if you have OwnTicket. It is
+thus a subset of the possible changes provided by ModifyTicket.
+This exists to allow granting TakeTicket freely, and
+the broader ModifyTicket only to Owners.
+
+=item *
+
+If the ticket is currently owned by someone who is not you or
+Nobody, StealTicket is sufficient to set the owner to yourself,
+but only if you have OwnTicket. This is hence non-overlapping
+with the changes provided by ModifyTicket, and is used to break
+a lock held by another user.
+
+=back
+
+=head3 Parameters
+
+This method returns ($result, $message) with $result containing
+true or false indicating if the current user can set owner and $message
+containing a message, typically in the case of a false response.
+
+If called with no parameters, this method determines if the current
+user could set the owner of the current ticket given any
+permutation of the rights described above. This can be useful
+when determining whether to make owner-setting options available
+in the GUI.
+
+This method accepts the following parameters as a paramshash:
+
+NewOwnerObj: Optional. A user object representing the proposed
+new owner of the ticket.
+
+Type: Optional. The type of set owner operation. Valid values are Take,
+Steal, or Force.
+
+As noted above, there are exceptions to the standard ticket-based rights
+described here. The Force option allows for these and is used
+when moving tickets between queues, for reminders (because the full
+owner rights system is too complex for them), and optionally during
+bulk update.
+
+=cut
+
+sub CurrentUserCanSetOwner {
     my $self = shift;
-    # must have ModifyTicket rights
-    # or TakeTicket/StealTicket and $NewOwner is self
-    # see if it's a take
+    my %args = ( Type => '',
+                 @_);
     my $OldOwnerObj = $self->OwnerObj;
+
+    # Confirm rights for new owner if we got one
+    if ( $args{'NewOwnerObj'} ){
+        my ($ok, $message) = $self->_NewOwnerCanOwnTicket($args{'NewOwnerObj'}, $OldOwnerObj);
+        return ($ok, $message) if not $ok;
+    }
+
+    # ReassignTicket unconditionally allows you to SetOwner
+    return (1, undef) if $self->CurrentUserHasRight('ReassignTicket');
+
+    # Ticket is unowned
+    # Can set owner to yourself withn ModifyTicket or TakeTicket
+    # and OwnTicket.
     if ( $OldOwnerObj->Id == RT->Nobody->Id ) {
-        unless (    $self->CurrentUserHasRight('ModifyTicket')
-                 || $self->CurrentUserHasRight('TakeTicket') ) {
-            return 0;
+
+        # Steal is not applicable for unowned tickets.
+        if ( $args{'Type'} eq 'Steal' ){
+            return ( 0, $self->loc("You can only steal a ticket owned by someone else") )
+        }
+
+        unless ( (  $self->CurrentUserHasRight('ModifyTicket')
+                 or $self->CurrentUserHasRight('TakeTicket') )
+                 and $self->CurrentUserHasRight('OwnTicket') ) {
+            return ( 0, $self->loc("Permission Denied") );
         }
     }
 
-    # see if it's a steal
+    # Ticket is owned by someone else
+    # Can set owner to yourself with ModifyTicket or StealTicket
+    # and OwnTicket.
     elsif (    $OldOwnerObj->Id != RT->Nobody->Id
             && $OldOwnerObj->Id != $self->CurrentUser->id ) {
 
         unless (    $self->CurrentUserHasRight('ModifyTicket')
                  || $self->CurrentUserHasRight('StealTicket') ) {
-            return 0;
+            return ( 0, $self->loc("Permission Denied") )
         }
-    }
-    else {
-        unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
-            return 0;
+
+        if ( $args{'Type'} eq 'Steal' || $args{'Type'} eq 'Force' ){
+            return ( 1, undef ) if $self->CurrentUserHasRight('OwnTicket');
+            return ( 0, $self->loc("Permission Denied") );
         }
-    }
-    return 1;
-}
 
-sub _IsProposedOwnerChangeValid {
-    my $self        = shift;
-    my $NewOwnerObj = shift;
-    my $Type        = shift;
-
-    my $OldOwnerObj = $self->OwnerObj;
-
-    # If we're not stealing and the ticket has an owner and it's not
-    # the current user
-    if (     $Type ne 'Steal' and $Type ne 'Force'
-         and $OldOwnerObj->Id != RT->Nobody->Id
-         and $OldOwnerObj->Id != $self->CurrentUser->Id ) {
-        if ( $NewOwnerObj->id == $self->CurrentUser->id) {
-            return ( 0, $self->loc("You can only take tickets that are unowned") )
+        # Not a steal or force
+        if ( $args{'Type'} eq 'Take'
+             or ( $args{'NewOwnerObj'}
+                  and $args{'NewOwnerObj'}->id == $self->CurrentUser->id )) {
+            return ( 0, $self->loc("You can only take tickets that are unowned") );
         }
         else {
             return ( 0, $self->loc( "You can only reassign tickets that you own or that are unowned"));
         }
+
+    }
+    # You own the ticket
+    # Untake falls through to here, so we don't need to explicitly handle that Type
+    else {
+        unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
+            return ( 0, $self->loc("Permission Denied") );
+        }
     }
 
-    #If we've specified a new owner and that user can't modify the ticket
-    elsif ( !$NewOwnerObj->HasRight( Right => 'OwnTicket', Object => $self ) )
-    {
+    return ( 1, undef );
+}
+
+# Verify the proposed new owner can own the ticket.
+
+sub _NewOwnerCanOwnTicket {
+    my $self = shift;
+    my $NewOwnerObj = shift;
+    my $OldOwnerObj = shift;
+
+    unless ( $NewOwnerObj->Id ) {
+        return ( 0, $self->loc("That user does not exist") );
+    }
+
+    # The proposed new owner can't own the ticket
+    if ( !$NewOwnerObj->HasRight( Right => 'OwnTicket', Object => $self ) ){
         return ( 0, $self->loc("That user may not own tickets in that queue") );
     }
 
-    # If the ticket has an owner and it's the new owner, we don't need
-    # To do anything
+    # Ticket's current owner is the same as the new owner, nothing to do
     elsif ( $NewOwnerObj->Id == $OldOwnerObj->Id ) {
         return ( 0, $self->loc("That user already owns that ticket") );
     }
+
     return (1, undef);
 }
 
@@ -2264,6 +2326,7 @@ sub _SetStatus {
         Lifecycle => $self->LifecycleObj,
         @_,
     );
+    $args{Status} = lc $args{Status} if defined $args{Status};
     $args{NewLifecycle} ||= $args{Lifecycle};
 
     my $now = RT::Date->new( $self->CurrentUser );
@@ -2746,28 +2809,6 @@ sub _UpdateTimeTaken {
     return ($Total);
 }
 
-
-
-
-
-=head2 CurrentUserHasRight
-
-  Takes the textual name of a Ticket scoped right (from RT::ACE) and returns
-1 if the user has that right. It returns 0 if the user doesn't have that right.
-
-=cut
-
-sub CurrentUserHasRight {
-    my $self  = shift;
-    my $right = shift;
-
-    return $self->CurrentUser->PrincipalObj->HasRight(
-        Object => $self,
-        Right  => $right,
-    )
-}
-
-
 =head2 CurrentUserCanSee
 
 Returns true if the current user can see the ticket, using ShowTicket
@@ -2776,43 +2817,29 @@ Returns true if the current user can see the ticket, using ShowTicket
 
 sub CurrentUserCanSee {
     my $self = shift;
-    return $self->CurrentUserHasRight('ShowTicket');
-}
+    my ($what, $txn) = @_;
+    return 0 unless $self->CurrentUserHasRight('ShowTicket');
 
-=head2 HasRight
+    return 1 if $what ne "Transaction";
 
- Takes a paramhash with the attributes 'Right' and 'Principal'
-  'Right' is a ticket-scoped textual right from RT::ACE 
-  'Principal' is an RT::User object
-
-  Returns 1 if the principal has the right. Returns undef if not.
-
-=cut
-
-sub HasRight {
-    my $self = shift;
-    my %args = (
-        Right     => undef,
-        Principal => undef,
-        @_
-    );
-
-    unless ( ( defined $args{'Principal'} ) and ( ref( $args{'Principal'} ) ) )
-    {
-        Carp::cluck("Principal attrib undefined for Ticket::HasRight");
-        $RT::Logger->crit("Principal attrib undefined for Ticket::HasRight");
-        return(undef);
+    # If it's a comment, we need to be extra special careful
+    my $type = $txn->__Value('Type');
+    if ( $type eq 'Comment' ) {
+        unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
+            return 0;
+        }
+    } elsif ( $type eq 'CommentEmailRecord' ) {
+        unless ( $self->CurrentUserHasRight('ShowTicketComments')
+            && $self->CurrentUserHasRight('ShowOutgoingEmail') ) {
+            return 0;
+        }
+    } elsif ( $type eq 'EmailRecord' ) {
+        unless ( $self->CurrentUserHasRight('ShowOutgoingEmail') ) {
+            return 0;
+        }
     }
-
-    return (
-        $args{'Principal'}->HasRight(
-            Object => $self,
-            Right     => $args{'Right'}
-          )
-    );
+    return 1;
 }
-
-
 
 =head2 Reminders
 

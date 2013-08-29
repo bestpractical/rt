@@ -63,9 +63,6 @@ BEGIN {
     use base 'Exporter';
     use vars qw ( @EXPORT_OK);
 
-    # set the version for version checking
-    our $VERSION = 2.0;
-
     # your exported package globals go here,
     # as well as any optionally exported functions
     @EXPORT_OK = qw(
@@ -225,8 +222,8 @@ add 'In-Reply-To' field to the error that points to this message.
 
 =item Attach - optional text that attached to the error as 'message/rfc822' part.
 
-=item LogLevel - log level under which we should write explanation message into the
-log, by default we log it as critical.
+=item LogLevel - log level under which we should write the subject and
+explanation message into the log, by default we log it as critical.
 
 =back
 
@@ -247,7 +244,7 @@ sub MailError {
 
     $RT::Logger->log(
         level   => $args{'LogLevel'},
-        message => $args{'Explanation'}
+        message => "$args{Subject}: $args{'Explanation'}",
     ) if $args{'LogLevel'};
 
     # the colons are necessary to make ->build include non-standard headers
@@ -426,21 +423,24 @@ sub SendEmail {
         # SetOutgoingMailFrom and bounces conflict, since they both want -f
         if ( $args{'Bounce'} ) {
             push @args, shellwords(RT->Config->Get('SendmailBounceArguments'));
-        } elsif ( RT->Config->Get('SetOutgoingMailFrom') ) {
-            my $OutgoingMailAddress;
+        } elsif ( my $MailFrom = RT->Config->Get('SetOutgoingMailFrom') ) {
+            my $OutgoingMailAddress = $MailFrom =~ /\@/ ? $MailFrom : undef;
+            my $Overrides = RT->Config->Get('OverrideOutgoingMailFrom') || {};
 
             if ($TicketObj) {
                 my $QueueName = $TicketObj->QueueObj->Name;
-                my $QueueAddressOverride = RT->Config->Get('OverrideOutgoingMailFrom')->{$QueueName};
+                my $QueueAddressOverride = $Overrides->{$QueueName};
 
                 if ($QueueAddressOverride) {
                     $OutgoingMailAddress = $QueueAddressOverride;
                 } else {
-                    $OutgoingMailAddress = $TicketObj->QueueObj->CorrespondAddress;
+                    $OutgoingMailAddress ||= $TicketObj->QueueObj->CorrespondAddress
+                                             || RT->Config->Get('CorrespondAddress');
                 }
             }
-
-            $OutgoingMailAddress ||= RT->Config->Get('OverrideOutgoingMailFrom')->{'Default'};
+            elsif ($Overrides->{'Default'}) {
+                $OutgoingMailAddress = $Overrides->{'Default'};
+            }
 
             push @args, "-f", $OutgoingMailAddress
                 if $OutgoingMailAddress;
@@ -1192,15 +1192,20 @@ sub SetInReplyTo {
     }
     push @references, @id, @rtid;
     if ( $args{'Ticket'} ) {
-        my $pseudo_ref =  '<RT-Ticket-'. $args{'Ticket'}->id .'@'. RT->Config->Get('Organization') .'>';
+        my $pseudo_ref = PseudoReference( $args{'Ticket'} );
         push @references, $pseudo_ref unless grep $_ eq $pseudo_ref, @references;
     }
-    @references = splice @references, 4, -6
+    splice @references, 4, -6
         if @references > 10;
 
     my $mail = $args{'Message'};
     $mail->head->set( 'In-Reply-To' => Encode::encode_utf8(join ' ', @rtid? (@rtid) : (@id)) ) if @id || @rtid;
     $mail->head->set( 'References' => Encode::encode_utf8(join ' ', @references) );
+}
+
+sub PseudoReference {
+    my $ticket = shift;
+    return '<RT-Ticket-'. $ticket->id .'@'. RT->Config->Get('Organization') .'>';
 }
 
 sub ExtractTicketId {
@@ -1412,6 +1417,9 @@ sub Gateway {
 
     my $head = $Message->head;
     my $ErrorsTo = ParseErrorsToAddressFromHead( $head );
+    my $Sender = (ParseSenderAddressFromHead( $head ))[0];
+    my $From = $head->get("From");
+    chomp $From if defined $From;
 
     my $MessageId = $head->get('Message-ID')
         || "<no-message-id-". time . rand(2000) .'@'. RT->Config->Get('Organization') .'>';
@@ -1496,7 +1504,8 @@ sub Gateway {
         );
         return (
             0,
-            "$ErrorsTo tried to submit a message to "
+            ($CurrentUser->EmailAddress || $CurrentUser->Name)
+            . " ($Sender) tried to submit a message to "
                 . $args{'Queue'}
                 . " without permission.",
             undef
@@ -1543,7 +1552,7 @@ sub Gateway {
                 Explanation => $ErrStr,
                 MIMEObj     => $Message
             );
-            return ( 0, "Ticket creation failed: $ErrStr", $Ticket );
+            return ( 0, "Ticket creation From: $From failed: $ErrStr", $Ticket );
         }
 
         # strip comments&corresponds from the actions we don't need
@@ -1584,11 +1593,11 @@ sub Gateway {
                 #Warn the sender that we couldn't actually submit the comment.
                 MailError(
                     To          => $ErrorsTo,
-                    Subject     => "Message not recorded: $Subject",
+                    Subject     => "Message not recorded ($method): $Subject",
                     Explanation => $msg,
                     MIMEObj     => $Message
                 );
-                return ( 0, "Message not recorded: $msg", $Ticket );
+                return ( 0, "Message From: $From not recorded: $msg", $Ticket );
             }
         } elsif ($unsafe_actions) {
             my ( $status, $msg ) = _RunUnsafeAction(
@@ -1687,6 +1696,8 @@ sub _RunUnsafeAction {
         @_
     );
 
+    my $From = $args{Message}->head->get("From");
+
     if ( $args{'Action'} =~ /^take$/i ) {
         my ( $status, $msg ) = $args{'Ticket'}->SetOwner( $args{'CurrentUser'}->id );
         unless ($status) {
@@ -1696,7 +1707,7 @@ sub _RunUnsafeAction {
                 Explanation => $msg,
                 MIMEObj     => $args{'Message'}
             );
-            return ( 0, "Ticket not taken" );
+            return ( 0, "Ticket not taken, by email From: $From" );
         }
     } elsif ( $args{'Action'} =~ /^resolve$/i ) {
         my $new_status = $args{'Ticket'}->FirstInactiveStatus;
@@ -1711,11 +1722,11 @@ sub _RunUnsafeAction {
                     Explanation => $msg,
                     MIMEObj     => $args{'Message'}
                 );
-                return ( 0, "Ticket not resolved" );
+                return ( 0, "Ticket not resolved, by email From: $From" );
             }
         }
     } else {
-        return ( 0, "Not supported unsafe action $args{'Action'}", $args{'Ticket'} );
+        return ( 0, "Not supported unsafe action $args{'Action'}, by email From: $From", $args{'Ticket'} );
     }
     return ( 1, "Success" );
 }
@@ -1876,6 +1887,31 @@ sub _RecordSendEmailFailure {
         $RT::Logger->error( "Can't record send email failure as ticket is missing" );
         return;
     }
+}
+
+=head2 ConvertHTMLToText HTML
+
+Takes HTML and converts it to plain text.  Appropriate for generating a plain
+text part from an HTML part of an email.
+
+=cut
+
+sub ConvertHTMLToText {
+    my $html = shift;
+
+    require HTML::FormatText::WithLinks::AndTables;
+    return HTML::FormatText::WithLinks::AndTables->convert(
+        $html => {
+            leftmargin      => 0,
+            rightmargin     => 78,
+            no_rowspacing   => 1,
+            before_link     => '',
+            after_link      => ' (%l)',
+            footnote        => '',
+            skip_linked_urls => 1,
+            with_emphasis   => 0,
+        }
+    );
 }
 
 RT::Base->_ImportOverlays();

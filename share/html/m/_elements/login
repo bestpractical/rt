@@ -46,11 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, CallbackName => 'Header' );
-<&| /m/_elements/wrapper, show_home_button => 0 &>
-<style>
-<& /m/_elements/raw_style &>
-</style>
-<h1><&|/l, RT->Config->Get('rtname') &>RT for [_1]</&></h1>
+<&| /m/_elements/wrapper, title => loc('RT for [_1]', RT->Config->Get('rtname')), show_home_button => 0 &>
 <div id="body" class="login-body">
 
 <& /Elements/ListActions,
@@ -66,7 +62,7 @@
 
 <& /Elements/LoginRedirectWarning, %ARGS &>
 
-% unless (RT->Config->Get('WebExternalAuth') and !RT->Config->Get('WebFallbackToInternalAuth')) {
+% unless (RT->Config->Get('WebRemoteUserAuth') and !RT->Config->Get('WebFallbackToRTLogin')) {
 <form id="login" name="login" method="post" action="<% RT->Config->Get("WebPath") %>/NoAuth/Login.html">
 
 <div class="entry">
@@ -96,6 +92,7 @@ if (window.location.hash) {
 </form>
 % }
 </&>
+<& /Elements/LoginHelp &>
 </div><!-- #login-box -->
 
 % $m->callback( %ARGS, CallbackName => 'AfterForm' );

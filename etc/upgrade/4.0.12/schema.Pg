@@ -1,0 +1,1 @@
+UPDATE Tickets SET Type = LOWER(Type) WHERE LOWER(Type) IN ('ticket', 'approval', 'reminder');

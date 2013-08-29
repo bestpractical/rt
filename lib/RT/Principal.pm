@@ -139,7 +139,7 @@ sub Object {
             $RT::Logger->crit("Found a principal (".$self->Id.") that was neither a user nor a group");
             return(undef);
         }
-        $self->{'object'}->Load( $self->ObjectId() );
+        $self->{'object'}->Load( $self->id );
     }
     return ($self->{'object'});
 
@@ -276,8 +276,9 @@ sub HasRight {
         return 1;
     }
 
-    $args{'Right'} = RT::ACE->CanonicalizeRightName( $args{'Right'} );
-    unless ( $args{'Right'} ) {
+    if ( my $right = RT::ACE->CanonicalizeRightName( $args{'Right'} ) ) {
+        $args{'Right'} = $right;
+    } else {
         $RT::Logger->error(
                "Invalid right. Couldn't canonicalize right '$args{'Right'}'");
         return undef;
@@ -576,14 +577,17 @@ sub _HasRoleRightQuery {
     ;
 
     if ( $args{'Roles'} ) {
-        $query .= "AND (" . join( ' OR ', map "Groups.Type = '$_'", @{ $args{'Roles'} } ) . ")";
+        $query .= "AND (" . join( ' OR ',
+            map $RT::Handle->__MakeClauseCaseInsensitive('Groups.Name', '=', "'$_'"),
+            @{ $args{'Roles'} }
+        ) . ")";
     }
 
     my (@object_clauses);
     foreach my $obj ( @{ $args{'EquivObjects'} } ) {
         my $type = ref($obj) ? ref($obj) : $obj;
 
-        my $clause = "Groups.Domain = '$type-Role'";
+        my $clause = $RT::Handle->__MakeClauseCaseInsensitive('Groups.Domain', '=', "'$type-Role'");
 
         if ( my $id = eval { $obj->id } ) {
             $clause .= " AND Groups.Instance = $id";
@@ -704,7 +708,7 @@ return that. if it has no type, return group.
 sub _GetPrincipalTypeForACL {
     my $self = shift;
     if ($self->IsRoleGroup) {
-        return $self->Object->Type;
+        return $self->Object->Name;
     } else {
         return $self->PrincipalType;
     }
@@ -735,7 +739,20 @@ sub _ReferenceId {
     }
 }
 
+sub ObjectId {
+    my $self = shift;
+    RT->Deprecated( Instead => 'id', Remove => '4.4' );
+    return $self->_Value('ObjectId');
+}
 
+sub LoadByCols {
+    my $self = shift;
+    my %args = @_;
+    if ( exists $args{'ObjectId'} ) {
+        RT->Deprecated( Arguments => 'ObjectId', Instead => 'id', Remove => '4.4' );
+    }
+    return $self->SUPER::LoadByCols( %args );
+}
 
 
 

@@ -69,8 +69,7 @@ sub Table {'Articles'}
 # This object takes custom fields
 
 use RT::CustomField;
-RT::CustomField->_ForObjectType( CustomFieldLookupType() => 'Articles' )
-  ;    #loc
+RT::CustomField->RegisterLookupType( CustomFieldLookupType() => 'Articles' );    #loc
 
 # {{{ Create
 
@@ -499,25 +498,6 @@ sub DeleteTopic {
     }
 }
 
-=head2 CurrentUserHasRight
-
-Returns true if the current user has the right for this article, for the whole system or for this article's class
-
-=cut
-
-sub CurrentUserHasRight {
-    my $self  = shift;
-    my $right = shift;
-
-    return (
-        $self->CurrentUser->HasRight(
-            Right        => $right,
-            Object       => $self,
-        )
-    );
-
-}
-
 =head2 CurrentUserCanSee
 
 Returns true if the current user can see the article, using ShowArticle
@@ -630,11 +610,11 @@ sub LoadByInclude {
     }
 
     unless ($ok) { # load failed, don't check Class
-        return ($ok, $msg);
+        return wantarray ? ($ok, $msg) : $ok;
     }
 
     unless ($Queue) { # we haven't requested extra sanity checking
-        return ($ok, $msg);
+        return wantarray ? ($ok, $msg) : $ok;
     }
 
     # ensure that this article is available for the Queue we're
@@ -642,10 +622,10 @@ sub LoadByInclude {
     my $class = $self->ClassObj;
     unless ($class->IsApplied(0) || $class->IsApplied($Queue)) {
         $self->LoadById(0);
-        return (0, $self->loc("The Class of the Article identified by [_1] is not applied to the current Queue",$Value));
+        return wantarray ? (0, $self->loc("The Class of the Article identified by [_1] is not applied to the current Queue",$Value)) : 0;
     }
 
-    return ($ok, $msg);
+    return wantarray ? ($ok, $msg) : $ok;
 
 }
 

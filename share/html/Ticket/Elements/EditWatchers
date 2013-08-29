@@ -55,7 +55,7 @@
 % while ( my $watcher = $Members->Next ) {
 % my $member = $watcher->MemberObj->Object;
 <li>
-<input type="checkbox" class="checkbox" name="Ticket-DeleteWatcher-Type-<% $Watchers->Type %>-Principal-<% $watcher->MemberId %>" value="1" unchecked />
+<input type="checkbox" class="checkbox" name="Ticket-DeleteWatcher-Type-<% $Watchers->Name %>-Principal-<% $watcher->MemberId %>" value="1" unchecked />
 % if ( $member->isa( 'RT::User' ) ) { 
 % if ( $session{CurrentUser}->HasRight( Right => 'AdminUsers', Object => $RT::System ) &&
 %      $session{CurrentUser}->HasRight( Right => 'ShowConfigTab', Object =>$RT::System ) ) {

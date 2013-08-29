@@ -226,7 +226,7 @@ for my $path (qw(Prefs/Other.html /Prefs/Other.html)) {
     unlike($agent->content, qr/Your username or password is incorrect/, "didn't get any error message");
 }
 
-# XXX TODO: we should also be testing WebExternalAuth here, but we don't have
+# XXX TODO: we should also be testing WebRemoteUserAuth here, but we don't have
 # the framework for dealing with that
 
 1;

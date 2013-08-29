@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 51;
+use RT::Test tests => undef;
 
 RT->Config->Set( 'Timezone' => 'EST5EDT' ); # -04:00
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -24,7 +24,7 @@ if ( ( $ENV{RT_TEST_WEB_HANDLER} || '' ) =~ /^apache(\+mod_perl)?$/
 my $cfid;
 diag "Create a CF";
 {
-    $m->follow_link( id => 'tools-config-custom-fields-create');
+    $m->follow_link( id => 'admin-custom-fields-create');
     $m->submit_form(
         form_name => "ModifyCustomField",
         fields => {
@@ -47,7 +47,7 @@ ok $queue && $queue->id, 'loaded or created queue';
     $m->title_is(q/Admin queues/, 'admin-queues screen');
     $m->follow_link( text => 'General' );
     $m->title_is(q/Configuration for queue General/, 'admin-queue: general');
-    $m->follow_link( text => 'Ticket Custom Fields' );
+    $m->follow_link( id => 'page-custom-fields-tickets' );
     $m->title_is(q/Custom Fields for queue General/, 'admin-queue: general cfid');
 
     $m->form_name('EditCustomFields');
@@ -209,6 +209,10 @@ diag 'check invalid inputs';
 
     $m->content_contains('test cf datetime:', 'has cf datetime field on the page');
     $m->content_lacks('foodate', 'invalid dates not set');
+
+    my @warnings = $m->get_warnings;
+    chomp @warnings;
+    is_deeply( @warnings, q{Couldn't parse date 'foodate' by Time::ParseDate} );
 }
 
 sub is_results_number {
@@ -232,3 +236,4 @@ sub is_results_number {
 # to make $m->DESTROY happy
 undef $m;
 
+done_testing;

@@ -50,9 +50,6 @@
 &>
 <& /Elements/ListActions, actions => \@results &>
 
-<& /Widgets/SelectionBox:header, nojs => 1 &>
-
-
 <br />
 
 % for my $pane ( @panes ) {
@@ -60,7 +57,7 @@
     title => loc('RT at a glance') .': '. loc( $pane->{Name} ),
     bodyclass => ""
 &>
-<& /Widgets/SelectionBox:show, self => $pane, nojs => 1 &>
+<& /Widgets/SelectionBox:show, self => $pane &>
 </&>
 % }
 
@@ -161,7 +158,7 @@ my @panes = $m->comp(
     }
 );
 
-$m->comp( '/Widgets/SelectionBox:process', %ARGS, self => $_, nojs => 1 )
+$m->comp( '/Widgets/SelectionBox:process', %ARGS, self => $_ )
     for @panes;
 
 </%INIT>

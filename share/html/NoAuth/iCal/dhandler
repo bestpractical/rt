@@ -90,14 +90,26 @@ while (my $t = $tickets->Next) {
 
     my $starttime = $t->StartsObj->Unix > 0 ? $t->StartsObj : $t->CreatedObj;
 
+    my $url;
+    if ( RT->Config->Get('CanonicalizeURLsInFeeds') ) {
+        $url = RT->Config->Get('WebURL');
+    }
+    else {
+        $url = RT::Interface::Web::GetWebURLFromRequest();
+    }
+    $url .= "Ticket/Display.html?id=".$t->id,
+
     my $now = RT::Date->new( $cu ); $now->SetToNow;
     my $start = Data::ICal::Entry::Event->new;
     my $end   = Data::ICal::Entry::Event->new;
+
+
     $_->add_properties(
-        url       => RT->Config->Get('WebURL') . "Ticket/Display.html?id=".$t->id,
-        organizer => $t->OwnerObj->Name,
-        dtstamp   => $now->iCal,
-        created   => $t->CreatedObj->iCal,
+        url            => $url,
+        description    => $url,
+        organizer      => $t->OwnerObj->Name,
+        dtstamp        => $now->iCal,
+        created        => $t->CreatedObj->iCal,
        'last-modified' => $t->LastUpdatedObj->iCal,
     ) for $start, $end;
 

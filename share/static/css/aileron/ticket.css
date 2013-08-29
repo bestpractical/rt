@@ -1,0 +1,9 @@
+/* Use a lighter colored toggle arrow */
+.ticket-info-cfs .titlebox-title .widget a { background-position: center -7px; }
+.ticket-info-basics .titlebox-title .widget a { background-position: center -7px; }
+.ticket-info-people .titlebox-title .widget a { background-position: center -7px; }
+.ticket-info-requestor .titlebox-title .widget a { background-position: center -7px; }
+.ticket-info-links .titlebox-title .widget a { background-position: center -7px; }
+.ticket-info-reminders .titlebox-title .widget a { background-position: center -7px; }
+.ticket-info-dates .titlebox-title .widget a { background-position: center -7px; }
+.ticket-info-attachments .titlebox-title .widget a { background-position: center -7px; }

@@ -126,6 +126,14 @@ database level.
 =back
 
 
+=head2 Ticket content searches (full text search)
+
+Since 4.0.0, RT's ticket content search is disabled by default because of
+performance issues when used without full text indexing.  For details on how to
+re-enable it with (or without) full text indexing, see
+F<docs/full_text_indexing.pod>.
+
+
 
 =head1 UPGRADING FROM 4.0.5 AND EARLIER
 
@@ -177,3 +185,64 @@ If you have @JSFiles set in your RT_SiteConfig.pm but it appears to be
 the same as RT_Config.pm (no local js files added) you can safely remove
 the whole setting from RT_SiteConfig.pm and allow our default to be
 used.
+
+=head1 UPGRADING FROM 4.0.11 AND EARLIER
+
+=head2 Data Upgrades
+
+Previous versions of RT allowed you to create Tickets with a Type of
+'Ticket', 'Approval' or 'Reminder' instead of the correct 'ticket'.
+Existing Types are updated in the database and the RT API now corrects
+these types before insertion.
+
+Site-specific custom types (anything but ticket, reminder or approval)
+are not affected by these changes.
+
+=head1 UPGRADING FROM 4.0.13 AND EARLIER
+
+=head2 Outgoing mail From: header
+
+The "Default" key of the C<$OverrideOutgoingMailFrom> config option now,
+as previously documented, only applies when no ticket is involved.
+Previously it was also used when a ticket was involved but the
+associated queue had no specific correspond address.  In such cases the
+global correspond address is now used.
+
+The config option C<$SetOutgoingMailFrom> now accepts an email address
+as a value which will act as a global default.  This covers the simple
+case of sending all bounces to a specific address, without the previous
+solution of resorting to defining all queues in
+$OverrideOutgoingMailFrom.  Any definitions in the Override option
+(including Default) still take precedence.  See
+L<RT_Config/$SetOutgoingMailFrom> for more information.
+
+=head2 Reminder statuses
+
+New reminders are now created in the "reminder_on_open" status defined in your
+lifecycles.  For the default lifecycle, this means reminders will start as
+"open" instead of "new".  This change is for consistency when a completed
+reminder is reopened at a later date.  If you use custom lifecycles and added
+further transition restrictions, you may need to adjust the L<"reminder_on_open"
+setting|RT_Config/reminder_on_open> in your lifecycles.
+
+=head2 Bookmarks
+
+Previously, the list of Bookmarks on your homepage was unlimited (if you
+had 100 bookmarked tickets, you would see a 100 item list on your RT at
+a Glance).  'Bookmarked Tickets' now uses the same size limits as any
+other search on your homepage.  This can be customized using the 'Rows
+per box' setting on your RT at a Glance configuration page.
+
+=head2 PostgreSQL 9.2
+
+If you are upgrading an RT from 3.8 (or earlier) to 4.0 on PostgreSQL
+9.2, you should make sure that you have installed DBD::Pg 2.19.3 or
+higher.  If you start your upgrade without installing a recent-enough
+version of DBD::Pg RT will stop the upgrade during the 3.9.8 step and
+remind you to upgrade DBD::Pg.  If this happens, you can re-start your
+upgrade by running:
+
+   ./sbin/rt-setup-database --action insert --datadir etc/upgrade/3.9.8/
+
+Followed by re-running make upgrade-database and answering 3.9.8 when
+prompted for which RT version you're upgrading from.

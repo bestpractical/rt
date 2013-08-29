@@ -4,7 +4,22 @@ use warnings;
 our @Initial = (
     sub {
         my $users = RT::Users->new(RT->SystemUser);
-        $users->UnLimit;
+        my $attributes = $users->Join(
+            ALIAS1 => "main",
+            FIELD1 => "id",
+            TABLE2 => "Attributes",
+            FIELD2 => "ObjectId",
+        );
+        $users->Limit(
+            ALIAS => $attributes,
+            FIELD => "ObjectType",
+            VALUE => "RT::User",
+        );
+        $users->Limit(
+            ALIAS => $attributes,
+            FIELD => "Name",
+            VALUE => RT::User::_PrefName('HomepageSettings'),
+        );
 
         while (my $user = $users->Next) {
             my $settings = $user->Preferences('HomepageSettings')

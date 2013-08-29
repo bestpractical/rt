@@ -58,13 +58,17 @@ diag 'Test iCal with date only';
     is( $ical_count, 10, "Got $ical_count ical entries");
 
     my $prop_ref = $entries[0]->[0]->properties;
-    my $start = $start_obj->ISO( Time => 0);
+    my $start_as_root = RT::Date->new( RT::CurrentUser->new( 'root' ) );
+    $start_as_root->Unix( $start_obj->Unix );
+    my $start = $start_as_root->ISO( Time => 0, Timezone => 'user' );
     $start =~ s/-//g;
     is($prop_ref->{'dtstart'}->[0]->value, $start, "Got start date: $start");
     like( $prop_ref->{'dtstart'}->[0]->as_string, qr/VALUE=DATE\:/, 'Got DATE value');
 
     $prop_ref = $entries[0]->[1]->properties;
-    my $due = $due_obj->ISO( Time => 0);
+    my $due_as_root = RT::Date->new( RT::CurrentUser->new( 'root' ) );
+    $due_as_root->Unix( $due_obj->Unix );
+    my $due = $due_as_root->ISO( Time => 0, Timezone => 'user' );
     $due =~ s/-//g;
     is($prop_ref->{'dtend'}->[0]->value, $due, "Got due date: $due");
     like( $prop_ref->{'dtend'}->[0]->as_string, qr/VALUE=DATE\:/, 'Got DATE value');

@@ -49,12 +49,6 @@
 %if ($DefaultValue) {
 <option value=""<% !$Default ? qq[ selected="selected"] : '' |n %>><%$DefaultLabel |n%></option>
 %}
-% $Default = 0 unless defined $Default && $Default =~ /^\d+$/;
-% my @formatednames = sort {lc $a->[1] cmp lc $b->[1]} map {[$_, $_->Format]} grep { $_->id != RT->Nobody->id } @users;
-% my $nobody_user = RT::User->new( $session{CurrentUser} );
-% $nobody_user->Load( RT->Nobody->id );
-% my $nobody = [$nobody_user, $nobody_user->Format];
-% unshift @formatednames, $nobody;
 %foreach my $UserRef ( @formatednames)  {
 %my $User = $UserRef->[0];
 <option <% ( $User->Id == $Default) ? qq[ selected="selected"] : '' |n %>
@@ -73,6 +67,7 @@ my $isSU = $session{CurrentUser}
     ->HasRight( Right => 'SuperUser', Object => $RT::System );
 foreach my $object (@$Objects) {
     my $Users = RT::Users->new( $session{CurrentUser} );
+    $Users->LimitToPrivileged;
     $Users->WhoHaveRight(
         Right               => 'OwnTicket',
         Object              => $object,
@@ -83,12 +78,30 @@ foreach my $object (@$Objects) {
         $user_uniq_hash{ $User->Id() } = $User;
     }
 }
+
+if (keys(%user_uniq_hash) > 50 ) {
+    my $desc = $Objects->[0]->RecordType." ".$Objects->[0]->id;
+    RT->Logger->notice("More than 50 possible Owners found for $desc; switching to autocompleter");
+    $m->comp("/Elements/SelectOwnerAutocomplete", %ARGS);
+    return;
+}
+
 if ($Default && $Default != RT->Nobody->id && !$user_uniq_hash{$Default}) {
     $user_uniq_hash{$Default} = RT::User->new($session{CurrentUser});
     $user_uniq_hash{$Default}->Load($Default);
 }
+$Default = 0 unless defined $Default && $Default =~ /^\d+$/;
 
-my @users = values %user_uniq_hash;
+my @formatednames = sort {lc $a->[1] cmp lc $b->[1]}
+                     map {[$_, $_->Format]}
+                    grep { $_->id != RT->Nobody->id }
+                  values %user_uniq_hash;
+
+my $nobody_user = RT::User->new( $session{CurrentUser} );
+$nobody_user->Load( RT->Nobody->id );
+my $nobody = [$nobody_user, $nobody_user->Format];
+unshift @formatednames, $nobody;
+
 </%INIT>
 
 <%ARGS>

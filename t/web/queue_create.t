@@ -13,7 +13,7 @@ my $queue_name = 'test queue';
 my $queue_id;
 diag "Create a queue";
 {
-    $m->follow_link( id => 'tools-config-queues-create');
+    $m->follow_link( id => 'admin-queues-create');
 
     # Test queue form validation
     $m->submit_form(

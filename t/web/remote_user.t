@@ -18,10 +18,10 @@ sub stop_server {
 diag "Continuous + Fallback";
 {
     RT->Config->Set( DevelMode => 0 );
-    RT->Config->Set( WebExternalAuth => 1 );
-    RT->Config->Set( WebExternalAuthContinuous => 1 );
-    RT->Config->Set( WebFallbackToInternalAuth => 1 );
-    RT->Config->Set( WebExternalAuto => 0 );
+    RT->Config->Set( WebRemoteUserAuth => 1 );
+    RT->Config->Set( WebRemoteUserAuthContinuous => 1 );
+    RT->Config->Set( WebFallbackToRTLogin => 1 );
+    RT->Config->Set( WebRemoteUserAutocreate => 0 );
 
     my ( $url, $m ) = RT::Test->started_ok( basic_auth => 'anon' );
 
@@ -116,10 +116,10 @@ diag "Continuous + Fallback";
 diag "Fallback OFF";
 {
     RT->Config->Set( DevelMode => 0 );
-    RT->Config->Set( WebExternalAuth => 1 );
-    RT->Config->Set( WebExternalAuthContinuous => 0 );
-    RT->Config->Set( WebFallbackToInternalAuth => 0 );
-    RT->Config->Set( WebExternalAuto => 0 );
+    RT->Config->Set( WebRemoteUserAuth => 1 );
+    RT->Config->Set( WebRemoteUserContinuous => 0 );
+    RT->Config->Set( WebFallbackToRTLogin => 0 );
+    RT->Config->Set( WebRemoteUserAutocreate => 0 );
 
     my ( $url, $m ) = RT::Test->started_ok( basic_auth => 'anon' );
 
@@ -133,14 +133,14 @@ diag "Fallback OFF";
     stop_server(\$m);
 }
 
-diag "AutoCreate";
+diag "WebRemoteUserAutocreate";
 {
     RT->Config->Set( DevelMode => 0 );
-    RT->Config->Set( WebExternalAuth => 1 );
-    RT->Config->Set( WebExternalAuthContinuous => 1 );
-    RT->Config->Set( WebFallbackToInternalAuth => 0 );
-    RT->Config->Set( WebExternalAuto => 1 );
-    RT->Config->Set( AutoCreate => { Organization => "BPS" } );
+    RT->Config->Set( WebRemoteUserAuth => 1 );
+    RT->Config->Set( WebRemoteUserContinuous => 1 );
+    RT->Config->Set( WebFallbackToRTLogin => 0 );
+    RT->Config->Set( WebRemoteUserAutocreate => 1 );
+    RT->Config->Set( UserAutocreateDefaultsOnLogin => { Organization => "BPS" } );
 
     my ( $url, $m ) = RT::Test->started_ok( basic_auth => 'anon' );
 
@@ -153,13 +153,13 @@ diag "AutoCreate";
         my $user = RT::User->new( RT->SystemUser );
         $user->Load("anewuser");
         ok $user->id, "Found newly created user";
-        is $user->Organization, "BPS", "Found Organization from AutoCreate hash";
+        is $user->Organization, "BPS", "Found Organization from UserAutocreateDefaultsOnLogin hash";
         ok $user->Privileged, "Privileged by default";
     }
 
     stop_server(\$m);
     RT->Config->Set(
-        AutoCreate => {
+        UserAutocreateDefaultsOnLogin => {
             Privileged   => 0,
             EmailAddress => 'foo@example.com',
         },

@@ -65,9 +65,8 @@
 
 <link rel="shortcut icon" href="<%RT->Config->Get('WebImagesURL')%>favicon.png" type="image/png" />
 % for my $cssfile ( @css_files ) {
-<link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/<% $cssfile %>" type="text/css" media="all" />
+<link rel="stylesheet" href="<%RT->Config->Get('WebPath')%><% $cssfile %>" type="text/css" media="all" />
 % }
-<link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/print.css" type="text/css" media="print" />
 
 % for (keys %{$LinkRel || {}}) {
     <link rel="<% $_ %>" href="<% RT->Config->Get('WebPath') . $LinkRel->{$_} %>" />
@@ -124,12 +123,12 @@ my $style = $session{'CurrentUser'}
 
 my @css_files;
 if ( RT->Config->Get('DevelMode') ) {
-    @css_files = ( "$style/main.css", RT->Config->Get('CSSFiles' ) );
+    @css_files = map { "/static/css/$_" } "$style/main.css", RT->Config->Get('CSSFiles');
 }
 else {
     my $key =
       RT::Interface::Web::SquishedCSS( $style )->Key;
-    @css_files = "$style-squished-$key.css";
+    @css_files = "/NoAuth/css/$style/squished-$key.css";
 }
 
 </%INIT>
@@ -138,9 +137,7 @@ else {
 #$Focus => 'focus'
 $Focus => ''
 $Title =>  'RT'
-$Code => undef
 $Refresh => 0
-$Why => undef
 $ShowBar => 1
 $URL => undef
 $RSSAutoDiscovery => undef

@@ -115,13 +115,16 @@ sub JSFiles {
       jquery.modal-defaults.js
       jquery.cookie.js
       titlebox-state.js
+      i18n.js
       util.js
-      userautocomplete.js
+      autocomplete.js
       jquery.event.hover-1.0.js
       superfish.js
       supersubs.js
       jquery.supposition.js
       history-folding.js
+      cascaded.js
+      forms.js
       event-registration.js
       late.js
       /, RT->Config->Get('JSFiles');
@@ -184,13 +187,13 @@ sub EscapeURI {
 
 =head2 EncodeJSON SCALAR
 
-Encodes the SCALAR to JSON and returns a JSON string.  SCALAR may be a simple
-value or a reference.
+Encodes the SCALAR to JSON and returns a JSON Unicode (B<not> UTF-8) string.
+SCALAR may be a simple value or a reference.
 
 =cut
 
 sub EncodeJSON {
-    my $s = JSON::to_json(shift, { utf8 => 1, allow_nonref => 1 });
+    my $s = JSON::to_json(shift, { allow_nonref => 1 });
     $s =~ s{/}{\\/}g;
     return $s;
 }
@@ -228,21 +231,21 @@ sub WebCanonicalizeInfo {
 
 
 
-=head2 WebExternalAutoInfo($user);
+=head2 WebRemoteUserAutocreateInfo($user);
 
-Returns a hash of user attributes, used when WebExternalAuto is set.
+Returns a hash of user attributes, used when WebRemoteUserAutocreate is set.
 
 =cut
 
-sub WebExternalAutoInfo {
+sub WebRemoteUserAutocreateInfo {
     my $user = shift;
 
     my %user_info;
 
     # default to making Privileged users, even if they specify
     # some other default Attributes
-    if ( !$RT::AutoCreate
-        || ( ref($RT::AutoCreate) && not exists $RT::AutoCreate->{Privileged} ) )
+    if ( !$RT::UserAutocreateDefaultsOnLogin
+        || ( ref($RT::UserAutocreateDefaultsOnLogin) && not exists $RT::UserAutocreateDefaultsOnLogin->{Privileged} ) )
     {
         $user_info{'Privileged'} = 1;
     }
@@ -309,7 +312,7 @@ sub HandleRequest {
 
     MaybeShowNoAuthPage($ARGS);
 
-    AttemptExternalAuth($ARGS) if RT->Config->Get('WebExternalAuthContinuous') or not _UserLoggedIn();
+    AttemptExternalAuth($ARGS) if RT->Config->Get('WebRemoteUserContinuous') or not _UserLoggedIn();
 
     _ForceLogout() unless _UserLoggedIn();
 
@@ -616,6 +619,7 @@ sub MaybeRejectPrivateComponentRequest {
             / # leading slash
             ( Elements    |
               _elements   | # mobile UI
+              Callbacks   |
               Widgets     |
               autohandler | # requesting this directly is suspicious
               l (_unsafe)? ) # loc component
@@ -681,7 +685,7 @@ sub ShowRequestedPage {
 sub AttemptExternalAuth {
     my $ARGS = shift;
 
-    return unless ( RT->Config->Get('WebExternalAuth') );
+    return unless ( RT->Config->Get('WebRemoteUserAuth') );
 
     my $user = $ARGS->{user};
     my $m    = $HTML::Mason::Commands::m;
@@ -698,9 +702,9 @@ sub AttemptExternalAuth {
         and (not _UserLoggedIn() or $logged_in_external_user) )
     {
         $user = RT::Interface::Web::WebCanonicalizeInfo();
-        my $load_method = RT->Config->Get('WebExternalGecos') ? 'LoadByGecos' : 'Load';
+        my $load_method = RT->Config->Get('WebRemoteUserGecos') ? 'LoadByGecos' : 'Load';
 
-        if ( $^O eq 'MSWin32' and RT->Config->Get('WebExternalGecos') ) {
+        if ( $^O eq 'MSWin32' and RT->Config->Get('WebRemoteUserGecos') ) {
             my $NodeName = Win32::NodeName();
             $user =~ s/^\Q$NodeName\E\\//i;
         }
@@ -711,12 +715,12 @@ sub AttemptExternalAuth {
         $HTML::Mason::Commands::session{'CurrentUser'} = RT::CurrentUser->new();
         $HTML::Mason::Commands::session{'CurrentUser'}->$load_method($user);
 
-        if ( RT->Config->Get('WebExternalAuto') and not _UserLoggedIn() ) {
+        if ( RT->Config->Get('WebRemoteUserAutocreate') and not _UserLoggedIn() ) {
 
             # Create users on-the-fly
             my $UserObj = RT::User->new(RT->SystemUser);
             my ( $val, $msg ) = $UserObj->Create(
-                %{ ref RT->Config->Get('AutoCreate') ? RT->Config->Get('AutoCreate') : {} },
+                %{ ref RT->Config->Get('UserAutocreateDefaultsOnLogin') ? RT->Config->Get('UserAutocreateDefaultsOnLogin') : {} },
                 Name  => $user,
                 Gecos => $user,
             );
@@ -724,7 +728,7 @@ sub AttemptExternalAuth {
             if ($val) {
 
                 # now get user specific information, to better create our user.
-                my $new_user_info = RT::Interface::Web::WebExternalAutoInfo($user);
+                my $new_user_info = RT::Interface::Web::WebRemoteUserAutocreateInfo($user);
 
                 # set the attributes that have been defined.
                 foreach my $attribute ( $UserObj->WritableAttributes, qw(Privileged Disabled) ) {
@@ -740,8 +744,8 @@ sub AttemptExternalAuth {
                 }
                 $HTML::Mason::Commands::session{'CurrentUser'}->Load($user);
             } else {
-                RT->Logger->error("Couldn't auto-create user '$user' when attempting WebExternalAuth: $msg");
-                AbortExternalAuth( Error => "AutoCreate" );
+                RT->Logger->error("Couldn't auto-create user '$user' when attempting WebRemoteUser: $msg");
+                AbortExternalAuth( Error => "UserAutocreateDefaultsOnLogin" );
             }
         }
 
@@ -760,7 +764,7 @@ sub AttemptExternalAuth {
         } else {
             # Couldn't auth with the REMOTE_USER provided because an RT
             # user doesn't exist and we're configured not to create one.
-            RT->Logger->error("Couldn't find internal user for '$user' when attempting WebExternalAuth and RT is not configured for auto-creation. Refer to `perldoc $RT::BasePath/docs/authentication.pod` if you want to allow auto-creation.");
+            RT->Logger->error("Couldn't find internal user for '$user' when attempting WebRemoteUser and RT is not configured for auto-creation. Refer to `perldoc $RT::BasePath/docs/authentication.pod` if you want to allow auto-creation.");
             AbortExternalAuth(
                 Error => "NoInternalUser",
                 User  => $user,
@@ -772,7 +776,7 @@ sub AttemptExternalAuth {
         # should kick them out.
         AbortExternalAuth( Error => "Deauthorized" );
     }
-    elsif (not RT->Config->Get('WebFallbackToInternalAuth')) {
+    elsif (not RT->Config->Get('WebFallbackToRTLogin')) {
         # Abort if we don't want to fallback internally
         AbortExternalAuth( Error => "NoRemoteUser" );
     }
@@ -780,7 +784,7 @@ sub AttemptExternalAuth {
 
 sub AbortExternalAuth {
     my %args  = @_;
-    my $error = $args{Error} ? "/Errors/WebExternalAuth/$args{Error}" : undef;
+    my $error = $args{Error} ? "/Errors/WebRemoteUser/$args{Error}" : undef;
     my $m     = $HTML::Mason::Commands::m;
     my $r     = $HTML::Mason::Commands::r;
 
@@ -857,7 +861,7 @@ sub LoadSessionFromCookie {
     my $SessionCookie = ( $cookies{$cookiename} ? $cookies{$cookiename}->value : undef );
     tie %HTML::Mason::Commands::session, 'RT::Interface::Web::Session', $SessionCookie;
     unless ( $SessionCookie && $HTML::Mason::Commands::session{'_session_id'} eq $SessionCookie ) {
-        undef $cookies{$cookiename};
+        InstantiateNewSession();
     }
     if ( int RT->Config->Get('AutoLogoff') ) {
         my $now = int( time / 60 );
@@ -890,6 +894,30 @@ sub SendSessionCookie {
     $HTML::Mason::Commands::r->err_headers_out->{'Set-Cookie'} = $cookie->as_string;
 }
 
+=head2 GetWebURLFromRequest
+
+People may use different web urls instead of C<$WebURL> in config.
+Return the web url current user is using.
+
+=cut
+
+sub GetWebURLFromRequest {
+
+    my $uri = URI->new( RT->Config->Get('WebURL') );
+
+    if ( defined $ENV{HTTPS} and $ENV{'HTTPS'} eq 'on' ) {
+        $uri->scheme('https');
+    }
+    else {
+        $uri->scheme('http');
+    }
+
+    # [rt3.fsck.com #12716] Apache recommends use of $SERVER_HOST
+    $uri->host( $ENV{'SERVER_HOST'} || $ENV{'HTTP_HOST'} || $ENV{'SERVER_NAME'} );
+    $uri->port( $ENV{'SERVER_PORT'} );
+    return "$uri"; # stringify to be consistent with WebURL in config
+}
+
 =head2 Redirect URL
 
 This routine ells the current user's browser to redirect to URL.  
@@ -920,15 +948,10 @@ sub Redirect {
         && $uri->host eq $server_uri->host
         && $uri->port eq $server_uri->port )
     {
-        if ( defined $ENV{HTTPS} and $ENV{'HTTPS'} eq 'on' ) {
-            $uri->scheme('https');
-        } else {
-            $uri->scheme('http');
-        }
-
-        # [rt3.fsck.com #12716] Apache recommends use of $SERVER_HOST
-        $uri->host( $ENV{'SERVER_HOST'} || $ENV{'HTTP_HOST'} || $ENV{'SERVER_NAME'});
-        $uri->port( $ENV{'SERVER_PORT'} );
+        my $env_uri = URI->new(GetWebURLFromRequest());
+        $uri->scheme($env_uri->scheme);
+        $uri->host($env_uri->host);
+        $uri->port($env_uri->port);
     }
 
     # not sure why, but on some systems without this call mason doesn't
@@ -940,6 +963,38 @@ sub Redirect {
     $HTML::Mason::Commands::m->redirect( $uri->canonical, "302 Found" );
 
     $HTML::Mason::Commands::m->abort;
+}
+
+=head2 CacheControlExpiresHeaders
+
+set both Cache-Control and Expires http headers
+
+=cut
+
+sub CacheControlExpiresHeaders {
+    my %args = @_;
+
+    my $Visibility = 'private';
+    if ( ! defined $args{Time} ) {
+        $args{Time} = 0;
+    } elsif ( $args{Time} eq 'no-cache' ) {
+        $args{Time} = 0;
+    } elsif ( $args{Time} eq 'forever' ) {
+        $args{Time} = 30 * 24 * 60 * 60;
+        $Visibility = 'public';
+    }
+
+    my $CacheControl = $args{Time}
+        ? sprintf "max-age=%d, %s", $args{Time}, $Visibility
+        : 'no-cache'
+    ;
+    $HTML::Mason::Commands::r->headers_out->{'Cache-Control'} = $CacheControl;
+
+    my $expires = RT::Date->new(RT->SystemUser);
+    $expires->SetToNow;
+    $expires->AddSeconds( $args{Time} ) if $args{Time};
+
+    $HTML::Mason::Commands::r->headers_out->{'Expires'} = $expires->RFC2616;
 }
 
 =head2 StaticFileHeaders 
@@ -954,16 +1009,12 @@ This routine could really use _accurate_ heuristics. (XXX TODO)
 sub StaticFileHeaders {
     my $date = RT::Date->new(RT->SystemUser);
 
-    # make cache public
-    $HTML::Mason::Commands::r->headers_out->{'Cache-Control'} = 'max-age=259200, public';
-
     # remove any cookie headers -- if it is cached publicly, it
     # shouldn't include anyone's cookie!
     delete $HTML::Mason::Commands::r->err_headers_out->{'Set-Cookie'};
 
     # Expire things in a month.
-    $date->Set( Value => time + 30 * 24 * 60 * 60 );
-    $HTML::Mason::Commands::r->headers_out->{'Expires'} = $date->RFC2616;
+    CacheControlExpiresHeaders( Time => 'forever' );
 
     # if we set 'Last-Modified' then browser request a comp using 'If-Modified-Since'
     # request, but we don't handle it and generate full reply again
@@ -977,15 +1028,15 @@ sub StaticFileHeaders {
 Takes C<PATH> and returns a boolean indicating that the user-specified partial
 component path is safe.
 
-Currently "safe" means that the path does not start with a dot (C<.>) and does
-not contain a slash-dot C</.>.
+Currently "safe" means that the path does not start with a dot (C<.>), does
+not contain a slash-dot C</.>, and does not contain any nulls.
 
 =cut
 
 sub ComponentPathIsSafe {
     my $self = shift;
     my $path = shift;
-    return $path !~ m{(?:^|/)\.};
+    return $path !~ m{(?:^|/)\.} and $path !~ m{\0};
 }
 
 =head2 PathIsSafe
@@ -1297,6 +1348,16 @@ sub ComponentRoots {
     return @roots;
 }
 
+sub StaticRoots {
+    my $self   = shift;
+    my @static = (
+        $RT::LocalStaticPath,
+        (map { $_->StaticDir } @{RT->Plugins}),
+        $RT::StaticPath,
+    );
+    return grep { $_ and -d $_ } @static;
+}
+
 our %is_whitelisted_component = (
     # The RSS feed embeds an auth token in the path, but query
     # information for the search.  Because it's a straight-up read, in
@@ -1486,7 +1547,7 @@ sub ExpandCSRFToken {
     if ($data->{attach}) {
         my $filename = $data->{attach}{filename};
         my $mime     = $data->{attach}{mime};
-        $HTML::Mason::Commands::session{'Attachments'}{$filename}
+        $HTML::Mason::Commands::session{'Attachments'}{$ARGS->{'Token'}||''}{$filename}
             = $mime;
     }
 
@@ -1566,6 +1627,89 @@ sub PotentialPageAction {
     return "";
 }
 
+=head2 RewriteInlineImages PARAMHASH
+
+Turns C<< <img src="cid:..."> >> elements in HTML into working images pointing
+back to RT's stored copy.
+
+Takes the following parameters:
+
+=over 4
+
+=item Content
+
+Scalar ref of the HTML content to rewrite.  Modified in place to support the
+most common use-case.
+
+=item Attachment
+
+The L<RT::Attachment> object from which the Content originates.
+
+=item Related (optional)
+
+Array ref of related L<RT::Attachment> objects to use for C<Content-ID> matching.
+
+Defaults to the result of the C<Siblings> method on the passed Attachment.
+
+=item AttachmentPath (optional)
+
+The base path to use when rewriting C<src> attributes.
+
+Defaults to C< $WebPath/Ticket/Attachment >
+
+=back
+
+In scalar context, returns the number of elements rewritten.
+
+In list content, returns the attachments IDs referred to by the rewritten <img>
+elements, in the order found.  There may be duplicates.
+
+=cut
+
+sub RewriteInlineImages {
+    my %args = (
+        Content         => undef,
+        Attachment      => undef,
+        Related         => undef,
+        AttachmentPath  => RT->Config->Get('WebPath')."/Ticket/Attachment",
+        @_
+    );
+
+    return unless defined $args{Content}
+              and ref $args{Content} eq 'SCALAR'
+              and defined $args{Attachment};
+
+    my $related_part = $args{Attachment}->Closest("multipart/related")
+        or return;
+
+    $args{Related} ||= $related_part->Children->ItemsArrayRef;
+    return unless @{$args{Related}};
+
+    my $content = $args{'Content'};
+    my @rewritten;
+
+    require HTML::RewriteAttributes::Resources;
+    $$content = HTML::RewriteAttributes::Resources->rewrite($$content, sub {
+        my $cid  = shift;
+        my %meta = @_;
+        return $cid unless    lc $meta{tag}  eq 'img'
+                          and lc $meta{attr} eq 'src'
+                          and $cid =~ s/^cid://i;
+
+        for my $attach (@{$args{Related}}) {
+            if (($attach->GetHeader('Content-ID') || '') =~ /^(<)?\Q$cid\E(?(1)>)$/) {
+                push @rewritten, $attach->Id;
+                return "$args{AttachmentPath}/" . $attach->TransactionId . '/' . $attach->Id;
+            }
+        }
+
+        # No attachments means this is a bogus CID. Just pass it through.
+        RT->Logger->debug(qq[Found bogus inline image src="cid:$cid"]);
+        return "cid:$cid";
+    });
+    return @rewritten;
+}
+
 package HTML::Mason::Commands;
 
 use vars qw/$r $m %session/;
@@ -1634,6 +1778,14 @@ sub RenderMenu {
 
             if ( $tmp = $child->target ) {
                 $res .= ' target="'. $interp->apply_escapes($tmp, 'h') .'"'
+            }
+
+            if ($child->attributes) {
+                for my $key (keys %{$child->attributes}) {
+                    my ($name, $value) = map { $interp->apply_escapes($_, 'h') }
+                                             $key, $child->attributes->{$key};
+                    $res .= " $name=\"$value\"";
+                }
             }
             $res .= '>';
 
@@ -1862,18 +2014,21 @@ sub CreateTicket {
         Interface => RT::Interface::Web::MobileClient() ? 'Mobile' : 'Web',
     );
 
-    if ( $ARGS{'Attachments'} ) {
-        my $rv = $MIMEObj->make_multipart;
-        $RT::Logger->error("Couldn't make multipart message")
-            if !$rv || $rv !~ /^(?:DONE|ALREADY)$/;
+    my @attachments;
+    if ( my $tmp = $session{'Attachments'}{ $ARGS{'Token'} || '' } ) {
+        push @attachments, grep $_, map $tmp->{$_}, sort keys %$tmp;
 
-        foreach ( values %{ $ARGS{'Attachments'} } ) {
-            unless ($_) {
-                $RT::Logger->error("Couldn't add empty attachemnt");
-                next;
-            }
-            $MIMEObj->add_part($_);
-        }
+        delete $session{'Attachments'}{ $ARGS{'Token'} || '' }
+            unless $ARGS{'KeepAttachments'};
+        $session{'Attachments'} = $session{'Attachments'}
+            if @attachments;
+    }
+    if ( $ARGS{'Attachments'} ) {
+        push @attachments, grep $_, map $ARGS{Attachments}->{$_}, sort keys %{ $ARGS{'Attachments'} };
+    }
+    if ( @attachments ) {
+        $MIMEObj->make_multipart;
+        $MIMEObj->add_part( $_ ) foreach @attachments;
     }
 
     for my $argument (qw(Encrypt Sign)) {
@@ -1898,16 +2053,24 @@ sub CreateTicket {
         Status          => $ARGS{'Status'},
         Due             => $due ? $due->ISO : undef,
         Starts          => $starts ? $starts->ISO : undef,
-        MIMEObj         => $MIMEObj
+        MIMEObj         => $MIMEObj,
+        TransSquelchMailTo => $ARGS{'TransSquelchMailTo'},
     );
 
-    my @txn_squelch;
-    foreach my $type (qw(Requestor Cc AdminCc)) {
-        push @txn_squelch, map $_->address, Email::Address->parse( $create_args{$type} )
-            if grep $_ eq $type || $_ eq ( $type . 's' ), @{ $ARGS{'SkipNotification'} || [] };
+    if ($ARGS{'DryRun'}) {
+        $create_args{DryRun} = 1;
+        $create_args{Owner}     ||= $RT::Nobody->Id;
+        $create_args{Requestor} ||= $session{CurrentUser}->EmailAddress;
+        $create_args{Subject}   ||= '';
+        $create_args{Status}    ||= $Queue->Lifecycle->DefaultOnCreate,
+    } else {
+        my @txn_squelch;
+        foreach my $type (qw(Requestor Cc AdminCc)) {
+            push @txn_squelch, map $_->address, Email::Address->parse( $create_args{$type} )
+                if grep $_ eq $type || $_ eq ( $type . 's' ), @{ $ARGS{'SkipNotification'} || [] };
+        }
+        push @{$create_args{TransSquelchMailTo}}, @txn_squelch;
     }
-    $create_args{TransSquelchMailTo} = \@txn_squelch
-        if @txn_squelch;
 
     if ( $ARGS{'AttachTickets'} ) {
         require RT::Action::SendEmail;
@@ -1925,6 +2088,8 @@ sub CreateTicket {
     my %links = ProcessLinksForCreate( ARGSRef => \%ARGS );
 
     my ( $id, $Trans, $ErrMsg ) = $Ticket->Create(%create_args, %links, %cfs);
+    return $Trans if $ARGS{DryRun};
+
     unless ($id) {
         Abort($ErrMsg);
     }
@@ -1989,10 +2154,18 @@ sub ProcessUpdateMessage {
         @_
     );
 
-    if ( $args{ARGSRef}->{'UpdateAttachments'}
-        && !keys %{ $args{ARGSRef}->{'UpdateAttachments'} } )
-    {
-        delete $args{ARGSRef}->{'UpdateAttachments'};
+    my @attachments;
+    if ( my $tmp = $session{'Attachments'}{ $args{'ARGSRef'}{'Token'} || '' } ) {
+        push @attachments, grep $_, map $tmp->{$_}, sort keys %$tmp;
+
+        delete $session{'Attachments'}{ $args{'ARGSRef'}{'Token'} || '' }
+            unless $args{'KeepAttachments'};
+        $session{'Attachments'} = $session{'Attachments'}
+            if @attachments;
+    }
+    if ( $args{ARGSRef}{'UpdateAttachments'} ) {
+        push @attachments, grep $_, map $args{ARGSRef}->{UpdateAttachments}{$_},
+                                   sort keys %{ $args{ARGSRef}->{'UpdateAttachments'} };
     }
 
     # Strip the signature
@@ -2006,7 +2179,7 @@ sub ProcessUpdateMessage {
     # If, after stripping the signature, we have no message, move the
     # UpdateTimeWorked into adjusted TimeWorked, so that a later
     # ProcessBasics can deal -- then bail out.
-    if (    not $args{ARGSRef}->{'UpdateAttachments'}
+    if (    not @attachments
         and not length $args{ARGSRef}->{'UpdateContent'} )
     {
         if ( $args{ARGSRef}->{'UpdateTimeWorked'} ) {
@@ -2015,7 +2188,7 @@ sub ProcessUpdateMessage {
         return;
     }
 
-    if ( $args{ARGSRef}->{'UpdateSubject'} eq ($args{'TicketObj'}->Subject || '') ) {
+    if ( ($args{ARGSRef}->{'UpdateSubject'}||'') eq ($args{'TicketObj'}->Subject || '') ) {
         $args{ARGSRef}->{'UpdateSubject'} = undef;
     }
 
@@ -2039,13 +2212,14 @@ sub ProcessUpdateMessage {
     if ( my $msg = $old_txn->Message->First ) {
         RT::Interface::Email::SetInReplyTo(
             Message   => $Message,
-            InReplyTo => $msg
+            InReplyTo => $msg,
+            Ticket    => $args{'TicketObj'},
         );
     }
 
-    if ( $args{ARGSRef}->{'UpdateAttachments'} ) {
+    if ( @attachments ) {
         $Message->make_multipart;
-        $Message->add_part($_) foreach values %{ $args{ARGSRef}->{'UpdateAttachments'} };
+        $Message->add_part( $_ ) foreach @attachments;
     }
 
     if ( $args{ARGSRef}->{'AttachTickets'} ) {
@@ -2135,33 +2309,36 @@ sub _ProcessUpdateMessageRecipients {
 sub ProcessAttachments {
     my %args = (
         ARGSRef => {},
+        Token   => '',
         @_
     );
 
-    my $ARGSRef = $args{ARGSRef} || {};
+    my $token = $args{'ARGSRef'}{'Token'}
+        ||= $args{'Token'} ||= Digest::MD5::md5_hex( rand(1024) );
+
+    my $update_session = 0;
+
     # deal with deleting uploaded attachments
-    foreach my $key ( keys %$ARGSRef ) {
-        if ( $key =~ m/^DeleteAttach-(.+)$/ ) {
-            delete $session{'Attachments'}{$1};
-        }
-        $session{'Attachments'} = { %{ $session{'Attachments'} || {} } };
+    if ( my $del = $args{'ARGSRef'}{'DeleteAttach'} ) {
+        delete $session{'Attachments'}{ $token }{ $_ }
+            foreach ref $del? @$del : ($del);
+
+        $update_session = 1;
     }
 
     # store the uploaded attachment in session
-    if ( defined $ARGSRef->{'Attach'} && length $ARGSRef->{'Attach'} )
-    {    # attachment?
-        my $attachment = MakeMIMEEntity( AttachmentFieldName => 'Attach' );
+    my $new = $args{'ARGSRef'}{'Attach'};
+    if ( defined $new && length $new ) {
+        my $attachment = MakeMIMEEntity(
+            AttachmentFieldName => 'Attach'
+        );
 
-        my $file_path = Encode::decode_utf8("$ARGSRef->{'Attach'}");
-        $session{'Attachments'} =
-          { %{ $session{'Attachments'} || {} }, $file_path => $attachment, };
-    }
+        my $file_path = Encode::decode_utf8("$new");
+        $session{'Attachments'}{ $token }{ $file_path } = $attachment;
 
-    # delete temporary storage entry to make WebUI clean
-    unless ( keys %{ $session{'Attachments'} } and $ARGSRef->{'UpdateAttach'} )
-    {
-        delete $session{'Attachments'};
+        $update_session = 1;
     }
+    $session{'Attachments'} = $session{'Attachments'} if $update_session;
 }
 
 
@@ -2296,7 +2473,7 @@ sub ProcessACLChanges {
         my $obj;
         if ( $object_type eq 'RT::System' ) {
             $obj = $RT::System;
-        } elsif ( $RT::ACE::OBJECT_TYPES{$object_type} ) {
+        } elsif ( $object_type->DOES('RT::Record::Role::Rights') ) {
             $obj = $object_type->new( $session{'CurrentUser'} );
             $obj->Load($object_id);
             unless ( $obj->id ) {
@@ -2396,7 +2573,7 @@ sub ProcessACLs {
         my $obj;
         if ( $object_type eq 'RT::System' ) {
             $obj = $RT::System;
-        } elsif ( $RT::ACE::OBJECT_TYPES{$object_type} ) {
+        } elsif ( $object_type->DOES('RT::Record::Role::Rights') ) {
             $obj = $object_type->new( $session{'CurrentUser'} );
             $obj->Load($object_id);
             unless ( $obj->id ) {
@@ -2887,7 +3064,7 @@ sub _ProcessObjectCustomFieldUpdates {
                 );
                 push( @results, $msg );
             }
-        } elsif ( $arg eq 'Values' && !$cf->Repeated ) {
+        } elsif ( $arg eq 'Values' ) {
             my $cf_values = $args{'Object'}->CustomFieldValues( $cf->id );
 
             my %values_hash;
@@ -2915,29 +3092,6 @@ sub _ProcessObjectCustomFieldUpdates {
                 my ( $val, $msg ) = $args{'Object'}->DeleteCustomFieldValue(
                     Field   => $cf,
                     ValueId => $cf_value->id
-                );
-                push( @results, $msg );
-            }
-        } elsif ( $arg eq 'Values' ) {
-            my $cf_values = $args{'Object'}->CustomFieldValues( $cf->id );
-
-            # keep everything up to the point of difference, delete the rest
-            my $delete_flag;
-            foreach my $old_cf ( @{ $cf_values->ItemsArrayRef } ) {
-                if ( !$delete_flag and @values and $old_cf->Content eq $values[0] ) {
-                    shift @values;
-                    next;
-                }
-
-                $delete_flag ||= 1;
-                $old_cf->Delete;
-            }
-
-            # now add/replace extra things, if any
-            foreach my $value (@values) {
-                my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue(
-                    Field => $cf,
-                    Value => $value
                 );
                 push( @results, $msg );
             }
@@ -3154,7 +3308,6 @@ sub ProcessTicketDates {
     # Set date fields
     my @date_fields = qw(
         Told
-        Resolved
         Starts
         Started
         Due
@@ -3198,19 +3351,24 @@ Returns an array of results messages.
 sub ProcessTicketLinks {
     my %args = (
         TicketObj => undef,
+        TicketId  => undef,
         ARGSRef   => undef,
         @_
     );
 
     my $Ticket  = $args{'TicketObj'};
+    my $TicketId = $args{'TicketId'} || $Ticket->Id;
     my $ARGSRef = $args{'ARGSRef'};
 
-    my (@results) = ProcessRecordLinks( RecordObj => $Ticket, ARGSRef => $ARGSRef );
+    my (@results) = ProcessRecordLinks(
+        %args, RecordObj => $Ticket, RecordId => $TicketId, ARGSRef => $ARGSRef,
+    );
 
     #Merge if we need to
-    if ( $ARGSRef->{ $Ticket->Id . "-MergeInto" } ) {
-        $ARGSRef->{ $Ticket->Id . "-MergeInto" } =~ s/\s+//g;
-        my ( $val, $msg ) = $Ticket->MergeInto( $ARGSRef->{ $Ticket->Id . "-MergeInto" } );
+    my $input = $TicketId .'-MergeInto';
+    if ( $ARGSRef->{ $input } ) {
+        $ARGSRef->{ $input } =~ s/\s+//g;
+        my ( $val, $msg ) = $Ticket->MergeInto( $ARGSRef->{ $input } );
         push @results, $msg;
     }
 
@@ -3221,11 +3379,13 @@ sub ProcessTicketLinks {
 sub ProcessRecordLinks {
     my %args = (
         RecordObj => undef,
+        RecordId  => undef,
         ARGSRef   => undef,
         @_
     );
 
     my $Record  = $args{'RecordObj'};
+    my $RecordId = $args{'RecordId'} || $Record->Id;
     my $ARGSRef = $args{'ARGSRef'};
 
     my (@results);
@@ -3252,11 +3412,12 @@ sub ProcessRecordLinks {
     my @linktypes = qw( DependsOn MemberOf RefersTo );
 
     foreach my $linktype (@linktypes) {
-        if ( $ARGSRef->{ $Record->Id . "-$linktype" } ) {
-            $ARGSRef->{ $Record->Id . "-$linktype" } = join( ' ', @{ $ARGSRef->{ $Record->Id . "-$linktype" } } )
-                if ref( $ARGSRef->{ $Record->Id . "-$linktype" } );
+        my $input = $RecordId .'-'. $linktype;
+        if ( $ARGSRef->{ $input } ) {
+            $ARGSRef->{ $input } = join( ' ', @{ $ARGSRef->{ $input } } )
+                if ref $ARGSRef->{ $input };
 
-            for my $luri ( split( / /, $ARGSRef->{ $Record->Id . "-$linktype" } ) ) {
+            for my $luri ( split( / /, $ARGSRef->{ $input } ) ) {
                 next unless $luri;
                 $luri =~ s/\s+$//;    # Strip trailing whitespace
                 my ( $val, $msg ) = $Record->AddLink(
@@ -3266,11 +3427,12 @@ sub ProcessRecordLinks {
                 push @results, $msg;
             }
         }
-        if ( $ARGSRef->{ "$linktype-" . $Record->Id } ) {
-            $ARGSRef->{ "$linktype-" . $Record->Id } = join( ' ', @{ $ARGSRef->{ "$linktype-" . $Record->Id } } )
-                if ref( $ARGSRef->{ "$linktype-" . $Record->Id } );
+        $input = $linktype .'-'. $RecordId;
+        if ( $ARGSRef->{ $input } ) {
+            $ARGSRef->{ $input } = join( ' ', @{ $ARGSRef->{ $input } } )
+                if ref $ARGSRef->{ $input };
 
-            for my $luri ( split( / /, $ARGSRef->{ "$linktype-" . $Record->Id } ) ) {
+            for my $luri ( split( / /, $ARGSRef->{ $input } ) ) {
                 next unless $luri;
                 my ( $val, $msg ) = $Record->AddLink(
                     Base => $luri,
@@ -3338,6 +3500,49 @@ sub ProcessTransactionSquelching {
     return %squelched;
 }
 
+sub ProcessRecordBulkCustomFields {
+    my %args = (RecordObj => undef, ARGSRef => {}, @_);
+
+    my $ARGSRef = $args{'ARGSRef'};
+
+    my @results;
+    foreach my $key ( keys %$ARGSRef ) {
+        next unless $key =~ /^Bulk-(Add|Delete)-CustomField-(\d+)-(.*)$/;
+        my ($op, $cfid, $rest) = ($1, $2, $3);
+        next if $rest eq "Category";
+
+        my $cf = RT::CustomField->new( $session{'CurrentUser'} );
+        $cf->Load( $cfid );
+        next unless $cf->Id;
+
+        my @values = _NormalizeObjectCustomFieldValue(
+            CustomField => $cf,
+            Value => $ARGSRef->{$key},
+            Param => $key,
+        );
+
+        my $current_values = $args{'RecordObj'}->CustomFieldValues( $cfid );
+        foreach my $value (@values) {
+            if ( $op eq 'Delete' && $current_values->HasEntry($value) ) {
+                my ( $id, $msg ) = $args{'RecordObj'}->DeleteCustomFieldValue(
+                    Field => $cfid,
+                    Value => $value
+                );
+                push @results, $msg;
+            }
+
+            elsif ( $op eq 'Add' && !$current_values->HasEntry($value) ) {
+                my ( $id, $msg ) = $args{'RecordObj'}->AddCustomFieldValue(
+                    Field => $cfid,
+                    Value => $value
+                );
+                push @results, $msg;
+            }
+        }
+    }
+    return @results;
+}
+
 =head2 _UploadedFile ( $arg );
 
 Takes a CGI parameter name; if a file is uploaded under that name,
@@ -3374,7 +3579,7 @@ sub GetColumnMapEntry {
     }
 
     # complex things
-    elsif ( my ( $mainkey, $subkey ) = $args{'Name'} =~ /^(.*?)\.{(.+)}$/ ) {
+    elsif ( my ( $mainkey, $subkey ) = $args{'Name'} =~ /^(.*?)\.\{(.+)\}$/ ) {
         return undef unless $args{'Map'}->{$mainkey};
         return $args{'Map'}{$mainkey}{ $args{'Attribute'} }
             unless ref $args{'Map'}{$mainkey}{ $args{'Attribute'} } eq 'CODE';
@@ -3420,10 +3625,10 @@ sub GetPrincipalsMap {
         if (/System/) {
             my $system = RT::Groups->new($session{'CurrentUser'});
             $system->LimitToSystemInternalGroups();
-            $system->OrderBy( FIELD => 'Type', ORDER => 'ASC' );
+            $system->OrderBy( FIELD => 'Name', ORDER => 'ASC' );
             push @map, [
                 'System' => $system,    # loc_left_pair
-                'Type'   => 1,
+                'Name'   => 1,
             ];
         }
         elsif (/Groups/) {
@@ -3452,7 +3657,7 @@ sub GetPrincipalsMap {
                 my $class = $object->RecordClassFromLookupType;
                 if ($class and $class->DOES("RT::Record::Role::Roles")) {
                     $roles->LimitToRolesForObject(RT->System);
-                    $roles->Limit( FIELD => "Type", VALUE => $_ )
+                    $roles->Limit( FIELD => "Name", VALUE => $_, CASESENSITIVE => 0 )
                         for $class->Roles;
                 } else {
                     # No roles to show; so show nothing
@@ -3463,10 +3668,10 @@ sub GetPrincipalsMap {
             }
 
             if ($roles) {
-                $roles->OrderBy( FIELD => 'Type', ORDER => 'ASC' );
+                $roles->OrderBy( FIELD => 'Name', ORDER => 'ASC' );
                 push @map, [
                     'Roles' => $roles,  # loc_left_pair
-                    'Type'  => 1
+                    'Name'  => 1
                 ];
             }
         }
@@ -3483,15 +3688,14 @@ sub GetPrincipalsMap {
             );
 
             # Limit to UserEquiv groups
-            my $groups = $Users->NewAlias('Groups');
-            $Users->Join(
-                ALIAS1 => $groups,
-                FIELD1 => 'id',
-                ALIAS2 => $group_members,
-                FIELD2 => 'GroupId'
+            my $groups = $Users->Join(
+                ALIAS1 => $group_members,
+                FIELD1 => 'GroupId',
+                TABLE2 => 'Groups',
+                FIELD2 => 'id',
             );
-            $Users->Limit( ALIAS => $groups, FIELD => 'Domain', VALUE => 'ACLEquivalence' );
-            $Users->Limit( ALIAS => $groups, FIELD => 'Type', VALUE => 'UserEquiv' );
+            $Users->Limit( ALIAS => $groups, FIELD => 'Domain', VALUE => 'ACLEquivalence', CASESENSITIVE => 0 );
+            $Users->Limit( ALIAS => $groups, FIELD => 'Name', VALUE => 'UserEquiv', CASESENSITIVE => 0 );
 
             push @map, [
                 'Users' => $Users,  # loc_left_pair
@@ -3598,6 +3802,23 @@ our %SCRUBBER_ALLOWED_ATTRIBUTES = (
 );
 
 our %SCRUBBER_RULES = ();
+
+# If we're displaying images, let embedded ones through
+if (RT->Config->Get('ShowTransactionImages') or RT->Config->Get('ShowRemoteImages')) {
+    $SCRUBBER_RULES{'img'} = {
+        '*' => 0,
+        alt => 1,
+    };
+
+    my @src;
+    push @src, qr/^cid:/i
+        if RT->Config->Get('ShowTransactionImages');
+
+    push @src, $SCRUBBER_ALLOWED_ATTRIBUTES{'href'}
+        if RT->Config->Get('ShowRemoteImages');
+
+    $SCRUBBER_RULES{'img'}->{'src'} = join "|", @src;
+}
 
 sub _NewScrubber {
     require HTML::Scrubber;

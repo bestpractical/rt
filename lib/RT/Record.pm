@@ -393,7 +393,10 @@ sub LoadByCols {
     # We don't want to hang onto this
     $self->ClearAttributes;
 
-    return $self->SUPER::LoadByCols( @_ ) unless $self->_Handle->CaseSensitive;
+    unless ( $self->_Handle->CaseSensitive ) {
+        my ( $ret, $msg ) = $self->SUPER::LoadByCols( @_ );
+        return wantarray ? ( $ret, $msg ) : $ret;
+    }
 
     # If this database is case sensitive we need to uncase objects for
     # explicit loading
@@ -411,7 +414,8 @@ sub LoadByCols {
             $hash{$key}->{function} = $func;
         }
     }
-    return $self->SUPER::LoadByCols( %hash );
+    my ( $ret, $msg ) = $self->SUPER::LoadByCols( %hash );
+    return wantarray ? ( $ret, $msg ) : $ret;
 }
 
 
@@ -649,6 +653,7 @@ sub __Value {
     }
 
     my $value = $self->SUPER::__Value($field);
+    return $value if ref $value;
 
     return undef if (!defined $value);
 
@@ -794,7 +799,7 @@ sub _EncodeLOB {
                                    . length($Body));
                 $RT::Logger->info( "It started: " . substr( $Body, 0, 60 ) );
                 $Filename .= ".txt" if $Filename;
-                return ("none", "Large attachment dropped", "plain/text", $Filename );
+                return ("none", "Large attachment dropped", "text/plain", $Filename );
             }
         }
 
@@ -1307,7 +1312,7 @@ sub _AddLink {
 
     if ( $args{'Base'} and $args{'Target'} ) {
         $RT::Logger->debug( "$self tried to create a link. both base and target were specified" );
-        return ( 0, $self->loc("Can't specifiy both base and target") );
+        return ( 0, $self->loc("Can't specify both base and target") );
     }
     elsif ( $args{'Base'} ) {
         $args{'Target'} = $self->URI();
@@ -1354,6 +1359,17 @@ sub _AddLink {
     if ( $old_link->Id ) {
         $RT::Logger->debug("$self Somebody tried to duplicate a link");
         return ( $old_link->id, $self->loc("Link already exists"), 1 );
+    }
+
+    if ( $args{'Type'} =~ /^(?:DependsOn|MemberOf)$/ ) {
+
+        my @tickets = $self->_AllLinkedTickets(
+            LinkType  => $args{'Type'},
+            Direction => $direction eq 'Target' ? 'Base' : 'Target',
+        );
+        if ( grep { $_->id == ( $direction eq 'Target' ? $args{'Base'} : $args{'Target'} ) } @tickets ) {
+            return ( 0, $self->loc("Refused to add link which would create a circular relationship") );
+        }
     }
 
     # Storing the link in the DB.
@@ -1440,7 +1456,7 @@ sub _DeleteLink {
 
     if ( $args{'Base'} and $args{'Target'} ) {
         $RT::Logger->debug("$self ->_DeleteLink. got both Base and Target");
-        return ( 0, $self->loc("Can't specifiy both base and target") );
+        return ( 0, $self->loc("Can't specify both base and target") );
     }
     elsif ( $args{'Base'} ) {
         $args{'Target'} = $self->URI();
@@ -1946,7 +1962,7 @@ sub _AddCustomFieldValue {
             my $is_the_same = 1;
             if ( defined $args{'Value'} ) {
                 $is_the_same = 0 unless defined $old_content
-                    && lc $old_content eq lc $args{'Value'};
+                    && $old_content eq $args{'Value'};
             } else {
                 $is_the_same = 0 if defined $old_content;
             }
@@ -2225,6 +2241,37 @@ sub LoadCustomFieldByIdentifier {
 }
 
 sub ACLEquivalenceObjects { } 
+
+=head2 HasRight
+
+ Takes a paramhash with the attributes 'Right' and 'Principal'
+  'Right' is a ticket-scoped textual right from RT::ACE 
+  'Principal' is an RT::User object
+
+  Returns 1 if the principal has the right. Returns undef if not.
+
+=cut
+
+sub HasRight {
+    my $self = shift;
+    my %args = (
+        Right     => undef,
+        Principal => undef,
+        @_
+    );
+
+    $args{Principal} ||= $self->CurrentUser->PrincipalObj;
+
+    return $args{'Principal'}->HasRight(
+        Object => $self->Id ? $self : $RT::System,
+        Right  => $args{'Right'}
+    );
+}
+
+sub CurrentUserHasRight {
+    my $self = shift;
+    return $self->HasRight( Right => @_ );
+}
 
 sub ModifyLinkRight { }
 

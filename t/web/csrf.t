@@ -101,9 +101,7 @@ my $link = $m->find_link(text_regex => qr{resume your request});
 $m->get_ok($broken_url);
 $m->content_like(qr/Queue\s+could not be loaded/);
 $m->title_is('RT Error');
-$m->next_warning_like(qr/Use of uninitialized value/);
-$m->next_warning_like(qr/Queue\s+could not be loaded/);
-$m->no_leftover_warnings_ok;
+$m->warning_like(qr/Queue\s+could not be loaded/);
 
 # The token doesn't work for other pages, or other arguments to the same page.
 $m->add_header(Referer => undef);

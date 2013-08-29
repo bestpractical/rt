@@ -125,13 +125,17 @@ foreach ( $SearchArg, $ProcessedSearchArg ) {
 
     # extract-message-catalog would "$1", so we avoid quotes for loc calls
     $_->{'Format'} =~ s/__loc\(["']?(\w+)["']?\)__/my $f = "$1"; loc($f)/ge;
-    if ( $_->{'Query'} =~ /__Bookmarked__/ ) {
-        $_->{'Rows'} = 999;
-    }
-    elsif ( $_->{'Query'} =~ /__Bookmarks__/ ) {
+    if ( $_->{'Query'} =~ /__Bookmarks__/ ) {
         $_->{'Rows'} = 999;
 
-        # DEPRECATED: will be here for a while up to 3.10/4.0
+        # DEPRECATED: will be here for a while up to 4.4
+        RT->Deprecated(
+            Remove  => "4.4",
+            Instead => "id = '__Bookmarked__'",
+            Message => "The __Bookmarks__ query syntax is deprecated",
+            Object  => $search,
+        );
+
         my @bookmarks = $session{'CurrentUser'}->UserObj->Bookmarks;
         my $query = join(" OR ", map " id = '$_' ", @bookmarks ) || 'id=0';
         $_->{'Query'} =~ s/__Bookmarks__/( $query )/g;

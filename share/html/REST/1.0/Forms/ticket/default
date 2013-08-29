@@ -67,7 +67,7 @@ my @dates  = qw(Created Starts Started Due Resolved Told LastUpdated);
 my @people = qw(Requestors Cc AdminCc);
 my @create = qw(Queue Requestor Subject Cc AdminCc Owner Status Priority
                 InitialPriority FinalPriority TimeEstimated TimeWorked
-                TimeLeft Starts Started Due Resolved);
+                TimeLeft Starts Started Due Resolved Content-Type);
 my @simple = qw(Subject Status Priority Disabled TimeEstimated TimeWorked
                 TimeLeft InitialPriority FinalPriority);
 my %dates  = map {lc $_ => $_} @dates;
@@ -82,7 +82,7 @@ if ($id ne 'new') {
         return [ "# Ticket $id does not exist.", [], {}, 1 ];
     }
     elsif ( %data ) {
-        if ( $data{status} && $data{status} eq 'deleted' && ! grep { $_ ne 'id' && $_ ne 'status' } keys %data ) {
+        if ( $data{status} && lc $data{status} eq 'deleted' && ! grep { $_ ne 'id' && $_ ne 'status' } keys %data ) {
             if ( !$ticket->CurrentUserHasRight('DeleteTicket') ) {
                 return [ "# You are not allowed to delete ticket $id.", [], {}, 1 ];
             }
@@ -110,7 +110,7 @@ else {
         return [
             "# Required: id, Queue",
             [ qw(id Queue Requestor Subject Cc AdminCc Owner Status Priority
-                 InitialPriority FinalPriority TimeEstimated Starts Due Text) ],
+                 InitialPriority FinalPriority TimeEstimated Starts Due Attachment Text) ],
             {
                 id               => "ticket/new",
                 Queue            => $queue->Name,
@@ -126,6 +126,7 @@ else {
                 TimeEstimated    => 0,
                 Starts           => $starts->ISO,
                 Due              => $due->ISO,
+                Attachment       => '',
                 Text             => "",
             },
             0
@@ -134,7 +135,7 @@ else {
     else {
         # We'll create a new ticket, and fall through to set fields that
         # can't be set in the call to Create().
-        my (%v, $text);
+        my (%v, $text, @atts);
 
         foreach my $k (keys %data) {
             # flexibly parse any dates
@@ -167,6 +168,9 @@ else {
             elsif (lc $k eq 'text') {
                 $text = delete $data{$k};
             }
+            elsif (lc $k eq 'attachment') {
+                push @atts, @{ vsplit(delete $data{$k}) };
+            }
             elsif ( $k !~ /^(?:id|requestors)$/i ) {
                 $e = 1;
                 push @$o, $k;
@@ -183,14 +187,25 @@ else {
         # people fields allow multiple values
         $v{$_} = vsplit($v{$_}) foreach ( grep $create{lc $_}, @people );
 
-        if ($text) {
+        if ($text || @atts) {
             $v{MIMEObj} =
                 MIME::Entity->build(
+                    Type => "multipart/mixed",
                     From => $session{CurrentUser}->EmailAddress,
                     Subject => $v{Subject},
-                    Data => $text,
                     'X-RT-Interface' => 'REST',
+                    'Content-Type' => $v{'Content-Type'} || 'text/plain',
                 );
+            $v{MIMEObj}->attach(
+                Data => $text,
+                'Content-Type' => $v{'Content-Type'} || 'text/plain',
+            ) if $text;
+            my ($status, $msg) = process_attachments($v{'MIMEObj'}, @atts);
+            unless ($status) {
+                push(@comments, "# $msg");
+                goto DONE;
+            }
+            $v{MIMEObj}->make_singlepart;
         }
 
         my($tid,$trid,$terr) = $ticket->Create(%v);    
@@ -279,6 +294,7 @@ if (!keys(%data)) {
 }
 else {
     my ($get, $set, $key, $val, $n, $s);
+    my $updated;
 
     foreach $key (keys %data) {
         $val = $data{$key};
@@ -406,14 +422,14 @@ else {
                             $s =~ s/\\'/'/g;
                             push @new, $s;
                         }
-                        elsif ( $a =~ /^q{/ ) {
+                        elsif ( $a =~ /^q\{/ ) {
                             my $s = $a;
-                            while ( $a !~ /}$/ ) {
+                            while ( $a !~ /\}$/ ) {
                                 ( $a, $b ) = split /\s*,\s*/, $b, 2;
                                 $s .= ',' . $a;
                             }
-                            $s =~ s/^q{//;
-                            $s =~ s/}//;
+                            $s =~ s/^q\{//;
+                            $s =~ s/\}//;
                             push @new, $s;
                         }
                         else {
@@ -444,7 +460,7 @@ else {
                 }
             }
         }
-        elsif ($key ne 'id' && $key ne 'type' && $key ne 'creator') {
+        elsif ($key ne 'id' && $key ne 'type' && $key ne 'creator' && $key ne 'content-type' ) {
             $n = 0;
             $s = "Unknown field.";
         }
@@ -459,8 +475,11 @@ else {
                 $k = $changes;
             }
         }
+        else {
+            $updated ||= 1;
+        }
     }
-    push(@comments, "# Ticket ".$ticket->id." updated.") unless $n == 0;
+    push(@comments, "# Ticket ".$ticket->id." updated.") if $updated;
 }
 
 DONE:

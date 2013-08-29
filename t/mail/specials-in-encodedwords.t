@@ -14,7 +14,7 @@ diag "specials (, and ;) in MIME encoded-words aren't treated as specials";
 From: root@localhost
 Subject: testing mime encoded specials
 Cc: a@example.com, =?utf8?q?d=40example.com=2ce=40example.com=3b?=
-    <b@example.com>; c@example.com
+    <b@example.com>, c@example.com
 Content-Type: text/plain; charset=utf8
 
 here's some content

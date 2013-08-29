@@ -48,7 +48,7 @@
 % $m->callback( %ARGS, error => $error );
 
 % unless ($SuppressHeader) {
-<& /Elements/Header, Code => $Code, Why => $Why, Title => $Title &>
+<& /Elements/Header, Title => $Title &>
 <& /Elements/Tabs &>
 % }
 
@@ -60,14 +60,11 @@
 <%$Details%>
 </div>
 
-<%cleanup>
-$m->comp('/Elements/Footer');
-$m->abort();
-</%cleanup>
+<& /Elements/Footer &>
+% $m->abort;
 
 <%args>
 $Actions => []
-$Code => undef
 $Details => ''
 $Title => loc("RT Error")
 $Why => loc("the calling component did not specify why"),
@@ -75,7 +72,7 @@ $SuppressHeader => 0,
 </%args>
 
 <%INIT>
-my $error = "WebRT: $Why";
+my $error = $Why;
 $error .= " ($Details)" if defined $Details && length $Details;
 
 # TODO: Log::Dispatch isn't UTF-8 safe. Autrijus needs to talk to dave rolsky about getting this fixed

@@ -293,13 +293,13 @@ L<RT::Group> object on failure.
 
 sub RoleGroup {
     my $self  = shift;
-    my $type  = shift;
+    my $name  = shift;
     my $group = RT::Group->new( $self->CurrentUser );
 
-    if ($self->HasRole($type)) {
+    if ($self->HasRole($name)) {
         $group->LoadRoleGroup(
             Object  => $self,
-            Type    => $type,
+            Name    => $name,
         );
     }
     return $group;
@@ -384,7 +384,7 @@ sub AddRoleMember {
             unless ($user->Id) {
                 # If we can't find this watcher, we need to bail.
                 $RT::Logger->error("Could not load or create a user '$name' to add as a watcher: $msg");
-                return (0, $self->loc("Could not find or create user '$name'"));
+                return (0, $self->loc("Could not find or create user '[_1]'", $name));
             }
             $args{PrincipalId} = $user->PrincipalId;
         }
@@ -394,7 +394,7 @@ sub AddRoleMember {
             $group->LoadUserDefinedGroup($name);
             unless ($group->id) {
                 $RT::Logger->error("Could not load group '$name' to add as a watcher");
-                return (0, $self->loc("Could not find group '$name'"));
+                return (0, $self->loc("Could not find group '[_1]'", $name));
             }
             $args{PrincipalId} = $group->PrincipalObj->id;
         }
@@ -408,12 +408,15 @@ sub AddRoleMember {
         if $acl and not $acl->($type => $principal);
 
     my $group = $self->RoleGroup( $type );
-    return (0, $self->loc("Role group '$type' not found"))
+    return (0, $self->loc("Role group '[_1]' not found", $type))
         unless $group->id;
 
     return (0, $self->loc('[_1] is already a [_2]',
                           $principal->Object->Name, $self->loc($type)) )
             if $group->HasMember( $principal );
+
+    return (0, $self->loc('[_1] cannot be a group', $self->loc($type)) )
+                if $group->SingleMemberRoleGroup and $principal->IsGroup;
 
     my ( $ok, $msg ) = $group->_AddMember( %args, RecordTransaction => !$args{Silent} );
     unless ($ok) {
@@ -467,7 +470,7 @@ sub DeleteRoleMember {
         my $user = RT::User->new( $self->CurrentUser );
         $user->LoadByEmail( $args{User} );
         $user->Load( $args{User} ) unless $user->id;
-        return (0, $self->loc("Could not load user '$args{User}'") )
+        return (0, $self->loc("Could not load user '[_1]'", $args{User}) )
             unless $user->id;
         $args{PrincipalId} = $user->PrincipalId;
     }
@@ -483,7 +486,7 @@ sub DeleteRoleMember {
         if $acl and not $acl->($principal);
 
     my $group = $self->RoleGroup( $args{Type} );
-    return (0, $self->loc("Role group '$args{Type}' not found"))
+    return (0, $self->loc("Role group '[_1]' not found", $args{Type}))
         unless $group->id;
 
     return ( 0, $self->loc( '[_1] is not a [_2]',
@@ -567,15 +570,15 @@ sub _ResolveRoles {
 sub _CreateRoleGroups {
     my $self = shift;
     my %args = (@_);
-    for my $type ($self->Roles) {
+    for my $name ($self->Roles) {
         my $type_obj = RT::Group->new($self->CurrentUser);
         my ($id, $msg) = $type_obj->CreateRoleGroup(
-            Type    => $type,
+            Name    => $name,
             Object  => $self,
             %args,
         );
         unless ($id) {
-            $RT::Logger->error("Couldn't create a role group of type '$type' for ".ref($self)." ".
+            $RT::Logger->error("Couldn't create a role group of type '$name' for ".ref($self)." ".
                                    $self->id.": ".$msg);
             return(undef);
         }

@@ -99,7 +99,7 @@ sub __DependsOn
 # ACL equivalence group
 # don't use LoadACLEquivalenceGroup cause it may not exists any more
     my $objs = RT::Groups->new( $self->CurrentUser );
-    $objs->Limit( FIELD => 'Domain', VALUE => 'ACLEquivalence' );
+    $objs->Limit( FIELD => 'Domain', VALUE => 'ACLEquivalence', CASESENSITIVE => 0 );
     $objs->Limit( FIELD => 'Instance', VALUE => $self->Id );
     push( @$list, $objs );
 
@@ -122,7 +122,7 @@ sub __DependsOn
         my $class = "RT::$_";
         foreach my $method ( qw(Creator LastUpdatedBy) ) {
             my $objs = $class->new( $self->CurrentUser );
-            next unless $objs->NewItem->_Accessible( $method => 'read' );
+            next unless $objs->RecordClass->_Accessible( $method => 'read' );
             $objs->Limit( FIELD => $method, VALUE => $self->id );
             push @var_objs, $objs;
         }

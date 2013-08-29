@@ -6,7 +6,7 @@ use RT::Test tests => 14;
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, "logged in";
 
-$m->follow_link_ok({ id => 'tools-config-global-group-rights'});
+$m->follow_link_ok({ id => 'admin-global-group-rights'});
 
 
 sub get_rights {

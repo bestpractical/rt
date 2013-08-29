@@ -45,7 +45,12 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => $title &>
+<& /Admin/Elements/Header,
+    Title => $title,
+    Focus => (($added_cfv or $ARGS{FocusAddValue})
+        ? "input[name=CustomField-$id-Value-new-Name]"
+        : undef),
+    &>
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
@@ -152,7 +157,7 @@
 
 </form>
 <%INIT>
-my ($title, @results);
+my ($title, @results, $added_cfv);
 
 my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
 
@@ -273,6 +278,7 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
                 $_ => $ARGS{ $paramtag ."-new-$_" } } qw/ Name Description SortOrder Category/
         );
         push (@results, $msg);
+        $added_cfv = 1 if $id;
 
         my $cfv = RT::CustomFieldValue->new( $session{CurrentUser} );
         $cfv->Load($id);
@@ -301,7 +307,7 @@ $id = $CustomFieldObj->id if $CustomFieldObj->id;
 # This code does automatic redirection if any updates happen.
 MaybeRedirectForResults(
     Actions     => \@results,
-    Arguments   => { id => $id },
+    Arguments   => { id => $id, FocusAddValue => ($added_cfv ? 1 : 0) },
 ) if $CustomFieldObj->id;
 
 
@@ -320,7 +326,7 @@ $m->callback(CallbackName => 'ValidationPatterns', Values => \@CFvalidations);
 <%ARGS>
 $id => undef
 $TypeComposite => undef
-$LookupType => undef
+$LookupType => RT::Ticket->CustomFieldLookupType
 $MaxValues => undef
 $SortOrder => undef
 $Description => undef

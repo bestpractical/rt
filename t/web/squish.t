@@ -12,11 +12,11 @@ $m->login;
 
 diag "test squished files with devel mode disabled";
 
-$m->follow_link_ok( { url_regex => qr!aileron-squished-([a-f0-9]{32})\.css! },
+$m->follow_link_ok( { url_regex => qr!aileron/squished-([a-f0-9]{32})\.css! },
     'follow squished css' );
 $m->content_like( qr!/\*\* End of .*?.css \*/!, 'squished css' );
-$m->content_lacks( 'text-decoration: underline !important;',
-    'no print.css by default' );
+$m->content_lacks( 'counteract the titlebox',
+    'no mobile.css by default' );
 
 $m->back;
 my ($js_link) =
@@ -29,16 +29,16 @@ RT::Test->stop_server;
 
 diag "test squished files with customized files and devel mode disabled";
 RT->AddJavaScript( 'not-by-default.js' );
-RT->AddStyleSheets( 'print.css' );
+RT->AddStyleSheets( 'mobile.css' );
 
 ( $url, $m ) = RT::Test->started_ok;
 
 $m->login;
-$m->follow_link_ok( { url_regex => qr!aileron-squished-([a-f0-9]{32})\.css! },
+$m->follow_link_ok( { url_regex => qr!aileron/squished-([a-f0-9]{32})\.css! },
     'follow squished css' );
 $m->content_like( qr!/\*\* End of .*?.css \*/!, 'squished css' );
-$m->content_contains( 'text-decoration: underline !important;',
-    'has print.css' );
+$m->content_contains( 'counteract the titlebox',
+    'has mobile.css' );
 
 $m->back;
 ($js_link) =

@@ -47,16 +47,13 @@
 %# END BPS TAGGED BLOCK }}}
 % if ( $Show ne 'Groups' ) {
 <label for="<% $Name %>Users"><&|/l&>Add user</&>:</label>
-<input type="text" value="" name="<% $Name %>Users" id="<% $Name %>Users" /><br />
+<input type="text" value="" name="<% $Name %>Users" id="<% $Name %>Users" data-autocomplete="Users" data-autocomplete-return="Name" data-autocomplete-privileged="1" data-autocomplete-exclude="<% $user_ids |n %>" /><br />
 <script type="text/javascript">
 jQuery(function(){
-    jQuery("#"+<% $Name |n,j%>+"Users").autocomplete({
-        source: RT.Config.WebPath + "/Helpers/Autocomplete/Users?return=Name;privileged=1;exclude="+<% $user_ids |n,u,j %>,
-        // Auto-submit once a user is chosen
-        select: function( event, ui ) {
-            jQuery(event.target).val(ui.item.value);
-            jQuery(event.target).closest("form").submit();
-        }
+    // Auto-submit once a user is chosen
+    jQuery("#"+<% $Name |n,j%>+"Users").on("autocompleteselect", function( event, ui ) {
+        jQuery(event.target).val(ui.item.value);
+        jQuery(event.target).closest("form").submit();
     });
 });
 </script>
@@ -64,16 +61,13 @@ jQuery(function(){
 
 % if ( $Show ne 'Users' ) {
 <label for="<% $Name %>Groups"><&|/l&>Add group</&>:</label>
-<input type="text" value="" name="<% $Name %>Groups" id="<% $Name %>Groups" /><br />
+<input type="text" value="" name="<% $Name %>Groups" id="<% $Name %>Groups" data-autocomplete="Groups" data-autocomplete-exclude="<% $group_ids |n %>" /><br />
 <script type="text/javascript">
 jQuery(function(){
-    jQuery("#"+<% $Name |n,j%>+"Groups").autocomplete({
-        source: RT.Config.WebPath + "/Helpers/Autocomplete/Groups?exclude="+<% $group_ids |n,u,j %>,
-        // Auto-submit once a user is chosen
-        select: function( event, ui ) {
-            jQuery(event.target).val(ui.item.value);
-            jQuery(event.target).closest("form").submit();
-        }
+    // Auto-submit once a group is chosen
+    jQuery("#"+<% $Name |n,j%>+"Groups").on("autocompleteselect", function( event, ui ) {
+        jQuery(event.target).val(ui.item.value);
+        jQuery(event.target).closest("form").submit();
     });
 });
 </script>

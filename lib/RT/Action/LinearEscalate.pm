@@ -98,7 +98,7 @@ the Due date. Tickets without due date B<are not updated>.
 =head1 CONFIGURATION
 
 Initial and Final priorities are controlled by queue's options
-and can be defined using the web UI via Configuration tab. This
+and can be defined using the web UI via Admin tab. This
 action should handle correctly situations when initial priority
 is greater than final.
 
@@ -139,8 +139,6 @@ package RT::Action::LinearEscalate;
 use strict;
 use warnings;
 use base qw(RT::Action);
-
-our $VERSION = '0.06';
 
 #Do what we need to do and send it out.
 

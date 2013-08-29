@@ -1,0 +1,22 @@
+use strict;
+use warnings;
+
+our @ScripActions = (
+    { Name        => 'Notify Owner and AdminCcs',                         # loc
+      Description => 'Sends mail to the Owner and administrative Ccs',    # loc
+      ExecModule  => 'Notify',
+      Argument    => 'Owner,AdminCc' },
+);
+
+our @Templates = (
+    # Shadow the global templates of the same name to suppress duplicate
+    # notifications until rules is ripped out.
+    { Queue     => "___Approvals",
+      Name      => "Transaction in HTML",
+      Content   => "",
+    },
+    { Queue     => "___Approvals",
+      Name      => "Transaction",
+      Content   => "",
+    },
+);

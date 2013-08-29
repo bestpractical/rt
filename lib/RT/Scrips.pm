@@ -458,13 +458,11 @@ sub _FindScrips {
     $self->LimitToGlobal;
     $self->LimitByStage( $args{'Stage'} );
 
-    my $ConditionsAlias = $self->NewAlias('ScripConditions');
-
-    $self->Join(
+    my $ConditionsAlias = $self->Join(
         ALIAS1 => 'main',
         FIELD1 => 'ScripCondition',
-        ALIAS2 => $ConditionsAlias,
-        FIELD2 => 'id'
+        TABLE2 => 'ScripConditions',
+        FIELD2 => 'id',
     );
 
     #We only want things where the scrip applies to this sort of transaction
@@ -502,19 +500,6 @@ sub _FindScrips {
     );
 }
 
-
-
-
-=head2 NewItem
-
-Returns an empty new RT::Scrip item
-
-=cut
-
-sub NewItem {
-    my $self = shift;
-    return(RT::Scrip->new($self->CurrentUser));
-}
 RT::Base->_ImportOverlays();
 
 1;

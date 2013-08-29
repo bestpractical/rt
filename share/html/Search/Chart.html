@@ -46,33 +46,21 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%args>
-$PrimaryGroupBy => 'Queue'
+@GroupBy => 'Status'
 $ChartStyle => 'bars'
+@ChartFunction => ('COUNT')
 $Description => undef
+$Width => undef
+$Height => undef
 </%args>
 <%init>
 $ARGS{Query} ||= 'id > 0';
 
-# FIXME: should be factored with RT::Report::Tickets::Label :(
-my $PrimaryGroupByLabel;
-if ( $PrimaryGroupBy =~ /^(?:CF|CustomField)\.{(.*)}$/ ) {
-    my $cf = $1;
-    if ( $cf =~ /\D/ ) {
-        $PrimaryGroupByLabel = loc( "custom field '[_1]'", $cf );
-    } else {
-        my $obj = RT::CustomField->new( $session{'CurrentUser'} );
-        $obj->Load( $cf );
-        $PrimaryGroupByLabel = loc( "custom field '[_1]'", $obj->Name );
-    }
-} else {
-    $PrimaryGroupByLabel = loc( $PrimaryGroupBy );
-}
-
-my $title = loc( "Search results grouped by [_1]", $PrimaryGroupByLabel );
+my $title = loc( "Grouped search results");
 
 my $saved_search = $m->comp( '/Widgets/SavedSearch:new',
     SearchType   => 'Chart',
-    SearchFields => [qw(Query PrimaryGroupBy ChartStyle)] );
+    SearchFields => [qw(Query GroupBy ChartStyle ChartFunction Width Height)] );
 
 my @actions = $m->comp( '/Widgets/SavedSearch:process', args => \%ARGS, self => $saved_search );
 
@@ -97,8 +85,8 @@ my %query;
     );
 
     for(@session_fields) {
-        $query{$_} = $current->{$_} unless defined $query{$_};
         $query{$_} = $DECODED_ARGS->{$_} unless defined $query{$_};
+        $query{$_} = $current->{$_} unless defined $query{$_};
     }
 
     if ($DECODED_ARGS->{'SavedSearchLoadSubmit'}) {
@@ -119,15 +107,69 @@ my %query;
 
 <div class="chart-meta">
 <div class="chart-type">
-<&| /Widgets/TitleBox, title => loc('Chart Properties')&>
-<form method="get" action="<%RT->Config->Get('WebPath')%>/Search/Chart.html">
+
+<form method="get" action="<% RT->Config->Get('WebPath') %>/Search/Chart.html">
 <input type="hidden" class="hidden" name="Query" value="<% $ARGS{Query} %>" />
 <input type="hidden" class="hidden" name="SavedChartSearchId" value="<% $saved_search->{SearchId} || 'new' %>" />
 
-<&|/l_unsafe, $m->scomp('Elements/SelectChartType', Name => 'ChartStyle', Default => $ChartStyle), $m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $ARGS{Query}, Default => $PrimaryGroupBy) 
-&>[_1] chart by [_2]</&><input type="submit" class="button" value="<%loc('Update Chart')%>" />
-</form>
+<&| /Widgets/TitleBox, title => loc('Group by'), class => "chart-group-by" &>
+<fieldset><legend><% loc('Group tickets by') %></legend>
+<& Elements/SelectGroupBy,
+    Name => 'GroupBy',
+    Query => $ARGS{Query},
+    Default => $GroupBy[0],
+    &>
+</fieldset>
+<fieldset><legend><% loc('and then') %></legend>
+<& Elements/SelectGroupBy,
+    Name => 'GroupBy',
+    Query => $ARGS{Query},
+    Default => $GroupBy[1],
+    ShowEmpty => 1,
+    &>
+</fieldset>
+<fieldset><legend><% loc('and then') %></legend>
+<& Elements/SelectGroupBy,
+    Name => 'GroupBy',
+    Query => $ARGS{Query},
+    Default => $GroupBy[2],
+    ShowEmpty => 1,
+    &>
+</fieldset>
 </&>
+
+<&| /Widgets/TitleBox, title => loc("Calculate"), class => "chart-calculate" &>
+
+<fieldset><legend><% loc('Calculate values of') %></legend>
+<& Elements/SelectChartFunction, Default => $ChartFunction[0] &>
+</fieldset>
+<fieldset><legend><% loc('and then') %></legend>
+<& Elements/SelectChartFunction, Default => $ChartFunction[1], ShowEmpty => 1 &>
+</fieldset>
+<fieldset><legend><% loc('and then') %></legend>
+<& Elements/SelectChartFunction, Default => $ChartFunction[2], ShowEmpty => 1 &>
+</fieldset>
+
+</&>
+
+<&| /Widgets/TitleBox, title => loc('Picture'), class => "chart-picture" &>
+<label><% loc('Style') %>: <& Elements/SelectChartType, Default => $ChartStyle, Name => 'ChartStyle' &></label>
+<label><% loc("Width") %>: <input type="text" name="Width" value="<% $Width || "" %>"> <% loc("px") %></label>
+<span class="height">
+  &#x00d7;
+  <label><% loc("Height") %>: <input type="text" name="Height" value="<% $Height || "" %>"> <% loc("px") %></label>
+</span>
+</&>
+<script type="text/javascript">
+jQuery(".chart-picture [name=ChartStyle]").change(function(){
+    var t = jQuery(this);
+    t.closest("form").find("[name=Height]").closest(".height").toggle( t.val() !== "pie" );
+}).change();
+</script>
+
+<& /Elements/Submit, Label => loc('Update Chart'), Name => 'Update' &>
+</form>
+
 </div>
 <div class="saved-search">
     <& /Widgets/SavedSearch:show, %ARGS, Action => 'Chart.html', self => $saved_search, Title => loc('Saved charts') &>

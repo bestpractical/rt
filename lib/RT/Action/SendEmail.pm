@@ -195,9 +195,12 @@ sub Prepare {
         $part->head->mime_attr( "Content-Type.charset" => 'utf-8' );
     }
 
-    RT::I18N::SetMIMEEntityToEncoding( $MIMEObj,
-        RT->Config->Get('EmailOutputEncoding'),
-        'mime_words_ok', );
+    RT::I18N::SetMIMEEntityToEncoding(
+        Entity        => $MIMEObj,
+        Encoding      => RT->Config->Get('EmailOutputEncoding'),
+        PreserveWords => 1,
+        IsOut         => 1,
+    );
 
     # Build up a MIME::Entity that looks like the original message.
     $self->AddAttachments if ( $MIMEObj->head->get('RT-Attach-Message')
@@ -382,7 +385,7 @@ sub AddAttachments {
 
 =head2 AddAttachment $attachment
 
-Takes one attachment object of L<RT::Attachmment> class and attaches it to the message
+Takes one attachment object of L<RT::Attachment> class and attaches it to the message
 we're building.
 
 =cut
@@ -397,15 +400,17 @@ sub AddAttachment {
               and $attach->TransactionObj->CurrentUserCanSee;
 
     # ->attach expects just the disposition type; extract it if we have the header
+    # or default to "attachment"
     my $disp = ($attach->GetHeader('Content-Disposition') || '')
-                    =~ /^\s*(inline|attachment)/i ? $1 : undef;
+                    =~ /^\s*(inline|attachment)/i ? $1 : "attachment";
 
     $MIMEObj->attach(
         Type        => $attach->ContentType,
         Charset     => $attach->OriginalEncoding,
         Data        => $attach->OriginalContent,
-        Disposition => $disp, # a false value defaults to inline in MIME::Entity
+        Disposition => $disp,
         Filename    => $self->MIMEEncodeString( $attach->Filename ),
+        Id          => $attach->GetHeader('Content-ID'),
         'RT-Attachment:' => $self->TicketObj->Id . "/"
             . $self->TransactionObj->Id . "/"
             . $attach->id,
@@ -1120,13 +1125,8 @@ Returns a fake Message-ID: header for the ticket to allow a base level of thread
 =cut
 
 sub PseudoReference {
-
     my $self = shift;
-    my $pseudo_ref
-        = '<RT-Ticket-'
-        . $self->TicketObj->id . '@'
-        . RT->Config->Get('Organization') . '>';
-    return $pseudo_ref;
+    return RT::Interface::Email::PseudoReference( $self->TicketObj );
 }
 
 =head2 SetHeaderAsEncoding($field_name, $charset_encoding)

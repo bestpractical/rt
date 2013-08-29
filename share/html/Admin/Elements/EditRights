@@ -135,21 +135,23 @@ for my $category (@$Principals) {
     <li class="addprincipal">
       <a href="#acl-AddPrincipal">
         <input type="text" value=""
+            data-autocomplete="<% lc $AddPrincipal eq 'user' ? 'Users' : 'Groups' %>"
+% if ( lc $AddPrincipal eq 'user' ) {
+            data-autocomplete-return="Name"
+            data-autocomplete-privileged="1"
+% }
                name="AddPrincipalForRights-<% lc $AddPrincipal %>"
                id="AddPrincipalForRights-<% lc $AddPrincipal %>" />
         <script type="text/javascript">
         jQuery(function() {
             jQuery("#AddPrincipalForRights-"+<% lc $AddPrincipal |n,j%>).keyup(function(){
                 toggle_addprincipal_validity(this, true);
+            }).keydown(function(event){
+                event.stopPropagation() // Disable tabs keyboard nav
             });
 
-% if (lc $AddPrincipal eq 'group') {
-            jQuery("#AddPrincipalForRights-"+<% lc $AddPrincipal |n,j%>).autocomplete({
-                source: RT.Config.WebPath + "/Helpers/Autocomplete/Groups",
-                select: addprincipal_onselect,
-                change: addprincipal_onchange
-            });
-% }
+            jQuery("#AddPrincipalForRights-"+<% lc $AddPrincipal |n,j%>).on("autocompleteselect", addprincipal_onselect);
+            jQuery("#AddPrincipalForRights-"+<% lc $AddPrincipal |n,j%>).on("autocompletechange", addprincipal_onchange);
         });
         </script>
 % my $type = lc $AddPrincipal eq 'user' ? loc('username') : loc($AddPrincipal);
@@ -175,7 +177,7 @@ for my $category (@$Principals) {
 if ($obj->isa('RT::Group') and $obj->Domain eq 'UserDefined') {
     my $subgroups = $obj->GroupMembersObj( Recursively => 1 );
     $subgroups->LimitToUserDefinedGroups;
-    $subgroups->Limit( FIELD => 'Name', OPERATOR => '!=', VALUE => $obj->Name );
+    $subgroups->Limit( FIELD => 'Name', OPERATOR => '!=', VALUE => $obj->Name, CASESENSITIVE => 0 );
 
     if ( $subgroups->Count ) {
         my $inc = join ", ", map $_->Name, @{$subgroups->ItemsArrayRef};

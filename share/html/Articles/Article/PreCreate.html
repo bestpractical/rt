@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => loc('Create an article in class...') &>
-<& /Elements/Tabs, Title => loc('Create an article in class...') &>
+<& /Elements/Tabs &>
 <ul>
 % my $Classes = RT::Classes->new($session{'CurrentUser'});
 % $Classes->LimitToEnabled();
@@ -58,6 +58,5 @@
 % }
 </ul>
 % unless ( $have_classes ) {
-<span><&|/l&>Permission Denied</&></span>
-<p><span><&|/l&>To create an Article, you must first create a Class and have access to that Class.</&></span></p>
+<& /Articles/Elements/NeedsSetup &>
 % }

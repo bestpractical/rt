@@ -94,6 +94,7 @@ for my $column (@columns) {
     @out = grep { defined $_ and length $_ } @out;
 </%perl>
 <span class="value"><% join('',@out) |n %></span>
+% $m->callback(CallbackName => 'AfterValue', Object => $Object, attribute => $attr, column => $column );
 </div>
 % }
 </div>

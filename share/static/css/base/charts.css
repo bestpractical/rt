@@ -1,0 +1,28 @@
+.chart-group-by fieldset,
+.chart-calculate fieldset {
+    border-width: 1px 0 0 0;
+    border-style: solid;
+    border-color: #aaa;
+}
+
+.chart-group-by fieldset legend,
+.chart-calculate fieldset legend {
+    padding: 0 1em;
+}
+
+.chart-picture input[name=Width],
+.chart-picture input[name=Height] {
+    width: 3em;
+    text-align: right;
+}
+
+.chart-wrapper .collection-as-table th {
+    text-shadow: 0 0 3px #ddd;
+}
+
+.chart-wrapper .collection-as-table tr th.evenline {
+    background: #eee;
+}
+.chart-wrapper .collection-as-table tr th.oddline {
+    background: #ddd;
+}

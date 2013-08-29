@@ -60,9 +60,9 @@ RT::Handle - RT's database handle
 
 C<RT::Handle> is RT specific wrapper over one of L<DBIx::SearchBuilder::Handle>
 classes. As RT works with different types of DBs we subclass repsective handler
-from L<DBIx::SerachBuilder>. Type of the DB is defined by C<DatabasseType> RT's
-config option. You B<must> load this module only when the configs have been
-loaded.
+from L<DBIx::SearchBuilder>. Type of the DB is defined by L<RT's DatabaseType
+config option|RT_Config/DatabaseType>. You B<must> load this module only when
+the configs have been loaded.
 
 =cut
 
@@ -87,10 +87,19 @@ sub FinalizeDatabaseType {
         use base "DBIx::SearchBuilder::Handle::". RT->Config->Get('DatabaseType');
     };
 
+    my $db_type = RT->Config->Get('DatabaseType');
     if ($@) {
-        die "Unable to load DBIx::SearchBuilder database handle for '". RT->Config->Get('DatabaseType') ."'.\n".
+        die "Unable to load DBIx::SearchBuilder database handle for '$db_type'.\n".
             "Perhaps you've picked an invalid database type or spelled it incorrectly.\n".
             $@;
+    }
+
+    # We use COLLATE NOCASE to enforce case insensitivity on the normally
+    # case-sensitive SQLite, LOWER() approach works, but lucks performance
+    # due to absence of functional indexes
+    if ($db_type eq 'SQLite') {
+        no strict 'refs'; no warnings 'redefine';
+        *DBIx::SearchBuilder::Handle::SQLite::CaseSensitive = sub {0};
     }
 }
 
@@ -114,6 +123,7 @@ sub Connect {
     $self->SUPER::Connect(
         User => RT->Config->Get('DatabaseUser'),
         Password => RT->Config->Get('DatabasePassword'),
+        DisconnectHandleOnDestroy => 1,
         %args,
     );
 
@@ -157,7 +167,6 @@ sub BuildDSN {
         Port       => $db_port,
         Driver     => $db_type,
         RequireSSL => RT->Config->Get('DatabaseRequireSSL'),
-        DisconnectHandleOnDestroy => 1,
     );
     if ( $db_type eq 'Oracle' && $db_host ) {
         $args{'SID'} = delete $args{'Database'};
@@ -283,6 +292,12 @@ sub CheckCompatibility {
                 return (0, "RT since version 3.8 has new schema for MySQL versions after 4.1.0\n"
                     ."Follow instructions in the UPGRADING.mysql file.");
             }
+        }
+
+        my $max_packet = ($dbh->selectrow_array("show variables like 'max_allowed_packet'"))[1];
+        if ($state =~ /^(create|post)$/ and $max_packet <= (1024 * 1024)) {
+            my $max_packet = sprintf("%.1fM", $max_packet/1024/1024);
+            warn "max_allowed_packet is set to $max_packet, which limits the maximum attachment or email size that RT can process.  Consider adjusting MySQL's max_allowed_packet setting.\n";
         }
     }
     return (1)
@@ -671,10 +686,9 @@ sub InsertInitialData {
 
         $group = RT::Group->new( RT->SystemUser );
         my ( $val, $msg ) = $group->_Create(
-            Type        => $name,
             Domain      => 'SystemInternal',
             Description => 'Pseudogroup for internal use',  # loc
-            Name        => '',
+            Name        => $name,
             Instance    => '',
         );
         return ($val, $msg) unless $val;
@@ -722,7 +736,7 @@ sub InsertInitialData {
 
         $group = RT::Group->new( RT->SystemUser );
         my ( $val, $msg ) = $group->CreateRoleGroup(
-            Type                => $name,
+            Name                => $name,
             Object              => RT->System,
             Description         => 'SystemRolegroup for internal use',  # loc
             InsideTransaction   => 0,
@@ -884,12 +898,15 @@ sub InsertData {
             my $new_entry = RT::CustomField->new( RT->SystemUser );
             my $values    = delete $item->{'Values'};
 
-            my @queues;
-            # if ref then it's list of queues, so we do things ourself
-            if ( exists $item->{'Queue'} && ref $item->{'Queue'} ) {
+            # Back-compat for the old "Queue" argument
+            if ( exists $item->{'Queue'} ) {
                 $item->{'LookupType'} ||= 'RT::Queue-RT::Ticket';
-                @queues = @{ delete $item->{'Queue'} };
+                $RT::Logger->warn("Queue provided for non-ticket custom field")
+                    unless $item->{'LookupType'} =~ /^RT::Queue-/;
+                $item->{'ApplyTo'} = delete $item->{'Queue'};
             }
+
+            my $apply_to = delete $item->{'ApplyTo'};
 
             if ( $item->{'BasedOn'} ) {
                 if ( $item->{'LookupType'} ) {
@@ -916,29 +933,38 @@ sub InsertData {
             }
 
             foreach my $value ( @{$values} ) {
-                my ( $return, $msg ) = $new_entry->AddValue(%$value);
+                ( $return, $msg ) = $new_entry->AddValue(%$value);
                 $RT::Logger->error( $msg ) unless $return;
             }
 
-            # apply by default
-            if ( !@queues && !exists $item->{'Queue'} && $item->{LookupType} ) {
-                my $ocf = RT::ObjectCustomField->new(RT->SystemUser);
-                $ocf->Create( CustomField => $new_entry->Id );
-            }
-
-            for my $q (@queues) {
-                my $q_obj = RT::Queue->new(RT->SystemUser);
-                $q_obj->Load($q);
-                unless ( $q_obj->Id ) {
-                    $RT::Logger->error("Could not find queue ". $q );
-                    next;
+            my $class = $new_entry->RecordClassFromLookupType;
+            if ($class) {
+                if ($new_entry->IsOnlyGlobal and $apply_to) {
+                    $RT::Logger->warn("ApplyTo provided for global custom field ".$new_entry->Name );
+                    undef $apply_to;
                 }
-                my $OCF = RT::ObjectCustomField->new(RT->SystemUser);
-                ( $return, $msg ) = $OCF->Create(
-                    CustomField => $new_entry->Id,
-                    ObjectId    => $q_obj->Id,
-                );
-                $RT::Logger->error( $msg ) unless $return and $OCF->Id;
+                if ( !$apply_to ) {
+                    # Apply to all by default
+                    my $ocf = RT::ObjectCustomField->new(RT->SystemUser);
+                    ( $return, $msg) = $ocf->Create( CustomField => $new_entry->Id );
+                    $RT::Logger->error( $msg ) unless $return and $ocf->Id;
+                } else {
+                    $apply_to = [ $apply_to ] unless ref $apply_to;
+                    for my $name ( @{ $apply_to } ) {
+                        my $obj = $class->new(RT->SystemUser);
+                        $obj->Load($name);
+                        if ( $obj->Id ) {
+                            my $ocf = RT::ObjectCustomField->new(RT->SystemUser);
+                            ( $return, $msg ) = $ocf->Create(
+                                CustomField => $new_entry->Id,
+                                ObjectId    => $obj->Id,
+                            );
+                            $RT::Logger->error( $msg ) unless $return and $ocf->Id;
+                        } else {
+                            $RT::Logger->error("Could not find $class $name to apply ".$new_entry->Name." to" );
+                        }
+                    }
+                }
             }
         }
 
@@ -954,16 +980,30 @@ sub InsertData {
             if ( $item->{'CF'} ) {
                 $object = RT::CustomField->new( RT->SystemUser );
                 my @columns = ( Name => $item->{'CF'} );
+                push @columns, LookupType => $item->{'LookupType'} if $item->{'LookupType'};
                 push @columns, Queue => $item->{'Queue'} if $item->{'Queue'} and not ref $item->{'Queue'};
-                $object->LoadByName( @columns );
+                my ($ok, $msg) = $object->LoadByName( @columns );
+                unless ( $ok ) {
+                    RT->Logger->error("Unable to load CF ".$item->{CF}.": $msg");
+                    next;
+                }
             } elsif ( $item->{'Queue'} ) {
                 $object = RT::Queue->new(RT->SystemUser);
-                $object->Load( $item->{'Queue'} );
+                my ($ok, $msg) = $object->Load( $item->{'Queue'} );
+                unless ( $ok ) {
+                    RT->Logger->error("Unable to load queue ".$item->{Queue}.": $msg");
+                    next;
+                }
+            } elsif ( $item->{ObjectType} and $item->{ObjectId}) {
+                $object = $item->{ObjectType}->new(RT->SystemUser);
+                my ($ok, $msg) = $object->Load( $item->{ObjectId} );
+                unless ( $ok ) {
+                    RT->Logger->error("Unable to load ".$item->{ObjectType}." ".$item->{ObjectId}.": $msg");
+                    next;
+                }
             } else {
                 $object = $RT::System;
             }
-
-            $RT::Logger->error("Couldn't load object") and next unless $object and $object->Id;
 
             # Group rights or user rights?
             if ( $item->{'GroupDomain'} ) {
@@ -973,11 +1013,11 @@ sub InsertData {
                 } elsif ( $item->{'GroupDomain'} eq 'SystemInternal' ) {
                   $princ->LoadSystemInternalGroup( $item->{'GroupType'} );
                 } elsif ( $item->{'GroupDomain'} eq 'RT::System-Role' ) {
-                  $princ->LoadRoleGroup( Object => RT->System, Type => $item->{'GroupType'} );
+                  $princ->LoadRoleGroup( Object => RT->System, Name => $item->{'GroupType'} );
                 } elsif ( $item->{'GroupDomain'} eq 'RT::Queue-Role' &&
                           $item->{'Queue'} )
                 {
-                  $princ->LoadRoleGroup( Object => $object, Type => $item->{'GroupType'} );
+                  $princ->LoadRoleGroup( Object => $object, Name => $item->{'GroupType'} );
                 } else {
                   $princ->Load( $item->{'GroupId'} );
                 }
@@ -1227,6 +1267,39 @@ sub _LogSQLStatement {
 
     require HTML::Mason::Exceptions;
     push @{$self->{'StatementLog'}} , ([Time::HiRes::time(), $statement, [@bind], $duration, HTML::Mason::Exception->new->as_string]);
+}
+
+# helper in a few cases where we do SQL by hand
+sub __MakeClauseCaseInsensitive {
+    my $self = shift;
+    return join ' ', @_ unless $self->CaseSensitive;
+    my ($field, $op, $value) = $self->_MakeClauseCaseInsensitive(@_);
+    return "$field $op $value";
+}
+
+sub _TableNames {
+    my $self = shift;
+    my $dbh = shift || $self->dbh;
+
+    {
+        local $@;
+        if (
+            $dbh->{Driver}->{Name} eq 'Pg'
+            && $dbh->{'pg_server_version'} >= 90200
+            && !eval { DBD::Pg->VERSION('2.19.3'); 1 }
+        ) {
+            die "You're using PostgreSQL 9.2 or newer. You have to upgrade DBD::Pg module to 2.19.3 or newer: $@";
+        }
+    }
+
+    my @res;
+
+    my $sth = $dbh->table_info( '', undef, undef, "'TABLE'");
+    while ( my $table = $sth->fetchrow_hashref ) {
+        push @res, $table->{TABLE_NAME} || $table->{table_name};
+    }
+
+    return @res;
 }
 
 __PACKAGE__->FinalizeDatabaseType;

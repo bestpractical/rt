@@ -201,15 +201,15 @@ our %META = (
         WidgetArguments => {
             Description => 'Theme',                  #loc
             # XXX: we need support for 'get values callback'
-            Values => [qw(web2 aileron ballard)],
+            Values => [qw(rudder web2 aileron ballard)],
         },
         PostLoadCheck => sub {
             my $self = shift;
             my $value = $self->Get('WebDefaultStylesheet');
 
-            my @comp_roots = RT::Interface::Web->ComponentRoots;
-            for my $comp_root (@comp_roots) {
-                return if -d $comp_root.'/NoAuth/css/'.$value;
+            my @roots = RT::Interface::Web->StaticRoots;
+            for my $root (@roots) {
+                return if -d "$root/css/$value";
             }
 
             $RT::Logger->warning(
@@ -383,13 +383,20 @@ our %META = (
 
     },
     PlainTextPre => {
-        Section         => 'Ticket display',
-        Overridable     => 1,
-        SortOrder       => 5,
-        Widget          => '/Widgets/Form/Boolean',
-        WidgetArguments => {
-            Description => 'add <pre> tag around plain text attachments', #loc
-            Hints       => "Use this to protect the format of plain text" #loc
+        PostSet => sub {
+            my $self  = shift;
+            my $value = shift;
+            $self->SetFromConfig(
+                Option => \'PlainTextMono',
+                Value  => [$value],
+                %{$self->Meta('PlainTextPre')->{'Source'}}
+            );
+        },
+        PostLoadCheck => sub {
+            my $self = shift;
+            # XXX: deprecated, remove in 4.4
+            $RT::Logger->info("You set \$PlainTextPre in your config, which has been removed in favor of \$PlainTextMono.  Please update your config.")
+                if $self->Meta('PlainTextPre')->{'Source'}{'Package'};
         },
     },
     PlainTextMono => {
@@ -398,8 +405,8 @@ our %META = (
         SortOrder       => 5,
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
-            Description => 'display wrapped and formatted plain text attachments', #loc
-            Hints => 'Use css rules to display text monospaced and with formatting preserved, but wrap as needed.  This does not work well with IE6 and you should use the previous option', #loc
+            Description => 'Display plain-text attachments in fixed-width font', #loc
+            Hints => 'Display all plain-text attachments in a monospace font with formatting preserved, but wrapping as needed.', #loc
         },
     },
     MoreAboutRequestorTicketList => {
@@ -408,7 +415,7 @@ our %META = (
         SortOrder       => 6,
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
-            Description => q|What tickets to display in the 'More about requestor' box|,                #loc
+            Description => 'What tickets to display in the "More about requestor" box',                #loc
             Values      => [qw(Active Inactive All None)],
             ValuesLabel => {
                 Active   => "Show the Requestor's 10 highest priority active tickets",                  #loc
@@ -424,7 +431,7 @@ our %META = (
         SortOrder       => 7,
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
-            Description => q|Show simplified recipient list on ticket update|,                #loc
+            Description => "Show simplified recipient list on ticket update",                #loc
         },
     },
     DisplayTicketAfterQuickCreate => {
@@ -433,8 +440,17 @@ our %META = (
         SortOrder       => 8,
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
-            Description => q{Display ticket after "Quick Create"}, #loc
+            Description => 'Display ticket after "Quick Create"', #loc
         },
+    },
+    QuoteFolding => {
+        Section => 'Ticket display',
+        Overridable => 1,
+        SortOrder => 9,
+        Widget => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Enable quote folding?' # loc
+        }
     },
 
     # User overridable locale options
@@ -788,21 +804,41 @@ our %META = (
             }
 
             for my $class (keys %$groups) {
-                unless (ref($groups->{$class}) eq 'HASH') {
-                    RT->Logger->error("Config option \%CustomFieldGroupings{$class} is not a HASH; ignoring");
+                my @h;
+                if (ref($groups->{$class}) eq 'HASH') {
+                    push @h, $_, $groups->{$class}->{$_}
+                        for sort {lc($a) cmp lc($b)} keys %{ $groups->{$class} };
+                } elsif (ref($groups->{$class}) eq 'ARRAY') {
+                    @h = @{ $groups->{$class} };
+                } else {
+                    RT->Logger->error("Config option \%CustomFieldGroupings{$class} is not a HASH or ARRAY; ignoring");
                     delete $groups->{$class};
                     next;
                 }
-                for my $group (keys %{ $groups->{$class} }) {
-                    unless (ref($groups->{$class}{$group}) eq 'ARRAY') {
+
+                $groups->{$class} = [];
+                while (@h) {
+                    my $group = shift @h;
+                    my $ref   = shift @h;
+                    if (ref($ref) eq 'ARRAY') {
+                        push @{$groups->{$class}}, $group => $ref;
+                    } else {
                         RT->Logger->error("Config option \%CustomFieldGroupings{$class}{$group} is not an ARRAY; ignoring");
-                        delete $groups->{$class}{$group};
                     }
                 }
             }
             $config->Set( CustomFieldGroupings => %$groups );
         },
     },
+    ChartColors => {
+        Type    => 'ARRAY',
+    },
+    WebExternalAuth           => { Deprecated => { Instead => 'WebRemoteUserAuth',             Remove => '4.4' }},
+    WebExternalAuthContinuous => { Deprecated => { Instead => 'WebRemoteUserContinuous',       Remove => '4.4' }},
+    WebFallbackToInternalAuth => { Deprecated => { Instead => 'WebFallbackToRTLogin',          Remove => '4.4' }},
+    WebExternalGecos          => { Deprecated => { Instead => 'WebRemoteUserGecos',            Remove => '4.4' }},
+    WebExternalAuto           => { Deprecated => { Instead => 'WebRemoteUserAutocreate',       Remove => '4.4' }},
+    AutoCreate                => { Deprecated => { Instead => 'UserAutocreateDefaultsOnLogin', Remove => '4.4' }},
 );
 my %OPTIONS = ();
 my @LOADED_CONFIGS = ();
@@ -827,19 +863,6 @@ sub _Init {
     return;
 }
 
-=head2 InitConfig
-
-Do nothin right now.
-
-=cut
-
-sub InitConfig {
-    my $self = shift;
-    my %args = ( File => '', @_ );
-    $args{'File'} =~ s/(?<=Config)(?=\.pm$)/Meta/;
-    return 1;
-}
-
 =head2 LoadConfigs
 
 Load all configs. First of all load RT's config then load
@@ -851,11 +874,9 @@ Takes no arguments.
 sub LoadConfigs {
     my $self    = shift;
 
-    $self->InitConfig( File => 'RT_Config.pm' );
     $self->LoadConfig( File => 'RT_Config.pm' );
 
     my @configs = $self->Configs;
-    $self->InitConfig( File => $_ ) foreach @configs;
     $self->LoadConfig( File => $_ ) foreach @configs;
     return;
 }
@@ -915,6 +936,19 @@ sub _LoadConfig {
             return $self->SetFromConfig(
                 Option     => $opt_ref,
                 Value      => [@args],
+                Package    => $pack,
+                File       => $file,
+                Line       => $line,
+                SiteConfig => $is_site,
+                Extension  => $is_ext,
+            );
+        };
+        local *Plugin = sub {
+            my (@new_plugins) = @_;
+            my ( $pack, $file, $line ) = caller;
+            return $self->SetFromConfig(
+                Option     => \@RT::Plugins,
+                Value      => [@RT::Plugins, @new_plugins],
                 Package    => $pack,
                 File       => $file,
                 Line       => $line,

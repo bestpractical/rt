@@ -87,7 +87,7 @@ sub __DependsOn
     my $group = $self->GroupObj->Object;
     # XXX: If we delete member of the ticket owner role group then we should also
     # fix ticket object, but only if we don't plan to delete group itself!
-    unless( ($group->Type || '') eq 'Owner' &&
+    unless( ($group->Name || '') eq 'Owner' &&
         ($group->Domain || '') eq 'RT::Ticket-Role' ) {
         return $self->SUPER::__DependsOn( %args );
     }
@@ -106,7 +106,7 @@ sub __DependsOn
                 my %args = (@_);
                 my $group = $args{'TargetObject'};
                 return if $args{'Shredder'}->GetState( Object => $group ) & (WIPED|IN_WIPING);
-                return unless ($group->Type || '') eq 'Owner';
+                return unless ($group->Name || '') eq 'Owner';
                 return unless ($group->Domain || '') eq 'RT::Ticket-Role';
 
                 return if $group->MembersObj->Count > 1;

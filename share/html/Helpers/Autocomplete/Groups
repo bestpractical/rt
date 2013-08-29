@@ -73,6 +73,7 @@ $groups->Limit(
     FIELD           => 'Name',
     OPERATOR        => $op,
     VALUE           => $term,
+    CASESENSITIVE   => 0,
 );
 
 # Exclude groups we don't want
@@ -83,6 +84,8 @@ foreach (split /\s*,\s*/, $exclude) {
 my @suggestions;
 
 while ( my $group = $groups->Next ) {
-    push @suggestions, $group->Name;
+    my $suggestion = { id => $group->Id, label => $group->Name, value => $group->Name };
+    $m->callback( CallbackName => "ModifySuggestion", suggestion => $suggestion, group => $group );
+    push @suggestions, $suggestion;
 }
 </%INIT>

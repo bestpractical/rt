@@ -192,22 +192,71 @@ sub IsTextualContentType {
 }
 
 
-=head2 SetMIMEEntityToEncoding $entity, $encoding
+=head2 SetMIMEEntityToEncoding Entity => ENTITY, Encoding => ENCODING, PreserveWords => BOOL, IsOut => BOOL
 
 An utility function which will try to convert entity body into specified
 charset encoding (encoded as octets, *not* unicode-strings).  It will
 iterate all the entities in $entity, and try to convert each one into
 specified charset if whose Content-Type is 'text/plain'.
 
+If PreserveWords is true, values in mime head will be decoded.(default is false)
+
+Incoming and outgoing mails are handled differently, if IsOut is true(default
+is false), it'll be treated as outgoing mail, otherwise incomding mail:
+
+incoming mail:
+1) find encoding
+2) if found then try to convert to utf-8 in croak mode, return if success
+3) guess encoding
+4) if guessed differently then try to convert to utf-8 in croak mode, return
+   if success
+5) mark part as application/octet-stream instead of falling back to any
+   encoding
+
+outgoing mail:
+1) find encoding
+2) if didn't find then do nothing, send as is, let MUA deal with it
+3) if found then try to convert it to outgoing encoding in croak mode, return
+   if success
+4) do nothing otherwise, keep original encoding
+
 This function doesn't return anything meaningful.
 
 =cut
 
 sub SetMIMEEntityToEncoding {
-    my ( $entity, $enc, $preserve_words ) = ( shift, shift, shift );
+    my ( $entity, $enc, $preserve_words, $is_out );
+
+    if ( @_ <= 3 ) {
+        ( $entity, $enc, $preserve_words ) = @_;
+    }
+    else {
+        my %args = (
+            Entity        => undef,
+            Encoding      => undef,
+            PreserveWords => undef,
+            IsOut         => undef,
+            @_,
+        );
+
+        $entity         = $args{Entity};
+        $enc            = $args{Encoding};
+        $preserve_words = $args{PreserveWords};
+        $is_out         = $args{IsOut};
+    }
+
+    unless ( $entity && $enc ) {
+        RT->Logger->error("Missing Entity or Encoding arguments");
+        return;
+    }
 
     # do the same for parts first of all
-    SetMIMEEntityToEncoding( $_, $enc, $preserve_words ) foreach $entity->parts;
+    SetMIMEEntityToEncoding(
+        Entity        => $_,
+        Encoding      => $enc,
+        PreserveWords => $preserve_words,
+        IsOut         => $is_out,
+    ) foreach $entity->parts;
 
     my $head = $entity->head;
 
@@ -225,9 +274,11 @@ sub SetMIMEEntityToEncoding {
     }
 
     SetMIMEHeadToEncoding(
-        $head,
-        _FindOrGuessCharset($entity, 1) => $enc,
-        $preserve_words
+        Head          => $head,
+        From          => _FindOrGuessCharset( $entity, 1 ),
+        To            => $enc,
+        PreserveWords => $preserve_words,
+        IsOut         => $is_out,
     );
 
     # If this is a textual entity, we'd need to preserve its original encoding
@@ -247,7 +298,25 @@ sub SetMIMEEntityToEncoding {
 
         # NOTE:: see the comments at the end of the sub.
         Encode::_utf8_off($string);
-        Encode::from_to( $string, $charset => $enc );
+        my $orig_string = $string;
+        ( my $success, $string ) = EncodeFromToWithCroak( $orig_string, $charset => $enc );
+        if ( !$success ) {
+            return if $is_out;
+            my $error = $string;
+
+            my $guess = _GuessCharset($orig_string);
+            if ( $guess && $guess ne $charset ) {
+                $RT::Logger->error( "Encoding error: " . $error . " falling back to Guess($guess) => $enc" );
+                ( $success, $string ) = EncodeFromToWithCroak( $orig_string, $guess, $enc );
+                $error = $string unless $success;
+            }
+
+            if ( !$success ) {
+                $RT::Logger->error( "Encoding error: " . $error . " falling back to application/octet-stream" );
+                $head->mime_attr( "content-type" => 'application/octet-stream' );
+                return;
+            }
+        }
 
         my $new_body = MIME::Body::InCore->new($string);
 
@@ -295,14 +364,71 @@ sub DecodeMIMEWordsToEncoding {
     my $str = shift;
     my $to_charset = _CanonicalizeCharset(shift);
     my $field = shift || '';
+    $RT::Logger->warning(
+        "DecodeMIMEWordsToEncoding was called without field name."
+        ."It's known to cause troubles with decoding fields properly."
+    ) unless $field;
+
+    # XXX TODO: RT doesn't currently do the right thing with mime-encoded headers
+    # We _should_ be preserving them encoded until after parsing is completed and
+    # THEN undo the mime-encoding.
+    #
+    # This routine should be translating the existing mimeencoding to utf8 but leaving
+    # things encoded.
+    #
+    # It's legal for headers to contain mime-encoded commas and semicolons which
+    # should not be treated as address separators. (Encoding == quoting here)
+    #
+    # until this is fixed, we must escape any string containing a comma or semicolon
+    # this is only a bandaid
+
+    # Some _other_ MUAs encode quotes _already_, and double quotes
+    # confuse us a lot, so only quote it if it isn't quoted
+    # already.
 
     # handle filename*=ISO-8859-1''%74%E9%73%74%2E%74%78%74, parameter value
     # continuations, and similar syntax from RFC 2231
-    if ($field =~ /^Content-(Type|Disposition)/i) {
+    if ($field =~ /^Content-/i) {
         # This concatenates continued parameters and normalizes encoded params
         # to QB encoded-words which we handle below
-        $str = MIME::Field::ParamVal->parse($str)->stringify;
+        my $params = MIME::Field::ParamVal->parse_params($str);
+        foreach my $v ( values %$params ) {
+            $v = _DecodeMIMEWordsToEncoding( $v, $to_charset );
+            # de-quote in case those were hidden inside encoded part
+            $v =~ s/\\(.)/$1/g if $v =~ s/^"(.*)"$/$1/;
+        }
+        $str = bless({}, 'MIME::Field::ParamVal')->set($params)->stringify;
     }
+    elsif ( $field =~ /^(?:Resent-)?(?:To|From|B?Cc|Sender|Reply-To)$/i ) {
+        my @addresses = RT::EmailParser->ParseEmailAddress( $str );
+        foreach my $address ( @addresses ) {
+            foreach my $field (qw(phrase comment)) {
+                my $v = $address->$field() or next;
+                $v = _DecodeMIMEWordsToEncoding( $v, $to_charset );
+                if ( $field eq 'phrase' ) {
+                    # de-quote in case quoted value were hidden inside encoded part
+                    $v =~ s/\\(.)/$1/g if $v =~ s/^"(.*)"$/$1/;
+                }
+                $address->$field($v);
+            }
+        }
+        $str = join ', ', map $_->format, @addresses;
+    }
+    else {
+        $str = _DecodeMIMEWordsToEncoding( $str, $to_charset );
+    }
+
+
+    # We might have \n without trailing whitespace, which will result in
+    # invalid headers.
+    $str =~ s/\n//g;
+
+    return ($str)
+}
+
+sub _DecodeMIMEWordsToEncoding {
+    my $str = shift;
+    my $to_charset = shift;
 
     # Pre-parse by removing all whitespace between encoded words
     my $encoded_word = qr/
@@ -330,77 +456,49 @@ sub DecodeMIMEWordsToEncoding {
                          $encoded_word
                          ([^=]*)        # trailing
                         /xgcs;
+    return $str unless @list;
 
-    if ( @list ) {
-        # add everything that hasn't matched to the end of the latest
-        # string in array this happen when we have 'key="=?encoded?="; key="plain"'
-        $list[-1] .= substr($str, pos $str);
+    # add everything that hasn't matched to the end of the latest
+    # string in array this happen when we have 'key="=?encoded?="; key="plain"'
+    $list[-1] .= substr($str, pos $str);
 
-        $str = "";
-        while (@list) {
-            my ($prefix, $charset, $encoding, $enc_str, $trailing) =
-                    splice @list, 0, 5;
-            $charset  = _CanonicalizeCharset($charset);
-            $encoding = lc $encoding;
+    $str = '';
+    while (@list) {
+        my ($prefix, $charset, $encoding, $enc_str, $trailing) =
+                splice @list, 0, 5;
+        $charset  = _CanonicalizeCharset($charset);
+        $encoding = lc $encoding;
 
-            $trailing =~ s/\s?\t?$//;               # Observed from Outlook Express
+        $trailing =~ s/\s?\t?$//;               # Observed from Outlook Express
 
-            if ( $encoding eq 'q' ) {
-                use MIME::QuotedPrint;
-                $enc_str =~ tr/_/ /;                # Observed from Outlook Express
-                $enc_str = decode_qp($enc_str);
-            } elsif ( $encoding eq 'b' ) {
-                use MIME::Base64;
-                $enc_str = decode_base64($enc_str);
-            } else {
-                $RT::Logger->warning("Incorrect encoding '$encoding' in '$str', "
-                    ."only Q(uoted-printable) and B(ase64) are supported");
-            }
-
-            # now we have got a decoded subject, try to convert into the encoding
-            if ( $charset ne $to_charset || $charset =~ /^utf-?8(?:-strict)?$/i ) {
-                if ( Encode::find_encoding($charset) ) {
-                    Encode::from_to( $enc_str, $charset, $to_charset );
-                } else {
-                    $RT::Logger->warning("Charset '$charset' is not supported");
-                    $enc_str =~ s/[^[:print:]]/\357\277\275/g;
-                    Encode::from_to( $enc_str, 'UTF-8', $to_charset )
-                        unless $to_charset eq 'utf-8';
-                }
-            }
-
-            # XXX TODO: RT doesn't currently do the right thing with mime-encoded headers
-            # We _should_ be preserving them encoded until after parsing is completed and
-            # THEN undo the mime-encoding.
-            #
-            # This routine should be translating the existing mimeencoding to utf8 but leaving
-            # things encoded.
-            #
-            # It's legal for headers to contain mime-encoded commas and semicolons which
-            # should not be treated as address separators. (Encoding == quoting here)
-            #
-            # until this is fixed, we must escape any string containing a comma or semicolon
-            # this is only a bandaid
-
-            # Some _other_ MUAs encode quotes _already_, and double quotes
-            # confuse us a lot, so only quote it if it isn't quoted
-            # already.
-            $enc_str = qq{"$enc_str"}
-                if $enc_str =~ /[,;]/
-                and $enc_str !~ /^".*"$/
-                and (!$field || $field =~ /^(?:To$|From$|B?Cc$|Content-)/i);
-
-            $str .= $prefix . $enc_str . $trailing;
+        if ( $encoding eq 'q' ) {
+            use MIME::QuotedPrint;
+            $enc_str =~ tr/_/ /;                # Observed from Outlook Express
+            $enc_str = decode_qp($enc_str);
+        } elsif ( $encoding eq 'b' ) {
+            use MIME::Base64;
+            $enc_str = decode_base64($enc_str);
+        } else {
+            $RT::Logger->warning("Incorrect encoding '$encoding' in '$str', "
+                ."only Q(uoted-printable) and B(ase64) are supported");
         }
-    }
 
-    # We might have \n without trailing whitespace, which will result in
-    # invalid headers.
-    $str =~ s/\n//g;
+        # now we have got a decoded subject, try to convert into the encoding
+        if ( $charset ne $to_charset || $charset =~ /^utf-?8(?:-strict)?$/i ) {
+            if ( Encode::find_encoding($charset) ) {
+                Encode::from_to( $enc_str, $charset, $to_charset );
+            } else {
+                $RT::Logger->warning("Charset '$charset' is not supported");
+                $enc_str =~ s/[^[:print:]]/\357\277\275/g;
+                Encode::from_to( $enc_str, 'UTF-8', $to_charset )
+                    unless $to_charset eq 'utf-8';
+            }
+        }
+        $str .= $prefix . $enc_str . $trailing;
+    }
 
     return ($str)
 }
-
 
 
 =head2 _FindOrGuessCharset MIME::Entity, $head_only
@@ -545,7 +643,7 @@ sub _CanonicalizeCharset {
 }
 
 
-=head2 SetMIMEHeadToEncoding HEAD OLD_CHARSET NEW_CHARSET
+=head2 SetMIMEHeadToEncoding MIMEHead => HEAD, From => OLD_ENCODING, To => NEW_Encoding, PreserveWords => BOOL, IsOut => BOOL
 
 Converts a MIME Head from one encoding to another. This totally violates the RFC.
 We should never need this. But, Surprise!, MUAs are badly broken and do this kind of stuff
@@ -555,7 +653,33 @@ all the time
 =cut
 
 sub SetMIMEHeadToEncoding {
-    my ( $head, $charset, $enc, $preserve_words ) = ( shift, shift, shift, shift );
+    my ( $head, $charset, $enc, $preserve_words, $is_out );
+
+    if ( @_ <= 4 ) {
+        ( $head, $charset, $enc, $preserve_words ) = @_;
+    }
+    else {
+        my %args = (
+            Head      => undef,
+            From          => undef,
+            To            => undef,
+            PreserveWords => undef,
+            IsOut         => undef,
+            @_,
+        );
+
+        $head           = $args{Head};
+        $charset        = $args{From};
+        $enc            = $args{To};
+        $preserve_words = $args{PreserveWords};
+        $is_out         = $args{IsOut};
+    }
+
+    unless ( $head && $charset && $enc ) {
+        RT->Logger->error(
+            "Missing Head or From or To arguments");
+        return;
+    }
 
     $charset = _CanonicalizeCharset($charset);
     $enc     = _CanonicalizeCharset($enc);
@@ -569,8 +693,31 @@ sub SetMIMEHeadToEncoding {
         foreach my $value (@values) {
             if ( $charset ne $enc || $enc =~ /^utf-?8(?:-strict)?$/i ) {
                 Encode::_utf8_off($value);
-                Encode::from_to( $value, $charset => $enc );
+                my $orig_value = $value;
+                ( my $success, $value ) = EncodeFromToWithCroak( $orig_value, $charset => $enc );
+                if ( !$success ) {
+                    my $error = $value;
+                    if ($is_out) {
+                        $value = $orig_value;
+                        $head->add( $tag, $value );
+                        next;
+                    }
+
+                    my $guess = _GuessCharset($orig_value);
+                    if ( $guess && $guess ne $charset ) {
+                        $RT::Logger->error( "Encoding error: " . $error . " falling back to Guess($guess) => $enc" );
+                        ( $success, $value ) = EncodeFromToWithCroak( $orig_value, $guess, $enc );
+                        $error = $value unless $success;
+                    }
+
+                    if ( !$success ) {
+                        $RT::Logger->error( "Encoding error: " . $error . " forcing conversion to $charset => $enc" );
+                        $value = $orig_value;
+                        Encode::from_to( $value, $charset => $enc );
+                    }
+                }
             }
+
             $value = DecodeMIMEWordsToEncoding( $value, $enc, $tag )
                 unless $preserve_words;
 
@@ -583,6 +730,23 @@ sub SetMIMEHeadToEncoding {
         }
     }
 
+}
+
+=head2 EncodeFromToWithCroak $string, $from, $to
+
+Try to encode string from encoding $from to encoding $to in croak mode
+
+return (1, $encoded_string) if success, otherwise (0, $error)
+
+=cut
+
+sub EncodeFromToWithCroak {
+    my $string = shift;
+    my $from   = shift;
+    my $to     = shift;
+
+    eval { Encode::from_to( $string, $from => $to, Encode::FB_CROAK ); };
+    return $@ ? ( 0, $@ ) : ( 1, $string );
 }
 
 RT::Base->_ImportOverlays();

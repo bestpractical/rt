@@ -86,7 +86,9 @@ $m->comp(
     $m->current_comp,
     %ARGS,
     Parent    => $message->id,
-    ParentObj => $message
+    ParentObj => $message,
+
+    displayed_inline => $displayed_inline,
 );
 
 </%PERL>
@@ -103,6 +105,9 @@ $AttachmentContent => {}
 $Parent => 0
 $ParentObj => undef
 $WarnUnsigned => 0
+
+# Keep track of CID images we display inline
+$displayed_inline => {}
 </%ARGS>
 <%INIT>
 my @DisplayHeaders=qw(_all);
@@ -187,6 +192,19 @@ my $render_attachment = sub {
             if ( $content_type eq 'text/html' ) {
                 $content = $m->comp( '/Elements/ScrubHTML', Content => $content );
 
+                if (RT->Config->Get('ShowTransactionImages')) {
+                    my @rewritten = RT::Interface::Web::RewriteInlineImages(
+                        Content         => \$content,
+                        Attachment      => $message,
+                        # Not technically correct to search all parts of the
+                        # MIME structure, but it saves having to go to the
+                        # database again and is unlikely to break display.
+                        Related         => [ map { @$_ } values %$Attachments ],
+                        AttachmentPath  => $AttachmentPath,
+                    );
+                    $displayed_inline->{$_}++ for @rewritten;
+                }
+
                 $m->comp(
                     '/Elements/MakeClicky',
                     content => \$content,
@@ -194,8 +212,17 @@ my $render_attachment = sub {
                     object  => $Object,
                 );
 
-                require HTML::Quoted;
-                $content = HTML::Quoted->extract($content) unless length $name;
+                if ( !length $name && RT->Config->Get( 'QuoteFolding', $session{CurrentUser} ) ) {
+                    eval {
+                        require HTML::Quoted;
+                        $content = HTML::Quoted->extract($content)
+                    };
+                    if ($@) {
+                        RT->Logger->error(
+                            "HTML::Quoted couldn't process attachment #@{[$message->id]}: $@."
+                          . "  This is a bug, please report it to rt-bugs\@bestpractical.com.");
+                    }
+                }
 
                 $m->comp(
                     'ShowMessageStanza',
@@ -212,9 +239,17 @@ my $render_attachment = sub {
 
             # It's a text type we don't have special handling for
             else {
-                unless ( length $name ) {
-                    eval { require Text::Quoted;  $content = Text::Quoted::extract($content); };
-                    if ($@) { $RT::Logger->warning( "Text::Quoted failed: $@" ) }
+                if ( !length $name && RT->Config->Get( 'QuoteFolding', $session{CurrentUser} ) ) {
+                    eval {
+                        require Text::Quoted;
+                        Text::Quoted::set_quote_characters(undef);
+                        $content = Text::Quoted::extract($content);
+                    };
+                    if ($@) {
+                        RT->Logger->error(
+                            "Text::Quoted couldn't process attachment #@{[$message->id]}: $@."
+                          . "  This is a bug, please report it to rt-bugs\@bestpractical.com.");
+                    }
                 }
 
                 $m->comp(
@@ -228,9 +263,17 @@ my $render_attachment = sub {
     }
 
     # if it's an image, show it as an image
-    elsif ( RT->Config->Get('ShowTransactionImages') and  $content_type =~ m{^image/} ) {
-        if ( $disposition ne 'inline' ) {
-            $m->out('<p>'. loc( 'Message body is not shown because sender requested not to inline it.' ) .'</p>');
+    elsif ( $content_type =~ m{^image/} ) {
+        if (not RT->Config->Get('ShowTransactionImages')) {
+            $m->out('<p><i>'. loc( 'Image not shown because display is disabled in system configuration.' ) .'</i></p>');
+            return;
+        }
+        elsif ( $displayed_inline->{$message->Id} ) {
+            $m->out('<p><i>'. loc( 'Image displayed inline above' ) .'</i></p>');
+            return;
+        }
+        elsif ( $disposition ne 'inline' ) {
+            $m->out('<p>'. loc( 'Image not shown because sender requested not to inline it.' ) .'</p>');
             return;
         }
 

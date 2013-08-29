@@ -101,7 +101,7 @@ sub produces_dashboard_mail_ok { # {{{
 
     my $mail = parse_mail( $mails[0] );
     is($mail->head->get('Subject'), $subject);
-    is($mail->head->get('From'), "root\n");
+    is($mail->head->get('From'), qq{"root" <root\@localhost>\n});
     is($mail->head->get('X-RT-Dashboard-Id'), "$dashboard_id\n");
     is($mail->head->get('X-RT-Dashboard-Subscription-Id'), "$subscription_id\n");
 

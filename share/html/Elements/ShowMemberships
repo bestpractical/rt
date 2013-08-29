@@ -52,7 +52,7 @@
 %    if ($Group->Domain eq 'UserDefined') {
 <li><a href="<%RT->Config->Get('WebPath')%>/Admin/Groups/Modify.html?id=<% $Group->Id %>"><% $Group->Name %></a></li>
 %    } elsif ($Group->Domain eq 'SystemInternal') {
-<li><em><% loc($Group->Type) %></em></li>
+<li><em><% loc($Group->Name) %></em></li>
 %    }
 % }
 </ul>
@@ -71,12 +71,14 @@ $GroupMembers->Limit(
     FIELD      => 'Domain',
     OPERATOR   => '=',
     VALUE      => 'SystemInternal',
+    CASESENSITIVE => 0,
 );
 $GroupMembers->Limit(
     ALIAS      => $alias,
     FIELD      => 'Domain',
     OPERATOR   => '=',
     VALUE      => 'UserDefined',
+    CASESENSITIVE => 0,
 );
 $GroupMembers->OrderByCols(
     { ALIAS => $alias, FIELD => 'Domain' },

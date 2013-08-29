@@ -1,0 +1,31 @@
+my $upgrade = shift;
+
+my $groups = RT::Groups->new( RT->SystemUser );
+$groups->Limit(
+    FIELD => 'Name', OPERATOR => '!=', VALUE => 'main.Type', QUOTEVALUE => 0
+);
+$groups->Limit(
+    FIELD => 'Domain',
+    VALUE => 'SystemInternal',
+    CASESENSITIVE => 0,
+);
+$groups->RowsPerPage(1);
+if ( $groups->Next ) {
+    my $dbh = $RT::Handle->dbh;
+    my $db_type = RT->Config->Get('DatabaseType');
+    if ( $db_type eq 'Oracle' || $db_type eq 'Pg' ) {
+        $dbh->do(
+            "UPDATE Groups SET Name = Type
+            WHERE LOWER(Domain) IN ('aclequivalence', 'systeminternal')
+                OR LOWER(Domain) LIKE '%-role'"
+        );
+    } else {
+        $dbh->do(
+            "UPDATE Groups SET Name = Type
+            WHERE Domain IN ('ACLEquivalence', 'SystemInternal')
+                OR Domain LIKE '%-Role'"
+        );
+    }
+}
+
+$upgrade->();

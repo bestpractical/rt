@@ -52,6 +52,13 @@
 
 % $m->callback( ARGSRef => \%ARGS, CallbackName => 'BeforeResults' );
 
+% unless ($ok) {
+%    $msg =~ s{ at .*? line .*}{}s;
+<&| /Widgets/TitleBox, title => loc("Error"), class => "error" &>
+<&|/l_unsafe, "<i>".$m->interp->apply_escapes($msg, "h")."</i>" &>There was an error parsing your search query: [_1].  Your RT admin can find more information in the error logs.</&>
+</&>
+% } else {
+
 <& /Elements/CollectionList, 
     Query => $Query,
     TotalFound => $ticketcount,
@@ -62,9 +69,12 @@
     Page => $Page,
     Format => $Format,
     Class => 'RT::Tickets',
-    BaseURL => $BaseURL
-
-   &>
+    BaseURL => $BaseURL,
+    SavedSearchId => $ARGS{'SavedSearchId'},
+    SavedChartSearchId => $ARGS{'SavedChartSearchId'},
+    PassArguments => [qw(Query Format Rows Page Order OrderBy SavedSearchId SavedChartSearchId)],
+&>
+% }
 % $m->callback( ARGSRef => \%ARGS, CallbackName => 'AfterResults' );
 
 % my %hiddens = (Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order, HideResults => $HideResults, Page => $Page, SavedChartSearchId => $SavedChartSearchId );

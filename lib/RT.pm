@@ -48,12 +48,14 @@
 
 use strict;
 use warnings;
+use 5.010;
 
 package RT;
 
 
 use File::Spec ();
 use Cwd ();
+use Scalar::Util qw(blessed);
 
 use vars qw($Config $System $SystemUser $Nobody $Handle $Logger $_Privileged $_Unprivileged $_INSTALL_MODE);
 
@@ -85,11 +87,55 @@ RT - Request Tracker
 
 =head1 SYNOPSIS
 
-A fully featured request tracker package
+A fully featured request tracker package.
+
+This documentation describes the point-of-entry for RT's Perl API.  To learn
+more about what RT is and what it can do for you, visit
+L<https://bestpractical.com/rt>.
 
 =head1 DESCRIPTION
 
 =head2 INITIALIZATION
+
+If you're using RT's Perl libraries, you need to initialize RT before using any
+of the modules.
+
+You have the option of handling the timing of config loading and the actual
+init sequence yourself with:
+
+    use RT;
+    BEGIN {
+        RT->LoadConfig;
+        RT->Init;
+    }
+
+or you can let RT do it all:
+
+    use RT -init;
+
+This second method is particular useful when writing one-liners to interact with RT:
+
+    perl -MRT=-init -e '...'
+
+The first method is necessary if you need to delay or conditionalize
+initialization or if you want to fiddle with C<< RT->Config >> between loading
+the config files and initializing the RT environment.
+
+=cut
+
+{
+    my $DID_IMPORT_INIT;
+    sub import {
+        my $class  = shift;
+        my $action = shift || '';
+
+        if ($action eq "-init" and not $DID_IMPORT_INIT) {
+            $class->LoadConfig;
+            $class->Init;
+            $DID_IMPORT_INIT = 1;
+        }
+    }
+}
 
 =head2 LoadConfig
 
@@ -150,9 +196,10 @@ sub Init {
     InitClasses();
     InitLogging();
     InitPlugins();
+    _BuildTableAttributes();
     RT::I18N->Init;
     RT->Config->PostLoadCheck;
-
+    RT::Lifecycle->new->FillCache;
 }
 
 =head2 ConnectToDatabase
@@ -218,7 +265,7 @@ sub InitLogging {
             my ($package, $filename, $line) = caller($frame);
 
             $p{'message'} =~ s/(?:\r*\n)+$//;
-            return "[". gmtime(time) ."] [". $p{'level'} ."]: "
+            return "[$$] [". gmtime(time) ."] [". $p{'level'} ."]: "
                 . $p{'message'} ." ($filename:$line)\n";
         };
 
@@ -237,9 +284,9 @@ sub InitLogging {
 
             $p{message} =~ s/(?:\r*\n)+$//;
             if ($p{level} eq 'debug') {
-                return "$p{message}\n";
+                return "[$$] $p{message} ($filename:$line)\n";
             } else {
-                return "$p{message} ($filename:$line)\n";
+                return "[$$] $p{message}\n";
             }
         };
 
@@ -353,8 +400,9 @@ sub InitSignalHandlers {
 
 
 sub CheckPerlRequirements {
-    if ($^V < 5.008003) {
-        die sprintf "RT requires Perl v5.8.3 or newer.  Your current Perl is v%vd\n", $^V;
+    eval {require 5.010_001};
+    if ($@) {
+        die sprintf "RT requires Perl v5.10.1 or newer.  Your current Perl is v%vd\n", $^V;
     }
 
     # use $error here so the following "die" can still affect the global $@
@@ -436,6 +484,30 @@ sub InitClasses {
     require RT::Link;
     require RT::Links;
 
+    _BuildTableAttributes();
+
+    if ( $args{'Heavy'} ) {
+        # load scrips' modules
+        my $scrips = RT::Scrips->new(RT->SystemUser);
+        while ( my $scrip = $scrips->Next ) {
+            local $@;
+            eval { $scrip->LoadModules } or
+                $RT::Logger->error("Invalid Scrip ".$scrip->Id.".  Unable to load the Action or Condition.  ".
+                                   "You should delete or repair this Scrip in the admin UI.\n$@\n");
+        }
+
+        foreach my $class ( grep $_, RT->Config->Get('CustomFieldValuesSources') ) {
+            local $@;
+            eval "require $class; 1" or $RT::Logger->error(
+                "Class '$class' is listed in CustomFieldValuesSources option"
+                ." in the config, but we failed to load it:\n$@\n"
+            );
+        }
+
+    }
+}
+
+sub _BuildTableAttributes {
     # on a cold server (just after restart) people could have an object
     # in the session, as we deserialize it so we never call constructor
     # of the class, so the list of accessible fields is empty and we die
@@ -469,26 +541,6 @@ sub InitClasses {
         RT::ObjectTopic
         RT::Topic
     );
-
-    if ( $args{'Heavy'} ) {
-        # load scrips' modules
-        my $scrips = RT::Scrips->new(RT->SystemUser);
-        while ( my $scrip = $scrips->Next ) {
-            local $@;
-            eval { $scrip->LoadModules } or
-                $RT::Logger->error("Invalid Scrip ".$scrip->Id.".  Unable to load the Action or Condition.  ".
-                                   "You should delete or repair this Scrip in the admin UI.\n$@\n");
-        }
-
-        foreach my $class ( grep $_, RT->Config->Get('CustomFieldValuesSources') ) {
-            local $@;
-            eval "require $class; 1" or $RT::Logger->error(
-                "Class '$class' is listed in CustomFieldValuesSources option"
-                ." in the config, but we failed to load it:\n$@\n"
-            );
-        }
-
-    }
 }
 
 =head2 InitSystemObjects
@@ -598,14 +650,17 @@ You can define plugins by adding them to the @Plugins list in your RT_SiteConfig
 
 =cut
 
-our @PLUGINS = ();
 sub Plugins {
+    state @PLUGINS;
+    state $DID_INIT = 0;
+
     my $self = shift;
-    unless (@PLUGINS) {
+    unless ($DID_INIT) {
         $self->InitPluginPaths;
         @PLUGINS = $self->InitPlugins;
+        $DID_INIT++;
     }
-    return \@PLUGINS;
+    return [@PLUGINS];
 }
 
 =head2 PluginDirs
@@ -782,8 +837,8 @@ file:
 
     RT->AddStyleSheets( 'foo.css', 'bar.css' ); 
 
-Files are expected to be in a Mason root in a F<NoAuth/css/> directory, such as
-F<html/NoAuth/css/> in your extension or F<local/html/NoAuth/css/> for local
+Files are expected to be in a static root in a F<css/> directory, such as
+F<static/css/> in your extension or F<local/static/css/> for local
 overlays.
 
 =cut
@@ -843,6 +898,12 @@ calling it; names the arguments which are deprecated.
 Overrides the auto-built phrasing of C<Calling function ____ is
 deprecated> with a custom message.
 
+=item Object
+
+An L<RT::Record> object to print the class and numeric id of.  Useful if the
+admin will need to hunt down a particular object to fix the deprecation
+warning.
+
 =back
 
 =cut
@@ -886,6 +947,9 @@ sub Deprecated {
 
     $msg .= "  You should use $args{Instead} instead."
         if $args{Instead};
+
+    $msg .= sprintf "  Object: %s #%d.", blessed($args{Object}), $args{Object}->id
+        if $args{Object};
 
     $msg .= "  Call stack:\n$stack" if $args{Stack};
     RT->Logger->warn($msg);

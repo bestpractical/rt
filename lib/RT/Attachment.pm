@@ -262,6 +262,35 @@ sub ParentObj {
     return $parent;
 }
 
+=head2 Closest
+
+Takes a MIME type as a string or regex.  Returns an L<RT::Attachment> object
+for the nearest containing part with a matching L</ContentType>.  Strings must
+match exactly and all matches are done case insensitively.  Strings ending in a
+C</> must only match the first part of the MIME type.  For example:
+
+    # Find the nearest multipart/* container
+    my $container = $attachment->Closest("multipart/");
+
+Returns undef if no such object is found.
+
+=cut
+
+sub Closest {
+    my $self = shift;
+    my $type = shift;
+    my $part = $self->ParentObj or return undef;
+
+    $type = qr/^\Q$type\E$/
+        unless ref $type eq "REGEX";
+
+    while (lc($part->ContentType) !~ $type) {
+        $part = $part->ParentObj or last;
+    }
+
+    return ($part and $part->id) ? $part : undef;
+}
+
 =head2 Children
 
 Returns an L<RT::Attachments> object which is preloaded with
@@ -276,6 +305,30 @@ sub Children {
     my $kids = RT::Attachments->new( $self->CurrentUser );
     $kids->ChildrenOf( $self->Id );
     return($kids);
+}
+
+=head2 Siblings
+
+Returns an L<RT::Attachments> object containing all the attachments sharing
+the same immediate parent as the current object, excluding the current
+attachment itself.
+
+If the current attachment is a top-level part (i.e. Parent == 0) then a
+guaranteed empty L<RT::Attachments> object is returned.
+
+=cut
+
+sub Siblings {
+    my $self = shift;
+    my $siblings = RT::Attachments->new( $self->CurrentUser );
+    if ($self->Parent) {
+        $siblings->ChildrenOf( $self->Parent );
+        $siblings->Limit( FIELD => 'id', OPERATOR => '!=', VALUE => $self->Id );
+    } else {
+        # Ensure emptiness
+        $siblings->Limit( FIELD => 'id', VALUE => 0 );
+    }
+    return $siblings;
 }
 
 =head2 Content

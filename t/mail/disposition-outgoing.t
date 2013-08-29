@@ -50,7 +50,7 @@ a fake patch
     $mail =~ s/^Content-disposition: .+?\n(?=\n)//ism;
 
     my $rt = send_and_receive($mail);
-    like $rt, qr/Content-Disposition:\s*inline.+?filename\.patch/is, 'found default (inline) disposition';
+    like $rt, qr/Content-Disposition:\s*attachment.+?filename\.patch/is, 'found default (attachment) disposition';
 }
 
 sub send_and_receive {

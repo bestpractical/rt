@@ -48,8 +48,6 @@
 <& /Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
 
-<& /Widgets/SelectionBox:header, nojs => 1 &>
-
 <& /Elements/ListActions, actions => \@results &>
 
 <& Elements/Deleted, searches => \@deleted, Dashboard => $Dashboard &>
@@ -65,7 +63,7 @@
 
 <&| /Widgets/TitleBox, title => $pane->{DisplayName} &>
 % my ( $pane_name ) = $pane->{Name} =~ /Searches-(.+)/;
-    <& /Widgets/SelectionBox:show, self => $pane, nojs => 1, grep( {
+    <& /Widgets/SelectionBox:show, self => $pane, grep( {
             $_->{pane} eq $pane_name} @deleted ) ? ( ShowUpdate => 1 ) : () &>
 </&>
 </form>
@@ -268,7 +266,7 @@ for my $pane (keys %pane_name) {
     push @panes, $sel;
 }
 
-$m->comp('/Widgets/SelectionBox:process', %ARGS, self => $_, nojs => 1)
+$m->comp('/Widgets/SelectionBox:process', %ARGS, self => $_ )
     for @panes;
 
 my @hidden_searches = $Dashboard->PossibleHiddenSearches;

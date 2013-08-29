@@ -98,7 +98,7 @@ GetOptions(
 RT::LoadConfig();
 
 # adjust logging to the screen according to options
-RT->Config->Set( LogToScreen => $log ) if $log;
+RT->Config->Set( LogToSTDERR => $log ) if $log;
 
 #Connect to the database and get RT::SystemUser and RT::Nobody loaded
 RT::Init();
@@ -334,7 +334,7 @@ sub help {
       . loc( "[_1] - Specify the comma separated list of transactions' types you want to use", "--transaction-type" )
       . "\n";
     print "        "
-      . loc( "[_1] - Adjust LogToScreen config option", "--log" ) . "\n";
+      . loc( "[_1] - Adjust LogToSTDERR config option", "--log" ) . "\n";
     print "        "
       . loc( "[_1] - Output status updates to STDOUT", "--verbose" ) . "\n";
     print "\n";
@@ -450,7 +450,7 @@ Specify the comma separated list of transactions' types you want to use
 
 =item log
 
-Adjust LogToScreen config option
+Adjust LogToSTDERR config option
 
 =item verbose
 

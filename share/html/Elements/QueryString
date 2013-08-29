@@ -54,11 +54,12 @@ for my $key (sort keys %ARGS) {
     if( UNIVERSAL::isa( $value, 'ARRAY' ) ) {
         push @params,
             map $key ."=". $m->interp->apply_escapes( $_, 'u' ),
+            map defined $_? $_ : '',
                 @$value;
     } else {
         push @params, $key ."=". $m->interp->apply_escapes($value, 'u');
     }
 }
 
-return join '&', sort(@params);
+return join '&', @params;
 </%INIT>

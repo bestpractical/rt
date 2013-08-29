@@ -71,8 +71,8 @@ sub Prepare {
 
 =head2 SetRecipients
 
-Sets the recipients of this meesage to Owner, Requestor, AdminCc, Cc or All. 
-Explicitly B<does not> notify the creator of the transaction by default
+Sets the recipients of this message to Owner, Requestor, AdminCc, Cc or All.
+Explicitly B<does not> notify the creator of the transaction by default.
 
 =cut
 
@@ -146,6 +146,15 @@ sub SetRecipients {
     }
 }
 
+=head2 RemoveInappropriateRecipients
+
+Remove transaction creator as appropriate for the NotifyActor setting.
+
+To send email to the selected receipients regardless of RT's NotifyActor
+configuration, include AlwaysNotifyActor in the list of arguments.
+
+=cut
+
 sub RemoveInappropriateRecipients {
     my $self = shift;
 
@@ -159,7 +168,8 @@ sub RemoveInappropriateRecipients {
             return unless lc $_[0] eq lc $creator;
             return "not sending to $creator, creator of the transaction, due to NotifyActor setting";
         },
-    ) unless RT->Config->Get('NotifyActor',$TransactionCurrentUser);
+    ) unless RT->Config->Get('NotifyActor',$TransactionCurrentUser)
+             || $self->Argument =~ /\bAlwaysNotifyActor\b/;
 
     $self->SUPER::RemoveInappropriateRecipients();
 }

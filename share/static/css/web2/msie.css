@@ -1,0 +1,195 @@
+div#body {
+    left: 0.25em;
+    height: 100%;
+    top: 6em;
+}
+
+#main-navigation {
+    padding-bottom: 1em;
+}
+
+#footer {
+    padding: 1em;
+}
+
+
+div#header h1 {
+ position: absolute;
+ left: 7.25em;
+ overflow: hidden;
+ height: 1em;
+ font-size: 1.4em;
+ margin-top: 0.4em;
+ right: 23.5em;
+ padding: 0.25em;
+}
+
+
+#topactions {
+    top: 3.5em;
+    width: auto;
+}
+
+.topaction form * { 
+    vertical-align: top;
+}
+
+.topaction form button, .topaction form input { 
+   height: 2em; 
+}
+
+.topaction form input.field {
+   height: 1.6em; 
+}
+
+.topaction .select-queue {
+    margin-top: 0.2em;
+}
+
+div#page-navigation {
+    position: absolute;
+    top: 6.2em;
+    height: 1.8em;
+    background: #fff;
+    border-top: 2px solid #ccc;
+}
+
+
+
+div#page-navigation ul#page-menu {
+    background: none;
+    border: none;
+}
+
+
+div#quickbar { height: 1.2em;
+
+
+}
+
+#pick-criteria td.label select {
+    width: 10em;    
+}
+
+
+#editquery {
+  margin-top: 0.2em;
+  width: 39%;
+  left: 60%;
+}
+
+div#nav li.first {
+    margin-top: 0.75em;
+    border-top: none;
+}
+div#nav ul ul li.first {
+    border-top: 1px solid #cccccc;
+    margin-top: 0.25em;
+}
+
+div#nav li.last {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+
+.transaction .type a { font-weight: normal; text-decoration: none; color: #fff; }
+
+
+.titlebox {
+ border-top: none;
+ border-left: none;
+}
+
+.titlebox .titlebox-title .left {
+    padding: 0.25em;
+    padding-left: 0.5em;
+}
+
+.titlebox {
+}
+
+.titlebox .titlebox-title .right {
+    border-right: 2px solid #aaa;
+    display: block;
+    margin-top: 0.1em;
+    right: -0.2em;
+
+}
+
+
+.titlebox .titlebox-content {
+    padding-top: 2.2em;
+}
+
+
+.titlebox table.collection-as-table, .titlebox table.queue-summary {
+    width: 95%;
+    padding: 0.5em;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+ .titlebox-title {
+    position: relative;
+}
+
+.titlebox-title .widget {
+    position: absolute;
+    top: -0.25em;
+    left: -0.25em;
+
+}
+.titlebox-title .left {
+    position: absolute;
+    top: -0.75em;
+    left: 0.5em;
+}
+
+/* nested things. like the ticket dates tab */
+.titlebox .titlebox .titlebox-title .right{
+    top: 0.25em;
+}
+
+.combobox {
+    float: left;
+}
+
+.combobox .combo-button {
+    color: ButtonText;
+    padding: 0;
+}
+
+.combobox .combo-list {
+    margin-top:0.5em;
+    margin-left: -0.2em;
+}
+
+#pick-criteria td.label {
+     width: auto;
+}
+
+#pick-criteria td.operator {
+  width: 7.5em;
+}
+
+.plain-text-white-space {
+  word-wrap: break-word;       /* Internet Explorer 5.5+ */
+  white-space: pre;   /* IE only hack to re-specify in addition to
+  word-wrap  */
+}
+
+div#logo .rtname {
+    float: right;
+    padding-right: 1em;
+}
+
+#page-action-menu {
+    top: 9.5em;
+}
+
+#rt-portal .titlebox-content {
+    height: 23em;
+}
+

@@ -66,25 +66,72 @@ and ensuring that dates are in local not DB timezones.
 
 sub LabelValue {
     my $self  = shift;
-    my $field = shift;
-    my $value = $self->__Value( $field );
+    my $name = shift;
 
-    if ( $field =~ /(Daily|Monthly|Annually|Hourly)$/ ) {
-        my $re;
-        # it's not just 1970-01-01 00:00:00 because of timezone shifts
-        # and conversion from UTC to user's TZ
-        $re = qr{19(?:70-01-01|69-12-31) [0-9]{2}} if $field =~ /Hourly$/;
-        $re = qr{19(?:70-01-01|69-12-31)} if $field =~ /Daily$/;
-        $re = qr{19(?:70-01|69-12)} if $field =~ /Monthly$/;
-        $re = qr{19(?:70|69)} if $field =~ /Annually$/;
-        $value =~ s/^$re/Not Set/;
+    my $raw = $self->RawValue( $name, @_ );
+
+    if ( my $code = $self->Report->LabelValueCode( $name ) ) {
+        return $code->( $self, %{ $self->Report->ColumnInfo( $name ) }, VALUE => $raw );
     }
 
-    return $value;
+    unless ( ref $raw ) {
+        return $self->loc('(no value)') unless defined $raw && length $raw;
+        return $self->loc($raw) if $self->Report->ColumnInfo( $name )->{'META'}{'Localize'};
+        return $raw;
+    } else {
+        my $loc = $self->Report->ColumnInfo( $name )->{'META'}{'Localize'};
+        my %res = %$raw;
+        if ( $loc ) {
+            $res{ $self->loc($_) } = delete $res{ $_ } foreach keys %res;
+            $_ = $self->loc($_) foreach values %res;
+        }
+        $_ = $self->loc('(no value)') foreach grep !defined || !length, values %res;
+        return \%res;
+    }
+}
+
+sub RawValue {
+    return (shift)->__Value( @_ );
 }
 
 sub ObjectType {
     return 'RT::Ticket';
+}
+
+sub Query {
+    my $self = shift;
+
+    my @parts;
+    foreach my $column ( $self->Report->ColumnsList ) {
+        my $info = $self->Report->ColumnInfo( $column );
+        next unless $info->{'TYPE'} eq 'grouping';
+
+        my $custom = $info->{'META'}{'Query'};
+        if ( $custom and my $code = $self->Report->FindImplementationCode( $custom ) ) {
+            push @parts, $code->( $self, COLUMN => $column, %$info );
+        }
+        else {
+            my $field = join '.', grep $_, $info->{KEY}, $info->{SUBKEY};
+            my $value = $self->RawValue( $column );
+            my $op = '=';
+            if ( defined $value ) {
+                unless ( $value =~ /^\d+$/ ) {
+                    $value =~ s/(['\\])/\\$1/g;
+                    $value = "'$value'";
+                }
+            }
+            else {
+                ($op, $value) = ('IS', 'NULL');
+            }
+            push @parts, "$field $op $value";
+        }
+    }
+    return () unless @parts;
+    return join ' AND ', map "($_)", grep defined && length, @parts;
+}
+
+sub Report {
+    return $_[0]->{'report'};
 }
 
 RT::Base->_ImportOverlays();

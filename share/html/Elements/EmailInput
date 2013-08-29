@@ -45,9 +45,11 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<input type="text" id="<% $Name %>" name="<% $Name %>" <% defined $Size ? qq{size="$Size"} : '' |n %> value="<% $Default || '' %>" />
+<input type="text" id="<% $Name %>" name="<% $Name %>" <% defined $Size ? qq{size="$Size"} : '' |n %> value="<% $Default || '' %>" <% $Autocomplete ? q{data-autocomplete="Users"} : '' |n%> <% $AutocompleteMultiple ? q{data-autocomplete-multiple} : '' |n%> />
 <%ARGS>
 $Name
 $Size    => 40
 $Default => ''
+$Autocomplete => 1
+$AutocompleteMultiple => 0
 </%ARGS>

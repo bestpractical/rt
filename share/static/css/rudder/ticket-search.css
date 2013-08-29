@@ -1,0 +1,188 @@
+#comp-Search-Build #body {
+    position: relative
+}
+
+#pick-criteria select {
+    width: 8em
+}
+
+#pick-criteria tr {
+    height: 1.5em
+}
+
+#pick-criteria td.label {
+    font: message-box;
+    padding-right: 0.5em;
+    width: 11em;
+}
+
+#pick-criteria td.label select {
+    width: 8.5em;
+    text-align: right;
+}
+
+#pick-criteria td.operator {
+    padding-right: 0.5em;
+    text-align: left;
+    vertical-align: bottom;
+    width: 7em;
+}
+
+#pick-criteria td.operator select {
+    text-align: right
+}
+
+#pick-criteria td.value input,
+#pick-criteria td.value select {
+    width: 11em
+}
+
+#pick-criteria td.value #ValueOfDate {
+    width: 11em
+}
+
+#pick-criteria td.value #ValueOfTime {
+    width: 4em
+}
+
+#pick-criteria td.value #ValueOfTime-TimeUnits {
+    width: 5.5em
+}
+
+#pick-criteria td.value {
+    padding-right: 0.5em;
+    text-align: left;
+    font: message-box;
+}
+
+#editquery,
+#editsearches {
+    position: absolute;
+    margin-top: 1.5em;
+    right: 1em;
+    left: 60%;
+    top: 1em;
+}
+
+#editquery {
+    top: 1.3em
+}
+
+#editsearches {
+    top: 24em
+}
+
+#pick-criteria {
+    width: 58%;
+    padding-top: 0em;
+    margin-top: 0em;
+}
+
+#pick-criteria .titlebox-content {
+    overflow-x: auto
+}
+
+#BuildQuery .submit {
+    width: 58%
+}
+
+#sorting.titlebox {
+    width: 55%;
+    padding-right: 1em;
+}
+
+#display-options .submit {
+    width: 100%
+}
+
+.search-result-views {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-top: -2px;
+    margin-right: 0em;
+    padding: 0.25em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    background-color: #ccc;
+    border-left: 1px solid #999;
+    border-bottom: 1px solid #999;
+    -moz-border-radius-bottomleft: 0.5em;
+    -webkit-border-bottom-left-radius: 0.5em;
+    border-radius: 0 0 0 0.5em;
+}
+
+.search-result-views li {
+    display: inline
+}
+
+.search-result-views li:after {
+    content: " \00b7 "
+}
+
+.search-result-views li:last-child:after {
+    content: ""
+}
+
+.edit-saved-searches .label {
+    display: inline-block;
+    width: 10em;
+}
+
+span#display-options {
+    display: block;
+    padding-top: 2em;
+    margin-top: 2em;
+    border-top: 1px solid #ccc;
+    clear: both;
+}
+
+span#display-options .titlebox#sorting {
+    float: left;
+    width: auto;
+    margin-right: 2em;
+    min-width: 35%;
+}
+
+span#display-options .titlebox#columns {
+    float: left
+}
+
+span#display-options .titlebox#columns table.edit-columns td {
+    padding: 0.5em
+}
+
+span#display-options .titlebox#columns table.edit-columns div.row {
+    width: 9em
+}
+
+span#display-options .titlebox#columns table.edit-columns span.label {
+    width: 2em
+}
+
+span#display-options .titlebox#columns table.edit-columns span.value input,
+span#display-options .titlebox#columns table.edit-columns span.value select {
+    width: 7em;
+    padding: 0;
+}
+
+span#display-options .titlebox#columns table.edit-columns span.value {
+    display: inline-block;
+    width: 7em;
+}
+
+#BuildQuery #formatbuttons.submit {
+    width: 85%
+}
+
+.refresh {
+    float: left
+}
+
+/* Force some widget to fit at max parent box */
+
+#HomeRefreshInterval,
+#SavedSearchLoad,
+#SavedSearchOwner {
+    max-width: 100%
+}

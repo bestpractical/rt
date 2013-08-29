@@ -310,8 +310,6 @@ my $year = (localtime(time))[5] + 1900;
 
 { # set+datemanip format(Time::ParseDate)
     my $date = RT::Date->new(RT->SystemUser);
-    $date->Set(Format => 'unknown', Value => 'weird date');
-    is($date->Unix, 0, "date was wrong");
 
     RT->Config->Set( Timezone => 'Europe/Moscow' );
     $date->Set(Format => 'datemanip', Value => '2005-11-28 15:10:00');
@@ -329,7 +327,9 @@ my $year = (localtime(time))[5] + 1900;
 
 { # set+unknown format(Time::ParseDate)
     my $date = RT::Date->new(RT->SystemUser);
-    $date->Set(Format => 'unknown', Value => 'weird date');
+    warnings_like {
+        $date->Set(Format => 'unknown', Value => 'weird date');
+    } qr{Couldn't parse date 'weird date' by Time::ParseDate};
     is($date->Unix, 0, "date was wrong");
 
     RT->Config->Set( Timezone => 'Europe/Moscow' );
@@ -499,11 +499,11 @@ my $year = (localtime(time))[5] + 1900;
 { # DurationAsString
     my $date = RT::Date->new(RT->SystemUser);
 
-    is($date->DurationAsString(1), '1 sec', '1 sec');
-    is($date->DurationAsString(59), '59 sec', '59 sec');
-    is($date->DurationAsString(60), '1 min', '1 min');
-    is($date->DurationAsString(60*119), '119 min', '119 min');
-    is($date->DurationAsString(60*60*2-1), '120 min', '120 min');
+    is($date->DurationAsString(1), '1 second', '1 sec');
+    is($date->DurationAsString(59), '59 seconds', '59 sec');
+    is($date->DurationAsString(60), '1 minute', '1 min');
+    is($date->DurationAsString(60*119), '119 minutes', '119 min');
+    is($date->DurationAsString(60*60*2-1), '120 minutes', '120 min');
     is($date->DurationAsString(60*60*2), '2 hours', '2 hours');
     is($date->DurationAsString(60*60*48-1), '48 hours', '48 hours');
     is($date->DurationAsString(60*60*48), '2 days', '2 days');
@@ -512,9 +512,9 @@ my $year = (localtime(time))[5] + 1900;
     is($date->DurationAsString(60*60*24*7*8-1), '8 weeks', '8 weeks');
     is($date->DurationAsString(60*60*24*61), '2 months', '2 months');
     is($date->DurationAsString(60*60*24*365-1), '12 months', '12 months');
-    is($date->DurationAsString(60*60*24*366), '1 years', '1 years');
+    is($date->DurationAsString(60*60*24*366), '1 year', '1 year');
 
-    is($date->DurationAsString(-1), '1 sec ago', '1 sec ago');
+    is($date->DurationAsString(-1), '1 second ago', '1 sec ago');
 }
 
 { # DiffAsString
@@ -526,13 +526,13 @@ my $year = (localtime(time))[5] + 1900;
     $date->Unix(2);
     is($date->DiffAsString(-1), '', 'no diff, wrong input');
 
-    is($date->DiffAsString(3), '1 sec ago', 'diff: 1 sec ago');
-    is($date->DiffAsString(1), '1 sec', 'diff: 1 sec');
+    is($date->DiffAsString(3), '1 second ago', 'diff: 1 sec ago');
+    is($date->DiffAsString(1), '1 second', 'diff: 1 sec');
 
     my $ndate = RT::Date->new(RT->SystemUser);
     is($date->DiffAsString($ndate), '', 'no diff, wrong input');
     $ndate->Unix(3);
-    is($date->DiffAsString($ndate), '1 sec ago', 'diff: 1 sec ago');
+    is($date->DiffAsString($ndate), '1 second ago', 'diff: 1 sec ago');
 }
 
 { # Diff
@@ -547,7 +547,7 @@ my $year = (localtime(time))[5] + 1900;
     my $date = RT::Date->new(RT->SystemUser);
     $date->SetToNow;
     my $diff = $date->AgeAsString;
-    like($diff, qr/^(0 sec|[1-5] sec ago)$/, 'close enought');
+    like($diff, qr/^(0 seconds|(1 second|[2-5] seconds) ago)$/, 'close enought');
 }
 
 { # GetWeekday

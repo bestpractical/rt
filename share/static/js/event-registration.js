@@ -34,9 +34,69 @@ function ReplaceUserReferences() {
                 if (!json[uid])
                     return
                 user.removeAttr("data-replace")
-                    .html( json[uid]._html );
+                    .html( jQuery(json[uid]._html).html() );
             });
         }
     );
 }
 jQuery(ReplaceUserReferences);
+
+// Cascaded selects
+jQuery(function() {
+    jQuery("select.cascade-by-optgroup").each(function(){
+        var name = this.name;
+        if (!name) return;
+
+        // Generate elements for cascading based on the master <select> ...
+        var complete = jQuery(this)
+            .clone(true, true)
+            .attr("name", name + "-Complete")
+            .attr("disabled", "disabled")
+            .hide()
+            .insertAfter(this);
+
+        var groups = jQuery(this)
+            .clone(true, true)
+            .attr("name", name + "-Groups")
+            .find("option").remove().end()
+            .find("optgroup").replaceWith(function(){
+                return jQuery("<option>").val(this.label).text(this.label);
+            }).end()
+            .prepend( complete.find("option[value='']") )
+            .insertBefore(this);
+
+        // Synchronize the <select> we just generated
+        var selected = jQuery("option[selected]", this).parent().attr("label");
+        jQuery('option[value="' + selected + '"]', groups).attr("selected", "selected");
+
+        // Wire it all up
+        groups.change(function(){
+            var name     = this.name.replace(/-Groups$/, '');
+            var field    = jQuery(this);
+            var subfield = field.next("select[name=" + name + "]");
+            var complete = subfield.next("select[name=" + name + "-Complete]");
+            var value    = field.val();
+            filter_cascade( subfield[0], complete[0], value, true );
+        }).change();
+    });
+});
+
+jQuery( function() {
+    jQuery("input[type=file]").change( function() {
+        var input = jQuery(this);
+        var warning = input.next(".invalid");
+
+        if ( !input.val().match(/"/) ) {
+            warning.hide();
+        } else {
+            if (warning.length) {
+                warning.show();
+            } else {
+                input.val("");
+                jQuery("<span class='invalid'>")
+                    .text(loc_key("quote_in_filename"))
+                    .insertAfter(input);
+            }
+        }
+    });
+});

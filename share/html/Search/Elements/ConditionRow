@@ -74,9 +74,11 @@ $handle_block = sub {
         return $m->scomp( $box->{'Path'}, %{ $box->{'Arguments'} }, Name => $name );
     }
     if ( $box->{'Type'} eq 'text' ) {
-        my $default = $box->{'Default'} || '';
-        my $size = $box->{'Size'}? qq{size="$box->{'Size'}"} : '';
-        return qq{<input id="$name" name="$name" value="$default" $size />};
+        $box->{id} ||= $box->{name} ||= $name;
+        $box->{value} ||= delete($box->{Default}) || '';
+        return "<input ".join(" ", map{$m->interp->apply_escapes(lc($_),'h')
+                                      .q{="}.$m->interp->apply_escapes($box->{$_},'h').q{"}}
+                                   sort keys %$box)." />";
     }
     if ( $box->{'Type'} eq 'select' ) {
         my $res = '';

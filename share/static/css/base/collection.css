@@ -1,0 +1,16 @@
+table.collection td:first-child, table.collection th:first-child {
+    padding-left: 1em;
+}
+
+.collection-as-table ul.cf-values {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.collection-as-table .user a {
+    font-weight: inherit;
+}
+
+.collection-as-table .user a:visited {
+    color: inherit;
+}

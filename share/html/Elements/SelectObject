@@ -104,6 +104,9 @@ if ( not defined $session{$cache_key} and not $Lite ) {
     my $collection = "${ObjectType}s"->new($session{'CurrentUser'});
     $collection->UnLimit;
 
+    $m->callback( CallbackName => 'ModifyCollection', ARGSRef => \%ARGS,
+                  Collection => $collection, ObjectType => $ObjectType );
+
     while (my $object = $collection->Next) {
         if ($ShowAll
             or not $CheckRight

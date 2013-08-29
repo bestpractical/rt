@@ -17,7 +17,7 @@ ok( RT::Test->set_rights(
 ok $m->login('user_a', 'password'), 'logged in as user A';
 
 # get to the templates screen
-$m->follow_link( text => 'Configuration' );
+$m->follow_link( text => 'Admin' );
 $m->title_is(q{RT Administration}, 'admin screen');
 
 $m->follow_link( text => 'Global' );

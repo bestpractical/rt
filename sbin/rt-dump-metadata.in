@@ -95,11 +95,6 @@ my %Ignore = (
             id Created Creator LastUpdated LastUpdatedBy
             )
            ],
-    Templates => [
-        qw(
-            TranslationOf
-            )
-    ],
 );
 
 my $SystemUserId = RT->SystemUser->Id;
@@ -138,7 +133,8 @@ foreach my $class (@classes) {
         $objects->Limit(
             FIELD    => 'Domain',
             OPERATOR => '=',
-            VALUE    => 'UserDefined'
+            VALUE    => 'UserDefined',
+            CASESENSITIVE => 0,
         ) if $class eq 'Groups';
     }
 

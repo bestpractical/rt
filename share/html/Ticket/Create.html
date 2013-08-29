@@ -54,6 +54,7 @@
 
 <form action="<% RT->Config->Get('WebPath') %>/Ticket/Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">
   <input type="hidden" class="hidden" name="id" value="new" />
+  <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
   
 % $m->callback( CallbackName => 'FormStart', QueueObj => $QueueObj, ARGSRef => \%ARGS );
 
@@ -126,7 +127,7 @@
 <&|/l&>Requestors</&>:
 </td>
 <td class="value" colspan="5">
-<& /Elements/EmailInput, Name => 'Requestors', Size => undef, Default => $ARGS{Requestors} || $session{CurrentUser}->EmailAddress &>
+<& /Elements/EmailInput, Name => 'Requestors', Size => undef, Default => $ARGS{Requestors} || $session{CurrentUser}->EmailAddress, AutocompleteMultiple => 1 &>
 % $m->callback( CallbackName => 'AfterRequestors', QueueObj => $QueueObj, ARGSRef => \%ARGS );
 </td>
 </tr>
@@ -134,7 +135,7 @@
 <td class="label">
 <&|/l&>Cc</&>:
 </td>
-<td class="value" colspan="5"><& /Elements/EmailInput, Name => 'Cc', Size => undef, Default => $ARGS{Cc} &></td>
+<td class="value" colspan="5"><& /Elements/EmailInput, Name => 'Cc', Size => undef, Default => $ARGS{Cc}, AutocompleteMultiple => 1 &></td>
 </tr>
 
 <tr>
@@ -150,7 +151,7 @@
 <td class="label">
 <&|/l&>Admin Cc</&>:
 </td>
-<td class="value" colspan="5"><& /Elements/EmailInput, Name => 'AdminCc', Size => undef, Default => $ARGS{AdminCc} &></td>
+<td class="value" colspan="5"><& /Elements/EmailInput, Name => 'AdminCc', Size => undef, Default => $ARGS{AdminCc}, AutocompleteMultiple => 1 &></td>
 </tr>
 
 <tr>
@@ -364,7 +365,7 @@ my @results;
 my $title = loc("Create a new ticket");
 
 my $QueueObj = RT::Queue->new($session{'CurrentUser'});
-$QueueObj->Load($Queue) || Abort(loc("Queue [_1] could not be loaded.", $Queue));
+$QueueObj->Load($Queue) || Abort(loc("Queue [_1] could not be loaded.", $Queue||''));
 
 $m->callback( QueueObj => $QueueObj, title => \$title, results => \@results, ARGSRef => \%ARGS );
 

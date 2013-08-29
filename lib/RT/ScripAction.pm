@@ -119,7 +119,7 @@ sub Load  {
     my $identifier = shift;
 
     if (!$identifier) {
-        return (0, $self->loc('Input error'));
+        return wantarray ? (0, $self->loc('Input error')) : 0;
     }
 
     my ($ok, $msg);
@@ -138,7 +138,7 @@ sub Load  {
         $self->{'Template'} = shift;
     }
 
-    return ($ok, $msg);
+    return wantarray ? ($ok, $msg) : $ok;
 }
 
 

@@ -82,8 +82,7 @@ use RT::Attachments;
 use RT::Scrips;
 use RT::Ruleset;
 
-use HTML::FormatText;
-use HTML::TreeBuilder;
+use HTML::FormatText::WithLinks::AndTables;
 use HTML::Scrubber;
 
 # For EscapeHTML() and decode_entities()
@@ -173,41 +172,47 @@ sub Create {
         Content => RT::User->CanonicalizeEmailAddress($_)
     ) for @{$args{'SquelchMailTo'} || []};
 
-    #Provide a way to turn off scrips if we need to
-        $RT::Logger->debug('About to think about scrips for transaction #' .$self->Id);
-    if ( $args{'ActivateScrips'} and $args{'ObjectType'} eq 'RT::Ticket' ) {
-       $self->{'scrips'} = RT::Scrips->new(RT->SystemUser);
+    my @return = ( $id, $self->loc("Transaction Created") );
 
-        $RT::Logger->debug('About to prepare scrips for transaction #' .$self->Id); 
+    return @return unless $args{'ObjectType'} eq 'RT::Ticket';
 
-        $self->{'scrips'}->Prepare(
-            Stage       => 'TransactionCreate',
-            Type        => $args{'Type'},
-            Ticket      => $args{'ObjectId'},
-            Transaction => $self->id,
-        );
-
-       # Entry point of the rule system
-       my $ticket = RT::Ticket->new(RT->SystemUser);
-       $ticket->Load($args{'ObjectId'});
-       my $txn = RT::Transaction->new($RT::SystemUser);
-       $txn->Load($self->id);
-
-       my $rules = $self->{rules} = RT::Ruleset->FindAllRules(
-            Stage       => 'TransactionCreate',
-            Type        => $args{'Type'},
-            TicketObj   => $ticket,
-            TransactionObj => $txn,
-       );
-
-        if ($args{'CommitScrips'} ) {
-            $RT::Logger->debug('About to commit scrips for transaction #' .$self->Id);
-            $self->{'scrips'}->Commit();
-            RT::Ruleset->CommitRules($rules);
-        }
+    # Provide a way to turn off scrips if we need to
+    unless ( $args{'ActivateScrips'} ) {
+        $RT::Logger->debug('Skipping scrips for transaction #' .$self->Id);
+        return @return;
     }
 
-    return ( $id, $self->loc("Transaction Created") );
+    $self->{'scrips'} = RT::Scrips->new(RT->SystemUser);
+
+    $RT::Logger->debug('About to prepare scrips for transaction #' .$self->Id); 
+
+    $self->{'scrips'}->Prepare(
+        Stage       => 'TransactionCreate',
+        Type        => $args{'Type'},
+        Ticket      => $args{'ObjectId'},
+        Transaction => $self->id,
+    );
+
+   # Entry point of the rule system
+   my $ticket = RT::Ticket->new(RT->SystemUser);
+   $ticket->Load($args{'ObjectId'});
+   my $txn = RT::Transaction->new($RT::SystemUser);
+   $txn->Load($self->id);
+
+   my $rules = $self->{rules} = RT::Ruleset->FindAllRules(
+        Stage       => 'TransactionCreate',
+        Type        => $args{'Type'},
+        TicketObj   => $ticket,
+        TransactionObj => $txn,
+   );
+
+    if ($args{'CommitScrips'} ) {
+        $RT::Logger->debug('About to commit scrips for transaction #' .$self->Id);
+        $self->{'scrips'}->Commit();
+        RT::Ruleset->CommitRules($rules);
+    }
+
+    return @return;
 }
 
 
@@ -341,12 +346,7 @@ sub Content {
             $content =~ s/<p>--\s+<br \/>.*?$//s if $args{'Quote'};
 
             if ($args{Type} ne 'text/html') {
-                my $tree = HTML::TreeBuilder->new_from_content( $content );
-                $content = HTML::FormatText->new(
-                    leftmargin  => 0,
-                    rightmargin => 78,
-                )->format( $tree);
-                $tree->delete;
+                $content = RT::Interface::Email::ConvertHTMLToText($content);
             }
         }
         else {
@@ -367,24 +367,9 @@ sub Content {
     }
 
     if ( $args{'Quote'} ) {
+        $content = $self->ApplyQuoteWrap(content => $content,
+                                         cols    => $args{'Wrap'} );
 
-        # What's the longest line like?
-        my $max = 0;
-        foreach ( split ( /\n/, $content ) ) {
-            $max = length if length > $max;
-        }
-
-        if ( $max > 76 ) {
-            require Text::Wrapper;
-            my $wrapper = Text::Wrapper->new(
-                columns    => $args{'Wrap'},
-                body_start => ( $max > 70 * 3 ? '   ' : '' ),
-                par_start  => ''
-            );
-            $content = $wrapper->wrap($content);
-        }
-
-        $content =~ s/^/> /gm;
         $content = $self->QuoteHeader . "\n$content\n\n";
     }
 
@@ -402,6 +387,84 @@ localized "On <date> <user name> wrote:\n".
 sub QuoteHeader {
     my $self = shift;
     return $self->loc("On [_1], [_2] wrote:", $self->CreatedAsString, $self->CreatorObj->Name);
+}
+
+=head2 ApplyQuoteWrap PARAMHASH
+
+Wrapper to calculate wrap criteria and apply quote wrapping if needed.
+
+=cut
+
+sub ApplyQuoteWrap {
+    my $self = shift;
+    my %args = @_;
+    my $content = $args{content};
+
+    # What's the longest line like?
+    my $max = 0;
+    foreach ( split ( /\n/, $args{content} ) ) {
+        $max = length if length > $max;
+    }
+
+    if ( $max > 76 ) {
+        require Text::Quoted;
+        require Text::Wrapper;
+
+        my $structure = Text::Quoted::extract($args{content});
+        $content = $self->QuoteWrap(content_ref => $structure,
+                                    cols        => $args{cols},
+                                    max         => $max );
+    }
+
+    $content =~ s/^/> /gm;  # use regex since string might be multi-line
+    return $content;
+}
+
+=head2 QuoteWrap PARAMHASH
+
+Wrap the contents of transactions based on Wrap settings, maintaining
+the quote character from the original.
+
+=cut
+
+sub QuoteWrap {
+    my $self = shift;
+    my %args = @_;
+    my $ref = $args{content_ref};
+    my $final_string;
+
+    if ( ref $ref eq 'ARRAY' ){
+        foreach my $array (@$ref){
+            $final_string .= $self->QuoteWrap(content_ref => $array,
+                                              cols        => $args{cols},
+                                              max         => $args{max} );
+        }
+    }
+    elsif ( ref $ref eq 'HASH' ){
+        return $ref->{quoter} . "\n" if $ref->{empty}; # Blank line
+
+        my $col = $args{cols} - (length $ref->{quoter});
+        my $wrapper = Text::Wrapper->new( columns => $col );
+
+        # Wrap on individual lines to honor incoming line breaks
+        # Otherwise deliberate separate lines (like a list or a sig)
+        # all get combined incorrectly into single paragraphs.
+
+        my @lines = split /\n/, $ref->{text};
+        my $wrap = join '', map { $wrapper->wrap($_) } @lines;
+        my $quoter = $ref->{quoter};
+
+        # Only add the space if actually quoting
+        $quoter .= ' ' if length $quoter;
+        $wrap =~ s/^/$quoter/mg;  # use regex since string might be multi-line
+
+        return $wrap;
+    }
+    else{
+        $RT::Logger->warning("Can't apply quoting with $ref");
+        return;
+    }
+    return $final_string;
 }
 
 
@@ -694,6 +757,16 @@ sub _ProcessReturnValues {
     } @values;
 }
 
+sub _FormatPrincipal {
+    my $self = shift;
+    my $principal = shift;
+    if ($principal->IsUser) {
+        return $self->_FormatUser( $principal->Object );
+    } else {
+        return $self->loc("group [_1]", $principal->Object->Name);
+    }
+}
+
 sub _FormatUser {
     my $self = shift;
     my $user = shift;
@@ -724,10 +797,13 @@ sub _FormatUser {
                 return ( "[_1] deleted", $self->FriendlyObjectType );   #loc
             }
             else {
+                my $canon = $self->Object->DOES("RT::Record::Role::Status")
+                    ? sub { $self->Object->LifecycleObj->CanonicalCase(@_) }
+                    : sub { return $_[0] };
                 return (
                     "Status changed from [_1] to [_2]",                 #loc
-                    "'" . $self->loc( $self->OldValue ) . "'",
-                    "'" . $self->loc( $self->NewValue ) . "'"
+                    "'" . $self->loc( $canon->($self->OldValue) ) . "'",
+                    "'" . $self->loc( $canon->($self->NewValue) ) . "'"
                 );
             }
         }
@@ -783,8 +859,9 @@ sub _FormatUser {
         my $self = shift;
         my $field = $self->loc('CustomField');
 
+        my $cf;
         if ( $self->Field ) {
-            my $cf = RT::CustomField->new( $self->CurrentUser );
+            $cf = RT::CustomField->new( $self->CurrentUser );
             $cf->SetContextObject( $self->Object );
             $cf->Load( $self->Field );
             $field = $cf->Name();
@@ -793,6 +870,44 @@ sub _FormatUser {
 
         my $new = $self->NewValue;
         my $old = $self->OldValue;
+
+        if ( $cf ) {
+
+            if ( $cf->Type eq 'DateTime' ) {
+                if ($old) {
+                    my $date = RT::Date->new( $self->CurrentUser );
+                    $date->Set( Format => 'ISO', Value => $old );
+                    $old = $date->AsString;
+                }
+
+                if ($new) {
+                    my $date = RT::Date->new( $self->CurrentUser );
+                    $date->Set( Format => 'ISO', Value => $new );
+                    $new = $date->AsString;
+                }
+            }
+            elsif ( $cf->Type eq 'Date' ) {
+                if ($old) {
+                    my $date = RT::Date->new( $self->CurrentUser );
+                    $date->Set(
+                        Format   => 'unknown',
+                        Value    => $old,
+                        Timezone => 'UTC',
+                    );
+                    $old = $date->AsString( Time => 0, Timezone => 'UTC' );
+                }
+
+                if ($new) {
+                    my $date = RT::Date->new( $self->CurrentUser );
+                    $date->Set(
+                        Format   => 'unknown',
+                        Value    => $new,
+                        Timezone => 'UTC',
+                    );
+                    $new = $date->AsString( Time => 0, Timezone => 'UTC' );
+                }
+            }
+        }
 
         if ( !defined($old) || $old eq '' ) {
             return ("[_1] [_2] added", $field, $new);   #loc
@@ -838,19 +953,19 @@ sub _FormatUser {
         my $self = shift;
         my $principal = RT::Principal->new($self->CurrentUser);
         $principal->Load($self->NewValue);
-        return ( "[_1] [_2] added", $self->loc($self->Field), $self->_FormatUser($principal->Object));    #loc
+        return ( "[_1] [_2] added", $self->loc($self->Field), $self->_FormatPrincipal($principal));    #loc
     },
     DelWatcher => sub {
         my $self = shift;
         my $principal = RT::Principal->new($self->CurrentUser);
         $principal->Load($self->OldValue);
-        return ( "[_1] [_2] deleted", $self->loc($self->Field), $self->_FormatUser($principal->Object));  #loc
+        return ( "[_1] [_2] deleted", $self->loc($self->Field), $self->_FormatPrincipal($principal));  #loc
     },
     SetWatcher => sub {
         my $self = shift;
         my $principal = RT::Principal->new($self->CurrentUser);
         $principal->Load($self->NewValue);
-        return ( "[_1] set to [_2]", $self->loc($self->Field), $self->_FormatUser($principal->Object));  #loc
+        return ( "[_1] set to [_2]", $self->loc($self->Field), $self->_FormatPrincipal($principal));  #loc
     },
     Subject => sub {
         my $self = shift;
@@ -1128,23 +1243,6 @@ sub _Value {
 }
 
 
-
-=head2 CurrentUserHasRight RIGHT
-
-Calls $self->CurrentUser->HasQueueRight for the right passed in here.
-passed in here.
-
-=cut
-
-sub CurrentUserHasRight {
-    my $self  = shift;
-    my $right = shift;
-    return $self->CurrentUser->HasRight(
-        Right  => $right,
-        Object => $self->Object
-    );
-}
-
 =head2 CurrentUserCanSee
 
 Returns true if current user has rights to see this particular transaction.
@@ -1158,26 +1256,9 @@ custom implementations.
 sub CurrentUserCanSee {
     my $self = shift;
 
-    # If it's a comment, we need to be extra special careful
-    my $type = $self->__Value('Type');
-    if ( $type eq 'Comment' ) {
-        unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
-            return 0;
-        }
-    }
-    elsif ( $type eq 'CommentEmailRecord' ) {
-        unless ( $self->CurrentUserHasRight('ShowTicketComments')
-            && $self->CurrentUserHasRight('ShowOutgoingEmail') ) {
-            return 0;
-        }
-    }
-    elsif ( $type eq 'EmailRecord' ) {
-        unless ( $self->CurrentUserHasRight('ShowOutgoingEmail') ) {
-            return 0;
-        }
-    }
     # Make sure the user can see the custom field before showing that it changed
-    elsif ( $type eq 'CustomField' and my $cf_id = $self->__Value('Field') ) {
+    my $type = $self->__Value('Type');
+    if ( $type eq 'CustomField' and my $cf_id = $self->__Value('Field') ) {
         my $cf = RT::CustomField->new( $self->CurrentUser );
         $cf->SetContextObject( $self->Object );
         $cf->Load( $cf_id );
@@ -1189,7 +1270,7 @@ sub CurrentUserCanSee {
     return 1 if $self->{ _object_is_readable };
 
     # Defer to the object in question
-    return $self->Object->CurrentUserCanSee("Transaction");
+    return $self->Object->CurrentUserCanSee("Transaction", $self);
 }
 
 
@@ -1336,7 +1417,7 @@ sub LoadCustomFieldByIdentifier {
 
     my $CFs = RT::CustomFields->new( $self->CurrentUser );
     $CFs->SetContextObject( $self->Object );
-    $CFs->Limit( FIELD => 'Name', VALUE => $field );
+    $CFs->Limit( FIELD => 'Name', VALUE => $field, CASESENSITIVE => 0 );
     $CFs->LimitToLookupType($self->CustomFieldLookupType);
     $CFs->LimitToGlobalOrObjectId($self->Object->QueueObj->id);
     return $CFs->First || RT::CustomField->new( $self->CurrentUser );

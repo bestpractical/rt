@@ -313,7 +313,7 @@ sub Delete {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    if ( $self->UsedBy->Count ) {
+    if ( !$self->IsOverride && $self->UsedBy->Count ) {
         return ( 0, $self->loc('Template is in use') );
     }
 
@@ -348,6 +348,23 @@ sub IsEmpty {
     return 0 if defined $content && length $content;
     return 1;
 }
+
+=head2 IsOverride
+
+Returns true if it's queue specific template and there is global
+template with the same name.
+
+=cut
+
+sub IsOverride {
+    my $self = shift;
+    return 0 unless $self->Queue;
+
+    my $template = RT::Template->new( $self->CurrentUser );
+    $template->LoadGlobalTemplate( $self->Name );
+    return $template->id;
+}
+
 
 =head2 MIMEObj
 
@@ -641,20 +658,11 @@ sub _DowngradeFromHTML {
     $orig_entity->head->mime_attr( "Content-Type.charset" => 'utf-8' );
     $orig_entity->make_multipart('alternative', Force => 1);
 
-    require HTML::FormatText;
-    require HTML::TreeBuilder;
     require Encode;
-    # need to decode_utf8, see the doc of MIMEObj method
-    my $tree = HTML::TreeBuilder->new_from_content(
-        Encode::decode_utf8($new_entity->bodyhandle->as_string)
-    );
     $new_entity->bodyhandle(MIME::Body::InCore->new(
-        \(scalar HTML::FormatText->new(
-            leftmargin  => 0,
-            rightmargin => 78,
-        )->format( $tree ))
+        # need to decode_utf8, see the doc of MIMEObj method
+        \(RT::Interface::Email::ConvertHTMLToText(Encode::decode_utf8($new_entity->bodyhandle->as_string)))
     ));
-    $tree->delete;
 
     $orig_entity->add_part($new_entity, 0); # plain comes before html
     $self->{MIMEObj} = $orig_entity;
@@ -929,42 +937,6 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=head2 Language
-
-Returns the current value of Language.
-(In the database, Language is stored as varchar(16).)
-
-
-
-=head2 SetLanguage VALUE
-
-
-Set Language to VALUE.
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Language will be stored as a varchar(16).)
-
-
-=cut
-
-
-=head2 TranslationOf
-
-Returns the current value of TranslationOf.
-(In the database, TranslationOf is stored as int(11).)
-
-
-
-=head2 SetTranslationOf VALUE
-
-
-Set TranslationOf to VALUE.
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, TranslationOf will be stored as a int(11).)
-
-
-=cut
-
-
 =head2 Content
 
 Returns the current value of Content.
@@ -1033,10 +1005,6 @@ sub _CoreAccessible {
                 {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         Type =>
                 {read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
-        Language =>
-                {read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
-        TranslationOf =>
-                {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Content =>
                 {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
         LastUpdated =>

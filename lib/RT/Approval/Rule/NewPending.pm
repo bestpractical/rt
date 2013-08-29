@@ -75,7 +75,7 @@ sub Commit {
 
     # first txn entry of the approval ticket
     local $self->{TransactionObj} = $to;
-    $self->RunScripAction('Notify Owner', 'New Pending Approval', @_);
+    $self->RunScripAction('Notify Owner and AdminCcs', 'New Pending Approval', @_);
 
     return;
 

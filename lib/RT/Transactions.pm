@@ -108,11 +108,10 @@ sub LimitToTicket {
     my $tid  = shift;
 
     unless ( $self->{'tickets_table'} ) {
-        $self->{'tickets_table'} ||= $self->NewAlias('Tickets');
-        $self->Join(
+        $self->{'tickets_table'} ||= $self->Join(
             ALIAS1 => 'main',
             FIELD1 => 'ObjectId',
-            ALIAS2 => $self->{'tickets_table'},
+            TABLE2 => 'Tickets',
             FIELD2 => 'id'
         );
         $self->Limit(
@@ -154,20 +153,6 @@ sub Next {
     }
 }
 
-
-
-
-
-=head2 NewItem
-
-Returns an empty new RT::Transaction item
-
-=cut
-
-sub NewItem {
-    my $self = shift;
-    return(RT::Transaction->new($self->CurrentUser));
-}
 RT::Base->_ImportOverlays();
 
 1;

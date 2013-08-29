@@ -164,7 +164,9 @@ for my $quote ( q{'}, q{"} ) {
         Subject   => qq!base${quote}ticket $$!,
         Queue     => 'general',
         Owner     => $user->Name,
-        Requestor => qq!custom${quote}search\@localhost!,
+        ( $quote eq q{'}
+            ? (Requestor => qq!custom${quote}search\@localhost!)
+            : () ),
         Content   => qq!this is base${quote}ticket with quote inside!,
     );
     ok( $ticket_quote->id, 'created ticket with quote for custom search' );

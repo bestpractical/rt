@@ -46,6 +46,23 @@
 #
 # END BPS TAGGED BLOCK }}}
 
+=head1 NAME
+
+RT::Condition::BeforeDue
+
+=head1 DESCRIPTION
+
+Returns true if the ticket we're operating on is within the
+amount of time defined by the passed in argument.
+
+The passed in value is a date in the format "1d2h3m4s"
+for 1 day and 2 hours and 3 minutes and 4 seconds. Single
+units can also be passed such as 1d for just one day.
+
+
+=cut
+
+
 package RT::Condition::BeforeDue;
 use base 'RT::Condition';
 

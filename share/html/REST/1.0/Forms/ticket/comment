@@ -55,8 +55,6 @@ $id
 use MIME::Entity;
 use LWP::MediaTypes;
 use RT::Interface::REST;
-use File::Temp qw(tempfile);
-my @tmp_files;
 
 $RT::Logger->debug("Got ticket id=$id for comment");
 $RT::Logger->debug("Got args @{[keys(%changes)]}.");
@@ -89,44 +87,23 @@ if (!$changes{Text} && @atts == 0) {
     goto OUTPUT;
 }
 
-my $cgi = $m->cgi_object;
 my $ent = MIME::Entity->build(
     Type => "multipart/mixed",
     'X-RT-Interface' => 'REST',
 );
-$ent->attach(Data => $changes{Text}) if $changes{Text};
+$ent->attach(
+    'Content-Type' => $changes{'Content-Type'} || 'text/plain',
+    Data => $changes{Text},
+) if $changes{Text};
 
-my $i = 1;
-foreach my $att (@atts) {
-    local $/=undef;
-    my $file = $att;
-    $file =~ s#^.*[\\/]##;
 
-    my $fh = $cgi->upload("attachment_$i");
-    if ($fh) {
-        my $buf;
-        my ($w, $tmp) = tempfile();
-        my $info = $cgi->uploadInfo($fh);
-        push @tmp_files, $tmp;
-
-        while (sysread($fh, $buf, 8192)) {
-            syswrite($w, $buf);
-        }
-
-        $ent->attach(
-            Path => $tmp,
-            Type => $info->{'Content-Type'} || guess_media_type($tmp),
-            Filename => $file,
-            Disposition => "attachment"
-        );
-    }
-    else {
+{
+    my ($status, $msg) = process_attachments($ent, @atts);
+    unless ( $status ) {
         $e = 1;
-        $c = "# No attachment for $att.";
+        $c = "# $msg";
         goto OUTPUT;
     }
-
-    $i++;
 }
 
 unless ($ticket->CurrentUserHasRight('ModifyTicket') ||
@@ -154,6 +131,5 @@ if ($changes{Status}) {
 
 OUTPUT:
 
-unlink @tmp_files;
 return [ $c, $o, $k, $e ];
 </%INIT>

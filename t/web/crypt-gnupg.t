@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use RT::Test::GnuPG
-  tests         => 101,
+  tests         => undef,
   gnupg_options => {
     passphrase    => 'recipient',
     'trust-model' => 'always',
@@ -351,8 +351,13 @@ $nokey->PrincipalObj->GrantRight(Right => 'CreateTicket');
 $nokey->PrincipalObj->GrantRight(Right => 'OwnTicket');
 
 my $tick = RT::Ticket->new( RT->SystemUser );
-$tick->Create(Subject => 'owner lacks pubkey', Queue => 'general',
-              Owner => $nokey);
+warning_like {
+    $tick->Create(Subject => 'owner lacks pubkey', Queue => 'general',
+                  Owner => $nokey);
+} [
+    qr/nokey\@example.com: skipped: public key not found/,
+    qr/Recipient 'nokey\@example.com' is unusable/,
+];
 ok(my $id = $tick->id, 'created ticket for owner-without-pubkey');
 
 $tick = RT::Ticket->new( RT->SystemUser );
@@ -426,8 +431,8 @@ $m->get("$baseurl/Search/Simple.html?q=General");
 my $content = $m->content;
 $content =~ s/&#40;/(/g;
 $content =~ s/&#41;/)/g;
-$content =~ s/<a\b[^>]+>//g;
-$content =~ s/<\/a>//g;
+$content =~ s/<(a|span)\b[^>]+>//g;
+$content =~ s/<\/(a|span)>//g;
 $content =~ s/&lt;/</g;
 $content =~ s/&gt;/>/g;
 
@@ -456,3 +461,6 @@ like($content, qr/KR-nokey \(no pubkey!\)-K/,
 $m->next_warning_like(qr/public key not found/);
 $m->next_warning_like(qr/public key not found/);
 $m->no_leftover_warnings_ok;
+
+undef $m;
+done_testing;

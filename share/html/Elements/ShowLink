@@ -45,20 +45,17 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<a href="<% $href %>">
 % my $member = $URI->Object;
 % if (blessed($member) && $member->isa("RT::Ticket")) {
 % my $inactive = $member->QueueObj->IsInactiveStatus($member->Status);
 
 <span class="<% $inactive ? 'ticket-inactive' : '' %>">
-
-<%$member->Id%>: (<& /Elements/ShowUser, User => $member->OwnerObj &>) <%$member->Subject || ''%> [<% loc($member->Status) %>]
+<a href="<% $href %>"><%$member->Id%>: <%$member->Subject || ''%> [<% loc($member->Status) %>]</a> (<& /Elements/ShowUser, User => $member->OwnerObj &>)
 </span>
 
 % } else {
-<%$URI->AsString%>
+<a href="<% $href %>"><%$URI->AsString%></a>
 % }
-</a>
 <%ARGS>
 $URI => undef
 </%ARGS>

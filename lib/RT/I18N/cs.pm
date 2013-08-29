@@ -93,10 +93,11 @@ sub numerate {
   my $s = ($num == 1);
 
   return '' unless @forms;
-  return
+  return (
    $s ? $forms[0] :
    ( $num > 1 && $num < 5 ) ? $forms[1] :
-   $forms[2];
+   $forms[2]
+  ) || (grep defined, @forms)[0];
 }
 
 #--------------------------------------------------------------------------

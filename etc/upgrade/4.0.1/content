@@ -6,16 +6,17 @@ our @Initial = (
         RT->Logger->debug('Removing all delegated rights');
 
         my $acl = RT::ACL->new(RT->SystemUser);
-        my $groupjoin = $acl->NewAlias('Groups');
-        $acl->Join( ALIAS1 => 'main',
-                    FIELD1 => 'PrincipalId',
-                    ALIAS2 => $groupjoin,
-                    FIELD2 => 'id'
-                  );
+        my $groupjoin = $acl->Join(
+            ALIAS1 => 'main',
+            FIELD1 => 'PrincipalId',
+            TABLE2 => 'Groups',
+            FIELD2 => 'id',
+        );
         $acl->Limit( ALIAS           => $groupjoin,
                      FIELD           => 'Domain',
                      OPERATOR        => '=',
                      VALUE           => 'Personal',
+                     CASESENSITIVE   => 0,
                     );
 
         while ( my $ace = $acl->Next ) {
@@ -29,7 +30,8 @@ our @Initial = (
         my $groups = RT::Groups->new(RT->SystemUser);
         $groups->Limit( FIELD    => 'Domain',
                         OPERATOR => '=',
-                        VALUE    => 'Personal'
+                        VALUE    => 'Personal',
+                        CASESENSITIVE   => 0,
                       );
         while ( my $group = $groups->Next ) {
             my $members = $group->MembersObj();

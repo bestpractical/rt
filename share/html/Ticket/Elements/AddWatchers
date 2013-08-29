@@ -84,7 +84,7 @@
 <tr><td>
 <&/Elements/SelectWatcherType, Name => "WatcherTypeEmail".$counter &>
 </td><td>
-<input type="hidden" name="WatcherAddressEmail<%$counter%>" value="<%$email->address%>">
+<input type="hidden" name="WatcherAddressEmail<%$counter%>" value="<%$email->format%>">
 <%$email->format%>
 </td></tr>
 % }
@@ -116,7 +116,7 @@ if ($UserString) {
 
 if ($GroupString) {
     $Groups = RT::Groups->new($session{'CurrentUser'});
-    $Groups->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'UserDefined');
+    $Groups->LimitToUserDefinedGroups;
     $Groups->Limit(FIELD => $GroupField, VALUE => $GroupString, OPERATOR => $GroupOp);
      }
 

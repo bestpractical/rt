@@ -78,27 +78,8 @@ sub Squish {
     return $self->concatenate( "$style/main.css", RT->Config->Get('CSSFiles') );
 }
 
-=head2 file_handle
-
-subclass CSS::Squish::file_handle for RT
-
-=cut
-
-sub file_handle {
-    my $self    = shift;
-    my $file    = shift;
-
-    my $path = "/NoAuth/css/$file";
-    my $content;
-    if ( $HTML::Mason::Commands::m->comp_exists($path) ) {
-        $content = $HTML::Mason::Commands::m->scomp("$path");
-    } else {
-        RT->Logger->error("Unable to open $path for CSS Squishing");
-        return undef;
-    }
-
-    open( my $fh, '<', \$content ) or die $!;
-    return $fh;
+sub roots {
+    map { "$_/css" } RT::Interface::Web->StaticRoots
 }
 
 1;

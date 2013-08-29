@@ -47,107 +47,36 @@
 %# END BPS TAGGED BLOCK }}}
 <%args>
 $Query => "id > 0"
-$PrimaryGroupBy => 'Queue'
+@GroupBy => ()
 $ChartStyle => 'bars'
+@ChartFunction => 'COUNT'
 </%args>
 <%init>
 use RT::Report::Tickets;
-$PrimaryGroupBy ||= 'Queue'; # make sure PrimaryGroupBy is not undef
 
-my $tix = RT::Report::Tickets->new( $session{'CurrentUser'} );
-my %AllowedGroupings = reverse $tix->Groupings( Query => $Query );
-$PrimaryGroupBy = 'Queue' unless exists $AllowedGroupings{$PrimaryGroupBy};
-my ($count_name, $value_name) = $tix->SetupGroupings(
-    Query => $Query, GroupBy => $PrimaryGroupBy,
+my $report = RT::Report::Tickets->new( $session{'CurrentUser'} );
+
+my %columns = $report->SetupGroupings(
+    Query => $Query,
+    GroupBy => \@GroupBy,
+    Function => \@ChartFunction,
 );
 
-my %class = (
-    Queue => 'RT::Queue',
-    Owner => 'RT::User',
-    Creator => 'RT::User',
-    LastUpdatedBy => 'RT::User',
-);
-my $class = $class{ $PrimaryGroupBy };
+$report->SortEntries;
 
-my (@keys, @values);
-while ( my $entry = $tix->Next ) {
-    if ($class) {
-        my $q = $class->new( $session{'CurrentUser'} );
-        $q->Load( $entry->LabelValue( $value_name ) );
-        push @keys, $q->Name;
-    }
-    else {
-        push @keys, $entry->LabelValue( $value_name );
-    }
-    $keys[-1] ||= loc('(no value)');
-    push @values, $entry->__Value( $count_name );
-}
-
-my %data;
-my %loc_keys;
-foreach my $key (@keys) { $data{$key} = shift @values; $loc_keys{$key} = loc($key); }
-my @sorted_keys = map { $loc_keys{$_}} sort { $loc_keys{$a} cmp $loc_keys{$b} } keys %loc_keys;
-my @sorted_values = map { $data{$_}} sort { $loc_keys{$a} cmp $loc_keys{$b} } keys %loc_keys;
-my $query_string = $m->comp('/Elements/QueryString', %ARGS);
-
-my ($i,$total);
+my $query_string = $m->comp('/Elements/QueryString', %ARGS, GroupBy => \@GroupBy );
 </%init>
 <div class="chart-wrapper">
 <span class="chart image">
 % if (RT->Config->Get('DisableGD')) {
 <% loc('Graphical charts are not available.') %><br />
 % } else {
-<img src="<%RT->Config->Get('WebPath')%>/Search/Chart?<%$query_string|n%>" />
+% my $key = Digest::MD5::md5_hex( rand(1024) );
+% $session{'charts_cache'}{$key} = { columns => \%columns, report => $report->Serialize };
+% $session{'i'}++;
+<img src="<% RT->Config->Get('WebPath') %>/Search/Chart?Cache=<% $key |un %>&<% $query_string |n %>" />
 % }
 </span>
-<table class="collection-as-table chart">
-<tr>
-<th class="collection-as-table"><% loc($tix->Label($PrimaryGroupBy)) %>
-</th>
-<th class="collection-as-table"><&|/l&>Tickets</&>
-</th>
-</tr>
-<%perl>
- while (my $key = shift @sorted_keys) {
- $i++;
- my $value = shift @sorted_values;
- $total += $value;
-</%perl>
-<tr class="<% $i%2 ? 'evenline' : 'oddline' %>">
-<%perl>
-# TODO sadly we don't have "creator.city is null" or alike support yet
-# so no link if the key is undef for now
- if ( $PrimaryGroupBy !~ /(Hourly|Daily|Monthly|Annually)$/
-        && $key ne loc('(no value)') ) {
- my $group = $PrimaryGroupBy; $group =~ s! !.!;
- my %orig_keys = reverse %loc_keys;
- my $QueryString = $m->comp('/Elements/QueryString',
-           Query => "$Query and $group = '$orig_keys{$key}'",
-                           Format  => $ARGS{Format},
-                           Rows    => $ARGS{Rows},
-                           OrderBy => $ARGS{OrderBy},
-                           Order   => $ARGS{Order},
-                         );
-</%perl>
-<td class="label collection-as-table">
-<a href=<% RT->Config->Get('WebPath') %>/Search/Results.html?<%$QueryString%>><%$key%></a>
-</td>
-<td class="value collection-as-table">
-<a href=<% RT->Config->Get('WebPath') %>/Search/Results.html?<%$QueryString%>><%$value%></a>
-</td>
-% } else {
-<td class="label collection-as-table"><% $key %></td>
-<td class="value collection-as-table"><% $value %></td>
-% }
-</tr>
-% }
-
-%$i++;
-<tr class="<%$i%2 ? 'evenline' : 'oddline' %> total">
-<td class="label collection-as-table"><%loc('Total')%></td>
-<td class="value collection-as-table"><%$total||'0'%></td>
-</tr>
-
-</table>
+<& ChartTable, %ARGS, Table => { $report->FormatTable( %columns ) } &>
 <div class="query"><span class="label"><% loc('Query') %>:</span><span class="value"><% $Query %></span></div>
 </div>

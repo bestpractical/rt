@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 111;
+use RT::Test tests => 122;
 
 
 {
@@ -106,7 +106,7 @@ ok($user->Privileged, "User 'root' is privileged again");
 
 ok(my $u = RT::User->new(RT->SystemUser));
 ok($u->Load(1), "Loaded the first user");
-is($u->PrincipalObj->ObjectId , 1, "user 1 is the first principal");
+is($u->PrincipalObj->id , 1, "user 1 is the first principal");
 is($u->PrincipalObj->PrincipalType, 'User' , "Principal 1 is a user, not a group");
 
 
@@ -333,5 +333,32 @@ ok($rqv, "Revoked the right successfully - $rqm");
 # have the privileged user try to create another user and fail the ACL check
 
 
+}
+
+{
+    my $root = RT::Test->load_or_create_user( Name => 'root' );
+    ok $root && $root->id;
+
+    my $queue = RT::Test->load_or_create_queue( Name => 'General' );
+    ok $queue && $queue->id;
+
+    my $ticket = RT::Ticket->new( RT->SystemUser );
+    my ($id) = $ticket->Create( Subject => 'test', Queue => $queue );
+    ok $id;
+
+    my $b_ticket = RT::Ticket->new( RT->SystemUser );
+    ($id) = $b_ticket->Create( Subject => 'test', Queue => $queue );
+    ok $id;
+
+    ok $root->ToggleBookmark($b_ticket);
+    ok !$root->ToggleBookmark($b_ticket);
+    ok $root->ToggleBookmark($b_ticket);
+
+    ok $root->HasBookmark( $b_ticket );
+    ok !$root->HasBookmark( $ticket );
+
+    my @marks = $root->Bookmarks;
+    is scalar @marks, 1;
+    is $marks[0], $b_ticket->id;
 }
 

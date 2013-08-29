@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use RT::Test tests => 29;
+use RT::Test tests => 37;
 
 use_ok('RT::Template');
 
@@ -127,6 +127,54 @@ note "make sure template can not be deleted if it has scrips";
     ok(!$val,$msg);
 }
 
+note "make sure template can be deleted if it's an override";
+{
+    clean_templates( Queue => $queue->id );
+    my $template = RT::Template->new( RT->SystemUser );
+    my ($val,$msg) = $template->Create( Queue => $queue->id, Name => 'Overrided' );
+    ok($val,$msg);
+
+    $template = RT::Template->new( RT->SystemUser );
+    ($val,$msg) = $template->Create( Queue => 0, Name => 'Overrided' );
+    ok($val,$msg);
+
+    my $scrip = RT::Scrip->new( RT->SystemUser );
+    ($val,$msg) = $scrip->Create(
+        Queue => $queue->id,
+        ScripCondition => "On Create",
+        ScripAction => 'Autoreply To Requestors',
+        Template => $template->Name,
+    );
+    ok($val, $msg);
+
+    ($val, $msg) = $template->Delete;
+    ok($val,$msg);
+}
+
+note "make sure template can be deleted if it has an override";
+{
+    clean_templates( Queue => $queue->id );
+    my $template = RT::Template->new( RT->SystemUser );
+    my ($val,$msg) = $template->Create( Queue => 0, Name => 'Overrided' );
+    ok($val,$msg);
+
+    $template = RT::Template->new( RT->SystemUser );
+    ($val,$msg) = $template->Create( Queue => $queue->id, Name => 'Overrided' );
+    ok($val,$msg);
+
+    my $scrip = RT::Scrip->new( RT->SystemUser );
+    ($val,$msg) = $scrip->Create(
+        Queue => $queue->id,
+        ScripCondition => "On Create",
+        ScripAction => 'Autoreply To Requestors',
+        Template => $template->Name,
+    );
+    ok($val, $msg);
+
+    ($val, $msg) = $template->Delete;
+    ok($val,$msg);
+}
+
 
 {
     my $t = RT::Template->new(RT->SystemUser);
@@ -145,7 +193,11 @@ sub clean_templates {
     $templates->Limit( FIELD => 'Name', VALUE => $_ )
         foreach ref $args{'Name'}? @{$args{'Name'}} : ($args{'Name'}||());
     while ( my $t = $templates->Next ) {
-        $t->Delete;
+        my ($status) = $t->Delete;
+        unless ( $status ) {
+            $_->Delete foreach @{ $t->UsedBy->ItemsArrayRef };
+            $t->Delete;
+        }
     }
 }
 

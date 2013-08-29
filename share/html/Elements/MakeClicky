@@ -48,20 +48,27 @@
 <%ONCE>
 use Regexp::Common qw(URI);
 
+my $escaper = sub {
+    my $content = shift;
+    RT::Interface::Web::EscapeHTML( \$content );
+    return $content;
+};
+
 my %actions = (
     default => sub {
         my %args = @_;
-        return $args{value};
+        return $escaper->($args{value});
     },
     url => sub {
         my %args = @_;
+        $args{value} = $escaper->($args{value});
         my $result = qq{[<a target="new" href="$args{value}">}. loc('Open URL') .qq{</a>]};
         return $args{value} . qq{ <span class="clickylink">$result</span>};
     },
     url_overwrite => sub {
         my %args = @_;
-        my $result = qq{<a target="new" href="$args{'value'}">};
-        $result .= qq{$args{'value'}</a>};
+        $args{value} = $escaper->($args{value});
+        my $result = qq{<a target="new" href="$args{value}">$args{value}</a>};
         return qq{<span class="clickylink">$result</span>};
     },
 );
@@ -69,12 +76,12 @@ my %actions = (
 my @types = (
     {
         name   => "httpurl",
-        regex  => qr/$RE{URI}{HTTP}{-keep}{-scheme => 'https?'}(?:#\S+)?/,
+        regex  => qr/$RE{URI}{HTTP}{-keep}{-scheme => 'https?'}(?:#[^\s<]+)?(?<![.?!,;:])/,
         action => "url",
     },
     {
         name   => "httpurl_overwrite",
-        regex  => qr/$RE{URI}{HTTP}{-keep}{-scheme => 'https?'}(?:#\S+)?/,
+        regex  => qr/$RE{URI}{HTTP}{-keep}{-scheme => 'https?'}(?:#[^\s<]+)?(?<![.?!,;:])/,
         action => "url_overwrite",
     },
 );
@@ -87,12 +94,6 @@ my $handle = sub {
             all_matches => [ $args{value}, $1, $2, $3, $4, $5, $6, $7, $8, $9 ],
         ) if $args{value} =~ $rec->{regex};
     }
-};
-
-my $escaper = sub {
-    my $content = shift;
-    RT::Interface::Web::EscapeHTML( \$content );
-    return $content;
 };
 
 # Hook to add more Clicky types
@@ -138,7 +139,7 @@ unless ( $regexp ) {
 my $pos = 0;
 while ( $$content =~ /($regexp)/gsio ) {
     my $match = $1;
-    next if $` =~ /href=(?:&quot;|")$/;
+    next if $` =~ /\w+=(?:&quot;|")$/;
     my $skipped_len = pos($$content) - $pos - length($match);
     if ( $skipped_len > 0 ) {
         my $plain;

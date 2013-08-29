@@ -73,6 +73,9 @@ use warnings;
 
 use base 'RT::Record';
 
+use Role::Basic 'with';
+with "RT::Record::Role::Rights";
+
 sub Table {'Groups'}
 
 
@@ -82,96 +85,18 @@ use RT::GroupMembers;
 use RT::Principals;
 use RT::ACL;
 
-use vars qw/$RIGHTS $RIGHT_CATEGORIES/;
-
-$RIGHTS = {
-    AdminGroup              => 'Modify group metadata or delete group',     # loc_pair
-    AdminGroupMembership    => 'Modify group membership roster',            # loc_pair
-    ModifyOwnMembership     => 'Join or leave group',                       # loc_pair
-    EditSavedSearches       => 'Create, modify and delete saved searches',  # loc_pair
-    ShowSavedSearches       => 'View saved searches',                       # loc_pair
-    SeeGroup                => 'View group',                                # loc_pair
-    SeeGroupDashboard       => 'View group dashboards',                     # loc_pair
-    CreateGroupDashboard    => 'Create group dashboards',                   # loc_pair
-    ModifyGroupDashboard    => 'Modify group dashboards',                   # loc_pair
-    DeleteGroupDashboard    => 'Delete group dashboards',                   # loc_pair
-};
-
-$RIGHT_CATEGORIES = {
-    AdminGroup              => 'Admin',
-    AdminGroupMembership    => 'Admin',
-    ModifyOwnMembership     => 'Staff',
-    EditSavedSearches       => 'Admin',
-    ShowSavedSearches       => 'Staff',
-    SeeGroup                => 'Staff',
-    SeeGroupDashboard       => 'Staff',
-    CreateGroupDashboard    => 'Admin',
-    ModifyGroupDashboard    => 'Admin',
-    DeleteGroupDashboard    => 'Admin',
-};
-
-# Tell RT::ACE that this sort of object can get acls granted
-$RT::ACE::OBJECT_TYPES{'RT::Group'} = 1;
-
-# TODO: This should be refactored out into an RT::ACLedObject or something
-# stuff the rights into a hash of rights that can exist.
-
-__PACKAGE__->AddRights(%$RIGHTS);
-__PACKAGE__->AddRightCategories(%$RIGHT_CATEGORIES);
+__PACKAGE__->AddRight( Admin => AdminGroup           => 'Modify group metadata or delete group'); # loc_pair
+__PACKAGE__->AddRight( Admin => AdminGroupMembership => 'Modify group membership roster'); # loc_pair
+__PACKAGE__->AddRight( Staff => ModifyOwnMembership  => 'Join or leave group'); # loc_pair
+__PACKAGE__->AddRight( Admin => EditSavedSearches    => 'Create, modify and delete saved searches'); # loc_pair
+__PACKAGE__->AddRight( Staff => ShowSavedSearches    => 'View saved searches'); # loc_pair
+__PACKAGE__->AddRight( Staff => SeeGroup             => 'View group'); # loc_pair
+__PACKAGE__->AddRight( Staff => SeeGroupDashboard    => 'View group dashboards'); # loc_pair
+__PACKAGE__->AddRight( Admin => CreateGroupDashboard => 'Create group dashboards'); # loc_pair
+__PACKAGE__->AddRight( Admin => ModifyGroupDashboard => 'Modify group dashboards'); # loc_pair
+__PACKAGE__->AddRight( Admin => DeleteGroupDashboard => 'Delete group dashboards'); # loc_pair
 
 =head1 METHODS
-
-=head2 AddRights C<RIGHT>, C<DESCRIPTION> [, ...]
-
-Adds the given rights to the list of possible rights.  This method
-should be called during server startup, not at runtime.
-
-=cut
-
-sub AddRights {
-    my $self = shift;
-    my %new = @_;
-    $RIGHTS = { %$RIGHTS, %new };
-    %RT::ACE::LOWERCASERIGHTNAMES = ( %RT::ACE::LOWERCASERIGHTNAMES,
-                                      map { lc($_) => $_ } keys %new);
-}
-
-=head2 AvailableRights
-
-Returns a hash of available rights for this object. The keys are the right names and the values are a description of what the rights do
-
-=cut
-
-sub AvailableRights {
-    my $self = shift;
-    return($RIGHTS);
-}
-
-=head2 RightCategories
-
-Returns a hashref where the keys are rights for this type of object and the
-values are the category (General, Staff, Admin) the right falls into.
-
-=cut
-
-sub RightCategories {
-    return $RIGHT_CATEGORIES;
-}
-
-=head2 AddRightCategories C<RIGHT>, C<CATEGORY> [, ...]
-
-Adds the given right and category pairs to the list of right categories.  This
-method should be called during server startup, not at runtime.
-
-=cut
-
-sub AddRightCategories {
-    my $self = shift if ref $_[0] or $_[0] eq __PACKAGE__;
-    my %new = @_;
-    $RIGHT_CATEGORIES = { %$RIGHT_CATEGORIES, %new };
-}
-
-
 
 =head2 SelfDescription
 
@@ -190,23 +115,23 @@ sub SelfDescription {
         return $self->loc("group '[_1]'",$self->Name);
     }
     elsif ($self->Domain eq 'RT::System-Role') {
-        return $self->loc("system [_1]",$self->Type);
+        return $self->loc("system [_1]",$self->Name);
     }
     elsif ($self->Domain eq 'RT::Queue-Role') {
         my $queue = RT::Queue->new($self->CurrentUser);
         $queue->Load($self->Instance);
-        return $self->loc("queue [_1] [_2]",$queue->Name, $self->Type);
+        return $self->loc("queue [_1] [_2]",$queue->Name, $self->Name);
     }
     elsif ($self->Domain eq 'RT::Ticket-Role') {
-        return $self->loc("ticket #[_1] [_2]",$self->Instance, $self->Type);
+        return $self->loc("ticket #[_1] [_2]",$self->Instance, $self->Name);
     }
     elsif ($self->RoleClass) {
         my $class = lc $self->RoleClass;
            $class =~ s/^RT:://i;
-        return $self->loc("[_1] #[_2] [_3]", $self->loc($class), $self->Instance, $self->Type);
+        return $self->loc("[_1] #[_2] [_3]", $self->loc($class), $self->Instance, $self->Name);
     }
     elsif ($self->Domain eq 'SystemInternal') {
-        return $self->loc("system group '[_1]'",$self->Type);
+        return $self->loc("system group '[_1]'",$self->Name);
     }
     else {
         return $self->loc("undescribed group [_1]",$self->Id);
@@ -283,7 +208,7 @@ sub LoadACLEquivalenceGroup {
 
     return $self->LoadByCols(
         Domain   => 'ACLEquivalence',
-        Type     => 'UserEquiv',
+        Name     => 'UserEquiv',
         Instance => $principal,
     );
 }
@@ -305,13 +230,13 @@ sub LoadSystemInternalGroup {
 
     return $self->LoadByCols(
         Domain => 'SystemInternal',
-        Type   => $identifier,
+        Name   => $identifier,
     );
 }
 
 =head2 LoadRoleGroup
 
-Takes a paramhash of Object and Type and attempts to load the suitable role
+Takes a paramhash of Object and Name and attempts to load the suitable role
 group for said object.
 
 =cut
@@ -320,13 +245,13 @@ sub LoadRoleGroup {
     my $self = shift;
     my %args = (
         Object  => undef,
-        Type    => undef,
+        Name    => undef,
         @_
     );
 
     my $object = delete $args{Object};
 
-    return (0, $self->loc("Object passed is not loaded"))
+    return wantarray ? (0, $self->loc("Object passed is not loaded")) : 0
        unless $object->id;
 
     # Translate Object to Domain + Instance
@@ -337,7 +262,7 @@ sub LoadRoleGroup {
 }
 
 
-=head2 LoadTicketRoleGroup  { Ticket => TICKET_ID, Type => TYPE }
+=head2 LoadTicketRoleGroup  { Ticket => TICKET_ID, Name => TYPE }
 
 Deprecated in favor of L</LoadRoleGroup> or L<RT::Record/RoleGroup>.
 
@@ -347,17 +272,18 @@ sub LoadTicketRoleGroup {
     my $self = shift;
     my %args = (
         Ticket => '0',
-        Type => undef,
+        Name => undef,
         @_,
     );
     RT->Deprecated(
         Instead => "RT::Group->LoadRoleGroup or RT::Ticket->RoleGroup",
         Remove => "4.4",
     );
+    $args{'Name'} = $args{'Type'} if exists $args{'Type'};
     $self->LoadByCols(
         Domain   => 'RT::Ticket-Role',
         Instance => $args{'Ticket'},
-        Type     => $args{'Type'},
+        Name     => $args{'Name'},
     );
 }
 
@@ -373,23 +299,24 @@ sub LoadQueueRoleGroup {
     my $self = shift;
     my %args = (
         Queue => undef,
-        Type => undef,
+        Name => undef,
         @_,
     );
     RT->Deprecated(
         Instead => "RT::Group->LoadRoleGroup or RT::Queue->RoleGroup",
         Remove => "4.4",
     );
+    $args{'Name'} = $args{'Type'} if exists $args{'Type'};
     $self->LoadByCols(
         Domain   => 'RT::Queue-Role',
         Instance => $args{'Queue'},
-        Type     => $args{'Type'},
+        Name     => $args{'Name'},
     );
 }
 
 
 
-=head2 LoadSystemRoleGroup  Type
+=head2 LoadSystemRoleGroup  Name
 
 Deprecated in favor of L</LoadRoleGroup> or L<RT::Record/RoleGroup>.
 
@@ -404,8 +331,18 @@ sub LoadSystemRoleGroup {
     );
     $self->LoadByCols(
         Domain => 'RT::System-Role',
-        Type => $type
+        Name => $type
     );
+}
+
+sub LoadByCols {
+    my $self = shift;
+    my %args = ( @_ );
+    if ( exists $args{'Type'} ) {
+        RT->Deprecated( Instead => 'Name', Arguments => 'Type', Remove => '4.4' );
+        $args{'Name'} = $args{'Type'};
+    }
+    return $self->SUPER::LoadByCols( %args );
 }
 
 
@@ -439,12 +376,17 @@ sub _Create {
         Name        => undef,
         Description => undef,
         Domain      => undef,
-        Type        => undef,
         Instance    => '0',
         InsideTransaction => undef,
         _RecordTransaction => 1,
         @_
     );
+    if ( $args{'Type'} ) {
+        RT->Deprecated( Instead => 'Name', Arguments => 'Type', Remove => '4.4' );
+        $args{'Name'} = $args{'Type'};
+    } else {
+        $args{'Type'} = $args{'Name'};
+    }
 
     # Enforce uniqueness on user defined group names
     if ($args{'Domain'} and $args{'Domain'} eq 'UserDefined') {
@@ -522,7 +464,7 @@ sub CreateUserDefinedGroup {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    return($self->_Create( Domain => 'UserDefined', Type => '', Instance => '', @_));
+    return($self->_Create( Domain => 'UserDefined', Instance => '', @_));
 }
 
 =head2 ValidateName VALUE
@@ -576,8 +518,7 @@ sub _CreateACLEquivalenceGroup {
     my $princ = shift;
  
       my $id = $self->_Create( Domain => 'ACLEquivalence', 
-                           Type => 'UserEquiv',
-                           Name => 'User '. $princ->Object->Id,
+                           Name => 'UserEquiv',
                            Description => 'ACL equiv. for user '.$princ->Object->Id,
                            Instance => $princ->Id,
                            InsideTransaction => 1,
@@ -617,7 +558,7 @@ Takes a paramhash of:
 
 =over 4
 
-=item Type
+=item Name
 
 Required.  RT's core role types are C<Requestor>, C<Cc>, C<AdminCc>, and
 C<Owner>.  Extensions may add their own.
@@ -660,7 +601,7 @@ Message should contain an error string.
 sub CreateRoleGroup {
     my $self = shift;
     my %args = ( Instance => undef,
-                 Type     => undef,
+                 Name     => undef,
                  Domain   => undef,
                  Object   => undef,
                  InsideTransaction => 1,
@@ -678,10 +619,15 @@ sub CreateRoleGroup {
     }
 
     unless ($self->ValidateRoleGroup(%args)) {
-        return ( 0, $self->loc("Invalid Group Type and Domain") );
+        return ( 0, $self->loc("Invalid Group Name and Domain") );
     }
 
-    my %create = map { $_ => $args{$_} } qw(Domain Instance Type);
+    if ( exists $args{'Type'} ) {
+        RT->Deprecated( Instead => 'Name', Arguments => 'Type', Remove => '4.4' );
+        $args{'Name'} = $args{'Type'};
+    }
+
+    my %create = map { $_ => $args{$_} } qw(Domain Instance Name);
 
     my $duplicate = RT::Group->new( RT->SystemUser );
     $duplicate->LoadByCols( %create );
@@ -725,12 +671,12 @@ registered role on the specified Domain.  Otherwise returns false.
 sub ValidateRoleGroup {
     my $self = shift;
     my %args = (@_);
-    return 0 unless $args{Domain} and $args{Type};
+    return 0 unless $args{Domain} and ($args{Type} or $args{'Name'});
 
     my $class = $self->RoleClass($args{Domain});
     return 0 unless $class;
 
-    return $class->HasRole($args{Type});
+    return $class->HasRole($args{Type}||$args{'Name'});
 }
 
 =head2 SingleMemberRoleGroup
@@ -741,7 +687,7 @@ sub SingleMemberRoleGroup {
     my $self = shift;
     my $class = $self->RoleClass;
     return unless $class;
-    return $class->Role($self->Type)->{Single};
+    return $class->Role($self->Name)->{Single};
 }
 
 sub SingleMemberRoleGroupColumn {
@@ -749,7 +695,7 @@ sub SingleMemberRoleGroupColumn {
     my ($class) = $self->Domain =~ /^(.+)-Role$/;
     return unless $class;
 
-    my $role = $class->Role($self->Type);
+    my $role = $class->Role($self->Name);
     return unless $role->{Class} eq $class;
     return $role->{Column};
 }
@@ -761,6 +707,33 @@ sub RoleGroupObject {
     my $obj = $class->new( $self->CurrentUser );
     $obj->Load( $self->Instance );
     return $obj;
+}
+
+sub Type {
+    my $self = shift;
+    RT->Deprecated( Instead => 'Name', Remove => '4.4' );
+    return $self->_Value('Type', @_);
+}
+
+sub SetType {
+    my $self = shift;
+    RT->Deprecated( Instead => 'Name', Remove => '4.4' );
+    return $self->SetName(@_);
+}
+
+sub SetName {
+    my $self = shift;
+    my $value = shift;
+
+    my ($status, $msg) = $self->_Set( Field => 'Name', Value => $value );
+    return ($status, $msg) unless $status;
+
+    {
+        my ($status, $msg) = $self->__Set( Field => 'Type', Value => $value );
+        RT->Logger->error("Couldn't set Type: $msg") unless $status;
+    }
+
+    return ($status, $msg);
 }
 
 =head2 Delete
@@ -1142,16 +1115,20 @@ sub _AddMember {
                 Type     => 'SetWatcher',
                 OldValue => $old_member_id,
                 NewValue => $new_member_obj->Id,
-                Field    => $self->Type,
+                Field    => $self->Name,
             );
         } else {
             $obj->_NewTransaction(
                 Type     => 'AddWatcher', # use "watcher" for history's sake
                 NewValue => $new_member_obj->Id,
-                Field    => $self->Type,
+                Field    => $self->Name,
             );
         }
     }
+
+    return (1, $self->loc("[_1] set to [_2]",
+                          $self->loc($self->Name), $new_member_obj->Object->Name) )
+        if $self->SingleMemberRoleGroup;
 
     return ( 1, $self->loc("Member added: [_1]", $new_member_obj->Object->Name) );
 }
@@ -1311,7 +1288,7 @@ sub _DeleteMember {
     if ($self->RoleClass) {
         my %txn = (
             OldValue => $old_member,
-            Field    => $self->Type,
+            Field    => $self->Name,
         );
 
         if ($self->SingleMemberRoleGroup) {
@@ -1378,40 +1355,6 @@ sub _Set {
     }
 }
 
-
-
-
-
-=head2 CurrentUserHasRight RIGHTNAME
-
-Returns true if the current user has the specified right for this group.
-
-
-    TODO: we don't deal with membership visibility yet
-
-=cut
-
-
-sub CurrentUserHasRight {
-    my $self = shift;
-    my $right = shift;
-
-
-
-    if ($self->Id &&
-                $self->CurrentUser->HasRight( Object => $self,
-                                              Right => $right )) {
-        return(1);
-    }
-    elsif ( $self->CurrentUser->HasRight(Object => $RT::System, Right =>  $right )) {
-        return (1);
-    } else {
-        return(undef);
-    }
-
-}
-
-
 =head2 CurrentUserCanSee
 
 Always returns 1; unfortunately, for historical reasons, users have
@@ -1438,17 +1381,9 @@ The response is cached. PrincipalObj should never ever change.
 
 sub PrincipalObj {
     my $self = shift;
-    unless ( defined $self->{'PrincipalObj'} &&
-             defined $self->{'PrincipalObj'}->ObjectId &&
-            ($self->{'PrincipalObj'}->ObjectId == $self->Id) &&
-            (defined $self->{'PrincipalObj'}->PrincipalType && 
-                $self->{'PrincipalObj'}->PrincipalType eq 'Group')) {
-
-            $self->{'PrincipalObj'} = RT::Principal->new($self->CurrentUser);
-            $self->{'PrincipalObj'}->LoadByCols('ObjectId' => $self->Id,
-                                                'PrincipalType' => 'Group') ;
-            }
-    return($self->{'PrincipalObj'});
+    my $res = RT::Principal->new( $self->CurrentUser );
+    $res->Load( $self->id );
+    return $res;
 }
 
 
@@ -1572,7 +1507,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 Returns the current value of Type.
 (In the database, Type is stored as varchar(64).)
 
-
+Deprecated, use Name instead, will be removed in 4.4.
 
 =head2 SetType VALUE
 
@@ -1581,6 +1516,7 @@ Set Type to VALUE.
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 (In the database, Type will be stored as a varchar(64).)
 
+Deprecated, use SetName instead, will be removed in 4.4.
 
 =cut
 

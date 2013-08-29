@@ -56,9 +56,10 @@
 <option value="<%$value->Name%>"<% ($value->Name eq $Default) ? q[ selected="selected"] : ''%>><%$value->Name%></option>
 % }
 </select>
-% }
-% else {
-<input name="<%$Name%>" size="20" value="<% $Default %>" />
+% } elsif ($CustomField->Type =~ /^Date(Time)?$/) {
+<& /Elements/SelectDate, ShowTime => ($1 ? 1 : 0), Name => $Name, Value => $Default &>
+% } else {
+<input name="<%$Name%>" size="20" value="<% $Default %>" type="text" />
 % }
 <%args>
 $Name => undef

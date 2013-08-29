@@ -66,11 +66,14 @@ package RT::SearchBuilder;
 
 use strict;
 use warnings;
+use 5.010;
 
 use base qw(DBIx::SearchBuilder RT::Base);
 
 use RT::Base;
 use DBIx::SearchBuilder "1.40";
+
+use Scalar::Util qw/blessed/;
 
 sub _Init  {
     my $self = shift;
@@ -85,10 +88,25 @@ sub _Init  {
     $self->SUPER::_Init( 'Handle' => $RT::Handle);
 }
 
+sub _Handle { return $RT::Handle }
+
 sub CleanSlate {
     my $self = shift;
     $self->{'_sql_aliases'} = {};
+    delete $self->{'handled_disabled_column'};
+    delete $self->{'find_disabled_rows'};
     return $self->SUPER::CleanSlate(@_);
+}
+
+sub Join {
+    my $self = shift;
+    my %args = @_;
+
+    $args{'DISTINCT'} = 1 if
+        !exists $args{'DISTINCT'}
+        && $args{'TABLE2'} && lc($args{'FIELD2'}||'') eq 'id';
+
+    return $self->SUPER::Join( %args );
 }
 
 sub JoinTransactions {
@@ -105,6 +123,7 @@ sub JoinTransactions {
         FIELD2 => 'ObjectId',
     );
 
+    # NewItem is necessary here because of RT::Report::Tickets and RT::Report::Tickets::Entry
     my $item = $self->NewItem;
     my $object_type = $item->can('ObjectType') ? $item->ObjectType : ref $item;
 
@@ -117,6 +136,40 @@ sub JoinTransactions {
         unless $args{'New'};
 
     return $alias;
+}
+
+sub _OrderByCF {
+    my $self = shift;
+    my ($row, $cfkey, $cf) = @_;
+
+    $cfkey .= ".ordering" if !blessed($cf) || ($cf->MaxValues||0) != 1;
+    my ($ocfvs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cf );
+    # this is described in _LimitCustomField
+    $self->Limit(
+        ALIAS      => $CFs,
+        FIELD      => 'Name',
+        OPERATOR   => 'IS NOT',
+        VALUE      => 'NULL',
+        ENTRYAGGREGATOR => 'AND',
+        SUBCLAUSE  => ".ordering",
+    ) if $CFs;
+    my $CFvs = $self->Join(
+        TYPE   => 'LEFT',
+        ALIAS1 => $ocfvs,
+        FIELD1 => 'CustomField',
+        TABLE2 => 'CustomFieldValues',
+        FIELD2 => 'CustomField',
+    );
+    $self->Limit(
+        LEFTJOIN        => $CFvs,
+        FIELD           => 'Name',
+        QUOTEVALUE      => 0,
+        VALUE           => "$ocfvs.Content",
+        ENTRYAGGREGATOR => 'AND'
+    );
+
+    return { %$row, ALIAS => $CFvs,  FIELD => 'SortOrder' },
+           { %$row, ALIAS => $ocfvs, FIELD => 'Content' };
 }
 
 sub OrderByCols {
@@ -202,44 +255,604 @@ sub _SingularClass {
     return $class;
 }
 
+=head2 RecordClass
+
+Returns class name of records in this collection. This generic implementation
+just strips trailing 's'.
+
+=cut
+
+sub RecordClass {
+    $_[0]->_SingularClass
+}
+
+=head2 RegisterCustomFieldJoin
+
+Takes a pair of arguments, the first a class name and the second a callback
+function.  The class will be used to call
+L<RT::Record/CustomFieldLookupType>.  The callback will be called when
+limiting a collection of the caller's class by a CF of the passed class's
+lookup type.
+
+The callback is passed a single argument, the current collection object (C<$self>).
+
+An example from L<RT::Tickets>:
+
+    __PACKAGE__->RegisterCustomFieldJoin(
+        "RT::Transaction" => sub { $_[0]->JoinTransactions }
+    );
+
+Returns true on success, undef on failure.
+
+=cut
+
+sub RegisterCustomFieldJoin {
+    my $class = shift;
+    my ($type, $callback) = @_;
+
+    $type = $type->CustomFieldLookupType if $type;
+
+    die "Unknown LookupType '$type'"
+        unless $type and grep { $_ eq $type } RT::CustomField->LookupTypes;
+
+    die "Custom field join callbacks must be CODE references"
+        unless ref($callback) eq 'CODE';
+
+    warn "Another custom field join callback is already registered for '$type'"
+        if $class->_JOINS_FOR_LOOKUP_TYPES->{$type};
+
+    # Stash the callback on ourselves
+    $class->_JOINS_FOR_LOOKUP_TYPES->{ $type } = $callback;
+
+    return 1;
+}
+
+=head2 _JoinForLookupType
+
+Takes an L<RT::CustomField> LookupType and joins this collection as
+appropriate to reach the object records to which LookupType applies.  The
+object records will be of the class returned by
+L<RT::CustomField/ObjectTypeFromLookupType>.
+
+Returns the join alias suitable for further limiting against object
+properties.
+
+Returns undef on failure.
+
+Used by L</_CustomFieldJoin>.
+
+=cut
+
+sub _JoinForLookupType {
+    my $self = shift;
+    my $type = shift or return;
+
+    # Convenience shortcut so that classes don't need to register a handler
+    # for their native lookup type
+    return "main" if $type eq $self->RecordClass->CustomFieldLookupType
+        and grep { $_ eq $type } RT::CustomField->LookupTypes;
+
+    my $JOINS = $self->_JOINS_FOR_LOOKUP_TYPES;
+    return $JOINS->{$type}->($self)
+        if ref $JOINS->{$type} eq 'CODE';
+
+    return;
+}
+
+sub _JOINS_FOR_LOOKUP_TYPES {
+    my $class = blessed($_[0]) || $_[0];
+    state %JOINS;
+    return $JOINS{$class} ||= {};
+}
+
+=head2 _CustomFieldJoin
+
+Factor out the Join of custom fields so we can use it for sorting too
+
+=cut
+
+sub _CustomFieldJoin {
+    my ($self, $cfkey, $cf, $type) = @_;
+    $type ||= $self->RecordClass->CustomFieldLookupType;
+
+    # Perform one Join per CustomField
+    if ( $self->{_sql_object_cfv_alias}{$cfkey} ||
+         $self->{_sql_cf_alias}{$cfkey} )
+    {
+        return ( $self->{_sql_object_cfv_alias}{$cfkey},
+                 $self->{_sql_cf_alias}{$cfkey} );
+    }
+
+    my $ObjectAlias = $self->_JoinForLookupType($type)
+        or die "We don't know how to join for LookupType $type";
+
+    my ($ocfvalias, $CFs);
+    if ( blessed($cf) ) {
+        $ocfvalias = $self->{_sql_object_cfv_alias}{$cfkey} = $self->Join(
+            TYPE   => 'LEFT',
+            ALIAS1 => $ObjectAlias,
+            FIELD1 => 'id',
+            TABLE2 => 'ObjectCustomFieldValues',
+            FIELD2 => 'ObjectId',
+            $cf->SingleValue? (DISTINCT => 1) : (),
+        );
+        $self->Limit(
+            LEFTJOIN        => $ocfvalias,
+            FIELD           => 'CustomField',
+            VALUE           => $cf->id,
+            ENTRYAGGREGATOR => 'AND'
+        );
+    }
+    else {
+        ($ocfvalias, $CFs) = $self->_CustomFieldJoinByName( $ObjectAlias, $cf, $type );
+        $self->{_sql_cf_alias}{$cfkey} = $CFs;
+        $self->{_sql_object_cfv_alias}{$cfkey} = $ocfvalias;
+    }
+    $self->Limit(
+        LEFTJOIN        => $ocfvalias,
+        FIELD           => 'ObjectType',
+        VALUE           => RT::CustomField->ObjectTypeFromLookupType($type),
+        ENTRYAGGREGATOR => 'AND'
+    );
+    $self->Limit(
+        LEFTJOIN        => $ocfvalias,
+        FIELD           => 'Disabled',
+        OPERATOR        => '=',
+        VALUE           => '0',
+        ENTRYAGGREGATOR => 'AND'
+    );
+
+    return ($ocfvalias, $CFs);
+}
+
+sub _CustomFieldJoinByName {
+    my $self = shift;
+    my ($ObjectAlias, $cf, $type) = @_;
+    my $ocfalias = $self->Join(
+        TYPE       => 'LEFT',
+        EXPRESSION => q|'0'|,
+        TABLE2     => 'ObjectCustomFields',
+        FIELD2     => 'ObjectId',
+    );
+
+    my $CFs = $self->Join(
+        TYPE       => 'LEFT',
+        ALIAS1     => $ocfalias,
+        FIELD1     => 'CustomField',
+        TABLE2     => 'CustomFields',
+        FIELD2     => 'id',
+    );
+    $self->Limit(
+        LEFTJOIN        => $CFs,
+        ENTRYAGGREGATOR => 'AND',
+        FIELD           => 'LookupType',
+        VALUE           => $type,
+    );
+    $self->Limit(
+        LEFTJOIN        => $CFs,
+        ENTRYAGGREGATOR => 'AND',
+        FIELD           => 'Name',
+        CASESENSITIVE   => 0,
+        VALUE           => $cf,
+    );
+
+    my $ocfvalias = $self->Join(
+        TYPE   => 'LEFT',
+        ALIAS1 => $CFs,
+        FIELD1 => 'id',
+        TABLE2 => 'ObjectCustomFieldValues',
+        FIELD2 => 'CustomField',
+    );
+    $self->Limit(
+        LEFTJOIN        => $ocfvalias,
+        FIELD           => 'ObjectId',
+        VALUE           => "$ObjectAlias.id",
+        QUOTEVALUE      => 0,
+        ENTRYAGGREGATOR => 'AND',
+    );
+
+    return ($ocfvalias, $CFs, $ocfalias);
+}
+
 sub LimitCustomField {
+    my $self = shift;
+    return $self->_LimitCustomField( @_ );
+}
+
+use Regexp::Common qw(RE_net_IPv4);
+use Regexp::Common::net::CIDR;
+
+sub _LimitCustomField {
     my $self = shift;
     my %args = ( VALUE        => undef,
                  CUSTOMFIELD  => undef,
                  OPERATOR     => '=',
+                 KEY          => undef,
+                 PREPARSE     => 1,
                  @_ );
 
-    my $alias = $self->Join(
-        TYPE       => 'left',
-        ALIAS1     => 'main',
-        FIELD1     => 'id',
-        TABLE2     => 'ObjectCustomFieldValues',
-        FIELD2     => 'ObjectId'
-    );
+    my $op     = delete $args{OPERATOR};
+    my $value  = delete $args{VALUE};
+    my $ltype  = delete $args{LOOKUPTYPE} || $self->RecordClass->CustomFieldLookupType;
+    my $cf     = delete $args{CUSTOMFIELD};
+    my $column = delete $args{COLUMN};
+    my $cfkey  = delete $args{KEY};
+    if (blessed($cf) and $cf->id) {
+        $cfkey ||= $cf->id;
+    } elsif ($cf =~ /^\d+$/) {
+        # Intentionally load as the system user, so we can build better
+        # queries; this is necessary as we don't have a context object
+        # which might grant the user rights to see the CF.  This object
+        # is only used to inspect the properties of the CF itself.
+        my $obj = RT::CustomField->new( RT->SystemUser );
+        $obj->Load($cf);
+        if ($obj->id) {
+            $cf = $obj;
+            $cfkey ||= $cf->id;
+        } else {
+            $cfkey ||= "$ltype-$cf";
+        }
+    } else {
+        $cfkey ||= "$ltype-$cf";
+    }
+
+    $args{SUBCLAUSE} ||= "cf-$cfkey";
+
+
+    my $fix_op = sub {
+        return @_ unless RT->Config->Get('DatabaseType') eq 'Oracle';
+
+        my %args = @_;
+        return %args unless $args{'FIELD'} eq 'LargeContent';
+
+        my $op = $args{'OPERATOR'};
+        if ( $op eq '=' ) {
+            $args{'OPERATOR'} = 'MATCHES';
+        }
+        elsif ( $op eq '!=' ) {
+            $args{'OPERATOR'} = 'NOT MATCHES';
+        }
+        elsif ( $op =~ /^[<>]=?$/ ) {
+            $args{'FUNCTION'} = "TO_CHAR( $args{'ALIAS'}.LargeContent )";
+        }
+        return %args;
+    };
+
+    ########## Content pre-parsing if we know things about the CF
+    if ( blessed($cf) and delete $args{PREPARSE} ) {
+        my $type = $cf->Type;
+        if ( $type eq 'IPAddress' ) {
+            my $parsed = RT::ObjectCustomFieldValue->ParseIP($value);
+            if ($parsed) {
+                $value = $parsed;
+            } else {
+                $RT::Logger->warn("$value is not a valid IPAddress");
+            }
+        } elsif ( $type eq 'IPAddressRange' ) {
+            if ( $value =~ /^\s*$RE{net}{CIDR}{IPv4}{-keep}\s*$/o ) {
+                # convert incomplete 192.168/24 to 192.168.0.0/24 format
+                $value =
+                  join( '.', map $_ || 0, ( split /\./, $1 )[ 0 .. 3 ] ) . "/$2"
+                  || $value;
+            }
+
+            my ( $start_ip, $end_ip ) =
+              RT::ObjectCustomFieldValue->ParseIPRange($value);
+            if ( $start_ip && $end_ip ) {
+                if ( $op =~ /^<=?$/ ) {
+                    $value = $start_ip;
+                } elsif ($op =~ /^>=?$/ ) {
+                    $value = $end_ip;
+                } else {
+                    $value = join '-', $start_ip, $end_ip;
+                }
+            } else {
+                $RT::Logger->warn("$value is not a valid IPAddressRange");
+            }
+
+            # Recurse if they want a range comparison
+            if ( $op !~ /^[<>]=?$/ ) {
+                my ($start_ip, $end_ip) = split /-/, $value;
+                $self->_OpenParen( $args{SUBCLAUSE} );
+                # Ideally we would limit >= 000.000.000.000 and <=
+                # 255.255.255.255 so DB optimizers could use better
+                # estimations and scan less rows, but this breaks with IPv6.
+                if ( $op !~ /NOT|!=|<>/i ) { # positive equation
+                    $self->_LimitCustomField(
+                        %args,
+                        OPERATOR    => '<=',
+                        VALUE       => $end_ip,
+                        LOOKUPTYPE  => $ltype,
+                        CUSTOMFIELD => $cf,
+                        COLUMN      => 'Content',
+                        PREPARSE    => 0,
+                    );
+                    $self->_LimitCustomField(
+                        %args,
+                        OPERATOR    => '>=',
+                        VALUE       => $start_ip,
+                        LOOKUPTYPE  => $ltype,
+                        CUSTOMFIELD => $cf,
+                        COLUMN      => 'LargeContent',
+                        ENTRYAGGREGATOR => 'AND',
+                        PREPARSE    => 0,
+                    );
+                } else { # negative equation
+                    $self->_LimitCustomField(
+                        %args,
+                        OPERATOR    => '>',
+                        VALUE       => $end_ip,
+                        LOOKUPTYPE  => $ltype,
+                        CUSTOMFIELD => $cf,
+                        COLUMN      => 'Content',
+                        PREPARSE    => 0,
+                    );
+                    $self->_LimitCustomField(
+                        %args,
+                        OPERATOR    => '<',
+                        VALUE       => $start_ip,
+                        LOOKUPTYPE  => $ltype,
+                        CUSTOMFIELD => $cf,
+                        COLUMN      => 'LargeContent',
+                        ENTRYAGGREGATOR => 'OR',
+                        PREPARSE    => 0,
+                    );
+                }
+                $self->_CloseParen( $args{SUBCLAUSE} );
+                return;
+            }
+        } elsif ( $type =~ /^Date(?:Time)?$/ ) {
+            my $date = RT::Date->new( $self->CurrentUser );
+            $date->Set( Format => 'unknown', Value => $value );
+            if ( $date->Unix ) {
+                if (
+                       $type eq 'Date'
+                           # Heuristics to determine if a date, and not
+                           # a datetime, was entered:
+                    || $value =~ /^\s*(?:today|tomorrow|yesterday)\s*$/i
+                    || (   $value !~ /midnight|\d+:\d+:\d+/i
+                        && $date->Time( Timezone => 'user' ) eq '00:00:00' )
+                  )
+                {
+                    $value = $date->Date( Timezone => 'user' );
+                } else {
+                    $value = $date->DateTime;
+                }
+            } else {
+                $RT::Logger->warn("$value is not a valid date string");
+            }
+
+            # Recurse if day equality is being checked on a datetime
+            if ( $type eq 'DateTime' and $op eq '=' && $value !~ /:/ ) {
+                my $date = RT::Date->new( $self->CurrentUser );
+                $date->Set( Format => 'unknown', Value => $value );
+                my $daystart = $date->ISO;
+                $date->AddDay;
+                my $dayend = $date->ISO;
+
+                $self->_OpenParen( $args{SUBCLAUSE} );
+                $self->_LimitCustomField(
+                    %args,
+                    OPERATOR        => ">=",
+                    VALUE           => $daystart,
+                    LOOKUPTYPE      => $ltype,
+                    CUSTOMFIELD     => $cf,
+                    COLUMN          => 'Content',
+                    ENTRYAGGREGATOR => 'AND',
+                    PREPARSE        => 0,
+                );
+
+                $self->_LimitCustomField(
+                    %args,
+                    OPERATOR        => "<",
+                    VALUE           => $dayend,
+                    LOOKUPTYPE      => $ltype,
+                    CUSTOMFIELD     => $cf,
+                    COLUMN          => 'Content',
+                    ENTRYAGGREGATOR => 'AND',
+                    PREPARSE        => 0,
+                );
+                $self->_CloseParen( $args{SUBCLAUSE} );
+                return;
+            }
+        }
+    }
+
+    ########## Limits
+    # IS NULL and IS NOT NULL checks
+    if ( $op =~ /^IS( NOT)?$/i ) {
+        my ($ocfvalias, $CFs) = $self->_CustomFieldJoin( $cfkey, $cf, $ltype );
+        $self->_OpenParen( $args{SUBCLAUSE} );
+        $self->Limit(
+            %args,
+            ALIAS    => $ocfvalias,
+            FIELD    => ($column || 'id'),
+            OPERATOR => $op,
+            VALUE    => $value,
+        );
+        # See below for an explanation of this limit
+        $self->Limit(
+            ALIAS      => $CFs,
+            FIELD      => 'Name',
+            OPERATOR   => 'IS NOT',
+            VALUE      => 'NULL',
+            ENTRYAGGREGATOR => 'AND',
+            SUBCLAUSE  => $args{SUBCLAUSE},
+        ) if $CFs;
+        $self->_CloseParen( $args{SUBCLAUSE} );
+        return;
+    }
+
+    my $single_value = !blessed($cf) || $cf->SingleValue;
+    my $negative_op = ($op eq '!=' || $op =~ /\bNOT\b/i);
+    my $value_is_long = (length( Encode::encode_utf8($value)) > 255) ? 1 : 0;
+
+    $cfkey .= '.'. $self->{'_sql_multiple_cfs_index'}++
+        if not $single_value and $op =~ /^(!?=|(NOT )?LIKE)$/i;
+    my ($ocfvalias, $CFs) = $self->_CustomFieldJoin( $cfkey, $cf, $ltype );
+
+    # A negative limit on a multi-value CF means _none_ of the values
+    # are the given value
+    if ( $negative_op and not $single_value ) {
+        # Reverse the limit we apply to the join, and check IS NULL
+        $op =~ s/!|NOT\s+//i;
+
+        # Ideally we would check both Content and LargeContent here, as
+        # the positive searches do below -- however, we cannot place
+        # complex limits inside LEFTJOINs due to searchbuilder
+        # limitations.  Guessing which to check based on the value's
+        # string length is sufficient for !=, but sadly insufficient for
+        # NOT LIKE checks, giving false positives.
+        $column ||= $value_is_long ? 'LargeContent' : 'Content';
+        $self->Limit( $fix_op->(
+            LEFTJOIN   => $ocfvalias,
+            ALIAS      => $ocfvalias,
+            FIELD      => $column,
+            OPERATOR   => $op,
+            VALUE      => $value,
+            CASESENSITIVE => 0,
+        ) );
+        $self->Limit(
+            %args,
+            ALIAS      => $ocfvalias,
+            FIELD      => 'id',
+            OPERATOR   => 'IS',
+            VALUE      => 'NULL',
+        );
+        return;
+    }
+
+    # If column is defined, then we just search it that, with no magic
+    if ( $column ) {
+        $self->_OpenParen( $args{SUBCLAUSE} );
+        $self->Limit( $fix_op->(
+            %args,
+            ALIAS      => $ocfvalias,
+            FIELD      => $column,
+            OPERATOR   => $op,
+            VALUE      => $value,
+            CASESENSITIVE => 0,
+        ) );
+        $self->Limit(
+            ALIAS           => $ocfvalias,
+            FIELD           => $column,
+            OPERATOR        => 'IS',
+            VALUE           => 'NULL',
+            ENTRYAGGREGATOR => 'OR',
+            SUBCLAUSE       => $args{SUBCLAUSE},
+        ) if $negative_op;
+        $self->_CloseParen( $args{SUBCLAUSE} );
+        return;
+    }
+
+    $self->_OpenParen( $args{SUBCLAUSE} ); # For negative_op "OR it is null" clause
+    $self->_OpenParen( $args{SUBCLAUSE} ); # NAME IS NOT NULL clause
+
+    $self->_OpenParen( $args{SUBCLAUSE} ); # Check Content / LargeContent
+    if ($value_is_long and $op eq "=") {
+        # Doesn't matter what Content contains, as it cannot match the
+        # too-long value; we just look in LargeContent, below.
+    } elsif ($value_is_long and $op =~ /^(!=|<>)$/) {
+        # If Content is non-null, that's a valid way to _not_ contain the too-long value.
+        $self->Limit(
+            %args,
+            ALIAS    => $ocfvalias,
+            FIELD    => 'Content',
+            OPERATOR => 'IS NOT',
+            VALUE    => 'NULL',
+        );
+    } else {
+        # Otherwise, go looking at the Content
+        $self->Limit(
+            %args,
+            ALIAS    => $ocfvalias,
+            FIELD    => 'Content',
+            OPERATOR => $op,
+            VALUE    => $value,
+            CASESENSITIVE => 0,
+        );
+    }
+
+    if (!$value_is_long and $op eq "=") {
+        # Doesn't matter what LargeContent contains, as it cannot match
+        # the short value.
+    } elsif (!$value_is_long and $op =~ /^(!=|<>)$/) {
+        # If LargeContent is non-null, that's a valid way to _not_
+        # contain the too-short value.
+        $self->Limit(
+            %args,
+            ALIAS    => $ocfvalias,
+            FIELD    => 'LargeContent',
+            OPERATOR => 'IS NOT',
+            VALUE    => 'NULL',
+            ENTRYAGGREGATOR => 'OR',
+        );
+    } else {
+        $self->_OpenParen( $args{SUBCLAUSE} ); # LargeContent check
+        $self->_OpenParen( $args{SUBCLAUSE} ); # Content is null?
+        $self->Limit(
+            ALIAS           => $ocfvalias,
+            FIELD           => 'Content',
+            OPERATOR        => '=',
+            VALUE           => '',
+            ENTRYAGGREGATOR => 'OR',
+            SUBCLAUSE       => $args{SUBCLAUSE},
+        );
+        $self->Limit(
+            ALIAS           => $ocfvalias,
+            FIELD           => 'Content',
+            OPERATOR        => 'IS',
+            VALUE           => 'NULL',
+            ENTRYAGGREGATOR => 'OR',
+            SUBCLAUSE       => $args{SUBCLAUSE},
+        );
+        $self->_CloseParen( $args{SUBCLAUSE} ); # Content is null?
+        $self->Limit( $fix_op->(
+            ALIAS           => $ocfvalias,
+            FIELD           => 'LargeContent',
+            OPERATOR        => $op,
+            VALUE           => $value,
+            ENTRYAGGREGATOR => 'AND',
+            SUBCLAUSE       => $args{SUBCLAUSE},
+            CASESENSITIVE => 0,
+        ) );
+        $self->_CloseParen( $args{SUBCLAUSE} ); # LargeContent check
+    }
+
+    $self->_CloseParen( $args{SUBCLAUSE} ); # Check Content/LargeContent
+
+    # XXX: if we join via CustomFields table then
+    # because of order of left joins we get NULLs in
+    # CF table and then get nulls for those records
+    # in OCFVs table what result in wrong results
+    # as decifer method now tries to load a CF then
+    # we fall into this situation only when there
+    # are more than one CF with the name in the DB.
+    # the same thing applies to order by call.
+    # TODO: reorder joins T <- OCFVs <- CFs <- OCFs if
+    # we want treat IS NULL as (not applies or has
+    # no value)
     $self->Limit(
-        ALIAS      => $alias,
-        FIELD      => 'CustomField',
-        OPERATOR   => '=',
-        VALUE      => $args{'CUSTOMFIELD'},
-    ) if ($args{'CUSTOMFIELD'});
+        ALIAS           => $CFs,
+        FIELD           => 'Name',
+        OPERATOR        => 'IS NOT',
+        VALUE           => 'NULL',
+        ENTRYAGGREGATOR => 'AND',
+        SUBCLAUSE       => $args{SUBCLAUSE},
+    ) if $CFs;
+    $self->_CloseParen( $args{SUBCLAUSE} ); # Name IS NOT NULL clause
+
+    # If we were looking for != or NOT LIKE, we need to include the
+    # possibility that the row had no value.
     $self->Limit(
-        ALIAS      => $alias,
-        FIELD      => 'ObjectType',
-        OPERATOR   => '=',
-        VALUE      => $self->_SingularClass,
-    );
-    $self->Limit(
-        ALIAS      => $alias,
-        FIELD      => 'Content',
-        OPERATOR   => $args{'OPERATOR'},
-        VALUE      => $args{'VALUE'},
-    );
-    $self->Limit(
-        ALIAS => $alias,
-        FIELD => 'Disabled',
-        OPERATOR => '=',
-        VALUE => 0,
-    );
+        ALIAS           => $ocfvalias,
+        FIELD           => 'id',
+        OPERATOR        => 'IS',
+        VALUE           => 'NULL',
+        ENTRYAGGREGATOR => 'OR',
+        SUBCLAUSE       => $args{SUBCLAUSE},
+    ) if $negative_op;
+    $self->_CloseParen( $args{SUBCLAUSE} ); # negative_op clause
 }
 
 =head2 Limit PARAMHASH
@@ -254,10 +867,23 @@ injection attacks when we pass through user specified values.
 
 =cut
 
+my %check_case_sensitivity = (
+    groups => { 'name' => 1, domain => 1 },
+    queues => { 'name' => 1 },
+    users => { 'name' => 1, emailaddress => 1 },
+    customfields => { 'name' => 1 },
+);
+
+my %deprecated = (
+    groups => {
+        type => 'Name',
+    },
+    principals => { objectid => 'id' },
+);
+
 sub Limit {
     my $self = shift;
     my %ARGS = (
-        CASESENSITIVE => 1,
         OPERATOR => '=',
         @_,
     );
@@ -269,10 +895,7 @@ sub Limit {
         $ARGS{'VALUE'} = 'NULL';
     }
 
-    if ($ARGS{FUNCTION}) {
-        ($ARGS{ALIAS}, $ARGS{FIELD}) = split /\./, delete $ARGS{FUNCTION}, 2;
-        $self->SUPER::Limit(%ARGS);
-    } elsif ($ARGS{FIELD} =~ /\W/
+    if (($ARGS{FIELD}||'') =~ /\W/
           or $ARGS{OPERATOR} !~ /^(=|<|>|!=|<>|<=|>=
                                   |(NOT\s*)?LIKE
                                   |(NOT\s*)?(STARTS|ENDS)WITH
@@ -281,15 +904,40 @@ sub Limit {
                                   |(NOT\s*)?IN
                                   |\@\@)$/ix) {
         $RT::Logger->crit("Possible SQL injection attack: $ARGS{FIELD} $ARGS{OPERATOR}");
-        $self->SUPER::Limit(
+        %ARGS = (
             %ARGS,
             FIELD    => 'id',
             OPERATOR => '<',
             VALUE    => '0',
         );
-    } else {
-        $self->SUPER::Limit(%ARGS);
     }
+
+    my $table;
+    ($table) = $ARGS{'ALIAS'} && $ARGS{'ALIAS'} ne 'main'
+        ? ($ARGS{'ALIAS'} =~ /^(.*)_\d+$/)
+        : $self->Table
+    ;
+
+    if ( $table and $ARGS{FIELD} and my $instead = $deprecated{ lc $table }{ lc $ARGS{'FIELD'} } ) {
+        RT->Deprecated(
+            Message => "$table.$ARGS{'FIELD'} column is deprecated",
+            Instead => $instead, Remove => '4.4'
+        );
+    }
+
+    unless ( exists $ARGS{CASESENSITIVE} or (exists $ARGS{QUOTEVALUE} and not $ARGS{QUOTEVALUE}) ) {
+        if ( $ARGS{FIELD} and $ARGS{'OPERATOR'} !~ /IS/i
+            && $table && $check_case_sensitivity{ lc $table }{ lc $ARGS{'FIELD'} }
+        ) {
+            RT->Logger->warning(
+                "Case sensitive search by $table.$ARGS{'FIELD'}"
+                ." at ". (caller)[1] . " line ". (caller)[2]
+            );
+        }
+        $ARGS{'CASESENSITIVE'} = 1;
+    }
+
+    return $self->SUPER::Limit( %ARGS );
 }
 
 =head2 ItemsOrderBy
@@ -305,10 +953,10 @@ sub ItemsOrderBy {
     my $self = shift;
     my $items = shift;
   
-    if ($self->NewItem()->_Accessible('SortOrder','read')) {
+    if ($self->RecordClass->_Accessible('SortOrder','read')) {
         $items = [ sort { $a->SortOrder <=> $b->SortOrder } @{$items} ];
     }
-    elsif ($self->NewItem()->_Accessible('Name','read')) {
+    elsif ($self->RecordClass->_Accessible('Name','read')) {
         $items = [ sort { lc($a->Name) cmp lc($b->Name) } @{$items} ];
     }
 
@@ -366,6 +1014,41 @@ sub ColumnMapClassName {
     my $Class = $self->_SingularClass;
        $Class =~ s/:/_/g;
     return $Class;
+}
+
+=head2 NewItem
+
+Returns a new item based on L</RecordClass> using the current user.
+
+=cut
+
+sub NewItem {
+    my $self = shift;
+    return $self->RecordClass->new($self->CurrentUser);
+}
+
+=head2 NotSetDateToNullFunction
+
+Takes a paramhash with an optional FIELD key whose value is the name of a date
+column.  If no FIELD is provided, a literal C<?> placeholder is used so the
+caller can fill in the field later.
+
+Returns a SQL function which evaluates to C<NULL> if the FIELD is set to the
+Unix epoch; otherwise it evaluates to FIELD.  This is useful because RT
+currently stores unset dates as a Unix epoch timestamp instead of NULL, but
+NULLs are often more desireable.
+
+=cut
+
+sub NotSetDateToNullFunction {
+    my $self = shift;
+    my %args = ( FIELD => undef, @_ );
+
+    my $res = "CASE WHEN ? BETWEEN '1969-12-31 11:59:59' AND '1970-01-01 12:00:01' THEN NULL ELSE ? END";
+    if ( $args{FIELD} ) {
+        $res = $self->CombineFunctionWithField( %args, FUNCTION => $res );
+    }
+    return $res;
 }
 
 RT::Base->_ImportOverlays();

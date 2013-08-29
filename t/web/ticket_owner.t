@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 105;
+use RT::Test nodata => 1, tests => undef;
 
 my $queue = RT::Test->load_or_create_queue( Name => 'Regression' );
 ok $queue && $queue->id, 'loaded or created queue';
@@ -10,12 +10,18 @@ ok $queue && $queue->id, 'loaded or created queue';
 my $user_a = RT::Test->load_or_create_user(
     Name => 'user_a', Password => 'password',
 );
-ok $user_a && $user_a->id, 'loaded or created user';
+ok $user_a && $user_a->id, 'loaded or created user: ' . $user_a->Name;
 
 my $user_b = RT::Test->load_or_create_user(
     Name => 'user_b', Password => 'password',
 );
-ok $user_b && $user_b->id, 'loaded or created user';
+ok $user_b && $user_b->id, 'loaded or created user: ' . $user_b->Name;
+
+# To give ReassignTicket
+my $user_c = RT::Test->load_or_create_user(
+    Name => 'user_c', Password => 'password',
+);
+ok $user_c && $user_c->id, 'loaded or created user: ' . $user_c->Name;
 
 my ($baseurl, $agent_a) = RT::Test->started_ok;
 
@@ -360,6 +366,7 @@ ok(
             ]
         },
         { Principal => $user_b, Right => [qw(SeeQueue ShowTicket OwnTicket)] },
+        { Principal => $user_c, Right => [qw(SeeQueue ShowTicket ReassignTicket)] },
     ),
     'set rights'
 );
@@ -383,10 +390,12 @@ diag
         fields    => { Owner => $user_a->id },
         button => 'SubmitTicket',
     );
-    $agent_a->content_like( qr{<a\b[^>]+>user_a</a>\s+-\s+Taken}, 'got user_a Taken message' );
+    like($agent_a->dom->at('.transaction.people .description')->all_text,
+         qr/user_a\s*-\s*Taken/, 'got user_a Taken message' );
 
     $agent_b->goto_ticket($id);
-    $agent_b->content_like( qr{<a\b[^>]+>user_a</a>\s+-\s+Taken}, 'got user_a Taken message for user b ' );
+    like($agent_b->dom->at('.transaction.people .description')->all_text,
+         qr/user_a\s*-\s*Taken/, 'got user_a Taken message for user b' );
 }
 
 diag
@@ -410,9 +419,58 @@ diag
     $agent_a->content_contains( 'Owner changed from Nobody to user_a',
         'got set message in Basics' );
     $agent_a->goto_ticket($id);
-    $agent_a->content_like( qr{<a\b[^>]+>user_a</a>\s+-\s+Taken}, 'got user_a Taken message' );
+    like($agent_a->dom->at('.transaction.people .description')->all_text,
+         qr/user_a\s*-\s*Taken/, 'got user_a Taken message' );
 
     $agent_b->goto_ticket($id);
-    $agent_b->content_like( qr{<a\b[^>]+>user_a</a>\s+-\s+Taken}, 'got user_a Taken message for user b ' );
+    like($agent_b->dom->at('.transaction.people .description')->all_text,
+         qr/user_a\s*-\s*Taken/, 'got user_a Taken message for user b' );
 }
 
+my $agent_c = RT::Test::Web->new;
+ok $agent_c->login('user_c', 'password'), 'logged in as user C';
+
+diag "user can assign ticket to new owner with ReassignTicket right";
+{
+    my $ticket = RT::Ticket->new($user_a);
+    my ( $id, $txn, $msg ) = $ticket->Create(
+        Queue   => $queue->id,
+        Subject => 'test',
+    );
+    ok $id, 'created a ticket #' . $id or diag "error: $msg";
+    is $ticket->Owner, RT->Nobody->id, 'correct owner';
+
+    $agent_a->goto_ticket($id);
+    $agent_a->content_lacks('Taken', 'no Taken');
+    $agent_a->follow_link_ok( { text => 'Basics' }, 'Ticket -> Basics' );
+    $agent_a->submit_form(
+        form_name => 'TicketModify',
+        fields    => { Owner => $user_a->id },
+    );
+    $agent_a->content_contains( 'Owner changed from Nobody to user_a',
+        'got set message in Basics' );
+    $agent_a->goto_ticket($id);
+    like($agent_a->dom->at('.transaction.people .description')->all_text,
+         qr{user_a\s*-\s*Taken}, 'got user_a Taken message' );
+
+    $agent_c->goto_ticket($id);
+    $agent_c->follow_link_ok( { text => 'Basics' }, 'Ticket -> Basics' );
+    my $form = $agent_c->form_name('TicketModify');
+    is $form->value('Owner'), $user_a->id, 'correct owner selected';
+
+    ok grep($_ == $user_b->id,  $form->find_input('Owner')->possible_values),
+        'user B is listed as potential owner';
+    $agent_c->select('Owner', $user_b->id);
+    $agent_c->submit;
+    $agent_c->content_contains( 'Owner changed from user_a to user_b',
+        'got set message in Basics' );
+    $agent_c->goto_ticket($id);
+    $agent_c->content_like( qr{Owner forcibly changed}, 'got owner forcibly changed message' );
+
+}
+
+
+undef $agent_a;
+undef $agent_b;
+undef $agent_c;
+done_testing;

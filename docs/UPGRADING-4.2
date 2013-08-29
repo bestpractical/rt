@@ -1,90 +1,266 @@
-UPGRADING FROM RT 4.0.0 and greater
+=head1 UPGRADING FROM RT 4.0.0 and greater
 
-* The $UseSQLForACLChecks option defaults to on.  This provides a number
-  of improvements, most notably no longer showing pages of empty results
-  if the user doesn't have permissions to view the tickets in question.
-  It may, in some cases, have performance impacts, but these have been
-  found to be minimal in existing 4.0 installs.
+The 4.2 release is a major upgrade and as such there are more changes
+than in a minor bugfix release (e.g., 4.0.13 to 4.0.14) and some of these
+changes are backward-incompatible. The following lists some of the notable
+changes, especially those that might require you to change a configuration
+option or other setting due to a change in RT. Read this section carefully
+before you upgrade and look for changes to features you currently use.
 
-* The $LogToScreen config setting is now named $LogToSTDERR which better
-  describes what the log level controls.  Setting $LogToScreen will still work,
-  but an informational notice will be issued on server start telling you about
-  the rename.  To avoid this you should set $LogToSTDERR instead.
+=over
 
-* The link direction and type maps are consolidated into RT::Link.  If you
-  wrote local customizations or extensions utilizing %RT::Ticket::LINKDIRMAP,
-  %RT::Ticket::LINKTYPEMAP, RT::Ticket->LINKDIRMAP, RT::Ticket->LINKTYPEMAP, or
-  %RT::Record::LINKDIRMAP, you will need to switch to %RT::Link::DIRMAP and
-  %RT::Link::TYPEMAP.
+=item *
 
-* $LinkTransactionsRun1Scrip is removed.  If you were relying on this behaviour
-  (by setting it to 1), you should adjust your scrips to ignore one of the link
-  transactions.
+The L<RT_Config/$UseSQLForACLChecks> option defaults to on.  This provides
+a number of improvements, most notably no longer showing pages of empty results
+if the user doesn't have permissions to view the tickets in question.
+It may, in some cases, have performance impacts, but these have been
+found to be minimal in existing 4.0 installs.
 
-* The $AttachmentUnits option was removed in preference of always displaying in
-  megabytes, kilobytes, or bytes as appropriate.  The option was incompletely
-  implemented and controlled display in the attachments list but not history.
+=item *
 
-* MakeClicky handlers added via a callback are now passed an "object" key in
-  the parameter hash instead of "ticket".  The object may be any RT::Record
-  subclass.
+The C<$LogToScreen> config setting is now named
+L<< "C<$LogToSTDERR>"|RT_Config/"$LogToSyslog, $LogToSTDERR" >> which
+better describes what the log level controls.  Setting C<$LogToScreen> will
+still work, but an informational notice will be issued on server start telling
+you about the rename.  To avoid this you should set C<$LogToSTDERR> instead.
 
-* $MessageBoxWrap was removed.  Wrapping is now always SOFT.  If you want hard
-  line breaks, enter them manually.
+=item *
 
-* ShowUser handlers (/Elements/ShowUser*) have moved out of Mason components
-  and into RT::User methods.  Any custom username formats will need to be
-  reimplemented as RT::User methods.  Renaming should follow that of the core
-  components:
+The link direction and type maps are consolidated into RT::Link.  If you
+wrote local customizations or extensions utilizing C<%RT::Ticket::LINKDIRMAP>,
+C<%RT::Ticket::LINKTYPEMAP>, C<RT::Ticket-E<gt>LINKDIRMAP>,
+C<RT::Ticket-E<gt>LINKTYPEMAP>, or C<%RT::Record::LINKDIRMAP>, you will need to
+switch to C<%RT::Link::DIRMAP> and C<%RT::Link::TYPEMAP>.
 
-        /Elements/ShowUserConcise => RT::User->_FormatUserConcise
-        /Elements/ShowUserVerbose => RT::User->_FormatUserVerbose
+=item *
 
-  The _FormatUser* methods are passed a hash containing the keys User and
-  Address, which have the same properties as before.
+C<$LinkTransactionsRun1Scrip> is removed.  If you were relying on this behavior
+(by setting it to 1), you should adjust your scrips to ignore one of the link
+transactions.
 
-* Rich text (HTML) messages are now preferred for display.  If you prefer plain
-  text messages, set $PreferRichText to 0.
+=item *
 
-* User email addresses are now validated by default and multiple,
-  comma-separated addresses for a single user are no longer allowed.  Existing
-  users with invalid addresses will continue to work until the next time they
-  are updated by an administrator on the modify user page.  If you prefer no
-  address validation, set $ValidateUserEmailAddresses to 0.
+The C<$AttachmentUnits> option was removed in preference of always displaying in
+megabytes, kilobytes, or bytes as appropriate.  The option was incompletely
+implemented and controlled display in the attachments list but not history.
 
-* The 'smtp' value for $MailCommand, along with the associated
-  $SMTPServer, $SMTPFrom, and $SMTPDebug options, has been removed
-  because it did not guarantee delivery.  Instead, use a local MTA for
-  outgoing mail, via the 'sendmailpipe' setting to $MailCommand.
+=item *
 
-* The @JSFiles config now only keeps additional JavaScript filenames; if
-  you had copied @JSFiles to add extra entries in your RT_SiteConfig,
-  remove the core JS from the list, or RT will serve those files
-  multiple times.
+MakeClicky handlers added via a callback are now passed an "object" key in
+the parameter hash instead of "ticket".  The object may be any L<RT::Record>
+subclass.
 
-* The $DeferTransactionLoading was combined into the new option $ShowHistory.
-  If you had enabled $DeferTransactionLoading, you may want to set $ShowHistory
-  to "click".  However, $ShowHistory provides a new mode, "delay", which is the
-  default and may be a more appealing alternative to "click".
+=item *
 
-* A Status transaction is now recorded when a ticket status changes as a
-  result of a queue change.  Scrips with conditions relying on Status changes
-  may start to trigger on these transitions; previously these Status changes
-  never triggered scrips.
+C<$MessageBoxWrap> was removed.  Wrapping is now always C<SOFT>.  If you want hard
+line breaks, enter them manually.
 
-* The Googleish search has been renamed to Simple. If you were
-  using this in an rt-crontool cronjob or had used a
-  Googleish_Local.pm to add features, you will need to convert to
-  using RT::Search::Simple instead.
+=item *
 
-* RT was recording additional time change transactions during merge, so
-  difference in ticket's history doesn't add up value on ticket. This has
-  been fixed, time is adjusted during merge, but now transactions are recorded.
+C<ShowUser> handlers (C</Elements/ShowUser*>) have moved out of Mason components
+and into C<RT::User> methods.  Any custom username formats will need to be
+reimplemented as C<RT::User> methods.  Renaming should follow that of the core
+components:
 
-  In order to fix history records of old ticket you can run the following
-  command:
+    /Elements/ShowUserConcise => RT::User->_FormatUserConcise
+    /Elements/ShowUserVerbose => RT::User->_FormatUserVerbose
+
+The C<_FormatUser*> methods are passed a hash containing the keys C<User> and
+C<Address>, which have the same properties as before.
+
+=item *
+
+Rich text (HTML) messages are now preferred for display.  If you prefer plain
+text messages, set L<RT_Config/$PreferRichText> to 0.
+
+=item *
+
+User email addresses are now validated by default and multiple,
+comma-separated addresses for a single user are no longer allowed.  Existing
+users with invalid addresses will continue to work until the next time they
+are updated by an administrator on the modify user page.  If you prefer no
+address validation, set L<RT_Config/$ValidateUserEmailAddresses> to 0.
+
+=item *
+
+The C<smtp> option for L<RT_Config/$MailCommand>, along with the associated
+C<$SMTPServer>, C<$SMTPFrom>, and C<$SMTPDebug> options, has been removed
+because it did not guarantee delivery.  Instead, use a local MTA for
+outgoing mail, via the 'sendmailpipe' setting to C<$MailCommand>.
+
+=item *
+
+The L<RT_Config/@JSFiles> config now only keeps additional JavaScript filenames; if
+you had copied C<@JSFiles> to add extra entries in your C<RT_SiteConfig.pm>,
+remove the core JS from the list, or RT will serve those files
+multiple times.
+
+=item *
+
+The C<$DeferTransactionLoading> option was combined into the new option
+L<RT_Config/$ShowHistory>. If you had enabled C<$DeferTransactionLoading>,
+you may want to set C<$ShowHistory> to C<click>.  However, C<$ShowHistory>
+provides a new mode, C<delay>, which is the default and may be a more
+appealing alternative to C<click>.
+
+=item *
+
+A C<Status> transaction is now recorded when a ticket status changes as a
+result of a queue change.  Scrips with conditions relying on Status changes
+may start to trigger on these transitions; previously these Status changes
+never triggered scrips.
+
+=item *
+
+The C<Googleish> search has been renamed to C<Simple>. If you were
+using this in an L<< C<rt-crontool> >> cronjob or had used a
+C<Googleish_Local.pm> to add features, you will need to convert to
+using L<RT::Search::Simple> instead.
+
+=item *
+
+On merge, RT retains transactions from both tickets. Previously, RT
+also recorded explicit time change transactions during a
+merge to adjust the total time spent. This caused the total time
+spent, as summed from transactions, to be different from the ticket's
+overall time spent. This has been fixed: time is adjusted during the
+merge commit itself, removing the need for the confusing
+extra transactions, and keeping the summed time spent consistent.
+
+In order to fix the history records of old ticket you can run the following
+command:
 
     perl -I /opt/rt4/local/lib/ -I /opt/rt4/lib/ etc/upgrade/time-worked-history.pl
 
-  This command deletes records from Transactions table. This script can only fix
-  TimeWorked mismatch, but not TimeLeft or TimeEstimated.
+This command deletes records from the Transactions table. This script can only fix
+TimeWorked mismatches, but not TimeLeft or TimeEstimated.
+
+=item *
+
+A new action, "Open Inactive Tickets", has been added, and on new
+installs the default scrip "On Correspond Open Tickets" has been
+replaced by "On Correspond Open Inactive Tickets".  The key difference
+between "Open Tickets" and "Open Inactive Tickets" is that the latter
+will not adjust the status of a ticket if it is already active.  This
+is particularly useful when creating complex workflows using
+Lifecycles.
+
+=item *
+
+CSS is no longer processed through Mason; it's served by a proper static file
+handler.  If you used the C<Begin> or C<End> callbacks of C<main.css> in the
+aileron, web2, or ballard themes, you should transition to the
+L<RT_Config/@CSSFiles> config option. If you need to target specific themes,
+you can use the class set on the E<lt>C<body>E<gt> element (for example:
+body.aileron).  See F<docs/customizing/styling_rt.pod> for more information
+on custom styles.
+
+=item *
+
+There are now HTML versions of the standard plain text templates.  Running
+make upgrade as described in the F<README> will insert the new templates into
+existing installs.  While new installs use the HTML templates by default,
+upgrades from older versions don't automatically switch to the HTML versions.
+To switch existing scrips, run:
+
+    /opt/rt4/etc/upgrade/switch-templates-to html
+
+To switch from HTML back to text, run:
+
+    /opt/rt4/etc/upgrade/switch-templates-to text
+
+=item *
+
+The Articles menu is now a top-level menu item and display is controlled by
+the right C<ShowArticlesMenu>.  This right is only grantable globally to groups
+or users.  During the upgrade, the new right will be automatically granted to
+Privileged users so that the menu doesn't disappear for anyone previously
+using it.  You may wish to revoke the right from Privileged and grant it
+more selectively.
+
+=item *
+
+The Owner drop-down now only includes privileged users (no matter if
+unprivileged users have been granted the OwnTicket right) because
+configurations which have unprivileged Owners are exceedingly rare,
+and granting Everyone the OwnTicket right is a common cause of
+performance problems.  Unprivileged Owners (if they exist) may still
+be set using the Autocompleter.
+
+=item *
+
+The functionality that changed the ticket status to Open when the Started
+date is set has been moved to a Scrip called 'On transaction and SetStarted
+Open Ticket'. If you do not depend on this functionality, the Scrip can
+be deleted.
+
+=item *
+
+New installs will notify Ccs and one-time Ccs/Bccs on create and Owners on
+create and correspond.  Upgraded installations will not.  If you'd like to
+adjust your scrips to match the new install behavior, create and edit the
+following scrips from the admin scrip page:
+
+To notify Ccs on create, on the 'Create a global scrip' page:
+
+  Description: On Create Notify Ccs
+  Condition:   On Create
+  Action:      Notify Ccs
+  Template:    Correspondence in HTML
+
+To notify one-time Ccs/Bccs on create, on the 'Create a global scrip' page:
+
+  Description: On Create Notify Other Recipients
+  Condition:   On Create
+  Action:      Notify Other Recipients
+  Template:    Correspondence in HTML
+
+To notify Owners on create, click 'On Create Notify AdminCcs'. Change the
+fields listed below to their corresponding values:
+
+  Description: On Create Notify Owner and AdminCcs
+  Action:      Notify Owner and AdminCcs
+
+To notify Owners on correspond, click 'On Correspond Notify AdminCcs'. Change
+the fields listed below to their corresponding values:
+
+  Description: On Correspond Notify Owner and AdminCcs
+  Action:      Notify Owner and AdminCcs
+
+=item *
+
+Notifications to AdminCcs on approvals are now handled via the New Pending
+Approval template in the hidden ___Approvals queue.  If you customized the
+Transaction template, you should port your changes to New Pending Approval.
+
+=item *
+
+On Oracle, sessions are now stored in the database by default instead of
+on-disk.  If you wish to preserve the original behavior, ensure that
+L<RT_Config/$WebSessionClass> is set in your C<RT_SiteConfig.pm>:
+
+    Set($WebSessionClass, "Apache::Session::File");
+
+=item *
+
+Configuration options dealing with "external authentication" have been
+renamed to reduce confusion with the common extension
+L<RT::Authen::ExternalAuth>.  The old names will work, but produce
+deprecation warnings.  The old names, and their new counterparts, are:
+
+    WebExternalAuth           => WebRemoteUserAuth
+    WebExternalAuthContinuous => WebRemoteUserContinuous
+    WebFallbackToInternalAuth => WebFallbackToRTLogin
+    WebExternalGecos          => WebRemoteUserGecos
+    WebExternalAuto           => WebRemoteUserAutocreate
+    AutoCreate                => UserAutocreateDefaultsOnLogin
+
+=item *
+
+Due to many long-standing bugs and limitations, the "Offline Tool" was
+removed.
+
+=back
+
+=cut

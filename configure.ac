@@ -397,6 +397,7 @@ AC_CONFIG_FILES([
                  etc/upgrade/generate-rtaddressregexp
                  etc/upgrade/upgrade-articles
                  etc/upgrade/vulnerable-passwords
+                 etc/upgrade/switch-templates-to
                  sbin/rt-attributes-viewer
                  sbin/rt-preferences-viewer
                  sbin/rt-session-viewer

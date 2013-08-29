@@ -122,7 +122,7 @@ sub Add {
         return ( 0, $self->loc( "Failed to load ticket [_1]", $self->Ticket ) );
     }
 
-    if ( $ticket->Status eq 'deleted' ) {
+    if ( lc $ticket->Status eq 'deleted' ) {
         return ( 0, $self->loc("Can't link to a deleted ticket") );
     }
 
@@ -145,6 +145,7 @@ sub Add {
         RefersTo => $self->Ticket,
         Type => 'reminder',
         Queue => $self->TicketObj->Queue,
+        Status => $self->TicketObj->QueueObj->LifecycleObj->ReminderStatusOnOpen,
     );
     $self->TicketObj->_NewTransaction(
         Type => 'AddReminder',

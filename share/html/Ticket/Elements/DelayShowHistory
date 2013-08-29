@@ -67,16 +67,12 @@ jQuery(function(){
 <%ARGS>
 $Ticket
 </%ARGS>
-<%ONCE>
-require JSON;
-</%ONCE>
 <%INIT>
 my %params = %ARGS;
 delete $params{Ticket};
 
-my $url = JSON::to_json(
+my $url = JSON(
     RT->Config->Get('WebPath') . "/Helpers/TicketHistory?".
-        $m->comp('/Elements/QueryString', %params, id => $Ticket->id ),
-    { allow_nonref => 1 }
+        $m->comp('/Elements/QueryString', %params, id => $Ticket->id )
 );
 </%INIT>

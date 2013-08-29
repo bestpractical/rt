@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%init>
 if (keys %session) {
-    tied(%session)->delete;
+    RT::Interface::Web::InstantiateNewSession();
     $session{'CurrentUser'} = RT::CurrentUser->new;
 }
 RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."m/");

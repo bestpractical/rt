@@ -1,0 +1,11 @@
+.comment { 
+ padding-left: 0.5em;
+ color: #999;
+
+}
+
+#comp-Ticket-ShowEmailRecord #body {
+    margin-left: 1em;
+    margin-top: 1em;
+    overflow: auto;
+} 

@@ -192,23 +192,14 @@ sub LimitToObject {
     unless (eval { $obj->id} ){
         return undef;
     }
-    $self->Limit(FIELD => 'ObjectType', OPERATOR=> '=', VALUE => ref($obj), ENTRYAGGREGATOR => 'OR');
+
+    my $type = $obj->isa("RT::CurrentUser") ? "RT::User" : ref($obj);
+
+    $self->Limit(FIELD => 'ObjectType', OPERATOR=> '=', VALUE => $type, ENTRYAGGREGATOR => 'OR');
     $self->Limit(FIELD => 'ObjectId', OPERATOR=> '=', VALUE => $obj->id, ENTRYAGGREGATOR => 'OR', QUOTEVALUE => 0);
 
 }
 
-
-
-=head2 NewItem
-
-Returns an empty new RT::Attribute item
-
-=cut
-
-sub NewItem {
-    my $self = shift;
-    return(RT::Attribute->new($self->CurrentUser));
-}
 RT::Base->_ImportOverlays();
 
 1;

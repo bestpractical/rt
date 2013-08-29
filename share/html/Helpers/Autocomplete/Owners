@@ -65,9 +65,6 @@ $m->abort unless defined $return
 
 my $CurrentUser = $session{'CurrentUser'};
 
-my %fields = %{ RT->Config->Get('UserSearchFields')
-                || { EmailAddress => 1, Name => 1, RealName => 'LIKE' } };
-
 my %user_uniq_hash;
 my $isSU = $session{CurrentUser}
     ->HasRight( Right => 'SuperUser', Object => $RT::System );
@@ -89,22 +86,13 @@ foreach my $spec (map { [split /\-/, $_, 2] } split /\|/, $limit) {
     }
 
     my $Users = RT::Users->new( $session{CurrentUser} );
-    $Users->RowsPerPage( $max );
-
     # Limit by our autocomplete term BEFORE we limit to OwnTicket because that
     # does a funky union hack
-    while (my ($name, $op) = each %fields) {
-        $op = 'STARTSWITH'
-            unless $op =~ /^(?:LIKE|(?:START|END)SWITH)$/i;
-
-        $Users->Limit(
-            FIELD           => $name,
-            OPERATOR        => $op,
-            VALUE           => $term,
-            ENTRYAGGREGATOR => 'OR',
-            SUBCLAUSE       => 'autocomplete',
-        );
-    }
+    $Users->SimpleSearch(
+        Max    => $max,
+        Term   => $term,
+        Return => $return,
+    );
 
     $Users->WhoHaveRight(
         Right               => 'OwnTicket',

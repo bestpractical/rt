@@ -86,12 +86,11 @@ sub _Init {
                     FIELD => 'Name',
                     ORDER => 'ASC' );
 
-    $self->{'princalias'} = $self->NewAlias('Principals');
-
     # XXX: should be generalized
-    $self->Join( ALIAS1 => 'main',
+    $self->{'princalias'} = $self->Join(
+                 ALIAS1 => 'main',
                  FIELD1 => 'id',
-                 ALIAS2 => $self->{'princalias'},
+                 TABLE2 => 'Principals',
                  FIELD2 => 'id' );
     $self->Limit( ALIAS => $self->{'princalias'},
                   FIELD => 'PrincipalType',
@@ -163,7 +162,7 @@ that email address
 sub LimitToEmail {
     my $self = shift;
     my $addr = shift;
-    $self->Limit( FIELD => 'EmailAddress', VALUE => "$addr" );
+    $self->Limit( FIELD => 'EmailAddress', VALUE => $addr, CASESENSITIVE => 0 );
 }
 
 
@@ -226,7 +225,7 @@ sub LimitToUnprivileged {
 sub Limit {
     my $self = shift;
     my %args = @_;
-    $args{'CASESENSITIVE'} = 0 unless exists $args{'CASESENSITIVE'};
+    $args{'CASESENSITIVE'} = 0 unless exists $args{'CASESENSITIVE'} or $args{'ALIAS'};
     return $self->SUPER::Limit( %args );
 }
 
@@ -440,7 +439,9 @@ sub WhoHaveRoleRight
                   VALUE => RT->SystemUser->id
                 );
 
-    $self->_AddSubClause( "WhichRole", "(". join( ' OR ', map "$groups.Type = '$_'", @roles ) .")" );
+    $self->_AddSubClause( "WhichRole", "(". join( ' OR ',
+        map $RT::Handle->__MakeClauseCaseInsensitive("$groups.Name", '=', "'$_'"), @roles
+    ) .")" );
 
     my @groups_clauses = $self->_RoleClauses( $groups, @objects );
     $self->_AddSubClause( "WhichObject", "(". join( ' OR ', @groups_clauses ) .")" )
@@ -460,7 +461,7 @@ sub _RoleClauses {
         my $id;
         $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
 
-        my $role_clause = "$groups.Domain = '$type-Role'";
+        my $role_clause = $RT::Handle->__MakeClauseCaseInsensitive("$groups.Domain", '=', "'$type-Role'");
         $role_clause   .= " AND $groups.Instance = $id" if $id;
         push @groups_clauses, "($role_clause)";
     }
@@ -610,13 +611,24 @@ sub SimpleSearch {
         $op = 'STARTSWITH'
         unless $op =~ /^(?:LIKE|(?:START|END)SWITH|=|!=)$/i;
 
-        $self->Limit(
-            FIELD           => $name,
-            OPERATOR        => $op,
-            VALUE           => $args{Term},
-            ENTRYAGGREGATOR => 'OR',
-            SUBCLAUSE       => 'autocomplete',
-        );
+        if ($name =~ /^CF\.(?:\{(.*)}|(.*))$/) {
+            my $cfname = $1 || $2;
+            $self->LimitCustomField(
+                CUSTOMFIELD     => $cfname,
+                OPERATOR        => $op,
+                VALUE           => $args{Term},
+                ENTRYAGGREGATOR => 'OR',
+                SUBCLAUSE       => 'autocomplete',
+            );
+        } else {
+            $self->Limit(
+                FIELD           => $name,
+                OPERATOR        => $op,
+                VALUE           => $args{Term},
+                ENTRYAGGREGATOR => 'OR',
+                SUBCLAUSE       => 'autocomplete',
+            );
+        }
     }
 
     # Exclude users we don't want
@@ -644,17 +656,6 @@ sub SimpleSearch {
     return $self;
 }
 
-
-=head2 NewItem
-
-Returns an empty new RT::User item
-
-=cut
-
-sub NewItem {
-    my $self = shift;
-    return(RT::User->new($self->CurrentUser));
-}
 RT::Base->_ImportOverlays();
 
 1;

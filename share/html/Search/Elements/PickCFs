@@ -49,16 +49,6 @@
 <& ConditionRow, Condition => $_ &>
 % }
 <%INIT>
-my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
-foreach my $id (keys %queues) {
-    # Gotta load up the $queue object, since queues get stored by name now.
-    my $queue = RT::Queue->new($session{'CurrentUser'});
-    $queue->Load($id);
-    $CustomFields->LimitToQueue($queue->Id) if $queue->Id;
-}
-$CustomFields->LimitToGlobal;
-$CustomFields->OrderBy( FIELD => 'Name', ORDER => 'ASC' );
-
 $m->callback(
     CallbackName => 'MassageCustomFields',
     CustomFields => $CustomFields,
@@ -68,7 +58,7 @@ $m->callback(
 my @lines;
 while ( my $CustomField = $CustomFields->Next ) {
     my %line;
-    $line{'Name'} = "CF.{" . $CustomField->Name . "}";
+    $line{'Name'} = "$TicketSQLField.{" . $CustomField->Name . "}";
     $line{'Field'} = $CustomField->Name;
 
     # Op
@@ -98,20 +88,11 @@ while ( my $CustomField = $CustomFields->Next ) {
     }
 
     # Value
-    if ($CustomField->Type =~ /^Date(Time)?$/) {
-        my $is_datetime = $1 ? 1 : 0;
-        $line{'Value'} = {
-            Type => 'component',
-            Path => '/Elements/SelectDate',
-            Arguments => { $is_datetime ? (ShowTime => 1) : (ShowTime => 0), },
-        };
-    } else {
-        $line{'Value'} = {
-            Type => 'component',
-            Path => '/Elements/SelectCustomFieldValue',
-            Arguments => { CustomField => $CustomField },
-        };
-    }
+    $line{'Value'} = {
+        Type => 'component',
+        Path => '/Elements/SelectCustomFieldValue',
+        Arguments => { CustomField => $CustomField },
+    };
 
     push @lines, \%line;
 }
@@ -122,4 +103,6 @@ $m->callback( Conditions => \@lines, Queues => \%queues );
 
 <%ARGS>
 %queues => ()
+$CustomFields
+$TicketSQLField => 'CF'
 </%ARGS>

@@ -205,20 +205,32 @@ is ($t1->Requestors->MembersObj->Count, 2);
 
 }
 
+diag "Test owner changes";
 {
 
 my $root = RT::User->new(RT->SystemUser);
 $root->Load('root');
 ok ($root->Id, "Loaded the root user");
 my $t = RT::Ticket->new(RT->SystemUser);
-$t->Load(1);
-$t->SetOwner('root');
+my ($val, $msg) = $t->Create( Subject => 'Owner test 1', Queue => 'General');
+ok( $t->Id, "Created a new ticket with id $val: $msg");
+
+($val, $msg) = $t->SetOwner('bogususer');
+ok( !$val, "Can't set owner to bogus user");
+is( $msg, "That user does not exist", "Got message: $msg");
+
+($val, $msg) = $t->SetOwner('root');
 is ($t->OwnerObj->Name, 'root' , "Root owns the ticket");
+
+($val, $msg) = $t->SetOwner('root');
+ok( !$val, "User already owns ticket");
+is( $msg, "That user already owns that ticket", "Got message: $msg");
+
 $t->Steal();
 is ($t->OwnerObj->id, RT->SystemUser->id , "SystemUser owns the ticket");
 my $txns = RT::Transactions->new(RT->SystemUser);
 $txns->OrderBy(FIELD => 'id', ORDER => 'DESC');
-$txns->Limit(FIELD => 'ObjectId', VALUE => '1');
+$txns->Limit(FIELD => 'ObjectId', VALUE => $t->Id);
 $txns->Limit(FIELD => 'ObjectType', VALUE => 'RT::Ticket');
 $txns->Limit(FIELD => 'Type', OPERATOR => '!=',  VALUE => 'EmailRecord');
 
@@ -226,6 +238,37 @@ my $steal  = $txns->First;
 is($steal->OldValue , $root->Id , "Stolen from root");
 is($steal->NewValue , RT->SystemUser->Id , "Stolen by the systemuser");
 
+ok(my $user1 = RT::User->new(RT->SystemUser), "Creating a user1 rt::user");
+($val, $msg) = $user1->Create(Name => 'User1', EmailAddress => 'user1@example.com');
+ok( $val, "Created new user with id: $val");
+ok( $user1->Id,  "Found the user1 rt user");
+
+my $t1 = RT::Ticket->new($user1);
+($val, $msg) = $t1->Load($t->Id);
+ok( $t1->Id, "Loaded ticket with id $val");
+
+($val, $msg) = $t1->SetOwner('root');
+ok( !$val, "user1 can't set owner to root: $msg");
+is ($t->OwnerObj->id, RT->SystemUser->id , "SystemUser still owns ticket " . $t1->Id);
+
+my $queue = RT::Queue->new(RT->SystemUser);
+$queue->Load("General");
+
+($val, $msg) = $user1->PrincipalObj->GrantRight(
+         Object => $queue, Right => 'ModifyTicket'
+     );
+
+($val, $msg) = $t1->SetOwner('root');
+ok( !$val, "With ModifyTicket user1 can't set owner to root: $msg");
+is ($t->OwnerObj->id, RT->SystemUser->id , "SystemUser still owns ticket " . $t1->Id);
+
+($val, $msg) = $user1->PrincipalObj->GrantRight(
+         Object => $queue, Right => 'ReassignTicket'
+     );
+
+($val, $msg) = $t1->SetOwner('root');
+ok( $val, "With ReassignTicket user1 reassigned ticket " . $t1->Id . " to root: $msg");
+is ($t1->OwnerObj->Name, 'root' , "Root owns ticket " . $t1->Id);
 
 }
 
@@ -257,6 +300,34 @@ ok( $dep->id, $dep_msg );
 ($id, $msg) = $tt->SetStatus('rejected');
 ok( $id, $msg );
 
+}
+
+diag("Test ticket types with different cases");
+{
+    my $t = RT::Ticket->new(RT->SystemUser);
+    my ($ok) = $t->Create(
+        Queue => 'general',
+        Subject => 'type test',
+        Type => 'Ticket',
+    );
+    ok($ok, "Ticket allows passing upper-case Ticket as type during Create");
+    is($t->Type, "ticket", "Ticket type is lowercased during create");
+
+    ($ok) = $t->SetType("REMINDER");
+    ok($ok, "Ticket allows passing upper-case REMINDER to SetType");
+    is($t->Type, "reminder", "Ticket type is lowercased during set");
+
+    ($ok) = $t->SetType("OTHER");
+    ok($ok, "Allows setting Type to non-RT types");
+    is($t->Type, "OTHER", "Non-RT types are case-insensitive");
+
+    ($ok) = $t->Create(
+        Queue => 'general',
+        Subject => 'type test',
+        Type => 'Approval',
+    );
+    ok($ok, "Tickets can be created with an upper-case Approval type");
+    is($t->Type, "approval", "Approvals, the third and final internal type, are also lc'd during Create");
 }
 
 done_testing;

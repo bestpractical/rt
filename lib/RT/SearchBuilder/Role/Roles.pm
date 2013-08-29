@@ -83,7 +83,7 @@ limiting on L<RT::Queue> roles while searching for L<RT::Ticket>s.
 
 The default implementation is:
 
-    blessed($self->NewItem)
+    $self->RecordClass
 
 which is the class that this collection object searches and instatiates objects
 for.  If you're doing something hinky, you may need to override this method.
@@ -92,17 +92,23 @@ for.  If you're doing something hinky, you may need to override this method.
 
 sub _RoleGroupClass {
     my $self = shift;
-    return blessed($self->NewItem);
+    return $self->RecordClass;
 }
 
 sub _RoleGroupsJoin {
     my $self = shift;
-    my %args = (New => 0, Class => '', Type => '', @_);
+    my %args = (New => 0, Class => '', Name => '', @_);
 
     $args{'Class'} ||= $self->_RoleGroupClass;
 
-    return $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $args{'Type'} }
-        if $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $args{'Type'} }
+    my $name = $args{'Name'};
+    if ( exists $args{'Type'} ) {
+        RT->Deprecated( Arguments => 'Type', Instead => 'Name', Remove => '4.4' );
+        $name = $args{'Type'};
+    }
+
+    return $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $name }
+        if $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $name }
            && !$args{'New'};
 
     # If we're looking at a role group on a class that "contains" this record
@@ -119,21 +125,24 @@ sub _RoleGroupsJoin {
         TABLE2          => 'Groups',
         FIELD2          => 'Instance',
         ENTRYAGGREGATOR => 'AND',
+        DISTINCT        => !!$args{'Type'},
     );
     $self->Limit(
         LEFTJOIN        => $groups,
         ALIAS           => $groups,
         FIELD           => 'Domain',
         VALUE           => $args{'Class'} .'-Role',
+        CASESENSITIVE   => 0,
     );
     $self->Limit(
         LEFTJOIN        => $groups,
         ALIAS           => $groups,
-        FIELD           => 'Type',
-        VALUE           => $args{'Type'},
-    ) if $args{'Type'};
+        FIELD           => 'Name',
+        VALUE           => $name,
+        CASESENSITIVE   => 0,
+    ) if $name;
 
-    $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $args{'Type'} } = $groups
+    $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $name } = $groups
         unless $args{'New'};
 
     return $groups;
@@ -252,13 +261,18 @@ sub RoleLimit {
 
     $args{FIELD} ||= 'EmailAddress';
 
-    my $groups = $self->_RoleGroupsJoin( Type => $type, Class => $class, New => !$type );
+    my ($groups, $group_members, $users);
+    if ( $args{'BUNDLE'} ) {
+        ($groups, $group_members, $users) = @{ $args{'BUNDLE'} };
+    } else {
+        $groups = $self->_RoleGroupsJoin( Name => $type, Class => $class, New => !$type );
+    }
 
     $self->_OpenParen( $args{SUBCLAUSE} ) if $args{SUBCLAUSE};
     if ( $args{OPERATOR} =~ /^IS(?: NOT)?$/i ) {
         # is [not] empty case
 
-        my $group_members = $self->_GroupMembersJoin( GroupsAlias => $groups );
+        $group_members ||= $self->_GroupMembersJoin( GroupsAlias => $groups );
         # to avoid joining the table Users into the query, we just join GM
         # and make sure we don't match records where group is member of itself
         $self->Limit(
@@ -296,7 +310,7 @@ sub RoleLimit {
         $users_obj->RowsPerPage(2);
         my @users = @{ $users_obj->ItemsArrayRef };
 
-        my $group_members = $self->_GroupMembersJoin( GroupsAlias => $groups );
+        $group_members ||= $self->_GroupMembersJoin( GroupsAlias => $groups );
         if ( @users <= 1 ) {
             my $uid = 0;
             $uid = $users[0]->id if @users;
@@ -321,7 +335,7 @@ sub RoleLimit {
                 VALUE      => "$group_members.MemberId",
                 QUOTEVALUE => 0,
             );
-            my $users = $self->Join(
+            $users ||= $self->Join(
                 TYPE            => 'LEFT',
                 ALIAS1          => $group_members,
                 FIELD1          => 'MemberId',
@@ -347,26 +361,39 @@ sub RoleLimit {
     } else {
         # positive condition case
 
-        my $group_members = $self->_GroupMembersJoin(
+        $group_members ||= $self->_GroupMembersJoin(
             GroupsAlias => $groups, New => 1, Left => 0
         );
-        my $users = $self->Join(
-            TYPE            => 'LEFT',
-            ALIAS1          => $group_members,
-            FIELD1          => 'MemberId',
-            TABLE2          => 'Users',
-            FIELD2          => 'id',
-        );
-        $self->Limit(
-            %args,
-            ALIAS           => $users,
-            FIELD           => $args{FIELD},
-            OPERATOR        => $args{OPERATOR},
-            VALUE           => $args{VALUE},
-            CASESENSITIVE   => 0,
-        );
+        if ($args{FIELD} eq "id") {
+            # Save a left join to Users, if possible
+            $self->Limit(
+                %args,
+                ALIAS           => $group_members,
+                FIELD           => "MemberId",
+                OPERATOR        => $args{OPERATOR},
+                VALUE           => $args{VALUE},
+                CASESENSITIVE   => 0,
+            );
+        } else {
+            $users ||= $self->Join(
+                TYPE            => 'LEFT',
+                ALIAS1          => $group_members,
+                FIELD1          => 'MemberId',
+                TABLE2          => 'Users',
+                FIELD2          => 'id',
+            );
+            $self->Limit(
+                %args,
+                ALIAS           => $users,
+                FIELD           => $args{FIELD},
+                OPERATOR        => $args{OPERATOR},
+                VALUE           => $args{VALUE},
+                CASESENSITIVE   => 0,
+            );
+        }
     }
     $self->_CloseParen( $args{SUBCLAUSE} ) if $args{SUBCLAUSE};
+    return ($groups, $group_members, $users);
 }
 
 1;

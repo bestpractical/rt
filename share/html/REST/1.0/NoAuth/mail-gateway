@@ -60,24 +60,24 @@ $r->content_type('text/plain; charset=utf-8');
 $m->error_format('text');
 my ( $status, $error, $Ticket ) = RT::Interface::Email::Gateway( \%ARGS );
 if ( $status == 1 ) {
-  $m->out('ok');
+  $m->out("ok\n");
   if ( $Ticket && $Ticket->Id ) {
-    $m->out( 'Ticket: '  . ($Ticket->Id             || '') );
-    $m->out( 'Queue: '   . ($Ticket->QueueObj->Name || '') );
-    $m->out( 'Owner: '   . ($Ticket->OwnerObj->Name || '') );
-    $m->out( 'Status: '  . ($Ticket->Status         || '') );
-    $m->out( 'Subject: ' . ($Ticket->Subject        || '') );
+    $m->out( 'Ticket: '  . ($Ticket->Id             || '') . "\n" );
+    $m->out( 'Queue: '   . ($Ticket->QueueObj->Name || '') . "\n" );
+    $m->out( 'Owner: '   . ($Ticket->OwnerObj->Name || '') . "\n" );
+    $m->out( 'Status: '  . ($Ticket->Status         || '') . "\n" );
+    $m->out( 'Subject: ' . ($Ticket->Subject        || '') . "\n" );
     $m->out(
-      'Requestor: ' . ($Ticket->Requestors->MemberEmailAddressesAsString || '') );
+      'Requestor: ' . ($Ticket->Requestors->MemberEmailAddressesAsString || '') . "\n" );
   }
 }
 else {
   $RT::Logger->error( "Could not record email: " . $error );
   if ( $status == -75 ) {
-    $m->out( "temporary failure - " . $error );
+    $m->out( "temporary failure - $error\n" );
   }
   else {
-    $m->out( 'not ok - ' . $error );
+    $m->out( "not ok - $error\n" );
   }
 }
 $m->abort();

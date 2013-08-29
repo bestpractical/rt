@@ -219,7 +219,7 @@ sub Set {
         # should be applied to absolute times, so compensate shift in NOW
         my $now = time;
         $now += ($self->Localtime( $args{Timezone}, $now ))[9];
-        my $date = Time::ParseDate::parsedate(
+        my ($date, $error) = Time::ParseDate::parsedate(
             $args{'Value'},
             GMT           => 1,
             NOW           => $now,
@@ -227,6 +227,13 @@ sub Set {
             PREFER_PAST   => RT->Config->Get('AmbiguousDayInPast'),
             PREFER_FUTURE => RT->Config->Get('AmbiguousDayInFuture'),
         );
+        unless ( defined $date ) {
+            $RT::Logger->warning(
+                "Couldn't parse date '$args{'Value'}' by Time::ParseDate"
+            );
+            return $self->Unix(0);
+        }
+
         # apply timezone offset
         $date -= ($self->Localtime( $args{Timezone}, $date ))[9];
 
@@ -334,50 +341,116 @@ sub DiffAsString {
 Takes a number of seconds. Returns a localized string describing
 that duration.
 
+Takes optional named arguments:
+
+=over 4
+
+=item * Show
+
+How many elements to show, how precise it should be. Default is 1,
+most vague variant.
+
+=item * Short
+
+Turn on short notation with one character units, for example
+"3M 2d 1m 10s".
+
+=back
+
 =cut
+
+# loc("[_1]s")
+# loc("[_1]m")
+# loc("[_1]h")
+# loc("[_1]d")
+# loc("[_1]W")
+# loc("[_1]M")
+# loc("[_1]Y")
+# loc("[quant,_1,second]")
+# loc("[quant,_1,minute]")
+# loc("[quant,_1,hour]")
+# loc("[quant,_1,day]")
+# loc("[quant,_1,week]")
+# loc("[quant,_1,month]")
+# loc("[quant,_1,year]")
 
 sub DurationAsString {
     my $self     = shift;
     my $duration = int shift;
+    my %args = ( Show => 1, Short => 0, @_ );
 
-    my ( $negative, $s, $time_unit );
+    unless ( $duration ) {
+        return $args{Short}? $self->loc("0s") : $self->loc("0 seconds");
+    }
+
+    my $negative;
     $negative = 1 if $duration < 0;
     $duration = abs $duration;
 
-    if ( $duration < $MINUTE ) {
-        $s         = $duration;
-        $time_unit = $self->loc("sec");
-    }
-    elsif ( $duration < ( 2 * $HOUR ) ) {
-        $s         = int( $duration / $MINUTE + 0.5 );
-        $time_unit = $self->loc("min");
-    }
-    elsif ( $duration < ( 2 * $DAY ) ) {
-        $s         = int( $duration / $HOUR + 0.5 );
-        $time_unit = $self->loc("hours");
-    }
-    elsif ( $duration < ( 2 * $WEEK ) ) {
-        $s         = int( $duration / $DAY + 0.5 );
-        $time_unit = $self->loc("days");
-    }
-    elsif ( $duration < ( 2 * $MONTH ) ) {
-        $s         = int( $duration / $WEEK + 0.5 );
-        $time_unit = $self->loc("weeks");
-    }
-    elsif ( $duration < $YEAR ) {
-        $s         = int( $duration / $MONTH + 0.5 );
-        $time_unit = $self->loc("months");
-    }
-    else {
-        $s         = int( $duration / $YEAR + 0.5 );
-        $time_unit = $self->loc("years");
+    my %units = (
+        s => 1,
+        m => $MINUTE,
+        h => $HOUR,
+        d => $DAY,
+        W => $WEEK,
+        M => $MONTH,
+        Y => $YEAR,
+    );
+    my %long_units = (
+        s => 'second',
+        m => 'minute',
+        h => 'hour',
+        d => 'day',
+        W => 'week',
+        M => 'month',
+        Y => 'year',
+    );
+
+    my @res;
+
+    my $coef = 2;
+    my $i = 0;
+    while ( $duration > 0 && ++$i <= $args{'Show'} ) {
+
+        my $unit;
+        if ( $duration < $MINUTE ) {
+            $unit = 's';
+        }
+        elsif ( $duration < ( $coef * $HOUR ) ) {
+            $unit = 'm';
+        }
+        elsif ( $duration < ( $coef * $DAY ) ) {
+            $unit = 'h';
+        }
+        elsif ( $duration < ( $coef * $WEEK ) ) {
+            $unit = 'd';
+        }
+        elsif ( $duration < ( $coef * $MONTH ) ) {
+            $unit = 'W';
+        }
+        elsif ( $duration < $YEAR ) {
+            $unit = 'M';
+        }
+        else {
+            $unit = 'Y';
+        }
+        my $value = int( $duration / $units{$unit}  + ($i < $args{'Show'}? 0 : 0.5) );
+        $duration -= int( $value * $units{$unit} );
+
+        if ( $args{'Short'} ) {
+            push @res, $self->loc("[_1]$unit", $value);
+        } else {
+            push @res, $self->loc("[quant,_1,$long_units{$unit}]", $value);
+        }
+
+        $coef = 1;
     }
 
     if ( $negative ) {
-        return $self->loc( "[_1] [_2] ago", $s, $time_unit );
+        return $self->loc( "[_1] ago", join ' ', @res );
     }
     else {
-        return $self->loc( "[_1] [_2]", $s, $time_unit );
+        return join ' ', @res;
     }
 }
 
@@ -899,7 +972,9 @@ sub RFC2616 {
 
 =head4 iCal
 
-Returns the object's date and time in iCalendar format,
+Returns the object's date and time in iCalendar format.
+If only date requested then users timezone is used, otherwise
+it's UTC.
 
 Supports arguments: C<Date> and C<Time>.
 See </Output formatters> for description of arguments.
@@ -912,8 +987,16 @@ sub iCal {
         Date => 1, Time => 1,
         @_,
     );
+
+    my $tz;
+    if ( $args{'Date'} && !$args{'Time'} ) {
+        $tz = 'user';
+    } else {
+        $tz = 'utc';
+    }
+
     my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) =
-        $self->Localtime( 'utc' );
+        $self->Localtime( $tz );
 
     #the month needs incrementing, as gmtime returns 0-11
     $mon++;

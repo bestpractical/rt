@@ -89,10 +89,21 @@ method isn't available in consuming classes, however.
 with 'RT::Record::Role';
 requires 'LifecycleColumn';
 
-# XXX: can't require column methods due to DBIx::SB::Record's AUTOLOAD
-#requires 'Status';
-
 =head1 PROVIDES
+
+=head2 Status
+
+Returns the Status for this record, in the canonical casing.
+
+=cut
+
+sub Status {
+    my $self = shift;
+    my $value = $self->_Value( 'Status' );
+    my $lifecycle = $self->LifecycleObj;
+    return $value unless $lifecycle;
+    return $lifecycle->CanonicalCase( $value );
+}
 
 =head2 LifecycleObj
 
@@ -202,6 +213,7 @@ sub _SetStatus {
         Lifecycle   => $self->LifecycleObj,
         @_,
     );
+    $args{Status} = lc $args{Status} if defined $args{Status};
     $args{NewLifecycle} ||= $args{Lifecycle};
 
     return $self->_Set(
@@ -265,7 +277,7 @@ sub _SetLifecycleColumn {
         unless ( $old_lifecycle->HasMoveMap( $new_lifecycle ) ) {
             return ( 0, $self->loc("There is no mapping for statuses between lifecycle [_1] and [_2]. Contact your system administrator.", $old_lifecycle->Name, $new_lifecycle->Name) );
         }
-        $new_status = $old_lifecycle->MoveMap( $new_lifecycle )->{ $self->Status };
+        $new_status = $old_lifecycle->MoveMap( $new_lifecycle )->{ lc $self->Status };
         return ( 0, $self->loc("Mapping between lifecycle [_1] and [_2] is incomplete. Contact your system administrator.", $old_lifecycle->Name, $new_lifecycle->Name) )
             unless $new_status;
     }

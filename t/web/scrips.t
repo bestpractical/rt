@@ -20,7 +20,7 @@ ok $queue_r && $queue_r->id, 'loaded or created queue';
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, "logged in";
 
-$m->follow_link_ok({id => 'tools-config-global-scrips-create'});
+$m->follow_link_ok({id => 'admin-global-scrips-create'});
 
 sub prepare_code_with_value {
     my $value = shift;
@@ -55,13 +55,13 @@ sub prepare_code_with_value {
     foreach my $data (@values_for_actions) {
         my ($condition, $prepare_code_value) = @$data;
         diag "Create Scrip (Cond #$condition)" if $ENV{TEST_VERBOSE};
-        $m->follow_link_ok({id => 'tools-config-global-scrips-create'});
+        $m->follow_link_ok({id => 'admin-global-scrips-create'});
         my $prepare_code = prepare_code_with_value($prepare_code_value);
         $m->form_name('CreateScrip');
         $m->set_fields(
             'ScripCondition'    => $condition,
-            'ScripAction'       => 15, # User Defined
-            'Template'          => 1,  # Blank
+            'ScripAction'       => 'User Defined',
+            'Template'          => 'Blank',
             'CustomPrepareCode' => $prepare_code,
         );
         $m->click('Create');
@@ -85,7 +85,7 @@ sub prepare_code_with_value {
     $m->submit_form(
         form_name => 'ForwardMessage',
         fields    => {
-            To => 'rt-test, rt-to@example.com',
+            To => 'rt-test@example.com, rt-to@example.com',
         },
         button => 'ForwardAndReturn'
     );
@@ -101,7 +101,7 @@ sub prepare_code_with_value {
     $m->submit_form(
         form_name => 'ForwardMessage',
         fields    => {
-            To => 'rt-test, rt-to@example.com',
+            To => 'rt-test@example.com, rt-to@example.com',
         },
         button => 'ForwardAndReturn'
     );
@@ -113,7 +113,7 @@ sub prepare_code_with_value {
 
 note "check basics in scrip's admin interface";
 {
-    $m->follow_link_ok( { id => 'tools-config-global-scrips-create' } );
+    $m->follow_link_ok( { id => 'admin-global-scrips-create' } );
     ok $m->form_name('CreateScrip');
     is $m->value_name('Description'), '', 'empty value';
     is $m->value_name('ScripAction'), '-', 'empty value';
@@ -160,7 +160,7 @@ note "check basics in scrip's admin interface";
 
 note "check application in admin interface";
 {
-    $m->follow_link_ok({ id => 'tools-config-global-scrips-create' });
+    $m->follow_link_ok({ id => 'admin-global-scrips-create' });
     $m->submit_form_ok({
         with_fields => {
             Description     => "testing application",
@@ -195,34 +195,21 @@ note "check templates in scrip's admin interface";
     my ($status, $msg) = $template->Create( Queue => $queue_g->id, Name => 'foo' );
     ok $status, 'created a template';
 
+    my $templates = RT::Templates->new( RT->SystemUser );
+    $templates->LimitToGlobal;
+
     my @default = (
           '',
-          'Admin Comment',
-          'Admin Correspondence',
-          'Autoreply',
-          'Blank',
-          'Correspondence',
-          'Email Digest',
-          'Error to RT owner: public key',
-          'Error: bad GnuPG data',
-          'Error: Missing dashboard',
-          'Error: no private key',
-          'Error: public key',
-          'Forward',
-          'Forward Ticket',
-          'PasswordChange',
-          'Resolved',
-          'Status Change',
-          'Transaction'
+          map $_->Name, @{$templates->ItemsArrayRef}
     );
 
-    $m->follow_link_ok( { id => 'tools-config-global-scrips-create' } );
+    $m->follow_link_ok( { id => 'admin-global-scrips-create' } );
     ok $m->form_name('CreateScrip');
     my @templates = ($m->find_all_inputs( type => 'option', name => 'Template' ))[0]
         ->possible_values;
-    is_deeply(\@templates, \@default);
+    is_deeply([sort @templates], [sort @default]);
 
-    $m->follow_link_ok( { id => 'tools-config-queues' } );
+    $m->follow_link_ok( { id => 'admin-queues' } );
     $m->follow_link_ok( { text => 'General' } );
     $m->follow_link_ok( { id => 'page-scrips-create' } );
 
@@ -279,7 +266,7 @@ note "go to apply page and apply with template change";
 
 note "apply scrip in different stage to different queues";
 {
-    $m->follow_link_ok( { id => 'tools-config-queues' } );
+    $m->follow_link_ok( { id => 'admin-queues' } );
     $m->follow_link_ok( { text => 'General' } );
     $m->follow_link_ok( { id => 'page-scrips-create'});
 

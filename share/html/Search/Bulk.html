@@ -50,13 +50,13 @@
 
 <& /Elements/ListActions, actions => \@results &>
 <form method="post" action="<% RT->Config->Get('WebPath') %>/Search/Bulk.html" enctype="multipart/form-data" name="BulkUpdate" id="BulkUpdate">
-% foreach my $var (qw(Query Format OrderBy Order Rows Page SavedChartSearchId)) {
+% foreach my $var (qw(Query Format OrderBy Order Rows Page SavedSearchId SavedChartSearchId Token)) {
 <input type="hidden" class="hidden" name="<%$var%>" value="<%$ARGS{$var} || ''%>" />
 %}
 <& /Elements/CollectionList, 
     Query => $Query,
-    DisplayFormat => $Format,
-    Format => $ARGS{'Format'},
+    DisplayFormat => $DisplayFormat,
+    Format => $Format,
     Verbatim => 1,
     AllowSorting => 1,
     OrderBy => $OrderBy,
@@ -71,7 +71,7 @@
 
 <hr />
 
-<& /Elements/Submit, Label => loc('Update'), CheckboxNameRegex => '/^UpdateTicket\d+$/', CheckAll => 1, ClearAll => 1 &>
+<& /Elements/Submit, Label => loc('Update'), CheckboxNameRegex => '/^UpdateTicket(All)?$/', CheckAll => 1, ClearAll => 1 &>
 <br />
 <&|/Widgets/TitleBox, title => $title &>
 <table>
@@ -83,17 +83,17 @@
 <label>(<input type="checkbox" class="checkbox" name="ForceOwnerChange"
 <% $ARGS{ForceOwnerChange} ? 'checked="checked"' : '' %> /> <&|/l&>Force change</&>)</label></td></tr>
 <tr><td class="label"> <&|/l&>Add Requestor</&>: </td>
-<td class="value"> <input name="AddRequestor" size="20" value="<% $ARGS{AddRequestor} || '' %>" /> </td></tr>
+<td class="value"> <& /Elements/EmailInput, Name => "AddRequestor", Size=> 20, Default => $ARGS{AddRequestor} &> </td></tr>
 <tr><td class="label"> <&|/l&>Remove Requestor</&>: </td>
-<td class="value"> <input name="DeleteRequestor" size="20" value="<% $ARGS{DeleteRequestor} || '' %>"/> </td></tr>
+<td class="value"> <& /Elements/EmailInput, Name => "DeleteRequestor", Size=> 20, Default => $ARGS{DeleteRequestor} &> </td></tr>
 <tr><td class="label"> <&|/l&>Add Cc</&>: </td>
-<td class="value"> <input name="AddCc" size="20" value="<% $ARGS{AddCc} || '' %>" /> </td></tr>
+<td class="value"> <& /Elements/EmailInput, Name => "AddCc", Size=> 20, Default => $ARGS{AddCc} &> </td></tr>
 <tr><td class="label"> <&|/l&>Remove Cc</&>: </td>
-<td class="value"> <input name="DeleteCc" size="20" value="<% $ARGS{DeleteCc} || '' %>" /> </td></tr>
+<td class="value"> <& /Elements/EmailInput, Name => "DeleteCc", Size=> 20, Default => $ARGS{DeleteCc} &> </td></tr>
 <tr><td class="label"> <&|/l&>Add AdminCc</&>: </td>
-<td class="value"> <input name="AddAdminCc" size="20" value="<% $ARGS{AddAdminCc} || '' %>" /> </td></tr>
+<td class="value"> <& /Elements/EmailInput, Name => "AddAdminCc", Size=> 20, Default => $ARGS{AddAdminCc} &> </td></tr>
 <tr><td class="label"> <&|/l&>Remove AdminCc</&>: </td>
-<td class="value"> <input name="DeleteAdminCc" size="20" value="<% $ARGS{DeleteAdminCc} || '' %>" /> </td></tr>
+<td class="value"> <& /Elements/EmailInput, Name => "DeleteAdminCc", Size=> 20, Default => $ARGS{DeleteAdminCc} &> </td></tr>
 </table>
 </td>
 <td valign="top">
@@ -114,8 +114,6 @@
 <td class="value"> <& /Elements/SelectDate, Name => "Told_Date", Default => $ARGS{Told_Date} || '' &> </td></tr>
 <tr><td class="label"> <&|/l&>Make date Due</&>: </td>
 <td class="value"> <& /Elements/SelectDate, Name => "Due_Date", Default => $ARGS{Due_Date} || '' &> </td></tr>
-<tr><td class="label"> <&|/l&>Make date Resolved</&>: </td>
-<td class="value"> <& /Elements/SelectDate, Name => "Resolved_Date", Default => $ARGS{Resolved_Date} || '' &> </td></tr>
 </table>
 
 </td>
@@ -162,50 +160,19 @@ $cfs->LimitToGlobal();
 $cfs->LimitToQueue($_) for keys %$seen_queues;
 </%perl>
 
-% if ($cfs->Count) {
-<&|/Widgets/TitleBox, title => loc('Edit Custom Fields'), color => "#336633"&>
-<table>
-<tr>
-<th><&|/l&>Name</&></th>
-<th><&|/l&>Add values</&></th>
-<th><&|/l&>Delete values</&></th>
-</tr>
-% while (my $cf = $cfs->Next()) {
-<tr>
-<td class="label"><% loc($cf->Name) %><br />
-<em>(<%$cf->FriendlyType%>)</em></td>
-% my $rows = 5;
-% my $cf_id = $cf->id;
-% my @add = (NamePrefix => 'Bulk-Add-CustomField-', CustomField => $cf, Rows => $rows,
-%   Multiple => ($cf->MaxValues ==1 ? 0 : 1) , Cols => 25, 
-%   Default => $ARGS{"Bulk-Add-CustomField-$cf_id-Values"} || $ARGS{"Bulk-Add-CustomField-$cf_id-Value"}, );
-% my @del = (NamePrefix => 'Bulk-Delete-CustomField-', CustomField => $cf,
-%   Rows => $rows, Multiple => 1, Cols => 25,
-%   Default => $ARGS{"Bulk-Delete-CustomField-$cf_id-Values"} || $ARGS{"Bulk-Delete-CustomField-$cf_id-Value"}, );
-% if ($cf->Type eq 'Select') {
-<td><& /Elements/EditCustomFieldSelect, @add &></td>
-<td><& /Elements/EditCustomFieldSelect, @del &></td>
-% } elsif ($cf->Type eq 'Combobox') {
-<td><& /Elements/EditCustomFieldCombobox, @add &></td>
-<td><& /Elements/EditCustomFieldCombobox, @del &></td>
-% } elsif ($cf->Type eq 'Freeform') {
-<td><& /Elements/EditCustomFieldFreeform, @add &></td>
-<td><& /Elements/EditCustomFieldFreeform, @del &></td>
-% } elsif ($cf->Type eq 'Text') {
-<td><& /Elements/EditCustomFieldText, @add &></td>
-<td>&nbsp;</td>
-% } else {
-%   $RT::Logger->crit("Unknown CustomField type: " . $cf->Type);
-% }
-</tr>
-% }
-</table>
+% if ( $cfs->Count ) {
+<&|/Widgets/TitleBox, title => loc('Edit Custom Fields') &>
+<& /Elements/BulkCustomFields, $ARGS{'AddMoreAttach'} ? %ARGS : (), CustomFields => $cfs &>
 </&>
 % }
 
 <&|/Widgets/TitleBox, title => loc('Edit Links'), color => "#336633"&>
 <em><&|/l&>Enter tickets or URIs to link tickets to. Separate multiple entries with spaces.</&></em><br />
-<& /Ticket/Elements/BulkLinks, Tickets => $Tickets, $ARGS{'AddMoreAttach'} ? %ARGS : () &>
+<& /Elements/BulkLinks, Collection => $Tickets, $ARGS{'AddMoreAttach'} ? %ARGS : () &>
+</&>
+
+<&| /Widgets/TitleBox, title => loc('Merge'), color => '#336633' &>
+<& /Ticket/Elements/EditMerge, Tickets => $Tickets, %ARGS &>
 </&>
 
 <& /Elements/Submit, Label => loc('Update') &>
@@ -232,8 +199,10 @@ $Page ||= 1;
 
 $Format ||= RT->Config->Get('DefaultSearchResultFormat');
 
-# inject _CHECKBOX to the first field.
-$Format =~ s/'?([^']+)'?,/'___CHECKBOX__$1',/;
+my $DisplayFormat = "'__CheckBox.{UpdateTicket}__',". $Format;
+$DisplayFormat =~ s/\s*,\s*('?__NEWLINE__'?)/,$1,''/gi;
+
+$DECODED_ARGS->{'UpdateTicketAll'} = 1 unless @UpdateTicket;
 
 my $Tickets = RT::Tickets->new( $session{'CurrentUser'} );
 $Tickets->FromSQL($Query);
@@ -271,25 +240,22 @@ while ( my $ticket = $Tickets->Next ) {
 
 #Iterate through each ticket we've been handed
 my @linkresults;
-my %queues;
 
 $Tickets->RedoSearch();
 
 unless ( $ARGS{'AddMoreAttach'} ) {
-    # Add session attachments if any to be processed by ProcessUpdateMessage
-    $ARGS{'UpdateAttachments'} = $session{'Attachments'} if ( $session{'Attachments'} );
-
     while ( my $Ticket = $Tickets->Next ) {
-        next unless ( $ARGS{ "UpdateTicket" . $Ticket->Id } );
+        my $tid = $Ticket->id;
+        next unless grep $tid == $_, @UpdateTicket;
 
         #Update the links
         $ARGS{'id'} = $Ticket->id;
-        $queues{ $Ticket->QueueObj->Id }++;
 
         my @updateresults = ProcessUpdateMessage(
-                TicketObj => $Ticket,
-                ARGSRef   => \%ARGS,
-            );
+            TicketObj       => $Ticket,
+            ARGSRef         => \%ARGS,
+            KeepAttachments => 1,
+        );
 
         #Update the basics.
         my @basicresults =
@@ -301,53 +267,11 @@ unless ( $ARGS{'AddMoreAttach'} ) {
         my @watchresults =
           ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
-        foreach my $type (qw(MergeInto DependsOn MemberOf RefersTo)) {
-            $ARGS{ $Ticket->id . "-" . $type } = $ARGS{"Ticket-$type"};
-            $ARGS{ $type . "-" . $Ticket->id } = $ARGS{"$type-Ticket"};
-        }
         @linkresults =
-          ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS );
-        foreach my $type (qw(MergeInto DependsOn MemberOf RefersTo)) {
-            delete $ARGS{ $type . "-" . $Ticket->id };
-            delete $ARGS{ $Ticket->id . "-" . $type };
-        }
+            ProcessTicketLinks( TicketObj => $Ticket, TicketId => 'Ticket', ARGSRef => \%ARGS );
 
-        my @cfresults;
+        my @cfresults = ProcessRecordBulkCustomFields( RecordObj => $Ticket, ARGSRef => \%ARGS );
 
-        foreach my $key ( keys %ARGS ) {
-            next unless $key =~ /^Bulk-(Add|Delete)-CustomField-(\d+)-(.*)$/;
-            my ($op,$cfid,$rest) = ($1, $2, $3);
-            next if $rest eq "Category";
-
-            my $cf = RT::CustomField->new( $session{'CurrentUser'} );
-            $cf->Load($cfid);
-            next unless $cf->Id;
-
-            my @values = _NormalizeObjectCustomFieldValue(
-                CustomField => $cf,
-                Value => $ARGS{$key},
-                Param => $key,
-            );
-
-            my $current_values = $Ticket->CustomFieldValues($cfid);
-            foreach my $value (@values) {
-                if ( $op eq 'Delete' && $current_values->HasEntry($value) ) {
-                    my ( $id, $msg ) = $Ticket->DeleteCustomFieldValue(
-                        Field => $cfid,
-                        Value => $value
-                    );
-                    push @cfresults, $msg;
-                }
-
-                elsif ( $op eq 'Add' && !$current_values->HasEntry($value) ) {
-                    my ( $id, $msg ) = $Ticket->AddCustomFieldValue(
-                        Field => $cfid,
-                        Value => $value
-                    );
-                    push @cfresults, $msg;
-                }
-            }
-        }
         my @tempresults = (
             @watchresults,  @basicresults, @dateresults,
             @updateresults, @linkresults,  @cfresults
@@ -359,13 +283,12 @@ unless ( $ARGS{'AddMoreAttach'} ) {
         @results = ( @results, @tempresults );
     }
 
-    # Cleanup WebUI
-    delete $session{'Attachments'};
+    delete $session{'Attachments'}{ $ARGS{'Token'} };
 }
 
 my $TxnCFs = RT::CustomFields->new( $session{CurrentUser} );
 $TxnCFs->LimitToLookupType( RT::Transaction->CustomFieldLookupType );
-$TxnCFs->LimitToGlobalOrObjectId( sort keys %queues );
+$TxnCFs->LimitToGlobalOrObjectId( keys %$seen_queues );
 
 </%INIT>
 <%args>
@@ -376,6 +299,5 @@ $RowsPerPage => undef
 $Order => 'ASC'
 $OrderBy => 'id'
 $Query => undef
-$SavedSearchId => undef
-$SavedChartSearchId => undef
+@UpdateTicket => ()
 </%args>

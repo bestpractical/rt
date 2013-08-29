@@ -1,0 +1,53 @@
+.user-accordion {
+    margin: 0;
+}
+
+.user-accordion .ui-accordion-content {
+    padding: 0 0 0 20px;
+    margin: 0 0 0.5em 0;
+    border: none;
+    background: none;
+    color: black;
+}
+
+.user-accordion .ui-accordion-header .ui-icon {
+    background-image: url(../../../static/images/jquery_ui/ui-icons_2e83ff_256x240.png);
+    left: 0;
+}
+
+.user-accordion .ui-accordion-header {
+    padding: 0;
+    background: none;
+}
+
+.user-accordion .ui-accordion-header, .user-accordion .ui-accordion-header a {
+    color: black;
+    border: none;
+    margin: 0;
+}
+
+.user-accordion .ui-accordion-header a {
+    padding: 0 0 0.25em 20px;
+}
+
+.user-accordion .ui-accordion-header a:hover,
+.user-accordion .ui-accordion-header.ui-state-active a {
+    text-decoration: underline;
+}
+
+
+
+.user-accordion h3 {
+    position: relative;
+}
+.user-accordion a.user-summary {
+    position: absolute;
+    right: 0;
+    text-decoration: none;
+}
+.user-accordion a.user-summary:hover { text-decoration: underline }
+
+.user-accordion a.modify-user {
+    font-size: 80%;
+    color: black !important;
+}

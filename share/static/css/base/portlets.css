@@ -1,0 +1,17 @@
+table.myrt {
+    width: 100%;
+}
+
+table.dashboard {
+    width: 100%;
+    border: 0;
+}
+
+.quick-create .select-queue {
+   width: 12em;
+}
+
+.quick-create input[type="text"], .quick-create textarea {
+    width: 100%;
+
+}

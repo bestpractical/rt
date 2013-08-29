@@ -119,7 +119,7 @@ sub Create {
         }
         else {
             $args{'LargeContent'} = $args{'Content'};
-            $args{'Content'} = '';
+            $args{'Content'} = undef;
             $args{'ContentType'} ||= 'text/plain';
         }
     }

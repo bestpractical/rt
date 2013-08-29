@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use File::Spec ();
 
-use RT::Test tests => 141;
+use RT::Test tests => undef;
 
 use RT::EmailParser;
 use RT::Tickets;
@@ -61,7 +61,7 @@ like (first_txn($tick)->Content , qr/The original message was received/, "It's t
 
 
 # make sure it fires scrips.
-is ($#scrips_fired, 1, "Fired 2 scrips on ticket creation");
+is (scalar @scrips_fired, 4, "Fired 4 scrips on ticket creation");
 
 undef @scrips_fired;
 
@@ -89,7 +89,7 @@ ok ($tick->Id, "found ticket ".$tick->Id);
 is ($tick->Subject , 'I18NTest', "failed to create the new ticket from an unprivileged account");
 
 # make sure it fires scrips.
-is ($#scrips_fired, 1, "Fired 2 scrips on ticket creation");
+is (scalar @scrips_fired, 4, "Fired 4 scrips on ticket creation");
 # make sure it sends an autoreply
 # make sure it sends a notification to adminccs
 
@@ -124,7 +124,7 @@ like (first_txn($tick)->Content , qr/H\x{e5}vard/, "It's signed by havard. yay")
 
 
 # make sure it fires scrips.
-is ($#scrips_fired, 1, "Fired 2 scrips on ticket creation");
+is (scalar @scrips_fired, 4, "Fired 4 scrips on ticket creation");
 # make sure it sends an autoreply
 
 
@@ -166,7 +166,7 @@ like (first_txn($tick)->Content , qr/H\x{e5}vard/, "It's signed by havard. yay")
 
 
 # make sure it fires scrips.
-is ($#scrips_fired, 1, "Fired 2 scrips on ticket creation");
+is (scalar @scrips_fired, 4, "Fired 4 scrips on ticket creation");
 # make sure it sends an autoreply
 
 
@@ -203,9 +203,13 @@ sub utf8_redef_sendmessage {
                   "hey, look. it's a mime entity" );
         main::is( ref( $MIME->head ) , 'MIME::Head',
                   "its mime header is a mime header. yay" );
-        main::like( $MIME->head->get('Content-Type') , qr/utf-8/,
-                  "Its content type is utf-8" );
-        my $message_as_string = $MIME->bodyhandle->as_string();
+        main::like( $MIME->head->get('Content-Type') , qr/multipart\/alternative/,
+                  "Its content type is multipart/alternative" );
+        main::like( $MIME->parts(0)->head->get('Content-Type') , qr/text\/plain.+?utf-8/,
+                  "first part's content type is text/plain utf-8" );
+        main::like( $MIME->parts(1)->head->get('Content-Type') , qr/text\/html.+?utf-8/,
+                  "second part's content type is text/html utf-8" );
+        my $message_as_string = $MIME->parts(0)->bodyhandle->as_string();
         use Encode;
         $message_as_string = Encode::decode_utf8($message_as_string);
         main::like(
@@ -229,9 +233,14 @@ sub iso8859_redef_sendmessage {
                   "hey, look. it's a mime entity" );
         main::is( ref( $MIME->head ) , 'MIME::Head',
                   "its mime header is a mime header. yay" );
-        main::like( $MIME->head->get('Content-Type') , qr/iso-8859-1/,
-                  "Its content type is iso-8859-1 - " . $MIME->head->get("Content-Type") );
-        my $message_as_string = $MIME->bodyhandle->as_string();
+
+        main::like( $MIME->head->get('Content-Type') , qr/multipart\/alternative/,
+                  "Its content type is multipart/alternative" );
+        main::like( $MIME->parts(0)->head->get('Content-Type') , qr/text\/plain.+?iso-8859-1/,
+                  "Its content type is iso-8859-1 - " . $MIME->parts(0)->head->get("Content-Type") );
+        main::like( $MIME->parts(1)->head->get('Content-Type') , qr/text\/html.+?iso-8859-1/,
+                  "Its content type is iso-8859-1 - " . $MIME->parts(1)->head->get("Content-Type") );
+        my $message_as_string = $MIME->parts(0)->bodyhandle->as_string();
         use Encode;
         $message_as_string = Encode::decode("iso-8859-1",$message_as_string);
         main::like(
@@ -296,9 +305,9 @@ sub text_html_redef_sendmessage {
         my $self = shift;
         my $MIME = shift;
         return (1) unless ($self->ScripObj->ScripActionObj->Name eq "Notify AdminCcs" );
-        is ($MIME->parts, 0, "generated correspondence mime entity
-                does not have parts");
-        is ($MIME->head->mime_type , "text/plain", "The mime type is a plain");
+        is ($MIME->parts, 2, "generated correspondence mime entity has parts");
+        is ($MIME->parts(0)->head->mime_type , "text/plain", "The first part mime type is a plain");
+        is ($MIME->parts(1)->head->mime_type , "text/html", "The second part mime type is a plain");
     };
 }
 
@@ -314,30 +323,7 @@ $parser->ParseMIMEEntityFromScalar($content);
 
  %args =        (message => $content, queue => 1, action => 'correspond');
 
-{
-
-my @warnings;
-local $SIG{__WARN__} = sub {
-    push @warnings, "@_";
-};
-
 RT::Interface::Email::Gateway(\%args);
-
-TODO: {
-        local $TODO =
-'need a better approach of encoding converter, should be fixed in 4.2';
-ok( @warnings == 1 || @warnings == 2, "1 or 2 warnings are ok" );
-ok( @warnings == 1 || ( @warnings == 2 && $warnings[1] eq $warnings[0] ),
-    'if there are 2 warnings, they should be same' );
-
-like(
-    $warnings[0],
-    qr/\QEncoding error: "\x{041f}" does not map to iso-8859-1/,
-"The badly formed Russian spam we have isn't actually well-formed UTF8, which makes Encode (correctly) warn",
-);
-
-}
-}
 
  $tickets = RT::Tickets->new(RT->SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
@@ -379,7 +365,10 @@ sub text_plain_russian_redef_sendmessage {
         my $self = shift; 
         my $MIME = shift; 
         return (1) unless ($self->ScripObj->ScripActionObj->Name eq "Notify AdminCcs" );
-        is ($MIME->head->mime_type , "text/plain", "The only part is text/plain ");
+        is ($MIME->head->mime_type , "multipart/alternative", "The top part is multipart/alternative");
+        is ($MIME->parts, 2, "generated correspondence mime entity has parts");
+        is ($MIME->parts(0)->head->mime_type , "text/plain", "The first part mime type is a plain");
+        is ($MIME->parts(1)->head->mime_type , "text/html", "The second part mime type is a plain");
             my $subject  = $MIME->head->get("subject");
         chomp($subject);
         #is( $subject ,      /^=\?KOI8-R\?B\?W2V4YW1wbGUuY39tICM3XSDUxdPUINTF09Q=\?=/ , "The $subject is encoded correctly");
@@ -544,3 +533,5 @@ diag q{regression test for #5248 from rt3.fsck.com};
 
 # Don't taint the environment
 $everyone->PrincipalObj->RevokeRight(Right =>'SuperUser');
+
+done_testing;

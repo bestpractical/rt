@@ -669,53 +669,17 @@ sub _Value {
     return $self->__Value(@_);
 }
 
+=head2 ACLEquivalenceObjects
 
-
-=head2 CurrentUserHasRight
-
-Helper menthod for HasRight. Presets Principal to CurrentUser then 
-calls HasRight.
+Having rights on any of the queues the scrip applies to is equivalent to
+having rights on the scrip.
 
 =cut
 
-sub CurrentUserHasRight {
-    my $self  = shift;
-    my $right = shift;
-    return ( $self->HasRight( Principal => $self->CurrentUser->UserObj,
-                              Right     => $right ) );
-
-}
-
-
-
-=head2 HasRight
-
-Takes a param-hash consisting of "Right" and "Principal"  Principal is 
-an RT::User object or an RT::CurrentUser object. "Right" is a textual
-Right string that applies to Scrips.
-
-=cut
-
-sub HasRight {
+sub ACLEquivalenceObjects {
     my $self = shift;
-    my %args = ( Right     => undef,
-                 Principal => undef,
-                 @_ );
-
-    my $queues = $self->AddedTo;
-    my $found = 0;
-    while ( my $queue = $queues->Next ) {
-        return 1 if $args{'Principal'}->HasRight(
-            Right  => $args{'Right'},
-            Object => $queue,
-        );
-        $found = 1;
-    }
-    return $args{'Principal'}->HasRight(
-        Object => $RT::System,
-        Right  => $args{'Right'},
-    ) unless $found;
-    return 0;
+    return unless $self->id;
+    return @{ $self->AddedTo->ItemsArrayRef };
 }
 
 
@@ -908,42 +872,6 @@ sub ScripActionObj {
         return($ScripAction);
 }
 
-=head2 ConditionRules
-
-Returns the current value of ConditionRules.
-(In the database, ConditionRules is stored as text.)
-
-
-
-=head2 SetConditionRules VALUE
-
-
-Set ConditionRules to VALUE.
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, ConditionRules will be stored as a text.)
-
-
-=cut
-
-
-=head2 ActionRules
-
-Returns the current value of ActionRules.
-(In the database, ActionRules is stored as text.)
-
-
-
-=head2 SetActionRules VALUE
-
-
-Set ActionRules to VALUE.
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, ActionRules will be stored as a text.)
-
-
-=cut
-
-
 =head2 CustomIsApplicableCode
 
 Returns the current value of CustomIsApplicableCode.
@@ -1082,10 +1010,6 @@ sub _CoreAccessible {
                 {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         ScripAction =>
                 {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
-        ConditionRules =>
-                {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
-        ActionRules =>
-                {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
         CustomIsApplicableCode =>
                 {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
         CustomPrepareCode =>

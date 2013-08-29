@@ -51,7 +51,6 @@ package RT::Interface::Web::Request;
 use strict;
 use warnings;
 
-our $VERSION = '0.30';
 use HTML::Mason::PSGIHandler;
 use base qw(HTML::Mason::Request::PSGI);
 use Params::Validate qw(:all);

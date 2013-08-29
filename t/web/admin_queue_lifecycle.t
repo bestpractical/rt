@@ -24,7 +24,7 @@ my $lifecycle_input = $form->find_input('Lifecycle');
 is( $lifecycle_input->value, 'default', 'default lifecycle' );
 
 my @lifecycles = sort $lifecycle_input->possible_values;
-is_deeply( \@lifecycles, [qw/approvals default foo/], 'found all lifecycles' );
+is_deeply( \@lifecycles, [qw/default foo/], 'found all lifecycles' );
 
 $m->submit_form();
 $m->content_lacks( 'Lifecycle changed from',

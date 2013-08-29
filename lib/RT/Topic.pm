@@ -212,41 +212,18 @@ sub _Set {
 # }}}
 
 
-# {{{ CurrentUserHasRight
+=head2 ACLEquivalenceObjects
 
-=head2 CurrentUserHasRight
-
-Returns true if the current user has the right for this topic, for the
-whole system or for whatever object this topic is associated with
+Rights on the topic are inherited from the object it is a topic on.
 
 =cut
 
-sub CurrentUserHasRight {
+sub ACLEquivalenceObjects {
     my $self  = shift;
-    my $right = shift;
+    return unless $self->id and $self->ObjectId;
 
-    my $equiv = [ $RT::System ];
-    push @{$equiv}, $self->Object if $self->ObjectId;
-    if ($self->Id) {
-        return ( $self->CurrentUser->HasRight(
-                                              Right        => $right,
-                                              Object       => $self,
-                                              EquivObjects => $equiv,
-                                             ) );
-    } else {
-        # If we don't have an ID, we don't even know what object we're
-        # attached to -- so the only thing we can fall back on is the
-        # system object.
-        return ( $self->CurrentUser->HasRight(
-                                              Right        => $right,
-                                              Object       => $RT::System,
-                                             ) );
-    }
-    
-
+    return $self->Object;
 }
-
-# }}}
 
 
 sub Object {
