@@ -74,6 +74,7 @@ You should start from reading L<RT::Crypt>.
         Enable => 1,
         OpenSSL => '/usr/bin/openssl',
         Keyring => '/opt/rt4/var/data/smime',
+        CAPath  => '/opt/rt4/var/data/smime/signing-ca.pem',
     );
 
 =head3 OpenSSL
@@ -85,6 +86,14 @@ Path to openssl executable.
 Path to directory with keys and certificates for queues. Key and
 certificates should be stored in a PEM file named, e.g.,
 F<email.address@example.com.pem>.  See L</Keyring configuration>.
+
+=head3 CAPath
+
+C<CAPath> should be set to either a PEM-formatted certificate of a
+single signing certificate authority, or a directory of such (including
+hash symlinks as created by the openssl tool C<c_rehash>).  Only SMIME
+certificates signed by these certificate authorities will be treated as
+valid signatures.  If left unset, no signatures will be marked as valid!
 
 =head2 Keyring configuration
 
@@ -227,11 +236,24 @@ sub Verify {
     if ( my $key = do { $keyfh->seek(0, 0); local $/; readline $keyfh } ) {{
         my %info = $self->GetCertificateInfo( Certificate => $key );
 
-        $signer = $info{info}[0]{User}[0]{String};
-        last unless $signer;
+        $signer = $info{info}[0];
+        last unless $signer and $signer->{User}[0]{String};
+
+        unless ( $info{info}[0]{TrustLevel} > 0) {
+            # We don't trust it; give it the finger
+            $res{exit_code} = 1;
+            $res{'message'} = "Validation failed";
+            $res{'status'} = $self->FormatStatus({
+                Operation => "Verify", Status => "BAD",
+                Message => "The signing CA was not trusted",
+                UserString => $signer->{User}[0]{String},
+                Trust => "NONE",
+            });
+            return %res;
+        }
 
         my $user = RT::User->new( $RT::SystemUser );
-        $user->LoadOrCreateByEmail( $signer );
+        $user->LoadOrCreateByEmail( $signer->{User}[0]{String} );
         my $current_key = $user->SMIMECertificate;
         last if $current_key && $current_key eq $key;
 
@@ -246,7 +268,8 @@ sub Verify {
         $res{'message'} = "verified message, but couldn't parse result";
         $res{'status'} = $self->FormatStatus({
             Operation => "Verify", Status => "DONE",
-            Message => "The signature is good",
+            Message => "The signature is good, unknown signer",
+            Trust => "UNKNOWN",
         });
         return %res;
     }
@@ -259,8 +282,9 @@ sub Verify {
 
     $res{'status'} = $self->FormatStatus({
         Operation => "Verify", Status => "DONE",
-        Message => "The signature is good, signed by $signer",
-        UserString => $signer,
+        Message => "The signature is good, signed by ".$signer->{User}[0]{String}.", trust is ".$signer->{TrustTerse},
+        UserString => $signer->{User}[0]{String},
+        Trust => uc($signer->{TrustTerse}),
     });
 
     return %res;
@@ -525,18 +549,61 @@ sub GetCertificateInfo {
         . MIME::Base64::encode_base64( $args{Certificate} )
         . "-----END CERTIFICATE-----\n";
 
-    my %data = (
-        Content         => $PEM,
-        TrustLevel      => 1,
-        Fingerprint     => Digest::SHA::sha1_hex($args{Certificate}),
-        'Serial Number' => $cert->serial,
-        Created         => $self->ParseDate( $cert->not_before ),
-        Expire          => $self->ParseDate( $cert->not_after ),
-        Version         => sprintf("%d (0x%x)",hex($cert->version || 0)+1, hex($cert->version || 0)),
-        Issuer          => [ $canonicalize->( 'issuer' ) ],
-        User            => [ $canonicalize->( 'subject' ) ],
+    my %res = (
+        exit_code => 0,
+        info => [ {
+            Content         => $PEM,
+            Fingerprint     => Digest::SHA::sha1_hex($args{Certificate}),
+            'Serial Number' => $cert->serial,
+            Created         => $self->ParseDate( $cert->not_before ),
+            Expire          => $self->ParseDate( $cert->not_after ),
+            Version         => sprintf("%d (0x%x)",hex($cert->version || 0)+1, hex($cert->version || 0)),
+            Issuer          => [ $canonicalize->( 'issuer' ) ],
+            User            => [ $canonicalize->( 'subject' ) ],
+        } ],
+        stderr => ''
     );
-    return ( exit_code => 0, info => [ \%data ], stderr => '' );
+
+    # Check the validity
+    my $ca = RT->Config->Get('SMIME')->{'CAPath'};
+    if ($ca) {
+        my @ca_verify;
+        if (-d $ca) {
+            @ca_verify = ('-CApath', $ca);
+        } elsif (-f $ca) {
+            @ca_verify = ('-CAfile', $ca);
+        }
+
+        local $SIG{CHLD} = 'DEFAULT';
+        my $cmd = [
+            $self->OpenSSLPath,
+            'verify', @ca_verify,
+        ];
+        my $buf = '';
+        safe_run_child { run3( $cmd, \$PEM, \$buf, \$res{stderr} ) };
+        if ( $? ) {
+            $res{exit_code} = $?;
+            $res{message} = "openssl exited with error code ". ($? >> 8)
+                ." and error: $res{stderr}";
+            return %res;
+        }
+
+        if ($buf =~ /^stdin: OK$/) {
+            $res{info}[0]{Trust} = "Signed by trusted CA $res{info}[0]{Issuer}[0]{String}";
+            $res{info}[0]{TrustTerse} = "full";
+            $res{info}[0]{TrustLevel} = 2;
+        } else {
+            $res{info}[0]{Trust} = "UNTRUSTED signing CA $res{info}[0]{Issuer}[0]{String}";
+            $res{info}[0]{TrustTerse} = "none";
+            $res{info}[0]{TrustLevel} = -1;
+        }
+    } else {
+        $res{info}[0]{Trust} = "unknown (no CAPath set)";
+        $res{info}[0]{TrustTerse} = "unknown";
+        $res{info}[0]{TrustLevel} = 0;
+    }
+
+    return %res;
 }
 
 1;

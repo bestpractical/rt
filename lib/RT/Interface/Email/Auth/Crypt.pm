@@ -88,6 +88,7 @@ addresses and specify the following in your SiteConfig.pm
         Enable => 1,
         OpenSSL => '/usr/bin/openssl',
         Keyring => '/opt/rt4/var/data/smime',
+        CAPath  => '/opt/rt4/var/data/smime/signing-ca.pem',
     );
 
 Read also: L<RT::Crypt> and L<RT::Crypt::SMIME>.

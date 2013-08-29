@@ -695,6 +695,19 @@ our %META;
                     delete $opt->{Keyring};
                 }
             }
+
+            if (defined $opt->{CAPath}) {
+                if (-d $opt->{CAPath} and -r _) {
+                    # directory, all set
+                } elsif (-f $opt->{CAPath} and -r _) {
+                    # file, all set
+                } else {
+                    $RT::Logger->warn(
+                        "RT's SMIME libraries could not read your configured CAPath (".$opt->{CAPath}.")"
+                    );
+                    delete $opt->{CAPath};
+                }
+            }
         },
     },
     GnuPG        => {

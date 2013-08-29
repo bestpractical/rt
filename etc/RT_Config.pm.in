@@ -2355,6 +2355,12 @@ Set C<Keyring> to directory with key files.  Key and certificates should
 be stored in a PEM file in this directory named named, e.g.,
 F<email.address@example.com.pem>.
 
+Set C<CAPath> to either a PEM-formatted certificate of a single signing
+certificate authority, or a directory of such (including hash symlinks
+as created by the openssl tool C<c_rehash>).  Only SMIME certificates
+signed by these certificate authorities will be treated as valid
+signatures.  If left unset, no signatures will be marked as valid!
+
 See L<RT::Crypt::SMIME> for details.
 
 =back
@@ -2365,6 +2371,7 @@ Set( %SMIME,
     Enable => @RT_SMIME@,
     OpenSSL => '/usr/bin/openssl',
     Keyring => q{@RT_VAR_PATH@/data/smime},
+    CAPath => undef,
 );
 
 =head2 GnuPG configuration
