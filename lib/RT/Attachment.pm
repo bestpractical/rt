@@ -326,7 +326,7 @@ sub Siblings {
         $siblings->Limit( FIELD => 'id', OPERATOR => '!=', VALUE => $self->Id );
     } else {
         # Ensure emptiness
-        $siblings->Limit( FIELD => 'id', VALUE => 0 );
+        $siblings->Limit( SUBCLAUSE => 'empty', FIELD => 'id', VALUE => 0 );
     }
     return $siblings;
 }
