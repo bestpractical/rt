@@ -135,13 +135,15 @@ Builds an outgoing email we're going to send using scrip's template.
 sub Prepare {
     my $self = shift;
 
-    my ( $result, $message ) = $self->TemplateObj->Parse(
-        Argument       => $self->Argument,
-        TicketObj      => $self->TicketObj,
-        TransactionObj => $self->TransactionObj
-    );
-    if ( !$result ) {
-        return (undef);
+    unless ( $self->TemplateObj->MIMEObj ) {
+        my ( $result, $message ) = $self->TemplateObj->Parse(
+            Argument       => $self->Argument,
+            TicketObj      => $self->TicketObj,
+            TransactionObj => $self->TransactionObj
+        );
+        if ( !$result ) {
+            return (undef);
+        }
     }
 
     my $MIMEObj = $self->TemplateObj->MIMEObj;
@@ -221,7 +223,7 @@ sub Prepare {
             'Success';
     }
 
-    return $result;
+    return 1;
 }
 
 =head2 To

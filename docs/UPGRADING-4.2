@@ -263,4 +263,16 @@ removed.
 
 =back
 
+=item *
+
+We updated default "Forward" and "Forward Ticket" templates to support
+customizing messages on forward. They will be updated automatically if you
+didn't change them before.
+
+But in case you have changed them already, you need to update them manually.
+You can use $ForwardTransaction to refer to the customized message in the
+templates, e.g. "Forward" template could be updated to:
+
+{ $ForwardTransaction->Content =~ /\S/ ? $ForwardTransaction->Content : "This is a forward of transaction #".$Transaction->id." of ticket #". $Ticket->id }
+
 =cut

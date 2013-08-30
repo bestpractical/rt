@@ -587,176 +587,6 @@ sub SendEmailUsingTemplate {
     return SendEmail( Entity => $mail );
 }
 
-=head2 ForwardTransaction TRANSACTION, To => '', Cc => '', Bcc => ''
-
-Forwards transaction with all attachments as 'message/rfc822'.
-
-=cut
-
-sub ForwardTransaction {
-    my $txn = shift;
-    my %args = ( To => '', Cc => '', Bcc => '', @_ );
-
-    $args{$_} = join ", ", map { $_->format } RT::EmailParser->ParseEmailAddress($args{$_} || '')
-        for qw(To Cc Bcc);
-
-    my $entity = $txn->ContentAsMIME;
-
-    my ( $ret, $msg ) = SendForward( %args, Entity => $entity, Transaction => $txn );
-    if ($ret) {
-        my $ticket = $txn->TicketObj;
-        my ( $ret, $msg ) = $ticket->_NewTransaction(
-            Type  => 'Forward Transaction',
-            Field => $txn->id,
-            Data  => join ', ', grep { length } $args{To}, $args{Cc}, $args{Bcc},
-        );
-        unless ($ret) {
-            $RT::Logger->error("Failed to create transaction: $msg");
-        }
-    }
-    return ( $ret, $msg );
-}
-
-=head2 ForwardTicket TICKET, To => '', Cc => '', Bcc => ''
-
-Forwards a ticket's Create and Correspond Transactions and their Attachments as 'message/rfc822'.
-
-=cut
-
-sub ForwardTicket {
-    my $ticket = shift;
-    my %args = ( To => '', Cc => '', Bcc => '', @_ );
-
-    $args{$_} = join ", ", map { $_->format } RT::EmailParser->ParseEmailAddress($args{$_} || '')
-        for qw(To Cc Bcc);
-
-    my $txns = $ticket->Transactions;
-    $txns->Limit(
-        FIELD    => 'Type',
-        VALUE    => $_,
-    ) for qw(Create Correspond);
-
-    my $entity = MIME::Entity->build(
-        Type        => 'multipart/mixed',
-        Description => 'forwarded ticket',
-    );
-    $entity->add_part( $_ ) foreach 
-        map $_->ContentAsMIME,
-        @{ $txns->ItemsArrayRef };
-
-    my ( $ret, $msg ) = SendForward(
-        %args,
-        Entity   => $entity,
-        Ticket   => $ticket,
-        Template => 'Forward Ticket',
-    );
-
-    if ($ret) {
-        my ( $ret, $msg ) = $ticket->_NewTransaction(
-            Type  => 'Forward Ticket',
-            Field => $ticket->id,
-            Data  => join ', ', grep { length } $args{To}, $args{Cc}, $args{Bcc},
-        );
-        unless ($ret) {
-            $RT::Logger->error("Failed to create transaction: $msg");
-        }
-    }
-
-    return ( $ret, $msg );
-
-}
-
-=head2 SendForward Entity => undef, Ticket => undef, Transaction => undef, Template => undef, To => '', Cc => '', Bcc => ''
-
-Forwards an Entity representing Ticket or Transaction as 'message/rfc822'. Entity is wrapped into Template.
-
-=cut
-
-sub SendForward {
-    my (%args) = (
-        Entity => undef,
-        Ticket => undef,
-        Transaction => undef,
-        Template => 'Forward',
-        To => '', Cc => '', Bcc => '',
-        @_
-    );
-
-    my $txn = $args{'Transaction'};
-    my $ticket = $args{'Ticket'};
-    $ticket ||= $txn->Object if $txn;
-
-    my $entity = $args{'Entity'};
-    unless ( $entity ) {
-        require Carp;
-        $RT::Logger->error(Carp::longmess("No entity provided"));
-        return (0, $ticket->loc("Couldn't send email"));
-    }
-
-    my ($template, $msg) = PrepareEmailUsingTemplate(
-        Template  => $args{'Template'},
-        Arguments => {
-            Ticket      => $ticket,
-            Transaction => $txn,
-        },
-    );
-
-    my $mail;
-    if ( $template ) {
-        $mail = $template->MIMEObj;
-    } else {
-        $RT::Logger->warning($msg);
-    }
-    unless ( $mail ) {
-        $RT::Logger->warning("Couldn't generate email using template '$args{Template}'");
-
-        my $description;
-        unless ( $args{'Transaction'} ) {
-            $description = 'This is forward of ticket #'. $ticket->id;
-        } else {
-            $description = 'This is forward of transaction #'
-                . $txn->id ." of a ticket #". $txn->ObjectId;
-        }
-        $mail = MIME::Entity->build(
-            Type => 'text/plain',
-            Data => $description,
-        );
-    }
-
-    $mail->head->set( $_ => EncodeToMIME( String => $args{$_} ) )
-        foreach grep defined $args{$_}, qw(To Cc Bcc);
-
-    $mail->make_multipart unless $mail->is_multipart;
-    $mail->add_part( $entity );
-
-    my $from;
-    unless (defined $mail->head->get('Subject')) {
-        my $subject = '';
-        $subject = $txn->Subject if $txn;
-        $subject ||= $ticket->Subject if $ticket;
-
-        unless ( RT->Config->Get('ForwardFromUser') ) {
-            # XXX: what if want to forward txn of other object than ticket?
-            $subject = AddSubjectTag( $subject, $ticket );
-        }
-
-        $mail->head->set( Subject => EncodeToMIME( String => "Fwd: $subject" ) );
-    }
-
-    $mail->head->set(
-        From => EncodeToMIME(
-            String => GetForwardFrom( Transaction => $txn, Ticket => $ticket )
-        )
-    );
-
-    my $status = RT->Config->Get('ForwardFromUser')
-        # never sign if we forward from User
-        ? SendEmail( %args, Entity => $mail, Sign => 0 )
-        : SendEmail( %args, Entity => $mail );
-    return (0, $ticket->loc("Couldn't send email")) unless $status;
-    return (1, $ticket->loc("Sent email successfully"));
-}
-
 =head2 GetForwardFrom Ticket => undef, Transaction => undef
 
 Resolve the From field to use in forward mail
@@ -776,6 +606,36 @@ sub GetForwardFrom {
           || RT->Config->Get('CorrespondAddress');
     }
 }
+
+=head2 GetForwardAttachments Ticket => undef, Transaction => undef
+
+Resolve the Attachments to forward
+
+=cut
+
+sub GetForwardAttachments {
+    my %args   = ( Ticket => undef, Transaction => undef, @_ );
+    my $txn    = $args{Transaction};
+    my $ticket = $args{Ticket} || $txn->Object;
+
+    my $attachments = RT::Attachments->new( $ticket->CurrentUser );
+    if ($txn) {
+        $attachments->Limit( FIELD => 'TransactionId', VALUE => $txn->id );
+    }
+    else {
+        my $txns = $ticket->Transactions;
+        $txns->Limit(
+            FIELD => 'Type',
+            VALUE => $_,
+        ) for qw(Create Correspond);
+
+        while ( my $txn = $txns->Next ) {
+            $attachments->Limit( FIELD => 'TransactionId', VALUE => $txn->id );
+        }
+    }
+    return $attachments;
+}
+
 
 =head2 SignEncrypt Entity => undef, Sign => 0, Encrypt => 0
 

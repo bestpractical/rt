@@ -61,7 +61,7 @@
 <td><% $from %></td></tr>
 
 <tr><td align="right"><&|/l&>Subject</&>:</td>
-<td><% $subject %></td></tr>
+<td><input name="Subject" size="60" value="<% $ARGS{'Subject'} || $subject %>" /></td></tr>
 
 <tr><td align="right"><&|/l&>To</&>:</td>
 <td><input name="To" size="60" value="<% $ARGS{'To'} || '' %>" /></td></tr>
@@ -72,7 +72,20 @@
 <tr><td align="right"><&|/l&>Bcc</&>:</td>
 <td><input name="Bcc" size="60" value="<% $ARGS{'Bcc'} || '' %>" /></td></tr>
 
+<tr>
+<td><&|/l&>Content</&>:</td>
+<td>
+% if (exists $ARGS{Content}) {
+<& /Elements/MessageBox, Default => $ARGS{Content}, IncludeSignature => 0 &>
+% } else {
+<& /Elements/MessageBox  &>
+%}
+</td>
+</tr>
+
 </table>
+
+<& /Ticket/Elements/ShowAttachments, Attachments => $attachments &>
 
 <& /Elements/Submit, Label => loc('Forward Message and Return'), Name => 'ForwardAndReturn' &>
 <& /Elements/Submit, Label => loc('Forward Message'), Name => 'Forward' &>
@@ -94,10 +107,7 @@ if ( $QuoteTransaction ) {
 
 my @results;
 if ( $Forward || $ForwardAndReturn ) {
-    require RT::Interface::Email;
-    my ($status, $msg) = $txn
-        ? RT::Interface::Email::ForwardTransaction( $txn, %ARGS )
-        : RT::Interface::Email::ForwardTicket( $TicketObj, %ARGS );
+    my ( $status, $msg ) = $TicketObj->Forward( Transaction => $txn, %ARGS );
     push @results, $msg;
 
     if ( $ForwardAndReturn ) {
@@ -115,9 +125,12 @@ my $Title = $txn
 my $from = RT::Interface::Email::GetForwardFrom(
     $txn ? ( Transaction => $txn ) : ( Ticket => $TicketObj ) );
 
-my $subject = $TicketObj->Subject;
-$subject = RT::Interface::Email::AddSubjectTag( $subject, $TicketObj )
-    unless RT->Config->Get('ForwardFromUser');
+my $subject = "Fwd: ".($txn || $TicketObj)->Subject;
+
+my $attachments = RT::Interface::Email::GetForwardAttachments(
+    Ticket => $TicketObj,
+    $txn ? ( Transaction => $txn ) : (),
+);
 
 </%INIT>
 
