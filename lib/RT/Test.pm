@@ -837,6 +837,20 @@ sub create_ticket {
         );
     }
 
+    if ( my $cfs = delete $args{'CustomFields'} ) {
+        my $q = RT::Queue->new( RT->SystemUser );
+        $q->Load( $args{'Queue'} );
+        while ( my ($k, $v) = each %$cfs ) {
+            my $cf = $q->CustomField( $k );
+            unless ($cf->id) {
+                RT->Logger->error("Couldn't load custom field $k");
+                next;
+            }
+
+            $args{'CustomField-'. $cf->id} = $v;
+        }
+    }
+
     my $ticket = RT::Ticket->new( RT->SystemUser );
     my ( $id, undef, $msg ) = $ticket->Create( %args );
     Test::More::ok( $id, "ticket created" )
