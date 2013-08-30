@@ -98,6 +98,10 @@ sub ObjectType {
     return 'RT::Ticket';
 }
 
+sub CustomFieldLookupType {
+    RT::Ticket->CustomFieldLookupType
+}
+
 sub Query {
     my $self = shift;
 
