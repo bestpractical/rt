@@ -67,19 +67,22 @@
 %   Default => $ARGS{"Bulk-Delete-CustomField-$cf_id-Values"} || $ARGS{"Bulk-Delete-CustomField-$cf_id-Value"}, );
 % if ($cf->Type eq 'Select') {
 <td><& /Elements/EditCustomFieldSelect, @add &></td>
-<td><& /Elements/EditCustomFieldSelect, @del &></td>
+<td><& /Elements/EditCustomFieldSelect, @del &><br />
 % } elsif ($cf->Type eq 'Combobox') {
 <td><& /Elements/EditCustomFieldCombobox, @add &></td>
-<td><& /Elements/EditCustomFieldCombobox, @del &></td>
+<td><& /Elements/EditCustomFieldCombobox, @del &><br />
 % } elsif ($cf->Type eq 'Freeform') {
-<td><& /Elements/EditCustomFieldFreeform, @add &></td>
-<td><& /Elements/EditCustomFieldFreeform, @del &></td>
+<td><& /Elements/EditCustomFieldFreeform, @add &>
+<td><& /Elements/EditCustomFieldFreeform, @del &><br />
 % } elsif ($cf->Type eq 'Text') {
-<td><& /Elements/EditCustomFieldText, @add &></td>
-<td>&nbsp;</td>
+<td><& /Elements/EditCustomFieldText, @add &>
+<td>
 % } else {
 %   $RT::Logger->crit("Unknown CustomField type: " . $cf->Type);
+%   next
 % }
+  <label><input type="checkbox" name="Bulk-Delete-CustomField-<% $cf_id %>-AllValues" value="1"><em>check to delete all values</em></label>
+</td>
 </tr>
 % }
 </table>

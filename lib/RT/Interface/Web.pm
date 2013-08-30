@@ -3522,6 +3522,16 @@ sub ProcessRecordBulkCustomFields {
         );
 
         my $current_values = $args{'RecordObj'}->CustomFieldValues( $cfid );
+        if ( $op eq 'Delete' && $rest eq 'AllValues' && @values ) {
+            while ( my $value = $current_values->Next ) {
+                my ( $id, $msg ) = $args{'RecordObj'}->DeleteCustomFieldValue(
+                    Field   => $cfid,
+                    ValueId => $value->id,
+                );
+                push @results, $msg;
+            }
+            next;
+        }
         foreach my $value (@values) {
             if ( $op eq 'Delete' && $current_values->HasEntry($value) ) {
                 my ( $id, $msg ) = $args{'RecordObj'}->DeleteCustomFieldValue(
