@@ -754,7 +754,7 @@ sub GenerateCustomFieldFunction {
     my $self = shift;
     my %args = @_;
 
-    my ($name) = ( $args{'SUBKEY'} =~ /^\.\{(.*)\}$/ );
+    my ($name) = ( $args{'SUBKEY'} =~ /^\{(.*)\}$/ );
     my $cf = RT::CustomField->new( $self->CurrentUser );
     $cf->Load($name);
     unless ( $cf->id ) {

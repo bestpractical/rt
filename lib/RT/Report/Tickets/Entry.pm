@@ -98,6 +98,10 @@ sub ObjectType {
     return 'RT::Ticket';
 }
 
+sub CustomFieldLookupType {
+    RT::Ticket->CustomFieldLookupType
+}
+
 sub Query {
     my $self = shift;
 
@@ -122,6 +126,10 @@ sub Query {
             }
             else {
                 ($op, $value) = ('IS', 'NULL');
+            }
+            unless ( $field =~ /^[{}\w\.]+$/ ) {
+                $field =~ s/(['\\])/\\$1/g;
+                $field = "'$field'";
             }
             push @parts, "$field $op $value";
         }
