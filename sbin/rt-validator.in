@@ -790,20 +790,6 @@ push @CHECKS, 'Attachments -> other' => sub {
     );
 };
 
-# ObjectCustomFieldValues
-push @CHECKS, 'ObjectCustomFieldValues -> other' => sub {
-    check_integrity(
-        ObjectCustomFieldValues  => 'ObjectId', Tickets => 'id',
-        action => sub {
-            my $id = shift;
-            return unless prompt(
-                'Delete', "Found a custom field value on a ticket that does not exist."
-            );
-            delete_record( 'ObjectCustomFieldValues', $id );
-        },
-    );
-};
-
 push @CHECKS, 'CustomFields and friends' => sub {
     #XXX: ObjectCustomFields needs more love
     check_integrity(
@@ -817,6 +803,13 @@ push @CHECKS, 'CustomFields and friends' => sub {
             'ObjectCustomFieldValues', 'ObjectId' => m2t($model), 'id',
             condition   => 's.ObjectType = ?',
             bind_values => [ "RT::$model" ],
+            action => sub {
+                my $id = shift;
+                return unless prompt(
+                    'Delete', "Found a custom field value on an object that does not exist."
+                );
+                delete_record( 'ObjectCustomFieldValues', $id );
+            },
         );
     }
 };
