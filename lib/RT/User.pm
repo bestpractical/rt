@@ -897,7 +897,7 @@ sub _GeneratePassword_bcrypt {
         key_nul => 1,
         cost    => $rounds,
         salt    => $salt,
-    }, encode_utf8($password) );
+    }, Digest::SHA::sha512( encode_utf8($password) ) );
 
     return join("!", "", "bcrypt", sprintf("%02d", $rounds),
                 Crypt::Eksblowfish::Bcrypt::en_base64( $salt ).
