@@ -393,6 +393,22 @@ sub SendEmail {
         $TicketObj = $TransactionObj->Object;
     }
 
+    my $head = $args{'Entity'}->head;
+    unless ( $head->get('Date') ) {
+        require RT::Date;
+        my $date = RT::Date->new( RT->SystemUser );
+        $date->SetToNow;
+        $head->set( 'Date', $date->RFC2822( Timezone => 'server' ) );
+    }
+    unless ( $head->get('MIME-Version') ) {
+        # We should never have to set the MIME-Version header
+        $head->set( 'MIME-Version', '1.0' );
+    }
+    unless ( $head->get('Content-Transfer-Encoding') ) {
+        # fsck.com #5959: Since RT sends 8bit mail, we should say so.
+        $head->set( 'Content-Transfer-Encoding', '8bit' );
+    }
+
     if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
         %args = WillSignEncrypt(
             %args,
@@ -401,13 +417,6 @@ sub SendEmail {
         );
         my $res = SignEncrypt( %args );
         return $res unless $res > 0;
-    }
-
-    unless ( $args{'Entity'}->head->get('Date') ) {
-        require RT::Date;
-        my $date = RT::Date->new( RT->SystemUser );
-        $date->SetToNow;
-        $args{'Entity'}->head->set( 'Date', $date->RFC2822( Timezone => 'server' ) );
     }
 
     my $mail_command = RT->Config->Get('MailCommand');
