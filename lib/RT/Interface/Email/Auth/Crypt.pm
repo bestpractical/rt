@@ -121,7 +121,12 @@ sub GetCurrentUser {
     }
 
     if ( grep {$_->{'exit_code'}} @res ) {
-        $RT::Logger->error("Had a problem during decrypting and verifying");
+        my @fail = grep {$_->{status}{Status} ne "DONE"}
+                   map { my %ret = %{$_}; map {+{%ret, status => $_}} RT::Crypt->ParseStatus( Protocol => $_->{Protocol}, Status => $_->{status})}
+                   @res;
+        for my $fail ( @fail ) {
+            $RT::Logger->warning("Failure during ".$fail->{Protocol}." ". lc($fail->{status}{Operation}) . ": ". $fail->{status}{Message});
+        }
         my $reject = HandleErrors( Message => $args{'Message'}, Result => \@res );
         return (0, 'rejected because of problems during decrypting and verifying')
             if $reject;
@@ -236,8 +241,6 @@ sub CheckBadData {
         grep $_->{'Status'} ne 'DONE' && $_->{'Operation'} eq 'Data',
         @{ $args{'Status'} };
     return 1 unless @bad_data_messages;
-
-    $RT::Logger->error("Couldn't process a message: ". join ', ', @bad_data_messages );
 
     my $address = (RT::Interface::Email::ParseSenderAddressFromHead( $args{'Message'}->head ))[0];
     my ($status) = RT::Interface::Email::SendEmailUsingTemplate(
