@@ -885,8 +885,7 @@ sub _GeneratePassword_bcrypt {
         # special bcrypt base64.
         $salt = Crypt::Eksblowfish::Bcrypt::de_base64( substr($rest[1], 0, 22) );
     } else {
-        # The current standard is 10 rounds
-        $rounds = 10;
+        $rounds = RT->Config->Get('BcryptCost');
 
         # Generate a random 16-octet base64 salt
         $salt = "";
@@ -985,7 +984,9 @@ sub IsPassword {
         # If it's a new-style (>= RT 4.0) password, it starts with a '!'
         my (undef, $method, @rest) = split /!/, $stored;
         if ($method eq "bcrypt") {
-            return $self->_GeneratePassword_bcrypt($value, @rest) eq $stored;
+            return 0 unless $self->_GeneratePassword_bcrypt($value, @rest) eq $stored;
+            # Upgrade to a larger number of rounds if necessary
+            return 1 unless $rest[0] < RT->Config->Get('BcryptCost');
         } elsif ($method eq "sha512") {
             return 0 unless $self->_GeneratePassword_sha512($value, @rest) eq $stored;
         } else {
