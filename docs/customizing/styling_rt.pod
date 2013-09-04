@@ -12,17 +12,21 @@ RT versions have a default, and the RT admin can set the system-wide
 theme with the C<$WebDefaultStylesheet> configuration value in the
 F<RT_SiteConfig.pm> file.
 
-RT 4.0 comes with the following themes:
+RT comes with the following themes:
 
 =over
 
-=item web2
+=item rudder
 
-An approximation of the 3.8 style
+The default layout for RT 4.2
 
 =item aileron
 
 The default layout for RT 4.0
+
+=item web2
+
+An approximation of the 3.8 style
 
 =item ballard
 
@@ -115,10 +119,10 @@ C</opt/rt4> directory (or wherever your RT is installed) to get
 started:
 
     $ mkdir -p local/static/css/localstyle
-    $ cp -R share/static/css/aileron/* local/static/css/localstyle/
+    $ cp -R share/static/css/rudder/* local/static/css/localstyle/
 
 You can call your "localstyle" directory whatever you want and you don't
-have to copy the aileron theme to start from, but it's a good place to
+have to copy the rudder theme to start from, but it's a good place to
 start off for RT4.
 
 Now set C<$WebDefaultStylesheet> in RT_SiteConfig.pm to the new directory
