@@ -2307,7 +2307,7 @@ email. You may set C<Incoming> to a subset of this list, if some enabled
 protocols do not apply to incoming mail; however, this is usually
 unnecessary. Note that for any verification or decryption to occur for
 incoming mail, the C<Auth::Crypt> mail plugin must be added to
-L</@MailPlugins>.
+L</@MailPlugins> as specified in L<RT::Crypt/Handling incoming messages>.
 
 For outgoing emails, the first security protocol from the above list is
 used. Use the C<Outgoing> option to set a security protocol that should
