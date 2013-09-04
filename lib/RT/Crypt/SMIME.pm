@@ -138,6 +138,7 @@ to the certificate on the user.
 
 sub OpenSSLPath {
     state $cache = RT->Config->Get('SMIME')->{'OpenSSL'};
+    $cache = $_[1] if @_ > 1;
     return $cache;
 }
 
@@ -166,6 +167,7 @@ sub Probe {
                 "Check the 'OpenSSL' configuration in %OpenSSL");
             return 0;
         }
+        $self->OpenSSLPath( $bin = $path );
     }
 
     {

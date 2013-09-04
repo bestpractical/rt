@@ -1816,6 +1816,7 @@ sub ImportKey {
 
 sub GnuPGPath {
     state $cache = RT->Config->Get('GnuPG')->{'GnuPG'};
+    $cache = $_[1] if @_ > 1;
     return $cache;
 }
 
@@ -1846,6 +1847,7 @@ sub Probe {
                 "Check the 'GnuPG' configuration in %GnuPG");
             return 0;
         }
+        $self->GnuPGPath( $bin = $path );
     }
 
     $gnupg->call( $bin );
