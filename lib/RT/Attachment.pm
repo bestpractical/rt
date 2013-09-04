@@ -737,20 +737,16 @@ sub Encrypt {
     return (0, $self->loc('Permission Denied')) unless $txn->CurrentUserCanSee;
     return (0, $self->loc('Permission Denied'))
         unless $txn->TicketObj->CurrentUserHasRight('ModifyTicket');
-    return (0, $self->loc('GnuPG integration is disabled'))
-        unless RT->Config->Get('GnuPG')->{'Enable'};
+    return (0, $self->loc('Cryptography is disabled'))
+        unless RT->Config->Get('Crypt')->{'Enable'};
     return (0, $self->loc('Attachments encryption is disabled'))
-        unless RT->Config->Get('GnuPG')->{'AllowEncryptDataInDB'};
-
-    require RT::Crypt::GnuPG;
+        unless RT->Config->Get('Crypt')->{'AllowEncryptDataInDB'};
 
     my $type = $self->ContentType;
-    if ( $type =~ /^x-application-rt\/gpg-encrypted/i ) {
+    if ( $type =~ /^x-application-rt\/[^-]+-encrypted/i ) {
         return (1, $self->loc('Already encrypted'));
     } elsif ( $type =~ /^multipart\//i ) {
         return (1, $self->loc('No need to encrypt'));
-    } else {
-        $type = qq{x-application-rt\/gpg-encrypted; original-type="$type"};
     }
 
     my $queue = $txn->TicketObj->QueueObj;
@@ -761,9 +757,9 @@ sub Encrypt {
         RT->Config->Get('CorrespondAddress'),
         RT->Config->Get('CommentAddress'),
     ) {
-        my %res = RT::Crypt::GnuPG::GetKeysInfo( $address, 'private' );
+        my %res = RT::Crypt->GetKeysInfo( Key => $address, Type => 'private' );
         next if $res{'exit_code'} || !$res{'info'};
-        %res = RT::Crypt::GnuPG::GetKeysForEncryption( $address );
+        %res = RT::Crypt->GetKeysForEncryption( $address );
         next if $res{'exit_code'} || !$res{'info'};
         $encrypt_for = $address;
     }
@@ -771,24 +767,26 @@ sub Encrypt {
         return (0, $self->loc('No key suitable for encryption'));
     }
 
-    $self->__Set( Field => 'ContentType', Value => $type );
-    $self->SetHeader( 'Content-Type' => $type );
-
     my $content = $self->Content;
-    my %res = RT::Crypt::GnuPG::SignEncryptContent(
+    my %res = RT::Crypt->SignEncryptContent(
         Content => \$content,
         Sign => 0,
         Encrypt => 1,
         Recipients => [ $encrypt_for ],
     );
     if ( $res{'exit_code'} ) {
-        return (0, $self->loc('GnuPG error. Contact with administrator'));
+        return (0, $self->loc('Encryption error; contact the administrator'));
     }
 
     my ($status, $msg) = $self->__Set( Field => 'Content', Value => $content );
     unless ( $status ) {
         return ($status, $self->loc("Couldn't replace content with encrypted data: [_1]", $msg));
     }
+
+    $type = qq{x-application-rt\/$res{'Protocol'}-encrypted; original-type="$type"};
+    $self->__Set( Field => 'ContentType', Value => $type );
+    $self->SetHeader( 'Content-Type' => $type );
+
     return (1, $self->loc('Successfuly encrypted data'));
 }
 
@@ -799,31 +797,45 @@ sub Decrypt {
     return (0, $self->loc('Permission Denied')) unless $txn->CurrentUserCanSee;
     return (0, $self->loc('Permission Denied'))
         unless $txn->TicketObj->CurrentUserHasRight('ModifyTicket');
-    return (0, $self->loc('GnuPG integration is disabled'))
-        unless RT->Config->Get('GnuPG')->{'Enable'};
-
-    require RT::Crypt::GnuPG;
+    return (0, $self->loc('Cryptography is disabled'))
+        unless RT->Config->Get('Crypt')->{'Enable'};
 
     my $type = $self->ContentType;
-    if ( $type =~ /^x-application-rt\/gpg-encrypted/i ) {
+    my $protocol;
+    if ( $type =~ /^x-application-rt\/([^-]+)-encrypted/i ) {
+        $protocol = $1;
+        $protocol =~ s/gpg/gnupg/; # backwards compatibility
         ($type) = ($type =~ /original-type="(.*)"/i);
         $type ||= 'application/octet-stream';
     } else {
         return (1, $self->loc('Is not encrypted'));
     }
-    $self->__Set( Field => 'ContentType', Value => $type );
-    $self->SetHeader( 'Content-Type' => $type );
+
+    my $queue = $txn->TicketObj->QueueObj;
+    my @addresses =
+        $queue->CorrespondAddress,
+        $queue->CommentAddress,
+        RT->Config->Get('CorrespondAddress'),
+        RT->Config->Get('CommentAddress')
+    ;
 
     my $content = $self->Content;
-    my %res = RT::Crypt::GnuPG::DecryptContent( Content => \$content, );
+    my %res = RT::Crypt->DecryptContent(
+        Protocol => $protocol,
+        Content => \$content,
+        Recipients => \@addresses,
+    );
     if ( $res{'exit_code'} ) {
-        return (0, $self->loc('GnuPG error. Contact with administrator'));
+        return (0, $self->loc('Decryption error; contact the administrator'));
     }
 
     my ($status, $msg) = $self->__Set( Field => 'Content', Value => $content );
     unless ( $status ) {
         return ($status, $self->loc("Couldn't replace content with decrypted data: [_1]", $msg));
     }
+    $self->__Set( Field => 'ContentType', Value => $type );
+    $self->SetHeader( 'Content-Type' => $type );
+
     return (1, $self->loc('Successfuly decrypted data'));
 }
 

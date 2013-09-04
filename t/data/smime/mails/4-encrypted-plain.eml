@@ -1,0 +1,32 @@
+X-Mozilla-Status: 0801
+X-Mozilla-Status2: 00000000
+X-Mozilla-Keys:                                                                                 
+FCC: imap://sender@localhost/Sent
+X-Identity-Key: id1
+X-Account-Key: account1
+Message-ID: <4B709D39.6090102@example.com>
+Date: Tue, 09 Feb 2010 02:24:41 +0300
+From: tester <sender@example.com>
+X-Mozilla-Draft-Info: internal/draft; vcard=0; receipt=0; DSN=0; uuencode=0
+User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.5; ru; rv:1.9.1.7) Gecko/20100111 Thunderbird/3.0.1
+MIME-Version: 1.0
+To: root@example.com
+Subject: Test Email ID:4
+Content-Type: application/pkcs7-mime; name="smime.p7m"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7m"
+Content-Description: S/MIME Encrypted Message
+
+MIAGCSqGSIb3DQEHA6CAMIACAQAxggHIMIHhAgEAMIGKMH0xCzAJBgNVBAYTAkFVMRMwEQYD
+VQQIEwpTb21lLVN0YXRlMSEwHwYDVQQKExhJbnRlcm5ldCBXaWRnaXRzIFB0eSBMdGQxETAP
+BgNVBAMTCENBIE93bmVyMSMwIQYJKoZIhvcNAQkBFhRjYS5vd25lckBleGFtcGxlLmNvbQIJ
+AIpqzVG+lKAVMA0GCSqGSIb3DQEBAQUABEB4NUWl1nJB+cQVXPRmHEj+uxapSKRQ2PFeP+Eh
+VJHyPpsgf8APPxhS/6s1DBIWE9fwkghiM7JTgYZow42q/tdfMIHhAgEAMIGKMH0xCzAJBgNV
+BAYTAkFVMRMwEQYDVQQIEwpTb21lLVN0YXRlMSEwHwYDVQQKExhJbnRlcm5ldCBXaWRnaXRz
+IFB0eSBMdGQxETAPBgNVBAMTCENBIE93bmVyMSMwIQYJKoZIhvcNAQkBFhRjYS5vd25lckBl
+eGFtcGxlLmNvbQIJAIpqzVG+lKAWMA0GCSqGSIb3DQEBAQUABEAFd/zqPwzjH8gKZoGUA/yY
+7aDfJzlAsg2tar47hM1xeSTgJ5JpluYy9V/43oK++Q+3HceI4P+aE91CjMrcbqvlMIAGCSqG
+SIb3DQEHATAaBggqhkiG9w0DAjAOAgIAoAQIsDsGzNXDhPmggASBiBdO/BdF/SrEjAeIi2is
+G71RuJ/lcnNlAltdk9lMJLoOxxTaa495lk8HuVD0xFYQueNS8AsACRjkOwgSf9Avh1elFRV5
+U3XZrmCOqbnDsWRTr2KEc8K9CXxqY6CwFizaoFlTftpji7W3ATU2+/QufIKYBS7Za3Zq1u7M
+HLbv4GLdEP1GVPDj2fAECP7azsN17fhCAAAAAAAAAAAAAA==

@@ -323,7 +323,7 @@ sub WillSignEncrypt {
     my $attachment = delete $args{Attachment};
     my $ticket     = delete $args{Ticket};
 
-    if ( not RT->Config->Get('GnuPG')->{'Enable'} ) {
+    if ( not RT->Config->Get('Crypt')->{'Enable'} ) {
         $args{Sign} = $args{Encrypt} = 0;
         return wantarray ? %args : 0;
     }
@@ -409,7 +409,7 @@ sub SendEmail {
         $head->set( 'Content-Transfer-Encoding', '8bit' );
     }
 
-    if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
+    if ( RT->Config->Get('Crypt')->{'Enable'} ) {
         %args = WillSignEncrypt(
             %args,
             Attachment => $TransactionObj ? $TransactionObj->Attachments->First : undef,
@@ -648,8 +648,8 @@ sub GetForwardAttachments {
 
 =head2 SignEncrypt Entity => undef, Sign => 0, Encrypt => 0
 
-Signs and encrypts message using L<RT::Crypt::GnuPG>, but as well
-handle errors with users' keys.
+Signs and encrypts message using L<RT::Crypt>, but as well handle errors
+with users' keys.
 
 If a recipient has no key or has other problems with it, then the
 unction sends a error to him using 'Error: public key' template.
@@ -677,11 +677,12 @@ sub SignEncrypt {
     $RT::Logger->debug("$msgid Signing message") if $args{'Sign'};
     $RT::Logger->debug("$msgid Encrypting message") if $args{'Encrypt'};
 
-    require RT::Crypt::GnuPG;
-    my %res = RT::Crypt::GnuPG::SignEncrypt( %args );
+    my %res = RT::Crypt->SignEncrypt( %args );
     return 1 unless $res{'exit_code'};
 
-    my @status = RT::Crypt::GnuPG::ParseStatus( $res{'status'} );
+    my @status = RT::Crypt->ParseStatus(
+        Protocol => $res{'Protocol'}, Status => $res{'status'},
+    );
 
     my @bad_recipients;
     foreach my $line ( @status ) {
@@ -745,7 +746,7 @@ sub SignEncrypt {
     }
 
     # redo without broken recipients
-    %res = RT::Crypt::GnuPG::SignEncrypt( %args );
+    %res = RT::Crypt->SignEncrypt( %args );
     return 0 if $res{'exit_code'};
 
     return 1;
@@ -1248,6 +1249,10 @@ sub Gateway {
     push @mail_plugins, "Auth::MailFrom" unless @mail_plugins;
     @mail_plugins = _LoadPlugins( @mail_plugins );
 
+    #Set up a queue object
+    my $SystemQueueObj = RT::Queue->new( RT->SystemUser );
+    $SystemQueueObj->Load( $args{'queue'} );
+
     my %skip_plugin;
     foreach my $class( grep !ref, @mail_plugins ) {
         # check if we should apply filter before decoding
@@ -1259,6 +1264,8 @@ sub Gateway {
         next unless $check_cb->(
             Message       => $Message,
             RawMessageRef => \$args{'message'},
+            Queue         => $SystemQueueObj,
+            Actions       => \@actions,
         );
 
         $skip_plugin{ $class }++;
@@ -1270,6 +1277,8 @@ sub Gateway {
         my ($status, $msg) = $Code->(
             Message       => $Message,
             RawMessageRef => \$args{'message'},
+            Queue         => $SystemQueueObj,
+            Actions       => \@actions,
         );
         next if $status > 0;
 
@@ -1327,10 +1336,6 @@ sub Gateway {
     } else {
         $Right = 'CreateTicket';
     }
-
-    #Set up a queue object
-    my $SystemQueueObj = RT::Queue->new( RT->SystemUser );
-    $SystemQueueObj->Load( $args{'queue'} );
 
     # We can safely have no queue of we have a known-good ticket
     unless ( $SystemTicket->id || $SystemQueueObj->id ) {

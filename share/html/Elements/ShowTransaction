@@ -213,11 +213,11 @@ if ( $ShowActions ) {
             };
         }
         if ( $EncryptionPath && $can_modify
-            && RT->Config->Get('GnuPG')->{'Enable'}
-            && RT->Config->Get('GnuPG')->{'AllowEncryptDataInDB'}
+            && RT->Config->Get('Crypt')->{'Enable'}
+            && RT->Config->Get('Crypt')->{'AllowEncryptDataInDB'}
         ) {
             push @actions, {
-                class  => "gpg-link",
+                class  => "encryption-link",
                 title  => loc('Encrypt/Decrypt'),
                 path   => $EncryptionPath
                     .'?id='. $Transaction->id

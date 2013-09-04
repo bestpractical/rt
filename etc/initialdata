@@ -622,6 +622,15 @@ Content-Type: text/html
 }
     },
     {  Queue       => 0,
+       Name        => "Error: unencrypted message",    # loc
+       Description =>
+         "Inform user that their unencrypted mail has been rejected", # loc
+       Content => q{Subject: RT requires that all incoming mail be encrypted
+
+You received this message because RT received mail from you that was not encrypted.  As such, it has been rejected.
+}
+    },
+    {  Queue       => 0,
        Name        => "Error: public key",    # loc
        Description =>
          "Inform user that he has problems with public key and couldn't recieve encrypted content", # loc
@@ -656,12 +665,12 @@ Please, check that you encrypt messages with correct keys
 or contact the system administrator.}
     },
     {  Queue       => 0,
-       Name        => "Error: bad GnuPG data",    # loc
+       Name        => "Error: bad encrypted data",    # loc
        Description =>
-         "Inform user that a message he sent has invalid GnuPG data", # loc
+         "Inform user that a message he sent has invalid encryption data", # loc
        Content => q{Subject: We received a message we cannot handle
 
-You sent us a message that we cannot handle due to corrupted GnuPG signature or encrypted block. we get the following error(s):
+You sent us a message that we cannot handle due to corrupted signature or encrypted block. we get the following error(s):
 { foreach my $msg ( @Messages ) {
     $OUT .= "* $msg\n";
   }

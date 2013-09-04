@@ -162,15 +162,11 @@ sub LoadConfig {
     # If the user does that, do what they mean.
     $RT::WebPath = '' if ($RT::WebPath eq '/');
 
-    # fix relative LogDir and GnuPG homedir
+    # Fix relative LogDir; It cannot be fixed in a PostLoadCheck, as
+    # they are run after logging is enabled.
     unless ( File::Spec->file_name_is_absolute( $Config->Get('LogDir') ) ) {
         $Config->Set( LogDir =>
               File::Spec->catfile( $BasePath, $Config->Get('LogDir') ) );
-    }
-
-    my $gpgopts = $Config->Get('GnuPGOptions');
-    unless ( File::Spec->file_name_is_absolute( $gpgopts->{homedir} ) ) {
-        $gpgopts->{homedir} = File::Spec->catfile( $BasePath, $gpgopts->{homedir} );
     }
 
     return $Config;

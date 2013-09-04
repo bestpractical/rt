@@ -66,11 +66,11 @@ sub safe_run_child (&) {
     # on failure and reset values only in our original
     # process
     my ($oldv_dbh, $oldv_rth);
-    my $dbh = $RT::Handle->dbh;
+    my $dbh = $RT::Handle ? $RT::Handle->dbh : undef;
     $oldv_dbh = $dbh->{'InactiveDestroy'} if $dbh;
     $dbh->{'InactiveDestroy'} = 1 if $dbh;
-    $oldv_rth = $RT::Handle->{'DisconnectHandleOnDestroy'};
-    $RT::Handle->{'DisconnectHandleOnDestroy'} = 0;
+    $oldv_rth = $RT::Handle->{'DisconnectHandleOnDestroy'} if $RT::Handle;
+    $RT::Handle->{'DisconnectHandleOnDestroy'} = 0 if $RT::Handle;
 
     my ($reader, $writer);
     pipe( $reader, $writer );
@@ -94,7 +94,7 @@ sub safe_run_child (&) {
         $err =~ s/^Stack:.*$//ms;
         if ( $our_pid == $$ ) {
             $dbh->{'InactiveDestroy'} = $oldv_dbh if $dbh;
-            $RT::Handle->{'DisconnectHandleOnDestroy'} = $oldv_rth;
+            $RT::Handle->{'DisconnectHandleOnDestroy'} = $oldv_rth if $RT::Handle;
             die "System Error: $err";
         } else {
             print $writer "System Error: $err";
@@ -108,7 +108,7 @@ sub safe_run_child (&) {
     warn $response if $response;
 
     $dbh->{'InactiveDestroy'} = $oldv_dbh if $dbh;
-    $RT::Handle->{'DisconnectHandleOnDestroy'} = $oldv_rth;
+    $RT::Handle->{'DisconnectHandleOnDestroy'} = $oldv_rth if $RT::Handle;
     return $want? (@res) : $res[0];
 }
 

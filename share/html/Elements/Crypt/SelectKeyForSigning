@@ -45,56 +45,23 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => $title &>
-<& /Elements/Tabs &>
-
-% $m->callback( CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSRef => \%ARGS );
-<& /Elements/ListActions, actions => \@results &>
-<form method="post" action="<% RT->Config->Get('WebPath') . $m->request_comp->path %>?id=<% $id %>">
-<a href="<% RT->Config->Get('WebPath') %>/Ticket/Display.html?id=<% $txn->Ticket %>#txn-<% $id %>">
-<% loc('Return back to the ticket') %>
-</a>
-<& /Elements/Submit,
-    Label => ($encrypted? loc('Decrypt'): loc('Encrypt')),
-    Name  => ($encrypted? 'Decrypt': 'Encrypt'),
-&>
-</form>
+% if ( $user_key ) {
+<select name="<% $Name %>">
+<option value=""><% loc("Queue's key") %></option>
+<option value="<% $user_key %>"><% $user_key %></option>
+</select>
+% } else {
+<% loc("Queue's key") %>
+% }
 <%ARGS>
-$id => undef
-$Encrypt => 0
-$Decrypt => 0
+$Name => 'SignUsing',
+$User => undef,
 </%ARGS>
 <%INIT>
-my $txn = RT::Transaction->new( $session{'CurrentUser'} );
-$txn->Load( $id );
-unless ( $txn->id ) {
-    Abort(loc("Couldn't load transaction #[_1]", $id));
-}
-$id = $txn->id;
+return unless RT->Config->Get('Crypt')->{'Enable'};
 
-my @results;
-
-my $encrypted = 0;
-
-my $attachments = $txn->Attachments;
-while ( my $attachment = $attachments->Next ) {
-    next unless $attachment->ContentType =~ m{^x-application-rt/gpg-encrypted\b};
-    $encrypted = 1;
-    last;
-}
-$attachments->GotoFirstItem;
-
-if ( $Encrypt || $Decrypt ) {
-    my $done = 1;
-    while ( my $attachment = $attachments->Next ) {
-        my ($status, $msg) = $Decrypt? $attachment->Decrypt : $attachment->Encrypt;
-        push @results, $msg;
-        unless ( $status ) {
-            $done = 0; last;
-        }
-    }
-    $encrypted = !$encrypted if $done;
-}
-
-my $title = loc("Encrypt/Decrypt transaction #[_1] of ticket #[_2]", $id, $txn->Ticket);
+# XXX: Only GnuPG at this moment supports user's private keys
+my $user_key;
+$user_key = $User->PrivateKey
+    if RT->Config->Get('Crypt')->{'Outgoing'} eq 'GnuPG';
 </%INIT>

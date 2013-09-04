@@ -59,7 +59,7 @@
 <input type="hidden" class="hidden" name="Action" value="<% $Action %>" />
 <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
 
-<& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
+<& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
 <div id="ticket-update-metadata">
   <&|/Widgets/TitleBox, title => loc('Ticket and Transaction') &>
@@ -150,7 +150,7 @@
 
 % if ( $gnupg_widget ) {
 <tr><td>&nbsp;</td><td>
-<& /Elements/GnuPG/SignEncryptWidget,
+<& /Elements/Crypt/SignEncryptWidget,
     self => $gnupg_widget,
     TicketObj => $TicketObj,
 &>
@@ -243,8 +243,8 @@ $CanComment = 1 if ( $TicketObj->CurrentUserHasRight('CommentOnTicket') or
 
 ProcessAttachments(ARGSRef => \%ARGS);
 
-my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', Arguments => \%ARGS );
-$m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
+my $gnupg_widget = $m->comp('/Elements/Crypt/SignEncryptWidget:new', Arguments => \%ARGS );
+$m->comp( '/Elements/Crypt/SignEncryptWidget:Process',
     self => $gnupg_widget,
     TicketObj => $TicketObj,
 );
@@ -264,7 +264,7 @@ if ( $ARGS{'SubmitTicket'} ) {
         push @results, @msg;
         $checks_failure = 1;
     }
-    $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
+    $status = $m->comp('/Elements/Crypt/SignEncryptWidget:Check',
         self      => $gnupg_widget,
         TicketObj => $TicketObj,
     );

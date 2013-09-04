@@ -147,3 +147,14 @@ padding-right:0.25em;
 .transaction.message .type { background: #069; }
 .transaction.reminders .type { background: #369; }
 .transaction.other .type { background: #abc; }
+
+
+.transaction .message-header-value.verify { font-weight: bold; }
+.transaction .message-header-value.verify.bad                  { color: #A00; }
+.transaction .message-header-value.verify.done.trust-UNDEFINED { color: #F60; }
+.transaction .message-header-value.verify.done.trust-NONE      { color: #900; }
+.transaction .message-header-value.verify.done.trust-NEVER     { color: #900; }
+.transaction .message-header-value.verify.done.trust-MARGINAL  { color: #F60; }
+.transaction .message-header-value.verify.done.trust-FULL      { color: #060; }
+.transaction .message-header-value.verify.done.trust-FULLY     { color: #060; }
+.transaction .message-header-value.verify.done.trust-ULTIMATE  { color: #060; }

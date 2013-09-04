@@ -46,12 +46,27 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-package RT::Interface::Email::Auth::GnuPG;
+package RT::Interface::Email::Auth::Crypt;
 
 use strict;
 use warnings;
 
-=head2 GetCurrentUser
+=head1 NAME
+
+RT::Interface::Email::Auth::Crypt - decrypting and verifying protected emails
+
+=head2 DESCRIPTION
+
+This mail plugin decrypts and verifies incoming emails. Supported
+encryption protocols are GnuPG and SMIME.
+
+This code is independant from code that encrypts/sign outgoing emails, so
+it's possible to decrypt data without bringing in encryption. To enable
+it put the module in the mail plugins list:
+
+    Set(@MailPlugins, 'Auth::MailFrom', 'Auth::Crypt', ...other filters...);
+
+=head3 GnuPG
 
 To use the gnupg-secured mail gateway, you need to do the following:
 
@@ -59,48 +74,85 @@ Set up a GnuPG key directory with a pubring containing only the keys
 you care about and specify the following in your SiteConfig.pm
 
     Set(%GnuPGOptions, homedir => '/opt/rt4/var/data/GnuPG');
-    Set(@MailPlugins, 'Auth::MailFrom', 'Auth::GnuPG', ...other filter...);
+
+Read also: L<RT::Crypt> and L<RT::Crypt::GnuPG>.
+
+=head3 SMIME
+
+To use the SMIME-secured mail gateway, you need to do the following:
+
+Set up a SMIME key directory with files containing keys for queues'
+addresses and specify the following in your SiteConfig.pm
+
+    Set(%SMIME,
+        Enable => 1,
+        OpenSSL => '/usr/bin/openssl',
+        Keyring => '/opt/rt4/var/data/smime',
+        CAPath  => '/opt/rt4/var/data/smime/signing-ca.pem',
+        Passphrase => {
+            'queue.address@example.com' => 'passphrase',
+            '' => 'fallback',
+        },
+    );
+
+Read also: L<RT::Crypt> and L<RT::Crypt::SMIME>.
 
 =cut
 
 sub ApplyBeforeDecode { return 1 }
 
-use RT::Crypt::GnuPG;
+use RT::Crypt;
 use RT::EmailParser ();
 
 sub GetCurrentUser {
     my %args = (
         Message       => undef,
         RawMessageRef => undef,
+        Queue         => undef,
+        Actions       => undef,
         @_
     );
 
-    foreach my $p ( $args{'Message'}->parts_DFS ) {
-        $p->head->delete($_) for qw(
-            X-RT-GnuPG-Status X-RT-Incoming-Encryption
+    # we clean all possible headers
+    my @headers =
+        qw(
+            X-RT-Incoming-Encryption
             X-RT-Incoming-Signature X-RT-Privacy
             X-RT-Sign X-RT-Encrypt
-        );
+        ),
+        map "X-RT-$_-Status", RT::Crypt->Protocols;
+    foreach my $p ( $args{'Message'}->parts_DFS ) {
+        $p->head->delete($_) for @headers;
     }
 
-    my $msg = $args{'Message'}->dup;
-
-    my ($status, @res) = VerifyDecrypt(
-        Entity => $args{'Message'}, AddStatus => 1,
+    my (@res) = RT::Crypt->VerifyDecrypt(
+        %args,
+        Entity => $args{'Message'},
     );
-    if ( $status && !@res ) {
-        $args{'Message'}->head->replace(
-            'X-RT-Incoming-Encryption' => 'Not encrypted'
-        );
-
+    if ( !@res ) {
+        if (RT->Config->Get('Crypt')->{'RejectOnUnencrypted'}) {
+            EmailErrorToSender(
+                %args,
+                Template  => 'Error: unencrypted message',
+                Arguments => { Message  => $args{'Message'} },
+            );
+            return (-1, 'rejected because the message is unencrypted with RejectOnUnencrypted enabled');
+        }
+        else {
+            $args{'Message'}->head->replace(
+                'X-RT-Incoming-Encryption' => 'Not encrypted'
+            );
+        }
         return 1;
     }
 
-    # FIXME: Check if the message is encrypted to the address of
-    # _this_ queue. send rejecting mail otherwise.
-
-    unless ( $status ) {
-        $RT::Logger->error("Had a problem during decrypting and verifying");
+    if ( grep {$_->{'exit_code'}} @res ) {
+        my @fail = grep {$_->{status}{Status} ne "DONE"}
+                   map { my %ret = %{$_}; map {+{%ret, status => $_}} RT::Crypt->ParseStatus( Protocol => $_->{Protocol}, Status => $_->{status})}
+                   @res;
+        for my $fail ( @fail ) {
+            $RT::Logger->warning("Failure during ".$fail->{Protocol}." ". lc($fail->{status}{Operation}) . ": ". $fail->{status}{Message});
+        }
         my $reject = HandleErrors( Message => $args{'Message'}, Result => \@res );
         return (0, 'rejected because of problems during decrypting and verifying')
             if $reject;
@@ -113,14 +165,19 @@ sub GetCurrentUser {
         Data        => ${ $args{'RawMessageRef'} },
     );
 
-    $args{'Message'}->head->replace( 'X-RT-Privacy' => 'PGP' );
-
+    my @found;
+    my @check_protocols = RT::Crypt->EnabledOnIncoming;
     foreach my $part ( $args{'Message'}->parts_DFS ) {
         my $decrypted;
 
-        my $status = $part->head->get( 'X-RT-GnuPG-Status' );
-        if ( $status ) {
-            for ( RT::Crypt::GnuPG::ParseStatus( $status ) ) {
+        foreach my $protocol ( @check_protocols ) {
+            my @status = grep defined && length,
+                $part->head->get( "X-RT-$protocol-Status" );
+            next unless @status;
+
+            push @found, $protocol;
+
+            for ( map RT::Crypt->ParseStatus( Protocol => $protocol, Status => "$_" ), @status ) {
                 if ( $_->{Operation} eq 'Decrypt' && $_->{Status} eq 'DONE' ) {
                     $decrypted = 1;
                 }
@@ -138,6 +195,10 @@ sub GetCurrentUser {
         );
     }
 
+    my %seen;
+    $args{'Message'}->head->replace( 'X-RT-Privacy' => $_ )
+        foreach grep !$seen{$_}++, @found;
+
     return 1;
 }
 
@@ -152,17 +213,17 @@ sub HandleErrors {
 
     my %sent_once = ();
     foreach my $run ( @{ $args{'Result'} } ) {
-        my @status = RT::Crypt::GnuPG::ParseStatus( $run->{'status'} );
+        my @status = RT::Crypt->ParseStatus( Protocol => $run->{'Protocol'}, Status => $run->{'status'} );
         unless ( $sent_once{'NoPrivateKey'} ) {
             unless ( CheckNoPrivateKey( Message => $args{'Message'}, Status => \@status ) ) {
                 $sent_once{'NoPrivateKey'}++;
-                $reject = 1 if RT->Config->Get('GnuPG')->{'RejectOnMissingPrivateKey'};
+                $reject = 1 if RT->Config->Get('Crypt')->{'RejectOnMissingPrivateKey'};
             }
         }
         unless ( $sent_once{'BadData'} ) {
             unless ( CheckBadData( Message => $args{'Message'}, Status => \@status ) ) {
                 $sent_once{'BadData'}++;
-                $reject = 1 if RT->Config->Get('GnuPG')->{'RejectOnBadData'};
+                $reject = 1 if RT->Config->Get('Crypt')->{'RejectOnBadData'};
             }
         }
     }
@@ -184,20 +245,11 @@ sub CheckNoPrivateKey {
 
     $RT::Logger->error("Couldn't decrypt a message: have no private key");
 
-    my $address = (RT::Interface::Email::ParseSenderAddressFromHead( $args{'Message'}->head ))[0];
-    my ($status) = RT::Interface::Email::SendEmailUsingTemplate(
-        To        => $address,
+    return EmailErrorToSender(
+        %args,
         Template  => 'Error: no private key',
-        Arguments => {
-            Message   => $args{'Message'},
-            TicketObj => $args{'Ticket'},
-        },
-        InReplyTo => $args{'Message'},
+        Arguments => { Message   => $args{'Message'} },
     );
-    unless ( $status ) {
-        $RT::Logger->error("Couldn't send 'Error: no private key'");
-    }
-    return 0;
 }
 
 sub CheckBadData {
@@ -208,50 +260,32 @@ sub CheckBadData {
         @{ $args{'Status'} };
     return 1 unless @bad_data_messages;
 
-    $RT::Logger->error("Couldn't process a message: ". join ', ', @bad_data_messages );
+    return EmailErrorToSender(
+        %args,
+        Template  => 'Error: bad encrypted data',
+        Arguments => { Messages  => [ @bad_data_messages ] },
+    );
+}
+
+sub EmailErrorToSender {
+    my %args = (@_);
+
+    $args{'Arguments'} ||= {};
+    $args{'Arguments'}{'TicketObj'} ||= $args{'Ticket'};
 
     my $address = (RT::Interface::Email::ParseSenderAddressFromHead( $args{'Message'}->head ))[0];
     my ($status) = RT::Interface::Email::SendEmailUsingTemplate(
         To        => $address,
-        Template  => 'Error: bad GnuPG data',
-        Arguments => {
-            Messages  => [ @bad_data_messages ],
-            TicketObj => $args{'Ticket'},
-        },
+        Template  => $args{'Template'},
+        Arguments => $args{'Arguments'},
         InReplyTo => $args{'Message'},
     );
     unless ( $status ) {
-        $RT::Logger->error("Couldn't send 'Error: bad GnuPG data'");
+        $RT::Logger->error("Couldn't send '$args{'Template'}''");
     }
     return 0;
-}
-
-sub VerifyDecrypt {
-    my %args = (
-        Entity => undef,
-        @_
-    );
-
-    my @res = RT::Crypt::GnuPG::VerifyDecrypt( %args );
-    unless ( @res ) {
-        $RT::Logger->debug("No more encrypted/signed parts");
-        return 1;
-    }
-
-    $RT::Logger->debug('Found GnuPG protected parts');
-
-    # return on any error
-    if ( grep $_->{'exit_code'}, @res ) {
-        $RT::Logger->debug("Error during verify/decrypt operation");
-        return (0, @res);
-    }
-
-    # nesting
-    my ($status, @nested) = VerifyDecrypt( %args );
-    return $status, @res, @nested;
 }
 
 RT::Base->_ImportOverlays();
 
 1;
-

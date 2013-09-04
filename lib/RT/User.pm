@@ -104,6 +104,7 @@ sub _OverlayAccessible {
           AuthSystem            => { public => 1,  admin => 1 },
           Gecos                 => { public => 1,  admin => 1 },
           PGPKey                => { public => 1,  admin => 1 },
+          SMIMECertificate      => { public => 1,  admin => 1 },
           PrivateKey            => {               admin => 1 },
           City                  => { public => 1 },
           Country               => { public => 1 },
@@ -1770,18 +1771,17 @@ sub PreferredKey
     return $prefkey->Content if $prefkey;
 
     # we don't have a preferred key for this user, so now we must query GPG
-    require RT::Crypt::GnuPG;
-    my %res = RT::Crypt::GnuPG::GetKeysForEncryption($self->EmailAddress);
+    my %res = RT::Crypt->GetKeysForEncryption($self->EmailAddress);
     return undef unless defined $res{'info'};
     my @keys = @{ $res{'info'} };
     return undef if @keys == 0;
 
     if (@keys == 1) {
-        $prefkey = $keys[0]->{'Fingerprint'};
+        $prefkey = $keys[0]->{'id'} || $keys[0]->{'Fingerprint'};
     } else {
         # prefer the maximally trusted key
         @keys = sort { $b->{'TrustLevel'} <=> $a->{'TrustLevel'} } @keys;
-        $prefkey = $keys[0]->{'Fingerprint'};
+        $prefkey = $keys[0]->{'id'} || $keys[0]->{'Fingerprint'};
     }
 
     $self->SetAttribute(Name => 'PreferredKey', Content => $prefkey);
@@ -1824,7 +1824,7 @@ sub SetPrivateKey {
 
     # check that it's really private key
     {
-        my %tmp = RT::Crypt::GnuPG::GetKeysForSigning( $key );
+        my %tmp = RT::Crypt->GetKeysForSigning( Signer => $key, Protocol => 'GnuPG' );
         return (0, $self->loc("No such key or it's not suitable for signing"))
             if $tmp{'exit_code'} || !$tmp{'info'};
     }
@@ -2524,6 +2524,24 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
+=head2 SMIMECertificate
+
+Returns the current value of SMIMECertificate. 
+(In the database, SMIMECertificate is stored as text.)
+
+
+
+=head2 SetSMIMECertificate VALUE
+
+
+Set SMIMECertificate to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, SMIMECertificate will be stored as a text.)
+
+
+=cut
+
+
 =head2 Creator
 
 Returns the current value of Creator. 
@@ -2625,6 +2643,8 @@ sub _CoreAccessible {
         Timezone => 
         {read => 1, write => 1, sql_type => 12, length => 50,  is_blob => 0,  is_numeric => 0,  type => 'varchar(50)', default => ''},
         PGPKey => 
+        {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
+        SMIMECertificate =>
         {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
         Creator => 
         {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},

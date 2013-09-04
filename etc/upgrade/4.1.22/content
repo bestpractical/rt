@@ -1,0 +1,85 @@
+use strict;
+use warnings;
+
+our @Initial = (
+    sub {
+        my $template = RT::Template->new( RT->SystemUser );
+        $template->Load("Error: bad GnuPG data");
+        unless ($template->id) {
+            RT->Logger->error( "Couldn't find 'Error: bad GnuPG data' template to rename" );
+            return;
+        }
+
+        my ($ok, $msg) = $template->SetName("Error: bad encrypted data");
+        RT->Logger->error( "Couldn't rename 'Error: bad GnuPG data' template: $msg")
+            unless $ok;
+
+        ($ok, $msg) = $template->SetDescription("Inform user that a message he sent has invalid encryption data");
+        RT->Logger->error( "Couldn't update 'Error: bad encrypted data' template description: $msg")
+            unless $ok;
+
+        my $content = $template->Content;
+        $content =~ s/GnuPG signature/signature/g;
+        ($ok, $msg) = $template->SetContent( $content );
+        RT->Logger->error( "Couldn't update 'Error: bad encrypted data' template content: $msg")
+            unless $ok;
+    },
+    sub {
+        my $type = RT::User->new( $RT::SystemUser )->CustomFieldLookupType;
+        my $cf = RT::CustomField->new( $RT::SystemUser );
+        $cf->LoadByCols( Name => 'SMIME Key', LookupType => $type );
+        $cf->LoadByCols( Name => 'PublicKey', LookupType => $type ) unless $cf->id;
+        unless ( $cf->id ) {
+            $RT::Logger->debug("You don't have an 'SMIME Key' or 'PublicKey' user CF -- nothing to do.");
+            return;
+        }
+
+        my $users = RT::Users->new( RT->SystemUser );
+        $users->LimitCustomField(
+            CUSTOMFIELD => $cf->id,
+            OPERATOR    => "IS NOT",
+            VALUE       => "NULL",
+        );
+        while (my $u = $users->Next) {
+            $u->SetSMIMECertificate(
+                $u->FirstCustomFieldValue( $cf->id ),
+            );
+        }
+
+        my $ocfs = $cf->AddedTo;
+        while (my $ocf = $ocfs->Next) {
+            my ($ok, $msg) = $ocf->Delete;
+            RT->Logger->error( "Couldn't delete OCF ".$ocf->id." while deleting ".$cf->Name." CF: $msg")
+                unless $ok;
+        }
+
+        my ($ok, $msg) = $cf->Delete;
+        RT->Logger->error( "Couldn't delete ".$cf->Name." CF: $msg")
+            unless $ok;
+    },
+    sub {
+        $RT::Logger->info("Going to delete all SMIMEKeyNotAfter attributes");
+        my $attrs = RT::Attributes->new( $RT::SystemUser );
+        $attrs->Limit( FIELD => 'ObjectType', VALUE => 'RT::User' );
+        $attrs->Limit( FIELD => 'Name', VALUE => 'SMIMEKeyNotAfter' );
+        while ( my $attr = $attrs->Next ) {
+            my ($status, $msg) = $attr->Delete;
+            unless ( $status ) {
+                $RT::Logger->error("Couldn't delete attribute: $msg");
+            }
+        }
+        return 1;
+    },
+);
+
+our @Templates = (
+    {  Queue       => 0,
+       Name        => "Error: unencrypted message",    # loc
+       Description =>
+         "Inform user that their unencrypted mail has been rejected", # loc
+       Content => q{Subject: RT requires that all incoming mail be encrypted
+
+You received this message because RT received mail from you that was not encrypted.  As such, it has been rejected.
+}
+    },
+);

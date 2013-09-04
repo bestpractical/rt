@@ -138,7 +138,8 @@ can be set for each config optin:
 
 =cut
 
-our %META = (
+our %META;
+%META = (
     # General user overridable options
     DefaultQueue => {
         Section         => 'General',
@@ -614,33 +615,132 @@ our %META = (
             $self->Set( MailCommand => 'sendmailpipe' );
         },
     },
-    MailPlugins  => { Type => 'ARRAY' },
-    GnuPG        => { Type => 'HASH' },
-    GnuPGOptions => { Type => 'HASH',
+    MailPlugins  => {
+        Type => 'ARRAY',
+        PostLoadCheck => sub {
+            my $self = shift;
+            my @plugins = $self->Get('MailPlugins');
+            if ( grep $_ eq 'Auth::GnuPG' || $_ eq 'Auth::SMIME', @plugins ) {
+                $RT::Logger->warning(
+                    'Auth::GnuPG and Auth::SMIME (from an extension) have been'
+                    .' replaced with Auth::Crypt.  @MailPlugins has been adjusted,'
+                    .' but should be updated to replace both with Auth::Crypt to'
+                    .' silence this warning.'
+                );
+                my %seen;
+                @plugins =
+                    grep !$seen{$_}++,
+                    grep {
+                        $_ eq 'Auth::GnuPG' || $_ eq 'Auth::SMIME'
+                        ? 'Auth::Crypt' : $_
+                    } @plugins;
+                $self->Set( MailPlugins => @plugins );
+            }
+        },
+    },
+    Crypt        => {
+        Type => 'HASH',
+        PostLoadCheck => sub {
+            my $self = shift;
+            require RT::Crypt;
+
+            for my $proto (RT::Crypt->EnabledProtocols) {
+                my $opt = $self->Get($proto);
+                if (not RT::Crypt->LoadImplementation($proto)) {
+                    $RT::Logger->error("You enabled $proto, but we couldn't load module RT::Crypt::$proto");
+                    $opt->{'Enable'} = 0;
+                } elsif (not RT::Crypt->LoadImplementation($proto)->Probe) {
+                    $opt->{'Enable'} = 0;
+                } elsif ($META{$proto}{'PostLoadCheck'}) {
+                    $META{$proto}{'PostLoadCheck'}->( $self, $self->Get( $proto ) );
+                }
+
+            }
+
+            my $opt = $self->Get('Crypt');
+            my @enabled = RT::Crypt->EnabledProtocols;
+            my %enabled;
+            $enabled{$_} = 1 for @enabled;
+            $opt->{'Enable'} = scalar @enabled;
+            $opt->{'Incoming'} = [ $opt->{'Incoming'} ]
+                if $opt->{'Incoming'} and not ref $opt->{'Incoming'};
+            if ( $opt->{'Incoming'} && @{ $opt->{'Incoming'} } ) {
+                $opt->{'Incoming'} = [ grep {$enabled{$_}} @{$opt->{'Incoming'}} ];
+            } else {
+                $opt->{'Incoming'} = \@enabled;
+            }
+            if ( $opt->{'Outgoing'} ) {
+                $opt->{'Outgoing'} = $enabled[0] unless $enabled{$opt->{'Outgoing'}};
+            } else {
+                $opt->{'Outgoing'} = $enabled[0];
+            }
+        },
+    },
+    SMIME        => {
+        Type => 'HASH',
+        PostLoadCheck => sub {
+            my $self = shift;
+            my $opt = $self->Get('SMIME');
+            return unless $opt->{'Enable'};
+
+            if (exists $opt->{Keyring}) {
+                unless ( File::Spec->file_name_is_absolute( $opt->{Keyring} ) ) {
+                    $opt->{Keyring} = File::Spec->catfile( $RT::BasePath, $opt->{Keyring} );
+                }
+                unless (-d $opt->{Keyring} and -r _) {
+                    $RT::Logger->info(
+                        "RT's SMIME libraries couldn't successfully read your".
+                        " configured SMIME keyring directory (".$opt->{Keyring}
+                        .").");
+                    delete $opt->{Keyring};
+                }
+            }
+
+            if (defined $opt->{CAPath}) {
+                if (-d $opt->{CAPath} and -r _) {
+                    # directory, all set
+                } elsif (-f $opt->{CAPath} and -r _) {
+                    # file, all set
+                } else {
+                    $RT::Logger->warn(
+                        "RT's SMIME libraries could not read your configured CAPath (".$opt->{CAPath}.")"
+                    );
+                    delete $opt->{CAPath};
+                }
+            }
+        },
+    },
+    GnuPG        => {
+        Type => 'HASH',
         PostLoadCheck => sub {
             my $self = shift;
             my $gpg = $self->Get('GnuPG');
             return unless $gpg->{'Enable'};
+
             my $gpgopts = $self->Get('GnuPGOptions');
+            unless ( File::Spec->file_name_is_absolute( $gpgopts->{homedir} ) ) {
+                $gpgopts->{homedir} = File::Spec->catfile( $RT::BasePath, $gpgopts->{homedir} );
+            }
             unless (-d $gpgopts->{homedir}  && -r _ ) { # no homedir, no gpg
                 $RT::Logger->debug(
                     "RT's GnuPG libraries couldn't successfully read your".
                     " configured GnuPG home directory (".$gpgopts->{homedir}
-                    ."). PGP support has been disabled");
+                    ."). GnuPG support has been disabled");
                 $gpg->{'Enable'} = 0;
                 return;
             }
 
-
-            require RT::Crypt::GnuPG;
-            unless (RT::Crypt::GnuPG->Probe()) {
-                $RT::Logger->debug(
-                    "RT's GnuPG libraries couldn't successfully execute gpg.".
-                    " PGP support has been disabled");
-                $gpg->{'Enable'} = 0;
+            if ( grep exists $gpg->{$_}, qw(RejectOnMissingPrivateKey RejectOnBadData AllowEncryptDataInDB) ) {
+                $RT::Logger->warning(
+                    "The RejectOnMissingPrivateKey, RejectOnBadData and AllowEncryptDataInDB"
+                    ." GnuPG options are now properties of the generic Crypt configuration. You"
+                    ." should set them there instead."
+                );
+                delete $gpg->{$_} for qw(RejectOnMissingPrivateKey RejectOnBadData AllowEncryptDataInDB);
             }
         }
     },
+    GnuPGOptions => { Type => 'HASH' },
     ReferrerWhitelist => { Type => 'ARRAY' },
     WebPath => {
         PostLoadCheck => sub {
@@ -1313,7 +1413,7 @@ sub Sections {
 sub Options {
     my $self = shift;
     my %args = ( Section => undef, Overridable => 1, Sorted => 1, @_ );
-    my @res  = keys %META;
+    my @res  = sort keys %META;
     
     @res = grep( ( $META{$_}->{'Section'} || 'General' ) eq $args{'Section'},
         @res 

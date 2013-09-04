@@ -45,48 +45,56 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% if ( @$Issues || @$SignAddresses ) {
-<&| /Widgets/TitleBox, title => loc('GnuPG issues') &>
+<& /Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
 
-% if ( @$SignAddresses ) {
-<% loc("The system is unable to sign outgoing email messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately. The problem addresses are:") %>
-<ul>
-% for my $address (@$SignAddresses) {
-    <li><% $address %></li>
-% }
-</ul>
-% }
-
-% if (@$Issues == 1) {
-<% loc("You are going to encrypt outgoing email messages, but there is a problem with a recipient's public key. You have to fix the problem with the key, disable sending a message to that recipient, or disable encryption.") %>
-% } elsif (@$Issues > 1) {
-<% loc("You are going to encrypt outgoing email messages, but there are problems with recipients' public keys. You have to fix the problems with the keys, disable sending a message to the recipients with key problems, or disable encryption.") %>
-% }
-
-<ul>
-% foreach my $issue ( @$Issues ) {
-<li>
-% if ( $issue->{'User'} ) {
-User <a href="<% RT->Config->Get('WebPath') %>/Admin/Users/Modify.html?id=<% $issue->{'User'}->id %>"><&/Elements/ShowUser, User => $issue->{'User'} &></a> has a problem.
-% } else {
-There is a problem with key(s) for address <% $issue->{'EmailAddress'} %>, but there is no user in the DB for this address.
-% }
-<% $issue->{'Message'} %>
-<br />
-Select a key you want to use for encryption:
-<& /Elements/GnuPG/SelectKeyForEncryption,
-    Name         => 'UseKey-'. $issue->{'EmailAddress'},
-    EmailAddress => $issue->{'EmailAddress'},
-    Default      => ( $issue->{'User'}? $issue->{'User'}->PreferredKey : undef ),
+% $m->callback( CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSRef => \%ARGS );
+<& /Elements/ListActions, actions => \@results &>
+<form method="post" action="<% RT->Config->Get('WebPath') . $m->request_comp->path %>?id=<% $id %>">
+<a href="<% RT->Config->Get('WebPath') %>/Ticket/Display.html?id=<% $txn->Ticket %>#txn-<% $id %>">
+<% loc('Return back to the ticket') %>
+</a>
+<& /Elements/Submit,
+    Label => ($encrypted? loc('Decrypt'): loc('Encrypt')),
+    Name  => ($encrypted? 'Decrypt': 'Encrypt'),
 &>
-</li>
-% }
-</ul>
-</&>
-% }
-
+</form>
 <%ARGS>
-$Issues => []
-$SignAddresses => []
+$id => undef
+$Encrypt => 0
+$Decrypt => 0
 </%ARGS>
+<%INIT>
+my $txn = RT::Transaction->new( $session{'CurrentUser'} );
+$txn->Load( $id );
+unless ( $txn->id ) {
+    Abort(loc("Couldn't load transaction #[_1]", $id));
+}
+$id = $txn->id;
 
+my @results;
+
+my $encrypted = 0;
+
+my $attachments = $txn->Attachments;
+while ( my $attachment = $attachments->Next ) {
+    next unless $attachment->ContentType =~ m{^x-application-rt/[^-]+-encrypted\b};
+    $encrypted = 1;
+    last;
+}
+$attachments->GotoFirstItem;
+
+if ( $Encrypt || $Decrypt ) {
+    my $done = 1;
+    while ( my $attachment = $attachments->Next ) {
+        my ($status, $msg) = $Decrypt? $attachment->Decrypt : $attachment->Encrypt;
+        push @results, $msg;
+        unless ( $status ) {
+            $done = 0; last;
+        }
+    }
+    $encrypted = !$encrypted if $done;
+}
+
+my $title = loc("Encrypt/Decrypt transaction #[_1] of ticket #[_2]", $id, $txn->Ticket);
+</%INIT>

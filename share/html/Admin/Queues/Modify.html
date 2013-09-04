@@ -111,7 +111,7 @@
 </td></tr>
 % }
 
-% if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
+% if ( RT->Config->Get('Crypt')->{'Enable'} ) {
 <tr><td align="right"><input type="checkbox" class="checkbox" id="Sign" name="Sign" value="1" <% $QueueObj->Sign? 'checked="checked"': '' |n%> /></td>
 <td><label for="Sign"><&|/l&>Sign by default</&></label></td>
 <td align="right"><input type="checkbox" class="checkbox" id="Encrypt" name="Encrypt" value="1" <% $QueueObj->Encrypt? 'checked="checked"': '' |n%> /></td>
@@ -126,14 +126,14 @@
 % $m->callback( %ARGS, QueueObj => $QueueObj, results => \@results );
 </td></tr>
 
-% if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
+% if ( RT->Config->Get('Crypt')->{'Enable'} ) {
 <tr><td colspan="4">
 % if ( my $email = $QueueObj->CorrespondAddress || RT->Config->Get('CorrespondAddress') ) {
 <& /Admin/Elements/ShowKeyInfo, Type => 'private', EmailAddress => $email &>
 % } else {
-<&|/Widgets/TitleBox, title => loc( 'GnuPG private keys') &>
-<i><&|/l&>You have enabled GnuPG support but have not set a correspondence address for this queue.</&>
-<&|/l&>You must set a correspondence address for this queue in order to configure a GnuPG private key.</&></i>
+<&|/Widgets/TitleBox, title => loc( 'Private keys') &>
+<i><&|/l&>You have enabled encryption support but have not set a correspondence address for this queue.</&>
+<&|/l&>You must set a correspondence address for this queue in order to configure a private key.</&></i>
 </&>
 % }
 </td></tr>
@@ -141,9 +141,9 @@
 % if ( my $email = $QueueObj->CommentAddress || RT->Config->Get('CommentAddress') ) {
 <& /Admin/Elements/ShowKeyInfo, Type => 'private', EmailAddress => $email &>
 % } else {
-<&|/Widgets/TitleBox, title => loc( 'GnuPG private keys') &>
-<i><&|/l&>You have enabled GnuPG support but have not set a comment address for this queue.</&>
-<&|/l&>You must set a comment address for this queue in order to configure a GnuPG private key.</&></i>
+<&|/Widgets/TitleBox, title => loc( 'Private keys') &>
+<i><&|/l&>You have enabled encryption support but have not set a comment address for this queue.</&>
+<&|/l&>You must set a comment address for this queue in order to configure a private key.</&></i>
 </&>
 %}
 </td></tr>

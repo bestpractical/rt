@@ -2301,8 +2301,118 @@ Set($TimeInICal, 0);
 
 
 
+=head1 Cryptography
 
-=head1 GnuPG integration
+A complete description of RT's cryptography capabilities can be found in
+L<RT::Crypt>. At this moment, GnuPG (PGP) and SMIME security protocols are
+supported.
+
+=over 4
+
+=item C<%Crypt>
+
+The following options apply to all cryptography protocols.
+
+By default, all enabled security protocols will analyze each incoming
+email. You may set C<Incoming> to a subset of this list, if some enabled
+protocols do not apply to incoming mail; however, this is usually
+unnecessary. Note that for any verification or decryption to occur for
+incoming mail, the C<Auth::Crypt> mail plugin must be added to
+L</@MailPlugins> as specified in L<RT::Crypt/Handling incoming messages>.
+
+For outgoing emails, the first security protocol from the above list is
+used. Use the C<Outgoing> option to set a security protocol that should
+be used in outgoing emails.  At this moment, only one protocol can be
+used to protect outgoing emails.
+
+Set C<RejectOnUnencrypted> to true if all incoming email must be
+properly encrypted.  All unencrypted emails will be rejected by RT.
+
+Set C<RejectOnMissingPrivateKey> to false if you don't want to reject
+emails encrypted for key RT doesn't have and can not decrypt.
+
+Set C<RejectOnBadData> to false if you don't want to reject letters
+with incorrect data.
+
+If you want to allow people to encrypt attachments inside the DB then
+set C<AllowEncryptDataInDB> to 1.
+
+Set C<Dashboards> to a hash with Encrypt and Sign keys to control
+whether dashboards should be encrypted and/or signed correspondingly.
+By default they are not encrypted or signed.
+
+=back
+
+=cut
+
+Set( %Crypt,
+    Incoming                  => undef, # ['GnuPG', 'SMIME']
+    Outgoing                  => undef, # 'SMIME'
+
+    RejectOnUnencrypted       => 0,
+    RejectOnMissingPrivateKey => 1,
+    RejectOnBadData           => 1,
+
+    AllowEncryptDataInDB      => 0,
+
+    Dashboards => {
+        Encrypt => 0,
+        Sign    => 0,
+    },
+);
+
+=head2 SMIME configuration
+
+A full description of the SMIME integration can be found in
+L<RT::Crypt::SMIME>.
+
+=over 4
+
+=item C<%SMIME>
+
+Set C<Enable> to false or true value to disable or enable SMIME for
+encrypting and signing messages.
+
+Set C<OpenSSL> to path to F<openssl> executable.
+
+Set C<Keyring> to directory with key files.  Key and certificates should
+be stored in a PEM file in this directory named named, e.g.,
+F<email.address@example.com.pem>.
+
+Set C<CAPath> to either a PEM-formatted certificate of a single signing
+certificate authority, or a directory of such (including hash symlinks
+as created by the openssl tool C<c_rehash>).  Only SMIME certificates
+signed by these certificate authorities will be treated as valid
+signatures.  If left unset (and C<AcceptUntrustedCAs> is unset, as it is
+by default), no signatures will be marked as valid!
+
+Set C<AcceptUntrustedCAs> to allow arbitrary SMIME certificates, no
+matter their signing entities.  Such mails will be marked as untrusted,
+but signed; C<CAPath> will be used to mark which mails are signed by
+trusted certificate authorities.  This configuration is generally
+insecure, as it allows the possibility of accepting forged mail signed
+by an untrusted certificate authority.
+
+Set C<Passphrase> to a scalar (to use for all keys), an anonymous
+function, or a hash (to look up by address).  If the hash is used, the
+'' key is used as a default.
+
+See L<RT::Crypt::SMIME> for details.
+
+=back
+
+=cut
+
+Set( %SMIME,
+    Enable => @RT_SMIME@,
+    OpenSSL => '/usr/bin/openssl',
+    Keyring => q{@RT_VAR_PATH@/data/smime},
+    CAPath => undef,
+    AcceptUntrustedCAs => undef,
+    Passphrase => undef,
+);
+
+=head2 GnuPG configuration
 
 A full description of the (somewhat extensive) GnuPG integration can
 be found by running the command `perldoc L<RT::Crypt::GnuPG>` (or
@@ -2312,27 +2422,22 @@ be found by running the command `perldoc L<RT::Crypt::GnuPG>` (or
 
 =item C<%GnuPG>
 
+Set C<Enable> to false or true value to disable or enable GnuPG interfaces
+for encrypting and signing outgoing messages.
+
+Set C<Passphrase> to a scalar (to use for all keys), an anonymous
+function, or a hash (to look up by address).  If the hash is used, the
+'' key is used as a default.
+
 Set C<OutgoingMessagesFormat> to 'inline' to use inline encryption and
 signatures instead of 'RFC' (GPG/MIME: RFC3156 and RFC1847) format.
-
-If you want to allow people to encrypt attachments inside the DB then
-set C<AllowEncryptDataInDB> to 1.
-
-Set C<RejectOnMissingPrivateKey> to false if you don't want to reject
-emails encrypted for key RT doesn't have and can not decrypt.
-
-Set C<RejectOnBadData> to false if you don't want to reject letters
-with incorrect GnuPG data.
 
 =cut
 
 Set(%GnuPG,
-    Enable => @RT_GPG@,
+    Enable                 => @RT_GPG@,
+    Passphrase             => undef,
     OutgoingMessagesFormat => "RFC", # Inline
-    AllowEncryptDataInDB   => 0,
-
-    RejectOnMissingPrivateKey => 1,
-    RejectOnBadData           => 1,
 );
 
 =item C<%GnuPGOptions>

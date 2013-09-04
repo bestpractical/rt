@@ -47,6 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <table><tr>
 % my $columnsplit = "</td><td>";
+% if ( RT->Config->Get('Crypt')->{'Outgoing'} eq 'GnuPG' ) {
 <td><% loc( 'Sign[_1][_2] using [_3]',
     $columnsplit,
     $m->scomp('/Widgets/Form/Boolean:InputOnly',
@@ -54,6 +55,14 @@
     ),
     $m->scomp('SelectKeyForSigning', User => $session{'CurrentUser'}->UserObj ),
 ) |n %></td>
+% } else {
+<td><% loc( 'Sign[_1][_2]',
+    $columnsplit,
+    $m->scomp('/Widgets/Form/Boolean:InputOnly',
+        Name => 'Sign', CurrentValue => $self->{'Sign'}
+    ),
+) |n %></td>
+% }
 
 <td><% loc('Encrypt')%></td>
 <td><& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $self->{'Encrypt'} &></td>
@@ -70,9 +79,7 @@ return unless $self;
 $Arguments => {}
 </%ARGS>
 <%INIT>
-return undef unless RT->Config->Get('GnuPG')->{'Enable'};
-
-require RT::Crypt::GnuPG;
+return undef unless RT->Config->Get('Crypt')->{'Enable'};
 return { %$Arguments };
 </%INIT>
 </%METHOD>
@@ -84,7 +91,7 @@ $self => undef,
 <%INIT>
 return unless $self;
 
-return $m->comp( '/Elements/GnuPG/KeyIssues',
+return $m->comp( '/Elements/Crypt/KeyIssues',
     Issues => $self->{'GnuPGRecipientsKeyIssues'} || [],
     SignAddresses => $self->{'GnuPGCanNotSignAs'} || [],
 );
@@ -138,11 +145,11 @@ if ( $self->{'Sign'} ) {
     if ($address ne $private and $address ne $queue) {
         push @{ $self->{'GnuPGCanNotSignAs'} ||= [] }, $address;
         $checks_failure = 1;
-    } elsif ( not RT::Crypt::GnuPG::DrySign( $address ) ) {
+    } elsif ( not RT::Crypt->DrySign( Signer => $address ) ) {
         push @{ $self->{'GnuPGCanNotSignAs'} ||= [] }, $address;
         $checks_failure = 1;
     } else {
-        RT::Crypt::GnuPG::UseKeyForSigning( $self->{'SignUsing'} )
+        RT::Crypt->UseKeyForSigning( $self->{'SignUsing'} )
             if $self->{'SignUsing'};
     }
 }
@@ -165,13 +172,13 @@ if ( $self->{'Encrypt'} ) {
     my %seen;
     @recipients = grep !$seen{ lc $_ }++, @recipients;
 
-    RT::Crypt::GnuPG::UseKeyForEncryption(
+    RT::Crypt->UseKeyForEncryption(
         map { (/^UseKey-(.*)$/)[0] => $self->{ $_ } }
         grep $self->{ $_ } && /^UseKey-/,
         keys %$self
     );
 
-    my ($status, @issues) = RT::Crypt::GnuPG::CheckRecipients( @recipients );
+    my ($status, @issues) = RT::Crypt->CheckRecipients( @recipients );
     push @{ $self->{'GnuPGRecipientsKeyIssues'} ||= [] }, @issues;
     $checks_failure = 1 unless $status;
 }

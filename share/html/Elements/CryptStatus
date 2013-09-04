@@ -45,16 +45,8 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table class="crypt-runs">
-<tr><td align="right" class="labeltop" rowspan="<% scalar @messages %>">GnuPG:</td>
-<td><% shift @messages %></td></tr>
-
-% foreach my $msg( @messages ) {
-<tr><td><% $msg %></td></tr>
-% }
-</table>
 <%ARGS>
-$Attachment
+$Message
 $WarnUnsigned => undef
 $Reverify     => 1
 </%ARGS>
@@ -62,10 +54,12 @@ $Reverify     => 1
 my @runs;
 my $needs_unsigned_warning = $WarnUnsigned;
 
-foreach ( $Attachment->SplitHeaders ) {
-    if ( s/^X-RT-GnuPG-Status:\s*//i ) {
-        require RT::Crypt::GnuPG;
-        push @runs, [ RT::Crypt::GnuPG::ParseStatus( $_ ) ];
+my @protocols = RT::Crypt->EnabledProtocols;
+my $re_protocols = join '|', map "\Q$_\E", @protocols;
+
+foreach ( $Message->SplitHeaders ) {
+    if ( s/^X-RT-($re_protocols)-Status:\s*//io ) {
+        push @runs, [ $1, RT::Crypt->ParseStatus( Protocol => "$1", Status => $_ ) ];
     }
 
     $needs_unsigned_warning = 0 if /^X-RT-Incoming-Signature:/;
@@ -103,26 +97,25 @@ my $reverify_cb = sub {
         return (0, "Couldn't parse content of attachment #". $original->id);
     }
 
-    use RT::Interface::Email::Auth::GnuPG;
-    my ($status, @res) = RT::Interface::Email::Auth::GnuPG::VerifyDecrypt( Entity => $entity );
-    if ( $status && !@res ) {
-        # imposible in this situation
-        return (0, "Content of attachment #". $original->id ." is not signed and/or encrypted");
-    }
-    elsif ( @res ) {
-        require RT::Crypt::GnuPG;
+    my @res = RT::Crypt->VerifyDecrypt( Entity => $entity );
+    return (0, "Content of attachment #". $original->id ." is not signed and/or encrypted")
+        unless @res;
 
-        $top->DelHeader('X-RT-GnuPG-Status');
-        $top->AddHeader(map { ('X-RT-GnuPG-Status' => $_->{'status'} ) } @res);
-        $top->SetHeader('X-RT-Privacy' => 'PGP' );
-        $top->DelHeader('X-RT-Incoming-Signature');
+    $top->DelHeader("X-RT-$_-Status") for RT::Crypt->Protocols;
+    $top->AddHeader(map { ("X-RT-". $_->{Protocol} ."-Status" => $_->{'status'} ) } @res);
+    $top->DelHeader("X-RT-Privacy");
+    my %protocols; $protocols{$_->{Protocol}}++ for @res;
+    $top->AddHeader('X-RT-Privacy' => $_ ) for sort keys %protocols;
 
-        my @status = RT::Crypt::GnuPG::ParseStatus( $res[0]->{'status'} );
-        for ( @status ) {
-            if ( $_->{'Operation'} eq 'Verify' && $_->{'Status'} eq 'DONE' ) {
-                $top->AddHeader( 'X-RT-Incoming-Signature' => $_->{'UserString'} );
-                $needs_unsigned_warning = 0;
-            }
+    $top->DelHeader('X-RT-Incoming-Signature');
+    my @status = RT::Crypt->ParseStatus(
+        Protocol => $res[0]{'Protocol'},
+        Status => $res[0]{'status'},
+    );
+    for ( @status ) {
+        if ( $_->{'Operation'} eq 'Verify' && $_->{'Status'} eq 'DONE' ) {
+            $top->AddHeader( 'X-RT-Incoming-Signature' => $_->{'UserString'} );
+            $needs_unsigned_warning = 0;
         }
     }
     return (1, "Reverified original message");
@@ -130,6 +123,8 @@ my $reverify_cb = sub {
 
 my @messages;
 foreach my $run ( @runs ) {
+    my $protocol = shift @$run;
+    $protocol = $RT::Crypt::PROTOCOLS{lc $protocol};
     foreach my $line ( @$run ) {
         if ( $line->{'Operation'} eq 'KeyCheck' ) {
             next unless $Reverify;
@@ -137,9 +132,11 @@ foreach my $run ( @runs ) {
             next unless $line->{'KeyType'} eq 'public' && $line->{'Status'} eq 'MISSING';
 
             # but only if we have key
-            my %key = RT::Crypt::GnuPG::GetPublicKeyInfo( $line->{'Key'} );
+            my %key = RT::Crypt->GetPublicKeyInfo(
+                Protocol => $protocol, Key => $line->{'Key'}
+            );
             if ( $key{'info'} ) {
-                my ($status, $msg) = $reverify_cb->($Attachment);
+                my ($status, $msg) = $reverify_cb->($Message);
                 unless ($status) {
                     $RT::Logger->error($msg);
                 } else {
@@ -147,31 +144,52 @@ foreach my $run ( @runs ) {
                 }
             }
             else {
-                push @messages, loc( "Public key '0x[_1]' is required to verify signature", $line->{'Key'} );
+                push @messages, {
+                    Tag     => $protocol,
+                    Classes => [qw/keycheck bad/],
+                    Value   => loc( "Public key '0x[_1]' is required to verify signature", $line->{'Key'} ),
+                };
             }
         }
         elsif ( $line->{'Operation'} eq 'PassphraseCheck' ) {
             next if $line->{'Status'} eq 'DONE';
-            push @messages, loc( $line->{'Message'} );
+            push @messages, {
+                Tag     => $protocol,
+                Classes => ['passphrasecheck', lc $line->{Status}],
+                Value   => loc( $line->{'Message'} ),
+            };
         }
         elsif ( $line->{'Operation'} eq 'Decrypt' ) {
-            push @messages, loc( $line->{'Message'} );
+            push @messages, {
+                Tag     => $protocol,
+                Classes => ['decrypt', lc $line->{Status}],
+                Value   => loc( $line->{'Message'} ),
+            };
         }
         elsif ( $line->{'Operation'} eq 'Verify' ) {
-            push @messages, loc( $line->{'Message'} );
+            push @messages, {
+                Tag     => $protocol,
+                Classes => ['verify', lc $line->{Status}, 'trust-'.($line->{Trust} || 'UNKNOWN')],
+                Value   => loc( $line->{'Message'} ),
+            };
         }
         else {
             next if $line->{'Status'} eq 'DONE';
-            push @messages, loc( $line->{'Message'} );
+            push @messages, {
+                Tag     => $protocol,
+                Classes => [lc $line->{Operation}, lc $line->{Status}],
+                Value   => loc( $line->{'Message'} ),
+            }
         }
     }
 }
 
-push @messages, loc('Warning! This is NOT signed!')
+push @messages, { Tag => "Signing", Classes => ['verify', 'bad'], Value => loc('Warning! This is NOT signed!') }
     if $needs_unsigned_warning;
 return unless @messages;
 
 my %seen;
-@messages = grep !$seen{$_}++, @messages;
+@messages = grep !$seen{$_->{Value}}++, @messages;
 
+return @messages;
 </%INIT>

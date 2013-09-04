@@ -162,15 +162,15 @@ my $checks_failure = 0;
     }
 }
 
-my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', Arguments => \%ARGS );
-$m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
+my $gnupg_widget = $m->comp('/Elements/Crypt/SignEncryptWidget:new', Arguments => \%ARGS );
+$m->comp( '/Elements/Crypt/SignEncryptWidget:Process',
     self      => $gnupg_widget,
     QueueObj  => $QueueObj,
 );
 
 
 if ( !exists $ARGS{'AddMoreAttach'} && ($ARGS{'id'}||'') eq 'new' ) {
-    my $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
+    my $status = $m->comp('/Elements/Crypt/SignEncryptWidget:Check',
         self      => $gnupg_widget,
         Operation => 'Create',
         QueueObj  => $QueueObj,
@@ -217,7 +217,7 @@ if ((!exists $ARGS{'AddMoreAttach'}) and (defined($ARGS{'id'}) and $ARGS{'id'} e
 <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
 % $m->callback( CallbackName => 'FormStart', QueueObj => $QueueObj, ARGSRef => \%ARGS );
 % if ($gnupg_widget) {
-<& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
+<& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 % }
 
 
@@ -329,7 +329,7 @@ $showrows->(
 
 
 % if ( $gnupg_widget ) {
-<& /Elements/GnuPG/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &>
+<& /Elements/Crypt/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &>
 % }
 
 

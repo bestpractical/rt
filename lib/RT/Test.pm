@@ -1348,6 +1348,21 @@ sub get_relocatable_file {
     return File::Spec->catfile(get_relocatable_dir(@_), $file);
 }
 
+sub find_relocatable_path {
+    my @path = @_;
+
+    # A simple strategy to find e.g., t/data/gnupg/keys, from the dir
+    # where test file lives. We try up to 3 directories up
+    my $path = File::Spec->catfile( @path );
+    for my $up ( 0 .. 2 ) {
+        my $p = get_relocatable_dir($path);
+        return $p if -e $p;
+
+        $path = File::Spec->catfile( File::Spec->updir(), $path );
+    }
+    return undef;
+}
+
 sub get_abs_relocatable_dir {
     (my $volume, my $directories, my $file) = File::Spec->splitpath($0);
     if (File::Spec->file_name_is_absolute($directories)) {
@@ -1373,154 +1388,59 @@ sub import_gnupg_key {
     $key =~ s/\@/-at-/g;
     $key .= ".$type.key";
 
-    require RT::Crypt::GnuPG;
-
-    # simple strategy find data/gnupg/keys, from the dir where test file lives
-    # to updirs, try 3 times in total
-    my $path = File::Spec->catfile( 'data', 'gnupg', 'keys' );
-    my $abs_path;
-    for my $up ( 0 .. 2 ) {
-        my $p = get_relocatable_dir($path);
-        if ( -e $p ) {
-            $abs_path = $p;
-            last;
-        }
-        else {
-            $path = File::Spec->catfile( File::Spec->updir(), $path );
-        }
-    }
+    my $path = find_relocatable_path( 'data', 'gnupg', 'keys' );
 
     die "can't find the dir where gnupg keys are stored"
-      unless $abs_path;
+      unless $path;
 
-    return RT::Crypt::GnuPG::ImportKey(
-        RT::Test->file_content( [ $abs_path, $key ] ) );
+    return RT::Crypt::GnuPG->ImportKey(
+        RT::Test->file_content( [ $path, $key ] ) );
 }
-
 
 sub lsign_gnupg_key {
     my $self = shift;
     my $key = shift;
 
-    require RT::Crypt::GnuPG; require GnuPG::Interface;
-    my $gnupg = GnuPG::Interface->new();
-    my %opt = RT->Config->Get('GnuPGOptions');
-    $gnupg->options->hash_init(
-        RT::Crypt::GnuPG::_PrepareGnuPGOptions( %opt ),
-        meta_interactive => 0,
-    );
-
-    my %handle; 
-    my $handles = GnuPG::Handles->new(
-        stdin   => ($handle{'input'}   = IO::Handle->new()),
-        stdout  => ($handle{'output'}  = IO::Handle->new()),
-        stderr  => ($handle{'error'}   = IO::Handle->new()),
-        logger  => ($handle{'logger'}  = IO::Handle->new()),
-        status  => ($handle{'status'}  = IO::Handle->new()),
-        command => ($handle{'command'} = IO::Handle->new()),
-    );
-
-    eval {
-        local $SIG{'CHLD'} = 'DEFAULT';
-        local @ENV{'LANG', 'LC_ALL'} = ('C', 'C');
-        my $pid = $gnupg->wrap_call(
-            handles => $handles,
-            commands => ['--lsign-key'],
-            command_args => [$key],
-        );
-        close $handle{'input'};
-        while ( my $str = readline $handle{'status'} ) {
-            if ( $str =~ /^\[GNUPG:\]\s*GET_BOOL sign_uid\..*/ ) {
-                print { $handle{'command'} } "y\n";
+    return RT::Crypt::GnuPG->CallGnuPG(
+        Command     => '--lsign-key',
+        CommandArgs => [$key],
+        Callback    => sub {
+            my %handle = @_;
+            while ( my $str = readline $handle{'status'} ) {
+                if ( $str =~ /^\[GNUPG:\]\s*GET_BOOL sign_uid\..*/ ) {
+                    print { $handle{'command'} } "y\n";
+                }
             }
-        }
-        waitpid $pid, 0;
-    };
-    my $err = $@;
-    close $handle{'output'};
-
-    my %res;
-    $res{'exit_code'} = $?;
-    foreach ( qw(error logger status) ) {
-        $res{$_} = do { local $/; readline $handle{$_} };
-        delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
-        close $handle{$_};
-    }
-    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
-    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
-    if ( $err || $res{'exit_code'} ) {
-        $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
-    }
-    return %res;
+        },
+    );
 }
 
 sub trust_gnupg_key {
     my $self = shift;
     my $key = shift;
 
-    require RT::Crypt::GnuPG; require GnuPG::Interface;
-    my $gnupg = GnuPG::Interface->new();
-    my %opt = RT->Config->Get('GnuPGOptions');
-    $gnupg->options->hash_init(
-        RT::Crypt::GnuPG::_PrepareGnuPGOptions( %opt ),
-        meta_interactive => 0,
-    );
-
-    my %handle; 
-    my $handles = GnuPG::Handles->new(
-        stdin   => ($handle{'input'}   = IO::Handle->new()),
-        stdout  => ($handle{'output'}  = IO::Handle->new()),
-        stderr  => ($handle{'error'}   = IO::Handle->new()),
-        logger  => ($handle{'logger'}  = IO::Handle->new()),
-        status  => ($handle{'status'}  = IO::Handle->new()),
-        command => ($handle{'command'} = IO::Handle->new()),
-    );
-
-    eval {
-        local $SIG{'CHLD'} = 'DEFAULT';
-        local @ENV{'LANG', 'LC_ALL'} = ('C', 'C');
-        my $pid = $gnupg->wrap_call(
-            handles => $handles,
-            commands => ['--edit-key'],
-            command_args => [$key],
-        );
-        close $handle{'input'};
-
-        my $done = 0;
-        while ( my $str = readline $handle{'status'} ) {
-            if ( $str =~ /^\[GNUPG:\]\s*\QGET_LINE keyedit.prompt/ ) {
-                if ( $done ) {
-                    print { $handle{'command'} } "quit\n";
-                } else {
-                    print { $handle{'command'} } "trust\n";
+    return RT::Crypt::GnuPG->CallGnuPG(
+        Command     => '--edit-key',
+        CommandArgs => [$key],
+        Callback    => sub {
+            my %handle = @_;
+            my $done = 0;
+            while ( my $str = readline $handle{'status'} ) {
+                if ( $str =~ /^\[GNUPG:\]\s*\QGET_LINE keyedit.prompt/ ) {
+                    if ( $done ) {
+                        print { $handle{'command'} } "quit\n";
+                    } else {
+                        print { $handle{'command'} } "trust\n";
+                    }
+                } elsif ( $str =~ /^\[GNUPG:\]\s*\QGET_LINE edit_ownertrust.value/ ) {
+                    print { $handle{'command'} } "5\n";
+                } elsif ( $str =~ /^\[GNUPG:\]\s*\QGET_BOOL edit_ownertrust.set_ultimate.okay/ ) {
+                    print { $handle{'command'} } "y\n";
+                    $done = 1;
                 }
-            } elsif ( $str =~ /^\[GNUPG:\]\s*\QGET_LINE edit_ownertrust.value/ ) {
-                print { $handle{'command'} } "5\n";
-            } elsif ( $str =~ /^\[GNUPG:\]\s*\QGET_BOOL edit_ownertrust.set_ultimate.okay/ ) {
-                print { $handle{'command'} } "y\n";
-                $done = 1;
             }
-        }
-        waitpid $pid, 0;
-    };
-    my $err = $@;
-    close $handle{'output'};
-
-    my %res;
-    $res{'exit_code'} = $?;
-    foreach ( qw(error logger status) ) {
-        $res{$_} = do { local $/; readline $handle{$_} };
-        delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
-        close $handle{$_};
-    }
-    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
-    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
-    if ( $err || $res{'exit_code'} ) {
-        $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
-    }
-    return %res;
+        },
+    );
 }
 
 sub started_ok {

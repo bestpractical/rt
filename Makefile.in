@@ -220,7 +220,7 @@ DB_RT_PASS		=	@DB_RT_PASS@
 
 
 
-TEST_FILES = t/*.t t/*/*.t
+TEST_FILES = t/*.t t/*/*.t t/*/*/*.t
 TEST_VERBOSE = 0
 
 RT_TEST_PARALLEL_NUM ?= 5
