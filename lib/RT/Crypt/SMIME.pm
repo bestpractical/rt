@@ -306,6 +306,12 @@ sub SignEncrypt {
     $parser->output_dir($tmpdir);
     my $newmime = $parser->parse_data($buf);
 
+    # Work around https://rt.cpan.org/Public/Bug/Display.html?id=87835
+    for my $part (grep {$_->is_multipart and $_->preamble and @{$_->preamble}} $newmime->parts_DFS) {
+        $part->preamble->[-1] .= "\n"
+            if $part->preamble->[-1] =~ /\r$/;
+    }
+
     $entity->parts([$newmime]);
     $entity->make_singlepart;
 
