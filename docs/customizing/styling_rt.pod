@@ -32,7 +32,7 @@ Theme which doesn't rely on JavaScript for menuing
 
 If you have granted the ModifySelf right to users on your system,
 they can pick a different theme for themselves by going to
-Logged in as -> Settings -> Options and selecting a different theme.
+Logged in as -> Settings -> Preferences and selecting a different theme.
 
 
 =head1 RT Theme Editor
@@ -127,7 +127,7 @@ name you selected, for example:
     Set( $WebDefaultStylesheet, 'localstyle' );
 
 If you restart your RT it should look just the same (assuming you copied
-your current default theme), but if you go to your Options page you'll
+your current default theme), but if you go to your Preferences page you'll
 see that the system default theme is now your new "localtheme."
 
 If you look at the CSS being loaded, you'll also see that the main css

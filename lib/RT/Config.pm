@@ -107,7 +107,7 @@ Keyed by config name, there are several properties that
 can be set for each config optin:
 
  Section     - What header this option should be grouped
-               under on the user Settings page
+               under on the user Preferences page
  Overridable - Can users change this option
  SortOrder   - Within a Section, how should the options be sorted
                for display to the user
