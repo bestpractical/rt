@@ -889,21 +889,22 @@ sub GetCertificateInfo {
         ];
         my $buf = '';
         safe_run_child { run3( $cmd, \$PEM, \$buf, \$res{stderr} ) };
-        if ( $? ) {
-            $res{exit_code} = $?;
-            $res{message} = "openssl exited with error code ". ($? >> 8)
-                ." and error: $res{stderr}";
-            return %res;
-        }
 
         if ($buf =~ /^stdin: OK$/) {
             $res{info}[0]{Trust} = "Signed by trusted CA $res{info}[0]{Issuer}[0]{String}";
             $res{info}[0]{TrustTerse} = "full";
             $res{info}[0]{TrustLevel} = 2;
-        } else {
+        } elsif ($? == 0 or ($? >> 8) == 2) {
             $res{info}[0]{Trust} = "UNTRUSTED signing CA $res{info}[0]{Issuer}[0]{String}";
             $res{info}[0]{TrustTerse} = "none";
             $res{info}[0]{TrustLevel} = -1;
+        } else {
+            $res{exit_code} = $?;
+            $res{message} = "openssl exited with error code ". ($? >> 8)
+                ." and stout: $buf";
+            $res{info}[0]{Trust} = "unknown (openssl failed)";
+            $res{info}[0]{TrustTerse} = "unknown";
+            $res{info}[0]{TrustLevel} = 0;
         }
     } else {
         $res{info}[0]{Trust} = "unknown (no CAPath set)";
