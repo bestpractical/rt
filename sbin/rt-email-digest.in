@@ -71,9 +71,9 @@ use RT;
 use RT::Interface::CLI qw( CleanEnv loc );
 use RT::Interface::Email;
 
-CleanEnv();
 RT::LoadConfig();
 RT::Init();
+CleanEnv();
 
 sub usage {
     my ($error) = @_;
