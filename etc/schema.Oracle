@@ -38,7 +38,7 @@ CREATE TABLE Queues (
         LastUpdated             DATE,
         Disabled                NUMBER(11,0) DEFAULT 0 NOT NULL
 );
- CREATE  INDEX Queues1 ON Queues (LOWER(Name));
+CREATE UNIQUE INDEX Queues1 ON Queues (LOWER(Name));
 CREATE INDEX Queues2 ON Queues (Disabled);
 
 
@@ -88,8 +88,9 @@ CREATE TABLE Groups (
         LastUpdated     DATE
 --      Instance        VARCHAR2(64)
 );
-CREATE INDEX Groups1 ON Groups (LOWER(Domain), Instance, LOWER(Type), id);
-CREATE INDEX Groups2 ON Groups (LOWER(Type), Instance, LOWER(Domain));
+CREATE INDEX Groups1 ON Groups (LOWER(Domain), LOWER(Type), Instance);
+CREATE INDEX Groups2 ON Groups (LOWER(Domain), LOWER(Name), Instance);
+CREATE INDEX Groups3 ON Groups (Instance);
 
 
 CREATE SEQUENCE SCRIPCONDITIONS_seq;
@@ -204,7 +205,7 @@ CREATE TABLE CachedGroupMembers (
         Disabled        NUMBER(11,0) DEFAULT 0 NOT NULL
 );
 CREATE INDEX DisGrouMem ON CachedGroupMembers (GroupId, MemberId, Disabled);
-CREATE INDEX GrouMem ON CachedGroupMembers (GroupId, MemberId);
+CREATE INDEX CachedGroupMembers2 ON CachedGroupMembers (MemberId, GroupId, Disabled);
 CREATE INDEX CachedGroupMembers3 on CachedGroupMembers (MemberId, ImmediateParentId);
 
 
@@ -249,9 +250,8 @@ CREATE TABLE Users (
         LastUpdatedBy           NUMBER(11,0) DEFAULT 0 NOT NULL,
         LastUpdated             DATE
 );
--- CREATE UNIQUE INDEX Users1 ON Users (Name);
 
-CREATE INDEX Users2 ON Users( LOWER(Name));
+CREATE UNIQUE INDEX Users1 ON Users (LOWER(Name));
 CREATE INDEX Users4 ON Users (LOWER(EmailAddress));
 
 
@@ -287,8 +287,6 @@ CREATE TABLE Tickets (
 );
 CREATE INDEX Tickets1 ON Tickets (Queue, Status);
 CREATE INDEX Tickets2 ON Tickets (Owner);
-CREATE INDEX Tickets4 ON Tickets (id, Status);
-CREATE INDEX Tickets5 ON Tickets (id, EffectiveId);
 CREATE INDEX Tickets6 ON Tickets (EffectiveId, Type);
 
 

@@ -92,7 +92,9 @@ CREATE TABLE Groups (
   
 ) ;
 
-CREATE UNIQUE INDEX Groups1 ON Groups (Name,Domain,Type,Instance) ;
+CREATE INDEX Groups1 ON Groups (Domain,Type,Instance);
+CREATE INDEX Groups2 ON Groups (Domain,Name,Instance);
+CREATE INDEX Groups3 ON Groups (Instance);
 
 --- }}}
 
@@ -206,6 +208,8 @@ CREATE TABLE GroupMembers (
   
 ) ;
 
+CREATE UNIQUE INDEX GroupMembers1 ON GroupMembers(GroupId, MemberId);
+
 --- }}}
 
 --- {{{ CachedGroupMembers
@@ -224,6 +228,10 @@ create table CachedGroupMembers (
 
         
 ) ;
+
+CREATE INDEX CachedGroupMembers1 ON CachedGroupMembers (GroupId, MemberId, Disabled);
+CREATE INDEX CachedGroupMembers2 ON CachedGroupMembers (MemberId, GroupId, Disabled);
+CREATE INDEX CachedGroupMembers3 ON CachedGroupMembers (MemberId, ImmediateParentId);
 
 --- }}}
 
@@ -272,8 +280,6 @@ CREATE TABLE Users (
 
 
 CREATE UNIQUE INDEX Users1 ON Users (Name) ;
-CREATE INDEX Users2 ON Users (Name);
-CREATE INDEX Users3 ON Users (id, EmailAddress);
 CREATE INDEX Users4 ON Users (EmailAddress);
 
 
@@ -316,8 +322,6 @@ CREATE TABLE Tickets (
 CREATE INDEX Tickets1 ON Tickets (Queue, Status) ;
 CREATE INDEX Tickets2 ON Tickets (Owner) ;
 CREATE INDEX Tickets3 ON Tickets (EffectiveId) ;
-CREATE INDEX Tickets4 ON Tickets (id, Status) ;
-CREATE INDEX Tickets5 ON Tickets (id, EffectiveId) ;
 
 --- }}}
 

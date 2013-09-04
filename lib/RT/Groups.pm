@@ -179,8 +179,7 @@ sub LimitToRolesForObject {
     my $self   = shift;
     my $object = shift;
     $self->Limit(FIELD => 'Domain',   OPERATOR => '=', VALUE => ref($object) . "-Role", CASESENSITIVE => 0 );
-    $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => $object->id)
-        if $object->id and not ref($object) eq "RT::System";
+    $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => $object->id);
 }
 
 =head2 LimitToRolesForQueue QUEUE_ID
@@ -240,6 +239,7 @@ sub LimitToRolesForSystem {
         Remove => "4.4",
     );
     $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'RT::System-Role', CASESENSITIVE => 0 );
+    $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => RT::System->Id );
 }
 
 

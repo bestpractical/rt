@@ -531,6 +531,33 @@ sub InsertSchema {
     return (1);
 }
 
+sub InsertIndexes {
+    my $self      = shift;
+    my $dbh       = shift;
+    my $base_path = shift || $RT::EtcPath;
+
+    my $db_type = RT->Config->Get('DatabaseType');
+
+    $dbh = $self->dbh if !$dbh && ref $self;
+    return (0, "No DBI handle provided") unless $dbh;
+
+    return (0, "'$base_path' doesn't exist") unless -e $base_path;
+
+    my $path;
+    if ( -d $base_path ) {
+        $path = File::Spec->catfile( $base_path, "indexes");
+        return (0, "Couldn't find indexes file")
+            unless -e $path;
+    } else {
+        $path = $base_path;
+    }
+
+    local $@;
+    eval { require $path; 1 }
+        or return (0, "Couldn't execute '$path': " . $@);
+    return (1);
+}
+
 =head1 GetVersionFile
 
 Takes base name of the file as argument, scans for <base name>-<version> named
@@ -1255,6 +1282,338 @@ sub FillIn {
     $sql =~ s{\?}{$self->Quote($bind->[$b++])}eg;
 
     return $sql;
+}
+
+sub Indexes {
+    my $self = shift;
+
+    my %res;
+
+    my $db_type = RT->Config->Get('DatabaseType');
+    my $dbh = $self->dbh;
+
+    my $list;
+    if ( $db_type eq 'mysql' ) {
+        $list = $dbh->selectall_arrayref(
+            'select distinct table_name, index_name from information_schema.statistics where table_schema = ?',
+            undef, scalar RT->Config->Get('DatabaseName')
+        );
+    }
+    elsif ( $db_type eq 'Pg' ) {
+        $list = $dbh->selectall_arrayref(
+            'select tablename, indexname from pg_indexes where schemaname = ?',
+            undef, 'public'
+        );
+    }
+    elsif ( $db_type eq 'SQLite' ) {
+        $list = $dbh->selectall_arrayref(
+            'select tbl_name, name from sqlite_master where type = ?',
+            undef, 'index'
+        );
+    }
+    elsif ( $db_type eq 'Oracle' ) {
+        $list = $dbh->selectall_arrayref(
+            'select table_name, index_name from dba_indexes where index_name NOT LIKE ? AND lower(Owner) = ?',
+            undef, 'SYS_%$$', lc RT->Config->Get('DatabaseUser'),
+        );
+    }
+    else {
+        die "Not implemented";
+    }
+    push @{ $res{ lc $_->[0] } ||= [] }, lc $_->[1] foreach @$list;
+    return %res;
+}
+
+sub IndexesThatBeginWith {
+    my $self = shift;
+    my %args = (Table => undef, Columns => [], @_);
+
+    my %indexes = $self->Indexes;
+
+    my @check = @{ $args{'Columns'} };
+
+    my @list;
+    foreach my $index ( @{ $indexes{ lc $args{'Table'} } || [] } ) {
+        my %info = $self->IndexInfo( Table => $args{'Table'}, Name => $index );
+        next if @{ $info{'Columns'} } < @check;
+        my $check = join ',', @check;
+        next if join( ',', @{ $info{'Columns'} } ) !~ /^\Q$check\E(?:,|$)/i;
+
+        push @list, \%info;
+    }
+    return sort { @{ $a->{'Columns'} } <=> @{ $b->{'Columns'} } } @list;
+}
+
+sub IndexInfo {
+    my $self = shift;
+    my %args = (Table => undef, Name => undef, @_);
+
+    my $db_type = RT->Config->Get('DatabaseType');
+    my $dbh = $self->dbh;
+
+    my %res = (
+        Table => lc $args{'Table'},
+        Name => lc $args{'Name'},
+    );
+    if ( $db_type eq 'mysql' ) {
+        my $list = $dbh->selectall_arrayref(
+            'select NON_UNIQUE, COLUMN_NAME, SUB_PART
+            from information_schema.statistics
+            where table_schema = ? AND table_name = ? AND index_name = ?
+            ORDER BY SEQ_IN_INDEX',
+            undef, scalar RT->Config->Get('DatabaseName'), $args{'Table'}, $args{'Name'},
+        );
+        return () unless $list && @$list;
+        $res{'Unique'} = $list->[0][0]? 0 : 1;
+        $res{'Functional'} = 0;
+        $res{'Columns'} = [ map $_->[1], @$list ];
+    }
+    elsif ( $db_type eq 'Pg' ) {
+        my $index = $dbh->selectrow_hashref(
+            'select ix.*, pg_get_expr(ix.indexprs, ix.indrelid) as functions
+            from
+                pg_class t, pg_class i, pg_index ix
+            where
+                t.relname ilike ?
+                and t.relkind = ?
+                and i.relname ilike ?
+                and ix.indrelid = t.oid
+                and ix.indexrelid = i.oid
+            ',
+            undef, $args{'Table'}, 'r', $args{'Name'},
+        );
+        return () unless $index && keys %$index;
+        $res{'Unique'} = $index->{'indisunique'};
+        $res{'Functional'} = (grep $_ == 0, split ' ', $index->{'indkey'})? 1 : 0;
+        $res{'Columns'} = [ map int($_), split ' ', $index->{'indkey'} ];
+        my $columns = $dbh->selectall_hashref(
+            'select a.attnum, a.attname
+            from pg_attribute a where a.attrelid = ?',
+            'attnum', undef, $index->{'indrelid'}
+        );
+        if ($index->{'functions'}) {
+            # XXX: this is good enough for us
+            $index->{'functions'} = [ split /,\s+/, $index->{'functions'} ];
+        }
+        foreach my $e ( @{ $res{'Columns'} } ) {
+            if (exists $columns->{$e} ) {
+                $e = $columns->{$e}{'attname'};
+            }
+            elsif ( !$e ) {
+                $e = shift @{ $index->{'functions'} };
+            }
+        }
+
+        foreach my $column ( @{$res{'Columns'}} ) {
+            next unless $column =~ s/^lower\( \s* \(? (\w+) \)? (?:::text)? \s* \)$/$1/ix;
+            $res{'CaseInsensitive'}{ lc $1 } = 1;
+        }
+    }
+    elsif ( $db_type eq 'SQLite' ) {
+        my $list = $dbh->selectall_arrayref("pragma index_info('$args{'Name'}')");
+        return () unless $list && @$list;
+
+        $res{'Functional'} = 0;
+        $res{'Columns'} = [ map $_->[2], @$list ];
+
+        $list = $dbh->selectall_arrayref("pragma index_list('$args{'Table'}')");
+        $res{'Unique'} = (grep lc $_->[1] eq lc $args{'Name'}, @$list)[0][2]? 1 : 0;
+    }
+    elsif ( $db_type eq 'Oracle' ) {
+        my $index = $dbh->selectrow_hashref(
+            'select uniqueness, funcidx_status from dba_indexes
+            where lower(table_name) = ? AND lower(index_name) = ? AND LOWER(Owner) = ?',
+            undef, lc $args{'Table'}, lc $args{'Name'}, lc RT->Config->Get('DatabaseUser'),
+        );
+        return () unless $index && keys %$index;
+        $res{'Unique'} = $index->{'uniqueness'} eq 'UNIQUE'? 1 : 0;
+        $res{'Functional'} = $index->{'funcidx_status'}? 1 : 0;
+
+        my %columns = map @$_, @{ $dbh->selectall_arrayref(
+            'select column_position, column_name from dba_ind_columns
+            where lower(table_name) = ? AND lower(index_name) = ? AND LOWER(index_owner) = ?',
+            undef, lc $args{'Table'}, lc $args{'Name'}, lc RT->Config->Get('DatabaseUser'),
+        ) };
+        $columns{ $_->[0] } = $_->[1] foreach @{ $dbh->selectall_arrayref(
+            'select column_position, column_expression from dba_ind_expressions
+            where lower(table_name) = ? AND lower(index_name) = ? AND LOWER(index_owner) = ?',
+            undef, lc $args{'Table'}, lc $args{'Name'}, lc RT->Config->Get('DatabaseUser'),
+        ) };
+        $res{'Columns'} = [ map $columns{$_}, sort { $a <=> $b } keys %columns ];
+
+        foreach my $column ( @{$res{'Columns'}} ) {
+            next unless $column =~ s/^lower\( \s* " (\w+) " \s* \)$/$1/ix;
+            $res{'CaseInsensitive'}{ lc $1 } = 1;
+        }
+    }
+    else {
+        die "Not implemented";
+    }
+    $_ = lc $_ foreach @{ $res{'Columns'} };
+    return %res;
+}
+
+sub DropIndex {
+    my $self = shift;
+    my %args = (Table => undef, Name => undef, @_);
+
+    my $db_type = RT->Config->Get('DatabaseType');
+    my $dbh = $self->dbh;
+    local $dbh->{'PrintError'} = 0;
+    local $dbh->{'RaiseError'} = 0;
+
+    my $res;
+    if ( $db_type eq 'mysql' ) {
+        $res = $dbh->do(
+            'drop index '. $dbh->quote_identifier($args{'Name'}) ." on $args{'Table'}",
+        );
+    }
+    elsif ( $db_type eq 'Pg' ) {
+        $res = $dbh->do("drop index $args{'Name'} CASCADE");
+    }
+    elsif ( $db_type eq 'SQLite' ) {
+        $res = $dbh->do("drop index $args{'Name'}");
+    }
+    elsif ( $db_type eq 'Oracle' ) {
+        my $user = RT->Config->Get('DatabaseUser');
+        $res = $dbh->do("drop index $user.$args{'Name'}");
+    }
+    else {
+        die "Not implemented";
+    }
+    my $desc = $self->IndexDescription( %args );
+    return ($res, $res? "Dropped $desc" : "Couldn't drop $desc: ". $dbh->errstr);
+}
+
+sub DropIndexIfExists {
+    my $self = shift;
+    my %args = (Table => undef, Name => undef, @_);
+
+    my %indexes = $self->Indexes;
+    return (1, ucfirst($self->IndexDescription( %args )) ." doesn't exists")
+        unless grep $_ eq lc $args{'Name'},
+        @{ $indexes{ lc $args{'Table'} } || []};
+    return $self->DropIndex(%args);
+}
+
+sub CreateIndex {
+    my $self = shift;
+    my %args = ( Table => undef, Name => undef, Columns => [], CaseInsensitive => {}, @_ );
+
+    my $name = $args{'Name'};
+    unless ( $name ) {
+        my %indexes = $self->Indexes;
+        %indexes = map { $_ => 1 } @{ $indexes{ lc $args{'Table'} } || [] };
+        my $i = 1;
+        $i++ while $indexes{ lc($args{'Table'}).$i };
+        $name = lc($args{'Table'}).$i;
+    }
+
+    my @columns = @{ $args{'Columns'} };
+    if ( $self->CaseSensitive ) {
+        foreach my $column ( @columns ) {
+            next unless $args{'CaseInsensitive'}{ lc $column };
+            $column = "LOWER($column)";
+        }
+    }
+
+    my $sql = "CREATE"
+        . ($args{'Unique'}? ' UNIQUE' : '')
+        ." INDEX $name ON $args{'Table'}"
+        ."(". join( ', ', @columns ) .")"
+    ;
+
+    my $res = $self->dbh->do( $sql );
+    unless ( $res ) {
+        return (
+            undef, "Failed to create ". $self->IndexDescription( %args )
+                ." (sql: $sql): ". $self->dbh->errstr
+        );
+    }
+    return ($name, "Created ". $self->IndexDescription( %args ) );
+}
+
+sub IndexDescription {
+    my $self = shift;
+    my %args = (@_);
+
+    my $desc =
+        ($args{'Unique'}? 'unique ' : '')
+        .'index'
+        . ($args{'Name'}? " $args{'Name'}" : '')
+        . ( @{$args{'Columns'}||[]}?
+            " ("
+            . join(', ', @{$args{'Columns'}})
+            . (@{$args{'Optional'}||[]}? '['. join(', ', '', @{$args{'Optional'}}).']' : '' )
+            .")"
+            : ''
+        )
+        . ($args{'Table'}? " on $args{'Table'}" : '')
+    ;
+    return $desc;
+}
+
+sub MakeSureIndexExists {
+    my $self = shift;
+    my %args = ( Table => undef, Columns => [], Optional => [], @_ );
+
+    my @list = $self->IndexesThatBeginWith(
+        Table => $args{'Table'}, Columns => [@{$args{'Columns'}}, @{$args{'Optional'}}],
+    );
+    if (@list) {
+        RT->Logger->debug( ucfirst $self->IndexDescription(
+            Table => $args{'Table'}, Columns => [@{$args{'Columns'}}, @{$args{'Optional'}}],
+        ). ' exists.' );
+        return;
+    }
+
+    @list = $self->IndexesThatBeginWith(
+        Table => $args{'Table'}, Columns => $args{'Columns'},
+    );
+    if ( !@list ) {
+        my ($status, $msg) = $self->CreateIndex(
+            Table => $args{'Table'}, Columns => [@{$args{'Columns'}}, @{$args{'Optional'}}],
+        );
+        my $method = $status ? 'debug' : 'warning';
+        RT->Logger->$method($msg);
+    }
+    else {
+        RT->Logger->info(
+            ucfirst $self->IndexDescription(
+                %{$list[0]}
+            )
+            .' exists, you may consider replacing it with '
+            . $self->IndexDescription(
+                Table => $args{'Table'}, Columns => [@{$args{'Columns'}}, @{$args{'Optional'}}],
+            )
+        );
+    }
+}
+
+sub DropIndexesThatArePrefix {
+    my $self = shift;
+    my %args = ( Table => undef, Columns => [], @_ );
+
+    my @list = $self->IndexesThatBeginWith(
+        Table => $args{'Table'}, Columns => [$args{'Columns'}[0]],
+    );
+
+    my $checking = join ',', map lc $_, @{ $args{'Columns'} }, '';
+    foreach my $i ( splice @list ) {
+        my $columns = join ',', @{ $i->{'Columns'} }, '';
+        next unless $checking =~ /^\Q$columns/i;
+
+        push @list, $i;
+    }
+    pop @list;
+
+    foreach my $i ( @list ) {
+        my ($status, $msg) = $self->DropIndex(
+            Table => $i->{'Table'}, Name => $i->{'Name'},
+        );
+        my $method = $status ? 'debug' : 'warning';
+        RT->Logger->$method($msg);
+    }
 }
 
 # log a mason stack trace instead of a Carp::longmess because it's less painful

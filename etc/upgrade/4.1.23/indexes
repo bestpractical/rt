@@ -1,0 +1,169 @@
+use strict;
+use warnings;
+
+# groups table
+{
+    foreach my $name ( qw(Groups1 Groups2 Groups3) ) {
+        my ($status, $msg) = $RT::Handle->DropIndexIfExists(
+            Table => 'Groups', Name => $name,
+        );
+        my $method = $status ? 'debug' : 'warning';
+        RT->Logger->$method($msg);
+    }
+
+    my ($name, $msg) = $RT::Handle->CreateIndex(
+        Table => 'Groups',
+        Columns => [qw(Domain Type Instance)],
+        CaseInsensitive => { domain => 1, type => 1 },
+    );
+    my $method = $name ? 'debug' : 'warning';
+    RT->Logger->$method($msg);
+
+    ($name, $msg) = $RT::Handle->CreateIndex(
+        Table => 'Groups',
+        Columns => [qw(Domain Name Instance)],
+        CaseInsensitive => { domain => 1, name => 1 },
+    );
+    $method = $name ? 'debug' : 'warning';
+    RT->Logger->$method($msg);
+
+    ($name, $msg) = $RT::Handle->CreateIndex(
+        Table => 'Groups',
+        Columns => [qw(Instance)],
+    );
+    $method = $name ? 'debug' : 'warning';
+    RT->Logger->$method($msg);
+}
+
+my $dedup = sub {
+    my ($table, $column) = (@_);
+
+    my $collection_class = "RT::$table";
+    my $record_class = $collection_class;
+    $record_class =~ s/s$//;
+
+    my $sql;
+
+    my $cs = $RT::Handle->CaseSensitive;
+    if ($cs) {
+        $sql = "SELECT DISTINCT LOWER(t1.$column) FROM $table t1, $table t2"
+        ." WHERE LOWER(t1.$column) = LOWER(t2.$column)"
+        .' AND t1.id != t2.id';
+    } else {
+        $sql = "SELECT DISTINCT t1.$column FROM $table t1, $table t2"
+        ." WHERE t1.$column = t2.$column"
+        .' AND t1.id != t2.id';
+    }
+
+    my $dbh = $RT::Handle->dbh;
+    my $sth = $dbh->prepare($sql);
+    $sth->execute;
+
+    my $found = 0;
+    while ( my ($value) = $sth->fetchrow_array ) {
+        $found = 1;
+
+        my $ids = $dbh->selectcol_arrayref(
+            "SELECT id FROM $table WHERE ". ($cs? "LOWER($column)" : $column) ." = LOWER(?)",
+            undef,
+            $value
+        );
+
+        # skip first
+        shift @$ids;
+
+        foreach my $id ( @$ids ) {
+            RT->Logger->debug("Changing $column of $record_class #". $id );
+            $dbh->do("UPDATE $table SET $column = ? WHERE id = ?", undef,  $value . '-dup-'.$id, $id);
+        }
+    }
+
+    if ( $found ) {
+        RT->Logger->warning(
+            "Records in $table table had non-unique values in $column column."
+            ." $column has been changed for such records, and now matches '%-dup-%'"
+        );
+    }
+};
+
+# a few case insensitive and unique indexes
+{
+    my @list = (
+        { Table => 'Queues', Column => 'Name' },
+        { Table => 'Users', Column => 'Name' },
+    );
+    foreach my $e (@list) {
+        RT->Logger->debug("Checking index on ". $e->{'Column'} ." in ". $e->{'Table'} );
+        my ($index) = $RT::Handle->IndexesThatBeginWith(
+            Table => $e->{'Table'}, Columns => [$e->{'Column'}]
+        );
+        $index = undef if $index && @{$index->{'Columns'}}>1;
+        if (
+            $index && $index->{'Unique'}
+            && ($RT::Handle->CaseSensitive? $index->{'CaseInsensitive'}{ lc $e->{'Column'} } : 1 )
+        ) {
+            RT->Logger->debug("Required index exists. Skipping.");
+            next;
+        }
+
+        $dedup->( $e->{'Table'}, $e->{'Column'} );
+
+        if ( $index ) {
+            my ($status, $msg) = $RT::Handle->DropIndex(
+                Table => $e->{'Table'}, Name => $index->{'Name'},
+            );
+            my $method = $status ? 'debug' : 'warning';
+            RT->Logger->$method($msg);
+        }
+
+        my ($status, $msg) = $RT::Handle->CreateIndex(
+            Table => $e->{'Table'}, Columns => [$e->{'Column'}],
+            Unique => 1, CaseInsensitive => { lc $e->{'Column'} => 1 },
+        );
+        my $method = $status ? 'debug' : 'warning';
+        RT->Logger->$method($msg);
+    }
+}
+
+# cached group members
+{
+    $RT::Handle->MakeSureIndexExists(
+        Table => 'CachedGroupMembers',
+        Columns => ['MemberId', 'ImmediateParentId'],
+    );
+    $RT::Handle->MakeSureIndexExists(
+        Table => 'CachedGroupMembers',
+        Columns => ['MemberId', 'GroupId'],
+        Optional => ['Disabled'],
+    );
+    $RT::Handle->DropIndexesThatArePrefix(
+        Table => 'CachedGroupMembers',
+        Columns => ['MemberId', 'GroupId', 'Disabled'],
+    );
+    $RT::Handle->MakeSureIndexExists(
+        Table => 'CachedGroupMembers',
+        Columns => ['GroupId', 'MemberId'],
+        Optional => ['Disabled'],
+    );
+    $RT::Handle->DropIndexesThatArePrefix(
+        Table => 'CachedGroupMembers',
+        Columns => ['GroupId', 'MemberId', 'Disabled'],
+    );
+}
+
+# drop indexes that start with 'id' column
+foreach my $table ('Users', 'Tickets') {
+    my @list = $RT::Handle->IndexesThatBeginWith(
+        Table => $table, Columns => ['id'],
+    );
+    @list = grep @{ $_->{'Columns'} } > 1, @list;
+
+    foreach my $index (@list) {
+        my ($status, $msg) = $RT::Handle->DropIndex(
+            Table => $table, Name => $index->{'Name'},
+        );
+        RT->Logger->info($msg);
+    }
+}
+
+1;

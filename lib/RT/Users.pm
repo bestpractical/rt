@@ -458,11 +458,12 @@ sub _RoleClauses {
     my @groups_clauses;
     foreach my $obj ( @objects ) {
         my $type = ref($obj)? ref($obj): $obj;
-        my $id;
-        $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
 
         my $role_clause = $RT::Handle->__MakeClauseCaseInsensitive("$groups.Domain", '=', "'$type-Role'");
-        $role_clause   .= " AND $groups.Instance = $id" if $id;
+
+        if ( my $id = eval { $obj->id } ) {
+            $role_clause .= " AND $groups.Instance = $id";
+        }
         push @groups_clauses, "($role_clause)";
     }
     return @groups_clauses;
