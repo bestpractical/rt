@@ -1561,7 +1561,7 @@ sub MakeSureIndexExists {
         Table => $args{'Table'}, Columns => [@{$args{'Columns'}}, @{$args{'Optional'}}],
     );
     if (@list) {
-        RT->Logger->info( ucfirst $self->IndexDescription(
+        RT->Logger->debug( ucfirst $self->IndexDescription(
             Table => $args{'Table'}, Columns => [@{$args{'Columns'}}, @{$args{'Optional'}}],
         ). ' exists.' );
         return;
@@ -1574,7 +1574,8 @@ sub MakeSureIndexExists {
         my ($status, $msg) = $self->CreateIndex(
             Table => $args{'Table'}, Columns => [@{$args{'Columns'}}, @{$args{'Optional'}}],
         );
-        RT->Logger->info($msg);
+        my $method = $status ? 'debug' : 'warning';
+        RT->Logger->$method($msg);
     }
     else {
         RT->Logger->info(
@@ -1610,7 +1611,8 @@ sub DropIndexesThatArePrefix {
         my ($status, $msg) = $self->DropIndex(
             Table => $i->{'Table'}, Name => $i->{'Name'},
         );
-        RT->Logger->info($msg);
+        my $method = $status ? 'debug' : 'warning';
+        RT->Logger->$method($msg);
     }
 }
 

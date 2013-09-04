@@ -7,7 +7,8 @@ use warnings;
         my ($status, $msg) = $RT::Handle->DropIndexIfExists(
             Table => 'Groups', Name => $name,
         );
-        RT->Logger->info($msg);
+        my $method = $status ? 'debug' : 'warning';
+        RT->Logger->$method($msg);
     }
 
     my ($name, $msg) = $RT::Handle->CreateIndex(
@@ -15,20 +16,23 @@ use warnings;
         Columns => [qw(Domain Type Instance)],
         CaseInsensitive => { domain => 1, type => 1 },
     );
-    RT->Logger->info($msg);
+    my $method = $name ? 'debug' : 'warning';
+    RT->Logger->$method($msg);
 
     ($name, $msg) = $RT::Handle->CreateIndex(
         Table => 'Groups',
         Columns => [qw(Domain Name Instance)],
         CaseInsensitive => { domain => 1, name => 1 },
     );
-    RT->Logger->info($msg);
+    $method = $name ? 'debug' : 'warning';
+    RT->Logger->$method($msg);
 
     ($name, $msg) = $RT::Handle->CreateIndex(
         Table => 'Groups',
         Columns => [qw(Instance)],
     );
-    RT->Logger->info($msg);
+    $method = $name ? 'debug' : 'warning';
+    RT->Logger->$method($msg);
 }
 
 my $dedup = sub {
@@ -89,7 +93,7 @@ my $dedup = sub {
         { Table => 'Users', Column => 'Name' },
     );
     foreach my $e (@list) {
-        RT->Logger->info("Checking index on ". $e->{'Column'} ." in ". $e->{'Table'} );
+        RT->Logger->debug("Checking index on ". $e->{'Column'} ." in ". $e->{'Table'} );
         my ($index) = $RT::Handle->IndexesThatBeginWith(
             Table => $e->{'Table'}, Columns => [$e->{'Column'}]
         );
@@ -98,7 +102,7 @@ my $dedup = sub {
             $index && $index->{'Unique'}
             && ($RT::Handle->CaseSensitive? $index->{'CaseInsensitive'}{ lc $e->{'Column'} } : 1 )
         ) {
-            RT->Logger->info("Required index exists. Skipping.");
+            RT->Logger->debug("Required index exists. Skipping.");
             next;
         }
 
@@ -108,14 +112,16 @@ my $dedup = sub {
             my ($status, $msg) = $RT::Handle->DropIndex(
                 Table => $e->{'Table'}, Name => $index->{'Name'},
             );
-            RT->Logger->info($msg);
+            my $method = $status ? 'debug' : 'warning';
+            RT->Logger->$method($msg);
         }
 
         my ($status, $msg) = $RT::Handle->CreateIndex(
             Table => $e->{'Table'}, Columns => [$e->{'Column'}],
             Unique => 1, CaseInsensitive => { lc $e->{'Column'} => 1 },
         );
-        RT->Logger->info($msg);
+        my $method = $status ? 'debug' : 'warning';
+        RT->Logger->$method($msg);
     }
 }
 
