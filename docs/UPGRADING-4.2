@@ -261,8 +261,6 @@ deprecation warnings.  The old names, and their new counterparts, are:
 Due to many long-standing bugs and limitations, the "Offline Tool" was
 removed.
 
-=back
-
 =item *
 
 We updated default "Forward" and "Forward Ticket" templates to support
@@ -274,5 +272,7 @@ You can use $ForwardTransaction to refer to the customized message in the
 templates, e.g. "Forward" template could be updated to:
 
 { $ForwardTransaction->Content =~ /\S/ ? $ForwardTransaction->Content : "This is a forward of transaction #".$Transaction->id." of ticket #". $Ticket->id }
+
+=back
 
 =cut
