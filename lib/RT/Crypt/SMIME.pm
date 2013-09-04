@@ -364,6 +364,12 @@ sub Decrypt {
     my $res_entity = _extract_msg_from_buf( \$buf );
     $res_entity->make_multipart( 'mixed', Force => 1 );
 
+    # Work around https://rt.cpan.org/Public/Bug/Display.html?id=87835
+    for my $part (grep {$_->is_multipart and $_->preamble and @{$_->preamble}} $res_entity->parts_DFS) {
+        $part->preamble->[-1] .= "\n"
+            if $part->preamble->[-1] =~ /\r$/;
+    }
+
     $args{'Data'}->make_multipart( 'mixed', Force => 1 );
     $args{'Data'}->parts([ $res_entity->parts ]);
     $args{'Data'}->make_singlepart;
