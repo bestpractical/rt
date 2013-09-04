@@ -281,6 +281,14 @@ templates, e.g. "Forward" template could be updated to:
 
 { $ForwardTransaction->Content =~ /\S/ ? $ForwardTransaction->Content : "This is a forward of transaction #".$Transaction->id." of ticket #". $Ticket->id }
 
+=item *
+
+GnuPG and S/MIME are no longer enabled in F<RT_Config.pm> merely by the
+presence of the C<gpg> or C<openssl> binaries.  Systems which depended
+on C<configure> enabling these in F<RT_Config.pm> implicitly will need
+to pass C<--enable-gpg> to C<configure>, or alter their
+C<RT_SiteConfig.pm> to enable the functionality explicitly.
+
 =back
 
 =cut
