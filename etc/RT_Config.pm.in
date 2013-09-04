@@ -2018,6 +2018,17 @@ Simple wildcards, similar to SSL certificates, are allowed.  For example:
 
 Set(@ReferrerWhitelist, qw());
 
+
+=item C<$BcryptCost>
+
+This sets the default cost parameter used for the C<bcrypt> key
+derivation function.  Valid values range from 4 to 31, inclusive, with
+higher numbers denoting greater effort.
+
+=cut
+
+Set($BcryptCost, 10);
+
 =back
 
 

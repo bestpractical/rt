@@ -263,6 +263,14 @@ removed.
 
 =item *
 
+To increase security against offline brute-force attacks, RT's default
+password encryption has been switched to the popular bcrypt() key
+derivation function.  Passwords cannot be automatically bulk upgraded to
+the new format, but will be replaced with bcrypt versions upon the first
+successful login.
+
+=item *
+
 We updated default "Forward" and "Forward Ticket" templates to support
 customizing messages on forward. They will be updated automatically if you
 didn't change them before.

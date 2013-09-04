@@ -79,6 +79,7 @@ sub Table {'Users'}
 
 use Digest::SHA;
 use Digest::MD5;
+use Crypt::Eksblowfish::Bcrypt qw();
 use RT::Principals;
 use RT::ACE;
 use RT::Interface::Email;
@@ -870,6 +871,39 @@ sub SetPassword {
 
 }
 
+sub _GeneratePassword_bcrypt {
+    my $self = shift;
+    my ($password, @rest) = @_;
+
+    my $salt;
+    my $rounds;
+    if (@rest) {
+        # The first split is the number of rounds
+        $rounds = $rest[0];
+
+        # The salt is the first 22 characters, b64 encoded usign the
+        # special bcrypt base64.
+        $salt = Crypt::Eksblowfish::Bcrypt::de_base64( substr($rest[1], 0, 22) );
+    } else {
+        $rounds = RT->Config->Get('BcryptCost');
+
+        # Generate a random 16-octet base64 salt
+        $salt = "";
+        $salt .= pack("C", int rand(256)) for 1..16;
+    }
+
+    my $hash = Crypt::Eksblowfish::Bcrypt::bcrypt_hash({
+        key_nul => 1,
+        cost    => $rounds,
+        salt    => $salt,
+    }, Digest::SHA::sha512( encode_utf8($password) ) );
+
+    return join("!", "", "bcrypt", sprintf("%02d", $rounds),
+                Crypt::Eksblowfish::Bcrypt::en_base64( $salt ).
+                Crypt::Eksblowfish::Bcrypt::en_base64( $hash )
+              );
+}
+
 sub _GeneratePassword_sha512 {
     my $self = shift;
     my ($password, $salt) = @_;
@@ -893,13 +927,13 @@ Returns a string to store in the database.  This string takes the form:
 
    !method!salt!hash
 
-By default, the method is currently C<sha512>.
+By default, the method is currently C<bcrypt>.
 
 =cut
 
 sub _GeneratePassword {
     my $self = shift;
-    return $self->_GeneratePassword_sha512(@_);
+    return $self->_GeneratePassword_bcrypt(@_);
 }
 
 =head3 HasPassword
@@ -948,9 +982,13 @@ sub IsPassword {
     my $stored = $self->__Value('Password');
     if ($stored =~ /^!/) {
         # If it's a new-style (>= RT 4.0) password, it starts with a '!'
-        my (undef, $method, $salt, undef) = split /!/, $stored;
-        if ($method eq "sha512") {
-            return $self->_GeneratePassword_sha512($value, $salt) eq $stored;
+        my (undef, $method, @rest) = split /!/, $stored;
+        if ($method eq "bcrypt") {
+            return 0 unless $self->_GeneratePassword_bcrypt($value, @rest) eq $stored;
+            # Upgrade to a larger number of rounds if necessary
+            return 1 unless $rest[0] < RT->Config->Get('BcryptCost');
+        } elsif ($method eq "sha512") {
+            return 0 unless $self->_GeneratePassword_sha512($value, @rest) eq $stored;
         } else {
             $RT::Logger->warn("Unknown hash method $method");
             return 0;

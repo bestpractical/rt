@@ -4,16 +4,28 @@ use warnings;
 use RT::Test;
 use Digest::MD5;
 
-my $default = "sha512";
+my $default = "bcrypt";
 
 my $root = RT::User->new(RT->SystemUser);
 $root->Load("root");
 
-# Salted SHA-512 (default)
+# bcrypt (default)
 my $old = $root->__Value("Password");
 like($old, qr/^\!$default\!/, "Stored as salted $default");
 ok($root->IsPassword("password"));
 is($root->__Value("Password"), $old, "Unchanged after password check");
+
+# bcrypt (smaller number of rounds)
+my $salt = Crypt::Eksblowfish::Bcrypt::en_base64("a"x16);
+$root->_Set( Field => "Password", Value => RT::User->_GeneratePassword_bcrypt("smaller", 6, $salt) );
+like($root->__Value("Password"), qr/^\!$default\!06\!/, "Stored with a smaller number of rounds");
+ok($root->IsPassword("smaller"), "Smaller number of bcrypt rounds works");
+like($root->__Value("Password"), qr/^\!$default\!10\!/, "And is now upgraded to salted $default");
+
+# Salted SHA-512, one round
+$root->_Set( Field => "Password", Value => RT::User->_GeneratePassword_sha512("other", "salt") );
+ok($root->IsPassword("other"), "SHA-512 password works");
+like($root->__Value("Password"), qr/^\!$default\!/, "And is now upgraded to salted $default");
 
 # Crypt
 $root->_Set( Field => "Password", Value => crypt("something", "salt"));
