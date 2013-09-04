@@ -608,9 +608,9 @@ sub SetRTSpecialHeaders {
     }
 
     $self->SetHeader( 'X-RT-Loop-Prevention', RT->Config->Get('rtname') );
-    $self->SetHeader( 'RT-Ticket',
+    $self->SetHeader( 'X-RT-Ticket',
         RT->Config->Get('rtname') . " #" . $self->TicketObj->id() );
-    $self->SetHeader( 'Managed-by',
+    $self->SetHeader( 'X-Managed-by',
         "RT $RT::VERSION (http://www.bestpractical.com/rt/)" );
 
 # XXX, TODO: use /ShowUser/ShowUserEntry(or something like that) when it would be
@@ -618,7 +618,7 @@ sub SetRTSpecialHeaders {
     if ( my $email = $self->TransactionObj->CreatorObj->EmailAddress
          and RT->Config->Get('UseOriginatorHeader')
     ) {
-        $self->SetHeader( 'RT-Originator', $email );
+        $self->SetHeader( 'X-RT-Originator', $email );
     }
 
 }

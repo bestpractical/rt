@@ -275,4 +275,15 @@ templates, e.g. "Forward" template could be updated to:
 
 { $ForwardTransaction->Content =~ /\S/ ? $ForwardTransaction->Content : "This is a forward of transaction #".$Transaction->id." of ticket #". $Ticket->id }
 
+=item *
+
+RT has generated RT-Ticket: RT-Originator: and Managed-By: headers in
+compliance with RFC2822/6648 but we've discovered that some smarthost
+providers are requiring strict adherence to RFC822 which mandates X-
+prefixes on these headers. We've made this change in 4.2 for users
+relying on those providers.
+
+Any external scripts which were parsing on these RT mail headers will
+need to be updated.
+
 =cut
