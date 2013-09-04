@@ -326,6 +326,7 @@ PerlIO::eol
 
 $deps{'SMIME'} = [ text_to_hash( << '.') ];
 Crypt::X509
+File::Which
 String::ShellQuote
 .
 
