@@ -571,9 +571,9 @@ s!(?<=Your ticket has been (?:approved|rejected) by { eval { )\$Approval->OwnerO
             my ($ref) = @_;
             if ($ref->{Name} eq 'Forward') {
                 $ref->{Description} = 'Forwarded message';
-                if ( $ref->{Content} eq q{
-This is a forward of transaction #{$Transaction->id} of ticket #{ $Ticket->id }
-} ) {
+                if ( $ref->{Content} =~
+                     m/^\n*This is (a )?forward of transaction #\{\s*\$Transaction->id\s*\} of (a )?ticket #\{\s*\$Ticket->id\s*\}\n*$/
+                   ) {
                     $ref->{Content} = q{
 { $ForwardTransaction->Content =~ /\S/ ? $ForwardTransaction->Content : "This is a forward of transaction #".$Transaction->id." of ticket #". $Ticket->id }
 };
