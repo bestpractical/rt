@@ -497,6 +497,21 @@ sub action_upgrade {
         individual_id => $full_id
     });
 
+    # Ensure that the Attributes column is big enough to hold the
+    # upgrade steps we're going to add; this step exists in 4.0.6 for
+    # mysql, but that may be too late.  Run it as soon as possible.
+    if (RT->Config->Get('DatabaseType') eq 'mysql'
+            and RT::Handle::cmp_version( $upgrading_from, '4.0.6') < 0) {
+        my $dbh = get_admin_dbh();
+        # Before the binary switch in 3.7.87, we want to alter text ->
+        # longtext, not blob -> longblob
+        if (RT::Handle::cmp_version( $upgrading_from, '3.7.87') < 0) {
+            $dbh->do("ALTER TABLE Attributes MODIFY Content LONGTEXT")
+        } else {
+            $dbh->do("ALTER TABLE Attributes MODIFY Content LONGBLOB")
+        }
+    }
+
     my $previous = $upgrading_from;
     my ( $ret, $msg );
     foreach my $n ( 0..$#versions ) {
