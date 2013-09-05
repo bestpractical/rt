@@ -65,6 +65,9 @@
 %       } else {
 <% ucfirst($row->{action}) %>
 %       }
+%       if (not $complete) {
+ <&|/l&>(Incomplete)</&>
+%       }
     </td>
     <td class="collection-as-table"><% $timestamp->AsString %></td>
     <td class="collection-as-table"><% $duration %></td>
