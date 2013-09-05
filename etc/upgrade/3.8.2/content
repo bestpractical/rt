@@ -190,7 +190,9 @@ our @Final = (
         while ( my $scrip = $scrips->Next ) {
             my %tmp =
                 map { $_ => $scrip->_Value( $_ ) }
-                $scrip->ReadableAttributes;
+                qw/id Description ScripCondition ScripAction
+                   CustomIsApplicableCode CustomPrepareCode CustomCommitCode
+                   Stage Queue Template Creator Created LastUpdatedBy LastUpdated/;
 
             print $tmp_fh Data::Dumper::Dumper( \%tmp );
 
