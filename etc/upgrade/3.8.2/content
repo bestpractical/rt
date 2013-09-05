@@ -185,7 +185,8 @@ our @Final = (
         require Data::Dumper;
 
         my $scrips = RT::Scrips->new( RT->SystemUser );
-        $scrips->LimitToQueue( $approvals_q->id );
+        $scrips->{'with_disabled_column'} = 0;
+        $scrips->Limit( FIELD => 'Queue', VALUE => $approvals_q->id );
         while ( my $scrip = $scrips->Next ) {
             my %tmp =
                 map { $_ => $scrip->_Value( $_ ) }
