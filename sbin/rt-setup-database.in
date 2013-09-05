@@ -238,8 +238,28 @@ sub action_schema {
     my ($status, $msg) = RT::Handle->CheckCompatibility( $dbh, 'schema' );
     return ($status, $msg) unless $status;
 
+    my $individual_id = Data::GUID->new->as_string();
+    my %upgrade_data = (
+        action   => 'schema',
+        filename => Cwd::abs_path($args{'datafile'} || $args{'datadir'} || ''),
+        stage    => 'before',
+        full_id  => $full_id,
+        individual_id => $individual_id,
+    );
+    $upgrade_data{'ext_version'} = $ext_version if $ext_version;
+    RT->System->AddUpgradeHistory($package => \%upgrade_data) unless $init;
+
     print "Now populating database schema.\n";
-    return RT::Handle->InsertSchema( $dbh, $args{'datafile'} || $args{'datadir'} );
+    my @ret = RT::Handle->InsertSchema( $dbh, $args{'datafile'} || $args{'datadir'} );
+
+    %upgrade_data = (
+        stage         => 'after',
+        individual_id => $individual_id,
+        return_value  => [ @ret ],
+    );
+    RT->System->AddUpgradeHistory($package => \%upgrade_data) unless $init;
+
+    return @ret;
 }
 
 sub action_acl {
@@ -248,19 +268,63 @@ sub action_acl {
     my ($status, $msg) = RT::Handle->CheckCompatibility( $dbh, 'acl' );
     return ($status, $msg) unless $status;
 
+    my $individual_id = Data::GUID->new->as_string();
+    my %upgrade_data = (
+        action   => 'acl',
+        filename => Cwd::abs_path($args{'datafile'} || $args{'datadir'} || ''),
+        stage    => 'before',
+        full_id  => $full_id,
+        individual_id => $individual_id,
+    );
+    $upgrade_data{'ext_version'} = $ext_version if $ext_version;
+    RT->System->AddUpgradeHistory($package => \%upgrade_data) unless $init;
+
     print "Now inserting database ACLs.\n";
-    return RT::Handle->InsertACL( $dbh, $args{'datafile'} || $args{'datadir'} );
+    my @ret = RT::Handle->InsertACL( $dbh, $args{'datafile'} || $args{'datadir'} );
+
+    %upgrade_data = (
+        stage         => 'after',
+        individual_id => $individual_id,
+        return_value  => [ @ret ],
+    );
+    RT->System->AddUpgradeHistory($package => \%upgrade_data) unless $init;
+
+    return @ret;
 }
 
 sub action_indexes {
     my %args = @_;
+    RT->ConnectToDatabase;
+    my $individual_id = Data::GUID->new->as_string();
+    my %upgrade_data = (
+        action   => 'indexes',
+        filename => Cwd::abs_path($args{'datafile'} || $args{'datadir'} || ''),
+        stage    => 'before',
+        full_id  => $full_id,
+        individual_id => $individual_id,
+    );
+    $upgrade_data{'ext_version'} = $ext_version if $ext_version;
+    RT->System->AddUpgradeHistory($package => \%upgrade_data);
+
     my $dbh = get_admin_dbh();
     $RT::Handle = RT::Handle->new;
     $RT::Handle->dbh( $dbh );
     RT::InitLogging();
 
     print "Now inserting database indexes.\n";
-    return RT::Handle->InsertIndexes( $dbh, $args{'datafile'} || $args{'datadir'} );
+    my @ret = RT::Handle->InsertIndexes( $dbh, $args{'datafile'} || $args{'datadir'} );
+
+    $RT::Handle = RT::Handle->new;
+    $RT::Handle->dbh( undef );
+    RT->ConnectToDatabase;
+    %upgrade_data = (
+        stage         => 'after',
+        individual_id => $individual_id,
+        return_value  => [ @ret ],
+    );
+    RT->System->AddUpgradeHistory($package => \%upgrade_data);
+
+    return @ret;
 }
 
 sub action_coredata {
