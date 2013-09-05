@@ -298,8 +298,9 @@ sub ParsedUpgradeHistory {
                 $event = $ids{$event->{individual_id}};
                 $event->{end} = $end->{timestamp};
 
-                $event->{return_value} = [ split ', ', $end->{return_value}, 2 ]
-                    if $end->{return_value};
+                $end->{return_value} = [ split ', ', $end->{return_value}, 2 ]
+                    if $end->{return_value} and not ref $end->{return_value};
+                $event->{return_value} = $end->{return_value};
                 $event->{content} ||= $end->{content};
             }
         }

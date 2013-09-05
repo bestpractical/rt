@@ -337,7 +337,7 @@ sub action_insert {
         content  => $content,
         stage    => 'after',
         type     => 'process initialdata',
-        return_value => join (', ', @ret),
+        return_value => [ @ret ],
         full_id => $full_id,
         individual_id => $individual_id );
 
