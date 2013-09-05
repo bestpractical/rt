@@ -751,6 +751,16 @@ sub _CoreAccessible {
  }
 };
 
+sub FindDependencies {
+    my $self = shift;
+    my ($walker, $deps) = @_;
+
+    $self->SUPER::FindDependencies($walker, $deps);
+
+    $deps->Add( out => $self->CustomFieldObj );
+    $deps->Add( out => $self->Object );
+}
+
 RT::Base->_ImportOverlays();
 
 1;

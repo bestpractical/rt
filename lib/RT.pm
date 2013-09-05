@@ -477,6 +477,8 @@ sub InitClasses {
     require RT::ObjectTopics;
     require RT::Topic;
     require RT::Topics;
+    require RT::Link;
+    require RT::Links;
 
     _BuildTableAttributes();
 
@@ -528,9 +530,9 @@ sub _BuildTableAttributes {
         RT::ObjectCustomFieldValue
         RT::Attribute
         RT::ACE
-        RT::Link
         RT::Article
         RT::Class
+        RT::Link
         RT::ObjectClass
         RT::ObjectTopic
         RT::Topic

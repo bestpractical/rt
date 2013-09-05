@@ -34,6 +34,8 @@
 /sbin/rt-test-dependencies
 /sbin/rt-validator
 /sbin/rt-validate-aliases
+/sbin/rt-serializer
+/sbin/rt-importer
 /sbin/standalone_httpd
 /var/mason_data/
 /autom4te.cache/

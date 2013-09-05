@@ -222,11 +222,16 @@ sub ACLEquivalenceObjects {
     my $self  = shift;
     return unless $self->id and $self->ObjectId;
 
-    my $obj = $self->ObjectType->new($self->CurrentUser);
-    $obj->Load($self->ObjectId);
-    return $obj;
+    return $self->Object;
 }
 
+
+sub Object {
+    my $self  = shift;
+    my $Object = $self->__Value('ObjectType')->new( $self->CurrentUser );
+    $Object->Load( $self->__Value('ObjectId') );
+    return $Object;
+}
 
 =head2 id
 
@@ -346,6 +351,16 @@ sub _CoreAccessible {
 
  }
 };
+
+sub FindDependencies {
+    my $self = shift;
+    my ($walker, $deps) = @_;
+
+    $self->SUPER::FindDependencies($walker, $deps);
+    $deps->Add( out => $self->ParentObj ) if $self->ParentObj->Id;
+    $deps->Add( in  => $self->Children );
+    $deps->Add( out => $self->Object );
+}
 
 RT::Base->_ImportOverlays();
 1;

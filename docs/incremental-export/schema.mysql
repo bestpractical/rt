@@ -1,0 +1,10 @@
+CREATE TABLE IncrementalRecords (
+  id         INTEGER NOT NULL AUTO_INCREMENT,
+  ObjectType VARCHAR(50) NOT NULL,
+  ObjectId   INTEGER NOT NULL,
+  UpdateType TINYINT NOT NULL,
+  AlteredAt  TIMESTAMP NOT NULL,
+  PRIMARY KEY(ObjectType, ObjectId),
+  UNIQUE KEY(id),
+  KEY(UpdateType)
+);
