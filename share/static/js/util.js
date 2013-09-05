@@ -30,6 +30,11 @@ function switchVisibility(id1, id2) {
     return false;
 }
 
+function toggle_upgrade_history(widget, selector) {
+    jQuery(selector).toggle();
+    jQuery(widget).toggleClass("rolled-up");
+}
+
 /* Classes */
 function jQueryWrap( id ) {
     return typeof id == 'object' ? jQuery(id) : jQuery('#'+id);

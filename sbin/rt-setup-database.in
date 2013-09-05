@@ -70,6 +70,7 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 
 use Term::ReadKey;
 use Getopt::Long;
+use Data::GUID;
 
 $| = 1; # unbuffer all output.
 
@@ -193,6 +194,7 @@ print "Working with:\n"
 
 my $package = $args{'package'} || 'RT';
 my $ext_version = $args{'ext-version'};
+my $full_id = Data::GUID->new->as_string;
 
 foreach my $action ( @actions ) {
     no strict 'refs';
@@ -236,8 +238,28 @@ sub action_schema {
     my ($status, $msg) = RT::Handle->CheckCompatibility( $dbh, 'schema' );
     return ($status, $msg) unless $status;
 
+    my $individual_id = Data::GUID->new->as_string();
+    my %upgrade_data = (
+        action   => 'schema',
+        filename => Cwd::abs_path($args{'datafile'} || $args{'datadir'} || ''),
+        stage    => 'before',
+        full_id  => $full_id,
+        individual_id => $individual_id,
+    );
+    $upgrade_data{'ext_version'} = $ext_version if $ext_version;
+    RT->System->AddUpgradeHistory($package => \%upgrade_data) unless $init;
+
     print "Now populating database schema.\n";
-    return RT::Handle->InsertSchema( $dbh, $args{'datafile'} || $args{'datadir'} );
+    my @ret = RT::Handle->InsertSchema( $dbh, $args{'datafile'} || $args{'datadir'} );
+
+    %upgrade_data = (
+        stage         => 'after',
+        individual_id => $individual_id,
+        return_value  => [ @ret ],
+    );
+    RT->System->AddUpgradeHistory($package => \%upgrade_data) unless $init;
+
+    return @ret;
 }
 
 sub action_acl {
@@ -246,19 +268,63 @@ sub action_acl {
     my ($status, $msg) = RT::Handle->CheckCompatibility( $dbh, 'acl' );
     return ($status, $msg) unless $status;
 
+    my $individual_id = Data::GUID->new->as_string();
+    my %upgrade_data = (
+        action   => 'acl',
+        filename => Cwd::abs_path($args{'datafile'} || $args{'datadir'} || ''),
+        stage    => 'before',
+        full_id  => $full_id,
+        individual_id => $individual_id,
+    );
+    $upgrade_data{'ext_version'} = $ext_version if $ext_version;
+    RT->System->AddUpgradeHistory($package => \%upgrade_data) unless $init;
+
     print "Now inserting database ACLs.\n";
-    return RT::Handle->InsertACL( $dbh, $args{'datafile'} || $args{'datadir'} );
+    my @ret = RT::Handle->InsertACL( $dbh, $args{'datafile'} || $args{'datadir'} );
+
+    %upgrade_data = (
+        stage         => 'after',
+        individual_id => $individual_id,
+        return_value  => [ @ret ],
+    );
+    RT->System->AddUpgradeHistory($package => \%upgrade_data) unless $init;
+
+    return @ret;
 }
 
 sub action_indexes {
     my %args = @_;
+    RT->ConnectToDatabase;
+    my $individual_id = Data::GUID->new->as_string();
+    my %upgrade_data = (
+        action   => 'indexes',
+        filename => Cwd::abs_path($args{'datafile'} || $args{'datadir'} || ''),
+        stage    => 'before',
+        full_id  => $full_id,
+        individual_id => $individual_id,
+    );
+    $upgrade_data{'ext_version'} = $ext_version if $ext_version;
+    RT->System->AddUpgradeHistory($package => \%upgrade_data);
+
     my $dbh = get_admin_dbh();
     $RT::Handle = RT::Handle->new;
     $RT::Handle->dbh( $dbh );
     RT::InitLogging();
 
     print "Now inserting database indexes.\n";
-    return RT::Handle->InsertIndexes( $dbh, $args{'datafile'} || $args{'datadir'} );
+    my @ret = RT::Handle->InsertIndexes( $dbh, $args{'datafile'} || $args{'datadir'} );
+
+    $RT::Handle = RT::Handle->new;
+    $RT::Handle->dbh( undef );
+    RT->ConnectToDatabase;
+    %upgrade_data = (
+        stage         => 'after',
+        individual_id => $individual_id,
+        return_value  => [ @ret ],
+    );
+    RT->System->AddUpgradeHistory($package => \%upgrade_data);
+
+    return @ret;
 }
 
 sub action_coredata {
@@ -285,6 +351,21 @@ sub action_insert {
     $file = $RT::EtcPath . "/initialdata" if $init && !$file;
     $file ||= $args{'datadir'}."/content";
 
+    my $individual_id = Data::GUID->new->as_string();
+    my %upgrade_data = (
+        action   => 'insert',
+        filename => Cwd::abs_path($file),
+        stage    => 'before',
+        full_id  => $full_id,
+        individual_id => $individual_id
+    );
+    $upgrade_data{'ext_version'} = $ext_version if $ext_version;
+
+    open my $handle, '<', $file or warn "Unable to open $file: $!";
+    $upgrade_data{content} = do {local $/; <$handle>} if $handle;
+
+    RT->System->AddUpgradeHistory($package => \%upgrade_data);
+
     my @ret;
 
     my $upgrade = sub { @ret = $RT::Handle->InsertData( $file, $root_password ) };
@@ -302,26 +383,16 @@ sub action_insert {
 
     $upgrade->();
 
-    my $content;
-    open my $handle, '<', $file or warn "Unable to open $file: $!";
-    if ($handle) {
-        local $/; # slurp
-        $content = <$handle>;
-    }
-
     # XXX Reconnecting to insert the history entry
     # until we can sort out removing
     # the disconnect at the end of InsertData.
-
     RT->ConnectToDatabase();
 
-    my %upgrade_data = (
-        action   => 'insert',
-        filename => Cwd::abs_path($file),
-        content  => $content,
-        stage    => 'after',);
-
-    $upgrade_data{'ext_version'} = $ext_version if $ext_version;
+    %upgrade_data = (
+        stage         => 'after',
+        individual_id => $individual_id,
+        return_value  => [ @ret ],
+    );
 
     RT->System->AddUpgradeHistory($package => \%upgrade_data);
 
@@ -422,12 +493,31 @@ sub action_upgrade {
         from      => $upgrading_from,
         to        => $upgrading_to,
         versions  => [@versions],
+        full_id => $full_id,
+        individual_id => $full_id
     });
+
+    # Ensure that the Attributes column is big enough to hold the
+    # upgrade steps we're going to add; this step exists in 4.0.6 for
+    # mysql, but that may be too late.  Run it as soon as possible.
+    if (RT->Config->Get('DatabaseType') eq 'mysql'
+            and RT::Handle::cmp_version( $upgrading_from, '4.0.6') < 0) {
+        my $dbh = get_admin_dbh();
+        # Before the binary switch in 3.7.87, we want to alter text ->
+        # longtext, not blob -> longblob
+        if (RT::Handle::cmp_version( $upgrading_from, '3.7.87') < 0) {
+            $dbh->do("ALTER TABLE Attributes MODIFY Content LONGTEXT")
+        } else {
+            $dbh->do("ALTER TABLE Attributes MODIFY Content LONGBLOB")
+        }
+    }
 
     my $previous = $upgrading_from;
     my ( $ret, $msg );
     foreach my $n ( 0..$#versions ) {
         my $v = $versions[$n];
+        my $individual_id = Data::GUID->new->as_string();
+
         my @back = grep {-e $_} map {"$base_dir/$versions[$_]/backcompat"} $n+1..$#versions;
         print "Processing $v\n";
 
@@ -437,6 +527,8 @@ sub action_upgrade {
             stage  => 'before',
             from   => $previous,
             to     => $v,
+            full_id => $full_id,
+            individual_id => $individual_id,
         });
 
         my %tmp = (%args, datadir => "$base_dir/$v", datafile => undef, backcompat => \@back);
@@ -464,23 +556,16 @@ sub action_upgrade {
         RT->ConnectToDatabase();
 
         RT->System->AddUpgradeHistory($package => {
-            action => 'upgrade',
-            type   => 'individual upgrade',
-            stage  => 'after',
-            from   => $previous,
-            to     => $v,
+            stage         => 'after',
+            individual_id => $individual_id,
         });
 
         $previous = $v;
     }
 
     RT->System->AddUpgradeHistory($package => {
-        type      => 'full upgrade',
-        action    => 'upgrade',
-        stage     => 'after',
-        from      => $upgrading_from,
-        to        => $upgrading_to,
-        versions  => [@versions],
+        stage         => 'after',
+        individual_id => $full_id,
     });
 
     return 1;
