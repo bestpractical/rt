@@ -78,6 +78,7 @@ with "RT::Record::Role::Roles",
 
 use RT::ACL;
 use RT::ACE;
+use Data::GUID;
 
 __PACKAGE__->AddRight( Admin   => SuperUser           => 'Do anything and everything'); # loc_pair
 __PACKAGE__->AddRight( Staff   => ShowUserHistory     => 'Show history of public user properties'); # loc_pair
@@ -279,7 +280,17 @@ sub ParsedUpgradeHistory {
 
     my @events = $self->UpgradeHistory( $package );
     for my $event (@events) {
-        if ($event->{stage} eq 'before') {
+        if ($event->{stage} eq 'before' or (($event->{action}||'') eq 'insert' and not $event->{full_id})) {
+            if (not $event->{full_id}) {
+                # For upgrade done in the 4.1 series without GUIDs
+                if (($event->{type}||'') eq 'full upgrade') {
+                    $event->{full_id} = $event->{individual_id} = Data::GUID->new->as_string;
+                } else {
+                    $event->{individual_id} = Data::GUID->new->as_string;
+                    $event->{full_id} = (@lines ? $lines[-1]{full_id} : Data::GUID->new->as_string);
+                }
+                $event->{return_value} = [1] if $event->{stage} eq 'after';
+            }
             if ($ids{$event->{full_id}}) {
                 my $kids = $ids{$event->{full_id}}{sub_events} ||= [];
                 # Stitch non-"upgrade"s beneath the previous "upgrade"
@@ -293,7 +304,14 @@ sub ParsedUpgradeHistory {
             }
             $ids{$event->{individual_id}} = $event;
         } elsif ($event->{stage} eq 'after') {
-            if ($ids{$event->{individual_id}}) {
+            if (not $event->{individual_id}) {
+                if (($event->{type}||'') eq 'full upgrade') {
+                    $lines[-1]{end} = $event->{timestamp} if @lines;
+                } elsif (($event->{type}||'') eq 'individual upgrade') {
+                    $lines[-1]{sub_events}[-1]{end} = $event->{timestamp}
+                        if @lines and @{ $lines[-1]{sub_events} };
+                }
+            } elsif ($ids{$event->{individual_id}}) {
                 my $end = $event;
                 $event = $ids{$event->{individual_id}};
                 $event->{end} = $end->{timestamp};
