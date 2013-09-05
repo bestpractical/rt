@@ -185,6 +185,8 @@
   </table>
 </&>
 
+% $m->callback( %ARGS, CallbackName => 'BeforeSubmit', Ticket => $TicketObj );
+
   <& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket', id => 'SubmitTicket' &>
 
 % if ($TicketObj->CurrentUserHasRight('ShowOutgoingEmail')) {
