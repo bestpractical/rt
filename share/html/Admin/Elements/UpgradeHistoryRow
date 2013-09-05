@@ -1,0 +1,95 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<tr class="<% join ' ', map {CSSClass($_)} @classes %>">
+    <td class="upgrade-history-parent" id="parent-upgrade-history-<% $row->{individual_id} %>">
+% if ($top) {
+    <span class="widget"><a href="#" onclick="toggle_upgrade_history(this, '.upgrade-history-' + <% $row->{full_id} | n,j %>); return false";"></a></span>
+% }
+    </td>
+    <td class="collection-as-table" style="padding-left: <% $indent * 3%>em">
+%       if ($row->{'action'} eq 'upgrade') { # type is more specific for upgrades
+<&|/l, $row->{'from'}, $row->{'to'} &>Upgrade from [_1] to [_2]</&>
+%       } elsif ( $row->{'action'} eq 'insert' ) {
+<&|/l, $row->{filename} &>Insert from [_1]</&>
+%       } elsif ( $row->{'action'} eq 'schema' ) {
+<&|/l, $row->{filename} &>Schema updates from [_1]</&>
+%       } elsif ( $row->{'action'} eq 'acl' ) {
+<&|/l, $row->{filename} &>ACL updates from [_1]</&>
+%       } elsif ( $row->{'action'} eq 'indexes' ) {
+<&|/l, $row->{filename} &>Index updates from [_1]</&>
+%       } else {
+<% ucfirst($row->{action}) %>
+%       }
+    </td>
+    <td class="collection-as-table"><% $timestamp->AsString %></td>
+    <td class="collection-as-table"><% $duration %></td>
+    <td class="collection-as-table"><% $row->{ext_version} || $row->{rt_version} %></td>
+</tr>
+% for (@{$kids || []}) {
+<& UpgradeHistoryRow, row => $_, indent => $indent+1, i => $i &>
+% }
+<%args>
+$indent => 0
+$i
+$row
+</%args>
+<%init>
+my $complete = $row->{return_value} ? $row->{return_value}[0] : $row->{end};
+my $kids     = $row->{sub_events};
+my $top      = $row->{full_id} eq $row->{individual_id};
+
+my @classes;
+push @classes, $complete ? 'complete' : 'incomplete';
+push @classes, $$i++ % 2 ? 'oddline' : 'evenline';
+push @classes, 'upgrade-history-'.$row->{full_id} unless $top;
+
+my $timestamp = RT::Date->new($session{CurrentUser});
+$timestamp->Set(Value => $row->{timestamp});
+
+my $duration = $row->{end} ? $timestamp->DurationAsString($row->{end} - $row->{timestamp}) : '';
+</%init>
