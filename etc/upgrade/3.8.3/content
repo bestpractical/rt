@@ -82,13 +82,23 @@ if ( $extract_action && $extract_action->Id ) {
     );
 
     RT->Logger->debug("Adding Extract Subject Tag Scrip");
-    push @Scrips, (
-        {  Description    => "On transaction, add any tags in the transaction's subject to the ticket's subject",
-           ScripCondition => 'On Transaction',
-           ScripAction    => 'Extract Subject Tag',
-           Template       => 'Blank' 
-        },
-    );
+    push @Final, sub {
+        my $action = RT::ScripAction->new( RT->SystemUser );
+        $action->Load( 'Extract Subject Tag' );
+        my $condition = RT::ScripCondition->new( RT->SystemUser );
+        $condition->Load( 'On Transaction' );
+        my $template = RT::Template->new( RT->SystemUser );
+        $template->LoadByName( Name => 'Blank', Queue => 0 );
+        my $scrip = RT::Scrip->new( RT->SystemUser );
+        $scrip->RT::Record::Create(
+           Description    => "On transaction, add any tags in the transaction's subject to the ticket's subject",
+           ScripCondition => $condition->id,
+           ScripAction    => $action->id,
+           Template       => $template->id,
+           Stage          => 'TransactionCreate',
+           Queue          => 0,
+        );
+    };
 }
 }
 
