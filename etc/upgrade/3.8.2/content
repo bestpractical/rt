@@ -196,7 +196,7 @@ our @Final = (
 
             print $tmp_fh Data::Dumper::Dumper( \%tmp );
 
-            my ($status, $msg) = $scrip->Delete;
+            my ($status, $msg) = $scrip->DBIx::SearchBuilder::Record::Delete;
             unless ( $status ) {
                 RT->Logger->error( "Couldn't delete scrip: $msg");
             }
