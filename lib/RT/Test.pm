@@ -72,6 +72,7 @@ use Socket;
 use File::Temp qw(tempfile);
 use File::Path qw(mkpath);
 use File::Spec;
+use File::Which qw();
 use Scalar::Util qw(blessed);
 
 our @EXPORT = qw(is_empty diag parse_mail works fails plan done_testing);
@@ -1651,17 +1652,8 @@ sub file_content {
 
 sub find_executable {
     my $self = shift;
-    my $name = shift;
 
-    require File::Spec;
-    foreach my $dir ( split /:/, $ENV{'PATH'} ) {
-        my $fpath = File::Spec->catpath(
-            (File::Spec->splitpath( $dir, 'no file' ))[0..1], $name
-        );
-        next unless -e $fpath && -r _ && -x _;
-        return $fpath;
-    }
-    return undef;
+    return File::Which::which( @_ );
 }
 
 sub diag {

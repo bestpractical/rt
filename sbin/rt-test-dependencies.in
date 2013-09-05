@@ -90,8 +90,8 @@ my %default = (
     'with-CLI' => 1,
     'with-MAILGATE' => 1, 
     'with-DEVELOPER' => @RT_DEVELOPER@,
-    'with-GPG' => @RT_GPG@,
-    'with-SMIME' => @RT_SMIME@,
+    'with-GPG' => @RT_GPG_DEPS@,
+    'with-SMIME' => @RT_SMIME_DEPS@,
     'with-ICAL' => 1,
     'with-GRAPHVIZ' => @RT_GRAPHVIZ@,
     'with-GD' => @RT_GD@,
@@ -269,6 +269,7 @@ Text::ParseWords
 $deps{'DEVELOPER'} = [ text_to_hash( << '.') ];
 Email::Abstract
 File::Find
+File::Which
 Locale::PO
 Log::Dispatch::Perl
 Mojo::DOM
@@ -320,12 +321,14 @@ DBD::SQLite 1.00
 .
 
 $deps{'GPG'} = [ text_to_hash( << '.') ];
+File::Which
 GnuPG::Interface
 PerlIO::eol
 .
 
 $deps{'SMIME'} = [ text_to_hash( << '.') ];
 Crypt::X509
+File::Which
 String::ShellQuote
 .
 

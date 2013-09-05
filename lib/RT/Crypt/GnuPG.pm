@@ -48,6 +48,7 @@
 
 use strict;
 use warnings;
+use 5.010;
 
 package RT::Crypt::GnuPG;
 
@@ -55,6 +56,7 @@ use Role::Basic 'with';
 with 'RT::Crypt::Role';
 
 use IO::Handle;
+use File::Which qw();
 use RT::Crypt::GnuPG::CRLFHandle;
 use GnuPG::Interface;
 use RT::EmailParser ();
@@ -343,6 +345,7 @@ sub CallGnuPG {
         %{ $args{Options} || {} },
     );
     my $gnupg = GnuPG::Interface->new;
+    $gnupg->call( $self->GnuPGPath );
     $gnupg->options->hash_init(
         _PrepareGnuPGOptions( %opt ),
     );
@@ -1811,9 +1814,43 @@ sub ImportKey {
     );
 }
 
+sub GnuPGPath {
+    state $cache = RT->Config->Get('GnuPG')->{'GnuPG'};
+    $cache = $_[1] if @_ > 1;
+    return $cache;
+}
+
 sub Probe {
     my $self = shift;
     my $gnupg = GnuPG::Interface->new;
+
+    my $bin = $self->GnuPGPath();
+    unless ($bin) {
+        $RT::Logger->warning(
+            "No gpg path set; GnuPG support has been disabled.  ".
+            "Check the 'GnuPG' configuration in %GnuPG");
+        return 0;
+    }
+
+    if ($bin =~ m{^/}) {
+        unless (-f $bin and -x _) {
+            $RT::Logger->warning(
+                "Invalid gpg path $bin; GnuPG support has been disabled.  ".
+                "Check the 'GnuPG' configuration in %GnuPG");
+            return 0;
+        }
+    } else {
+        my $path = File::Which::which( $bin );
+        unless ($path) {
+            $RT::Logger->warning(
+                "Can't find gpg binary '$bin' in PATH; GnuPG support has been disabled.  ".
+                "Check the 'GnuPG' configuration in %GnuPG");
+            return 0;
+        }
+        $self->GnuPGPath( $bin = $path );
+    }
+
+    $gnupg->call( $bin );
     $gnupg->options->hash_init(
         _PrepareGnuPGOptions( RT->Config->Get('GnuPGOptions') )
     );

@@ -56,6 +56,7 @@ use Role::Basic 'with';
 with 'RT::Crypt::Role';
 
 use RT::Crypt;
+use File::Which qw();
 use IPC::Run3 0.036 'run3';
 use RT::Util 'safe_run_child';
 use Crypt::X509;
@@ -137,17 +138,36 @@ to the certificate on the user.
 
 sub OpenSSLPath {
     state $cache = RT->Config->Get('SMIME')->{'OpenSSL'};
+    $cache = $_[1] if @_ > 1;
     return $cache;
 }
 
 sub Probe {
     my $self = shift;
     my $bin = $self->OpenSSLPath();
-    return 0 unless $bin;
+    unless ($bin) {
+        $RT::Logger->warning(
+            "No openssl path set; SMIME support has been disabled.  ".
+            "Check the 'OpenSSL' configuration in %OpenSSL");
+        return 0;
+    }
 
     if ($bin =~ m{^/}) {
-        return 0 unless -f $bin;
-        return 0 unless -x _;
+        unless (-f $bin and -x _) {
+            $RT::Logger->warning(
+                "Invalid openssl path $bin; SMIME support has been disabled.  ".
+                "Check the 'OpenSSL' configuration in %OpenSSL");
+            return 0;
+        }
+    } else {
+        my $path = File::Which::which( $bin );
+        unless ($path) {
+            $RT::Logger->warning(
+                "Can't find openssl binary '$bin' in PATH; SMIME support has been disabled.  ".
+                "Check the 'OpenSSL' configuration in %OpenSSL");
+            return 0;
+        }
+        $self->OpenSSLPath( $bin = $path );
     }
 
     {
