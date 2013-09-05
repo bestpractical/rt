@@ -288,16 +288,17 @@ sub action_insert {
     $file ||= $args{'datadir'}."/content";
 
     my $individual_id = Data::GUID->new->as_string();
-
     my %upgrade_data = (
         action   => 'insert',
         filename => Cwd::abs_path($file),
         stage    => 'before',
-        type     => 'process initialdata',
-        full_id => $full_id,
-        individual_id => $individual_id );
-
+        full_id  => $full_id,
+        individual_id => $individual_id
+    );
     $upgrade_data{'ext_version'} = $ext_version if $ext_version;
+
+    open my $handle, '<', $file or warn "Unable to open $file: $!";
+    $upgrade_data{content} = do {local $/; <$handle>} if $handle;
 
     RT->System->AddUpgradeHistory($package => \%upgrade_data);
 
@@ -318,30 +319,16 @@ sub action_insert {
 
     $upgrade->();
 
-    my $content;
-    open my $handle, '<', $file or warn "Unable to open $file: $!";
-    if ($handle) {
-        local $/; # slurp
-        $content = <$handle>;
-    }
-
     # XXX Reconnecting to insert the history entry
     # until we can sort out removing
     # the disconnect at the end of InsertData.
-
     RT->ConnectToDatabase();
 
     %upgrade_data = (
-        action   => 'insert',
-        filename => Cwd::abs_path($file),
-        content  => $content,
-        stage    => 'after',
-        type     => 'process initialdata',
-        return_value => [ @ret ],
-        full_id => $full_id,
-        individual_id => $individual_id );
-
-    $upgrade_data{'ext_version'} = $ext_version if $ext_version;
+        stage         => 'after',
+        individual_id => $individual_id,
+        return_value  => [ @ret ],
+    );
 
     RT->System->AddUpgradeHistory($package => \%upgrade_data);
 
@@ -490,12 +477,7 @@ sub action_upgrade {
         RT->ConnectToDatabase();
 
         RT->System->AddUpgradeHistory($package => {
-            action => 'upgrade',
-            type   => 'individual upgrade',
-            stage  => 'after',
-            from   => $previous,
-            to     => $v,
-            full_id => $full_id,
+            stage         => 'after',
             individual_id => $individual_id,
         });
 
@@ -503,13 +485,7 @@ sub action_upgrade {
     }
 
     RT->System->AddUpgradeHistory($package => {
-        type      => 'full upgrade',
-        action    => 'upgrade',
-        stage     => 'after',
-        from      => $upgrading_from,
-        to        => $upgrading_to,
-        versions  => [@versions],
-        full_id => $full_id,
+        stage         => 'after',
         individual_id => $full_id,
     });
 
