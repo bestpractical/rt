@@ -45,16 +45,16 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table>
+<table class="bulk-edit-custom-fields">
 
 <tr>
 <th><&|/l&>Name</&></th>
 <th><&|/l&>Add values</&></th>
 <th><&|/l&>Delete values</&></th>
 </tr>
-
+% my $i = 0;
 % while (my $cf = $CustomFields->Next) {
-<tr>
+<tr class="<% ++$i%2 ? 'oddline': 'evenline' %>">
 <td class="label"><% loc($cf->Name) %><br />
 <em>(<% $cf->FriendlyType %>)</em></td>
 % my $rows = 5;
