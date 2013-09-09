@@ -85,7 +85,7 @@ called "our new release."
 You can also display saved charts in dashboards, creating a powerful visual of 
 ticket data in a convenient page. To add a chart, start with a search, refine 
 your query, then click Chart in the submenu in the Query Builder or Search 
-Results page. Configure your chart as described in L<Charts>, select a Privacy 
+Results page. Configure your chart as described in L<charts>, select a Privacy
 setting, name it "Outstanding Invoices", and click Save.
 
 Return to the dashboard, click Content, and you'll see a new "Chart: 
