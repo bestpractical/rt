@@ -52,9 +52,11 @@ $Attr  => undef
 </%ARGS>
 <%ONCE>
 
+use Scalar::Util;
+
 # This is scary and should totally be refactored -- jesse
-my $COLUMN_MAP;
-$COLUMN_MAP = {
+my ($COLUMN_MAP, $WCOLUMN_MAP);
+$WCOLUMN_MAP = $COLUMN_MAP = {
     id => {
         attribute => 'id',
         title     => '#', # loc
@@ -97,7 +99,7 @@ $COLUMN_MAP = {
         attribute => sub { return shift @_ },
         title     => sub { return pop @_ },
         value     => sub {
-            my $self = $COLUMN_MAP->{CustomField};
+            my $self = $WCOLUMN_MAP->{CustomField};
             my $cf   = $self->{load}->(@_);
             return unless $cf->Id;
             return $self->{render}->( $cf, $cf->ValuesForObject($_[0])->ItemsArrayRef );
@@ -202,6 +204,8 @@ $COLUMN_MAP = {
 };
 
 $COLUMN_MAP->{'CF'} = $COLUMN_MAP->{'CustomField'};
+
+Scalar::Util::weaken($WCOLUMN_MAP);
 
 my $ROLE_MAP = {};
 
