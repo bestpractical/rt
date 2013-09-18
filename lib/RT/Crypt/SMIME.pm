@@ -844,9 +844,9 @@ sub GetCertificateInfo {
         @_,
     );
 
-    if ($args{Certificate} =~ /^-----BEGIN \s+ CERTIFICATE-----$
+    if ($args{Certificate} =~ /^-----BEGIN \s+ CERTIFICATE----- \s* $
                                 (.*?)
-                               ^-----END \s+ CERTIFICATE-----$/smx) {
+                               ^-----END \s+ CERTIFICATE----- \s* $/smx) {
         $args{Certificate} = MIME::Base64::decode_base64($1);
     }
 
