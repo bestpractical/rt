@@ -110,6 +110,9 @@ used to mark which mails are signed by trusted certificate authorities.
 This configuration is generally insecure, as it allows the possibility
 of accepting forged mail signed by an untrusted certificate authority.
 
+Setting this option also allows encryption to users with certificates
+created by untrusted CAs.
+
 =head3 Passphrase
 
 C<Passphrase> may be set to a scalar (to use for all keys), an anonymous

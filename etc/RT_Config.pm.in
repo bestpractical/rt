@@ -2393,6 +2393,9 @@ trusted certificate authorities.  This configuration is generally
 insecure, as it allows the possibility of accepting forged mail signed
 by an untrusted certificate authority.
 
+Setting C<AcceptUntrustedCAs> also allows encryption to users with
+certificates created by untrusted CAs.
+
 Set C<Passphrase> to a scalar (to use for all keys), an anonymous
 function, or a hash (to look up by address).  If the hash is used, the
 '' key is used as a default.
