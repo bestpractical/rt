@@ -662,11 +662,19 @@ sub CheckRecipients {
 
     my ($status, @issues) = (1, ());
 
+    my $trust = sub { 1 };
+    if ( $self->UseForOutgoing eq 'SMIME' ) {
+        $trust = sub { $_[0]->{'TrustLevel'} > 0 or RT->Config->Get('SMIME')->{AcceptUntrustedCAs} };
+    } elsif ( $self->UseForOutgoing eq 'GnuPG' ) {
+        $trust = sub { $_[0]->{'TrustLevel'} > 0 };
+    }
+
     my %seen;
     foreach my $address ( grep !$seen{ lc $_ }++, map $_->address, @recipients ) {
         my %res = $self->GetKeysForEncryption( Recipient => $address );
-        if ( $res{'info'} && @{ $res{'info'} } == 1 && $res{'info'}[0]{'TrustLevel'} > 0 ) {
-            # good, one suitable and trusted key 
+        if ( $res{'info'} && @{ $res{'info'} } == 1 and $trust->($res{'info'}[0]) ) {
+            # One key, which is trusted, or we can sign with an
+            # untrusted key (aka SMIME with AcceptUntrustedCAs)
             next;
         }
         my $user = RT::User->new( RT->SystemUser );
@@ -678,7 +686,7 @@ sub CheckRecipients {
             if ( $res{'info'} && @{ $res{'info'} } ) {
                 next if
                     grep lc $_->{'Fingerprint'} eq lc $fpr,
-                    grep $_->{'TrustLevel'} > 0,
+                    grep $trust->($_),
                     @{ $res{'info'} };
             }
 
