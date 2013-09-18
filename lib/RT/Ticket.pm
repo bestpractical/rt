@@ -1657,6 +1657,7 @@ sub DryRun {
         MIMEObj      => $Message,
         TimeTaken    => $args{'UpdateTimeWorked'},
         DryRun       => 1,
+        SquelchMailTo => $args{'SquelchMailTo'},
     );
     unless ( $Transaction ) {
         $RT::Logger->error("Couldn't fire '$action' action: $Description");

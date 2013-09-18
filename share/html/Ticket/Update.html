@@ -252,6 +252,9 @@ $CanComment = 1 if ( $TicketObj->CurrentUserHasRight('CommentOnTicket') or
 
 ProcessAttachments(ARGSRef => \%ARGS);
 
+my %squelched = ProcessTransactionSquelching( \%ARGS );
+$ARGS{'SquelchMailTo'} = [keys %squelched] if keys %squelched;
+
 my $gnupg_widget = $m->comp('/Elements/Crypt/SignEncryptWidget:new', Arguments => \%ARGS );
 $m->comp( '/Elements/Crypt/SignEncryptWidget:Process',
     self => $gnupg_widget,
@@ -259,9 +262,6 @@ $m->comp( '/Elements/Crypt/SignEncryptWidget:Process',
 );
 
 if ( $ARGS{'SubmitTicket'} ) {
-
-    my %squelched = ProcessTransactionSquelching( \%ARGS );
-    $ARGS{'SquelchMailTo'} = [keys %squelched] if keys %squelched;
 
     my ($status, @msg) = $m->comp(
         '/Elements/ValidateCustomFields',
