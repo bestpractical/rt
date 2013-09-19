@@ -197,6 +197,11 @@ my $ext_version = $args{'ext-version'};
 my $full_id = Data::GUID->new->as_string;
 
 my $log_actions = 0;
+if ($args{'package'} ne 'RT') {
+    RT->ConnectToDatabase();
+    RT->InitSystemObjects();
+    $log_actions = 1;
+}
 
 foreach my $action ( @actions ) {
     no strict 'refs';
