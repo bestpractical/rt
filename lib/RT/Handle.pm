@@ -1359,9 +1359,9 @@ sub IndexInfo {
         my $list = $dbh->selectall_arrayref(
             'select NON_UNIQUE, COLUMN_NAME, SUB_PART
             from information_schema.statistics
-            where table_schema = ? AND table_name = ? AND index_name = ?
+            where table_schema = ? AND LOWER(table_name) = ? AND index_name = ?
             ORDER BY SEQ_IN_INDEX',
-            undef, scalar RT->Config->Get('DatabaseName'), $args{'Table'}, $args{'Name'},
+            undef, scalar RT->Config->Get('DatabaseName'), lc $args{'Table'}, $args{'Name'},
         );
         return () unless $list && @$list;
         $res{'Unique'} = $list->[0][0]? 0 : 1;
