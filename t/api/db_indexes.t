@@ -123,4 +123,47 @@ note "test ->CreateIndex and ->IndexesThatBeginWith methods";
     ok $status, $msg;
 }
 
+note "Test some cases sensitivity aspects";
+{
+    {
+        my %res = $handle->IndexInfo( Table => 'groupmembers', Name => 'groupmembers1' );
+        is_deeply(
+            \%res,
+            {
+                Table => 'groupmembers', Name => 'groupmembers1',
+                Unique => 1, Functional => 0,
+                Columns => ['groupid', 'memberid']
+            }
+        );
+    }
+
+    {
+        my ($status, $msg) = $handle->DropIndex( Table => 'groupmembers', Name => 'groupmembers1' );
+        ok $status, $msg;
+
+        my %indexes = $handle->Indexes;
+        ok !grep $_ eq 'groupmembers1', @{ $indexes{'groupmembers'} };
+    }
+
+    {
+        my ($name, $msg) = $handle->CreateIndex(
+            Table => 'groupmembers', Name => 'groupmembers1',
+            Unique => 1,
+            Columns => ['groupid', 'memberid']
+        );
+        ok $name, $msg;
+
+        my %indexes = $handle->Indexes;
+        ok grep $_ eq 'groupmembers1', @{ $indexes{'groupmembers'} };
+    }
+
+    {
+        my ($status, $msg) = $handle->DropIndexIfExists( Table => 'groupmembers', Name => 'groupmembers1' );
+        ok $status, $msg;
+
+        my %indexes = $handle->Indexes;
+        ok !grep $_ eq 'groupmembers1', @{ $indexes{'groupmembers'} };
+    }
+}
+
 done_testing();
