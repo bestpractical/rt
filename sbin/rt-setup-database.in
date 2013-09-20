@@ -196,6 +196,13 @@ my $package = $args{'package'} || 'RT';
 my $ext_version = $args{'ext-version'};
 my $full_id = Data::GUID->new->as_string;
 
+my $log_actions = 0;
+if ($args{'package'} ne 'RT') {
+    RT->ConnectToDatabase();
+    RT->InitSystemObjects();
+    $log_actions = 1;
+}
+
 foreach my $action ( @actions ) {
     no strict 'refs';
     my ($status, $msg) = *{ 'action_'. $action }{'CODE'}->( %args );
@@ -247,7 +254,7 @@ sub action_schema {
         individual_id => $individual_id,
     );
     $upgrade_data{'ext_version'} = $ext_version if $ext_version;
-    RT->System->AddUpgradeHistory($package => \%upgrade_data) unless $init;
+    RT->System->AddUpgradeHistory($package => \%upgrade_data) if $log_actions;
 
     print "Now populating database schema.\n";
     my @ret = RT::Handle->InsertSchema( $dbh, $args{'datafile'} || $args{'datadir'} );
@@ -257,7 +264,7 @@ sub action_schema {
         individual_id => $individual_id,
         return_value  => [ @ret ],
     );
-    RT->System->AddUpgradeHistory($package => \%upgrade_data) unless $init;
+    RT->System->AddUpgradeHistory($package => \%upgrade_data) if $log_actions;
 
     return @ret;
 }
@@ -277,7 +284,7 @@ sub action_acl {
         individual_id => $individual_id,
     );
     $upgrade_data{'ext_version'} = $ext_version if $ext_version;
-    RT->System->AddUpgradeHistory($package => \%upgrade_data) unless $init;
+    RT->System->AddUpgradeHistory($package => \%upgrade_data) if $log_actions;
 
     print "Now inserting database ACLs.\n";
     my @ret = RT::Handle->InsertACL( $dbh, $args{'datafile'} || $args{'datadir'} );
@@ -287,7 +294,7 @@ sub action_acl {
         individual_id => $individual_id,
         return_value  => [ @ret ],
     );
-    RT->System->AddUpgradeHistory($package => \%upgrade_data) unless $init;
+    RT->System->AddUpgradeHistory($package => \%upgrade_data) if $log_actions;
 
     return @ret;
 }
@@ -304,7 +311,7 @@ sub action_indexes {
         individual_id => $individual_id,
     );
     $upgrade_data{'ext_version'} = $ext_version if $ext_version;
-    RT->System->AddUpgradeHistory($package => \%upgrade_data);
+    RT->System->AddUpgradeHistory($package => \%upgrade_data) if $log_actions;
 
     my $dbh = get_admin_dbh();
     $RT::Handle = RT::Handle->new;
@@ -322,7 +329,7 @@ sub action_indexes {
         individual_id => $individual_id,
         return_value  => [ @ret ],
     );
-    RT->System->AddUpgradeHistory($package => \%upgrade_data);
+    RT->System->AddUpgradeHistory($package => \%upgrade_data) if $log_actions;
 
     return @ret;
 }
@@ -343,6 +350,8 @@ sub action_insert {
     my %args = @_;
     $RT::Handle = RT::Handle->new;
     RT::Init();
+    $log_actions = 1;
+
     my ($status, $msg) = RT::Handle->CheckCompatibility( $RT::Handle->dbh, 'insert' );
     return ($status, $msg) unless $status;
 
@@ -485,6 +494,7 @@ sub action_upgrade {
 
     RT->ConnectToDatabase();
     RT->InitSystemObjects();
+    $log_actions = 1;
 
     RT->System->AddUpgradeHistory($package => {
         type      => 'full upgrade',
