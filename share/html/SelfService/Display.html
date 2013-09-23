@@ -58,9 +58,14 @@
                 ($LinkBasicsTitle ? (title_href => $title_box_link) : ()),
                 title_class=> 'inverse',
                 color => "#993333" &>
-                <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
-                <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket &>
+                <& /Ticket/Elements/ShowBasics, Ticket => $Ticket, UngroupedCFs => 1 &>
           </&>
+
+    <& /Elements/ShowCustomFieldCustomGroupings,
+        Object       => $Ticket,
+        title_href   => ($LinkBasicsTitle ? RT->Config->Get('WebPath')."/SelfService/Update.html" : "" ),
+        Groupings    => [ grep {$_ !~ /^(Basics|Dates)$/} RT::CustomField->Groupings( "RT::Ticket" ) ],
+        &>
 </td>
         <td valign="top" width="50%" class="boxcontainer">
           <&| /Widgets/TitleBox, title => loc("Dates"),
