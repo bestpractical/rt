@@ -84,8 +84,12 @@
   </tr>
 % }
   <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Grouping => 'Basics', Table => 0 &>
+% if ($UngroupedCFs) {
+  <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Grouping => '', Table => 0 &>
+% }
 % $m->callback( %ARGS, CallbackName => 'EndOfList', TicketObj => $Ticket );
 </table>
 <%ARGS>
 $Ticket => undef
+$UngroupedCFs => 0
 </%ARGS>
