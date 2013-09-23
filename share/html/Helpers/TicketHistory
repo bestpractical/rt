@@ -56,8 +56,8 @@ my $attachments = $TicketObj->Attachments;
 my $attachment_content = $TicketObj->TextAttachments;
 </%INIT>
 <& /Elements/ShowHistory,
+    %ARGS,
     Object => $TicketObj,
-    ShowHeaders => $ARGS{'ShowHeaders'},
     Attachments => $attachments,
     AttachmentContent => $attachment_content
     &>
