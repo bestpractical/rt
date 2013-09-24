@@ -1,3 +1,4 @@
+.titlebox-fancy .titlebox-title .widget a,
 .ticket-info-cfs .titlebox-title .widget a,
 .ticket-info-basics .titlebox-title .widget a,
 .ticket-info-people .titlebox-title .widget a,
@@ -10,6 +11,7 @@
     background-position: center -7px;
 }
 
+.titlebox-fancy .titlebox-title,
 .ticket-info-cfs .titlebox-title,
 .ticket-info-basics .titlebox-title,
 .ticket-info-people .titlebox-title,
@@ -22,6 +24,7 @@
     margin-left: 1em
 }
 
+.titlebox-fancy .titlebox-title  .left,
 .ticket-info-cfs .titlebox-title  .left,
 .ticket-info-basics .titlebox-title  .left,
 .ticket-info-people .titlebox-title  .left,
