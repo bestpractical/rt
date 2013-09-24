@@ -55,6 +55,13 @@ fieldset.cfedit {
     margin: 0;
 }
 
+table.bulk-edit-custom-fields {
+    border-spacing: 0;
+}
+table.bulk-edit-custom-fields tr td {
+    padding-bottom: 0.5em;
+}
+
 .query-stacktrace-toggle {
     float: right;
 }

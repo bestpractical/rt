@@ -3505,39 +3505,75 @@ sub ProcessRecordBulkCustomFields {
 
     my $ARGSRef = $args{'ARGSRef'};
 
+    my %data;
+
     my @results;
     foreach my $key ( keys %$ARGSRef ) {
         next unless $key =~ /^Bulk-(Add|Delete)-CustomField-(\d+)-(.*)$/;
         my ($op, $cfid, $rest) = ($1, $2, $3);
         next if $rest eq "Category";
 
-        my $cf = RT::CustomField->new( $session{'CurrentUser'} );
-        $cf->Load( $cfid );
-        next unless $cf->Id;
+        my $res = $data{$cfid} ||= {};
+        unless (keys %$res) {
+            my $cf = RT::CustomField->new( $session{'CurrentUser'} );
+            $cf->Load( $cfid );
+            next unless $cf->Id;
+
+            $res->{'cf'} = $cf;
+        }
+
+        if ( $op eq 'Delete' && $rest eq 'AllValues' ) {
+            $res->{'DeleteAll'} = $ARGSRef->{$key};
+            next;
+        }
 
         my @values = _NormalizeObjectCustomFieldValue(
-            CustomField => $cf,
+            CustomField => $res->{'cf'},
             Value => $ARGSRef->{$key},
             Param => $key,
         );
+        next unless @values;
+        $res->{$op} = \@values;
+    }
+
+    while ( my ($cfid, $data) = each %data ) {
+        # just add one value for fields with single value
+        if ( $data->{'Add'} && $data->{'cf'}->MaxValues == 1 ) {
+            my ( $id, $msg ) = $args{'RecordObj'}->AddCustomFieldValue(
+                Field => $cfid,
+                Value => $data->{'Add'}[-1],
+            );
+            push @results, $msg;
+            next;
+        }
 
         my $current_values = $args{'RecordObj'}->CustomFieldValues( $cfid );
-        foreach my $value (@values) {
-            if ( $op eq 'Delete' && $current_values->HasEntry($value) ) {
+        if ( $data->{'DeleteAll'} ) {
+            while ( my $value = $current_values->Next ) {
                 my ( $id, $msg ) = $args{'RecordObj'}->DeleteCustomFieldValue(
-                    Field => $cfid,
-                    Value => $value
+                    Field   => $cfid,
+                    ValueId => $value->id,
                 );
                 push @results, $msg;
             }
+        }
+        foreach my $value ( @{ $data->{'Delete'} || [] } ) {
+            next unless $current_values->HasEntry($value);
 
-            elsif ( $op eq 'Add' && !$current_values->HasEntry($value) ) {
-                my ( $id, $msg ) = $args{'RecordObj'}->AddCustomFieldValue(
-                    Field => $cfid,
-                    Value => $value
-                );
-                push @results, $msg;
-            }
+            my ( $id, $msg ) = $args{'RecordObj'}->DeleteCustomFieldValue(
+                Field => $cfid,
+                Value => $value
+            );
+            push @results, $msg;
+        }
+        foreach my $value ( @{ $data->{'Add'} || [] } ) {
+            next if $current_values->HasEntry($value);
+
+            my ( $id, $msg ) = $args{'RecordObj'}->AddCustomFieldValue(
+                Field => $cfid,
+                Value => $value
+            );
+            push @results, $msg;
         }
     }
     return @results;
