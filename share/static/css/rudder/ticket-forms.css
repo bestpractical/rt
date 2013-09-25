@@ -1,3 +1,8 @@
+#ticket-create-metadata .cflabel .name,
+#ticket-update-metadata .cflabel .name {
+    font-weight: inherit
+}
+
 .sidebyside #ticket-create-message .button[name="AddMoreAttach"],
 .sidebyside #ticket-update-message .button[name="AddMoreAttach"] {
     margin-right: -0.25em;
