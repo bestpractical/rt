@@ -106,7 +106,7 @@
 
 <div id="custom-css">
   <h2>Custom CSS (Advanced)</h2>
-  
+
   <form method="POST">
     <textarea rows=20 id="user_css" name="user_css" wrap="off"><% $user_css %></textarea><br />
     <input id="try" type="button" class="button" value="Try" />
@@ -118,8 +118,9 @@
 
 <%ONCE>
 my @sections = (
-    ['Page'         => ['body']],
-    ['Header'       => ['div#quickbar', 'body.aileron #main-navigation #app-nav > li, body.aileron #main-navigation #app-nav > li > a, #prefs-menu > li, #prefs-menu > li > a, #logo .rtname']],
+    ['Page'         => ['body', 'div#body']],
+    ['Menu bar'     => ['div#quickbar', '#main-navigation #app-nav.sf-shadow > li, #main-navigation #app-nav.sf-shadow > li > a, #prefs-menu > li, #prefs-menu > li > a, #logo .rtname']],
+    ['Title bar'    => ['div#header']],
     ['Page title'   => ['div#header h1']],
     ['Page content' => ['div#body']],
     ['Buttons'      => ['input[type="reset"], input[type="submit"], input[class="button"]']],
@@ -169,7 +170,7 @@ jQuery(function($) {
                   newcss += "; border: none;"
 
               /* Page title's text color is the selected color */
-              if (applying[name].match(/#header/))
+              if (applying[name].match(/h1/))
                   newcss = "color: " + bg;
 
               /* Nav doesn't need a background, but it wants text color */
