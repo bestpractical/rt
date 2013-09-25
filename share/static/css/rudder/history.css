@@ -1,5 +1,5 @@
 div.history-container {
-    border: 0;
+    border: 0
 }
 
 .history .transaction.message div.content {
@@ -9,22 +9,23 @@ div.history-container {
 }
 
 .history .transaction .metadata span.type {
-    margin:0;
+    margin: 0;
     font-size: 1.2em;
     margin-right: 1em;
     padding: 0.25em;
     border: none;
 }
-.history .transaction .metadata span.type a{
-    color: transparent ;
 
+.history .transaction .metadata span.type a {
+    color: transparent
 }
-.history .transaction .metadata span.type a#lasttrans{
-    display: inline;
-    
+
+.history .transaction .metadata span.type a#lasttrans {
+    display: inline
 }
-.history .transaction:hover .metadata span.type a{
-    color: white;
+
+.history .transaction:hover .metadata span.type a {
+    color: white
 }
 
 .history .transaction .metadata .date,
@@ -40,7 +41,7 @@ div.history-container {
     margin-top: 0.25em;
 }
 
-.transaction div.metadata span.actions  {
+.transaction div.metadata span.actions {
     background: #eee;
     color: #eee;
     display: inline-block;
@@ -49,10 +50,11 @@ div.history-container {
     padding-bottom: 0.5em;
     border-right: 1px solid #999;
     -moz-border-radius-bottomright: 0.5em;
-    -webkit-border-bottom-right-radius: 0.5em
+    -webkit-border-bottom-right-radius: 0.5em;
 }
+
 .transaction div.metadata span.actions a {
-    padding: 0.2em;
+    padding: 0.2em
 }
 
 .transaction div.downloadattachment {

@@ -21,11 +21,11 @@ td.labeltop {
     min-width: 6em;
 }
 
-span.cflabel .type, td.cflabel .type {
-  font-weight: normal;
-  font-size: 0.8em;
+span.cflabel .type,
+td.cflabel .type {
+    font-weight: normal;
+    font-size: 0.8em;
 }
-
 
 table.myday h2 {
     display: inline
