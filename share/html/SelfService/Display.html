@@ -51,10 +51,11 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-  <table width="100%" class="ticketsummary" >
+  <table width="100%" class="ticket-summary" >
       <tr>
         <td valign="top" width="50%" class="boxcontainer">
           <&| /Widgets/TitleBox, title => loc('The Basics'),
+                class => 'ticket-info-basics',
                 ($LinkBasicsTitle ? (title_href => $title_box_link) : ()),
                 title_class=> 'inverse',
                 color => "#993333" &>
@@ -69,7 +70,8 @@
 </td>
         <td valign="top" width="50%" class="boxcontainer">
           <&| /Widgets/TitleBox, title => loc("Dates"),
-                title_class=> 'inverse',
+                 class => 'ticket-info-dates',
+                 title_class=> 'inverse',
                  color => "#663366" &>
           <& /Ticket/Elements/ShowDates, Ticket => $Ticket, UpdatedLink => 0 &>
           </&>

@@ -1,53 +1,36 @@
-/* Use a lighter colored toggle arrow */
-
-.ticket-info-cfs .titlebox-title .widget a {
-    background-position: center -7px
-}
-
-.ticket-info-basics .titlebox-title .widget a {
-    background-position: center -7px
-}
-
-.ticket-info-people .titlebox-title .widget a {
-    background-position: center -7px
-}
-
-.ticket-info-requestor .titlebox-title .widget a {
-    background-position: center -7px
-}
-
-.ticket-info-links .titlebox-title .widget a {
-    background-position: center -7px
-}
-
-.ticket-info-reminders .titlebox-title .widget a {
-    background-position: center -7px
-}
-
-.ticket-info-dates .titlebox-title .widget a {
-    background-position: center -7px
-}
-
+.titlebox-title.inverse .widget a,
+.ticket-info-cfs .titlebox-title .widget a,
+.ticket-info-basics .titlebox-title .widget a,
+.ticket-info-people .titlebox-title .widget a,
+.ticket-info-requestor .titlebox-title .widget a,
+.ticket-info-links .titlebox-title .widget a,
+.ticket-info-merge .titlebox-title .widget a,
+.ticket-info-reminders .titlebox-title .widget a,
+.ticket-info-dates .titlebox-title .widget a,
 .ticket-info-attachments .titlebox-title .widget a {
     background-position: center -7px
 }
 
+.titlebox-title.inverse,
 .ticket-info-cfs .titlebox-title,
 .ticket-info-basics .titlebox-title,
 .ticket-info-people .titlebox-title,
 .ticket-info-requestor .titlebox-title,
 .ticket-info-links .titlebox-title,
+.ticket-info-merge .titlebox-title,
 .ticket-info-reminders .titlebox-title,
 .ticket-info-dates .titlebox-title,
 .ticket-info-attachments .titlebox-title {
     margin-left: 1em
 }
 
+.titlebox-title.inverse  .left,
 .ticket-info-cfs .titlebox-title  .left,
 .ticket-info-basics .titlebox-title  .left,
 .ticket-info-people .titlebox-title  .left,
 .ticket-info-requestor .titlebox-title  .left,
 .ticket-info-links .titlebox-title  .left,
+.ticket-info-merge .titlebox-title  .left,
 .ticket-info-reminders .titlebox-title  .left,
 .ticket-info-dates .titlebox-title  .left,
 .ticket-info-attachments .titlebox-title  .left {

@@ -56,7 +56,7 @@
 
   <<% $FIELD %> class="edit-custom-field cftype-<% $Type %>">
     <<% $CELL %> class="cflabel">
-      <span class="name"><% loc($CustomField->Name) %></span><br />
+      <span class="name"><% loc($CustomField->Name) %>:</span><br />
       <span class="type"><% $CustomField->FriendlyType %></span>
     </<% $CELL %>>
     <<% $CELL %> class="entry">
