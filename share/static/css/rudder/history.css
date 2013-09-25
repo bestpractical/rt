@@ -73,6 +73,6 @@ div.history-container {
 }
 
 .transaction div.downloadattachment .downloadcontenttype {
-    color #ccc;
+    color: #ccc;
     display: block;
 }
