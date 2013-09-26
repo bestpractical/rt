@@ -453,7 +453,7 @@ sub test_dep {
 
             my $path = $module;
             $path =~ s{::}{/}g;
-            undef $error if $error =~ /^Can't locate $path\.pm in \@INC/;
+            undef $error if defined $error and $error =~ /^Can't locate $path\.pm in \@INC/;
 
             return ( 0, $error );
         }
