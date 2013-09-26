@@ -443,7 +443,7 @@ sub test_dep {
         print $module, ': ', $version || 0, "\n"; 
     }
     else {
-        eval "use $module $version ()";
+        eval "{ local \$ENV{__WARN__}; use $module $version () }";
         if ( my $error = $@ ) {
             return 0 unless wantarray;
 
