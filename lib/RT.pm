@@ -700,7 +700,9 @@ sub InitPluginPaths {
     my @tmp_inc;
     my $added;
     for (@INC) {
-        if ( Cwd::realpath($_) eq $RT::LocalLibPath) {
+        my $realpath = Cwd::realpath($_);
+        next unless defined $realpath;
+        if ( $realpath eq $RT::LocalLibPath) {
             push @tmp_inc, $_, @lib_dirs;
             $added = 1;
         } else {
