@@ -45,6 +45,10 @@
     border-radius: 0.3em 0.3em 0 0;
 }
 
+.titlebox-title.inverse .left a {
+    color: #fff;
+}
+
 .titlebox.ticket-info-reminders table {
     width: 100%
 }
