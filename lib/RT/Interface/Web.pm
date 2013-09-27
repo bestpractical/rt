@@ -956,7 +956,7 @@ not contain a slash-dot C</.>, and does not contain any nulls.
 sub ComponentPathIsSafe {
     my $self = shift;
     my $path = shift;
-    return $path !~ m{(?:^|/)\.} and $path !~ m{\0};
+    return($path !~ m{(?:^|/)\.} and $path !~ m{\0});
 }
 
 =head2 PathIsSafe

@@ -89,8 +89,8 @@ sub Run
     my $query = $args{'Object'}->_AsInsertQuery;
     $query .= "\n" unless $query =~ /\n$/;
 
-    return print $fh $query or return (0, "Couldn't write to filehandle");
-    return 1;
+    return 1 if print $fh $query;
+    return (0, "Couldn't write to filehandle");
 }
 
 1;
