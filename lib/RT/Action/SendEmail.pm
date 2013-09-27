@@ -972,7 +972,7 @@ sub SetSubject {
 
     $subject =~ s/(\r\n|\n|\s)/ /g;
 
-    $self->SetHeader( 'Subject', $subject );
+    $self->SetHeader( 'Subject', Encode::encode_utf8( $subject ) );
 
 }
 
@@ -986,11 +986,14 @@ sub SetSubjectToken {
     my $self = shift;
 
     my $head = $self->TemplateObj->MIMEObj->head;
-    $head->replace(
-        Subject => RT::Interface::Email::AddSubjectTag(
-            Encode::decode_utf8( $head->get('Subject') ),
-            $self->TicketObj,
-        ),
+    $self->SetHeader(
+        Subject =>
+            Encode::encode_utf8(
+                RT::Interface::Email::AddSubjectTag(
+                    Encode::decode_utf8( $head->get('Subject') ),
+                    $self->TicketObj,
+                ),
+            ),
     );
 }
 
