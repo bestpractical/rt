@@ -430,6 +430,7 @@ if ($chart->get('width') != $Width || $chart->get('height') != $Height ) {
     label_font   => [ $font, 14 ],
     y_axis_font  => [ $font, 12 ],
     values_font  => [ $font, 12 ],
+    value_font   => [ $font, 12 ],
     %chart_options,
 );
 
