@@ -1301,8 +1301,8 @@ sub Indexes {
     }
     elsif ( $db_type eq 'Pg' ) {
         $list = $dbh->selectall_arrayref(
-            'select tablename, indexname from pg_indexes where schemaname = ?',
-            undef, 'public'
+            'select tablename, indexname from pg_indexes',
+            undef,
         );
     }
     elsif ( $db_type eq 'SQLite' ) {
