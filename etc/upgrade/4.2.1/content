@@ -1,4 +1,7 @@
-@Initial = (
+use strict;
+use warnings;
+
+our @Initial = (
     sub {
         my $attr = RT->System->FirstAttribute('BrandedSubjectTag');
         return 1 unless $attr;
