@@ -166,8 +166,8 @@ sub Probe {
         my $path = File::Which::which( $bin );
         unless ($path) {
             $RT::Logger->warning(
-                "Can't find openssl binary '$bin' in PATH; SMIME support has been disabled.  ".
-                "Check the 'OpenSSL' configuration in %OpenSSL");
+                "Can't find openssl binary '$bin' in PATH ($ENV{PATH}); SMIME support has been disabled.  ".
+                "You may need to specify a full path to opensssl via the 'OpenSSL' configuration in %OpenSSL");
             return 0;
         }
         $self->OpenSSLPath( $bin = $path );
