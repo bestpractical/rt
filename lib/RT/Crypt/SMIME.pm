@@ -163,6 +163,8 @@ sub Probe {
             return 0;
         }
     } else {
+        local $ENV{PATH} = '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+            unless defined $ENV{PATH};
         my $path = File::Which::which( $bin );
         unless ($path) {
             $RT::Logger->warning(
