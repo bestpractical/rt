@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
-"POT-Creation-Date: 2011-08-05 23:32+0000\n"
-"PO-Revision-Date: 2011-08-06 00:34+0000\n"
+"POT-Creation-Date: 2013-06-06 21:51+0000\n"
+"PO-Revision-Date: 2013-05-25 02:51+0000\n"
 "Last-Translator: Anna Jonna Armannsdottir <annajonna@gmail.com>\n"
 "Language-Team: Icelandic <annajonna@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-06 01:13+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2013-10-03 20:12+0000\n"
+"X-Generator: Launchpad (build 16791)\n"
 
 #: share/html/Elements/LoginHelp:51
 #. (RT->Config->Get('OwnerEmail'))
@@ -23,10 +23,6 @@ msgid ""
 "\n"
 "For local help, please contact %1\n"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid " (untrusted!)"
-msgstr " (vantreyst!)"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:60
 msgid "#"
@@ -354,10 +350,6 @@ msgstr ""
 msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "%1 is no longer a %2 for this queue."
-msgstr "%1 er ekki lengur %2 fyrir þessa biðröð."
-
 #: lib/RT/Ticket.pm:673
 #. ($principal->Object->Name,                         $self->loc($args{'Type'}))
 msgid "%1 is no longer a %2 for this ticket."
@@ -582,7 +574,7 @@ msgstr ""
 #: lib/RT/Queue.pm:323
 #. ($name)
 msgid "'%1' is not a valid name."
-msgstr ""
+msgstr "'%1' er ekki gilt nafn."
 
 #: share/html/Articles/Article/Edit.html:121
 #. ($Class)
@@ -605,14 +597,6 @@ msgstr "(Hakaðu í boxið til að eyða)"
 #: share/html/Articles/Article/Elements/EditLinks:53
 msgid "(Check boxes to delete)"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "(Check boxes to disable notifications to the listed recipients)"
-msgstr "(Hakaðu í kassana ef ekki á að senda tilkynningar til móttakendanna)"
-
-#: NOT FOUND IN SOURCE
-msgid "(Check boxes to enable notifications to the listed recipients)"
-msgstr "(Hakaðu í kassana ef senda á  tilkynningar til móttakendanna)"
 
 #: share/html/m/ticket/create:392
 msgid "(Enter ticket ids or URLs, separated with spaces)"
@@ -638,7 +622,7 @@ msgstr ""
 
 #: share/html/Admin/Groups/Members.html:71
 msgid "(No members)"
-msgstr ""
+msgstr "Engir meðlimir"
 
 #: share/html/Admin/Elements/EditScrips:58 share/html/Admin/Elements/EditScrips:66 share/html/Admin/Elements/EditScrips:88
 msgid "(No scrips)"
@@ -654,11 +638,11 @@ msgstr "(Ekkert)"
 
 #: share/html/Ticket/Create.html:161 share/html/m/ticket/create:290
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)"
-msgstr ""
+msgstr "(Afrit er sent af þessari uppfærslu til lista af netföngum umsjónaraðila - aðgreindum með kommu. Þau <strong>munu</strong> framvegis fá sendar uppfærslur um þetta mál.)"
 
 #: share/html/Ticket/Create.html:145 share/html/m/ticket/create:281
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)"
-msgstr ""
+msgstr "(Afrit er sent af þessari uppfærslu til lista af netföngum - aðgreindum með kommu. Þau <strong>munu</strong> framvegis fá sendar uppfærslur um þetta mál.)"
 
 #: share/html/Admin/Scrips/Elements/EditCustomCode:52
 msgid "(Use these fields when you choose 'User Defined' for a condition or action)"
@@ -668,17 +652,13 @@ msgstr ""
 msgid "(any)"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "(empty)"
-msgstr "(tómt)"
-
 #: share/html/Articles/Elements/NewestArticles:66 share/html/Articles/Elements/UpdatedArticles:67
 msgid "(no Summary)"
 msgstr ""
 
 #: share/html/Admin/Articles/Elements/Topics:99 share/html/Articles/Article/Elements/EditTopics:58 share/html/Articles/Article/Elements/EditTopics:74 share/html/Articles/Article/Elements/Preformatted:49 share/html/Articles/Article/Elements/Preformatted:50 share/html/Articles/Elements/BeforeMessageBox:103 share/html/Articles/Elements/BeforeMessageBox:120 share/html/Articles/Elements/BeforeMessageBox:70 share/html/Articles/Elements/BeforeMessageBox:82 share/html/Articles/Elements/BeforeMessageBox:90 share/html/Articles/Elements/NewestArticles:60 share/html/Articles/Elements/ShowTopic:51 share/html/Articles/Elements/ShowTopicLink:55 share/html/Articles/Elements/UpdatedArticles:61 share/html/Articles/Topics.html:105 share/html/SelfService/Article/Display.html:49 share/html/SelfService/Article/Search.html:77 share/html/SelfService/Article/Search.html:85
 msgid "(no name)"
-msgstr ""
+msgstr "(nafnlaust)"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:269 share/html/Elements/RT__Ticket/ColumnMap:88
 msgid "(no pubkey!)"
@@ -742,14 +722,6 @@ msgstr ""
 msgid "0s"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
-msgstr "<input type=\"submit\" class=\"button\" value=\"Nýtt mál í\" />&nbsp;%1"
-
-#: NOT FOUND IN SOURCE
-msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
-msgstr "<input type=\"submit\" value=\"Nýtt mál í\">&nbsp;%1"
-
 #: lib/RT/Template.pm:287 lib/RT/Template.pm:713
 msgid "A Template with that name already exists"
 msgstr ""
@@ -760,7 +732,7 @@ msgstr ""
 
 #: share/html/Admin/Users/Modify.html:349
 msgid "A password was not set, so user won't be able to login."
-msgstr ""
+msgstr "Lykilorð var ekki stillt, þannig að notandinn getur ekki skráði sig inn."
 
 #: lib/RT/ACE.pm:152
 msgid "ACE not found"
@@ -841,15 +813,15 @@ msgstr "Bæta við Cc"
 
 #: share/html/Search/Elements/EditFormat:51
 msgid "Add Columns"
-msgstr ""
+msgstr "Bæta við dálkum"
 
 #: share/html/Search/Elements/PickCriteria:48
 msgid "Add Criteria"
-msgstr ""
+msgstr "Bæta við leitarskilyrðum"
 
 #: share/html/Ticket/Elements/AddAttachments:61 share/html/m/ticket/create:324 share/html/m/ticket/reply:138
 msgid "Add More Files"
-msgstr ""
+msgstr "Bæta skrám við"
 
 #: share/html/Search/Bulk.html:85
 msgid "Add Requestor"
@@ -1037,7 +1009,7 @@ msgstr ""
 
 #: share/html/Search/Elements/PickCriteria:62
 msgid "Aggregator"
-msgstr ""
+msgstr "Tengiliður"
 
 #: etc/initialdata:526 etc/upgrade/3.8.2/content:85
 msgid "All Approvals Passed"
@@ -1073,7 +1045,7 @@ msgstr ""
 
 #: share/html/Admin/Queues/index.html:99
 msgid "All queues matching search criteria"
-msgstr ""
+msgstr "Allar biðraðir sem passa við leitarskilyrði"
 
 #: share/html/m/_elements/menu:82
 msgid "All tickets"
@@ -1326,7 +1298,7 @@ msgstr "ágú"
 msgid "Automatic account setup failed"
 msgstr ""
 
-#: share/html/Admin/Tools/Theme.html:310
+#: share/html/Admin/Tools/Theme.html:311
 #. ($valid_image_types)
 msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 msgstr ""
@@ -1445,10 +1417,6 @@ msgstr "Bókmerkt mál"
 msgid "Bookmarked tickets"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Brief headers"
-msgstr "Úrdráttur bréfhausa"
-
 #: share/html/Articles/Topics.html:48 share/html/Articles/Topics.html:60
 msgid "Browse by topic"
 msgstr ""
@@ -1459,7 +1427,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:811
 msgid "Bulk Update"
-msgstr ""
+msgstr "Fjöldauppfærsla"
 
 #: lib/RT/Tickets.pm:160
 msgid "CCGroup"
@@ -1540,10 +1508,6 @@ msgstr "Flokkar eru byggðir á"
 #: share/html/Admin/Elements/AddCustomFieldValue:57 share/html/Admin/Elements/EditCustomFieldValues:61
 msgid "Category"
 msgstr "Flokkur"
-
-#: NOT FOUND IN SOURCE
-msgid "Category unset"
-msgstr "Flokkur er ekki stillur"
 
 #: lib/RT/Report/Tickets.pm:69 lib/RT/Ticket.pm:102 lib/RT/Tickets.pm:145 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:79 share/html/Ticket/Create.html:136 share/html/Ticket/Elements/EditPeople:79 share/html/Ticket/Elements/ShowPeople:62 share/html/Ticket/Forward.html:69 share/html/m/ticket/create:275 share/html/m/ticket/show:295
 msgid "Cc"
@@ -1660,10 +1624,6 @@ msgstr ""
 msgid "Click to choose a color"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Close window"
-msgstr "Loka glugga"
-
 #: share/html/Ticket/Elements/ShowDates:75 share/html/m/ticket/show:375
 msgid "Closed"
 msgstr "Lokað"
@@ -1711,10 +1671,6 @@ msgstr "Athugasemdir"
 #: share/html/Search/Bulk.html:127 share/html/Ticket/ModifyAll.html:100 share/html/Ticket/Update.html:77 share/html/m/ticket/reply:93
 msgid "Comments (Not sent to requestors)"
 msgstr "Athugasemdir (Ekki sendar til spyrjenda)"
-
-#: NOT FOUND IN SOURCE
-msgid "Comments (not sent to requestors)"
-msgstr "Athugasemdir (ekki sendar til spyrjenda)"
 
 #: share/html/Admin/Users/Modify.html:209 share/html/Ticket/Elements/ShowRequestor:78
 msgid "Comments about this user"
@@ -1845,7 +1801,7 @@ msgstr ""
 
 #: lib/RT/Ticket.pm:260
 msgid "Could not create ticket. Queue not set"
-msgstr ""
+msgstr "Ekki var hægt að búa til mál. Biðröðin óstillt"
 
 #: lib/RT/User.pm:192 lib/RT/User.pm:206 lib/RT/User.pm:215 lib/RT/User.pm:224 lib/RT/User.pm:233 lib/RT/User.pm:247 lib/RT/User.pm:257 lib/RT/User.pm:450
 msgid "Could not create user"
@@ -1911,7 +1867,7 @@ msgstr ""
 
 #: lib/RT/User.pm:144
 msgid "Could not set user info"
-msgstr ""
+msgstr "Ekki var hægt að stilla notendaupplýsingar"
 
 #: lib/RT/Group.pm:1106
 #. ($col, $msg)
@@ -2288,14 +2244,6 @@ msgstr "Búa til mál"
 msgid "Create tickets"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Create tickets in this queue"
-msgstr "Búa til mál í þessari biðröð"
-
-#: NOT FOUND IN SOURCE
-msgid "Create, delete and modify users"
-msgstr "Búa til, eyða eða breyta notendum"
-
 #: lib/RT/Class.pm:98 lib/RT/Queue.pm:112
 msgid "Create, modify and delete Access Control List entries"
 msgstr ""
@@ -2342,7 +2290,7 @@ msgstr ""
 
 #: lib/RT/Queue.pm:129
 msgid "CreateTicket"
-msgstr ""
+msgstr "BúaTilMál"
 
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:73 lib/RT/Tickets.pm:137 share/html/Admin/Elements/ShowKeyInfo:71 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:67 share/html/Elements/ColumnMap:72 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:350
 msgid "Created"
@@ -2362,22 +2310,14 @@ msgstr ""
 msgid "Created by"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Created in a date range"
-msgstr "Búið til á gefnu tímabili"
-
 #: share/html/Articles/Article/Search.html:200
 #. ($search->Name)
 msgid "Created search %1"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Created tickets in period, grouped by status"
-msgstr "Mál sem búin voru til á gefnu tímabili, flokkuð eftir stöðu"
-
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "CreatedBy"
-msgstr ""
+msgstr "ÞettaGerði"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "CreatedRelative"
@@ -2399,21 +2339,29 @@ msgstr ""
 msgid "Current Links"
 msgstr "Núverandi Tengingar"
 
+#: NOT FOUND IN SOURCE
+msgid "Current Scrips"
+msgstr "Núverandi Skriftur"
+
 #: share/html/Elements/Tabs:796
 msgid "Current Search"
-msgstr ""
+msgstr "Núverandi leit"
 
 #: share/html/Admin/Groups/Members.html:60
 msgid "Current members"
-msgstr ""
+msgstr "Núverandi meðlimir"
+
+#: NOT FOUND IN SOURCE
+msgid "Current rights"
+msgstr "Núverandi réttindi"
 
 #: share/html/Search/Elements/EditQuery:49
 msgid "Current search"
-msgstr ""
+msgstr "Núverandi leit"
 
 #: share/html/Admin/Queues/People.html:62 share/html/Ticket/Elements/EditPeople:68
 msgid "Current watchers"
-msgstr ""
+msgstr "Núverandi áhorfendur"
 
 #: share/html/Elements/EditCustomFieldCustomGroupings:50 share/html/Elements/ShowCustomFieldCustomGroupings:51 share/html/Elements/Tabs:133 share/html/Elements/Tabs:183 share/html/Elements/Tabs:258 share/html/Elements/Tabs:300 share/html/Elements/Tabs:427 share/html/Elements/Tabs:92 share/html/User/Prefs.html:157 share/html/m/ticket/show:252
 msgid "Custom Fields"
@@ -2503,7 +2451,7 @@ msgstr "Sérsníða"
 
 #: share/html/Install/Basics.html:48 share/html/Install/DatabaseDetails.html:72 share/html/Install/Sendmail.html:64
 msgid "Customize Basics"
-msgstr ""
+msgstr "Sérsníða Grunnatriði"
 
 #: share/html/Install/Global.html:48 share/html/Install/Initialize.html:62 share/html/Install/Sendmail.html:63
 msgid "Customize Email Addresses"
@@ -2610,7 +2558,7 @@ msgstr ""
 msgid "Date format"
 msgstr "Snið dagsetningar"
 
-#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:633 share/html/SelfService/Display.html:66 share/html/Ticket/Create.html:253 share/html/Ticket/Elements/ShowSummary:84 share/html/Ticket/ModifyAll.html:68 share/html/m/ticket/create:377 share/html/m/ticket/show:344
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:633 share/html/SelfService/Display.html:72 share/html/Ticket/Create.html:253 share/html/Ticket/Elements/ShowSummary:84 share/html/Ticket/ModifyAll.html:68 share/html/m/ticket/create:377 share/html/m/ticket/show:344
 msgid "Dates"
 msgstr "Dagsetningar"
 
@@ -2647,7 +2595,7 @@ msgstr ""
 msgid "DefaultFormat"
 msgstr ""
 
-#: etc/RT_Config.pm:2766 etc/RT_Config.pm:2842 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:864 share/html/Elements/Tabs:889 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:2769 etc/RT_Config.pm:2845 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:864 share/html/Elements/Tabs:889 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
 msgid "Delete"
 msgstr "Eyða"
 
@@ -2855,7 +2803,7 @@ msgstr ""
 
 #: share/html/Elements/Refresh:53
 msgid "Don't refresh this page."
-msgstr ""
+msgstr "Ekki uppfæra þessa síðu."
 
 #: lib/RT/Crypt/GnuPG.pm:1742
 msgid "Don't trust this key at all"
@@ -2888,7 +2836,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:514
 msgid "Easy updating of your open tickets"
-msgstr ""
+msgstr "Þægileg leið til að uppfæra opnu málin þín"
 
 #: share/html/Elements/Tabs:521
 msgid "Easy viewing of your reminders"
@@ -2943,10 +2891,6 @@ msgstr "Breyta Leit"
 msgid "Edit global topic hierarchy"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Edit saved searches for this group"
-msgstr "Breyta vistuðum leitum fyrir þennan hóp"
-
 #: share/html/Elements/Tabs:126
 msgid "Edit system templates"
 msgstr ""
@@ -2959,10 +2903,6 @@ msgstr ""
 #: lib/RT/Group.pm:91
 msgid "EditSavedSearches"
 msgstr "BreytaVistuðumLeitum"
-
-#: NOT FOUND IN SOURCE
-msgid "Editable text"
-msgstr "Breytanlegur texti"
 
 #: share/html/Admin/CustomFields/Modify.html:195 share/html/Admin/Elements/EditCustomField:123
 #. ($CustomFieldObj->Name)
@@ -3058,7 +2998,7 @@ msgstr ""
 
 #: share/html/Admin/Queues/index.html:100
 msgid "Enabled queues matching search criteria"
-msgstr ""
+msgstr "Virkar biðraðir sem passa við leitarskilyrði"
 
 #: share/html/Admin/Articles/Classes/Modify.html:207 share/html/Admin/Elements/EditCustomField:139
 #. (loc_fuzzy($msg))
@@ -3120,7 +3060,7 @@ msgstr ""
 
 #: share/html/Elements/AddLinks:67
 msgid "Enter objects or URIs to link objects to. Separate multiple entries with spaces."
-msgstr ""
+msgstr "Skráið viðföng eða slóðir (URI) sem tengja í viðföng. Séu fleiri færslur, á bil að vera á milli."
 
 #: lib/RT/CustomField.pm:183
 msgid "Enter one IP address"
@@ -3140,11 +3080,11 @@ msgstr ""
 
 #: share/html/Elements/AddLinks:64
 msgid "Enter queues or URIs to link queues to. Separate multiple entries with spaces."
-msgstr ""
+msgstr "Skráið biðraðir eða slóðir (URI) sem tengja við biðraðir. Séu fleiri færslur, á bil að vera á milli."
 
 #: share/html/Elements/AddLinks:59 share/html/Search/Bulk.html:170
 msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with spaces."
-msgstr ""
+msgstr "Skráið mál eða slóðir (URI) sem tengja við mál. Séu fleiri færslur, á bil að vera á milli."
 
 #: lib/RT/Config.pm:285
 msgid "Enter time in hours by default"
@@ -3179,7 +3119,7 @@ msgstr ""
 msgid "Error"
 msgstr "Villa"
 
-#: share/html/Search/Chart:459
+#: share/html/Search/Chart:460
 #. ($error)
 msgid "Error plotting chart: %1"
 msgstr ""
@@ -3252,7 +3192,7 @@ msgstr "Útrunnið"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "ExtendedStatus"
-msgstr ""
+msgstr "AukinStaða"
 
 #: lib/RT/User.pm:1037
 msgid "External authentication enabled."
@@ -3397,11 +3337,11 @@ msgstr ""
 
 #: lib/RT/Tickets.pm:1664 share/html/Search/Elements/PickBasics:201 share/html/Ticket/Create.html:230 share/html/m/ticket/create:347
 msgid "Final Priority"
-msgstr ""
+msgstr "Endanlegur Forgangur"
 
 #: lib/RT/Tickets.pm:115 share/html/Elements/RT__Ticket/ColumnMap:159 share/html/Search/Elements/BuildFormatString:100
 msgid "FinalPriority"
-msgstr ""
+msgstr "EndanlegurForgangur"
 
 #: share/html/Elements/FindUser:48
 msgid "Find a user"
@@ -3409,7 +3349,7 @@ msgstr ""
 
 #: share/html/Admin/Users/index.html:77
 msgid "Find all users whose"
-msgstr ""
+msgstr "Finna alla notendur þar sem"
 
 #: share/html/Admin/Groups/index.html:68 share/html/Admin/Queues/People.html:78 share/html/Ticket/Elements/EditPeople:57
 msgid "Find groups whose"
@@ -3446,7 +3386,7 @@ msgstr ""
 
 #: share/html/Search/Bulk.html:84
 msgid "Force change"
-msgstr ""
+msgstr "Þvinga fram breytingu"
 
 #: share/html/Search/Edit.html:59 share/html/Search/Elements/EditFormat:52
 msgid "Format"
@@ -3462,11 +3402,11 @@ msgstr "Áfram"
 
 #: share/html/Ticket/Forward.html:91
 msgid "Forward Message"
-msgstr ""
+msgstr "Áframsenda Skilaboð"
 
 #: share/html/Ticket/Forward.html:90
 msgid "Forward Message and Return"
-msgstr ""
+msgstr "Áframsenda Skilaboð og snúa til baka"
 
 #: etc/initialdata:617 etc/upgrade/3.8.6/content:6
 msgid "Forward Ticket"
@@ -3527,10 +3467,6 @@ msgstr "Föstudagur"
 #: share/html/Ticket/Forward.html:60
 msgid "From"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Full headers"
-msgstr "Allir bréfhausar"
 
 #: share/html/Admin/Tools/Theme.html:67
 msgid "GD is disabled or not installed. You can upload an image, but you won't get automatic color suggestions."
@@ -3693,7 +3629,7 @@ msgstr ""
 
 #: share/html/Admin/Groups/index.html:102
 msgid "Groups matching search criteria"
-msgstr ""
+msgstr "Hópar sem passa við leitarskilyrði"
 
 #: share/html/Admin/Elements/MembershipsPage:55
 msgid "Groups the principal is member of (check box to delete)"
@@ -3755,10 +3691,6 @@ msgstr ""
 msgid "Hello!"
 msgstr "Halló!"
 
-#: NOT FOUND IN SOURCE
-msgid "Hello, %1"
-msgstr "Hallo, %1"
-
 #: share/html/Install/Global.html:52
 msgid "Help us set up some useful defaults for RT."
 msgstr ""
@@ -3796,13 +3728,9 @@ msgstr ""
 msgid "History of the user %1"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Home"
-msgstr "Heimasvæðið þitt"
-
 #: share/html/Elements/RT__User/ColumnMap:81
 msgid "Home Phone"
-msgstr ""
+msgstr "Heimasími"
 
 #: lib/RT/Config.pm:316
 msgid "Home page refresh interval"
@@ -3875,7 +3803,7 @@ msgstr ""
 msgid "If you've changed the Port that RT runs on, you'll need to restart the server in order to log in."
 msgstr ""
 
-#: share/html/Admin/Queues/People.html:124 share/html/Ticket/Modify.html:66 share/html/Ticket/ModifyAll.html:136 share/html/Ticket/ModifyPeople.html:76
+#: share/html/Admin/Queues/People.html:124 share/html/Ticket/Modify.html:68 share/html/Ticket/ModifyAll.html:136 share/html/Ticket/ModifyPeople.html:76
 msgid "If you've updated anything above, be sure to"
 msgstr ""
 
@@ -3926,23 +3854,23 @@ msgstr ""
 
 #: share/html/Admin/CustomFields/index.html:81
 msgid "Include disabled custom fields in listing."
-msgstr ""
+msgstr "Taka með óvirka sérsniðna reiti í listuninni."
 
 #: share/html/Admin/Groups/index.html:70
 msgid "Include disabled groups in listing."
-msgstr ""
+msgstr "Taka með óvirka hópa í listuninni."
 
 #: share/html/Admin/Queues/index.html:88
 msgid "Include disabled queues in listing."
-msgstr ""
+msgstr "Taka með óvirkar biðraðir í listuninni."
 
 #: share/html/Admin/Users/index.html:79
 msgid "Include disabled users in search."
-msgstr ""
+msgstr "Taka með óvirk notendanöfn í listuninni."
 
 #: share/html/Admin/CustomFields/Modify.html:116
 msgid "Include page"
-msgstr ""
+msgstr "Taka síðu með"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:140
 msgid "Include subtopics"
@@ -3959,7 +3887,7 @@ msgstr ""
 
 #: lib/RT/Config.pm:513
 msgid "Individual messages"
-msgstr ""
+msgstr "Stök skilaboð"
 
 #: etc/initialdata:645 etc/upgrade/3.7.10/content:18
 msgid "Inform RT owner that user(s) have problems with public keys"
@@ -4200,7 +4128,7 @@ msgstr ""
 
 #: share/html/Admin/Users/Modify.html:92 share/html/Elements/RT__User/ColumnMap:136 share/html/Install/index.html:56 share/html/SelfService/Prefs.html:59 share/html/User/Prefs.html:76
 msgid "Language"
-msgstr ""
+msgstr "Tungumál"
 
 #: share/html/Search/Elements/EditFormat:88
 msgid "Large"
@@ -4212,19 +4140,19 @@ msgstr "Síðasta"
 
 #: share/html/Ticket/Elements/EditDates:61 share/html/Ticket/Elements/ShowDates:62 share/html/m/ticket/show:362
 msgid "Last Contact"
-msgstr "Síðast í sambandi"
+msgstr "Síðasta Samband"
 
 #: share/html/Elements/SelectDateType:52
 msgid "Last Contacted"
-msgstr ""
+msgstr "Síðast Í Sambandi"
 
 #: share/html/Elements/ColumnMap:82 share/html/Elements/ColumnMap:87 share/html/Elements/SelectDateType:53
 msgid "Last Updated"
-msgstr ""
+msgstr "Síðasta Uppfærsla"
 
 #: share/html/Elements/ColumnMap:92
 msgid "Last Updated By"
-msgstr ""
+msgstr "Síðustu Uppfærslu Gerði"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:107
 msgid "Last updated"
@@ -4232,15 +4160,15 @@ msgstr ""
 
 #: share/html/Search/Elements/PickBasics:116
 msgid "Last updated by"
-msgstr ""
+msgstr "Síðustu uppfærslu gerði"
 
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:79 lib/RT/Tickets.pm:136 share/html/Search/Elements/BuildFormatString:100
 msgid "LastUpdated"
-msgstr ""
+msgstr "SíðastaUppfærsla"
 
 #: lib/RT/Graph/Tickets.pm:154 lib/RT/Report/Tickets.pm:66 lib/RT/Tickets.pm:110 share/html/Search/Elements/BuildFormatString:100
 msgid "LastUpdatedBy"
-msgstr ""
+msgstr "SíðustuUppfærsluGerði"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "LastUpdatedRelative"
@@ -4261,7 +4189,7 @@ msgstr ""
 
 #: share/html/Ticket/Elements/ShowBasics:71 share/html/m/ticket/show:233
 msgid "Left"
-msgstr "Vinstri"
+msgstr "Eftir"
 
 #: share/html/Ticket/Graphs/Elements/ShowLegends:48
 msgid "Legends"
@@ -4273,15 +4201,15 @@ msgstr ""
 
 #: share/html/Admin/Users/Modify.html:109
 msgid "Let this user access RT"
-msgstr ""
+msgstr "Veita þessum notanda aðgang að RT"
 
 #: share/html/Admin/Users/Modify.html:114
 msgid "Let this user be granted rights"
-msgstr ""
+msgstr "Veita þessum notanda aukin réttindi"
 
 #: share/html/Install/index.html:79 share/html/Install/index.html:87
 msgid "Let's go!"
-msgstr ""
+msgstr "Af stað!"
 
 #: share/html/Admin/Queues/Modify.html:67
 msgid "Lifecycle"
@@ -4293,7 +4221,11 @@ msgstr "Tengill"
 
 #: lib/RT/Record.pm:1361
 msgid "Link already exists"
-msgstr ""
+msgstr "Tenging er núþegar til"
+
+#: NOT FOUND IN SOURCE
+msgid "Link could not be created"
+msgstr "Ekki var hægt að gera nýja tengingu"
 
 #: lib/RT/Record.pm:1383
 #. ($linkmsg)
@@ -4307,12 +4239,12 @@ msgstr ""
 
 #: lib/RT/Record.pm:1505
 msgid "Link not found"
-msgstr ""
+msgstr "Tenging fannst ekki"
 
 #: share/html/Ticket/ModifyLinks.html:48
 #. ($Ticket->Id)
 msgid "Link ticket #%1"
-msgstr ""
+msgstr "Tengja mál #%1"
 
 #: share/html/Admin/CustomFields/Modify.html:108
 msgid "Link values to"
@@ -4324,16 +4256,20 @@ msgstr "Tengt"
 
 #: lib/RT/Tickets.pm:123
 msgid "LinkedFrom"
-msgstr ""
+msgstr "TengtFrá"
 
 #: lib/RT/Tickets.pm:122
 msgid "LinkedTo"
-msgstr ""
+msgstr "TengtVið"
 
 #: lib/RT/Record.pm:1347
 #. ($self->loc(lc($remote_obj->RecordType)))
 msgid "Linking to a deleted %1 is not allowed"
 msgstr ""
+
+#: NOT FOUND IN SOURCE
+msgid "Linking. Permission denied"
+msgstr "Tengi. Ekki leyfilegt"
 
 #: share/html/Articles/Article/Display.html:56 share/html/Articles/Article/Edit.html:79 share/html/Articles/Article/Elements/ShowSearchCriteria:117 share/html/Elements/Tabs:634 share/html/Ticket/Create.html:276 share/html/Ticket/Elements/ShowSummary:91 share/html/Ticket/ModifyAll.html:81 share/html/m/ticket/create:390 share/html/m/ticket/show:386
 msgid "Links"
@@ -4361,11 +4297,11 @@ msgstr ""
 
 #: share/html/Articles/Article/Search.html:73
 msgid "Load saved search:"
-msgstr ""
+msgstr "Hlaða inn vistuðum leitum:"
 
 #: lib/RT/System.pm:91
 msgid "LoadSavedSearch"
-msgstr ""
+msgstr "HlaðaInnVistuðumLeitum"
 
 #: lib/RT/SharedSetting.pm:119
 #. ($self->ObjectName, $self->Name)
@@ -4388,7 +4324,7 @@ msgstr ""
 #: share/html/Search/Elements/EditSearches:171
 #. ($SavedSearch->{'Description'})
 msgid "Loaded saved search \"%1\""
-msgstr ""
+msgstr "Hlóð inn vistaðri leit \"%1\""
 
 #: share/html/Ticket/Elements/ClickToShowHistory:50 share/html/Ticket/Elements/DelayShowHistory:50 share/html/Ticket/Elements/ShowRequestor:109
 msgid "Loading..."
@@ -4475,19 +4411,19 @@ msgstr ""
 
 #: share/html/Search/Bulk.html:81
 msgid "Make Owner"
-msgstr ""
+msgstr "Gera að eiganda"
 
 #: share/html/Search/Bulk.html:107
 msgid "Make Status"
-msgstr ""
+msgstr "Gera að stöðu"
 
 #: share/html/Search/Bulk.html:115
 msgid "Make date Due"
-msgstr ""
+msgstr "Gera að skiladegi"
 
 #: share/html/Search/Bulk.html:111
 msgid "Make date Started"
-msgstr ""
+msgstr "Gera að byrjunardegi"
 
 #: share/html/Search/Bulk.html:109
 msgid "Make date Starts"
@@ -4511,23 +4447,23 @@ msgstr ""
 
 #: share/html/Elements/Tabs:93
 msgid "Manage custom fields and custom field values"
-msgstr ""
+msgstr "Umsjón með sérsniðnum reitum og gildum þeirra"
 
 #: share/html/Elements/Tabs:76
 msgid "Manage groups and group membership"
-msgstr ""
+msgstr "Umsjón með hópum og aðild að hópum"
 
 #: share/html/Elements/Tabs:112
 msgid "Manage properties and configuration which apply to all queues"
-msgstr ""
+msgstr "Umsjón með eiginleikum og uppsetningu sem á við allar biðraðir"
 
 #: share/html/Elements/Tabs:84
 msgid "Manage queues and queue-specific properties"
-msgstr ""
+msgstr "Umsjón með biðröðum og eiginleikum biðraða"
 
 #: share/html/Ticket/Graphs/index.html:63
 msgid "Manage saved graphs"
-msgstr ""
+msgstr "Umsjón með vistuðum línuritum"
 
 #: share/html/Elements/Tabs:103
 msgid "Manage scrips"
@@ -4535,7 +4471,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:68
 msgid "Manage users and passwords"
-msgstr ""
+msgstr "Umsjón með notendanöfnum og lykilorðum"
 
 #: lib/RT/Record/Role/Status.pm:281
 #. ($old_lifecycle->Name, $new_lifecycle->Name)
@@ -4623,9 +4559,13 @@ msgstr ""
 msgid "Member not deleted"
 msgstr ""
 
+#: NOT FOUND IN SOURCE
+msgid "Member of"
+msgstr "Meðlimur í"
+
 #: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:124 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
 msgid "MemberOf"
-msgstr ""
+msgstr "MeðlimurÍ"
 
 #: lib/RT/Graph/Tickets.pm:156 share/html/Elements/Tabs:349 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
 msgid "Members"
@@ -4656,11 +4596,11 @@ msgstr ""
 
 #: lib/RT/Ticket.pm:1792
 msgid "Merge Successful"
-msgstr ""
+msgstr "Sameining heppnaðist"
 
 #: lib/RT/Ticket.pm:1813
 msgid "Merge failed. Couldn't set EffectiveId"
-msgstr ""
+msgstr "Sameining misheppnaðist. Ekki var hægt að stilla EffectiveId"
 
 #: lib/RT/Ticket.pm:1819
 msgid "Merge failed. Couldn't set IsMerged"
@@ -4668,11 +4608,15 @@ msgstr ""
 
 #: lib/RT/Ticket.pm:1832
 msgid "Merge failed. Couldn't set Status"
-msgstr ""
+msgstr "Sameining misheppnaðist. Ekki var hægt að stilla Stöðu"
 
 #: share/html/Ticket/Elements/EditMerge:54
 msgid "Merge into"
-msgstr ""
+msgstr "Sameina við"
+
+#: NOT FOUND IN SOURCE
+msgid "Merged into %1"
+msgstr "Sameina við %1"
 
 #: share/html/Search/Bulk.html:145 share/html/Ticket/Update.html:147 share/html/Ticket/Update.html:165 share/html/m/ticket/reply:108
 msgid "Message"
@@ -4769,10 +4713,6 @@ msgstr "Farsími"
 #: share/html/Elements/RT__User/ColumnMap:91
 msgid "Mobile Phone"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "MobilePhone"
-msgstr "Farsími"
 
 #: share/html/Elements/Tabs:863 share/html/Elements/Tabs:886 share/html/m/_elements/ticket_menu:67
 msgid "Modify"
@@ -4909,7 +4849,7 @@ msgstr ""
 
 #: lib/RT/Queue.pm:113
 msgid "Modify queue watchers"
-msgstr ""
+msgstr "Breyta áhorfendum biðraðar"
 
 #: share/html/Admin/Scrips/Modify.html:48
 #. ($id)
@@ -4984,12 +4924,12 @@ msgstr ""
 #: share/html/Ticket/ModifyAll.html:59
 #. ($Ticket->Id)
 msgid "Modify ticket # %1"
-msgstr ""
+msgstr "Breyta máli # %1"
 
 #: share/html/Ticket/Modify.html:48 share/html/Ticket/Modify.html:58
 #. ($TicketObj->Id)
 msgid "Modify ticket #%1"
-msgstr ""
+msgstr "Breyta máli #%1"
 
 #: lib/RT/Queue.pm:137
 msgid "Modify ticket owner on owned tickets"
@@ -4997,7 +4937,7 @@ msgstr ""
 
 #: lib/RT/Queue.pm:133
 msgid "Modify tickets"
-msgstr ""
+msgstr "Breyta málum"
 
 #: share/html/Admin/Articles/Classes/Topics.html:59
 #. ($ClassObj->Name)
@@ -5071,7 +5011,7 @@ msgstr ""
 
 #: lib/RT/Queue.pm:113
 msgid "ModifyQueueWatchers"
-msgstr ""
+msgstr "BreytaÁhorfendumBiðraðar"
 
 #: lib/RT/Queue.pm:120
 msgid "ModifyScrips"
@@ -5109,14 +5049,6 @@ msgstr ""
 msgid "Monthly"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "More"
-msgstr "Meira"
-
-#: NOT FOUND IN SOURCE
-msgid "More about %1"
-msgstr "Nánar varðandi %1"
-
 #: share/html/Ticket/Elements/ShowRequestor:61
 msgid "More about the requestors"
 msgstr ""
@@ -5140,7 +5072,7 @@ msgstr ""
 #: share/html/SelfService/Elements/MyRequests:62
 #. ($friendly_status)
 msgid "My %1 tickets"
-msgstr ""
+msgstr "Mín %1 mál"
 
 #: share/html/Elements/Tabs:529
 msgid "My Approvals"
@@ -5148,7 +5080,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:513
 msgid "My Day"
-msgstr ""
+msgstr "Dagurinn minn"
 
 #: share/html/Elements/Tabs:520
 msgid "My Reminders"
@@ -5164,7 +5096,7 @@ msgstr ""
 
 #: share/html/Dashboards/Elements/SelectPrivacy:62 share/html/Dashboards/Elements/ShowDashboards:53
 msgid "My dashboards"
-msgstr ""
+msgstr "Mælaborðin mín"
 
 #: share/html/Elements/MyReminders:50 share/html/Tools/MyReminders.html:48
 msgid "My reminders"
@@ -5172,7 +5104,7 @@ msgstr ""
 
 #: share/html/Articles/Article/Elements/SelectSavedSearches:54 share/html/Elements/SavedSearches:54 share/html/Search/Elements/SearchPrivacy:55
 msgid "My saved searches"
-msgstr ""
+msgstr "Mínar vistuðu leitir"
 
 #: etc/RT_Config.pm:1235
 msgid "MyAdminQueues"
@@ -5204,11 +5136,11 @@ msgstr "Nafn"
 
 #: lib/RT/Config.pm:183
 msgid "Name and email address"
-msgstr ""
+msgstr "Nafn og netfang"
 
 #: lib/RT/Article.pm:116 lib/RT/User.pm:287
 msgid "Name in use"
-msgstr ""
+msgstr "Nafnið er þegar í notkun"
 
 #: lib/RT/Template.pm:281 lib/RT/Template.pm:705
 msgid "Name is required"
@@ -5250,10 +5182,6 @@ msgstr ""
 msgid "New Search"
 msgstr "Ný leit"
 
-#: NOT FOUND IN SOURCE
-msgid "New group"
-msgstr "Nýr hópur"
-
 #: share/html/Elements/RT__Ticket/ColumnMap:248 share/html/Ticket/Elements/ShowUpdateStatus:49
 msgid "New messages"
 msgstr ""
@@ -5285,7 +5213,7 @@ msgstr ""
 
 #: share/html/Admin/Queues/People.html:72 share/html/Ticket/Elements/EditPeople:52
 msgid "New watchers"
-msgstr ""
+msgstr "Nýir áhorfendur"
 
 #: share/html/Elements/CollectionListPaging:106 share/html/Elements/Tabs:723 share/html/Install/Basics.html:62 share/html/Install/DatabaseDetails.html:72 share/html/Install/DatabaseType.html:70 share/html/Install/Global.html:64 share/html/Install/Global.html:64 share/html/Install/Sendmail.html:63
 msgid "Next"
@@ -5398,7 +5326,7 @@ msgstr ""
 
 #: lib/RT/CustomField.pm:414
 msgid "No name provided"
-msgstr ""
+msgstr "Nafn ekki tilgreint"
 
 #: lib/RT/Attachment.pm:749
 msgid "No need to encrypt"
@@ -5417,7 +5345,7 @@ msgstr ""
 msgid "No permission to create tickets in the queue '%1'"
 msgstr ""
 
-#: share/html/SelfService/Display.html:137
+#: share/html/SelfService/Display.html:144
 msgid "No permission to display that ticket"
 msgstr ""
 
@@ -5541,7 +5469,7 @@ msgstr "Innskráning er eftir."
 
 #: lib/RT/Date.pm:483 share/html/Elements/ShowReminders:73 share/html/Ticket/Elements/Reminders:207
 msgid "Not set"
-msgstr ""
+msgstr "Ekki stillt"
 
 #: share/html/m/_elements/full_site_link:48
 msgid "Not using a mobile browser?"
@@ -5593,7 +5521,7 @@ msgstr ""
 
 #: etc/initialdata:558 etc/initialdata:571 etc/upgrade/3.8.2/content:101 etc/upgrade/4.1.9/content:164
 msgid "Notify Owner of their rejected ticket"
-msgstr ""
+msgstr "Láta eiganda vita um höfnun á sínu máli"
 
 #: etc/initialdata:586 etc/initialdata:598 etc/upgrade/3.8.2/content:114 etc/upgrade/4.1.9/content:179
 msgid "Notify Owner of their ticket has been approved and is ready to be acted on"
@@ -5637,7 +5565,7 @@ msgstr ""
 
 #: lib/RT/Config.pm:382
 msgid "Notify me of unread messages"
-msgstr ""
+msgstr "Láta mig vita um ólesin skilaboð"
 
 #: lib/RT/Date.pm:101
 msgid "Nov"
@@ -5758,11 +5686,11 @@ msgstr ""
 
 #: share/html/Ticket/Elements/UpdateCc:69 share/html/m/ticket/reply:106
 msgid "One-time Bcc"
-msgstr ""
+msgstr "BCC í þettta eina skipti"
 
 #: share/html/Ticket/Elements/UpdateCc:50 share/html/m/ticket/reply:104
 msgid "One-time Cc"
-msgstr ""
+msgstr "CC í þettta eina skipti"
 
 #: lib/RT/Config.pm:286
 msgid "Only for entry, not display"
@@ -5780,23 +5708,23 @@ msgstr ""
 
 #: share/html/Admin/CustomFields/index.html:72
 msgid "Only show custom fields for:"
-msgstr ""
+msgstr "Sýna aðeins sérsniðna reiti fyrir:"
 
 #: etc/initialdata:101
 msgid "Open Inactive Tickets"
 msgstr ""
 
-#: etc/RT_Config.pm:2754 etc/RT_Config.pm:2783 etc/RT_Config.pm:2830 etc/RT_Config.pm:2859
+#: etc/RT_Config.pm:2757 etc/RT_Config.pm:2786 etc/RT_Config.pm:2833 etc/RT_Config.pm:2862
 msgid "Open It"
-msgstr ""
+msgstr "Opna það"
 
 #: etc/initialdata:98
 msgid "Open Tickets"
-msgstr ""
+msgstr "Opin Mál"
 
 #: share/html/Elements/MakeClicky:65
 msgid "Open URL"
-msgstr ""
+msgstr "Opna slóð"
 
 #: etc/initialdata:102
 msgid "Open inactive tickets"
@@ -5804,7 +5732,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:935 share/html/SelfService/index.html:48
 msgid "Open tickets"
-msgstr ""
+msgstr "Opin mál"
 
 #: etc/initialdata:99
 msgid "Open tickets on correspondence"
@@ -5837,19 +5765,19 @@ msgstr "Stofnun/félag"
 #: share/html/Approvals/Elements/Approve:55
 #. ($approving->Id, $approving->Subject)
 msgid "Originating ticket: #%1"
-msgstr ""
+msgstr "Upptökin eru í máli: #%1"
 
 #: lib/RT/Transaction.pm:844
 msgid "Outgoing email about a comment recorded"
-msgstr ""
+msgstr "Skráning á sendu tölvubréfi um athugasemd"
 
 #: lib/RT/Transaction.pm:848
 msgid "Outgoing email recorded"
-msgstr ""
+msgstr "Skráning á sendu tölvubréfi"
 
 #: lib/RT/Config.pm:526
 msgid "Outgoing mail"
-msgstr ""
+msgstr "Tölvubréf sent"
 
 #: share/html/Admin/Queues/Modify.html:93
 msgid "Over time, priority moves toward"
@@ -5861,11 +5789,11 @@ msgstr ""
 
 #: lib/RT/Queue.pm:132
 msgid "Own tickets"
-msgstr ""
+msgstr "Eigin mál"
 
 #: lib/RT/Queue.pm:132
 msgid "OwnTicket"
-msgstr ""
+msgstr "EiginMál"
 
 #: lib/RT/Graph/Tickets.pm:154 lib/RT/Report/Tickets.pm:64 lib/RT/Ticket.pm:100 lib/RT/Tickets.pm:111 lib/RT/Tickets.pm:1813 share/html/Elements/QuickCreate:62 share/html/Elements/RT__Ticket/ColumnMap:106 share/html/Elements/RT__Ticket/ColumnMap:262 share/html/Elements/RT__Ticket/ColumnMap:279 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:137 share/html/Ticket/Elements/Reminders:175 share/html/Ticket/Elements/Reminders:84 share/html/Ticket/Elements/ShowPeople:50 share/html/m/_elements/ticket_list:96 share/html/m/ticket/create:258 share/html/m/ticket/reply:71 share/html/m/ticket/show:286
 msgid "Owner"
@@ -5879,11 +5807,15 @@ msgstr ""
 #: lib/RT/Ticket.pm:2047
 #. ($OldOwnerObj->Name, $NewOwnerObj->Name)
 msgid "Owner changed from %1 to %2"
-msgstr ""
+msgstr "Eiganda var breytt úr %1 í %2"
+
+#: NOT FOUND IN SOURCE
+msgid "Owner could not be set."
+msgstr "Ekki var hægt að breyta eiganda."
 
 #: lib/RT/Transaction.pm:1120 lib/RT/Transaction.pm:937
 msgid "Owner forcibly changed from %1 to %2"
-msgstr ""
+msgstr "Þvinguð var fram breyting á eiganda úr %1 í %2"
 
 #: lib/RT/Tickets.pm:158
 msgid "OwnerGroup"
@@ -5891,7 +5823,7 @@ msgstr ""
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "OwnerName"
-msgstr ""
+msgstr "EigandaNafn"
 
 #: share/html/Elements/CollectionListPaging:65
 msgid "Page"
@@ -5899,11 +5831,11 @@ msgstr "Síða"
 
 #: share/html/Elements/CollectionListPaging:62
 msgid "Page 1 of 1"
-msgstr ""
+msgstr "Síða 1 af 1"
 
 #: share/html/dhandler:48
 msgid "Page not found"
-msgstr ""
+msgstr "Síða fannst ekki"
 
 #: share/html/Admin/Users/Modify.html:191 share/html/User/Prefs.html:100
 msgid "Pager"
@@ -6048,15 +5980,15 @@ msgstr ""
 
 #: share/html/dhandler:51
 msgid "Please check the URL and try again."
-msgstr ""
+msgstr "Vinsamlegast athugaðu slóðina (URL) og reyndu aftur."
 
 #: lib/RT/User.pm:824
 msgid "Please enter your current password correctly."
-msgstr ""
+msgstr "Vinsamlegast skrifaðu núverandi lykilorð þitt rétt."
 
 #: lib/RT/User.pm:826
 msgid "Please enter your current password."
-msgstr ""
+msgstr "Vinsamlegast skrifaðu núverandi lykilorð þitt."
 
 #: share/html/Elements/CSRF:48 share/html/Elements/CSRF:51
 msgid "Possible cross-site request forgery"
@@ -6083,13 +6015,13 @@ msgstr "Kjörstillingar"
 #: share/html/Admin/Users/MyRT.html:116
 #. ($pane, $UserObj->Name)
 msgid "Preferences %1 for user %2."
-msgstr ""
+msgstr "Kjörstillingar %1 fyrir notanda %2."
 
 #: share/html/Prefs/MyRT.html:156 share/html/Prefs/MyRT.html:91
 #. ($pane)
 #. (loc('summary rows'))
 msgid "Preferences saved for %1."
-msgstr ""
+msgstr "Kjörstillingar vistaðar fyrir %1."
 
 #: share/html/Admin/Users/DashboardsInMenu.html:107 share/html/Prefs/DashboardsInMenu.html:104
 msgid "Preferences saved for dashboards in menu."
@@ -6102,7 +6034,7 @@ msgstr ""
 
 #: share/html/Prefs/DashboardsInMenu.html:79 share/html/Prefs/MyRT.html:98 share/html/Prefs/Other.html:103 share/html/Prefs/Quicksearch.html:106 share/html/Prefs/Search.html:104 share/html/Prefs/SearchOptions.html:81
 msgid "Preferences saved."
-msgstr ""
+msgstr "Kjörstillingar vistaðar."
 
 #: share/html/Prefs/Other.html:88
 #. ($msg)
@@ -6136,7 +6068,7 @@ msgstr ""
 
 #: sbin/rt-email-digest:91
 msgid "Print this message"
-msgstr ""
+msgstr "Prenta þessi skilaboð"
 
 #: lib/RT/Tickets.pm:116 lib/RT/Tickets.pm:1617 share/html/Elements/RT__Queue/ColumnMap:61 share/html/Elements/RT__Ticket/ColumnMap:148 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:199 share/html/Ticket/Create.html:225 share/html/Ticket/Elements/ShowBasics:76 share/html/m/_elements/ticket_list:99 share/html/m/ticket/create:342 share/html/m/ticket/show:238
 msgid "Priority"
@@ -6144,7 +6076,7 @@ msgstr "Forgangur"
 
 #: share/html/Admin/Queues/Modify.html:88
 msgid "Priority starts at"
-msgstr ""
+msgstr "Forgangur byrjar við"
 
 #: share/html/Dashboards/Modify.html:67 share/html/Search/Elements/EditSearches:53
 msgid "Privacy"
@@ -6169,16 +6101,16 @@ msgstr ""
 
 #: lib/RT/Handle.pm:704 share/html/Admin/Users/Modify.html:114
 msgid "Privileged"
-msgstr ""
+msgstr "Aukin réttindi"
 
 #: share/html/Admin/Users/Modify.html:323 share/html/User/Prefs.html:253
 #. (loc_fuzzy($msg))
 msgid "Privileged status: %1"
-msgstr ""
+msgstr "Staða aukinna réttinda: %1"
 
 #: share/html/Admin/Users/index.html:127
 msgid "Privileged users"
-msgstr ""
+msgstr "Notendur með aukin réttindi"
 
 #: bin/rt-crontool:174
 msgid "Processing without transaction, some conditions and actions may fail. Consider using --transaction argument"
@@ -6208,7 +6140,7 @@ msgstr "Fyrirspurn"
 
 #: share/html/Search/Build.html:115
 msgid "Query Builder"
-msgstr ""
+msgstr "Gera Fyrirspurn"
 
 #: lib/RT/Graph/Tickets.pm:153 lib/RT/Record.pm:954 lib/RT/Report/Tickets.pm:62 lib/RT/Tickets.pm:107 lib/RT/Tickets.pm:1424 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:63 share/html/Elements/RT__Template/ColumnMap:66 share/html/Elements/RT__Template/ColumnMap:73 share/html/Elements/RT__Ticket/ColumnMap:102 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:61 share/html/Ticket/Elements/ShowBasics:82 share/html/m/ticket/create:248 share/html/m/ticket/show:242
 msgid "Queue"
@@ -6257,7 +6189,7 @@ msgstr ""
 msgid "Queue id"
 msgstr "Biðröð nr"
 
-#: lib/RT/CustomField.pm:285 share/html/SelfService/Display.html:102
+#: lib/RT/CustomField.pm:285 share/html/SelfService/Display.html:109
 msgid "Queue not found"
 msgstr "Biðröð fannst ekki"
 
@@ -6279,7 +6211,7 @@ msgstr ""
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "QueueName"
-msgstr ""
+msgstr "BiðraðarNafn"
 
 #: lib/RT/Tickets.pm:150
 msgid "QueueWatcher"
@@ -6303,7 +6235,7 @@ msgstr "Flýtileit"
 
 #: share/html/Elements/QuickCreate:49 share/html/User/Elements/Portlets/CreateTicket:48
 msgid "Quick ticket creation"
-msgstr ""
+msgstr "Búa til mál"
 
 #: etc/RT_Config.pm:1235 etc/initialdata:860
 msgid "QuickCreate"
@@ -6347,7 +6279,7 @@ msgstr ""
 
 #: lib/RT/Config.pm:311 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:54 share/html/Admin/Users/MyRT.html:62 share/html/Elements/Tabs:206 share/html/Elements/Tabs:326 share/html/Elements/Tabs:556 share/html/Prefs/MyRT.html:57 share/html/Prefs/MyRT.html:81 share/html/index.html:4
 msgid "RT at a glance"
-msgstr ""
+msgstr "RT í stuttu máli"
 
 #: share/html/Admin/Users/MyRT.html:71
 #. ($UserObj->Name)
@@ -6422,7 +6354,7 @@ msgstr ""
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr ""
 
-#: etc/RT_Config.pm:2786 etc/RT_Config.pm:2790 etc/RT_Config.pm:2862 etc/RT_Config.pm:2866
+#: etc/RT_Config.pm:2789 etc/RT_Config.pm:2793 etc/RT_Config.pm:2865 etc/RT_Config.pm:2869
 msgid "Re-open"
 msgstr ""
 
@@ -6432,7 +6364,7 @@ msgstr ""
 
 #: share/html/Admin/Users/Modify.html:77 share/html/Elements/RT__User/ColumnMap:61 share/html/User/Prefs.html:69
 msgid "Real Name"
-msgstr ""
+msgstr "Raunverulegt Nafn"
 
 #: lib/RT/Queue.pm:137
 msgid "ReassignTicket"
@@ -6452,7 +6384,7 @@ msgstr ""
 
 #: share/html/Tools/MyDay.html:72
 msgid "Record all updates"
-msgstr ""
+msgstr "Skrá allar endurnýjanir"
 
 #: share/html/Elements/RT__Group/ColumnMap:64
 msgid "Recursive member"
@@ -6461,6 +6393,22 @@ msgstr ""
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:124
 msgid "Refer to"
 msgstr ""
+
+#: NOT FOUND IN SOURCE
+msgid "Reference by %1 added"
+msgstr "Bætt við tilvísun frá %1"
+
+#: NOT FOUND IN SOURCE
+msgid "Reference by %1 deleted"
+msgstr "Eytt tilvísun frá %1"
+
+#: NOT FOUND IN SOURCE
+msgid "Reference to %1 added"
+msgstr "Bætt við tilvísun til %1"
+
+#: NOT FOUND IN SOURCE
+msgid "Reference to %1 deleted"
+msgstr "Eytt tilvísun til %1"
 
 #: share/html/Articles/Article/Elements/EditLinks:84 share/html/Articles/Article/Elements/ShowLinks:70 share/html/Articles/Article/Elements/ShowSearchCriteria:128 share/html/Elements/AddLinks:91 share/html/Elements/BulkLinks:104 share/html/Elements/BulkLinks:147 share/html/Elements/EditLinks:100 share/html/Elements/ShowLinks:74 share/html/Search/Elements/SelectLinks:64 share/html/m/ticket/create:401 share/html/m/ticket/show:447
 msgid "Referred to by"
@@ -6484,56 +6432,56 @@ msgstr "Endurlesa (uppfæra)"
 
 #: lib/RT/Config.pm:322
 msgid "Refresh home page every 10 minutes."
-msgstr ""
+msgstr "Uppfæra heimasíðu á 10 mínútna fresti."
 
 #: lib/RT/Config.pm:325
 msgid "Refresh home page every 120 minutes."
-msgstr ""
+msgstr "Uppfæra heimasíðu á 120 mínútna fresti."
 
 #: lib/RT/Config.pm:320
 msgid "Refresh home page every 2 minutes."
-msgstr ""
+msgstr "Uppfæra heimasíðu á 2 mínútna fresti."
 
 #: lib/RT/Config.pm:323
 msgid "Refresh home page every 20 minutes."
-msgstr ""
+msgstr "Uppfæra heimasíðu á 20 mínútna fresti."
 
 #: lib/RT/Config.pm:321
 msgid "Refresh home page every 5 minutes."
-msgstr ""
+msgstr "Uppfæra heimasíðu á 5 mínútna fresti."
 
 #: lib/RT/Config.pm:324
 msgid "Refresh home page every 60 minutes."
-msgstr ""
+msgstr "Uppfæra heimasíðu á 60 mínútna fresti."
 
 #: lib/RT/Config.pm:301
 msgid "Refresh search results every 10 minutes."
-msgstr ""
+msgstr "Uppfæra leitarniðurstöður á 10 mínútna fresti."
 
 #: lib/RT/Config.pm:304
 msgid "Refresh search results every 120 minutes."
-msgstr ""
+msgstr "Uppfæra leitarniðurstöður á 120 mínútna fresti."
 
 #: lib/RT/Config.pm:299
 msgid "Refresh search results every 2 minutes."
-msgstr ""
+msgstr "Uppfæra leitarniðurstöður á 2 mínútna fresti."
 
 #: lib/RT/Config.pm:302
 msgid "Refresh search results every 20 minutes."
-msgstr ""
+msgstr "Uppfæra leitarniðurstöður á 20 mínútna fresti."
 
 #: lib/RT/Config.pm:300
 msgid "Refresh search results every 5 minutes."
-msgstr ""
+msgstr "Uppfæra leitarniðurstöður á 5 mínútna fresti."
 
 #: lib/RT/Config.pm:303
 msgid "Refresh search results every 60 minutes."
-msgstr ""
+msgstr "Uppfæra leitarniðurstöður á 60 mínútna fresti."
 
 #: share/html/Elements/Refresh:59
 #. ($value/60)
 msgid "Refresh this page every %1 minutes."
-msgstr ""
+msgstr "Uppfæra þessa síðu á %1 mínútna fresti."
 
 #: etc/RT_Config.pm:1235 etc/initialdata:879
 msgid "RefreshHomepage"
@@ -6543,7 +6491,7 @@ msgstr ""
 msgid "Refused to add link which would create a circular relationship"
 msgstr ""
 
-#: etc/RT_Config.pm:2762 etc/RT_Config.pm:2778 etc/RT_Config.pm:2838 etc/RT_Config.pm:2854
+#: etc/RT_Config.pm:2765 etc/RT_Config.pm:2781 etc/RT_Config.pm:2841 etc/RT_Config.pm:2857
 msgid "Reject"
 msgstr ""
 
@@ -6572,10 +6520,6 @@ msgstr "Áminning '%1' endurvakin"
 #. ($old_subject || $reminder->Subject, $_)
 msgid "Reminder '%1': %2"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Reminder ticket #%1"
-msgstr "Áminningarmál #%1"
 
 #: share/html/Elements/Tabs:642 share/html/Ticket/Elements/Reminders:79 share/html/Ticket/Elements/ShowSummary:73 share/html/Ticket/Reminders.html:56 share/html/m/ticket/show:332
 msgid "Reminders"
@@ -6639,13 +6583,9 @@ msgstr ""
 msgid "ReplyToTicket"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Reports"
-msgstr "Skýrslur"
-
 #: lib/RT/Report/Tickets.pm:68 lib/RT/Ticket.pm:101 lib/RT/Tickets.pm:143
 msgid "Requestor"
-msgstr ""
+msgstr "Spyrjandi"
 
 #: lib/RT/Tickets.pm:159
 msgid "RequestorGroup"
@@ -6682,44 +6622,28 @@ msgstr ""
 
 #: share/html/Admin/Users/DashboardsInMenu.html:56 share/html/Admin/Users/MyRT.html:56 share/html/Prefs/DashboardsInMenu.html:67 share/html/Prefs/MyRT.html:74
 msgid "Reset to default"
-msgstr ""
+msgstr "Frumstilla að sjálfgefnum gildum"
 
 #: share/html/Admin/Users/Modify.html:176 share/html/User/Prefs.html:88
 msgid "Residence"
-msgstr ""
+msgstr "Bústaður"
 
-#: etc/RT_Config.pm:2758 etc/RT_Config.pm:2774 etc/RT_Config.pm:2834 etc/RT_Config.pm:2850 share/html/Search/Elements/EditFormat:75
+#: etc/RT_Config.pm:2761 etc/RT_Config.pm:2777 etc/RT_Config.pm:2837 etc/RT_Config.pm:2853 share/html/Search/Elements/EditFormat:75
 msgid "Resolve"
 msgstr "Leysa"
 
 #: share/html/m/ticket/reply:173
 #. ($t->id, $t->Subject)
 msgid "Resolve ticket #%1 (%2)"
-msgstr ""
+msgstr "Leysa mál #%1 (%2)"
 
 #: etc/initialdata:440 lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:76 lib/RT/Tickets.pm:135 share/html/Elements/RT__Ticket/ColumnMap:218 share/html/Elements/RT__Ticket/ColumnMap:243 share/html/Elements/SelectDateType:51 share/html/Search/Elements/BuildFormatString:100
 msgid "Resolved"
 msgstr "Leyst"
 
-#: NOT FOUND IN SOURCE
-msgid "Resolved by owner"
-msgstr "Leyst eftir eiganda"
-
 #: etc/initialdata:449 etc/upgrade/4.1.9/content:102
 msgid "Resolved in HTML"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Resolved in date range"
-msgstr "Leyst á tímabili"
-
-#: NOT FOUND IN SOURCE
-msgid "Resolved tickets in period, grouped by owner"
-msgstr "Leyst mál á tímabili, raðað eftir eiganda"
-
-#: NOT FOUND IN SOURCE
-msgid "Resolved tickets, grouped by owner"
-msgstr "Leyst mál, raðað eftir eiganda"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "ResolvedRelative"
@@ -6792,7 +6716,7 @@ msgstr ""
 msgid "Role group exists already"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3673
+#: lib/RT/Interface/Web.pm:3709
 msgid "Roles"
 msgstr "Hlutverk"
 
@@ -6806,7 +6730,7 @@ msgstr ""
 
 #: share/html/Search/Elements/EditSort:91
 msgid "Rows per page"
-msgstr ""
+msgstr "Raðir á hverja síðu"
 
 #: share/html/Admin/Tools/Queries.html:49 share/html/Admin/Tools/Queries.html:58 share/html/Elements/Tabs:239
 msgid "SQL Queries"
@@ -6841,7 +6765,7 @@ msgstr "Laugardagur"
 msgid "Save"
 msgstr "Vista"
 
-#: share/html/Admin/Articles/Classes/GroupRights.html:57 share/html/Admin/Articles/Classes/Modify.html:130 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:91 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:93 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:156 share/html/Admin/Queues/People.html:124 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Scrips/Modify.html:88 share/html/Admin/Scrips/Modify.html:92 share/html/Admin/Users/Keys.html:80 share/html/Admin/Users/Modify.html:226 share/html/Articles/Article/Edit.html:102 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:186 share/html/Prefs/Other.html:76 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:62 share/html/SelfService/Prefs.html:79 share/html/Ticket/Modify.html:66 share/html/Ticket/ModifyAll.html:135 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:67 share/html/Ticket/ModifyPeople.html:76 share/html/Ticket/Reminders.html:63
+#: share/html/Admin/Articles/Classes/GroupRights.html:57 share/html/Admin/Articles/Classes/Modify.html:130 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:91 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:93 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:156 share/html/Admin/Queues/People.html:124 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Scrips/Modify.html:88 share/html/Admin/Scrips/Modify.html:92 share/html/Admin/Users/Keys.html:80 share/html/Admin/Users/Modify.html:226 share/html/Articles/Article/Edit.html:102 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:186 share/html/Prefs/Other.html:76 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:62 share/html/SelfService/Prefs.html:79 share/html/Ticket/Modify.html:68 share/html/Ticket/ModifyAll.html:135 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:67 share/html/Ticket/ModifyPeople.html:76 share/html/Ticket/Reminders.html:63
 msgid "Save Changes"
 msgstr "Vista breytingar"
 
@@ -6885,7 +6809,7 @@ msgstr ""
 
 #: share/html/Articles/Article/Elements/ShowSavedSearches:48 share/html/Articles/Article/Search.html:72 share/html/Search/Elements/EditSearches:136 share/html/Widgets/SavedSearch:186
 msgid "Saved searches"
-msgstr ""
+msgstr "Vistaðar leitir"
 
 #: etc/RT_Config.pm:1235
 msgid "SavedSearches"
@@ -6948,16 +6872,12 @@ msgstr ""
 
 #: share/html/Search/Simple.html:100
 msgid "Search for tickets"
-msgstr ""
+msgstr "Leita að málum"
 
 #: share/html/Search/Simple.html:63
 #. (@strong)
 msgid "Search for tickets by entering %1id%2 numbers, subject words %1\"in quotes\"%2, %1queues%2 by name, Owners by %1username%2, Requestors by %1email address%2, and ticket %1statuses%2.  Searching for %1@domainname.com%2 will return tickets with requestors from that domain."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name, Owners by <strong>username</strong> and Requestors by <strong>email address</strong>."
-msgstr "Leita að málum. Skráið <strong>málsnr.</strong> númer, <strong>biðraðir</strong> eftir nafni, Eigendur <strong>notendanafn</strong> og spyrjendur eftir <strong>netfangi</strong>."
 
 #: share/html/Elements/Tabs:555
 msgid "Search options"
@@ -6979,10 +6899,6 @@ msgstr ""
 #. ($fulltext_keyword)
 msgid "Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history by typing <b>%1<i>word</i></b>."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history for any word by typing <b>fulltext:<i>word</i></b>."
-msgstr "Leit í öllum texta hvers máls, getur tekið langan tíma en ef þú þarft að gera þetta, geturðu leitað að að hvaða orði sem er í málasögunni með því að skrifa\n <b>fulltext:<i>orðið</i></b>."
 
 #: share/html/User/Prefs.html:170
 msgid "Secret authentication token"
@@ -7054,7 +6970,7 @@ msgstr ""
 
 #: share/html/Admin/CustomFields/index.html:96
 msgid "Select a Custom Field"
-msgstr ""
+msgstr "Velja sérsniðin reit"
 
 #: share/html/Admin/Scrips/index.html:48
 msgid "Select a Scrip"
@@ -7066,15 +6982,15 @@ msgstr ""
 
 #: share/html/Admin/Groups/index.html:77 share/html/Admin/Groups/index.html:94
 msgid "Select a group"
-msgstr ""
+msgstr "Velja hóp"
 
 #: share/html/Admin/Queues/index.html:54 share/html/m/ticket/select_create_queue:55
 msgid "Select a queue"
-msgstr ""
+msgstr "Velja biðröð"
 
 #: share/html/SelfService/CreateTicketInQueue.html:50
 msgid "Select a queue for your new ticket"
-msgstr ""
+msgstr "Veldu biðröð fyrir nýja málið þitt"
 
 #: share/html/Admin/Tools/Theme.html:79
 msgid "Select a section"
@@ -7082,7 +6998,7 @@ msgstr ""
 
 #: share/html/Admin/Users/index.html:48 share/html/Admin/Users/index.html:87 share/html/User/Search.html:60
 msgid "Select a user"
-msgstr ""
+msgstr "Velja notanda"
 
 #: share/html/Articles/Elements/BeforeMessageBox:114
 #. ($included_topic->Name)
@@ -7133,10 +7049,6 @@ msgstr ""
 msgid "Select global scrip stage:"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Select group"
-msgstr "Velja hóp"
-
 #: lib/RT/CustomField.pm:163
 msgid "Select multiple dates"
 msgstr ""
@@ -7186,7 +7098,7 @@ msgstr ""
 msgid "Selected Queues"
 msgstr ""
 
-#: lib/RT/Crypt.pm:691
+#: lib/RT/Crypt.pm:699
 msgid "Selected key either is not trusted or doesn't exist anymore."
 msgstr ""
 
@@ -7208,11 +7120,11 @@ msgstr ""
 
 #: etc/initialdata:80
 msgid "Send mail to owner and all watchers"
-msgstr ""
+msgstr "Senda eiganda og öllum áhorfendum tölvupóst"
 
 #: etc/initialdata:76
 msgid "Send mail to owner and all watchers as a \"comment\""
-msgstr ""
+msgstr "Senda eiganda og öllum áhorfendum tölvupóst sem væri það \"athugasemd\""
 
 #: etc/initialdata:71
 msgid "Send mail to requestors and Ccs"
@@ -7260,7 +7172,7 @@ msgstr "sep"
 
 #: share/html/Articles/Article/Elements/LinkEntryInstructions:49
 msgid "Separate multiple entries with spaces."
-msgstr ""
+msgstr "Séu fleiri færslur, á bil að vera á milli."
 
 #: lib/RT/User.pm:1838
 msgid "Set private key"
@@ -7296,7 +7208,7 @@ msgstr ""
 
 #: share/html/Search/Elements/EditFormat:54
 msgid "Show Columns"
-msgstr ""
+msgstr "Sýna dálka"
 
 #: share/html/Elements/Tabs:807
 msgid "Show Results"
@@ -7321,19 +7233,15 @@ msgstr ""
 
 #: share/html/Elements/ShowHistory:69
 msgid "Show brief headers"
-msgstr ""
+msgstr "Sýna hausa í stuttri útgáfu"
 
 #: share/html/Approvals/Elements/PendingMyApproval:68
 msgid "Show denied requests"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Show details"
-msgstr "Sýna nánar"
-
 #: share/html/Elements/ShowHistory:74
 msgid "Show full headers"
-msgstr ""
+msgstr "Sýna alla skilaboðahausa"
 
 #: lib/RT/System.pm:90
 msgid "Show global templates"
@@ -7576,7 +7484,7 @@ msgstr ""
 msgid "Stage"
 msgstr "Þrep"
 
-#: etc/RT_Config.pm:2770 etc/RT_Config.pm:2846
+#: etc/RT_Config.pm:2773 etc/RT_Config.pm:2849
 msgid "Stall"
 msgstr ""
 
@@ -7661,10 +7569,6 @@ msgstr "Skref %1 af %2"
 #: NOT FOUND IN SOURCE
 msgid "Stolen from %1"
 msgstr "Stolið af %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Stolen from %1 "
-msgstr "Stolið af %1 "
 
 #: share/html/Search/Chart.html:156 share/html/Search/Elements/EditFormat:93
 msgid "Style"
@@ -7785,7 +7689,7 @@ msgstr ""
 msgid "Suspended"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3630
+#: lib/RT/Interface/Web.pm:3666
 msgid "System"
 msgstr ""
 
@@ -7928,6 +7832,10 @@ msgstr ""
 msgid "That is not a value for this custom field"
 msgstr ""
 
+#: NOT FOUND IN SOURCE
+msgid "That is the same value"
+msgstr "Það er sama gildi"
+
 #: lib/RT/Ticket.pm:2311
 msgid "That ticket has unresolved dependencies"
 msgstr ""
@@ -7966,7 +7874,7 @@ msgstr ""
 
 #: share/html/SelfService/Display.html:57 share/html/Ticket/Create.html:221 share/html/Ticket/Elements/ShowSummary:52 share/html/m/ticket/create:337 share/html/m/ticket/show:206
 msgid "The Basics"
-msgstr ""
+msgstr "Grunnatriðin"
 
 #: lib/RT/Ticket.pm:102
 msgid "The CC of a ticket"
@@ -7987,7 +7895,7 @@ msgstr ""
 
 #: lib/RT/Installer.pm:81
 msgid "The domain name of your database server (like 'db.example.com')."
-msgstr ""
+msgstr "Lénanafnið á gagnagrunnsþjóninum þínum (til dæmis 'db.example.com')."
 
 #: bin/rt-crontool:352
 msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they are overdue:"
@@ -8050,7 +7958,7 @@ msgstr ""
 msgid "Theme"
 msgstr ""
 
-#: lib/RT/Crypt.pm:718
+#: lib/RT/Crypt.pm:726
 msgid "There are several keys suitable for encryption."
 msgstr ""
 
@@ -8067,7 +7975,7 @@ msgstr ""
 msgid "There is more than one group with the name '%1'.  This may cause inconsistency in parts of the admin interface, and therefore it's recommended you rename the conflicting groups."
 msgstr ""
 
-#: lib/RT/Crypt.pm:710
+#: lib/RT/Crypt.pm:718
 msgid "There is no key suitable for encryption."
 msgstr ""
 
@@ -8076,7 +7984,7 @@ msgstr ""
 msgid "There is no mapping for statuses between lifecycle %1 and %2. Contact your system administrator."
 msgstr ""
 
-#: lib/RT/Crypt.pm:714
+#: lib/RT/Crypt.pm:722
 msgid "There is one suitable key, but trust level is not set."
 msgstr ""
 
@@ -8109,7 +8017,7 @@ msgstr ""
 msgid "This feature is only available to system administrators"
 msgstr ""
 
-#: share/html/Admin/Tools/Queries.html:51 share/html/Admin/Tools/Theme.html:225
+#: share/html/Admin/Tools/Queries.html:51 share/html/Admin/Tools/Theme.html:226
 msgid "This feature is only available to system administrators."
 msgstr ""
 
@@ -8138,10 +8046,6 @@ msgstr ""
 #. ($Rows, $Description)
 msgid "This user's %1 highest priority %2 tickets"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "This user's %1 highest priority tickets"
-msgstr "%1 hæstu forgangsmál þessa notanda"
 
 #: share/html/User/Search.html:53
 msgid "This will search for users by looking in the following fields:"
@@ -8280,29 +8184,13 @@ msgstr "Mál %1 eftir %2"
 msgid "Tickets I own"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Tickets created after"
-msgstr "Mál gerð eftir"
-
-#: NOT FOUND IN SOURCE
-msgid "Tickets created before"
-msgstr "Mál gerð fyrir"
-
-#: NOT FOUND IN SOURCE
-msgid "Tickets resolved after"
-msgstr "Mál leyst eftir"
-
-#: NOT FOUND IN SOURCE
-msgid "Tickets resolved before"
-msgstr "Mál leyst fyrir"
-
 #: share/html/Approvals/Elements/ShowDependency:50
 msgid "Tickets which depend on this approval:"
 msgstr "Mál sem eru háð þessu samþykki:"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:186 share/html/Search/Elements/PickBasics:178 share/html/Ticket/Create.html:235 share/html/m/ticket/create:353
 msgid "Time Estimated"
-msgstr ""
+msgstr "Áætlaður tími"
 
 #: lib/RT/Tickets.pm:1710 share/html/Elements/RT__Ticket/ColumnMap:181 share/html/Search/Elements/PickBasics:179 share/html/Ticket/Create.html:245 share/html/m/ticket/create:367
 msgid "Time Left"
@@ -8310,7 +8198,7 @@ msgstr "Tími eftir"
 
 #: lib/RT/Tickets.pm:1687 share/html/Elements/RT__Ticket/ColumnMap:176 share/html/Search/Elements/PickBasics:177 share/html/Ticket/Create.html:240 share/html/m/ticket/create:360
 msgid "Time Worked"
-msgstr ""
+msgstr "Unninn tími"
 
 #: share/html/Elements/Footer:54
 msgid "Time to display"
@@ -8322,7 +8210,7 @@ msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:153 lib/RT/Tickets.pm:117 share/html/Search/Elements/BuildFormatString:100
 msgid "TimeLeft"
-msgstr ""
+msgstr "TímiEftir"
 
 #: lib/RT/Graph/Tickets.pm:153 lib/RT/Tickets.pm:118 share/html/Search/Elements/BuildFormatString:100
 msgid "TimeWorked"
@@ -8519,12 +8407,12 @@ msgstr ""
 msgid "Unable to load article"
 msgstr ""
 
-#: share/html/Admin/Tools/Theme.html:270
+#: share/html/Admin/Tools/Theme.html:271
 #. ($msg)
 msgid "Unable to set UserCSS: %1"
 msgstr ""
 
-#: share/html/Admin/Tools/Theme.html:242
+#: share/html/Admin/Tools/Theme.html:243
 #. ($msg)
 msgid "Unable to set UserLogo: %1"
 msgstr ""
@@ -8558,7 +8446,7 @@ msgstr ""
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr ""
 
-#: etc/RT_Config.pm:2794 etc/RT_Config.pm:2870
+#: etc/RT_Config.pm:2797 etc/RT_Config.pm:2873
 msgid "Undelete"
 msgstr ""
 
@@ -8672,7 +8560,7 @@ msgstr ""
 
 #: share/html/Search/Build.html:106
 msgid "Update format and Search"
-msgstr ""
+msgstr "Uppfæra sniðið og leita"
 
 #: share/html/Search/Bulk.html:189
 msgid "Update multiple tickets"
@@ -8775,7 +8663,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:223
 msgid "Use other RT administrative tools"
-msgstr ""
+msgstr "Nota önnur áhöldd til að sjá um RT"
 
 #: share/html/Widgets/Form/Select:125
 #. (join ', ', map loc($ValuesLabel{$_} || $_), grep defined,            @DefaultValue)
@@ -8806,7 +8694,7 @@ msgstr "Skilgreint af notanda"
 msgid "User Defined conditions and results"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3648
+#: lib/RT/Interface/Web.pm:3684
 msgid "User Groups"
 msgstr ""
 
@@ -8838,7 +8726,7 @@ msgstr ""
 
 #: lib/RT/User.pm:267
 msgid "User created"
-msgstr ""
+msgstr "Notandi búinn til"
 
 #: lib/RT/User.pm:1152
 msgid "User disabled"
@@ -8873,7 +8761,7 @@ msgstr "Notandanafn"
 msgid "Username format"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1746 lib/RT/Interface/Web.pm:3701 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:500 share/html/Elements/Tabs:67
+#: lib/RT/CustomField.pm:1746 lib/RT/Interface/Web.pm:3737 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:500 share/html/Elements/Tabs:67
 msgid "Users"
 msgstr "Notendur"
 
@@ -8900,7 +8788,7 @@ msgstr "Gildi"
 
 #: share/html/Admin/CustomFields/Modify.html:149 share/html/Admin/Elements/EditCustomField:81
 msgid "Values"
-msgstr ""
+msgstr "Gildi"
 
 #: share/html/Admin/Tools/Configuration.html:113 share/html/Admin/Tools/Configuration.html:284
 msgid "Variable"
@@ -9008,11 +8896,11 @@ msgstr ""
 
 #: share/html/Elements/Tabs:290
 msgid "Watchers"
-msgstr ""
+msgstr "Áhorfendur"
 
 #: share/html/Install/DatabaseDetails.html:64
 msgid "We are able to find your database and connect as the DBA.  You can click on 'Customize Basics' to continue customizing RT."
-msgstr ""
+msgstr "Hægt var að finna gagnagrunninn þinn og tengjast sem umsjónarmaður gagnagrunnsins. Þý getur smellt á 'Sérsníða Grunnatrið' til að halda áfram að sérsníða RT."
 
 #: lib/RT/CustomField.pm:1057 lib/RT/CustomField.pm:1859
 msgid "We can't currently render as a List when basing categories on another custom field.  Please use another render type."
@@ -9096,7 +8984,7 @@ msgstr ""
 
 #: etc/initialdata:195 etc/upgrade/3.8.3/content:6
 msgid "Whenever a ticket is rejected"
-msgstr ""
+msgstr "Í hvert skipti sem máli er hafnað"
 
 #: etc/initialdata:214 etc/upgrade/3.7.1/content:11
 msgid "Whenever a ticket is reopened"
@@ -9104,7 +8992,7 @@ msgstr ""
 
 #: etc/initialdata:188
 msgid "Whenever a ticket is resolved"
-msgstr ""
+msgstr "Í hvert skipti sem mál er leyst"
 
 #: etc/initialdata:132 etc/upgrade/4.0.3/content:8
 msgid "Whenever a ticket or transaction is forwarded"
@@ -9136,7 +9024,7 @@ msgstr ""
 
 #: etc/initialdata:153
 msgid "Whenever comments come in"
-msgstr ""
+msgstr "Alltaf þegar athugasemdir berast"
 
 #: etc/initialdata:125
 msgid "Whenever correspondence comes in"
@@ -9219,7 +9107,7 @@ msgstr ""
 
 #: lib/RT/User.pm:818
 msgid "You can not set password."
-msgstr ""
+msgstr "Þú getur ekki stillt lykilorð."
 
 #: lib/RT/Ticket.pm:2191
 msgid "You can only reassign tickets that you own or that are unowned"
@@ -9251,6 +9139,14 @@ msgstr ""
 msgid "You have been logged out of RT."
 msgstr ""
 
+#: NOT FOUND IN SOURCE
+msgid "You have enabled GnuPG support but have not set a comment address for this queue."
+msgstr "Þú hefur kveikt á GnuPG stuðningi en hefur ekki stillt netfang fyrir athugasemdir fyrir þessa biðröð."
+
+#: NOT FOUND IN SOURCE
+msgid "You have enabled GnuPG support but have not set a correspondence address for this queue."
+msgstr "Þú hefur kveikt á GnuPG stuðningi en hefur ekki stillt netfang fyrir þessa biðröð."
+
 #: share/html/Admin/Queues/Modify.html:145
 msgid "You have enabled encryption support but have not set a comment address for this queue."
 msgstr ""
@@ -9259,7 +9155,7 @@ msgstr ""
 msgid "You have enabled encryption support but have not set a correspondence address for this queue."
 msgstr ""
 
-#: share/html/SelfService/Display.html:104
+#: share/html/SelfService/Display.html:111
 msgid "You have no permission to create tickets in that queue."
 msgstr ""
 
@@ -9303,11 +9199,11 @@ msgstr ""
 
 #: share/html/NoAuth/Logout.html:59
 msgid "You're welcome to login again"
-msgstr ""
+msgstr "Þér er velkomið að ská þig inn aftur"
 
 #: lib/RT/User.pm:1044
 msgid "Your password is not set."
-msgstr ""
+msgstr "Lykilorðið þitt er ekki stillt."
 
 #: share/html/Admin/Tools/Theme.html:65
 #. ($valid_image_types)
@@ -9316,7 +9212,7 @@ msgstr ""
 
 #: lib/RT/Interface/Web.pm:816
 msgid "Your username or password is incorrect"
-msgstr ""
+msgstr "Notandanafnið þitt eða lykilorð er ekki rétt"
 
 #: share/html/Admin/Users/Modify.html:158 share/html/Elements/RT__User/ColumnMap:121 share/html/User/Prefs.html:147
 msgid "Zip"
@@ -9416,7 +9312,7 @@ msgstr ""
 
 #: share/html/SelfService/Closed.html:53
 msgid "closed"
-msgstr ""
+msgstr "lokað"
 
 #: share/html/Admin/Tools/Configuration.html:83
 msgid "core config"
@@ -9449,7 +9345,7 @@ msgstr "eytt"
 
 #: share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectMatch:58 share/html/Search/Elements/PickBasics:74
 msgid "doesn't match"
-msgstr ""
+msgstr "passar ekki við"
 
 #: share/html/Ticket/ShowEmailRecord.html:68
 msgid "download"
@@ -9519,7 +9415,7 @@ msgstr ""
 #: lib/RT/Group.pm:115
 #. ($self->Name)
 msgid "group '%1'"
-msgstr ""
+msgstr "hópur '%1'"
 
 #: NOT FOUND IN SOURCE
 msgid "hours"
@@ -9527,11 +9423,11 @@ msgstr "klukkustundir"
 
 #: lib/RT/Date.pm:121 share/html/Elements/Tabs:838
 msgid "iCal"
-msgstr ""
+msgstr "iCal"
 
 #: lib/RT/Tickets.pm:113 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:53 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:56
 msgid "id"
-msgstr ""
+msgstr "málsnúmer"
 
 #: lib/RT/Config.pm:372
 msgid "immediately"
@@ -9563,7 +9459,7 @@ msgstr ""
 
 #: share/html/Elements/SelectBoolean:55 share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectIPRelation:61 share/html/Elements/SelectMatch:59 share/html/Search/Elements/PickBasics:152 share/html/Search/Elements/PickCFs:82
 msgid "is"
-msgstr ""
+msgstr "er"
 
 #: share/html/Elements/SelectBoolean:59 share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectIPRelation:61 share/html/Elements/SelectMatch:60 share/html/Search/Elements/PickCFs:83
 msgid "isn't"
@@ -9595,7 +9491,7 @@ msgstr ""
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:64 share/html/Articles/Article/Elements/ShowSearchCriteria:68 share/html/Articles/Article/Elements/ShowSearchCriteria:74 share/html/Articles/Article/Elements/ShowSearchCriteria:79 share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectMatch:57 share/html/Search/Elements/PickBasics:73
 msgid "matches"
-msgstr ""
+msgstr "passar við"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:64
 msgid "maximum depth"
@@ -9668,7 +9564,7 @@ msgstr ""
 
 #: share/html/Dashboards/Subscription.html:105 share/html/Elements/SelectDateRelation:58
 msgid "on"
-msgstr ""
+msgstr "þann"
 
 #: share/html/Dashboards/Subscription.html:127
 msgid "on day"
@@ -9680,11 +9576,11 @@ msgstr "eitt"
 
 #: lib/RT/Queue.pm:103 share/html/SelfService/Elements/MyRequests:72 share/html/SelfService/index.html:52
 msgid "open"
-msgstr "stalled"
+msgstr "opið"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:155
 msgid "open/close"
-msgstr ""
+msgstr "opna/loka"
 
 #: share/html/Widgets/Form/Select:79
 msgid "other..."
@@ -9696,7 +9592,7 @@ msgstr ""
 
 #: share/html/Search/Elements/SelectChartType:55
 msgid "pie"
-msgstr ""
+msgstr "kökurit"
 
 #: share/html/Admin/Tools/Shredder/index.html:177
 msgid "plugin returned empty list"
@@ -9713,7 +9609,7 @@ msgstr ""
 
 #: lib/RT/Queue.pm:106
 msgid "rejected"
-msgstr ""
+msgstr "hafnað"
 
 #: share/html/Admin/Queues/Modify.html:97
 msgid "requires running rt-crontool"
@@ -9721,11 +9617,11 @@ msgstr ""
 
 #: lib/RT/Queue.pm:105
 msgid "resolved"
-msgstr ""
+msgstr "leyst"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:55
 msgid "right to left"
-msgstr ""
+msgstr "hægri til vinstri"
 
 #: NOT FOUND IN SOURCE
 msgid "sec"
@@ -9734,14 +9630,6 @@ msgstr "sek"
 #: share/html/Admin/Tools/Shredder/index.html:179
 msgid "see object list below"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "show Approvals tab"
-msgstr "Sýna Samþykkisflipa"
-
-#: NOT FOUND IN SOURCE
-msgid "show Configuration tab"
-msgstr "Sýna stillingaflipa"
 
 #: share/html/Admin/Global/MyRT.html:87
 msgid "sidebar"
@@ -9840,10 +9728,6 @@ msgstr ""
 msgid "username"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "verbose"
-msgstr "fjölyrt"
-
 #: share/html/Dashboards/Subscription.html:105
 msgid "weekly"
 msgstr ""
@@ -9868,7 +9752,7 @@ msgstr ""
 
 #: share/html/Elements/ShowTransactionAttachments:64
 msgid "with headers"
-msgstr ""
+msgstr "með hausum"
 
 #: NOT FOUND IN SOURCE
 msgid "years"

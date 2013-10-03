@@ -3,15 +3,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
-"POT-Creation-Date: 2013-01-24 23:12+0000\n"
-"PO-Revision-Date: 2012-12-04 10:06+0000\n"
-"Last-Translator: Shawn M Moore <Unknown>\n"
+"POT-Creation-Date: 2013-06-06 21:51+0000\n"
+"PO-Revision-Date: 2013-07-30 12:54+0000\n"
+"Last-Translator: Lubos Pavlicek <lubos.pavlicek@gmail.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-14 16:28+0000\n"
-"X-Generator: Launchpad (build 16532)\n"
+"X-Launchpad-Export-Date: 2013-10-03 20:13+0000\n"
+"X-Generator: Launchpad (build 16791)\n"
 
 #: share/html/Elements/LoginHelp:51
 #. (RT->Config->Get('OwnerEmail'))
@@ -110,12 +110,12 @@ msgstr "%1 %2 smazán."
 #: lib/RT/Record/Role/Status.pm:256
 #. ($self->loc($column), $args{Value})
 msgid "%1 %2 does not exist"
-msgstr ""
+msgstr "%1 %2 neexistuje"
 
 #: lib/RT/Record/Role/Status.pm:261
 #. ($self->loc($column), $name)
 msgid "%1 %2 is disabled"
-msgstr ""
+msgstr "%1 %2 je zakázán(o)"
 
 #: share/html/Widgets/SavedSearch:130
 #. (loc($self->{SearchType}), $args->{SavedSearchDescription})
@@ -239,7 +239,7 @@ msgstr "%1 již existuje, ale neobsahuje tabulky RT ani metadata. Pozdější kr
 #: lib/RT/ACE.pm:272
 #. ($princ_obj->Object->Name)
 msgid "%1 already has that right"
-msgstr ""
+msgstr "%1 již má toto právo"
 
 #: lib/RT/Link.pm:176 lib/RT/Link.pm:184
 #. ($args{'Base'})
@@ -331,12 +331,20 @@ msgstr "%1 je nástroj, který má být spuštěn z cronu, který odešle všech
 #: lib/RT/Record/Role/Roles.pm:415
 #. ($principal->Object->Name, $self->loc($type))
 msgid "%1 is already a %2"
-msgstr ""
+msgstr "%1 je již %2"
+
+#: NOT FOUND IN SOURCE
+msgid "%1 is already a %2 for this queue"
+msgstr "%1 již je %2 pro tuto frontu"
+
+#: NOT FOUND IN SOURCE
+msgid "%1 is already a %2 for this ticket"
+msgstr "%1 již je %2 pro tento požadavek"
 
 #: lib/RT/Record/Role/Status.pm:264
 #. ($self->loc($column), $name)
 msgid "%1 is already set to %2"
-msgstr ""
+msgstr "%1 je již nastaven(o) na %2"
 
 #: lib/RT/Record/Role/Roles.pm:365 lib/RT/Record/Role/Roles.pm:373 share/html/Ticket/Create.html:418 share/html/Ticket/Update.html:282 share/html/m/ticket/create:189 share/html/m/ticket/reply:208
 #. ($email, $self->loc($type))
@@ -359,13 +367,21 @@ msgstr "%1 již není hodnotou uživatelské položky %2"
 #: lib/RT/Record/Role/Roles.pm:493
 #. ($principal->Object->Name, $self->loc($args{Type}))
 msgid "%1 is not a %2"
-msgstr ""
+msgstr "%1 není %2"
+
+#: NOT FOUND IN SOURCE
+msgid "%1 is not a %2 for this queue"
+msgstr "%1 není %2 pro tuto frontu"
+
+#: NOT FOUND IN SOURCE
+msgid "%1 is not a %2 for this ticket"
+msgstr "%1 není %2 pro tento požadavek"
 
 #: lib/RT/Queue.pm:189 lib/RT/Record/Role/Lifecycle.pm:126
 #. ($args{'Lifecycle'})
 #. ($value)
 msgid "%1 is not a valid lifecycle"
-msgstr ""
+msgstr "%1 není platný životní cyklus"
 
 #: share/html/Elements/Crypt/KeyIssues:50
 #. (RT->Config->Get('Crypt')->{'Outgoing'})
@@ -535,7 +551,7 @@ msgstr ""
 #: share/html/Articles/Elements/ShowTopicLink:61
 #. ($Articles->Count)
 msgid "%quant(%1,article)"
-msgstr "%quant(%1,článek,článku)"
+msgstr "%quant(%1,článek,články,článků)"
 
 #: lib/RT/Date.pm:372
 msgid "%quant(%1,day)"
@@ -703,7 +719,7 @@ msgstr "(jen jeden požadavek)"
 #: share/html/Elements/RT__Ticket/ColumnMap:138
 #. ($count)
 msgid "(pending %quant(%1,other ticket))"
-msgstr "(až do %quant(%1,další požadavky))"
+msgstr "(čeká na %quant(%1,jiný požadavek,jiné požadavky,jiné požadavky))"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:130
 msgid "(pending approval)"
@@ -748,7 +764,7 @@ msgstr ""
 
 #: lib/RT/Template.pm:287 lib/RT/Template.pm:713
 msgid "A Template with that name already exists"
-msgstr ""
+msgstr "Šablona s tímto jménem již existuje"
 
 #: etc/initialdata:224
 msgid "A blank template"
@@ -869,7 +885,7 @@ msgstr "Přidat skupinu"
 
 #: share/html/Admin/Articles/Elements/Topics:108
 msgid "Add here"
-msgstr ""
+msgstr "Vložit sem"
 
 #: share/html/Admin/Groups/Members.html:63
 msgid "Add members"
@@ -902,21 +918,21 @@ msgstr "Přidat hodnoty"
 
 #: lib/RT/CustomField.pm:216
 msgid "Add, modify and delete custom field values for objects"
-msgstr "Přidat, upravit a odstranit vlastní hodnoty pole pro objekty"
+msgstr "Přidávat, upravovat a mazat hodnoty vlastní položky pro objekty"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:85
 msgid "Added"
-msgstr ""
+msgstr "Přidáno"
 
 #: lib/RT/Ticket.pm:642
 #. ($principal->Object->Name, $self->loc($args{'Type'}))
 msgid "Added %1 as a %2 for this ticket"
-msgstr ""
+msgstr "Uživatel %1 přidán jako %2 pro tento požadavek"
 
 #: lib/RT/Queue.pm:605
 #. ($principal->Object->Name, $self->loc($args{'Type'}))
 msgid "Added %1 to members of %2 for this queue."
-msgstr "Přidán %1 jako uživatelé %2 pro tuto frontu."
+msgstr "Přidán uživatel %1 jako %2 pro tuto frontu."
 
 #: lib/RT/Class.pm:386
 #. ($cf->Name)
@@ -985,7 +1001,7 @@ msgstr "AdminCcs"
 
 #: lib/RT/Class.pm:95
 msgid "AdminClass"
-msgstr ""
+msgstr "Spravovat třídu"
 
 #: lib/RT/CustomField.pm:214
 msgid "AdminCustomField"
@@ -993,7 +1009,7 @@ msgstr "Spravovat uživatelskou položku"
 
 #: lib/RT/CustomField.pm:215
 msgid "AdminCustomFieldValues"
-msgstr ""
+msgstr "Spravovat hodnoty uživatelské položky"
 
 #: lib/RT/Group.pm:88
 msgid "AdminGroup"
@@ -1009,7 +1025,7 @@ msgstr "Spravovat frontu"
 
 #: lib/RT/Class.pm:96
 msgid "AdminTopics"
-msgstr ""
+msgstr "Spravovat témata"
 
 #: lib/RT/System.pm:85
 msgid "AdminUsers"
@@ -1033,7 +1049,7 @@ msgstr "Rozšířené vyhledávání"
 
 #: share/html/Elements/LoginRedirectWarning:62
 msgid "After logging in you'll be sent to your original destination:"
-msgstr ""
+msgstr "Po přihlášení budete přesměrováni na původní adresu:"
 
 #: share/html/Search/Elements/PickCriteria:62
 msgid "Aggregator"
@@ -1085,11 +1101,11 @@ msgstr "Všechny témata"
 
 #: lib/RT/System.pm:92
 msgid "Allow creation of saved searches"
-msgstr "Povolit uložení pro vytvořená hledání"
+msgstr "Povolit vytváření uložených dotazů"
 
 #: lib/RT/System.pm:91
 msgid "Allow loading of saved searches"
-msgstr "Povolit nahrání z vytvořených hledání"
+msgstr "Povolit nahrání uložených dotazů"
 
 #: lib/RT/System.pm:93
 msgid "Allow writing Perl code in templates, scrips, etc"
@@ -1110,11 +1126,15 @@ msgstr ""
 
 #: share/html/Errors/WebRemoteUser/Wrapper:49
 msgid "An error occurred"
-msgstr ""
+msgstr "Vyskytla se chyba"
 
 #: share/html/Search/Elements/EditQuery:60
 msgid "And/Or"
 msgstr "And/Or"
+
+#: NOT FOUND IN SOURCE
+msgid "Annually"
+msgstr "Ročně"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:74
 msgid "Any field"
@@ -1142,7 +1162,7 @@ msgstr "Provést"
 
 #: share/html/Admin/Articles/Classes/Objects.html:60 share/html/Admin/CustomFields/Objects.html:61 share/html/Admin/Scrips/Objects.html:67
 msgid "Apply globally"
-msgstr "Provés globálne"
+msgstr "Provést globálně"
 
 #: share/html/Admin/Elements/EditScrips:95
 msgid "Apply selected scrips"
@@ -1212,7 +1232,7 @@ msgstr "Jste si jisti, že chcete smazat tento článek?"
 #: lib/RT/URI/fsck_com_article.pm:207
 #. ($object->id)
 msgid "Article #%1"
-msgstr ""
+msgstr "Článek #%1"
 
 #: share/html/Articles/Article/Delete.html:97
 #. ($ArticleObj->Id)
@@ -1222,7 +1242,7 @@ msgstr "Článek #%1 smazán"
 #: share/html/Articles/Article/History.html:61
 #. ($id)
 msgid "Article #%1 not found"
-msgstr ""
+msgstr "Článek #%1 nenalezen"
 
 #: lib/RT/URI/fsck_com_article.pm:205 share/html/Articles/Article/Display.html:84 share/html/SelfService/Article/Display.html:66
 #. ($article->Id, $article->Name || loc("(no name)"))
@@ -1241,7 +1261,7 @@ msgstr "Článek #%1 vytvořen"
 
 #: share/html/Admin/Articles/index.html:48
 msgid "Article Administration"
-msgstr "Spravovať článok"
+msgstr "Administrace pro články"
 
 #: lib/RT/Article.pm:324
 msgid "Article Deleted"
@@ -1258,7 +1278,7 @@ msgstr "Články"
 #: share/html/Articles/Topics.html:99
 #. ($currtopic->Name)
 msgid "Articles in %1"
-msgstr "Články v %1"
+msgstr "Články pro téma %1"
 
 #: share/html/SelfService/Article/Search.html:64
 #. ($Articles_Content)
@@ -1279,7 +1299,7 @@ msgstr "Vzestupně"
 
 #: lib/RT/Queue.pm:116
 msgid "Assign and remove queue custom fields"
-msgstr "Přiřazení a odebrání vlastních polí fronty"
+msgstr "Přidávat a odebírat uživatelské položky ke frontě"
 
 #: lib/RT/Queue.pm:116
 msgid "AssignCustomFields"
@@ -1332,12 +1352,12 @@ msgstr "srp"
 
 #: share/html/Errors/WebRemoteUser/UserAutocreateDefaultsOnLogin:48
 msgid "Automatic account setup failed"
-msgstr ""
+msgstr "Automatické vytvoření účtu selhalo"
 
-#: share/html/Admin/Tools/Theme.html:310
+#: share/html/Admin/Tools/Theme.html:311
 #. ($valid_image_types)
 msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
-msgstr ""
+msgstr "Automatické barevné návrhy tématu nejsou dostupné pro váš obrázek. Může to být tím, že jste nahráli obrázek, který není podporován nainstalovanou verzí knihovny GD. Podporované typy obrázků jsou: %1. Novější verze libgd a GD.pm mohou obsahovat podporu pro další typy obrázků."
 
 #: etc/initialdata:227
 msgid "Autoreply"
@@ -1443,7 +1463,7 @@ msgstr "Záložka"
 
 #: share/html/Articles/Article/Search.html:114
 msgid "Bookmarkable link for this search"
-msgstr ""
+msgstr "Záložkovatelný odkaz tohoto hledání"
 
 #: etc/initialdata:831 etc/initialdata:856 etc/upgrade/3.7.82/content:6
 msgid "Bookmarked Tickets"
@@ -1451,7 +1471,7 @@ msgstr "Záložky"
 
 #: share/html/m/_elements/menu:73
 msgid "Bookmarked tickets"
-msgstr ""
+msgstr "Záložky"
 
 #: share/html/Articles/Topics.html:48 share/html/Articles/Topics.html:60
 msgid "Browse by topic"
@@ -1459,7 +1479,7 @@ msgstr "Prohlížet podle tématu"
 
 #: share/html/Elements/Tabs:240
 msgid "Browse the SQL queries made in this process"
-msgstr "Procházet SQL dotazy provedené v tomto procesu"
+msgstr "Procházet SQL příkazy provedené v tomto procesu"
 
 #: share/html/Elements/Tabs:811
 msgid "Bulk Update"
@@ -1489,7 +1509,7 @@ msgstr ""
 #: share/html/Search/Elements/EditSearches:176
 #. ($ARGS{'SavedSearchLoad'})
 msgid "Can not load saved search \"%1\""
-msgstr "Nelze načíst uložené hledání \"%1\""
+msgstr "Nelze načíst uložený dotaz \"%1\""
 
 #: lib/RT/User.pm:1563
 msgid "Can not modify system users"
@@ -1509,7 +1529,7 @@ msgstr "Požadavek nelze svázat se sebou samým"
 
 #: lib/RT/Reminders.pm:126
 msgid "Can't link to a deleted ticket"
-msgstr ""
+msgstr "Nelze odkazovat na smazaný požadavek"
 
 #: share/html/index.html:127
 #. ($QueueObj->Name)
@@ -1543,7 +1563,7 @@ msgstr "Nelze vytvářet požadavky v zablokované frontě."
 
 #: share/html/Admin/CustomFields/Modify.html:126
 msgid "Categories are based on"
-msgstr ""
+msgstr "Kategorie založit na"
 
 #: share/html/Admin/Elements/AddCustomFieldValue:57 share/html/Admin/Elements/EditCustomFieldValues:61
 msgid "Category"
@@ -1571,7 +1591,7 @@ msgstr "Změna hesla"
 
 #: lib/RT/Template.pm:692
 msgid "Changing queue is not implemented"
-msgstr ""
+msgstr "Změna fronty není implementována"
 
 #: share/html/Elements/Tabs:812
 msgid "Chart"
@@ -1616,7 +1636,7 @@ msgstr "Vyberte Database Engine"
 #: share/html/Articles/Elements/BeforeMessageBox:97
 #. ($QueueObj->Name)
 msgid "Choose from Topics for %1"
-msgstr "Vyberte z Témat pro %1"
+msgstr "Vyberte z témat pro %1"
 
 #: share/html/Admin/Users/Modify.html:146 share/html/Elements/RT__User/ColumnMap:111 share/html/User/Prefs.html:139
 msgid "City"
@@ -1670,7 +1690,7 @@ msgstr "Klikněte na \"Inicializovat databázi\" pro vytvoření databází RT a
 
 #: share/html/Admin/Tools/Theme.html:101
 msgid "Click to choose a color"
-msgstr ""
+msgstr "Kliknutím vyberte barvu"
 
 #: share/html/Ticket/Elements/ShowDates:75 share/html/m/ticket/show:375
 msgid "Closed"
@@ -1766,7 +1786,7 @@ msgstr "Správa"
 #: share/html/Admin/Queues/Modify.html:182
 #. ($QueueObj->Name)
 msgid "Configuration for queue %1"
-msgstr ""
+msgstr "Konfigurace fronty %1"
 
 #: share/html/Install/DatabaseDetails.html:140
 msgid "Connection succeeded"
@@ -1779,7 +1799,7 @@ msgstr ""
 
 #: share/html/Errors/WebRemoteUser/Wrapper:69
 msgid "Contact your RT administrator."
-msgstr ""
+msgstr "Kontaktujte vašeho správce RT."
 
 #: lib/RT/Tickets.pm:139 share/html/Admin/Elements/ModifyTemplate:70 share/html/Articles/Article/Display.html:53 share/html/Articles/Article/Edit.html:68 share/html/Articles/Article/Elements/ShowSearchCriteria:71 share/html/Elements/QuickCreate:74 share/html/Elements/SelectAttachmentField:51 share/html/Elements/Tabs:589 share/html/Ticket/Forward.html:76 share/html/Ticket/ModifyAll.html:121
 msgid "Content"
@@ -1787,11 +1807,11 @@ msgstr "Obsah"
 
 #: lib/RT/ObjectCustomFieldValue.pm:97
 msgid "Content is an invalid IP address"
-msgstr ""
+msgstr "vložena neplatná IP adresa"
 
 #: lib/RT/ObjectCustomFieldValue.pm:111
 msgid "Content is an invalid IP address range"
-msgstr ""
+msgstr "vložen neplatný IP adresní rozsah"
 
 #: share/html/Elements/SelectAttachmentField:53
 msgid "Content-Type"
@@ -1815,7 +1835,7 @@ msgstr "Korespondence zaznamenána"
 
 #: etc/initialdata:367 etc/upgrade/4.1.9/content:68
 msgid "Correspondence in HTML"
-msgstr ""
+msgstr "Korespondence v HTML"
 
 #: lib/RT/Record.pm:1990 lib/RT/Record.pm:2056
 #. ($msg)
@@ -1863,7 +1883,7 @@ msgstr "Nelze odstranit vyhledávací %1: %2"
 #: lib/RT/Record/Role/Roles.pm:397
 #. ($name)
 msgid "Could not find group '%1'"
-msgstr ""
+msgstr "Nemůžu najít skupinu '%1'"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not find or create that user"
@@ -1872,11 +1892,11 @@ msgstr "Tohoto uživatele nelze nalézt nebo vytvořit"
 #: lib/RT/Record/Role/Roles.pm:387
 #. ($name)
 msgid "Could not find or create user '%1'"
-msgstr ""
+msgstr "Nemůžu najít nebo vytvořit uživatele '%1'"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not find that principal"
-msgstr "Nelze naléze tohoto uživatele"
+msgstr "Nelze nalézt tohoto uživatele"
 
 #: lib/RT/SharedSetting.pm:244
 #. ($self->ObjectName)
@@ -1885,7 +1905,7 @@ msgstr "Nelze nahrát atribut %1"
 
 #: share/html/Admin/Articles/Classes/Objects.html:105
 msgid "Could not load Class %1"
-msgstr "Nelze načíst Třída %1"
+msgstr "Nelze načíst třídu %1"
 
 #: share/html/Admin/CustomFields/Objects.html:109
 #. ($id)
@@ -1916,10 +1936,26 @@ msgstr ""
 msgid "Could not make %1 a %2"
 msgstr ""
 
+#: NOT FOUND IN SOURCE
+msgid "Could not make %1 a %2 for this queue"
+msgstr "Nepodařilo se uživatele/skupinu %1 přiřadit jako %2 pro tuto frontu"
+
+#: NOT FOUND IN SOURCE
+msgid "Could not make %1 a %2 for this ticket"
+msgstr "Nepodařilo se uživatele/skupinu %1 přiřadit jako %2 pro tento požadavek"
+
 #: lib/RT/Record/Role/Roles.pm:501
 #. ($principal->Object->Name, $self->loc($args{Type}))
 msgid "Could not remove %1 as a %2"
 msgstr ""
+
+#: NOT FOUND IN SOURCE
+msgid "Could not remove %1 as a %2 for this queue"
+msgstr "Nepodařilo se smazat uživatele/skupinu %1 z %2 pro tuto frontu"
+
+#: NOT FOUND IN SOURCE
+msgid "Could not remove %1 as a %2 for this ticket"
+msgstr "Nepodařilo se smazat uživatele/skupinu %1 z %2 pro tento požadavek"
 
 #: lib/RT/User.pm:144
 msgid "Could not set user info"
@@ -1928,7 +1964,7 @@ msgstr "Nelze nastavit uživatelské informace"
 #: lib/RT/Group.pm:1106
 #. ($col, $msg)
 msgid "Could not update column %1: %2"
-msgstr ""
+msgstr "Nemůžu upravit sloupec %1: %2"
 
 #: lib/RT/Record/AddAndSort.pm:200
 msgid "Couldn't add as it's global already"
@@ -1978,7 +2014,7 @@ msgstr ""
 
 #: lib/RT/Group.pm:1054
 msgid "Couldn't find that principal"
-msgstr "Tohoto uživatele nelze nalézt"
+msgstr "Nelze nalézt zadaného uživatele či zadanou skupinu"
 
 #: lib/RT/CustomField.pm:546
 msgid "Couldn't find that value"
@@ -2002,7 +2038,7 @@ msgstr "Nelze načíst uživatelskou položku #%1"
 #: share/html/Admin/Elements/EditCustomFields:134 share/html/Admin/Elements/EditCustomFields:145
 #. ($cf_id)
 msgid "Couldn't load CustomField #%1"
-msgstr ""
+msgstr "Nelze načíst uživatelskou položku #%1"
 
 #: share/html/Admin/CustomFields/GroupRights.html:66
 #. ($id)
@@ -2041,7 +2077,7 @@ msgstr "Vazbu nelze načíst"
 #: lib/RT/Link.pm:240
 #. ($msg)
 msgid "Couldn't load link: %1"
-msgstr ""
+msgstr "Nemohu načíst link: %1"
 
 #: share/html/Admin/Articles/Classes/CustomFields.html:54 share/html/Admin/Queues/CustomFields.html:56 share/html/Admin/Users/CustomFields.html:56
 #. ($id)
@@ -2111,11 +2147,11 @@ msgstr ""
 #. ($QuoteTransaction)
 #. ($id)
 msgid "Couldn't load transaction #%1"
-msgstr ""
+msgstr "Nelze načíst transakci #%1"
 
 #: share/html/User/Prefs.html:215
 msgid "Couldn't load user"
-msgstr ""
+msgstr "Nemohu načíst uživatele"
 
 #: share/html/Admin/Users/Keys.html:95 share/html/User/Prefs.html:211
 #. ($id)
@@ -2125,12 +2161,12 @@ msgstr "Nelze načíst uživatele #%1"
 #: share/html/User/Prefs.html:209
 #. ($id, $Name)
 msgid "Couldn't load user #%1 or user '%2'"
-msgstr ""
+msgstr "Nomohu načíst uživatele #%1 či uživatele '%2'"
 
 #: share/html/User/Prefs.html:213
 #. ($Name)
 msgid "Couldn't load user '%1'"
-msgstr ""
+msgstr "Nemohu načíst uživatele '%1'"
 
 #: lib/RT/Link.pm:229
 #. ($args{Base})
@@ -2232,7 +2268,7 @@ msgstr "Vytvořit nový článek"
 
 #: share/html/Articles/Article/ExtractIntoClass.html:52
 msgid "Create a new article in"
-msgstr ""
+msgstr "Vytvořit článek ve třídě:"
 
 #: share/html/Dashboards/Modify.html:131 share/html/Dashboards/Modify.html:98
 msgid "Create a new dashboard"
@@ -2266,7 +2302,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Create a scrip for queue %1"
-msgstr "Vytvořit scrips pro frontu %1"
+msgstr "Vytvořit scrip pro frontu %1"
 
 #: share/html/Admin/Global/Template.html:77
 msgid "Create a template"
@@ -2286,7 +2322,7 @@ msgstr "Vytvořit článek"
 
 #: share/html/Articles/Article/PreCreate.html:48
 msgid "Create an article in class..."
-msgstr "Vytvořit článek v tříde..."
+msgstr "Vytvořit článek ve třídě..."
 
 #: lib/RT/Class.pm:88
 msgid "Create articles in this class"
@@ -2322,15 +2358,15 @@ msgstr "Vytvoření požadavků offline"
 
 #: lib/RT/Class.pm:98 lib/RT/Queue.pm:112
 msgid "Create, modify and delete Access Control List entries"
-msgstr ""
+msgstr "Vytvářet, upravovat a mazat položky seznamu přístupových práv"
 
 #: lib/RT/CustomField.pm:214
 msgid "Create, modify and delete custom fields"
-msgstr ""
+msgstr "Vytvářet, upravoat a mazat uživatelské položky"
 
 #: lib/RT/CustomField.pm:215
 msgid "Create, modify and delete custom fields values"
-msgstr "Vytvářet, upravovat a mazat vlastní pole hodnot"
+msgstr "Vytvářet, upravovat a mazat hodnoty uživatelských položek"
 
 #: lib/RT/Queue.pm:110
 msgid "Create, modify and delete queue"
@@ -2338,7 +2374,7 @@ msgstr "Vytvářet, upravovat a mazat frontu"
 
 #: lib/RT/Group.pm:91
 msgid "Create, modify and delete saved searches"
-msgstr ""
+msgstr "Vytvářet, upravovat a rušit uložené dotazy"
 
 #: lib/RT/System.pm:85
 msgid "Create, modify and delete users"
@@ -2346,7 +2382,7 @@ msgstr "Vytvářet, upravovat a mazat uživatele"
 
 #: lib/RT/Class.pm:88
 msgid "CreateArticle"
-msgstr ""
+msgstr "Vytvořit článek"
 
 #: lib/RT/Dashboard.pm:81
 msgid "CreateDashboard"
@@ -2389,7 +2425,7 @@ msgstr "Vytvořil"
 #: share/html/Articles/Article/Search.html:200
 #. ($search->Name)
 msgid "Created search %1"
-msgstr ""
+msgstr "Vytvořen dotaz %1"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "CreatedBy"
@@ -2397,7 +2433,7 @@ msgstr "Kým vytvořeno"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "CreatedRelative"
-msgstr ""
+msgstr "Vytvořeno před"
 
 #: lib/RT/Graph/Tickets.pm:154 lib/RT/Report/Tickets.pm:65 lib/RT/Tickets.pm:109 share/html/Search/Elements/PickBasics:115
 msgid "Creator"
@@ -2451,7 +2487,7 @@ msgstr "Uživatelské položky pro %1"
 #: share/html/Admin/Queues/CustomFields.html:61
 #. ($Object->Name)
 msgid "Custom Fields for queue %1"
-msgstr ""
+msgstr "Uživatelské položky pro frontu %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Custom action cleanup code"
@@ -2473,7 +2509,7 @@ msgstr "Uživatelská podmínka"
 #. ($MoveCustomFieldDown)
 #. ($MoveCustomFieldUp)
 msgid "Custom field #%1 is not applied to this object"
-msgstr ""
+msgstr "Uživatelská položka #%1 není aplikována na tento objekt"
 
 #: lib/RT/Tickets.pm:2184
 #. ($CF->Name, $args{OPERATOR}, $args{VALUE})
@@ -2503,6 +2539,10 @@ msgstr "Uživatelská položka %1 nenalezena"
 #: NOT FOUND IN SOURCE
 msgid "Custom field '%1'"
 msgstr "Uživatelská položka '%1'"
+
+#: NOT FOUND IN SOURCE
+msgid "Custom field is already applied to the object"
+msgstr "Uživatelská položka je již aplikována na tento objekt"
 
 #: lib/RT/CustomField.pm:1695
 #. ($args{'Content'}, $self->Name)
@@ -2551,7 +2591,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:233
 msgid "Customize the look of your RT"
-msgstr ""
+msgstr "Upravit vzhled RT"
 
 #: lib/RT/Installer.pm:113
 msgid "DBA password"
@@ -2642,7 +2682,7 @@ msgstr ""
 msgid "Date format"
 msgstr "Formát datumu"
 
-#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:633 share/html/SelfService/Display.html:66 share/html/Ticket/Create.html:253 share/html/Ticket/Elements/ShowSummary:84 share/html/Ticket/ModifyAll.html:68 share/html/m/ticket/create:377 share/html/m/ticket/show:344
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:633 share/html/SelfService/Display.html:72 share/html/Ticket/Create.html:253 share/html/Ticket/Elements/ShowSummary:84 share/html/Ticket/ModifyAll.html:68 share/html/m/ticket/create:377 share/html/m/ticket/show:344
 msgid "Dates"
 msgstr "Termíny"
 
@@ -2707,22 +2747,22 @@ msgstr "Implicitně: %1/%2 změneno z %3 na %4"
 msgid "DefaultFormat"
 msgstr ""
 
-#: etc/RT_Config.pm:2766 etc/RT_Config.pm:2842 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:864 share/html/Elements/Tabs:889 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:2769 etc/RT_Config.pm:2845 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:864 share/html/Elements/Tabs:889 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
 msgid "Delete"
 msgstr "Smazat"
 
 #: share/html/Admin/Elements/EditTemplates:72
 msgid "Delete Template"
-msgstr "Smazat šblonu"
+msgstr "Smazat šablonu"
 
 #: share/html/Articles/Article/Delete.html:101
 #. ($ArticleObj->Id)
 msgid "Delete article #%1"
-msgstr ""
+msgstr "Smazat článek #%1"
 
 #: lib/RT/Class.pm:99
 msgid "Delete articles in this class"
-msgstr ""
+msgstr "Smazat články v této třídě"
 
 #: lib/RT/SharedSetting.pm:287
 #. ($msg)
@@ -2731,11 +2771,11 @@ msgstr "Nelze smazat: %1"
 
 #: lib/RT/Group.pm:97
 msgid "Delete group dashboards"
-msgstr ""
+msgstr "Smazat řídící panel skupiny"
 
 #: lib/RT/Ticket.pm:2397
 msgid "Delete operation is disabled by lifecycle configuration"
-msgstr ""
+msgstr "Operace smazání není povolena v konfiguraci životního cyklu"
 
 #: lib/RT/Dashboard.pm:88
 msgid "Delete personal dashboards"
@@ -2759,7 +2799,7 @@ msgstr "Smazat hodnoty"
 
 #: lib/RT/Class.pm:99
 msgid "DeleteArticle"
-msgstr ""
+msgstr "Smazat článek"
 
 #: lib/RT/Dashboard.pm:83
 msgid "DeleteDashboard"
@@ -2784,7 +2824,7 @@ msgstr ""
 
 #: share/html/Dashboards/Elements/Deleted:52
 msgid "Deleted queries"
-msgstr ""
+msgstr "Smazané dotazy"
 
 #: share/html/Search/Elements/EditSearches:194
 msgid "Deleted saved search"
@@ -2793,7 +2833,7 @@ msgstr "Smazaný uložený dotaz"
 #: share/html/Articles/Article/Search.html:233
 #. ($searchname)
 msgid "Deleted search %1"
-msgstr ""
+msgstr "Smazán dotaz %1"
 
 #: lib/RT/Queue.pm:230
 msgid "Deleting this object would break referential integrity"
@@ -2813,7 +2853,7 @@ msgstr "Je rekvizitou pro"
 
 #: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:129 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
 msgid "DependedOnBy"
-msgstr ""
+msgstr "Je rekvizitou pro"
 
 #: NOT FOUND IN SOURCE
 msgid "Dependency by %1 added"
@@ -2833,7 +2873,7 @@ msgstr "Závislost na %1 smazána"
 
 #: lib/RT/Tickets.pm:128
 msgid "DependentOn"
-msgstr ""
+msgstr "Závisející na"
 
 #: share/html/Elements/AddLinks:71 share/html/Elements/BulkLinks:127 share/html/Elements/BulkLinks:54 share/html/Elements/EditLinks:55 share/html/Elements/ShowLinks:69 share/html/Search/Elements/SelectLinks:61 share/html/m/ticket/create:396 share/html/m/ticket/show:389
 msgid "Depends on"
@@ -2861,7 +2901,7 @@ msgstr "Popis"
 
 #: share/html/Elements/Tabs:228
 msgid "Detailed information about your RT setup"
-msgstr ""
+msgstr "Podrobné informace o nastavení RT"
 
 #: share/html/Ticket/Create.html:441
 msgid "Details"
@@ -2886,7 +2926,7 @@ msgstr "Zobrazit přístupová práva"
 #: share/html/SelfService/Article/Display.html:48
 #. ($id)
 msgid "Display Article %1"
-msgstr ""
+msgstr "Zobrazit článek %1"
 
 #: share/html/Search/Elements/DisplayOptions:51
 msgid "Display Columns"
@@ -2927,11 +2967,11 @@ msgstr "Nesmí obsahovat http://, ale pouze něco jako 'localhost', 'rt.example.
 
 #: lib/RT/Config.pm:319
 msgid "Don't refresh home page."
-msgstr ""
+msgstr "Neobnovovat domácí stránku"
 
 #: lib/RT/Config.pm:298
 msgid "Don't refresh search results."
-msgstr ""
+msgstr "Neobnovovat výsledky vyhledávání."
 
 #: share/html/Elements/Refresh:53
 msgid "Don't refresh this page."
@@ -2939,7 +2979,7 @@ msgstr "Neobnovovat tuto stránku."
 
 #: lib/RT/Crypt/GnuPG.pm:1742
 msgid "Don't trust this key at all"
-msgstr ""
+msgstr "Tomuto klíči vůbec nedůvěřovat"
 
 #: share/html/Elements/ShowTransactionAttachments:62
 msgid "Download"
@@ -2951,7 +2991,7 @@ msgstr "Stáhnout dumpfile"
 
 #: lib/RT/CustomField.pm:87
 msgid "Dropdown"
-msgstr ""
+msgstr "Rozbalovací nabídka"
 
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:77 lib/RT/Tickets.pm:134 share/html/Elements/RT__Ticket/ColumnMap:205 share/html/Elements/RT__Ticket/ColumnMap:238 share/html/Elements/SelectDateType:55 share/html/Elements/ShowReminders:52 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:259 share/html/Ticket/Elements/EditDates:68 share/html/Ticket/Elements/Reminders:141 share/html/Ticket/Elements/Reminders:177 share/html/Ticket/Elements/Reminders:83 share/html/Ticket/Elements/ShowDates:66 share/html/m/ticket/create:384 share/html/m/ticket/show:366
 msgid "Due"
@@ -2959,7 +2999,7 @@ msgstr "Termín dokončení"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "DueRelative"
-msgstr ""
+msgstr "Termín před"
 
 #: share/html/Install/Initialize.html:131 share/html/Install/Initialize.html:94
 #. ($msg)
@@ -2972,7 +3012,7 @@ msgstr "Jednoduchá úprava vašich otevřených požadavků"
 
 #: share/html/Elements/Tabs:521
 msgid "Easy viewing of your reminders"
-msgstr ""
+msgstr "Přehledné zobrazení Vašich připomenutí"
 
 #: share/html/Elements/Dashboards:51 share/html/Elements/Quicksearch:52 share/html/Elements/ShowSearch:51 share/html/Elements/Tabs:900 share/html/Elements/Tabs:908 share/html/Ticket/Elements/ShowRequestor:124
 msgid "Edit"
@@ -3001,7 +3041,7 @@ msgstr "Upravit uživatelské položky pro všechny uživatele"
 
 #: share/html/Admin/Global/CustomFields/Class-Article.html:52
 msgid "Edit Custom Fields for articles in all classes"
-msgstr ""
+msgstr "Upravit uživatelské položky pro články ve všech třídách"
 
 #: share/html/Admin/Global/CustomFields/Queue-Tickets.html:53 share/html/Admin/Global/CustomFields/Queue-Transactions.html:53
 msgid "Edit Custom Fields for tickets in all queues"
@@ -3021,7 +3061,7 @@ msgstr "Úprava dotazu"
 
 #: share/html/Admin/Global/Topics.html:56
 msgid "Edit global topic hierarchy"
-msgstr ""
+msgstr "Upravit globální hierarchii témat"
 
 #: share/html/Elements/Tabs:126
 msgid "Edit system templates"
@@ -3030,7 +3070,7 @@ msgstr "Úprava systémových šablon"
 #: share/html/Admin/Articles/Classes/Topics.html:60
 #. ($ClassObj->Name)
 msgid "Edit topic hierarchy for %1"
-msgstr ""
+msgstr "Upravit hierarchii témat pro třídu %1"
 
 #: lib/RT/Group.pm:91
 msgid "EditSavedSearches"
@@ -3086,7 +3126,11 @@ msgstr "Doručování zpráv"
 
 #: etc/initialdata:696 etc/upgrade/3.7.85/content:8
 msgid "Email template for periodic notification digests"
-msgstr ""
+msgstr "Šablona emailu pro opakované upozorňovací sestavy"
+
+#: NOT FOUND IN SOURCE
+msgid "EmailAddress"
+msgstr "Emailová adresa"
 
 #: share/html/Elements/RT__Template/ColumnMap:77
 msgid "Empty"
@@ -3102,11 +3146,11 @@ msgstr "Povoleno"
 
 #: share/html/Admin/Articles/Classes/Modify.html:73
 msgid "Enabled (Unchecking this box disables this class)"
-msgstr ""
+msgstr "Povolena (zrušením zatrhnutí zablokujete tuto třídu)"
 
 #: share/html/Admin/CustomFields/Modify.html:141 share/html/Admin/Elements/EditCustomField:75
 msgid "Enabled (Unchecking this box disables this custom field)"
-msgstr "Povolena (zrušením zatrhnutí zablokujete tuto uživatelskou položky)"
+msgstr "Povolena (zrušením zatrhnutí zablokujete tuto uživatelskou položku)"
 
 #: share/html/Admin/Groups/Modify.html:85
 msgid "Enabled (Unchecking this box disables this group)"
@@ -3122,7 +3166,7 @@ msgstr ""
 
 #: share/html/Admin/Articles/Classes/index.html:81
 msgid "Enabled Classes"
-msgstr "Povilt třídy"
+msgstr "Povolené třídy"
 
 #: share/html/Admin/Queues/index.html:112
 msgid "Enabled Queues"
@@ -3130,7 +3174,7 @@ msgstr "Povolené fronty"
 
 #: share/html/Admin/Queues/index.html:100
 msgid "Enabled queues matching search criteria"
-msgstr ""
+msgstr "Povolené fronty, které odpovídají zadané podmínce"
 
 #: share/html/Admin/Articles/Classes/Modify.html:207 share/html/Admin/Elements/EditCustomField:139
 #. (loc_fuzzy($msg))
@@ -3172,15 +3216,15 @@ msgstr ""
 
 #: share/html/Articles/Article/Elements/EditLinks:50
 msgid "Enter articles, tickets, or other URLs related to this article."
-msgstr ""
+msgstr "Vložte články, požadavky či nějaká URL související s tímto článkem."
 
 #: lib/RT/CustomField.pm:191
 msgid "Enter multiple IP address ranges"
-msgstr "Zadejte vice IP adresních rozsahu"
+msgstr "Zadejte více IP adresních rozsahů"
 
 #: lib/RT/CustomField.pm:182
 msgid "Enter multiple IP addresses"
-msgstr "Zadejte vice IP adres"
+msgstr "Zadejte více IP adres"
 
 #: lib/RT/CustomField.pm:97
 msgid "Enter multiple values"
@@ -3220,15 +3264,15 @@ msgstr "Zadejte požadavky či URI k provázání. Více položek oddělujte mez
 
 #: lib/RT/Config.pm:285
 msgid "Enter time in hours by default"
-msgstr ""
+msgstr "Přednastavit vkládání času na hodiny"
 
 #: lib/RT/CustomField.pm:193
 msgid "Enter up to %1 IP address ranges"
-msgstr ""
+msgstr "Zadejte až %1 rozsah(ů) IP adres"
 
 #: lib/RT/CustomField.pm:184
 msgid "Enter up to %1 IP addresses"
-msgstr ""
+msgstr "Zadejte až %1 IP adres"
 
 #: lib/RT/CustomField.pm:99
 msgid "Enter up to %1 values"
@@ -3241,11 +3285,11 @@ msgstr "Vyplnit nejvýše %1 %quant(%1,hodnotu,hodnoty,hodnot) s automatickým d
 #: share/html/Search/Simple.html:77
 #. (map { "<strong>$_</strong>" } qw(initial active inactive any))
 msgid "Entering %1, %2, %3, or %4 limits results to tickets with one of the respective types of statuses.  Any individual status name limits results to just the statuses named."
-msgstr ""
+msgstr "Slova %1, %2, %3 nebo %4 omezí výsledky na jeden z příslušných typů stavů. Zadáním konkrétního typu stavu se omezí výsledky na příslušný stav."
 
 #: share/html/Admin/Tools/Configuration.html:281
 msgid "Environment variables"
-msgstr ""
+msgstr "Proměnné prostředí"
 
 #: sbin/rt-email-digest:96 share/html/Elements/Login:54 share/html/Install/Elements/Errors:49 share/html/Search/Results.html:57 share/html/m/_elements/login:53
 msgid "Error"
@@ -3259,7 +3303,7 @@ msgstr "Chyba v parametrech do Ticket->AddWatcher"
 msgid "Error in parameters to Ticket->DeleteWatcher"
 msgstr "Chyba v parametrech do Ticket->DeleteWatcher"
 
-#: share/html/Search/Chart:459
+#: share/html/Search/Chart:460
 #. ($error)
 msgid "Error plotting chart: %1"
 msgstr ""
@@ -3332,11 +3376,15 @@ msgstr "Vypršet"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "ExtendedStatus"
-msgstr ""
+msgstr "Rozšířený stav"
 
 #: lib/RT/User.pm:1037
 msgid "External authentication enabled."
-msgstr "Externí ověření pravosti povoleno."
+msgstr "Externí autentizace povolena."
+
+#: NOT FOUND IN SOURCE
+msgid "Extra"
+msgstr "Navíc"
 
 #: share/html/Admin/Users/Modify.html:97
 msgid "Extra info"
@@ -3344,21 +3392,21 @@ msgstr "Doplňkové údaje"
 
 #: share/html/Elements/Tabs:698
 msgid "Extract Article"
-msgstr ""
+msgstr "Vytáhnout článek"
 
 #: etc/initialdata:104 etc/upgrade/3.8.3/content:78
 msgid "Extract Subject Tag"
-msgstr ""
+msgstr "Vytáhnout značku z předmětu e-mailu"
 
 #: share/html/Articles/Article/ExtractIntoClass.html:48 share/html/Articles/Article/ExtractIntoTopic.html:48
 #. ($Ticket)
 msgid "Extract a new article from ticket #%1"
-msgstr ""
+msgstr "Vytvořit nový článek z požadavku #%1"
 
 #: share/html/Articles/Article/ExtractFromTicket.html:48
 #. ($Ticket, $ClassObj->Name)
 msgid "Extract article from ticket #%1 into class %2"
-msgstr ""
+msgstr "Vytvořit článek ve třídě %2 z požadavku #%1"
 
 #: etc/initialdata:105 etc/upgrade/3.8.3/content:79
 msgid "Extract tags from a Transaction's subject and add them to the Ticket's subject."
@@ -3409,7 +3457,7 @@ msgstr "Nelze načíst šablonu"
 #: lib/RT/Reminders.pm:122
 #. ($self->Ticket)
 msgid "Failed to load ticket %1"
-msgstr ""
+msgstr "Nepodařilo se načíst požadavek %1"
 
 #: sbin/rt-email-digest:168
 msgid "Failed to parse template"
@@ -3445,7 +3493,7 @@ msgstr "Vyplňte argumenty"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:82
 msgid "Fill boxes with color using"
-msgstr ""
+msgstr "Obarvit políčka dle změny atributu"
 
 #: lib/RT/CustomField.pm:106
 msgid "Fill in multiple text areas"
@@ -3485,7 +3533,7 @@ msgstr "Koncová priorita"
 
 #: share/html/Elements/FindUser:48
 msgid "Find a user"
-msgstr ""
+msgstr "Najdi uživatele"
 
 #: share/html/Admin/Users/index.html:77
 msgid "Find all users whose"
@@ -3522,7 +3570,7 @@ msgstr "První"
 #: share/html/Search/Simple.html:91
 #. ($link_start, $link_end)
 msgid "For the full power of RT's searches, please visit the %1search builder interface%2."
-msgstr "Pro dosažení maximálního výkonu vyhledávání Rt-s, navštivte prosím  %1vyhledávací rozhraní%2."
+msgstr "Všechny možnosti vyhledávání jsou dostupné přes %1tvůrce dotazu%2."
 
 #: share/html/Search/Bulk.html:84
 msgid "Force change"
@@ -3538,37 +3586,37 @@ msgstr ""
 
 #: etc/initialdata:609 etc/upgrade/3.7.15/content:7 share/html/Elements/ShowTransaction:208 share/html/Elements/Tabs:654
 msgid "Forward"
-msgstr "Předání"
+msgstr "Přeposlat"
 
 #: share/html/Ticket/Forward.html:91
 msgid "Forward Message"
-msgstr "Předat zprávu"
+msgstr "Přeposlat zprávu"
 
 #: share/html/Ticket/Forward.html:90
 msgid "Forward Message and Return"
-msgstr "Předat zprávu a zpět"
+msgstr "Přeposlat zprávu a zpět"
 
 #: etc/initialdata:617 etc/upgrade/3.8.6/content:6
 msgid "Forward Ticket"
-msgstr "Předat požadavek dál"
+msgstr "Přeposlat požadavek"
 
 #: lib/RT/Queue.pm:139
 msgid "Forward messages outside of RT"
-msgstr ""
+msgstr "Přeposílat zprávy mio RT"
 
 #: share/html/Ticket/Forward.html:123
 #. ($TicketObj->id)
 msgid "Forward ticket #%1"
-msgstr "Předat požadavek %1"
+msgstr "Přeposlat požadavek %1"
 
 #: share/html/Ticket/Forward.html:122
 #. ($txn->id)
 msgid "Forward transaction #%1"
-msgstr ""
+msgstr "Přeposlat transakci #%1"
 
 #: lib/RT/Queue.pm:139
 msgid "ForwardMessage"
-msgstr "Předat zprávu"
+msgstr "Přeposlat zprávu"
 
 #: lib/RT/Transaction.pm:830
 msgid "Forwarded %3Transaction #%1%4 to %2"
@@ -3576,7 +3624,11 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Forwarded Ticket to %1"
-msgstr "Pŕedání požadavku na %1"
+msgstr "Přeposlání požadavku na %1"
+
+#: NOT FOUND IN SOURCE
+msgid "Forwarded Transaction #%1 to %2"
+msgstr "Přeposlání transakce  #%1 na adresu %2"
 
 #: etc/initialdata:610
 msgid "Forwarded message"
@@ -3614,7 +3666,7 @@ msgstr "Od"
 
 #: share/html/Admin/Tools/Theme.html:67
 msgid "GD is disabled or not installed. You can upload an image, but you won't get automatic color suggestions."
-msgstr "GD je zakázán nebo není nainstalována. Můžete nahrát obrázek, ale nebudete dostávat automatické barevné návrhy."
+msgstr "Knihovná GD není nainstalována nebo je zakázána. Můžete nahrát obrázek, ale nebudete dostávat automatické barevné návrhy."
 
 #: lib/RT/Config.pm:198 lib/RT/Config.pm:290
 msgid "General"
@@ -3622,7 +3674,7 @@ msgstr "Obecné"
 
 #: share/html/Admin/Elements/EditRightsCategoryTabs:86
 msgid "General rights"
-msgstr ""
+msgstr "Práva pro všechny"
 
 #: NOT FOUND IN SOURCE
 msgid "Get template from file"
@@ -3646,11 +3698,11 @@ msgstr "Globální"
 
 #: share/html/Admin/Tools/Configuration.html:210
 msgid "Global Attributes"
-msgstr ""
+msgstr "Globální atributy"
 
 #: share/html/Articles/Topics.html:91
 msgid "Global Topics"
-msgstr "Globální témy"
+msgstr "Globální témata"
 
 #: share/html/Admin/Global/CustomFields/index.html:61
 msgid "Global custom field configuration"
@@ -3668,7 +3720,7 @@ msgstr ""
 #: share/html/Admin/Global/MyRT.html:100
 #. ($pane)
 msgid "Global portlet %1 saved."
-msgstr "Globální portlet %1 uložen."
+msgstr "Uloženo '%1' globálního přehledu RT."
 
 #: lib/RT/Scrip.pm:161
 #. ($args{'Template'})
@@ -3692,6 +3744,10 @@ msgid "GnuPG integration is disabled"
 msgstr "Integrace GnuPG je zakázána"
 
 #: NOT FOUND IN SOURCE
+msgid "GnuPG issues"
+msgstr "Problémy GnuPG"
+
+#: NOT FOUND IN SOURCE
 msgid "GnuPG private key(s) for %1"
 msgstr "GnuPG soukromý klíč(e) pro %1"
 
@@ -3701,7 +3757,7 @@ msgstr "GnuPG privátní klíče"
 
 #: NOT FOUND IN SOURCE
 msgid "GnuPG public key(s) for %1"
-msgstr "GnuPg veřejný klíč(e) pro %1"
+msgstr "GnuPG veřejný klíč(e) pro %1"
 
 #: share/html/m/_elements/menu:67
 msgid "Go"
@@ -3861,15 +3917,15 @@ msgstr ""
 
 #: lib/RT/Tickets.pm:127
 msgid "HasMember"
-msgstr ""
+msgstr "Je členem"
 
 #: etc/upgrade/3.8.6/content:7
 msgid "Heading of a forwarded Ticket"
-msgstr "Nadpis předané požadavky"
+msgstr "Záhlaví přeposlaného požadavku"
 
 #: etc/upgrade/3.7.15/content:8
 msgid "Heading of a forwarded message"
-msgstr "Záhlaví předané zprávy"
+msgstr "Záhlaví přeposlané zprávy"
 
 #: share/html/Search/Chart.html:160
 msgid "Height"
@@ -3891,6 +3947,10 @@ msgstr "Skrýt všechen citovaný text"
 msgid "Hide quoted text"
 msgstr "Skrýt citovaný text"
 
+#: NOT FOUND IN SOURCE
+msgid "Hide ticket history by default"
+msgstr "Skrýt historii požadavku"
+
 #: share/html/Elements/ShowHistory:52 share/html/Elements/Tabs:309 share/html/Elements/Tabs:325 share/html/Elements/Tabs:353 share/html/Elements/Tabs:609 share/html/Elements/Tabs:862 share/html/Elements/Tabs:883 share/html/Elements/Tabs:903 share/html/m/_elements/ticket_menu:64
 msgid "History"
 msgstr "Historie"
@@ -3898,7 +3958,7 @@ msgstr "Historie"
 #: share/html/Articles/Article/History.html:48
 #. ($id)
 msgid "History for article #%1"
-msgstr ""
+msgstr "Historie článku #%1"
 
 #: share/html/Admin/Groups/History.html:60
 #. ($GroupObj->Name)
@@ -3922,7 +3982,7 @@ msgstr "Telefon domů"
 
 #: lib/RT/Config.pm:316
 msgid "Home page refresh interval"
-msgstr ""
+msgstr "Interval obnovování domácí stránky."
 
 #: share/html/Elements/Tabs:444 share/html/m/_elements/header:69
 msgid "Homepage"
@@ -3931,6 +3991,10 @@ msgstr "Domovská stránka"
 #: share/html/Dashboards/Subscription.html:141
 msgid "Hour"
 msgstr "Hodina"
+
+#: NOT FOUND IN SOURCE
+msgid "Hourly"
+msgstr "Hodinově"
 
 #: share/html/Elements/SelectTimeUnits:53
 msgid "Hours"
@@ -3975,7 +4039,7 @@ msgstr "Nebyla-li zadána fronta, vytvářejte požadavky v této frontě"
 
 #: share/html/Elements/LoginRedirectWarning:66
 msgid "If this is not what you expect, leave this page now without logging in."
-msgstr ""
+msgstr "Pokud toto není co jste očekávali, opusťte tuto stránku bez přihlašování."
 
 #: bin/rt-crontool:344
 msgid "If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT."
@@ -3999,7 +4063,7 @@ msgstr ""
 msgid "If you've changed the Port that RT runs on, you'll need to restart the server in order to log in."
 msgstr ""
 
-#: share/html/Admin/Queues/People.html:124 share/html/Ticket/Modify.html:66 share/html/Ticket/ModifyAll.html:136 share/html/Ticket/ModifyPeople.html:76
+#: share/html/Admin/Queues/People.html:124 share/html/Ticket/Modify.html:68 share/html/Ticket/ModifyAll.html:136 share/html/Ticket/ModifyPeople.html:76
 msgid "If you've updated anything above, be sure to"
 msgstr "Pokud jste změnili cokoli nahoře, nezapomeňte"
 
@@ -4018,7 +4082,7 @@ msgstr ""
 
 #: share/html/Elements/ShowTransactionAttachments:264
 msgid "Image not shown because display is disabled in system configuration."
-msgstr ""
+msgstr "Obrázek se nezobrazuje, protože je to zakázáno v systémové konfiguraci."
 
 #: share/html/Elements/ShowTransactionAttachments:272
 msgid "Image not shown because sender requested not to inline it."
@@ -4030,23 +4094,23 @@ msgstr "Neměnná položka"
 
 #: share/html/Ticket/Elements/ShowRequestor:160 share/html/User/Elements/Portlets/InactiveTickets:54
 msgid "Inactive Tickets"
-msgstr ""
+msgstr "Neaktivní požadavky"
 
 #: share/html/Articles/Elements/BeforeMessageBox:59
 msgid "Include Article:"
-msgstr ""
+msgstr "Vložit článek:"
 
 #: share/html/Admin/Articles/Classes/Modify.html:89
 msgid "Include article name"
-msgstr ""
+msgstr "Zahrnout název článku"
 
 #: share/html/Admin/Articles/Classes/Modify.html:93
 msgid "Include article summary"
-msgstr ""
+msgstr "Zahrnout přehled článku"
 
 #: share/html/Admin/Articles/Classes/index.html:69
 msgid "Include disabled classes in listing."
-msgstr ""
+msgstr "Zahrnout blokované třídy do výpisu."
 
 #: share/html/Admin/CustomFields/index.html:81
 msgid "Include disabled custom fields in listing."
@@ -4070,7 +4134,7 @@ msgstr "Zahrnout stránku"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:140
 msgid "Include subtopics"
-msgstr ""
+msgstr "včetně podtémat"
 
 #: lib/RT/Config.pm:230
 msgid "Include time in iCal feed events?"
@@ -4131,11 +4195,11 @@ msgstr "Inicializovat databázi"
 
 #: share/html/Elements/ValidateCustomFields:86
 msgid "Input can not be parsed as an IP address"
-msgstr ""
+msgstr "Vstup není rozpoznán jako IP adresa"
 
 #: share/html/Elements/ValidateCustomFields:97
 msgid "Input can not be parsed as an IP address range"
-msgstr ""
+msgstr "Vstup není rozpoznán jako IP adresní rozsah"
 
 #: lib/RT/ScripAction.pm:122
 msgid "Input error"
@@ -4165,12 +4229,12 @@ msgstr "Vnitřní chyba: %1"
 #: lib/RT/Article.pm:212
 #. ($txn_msg)
 msgid "Internal error: %1"
-msgstr ""
+msgstr "Interní chyba: %1"
 
 #: share/html/Admin/Elements/EditRights:158
 #. ($type)
 msgid "Invalid %1"
-msgstr ""
+msgstr "Neplatný %1"
 
 #: share/html/Articles/Article/Search.html:175
 #. ('LoadSavedSearch')
@@ -4190,11 +4254,11 @@ msgstr "Neplatný %1: mělo by to být číslo"
 
 #: lib/RT/Article.pm:109
 msgid "Invalid Class"
-msgstr ""
+msgstr "Neplatná třída"
 
 #: lib/RT/CustomField.pm:321 lib/RT/CustomField.pm:651
 msgid "Invalid Custom Field values source"
-msgstr ""
+msgstr "Neplatný zdroj hodnot uživatelské položky"
 
 #: lib/RT/Group.pm:623
 msgid "Invalid Group Name and Domain"
@@ -4207,16 +4271,16 @@ msgstr "Neplatný typ skupiny"
 #: lib/RT/Class.pm:311
 #. ($msg)
 msgid "Invalid Queue, unable to apply Class: %1"
-msgstr ""
+msgstr "Neplatná fronta, nelze přiřadit třídu: %1"
 
 #: lib/RT/CustomField.pm:310
 msgid "Invalid Render Type"
-msgstr ""
+msgstr "Neplatný způsob zobrazení"
 
 #: lib/RT/CustomField.pm:1052
 #. ($self->FriendlyType)
 msgid "Invalid Render Type for custom field of type %1"
-msgstr ""
+msgstr "Neplatný způsob zobrazení pro uživatelskou položku typu %1"
 
 #: lib/RT/Record.pm:970
 msgid "Invalid data"
@@ -4225,7 +4289,7 @@ msgstr "Neplatná data"
 #: share/html/Admin/Users/Keys.html:119
 #. ($ARGS{'PrivateKey'}, $email)
 msgid "Invalid key %1 for address '%2'"
-msgstr ""
+msgstr "Nesprávný klíč %1 pro adresu '%2'"
 
 #: lib/RT/CustomField.pm:1533
 msgid "Invalid object"
@@ -4248,7 +4312,7 @@ msgstr "Neplatná fronta"
 
 #: lib/RT/Scrip.pm:304
 msgid "Invalid queue id"
-msgstr ""
+msgstr "Nesprávné id fronty"
 
 #: lib/RT/ACE.pm:258
 msgid "Invalid right"
@@ -4303,7 +4367,7 @@ msgstr "led"
 
 #: lib/RT/Group.pm:90
 msgid "Join or leave group"
-msgstr "Připojit nebo nechat skupině"
+msgstr "Připojit se ke skupině či ji opustit"
 
 #: lib/RT/Date.pm:97
 msgid "Jul"
@@ -4325,6 +4389,10 @@ msgstr "Pokud si nejste jisti, nechejte 'localhost'. Nechejte nevyplněné, poku
 #. (ref $self)
 msgid "Keyword and intuition-based searching"
 msgstr "Klíčové slovo a intuitivní vyhledávání"
+
+#: NOT FOUND IN SOURCE
+msgid "Lang"
+msgstr "Jazyk"
 
 #: share/html/Admin/Users/Modify.html:92 share/html/Elements/RT__User/ColumnMap:136 share/html/Install/index.html:56 share/html/SelfService/Prefs.html:59 share/html/User/Prefs.html:76
 msgid "Language"
@@ -4372,7 +4440,7 @@ msgstr "Naposledy aktualizoval(a)"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "LastUpdatedRelative"
-msgstr ""
+msgstr "Aktualizováno před"
 
 #: share/html/Dashboards/Subscription.html:177
 #. ($session{'CurrentUser'}->EmailAddress)
@@ -4397,7 +4465,7 @@ msgstr "Vysvětlivky"
 
 #: lib/RT/Config.pm:349
 msgid "Length in characters; Use '0' to show all messages inline, regardless of length"
-msgstr "Délka ve znacích; Použijte '0' pro zobrazení celé vložené zprávy bez ohledu na její délku"
+msgstr "Délka ve znacích. Použijte '0' pro zobrazení celé části zprávy bez ohledu na její délku."
 
 #: share/html/Admin/Users/Modify.html:109
 msgid "Let this user access RT"
@@ -4460,7 +4528,7 @@ msgstr ""
 
 #: lib/RT/Tickets.pm:122
 msgid "LinkedTo"
-msgstr ""
+msgstr "Odkazuje na"
 
 #: lib/RT/Record.pm:1347
 #. ($self->loc(lc($remote_obj->RecordType)))
@@ -4485,7 +4553,7 @@ msgstr ""
 
 #: lib/RT/CustomField.pm:84 lib/RT/CustomField.pm:88
 msgid "List"
-msgstr ""
+msgstr "Seznam hodnot"
 
 #: share/html/Articles/Article/Elements/ShowSavedSearches:69 share/html/Articles/Article/Search.html:75 share/html/Search/Elements/EditSearches:80
 msgid "Load"
@@ -4493,7 +4561,7 @@ msgstr "Načíst"
 
 #: share/html/Articles/Article/Elements/ShowSavedSearches:67
 msgid "Load a saved search"
-msgstr "Načtení uloženého hledání"
+msgstr "Načtení uloženého dotazu"
 
 #: share/html/Search/Elements/EditSearches:78
 msgid "Load saved search"
@@ -4514,7 +4582,7 @@ msgstr "Načten %1 %2"
 
 #: share/html/Admin/Tools/Configuration.html:191
 msgid "Loaded config files"
-msgstr ""
+msgstr "Načtené konfigurační soubory"
 
 #: share/html/Search/Elements/EditSearches:169
 #. ($SavedSearch->{'Description'})
@@ -4611,7 +4679,7 @@ msgstr "Email"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:58
 msgid "Main type of links"
-msgstr ""
+msgstr "Čáry pro atribut"
 
 #: share/html/Search/Bulk.html:81
 msgid "Make Owner"
@@ -4728,7 +4796,7 @@ msgstr ""
 
 #: lib/RT/Config.pm:347
 msgid "Maximum inline message length"
-msgstr "Maximální délka vložené zprávy"
+msgstr "Maximální délka části zprávy"
 
 #: lib/RT/Report/Tickets.pm:207
 msgid "Maximum time estimated"
@@ -4848,15 +4916,15 @@ msgstr "Zpráva"
 
 #: share/html/Elements/ShowTransactionAttachments:149
 msgid "Message body is not shown because it is too large."
-msgstr ""
+msgstr "Obsah zprávy není zobrazen, neboť je příliš velký."
 
 #: share/html/Elements/ShowTransactionAttachments:141
 msgid "Message body is not shown because sender requested not to inline it."
-msgstr ""
+msgstr "Obsah není zobrazen, neboť odesílatel nenastavil automatické zobrazení této části zprávy."
 
 #: share/html/Elements/ShowTransactionAttachments:287
 msgid "Message body not shown because it is not plain text."
-msgstr ""
+msgstr "Obsah zprávy není zobrazen, neboť to není prostý text."
 
 #: lib/RT/Config.pm:276
 msgid "Message box height"
@@ -4865,6 +4933,10 @@ msgstr "Výška pole zprávy"
 #: lib/RT/Config.pm:267
 msgid "Message box width"
 msgstr "Šířka pole zprávy"
+
+#: NOT FOUND IN SOURCE
+msgid "Message box wrapping"
+msgstr "Zalamování v poli zprávy"
 
 #: lib/RT/Ticket.pm:1622
 msgid "Message could not be recorded"
@@ -4936,15 +5008,11 @@ msgstr "Mobilní telefon"
 
 #: share/html/Elements/RT__User/ColumnMap:91
 msgid "Mobile Phone"
-msgstr ""
+msgstr "Mobilní telefon"
 
 #: share/html/Elements/Tabs:863 share/html/Elements/Tabs:886 share/html/m/_elements/ticket_menu:67
 msgid "Modify"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Modify Access Control List"
-msgstr "Upravovat seznam přístupových práv"
+msgstr "Upravit"
 
 #: share/html/Admin/Groups/Members.html:108
 msgid "Modify Members"
@@ -4952,11 +5020,11 @@ msgstr "Upravit členy"
 
 #: lib/RT/Queue.pm:117
 msgid "Modify Scrip templates"
-msgstr ""
+msgstr "Upravovat šablony pro scripy"
 
 #: lib/RT/Queue.pm:120
 msgid "Modify Scrips"
-msgstr ""
+msgstr "Upravovat scripy"
 
 #: share/html/Admin/Queues/CustomField.html:63
 #. ($QueueObj->Name())
@@ -4977,7 +5045,7 @@ msgstr "Upravovat a vytvářet třídy"
 
 #: share/html/Elements/Tabs:177
 msgid "Modify and Create Custom Fields for Articles"
-msgstr "Upravovat a vytvářet vlastní pole k článkům"
+msgstr "Upravovat a vytvářet uživatelské položky k článkům"
 
 #: share/html/Articles/Article/Edit.html:173 share/html/Articles/Article/Edit.html:276
 #. ($ArticleObj->Id)
@@ -4997,7 +5065,7 @@ msgstr ""
 
 #: lib/RT/Class.pm:94 lib/RT/Queue.pm:115
 msgid "Modify custom field values"
-msgstr "Upravit vlastní pole hodnot"
+msgstr "Upravovat obsah uživatelských položek"
 
 #: share/html/Ticket/ModifyDates.html:48
 #. ($TicketObj->Id)
@@ -5011,7 +5079,7 @@ msgstr "Úprava datumů pro požadavek # %1"
 
 #: share/html/Elements/Tabs:217
 msgid "Modify global article topics"
-msgstr "Úprava globální témata článků"
+msgstr "Úprava globálních témat článků"
 
 #: share/html/Elements/Tabs:134
 msgid "Modify global custom fields"
@@ -5035,7 +5103,7 @@ msgstr "Upravit skupinu řídicích panelů"
 
 #: lib/RT/Group.pm:89
 msgid "Modify group membership roster"
-msgstr "Upravit členství ve skupině soupisku"
+msgstr "Spravovat členství ve skupinách"
 
 #: lib/RT/Group.pm:88
 msgid "Modify group metadata or delete group"
@@ -5063,7 +5131,7 @@ msgstr "Úprava skupinových práv pro frontu %1"
 
 #: lib/RT/Class.pm:95
 msgid "Modify metadata and custom fields for this class"
-msgstr "Upravit metadata a vlastní pole pro tuto třídu"
+msgstr "Upravit metadata a uživatelské položky pro tuto třídu"
 
 #: lib/RT/System.pm:86
 msgid "Modify one's own RT account"
@@ -5085,7 +5153,7 @@ msgstr "Upravovat osobní řídící panely"
 
 #: lib/RT/Queue.pm:113
 msgid "Modify queue watchers"
-msgstr "Upravit frontu pozorovatelů"
+msgstr "Upravit pozorovatele fronty"
 
 #: share/html/Admin/Scrips/Modify.html:48
 #. ($id)
@@ -5113,7 +5181,7 @@ msgstr "Úprava šablony %1"
 #: share/html/Admin/Queues/Template.html:114
 #. (loc( $TemplateObj->Name()), $QueueObj->Name)
 msgid "Modify template %1 for queue %2"
-msgstr ""
+msgstr "Upravit šablonu %1 pro frontu %2"
 
 #: share/html/Admin/Global/Templates.html:53
 msgid "Modify templates which apply to all queues"
@@ -5146,7 +5214,7 @@ msgstr "Úprava skupiny %1"
 #: share/html/Dashboards/Subscription.html:287
 #. ($Dashboard->Name)
 msgid "Modify the subscription to dashboard %1"
-msgstr "Upravit odběr řídicího panelu %1"
+msgstr "Upravit předplatné z řídicího panelu %1"
 
 #: share/html/Admin/Users/Modify.html:289
 #. ($UserObj->Name)
@@ -5155,7 +5223,11 @@ msgstr "Úprava uživatele %1"
 
 #: share/html/Articles/Article/Search.html:85
 msgid "Modify this search..."
-msgstr "Změnit toto hledání ..."
+msgstr "Změnit tento dotaz ..."
+
+#: NOT FOUND IN SOURCE
+msgid "Modify this user"
+msgstr "Upravit tohoto uživatele"
 
 #: share/html/Ticket/ModifyAll.html:59
 #. ($Ticket->Id)
@@ -5178,11 +5250,11 @@ msgstr "Upravovat požadavky"
 #: share/html/Admin/Articles/Classes/Topics.html:59
 #. ($ClassObj->Name)
 msgid "Modify topic for %1"
-msgstr ""
+msgstr "Upravit témata pro třídu %1"
 
 #: lib/RT/Class.pm:96
 msgid "Modify topic hierarchy associated with this class"
-msgstr "Upravit hierarchii tématu spojené s touto třídou"
+msgstr "Upravit hierarchii témat pro tuto třídu"
 
 #: lib/RT/Class.pm:93
 msgid "Modify topics for articles in this class"
@@ -5219,11 +5291,11 @@ msgstr "Upravovat seznam přístupových práv"
 
 #: lib/RT/Class.pm:92
 msgid "ModifyArticle"
-msgstr ""
+msgstr "Upravovat článek"
 
 #: lib/RT/Class.pm:93
 msgid "ModifyArticleTopics"
-msgstr ""
+msgstr "Upravovat témata pro článek"
 
 #: lib/RT/Class.pm:94 lib/RT/CustomField.pm:216 lib/RT/Queue.pm:115
 msgid "ModifyCustomField"
@@ -5279,15 +5351,15 @@ msgstr "Pondělí"
 
 #: share/html/Dashboards/Subscription.html:100
 msgid "Monday through Friday"
-msgstr "Pondělí až pátek"
+msgstr "pondělí až pátek"
 
 #: lib/RT/Dashboard/Mailer.pm:331
 msgid "Monthly"
-msgstr "Měsíčne"
+msgstr "Měsíčně"
 
 #: share/html/Ticket/Elements/ShowRequestor:61
 msgid "More about the requestors"
-msgstr "Více o žadatelech"
+msgstr "Více o žadatelích"
 
 #: NOT FOUND IN SOURCE
 msgid "Move down"
@@ -5295,7 +5367,7 @@ msgstr "Dát níže"
 
 #: share/html/Admin/Articles/Elements/Topics:108
 msgid "Move here"
-msgstr ""
+msgstr "Přesunout sem"
 
 #: NOT FOUND IN SOURCE
 msgid "Move up"
@@ -5328,7 +5400,7 @@ msgstr "Moje připomenutí"
 
 #: etc/initialdata:848
 msgid "My Tickets"
-msgstr ""
+msgstr "Moje požadavky"
 
 #: share/html/Approvals/index.html:48
 msgid "My approvals"
@@ -5348,11 +5420,11 @@ msgstr "Moje uložené dotazy"
 
 #: etc/RT_Config.pm:1235
 msgid "MyAdminQueues"
-msgstr ""
+msgstr "Fronty v nichž jsem AdminCc"
 
 #: etc/RT_Config.pm:1235 etc/initialdata:867
 msgid "MyReminders"
-msgstr ""
+msgstr "Moje připomenutí"
 
 #: lib/RT/Installer.pm:68
 msgid "MySQL"
@@ -5360,7 +5432,7 @@ msgstr "MySQL"
 
 #: etc/RT_Config.pm:1235
 msgid "MySupportQueues"
-msgstr ""
+msgstr "Fronty mnou spravované"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "NBSP"
@@ -5384,11 +5456,11 @@ msgstr "Jméno je použito"
 
 #: lib/RT/Template.pm:281 lib/RT/Template.pm:705
 msgid "Name is required"
-msgstr ""
+msgstr "Jméno je vyžadováno"
 
 #: share/html/Articles/Article/Elements/ShowSavedSearches:55
 msgid "Name:"
-msgstr "Jméno:"
+msgstr "Název"
 
 #: lib/RT/Dashboard/Mailer.pm:332 share/html/Elements/RT__Dashboard/ColumnMap:102 share/html/Ticket/Elements/ShowDates:80 share/html/m/ticket/show:380
 msgid "Never"
@@ -5404,7 +5476,7 @@ msgstr "Nový článek"
 
 #: share/html/Elements/Tabs:488
 msgid "New Dashboard"
-msgstr "Nový Řídíci panel"
+msgstr "Nový řídíci panel"
 
 #: share/html/Elements/BulkLinks:122 share/html/Elements/EditLinks:118
 msgid "New Links"
@@ -5467,6 +5539,10 @@ msgstr "Nový pozorovatel"
 msgid "Next"
 msgstr "Další"
 
+#: NOT FOUND IN SOURCE
+msgid "NickName"
+msgstr "Přezdívka"
+
 #: share/html/Admin/Users/Modify.html:82 share/html/Elements/RT__User/ColumnMap:66 share/html/User/Prefs.html:72
 msgid "Nickname"
 msgstr "Přezdívka"
@@ -5496,7 +5572,7 @@ msgstr "Nedefinována žádná třída"
 
 #: share/html/Admin/Articles/Classes/index.html:54
 msgid "No Classes matching search criteria found."
-msgstr ""
+msgstr "Žádná třída neodpovídá vyhledávací podmínce."
 
 #: share/html/Admin/CustomFields/Modify.html:192 share/html/Admin/Elements/EditCustomField:122
 msgid "No CustomField"
@@ -5601,7 +5677,7 @@ msgstr "Nedostatek práv k vytváření front"
 msgid "No permission to create tickets in the queue '%1'"
 msgstr "Nedostatek práv k vytváření požadavků ve frontě '%1'"
 
-#: share/html/SelfService/Display.html:137
+#: share/html/SelfService/Display.html:144
 msgid "No permission to display that ticket"
 msgstr "Nedostatek práv k zobrazení tohoto požadavku"
 
@@ -5619,7 +5695,7 @@ msgstr "Nedostatek práv ke změně nastavení"
 
 #: share/html/Articles/Article/Edit.html:283
 msgid "No permission to view Article"
-msgstr "Nemáte oprávnění prohlížet článek"
+msgstr "Nemáte oprávnění zobrazit článek"
 
 #: share/html/SelfService/Update.html:112
 msgid "No permission to view update ticket"
@@ -5839,10 +5915,6 @@ msgstr "Informuj mne o nepřečtených zprávách"
 msgid "Nov"
 msgstr "lis"
 
-#: NOT FOUND IN SOURCE
-msgid "Number of search results"
-msgstr "Počet výsledků hledání"
-
 #: share/html/Search/Elements/SelectAndOr:49
 msgid "OR"
 msgstr "OR"
@@ -5914,15 +5986,15 @@ msgstr "Při založení"
 
 #: etc/initialdata:131 etc/upgrade/4.0.3/content:7
 msgid "On Forward"
-msgstr ""
+msgstr "Při přeposlání"
 
 #: etc/initialdata:138 etc/upgrade/4.0.3/content:14
 msgid "On Forward Ticket"
-msgstr ""
+msgstr "Při přeposlání požadavku"
 
 #: etc/initialdata:145 etc/upgrade/4.0.3/content:21
 msgid "On Forward Transaction"
-msgstr ""
+msgstr "Při přeposlání transakce"
 
 #: etc/initialdata:173
 msgid "On Owner Change"
@@ -5938,7 +6010,7 @@ msgstr "Při změně fronty"
 
 #: etc/initialdata:194 etc/upgrade/3.8.3/content:5
 msgid "On Reject"
-msgstr ""
+msgstr "Při zamítnutí"
 
 #: etc/initialdata:213 etc/upgrade/3.7.1/content:10
 msgid "On Reopen"
@@ -5970,7 +6042,7 @@ msgstr "Jednorázové Cc"
 
 #: lib/RT/Config.pm:286
 msgid "Only for entry, not display"
-msgstr ""
+msgstr "Pouze pro vkládání, ne pro zobrazování."
 
 #: share/html/Approvals/Elements/PendingMyApproval:75
 #. (qq{<input size='15' class="datepicker" value='}.( $created_after->Unix >0 && $created_after->ISO(Timezone => 'user'))."' name='CreatedAfter' id='CreatedAfter' />")
@@ -5990,9 +6062,9 @@ msgstr "Zobrazit jen uživatelské položky pro:"
 msgid "Open Inactive Tickets"
 msgstr ""
 
-#: etc/RT_Config.pm:2754 etc/RT_Config.pm:2783 etc/RT_Config.pm:2830 etc/RT_Config.pm:2859
+#: etc/RT_Config.pm:2757 etc/RT_Config.pm:2786 etc/RT_Config.pm:2833 etc/RT_Config.pm:2862
 msgid "Open It"
-msgstr ""
+msgstr "Otevřít"
 
 #: etc/initialdata:98
 msgid "Open Tickets"
@@ -6016,7 +6088,7 @@ msgstr "Otevřít požadavky při korespondenci"
 
 #: share/html/Admin/Tools/Configuration.html:297
 msgid "Operating System"
-msgstr ""
+msgstr "Operační systém"
 
 #: share/html/Admin/Tools/Configuration.html:61
 msgid "Option"
@@ -6200,7 +6272,7 @@ msgstr "Uživatelé"
 #: share/html/Admin/Queues/People.html:185
 #. ($QueueObj->Name)
 msgid "People related to queue %1"
-msgstr ""
+msgstr "Pozorovatelé pro frontu %1"
 
 #: etc/initialdata:92
 msgid "Perform a user-defined action"
@@ -6220,7 +6292,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:246
 msgid "Permanently wipeout data from RT"
-msgstr ""
+msgstr "Trvale vymazat údaje z RT"
 
 #: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:737 lib/RT/Attachment.pm:738 lib/RT/Attachment.pm:797 lib/RT/Attachment.pm:798 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:386 lib/RT/Attribute.pm:395 lib/RT/Attribute.pm:408 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1464 lib/RT/CustomField.pm:1493 lib/RT/CustomField.pm:1536 lib/RT/CustomField.pm:1676 lib/RT/CustomField.pm:1826 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:513 lib/RT/CustomField.pm:540 lib/RT/CustomField.pm:922 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1247 lib/RT/Group.pm:1331 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:355 lib/RT/Queue.pm:381 lib/RT/Queue.pm:407 lib/RT/Queue.pm:799 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:274 lib/RT/Scrip.pm:307 lib/RT/Scrip.pm:621 lib/RT/Scrip.pm:629 lib/RT/Scrip.pm:638 lib/RT/Scrip.pm:643 lib/RT/Scrip.pm:651 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:313 lib/RT/Template.pm:479 lib/RT/Template.pm:730 lib/RT/Template.pm:747 lib/RT/Template.pm:765 lib/RT/Ticket.pm:1069 lib/RT/Ticket.pm:1280 lib/RT/Ticket.pm:1448 lib/RT/Ticket.pm:1498 lib/RT/Ticket.pm:1764 lib/RT/Ticket.pm:1778 lib/RT/Ticket.pm:2164 lib/RT/Ticket.pm:2176 lib/RT/Ticket.pm:2181 lib/RT/Ticket.pm:2199 lib/RT/Ticket.pm:2416 lib/RT/Ticket.pm:2645 lib/RT/Ticket.pm:3005 lib/RT/Ticket.pm:731 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:668 lib/RT/Transaction.pm:708 lib/RT/User.pm:1137 lib/RT/User.pm:139 lib/RT/User.pm:1566 lib/RT/User.pm:1813 lib/RT/User.pm:1846 lib/RT/User.pm:328 lib/RT/User.pm:735 lib/RT/User.pm:770 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97
 msgid "Permission Denied"
@@ -6286,7 +6358,7 @@ msgstr "PostgreSQL"
 #. ($m->interp->apply_escapes($Name, 'h'))
 #. ($m->interp->apply_escapes($name, 'h'))
 msgid "Predefined search %1 not found"
-msgstr ""
+msgstr "Předefinovaný dotaz %1 nenalezen"
 
 #: share/html/Elements/Tabs:553 share/html/Elements/Tabs:949 share/html/Prefs/Other.html:80 share/html/SelfService/Prefs.html:48 share/html/User/Prefs.html:48
 msgid "Preferences"
@@ -6469,7 +6541,7 @@ msgstr "Fronta povolena"
 msgid "Queue id"
 msgstr "ID fronty"
 
-#: lib/RT/CustomField.pm:285 share/html/SelfService/Display.html:102
+#: lib/RT/CustomField.pm:285 share/html/SelfService/Display.html:109
 msgid "Queue not found"
 msgstr "Fronta nenalezena"
 
@@ -6479,7 +6551,7 @@ msgstr "Klíč fronty"
 
 #: lib/RT/Tickets.pm:149
 msgid "QueueAdminCc"
-msgstr ""
+msgstr "AdminCc fronty"
 
 #: lib/RT/Tickets.pm:156
 msgid "QueueCF"
@@ -6487,7 +6559,7 @@ msgstr ""
 
 #: lib/RT/Tickets.pm:148
 msgid "QueueCc"
-msgstr ""
+msgstr "Cc fronty"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "QueueName"
@@ -6495,7 +6567,7 @@ msgstr "Název fronty"
 
 #: lib/RT/Tickets.pm:150
 msgid "QueueWatcher"
-msgstr ""
+msgstr "Pozorovatel fronty"
 
 #: lib/RT/CustomField.pm:1748 share/html/Admin/Global/CustomFields/index.html:77 share/html/Elements/Tabs:148 share/html/Elements/Tabs:255 share/html/Elements/Tabs:83
 msgid "Queues"
@@ -6509,6 +6581,10 @@ msgstr "Fronty mnou spravované"
 msgid "Queues I'm an AdminCc for"
 msgstr "Fronty v nichž jsem AdminCc"
 
+#: NOT FOUND IN SOURCE
+msgid "Quick Create"
+msgstr "Rychlé vytvoření"
+
 #: share/html/Articles/Elements/QuickSearch:48 share/html/Elements/Quicksearch:50 share/html/Elements/Tabs:561 share/html/Prefs/Quicksearch.html:79
 msgid "Quick search"
 msgstr "Rychlé hledání"
@@ -6519,15 +6595,15 @@ msgstr "Rychlé založení požadavku"
 
 #: etc/RT_Config.pm:1235 etc/initialdata:860
 msgid "QuickCreate"
-msgstr ""
+msgstr "Rychlé založení"
 
 #: etc/RT_Config.pm:1235 etc/initialdata:871
 msgid "Quicksearch"
-msgstr ""
+msgstr "Rychlé hledání"
 
 #: lib/RT/Date.pm:120
 msgid "RFC2616"
-msgstr ""
+msgstr "RFC2616"
 
 #: lib/RT/Date.pm:119
 msgid "RFC2822"
@@ -6638,9 +6714,9 @@ msgstr ""
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr ""
 
-#: etc/RT_Config.pm:2786 etc/RT_Config.pm:2790 etc/RT_Config.pm:2862 etc/RT_Config.pm:2866
+#: etc/RT_Config.pm:2789 etc/RT_Config.pm:2793 etc/RT_Config.pm:2865 etc/RT_Config.pm:2869
 msgid "Re-open"
-msgstr "Opětovné-otevřen"
+msgstr "Znovu otevřít"
 
 #: share/html/Elements/EditCustomFieldBinary:54 share/html/Elements/EditCustomFieldImage:54
 msgid "Reached maximum number, so new values will override old ones."
@@ -6648,6 +6724,10 @@ msgstr ""
 
 #: share/html/Admin/Users/Modify.html:77 share/html/Elements/RT__User/ColumnMap:61 share/html/User/Prefs.html:69
 msgid "Real Name"
+msgstr "Skutečné jméno"
+
+#: NOT FOUND IN SOURCE
+msgid "RealName"
 msgstr "Skutečné jméno"
 
 #: lib/RT/Queue.pm:137
@@ -6700,7 +6780,7 @@ msgstr "Je odkazem z"
 
 #: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:130 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
 msgid "ReferredToBy"
-msgstr ""
+msgstr "Je odkazem z"
 
 #: share/html/Articles/Article/Elements/EditLinks:58 share/html/Articles/Article/Elements/ShowLinks:48 share/html/Elements/AddLinks:87 share/html/Elements/BulkLinks:143 share/html/Elements/BulkLinks:94 share/html/Elements/EditLinks:91 share/html/Elements/ShowLinks:73 share/html/Search/Elements/SelectLinks:63 share/html/m/ticket/create:400 share/html/m/ticket/show:437
 msgid "Refers to"
@@ -6708,7 +6788,7 @@ msgstr "Odkazuje na"
 
 #: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:126 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
 msgid "RefersTo"
-msgstr ""
+msgstr "Odkazuje na"
 
 #: share/html/Elements/RefreshHomepage:48
 msgid "Refresh"
@@ -6769,15 +6849,15 @@ msgstr "Obnovit tuto stránku %quant(%1,každou,každé,každých) %numf(%1) %qu
 
 #: etc/RT_Config.pm:1235 etc/initialdata:879
 msgid "RefreshHomepage"
-msgstr ""
+msgstr "Obnova domácí stránky"
 
 #: lib/RT/Record.pm:1371
 msgid "Refused to add link which would create a circular relationship"
 msgstr ""
 
-#: etc/RT_Config.pm:2762 etc/RT_Config.pm:2778 etc/RT_Config.pm:2838 etc/RT_Config.pm:2854
+#: etc/RT_Config.pm:2765 etc/RT_Config.pm:2781 etc/RT_Config.pm:2841 etc/RT_Config.pm:2857
 msgid "Reject"
-msgstr "Odmítnutí"
+msgstr "Zamítnout"
 
 #: lib/RT/Config.pm:170
 msgid "Remember default queue"
@@ -6833,7 +6913,7 @@ msgstr "Odstranit žadatele"
 #: lib/RT/Queue.pm:635
 #. ($principal->Object->Name, $self->loc($args{'Type'}))
 msgid "Removed %1 from members of %2 for this queue."
-msgstr ""
+msgstr "%1 přestal být členem %2 pro tuto frontu."
 
 #: lib/RT/Class.pm:390
 msgid "Removed Subject Override"
@@ -6841,11 +6921,11 @@ msgstr ""
 
 #: share/html/Admin/CustomFields/Modify.html:77
 msgid "Render Type"
-msgstr ""
+msgstr "Způsob zobrazení"
 
 #: lib/RT/Config.pm:194
 msgid "Replaces the owner dropdowns with textboxes"
-msgstr "Nahradí vlastníka rozbalovací nabídky s textovými poli"
+msgstr "Nahradí rozbalovací nabídku pro změnu vlastníka textovým polem."
 
 #: share/html/Elements/ShowTransaction:180 share/html/Elements/Tabs:646 share/html/m/_elements/ticket_menu:69
 msgid "Reply"
@@ -6894,7 +6974,7 @@ msgstr "Vymazat"
 
 #: share/html/Prefs/MyRT.html:71
 msgid "Reset RT at a glance"
-msgstr ""
+msgstr "Obnovit přehled RT"
 
 #: share/html/Prefs/DashboardsInMenu.html:64
 msgid "Reset dashboards in menu"
@@ -6912,7 +6992,7 @@ msgstr "Obnovit výchozí"
 msgid "Residence"
 msgstr "Bydliště"
 
-#: etc/RT_Config.pm:2758 etc/RT_Config.pm:2774 etc/RT_Config.pm:2834 etc/RT_Config.pm:2850 share/html/Search/Elements/EditFormat:75
+#: etc/RT_Config.pm:2761 etc/RT_Config.pm:2777 etc/RT_Config.pm:2837 etc/RT_Config.pm:2853 share/html/Search/Elements/EditFormat:75
 msgid "Resolve"
 msgstr "Vyřešit"
 
@@ -6931,7 +7011,7 @@ msgstr ""
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "ResolvedRelative"
-msgstr ""
+msgstr "Vyřešeno před"
 
 #: share/html/Search/Elements/EditFormat:73
 msgid "Respond"
@@ -7000,9 +7080,9 @@ msgstr ""
 msgid "Role group exists already"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3673
+#: lib/RT/Interface/Web.pm:3709
 msgid "Roles"
-msgstr ""
+msgstr "Role"
 
 #: share/html/Dashboards/Subscription.html:164
 msgid "Rows"
@@ -7018,7 +7098,7 @@ msgstr "Řádků na stránku"
 
 #: share/html/Admin/Tools/Queries.html:49 share/html/Admin/Tools/Queries.html:58 share/html/Elements/Tabs:239
 msgid "SQL Queries"
-msgstr ""
+msgstr "SQL příkazy"
 
 #: share/html/Admin/Elements/LoggingSummary:80
 #. ($m->interp->apply_escapes($level, 'h'), qq[<strong><a href="$url">], '</a></strong>')
@@ -7027,7 +7107,7 @@ msgstr ""
 
 #: share/html/Admin/Elements/LoggingSummary:82
 msgid "SQL queries are not logged."
-msgstr ""
+msgstr "SQL dotazy nejsou logovány."
 
 #: lib/RT/Installer.pm:70
 msgid "SQLite"
@@ -7049,7 +7129,7 @@ msgstr "Sobota"
 msgid "Save"
 msgstr "Uložit"
 
-#: share/html/Admin/Articles/Classes/GroupRights.html:57 share/html/Admin/Articles/Classes/Modify.html:130 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:91 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:93 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:156 share/html/Admin/Queues/People.html:124 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Scrips/Modify.html:88 share/html/Admin/Scrips/Modify.html:92 share/html/Admin/Users/Keys.html:80 share/html/Admin/Users/Modify.html:226 share/html/Articles/Article/Edit.html:102 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:186 share/html/Prefs/Other.html:76 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:62 share/html/SelfService/Prefs.html:79 share/html/Ticket/Modify.html:66 share/html/Ticket/ModifyAll.html:135 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:67 share/html/Ticket/ModifyPeople.html:76 share/html/Ticket/Reminders.html:63
+#: share/html/Admin/Articles/Classes/GroupRights.html:57 share/html/Admin/Articles/Classes/Modify.html:130 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:91 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:93 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:156 share/html/Admin/Queues/People.html:124 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Scrips/Modify.html:88 share/html/Admin/Scrips/Modify.html:92 share/html/Admin/Users/Keys.html:80 share/html/Admin/Users/Modify.html:226 share/html/Articles/Article/Edit.html:102 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:186 share/html/Prefs/Other.html:76 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:62 share/html/SelfService/Prefs.html:79 share/html/Ticket/Modify.html:68 share/html/Ticket/ModifyAll.html:135 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:67 share/html/Ticket/ModifyPeople.html:76 share/html/Ticket/Reminders.html:63
 msgid "Save Changes"
 msgstr "Uložit změny"
 
@@ -7067,7 +7147,7 @@ msgstr ""
 
 #: share/html/Articles/Article/Elements/ShowSavedSearches:54
 msgid "Save this search"
-msgstr ""
+msgstr "Uložit tento dotaz"
 
 #: lib/RT/SharedSetting.pm:215
 #. ($self->loc( $self->ObjectName ), $name)
@@ -7076,7 +7156,7 @@ msgstr "Uložen %1 %2"
 
 #: share/html/Admin/Global/MyRT.html:73 share/html/Dashboards/Queries.html:126
 msgid "Saved Search"
-msgstr ""
+msgstr "Uložený dotaz"
 
 #: NOT FOUND IN SOURCE
 msgid "Saved Search %1 not found"
@@ -7084,7 +7164,7 @@ msgstr "Uložený dotaz %1 nenalezen"
 
 #: share/html/Elements/SavedSearches:48 share/html/Elements/Tabs:563
 msgid "Saved Searches"
-msgstr ""
+msgstr "Uložené dotazy"
 
 #: share/html/Search/Chart.html:175
 msgid "Saved charts"
@@ -7101,7 +7181,7 @@ msgstr "Uložené dotazy"
 
 #: etc/RT_Config.pm:1235
 msgid "SavedSearches"
-msgstr ""
+msgstr "Uložené dotazy"
 
 #: share/html/Admin/Elements/UpgradeHistoryRow:60
 #. ($row->{filename})
@@ -7168,7 +7248,7 @@ msgstr "Vyhledávání schvalování"
 
 #: share/html/Articles/Article/Search.html:48
 msgid "Search for articles"
-msgstr ""
+msgstr "Vyhledání článků"
 
 #: share/html/Search/Simple.html:100
 msgid "Search for tickets"
@@ -7176,7 +7256,7 @@ msgstr "Hledat požadavky"
 
 #: NOT FOUND IN SOURCE
 msgid "Search for tickets by entering %1id%2 numbers, subject words %1\"in quotes\"%2, %1queues%2 by name, Owners by %1username%2, Requestors by %1email address%2, and ticket %1statuses%2."
-msgstr "Hledat požadavky zadáním %1id%2 čísla, předmětu"
+msgstr "Vyhledání požadavků. Lze zadat %1čísla%2 požadavků, %1\"v uvozovkách\"%2 slova z předmětu, jméno %1fronty%2,  %1uživatelská jména%2 vlastníků, %1emailové adresy%2 žadatelů a %1stavy%2 požadavků."
 
 #: share/html/Search/Simple.html:63
 #. (@strong)
@@ -7189,7 +7269,7 @@ msgstr "Volby pro hledání"
 
 #: share/html/Articles/Article/Search.html:88
 msgid "Search results"
-msgstr ""
+msgstr "Výsledky vyhledávání:"
 
 #: NOT FOUND IN SOURCE
 msgid "Search results grouped by %1"
@@ -7197,7 +7277,7 @@ msgstr "Výsledky hledání seskupit podle %1"
 
 #: lib/RT/Config.pm:295
 msgid "Search results refresh interval"
-msgstr ""
+msgstr "Interval obnovování výsledků vyhledávání."
 
 #: share/html/Search/index.html:48
 msgid "Searches"
@@ -7222,19 +7302,19 @@ msgstr "Viz také:"
 
 #: lib/RT/Class.pm:89
 msgid "See articles in this class"
-msgstr ""
+msgstr "Zobrazit články ve třídě"
 
 #: lib/RT/Class.pm:90
 msgid "See changes to articles in this class"
-msgstr ""
+msgstr "Vidět změny článků v této třídě"
 
 #: lib/RT/Class.pm:87
 msgid "See that this class exists"
-msgstr ""
+msgstr "Vidět, že tato třída existuje"
 
 #: lib/RT/Class.pm:87
 msgid "SeeClass"
-msgstr ""
+msgstr "Vidět třídu"
 
 #: lib/RT/Class.pm:91 lib/RT/CustomField.pm:213 lib/RT/Queue.pm:114
 msgid "SeeCustomField"
@@ -7266,7 +7346,7 @@ msgstr "Výběr"
 
 #: share/html/Admin/Global/CustomFields/index.html:96 share/html/Elements/Tabs:164
 msgid "Select Custom Fields for Articles in all Classes"
-msgstr ""
+msgstr "Vybrat uživatelské položky pro články ze všech tříd"
 
 #: share/html/Install/DatabaseDetails.html:73
 msgid "Select Database Type"
@@ -7274,7 +7354,7 @@ msgstr "Výběr typu databáze"
 
 #: share/html/Admin/Articles/Classes/index.html:48 share/html/Admin/Articles/Classes/index.html:52
 msgid "Select a Class"
-msgstr ""
+msgstr "Vyberte třídu"
 
 #: share/html/Admin/CustomFields/index.html:96
 msgid "Select a Custom Field"
@@ -7311,11 +7391,11 @@ msgstr "Výběr uživatele"
 #: share/html/Articles/Elements/BeforeMessageBox:114
 #. ($included_topic->Name)
 msgid "Select an Article from %1"
-msgstr ""
+msgstr "Vyberte článek z téma %1"
 
 #: share/html/Articles/Elements/BeforeMessageBox:66
 msgid "Select an Article to include"
-msgstr ""
+msgstr "Vyberte článek ke vložení"
 
 #: share/html/Install/index.html:59
 msgid "Select another language"
@@ -7323,7 +7403,7 @@ msgstr "Vyberte jiný jazyk"
 
 #: lib/RT/CustomField.pm:83 lib/RT/CustomField.pm:86
 msgid "Select box"
-msgstr ""
+msgstr "Rozbalovací seznam"
 
 #: share/html/Admin/Global/CustomFields/index.html:78 share/html/Elements/Tabs:149
 msgid "Select custom fields for all queues"
@@ -7347,11 +7427,11 @@ msgstr "Vybrat uživatelské položky pro transakce s požadavky ve všech front
 
 #: lib/RT/CustomField.pm:164
 msgid "Select date"
-msgstr ""
+msgstr "Vybrat datum"
 
 #: lib/RT/CustomField.pm:173
 msgid "Select datetime"
-msgstr ""
+msgstr "Vybrat datum a čas"
 
 #: share/html/Admin/Scrips/Objects.html:64
 msgid "Select global scrip stage:"
@@ -7406,7 +7486,7 @@ msgstr "Vybrané uživatelské položky"
 msgid "Selected Queues"
 msgstr "Vybrané fronty"
 
-#: lib/RT/Crypt.pm:691
+#: lib/RT/Crypt.pm:699
 msgid "Selected key either is not trusted or doesn't exist anymore."
 msgstr "Vybraný klíč buď není důvěryhodný nebo již neexistuje."
 
@@ -7484,7 +7564,7 @@ msgstr "zář"
 
 #: share/html/Articles/Article/Elements/LinkEntryInstructions:49
 msgid "Separate multiple entries with spaces."
-msgstr ""
+msgstr "Více položek oddělujte mezerami."
 
 #: lib/RT/User.pm:1838
 msgid "Set private key"
@@ -7500,7 +7580,7 @@ msgstr "Krátke uživatelské jméno"
 
 #: lib/RT/Config.pm:527
 msgid "Should RT send you mail for ticket updates you make?"
-msgstr ""
+msgstr "Má Vám RT poslat mail, pokud jste mezi příjemci (To, Cc, Bcc) a sami požadavek aktualizujete?"
 
 #: share/html/Elements/ShowTransaction:152 share/html/Elements/Tabs:592
 msgid "Show"
@@ -7533,11 +7613,11 @@ msgstr "Zobrazit výsledky"
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:154
 #. ($Level)
 msgid "Show Tickets Properties on %1 level"
-msgstr "Zobrazit vlastnosti požadavku na %1 levelu"
+msgstr "Zobrazit vlastnosti požadavku na %1 úrovni"
 
 #: share/html/Elements/ShowHistory:58 share/html/Elements/ShowHistory:59
 msgid "Show all quoted text"
-msgstr ""
+msgstr "Zobrazit všechen citovaný text"
 
 #: share/html/Approvals/Elements/PendingMyApproval:65
 msgid "Show approved requests"
@@ -7545,7 +7625,7 @@ msgstr "Zobrazit schválené požadavky"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:71
 msgid "Show as well"
-msgstr ""
+msgstr "Další čáry pro"
 
 #: share/html/Elements/ShowHistory:69
 msgid "Show brief headers"
@@ -7561,7 +7641,7 @@ msgstr "Zobrazit úplné záhlaví"
 
 #: lib/RT/System.pm:90
 msgid "Show global templates"
-msgstr ""
+msgstr "Zobrazit globální šablony"
 
 #: lib/RT/Config.pm:367
 msgid "Show history"
@@ -7577,7 +7657,7 @@ msgstr "Zobrazit odkaz popisů"
 
 #: lib/RT/Config.pm:425
 msgid "Show no tickets for the Requestor"
-msgstr ""
+msgstr "Nezobrazit žádné požadavky žadatele"
 
 #: lib/RT/Config.pm:358
 msgid "Show oldest history first"
@@ -7601,15 +7681,15 @@ msgstr ""
 
 #: lib/RT/Config.pm:422
 msgid "Show the Requestor's 10 highest priority active tickets"
-msgstr ""
+msgstr "Zobraz 10 nejdůležitejších aktivních požadavků žadatele"
 
 #: lib/RT/Config.pm:423
 msgid "Show the Requestor's 10 highest priority inactive tickets"
-msgstr ""
+msgstr "Zobraz 10 nejdůležitějších neaktivních požadavků žadatele"
 
 #: lib/RT/Config.pm:424
 msgid "Show the Requestor's 10 highest priority tickets"
-msgstr ""
+msgstr "Zobraz 10 nejdůležitějších požadavků žadatele"
 
 #: share/html/Ticket/Elements/ClickToShowHistory:50
 msgid "Show ticket history"
@@ -7625,11 +7705,11 @@ msgstr "Zobrazit záložku Schvalování"
 
 #: lib/RT/Class.pm:89
 msgid "ShowArticle"
-msgstr ""
+msgstr "Zobrazit článek"
 
 #: lib/RT/Class.pm:90
 msgid "ShowArticleHistory"
-msgstr ""
+msgstr "Zobrazit historii článku"
 
 #: lib/RT/System.pm:87
 msgid "ShowArticlesMenu"
@@ -7641,7 +7721,7 @@ msgstr "Zobrazit záložku Správa"
 
 #: lib/RT/System.pm:90
 msgid "ShowGlobalTemplates"
-msgstr ""
+msgstr "Zobrazit globální šablony"
 
 #: lib/RT/Queue.pm:125
 msgid "ShowOutgoingEmail"
@@ -7673,16 +7753,16 @@ msgstr ""
 
 #: share/html/Admin/Tools/Shredder/index.html:74 share/html/Elements/Tabs:245 share/html/Elements/Tabs:850
 msgid "Shredder"
-msgstr "Shredder"
+msgstr "Skartovač"
 
 #: share/html/Admin/Tools/Shredder/Elements/Error/NoStorage:55
 #. ($path_tag)
 msgid "Shredder needs a directory to write dumps to. Please ensure that the directory %1 exists and that it is writable by your web server."
-msgstr "Shredder potřebuje adresář pro zápis. Ujistěte se, že adresář %1 existuje a že web server má práva zápisu."
+msgstr "Skartovač potřebuje adresář pro zápis. Ujistěte se, že adresář %1 existuje a že web server má práva zápisu."
 
 #: share/html/Dashboards/Queries.html:181
 msgid "Sidebar"
-msgstr ""
+msgstr "Postranní lišta"
 
 #: share/html/Elements/RT__Queue/ColumnMap:76
 msgid "Sign"
@@ -7691,7 +7771,7 @@ msgstr "Registrace"
 #: share/html/Admin/Queues/Modify.html:121
 #. ("<b>","</b>","<i>","</i>")
 msgid "Sign all auto-generated mail.  %1Caution%2: Enabling this option alters the signature from providing %3authentication%4 to providing %3integrity%4."
-msgstr ""
+msgstr "Podepsat všechnu automaticky vygenerovanou poštu.  %1Pozor%2: Nastavením této volby podpis již nezajišťuje %3autentizaci%4 ale pouze %3integritu%4."
 
 #: share/html/Admin/Queues/Modify.html:116
 msgid "Sign by default"
@@ -7800,9 +7880,9 @@ msgstr ""
 msgid "Stage"
 msgstr "Fáze"
 
-#: etc/RT_Config.pm:2770 etc/RT_Config.pm:2846
+#: etc/RT_Config.pm:2773 etc/RT_Config.pm:2849
 msgid "Stall"
-msgstr "Stání (Stall)"
+msgstr "Odložit"
 
 #: share/html/Search/Simple.html:85
 #. (map { "<strong>$_</strong>" } 'queue:"Example Queue"', 'owner:email@example.com')
@@ -7815,7 +7895,7 @@ msgstr "Započato"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "StartedRelative"
-msgstr ""
+msgstr "Započato před"
 
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:74 lib/RT/Tickets.pm:132 share/html/Elements/RT__Ticket/ColumnMap:190 share/html/Elements/RT__Ticket/ColumnMap:223 share/html/Elements/SelectDateType:54 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:258 share/html/Ticket/Elements/EditDates:50 share/html/Ticket/Elements/ShowDates:54 share/html/m/ticket/create:383 share/html/m/ticket/show:354
 msgid "Starts"
@@ -7823,7 +7903,7 @@ msgstr "Začíná"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "StartsRelative"
-msgstr ""
+msgstr "Začalo před"
 
 #: share/html/Admin/Users/Modify.html:152 share/html/Elements/RT__User/ColumnMap:116 share/html/User/Prefs.html:143
 msgid "State"
@@ -7896,7 +7976,7 @@ msgstr "Předmět"
 
 #: share/html/Admin/Queues/Modify.html:76
 msgid "Subject Tag"
-msgstr "Předmět značky"
+msgstr "Značka v předmětu e-mailu"
 
 #: NOT FOUND IN SOURCE
 msgid "Subject changed to %1"
@@ -7904,7 +7984,7 @@ msgstr "Předmět změněn na %1"
 
 #: share/html/Elements/RT__Queue/ColumnMap:71
 msgid "SubjectTag"
-msgstr "Předmět značky"
+msgstr "Značka v předmětu e-mailu"
 
 #: share/html/Elements/Submit:99
 msgid "Submit"
@@ -7951,7 +8031,7 @@ msgstr "Úspěšně zašifrovaná data"
 
 #: share/html/Articles/Article/Elements/EditBasics:53 share/html/Articles/Article/Elements/ShowSearchCriteria:67 share/html/Elements/RT__Article/ColumnMap:66 share/html/Elements/Tabs:902
 msgid "Summary"
-msgstr "Celkem"
+msgstr "Shrnutí"
 
 #: lib/RT/Report/Tickets.pm:223
 msgid "Summary of Created-LastUpdated"
@@ -8005,7 +8085,7 @@ msgstr "Super uživatel"
 msgid "Suspended"
 msgstr "Pozastaveno"
 
-#: lib/RT/Interface/Web.pm:3630
+#: lib/RT/Interface/Web.pm:3666
 msgid "System"
 msgstr ""
 
@@ -8095,7 +8175,7 @@ msgstr ""
 
 #: lib/RT/Template.pm:483
 msgid "Template is empty"
-msgstr "Šablona je prázdn"
+msgstr "Šablona je prázdná"
 
 #: lib/RT/Template.pm:317
 msgid "Template is in use"
@@ -8130,7 +8210,7 @@ msgstr "Šablony"
 #: share/html/Admin/Queues/Templates.html:60
 #. ($QueueObj->Name)
 msgid "Templates for queue %1"
-msgstr "Šablony pro fronu %1"
+msgstr "Šablony pro frontu %1"
 
 #: share/html/Admin/Tools/Theme.html:95
 msgid "Text"
@@ -8223,7 +8303,7 @@ msgstr ""
 
 #: share/html/Dashboards/Elements/Deleted:53
 msgid "The following queries have been deleted and each will be removed from the dashboard once its pane is updated."
-msgstr ""
+msgstr "Následující dotazy byly smazány či přejmenovány. Při jakékoliv úpravě řídícího panelu budou z něho vymazány."
 
 #: share/html/Dashboards/Elements/HiddenSearches:74
 msgid "The following queries may not be visible to all users who can see this dashboard."
@@ -8278,7 +8358,7 @@ msgstr ""
 msgid "Theme"
 msgstr "Motiv"
 
-#: lib/RT/Crypt.pm:718
+#: lib/RT/Crypt.pm:726
 msgid "There are several keys suitable for encryption."
 msgstr "Více klíčů je vhodných pro šifrování."
 
@@ -8295,7 +8375,7 @@ msgstr ""
 msgid "There is more than one group with the name '%1'.  This may cause inconsistency in parts of the admin interface, and therefore it's recommended you rename the conflicting groups."
 msgstr ""
 
-#: lib/RT/Crypt.pm:710
+#: lib/RT/Crypt.pm:718
 msgid "There is no key suitable for encryption."
 msgstr "Žádný klíč není vhodný pro šifrování."
 
@@ -8304,7 +8384,7 @@ msgstr "Žádný klíč není vhodný pro šifrování."
 msgid "There is no mapping for statuses between lifecycle %1 and %2. Contact your system administrator."
 msgstr ""
 
-#: lib/RT/Crypt.pm:714
+#: lib/RT/Crypt.pm:722
 msgid "There is one suitable key, but trust level is not set."
 msgstr ""
 
@@ -8323,7 +8403,7 @@ msgstr "Tyto volby nastavení zahrnují některé základní údaje potřebné k
 
 #: lib/RT/CustomField.pm:317 lib/RT/CustomField.pm:647
 msgid "This Custom Field can not have list of values"
-msgstr ""
+msgstr "Tato uživatelská položka nemá seznam hodnot"
 
 #: lib/RT/Class.pm:359
 msgid "This class does not apply to that object"
@@ -8339,13 +8419,13 @@ msgstr "Tato uživatelská položka se nevztahuje k tomuto objektu"
 
 #: lib/RT/CustomField.pm:1043 lib/RT/CustomField.pm:304
 msgid "This custom field has no Render Types"
-msgstr ""
+msgstr "Tato uživatelská položka nemá volitelný způsob zobrazení"
 
 #: share/html/Admin/Tools/Configuration.html:52
 msgid "This feature is only available to system administrators"
 msgstr "Tato funkce je dostupná jen správcům systému"
 
-#: share/html/Admin/Tools/Queries.html:51 share/html/Admin/Tools/Theme.html:225
+#: share/html/Admin/Tools/Queries.html:51 share/html/Admin/Tools/Theme.html:226
 msgid "This feature is only available to system administrators."
 msgstr "Tato funkce je dostupná pouze pro systémové administrátory."
 
@@ -8355,7 +8435,7 @@ msgstr "Může to znamenat, že adresář '%1' není přístupný pro zápis neb
 
 #: share/html/Admin/Tools/Queries.html:63
 msgid "This server process has recorded no SQL queries."
-msgstr ""
+msgstr "Zatím nejsou nahrány žádné SQL příkazy."
 
 #: share/html/Ticket/Elements/ShowDependencyStatus:57
 msgid "This ticket cannot be resolved until it is approved."
@@ -8377,7 +8457,7 @@ msgstr "Tato transakce vypadá, že nemá obsah"
 #: share/html/Ticket/Elements/ShowRequestorTickets:57
 #. ($Rows, $Description)
 msgid "This user's %1 highest priority %2 tickets"
-msgstr ""
+msgstr "%1 nejdůležitějších %2 požadavků uživatele"
 
 #: share/html/User/Search.html:53
 msgid "This will search for users by looking in the following fields:"
@@ -8403,7 +8483,11 @@ msgstr "Požadavek #%1 Maxi aktualizace: %2"
 #: share/html/Ticket/Graphs/index.html:109
 #. ($id)
 msgid "Ticket #%1 relationships graph"
-msgstr ""
+msgstr "Diagram vztahů pro požadavek #%1"
+
+#: NOT FOUND IN SOURCE
+msgid "Ticket #%1:"
+msgstr "Požadavek #%1:"
 
 #: share/html/Approvals/Elements/ShowDependency:69
 #. ($link->BaseObj->Id, $link->BaseObj->Subject)
@@ -8451,11 +8535,11 @@ msgstr "Transakce s požadavky"
 
 #: share/html/Ticket/Update.html:65
 msgid "Ticket and Transaction"
-msgstr ""
+msgstr "Požadavek a transakce"
 
 #: lib/RT/Config.pm:280
 msgid "Ticket composition"
-msgstr ""
+msgstr "Vytváření požadavku"
 
 #: lib/RT/Tickets.pm:1735
 msgid "Ticket content"
@@ -8491,7 +8575,7 @@ msgstr "Stav požadavku změněn"
 
 #: share/html/Articles/Article/ExtractFromTicket.html:63
 msgid "Ticket update"
-msgstr ""
+msgstr "Aktualizace/části požadavku"
 
 #: lib/RT/Search/FromSQL.pm:80
 #. (ref $self)
@@ -8514,7 +8598,7 @@ msgstr ""
 
 #: share/html/m/_elements/menu:76
 msgid "Tickets I own"
-msgstr ""
+msgstr "Požadavky, které vlastním"
 
 #: share/html/Approvals/Elements/ShowDependency:50
 msgid "Tickets which depend on this approval:"
@@ -8560,6 +8644,10 @@ msgstr "Nadpis"
 msgid "To"
 msgstr "Komu"
 
+#: NOT FOUND IN SOURCE
+msgid "To create an Article, you must first create a Class and have access to that Class."
+msgstr "Před vytvořením článku musíte nejdříve vytvořit třídu pro článek a musíte mít přístup k této třídě."
+
 #: share/html/Elements/Footer:59
 #. ('<a href="mailto:sales@bestpractical.com">sales@bestpractical.com</a>')
 msgid "To inquire about support, training, custom development or licensing, please contact %1."
@@ -8568,12 +8656,12 @@ msgstr "K získání informací o podpoře, tréninku, zákaznických úpravách
 #: share/html/Admin/Tools/Queries.html:82
 #. ($count)
 msgid "Toggle %quant(%1,query,queries)"
-msgstr ""
+msgstr "Zobrazit/skrýt SQL %quant(%1,příkaz,příkazy,příkazy)"
 
 #: share/html/Admin/Tools/Queries.html:118
 #. ()
 msgid "Toggle stack trace"
-msgstr ""
+msgstr "Zobrazit/skrýt průběh volání"
 
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:78 lib/RT/Tickets.pm:131 share/html/Elements/RT__Ticket/ColumnMap:200 share/html/Elements/RT__Ticket/ColumnMap:233 share/html/Search/Elements/BuildFormatString:100
 msgid "Told"
@@ -8581,7 +8669,7 @@ msgstr "Poslední kontakt"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "ToldRelative"
-msgstr ""
+msgstr "Poslední kontakt"
 
 #: share/html/Elements/Tabs:222 share/html/Elements/Tabs:510 share/html/Tools/index.html:48
 msgid "Tools"
@@ -8589,11 +8677,11 @@ msgstr "Nástroje"
 
 #: share/html/Admin/Articles/Elements/Topics:56
 msgid "Topic Name"
-msgstr ""
+msgstr "Název tématu"
 
 #: lib/RT/Article.pm:454
 msgid "Topic membership added"
-msgstr ""
+msgstr "Přídáno téma"
 
 #: lib/RT/Article.pm:489
 msgid "Topic membership removed"
@@ -8601,11 +8689,11 @@ msgstr ""
 
 #: share/html/Admin/Articles/Elements/Topics:135 share/html/Admin/Articles/Elements/Topics:147 share/html/Admin/Articles/Elements/Topics:169
 msgid "Topic not found"
-msgstr ""
+msgstr "Téma nenalezeno"
 
 #: share/html/Articles/Article/Display.html:59 share/html/Articles/Article/Edit.html:87 share/html/Articles/Article/Edit.html:91 share/html/Articles/Article/Elements/ShowSearchCriteria:132 share/html/Elements/RT__Article/ColumnMap:80 share/html/Elements/Tabs:216 share/html/Elements/Tabs:426 share/html/Elements/Tabs:505
 msgid "Topics"
-msgstr ""
+msgstr "Témata"
 
 #: lib/RT/Report/Tickets.pm:939
 msgid "Total"
@@ -8677,7 +8765,7 @@ msgstr ""
 
 #: lib/RT/Tickets.pm:142
 msgid "TransactionDate"
-msgstr ""
+msgstr "Datum transakce"
 
 #: share/html/Elements/Tabs:304
 msgid "Transactions"
@@ -8709,7 +8797,7 @@ msgstr "Typ"
 
 #: share/html/Articles/Article/Elements/LinkEntryInstructions:48
 msgid "Type <b>a:</b> before article numbers and <b>t:</b> before ticket numbers."
-msgstr ""
+msgstr "Vložte <b>a:</b> před číslo článku a <b>t:</b> před číslo požadavku."
 
 #: lib/RT/CustomField.pm:993
 #. ($self->FriendlyTypeComposite( $old ),        $self->FriendlyTypeComposite( $composite ),)
@@ -8745,17 +8833,17 @@ msgstr "Nelze určit typ objektu nebo id"
 
 #: share/html/Articles/Article/Delete.html:87 share/html/Articles/Article/Edit.html:198
 msgid "Unable to load article"
-msgstr ""
+msgstr "Nemohu načíst článek"
 
-#: share/html/Admin/Tools/Theme.html:270
+#: share/html/Admin/Tools/Theme.html:271
 #. ($msg)
 msgid "Unable to set UserCSS: %1"
 msgstr ""
 
-#: share/html/Admin/Tools/Theme.html:242
+#: share/html/Admin/Tools/Theme.html:243
 #. ($msg)
 msgid "Unable to set UserLogo: %1"
-msgstr ""
+msgstr "Nemohu nastavit uživatelské logo: %1"
 
 #: share/html/Search/Elements/EditSearches:280
 #. ($msg)
@@ -8777,6 +8865,10 @@ msgstr ""
 msgid "Unable to subscribe to dashboard %1: Permission Denied"
 msgstr ""
 
+#: NOT FOUND IN SOURCE
+msgid "Unable to subscribe to dashboard %1: Permission denied"
+msgstr "Nemohu se přihlásit k řídícímu panelu %1: Přístup zakázán"
+
 #: share/html/Errors/WebRemoteUser/NoInternalUser:48 share/html/Errors/WebRemoteUser/NoRemoteUser:48
 msgid "Unauthorized"
 msgstr ""
@@ -8784,9 +8876,9 @@ msgstr ""
 #: share/html/Ticket/Elements/PreviewScrips:60 share/html/Ticket/Elements/ShowSimplifiedRecipients:100
 #. (RT->Config->Get('WebPath')."/Ticket/ModifyPeople.html?id=".$TicketObj->Id,)
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
-msgstr ""
+msgstr "Pokud nechcete poslat tuto konkrétní zprávu některým stálým příjemcům, odškrtněte je v příslušných políčkách. Trvalé změny příjemců se nastavují na záložce <a href=\"%1\">Uživatelé</a>."
 
-#: etc/RT_Config.pm:2794 etc/RT_Config.pm:2870
+#: etc/RT_Config.pm:2797 etc/RT_Config.pm:2873
 msgid "Undelete"
 msgstr "Vrátit smazání"
 
@@ -8828,7 +8920,7 @@ msgstr "Neznámý typ pozorovatele %1"
 #: share/html/Search/Simple.html:81
 #. ($status_str)
 msgid "Unless you specify a specific status, only tickets with active statuses (%1) are searched."
-msgstr ""
+msgstr "Pokud nezadáte konkrétní stav či typ stavu, budou vyhledány pouze aktivní požadavky (%1)."
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:65
 msgid "Unlimit"
@@ -8840,7 +8932,7 @@ msgstr "Neomezeně"
 
 #: share/html/Elements/RT__Dashboard/ColumnMap:58
 msgid "Unnamed dashboard"
-msgstr ""
+msgstr "Nepojmenovaný řídící panel"
 
 #: share/html/Articles/Article/Elements/SelectSavedSearches:60 share/html/Elements/RT__SavedSearch/ColumnMap:58 share/html/Search/Elements/SelectSearchesForObjects:63
 msgid "Unnamed search"
@@ -8848,11 +8940,11 @@ msgstr "Nepojmenovaný dotaz"
 
 #: etc/initialdata:852
 msgid "Unowned Tickets"
-msgstr ""
+msgstr "Požadavky bez vlastníka"
 
 #: share/html/m/_elements/menu:79
 msgid "Unowned tickets"
-msgstr "Požadavky bez vlastíka"
+msgstr "Požadavky bez vlastníka"
 
 #: lib/RT/Handle.pm:705
 msgid "Unprivileged"
@@ -8936,7 +9028,7 @@ msgstr "Typ aktualizace nebyl ani korespondence ani komentář."
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "UpdateStatus"
-msgstr ""
+msgstr "Nové zprávy"
 
 #: lib/RT/CustomField.pm:1829 lib/RT/Tickets.pm:157 share/html/Elements/SelectDateType:56 share/html/Ticket/Elements/ShowDates:79 share/html/m/ticket/show:379
 msgid "Updated"
@@ -8958,7 +9050,7 @@ msgstr "Odeslat"
 
 #: share/html/Admin/Tools/Theme.html:61
 msgid "Upload a new logo"
-msgstr ""
+msgstr "Nahrát nové logo"
 
 #: lib/RT/CustomField.pm:134
 msgid "Upload multiple files"
@@ -8998,11 +9090,15 @@ msgstr "Použít SSL?"
 
 #: lib/RT/Config.pm:240
 msgid "Use a two column layout for create and update forms?"
-msgstr ""
+msgstr "Uspořádat stránku pro tvorbu a aktualizaci požadavků do dvou sloupců?"
 
 #: lib/RT/Config.pm:193
 msgid "Use autocomplete to find owners?"
-msgstr ""
+msgstr "Použít automatické doplňování pro vyhledání vlastníků?"
+
+#: NOT FOUND IN SOURCE
+msgid "Use css rules to display text monospaced and with formatting preserved, but wrap as needed.  This does not work well with IE6 and you should use the previous option"
+msgstr "Pro zobrazení textů se použije strojový font, snaží se zachovat formátování, řádky se zalamují dle potřeby. Nefunguje dobře v IE6."
 
 #: share/html/Widgets/Form/Boolean:68
 #. ($DefaultValue? loc('Yes'): loc('No'))
@@ -9020,7 +9116,11 @@ msgstr "Použít nastavení systému (%1)"
 
 #: share/html/Articles/Article/ExtractFromTicket.html:58
 msgid "Use the dropdown menus to select which ticket updates you want to extract into a new article."
-msgstr ""
+msgstr "Použijte rozbalovací nabídky pro určení, které části požadavku chcete vložit do nového článku."
+
+#: NOT FOUND IN SOURCE
+msgid "Use this to protect the format of plain text"
+msgstr "Zachová se tím formátování textových příloh"
 
 #: share/html/Elements/RT__Template/ColumnMap:81
 msgid "Used by scrips"
@@ -9050,7 +9150,7 @@ msgstr "Uživatelem definované podmínky a akce"
 msgid "User Defined conditions and results"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3648
+#: lib/RT/Interface/Web.pm:3684
 msgid "User Groups"
 msgstr ""
 
@@ -9086,11 +9186,11 @@ msgstr "Uživatel vytvořen"
 
 #: lib/RT/User.pm:1152
 msgid "User disabled"
-msgstr ""
+msgstr "Uživatel vyřazen"
 
 #: lib/RT/User.pm:1154
 msgid "User enabled"
-msgstr ""
+msgstr "Uživatel povolen"
 
 #: share/html/Admin/Users/Keys.html:56
 msgid "User has empty email address"
@@ -9117,7 +9217,7 @@ msgstr "Uživatelské jméno"
 msgid "Username format"
 msgstr "Formát uživatelského jména"
 
-#: lib/RT/CustomField.pm:1746 lib/RT/Interface/Web.pm:3701 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:500 share/html/Elements/Tabs:67
+#: lib/RT/CustomField.pm:1746 lib/RT/Interface/Web.pm:3737 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:500 share/html/Elements/Tabs:67
 msgid "Users"
 msgstr "Uživatelé"
 
@@ -9140,7 +9240,7 @@ msgstr "Validace"
 
 #: share/html/Admin/Articles/Classes/Modify.html:105 share/html/Admin/Tools/Configuration.html:114 share/html/Admin/Tools/Configuration.html:214 share/html/Admin/Tools/Configuration.html:285 share/html/Admin/Tools/Configuration.html:62
 msgid "Value"
-msgstr ""
+msgstr "Hodnota"
 
 #: share/html/Admin/CustomFields/Modify.html:149 share/html/Admin/Elements/EditCustomField:81
 msgid "Values"
@@ -9156,31 +9256,31 @@ msgstr "Verze"
 
 #: lib/RT/Queue.pm:118
 msgid "View Scrip templates"
-msgstr ""
+msgstr "Zobrazit šablony pro skripy"
 
 #: lib/RT/Queue.pm:121
 msgid "View Scrips"
-msgstr ""
+msgstr "Zobrazit skripy"
 
 #: lib/RT/Class.pm:91 lib/RT/Queue.pm:114
 msgid "View custom field values"
-msgstr ""
+msgstr "Zobrazit hodnoty uživatelské položky"
 
 #: lib/RT/CustomField.pm:213
 msgid "View custom fields"
-msgstr ""
+msgstr "Zobrazit uživatelské položky"
 
 #: lib/RT/Queue.pm:125
 msgid "View exact outgoing email messages and their recipients"
-msgstr ""
+msgstr "Zobrazit odchozí e-mailové zprávy a jejich příjemce"
 
 #: lib/RT/Group.pm:93
 msgid "View group"
-msgstr ""
+msgstr "Zobrazit skupinu"
 
 #: lib/RT/Group.pm:94
 msgid "View group dashboards"
-msgstr ""
+msgstr "Zobrazit řídící panely skupiny"
 
 #: lib/RT/Dashboard.pm:85
 msgid "View personal dashboards"
@@ -9188,11 +9288,11 @@ msgstr "Zobrazit osobní řídící panely"
 
 #: lib/RT/Queue.pm:109
 msgid "View queue"
-msgstr ""
+msgstr "Zobrazit frontu"
 
 #: lib/RT/Group.pm:92
 msgid "View saved searches"
-msgstr ""
+msgstr "Zobrazit uložené dotazy"
 
 #: lib/RT/Dashboard.pm:80
 msgid "View system dashboards"
@@ -9200,11 +9300,11 @@ msgstr "Zobrazit systémové řídící panely"
 
 #: lib/RT/Queue.pm:124
 msgid "View ticket private commentary"
-msgstr ""
+msgstr "Zobrazit komentáře k požadavku"
 
 #: lib/RT/Queue.pm:123
 msgid "View ticket summaries"
-msgstr ""
+msgstr "Zobrazit základní údaje požadavku"
 
 #: lib/RT/Date.pm:118
 msgid "W3CDTF"
@@ -9216,11 +9316,11 @@ msgstr ""
 
 #: lib/RT/Config.pm:258
 msgid "WYSIWYG composer height"
-msgstr "Výška WYSIWYG tvůrce"
+msgstr "Výška WYSIWYG editoru"
 
 #: lib/RT/Config.pm:249
 msgid "WYSIWYG message composer"
-msgstr "WYSIWYG tvůrce zpráv"
+msgstr "WYSIWYG editor zpráv"
 
 #: share/html/Elements/CryptStatus:187
 msgid "Warning! This is NOT signed!"
@@ -9260,7 +9360,7 @@ msgstr "Jsme schopni nalézt vaši databázi a připojit se jako DBA. Pro pokra�
 
 #: lib/RT/CustomField.pm:1057 lib/RT/CustomField.pm:1859
 msgid "We can't currently render as a List when basing categories on another custom field.  Please use another render type."
-msgstr ""
+msgstr "Pokud jsou použity kategorie z jiné uživatelské položky, nelze pro zobrazení v současné verzi použít Seznam hodnot. Prosím, použijte jiný způsob zobrazení položky."
 
 #: share/html/Install/DatabaseDetails.html:55
 msgid "We need to know the name of the database RT will use and where to find it.  We also need to know the username and password of the user RT should use. RT can create the database and user for you, which is why we ask for the username and password of a user with DBA privileges.  During step 6 of the installation process we will use this information to create and initialize RT's database."
@@ -9326,6 +9426,10 @@ msgstr "Upozornit vlastníka a všechny AdminCc, jejichž schválení se očeká
 msgid "When anything happens"
 msgstr "Stane-li se cokoli"
 
+#: NOT FOUND IN SOURCE
+msgid "When the WYSIWYG editor is not enabled, this setting determines whether automatic line wraps in the ticket message box are sent to RT or not."
+msgstr "Pouze pokud není WYSIWYG editor. Určuje, jak se má automatické odřádkování zapsat do vlastní zprávy."
+
 #: share/html/Install/DatabaseDetails.html:58
 msgid "When you click on 'Check Database Connectivity' there may be a small delay while RT tries to connect to your database"
 msgstr "Když kliknete na 'Kontrola připojení k databázi', tak může nastat malé zpoždění, během kterého se RT snaží připojit k vaší databázi"
@@ -9336,11 +9440,11 @@ msgstr "Je-li uzavřen požadavek"
 
 #: etc/initialdata:139 etc/upgrade/4.0.3/content:15
 msgid "Whenever a ticket is forwarded"
-msgstr ""
+msgstr "Je-li požadavek přeposlán"
 
 #: etc/initialdata:195 etc/upgrade/3.8.3/content:6
 msgid "Whenever a ticket is rejected"
-msgstr ""
+msgstr "Je-li požadavek zamítnut"
 
 #: etc/initialdata:214 etc/upgrade/3.7.1/content:11
 msgid "Whenever a ticket is reopened"
@@ -9352,7 +9456,7 @@ msgstr "Je-li vyřešen požadavek"
 
 #: etc/initialdata:132 etc/upgrade/4.0.3/content:8
 msgid "Whenever a ticket or transaction is forwarded"
-msgstr ""
+msgstr "Je-li přeposlán požadavek či transakce"
 
 #: etc/initialdata:174
 msgid "Whenever a ticket's owner changes"
@@ -9372,7 +9476,7 @@ msgstr "Změní-li se stav požadavku"
 
 #: etc/initialdata:146 etc/upgrade/4.0.3/content:22
 msgid "Whenever a transaction is forwarded"
-msgstr ""
+msgstr "Je-li transakce přeposlána"
 
 #: etc/initialdata:202
 msgid "Whenever a user-defined condition occurs"
@@ -9404,7 +9508,7 @@ msgstr "Zaměstnání"
 
 #: share/html/Elements/RT__User/ColumnMap:86
 msgid "Work Phone"
-msgstr ""
+msgstr "Pracovní telefon"
 
 #: share/html/Ticket/Elements/ShowBasics:65 share/html/Tools/MyDay.html:62 share/html/m/ticket/reply:81 share/html/m/ticket/show:227
 msgid "Worked"
@@ -9519,7 +9623,7 @@ msgstr ""
 msgid "You have enabled encryption support but have not set a correspondence address for this queue."
 msgstr ""
 
-#: share/html/SelfService/Display.html:104
+#: share/html/SelfService/Display.html:111
 msgid "You have no permission to create tickets in that queue."
 msgstr "V této frontě nemáte práva vytvářet požadavky."
 
@@ -9537,7 +9641,7 @@ msgstr "Musíte zadat administrativní heslo"
 
 #: share/html/Admin/Tools/Queries.html:61
 msgid "You must set StatementLog to true to enable this query history page."
-msgstr "Musíte nastavit StatementLog na true, aby byl povolen tento dotaz historii stránky."
+msgstr "Musíte nastavit StatementLog na true, aby se ukládali SQL příkazy a bylo je možné prohlížet."
 
 #: NOT FOUND IN SOURCE
 msgid "You must set a comment address for this queue in order to configure a GnuPG private key."
@@ -9584,7 +9688,7 @@ msgstr "Váš systém podporuje automatické barevné návrhy pro: %1"
 
 #: lib/RT/Interface/Web.pm:816
 msgid "Your username or password is incorrect"
-msgstr "Vaše uživatelské jméno nebo heslo je nesprávné"
+msgstr "Vaše uživatelské jméno nebo heslo je chybně"
 
 #: share/html/Admin/Users/Modify.html:158 share/html/Elements/RT__User/ColumnMap:121 share/html/User/Prefs.html:147
 msgid "Zip"
@@ -9604,11 +9708,15 @@ msgstr "[nezadáno]"
 
 #: lib/RT/Transaction.pm:868
 msgid "a custom field"
-msgstr "vlastní pole"
+msgstr "uživatelská položka"
 
 #: share/html/Ticket/Elements/ShowRequestorTicketsActive:48
 msgid "active"
-msgstr "aktivní"
+msgstr "aktivních"
+
+#: NOT FOUND IN SOURCE
+msgid "add <pre> tag around plain text attachments"
+msgstr "Použít značku <pre> při zobrazení textových příloh"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:100 share/html/Articles/Article/Elements/ShowSearchCriteria:108 share/html/Elements/SelectDateRelation:59
 msgid "after"
@@ -9644,7 +9752,7 @@ msgstr "před"
 
 #: share/html/Admin/Global/MyRT.html:86
 msgid "body"
-msgstr "telo"
+msgstr "tělo"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:54
 msgid "bottom to top"
@@ -9656,7 +9764,7 @@ msgstr "Zaškrtněte toto políčko pro použití této globální třídy na v�
 
 #: share/html/Admin/CustomFields/Objects.html:64
 msgid "check this box to apply this Custom Field to all objects."
-msgstr "Zaškrtněte toto políčko pro použití Vlastního pole na všechny objekty."
+msgstr "Zaškrtněte toto políčko pro použití uživatelské položky na všechny objekty."
 
 #: share/html/Admin/Scrips/Objects.html:71
 msgid "check this box to apply this scrip to all objects."
@@ -9664,11 +9772,11 @@ msgstr ""
 
 #: share/html/Admin/Articles/Classes/Objects.html:58
 msgid "check this box to remove this Class globally and be able to choose specific Queues."
-msgstr "Zaškrtněte toto políčko pro odstranení této třídy globálně a musí být schopen vybrat konkrétní fronty."
+msgstr "Zaškrtněte toto políčko pro odstranení této třídy globálně, požé budet schopni ji přiřadit ke konkrétním frontám."
 
 #: share/html/Admin/CustomFields/Objects.html:59
 msgid "check this box to remove this Custom Field from all objects and be able to choose specific objects."
-msgstr ""
+msgstr "Zatrhněte toto políčko a po odeslání se zruší globální přiřazení uživatelské položky. Poté budete schopni přiřadit položku konkrétním objektům."
 
 #: share/html/Admin/Scrips/Objects.html:59
 msgid "check this box to remove this scrip from all objects and be able to choose specific objects."
@@ -9692,7 +9800,11 @@ msgstr ""
 
 #: lib/RT/Interface/Web.pm:1607 lib/RT/Interface/Web.pm:1616
 msgid "create a ticket"
-msgstr ""
+msgstr "vytvořit požadavek"
+
+#: NOT FOUND IN SOURCE
+msgid "custom field '%1'"
+msgstr "uživatelská položka '%1'"
 
 #: share/html/Dashboards/Subscription.html:96
 msgid "daily"
@@ -9717,7 +9829,7 @@ msgstr "smazán"
 
 #: NOT FOUND IN SOURCE
 msgid "display wrapped and formatted plain text attachments"
-msgstr "zobrazit zabalené a formátovány přílohy ve formátu prostého textu"
+msgstr "Zobrazit formátované přílohy jako prostý text"
 
 #: share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectMatch:58 share/html/Search/Elements/PickBasics:74
 msgid "doesn't match"
@@ -9733,7 +9845,7 @@ msgstr "trvání"
 
 #: lib/RT/User.pm:281
 msgid "empty name"
-msgstr ""
+msgstr "nezadáno uživatelské jméno"
 
 #: share/html/Elements/SelectEqualityOperator:61
 msgid "equal to"
@@ -9813,11 +9925,11 @@ msgstr ""
 #. ($Class->Name)
 #. ($class->Name)
 msgid "in class %1"
-msgstr ""
+msgstr "ve třídě %1"
 
 #: share/html/Ticket/Elements/ShowRequestorTicketsInactive:48
 msgid "inactive"
-msgstr "neaktivní"
+msgstr "neaktivních"
 
 #: share/html/Admin/Elements/EditRights:185
 #. ($inc)
@@ -9883,11 +9995,11 @@ msgstr "minut"
 
 #: lib/RT/Interface/Web.pm:1609
 msgid "modify RT's configuration"
-msgstr ""
+msgstr "upravit konfiguraci RT"
 
 #: lib/RT/Interface/Web.pm:1612
 msgid "modify a dashboard"
-msgstr ""
+msgstr "upravit řídící panel"
 
 #: lib/RT/Interface/Web.pm:1615
 msgid "modify or access a search"
@@ -10025,7 +10137,7 @@ msgstr "odložený"
 
 #: share/html/Admin/Tools/Queries.html:88
 msgid "statement"
-msgstr "prohlášení"
+msgstr "SQL příkaz"
 
 #: NOT FOUND IN SOURCE
 msgid "summary"
@@ -10089,7 +10201,7 @@ msgstr "neomezene"
 
 #: lib/RT/Interface/Web.pm:1608 lib/RT/Interface/Web.pm:1613 lib/RT/Interface/Web.pm:1617
 msgid "update a ticket"
-msgstr ""
+msgstr "aktualizovat požadavek"
 
 #: lib/RT/Interface/Web.pm:1610
 msgid "update an approval"
@@ -10097,7 +10209,7 @@ msgstr ""
 
 #: lib/RT/Interface/Web.pm:1611
 msgid "update an article"
-msgstr ""
+msgstr "aktualizovat článek"
 
 #: share/html/Admin/Elements/EditRights:64
 msgid "user"

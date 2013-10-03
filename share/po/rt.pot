@@ -1243,7 +1243,7 @@ msgstr ""
 msgid "Automatic account setup failed"
 msgstr ""
 
-#: share/html/Admin/Tools/Theme.html:310
+#: share/html/Admin/Tools/Theme.html:311
 #. ($valid_image_types)
 msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 msgstr ""
@@ -2491,7 +2491,7 @@ msgstr ""
 msgid "Date format"
 msgstr ""
 
-#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:633 share/html/SelfService/Display.html:66 share/html/Ticket/Create.html:253 share/html/Ticket/Elements/ShowSummary:84 share/html/Ticket/ModifyAll.html:68 share/html/m/ticket/create:377 share/html/m/ticket/show:344
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:633 share/html/SelfService/Display.html:72 share/html/Ticket/Create.html:253 share/html/Ticket/Elements/ShowSummary:84 share/html/Ticket/ModifyAll.html:68 share/html/m/ticket/create:377 share/html/m/ticket/show:344
 msgid "Dates"
 msgstr ""
 
@@ -2528,7 +2528,7 @@ msgstr ""
 msgid "DefaultFormat"
 msgstr ""
 
-#: etc/RT_Config.pm:2766 etc/RT_Config.pm:2842 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:864 share/html/Elements/Tabs:889 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:2769 etc/RT_Config.pm:2845 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:864 share/html/Elements/Tabs:889 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
 msgid "Delete"
 msgstr ""
 
@@ -3050,7 +3050,7 @@ msgstr ""
 msgid "Error"
 msgstr ""
 
-#: share/html/Search/Chart:459
+#: share/html/Search/Chart:460
 #. ($error)
 msgid "Error plotting chart: %1"
 msgstr ""
@@ -3734,7 +3734,7 @@ msgstr ""
 msgid "If you've changed the Port that RT runs on, you'll need to restart the server in order to log in."
 msgstr ""
 
-#: share/html/Admin/Queues/People.html:124 share/html/Ticket/Modify.html:66 share/html/Ticket/ModifyAll.html:136 share/html/Ticket/ModifyPeople.html:76
+#: share/html/Admin/Queues/People.html:124 share/html/Ticket/Modify.html:68 share/html/Ticket/ModifyAll.html:136 share/html/Ticket/ModifyPeople.html:76
 msgid "If you've updated anything above, be sure to"
 msgstr ""
 
@@ -5253,7 +5253,7 @@ msgstr ""
 msgid "No permission to create tickets in the queue '%1'"
 msgstr ""
 
-#: share/html/SelfService/Display.html:137
+#: share/html/SelfService/Display.html:144
 msgid "No permission to display that ticket"
 msgstr ""
 
@@ -5618,7 +5618,7 @@ msgstr ""
 msgid "Open Inactive Tickets"
 msgstr ""
 
-#: etc/RT_Config.pm:2754 etc/RT_Config.pm:2783 etc/RT_Config.pm:2830 etc/RT_Config.pm:2859
+#: etc/RT_Config.pm:2757 etc/RT_Config.pm:2786 etc/RT_Config.pm:2833 etc/RT_Config.pm:2862
 msgid "Open It"
 msgstr ""
 
@@ -6089,7 +6089,7 @@ msgstr ""
 msgid "Queue id"
 msgstr ""
 
-#: lib/RT/CustomField.pm:285 share/html/SelfService/Display.html:102
+#: lib/RT/CustomField.pm:285 share/html/SelfService/Display.html:109
 msgid "Queue not found"
 msgstr ""
 
@@ -6254,7 +6254,7 @@ msgstr ""
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr ""
 
-#: etc/RT_Config.pm:2786 etc/RT_Config.pm:2790 etc/RT_Config.pm:2862 etc/RT_Config.pm:2866
+#: etc/RT_Config.pm:2789 etc/RT_Config.pm:2793 etc/RT_Config.pm:2865 etc/RT_Config.pm:2869
 msgid "Re-open"
 msgstr ""
 
@@ -6385,7 +6385,7 @@ msgstr ""
 msgid "Refused to add link which would create a circular relationship"
 msgstr ""
 
-#: etc/RT_Config.pm:2762 etc/RT_Config.pm:2778 etc/RT_Config.pm:2838 etc/RT_Config.pm:2854
+#: etc/RT_Config.pm:2765 etc/RT_Config.pm:2781 etc/RT_Config.pm:2841 etc/RT_Config.pm:2857
 msgid "Reject"
 msgstr ""
 
@@ -6510,7 +6510,7 @@ msgstr ""
 msgid "Residence"
 msgstr ""
 
-#: etc/RT_Config.pm:2758 etc/RT_Config.pm:2774 etc/RT_Config.pm:2834 etc/RT_Config.pm:2850 share/html/Search/Elements/EditFormat:75
+#: etc/RT_Config.pm:2761 etc/RT_Config.pm:2777 etc/RT_Config.pm:2837 etc/RT_Config.pm:2853 share/html/Search/Elements/EditFormat:75
 msgid "Resolve"
 msgstr ""
 
@@ -6598,7 +6598,7 @@ msgstr ""
 msgid "Role group exists already"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3673
+#: lib/RT/Interface/Web.pm:3709
 msgid "Roles"
 msgstr ""
 
@@ -6647,7 +6647,7 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-#: share/html/Admin/Articles/Classes/GroupRights.html:57 share/html/Admin/Articles/Classes/Modify.html:130 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:91 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:93 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:156 share/html/Admin/Queues/People.html:124 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Scrips/Modify.html:88 share/html/Admin/Scrips/Modify.html:92 share/html/Admin/Users/Keys.html:80 share/html/Admin/Users/Modify.html:226 share/html/Articles/Article/Edit.html:102 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:186 share/html/Prefs/Other.html:76 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:62 share/html/SelfService/Prefs.html:79 share/html/Ticket/Modify.html:66 share/html/Ticket/ModifyAll.html:135 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:67 share/html/Ticket/ModifyPeople.html:76 share/html/Ticket/Reminders.html:63
+#: share/html/Admin/Articles/Classes/GroupRights.html:57 share/html/Admin/Articles/Classes/Modify.html:130 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:91 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:93 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:156 share/html/Admin/Queues/People.html:124 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Scrips/Modify.html:88 share/html/Admin/Scrips/Modify.html:92 share/html/Admin/Users/Keys.html:80 share/html/Admin/Users/Modify.html:226 share/html/Articles/Article/Edit.html:102 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:186 share/html/Prefs/Other.html:76 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:62 share/html/SelfService/Prefs.html:79 share/html/Ticket/Modify.html:68 share/html/Ticket/ModifyAll.html:135 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:67 share/html/Ticket/ModifyPeople.html:76 share/html/Ticket/Reminders.html:63
 msgid "Save Changes"
 msgstr ""
 
@@ -6980,7 +6980,7 @@ msgstr ""
 msgid "Selected Queues"
 msgstr ""
 
-#: lib/RT/Crypt.pm:691
+#: lib/RT/Crypt.pm:699
 msgid "Selected key either is not trusted or doesn't exist anymore."
 msgstr ""
 
@@ -7363,7 +7363,7 @@ msgstr ""
 msgid "Stage"
 msgstr ""
 
-#: etc/RT_Config.pm:2770 etc/RT_Config.pm:2846
+#: etc/RT_Config.pm:2773 etc/RT_Config.pm:2849
 msgid "Stall"
 msgstr ""
 
@@ -7560,7 +7560,7 @@ msgstr ""
 msgid "Suspended"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3630
+#: lib/RT/Interface/Web.pm:3666
 msgid "System"
 msgstr ""
 
@@ -7825,7 +7825,7 @@ msgstr ""
 msgid "Theme"
 msgstr ""
 
-#: lib/RT/Crypt.pm:718
+#: lib/RT/Crypt.pm:726
 msgid "There are several keys suitable for encryption."
 msgstr ""
 
@@ -7842,7 +7842,7 @@ msgstr ""
 msgid "There is more than one group with the name '%1'.  This may cause inconsistency in parts of the admin interface, and therefore it's recommended you rename the conflicting groups."
 msgstr ""
 
-#: lib/RT/Crypt.pm:710
+#: lib/RT/Crypt.pm:718
 msgid "There is no key suitable for encryption."
 msgstr ""
 
@@ -7851,7 +7851,7 @@ msgstr ""
 msgid "There is no mapping for statuses between lifecycle %1 and %2. Contact your system administrator."
 msgstr ""
 
-#: lib/RT/Crypt.pm:714
+#: lib/RT/Crypt.pm:722
 msgid "There is one suitable key, but trust level is not set."
 msgstr ""
 
@@ -7884,7 +7884,7 @@ msgstr ""
 msgid "This feature is only available to system administrators"
 msgstr ""
 
-#: share/html/Admin/Tools/Queries.html:51 share/html/Admin/Tools/Theme.html:225
+#: share/html/Admin/Tools/Queries.html:51 share/html/Admin/Tools/Theme.html:226
 msgid "This feature is only available to system administrators."
 msgstr ""
 
@@ -8270,12 +8270,12 @@ msgstr ""
 msgid "Unable to load article"
 msgstr ""
 
-#: share/html/Admin/Tools/Theme.html:270
+#: share/html/Admin/Tools/Theme.html:271
 #. ($msg)
 msgid "Unable to set UserCSS: %1"
 msgstr ""
 
-#: share/html/Admin/Tools/Theme.html:242
+#: share/html/Admin/Tools/Theme.html:243
 #. ($msg)
 msgid "Unable to set UserLogo: %1"
 msgstr ""
@@ -8309,7 +8309,7 @@ msgstr ""
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr ""
 
-#: etc/RT_Config.pm:2794 etc/RT_Config.pm:2870
+#: etc/RT_Config.pm:2797 etc/RT_Config.pm:2873
 msgid "Undelete"
 msgstr ""
 
@@ -8553,7 +8553,7 @@ msgstr ""
 msgid "User Defined conditions and results"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3648
+#: lib/RT/Interface/Web.pm:3684
 msgid "User Groups"
 msgstr ""
 
@@ -8620,7 +8620,7 @@ msgstr ""
 msgid "Username format"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1746 lib/RT/Interface/Web.pm:3701 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:500 share/html/Elements/Tabs:67
+#: lib/RT/CustomField.pm:1746 lib/RT/Interface/Web.pm:3737 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:500 share/html/Elements/Tabs:67
 msgid "Users"
 msgstr ""
 
@@ -9006,7 +9006,7 @@ msgstr ""
 msgid "You have enabled encryption support but have not set a correspondence address for this queue."
 msgstr ""
 
-#: share/html/SelfService/Display.html:104
+#: share/html/SelfService/Display.html:111
 msgid "You have no permission to create tickets in that queue."
 msgstr ""
 

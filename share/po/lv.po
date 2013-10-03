@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
-"POT-Creation-Date: 2011-08-05 23:32+0000\n"
-"PO-Revision-Date: 2011-08-06 00:22+0000\n"
-"Last-Translator: Shawn M Moore <sartak@bestpractical.com>\n"
+"POT-Creation-Date: 2013-06-06 21:51+0000\n"
+"PO-Revision-Date: 2013-05-25 02:54+0000\n"
+"Last-Translator: Shawn M Moore <Unknown>\n"
 "Language-Team: Latvian <lv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-06 01:12+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2013-10-03 20:13+0000\n"
+"X-Generator: Launchpad (build 16791)\n"
 "X-Language: lv_LV\n"
 
 #: share/html/Elements/LoginHelp:51
@@ -24,14 +24,6 @@ msgid ""
 "\n"
 "For local help, please contact %1\n"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid " (no pubkey!)"
-msgstr " (nav publiskās atslēgas!)"
-
-#: NOT FOUND IN SOURCE
-msgid " (untrusted!)"
-msgstr " (neuzticams!)"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:60
 msgid "#"
@@ -130,10 +122,6 @@ msgstr ""
 msgid "%1 %2 is disabled"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "%1 %2 renamed to %3."
-msgstr "%1 %2pārsaukts uz %3."
-
 #: share/html/Widgets/SavedSearch:130
 #. (loc($self->{SearchType}), $args->{SavedSearchDescription})
 msgid "%1 %2 saved."
@@ -175,6 +163,10 @@ msgstr "%1 (no rūts %2)"
 msgid "%1 - Adjust LogToSTDERR config option"
 msgstr "%1 - Pielāgot LogToSTDERR config opciju"
 
+#: NOT FOUND IN SOURCE
+msgid "%1 - Adjust LogToScreen config option"
+msgstr "%1 - Pielāgot LogToScreen config opciju"
+
 #: bin/rt-crontool:312 bin/rt-crontool:319 bin/rt-crontool:325
 #. ("--action-arg", "--action")
 #. ("--condition-arg", "--condition")
@@ -186,10 +178,6 @@ msgstr "%1 - Arguments kuru nodot uz %2"
 #. ("--verbose")
 msgid "%1 - Output status updates to STDOUT"
 msgstr "%1 - Drukāt statusa izmaiņas uz STDOUT"
-
-#: NOT FOUND IN SOURCE
-msgid "%1 - Specify id of the template you want to use"
-msgstr "%1 - Uzrādiet šablona id kuru vēlaties izmantot"
 
 #: bin/rt-crontool:331
 #. ("--transaction")
@@ -226,19 +214,11 @@ msgstr "%1 - Uzrādiet meklēšanas moduli, kuru vēlaties izmantot"
 msgid "%1 CFs"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "%1 DashBoards"
-msgstr "%1 DashBoardi"
-
 #: share/html/Elements/Footer:56 share/html/m/_elements/footer:51
 #. ('&#187;&#124;&#171;', $RT::VERSION, '2013', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #. ('', '', '2013', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr "%1 RT %2 Copyright 1996-%3 %4."
-
-#: NOT FOUND IN SOURCE
-msgid "%1 ScripAction loaded"
-msgstr "%1 ScripAction ielādēts"
 
 #: share/html/Admin/Elements/UpgradeHistory:58
 #. ($package)
@@ -323,10 +303,6 @@ msgid "%1 could not be set to %2."
 msgstr "%1 nevar tikt uzstādīts kā %2."
 
 #: NOT FOUND IN SOURCE
-msgid "%1 couldn't set status to resolved. RT's Database may be inconsistent."
-msgstr "%1 nevar uzstādīt statusu, kā atrisinātu. RT Datubāzes konsistence var būt nepilnīga."
-
-#: NOT FOUND IN SOURCE
 msgid "%1 created"
 msgstr "%1 izveidots"
 
@@ -378,10 +354,6 @@ msgstr ""
 #. ($email->format, loc(substr($field, 6)))
 msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
 msgstr "%1 adrese, uz kuru RT saņem e-pastu. Pieliekot to kā '%2' veidos pasta ciklēšanu"
-
-#: NOT FOUND IN SOURCE
-msgid "%1 is no longer a %2 for this queue."
-msgstr "%1 vairs nav %2 priekš šīs plūsmas."
 
 #: lib/RT/Ticket.pm:673
 #. ($principal->Object->Name,                         $self->loc($args{'Type'}))
@@ -461,10 +433,6 @@ msgstr "%1 papildinājums: Nav izmaiņu"
 #. ($self->loc( $args{'Field'} ),)
 msgid "%1 updated"
 msgstr "%1 papildināts"
-
-#: NOT FOUND IN SOURCE
-msgid "%1 will resolve all members of a resolved group ticket."
-msgstr "%1 atrisinās visus atrisinātas grupas pieprasījumam piederošos elementus."
 
 #: lib/RT/Date.pm:441
 #. ($value)
@@ -639,14 +607,6 @@ msgstr "(Atzīmēt rūti lai dzēstu)"
 msgid "(Check boxes to delete)"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "(Check boxes to disable notifications to the listed recipients)"
-msgstr "(Atzīmēt rūtis lai atslēgtu notifikācijas uzskaitītajiem adresātiem)"
-
-#: NOT FOUND IN SOURCE
-msgid "(Check boxes to enable notifications to the listed recipients)"
-msgstr "(Atzīmēt rūtis lai ieslēgtu notifikācijas uzskaitītajiem adresātiem)"
-
 #: share/html/m/ticket/create:392
 msgid "(Enter ticket ids or URLs, separated with spaces)"
 msgstr "(Ievadiet pieprasījumu id vai URL, atdalītus ar atstarpēm)"
@@ -704,10 +664,6 @@ msgstr "(Nebūs nosūtīts e-pasts)"
 #: share/html/Admin/CustomFields/index.html:74
 msgid "(any)"
 msgstr "(katrs)"
-
-#: NOT FOUND IN SOURCE
-msgid "(empty)"
-msgstr "(tukšs)"
 
 #: share/html/Articles/Elements/NewestArticles:66 share/html/Articles/Elements/UpdatedArticles:67
 msgid "(no Summary)"
@@ -779,18 +735,6 @@ msgstr ""
 msgid "0s"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
-msgstr "<input type=\"submit\" class=\"button\" value=\"Izveidot pieprasījumu iekš\" />&nbsp;%1"
-
-#: NOT FOUND IN SOURCE
-msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
-msgstr "<input type=\"submit\" value=\"Izveidot pieprasījumu iekš\">&nbsp;%1"
-
-#: NOT FOUND IN SOURCE
-msgid "<p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
-msgstr "<p>Visi iCal barotuve satur slepenu pazīmi, kas kalpo tevis autorizācijai. Ja URL adrese tavam iCal barotuve kļūst pieejama pārējai pasaulei, tu vari iegūt jaunu, kas <b>pārtrauks visas eksistējošās iCal barotuves</b> zemāk.</p>"
-
 #: lib/RT/Template.pm:287 lib/RT/Template.pm:713
 msgid "A Template with that name already exists"
 msgstr ""
@@ -841,10 +785,6 @@ msgstr "Darbība '%1' nav atrasta"
 #: bin/rt-crontool:220
 msgid "Action committed."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Action committed.\\n"
-msgstr "Darbība nosūtīta.\\n"
 
 #: lib/RT/Scrip.pm:149 lib/RT/Scrip.pm:726
 msgid "Action is mandatory argument"
@@ -949,10 +889,6 @@ msgstr ""
 msgid "Add values"
 msgstr "Pievienot vērtības"
 
-#: NOT FOUND IN SOURCE
-msgid "Add, delete and modify custom field values for objects"
-msgstr "Pievienot, dzēst un mainīt pielāgojuma lauku vērtības priekš objektiem"
-
 #: lib/RT/CustomField.pm:216
 msgid "Add, modify and delete custom field values for objects"
 msgstr ""
@@ -975,14 +911,6 @@ msgstr ""
 #. ($cf->Name)
 msgid "Added Subject Override: %1"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Added principal as a %1 for this queue"
-msgstr "Pievienots principāls kā %1 priekš šīs rindas"
-
-#: NOT FOUND IN SOURCE
-msgid "Added principal as a %1 for this ticket"
-msgstr "Pievienots principāls kā  %1 priekš šī pieprasījuma"
 
 #: share/html/Elements/RT__Queue/ColumnMap:65 share/html/Elements/RT__User/ColumnMap:101
 msgid "Address"
@@ -1032,10 +960,6 @@ msgstr "Admina rindas"
 msgid "Admin/Global configuration"
 msgstr "Admina/Globālā konfigurācija"
 
-#: NOT FOUND IN SOURCE
-msgid "AdminAllPersonalGroups"
-msgstr "AdminVisusPers.Grupas"
-
 #: lib/RT/Tickets.pm:161
 msgid "AdminCCGroup"
 msgstr "AdminCCGroup"
@@ -1067,10 +991,6 @@ msgstr "AdminGroup"
 #: lib/RT/Group.pm:89
 msgid "AdminGroupMembership"
 msgstr "AdminGroupMembership"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminOwnPersonalGroups"
-msgstr "AdminOwnPersonalGroups"
 
 #: lib/RT/Queue.pm:110
 msgid "AdminQueue"
@@ -1274,10 +1194,6 @@ msgstr "Apstiprināt"
 msgid "Apr"
 msgstr "Apr"
 
-#: NOT FOUND IN SOURCE
-msgid "April"
-msgstr "Aprīlis"
-
 #: share/html/Articles/Article/Delete.html:56
 msgid "Are you sure you want to delete this article?"
 msgstr ""
@@ -1346,10 +1262,6 @@ msgstr "Aug"
 msgid "Ascending"
 msgstr "Augoši"
 
-#: NOT FOUND IN SOURCE
-msgid "Assign and remove custom fields"
-msgstr "Pievienot vai noņemt pielāgojuma laukus"
-
 #: lib/RT/Queue.pm:116
 msgid "Assign and remove queue custom fields"
 msgstr ""
@@ -1403,15 +1315,11 @@ msgstr "Atribūts Dzēsts"
 msgid "Aug"
 msgstr "Aug"
 
-#: NOT FOUND IN SOURCE
-msgid "August"
-msgstr "Augusts"
-
 #: share/html/Errors/WebRemoteUser/UserAutocreateDefaultsOnLogin:48
 msgid "Automatic account setup failed"
 msgstr ""
 
-#: share/html/Admin/Tools/Theme.html:310
+#: share/html/Admin/Tools/Theme.html:311
 #. ($valid_image_types)
 msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 msgstr ""
@@ -1468,10 +1376,6 @@ msgstr ""
 msgid "Average time worked"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "BCc"
-msgstr "BCc"
-
 #: share/html/Elements/Submit:109 share/html/Install/Basics.html:63 share/html/Install/DatabaseDetails.html:73 share/html/Install/DatabaseDetails.html:89 share/html/Install/Global.html:65 share/html/Install/Initialize.html:62 share/html/Install/Sendmail.html:64
 msgid "Back"
 msgstr "Atpakaļ"
@@ -1501,18 +1405,10 @@ msgstr ""
 msgid "Bcc"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Be sure to save your changes"
-msgstr "Atceries saglabāt savas izmaiņas"
-
 #: share/html/Articles/Elements/NeedsSetup:50
 #. (qq[<a href="@{[RT->Config->Get("WebPath")]}/Admin/Articles/">], '</a>')
 msgid "Before Articles can be used, your RT administrator must %1create Classes%2, apply Article custom fields to them, and grant users rights on the classes and CFs."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Best Practical Solutions, LLC corporate logo"
-msgstr "Best Practical Solutions, LLC korporācijas logo"
 
 #: etc/initialdata:223
 msgid "Blank"
@@ -1542,10 +1438,6 @@ msgstr "Pieprasījumi Grāmatzīmēs"
 msgid "Bookmarked tickets"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Brief headers"
-msgstr "Īsais heders"
-
 #: share/html/Articles/Topics.html:48 share/html/Articles/Topics.html:60
 msgid "Browse by topic"
 msgstr ""
@@ -1557,14 +1449,6 @@ msgstr ""
 #: share/html/Elements/Tabs:811
 msgid "Bulk Update"
 msgstr "Papildinājumi Vairumā"
-
-#: NOT FOUND IN SOURCE
-msgid "Buy Support"
-msgstr "Pirkt Atbalstu"
-
-#: NOT FOUND IN SOURCE
-msgid "By default, RT will use the timezone of your system.  This lets you set a global default for the display of dates and times in RT.  Your users can choose a different Timezone in their preferences."
-msgstr "Standartā, RT lietos jūsu sistēmas laika zonu. Te jums ir iespēja uzstādīt globālo pamatvērtību datuma un laika atainošanai RT. Jūsu lietotāji var izvēlēties citu laika zonu savos uzstādījumos."
 
 #: lib/RT/Tickets.pm:160
 msgid "CCGroup"
@@ -1596,17 +1480,9 @@ msgstr "Nevar ielādēt saglabāto meklējumu \"%1\""
 msgid "Can not modify system users"
 msgstr "Nav iespējams mainīt sistēmas lietotājus"
 
-#: NOT FOUND IN SOURCE
-msgid "Can this principal see this queue"
-msgstr "Var šis principālis skatīt šo rindu"
-
 #: lib/RT/CustomField.pm:518
 msgid "Can't add a custom field value without a name"
 msgstr "Nevar pievienot pielāgojuma lauku bez vārda"
-
-#: NOT FOUND IN SOURCE
-msgid "Can't find a collection class for '%1'"
-msgstr "Nevar atrast collection klasi priekš '%1'"
 
 #: share/html/Search/Elements/EditSearches:316
 msgid "Can't find a saved search to work with"
@@ -1650,10 +1526,6 @@ msgstr ""
 msgid "Cannot create tickets in a disabled queue."
 msgstr "Nevar izveidot pieprasījumus atslēgtā rindā"
 
-#: NOT FOUND IN SOURCE
-msgid "Cannot create user: %1"
-msgstr "Nevar izveidot lietotāju: %1"
-
 #: share/html/Admin/CustomFields/Modify.html:126
 msgid "Categories are based on"
 msgstr "Kategorijas ir balstītas uz"
@@ -1661,10 +1533,6 @@ msgstr "Kategorijas ir balstītas uz"
 #: share/html/Admin/Elements/AddCustomFieldValue:57 share/html/Admin/Elements/EditCustomFieldValues:61
 msgid "Category"
 msgstr "Kategorija"
-
-#: NOT FOUND IN SOURCE
-msgid "Category unset"
-msgstr "Neuzstādīta kategorija"
 
 #: lib/RT/Report/Tickets.pm:69 lib/RT/Ticket.pm:102 lib/RT/Tickets.pm:145 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:79 share/html/Ticket/Create.html:136 share/html/Ticket/Elements/EditPeople:79 share/html/Ticket/Elements/ShowPeople:62 share/html/Ticket/Forward.html:69 share/html/m/ticket/create:275 share/html/m/ticket/show:295
 msgid "Cc"
@@ -1785,10 +1653,6 @@ msgstr "Klikšķini \"Initialize Database\" lai izveidotu RT datubāzi un ievad�
 msgid "Click to choose a color"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Close window"
-msgstr "Aizvērt logu"
-
 #: share/html/Ticket/Elements/ShowDates:75 share/html/m/ticket/show:375
 msgid "Closed"
 msgstr "Aizvērts"
@@ -1825,10 +1689,6 @@ msgstr "Piezīmes adrese"
 msgid "Comment on tickets"
 msgstr "Piezīme pieprasījumiem"
 
-#: NOT FOUND IN SOURCE
-msgid "CommentAddress"
-msgstr "CommentAddress"
-
 #: lib/RT/Queue.pm:131
 msgid "CommentOnTicket"
 msgstr "CommentOnTicket"
@@ -1840,10 +1700,6 @@ msgstr "Piezīmes"
 #: share/html/Search/Bulk.html:127 share/html/Ticket/ModifyAll.html:100 share/html/Ticket/Update.html:77 share/html/m/ticket/reply:93
 msgid "Comments (Not sent to requestors)"
 msgstr "Piezīmes (Nesūtītas pieprasītājiem)"
-
-#: NOT FOUND IN SOURCE
-msgid "Comments (not sent to requestors)"
-msgstr "Piezīmes (nesūtītas pieprasītājiem)"
 
 #: share/html/Admin/Users/Modify.html:209 share/html/Ticket/Elements/ShowRequestor:78
 msgid "Comments about this user"
@@ -1893,10 +1749,6 @@ msgstr "Konfigurācija"
 msgid "Configuration for queue %1"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Confirm"
-msgstr "Apstiprināt"
-
 #: share/html/Install/DatabaseDetails.html:140
 msgid "Connection succeeded"
 msgstr "Savienojums veiksmīgs"
@@ -1934,10 +1786,6 @@ msgstr "ContentType"
 msgid "Correspond address"
 msgstr "Atbilstošā adrese"
 
-#: NOT FOUND IN SOURCE
-msgid "CorrespondAddress"
-msgstr "CorrespondAddress"
-
 #: etc/initialdata:359
 msgid "Correspondence"
 msgstr "Sarakste"
@@ -1961,10 +1809,6 @@ msgstr "Nav iespējams pievienot jaunu pielāgota lauka vērtību: %1"
 msgid "Could not change owner: %1"
 msgstr "Nevar nomainīt īpašnieku: %1"
 
-#: NOT FOUND IN SOURCE
-msgid "Could not create CustomField"
-msgstr "Nevar izveidot CustomField"
-
 #: share/html/Admin/CustomFields/Modify.html:184 share/html/Admin/Elements/EditCustomField:116
 #. ($msg)
 msgid "Could not create CustomField: %1"
@@ -1983,10 +1827,6 @@ msgstr ""
 #. ($msg)
 msgid "Could not create template: %1"
 msgstr "Nevar izveidot šablonu: %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Could not create ticket in disabled queue \"%1\""
-msgstr "Nevar izveidot pieprasījumu atslēgtai rindai \"%1\""
 
 #: lib/RT/Ticket.pm:260
 msgid "Could not create ticket. Queue not set"
@@ -2057,26 +1897,10 @@ msgstr ""
 msgid "Could not make %1 a %2"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Could not make that principal a %1 for this queue"
-msgstr "Nevar uzstādīt šo principālu par %1 priekš šīs rindas"
-
-#: NOT FOUND IN SOURCE
-msgid "Could not make that principal a %1 for this ticket"
-msgstr "Nevar uzstādīt šo principālu par %1 priekš šī pieprasījuma"
-
 #: lib/RT/Record/Role/Roles.pm:501
 #. ($principal->Object->Name, $self->loc($args{Type}))
 msgid "Could not remove %1 as a %2"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Could not remove that principal as a %1 for this queue"
-msgstr "Nevar noņemt šo principālu kā %1 priekš šīs rindas"
-
-#: NOT FOUND IN SOURCE
-msgid "Could not remove that principal as a %1 for this ticket"
-msgstr "Nevar noņemt šo principālu kā %1 priekš šī pieprasījuma"
 
 #: lib/RT/User.pm:144
 msgid "Could not set user info"
@@ -2119,10 +1943,6 @@ msgstr ""
 msgid "Couldn't create a transaction: %1"
 msgstr "Nevarēja izveidot tranzakciju: %1"
 
-#: NOT FOUND IN SOURCE
-msgid "Couldn't create record"
-msgstr "Nevarēja izveidot ierakstu"
-
 #: lib/RT/CustomField.pm:1586
 #. ($msg)
 msgid "Couldn't create record: %1"
@@ -2153,10 +1973,6 @@ msgstr "Nevarēja atrast šo vērtību"
 #. ($protocol)
 msgid "Couldn't get %1 keys information"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Couldn't load %1 from the users database.\\n"
-msgstr "Nevarēja ielādēt %1 no lietotāju datubāzes.\\n"
 
 #: share/html/Admin/Articles/Classes/GroupRights.html:66 share/html/Admin/Articles/Classes/UserRights.html:65 share/html/Admin/CustomFields/UserRights.html:66
 #. ($id)
@@ -2192,10 +2008,6 @@ msgstr "Nevarēja ielādēt kopiju pieprasījumam #%1."
 #. ($id, $msg)
 msgid "Couldn't load dashboard %1: %2"
 msgstr "Nevarēja ielādēt dashboardu %1: %2"
-
-#: NOT FOUND IN SOURCE
-msgid "Couldn't load dashboard %1: %2."
-msgstr "Nevarēja ielādēt dashboardu %1: %2."
 
 #: share/html/Admin/Elements/MembershipsPage:100 share/html/Admin/Elements/MembershipsPage:110
 #. ($gid)
@@ -2415,10 +2227,6 @@ msgstr "Izveidot jaunu instrumentu paneli"
 msgid "Create a new group"
 msgstr "Izveidot jaunu grupu"
 
-#: NOT FOUND IN SOURCE
-msgid "Create a new personal group"
-msgstr "Izveidot jaunu privātu grupu"
-
 #: share/html/Admin/Queues/Template.html:110
 #. ($QueueObj->Name)
 msgid "Create a new template for queue %1"
@@ -2469,10 +2277,6 @@ msgstr ""
 msgid "Create articles in this class"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Create dashboards for this group"
-msgstr "Izveidot instrumentu paneli šai grupai"
-
 #: lib/RT/Group.pm:95
 msgid "Create group dashboards"
 msgstr ""
@@ -2498,32 +2302,8 @@ msgid "Create tickets"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
-msgid "Create tickets in this queue"
-msgstr "Izveidot pieprasījumus šajā rindā"
-
-#: NOT FOUND IN SOURCE
 msgid "Create tickets offline"
 msgstr "Izveidot pieprasījumus nesaistē"
-
-#: NOT FOUND IN SOURCE
-msgid "Create, delete and modify custom fields"
-msgstr "Izveidot, dzēst un mainīt pielāgotos laukus"
-
-#: NOT FOUND IN SOURCE
-msgid "Create, delete and modify queues"
-msgstr "Izveidot, dzēst un mainīt rindas"
-
-#: NOT FOUND IN SOURCE
-msgid "Create, delete and modify the members of any user's personal groups"
-msgstr "Izveidot, dzēst un mainīt jebkura lietotāja privāto grupu dalībniekus"
-
-#: NOT FOUND IN SOURCE
-msgid "Create, delete and modify the members of personal groups"
-msgstr "Izveidot, dzēst un mainīt privāto grupu dalībniekus"
-
-#: NOT FOUND IN SOURCE
-msgid "Create, delete and modify users"
-msgstr "Izveidot, dzēst un mainīt lietotājus"
 
 #: lib/RT/Class.pm:98 lib/RT/Queue.pm:112
 msgid "Create, modify and delete Access Control List entries"
@@ -2591,18 +2371,10 @@ msgstr "Izveidots CustomField %1"
 msgid "Created by"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Created in a date range"
-msgstr "Izveidots laika posmā"
-
 #: share/html/Articles/Article/Search.html:200
 #. ($search->Name)
 msgid "Created search %1"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Created tickets in period, grouped by status"
-msgstr "Periodā izveidotie pieprasījumi, grupēti pēc statusa"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "CreatedBy"
@@ -2859,23 +2631,7 @@ msgstr ""
 msgid "Date format"
 msgstr "Datuma formāts"
 
-#: NOT FOUND IN SOURCE
-msgid "DateTime doesn't support format_cldr, you must upgrade to use this feature"
-msgstr "DateTime neatbalsta format_cldr, jums jāatjauno programmatūra, lai lietotu šo iespēju"
-
-#: NOT FOUND IN SOURCE
-msgid "DateTime module missing"
-msgstr "Trūkst DateTime modulis"
-
-#: NOT FOUND IN SOURCE
-msgid "DateTime::Locale doesn't support date_format_full, you must upgrade to use this feature"
-msgstr "DateTime::Locale neatbalsta date_format_full, jums jāatjauno programmatūra, lai lietotu šo iespēju"
-
-#: NOT FOUND IN SOURCE
-msgid "DateTime::Locale module missing"
-msgstr "Trūkst DateTime::Locale modulis"
-
-#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:633 share/html/SelfService/Display.html:66 share/html/Ticket/Create.html:253 share/html/Ticket/Elements/ShowSummary:84 share/html/Ticket/ModifyAll.html:68 share/html/m/ticket/create:377 share/html/m/ticket/show:344
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:633 share/html/SelfService/Display.html:72 share/html/Ticket/Create.html:253 share/html/Ticket/Elements/ShowSummary:84 share/html/Ticket/ModifyAll.html:68 share/html/m/ticket/create:377 share/html/m/ticket/show:344
 msgid "Dates"
 msgstr "Datumi"
 
@@ -2940,23 +2696,7 @@ msgstr "Noklusējums: %1/%2 mainīts no %3 uz %4"
 msgid "DefaultFormat"
 msgstr "DefaultFormat"
 
-#: NOT FOUND IN SOURCE
-msgid "Delegate rights"
-msgstr "Deleģēt tiesības"
-
-#: NOT FOUND IN SOURCE
-msgid "Delegate specific rights which have been granted to you."
-msgstr "Deleģēt specifiskas tiesības, kas jums piešķirtas."
-
-#: NOT FOUND IN SOURCE
-msgid "DelegateRights"
-msgstr "DelegateRights"
-
-#: NOT FOUND IN SOURCE
-msgid "Delegation"
-msgstr "Deleģēšana"
-
-#: etc/RT_Config.pm:2766 etc/RT_Config.pm:2842 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:864 share/html/Elements/Tabs:889 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:2769 etc/RT_Config.pm:2845 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:864 share/html/Elements/Tabs:889 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
 msgid "Delete"
 msgstr "Dzēst"
 
@@ -2972,10 +2712,6 @@ msgstr ""
 #: lib/RT/Class.pm:99
 msgid "Delete articles in this class"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Delete dashboards for this group"
-msgstr "Dzēst instrumentu paneli šai grupai"
 
 #: lib/RT/SharedSetting.pm:287
 #. ($msg)
@@ -3034,10 +2770,6 @@ msgstr "DeleteTicket"
 #. ($self->ObjectName)
 msgid "Deleted %1"
 msgstr "Dzēsts %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Deleted dashboard %1"
-msgstr "Dzēsts instrumentu panelis %1"
 
 #: share/html/Dashboards/Elements/Deleted:52
 msgid "Deleted queries"
@@ -3149,14 +2881,6 @@ msgstr ""
 msgid "Display Columns"
 msgstr "Attēlot Kolonnas"
 
-#: NOT FOUND IN SOURCE
-msgid "Display Scrip templates for this queue"
-msgstr "Attēlot Skripta veidnes šai rindai"
-
-#: NOT FOUND IN SOURCE
-msgid "Display Scrips for this queue"
-msgstr "Attēlot Skriptus šai rindai"
-
 #: lib/RT/Config.pm:410
 msgid "Display all plain-text attachments in a monospace font with formatting preserved, but wrapping as needed."
 msgstr ""
@@ -3169,10 +2893,6 @@ msgstr ""
 msgid "Display plain-text attachments in fixed-width font"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Display saved searches for this group"
-msgstr "Attēlot šīs grupas saglabātos meklējumus"
-
 #: lib/RT/Config.pm:444
 msgid "Display ticket after \"Quick Create\""
 msgstr ""
@@ -3181,10 +2901,6 @@ msgstr ""
 #. ('<a href="http://www.gnu.org/licenses/gpl-2.0.html">', '</a>')
 msgid "Distributed under %1version 2 of the GNU GPL%2."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Distributed under version 2 <a href=\"http://www.gnu.org/copyleft/gpl.html\"> of the GNU GPL.</a>"
-msgstr "Izplatīts zem <a href=\"http://www.gnu.org/copyleft/gpl.html\"> GNU GPL</a> 2. versijas"
 
 #: lib/RT/System.pm:83
 msgid "Do anything and everything"
@@ -3217,10 +2933,6 @@ msgstr "Neuzticēties šai atslēgam pavisam"
 #: share/html/Elements/ShowTransactionAttachments:62
 msgid "Download"
 msgstr "Lejuplādēt"
-
-#: NOT FOUND IN SOURCE
-msgid "Download as a tab-delimited file"
-msgstr "Lejuplādēt kā tab-delimitētētu failu"
 
 #: share/html/Admin/Tools/Shredder/Elements/DumpFileLink:49
 msgid "Download dumpfile"
@@ -3296,17 +3008,9 @@ msgstr "Labot uzdevumus"
 msgid "Edit Search"
 msgstr "Labot meklēšanu"
 
-#: NOT FOUND IN SOURCE
-msgid "Edit Templates for queue %1"
-msgstr "Labot šablonusuzdevumam %1"
-
 #: share/html/Admin/Global/Topics.html:56
 msgid "Edit global topic hierarchy"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Edit saved searches for this group"
-msgstr "Labot saglabāto meklēto info šajā grupā"
 
 #: share/html/Elements/Tabs:126
 msgid "Edit system templates"
@@ -3321,14 +3025,6 @@ msgstr ""
 msgid "EditSavedSearches"
 msgstr "labot saglabātos meklējumus"
 
-#: NOT FOUND IN SOURCE
-msgid "Editable text"
-msgstr "Labojams teksts"
-
-#: NOT FOUND IN SOURCE
-msgid "Editing Configuration for queue %1"
-msgstr "Labot konfigurāciju uzdevumam %1"
-
 #: share/html/Admin/CustomFields/Modify.html:195 share/html/Admin/Elements/EditCustomField:123
 #. ($CustomFieldObj->Name)
 #. ($CustomFieldObj->Name())
@@ -3339,10 +3035,6 @@ msgstr "Labot lauku %1"
 #. ($Group->Name)
 msgid "Editing membership for group %1"
 msgstr "Labot lietotāju grupai %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Editing membership for personal group %1"
-msgstr "Labot lietotājus personāla grupai"
 
 #: lib/RT/Tickets.pm:112 share/html/Elements/RT__Ticket/ColumnMap:165
 msgid "EffectiveId"
@@ -3553,14 +3245,6 @@ msgid "Error"
 msgstr "Kļūda"
 
 #: NOT FOUND IN SOURCE
-msgid "Error in parameters to Queue->AddWatcher"
-msgstr "Kļūda parametros Uzdevumi->AddWatcher"
-
-#: NOT FOUND IN SOURCE
-msgid "Error in parameters to Queue->DeleteWatcher"
-msgstr "Kļūda parametros Uzdevumi->DeleteWatcher"
-
-#: NOT FOUND IN SOURCE
 msgid "Error in parameters to Ticket->AddWatcher"
 msgstr "Kļūda parametros Pieprasījumi->AddWatcher"
 
@@ -3568,7 +3252,7 @@ msgstr "Kļūda parametros Pieprasījumi->AddWatcher"
 msgid "Error in parameters to Ticket->DeleteWatcher"
 msgstr "Kļūda parametros Pieprasījumi->DeleteWatcher"
 
-#: share/html/Search/Chart:459
+#: share/html/Search/Chart:460
 #. ($error)
 msgid "Error plotting chart: %1"
 msgstr ""
@@ -3626,18 +3310,6 @@ msgstr "Aptuveni"
 #: lib/RT/Handle.pm:703
 msgid "Everyone"
 msgstr "Jebkurš"
-
-#: NOT FOUND IN SOURCE
-msgid "Examine tickets created in a queue between two dates"
-msgstr "Apskatīt pieprasījumus izveidotus uzdevumos laika periodā"
-
-#: NOT FOUND IN SOURCE
-msgid "Examine tickets resolved in a queue between two dates"
-msgstr "Apskatīt atrisinātos pieprasījumus uzdevumos laika periodā"
-
-#: NOT FOUND IN SOURCE
-msgid "Examine tickets resolved in a queue, grouped by owner"
-msgstr "Skatīt pieprasījumus, uzdotos pēc īpašnieka"
 
 #: bin/rt-crontool:348
 msgid "Example:"
@@ -3752,10 +3424,6 @@ msgstr ""
 msgid "Field values source:"
 msgstr "Lauku vērtību  avots:"
 
-#: NOT FOUND IN SOURCE
-msgid "FileName"
-msgstr "Faila nosaukums"
-
 #: lib/RT/Tickets.pm:141 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:53 share/html/Elements/SelectAttachmentField:54
 msgid "Filename"
 msgstr "Fails"
@@ -3844,14 +3512,6 @@ msgstr "Beigt"
 msgid "First"
 msgstr "Pirmais"
 
-#: NOT FOUND IN SOURCE
-msgid "Foo Bar Baz"
-msgstr "Foo rinda"
-
-#: NOT FOUND IN SOURCE
-msgid "Foo!"
-msgstr "Foo!"
-
 #: share/html/Search/Simple.html:91
 #. ($link_start, $link_end)
 msgid "For the full power of RT's searches, please visit the %1search builder interface%2."
@@ -3888,10 +3548,6 @@ msgstr "Pārsūtīt pieprasījumu"
 #: lib/RT/Queue.pm:139
 msgid "Forward messages outside of RT"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Forward messages to third person(s)"
-msgstr "Pārsūtīt ziņas citām personām"
 
 #: share/html/Ticket/Forward.html:123
 #. ($TicketObj->id)
@@ -3944,10 +3600,6 @@ msgstr "Piektdiena"
 #: share/html/Ticket/Forward.html:60
 msgid "From"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Full headers"
-msgstr "Pilnai headeri"
 
 #: share/html/Admin/Tools/Theme.html:67
 msgid "GD is disabled or not installed. You can upload an image, but you won't get automatic color suggestions."
@@ -4123,10 +3775,6 @@ msgstr ""
 msgid "Group not found"
 msgstr "Grupa nav atrasta"
 
-#: NOT FOUND IN SOURCE
-msgid "Group rights"
-msgstr "Grupas tiesības"
-
 #: share/html/Search/Chart.html:116
 msgid "Group tickets by"
 msgstr ""
@@ -4220,10 +3868,6 @@ msgstr ""
 msgid "Hello!"
 msgstr "Sveiki!"
 
-#: NOT FOUND IN SOURCE
-msgid "Hello, %1"
-msgstr "Sveiki, %1"
-
 #: share/html/Install/Global.html:52
 msgid "Help us set up some useful defaults for RT."
 msgstr "Palīdzi mums uzstādīt RT uzstatījumus"
@@ -4261,10 +3905,6 @@ msgstr "Pieprasījumu vēsture %1"
 msgid "History of the user %1"
 msgstr "Lietotāja vēsture %1"
 
-#: NOT FOUND IN SOURCE
-msgid "Home"
-msgstr "Sākums"
-
 #: share/html/Elements/RT__User/ColumnMap:81
 msgid "Home Phone"
 msgstr ""
@@ -4272,10 +3912,6 @@ msgstr ""
 #: lib/RT/Config.pm:316
 msgid "Home page refresh interval"
 msgstr "Mājas lapas atjaunošanas intervāls"
-
-#: NOT FOUND IN SOURCE
-msgid "HomePhone"
-msgstr "Telefons"
 
 #: share/html/Elements/Tabs:444 share/html/m/_elements/header:69
 msgid "Homepage"
@@ -4348,15 +3984,11 @@ msgstr ""
 msgid "If you really intended to visit %1 and %2, then %3click here to resume your request%4."
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "If you've change the Port that RT runs on, you'll need to restart the server in order to log in."
-msgstr "Ja ir nomainīts RT ports, serveris jāpārstartē, lai varētu ielogoties"
-
 #: share/html/Install/Finish.html:60
 msgid "If you've changed the Port that RT runs on, you'll need to restart the server in order to log in."
 msgstr ""
 
-#: share/html/Admin/Queues/People.html:124 share/html/Ticket/Modify.html:66 share/html/Ticket/ModifyAll.html:136 share/html/Ticket/ModifyPeople.html:76
+#: share/html/Admin/Queues/People.html:124 share/html/Ticket/Modify.html:68 share/html/Ticket/ModifyAll.html:136 share/html/Ticket/ModifyPeople.html:76
 msgid "If you've updated anything above, be sure to"
 msgstr "Ja kaut tika mainīts, pārliecinies, ka"
 
@@ -4510,10 +4142,6 @@ msgstr "Ievadei jāsakrīt ar %1"
 msgid "Insert from %1"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Install RT"
-msgstr "Instalēt RT"
-
 #: lib/RT/Article.pm:282 lib/RT/Article.pm:291 lib/RT/Article.pm:300 lib/RT/Article.pm:309 lib/RT/Article.pm:318
 msgid "Internal Error"
 msgstr "Iekšēja Kļūda"
@@ -4592,10 +4220,6 @@ msgstr ""
 msgid "Invalid object"
 msgstr "Nepareizs objekts"
 
-#: NOT FOUND IN SOURCE
-msgid "Invalid owner object"
-msgstr "Nepareizs īpašnieka objekts"
-
 #: lib/RT/CustomField.pm:295 lib/RT/CustomField.pm:755
 #. ($msg)
 msgid "Invalid pattern: %1"
@@ -4638,10 +4262,6 @@ msgstr "nepareiza vērtība %1"
 msgid "Invalid value for custom field"
 msgstr "Nepareiza vērtība laukā"
 
-#: NOT FOUND IN SOURCE
-msgid "Invalid value for status"
-msgstr "Nepareiza statusa vērtība"
-
 #: lib/RT/Record/AddAndSort.pm:195
 msgid "Is already added to the object"
 msgstr ""
@@ -4673,10 +4293,6 @@ msgstr "Jan"
 #: lib/RT/Group.pm:90
 msgid "Join or leave group"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Join or leave this group"
-msgstr "Pievienoties vai atstāt šo grupu"
 
 #: lib/RT/Date.pm:97
 msgid "Jul"
@@ -5022,10 +4638,6 @@ msgstr "Veidot uzdevumu"
 msgid "Make subject"
 msgstr "Veidot tēmu"
 
-#: NOT FOUND IN SOURCE
-msgid "Make this group visible to user"
-msgstr "Veidot šo tēmu redzamu lietotājam"
-
 #: share/html/Elements/Tabs:93
 msgid "Manage custom fields and custom field values"
 msgstr "Menedžēt laukus un lauku vērtības"
@@ -5231,10 +4843,6 @@ msgstr "Vēstule netiks parādīta. Sūtītājs neļauj izlasīt pašu vēstuli"
 msgid "Message body not shown because it is not plain text."
 msgstr "Vēstule netiks parādīta jo nav tīra teksta formātā."
 
-#: NOT FOUND IN SOURCE
-msgid "Message body not shown because it is too large."
-msgstr "Vēstule netiks parādīta jo izmērs ir par lielu"
-
 #: lib/RT/Config.pm:276
 msgid "Message box height"
 msgstr "Vēstules augstums punktos"
@@ -5254,10 +4862,6 @@ msgstr "Vēstule lietotājam"
 #: lib/RT/Ticket.pm:1625 lib/RT/Ticket.pm:3055
 msgid "Message recorded"
 msgstr "Vēstule ierakstīta"
-
-#: NOT FOUND IN SOURCE
-msgid "Messages about this ticket will not be sent to..."
-msgstr "Vēstules par šo pieprasījumu netiks nosūtītas  ..."
 
 #: lib/RT/Report/Tickets.pm:226
 msgid "Minimum Created-LastUpdated"
@@ -5319,57 +4923,21 @@ msgstr "Mobilais"
 msgid "Mobile Phone"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "MobilePhone"
-msgstr "Mob.Telefons"
-
 #: share/html/Elements/Tabs:863 share/html/Elements/Tabs:886 share/html/m/_elements/ticket_menu:67
 msgid "Modify"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Modify Access Control List"
-msgstr "Labot piekļūšanas tiesības"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify Custom Fields which apply to %1 for all %2"
-msgstr "Labot laukus kas pieliksies %1 visiem %2"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify Custom Fields which apply to all %1"
-msgstr "Labot laukus kas pieliksies visiem %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify Group Rights"
-msgstr "Labot grupas tiesības"
 
 #: share/html/Admin/Groups/Members.html:108
 msgid "Modify Members"
 msgstr "Labot biedrus"
 
-#: NOT FOUND IN SOURCE
-msgid "Modify Rights"
-msgstr "Labot tiesības"
-
 #: lib/RT/Queue.pm:117
 msgid "Modify Scrip templates"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Modify Scrip templates for this queue"
-msgstr "Labot šablonus šim uzdevumam"
-
 #: lib/RT/Queue.pm:120
 msgid "Modify Scrips"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Modify Scrips for this queue"
-msgstr "Labot šablonus šim uzdevumam"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify User Rights"
-msgstr "Labot lietotāja tiesības"
 
 #: share/html/Admin/Queues/CustomField.html:63
 #. ($QueueObj->Name())
@@ -5412,10 +4980,6 @@ msgstr ""
 msgid "Modify custom field values"
 msgstr "Labot formas vērtības"
 
-#: NOT FOUND IN SOURCE
-msgid "Modify dashboards for this group"
-msgstr "Mainīt šīs grupas paneļus"
-
 #: share/html/Ticket/ModifyDates.html:48
 #. ($TicketObj->Id)
 msgid "Modify dates for #%1"
@@ -5438,20 +5002,12 @@ msgstr "mainīt globālos laukus"
 msgid "Modify global group rights"
 msgstr "Mainīt globālās grupas tiesības"
 
-#: NOT FOUND IN SOURCE
-msgid "Modify global group rights."
-msgstr "Mainīt globālās grupas tiesības"
-
 #: share/html/Admin/Global/Topics.html:55
 msgid "Modify global topics"
 msgstr ""
 
 #: share/html/Admin/Global/UserRights.html:48 share/html/Elements/Tabs:202
 msgid "Modify global user rights"
-msgstr "Mainīt globālās lietotāja tiesības"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify global user rights."
 msgstr "Mainīt globālās lietotāja tiesības"
 
 #: lib/RT/Group.pm:96
@@ -5486,10 +5042,6 @@ msgstr "Mainīt grupas tiesības grupai %1"
 msgid "Modify group rights for queue %1"
 msgstr "Mainīt grupas tiesības uzdevumam %1"
 
-#: NOT FOUND IN SOURCE
-msgid "Modify membership roster for this group"
-msgstr "Mainīt tiesību žurnālu šai grupai"
-
 #: lib/RT/Class.pm:95
 msgid "Modify metadata and custom fields for this class"
 msgstr ""
@@ -5501,10 +5053,6 @@ msgstr "Mainīt lietotāja RT akkauntu"
 #: lib/RT/Class.pm:92
 msgid "Modify or delete articles in this class"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Modify people related to queue %1"
-msgstr "Mainīt uzdevuma biedrus %1"
 
 #: share/html/Ticket/ModifyPeople.html:48 share/html/Ticket/ModifyPeople.html:57
 #. ($Ticket->Id)
@@ -5575,14 +5123,6 @@ msgstr "Mainīt pamatēmu \"RT at a glance\""
 #. ($Group->Name)
 msgid "Modify the group %1"
 msgstr "Mainīt grupu %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify the queries of dashboard %1"
-msgstr "Mainīt uzdevumus panelī %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify the queue watchers"
-msgstr "Mainīt uzdevuma skatītājus"
 
 #: share/html/Dashboards/Subscription.html:287
 #. ($Dashboard->Name)
@@ -5726,14 +5266,6 @@ msgstr "Pirmdiena līdz Piektdiena"
 msgid "Monthly"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "More"
-msgstr "Vairāk"
-
-#: NOT FOUND IN SOURCE
-msgid "More about %1"
-msgstr "Vairāk kā %1"
-
 #: share/html/Ticket/Elements/ShowRequestor:61
 msgid "More about the requestors"
 msgstr ""
@@ -5871,18 +5403,6 @@ msgstr ""
 msgid "New Search"
 msgstr "Jauna Meklēšana"
 
-#: NOT FOUND IN SOURCE
-msgid "New and open tickets for %1"
-msgstr "Jauni un atvērti pieprasījumi %1"
-
-#: NOT FOUND IN SOURCE
-msgid "New custom field"
-msgstr "Jauns izvēles lauks"
-
-#: NOT FOUND IN SOURCE
-msgid "New group"
-msgstr "Jauna grupa"
-
 #: share/html/Elements/RT__Ticket/ColumnMap:248 share/html/Ticket/Elements/ShowUpdateStatus:49
 msgid "New messages"
 msgstr "Jaunas vēstules"
@@ -5902,14 +5422,6 @@ msgstr "Jauns atgādinājums:"
 #: NOT FOUND IN SOURCE
 msgid "New rights"
 msgstr "Jaunas tiesības"
-
-#: NOT FOUND IN SOURCE
-msgid "New scrip"
-msgstr "Jauns skrips"
-
-#: NOT FOUND IN SOURCE
-msgid "New template"
-msgstr "Jauns šablons"
 
 #: share/html/Elements/Tabs:930 share/html/Elements/Tabs:932 share/html/m/_elements/menu:70
 msgid "New ticket"
@@ -5995,10 +5507,6 @@ msgstr "Nav definēts uzdevums"
 msgid "No RT user found. Please consult your RT administrator."
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "No RT user found. Please consult your RT administrator.\\n"
-msgstr "Nav atrasts RT lietotājs, Lūdzu konsultēties ar administratoru.\\n"
-
 #: share/html/Search/Elements/ResultsRSSView:134
 msgid "No Subject"
 msgstr "Nav temata"
@@ -6018,10 +5526,6 @@ msgstr "Nav norādīta kolonna"
 #: share/html/Ticket/Elements/ShowRequestor:79
 msgid "No comment entered about this user"
 msgstr "Par šo lietotāju nav ievadīti komentāri"
-
-#: NOT FOUND IN SOURCE
-msgid "No dashboards."
-msgstr "Nav paneļu"
 
 #: lib/RT/Action.pm:163 lib/RT/Condition.pm:183 lib/RT/Search.pm:125 lib/RT/Search/ActiveTicketsInQueue.pm:75
 #. (ref $self)
@@ -6082,7 +5586,7 @@ msgstr "Nav tiesību veidot uzdevumus"
 msgid "No permission to create tickets in the queue '%1'"
 msgstr "Nav tiesību veidot pieprasījumu uzdevumā '%1'"
 
-#: share/html/SelfService/Display.html:137
+#: share/html/SelfService/Display.html:144
 msgid "No permission to display that ticket"
 msgstr "Nav tiesību skatīt šo pieprasījumu"
 
@@ -6179,10 +5683,6 @@ msgstr ""
 #: lib/RT/Record.pm:964
 msgid "No value sent to _Set!"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "No value sent to _Set!\\n"
-msgstr "Nav vērtības sūtītas _Set!\\n"
 
 #: share/html/Elements/QuickCreate:65
 msgid "Nobody"
@@ -6320,10 +5820,6 @@ msgstr "Paziņot man par neizlasītu e-pastu"
 msgid "Nov"
 msgstr "Nov"
 
-#: NOT FOUND IN SOURCE
-msgid "Number of search results"
-msgstr "atrasto vienību skaits"
-
 #: share/html/Search/Elements/SelectAndOr:49
 msgid "OR"
 msgstr "VAI"
@@ -6348,10 +5844,6 @@ msgstr "Objekts izveidots"
 msgid "Object deleted"
 msgstr "Objekts dzēsts"
 
-#: NOT FOUND IN SOURCE
-msgid "Object of type %1 cannot take custom fields"
-msgstr "Objekta tips %1 nevar paņemt laukus"
-
 #: lib/RT/Group.pm:254
 msgid "Object passed is not loaded"
 msgstr ""
@@ -6371,10 +5863,6 @@ msgstr "Okt."
 #: NOT FOUND IN SOURCE
 msgid "Offline"
 msgstr "Atslēdzies"
-
-#: NOT FOUND IN SOURCE
-msgid "Offline edits"
-msgstr "Offline labošana"
 
 #: NOT FOUND IN SOURCE
 msgid "Offline upload"
@@ -6479,7 +5967,7 @@ msgstr "Rādīt laukus tikai:"
 msgid "Open Inactive Tickets"
 msgstr ""
 
-#: etc/RT_Config.pm:2754 etc/RT_Config.pm:2783 etc/RT_Config.pm:2830 etc/RT_Config.pm:2859
+#: etc/RT_Config.pm:2757 etc/RT_Config.pm:2786 etc/RT_Config.pm:2833 etc/RT_Config.pm:2862
 msgid "Open It"
 msgstr ""
 
@@ -6494,10 +5982,6 @@ msgstr "Atvērt URL"
 #: etc/initialdata:102
 msgid "Open inactive tickets"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Open it"
-msgstr "Atvērt to"
 
 #: share/html/Elements/Tabs:935 share/html/SelfService/index.html:48
 msgid "Open tickets"
@@ -6614,10 +6098,6 @@ msgstr "Peidžeris"
 msgid "Pager Phone"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "PagerPhone"
-msgstr "Mob.telefons"
-
 #: share/html/Search/Elements/SelectLinks:60
 msgid "Parent"
 msgstr ""
@@ -6726,14 +6206,6 @@ msgstr "Atļauja liegta"
 #: lib/RT/Record.pm:1339 lib/RT/Record.pm:1483 lib/RT/Record/Role/Roles.pm:407 lib/RT/Record/Role/Roles.pm:485
 msgid "Permission denied"
 msgstr "Pieeja aizliegta"
-
-#: NOT FOUND IN SOURCE
-msgid "Personal Dashboards"
-msgstr "Personīgie paneļi"
-
-#: NOT FOUND IN SOURCE
-msgid "Personal Groups"
-msgstr "Personīgās grupas"
 
 #: share/html/Admin/Users/Modify.html:173 share/html/User/Prefs.html:85
 msgid "Phone numbers"
@@ -6927,10 +6399,6 @@ msgstr "Pieprasījums"
 msgid "Query Builder"
 msgstr "Pieprasījumu veidošana"
 
-#: NOT FOUND IN SOURCE
-msgid "Query:"
-msgstr "Pieprasījums:"
-
 #: lib/RT/Graph/Tickets.pm:153 lib/RT/Record.pm:954 lib/RT/Report/Tickets.pm:62 lib/RT/Tickets.pm:107 lib/RT/Tickets.pm:1424 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:63 share/html/Elements/RT__Template/ColumnMap:66 share/html/Elements/RT__Template/ColumnMap:73 share/html/Elements/RT__Ticket/ColumnMap:102 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:61 share/html/Ticket/Elements/ShowBasics:82 share/html/m/ticket/create:248 share/html/m/ticket/show:242
 msgid "Queue"
 msgstr "Secība"
@@ -6978,13 +6446,9 @@ msgstr "Uzdevums aktīvs"
 msgid "Queue id"
 msgstr "Uzdevuma Id"
 
-#: lib/RT/CustomField.pm:285 share/html/SelfService/Display.html:102
+#: lib/RT/CustomField.pm:285 share/html/SelfService/Display.html:109
 msgid "Queue not found"
 msgstr "Uzdevums nav atrasts"
-
-#: NOT FOUND IN SOURCE
-msgid "Queue rights"
-msgstr "Uzdevuma tiesības"
 
 #: share/html/Elements/Crypt/SelectKeyForSigning:50 share/html/Elements/Crypt/SelectKeyForSigning:54
 msgid "Queue's key"
@@ -7050,10 +6514,6 @@ msgstr "RFC2822"
 msgid "RSS"
 msgstr "RSS"
 
-#: NOT FOUND IN SOURCE
-msgid "RT %1 for %2"
-msgstr "RT %1 uz %2"
-
 #: share/html/Admin/index.html:48
 msgid "RT Administration"
 msgstr "RT Administrācija"
@@ -7069,10 +6529,6 @@ msgstr "RT konfigurācija"
 #: share/html/Elements/Error:69
 msgid "RT Error"
 msgstr "RT kļūda"
-
-#: NOT FOUND IN SOURCE
-msgid "RT Self Service"
-msgstr "RT serviss"
 
 #: share/html/Admin/Tools/Configuration.html:139
 msgid "RT Size"
@@ -7159,7 +6615,7 @@ msgstr ""
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr ""
 
-#: etc/RT_Config.pm:2786 etc/RT_Config.pm:2790 etc/RT_Config.pm:2862 etc/RT_Config.pm:2866
+#: etc/RT_Config.pm:2789 etc/RT_Config.pm:2793 etc/RT_Config.pm:2865 etc/RT_Config.pm:2869
 msgid "Re-open"
 msgstr ""
 
@@ -7296,7 +6752,7 @@ msgstr ""
 msgid "Refused to add link which would create a circular relationship"
 msgstr ""
 
-#: etc/RT_Config.pm:2762 etc/RT_Config.pm:2778 etc/RT_Config.pm:2838 etc/RT_Config.pm:2854
+#: etc/RT_Config.pm:2765 etc/RT_Config.pm:2781 etc/RT_Config.pm:2841 etc/RT_Config.pm:2857
 msgid "Reject"
 msgstr ""
 
@@ -7325,10 +6781,6 @@ msgstr "Atgādinājums '%1' pāratvērts"
 #. ($old_subject || $reminder->Subject, $_)
 msgid "Reminder '%1': %2"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Reminder ticket #%1"
-msgstr "Atgādinājums pieprasījumam #%1"
 
 #: share/html/Elements/Tabs:642 share/html/Ticket/Elements/Reminders:79 share/html/Ticket/Elements/ShowSummary:73 share/html/Ticket/Reminders.html:56 share/html/m/ticket/show:332
 msgid "Reminders"
@@ -7392,10 +6844,6 @@ msgstr "Atbildēt pieprasījumiem"
 msgid "ReplyToTicket"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Reports"
-msgstr "Pārskati"
-
 #: lib/RT/Report/Tickets.pm:68 lib/RT/Ticket.pm:101 lib/RT/Tickets.pm:143
 msgid "Requestor"
 msgstr "Pieprasītājs"
@@ -7441,7 +6889,7 @@ msgstr "Atstatīt uz noklusēto"
 msgid "Residence"
 msgstr "Uzturēšanās"
 
-#: etc/RT_Config.pm:2758 etc/RT_Config.pm:2774 etc/RT_Config.pm:2834 etc/RT_Config.pm:2850 share/html/Search/Elements/EditFormat:75
+#: etc/RT_Config.pm:2761 etc/RT_Config.pm:2777 etc/RT_Config.pm:2837 etc/RT_Config.pm:2853 share/html/Search/Elements/EditFormat:75
 msgid "Resolve"
 msgstr "Atrisināt"
 
@@ -7454,25 +6902,9 @@ msgstr "Atrisināt pieprasījumu #%1 (%2)"
 msgid "Resolved"
 msgstr "Atrisināts"
 
-#: NOT FOUND IN SOURCE
-msgid "Resolved by owner"
-msgstr "Atrisinājis īpašnieks"
-
 #: etc/initialdata:449 etc/upgrade/4.1.9/content:102
 msgid "Resolved in HTML"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Resolved in date range"
-msgstr "Atrisināts laika posmā"
-
-#: NOT FOUND IN SOURCE
-msgid "Resolved tickets in period, grouped by owner"
-msgstr "Atrisinātie pieprasījumi laika periodā, grupēti pēc īpašnieka"
-
-#: NOT FOUND IN SOURCE
-msgid "Resolved tickets, grouped by owner"
-msgstr "Atrisinātie pieprasījumi, grupēti pēc īpašnieka"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "ResolvedRelative"
@@ -7502,10 +6934,6 @@ msgstr "Atgriezt"
 msgid "Rich text (HTML) shows formatting such as colored text, bold, italics, and more"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Right Delegated"
-msgstr "Tiesības deleģētas"
-
 #: lib/RT/ACE.pm:288
 msgid "Right Granted"
 msgstr "Tiesības piešķirtas"
@@ -7517,10 +6945,6 @@ msgstr "Tiesības ielādētas"
 #: lib/RT/ACE.pm:343
 msgid "Right could not be revoked"
 msgstr "Tiesības netiks anulētas"
-
-#: NOT FOUND IN SOURCE
-msgid "Right not found"
-msgstr "Tiesības nav atrastas"
 
 #: lib/RT/ACE.pm:311
 msgid "Right not loaded."
@@ -7553,7 +6977,7 @@ msgstr ""
 msgid "Role group exists already"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3673
+#: lib/RT/Interface/Web.pm:3709
 msgid "Roles"
 msgstr "Tiesības"
 
@@ -7602,7 +7026,7 @@ msgstr "Sestdiena"
 msgid "Save"
 msgstr "Saglabāt"
 
-#: share/html/Admin/Articles/Classes/GroupRights.html:57 share/html/Admin/Articles/Classes/Modify.html:130 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:91 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:93 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:156 share/html/Admin/Queues/People.html:124 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Scrips/Modify.html:88 share/html/Admin/Scrips/Modify.html:92 share/html/Admin/Users/Keys.html:80 share/html/Admin/Users/Modify.html:226 share/html/Articles/Article/Edit.html:102 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:186 share/html/Prefs/Other.html:76 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:62 share/html/SelfService/Prefs.html:79 share/html/Ticket/Modify.html:66 share/html/Ticket/ModifyAll.html:135 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:67 share/html/Ticket/ModifyPeople.html:76 share/html/Ticket/Reminders.html:63
+#: share/html/Admin/Articles/Classes/GroupRights.html:57 share/html/Admin/Articles/Classes/Modify.html:130 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:91 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:93 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:156 share/html/Admin/Queues/People.html:124 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Scrips/Modify.html:88 share/html/Admin/Scrips/Modify.html:92 share/html/Admin/Users/Keys.html:80 share/html/Admin/Users/Modify.html:226 share/html/Articles/Article/Edit.html:102 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:186 share/html/Prefs/Other.html:76 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:62 share/html/SelfService/Prefs.html:79 share/html/Ticket/Modify.html:68 share/html/Ticket/ModifyAll.html:135 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:67 share/html/Ticket/ModifyPeople.html:76 share/html/Ticket/Reminders.html:63
 msgid "Save Changes"
 msgstr "Saglabāt izmaiņas"
 
@@ -7732,10 +7156,6 @@ msgstr "Meklēt pieprasījumus"
 msgid "Search for tickets by entering %1id%2 numbers, subject words %1\"in quotes\"%2, %1queues%2 by name, Owners by %1username%2, Requestors by %1email address%2, and ticket %1statuses%2.  Searching for %1@domainname.com%2 will return tickets with requestors from that domain."
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name, Owners by <strong>username</strong> and Requestors by <strong>email address</strong>."
-msgstr "Meklēt pieprasījumus. Ievadiet <strong>id</strong> numurus, <strong>uzdevumus</strong> pēc vārda, Īpašniekus <strong>Lietotāja</strong> un pieprasītāja <strong>E-pasta</strong>."
-
 #: share/html/Elements/Tabs:555
 msgid "Search options"
 msgstr "Meklēšanas iestatījumi"
@@ -7761,10 +7181,6 @@ msgstr ""
 msgid "Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history by typing <b>%1<i>word</i></b>."
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history for any word by typing <b>fulltext:<i>word</i></b>."
-msgstr "Meklēt pilnu tekstu katrā pieprasījumā var aizņemt ilgu laiku, bet ja tas nepieciešams, jūs varat meklēt jebkuru vārdu pilnā pieprasījumu vēsturē ierakstot <b>fulltext:<i>word</i></b>."
-
 #: share/html/User/Prefs.html:170
 msgid "Secret authentication token"
 msgstr "Slepenais autorizācijas žetons"
@@ -7785,29 +7201,9 @@ msgstr ""
 msgid "See changes to articles in this class"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "See custom field values"
-msgstr "Skatīt lauku vērtības"
-
-#: NOT FOUND IN SOURCE
-msgid "See custom fields"
-msgstr "Skatīt laukus"
-
-#: NOT FOUND IN SOURCE
-msgid "See exact outgoing email messages and their recipeients"
-msgstr "Skatīt izejošos e-pastus un to saņēmējus"
-
 #: lib/RT/Class.pm:87
 msgid "See that this class exists"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "See ticket private commentary"
-msgstr "Skatīt pieprasījuma privātos komentārus"
-
-#: NOT FOUND IN SOURCE
-msgid "See ticket summaries"
-msgstr "Skatīt pieprasījuma apkopojumu"
 
 #: lib/RT/Class.pm:87
 msgid "SeeClass"
@@ -7934,10 +7330,6 @@ msgstr ""
 msgid "Select global scrip stage:"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Select group"
-msgstr "Atlasīt grupu"
-
 #: lib/RT/CustomField.pm:163
 msgid "Select multiple dates"
 msgstr ""
@@ -7958,17 +7350,9 @@ msgstr "Izvēlēties vienu vērtību"
 msgid "Select queues to be displayed on the \"RT at a glance\" page"
 msgstr "Izvēlēties uzdevumus kurus rādīt \"RT at a glance\" lapā"
 
-#: NOT FOUND IN SOURCE
-msgid "Select scrip"
-msgstr "Izvēlēties skripu"
-
 #: share/html/Admin/Elements/SelectStageForAdded:53
 msgid "Select scrip stage for newly added queues:"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Select template"
-msgstr "Izvēlies šablonu"
 
 #: share/html/Articles/Article/ExtractIntoClass.html:63 share/html/Articles/Article/ExtractIntoTopic.html:52
 #. ()
@@ -7995,7 +7379,7 @@ msgstr "Izvēlies Custom laukus"
 msgid "Selected Queues"
 msgstr ""
 
-#: lib/RT/Crypt.pm:691
+#: lib/RT/Crypt.pm:699
 msgid "Selected key either is not trusted or doesn't exist anymore."
 msgstr "Izvēlētā atslēga nav droša vai vispār nepastāv."
 
@@ -8010,10 +7394,6 @@ msgstr "Izvēlne mainīta. Saglabājiet izmaiņas"
 #: etc/initialdata:107
 msgid "Send Forward"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Send email successfully"
-msgstr "Vēstule nosūtīta veiksmīgi"
 
 #: etc/initialdata:108
 msgid "Send forwarded message"
@@ -8132,10 +7512,6 @@ msgstr "Rādīt apstiprinātos uzdevumus"
 msgid "Show as well"
 msgstr "Parādīt kā arī"
 
-#: NOT FOUND IN SOURCE
-msgid "Show basics"
-msgstr "Parādīt pamatus"
-
 #: share/html/Elements/ShowHistory:69
 msgid "Show brief headers"
 msgstr ""
@@ -8143,10 +7519,6 @@ msgstr ""
 #: share/html/Approvals/Elements/PendingMyApproval:68
 msgid "Show denied requests"
 msgstr "Parādīt noraidītos pieprasījumus"
-
-#: NOT FOUND IN SOURCE
-msgid "Show details"
-msgstr "Rādīt detaļas"
 
 #: share/html/Elements/ShowHistory:74
 msgid "Show full headers"
@@ -8393,7 +7765,7 @@ msgstr ""
 msgid "Stage"
 msgstr ""
 
-#: etc/RT_Config.pm:2770 etc/RT_Config.pm:2846
+#: etc/RT_Config.pm:2773 etc/RT_Config.pm:2849
 msgid "Stall"
 msgstr ""
 
@@ -8479,10 +7851,6 @@ msgstr "Solis %1 no %2"
 msgid "Stolen from %1"
 msgstr "Nozagts no %1"
 
-#: NOT FOUND IN SOURCE
-msgid "Stolen from %1 "
-msgstr "Nozagts no %1 "
-
 #: share/html/Search/Chart.html:156 share/html/Search/Elements/EditFormat:93
 msgid "Style"
 msgstr "Stils"
@@ -8502,10 +7870,6 @@ msgstr "Temats mainīts uz %1"
 #: share/html/Elements/RT__Queue/ColumnMap:71
 msgid "SubjectTag"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "SubjectTag changed to %1"
-msgstr "Temata tegs mainīts uz %1"
 
 #: share/html/Elements/Submit:99
 msgid "Submit"
@@ -8606,17 +7970,13 @@ msgstr "Sisadmins"
 msgid "Suspended"
 msgstr "Iesaldēts"
 
-#: lib/RT/Interface/Web.pm:3630
+#: lib/RT/Interface/Web.pm:3666
 msgid "System"
 msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:50 share/html/Elements/Tabs:227
 msgid "System Configuration"
 msgstr "Sistēmas konfigurācija"
-
-#: NOT FOUND IN SOURCE
-msgid "System Dashboards"
-msgstr "Sistēmas paneļi"
 
 #: lib/RT/Installer.pm:206 share/html/Elements/SelectTimezone:63
 msgid "System Default"
@@ -8639,21 +7999,9 @@ msgstr "Sistēmas rīki"
 msgid "System error"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "System error. Right not delegated."
-msgstr "Sistēmas kļūda. Tiesības nav deleģētas."
-
 #: lib/RT/ACE.pm:141 lib/RT/ACE.pm:209 lib/RT/ACE.pm:291
 msgid "System error. Right not granted."
 msgstr "Sistēmas kļūda. Nav tiesību."
-
-#: NOT FOUND IN SOURCE
-msgid "System groups"
-msgstr "Sistēmas grupas"
-
-#: NOT FOUND IN SOURCE
-msgid "System rights"
-msgstr "Sistēmas tiesības"
 
 #: lib/RT/Handle.pm:768
 msgid "SystemRolegroup for internal use"
@@ -8682,10 +8030,6 @@ msgstr ""
 #: share/html/Admin/Scrips/Elements/EditBasics:64 share/html/Elements/RT__Scrip/ColumnMap:75
 msgid "Template"
 msgstr "Šablons:"
-
-#: NOT FOUND IN SOURCE
-msgid "Template #%1"
-msgstr "Šablons #%1"
 
 #: share/html/Admin/Elements/EditTemplates:111
 #. ($id)
@@ -8774,18 +8118,6 @@ msgid "That is the same value"
 msgstr "Tas ar tādu pašu vērtību"
 
 #: NOT FOUND IN SOURCE
-msgid "That principal is already a %1 for this ticket"
-msgstr "šāds pamats jau ir %1 šīm pieprasījumam"
-
-#: NOT FOUND IN SOURCE
-msgid "That principal is not a %1 for this queue"
-msgstr "šāds pamats nav %1 šīm uzdevumam"
-
-#: NOT FOUND IN SOURCE
-msgid "That principal is not a %1 for this ticket"
-msgstr "šāds pamats nav %1 šīm pieprasījumam"
-
-#: NOT FOUND IN SOURCE
 msgid "That queue does not exist"
 msgstr "šāds uzdevums neeksistē"
 
@@ -8854,10 +8186,6 @@ msgstr "Domēna vārds datubāzes serverim (piem. 'db.example.com')."
 msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they are overdue:"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they haven't been touched in 4 hours:"
-msgstr "Sekojoša komanda sameklēs aktīvos pieprasījumus uzdevumā 'General' un uzliks prioritāti 99 ja tie nav aiztikti 4 stundas:"
-
 #: share/html/Dashboards/Elements/Deleted:53
 msgid "The following queries have been deleted and each will be removed from the dashboard once its pane is updated."
 msgstr "Sekojoši pieprasījumi tiks dzēsti un katrs tiks noņemts no paneļa kad panelis tiks atjaunināts."
@@ -8915,7 +8243,7 @@ msgstr "Sistēma nevar apstiprināt izejošo e-pastu. Tas liecina, ka, vai passf
 msgid "Theme"
 msgstr "Tēma"
 
-#: lib/RT/Crypt.pm:718
+#: lib/RT/Crypt.pm:726
 msgid "There are several keys suitable for encryption."
 msgstr "Ir vairākas atslēgas derīgas šifrēšanai."
 
@@ -8932,7 +8260,7 @@ msgstr "Šaj atslēgai ir nepilna uzticība"
 msgid "There is more than one group with the name '%1'.  This may cause inconsistency in parts of the admin interface, and therefore it's recommended you rename the conflicting groups."
 msgstr ""
 
-#: lib/RT/Crypt.pm:710
+#: lib/RT/Crypt.pm:718
 msgid "There is no key suitable for encryption."
 msgstr "Nav piemērotas atslēgas šifrēšanai"
 
@@ -8941,7 +8269,7 @@ msgstr "Nav piemērotas atslēgas šifrēšanai"
 msgid "There is no mapping for statuses between lifecycle %1 and %2. Contact your system administrator."
 msgstr ""
 
-#: lib/RT/Crypt.pm:714
+#: lib/RT/Crypt.pm:722
 msgid "There is one suitable key, but trust level is not set."
 msgstr "Ir viena piemērota atslēga, bet uzticības līmenis nav uzlikts."
 
@@ -8982,17 +8310,13 @@ msgstr ""
 msgid "This feature is only available to system administrators"
 msgstr "Šī iespēja atļauta tikai sistēmas adminam"
 
-#: share/html/Admin/Tools/Queries.html:51 share/html/Admin/Tools/Theme.html:225
+#: share/html/Admin/Tools/Queries.html:51 share/html/Admin/Tools/Theme.html:226
 msgid "This feature is only available to system administrators."
 msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "This may mean that that the directory '%1' isn't writable or a database table is missing or corrupt."
 msgstr "Tas nozīmē ka direktorija '%1' nav rakstāma vai DB tabula neekstistē vai ir bojāta."
-
-#: NOT FOUND IN SOURCE
-msgid "This message will be sent to..."
-msgstr "Vēstule tiks nosūtīta ..."
 
 #: share/html/Admin/Tools/Queries.html:63
 msgid "This server process has recorded no SQL queries."
@@ -9019,10 +8343,6 @@ msgstr "Šāds darījums parādās bez satura"
 #. ($Rows, $Description)
 msgid "This user's %1 highest priority %2 tickets"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "This user's %1 highest priority tickets"
-msgstr "Šā lietotāja %1 augstākās prioritātes pieprasījumi"
 
 #: share/html/User/Search.html:53
 msgid "This will search for users by looking in the following fields:"
@@ -9164,22 +8484,6 @@ msgstr "Pieprasījumi %1 no %2"
 #: share/html/m/_elements/menu:76
 msgid "Tickets I own"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Tickets created after"
-msgstr "Pieprasījumi veidoti pēc"
-
-#: NOT FOUND IN SOURCE
-msgid "Tickets created before"
-msgstr "Pieprasījumi veidoti pirms"
-
-#: NOT FOUND IN SOURCE
-msgid "Tickets resolved after"
-msgstr "Pieprasījumi atrisināti pēc"
-
-#: NOT FOUND IN SOURCE
-msgid "Tickets resolved before"
-msgstr "Pieprasījumi atrisināti pirms"
 
 #: share/html/Approvals/Elements/ShowDependency:50
 msgid "Tickets which depend on this approval:"
@@ -9412,12 +8716,12 @@ msgstr "Nevar noteikt objekta tipu vai id"
 msgid "Unable to load article"
 msgstr ""
 
-#: share/html/Admin/Tools/Theme.html:270
+#: share/html/Admin/Tools/Theme.html:271
 #. ($msg)
 msgid "Unable to set UserCSS: %1"
 msgstr ""
 
-#: share/html/Admin/Tools/Theme.html:242
+#: share/html/Admin/Tools/Theme.html:243
 #. ($msg)
 msgid "Unable to set UserLogo: %1"
 msgstr ""
@@ -9455,7 +8759,7 @@ msgstr ""
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr ""
 
-#: etc/RT_Config.pm:2794 etc/RT_Config.pm:2870
+#: etc/RT_Config.pm:2797 etc/RT_Config.pm:2873
 msgid "Undelete"
 msgstr ""
 
@@ -9657,10 +8961,6 @@ msgstr "Ielādēt jūsu izmaiņas"
 msgid "Usage:"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Usage: "
-msgstr "Pielietojums: "
-
 #: lib/RT/Installer.pm:137
 msgid "Use SSL?"
 msgstr "Lietot SSL?"
@@ -9727,7 +9027,7 @@ msgstr "Lietotāja definēti nosacījumi un darbības"
 msgid "User Defined conditions and results"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3648
+#: lib/RT/Interface/Web.pm:3684
 msgid "User Groups"
 msgstr ""
 
@@ -9761,10 +9061,6 @@ msgstr "Nevar izveidot lietotāju %1"
 msgid "User created"
 msgstr "Lietotājs izveidot"
 
-#: NOT FOUND IN SOURCE
-msgid "User defined groups"
-msgstr "Lietotāja definētās grupas"
-
 #: lib/RT/User.pm:1152
 msgid "User disabled"
 msgstr "Lietotājs atslēgts"
@@ -9780,10 +9076,6 @@ msgstr "Lietotājam nenorādīta E-pasta adrese"
 #: lib/RT/User.pm:533 lib/RT/User.pm:553
 msgid "User loaded"
 msgstr "Lietotājs ielādēts"
-
-#: NOT FOUND IN SOURCE
-msgid "User's GnuPG keys"
-msgstr "Lietotāju GnuPG atslēgas"
 
 #: share/html/Admin/Groups/index.html:121
 msgid "User-defined groups"
@@ -9802,7 +9094,7 @@ msgstr "Lietotājvārds"
 msgid "Username format"
 msgstr "Lietotājvārda formāts"
 
-#: lib/RT/CustomField.pm:1746 lib/RT/Interface/Web.pm:3701 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:500 share/html/Elements/Tabs:67
+#: lib/RT/CustomField.pm:1746 lib/RT/Interface/Web.pm:3737 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:500 share/html/Elements/Tabs:67
 msgid "Users"
 msgstr "Lietotāji"
 
@@ -9835,10 +9127,6 @@ msgstr "Vērtības"
 msgid "Variable"
 msgstr "Mainīgais"
 
-#: NOT FOUND IN SOURCE
-msgid "Various RT reports"
-msgstr "Dažādas RT atskaites"
-
 #: share/html/Admin/Tools/Configuration.html:239
 msgid "Version"
 msgstr "Versija"
@@ -9858,10 +9146,6 @@ msgstr ""
 #: lib/RT/CustomField.pm:213
 msgid "View custom fields"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "View dashboards for this group"
-msgstr "Skatīt šīs grupas paneļus"
 
 #: lib/RT/Queue.pm:125
 msgid "View exact outgoing email messages and their recipients"
@@ -10099,10 +9383,6 @@ msgstr "Darbs"
 msgid "Work Phone"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "WorkPhone"
-msgstr "DarbaTelefons"
-
 #: share/html/Ticket/Elements/ShowBasics:65 share/html/Tools/MyDay.html:62 share/html/m/ticket/reply:81 share/html/m/ticket/show:227
 msgid "Worked"
 msgstr "Strādāts"
@@ -10140,10 +9420,6 @@ msgstr "Jūs gribat šifrēt izejošās vēstules, bet ir problēma ar saņēmē
 #: share/html/Elements/Crypt/KeyIssues:62
 msgid "You are going to encrypt outgoing email messages, but there is a problem with a recipient's public key/certificate. You have to fix the problem with the key/certificate, disable sending a message to that recipient, or disable encryption."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "You are not an authorized user"
-msgstr "Jūs neesat autorizēts lietotājs"
 
 #: share/html/Errors/WebRemoteUser/NoRemoteUser:49
 msgid "You are not authorized to use RT."
@@ -10200,10 +9476,6 @@ msgstr ""
 msgid "You don't have <b>SuperUser</b> right."
 msgstr "Jums nav SuperUser tiesību."
 
-#: NOT FOUND IN SOURCE
-msgid "You found %1 tickets in queue %2"
-msgstr "Jūs atradāt %1 pieprasījumus uzdevumā %2"
-
 #: share/html/NoAuth/Logout.html:55
 msgid "You have been logged out of RT."
 msgstr "Jūs izgājāt no RT"
@@ -10216,7 +9488,7 @@ msgstr ""
 msgid "You have enabled encryption support but have not set a correspondence address for this queue."
 msgstr ""
 
-#: share/html/SelfService/Display.html:104
+#: share/html/SelfService/Display.html:111
 msgid "You have no permission to create tickets in that queue."
 msgstr "Jums nav tiesību veidot pieprasījumus šajā uzdevumā"
 
@@ -10249,10 +9521,6 @@ msgstr ""
 msgid "You should be taken directly to a login page. You'll be able to log in with username of %1 and the password you set earlier."
 msgstr "Jūs pārsūtīs uz login lapu. Varēsiet ieiet ar lietotājvārdu %1 un agrāko paroli"
 
-#: NOT FOUND IN SOURCE
-msgid "You should be taken directly to a login page. You'll be able to log in with username of <tt>root</tt> and the password you set earlier."
-msgstr "Jūs pārsūtīs uz login lapu. Varēsiet ieiet ar lietotājvārdu <tt>root</tt> un agrāko paroli"
-
 #: share/html/Install/DatabaseType.html:55
 msgid "You should choose the database you or your local database administrator is most comfortable with."
 msgstr "You should choose the database you or your local database administrator is most comfortable with."
@@ -10260,10 +9528,6 @@ msgstr "You should choose the database you or your local database administrator 
 #: share/html/Errors/WebRemoteUser/Deauthorized:49
 msgid "You were logged out of RT by your authentication system.  This may be a temporary hiccup, in which case refreshing this page may help."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>Let's go!</i> below, RT will guide you through setting up your RT server and database."
-msgstr "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT. If you click <i>Let's go!</i> below, RT will guide you through setting up your RT server and database."
 
 #: share/html/Install/index.html:79
 #. (loc("Let's go!"))
@@ -10273,10 +9537,6 @@ msgstr "You're seeing this screen because you started up an RT server without a 
 #: share/html/NoAuth/Logout.html:59
 msgid "You're welcome to login again"
 msgstr "Sveicināts atkal ielogoties"
-
-#: NOT FOUND IN SOURCE
-msgid "Your current password"
-msgstr "Jūsu tekošā parole"
 
 #: lib/RT/User.pm:1044
 msgid "Your password is not set."
@@ -10331,14 +9591,6 @@ msgstr ""
 msgid "after the rest of the page loads"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "allow creation of saved searches"
-msgstr "atļaut saglabāto meklējumu izveidi"
-
-#: NOT FOUND IN SOURCE
-msgid "allow loading of saved searches"
-msgstr "atļaut saglabāto meklējumu ielādi"
-
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:102 share/html/Articles/Article/Elements/ShowSearchCriteria:111
 msgid "and before"
 msgstr ""
@@ -10350,10 +9602,6 @@ msgstr ""
 #: share/html/Search/Chart.html:123 share/html/Search/Chart.html:131 share/html/Search/Chart.html:146 share/html/Search/Chart.html:149
 msgid "and then"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "as granted to %1"
-msgstr "kā tiesīgs uz %1"
 
 #: share/html/Search/Elements/SelectChartType:54
 msgid "bar"
@@ -10406,10 +9654,6 @@ msgstr "Spiest lai uzreiz pieliktu/noņemtu visus objektus"
 #: share/html/SelfService/Closed.html:53
 msgid "closed"
 msgstr "Aizvērts"
-
-#: NOT FOUND IN SOURCE
-msgid "concise"
-msgstr "īss"
 
 #: share/html/Admin/Tools/Configuration.html:83
 msgid "core config"
@@ -10699,10 +9943,6 @@ msgstr "cits..."
 msgid "perform actions"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "personal group '%1' for user '%2'"
-msgstr "Personāla grupa '%1' lietotājam '%2'"
-
 #: share/html/Search/Elements/SelectChartType:55
 msgid "pie"
 msgstr "pie"
@@ -10743,14 +9983,6 @@ msgstr "sek"
 #: share/html/Admin/Tools/Shredder/index.html:179
 msgid "see object list below"
 msgstr "skatīt zemāk norādīto objektu"
-
-#: NOT FOUND IN SOURCE
-msgid "show Approvals tab"
-msgstr "Rādīt Apstiprinājumu tabu"
-
-#: NOT FOUND IN SOURCE
-msgid "show Configuration tab"
-msgstr "Rādīt konfigurāciju tabu"
 
 #: share/html/Admin/Global/MyRT.html:87
 msgid "sidebar"
@@ -10848,10 +10080,6 @@ msgstr "lietotājs %1"
 #: share/html/Admin/Elements/EditRights:157
 msgid "username"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "verbose"
-msgstr "runīgs"
 
 #: share/html/Dashboards/Subscription.html:105
 msgid "weekly"

@@ -4,15 +4,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
-"POT-Creation-Date: 2011-08-05 23:32+0000\n"
-"PO-Revision-Date: 2011-08-05 23:59+0000\n"
-"Last-Translator: Shawn M Moore <sartak@bestpractical.com>\n"
+"POT-Creation-Date: 2013-06-06 21:51+0000\n"
+"PO-Revision-Date: 2013-05-25 02:59+0000\n"
+"Last-Translator: Shawn M Moore <Unknown>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-06 01:13+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2013-10-03 20:13+0000\n"
+"X-Generator: Launchpad (build 16791)\n"
 
 #: share/html/Elements/LoginHelp:51
 #. (RT->Config->Get('OwnerEmail'))
@@ -20,18 +20,6 @@ msgid ""
 "\n"
 "For local help, please contact %1\n"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid " %1 deleted."
-msgstr " %1 silindi."
-
-#: NOT FOUND IN SOURCE
-msgid " %1 renamed to %2."
-msgstr " %1 değeri %2 olarak yeniden adlandırıldı."
-
-#: NOT FOUND IN SOURCE
-msgid " %1 saved."
-msgstr " %1 kaydedildi."
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:60
 msgid "#"
@@ -164,12 +152,16 @@ msgstr "%1 (Değişmemiş)"
 #: share/html/Dashboards/Elements/Deleted:57
 #. (($_->{description} || $_->{name}), $_->{pane})
 msgid "%1 (from pane %2)"
-msgstr ""
+msgstr "%1 (panel %2 den)"
 
 #: bin/rt-crontool:337
 #. ("--log")
 msgid "%1 - Adjust LogToSTDERR config option"
 msgstr ""
+
+#: NOT FOUND IN SOURCE
+msgid "%1 - Adjust LogToScreen config option"
+msgstr "%1 - LogToScreen konfigurasyon seçeneğini ayarla"
 
 #: bin/rt-crontool:312 bin/rt-crontool:319 bin/rt-crontool:325
 #. ("--action-arg", "--action")
@@ -183,23 +175,15 @@ msgstr "%1 - %2 komutuna geçilecek bir argüman"
 msgid "%1 - Output status updates to STDOUT"
 msgstr "%1 - STDOUT' a gönderilen çıktı durumu güncellemeleri"
 
-#: NOT FOUND IN SOURCE
-msgid "%1 - Specify id of the template you want to use"
-msgstr "%1 - Kullanmak istediğiniz şablonun adını belirtin"
-
-#: NOT FOUND IN SOURCE
-msgid "%1 - Specify if you want to use either 'first' or 'last' tarnsaction"
-msgstr "%1 - 'first' veya 'last' hareketlerinden hangisini kullanacağınızı belirtin"
-
 #: bin/rt-crontool:331
 #. ("--transaction")
 msgid "%1 - Specify if you want to use either 'first', 'last' or 'all' transactions"
-msgstr ""
+msgstr "%1 - 'İlk', 'Son' ve 'hepsi'  işlemlerinin hangisini kullanacağını belirtin"
 
 #: bin/rt-crontool:328
 #. ("--template")
 msgid "%1 - Specify name or id of template(s) you want to use"
-msgstr ""
+msgstr "%1 * Kullanmak istediğiniz şablonların id veya ismini belirtin"
 
 #: bin/rt-crontool:322
 #. ("--action")
@@ -221,10 +205,6 @@ msgstr "%1 - Kullanmak istediğiniz durum modülünü belirtin"
 msgid "%1 - Specify the search module you want to use"
 msgstr "%1 - Kullanmak istediğiniz arama modülünü belirtin"
 
-#: NOT FOUND IN SOURCE
-msgid "%1 - Specify the type of a transaction you want to use"
-msgstr "%1 - Kullanmak istediğiniz hareket türünü belirtin"
-
 #: share/html/Search/Elements/PickObjectCFs:70
 #. (loc($Class))
 msgid "%1 CFs"
@@ -235,10 +215,6 @@ msgstr ""
 #. ('', '', '2013', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr "%1 RT sürüm %2 Telif Hakkı: 1996-%3 %4."
-
-#: NOT FOUND IN SOURCE
-msgid "%1 ScripAction loaded"
-msgstr "ScriptAction %1 yüklendi"
 
 #: share/html/Admin/Elements/UpgradeHistory:58
 #. ($package)
@@ -302,7 +278,7 @@ msgstr "%1, %2 değerinden %3 değerine değişti"
 #. (loc("Render Type"), $original, $RenderType)
 #. (loc("Field values source"), $original, $ValuesClass)
 msgid "%1 changed from '%2' to '%3'"
-msgstr ""
+msgstr "%1 %2 den %3 e değiştir"
 
 #: share/html/Search/Elements/EditSearches:203
 #. ($SavedSearch->{'Object'}->Description)
@@ -317,10 +293,6 @@ msgstr ""
 #: lib/RT/Record.pm:962
 msgid "%1 could not be set to %2."
 msgstr "%1, %2 olarak atanamıyor"
-
-#: NOT FOUND IN SOURCE
-msgid "%1 couldn't set status to resolved. RT's Database may be inconsistent."
-msgstr "%1, durumunu çözülmüş olarak değiştiremiyor. RT' nin veritabanı tutarsız olabilir"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 created"
@@ -366,10 +338,6 @@ msgstr ""
 #. ($email->format, loc(substr($field, 6)))
 msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "%1 is no longer a %2 for this queue."
-msgstr "%1, artık bu kuyruk için %2 değil."
 
 #: lib/RT/Ticket.pm:673
 #. ($principal->Object->Name,                         $self->loc($args{'Type'}))
@@ -425,10 +393,6 @@ msgstr "Sahibi olmayan en yeni %1 bilet"
 msgid "%1 objects"
 msgstr "%1 nesne"
 
-#: NOT FOUND IN SOURCE
-msgid "%1 rights"
-msgstr "%1 hak"
-
 #: lib/RT/Group.pm:1131
 #. ($self->loc($self->Name), $new_member_obj->Object->Name)
 msgid "%1 set to %2"
@@ -453,10 +417,6 @@ msgstr ""
 #. ($self->loc( $args{'Field'} ),)
 msgid "%1 updated"
 msgstr "%1 güncellendi"
-
-#: NOT FOUND IN SOURCE
-msgid "%1 will resolve all members of a resolved group ticket."
-msgstr "%1, çözülmüş bir grup biletinin tüm üyelerini çözecektir"
 
 #: lib/RT/Date.pm:441
 #. ($value)
@@ -631,14 +591,6 @@ msgstr "(Silmek için kutucuğu işaretleyin)"
 msgid "(Check boxes to delete)"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "(Check boxes to disable notifications to the listed recipients)"
-msgstr "(Listelenen alıcılara uyarı gitmesini iptal etmek için kutucukları işaretleyin)"
-
-#: NOT FOUND IN SOURCE
-msgid "(Check boxes to enable notifications to the listed recipients)"
-msgstr "Listelenen alıcılara uyarı gitmesi için kutucukları işaretleyin)"
-
 #: share/html/m/ticket/create:392
 msgid "(Enter ticket ids or URLs, separated with spaces)"
 msgstr "(Boşluklarla ayrılmış olarak, bilet numaralarını veya URL' lerini girin)"
@@ -677,17 +629,9 @@ msgstr "(Şablon yok)"
 msgid "(None)"
 msgstr "(Hiçbiri)"
 
-#: NOT FOUND IN SOURCE
-msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)"
-msgstr "(Bu güncellemeyi, virgülle ayrılmış eposta listesine, görünmez karbon kopya olarak gönderir. İleriki güncellemeleri kimin alıp almayacağını <strong>değiştirmez</strong>.)"
-
 #: share/html/Ticket/Create.html:161 share/html/m/ticket/create:290
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)"
 msgstr "(Bu güncellemeyi, virgülle ayrılmış eposta listesine, karbon kopya olarak gönderir. Listedeki kişiler ileriki güncellemeleri <strong>alacaktır</strong>.)"
-
-#: NOT FOUND IN SOURCE
-msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)"
-msgstr "(Bu güncellemeyi, virgülle ayrılmış eposta listesine, karbon kopya olarak gönderir. İleriki güncellemeleri kimin alıp almayacağını <strong>değiştirmez</strong>.)"
 
 #: share/html/Ticket/Create.html:145 share/html/m/ticket/create:281
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)"
@@ -705,17 +649,9 @@ msgstr "(Eposta gönderilmeyecek)"
 msgid "(any)"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "(empty)"
-msgstr "(boş)"
-
 #: share/html/Articles/Elements/NewestArticles:66 share/html/Articles/Elements/UpdatedArticles:67
 msgid "(no Summary)"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "(no name listed)"
-msgstr "(herhangi bir ad listelenmedi)"
 
 #: share/html/Admin/Articles/Elements/Topics:99 share/html/Articles/Article/Elements/EditTopics:58 share/html/Articles/Article/Elements/EditTopics:74 share/html/Articles/Article/Elements/Preformatted:49 share/html/Articles/Article/Elements/Preformatted:50 share/html/Articles/Elements/BeforeMessageBox:103 share/html/Articles/Elements/BeforeMessageBox:120 share/html/Articles/Elements/BeforeMessageBox:70 share/html/Articles/Elements/BeforeMessageBox:82 share/html/Articles/Elements/BeforeMessageBox:90 share/html/Articles/Elements/NewestArticles:60 share/html/Articles/Elements/ShowTopic:51 share/html/Articles/Elements/ShowTopicLink:55 share/html/Articles/Elements/UpdatedArticles:61 share/html/Articles/Topics.html:105 share/html/SelfService/Article/Display.html:49 share/html/SelfService/Article/Search.html:77 share/html/SelfService/Article/Search.html:85
 msgid "(no name)"
@@ -746,10 +682,6 @@ msgstr ""
 msgid "(pending approval)"
 msgstr "(onaylanmayı bekliyor)"
 
-#: NOT FOUND IN SOURCE
-msgid "(pending other Collection)"
-msgstr "(diğer bir Koleksiyonu bekliyor)"
-
 #: share/html/Admin/Users/Modify.html:69
 msgid "(required)"
 msgstr "(gerekli)"
@@ -767,10 +699,6 @@ msgstr "(başlıksız)"
 msgid "(untrusted!)"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "(yyyy/mm/dd)"
-msgstr "(yyyy/aa/gg)"
-
 #: share/html/Articles/Elements/BeforeMessageBox:68 share/html/Elements/EditCustomFieldSelect:58
 msgid "-"
 msgstr "-"
@@ -778,10 +706,6 @@ msgstr "-"
 #: bin/rt-crontool:129
 msgid "--template-id is deprecated argument and can not be used with --template"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "--transaction argument could be only 'first' or 'last'"
-msgstr "--transaction argümanı sadece 'first' veya 'last' olabilir"
 
 #: bin/rt-crontool:124
 msgid "--transaction argument could be only 'first', 'last' or 'all'"
@@ -794,14 +718,6 @@ msgstr ""
 #: lib/RT/Date.pm:383
 msgid "0s"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
-msgstr "<input type=\"submit\" class=\"button\" value=\"Yeni bilet:\" />&nbsp;%1"
-
-#: NOT FOUND IN SOURCE
-msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
-msgstr "<input type=\"submit\" value=\"Yeni bilet:\">&nbsp;%1"
 
 #: lib/RT/Template.pm:287 lib/RT/Template.pm:713
 msgid "A Template with that name already exists"
@@ -844,10 +760,6 @@ msgstr "Erişim denetimi"
 msgid "Action"
 msgstr "Eylem"
 
-#: NOT FOUND IN SOURCE
-msgid "Action %1 not found"
-msgstr "%1 eylemi bulunamadı"
-
 #: lib/RT/Scrip.pm:153 lib/RT/Scrip.pm:731
 #. ($args{'ScripAction'})
 #. ($value)
@@ -857,10 +769,6 @@ msgstr ""
 #: bin/rt-crontool:220
 msgid "Action committed."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Action committed.\\n"
-msgstr "Eylem yapıldı"
 
 #: lib/RT/Scrip.pm:149 lib/RT/Scrip.pm:726
 msgid "Action is mandatory argument"
@@ -882,10 +790,6 @@ msgstr ""
 #. ($session{'CurrentUser'}->Name)
 msgid "Active tickets for %1"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Add"
-msgstr "Ekle"
 
 #: share/html/Admin/Elements/EditRights:134
 #. (loc($AddPrincipal))
@@ -928,10 +832,6 @@ msgstr "Değer ekle"
 msgid "Add a scrip which will apply to all queues"
 msgstr "Bütün kuyruklara etki edecek bir senet ekle"
 
-#: NOT FOUND IN SOURCE
-msgid "Add and Search"
-msgstr "Ekle ve Ara"
-
 #: share/html/Search/Bulk.html:123
 msgid "Add comments or replies to selected tickets"
 msgstr "Seçilen senetlere yorum veya cevap ekle"
@@ -965,10 +865,6 @@ msgstr "Bu terimleri ekle"
 msgid "Add these terms and Search"
 msgstr "Bu terimleri ekle ve Ara"
 
-#: NOT FOUND IN SOURCE
-msgid "Add these terms to your search"
-msgstr "Aramanıza bu terimleri ekleyin"
-
 #: share/html/Admin/Elements/SelectNewGroupMembers:49
 msgid "Add user"
 msgstr ""
@@ -976,10 +872,6 @@ msgstr ""
 #: share/html/Elements/BulkCustomFields:52
 msgid "Add values"
 msgstr "Değer ekle"
-
-#: NOT FOUND IN SOURCE
-msgid "Add, delete and modify custom field values for objects"
-msgstr "Nesneler için, kişiselleştirilmiş alanları ekleyin, silin ve değiştirin"
 
 #: lib/RT/CustomField.pm:216
 msgid "Add, modify and delete custom field values for objects"
@@ -1003,14 +895,6 @@ msgstr ""
 #. ($cf->Name)
 msgid "Added Subject Override: %1"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Added principal as a %1 for this queue"
-msgstr "Bu kuyruk için, asıl, %1 olarak eklendi"
-
-#: NOT FOUND IN SOURCE
-msgid "Added principal as a %1 for this ticket"
-msgstr "Bu bilet için, asıl, %1 olarak eklendi"
 
 #: share/html/Elements/RT__Queue/ColumnMap:65 share/html/Elements/RT__User/ColumnMap:101
 msgid "Address"
@@ -1290,17 +1174,9 @@ msgstr ""
 msgid "Approve"
 msgstr "Onayla"
 
-#: NOT FOUND IN SOURCE
-msgid "Approver's notes: %1"
-msgstr "Onaylayanın notları: %1"
-
 #: lib/RT/Date.pm:94
 msgid "Apr"
 msgstr "Nis"
-
-#: NOT FOUND IN SOURCE
-msgid "Apr."
-msgstr "Nis."
 
 #: share/html/Articles/Article/Delete.html:56
 msgid "Are you sure you want to delete this article?"
@@ -1370,10 +1246,6 @@ msgstr "Art"
 msgid "Ascending"
 msgstr "Artan"
 
-#: NOT FOUND IN SOURCE
-msgid "Assign and remove custom fields"
-msgstr "Kişisel alanları ata ve kaldır"
-
 #: lib/RT/Queue.pm:116
 msgid "Assign and remove queue custom fields"
 msgstr ""
@@ -1427,15 +1299,11 @@ msgstr "Öznitelik Silindi"
 msgid "Aug"
 msgstr "Ağu"
 
-#: NOT FOUND IN SOURCE
-msgid "Aug."
-msgstr "Ağu."
-
 #: share/html/Errors/WebRemoteUser/UserAutocreateDefaultsOnLogin:48
 msgid "Automatic account setup failed"
 msgstr ""
 
-#: share/html/Admin/Tools/Theme.html:310
+#: share/html/Admin/Tools/Theme.html:311
 #. ($valid_image_types)
 msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 msgstr ""
@@ -1521,18 +1389,10 @@ msgstr ""
 msgid "Bcc"
 msgstr "Gizli karbon kopya"
 
-#: NOT FOUND IN SOURCE
-msgid "Be sure to save your changes"
-msgstr "Değişikliklerinizi kaydettiğinizden emin olun"
-
 #: share/html/Articles/Elements/NeedsSetup:50
 #. (qq[<a href="@{[RT->Config->Get("WebPath")]}/Admin/Articles/">], '</a>')
 msgid "Before Articles can be used, your RT administrator must %1create Classes%2, apply Article custom fields to them, and grant users rights on the classes and CFs."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Best Practical Solutions, LLC corporate logo"
-msgstr "Best Practical Solutions, LLC şirket logosu"
 
 #: etc/initialdata:223
 msgid "Blank"
@@ -1550,10 +1410,6 @@ msgstr "Kalın"
 msgid "Bookmark"
 msgstr "Yer İmi"
 
-#: NOT FOUND IN SOURCE
-msgid "Bookmarkable link"
-msgstr "Yer imi olarak eklenebilir bağlantı"
-
 #: share/html/Articles/Article/Search.html:114
 msgid "Bookmarkable link for this search"
 msgstr ""
@@ -1565,10 +1421,6 @@ msgstr ""
 #: share/html/m/_elements/menu:73
 msgid "Bookmarked tickets"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Brief headers"
-msgstr "Kısa başlıklar"
 
 #: share/html/Articles/Topics.html:48 share/html/Articles/Topics.html:60
 msgid "Browse by topic"
@@ -1612,17 +1464,9 @@ msgstr ""
 msgid "Can not modify system users"
 msgstr "Sistem kullanıcıları değiştirilemez"
 
-#: NOT FOUND IN SOURCE
-msgid "Can this principal see this queue"
-msgstr "Bu yetkili, bu kuyruğu gördü mü"
-
 #: lib/RT/CustomField.pm:518
 msgid "Can't add a custom field value without a name"
 msgstr "Bir ad olmadan, kişisel alan değeri eklenemez"
-
-#: NOT FOUND IN SOURCE
-msgid "Can't find a collection class for '%1'"
-msgstr "'%1' için bir koleksiyon sınıfı bulunamadı"
 
 #: share/html/Search/Elements/EditSearches:316
 msgid "Can't find a saved search to work with"
@@ -1665,10 +1509,6 @@ msgstr ""
 #: share/html/Ticket/Create.html:374 share/html/m/ticket/create:147
 msgid "Cannot create tickets in a disabled queue."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Cannot create user: %1"
-msgstr "Kullanıcı oluşturulamadı: %1"
 
 #: share/html/Admin/CustomFields/Modify.html:126
 msgid "Categories are based on"
@@ -1738,10 +1578,6 @@ msgstr "Çocuklar"
 msgid "Choose Database Engine"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Choose a date"
-msgstr "Bir tarih seçin"
-
 #: share/html/Articles/Elements/BeforeMessageBox:97
 #. ($QueueObj->Name)
 msgid "Choose from Topics for %1"
@@ -1801,10 +1637,6 @@ msgstr ""
 msgid "Click to choose a color"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Close window"
-msgstr "Pencereyi Kapat"
-
 #: share/html/Ticket/Elements/ShowDates:75 share/html/m/ticket/show:375
 msgid "Closed"
 msgstr "Kapatıldı"
@@ -1853,10 +1685,6 @@ msgstr "Açıklamalar"
 msgid "Comments (Not sent to requestors)"
 msgstr "Yorumlar (istekçilere gönderilmedi)"
 
-#: NOT FOUND IN SOURCE
-msgid "Comments (not sent to requestors)"
-msgstr "Yorumlar (istekçilere gönderilmedi)"
-
 #: share/html/Admin/Users/Modify.html:209 share/html/Ticket/Elements/ShowRequestor:78
 msgid "Comments about this user"
 msgstr "Bu kullanıcı hakkındaki yorumlar"
@@ -1887,10 +1715,6 @@ msgstr "Durum, zorunlu bir argüman"
 msgid "Condition matches..."
 msgstr "Durum eşleşiyor..."
 
-#: NOT FOUND IN SOURCE
-msgid "Condition not found"
-msgstr "Durum bulunamadı"
-
 #: share/html/Elements/RT__Scrip/ColumnMap:79
 msgid "Condition, Action and Template"
 msgstr ""
@@ -1908,10 +1732,6 @@ msgstr "Ayarlar"
 #. ($QueueObj->Name)
 msgid "Configuration for queue %1"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Confirm"
-msgstr "Onayla"
 
 #: share/html/Install/DatabaseDetails.html:140
 msgid "Connection succeeded"
@@ -1946,10 +1766,6 @@ msgstr ""
 msgid "ContentType"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Copy"
-msgstr "Kopya"
-
 #: lib/RT/Installer.pm:180
 msgid "Correspond address"
 msgstr ""
@@ -1966,32 +1782,16 @@ msgstr "Uygunluk eklendi"
 msgid "Correspondence in HTML"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Could not add new custom field value. "
-msgstr "Yeni özel bölüm eklenemiyor. "
-
-#: NOT FOUND IN SOURCE
-msgid "Could not add new custom field value. %1 "
-msgstr "Yeni özel bölüm eklenemiyor. %1 "
-
 #: lib/RT/Record.pm:1990 lib/RT/Record.pm:2056
 #. ($msg)
 #. ($value_msg)
 msgid "Could not add new custom field value: %1"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Could not change owner. "
-msgstr "Sahip değiştirilemiyor. "
-
 #: lib/RT/Ticket.pm:2043
 #. ($msg)
 msgid "Could not change owner: %1"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Could not create CustomField"
-msgstr "Özel bölüm oluşturulamıyor"
 
 #: share/html/Admin/CustomFields/Modify.html:184 share/html/Admin/Elements/EditCustomField:116
 #. ($msg)
@@ -2071,10 +1871,6 @@ msgstr "%1 için nesne yüklenemiyor"
 msgid "Could not load scrip #%1"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Could not load search attribute"
-msgstr "Arama özniteliği yüklenemiyor"
-
 #: lib/RT/Record/Role/Roles.pm:473
 #. ($args{User})
 msgid "Could not load user '%1'"
@@ -2085,22 +1881,10 @@ msgstr ""
 msgid "Could not make %1 a %2"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Could not make that principal a %1 for this queue"
-msgstr "Bu yetkili, bu kuyruk için bir %1 yapılamıyor"
-
-#: NOT FOUND IN SOURCE
-msgid "Could not make that principal a %1 for this ticket"
-msgstr "Bu yetkili, bu bilet için bir %1 yapılamıyor"
-
 #: lib/RT/Record/Role/Roles.pm:501
 #. ($principal->Object->Name, $self->loc($args{Type}))
 msgid "Could not remove %1 as a %2"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Could not remove that principal as a %1 for this queue"
-msgstr "Bu yetkili, bu kuyruktan %1 olarak ayrılamıyor"
 
 #: lib/RT/User.pm:144
 msgid "Could not set user info"
@@ -2139,10 +1923,6 @@ msgstr ""
 msgid "Couldn't create a transaction: %1"
 msgstr "Bir hareket oluşturulamıyor: %1"
 
-#: NOT FOUND IN SOURCE
-msgid "Couldn't create record"
-msgstr "Kayıt oluşturulamadı"
-
 #: lib/RT/CustomField.pm:1586
 #. ($msg)
 msgid "Couldn't create record: %1"
@@ -2173,10 +1953,6 @@ msgstr "Bu değer bulunamadı"
 #. ($protocol)
 msgid "Couldn't get %1 keys information"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Couldn't load %1 from the users database.\\n"
-msgstr "%1 değeri, kullanıcı veritabanından yüklenemedi.\\n"
 
 #: share/html/Admin/Articles/Classes/GroupRights.html:66 share/html/Admin/Articles/Classes/UserRights.html:65 share/html/Admin/CustomFields/UserRights.html:66
 #. ($id)
@@ -2423,10 +2199,6 @@ msgstr ""
 msgid "Create a new group"
 msgstr "Yeni bir grup oluştur"
 
-#: NOT FOUND IN SOURCE
-msgid "Create a new personal group"
-msgstr "Yeni bir kişisel grup oluştur"
-
 #: share/html/Admin/Queues/Template.html:110
 #. ($QueueObj->Name)
 msgid "Create a new template for queue %1"
@@ -2501,26 +2273,6 @@ msgstr "Yeni bilet oluştur"
 msgid "Create tickets"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Create tickets in this queue"
-msgstr "Bu kuyrukta yeni biletler oluştur"
-
-#: NOT FOUND IN SOURCE
-msgid "Create, delete and modify custom fields"
-msgstr "Özel bölümleri oluştur, sil ve değiştir"
-
-#: NOT FOUND IN SOURCE
-msgid "Create, delete and modify queues"
-msgstr "Kuyrukları oluştur, sil ve değiştir"
-
-#: NOT FOUND IN SOURCE
-msgid "Create, delete and modify the members of personal groups"
-msgstr "Kişisel grup üyelerini oluştur, sil ve değiştir"
-
-#: NOT FOUND IN SOURCE
-msgid "Create, delete and modify users"
-msgstr "Kullanıcıları oluştur, sil ve değiştir"
-
 #: lib/RT/Class.pm:98 lib/RT/Queue.pm:112
 msgid "Create, modify and delete Access Control List entries"
 msgstr ""
@@ -2587,18 +2339,10 @@ msgstr "Özel bölüm %1 oluşturuldu"
 msgid "Created by"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Created in a date range"
-msgstr "Bir zaman aralığı içinde oluşturuldu"
-
 #: share/html/Articles/Article/Search.html:200
 #. ($search->Name)
 msgid "Created search %1"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Created tickets in period, grouped by status"
-msgstr "Bir devir içinde biletle oluşturuldu ve duruma göre sıralandı"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "CreatedBy"
@@ -2851,17 +2595,13 @@ msgstr ""
 msgid "Date format"
 msgstr "Tarih biçimi"
 
-#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:633 share/html/SelfService/Display.html:66 share/html/Ticket/Create.html:253 share/html/Ticket/Elements/ShowSummary:84 share/html/Ticket/ModifyAll.html:68 share/html/m/ticket/create:377 share/html/m/ticket/show:344
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:633 share/html/SelfService/Display.html:72 share/html/Ticket/Create.html:253 share/html/Ticket/Elements/ShowSummary:84 share/html/Ticket/ModifyAll.html:68 share/html/m/ticket/create:377 share/html/m/ticket/show:344
 msgid "Dates"
 msgstr "Tarihler"
 
 #: lib/RT/Date.pm:102
 msgid "Dec"
 msgstr "Ara"
-
-#: NOT FOUND IN SOURCE
-msgid "Dec."
-msgstr "Ara."
 
 #: share/html/Ticket/Crypt.html:58
 msgid "Decrypt"
@@ -2920,23 +2660,7 @@ msgstr ""
 msgid "DefaultFormat"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Delegate rights"
-msgstr "Yetkileri devret"
-
-#: NOT FOUND IN SOURCE
-msgid "Delegate specific rights which have been granted to you."
-msgstr "Size verilen belirli yetkileri devredin"
-
-#: NOT FOUND IN SOURCE
-msgid "DelegateRights"
-msgstr "HaklarıDevret"
-
-#: NOT FOUND IN SOURCE
-msgid "Delegation"
-msgstr "Devretmek"
-
-#: etc/RT_Config.pm:2766 etc/RT_Config.pm:2842 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:864 share/html/Elements/Tabs:889 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:2769 etc/RT_Config.pm:2845 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:864 share/html/Elements/Tabs:889 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
 msgid "Delete"
 msgstr "Sil"
 
@@ -3018,10 +2742,6 @@ msgstr ""
 #: share/html/Search/Elements/EditSearches:194
 msgid "Deleted saved search"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Deleted search"
-msgstr "Arama sil"
 
 #: share/html/Articles/Article/Search.html:233
 #. ($searchname)
@@ -3125,14 +2845,6 @@ msgstr ""
 msgid "Display Columns"
 msgstr "Sütunları Görüntüle"
 
-#: NOT FOUND IN SOURCE
-msgid "Display Scrip templates for this queue"
-msgstr "Bu kuyruk için senet şablonlarını görüntüle"
-
-#: NOT FOUND IN SOURCE
-msgid "Display Scrips for this queue"
-msgstr "Bu kuyruk için senetleri görüntüle"
-
 #: lib/RT/Config.pm:410
 msgid "Display all plain-text attachments in a monospace font with formatting preserved, but wrapping as needed."
 msgstr ""
@@ -3141,17 +2853,9 @@ msgstr ""
 msgid "Display messages in rich text if available"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Display mode"
-msgstr "Görüntüleme kipi"
-
 #: lib/RT/Config.pm:409
 msgid "Display plain-text attachments in fixed-width font"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Display saved searches for this group"
-msgstr "Bu grup için, kaydedilmiş aramaları görüntüle"
 
 #: lib/RT/Config.pm:444
 msgid "Display ticket after \"Quick Create\""
@@ -3161,10 +2865,6 @@ msgstr ""
 #. ('<a href="http://www.gnu.org/licenses/gpl-2.0.html">', '</a>')
 msgid "Distributed under %1version 2 of the GNU GPL%2."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Distributed under version 2 <a href=\"http://www.gnu.org/copyleft/gpl.html\"> of the GNU GPL.</a>"
-msgstr "<a href=\"http://www.gnu.org/copyleft/gpl.html\">GNU GPL</a>' nin 2. sürümü altında dağıtılmaktadır."
 
 #: lib/RT/System.pm:83
 msgid "Do anything and everything"
@@ -3197,10 +2897,6 @@ msgstr ""
 #: share/html/Elements/ShowTransactionAttachments:62
 msgid "Download"
 msgstr "İndir"
-
-#: NOT FOUND IN SOURCE
-msgid "Download as a tab-delimited file"
-msgstr "Sekme ile ayrılmış dosya olarak indir"
 
 #: share/html/Admin/Tools/Shredder/Elements/DumpFileLink:49
 msgid "Download dumpfile"
@@ -3276,17 +2972,9 @@ msgstr "Sorguyu Düzenle"
 msgid "Edit Search"
 msgstr "Aramayı Düzenle"
 
-#: NOT FOUND IN SOURCE
-msgid "Edit Templates for queue %1"
-msgstr "%1 kuyruğundaki şablonları düzenle"
-
 #: share/html/Admin/Global/Topics.html:56
 msgid "Edit global topic hierarchy"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Edit saved searches for this group"
-msgstr "Bu grup için kaydedilmiş aramaları düzenle"
 
 #: share/html/Elements/Tabs:126
 msgid "Edit system templates"
@@ -3301,10 +2989,6 @@ msgstr ""
 msgid "EditSavedSearches"
 msgstr "KaydedilmişAramalarıDüzenle"
 
-#: NOT FOUND IN SOURCE
-msgid "Editing Configuration for queue %1"
-msgstr "%1 kuyruğunun ayarları düzenleniyor"
-
 #: share/html/Admin/CustomFields/Modify.html:195 share/html/Admin/Elements/EditCustomField:123
 #. ($CustomFieldObj->Name)
 #. ($CustomFieldObj->Name())
@@ -3315,10 +2999,6 @@ msgstr "Özel bölüm %1 düzenleniyor"
 #. ($Group->Name)
 msgid "Editing membership for group %1"
 msgstr "%1 grubu için üyelik düzenleniyor"
-
-#: NOT FOUND IN SOURCE
-msgid "Editing membership for personal group %1"
-msgstr "Özel grup %1 için üyelik düzenleniyor"
 
 #: lib/RT/Tickets.pm:112 share/html/Elements/RT__Ticket/ColumnMap:165
 msgid "EffectiveId"
@@ -3408,10 +3088,6 @@ msgstr ""
 #: share/html/Admin/Articles/Classes/Modify.html:207 share/html/Admin/Elements/EditCustomField:139
 #. (loc_fuzzy($msg))
 msgid "Enabled status %1"
-msgstr "Etkinleştirilme durumu %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Enabled status: %1"
 msgstr "Etkinleştirilme durumu %1"
 
 #: share/html/Elements/Crypt/SignEncryptWidget:67 share/html/Elements/RT__Queue/ColumnMap:80 share/html/Ticket/Crypt.html:58
@@ -3529,14 +3205,6 @@ msgid "Error"
 msgstr "Hata"
 
 #: NOT FOUND IN SOURCE
-msgid "Error in parameters to Queue->AddWatcher"
-msgstr "Queue->AddWatcher için geçilen parametrelerde hata var"
-
-#: NOT FOUND IN SOURCE
-msgid "Error in parameters to Queue->DeleteWatcher"
-msgstr "Queue->DeleteWatcher için geçilen parametrelerde hata var"
-
-#: NOT FOUND IN SOURCE
 msgid "Error in parameters to Ticket->AddWatcher"
 msgstr "Ticket->AddWatcher için geçilen parametrelerde hata var"
 
@@ -3544,7 +3212,7 @@ msgstr "Ticket->AddWatcher için geçilen parametrelerde hata var"
 msgid "Error in parameters to Ticket->DeleteWatcher"
 msgstr "Ticket->DeleteWatcher için geçilen parametrelerde hata var"
 
-#: share/html/Search/Chart:459
+#: share/html/Search/Chart:460
 #. ($error)
 msgid "Error plotting chart: %1"
 msgstr ""
@@ -3659,10 +3327,6 @@ msgstr ""
 msgid "Failed to create %1 attribute"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Failed to create search attribute"
-msgstr "Arama özniteliği oluşturulamadı"
-
 #: lib/RT/User.pm:341
 msgid "Failed to find 'Privileged' users pseudogroup."
 msgstr "'Ayrıcalıklı' sahte kullanıcı grubu bulunamadı"
@@ -3707,10 +3371,6 @@ msgstr ""
 #: lib/RT/Date.pm:92
 msgid "Feb"
 msgstr "Şub"
-
-#: NOT FOUND IN SOURCE
-msgid "Feb."
-msgstr "Şub."
 
 #: share/html/Elements/Tabs:814
 msgid "Feeds"
@@ -3893,10 +3553,6 @@ msgstr ""
 msgid "Fri"
 msgstr "Cum"
 
-#: NOT FOUND IN SOURCE
-msgid "Fri."
-msgstr "Cum."
-
 #: share/html/Dashboards/Subscription.html:111
 msgid "Friday"
 msgstr "Cuma"
@@ -3904,10 +3560,6 @@ msgstr "Cuma"
 #: share/html/Ticket/Forward.html:60
 msgid "From"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Full headers"
-msgstr "Tüm Başlıklar"
 
 #: share/html/Admin/Tools/Theme.html:67
 msgid "GD is disabled or not installed. You can upload an image, but you won't get automatic color suggestions."
@@ -3944,10 +3596,6 @@ msgstr "Küresel"
 #: share/html/Admin/Tools/Configuration.html:210
 msgid "Global Attributes"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Global Custom Fields"
-msgstr "Küresel Özel Alanlar"
 
 #: share/html/Articles/Topics.html:91
 msgid "Global Topics"
@@ -4152,10 +3800,6 @@ msgstr ""
 msgid "Hello!"
 msgstr "Merhaba!"
 
-#: NOT FOUND IN SOURCE
-msgid "Hello, %1"
-msgstr "Merhaba, %1"
-
 #: share/html/Install/Global.html:52
 msgid "Help us set up some useful defaults for RT."
 msgstr ""
@@ -4222,10 +3866,6 @@ msgstr ""
 msgid "I want to reset my secret token."
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "I'm lost"
-msgstr "Kayboldum"
-
 #: lib/RT/Date.pm:117
 msgid "ISO"
 msgstr "ISO"
@@ -4280,7 +3920,7 @@ msgstr ""
 msgid "If you've changed the Port that RT runs on, you'll need to restart the server in order to log in."
 msgstr ""
 
-#: share/html/Admin/Queues/People.html:124 share/html/Ticket/Modify.html:66 share/html/Ticket/ModifyAll.html:136 share/html/Ticket/ModifyPeople.html:76
+#: share/html/Admin/Queues/People.html:124 share/html/Ticket/Modify.html:68 share/html/Ticket/ModifyAll.html:136 share/html/Ticket/ModifyPeople.html:76
 msgid "If you've updated anything above, be sure to"
 msgstr "Eğer yukarıda herhangi bir şeyi değiştirdiyseniz, mutlaka"
 
@@ -4356,14 +3996,6 @@ msgstr ""
 #: lib/RT/Config.pm:230
 msgid "Include time in iCal feed events?"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Incomplete Query"
-msgstr "Eksik Sorgu"
-
-#: NOT FOUND IN SOURCE
-msgid "Incomplete query"
-msgstr "Eksik sorgu"
 
 #: share/html/Admin/Elements/UpgradeHistoryRow:64
 #. ($row->{filename})
@@ -4507,10 +4139,6 @@ msgstr ""
 msgid "Invalid Render Type for custom field of type %1"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Invalid Right"
-msgstr "Geçersiz Hak"
-
 #: lib/RT/Record.pm:970
 msgid "Invalid data"
 msgstr "Geçersiz veri"
@@ -4566,10 +4194,6 @@ msgstr "%1 için geçersiz değer"
 msgid "Invalid value for custom field"
 msgstr "Özel alan için geçersiz değer"
 
-#: NOT FOUND IN SOURCE
-msgid "Invalid value for status"
-msgstr "Durum için geçersiz değer"
-
 #: lib/RT/Record/AddAndSort.pm:195
 msgid "Is already added to the object"
 msgstr ""
@@ -4598,25 +4222,13 @@ msgstr "Eğik"
 msgid "Jan"
 msgstr "Oca"
 
-#: NOT FOUND IN SOURCE
-msgid "Jan."
-msgstr "Oca."
-
 #: lib/RT/Group.pm:90
 msgid "Join or leave group"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Join or leave this group"
-msgstr "Bu gruba katılın veya ayrılın"
-
 #: lib/RT/Date.pm:97
 msgid "Jul"
 msgstr "Tem"
-
-#: NOT FOUND IN SOURCE
-msgid "Jul."
-msgstr "Tem."
 
 #: share/html/Elements/Tabs:638
 msgid "Jumbo"
@@ -4625,10 +4237,6 @@ msgstr ""
 #: lib/RT/Date.pm:96
 msgid "Jun"
 msgstr "Haz"
-
-#: NOT FOUND IN SOURCE
-msgid "Jun."
-msgstr "Haz."
 
 #: lib/RT/Installer.pm:80
 msgid "Keep 'localhost' if you're not sure. Leave blank to connect locally over a socket"
@@ -4750,14 +4358,6 @@ msgstr ""
 msgid "Link could not be deleted: %1"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Link created (%1)"
-msgstr "Bağlantı oulşturuldu (%1)"
-
-#: NOT FOUND IN SOURCE
-msgid "Link deleted (%1)"
-msgstr "Bağlantı silindi (%1)"
-
 #: lib/RT/Record.pm:1505
 msgid "Link not found"
 msgstr "Bağlantı bulunamadı"
@@ -4846,10 +4446,6 @@ msgstr "Yüklenmiş Perl modülleri"
 #. ($SavedSearch->{'Description'})
 msgid "Loaded saved search \"%1\""
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Loaded search %1"
-msgstr "Yüklenmiş arama %1"
 
 #: share/html/Ticket/Elements/ClickToShowHistory:50 share/html/Ticket/Elements/DelayShowHistory:50 share/html/Ticket/Elements/ShowRequestor:109
 msgid "Loading..."
@@ -4974,10 +4570,6 @@ msgstr "Yapım kuyruğu"
 msgid "Make subject"
 msgstr "Yapım başlığı"
 
-#: NOT FOUND IN SOURCE
-msgid "Make this group visible to user"
-msgstr "Bu grubun, kullanıcıya görünür olmasını sağla"
-
 #: share/html/Elements/Tabs:93
 msgid "Manage custom fields and custom field values"
 msgstr "Özel alanları ve özel alan değerlerini yönet"
@@ -5014,10 +4606,6 @@ msgstr ""
 #: lib/RT/Date.pm:93
 msgid "Mar"
 msgstr "Mar"
-
-#: NOT FOUND IN SOURCE
-msgid "Mar."
-msgstr "Mar."
 
 #: share/html/Ticket/Display.html:191 share/html/m/ticket/show:122
 msgid "Marked all messages as seen"
@@ -5074,10 +4662,6 @@ msgstr ""
 #: lib/RT/Date.pm:95
 msgid "May"
 msgstr "May"
-
-#: NOT FOUND IN SOURCE
-msgid "May."
-msgstr "May."
 
 #: share/html/Elements/QuickCreate:64
 msgid "Me"
@@ -5191,10 +4775,6 @@ msgstr ""
 msgid "Message body not shown because it is not plain text."
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Message body not shown because it is too large or is not plain text."
-msgstr "İleti gövdesi, çok büyük veya düz metin olmadığından gösterilmiyor."
-
 #: lib/RT/Config.pm:276
 msgid "Message box height"
 msgstr ""
@@ -5214,10 +4794,6 @@ msgstr ""
 #: lib/RT/Ticket.pm:1625 lib/RT/Ticket.pm:3055
 msgid "Message recorded"
 msgstr "İleti kaydedildi"
-
-#: NOT FOUND IN SOURCE
-msgid "Messages about this ticket will not be sent to..."
-msgstr "Bu bilet hakkındaki iletiler gönderilmeyecek..."
 
 #: lib/RT/Report/Tickets.pm:226
 msgid "Minimum Created-LastUpdated"
@@ -5267,10 +4843,6 @@ msgstr "Dakika"
 msgid "Miscellaneous"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Mismatched parentheses"
-msgstr "Eşleşmemiş parantezler"
-
 #: lib/RT/Record.pm:972
 msgid "Missing a primary key?: %1"
 msgstr "Başlıca anahtarlardan birisi eksik mi?: %1"
@@ -5287,49 +4859,17 @@ msgstr ""
 msgid "Modify"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Modify Access Control List"
-msgstr "Erişim Denetim listesini Değiştir"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify Custom Fields which apply to %1 for all %2"
-msgstr "Bütün %2 için, %1 etki eden bütün özel alanları değiştir"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify Custom Fields which apply to all %1"
-msgstr "Bütün %1 etki eden özel alanları değiştir"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify Group Rights"
-msgstr "Grup yetkilerini değiştir"
-
 #: share/html/Admin/Groups/Members.html:108
 msgid "Modify Members"
 msgstr "Üyeleri Değiştir"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify Rights"
-msgstr "Yetkileri Değiştir"
 
 #: lib/RT/Queue.pm:117
 msgid "Modify Scrip templates"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Modify Scrip templates for this queue"
-msgstr "Bu kuyruk için, senet şablonlarını değiştir"
-
 #: lib/RT/Queue.pm:120
 msgid "Modify Scrips"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Modify Scrips for this queue"
-msgstr "Bu kuyruk için senetleri değiştir"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify User Rights"
-msgstr "Kullanıcı haklarını değiştir"
 
 #: share/html/Admin/Queues/CustomField.html:63
 #. ($QueueObj->Name())
@@ -5394,10 +4934,6 @@ msgstr "Küresel özel alanları değiştir"
 msgid "Modify global group rights"
 msgstr "Küresel grup izinlerini değiştir"
 
-#: NOT FOUND IN SOURCE
-msgid "Modify global group rights."
-msgstr "Küresel grup izinlerini değiştir."
-
 #: share/html/Admin/Global/Topics.html:55
 msgid "Modify global topics"
 msgstr ""
@@ -5405,10 +4941,6 @@ msgstr ""
 #: share/html/Admin/Global/UserRights.html:48 share/html/Elements/Tabs:202
 msgid "Modify global user rights"
 msgstr "Küresel kullanıcı izinlerini değiştir"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify global user rights."
-msgstr "Küresel kullanıcı izinlerini değiştir."
 
 #: lib/RT/Group.pm:96
 msgid "Modify group dashboards"
@@ -5442,10 +4974,6 @@ msgstr "%1 grubu için, grup izinlerini değiştir."
 msgid "Modify group rights for queue %1"
 msgstr "%1 kuyruğu için, grup izinlerini değiştir."
 
-#: NOT FOUND IN SOURCE
-msgid "Modify membership roster for this group"
-msgstr "Bu grup için, üyelik listesini değiştir"
-
 #: lib/RT/Class.pm:95
 msgid "Modify metadata and custom fields for this class"
 msgstr ""
@@ -5457,10 +4985,6 @@ msgstr "Kişinin kendi RT hesabını değiştir"
 #: lib/RT/Class.pm:92
 msgid "Modify or delete articles in this class"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Modify people related to queue %1"
-msgstr "%1 ile ilişkili kişileri değiştir"
 
 #: share/html/Ticket/ModifyPeople.html:48 share/html/Ticket/ModifyPeople.html:57
 #. ($Ticket->Id)
@@ -5531,10 +5055,6 @@ msgstr "Varsayılan \"Bir bakışta RT\" görünümünü değiştir"
 #. ($Group->Name)
 msgid "Modify the group %1"
 msgstr "%1 grubunu değiştir"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify the queue watchers"
-msgstr "Kuyruk gözcülerini değiştir"
 
 #: share/html/Dashboards/Subscription.html:287
 #. ($Dashboard->Name)
@@ -5666,10 +5186,6 @@ msgstr "Modül"
 msgid "Mon"
 msgstr "Pts"
 
-#: NOT FOUND IN SOURCE
-msgid "Mon."
-msgstr "Pzt."
-
 #: share/html/Dashboards/Subscription.html:107
 msgid "Monday"
 msgstr "Pazartesi"
@@ -5681,14 +5197,6 @@ msgstr "Pazartesiden Cumaya"
 #: lib/RT/Dashboard/Mailer.pm:331
 msgid "Monthly"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "More"
-msgstr "Daha fazla"
-
-#: NOT FOUND IN SOURCE
-msgid "More about %1"
-msgstr "%1 hakkında daha fazla bilgi"
 
 #: share/html/Ticket/Elements/ShowRequestor:61
 msgid "More about the requestors"
@@ -5815,10 +5323,6 @@ msgstr ""
 msgid "New Links"
 msgstr "Yeni bağlantılar"
 
-#: NOT FOUND IN SOURCE
-msgid "New Password"
-msgstr "Yeni parola"
-
 #: etc/initialdata:458 etc/upgrade/3.8.2/content:52
 msgid "New Pending Approval"
 msgstr "Yeni bekleyen onay"
@@ -5830,14 +5334,6 @@ msgstr ""
 #: share/html/Elements/Tabs:495
 msgid "New Search"
 msgstr "Yeni arama"
-
-#: NOT FOUND IN SOURCE
-msgid "New custom field"
-msgstr "Yeni özel alan"
-
-#: NOT FOUND IN SOURCE
-msgid "New group"
-msgstr "Yeni grup"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:248 share/html/Ticket/Elements/ShowUpdateStatus:49
 msgid "New messages"
@@ -5851,10 +5347,6 @@ msgstr "Yeni parola"
 msgid "New password notification sent"
 msgstr "Yeni parola uyarısı iletildi"
 
-#: NOT FOUND IN SOURCE
-msgid "New queue"
-msgstr "Yeni kuyruk"
-
 #: share/html/Ticket/Elements/Reminders:119
 msgid "New reminder:"
 msgstr "Yeni hatırlatıcı:"
@@ -5862,14 +5354,6 @@ msgstr "Yeni hatırlatıcı:"
 #: NOT FOUND IN SOURCE
 msgid "New rights"
 msgstr "Yeni yetkiler"
-
-#: NOT FOUND IN SOURCE
-msgid "New scrip"
-msgstr "Yeni senet"
-
-#: NOT FOUND IN SOURCE
-msgid "New template"
-msgstr "Yeni şablon"
 
 #: share/html/Elements/Tabs:930 share/html/Elements/Tabs:932 share/html/m/_elements/menu:70
 msgid "New ticket"
@@ -5885,10 +5369,6 @@ msgid "New tickets can not have status '%1' in this queue."
 msgstr ""
 
 #: NOT FOUND IN SOURCE
-msgid "New user"
-msgstr "Yeni kullanıcı"
-
-#: NOT FOUND IN SOURCE
 msgid "New user called"
 msgstr "Yeni kullanıcı:"
 
@@ -5899,10 +5379,6 @@ msgstr "Yeni gözcüler"
 #: share/html/Elements/CollectionListPaging:106 share/html/Elements/Tabs:723 share/html/Install/Basics.html:62 share/html/Install/DatabaseDetails.html:72 share/html/Install/DatabaseType.html:70 share/html/Install/Global.html:64 share/html/Install/Global.html:64 share/html/Install/Sendmail.html:63
 msgid "Next"
 msgstr "İleri"
-
-#: NOT FOUND IN SOURCE
-msgid "Next Page"
-msgstr "Sonraki Sayfa"
 
 #: NOT FOUND IN SOURCE
 msgid "NickName"
@@ -5962,10 +5438,6 @@ msgstr "Kuyruk tanımlanmadı"
 #: bin/rt-crontool:116
 msgid "No RT user found. Please consult your RT administrator."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "No RT user found. Please consult your RT administrator.\\n"
-msgstr "RT kullanıcısı bulunamadı. Lütfen RT yöneticinize danışın.\\n"
 
 #: share/html/Search/Elements/ResultsRSSView:134
 msgid "No Subject"
@@ -6042,11 +5514,7 @@ msgstr "Kuyruk oluşturmak için gerekli yetki yok"
 msgid "No permission to create tickets in the queue '%1'"
 msgstr "%1 kuyruğunda bilet oluşturmak için gerekli yetki yok"
 
-#: NOT FOUND IN SOURCE
-msgid "No permission to create users"
-msgstr "Kullanıcı oluşturmak için gerekli yetki yok"
-
-#: share/html/SelfService/Display.html:137
+#: share/html/SelfService/Display.html:144
 msgid "No permission to display that ticket"
 msgstr "Bu bileti görüntülemek için gerekli yetki yok"
 
@@ -6103,10 +5571,6 @@ msgstr "Herhangi bir yetki verilmedi."
 msgid "No rights to add '%1' as an AdminCc on this ticket"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "No search loaded"
-msgstr "Herhangi bir arama yüklenemedi"
-
 #: share/html/Search/Bulk.html:225
 msgid "No search to operate on."
 msgstr "İşlenecek bir arama bulunamadı"
@@ -6152,10 +5616,6 @@ msgstr ""
 msgid "No value sent to _Set!"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "No value sent to _Set!\\n"
-msgstr "_Set için herhangi bir değer gönderilmedi!\\n"
-
 #: share/html/Elements/QuickCreate:65
 msgid "Nobody"
 msgstr "Hiçkimse"
@@ -6171,10 +5631,6 @@ msgstr "Varolmayan Alan?"
 #: share/html/Admin/Elements/SelectStage:66
 msgid "Normal"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Not Set"
-msgstr "Atanmadı"
 
 #: share/html/Admin/Elements/EditScrips:75
 msgid "Not applied scrips"
@@ -6252,14 +5708,6 @@ msgstr "Sahipleri, reddedilen biletleri hakkında uyar"
 msgid "Notify Owner of their ticket has been approved and is ready to be acted on"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Notify Owner of their ticket has been approved by all approvers"
-msgstr "Bütün onaycılar tarafından onaylanan bileti hakkında sahibi uyar"
-
-#: NOT FOUND IN SOURCE
-msgid "Notify Owner of their ticket has been approved by some approver"
-msgstr "Herhangi bir onaycı tarafından onaylanan bileti hakkında sahibi uyar"
-
 #: lib/RT/Approval/Rule/Passed.pm:54
 msgid "Notify Owner of their ticket has been approved by some or all approvers"
 msgstr ""
@@ -6296,14 +5744,6 @@ msgstr "İstekçileri ve Kk' ları uyar"
 msgid "Notify Requestors and Ccs as Comment"
 msgstr "İstekçileri ve Kk' ları yorum olarak uyar"
 
-#: NOT FOUND IN SOURCE
-msgid "Notify Requestors, Ccs and AdminCcs"
-msgstr "İstekçileri, Kk' ları ve Yönetici Kk' ları uyar"
-
-#: NOT FOUND IN SOURCE
-msgid "Notify Requestors, Ccs and AdminCcs as Comment"
-msgstr "İstekçileri, Kk' ları ve Yönetici Kk' ları yorum olarak uyar"
-
 #: lib/RT/Config.pm:382
 msgid "Notify me of unread messages"
 msgstr ""
@@ -6311,14 +5751,6 @@ msgstr ""
 #: lib/RT/Date.pm:101
 msgid "Nov"
 msgstr "Kas"
-
-#: NOT FOUND IN SOURCE
-msgid "Nov."
-msgstr "Kas."
-
-#: NOT FOUND IN SOURCE
-msgid "Number of search results"
-msgstr "Arama sonuçlarının sayısı"
 
 #: share/html/Search/Elements/SelectAndOr:49
 msgid "OR"
@@ -6344,10 +5776,6 @@ msgstr "Nesne oluşturuldu"
 msgid "Object deleted"
 msgstr "Nesne silindi"
 
-#: NOT FOUND IN SOURCE
-msgid "Object of type %1 cannot take custom fields"
-msgstr "%1 türündeki nesneler, özel alanlar alamazlar"
-
 #: lib/RT/Group.pm:254
 msgid "Object passed is not loaded"
 msgstr ""
@@ -6365,16 +5793,8 @@ msgid "Oct"
 msgstr "Eki"
 
 #: NOT FOUND IN SOURCE
-msgid "Oct."
-msgstr "Eki."
-
-#: NOT FOUND IN SOURCE
 msgid "Offline"
 msgstr "Çevrimdışı"
-
-#: NOT FOUND IN SOURCE
-msgid "Offline edits"
-msgstr "Çevrimdışı düzenlemeler"
 
 #: NOT FOUND IN SOURCE
 msgid "Offline upload"
@@ -6479,7 +5899,7 @@ msgstr "Sadece şunun için özel alanları göster:"
 msgid "Open Inactive Tickets"
 msgstr ""
 
-#: etc/RT_Config.pm:2754 etc/RT_Config.pm:2783 etc/RT_Config.pm:2830 etc/RT_Config.pm:2859
+#: etc/RT_Config.pm:2757 etc/RT_Config.pm:2786 etc/RT_Config.pm:2833 etc/RT_Config.pm:2862
 msgid "Open It"
 msgstr ""
 
@@ -6494,10 +5914,6 @@ msgstr "URL Aç"
 #: etc/initialdata:102
 msgid "Open inactive tickets"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Open it"
-msgstr "Aç"
 
 #: share/html/Elements/Tabs:935 share/html/SelfService/index.html:48
 msgid "Open tickets"
@@ -6598,10 +6014,6 @@ msgstr ""
 msgid "Page"
 msgstr "Sayfa"
 
-#: NOT FOUND IN SOURCE
-msgid "Page %1 of %2"
-msgstr "Sayfa %1/%2"
-
 #: share/html/Elements/CollectionListPaging:62
 msgid "Page 1 of 1"
 msgstr ""
@@ -6672,10 +6084,6 @@ msgstr ""
 msgid "Passwords do not match."
 msgstr "Parolalar eşleşmiyor"
 
-#: NOT FOUND IN SOURCE
-msgid "Passwords do not match. Your password has not been changed"
-msgstr "Parolalar eşleşmiyor. Parolanız değişmedi"
-
 #: lib/RT/Installer.pm:189
 msgid "Path to sendmail"
 msgstr ""
@@ -6730,22 +6138,6 @@ msgstr "Pääsy kielletty"
 #: lib/RT/Record.pm:1339 lib/RT/Record.pm:1483 lib/RT/Record/Role/Roles.pm:407 lib/RT/Record/Role/Roles.pm:485
 msgid "Permission denied"
 msgstr "İzin Reddedildi"
-
-#: NOT FOUND IN SOURCE
-msgid "Permissions denied"
-msgstr "İzin Reddedildi"
-
-#: NOT FOUND IN SOURCE
-msgid "Personal Groups"
-msgstr "Kişisel gruplar"
-
-#: NOT FOUND IN SOURCE
-msgid "Personal groups"
-msgstr "Kişisel gruplar"
-
-#: NOT FOUND IN SOURCE
-msgid "Personal groups:"
-msgstr "Kişisel gruplar:"
 
 #: share/html/Admin/Users/Modify.html:173 share/html/User/Prefs.html:85
 msgid "Phone numbers"
@@ -6809,10 +6201,6 @@ msgstr ""
 msgid "Preferences"
 msgstr "Tercihler"
 
-#: NOT FOUND IN SOURCE
-msgid "Preferences %1 for user %2 ."
-msgstr "%2 kullanıcısı için %1 tercihleri"
-
 #: share/html/Admin/Users/MyRT.html:116
 #. ($pane, $UserObj->Name)
 msgid "Preferences %1 for user %2."
@@ -6857,10 +6245,6 @@ msgstr "Önceki"
 #: share/html/Elements/CollectionListPaging:103
 msgid "Previous"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Previous Page"
-msgstr "Önceki sayfa"
 
 #: lib/RT/ACE.pm:135 lib/RT/ACE.pm:220
 #. ($args{'PrincipalId'})
@@ -6947,10 +6331,6 @@ msgstr "Sorgu"
 msgid "Query Builder"
 msgstr "Sorgu Oluşturucu"
 
-#: NOT FOUND IN SOURCE
-msgid "Query:"
-msgstr "Sorgu:"
-
 #: lib/RT/Graph/Tickets.pm:153 lib/RT/Record.pm:954 lib/RT/Report/Tickets.pm:62 lib/RT/Tickets.pm:107 lib/RT/Tickets.pm:1424 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:63 share/html/Elements/RT__Template/ColumnMap:66 share/html/Elements/RT__Template/ColumnMap:73 share/html/Elements/RT__Ticket/ColumnMap:102 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:61 share/html/Ticket/Elements/ShowBasics:82 share/html/m/ticket/create:248 share/html/m/ticket/show:242
 msgid "Queue"
 msgstr "Kuyruk"
@@ -6998,7 +6378,7 @@ msgstr ""
 msgid "Queue id"
 msgstr ""
 
-#: lib/RT/CustomField.pm:285 share/html/SelfService/Display.html:102
+#: lib/RT/CustomField.pm:285 share/html/SelfService/Display.html:109
 msgid "Queue not found"
 msgstr "Kuyruk bulunamadı"
 
@@ -7066,10 +6446,6 @@ msgstr "RFC2822"
 msgid "RSS"
 msgstr "RSS"
 
-#: NOT FOUND IN SOURCE
-msgid "RT %1 for %2"
-msgstr "RT %1 - %2"
-
 #: share/html/Admin/index.html:48
 msgid "RT Administration"
 msgstr "RT Yönetimi"
@@ -7089,10 +6465,6 @@ msgstr "RT Hatası"
 #: share/html/Admin/Tools/Configuration.html:139
 msgid "RT Size"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "RT Variables"
-msgstr "RT Değişkenleri"
 
 #: lib/RT/Config.pm:311 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:54 share/html/Admin/Users/MyRT.html:62 share/html/Elements/Tabs:206 share/html/Elements/Tabs:326 share/html/Elements/Tabs:556 share/html/Prefs/MyRT.html:57 share/html/Prefs/MyRT.html:81 share/html/index.html:4
 msgid "RT at a glance"
@@ -7153,18 +6525,10 @@ msgstr ""
 msgid "RT will create a user called \"root\" and set this as their password"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "RT will look for anything else you enter in ticket subjects."
-msgstr "RT, bilet başlıklarına gireceğiniz herhangi bir şeyi araştıracaktır."
-
 #: share/html/Admin/CustomFields/Modify.html:113 share/html/Admin/CustomFields/Modify.html:121
 #. ('<tt>__id__</tt>', '<tt>__CustomField__</tt>')
 msgid "RT will replace %1 and %2 with the record's id and the custom field's value, respectively."
 msgstr "RT, %1 ve %2 değerlerini, kayıt numarası ve özel alan değeri ile değiştirecektir"
-
-#: NOT FOUND IN SOURCE
-msgid "RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively"
-msgstr "RT, <tt>__id__</tt> ve <tt>__CustomField__</tt> değerlerini, kayıt numarası ve özel alan değeri ile değiştirecektir"
 
 #: lib/RT/Installer.pm:144
 msgid "RT will use this string to uniquely identify your installation and looks for it in the subject of emails to decide what ticket a message applies to.  We recommend that you set this to your internet domain. (ex: example.com)"
@@ -7183,7 +6547,7 @@ msgstr ""
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr ""
 
-#: etc/RT_Config.pm:2786 etc/RT_Config.pm:2790 etc/RT_Config.pm:2862 etc/RT_Config.pm:2866
+#: etc/RT_Config.pm:2789 etc/RT_Config.pm:2793 etc/RT_Config.pm:2865 etc/RT_Config.pm:2869
 msgid "Re-open"
 msgstr ""
 
@@ -7320,7 +6684,7 @@ msgstr ""
 msgid "Refused to add link which would create a circular relationship"
 msgstr ""
 
-#: etc/RT_Config.pm:2762 etc/RT_Config.pm:2778 etc/RT_Config.pm:2838 etc/RT_Config.pm:2854
+#: etc/RT_Config.pm:2765 etc/RT_Config.pm:2781 etc/RT_Config.pm:2841 etc/RT_Config.pm:2857
 msgid "Reject"
 msgstr ""
 
@@ -7349,10 +6713,6 @@ msgstr "'%1' hatırlatıcısı tekrar açıldı"
 #. ($old_subject || $reminder->Subject, $_)
 msgid "Reminder '%1': %2"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Reminder ticket #%1"
-msgstr "Hatırlatıcı bilet  #%1"
 
 #: share/html/Elements/Tabs:642 share/html/Ticket/Elements/Reminders:79 share/html/Ticket/Elements/ShowSummary:73 share/html/Ticket/Reminders.html:56 share/html/m/ticket/show:332
 msgid "Reminders"
@@ -7416,10 +6776,6 @@ msgstr "Biletleri Yanıtla"
 msgid "ReplyToTicket"
 msgstr "BiletiYanıtla"
 
-#: NOT FOUND IN SOURCE
-msgid "Reports"
-msgstr "Raporlar"
-
 #: lib/RT/Report/Tickets.pm:68 lib/RT/Ticket.pm:101 lib/RT/Tickets.pm:143
 msgid "Requestor"
 msgstr "İstekçi"
@@ -7465,7 +6821,7 @@ msgstr "Varsayılana sıfırla"
 msgid "Residence"
 msgstr "Hane"
 
-#: etc/RT_Config.pm:2758 etc/RT_Config.pm:2774 etc/RT_Config.pm:2834 etc/RT_Config.pm:2850 share/html/Search/Elements/EditFormat:75
+#: etc/RT_Config.pm:2761 etc/RT_Config.pm:2777 etc/RT_Config.pm:2837 etc/RT_Config.pm:2853 share/html/Search/Elements/EditFormat:75
 msgid "Resolve"
 msgstr "Çöz"
 
@@ -7478,25 +6834,9 @@ msgstr "#%1 biletini çözümle (%2)"
 msgid "Resolved"
 msgstr "Çözüldü"
 
-#: NOT FOUND IN SOURCE
-msgid "Resolved by owner"
-msgstr "Sahip tarafından çözüldü"
-
 #: etc/initialdata:449 etc/upgrade/4.1.9/content:102
 msgid "Resolved in HTML"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Resolved in date range"
-msgstr "Zaman aralığında çözüldü"
-
-#: NOT FOUND IN SOURCE
-msgid "Resolved tickets in period, grouped by owner"
-msgstr "Dönemdeki çözülmüş biletler (sahip ile gruplandırılmış)"
-
-#: NOT FOUND IN SOURCE
-msgid "Resolved tickets, grouped by owner"
-msgstr "Çözülmüş biletler (sahip ile gruplandırılmış)"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "ResolvedRelative"
@@ -7526,10 +6866,6 @@ msgstr "Eskiye dön"
 msgid "Rich text (HTML) shows formatting such as colored text, bold, italics, and more"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Right Delegated"
-msgstr "Yetki Aktarıldı"
-
 #: lib/RT/ACE.pm:288
 msgid "Right Granted"
 msgstr "Yetki Verildi"
@@ -7542,10 +6878,6 @@ msgstr "Yetki Yüklendi"
 msgid "Right could not be revoked"
 msgstr "Yetki geri alınamıyor"
 
-#: NOT FOUND IN SOURCE
-msgid "Right not found"
-msgstr "Yetki bulunamadı"
-
 #: lib/RT/ACE.pm:311
 msgid "Right not loaded."
 msgstr "Yetki yüklenemedi"
@@ -7554,18 +6886,10 @@ msgstr "Yetki yüklenemedi"
 msgid "Right revoked"
 msgstr "Yetki geri alındı"
 
-#: NOT FOUND IN SOURCE
-msgid "Rights"
-msgstr "Yetkiler"
-
 #: lib/RT/Interface/Web.pm:2485 lib/RT/Interface/Web.pm:2585
 #. ($object_type)
 msgid "Rights could not be granted for %1"
 msgstr "Yetkiler %1 için verilemiyor"
-
-#: NOT FOUND IN SOURCE
-msgid "Rights could not be revoked for %1"
-msgstr "Yetkiler %1 için geri alınamıyor"
 
 #: share/html/Admin/Elements/EditRightsCategoryTabs:88
 msgid "Rights for Administrators"
@@ -7585,7 +6909,7 @@ msgstr ""
 msgid "Role group exists already"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3673
+#: lib/RT/Interface/Web.pm:3709
 msgid "Roles"
 msgstr "Roller"
 
@@ -7626,10 +6950,6 @@ msgstr ""
 msgid "Sat"
 msgstr "Cts"
 
-#: NOT FOUND IN SOURCE
-msgid "Sat."
-msgstr "Cmt."
-
 #: share/html/Dashboards/Subscription.html:112
 msgid "Saturday"
 msgstr "Cumartesi"
@@ -7638,7 +6958,7 @@ msgstr "Cumartesi"
 msgid "Save"
 msgstr "Kaydet"
 
-#: share/html/Admin/Articles/Classes/GroupRights.html:57 share/html/Admin/Articles/Classes/Modify.html:130 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:91 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:93 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:156 share/html/Admin/Queues/People.html:124 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Scrips/Modify.html:88 share/html/Admin/Scrips/Modify.html:92 share/html/Admin/Users/Keys.html:80 share/html/Admin/Users/Modify.html:226 share/html/Articles/Article/Edit.html:102 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:186 share/html/Prefs/Other.html:76 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:62 share/html/SelfService/Prefs.html:79 share/html/Ticket/Modify.html:66 share/html/Ticket/ModifyAll.html:135 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:67 share/html/Ticket/ModifyPeople.html:76 share/html/Ticket/Reminders.html:63
+#: share/html/Admin/Articles/Classes/GroupRights.html:57 share/html/Admin/Articles/Classes/Modify.html:130 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:91 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:93 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:156 share/html/Admin/Queues/People.html:124 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Scrips/Modify.html:88 share/html/Admin/Scrips/Modify.html:92 share/html/Admin/Users/Keys.html:80 share/html/Admin/Users/Modify.html:226 share/html/Articles/Article/Edit.html:102 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:186 share/html/Prefs/Other.html:76 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:62 share/html/SelfService/Prefs.html:79 share/html/Ticket/Modify.html:68 share/html/Ticket/ModifyAll.html:135 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:67 share/html/Ticket/ModifyPeople.html:76 share/html/Ticket/Reminders.html:63
 msgid "Save Changes"
 msgstr "Değişiklikleri Kaydet"
 
@@ -7649,10 +6969,6 @@ msgstr "Tercihleri Kaydet"
 #: share/html/Search/Elements/EditSearches:66
 msgid "Save as New"
 msgstr "Yeni olarak Kaydet"
-
-#: NOT FOUND IN SOURCE
-msgid "Save changes"
-msgstr "Değişiklikleri kaydet"
 
 #: share/html/Articles/Article/Elements/ShowSavedSearches:59
 msgid "Save new"
@@ -7678,10 +6994,6 @@ msgstr ""
 #: share/html/Search/Chart.html:175
 msgid "Saved charts"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Saved search %1"
-msgstr "Kaydedilmiş arama %1"
 
 #: share/html/Elements/ShowSearch:73
 #. ($m->interp->apply_escapes($SavedSearch, 'h'))
@@ -7751,10 +7063,6 @@ msgstr ""
 msgid "Search Preferences"
 msgstr "Arama Tercihleri"
 
-#: NOT FOUND IN SOURCE
-msgid "Search attribute load failure"
-msgstr "Arama özniteliği yükleme hatası"
-
 #: share/html/Articles/Elements/BeforeMessageBox:55 share/html/SelfService/Article/Search.html:53
 msgid "Search for Articles matching"
 msgstr ""
@@ -7776,10 +7084,6 @@ msgstr "Biletleri ara"
 msgid "Search for tickets by entering %1id%2 numbers, subject words %1\"in quotes\"%2, %1queues%2 by name, Owners by %1username%2, Requestors by %1email address%2, and ticket %1statuses%2.  Searching for %1@domainname.com%2 will return tickets with requestors from that domain."
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name, Owners by <strong>username</strong> and Requestors by <strong>email address</strong>. RT will look for anything else you enter in ticket bodies and attachments."
-msgstr "Biletleri ara. Bilet <strong>numarasını</strong>, <strong>Kuyrukları</strong> adı ile, Sahipleri <strong>kulanıcı adı</strong> ile ve İstekçileri <strong>eposta adresi</strong> ile girin. RT, girdiğiniz diğer şeyleri bilet gövdelerinde ve eklentilerde arayacaktır."
-
 #: share/html/Elements/Tabs:555
 msgid "Search options"
 msgstr "Arama tercihleri"
@@ -7796,10 +7100,6 @@ msgstr "Arama sonuçları %1 ile gruplandırılmıştır."
 msgid "Search results refresh interval"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Search update: %1"
-msgstr "Arama güncellemesi: %1"
-
 #: share/html/Search/index.html:48
 msgid "Searches"
 msgstr ""
@@ -7808,10 +7108,6 @@ msgstr ""
 #. ($fulltext_keyword)
 msgid "Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history by typing <b>%1<i>word</i></b>."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history for any word by typing <b>fulltext:<i>word</i></b>."
-msgstr "Her bir biletin tüm metninin aranması uzun sürebilir, ama eğer bunu yapmanız gerkiyorsa, <b>fulltext:<i>kelime</i></b> yazarak tüm bilet tarihçesindeki herhangi bir kelimeyi aratabilirsiniz."
 
 #: share/html/User/Prefs.html:170
 msgid "Secret authentication token"
@@ -7833,25 +7129,9 @@ msgstr ""
 msgid "See changes to articles in this class"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "See custom fields"
-msgstr "Özel alanları gör"
-
-#: NOT FOUND IN SOURCE
-msgid "See exact outgoing email messages and their recipeients"
-msgstr "Giden eposta iletilerinin tamamını ve alıcılarını gör"
-
 #: lib/RT/Class.pm:87
 msgid "See that this class exists"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "See ticket private commentary"
-msgstr "Biletin gizli yorumlarını gör"
-
-#: NOT FOUND IN SOURCE
-msgid "See ticket summaries"
-msgstr "Bilet özetlerini gör"
 
 #: lib/RT/Class.pm:87
 msgid "SeeClass"
@@ -7946,10 +7226,6 @@ msgstr "Başka bir dil seçin"
 msgid "Select box"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Select custom field"
-msgstr "Özel alan seçin"
-
 #: share/html/Admin/Global/CustomFields/index.html:78 share/html/Elements/Tabs:149
 msgid "Select custom fields for all queues"
 msgstr ""
@@ -7982,10 +7258,6 @@ msgstr ""
 msgid "Select global scrip stage:"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Select group"
-msgstr "Grup seçin"
-
 #: lib/RT/CustomField.pm:163
 msgid "Select multiple dates"
 msgstr ""
@@ -8002,25 +7274,13 @@ msgstr "Çoklu değer seçin"
 msgid "Select one value"
 msgstr "Bir değer seçin"
 
-#: NOT FOUND IN SOURCE
-msgid "Select queue"
-msgstr "Kuyruk seçin"
-
 #: share/html/Prefs/Quicksearch.html:52
 msgid "Select queues to be displayed on the \"RT at a glance\" page"
 msgstr "\"Bir bakışta RT\" sayfasında görüntülenecek kuyrukları seçin"
 
-#: NOT FOUND IN SOURCE
-msgid "Select scrip"
-msgstr "Senet seçin"
-
 #: share/html/Admin/Elements/SelectStageForAdded:53
 msgid "Select scrip stage for newly added queues:"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Select template"
-msgstr "Şablon seçin"
 
 #: share/html/Articles/Article/ExtractIntoClass.html:63 share/html/Articles/Article/ExtractIntoTopic.html:52
 #. ()
@@ -8039,10 +7299,6 @@ msgstr ""
 msgid "Select up to %1 values"
 msgstr "En çok %1 adet değer seçin"
 
-#: NOT FOUND IN SOURCE
-msgid "Select user"
-msgstr "Kullanıcı seç"
-
 #: share/html/Admin/Elements/EditCustomFields:55
 msgid "Selected Custom Fields"
 msgstr "Seçili özel alanlar"
@@ -8051,7 +7307,7 @@ msgstr "Seçili özel alanlar"
 msgid "Selected Queues"
 msgstr ""
 
-#: lib/RT/Crypt.pm:691
+#: lib/RT/Crypt.pm:699
 msgid "Selected key either is not trusted or doesn't exist anymore."
 msgstr ""
 
@@ -8070,14 +7326,6 @@ msgstr ""
 #: etc/initialdata:108
 msgid "Send forwarded message"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Send mail to all watchers"
-msgstr "Tüm izleyicilere posta gönder"
-
-#: NOT FOUND IN SOURCE
-msgid "Send mail to all watchers as a \"comment\""
-msgstr "Tüm izleyicilere \"yorum\" olarak posta gönder"
 
 #: etc/initialdata:80
 msgid "Send mail to owner and all watchers"
@@ -8131,10 +7379,6 @@ msgstr "Sahibe posta gönderir"
 msgid "Sep"
 msgstr "Eyl"
 
-#: NOT FOUND IN SOURCE
-msgid "Sep."
-msgstr "Eki."
-
 #: share/html/Articles/Article/Elements/LinkEntryInstructions:49
 msgid "Separate multiple entries with spaces."
 msgstr ""
@@ -8162,10 +7406,6 @@ msgstr "Göster"
 #: lib/RT/System.pm:88
 msgid "Show Admin menu"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Show Approvals"
-msgstr "Onayları Göster"
 
 #: lib/RT/System.pm:89
 msgid "Show Approvals tab"
@@ -8200,10 +7440,6 @@ msgstr "Onaylanmış istekleri göster"
 msgid "Show as well"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Show basics"
-msgstr "Temelleri Göster"
-
 #: share/html/Elements/ShowHistory:69
 msgid "Show brief headers"
 msgstr ""
@@ -8211,10 +7447,6 @@ msgstr ""
 #: share/html/Approvals/Elements/PendingMyApproval:68
 msgid "Show denied requests"
 msgstr "Reddedilmiş istekleri göster"
-
-#: NOT FOUND IN SOURCE
-msgid "Show details"
-msgstr "Ayrıntıları göster"
 
 #: share/html/Elements/ShowHistory:74
 msgid "Show full headers"
@@ -8461,7 +7693,7 @@ msgstr ""
 msgid "Stage"
 msgstr "Aşama"
 
-#: etc/RT_Config.pm:2770 etc/RT_Config.pm:2846
+#: etc/RT_Config.pm:2773 etc/RT_Config.pm:2849
 msgid "Stall"
 msgstr ""
 
@@ -8547,10 +7779,6 @@ msgstr ""
 msgid "Stolen from %1"
 msgstr "%1 den çalındı"
 
-#: NOT FOUND IN SOURCE
-msgid "Stolen from %1 "
-msgstr "%1 den çalındı "
-
 #: share/html/Search/Chart.html:156 share/html/Search/Elements/EditFormat:93
 msgid "Style"
 msgstr "Biçem"
@@ -8606,10 +7834,6 @@ msgstr "Abonelik"
 msgid "Subscription could not be created: %1"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Succeeded"
-msgstr "Başarılı"
-
 #: lib/RT/Attachment.pm:839
 msgid "Successfuly decrypted data"
 msgstr ""
@@ -8662,10 +7886,6 @@ msgstr ""
 msgid "Sun"
 msgstr "Pzr"
 
-#: NOT FOUND IN SOURCE
-msgid "Sun."
-msgstr "Paz."
-
 #: share/html/Dashboards/Subscription.html:113
 msgid "Sunday"
 msgstr "Pazar"
@@ -8678,7 +7898,7 @@ msgstr ""
 msgid "Suspended"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3630
+#: lib/RT/Interface/Web.pm:3666
 msgid "System"
 msgstr "Sistem"
 
@@ -8707,25 +7927,13 @@ msgstr "Sistem Araçları"
 msgid "System error"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "System error. Right not delegated."
-msgstr "Sistem hatası. Yetki devredilemedi."
-
 #: lib/RT/ACE.pm:141 lib/RT/ACE.pm:209 lib/RT/ACE.pm:291
 msgid "System error. Right not granted."
 msgstr "Sistem hatası. Yetki verilemedi."
 
-#: NOT FOUND IN SOURCE
-msgid "System groups"
-msgstr "Sistem grupları"
-
 #: lib/RT/Handle.pm:768
 msgid "SystemRolegroup for internal use"
 msgstr "İç kullanım için SistemRolGrubu"
-
-#: NOT FOUND IN SOURCE
-msgid "TEST_STRING"
-msgstr "DENEME_YAZISI"
 
 #: etc/initialdata:820 share/html/Elements/Tabs:690 share/html/Search/Elements/EditFormat:72
 msgid "Take"
@@ -8751,10 +7959,6 @@ msgstr ""
 msgid "Template"
 msgstr "Şablon"
 
-#: NOT FOUND IN SOURCE
-msgid "Template #%1"
-msgstr "Şablon #%1"
-
 #: share/html/Admin/Elements/EditTemplates:111
 #. ($id)
 msgid "Template #%1 deleted"
@@ -8778,10 +7982,6 @@ msgstr ""
 msgid "Template compiles"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Template deleted"
-msgstr "Şablon silindi"
-
 #: lib/RT/Template.pm:785
 msgid "Template does not include Perl code"
 msgstr ""
@@ -8797,10 +7997,6 @@ msgstr ""
 #: lib/RT/Scrip.pm:156 lib/RT/Scrip.pm:766
 msgid "Template is mandatory argument"
 msgstr "Şablon gerekli bir argüman"
-
-#: NOT FOUND IN SOURCE
-msgid "Template not found"
-msgstr "Şablon bulunamadı"
 
 #: lib/RT/Template.pm:463
 msgid "Template parsed"
@@ -8848,22 +8044,6 @@ msgstr "Bu, bu özel alan için bir değer değil"
 #: NOT FOUND IN SOURCE
 msgid "That is the same value"
 msgstr "Bu, aynı değer"
-
-#: NOT FOUND IN SOURCE
-msgid "That principal already has that right"
-msgstr "Bu yetkili, zaten bu hakka sahip"
-
-#: NOT FOUND IN SOURCE
-msgid "That principal is already a %1 for this queue"
-msgstr "Bu yetkili, zaten bu kuyruk için bir %1"
-
-#: NOT FOUND IN SOURCE
-msgid "That principal is already a %1 for this ticket"
-msgstr "Bu yetkili, zaten bu bilet için bir %1"
-
-#: NOT FOUND IN SOURCE
-msgid "That principal is not a %1 for this queue"
-msgstr "Bu yetkili, zaten bu kuyruk için bir %1 değil"
 
 #: NOT FOUND IN SOURCE
 msgid "That queue does not exist"
@@ -8934,10 +8114,6 @@ msgstr ""
 msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they are overdue:"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they haven't been touched in 4 hours:"
-msgstr "Sonraki komut, 'genel' kuyruğundaki bütün biletleri bulacak ve eğer son 4 saat içinde dokunulmamışlarsa, önem derecelerini 99 a yükseltecektir."
-
 #: share/html/Dashboards/Elements/Deleted:53
 msgid "The following queries have been deleted and each will be removed from the dashboard once its pane is updated."
 msgstr ""
@@ -8995,7 +8171,7 @@ msgstr ""
 msgid "Theme"
 msgstr "Tema"
 
-#: lib/RT/Crypt.pm:718
+#: lib/RT/Crypt.pm:726
 msgid "There are several keys suitable for encryption."
 msgstr ""
 
@@ -9012,7 +8188,7 @@ msgstr ""
 msgid "There is more than one group with the name '%1'.  This may cause inconsistency in parts of the admin interface, and therefore it's recommended you rename the conflicting groups."
 msgstr ""
 
-#: lib/RT/Crypt.pm:710
+#: lib/RT/Crypt.pm:718
 msgid "There is no key suitable for encryption."
 msgstr ""
 
@@ -9021,7 +8197,7 @@ msgstr ""
 msgid "There is no mapping for statuses between lifecycle %1 and %2. Contact your system administrator."
 msgstr ""
 
-#: lib/RT/Crypt.pm:714
+#: lib/RT/Crypt.pm:722
 msgid "There is one suitable key, but trust level is not set."
 msgstr ""
 
@@ -9062,13 +8238,9 @@ msgstr ""
 msgid "This feature is only available to system administrators"
 msgstr "Bu özellik, sadece sistem yöneticileri tarafından kullanılabilir"
 
-#: share/html/Admin/Tools/Queries.html:51 share/html/Admin/Tools/Theme.html:225
+#: share/html/Admin/Tools/Queries.html:51 share/html/Admin/Tools/Theme.html:226
 msgid "This feature is only available to system administrators."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "This message will be sent to..."
-msgstr "Bu iletinin gönderileceği kişi..."
 
 #: share/html/Admin/Tools/Queries.html:63
 msgid "This server process has recorded no SQL queries."
@@ -9096,10 +8268,6 @@ msgstr "Bu hareketin bir içeriğe sahip olmadığı gözüküyor"
 msgid "This user's %1 highest priority %2 tickets"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "This user's %1 highest priority tickets"
-msgstr "Bu kullanıcının %1 en yüksek öneme sahip biletleri"
-
 #: share/html/User/Search.html:53
 msgid "This will search for users by looking in the following fields:"
 msgstr ""
@@ -9107,10 +8275,6 @@ msgstr ""
 #: lib/RT/Date.pm:110
 msgid "Thu"
 msgstr "Prş"
-
-#: NOT FOUND IN SOURCE
-msgid "Thu."
-msgstr "Per."
 
 #: share/html/Dashboards/Subscription.html:110
 msgid "Thursday"
@@ -9241,22 +8405,6 @@ msgstr ""
 msgid "Tickets I own"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Tickets created after"
-msgstr "Şundan sonra oluşturulan biletler:"
-
-#: NOT FOUND IN SOURCE
-msgid "Tickets created before"
-msgstr "Şundan önce oluşturulan biletler:"
-
-#: NOT FOUND IN SOURCE
-msgid "Tickets resolved after"
-msgstr "Şundan sonra çözümlenen biletler:"
-
-#: NOT FOUND IN SOURCE
-msgid "Tickets resolved before"
-msgstr "Şundan önce çözümlenen biletler:"
-
 #: share/html/Approvals/Elements/ShowDependency:50
 msgid "Tickets which depend on this approval:"
 msgstr "Bu onaya dayanan biletler:"
@@ -9273,17 +8421,9 @@ msgstr "Kalan Süre"
 msgid "Time Worked"
 msgstr "Çalışılan Süre"
 
-#: NOT FOUND IN SOURCE
-msgid "Time left"
-msgstr "Kalan süre"
-
 #: share/html/Elements/Footer:54
 msgid "Time to display"
 msgstr "Gösterilecek süre"
-
-#: NOT FOUND IN SOURCE
-msgid "Time worked"
-msgstr "Çalışılan süre"
 
 #: lib/RT/Graph/Tickets.pm:153 lib/RT/Tickets.pm:119 share/html/Search/Elements/BuildFormatString:100
 msgid "TimeEstimated"
@@ -9444,10 +8584,6 @@ msgstr ""
 msgid "Tue"
 msgstr "Sal"
 
-#: NOT FOUND IN SOURCE
-msgid "Tue."
-msgstr "Sal."
-
 #: share/html/Dashboards/Subscription.html:108
 msgid "Tuesday"
 msgstr "Salı"
@@ -9500,12 +8636,12 @@ msgstr ""
 msgid "Unable to load article"
 msgstr ""
 
-#: share/html/Admin/Tools/Theme.html:270
+#: share/html/Admin/Tools/Theme.html:271
 #. ($msg)
 msgid "Unable to set UserCSS: %1"
 msgstr ""
 
-#: share/html/Admin/Tools/Theme.html:242
+#: share/html/Admin/Tools/Theme.html:243
 #. ($msg)
 msgid "Unable to set UserLogo: %1"
 msgstr ""
@@ -9539,7 +8675,7 @@ msgstr ""
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr ""
 
-#: etc/RT_Config.pm:2794 etc/RT_Config.pm:2870
+#: etc/RT_Config.pm:2797 etc/RT_Config.pm:2873
 msgid "Undelete"
 msgstr ""
 
@@ -9568,10 +8704,6 @@ msgstr ""
 #. ($self->ContentEncoding)
 msgid "Unknown ContentEncoding %1"
 msgstr "Bilinmeyen İçerikKodlaması %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Unknown field: $key"
-msgstr "Bilinmeyen alan: $key"
 
 #: lib/RT/Interface/Web/QueryBuilder/Tree.pm:269
 #. ($key)
@@ -9745,10 +8877,6 @@ msgstr "Değişikliklerinizi yükleyin"
 msgid "Usage:"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Usage: "
-msgstr "Kullanımı: "
-
 #: lib/RT/Installer.pm:137
 msgid "Use SSL?"
 msgstr ""
@@ -9807,7 +8935,7 @@ msgstr "Kullanıcı tanımlı durumlar ve eylemler"
 msgid "User Defined conditions and results"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3648
+#: lib/RT/Interface/Web.pm:3684
 msgid "User Groups"
 msgstr ""
 
@@ -9840,10 +8968,6 @@ msgstr "Kullanıcı oluşturulamıyor: %1"
 #: lib/RT/User.pm:267
 msgid "User created"
 msgstr "Kullanıcı oluşturuldu"
-
-#: NOT FOUND IN SOURCE
-msgid "User defined groups"
-msgstr "Kullanıcı tanımlı gruplar"
 
 #: lib/RT/User.pm:1152
 msgid "User disabled"
@@ -9878,7 +9002,7 @@ msgstr "Kullanıcı adı"
 msgid "Username format"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1746 lib/RT/Interface/Web.pm:3701 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:500 share/html/Elements/Tabs:67
+#: lib/RT/CustomField.pm:1746 lib/RT/Interface/Web.pm:3737 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:500 share/html/Elements/Tabs:67
 msgid "Users"
 msgstr "Kullanıcılar"
 
@@ -10035,10 +9159,6 @@ msgstr ""
 msgid "Wed"
 msgstr "Çrş"
 
-#: NOT FOUND IN SOURCE
-msgid "Wed."
-msgstr "Çar."
-
 #: share/html/Dashboards/Subscription.html:109
 msgid "Wednesday"
 msgstr "Çarşamba"
@@ -10078,14 +9198,6 @@ msgstr ""
 #: share/html/Install/Global.html:54
 msgid "When RT sends an email it sets the From: and Reply-To: headers so users can add to the conversation by just hitting Reply in their mail client.  It uses different addresses for Replies and Comments.  These can be changed for each of your queues.  These addresses will need to be configured to use the <tt>rt-mailgate</tt> program."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "When a ticket has been approved by all approvers, add correspondence to the original ticket"
-msgstr "Bir bilet, bütün onaycılar tarafından onaylandığında, özgün bilete cevap yolla"
-
-#: NOT FOUND IN SOURCE
-msgid "When a ticket has been approved by any approver, add correspondence to the original ticket"
-msgstr "Bir bilet, herhangi bir onaycı tarafından onaylandığında, özgün bilete cevap yolla"
 
 #: etc/initialdata:114
 msgid "When a ticket is created"
@@ -10179,10 +9291,6 @@ msgstr "Çalışma"
 msgid "Work Phone"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Work offline"
-msgstr "Çevrimdışı çalışma"
-
 #: share/html/Ticket/Elements/ShowBasics:65 share/html/Tools/MyDay.html:62 share/html/m/ticket/reply:81 share/html/m/ticket/show:227
 msgid "Worked"
 msgstr "Çalışıldı"
@@ -10212,10 +9320,6 @@ msgstr ""
 #: share/html/Elements/Crypt/KeyIssues:62
 msgid "You are going to encrypt outgoing email messages, but there is a problem with a recipient's public key/certificate. You have to fix the problem with the key/certificate, disable sending a message to that recipient, or disable encryption."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "You are not an authorized user"
-msgstr "Yetkili bir kullanıcı değilsiniz"
 
 #: share/html/Errors/WebRemoteUser/NoRemoteUser:49
 msgid "You are not authorized to use RT."
@@ -10272,10 +9376,6 @@ msgstr ""
 msgid "You don't have <b>SuperUser</b> right."
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "You found %1 tickets in queue %2"
-msgstr "%2 kuyruğunda %1 bilet buldunuz"
-
 #: share/html/NoAuth/Logout.html:55
 msgid "You have been logged out of RT."
 msgstr "RT' den çıkış yaptınız"
@@ -10288,7 +9388,7 @@ msgstr ""
 msgid "You have enabled encryption support but have not set a correspondence address for this queue."
 msgstr ""
 
-#: share/html/SelfService/Display.html:104
+#: share/html/SelfService/Display.html:111
 msgid "You have no permission to create tickets in that queue."
 msgstr "Bu kuyrukta bilet oluşturmaya yetkiniz yok."
 
@@ -10342,18 +9442,6 @@ msgstr "Tekrar giriş yapabilirsiniz"
 msgid "Your password is not set."
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Your request has been approved by %1. Other approvals may still be pending."
-msgstr "İsteğiniz %1 tarafından onaylandı. Diğer onaylar, halen bekliyor olabilir."
-
-#: NOT FOUND IN SOURCE
-msgid "Your request has been approved."
-msgstr "İsteğiniz onaylandı"
-
-#: NOT FOUND IN SOURCE
-msgid "Your request was rejected."
-msgstr "İsteğiniz reddedildi."
-
 #: share/html/Admin/Tools/Theme.html:65
 #. ($valid_image_types)
 msgid "Your system supports automatic color suggestions for: %1"
@@ -10399,14 +9487,6 @@ msgstr ""
 msgid "after the rest of the page loads"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "allow creation of saved searches"
-msgstr "kaydedilmiş aramaların oluşturulmasına izin ver"
-
-#: NOT FOUND IN SOURCE
-msgid "allow loading of saved searches"
-msgstr "kaydedilmiş aramaların yüklenmesine izin ver"
-
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:102 share/html/Articles/Article/Elements/ShowSearchCriteria:111
 msgid "and before"
 msgstr ""
@@ -10418,10 +9498,6 @@ msgstr ""
 #: share/html/Search/Chart.html:123 share/html/Search/Chart.html:131 share/html/Search/Chart.html:146 share/html/Search/Chart.html:149
 msgid "and then"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "as granted to %1"
-msgstr "%1' e verildi"
 
 #: share/html/Search/Elements/SelectChartType:54
 msgid "bar"
@@ -10438,10 +9514,6 @@ msgstr ""
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:54
 msgid "bottom to top"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "chart"
-msgstr "şema"
 
 #: share/html/Admin/Articles/Classes/Objects.html:63
 msgid "check this box to apply this Class globally to all Queues."
@@ -10479,10 +9551,6 @@ msgstr ""
 msgid "closed"
 msgstr "kapalı"
 
-#: NOT FOUND IN SOURCE
-msgid "contains"
-msgstr "içeriyor"
-
 #: share/html/Admin/Tools/Configuration.html:83
 msgid "core config"
 msgstr ""
@@ -10511,14 +9579,6 @@ msgstr "gün"
 #: lib/RT/Queue.pm:107
 msgid "deleted"
 msgstr "silindi"
-
-#: NOT FOUND IN SOURCE
-msgid "does not match"
-msgstr "eşleşmiyor"
-
-#: NOT FOUND IN SOURCE
-msgid "doesn't contain"
-msgstr "içermiyor"
 
 #: share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectMatch:58 share/html/Search/Elements/PickBasics:74
 msgid "doesn't match"
@@ -10593,10 +9653,6 @@ msgstr ""
 #. ($self->Name)
 msgid "group '%1'"
 msgstr "grup %1"
-
-#: NOT FOUND IN SOURCE
-msgid "grouped by %1"
-msgstr "%1 ile gruplanmış"
 
 #: NOT FOUND IN SOURCE
 msgid "hours"
@@ -10731,10 +9787,6 @@ msgstr ""
 msgid "no name"
 msgstr "adsız"
 
-#: NOT FOUND IN SOURCE
-msgid "no value"
-msgstr "değersiz"
-
 #: lib/RT/Crypt/GnuPG.pm:1743 share/html/Admin/Elements/EditQueueWatchers:50 share/html/Dashboards/Subscription.html:73 share/html/Ticket/Elements/EditWatchers:51
 msgid "none"
 msgstr "hiçbiri"
@@ -10779,10 +9831,6 @@ msgstr ""
 msgid "perform actions"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "personal group '%1' for user '%2'"
-msgstr "'%2' kullanıcısı için, kişisel grup '%1'"
-
 #: share/html/Search/Elements/SelectChartType:55
 msgid "pie"
 msgstr ""
@@ -10824,10 +9872,6 @@ msgstr "saniye"
 msgid "see object list below"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "show Configuration tab"
-msgstr "ayar sekmesini göster"
-
 #: share/html/Admin/Global/MyRT.html:87
 msgid "sidebar"
 msgstr ""
@@ -10836,10 +9880,6 @@ msgstr ""
 msgid "site config"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "spreadsheet"
-msgstr "hesap çizelgesi"
-
 #: lib/RT/Queue.pm:104
 msgid "stalled"
 msgstr "savsaklandı"
@@ -10847,10 +9887,6 @@ msgstr "savsaklandı"
 #: share/html/Admin/Tools/Queries.html:88
 msgid "statement"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "style: %1"
-msgstr "biçem: %1"
 
 #: share/html/Prefs/MyRT.html:86
 msgid "summary rows"

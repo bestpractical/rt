@@ -6,15 +6,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
-"POT-Creation-Date: 2011-08-05 23:32+0000\n"
-"PO-Revision-Date: 2011-08-06 00:03+0000\n"
-"Last-Translator: Shawn M Moore <sartak@bestpractical.com>\n"
+"POT-Creation-Date: 2013-06-06 21:51+0000\n"
+"PO-Revision-Date: 2013-05-25 02:53+0000\n"
+"Last-Translator: Shawn M Moore <Unknown>\n"
 "Language-Team: Lithuanian\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-06 01:13+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2013-10-03 20:12+0000\n"
+"X-Generator: Launchpad (build 16791)\n"
 
 #: share/html/Elements/LoginHelp:51
 #. (RT->Config->Get('OwnerEmail'))
@@ -22,14 +22,6 @@ msgid ""
 "\n"
 "For local help, please contact %1\n"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid " (no pubkey!)"
-msgstr " (Trūksta viešo rakto!)"
-
-#: NOT FOUND IN SOURCE
-msgid " (untrusted!)"
-msgstr " (nepatikimas!)"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:60
 msgid "#"
@@ -111,12 +103,12 @@ msgstr "%1 %2 pakeistas į %3"
 #: lib/RT/Record.pm:2038
 #. ($cf->Name, $old_content)
 msgid "%1 %2 deleted"
-msgstr "%1 %2 ištrintas"
+msgstr "%1 %2 panaikintas"
 
 #: share/html/Widgets/SavedSearch:140
 #. (loc($self->{SearchType}), $self->{CurrentSearch}{Object}->Description)
 msgid "%1 %2 deleted."
-msgstr "%1 %2 ištrintas."
+msgstr "%1 %2 panaikintas."
 
 #: lib/RT/Record/Role/Status.pm:256
 #. ($self->loc($column), $args{Value})
@@ -127,10 +119,6 @@ msgstr ""
 #. ($self->loc($column), $name)
 msgid "%1 %2 is disabled"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "%1 %2 renamed to %3."
-msgstr "%1 %2 pervadintas į %3."
 
 #: share/html/Widgets/SavedSearch:130
 #. (loc($self->{SearchType}), $args->{SavedSearchDescription})
@@ -161,7 +149,7 @@ msgstr "%1 (%2) prie %3"
 #. (loc('Approve'))
 #. (loc('Deny'))
 msgid "%1 (Unchanged)"
-msgstr "%1 (nesikeičia)"
+msgstr "%1 (nekeičiama)"
 
 #: share/html/Dashboards/Elements/Deleted:57
 #. (($_->{description} || $_->{name}), $_->{pane})
@@ -171,6 +159,10 @@ msgstr "%1 (iš panelės %2)"
 #: bin/rt-crontool:337
 #. ("--log")
 msgid "%1 - Adjust LogToSTDERR config option"
+msgstr "%1 - Derinti prisijungimo ekrano nustatymus"
+
+#: NOT FOUND IN SOURCE
+msgid "%1 - Adjust LogToScreen config option"
 msgstr "%1 - Derinti prisijungimo ekrano nustatymus"
 
 #: bin/rt-crontool:312 bin/rt-crontool:319 bin/rt-crontool:325
@@ -184,10 +176,6 @@ msgstr "%1 - Parametras perdavimui į %2"
 #. ("--verbose")
 msgid "%1 - Output status updates to STDOUT"
 msgstr "%1 - Būsenos atnaujinimas perduodamas į STDOUT"
-
-#: NOT FOUND IN SOURCE
-msgid "%1 - Specify id of the template you want to use"
-msgstr "%1 - nurodykite šablono, kurį norite naudoti, identifikatorių"
 
 #: bin/rt-crontool:331
 #. ("--transaction")
@@ -224,19 +212,11 @@ msgstr "%1 - Nurodykite kurį paieškos modulį norite naudoti"
 msgid "%1 CFs"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "%1 DashBoards"
-msgstr "%1 informacinės panelės"
-
 #: share/html/Elements/Footer:56 share/html/m/_elements/footer:51
 #. ('&#187;&#124;&#171;', $RT::VERSION, '2013', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #. ('', '', '2013', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr "%1 RT %2 Copyright 1996-%3 %4."
-
-#: NOT FOUND IN SOURCE
-msgid "%1 ScripAction loaded"
-msgstr "%1 SkriptAction pakrautas"
 
 #: share/html/Admin/Elements/UpgradeHistory:58
 #. ($package)
@@ -266,7 +246,7 @@ msgstr "%1 jau egzistuoja, bet neturi reikalingų RT sistemos lentelių ir meta-
 #: lib/RT/ACE.pm:272
 #. ($princ_obj->Object->Name)
 msgid "%1 already has that right"
-msgstr ""
+msgstr "%1 jau turi šias teises"
 
 #: lib/RT/Link.pm:176 lib/RT/Link.pm:184
 #. ($args{'Base'})
@@ -304,7 +284,7 @@ msgstr "%1 pakeista iš '%2' į '%3'"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 chart by %2"
-msgstr "%1 grafikas pagal %2"
+msgstr "%1 diagrama pagal %2"
 
 #: share/html/Search/Elements/EditSearches:203
 #. ($SavedSearch->{'Object'}->Description)
@@ -321,16 +301,12 @@ msgid "%1 could not be set to %2."
 msgstr "%1 negalima nustatyti į %2."
 
 #: NOT FOUND IN SOURCE
-msgid "%1 couldn't set status to resolved. RT's Database may be inconsistent."
-msgstr "%1 negali pakeisti būseną į Išspręsta. Gali būti sugadinta RT duomenų bazė."
-
-#: NOT FOUND IN SOURCE
 msgid "%1 created"
 msgstr "%1 sukurtas"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 deleted"
-msgstr "%1 ištrintas"
+msgstr "%1 panaikintas"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 disabled"
@@ -364,6 +340,14 @@ msgstr "%1 -- yra instrumentas, vykdomas cron planavimo sistemos, skirtas išsi�
 msgid "%1 is already a %2"
 msgstr ""
 
+#: NOT FOUND IN SOURCE
+msgid "%1 is already a %2 for this queue"
+msgstr "%1 jau yra šios eilės %2"
+
+#: NOT FOUND IN SOURCE
+msgid "%1 is already a %2 for this ticket"
+msgstr "%1 jau yra šio prašymo %2"
+
 #: lib/RT/Record/Role/Status.pm:264
 #. ($self->loc($column), $name)
 msgid "%1 is already set to %2"
@@ -376,10 +360,6 @@ msgstr ""
 #. ($email->format, loc(substr($field, 6)))
 msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
 msgstr "%1 yra adresas, kuriuo RT gauna laiškus. Nurodžius jį kaip  '%2', susidarys pašto kilpa"
-
-#: NOT FOUND IN SOURCE
-msgid "%1 is no longer a %2 for this queue."
-msgstr "%1 daugiau nebėra %2 šiai eilei."
 
 #: lib/RT/Ticket.pm:673
 #. ($principal->Object->Name,                         $self->loc($args{'Type'}))
@@ -396,15 +376,19 @@ msgstr "%1 daugiau nebėra papildomo lauko %2 reikšme"
 msgid "%1 is not a %2"
 msgstr ""
 
+#: NOT FOUND IN SOURCE
+msgid "%1 is not a %2 for this queue"
+msgstr "%1 nėra šios eilės %2"
+
+#: NOT FOUND IN SOURCE
+msgid "%1 is not a %2 for this ticket"
+msgstr "%1 nėra šio prašymo %2"
+
 #: lib/RT/Queue.pm:189 lib/RT/Record/Role/Lifecycle.pm:126
 #. ($args{'Lifecycle'})
 #. ($value)
 msgid "%1 is not a valid lifecycle"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "%1 is not valid lifecycle"
-msgstr "%1 nėra korektiškas gyvavimo ciklas"
+msgstr "%1 nėra teisingas gyvavimo ciklas"
 
 #: share/html/Elements/Crypt/KeyIssues:50
 #. (RT->Config->Get('Crypt')->{'Outgoing'})
@@ -424,12 +408,12 @@ msgstr "%1 min"
 #: share/html/Articles/Elements/UpdatedArticles:48
 #. ($rows)
 msgid "%1 most recently updated articles"
-msgstr "%1 vėliausiai atnaujintų straipsnių"
+msgstr "%1 vėliausiai atnaujintų aprašų"
 
 #: share/html/Articles/Elements/NewestArticles:48
 #. ($rows)
 msgid "%1 newest articles"
-msgstr "%1 naujausių straipsnių"
+msgstr "%1 naujausių aprašų"
 
 #: etc/initialdata:818
 msgid "%1 newest unowned tickets"
@@ -463,10 +447,6 @@ msgstr "%1 pakeitimas: Niekas nepakeista"
 #. ($self->loc( $args{'Field'} ),)
 msgid "%1 updated"
 msgstr "%1 pakeista"
-
-#: NOT FOUND IN SOURCE
-msgid "%1 will resolve all members of a resolved group ticket."
-msgstr "%1 išspręs visus prašymus iš išspręstų prašymų grupės."
 
 #: lib/RT/Date.pm:441
 #. ($value)
@@ -621,7 +601,7 @@ msgstr "'%1' yra neteisinga būsenos reikšmė"
 #: lib/RT/Queue.pm:323
 #. ($name)
 msgid "'%1' is not a valid name."
-msgstr ""
+msgstr "'%1' nėra teisingas vardas."
 
 #: share/html/Articles/Article/Edit.html:121
 #. ($Class)
@@ -659,15 +639,7 @@ msgstr "(Pažymėkite ką norite pašalinti)"
 
 #: share/html/Articles/Article/Elements/EditLinks:53
 msgid "(Check boxes to delete)"
-msgstr "(Ištrynimui pažymėkite varnelę)"
-
-#: NOT FOUND IN SOURCE
-msgid "(Check boxes to disable notifications to the listed recipients)"
-msgstr "(Pažymėkite adresatus, kuriuos <B>nenorite</B> informuoti ir paspauskite apatinį mygtuką 'Keisti adresatus')"
-
-#: NOT FOUND IN SOURCE
-msgid "(Check boxes to enable notifications to the listed recipients)"
-msgstr "(Pažymėkite adresatus, kuriuos <B>norite</B> informuoti ir paspauskite apatinį mygtuką 'Keisti adresatus')"
+msgstr "(Pažymėkite ką norite pašalinti)"
 
 #: share/html/m/ticket/create:392
 msgid "(Enter ticket ids or URLs, separated with spaces)"
@@ -727,17 +699,13 @@ msgstr "(El. paštas nebus siunčiamas)"
 msgid "(any)"
 msgstr "(bet kuris)"
 
-#: NOT FOUND IN SOURCE
-msgid "(empty)"
-msgstr "(tuščia)"
-
 #: share/html/Articles/Elements/NewestArticles:66 share/html/Articles/Elements/UpdatedArticles:67
 msgid "(no Summary)"
 msgstr "(nėra santraukos)"
 
 #: share/html/Admin/Articles/Elements/Topics:99 share/html/Articles/Article/Elements/EditTopics:58 share/html/Articles/Article/Elements/EditTopics:74 share/html/Articles/Article/Elements/Preformatted:49 share/html/Articles/Article/Elements/Preformatted:50 share/html/Articles/Elements/BeforeMessageBox:103 share/html/Articles/Elements/BeforeMessageBox:120 share/html/Articles/Elements/BeforeMessageBox:70 share/html/Articles/Elements/BeforeMessageBox:82 share/html/Articles/Elements/BeforeMessageBox:90 share/html/Articles/Elements/NewestArticles:60 share/html/Articles/Elements/ShowTopic:51 share/html/Articles/Elements/ShowTopicLink:55 share/html/Articles/Elements/UpdatedArticles:61 share/html/Articles/Topics.html:105 share/html/SelfService/Article/Display.html:49 share/html/SelfService/Article/Search.html:77 share/html/SelfService/Article/Search.html:85
 msgid "(no name)"
-msgstr "(nėra vardo)"
+msgstr "(be pavadinimo)"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:269 share/html/Elements/RT__Ticket/ColumnMap:88
 msgid "(no pubkey!)"
@@ -805,26 +773,6 @@ msgstr ""
 msgid "<% $field->{'name'} %>"
 msgstr "<% $field->{'name'} %>"
 
-#: NOT FOUND IN SOURCE
-msgid "<%$Action%> here"
-msgstr "<%$Action%> čia"
-
-#: NOT FOUND IN SOURCE
-msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
-msgstr "<input type=\"submit\" class=\"button\" value=\"Naujas prašymas eilėje\" />&nbsp;%1"
-
-#: NOT FOUND IN SOURCE
-msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
-msgstr "<input type=\"submit\" value=\"Создать заявку в очереди\">&nbsp;%1"
-
-#: NOT FOUND IN SOURCE
-msgid "<p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
-msgstr "<p>Visi iCal srautai turi slaptą žymą, kuri jus autorizuoja.  Jeigu vieno iš jūsų iCal srautų URL bus atskleistas pasauliui, galite gauti naują slaptą žymą, bet tokiu atveju <b>sugrius visi jūsų dabartiniai iCal srautai</b> žemiau.</p>"
-
-#: NOT FOUND IN SOURCE
-msgid "<tt>%1</tt> - <i>%2s</i>"
-msgstr "<tt>%1</tt> - <i>%2s</i>"
-
 #: lib/RT/Template.pm:287 lib/RT/Template.pm:713
 msgid "A Template with that name already exists"
 msgstr ""
@@ -876,10 +824,6 @@ msgstr "Veiksmas %1 nerastas"
 msgid "Action committed."
 msgstr "Veiksmas patvirtintas."
 
-#: NOT FOUND IN SOURCE
-msgid "Action committed.\\n"
-msgstr "Veiksmas patvirtintas.\\n"
-
 #: lib/RT/Scrip.pm:149 lib/RT/Scrip.pm:726
 msgid "Action is mandatory argument"
 msgstr "Veiksmas yra privalomas argumentas"
@@ -899,7 +843,7 @@ msgstr "Aktyvūs prašymai"
 #: share/html/Tools/MyDay.html:53
 #. ($session{'CurrentUser'}->Name)
 msgid "Active tickets for %1"
-msgstr "Atviri prašymai, priskirti %1"
+msgstr "Vykdomi prašymai, kurių atsakingas asmuo yra %1"
 
 #: share/html/Admin/Elements/EditRights:134
 #. (loc($AddPrincipal))
@@ -924,7 +868,7 @@ msgstr "Pridėti stulpelius"
 
 #: share/html/Search/Elements/PickCriteria:48
 msgid "Add Criteria"
-msgstr "Papildomas kriterijus"
+msgstr "Papildomi kriterijai"
 
 #: share/html/Ticket/Elements/AddAttachments:61 share/html/m/ticket/create:324 share/html/m/ticket/reply:138
 msgid "Add More Files"
@@ -952,7 +896,7 @@ msgstr "Pridėkite  grupę"
 
 #: share/html/Admin/Articles/Elements/Topics:108
 msgid "Add here"
-msgstr ""
+msgstr "Pridėti čia"
 
 #: share/html/Admin/Groups/Members.html:63
 msgid "Add members"
@@ -983,14 +927,9 @@ msgstr "Pridėkite naudotoją"
 msgid "Add values"
 msgstr "Pridėti reikšmes"
 
-# Manual merge by Andrew Kornilov <andy@eva.dp.ua>
-#: NOT FOUND IN SOURCE
-msgid "Add, delete and modify custom field values for objects"
-msgstr "Pridėti, panaikinti ar ištrinti nuosavas laukų reikšmes objektams"
-
 #: lib/RT/CustomField.pm:216
 msgid "Add, modify and delete custom field values for objects"
-msgstr "Pridėti, pakeisti ar ištrinti papildomo laiko reikšmes objektui"
+msgstr "Pridėti, pakeisti ar panaikinti papildomo laiko reikšmes objektui"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:85
 msgid "Added"
@@ -999,7 +938,7 @@ msgstr ""
 #: lib/RT/Ticket.pm:642
 #. ($principal->Object->Name, $self->loc($args{'Type'}))
 msgid "Added %1 as a %2 for this ticket"
-msgstr ""
+msgstr "%1 yra pridėtas kaip šio prašymo %2"
 
 #: lib/RT/Queue.pm:605
 #. ($principal->Object->Name, $self->loc($args{'Type'}))
@@ -1010,14 +949,6 @@ msgstr "Pridėti %1 prie %2 narių šioje eilėje."
 #. ($cf->Name)
 msgid "Added Subject Override: %1"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Added principal as a %1 for this queue"
-msgstr "Vartotojas pridėtas kaip šios eilės %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Added principal as a %1 for this ticket"
-msgstr "Naudotojas pridėtas kaip šio prašymo %1"
 
 #: share/html/Elements/RT__Queue/ColumnMap:65 share/html/Elements/RT__User/ColumnMap:101
 msgid "Address"
@@ -1065,7 +996,7 @@ msgstr "Eilių valdymas"
 
 #: share/html/Admin/Global/index.html:48
 msgid "Admin/Global configuration"
-msgstr "Administravimas/Globali konfigūracija"
+msgstr "Administravimas/Bendri nustatymai"
 
 #: lib/RT/Tickets.pm:161
 msgid "AdminCCGroup"
@@ -1099,10 +1030,6 @@ msgstr "Administruoti grupes"
 msgid "AdminGroupMembership"
 msgstr "Administruoti grupės narystę"
 
-#: NOT FOUND IN SOURCE
-msgid "AdminOwnPersonalGroups"
-msgstr "Administruoti nuosavas grupes"
-
 #: lib/RT/Queue.pm:110
 msgid "AdminQueue"
 msgstr "Administruoti eiles"
@@ -1117,7 +1044,7 @@ msgstr "Administruoti naudotojus"
 
 #: share/html/Ticket/Elements/EditPeople:84
 msgid "Administrative Cc"
-msgstr "Administracinė kopija"
+msgstr "Administracinė kopija (CC)"
 
 #: lib/RT/Installer.pm:157
 msgid "Administrative password"
@@ -1133,7 +1060,7 @@ msgstr "Išplėstinė paieška"
 
 #: share/html/Elements/LoginRedirectWarning:62
 msgid "After logging in you'll be sent to your original destination:"
-msgstr ""
+msgstr "Prisijungę būsite nukreipti į pradinį tikslą"
 
 #: share/html/Search/Elements/PickCriteria:62
 msgid "Aggregator"
@@ -1149,7 +1076,7 @@ msgstr ""
 
 #: share/html/Admin/Articles/Classes/Modify.html:80
 msgid "All Articles in this class should be listed in a dropdown of the ticket reply page"
-msgstr "Visi straipsniai šioje klasėje turi būti išvardinti pasirinkimo sąraše atsakymo į prašymą lange."
+msgstr "Visi aprašai šioje klasėje turi būti išvardinti pasirinkimo sąraše atsakymo į prašymą lange."
 
 #: share/html/Admin/Articles/Classes/index.html:77
 msgid "All Classes"
@@ -1169,7 +1096,7 @@ msgstr "Visi prašymai"
 
 #: share/html/User/Prefs.html:172
 msgid "All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below."
-msgstr "Visi iCal srautai turi slaptą žymą, kuri jus autorizuoja.  Jeigu vieno iš jūsų iCal srautų URL bus atskleistas pasauliui, galite gauti naują slaptą žymą, bet tokiu atveju <b>sugrius visi jūsų dabartiniai iCal srautai</b> žemiau."
+msgstr "Visi kalendoriaus įrašų srautai (iCal feeds) turi slaptą žymą (secret token), kuri suteikia jums teises į srautą. Jeigu jūsų kalendoriaus įrašų srauto URL adresas tapo žinomas tretiems asmenims, galite gauti naują slaptą žymą paspaudę nuorodą žemiau. Tačiau <b>nustos veikti visi dabartiniai jūsų kalendoriaus įrašų srautai</b>."
 
 #: share/html/Admin/Queues/index.html:99
 msgid "All queues matching search criteria"
@@ -1216,13 +1143,17 @@ msgstr ""
 msgid "And/Or"
 msgstr "Ir/arba"
 
+#: NOT FOUND IN SOURCE
+msgid "Annually"
+msgstr "Kasmet"
+
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:74
 msgid "Any field"
 msgstr "Bet kuris laukas"
 
 #: share/html/Search/Simple.html:65
 msgid "Any word not recognized by RT is searched for in ticket subjects."
-msgstr ""
+msgstr "Bet kurio RT neatpažinto žodžio bus ieškoma prašymų antraštėse."
 
 #: NOT FOUND IN SOURCE
 msgid "Applied"
@@ -1242,7 +1173,7 @@ msgstr "Taikyti"
 
 #: share/html/Admin/Articles/Classes/Objects.html:60 share/html/Admin/CustomFields/Objects.html:61 share/html/Admin/Scrips/Objects.html:67
 msgid "Apply globally"
-msgstr "Pritaikyti globaliai"
+msgstr "Taikyti visuotinai"
 
 #: share/html/Admin/Elements/EditScrips:95
 msgid "Apply selected scrips"
@@ -1261,17 +1192,17 @@ msgstr "Patvirtinimas"
 #. ($link->BaseObj->Id, $link->BaseObj->Subject)
 #. ($ticket->id, $msg)
 msgid "Approval #%1: %2"
-msgstr "Patvirtinimas #%1: %2"
+msgstr "Patvirtinimas Nr. %1: %2"
 
 #: share/html/Approvals/index.html:84
 #. ($ticket->Id)
 msgid "Approval #%1: Notes not recorded due to a system error"
-msgstr "Patvirtinimas #%1: Pastabos neišsaugotos dėl sistemos klaidos"
+msgstr "Patvirtinimas Nr. %1: Pastabos neišsaugotos dėl sistemos klaidos"
 
 #: share/html/Approvals/index.html:82
 #. ($ticket->Id)
 msgid "Approval #%1: Notes recorded"
-msgstr "Patvirtinimas #%1: Pastabos išsaugotos"
+msgstr "Patvirtinimas Nr. %1: Pastabos išsaugotos"
 
 #: etc/initialdata:496 etc/upgrade/3.8.2/content:71
 msgid "Approval Passed"
@@ -1305,13 +1236,9 @@ msgstr "Patvirtinti"
 msgid "Apr"
 msgstr "Bal"
 
-#: NOT FOUND IN SOURCE
-msgid "April"
-msgstr "Balandis"
-
 #: share/html/Articles/Article/Delete.html:56
 msgid "Are you sure you want to delete this article?"
-msgstr "Ar tikrai norite panaikinti šį straipsnį?"
+msgstr "Ar tikrai norite panaikinti šį aprašą?"
 
 #: lib/RT/URI/fsck_com_article.pm:207
 #. ($object->id)
@@ -1321,7 +1248,7 @@ msgstr ""
 #: share/html/Articles/Article/Delete.html:97
 #. ($ArticleObj->Id)
 msgid "Article #%1 deleted"
-msgstr "Straipsnis #%1 panaikintas"
+msgstr "Aprašas Nr. %1 panaikintas"
 
 #: share/html/Articles/Article/History.html:61
 #. ($id)
@@ -1332,46 +1259,46 @@ msgstr ""
 #. ($article->Id, $article->Name || loc("(no name)"))
 #. ($object->id, $object->Name)
 msgid "Article #%1: %2"
-msgstr "Straipsnis #%1: %2"
+msgstr "Aprašas Nr. %1: %2"
 
 #: NOT FOUND IN SOURCE
 msgid "Article %1"
-msgstr "Straipsnis %1"
+msgstr "Aprašas %1"
 
 #: lib/RT/Article.pm:216
 #. ($self->id)
 msgid "Article %1 created"
-msgstr "Straipsnis %1 sukurtas"
+msgstr "Aprašas %1 sukurtas"
 
 #: share/html/Admin/Articles/index.html:48
 msgid "Article Administration"
-msgstr "Straipsnių valdymas"
+msgstr "Aprašų valdymas"
 
 #: lib/RT/Article.pm:324
 msgid "Article Deleted"
-msgstr "Straipsnis panaikintas"
+msgstr "Aprašas panaikintas"
 
 #: share/html/Articles/Article/Display.html:76 share/html/SelfService/Article/Display.html:60
 msgid "Article not found"
-msgstr "Straipsnis nerastas"
+msgstr "Aprašas nerastas"
 
 #: share/html/Admin/Global/CustomFields/index.html:95 share/html/Articles/index.html:48 share/html/Elements/Tabs:163 share/html/Elements/Tabs:168 share/html/Elements/Tabs:497 share/html/Elements/Tabs:503
 msgid "Articles"
-msgstr "Straipsniai"
+msgstr "Aprašai"
 
 #: share/html/Articles/Topics.html:99
 #. ($currtopic->Name)
 msgid "Articles in %1"
-msgstr "%1 straipsniai"
+msgstr "%1 aprašai"
 
 #: share/html/SelfService/Article/Search.html:64
 #. ($Articles_Content)
 msgid "Articles matching %1"
-msgstr "Straipsniai, atitinkantys %1"
+msgstr "Aprašai, atitinkantys %1"
 
 #: share/html/Articles/Topics.html:101
 msgid "Articles with no topics"
-msgstr "Straipsniai be temų"
+msgstr "Aprašai be temų"
 
 #: share/html/Search/Elements/EditSort:79
 msgid "Asc"
@@ -1380,10 +1307,6 @@ msgstr "Didėjimo tvarka"
 #: NOT FOUND IN SOURCE
 msgid "Ascending"
 msgstr "Didėjimo tvarka"
-
-#: NOT FOUND IN SOURCE
-msgid "Assign and remove custom fields"
-msgstr "Papaildomų laukų priskyrimas ir pašalinimas"
 
 #: lib/RT/Queue.pm:116
 msgid "Assign and remove queue custom fields"
@@ -1420,7 +1343,7 @@ msgstr "Priedas sukurtas"
 
 #: lib/RT/Tickets.pm:1758
 msgid "Attachment filename"
-msgstr "Priedo failo vardas"
+msgstr "Pridėto failo pavadinimas"
 
 #: share/html/Ticket/Elements/ShowAttachments:49 share/html/m/ticket/show:306
 msgid "Attachments"
@@ -1432,21 +1355,17 @@ msgstr "Priedų šifravimas išjungtas"
 
 #: lib/RT/Attributes.pm:178
 msgid "Attribute Deleted"
-msgstr "Atributas pašalintas"
+msgstr "Atributas panaikintas"
 
 #: lib/RT/Date.pm:98
 msgid "Aug"
 msgstr "Rgp"
 
-#: NOT FOUND IN SOURCE
-msgid "August"
-msgstr "Rugpjūtis"
-
 #: share/html/Errors/WebRemoteUser/UserAutocreateDefaultsOnLogin:48
 msgid "Automatic account setup failed"
 msgstr ""
 
-#: share/html/Admin/Tools/Theme.html:310
+#: share/html/Admin/Tools/Theme.html:311
 #. ($valid_image_types)
 msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 msgstr "Jūsų įkeltam paveikslėliui negalima automatiškai pasiūlyti spalvinių temų. Taip gali būti todėl, kad jūsų GD bibliotekos nepalaiko paveikslėlio failo formato. Palaikomi formatai yra: %1. Galite pabandyti perkompiliuoti libgd ir GD.pm įtraukę papildomus paveikslėlių failų formatus."
@@ -1465,7 +1384,7 @@ msgstr ""
 
 #: share/html/Widgets/SelectionBox:170
 msgid "Available"
-msgstr "Turimas"
+msgstr "Pasirinkite"
 
 #: lib/RT/Report/Tickets.pm:225
 msgid "Average Created-LastUpdated"
@@ -1503,10 +1422,6 @@ msgstr ""
 msgid "Average time worked"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "BCc"
-msgstr "Slapta kopija (BCC)"
-
 #: share/html/Elements/Submit:109 share/html/Install/Basics.html:63 share/html/Install/DatabaseDetails.html:73 share/html/Install/DatabaseDetails.html:89 share/html/Install/Global.html:65 share/html/Install/Initialize.html:62 share/html/Install/Sendmail.html:64
 msgid "Back"
 msgstr "Atgal"
@@ -1534,20 +1449,12 @@ msgstr ""
 
 #: share/html/Ticket/Forward.html:72
 msgid "Bcc"
-msgstr "Slapta kopija"
-
-#: NOT FOUND IN SOURCE
-msgid "Be sure to save your changes"
-msgstr "Nepamirškite išsaugoti nustatymus"
+msgstr "Slapta kopija (Bcc)"
 
 #: share/html/Articles/Elements/NeedsSetup:50
 #. (qq[<a href="@{[RT->Config->Get("WebPath")]}/Admin/Articles/">], '</a>')
 msgid "Before Articles can be used, your RT administrator must %1create Classes%2, apply Article custom fields to them, and grant users rights on the classes and CFs."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Best Practical Solutions, LLC corporate logo"
-msgstr "Best Practical Solutions, LLC corporate logo"
 
 #: etc/initialdata:223
 msgid "Blank"
@@ -1559,7 +1466,7 @@ msgstr "Turinys"
 
 #: share/html/Search/Elements/EditFormat:96
 msgid "Bold"
-msgstr "Riebus"
+msgstr "Paryškintas"
 
 #: share/html/Search/Elements/BuildFormatString:100 share/html/m/_elements/ticket_list:101 share/html/m/ticket/show:246
 msgid "Bookmark"
@@ -1577,10 +1484,6 @@ msgstr "Pažymėti prašymai"
 msgid "Bookmarked tickets"
 msgstr "Pažymėti prašymus"
 
-#: NOT FOUND IN SOURCE
-msgid "Brief headers"
-msgstr "Trumpos antraštės"
-
 #: share/html/Articles/Topics.html:48 share/html/Articles/Topics.html:60
 msgid "Browse by topic"
 msgstr "Peržiūrėti pagal temas"
@@ -1593,14 +1496,6 @@ msgstr "Peržiūrėti SQL užklausas, įvykdytas šiame procese"
 msgid "Bulk Update"
 msgstr "Masinis pakeitimas"
 
-#: NOT FOUND IN SOURCE
-msgid "Buy Support"
-msgstr "Įsigyti palaikymą"
-
-#: NOT FOUND IN SOURCE
-msgid "By default, RT will use the timezone of your system.  This lets you set a global default for the display of dates and times in RT.  Your users can choose a different Timezone in their preferences."
-msgstr "By default, RT will use the timezone of your system.  This lets you set a global default for the display of dates and times in RT.  Your users can choose a different Timezone in their preferences."
-
 #: lib/RT/Tickets.pm:160
 msgid "CCGroup"
 msgstr "Kopijų grupė"
@@ -1612,7 +1507,7 @@ msgstr "CF"
 #: share/html/Search/Simple.html:87
 #. ('<strong>cf.Name:value</strong>')
 msgid "CFs may be searched using a similar syntax as above with %1."
-msgstr ""
+msgstr "CF gali būti ieškoma naudojant panašią sintaksę, kaip  ankstesnė %1."
 
 #: share/html/Search/Chart.html:141
 msgid "Calculate"
@@ -1631,17 +1526,9 @@ msgstr "Nepavyksta atstatyti įsimintos paieškos \"%1\""
 msgid "Can not modify system users"
 msgstr "Sisteminių naudotojų keisti negalima"
 
-#: NOT FOUND IN SOURCE
-msgid "Can this principal see this queue"
-msgstr "Ar gali šis vartotojas matyti šią eilę"
-
 #: lib/RT/CustomField.pm:518
 msgid "Can't add a custom field value without a name"
 msgstr "Negalima įtraukti papildomą lauką be pavadinimo"
-
-#: NOT FOUND IN SOURCE
-msgid "Can't find a collection class for '%1'"
-msgstr "Nepavyksta rasti kolekcijos klasės, skirtos '%1'"
 
 #: share/html/Search/Elements/EditSearches:316
 msgid "Can't find a saved search to work with"
@@ -1685,10 +1572,6 @@ msgstr "Negalima įdėti nuorodos į paprastą skaičių"
 msgid "Cannot create tickets in a disabled queue."
 msgstr "Negalima sukurti prašymo išjungtoje eilėje."
 
-#: NOT FOUND IN SOURCE
-msgid "Cannot create user: %1"
-msgstr "Negalima sukurti vartotojo: %1"
-
 #: share/html/Admin/CustomFields/Modify.html:126
 msgid "Categories are based on"
 msgstr "Kategorijos remiasi"
@@ -1696,10 +1579,6 @@ msgstr "Kategorijos remiasi"
 #: share/html/Admin/Elements/AddCustomFieldValue:57 share/html/Admin/Elements/EditCustomFieldValues:61
 msgid "Category"
 msgstr "Kategorija"
-
-#: NOT FOUND IN SOURCE
-msgid "Category unset"
-msgstr "Kategorija nenurodyta"
 
 #: lib/RT/Report/Tickets.pm:69 lib/RT/Ticket.pm:102 lib/RT/Tickets.pm:145 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:79 share/html/Ticket/Create.html:136 share/html/Ticket/Elements/EditPeople:79 share/html/Ticket/Elements/ShowPeople:62 share/html/Ticket/Forward.html:69 share/html/m/ticket/create:275 share/html/m/ticket/show:295
 msgid "Cc"
@@ -1715,7 +1594,7 @@ msgstr "Pakeisti"
 
 #: lib/RT/Approval/Rule/Created.pm:56
 msgid "Change Approval ticket to open status"
-msgstr "Pakeiti tvirtinimo prašymą į atidarytą būseną"
+msgstr "Pakeiti tvirtinimo prašymą į vykdomą būseną"
 
 #: share/html/SelfService/Prefs.html:70
 msgid "Change password"
@@ -1753,10 +1632,6 @@ msgstr "Pasirinkite ką norite pašalinti"
 msgid "Check box to revoke right"
 msgstr "Pasirinktite teises, kurias norite nuimti"
 
-#: NOT FOUND IN SOURCE
-msgid "Check your database credentials"
-msgstr "Check your database credentials"
-
 #: share/html/Search/Elements/SelectLinks:59
 msgid "Child"
 msgstr ""
@@ -1768,10 +1643,6 @@ msgstr "Palikuonys"
 #: share/html/Install/DatabaseDetails.html:89 share/html/Install/DatabaseType.html:48
 msgid "Choose Database Engine"
 msgstr "Pasirinkti DBVS"
-
-#: NOT FOUND IN SOURCE
-msgid "Choose a database engine"
-msgstr "Choose a database engine"
 
 #: share/html/Articles/Elements/BeforeMessageBox:97
 #. ($QueueObj->Name)
@@ -1788,12 +1659,12 @@ msgstr "Klasė"
 
 #: share/html/Admin/Articles/Classes/Modify.html:62
 msgid "Class Name"
-msgstr "Klasės vardas"
+msgstr "Klasės pavadinimas"
 
 #: share/html/Admin/Articles/Classes/Modify.html:149
 #. ($msg)
 msgid "Class could not be created: %1"
-msgstr ""
+msgstr "Klasė negali būti sukurta: %1"
 
 #: share/html/Elements/RT__Article/ColumnMap:71
 msgid "Class id"
@@ -1801,7 +1672,7 @@ msgstr "Klasės identifikatorius"
 
 #: lib/RT/Class.pm:322
 msgid "Class is already applied Globally"
-msgstr "Klasė jau pritaikyta globaliai"
+msgstr "Klasė jau taikoma visuotinai"
 
 #: lib/RT/Class.pm:317
 #. ($queue->Name)
@@ -1832,13 +1703,9 @@ msgstr "Click \"Initialize Database\" to create RT's database and insert initial
 msgid "Click to choose a color"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Close window"
-msgstr "Uždaryti langą"
-
 #: share/html/Ticket/Elements/ShowDates:75 share/html/m/ticket/show:375
 msgid "Closed"
-msgstr "Uždaryta"
+msgstr "Įvykdytas"
 
 #: share/html/Elements/Tabs:936 share/html/SelfService/Closed.html:48
 msgid "Closed tickets"
@@ -1870,15 +1737,11 @@ msgstr "Adresas komentarams"
 
 #: lib/RT/Queue.pm:131
 msgid "Comment on tickets"
-msgstr "Prašymo komentarai"
-
-#: NOT FOUND IN SOURCE
-msgid "CommentAddress"
-msgstr "Adresas komentarams"
+msgstr "Komentuoti prašymą"
 
 #: lib/RT/Queue.pm:131
 msgid "CommentOnTicket"
-msgstr "Prašymo komentarai"
+msgstr "Komentuoti prašymą"
 
 #: share/html/Tools/MyDay.html:64
 msgid "Comments"
@@ -1886,11 +1749,7 @@ msgstr "Komentarai"
 
 #: share/html/Search/Bulk.html:127 share/html/Ticket/ModifyAll.html:100 share/html/Ticket/Update.html:77 share/html/m/ticket/reply:93
 msgid "Comments (Not sent to requestors)"
-msgstr "Komentarai (nesiunčiami prašymo autoriui)"
-
-#: NOT FOUND IN SOURCE
-msgid "Comments (not sent to requestors)"
-msgstr "Komentarai (nesiunčiami prašymo autoriui)"
+msgstr "Komentaras (nesiunčiamas prašymo autoriui)"
 
 #: share/html/Admin/Users/Modify.html:209 share/html/Ticket/Elements/ShowRequestor:78
 msgid "Comments about this user"
@@ -1940,10 +1799,6 @@ msgstr "Konfigūracija"
 msgid "Configuration for queue %1"
 msgstr "Eilės  %1 konfigūracija"
 
-#: NOT FOUND IN SOURCE
-msgid "Confirm"
-msgstr "Patvirtinti"
-
 #: share/html/Install/DatabaseDetails.html:140
 msgid "Connection succeeded"
 msgstr "Prisijungta sėkmingai"
@@ -1981,10 +1836,6 @@ msgstr "Turinio tipas"
 msgid "Correspond address"
 msgstr "Susirašinėjimo adresas"
 
-#: NOT FOUND IN SOURCE
-msgid "CorrespondAddress"
-msgstr "Susirašinėjimo adresas"
-
 #: etc/initialdata:359
 msgid "Correspondence"
 msgstr "Susirašinėjimas"
@@ -2008,10 +1859,6 @@ msgstr "Negalima pridėti naujos papildomo lauko reikšmės: %1"
 msgid "Could not change owner: %1"
 msgstr "Nepavyko pakeisti atsakingo: %1"
 
-#: NOT FOUND IN SOURCE
-msgid "Could not create CustomField"
-msgstr "Nepavyko sukurti papildomo lauko"
-
 #: share/html/Admin/CustomFields/Modify.html:184 share/html/Admin/Elements/EditCustomField:116
 #. ($msg)
 msgid "Could not create CustomField: %1"
@@ -2031,10 +1878,6 @@ msgstr "Nepavyksta įsiminti paieškos: %1"
 msgid "Could not create template: %1"
 msgstr "Nepavyko sukurti šablono: %1"
 
-#: NOT FOUND IN SOURCE
-msgid "Could not create ticket in disabled queue \"%1\""
-msgstr "Negalima sukurti prašymo išjungtoje eilėje \"%1\""
-
 #: lib/RT/Ticket.pm:260
 msgid "Could not create ticket. Queue not set"
 msgstr "Nepavyko sukurti prašymo. Eilė nenurodyta."
@@ -2046,7 +1889,7 @@ msgstr "Nepavyko sukurti naudotojo"
 #: share/html/Articles/Article/Search.html:244
 #. ($searchname, $msg)
 msgid "Could not delete search %1: %2"
-msgstr "Negaliu panaikinti paieškos %1: %2"
+msgstr "Negalima panaikinti paieškos %1: %2"
 
 #: lib/RT/Record/Role/Roles.pm:397
 #. ($name)
@@ -2105,12 +1948,12 @@ msgid "Could not make %1 a %2"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
-msgid "Could not make that principal a %1 for this queue"
-msgstr "Negalima paskirti šio naudotojo %1 šiai eilei"
+msgid "Could not make %1 a %2 for this queue"
+msgstr "%1 negali būti paskirtas šios eilės %2"
 
 #: NOT FOUND IN SOURCE
-msgid "Could not make that principal a %1 for this ticket"
-msgstr "Negalima paskirti šio naudotojo %1 šiam prašymui"
+msgid "Could not make %1 a %2 for this ticket"
+msgstr "%1 negali būti paskirtas šio prašymo %2"
 
 #: lib/RT/Record/Role/Roles.pm:501
 #. ($principal->Object->Name, $self->loc($args{Type}))
@@ -2118,12 +1961,12 @@ msgid "Could not remove %1 as a %2"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
-msgid "Could not remove that principal as a %1 for this queue"
-msgstr "Negalima atšaukti vartotjo funkcijos  %1 šiai eilei"
+msgid "Could not remove %1 as a %2 for this queue"
+msgstr "%1 negali būti pašalintas iš šios eilės %2"
 
 #: NOT FOUND IN SOURCE
-msgid "Could not remove that principal as a %1 for this ticket"
-msgstr "Negalima atšaukti naudotojo kaip %1 šiam prašymui"
+msgid "Could not remove %1 as a %2 for this ticket"
+msgstr "%1 negali būti pašalintas iš šios prašymo %2"
 
 #: lib/RT/User.pm:144
 msgid "Could not set user info"
@@ -2148,7 +1991,7 @@ msgstr "Nepavyko įtraukti naudotojo į grupę"
 
 #: NOT FOUND IN SOURCE
 msgid "Couldn't apply custom field to an object as it's global already"
-msgstr "Negalima pritaikyti papildomo lauko objektui, nes jis jau yra globalus"
+msgstr "Negalima paskirti papildomo lauko objektui, nes jis jau taikomas visuotinai"
 
 #: lib/RT/Scrip.pm:713
 #. ($method, $code, $error)
@@ -2165,10 +2008,6 @@ msgstr "Nepavyksta sukompiliuoti šablono kodo bloko '%1': %2"
 #. ($msg)
 msgid "Couldn't create a transaction: %1"
 msgstr "Negalima sukurti tranzakcijos: %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Couldn't create record"
-msgstr "Nepavyko sukurti įrašo"
 
 #: lib/RT/CustomField.pm:1586
 #. ($msg)
@@ -2201,10 +2040,6 @@ msgstr "Negaliu rasti šios reikšmės"
 msgid "Couldn't get %1 keys information"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Couldn't load %1 from the users database.\\n"
-msgstr "Negaliu pakrauti %1 iš vartotojų duomenų bazės.\\n"
-
 #: share/html/Admin/Articles/Classes/GroupRights.html:66 share/html/Admin/Articles/Classes/UserRights.html:65 share/html/Admin/CustomFields/UserRights.html:66
 #. ($id)
 msgid "Couldn't load Class %1"
@@ -2213,12 +2048,12 @@ msgstr "Negaliu nuskaityti klasės %1"
 #: lib/RT/CustomFieldValue.pm:112 lib/RT/CustomFieldValue.pm:86
 #. ($cf_id)
 msgid "Couldn't load Custom Field #%1"
-msgstr "Klaida nuskaitant papildomą lauką #%1"
+msgstr "Klaida nuskaitant papildomą lauką Nr. %1"
 
 #: share/html/Admin/Elements/EditCustomFields:134 share/html/Admin/Elements/EditCustomFields:145
 #. ($cf_id)
 msgid "Couldn't load CustomField #%1"
-msgstr "Nepavyksta nuskaityti papildomo lauko #%1"
+msgstr "Nepavyksta nuskaityti papildomo lauko Nr. %1"
 
 #: share/html/Admin/CustomFields/GroupRights.html:66
 #. ($id)
@@ -2233,21 +2068,17 @@ msgstr ""
 #: lib/RT/Ticket.pm:1087
 #. ($self->Id)
 msgid "Couldn't load copy of ticket #%1."
-msgstr "Negaliu nuskaityti prašymo #%1 kopijos."
+msgstr "Negaliu nuskaityti prašymo Nr. %1 kopijos."
 
 #: share/html/Dashboards/Modify.html:122 share/html/Dashboards/Queries.html:81 share/html/Dashboards/Render.html:100 share/html/Dashboards/Subscription.html:201
 #. ($id, $msg)
 msgid "Couldn't load dashboard %1: %2"
 msgstr "Klaida nuskaitant informacinę panelę %1: %2"
 
-#: NOT FOUND IN SOURCE
-msgid "Couldn't load dashboard %1: %2."
-msgstr "Klaida nuskaitant informacinę panelę %1: %2."
-
 #: share/html/Admin/Elements/MembershipsPage:100 share/html/Admin/Elements/MembershipsPage:110
 #. ($gid)
 msgid "Couldn't load group #%1"
-msgstr "Nepavyko nuskaityti grupės #%1"
+msgstr "Nepavyko nuskaityti grupės Nr. %1"
 
 #: share/html/Admin/Groups/GroupRights.html:66 share/html/Admin/Groups/UserRights.html:67
 #. ($id)
@@ -2291,7 +2122,7 @@ msgstr "Negaliu nuskaityti eilės"
 #: share/html/Admin/Elements/EditScrips:107
 #. ($id)
 msgid "Couldn't load queue #%1"
-msgstr "Klaida nuskaitant eilę #%1"
+msgstr "Nepavyko nuskaityti eilės Nr. %1"
 
 #: share/html/Admin/Queues/GroupRights.html:71 share/html/Admin/Queues/UserRights.html:72 share/html/Admin/Scrips/Create.html:99
 #. ($Queue)
@@ -2307,12 +2138,12 @@ msgstr "Klaida nuskaitant eilę '%1'"
 #: share/html/Admin/Scrips/Modify.html:103
 #. ($id)
 msgid "Couldn't load scrip #%1"
-msgstr "Nepavyko nuskaityti skripto #%1"
+msgstr "Nepavyko nuskaityti skripto Nr. %1"
 
 #: share/html/Admin/Elements/EditTemplates:105
 #. ($id)
 msgid "Couldn't load template #%1"
-msgstr "Klaida nuskaitant šabloną #%1"
+msgstr "Nepavyko nuskaityti šablono Nr. %1"
 
 #: lib/RT/Interface/Web.pm:2527
 msgid "Couldn't load the specified principal"
@@ -2331,7 +2162,7 @@ msgstr "Nepavyksta nuskaityti temos narystės bandant ją panaikinti"
 #. ($QuoteTransaction)
 #. ($id)
 msgid "Couldn't load transaction #%1"
-msgstr "Klaida nuskaitant tranzakciją #%1"
+msgstr "Nepavyko nuskaityti tranzakcijos Nr. %1"
 
 #: share/html/User/Prefs.html:215
 msgid "Couldn't load user"
@@ -2340,12 +2171,12 @@ msgstr "Nepavyksta nuskaityti naudotojo"
 #: share/html/Admin/Users/Keys.html:95 share/html/User/Prefs.html:211
 #. ($id)
 msgid "Couldn't load user #%1"
-msgstr "Nepavyko įkelti naudotojo #%1"
+msgstr "Nepavyko nuskaityti naudotojo Nr. %1"
 
 #: share/html/User/Prefs.html:209
 #. ($id, $Name)
 msgid "Couldn't load user #%1 or user '%2'"
-msgstr "Nepavyksta nuskaityti naudotojo #%1 arba naudotojo '%2'"
+msgstr "Nepavyko nuskaityti naudotojo Nr. %1 arba naudotojo '%2'"
 
 #: share/html/User/Prefs.html:213
 #. ($Name)
@@ -2452,11 +2283,11 @@ msgstr ""
 
 #: share/html/Articles/Article/Edit.html:128 share/html/Articles/Article/Edit.html:190
 msgid "Create a new article"
-msgstr "Sukurti naują straipsnį"
+msgstr "Sukurti naują aprašą"
 
 #: share/html/Articles/Article/ExtractIntoClass.html:52
 msgid "Create a new article in"
-msgstr "Sukurti naują straipnį"
+msgstr "Sukurti naują aprašą"
 
 #: share/html/Dashboards/Modify.html:131 share/html/Dashboards/Modify.html:98
 msgid "Create a new dashboard"
@@ -2465,10 +2296,6 @@ msgstr "Sukurti naują informacinę panelę"
 #: share/html/Admin/Groups/Modify.html:103 share/html/Admin/Groups/Modify.html:123
 msgid "Create a new group"
 msgstr "Sukurti naują grupę"
-
-#: NOT FOUND IN SOURCE
-msgid "Create a new personal group"
-msgstr "sukurti naują asmeninę grupę"
 
 #: share/html/Admin/Queues/Template.html:110
 #. ($QueueObj->Name)
@@ -2510,19 +2337,15 @@ msgstr ""
 
 #: share/html/Articles/Elements/CreateArticle:48
 msgid "Create an article"
-msgstr "Sukurti naują staripsnį"
+msgstr "Sukurti naują aprašą"
 
 #: share/html/Articles/Article/PreCreate.html:48
 msgid "Create an article in class..."
-msgstr "Sukurti naują straipsnį klasėje..."
+msgstr "Sukurti naują aprašą klasėje..."
 
 #: lib/RT/Class.pm:88
 msgid "Create articles in this class"
-msgstr "Sukurti naują straipsnį klasėje"
-
-#: NOT FOUND IN SOURCE
-msgid "Create dashboards for this group"
-msgstr "Sukurti informacines paneles šiai grupei"
+msgstr "Sukurti naują aprašą klasėje"
 
 #: lib/RT/Group.pm:95
 msgid "Create group dashboards"
@@ -2549,56 +2372,36 @@ msgid "Create tickets"
 msgstr "Sukurti prašymus"
 
 #: NOT FOUND IN SOURCE
-msgid "Create tickets in this queue"
-msgstr "Užregistruoti prašymus šioje eilėje"
-
-#: NOT FOUND IN SOURCE
 msgid "Create tickets offline"
 msgstr "Užregistruoti prašymus neprisijungus"
 
-#: NOT FOUND IN SOURCE
-msgid "Create, delete and modify custom fields"
-msgstr "Sukurti, panaikinti ir pakeisti papildomus laukus"
-
-#: NOT FOUND IN SOURCE
-msgid "Create, delete and modify queues"
-msgstr "Sukurti, panaikinti ir pakeisti eiles"
-
-#: NOT FOUND IN SOURCE
-msgid "Create, delete and modify the members of personal groups"
-msgstr "Sukurti, panaikinti ir pakeisti vartotojo asmeninių grupių narius"
-
-#: NOT FOUND IN SOURCE
-msgid "Create, delete and modify users"
-msgstr "Sukurti, panaikinti ir pakeisti vartotojus"
-
 #: lib/RT/Class.pm:98 lib/RT/Queue.pm:112
 msgid "Create, modify and delete Access Control List entries"
-msgstr "Kurti, keisti arba naikinti prieigos teisių įrašus"
+msgstr "Kurti, keisti arba panaikinti prieigos teisių įrašus"
 
 #: lib/RT/CustomField.pm:214
 msgid "Create, modify and delete custom fields"
-msgstr "Kurti, keisti arba naikinti papildomus laukus"
+msgstr "Kurti, keisti arba panaikinti papildomus laukus"
 
 #: lib/RT/CustomField.pm:215
 msgid "Create, modify and delete custom fields values"
-msgstr "Kurti, keisti arba naikinti papildomų laukų reikšmes"
+msgstr "Kurti, keisti arba panaikinti papildomų laukų reikšmes"
 
 #: lib/RT/Queue.pm:110
 msgid "Create, modify and delete queue"
-msgstr "Kurti, keisti arba naikinti eiles"
+msgstr "Kurti, keisti arba panaikinti eiles"
 
 #: lib/RT/Group.pm:91
 msgid "Create, modify and delete saved searches"
-msgstr "Kurti, keisti arba naikinti įsimintas paieškas"
+msgstr "Kurti, keisti arba panaikinti įsimintas paieškas"
 
 #: lib/RT/System.pm:85
 msgid "Create, modify and delete users"
-msgstr "Kurti, keisti arba naikinti naudotojus"
+msgstr "Kurti, keisti arba panaikinti naudotojus"
 
 #: lib/RT/Class.pm:88
 msgid "CreateArticle"
-msgstr "Sukurti straipsnį"
+msgstr "Sukurti aprašą"
 
 #: lib/RT/Dashboard.pm:81
 msgid "CreateDashboard"
@@ -2638,18 +2441,10 @@ msgstr "Sukurtas papildomas laukas %1"
 msgid "Created by"
 msgstr "Sukūrė"
 
-#: NOT FOUND IN SOURCE
-msgid "Created in a date range"
-msgstr "Užregistruoti prašymai per laikotarpį"
-
 #: share/html/Articles/Article/Search.html:200
 #. ($search->Name)
 msgid "Created search %1"
 msgstr "Sukurta paieška %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Created tickets in period, grouped by status"
-msgstr "Užregistruoti prašymai per periodą, sugrupuoti pagal būseną"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "CreatedBy"
@@ -2733,7 +2528,7 @@ msgstr "Papildoma sąlyga"
 #. ($MoveCustomFieldDown)
 #. ($MoveCustomFieldUp)
 msgid "Custom field #%1 is not applied to this object"
-msgstr "Papildomas laukas  #%1 netaikomas šiam objektui"
+msgstr "Papildomas laukas Nr. %1 netaikomas šiam objektui"
 
 #: lib/RT/Tickets.pm:2184
 #. ($CF->Name, $args{OPERATOR}, $args{VALUE})
@@ -2775,7 +2570,7 @@ msgstr "Nerasta reikšmė %1 papildomam laukui %2"
 
 #: lib/RT/CustomField.pm:554
 msgid "Custom field value could not be deleted"
-msgstr "Nepavyko ištrinti papildomo lauko reikšmės"
+msgstr "Nepavyko panaikinti papildomo lauko reikšmės"
 
 #: lib/RT/CustomField.pm:1707
 msgid "Custom field value could not be found"
@@ -2801,10 +2596,6 @@ msgstr "Keisti:"
 msgid "Customize Basics"
 msgstr "Customize Basics"
 
-#: NOT FOUND IN SOURCE
-msgid "Customize Database Details"
-msgstr "Customize Database Details"
-
 #: share/html/Install/Global.html:48 share/html/Install/Initialize.html:62 share/html/Install/Sendmail.html:63
 msgid "Customize Email Addresses"
 msgstr "Customize Email Addresses"
@@ -2812,14 +2603,6 @@ msgstr "Customize Email Addresses"
 #: share/html/Install/Basics.html:62 share/html/Install/Global.html:65 share/html/Install/Sendmail.html:48
 msgid "Customize Email Configuration"
 msgstr "Customize Email Configuration"
-
-#: NOT FOUND IN SOURCE
-msgid "Customize Global"
-msgstr "Customize Global"
-
-#: NOT FOUND IN SOURCE
-msgid "Customize Global Defaults"
-msgstr "Customize Global Defaults"
 
 #: share/html/Elements/Tabs:212
 msgid "Customize dashboards in menu"
@@ -2839,7 +2622,7 @@ msgstr "DBA username"
 
 #: lib/RT/Dashboard/Mailer.pm:329
 msgid "Daily"
-msgstr ""
+msgstr "Kasdien"
 
 #: lib/RT/Config.pm:514
 msgid "Daily digest"
@@ -2892,7 +2675,7 @@ msgstr "Database host"
 
 #: lib/RT/Installer.pm:96
 msgid "Database name"
-msgstr "Database name"
+msgstr "Duomenų bazės pavadinimas"
 
 #: lib/RT/Installer.pm:129
 msgid "Database password for RT"
@@ -2918,17 +2701,13 @@ msgstr ""
 msgid "Date format"
 msgstr "Datos formatas"
 
-#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:633 share/html/SelfService/Display.html:66 share/html/Ticket/Create.html:253 share/html/Ticket/Elements/ShowSummary:84 share/html/Ticket/ModifyAll.html:68 share/html/m/ticket/create:377 share/html/m/ticket/show:344
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:633 share/html/SelfService/Display.html:72 share/html/Ticket/Create.html:253 share/html/Ticket/Elements/ShowSummary:84 share/html/Ticket/ModifyAll.html:68 share/html/m/ticket/create:377 share/html/m/ticket/show:344
 msgid "Dates"
 msgstr "Datos"
 
 #: lib/RT/Date.pm:102
 msgid "Dec"
 msgstr "Grd"
-
-#: NOT FOUND IN SOURCE
-msgid "December"
-msgstr "Gruodis"
 
 #: share/html/Ticket/Crypt.html:58
 msgid "Decrypt"
@@ -2983,33 +2762,13 @@ msgstr "Nutylėta: %1"
 msgid "Default: %1/%2 changed from %3 to %4"
 msgstr "Nutylėta: %1/%2 pakeista iš %3 į %4"
 
-#: NOT FOUND IN SOURCE
-msgid "DefaultDueIn"
-msgstr "Nutylėta nes"
-
 #: lib/RT/Date.pm:116
 msgid "DefaultFormat"
 msgstr "Nutylėtasis formatas"
 
-#: NOT FOUND IN SOURCE
-msgid "Delegate rights"
-msgstr "Teisių delegavimas"
-
-#: NOT FOUND IN SOURCE
-msgid "Delegate specific rights which have been granted to you."
-msgstr "Atskirų savo teisių delegavimas."
-
-#: NOT FOUND IN SOURCE
-msgid "DelegateRights"
-msgstr "Deleguoti teises"
-
-#: NOT FOUND IN SOURCE
-msgid "Delegation"
-msgstr "Teisių delegavimas"
-
-#: etc/RT_Config.pm:2766 etc/RT_Config.pm:2842 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:864 share/html/Elements/Tabs:889 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:2769 etc/RT_Config.pm:2845 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:864 share/html/Elements/Tabs:889 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
 msgid "Delete"
-msgstr "Panaikinti"
+msgstr "Pašalinti"
 
 #: share/html/Admin/Elements/EditTemplates:72
 msgid "Delete Template"
@@ -3018,20 +2777,16 @@ msgstr "Panaikinti šabloną"
 #: share/html/Articles/Article/Delete.html:101
 #. ($ArticleObj->Id)
 msgid "Delete article #%1"
-msgstr "Panaikinti straipsnį #%1"
+msgstr "Panaikinti aprašą Nr. %1"
 
 #: lib/RT/Class.pm:99
 msgid "Delete articles in this class"
-msgstr "Ištrinti staripsnius klasėje"
-
-#: NOT FOUND IN SOURCE
-msgid "Delete dashboards for this group"
-msgstr "Panaikinti šios grupės informacines paneles"
+msgstr "Panaikinti aprašus klasėje"
 
 #: lib/RT/SharedSetting.pm:287
 #. ($msg)
 msgid "Delete failed: %1"
-msgstr "Trynimas nepavyko: %1"
+msgstr "Panaikinti nepavyko: %1"
 
 #: lib/RT/Group.pm:97
 msgid "Delete group dashboards"
@@ -3039,7 +2794,7 @@ msgstr "Panaikinti grupės informacinę panelę"
 
 #: lib/RT/Ticket.pm:2397
 msgid "Delete operation is disabled by lifecycle configuration"
-msgstr "Trynimo operacija yra uždrausta gyvavimo ciklo konfigūracijoje"
+msgstr "Panaikinimas yra uždraustas gyvavimo ciklo konfigūracijoje"
 
 #: lib/RT/Dashboard.pm:88
 msgid "Delete personal dashboards"
@@ -3063,7 +2818,7 @@ msgstr "Panaikinti reikšmes"
 
 #: lib/RT/Class.pm:99
 msgid "DeleteArticle"
-msgstr "Panaikinti straipsnį"
+msgstr "Panaikinti aprašą"
 
 #: lib/RT/Dashboard.pm:83
 msgid "DeleteDashboard"
@@ -3085,10 +2840,6 @@ msgstr "Panaikinti prašymą"
 #. ($self->ObjectName)
 msgid "Deleted %1"
 msgstr "Panaikinta %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Deleted dashboard %1"
-msgstr "Panaikinta informacinė panelė %1"
 
 #: share/html/Dashboards/Elements/Deleted:52
 msgid "Deleted queries"
@@ -3161,7 +2912,7 @@ msgstr "Mažėjimo tvarka"
 
 #: share/html/SelfService/Create.html:108 share/html/Ticket/Create.html:192 share/html/m/ticket/create:231
 msgid "Describe the issue below"
-msgstr "Detalizuokite situaciją"
+msgstr "Prašymo turinys"
 
 #: share/html/Admin/Articles/Classes/Modify.html:66 share/html/Admin/Articles/Elements/Topics:60 share/html/Admin/CustomFields/Modify.html:66 share/html/Admin/Elements/AddCustomFieldValue:55 share/html/Admin/Elements/EditCustomField:62 share/html/Admin/Elements/EditCustomFieldValues:59 share/html/Admin/Elements/ModifyTemplate:54 share/html/Admin/Groups/Modify.html:70 share/html/Admin/Queues/Modify.html:63 share/html/Admin/Scrips/Elements/EditBasics:48 share/html/Elements/RT__Class/ColumnMap:61 share/html/Elements/RT__Group/ColumnMap:77 share/html/Elements/RT__Scrip/ColumnMap:87 share/html/Elements/RT__Template/ColumnMap:61 share/html/Search/Elements/EditSearches:56
 msgid "Description"
@@ -3194,19 +2945,11 @@ msgstr "Parodyti teisių sąrašą"
 #: share/html/SelfService/Article/Display.html:48
 #. ($id)
 msgid "Display Article %1"
-msgstr "Parodyti straipsnį %1"
+msgstr "Parodyti aprašą %1"
 
 #: share/html/Search/Elements/DisplayOptions:51
 msgid "Display Columns"
 msgstr "Rodyti stulpelius"
-
-#: NOT FOUND IN SOURCE
-msgid "Display Scrip templates for this queue"
-msgstr "Parodyti skriptų šablonų sąrašą šiai eilei"
-
-#: NOT FOUND IN SOURCE
-msgid "Display Scrips for this queue"
-msgstr "Parodyti skriptų sąrašą šiai eilei"
 
 #: lib/RT/Config.pm:410
 msgid "Display all plain-text attachments in a monospace font with formatting preserved, but wrapping as needed."
@@ -3220,10 +2963,6 @@ msgstr ""
 msgid "Display plain-text attachments in fixed-width font"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Display saved searches for this group"
-msgstr "Parodyti išsaugotas užklausas šiai grupei"
-
 #: lib/RT/Config.pm:444
 msgid "Display ticket after \"Quick Create\""
 msgstr ""
@@ -3232,14 +2971,6 @@ msgstr ""
 #. ('<a href="http://www.gnu.org/licenses/gpl-2.0.html">', '</a>')
 msgid "Distributed under %1version 2 of the GNU GPL%2."
 msgstr "Platinama pagal  %1 versiją 2 GNU GPL%2 licenciją."
-
-#: NOT FOUND IN SOURCE
-msgid "Distributed under %1version 2 of the GNU GPL%2.</a>"
-msgstr "Platinama pagal  %1 versiją 2 GNU GPL%2 licenciją.</a>"
-
-#: NOT FOUND IN SOURCE
-msgid "Distributed under version 2 <a href=\"http://www.gnu.org/copyleft/gpl.html\"> of the GNU GPL.</a>"
-msgstr "Platinama pagal 2 versiją <a href=\"http://www.gnu.org/copyleft/gpl.html\"> GNU GPL.</a>"
 
 #: lib/RT/System.pm:83
 msgid "Do anything and everything"
@@ -3271,15 +3002,11 @@ msgstr "Nuo šiol nepasitikėti šiuo raktu"
 
 #: share/html/Elements/ShowTransactionAttachments:62
 msgid "Download"
-msgstr "Parsisiųsti"
-
-#: NOT FOUND IN SOURCE
-msgid "Download as a tab-delimited file"
-msgstr "Parsisiųsti tabuliacijomis atskirtą failą"
+msgstr "Atsiųsti"
 
 #: share/html/Admin/Tools/Shredder/Elements/DumpFileLink:49
 msgid "Download dumpfile"
-msgstr "Parsisiųsti dump failą"
+msgstr "Atsisiųsti dump failą"
 
 #: lib/RT/CustomField.pm:87
 msgid "Dropdown"
@@ -3287,7 +3014,7 @@ msgstr "Pasirinkimo sąrašas"
 
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:77 lib/RT/Tickets.pm:134 share/html/Elements/RT__Ticket/ColumnMap:205 share/html/Elements/RT__Ticket/ColumnMap:238 share/html/Elements/SelectDateType:55 share/html/Elements/ShowReminders:52 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:259 share/html/Ticket/Elements/EditDates:68 share/html/Ticket/Elements/Reminders:141 share/html/Ticket/Elements/Reminders:177 share/html/Ticket/Elements/Reminders:83 share/html/Ticket/Elements/ShowDates:66 share/html/m/ticket/create:384 share/html/m/ticket/show:366
 msgid "Due"
-msgstr "Terminas"
+msgstr "Galutinis terminas"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "DueRelative"
@@ -3300,7 +3027,7 @@ msgstr "KLAIDA: %1"
 
 #: share/html/Elements/Tabs:514
 msgid "Easy updating of your open tickets"
-msgstr "Greitas savo neįvykdytų prašymų keitimas"
+msgstr "Masinis mano vykdomų prašymų atnaujinimas"
 
 #: share/html/Elements/Tabs:521
 msgid "Easy viewing of your reminders"
@@ -3333,7 +3060,7 @@ msgstr "Taisyti papildomus laukus visiems naudotojams"
 
 #: share/html/Admin/Global/CustomFields/Class-Article.html:52
 msgid "Edit Custom Fields for articles in all classes"
-msgstr "Taisyti straipsnių papildomus laukus visose klasėse"
+msgstr "Taisyti aprašams papildomus laukus visose klasėse"
 
 #: share/html/Admin/Global/CustomFields/Queue-Tickets.html:53 share/html/Admin/Global/CustomFields/Queue-Transactions.html:53
 msgid "Edit Custom Fields for tickets in all queues"
@@ -3351,17 +3078,9 @@ msgstr "Taisyti užklausą"
 msgid "Edit Search"
 msgstr "Patikslinti paiešką"
 
-#: NOT FOUND IN SOURCE
-msgid "Edit Templates for queue %1"
-msgstr "Taisyti šablonus eilei %1"
-
 #: share/html/Admin/Global/Topics.html:56
 msgid "Edit global topic hierarchy"
-msgstr "Taisyti globalią temų hierarchiją"
-
-#: NOT FOUND IN SOURCE
-msgid "Edit saved searches for this group"
-msgstr "Taisyti įsimintas paieškas šiai grupei"
+msgstr "Taisyti bendrą temų hierarchiją"
 
 #: share/html/Elements/Tabs:126
 msgid "Edit system templates"
@@ -3376,18 +3095,6 @@ msgstr "Taisyti %1 temų hierarchiją"
 msgid "EditSavedSearches"
 msgstr "Taisyti įsimintas paieškas"
 
-#: NOT FOUND IN SOURCE
-msgid "Editable text"
-msgstr "Tekstas taisymui"
-
-#: NOT FOUND IN SOURCE
-msgid "Editing Configuration for Class %1"
-msgstr "Taisyti klasės %1 konfigūraciją"
-
-#: NOT FOUND IN SOURCE
-msgid "Editing Configuration for queue %1"
-msgstr "Eilės %1 nustatymų redagavimas"
-
 #: share/html/Admin/CustomFields/Modify.html:195 share/html/Admin/Elements/EditCustomField:123
 #. ($CustomFieldObj->Name)
 #. ($CustomFieldObj->Name())
@@ -3398,10 +3105,6 @@ msgstr "Lauko %1 redagavimas"
 #. ($Group->Name)
 msgid "Editing membership for group %1"
 msgstr "Grupės %1 naudotojų sąrašo redagavimas"
-
-#: NOT FOUND IN SOURCE
-msgid "Editing membership for personal group %1"
-msgstr "Asmeninės grupės %1 vartotojų sąrašo redagavimas"
 
 #: lib/RT/Tickets.pm:112 share/html/Elements/RT__Ticket/ColumnMap:165
 msgid "EffectiveId"
@@ -3428,10 +3131,6 @@ msgstr "El. pašto adresas"
 msgid "Email Address"
 msgstr "El. pašto adresas"
 
-#: NOT FOUND IN SOURCE
-msgid "Email Configuration"
-msgstr "Email Configuration"
-
 #: etc/initialdata:695 etc/upgrade/3.7.85/content:7
 msgid "Email Digest"
 msgstr "Pašto santrauka"
@@ -3442,7 +3141,7 @@ msgstr "Email adresas jau naudojamas"
 
 #: lib/RT/Config.pm:511
 msgid "Email delivery"
-msgstr "Pašto pristatymas"
+msgstr "Informavimas el. paštu"
 
 #: etc/initialdata:696 etc/upgrade/3.7.85/content:8
 msgid "Email template for periodic notification digests"
@@ -3486,7 +3185,7 @@ msgstr ""
 
 #: share/html/Admin/Articles/Classes/index.html:81
 msgid "Enabled Classes"
-msgstr "Įjungti klases"
+msgstr "Įjungtos klasės"
 
 #: share/html/Admin/Queues/index.html:112
 msgid "Enabled Queues"
@@ -3516,7 +3215,7 @@ msgstr "Užšifruoti/Dešifruoti"
 #: share/html/Ticket/Crypt.html:99
 #. ($id, $txn->Ticket)
 msgid "Encrypt/Decrypt transaction #%1 of ticket #%2"
-msgstr "Užšifruoti/Dešifruoti tranzakciją #%1 prašymui #%2"
+msgstr "Užšifruoti/Dešifruoti tranzakciją Nr. %1 prašymui Nr. %2"
 
 #: lib/RT/Queue.pm:417
 msgid "Encrypting disabled"
@@ -3536,7 +3235,7 @@ msgstr ""
 
 #: share/html/Articles/Article/Elements/EditLinks:50
 msgid "Enter articles, tickets, or other URLs related to this article."
-msgstr "Nurodyti straipsnius, prašymus ar kitas URL nuorodas, susijusias su šiuo straipsniu."
+msgstr "Nurodyti aprašus, prašymus ar kitas URL nuorodas, susijusias su šiuo aprašu."
 
 #: lib/RT/CustomField.pm:191
 msgid "Enter multiple IP address ranges"
@@ -3584,7 +3283,7 @@ msgstr "Išvardinkite prašymus arba nuorodas į juos (URI). Reikšmes atskirkit
 
 #: lib/RT/Config.pm:285
 msgid "Enter time in hours by default"
-msgstr ""
+msgstr "Pagal nutylėjimą laikas nurodomas valandomis"
 
 #: lib/RT/CustomField.pm:193
 msgid "Enter up to %1 IP address ranges"
@@ -3605,7 +3304,7 @@ msgstr "Nurodykite iki %1 reikšmių (automatinis užbaigimas)"
 #: share/html/Search/Simple.html:77
 #. (map { "<strong>$_</strong>" } qw(initial active inactive any))
 msgid "Entering %1, %2, %3, or %4 limits results to tickets with one of the respective types of statuses.  Any individual status name limits results to just the statuses named."
-msgstr ""
+msgstr "Nurodžius %1, %2, %3 arba %4, rezultatai apribojami atitinkamo būsenos prašymais. Nurodžis konkremią būseną, rezultatai apribojami tik tos būsenos prašymais."
 
 #: share/html/Admin/Tools/Configuration.html:281
 msgid "Environment variables"
@@ -3616,14 +3315,6 @@ msgid "Error"
 msgstr "Klaida"
 
 #: NOT FOUND IN SOURCE
-msgid "Error in parameters to Queue->AddWatcher"
-msgstr "Klaida parametruose Queue->AddWatcher"
-
-#: NOT FOUND IN SOURCE
-msgid "Error in parameters to Queue->DeleteWatcher"
-msgstr "Klaida parametruose Queue->DeleteWatcher"
-
-#: NOT FOUND IN SOURCE
 msgid "Error in parameters to Ticket->AddWatcher"
 msgstr "Klaida parametruose Ticket->AddWatcher"
 
@@ -3631,7 +3322,7 @@ msgstr "Klaida parametruose Ticket->AddWatcher"
 msgid "Error in parameters to Ticket->DeleteWatcher"
 msgstr "Klaida parametruose Ticket->DeleteWatcher"
 
-#: share/html/Search/Chart:459
+#: share/html/Search/Chart:460
 #. ($error)
 msgid "Error plotting chart: %1"
 msgstr ""
@@ -3690,18 +3381,6 @@ msgstr "Įvertinta"
 msgid "Everyone"
 msgstr "Visi"
 
-#: NOT FOUND IN SOURCE
-msgid "Examine tickets created in a queue between two dates"
-msgstr "Perižūrėti prašymus, sukurtus eilėje tarp datų intervalo"
-
-#: NOT FOUND IN SOURCE
-msgid "Examine tickets resolved in a queue between two dates"
-msgstr "Perižūrėti prašymus, išspręstus eilėje tarp datų intervalo"
-
-#: NOT FOUND IN SOURCE
-msgid "Examine tickets resolved in a queue, grouped by owner"
-msgstr "Perižūrėti prašymus, išspręstus eilėje, sugrupuotus pagal atsakingą"
-
 #: bin/rt-crontool:348
 msgid "Example:"
 msgstr "Pavyzdys:"
@@ -3728,25 +3407,25 @@ msgstr "Papildoma informacija"
 
 #: share/html/Elements/Tabs:698
 msgid "Extract Article"
-msgstr "Ištraukti straipsnį"
+msgstr "Perkelti į aprašą"
 
 #: etc/initialdata:104 etc/upgrade/3.8.3/content:78
 msgid "Extract Subject Tag"
-msgstr "Ištraukti pavadinimo žymę"
+msgstr "Panaudoti pavadinimo lauką"
 
 #: share/html/Articles/Article/ExtractIntoClass.html:48 share/html/Articles/Article/ExtractIntoTopic.html:48
 #. ($Ticket)
 msgid "Extract a new article from ticket #%1"
-msgstr "Ištraukti naują straipsnį iš prašymo #%1"
+msgstr "Sukurti naują aprašą prašymo Nr. %1 pagrindu"
 
 #: share/html/Articles/Article/ExtractFromTicket.html:48
 #. ($Ticket, $ClassObj->Name)
 msgid "Extract article from ticket #%1 into class %2"
-msgstr "Ištraukti straipsnį iš prašymo #%1 į klasę %2"
+msgstr "Sukurti naują aprašą prašymo Nr. %1 pagrindu klasėje %2"
 
 #: etc/initialdata:105 etc/upgrade/3.8.3/content:79
 msgid "Extract tags from a Transaction's subject and add them to the Ticket's subject."
-msgstr "Ištraukti žymę iš tranzakcijos pavadinimo ir įdėti ją į prašymo pavadinimą"
+msgstr "Panaudoti žymes iš tranzakcijos pavadinimo ir įdėti jas į prašymo pavadinimą"
 
 #: share/html/Install/DatabaseDetails.html:186
 #. ($DBI::errstr)
@@ -3803,10 +3482,6 @@ msgstr "Šablono apdorojimo klaida"
 msgid "Feb"
 msgstr "Vas"
 
-#: NOT FOUND IN SOURCE
-msgid "February"
-msgstr "Vasaris"
-
 #: share/html/Elements/Tabs:814
 msgid "Feeds"
 msgstr "Sklaidos kanalai"
@@ -3819,13 +3494,9 @@ msgstr "Laukas"
 msgid "Field values source:"
 msgstr "Lauko reikšmių šaltinis:"
 
-#: NOT FOUND IN SOURCE
-msgid "FileName"
-msgstr "Failo vardas"
-
 #: lib/RT/Tickets.pm:141 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:53 share/html/Elements/SelectAttachmentField:54
 msgid "Filename"
-msgstr "Failo vardas"
+msgstr "Failo pavadinimas"
 
 #: share/html/Elements/JavascriptConfig:66
 msgid "Filenames with double quotes can not be uploaded."
@@ -3853,7 +3524,7 @@ msgstr "Užpildykite vieną tekstinį lauką"
 
 #: lib/RT/CustomField.pm:116
 msgid "Fill in one wikitext area"
-msgstr "Užpildykite vieną wikitext lauką"
+msgstr "Užpildykite wikitext formato lauką"
 
 #: share/html/Admin/CustomFields/Modify.html:112 share/html/Admin/CustomFields/Modify.html:120
 msgid "Fill in this field with a URL."
@@ -3869,11 +3540,11 @@ msgstr "Užpildykite iki %1 wikitext laukų"
 
 #: lib/RT/Tickets.pm:1664 share/html/Search/Elements/PickBasics:201 share/html/Ticket/Create.html:230 share/html/m/ticket/create:347
 msgid "Final Priority"
-msgstr "Galutinis prioritetas"
+msgstr "Galutinis būsimas prioritetas"
 
 #: lib/RT/Tickets.pm:115 share/html/Elements/RT__Ticket/ColumnMap:159 share/html/Search/Elements/BuildFormatString:100
 msgid "FinalPriority"
-msgstr "Galutinis prioritetas"
+msgstr "Galutinis būsimas prioritetas"
 
 #: share/html/Elements/FindUser:48
 msgid "Find a user"
@@ -3911,18 +3582,10 @@ msgstr "Pabaigti"
 msgid "First"
 msgstr "Pirmas"
 
-#: NOT FOUND IN SOURCE
-msgid "Foo Bar Baz"
-msgstr "Foo Bar Baz"
-
-#: NOT FOUND IN SOURCE
-msgid "Foo!"
-msgstr "Foo!"
-
 #: share/html/Search/Simple.html:91
 #. ($link_start, $link_end)
 msgid "For the full power of RT's searches, please visit the %1search builder interface%2."
-msgstr ""
+msgstr "Norėdami panaudoti visas RT paieškos galimybes, atverkite %1paieškos konstravimo sąsają%2."
 
 #: share/html/Search/Bulk.html:84
 msgid "Force change"
@@ -3930,7 +3593,7 @@ msgstr "Priverstinai pakeisti"
 
 #: share/html/Search/Edit.html:59 share/html/Search/Elements/EditFormat:52
 msgid "Format"
-msgstr "Forma"
+msgstr "Paieškos rezultatų forma"
 
 #: lib/RT/Config.pm:231
 msgid "Formats iCal feed events with date and time"
@@ -3952,27 +3615,19 @@ msgstr "Persiųsti pranešimą ir grįžti"
 msgid "Forward Ticket"
 msgstr "Persiųsti prašymą"
 
-#: NOT FOUND IN SOURCE
-msgid "Forward message"
-msgstr "Persiųsti pranešimą"
-
 #: lib/RT/Queue.pm:139
 msgid "Forward messages outside of RT"
 msgstr "Persiųsti pranešimą iš RT į išorę"
 
-#: NOT FOUND IN SOURCE
-msgid "Forward messages to third person(s)"
-msgstr "Persiųsti pranešimą trečiai šaliai"
-
 #: share/html/Ticket/Forward.html:123
 #. ($TicketObj->id)
 msgid "Forward ticket #%1"
-msgstr "Persiųsti prašymą #%1"
+msgstr "Persiųsti prašymą Nr. %1"
 
 #: share/html/Ticket/Forward.html:122
 #. ($txn->id)
 msgid "Forward transaction #%1"
-msgstr "Persiųti operaciją #%1"
+msgstr "Persiųsti operaciją Nr. %1"
 
 #: lib/RT/Queue.pm:139
 msgid "ForwardMessage"
@@ -3988,7 +3643,7 @@ msgstr "Persiųstas prašymas adresu %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Forwarded Transaction #%1 to %2"
-msgstr "Persiųsta operacija #%1 adresu %2"
+msgstr "Operacija Nr. %1 persiųsta adresu %2"
 
 #: etc/initialdata:610
 msgid "Forwarded message"
@@ -4022,11 +3677,7 @@ msgstr "Penktadienis"
 
 #: share/html/Ticket/Forward.html:60
 msgid "From"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Full headers"
-msgstr "Pilnos antraštės"
+msgstr "Nuo"
 
 #: share/html/Admin/Tools/Theme.html:67
 msgid "GD is disabled or not installed. You can upload an image, but you won't get automatic color suggestions."
@@ -4058,23 +3709,19 @@ msgstr "Paskirta %1"
 
 #: share/html/Admin/Scrips/Modify.html:64 share/html/Elements/RT__CustomField/ColumnMap:88 share/html/Elements/RT__Scrip/ColumnMap:59 share/html/Elements/RT__Template/ColumnMap:69 share/html/Elements/Tabs:111
 msgid "Global"
-msgstr "Globalūs"
+msgstr "Bendri"
 
 #: share/html/Admin/Tools/Configuration.html:210
 msgid "Global Attributes"
-msgstr "Globalūs požymiai"
-
-#: NOT FOUND IN SOURCE
-msgid "Global Custom Fields"
-msgstr "Globalūs papildomi laukai"
+msgstr "Bendri požymiai"
 
 #: share/html/Articles/Topics.html:91
 msgid "Global Topics"
-msgstr ""
+msgstr "Bendros temos"
 
 #: share/html/Admin/Global/CustomFields/index.html:61
 msgid "Global custom field configuration"
-msgstr "Globalių papildomų laukų nustatymai"
+msgstr "Bendro papildomo lauko nustatymai"
 
 #: share/html/Admin/Global/DashboardsInMenu.html:104
 msgid "Global dashboards in menu saved."
@@ -4088,7 +3735,7 @@ msgstr ""
 #: share/html/Admin/Global/MyRT.html:100
 #. ($pane)
 msgid "Global portlet %1 saved."
-msgstr "Bendras protletas %1 išsaugotas."
+msgstr "Bendras portletas %1 išsaugotas."
 
 #: lib/RT/Scrip.pm:161
 #. ($args{'Template'})
@@ -4097,7 +3744,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Global template: %1"
-msgstr "Globalus šablonas: %1"
+msgstr "Bendras šablonas: %1"
 
 #: NOT FOUND IN SOURCE
 msgid "GnuPG"
@@ -4153,7 +3800,7 @@ msgstr "Rodyti prašymą"
 
 #: share/html/Ticket/Elements/ShowSummary:89 share/html/Ticket/ModifyLinks.html:58
 msgid "Graph"
-msgstr "Grafikas"
+msgstr "Diagrama"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:48
 msgid "Graph Properties"
@@ -4204,15 +3851,11 @@ msgstr "Grupėje nėra tokio naudotojo"
 #: lib/RT/Group.pm:502
 #. ($value)
 msgid "Group name '%1' is already in use"
-msgstr "Grupė vardu '%1' jau naudojama"
+msgstr "Grupė pavadinimu '%1' jau naudojama"
 
 #: lib/RT/Group.pm:1040
 msgid "Group not found"
 msgstr "Grupė nerasta"
-
-#: NOT FOUND IN SOURCE
-msgid "Group rights"
-msgstr "Grupės teisės"
 
 #: share/html/Search/Chart.html:116
 msgid "Group tickets by"
@@ -4307,17 +3950,13 @@ msgstr ""
 msgid "Hello!"
 msgstr "Labas!"
 
-#: NOT FOUND IN SOURCE
-msgid "Hello, %1"
-msgstr "Labas, %1"
-
 #: share/html/Install/Global.html:52
 msgid "Help us set up some useful defaults for RT."
 msgstr "Help us set up some useful defaults for RT."
 
 #: share/html/Elements/ShowHistory:60
 msgid "Hide all quoted text"
-msgstr ""
+msgstr "Paslėpti visą cituojamą tekstą"
 
 #: share/html/Elements/FoldStanzaJS:50
 msgid "Hide quoted text"
@@ -4334,7 +3973,7 @@ msgstr "Istorija"
 #: share/html/Articles/Article/History.html:48
 #. ($id)
 msgid "History for article #%1"
-msgstr "Straipsnio #%1 istorija"
+msgstr "Aprašo Nr. %1 istorija"
 
 #: share/html/Admin/Groups/History.html:60
 #. ($GroupObj->Name)
@@ -4352,10 +3991,6 @@ msgstr "Eilės %1 istorija"
 msgid "History of the user %1"
 msgstr "Naudotojo %1 istorija"
 
-#: NOT FOUND IN SOURCE
-msgid "Home"
-msgstr "Į pradžią"
-
 #: share/html/Elements/RT__User/ColumnMap:81
 msgid "Home Phone"
 msgstr "Namų telefonas"
@@ -4364,10 +3999,6 @@ msgstr "Namų telefonas"
 msgid "Home page refresh interval"
 msgstr "Pradinio puslapio atnaujinimo dažnumas"
 
-#: NOT FOUND IN SOURCE
-msgid "HomePhone"
-msgstr "Namų telefonas"
-
 #: share/html/Elements/Tabs:444 share/html/m/_elements/header:69
 msgid "Homepage"
 msgstr "Į pradžią"
@@ -4375,6 +4006,10 @@ msgstr "Į pradžią"
 #: share/html/Dashboards/Subscription.html:141
 msgid "Hour"
 msgstr "Valanda"
+
+#: NOT FOUND IN SOURCE
+msgid "Hourly"
+msgstr "Kas valandą"
 
 #: share/html/Elements/SelectTimeUnits:53
 msgid "Hours"
@@ -4387,7 +4022,7 @@ msgstr "Turiu %quant(%1,concrete mixer)."
 
 #: share/html/User/Prefs.html:175
 msgid "I want to reset my secret token."
-msgstr ""
+msgstr "Noriu pakeisti savo slaptą žymą"
 
 #: lib/RT/Date.pm:117
 msgid "ISO"
@@ -4407,7 +4042,7 @@ msgstr ""
 
 #: lib/RT/Approval/Rule/Rejected.pm:54
 msgid "If an approval is rejected, reject the original and delete pending approvals"
-msgstr "Jeigu patvirtinimas atmestas, atmesti originalą ir ištrinti laukiančius patvirtinimus"
+msgstr "Jeigu patvirtinimas atmestas, atmesti originalą ir panaikinti laukiančius patvirtinimus"
 
 #: NOT FOUND IN SOURCE
 msgid "If no Requestor is specified, create tickets with this requestor."
@@ -4419,7 +4054,7 @@ msgstr "Jeigu eilė nenurodyta, prašymai kuriami šioje eilėje."
 
 #: share/html/Elements/LoginRedirectWarning:66
 msgid "If this is not what you expect, leave this page now without logging in."
-msgstr ""
+msgstr "Jeigu jūs tikėjotės ne to, išeikite iš šio puslapi neprisijungdami."
 
 #: bin/rt-crontool:344
 msgid "If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT."
@@ -4429,10 +4064,6 @@ msgstr "Jeigu ši programa nustatyta setgid, priešiškas naudotojas gali pasina
 msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server."
 msgstr "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server."
 
-#: NOT FOUND IN SOURCE
-msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server.</p>"
-msgstr "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server.</p>"
-
 #: share/html/Errors/WebRemoteUser/Wrapper:75
 #. (qq[<a href="$login_url">], '</a>')
 msgid "If you have an internal RT login, you may %1try it instead%2."
@@ -4441,19 +4072,15 @@ msgstr ""
 #: share/html/Elements/CSRF:59
 #. ($escaped_path, $action, $start, $end)
 msgid "If you really intended to visit %1 and %2, then %3click here to resume your request%4."
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "If you've change the Port that RT runs on, you'll need to restart the server in order to log in."
-msgstr "Jeigu pakeitėte RT naudojamą TCP portą, norinti prisijugti iš naujo, reikia restartuoti serverį."
+msgstr "Jeigu jūs tikrai norėjote patekti į %1 ir %2, %3spauskite čią, norėdami atnaujinti savo prašymą%4."
 
 #: share/html/Install/Finish.html:60
 msgid "If you've changed the Port that RT runs on, you'll need to restart the server in order to log in."
 msgstr "Jeigu pakeitėte RT naudojamą TCP portą, norinti prisijugti iš naujo, reikia restartuoti serverį."
 
-#: share/html/Admin/Queues/People.html:124 share/html/Ticket/Modify.html:66 share/html/Ticket/ModifyAll.html:136 share/html/Ticket/ModifyPeople.html:76
+#: share/html/Admin/Queues/People.html:124 share/html/Ticket/Modify.html:68 share/html/Ticket/ModifyAll.html:136 share/html/Ticket/ModifyPeople.html:76
 msgid "If you've updated anything above, be sure to"
-msgstr "Po bet kokių pakeitimų nepamirškite:"
+msgstr "Jeigu ką nors keitėte, nepamirškite:"
 
 #: share/html/Install/DatabaseType.html:61
 #. ('<a href="http://search.cpan.org" target="_new">CPAN</a>')
@@ -4486,7 +4113,7 @@ msgstr "Neaktyvūs prašymai"
 
 #: share/html/Articles/Elements/BeforeMessageBox:59
 msgid "Include Article:"
-msgstr "Įtraukti straipsnį:"
+msgstr "Įtraukti aprašą:"
 
 #: share/html/Admin/Articles/Classes/Modify.html:89
 msgid "Include article name"
@@ -4605,10 +4232,6 @@ msgstr "Įvestas tekstas turi atitikti %1"
 msgid "Insert from %1"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Install RT"
-msgstr "Įdiegti RT"
-
 #: lib/RT/Article.pm:282 lib/RT/Article.pm:291 lib/RT/Article.pm:300 lib/RT/Article.pm:309 lib/RT/Article.pm:318
 msgid "Internal Error"
 msgstr "Vidinė klaida"
@@ -4644,10 +4267,6 @@ msgstr "Invalid %1: '%2' doesn't look like an email address"
 msgid "Invalid %1: it should be a number"
 msgstr "Invalid %1: it should be a number"
 
-#: NOT FOUND IN SOURCE
-msgid "Invalid %1: that doesn't look like an email address"
-msgstr "Invalid %1: that doesn't look like an email address"
-
 #: lib/RT/Article.pm:109
 msgid "Invalid Class"
 msgstr "Neteisinga klasė"
@@ -4678,10 +4297,6 @@ msgstr "Neteisingas pavertimo tipas"
 msgid "Invalid Render Type for custom field of type %1"
 msgstr "Neteisingas pavertimo tipas papildomam laukui, kurio tipas %1"
 
-#: NOT FOUND IN SOURCE
-msgid "Invalid Right"
-msgstr "Neleistinos teisės"
-
 #: lib/RT/Record.pm:970
 msgid "Invalid data"
 msgstr "Nekorektiški duomenys"
@@ -4689,19 +4304,11 @@ msgstr "Nekorektiški duomenys"
 #: share/html/Admin/Users/Keys.html:119
 #. ($ARGS{'PrivateKey'}, $email)
 msgid "Invalid key %1 for address '%2'"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Invalid lifecycle name"
-msgstr "Neteisignas gyvavimo ciklo vardas"
+msgstr "Neteisingas raktas %1 adresui '%2'"
 
 #: lib/RT/CustomField.pm:1533
 msgid "Invalid object"
 msgstr "Nekorektiškas objektas"
-
-#: NOT FOUND IN SOURCE
-msgid "Invalid owner object"
-msgstr "Nekorektiškas savininko objektas"
 
 #: lib/RT/CustomField.pm:295 lib/RT/CustomField.pm:755
 #. ($msg)
@@ -4749,10 +4356,6 @@ msgstr "Neleistina reikšmė laukui %1"
 msgid "Invalid value for custom field"
 msgstr "Neleistina papildomo lauko reikšmė"
 
-#: NOT FOUND IN SOURCE
-msgid "Invalid value for status"
-msgstr "Neleistina būsenos reikšmė"
-
 #: lib/RT/Record/AddAndSort.pm:195
 msgid "Is already added to the object"
 msgstr ""
@@ -4781,25 +4384,13 @@ msgstr "Kursyvas"
 msgid "Jan"
 msgstr "Sau"
 
-#: NOT FOUND IN SOURCE
-msgid "January"
-msgstr "Sausis"
-
 #: lib/RT/Group.pm:90
 msgid "Join or leave group"
 msgstr "Prisijungti prie ar palikti grupę"
 
-#: NOT FOUND IN SOURCE
-msgid "Join or leave this group"
-msgstr "Įsijungti prie ar išeiti iš grupės"
-
 #: lib/RT/Date.pm:97
 msgid "Jul"
 msgstr "Lie"
-
-#: NOT FOUND IN SOURCE
-msgid "July"
-msgstr "Liepa"
 
 #: share/html/Elements/Tabs:638
 msgid "Jumbo"
@@ -4808,10 +4399,6 @@ msgstr "Visi duomenys"
 #: lib/RT/Date.pm:96
 msgid "Jun"
 msgstr "Bir"
-
-#: NOT FOUND IN SOURCE
-msgid "June"
-msgstr "Birželis"
 
 #: lib/RT/Installer.pm:80
 msgid "Keep 'localhost' if you're not sure. Leave blank to connect locally over a socket"
@@ -4822,13 +4409,13 @@ msgstr "Keep 'localhost' if you're not sure. Leave blank to connect locally over
 msgid "Keyword and intuition-based searching"
 msgstr "Paieška pagal raktinius žodžius arba intuityvi paieška"
 
+#: NOT FOUND IN SOURCE
+msgid "Lang"
+msgstr "Kalba"
+
 #: share/html/Admin/Users/Modify.html:92 share/html/Elements/RT__User/ColumnMap:136 share/html/Install/index.html:56 share/html/SelfService/Prefs.html:59 share/html/User/Prefs.html:76
 msgid "Language"
 msgstr "Kalba"
-
-#: NOT FOUND IN SOURCE
-msgid "Language."
-msgstr "Kalba."
 
 #: share/html/Search/Elements/EditFormat:88
 msgid "Large"
@@ -4856,7 +4443,7 @@ msgstr "Paskutinį kartą atnaujino:"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:107
 msgid "Last updated"
-msgstr "Paskutiniai pakeitimai"
+msgstr "Paskutinis atnaujinimas"
 
 #: share/html/Search/Elements/PickBasics:116
 msgid "Last updated by"
@@ -4944,7 +4531,7 @@ msgstr "Ryšys nerastas"
 #: share/html/Ticket/ModifyLinks.html:48
 #. ($Ticket->Id)
 msgid "Link ticket #%1"
-msgstr "Susieti prašymą Nr.%1"
+msgstr "Susieti prašymą Nr. %1"
 
 #: share/html/Admin/CustomFields/Modify.html:108
 msgid "Link values to"
@@ -4966,6 +4553,10 @@ msgstr "Susieta su"
 #. ($self->loc(lc($remote_obj->RecordType)))
 msgid "Linking to a deleted %1 is not allowed"
 msgstr ""
+
+#: NOT FOUND IN SOURCE
+msgid "Linking. Can't link to a deleted ticket"
+msgstr "Nuorodos. Negalima nurodyti pašalinto prašymo"
 
 #: NOT FOUND IN SOURCE
 msgid "Linking. Permission denied"
@@ -5040,7 +4631,7 @@ msgstr "Vietinio formato data ir laikas"
 
 #: share/html/Admin/Users/Modify.html:128 share/html/User/Prefs.html:124
 msgid "Location"
-msgstr "Vieta"
+msgstr "Adresas"
 
 #: lib/RT/Interface/Web.pm:841
 msgid "Logged in"
@@ -5050,10 +4641,6 @@ msgstr "Prisijungė"
 #. ($username)
 msgid "Logged in as %1"
 msgstr "Prisijungęs %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Logged in as <span class=\"current-user\">%1</span>"
-msgstr "Prisijungta vardu <span class=\"current-user\">%1</span>"
 
 #: share/html/NoAuth/Logout.html:54
 msgid "Logged out"
@@ -5098,12 +4685,12 @@ msgstr "Atsijungti"
 
 #: lib/RT/CustomField.pm:1460
 msgid "Lookup type mismatch"
-msgstr "Neatitinka tipo pasirinkimas"
+msgstr "Neatitinka tipas"
 
 #: share/html/Elements/RT__Dashboard/ColumnMap:99
 #. ($hour)
 msgid "M-F at %1"
-msgstr ""
+msgstr "M-F prie %1"
 
 #: lib/RT/Config.pm:506 lib/RT/Config.pm:521
 msgid "Mail"
@@ -5153,10 +4740,6 @@ msgstr "Nurodyti eilę"
 msgid "Make subject"
 msgstr "Nurodyti pavadinimą"
 
-#: NOT FOUND IN SOURCE
-msgid "Make this group visible to user"
-msgstr "Padaryti šią grupę matomą vartotojui"
-
 #: share/html/Elements/Tabs:93
 msgid "Manage custom fields and custom field values"
 msgstr "Tvarkyti papildomus laukus ir jų reikšmes"
@@ -5197,10 +4780,6 @@ msgstr "Atitikimas tarp eilių gyvavimo ciklų yra nepilnas. Kreipkitės į savo
 #: lib/RT/Date.pm:93
 msgid "Mar"
 msgstr "Kov"
-
-#: NOT FOUND IN SOURCE
-msgid "March"
-msgstr "Kovas"
 
 #: share/html/Ticket/Display.html:191 share/html/m/ticket/show:122
 msgid "Marked all messages as seen"
@@ -5272,7 +4851,7 @@ msgstr "Narys %1 pridėtas"
 
 #: NOT FOUND IN SOURCE
 msgid "Member %1 deleted"
-msgstr "Narys %1 ištrintas"
+msgstr "Narys %1 panaikintas"
 
 #: lib/RT/Group.pm:1134
 #. ($new_member_obj->Object->Name)
@@ -5356,7 +4935,7 @@ msgstr "Apjungta į %1"
 
 #: share/html/Search/Bulk.html:145 share/html/Ticket/Update.html:147 share/html/Ticket/Update.html:165 share/html/m/ticket/reply:108
 msgid "Message"
-msgstr "Pranešimas"
+msgstr "Tekstas"
 
 #: share/html/Elements/ShowTransactionAttachments:149
 msgid "Message body is not shown because it is too large."
@@ -5369,10 +4948,6 @@ msgstr "Pranešimo turinys nerodomas, nes siuntėjas nurodė jo neįtraukti į p
 #: share/html/Elements/ShowTransactionAttachments:287
 msgid "Message body not shown because it is not plain text."
 msgstr "Pranešimo turinys nerodomas, nes jis nėra tekstas"
-
-#: NOT FOUND IN SOURCE
-msgid "Message body not shown because it is too large or is not plain text."
-msgstr "Pranešimo turinys nerodomas todėl, kad jis per didelis arba nėra tekstas."
 
 #: lib/RT/Config.pm:276
 msgid "Message box height"
@@ -5397,10 +4972,6 @@ msgstr "Pranešimas naudotojui"
 #: lib/RT/Ticket.pm:1625 lib/RT/Ticket.pm:3055
 msgid "Message recorded"
 msgstr "Pranešimas išsaugotas"
-
-#: NOT FOUND IN SOURCE
-msgid "Messages about this ticket will not be sent to..."
-msgstr "Pranešimai nebus siunčiami:"
 
 #: lib/RT/Report/Tickets.pm:226
 msgid "Minimum Created-LastUpdated"
@@ -5462,57 +5033,21 @@ msgstr "Mobilusis telefonas"
 msgid "Mobile Phone"
 msgstr "Mobilusis telefonas"
 
-#: NOT FOUND IN SOURCE
-msgid "MobilePhone"
-msgstr "Mobilusis telefonas"
-
 #: share/html/Elements/Tabs:863 share/html/Elements/Tabs:886 share/html/m/_elements/ticket_menu:67
 msgid "Modify"
 msgstr "Keisti"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify Access Control List"
-msgstr "Pakeisti priėjimo teisių sąrašą"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify Custom Fields which apply to %1 for all %2"
-msgstr "Pakeisti papildomus laukus, kurie taikomi %1 visiems %2"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify Custom Fields which apply to all %1"
-msgstr "Pakeisti papildomą lauką, taikomą visiems %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify Group Rights"
-msgstr "Pakeisti grupės teises"
 
 #: share/html/Admin/Groups/Members.html:108
 msgid "Modify Members"
 msgstr "Pakeisti narius"
 
-#: NOT FOUND IN SOURCE
-msgid "Modify Rights"
-msgstr "Pakeisti teises"
-
 #: lib/RT/Queue.pm:117
 msgid "Modify Scrip templates"
 msgstr "Keisti skriptų šablonus"
 
-#: NOT FOUND IN SOURCE
-msgid "Modify Scrip templates for this queue"
-msgstr "Pakeisti šios eilės skriptų šablonus"
-
 #: lib/RT/Queue.pm:120
 msgid "Modify Scrips"
 msgstr "Keisti skriptus"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify Scrips for this queue"
-msgstr "Pakeisti šios eilės skriptus"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify User Rights"
-msgstr "Pakeisti vartotojo teises"
 
 #: share/html/Admin/Queues/CustomField.html:63
 #. ($QueueObj->Name())
@@ -5529,16 +5064,16 @@ msgstr "Pakeisti skriptą, kuris taikomas visoms eilėms"
 
 #: share/html/Elements/Tabs:172
 msgid "Modify and Create Classes"
-msgstr ""
+msgstr "Pakeisti ir sukurti klasę"
 
 #: share/html/Elements/Tabs:177
 msgid "Modify and Create Custom Fields for Articles"
-msgstr ""
+msgstr "Pakeisti ir sukurti papildomus laukus aprašuose"
 
 #: share/html/Articles/Article/Edit.html:173 share/html/Articles/Article/Edit.html:276
 #. ($ArticleObj->Id)
 msgid "Modify article #%1"
-msgstr "Keisti straipsnį #%1"
+msgstr "Keisti aprašą Nr. %1"
 
 #: share/html/Admin/Articles/Classes/Objects.html:147 share/html/Admin/CustomFields/Objects.html:153
 #. ($CF->Name)
@@ -5555,35 +5090,27 @@ msgstr ""
 msgid "Modify custom field values"
 msgstr "Keisti papildomų laukų reikšmes"
 
-#: NOT FOUND IN SOURCE
-msgid "Modify dashboards for this group"
-msgstr "Pakeisti informacines paneles šiai grupei"
-
 #: share/html/Ticket/ModifyDates.html:48
 #. ($TicketObj->Id)
 msgid "Modify dates for #%1"
-msgstr "Pakeiti prašymo #%1 datas"
+msgstr "Pakeisti prašymo Nr. %1 datas"
 
 #: share/html/Ticket/ModifyDates.html:57
 #. ($TicketObj->Id)
 msgid "Modify dates for ticket # %1"
-msgstr "Pakeiti prašymo #%1 datas"
+msgstr "Pakeisti prašymo Nr. %1 datas"
 
 #: share/html/Elements/Tabs:217
 msgid "Modify global article topics"
-msgstr "Keisti globalaus straipsnio temas"
+msgstr "Keisti bendras aprašo temas"
 
 #: share/html/Elements/Tabs:134
 msgid "Modify global custom fields"
-msgstr "Pakeisti globalius papildomus laukus"
+msgstr "Pakeisti bendrus papildomus laukus"
 
 #: share/html/Admin/Global/GroupRights.html:48 share/html/Elements/Tabs:197
 msgid "Modify global group rights"
 msgstr "Pakeisti bendras teises grupei"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify global group rights."
-msgstr "Pakeisti bendras teises grupei."
 
 #: share/html/Admin/Global/Topics.html:55
 msgid "Modify global topics"
@@ -5592,10 +5119,6 @@ msgstr "Keisti bendras temas"
 #: share/html/Admin/Global/UserRights.html:48 share/html/Elements/Tabs:202
 msgid "Modify global user rights"
 msgstr "Pakeisti bendras naudotojo teises"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify global user rights."
-msgstr "Pakeisti bendras vartotojo teises."
 
 #: lib/RT/Group.pm:96
 msgid "Modify group dashboards"
@@ -5607,7 +5130,7 @@ msgstr "Keisti narystės grupėse sąrašą"
 
 #: lib/RT/Group.pm:88
 msgid "Modify group metadata or delete group"
-msgstr "Pakeisti grupės duomenis arba ištrinti grupę"
+msgstr "Pakeisti grupės duomenis arba panaikinti grupę"
 
 #: share/html/Admin/Articles/Classes/GroupRights.html:48
 #. ($ClassObj->Name)
@@ -5629,10 +5152,6 @@ msgstr "Pakeisti grupės teises grupei %1"
 msgid "Modify group rights for queue %1"
 msgstr "Pakeisti grupės teises eilei %1"
 
-#: NOT FOUND IN SOURCE
-msgid "Modify membership roster for this group"
-msgstr "Pakeisti šios grupės dalyvių sąrašą"
-
 #: lib/RT/Class.pm:95
 msgid "Modify metadata and custom fields for this class"
 msgstr "Keisti šios klasės metaduomenis ir papildomus laukus"
@@ -5643,17 +5162,13 @@ msgstr "Pakeisti paties RT naudotoją"
 
 #: lib/RT/Class.pm:92
 msgid "Modify or delete articles in this class"
-msgstr "Keisti šios klasės straipsnius"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify people related to queue %1"
-msgstr "Pakeisti su eile %1 susijusius vartotojus"
+msgstr "Keisti arba panaikinti aprašus šioje klasėje"
 
 #: share/html/Ticket/ModifyPeople.html:48 share/html/Ticket/ModifyPeople.html:57
 #. ($Ticket->Id)
 #. ($Ticket->id)
 msgid "Modify people related to ticket #%1"
-msgstr "Pakeisti su prašymu Nr.%1 susijusius asmenis"
+msgstr "Pakeisti su prašymu Nr. %1 susijusius asmenis"
 
 #: lib/RT/Dashboard.pm:87
 msgid "Modify personal dashboards"
@@ -5698,7 +5213,7 @@ msgstr "Pakeisti šablonus, taikomus visoms eilėms"
 #: share/html/Admin/Articles/Classes/Modify.html:157
 #. ($ClassObj->Name)
 msgid "Modify the Class %1"
-msgstr ""
+msgstr "Pakeisti klasę %1"
 
 #: share/html/Dashboards/Queries.html:82
 #. ($Dashboard->Name)
@@ -5719,14 +5234,6 @@ msgstr "Pakeisti įprastą puslapio \"RT apžvalga\" išvaizdą"
 msgid "Modify the group %1"
 msgstr "Pakeisit grupę %1"
 
-#: NOT FOUND IN SOURCE
-msgid "Modify the queries of dashboard %1"
-msgstr "Pakeisti užklausą informacinei panelei %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify the queue watchers"
-msgstr "Pakeisti eilės stebėtojus"
-
 #: share/html/Dashboards/Subscription.html:287
 #. ($Dashboard->Name)
 msgid "Modify the subscription to dashboard %1"
@@ -5744,20 +5251,16 @@ msgstr "Keisti šią paiešką..."
 #: share/html/Ticket/ModifyAll.html:59
 #. ($Ticket->Id)
 msgid "Modify ticket # %1"
-msgstr "Pakeisti prašymą Nr.%1"
+msgstr "Pakeisti prašymą Nr. %1"
 
 #: share/html/Ticket/Modify.html:48 share/html/Ticket/Modify.html:58
 #. ($TicketObj->Id)
 msgid "Modify ticket #%1"
-msgstr "Pakeisti prašymą Nr.%1"
+msgstr "Pakeisti prašymą Nr. %1"
 
 #: lib/RT/Queue.pm:137
 msgid "Modify ticket owner on owned tickets"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Modify ticket status"
-msgstr "Keisti prašymo būseną"
 
 #: lib/RT/Queue.pm:133
 msgid "Modify tickets"
@@ -5774,7 +5277,7 @@ msgstr "Keisti temų hierarchiją, susietą su šia klase"
 
 #: lib/RT/Class.pm:93
 msgid "Modify topics for articles in this class"
-msgstr "Keisti straipsnių temas šioje klasėje"
+msgstr "Keisti aprašų temas šioje klasėje"
 
 #: share/html/Admin/Articles/Classes/UserRights.html:48
 #. ($ClassObj->Name)
@@ -5799,7 +5302,7 @@ msgstr "Pakeisti naudotojo teises eilei %1"
 #: share/html/Ticket/ModifyPeople.html:60
 #. ($Ticket->Id)
 msgid "Modify who receives mail for ticket #%1"
-msgstr "Keisti el. pašto gavėjų sąrašą prašymui #%1"
+msgstr "Keisti el. pašto gavėjų sąrašą prašymui Nr. %1"
 
 #: lib/RT/Class.pm:98 lib/RT/Queue.pm:112
 msgid "ModifyACL"
@@ -5807,11 +5310,11 @@ msgstr "Pakeisti teises"
 
 #: lib/RT/Class.pm:92
 msgid "ModifyArticle"
-msgstr "Keisti straipsnį"
+msgstr "Keisti aprašą"
 
 #: lib/RT/Class.pm:93
 msgid "ModifyArticleTopics"
-msgstr "Keisti straipsnio temas"
+msgstr "Keisti aprašo temas"
 
 #: lib/RT/Class.pm:94 lib/RT/CustomField.pm:216 lib/RT/Queue.pm:115
 msgid "ModifyCustomField"
@@ -5853,10 +5356,6 @@ msgstr "Pakeisti šabloną"
 msgid "ModifyTicket"
 msgstr "Pakeisti prašymą"
 
-#: NOT FOUND IN SOURCE
-msgid "ModifyTicketStatus"
-msgstr "Keisti prašymo būseną"
-
 #: share/html/Admin/Tools/Configuration.html:238
 msgid "Module"
 msgstr "Modulis"
@@ -5875,11 +5374,7 @@ msgstr "Nuo pirmadienio iki penktadienio"
 
 #: lib/RT/Dashboard/Mailer.pm:331
 msgid "Monthly"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "More about %1"
-msgstr "Informacija apie %1"
+msgstr "Kas mėnesį"
 
 #: share/html/Ticket/Elements/ShowRequestor:61
 msgid "More about the requestors"
@@ -5891,7 +5386,7 @@ msgstr "Perkelti žemyn"
 
 #: share/html/Admin/Articles/Elements/Topics:108
 msgid "Move here"
-msgstr ""
+msgstr "Perkelti čia"
 
 #: NOT FOUND IN SOURCE
 msgid "Move up"
@@ -5903,7 +5398,7 @@ msgstr "Keletas reikšmių"
 
 #: lib/RT/User.pm:172
 msgid "Must specify 'Name' attribute"
-msgstr "Būtina nurodyti vardą"
+msgstr "Būtina nurodyti pavadinimą"
 
 #: share/html/SelfService/Elements/MyRequests:62
 #. ($friendly_status)
@@ -5960,7 +5455,7 @@ msgstr ""
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "NBSP"
-msgstr ""
+msgstr "NBSP"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "NEWLINE"
@@ -5968,15 +5463,15 @@ msgstr "Nauja eilėtė"
 
 #: share/html/Admin/CustomFields/Modify.html:63 share/html/Admin/Elements/AddCustomFieldValue:54 share/html/Admin/Elements/EditCustomField:57 share/html/Admin/Elements/EditCustomFieldValues:58 share/html/Admin/Elements/ModifyTemplate:50 share/html/Admin/Groups/Modify.html:64 share/html/Admin/Tools/Configuration.html:213 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Articles/Article/Elements/EditBasics:49 share/html/Articles/Article/Elements/ShowSearchCriteria:63 share/html/Articles/Elements/NewestArticles:52 share/html/Articles/Elements/UpdatedArticles:52 share/html/Dashboards/Modify.html:63 share/html/Elements/BulkCustomFields:51 share/html/Elements/RT__Article/ColumnMap:61 share/html/Elements/RT__Class/ColumnMap:56 share/html/Elements/RT__Dashboard/ColumnMap:56 share/html/Elements/RT__Group/ColumnMap:72 share/html/Elements/RT__SavedSearch/ColumnMap:56 share/html/Elements/RT__Template/ColumnMap:56 share/html/Elements/RT__User/ColumnMap:56
 msgid "Name"
-msgstr "Vardas"
+msgstr "Pavadinimas"
 
 #: lib/RT/Config.pm:183
 msgid "Name and email address"
-msgstr ""
+msgstr "Vardas ir el. pašto adresas"
 
 #: lib/RT/Article.pm:116 lib/RT/User.pm:287
 msgid "Name in use"
-msgstr "Vardas jau naudojamas"
+msgstr "Šis pavadinimas jau panaudotas"
 
 #: lib/RT/Template.pm:281 lib/RT/Template.pm:705
 msgid "Name is required"
@@ -5985,10 +5480,6 @@ msgstr ""
 #: share/html/Articles/Article/Elements/ShowSavedSearches:55
 msgid "Name:"
 msgstr "Pavadinimas:"
-
-#: NOT FOUND IN SOURCE
-msgid "Named, shared collection of portlets"
-msgstr "Užvardintas bendro naudojimo portletų rinkinys"
 
 #: lib/RT/Dashboard/Mailer.pm:332 share/html/Elements/RT__Dashboard/ColumnMap:102 share/html/Ticket/Elements/ShowDates:80 share/html/m/ticket/show:380
 msgid "Never"
@@ -6000,7 +5491,7 @@ msgstr "Naujas"
 
 #: share/html/Elements/Tabs:875
 msgid "New Article"
-msgstr "Naujas straipsnis"
+msgstr "Naujas aprašas"
 
 #: share/html/Elements/Tabs:488
 msgid "New Dashboard"
@@ -6009,10 +5500,6 @@ msgstr "Nauja informacinė panelė"
 #: share/html/Elements/BulkLinks:122 share/html/Elements/EditLinks:118
 msgid "New Links"
 msgstr "Naujos nuorodos"
-
-#: NOT FOUND IN SOURCE
-msgid "New Password"
-msgstr "Naujas slaptažodis"
 
 #: etc/initialdata:458 etc/upgrade/3.8.2/content:52
 msgid "New Pending Approval"
@@ -6024,23 +5511,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:495
 msgid "New Search"
-msgstr "Nauja paieška"
-
-#: NOT FOUND IN SOURCE
-msgid "New and open tickets for %1"
-msgstr "Nauji ir atidaryti prašymai naudotojui %1"
-
-#: NOT FOUND IN SOURCE
-msgid "New custom field"
-msgstr "Naujas papildomas laukas"
-
-#: NOT FOUND IN SOURCE
-msgid "New dashboard"
-msgstr "Nauja informacinė panelė"
-
-#: NOT FOUND IN SOURCE
-msgid "New group"
-msgstr "Nauja grupė"
+msgstr "Išplėstinė paieška"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:248 share/html/Ticket/Elements/ShowUpdateStatus:49
 msgid "New messages"
@@ -6061,14 +5532,6 @@ msgstr "Naujas priminimas:"
 #: NOT FOUND IN SOURCE
 msgid "New rights"
 msgstr "Naujos teisės"
-
-#: NOT FOUND IN SOURCE
-msgid "New scrip"
-msgstr "Naujas skriptas"
-
-#: NOT FOUND IN SOURCE
-msgid "New template"
-msgstr "Naujas šablonas"
 
 #: share/html/Elements/Tabs:930 share/html/Elements/Tabs:932 share/html/m/_elements/menu:70
 msgid "New ticket"
@@ -6097,11 +5560,11 @@ msgstr "Kitas"
 
 #: NOT FOUND IN SOURCE
 msgid "NickName"
-msgstr "Pseudonimas"
+msgstr "Slapyvardis"
 
 #: share/html/Admin/Users/Modify.html:82 share/html/Elements/RT__User/ColumnMap:66 share/html/User/Prefs.html:72
 msgid "Nickname"
-msgstr "Pseudonimas"
+msgstr "Slapyvardis"
 
 #: share/html/Articles/Article/Delete.html:62 share/html/Elements/RT__Template/ColumnMap:78 share/html/Elements/RT__Ticket/ColumnMap:250 share/html/Widgets/Form/Boolean:79
 msgid "No"
@@ -6120,7 +5583,7 @@ msgstr "%1 nenuskaitytas"
 #: share/html/SelfService/Article/Search.html:66
 #. ($Articles_Content)
 msgid "No Articles match %1"
-msgstr "Nei vienas straipsnis neatitinka %1"
+msgstr "Nei vienas aprašas neatitinka %1"
 
 #: share/html/Admin/Articles/Classes/GroupRights.html:62 share/html/Admin/Articles/Classes/UserRights.html:61 share/html/Admin/CustomFields/UserRights.html:62
 msgid "No Class defined"
@@ -6154,10 +5617,6 @@ msgstr "Eilė neapibrėžta"
 msgid "No RT user found. Please consult your RT administrator."
 msgstr "RT naudotojas nerastas. Kreipkitės į savo sistemos administratorių."
 
-#: NOT FOUND IN SOURCE
-msgid "No RT user found. Please consult your RT administrator.\\n"
-msgstr "RT naudotojas nerastas. Kreipkitės į savo sistemos administratorių.\\n"
-
 #: share/html/Search/Elements/ResultsRSSView:134
 msgid "No Subject"
 msgstr "Nenurodytas pavadinimas"
@@ -6177,10 +5636,6 @@ msgstr "Stulpelis nenurodytas"
 #: share/html/Ticket/Elements/ShowRequestor:79
 msgid "No comment entered about this user"
 msgstr "Apie šį naudotoją komentarų nėra"
-
-#: NOT FOUND IN SOURCE
-msgid "No dashboards."
-msgstr "Nėra informacinių panelių."
 
 #: lib/RT/Action.pm:163 lib/RT/Condition.pm:183 lib/RT/Search.pm:125 lib/RT/Search/ActiveTicketsInQueue.pm:75
 #. (ref $self)
@@ -6222,7 +5677,7 @@ msgstr "Nėra prijungto pranešimo"
 
 #: lib/RT/CustomField.pm:414
 msgid "No name provided"
-msgstr "Vardas nenurodytas"
+msgstr "Pavadinimas nenurodytas"
 
 #: lib/RT/Attachment.pm:749
 msgid "No need to encrypt"
@@ -6241,17 +5696,17 @@ msgstr "Nėra eilių kūrimo teisių"
 msgid "No permission to create tickets in the queue '%1'"
 msgstr "Nėra prašymų kūrimo teisių eilėje '%1'"
 
-#: share/html/SelfService/Display.html:137
+#: share/html/SelfService/Display.html:144
 msgid "No permission to display that ticket"
 msgstr "Nėra prašymo peržiūros teisių"
 
 #: share/html/Articles/Article/Delete.html:92
 msgid "No permission to modify article"
-msgstr "Neužtenka teisių taisyti straipsnį"
+msgstr "Neužtenka teisių taisyti aprašą"
 
 #: share/html/Search/Elements/EditSearches:246
 msgid "No permission to save system-wide searches"
-msgstr "Nėra globalių paieškų išaugojimo teisių"
+msgstr "Neturite teisės išsaugoti bendras paieškas"
 
 #: lib/RT/User.pm:1432
 msgid "No permission to set preferences"
@@ -6259,7 +5714,7 @@ msgstr "Nėra teisių keisti nustatymus"
 
 #: share/html/Articles/Article/Edit.html:283
 msgid "No permission to view Article"
-msgstr "Neužtenka teisių pamatyti straipsnį"
+msgstr "Neužtenka teisių pamatyti aprašą"
 
 #: share/html/SelfService/Update.html:112
 msgid "No permission to view update ticket"
@@ -6343,10 +5798,6 @@ msgstr ""
 msgid "No value sent to _Set!"
 msgstr "Nebuvo nusiųsta reikšmė, skirta _Set!"
 
-#: NOT FOUND IN SOURCE
-msgid "No value sent to _Set!\\n"
-msgstr "Nebuvo nusiųsta reikšmė, skirta _Set!\\n"
-
 #: share/html/Elements/QuickCreate:65
 msgid "Nobody"
 msgstr "Niekas"
@@ -6362,10 +5813,6 @@ msgstr "Neegzistuojantis laukas?"
 #: share/html/Admin/Elements/SelectStage:66
 msgid "Normal"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Not Set"
-msgstr "Nenustatyta"
 
 #: share/html/Admin/Elements/EditScrips:75
 msgid "Not applied scrips"
@@ -6479,14 +5926,6 @@ msgstr "Informuoti prašymo autorius ir kopijas gaunančius asmenis"
 msgid "Notify Requestors and Ccs as Comment"
 msgstr "Komentaru informuoti prašymo autorius ir kopijas gaunančius asmenis"
 
-#: NOT FOUND IN SOURCE
-msgid "Notify Requestors, Ccs and AdminCcs"
-msgstr "Informuoti prašymo autorius, kopijas ir administracines kopijas gaunančius asmenis"
-
-#: NOT FOUND IN SOURCE
-msgid "Notify Requestors, Ccs and AdminCcs as Comment"
-msgstr "Komentaru informuoti prašymo autorius, kopijas ir administracines kopijas gaunančius asmenis"
-
 #: lib/RT/Config.pm:382
 msgid "Notify me of unread messages"
 msgstr "Informuoti mane apie neskaitytus pranešimus"
@@ -6494,14 +5933,6 @@ msgstr "Informuoti mane apie neskaitytus pranešimus"
 #: lib/RT/Date.pm:101
 msgid "Nov"
 msgstr "Lap"
-
-#: NOT FOUND IN SOURCE
-msgid "November"
-msgstr "Lapkritis"
-
-#: NOT FOUND IN SOURCE
-msgid "Number of search results"
-msgstr "Rodomų paieškos rezultatų skaičius"
 
 #: share/html/Search/Elements/SelectAndOr:49
 msgid "OR"
@@ -6517,7 +5948,7 @@ msgstr "Nepavyko sukurti objekto"
 
 #: lib/RT/Record.pm:129
 msgid "Object could not be deleted"
-msgstr "Nepavyko panaikinti objekto"
+msgstr "Objekto negalima panaikinti"
 
 #: lib/RT/Record.pm:373 share/html/Admin/CustomFields/Modify.html:188
 msgid "Object created"
@@ -6526,10 +5957,6 @@ msgstr "Objektas sukurtas"
 #: lib/RT/Record.pm:126
 msgid "Object deleted"
 msgstr "Objektas panaikintas"
-
-#: NOT FOUND IN SOURCE
-msgid "Object of type %1 cannot take custom fields"
-msgstr "%1 tipo objektas negali turėti papildomų laukų"
 
 #: lib/RT/Group.pm:254
 msgid "Object passed is not loaded"
@@ -6548,16 +5975,8 @@ msgid "Oct"
 msgstr "Spa"
 
 #: NOT FOUND IN SOURCE
-msgid "October"
-msgstr "Spalis"
-
-#: NOT FOUND IN SOURCE
 msgid "Offline"
 msgstr "Atsijungus"
-
-#: NOT FOUND IN SOURCE
-msgid "Offline edits"
-msgstr "Redagavimas atsijungus"
 
 #: NOT FOUND IN SOURCE
 msgid "Offline upload"
@@ -6586,15 +6005,15 @@ msgstr "Sukūrus prašymą"
 
 #: etc/initialdata:131 etc/upgrade/4.0.3/content:7
 msgid "On Forward"
-msgstr ""
+msgstr "Persiunčiant"
 
 #: etc/initialdata:138 etc/upgrade/4.0.3/content:14
 msgid "On Forward Ticket"
-msgstr ""
+msgstr "Persiunčiant prašymą"
 
 #: etc/initialdata:145 etc/upgrade/4.0.3/content:21
 msgid "On Forward Transaction"
-msgstr ""
+msgstr "Persiunčiant veiksmą"
 
 #: etc/initialdata:173
 msgid "On Owner Change"
@@ -6614,7 +6033,7 @@ msgstr "Atmetimo atveju"
 
 #: etc/initialdata:213 etc/upgrade/3.7.1/content:10
 msgid "On Reopen"
-msgstr "Pakartotinai atidarius"
+msgstr "Pradedant vykdyti pakartotinai"
 
 #: etc/initialdata:187
 msgid "On Resolve"
@@ -6642,7 +6061,7 @@ msgstr "Vienkartinė kopija (CC)"
 
 #: lib/RT/Config.pm:286
 msgid "Only for entry, not display"
-msgstr ""
+msgstr "Tai taikoma tik įvedimui, bet ne rodymui"
 
 #: share/html/Approvals/Elements/PendingMyApproval:75
 #. (qq{<input size='15' class="datepicker" value='}.( $created_after->Unix >0 && $created_after->ISO(Timezone => 'user'))."' name='CreatedAfter' id='CreatedAfter' />")
@@ -6662,13 +6081,13 @@ msgstr "Papildomus laukus rodyti tik:"
 msgid "Open Inactive Tickets"
 msgstr ""
 
-#: etc/RT_Config.pm:2754 etc/RT_Config.pm:2783 etc/RT_Config.pm:2830 etc/RT_Config.pm:2859
+#: etc/RT_Config.pm:2757 etc/RT_Config.pm:2786 etc/RT_Config.pm:2833 etc/RT_Config.pm:2862
 msgid "Open It"
-msgstr ""
+msgstr "Pradėti vykdyti"
 
 #: etc/initialdata:98
 msgid "Open Tickets"
-msgstr "Atidaryti prašymai"
+msgstr "Vykdomi prašymai"
 
 #: share/html/Elements/MakeClicky:65
 msgid "Open URL"
@@ -6678,17 +6097,13 @@ msgstr "Atverti nuorodą"
 msgid "Open inactive tickets"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Open it"
-msgstr "Atidaryti"
-
 #: share/html/Elements/Tabs:935 share/html/SelfService/index.html:48
 msgid "Open tickets"
-msgstr "Atidaryti prašymus"
+msgstr "Vykdomi prašymai"
 
 #: etc/initialdata:99
 msgid "Open tickets on correspondence"
-msgstr "Atidaryti prašymus gavus atsakymą"
+msgstr "Gavus atsakymą pakeisti būseną į Vykdomas"
 
 #: share/html/Admin/Tools/Configuration.html:297
 msgid "Operating System"
@@ -6700,7 +6115,7 @@ msgstr "Nustatymas"
 
 #: share/html/Prefs/MyRT.html:64
 msgid "Options"
-msgstr "Pasirinkimas"
+msgstr "Pagrindiniai nustatymai"
 
 #: lib/RT/Installer.pm:71
 msgid "Oracle"
@@ -6717,19 +6132,19 @@ msgstr "Organizacija"
 #: share/html/Approvals/Elements/Approve:55
 #. ($approving->Id, $approving->Subject)
 msgid "Originating ticket: #%1"
-msgstr "Pirminis prašymas: #%1"
+msgstr "Pirminis prašymas: Nr. %1"
 
 #: lib/RT/Transaction.pm:844
 msgid "Outgoing email about a comment recorded"
-msgstr "Išsiųstas laiškas apie komentarą išsaugotas"
+msgstr "Išsiųstas laiškas apie komentarą"
 
 #: lib/RT/Transaction.pm:848
 msgid "Outgoing email recorded"
-msgstr "Išsiųstas laiškas išsaugotas"
+msgstr "Išsiųstas laiškas"
 
 #: lib/RT/Config.pm:526
 msgid "Outgoing mail"
-msgstr "Išeinantis el. paštas"
+msgstr "Informavimas savo paties veiksmus"
 
 #: share/html/Admin/Queues/Modify.html:93
 msgid "Over time, priority moves toward"
@@ -6791,15 +6206,11 @@ msgstr "Puslapis nerastas"
 
 #: share/html/Admin/Users/Modify.html:191 share/html/User/Prefs.html:100
 msgid "Pager"
-msgstr "Peidžeris"
+msgstr "Faksas"
 
 #: share/html/Elements/RT__User/ColumnMap:96
 msgid "Pager Phone"
-msgstr "Peidžerio numeris"
-
-#: NOT FOUND IN SOURCE
-msgid "PagerPhone"
-msgstr "Peidžerio Nr"
+msgstr "Fakso numeris"
 
 #: share/html/Search/Elements/SelectLinks:60
 msgid "Parent"
@@ -6855,10 +6266,6 @@ msgstr "Slaptažodžio keitimas"
 msgid "Passwords do not match."
 msgstr "Slaptažodžiai nesutampa"
 
-#: NOT FOUND IN SOURCE
-msgid "Passwords do not match. Your password has not been changed"
-msgstr "Slaptažodžiai nesutampa. Jūsų slaptažodis nebuvo pakeistas"
-
 #: lib/RT/Installer.pm:189
 msgid "Path to sendmail"
 msgstr "Path to sendmail"
@@ -6894,10 +6301,6 @@ msgstr "Įvykdyti naudotojo apibrėžtą veiksmą"
 msgid "Perl"
 msgstr "Perl"
 
-#: NOT FOUND IN SOURCE
-msgid "Perl Include Paths (@INC)"
-msgstr "Perl Include Paths (@INC)"
-
 #: share/html/Admin/Tools/Configuration.html:274
 msgid "Perl configuration"
 msgstr "Perl konfigūracija"
@@ -6917,22 +6320,6 @@ msgstr "Neturite teisės"
 #: lib/RT/Record.pm:1339 lib/RT/Record.pm:1483 lib/RT/Record/Role/Roles.pm:407 lib/RT/Record/Role/Roles.pm:485
 msgid "Permission denied"
 msgstr "Neturite teisės"
-
-#: NOT FOUND IN SOURCE
-msgid "Personal Dashboards"
-msgstr "Asmeninės informacinės panelės"
-
-#: NOT FOUND IN SOURCE
-msgid "Personal Groups"
-msgstr "Asmeninės grupės"
-
-#: NOT FOUND IN SOURCE
-msgid "Personal groups"
-msgstr "Asmeninės grupės"
-
-#: NOT FOUND IN SOURCE
-msgid "Personal groups:"
-msgstr "Asmeninės grupės:"
 
 #: share/html/Admin/Users/Modify.html:173 share/html/User/Prefs.html:85
 msgid "Phone numbers"
@@ -6974,17 +6361,9 @@ msgstr "Teisingai nurodykite dabartinį slaptažodį."
 msgid "Please enter your current password."
 msgstr "Nurodykite dabartinį slaptažodį."
 
-#: NOT FOUND IN SOURCE
-msgid "Please note that only tickets with one of these statuses( %1 ) are displayed here. For more powerful searches please visit the %2search builder interface%3."
-msgstr "Atkreipkite dėmesį, kad tik prašymai vienoje iš šių būsenų ( %1 ) yra rodomi. Išsamesnei paieškai naudokite  %2paieškos konstravimo sąsają%3."
-
-#: NOT FOUND IN SOURCE
-msgid "Please note that only tickets with one of these statuses( %1 ) are displayed here. For more powerful searches please visit the <a href=\"<%RT->Config->Get('WebPath')%>/Search/Build.html\">search builder interface</a>."
-msgstr "Atkreipkite dėmesį, kad tik prašymai vienoje iš šių būsenų ( %1 ) yra rodomi. Išsamesnei paieškai naudokite  <a href=\"<%RT->Config->Get('WebPath')%>/Search/Build.html\">paieškos konstravimo sąsają</a>."
-
 #: share/html/Elements/CSRF:48 share/html/Elements/CSRF:51
 msgid "Possible cross-site request forgery"
-msgstr ""
+msgstr "Galima sufalsifikuota užklausa tarp svetainių (cross-site)"
 
 #: share/html/Dashboards/Elements/HiddenSearches:73
 msgid "Possible hidden searches"
@@ -6998,7 +6377,7 @@ msgstr "PostgreSQL"
 #. ($m->interp->apply_escapes($Name, 'h'))
 #. ($m->interp->apply_escapes($name, 'h'))
 msgid "Predefined search %1 not found"
-msgstr ""
+msgstr "Standartinė paieška %1 nerasta"
 
 #: share/html/Elements/Tabs:553 share/html/Elements/Tabs:949 share/html/Prefs/Other.html:80 share/html/SelfService/Prefs.html:48 share/html/User/Prefs.html:48
 msgid "Preferences"
@@ -7064,7 +6443,7 @@ msgstr "Spausdinti šį pranešimą"
 
 #: lib/RT/Tickets.pm:116 lib/RT/Tickets.pm:1617 share/html/Elements/RT__Queue/ColumnMap:61 share/html/Elements/RT__Ticket/ColumnMap:148 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:199 share/html/Ticket/Create.html:225 share/html/Ticket/Elements/ShowBasics:76 share/html/m/_elements/ticket_list:99 share/html/m/ticket/create:342 share/html/m/ticket/show:238
 msgid "Priority"
-msgstr "Prioritetas"
+msgstr "Dabartinis prioritetas"
 
 #: share/html/Admin/Queues/Modify.html:88
 msgid "Priority starts at"
@@ -7134,10 +6513,6 @@ msgstr "Užklausa"
 msgid "Query Builder"
 msgstr "Paieškos konstravimas"
 
-#: NOT FOUND IN SOURCE
-msgid "Query:"
-msgstr "Užklausa:"
-
 #: lib/RT/Graph/Tickets.pm:153 lib/RT/Record.pm:954 lib/RT/Report/Tickets.pm:62 lib/RT/Tickets.pm:107 lib/RT/Tickets.pm:1424 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:63 share/html/Elements/RT__Template/ColumnMap:66 share/html/Elements/RT__Template/ColumnMap:73 share/html/Elements/RT__Ticket/ColumnMap:102 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:61 share/html/Ticket/Elements/ShowBasics:82 share/html/m/ticket/create:248 share/html/m/ticket/show:242
 msgid "Queue"
 msgstr "Eilė"
@@ -7185,13 +6560,9 @@ msgstr "Eilė įjungta"
 msgid "Queue id"
 msgstr "Eilės identifikatorius"
 
-#: lib/RT/CustomField.pm:285 share/html/SelfService/Display.html:102
+#: lib/RT/CustomField.pm:285 share/html/SelfService/Display.html:109
 msgid "Queue not found"
 msgstr "Eilė nerasta"
-
-#: NOT FOUND IN SOURCE
-msgid "Queue rights"
-msgstr "Eilės teisės"
 
 #: share/html/Elements/Crypt/SelectKeyForSigning:50 share/html/Elements/Crypt/SelectKeyForSigning:54
 msgid "Queue's key"
@@ -7199,7 +6570,7 @@ msgstr "Raktas eilei"
 
 #: lib/RT/Tickets.pm:149
 msgid "QueueAdminCc"
-msgstr "Eilės administracinė kopija"
+msgstr "Eilės administracinė kopija (CC)"
 
 #: lib/RT/Tickets.pm:156
 msgid "QueueCF"
@@ -7211,7 +6582,7 @@ msgstr "Eilės korespondencijos kopijos"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "QueueName"
-msgstr "Eilės vardas"
+msgstr "Eilės pavadinimas"
 
 #: lib/RT/Tickets.pm:150
 msgid "QueueWatcher"
@@ -7261,10 +6632,6 @@ msgstr "RFC2822"
 msgid "RSS"
 msgstr "RSS"
 
-#: NOT FOUND IN SOURCE
-msgid "RT %1 for %2"
-msgstr "RT %1 skirta %2"
-
 #: share/html/Admin/index.html:48
 msgid "RT Administration"
 msgstr "RT nustatymai"
@@ -7272,10 +6639,6 @@ msgstr "RT nustatymai"
 #: lib/RT/Installer.pm:165
 msgid "RT Administrator Email"
 msgstr "RT Administrator Email"
-
-#: NOT FOUND IN SOURCE
-msgid "RT Config"
-msgstr "RT nustatymai"
 
 #: share/html/Admin/Tools/Configuration.html:58
 msgid "RT Configuration"
@@ -7285,17 +6648,9 @@ msgstr "RT konfigūracija"
 msgid "RT Error"
 msgstr "RT klaida"
 
-#: NOT FOUND IN SOURCE
-msgid "RT Self Service"
-msgstr "RT savitarna"
-
 #: share/html/Admin/Tools/Configuration.html:139
 msgid "RT Size"
 msgstr "RT dydis"
-
-#: NOT FOUND IN SOURCE
-msgid "RT Variables"
-msgstr "RT kintamieji"
 
 #: lib/RT/Config.pm:311 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:54 share/html/Admin/Users/MyRT.html:62 share/html/Elements/Tabs:206 share/html/Elements/Tabs:326 share/html/Elements/Tabs:556 share/html/Prefs/MyRT.html:57 share/html/Prefs/MyRT.html:81 share/html/index.html:4
 msgid "RT at a glance"
@@ -7334,7 +6689,7 @@ msgstr "%1 prašymų valdymo sistema RT"
 #: share/html/Elements/CSRF:55
 #. ($strong_start, $strong_end, $Reason, $action)
 msgid "RT has detected a possible %1cross-site request forgery%2 for this request, because %3.  A malicious attacker may be trying to %1%4%2 on your behalf. If you did not initiate this request, then you should alert your security team."
-msgstr ""
+msgstr "RT nustatė galimą %1sufabrikuotą užklausą tarp svetainių%2, nes %3. Galbūt įsilaužėlis bando %1%4%2 jūsų vardu. Jeigu jūs nevykdėte šios užklausos, skubiai susisiekite specialistais, atsakingais už jūsų sistemos saugumą."
 
 #: share/html/Install/index.html:71
 msgid "RT is an enterprise-grade issue tracking system designed to let you intelligently and efficiently manage tasks, issues, requests, defects or anything else that looks like an \"action item.\""
@@ -7342,7 +6697,7 @@ msgstr "RT is an enterprise-grade issue tracking system designed to let you inte
 
 #: share/html/Install/index.html:74
 msgid "RT is used by Fortune 100 companies, one-person businesses, government agencies, educational institutions, hospitals, nonprofits, NGOs, libraries, open source projects and all sorts of other organizations on all seven continents. (Yes, even Antarctica.)"
-msgstr "RT is used by Fortune 100 companies, one-person businesses, government agencies, educational institutions, hospitals, nonprofits, NGOs, libraries, open source projects and all sorts of other organizations on all seven continents. (Yes, even Antarctica.)"
+msgstr "RT naudoja Fortune 100 sąrašo bendrovės, individualios įmonės, valstybinės institucijos, mokymo įstaigos, ligoninės, pelno nesiekiančios organizacijos, bibliotekos, atviro kodo projektai ir įvairiausios kitos organizacijos visuose septyniuose žemynuose. (Taip, netgi Antarktidoje.)"
 
 #: share/html/Admin/Tools/Configuration.html:270
 msgid "RT upgrade history"
@@ -7356,18 +6711,10 @@ msgstr "RT will connect to the database using this user.  It will be created for
 msgid "RT will create a user called \"root\" and set this as their password"
 msgstr "RT will create a user called \"root\" and set this as their password"
 
-#: NOT FOUND IN SOURCE
-msgid "RT will look for anything else you enter in ticket subjects."
-msgstr "Neradęs kitur, RT ieškos prašymų antraštėse."
-
 #: share/html/Admin/CustomFields/Modify.html:113 share/html/Admin/CustomFields/Modify.html:121
 #. ('<tt>__id__</tt>', '<tt>__CustomField__</tt>')
 msgid "RT will replace %1 and %2 with the record's id and the custom field's value, respectively."
 msgstr "RT pakeis %1 ir %2 prašymo numeriu ir papildomo lauko reikšme atitinkamai"
-
-#: NOT FOUND IN SOURCE
-msgid "RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively"
-msgstr "RT pakeis <tt>__id__</tt> ir <tt>__CustomField__</tt> prašymo numeriu ir papildomo lauko reikšme atitinkamai"
 
 #: lib/RT/Installer.pm:144
 msgid "RT will use this string to uniquely identify your installation and looks for it in the subject of emails to decide what ticket a message applies to.  We recommend that you set this to your internet domain. (ex: example.com)"
@@ -7381,18 +6728,14 @@ msgstr "RT works with a number of different databases. <b>MySQL</b>, <b>PostgreS
 msgid "RT's logging configuration is summarized below:"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "RT/Admin/Edit the group %1"
-msgstr "RT tvarkyti grupę  %1"
-
 #: share/html/Admin/Queues/Modify.html:223
 #. ($address)
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr "RTAddressRegexp nustatymas konfigūracijoje neatitinka %1"
 
-#: etc/RT_Config.pm:2786 etc/RT_Config.pm:2790 etc/RT_Config.pm:2862 etc/RT_Config.pm:2866
+#: etc/RT_Config.pm:2789 etc/RT_Config.pm:2793 etc/RT_Config.pm:2865 etc/RT_Config.pm:2869
 msgid "Re-open"
-msgstr ""
+msgstr "Vykdyti pakartotinai"
 
 #: share/html/Elements/EditCustomFieldBinary:54 share/html/Elements/EditCustomFieldImage:54
 msgid "Reached maximum number, so new values will override old ones."
@@ -7531,17 +6874,9 @@ msgstr ""
 msgid "Refused to add link which would create a circular relationship"
 msgstr ""
 
-#: etc/RT_Config.pm:2762 etc/RT_Config.pm:2778 etc/RT_Config.pm:2838 etc/RT_Config.pm:2854
+#: etc/RT_Config.pm:2765 etc/RT_Config.pm:2781 etc/RT_Config.pm:2841 etc/RT_Config.pm:2857
 msgid "Reject"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Reject tickets"
-msgstr "Atmesti prašymai"
-
-#: NOT FOUND IN SOURCE
-msgid "RejectTicket"
-msgstr "Atmesti prašymą"
+msgstr "Atmesti"
 
 #: lib/RT/Config.pm:170
 msgid "Remember default queue"
@@ -7561,17 +6896,13 @@ msgstr "Priminimas '%1' įvykdytas"
 
 #: NOT FOUND IN SOURCE
 msgid "Reminder '%1' reopened"
-msgstr "Priminimas '%1' atidarytas pakartotinai"
+msgstr "Priminimas '%1' vykdomas pakartotinai"
 
 #: lib/RT/Interface/Web.pm:2889 lib/RT/Interface/Web.pm:2907
 #. ($args->{'NewReminder-Subject'}, loc("Created"))
 #. ($old_subject || $reminder->Subject, $_)
 msgid "Reminder '%1': %2"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Reminder ticket #%1"
-msgstr "Priminimo prašymas"
 
 #: share/html/Elements/Tabs:642 share/html/Ticket/Elements/Reminders:79 share/html/Ticket/Elements/ShowSummary:73 share/html/Ticket/Reminders.html:56 share/html/m/ticket/show:332
 msgid "Reminders"
@@ -7580,11 +6911,11 @@ msgstr "Priminimai"
 #: share/html/Ticket/Reminders.html:48
 #. ($Ticket->Id)
 msgid "Reminders for ticket #%1"
-msgstr "Priminimai prašymui #%1"
+msgstr "Priminimai prašymui Nr. %1"
 
 #: share/html/Search/Bulk.html:95
 msgid "Remove AdminCc"
-msgstr "Pašalinti administracinę kopiją"
+msgstr "Pašalinti administracinę kopiją (CC)"
 
 #: share/html/Ticket/Elements/Bookmark:68
 msgid "Remove Bookmark"
@@ -7592,7 +6923,7 @@ msgstr "Nuimti pažymėjimą"
 
 #: share/html/Search/Bulk.html:91
 msgid "Remove Cc"
-msgstr "Pašalinti kopiją"
+msgstr "Pašalinti kopiją (CC)"
 
 #: share/html/Search/Bulk.html:87
 msgid "Remove Requestor"
@@ -7613,7 +6944,7 @@ msgstr "Pavertimo tipas"
 
 #: lib/RT/Config.pm:194
 msgid "Replaces the owner dropdowns with textboxes"
-msgstr "Pakeičia savininko pasirikimo sąrašus teksto įvedimo laukais"
+msgstr "Pakeičia atsakingo asmens pasirikimą iš sąrašo į teksto įvedimo lauką"
 
 #: share/html/Elements/ShowTransaction:180 share/html/Elements/Tabs:646 share/html/m/_elements/ticket_menu:69
 msgid "Reply"
@@ -7634,10 +6965,6 @@ msgstr "Atsakyti į prašymus"
 #: lib/RT/Queue.pm:130
 msgid "ReplyToTicket"
 msgstr "Atsakyti į prašymą"
-
-#: NOT FOUND IN SOURCE
-msgid "Reports"
-msgstr "Ataskaitos"
 
 #: lib/RT/Report/Tickets.pm:68 lib/RT/Ticket.pm:101 lib/RT/Tickets.pm:143
 msgid "Requestor"
@@ -7678,48 +7005,32 @@ msgstr "Sugeneruoti naują slaptą autentikacijos žymą"
 
 #: share/html/Admin/Users/DashboardsInMenu.html:56 share/html/Admin/Users/MyRT.html:56 share/html/Prefs/DashboardsInMenu.html:67 share/html/Prefs/MyRT.html:74
 msgid "Reset to default"
-msgstr "Atstatyti standartinius"
+msgstr "Atstatyti numatytuosius"
 
 #: share/html/Admin/Users/Modify.html:176 share/html/User/Prefs.html:88
 msgid "Residence"
 msgstr "Namų"
 
-#: etc/RT_Config.pm:2758 etc/RT_Config.pm:2774 etc/RT_Config.pm:2834 etc/RT_Config.pm:2850 share/html/Search/Elements/EditFormat:75
+#: etc/RT_Config.pm:2761 etc/RT_Config.pm:2777 etc/RT_Config.pm:2837 etc/RT_Config.pm:2853 share/html/Search/Elements/EditFormat:75
 msgid "Resolve"
-msgstr "Išspręsti"
+msgstr "Užbaigti vykdyti"
 
 #: share/html/m/ticket/reply:173
 #. ($t->id, $t->Subject)
 msgid "Resolve ticket #%1 (%2)"
-msgstr "Išspręsti prašymą #%1 (%2)"
+msgstr "Įvykdyti prašymą Nr. %1 (%2)"
 
 #: etc/initialdata:440 lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:76 lib/RT/Tickets.pm:135 share/html/Elements/RT__Ticket/ColumnMap:218 share/html/Elements/RT__Ticket/ColumnMap:243 share/html/Elements/SelectDateType:51 share/html/Search/Elements/BuildFormatString:100
 msgid "Resolved"
-msgstr "Įvykdyti"
-
-#: NOT FOUND IN SOURCE
-msgid "Resolved by owner"
-msgstr "Įvykdyti prašymai pagal atsakingą"
+msgstr "Įvykdytas"
 
 #: etc/initialdata:449 etc/upgrade/4.1.9/content:102
 msgid "Resolved in HTML"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Resolved in date range"
-msgstr "Įvykdyti prašymai per laikotarpį"
-
-#: NOT FOUND IN SOURCE
-msgid "Resolved tickets in period, grouped by owner"
-msgstr "Įvykdyti prašymai per laikotarpį, sugrupuoti pagal atsakingą"
-
-#: NOT FOUND IN SOURCE
-msgid "Resolved tickets, grouped by owner"
-msgstr "Įvykdyti prašymai, sugrupuoti pagal atsakingą"
-
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "ResolvedRelative"
-msgstr "Išspręstas santykinai"
+msgstr "Įvykdytas santykinai"
 
 #: share/html/Search/Elements/EditFormat:73
 msgid "Respond"
@@ -7735,7 +7046,7 @@ msgstr "Grįžti prie prašymo"
 
 #: share/html/Elements/EditPassword:66
 msgid "Retype Password"
-msgstr "Pakartokite slaptažodį"
+msgstr "Pakartokite naują slaptažodį"
 
 #: share/html/Search/Elements/EditSearches:62
 msgid "Revert"
@@ -7744,10 +7055,6 @@ msgstr "Atkeisti"
 #: lib/RT/Config.pm:338
 msgid "Rich text (HTML) shows formatting such as colored text, bold, italics, and more"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Right Delegated"
-msgstr "Teisė deleguota"
 
 #: lib/RT/ACE.pm:288
 msgid "Right Granted"
@@ -7760,10 +7067,6 @@ msgstr "Teisė užkrauta"
 #: lib/RT/ACE.pm:343
 msgid "Right could not be revoked"
 msgstr "Teisė negali būti atšaukta"
-
-#: NOT FOUND IN SOURCE
-msgid "Right not found"
-msgstr "Teisė nerasta"
 
 #: lib/RT/ACE.pm:311
 msgid "Right not loaded."
@@ -7796,7 +7099,7 @@ msgstr ""
 msgid "Role group exists already"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3673
+#: lib/RT/Interface/Web.pm:3709
 msgid "Roles"
 msgstr "Rolės"
 
@@ -7845,7 +7148,7 @@ msgstr "Šeštadienis"
 msgid "Save"
 msgstr "Įsiminti"
 
-#: share/html/Admin/Articles/Classes/GroupRights.html:57 share/html/Admin/Articles/Classes/Modify.html:130 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:91 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:93 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:156 share/html/Admin/Queues/People.html:124 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Scrips/Modify.html:88 share/html/Admin/Scrips/Modify.html:92 share/html/Admin/Users/Keys.html:80 share/html/Admin/Users/Modify.html:226 share/html/Articles/Article/Edit.html:102 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:186 share/html/Prefs/Other.html:76 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:62 share/html/SelfService/Prefs.html:79 share/html/Ticket/Modify.html:66 share/html/Ticket/ModifyAll.html:135 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:67 share/html/Ticket/ModifyPeople.html:76 share/html/Ticket/Reminders.html:63
+#: share/html/Admin/Articles/Classes/GroupRights.html:57 share/html/Admin/Articles/Classes/Modify.html:130 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:91 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:93 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:156 share/html/Admin/Queues/People.html:124 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Scrips/Modify.html:88 share/html/Admin/Scrips/Modify.html:92 share/html/Admin/Users/Keys.html:80 share/html/Admin/Users/Modify.html:226 share/html/Articles/Article/Edit.html:102 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:186 share/html/Prefs/Other.html:76 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:62 share/html/SelfService/Prefs.html:79 share/html/Ticket/Modify.html:68 share/html/Ticket/ModifyAll.html:135 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:67 share/html/Ticket/ModifyPeople.html:76 share/html/Ticket/Reminders.html:63
 msgid "Save Changes"
 msgstr "Įsiminti pakeitimus"
 
@@ -7880,7 +7183,7 @@ msgstr "Nerasta įsiminta paieška %1"
 
 #: share/html/Elements/SavedSearches:48 share/html/Elements/Tabs:563
 msgid "Saved Searches"
-msgstr "Įsiminitos paieškos"
+msgstr "Įsimintos paieškos"
 
 #: share/html/Search/Chart.html:175
 msgid "Saved charts"
@@ -7907,7 +7210,7 @@ msgstr ""
 #: share/html/Ticket/Elements/PreviewScrips:71
 #. ($scrip->id)
 msgid "Scrip #%1"
-msgstr "Skriptas #%1"
+msgstr "Skriptas Nr. %1"
 
 #: lib/RT/Scrip.pm:209
 msgid "Scrip Created"
@@ -7948,19 +7251,15 @@ msgstr "Paieška %1 pakeista"
 
 #: share/html/Articles/Elements/GotoArticle:50 share/html/Articles/Elements/GotoArticle:50 share/html/SelfService/Article/Search.html:48 share/html/SelfService/Elements/SearchArticle:49 share/html/SelfService/Elements/SearchArticle:49
 msgid "Search Articles"
-msgstr "Ieškoti straipsnių"
+msgstr "Ieškoti aprašų"
 
 #: share/html/Prefs/SearchOptions.html:48
 msgid "Search Preferences"
 msgstr "Paieškos nustatymai"
 
-#: NOT FOUND IN SOURCE
-msgid "Search for Articles articles matching"
-msgstr "Ieškoti straipsnių, atitinkančių"
-
 #: share/html/Articles/Elements/BeforeMessageBox:55 share/html/SelfService/Article/Search.html:53
 msgid "Search for Articles matching"
-msgstr "Ieškoti atitinkančių straipsnių"
+msgstr "Ieškoti atitinkančių aprašų"
 
 #: share/html/Approvals/Elements/PendingMyApproval:57
 msgid "Search for approvals"
@@ -7968,20 +7267,20 @@ msgstr "Patvirtinų paieška"
 
 #: share/html/Articles/Article/Search.html:48
 msgid "Search for articles"
-msgstr "Ieškoti straipsnių"
+msgstr "Ieškoti aprašų"
 
 #: share/html/Search/Simple.html:100
 msgid "Search for tickets"
 msgstr "Prašymų paieška"
 
+#: NOT FOUND IN SOURCE
+msgid "Search for tickets by entering %1id%2 numbers, subject words %1\"in quotes\"%2, %1queues%2 by name, Owners by %1username%2, Requestors by %1email address%2, and ticket %1statuses%2."
+msgstr "Ieškoti prašymų nurodžius %1prašymo numerį%2, žodžius pavadinime %1\"kabutėse\"%2, %1eilės%2 pavadinimą, atsakingo naudotojo %1vardą%2, prašymo autoriaus %1el. pašto adresą%2 ir prašymo %1būsenas%2."
+
 #: share/html/Search/Simple.html:63
 #. (@strong)
 msgid "Search for tickets by entering %1id%2 numbers, subject words %1\"in quotes\"%2, %1queues%2 by name, Owners by %1username%2, Requestors by %1email address%2, and ticket %1statuses%2.  Searching for %1@domainname.com%2 will return tickets with requestors from that domain."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name, Owners by <strong>username</strong> and Requestors by <strong>email address</strong>."
-msgstr "Galite ieškoti prašymų pagal <strong>id</strong> numerį, <strong>eilės</strong> vardą, atsakingą <strong>naudotoją</strong> ir autoriaus <strong>el. pašto adresą</strong>. RT gali ieškoti pagal bet kokį tekstą pašymo turinyje ir prikabintuose failuose."
 
 #: share/html/Elements/Tabs:555
 msgid "Search options"
@@ -8006,15 +7305,7 @@ msgstr ""
 #: share/html/Search/Simple.html:73
 #. ($fulltext_keyword)
 msgid "Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history by typing <b>%1<i>word</i></b>."
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history by typing <b>fulltext:<i>word</i></b>."
-msgstr "Teksto fragmento paieška visuose prašymuose gali užtrukti ilgai, tačiau jeigu jums tikrai to reikia, naudokite paieškos sąlygą <b>fulltext:<i>ieškomas tekstas</i></b>."
-
-#: NOT FOUND IN SOURCE
-msgid "Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history for any word by typing <b>fulltext:<i>word</i></b>."
-msgstr "Paieška pagal bet kokį tekstą kiekviename prašyme užima daug laiko, bet jeigu jums iš tikro to reikia, galite nurodyti pilnatekstės paieškos žodį rašydami <b>fulltext:<i>žodis</i></b>."
+msgstr "Pilnatekstė paieška visuose prašymuose gali užtrukti labai ilgai. Tačiau jeigu jums tikrai to reikia, galite ją naudoti naudodami sintaksę <b>%1<i>tekstas</i></b>."
 
 #: share/html/User/Prefs.html:170
 msgid "Secret authentication token"
@@ -8030,35 +7321,15 @@ msgstr "Žr. taip pat:"
 
 #: lib/RT/Class.pm:89
 msgid "See articles in this class"
-msgstr "Peržiūtrėti straipsnius šioje klasėje"
+msgstr "Peržiūtrėti aprašus šioje klasėje"
 
 #: lib/RT/Class.pm:90
 msgid "See changes to articles in this class"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "See custom fields"
-msgstr "Peržiūrėti papildomus laukus"
-
-#: NOT FOUND IN SOURCE
-msgid "See exact outgoing email messages and their recipeients"
-msgstr "Peržiūrėti tikslų išeinantį paštą ir jo gavėjus"
-
-#: NOT FOUND IN SOURCE
-msgid "See exact outgoing email messages and their recipients"
-msgstr "Peržiūrėti tikslų išeinantį paštą ir jo gavėjus"
+msgstr "Parodyti aprašų pakeitimus šioje klasėje"
 
 #: lib/RT/Class.pm:87
 msgid "See that this class exists"
 msgstr "Pamatyti ar ši klasė egzistuoja"
-
-#: NOT FOUND IN SOURCE
-msgid "See ticket private commentary"
-msgstr "Peržiūrėti prašymo privatų komentarą"
-
-#: NOT FOUND IN SOURCE
-msgid "See ticket summaries"
-msgstr "Peržiūrėti prašymo santrauką"
 
 #: lib/RT/Class.pm:87
 msgid "SeeClass"
@@ -8094,7 +7365,7 @@ msgstr "Pasirinkti"
 
 #: share/html/Admin/Global/CustomFields/index.html:96 share/html/Elements/Tabs:164
 msgid "Select Custom Fields for Articles in all Classes"
-msgstr "Pasirinkti papildomus laukus straipsniams visose klasėse"
+msgstr "Pasirinkti papildomus laukus aprašams visose klasėse"
 
 #: share/html/Install/DatabaseDetails.html:73
 msgid "Select Database Type"
@@ -8139,11 +7410,11 @@ msgstr "Pasirinkite naudotoją"
 #: share/html/Articles/Elements/BeforeMessageBox:114
 #. ($included_topic->Name)
 msgid "Select an Article from %1"
-msgstr "Pasirinkti straipsnį iš %1"
+msgstr "Pasirinkti aprašą iš %1"
 
 #: share/html/Articles/Elements/BeforeMessageBox:66
 msgid "Select an Article to include"
-msgstr "Pasirinti įtraukiamą strapsnį"
+msgstr "Pasirinti įtraukiamą aprašą"
 
 #: share/html/Install/index.html:59
 msgid "Select another language"
@@ -8173,10 +7444,6 @@ msgstr "Pasirinkite papildomus laukus visoms eilėms"
 msgid "Select custom fields for transactions on tickets in all queues"
 msgstr "Pasirinkite papildomus laukus visoms tranzakcijoms visose eilėse"
 
-#: NOT FOUND IN SOURCE
-msgid "Select dashboard"
-msgstr "Pasirinkite informacinę panelę"
-
 #: lib/RT/CustomField.pm:164
 msgid "Select date"
 msgstr "Pasirinkti datą"
@@ -8188,10 +7455,6 @@ msgstr "Pasirinkti datą ir laiką"
 #: share/html/Admin/Scrips/Objects.html:64
 msgid "Select global scrip stage:"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Select group"
-msgstr "Pasirinkite grupę"
 
 #: lib/RT/CustomField.pm:163
 msgid "Select multiple dates"
@@ -8213,22 +7476,14 @@ msgstr "Pasirinkite vieną reikšmę"
 msgid "Select queues to be displayed on the \"RT at a glance\" page"
 msgstr "Pasirinkite eiles, kurios bus rodomos puslapyje \"RT apžvalga\""
 
-#: NOT FOUND IN SOURCE
-msgid "Select scrip"
-msgstr "Pasirinkite skriptą"
-
 #: share/html/Admin/Elements/SelectStageForAdded:53
 msgid "Select scrip stage for newly added queues:"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Select template"
-msgstr "Pasirinkite šabloną"
-
 #: share/html/Articles/Article/ExtractIntoClass.html:63 share/html/Articles/Article/ExtractIntoTopic.html:52
 #. ()
 msgid "Select topics for this article"
-msgstr "Pasirinkti temas šiam straipsniui"
+msgstr "Pasirinkti temas šiam aprašui"
 
 #: lib/RT/CustomField.pm:165
 msgid "Select up to %1 dates"
@@ -8250,7 +7505,7 @@ msgstr "Pasirinkti papildomi laukai"
 msgid "Selected Queues"
 msgstr "Pasirinkti eiles"
 
-#: lib/RT/Crypt.pm:691
+#: lib/RT/Crypt.pm:699
 msgid "Selected key either is not trusted or doesn't exist anymore."
 msgstr "Pasirinktas raktas arba nepatikimas, arba jau neegzistuoja."
 
@@ -8266,21 +7521,9 @@ msgstr "Pakeisti pasirinkimai. Išsaugokite pakeitimus."
 msgid "Send Forward"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Send email successfully"
-msgstr "Laiškas sėkmingai išsiųstas"
-
 #: etc/initialdata:108
 msgid "Send forwarded message"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Send mail to all watchers"
-msgstr "Pasiųsti laišką visiems stebėtojams"
-
-#: NOT FOUND IN SOURCE
-msgid "Send mail to all watchers as a \"comment\""
-msgstr "Pasiųsti kometarą visiems stebėtojams"
 
 #: etc/initialdata:80
 msgid "Send mail to owner and all watchers"
@@ -8342,10 +7585,6 @@ msgstr "Rgs"
 msgid "Separate multiple entries with spaces."
 msgstr "Atskirkite reikšmes tarpais."
 
-#: NOT FOUND IN SOURCE
-msgid "September"
-msgstr "Rugsėjis"
-
 #: lib/RT/User.pm:1838
 msgid "Set private key"
 msgstr "Nustatyti asmeninį raktą"
@@ -8356,11 +7595,11 @@ msgstr "Nustatymai"
 
 #: lib/RT/Config.pm:182
 msgid "Short usernames"
-msgstr ""
+msgstr "Trumpi naudotojų vardai"
 
 #: lib/RT/Config.pm:527
 msgid "Should RT send you mail for ticket updates you make?"
-msgstr "Ar RT turėtų siųsti jums laiškus apie pakeitimus, kuriuos pats atliekate?"
+msgstr "Nustatoma, ar RT turi siųsti man laiškus apie mano paties atliktus prašymų papildymus ir pakeitimus."
 
 #: share/html/Elements/ShowTransaction:152 share/html/Elements/Tabs:592
 msgid "Show"
@@ -8397,7 +7636,7 @@ msgstr "Rodyti prašymo savybes %1 lygyje"
 
 #: share/html/Elements/ShowHistory:58 share/html/Elements/ShowHistory:59
 msgid "Show all quoted text"
-msgstr ""
+msgstr "Parodyti visą cituojamą tekstą"
 
 #: share/html/Approvals/Elements/PendingMyApproval:65
 msgid "Show approved requests"
@@ -8407,25 +7646,17 @@ msgstr "Rodyti patvirtintus prašymus"
 msgid "Show as well"
 msgstr "Taip pat rodyti"
 
-#: NOT FOUND IN SOURCE
-msgid "Show basics"
-msgstr "Rodyti esminę informaciją"
-
 #: share/html/Elements/ShowHistory:69
 msgid "Show brief headers"
-msgstr ""
+msgstr "Rodyti trumpas antraštes"
 
 #: share/html/Approvals/Elements/PendingMyApproval:68
 msgid "Show denied requests"
 msgstr "Rodyti atmestus prašymus"
 
-#: NOT FOUND IN SOURCE
-msgid "Show details"
-msgstr "Rodyti visas detales"
-
 #: share/html/Elements/ShowHistory:74
 msgid "Show full headers"
-msgstr ""
+msgstr "Rodyti pilnas antraštes"
 
 #: lib/RT/System.pm:90
 msgid "Show global templates"
@@ -8445,7 +7676,7 @@ msgstr "Rodyti nuorodų aprašymus"
 
 #: lib/RT/Config.pm:425
 msgid "Show no tickets for the Requestor"
-msgstr "Nerodyti prašymų autoriui"
+msgstr "Nerodyti autoriaus prašymų"
 
 #: lib/RT/Config.pm:358
 msgid "Show oldest history first"
@@ -8469,27 +7700,19 @@ msgstr ""
 
 #: lib/RT/Config.pm:422
 msgid "Show the Requestor's 10 highest priority active tickets"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Show the Requestor's 10 highest priority closed tickets"
-msgstr "Rodyti autoriui 10 aukščiausio prioriteto įvykdytų jo prašymų"
+msgstr "Parodyti šio prašymo autoriaus 10 aukščiausio prioriteto vykdomų prašymų"
 
 #: lib/RT/Config.pm:423
 msgid "Show the Requestor's 10 highest priority inactive tickets"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Show the Requestor's 10 highest priority open tickets"
-msgstr "Rodyti autoriui 10 aukščiausio prioriteto vykdomų jo prašymų"
+msgstr "Parodyti šio prašymo autoriaus 10 aukščiausio prioriteto įvykdytų prašymų"
 
 #: lib/RT/Config.pm:424
 msgid "Show the Requestor's 10 highest priority tickets"
-msgstr "Rodyti autoriui 10 aukščiausio prioriteto jo prašymų"
+msgstr "Parodyti šio prašymo autoriaus 10 aukščiausio prioriteto visų prašymų"
 
 #: share/html/Ticket/Elements/ClickToShowHistory:50
 msgid "Show ticket history"
-msgstr ""
+msgstr "Rodyti prašymo istoriją"
 
 #: lib/RT/Class.pm:97 lib/RT/Queue.pm:111
 msgid "ShowACL"
@@ -8501,11 +7724,11 @@ msgstr "Rodyti tvirtinimo puslapius"
 
 #: lib/RT/Class.pm:89
 msgid "ShowArticle"
-msgstr "Rodyti straipsnį"
+msgstr "Rodyti aprašą"
 
 #: lib/RT/Class.pm:90
 msgid "ShowArticleHistory"
-msgstr "Rodyti straipsnio sitoriją"
+msgstr "Rodyti aprašo istoriją"
 
 #: lib/RT/System.pm:87
 msgid "ShowArticlesMenu"
@@ -8551,18 +7774,10 @@ msgstr ""
 msgid "Shredder"
 msgstr "Naikiklis"
 
-#: NOT FOUND IN SOURCE
-msgid "Shredder needs a directory to write dumps to. Please check that you have %1 and it is writable by your web server."
-msgstr "Trynimo procedūrai reikalinga direktorija išsaugoti duomenims. Patikrinkite ar egzistuoja <span class=\"file-path\">%1</span> ir web serveris turi ten rašymo teises."
-
-#: NOT FOUND IN SOURCE
-msgid "Shredder needs a directory to write dumps to. Please check that you have <span class=\"file-path\">%1</span> and it is writable by your web server."
-msgstr "Trynimo procedūrai reikalinga direktorija išsaugoti duomenims. Patikrinkite ar egzistuoja <span class=\"file-path\">%1</span> ir web serveris turi ten rašymo teises."
-
 #: share/html/Admin/Tools/Shredder/Elements/Error/NoStorage:55
 #. ($path_tag)
 msgid "Shredder needs a directory to write dumps to. Please ensure that the directory %1 exists and that it is writable by your web server."
-msgstr ""
+msgstr "Naikikliui reikalinga direktorija išsaugoti duomenų bazės išrašams. Įsitikinkite, kad direktorija %1 egzistuoja ir RT serverio procesas turi rašymo teises joje."
 
 #: share/html/Dashboards/Queries.html:181
 msgid "Sidebar"
@@ -8575,7 +7790,7 @@ msgstr "Pasirašyti"
 #: share/html/Admin/Queues/Modify.html:121
 #. ("<b>","</b>","<i>","</i>")
 msgid "Sign all auto-generated mail.  %1Caution%2: Enabling this option alters the signature from providing %3authentication%4 to providing %3integrity%4."
-msgstr ""
+msgstr "Pasirašyti visus automatiškai formuojamus laiškus. %1Dėmesio%2: Įjungdami šią savybę pakeičiate parašo funkciją iš %3autentikacijos%4 į %3integralumo užtikrinimą%4."
 
 #: share/html/Admin/Queues/Modify.html:116
 msgid "Sign by default"
@@ -8587,7 +7802,7 @@ msgstr "Pasirašyti prašymo autoriumi arba prašymo ar eilės kopija"
 
 #: lib/RT/Queue.pm:128
 msgid "Sign up as a ticket or queue AdminCc"
-msgstr "Pasirašyti kaip prašymo ar eilės administracinė kopija"
+msgstr "Pasiskirti prašymo ar eilės administracinę kopiją (CC)"
 
 #: share/html/Elements/Crypt/SignEncryptWidget:64
 #. ($columnsplit,    $m->scomp('/Widgets/Form/Boolean:InputOnly',        Name => 'Sign', CurrentValue => $self->{'Sign'}    ),)
@@ -8597,7 +7812,7 @@ msgstr ""
 #: share/html/Elements/Crypt/SignEncryptWidget:57
 #. ($columnsplit,    $m->scomp('/Widgets/Form/Boolean:InputOnly',        Name => 'Sign', CurrentValue => $self->{'Sign'}    ),    $m->scomp('SelectKeyForSigning', User => $session{'CurrentUser'}->UserObj ),)
 msgid "Sign%1%2 using %3"
-msgstr ""
+msgstr "Pasirašyti%1%2 naudojant %3"
 
 #: share/html/Admin/Users/Modify.html:214 share/html/User/Prefs.html:107
 msgid "Signature"
@@ -8625,7 +7840,7 @@ msgstr "Viena reikšmė"
 
 #: lib/RT/Installer.pm:143
 msgid "Site name"
-msgstr "Site name"
+msgstr "Svetainės pavadinimas"
 
 #: share/html/Admin/Tools/Configuration.html:143 share/html/Search/Elements/EditFormat:84
 msgid "Size"
@@ -8669,7 +7884,7 @@ msgstr "Nurodykite periodiškumą"
 
 #: share/html/Elements/Tabs:816
 msgid "Spreadsheet"
-msgstr "Excel failas"
+msgstr "Skaičialentė"
 
 #: share/html/Admin/Elements/LoggingSummary:73
 #. ($level)
@@ -8684,14 +7899,14 @@ msgstr ""
 msgid "Stage"
 msgstr "Stadija"
 
-#: etc/RT_Config.pm:2770 etc/RT_Config.pm:2846
+#: etc/RT_Config.pm:2773 etc/RT_Config.pm:2849
 msgid "Stall"
-msgstr ""
+msgstr "Pristabdyti"
 
 #: share/html/Search/Simple.html:85
 #. (map { "<strong>$_</strong>" } 'queue:"Example Queue"', 'owner:email@example.com')
 msgid "Start the search term with the name of a supported field followed by a colon, as in %1 and %2, to explicitly specify the search type."
-msgstr ""
+msgstr "Norėdami tiksliai nurodyti paieškos tipą, užrašykite lauko vardą su dvitaškiu pabaigoje prieš ieškomą tekstą, kaip parodyta %1 ir %2."
 
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:75 lib/RT/Tickets.pm:133 share/html/Elements/RT__Ticket/ColumnMap:195 share/html/Elements/RT__Ticket/ColumnMap:228 share/html/Elements/SelectDateType:50 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/EditDates:55 share/html/Ticket/Elements/ShowDates:58 share/html/m/ticket/show:358
 msgid "Started"
@@ -8770,10 +7985,6 @@ msgstr "Žingsnis %1 iš %2"
 msgid "Stolen from %1"
 msgstr "Atsakingas perimtas iš %1"
 
-#: NOT FOUND IN SOURCE
-msgid "Stolen from %1 "
-msgstr "Atsakingas perimtas iš %1 "
-
 #: share/html/Search/Chart.html:156 share/html/Search/Elements/EditFormat:93
 msgid "Style"
 msgstr "Stilius"
@@ -8793,10 +8004,6 @@ msgstr "Pavadinimas pakeistas į %1"
 #: share/html/Elements/RT__Queue/ColumnMap:71
 msgid "SubjectTag"
 msgstr "Pavadinimo žyma"
-
-#: NOT FOUND IN SOURCE
-msgid "SubjectTag changed to %1"
-msgstr "Pavadinimo žymė pakeista į %1"
 
 #: share/html/Elements/Submit:99
 msgid "Submit"
@@ -8893,15 +8100,11 @@ msgstr "Sekmadienis"
 msgid "SuperUser"
 msgstr "administratorius"
 
-#: NOT FOUND IN SOURCE
-msgid "Suppress automatic new to open status change on ticket update"
-msgstr "Išjungti automatinį prašymo būsenos pakeitimą iš naujo į atidarytą po pirmo prašymo atnaujinimo"
-
 #: lib/RT/Config.pm:516
 msgid "Suspended"
-msgstr "Pristabdytas"
+msgstr "Laikinai išjungtas"
 
-#: lib/RT/Interface/Web.pm:3630
+#: lib/RT/Interface/Web.pm:3666
 msgid "System"
 msgstr ""
 
@@ -8909,13 +8112,9 @@ msgstr ""
 msgid "System Configuration"
 msgstr "Sistemos konfigūracija"
 
-#: NOT FOUND IN SOURCE
-msgid "System Dashboards"
-msgstr "Sisteminės informcinės panelės"
-
 #: lib/RT/Installer.pm:206 share/html/Elements/SelectTimezone:63
 msgid "System Default"
-msgstr "Naudoti sisteminį nustatymą"
+msgstr "Naudoti sistemos nutylėtąją reikšmę"
 
 #: lib/RT/Interface/Web.pm:2485 lib/RT/Interface/Web.pm:2585 share/html/Admin/Elements/EditRightsCategoryTabs:60
 msgid "System Error"
@@ -8934,21 +8133,9 @@ msgstr "Sisteminiai įrankiai"
 msgid "System error"
 msgstr "Sistemos klaida"
 
-#: NOT FOUND IN SOURCE
-msgid "System error. Right not delegated."
-msgstr "Sisteminė klaida. Teisė nedeleguota."
-
 #: lib/RT/ACE.pm:141 lib/RT/ACE.pm:209 lib/RT/ACE.pm:291
 msgid "System error. Right not granted."
 msgstr "Sisteminė klaida. Teisė nesuteikta."
-
-#: NOT FOUND IN SOURCE
-msgid "System groups"
-msgstr "Sisteminės grupės"
-
-#: NOT FOUND IN SOURCE
-msgid "System rights"
-msgstr "Sisteminės teisės"
 
 #: lib/RT/Handle.pm:768
 msgid "SystemRolegroup for internal use"
@@ -8978,14 +8165,10 @@ msgstr "Tell us a little about how to find the database RT will be using"
 msgid "Template"
 msgstr "Šablonas"
 
-#: NOT FOUND IN SOURCE
-msgid "Template #%1"
-msgstr "Šablonas #%1"
-
 #: share/html/Admin/Elements/EditTemplates:111
 #. ($id)
 msgid "Template #%1 deleted"
-msgstr "Šablonas #%1 panaikintas"
+msgstr "Šablonas Nr. %1 panaikintas"
 
 #: lib/RT/Scrip.pm:170
 msgid "Template '%1' is not global"
@@ -9069,26 +8252,6 @@ msgid "That is the same value"
 msgstr "Tai ta pati reikšmė"
 
 #: NOT FOUND IN SOURCE
-msgid "That principal already has that right"
-msgstr "Šis naudotojas jau turi tokią teisę."
-
-#: NOT FOUND IN SOURCE
-msgid "That principal is already a %1 for this queue"
-msgstr "Šis naudotojas jau yra %1 šiam prašymui"
-
-#: NOT FOUND IN SOURCE
-msgid "That principal is already a %1 for this ticket"
-msgstr "Šis naudotojas jau yra %1 šiam prašymui"
-
-#: NOT FOUND IN SOURCE
-msgid "That principal is not a %1 for this queue"
-msgstr "Šis naudotojas nėra %1 šiai eilei"
-
-#: NOT FOUND IN SOURCE
-msgid "That principal is not a %1 for this ticket"
-msgstr "Šis naudotojas nėra %1 šiam prašymui"
-
-#: NOT FOUND IN SOURCE
 msgid "That queue does not exist"
 msgstr "Ši eilę neegzistuoja"
 
@@ -9139,7 +8302,7 @@ msgstr "Prašymo kopija"
 #: lib/RT/Article.pm:625
 #. ($Value)
 msgid "The Class of the Article identified by %1 is not applied to the current Queue"
-msgstr "Straipsnio klasė identifikuota %1 netaikoma šiai eilei"
+msgstr "Aprašo klasė identifikuota %1 netaikoma šiai eilei"
 
 #: lib/RT/Installer.pm:114
 msgid "The DBA's database password"
@@ -9147,19 +8310,15 @@ msgstr "The DBA's database password"
 
 #: lib/RT/Ticket.pm:103
 msgid "The administrative CC of a ticket"
-msgstr "Prašymo administracinė kopija"
+msgstr "Prašymo administracinė kopija (CC)"
 
 #: lib/RT/Installer.pm:81
 msgid "The domain name of your database server (like 'db.example.com')."
-msgstr "The domain name of your database server (like 'db.example.com')"
+msgstr "Duomenų bazės serverio pilnas pavadinimas(pvz., 'db.example.com')"
 
 #: bin/rt-crontool:352
 msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they are overdue:"
 msgstr "Toliau nurodyta komanda ras visus aktyvius prašymus eilėje 'general' ir pakeis jų prioritetą į 99, jeigu praėjo prašymo galutinis terminas:"
-
-#: NOT FOUND IN SOURCE
-msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they haven't been touched in 4 hours:"
-msgstr "Tolimesnė komanda suras visus aktyvius prašymus eilėje 'general' ir nustatys jų prioritetą 99 jeigu jie nebuvo pakeisti ilgiau kaip 4 valandas:"
 
 #: share/html/Dashboards/Elements/Deleted:53
 msgid "The following queries have been deleted and each will be removed from the dashboard once its pane is updated."
@@ -9216,9 +8375,9 @@ msgstr "The system is unable to sign outgoing email messages. This usually indic
 
 #: lib/RT/Config.pm:203 share/html/Admin/Tools/Theme.html:49 share/html/Elements/Tabs:232
 msgid "Theme"
-msgstr "Tema"
+msgstr "Išvaizda"
 
-#: lib/RT/Crypt.pm:718
+#: lib/RT/Crypt.pm:726
 msgid "There are several keys suitable for encryption."
 msgstr "Yra keletas raktų, tinkamų šifravimui."
 
@@ -9233,9 +8392,9 @@ msgstr "Šis raktas yra riboto pasitikėjimo"
 #: share/html/Admin/Groups/Modify.html:141
 #. ($Group->Name)
 msgid "There is more than one group with the name '%1'.  This may cause inconsistency in parts of the admin interface, and therefore it's recommended you rename the conflicting groups."
-msgstr "Yra daugiau nei viena grupė vardu '%1'. Tai gali sukelti nekorektišką sistemos veikimą, todėl rekomenduojama pervadinti grupes."
+msgstr "Yra daugiau nei viena grupė pavadinimu '%1'. Tai gali sukelti neteisingą sistemos veikimą, todėl rekomenduojama pervadinti grupes."
 
-#: lib/RT/Crypt.pm:710
+#: lib/RT/Crypt.pm:718
 msgid "There is no key suitable for encryption."
 msgstr "Nėra tinkamų raktų."
 
@@ -9248,7 +8407,7 @@ msgstr ""
 msgid "There is no mapping for statuses between these queues. Contact your system administrator."
 msgstr "Nėra būsenų atitikimo tarp šių eilių. Kreipkitės į savo sistemos administratorių."
 
-#: lib/RT/Crypt.pm:714
+#: lib/RT/Crypt.pm:722
 msgid "There is one suitable key, but trust level is not set."
 msgstr "Yra vienas tinkamas raktas, bet pasitikėjimo lygis nenustatytas"
 
@@ -9263,7 +8422,7 @@ msgstr "Šie komentarai nerodomi paprastam naudotojui"
 
 #: share/html/Install/Basics.html:53
 msgid "These configuration options cover some of the basics needed to get RT up and running.  We need to know the name of your RT installation and the domain name where RT will live.  You will also need to set a password for your default administrative user."
-msgstr "These configuration options cover some of the basics needed to get RT up and running.  We need to know the name of your RT installation and the domain name where RT will live.  You will also need to set a password for your default administrative user."
+msgstr "Šie nustatymai būtini RT veikimui. Reikia nurodyti RT sistemos pavadinimą ir interneto domeną, kuriame veiks RT sistema. Be to, reikės nurodyti sistemos administratoriaus slaptažodį."
 
 #: lib/RT/CustomField.pm:317 lib/RT/CustomField.pm:647
 msgid "This Custom Field can not have list of values"
@@ -9271,7 +8430,7 @@ msgstr "Šis papildomas laukas negali turėti reikšmių sąrašo"
 
 #: lib/RT/Class.pm:359
 msgid "This class does not apply to that object"
-msgstr ""
+msgstr "Ši klasė netaikoma šiam objektui"
 
 #: lib/RT/CustomField.pm:1498
 msgid "This custom field cannot be added to that object"
@@ -9289,17 +8448,13 @@ msgstr "Šis papildomas laukas neturi pavertimo tipų"
 msgid "This feature is only available to system administrators"
 msgstr "Ši savybė prieinama tik sistemos administratoriui."
 
-#: share/html/Admin/Tools/Queries.html:51 share/html/Admin/Tools/Theme.html:225
+#: share/html/Admin/Tools/Queries.html:51 share/html/Admin/Tools/Theme.html:226
 msgid "This feature is only available to system administrators."
 msgstr "Ši savybė skirta tik sistemos administratoriams"
 
 #: NOT FOUND IN SOURCE
 msgid "This may mean that that the directory '%1' isn't writable or a database table is missing or corrupt."
 msgstr "This may mean that that the directory '%1' isn't writable or a database table is missing or corrupt."
-
-#: NOT FOUND IN SOURCE
-msgid "This message will be sent to..."
-msgstr "Šis pranešimas bus siunčiamas:"
 
 #: share/html/Admin/Tools/Queries.html:63
 msgid "This server process has recorded no SQL queries."
@@ -9327,10 +8482,6 @@ msgstr "Atrodo, kad ši tranzakcija neturi turinio"
 msgid "This user's %1 highest priority %2 tickets"
 msgstr "Šio naudotojo %1 aukščiausio prioriteto %2 prašymų"
 
-#: NOT FOUND IN SOURCE
-msgid "This user's %1 highest priority tickets"
-msgstr "%1 aukščiausio prioriteto šio vartotojo prašymai"
-
 #: share/html/User/Search.html:53
 msgid "This will search for users by looking in the following fields:"
 msgstr ""
@@ -9350,39 +8501,39 @@ msgstr "Prašymas"
 #: share/html/Ticket/ModifyAll.html:48
 #. ($Ticket->Id, $Ticket->Subject)
 msgid "Ticket #%1 Jumbo update: %2"
-msgstr "Prašymo Nr.%1 visų duomenų keitimas. (%2)"
+msgstr "Prašymo Nr. %1 visų duomenų keitimas. %2"
 
 #: share/html/Ticket/Graphs/index.html:109
 #. ($id)
 msgid "Ticket #%1 relationships graph"
-msgstr "Prašymo #%1 ryšių grafikas"
+msgstr "Prašymo Nr. %1 ryšių diagrama"
 
 #: NOT FOUND IN SOURCE
 msgid "Ticket #%1:"
-msgstr "Paršymas #%1:"
+msgstr "Prašymas Nr. %1:"
 
 #: share/html/Approvals/Elements/ShowDependency:69
 #. ($link->BaseObj->Id, $link->BaseObj->Subject)
 msgid "Ticket #%1: %2"
-msgstr "Prašymas Nr.%1. (%2)"
+msgstr "Prašymas Nr. %1. %2"
 
 #: lib/RT/Action/CreateTickets.pm:1086 lib/RT/Action/CreateTickets.pm:1095 lib/RT/Action/CreateTickets.pm:334 lib/RT/Action/CreateTickets.pm:453 lib/RT/Action/CreateTickets.pm:465
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
 msgid "Ticket %1"
-msgstr "Prašymas Nr.%1"
+msgstr "Prašymas Nr. %1"
 
 #: lib/RT/Ticket.pm:546 lib/RT/Ticket.pm:568
 #. ($self->Id, $QueueObj->Name)
 msgid "Ticket %1 created in queue '%2'"
-msgstr "Prašymas Nr.%1 sukurtas eilėje '%2'"
+msgstr "Prašymas Nr. %1 sukurtas eilėje '%2'"
 
 #: share/html/Search/Bulk.html:281 share/html/Tools/MyDay.html:90 share/html/Tools/MyDay.html:93 share/html/Tools/MyDay.html:99
 #. ($Ticket->Id, $_)
 #. ($id, $msg)
 msgid "Ticket %1: %2"
-msgstr "Prašymas Nr.%1. (%2)"
+msgstr "Prašymas Nr. %1. %2"
 
 #: NOT FOUND IN SOURCE
 msgid "Ticket Custom Fields"
@@ -9391,7 +8542,7 @@ msgstr "Papildomi prašymo laukai"
 #: share/html/Ticket/History.html:48
 #. ($Ticket->Id, $Ticket->Subject)
 msgid "Ticket History # %1 %2"
-msgstr "Prašymo Nr.%1 istorija. (%2)"
+msgstr "Prašymo Nr. %1 istorija. %2"
 
 #: etc/initialdata:441
 msgid "Ticket Resolved"
@@ -9472,22 +8623,6 @@ msgstr "Prašymai %1 naudotojo %2"
 msgid "Tickets I own"
 msgstr "Man skirti prašymai"
 
-#: NOT FOUND IN SOURCE
-msgid "Tickets created after"
-msgstr "Prašymai pateikti nuo"
-
-#: NOT FOUND IN SOURCE
-msgid "Tickets created before"
-msgstr "Prašymai pateikti iki"
-
-#: NOT FOUND IN SOURCE
-msgid "Tickets resolved after"
-msgstr "Prašymai išspręsti nuo"
-
-#: NOT FOUND IN SOURCE
-msgid "Tickets resolved before"
-msgstr "Prašymai išspręsti iki"
-
 #: share/html/Approvals/Elements/ShowDependency:50
 msgid "Tickets which depend on this approval:"
 msgstr "Nuo šio patvirtinimo priklauso šie prašymai:"
@@ -9531,6 +8666,10 @@ msgstr "Pavadinimas"
 #: share/html/Ticket/Forward.html:66
 msgid "To"
 msgstr "To"
+
+#: NOT FOUND IN SOURCE
+msgid "To create an Article, you must first create a Class and have access to that Class."
+msgstr "Norėdami sukurti aprašą, pirmiausia turite sukurti klasę ir turite turėti teises šioje klasėje."
 
 #: share/html/Elements/Footer:59
 #. ('<a href="mailto:sales@bestpractical.com">sales@bestpractical.com</a>')
@@ -9681,7 +8820,7 @@ msgstr "Tipas"
 
 #: share/html/Articles/Article/Elements/LinkEntryInstructions:48
 msgid "Type <b>a:</b> before article numbers and <b>t:</b> before ticket numbers."
-msgstr "Tipas <b>a:</b> prieš straipsnio numerius ir <b>t:</b> prieš prašymo numerius."
+msgstr "Tipas <b>a:</b> prieš aprašo numerius ir <b>t:</b> prieš prašymo numerius."
 
 #: lib/RT/CustomField.pm:993
 #. ($self->FriendlyTypeComposite( $old ),        $self->FriendlyTypeComposite( $composite ),)
@@ -9709,7 +8848,7 @@ msgstr "Nepavyksta pridėti narystės temoje"
 #: lib/RT/Article.pm:485
 #. ($t->TopicObj->Name)
 msgid "Unable to delete topic membership in %1"
-msgstr "Nepavyksta panaikinti narystės temoje %1"
+msgstr "Nepavyko panaikinti narystės temoje %1"
 
 #: share/html/Search/Elements/EditSearches:292
 msgid "Unable to determine object type or id"
@@ -9717,18 +8856,14 @@ msgstr "Neįmanoma nustatyti objekto ar identifikatoriaus tipą"
 
 #: share/html/Articles/Article/Delete.html:87 share/html/Articles/Article/Edit.html:198
 msgid "Unable to load article"
-msgstr "Nepavyksta nuskaityti staripsnio"
+msgstr "Nepavyksta nuskaityti aprašo"
 
-#: NOT FOUND IN SOURCE
-msgid "Unable to read image: %1"
-msgstr "Nepavyksta nuskaityti paveikslėlio: %1"
-
-#: share/html/Admin/Tools/Theme.html:270
+#: share/html/Admin/Tools/Theme.html:271
 #. ($msg)
 msgid "Unable to set UserCSS: %1"
 msgstr "Nepavyksta nustatyti naudotojo CSS: %1"
 
-#: share/html/Admin/Tools/Theme.html:242
+#: share/html/Admin/Tools/Theme.html:243
 #. ($msg)
 msgid "Unable to set UserLogo: %1"
 msgstr "Nepavyksta nustatyti naudotojo logotipo: %1"
@@ -9766,9 +8901,9 @@ msgstr ""
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr "Nuimkite pažymėjimą, jeigu norite išjungti išvardintų gavėjų informavimą <b>tik šiai operacijai</b>. Nuolatinis išjungimas valdomas <a href=\"%1\">Asmenų puslapyje</a>."
 
-#: etc/RT_Config.pm:2794 etc/RT_Config.pm:2870
+#: etc/RT_Config.pm:2797 etc/RT_Config.pm:2873
 msgid "Undelete"
-msgstr ""
+msgstr "Atkurti"
 
 #: share/html/Errors/WebRemoteUser/UserAutocreateDefaultsOnLogin:49
 msgid "Unfortunately, RT couldn't automatically setup an account for you. Your RT administator will find more information in the logs."
@@ -9801,10 +8936,14 @@ msgstr "Nežinomas turinio kodavimas %1"
 msgid "Unknown field: %1"
 msgstr "Nežinomas laukas: %1"
 
+#: NOT FOUND IN SOURCE
+msgid "Unknown watcher type %1"
+msgstr "Nežinomas stebėtojo tipas %1"
+
 #: share/html/Search/Simple.html:81
 #. ($status_str)
 msgid "Unless you specify a specific status, only tickets with active statuses (%1) are searched."
-msgstr ""
+msgstr "Jeigu nenurodėte konkrečios būsenos, bus ieškoma tik aktyvių (%1) prašymų."
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:65
 msgid "Unlimit"
@@ -9898,13 +9037,13 @@ msgstr "Pakeisti prašymą"
 #. ($Ticket->id)
 #. ($t->id)
 msgid "Update ticket #%1"
-msgstr "Prašymo #%1 pakeitimas"
+msgstr "Prašymo Nr. %1 pakeitimas"
 
 #: share/html/Ticket/Update.html:218 share/html/m/ticket/reply:175
 #. ($TicketObj->id, $TicketObj->Subject||'')
 #. ($t->id, $t->Subject)
 msgid "Update ticket #%1 (%2)"
-msgstr "Prašymo #%1 pakeitimas (%2)"
+msgstr "Prašymo Nr. %1 pakeitimas (%2)"
 
 #: lib/RT/Action/CreateTickets.pm:472 lib/RT/Interface/Web.pm:2256
 msgid "Update type was neither correspondence nor comment."
@@ -9968,10 +9107,6 @@ msgstr "Įkelti jūsų pakeitimus."
 msgid "Usage:"
 msgstr "Naudojimas:"
 
-#: NOT FOUND IN SOURCE
-msgid "Usage: "
-msgstr "Naudojimas: "
-
 #: lib/RT/Installer.pm:137
 msgid "Use SSL?"
 msgstr "Naudoti SSL?"
@@ -9982,24 +9117,16 @@ msgstr "Ar naudoti dviejų stulpelių išdėstymą kuriant ir atnaujinant formas
 
 #: lib/RT/Config.pm:193
 msgid "Use autocomplete to find owners?"
-msgstr "Naudoti automatinį teksto užbaigimą ieškant atsakingų?"
+msgstr "Naudoti automatinį teksto užbaigimą parenkant atsakingą asmenį"
 
 #: NOT FOUND IN SOURCE
 msgid "Use css rules to display text monospaced and with formatting preserved, but wrap as needed.  This does not work well with IE6 and you should use the previous option"
-msgstr "Naudoti css taisykles rodant fiksuoto pločio tekstą bei perkeliant eilutes. Tai neveikia su Internet Explores 6 versija. Tokiu atveju geriau naudoti ankstesnį variantą."
+msgstr "Naudoti css taisykles rodant fiksuoto pločio tekstą bei perkeliant eilutes. Tai neveikia su Internet Explores 6 versija."
 
 #: share/html/Widgets/Form/Boolean:68
 #. ($DefaultValue? loc('Yes'): loc('No'))
 msgid "Use default (%1)"
-msgstr "Naudoti nustatytą reikšmę (%1)"
-
-#: NOT FOUND IN SOURCE
-msgid "Use fixed-width font to display plaintext messages"
-msgstr "Naudoti fiksuoto pločio šriftą atvaizduoti tekstinius pranešimus"
-
-#: NOT FOUND IN SOURCE
-msgid "Use monospace font"
-msgstr "Naudoti fiksuoto pločio šriftą"
+msgstr "Naudoti sistemos nutylėtąją reikšmę (%1)"
 
 #: share/html/Elements/Tabs:223
 msgid "Use other RT administrative tools"
@@ -10008,15 +9135,15 @@ msgstr "Naudoti kitas RT administravimo priemones"
 #: share/html/Widgets/Form/Select:125
 #. (join ', ', map loc($ValuesLabel{$_} || $_), grep defined,            @DefaultValue)
 msgid "Use system default (%1)"
-msgstr "Naudoti nustatytą sisteminę reikšmę (%1)"
+msgstr "Naudoti sistemos nutylėtąją reikšmę (%1)"
 
 #: share/html/Articles/Article/ExtractFromTicket.html:58
 msgid "Use the dropdown menus to select which ticket updates you want to extract into a new article."
-msgstr "Naudoti pasirinkimą iš sąrašo išrenkant prašymus, kuriuos norite perkelti į naują straipsnį."
+msgstr "Pasirinkite prašymo tekstus, kuriuos norite perkelti į naują aprašą."
 
 #: NOT FOUND IN SOURCE
 msgid "Use this to protect the format of plain text"
-msgstr "Naudokite tai apsaugoti teksto formatavimą"
+msgstr "Naudokite, kai norite išlaikyti teksto formatavimą"
 
 #: share/html/Elements/RT__Template/ColumnMap:81
 msgid "Used by scrips"
@@ -10046,7 +9173,7 @@ msgstr "Naudotojo nustatytos sąlygos ir veiksmai"
 msgid "User Defined conditions and results"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3648
+#: lib/RT/Interface/Web.pm:3684
 msgid "User Groups"
 msgstr ""
 
@@ -10069,7 +9196,7 @@ msgstr ""
 #: lib/RT/Interface/Web.pm:3104
 #. ($cf->Name, ref $args{'Object'},                    $args{'Object'}->id)
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
-msgstr "Naudotojas pageidauja nežinomo tipo pakeitimo %2 objektui #%3 papildomą lauką %1"
+msgstr "Naudotojas pageidauja nežinomo tipo pakeitimo %2 objekto Nr. %3 papildomam laukui %1"
 
 #: share/html/Admin/Users/Modify.html:280
 #. ($msg)
@@ -10079,10 +9206,6 @@ msgstr "Negalima sukurti naudotojo: %1"
 #: lib/RT/User.pm:267
 msgid "User created"
 msgstr "Naudotojas sukurtas"
-
-#: NOT FOUND IN SOURCE
-msgid "User defined groups"
-msgstr "Vartotojo apibrėžtos grupės"
 
 #: lib/RT/User.pm:1152
 msgid "User disabled"
@@ -10099,10 +9222,6 @@ msgstr "Nenurodytas naudotojo el. pašto adresas"
 #: lib/RT/User.pm:533 lib/RT/User.pm:553
 msgid "User loaded"
 msgstr "Naudotojas įkeltas"
-
-#: NOT FOUND IN SOURCE
-msgid "User's GnuPG keys"
-msgstr "Vartotojo GnuPG raktai"
 
 #: share/html/Admin/Groups/index.html:121
 msgid "User-defined groups"
@@ -10121,7 +9240,7 @@ msgstr "Naudotojo vardas"
 msgid "Username format"
 msgstr "Naudotojo vardo formatas"
 
-#: lib/RT/CustomField.pm:1746 lib/RT/Interface/Web.pm:3701 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:500 share/html/Elements/Tabs:67
+#: lib/RT/CustomField.pm:1746 lib/RT/Interface/Web.pm:3737 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:500 share/html/Elements/Tabs:67
 msgid "Users"
 msgstr "Naudotojai"
 
@@ -10132,7 +9251,7 @@ msgstr "Naudotojai, atitinkantys paeiškos kriterijus"
 #: bin/rt-crontool:166
 #. ($txn->id)
 msgid "Using transaction #%1..."
-msgstr "Naudojama tranzakcija #%1..."
+msgstr "Naudojama tranzakcija Nr. %1..."
 
 #: lib/RT/Tickets.pm:3033
 msgid "Valid Query"
@@ -10154,10 +9273,6 @@ msgstr "Reikšmės"
 msgid "Variable"
 msgstr "Kintamasis"
 
-#: NOT FOUND IN SOURCE
-msgid "Various RT reports"
-msgstr "Įvairios RT ataskaitos"
-
 #: share/html/Admin/Tools/Configuration.html:239
 msgid "Version"
 msgstr "Versija"
@@ -10177,10 +9292,6 @@ msgstr "Peržiūrėti papildomų laukų reikšmes"
 #: lib/RT/CustomField.pm:213
 msgid "View custom fields"
 msgstr "Peržiūrėti papildomus laukus"
-
-#: NOT FOUND IN SOURCE
-msgid "View dashboards for this group"
-msgstr "Žiūrėti šios grupės informacines paneles"
 
 #: lib/RT/Queue.pm:125
 msgid "View exact outgoing email messages and their recipients"
@@ -10276,7 +9387,7 @@ msgstr "Negalima parodyti kaip sąrašo, kai kategorijos remiasi kitu papildomu 
 
 #: share/html/Install/DatabaseDetails.html:55
 msgid "We need to know the name of the database RT will use and where to find it.  We also need to know the username and password of the user RT should use. RT can create the database and user for you, which is why we ask for the username and password of a user with DBA privileges.  During step 6 of the installation process we will use this information to create and initialize RT's database."
-msgstr "We need to know the name of the database RT will use and where to find it.  We also need to know the username and password of the user RT should use. RT can create the database and user for you, which is why we ask for the username and password of a user with DBA privileges.  During step 6 of the installation process we will use this information to create and initialize RT's database."
+msgstr "Reikia nurodyti RT naudojamos duomenų bazės pavadinimą ir kur ji yra. Be to, reikia nurodyti naudotojo vardą ir slaptažodį prisijungui prie duomenų bazės. RT instaliacija gali sukurti trūkstama duomenų bazę ir naudotoją, todėl reikia nurodyti duomenų bazės administratoriaus vardą ir slaptažodį. 6-ame instaliavimo žingsnyje ši informacija bus panaudota inicializuojant RT duomenų bazę."
 
 #: lib/RT/Installer.pm:222
 msgid "Web port"
@@ -10292,11 +9403,11 @@ msgstr "Trečiadienis"
 
 #: lib/RT/Dashboard/Mailer.pm:328
 msgid "Weekday"
-msgstr ""
+msgstr "Šiokiadienis"
 
 #: lib/RT/Dashboard/Mailer.pm:330
 msgid "Weekly"
-msgstr ""
+msgstr "Kas savaitę"
 
 #: lib/RT/Config.pm:515
 msgid "Weekly digest"
@@ -10324,7 +9435,7 @@ msgstr "When RT can't handle an email message, where should it be forwarded?"
 
 #: share/html/Install/Global.html:54
 msgid "When RT sends an email it sets the From: and Reply-To: headers so users can add to the conversation by just hitting Reply in their mail client.  It uses different addresses for Replies and Comments.  These can be changed for each of your queues.  These addresses will need to be configured to use the <tt>rt-mailgate</tt> program."
-msgstr "When RT sends an email it sets the From: and Reply-To: headers so users can add to the conversation by just hitting Reply in their mail client.  It uses different addresses for Replies and Comments.  These can be changed for each of your queues.  These addresses will need to be configured to use the <tt>rt-mailgate</tt> program."
+msgstr "Kai RT siunčia laišką, ji nurodo From: ir Reply-To: antraštes, kad naudotojai galėtų tiesiogiai atsakyti paspaudę Reply mygtuką savo pašto programoje. Atsakymams ir komentarams naudojami skirtingi adresai iš eilės nustatymų. Šie adresai turi būti nurodyti <tt>rt-mailgate</tt> programos konfigūracijoje."
 
 #: etc/initialdata:114
 msgid "When a ticket is created"
@@ -10352,7 +9463,7 @@ msgstr "Kiekvieną kartą uždarius prašymą"
 
 #: etc/initialdata:139 etc/upgrade/4.0.3/content:15
 msgid "Whenever a ticket is forwarded"
-msgstr ""
+msgstr "Kai persiunčiamas prašymas"
 
 #: etc/initialdata:195 etc/upgrade/3.8.3/content:6
 msgid "Whenever a ticket is rejected"
@@ -10360,7 +9471,7 @@ msgstr "Kai prašymas yra atmestas"
 
 #: etc/initialdata:214 etc/upgrade/3.7.1/content:11
 msgid "Whenever a ticket is reopened"
-msgstr "Kiekvieną kartą pakartotinai atidarius prašymą"
+msgstr "Kiekvieną kartą pradedant vykdyti prašymą pakartotinai"
 
 #: etc/initialdata:188
 msgid "Whenever a ticket is resolved"
@@ -10368,7 +9479,7 @@ msgstr "Kiekvieną kartą įvykdžius prašymą"
 
 #: etc/initialdata:132 etc/upgrade/4.0.3/content:8
 msgid "Whenever a ticket or transaction is forwarded"
-msgstr ""
+msgstr "Kai prašymas arba veiksmas yra persiunčiamas"
 
 #: etc/initialdata:174
 msgid "Whenever a ticket's owner changes"
@@ -10388,7 +9499,7 @@ msgstr "Kiekvieną kartą keičiantis prašymo būsenai"
 
 #: etc/initialdata:146 etc/upgrade/4.0.3/content:22
 msgid "Whenever a transaction is forwarded"
-msgstr ""
+msgstr "Kai veiksmas persiunčiamas"
 
 #: etc/initialdata:202
 msgid "Whenever a user-defined condition occurs"
@@ -10420,10 +9531,6 @@ msgstr "Darbo"
 
 #: share/html/Elements/RT__User/ColumnMap:86
 msgid "Work Phone"
-msgstr "Darbo telefonas"
-
-#: NOT FOUND IN SOURCE
-msgid "WorkPhone"
 msgstr "Darbo telefonas"
 
 #: share/html/Ticket/Elements/ShowBasics:65 share/html/Tools/MyDay.html:62 share/html/m/ticket/reply:81 share/html/m/ticket/show:227
@@ -10463,10 +9570,6 @@ msgstr "You are going to encrypt outgoing email messages, but there is a problem
 #: share/html/Elements/Crypt/KeyIssues:62
 msgid "You are going to encrypt outgoing email messages, but there is a problem with a recipient's public key/certificate. You have to fix the problem with the key/certificate, disable sending a message to that recipient, or disable encryption."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "You are not an authorized user"
-msgstr "Jūs esate neprisiregistravęs"
 
 #: share/html/Errors/WebRemoteUser/NoRemoteUser:49
 msgid "You are not authorized to use RT."
@@ -10512,11 +9615,7 @@ msgstr "Jūs galite paskirti sau tik tuos prašymus, kurie nepriskirti niekam"
 #: share/html/Search/Simple.html:71
 #. ($fulltext_keyword)
 msgid "You can search for any word in full ticket history by typing <b>%1<i>word</i></b>."
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "You can search for any word in full ticket history by typing <b>fulltext:<i>word</i></b>."
-msgstr "Galite ieškote teksto fragmento visuose prašymuose naudodami sąlygą <b>fulltext:<i>ieškomas tekstas</i></b>."
+msgstr "Galite ieškoti bet kokio žodžio prašymo istorijoje naudodami sintaksę <b>%1<i>žodis</i></b>."
 
 #: lib/RT/Record/Role/Status.pm:167
 #. ($self->loc($old), $self->loc($new))
@@ -10526,10 +9625,6 @@ msgstr "Jūs negalite pakeisti būsenos iš '%1' į '%2'."
 #: share/html/Admin/Tools/Shredder/Elements/Error/NoRights:50
 msgid "You don't have <b>SuperUser</b> right."
 msgstr "Jūs neturite b>SuperUser</b> teisių."
-
-#: NOT FOUND IN SOURCE
-msgid "You found %1 tickets in queue %2"
-msgstr "Radote %1 prašymų eilėje %2"
 
 #: share/html/NoAuth/Logout.html:55
 msgid "You have been logged out of RT."
@@ -10551,13 +9646,13 @@ msgstr ""
 msgid "You have enabled encryption support but have not set a correspondence address for this queue."
 msgstr ""
 
-#: share/html/SelfService/Display.html:104
+#: share/html/SelfService/Display.html:111
 msgid "You have no permission to create tickets in that queue."
 msgstr "Jūs neturite teisės kurti prašymus šioje eilėje."
 
 #: share/html/Elements/AddLinks:60
 msgid "You may enter links to Articles as \"a:###\", where ### represents the number of the Article."
-msgstr "Jūs galite įdėti nuorodą į straipsnį naudodami formą \"a:###\", kur ### atitinka straipsnio numerį."
+msgstr "Galite įdėti nuorodą į aprašą naudodami formą \"a:###\", kur ### atitinka aprašo numerį."
 
 #: NOT FOUND IN SOURCE
 msgid "You may not create requests in that queue."
@@ -10590,11 +9685,7 @@ msgstr ""
 #: share/html/Install/Finish.html:56
 #. ('<tt>root</tt>')
 msgid "You should be taken directly to a login page. You'll be able to log in with username of %1 and the password you set earlier."
-msgstr "You should be taken directly to a login page. You'll be able to log in with username of %1 and the password you set earlier."
-
-#: NOT FOUND IN SOURCE
-msgid "You should be taken directly to a login page. You'll be able to log in with username of <tt>root</tt> and the password you set earlier."
-msgstr "You should be taken directly to a login page. You'll be able to log in with username of <tt>root</tt> and the password you set earlier."
+msgstr "Jūs būsite nukreipti į prisijungimo puslapį. Galite jungtis naudotoju %1 su slaptažodžiu, kurį nurodėte anksčiau."
 
 #: share/html/Install/DatabaseType.html:55
 msgid "You should choose the database you or your local database administrator is most comfortable with."
@@ -10604,10 +9695,6 @@ msgstr "You should choose the database you or your local database administrator 
 msgid "You were logged out of RT by your authentication system.  This may be a temporary hiccup, in which case refreshing this page may help."
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>Let's go!</i> below, RT will guide you through setting up your RT server and database."
-msgstr "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>Let's go!</i> below, RT will guide you through setting up your RT server and database."
-
 #: share/html/Install/index.html:79
 #. (loc("Let's go!"))
 msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click \"%1\" below, RT will guide you through setting up your RT server and database."
@@ -10616,10 +9703,6 @@ msgstr "You're seeing this screen because you started up an RT server without a 
 #: share/html/NoAuth/Logout.html:59
 msgid "You're welcome to login again"
 msgstr "Ačiū. Kviečiame užeiti dar kartą"
-
-#: NOT FOUND IN SOURCE
-msgid "Your current password"
-msgstr "Jūsų dabartinis slaptažodis"
 
 #: lib/RT/User.pm:1044
 msgid "Your password is not set."
@@ -10660,7 +9743,7 @@ msgstr "aktyvus"
 
 #: NOT FOUND IN SOURCE
 msgid "add <pre> tag around plain text attachments"
-msgstr "naudokyte žymas <pre> prieš ir po tekstinių prikabintų failų"
+msgstr "Naudoti žymas <pre> prieš ir po tekstinių prikabintų tekstinių failų"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:100 share/html/Articles/Article/Elements/ShowSearchCriteria:108 share/html/Elements/SelectDateRelation:59
 msgid "after"
@@ -10674,14 +9757,6 @@ msgstr ""
 msgid "after the rest of the page loads"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "allow creation of saved searches"
-msgstr "leisti sukurti išsaugotas paieškas"
-
-#: NOT FOUND IN SOURCE
-msgid "allow loading of saved searches"
-msgstr "leisti užkrauti išsaugotas paieškas"
-
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:102 share/html/Articles/Article/Elements/ShowSearchCriteria:111
 msgid "and before"
 msgstr "ir prieš tai"
@@ -10693,10 +9768,6 @@ msgstr "ir ne"
 #: share/html/Search/Chart.html:123 share/html/Search/Chart.html:131 share/html/Search/Chart.html:146 share/html/Search/Chart.html:149
 msgid "and then"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "as granted to %1"
-msgstr "teisė suteikta: %1"
 
 #: share/html/Search/Elements/SelectChartType:54
 msgid "bar"
@@ -10748,11 +9819,7 @@ msgstr "spustelk pažymėti visus objektus iš karto"
 
 #: share/html/SelfService/Closed.html:53
 msgid "closed"
-msgstr "uždarytas"
-
-#: NOT FOUND IN SOURCE
-msgid "concise"
-msgstr "glaustas"
+msgstr "Įvykdytas"
 
 #: share/html/Admin/Tools/Configuration.html:83
 msgid "core config"
@@ -10760,7 +9827,7 @@ msgstr "pagrindinė konfigūracija"
 
 #: lib/RT/Interface/Web.pm:1607 lib/RT/Interface/Web.pm:1616
 msgid "create a ticket"
-msgstr ""
+msgstr "pateikti prašymą"
 
 #: NOT FOUND IN SOURCE
 msgid "custom field '%1'"
@@ -10789,11 +9856,11 @@ msgstr "panaikintas"
 
 #: NOT FOUND IN SOURCE
 msgid "display wrapped and formatted plain text attachments"
-msgstr "rodyti tekstinius prikabintus failus suformatuos ir su perkėlimu į naują eilutę"
+msgstr "Rodyti prikabintus tekstinius failus prašymo istorijoje suformatuotus ir automatiškai skaidant ilgas eilutes."
 
 #: share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectMatch:58 share/html/Search/Elements/PickBasics:74
 msgid "doesn't match"
-msgstr "nesutampa"
+msgstr "dalinai nėra"
 
 #: share/html/Ticket/ShowEmailRecord.html:68
 msgid "download"
@@ -10866,10 +9933,6 @@ msgid "group '%1'"
 msgstr "grupė '%1'"
 
 #: NOT FOUND IN SOURCE
-msgid "hide quoted text"
-msgstr "nerodyti cituojamo teksto"
-
-#: NOT FOUND IN SOURCE
 msgid "hours"
 msgstr "valandų"
 
@@ -10879,7 +9942,7 @@ msgstr "iCal"
 
 #: lib/RT/Tickets.pm:113 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:53 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:56
 msgid "id"
-msgstr "identifikatorius"
+msgstr "Numeris"
 
 #: lib/RT/Config.pm:372
 msgid "immediately"
@@ -10943,7 +10006,7 @@ msgstr "ribinis"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:64 share/html/Articles/Article/Elements/ShowSearchCriteria:68 share/html/Articles/Article/Elements/ShowSearchCriteria:74 share/html/Articles/Article/Elements/ShowSearchCriteria:79 share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectMatch:57 share/html/Search/Elements/PickBasics:73
 msgid "matches"
-msgstr "sutampa"
+msgstr "dalinai yra"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:64
 msgid "maximum depth"
@@ -10959,19 +10022,19 @@ msgstr "minučių"
 
 #: lib/RT/Interface/Web.pm:1609
 msgid "modify RT's configuration"
-msgstr ""
+msgstr "pakeisti RT konfigūraciją"
 
 #: lib/RT/Interface/Web.pm:1612
 msgid "modify a dashboard"
-msgstr ""
+msgstr "pakeisti informacinę panelę"
 
 #: lib/RT/Interface/Web.pm:1615
 msgid "modify or access a search"
-msgstr ""
+msgstr "pakeisti ar pažiūrėti paieškos kriterijus"
 
 #: lib/RT/Interface/Web.pm:1614
 msgid "modify your preferences"
-msgstr ""
+msgstr "pakeisti asmeninius nustatymus"
 
 #: share/html/Dashboards/Subscription.html:127
 msgid "monthly"
@@ -11000,7 +10063,7 @@ msgstr "ne"
 
 #: NOT FOUND IN SOURCE
 msgid "no name"
-msgstr "nėra vardo"
+msgstr "be pavadinimo"
 
 #: lib/RT/Crypt/GnuPG.pm:1743 share/html/Admin/Elements/EditQueueWatchers:50 share/html/Dashboards/Subscription.html:73 share/html/Ticket/Elements/EditWatchers:51
 msgid "none"
@@ -11032,7 +10095,7 @@ msgstr "vienas"
 
 #: lib/RT/Queue.pm:103 share/html/SelfService/Elements/MyRequests:72 share/html/SelfService/index.html:52
 msgid "open"
-msgstr "atidarytas"
+msgstr "vykdomas"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:155
 msgid "open/close"
@@ -11044,11 +10107,7 @@ msgstr "kiti..."
 
 #: share/html/Elements/CSRF:75 share/html/Elements/LoginRedirectWarning:57
 msgid "perform actions"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "personal group '%1' for user '%2'"
-msgstr "asmeninė grupė '%1' vartotojui '%2'"
+msgstr "atlikti veiksmus"
 
 #: share/html/Search/Elements/SelectChartType:55
 msgid "pie"
@@ -11077,7 +10136,7 @@ msgstr "reikalauja veikiančio rt-crontool įrankio"
 
 #: lib/RT/Queue.pm:105
 msgid "resolved"
-msgstr "išspręstas"
+msgstr "Įvykdytas"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:55
 msgid "right to left"
@@ -11090,18 +10149,6 @@ msgstr "sek"
 #: share/html/Admin/Tools/Shredder/index.html:179
 msgid "see object list below"
 msgstr "žr. objektų sąrašą žemiau"
-
-#: NOT FOUND IN SOURCE
-msgid "show Approvals tab"
-msgstr "rodyti Tvirtinimų puslapį"
-
-#: NOT FOUND IN SOURCE
-msgid "show Configuration tab"
-msgstr "parodyti konfigūracijos puslapį"
-
-#: NOT FOUND IN SOURCE
-msgid "show quoted text"
-msgstr "rodyti cituojamą tekstą"
 
 #: share/html/Admin/Global/MyRT.html:87
 msgid "sidebar"
@@ -11139,11 +10186,11 @@ msgstr "sisteminė grupė '%1'"
 
 #: lib/RT/Interface/Web.pm:1523
 msgid "the Referrer header supplied by your browser (%1) is not allowed by RT's configured hostname (%2)"
-msgstr ""
+msgstr "Naršyklės pateikta antraštė Referrer  (%1) neatitinka RT serverio vardo (%2)"
 
 #: lib/RT/Interface/Web.pm:1516
 msgid "the Referrer header supplied by your browser (%1) is not allowed by RT's configured hostname (%2) or whitelisted hosts (%3)"
-msgstr ""
+msgstr "Naršyklės pateikta antraštė Referrer  (%1) neatitinka RT serverio vardo (%2) arba kitų leistinų vardų (%3)"
 
 #: share/html/Elements/Error:70
 msgid "the calling component did not specify why"
@@ -11160,7 +10207,7 @@ msgstr "adresas bus naudojamas atsakymų laiškų laukuose From: ir Reply-To:"
 #: lib/RT/Group.pm:126
 #. ($self->Instance, $self->Name)
 msgid "ticket #%1 %2"
-msgstr "prašymas #%1 %2"
+msgstr "prašymas Nr. %1 %2"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:51
 msgid "top to bottom"
@@ -11181,15 +10228,15 @@ msgstr "neribotas"
 
 #: lib/RT/Interface/Web.pm:1608 lib/RT/Interface/Web.pm:1613 lib/RT/Interface/Web.pm:1617
 msgid "update a ticket"
-msgstr ""
+msgstr "atnaujinti prašymą"
 
 #: lib/RT/Interface/Web.pm:1610
 msgid "update an approval"
-msgstr ""
+msgstr "atnaujinti patvirtinimą"
 
 #: lib/RT/Interface/Web.pm:1611
 msgid "update an article"
-msgstr ""
+msgstr "pakeisti aprašą"
 
 #: share/html/Admin/Elements/EditRights:64
 msgid "user"
@@ -11203,10 +10250,6 @@ msgstr "naudotojas %1"
 #: share/html/Admin/Elements/EditRights:157
 msgid "username"
 msgstr "naudotojo vardas"
-
-#: NOT FOUND IN SOURCE
-msgid "verbose"
-msgstr "detaliai"
 
 #: share/html/Dashboards/Subscription.html:105
 msgid "weekly"
@@ -11224,7 +10267,7 @@ msgstr "savaitės"
 #: share/html/Elements/LoginRedirectWarning:64
 #. ("<strong>$consequence</strong>")
 msgid "which may %1 on your behalf."
-msgstr ""
+msgstr "kuris gali %1 jūsų vardu."
 
 #: lib/RT/Installer.pm:223
 msgid "which port your web server will listen to, e.g. 8080"
@@ -11244,5 +10287,5 @@ msgstr "taip"
 
 #: lib/RT/Interface/Web.pm:1508
 msgid "your browser did not supply a Referrer header"
-msgstr ""
+msgstr "Jūsų naršyklė nepalaiko antraštės atributo Referrer"
 

@@ -7,23 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
-"POT-Creation-Date: 2011-08-05 23:32+0000\n"
-"PO-Revision-Date: 2011-08-06 00:39+0000\n"
-"Last-Translator: Alex Vandiver <alexmv@bestpractical.com>\n"
+"POT-Creation-Date: 2013-06-06 21:51+0000\n"
+"PO-Revision-Date: 2013-09-19 13:58+0000\n"
+"Last-Translator: Andi Chandler <Unknown>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-06 01:13+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
-
-#: NOT FOUND IN SOURCE
-msgid " (no pubkey!)"
-msgstr " (no pubkey!)"
-
-#: NOT FOUND IN SOURCE
-msgid " (untrusted!)"
-msgstr " (untrusted!)"
+"X-Launchpad-Export-Date: 2013-10-03 20:13+0000\n"
+"X-Generator: Launchpad (build 16791)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:60
 msgid "#"
@@ -40,10 +32,24 @@ msgstr "#"
 msgid "#%1: %2"
 msgstr "#%1: %2"
 
+#: NOT FOUND IN SOURCE
+msgid "%1 #%1:"
+msgstr "%1 #%1:"
+
 #: lib/RT/URI/fsck_com_rt.pm:229
 #. ($self->ObjectType, $object->Id)
 msgid "%1 #%2"
 msgstr "%1 #%2"
+
+#: lib/RT/Group.pm:131
+#. ($self->loc($class), $self->Instance, $self->Name)
+msgid "%1 #%2 %3"
+msgstr "%1 #%2 %3"
+
+#: lib/RT/URI/fsck_com_rt.pm:227
+#. ($self->ObjectType, $object->Id, $name)
+msgid "%1 #%2: %3"
+msgstr "%1 #%2: %3"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 %2"
@@ -93,9 +99,15 @@ msgstr "%1 %2 deleted"
 msgid "%1 %2 deleted."
 msgstr "%1 %2 deleted."
 
-#: NOT FOUND IN SOURCE
-msgid "%1 %2 renamed to %3."
-msgstr "%1 %2 renamed to %3."
+#: lib/RT/Record/Role/Status.pm:256
+#. ($self->loc($column), $args{Value})
+msgid "%1 %2 does not exist"
+msgstr "%1 %2 does not exist"
+
+#: lib/RT/Record/Role/Status.pm:261
+#. ($self->loc($column), $name)
+msgid "%1 %2 is disabled"
+msgstr "%1 %2 is disabled"
 
 #: share/html/Widgets/SavedSearch:130
 #. (loc($self->{SearchType}), $args->{SavedSearchDescription})
@@ -138,6 +150,10 @@ msgstr "%1 (from pane %2)"
 msgid "%1 - Adjust LogToSTDERR config option"
 msgstr "%1 - Adjust LogToSTDERR config option"
 
+#: NOT FOUND IN SOURCE
+msgid "%1 - Adjust LogToScreen config option"
+msgstr "%1 - Adjust LogToScreen config option"
+
 #: bin/rt-crontool:312 bin/rt-crontool:319 bin/rt-crontool:325
 #. ("--action-arg", "--action")
 #. ("--condition-arg", "--condition")
@@ -149,10 +165,6 @@ msgstr "%1 - An argument to pass to %2"
 #. ("--verbose")
 msgid "%1 - Output status updates to STDOUT"
 msgstr "%1 - Output status updates to STDOUT"
-
-#: NOT FOUND IN SOURCE
-msgid "%1 - Specify id of the template you want to use"
-msgstr "%1 - Specify id of the template you want to use"
 
 #: bin/rt-crontool:331
 #. ("--transaction")
@@ -184,19 +196,11 @@ msgstr "%1 - Specify the condition module you want to use"
 msgid "%1 - Specify the search module you want to use"
 msgstr "%1 - Specify the search module you want to use"
 
-#: NOT FOUND IN SOURCE
-msgid "%1 DashBoards"
-msgstr "%1 DashBoards"
-
 #: share/html/Elements/Footer:56 share/html/m/_elements/footer:51
 #. ('&#187;&#124;&#171;', $RT::VERSION, '2013', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #. ('', '', '2013', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr "%1 RT %2 Copyright 1996-%3 %4."
-
-#: NOT FOUND IN SOURCE
-msgid "%1 ScripAction loaded"
-msgstr "%1 ScripAction loaded"
 
 #: lib/RT/Record.pm:2069
 #. ($args{'Value'}, $cf->Name)
@@ -212,6 +216,11 @@ msgstr "%1 already exists and has RT's tables in place, but does not contain RT'
 #. ($RT::DatabaseName)
 msgid "%1 already exists, but does not contain RT's tables or metadata. The 'Initialize Database' step later on can insert tables and metadata into this existing database. if this is acceptable, click 'Customize Basic' below to continue customizing RT."
 msgstr "%1 already exists, but does not contain RT's tables or metadata. The 'Initialise Database' step later on can insert tables and metadata into this existing database. if this is acceptable, click 'Customise Basic' below to continue customising RT."
+
+#: lib/RT/ACE.pm:272
+#. ($princ_obj->Object->Name)
+msgid "%1 already has that right"
+msgstr "%1 already has that right"
 
 #: lib/RT/Link.pm:176 lib/RT/Link.pm:184
 #. ($args{'Base'})
@@ -236,6 +245,12 @@ msgstr "%1 by %2"
 msgid "%1 changed from %2 to %3"
 msgstr "%1 changed from %2 to %3"
 
+#: share/html/Admin/CustomFields/Modify.html:215 share/html/Admin/CustomFields/Modify.html:231
+#. (loc("Render Type"), $original, $RenderType)
+#. (loc("Field values source"), $original, $ValuesClass)
+msgid "%1 changed from '%2' to '%3'"
+msgstr "%1 changed from '%2' to '%3'"
+
 #: NOT FOUND IN SOURCE
 msgid "%1 chart by %2"
 msgstr "%1 chart by %2"
@@ -253,10 +268,6 @@ msgstr "%1 core config"
 #: lib/RT/Record.pm:962
 msgid "%1 could not be set to %2."
 msgstr "%1 could not be set to %2."
-
-#: NOT FOUND IN SOURCE
-msgid "%1 couldn't set status to resolved. RT's Database may be inconsistent."
-msgstr "%1 couldn't set status to resolved. RT's Database may be inconsistent."
 
 #: NOT FOUND IN SOURCE
 msgid "%1 created"
@@ -293,9 +304,23 @@ msgstr "%1 is a tool to act on tickets from an external scheduling tool, such as
 msgid "%1 is a utility, meant to be run from cron, that dispatches all deferred RT notifications as a per-user digest."
 msgstr "%1 is a utility, meant to be run from cron, that dispatches all deferred RT notifications as a per-user digest."
 
-#: NOT FOUND IN SOURCE
-msgid "%1 is no longer a %2 for this queue."
-msgstr "%1 is no longer a %2 for this queue."
+#: lib/RT/Record/Role/Roles.pm:415
+#. ($principal->Object->Name, $self->loc($type))
+msgid "%1 is already a %2"
+msgstr "%1 is already a %2"
+
+#: lib/RT/Record/Role/Status.pm:264
+#. ($self->loc($column), $name)
+msgid "%1 is already set to %2"
+msgstr "%1 is already set to %2"
+
+#: lib/RT/Record/Role/Roles.pm:365 lib/RT/Record/Role/Roles.pm:373 share/html/Ticket/Create.html:418 share/html/Ticket/Update.html:282 share/html/m/ticket/create:189 share/html/m/ticket/reply:208
+#. ($email, $self->loc($type))
+#. ($name, $self->loc($type))
+#. ($email->format, loc($field =~ /^(.*?)s?$/))
+#. ($email->format, loc(substr($field, 6)))
+msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
+msgstr "%1 is an address where RT receives mail. Adding it as a '%2' would create a mail loop"
 
 #: lib/RT/Ticket.pm:673
 #. ($principal->Object->Name,                         $self->loc($args{'Type'}))
@@ -307,10 +332,31 @@ msgstr "%1 is no longer a %2 for this ticket."
 msgid "%1 is no longer a value for custom field %2"
 msgstr "%1 is no longer a value for custom field %2"
 
+#: lib/RT/Record/Role/Roles.pm:493
+#. ($principal->Object->Name, $self->loc($args{Type}))
+msgid "%1 is not a %2"
+msgstr "%1 is not a %2"
+
+#: lib/RT/Queue.pm:189 lib/RT/Record/Role/Lifecycle.pm:126
+#. ($args{'Lifecycle'})
+#. ($value)
+msgid "%1 is not a valid lifecycle"
+msgstr "%1 is not a valid lifecycle"
+
 #: share/html/Ticket/Elements/ShowTime:49 share/html/Ticket/Elements/ShowTime:51
 #. ($minutes)
 msgid "%1 min"
 msgstr "%1 min"
+
+#: share/html/Articles/Elements/UpdatedArticles:48
+#. ($rows)
+msgid "%1 most recently updated articles"
+msgstr "%1 most recently updated articles"
+
+#: share/html/Articles/Elements/NewestArticles:48
+#. ($rows)
+msgid "%1 newest articles"
+msgstr "%1 newest articles"
 
 #: etc/initialdata:818
 msgid "%1 newest unowned tickets"
@@ -340,10 +386,6 @@ msgstr "%1 update: Nothing changed"
 msgid "%1 updated"
 msgstr "%1 updated"
 
-#: NOT FOUND IN SOURCE
-msgid "%1 will resolve all members of a resolved group ticket."
-msgstr "%1 will resolve all members of a resolved group ticket."
-
 #: lib/RT/CustomField.pm:1158
 msgid "%1's %2 objects"
 msgstr "%1's %2 objects"
@@ -351,6 +393,15 @@ msgstr "%1's %2 objects"
 #: lib/RT/CustomField.pm:1159
 msgid "%1's %2's %3 objects"
 msgstr "%1's %2's %3 objects"
+
+#: NOT FOUND IN SOURCE
+msgid "%1's GnuPG keys"
+msgstr "%1's GnuPG keys"
+
+#: share/html/Elements/EditPassword:55
+#. ($session{'CurrentUser'}->Name())
+msgid "%1's current password"
+msgstr "%1's current password"
 
 #: share/html/Dashboards/Elements/SelectPrivacy:63 share/html/Dashboards/Elements/SelectPrivacy:65 share/html/Dashboards/Elements/ShowDashboards:55
 #. ($object->Format)
@@ -381,6 +432,11 @@ msgstr "%1:%2"
 msgid "%1:%2:%3"
 msgstr "%1:%2:%3"
 
+#: lib/RT/Attachment.pm:453 lib/RT/Date.pm:367
+#. (int( $size / 1024 / 102.4 ) / 10)
+msgid "%1M"
+msgstr "%1M"
+
 #: share/html/Elements/CreateTicket:54
 #. ($button_start, $button_end, $queue_selector)
 msgid "%1New ticket in%2&nbsp;%3"
@@ -396,26 +452,77 @@ msgstr "%1b"
 msgid "%1k"
 msgstr "%1k"
 
+#: lib/RT/Date.pm:363
+msgid "%1m"
+msgstr "%1m"
+
+#: lib/RT/Date.pm:362 share/html/Admin/Tools/Queries.html:110 share/html/Admin/Tools/Queries.html:81
+#. (sprintf('%.4f', $duration))
+#. (sprintf('%.4f', $seconds))
+msgid "%1s"
+msgstr "%1s"
+
+#: share/html/Articles/Elements/ShowTopicLink:61
+#. ($Articles->Count)
+msgid "%quant(%1,article)"
+msgstr "%quant(%1,article)"
+
 #: lib/RT/Date.pm:371 share/html/Ticket/Elements/ShowTime:51
 #. (sprintf("%.1f",$minutes / 60))
 msgid "%quant(%1,hour)"
 msgstr "%quant(%1,hour)"
 
+#: share/html/Elements/ShowTransaction:136
+#. ($Transaction->TimeTaken)
+msgid "%quant(%1,min,min)"
+msgstr "%quant(%1,min,min)"
+
 #: NOT FOUND IN SOURCE
 msgid "'%1' is an invalid value for status"
 msgstr "'%1' is an invalid value for status"
+
+#: lib/RT/Queue.pm:323
+#. ($name)
+msgid "'%1' is not a valid name."
+msgstr "'%1' is not a valid name."
+
+#: share/html/Articles/Article/Edit.html:121
+#. ($Class)
+msgid "'%1' isn't a valid class"
+msgstr "'%1' isn't a valid class"
+
+#: share/html/Articles/Article/ExtractFromTicket.html:93 share/html/Articles/Article/ExtractIntoTopic.html:70
+#. ($Class)
+msgid "'%1' isn't a valid class identifier"
+msgstr "'%1' isn't a valid class identifier"
+
+#: NOT FOUND IN SOURCE
+msgid "'Roles'"
+msgstr "'Roles'"
+
+#: NOT FOUND IN SOURCE
+msgid "'System'"
+msgstr "'System'"
+
+#: NOT FOUND IN SOURCE
+msgid "'User Groups'"
+msgstr "'User Groups'"
+
+#: NOT FOUND IN SOURCE
+msgid "'Users'"
+msgstr "'Users'"
+
+#: share/html/Ticket/Elements/Reminders:105
+msgid "(Check box to complete)"
+msgstr "(Check box to complete)"
 
 #: share/html/Admin/Elements/EditCustomFieldValues:92 share/html/Admin/Elements/EditQueueWatchers:67 share/html/Admin/Elements/EditTemplates:69 share/html/Admin/Groups/Members.html:107 share/html/Elements/BulkLinks:117 share/html/Elements/EditLinks:112 share/html/Ticket/Elements/EditPeople:69
 msgid "(Check box to delete)"
 msgstr "(Tick box to delete)"
 
-#: NOT FOUND IN SOURCE
-msgid "(Check boxes to disable notifications to the listed recipients)"
-msgstr "(Tick boxes to disable notifications to the listed recipients)"
-
-#: NOT FOUND IN SOURCE
-msgid "(Check boxes to enable notifications to the listed recipients)"
-msgstr "(Tick boxes to enable notifications to the listed recipients)"
+#: share/html/Articles/Article/Elements/EditLinks:53
+msgid "(Check boxes to delete)"
+msgstr "(Check boxes to delete)"
 
 #: share/html/m/ticket/create:392
 msgid "(Enter ticket ids or URLs, separated with spaces)"
@@ -467,9 +574,13 @@ msgstr "(Will not be sent email)"
 msgid "(any)"
 msgstr "(any)"
 
-#: NOT FOUND IN SOURCE
-msgid "(empty)"
-msgstr "(empty)"
+#: share/html/Articles/Elements/NewestArticles:66 share/html/Articles/Elements/UpdatedArticles:67
+msgid "(no Summary)"
+msgstr "(no Summary)"
+
+#: share/html/Admin/Articles/Elements/Topics:99 share/html/Articles/Article/Elements/EditTopics:58 share/html/Articles/Article/Elements/EditTopics:74 share/html/Articles/Article/Elements/Preformatted:49 share/html/Articles/Article/Elements/Preformatted:50 share/html/Articles/Elements/BeforeMessageBox:103 share/html/Articles/Elements/BeforeMessageBox:120 share/html/Articles/Elements/BeforeMessageBox:70 share/html/Articles/Elements/BeforeMessageBox:82 share/html/Articles/Elements/BeforeMessageBox:90 share/html/Articles/Elements/NewestArticles:60 share/html/Articles/Elements/ShowTopic:51 share/html/Articles/Elements/ShowTopicLink:55 share/html/Articles/Elements/UpdatedArticles:61 share/html/Articles/Topics.html:105 share/html/SelfService/Article/Display.html:49 share/html/SelfService/Article/Search.html:77 share/html/SelfService/Article/Search.html:85
+msgid "(no name)"
+msgstr "(no name)"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:269 share/html/Elements/RT__Ticket/ColumnMap:88
 msgid "(no pubkey!)"
@@ -526,16 +637,12 @@ msgid "--transaction argument could be only 'first', 'last' or 'all'"
 msgstr "--transaction argument could be only 'first', 'last' or 'all'"
 
 #: NOT FOUND IN SOURCE
-msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
-msgstr "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
+msgid "<% $field->{'name'} %>"
+msgstr "<% $field->{'name'} %>"
 
-#: NOT FOUND IN SOURCE
-msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
-msgstr "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
-
-#: NOT FOUND IN SOURCE
-msgid "<p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
-msgstr "<p>All iCal feeds embed a secret token which authorises you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
+#: lib/RT/Template.pm:287 lib/RT/Template.pm:713
+msgid "A Template with that name already exists"
+msgstr "A Template with that name already exists"
 
 #: etc/initialdata:224
 msgid "A blank template"
@@ -575,9 +682,9 @@ msgstr "Action"
 msgid "Action '%1' not found"
 msgstr "Action '%1' not found"
 
-#: NOT FOUND IN SOURCE
-msgid "Action committed.\\n"
-msgstr "Action committed.\\n"
+#: bin/rt-crontool:220
+msgid "Action committed."
+msgstr "Action committed."
 
 #: lib/RT/Scrip.pm:149 lib/RT/Scrip.pm:726
 msgid "Action is mandatory argument"
@@ -586,6 +693,24 @@ msgstr "Action is mandatory argument"
 #: bin/rt-crontool:216
 msgid "Action prepared..."
 msgstr "Action prepared..."
+
+#: share/html/Elements/Tabs:605
+msgid "Actions"
+msgstr "Actions"
+
+#: share/html/Ticket/Elements/ShowRequestor:159 share/html/User/Elements/Portlets/ActiveTickets:54
+msgid "Active Tickets"
+msgstr "Active Tickets"
+
+#: share/html/Tools/MyDay.html:53
+#. ($session{'CurrentUser'}->Name)
+msgid "Active tickets for %1"
+msgstr "Active tickets for %1"
+
+#: share/html/Admin/Elements/EditRights:134
+#. (loc($AddPrincipal))
+msgid "Add %1"
+msgstr "Add %1"
 
 #: share/html/Search/Bulk.html:93
 msgid "Add AdminCc"
@@ -627,6 +752,14 @@ msgstr "Add a scrip which will apply to all queues"
 msgid "Add comments or replies to selected tickets"
 msgstr "Add comments or replies to selected tickets"
 
+#: share/html/Admin/Elements/SelectNewGroupMembers:63
+msgid "Add group"
+msgstr "Add group"
+
+#: share/html/Admin/Articles/Elements/Topics:108
+msgid "Add here"
+msgstr "Add here"
+
 #: share/html/Admin/Groups/Members.html:63
 msgid "Add members"
 msgstr "Add members"
@@ -634,6 +767,11 @@ msgstr "Add members"
 #: share/html/Admin/Queues/People.html:83 share/html/Ticket/Elements/AddWatchers:51
 msgid "Add new watchers"
 msgstr "Add new watchers"
+
+#: share/html/Admin/Elements/EditRights:200
+#. (loc($AddPrincipal))
+msgid "Add rights for this %1"
+msgstr "Add rights for this %1"
 
 #: share/html/Search/Build.html:83
 msgid "Add these terms"
@@ -643,25 +781,44 @@ msgstr "Add these terms"
 msgid "Add these terms and Search"
 msgstr "Add these terms and Search"
 
+#: share/html/Admin/Elements/SelectNewGroupMembers:49
+msgid "Add user"
+msgstr "Add user"
+
 #: share/html/Elements/BulkCustomFields:52
 msgid "Add values"
 msgstr "Add values"
 
-#: NOT FOUND IN SOURCE
-msgid "Add, delete and modify custom field values for objects"
-msgstr "Add, delete and modify custom field values for objects"
+#: lib/RT/CustomField.pm:216
+msgid "Add, modify and delete custom field values for objects"
+msgstr "Add, modify and delete custom field values for objects"
 
-#: NOT FOUND IN SOURCE
-msgid "Added principal as a %1 for this queue"
-msgstr "Added principal as a %1 for this queue"
+#: share/html/Elements/RT__CustomField/ColumnMap:85
+msgid "Added"
+msgstr "Added"
 
-#: NOT FOUND IN SOURCE
-msgid "Added principal as a %1 for this ticket"
-msgstr "Added principal as a %1 for this ticket"
+#: lib/RT/Ticket.pm:642
+#. ($principal->Object->Name, $self->loc($args{'Type'}))
+msgid "Added %1 as a %2 for this ticket"
+msgstr "Added %1 as a %2 for this ticket"
+
+#: lib/RT/Queue.pm:605
+#. ($principal->Object->Name, $self->loc($args{'Type'}))
+msgid "Added %1 to members of %2 for this queue."
+msgstr "Added %1 to members of %2 for this queue."
+
+#: lib/RT/Class.pm:386
+#. ($cf->Name)
+msgid "Added Subject Override: %1"
+msgstr "Added Subject Override: %1"
 
 #: share/html/Elements/RT__Queue/ColumnMap:65 share/html/Elements/RT__User/ColumnMap:101
 msgid "Address"
 msgstr "Address"
+
+#: share/html/Elements/RT__User/ColumnMap:106
+msgid "Address 2"
+msgstr "Address 2"
 
 #: share/html/Admin/Users/Modify.html:136 share/html/User/Prefs.html:131
 msgid "Address1"
@@ -671,6 +828,10 @@ msgstr "Address1"
 msgid "Address2"
 msgstr "Address2"
 
+#: share/html/Elements/Tabs:64
+msgid "Admin"
+msgstr "Admin"
+
 #: share/html/Ticket/Create.html:152 share/html/m/ticket/create:284
 msgid "Admin Cc"
 msgstr "Admin Cc"
@@ -679,9 +840,17 @@ msgstr "Admin Cc"
 msgid "Admin Comment"
 msgstr "Admin Comment"
 
+#: etc/initialdata:390 etc/upgrade/4.1.9/content:77
+msgid "Admin Comment in HTML"
+msgstr "Admin Comment in HTML"
+
 #: etc/initialdata:336
 msgid "Admin Correspondence"
 msgstr "Admin Correspondence"
+
+#: etc/initialdata:347 etc/upgrade/4.1.9/content:56
+msgid "Admin Correspondence in HTML"
+msgstr "Admin Correspondence in HTML"
 
 #: share/html/Admin/Queues/index.html:48
 msgid "Admin queues"
@@ -690,10 +859,6 @@ msgstr "Admin queues"
 #: share/html/Admin/Global/index.html:48
 msgid "Admin/Global configuration"
 msgstr "Admin/Global configuration"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminAllPersonalGroups"
-msgstr "AdminAllPersonalGroups"
 
 #: lib/RT/Tickets.pm:161
 msgid "AdminCCGroup"
@@ -707,9 +872,17 @@ msgstr "AdminCc"
 msgid "AdminCcs"
 msgstr "AdminCcs"
 
+#: lib/RT/Class.pm:95
+msgid "AdminClass"
+msgstr "AdminClass"
+
 #: lib/RT/CustomField.pm:214
 msgid "AdminCustomField"
 msgstr "AdminCustomField"
+
+#: lib/RT/CustomField.pm:215
+msgid "AdminCustomFieldValues"
+msgstr "AdminCustomFieldValues"
 
 #: lib/RT/Group.pm:88
 msgid "AdminGroup"
@@ -719,13 +892,13 @@ msgstr "AdminGroup"
 msgid "AdminGroupMembership"
 msgstr "AdminGroupMembership"
 
-#: NOT FOUND IN SOURCE
-msgid "AdminOwnPersonalGroups"
-msgstr "AdminOwnPersonalGroups"
-
 #: lib/RT/Queue.pm:110
 msgid "AdminQueue"
 msgstr "AdminQueue"
+
+#: lib/RT/Class.pm:96
+msgid "AdminTopics"
+msgstr "AdminTopics"
 
 #: lib/RT/System.pm:85
 msgid "AdminUsers"
@@ -743,6 +916,14 @@ msgstr "Administrative password"
 msgid "Advanced"
 msgstr "Advanced"
 
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:49 share/html/Articles/Article/Elements/ShowSearchCriteria:51
+msgid "Advanced search"
+msgstr "Advanced search"
+
+#: share/html/Elements/LoginRedirectWarning:62
+msgid "After logging in you'll be sent to your original destination:"
+msgstr "After logging in you will be sent to your original destination:"
+
 #: share/html/Search/Elements/PickCriteria:62
 msgid "Aggregator"
 msgstr "Aggregator"
@@ -751,9 +932,29 @@ msgstr "Aggregator"
 msgid "All Approvals Passed"
 msgstr "All Approvals Passed"
 
+#: etc/initialdata:540 etc/upgrade/4.1.9/content:146
+msgid "All Approvals Passed in HTML"
+msgstr "All Approvals Passed in HTML"
+
+#: share/html/Admin/Articles/Classes/Modify.html:80
+msgid "All Articles in this class should be listed in a dropdown of the ticket reply page"
+msgstr "All Articles in this class should be listed in a dropdown of the ticket reply page"
+
+#: share/html/Admin/Articles/Classes/index.html:77
+msgid "All Classes"
+msgstr "All Classes"
+
+#: share/html/Elements/Tabs:485
+msgid "All Dashboards"
+msgstr "All Dashboards"
+
 #: share/html/Admin/Queues/index.html:111
 msgid "All Queues"
 msgstr "All Queues"
+
+#: share/html/Ticket/Elements/ShowRequestor:161
+msgid "All Tickets"
+msgstr "All Tickets"
 
 #: share/html/User/Prefs.html:172
 msgid "All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below."
@@ -763,13 +964,58 @@ msgstr "All iCal feeds embed a secret token which authorises you.  If the URL on
 msgid "All queues matching search criteria"
 msgstr "All queues matching search criteria"
 
+#: share/html/m/_elements/menu:82
+msgid "All tickets"
+msgstr "All tickets"
+
+#: share/html/Articles/Topics.html:51
+msgid "All topics"
+msgstr "All topics"
+
+#: lib/RT/System.pm:92
+msgid "Allow creation of saved searches"
+msgstr "Allow creation of saved searches"
+
+#: lib/RT/System.pm:91
+msgid "Allow loading of saved searches"
+msgstr "Allow loading of saved searches"
+
+#: lib/RT/System.pm:93
+msgid "Allow writing Perl code in templates, scrips, etc"
+msgstr "Allow writing Perl code in templates, scrips, etc"
+
 #: lib/RT/Attachment.pm:747
 msgid "Already encrypted"
 msgstr "Already encrypted"
 
+#: share/html/Articles/Elements/NeedsSetup:51
+#. (qq[<a href="http://bestpractical.com/rt/docs/$RT::MAJOR_VERSION.$RT::MINOR_VERSION/customizing/articles_introduction.html">], qq[<a href="http://bestpractical.com/rt/docs/$RT::MAJOR_VERSION.$RT::MINOR_VERSION/">], '</a>')
+msgid "An %1introduction to getting started with articles%3 is available from %2Best Practical's online documentation%3."
+msgstr "An %1introduction to getting started with articles%3 is available from %2Best Practical's online documentation%3."
+
+#: lib/RT/Group.pm:619
+msgid "An Instance must be provided"
+msgstr "An Instance must be provided"
+
+#: share/html/Errors/WebRemoteUser/Wrapper:49
+msgid "An error occurred"
+msgstr "An error occurred"
+
 #: share/html/Search/Elements/EditQuery:60
 msgid "And/Or"
 msgstr "And/Or"
+
+#: NOT FOUND IN SOURCE
+msgid "Annually"
+msgstr "Annually"
+
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:74
+msgid "Any field"
+msgstr "Any field"
+
+#: share/html/Search/Simple.html:65
+msgid "Any word not recognized by RT is searched for in ticket subjects."
+msgstr "Any word not recognised by RT is searched for in ticket subjects."
 
 #: NOT FOUND IN SOURCE
 msgid "Applied"
@@ -790,6 +1036,10 @@ msgstr "Apply"
 #: share/html/Admin/Articles/Classes/Objects.html:60 share/html/Admin/CustomFields/Objects.html:61 share/html/Admin/Scrips/Objects.html:67
 msgid "Apply globally"
 msgstr "Apply globally"
+
+#: share/html/Admin/Elements/EditScrips:95
+msgid "Apply selected scrips"
+msgstr "Apply selected scrips"
 
 #: share/html/Search/Edit.html:62
 msgid "Apply your changes"
@@ -820,13 +1070,25 @@ msgstr "Approval #%1: Notes recorded"
 msgid "Approval Passed"
 msgstr "Approval Passed"
 
+#: etc/initialdata:510 etc/upgrade/4.1.9/content:130
+msgid "Approval Passed in HTML"
+msgstr "Approval Passed in HTML"
+
 #: etc/initialdata:584 etc/upgrade/3.8.2/content:112
 msgid "Approval Ready for Owner"
 msgstr "Approval Ready for Owner"
 
+#: etc/initialdata:596 etc/upgrade/4.1.9/content:177
+msgid "Approval Ready for Owner in HTML"
+msgstr "Approval Ready for Owner in HTML"
+
 #: etc/initialdata:556 etc/upgrade/3.8.2/content:99
 msgid "Approval Rejected"
 msgstr "Approval Rejected"
+
+#: etc/initialdata:569 etc/upgrade/4.1.9/content:162
+msgid "Approval Rejected in HTML"
+msgstr "Approval Rejected in HTML"
 
 #: share/html/Approvals/Elements/Approve:75
 msgid "Approve"
@@ -836,9 +1098,65 @@ msgstr "Approve"
 msgid "Apr"
 msgstr "Apr"
 
-#: NOT FOUND IN SOURCE
-msgid "April"
-msgstr "April"
+#: share/html/Articles/Article/Delete.html:56
+msgid "Are you sure you want to delete this article?"
+msgstr "Are you sure you want to delete this article?"
+
+#: lib/RT/URI/fsck_com_article.pm:207
+#. ($object->id)
+msgid "Article #%1"
+msgstr "Article #%1"
+
+#: share/html/Articles/Article/Delete.html:97
+#. ($ArticleObj->Id)
+msgid "Article #%1 deleted"
+msgstr "Article #%1 deleted"
+
+#: share/html/Articles/Article/History.html:61
+#. ($id)
+msgid "Article #%1 not found"
+msgstr "Article #%1 not found"
+
+#: lib/RT/URI/fsck_com_article.pm:205 share/html/Articles/Article/Display.html:84 share/html/SelfService/Article/Display.html:66
+#. ($article->Id, $article->Name || loc("(no name)"))
+#. ($object->id, $object->Name)
+msgid "Article #%1: %2"
+msgstr "Article #%1: %2"
+
+#: lib/RT/Article.pm:216
+#. ($self->id)
+msgid "Article %1 created"
+msgstr "Article %1 created"
+
+#: share/html/Admin/Articles/index.html:48
+msgid "Article Administration"
+msgstr "Article Administration"
+
+#: lib/RT/Article.pm:324
+msgid "Article Deleted"
+msgstr "Article Deleted"
+
+#: share/html/Articles/Article/Display.html:76 share/html/SelfService/Article/Display.html:60
+msgid "Article not found"
+msgstr "Article not found"
+
+#: share/html/Admin/Global/CustomFields/index.html:95 share/html/Articles/index.html:48 share/html/Elements/Tabs:163 share/html/Elements/Tabs:168 share/html/Elements/Tabs:497 share/html/Elements/Tabs:503
+msgid "Articles"
+msgstr "Articles"
+
+#: share/html/Articles/Topics.html:99
+#. ($currtopic->Name)
+msgid "Articles in %1"
+msgstr "Articles in %1"
+
+#: share/html/SelfService/Article/Search.html:64
+#. ($Articles_Content)
+msgid "Articles matching %1"
+msgstr "Articles matching %1"
+
+#: share/html/Articles/Topics.html:101
+msgid "Articles with no topics"
+msgstr "Articles with no topics"
 
 #: share/html/Search/Elements/EditSort:79
 msgid "Asc"
@@ -848,9 +1166,9 @@ msgstr "Asc"
 msgid "Ascending"
 msgstr "Ascending"
 
-#: NOT FOUND IN SOURCE
-msgid "Assign and remove custom fields"
-msgstr "Assign and remove custom fields"
+#: lib/RT/Queue.pm:116
+msgid "Assign and remove queue custom fields"
+msgstr "Assign and remove queue custom fields"
 
 #: lib/RT/Queue.pm:116
 msgid "AssignCustomFields"
@@ -901,9 +1219,14 @@ msgstr "Attribute Deleted"
 msgid "Aug"
 msgstr "Aug"
 
-#: NOT FOUND IN SOURCE
-msgid "August"
-msgstr "August"
+#: share/html/Errors/WebRemoteUser/UserAutocreateDefaultsOnLogin:48
+msgid "Automatic account setup failed"
+msgstr "Automatic account setup failed"
+
+#: share/html/Admin/Tools/Theme.html:311
+#. ($valid_image_types)
+msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
+msgstr "Automatically suggested theme colours are not available for your image. This might be because you uploaded an image type that your installed version of GD does not support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 
 #: etc/initialdata:227
 msgid "Autoreply"
@@ -913,13 +1236,13 @@ msgstr "Autoreply"
 msgid "Autoreply To Requestors"
 msgstr "Autoreply to Requestors"
 
+#: etc/initialdata:257 etc/upgrade/4.1.9/content:8
+msgid "Autoreply in HTML"
+msgstr "Autoreply in HTML"
+
 #: share/html/Widgets/SelectionBox:170
 msgid "Available"
 msgstr "Available"
-
-#: NOT FOUND IN SOURCE
-msgid "BCc"
-msgstr "BCc"
 
 #: share/html/Elements/Submit:109 share/html/Install/Basics.html:63 share/html/Install/DatabaseDetails.html:73 share/html/Install/DatabaseDetails.html:89 share/html/Install/Global.html:65 share/html/Install/Initialize.html:62 share/html/Install/Sendmail.html:64
 msgid "Back"
@@ -934,13 +1257,26 @@ msgstr "Bad privacy for attribute %1"
 msgid "Basics"
 msgstr "Basics"
 
-#: NOT FOUND IN SOURCE
-msgid "Be sure to save your changes"
-msgstr "Be sure to save your changes"
+#: share/html/Admin/Elements/SelectStage:69
+msgid "Batch"
+msgstr "Batch"
 
-#: NOT FOUND IN SOURCE
-msgid "Best Practical Solutions, LLC corporate logo"
-msgstr "Best Practical Solutions, LLC corporate logo"
+#: share/html/Admin/Elements/SelectStage:70
+msgid "Batch (disabled by config)"
+msgstr "Batch (disabled by config)"
+
+#: share/html/Admin/Elements/EditScrips:61
+msgid "Batch scrips"
+msgstr "Batch scrips"
+
+#: share/html/Ticket/Forward.html:72
+msgid "Bcc"
+msgstr "Bcc"
+
+#: share/html/Articles/Elements/NeedsSetup:50
+#. (qq[<a href="@{[RT->Config->Get("WebPath")]}/Admin/Articles/">], '</a>')
+msgid "Before Articles can be used, your RT administrator must %1create Classes%2, apply Article custom fields to them, and grant users rights on the classes and CFs."
+msgstr "Before Articles can be used, your RT administrator must %1create Classes%2, apply Article custom fields to them, and grant users rights on the classes and CFs."
 
 #: etc/initialdata:223
 msgid "Blank"
@@ -958,25 +1294,29 @@ msgstr "Bold"
 msgid "Bookmark"
 msgstr "Bookmark"
 
+#: share/html/Articles/Article/Search.html:114
+msgid "Bookmarkable link for this search"
+msgstr "Bookmarkable link for this search"
+
 #: etc/initialdata:831 etc/initialdata:856 etc/upgrade/3.7.82/content:6
 msgid "Bookmarked Tickets"
 msgstr "Bookmarked Tickets"
 
-#: NOT FOUND IN SOURCE
-msgid "Brief headers"
-msgstr "Brief headers"
+#: share/html/m/_elements/menu:73
+msgid "Bookmarked tickets"
+msgstr "Bookmarked tickets"
+
+#: share/html/Articles/Topics.html:48 share/html/Articles/Topics.html:60
+msgid "Browse by topic"
+msgstr "Browse by topic"
+
+#: share/html/Elements/Tabs:240
+msgid "Browse the SQL queries made in this process"
+msgstr "Browse the SQL queries made in this process"
 
 #: share/html/Elements/Tabs:811
 msgid "Bulk Update"
 msgstr "Bulk Update"
-
-#: NOT FOUND IN SOURCE
-msgid "Buy Support"
-msgstr "Buy Support"
-
-#: NOT FOUND IN SOURCE
-msgid "By default, RT will use the timezone of your system.  This lets you set a global default for the display of dates and times in RT.  Your users can choose a different Timezone in their preferences."
-msgstr "By default, RT will use the time zone of your system.  This lets you set a global default for the display of dates and times in RT.  Your users can choose a different time zone in their preferences."
 
 #: lib/RT/Tickets.pm:160
 msgid "CCGroup"
@@ -986,21 +1326,23 @@ msgstr "CCGroup"
 msgid "CF"
 msgstr "CF"
 
+#: share/html/Search/Simple.html:87
+#. ('<strong>cf.Name:value</strong>')
+msgid "CFs may be searched using a similar syntax as above with %1."
+msgstr "CFs may be searched using a similar syntax as above with %1."
+
+#: share/html/Search/Elements/EditSearches:176
+#. ($ARGS{'SavedSearchLoad'})
+msgid "Can not load saved search \"%1\""
+msgstr "Cannot load saved search \"%1\""
+
 #: lib/RT/User.pm:1563
 msgid "Can not modify system users"
 msgstr "Can not modify system users"
 
-#: NOT FOUND IN SOURCE
-msgid "Can this principal see this queue"
-msgstr "Can this principal see this queue"
-
 #: lib/RT/CustomField.pm:518
 msgid "Can't add a custom field value without a name"
 msgstr "Can't add a custom field value without a name"
-
-#: NOT FOUND IN SOURCE
-msgid "Can't find a collection class for '%1'"
-msgstr "Can't find a collection class for '%1'"
 
 #: share/html/Search/Elements/EditSearches:316
 msgid "Can't find a saved search to work with"
@@ -1009,6 +1351,15 @@ msgstr "Can't find a saved search to work with"
 #: lib/RT/Link.pm:192
 msgid "Can't link a ticket to itself"
 msgstr "Can't link a ticket to itself"
+
+#: lib/RT/Reminders.pm:126
+msgid "Can't link to a deleted ticket"
+msgstr "Cannot link to a deleted ticket"
+
+#: share/html/index.html:127
+#. ($QueueObj->Name)
+msgid "Can't quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
+msgstr "Cannot quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
 
 #: share/html/Widgets/SavedSearch:133
 #. (loc($self->{SearchType}))
@@ -1023,13 +1374,13 @@ msgstr "Can't save this search"
 msgid "Can't specifiy both base and target"
 msgstr "Can't specifiy both base and target"
 
+#: lib/RT/Article.pm:382
+msgid "Cannot add link to plain number"
+msgstr "Cannot add link to plain number"
+
 #: share/html/Ticket/Create.html:374 share/html/m/ticket/create:147
 msgid "Cannot create tickets in a disabled queue."
 msgstr "Cannot create tickets in a disabled queue."
-
-#: NOT FOUND IN SOURCE
-msgid "Cannot create user: %1"
-msgstr "Cannot create user: %1"
 
 #: share/html/Admin/CustomFields/Modify.html:126
 msgid "Categories are based on"
@@ -1038,10 +1389,6 @@ msgstr "Categories are based on"
 #: share/html/Admin/Elements/AddCustomFieldValue:57 share/html/Admin/Elements/EditCustomFieldValues:61
 msgid "Category"
 msgstr "Category"
-
-#: NOT FOUND IN SOURCE
-msgid "Category unset"
-msgstr "Category unset"
 
 #: lib/RT/Report/Tickets.pm:69 lib/RT/Ticket.pm:102 lib/RT/Tickets.pm:145 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:79 share/html/Ticket/Create.html:136 share/html/Ticket/Elements/EditPeople:79 share/html/Ticket/Elements/ShowPeople:62 share/html/Ticket/Forward.html:69 share/html/m/ticket/create:275 share/html/m/ticket/show:295
 msgid "Cc"
@@ -1055,9 +1402,25 @@ msgstr "Ccs"
 msgid "Change"
 msgstr "Change"
 
+#: lib/RT/Approval/Rule/Created.pm:56
+msgid "Change Approval ticket to open status"
+msgstr "Change Approval ticket to open status"
+
 #: share/html/SelfService/Prefs.html:70
 msgid "Change password"
 msgstr "Change password"
+
+#: lib/RT/Template.pm:692
+msgid "Changing queue is not implemented"
+msgstr "Changing queue is not implemented"
+
+#: share/html/Elements/Tabs:812
+msgid "Chart"
+msgstr "Chart"
+
+#: NOT FOUND IN SOURCE
+msgid "Chart Properties"
+msgstr "Chart Properties"
 
 #: share/html/Elements/Submit:102
 msgid "Check All"
@@ -1087,9 +1450,44 @@ msgstr "Children"
 msgid "Choose Database Engine"
 msgstr "Choose Database Engine"
 
+#: share/html/Articles/Elements/BeforeMessageBox:97
+#. ($QueueObj->Name)
+msgid "Choose from Topics for %1"
+msgstr "Choose from Topics for %1"
+
 #: share/html/Admin/Users/Modify.html:146 share/html/Elements/RT__User/ColumnMap:111 share/html/User/Prefs.html:139
 msgid "City"
 msgstr "City"
+
+#: share/html/Articles/Article/Display.html:51 share/html/Articles/Article/Elements/EditBasics:57 share/html/Articles/Article/Elements/ShowSearchCriteria:58 share/html/Elements/RT__Article/ColumnMap:76
+msgid "Class"
+msgstr "Class"
+
+#: share/html/Admin/Articles/Classes/Modify.html:62
+msgid "Class Name"
+msgstr "Class Name"
+
+#: share/html/Admin/Articles/Classes/Modify.html:149
+#. ($msg)
+msgid "Class could not be created: %1"
+msgstr "Class could not be created: %1"
+
+#: share/html/Elements/RT__Article/ColumnMap:71
+msgid "Class id"
+msgstr "Class id"
+
+#: lib/RT/Class.pm:322
+msgid "Class is already applied Globally"
+msgstr "Class is already applied Globally"
+
+#: lib/RT/Class.pm:317
+#. ($queue->Name)
+msgid "Class is already applied to %1"
+msgstr "Class is already applied to %1"
+
+#: share/html/Elements/Tabs:169 share/html/Elements/Tabs:421
+msgid "Classes"
+msgstr "Classes"
 
 #: share/html/Tools/MyDay.html:72 share/html/Widgets/SelectionBox:198
 msgid "Clear"
@@ -1107,9 +1505,9 @@ msgstr "Click \"Finish Installation\" below to complete this wizard."
 msgid "Click \"Initialize Database\" to create RT's database and insert initial metadata. This may take a few moments"
 msgstr "Click \"Initialise Database\" to create RT's database and insert initial metadata. This may take a few moments"
 
-#: NOT FOUND IN SOURCE
-msgid "Close window"
-msgstr "Close window"
+#: share/html/Admin/Tools/Theme.html:101
+msgid "Click to choose a color"
+msgstr "Click to choose a colour"
 
 #: share/html/Ticket/Elements/ShowDates:75 share/html/m/ticket/show:375
 msgid "Closed"
@@ -1147,10 +1545,6 @@ msgstr "Comment address"
 msgid "Comment on tickets"
 msgstr "Comment on tickets"
 
-#: NOT FOUND IN SOURCE
-msgid "CommentAddress"
-msgstr "CommentAddress"
-
 #: lib/RT/Queue.pm:131
 msgid "CommentOnTicket"
 msgstr "CommentOnTicket"
@@ -1162,10 +1556,6 @@ msgstr "Comments"
 #: share/html/Search/Bulk.html:127 share/html/Ticket/ModifyAll.html:100 share/html/Ticket/Update.html:77 share/html/m/ticket/reply:93
 msgid "Comments (Not sent to requestors)"
 msgstr "Comments (Not sent to requestors)"
-
-#: NOT FOUND IN SOURCE
-msgid "Comments (not sent to requestors)"
-msgstr "Comments (not sent to requestors)"
 
 #: share/html/Admin/Users/Modify.html:209 share/html/Ticket/Elements/ShowRequestor:78
 msgid "Comments about this user"
@@ -1210,17 +1600,35 @@ msgstr "Config file %1 is locked"
 msgid "Configuration"
 msgstr "Configuration"
 
-#: NOT FOUND IN SOURCE
-msgid "Confirm"
-msgstr "Confirm"
+#: share/html/Admin/Queues/Modify.html:182
+#. ($QueueObj->Name)
+msgid "Configuration for queue %1"
+msgstr "Configuration for queue %1"
 
 #: share/html/Install/DatabaseDetails.html:140
 msgid "Connection succeeded"
 msgstr "Connection successful"
 
+#: share/html/Errors/WebRemoteUser/Wrapper:67
+#. (qq[<a href="mailto:$owner">], $owner, '</a>')
+msgid "Contact your RT administrator via %1email to %2%3."
+msgstr "Contact your RT administrator via %1email to %2%3."
+
+#: share/html/Errors/WebRemoteUser/Wrapper:69
+msgid "Contact your RT administrator."
+msgstr "Contact your RT administrator."
+
 #: lib/RT/Tickets.pm:139 share/html/Admin/Elements/ModifyTemplate:70 share/html/Articles/Article/Display.html:53 share/html/Articles/Article/Edit.html:68 share/html/Articles/Article/Elements/ShowSearchCriteria:71 share/html/Elements/QuickCreate:74 share/html/Elements/SelectAttachmentField:51 share/html/Elements/Tabs:589 share/html/Ticket/Forward.html:76 share/html/Ticket/ModifyAll.html:121
 msgid "Content"
 msgstr "Content"
+
+#: lib/RT/ObjectCustomFieldValue.pm:97
+msgid "Content is an invalid IP address"
+msgstr "Content is an invalid IP address"
+
+#: lib/RT/ObjectCustomFieldValue.pm:111
+msgid "Content is an invalid IP address range"
+msgstr "Content is an invalid IP address range"
 
 #: share/html/Elements/SelectAttachmentField:53
 msgid "Content-Type"
@@ -1234,10 +1642,6 @@ msgstr "ContentType"
 msgid "Correspond address"
 msgstr "Correspond address"
 
-#: NOT FOUND IN SOURCE
-msgid "CorrespondAddress"
-msgstr "CorrespondAddress"
-
 #: etc/initialdata:359
 msgid "Correspondence"
 msgstr "Correspondence"
@@ -1245,6 +1649,10 @@ msgstr "Correspondence"
 #: lib/RT/Transaction.pm:852
 msgid "Correspondence added"
 msgstr "Correspondence added"
+
+#: etc/initialdata:367 etc/upgrade/4.1.9/content:68
+msgid "Correspondence in HTML"
+msgstr "Correspondence in HTML"
 
 #: lib/RT/Record.pm:1990 lib/RT/Record.pm:2056
 #. ($msg)
@@ -1257,10 +1665,6 @@ msgstr "Could not add new custom field value: %1"
 msgid "Could not change owner: %1"
 msgstr "Could not change owner: %1"
 
-#: NOT FOUND IN SOURCE
-msgid "Could not create CustomField"
-msgstr "Could not create CustomField"
-
 #: share/html/Admin/CustomFields/Modify.html:184 share/html/Admin/Elements/EditCustomField:116
 #. ($msg)
 msgid "Could not create CustomField: %1"
@@ -1270,14 +1674,15 @@ msgstr "Could not create CustomField: %1"
 msgid "Could not create group"
 msgstr "Could not create group"
 
+#: share/html/Articles/Article/Search.html:204
+#. ($msg)
+msgid "Could not create search: %1"
+msgstr "Could not create search: %1"
+
 #: share/html/Admin/Global/Template.html:84 share/html/Admin/Queues/Template.html:83
 #. ($msg)
 msgid "Could not create template: %1"
 msgstr "Could not create template: %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Could not create ticket in disabled queue \"%1\""
-msgstr "Could not create ticket in disabled queue \"%1\""
 
 #: lib/RT/Ticket.pm:260
 msgid "Could not create ticket. Queue not set"
@@ -1287,9 +1692,24 @@ msgstr "Could not create ticket. Queue not set"
 msgid "Could not create user"
 msgstr "Could not create user"
 
+#: share/html/Articles/Article/Search.html:244
+#. ($searchname, $msg)
+msgid "Could not delete search %1: %2"
+msgstr "Could not delete search %1: %2"
+
+#: lib/RT/Record/Role/Roles.pm:397
+#. ($name)
+msgid "Could not find group '%1'"
+msgstr "Could not find group '%1'"
+
 #: NOT FOUND IN SOURCE
 msgid "Could not find or create that user"
 msgstr "Could not find or create that user"
+
+#: lib/RT/Record/Role/Roles.pm:387
+#. ($name)
+msgid "Could not find or create user '%1'"
+msgstr "Could not find or create user '%1'"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not find that principal"
@@ -1299,6 +1719,10 @@ msgstr "Could not find that principal"
 #. ($self->ObjectName)
 msgid "Could not load %1 attribute"
 msgstr "Could not load %1 attribute"
+
+#: share/html/Admin/Articles/Classes/Objects.html:105
+msgid "Could not load Class %1"
+msgstr "Could not load Class %1"
 
 #: share/html/Admin/CustomFields/Objects.html:109
 #. ($id)
@@ -1314,25 +1738,38 @@ msgstr "Could not load group"
 msgid "Could not load object for %1"
 msgstr "Could not load object for %1"
 
-#: NOT FOUND IN SOURCE
-msgid "Could not make that principal a %1 for this queue"
-msgstr "Could not make that principal a %1 for this queue"
+#: share/html/Admin/Scrips/Objects.html:126
+#. ($id)
+msgid "Could not load scrip #%1"
+msgstr "Could not load scrip #%1"
 
-#: NOT FOUND IN SOURCE
-msgid "Could not make that principal a %1 for this ticket"
-msgstr "Could not make that principal a %1 for this ticket"
+#: lib/RT/Record/Role/Roles.pm:473
+#. ($args{User})
+msgid "Could not load user '%1'"
+msgstr "Could not load user '%1'"
 
-#: NOT FOUND IN SOURCE
-msgid "Could not remove that principal as a %1 for this queue"
-msgstr "Could not remove that principal as a %1 for this queue"
+#: lib/RT/Record/Role/Roles.pm:426
+#. ($principal->Object->Name, $self->loc($type))
+msgid "Could not make %1 a %2"
+msgstr "Could not make %1 a %2"
 
-#: NOT FOUND IN SOURCE
-msgid "Could not remove that principal as a %1 for this ticket"
-msgstr "Could not remove that principal as a %1 for this ticket"
+#: lib/RT/Record/Role/Roles.pm:501
+#. ($principal->Object->Name, $self->loc($args{Type}))
+msgid "Could not remove %1 as a %2"
+msgstr "Could not remove %1 as a %2"
 
 #: lib/RT/User.pm:144
 msgid "Could not set user info"
 msgstr "Could not set user info"
+
+#: lib/RT/Group.pm:1106
+#. ($col, $msg)
+msgid "Could not update column %1: %2"
+msgstr "Could not update column %1: %2"
+
+#: lib/RT/Record/AddAndSort.pm:200
+msgid "Couldn't add as it's global already"
+msgstr "Couldn't add as it's global already"
 
 #: lib/RT/Transaction.pm:166
 msgid "Couldn't add attachment"
@@ -1346,15 +1783,26 @@ msgstr "Couldn't add member to group"
 msgid "Couldn't apply custom field to an object as it's global already"
 msgstr "Couldn't apply custom field to an object as it's already global"
 
+#: lib/RT/Scrip.pm:713
+#. ($method, $code, $error)
+msgid "Couldn't compile %1 codeblock '%2': %3"
+msgstr "Couldn't compile %1 codeblock '%2': %3"
+
+#: lib/RT/Template.pm:815
+#. ($fi_text, $error)
+msgid "Couldn't compile template codeblock '%1': %2"
+msgstr "Couldn't compile template codeblock '%1': %2"
+
 #: lib/RT/Record.pm:2066 lib/RT/Record.pm:2116
 #. ($Msg)
 #. ($msg)
 msgid "Couldn't create a transaction: %1"
 msgstr "Couldn't create a transaction: %1"
 
-#: NOT FOUND IN SOURCE
-msgid "Couldn't create record"
-msgstr "Couldn't create record"
+#: lib/RT/CustomField.pm:1586
+#. ($msg)
+msgid "Couldn't create record: %1"
+msgstr "Couldn't create record: %1"
 
 #: share/html/Dashboards/Modify.html:154
 #. ($id, $msg)
@@ -1377,10 +1825,6 @@ msgstr "Couldn't find that principal"
 msgid "Couldn't find that value"
 msgstr "Couldn't find that value"
 
-#: NOT FOUND IN SOURCE
-msgid "Couldn't load %1 from the users database.\\n"
-msgstr "Couldn't load %1 from the users database.\\n"
-
 #: share/html/Admin/Articles/Classes/GroupRights.html:66 share/html/Admin/Articles/Classes/UserRights.html:65 share/html/Admin/CustomFields/UserRights.html:66
 #. ($id)
 msgid "Couldn't load Class %1"
@@ -1401,6 +1845,11 @@ msgstr "Couldn't load CustomField #%1"
 msgid "Couldn't load CustomField %1"
 msgstr "Couldn't load CustomField %1"
 
+#: lib/RT/Record/Role/Status.pm:291
+#. (blessed($self), $self->Id)
+msgid "Couldn't load copy of %1 #%2"
+msgstr "Couldn't load copy of %1 #%2"
+
 #: lib/RT/Ticket.pm:1087
 #. ($self->Id)
 msgid "Couldn't load copy of ticket #%1."
@@ -1410,10 +1859,6 @@ msgstr "Couldn't load copy of ticket #%1."
 #. ($id, $msg)
 msgid "Couldn't load dashboard %1: %2"
 msgstr "Couldn't load dashboard %1: %2"
-
-#: NOT FOUND IN SOURCE
-msgid "Couldn't load dashboard %1: %2."
-msgstr "Couldn't load dashboard %1: %2."
 
 #: share/html/Admin/Elements/MembershipsPage:100 share/html/Admin/Elements/MembershipsPage:110
 #. ($gid)
@@ -1429,6 +1874,11 @@ msgstr "Couldn't load group %1"
 msgid "Couldn't load link"
 msgstr "Couldn't load link"
 
+#: lib/RT/Link.pm:240
+#. ($msg)
+msgid "Couldn't load link: %1"
+msgstr "Couldn't load link: %1"
+
 #: share/html/Admin/Articles/Classes/CustomFields.html:54 share/html/Admin/Queues/CustomFields.html:56 share/html/Admin/Users/CustomFields.html:56
 #. ($id)
 msgid "Couldn't load object %1"
@@ -1438,6 +1888,16 @@ msgstr "Couldn't load object %1"
 #. ($msg)
 msgid "Couldn't load or create user: %1"
 msgstr "Couldn't load or create user: %1"
+
+#: share/html/Admin/Elements/MembershipsPage:89
+#. ($id)
+msgid "Couldn't load principal #%1"
+msgstr "Couldn't load principal #%1"
+
+#: lib/RT/Record/Role/Roles.pm:545
+#. ($msg)
+msgid "Couldn't load principal: %1"
+msgstr "Couldn't load principal: %1"
 
 #: share/html/Admin/Queues/People.html:132
 #. ($id)
@@ -1470,10 +1930,18 @@ msgstr "Couldn't load scrip #%1"
 msgid "Couldn't load template #%1"
 msgstr "Couldn't load template #%1"
 
+#: lib/RT/Interface/Web.pm:2527
+msgid "Couldn't load the specified principal"
+msgstr "Couldn't load the specified principal"
+
 #: lib/RT/Action/CreateTickets.pm:404
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "Couldn't load ticket '%1'"
+
+#: lib/RT/Article.pm:496
+msgid "Couldn't load topic membership while trying to delete it"
+msgstr "Couldn't load topic membership while trying to delete it"
 
 #: share/html/Ticket/Crypt.html:71 share/html/Ticket/Forward.html:104
 #. ($QuoteTransaction)
@@ -1500,9 +1968,24 @@ msgstr "Couldn't load user #%1 or user '%2'"
 msgid "Couldn't load user '%1'"
 msgstr "Couldn't load user '%1'"
 
+#: lib/RT/Link.pm:229
+#. ($args{Base})
+msgid "Couldn't parse Base URI: %1"
+msgstr "Couldn't parse Base URI: %1"
+
+#: lib/RT/Link.pm:233
+#. ($args{Target})
+msgid "Couldn't parse Target URI: %1"
+msgstr "Couldn't parse Target URI: %1"
+
 #: NOT FOUND IN SOURCE
 msgid "Couldn't parse address from '%1' string"
 msgstr "Couldn't parse address from '%1' string"
+
+#: lib/RT/Group.pm:1088
+#. ($msg)
+msgid "Couldn't remove previous member: %1"
+msgstr "Couldn't remove previous member: %1"
 
 #: lib/RT/Attachment.pm:834
 #. ($msg)
@@ -1517,6 +2000,11 @@ msgstr "Couldn't replace content with encrypted data: %1"
 #: NOT FOUND IN SOURCE
 msgid "Couldn't resolve '%1' into a URI."
 msgstr "Couldn't resolve '%1' into a URI."
+
+#: lib/RT/Record.pm:1351 lib/RT/Record.pm:1488
+#. ($remote_link)
+msgid "Couldn't resolve '%1' into a link."
+msgstr "Couldn't resolve '%1' into a link."
 
 #: lib/RT/Link.pm:155
 #. ($args{'Base'})
@@ -1557,6 +2045,10 @@ msgstr "Create"
 msgid "Create Tickets"
 msgstr "Create Tickets"
 
+#: share/html/Admin/Articles/Classes/Modify.html:140 share/html/Admin/Articles/Classes/Modify.html:160
+msgid "Create a Class"
+msgstr "Create a Class"
+
 #: share/html/Admin/CustomFields/Modify.html:167 share/html/Admin/CustomFields/Modify.html:185 share/html/Admin/Elements/EditCustomField:99
 msgid "Create a CustomField"
 msgstr "Create a CustomField"
@@ -1566,6 +2058,18 @@ msgstr "Create a CustomField"
 msgid "Create a CustomField for queue %1"
 msgstr "Create a CustomField for queue %1"
 
+#: share/html/Admin/Scrips/Create.html:107
+msgid "Create a global scrip"
+msgstr "Create a global scrip"
+
+#: share/html/Articles/Article/Edit.html:128 share/html/Articles/Article/Edit.html:190
+msgid "Create a new article"
+msgstr "Create a new article"
+
+#: share/html/Articles/Article/ExtractIntoClass.html:52
+msgid "Create a new article in"
+msgstr "Create a new article in"
+
 #: share/html/Dashboards/Modify.html:131 share/html/Dashboards/Modify.html:98
 msgid "Create a new dashboard"
 msgstr "Create a new dashboard"
@@ -1574,9 +2078,10 @@ msgstr "Create a new dashboard"
 msgid "Create a new group"
 msgstr "Create a new group"
 
-#: NOT FOUND IN SOURCE
-msgid "Create a new personal group"
-msgstr "Create a new personal group"
+#: share/html/Admin/Queues/Template.html:110
+#. ($QueueObj->Name)
+msgid "Create a new template for queue %1"
+msgstr "Create a new template for queue %1"
 
 #: share/html/Ticket/Create.html:365
 msgid "Create a new ticket"
@@ -1590,6 +2095,11 @@ msgstr "Create a new user"
 msgid "Create a queue"
 msgstr "Create a queue"
 
+#: share/html/Admin/Scrips/Create.html:105
+#. ($queue_obj->Name)
+msgid "Create a scrip and add to queue %1"
+msgstr "Create a scrip and add to queue %1"
+
 #: NOT FOUND IN SOURCE
 msgid "Create a scrip for queue %1"
 msgstr "Create a scrip for queue %1"
@@ -1602,9 +2112,25 @@ msgstr "Create a template"
 msgid "Create a ticket"
 msgstr "Create a ticket"
 
-#: NOT FOUND IN SOURCE
-msgid "Create dashboards for this group"
-msgstr "Create dashboards for this group"
+#: share/html/User/Elements/Portlets/CreateTicket:50
+msgid "Create a ticket with this user as the Requestor in Queue"
+msgstr "Create a ticket with this user as the Requestor in Queue"
+
+#: share/html/Articles/Elements/CreateArticle:48
+msgid "Create an article"
+msgstr "Create an article"
+
+#: share/html/Articles/Article/PreCreate.html:48
+msgid "Create an article in class..."
+msgstr "Create an article in class..."
+
+#: lib/RT/Class.pm:88
+msgid "Create articles in this class"
+msgstr "Create articles in this class"
+
+#: lib/RT/Group.pm:95
+msgid "Create group dashboards"
+msgstr "Create group dashboards"
 
 #: etc/initialdata:96
 msgid "Create new tickets based on this scrip's template"
@@ -1622,33 +2148,41 @@ msgstr "Create system dashboards"
 msgid "Create ticket"
 msgstr "Create ticket"
 
-#: NOT FOUND IN SOURCE
-msgid "Create tickets in this queue"
-msgstr "Create tickets in this queue"
+#: lib/RT/Queue.pm:129
+msgid "Create tickets"
+msgstr "Create tickets"
 
 #: NOT FOUND IN SOURCE
 msgid "Create tickets offline"
 msgstr "Create tickets offline"
 
-#: NOT FOUND IN SOURCE
-msgid "Create, delete and modify custom fields"
-msgstr "Create, delete and modify custom fields"
+#: lib/RT/Class.pm:98 lib/RT/Queue.pm:112
+msgid "Create, modify and delete Access Control List entries"
+msgstr "Create, modify and delete Access Control List entries"
 
-#: NOT FOUND IN SOURCE
-msgid "Create, delete and modify queues"
-msgstr "Create, delete and modify queues"
+#: lib/RT/CustomField.pm:214
+msgid "Create, modify and delete custom fields"
+msgstr "Create, modify and delete custom fields"
 
-#: NOT FOUND IN SOURCE
-msgid "Create, delete and modify the members of any user's personal groups"
-msgstr "Create, delete and modify the members of any user's personal groups"
+#: lib/RT/CustomField.pm:215
+msgid "Create, modify and delete custom fields values"
+msgstr "Create, modify and delete custom fields values"
 
-#: NOT FOUND IN SOURCE
-msgid "Create, delete and modify the members of personal groups"
-msgstr "Create, delete and modify the members of personal groups"
+#: lib/RT/Queue.pm:110
+msgid "Create, modify and delete queue"
+msgstr "Create, modify and delete queue"
 
-#: NOT FOUND IN SOURCE
-msgid "Create, delete and modify users"
-msgstr "Create, delete and modify users"
+#: lib/RT/Group.pm:91
+msgid "Create, modify and delete saved searches"
+msgstr "Create, modify and delete saved searches"
+
+#: lib/RT/System.pm:85
+msgid "Create, modify and delete users"
+msgstr "Create, modify and delete users"
+
+#: lib/RT/Class.pm:88
+msgid "CreateArticle"
+msgstr "CreateArticle"
 
 #: lib/RT/Dashboard.pm:81
 msgid "CreateDashboard"
@@ -1684,13 +2218,14 @@ msgstr "Created By"
 msgid "Created CustomField %1"
 msgstr "Created CustomField %1"
 
-#: NOT FOUND IN SOURCE
-msgid "Created in a date range"
-msgstr "Created in a date range"
+#: share/html/Articles/Elements/NewestArticles:53 share/html/Articles/Elements/UpdatedArticles:53
+msgid "Created by"
+msgstr "Created by"
 
-#: NOT FOUND IN SOURCE
-msgid "Created tickets in period, grouped by status"
-msgstr "Created tickets in period, grouped by status"
+#: share/html/Articles/Article/Search.html:200
+#. ($search->Name)
+msgid "Created search %1"
+msgstr "Created search %1"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "CreatedBy"
@@ -1715,6 +2250,10 @@ msgstr "Current Links"
 #: NOT FOUND IN SOURCE
 msgid "Current Scrips"
 msgstr "Current Scrips"
+
+#: share/html/Elements/Tabs:796
+msgid "Current Search"
+msgstr "Current Search"
 
 #: share/html/Admin/Groups/Members.html:60
 msgid "Current members"
@@ -1741,9 +2280,18 @@ msgstr "Custom Fields"
 msgid "Custom Fields for %1"
 msgstr "Custom Fields for %1"
 
+#: share/html/Admin/Queues/CustomFields.html:61
+#. ($Object->Name)
+msgid "Custom Fields for queue %1"
+msgstr "Custom Fields for queue %1"
+
 #: NOT FOUND IN SOURCE
 msgid "Custom action cleanup code"
 msgstr "Custom action cleanup code"
+
+#: share/html/Admin/Scrips/Elements/EditCustomCode:73
+msgid "Custom action commit code"
+msgstr "Custom action commit code"
 
 #: share/html/Admin/Scrips/Elements/EditCustomCode:72
 msgid "Custom action preparation code"
@@ -1833,6 +2381,14 @@ msgstr "Customise Email Addresses"
 msgid "Customize Email Configuration"
 msgstr "Customise Email Configuration"
 
+#: share/html/Elements/Tabs:212
+msgid "Customize dashboards in menu"
+msgstr "Customise dashboards in menu"
+
+#: share/html/Elements/Tabs:233
+msgid "Customize the look of your RT"
+msgstr "Customise the look of your RT"
+
 #: lib/RT/Installer.pm:113
 msgid "DBA password"
 msgstr "DBA password"
@@ -1841,6 +2397,10 @@ msgstr "DBA password"
 msgid "DBA username"
 msgstr "DBA username"
 
+#: lib/RT/Dashboard/Mailer.pm:329
+msgid "Daily"
+msgstr "Daily"
+
 #: lib/RT/Config.pm:514
 msgid "Daily digest"
 msgstr "Daily digest"
@@ -1848,6 +2408,16 @@ msgstr "Daily digest"
 #: share/html/Dashboards/Queries.html:107 share/html/Dashboards/Queries.html:107 share/html/Dashboards/Subscription.html:59 share/html/Dashboards/Subscription.html:63
 msgid "Dashboard"
 msgstr "Dashboard"
+
+#: share/html/Dashboards/Modify.html:143
+#. ($Dashboard->Name, $msg)
+msgid "Dashboard %1 could not be updated: %2"
+msgstr "Dashboard %1 could not be updated: %2"
+
+#: share/html/Dashboards/Modify.html:140
+#. ($Dashboard->Name)
+msgid "Dashboard %1 updated"
+msgstr "Dashboard %1 updated"
 
 #: share/html/Dashboards/Modify.html:110
 #. ($msg)
@@ -1866,6 +2436,15 @@ msgstr "Dashboard updated"
 #: etc/RT_Config.pm:1235 etc/initialdata:875 share/html/Dashboards/index.html:48 share/html/Elements/Dashboards:49
 msgid "Dashboards"
 msgstr "Dashboards"
+
+#: share/html/Admin/Global/DashboardsInMenu.html:48 share/html/Admin/Global/DashboardsInMenu.html:54 share/html/Admin/Users/DashboardsInMenu.html:62 share/html/Elements/Tabs:211 share/html/Elements/Tabs:328 share/html/Elements/Tabs:558 share/html/Prefs/DashboardsInMenu.html:57
+msgid "Dashboards in menu"
+msgstr "Dashboards in menu"
+
+#: share/html/Admin/Users/DashboardsInMenu.html:71
+#. ($UserObj->Name)
+msgid "Dashboards in menu for the user %1"
+msgstr "Dashboards in menu for the user %1"
 
 #: lib/RT/Installer.pm:78
 msgid "Database host"
@@ -1895,23 +2474,7 @@ msgstr "Database username for RT"
 msgid "Date format"
 msgstr "Date format"
 
-#: NOT FOUND IN SOURCE
-msgid "DateTime doesn't support format_cldr, you must upgrade to use this feature"
-msgstr "DateTime doesn't support format_cldr, you must upgrade to use this feature"
-
-#: NOT FOUND IN SOURCE
-msgid "DateTime module missing"
-msgstr "DateTime module missing"
-
-#: NOT FOUND IN SOURCE
-msgid "DateTime::Locale doesn't support date_format_full, you must upgrade to use this feature"
-msgstr "DateTime::Locale doesn't support date_format_full, you must upgrade to use this feature"
-
-#: NOT FOUND IN SOURCE
-msgid "DateTime::Locale module missing"
-msgstr "DateTime::Locale module missing"
-
-#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:633 share/html/SelfService/Display.html:66 share/html/Ticket/Create.html:253 share/html/Ticket/Elements/ShowSummary:84 share/html/Ticket/ModifyAll.html:68 share/html/m/ticket/create:377 share/html/m/ticket/show:344
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:633 share/html/SelfService/Display.html:72 share/html/Ticket/Create.html:253 share/html/Ticket/Elements/ShowSummary:84 share/html/Ticket/ModifyAll.html:68 share/html/m/ticket/create:377 share/html/m/ticket/show:344
 msgid "Dates"
 msgstr "Dates"
 
@@ -1964,31 +2527,11 @@ msgstr "Default: %1"
 msgid "Default: %1/%2 changed from %3 to %4"
 msgstr "Default: %1/%2 changed from %3 to %4"
 
-#: NOT FOUND IN SOURCE
-msgid "DefaultDueIn"
-msgstr "DefaultDueIn"
-
 #: lib/RT/Date.pm:116
 msgid "DefaultFormat"
 msgstr "DefaultFormat"
 
-#: NOT FOUND IN SOURCE
-msgid "Delegate rights"
-msgstr "Delegate rights"
-
-#: NOT FOUND IN SOURCE
-msgid "Delegate specific rights which have been granted to you."
-msgstr "Delegate specific rights which have been granted to you."
-
-#: NOT FOUND IN SOURCE
-msgid "DelegateRights"
-msgstr "DelegateRights"
-
-#: NOT FOUND IN SOURCE
-msgid "Delegation"
-msgstr "Delegation"
-
-#: etc/RT_Config.pm:2766 etc/RT_Config.pm:2842 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:864 share/html/Elements/Tabs:889 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:2769 etc/RT_Config.pm:2845 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:864 share/html/Elements/Tabs:889 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
 msgid "Delete"
 msgstr "Delete"
 
@@ -1996,14 +2539,27 @@ msgstr "Delete"
 msgid "Delete Template"
 msgstr "Delete Template"
 
-#: NOT FOUND IN SOURCE
-msgid "Delete dashboards for this group"
-msgstr "Delete dashboards for this group"
+#: share/html/Articles/Article/Delete.html:101
+#. ($ArticleObj->Id)
+msgid "Delete article #%1"
+msgstr "Delete article #%1"
+
+#: lib/RT/Class.pm:99
+msgid "Delete articles in this class"
+msgstr "Delete articles in this class"
 
 #: lib/RT/SharedSetting.pm:287
 #. ($msg)
 msgid "Delete failed: %1"
 msgstr "Delete failed: %1"
+
+#: lib/RT/Group.pm:97
+msgid "Delete group dashboards"
+msgstr "Delete group dashboards"
+
+#: lib/RT/Ticket.pm:2397
+msgid "Delete operation is disabled by lifecycle configuration"
+msgstr "Delete operation is disabled by lifecycle configuration"
 
 #: lib/RT/Dashboard.pm:88
 msgid "Delete personal dashboards"
@@ -2024,6 +2580,10 @@ msgstr "Delete tickets"
 #: share/html/Elements/BulkCustomFields:53
 msgid "Delete values"
 msgstr "Delete values"
+
+#: lib/RT/Class.pm:99
+msgid "DeleteArticle"
+msgstr "DeleteArticle"
 
 #: lib/RT/Dashboard.pm:83
 msgid "DeleteDashboard"
@@ -2046,10 +2606,6 @@ msgstr "DeleteTicket"
 msgid "Deleted %1"
 msgstr "Deleted %1"
 
-#: NOT FOUND IN SOURCE
-msgid "Deleted dashboard %1"
-msgstr "Deleted dashboard %1"
-
 #: share/html/Dashboards/Elements/Deleted:52
 msgid "Deleted queries"
 msgstr "Deleted queries"
@@ -2057,6 +2613,11 @@ msgstr "Deleted queries"
 #: share/html/Search/Elements/EditSearches:194
 msgid "Deleted saved search"
 msgstr "Deleted saved search"
+
+#: share/html/Articles/Article/Search.html:233
+#. ($searchname)
+msgid "Deleted search %1"
+msgstr "Deleted search %1"
 
 #: lib/RT/Queue.pm:230
 msgid "Deleting this object would break referential integrity"
@@ -2122,6 +2683,14 @@ msgstr "Describe the issue below"
 msgid "Description"
 msgstr "Description"
 
+#: share/html/Elements/Tabs:228
+msgid "Detailed information about your RT setup"
+msgstr "Detailed information about your RT setup"
+
+#: share/html/Ticket/Create.html:441
+msgid "Details"
+msgstr "Details"
+
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:50
 msgid "Direction"
 msgstr "Direction"
@@ -2138,25 +2707,35 @@ msgstr "Display"
 msgid "Display Access Control List"
 msgstr "Display Access Control List"
 
+#: share/html/SelfService/Article/Display.html:48
+#. ($id)
+msgid "Display Article %1"
+msgstr "Display Article %1"
+
 #: share/html/Search/Elements/DisplayOptions:51
 msgid "Display Columns"
 msgstr "Display Columns"
 
-#: NOT FOUND IN SOURCE
-msgid "Display Scrip templates for this queue"
-msgstr "Display Scrip templates for this queue"
+#: lib/RT/Config.pm:410
+msgid "Display all plain-text attachments in a monospace font with formatting preserved, but wrapping as needed."
+msgstr "Display all plain-text attachments in a monospace font with formatting preserved, but wrapping as needed."
 
-#: NOT FOUND IN SOURCE
-msgid "Display Scrips for this queue"
-msgstr "Display Scrips for this queue"
+#: lib/RT/Config.pm:337
+msgid "Display messages in rich text if available"
+msgstr "Display messages in rich text if available"
 
-#: NOT FOUND IN SOURCE
-msgid "Display saved searches for this group"
-msgstr "Display saved searches for this group"
+#: lib/RT/Config.pm:409
+msgid "Display plain-text attachments in fixed-width font"
+msgstr "Display plain-text attachments in fixed-width font"
 
-#: NOT FOUND IN SOURCE
-msgid "Distributed under version 2 <a href=\"http://www.gnu.org/copyleft/gpl.html\"> of the GNU GPL.</a>"
-msgstr "Distributed under version 2 <a href=\"http://www.gnu.org/copyleft/gpl.html\"> of the GNU GPL.</a>"
+#: lib/RT/Config.pm:444
+msgid "Display ticket after \"Quick Create\""
+msgstr "Display ticket after \"Quick Create\""
+
+#: share/html/Elements/Footer:59
+#. ('<a href="http://www.gnu.org/licenses/gpl-2.0.html">', '</a>')
+msgid "Distributed under %1version 2 of the GNU GPL%2."
+msgstr "Distributed under %1version 2 of the GNU GPL%2."
 
 #: lib/RT/System.pm:83
 msgid "Do anything and everything"
@@ -2190,13 +2769,13 @@ msgstr "Don't trust this key at all"
 msgid "Download"
 msgstr "Download"
 
-#: NOT FOUND IN SOURCE
-msgid "Download as a tab-delimited file"
-msgstr "Download as a tab-delimited file"
-
 #: share/html/Admin/Tools/Shredder/Elements/DumpFileLink:49
 msgid "Download dumpfile"
 msgstr "Download dumpfile"
+
+#: lib/RT/CustomField.pm:87
+msgid "Dropdown"
+msgstr "Dropdown"
 
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:77 lib/RT/Tickets.pm:134 share/html/Elements/RT__Ticket/ColumnMap:205 share/html/Elements/RT__Ticket/ColumnMap:238 share/html/Elements/SelectDateType:55 share/html/Elements/ShowReminders:52 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:259 share/html/Ticket/Elements/EditDates:68 share/html/Ticket/Elements/Reminders:141 share/html/Ticket/Elements/Reminders:177 share/html/Ticket/Elements/Reminders:83 share/html/Ticket/Elements/ShowDates:66 share/html/m/ticket/create:384 share/html/m/ticket/show:366
 msgid "Due"
@@ -2214,6 +2793,10 @@ msgstr "ERROR: %1"
 #: share/html/Elements/Tabs:514
 msgid "Easy updating of your open tickets"
 msgstr "Easy updating of your open tickets"
+
+#: share/html/Elements/Tabs:521
+msgid "Easy viewing of your reminders"
+msgstr "Easy viewing of your reminders"
 
 #: share/html/Elements/Dashboards:51 share/html/Elements/Quicksearch:52 share/html/Elements/ShowSearch:51 share/html/Elements/Tabs:900 share/html/Elements/Tabs:908 share/html/Ticket/Elements/ShowRequestor:124
 msgid "Edit"
@@ -2240,6 +2823,10 @@ msgstr "Edit Custom Fields for all queues"
 msgid "Edit Custom Fields for all users"
 msgstr "Edit Custom Fields for all users"
 
+#: share/html/Admin/Global/CustomFields/Class-Article.html:52
+msgid "Edit Custom Fields for articles in all classes"
+msgstr "Edit Custom Fields for articles in all classes"
+
 #: share/html/Admin/Global/CustomFields/Queue-Tickets.html:53 share/html/Admin/Global/CustomFields/Queue-Transactions.html:53
 msgid "Edit Custom Fields for tickets in all queues"
 msgstr "Edit Custom Fields for tickets in all queues"
@@ -2256,29 +2843,22 @@ msgstr "Edit Query"
 msgid "Edit Search"
 msgstr "Edit Search"
 
-#: NOT FOUND IN SOURCE
-msgid "Edit Templates for queue %1"
-msgstr "Edit Templates for queue %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Edit saved searches for this group"
-msgstr "Edit saved searches for this group"
+#: share/html/Admin/Global/Topics.html:56
+msgid "Edit global topic hierarchy"
+msgstr "Edit global topic hierarchy"
 
 #: share/html/Elements/Tabs:126
 msgid "Edit system templates"
 msgstr "Edit system templates"
 
+#: share/html/Admin/Articles/Classes/Topics.html:60
+#. ($ClassObj->Name)
+msgid "Edit topic hierarchy for %1"
+msgstr "Edit topic hierarchy for %1"
+
 #: lib/RT/Group.pm:91
 msgid "EditSavedSearches"
 msgstr "EditSavedSearches"
-
-#: NOT FOUND IN SOURCE
-msgid "Editable text"
-msgstr "Editable text"
-
-#: NOT FOUND IN SOURCE
-msgid "Editing Configuration for queue %1"
-msgstr "Editing Configuration for queue %1"
 
 #: share/html/Admin/CustomFields/Modify.html:195 share/html/Admin/Elements/EditCustomField:123
 #. ($CustomFieldObj->Name)
@@ -2290,10 +2870,6 @@ msgstr "Editing CustomField %1"
 #. ($Group->Name)
 msgid "Editing membership for group %1"
 msgstr "Editing membership for group %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Editing membership for personal group %1"
-msgstr "Editing membership for personal group %1"
 
 #: lib/RT/Tickets.pm:112 share/html/Elements/RT__Ticket/ColumnMap:165
 msgid "EffectiveId"
@@ -2311,6 +2887,10 @@ msgstr "Either you have no rights to view saved search %1 or identifier is incor
 #: share/html/Admin/Users/Modify.html:72 share/html/Ticket/Elements/AddWatchers:79 share/html/User/Prefs.html:65
 msgid "Email"
 msgstr "E-mail"
+
+#: share/html/Elements/RT__User/ColumnMap:71
+msgid "Email Address"
+msgstr "Email Address"
 
 #: etc/initialdata:695 etc/upgrade/3.7.85/content:7
 msgid "Email Digest"
@@ -2332,9 +2912,17 @@ msgstr "Email template for periodic notification digests"
 msgid "EmailAddress"
 msgstr "EmailAddress"
 
+#: share/html/Elements/RT__Template/ColumnMap:77
+msgid "Empty"
+msgstr "Empty"
+
 #: share/html/Elements/RT__CustomField/ColumnMap:58 share/html/Elements/RT__Queue/ColumnMap:58 share/html/Elements/RT__Scrip/ColumnMap:94
 msgid "Enabled"
 msgstr "Enabled"
+
+#: share/html/Admin/Articles/Classes/Modify.html:73
+msgid "Enabled (Unchecking this box disables this class)"
+msgstr "Enabled (Unchecking this box disables this class)"
 
 #: share/html/Admin/CustomFields/Modify.html:141 share/html/Admin/Elements/EditCustomField:75
 msgid "Enabled (Unchecking this box disables this custom field)"
@@ -2347,6 +2935,14 @@ msgstr "Enabled (Unchecking this box disables this group)"
 #: share/html/Admin/Queues/Modify.html:125
 msgid "Enabled (Unchecking this box disables this queue)"
 msgstr "Enabled (Unchecking this box disables this queue)"
+
+#: share/html/Admin/Scrips/Create.html:66 share/html/Admin/Scrips/Modify.html:82
+msgid "Enabled (Unchecking this box disables this scrip)"
+msgstr "Enabled (Unchecking this box disables this scrip)"
+
+#: share/html/Admin/Articles/Classes/index.html:81
+msgid "Enabled Classes"
+msgstr "Enabled Classes"
 
 #: share/html/Admin/Queues/index.html:112
 msgid "Enabled Queues"
@@ -2386,6 +2982,18 @@ msgstr "Encrypting disabled"
 msgid "Encrypting enabled"
 msgstr "Encrypting enabled"
 
+#: share/html/Articles/Article/Elements/EditLinks:50
+msgid "Enter articles, tickets, or other URLs related to this article."
+msgstr "Enter articles, tickets, or other URLs related to this article."
+
+#: lib/RT/CustomField.pm:191
+msgid "Enter multiple IP address ranges"
+msgstr "Enter multiple IP address ranges"
+
+#: lib/RT/CustomField.pm:182
+msgid "Enter multiple IP addresses"
+msgstr "Enter multiple IP addresses"
+
 #: lib/RT/CustomField.pm:97
 msgid "Enter multiple values"
 msgstr "Enter multiple values"
@@ -2397,6 +3005,14 @@ msgstr "Enter multiple values with autocompletion"
 #: share/html/Elements/AddLinks:67
 msgid "Enter objects or URIs to link objects to. Separate multiple entries with spaces."
 msgstr "Enter objects or URIs to link objects to. Separate multiple entries with spaces."
+
+#: lib/RT/CustomField.pm:183
+msgid "Enter one IP address"
+msgstr "Enter one IP address"
+
+#: lib/RT/CustomField.pm:192
+msgid "Enter one IP address range"
+msgstr "Enter one IP address range"
 
 #: lib/RT/CustomField.pm:98
 msgid "Enter one value"
@@ -2414,6 +3030,18 @@ msgstr "Enter queues or URIs to link queues to. Separate multiple entries with s
 msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with spaces."
 msgstr "Enter tickets or URIs to link tickets to. Separate multiple entries with spaces."
 
+#: lib/RT/Config.pm:285
+msgid "Enter time in hours by default"
+msgstr "Enter time in hours by default"
+
+#: lib/RT/CustomField.pm:193
+msgid "Enter up to %1 IP address ranges"
+msgstr "Enter up to %1 IP address ranges"
+
+#: lib/RT/CustomField.pm:184
+msgid "Enter up to %1 IP addresses"
+msgstr "Enter up to %1 IP addresses"
+
 #: lib/RT/CustomField.pm:99
 msgid "Enter up to %1 values"
 msgstr "Enter up to %1 values"
@@ -2422,17 +3050,18 @@ msgstr "Enter up to %1 values"
 msgid "Enter up to %1 values with autocompletion"
 msgstr "Enter up to %1 values with autocompletion"
 
+#: share/html/Search/Simple.html:77
+#. (map { "<strong>$_</strong>" } qw(initial active inactive any))
+msgid "Entering %1, %2, %3, or %4 limits results to tickets with one of the respective types of statuses.  Any individual status name limits results to just the statuses named."
+msgstr "Entering %1, %2, %3, or %4 limits results to tickets with one of the respective types of statuses.  Any individual status name limits results to just the statuses named."
+
+#: share/html/Admin/Tools/Configuration.html:281
+msgid "Environment variables"
+msgstr "Environment variables"
+
 #: sbin/rt-email-digest:96 share/html/Elements/Login:54 share/html/Install/Elements/Errors:49 share/html/Search/Results.html:57 share/html/m/_elements/login:53
 msgid "Error"
 msgstr "Error"
-
-#: NOT FOUND IN SOURCE
-msgid "Error in parameters to Queue->AddWatcher"
-msgstr "Error in parameters to Queue->AddWatcher"
-
-#: NOT FOUND IN SOURCE
-msgid "Error in parameters to Queue->DeleteWatcher"
-msgstr "Error in parameters to Queue->DeleteWatcher"
 
 #: NOT FOUND IN SOURCE
 msgid "Error in parameters to Ticket->AddWatcher"
@@ -2454,6 +3083,15 @@ msgstr "Error: Missing dashboard"
 msgid "Error: bad GnuPG data"
 msgstr "Error: bad GnuPG data"
 
+#: share/html/Articles/Article/Search.html:209
+msgid "Error: cannot change privacy value of existing search"
+msgstr "Error: cannot change privacy value of existing search"
+
+#: share/html/Articles/Article/Search.html:172
+#. ($ARGS{'LoadSavedSearch'}, $msg)
+msgid "Error: could not load saved search %1: %2"
+msgstr "Error: could not load saved search %1: %2"
+
 #: etc/initialdata:656 etc/upgrade/3.7.10/content:29
 msgid "Error: no private key"
 msgstr "Error: no private key"
@@ -2461,6 +3099,11 @@ msgstr "Error: no private key"
 #: etc/initialdata:634 etc/upgrade/3.7.10/content:7
 msgid "Error: public key"
 msgstr "Error: public key"
+
+#: share/html/Articles/Article/Search.html:224
+#. ($search->Name, $msg)
+msgid "Error: search %1 not updated: %2"
+msgstr "Error: search %1 not updated: %2"
 
 #: bin/rt-crontool:362
 msgid "Escalate tickets"
@@ -2474,21 +3117,13 @@ msgstr "Estimated"
 msgid "Everyone"
 msgstr "Everyone"
 
-#: NOT FOUND IN SOURCE
-msgid "Examine tickets created in a queue between two dates"
-msgstr "Examine tickets created in a queue between two dates"
-
-#: NOT FOUND IN SOURCE
-msgid "Examine tickets resolved in a queue between two dates"
-msgstr "Examine tickets resolved in a queue between two dates"
-
-#: NOT FOUND IN SOURCE
-msgid "Examine tickets resolved in a queue, grouped by owner"
-msgstr "Examine tickets resolved in a queue, grouped by owner"
-
 #: bin/rt-crontool:348
 msgid "Example:"
 msgstr "Example:"
+
+#: lib/RT/System.pm:93
+msgid "ExecuteCode"
+msgstr "ExecuteCode"
 
 #: share/html/Admin/Elements/ShowKeyInfo:74
 msgid "Expire"
@@ -2502,13 +3137,31 @@ msgstr "ExtendedStatus"
 msgid "External authentication enabled."
 msgstr "External authentication enabled."
 
+#: NOT FOUND IN SOURCE
+msgid "Extra"
+msgstr "Extra"
+
 #: share/html/Admin/Users/Modify.html:97
 msgid "Extra info"
 msgstr "Extra info"
 
+#: share/html/Elements/Tabs:698
+msgid "Extract Article"
+msgstr "Extract Article"
+
 #: etc/initialdata:104 etc/upgrade/3.8.3/content:78
 msgid "Extract Subject Tag"
 msgstr "Extract Subject Tag"
+
+#: share/html/Articles/Article/ExtractIntoClass.html:48 share/html/Articles/Article/ExtractIntoTopic.html:48
+#. ($Ticket)
+msgid "Extract a new article from ticket #%1"
+msgstr "Extract a new article from ticket #%1"
+
+#: share/html/Articles/Article/ExtractFromTicket.html:48
+#. ($Ticket, $ClassObj->Name)
+msgid "Extract article from ticket #%1 into class %2"
+msgstr "Extract article from ticket #%1 into class %2"
 
 #: etc/initialdata:105 etc/upgrade/3.8.3/content:79
 msgid "Extract tags from a Transaction's subject and add them to the Ticket's subject."
@@ -2556,6 +3209,11 @@ msgstr "Failed to load object for %1"
 msgid "Failed to load template"
 msgstr "Failed to load template"
 
+#: lib/RT/Reminders.pm:122
+#. ($self->Ticket)
+msgid "Failed to load ticket %1"
+msgstr "Failed to load ticket %1"
+
 #: sbin/rt-email-digest:168
 msgid "Failed to parse template"
 msgstr "Failed to parse template"
@@ -2564,13 +3222,17 @@ msgstr "Failed to parse template"
 msgid "Feb"
 msgstr "Feb"
 
+#: share/html/Elements/Tabs:814
+msgid "Feeds"
+msgstr "Feeds"
+
+#: share/html/Articles/Article/ExtractFromTicket.html:62
+msgid "Field"
+msgstr "Field"
+
 #: share/html/Admin/CustomFields/Modify.html:89
 msgid "Field values source:"
 msgstr "Field values source:"
-
-#: NOT FOUND IN SOURCE
-msgid "FileName"
-msgstr "FileName"
 
 #: lib/RT/Tickets.pm:141 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:53 share/html/Elements/SelectAttachmentField:54
 msgid "Filename"
@@ -2620,6 +3282,10 @@ msgstr "Final Priority"
 msgid "FinalPriority"
 msgstr "FinalPriority"
 
+#: share/html/Elements/FindUser:48
+msgid "Find a user"
+msgstr "Find a user"
+
 #: share/html/Admin/Users/index.html:77
 msgid "Find all users whose"
 msgstr "Find all users whose"
@@ -2636,6 +3302,14 @@ msgstr "Find people whose"
 msgid "Find tickets"
 msgstr "Find tickets"
 
+#: etc/RT_Config.pm:1235
+msgid "FindUser"
+msgstr "FindUser"
+
+#: share/html/Admin/Elements/ShowKeyInfo:67
+msgid "Fingerprint"
+msgstr "Fingerprint"
+
 #: share/html/Install/Finish.html:48 share/html/Install/Global.html:64
 msgid "Finish"
 msgstr "Finish"
@@ -2644,13 +3318,10 @@ msgstr "Finish"
 msgid "First"
 msgstr "First"
 
-#: NOT FOUND IN SOURCE
-msgid "Foo Bar Baz"
-msgstr "Foo Bar Baz"
-
-#: NOT FOUND IN SOURCE
-msgid "Foo!"
-msgstr "Foo!"
+#: share/html/Search/Simple.html:91
+#. ($link_start, $link_end)
+msgid "For the full power of RT's searches, please visit the %1search builder interface%2."
+msgstr "For the full power of RT's searches, please visit the %1search builder interface%2."
 
 #: share/html/Search/Bulk.html:84
 msgid "Force change"
@@ -2659,6 +3330,10 @@ msgstr "Force change"
 #: share/html/Search/Edit.html:59 share/html/Search/Elements/EditFormat:52
 msgid "Format"
 msgstr "Format"
+
+#: lib/RT/Config.pm:231
+msgid "Formats iCal feed events with date and time"
+msgstr "Formats iCal feed events with date and time"
 
 #: etc/initialdata:609 etc/upgrade/3.7.15/content:7 share/html/Elements/ShowTransaction:208 share/html/Elements/Tabs:654
 msgid "Forward"
@@ -2676,9 +3351,9 @@ msgstr "Forward Message and Return"
 msgid "Forward Ticket"
 msgstr "Forward Ticket"
 
-#: NOT FOUND IN SOURCE
-msgid "Forward messages to third person(s)"
-msgstr "Forward messages to third person(s)"
+#: lib/RT/Queue.pm:139
+msgid "Forward messages outside of RT"
+msgstr "Forward messages outside of RT"
 
 #: share/html/Ticket/Forward.html:123
 #. ($TicketObj->id)
@@ -2693,6 +3368,10 @@ msgstr "Forward transaction #%1"
 #: lib/RT/Queue.pm:139
 msgid "ForwardMessage"
 msgstr "ForwardMessage"
+
+#: lib/RT/Transaction.pm:830
+msgid "Forwarded %3Transaction #%1%4 to %2"
+msgstr "Forwarded %3Transaction #%1%4 to %2"
 
 #: share/html/Search/Results.html:148 share/html/m/_elements/ticket_list:83
 #. ($ticketcount)
@@ -2716,13 +3395,21 @@ msgstr "Fri"
 msgid "Friday"
 msgstr "Friday"
 
-#: NOT FOUND IN SOURCE
-msgid "Full headers"
-msgstr "Full headers"
+#: share/html/Ticket/Forward.html:60
+msgid "From"
+msgstr "From"
+
+#: share/html/Admin/Tools/Theme.html:67
+msgid "GD is disabled or not installed. You can upload an image, but you won't get automatic color suggestions."
+msgstr "GD is disabled or not installed. You can upload an image, but you won't get automatic colour suggestions."
 
 #: lib/RT/Config.pm:198 lib/RT/Config.pm:290
 msgid "General"
 msgstr "General"
+
+#: share/html/Admin/Elements/EditRightsCategoryTabs:86
+msgid "General rights"
+msgstr "General rights"
 
 #: NOT FOUND IN SOURCE
 msgid "Get template from file"
@@ -2740,18 +3427,36 @@ msgstr "Given to %1"
 msgid "Global"
 msgstr "Global"
 
-#: NOT FOUND IN SOURCE
-msgid "Global Custom Fields"
-msgstr "Global Custom Fields"
+#: share/html/Admin/Tools/Configuration.html:210
+msgid "Global Attributes"
+msgstr "Global Attributes"
+
+#: share/html/Articles/Topics.html:91
+msgid "Global Topics"
+msgstr "Global Topics"
 
 #: share/html/Admin/Global/CustomFields/index.html:61
 msgid "Global custom field configuration"
 msgstr "Global custom field configuration"
 
+#: share/html/Admin/Global/DashboardsInMenu.html:104
+msgid "Global dashboards in menu saved."
+msgstr "Global dashboards in menu saved."
+
+#: lib/RT/Scrip.pm:163
+#. ($args{'Template'})
+msgid "Global or queue specific template '%1' not found"
+msgstr "Global or queue specific template '%1' not found"
+
 #: share/html/Admin/Global/MyRT.html:100
 #. ($pane)
 msgid "Global portlet %1 saved."
 msgstr "Global portlet %1 saved."
+
+#: lib/RT/Scrip.pm:161
+#. ($args{'Template'})
+msgid "Global template '%1' not found"
+msgstr "Global template '%1' not found"
 
 #: NOT FOUND IN SOURCE
 msgid "Global template: %1"
@@ -2778,6 +3483,10 @@ msgid "GnuPG private key(s) for %1"
 msgstr "GnuPG private key(s) for %1"
 
 #: NOT FOUND IN SOURCE
+msgid "GnuPG private keys"
+msgstr "GnuPG private keys"
+
+#: NOT FOUND IN SOURCE
 msgid "GnuPG public key(s) for %1"
 msgstr "GnuPG public key(s) for %1"
 
@@ -2785,9 +3494,21 @@ msgstr "GnuPG public key(s) for %1"
 msgid "Go"
 msgstr "Go"
 
+#: share/html/Admin/Groups/index.html:55
+msgid "Go to group"
+msgstr "Go to group"
+
+#: share/html/Admin/Users/index.html:60
+msgid "Go to user"
+msgstr "Go to user"
+
 #: share/html/Admin/Articles/Classes/index.html:70 share/html/Admin/CustomFields/index.html:86 share/html/Admin/Groups/index.html:71 share/html/Admin/Queues/People.html:76 share/html/Admin/Queues/People.html:80 share/html/Admin/Queues/index.html:89 share/html/Admin/Users/index.html:81 share/html/Approvals/index.html:54 share/html/Elements/RefreshHomepage:52 share/html/Ticket/Elements/EditPeople:55 share/html/Ticket/Elements/EditPeople:59
 msgid "Go!"
 msgstr "Go!"
+
+#: share/html/SelfService/Elements/GotoTicket:49 share/html/SelfService/Elements/GotoTicket:49
+msgid "Goto Ticket"
+msgstr "Goto Ticket"
 
 #: share/html/Elements/GotoTicket:49
 msgid "Goto ticket"
@@ -2839,13 +3560,14 @@ msgstr "Group enabled"
 msgid "Group has no such member"
 msgstr "Group has no such member"
 
+#: lib/RT/Group.pm:502
+#. ($value)
+msgid "Group name '%1' is already in use"
+msgstr "Group name '%1' is already in use"
+
 #: lib/RT/Group.pm:1040
 msgid "Group not found"
 msgstr "Group not found"
-
-#: NOT FOUND IN SOURCE
-msgid "Group rights"
-msgstr "Group rights"
 
 #: lib/RT/CustomField.pm:1747 share/html/Admin/Global/CustomFields/index.html:71 share/html/Admin/Groups/Members.html:88 share/html/Admin/Queues/People.html:102 share/html/Elements/Tabs:143 share/html/Elements/Tabs:257 share/html/Elements/Tabs:75
 msgid "Groups"
@@ -2859,6 +3581,14 @@ msgstr "Groups can't be members of their members"
 msgid "Groups matching search criteria"
 msgstr "Groups matching search criteria"
 
+#: share/html/Admin/Elements/MembershipsPage:55
+msgid "Groups the principal is member of (check box to delete)"
+msgstr "Groups the principal is member of (check box to delete)"
+
+#: share/html/Admin/Elements/MembershipsPage:69
+msgid "Groups the principal is not member of (check box to add)"
+msgstr "Groups the principal is not member of (check box to add)"
+
 #: NOT FOUND IN SOURCE
 msgid "Groups the user is member of (check box to delete)"
 msgstr "Groups the user is member of (check box to delete)"
@@ -2870,6 +3600,34 @@ msgstr "Groups the user is not member of (check box to add)"
 #: share/html/Ticket/Elements/ShowRequestor:120
 msgid "Groups this user belongs to"
 msgstr "Groups this user belongs to"
+
+#: etc/initialdata:258 etc/upgrade/4.1.9/content:9
+msgid "HTML Autoresponse template"
+msgstr "HTML Autoresponse template"
+
+#: etc/initialdata:450 etc/upgrade/4.1.9/content:103
+msgid "HTML Ticket Resolved"
+msgstr "HTML Ticket Resolved"
+
+#: etc/initialdata:427 etc/upgrade/4.1.9/content:91
+msgid "HTML Ticket status changed"
+msgstr "HTML Ticket status changed"
+
+#: etc/initialdata:391 etc/upgrade/4.1.9/content:78
+msgid "HTML admin comment template"
+msgstr "HTML admin comment template"
+
+#: etc/initialdata:348 etc/upgrade/4.1.9/content:57
+msgid "HTML admin correspondence template"
+msgstr "HTML admin correspondence template"
+
+#: etc/initialdata:368 etc/upgrade/4.1.9/content:69
+msgid "HTML correspondence template"
+msgstr "HTML correspondence template"
+
+#: etc/initialdata:303 etc/upgrade/4.1.9/content:35
+msgid "HTML transaction template"
+msgstr "HTML transaction template"
 
 #: lib/RT/Tickets.pm:127
 msgid "HasMember"
@@ -2887,17 +3645,26 @@ msgstr "Heading of a forwarded message"
 msgid "Hello!"
 msgstr "Hello!"
 
-#: NOT FOUND IN SOURCE
-msgid "Hello, %1"
-msgstr "Hello, %1"
-
 #: share/html/Install/Global.html:52
 msgid "Help us set up some useful defaults for RT."
 msgstr "Help us set up some useful defaults for RT."
 
+#: share/html/Elements/ShowHistory:60
+msgid "Hide all quoted text"
+msgstr "Hide all quoted text"
+
+#: share/html/Elements/FoldStanzaJS:50
+msgid "Hide quoted text"
+msgstr "Hide quoted text"
+
 #: share/html/Elements/ShowHistory:52 share/html/Elements/Tabs:309 share/html/Elements/Tabs:325 share/html/Elements/Tabs:353 share/html/Elements/Tabs:609 share/html/Elements/Tabs:862 share/html/Elements/Tabs:883 share/html/Elements/Tabs:903 share/html/m/_elements/ticket_menu:64
 msgid "History"
 msgstr "History"
+
+#: share/html/Articles/Article/History.html:48
+#. ($id)
+msgid "History for article #%1"
+msgstr "History for article #%1"
 
 #: share/html/Admin/Groups/History.html:60
 #. ($GroupObj->Name)
@@ -2915,17 +3682,13 @@ msgstr "History of the queue %1"
 msgid "History of the user %1"
 msgstr "History of the user %1"
 
-#: NOT FOUND IN SOURCE
-msgid "Home"
-msgstr "Home"
+#: share/html/Elements/RT__User/ColumnMap:81
+msgid "Home Phone"
+msgstr "Home Phone"
 
 #: lib/RT/Config.pm:316
 msgid "Home page refresh interval"
 msgstr "Home page refresh interval"
-
-#: NOT FOUND IN SOURCE
-msgid "HomePhone"
-msgstr "HomePhone"
 
 #: share/html/Elements/Tabs:444 share/html/m/_elements/header:69
 msgid "Homepage"
@@ -2935,6 +3698,10 @@ msgstr "Homepage"
 msgid "Hour"
 msgstr "Hour"
 
+#: NOT FOUND IN SOURCE
+msgid "Hourly"
+msgstr "Hourly"
+
 #: share/html/Elements/SelectTimeUnits:53
 msgid "Hours"
 msgstr "Hours"
@@ -2943,6 +3710,10 @@ msgstr "Hours"
 #. (6)
 msgid "I have %quant(%1,concrete mixer)."
 msgstr "I have %quant(%1,concrete mixer)."
+
+#: share/html/User/Prefs.html:175
+msgid "I want to reset my secret token."
+msgstr "I want to reset my secret token."
 
 #: lib/RT/Date.pm:117
 msgid "ISO"
@@ -2956,6 +3727,10 @@ msgstr "Id"
 msgid "Identity"
 msgstr "Identity"
 
+#: share/html/Admin/Articles/Classes/Modify.html:114
+msgid "If a Custom Field is selected, the Subject of your outgoing email will be overridden by this article."
+msgstr "If a Custom Field is selected, the Subject of your outgoing email will be overridden by this article."
+
 #: lib/RT/Approval/Rule/Rejected.pm:54
 msgid "If an approval is rejected, reject the original and delete pending approvals"
 msgstr "If an approval is rejected, reject the original and delete pending approvals"
@@ -2968,6 +3743,10 @@ msgstr "If no Requestor is specified, create tickets with this requestor."
 msgid "If no queue is specified, create tickets in this queue."
 msgstr "If no queue is specified, create tickets in this queue."
 
+#: share/html/Elements/LoginRedirectWarning:66
+msgid "If this is not what you expect, leave this page now without logging in."
+msgstr "If this is not what you expect, leave this page now without logging in."
+
 #: bin/rt-crontool:344
 msgid "If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT."
 msgstr "If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT."
@@ -2976,15 +3755,21 @@ msgstr "If this tool were setgid, a hostile local user could use this tool to ga
 msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server."
 msgstr "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server."
 
-#: NOT FOUND IN SOURCE
-msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server.</p>"
-msgstr "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server.</p>"
+#: share/html/Errors/WebRemoteUser/Wrapper:75
+#. (qq[<a href="$login_url">], '</a>')
+msgid "If you have an internal RT login, you may %1try it instead%2."
+msgstr "If you have an internal RT login, you may %1try it instead%2."
 
-#: NOT FOUND IN SOURCE
-msgid "If you've change the Port that RT runs on, you'll need to restart the server in order to log in."
-msgstr "If you've change the Port that RT runs on, you'll need to restart the server in order to log in."
+#: share/html/Elements/CSRF:59
+#. ($escaped_path, $action, $start, $end)
+msgid "If you really intended to visit %1 and %2, then %3click here to resume your request%4."
+msgstr "If you really intended to visit %1 and %2, then %3click here to resume your request%4."
 
-#: share/html/Admin/Queues/People.html:124 share/html/Ticket/Modify.html:66 share/html/Ticket/ModifyAll.html:136 share/html/Ticket/ModifyPeople.html:76
+#: share/html/Install/Finish.html:60
+msgid "If you've changed the Port that RT runs on, you'll need to restart the server in order to log in."
+msgstr "If you've changed the Port that RT runs on, you'll need to restart the server in order to log in."
+
+#: share/html/Admin/Queues/People.html:124 share/html/Ticket/Modify.html:68 share/html/Ticket/ModifyAll.html:136 share/html/Ticket/ModifyPeople.html:76
 msgid "If you've updated anything above, be sure to"
 msgstr "If you've updated anything above, be sure to"
 
@@ -2997,9 +3782,41 @@ msgstr "If your preferred database isn't listed in the dropdown below, that mean
 msgid "Illegal value for %1"
 msgstr "Illegal value for %1"
 
+#: share/html/Elements/ShowTransactionAttachments:268
+msgid "Image displayed inline above"
+msgstr "Image displayed inline above"
+
+#: share/html/Elements/ShowTransactionAttachments:264
+msgid "Image not shown because display is disabled in system configuration."
+msgstr "Image not shown because display is disabled in system configuration."
+
+#: share/html/Elements/ShowTransactionAttachments:272
+msgid "Image not shown because sender requested not to inline it."
+msgstr "Image not shown because sender requested not to inline it."
+
 #: lib/RT/Record.pm:968
 msgid "Immutable field"
 msgstr "Immutable field"
+
+#: share/html/Ticket/Elements/ShowRequestor:160 share/html/User/Elements/Portlets/InactiveTickets:54
+msgid "Inactive Tickets"
+msgstr "Inactive Tickets"
+
+#: share/html/Articles/Elements/BeforeMessageBox:59
+msgid "Include Article:"
+msgstr "Include Article:"
+
+#: share/html/Admin/Articles/Classes/Modify.html:89
+msgid "Include article name"
+msgstr "Include article name"
+
+#: share/html/Admin/Articles/Classes/Modify.html:93
+msgid "Include article summary"
+msgstr "Include article summary"
+
+#: share/html/Admin/Articles/Classes/index.html:69
+msgid "Include disabled classes in listing."
+msgstr "Include disabled classes in listing."
 
 #: share/html/Admin/CustomFields/index.html:81
 msgid "Include disabled custom fields in listing."
@@ -3020,6 +3837,14 @@ msgstr "Include disabled users in search."
 #: share/html/Admin/CustomFields/Modify.html:116
 msgid "Include page"
 msgstr "Include page"
+
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:140
+msgid "Include subtopics"
+msgstr "Include subtopics"
+
+#: lib/RT/Config.pm:230
+msgid "Include time in iCal feed events?"
+msgstr "Include time in iCal feed events?"
 
 #: lib/RT/Config.pm:513
 msgid "Individual messages"
@@ -3061,6 +3886,14 @@ msgstr "InitialPriority"
 msgid "Initialize Database"
 msgstr "Initialise Database"
 
+#: share/html/Elements/ValidateCustomFields:86
+msgid "Input can not be parsed as an IP address"
+msgstr "Input can not be parsed as an IP address"
+
+#: share/html/Elements/ValidateCustomFields:97
+msgid "Input can not be parsed as an IP address range"
+msgstr "Input can not be parsed as an IP address range"
+
 #: lib/RT/ScripAction.pm:122
 msgid "Input error"
 msgstr "Input error"
@@ -3072,10 +3905,6 @@ msgstr "Input error"
 msgid "Input must match %1"
 msgstr "Input must match %1"
 
-#: NOT FOUND IN SOURCE
-msgid "Install RT"
-msgstr "Install RT"
-
 #: lib/RT/Article.pm:282 lib/RT/Article.pm:291 lib/RT/Article.pm:300 lib/RT/Article.pm:309 lib/RT/Article.pm:318
 msgid "Internal Error"
 msgstr "Internal Error"
@@ -3084,6 +3913,21 @@ msgstr "Internal Error"
 #. ($id->{error_message})
 msgid "Internal Error: %1"
 msgstr "Internal Error: %1"
+
+#: lib/RT/Article.pm:212
+#. ($txn_msg)
+msgid "Internal error: %1"
+msgstr "Internal error: %1"
+
+#: share/html/Admin/Elements/EditRights:158
+#. ($type)
+msgid "Invalid %1"
+msgstr "Invalid %1"
+
+#: share/html/Articles/Article/Search.html:175
+#. ('LoadSavedSearch')
+msgid "Invalid %1 argument"
+msgstr "Invalid %1 argument"
 
 #: share/html/Install/Global.html:89 share/html/Install/Sendmail.html:92
 #. ($_, $ARGS{$_})
@@ -3096,30 +3940,67 @@ msgstr "Invalid %1: '%2' doesn't look like an email address"
 msgid "Invalid %1: it should be a number"
 msgstr "Invalid %1: it should be a number"
 
+#: lib/RT/Article.pm:109
+msgid "Invalid Class"
+msgstr "Invalid Class"
+
+#: lib/RT/CustomField.pm:321 lib/RT/CustomField.pm:651
+msgid "Invalid Custom Field values source"
+msgstr "Invalid Custom Field values source"
+
 #: NOT FOUND IN SOURCE
 msgid "Invalid Group Type"
 msgstr "Invalid Group Type"
+
+#: NOT FOUND IN SOURCE
+msgid "Invalid Group Type and Domain"
+msgstr "Invalid Group Type and Domain"
+
+#: lib/RT/Class.pm:311
+#. ($msg)
+msgid "Invalid Queue, unable to apply Class: %1"
+msgstr "Invalid Queue, unable to apply Class: %1"
+
+#: lib/RT/CustomField.pm:310
+msgid "Invalid Render Type"
+msgstr "Invalid Render Type"
+
+#: lib/RT/CustomField.pm:1052
+#. ($self->FriendlyType)
+msgid "Invalid Render Type for custom field of type %1"
+msgstr "Invalid Render Type for custom field of type %1"
 
 #: lib/RT/Record.pm:970
 msgid "Invalid data"
 msgstr "Invalid data"
 
+#: share/html/Admin/Users/Keys.html:119
+#. ($ARGS{'PrivateKey'}, $email)
+msgid "Invalid key %1 for address '%2'"
+msgstr "Invalid key %1 for address '%2'"
+
 #: lib/RT/CustomField.pm:1533
 msgid "Invalid object"
 msgstr "Invalid object"
-
-#: NOT FOUND IN SOURCE
-msgid "Invalid owner object"
-msgstr "Invalid owner object"
 
 #: lib/RT/CustomField.pm:295 lib/RT/CustomField.pm:755
 #. ($msg)
 msgid "Invalid pattern: %1"
 msgstr "Invalid pattern: %1"
 
+#: share/html/Dashboards/Elements/ShowPortlet/component:61 share/html/Elements/MyRT:94
+#. ($name)
+#. ($path)
+msgid "Invalid portlet %1"
+msgstr "Invalid portlet %1"
+
 #: lib/RT/Scrip.pm:139 lib/RT/Scrip.pm:269 lib/RT/Template.pm:273
 msgid "Invalid queue"
 msgstr "Invalid queue"
+
+#: lib/RT/Scrip.pm:304
+msgid "Invalid queue id"
+msgstr "Invalid queue id"
 
 #: lib/RT/ACE.pm:258
 msgid "Invalid right"
@@ -3144,9 +4025,9 @@ msgstr "Invalid value for %1"
 msgid "Invalid value for custom field"
 msgstr "Invalid value for custom field"
 
-#: NOT FOUND IN SOURCE
-msgid "Invalid value for status"
-msgstr "Invalid value for status"
+#: lib/RT/Record/AddAndSort.pm:195
+msgid "Is already added to the object"
+msgstr "Is already added to the object"
 
 #: lib/RT/Attachment.pm:811
 msgid "Is not encrypted"
@@ -3172,9 +4053,9 @@ msgstr "Italic"
 msgid "Jan"
 msgstr "Jan"
 
-#: NOT FOUND IN SOURCE
-msgid "Join or leave this group"
-msgstr "Join or leave this group"
+#: lib/RT/Group.pm:90
+msgid "Join or leave group"
+msgstr "Join or leave group"
 
 #: lib/RT/Date.pm:97
 msgid "Jul"
@@ -3191,6 +4072,15 @@ msgstr "Jun"
 #: lib/RT/Installer.pm:80
 msgid "Keep 'localhost' if you're not sure. Leave blank to connect locally over a socket"
 msgstr "Keep 'localhost' if you're not sure. Leave blank to connect locally over a socket"
+
+#: lib/RT/Search/Simple.pm:88
+#. (ref $self)
+msgid "Keyword and intuition-based searching"
+msgstr "Keyword and intuition-based searching"
+
+#: NOT FOUND IN SOURCE
+msgid "Lang"
+msgstr "Lang"
 
 #: share/html/Admin/Users/Modify.html:92 share/html/Elements/RT__User/ColumnMap:136 share/html/Install/index.html:56 share/html/SelfService/Prefs.html:59 share/html/User/Prefs.html:76
 msgid "Language"
@@ -3219,6 +4109,10 @@ msgstr "Last Updated"
 #: share/html/Elements/ColumnMap:92
 msgid "Last Updated By"
 msgstr "Last Updated By"
+
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:107
+msgid "Last updated"
+msgstr "Last updated"
 
 #: share/html/Search/Elements/PickBasics:116
 msgid "Last updated by"
@@ -3273,6 +4167,10 @@ msgstr "Let this user be granted rights"
 msgid "Let's go!"
 msgstr "Let's go!"
 
+#: share/html/Admin/Queues/Modify.html:67
+msgid "Lifecycle"
+msgstr "Lifecycle"
+
 #: share/html/Search/Elements/EditFormat:67
 msgid "Link"
 msgstr "Link"
@@ -3284,6 +4182,16 @@ msgstr "Link already exists"
 #: NOT FOUND IN SOURCE
 msgid "Link could not be created"
 msgstr "Link could not be created"
+
+#: lib/RT/Record.pm:1383
+#. ($linkmsg)
+msgid "Link could not be created: %1"
+msgstr "Link could not be created: %1"
+
+#: lib/RT/Record.pm:1518
+#. ($msg)
+msgid "Link could not be deleted: %1"
+msgstr "Link could not be deleted: %1"
 
 #: lib/RT/Record.pm:1505
 msgid "Link not found"
@@ -3310,6 +4218,11 @@ msgstr "LinkedFrom"
 msgid "LinkedTo"
 msgstr "LinkedTo"
 
+#: lib/RT/Record.pm:1347
+#. ($self->loc(lc($remote_obj->RecordType)))
+msgid "Linking to a deleted %1 is not allowed"
+msgstr "Linking to a deleted %1 is not allowed"
+
 #: NOT FOUND IN SOURCE
 msgid "Linking. Permission denied"
 msgstr "Linking. Permission denied"
@@ -3318,9 +4231,21 @@ msgstr "Linking. Permission denied"
 msgid "Links"
 msgstr "Links"
 
+#: lib/RT/CustomField.pm:84 lib/RT/CustomField.pm:88
+msgid "List"
+msgstr "List"
+
 #: share/html/Articles/Article/Elements/ShowSavedSearches:69 share/html/Articles/Article/Search.html:75 share/html/Search/Elements/EditSearches:80
 msgid "Load"
 msgstr "Load"
+
+#: share/html/Articles/Article/Elements/ShowSavedSearches:67
+msgid "Load a saved search"
+msgstr "Load a saved search"
+
+#: share/html/Search/Elements/EditSearches:78
+msgid "Load saved search"
+msgstr "Load saved search"
 
 #: share/html/Articles/Article/Search.html:73
 msgid "Load saved search:"
@@ -3334,6 +4259,10 @@ msgstr "LoadSavedSearch"
 #. ($self->ObjectName, $self->Name)
 msgid "Loaded %1 %2"
 msgstr "Loaded %1 %2"
+
+#: share/html/Admin/Tools/Configuration.html:191
+msgid "Loaded config files"
+msgstr "Loaded config files"
 
 #: share/html/Search/Elements/EditSearches:169
 #. ($SavedSearch->{'Description'})
@@ -3349,6 +4278,10 @@ msgstr "Loaded perl modules"
 msgid "Loaded saved search \"%1\""
 msgstr "Loaded saved search \"%1\""
 
+#: share/html/Ticket/Elements/ClickToShowHistory:50 share/html/Ticket/Elements/DelayShowHistory:50 share/html/Ticket/Elements/ShowRequestor:109
+msgid "Loading..."
+msgstr "Loading..."
+
 #: lib/RT/Config.pm:459 share/html/SelfService/Prefs.html:56
 msgid "Locale"
 msgstr "Locale"
@@ -3361,6 +4294,10 @@ msgstr "LocalisedDateTime"
 msgid "Location"
 msgstr "Location"
 
+#: lib/RT/Interface/Web.pm:841
+msgid "Logged in"
+msgstr "Logged in"
+
 #: share/html/Elements/Tabs:543 share/html/Elements/Tabs:943
 #. ($username)
 msgid "Logged in as %1"
@@ -3370,9 +4307,38 @@ msgstr "Logged in as %1"
 msgid "Logged out"
 msgstr "Logged out"
 
+#: share/html/Admin/Elements/LoggingSummary:59
+#. ($level, $logger->{filename})
+msgid "Logging %1 level messages and higher to %2"
+msgstr "Logging %1 level messages and higher to %2"
+
+#: share/html/Admin/Elements/LoggingSummary:52
+#. ($level)
+msgid "Logging %1 level messages and higher to STDERR, which will usually end up in your webserver's error logs."
+msgstr "Logging %1 level messages and higher to STDERR, which will usually end up in your webserver's error logs."
+
+#: share/html/Admin/Elements/LoggingSummary:66
+#. ($level, $conf)
+msgid "Logging %1 level messages and higher to syslog with the following configuration: %2"
+msgstr "Logging %1 level messages and higher to syslog with the following configuration: %2"
+
+#: share/html/Admin/Elements/LoggingSummary:68
+#. ($level)
+msgid "Logging %1 level messages and higher to syslog."
+msgstr "Logging %1 level messages and higher to syslog."
+
+#: share/html/Admin/Tools/Configuration.html:203
+msgid "Logging summary"
+msgstr "Logging summary"
+
 #: share/html/Elements/Login:49 share/html/Elements/Login:62 share/html/Elements/Login:91 share/html/m/_elements/login:61 share/html/m/_elements/login:76
 msgid "Login"
 msgstr "Login"
+
+#: share/html/Elements/Logo:52 share/html/Elements/Logo:56
+#. ())
+msgid "LogoAltText"
+msgstr "LogoAltText"
 
 #: share/html/Elements/Tabs:580 share/html/Elements/Tabs:955 share/html/NoAuth/Logout.html:48 share/html/m/_elements/menu:107
 msgid "Logout"
@@ -3381,6 +4347,11 @@ msgstr "Logout"
 #: lib/RT/CustomField.pm:1460
 msgid "Lookup type mismatch"
 msgstr "Lookup type mismatch"
+
+#: share/html/Elements/RT__Dashboard/ColumnMap:99
+#. ($hour)
+msgid "M-F at %1"
+msgstr "M-F at %1"
 
 #: lib/RT/Config.pm:506 lib/RT/Config.pm:521
 msgid "Mail"
@@ -3430,10 +4401,6 @@ msgstr "Make queue"
 msgid "Make subject"
 msgstr "Make subject"
 
-#: NOT FOUND IN SOURCE
-msgid "Make this group visible to user"
-msgstr "Make this group visible to user"
-
 #: share/html/Elements/Tabs:93
 msgid "Manage custom fields and custom field values"
 msgstr "Manage custom fields and custom field values"
@@ -3454,9 +4421,18 @@ msgstr "Manage queues and queue-specific properties"
 msgid "Manage saved graphs"
 msgstr "Manage saved graphs"
 
+#: share/html/Elements/Tabs:103
+msgid "Manage scrips"
+msgstr "Manage scrips"
+
 #: share/html/Elements/Tabs:68
 msgid "Manage users and passwords"
 msgstr "Manage users and passwords"
+
+#: lib/RT/Record/Role/Status.pm:281
+#. ($old_lifecycle->Name, $new_lifecycle->Name)
+msgid "Mapping between lifecycle %1 and %2 is incomplete. Contact your system administrator."
+msgstr "Mapping between lifecycle %1 and %2 is incomplete. Contact your system administrator."
 
 #: lib/RT/Date.pm:93
 msgid "Mar"
@@ -3465,6 +4441,10 @@ msgstr "Mar"
 #: share/html/Ticket/Display.html:191 share/html/m/ticket/show:122
 msgid "Marked all messages as seen"
 msgstr "Marked all messages as seen"
+
+#: share/html/Admin/Tools/Configuration.html:175
+msgid "Mason template search order"
+msgstr "Mason template search order"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:77
 msgid "MaxValues"
@@ -3477,6 +4457,10 @@ msgstr "Maximum inline message length"
 #: lib/RT/Date.pm:95
 msgid "May"
 msgstr "May"
+
+#: share/html/Elements/QuickCreate:64
+msgid "Me"
+msgstr "Me"
 
 #: share/html/Elements/RT__Group/ColumnMap:56
 msgid "Member"
@@ -3527,6 +4511,16 @@ msgstr "Membership in %1 deleted"
 msgid "Memberships"
 msgstr "Memberships"
 
+#: share/html/Admin/Elements/MembershipsPage:137
+#. ($object->Name)
+msgid "Memberships of the group %1"
+msgstr "Memberships of the group %1"
+
+#: share/html/Admin/Elements/MembershipsPage:139
+#. ($id)
+msgid "Memberships of the principal #%1"
+msgstr "Memberships of the principal #%1"
+
 #: share/html/Admin/Elements/MembershipsPage:135
 #. ($object->Name)
 msgid "Memberships of the user %1"
@@ -3539,6 +4533,10 @@ msgstr "Merge Successful"
 #: lib/RT/Ticket.pm:1813
 msgid "Merge failed. Couldn't set EffectiveId"
 msgstr "Merge failed. Couldn't set EffectiveId"
+
+#: lib/RT/Ticket.pm:1819
+msgid "Merge failed. Couldn't set IsMerged"
+msgstr "Merge failed. Couldn't set IsMerged"
 
 #: lib/RT/Ticket.pm:1832
 msgid "Merge failed. Couldn't set Status"
@@ -3556,6 +4554,10 @@ msgstr "Merged into %1"
 msgid "Message"
 msgstr "Message"
 
+#: share/html/Elements/ShowTransactionAttachments:149
+msgid "Message body is not shown because it is too large."
+msgstr "Message body is not shown because it is too large."
+
 #: share/html/Elements/ShowTransactionAttachments:141
 msgid "Message body is not shown because sender requested not to inline it."
 msgstr "Message body is not shown because sender requested not to inline it."
@@ -3563,10 +4565,6 @@ msgstr "Message body is not shown because sender requested not to inline it."
 #: share/html/Elements/ShowTransactionAttachments:287
 msgid "Message body not shown because it is not plain text."
 msgstr "Message body not shown because it is not plain text."
-
-#: NOT FOUND IN SOURCE
-msgid "Message body not shown because it is too large."
-msgstr "Message body not shown because it is too large."
 
 #: lib/RT/Config.pm:276
 msgid "Message box height"
@@ -3588,10 +4586,6 @@ msgstr "Message for user"
 msgid "Message recorded"
 msgstr "Message recorded"
 
-#: NOT FOUND IN SOURCE
-msgid "Messages about this ticket will not be sent to..."
-msgstr "Messages about this ticket will not be sent to..."
-
 #: lib/RT/Installer.pm:150
 msgid "Minimum password length"
 msgstr "Minimum password length"
@@ -3599,6 +4593,10 @@ msgstr "Minimum password length"
 #: share/html/Elements/SelectTimeUnits:50
 msgid "Minutes"
 msgstr "Minutes"
+
+#: share/html/Admin/Elements/EditRightsCategoryTabs:100
+msgid "Miscellaneous"
+msgstr "Miscellaneous"
 
 #: lib/RT/Record.pm:972
 msgid "Missing a primary key?: %1"
@@ -3608,45 +4606,25 @@ msgstr "Missing a primary key?: %1"
 msgid "Mobile"
 msgstr "Mobile"
 
-#: NOT FOUND IN SOURCE
-msgid "MobilePhone"
-msgstr "MobilePhone"
+#: share/html/Elements/RT__User/ColumnMap:91
+msgid "Mobile Phone"
+msgstr "Mobile Phone"
 
-#: NOT FOUND IN SOURCE
-msgid "Modify Access Control List"
-msgstr "Modify Access Control List"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify Custom Fields which apply to %1 for all %2"
-msgstr "Modify Custom Fields which apply to %1 for all %2"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify Custom Fields which apply to all %1"
-msgstr "Modify Custom Fields which apply to all %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify Group Rights"
-msgstr "Modify Group Rights"
+#: share/html/Elements/Tabs:863 share/html/Elements/Tabs:886 share/html/m/_elements/ticket_menu:67
+msgid "Modify"
+msgstr "Modify"
 
 #: share/html/Admin/Groups/Members.html:108
 msgid "Modify Members"
 msgstr "Modify Members"
 
-#: NOT FOUND IN SOURCE
-msgid "Modify Rights"
-msgstr "Modify Rights"
+#: lib/RT/Queue.pm:117
+msgid "Modify Scrip templates"
+msgstr "Modify Scrip templates"
 
-#: NOT FOUND IN SOURCE
-msgid "Modify Scrip templates for this queue"
-msgstr "Modify Scrip templates for this queue"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify Scrips for this queue"
-msgstr "Modify Scrips for this queue"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify User Rights"
-msgstr "Modify User Rights"
+#: lib/RT/Queue.pm:120
+msgid "Modify Scrips"
+msgstr "Modify Scrips"
 
 #: share/html/Admin/Queues/CustomField.html:63
 #. ($QueueObj->Name())
@@ -3661,19 +4639,33 @@ msgstr "Modify a scrip for queue %1"
 msgid "Modify a scrip that applies to all queues"
 msgstr "Modify a scrip that applies to all queues"
 
+#: share/html/Elements/Tabs:172
+msgid "Modify and Create Classes"
+msgstr "Modify and Create Classes"
+
+#: share/html/Elements/Tabs:177
+msgid "Modify and Create Custom Fields for Articles"
+msgstr "Modify and Create Custom Fields for Articles"
+
+#: share/html/Articles/Article/Edit.html:173 share/html/Articles/Article/Edit.html:276
+#. ($ArticleObj->Id)
+msgid "Modify article #%1"
+msgstr "Modify article #%1"
+
 #: share/html/Admin/Articles/Classes/Objects.html:147 share/html/Admin/CustomFields/Objects.html:153
 #. ($CF->Name)
 #. ($Class->Name)
 msgid "Modify associated objects for %1"
 msgstr "Modify associated objects for %1"
 
+#: share/html/Admin/Scrips/Objects.html:164
+#. ($id)
+msgid "Modify associated objects for scrip #%1"
+msgstr "Modify associated objects for scrip #%1"
+
 #: lib/RT/Class.pm:94 lib/RT/Queue.pm:115
 msgid "Modify custom field values"
 msgstr "Modify custom field values"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify dashboards for this group"
-msgstr "Modify dashboards for this group"
 
 #: share/html/Ticket/ModifyDates.html:48
 #. ($TicketObj->Id)
@@ -3685,6 +4677,10 @@ msgstr "Modify dates for #%1"
 msgid "Modify dates for ticket # %1"
 msgstr "Modify dates for ticket # %1"
 
+#: share/html/Elements/Tabs:217
+msgid "Modify global article topics"
+msgstr "Modify global article topics"
+
 #: share/html/Elements/Tabs:134
 msgid "Modify global custom fields"
 msgstr "Modify global custom fields"
@@ -3693,21 +4689,30 @@ msgstr "Modify global custom fields"
 msgid "Modify global group rights"
 msgstr "Modify global group rights"
 
-#: NOT FOUND IN SOURCE
-msgid "Modify global group rights."
-msgstr "Modify global group rights."
+#: share/html/Admin/Global/Topics.html:55
+msgid "Modify global topics"
+msgstr "Modify global topics"
 
 #: share/html/Admin/Global/UserRights.html:48 share/html/Elements/Tabs:202
 msgid "Modify global user rights"
 msgstr "Modify global user rights"
 
-#: NOT FOUND IN SOURCE
-msgid "Modify global user rights."
-msgstr "Modify global user rights."
+#: lib/RT/Group.pm:96
+msgid "Modify group dashboards"
+msgstr "Modify group dashboards"
+
+#: lib/RT/Group.pm:89
+msgid "Modify group membership roster"
+msgstr "Modify group membership roster"
 
 #: lib/RT/Group.pm:88
 msgid "Modify group metadata or delete group"
 msgstr "Modify group metadata or delete group"
+
+#: share/html/Admin/Articles/Classes/GroupRights.html:48
+#. ($ClassObj->Name)
+msgid "Modify group rights for Class %1"
+msgstr "Modify group rights for Class %1"
 
 #: share/html/Admin/CustomFields/GroupRights.html:70
 #. ($CustomFieldObj->Name)
@@ -3724,17 +4729,17 @@ msgstr "Modify group rights for group %1"
 msgid "Modify group rights for queue %1"
 msgstr "Modify group rights for queue %1"
 
-#: NOT FOUND IN SOURCE
-msgid "Modify membership roster for this group"
-msgstr "Modify membership roster for this group"
+#: lib/RT/Class.pm:95
+msgid "Modify metadata and custom fields for this class"
+msgstr "Modify metadata and custom fields for this class"
 
 #: lib/RT/System.pm:86
 msgid "Modify one's own RT account"
 msgstr "Modify one's own RT account"
 
-#: NOT FOUND IN SOURCE
-msgid "Modify people related to queue %1"
-msgstr "Modify people related to queue %1"
+#: lib/RT/Class.pm:92
+msgid "Modify or delete articles in this class"
+msgstr "Modify or delete articles in this class"
 
 #: share/html/Ticket/ModifyPeople.html:48 share/html/Ticket/ModifyPeople.html:57
 #. ($Ticket->Id)
@@ -3745,6 +4750,15 @@ msgstr "Modify people related to ticket #%1"
 #: lib/RT/Dashboard.pm:87
 msgid "Modify personal dashboards"
 msgstr "Modify personal dashboards"
+
+#: lib/RT/Queue.pm:113
+msgid "Modify queue watchers"
+msgstr "Modify queue watchers"
+
+#: share/html/Admin/Scrips/Modify.html:48
+#. ($id)
+msgid "Modify scrip #%1"
+msgstr "Modify scrip #%1"
 
 #: share/html/Admin/Queues/Scrips.html:56
 #. ($QueueObj->Name)
@@ -3764,9 +4778,24 @@ msgstr "Modify system dashboards"
 msgid "Modify template %1"
 msgstr "Modify template %1"
 
+#: share/html/Admin/Queues/Template.html:114
+#. (loc( $TemplateObj->Name()), $QueueObj->Name)
+msgid "Modify template %1 for queue %2"
+msgstr "Modify template %1 for queue %2"
+
 #: share/html/Admin/Global/Templates.html:53
 msgid "Modify templates which apply to all queues"
 msgstr "Modify templates which apply to all queues"
+
+#: share/html/Admin/Articles/Classes/Modify.html:157
+#. ($ClassObj->Name)
+msgid "Modify the Class %1"
+msgstr "Modify the Class %1"
+
+#: share/html/Dashboards/Queries.html:82
+#. ($Dashboard->Name)
+msgid "Modify the content of dashboard %1"
+msgstr "Modify the content of dashboard %1"
 
 #: share/html/Dashboards/Modify.html:126
 #. ($Dashboard->Name)
@@ -3782,14 +4811,6 @@ msgstr "Modify the default \"RT at a glance\" view"
 msgid "Modify the group %1"
 msgstr "Modify the group %1"
 
-#: NOT FOUND IN SOURCE
-msgid "Modify the queries of dashboard %1"
-msgstr "Modify the queries of dashboard %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify the queue watchers"
-msgstr "Modify the queue watchers"
-
 #: share/html/Dashboards/Subscription.html:287
 #. ($Dashboard->Name)
 msgid "Modify the subscription to dashboard %1"
@@ -3799,6 +4820,10 @@ msgstr "Modify the subscription to dashboard %1"
 #. ($UserObj->Name)
 msgid "Modify the user %1"
 msgstr "Modify the user %1"
+
+#: share/html/Articles/Article/Search.html:85
+msgid "Modify this search..."
+msgstr "Modify this search..."
 
 #: share/html/Ticket/ModifyAll.html:59
 #. ($Ticket->Id)
@@ -3810,9 +4835,31 @@ msgstr "Modify ticket # %1"
 msgid "Modify ticket #%1"
 msgstr "Modify ticket #%1"
 
+#: lib/RT/Queue.pm:137
+msgid "Modify ticket owner on owned tickets"
+msgstr "Modify ticket owner on owned tickets"
+
 #: lib/RT/Queue.pm:133
 msgid "Modify tickets"
 msgstr "Modify tickets"
+
+#: share/html/Admin/Articles/Classes/Topics.html:59
+#. ($ClassObj->Name)
+msgid "Modify topic for %1"
+msgstr "Modify topic for %1"
+
+#: lib/RT/Class.pm:96
+msgid "Modify topic hierarchy associated with this class"
+msgstr "Modify topic hierarchy associated with this class"
+
+#: lib/RT/Class.pm:93
+msgid "Modify topics for articles in this class"
+msgstr "Modify topics for articles in this class"
+
+#: share/html/Admin/Articles/Classes/UserRights.html:48
+#. ($ClassObj->Name)
+msgid "Modify user rights for class %1"
+msgstr "Modify user rights for class %1"
 
 #: share/html/Admin/CustomFields/UserRights.html:68
 #. ($CustomFieldObj->Name)
@@ -3829,9 +4876,22 @@ msgstr "Modify user rights for group %1"
 msgid "Modify user rights for queue %1"
 msgstr "Modify user rights for queue %1"
 
+#: share/html/Ticket/ModifyPeople.html:60
+#. ($Ticket->Id)
+msgid "Modify who receives mail for ticket #%1"
+msgstr "Modify who receives mail for ticket #%1"
+
 #: lib/RT/Class.pm:98 lib/RT/Queue.pm:112
 msgid "ModifyACL"
 msgstr "ModifyACL"
+
+#: lib/RT/Class.pm:92
+msgid "ModifyArticle"
+msgstr "ModifyArticle"
+
+#: lib/RT/Class.pm:93
+msgid "ModifyArticleTopics"
+msgstr "ModifyArticleTopics"
 
 #: lib/RT/Class.pm:94 lib/RT/CustomField.pm:216 lib/RT/Queue.pm:115
 msgid "ModifyCustomField"
@@ -3889,17 +4949,21 @@ msgstr "Monday"
 msgid "Monday through Friday"
 msgstr "Monday through Friday"
 
-#: NOT FOUND IN SOURCE
-msgid "More"
-msgstr "More"
+#: lib/RT/Dashboard/Mailer.pm:331
+msgid "Monthly"
+msgstr "Monthly"
 
-#: NOT FOUND IN SOURCE
-msgid "More about %1"
-msgstr "More about %1"
+#: share/html/Ticket/Elements/ShowRequestor:61
+msgid "More about the requestors"
+msgstr "More about the requestors"
 
 #: NOT FOUND IN SOURCE
 msgid "Move down"
 msgstr "Move down"
+
+#: share/html/Admin/Articles/Elements/Topics:108
+msgid "Move here"
+msgstr "Move here"
 
 #: NOT FOUND IN SOURCE
 msgid "Move up"
@@ -3918,9 +4982,21 @@ msgstr "Must specify 'Name' attribute"
 msgid "My %1 tickets"
 msgstr "My %1 tickets"
 
+#: share/html/Elements/Tabs:529
+msgid "My Approvals"
+msgstr "My Approvals"
+
 #: share/html/Elements/Tabs:513
 msgid "My Day"
 msgstr "My Day"
+
+#: share/html/Elements/Tabs:520
+msgid "My Reminders"
+msgstr "My Reminders"
+
+#: etc/initialdata:848
+msgid "My Tickets"
+msgstr "My Tickets"
 
 #: share/html/Approvals/index.html:48
 msgid "My approvals"
@@ -3930,13 +5006,33 @@ msgstr "My approvals"
 msgid "My dashboards"
 msgstr "My dashboards"
 
+#: share/html/Elements/MyReminders:50 share/html/Tools/MyReminders.html:48
+msgid "My reminders"
+msgstr "My reminders"
+
 #: share/html/Articles/Article/Elements/SelectSavedSearches:54 share/html/Elements/SavedSearches:54 share/html/Search/Elements/SearchPrivacy:55
 msgid "My saved searches"
 msgstr "My saved searches"
 
+#: etc/RT_Config.pm:1235
+msgid "MyAdminQueues"
+msgstr "MyAdminQueues"
+
+#: etc/RT_Config.pm:1235 etc/initialdata:867
+msgid "MyReminders"
+msgstr "MyReminders"
+
 #: lib/RT/Installer.pm:68
 msgid "MySQL"
 msgstr "MySQL"
+
+#: etc/RT_Config.pm:1235
+msgid "MySupportQueues"
+msgstr "MySupportQueues"
+
+#: share/html/Search/Elements/BuildFormatString:100
+msgid "NBSP"
+msgstr "NBSP"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "NEWLINE"
@@ -3946,13 +5042,21 @@ msgstr "NEWLINE"
 msgid "Name"
 msgstr "Name"
 
+#: lib/RT/Config.pm:183
+msgid "Name and email address"
+msgstr "Name and email address"
+
 #: lib/RT/Article.pm:116 lib/RT/User.pm:287
 msgid "Name in use"
 msgstr "Name in use"
 
-#: NOT FOUND IN SOURCE
-msgid "Named, shared collection of portlets"
-msgstr "Named, shared collection of portlets"
+#: lib/RT/Template.pm:281 lib/RT/Template.pm:705
+msgid "Name is required"
+msgstr "Name is required"
+
+#: share/html/Articles/Article/Elements/ShowSavedSearches:55
+msgid "Name:"
+msgstr "Name:"
 
 #: lib/RT/Dashboard/Mailer.pm:332 share/html/Elements/RT__Dashboard/ColumnMap:102 share/html/Ticket/Elements/ShowDates:80 share/html/m/ticket/show:380
 msgid "Never"
@@ -3962,33 +5066,29 @@ msgstr "Never"
 msgid "New"
 msgstr "New"
 
+#: share/html/Elements/Tabs:875
+msgid "New Article"
+msgstr "New Article"
+
+#: share/html/Elements/Tabs:488
+msgid "New Dashboard"
+msgstr "New Dashboard"
+
 #: share/html/Elements/BulkLinks:122 share/html/Elements/EditLinks:118
 msgid "New Links"
 msgstr "New Links"
-
-#: NOT FOUND IN SOURCE
-msgid "New Password"
-msgstr "New Password"
 
 #: etc/initialdata:458 etc/upgrade/3.8.2/content:52
 msgid "New Pending Approval"
 msgstr "New Pending Approval"
 
+#: etc/initialdata:477 etc/upgrade/4.1.9/content:111
+msgid "New Pending Approval in HTML"
+msgstr "New Pending Approval in HTML"
+
 #: share/html/Elements/Tabs:495
 msgid "New Search"
 msgstr "New Search"
-
-#: NOT FOUND IN SOURCE
-msgid "New and open tickets for %1"
-msgstr "New and open tickets for %1"
-
-#: NOT FOUND IN SOURCE
-msgid "New custom field"
-msgstr "New custom field"
-
-#: NOT FOUND IN SOURCE
-msgid "New group"
-msgstr "New group"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:248 share/html/Ticket/Elements/ShowUpdateStatus:49
 msgid "New messages"
@@ -4010,14 +5110,6 @@ msgstr "New reminder:"
 msgid "New rights"
 msgstr "New rights"
 
-#: NOT FOUND IN SOURCE
-msgid "New scrip"
-msgstr "New scrip"
-
-#: NOT FOUND IN SOURCE
-msgid "New template"
-msgstr "New template"
-
 #: share/html/Elements/Tabs:930 share/html/Elements/Tabs:932 share/html/m/_elements/menu:70
 msgid "New ticket"
 msgstr "New ticket"
@@ -4025,6 +5117,11 @@ msgstr "New ticket"
 #: lib/RT/Ticket.pm:1773
 msgid "New ticket doesn't exist"
 msgstr "New ticket doesn't exist"
+
+#: lib/RT/Ticket.pm:293
+#. ($self->loc($args{'Status'}))
+msgid "New tickets can not have status '%1' in this queue."
+msgstr "New tickets can not have status '%1' in this queue."
 
 #: NOT FOUND IN SOURCE
 msgid "New user called"
@@ -4055,9 +5152,18 @@ msgstr "No"
 msgid "No %1 loaded"
 msgstr "No %1 loaded"
 
+#: share/html/SelfService/Article/Search.html:66
+#. ($Articles_Content)
+msgid "No Articles match %1"
+msgstr "No Articles match %1"
+
 #: share/html/Admin/Articles/Classes/GroupRights.html:62 share/html/Admin/Articles/Classes/UserRights.html:61 share/html/Admin/CustomFields/UserRights.html:62
 msgid "No Class defined"
 msgstr "No Class defined"
+
+#: share/html/Admin/Articles/Classes/index.html:54
+msgid "No Classes matching search criteria found."
+msgstr "No Classes matching search criteria found."
 
 #: share/html/Admin/CustomFields/Modify.html:192 share/html/Admin/Elements/EditCustomField:122
 msgid "No CustomField"
@@ -4079,9 +5185,9 @@ msgstr "No Query"
 msgid "No Queue defined"
 msgstr "No Queue defined"
 
-#: NOT FOUND IN SOURCE
-msgid "No RT user found. Please consult your RT administrator.\\n"
-msgstr "No RT user found. Please consult your RT administrator.\\n"
+#: bin/rt-crontool:116
+msgid "No RT user found. Please consult your RT administrator."
+msgstr "No RT user found. Please consult your RT administrator."
 
 #: share/html/Search/Elements/ResultsRSSView:134
 msgid "No Subject"
@@ -4103,10 +5209,6 @@ msgstr "No column specified"
 msgid "No comment entered about this user"
 msgstr "No comment entered about this user"
 
-#: NOT FOUND IN SOURCE
-msgid "No dashboards."
-msgstr "No dashboards."
-
 #: lib/RT/Action.pm:163 lib/RT/Condition.pm:183 lib/RT/Search.pm:125 lib/RT/Search/ActiveTicketsInQueue.pm:75
 #. (ref $self)
 msgid "No description for %1"
@@ -4115,6 +5217,11 @@ msgstr "No description for %1"
 #: NOT FOUND IN SOURCE
 msgid "No details"
 msgstr "No details"
+
+#: lib/RT/Scrip.pm:288
+#. ($tname)
+msgid "No global template %1"
+msgstr "No global template %1"
 
 #: lib/RT/Users.pm:181
 msgid "No group specified"
@@ -4131,6 +5238,10 @@ msgstr "No key suitable for encryption"
 #: NOT FOUND IN SOURCE
 msgid "No keys for this address"
 msgstr "No keys for this address"
+
+#: share/html/Errors/WebRemoteUser/Deauthorized:48
+msgid "No longer authorized"
+msgstr "No longer authorised"
 
 #: lib/RT/Ticket.pm:1560
 msgid "No message attached"
@@ -4157,9 +5268,13 @@ msgstr "No permission to create queues"
 msgid "No permission to create tickets in the queue '%1'"
 msgstr "No permission to create tickets in the queue '%1'"
 
-#: share/html/SelfService/Display.html:137
+#: share/html/SelfService/Display.html:144
 msgid "No permission to display that ticket"
 msgstr "No permission to display that ticket"
+
+#: share/html/Articles/Article/Delete.html:92
+msgid "No permission to modify article"
+msgstr "No permission to modify article"
 
 #: share/html/Search/Elements/EditSearches:246
 msgid "No permission to save system-wide searches"
@@ -4168,6 +5283,10 @@ msgstr "No permission to save system-wide searches"
 #: lib/RT/User.pm:1432
 msgid "No permission to set preferences"
 msgstr "No permission to set preferences"
+
+#: share/html/Articles/Article/Edit.html:283
+msgid "No permission to view Article"
+msgstr "No permission to view Article"
 
 #: share/html/SelfService/Update.html:112
 msgid "No permission to view update ticket"
@@ -4201,6 +5320,11 @@ msgstr "No rights found"
 msgid "No rights granted."
 msgstr "No rights granted."
 
+#: lib/RT/Ticket.pm:527
+#. ($principal->Object->Name)
+msgid "No rights to add '%1' as an AdminCc on this ticket"
+msgstr "No rights to add '%1' as an AdminCc on this ticket"
+
 #: share/html/Search/Bulk.html:225
 msgid "No search to operate on."
 msgstr "No search to operate on."
@@ -4212,6 +5336,11 @@ msgstr "No subject"
 #: lib/RT/User.pm:1828
 msgid "No such key or it's not suitable for signing"
 msgstr "No such key or it's not suitable for signing"
+
+#: lib/RT/Scrip.pm:286
+#. ($tname, $queue->Name||$queue->id)
+msgid "No template %1 in queue %2 or global"
+msgstr "No template %1 in queue %2 or global"
 
 #: share/html/Search/Chart:167
 msgid "No tickets found."
@@ -4229,9 +5358,17 @@ msgstr "No usable keys."
 msgid "No users matching search criteria found."
 msgstr "No users matching search criteria found."
 
-#: NOT FOUND IN SOURCE
-msgid "No value sent to _Set!\\n"
-msgstr "No value sent to _Set!\\n"
+#: lib/RT/Record/Role/Roles.pm:478
+msgid "No valid PrincipalId"
+msgstr "No valid PrincipalId"
+
+#: lib/RT/Record/Role/Roles.pm:356 lib/RT/Record/Role/Roles.pm:466
+msgid "No valid Type specified"
+msgstr "No valid Type specified"
+
+#: lib/RT/Record.pm:964
+msgid "No value sent to _Set!"
+msgstr "No value sent to _Set!"
 
 #: share/html/Elements/QuickCreate:65
 msgid "Nobody"
@@ -4245,9 +5382,13 @@ msgstr "None"
 msgid "Nonexistant field?"
 msgstr "Nonexistant field?"
 
-#: NOT FOUND IN SOURCE
-msgid "Not Set"
-msgstr "Not Set"
+#: share/html/Admin/Elements/SelectStage:66
+msgid "Normal"
+msgstr "Normal"
+
+#: share/html/Admin/Elements/EditScrips:75
+msgid "Not applied scrips"
+msgstr "Not applied scrips"
 
 #: lib/RT/CustomField.pm:464
 msgid "Not found"
@@ -4260,6 +5401,10 @@ msgstr "Not logged in."
 #: lib/RT/Date.pm:483 share/html/Elements/ShowReminders:73 share/html/Ticket/Elements/Reminders:207
 msgid "Not set"
 msgstr "Not set"
+
+#: share/html/m/_elements/full_site_link:48
+msgid "Not using a mobile browser?"
+msgstr "Not using a mobile browser?"
 
 #: NOT FOUND IN SOURCE
 msgid "Not yet implemented."
@@ -4357,10 +5502,6 @@ msgstr "Notify me of unread messages"
 msgid "Nov"
 msgstr "Nov"
 
-#: NOT FOUND IN SOURCE
-msgid "Number of search results"
-msgstr "Number of search results"
-
 #: share/html/Search/Elements/SelectAndOr:49
 msgid "OR"
 msgstr "OR"
@@ -4385,9 +5526,9 @@ msgstr "Object created"
 msgid "Object deleted"
 msgstr "Object deleted"
 
-#: NOT FOUND IN SOURCE
-msgid "Object of type %1 cannot take custom fields"
-msgstr "Object of type %1 cannot take custom fields"
+#: lib/RT/Group.pm:254
+msgid "Object passed is not loaded"
+msgstr "Object passed is not loaded"
 
 #: lib/RT/CustomField.pm:1489
 msgid "Object type mismatch"
@@ -4404,10 +5545,6 @@ msgstr "Oct"
 #: NOT FOUND IN SOURCE
 msgid "Offline"
 msgstr "Offline"
-
-#: NOT FOUND IN SOURCE
-msgid "Offline edits"
-msgstr "Offline edits"
 
 #: NOT FOUND IN SOURCE
 msgid "Offline upload"
@@ -4433,6 +5570,18 @@ msgstr "On Correspond"
 #: etc/initialdata:113
 msgid "On Create"
 msgstr "On Create"
+
+#: etc/initialdata:131 etc/upgrade/4.0.3/content:7
+msgid "On Forward"
+msgstr "On Forward"
+
+#: etc/initialdata:138 etc/upgrade/4.0.3/content:14
+msgid "On Forward Ticket"
+msgstr "On Forward Ticket"
+
+#: etc/initialdata:145 etc/upgrade/4.0.3/content:21
+msgid "On Forward Transaction"
+msgstr "On Forward Transaction"
 
 #: etc/initialdata:173
 msgid "On Owner Change"
@@ -4466,6 +5615,10 @@ msgstr "On Status Change"
 msgid "On Transaction"
 msgstr "On Transaction"
 
+#: lib/RT/Record/Role/Roles.pm:352
+msgid "One, and only one, of PrincipalId/User/Group is required"
+msgstr "One, and only one, of PrincipalId/User/Group is required"
+
 #: share/html/Ticket/Elements/UpdateCc:69 share/html/m/ticket/reply:106
 msgid "One-time Bcc"
 msgstr "One-time Bcc"
@@ -4473,6 +5626,10 @@ msgstr "One-time Bcc"
 #: share/html/Ticket/Elements/UpdateCc:50 share/html/m/ticket/reply:104
 msgid "One-time Cc"
 msgstr "One-time Cc"
+
+#: lib/RT/Config.pm:286
+msgid "Only for entry, not display"
+msgstr "Only for entry, not display"
 
 #: share/html/Approvals/Elements/PendingMyApproval:75
 #. (qq{<input size='15' class="datepicker" value='}.( $created_after->Unix >0 && $created_after->ISO(Timezone => 'user'))."' name='CreatedAfter' id='CreatedAfter' />")
@@ -4488,6 +5645,14 @@ msgstr "Only show approvals for requests created before %1"
 msgid "Only show custom fields for:"
 msgstr "Only show custom fields for:"
 
+#: etc/initialdata:101
+msgid "Open Inactive Tickets"
+msgstr "Open Inactive Tickets"
+
+#: etc/RT_Config.pm:2757 etc/RT_Config.pm:2786 etc/RT_Config.pm:2833 etc/RT_Config.pm:2862
+msgid "Open It"
+msgstr "Open It"
+
 #: etc/initialdata:98
 msgid "Open Tickets"
 msgstr "Open Tickets"
@@ -4496,9 +5661,9 @@ msgstr "Open Tickets"
 msgid "Open URL"
 msgstr "Open URL"
 
-#: NOT FOUND IN SOURCE
-msgid "Open it"
-msgstr "Open it"
+#: etc/initialdata:102
+msgid "Open inactive tickets"
+msgstr "Open inactive tickets"
 
 #: share/html/Elements/Tabs:935 share/html/SelfService/index.html:48
 msgid "Open tickets"
@@ -4507,6 +5672,10 @@ msgstr "Open tickets"
 #: etc/initialdata:99
 msgid "Open tickets on correspondence"
 msgstr "Open tickets on correspondence"
+
+#: share/html/Admin/Tools/Configuration.html:297
+msgid "Operating System"
+msgstr "Operating System"
 
 #: share/html/Admin/Tools/Configuration.html:61
 msgid "Option"
@@ -4548,6 +5717,10 @@ msgstr "Outgoing mail"
 #: share/html/Admin/Queues/Modify.html:93
 msgid "Over time, priority moves toward"
 msgstr "Over time, priority moves toward"
+
+#: share/html/Elements/Tabs:504
+msgid "Overview"
+msgstr "Overview"
 
 #: lib/RT/Queue.pm:132
 msgid "Own tickets"
@@ -4599,9 +5772,9 @@ msgstr "Page not found"
 msgid "Pager"
 msgstr "Pager"
 
-#: NOT FOUND IN SOURCE
-msgid "PagerPhone"
-msgstr "PagerPhone"
+#: share/html/Elements/RT__User/ColumnMap:96
+msgid "Pager Phone"
+msgstr "Pager Phone"
 
 #: share/html/Elements/AddLinks:79 share/html/Elements/BulkLinks:135 share/html/Elements/BulkLinks:74 share/html/Elements/EditLinks:73 share/html/Elements/ShowLinks:71 share/html/Search/Elements/BuildFormatString:100 share/html/m/ticket/create:398 share/html/m/ticket/show:429
 msgid "Parents"
@@ -4628,6 +5801,10 @@ msgstr "Password has not been set."
 msgid "Password needs to be at least %1 characters long"
 msgstr "Password needs to be at least %1 characters long"
 
+#: share/html/Admin/Tools/Configuration.html:128 share/html/Admin/Tools/Configuration.html:91
+msgid "Password not printed"
+msgstr "Password not printed"
+
 #: lib/RT/User.pm:866
 msgid "Password set"
 msgstr "Password set"
@@ -4649,25 +5826,40 @@ msgstr "PasswordChange"
 msgid "Passwords do not match."
 msgstr "Passwords do not match."
 
-#: NOT FOUND IN SOURCE
-msgid "Passwords do not match. Your password has not been changed"
-msgstr "Passwords do not match. Your password has not been changed"
-
 #: lib/RT/Installer.pm:189
 msgid "Path to sendmail"
 msgstr "Path to sendmail"
+
+#: share/html/Ticket/Elements/ShowDependencyStatus:54
+#. ($approvals)
+msgid "Pending %quant(%1,approval,approvals)."
+msgstr "Pending %quant(%1,approval,approvals)."
+
+#: share/html/Ticket/Elements/ShowDependencyStatus:59
+#. ($depends)
+msgid "Pending %quant(%1,ticket,tickets)."
+msgstr "Pending %quant(%1,ticket,tickets)."
+
+#: share/html/Ticket/Elements/ShowDependencyStatus:52
+msgid "Pending approval."
+msgstr "Pending approval."
 
 #: share/html/Elements/Tabs:629 share/html/Ticket/Elements/ShowSummary:62 share/html/Ticket/ModifyAll.html:75 share/html/m/ticket/show:282
 msgid "People"
 msgstr "People"
 
+#: share/html/Admin/Queues/People.html:185
+#. ($QueueObj->Name)
+msgid "People related to queue %1"
+msgstr "People related to queue %1"
+
 #: etc/initialdata:92
 msgid "Perform a user-defined action"
 msgstr "Perform a user-defined action"
 
-#: NOT FOUND IN SOURCE
-msgid "Perl Include Paths (@INC)"
-msgstr "Perl Include Paths (@INC)"
+#: share/html/Admin/Elements/ModifyTemplate:62
+msgid "Perl"
+msgstr "Perl"
 
 #: share/html/Admin/Tools/Configuration.html:274
 msgid "Perl configuration"
@@ -4677,6 +5869,10 @@ msgstr "Perl configuration"
 msgid "Perl library search order"
 msgstr "Perl library search order"
 
+#: share/html/Elements/Tabs:246
+msgid "Permanently wipeout data from RT"
+msgstr "Permanently wipeout data from RT"
+
 #: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:737 lib/RT/Attachment.pm:738 lib/RT/Attachment.pm:797 lib/RT/Attachment.pm:798 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:386 lib/RT/Attribute.pm:395 lib/RT/Attribute.pm:408 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1464 lib/RT/CustomField.pm:1493 lib/RT/CustomField.pm:1536 lib/RT/CustomField.pm:1676 lib/RT/CustomField.pm:1826 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:513 lib/RT/CustomField.pm:540 lib/RT/CustomField.pm:922 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1247 lib/RT/Group.pm:1331 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:355 lib/RT/Queue.pm:381 lib/RT/Queue.pm:407 lib/RT/Queue.pm:799 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:274 lib/RT/Scrip.pm:307 lib/RT/Scrip.pm:621 lib/RT/Scrip.pm:629 lib/RT/Scrip.pm:638 lib/RT/Scrip.pm:643 lib/RT/Scrip.pm:651 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:313 lib/RT/Template.pm:479 lib/RT/Template.pm:730 lib/RT/Template.pm:747 lib/RT/Template.pm:765 lib/RT/Ticket.pm:1069 lib/RT/Ticket.pm:1280 lib/RT/Ticket.pm:1448 lib/RT/Ticket.pm:1498 lib/RT/Ticket.pm:1764 lib/RT/Ticket.pm:1778 lib/RT/Ticket.pm:2164 lib/RT/Ticket.pm:2176 lib/RT/Ticket.pm:2181 lib/RT/Ticket.pm:2199 lib/RT/Ticket.pm:2416 lib/RT/Ticket.pm:2645 lib/RT/Ticket.pm:3005 lib/RT/Ticket.pm:731 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:668 lib/RT/Transaction.pm:708 lib/RT/User.pm:1137 lib/RT/User.pm:139 lib/RT/User.pm:1566 lib/RT/User.pm:1813 lib/RT/User.pm:1846 lib/RT/User.pm:328 lib/RT/User.pm:735 lib/RT/User.pm:770 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97
 msgid "Permission Denied"
 msgstr "Permission Denied"
@@ -4685,17 +5881,25 @@ msgstr "Permission Denied"
 msgid "Permission denied"
 msgstr "Permission denied"
 
-#: NOT FOUND IN SOURCE
-msgid "Personal Dashboards"
-msgstr "Personal Dashboards"
-
-#: NOT FOUND IN SOURCE
-msgid "Personal Groups"
-msgstr "Personal Groups"
-
 #: share/html/Admin/Users/Modify.html:173 share/html/User/Prefs.html:85
 msgid "Phone numbers"
 msgstr "Phone numbers"
+
+#: etc/initialdata:377
+msgid "Plain text admin comment template"
+msgstr "Plain text admin comment template"
+
+#: etc/initialdata:337
+msgid "Plain text admin correspondence template"
+msgstr "Plain text admin correspondence template"
+
+#: etc/initialdata:360
+msgid "Plain text correspondence template"
+msgstr "Plain text correspondence template"
+
+#: etc/initialdata:284
+msgid "Plain text transaction template"
+msgstr "Plain text transaction template"
 
 #: share/html/dhandler:51
 msgid "Please check the URL and try again."
@@ -4709,6 +5913,10 @@ msgstr "Please enter your current password correctly."
 msgid "Please enter your current password."
 msgstr "Please enter your current password."
 
+#: share/html/Elements/CSRF:48 share/html/Elements/CSRF:51
+msgid "Possible cross-site request forgery"
+msgstr "Possible cross-site request forgery"
+
 #: share/html/Dashboards/Elements/HiddenSearches:73
 msgid "Possible hidden searches"
 msgstr "Possible hidden searches"
@@ -4716,6 +5924,12 @@ msgstr "Possible hidden searches"
 #: lib/RT/Installer.pm:69
 msgid "PostgreSQL"
 msgstr "PostgreSQL"
+
+#: share/html/Elements/ShowSearch:97 share/html/m/tickets/search:81
+#. ($m->interp->apply_escapes($Name, 'h'))
+#. ($m->interp->apply_escapes($name, 'h'))
+msgid "Predefined search %1 not found"
+msgstr "Predefined search %1 not found"
 
 #: share/html/Elements/Tabs:553 share/html/Elements/Tabs:949 share/html/Prefs/Other.html:80 share/html/SelfService/Prefs.html:48 share/html/User/Prefs.html:48
 msgid "Preferences"
@@ -4731,6 +5945,10 @@ msgstr "Preferences %1 for user %2."
 #. (loc('summary rows'))
 msgid "Preferences saved for %1."
 msgstr "Preferences saved for %1."
+
+#: share/html/Admin/Users/DashboardsInMenu.html:107 share/html/Prefs/DashboardsInMenu.html:104
+msgid "Preferences saved for dashboards in menu."
+msgstr "Preferences saved for dashboards in menu."
 
 #: share/html/Admin/Users/DashboardsInMenu.html:75 share/html/Admin/Users/MyRT.html:75
 #. ($UserObj->Name)
@@ -4833,13 +6051,14 @@ msgstr "Query"
 msgid "Query Builder"
 msgstr "Query Builder"
 
-#: NOT FOUND IN SOURCE
-msgid "Query:"
-msgstr "Query:"
-
 #: lib/RT/Graph/Tickets.pm:153 lib/RT/Record.pm:954 lib/RT/Report/Tickets.pm:62 lib/RT/Tickets.pm:107 lib/RT/Tickets.pm:1424 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:63 share/html/Elements/RT__Template/ColumnMap:66 share/html/Elements/RT__Template/ColumnMap:73 share/html/Elements/RT__Ticket/ColumnMap:102 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:61 share/html/Ticket/Elements/ShowBasics:82 share/html/m/ticket/create:248 share/html/m/ticket/show:242
 msgid "Queue"
 msgstr "Queue"
+
+#: share/html/Ticket/Create.html:368
+#. ($Queue||'')
+msgid "Queue %1 could not be loaded."
+msgstr "Queue %1 could not be loaded."
 
 #: share/html/Admin/Queues/CustomField.html:60 share/html/Admin/Queues/Scrips.html:54 share/html/Admin/Queues/Templates.html:58
 #. ($Queue)
@@ -4879,13 +6098,9 @@ msgstr "Queue enabled"
 msgid "Queue id"
 msgstr "Queue id"
 
-#: lib/RT/CustomField.pm:285 share/html/SelfService/Display.html:102
+#: lib/RT/CustomField.pm:285 share/html/SelfService/Display.html:109
 msgid "Queue not found"
 msgstr "Queue not found"
-
-#: NOT FOUND IN SOURCE
-msgid "Queue rights"
-msgstr "Queue rights"
 
 #: share/html/Elements/Crypt/SelectKeyForSigning:50 share/html/Elements/Crypt/SelectKeyForSigning:54
 msgid "Queue's key"
@@ -4927,6 +6142,14 @@ msgstr "Quick search"
 msgid "Quick ticket creation"
 msgstr "Quick ticket creation"
 
+#: etc/RT_Config.pm:1235 etc/initialdata:860
+msgid "QuickCreate"
+msgstr "QuickCreate"
+
+#: etc/RT_Config.pm:1235 etc/initialdata:871
+msgid "Quicksearch"
+msgstr "Quicksearch"
+
 #: lib/RT/Date.pm:120
 msgid "RFC2616"
 msgstr "RFC2616"
@@ -4939,10 +6162,6 @@ msgstr "RFC2822"
 msgid "RSS"
 msgstr "RSS"
 
-#: NOT FOUND IN SOURCE
-msgid "RT %1 for %2"
-msgstr "RT %1 for %2"
-
 #: share/html/Admin/index.html:48
 msgid "RT Administration"
 msgstr "RT Administration"
@@ -4950,10 +6169,6 @@ msgstr "RT Administration"
 #: lib/RT/Installer.pm:165
 msgid "RT Administrator Email"
 msgstr "RT Administrator Email"
-
-#: NOT FOUND IN SOURCE
-msgid "RT Config"
-msgstr "RT Config"
 
 #: share/html/Admin/Tools/Configuration.html:58
 msgid "RT Configuration"
@@ -4963,17 +6178,9 @@ msgstr "RT Configuration"
 msgid "RT Error"
 msgstr "RT Error"
 
-#: NOT FOUND IN SOURCE
-msgid "RT Self Service"
-msgstr "RT Self Service"
-
 #: share/html/Admin/Tools/Configuration.html:139
 msgid "RT Size"
 msgstr "RT Size"
-
-#: NOT FOUND IN SOURCE
-msgid "RT Variables"
-msgstr "RT Variables"
 
 #: lib/RT/Config.pm:311 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:54 share/html/Admin/Users/MyRT.html:62 share/html/Elements/Tabs:206 share/html/Elements/Tabs:326 share/html/Elements/Tabs:556 share/html/Prefs/MyRT.html:57 share/html/Prefs/MyRT.html:81 share/html/index.html:4
 msgid "RT at a glance"
@@ -5009,6 +6216,11 @@ msgstr "RT couldn't store your session."
 msgid "RT for %1"
 msgstr "RT for %1"
 
+#: share/html/Elements/CSRF:55
+#. ($strong_start, $strong_end, $Reason, $action)
+msgid "RT has detected a possible %1cross-site request forgery%2 for this request, because %3.  A malicious attacker may be trying to %1%4%2 on your behalf. If you did not initiate this request, then you should alert your security team."
+msgstr "RT has detected a possible %1cross-site request forgery%2 for this request, because %3.  A malicious attacker may be trying to %1%4%2 on your behalf. If you did not initiate this request, then you should alert your security team."
+
 #: share/html/Install/index.html:71
 msgid "RT is an enterprise-grade issue tracking system designed to let you intelligently and efficiently manage tasks, issues, requests, defects or anything else that looks like an \"action item.\""
 msgstr "RT is an enterprise-grade issue tracking system designed to let you intelligently and efficiently manage tasks, issues, requests, defects or anything else that looks like an \"action item.\""
@@ -5016,6 +6228,10 @@ msgstr "RT is an enterprise-grade issue tracking system designed to let you inte
 #: share/html/Install/index.html:74
 msgid "RT is used by Fortune 100 companies, one-person businesses, government agencies, educational institutions, hospitals, nonprofits, NGOs, libraries, open source projects and all sorts of other organizations on all seven continents. (Yes, even Antarctica.)"
 msgstr "RT is used by Fortune 100 companies, one-person businesses, government agencies, educational institutions, hospitals, nonprofits, NGOs, libraries, open source projects and all sorts of other organisations on all seven continents. (Yes, even Antarctica.)"
+
+#: share/html/Admin/Tools/Configuration.html:270
+msgid "RT upgrade history"
+msgstr "RT upgrade history"
 
 #: lib/RT/Installer.pm:123
 msgid "RT will connect to the database using this user.  It will be created for you."
@@ -5025,18 +6241,10 @@ msgstr "RT will connect to the database using this user.  It will be created for
 msgid "RT will create a user called \"root\" and set this as their password"
 msgstr "RT will create a user called \"root\" and set this as their password"
 
-#: NOT FOUND IN SOURCE
-msgid "RT will look for anything else you enter in ticket subjects."
-msgstr "RT will look for anything else you enter in ticket subjects."
-
 #: share/html/Admin/CustomFields/Modify.html:113 share/html/Admin/CustomFields/Modify.html:121
 #. ('<tt>__id__</tt>', '<tt>__CustomField__</tt>')
 msgid "RT will replace %1 and %2 with the record's id and the custom field's value, respectively."
 msgstr "RT will replace %1 and %2 with the record's id and the custom field's value, respectively."
-
-#: NOT FOUND IN SOURCE
-msgid "RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively"
-msgstr "RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively"
 
 #: lib/RT/Installer.pm:144
 msgid "RT will use this string to uniquely identify your installation and looks for it in the subject of emails to decide what ticket a message applies to.  We recommend that you set this to your internet domain. (ex: example.com)"
@@ -5046,14 +6254,22 @@ msgstr "RT will use this string to uniquely identify your installation and looks
 msgid "RT works with a number of different databases. <b>MySQL</b>, <b>PostgreSQL</b>, <b>Oracle</b> and <b>SQLite</b> are all supported."
 msgstr "RT works with a number of different databases. <b>MySQL</b>, <b>PostgreSQL</b>, <b>Oracle</b> and <b>SQLite</b> are all supported."
 
-#: NOT FOUND IN SOURCE
-msgid "RT/Admin/Edit the group %1"
-msgstr "RT/Admin/Edit the group %1"
+#: share/html/Admin/Elements/LoggingSummary:86
+msgid "RT's logging configuration is summarized below:"
+msgstr "RT's logging configuration is summarised below:"
 
 #: share/html/Admin/Queues/Modify.html:223
 #. ($address)
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr "RTAddressRegexp option in the config doesn't match %1"
+
+#: etc/RT_Config.pm:2789 etc/RT_Config.pm:2793 etc/RT_Config.pm:2865 etc/RT_Config.pm:2869
+msgid "Re-open"
+msgstr "Re-open"
+
+#: share/html/Elements/EditCustomFieldBinary:54 share/html/Elements/EditCustomFieldImage:54
+msgid "Reached maximum number, so new values will override old ones."
+msgstr "Reached maximum number, so new values will override old ones."
 
 #: share/html/Admin/Users/Modify.html:77 share/html/Elements/RT__User/ColumnMap:61 share/html/User/Prefs.html:69
 msgid "Real Name"
@@ -5063,9 +6279,21 @@ msgstr "Real Name"
 msgid "RealName"
 msgstr "RealName"
 
+#: lib/RT/Queue.pm:137
+msgid "ReassignTicket"
+msgstr "ReassignTicket"
+
 #: share/html/Dashboards/Subscription.html:174
 msgid "Recipient"
 msgstr "Recipient"
+
+#: share/html/Dashboards/Subscription.html:242
+msgid "Recipient must be an email address"
+msgstr "Recipient must be an email address"
+
+#: share/html/Ticket/Elements/ShowSimplifiedRecipients:78
+msgid "Recipients"
+msgstr "Recipients"
 
 #: share/html/Tools/MyDay.html:72
 msgid "Record all updates"
@@ -5074,6 +6302,10 @@ msgstr "Record all updates"
 #: share/html/Elements/RT__Group/ColumnMap:64
 msgid "Recursive member"
 msgstr "Recursive member"
+
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:124
+msgid "Refer to"
+msgstr "Refer to"
 
 #: NOT FOUND IN SOURCE
 msgid "Reference by %1 added"
@@ -5164,6 +6396,22 @@ msgstr "Refresh search results every 60 minutes."
 msgid "Refresh this page every %1 minutes."
 msgstr "Refresh this page every %1 minutes."
 
+#: etc/RT_Config.pm:1235 etc/initialdata:879
+msgid "RefreshHomepage"
+msgstr "RefreshHomepage"
+
+#: etc/RT_Config.pm:2765 etc/RT_Config.pm:2781 etc/RT_Config.pm:2841 etc/RT_Config.pm:2857
+msgid "Reject"
+msgstr "Reject"
+
+#: lib/RT/Config.pm:170
+msgid "Remember default queue"
+msgstr "Remember default queue"
+
+#: etc/initialdata:403 etc/upgrade/4.1.16/content:6 share/html/Elements/ShowReminders:51 share/html/Ticket/Elements/Reminders:82
+msgid "Reminder"
+msgstr "Reminder"
+
 #: NOT FOUND IN SOURCE
 msgid "Reminder '%1' added"
 msgstr "Reminder '%1' added"
@@ -5176,9 +6424,11 @@ msgstr "Reminder '%1' completed"
 msgid "Reminder '%1' reopened"
 msgstr "Reminder '%1' reopened"
 
-#: NOT FOUND IN SOURCE
-msgid "Reminder ticket #%1"
-msgstr "Reminder ticket #%1"
+#: lib/RT/Interface/Web.pm:2889 lib/RT/Interface/Web.pm:2907
+#. ($args->{'NewReminder-Subject'}, loc("Created"))
+#. ($old_subject || $reminder->Subject, $_)
+msgid "Reminder '%1': %2"
+msgstr "Reminder '%1': %2"
 
 #: share/html/Elements/Tabs:642 share/html/Ticket/Elements/Reminders:79 share/html/Ticket/Elements/ShowSummary:73 share/html/Ticket/Reminders.html:56 share/html/m/ticket/show:332
 msgid "Reminders"
@@ -5205,6 +6455,23 @@ msgstr "Remove Cc"
 msgid "Remove Requestor"
 msgstr "Remove Requestor"
 
+#: lib/RT/Queue.pm:635
+#. ($principal->Object->Name, $self->loc($args{'Type'}))
+msgid "Removed %1 from members of %2 for this queue."
+msgstr "Removed %1 from members of %2 for this queue."
+
+#: lib/RT/Class.pm:390
+msgid "Removed Subject Override"
+msgstr "Removed Subject Override"
+
+#: share/html/Admin/CustomFields/Modify.html:77
+msgid "Render Type"
+msgstr "Render Type"
+
+#: lib/RT/Config.pm:194
+msgid "Replaces the owner dropdowns with textboxes"
+msgstr "Replaces the owner dropdowns with textboxes"
+
 #: share/html/Elements/ShowTransaction:180 share/html/Elements/Tabs:646 share/html/m/_elements/ticket_menu:69
 msgid "Reply"
 msgstr "Reply"
@@ -5224,10 +6491,6 @@ msgstr "Reply to tickets"
 #: lib/RT/Queue.pm:130
 msgid "ReplyToTicket"
 msgstr "ReplyToTicket"
-
-#: NOT FOUND IN SOURCE
-msgid "Reports"
-msgstr "Reports"
 
 #: lib/RT/Report/Tickets.pm:68 lib/RT/Ticket.pm:101 lib/RT/Tickets.pm:143
 msgid "Requestor"
@@ -5254,6 +6517,14 @@ msgstr "Required parameter '%1' not specified"
 msgid "Reset"
 msgstr "Reset"
 
+#: share/html/Prefs/MyRT.html:71
+msgid "Reset RT at a glance"
+msgstr "Reset RT at a glance"
+
+#: share/html/Prefs/DashboardsInMenu.html:64
+msgid "Reset dashboards in menu"
+msgstr "Reset dashboards in menu"
+
 #: share/html/User/Prefs.html:178
 msgid "Reset secret authentication token"
 msgstr "Reset secret authentication token"
@@ -5266,7 +6537,7 @@ msgstr "Reset to default"
 msgid "Residence"
 msgstr "Residence"
 
-#: etc/RT_Config.pm:2758 etc/RT_Config.pm:2774 etc/RT_Config.pm:2834 etc/RT_Config.pm:2850 share/html/Search/Elements/EditFormat:75
+#: etc/RT_Config.pm:2761 etc/RT_Config.pm:2777 etc/RT_Config.pm:2837 etc/RT_Config.pm:2853 share/html/Search/Elements/EditFormat:75
 msgid "Resolve"
 msgstr "Resolve"
 
@@ -5279,21 +6550,9 @@ msgstr "Resolve ticket #%1 (%2)"
 msgid "Resolved"
 msgstr "Resolved"
 
-#: NOT FOUND IN SOURCE
-msgid "Resolved by owner"
-msgstr "Resolved by owner"
-
-#: NOT FOUND IN SOURCE
-msgid "Resolved in date range"
-msgstr "Resolved in date range"
-
-#: NOT FOUND IN SOURCE
-msgid "Resolved tickets in period, grouped by owner"
-msgstr "Resolved tickets in period, grouped by owner"
-
-#: NOT FOUND IN SOURCE
-msgid "Resolved tickets, grouped by owner"
-msgstr "Resolved tickets, grouped by owner"
+#: etc/initialdata:449 etc/upgrade/4.1.9/content:102
+msgid "Resolved in HTML"
+msgstr "Resolved in HTML"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "ResolvedRelative"
@@ -5319,9 +6578,9 @@ msgstr "Retype Password"
 msgid "Revert"
 msgstr "Revert"
 
-#: NOT FOUND IN SOURCE
-msgid "Right Delegated"
-msgstr "Right Delegated"
+#: lib/RT/Config.pm:338
+msgid "Rich text (HTML) shows formatting such as colored text, bold, italics, and more"
+msgstr "Rich text (HTML) shows formatting such as coloured text, bold, italics, and more"
 
 #: lib/RT/ACE.pm:288
 msgid "Right Granted"
@@ -5334,10 +6593,6 @@ msgstr "Right Loaded"
 #: lib/RT/ACE.pm:343
 msgid "Right could not be revoked"
 msgstr "Right could not be revoked"
-
-#: NOT FOUND IN SOURCE
-msgid "Right not found"
-msgstr "Right not found"
 
 #: lib/RT/ACE.pm:311
 msgid "Right not loaded."
@@ -5352,7 +6607,11 @@ msgstr "Right revoked"
 msgid "Rights could not be granted for %1"
 msgstr "Rights could not be granted for %1"
 
-#: lib/RT/Interface/Web.pm:3673
+#: share/html/Admin/Elements/EditRightsCategoryTabs:88
+msgid "Rights for Administrators"
+msgstr "Rights for Administrators"
+
+#: lib/RT/Interface/Web.pm:3709
 msgid "Roles"
 msgstr "Roles"
 
@@ -5388,7 +6647,7 @@ msgstr "Saturday"
 msgid "Save"
 msgstr "Save"
 
-#: share/html/Admin/Articles/Classes/GroupRights.html:57 share/html/Admin/Articles/Classes/Modify.html:130 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:91 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:93 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:156 share/html/Admin/Queues/People.html:124 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Scrips/Modify.html:88 share/html/Admin/Scrips/Modify.html:92 share/html/Admin/Users/Keys.html:80 share/html/Admin/Users/Modify.html:226 share/html/Articles/Article/Edit.html:102 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:186 share/html/Prefs/Other.html:76 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:62 share/html/SelfService/Prefs.html:79 share/html/Ticket/Modify.html:66 share/html/Ticket/ModifyAll.html:135 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:67 share/html/Ticket/ModifyPeople.html:76 share/html/Ticket/Reminders.html:63
+#: share/html/Admin/Articles/Classes/GroupRights.html:57 share/html/Admin/Articles/Classes/Modify.html:130 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:91 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:93 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:156 share/html/Admin/Queues/People.html:124 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Scrips/Modify.html:88 share/html/Admin/Scrips/Modify.html:92 share/html/Admin/Users/Keys.html:80 share/html/Admin/Users/Modify.html:226 share/html/Articles/Article/Edit.html:102 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:186 share/html/Prefs/Other.html:76 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:62 share/html/SelfService/Prefs.html:79 share/html/Ticket/Modify.html:68 share/html/Ticket/ModifyAll.html:135 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:67 share/html/Ticket/ModifyPeople.html:76 share/html/Ticket/Reminders.html:63
 msgid "Save Changes"
 msgstr "Save Changes"
 
@@ -5462,10 +6721,6 @@ msgstr "Search for approvals"
 msgid "Search for tickets"
 msgstr "Search for tickets"
 
-#: NOT FOUND IN SOURCE
-msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name, Owners by <strong>username</strong> and Requestors by <strong>email address</strong>."
-msgstr "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name, Owners by <strong>username</strong> and Requestors by <strong>email address</strong>."
-
 #: share/html/Elements/Tabs:555
 msgid "Search options"
 msgstr "Search options"
@@ -5478,10 +6733,6 @@ msgstr "Search results grouped by %1"
 msgid "Search results refresh interval"
 msgstr "Search results refresh interval"
 
-#: NOT FOUND IN SOURCE
-msgid "Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history for any word by typing <b>fulltext:<i>word</i></b>."
-msgstr "Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history for any word by typing <b>fulltext:<i>word</i></b>."
-
 #: share/html/User/Prefs.html:170
 msgid "Secret authentication token"
 msgstr "Secret authentication token"
@@ -5493,30 +6744,6 @@ msgstr "Security:"
 #: share/html/Elements/ShowCustomFields:121 share/html/m/ticket/show:191
 msgid "See also:"
 msgstr "See also:"
-
-#: NOT FOUND IN SOURCE
-msgid "See custom field values"
-msgstr "See custom field values"
-
-#: NOT FOUND IN SOURCE
-msgid "See custom fields"
-msgstr "See custom fields"
-
-#: NOT FOUND IN SOURCE
-msgid "See exact outgoing email messages and their recipeients"
-msgstr "See exact outgoing email messages and their recipeients"
-
-#: NOT FOUND IN SOURCE
-msgid "See exact outgoing email messages and their recipients"
-msgstr "See exact outgoing email messages and their recipients"
-
-#: NOT FOUND IN SOURCE
-msgid "See ticket private commentary"
-msgstr "See ticket private commentary"
-
-#: NOT FOUND IN SOURCE
-msgid "See ticket summaries"
-msgstr "See ticket summaries"
 
 #: lib/RT/Class.pm:91 lib/RT/CustomField.pm:213 lib/RT/Queue.pm:114
 msgid "SeeCustomField"
@@ -5594,10 +6821,6 @@ msgstr "Select custom fields for tickets in all queues"
 msgid "Select custom fields for transactions on tickets in all queues"
 msgstr "Select custom fields for transactions on tickets in all queues"
 
-#: NOT FOUND IN SOURCE
-msgid "Select group"
-msgstr "Select group"
-
 #: lib/RT/CustomField.pm:74
 msgid "Select multiple values"
 msgstr "Select multiple values"
@@ -5610,14 +6833,6 @@ msgstr "Select one value"
 msgid "Select queues to be displayed on the \"RT at a glance\" page"
 msgstr "Select queues to be displayed on the \"RT at a glance\" page"
 
-#: NOT FOUND IN SOURCE
-msgid "Select scrip"
-msgstr "Select scrip"
-
-#: NOT FOUND IN SOURCE
-msgid "Select template"
-msgstr "Select template"
-
 #: lib/RT/CustomField.pm:76
 msgid "Select up to %1 values"
 msgstr "Select up to %1 values"
@@ -5626,7 +6841,7 @@ msgstr "Select up to %1 values"
 msgid "Selected Custom Fields"
 msgstr "Selected Custom Fields"
 
-#: lib/RT/Crypt.pm:691
+#: lib/RT/Crypt.pm:699
 msgid "Selected key either is not trusted or doesn't exist anymore."
 msgstr "Selected key either is not trusted or doesn't exist anymore."
 
@@ -5637,10 +6852,6 @@ msgstr "Selected objects"
 #: share/html/Widgets/SelectionBox:208
 msgid "Selections modified. Please save your changes"
 msgstr "Selections modified. Please save your changes"
-
-#: NOT FOUND IN SOURCE
-msgid "Send email successfully"
-msgstr "Send email successfully"
 
 #: etc/initialdata:80
 msgid "Send mail to owner and all watchers"
@@ -5719,17 +6930,9 @@ msgstr "Show approved requests"
 msgid "Show as well"
 msgstr "Show as well"
 
-#: NOT FOUND IN SOURCE
-msgid "Show basics"
-msgstr "Show basics"
-
 #: share/html/Approvals/Elements/PendingMyApproval:68
 msgid "Show denied requests"
 msgstr "Show denied requests"
-
-#: NOT FOUND IN SOURCE
-msgid "Show details"
-msgstr "Show details"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:102
 msgid "Show link descriptions"
@@ -5786,14 +6989,6 @@ msgstr "ShowTicketComments"
 #: share/html/Admin/Tools/Shredder/index.html:74 share/html/Elements/Tabs:245 share/html/Elements/Tabs:850
 msgid "Shredder"
 msgstr "Shredder"
-
-#: NOT FOUND IN SOURCE
-msgid "Shredder needs a directory to write dumps to. Please check that you have %1 and it is writable by your web server."
-msgstr "Shredder needs a directory to write dumps to. Please check that you have %1 and it is writable by your web server."
-
-#: NOT FOUND IN SOURCE
-msgid "Shredder needs a directory to write dumps to. Please check that you have <span class=\"file-path\">%1</span> and it is writable by your web server."
-msgstr "Shredder needs a directory to write dumps to. Please check that you have <span class=\"file-path\">%1</span> and it is writable by your web server."
 
 #: share/html/Dashboards/Queries.html:181
 msgid "Sidebar"
@@ -5962,10 +7157,6 @@ msgstr "Subject changed to %1"
 msgid "SubjectTag"
 msgstr "SubjectTag"
 
-#: NOT FOUND IN SOURCE
-msgid "SubjectTag changed to %1"
-msgstr "SubjectTag changed to %1"
-
 #: share/html/Elements/Submit:99
 msgid "Submit"
 msgstr "Submit"
@@ -6029,10 +7220,6 @@ msgstr "Suspended"
 msgid "System Configuration"
 msgstr "System Configuration"
 
-#: NOT FOUND IN SOURCE
-msgid "System Dashboards"
-msgstr "System Dashboards"
-
 #: lib/RT/Installer.pm:206 share/html/Elements/SelectTimezone:63
 msgid "System Default"
 msgstr "System Default"
@@ -6050,21 +7237,9 @@ msgstr "System Error: %1"
 msgid "System Tools"
 msgstr "System Tools"
 
-#: NOT FOUND IN SOURCE
-msgid "System error. Right not delegated."
-msgstr "System error. Right not delegated."
-
 #: lib/RT/ACE.pm:141 lib/RT/ACE.pm:209 lib/RT/ACE.pm:291
 msgid "System error. Right not granted."
 msgstr "System error. Right not granted."
-
-#: NOT FOUND IN SOURCE
-msgid "System groups"
-msgstr "System groups"
-
-#: NOT FOUND IN SOURCE
-msgid "System rights"
-msgstr "System rights"
 
 #: lib/RT/Handle.pm:768
 msgid "SystemRolegroup for internal use"
@@ -6093,10 +7268,6 @@ msgstr "Tell us a little about how to find the database RT will be using"
 #: share/html/Admin/Scrips/Elements/EditBasics:64 share/html/Elements/RT__Scrip/ColumnMap:75
 msgid "Template"
 msgstr "Template"
-
-#: NOT FOUND IN SOURCE
-msgid "Template #%1"
-msgstr "Template #%1"
 
 #: share/html/Admin/Elements/EditTemplates:111
 #. ($id)
@@ -6144,26 +7315,6 @@ msgstr "That is not a value for this custom field"
 #: NOT FOUND IN SOURCE
 msgid "That is the same value"
 msgstr "That is the same value"
-
-#: NOT FOUND IN SOURCE
-msgid "That principal already has that right"
-msgstr "That principal already has that right"
-
-#: NOT FOUND IN SOURCE
-msgid "That principal is already a %1 for this queue"
-msgstr "That principal is already a %1 for this queue"
-
-#: NOT FOUND IN SOURCE
-msgid "That principal is already a %1 for this ticket"
-msgstr "That principal is already a %1 for this ticket"
-
-#: NOT FOUND IN SOURCE
-msgid "That principal is not a %1 for this queue"
-msgstr "That principal is not a %1 for this queue"
-
-#: NOT FOUND IN SOURCE
-msgid "That principal is not a %1 for this ticket"
-msgstr "That principal is not a %1 for this ticket"
 
 #: NOT FOUND IN SOURCE
 msgid "That queue does not exist"
@@ -6225,10 +7376,6 @@ msgstr "The administrative CC of a ticket"
 msgid "The domain name of your database server (like 'db.example.com')."
 msgstr "The domain name of your database server (like 'db.example.com')."
 
-#: NOT FOUND IN SOURCE
-msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they haven't been touched in 4 hours:"
-msgstr "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they haven't been touched in 4 hours:"
-
 #: share/html/Dashboards/Elements/Deleted:53
 msgid "The following queries have been deleted and each will be removed from the dashboard once its pane is updated."
 msgstr "The following queries have been deleted and each will be removed from the dashboard once its pane is updated."
@@ -6286,7 +7433,7 @@ msgstr "The system is unable to sign outgoing email messages. This usually indic
 msgid "Theme"
 msgstr "Theme"
 
-#: lib/RT/Crypt.pm:718
+#: lib/RT/Crypt.pm:726
 msgid "There are several keys suitable for encryption."
 msgstr "There are several keys suitable for encryption."
 
@@ -6298,11 +7445,11 @@ msgstr "There are unread messages on this ticket."
 msgid "There is marginal trust in this key"
 msgstr "There is marginal trust in this key"
 
-#: lib/RT/Crypt.pm:710
+#: lib/RT/Crypt.pm:718
 msgid "There is no key suitable for encryption."
 msgstr "There is no key suitable for encryption."
 
-#: lib/RT/Crypt.pm:714
+#: lib/RT/Crypt.pm:722
 msgid "There is one suitable key, but trust level is not set."
 msgstr "There is one suitable key, but trust level is not set."
 
@@ -6326,10 +7473,6 @@ msgstr "This feature is only available to system administrators"
 msgid "This may mean that that the directory '%1' isn't writable or a database table is missing or corrupt."
 msgstr "This may mean that that the directory '%1' isn't writable or a database table is missing or corrupt."
 
-#: NOT FOUND IN SOURCE
-msgid "This message will be sent to..."
-msgstr "This message will be sent to..."
-
 #: bin/rt-crontool:343
 msgid "This tool allows the user to run arbitrary perl modules from within RT."
 msgstr "This tool allows the user to run arbitrary perl modules from within RT."
@@ -6337,10 +7480,6 @@ msgstr "This tool allows the user to run arbitrary perl modules from within RT."
 #: lib/RT/Transaction.pm:366
 msgid "This transaction appears to have no content"
 msgstr "This transaction appears to have no content"
-
-#: NOT FOUND IN SOURCE
-msgid "This user's %1 highest priority tickets"
-msgstr "This user's %1 highest priority tickets"
 
 #: lib/RT/Date.pm:110
 msgid "Thu"
@@ -6458,22 +7597,6 @@ msgstr "Tickets %1 %2"
 #. ($self->loc( $args{'TYPE'} ),            $args{'TARGET'})
 msgid "Tickets %1 by %2"
 msgstr "Tickets %1 by %2"
-
-#: NOT FOUND IN SOURCE
-msgid "Tickets created after"
-msgstr "Tickets created after"
-
-#: NOT FOUND IN SOURCE
-msgid "Tickets created before"
-msgstr "Tickets created before"
-
-#: NOT FOUND IN SOURCE
-msgid "Tickets resolved after"
-msgstr "Tickets resolved after"
-
-#: NOT FOUND IN SOURCE
-msgid "Tickets resolved before"
-msgstr "Tickets resolved before"
 
 #: share/html/Approvals/Elements/ShowDependency:50
 msgid "Tickets which depend on this approval:"
@@ -6749,10 +7872,6 @@ msgstr "Upload up to %1 images"
 msgid "Upload your changes"
 msgstr "Upload your changes"
 
-#: NOT FOUND IN SOURCE
-msgid "Usage: "
-msgstr "Usage: "
-
 #: lib/RT/Installer.pm:137
 msgid "Use SSL?"
 msgstr "Use SSL?"
@@ -6817,10 +7936,6 @@ msgstr "User could not be created: %1"
 msgid "User created"
 msgstr "User created"
 
-#: NOT FOUND IN SOURCE
-msgid "User defined groups"
-msgstr "User defined groups"
-
 #: lib/RT/User.pm:1152
 msgid "User disabled"
 msgstr "User disabled"
@@ -6837,10 +7952,6 @@ msgstr "User has empty email address"
 msgid "User loaded"
 msgstr "User loaded"
 
-#: NOT FOUND IN SOURCE
-msgid "User's GnuPG keys"
-msgstr "User's GnuPG keys"
-
 #: share/html/Admin/Groups/index.html:121
 msgid "User-defined groups"
 msgstr "User-defined groups"
@@ -6853,7 +7964,7 @@ msgstr "Username"
 msgid "Username format"
 msgstr "Username format"
 
-#: lib/RT/CustomField.pm:1746 lib/RT/Interface/Web.pm:3701 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:500 share/html/Elements/Tabs:67
+#: lib/RT/CustomField.pm:1746 lib/RT/Interface/Web.pm:3737 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:500 share/html/Elements/Tabs:67
 msgid "Users"
 msgstr "Users"
 
@@ -6886,17 +7997,9 @@ msgstr "Values"
 msgid "Variable"
 msgstr "Variable"
 
-#: NOT FOUND IN SOURCE
-msgid "Various RT reports"
-msgstr "Various RT reports"
-
 #: share/html/Admin/Tools/Configuration.html:239
 msgid "Version"
 msgstr "Version"
-
-#: NOT FOUND IN SOURCE
-msgid "View dashboards for this group"
-msgstr "View dashboards for this group"
 
 #: lib/RT/Dashboard.pm:85
 msgid "View personal dashboards"
@@ -7062,10 +8165,6 @@ msgstr "Wipeout"
 msgid "Work"
 msgstr "Work"
 
-#: NOT FOUND IN SOURCE
-msgid "WorkPhone"
-msgstr "WorkPhone"
-
 #: share/html/Ticket/Elements/ShowBasics:65 share/html/Tools/MyDay.html:62 share/html/m/ticket/reply:81 share/html/m/ticket/show:227
 msgid "Worked"
 msgstr "Worked"
@@ -7085,10 +8184,6 @@ msgstr "You are going to encrypt outgoing email messages, but there are problems
 #: NOT FOUND IN SOURCE
 msgid "You are going to encrypt outgoing email messages, but there is a problem with a recipient's public key. You have to fix the problem with the key, disable sending a message to that recipient, or disable encryption."
 msgstr "You are going to encrypt outgoing email messages, but there is a problem with a recipient's public key. You have to fix the problem with the key, disable sending a message to that recipient, or disable encryption."
-
-#: NOT FOUND IN SOURCE
-msgid "You are not an authorized user"
-msgstr "You are not an authorised user"
 
 #: share/html/Ticket/Elements/ShowUpdateStatus:54
 #. (RT->Config->Get('WebPath') ."/Ticket/Display.html?id=". $Ticket->id. "#txn-".$txn->id, RT->Config->Get('WebPath') ."/Ticket/Display.html?id=". $Ticket->id ."&MarkAsSeen=1&Anchor=txn-" . $txn->id)
@@ -7111,15 +8206,11 @@ msgstr "You can only take tickets that are unowned"
 msgid "You don't have <b>SuperUser</b> right."
 msgstr "You don't have <b>SuperUser</b> right."
 
-#: NOT FOUND IN SOURCE
-msgid "You found %1 tickets in queue %2"
-msgstr "You found %1 tickets in queue %2"
-
 #: share/html/NoAuth/Logout.html:55
 msgid "You have been logged out of RT."
 msgstr "You have been logged out of RT."
 
-#: share/html/SelfService/Display.html:104
+#: share/html/SelfService/Display.html:111
 msgid "You have no permission to create tickets in that queue."
 msgstr "You have no permission to create tickets in that queue."
 
@@ -7136,17 +8227,9 @@ msgstr "You must enter an Administrative password"
 msgid "You should be taken directly to a login page. You'll be able to log in with username of %1 and the password you set earlier."
 msgstr "You should be taken directly to a login page. You'll be able to log in with username of %1 and the password you set earlier."
 
-#: NOT FOUND IN SOURCE
-msgid "You should be taken directly to a login page. You'll be able to log in with username of <tt>root</tt> and the password you set earlier."
-msgstr "You should be taken directly to a login page. You'll be able to log in with username of <tt>root</tt> and the password you set earlier."
-
 #: share/html/Install/DatabaseType.html:55
 msgid "You should choose the database you or your local database administrator is most comfortable with."
 msgstr "You should choose the database you or your local database administrator is most comfortable with."
-
-#: NOT FOUND IN SOURCE
-msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>Let's go!</i> below, RT will guide you through setting up your RT server and database."
-msgstr "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>Let's go!</i> below, RT will guide you through setting up your RT server and database."
 
 #: share/html/Install/index.html:79
 #. (loc("Let's go!"))
@@ -7156,10 +8239,6 @@ msgstr "You're seeing this screen because you started up an RT server without a 
 #: share/html/NoAuth/Logout.html:59
 msgid "You're welcome to login again"
 msgstr "You're welcome to login again"
-
-#: NOT FOUND IN SOURCE
-msgid "Your current password"
-msgstr "Your current password"
 
 #: lib/RT/User.pm:1044
 msgid "Your password is not set."
@@ -7193,18 +8272,6 @@ msgstr "add <pre> tag around plain text attachments"
 msgid "after"
 msgstr "after"
 
-#: NOT FOUND IN SOURCE
-msgid "allow creation of saved searches"
-msgstr "allow creation of saved searches"
-
-#: NOT FOUND IN SOURCE
-msgid "allow loading of saved searches"
-msgstr "allow loading of saved searches"
-
-#: NOT FOUND IN SOURCE
-msgid "as granted to %1"
-msgstr "as granted to %1"
-
 #: share/html/Search/Elements/SelectChartType:54
 msgid "bar"
 msgstr "bar"
@@ -7224,10 +8291,6 @@ msgstr "click to check/uncheck all objects at once"
 #: share/html/SelfService/Closed.html:53
 msgid "closed"
 msgstr "closed"
-
-#: NOT FOUND IN SOURCE
-msgid "concise"
-msgstr "concise"
 
 #: share/html/Admin/Tools/Configuration.html:83
 msgid "core config"
@@ -7444,10 +8507,6 @@ msgstr "open/close"
 msgid "other..."
 msgstr "other..."
 
-#: NOT FOUND IN SOURCE
-msgid "personal group '%1' for user '%2'"
-msgstr "personal group '%1' for user '%2'"
-
 #: share/html/Search/Elements/SelectChartType:55
 msgid "pie"
 msgstr "pie"
@@ -7480,14 +8539,6 @@ msgstr "sec"
 #: share/html/Admin/Tools/Shredder/index.html:179
 msgid "see object list below"
 msgstr "see object list below"
-
-#: NOT FOUND IN SOURCE
-msgid "show Approvals tab"
-msgstr "show Approvals tab"
-
-#: NOT FOUND IN SOURCE
-msgid "show Configuration tab"
-msgstr "show Configuration tab"
 
 #: share/html/Admin/Tools/Configuration.html:80
 msgid "site config"
@@ -7549,10 +8600,6 @@ msgstr "unlimited"
 #. ($user->Object->Name)
 msgid "user %1"
 msgstr "user %1"
-
-#: NOT FOUND IN SOURCE
-msgid "verbose"
-msgstr "verbose"
 
 #: share/html/Dashboards/Subscription.html:105
 msgid "weekly"

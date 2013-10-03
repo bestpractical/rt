@@ -4,15 +4,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
-"POT-Creation-Date: 2011-08-05 23:32+0000\n"
-"PO-Revision-Date: 2011-08-06 00:13+0000\n"
-"Last-Translator: Shawn M Moore <sartak@bestpractical.com>\n"
+"POT-Creation-Date: 2013-06-06 21:51+0000\n"
+"PO-Revision-Date: 2013-05-25 02:51+0000\n"
+"Last-Translator: Shawn M Moore <Unknown>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=US-ASCII\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-06 01:13+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2013-10-03 20:12+0000\n"
+"X-Generator: Launchpad (build 16791)\n"
 
 #: share/html/Elements/LoginHelp:51
 #. (RT->Config->Get('OwnerEmail'))
@@ -20,14 +20,6 @@ msgid ""
 "\n"
 "For local help, please contact %1\n"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid " (no pubkey!)"
-msgstr " (tidak ada kunci publik!)"
-
-#: NOT FOUND IN SOURCE
-msgid " (untrusted!)"
-msgstr " (tak terpercaya!)"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:60
 msgid "#"
@@ -47,10 +39,6 @@ msgstr "#%1: %2"
 #: lib/RT/Report/Tickets.pm:195
 msgid "$_->[0]"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "$prefix %1"
-msgstr "$Awalan %1"
 
 #: lib/RT/URI/fsck_com_rt.pm:229
 #. ($self->ObjectType, $object->Id)
@@ -171,6 +159,10 @@ msgstr ""
 msgid "%1 - Adjust LogToSTDERR config option"
 msgstr "%1 - Sesuaikan opsi konfig LogToSTDERR"
 
+#: NOT FOUND IN SOURCE
+msgid "%1 - Adjust LogToScreen config option"
+msgstr "%1 - Sesuaikan opsi konfig LogToScreen"
+
 #: bin/rt-crontool:312 bin/rt-crontool:319 bin/rt-crontool:325
 #. ("--action-arg", "--action")
 #. ("--condition-arg", "--condition")
@@ -223,10 +215,6 @@ msgstr ""
 #. ('', '', '2013', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr "%1 RT %2 Hak Cipta 1996-%3 %4."
-
-#: NOT FOUND IN SOURCE
-msgid "%1 ScripAction loaded"
-msgstr "%1 ScripAction telah dimuat"
 
 #: share/html/Admin/Elements/UpgradeHistory:58
 #. ($package)
@@ -307,10 +295,6 @@ msgid "%1 could not be set to %2."
 msgstr "%1 tidak bisa diatur ke %2."
 
 #: NOT FOUND IN SOURCE
-msgid "%1 couldn't set status to resolved. RT's Database may be inconsistent."
-msgstr "%1 tidak dapat mengatur status untuk diselesaikan. Database RT's mungkin tidak konsisten."
-
-#: NOT FOUND IN SOURCE
 msgid "%1 created"
 msgstr "%1 sudah dibuat"
 
@@ -334,10 +318,6 @@ msgstr "%1 diaktifkan"
 #: etc/initialdata:807
 msgid "%1 highest priority tickets I own"
 msgstr "%1 Tiket dengan prioritas paling tinggi yang saya miliki"
-
-#: NOT FOUND IN SOURCE
-msgid "%1 highest priority tickets I requested..."
-msgstr "%1 Tiket dengan prioritas paling tinggi yang saya minta..."
 
 #: bin/rt-crontool:304
 #. ($0)
@@ -366,10 +346,6 @@ msgstr ""
 #. ($email->format, loc(substr($field, 6)))
 msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "%1 is no longer a %2 for this queue."
-msgstr "%1 tidak lagi menjadi %2 untuk antrian ini."
 
 #: lib/RT/Ticket.pm:673
 #. ($principal->Object->Name,                         $self->loc($args{'Type'}))
@@ -421,17 +397,9 @@ msgstr ""
 msgid "%1 newest unowned tickets"
 msgstr "%1 tiket terbaru yang belum dimiliki"
 
-#: NOT FOUND IN SOURCE
-msgid "%1 newest unowned tickets..."
-msgstr "%1 tiket terbaru yang belum dimiliki..."
-
 #: lib/RT/CustomField.pm:1157
 msgid "%1 objects"
 msgstr "%1 objek"
-
-#: NOT FOUND IN SOURCE
-msgid "%1 rights"
-msgstr "hak-hak %1"
 
 #: lib/RT/Group.pm:1131
 #. ($self->loc($self->Name), $new_member_obj->Object->Name)
@@ -457,10 +425,6 @@ msgstr "%1 diperbarui: Tak ada yang berubah"
 #. ($self->loc( $args{'Field'} ),)
 msgid "%1 updated"
 msgstr "%1 telah diperbarui"
-
-#: NOT FOUND IN SOURCE
-msgid "%1 will resolve all members of a resolved group ticket."
-msgstr "%1 akan memecahkan semua anggota dari grup tiket yang dipecahkan."
 
 #: lib/RT/Date.pm:441
 #. ($value)
@@ -635,21 +599,9 @@ msgstr "Contreng untuk menghapus"
 msgid "(Check boxes to delete)"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "(Check boxes to disable notifications to the listed recipients)"
-msgstr "(Klik kotak ini untuk menon-aktifkan pemberitahuan kepada penerima yang sudah terdaftar)"
-
-#: NOT FOUND IN SOURCE
-msgid "(Check boxes to enable notifications to the listed recipients)"
-msgstr "(Klik kotak ini untuk mengaktifkan pemberitahuan kepada penerima yang sudah terdaftar)"
-
 #: share/html/m/ticket/create:392
 msgid "(Enter ticket ids or URLs, separated with spaces)"
 msgstr "(Masukkan ID Tiket atau URL, dipisahkan dengan spasi)"
-
-#: NOT FOUND IN SOURCE
-msgid "(If left blank, will default to %1"
-msgstr "(Jika ditinggalkan kosong, default akan diatur menjadi %1"
 
 #: share/html/Admin/Queues/Modify.html:82 share/html/Admin/Queues/Modify.html:85
 #. (RT->Config->Get('CommentAddress'))
@@ -685,25 +637,9 @@ msgstr "(Tidak ada template)"
 msgid "(None)"
 msgstr "(Tidak satu pun)"
 
-#: NOT FOUND IN SOURCE
-msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)"
-msgstr "(Kirim salinan tembusan untuk memperbaharui daftar alamat email yang dibatasi dengan koma. <b>Tidak</b> akan mengubah siapakah yang akan menerima pembaharuan di masa datang.)"
-
-#: NOT FOUND IN SOURCE
-msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)"
-msgstr "(Kirim salinan tembusan untuk memperbaharui daftar alamat administrasi email. Orang-orang ini <b>akan</b> menerima pembaharuan di masa datang.)"
-
 #: share/html/Ticket/Create.html:161 share/html/m/ticket/create:290
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)"
-msgstr "(Kirim salinan tembusan untuk memperbaharui daftar alamat email. <b>Tidak</b> akan mengubah siapakah yang akan menerima pembaharuan di masa datang.)"
-
-#: NOT FOUND IN SOURCE
-msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)"
-msgstr "(Kirim salinan tembusan untuk memperbaharui daftar alamat email. Orang-orang ini <b>akan</b> menerima pembaharuan di masa datang.)"
 
 #: share/html/Ticket/Create.html:145 share/html/m/ticket/create:281
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)"
@@ -717,17 +653,9 @@ msgstr "Gunakan kolom ini ketika anda memilih 'Definisikan Pengguna' untuk sebua
 msgid "(any)"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "(empty)"
-msgstr "(kosong)"
-
 #: share/html/Articles/Elements/NewestArticles:66 share/html/Articles/Elements/UpdatedArticles:67
 msgid "(no Summary)"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "(no name listed)"
-msgstr "(tidak ada nama yang terdaftar)"
 
 #: share/html/Admin/Articles/Elements/Topics:99 share/html/Articles/Article/Elements/EditTopics:58 share/html/Articles/Article/Elements/EditTopics:74 share/html/Articles/Article/Elements/Preformatted:49 share/html/Articles/Article/Elements/Preformatted:50 share/html/Articles/Elements/BeforeMessageBox:103 share/html/Articles/Elements/BeforeMessageBox:120 share/html/Articles/Elements/BeforeMessageBox:70 share/html/Articles/Elements/BeforeMessageBox:82 share/html/Articles/Elements/BeforeMessageBox:90 share/html/Articles/Elements/NewestArticles:60 share/html/Articles/Elements/ShowTopic:51 share/html/Articles/Elements/ShowTopicLink:55 share/html/Articles/Elements/UpdatedArticles:61 share/html/Articles/Topics.html:105 share/html/SelfService/Article/Display.html:49 share/html/SelfService/Article/Search.html:77 share/html/SelfService/Article/Search.html:85
 msgid "(no name)"
@@ -757,10 +685,6 @@ msgstr ""
 #: share/html/Elements/RT__Ticket/ColumnMap:130
 msgid "(pending approval)"
 msgstr "(izin ditunda)"
-
-#: NOT FOUND IN SOURCE
-msgid "(pending other Collection)"
-msgstr "(Koleksi yang lain ditunda)"
 
 #: share/html/Admin/Users/Modify.html:69
 msgid "(required)"
@@ -799,26 +723,6 @@ msgstr ""
 msgid "0s"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "<% $Ticket->Status%>"
-msgstr "<% $Tiket->Status%>"
-
-#: NOT FOUND IN SOURCE
-msgid "<% $_ %>"
-msgstr "<% $_ %>"
-
-#: NOT FOUND IN SOURCE
-msgid "<%$_%>"
-msgstr "<%$_%>"
-
-#: NOT FOUND IN SOURCE
-msgid "<%$field%>"
-msgstr "<%$kolom%>"
-
-#: NOT FOUND IN SOURCE
-msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
-msgstr "<Tipe input=\"submit\" nilai=\"Tiket Baru di dalam \">&nbsp;%1"
-
 #: lib/RT/Template.pm:287 lib/RT/Template.pm:713
 msgid "A Template with that name already exists"
 msgstr ""
@@ -848,10 +752,6 @@ msgstr ""
 msgid "AND"
 msgstr "DAN"
 
-#: NOT FOUND IN SOURCE
-msgid "Aborting to avoid unintended ticket modifications.\\n"
-msgstr "Dibatalkan untuk menghindari modifikasi tiket yang tidak diharapkan.\\n"
-
 #: share/html/Elements/Tabs:554
 msgid "About me"
 msgstr "Tentang Aku"
@@ -864,10 +764,6 @@ msgstr "Kontrol Akses"
 msgid "Action"
 msgstr "Aksi"
 
-#: NOT FOUND IN SOURCE
-msgid "Action %1 not found"
-msgstr "Aksi %1 tidak ditemukan"
-
 #: lib/RT/Scrip.pm:153 lib/RT/Scrip.pm:731
 #. ($args{'ScripAction'})
 #. ($value)
@@ -876,10 +772,6 @@ msgstr ""
 
 #: bin/rt-crontool:220
 msgid "Action committed."
-msgstr "Aksi dijalankan."
-
-#: NOT FOUND IN SOURCE
-msgid "Action committed.\\n"
 msgstr "Aksi dijalankan."
 
 #: lib/RT/Scrip.pm:149 lib/RT/Scrip.pm:726
@@ -902,10 +794,6 @@ msgstr ""
 #. ($session{'CurrentUser'}->Name)
 msgid "Active tickets for %1"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Add"
-msgstr "Tambah"
 
 #: share/html/Admin/Elements/EditRights:134
 #. (loc($AddPrincipal))
@@ -948,10 +836,6 @@ msgstr "Tambah Nilai"
 msgid "Add a scrip which will apply to all queues"
 msgstr "Tambah scrip yang akan digunakan di semua antrian"
 
-#: NOT FOUND IN SOURCE
-msgid "Add additional criteria"
-msgstr "Tambahkan kriteria tambahan"
-
 #: share/html/Search/Bulk.html:123
 msgid "Add comments or replies to selected tickets"
 msgstr "Tambah Komentar atau balas ke tiket yang sudah dipilih"
@@ -993,10 +877,6 @@ msgstr ""
 msgid "Add values"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Add, delete and modify custom field values for objects"
-msgstr "Tambah, hapus dan ubah nilai kolom kustom untuk objek"
-
 #: lib/RT/CustomField.pm:216
 msgid "Add, modify and delete custom field values for objects"
 msgstr ""
@@ -1019,14 +899,6 @@ msgstr ""
 #. ($cf->Name)
 msgid "Added Subject Override: %1"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Added principal as a %1 for this queue"
-msgstr "Tambahkan prinsipal sebagai %1 untuk antrian ini"
-
-#: NOT FOUND IN SOURCE
-msgid "Added principal as a %1 for this ticket"
-msgstr "Tambahkan prinsipal sebagai %1 untuk Tiket ini"
 
 #: share/html/Elements/RT__Queue/ColumnMap:65 share/html/Elements/RT__User/ColumnMap:101
 msgid "Address"
@@ -1107,10 +979,6 @@ msgstr "Grup Admin"
 #: lib/RT/Group.pm:89
 msgid "AdminGroupMembership"
 msgstr "Keanggotaan Grup Admin"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminOwnPersonalGroups"
-msgstr "Milik Grup Pribadi Admin"
 
 #: lib/RT/Queue.pm:110
 msgid "AdminQueue"
@@ -1306,17 +1174,9 @@ msgstr ""
 msgid "Approve"
 msgstr "Disetujui"
 
-#: NOT FOUND IN SOURCE
-msgid "Approver's notes: %1"
-msgstr "Catatan Pemberi Persetujuan: %1"
-
 #: lib/RT/Date.pm:94
 msgid "Apr"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Apr."
-msgstr "Apr."
 
 #: share/html/Articles/Article/Delete.html:56
 msgid "Are you sure you want to delete this article?"
@@ -1386,10 +1246,6 @@ msgstr ""
 msgid "Ascending"
 msgstr "Naik"
 
-#: NOT FOUND IN SOURCE
-msgid "Assign and remove custom fields"
-msgstr "Menentukan dan memindahkan kolom kustom"
-
 #: lib/RT/Queue.pm:116
 msgid "Assign and remove queue custom fields"
 msgstr ""
@@ -1443,19 +1299,11 @@ msgstr "Attribut sudah dihapus"
 msgid "Aug"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Aug."
-msgstr "Agst."
-
-#: NOT FOUND IN SOURCE
-msgid "AuthSystem"
-msgstr "Sistem Otorisasi"
-
 #: share/html/Errors/WebRemoteUser/UserAutocreateDefaultsOnLogin:48
 msgid "Automatic account setup failed"
 msgstr ""
 
-#: share/html/Admin/Tools/Theme.html:310
+#: share/html/Admin/Tools/Theme.html:311
 #. ($valid_image_types)
 msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 msgstr ""
@@ -1475,10 +1323,6 @@ msgstr ""
 #: share/html/Widgets/SelectionBox:170
 msgid "Available"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Available Columns"
-msgstr "Kolom Tersedia"
 
 #: lib/RT/Report/Tickets.pm:225
 msgid "Average Created-LastUpdated"
@@ -1520,10 +1364,6 @@ msgstr ""
 msgid "Back"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Bad data in %1"
-msgstr "Data buruk di dalam %1"
-
 #: lib/RT/SharedSetting.pm:151
 #. ($id)
 msgid "Bad privacy for attribute %1"
@@ -1549,22 +1389,10 @@ msgstr ""
 msgid "Bcc"
 msgstr "Bcc"
 
-#: NOT FOUND IN SOURCE
-msgid "Be sure to save your changes"
-msgstr "Pastikanlah untuk menyimpan setiap perubahan anda"
-
 #: share/html/Articles/Elements/NeedsSetup:50
 #. (qq[<a href="@{[RT->Config->Get("WebPath")]}/Admin/Articles/">], '</a>')
 msgid "Before Articles can be used, your RT administrator must %1create Classes%2, apply Article custom fields to them, and grant users rights on the classes and CFs."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Best Practical Solutions, LLC corporate logo"
-msgstr "Pemecahan Praktis yang terbaik, Logo bisnis LLC"
-
-#: NOT FOUND IN SOURCE
-msgid "Binary"
-msgstr "Binary"
 
 #: etc/initialdata:223
 msgid "Blank"
@@ -1582,10 +1410,6 @@ msgstr "Diberi huruf tebal"
 msgid "Bookmark"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Bookmarkable link"
-msgstr "Menyimpan penunjuk link"
-
 #: share/html/Articles/Article/Search.html:114
 msgid "Bookmarkable link for this search"
 msgstr ""
@@ -1598,10 +1422,6 @@ msgstr ""
 msgid "Bookmarked tickets"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Brief headers"
-msgstr "Catatan Atas Singkat"
-
 #: share/html/Articles/Topics.html:48 share/html/Articles/Topics.html:60
 msgid "Browse by topic"
 msgstr ""
@@ -1613,10 +1433,6 @@ msgstr ""
 #: share/html/Elements/Tabs:811
 msgid "Bulk Update"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Bulk ticket update"
-msgstr "Memperbaharui tiket dengan jumlah banyak pada waktu yang sama"
 
 #: lib/RT/Tickets.pm:160
 msgid "CCGroup"
@@ -1648,17 +1464,9 @@ msgstr ""
 msgid "Can not modify system users"
 msgstr "Tidak dapat mengubah sistem pengguna"
 
-#: NOT FOUND IN SOURCE
-msgid "Can this principal see this queue"
-msgstr "Dapatkah prinsipal melihat antrian ini"
-
 #: lib/RT/CustomField.pm:518
 msgid "Can't add a custom field value without a name"
 msgstr "Tidak dapat menambah nilai kolom kustom tanpa nama"
-
-#: NOT FOUND IN SOURCE
-msgid "Can't find a collection class for '%1'"
-msgstr "Tidak dapat menemukan kelas koleksi untuk '%'"
 
 #: share/html/Search/Elements/EditSearches:316
 msgid "Can't find a saved search to work with"
@@ -1671,10 +1479,6 @@ msgstr "Tidak dapat menghubungkan tiket tersebut dengan dirinya sendiri"
 #: lib/RT/Reminders.pm:126
 msgid "Can't link to a deleted ticket"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Can't merge into a merged ticket. You should never get this error"
-msgstr "Tidak dapat digabungkan ke dalam tiket gabungan. Anda seharusnya tidak pernah mendapatkan kesalahan ini."
 
 #: share/html/index.html:127
 #. ($QueueObj->Name)
@@ -1705,10 +1509,6 @@ msgstr ""
 #: share/html/Ticket/Create.html:374 share/html/m/ticket/create:147
 msgid "Cannot create tickets in a disabled queue."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Cannot create user: %1"
-msgstr "Tidak dapat membuat pengguna: %1"
 
 #: share/html/Admin/CustomFields/Modify.html:126
 msgid "Categories are based on"
@@ -1885,14 +1685,6 @@ msgstr "Komentar"
 msgid "Comments (Not sent to requestors)"
 msgstr "Komentar (Tidak dikirim ke pemohon)"
 
-#: NOT FOUND IN SOURCE
-msgid "Comments (not sent to requestors)"
-msgstr "Komentar (tidak dikirim ke pemohon)"
-
-#: NOT FOUND IN SOURCE
-msgid "Comments about %1"
-msgstr "Komentar mengenai %1"
-
 #: share/html/Admin/Users/Modify.html:209 share/html/Ticket/Elements/ShowRequestor:78
 msgid "Comments about this user"
 msgstr "Komentar tentang pengguna ini"
@@ -1923,10 +1715,6 @@ msgstr ""
 msgid "Condition matches..."
 msgstr "Kondisi sesuai dengan ..."
 
-#: NOT FOUND IN SOURCE
-msgid "Condition not found"
-msgstr "Kondisi tidak ditemukan"
-
 #: share/html/Elements/RT__Scrip/ColumnMap:79
 msgid "Condition, Action and Template"
 msgstr ""
@@ -1945,10 +1733,6 @@ msgstr "Konfigurasi"
 msgid "Configuration for queue %1"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Confirm"
-msgstr "Konfirmasi"
-
 #: share/html/Install/DatabaseDetails.html:140
 msgid "Connection succeeded"
 msgstr ""
@@ -1961,10 +1745,6 @@ msgstr ""
 #: share/html/Errors/WebRemoteUser/Wrapper:69
 msgid "Contact your RT administrator."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "ContactInfoSystem"
-msgstr "Hubungi Sistem Info"
 
 #: lib/RT/Tickets.pm:139 share/html/Admin/Elements/ModifyTemplate:70 share/html/Articles/Article/Display.html:53 share/html/Articles/Article/Edit.html:68 share/html/Articles/Article/Elements/ShowSearchCriteria:71 share/html/Elements/QuickCreate:74 share/html/Elements/SelectAttachmentField:51 share/html/Elements/Tabs:589 share/html/Ticket/Forward.html:76 share/html/Ticket/ModifyAll.html:121
 msgid "Content"
@@ -1986,10 +1766,6 @@ msgstr "Tipe - Isi"
 msgid "ContentType"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Copy"
-msgstr "Tiru"
-
 #: lib/RT/Installer.pm:180
 msgid "Correspond address"
 msgstr ""
@@ -2006,36 +1782,16 @@ msgstr "Korespondensi sudah ditambah"
 msgid "Correspondence in HTML"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Could not add new custom field value for ticket. "
-msgstr "Tidak dapat menambah nilai kolom kustom baru untuk tiket. "
-
-#: NOT FOUND IN SOURCE
-msgid "Could not add new custom field value. "
-msgstr "Tidak dapat menambah nilai kolom kustom baru "
-
-#: NOT FOUND IN SOURCE
-msgid "Could not add new custom field value. %1 "
-msgstr "Tidak dapat menambah nilai kolom kustom baru "
-
 #: lib/RT/Record.pm:1990 lib/RT/Record.pm:2056
 #. ($msg)
 #. ($value_msg)
 msgid "Could not add new custom field value: %1"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Could not change owner. "
-msgstr "Tidak dapat mengubah pemilik tiket. "
-
 #: lib/RT/Ticket.pm:2043
 #. ($msg)
 msgid "Could not change owner: %1"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Could not create CustomField"
-msgstr "Tidak dapat membuat Kolom Kustom"
 
 #: share/html/Admin/CustomFields/Modify.html:184 share/html/Admin/Elements/EditCustomField:116
 #. ($msg)
@@ -2115,10 +1871,6 @@ msgstr "Tidak dapat memanggil objek untuk %1"
 msgid "Could not load scrip #%1"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Could not load search attribute"
-msgstr "Tidak dapat memanggil attribut pencarian"
-
 #: lib/RT/Record/Role/Roles.pm:473
 #. ($args{User})
 msgid "Could not load user '%1'"
@@ -2129,22 +1881,10 @@ msgstr ""
 msgid "Could not make %1 a %2"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Could not make that principal a %1 for this queue"
-msgstr "Tidak dapat membuat prinsipal tersebut %1 untuk antrian ini"
-
-#: NOT FOUND IN SOURCE
-msgid "Could not make that principal a %1 for this ticket"
-msgstr "Tidak dapat membuat prinsipal tersebut %1 untuk Tiket ini"
-
 #: lib/RT/Record/Role/Roles.pm:501
 #. ($principal->Object->Name, $self->loc($args{Type}))
 msgid "Could not remove %1 as a %2"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Could not remove that principal as a %1 for this queue"
-msgstr "Tidak dapat menghapus prinsipal tersebut sebagai  %1 untuk antrian ini"
 
 #: lib/RT/User.pm:144
 msgid "Could not set user info"
@@ -2213,10 +1953,6 @@ msgstr "Tidak dapat menemukan nilai tersebut"
 #. ($protocol)
 msgid "Couldn't get %1 keys information"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Couldn't load %1 from the users database.\\n"
-msgstr "Tidak dapat memanggil %1 dari database pengguna.\\n"
 
 #: share/html/Admin/Articles/Classes/GroupRights.html:66 share/html/Admin/Articles/Classes/UserRights.html:65 share/html/Admin/CustomFields/UserRights.html:66
 #. ($id)
@@ -2322,10 +2058,6 @@ msgstr ""
 #. ($id)
 msgid "Couldn't load template #%1"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Couldn't load that user (%1)"
-msgstr "Tidak dapat memanggil pengguna tersebut (%1)"
 
 #: lib/RT/Interface/Web.pm:2527
 msgid "Couldn't load the specified principal"
@@ -2463,10 +2195,6 @@ msgstr ""
 msgid "Create a new group"
 msgstr "Buat grup baru"
 
-#: NOT FOUND IN SOURCE
-msgid "Create a new personal group"
-msgstr "Buat grup pribadi baru"
-
 #: share/html/Admin/Queues/Template.html:110
 #. ($QueueObj->Name)
 msgid "Create a new template for queue %1"
@@ -2540,26 +2268,6 @@ msgstr "Buat Tiket"
 #: lib/RT/Queue.pm:129
 msgid "Create tickets"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Create tickets in this queue"
-msgstr "Buat tiket untuk antrian ini"
-
-#: NOT FOUND IN SOURCE
-msgid "Create, delete and modify custom fields"
-msgstr "Buat, hapus dan ubah kolom kustom"
-
-#: NOT FOUND IN SOURCE
-msgid "Create, delete and modify queues"
-msgstr "Buat, hapus dan ubah antrian"
-
-#: NOT FOUND IN SOURCE
-msgid "Create, delete and modify the members of personal groups"
-msgstr "Buat, hapus dan ubah anggota dari grup pribadi"
-
-#: NOT FOUND IN SOURCE
-msgid "Create, delete and modify users"
-msgstr "Buat, hapus dan ubah pengguna"
 
 #: lib/RT/Class.pm:98 lib/RT/Queue.pm:112
 msgid "Create, modify and delete Access Control List entries"
@@ -2657,10 +2365,6 @@ msgid "Current Links"
 msgstr "Link yang sekarang"
 
 #: NOT FOUND IN SOURCE
-msgid "Current Relationships"
-msgstr "Hubungan Sekarang"
-
-#: NOT FOUND IN SOURCE
 msgid "Current Scrips"
 msgstr "Scrips Sekarang"
 
@@ -2679,10 +2383,6 @@ msgstr "Hak-hak Sekarang"
 #: share/html/Search/Elements/EditQuery:49
 msgid "Current search"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Current search criteria"
-msgstr "Kriteria pencarian sekarang"
 
 #: share/html/Admin/Queues/People.html:62 share/html/Ticket/Elements/EditPeople:68
 msgid "Current watchers"
@@ -2748,10 +2448,6 @@ msgstr "Kolom kustom %1 tidak memiliki nilai."
 #. ($args{'Field'})
 msgid "Custom field %1 not found"
 msgstr "Kolom kustom %1 tidak ditemukan"
-
-#: NOT FOUND IN SOURCE
-msgid "Custom field not found"
-msgstr "Kolom kustom tidak ditemukan"
 
 #: lib/RT/CustomField.pm:1695
 #. ($args{'Content'}, $self->Name)
@@ -2891,17 +2587,13 @@ msgstr ""
 msgid "Date format"
 msgstr ""
 
-#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:633 share/html/SelfService/Display.html:66 share/html/Ticket/Create.html:253 share/html/Ticket/Elements/ShowSummary:84 share/html/Ticket/ModifyAll.html:68 share/html/m/ticket/create:377 share/html/m/ticket/show:344
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:633 share/html/SelfService/Display.html:72 share/html/Ticket/Create.html:253 share/html/Ticket/Elements/ShowSummary:84 share/html/Ticket/ModifyAll.html:68 share/html/m/ticket/create:377 share/html/m/ticket/show:344
 msgid "Dates"
 msgstr "Tanggal"
 
 #: lib/RT/Date.pm:102
 msgid "Dec"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Dec."
-msgstr "Des."
 
 #: share/html/Ticket/Crypt.html:58
 msgid "Decrypt"
@@ -2960,23 +2652,7 @@ msgstr "Default: %1/%2 diganti dari %3 ke %4"
 msgid "DefaultFormat"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Delegate rights"
-msgstr "Hak-hak Utusan"
-
-#: NOT FOUND IN SOURCE
-msgid "Delegate specific rights which have been granted to you."
-msgstr "Hak-hak spesifik utusan yang sudah diberikan kepada anda."
-
-#: NOT FOUND IN SOURCE
-msgid "DelegateRights"
-msgstr "Hak-hak Utusan"
-
-#: NOT FOUND IN SOURCE
-msgid "Delegation"
-msgstr "Delegasi"
-
-#: etc/RT_Config.pm:2766 etc/RT_Config.pm:2842 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:864 share/html/Elements/Tabs:889 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:2769 etc/RT_Config.pm:2845 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:864 share/html/Elements/Tabs:889 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
 msgid "Delete"
 msgstr "Hapus"
 
@@ -3059,18 +2735,10 @@ msgstr ""
 msgid "Deleted saved search"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Deleted search"
-msgstr "Pencarian dihapus"
-
 #: share/html/Articles/Article/Search.html:233
 #. ($searchname)
 msgid "Deleted search %1"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Deleting this object could break referential integrity"
-msgstr "Menghapuskan objek ini dapat memutuskan integrasi referensial"
 
 #: lib/RT/Queue.pm:230
 msgid "Deleting this object would break referential integrity"
@@ -3169,14 +2837,6 @@ msgstr ""
 msgid "Display Columns"
 msgstr "Tampilkan Kolom"
 
-#: NOT FOUND IN SOURCE
-msgid "Display Scrip templates for this queue"
-msgstr "Tampilkan template Scrip untuk antrian ini"
-
-#: NOT FOUND IN SOURCE
-msgid "Display Scrips for this queue"
-msgstr "Tampilkan Scrip untuk antrian ini"
-
 #: lib/RT/Config.pm:410
 msgid "Display all plain-text attachments in a monospace font with formatting preserved, but wrapping as needed."
 msgstr ""
@@ -3185,17 +2845,9 @@ msgstr ""
 msgid "Display messages in rich text if available"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Display mode"
-msgstr "Tampilkan mode"
-
 #: lib/RT/Config.pm:409
 msgid "Display plain-text attachments in fixed-width font"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Display saved searches for this group"
-msgstr "Tampilkan pencarian yang disimpan untuk grup ini"
 
 #: lib/RT/Config.pm:444
 msgid "Display ticket after \"Quick Create\""
@@ -3206,17 +2858,9 @@ msgstr ""
 msgid "Distributed under %1version 2 of the GNU GPL%2."
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Distributed under version 2 <a href=\"http://www.gnu.org/copyleft/gpl.html\"> of the GNU GPL.</a>"
-msgstr "Didistribusikan dibawah versi 2 dari <a href=\"http://www.gnu.org/copyleft/gpl.html\"> GNU GPL.</a>"
-
 #: lib/RT/System.pm:83
 msgid "Do anything and everything"
 msgstr "Lakukan apa saja dan semuanya"
-
-#: NOT FOUND IN SOURCE
-msgid "Do the Search"
-msgstr "Lakukan Pencarian"
 
 #: lib/RT/Installer.pm:215
 msgid "Domain name"
@@ -3238,10 +2882,6 @@ msgstr ""
 msgid "Don't refresh this page."
 msgstr "Jangan refresh halaman ini."
 
-#: NOT FOUND IN SOURCE
-msgid "Don't show search results"
-msgstr "Jangan tampilkan hasil pencarian"
-
 #: lib/RT/Crypt/GnuPG.pm:1742
 msgid "Don't trust this key at all"
 msgstr ""
@@ -3249,10 +2889,6 @@ msgstr ""
 #: share/html/Elements/ShowTransactionAttachments:62
 msgid "Download"
 msgstr "Download"
-
-#: NOT FOUND IN SOURCE
-msgid "Download as a tab-delimited file"
-msgstr "Download sebagai file yang dibatasi dengan tab"
 
 #: share/html/Admin/Tools/Shredder/Elements/DumpFileLink:49
 msgid "Download dumpfile"
@@ -3274,10 +2910,6 @@ msgstr ""
 #. ($msg)
 msgid "ERROR: %1"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "ERROR: Couldn't load ticket '%1': %2.\\n"
-msgstr "KESALAHAN: Tidak dapat memanggil Tiket '%1': %2.\\n"
 
 #: share/html/Elements/Tabs:514
 msgid "Easy updating of your open tickets"
@@ -3328,25 +2960,13 @@ msgstr "Ubah Link"
 msgid "Edit Query"
 msgstr "Ubah Query"
 
-#: NOT FOUND IN SOURCE
-msgid "Edit Relationships"
-msgstr "Ubah Hubungan"
-
 #: share/html/Elements/Tabs:803
 msgid "Edit Search"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Edit Templates for queue %1"
-msgstr "Ubah Templates untuk antrian %1"
-
 #: share/html/Admin/Global/Topics.html:56
 msgid "Edit global topic hierarchy"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Edit saved searches for this group"
-msgstr "Ubah pencarian yang disimpan untuk grup ini"
 
 #: share/html/Elements/Tabs:126
 msgid "Edit system templates"
@@ -3361,14 +2981,6 @@ msgstr ""
 msgid "EditSavedSearches"
 msgstr "Ubah Pencarian yang Disimpan"
 
-#: NOT FOUND IN SOURCE
-msgid "Editing Configuration for queue %1"
-msgstr "Mengubah Konfigurasi untuk antrian %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Editing Configuration for user %1"
-msgstr "Mengubah Konfigurasi untuk pengguna %1"
-
 #: share/html/Admin/CustomFields/Modify.html:195 share/html/Admin/Elements/EditCustomField:123
 #. ($CustomFieldObj->Name)
 #. ($CustomFieldObj->Name())
@@ -3379,10 +2991,6 @@ msgstr "Mengubah Kolom Kustom %1"
 #. ($Group->Name)
 msgid "Editing membership for group %1"
 msgstr "Mengubah keanggotaan untuk grup ini %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Editing membership for personal group %1"
-msgstr "Mengubah keanggotaan untuk grup pribadi %1"
 
 #: lib/RT/Tickets.pm:112 share/html/Elements/RT__Ticket/ColumnMap:165
 msgid "EffectiveId"
@@ -3428,10 +3036,6 @@ msgstr ""
 #: NOT FOUND IN SOURCE
 msgid "EmailAddress"
 msgstr "Alamat Email"
-
-#: NOT FOUND IN SOURCE
-msgid "EmailEncoding"
-msgstr "Set Karakter Email"
 
 #: share/html/Elements/RT__Template/ColumnMap:77
 msgid "Empty"
@@ -3481,10 +3085,6 @@ msgstr ""
 #. (loc_fuzzy($msg))
 msgid "Enabled status %1"
 msgstr "Mengaktifkan status %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Enabled status: %1"
-msgstr "Mengaktifkan status: %1"
 
 #: share/html/Elements/Crypt/SignEncryptWidget:67 share/html/Elements/RT__Queue/ColumnMap:80 share/html/Ticket/Crypt.html:58
 msgid "Encrypt"
@@ -3567,10 +3167,6 @@ msgstr "Masukkan antrian atau URIs untuk menghubungkan antrian tersebut. Pisahka
 msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with spaces."
 msgstr "Masukkan tiket atau URIs untuk menghubungkan Tiket tersebut. Pisahkan beberapa input dengan spasi."
 
-#: NOT FOUND IN SOURCE
-msgid "Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces."
-msgstr "Masukkan tiket atau URIs  untuk menghubungkan Tiket tersebut. Pisahkan beberapa input dengan spasi."
-
 #: lib/RT/Config.pm:285
 msgid "Enter time in hours by default"
 msgstr ""
@@ -3605,30 +3201,14 @@ msgid "Error"
 msgstr "Kesalahan"
 
 #: NOT FOUND IN SOURCE
-msgid "Error in parameters to Queue->AddWatcher"
-msgstr "Kesalahan di dalam parameter ke Antrian->Tambah Pengamat"
-
-#: NOT FOUND IN SOURCE
-msgid "Error in parameters to Queue->DelWatcher"
-msgstr "Kesalahan di dalam parameter Ke Antrian->Hapus Pengamat"
-
-#: NOT FOUND IN SOURCE
-msgid "Error in parameters to Queue->DeleteWatcher"
-msgstr "Kesalahan di dalam parameter ke Antrian->Hapus Pengamat"
-
-#: NOT FOUND IN SOURCE
 msgid "Error in parameters to Ticket->AddWatcher"
 msgstr "Kesalahan di dalam parameter ke Tiket->Tambah Pengamat"
-
-#: NOT FOUND IN SOURCE
-msgid "Error in parameters to Ticket->DelWatcher"
-msgstr "Kesalahan di dalam parameter ke Tiket->Hapus Pengamat"
 
 #: NOT FOUND IN SOURCE
 msgid "Error in parameters to Ticket->DeleteWatcher"
 msgstr "Kesalahan di dalam parameter ke Ticket->Hapus Pengamat"
 
-#: share/html/Search/Chart:459
+#: share/html/Search/Chart:460
 #. ($error)
 msgid "Error plotting chart: %1"
 msgstr ""
@@ -3679,10 +3259,6 @@ msgstr ""
 msgid "Escalate tickets"
 msgstr "Meningkatkan Prioritas Tiket"
 
-#: NOT FOUND IN SOURCE
-msgid "Estimate"
-msgstr "Perkiraan"
-
 #: share/html/Ticket/Elements/ShowBasics:59 share/html/m/ticket/show:221
 msgid "Estimated"
 msgstr "Diperkirakan"
@@ -3710,14 +3286,6 @@ msgstr ""
 #: lib/RT/User.pm:1037
 msgid "External authentication enabled."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "ExternalAuthId"
-msgstr "AuthID Eksternal"
-
-#: NOT FOUND IN SOURCE
-msgid "ExternalContactInfoId"
-msgstr "Kontak Info ID Eksternal"
 
 #: share/html/Admin/Users/Modify.html:97
 msgid "Extra info"
@@ -3754,10 +3322,6 @@ msgstr ""
 #. ($self->loc( $self->ObjectName ))
 msgid "Failed to create %1 attribute"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Failed to create search attribute"
-msgstr "Gagal untuk membuat atribut pencarian"
 
 #: lib/RT/User.pm:341
 msgid "Failed to find 'Privileged' users pseudogroup."
@@ -3803,10 +3367,6 @@ msgstr ""
 #: lib/RT/Date.pm:92
 msgid "Feb"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Feb."
-msgstr "Feb."
 
 #: share/html/Elements/Tabs:814
 msgid "Feeds"
@@ -3908,14 +3468,6 @@ msgstr ""
 msgid "First"
 msgstr "Pertama"
 
-#: NOT FOUND IN SOURCE
-msgid "Foo Bar Baz"
-msgstr "Foo Bar Baz"
-
-#: NOT FOUND IN SOURCE
-msgid "Foo!"
-msgstr "Foo!"
-
 #: share/html/Search/Simple.html:91
 #. ($link_start, $link_end)
 msgid "For the full power of RT's searches, please visit the %1search builder interface%2."
@@ -3989,14 +3541,6 @@ msgstr "Ditemukan % quant(%1,tiket)"
 msgid "Found Object"
 msgstr "Objek ditemukan"
 
-#: NOT FOUND IN SOURCE
-msgid "Freeform"
-msgstr "Freeform"
-
-#: NOT FOUND IN SOURCE
-msgid "FreeformContactInfo"
-msgstr "FreeformContactInfo"
-
 #: share/html/Dashboards/Subscription.html:92
 msgid "Frequency"
 msgstr ""
@@ -4005,10 +3549,6 @@ msgstr ""
 msgid "Fri"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Fri."
-msgstr "Jum."
-
 #: share/html/Dashboards/Subscription.html:111
 msgid "Friday"
 msgstr ""
@@ -4016,10 +3556,6 @@ msgstr ""
 #: share/html/Ticket/Forward.html:60
 msgid "From"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Full headers"
-msgstr "Catatan Atas Lengkap"
 
 #: share/html/Admin/Tools/Theme.html:67
 msgid "GD is disabled or not installed. You can upload an image, but you won't get automatic color suggestions."
@@ -4056,10 +3592,6 @@ msgstr "Global"
 #: share/html/Admin/Tools/Configuration.html:210
 msgid "Global Attributes"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Global Custom Fields"
-msgstr "Kolom Kustom Global"
 
 #: share/html/Articles/Topics.html:91
 msgid "Global Topics"
@@ -4260,10 +3792,6 @@ msgstr ""
 msgid "Hello!"
 msgstr "Halo!"
 
-#: NOT FOUND IN SOURCE
-msgid "Hello, %1"
-msgstr "Halo, %1"
-
 #: share/html/Install/Global.html:52
 msgid "Help us set up some useful defaults for RT."
 msgstr ""
@@ -4309,10 +3837,6 @@ msgstr ""
 msgid "Home page refresh interval"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "HomePhone"
-msgstr "Telepon Rumah"
-
 #: share/html/Elements/Tabs:444 share/html/m/_elements/header:69
 msgid "Homepage"
 msgstr "Homepage"
@@ -4333,10 +3857,6 @@ msgstr "Saya memiliki %quant (%1,concrete mixer)."
 #: share/html/User/Prefs.html:175
 msgid "I want to reset my secret token."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "I'm lost"
-msgstr "Saya tersesat"
 
 #: lib/RT/Date.pm:117
 msgid "ISO"
@@ -4392,7 +3912,7 @@ msgstr ""
 msgid "If you've changed the Port that RT runs on, you'll need to restart the server in order to log in."
 msgstr ""
 
-#: share/html/Admin/Queues/People.html:124 share/html/Ticket/Modify.html:66 share/html/Ticket/ModifyAll.html:136 share/html/Ticket/ModifyPeople.html:76
+#: share/html/Admin/Queues/People.html:124 share/html/Ticket/Modify.html:68 share/html/Ticket/ModifyAll.html:136 share/html/Ticket/ModifyPeople.html:76
 msgid "If you've updated anything above, be sure to"
 msgstr "Jika anda memperbaharui apapun diatas, pastikanlah untuk"
 
@@ -4404,10 +3924,6 @@ msgstr ""
 #: lib/RT/Record.pm:965
 msgid "Illegal value for %1"
 msgstr "Nilai Ilegal untuk %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Image"
-msgstr "Gambar"
 
 #: share/html/Elements/ShowTransactionAttachments:268
 msgid "Image displayed inline above"
@@ -4472,14 +3988,6 @@ msgstr ""
 #: lib/RT/Config.pm:230
 msgid "Include time in iCal feed events?"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Incomplete Query"
-msgstr "Query tidak lengkap"
-
-#: NOT FOUND IN SOURCE
-msgid "Incomplete query"
-msgstr "query tidak lengkap"
 
 #: share/html/Admin/Elements/UpgradeHistoryRow:64
 #. ($row->{filename})
@@ -4623,10 +4131,6 @@ msgstr ""
 msgid "Invalid Render Type for custom field of type %1"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Invalid Right"
-msgstr "Hak-hak tidak valid"
-
 #: lib/RT/Record.pm:970
 msgid "Invalid data"
 msgstr "Data tidak valid"
@@ -4682,10 +4186,6 @@ msgstr "Nilai tidak valid untuk %1"
 msgid "Invalid value for custom field"
 msgstr "Nilai tidak valid untuk kolom kustom"
 
-#: NOT FOUND IN SOURCE
-msgid "Invalid value for status"
-msgstr "Nilai tidak valid untuk status"
-
 #: lib/RT/Record/AddAndSort.pm:195
 msgid "Is already added to the object"
 msgstr ""
@@ -4714,25 +4214,13 @@ msgstr "Diberi huruf miring"
 msgid "Jan"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Jan."
-msgstr "Jan."
-
 #: lib/RT/Group.pm:90
 msgid "Join or leave group"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Join or leave this group"
-msgstr "Bergabung atau tinggalkan grup ini"
-
 #: lib/RT/Date.pm:97
 msgid "Jul"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Jul."
-msgstr "Jul."
 
 #: share/html/Elements/Tabs:638
 msgid "Jumbo"
@@ -4741,10 +4229,6 @@ msgstr "Jumbo"
 #: lib/RT/Date.pm:96
 msgid "Jun"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Jun."
-msgstr "Jun."
 
 #: lib/RT/Installer.pm:80
 msgid "Keep 'localhost' if you're not sure. Leave blank to connect locally over a socket"
@@ -4778,10 +4262,6 @@ msgstr "Kontak Terakhir"
 #: share/html/Elements/SelectDateType:52
 msgid "Last Contacted"
 msgstr "Kontak Terakhir"
-
-#: NOT FOUND IN SOURCE
-msgid "Last Notified"
-msgstr "Pemberitahuan Terakhir"
 
 #: share/html/Elements/ColumnMap:82 share/html/Elements/ColumnMap:87 share/html/Elements/SelectDateType:53
 msgid "Last Updated"
@@ -4874,14 +4354,6 @@ msgstr ""
 msgid "Link could not be deleted: %1"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Link created (%1)"
-msgstr "Link sudah dibuat (%1)"
-
-#: NOT FOUND IN SOURCE
-msgid "Link deleted (%1)"
-msgstr "Link sudah dihapus (%1)"
-
 #: lib/RT/Record.pm:1505
 msgid "Link not found"
 msgstr "Link tidak ditemukan"
@@ -4967,10 +4439,6 @@ msgstr "Memanggil modul perl"
 msgid "Loaded saved search \"%1\""
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Loaded search %1"
-msgstr "Memanggil pencarian %1"
-
 #: share/html/Ticket/Elements/ClickToShowHistory:50 share/html/Ticket/Elements/DelayShowHistory:50 share/html/Ticket/Elements/ShowRequestor:109
 msgid "Loading..."
 msgstr ""
@@ -4986,10 +4454,6 @@ msgstr ""
 #: share/html/Admin/Users/Modify.html:128 share/html/User/Prefs.html:124
 msgid "Location"
 msgstr "Lokasi"
-
-#: NOT FOUND IN SOURCE
-msgid "Log directory %1 not found or couldn't be written.\\n RT can't run."
-msgstr "Direktori Log %1 tidak ditemukan atau tidak dapat ditulis.\\n RT tidak dapat dijalankan."
 
 #: lib/RT/Interface/Web.pm:841
 msgid "Logged in"
@@ -5098,10 +4562,6 @@ msgstr "Buat antrian"
 msgid "Make subject"
 msgstr "Buat subjek"
 
-#: NOT FOUND IN SOURCE
-msgid "Make this group visible to user"
-msgstr "Buat agar grup ini terlihat pada sisi pengguna"
-
 #: share/html/Elements/Tabs:93
 msgid "Manage custom fields and custom field values"
 msgstr "Mengatur kolom kustom dan nilai kolom kustom"
@@ -5138,10 +4598,6 @@ msgstr ""
 #: lib/RT/Date.pm:93
 msgid "Mar"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Mar."
-msgstr "Mar."
 
 #: share/html/Ticket/Display.html:191 share/html/m/ticket/show:122
 msgid "Marked all messages as seen"
@@ -5198,10 +4654,6 @@ msgstr ""
 #: lib/RT/Date.pm:95
 msgid "May"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "May."
-msgstr "Mei."
 
 #: share/html/Elements/QuickCreate:64
 msgid "Me"
@@ -5335,10 +4787,6 @@ msgstr ""
 msgid "Message recorded"
 msgstr "Pesan sudah dicatat"
 
-#: NOT FOUND IN SOURCE
-msgid "Messages about this ticket will not be sent to..."
-msgstr "Pesan mengenai Tiket ini tidak akan dikirim ke..."
-
 #: lib/RT/Report/Tickets.pm:226
 msgid "Minimum Created-LastUpdated"
 msgstr ""
@@ -5387,10 +4835,6 @@ msgstr ""
 msgid "Miscellaneous"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Mismatched parentheses"
-msgstr "tanda kurung tidak sama"
-
 #: lib/RT/Record.pm:972
 msgid "Missing a primary key?: %1"
 msgstr "Kunci utama tidak ditemukan?: %1"
@@ -5403,61 +4847,21 @@ msgstr "Hp"
 msgid "Mobile Phone"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "MobilePhone"
-msgstr "Handphone"
-
 #: share/html/Elements/Tabs:863 share/html/Elements/Tabs:886 share/html/m/_elements/ticket_menu:67
 msgid "Modify"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Modify Access Control List"
-msgstr "Mengubah Daftar Kontrol Akses"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify Custom Fields which apply to %1 for all %2"
-msgstr "Ubah Kolom Kustom yang digunakan untuk %1 untuk semua %2"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify Custom Fields which apply to all %1"
-msgstr "Mengatur Kolom Kustom yang dapat digunakan untuk seluruh %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify Custom Fields which apply to all queues"
-msgstr "Mengatur Kolom Kustom yang dapat digunakan di seluruh antrian"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify Group Rights"
-msgstr "Ubah Hak Grup"
 
 #: share/html/Admin/Groups/Members.html:108
 msgid "Modify Members"
 msgstr "Ubah Anggota"
 
-#: NOT FOUND IN SOURCE
-msgid "Modify Rights"
-msgstr "Ubah Hak-hak"
-
 #: lib/RT/Queue.pm:117
 msgid "Modify Scrip templates"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Modify Scrip templates for this queue"
-msgstr "Mengubah template Scrip untuk antrian ini"
-
 #: lib/RT/Queue.pm:120
 msgid "Modify Scrips"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Modify Scrips for this queue"
-msgstr "Mengubah Scrip untuk antrian ini"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify User Rights"
-msgstr "Ubah Hak Pengguna"
 
 #: share/html/Admin/Queues/CustomField.html:63
 #. ($QueueObj->Name())
@@ -5522,10 +4926,6 @@ msgstr "Mengubah kolom kustom global"
 msgid "Modify global group rights"
 msgstr "Mengubah hak grup global"
 
-#: NOT FOUND IN SOURCE
-msgid "Modify global group rights."
-msgstr "Mengubah hak grup global."
-
 #: share/html/Admin/Global/Topics.html:55
 msgid "Modify global topics"
 msgstr ""
@@ -5533,10 +4933,6 @@ msgstr ""
 #: share/html/Admin/Global/UserRights.html:48 share/html/Elements/Tabs:202
 msgid "Modify global user rights"
 msgstr "Mengubah hak pengguna global"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify global user rights."
-msgstr "Mengubah hak pengguna global."
 
 #: lib/RT/Group.pm:96
 msgid "Modify group dashboards"
@@ -5570,10 +4966,6 @@ msgstr "Mengubah hak grup untuk grup %1"
 msgid "Modify group rights for queue %1"
 msgstr "Mengubah hak grup untuk antrian %1"
 
-#: NOT FOUND IN SOURCE
-msgid "Modify membership roster for this group"
-msgstr "Mengubah daftar nama keanggotaan untuk grup ini"
-
 #: lib/RT/Class.pm:95
 msgid "Modify metadata and custom fields for this class"
 msgstr ""
@@ -5585,10 +4977,6 @@ msgstr "Mengubah pemilik account RT"
 #: lib/RT/Class.pm:92
 msgid "Modify or delete articles in this class"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Modify people related to queue %1"
-msgstr "Mengubah orang-orang yang berhubungan dengan antrian %1"
 
 #: share/html/Ticket/ModifyPeople.html:48 share/html/Ticket/ModifyPeople.html:57
 #. ($Ticket->Id)
@@ -5659,10 +5047,6 @@ msgstr ""
 #. ($Group->Name)
 msgid "Modify the group %1"
 msgstr "Mengubah grup %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify the queue watchers"
-msgstr "Mengubah pengamat antrian"
 
 #: share/html/Dashboards/Subscription.html:287
 #. ($Dashboard->Name)
@@ -5794,10 +5178,6 @@ msgstr ""
 msgid "Mon"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Mon."
-msgstr "Sen."
-
 #: share/html/Dashboards/Subscription.html:107
 msgid "Monday"
 msgstr ""
@@ -5810,17 +5190,9 @@ msgstr ""
 msgid "Monthly"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "More about %1"
-msgstr "Lebih mengenai %1"
-
 #: share/html/Ticket/Elements/ShowRequestor:61
 msgid "More about the requestors"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Move"
-msgstr "Pindah"
 
 #: NOT FOUND IN SOURCE
 msgid "Move down"
@@ -5943,10 +5315,6 @@ msgstr ""
 msgid "New Links"
 msgstr "Link Baru"
 
-#: NOT FOUND IN SOURCE
-msgid "New Password"
-msgstr "Sandi Baru"
-
 #: etc/initialdata:458 etc/upgrade/3.8.2/content:52
 msgid "New Pending Approval"
 msgstr "Izin Baru yang Ditunda"
@@ -5955,25 +5323,9 @@ msgstr "Izin Baru yang Ditunda"
 msgid "New Pending Approval in HTML"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "New Query"
-msgstr "Query Baru"
-
-#: NOT FOUND IN SOURCE
-msgid "New Relationships"
-msgstr "Hubungan Baru"
-
 #: share/html/Elements/Tabs:495
 msgid "New Search"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "New custom field"
-msgstr "Kolom Kustom Baru"
-
-#: NOT FOUND IN SOURCE
-msgid "New group"
-msgstr "Grup Baru"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:248 share/html/Ticket/Elements/ShowUpdateStatus:49
 msgid "New messages"
@@ -5987,10 +5339,6 @@ msgstr "Sandi Baru"
 msgid "New password notification sent"
 msgstr "Kirim Pemberitahuan Sandi Baru"
 
-#: NOT FOUND IN SOURCE
-msgid "New queue"
-msgstr "Antrian Baru"
-
 #: share/html/Ticket/Elements/Reminders:119
 msgid "New reminder:"
 msgstr ""
@@ -5998,14 +5346,6 @@ msgstr ""
 #: NOT FOUND IN SOURCE
 msgid "New rights"
 msgstr "Hak-hak Baru"
-
-#: NOT FOUND IN SOURCE
-msgid "New scrip"
-msgstr "Scrip Baru"
-
-#: NOT FOUND IN SOURCE
-msgid "New template"
-msgstr "Template Baru"
 
 #: share/html/Elements/Tabs:930 share/html/Elements/Tabs:932 share/html/m/_elements/menu:70
 msgid "New ticket"
@@ -6021,10 +5361,6 @@ msgid "New tickets can not have status '%1' in this queue."
 msgstr ""
 
 #: NOT FOUND IN SOURCE
-msgid "New user"
-msgstr "Pengguna Baru"
-
-#: NOT FOUND IN SOURCE
 msgid "New user called"
 msgstr "Pengguna Baru disebut"
 
@@ -6032,17 +5368,9 @@ msgstr "Pengguna Baru disebut"
 msgid "New watchers"
 msgstr "Pengamat Baru"
 
-#: NOT FOUND IN SOURCE
-msgid "New window setting"
-msgstr "Setting Window Baru"
-
 #: share/html/Elements/CollectionListPaging:106 share/html/Elements/Tabs:723 share/html/Install/Basics.html:62 share/html/Install/DatabaseDetails.html:72 share/html/Install/DatabaseType.html:70 share/html/Install/Global.html:64 share/html/Install/Global.html:64 share/html/Install/Sendmail.html:63
 msgid "Next"
 msgstr "Berikutnya"
-
-#: NOT FOUND IN SOURCE
-msgid "Next Page"
-msgstr "Halaman Berikutnya"
 
 #: NOT FOUND IN SOURCE
 msgid "NickName"
@@ -6103,10 +5431,6 @@ msgstr "Tidak ada Antrian yang didefinisikan"
 msgid "No RT user found. Please consult your RT administrator."
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "No RT user found. Please consult your RT administrator.\\n"
-msgstr "Tidak ada pengguna RT yang ditemukan. Silakan berkonsultasi dengan administrator RT anda.\\n"
-
 #: share/html/Search/Elements/ResultsRSSView:134
 msgid "No Subject"
 msgstr ""
@@ -6114,10 +5438,6 @@ msgstr ""
 #: share/html/Admin/Global/Template.html:88 share/html/Admin/Queues/Template.html:86
 msgid "No Template"
 msgstr "Tidak ada Template"
-
-#: NOT FOUND IN SOURCE
-msgid "No Ticket specified. Aborting ticket "
-msgstr "Tidak ada Tiket yang ditentukan. Batalkan tiket "
 
 #: share/html/Approvals/Elements/Approve:90
 msgid "No action"
@@ -6182,11 +5502,7 @@ msgstr "Tidak ada izin untuk membuat antrian"
 msgid "No permission to create tickets in the queue '%1'"
 msgstr "Tidak ada izin untuk membuat tiket ini di dalam antrian '%1'"
 
-#: NOT FOUND IN SOURCE
-msgid "No permission to create users"
-msgstr "Tidak ada izin untuk membuat pengguna"
-
-#: share/html/SelfService/Display.html:137
+#: share/html/SelfService/Display.html:144
 msgid "No permission to display that ticket"
 msgstr "Tidak ada izin untuk menampilkan tiket tersebut"
 
@@ -6243,10 +5559,6 @@ msgstr "Tidak ada hak-hak yang diberikan."
 msgid "No rights to add '%1' as an AdminCc on this ticket"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "No search loaded"
-msgstr "Tidak ada pencarian yang dipanggil"
-
 #: share/html/Search/Bulk.html:225
 msgid "No search to operate on."
 msgstr "Tidak ada pencarian untuk dijalankan di."
@@ -6284,10 +5596,6 @@ msgstr "Pengguna yang sesuai dengan kriteria pencarian tidak ditemukan."
 msgid "No valid PrincipalId"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "No valid RT user found. RT cvs handler disengaged. Please consult your RT administrator.\\n"
-msgstr "Tidak ada pengguna RT yang valid ditemukan. RT cvs handler dilepaskan. Silakan berkonsultasi dengan administrator RT anda.\\n"
-
 #: lib/RT/Record/Role/Roles.pm:356 lib/RT/Record/Role/Roles.pm:466
 msgid "No valid Type specified"
 msgstr ""
@@ -6295,10 +5603,6 @@ msgstr ""
 #: lib/RT/Record.pm:964
 msgid "No value sent to _Set!"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "No value sent to _Set!\\n"
-msgstr "Tidak ada nilai yang dikirim ke _Set!\\n"
 
 #: share/html/Elements/QuickCreate:65
 msgid "Nobody"
@@ -6392,14 +5696,6 @@ msgstr "Beritahu pemilik bahwa tiketnya ditolak"
 msgid "Notify Owner of their ticket has been approved and is ready to be acted on"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Notify Owner of their ticket has been approved by all approvers"
-msgstr "Beritahu Pemilik bahwa tiketnya sudah disetujui oleh seluruh pemberi persetujuan"
-
-#: NOT FOUND IN SOURCE
-msgid "Notify Owner of their ticket has been approved by some approver"
-msgstr "Beritahu Pemilik bahwa tiketnya sudah disetujui oleh beberapa pemberi persetujuan"
-
 #: lib/RT/Approval/Rule/Passed.pm:54
 msgid "Notify Owner of their ticket has been approved by some or all approvers"
 msgstr ""
@@ -6436,14 +5732,6 @@ msgstr "Beritahu Pemohon dan Ccs"
 msgid "Notify Requestors and Ccs as Comment"
 msgstr "Beritahu Pemohon dan Ccs dengan komentar"
 
-#: NOT FOUND IN SOURCE
-msgid "Notify Requestors, Ccs and AdminCcs"
-msgstr "Beritahu Pemohon, Ccs dan AdminCcs"
-
-#: NOT FOUND IN SOURCE
-msgid "Notify Requestors, Ccs and AdminCcs as Comment"
-msgstr "Beritahu Pemohon, Ccs dan AdminCcs dengan komentar"
-
 #: lib/RT/Config.pm:382
 msgid "Notify me of unread messages"
 msgstr ""
@@ -6451,10 +5739,6 @@ msgstr ""
 #: lib/RT/Date.pm:101
 msgid "Nov"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Nov."
-msgstr "Nop."
 
 #: share/html/Search/Elements/SelectAndOr:49
 msgid "OR"
@@ -6480,10 +5764,6 @@ msgstr "Object sudah dibuat"
 msgid "Object deleted"
 msgstr "Objek sudah dihapus"
 
-#: NOT FOUND IN SOURCE
-msgid "Object of type %1 cannot take custom fields"
-msgstr "Tipe Objek %1 tidak dapat mengambil kolom kustom"
-
 #: lib/RT/Group.pm:254
 msgid "Object passed is not loaded"
 msgstr ""
@@ -6501,16 +5781,8 @@ msgid "Oct"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
-msgid "Oct."
-msgstr "Okt."
-
-#: NOT FOUND IN SOURCE
 msgid "Offline"
 msgstr "Offline"
-
-#: NOT FOUND IN SOURCE
-msgid "Offline edits"
-msgstr "Ubah Offline"
 
 #: NOT FOUND IN SOURCE
 msgid "Offline upload"
@@ -6611,15 +5883,11 @@ msgstr "Hanya menampilkan izin untuk permintaan yang dibuat sebelum %1"
 msgid "Only show custom fields for:"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Open"
-msgstr "Buka"
-
 #: etc/initialdata:101
 msgid "Open Inactive Tickets"
 msgstr ""
 
-#: etc/RT_Config.pm:2754 etc/RT_Config.pm:2783 etc/RT_Config.pm:2830 etc/RT_Config.pm:2859
+#: etc/RT_Config.pm:2757 etc/RT_Config.pm:2786 etc/RT_Config.pm:2833 etc/RT_Config.pm:2862
 msgid "Open It"
 msgstr ""
 
@@ -6635,21 +5903,9 @@ msgstr ""
 msgid "Open inactive tickets"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Open it"
-msgstr "Buka ini"
-
 #: share/html/Elements/Tabs:935 share/html/SelfService/index.html:48
 msgid "Open tickets"
 msgstr "Buka tiket"
-
-#: NOT FOUND IN SOURCE
-msgid "Open tickets (from listing) in a new window"
-msgstr "Buka tiket (dari daftar) di window yang baru"
-
-#: NOT FOUND IN SOURCE
-msgid "Open tickets (from listing) in another window"
-msgstr "Buka tiket (dari daftar)  di window yang lain"
 
 #: etc/initialdata:99
 msgid "Open tickets on correspondence"
@@ -6674,10 +5930,6 @@ msgstr ""
 #: share/html/Search/Elements/EditSort:55
 msgid "Order by"
 msgstr "Diurutkan sesuai"
-
-#: NOT FOUND IN SOURCE
-msgid "Ordering and sorting"
-msgstr "Diurutkan dan disortir"
 
 #: share/html/Admin/Users/Modify.html:131 share/html/Elements/RT__User/ColumnMap:76 share/html/User/Prefs.html:127
 msgid "Organization"
@@ -6738,10 +5990,6 @@ msgstr "Pemilik tidak dapat diatur."
 msgid "Owner forcibly changed from %1 to %2"
 msgstr "Pemilik secara paksa digantikan dari %1 ke %2"
 
-#: NOT FOUND IN SOURCE
-msgid "Owner is"
-msgstr "Pemilik adalah"
-
 #: lib/RT/Tickets.pm:158
 msgid "OwnerGroup"
 msgstr ""
@@ -6753,10 +6001,6 @@ msgstr ""
 #: share/html/Elements/CollectionListPaging:65
 msgid "Page"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Page %1 of %2"
-msgstr "Halaman %1 dari %2"
 
 #: share/html/Elements/CollectionListPaging:62
 msgid "Page 1 of 1"
@@ -6773,10 +6017,6 @@ msgstr "Pager"
 #: share/html/Elements/RT__User/ColumnMap:96
 msgid "Pager Phone"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "PagerPhone"
-msgstr "Pager"
 
 #: share/html/Search/Elements/SelectLinks:60
 msgid "Parent"
@@ -6815,10 +6055,6 @@ msgstr ""
 msgid "Password set"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Password too short"
-msgstr "Sandi terlalu singkat"
-
 #: share/html/SelfService/Prefs.html:94 share/html/User/Prefs.html:263
 #. ($msg)
 msgid "Password: %1"
@@ -6835,10 +6071,6 @@ msgstr ""
 #: lib/RT/User.pm:829
 msgid "Passwords do not match."
 msgstr "Sandi tidak sesuai."
-
-#: NOT FOUND IN SOURCE
-msgid "Passwords do not match. Your password has not been changed"
-msgstr "Sandi tidak sesuai. Sandi anda belum diganti"
 
 #: lib/RT/Installer.pm:189
 msgid "Path to sendmail"
@@ -6894,18 +6126,6 @@ msgstr "Izin ditolak"
 #: lib/RT/Record.pm:1339 lib/RT/Record.pm:1483 lib/RT/Record/Role/Roles.pm:407 lib/RT/Record/Role/Roles.pm:485
 msgid "Permission denied"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Personal Groups"
-msgstr "Grup Pribadi"
-
-#: NOT FOUND IN SOURCE
-msgid "Personal groups"
-msgstr "Grup pribadi"
-
-#: NOT FOUND IN SOURCE
-msgid "Personal groups:"
-msgstr "Grup pribadi:"
 
 #: share/html/Admin/Users/Modify.html:173 share/html/User/Prefs.html:85
 msgid "Phone numbers"
@@ -7014,10 +6234,6 @@ msgstr "Sebelumnya"
 msgid "Previous"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Previous Page"
-msgstr "Halaman Sebelumnya"
-
 #: lib/RT/ACE.pm:135 lib/RT/ACE.pm:220
 #. ($args{'PrincipalId'})
 msgid "Principal %1 not found."
@@ -7076,10 +6292,6 @@ msgstr "Pengguna Hak-hak Istimewa"
 #: bin/rt-crontool:174
 msgid "Processing without transaction, some conditions and actions may fail. Consider using --transaction argument"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Projects"
-msgstr "Proyek-Proyek"
 
 #: lib/RT/Handle.pm:717
 msgid "Pseudogroup for internal use"
@@ -7154,7 +6366,7 @@ msgstr ""
 msgid "Queue id"
 msgstr ""
 
-#: lib/RT/CustomField.pm:285 share/html/SelfService/Display.html:102
+#: lib/RT/CustomField.pm:285 share/html/SelfService/Display.html:109
 msgid "Queue not found"
 msgstr "Antrian tidak dapat ditemukan"
 
@@ -7222,14 +6434,6 @@ msgstr ""
 msgid "RSS"
 msgstr "RSS"
 
-#: NOT FOUND IN SOURCE
-msgid "RT %1"
-msgstr "RT %1"
-
-#: NOT FOUND IN SOURCE
-msgid "RT %1 for %2"
-msgstr "RT %1 untuk %2"
-
 #: share/html/Admin/index.html:48
 msgid "RT Administration"
 msgstr "Administrasi RT"
@@ -7249,10 +6453,6 @@ msgstr "Kesalahan RT"
 #: share/html/Admin/Tools/Configuration.html:139
 msgid "RT Size"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "RT Variables"
-msgstr "Variable RT"
 
 #: lib/RT/Config.pm:311 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:54 share/html/Admin/Users/MyRT.html:62 share/html/Elements/Tabs:206 share/html/Elements/Tabs:326 share/html/Elements/Tabs:556 share/html/Prefs/MyRT.html:57 share/html/Prefs/MyRT.html:81 share/html/index.html:4
 msgid "RT at a glance"
@@ -7335,7 +6535,7 @@ msgstr ""
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr ""
 
-#: etc/RT_Config.pm:2786 etc/RT_Config.pm:2790 etc/RT_Config.pm:2862 etc/RT_Config.pm:2866
+#: etc/RT_Config.pm:2789 etc/RT_Config.pm:2793 etc/RT_Config.pm:2865 etc/RT_Config.pm:2869
 msgid "Re-open"
 msgstr ""
 
@@ -7411,10 +6611,6 @@ msgstr "Diserahkan ke"
 msgid "RefersTo"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Refine search"
-msgstr "Membersihkan pencarian"
-
 #: share/html/Elements/RefreshHomepage:48
 msgid "Refresh"
 msgstr ""
@@ -7480,13 +6676,9 @@ msgstr ""
 msgid "Refused to add link which would create a circular relationship"
 msgstr ""
 
-#: etc/RT_Config.pm:2762 etc/RT_Config.pm:2778 etc/RT_Config.pm:2838 etc/RT_Config.pm:2854
+#: etc/RT_Config.pm:2765 etc/RT_Config.pm:2781 etc/RT_Config.pm:2841 etc/RT_Config.pm:2857
 msgid "Reject"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Relationships"
-msgstr "Hubungan"
 
 #: lib/RT/Config.pm:170
 msgid "Remember default queue"
@@ -7609,7 +6801,7 @@ msgstr ""
 msgid "Residence"
 msgstr "Tempat Tinggal"
 
-#: etc/RT_Config.pm:2758 etc/RT_Config.pm:2774 etc/RT_Config.pm:2834 etc/RT_Config.pm:2850 share/html/Search/Elements/EditFormat:75
+#: etc/RT_Config.pm:2761 etc/RT_Config.pm:2777 etc/RT_Config.pm:2837 etc/RT_Config.pm:2853 share/html/Search/Elements/EditFormat:75
 msgid "Resolve"
 msgstr "Penyelesaian"
 
@@ -7634,17 +6826,9 @@ msgstr ""
 msgid "Respond"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Response to requestors"
-msgstr "Balas ke pemohon"
-
 #: share/html/Elements/ListActions:51 share/html/Search/Elements/NewListActions:48
 msgid "Results"
 msgstr "Hasil"
-
-#: NOT FOUND IN SOURCE
-msgid "Results per page"
-msgstr "Hasil per halaman"
 
 #: share/html/Ticket/Crypt.html:55
 msgid "Return back to the ticket"
@@ -7662,10 +6846,6 @@ msgstr "Kembali pada"
 msgid "Rich text (HTML) shows formatting such as colored text, bold, italics, and more"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Right Delegated"
-msgstr "Hak-hak Utusan"
-
 #: lib/RT/ACE.pm:288
 msgid "Right Granted"
 msgstr "Memberikan Hak-hak"
@@ -7678,10 +6858,6 @@ msgstr "Memanggil Hak-hak"
 msgid "Right could not be revoked"
 msgstr "Hak-hak tidak dapat dihilangkan"
 
-#: NOT FOUND IN SOURCE
-msgid "Right not found"
-msgstr "Hak-hak tidak ditemukan"
-
 #: lib/RT/ACE.pm:311
 msgid "Right not loaded."
 msgstr "Hak-hak tidak dapat dipanggil."
@@ -7690,18 +6866,10 @@ msgstr "Hak-hak tidak dapat dipanggil."
 msgid "Right revoked"
 msgstr "Hak-hak tidak dapat dihilangkan"
 
-#: NOT FOUND IN SOURCE
-msgid "Rights"
-msgstr "Hak-hak"
-
 #: lib/RT/Interface/Web.pm:2485 lib/RT/Interface/Web.pm:2585
 #. ($object_type)
 msgid "Rights could not be granted for %1"
 msgstr "Hak-hak tidak dapat diberikan untuk %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Rights could not be revoked for %1"
-msgstr "Hak-hak tidak dapat dihilangkan untuk %1"
 
 #: share/html/Admin/Elements/EditRightsCategoryTabs:88
 msgid "Rights for Administrators"
@@ -7721,7 +6889,7 @@ msgstr ""
 msgid "Role group exists already"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3673
+#: lib/RT/Interface/Web.pm:3709
 msgid "Roles"
 msgstr "Aturan"
 
@@ -7762,10 +6930,6 @@ msgstr ""
 msgid "Sat"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Sat."
-msgstr "Sab."
-
 #: share/html/Dashboards/Subscription.html:112
 msgid "Saturday"
 msgstr ""
@@ -7774,7 +6938,7 @@ msgstr ""
 msgid "Save"
 msgstr "Simpan"
 
-#: share/html/Admin/Articles/Classes/GroupRights.html:57 share/html/Admin/Articles/Classes/Modify.html:130 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:91 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:93 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:156 share/html/Admin/Queues/People.html:124 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Scrips/Modify.html:88 share/html/Admin/Scrips/Modify.html:92 share/html/Admin/Users/Keys.html:80 share/html/Admin/Users/Modify.html:226 share/html/Articles/Article/Edit.html:102 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:186 share/html/Prefs/Other.html:76 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:62 share/html/SelfService/Prefs.html:79 share/html/Ticket/Modify.html:66 share/html/Ticket/ModifyAll.html:135 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:67 share/html/Ticket/ModifyPeople.html:76 share/html/Ticket/Reminders.html:63
+#: share/html/Admin/Articles/Classes/GroupRights.html:57 share/html/Admin/Articles/Classes/Modify.html:130 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:91 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:93 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:156 share/html/Admin/Queues/People.html:124 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Scrips/Modify.html:88 share/html/Admin/Scrips/Modify.html:92 share/html/Admin/Users/Keys.html:80 share/html/Admin/Users/Modify.html:226 share/html/Articles/Article/Edit.html:102 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:186 share/html/Prefs/Other.html:76 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:62 share/html/SelfService/Prefs.html:79 share/html/Ticket/Modify.html:68 share/html/Ticket/ModifyAll.html:135 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:67 share/html/Ticket/ModifyPeople.html:76 share/html/Ticket/Reminders.html:63
 msgid "Save Changes"
 msgstr "Simpan Perubahan"
 
@@ -7785,10 +6949,6 @@ msgstr "Simpan Pilihan"
 #: share/html/Search/Elements/EditSearches:66
 msgid "Save as New"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Save changes"
-msgstr "Simpan perubahaan"
 
 #: share/html/Articles/Article/Elements/ShowSavedSearches:59
 msgid "Save new"
@@ -7814,10 +6974,6 @@ msgstr ""
 #: share/html/Search/Chart.html:175
 msgid "Saved charts"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Saved search %1"
-msgstr "Simpan pencarian %1"
 
 #: share/html/Elements/ShowSearch:73
 #. ($m->interp->apply_escapes($SavedSearch, 'h'))
@@ -7887,10 +7043,6 @@ msgstr ""
 msgid "Search Preferences"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Search attribute load failure"
-msgstr "Gagal memanggil atribut pencarian"
-
 #: share/html/Articles/Elements/BeforeMessageBox:55 share/html/SelfService/Article/Search.html:53
 msgid "Search for Articles matching"
 msgstr ""
@@ -7924,17 +7076,9 @@ msgstr ""
 msgid "Search results refresh interval"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Search update: %1"
-msgstr "Perbaharui Pencarian: %1"
-
 #: share/html/Search/index.html:48
 msgid "Searches"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Searches can't be associated with that kind of object"
-msgstr "Pencarian tidak dapat dihubungkan dengan objek yang seperti ini"
 
 #: share/html/Search/Simple.html:73
 #. ($fulltext_keyword)
@@ -7961,25 +7105,9 @@ msgstr ""
 msgid "See changes to articles in this class"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "See custom fields"
-msgstr "Lihat kolom kustom"
-
-#: NOT FOUND IN SOURCE
-msgid "See exact outgoing email messages and their recipeients"
-msgstr "Lihat pesan email yang keluar dan semua penerimanya dengan tepat"
-
 #: lib/RT/Class.pm:87
 msgid "See that this class exists"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "See ticket private commentary"
-msgstr "Lihat Penjelasan Tiket Pribadi"
-
-#: NOT FOUND IN SOURCE
-msgid "See ticket summaries"
-msgstr "Lihat Ringkasan Tiket"
 
 #: lib/RT/Class.pm:87
 msgid "SeeClass"
@@ -8074,10 +7202,6 @@ msgstr ""
 msgid "Select box"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Select custom field"
-msgstr "Pilih kolom kustom"
-
 #: share/html/Admin/Global/CustomFields/index.html:78 share/html/Elements/Tabs:149
 msgid "Select custom fields for all queues"
 msgstr ""
@@ -8110,10 +7234,6 @@ msgstr ""
 msgid "Select global scrip stage:"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Select group"
-msgstr "Pilih grup"
-
 #: lib/RT/CustomField.pm:163
 msgid "Select multiple dates"
 msgstr ""
@@ -8130,25 +7250,13 @@ msgstr "Pilih beberapa nilai"
 msgid "Select one value"
 msgstr "Pilih satu nilai"
 
-#: NOT FOUND IN SOURCE
-msgid "Select queue"
-msgstr "Pilih antrian"
-
 #: share/html/Prefs/Quicksearch.html:52
 msgid "Select queues to be displayed on the \"RT at a glance\" page"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Select scrip"
-msgstr "Pilih scrip"
-
 #: share/html/Admin/Elements/SelectStageForAdded:53
 msgid "Select scrip stage for newly added queues:"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Select template"
-msgstr "Pilih template"
 
 #: share/html/Articles/Article/ExtractIntoClass.html:63 share/html/Articles/Article/ExtractIntoTopic.html:52
 #. ()
@@ -8167,10 +7275,6 @@ msgstr ""
 msgid "Select up to %1 values"
 msgstr "Pilih sampai %1 nilai"
 
-#: NOT FOUND IN SOURCE
-msgid "Select user"
-msgstr "Pilih pengguna"
-
 #: share/html/Admin/Elements/EditCustomFields:55
 msgid "Selected Custom Fields"
 msgstr "Kolom Kustom yang dipilih"
@@ -8179,7 +7283,7 @@ msgstr "Kolom Kustom yang dipilih"
 msgid "Selected Queues"
 msgstr ""
 
-#: lib/RT/Crypt.pm:691
+#: lib/RT/Crypt.pm:699
 msgid "Selected key either is not trusted or doesn't exist anymore."
 msgstr ""
 
@@ -8198,14 +7302,6 @@ msgstr ""
 #: etc/initialdata:108
 msgid "Send forwarded message"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Send mail to all watchers"
-msgstr "Kirim pesan ke seluruh pengamat"
-
-#: NOT FOUND IN SOURCE
-msgid "Send mail to all watchers as a \"comment\""
-msgstr "Kirim pesan ke seluruh pengamat dengan \"komentar\""
 
 #: etc/initialdata:80
 msgid "Send mail to owner and all watchers"
@@ -8259,10 +7355,6 @@ msgstr "Kirim pesan ke pemilik"
 msgid "Sep"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Sep."
-msgstr "Sep."
-
 #: share/html/Articles/Article/Elements/LinkEntryInstructions:49
 msgid "Separate multiple entries with spaces."
 msgstr ""
@@ -8290,10 +7382,6 @@ msgstr "Tampilkan"
 #: lib/RT/System.pm:88
 msgid "Show Admin menu"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Show Approvals"
-msgstr "Tampilkan Izin"
 
 #: lib/RT/System.pm:89
 msgid "Show Approvals tab"
@@ -8328,10 +7416,6 @@ msgstr "Tamplikan permintaan yang disetujui"
 msgid "Show as well"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Show basics"
-msgstr "Tampilkan dasar-dasar"
-
 #: share/html/Elements/ShowHistory:69
 msgid "Show brief headers"
 msgstr ""
@@ -8339,10 +7423,6 @@ msgstr ""
 #: share/html/Approvals/Elements/PendingMyApproval:68
 msgid "Show denied requests"
 msgstr "Tampilkan permintaan yang ditolak"
-
-#: NOT FOUND IN SOURCE
-msgid "Show details"
-msgstr "Tampilkan detil"
 
 #: share/html/Elements/ShowHistory:74
 msgid "Show full headers"
@@ -8560,10 +7640,6 @@ msgstr ""
 msgid "Sort"
 msgstr "Sortir"
 
-#: NOT FOUND IN SOURCE
-msgid "Sort results by"
-msgstr "Sortir hasil dengan"
-
 #: share/html/Search/Elements/DisplayOptions:48
 msgid "Sorting"
 msgstr ""
@@ -8593,7 +7669,7 @@ msgstr ""
 msgid "Stage"
 msgstr "Tingkat"
 
-#: etc/RT_Config.pm:2770 etc/RT_Config.pm:2846
+#: etc/RT_Config.pm:2773 etc/RT_Config.pm:2849
 msgid "Stall"
 msgstr ""
 
@@ -8679,10 +7755,6 @@ msgstr ""
 msgid "Stolen from %1"
 msgstr "Dicuri dari %1"
 
-#: NOT FOUND IN SOURCE
-msgid "Stolen from %1 "
-msgstr "Dicuri dari %1 "
-
 #: share/html/Search/Chart.html:156 share/html/Search/Elements/EditFormat:93
 msgid "Style"
 msgstr "Gaya"
@@ -8738,10 +7810,6 @@ msgstr ""
 msgid "Subscription could not be created: %1"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Succeeded"
-msgstr "Berhasil"
-
 #: lib/RT/Attachment.pm:839
 msgid "Successfuly decrypted data"
 msgstr ""
@@ -8794,10 +7862,6 @@ msgstr ""
 msgid "Sun"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Sun."
-msgstr "Min."
-
 #: share/html/Dashboards/Subscription.html:113
 msgid "Sunday"
 msgstr ""
@@ -8810,7 +7874,7 @@ msgstr "PenggunaSuper"
 msgid "Suspended"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3630
+#: lib/RT/Interface/Web.pm:3666
 msgid "System"
 msgstr "Sistem"
 
@@ -8839,25 +7903,13 @@ msgstr "Peralatan Sistem"
 msgid "System error"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "System error. Right not delegated."
-msgstr "Kesalahan sistem. Hak-hak tidak dapat diserahkan."
-
 #: lib/RT/ACE.pm:141 lib/RT/ACE.pm:209 lib/RT/ACE.pm:291
 msgid "System error. Right not granted."
 msgstr "Kesalahan sistem. Hak-hak tidak dapat diberikan."
 
-#: NOT FOUND IN SOURCE
-msgid "System groups"
-msgstr "Grup Sistem"
-
 #: lib/RT/Handle.pm:768
 msgid "SystemRolegroup for internal use"
 msgstr "GrupAturanSistem yang digunakan untuk internal"
-
-#: NOT FOUND IN SOURCE
-msgid "TEST_STRING"
-msgstr "TES_STRING"
 
 #: etc/initialdata:820 share/html/Elements/Tabs:690 share/html/Search/Elements/EditFormat:72
 msgid "Take"
@@ -8875,10 +7927,6 @@ msgstr "Ambil Tiket"
 msgid "Taken"
 msgstr "Diambil"
 
-#: NOT FOUND IN SOURCE
-msgid "Task"
-msgstr "Tugas"
-
 #: share/html/Install/DatabaseDetails.html:53
 msgid "Tell us a little about how to find the database RT will be using"
 msgstr ""
@@ -8886,10 +7934,6 @@ msgstr ""
 #: share/html/Admin/Scrips/Elements/EditBasics:64 share/html/Elements/RT__Scrip/ColumnMap:75
 msgid "Template"
 msgstr "Template"
-
-#: NOT FOUND IN SOURCE
-msgid "Template #%1"
-msgstr "Template #%1"
 
 #: share/html/Admin/Elements/EditTemplates:111
 #. ($id)
@@ -8914,10 +7958,6 @@ msgstr ""
 msgid "Template compiles"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Template deleted"
-msgstr "Template sudah dihapus"
-
 #: lib/RT/Template.pm:785
 msgid "Template does not include Perl code"
 msgstr ""
@@ -8933,10 +7973,6 @@ msgstr ""
 #: lib/RT/Scrip.pm:156 lib/RT/Scrip.pm:766
 msgid "Template is mandatory argument"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Template not found"
-msgstr "Template tidak ditemukan"
 
 #: lib/RT/Template.pm:463
 msgid "Template parsed"
@@ -8984,22 +8020,6 @@ msgstr "Ini bukan nilai untuk kolom kustom ini"
 #: NOT FOUND IN SOURCE
 msgid "That is the same value"
 msgstr "Ini adalah nilai yang sama"
-
-#: NOT FOUND IN SOURCE
-msgid "That principal already has that right"
-msgstr "Prinsipal ini sudah memiliki hak-hak tersebut"
-
-#: NOT FOUND IN SOURCE
-msgid "That principal is already a %1 for this queue"
-msgstr "Prinsipal ini sudah %1 untuk antrian ini"
-
-#: NOT FOUND IN SOURCE
-msgid "That principal is already a %1 for this ticket"
-msgstr "Prinsipal ini sudah %1 untuk tiket ini"
-
-#: NOT FOUND IN SOURCE
-msgid "That principal is not a %1 for this queue"
-msgstr "Prinsipal ini bukan %1 untuk antrian ini"
 
 #: NOT FOUND IN SOURCE
 msgid "That queue does not exist"
@@ -9070,14 +8090,6 @@ msgstr ""
 msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they are overdue:"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they haven't been touched in 4 hours:"
-msgstr "Perintah berikut ini akan menemukan seluruh tiket yang aktif di dalam antrian 'umum' dan mengatur prioritas mereka ke 99 jika mereka tidak digunakan dalam waktu  4 jam:"
-
-#: NOT FOUND IN SOURCE
-msgid "The following commands were not proccessed:\\n\\n"
-msgstr "Perintah berikut ini tidak akan dijalankan:\\n\\n"
-
 #: share/html/Dashboards/Elements/Deleted:53
 msgid "The following queries have been deleted and each will be removed from the dashboard once its pane is updated."
 msgstr ""
@@ -9135,7 +8147,7 @@ msgstr ""
 msgid "Theme"
 msgstr ""
 
-#: lib/RT/Crypt.pm:718
+#: lib/RT/Crypt.pm:726
 msgid "There are several keys suitable for encryption."
 msgstr ""
 
@@ -9152,7 +8164,7 @@ msgstr ""
 msgid "There is more than one group with the name '%1'.  This may cause inconsistency in parts of the admin interface, and therefore it's recommended you rename the conflicting groups."
 msgstr ""
 
-#: lib/RT/Crypt.pm:710
+#: lib/RT/Crypt.pm:718
 msgid "There is no key suitable for encryption."
 msgstr ""
 
@@ -9161,7 +8173,7 @@ msgstr ""
 msgid "There is no mapping for statuses between lifecycle %1 and %2. Contact your system administrator."
 msgstr ""
 
-#: lib/RT/Crypt.pm:714
+#: lib/RT/Crypt.pm:722
 msgid "There is one suitable key, but trust level is not set."
 msgstr ""
 
@@ -9202,13 +8214,9 @@ msgstr ""
 msgid "This feature is only available to system administrators"
 msgstr "Fitur ini hanya tersedia untuk sistem administrator"
 
-#: share/html/Admin/Tools/Queries.html:51 share/html/Admin/Tools/Theme.html:225
+#: share/html/Admin/Tools/Queries.html:51 share/html/Admin/Tools/Theme.html:226
 msgid "This feature is only available to system administrators."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "This message will be sent to..."
-msgstr "Pesan ini akan dikirim ke..."
 
 #: share/html/Admin/Tools/Queries.html:63
 msgid "This server process has recorded no SQL queries."
@@ -9236,10 +8244,6 @@ msgstr "Transaksi ini tampaknya tidak memiliki isi"
 msgid "This user's %1 highest priority %2 tickets"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "This user's %1 highest priority tickets"
-msgstr "Pengguna ini memiliki %1 tiket dengan prioritas tertinggi"
-
 #: share/html/User/Search.html:53
 msgid "This will search for users by looking in the following fields:"
 msgstr ""
@@ -9247,10 +8251,6 @@ msgstr ""
 #: lib/RT/Date.pm:110
 msgid "Thu"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Thu."
-msgstr "Kms."
 
 #: share/html/Dashboards/Subscription.html:110
 msgid "Thursday"
@@ -9287,10 +8287,6 @@ msgstr "Tiket %1"
 msgid "Ticket %1 created in queue '%2'"
 msgstr "Tiket %1 sudah dibuat di dalam antrian '%2'"
 
-#: NOT FOUND IN SOURCE
-msgid "Ticket %1 loaded\\n"
-msgstr "Tiket %1 sudah dipanggil\\n"
-
 #: share/html/Search/Bulk.html:281 share/html/Tools/MyDay.html:90 share/html/Tools/MyDay.html:93 share/html/Tools/MyDay.html:99
 #. ($Ticket->Id, $_)
 #. ($id, $msg)
@@ -9321,10 +8317,6 @@ msgstr "Transaksi Tiket"
 #: share/html/Ticket/Update.html:65
 msgid "Ticket and Transaction"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Ticket attachment"
-msgstr "Lampiran Tiket"
 
 #: lib/RT/Config.pm:280
 msgid "Ticket composition"
@@ -9389,10 +8381,6 @@ msgstr "Tiket %1 oleh %2"
 msgid "Tickets I own"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Tickets from %1"
-msgstr "Tiket dari %1"
-
 #: share/html/Approvals/Elements/ShowDependency:50
 msgid "Tickets which depend on this approval:"
 msgstr "Tiket yang bergantung dengan izin ini:"
@@ -9409,17 +8397,9 @@ msgstr "Sisa Waktu"
 msgid "Time Worked"
 msgstr "Waktu Kerja"
 
-#: NOT FOUND IN SOURCE
-msgid "Time left"
-msgstr "Sisa waktu"
-
 #: share/html/Elements/Footer:54
 msgid "Time to display"
 msgstr "Waktu untuk ditampilkan"
-
-#: NOT FOUND IN SOURCE
-msgid "Time worked"
-msgstr "Waktu kerja"
 
 #: lib/RT/Graph/Tickets.pm:153 lib/RT/Tickets.pm:119 share/html/Search/Elements/BuildFormatString:100
 msgid "TimeEstimated"
@@ -9444,14 +8424,6 @@ msgstr "Judul"
 #: share/html/Ticket/Forward.html:66
 msgid "To"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "To generate a diff of this commit:"
-msgstr "To generate a diff of this commit:"
-
-#: NOT FOUND IN SOURCE
-msgid "To generate a diff of this commit:\\n"
-msgstr "To generate a diff of this commit:\\n"
 
 #: share/html/Elements/Footer:59
 #. ('<a href="mailto:sales@bestpractical.com">sales@bestpractical.com</a>')
@@ -9588,10 +8560,6 @@ msgstr ""
 msgid "Tue"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Tue."
-msgstr "Sel."
-
 #: share/html/Dashboards/Subscription.html:108
 msgid "Tuesday"
 msgstr ""
@@ -9644,12 +8612,12 @@ msgstr ""
 msgid "Unable to load article"
 msgstr ""
 
-#: share/html/Admin/Tools/Theme.html:270
+#: share/html/Admin/Tools/Theme.html:271
 #. ($msg)
 msgid "Unable to set UserCSS: %1"
 msgstr ""
 
-#: share/html/Admin/Tools/Theme.html:242
+#: share/html/Admin/Tools/Theme.html:243
 #. ($msg)
 msgid "Unable to set UserLogo: %1"
 msgstr ""
@@ -9683,7 +8651,7 @@ msgstr ""
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr ""
 
-#: etc/RT_Config.pm:2794 etc/RT_Config.pm:2870
+#: etc/RT_Config.pm:2797 etc/RT_Config.pm:2873
 msgid "Undelete"
 msgstr ""
 
@@ -9699,10 +8667,6 @@ msgstr "Belum diimplementasikan"
 msgid "Unix login"
 msgstr "Login Unix"
 
-#: NOT FOUND IN SOURCE
-msgid "UnixUsername"
-msgstr "Nama Pengguna Unix"
-
 #: lib/RT/Crypt/GnuPG.pm:1749 lib/RT/Crypt/GnuPG.pm:1754
 msgid "Unknown (no trust value assigned)"
 msgstr ""
@@ -9716,10 +8680,6 @@ msgstr ""
 #. ($self->ContentEncoding)
 msgid "Unknown ContentEncoding %1"
 msgstr "Content Encoding tidak dikenali%1"
-
-#: NOT FOUND IN SOURCE
-msgid "Unknown field: $key"
-msgstr "Kolom tidak dikenali: $key"
 
 #: lib/RT/Interface/Web/QueryBuilder/Tree.pm:269
 #. ($key)
@@ -9779,17 +8739,9 @@ msgstr ""
 msgid "Untaken"
 msgstr "Belum diambil"
 
-#: NOT FOUND IN SOURCE
-msgid "Untitled search"
-msgstr "Pencarian yang tidak memiliki judul"
-
 #: share/html/Admin/Elements/EditScrips:72 share/html/Admin/Elements/EditScrips:96 share/html/Admin/Elements/MembershipsPage:83 share/html/Articles/Article/Elements/ShowSavedSearches:58 share/html/Articles/Elements/NewestArticles:62 share/html/Articles/Elements/UpdatedArticles:63 share/html/Elements/RT__Ticket/ColumnMap:294 share/html/Search/Bulk.html:178 share/html/Search/Bulk.html:74 share/html/Search/Elements/EditSearches:71 share/html/Widgets/SelectionBox:201
 msgid "Update"
 msgstr "Perbaharui"
-
-#: NOT FOUND IN SOURCE
-msgid "Update All"
-msgstr "Perbahurui Semua"
 
 #: share/html/Search/Chart.html:170
 msgid "Update Chart"
@@ -9798,10 +8750,6 @@ msgstr ""
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:122
 msgid "Update Graph"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Update ID"
-msgstr "Perbaharui ID"
 
 #: share/html/Elements/Tabs:484
 msgid "Update This Menu"
@@ -9815,14 +8763,6 @@ msgstr "Perbaharui Tiket"
 msgid "Update Type"
 msgstr "Perbaharui Tipe"
 
-#: NOT FOUND IN SOURCE
-msgid "Update all these tickets at once"
-msgstr "Perbaharui seluruh tiket ini pada saat yang sama"
-
-#: NOT FOUND IN SOURCE
-msgid "Update email"
-msgstr "Perbaharui email"
-
 #: share/html/Search/Build.html:106
 msgid "Update format and Search"
 msgstr ""
@@ -9831,21 +8771,9 @@ msgstr ""
 msgid "Update multiple tickets"
 msgstr "Perbaharui beberapa tiket"
 
-#: NOT FOUND IN SOURCE
-msgid "Update name"
-msgstr "Perbaharui nama"
-
 #: lib/RT/Action/CreateTickets.pm:474 lib/RT/Interface/Web.pm:2256
 msgid "Update not recorded."
 msgstr "Perbaharui tidak dicatat."
-
-#: NOT FOUND IN SOURCE
-msgid "Update selected tickets"
-msgstr "Perbaharui tiket yang terpilih"
-
-#: NOT FOUND IN SOURCE
-msgid "Update signature"
-msgstr "Perbaharui tanda tangan"
 
 #: share/html/Ticket/ModifyAll.html:93
 msgid "Update ticket"
@@ -9983,13 +8911,9 @@ msgstr "Pengguna mendefinisikan kondisi dan aksi"
 msgid "User Defined conditions and results"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3648
+#: lib/RT/Interface/Web.pm:3684
 msgid "User Groups"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "User ID"
-msgstr "ID Pengguna"
 
 #: share/html/User/Elements/Portlets/ExtraInfo:48
 msgid "User Information"
@@ -10021,10 +8945,6 @@ msgstr "Pengguna tidak dapat dibuat: %1"
 msgid "User created"
 msgstr "Pengguna sudah dibuat"
 
-#: NOT FOUND IN SOURCE
-msgid "User defined groups"
-msgstr "Pengguna mendefinisikan grup"
-
 #: lib/RT/User.pm:1152
 msgid "User disabled"
 msgstr ""
@@ -10040,10 +8960,6 @@ msgstr ""
 #: lib/RT/User.pm:533 lib/RT/User.pm:553
 msgid "User loaded"
 msgstr "Pengguna sudah dipanggil"
-
-#: NOT FOUND IN SOURCE
-msgid "User view"
-msgstr "Lihat Pengguna"
 
 #: share/html/Admin/Groups/index.html:121
 msgid "User-defined groups"
@@ -10062,7 +8978,7 @@ msgstr "Nama Pengguna"
 msgid "Username format"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1746 lib/RT/Interface/Web.pm:3701 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:500 share/html/Elements/Tabs:67
+#: lib/RT/CustomField.pm:1746 lib/RT/Interface/Web.pm:3737 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:500 share/html/Elements/Tabs:67
 msgid "Users"
 msgstr "Pengguna"
 
@@ -10215,17 +9131,9 @@ msgstr ""
 msgid "Web port"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "WebEncoding"
-msgstr "WebEncoding"
-
 #: lib/RT/Date.pm:109
 msgid "Wed"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Wed."
-msgstr "Rabu."
 
 #: share/html/Dashboards/Subscription.html:109
 msgid "Wednesday"
@@ -10266,14 +9174,6 @@ msgstr ""
 #: share/html/Install/Global.html:54
 msgid "When RT sends an email it sets the From: and Reply-To: headers so users can add to the conversation by just hitting Reply in their mail client.  It uses different addresses for Replies and Comments.  These can be changed for each of your queues.  These addresses will need to be configured to use the <tt>rt-mailgate</tt> program."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "When a ticket has been approved by all approvers, add correspondence to the original ticket"
-msgstr "Kalau tiket sudah disetujui oleh semua pemberi persetujuan, tambahkan korespondesi ke tiket yang asli"
-
-#: NOT FOUND IN SOURCE
-msgid "When a ticket has been approved by any approver, add correspondence to the original ticket"
-msgstr "Kalau tiket sudah disetujui oleh beberapa pemberi persetujuan, tambahkan korespondensi ke tiket yang asli"
 
 #: etc/initialdata:114
 msgid "When a ticket is created"
@@ -10367,14 +9267,6 @@ msgstr "Bekerja"
 msgid "Work Phone"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Work offline"
-msgstr "Bekerja offline"
-
-#: NOT FOUND IN SOURCE
-msgid "WorkPhone"
-msgstr "Telepon Kantor"
-
 #: share/html/Ticket/Elements/ShowBasics:65 share/html/Tools/MyDay.html:62 share/html/m/ticket/reply:81 share/html/m/ticket/show:227
 msgid "Worked"
 msgstr "Sedang Bekerja"
@@ -10404,10 +9296,6 @@ msgstr ""
 #: share/html/Elements/Crypt/KeyIssues:62
 msgid "You are going to encrypt outgoing email messages, but there is a problem with a recipient's public key/certificate. You have to fix the problem with the key/certificate, disable sending a message to that recipient, or disable encryption."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "You are not an authorized user"
-msgstr "Anda bukanlah pengguna yang sah"
 
 #: share/html/Errors/WebRemoteUser/NoRemoteUser:49
 msgid "You are not authorized to use RT."
@@ -10464,10 +9352,6 @@ msgstr ""
 msgid "You don't have <b>SuperUser</b> right."
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "You found %1 tickets in queue %2"
-msgstr "Anda menemukan %1 tiket di dalam antrian ini %2"
-
 #: share/html/NoAuth/Logout.html:55
 msgid "You have been logged out of RT."
 msgstr "Anda sudah log out dari RT."
@@ -10480,7 +9364,7 @@ msgstr ""
 msgid "You have enabled encryption support but have not set a correspondence address for this queue."
 msgstr ""
 
-#: share/html/SelfService/Display.html:104
+#: share/html/SelfService/Display.html:111
 msgid "You have no permission to create tickets in that queue."
 msgstr "Anda tidak memiliki izin untuk membuat tiket di dalam antrian tersebut."
 
@@ -10534,18 +9418,6 @@ msgstr "Anda dapat login kembali"
 msgid "Your password is not set."
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Your request has been approved by %1. Other approvals may still be pending."
-msgstr "Permintaan anda sudah disetujui oleh. Persetujuan yang lain mungkin masih ditunda."
-
-#: NOT FOUND IN SOURCE
-msgid "Your request has been approved."
-msgstr "Permintaan anda sudah disetujui."
-
-#: NOT FOUND IN SOURCE
-msgid "Your request was rejected."
-msgstr "Permintaan anda sudah ditolak."
-
 #: share/html/Admin/Tools/Theme.html:65
 #. ($valid_image_types)
 msgid "Your system supports automatic color suggestions for: %1"
@@ -10591,14 +9463,6 @@ msgstr ""
 msgid "after the rest of the page loads"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "allow creation of saved searches"
-msgstr "mengijinkan pembuatan pencarian yang disimpan"
-
-#: NOT FOUND IN SOURCE
-msgid "allow loading of saved searches"
-msgstr "mengijinkan memanggil pencarian yang disimpan"
-
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:102 share/html/Articles/Article/Elements/ShowSearchCriteria:111
 msgid "and before"
 msgstr ""
@@ -10611,10 +9475,6 @@ msgstr ""
 msgid "and then"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "as granted to %1"
-msgstr "sudah diberikan ke %1"
-
 #: share/html/Search/Elements/SelectChartType:54
 msgid "bar"
 msgstr ""
@@ -10622,10 +9482,6 @@ msgstr ""
 #: share/html/Elements/SelectDateRelation:57
 msgid "before"
 msgstr "Sebelum"
-
-#: NOT FOUND IN SOURCE
-msgid "belongs to"
-msgstr "Milik"
 
 #: share/html/Admin/Global/MyRT.html:86
 msgid "body"
@@ -10671,10 +9527,6 @@ msgstr ""
 msgid "closed"
 msgstr "sudah ditutup"
 
-#: NOT FOUND IN SOURCE
-msgid "contains"
-msgstr "berisi"
-
 #: share/html/Admin/Tools/Configuration.html:83
 msgid "core config"
 msgstr ""
@@ -10704,18 +9556,6 @@ msgstr "hari"
 msgid "deleted"
 msgstr "sudah dihapus"
 
-#: NOT FOUND IN SOURCE
-msgid "does not belong to"
-msgstr "Bukan milik"
-
-#: NOT FOUND IN SOURCE
-msgid "does not match"
-msgstr "tidak sama"
-
-#: NOT FOUND IN SOURCE
-msgid "doesn't contain"
-msgstr "tidak berisi"
-
 #: share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectMatch:58 share/html/Search/Elements/PickBasics:74
 msgid "doesn't match"
 msgstr ""
@@ -10727,10 +9567,6 @@ msgstr ""
 #: share/html/Admin/Tools/Queries.html:87
 msgid "duration"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "email address"
-msgstr "alamat email"
 
 #: lib/RT/User.pm:281
 msgid "empty name"
@@ -10882,10 +9718,6 @@ msgstr "mnt"
 msgid "minutes"
 msgstr "menit"
 
-#: NOT FOUND IN SOURCE
-msgid "modifications\\n\\n"
-msgstr "perubahan\\n\\n"
-
 #: lib/RT/Interface/Web.pm:1609
 msgid "modify RT's configuration"
 msgstr ""
@@ -10931,10 +9763,6 @@ msgstr ""
 msgid "no name"
 msgstr "tidak ada nama"
 
-#: NOT FOUND IN SOURCE
-msgid "no value"
-msgstr "tidak ada nilai"
-
 #: lib/RT/Crypt/GnuPG.pm:1743 share/html/Admin/Elements/EditQueueWatchers:50 share/html/Dashboards/Subscription.html:73 share/html/Ticket/Elements/EditWatchers:51
 msgid "none"
 msgstr "tidak satupun"
@@ -10979,10 +9807,6 @@ msgstr ""
 msgid "perform actions"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "personal group '%1' for user '%2'"
-msgstr "grup pribadi '%1' untuk pengguna '%2'"
-
 #: share/html/Search/Elements/SelectChartType:55
 msgid "pie"
 msgstr ""
@@ -11024,10 +9848,6 @@ msgstr "dtk"
 msgid "see object list below"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "show Configuration tab"
-msgstr "tampilkan tab konfigurasi"
-
 #: share/html/Admin/Global/MyRT.html:87
 msgid "sidebar"
 msgstr ""
@@ -11035,10 +9855,6 @@ msgstr ""
 #: share/html/Admin/Tools/Configuration.html:80
 msgid "site config"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "spreadsheet"
-msgstr "lembar kerja"
 
 #: lib/RT/Queue.pm:104
 msgid "stalled"
