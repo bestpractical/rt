@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%perl>
-for my $group ( RT::CustomField->CustomGroupings( $Object ), '' ) {
+for my $group ( @Groupings ) {
     my %grouping_args = (
         title => $group? loc($group) : loc('Custom Fields'),
         class => $css_class .' '. ($group? CSSClass("$css_class-$group") : ''),
@@ -63,6 +63,7 @@ for my $group ( RT::CustomField->CustomGroupings( $Object ), '' ) {
 <%ARGS>
 $Object
 $title_href => ""
+@Groupings => ()
 </%ARGS>
 <%INIT>
 my $css_class = lc(ref($Object)||$Object);
@@ -72,4 +73,6 @@ $css_class = CSSClass($css_class);
 $css_class .= '-info-cfs';
 
 my $TitleBoxARGS = delete $ARGS{TitleBoxARGS} || {};
+
+@Groupings = (RT::CustomField->CustomGroupings( $Object ), '') unless @Groupings;
 </%INIT>

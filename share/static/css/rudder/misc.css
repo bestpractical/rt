@@ -9,6 +9,8 @@
     overflow: auto;
 }
 
+span.cflabel,
+td.cflabel,
 span.label,
 span.labeltop,
 td.label,
@@ -16,6 +18,13 @@ td.labeltop {
     font-weight: bold;
     color: #666;
     font-size: 1em;
+    min-width: 6em;
+}
+
+span.cflabel .type,
+td.cflabel .type {
+    font-weight: normal;
+    font-size: 0.8em;
 }
 
 table.myday h2 {
