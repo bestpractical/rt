@@ -119,6 +119,7 @@ if ( $Run ) {
                 $RT::Handle->dbh( undef );
                 RT::ConnectToDatabase();
                 RT::InitLogging();
+                RT::InitClasses();
                 ($status, $msg) = $RT::Handle->InsertInitialData;
             }
             elsif ( $action eq 'insert' ) {
