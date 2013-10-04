@@ -2032,7 +2032,9 @@ sub CreateTicket {
     }
 
     for my $argument (qw(Encrypt Sign)) {
-        $MIMEObj->head->replace( "X-RT-$argument" => $ARGS{$argument} ? 1 : 0 );
+        if ( defined $ARGS{ $argument } ) {
+            $MIMEObj->head->replace( "X-RT-$argument" => $ARGS{$argument} ? 1 : 0 );
+        }
     }
 
     my %create_args = (
