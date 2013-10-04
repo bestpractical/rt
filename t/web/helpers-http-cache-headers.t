@@ -57,15 +57,15 @@ diag "set up expected date headers";
   $expected = {
     Autocomplete => {
       'Cache-Control' => 'max-age=120, private',
-      'Expires'       => 'Fri, 5 Apr 2013 15:30:19 GMT',
+      'Expires'       => 'Fri, 05 Apr 2013 15:30:19 GMT',
     },
     NoAuth      => {
       'Cache-Control' => 'max-age=2592000, public',
-      'Expires'       => 'Sun, 5 May 2013 15:28:19 GMT',
+      'Expires'       => 'Sun, 05 May 2013 15:28:19 GMT',
     },
     default      => {
       'Cache-Control' => 'no-cache',
-      'Expires'       => 'Fri, 5 Apr 2013 15:28:19 GMT',
+      'Expires'       => 'Fri, 05 Apr 2013 15:28:19 GMT',
     },
   };
 
