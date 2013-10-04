@@ -60,6 +60,7 @@
 <& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes') &>
 </form>
 
+% $m->callback(CallbackName => 'AfterForm', ARGSRef => \%ARGS, Ticket => $TicketObj);
 
 <%INIT>
 
