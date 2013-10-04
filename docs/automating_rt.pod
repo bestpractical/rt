@@ -7,11 +7,11 @@ get lost, resolving old tickets that haven't had any activity for a period of
 time, or sending email notifications based on some ticket criteria like
 being 3 days old and still having a status of new.
 
-The tool for automating RT tasks is L<rt-crontool>. It's designed to be run
-from the cron scheduler and accepts a set of parameters that define what RT
-objects it should operate on and what it should do. The sections below give
-describe some common L<rt-crontool> tasks to serve as usable commands and
-as examples of the different ways you can automate tasks.
+The tool for automating RT tasks is L<rt-crontool>. It's designed to be
+run from the cron scheduler and accepts a set of parameters that define
+what RT objects it should operate on and what it should do. The sections
+below describe some common L<rt-crontool> tasks as examples of the
+different ways you can automate tasks.
 
 All of the options for L<rt-crontool> are documented with the tool itself:
 
@@ -24,9 +24,10 @@ and on the Best Practical web site.
 As you'll see in the examples below, this tool gives full access to RT.
 To manage the scope of changes that could be performed by the tool, we
 recommended creating a dedicated unix user with limited privileges for
-this purpose. Then create a user in RT with just enough access to perform
-the changes you need to automate and set the Unix login field to the unix
-user you created. See the L<rt-crontool> documentation for more information.
+this purpose. Then create a user in RT with just enough access to
+perform the changes you need to automate, and set the "Unix login" field
+of the RT user to the username of the unix user you created. See the
+L<rt-crontool> documentation for more information.
 
 =head2 Testing Tips
 
@@ -34,15 +35,16 @@ When setting up a new automated crontool job, keep in mind that you might be
 modifying a large number of tickets, especially the first time you run it.
 Changes to tickets can trigger scrips just like the same change made via
 the user interface. For example, changing the status to resolved will trigger
-the 'On Resolve' scrips which often means sending email. Depending on the
+the 'On Resolve' scrips, which often means sending email. Depending on the
 modification, you could end up sending a lot of email or triggering other
 actions.
 
-You can test your search queries in the RT search tools and use bulk update
-if you want to prepare things for your new automated job. You can also
-disable functionality by disabling certain scrips or turning off mail
-with the L<RT_Config.pm/"$MailCommand"> option. This can be useful if you
-want to clean up older tickets without sending notifications to people for
+You can test your TicketSQL search queries in the RT web interface
+(using the Advanced tab of ticket search), and use bulk update if you
+want to prepare things for your new automated job. You can also disable
+scrips which you wish to avoid, or turn off outgoing mail with the
+L<RT_Config.pm/"$MailCommand"> option. This can be useful if you want to
+clean up older tickets without sending notifications to requestors for
 tickets that were resolved years ago.
 
 To help with debugging, the C<--verbose> option will give you more output.
@@ -72,9 +74,9 @@ argument, C<--search-arg>, is the search query to use. These are
 the same queries you create in the RT search interface, so can use
 the RT web UI to refine your queries before setting up your job.
 
-The C<--action> argument is set to L<RT::Action> which is the base
-class for RT actions. Since it doesn't perform any action itself, this
-command will just output the results of the TicketSQL.
+The C<--action> argument is set to L<RT::Action> which is the base class
+for RT actions. Since this class doesn't perform any action itself, this
+command will just output the results of the TicketSQL search.
 
 =head1 Auto-resolve Aged Tickets
 
@@ -89,25 +91,28 @@ active tickets that haven't been acted on in a month or more:
         --action-arg resolved
 
 The search is similar to the previous example with a slightly more
-complicated search argument. The C<--action> in this case uses the
-L<RT::Action::SetStatus> module with an C<--action-arg> of C<resolved>.
-For each of the tickets returned from the search query, the status is
-set to resolved. When setting up automated tasks, you can use
-actions provided as part of RT, actions available from extensions,
-or actions you create yourself.
+complicated search argument.  Note that since LastUpdated is treated as
+a timestamp (which increases over time) C<LastUpdated <= '1 month ago'>
+means "the timestamp when it was updated is before the timestamp one
+month ago" and not "updated less than a month ago."
+
+The C<--action> in this case uses the L<RT::Action::SetStatus> module
+with an C<--action-arg> of C<resolved>.  For each of the tickets
+returned from the search query, the status is set to resolved. When
+setting up automated tasks, you can use actions provided as part of RT,
+actions available from extensions, or actions you create yourself.
 
 As noted previously, the normal RT rules apply when running actions
 with L<rt-crontool>, so for this example applicable 'On Resolve'
 scrips will run. If a ticket has unresolved dependencies, it will
 log an error since tickets can't be resolved until dependencies are
 resolved. Also, the status argument must be valid for the lifecycle of
-the selected tickets.
+the selected tickets, and the transition must be allowed.
 
 =head1 Commenting and Corresponding on a Ticket
 
-The following command records a comment on all tickets returned
-from the query, in this case tickets that are new and unowned
-after 3 days.
+The following command records a comment on all tickets returned from the
+query -- in this case, tickets that are new and unowned after 3 days.
 
     bin/rt-crontool --search RT::Search::FromSQL \
         --search-arg "Owner = 'Nobody' AND Status = 'new' \
@@ -125,8 +130,8 @@ could put whatever you like in that template. For example:
 
     Ticket {$Ticket->id} is still new and unowned after 3 days!
 
-You can set up a similar command to record a reply using the
-L<RT::Action::RecordCorrespondence> module.
+You can set up a similar command to send a reply rather than a comment
+using the L<RT::Action::RecordCorrespondence> module.
 
 =head1 Sending Notifications
 
@@ -167,9 +172,9 @@ in your queue configuration at Tools -> Configuration -> Queues. On the queue
 configuration page, set "Priority starts at" and "Over time, priority moves
 toward".
 
-Whichever scheme you choose, RT has an action that can escalate priority
-over time so tickets that are closer to their due date and are still not
-resolved have priority escalated automatically.
+Whichever scheme you choose, RT's L<RT::Action::EscalatePriority> can
+escalate the priority over time so tickets that are closer to their due
+date and are still not resolved have priority escalated automatically.
 
 This command escalates tickets in a designated queue:
 
