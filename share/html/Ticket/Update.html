@@ -184,7 +184,11 @@
   </table>
 </&>
 
+% $m->callback( %ARGS, CallbackName => 'BeforeSubmit', Ticket => $TicketObj );
+
   <& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket', id => 'SubmitTicket' &>
+
+% $m->callback( %ARGS, CallbackName => 'BeforeScrips', Ticket => $TicketObj );
 
 % if ($TicketObj->CurrentUserHasRight('ShowOutgoingEmail')) {
   <&|/Widgets/TitleBox, title => loc('Scrips and Recipients'), id => 'previewscrips', rolledup => RT->Config->Get('SimplifiedRecipients', $session{'CurrentUser'}) &>
@@ -193,12 +197,17 @@
 % }
 </div>
 
+% $m->callback( %ARGS, CallbackName => 'AfterScrips', Ticket => $TicketObj );
+
 % if (my $recips = $m->notes("DryRun-Recipients-".$TicketObj->Id)) {
 <input type="hidden" name="TxnRecipients" value="<% join ",",sort keys %{$recips} %>" />
 % }
 
 </form>
 <hr class="clear" />
+
+% $m->callback( %ARGS, CallbackName => 'AfterForm', Ticket => $TicketObj );
+
 <%INIT>
 my $CanRespond = 0;
 my $CanComment = 0;
