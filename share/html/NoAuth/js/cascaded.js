@@ -46,6 +46,34 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 function filter_cascade (id, vals) {
+    var element = document.getElementById(id);
+    if (!element) { return };
+
+    if ( element.tagName == 'SELECT' ) {
+        return filter_cascade_select.apply(this, arguments);
+    }
+    else {
+        if ( !( vals instanceof Array ) ) {
+            vals = [vals];
+        }
+
+        if ( arguments.length == 3 && (vals.length == 0 || (vals.length == 1 && vals[0] == '')) ) {
+            // no category, and the category is from a hierchical cf;
+            // leave it empty
+            jQuery(element).find('div').hide();
+        }
+        else {
+            jQuery(element).find('div').hide().find('input').attr('disabled', 'disabled');
+            jQuery(element).find('div[name=]').show().find('input').attr('disabled', '');
+            jQuery(element).find('div.none').show().find('input').attr('disabled','');
+            for ( var j = 0; j < vals.length; j++ ) {
+                jQuery(element).find('div[name^=' + vals[j] + ']').show().find('input').attr('disabled', '');
+            }
+        }
+    }
+}
+
+function filter_cascade_select (id, vals) {
     var select = document.getElementById(id);
     var complete_select = document.getElementById(id + "-Complete" );
     if ( !( vals instanceof Array ) ) {
