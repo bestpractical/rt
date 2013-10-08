@@ -91,6 +91,7 @@ GetOptions(
     'force', 'debug',
     'dba=s', 'dba-password=s', 'prompt-for-dba-password', 'package=s',
     'datafile=s', 'datadir=s', 'skip-create', 'root-password-file=s',
+    'upgrade-from=s', 'upgrade-to=s',
     'help|h',
 );
 
@@ -318,7 +319,7 @@ sub action_upgrade {
         } else {
             print "Enter $args{package} version you're upgrading from: ";
         }
-        $upgrading_from = scalar <STDIN>;
+        $upgrading_from = $args{'upgrade-from'} || scalar <STDIN>;
         chomp $upgrading_from;
         $upgrading_from =~ s/\s+//g;
     } while $upgrading_from !~ /$version_dir/;
@@ -352,7 +353,7 @@ sub action_upgrade {
                 print "\nEnter $args{package} version if you want to stop upgrade at some point,\n";
                 print "  or leave it blank if you want apply above upgrades: ";
             }
-            $custom_upgrading_to = scalar <STDIN>;
+            $custom_upgrading_to = $args{'upgrade-to'} || scalar <STDIN>;
             chomp $custom_upgrading_to;
             $custom_upgrading_to =~ s/\s+//g;
             last unless $custom_upgrading_to;
@@ -592,5 +593,15 @@ administrator privileges
 
 for 'init' and 'insert': rather than using the default administrative password
 for RT's "root" user, use the password in this file.
+
+=item upgrade-from
+
+for 'upgrade': specifies the version to upgrade from, and do not prompt
+for it if it appears to be a valid version.
+
+=item upgrade-to
+
+for 'upgrade': specifies the version to upgrade to, and do not prompt
+for it if it appears to be a valid version.
 
 =back
