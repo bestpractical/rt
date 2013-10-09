@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 266;
+use RT::Test tests => undef;
 use Test::Warn;
 
 my $queue = RT::Queue->new(RT->SystemUser);
@@ -158,12 +158,14 @@ warning_like {
     );
 } qr/Template parsing error: syntax error/;
 
-TemplateTest(
-    Content      => "\ntest { \$rtname ",
-    SyntaxError  => 1,
-    PerlOutput   => undef,
-    SimpleOutput => undef,
-);
+warning_like {
+    TemplateTest(
+        Content      => "\ntest { \$rtname ",
+        SyntaxError  => 1,
+        PerlOutput   => undef,
+        SimpleOutput => undef,
+    );
+} qr/Template parsing error in Test-\d+ \(#\d+\): End of data inside program text/;
 
 is($ticket->Status, 'new', "test setup");
 SimpleTemplateTest(
@@ -231,6 +233,8 @@ note "test arguments passing";
 }
 
 undef $ticket;
+done_testing;
+
 
 my $counter = 0;
 sub IndividualTemplateTest {
