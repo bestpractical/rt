@@ -1840,11 +1840,13 @@ sub Probe {
             return 0;
         }
     } else {
+        local $ENV{PATH} = '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+            unless defined $ENV{PATH};
         my $path = File::Which::which( $bin );
         unless ($path) {
             $RT::Logger->warning(
-                "Can't find gpg binary '$bin' in PATH; GnuPG support has been disabled.  ".
-                "Check the 'GnuPG' configuration in %GnuPG");
+                "Can't find gpg binary '$bin' in PATH ($ENV{PATH}); GnuPG support has been disabled.  ".
+                "You may need to specify a full path to gpg via the 'GnuPG' configuration in %GnuPG");
             return 0;
         }
         $self->GnuPGPath( $bin = $path );
