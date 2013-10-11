@@ -7,7 +7,7 @@ jQuery(function() {
     var $this = jQuery(this);
     var name = $this.attr('name');
     if (!name) { return true; }
-    $this.append( jQuery('<input/>', {type: "hidden", name: name, value: $this.val()} ) );
+    $this.after( jQuery('<input/>', {type: "hidden", name: name, value: $this.val()} ) );
     return true;
   })
 });
