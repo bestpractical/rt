@@ -56,8 +56,10 @@
 <input type="hidden" class="hidden" name="id" value="<% $TicketObj->Id %>" />
 
 <&| /Widgets/TitleBox, title => loc('Modify ticket #[_1]',$TicketObj->Id), class=>'ticket-info-basics' &>
-<& Elements/EditBasics, TicketObj => $TicketObj, defaults => \%ARGS &>
-<& /Elements/EditCustomFields, Object => $TicketObj, Grouping => 'Basics' &>
+<table>
+<& Elements/EditBasics, TicketObj => $TicketObj, defaults => \%ARGS, InTable => 1 &>
+<& /Elements/EditCustomFields, Object => $TicketObj, Grouping => 'Basics', InTable => 1 &>
+</table>
 </&>
 % $m->callback( CallbackName => 'AfterBasics', Ticket => $TicketObj );
 
@@ -65,6 +67,8 @@
 
 <& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#993333" &>
 </form>
+
+% $m->callback(CallbackName => 'AfterForm', ARGSRef => \%ARGS, Ticket => $TicketObj);
 <%INIT>
   
 my $TicketObj = LoadTicket($id);

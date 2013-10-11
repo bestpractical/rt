@@ -65,9 +65,6 @@ our @EXPORT_OK = qw(CleanEnv GetCurrentUser GetMessageContent debug loc);
   use RT::Interface::CLI  qw(CleanEnv
                              GetCurrentUser GetMessageContent loc);
 
-  #Clean out all the nasties from the environment
-  CleanEnv();
-
   #let's talk to RT'
   use RT;
 
@@ -76,6 +73,9 @@ our @EXPORT_OK = qw(CleanEnv GetCurrentUser GetMessageContent debug loc);
 
   # Connect to the database. set up loggign
   RT::Init();
+
+  # Clean out all the nasties from the environment
+  CleanEnv();
 
   #Get the current user all loaded
   my $CurrentUser = GetCurrentUser();

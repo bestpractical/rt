@@ -90,8 +90,8 @@ my %default = (
     'with-CLI' => 1,
     'with-MAILGATE' => 1, 
     'with-DEVELOPER' => @RT_DEVELOPER@,
-    'with-GPG' => @RT_GPG@,
-    'with-SMIME' => @RT_SMIME@,
+    'with-GPG' => @RT_GPG_DEPS@,
+    'with-SMIME' => @RT_SMIME_DEPS@,
     'with-ICAL' => 1,
     'with-GRAPHVIZ' => @RT_GRAPHVIZ@,
     'with-GD' => @RT_GD@,
@@ -182,6 +182,7 @@ CGI::PSGI 0.12
 Class::Accessor 0.34
 Crypt::Eksblowfish
 CSS::Squish 0.06
+Data::GUID
 Date::Extract 0.02
 Date::Manip
 DateTime 0.44
@@ -269,6 +270,7 @@ Text::ParseWords
 $deps{'DEVELOPER'} = [ text_to_hash( << '.') ];
 Email::Abstract
 File::Find
+File::Which
 Locale::PO
 Log::Dispatch::Perl
 Mojo::DOM
@@ -320,12 +322,14 @@ DBD::SQLite 1.00
 .
 
 $deps{'GPG'} = [ text_to_hash( << '.') ];
+File::Which
 GnuPG::Interface
 PerlIO::eol
 .
 
 $deps{'SMIME'} = [ text_to_hash( << '.') ];
 Crypt::X509
+File::Which
 String::ShellQuote
 .
 
@@ -439,7 +443,7 @@ sub test_dep {
         print $module, ': ', $version || 0, "\n"; 
     }
     else {
-        eval "use $module $version ()";
+        eval "{ local \$ENV{__WARN__}; use $module $version () }";
         if ( my $error = $@ ) {
             return 0 unless wantarray;
 
@@ -449,7 +453,7 @@ sub test_dep {
 
             my $path = $module;
             $path =~ s{::}{/}g;
-            undef $error if $error =~ /^Can't locate $path\.pm in \@INC/;
+            undef $error if defined $error and $error =~ /^Can't locate $path\.pm in \@INC/;
 
             return ( 0, $error );
         }
@@ -626,8 +630,6 @@ libraries needed to support the modperl 2 handler
 =item --with-developer
 
 tools needed for RT development
-
-=item
 
 =back
 

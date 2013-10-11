@@ -1,0 +1,14 @@
+use strict;
+use warnings;
+
+our @Initial = (
+    sub {
+        my $attr = RT->System->FirstAttribute('BrandedSubjectTag');
+        return 1 unless $attr;
+        my ( $status, $msg ) = $attr->Delete;
+        unless ( $status ) {
+            RT->Logger->error("Couldn't delete System BrandedSubjectTag: $msg");
+        }
+        return 1;
+    },
+);

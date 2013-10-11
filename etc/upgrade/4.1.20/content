@@ -24,9 +24,9 @@ our @Initial = (
         $forward_template->Load('Forward');
         $forward_template->SetDescription('Forwarded message');
 
-        if ( $forward_template->Content eq q{
-This is a forward of transaction #{$Transaction->id} of ticket #{ $Ticket->id }
-} ) {
+        if ( $forward_template->Content =~
+                m/^\n*This is (a )?forward of transaction #\{\s*\$Transaction->id\s*\} of (a )?ticket #\{\s*\$Ticket->id\s*\}\n*$/
+            ) {
             $forward_template->SetContent(q{
 
 { $ForwardTransaction->Content =~ /\S/ ? $ForwardTransaction->Content : "This is a forward of transaction #".$Transaction->id." of ticket #". $Ticket->id }

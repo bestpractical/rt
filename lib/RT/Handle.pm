@@ -1359,9 +1359,9 @@ sub IndexInfo {
         my $list = $dbh->selectall_arrayref(
             'select NON_UNIQUE, COLUMN_NAME, SUB_PART
             from information_schema.statistics
-            where table_schema = ? AND table_name = ? AND index_name = ?
+            where table_schema = ? AND LOWER(table_name) = ? AND index_name = ?
             ORDER BY SEQ_IN_INDEX',
-            undef, scalar RT->Config->Get('DatabaseName'), $args{'Table'}, $args{'Name'},
+            undef, scalar RT->Config->Get('DatabaseName'), lc $args{'Table'}, $args{'Name'},
         );
         return () unless $list && @$list;
         $res{'Unique'} = $list->[0][0]? 0 : 1;
@@ -1464,6 +1464,7 @@ sub DropIndex {
 
     my $res;
     if ( $db_type eq 'mysql' ) {
+        $args{'Table'} = $self->_CanonicTableNameMysql( $args{'Table'} );
         $res = $dbh->do(
             'drop index '. $dbh->quote_identifier($args{'Name'}) ." on $args{'Table'}",
         );
@@ -1485,6 +1486,20 @@ sub DropIndex {
     return ($res, $res? "Dropped $desc" : "Couldn't drop $desc: ". $dbh->errstr);
 }
 
+sub _CanonicTableNameMysql {
+    my $self = shift;
+    my $table = shift;
+    return $table unless $table;
+    # table name can be case sensitivity in DDL
+    # use LOWER to workaround mysql "bug"
+    return ($self->dbh->selectrow_array(
+        'SELECT table_name
+        FROM information_schema.tables
+        WHERE table_schema = ? AND LOWER(table_name) = ?',
+        undef, scalar RT->Config->Get('DatabaseName'), lc $table
+    ))[0] || $table;
+}
+
 sub DropIndexIfExists {
     my $self = shift;
     my %args = (Table => undef, Name => undef, @_);
@@ -1499,6 +1514,9 @@ sub DropIndexIfExists {
 sub CreateIndex {
     my $self = shift;
     my %args = ( Table => undef, Name => undef, Columns => [], CaseInsensitive => {}, @_ );
+
+    $args{'Table'} = $self->_CanonicTableNameMysql( $args{'Table'} )
+        if RT->Config->Get('DatabaseType') eq 'mysql';
 
     my $name = $args{'Name'};
     unless ( $name ) {

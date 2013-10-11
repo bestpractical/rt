@@ -1,14 +1,12 @@
 use strict;
 use warnings;
 
-use RT::Test::SMIME tests => undef;
+use RT::Test::SMIME tests => undef, config => 'Set( %Crypt, RejectOnUnencrypted => 1 );';
 my $test = 'RT::Test::SMIME';
 
 use IPC::Run3 'run3';
 use String::ShellQuote 'shell_quote';
 use RT::Tickets;
-
-RT->Config->Get('Crypt')->{'RejectOnUnencrypted'} = 1;
 
 my ($url, $m) = RT::Test->started_ok;
 ok $m->login, "logged in";

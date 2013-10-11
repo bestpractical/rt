@@ -286,30 +286,54 @@ fi
 AC_SUBST(RT_GD)
 
 dnl RT's GPG support
-AC_CHECK_PROG([RT_GPG], [gpg], "yes", "no")
+AC_CHECK_PROG([RT_GPG_DEPS], [gpg], "yes", "no")
+if test "$RT_GPG_DEPS" = yes; then
+        RT_GPG_DEPS="1"
+else
+        RT_GPG_DEPS="0"
+fi
 AC_ARG_ENABLE(gpg,
             AC_HELP_STRING([--enable-gpg],
                            [Turns on GNU Privacy Guard (GPG) support]),
             RT_GPG=$enableval)
 if test "$RT_GPG" = yes; then
         RT_GPG="1"
+        RT_GPG_DEPS="1"
 else
-        RT_GPG="0"
+        if test "$RT_GPG" = no; then
+                RT_GPG="0"
+                RT_GPG_DEPS="0"
+        else
+                RT_GPG="0"
+        fi
 fi
+AC_SUBST(RT_GPG_DEPS)
 AC_SUBST(RT_GPG)
 
 
 dnl RT's SMIME support
-AC_CHECK_PROG([RT_SMIME], [openssl], "yes", "no")
+AC_CHECK_PROG([RT_SMIME_DEPS], [openssl], "yes", "no")
+if test "$RT_SMIME_DEPS" = yes; then
+        RT_SMIME_DEPS="1"
+else
+        RT_SMIME_DEPS="0"
+fi
 AC_ARG_ENABLE(smime,
             AC_HELP_STRING([--enable-smime],
                            [Turns on Secure MIME (SMIME) support]),
             RT_SMIME=$enableval)
 if test "$RT_SMIME" = yes; then
         RT_SMIME="1"
+        RT_SMIME_DEPS="1"
 else
-        RT_SMIME="0"
+        if test "$RT_SMIME" = no; then
+                RT_SMIME="0"
+                RT_SMIME_DEPS="0"
+        else
+                RT_SMIME="0"
+        fi
 fi
+AC_SUBST(RT_SMIME_DEPS)
 AC_SUBST(RT_SMIME)
 
 
@@ -430,6 +454,8 @@ AC_CONFIG_FILES([
                  sbin/standalone_httpd
                  sbin/rt-setup-fulltext-index
                  sbin/rt-fulltext-indexer
+                 sbin/rt-serializer
+                 sbin/rt-importer
                  bin/rt-crontool
                  bin/rt-mailgate
                  bin/rt],

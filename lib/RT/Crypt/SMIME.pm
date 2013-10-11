@@ -56,6 +56,7 @@ use Role::Basic 'with';
 with 'RT::Crypt::Role';
 
 use RT::Crypt;
+use File::Which qw();
 use IPC::Run3 0.036 'run3';
 use RT::Util 'safe_run_child';
 use Crypt::X509;
@@ -109,6 +110,9 @@ used to mark which mails are signed by trusted certificate authorities.
 This configuration is generally insecure, as it allows the possibility
 of accepting forged mail signed by an untrusted certificate authority.
 
+Setting this option also allows encryption to users with certificates
+created by untrusted CAs.
+
 =head3 Passphrase
 
 C<Passphrase> may be set to a scalar (to use for all keys), an anonymous
@@ -137,17 +141,38 @@ to the certificate on the user.
 
 sub OpenSSLPath {
     state $cache = RT->Config->Get('SMIME')->{'OpenSSL'};
+    $cache = $_[1] if @_ > 1;
     return $cache;
 }
 
 sub Probe {
     my $self = shift;
     my $bin = $self->OpenSSLPath();
-    return 0 unless $bin;
+    unless ($bin) {
+        $RT::Logger->warning(
+            "No openssl path set; SMIME support has been disabled.  ".
+            "Check the 'OpenSSL' configuration in %OpenSSL");
+        return 0;
+    }
 
     if ($bin =~ m{^/}) {
-        return 0 unless -f $bin;
-        return 0 unless -x _;
+        unless (-f $bin and -x _) {
+            $RT::Logger->warning(
+                "Invalid openssl path $bin; SMIME support has been disabled.  ".
+                "Check the 'OpenSSL' configuration in %OpenSSL");
+            return 0;
+        }
+    } else {
+        local $ENV{PATH} = '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+            unless defined $ENV{PATH};
+        my $path = File::Which::which( $bin );
+        unless ($path) {
+            $RT::Logger->warning(
+                "Can't find openssl binary '$bin' in PATH ($ENV{PATH}); SMIME support has been disabled.  ".
+                "You may need to specify a full path to opensssl via the 'OpenSSL' configuration in %OpenSSL");
+            return 0;
+        }
+        $self->OpenSSLPath( $bin = $path );
     }
 
     {
@@ -824,9 +849,9 @@ sub GetCertificateInfo {
         @_,
     );
 
-    if ($args{Certificate} =~ /^-----BEGIN \s+ CERTIFICATE-----$
+    if ($args{Certificate} =~ /^-----BEGIN \s+ CERTIFICATE----- \s* $
                                 (.*?)
-                               ^-----END \s+ CERTIFICATE-----$/smx) {
+                               ^-----END \s+ CERTIFICATE----- \s* $/smx) {
         $args{Certificate} = MIME::Base64::decode_base64($1);
     }
 

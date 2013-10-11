@@ -722,7 +722,7 @@ our %META;
                 $gpgopts->{homedir} = File::Spec->catfile( $RT::BasePath, $gpgopts->{homedir} );
             }
             unless (-d $gpgopts->{homedir}  && -r _ ) { # no homedir, no gpg
-                $RT::Logger->debug(
+                $RT::Logger->info(
                     "RT's GnuPG libraries couldn't successfully read your".
                     " configured GnuPG home directory (".$gpgopts->{homedir}
                     ."). GnuPG support has been disabled");

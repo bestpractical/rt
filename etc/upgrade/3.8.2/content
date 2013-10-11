@@ -27,11 +27,24 @@ our @Initial = (
         }
         return 1;
     },
-);
-our @ACL = (
-    { GroupDomain => 'SystemInternal',
-      GroupType => 'privileged',
-      Right  => 'ShowApprovalsTab', },
+
+    sub {
+        my $group = RT::Group->new( RT->SystemUser );
+        $group->DBIx::SearchBuilder::Record::LoadByCols(
+            Domain => 'SystemInternal',
+            Type   => 'Privileged',
+        );
+        unless ($group->id) {
+            RT->Logger->warn("Failed to load Privilged group");
+            return;
+        }
+        my ( $return, $msg ) = $group->PrincipalObj->GrantRight(
+            Right => 'ShowApprovalsTab',
+            Object => RT->System,
+        );
+        RT->Logger->warn("Failed to grant ShowApprovalsTab right: $msg")
+            unless $return;
+    },
 );
 
 our @Templates = (
@@ -172,15 +185,18 @@ our @Final = (
         require Data::Dumper;
 
         my $scrips = RT::Scrips->new( RT->SystemUser );
-        $scrips->LimitToQueue( $approvals_q->id );
+        $scrips->{'with_disabled_column'} = 0;
+        $scrips->Limit( FIELD => 'Queue', VALUE => $approvals_q->id );
         while ( my $scrip = $scrips->Next ) {
             my %tmp =
                 map { $_ => $scrip->_Value( $_ ) }
-                $scrip->ReadableAttributes;
+                qw/id Description ScripCondition ScripAction
+                   CustomIsApplicableCode CustomPrepareCode CustomCommitCode
+                   Stage Queue Template Creator Created LastUpdatedBy LastUpdated/;
 
             print $tmp_fh Data::Dumper::Dumper( \%tmp );
 
-            my ($status, $msg) = $scrip->Delete;
+            my ($status, $msg) = $scrip->DBIx::SearchBuilder::Record::Delete;
             unless ( $status ) {
                 RT->Logger->error( "Couldn't delete scrip: $msg");
             }

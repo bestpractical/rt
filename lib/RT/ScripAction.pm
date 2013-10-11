@@ -345,6 +345,15 @@ sub _CoreAccessible {
  }
 };
 
+sub PreInflate {
+    my $class = shift;
+    my ($importer, $uid, $data) = @_;
+
+    $class->SUPER::PreInflate( $importer, $uid, $data );
+
+    return not $importer->SkipBy( "Name", $class, $uid, $data );
+}
+
 RT::Base->_ImportOverlays();
 
 1;

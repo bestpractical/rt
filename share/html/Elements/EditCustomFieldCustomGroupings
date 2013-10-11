@@ -50,6 +50,7 @@
     title => $group? loc($group) : loc('Custom Fields'),
     class => $css_class .' '. ($group? CSSClass("$css_class-$group") : ''),
     hide_empty => 1,
+    %$TitleBoxARGS,
 &>
 % $ARGS{CustomFields} = $CustomFieldGenerator->() if $CustomFieldGenerator;
 <& EditCustomFields, %ARGS, Object => $Object, Grouping => $group &>
@@ -65,4 +66,6 @@ $css_class =~ s/^rt:://;
 $css_class =~ s/::/-/g;
 $css_class = CSSClass($css_class);
 $css_class .= '-info-cfs';
+
+my $TitleBoxARGS = delete $ARGS{TitleBoxARGS} || {};
 </%INIT>

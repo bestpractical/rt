@@ -1,3 +1,5 @@
+=encoding utf-8
+
 =head1 RT Authentication
 
 RT allows for several different ways to authenticate users including an
