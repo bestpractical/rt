@@ -787,6 +787,7 @@ sub InsertData {
         $RT::Logger->debug("Creating groups...");
         foreach my $item (@Groups) {
             my $new_entry = RT::Group->new( RT->SystemUser );
+            $item->{Domain} ||= 'UserDefined';
             my $member_of = delete $item->{'MemberOf'};
             my $members = delete $item->{'Members'};
             my ( $return, $msg ) = $new_entry->_Create(%$item);
