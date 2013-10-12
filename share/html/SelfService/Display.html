@@ -50,6 +50,7 @@
 % $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSRef => \%ARGS, Ticket => $Ticket );
 
 <& /Elements/ListActions, actions => \@results &>
+<& /Ticket/Elements/ShowUpdateStatus, Ticket => $Ticket &>
 
   <table width="100%" class="ticketsummary" >
       <tr>
@@ -177,15 +178,21 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
         $m->abort();
     }
 
-    if (@results) {
-        # We've done something, so we need to clear the decks to avoid
-        # resubmission on refresh.
-        # But we need to store Actions somewhere too, so we don't lose them.
-        my $key = Digest::MD5::md5_hex(rand(1024));
-        push @{ $session{"Actions"}->{$key}  ||= [] }, @results;
-        $session{'i'}++;
-        RT::Interface::Web::Redirect( RT->Config->Get('WebURL') ."SelfService/Display.html?id=". $Ticket->id."&results=".$key);
+    if ( $ARGS{'MarkAsSeen'} ) {
+        $Ticket->SetAttribute(
+            Name    => 'User-'. $Ticket->CurrentUser->id .'-SeenUpTo',
+            Content => $Ticket->LastUpdated,
+        );
+        push @results, loc('Marked all messages as seen');
     }
+
+    # This code does automatic redirection if any updates happen.
+    MaybeRedirectForResults(
+        Actions   => \@results,
+        Path      => '/SelfService/Display.html',
+        Anchor    => $ARGS{'Anchor'},
+        Arguments => { id => $Ticket->id },
+    );
 
     my $Transactions = $Ticket->Transactions;
 
