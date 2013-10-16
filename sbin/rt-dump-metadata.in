@@ -200,6 +200,9 @@ foreach my $class (@classes) {
             my $attributes = $obj->Attributes;
             while ( my $attribute = $attributes->Next ) {
                 my $content = $attribute->Content;
+                if ( $class eq 'Users' and $attribute->Name eq 'Bookmarks' ) {
+                    next;
+                }
                 $rv->{Attributes}{ $attribute->Name } = $content
                     if length($content);
             }
