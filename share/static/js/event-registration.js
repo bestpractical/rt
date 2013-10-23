@@ -11,7 +11,7 @@ jQuery(function() {
 
             self.closest("form")
                 .find("table.collection input[type=checkbox]")
-                .attr("disabled", checked ? "disabled" : "");
+                .prop("disabled", checked);
         });
 });
 
