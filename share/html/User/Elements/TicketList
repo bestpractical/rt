@@ -88,17 +88,17 @@ my %QueryProperties = (
     Format     => $Format,
 );
 
+$m->callback( CallbackName => 'ModifyQueryProperties',
+    %ARGS,
+    QueryProperties => \%QueryProperties,
+);
+
 my $url  = RT->Config->Get('WebPath') . '/Search/Results.html?';
    $url .= $m->comp('/Elements/QueryString',
                     Query       => $QueryProperties{'Query'},
                     OrderBy     => $QueryProperties{'OrderBy'},
                     Order       => $QueryProperties{'Order'},
            );
-
-$m->callback( CallbackName => 'ModifyQueryProperties',
-    %ARGS,
-    QueryProperties => \%QueryProperties,
-);
 
 </%INIT>
 <%ARGS>
