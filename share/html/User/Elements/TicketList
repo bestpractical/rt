@@ -81,8 +81,8 @@ if (@$conditions) {
 
 my %QueryProperties = (
     Query      => $sql,
-    OrderBy    => 'Priority',
-    Order      => 'DESC',
+    OrderBy    => 'Priority|id',
+    Order      => 'DESC|DESC',
     Rows       => $Rows || 10,
     ShowHeader => $ShowHeader,
     Format     => $Format,
