@@ -422,6 +422,7 @@ sub BuildEmail {
         Type        => 'text/html',
         Charset     => 'UTF-8',
         Disposition => 'inline',
+        Encoding    => "base64",
     );
 
     for my $part (@parts) {
