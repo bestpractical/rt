@@ -7,11 +7,11 @@ jQuery(function() {
     jQuery(global_checkboxes.join(", "))
         .change(function(){
             var self    = jQuery(this);
-            var checked = self.attr("checked");
+            var checked = self.prop("checked");
 
             self.closest("form")
                 .find("table.collection input[type=checkbox]")
-                .attr("disabled", checked ? "disabled" : "");
+                .prop("disabled", checked);
         });
 });
 

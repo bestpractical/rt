@@ -140,20 +140,20 @@ function showShredderPluginTab( plugin )
 
 function checkAllObjects()
 {
-    var check = jQuery('#shredder-select-all-objects-checkbox').attr('checked');
+    var check = jQuery('#shredder-select-all-objects-checkbox').prop('checked');
     var elements = jQuery('#shredder-search-form :checkbox[name=WipeoutObject]');
 
     if( check ) {
-        elements.attr('checked', true);
+        elements.prop('checked', true);
     } else {
-        elements.attr('checked', false);
+        elements.prop('checked', false);
     }
 }
 
 function checkboxToInput(target,checkbox,val){    
     var tar = jQuery('#' + escapeCssSelector(target));
     var box = jQuery('#' + escapeCssSelector(checkbox));
-    if(box.attr('checked')){
+    if(box.prop('checked')){
         if (tar.val()==''){
             tar.val(val);
         }
