@@ -80,6 +80,7 @@ BEGIN {
 use Getopt::Long;
 my %opt;
 GetOptions( \%opt, "help|h",
+    "limit-to-privileged|l",
     "all|a",
 );
 
@@ -119,6 +120,8 @@ foreach my $class (@classes) {
     my $objects = "RT::$class"->new( RT->SystemUser );
     $objects->{find_disabled_rows} = 1;
     $objects->UnLimit;
+    $objects->LimitToPrivileged if $class eq 'Users'
+        && $opt{'limit-to-privileged'};
     $objects->Limit(
         FIELD    => 'Domain',
         OPERATOR => '=',
@@ -253,6 +256,10 @@ This is NOT a tool for backing up an RT database.
 When run with C<--all>, the dump will include all configuration
 metadata; otherwise, the metadata dump will only include 'local'
 configuration changes, i.e. those done manually in the web interface.
+
+=item C<--limit-to-privileged> or C<-l>
+
+Causes the dumper to only dump privileged users.
 
 =back
 
