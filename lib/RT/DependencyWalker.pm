@@ -51,7 +51,7 @@ package RT::DependencyWalker;
 use strict;
 use warnings;
 
-use RT::DependencyWalker::Dependencies;
+use RT::DependencyWalker::FindDependencies;
 use Carp;
 
 sub new {
