@@ -248,7 +248,7 @@ This is NOT a tool for backing up an RT database.
 
 =over
 
-=item C<--all>
+=item C<--all> or C<-a>
 
 When run with C<--all>, the dump will include all configuration
 metadata; otherwise, the metadata dump will only include 'local'
