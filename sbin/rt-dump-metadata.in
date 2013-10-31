@@ -79,7 +79,9 @@ BEGIN {
 
 use Getopt::Long;
 my %opt;
-GetOptions( \%opt, "help|h" );
+GetOptions( \%opt, "help|h",
+    "all|a",
+);
 
 if ( $opt{help} ) {
     require Pod::Usage;
@@ -92,8 +94,6 @@ require XML::Simple;
 
 RT::LoadConfig();
 RT::Init();
-
-my $LocalOnly = @ARGV ? shift(@ARGV) : 1;
 
 my %RV;
 my %Ignore = (
@@ -130,7 +130,7 @@ foreach my $class (@classes) {
         $objects->OrderBy( FIELD => 'Id' );
     }
 
-    if ($LocalOnly) {
+    unless ($opt{all}) {
         next if $class eq 'ACL';    # XXX - would go into infinite loop - XXX
         $objects->Limit(
             FIELD    => 'LastUpdatedBy',
@@ -232,7 +232,7 @@ rt-dump-metadata - dump configuration metadata from an RT database
 
 =head1 SYNOPSIS
 
-    rt-dump-metdata [ 0 ]
+    rt-dump-metdata [--all]
 
 =head1 DESCRIPTION
 
@@ -242,11 +242,19 @@ C<rt-setup-database>. To dump and load a full RT database, you should generally
 use the native database tools instead, as well as performing any necessary
 steps from UPGRADING.
 
-When run without arguments, the metadata dump will only include 'local'
+This is NOT a tool for backing up an RT database.
+
+=head1 OPTIONS
+
+=over
+
+=item C<--all>
+
+When run with C<--all>, the dump will include all configuration
+metadata; otherwise, the metadata dump will only include 'local'
 configuration changes, i.e. those done manually in the web interface.
 
-When run with the argument '0', the dump will include all configuration
-metadata.
+=back
 
-This is NOT a tool for backing up an RT database.
+=cut
 
