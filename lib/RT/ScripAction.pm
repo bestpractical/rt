@@ -193,8 +193,8 @@ sub TemplateObj {
         Remove => "4.4",
     );
 
-    return undef unless $self->{Template};
     if ( !$self->{'TemplateObj'} ) {
+        return undef unless $self->{Template};
         $self->{'TemplateObj'} = RT::Template->new( $self->CurrentUser );
         $self->{'TemplateObj'}->Load( $self->{'Template'} );
 
