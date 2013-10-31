@@ -125,6 +125,7 @@ while ( my $Transaction = $Transactions->Next ) {
         RowNum            => $i,
         Attachments       => $trans_attachments->{$Transaction->id} || {},
         AttachmentContent => $trans_content,
+        HasTxnCFs         => $HasTxnCFs,
     );
 
     # manually flush the content buffer after each txn,
@@ -171,6 +172,8 @@ for my $attachment (@{$Attachments->ItemsArrayRef()}) {
 
 my $record_type = $Object->RecordType;
 my $histid      = "\L$record_type\E-" . $Object->id . "-history";
+
+my $HasTxnCFs = ($Object->can("TransactionCustomFields") and $Object->TransactionCustomFields->Count);
 </%INIT>
 <%ARGS>
 $Object
