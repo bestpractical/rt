@@ -327,7 +327,8 @@ C<rt-setup-database>. To dump and load a full RT database, you should generally
 use the native database tools instead, as well as performing any necessary
 steps from UPGRADING.
 
-This is NOT a tool for backing up an RT database.
+This is NOT a tool for backing up an RT database.  See also
+L<docs/initialdata> for more straightforward means of importing data.
 
 =head1 OPTIONS
 
