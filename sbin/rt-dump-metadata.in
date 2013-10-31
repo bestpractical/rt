@@ -119,6 +119,11 @@ foreach my $class (@classes) {
     my $objects = "RT::$class"->new( RT->SystemUser );
     $objects->{find_disabled_rows} = 1;
     $objects->UnLimit;
+    $objects->Limit(
+        FIELD    => 'Domain',
+        OPERATOR => '=',
+        VALUE    => 'UserDefined'
+    ) if $class eq 'Groups';
 
     if ( $class eq 'CustomFields' ) {
         $objects->OrderByCols(
@@ -142,11 +147,6 @@ foreach my $class (@classes) {
             OPERATOR => '!=',
             VALUE    => $SystemUserId
         ) if $class eq 'Users';
-        $objects->Limit(
-            FIELD    => 'Domain',
-            OPERATOR => '=',
-            VALUE    => 'UserDefined'
-        ) if $class eq 'Groups';
     }
 
     my %fields;
