@@ -81,6 +81,7 @@ use Getopt::Long;
 my %opt;
 GetOptions( \%opt, "help|h",
     "limit-to-privileged|l",
+    "skip-disabled|s",
     "all|a",
 );
 
@@ -118,7 +119,7 @@ my @classes      = qw(
 foreach my $class (@classes) {
     require "RT/$class.pm";
     my $objects = "RT::$class"->new( RT->SystemUser );
-    $objects->{find_disabled_rows} = 1;
+    $objects->{find_disabled_rows} = 1 unless $opt{'skip-disabled'};
     $objects->UnLimit;
     $objects->LimitToPrivileged if $class eq 'Users'
         && $opt{'limit-to-privileged'};
@@ -260,6 +261,10 @@ configuration changes, i.e. those done manually in the web interface.
 =item C<--limit-to-privileged> or C<-l>
 
 Causes the dumper to only dump privileged users.
+
+=item C<--skip-disabled> or C<-s>
+
+Ignores disabled rows in the database.
 
 =back
 
