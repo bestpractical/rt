@@ -68,9 +68,7 @@
 
   <div class="content">
 <%PERL>
-if ( $Transaction->CustomFieldValues->Count ) {
-    $m->comp('/Elements/ShowCustomFields', Object => $Transaction );
-}
+$m->comp('/Elements/ShowCustomFields', Object => $Transaction ) if $HasTxnCFs;
 $m->comp(
     'ShowTransactionAttachments',
     %ARGS,
@@ -87,6 +85,7 @@ $Object => $Transaction->Object
 
 $Attachments => undef
 $AttachmentContent => undef
+$HasTxnCFs => 1
 
 $ShowBody => 1
 $ShowActions => 1
