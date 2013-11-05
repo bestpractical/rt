@@ -67,27 +67,27 @@ use base qw(RT::Shredder::Exception);
 
 my %DESCRIPTION = (
     DependenciesLimit => <<END,
-Dependecies list have reached its limit.
+Dependencies list has reached its limit.
 See \$RT::DependenciesLimit in RT::Shredder docs.
 END
 
     SystemObject => <<END,
-System object was requested for deletion, shredder couldn't
-do that because system would be unusable than.
+System object was selected for deletion, shredder couldn't
+do that because system would be unusable then.
 END
 
     CouldntLoadObject => <<END,
-Shredder couldn't load object. Most probably it's not fatal error.
-May be you've used Objects plugin and asked to delete object that
+Shredder couldn't load object. Most likely it's not a fatal error.
+Perhaps you've used the Objects plugin and asked to delete an object that
 doesn't exist in the system. If you think that your request was
-correct and it's problem of the Shredder then you can get full error
-message from RT log files and send bug report.
+correct and it's a problem of the Shredder then you can get a full error
+message from RT log files and send a bug report.
 END
 
     NoResolver => <<END,
 Object has dependency that could be resolved, but resolver
-wasn't defined. You have to re-read documentation of the
-plugin you're using, for example the 'Users' plugin has
+wasn't defined. You have to re-read the documentation of the
+plugin you're using. For example the 'Users' plugin has
 option 'replace_relations' argument.
 END
 );
