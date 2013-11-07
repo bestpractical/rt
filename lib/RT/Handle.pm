@@ -1486,7 +1486,17 @@ sub DropIndex {
     }
     elsif ( $db_type eq 'Oracle' ) {
         my $user = RT->Config->Get('DatabaseUser');
-        $res = $dbh->do("drop index $user.$args{'Name'}");
+        # Check if it has constraints associated with it
+        my ($constraint) = $dbh->selectrow_arrayref(
+            'SELECT constraint_name, table_name FROM dba_constraints WHERE LOWER(owner) = ? AND LOWER(index_name) = ?',
+            undef, lc $user, lc $args{'Name'}
+        );
+        if ($constraint) {
+            my ($constraint_name, $table) = @{$constraint};
+            $res = $dbh->do("ALTER TABLE $user.$table DROP CONSTRAINT $constraint_name");
+        } else {
+            $res = $dbh->do("DROP INDEX $user.$args{'Name'}");
+        }
     }
     else {
         die "Not implemented";
