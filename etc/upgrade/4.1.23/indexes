@@ -160,7 +160,8 @@ foreach my $table ('Users', 'Tickets') {
         my ($status, $msg) = $RT::Handle->DropIndex(
             Table => $table, Name => $index->{'Name'},
         );
-        RT->Logger->info($msg);
+        my $method = $status ? 'debug' : 'warning';
+        RT->Logger->$method($msg);
     }
 }
 
