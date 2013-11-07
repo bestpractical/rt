@@ -1429,14 +1429,14 @@ sub IndexInfo {
         $res{'Unique'} = (grep lc $_->[1] eq lc $args{'Name'}, @$list)[0][2]? 1 : 0;
     }
     elsif ( $db_type eq 'Oracle' ) {
-        my $index = $dbh->selectrow_hashref(
+        my $index = $dbh->selectrow_arrayref(
             'select uniqueness, funcidx_status from dba_indexes
             where lower(table_name) = ? AND lower(index_name) = ? AND LOWER(Owner) = ?',
             undef, lc $args{'Table'}, lc $args{'Name'}, lc RT->Config->Get('DatabaseUser'),
         );
-        return () unless $index && keys %$index;
-        $res{'Unique'} = $index->{'uniqueness'} eq 'UNIQUE'? 1 : 0;
-        $res{'Functional'} = $index->{'funcidx_status'}? 1 : 0;
+        return () unless $index && @$index;
+        $res{'Unique'} = $index->[0] eq 'UNIQUE'? 1 : 0;
+        $res{'Functional'} = $index->[1] ? 1 : 0;
 
         my %columns = map @$_, @{ $dbh->selectall_arrayref(
             'select column_position, column_name from dba_ind_columns
