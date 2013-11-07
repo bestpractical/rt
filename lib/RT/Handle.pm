@@ -552,6 +552,15 @@ sub InsertIndexes {
         $path = $base_path;
     }
 
+    if ( $db_type eq 'Oracle' ) {
+        my $db_user = RT->Config->Get('DatabaseUser');
+        my $status = $dbh->do( "ALTER SESSION SET CURRENT_SCHEMA=$db_user" );
+        unless ( $status ) {
+            return $status, "Couldn't set current schema to $db_user."
+                ."\nError: ". $dbh->errstr;
+        }
+    }
+
     local $@;
     eval { require $path; 1 }
         or return (0, "Couldn't execute '$path': " . $@);
