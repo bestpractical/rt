@@ -94,13 +94,11 @@ my $dedup = sub {
     );
     foreach my $e (@list) {
         RT->Logger->debug("Checking index on ". $e->{'Column'} ." in ". $e->{'Table'} );
-        my ($index) = $RT::Handle->IndexesThatBeginWith(
+        my (@indexes) = $RT::Handle->IndexesThatBeginWith(
             Table => $e->{'Table'}, Columns => [$e->{'Column'}]
         );
-        $index = undef if $index && @{$index->{'Columns'}}>1;
-        if (
-            $index && $index->{'Unique'}
-            && ($RT::Handle->CaseSensitive? $index->{'CaseInsensitive'}{ lc $e->{'Column'} } : 1 )
+        @indexes = grep {@{$_->{'Columns'}} == 1} @indexes;
+        if (grep {$_->{Unique} && ($RT::Handle->CaseSensitive? $_->{'CaseInsensitive'}{ lc $e->{'Column'} } : 1 ) } @indexes
         ) {
             RT->Logger->debug("Required index exists. Skipping.");
             next;
@@ -108,7 +106,7 @@ my $dedup = sub {
 
         $dedup->( $e->{'Table'}, $e->{'Column'} );
 
-        if ( $index ) {
+        for my $index ( @indexes ) {
             my ($status, $msg) = $RT::Handle->DropIndex(
                 Table => $e->{'Table'}, Name => $index->{'Name'},
             );
