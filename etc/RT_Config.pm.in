@@ -972,6 +972,8 @@ Set(@CSSFiles, qw//);
 This determines how user info is displayed. 'concise' will show the
 first of RealName, Name or EmailAddress that has a value. 'verbose' will
 show EmailAddress, and the first of RealName or Name which is defined.
+The default, 'role', uses 'verbose' for unprivileged users, and the Name
+followed by the RealName for privileged users.
 
 =cut
 
