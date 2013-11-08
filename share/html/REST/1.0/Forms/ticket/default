@@ -392,7 +392,7 @@ else {
             else {
                 my $vals = $ticket->CustomFieldValues($cf->id);
 
-                if ( !defined $val || !length $val ) {
+                if ( $ticket->CustomFieldValueIsEmpty( Field => $cf, Value => $val ) ) {
                     while ( my $val = $vals->Next ) {
                         ($n, $s) = $ticket->DeleteCustomFieldValue(
                             Field => $cf, ValueId => $val->id,
@@ -452,6 +452,10 @@ else {
                     }
                     for ( @new ) {
                         while ( $new{$_} && $new{$_}-- ) {
+                            next if $ticket->CustomFieldValueIsEmpty(
+                                Field => $cf,
+                                Value => $_,
+                            );
                             ($n, $s) = $ticket->AddCustomFieldValue(
                                 Field => $cf, Value => $_ );
                             $s =~ s/^# // if defined $s;

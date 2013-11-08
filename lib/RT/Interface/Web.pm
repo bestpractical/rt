@@ -3041,6 +3041,10 @@ sub _ProcessObjectCustomFieldUpdates {
 
         if ( $arg eq 'AddValue' || $arg eq 'Value' ) {
             foreach my $value (@values) {
+                next if $args{'Object'}->CustomFieldValueIsEmpty(
+                    Field => $cf->id,
+                    Value => $value,
+                );
                 my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue(
                     Field => $cf->id,
                     Value => $value
@@ -3071,10 +3075,22 @@ sub _ProcessObjectCustomFieldUpdates {
 
             my %values_hash;
             foreach my $value (@values) {
-                if ( my $entry = $cf_values->HasEntry($value) ) {
+                my $value_in_db = $value;
+                if ( $cf->Type eq 'DateTime' ) {
+                    my $date = RT::Date->new($session{CurrentUser});
+                    $date->Set(Format => 'unknown', Value => $value);
+                    $value_in_db = $date->ISO;
+                }
+
+                if ( my $entry = $cf_values->HasEntry($value_in_db) ) {
                     $values_hash{ $entry->id } = 1;
                     next;
                 }
+
+                next if $args{'Object'}->CustomFieldValueIsEmpty(
+                    Field => $cf,
+                    Value => $value,
+                );
 
                 my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue(
                     Field => $cf,
@@ -3083,9 +3099,6 @@ sub _ProcessObjectCustomFieldUpdates {
                 push( @results, $msg );
                 $values_hash{$val} = 1 if $val;
             }
-
-            # For Date Cfs, @values is empty when there is no changes (no datas in form input)
-            return @results if ( $cf->Type =~ /^Date(?:Time)?$/ && ! @values );
 
             $cf_values->RedoSearch;
             while ( my $cf_value = $cf_values->Next ) {
@@ -3318,23 +3331,29 @@ sub ProcessTicketDates {
     #Run through each field in this list. update the value if apropriate
     foreach my $field (@date_fields) {
         next unless exists $ARGSRef->{ $field . '_Date' };
-        next if $ARGSRef->{ $field . '_Date' } eq '';
-
-        my ( $code, $msg );
-
-        my $DateObj = RT::Date->new( $session{'CurrentUser'} );
-        $DateObj->Set(
-            Format => 'unknown',
-            Value  => $ARGSRef->{ $field . '_Date' }
-        );
-
         my $obj = $field . "Obj";
-        if (    ( defined $DateObj->Unix )
-            and ( $DateObj->Unix != $Ticket->$obj()->Unix() ) )
-        {
-            my $method = "Set$field";
-            my ( $code, $msg ) = $Ticket->$method( $DateObj->ISO );
-            push @results, "$msg";
+        my $method = "Set$field";
+
+        if ( $ARGSRef->{ $field . '_Date' } eq '' ) {
+            if ( $Ticket->$obj->Unix ) {
+                my ( $code, $msg ) = $Ticket->$method( '1970-01-01 00:00:00' );
+                push @results, $msg;
+            }
+        }
+        else {
+
+            my $DateObj = RT::Date->new( $session{'CurrentUser'} );
+            $DateObj->Set(
+                Format => 'unknown',
+                Value  => $ARGSRef->{ $field . '_Date' }
+            );
+
+            if (    ( defined $DateObj->Unix )
+                and ( $DateObj->Unix != $Ticket->$obj()->Unix() ) )
+            {
+                my ( $code, $msg ) = $Ticket->$method( $DateObj->ISO );
+                push @results, $msg;
+            }
         }
     }
 
@@ -3570,6 +3589,11 @@ sub ProcessRecordBulkCustomFields {
         }
         foreach my $value ( @{ $data->{'Add'} || [] } ) {
             next if $current_values->HasEntry($value);
+
+            next if $args{'RecordObj'}->CustomFieldValueIsEmpty(
+                Field => $cfid,
+                Value => $value,
+            );
 
             my ( $id, $msg ) = $args{'RecordObj'}->AddCustomFieldValue(
                 Field => $cfid,

@@ -474,7 +474,10 @@ sub Create {
         foreach my $value (
             UNIVERSAL::isa( $args{$arg} => 'ARRAY' ) ? @{ $args{$arg} } : ( $args{$arg} ) )
         {
-            next unless defined $value && length $value;
+            next if $self->CustomFieldValueIsEmpty(
+                Field => $cfid,
+                Value => $value,
+            );
 
             # Allow passing in uploaded LargeContent etc by hash reference
             my ($status, $msg) = $self->_AddCustomFieldValue(
