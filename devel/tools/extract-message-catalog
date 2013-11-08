@@ -189,7 +189,7 @@ sub extract_strings_from_code {
     # Comment-based mark: "..." # loc
     $line = 1;
     pos($_) = 0;
-    while (m/\G(.*?($re_delim)[\}\)\],;]*$re_loc_suffix)/smgo) {
+    while (m/\G(.*?($re_delim)[ \{\}\)\],;]*$re_loc_suffix)/smgo) {
         my ( $all, $str ) = ( $1, $2 );
         $line += ( $all =~ tr/\n/\n/ );
         unless ( defined $str ) {
@@ -204,7 +204,7 @@ sub extract_strings_from_code {
     # Comment-based qw mark: "qw(...)" # loc_qw
     $line = 1;
     pos($_) = 0;
-    while (m/\G(.*?(?:qw\(([^)]+)\)\s*[\{\}\)\],; ]*)?$re_loc_qw_suffix)/smgo) {
+    while (m/\G(.*?(?:qw\(([^)]+)\)[ \{\}\)\],;]*)?$re_loc_qw_suffix)/smgo) {
         my ( $all, $str ) = ( $1, $2 );
         $line += ( $all =~ tr/\n/\n/ );
         unless ( defined $str ) {
@@ -234,7 +234,7 @@ sub extract_strings_from_code {
     # Comment-based pair mark: "..." => "..." # loc_pair
     $line = 1;
     pos($_) = 0;
-    while (m/\G(.*?(?:(\w+|$re_delim)\s*=>\s*($re_delim)[\s\}\)\],;]*)?$re_loc_pair_suffix)/smgo) {
+    while (m/\G(.*?(?:(\w+|$re_delim)\s*=>\s*($re_delim)[ \{\}\)\],;]*)?$re_loc_pair_suffix)/smgo) {
         my ( $all, $key, $val ) = ( $1, $2, $10 );
         $line += ( $all =~ tr/\n/\n/ );
         unless ( defined $key && defined $val ) {
