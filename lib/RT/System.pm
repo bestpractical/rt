@@ -80,17 +80,17 @@ use RT::ACL;
 use RT::ACE;
 use Data::GUID;
 
-__PACKAGE__->AddRight( Admin   => SuperUser           => 'Do anything and everything'); # loc_pair
-__PACKAGE__->AddRight( Staff   => ShowUserHistory     => 'Show history of public user properties'); # loc_pair
-__PACKAGE__->AddRight( Admin   => AdminUsers          => 'Create, modify and delete users'); # loc_pair
-__PACKAGE__->AddRight( Staff   => ModifySelf          => "Modify one's own RT account"); # loc_pair
-__PACKAGE__->AddRight( Staff   => ShowArticlesMenu    => 'Show Articles menu'); # loc_pair
-__PACKAGE__->AddRight( Admin   => ShowConfigTab       => 'Show Admin menu'); # loc_pair
-__PACKAGE__->AddRight( Admin   => ShowApprovalsTab    => 'Show Approvals tab'); # loc_pair
-__PACKAGE__->AddRight( Staff   => ShowGlobalTemplates => 'Show global templates'); # loc_pair
-__PACKAGE__->AddRight( General => LoadSavedSearch     => 'Allow loading of saved searches'); # loc_pair
-__PACKAGE__->AddRight( General => CreateSavedSearch   => 'Allow creation of saved searches'); # loc_pair
-__PACKAGE__->AddRight( Admin   => ExecuteCode         => 'Allow writing Perl code in templates, scrips, etc'); # loc_pair
+__PACKAGE__->AddRight( Admin   => SuperUser           => 'Do anything and everything'); # loc
+__PACKAGE__->AddRight( Staff   => ShowUserHistory     => 'Show history of public user properties'); # loc
+__PACKAGE__->AddRight( Admin   => AdminUsers          => 'Create, modify and delete users'); # loc
+__PACKAGE__->AddRight( Staff   => ModifySelf          => "Modify one's own RT account"); # loc
+__PACKAGE__->AddRight( Staff   => ShowArticlesMenu    => 'Show Articles menu'); # loc
+__PACKAGE__->AddRight( Admin   => ShowConfigTab       => 'Show Admin menu'); # loc
+__PACKAGE__->AddRight( Admin   => ShowApprovalsTab    => 'Show Approvals tab'); # loc
+__PACKAGE__->AddRight( Staff   => ShowGlobalTemplates => 'Show global templates'); # loc
+__PACKAGE__->AddRight( General => LoadSavedSearch     => 'Allow loading of saved searches'); # loc
+__PACKAGE__->AddRight( General => CreateSavedSearch   => 'Allow creation of saved searches'); # loc
+__PACKAGE__->AddRight( Admin   => ExecuteCode         => 'Allow writing Perl code in templates, scrips, etc'); # loc
 
 =head2 AvailableRights
 
