@@ -193,7 +193,7 @@ msgstr "%1 - Określ moduł działań, którego chcesz użyć"
 #: bin/rt-crontool:334
 #. ("--transaction-type")
 msgid "%1 - Specify the comma separated list of transactions' types you want to use"
-msgstr "Określ listę oddzielonych przecinkami typów transakcji , których chcesz użyć"
+msgstr "%1 - Określ listę oddzielonych przecinkami typów transakcji , których chcesz użyć"
 
 #: bin/rt-crontool:316
 #. ("--condition")

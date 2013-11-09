@@ -7293,7 +7293,7 @@ msgstr "Резултати претраге"
 
 #: NOT FOUND IN SOURCE
 msgid "Search results grouped by %1"
-msgstr "Резултати претраге груписани по %2"
+msgstr "Резултати претраге груписани по %1"
 
 #: lib/RT/Config.pm:295
 msgid "Search results refresh interval"

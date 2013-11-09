@@ -296,7 +296,7 @@ msgstr "%1 kopija"
 #: share/html/Admin/Tools/Configuration.html:77
 #. ($meta->{'Source'}{'Extension'})
 msgid "%1 core config"
-msgstr "Pamatkonfigurācija"
+msgstr "%1 pamatkonfigurācija"
 
 #: lib/RT/Record.pm:962
 msgid "%1 could not be set to %2."

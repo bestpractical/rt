@@ -1958,7 +1958,7 @@ msgstr "Ezin izan da %1(r)en '%2' kode-blokea konpilatu: %3"
 #: lib/RT/Template.pm:815
 #. ($fi_text, $error)
 msgid "Couldn't compile template codeblock '%1': %2"
-msgstr "Ezin izan da txantiloiaren '%1' kode-blokea konpilatu: %3"
+msgstr "Ezin izan da txantiloiaren '%1' kode-blokea konpilatu: %2"
 
 #: lib/RT/Record.pm:2066 lib/RT/Record.pm:2116
 #. ($Msg)

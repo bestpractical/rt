@@ -446,7 +446,7 @@ msgstr "%1 actualitzar: %2"
 #: lib/RT/SharedSetting.pm:252
 #. (ucfirst($self->ObjectName))
 msgid "%1 update: Nothing changed"
-msgstr "%2 actualitzar: Res ha canviat"
+msgstr "%1 actualitzar: Res ha canviat"
 
 #: lib/RT/Record.pm:519 lib/RT/SharedSetting.pm:256
 #. ($self->loc( $args{'Field'} ),)

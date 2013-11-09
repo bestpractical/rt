@@ -949,7 +949,7 @@ msgstr "Añadido %1 a miembros de %2 para este queue"
 #: lib/RT/Class.pm:386
 #. ($cf->Name)
 msgid "Added Subject Override: %1"
-msgstr "Añadida anulación de asunto"
+msgstr "Añadida anulación de asunto: %1"
 
 #: share/html/Elements/RT__Queue/ColumnMap:65 share/html/Elements/RT__User/ColumnMap:101
 msgid "Address"

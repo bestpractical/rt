@@ -1270,7 +1270,7 @@ msgstr "Artiklar i %1"
 #: share/html/SelfService/Article/Search.html:64
 #. ($Articles_Content)
 msgid "Articles matching %1"
-msgstr "Artiklar matchar %!"
+msgstr "Artiklar matchar %1"
 
 #: share/html/Articles/Topics.html:101
 msgid "Articles with no topics"

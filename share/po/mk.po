@@ -489,7 +489,7 @@ msgstr ""
 #: share/html/Elements/CreateTicket:54
 #. ($button_start, $button_end, $queue_selector)
 msgid "%1New ticket in%2&nbsp;%3"
-msgstr "<input type=\"submit\" class=\"button\" value=Нов тикет во\" />&nbsp;%1"
+msgstr "%1Нов тикет во%2&nbsp;%3"
 
 #: lib/RT/Date.pm:366
 msgid "%1W"

@@ -191,7 +191,7 @@ msgstr "%1 - Zadajte názov alebo ID šablón(y), ktorý chcete použiť"
 #: bin/rt-crontool:322
 #. ("--action")
 msgid "%1 - Specify the action module you want to use"
-msgstr "Špecifikujte akú akciu modulu chcete pouťiť"
+msgstr "%1 - Špecifikujte akú akciu modulu chcete pouťiť"
 
 #: bin/rt-crontool:334
 #. ("--transaction-type")
@@ -352,7 +352,7 @@ msgstr ""
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
 #. ($email->format, loc(substr($field, 6)))
 msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
-msgstr "%1 je adresa RT na prijímanie pošty. Pridanie ako '% 2' by vytvorilo poštovú slučku"
+msgstr "%1 je adresa RT na prijímanie pošty. Pridanie ako '%2' by vytvorilo poštovú slučku"
 
 #: lib/RT/Ticket.pm:673
 #. ($principal->Object->Name,                         $self->loc($args{'Type'}))

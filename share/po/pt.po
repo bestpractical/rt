@@ -924,7 +924,7 @@ msgstr ""
 #: lib/RT/Queue.pm:605
 #. ($principal->Object->Name, $self->loc($args{'Type'}))
 msgid "Added %1 to members of %2 for this queue."
-msgstr "Adicionado %1 aos membros de %1 para esta queue"
+msgstr "Adicionado %1 aos membros de %2 para esta queue"
 
 #: lib/RT/Class.pm:386
 #. ($cf->Name)

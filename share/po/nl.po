@@ -736,7 +736,7 @@ msgstr "(vereist)"
 #: share/html/Elements/Crypt/SelectKeyForEncryption:53
 #. ($key->{'TrustTerse'})
 msgid "(trust: %1)"
-msgstr "vertrouwen"
+msgstr "(vertrouwen: %1)"
 
 #: share/html/Elements/ShowTransactionAttachments:276 share/html/Elements/ShowTransactionAttachments:62
 msgid "(untitled)"

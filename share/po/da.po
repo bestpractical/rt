@@ -8175,7 +8175,7 @@ msgstr "Skabelonfortolkningsfejl"
 #: lib/RT/Template.pm:568 lib/RT/Template.pm:796
 #. ($Text::Template::ERROR)
 msgid "Template parsing error: %1"
-msgstr "Fejl under fortolkning af skabelon: %s"
+msgstr "Fejl under fortolkning af skabelon: %1"
 
 #: share/html/Admin/Scrips/Objects.html:135
 #. ($msg)

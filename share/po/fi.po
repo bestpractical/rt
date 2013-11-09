@@ -4473,7 +4473,7 @@ msgstr "Linkkiä ei löydy"
 #: share/html/Ticket/ModifyLinks.html:48
 #. ($Ticket->Id)
 msgid "Link ticket #%1"
-msgstr "Lisää viittaus"
+msgstr "Lisää viittaus #%1"
 
 #: share/html/Admin/CustomFields/Modify.html:108
 msgid "Link values to"
@@ -6104,7 +6104,7 @@ msgstr ""
 #: lib/RT/Ticket.pm:2047
 #. ($OldOwnerObj->Name, $NewOwnerObj->Name)
 msgid "Owner changed from %1 to %2"
-msgstr "Yhteyshenkilöksi vaihdettu %2"
+msgstr "Yhteyshenkilöksi %1 vaihdettu arvoon %2"
 
 #: NOT FOUND IN SOURCE
 msgid "Owner could not be set."
@@ -6112,7 +6112,7 @@ msgstr "Yhteyshenkilöä ei voitu asettaa."
 
 #: lib/RT/Transaction.pm:1120 lib/RT/Transaction.pm:937
 msgid "Owner forcibly changed from %1 to %2"
-msgstr "Yhteyshenkilöksi vaihdettu %2"
+msgstr "Yhteyshenkilöksi %1 vaihdettu arvoon %2"
 
 #: lib/RT/Tickets.pm:158
 msgid "OwnerGroup"

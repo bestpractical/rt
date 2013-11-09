@@ -1436,7 +1436,7 @@ msgstr "Скрытая копия"
 #: share/html/Articles/Elements/NeedsSetup:50
 #. (qq[<a href="@{[RT->Config->Get("WebPath")]}/Admin/Articles/">], '</a>')
 msgid "Before Articles can be used, your RT administrator must %1create Classes%2, apply Article custom fields to them, and grant users rights on the classes and CFs."
-msgstr "До того, как статьи смогут быть использованы, администратор RT должен создать классы, применить к ним дополнительные поля и дать пользователям права на эти классы и поля."
+msgstr "До того, как статьи смогут быть использованы, администратор RT должен %1создать классы%2, применить к ним дополнительные поля и дать пользователям права на эти классы и поля."
 
 #: etc/initialdata:223
 msgid "Blank"

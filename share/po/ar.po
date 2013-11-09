@@ -99,12 +99,12 @@ msgstr "منذ %1 %2"
 #: lib/RT/Record.pm:2041
 #. ($cf->Name, $old_content, $new_content)
 msgid "%1 %2 changed to %3"
-msgstr "%1 %2 تغيرت إلى 3%"
+msgstr "%1 %2 تغيرت إلى %3"
 
 #: lib/RT/Record.pm:2038
 #. ($cf->Name, $old_content)
 msgid "%1 %2 deleted"
-msgstr "تم حذف 1% 2%"
+msgstr "تم حذف %1 %2"
 
 #: share/html/Widgets/SavedSearch:140
 #. (loc($self->{SearchType}), $self->{CurrentSearch}{Object}->Description)
@@ -124,7 +124,7 @@ msgstr ""
 #: share/html/Widgets/SavedSearch:130
 #. (loc($self->{SearchType}), $args->{SavedSearchDescription})
 msgid "%1 %2 saved."
-msgstr "تم حفظ1% 2%"
+msgstr "تم حفظ%1 %2"
 
 #: share/html/Widgets/SavedSearch:114
 #. (loc($self->{SearchType}), $args->{SavedSearchDescription})
@@ -135,7 +135,7 @@ msgstr "ثم تحديث %1 %2"
 #. ($_[0]->loc($_[0]->ConditionObj->Name),            $_[0]->loc($_[0]->ActionObj->Name),            $_[0]->loc($_[0]->Template),)
 #. (loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->Template))
 msgid "%1 %2 with template %3"
-msgstr "%1 %2 مع القالب 3%"
+msgstr "%1 %2 مع القالب %3"
 
 #: share/html/Ticket/Elements/ShowAttachments:62 share/html/m/ticket/show:319
 #. ($rev->CreatedAsString, $rev->FriendlyContentLength, $m->scomp('/Elements/ShowUser', User => $rev->CreatorObj))
@@ -155,7 +155,7 @@ msgstr "%1 (لم تتغير)"
 #: share/html/Dashboards/Elements/Deleted:57
 #. (($_->{description} || $_->{name}), $_->{pane})
 msgid "%1 (from pane %2)"
-msgstr "%1 (من اللوحة 2%)"
+msgstr "%1 (من اللوحة %2)"
 
 #: bin/rt-crontool:337
 #. ("--log")
@@ -271,7 +271,7 @@ msgstr ""
 #: lib/RT/Record.pm:526 lib/RT/Transaction.pm:1065 lib/RT/Transaction.pm:1080 lib/RT/Transaction.pm:1127 lib/RT/Transaction.pm:814
 #. ($self->loc( $args{'Field'} ),                ( $old_val ? '"' . $old_val . '"' : $self->loc("(no value)") ),                '"' . $self->__Value( $args{'Field'}) . '"',)
 msgid "%1 changed from %2 to %3"
-msgstr "%1 تغير من 2% إلى 3%"
+msgstr "%1 تغير من %2 إلى %3"
 
 #: share/html/Admin/CustomFields/Modify.html:215 share/html/Admin/CustomFields/Modify.html:231
 #. (loc("Render Type"), $original, $RenderType)
@@ -281,12 +281,12 @@ msgstr "%1 تغيرت من '%2' إلى '%3'"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 chart by %2"
-msgstr "%1 الرسم البياني بواسطة 2%"
+msgstr "%1 الرسم البياني بواسطة %2"
 
 #: share/html/Search/Elements/EditSearches:203
 #. ($SavedSearch->{'Object'}->Description)
 msgid "%1 copy"
-msgstr "نسخ 1%"
+msgstr "نسخ %1"
 
 #: share/html/Admin/Tools/Configuration.html:77
 #. ($meta->{'Source'}{'Extension'})
@@ -316,7 +316,7 @@ msgstr "%1 غير موجود"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 enabled"
-msgstr "تم تمكين 1%"
+msgstr "تم تمكين %1"
 
 #: etc/initialdata:807
 msgid "%1 highest priority tickets I own"
@@ -9839,7 +9839,7 @@ msgstr "أسبوعيًا"
 #: share/html/Elements/RT__Dashboard/ColumnMap:90
 #. (loc($day), $hour)
 msgid "weekly (on %1) at %2"
-msgstr "أسبوعياً (في 1%) عند 2%"
+msgstr "أسبوعياً (في %1) عند %2"
 
 #: share/html/Dashboards/Subscription.html:121
 msgid "weeks"
