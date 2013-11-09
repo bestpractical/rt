@@ -191,8 +191,8 @@ our %GROUPINGS_META = (
     },
 );
 
-# loc'able strings below generated with:
-#   perl -MRT=-init -MRT::Report::Tickets -E 'say qq{\# loc("$_->[0]")} while $_ = splice @RT::Report::Tickets::STATISTICS, 0, 2'
+# loc'able strings below generated with (s/loq/loc/):
+#   perl -MRT=-init -MRT::Report::Tickets -E 'say qq{\# loq("$_->[0]")} while $_ = splice @RT::Report::Tickets::STATISTICS, 0, 2'
 #
 # loc("Ticket count")
 # loc("Summary of time worked")
