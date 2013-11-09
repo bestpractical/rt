@@ -926,7 +926,7 @@ sub set_rights {
     $acl->Limit( FIELD => 'RightName', OPERATOR => '!=', VALUE => 'SuperUser' );
     while ( my $ace = $acl->Next ) {
         my $obj = $ace->PrincipalObj->Object;
-        if ( $obj->isa('RT::Group') && $obj->Type eq 'UserEquiv' && $obj->Instance == RT->Nobody->id ) {
+        if ( $obj->isa('RT::Group') && ($obj->Type||'') eq 'UserEquiv' && $obj->Instance == RT->Nobody->id ) {
             next;
         }
         $ace->Delete;
