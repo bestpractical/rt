@@ -11,7 +11,7 @@ CREATE TABLE ObjectScrips (
         LastUpdatedBy   NUMBER(11,0) DEFAULT 0 NOT NULL,
         LastUpdated     DATE
 );
-ALTER TABLE Scrips ADD COLUMN Disabled int2 NOT NULL DEFAULT 0;
+ALTER TABLE Scrips ADD Disabled NUMBER(11,0) DEFAULT 0 NOT NULL;
 
 INSERT INTO ObjectScrips(
     id, Scrip, Stage, ObjectId,
