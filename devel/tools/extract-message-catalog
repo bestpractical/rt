@@ -145,6 +145,7 @@ sub extract_strings_from_code {
     my $re_space_wo_nl = qr{(?!\n)\s};
     my $re_loc_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc $re_space_wo_nl* $}mx;
     my $re_loc_qw_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc_qw $re_space_wo_nl* $}mx;
+    my $re_loc_paren_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc \(\) $re_space_wo_nl* $}mx;
     my $re_loc_pair_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc_pair $re_space_wo_nl* $}mx;
     my $re_loc_left_pair_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc_left_pair $re_space_wo_nl* $}mx;
     my $re_delim = $RE{delimited}{-delim=>q{'"}}{-keep};
@@ -203,6 +204,32 @@ sub extract_strings_from_code {
         push @{ $FILECAT{$str} }, [ $filename, $line, '' ];
     }
 
+    # Comment-based mark for list to loc():  ("...", $foo, $bar)  # loc()
+    $line = 1;
+    pos($_) = 0;
+    while (m/\G(.*? $RE{balanced}{-parens=>'()'}{-keep} [ \{\}\)\],;]* $re_loc_paren_suffix)/sgx) {
+        my ( $all, $match ) = ( $1, $2 );
+        $line += ( $all =~ tr/\n/\n/ );
+
+        my ( $vars, $str );
+        if ( $match =~
+                /\(\s*($re_delim)(.*?)\s*\)$/so ) {
+
+            $str = substr( $1, 1, -1 );       # $str comes before $vars now
+            $vars = $9;
+        }
+        else {
+            warn "Failed to match delimited against $match, line $line";
+            next;
+        }
+        $seen{$line}++;
+
+        $vars =~ s/[\n\r]//g;
+        $str  =~ s/\\(['"])/$1/g;
+
+        push @{ $FILECAT{$str} }, [ $filename, $line, $vars ];
+    }
+
     # Comment-based qw mark: "qw(...)" # loc_qw
     $line = 1;
     pos($_) = 0;
@@ -257,7 +284,7 @@ sub extract_strings_from_code {
     # Check for ones we missed
     $line = 1;
     pos($_) = 0;
-    while (m/\G(.*? \# $re_space_wo_nl* (loc (_\w+)?) $re_space_wo_nl* $)/smgox) {
+    while (m/\G(.*? \# $re_space_wo_nl* (loc (_\w+|\(\))?) $re_space_wo_nl* $)/smgox) {
         my ($all, $loc_type) = ($1, $2);
         $line += ( $all =~ tr/\n/\n/ );
         next if $seen{$line};
