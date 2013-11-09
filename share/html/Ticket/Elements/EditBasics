@@ -53,9 +53,10 @@ $InTable => 0
 </%ARGS>
 <%INIT>
 unless ( @fields ) {
+    my $subject = $defaults{'Subject'} || $TicketObj->Subject;
     @fields = (
         {   name => 'Subject',
-            html => '<input name="Subject" value="'.$m->interp->apply_escapes( $defaults{'Subject'} || $TicketObj->Subject, 'h' ).'" />',
+            html => '<input name="Subject" value="'.(defined($subject) ? $m->interp->apply_escapes( $subject, 'h' ) : '').'" />',
         },
         {   name => 'Status',
             comp => '/Elements/SelectStatus',
