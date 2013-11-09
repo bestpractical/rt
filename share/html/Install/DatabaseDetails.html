@@ -149,6 +149,9 @@ if ( $Run ) {
                 my $sth = $dbh->prepare('SELECT username FROM dba_users WHERE username = ?');
                 $sth->execute( $ARGS{DatabaseUser} );
                 undef $dbh unless $sth->fetchrow_array;
+
+                push @errors, loc("Oracle users cannot have empty passwords")
+                    unless $ARGS{DatabasePassword};
             }
 
             if ( $dbh ) {
