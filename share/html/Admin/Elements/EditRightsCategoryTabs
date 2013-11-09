@@ -93,6 +93,8 @@ my %catsort = ( General => 1, Staff => 2, Admin => 3, Status => 4 );
 
 $acldesc ||= join '-', ($Principal ? $Principal->PrincipalId : 'addprincipal'),
                        ref($Context), $Context->Id;
+
+$available_rights{$_} = loc( $available_rights{$_} ) for keys %available_rights;
 </%init>
     <div class="category-tabs">
       <ul>
@@ -111,7 +113,7 @@ $acldesc ||= join '-', ($Principal ? $Principal->PrincipalId : 'addprincipal'),
                value="<% $right %>"
                <% $current_rights{$right} ? 'checked' : '' %> />
         <label for="SetRights-<% $acldesc %>-<% $right %>" title="<% $right %>">
-          <% loc($available_rights{$right}) %>
+          <% $available_rights{$right} %>
           <span class="separator">&mdash;</span>
           <span class="rightname"><% $right %></span>
         </label>
