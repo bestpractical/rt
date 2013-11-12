@@ -1035,7 +1035,8 @@ sub BriefDescription {
         else {
             return $self->loc( "[_1] changed from [_2] to [_3]",
                                $self->loc($self->Field),
-                               ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'" );
+                               ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")),
+                               ($self->NewValue? "'".$self->NewValue ."'" : $self->loc("(no value)")));
         }
     },
     PurgeTransaction => sub {

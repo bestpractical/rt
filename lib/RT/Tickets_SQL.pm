@@ -74,7 +74,7 @@ sub _InitSQL {
 
 sub _SQLLimit {
   my $self = shift;
-    my %args = (@_);
+    my %args = (FIELD => '', @_);
     if ($args{'FIELD'} eq 'EffectiveId' &&
          (!$args{'ALIAS'} || $args{'ALIAS'} eq 'main' ) ) {
         $self->{'looking_at_effective_id'} = 1;
