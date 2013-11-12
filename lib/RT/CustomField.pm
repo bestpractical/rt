@@ -210,10 +210,10 @@ __PACKAGE__->RegisterBuiltInGroupings(
     'RT::User'      => [ 'Identity', 'Access control', 'Location', 'Phones' ],
 );
 
-__PACKAGE__->AddRight( General => SeeCustomField         => 'View custom fields'); # loc_pair
-__PACKAGE__->AddRight( Admin   => AdminCustomField       => 'Create, modify and delete custom fields'); # loc_pair
-__PACKAGE__->AddRight( Admin   => AdminCustomFieldValues => 'Create, modify and delete custom fields values'); # loc_pair
-__PACKAGE__->AddRight( Staff   => ModifyCustomField      => 'Add, modify and delete custom field values for objects'); # loc_pair
+__PACKAGE__->AddRight( General => SeeCustomField         => 'View custom fields'); # loc
+__PACKAGE__->AddRight( Admin   => AdminCustomField       => 'Create, modify and delete custom fields'); # loc
+__PACKAGE__->AddRight( Admin   => AdminCustomFieldValues => 'Create, modify and delete custom fields values'); # loc
+__PACKAGE__->AddRight( Staff   => ModifyCustomField      => 'Add, modify and delete custom field values for objects'); # loc
 
 =head1 NAME
 

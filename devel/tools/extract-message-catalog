@@ -145,6 +145,7 @@ sub extract_strings_from_code {
     my $re_space_wo_nl = qr{(?!\n)\s};
     my $re_loc_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc $re_space_wo_nl* $}mx;
     my $re_loc_qw_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc_qw $re_space_wo_nl* $}mx;
+    my $re_loc_paren_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc \(\) $re_space_wo_nl* $}mx;
     my $re_loc_pair_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc_pair $re_space_wo_nl* $}mx;
     my $re_loc_left_pair_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc_left_pair $re_space_wo_nl* $}mx;
     my $re_delim = $RE{delimited}{-delim=>q{'"}}{-keep};
@@ -186,12 +187,14 @@ sub extract_strings_from_code {
         push @{ $FILECAT{$str} }, [ $filename, $line, $vars ];
     }
 
+    my %seen;
     # Comment-based mark: "..." # loc
     $line = 1;
     pos($_) = 0;
-    while (m/\G(.*?($re_delim)[\}\)\],;]*$re_loc_suffix)/smgo) {
+    while (m/\G(.*?($re_delim)[ \{\}\)\],;]*$re_loc_suffix)/smgo) {
         my ( $all, $str ) = ( $1, $2 );
         $line += ( $all =~ tr/\n/\n/ );
+        $seen{$line}++;
         unless ( defined $str ) {
             warn "Couldn't process loc at $filename:$line:\n  str«$str»\n";
             next;
@@ -201,12 +204,39 @@ sub extract_strings_from_code {
         push @{ $FILECAT{$str} }, [ $filename, $line, '' ];
     }
 
+    # Comment-based mark for list to loc():  ("...", $foo, $bar)  # loc()
+    $line = 1;
+    pos($_) = 0;
+    while (m/\G(.*? $RE{balanced}{-parens=>'()'}{-keep} [ \{\}\)\],;]* $re_loc_paren_suffix)/sgx) {
+        my ( $all, $match ) = ( $1, $2 );
+        $line += ( $all =~ tr/\n/\n/ );
+
+        my ( $vars, $str );
+        if ( $match =~
+                /\(\s*($re_delim)(.*?)\s*\)$/so ) {
+
+            $str = substr( $1, 1, -1 );       # $str comes before $vars now
+            $vars = $9;
+        }
+        else {
+            warn "Failed to match delimited against $match, line $line";
+            next;
+        }
+        $seen{$line}++;
+
+        $vars =~ s/[\n\r]//g;
+        $str  =~ s/\\(['"])/$1/g;
+
+        push @{ $FILECAT{$str} }, [ $filename, $line, $vars ];
+    }
+
     # Comment-based qw mark: "qw(...)" # loc_qw
     $line = 1;
     pos($_) = 0;
-    while (m/\G(.*?(?:qw\(([^)]+)\)\s*[\{\}\)\],; ]*)?$re_loc_qw_suffix)/smgo) {
+    while (m/\G(.*?(?:qw\(([^)]+)\)[ \{\}\)\],;]*)?$re_loc_qw_suffix)/smgo) {
         my ( $all, $str ) = ( $1, $2 );
         $line += ( $all =~ tr/\n/\n/ );
+        $seen{$line}++;
         unless ( defined $str ) {
             warn "Couldn't process loc_qw at $filename:$line:\n  str«$str»\n";
             next;
@@ -222,6 +252,7 @@ sub extract_strings_from_code {
     while (m/\G(.*?(?:(\w+|$re_delim)\s*=>[^#\n]+?)?$re_loc_left_pair_suffix)/smgo) {
         my ( $all, $key ) = ( $1, $2 );
         $line += ( $all =~ tr/\n/\n/ );
+        $seen{$line}++;
         unless ( defined $key ) {
             warn "Couldn't process loc_left_pair at $filename:$line:\n  key«$key»\n";
             next;
@@ -234,9 +265,10 @@ sub extract_strings_from_code {
     # Comment-based pair mark: "..." => "..." # loc_pair
     $line = 1;
     pos($_) = 0;
-    while (m/\G(.*?(?:(\w+|$re_delim)\s*=>\s*($re_delim)[\s\}\)\],;]*)?$re_loc_pair_suffix)/smgo) {
+    while (m/\G(.*?(?:(\w+|$re_delim)\s*=>\s*($re_delim)[ \{\}\)\],;]*)?$re_loc_pair_suffix)/smgo) {
         my ( $all, $key, $val ) = ( $1, $2, $10 );
         $line += ( $all =~ tr/\n/\n/ );
+        $seen{$line}++;
         unless ( defined $key && defined $val ) {
             warn "Couldn't process loc_pair at $filename:$line:\n  key«$key»\n  val«$val»\n";
             next;
@@ -247,6 +279,16 @@ sub extract_strings_from_code {
         $val  =~ s/\\(['"])/$1/g;
         push @{ $FILECAT{$key} }, [ $filename, $line, '' ];
         push @{ $FILECAT{$val} }, [ $filename, $line, '' ];
+    }
+
+    # Check for ones we missed
+    $line = 1;
+    pos($_) = 0;
+    while (m/\G(.*? \# $re_space_wo_nl* (loc (_\w+|\(\))?) $re_space_wo_nl* $)/smgox) {
+        my ($all, $loc_type) = ($1, $2);
+        $line += ( $all =~ tr/\n/\n/ );
+        next if $seen{$line};
+        warn "$loc_type that did not match, line $line of $filename\n";
     }
 
     close (_);

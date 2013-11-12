@@ -89,26 +89,26 @@ use Text::Password::Pronounceable;
 sub _OverlayAccessible {
     {
 
-        Name                    => { public => 1,  admin => 1 },
+          Name                  => { public => 1,  admin => 1 },    # loc_left_pair
           Password              => { read   => 0 },
-          EmailAddress          => { public => 1 },
-          Organization          => { public => 1,  admin => 1 },
-          RealName              => { public => 1 },
-          NickName              => { public => 1 },
-          Lang                  => { public => 1 },
+          EmailAddress          => { public => 1 },                 # loc_left_pair
+          Organization          => { public => 1,  admin => 1 },    # loc_left_pair
+          RealName              => { public => 1 },                 # loc_left_pair
+          NickName              => { public => 1 },                 # loc_left_pair
+          Lang                  => { public => 1 },                 # loc_left_pair
           EmailEncoding         => { public => 1 },
           WebEncoding           => { public => 1 },
           ExternalContactInfoId => { public => 1,  admin => 1 },
           ContactInfoSystem     => { public => 1,  admin => 1 },
           ExternalAuthId        => { public => 1,  admin => 1 },
           AuthSystem            => { public => 1,  admin => 1 },
-          Gecos                 => { public => 1,  admin => 1 },
-          PGPKey                => { public => 1,  admin => 1 },
-          SMIMECertificate      => { public => 1,  admin => 1 },
+          Gecos                 => { public => 1,  admin => 1 },    # loc_left_pair
+          PGPKey                => { public => 1,  admin => 1 },    # loc_left_pair
+          SMIMECertificate      => { public => 1,  admin => 1 },    # loc_left_pair
           PrivateKey            => {               admin => 1 },
-          City                  => { public => 1 },
-          Country               => { public => 1 },
-          Timezone              => { public => 1 },
+          City                  => { public => 1 },                 # loc_left_pair
+          Country               => { public => 1 },                 # loc_left_pair
+          Timezone              => { public => 1 },                 # loc_left_pair
     }
 }
 

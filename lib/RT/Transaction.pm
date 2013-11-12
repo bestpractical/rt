@@ -780,46 +780,46 @@ sub _FormatUser {
 %_BriefDescriptions = (
     Create => sub {
         my $self = shift;
-        return ( "[_1] created", $self->FriendlyObjectType );   #loc
+        return ( "[_1] created", $self->FriendlyObjectType );   #loc()
     },
     Enabled => sub {
         my $self = shift;
-        return ( "[_1] enabled", $self->FriendlyObjectType );   #loc
+        return ( "[_1] enabled", $self->FriendlyObjectType );   #loc()
     },
     Disabled => sub {
         my $self = shift;
-        return ( "[_1] disabled", $self->FriendlyObjectType );  #loc
+        return ( "[_1] disabled", $self->FriendlyObjectType );  #loc()
     },
     Status => sub {
         my $self = shift;
         if ( $self->Field eq 'Status' ) {
             if ( $self->NewValue eq 'deleted' ) {
-                return ( "[_1] deleted", $self->FriendlyObjectType );   #loc
+                return ( "[_1] deleted", $self->FriendlyObjectType );   #loc()
             }
             else {
                 my $canon = $self->Object->DOES("RT::Record::Role::Status")
                     ? sub { $self->Object->LifecycleObj->CanonicalCase(@_) }
                     : sub { return $_[0] };
                 return (
-                    "Status changed from [_1] to [_2]",                 #loc
+                    "Status changed from [_1] to [_2]",
                     "'" . $self->loc( $canon->($self->OldValue) ) . "'",
                     "'" . $self->loc( $canon->($self->NewValue) ) . "'"
-                );
+                );   # loc()
             }
         }
 
         # Generic:
         my $no_value = $self->loc("(no value)");
         return (
-            "[_1] changed from [_2] to [_3]", #loc
+            "[_1] changed from [_2] to [_3]",
             $self->Field,
             ( $self->OldValue ? "'" . $self->OldValue . "'" : $no_value ),
             "'" . $self->NewValue . "'"
-        );
+        ); #loc()
     },
     SystemError => sub {
         my $self = shift;
-        return ("System error"); #loc
+        return ("System error"); #loc()
     },
     "Forward Transaction" => sub {
         my $self = shift;
@@ -827,9 +827,9 @@ sub _FormatUser {
             RT::User->Format( Address => $_, CurrentUser => $self->CurrentUser )
         } RT::EmailParser->ParseEmailAddress($self->Data);
 
-        return ( "Forwarded [_3]Transaction #[_1][_4] to [_2]", #loc
+        return ( "Forwarded [_3]Transaction #[_1][_4] to [_2]",
             $self->Field, $recipients,
-            [\'<a href="#txn-', $self->Field, \'">'], \'</a>');
+            [\'<a href="#txn-', $self->Field, \'">'], \'</a>'); #loc()
     },
     "Forward Ticket" => sub {
         my $self = shift;
@@ -837,23 +837,23 @@ sub _FormatUser {
             RT::User->Format( Address => $_, CurrentUser => $self->CurrentUser )
         } RT::EmailParser->ParseEmailAddress($self->Data);
 
-        return ( "Forwarded Ticket to [_1]", $recipients ); #loc
+        return ( "Forwarded Ticket to [_1]", $recipients ); #loc()
     },
     CommentEmailRecord => sub {
         my $self = shift;
-        return ("Outgoing email about a comment recorded"); #loc
+        return ("Outgoing email about a comment recorded"); #loc()
     },
     EmailRecord => sub {
         my $self = shift;
-        return ("Outgoing email recorded"); #loc
+        return ("Outgoing email recorded"); #loc()
     },
     Correspond => sub {
         my $self = shift;
-        return ("Correspondence added");    #loc
+        return ("Correspondence added");    #loc()
     },
     Comment => sub {
         my $self = shift;
-        return ("Comments added");          #loc
+        return ("Comments added");          #loc()
     },
     CustomField => sub {
         my $self = shift;
@@ -910,22 +910,22 @@ sub _FormatUser {
         }
 
         if ( !defined($old) || $old eq '' ) {
-            return ("[_1] [_2] added", $field, $new);   #loc
+            return ("[_1] [_2] added", $field, $new);   #loc()
         }
         elsif ( !defined($new) || $new eq '' ) {
-            return ("[_1] [_2] deleted", $field, $old); #loc
+            return ("[_1] [_2] deleted", $field, $old); #loc()
         }
         else {
-            return ("[_1] [_2] changed to [_3]", $field, $old, $new);   #loc
+            return ("[_1] [_2] changed to [_3]", $field, $old, $new);   #loc()
         }
     },
     Untake => sub {
         my $self = shift;
-        return ("Untaken"); #loc
+        return ("Untaken"); #loc()
     },
     Take => sub {
         my $self = shift;
-        return ("Taken"); #loc
+        return ("Taken"); #loc()
     },
     Force => sub {
         my $self = shift;
@@ -934,42 +934,42 @@ sub _FormatUser {
         my $New = RT::User->new( $self->CurrentUser );
         $New->Load( $self->NewValue );
 
-        return ("Owner forcibly changed from [_1] to [_2]", #loc
-                map { $self->_FormatUser($_) } $Old, $New);
+        return ("Owner forcibly changed from [_1] to [_2]",
+                map { $self->_FormatUser($_) } $Old, $New);  #loc()
     },
     Steal => sub {
         my $self = shift;
         my $Old = RT::User->new( $self->CurrentUser );
         $Old->Load( $self->OldValue );
-        return ("Stolen from [_1]", $self->_FormatUser($Old));   #loc
+        return ("Stolen from [_1]", $self->_FormatUser($Old));   #loc()
     },
     Give => sub {
         my $self = shift;
         my $New = RT::User->new( $self->CurrentUser );
         $New->Load( $self->NewValue );
-        return ( "Given to [_1]", $self->_FormatUser($New));    #loc
+        return ( "Given to [_1]", $self->_FormatUser($New));    #loc()
     },
     AddWatcher => sub {
         my $self = shift;
         my $principal = RT::Principal->new($self->CurrentUser);
         $principal->Load($self->NewValue);
-        return ( "[_1] [_2] added", $self->loc($self->Field), $self->_FormatPrincipal($principal));    #loc
+        return ( "[_1] [_2] added", $self->loc($self->Field), $self->_FormatPrincipal($principal));    #loc()
     },
     DelWatcher => sub {
         my $self = shift;
         my $principal = RT::Principal->new($self->CurrentUser);
         $principal->Load($self->OldValue);
-        return ( "[_1] [_2] deleted", $self->loc($self->Field), $self->_FormatPrincipal($principal));  #loc
+        return ( "[_1] [_2] deleted", $self->loc($self->Field), $self->_FormatPrincipal($principal));  #loc()
     },
     SetWatcher => sub {
         my $self = shift;
         my $principal = RT::Principal->new($self->CurrentUser);
         $principal->Load($self->NewValue);
-        return ( "[_1] set to [_2]", $self->loc($self->Field), $self->_FormatPrincipal($principal));  #loc
+        return ( "[_1] set to [_2]", $self->loc($self->Field), $self->_FormatPrincipal($principal));  #loc()
     },
     Subject => sub {
         my $self = shift;
-        return ( "Subject changed to [_1]", $self->Data );  #loc
+        return ( "Subject changed to [_1]", $self->Data );  #loc()
     },
     AddLink => sub {
         my $self = shift;
@@ -988,29 +988,29 @@ sub _FormatUser {
             }
 
             if ( $self->Field eq 'DependsOn' ) {
-                return ( "Dependency on [_1] added", $value );  #loc
+                return ( "Dependency on [_1] added", $value );  #loc()
             }
             elsif ( $self->Field eq 'DependedOnBy' ) {
-                return ( "Dependency by [_1] added", $value );  #loc
+                return ( "Dependency by [_1] added", $value );  #loc()
             }
             elsif ( $self->Field eq 'RefersTo' ) {
-                return ( "Reference to [_1] added", $value );   #loc
+                return ( "Reference to [_1] added", $value );   #loc()
             }
             elsif ( $self->Field eq 'ReferredToBy' ) {
-                return ( "Reference by [_1] added", $value );   #loc
+                return ( "Reference by [_1] added", $value );   #loc()
             }
             elsif ( $self->Field eq 'MemberOf' ) {
-                return ( "Membership in [_1] added", $value );  #loc
+                return ( "Membership in [_1] added", $value );  #loc()
             }
             elsif ( $self->Field eq 'HasMember' ) {
-                return ( "Member [_1] added", $value );         #loc
+                return ( "Member [_1] added", $value );         #loc()
             }
             elsif ( $self->Field eq 'MergedInto' ) {
-                return ( "Merged into [_1]", $value );          #loc
+                return ( "Merged into [_1]", $value );          #loc()
             }
         }
         else {
-            return ( "[_1]", $self->Data ); #loc
+            return ( "[_1]", $self->Data ); #loc()
         }
     },
     DeleteLink => sub {
@@ -1030,26 +1030,26 @@ sub _FormatUser {
             }
 
             if ( $self->Field eq 'DependsOn' ) {
-                return ( "Dependency on [_1] deleted", $value );    #loc
+                return ( "Dependency on [_1] deleted", $value );    #loc()
             }
             elsif ( $self->Field eq 'DependedOnBy' ) {
-                return ( "Dependency by [_1] deleted", $value );    #loc
+                return ( "Dependency by [_1] deleted", $value );    #loc()
             }
             elsif ( $self->Field eq 'RefersTo' ) {
-                return ( "Reference to [_1] deleted", $value );     #loc
+                return ( "Reference to [_1] deleted", $value );     #loc()
             }
             elsif ( $self->Field eq 'ReferredToBy' ) {
-                return ( "Reference by [_1] deleted", $value );     #loc
+                return ( "Reference by [_1] deleted", $value );     #loc()
             }
             elsif ( $self->Field eq 'MemberOf' ) {
-                return ( "Membership in [_1] deleted", $value );    #loc
+                return ( "Membership in [_1] deleted", $value );    #loc()
             }
             elsif ( $self->Field eq 'HasMember' ) {
-                return ( "Member [_1] deleted", $value );           #loc
+                return ( "Member [_1] deleted", $value );           #loc()
             }
         }
         else {
-            return ( "[_1]", $self->Data ); #loc
+            return ( "[_1]", $self->Data ); #loc()
         }
     },
     Told => sub {
@@ -1059,26 +1059,26 @@ sub _FormatUser {
             $t1->Set(Format => 'ISO', Value => $self->NewValue);
             my $t2 = RT::Date->new($self->CurrentUser);
             $t2->Set(Format => 'ISO', Value => $self->OldValue);
-            return ( "[_1] changed from [_2] to [_3]", $self->loc($self->Field), $t2->AsString, $t1->AsString );    #loc
+            return ( "[_1] changed from [_2] to [_3]", $self->loc($self->Field), $t2->AsString, $t1->AsString );    #loc()
         }
         else {
-            return ( "[_1] changed from [_2] to [_3]",  #loc
+            return ( "[_1] changed from [_2] to [_3]",
                     $self->loc($self->Field),
-                    ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'" );
+                    ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'" );  #loc()
         }
     },
     Set => sub {
         my $self = shift;
         if ( $self->Field eq 'Password' ) {
-            return ('Password changed');    #loc
+            return ('Password changed');    #loc()
         }
         elsif ( $self->Field eq 'Queue' ) {
             my $q1 = RT::Queue->new( $self->CurrentUser );
             $q1->Load( $self->OldValue );
             my $q2 = RT::Queue->new( $self->CurrentUser );
             $q2->Load( $self->NewValue );
-            return ("[_1] changed from [_2] to [_3]",   #loc
-                    $self->loc($self->Field) , $q1->Name , $q2->Name);
+            return ("[_1] changed from [_2] to [_3]",
+                    $self->loc($self->Field) , $q1->Name , $q2->Name);  #loc()
         }
 
         # Write the date/time change at local time:
@@ -1087,7 +1087,7 @@ sub _FormatUser {
             $t1->Set(Format => 'ISO', Value => $self->NewValue);
             my $t2 = RT::Date->new($self->CurrentUser);
             $t2->Set(Format => 'ISO', Value => $self->OldValue);
-            return ( "[_1] changed from [_2] to [_3]", $self->loc($self->Field), $t2->AsString, $t1->AsString );    #loc
+            return ( "[_1] changed from [_2] to [_3]", $self->loc($self->Field), $t2->AsString, $t1->AsString );    #loc()
         }
         elsif ( $self->Field eq 'Owner' ) {
             my $Old = RT::User->new( $self->CurrentUser );
@@ -1097,36 +1097,36 @@ sub _FormatUser {
 
             if ( $Old->id == RT->Nobody->id ) {
                 if ( $New->id == $self->Creator ) {
-                    return ("Taken");   #loc
+                    return ("Taken");   #loc()
                 }
                 else {
-                    return ( "Given to [_1]", $self->_FormatUser($New) );    #loc
+                    return ( "Given to [_1]", $self->_FormatUser($New) );    #loc()
                 }
             }
             else {
                 if ( $New->id == $self->Creator ) {
-                    return ("Stolen from [_1]",  $self->_FormatUser($Old) );   #loc
+                    return ("Stolen from [_1]",  $self->_FormatUser($Old) );   #loc()
                 }
                 elsif ( $Old->id == $self->Creator ) {
                     if ( $New->id == RT->Nobody->id ) {
-                        return ("Untaken"); #loc
+                        return ("Untaken"); #loc()
                     }
                     else {
-                        return ( "Given to [_1]", $self->_FormatUser($New) ); #loc
+                        return ( "Given to [_1]", $self->_FormatUser($New) ); #loc()
                     }
                 }
                 else {
                     return (
-                        "Owner forcibly changed from [_1] to [_2]", #loc
+                        "Owner forcibly changed from [_1] to [_2]",
                         map { $self->_FormatUser($_) } $Old, $New
-                    );
+                    );   #loc()
                 }
             }
         }
         else {
-            return ( "[_1] changed from [_2] to [_3]",  #loc
+            return ( "[_1] changed from [_2] to [_3]",
                     $self->loc($self->Field),
-                    ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'" );
+                    ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'" );  #loc()
         }
     },
     "Set-TimeWorked" => sub {
@@ -1145,7 +1145,7 @@ sub _FormatUser {
     },
     PurgeTransaction => sub {
         my $self = shift;
-        return ("Transaction [_1] purged", $self->Data);    #loc
+        return ("Transaction [_1] purged", $self->Data);    #loc()
     },
     AddReminder => sub {
         my $self = shift;
@@ -1156,7 +1156,7 @@ sub _FormatUser {
             "/Ticket/Reminders.html?id=", $self->ObjectId,
             "#reminder-", $ticket->id, \'">', $ticket->Subject, \'</a>'
         ];
-        return ("Reminder '[_1]' added", $subject); #loc
+        return ("Reminder '[_1]' added", $subject); #loc()
     },
     OpenReminder => sub {
         my $self = shift;
@@ -1167,7 +1167,7 @@ sub _FormatUser {
             "/Ticket/Reminders.html?id=", $self->ObjectId,
             "#reminder-", $ticket->id, \'">', $ticket->Subject, \'</a>'
         ];
-        return ("Reminder '[_1]' reopened", $subject);  #loc
+        return ("Reminder '[_1]' reopened", $subject);  #loc()
     },
     ResolveReminder => sub {
         my $self = shift;
@@ -1178,7 +1178,7 @@ sub _FormatUser {
             "/Ticket/Reminders.html?id=", $self->ObjectId,
             "#reminder-", $ticket->id, \'">', $ticket->Subject, \'</a>'
         ];
-        return ("Reminder '[_1]' completed", $subject); #loc
+        return ("Reminder '[_1]' completed", $subject); #loc()
     }
 );
 

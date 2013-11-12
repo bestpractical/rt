@@ -841,7 +841,7 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
         Name        => 'HomepageSettings',
         Description => 'HomepageSettings',
         Content     => {
-            'body' =>    # loc
+            'body' =>                               # loc_left_pair
               [
                 {
                     type => 'system',
@@ -860,7 +860,7 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
                     name => 'QuickCreate'           # loc
                 },
               ],
-            'sidebar' =>                            # loc
+            'sidebar' =>                            # loc_left_pair
               [
                 {
                     type => 'component',

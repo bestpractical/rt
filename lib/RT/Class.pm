@@ -84,19 +84,19 @@ sub Load {
     }
 }
 
-__PACKAGE__->AddRight( Staff   => SeeClass            => 'See that this class exists'); # loc_pair
-__PACKAGE__->AddRight( Staff   => CreateArticle       => 'Create articles in this class'); # loc_pair
-__PACKAGE__->AddRight( General => ShowArticle         => 'See articles in this class'); # loc_pair
-__PACKAGE__->AddRight( Staff   => ShowArticleHistory  => 'See changes to articles in this class'); # loc_pair
-__PACKAGE__->AddRight( General => SeeCustomField      => 'View custom field values' ); # loc_pair
-__PACKAGE__->AddRight( Staff   => ModifyArticle       => 'Modify or delete articles in this class'); # loc_pair
-__PACKAGE__->AddRight( Staff   => ModifyArticleTopics => 'Modify topics for articles in this class'); # loc_pair
-__PACKAGE__->AddRight( Staff   => ModifyCustomField   => 'Modify custom field values' ); # loc_pair
-__PACKAGE__->AddRight( Admin   => AdminClass          => 'Modify metadata and custom fields for this class'); # loc_pair
-__PACKAGE__->AddRight( Admin   => AdminTopics         => 'Modify topic hierarchy associated with this class'); # loc_pair
-__PACKAGE__->AddRight( Admin   => ShowACL             => 'Display Access Control List'); # loc_pair
-__PACKAGE__->AddRight( Admin   => ModifyACL           => 'Create, modify and delete Access Control List entries'); # loc_pair
-__PACKAGE__->AddRight( Staff   => DeleteArticle       => 'Delete articles in this class'); # loc_pair
+__PACKAGE__->AddRight( Staff   => SeeClass            => 'See that this class exists'); # loc
+__PACKAGE__->AddRight( Staff   => CreateArticle       => 'Create articles in this class'); # loc
+__PACKAGE__->AddRight( General => ShowArticle         => 'See articles in this class'); # loc
+__PACKAGE__->AddRight( Staff   => ShowArticleHistory  => 'See changes to articles in this class'); # loc
+__PACKAGE__->AddRight( General => SeeCustomField      => 'View custom field values' ); # loc
+__PACKAGE__->AddRight( Staff   => ModifyArticle       => 'Modify or delete articles in this class'); # loc
+__PACKAGE__->AddRight( Staff   => ModifyArticleTopics => 'Modify topics for articles in this class'); # loc
+__PACKAGE__->AddRight( Staff   => ModifyCustomField   => 'Modify custom field values' ); # loc
+__PACKAGE__->AddRight( Admin   => AdminClass          => 'Modify metadata and custom fields for this class'); # loc
+__PACKAGE__->AddRight( Admin   => AdminTopics         => 'Modify topic hierarchy associated with this class'); # loc
+__PACKAGE__->AddRight( Admin   => ShowACL             => 'Display Access Control List'); # loc
+__PACKAGE__->AddRight( Admin   => ModifyACL           => 'Create, modify and delete Access Control List entries'); # loc
+__PACKAGE__->AddRight( Staff   => DeleteArticle       => 'Delete articles in this class'); # loc
 
 # {{{ Create
 
