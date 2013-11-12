@@ -81,6 +81,7 @@ if ( $ShowDisplayModes or $ShowTitle ) {
 
 <div class="history-container">
 <%perl>
+$m->callback( %ARGS, Object => $Object, CallbackName => 'BeforeTransactions' );
 my $i = 1;
 while ( my $Transaction = $Transactions->Next ) {
     my $skip = 0;
