@@ -1126,7 +1126,8 @@ sub _FormatUser {
         else {
             return ( "[_1] changed from [_2] to [_3]",
                     $self->loc($self->Field),
-                    ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'" );  #loc()
+                    ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")),
+                    ($self->NewValue? "'".$self->NewValue ."'" : $self->loc("(no value)")));  #loc()
         }
     },
     "Set-TimeWorked" => sub {

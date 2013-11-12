@@ -59,6 +59,7 @@ while ($Format =~ /($RE{delimited}{-delim=>qq{\'"}}|[{}\w.]+)/go) {
     if ($col =~ /^$RE{quoted}$/o) {
         substr($col,0,1) = "";
         substr($col,-1,1) = "";
+        $col =~ s/\\(.)/$1/g;
     }
 
     my $colref = { };

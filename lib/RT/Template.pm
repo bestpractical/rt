@@ -288,7 +288,7 @@ sub Create {
             if $tmp->id;
     }
 
-    my $result = $self->SUPER::Create(
+    my ( $result, $msg ) = $self->SUPER::Create(
         Content     => $args{'Content'},
         Queue       => $args{'Queue'},
         Description => $args{'Description'},
@@ -296,7 +296,11 @@ sub Create {
         Type        => $args{'Type'},
     );
 
-    return ($result);
+    if ( wantarray ) {
+        return ( $result, $msg );
+    } else {
+        return ( $result );
+    }
 
 }
 

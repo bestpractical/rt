@@ -50,6 +50,7 @@
 % $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSRef => \%ARGS, Ticket => $Ticket );
 
 <& /Elements/ListActions, actions => \@results &>
+<& /Ticket/Elements/ShowUpdateStatus, Ticket => $Ticket &>
 
   <table width="100%" class="ticket-summary" >
       <tr>
@@ -144,9 +145,18 @@ unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
     Abort( loc("No permission to display that ticket") );
 }
 
+if ( $ARGS{'MarkAsSeen'} ) {
+    $Ticket->SetAttribute(
+        Name    => 'User-'. $Ticket->CurrentUser->id .'-SeenUpTo',
+        Content => $Ticket->LastUpdated,
+    );
+    push @results, loc('Marked all messages as seen');
+}
+
 MaybeRedirectForResults(
     Actions   => \@results,
     Path      => '/SelfService/Display.html',
+    Anchor    => $ARGS{'Anchor'},
     Arguments => { 'id' => $Ticket->id },
 );
 

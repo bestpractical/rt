@@ -1052,11 +1052,6 @@ sub SetRenderType {
                                 $self->FriendlyType));
     }
 
-    # XXX: Remove this restriction once we support lists and cascaded selects
-    if ( $self->BasedOnObj->id and $type =~ /List/ ) {
-        return (0, $self->loc("We can't currently render as a List when basing categories on another custom field.  Please use another render type."));
-    }
-
     return $self->_Set( Field => 'RenderType', Value => $type, @_ );
 }
 

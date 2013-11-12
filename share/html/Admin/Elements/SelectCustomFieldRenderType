@@ -56,11 +56,6 @@ $Default ||= $cf->DefaultRenderType($TypeComposite);
 
 my @types = $cf->RenderTypes($TypeComposite);
 
-# XXX: We currently don't support cascaded select CFs when
-# rendering as a list, so don't offer it for now.
-if ( $BasedOn ) {
-    @types = grep { not /List/ } @types;
-}
 </%INIT>
 <%ARGS>
 $Default => undef

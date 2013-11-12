@@ -168,11 +168,7 @@ Change this line to read:
     been assigned an ID of { $Ticket->SubjectTag }."
 
 If you were previously using RT::Extension::BrandedQueues, you MUST uninstall
-it before upgrading. In addition, you must run the
-'etc/upgrade/3.8-branded-queues-extension' perl script.  This will
-convert the extension's configuration into the new format.  Finally, in
-templates where you were using the Tag method ($Ticket->QueueObj->Tag),
-you will need to replace it with $Ticket->SubjectTag
+it before upgrading.
 
 RT::Action::LinearEscalate extension has been integrated into core, so you
 MUST uninstall it before upgrading.

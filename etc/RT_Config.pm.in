@@ -1299,7 +1299,7 @@ Set ($DefaultSearchResultFormat, qq{
    Owner,
    Priority,
    '__NEWLINE__',
-   '',
+   '__NBSP__',
    '<small>__Requestors__</small>',
    '<small>__CreatedRelative__</small>',
    '<small>__ToldRelative__</small>',

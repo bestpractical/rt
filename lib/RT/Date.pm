@@ -920,7 +920,7 @@ sub RFC2822 {
 
     my ($date, $time) = ('','');
     $date .= "$DAYS_OF_WEEK[$wday], " if $args{'DayOfWeek'} && $args{'Date'};
-    $date .= "$mday $MONTHS[$mon] $year" if $args{'Date'};
+    $date .= sprintf("%02d %s %04d", $mday, $MONTHS[$mon], $year) if $args{'Date'};
 
     if ( $args{'Time'} ) {
         $time .= sprintf("%02d:%02d", $hour, $min);
@@ -988,28 +988,19 @@ sub iCal {
         @_,
     );
 
-    my $tz;
-    if ( $args{'Date'} && !$args{'Time'} ) {
-        $tz = 'user';
-    } else {
-        $tz = 'utc';
-    }
-
-    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) =
-        $self->Localtime( $tz );
-
-    #the month needs incrementing, as gmtime returns 0-11
-    $mon++;
-
     my $res;
     if ( $args{'Date'} && !$args{'Time'} ) {
-        $res = sprintf( '%04d%02d%02d', $year, $mon, $mday );
-    }
-    elsif ( !$args{'Date'} && $args{'Time'} ) {
+        my (undef, undef, undef, $mday, $mon, $year) =
+            $self->Localtime( 'user' );
+        $res = sprintf( '%04d%02d%02d', $year, $mon+1, $mday );
+    } elsif ( !$args{'Date'} && $args{'Time'} ) {
+        my ($sec, $min, $hour) =
+            $self->Localtime( 'utc' );
         $res = sprintf( 'T%02d%02d%02dZ', $hour, $min, $sec );
-    }
-    else {
-        $res = sprintf( '%04d%02d%02dT%02d%02d%02dZ', $year, $mon, $mday, $hour, $min, $sec );
+    } else {
+        my ($sec, $min, $hour, $mday, $mon, $year) =
+            $self->Localtime( 'utc' );
+        $res = sprintf( '%04d%02d%02dT%02d%02d%02dZ', $year, $mon+1, $mday, $hour, $min, $sec );
     }
     return $res;
 }

@@ -1,10 +1,33 @@
 function filter_cascade_by_id (id, vals, is_hierarchical) {
-    var select = document.getElementById(id);
-    var complete_select = document.getElementById(id + "-Complete" );
-    return filter_cascade(select, complete_select, vals, is_hierarchical);
+    var element = document.getElementById(id);
+    if (!element) { return };
+
+    if ( element.tagName == 'SELECT' ) {
+        var complete_select = document.getElementById(id + "-Complete" );
+        return filter_cascade_select(element, complete_select, vals, is_hierarchical);
+    }
+    else {
+        if ( !( vals instanceof Array ) ) {
+            vals = [vals];
+        }
+
+        if ( is_hierarchical && (vals.length == 0 || (vals.length == 1 && vals[0] == '')) ) {
+            // no category, and the category is from a hierchical cf;
+            // leave it empty
+            jQuery(element).find('div').hide();
+        }
+        else {
+            jQuery(element).find('div').hide().find('input').prop('disabled', true);
+            jQuery(element).find('div[name=]').show().find('input').prop('disabled', false);
+            jQuery(element).find('div.none').show().find('input').prop('disabled',false);
+            for ( var j = 0; j < vals.length; j++ ) {
+                jQuery(element).find('div[name^=' + vals[j] + ']').show().find('input').prop('disabled', false);
+            }
+        }
+    }
 }
 
-function filter_cascade (select, complete_select, vals, is_hierarchical) {
+function filter_cascade_select (select, complete_select, vals, is_hierarchical) {
     if ( !( vals instanceof Array ) ) {
         vals = [vals];
     }
