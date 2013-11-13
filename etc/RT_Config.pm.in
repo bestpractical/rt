@@ -370,11 +370,14 @@ Set($StoreLoops, undef);
 
 C<$MaxAttachmentSize> sets the maximum size (in bytes) of attachments
 stored in the database.  This setting is irrelevant unless one of
-$TruncateLongAttachments or $DropLongAttachments (below) are set.
+$TruncateLongAttachments or $DropLongAttachments (below) are set, B<OR>
+the database is stored in Oracle.  On Oracle, attachments larger than
+this can be fully stored, but will be truncated to this length when
+read.
 
 =cut
 
-Set($MaxAttachmentSize, 10_000_000);
+Set($MaxAttachmentSize, 10_000_000);  # 10M
 
 =item C<$TruncateLongAttachments>
 

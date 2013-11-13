@@ -369,6 +369,7 @@ diag "create with attachment";
 
     $m->form_name('TicketCreate');
     $m->field('Attach',  FaviconFile);
+    $m->field('Subject', 'Subject');
     $m->field('Content', 'Message');
     ok($m->current_form->find_input('AddMoreAttach'), "more than one attachment");
     $m->submit;

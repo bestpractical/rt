@@ -83,16 +83,16 @@ L<DBIx::SearchBuilder::Handle>, using the C<DatabaseType> configuration.
 =cut
 
 sub FinalizeDatabaseType {
-    eval {
-        use base "DBIx::SearchBuilder::Handle::". RT->Config->Get('DatabaseType');
-    };
-
     my $db_type = RT->Config->Get('DatabaseType');
-    if ($@) {
+    my $package = "DBIx::SearchBuilder::Handle::$db_type";
+
+    unless (eval "require $package; 1;") {
         die "Unable to load DBIx::SearchBuilder database handle for '$db_type'.\n".
             "Perhaps you've picked an invalid database type or spelled it incorrectly.\n".
             $@;
     }
+
+    @RT::Handle::ISA = ($package);
 
     # We use COLLATE NOCASE to enforce case insensitivity on the normally
     # case-sensitive SQLite, LOWER() approach works, but lucks performance

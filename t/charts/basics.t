@@ -26,6 +26,7 @@ use_ok 'RT::Report::Tickets';
         GroupBy  => ['Status'],
         Function => ['COUNT'],
     );
+    $report->SortEntries;
 
     my @colors = RT->Config->Get("ChartColors");
     my $expected = {
