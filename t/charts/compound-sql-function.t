@@ -33,6 +33,7 @@ use_ok 'RT::Report::Tickets';
         GroupBy  => ['Queue'],
         Function => ['ALL(Created-Resolved)'],
     );
+    $report->SortEntries;
 
     my @colors = RT->Config->Get("ChartColors");
     my $expected = {
