@@ -131,6 +131,8 @@ sub Attributes {
             Transaction => 1,
         };
     }
+    $res->{LongReadLen} = RT->Config->Get('MaxAttachmentSize')
+        if $class->isa('Apache::Session::Oracle');
     return $res;
 }
 
