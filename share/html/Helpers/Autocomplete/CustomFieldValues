@@ -63,11 +63,17 @@ unless ( exists $ARGS{ContextType} and exists $ARGS{ContextId} ) {
     $abort->();
 }
 
+# Use _ParseObjectCustomFieldArgs to avoid duplicating the regex.
+# See the docs for _ParseObjectCustomFieldArgs for details on the data
+# structure returned. There will be only one CF, so drill down 2 layers
+# to get the cf id, if one is there.
+
+my %custom_fields = _ParseObjectCustomFieldArgs(\%ARGS);
 my $CustomField;
-for my $k ( keys %ARGS ) {
-    next unless $k =~ /^Object-.*?-\d*-CustomField-(\d+)-Values?$/;
-    $CustomField = $1;
-    last;
+foreach my $class ( keys %custom_fields ){
+    foreach my $id ( keys %{$custom_fields{$class}} ){
+        ($CustomField) = keys %{$custom_fields{$class}{$id}};
+    }
 }
 
 unless ( $CustomField ) {
