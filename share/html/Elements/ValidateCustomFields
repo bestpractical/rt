@@ -81,6 +81,15 @@ while ( my $CF = $CustomFields->Next ) {
                 push @values, $ocfv->Content;
             }
         }
+        @values = grep {
+            my $DateObj = RT::Date->new ( $session{'CurrentUser'} );
+            $DateObj->Set(
+                Format => 'unknown',
+                Value => $_,
+                ($CF->Type eq "Date" ? (Timezone => 'utc') : ())
+            );
+            $DateObj->Unix > 0
+        } @values;
     }
     push @values, '' unless @values;
 
