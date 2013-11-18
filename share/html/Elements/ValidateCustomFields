@@ -72,7 +72,7 @@ while ( my $CF = $CustomFields->Next ) {
 
     my @values = _NormalizeObjectCustomFieldValue(
         CustomField => $CF,
-        Value       => $submitted->{Values} || $submitted->{Value} || $submitted->{Upload},
+        Value       => ($submitted->{Values} // $submitted->{Value} // $submitted->{Upload}),
     );
     if ($CF->Type =~ /^Date(?:Time)?$/) {
         if (not @values) {
