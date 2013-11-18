@@ -74,6 +74,14 @@ while ( my $CF = $CustomFields->Next ) {
         CustomField => $CF,
         Value       => $submitted->{Values} || $submitted->{Value} || $submitted->{Upload},
     );
+    if ($CF->Type =~ /^Date(?:Time)?$/) {
+        if (not @values) {
+            my $values = $Object->CustomFieldValues($CF->Id);
+            while (my $ocfv = $values->Next) {
+                push @values, $ocfv->Content;
+            }
+        }
+    }
     push @values, '' unless @values;
 
     for my $value( @values ) {
