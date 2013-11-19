@@ -79,10 +79,7 @@ if ( $IncludeSignature and my $text = $session{'CurrentUser'}->UserObj->Signatur
 }
 
 # wrap="something" seems to really break IE + richtext
-my $wrap_type = '';
-if ( not RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ) {
-    $wrap_type = 'wrap="soft"';
-}
+my $wrap_type = $type eq 'text/html' ? '' : 'wrap="soft"';
 
 # If there's no cols specified, we want to set the width to 100% in CSS
 my $width_attr;
