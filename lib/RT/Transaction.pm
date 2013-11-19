@@ -343,7 +343,7 @@ sub Content {
         $content = $content_obj->Content ||'';
 
         if ( lc $content_obj->ContentType eq 'text/html' ) {
-            $content =~ s/<p>--\s+<br \/>.*?$//s if $args{'Quote'};
+            $content =~ s/(?:(<\/div>)|<p>|<br\s*\/?>|<div(\s+class="[^"]+")?>)\s*--\s+<br\s*\/?>.*?$/$1/s if $args{'Quote'};
 
             if ($args{Type} ne 'text/html') {
                 $content = RT::Interface::Email::ConvertHTMLToText($content);
