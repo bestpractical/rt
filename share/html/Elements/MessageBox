@@ -67,6 +67,15 @@ if ( $QuoteTransaction ) {
 my $signature = '';
 if ( $IncludeSignature and my $text = $session{'CurrentUser'}->UserObj->Signature ) {
     $signature = "-- \n". $text;
+    if ($type eq 'text/html') {
+        $signature =~ s/&/&amp;/g;
+        $signature =~ s/</&lt;/g;
+        $signature =~ s/>/&gt;/g;
+        $signature =~ s/"/&quot;/g;  # "//;
+        $signature =~ s/'/&#39;/g;   # '//;
+        $signature =~ s{\n}{<br />}g;
+        $signature = "<p>$signature</p>";
+    }
 }
 
 # wrap="something" seems to really break IE + richtext
