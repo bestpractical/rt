@@ -50,17 +50,18 @@
 % $m->callback( %ARGS, SignatureRef => \$signature );
 <% $Default || '' %><% $message %><% $signature %></textarea>
 % $m->callback( %ARGS, CallbackName => 'AfterTextArea' );
-% if (RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'})) {
-<input type="text" style="display:none" name="<% $Name %>Type" id="<% $Name %>Type" value="<% $m->request_args->{$Name."Type"}||'' %>" />
+% if ($type eq 'text/html') {
+<input type="text" style="display:none" name="<% $Name %>Type" id="<% $Name %>Type" value="<% $m->request_args->{$Name."Type"}||$type %>" />
 % }
 <%INIT>
 
+my $type = RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ? 'text/html' : 'text/plain';
 my $message = '';
 
 if ( $QuoteTransaction ) {
     my $transaction = RT::Transaction->new( $session{'CurrentUser'} );
     $transaction->Load( $QuoteTransaction );
-    $message = $transaction->Content( Quote => 1 );
+    $message = $transaction->Content( Quote => 1, Type  => $type );
 }
 
 my $signature = '';

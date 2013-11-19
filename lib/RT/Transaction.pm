@@ -367,10 +367,18 @@ sub Content {
     }
 
     if ( $args{'Quote'} ) {
-        $content = $self->ApplyQuoteWrap(content => $content,
-                                         cols    => $args{'Wrap'} );
+        if ($args{Type} eq 'text/html') {
+            $content = '<div class="gmail_quote">'
+                . $self->QuoteHeader
+                . '<br /><blockquote class="gmail_quote" type="cite">'
+                . $content
+                . '</blockquote></div><br /><br />';
+        } else {
+            $content = $self->ApplyQuoteWrap(content => $content,
+                                             cols    => $args{'Wrap'} );
 
-        $content = $self->QuoteHeader . "\n$content\n\n";
+            $content = $self->QuoteHeader . "\n$content\n\n";
+        }
     }
 
     return ($content);
