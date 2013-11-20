@@ -872,7 +872,9 @@ sub InsertData {
             }
 
             if ( $item->{'BasedOn'} ) {
-                if ( $item->{'LookupType'} ) {
+                if ( $item->{'BasedOn'} =~ /^\d+$/) {
+                    # Already have an ID -- should be fine
+                } elsif ( $item->{'LookupType'} ) {
                     my $basedon = RT::CustomField->new($RT::SystemUser);
                     my ($ok, $msg ) = $basedon->LoadByCols( Name => $item->{'BasedOn'},
                                                             LookupType => $item->{'LookupType'} );
