@@ -524,7 +524,7 @@ sub _ResolveRoles {
                 $user->LoadByEmail( $value ) unless $user->id;
                 $roles->{$role} = $user->PrincipalObj;
             }
-            unless ($roles->{$role}->id) {
+            unless ($roles->{$role} and $roles->{$role}->id) {
                 push @errors, $self->loc("Invalid value for [_1]",loc($role));
                 $roles->{$role} = RT->Nobody->PrincipalObj;
             }
