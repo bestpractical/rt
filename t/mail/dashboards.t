@@ -106,12 +106,9 @@ sub produces_dashboard_mail_ok { # {{{
     is($mail->head->get('X-RT-Dashboard-Id'), "$dashboard_id\n");
     is($mail->head->get('X-RT-Dashboard-Subscription-Id'), "$subscription_id\n");
 
-    SKIP: {
-        skip 'Weird MIME failure', 2;
-        my $body = $mail->stringify_body;
-        like($body, qr{My dashboards});
-        like($body, qr{<a href="http://[^/]+/Dashboards/\d+/Testing!">Testing!</a>});
-    };
+    my $body = $mail->bodyhandle->as_string;
+    like($body, qr{My dashboards});
+    like($body, qr{<a href="http://[^/]+/Dashboards/\d+/Testing!">Testing!</a>});
 } # }}}
 
 sub produces_no_dashboard_mail_ok { # {{{
@@ -203,12 +200,9 @@ is($mail->head->get('From'), "dashboard\@example.com\n");
 is($mail->head->get('X-RT-Dashboard-Id'), "$dashboard_id\n");
 is($mail->head->get('X-RT-Dashboard-Subscription-Id'), "$subscription_id\n");
 
-SKIP: {
-    skip 'Weird MIME failure', 2;
-    my $body = $mail->stringify_body;
-    unlike($body, qr{My dashboards});
-    unlike($body, qr{Testing!});
-};
+my $body = $mail->bodyhandle->as_string;
+unlike($body, qr{My dashboards});
+unlike($body, qr{Testing!});
 
 delete_dashboard($dashboard_id);
 
