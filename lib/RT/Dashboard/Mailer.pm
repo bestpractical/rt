@@ -429,6 +429,8 @@ sub BuildEmail {
         $entity->add_part($part);
     }
 
+    $entity->make_singlepart;
+
     return $entity;
 }
 
