@@ -37,9 +37,7 @@ function filter_cascade_select (select, complete_select, vals, is_hierarchical) 
     var children = select.childNodes;
 
     if ( complete_select ) {
-        while (select.hasChildNodes()){
-            select.removeChild(select.firstChild);
-        }
+        jQuery(select).children().remove();
 
         var complete_children = complete_select.childNodes;
 
@@ -52,12 +50,7 @@ function filter_cascade_select (select, complete_select, vals, is_hierarchical) 
                 // leave this set of options empty
             } else if ( val == '' ) {
                 // no category, let's clone all node
-                for (i = 0; i < complete_children.length; i++) {
-                    if ( complete_children[i].cloneNode ) {
-                        var new_option = complete_children[i].cloneNode(true);
-                        select.appendChild(new_option);
-                    }
-                }
+                jQuery(select).append(jQuery(complete_children).clone());
                 break;
             }
             else {
@@ -80,10 +73,7 @@ function filter_cascade_select (select, complete_select, vals, is_hierarchical) 
                         continue;
                     }
 
-                    if ( complete_children[i].cloneNode ) {
-                        var new_option = complete_children[i].cloneNode(true);
-                        select.appendChild(new_option);
-                    }
+                    jQuery(select).append(jQuery(complete_children[i]).clone());
                 }
 
                 if ( !cloned_empty_label )
