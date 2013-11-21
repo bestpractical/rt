@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 181;
+use RT::Test tests => undef;
 use Test::Warn;
 use RT::Dashboard::Mailer;
 
@@ -102,6 +102,7 @@ sub produces_dashboard_mail_ok { # {{{
     my $mail = parse_mail( $mails[0] );
     is($mail->head->get('Subject'), $subject);
     is($mail->head->get('From'), qq{"root" <root\@localhost>\n});
+    is($mail->head->get('Content-Transfer-Encoding'), "base64\n");
     is($mail->head->get('X-RT-Dashboard-Id'), "$dashboard_id\n");
     is($mail->head->get('X-RT-Dashboard-Subscription-Id'), "$subscription_id\n");
 
@@ -368,3 +369,4 @@ produces_no_dashboard_mail_ok(
     Time    => $bad_time,
 );
 
+done_testing;
