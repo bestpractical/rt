@@ -58,7 +58,12 @@ my @comments;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
 my %data = %$changes;
 my $group = RT::Group->new($session{CurrentUser});
-my @fields = qw(Name Description);
+
+my @fields = qw(Name Description Disabled);
+if ( $fields && %$fields ) {
+    @fields = grep { exists $fields->{ lc $_ } } @fields;
+}
+
 my %fields = map { lc $_ => $_ } @fields;
 
 if ($id ne 'new') {
@@ -109,31 +114,33 @@ if (%data == 0) {
     my @data;
 
     push @data, [ id => "group/".$group->Id ];
-    push @data, [ Name => $group->Name ];
-    push @data, [ Description => $group->Description ];
-
+    foreach my $key (@fields) {
+        push @data, [ $key => $group->$key ];
+    }
 
     # Members
-    my $gms = [];
-    my $GroupMembers = $group->MembersObj();
-    while ( my $mo = $GroupMembers->Next() ) {
-        if ( $mo->MemberObj->IsGroup ) {
-            my $us = $mo->MemberObj->Object->UserMembersObj();
-            my @users;
-            while ( my $u = $us->Next() ) {
-                push @users, $u->RealName . ' <' . $u->EmailAddress . '>';
+    unless ( $fields && !exists $fields->{members} ) {
+        my $gms = [];
+        my $GroupMembers = $group->MembersObj();
+        while ( my $mo = $GroupMembers->Next() ) {
+            if ( $mo->MemberObj->IsGroup ) {
+                my $us = $mo->MemberObj->Object->UserMembersObj();
+                my @users;
+                while ( my $u = $us->Next() ) {
+                    push @users, $u->RealName . ' <' . $u->EmailAddress . '>';
+                }
+                push @$gms,
+                    'GROUP ['
+                    . $mo->MemberObj->Object->Name . ']' . ' ('
+                    . join( ';', @users ) . ')';
+            } elsif ( $mo->MemberObj->IsUser ) {
+                push @$gms,
+                    $mo->MemberObj->Object->RealName . ' <'
+                    . $mo->MemberObj->Object->EmailAddress . '>';
             }
-            push @$gms,
-                'GROUP ['
-                . $mo->MemberObj->Object->Name . ']' . ' ('
-                . join( ';', @users ) . ')';
-        } elsif ( $mo->MemberObj->IsUser ) {
-            push @$gms,
-                $mo->MemberObj->Object->RealName . ' <'
-                . $mo->MemberObj->Object->EmailAddress . '>';
         }
+        push @data, [ Members => $gms ];
     }
-    push @data, [ Members => $gms ];
 
     # Custom fields
     my $CustomFields = $group->CustomFields;

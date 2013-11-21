@@ -47,10 +47,247 @@
 %# END BPS TAGGED BLOCK }}}
 %# REST/1.0/search/dhandler
 %#
+<%ARGS>
+$query
+$format => undef
+$orderby => undef
+$fields => undef
+</%ARGS>
 <%INIT>
-my $status = "500 Server Error";
-my $output = "Unsupported object type.";
-</%INIT>
-RT/<% $RT::VERSION %> <% $status %>
+my $type = $m->dhandler_arg;
+my ( $status, $output );
 
-<% $output |n %>
+if ( $type =~ /^(ticket|queue|user|group)$/i ) {
+    $status = "200 Ok";
+    $output = '';
+    my $type = lc $1;
+
+    if (
+        $type eq 'user'
+        && !$session{CurrentUser}->HasRight(
+            Object => $RT::System,
+            Right  => 'AdminUsers',
+        )
+      )
+    {
+
+        $status = "403 Forbidden";
+        $output = "Permission denied";
+        goto OUTPUT;
+    }
+
+    my $class = 'RT::' . ucfirst $type . 's';
+    my $objects = $class->new( $session{CurrentUser} );
+
+    # Parse and validate any field specifications.
+    require RT::Interface::REST;
+    my $field = RT::Interface::REST->field_spec;
+    my ( %fields, @fields );
+    if ($fields) {
+        $format ||= "l";
+        unless ( $fields =~ /^(?:$field,)*$field$/ ) {
+            $status = "400 Bad Request";
+            $output = "Invalid field specification: $fields";
+            goto OUTPUT;
+        }
+        @fields = map lc, split /\s*,\s*/, $fields;
+        @fields{@fields} = ();
+        unless ( exists $fields{id} ) {
+            unshift @fields, "id";
+            $fields{id} = ();
+        }
+    }
+
+    $format ||= "s";
+    if ( $format !~ /^[isl]$/ ) {
+        $status = "400 Bad request";
+        $output = "Unknown listing format: $format. (Use i, s, or l.)\n";
+        goto OUTPUT;
+    }
+
+    my ( $n, $s );
+    $n = 0;
+    my @output;
+
+
+    if ( $type eq 'group' ) {
+        $objects->LimitToUserDefinedGroups;
+    }
+
+    if ( defined $query && length $query ) {
+        if ( $type eq 'ticket' ) {
+            my ( $n, $s );
+            eval { ( $n, $s ) = $objects->FromSQL($query); };
+            if ( $@ || $n == 0 ) {
+                $s ||= $@;
+                $status = "400 Bad request";
+                $output = "Invalid query: '$s'.\n";
+                goto OUTPUT;
+            }
+        }
+        else {
+            require Text::ParseWords;
+            my ( $field, $op, $value ) = Text::ParseWords::shellwords($query);
+            if ( $op !~
+                /^(?:[!<>]?=|[<>]|(NOT )?LIKE|STARTSWITH|ENDSWITH|MATCHES)$/i )
+            {
+                $status = "400 Bad Request";
+                $output = "Invalid operator specification: $op";
+                goto OUTPUT;
+            }
+
+            if ( ! $search_whitelist{$type}{lc $field} ) {
+                $status = "400 Bad Request";
+                $output = "Invalid field specification: $field";
+                goto OUTPUT;
+            }
+
+
+            if ( $field && $op && defined $value ) {
+                if ( $field eq 'Disabled' ) {
+                    if ($value) {
+                        if ( $type eq 'queue' ) {
+                            $objects->FindAllRows;
+                            $objects->Limit(
+                                FIELD    => $field,
+                                OPERATOR => uc $op,
+                                VALUE    => $value
+                            );
+                        }
+                        else {
+                            $objects->LimitToDeleted;
+                        }
+                    }
+                    else {
+                        if ( $type eq 'queue' ) {
+                            $objects->UnLimit;
+                        }
+                        else {
+                            $objects->LimitToEnabled;
+                        }
+                    }
+                }
+                else {
+                    $objects->Limit(
+                        FIELD    => $field,
+                        OPERATOR => uc $op,
+                        VALUE    => $value,
+                        CASESENSITIVE => 0,
+                    );
+                }
+            }
+            else {
+                $output = "Invalid query specification: $query";
+                goto OUTPUT;
+            }
+        }
+    }
+    else {
+        if ( $type eq 'queue' ) {
+            $objects->UnLimit;
+        }
+        elsif ( $type eq 'user' ) {
+            $objects->LimitToPrivileged;
+        }
+    }
+
+    if ($orderby) {
+        my ( $order, $field ) = $orderby =~ /^([\+\-])?(.+)/;
+        $order = $order && $order eq '-' ? 'DESC' : 'ASC';
+        $objects->OrderBy( FIELD => $field, ORDER => $order );
+    }
+
+    while ( my $object = $objects->Next ) {
+        next if $type eq 'user' && ( $object->id == RT->SystemUser->id || $object->id == RT->Nobody->id );
+        $n++;
+
+        my $id = $object->Id;
+        if ( $format eq "i" ) {
+            $output .= "$type/" . $id . "\n";
+        }
+        elsif ( $format eq "s" ) {
+            if ($fields) {
+                my $result = $m->comp(
+                    "/REST/1.0/Forms/$type/default",
+                    id     => $id,
+                    format => $format,
+                    fields => \%fields
+                );
+                my ( $notes, $order, $key_values, $errors ) = @$result;
+
+                # If it's the first time through, add our header
+                if ( $n == 1 ) {
+                    $output .= join( "\t", @$order ) . "\n";
+                }
+
+                # Cut off the annoying $type/ before the id;
+                $key_values->{'id'} = $id;
+                $output .= join(
+                    "\t",
+                    map {
+                        ref $key_values->{$_} eq 'ARRAY'
+                          ? join( ', ', @{ $key_values->{$_} } )
+                          : $key_values->{$_}
+                      } @$order
+                ) . "\n";
+            }
+            else {
+                if ( $type eq 'ticket' ) {
+                    $output .= $object->Id . ": " . $object->Subject . "\n";
+                }
+                else {
+                    $output .= $object->Id . ": " . $object->Name . "\n";
+                }
+            }
+        }
+        else {
+            my $d = $m->comp(
+                "/REST/1.0/Forms/$type/default",
+                id     => $id,
+                format => $format,
+                fields => \%fields
+            );
+            my ( $c, $o, $k, $e ) = @$d;
+            push @output, [ $c, $o, $k ];
+        }
+    }
+    if ( $n == 0 && $format ne "i" ) {
+        $output = "No matching results.\n";
+    }
+
+    $output = form_compose( \@output ) if @output;
+}
+else {
+    $status = "500 Server Error";
+    $output = "Unsupported object type.";
+    goto OUTPUT;
+}
+
+OUTPUT:
+$m->out("RT/". $RT::VERSION . " " . $status ."\n\n");
+$m->out($output );
+</%INIT>
+
+<%ONCE>
+my %search_whitelist = (
+    queue => {
+        map { lc $_ => 1 }
+          grep { $RT::Record::_TABLE_ATTR->{'RT::Queue'}{$_}{read} }
+          keys %{ $RT::Record::_TABLE_ATTR->{'RT::Queue'} }
+    },
+    user => {
+        disabled => 1,
+        map { lc $_ => 1 }
+          grep { $RT::Record::_TABLE_ATTR->{'RT::User'}{$_}{read} }
+          keys %{ $RT::Record::_TABLE_ATTR->{'RT::User'} }
+    },
+    group => {
+        disabled => 1,
+        map { lc $_ => 1 }
+          grep { $RT::Record::_TABLE_ATTR->{'RT::Group'}{$_}{read} }
+          keys %{ $RT::Record::_TABLE_ATTR->{'RT::Group'} }
+    }
+);
+
+</%ONCE>
+

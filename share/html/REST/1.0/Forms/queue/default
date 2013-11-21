@@ -58,8 +58,13 @@ my @comments;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
 my %data = %$changes;
 my $queue = RT::Queue->new($session{CurrentUser});
-my @fields = qw(Name Description CorrespondAddress CommentAddress
-                InitialPriority FinalPriority DefaultDueIn);
+
+my @fields =
+  qw(Name Description CorrespondAddress CommentAddress InitialPriority FinalPriority DefaultDueIn Disabled);
+if ( $fields && %$fields ) {
+    @fields = grep { exists $fields->{ lc $_ } } @fields;
+}
+
 my %fields = map { lc $_ => $_ } @fields;
 
 if ($id ne 'new') {
