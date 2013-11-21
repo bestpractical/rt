@@ -347,6 +347,18 @@ sub Content {
 
             if ($args{Type} ne 'text/html') {
                 $content = RT::Interface::Email::ConvertHTMLToText($content);
+            } else {
+                # Scrub out <html>, <head>, <meta>, and <body>, and
+                # leave all else untouched.
+                my $scrubber = HTML::Scrubber->new();
+                $scrubber->rules(
+                    html => 0,
+                    head => 0,
+                    meta => 0,
+                    body => 0,
+                );
+                $scrubber->default( 1 => { '*' => 1 } );
+                $content = $scrubber->scrub( $content );
             }
         }
         else {
