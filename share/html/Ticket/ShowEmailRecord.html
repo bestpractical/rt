@@ -101,8 +101,12 @@ unless ($AttachmentObj->TransactionId() == $Transaction ) {
     Abort(loc("Attachment '[_1]' could not be loaded", $Attachment));
 }
 
+my $title = loc("Email Source for Ticket [_1], Attachment [_2]",
+    $AttachmentObj->TransactionObj->ObjectId,
+    $AttachmentObj->Id);
+
 </%INIT>
-<& /Elements/Header, ShowBar => 0 &>
+<& /Elements/Header, ShowBar => 0, Title => $title &>
 % $show->( $AttachmentObj );
 </body>
 </html>
