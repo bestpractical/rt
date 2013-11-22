@@ -665,11 +665,18 @@ our %META;
             $opt->{'Incoming'} = [ $opt->{'Incoming'} ]
                 if $opt->{'Incoming'} and not ref $opt->{'Incoming'};
             if ( $opt->{'Incoming'} && @{ $opt->{'Incoming'} } ) {
+                $RT::Logger->warning("$_ explicitly set as incoming Crypt plugin, but not marked Enabled; removing")
+                    for grep {not $enabled{$_}} @{$opt->{'Incoming'}};
                 $opt->{'Incoming'} = [ grep {$enabled{$_}} @{$opt->{'Incoming'}} ];
             } else {
                 $opt->{'Incoming'} = \@enabled;
             }
             if ( $opt->{'Outgoing'} ) {
+                if (not $enabled{$opt->{'Outgoing'}}) {
+                    $RT::Logger->warning($opt->{'Outgoing'}.
+                                             " explicitly set as outgoing Crypt plugin, but not marked Enabled; "
+                                             . (@enabled ? "using $enabled[0]" : "removing"));
+                }
                 $opt->{'Outgoing'} = $enabled[0] unless $enabled{$opt->{'Outgoing'}};
             } else {
                 $opt->{'Outgoing'} = $enabled[0];
