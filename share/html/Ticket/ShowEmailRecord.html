@@ -92,22 +92,40 @@ $show = sub {
     $m->out('</div>');
 };
 
-my $AttachmentObj = RT::Attachment->new($session{'CurrentUser'});
-$AttachmentObj->Load($Attachment) || Abort(loc("Attachment '[_1]' could not be loaded", $Attachment));
-unless ( $AttachmentObj->id ) {
-    Abort(loc("Attachment '[_1]' could not be loaded", $Attachment));
-}
-unless ($AttachmentObj->TransactionId() == $Transaction ) {
-    Abort(loc("Attachment '[_1]' could not be loaded", $Attachment));
-}
+# Set error for error message below. Abort doesn't display well
+# because ShowEmailRecord doesn't use the standard RT menus
+# and headers.
 
-my $title = loc("Email Source for Ticket [_1], Attachment [_2]",
-    $AttachmentObj->TransactionObj->ObjectId,
-    $AttachmentObj->Id);
+my ($title, $error);
+
+my $AttachmentObj = RT::Attachment->new($session{'CurrentUser'});
+$AttachmentObj->Load($Attachment);
+
+if ( not $AttachmentObj->id
+    or not $AttachmentObj->TransactionId() == $Transaction ) {
+    $title = loc("Error loading attachment");
+    $error = loc("Attachment '[_1]' could not be loaded", $Attachment);
+}
+elsif ( not $AttachmentObj->TransactionObj->CurrentUserCanSee("Transaction")){
+    $title = loc("Permission Denied");
+    $error = loc("Permission Denied");
+}
+else{
+    $title = loc("Email Source for Ticket [_1], Attachment [_2]",
+        $AttachmentObj->TransactionObj->ObjectId,
+        $AttachmentObj->Id);
+}
 
 </%INIT>
 <& /Elements/Header, ShowBar => 0, Title => $title &>
-% $show->( $AttachmentObj );
+% if ( $error ){
+<div id="body"><div class="error">
+<% $error %>
+</div></div>
+% }
+% else{
+%    $show->( $AttachmentObj );
+% }
 </body>
 </html>
 % $m->abort;
