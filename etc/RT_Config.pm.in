@@ -2165,7 +2165,7 @@ Set(%GnuPGOptions,
 #    'auto-key-locate' => 'keyserver',
 
 # enables the automatic retrieving of keys when verifying signatures
-#    'auto-key-retrieve' => undef,
+#    'keyserver-options' => 'auto-key-retrieve',
 );
 
 =back
