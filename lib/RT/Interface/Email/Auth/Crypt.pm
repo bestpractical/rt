@@ -66,6 +66,9 @@ it put the module in the mail plugins list:
 
     Set(@MailPlugins, 'Auth::MailFrom', 'Auth::Crypt', ...other filters...);
 
+C<Auth::Crypt> will not function without C<Auth::MailFrom> listed before
+it.
+
 =head3 GnuPG
 
 To use the gnupg-secured mail gateway, you need to do the following:
