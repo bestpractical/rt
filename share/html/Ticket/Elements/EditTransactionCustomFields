@@ -54,7 +54,7 @@
 % next unless $CF->CurrentUserHasRight('ModifyCustomField');
 <<% $FIELD %>>
 <<% $CELL %> class="label cflabel">
-  <span class="name"><% loc($CF->Name) %>:</span><br />
+  <span class="name"><% $CF->Name %>:</span><br />
   <span class="type"><% $CF->FriendlyType %></span>
 </<% $CELL %>>
 <<% $CELL %>>

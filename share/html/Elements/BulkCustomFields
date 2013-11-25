@@ -55,7 +55,7 @@
 % my $i = 0;
 % while (my $cf = $CustomFields->Next) {
 <tr class="<% ++$i%2 ? 'oddline': 'evenline' %>">
-<td class="label"><% loc($cf->Name) %><br />
+<td class="label"><% $cf->Name %><br />
 <em>(<% $cf->FriendlyType %>)</em></td>
 % my $rows = 5;
 % my $cf_id = $cf->id;

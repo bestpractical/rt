@@ -104,7 +104,7 @@
 % my $CFs = $QueueObj->CustomFields;
 % while (my $CF = $CFs->Next) {
 <tr valign="top"><td align="right">
-<% loc($CF->Name) %>:
+<% $CF->Name %>:
 </td><td>
 <& /Elements/EditCustomField, CustomField => $CF,
                               Object => $QueueObj, &>

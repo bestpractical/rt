@@ -183,7 +183,7 @@ our %GROUPINGS_META = (
                 $cf = $obj->Name;
             }
 
-            return 'Custom field [_1]', $self->CurrentUser->loc( $cf );
+            return 'Custom field [_1]', $cf;
         },
     },
     Enum => {
