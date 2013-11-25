@@ -1,18 +1,21 @@
-# Finnish localization catalog for Request Tracker (RT)
-# First Author: Janne Pirkkanen <jp@oppipoika.net>, Jul 2002
+# Finnish translation for rt
+# Copyright (c) 2013 Rosetta Contributors and Canonical Ltd 2013
+# This file is distributed under the same license as the rt package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2013.
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: RT 4.0.x\n"
-"Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
-"POT-Creation-Date: 2013-06-06 21:51+0000\n"
-"PO-Revision-Date: 2013-05-25 02:47+0000\n"
-"Last-Translator: Shawn M Moore <Unknown>\n"
-"Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
+"Project-Id-Version: rt\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2013-11-12 21:21+0000\n"
+"PO-Revision-Date: 2013-10-03 21:30+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Finnish <fi@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-10-03 20:13+0000\n"
-"X-Generator: Launchpad (build 16791)\n"
+"X-Launchpad-Export-Date: 2013-11-25 21:45+0000\n"
+"X-Generator: Launchpad (build 16840)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:62
 msgid "#"
@@ -54,10 +57,6 @@ msgstr ""
 msgid "%1 #%2: %3"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "%1 %2"
-msgstr "%1 %2"
-
 #: lib/RT/Tickets.pm:1367
 #. ($args{'FIELD'},        $args{'OPERATOR'}, $args{'VALUE'})
 msgid "%1 %2 %3"
@@ -84,10 +83,6 @@ msgstr "%1 %3.%2 %7 %4:%5:%6"
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
 msgid "%1 %2 added"
 msgstr "%1 %2 lisätty"
-
-#: NOT FOUND IN SOURCE
-msgid "%1 %2 ago"
-msgstr "%1 %2 sitten"
 
 #: lib/RT/Record.pm:2041 lib/RT/Transaction.pm:919
 #. ($cf->Name, $old_content, $new_content)
@@ -158,10 +153,6 @@ msgstr "%1 (lähtöisin paneelista %2)"
 msgid "%1 - Adjust LogToSTDERR config option"
 msgstr "%1 - Mukauta LogToSTDERR konfiguraatioparametria"
 
-#: NOT FOUND IN SOURCE
-msgid "%1 - Adjust LogToScreen config option"
-msgstr "%1 - Mukauta LogToScreen konfiguraatioparametria"
-
 #: bin/rt-crontool:312 bin/rt-crontool:319 bin/rt-crontool:325
 #. ("--action-arg", "--action")
 #. ("--condition-arg", "--condition")
@@ -230,12 +221,12 @@ msgstr "%1 lisätty %2 arvoksi"
 msgid "%1 ago"
 msgstr ""
 
-#: share/html/Install/DatabaseDetails.html:169
+#: share/html/Install/DatabaseDetails.html:179
 #. ($RT::DatabaseName)
 msgid "%1 already exists and has RT's tables in place, but does not contain RT's metadata. The 'Initialize Database' step later on can insert metadata into this existing database. If this is acceptable, click 'Customize Basics' below to continue customizing RT."
 msgstr "%1 on jo olemassa ja sisältää RT:n taulut mutta tauluissa ei ole RT:n metatiedot. 'Alusta tietokanta' askel voi lisätä metatiedot olemassa olevaan tietokantaan. Jos hyväksytte tämän klikatkaa 'Muokkaa perustietoja' valintaa alapuolella jatkaaksenne RT:n kustomointia."
 
-#: share/html/Install/DatabaseDetails.html:174
+#: share/html/Install/DatabaseDetails.html:184
 #. ($RT::DatabaseName)
 msgid "%1 already exists, but does not contain RT's tables or metadata. The 'Initialize Database' step later on can insert tables and metadata into this existing database. if this is acceptable, click 'Customize Basic' below to continue customizing RT."
 msgstr "%1 on jo olemassa mutta ei sisällä RT:n tauluja tai metatietoja. 'Alusta tietokanta' askel voi lisätä taulut ja metatiedot tietokantaan. Jos hyväksytte tämän klikatkaa 'Muokkaa perustietoja'-valintaa alapuolella jatkaaksenne RT:n kustomointia."
@@ -243,7 +234,7 @@ msgstr "%1 on jo olemassa mutta ei sisällä RT:n tauluja tai metatietoja. 'Alus
 #: lib/RT/ACE.pm:272
 #. ($princ_obj->Object->Name)
 msgid "%1 already has that right"
-msgstr ""
+msgstr "%1:lla on jo tämä oikeus"
 
 #: lib/RT/Link.pm:176 lib/RT/Link.pm:184
 #. ($args{'Base'})
@@ -251,7 +242,7 @@ msgstr ""
 msgid "%1 appears to be a local object, but can't be found in the database"
 msgstr "%1 on paikallinen objekti mutta sitä ei löydy tietokannasta"
 
-#: share/html/Install/DatabaseDetails.html:165
+#: share/html/Install/DatabaseDetails.html:175
 #. ($RT::DatabaseName)
 msgid "%1 appears to be fully initialized.  We won't need to create any tables or insert metadata, but you can continue to customize RT by clicking 'Customize Basics' below"
 msgstr "%1 on alustettu. Tauluja ei tarvitse luoda uudestaan eikä metatietoja tarvitse lisätä, voit jatkaa RT:n kustomointia klikkaamalla 'Muokkaa perustietoja'-valintaa alapuolella"
@@ -266,11 +257,12 @@ msgstr "%1 - %2"
 #: lib/RT/Record/Role/Roles.pm:418
 #. ($self->loc($type))
 msgid "%1 cannot be a group"
-msgstr ""
+msgstr "%1 ei voi olla ryhmä"
 
-#: lib/RT/Record.pm:526 lib/RT/Transaction.pm:1062 lib/RT/Transaction.pm:1067 lib/RT/Transaction.pm:1081 lib/RT/Transaction.pm:1090 lib/RT/Transaction.pm:1129 lib/RT/Transaction.pm:818
+#: lib/RT/Record.pm:526 lib/RT/Transaction.pm:1062 lib/RT/Transaction.pm:1067 lib/RT/Transaction.pm:1081 lib/RT/Transaction.pm:1090 lib/RT/Transaction.pm:1130 lib/RT/Transaction.pm:818
 #. ($self->loc($self->Field) , $q1->Name , $q2->Name)
 #. ($self->loc($self->Field),                    ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'")
+#. ($self->loc($self->Field),                    ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")),                    ($self->NewValue? "'".$self->NewValue ."'" : $self->loc("(no value)")))
 #. ($self->loc( $args{'Field'} ),                ( $old_val ? '"' . $old_val . '"' : $self->loc("(no value)") ),                '"' . $self->__Value( $args{'Field'}) . '"',)
 #. ($self->Field,            ( $self->OldValue ? "'" . $self->OldValue . "'" : $no_value ),            "'" . $self->NewValue . "'")
 #. ($self->loc($self->Field), $t2->AsString, $t1->AsString)
@@ -282,10 +274,6 @@ msgstr "%1 muutettu arvosta %2 arvoon %3"
 #. (loc("Field values source"), $original, $ValuesClass)
 msgid "%1 changed from '%2' to '%3'"
 msgstr "%1 muutettu arvosta '%2' arvoon '%3'"
-
-#: NOT FOUND IN SOURCE
-msgid "%1 chart by %2"
-msgstr "%1 kaavio %2"
 
 #: share/html/Search/Elements/EditSearches:203
 #. ($SavedSearch->{'Object'}->Description)
@@ -343,14 +331,14 @@ msgstr "%1 on apuohjelma joka on tarkoitettu ajettavaksi cron-palvelusta, joka l
 #: lib/RT/Record/Role/Roles.pm:415
 #. ($principal->Object->Name, $self->loc($type))
 msgid "%1 is already a %2"
-msgstr ""
+msgstr "%1 on jo %2"
 
 #: lib/RT/Record/Role/Status.pm:264
 #. ($self->loc($column), $name)
 msgid "%1 is already set to %2"
-msgstr ""
+msgstr "%1 on jo %2"
 
-#: lib/RT/Record/Role/Roles.pm:365 lib/RT/Record/Role/Roles.pm:373 share/html/Ticket/Create.html:418 share/html/Ticket/Update.html:282 share/html/m/ticket/create:189 share/html/m/ticket/reply:208
+#: lib/RT/Record/Role/Roles.pm:365 lib/RT/Record/Role/Roles.pm:373 share/html/Ticket/Create.html:418 share/html/Ticket/Update.html:291 share/html/m/ticket/create:189 share/html/m/ticket/reply:208
 #. ($email, $self->loc($type))
 #. ($name, $self->loc($type))
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
@@ -371,7 +359,7 @@ msgstr "%1 ei ole enää kentän %2 arvo"
 #: lib/RT/Record/Role/Roles.pm:493
 #. ($principal->Object->Name, $self->loc($args{Type}))
 msgid "%1 is not a %2"
-msgstr ""
+msgstr "%1 ei ole %2"
 
 #: lib/RT/Queue.pm:189 lib/RT/Record/Role/Lifecycle.pm:126
 #. ($args{'Lifecycle'})
@@ -387,7 +375,7 @@ msgstr ""
 #: share/html/Admin/Elements/ShowKeyInfo:61
 #. ($protocol, $res{'info'}{'id'} || $res{'info'}{'Fingerprint'})
 msgid "%1 key '%2'"
-msgstr ""
+msgstr "%1 avain '%2'"
 
 #: share/html/Ticket/Elements/ShowTime:49 share/html/Ticket/Elements/ShowTime:51
 #. ($minutes)
@@ -408,7 +396,7 @@ msgstr "%1 uusinta artikkelia"
 msgid "%1 newest unowned tickets"
 msgstr "%1 uusinta osoittamatonta tikettiä"
 
-#: lib/RT/CustomField.pm:1157
+#: lib/RT/CustomField.pm:1152
 msgid "%1 objects"
 msgstr "%1 objektia"
 
@@ -443,17 +431,13 @@ msgstr "%1 päivitetty"
 msgid "%1$unit"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1158
+#: lib/RT/CustomField.pm:1153
 msgid "%1's %2 objects"
 msgstr "%1:n %2 objektia"
 
-#: lib/RT/CustomField.pm:1159
+#: lib/RT/CustomField.pm:1154
 msgid "%1's %2's %3 objects"
 msgstr "%1:n %2:n %3 objektia"
-
-#: NOT FOUND IN SOURCE
-msgid "%1's GnuPG keys"
-msgstr "käyttäjän %1 GnuPG avaimet"
 
 #: share/html/Elements/EditPassword:55
 #. ($session{'CurrentUser'}->Name())
@@ -497,7 +481,7 @@ msgstr "%1:%2:%3"
 #: lib/RT/Attachment.pm:453 lib/RT/Date.pm:367
 #. (int( $size / 1024 / 102.4 ) / 10)
 msgid "%1M"
-msgstr ""
+msgstr "%1 kk"
 
 #: share/html/Elements/CreateTicket:54
 #. ($button_start, $button_end, $queue_selector)
@@ -506,11 +490,11 @@ msgstr "%1Uusi tiketti%2&nbsp;%3"
 
 #: lib/RT/Date.pm:366
 msgid "%1W"
-msgstr ""
+msgstr "%1 vk"
 
 #: lib/RT/Date.pm:368
 msgid "%1Y"
-msgstr ""
+msgstr "%1 v"
 
 #: lib/RT/Attachment.pm:459
 #. ($size)
@@ -519,11 +503,11 @@ msgstr "%1t"
 
 #: lib/RT/Date.pm:365
 msgid "%1d"
-msgstr ""
+msgstr "%1 pv"
 
 #: lib/RT/Date.pm:364
 msgid "%1h"
-msgstr ""
+msgstr "%1 t"
 
 #: lib/RT/Attachment.pm:456
 #. (int( $size / 102.4 ) / 10)
@@ -543,7 +527,7 @@ msgstr "%1s"
 #: lib/RT/Date.pm:443
 #. ($value)
 msgid "%quant(%1,$long_units{$unit})"
-msgstr ""
+msgstr "%quant(%1,$long_units{$unit})"
 
 #: share/html/Articles/Elements/ShowTopicLink:61
 #. ($Articles->Count)
@@ -584,40 +568,20 @@ msgstr ""
 msgid "%quant(%1,year)"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "'%1' is an invalid value for status"
-msgstr "'%1' ei kelpaa tilan arvoksi"
-
 #: lib/RT/Queue.pm:323
 #. ($name)
 msgid "'%1' is not a valid name."
-msgstr ""
+msgstr "'%1' ei ole kelvollinen nimi"
 
 #: share/html/Articles/Article/Edit.html:121
 #. ($Class)
 msgid "'%1' isn't a valid class"
-msgstr ""
+msgstr "'%1' ei ole kelvollinen luokka"
 
 #: share/html/Articles/Article/ExtractFromTicket.html:93 share/html/Articles/Article/ExtractIntoTopic.html:70
 #. ($Class)
 msgid "'%1' isn't a valid class identifier"
 msgstr "%1 ei ole kelvollinen luokan tunnistin"
-
-#: NOT FOUND IN SOURCE
-msgid "'Roles'"
-msgstr "Roolit"
-
-#: NOT FOUND IN SOURCE
-msgid "'System'"
-msgstr "'Järjestelmä'"
-
-#: NOT FOUND IN SOURCE
-msgid "'User Groups'"
-msgstr "'Käyttäjäryhmät'"
-
-#: NOT FOUND IN SOURCE
-msgid "'Users'"
-msgstr "'Käyttäjät'"
 
 #: share/html/Ticket/Elements/Reminders:105
 msgid "(Check box to complete)"
@@ -643,7 +607,7 @@ msgstr "(Jos jätetty tyhjäksi, asetetaan oletusarvoisesti arvoon %1)"
 
 #: share/html/Admin/Elements/UpgradeHistoryRow:69
 msgid "(Incomplete)"
-msgstr ""
+msgstr "(kesken)"
 
 #: lib/RT/Report/Tickets.pm:424
 msgid "(Incorrect data)"
@@ -665,10 +629,6 @@ msgstr "(Ei komentosarjoja)"
 msgid "(No templates)"
 msgstr "(Ei mallineita)"
 
-#: NOT FOUND IN SOURCE
-msgid "(None)"
-msgstr "(Ei mitään)"
-
 #: share/html/Ticket/Create.html:161 share/html/m/ticket/create:290
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)"
 msgstr "(Lähettää kopion tästä muutoksesta pääkäyttäjien sähköpostiosoitteisiin. Osoitteiden tulee olla erotettuina toisistaan pilkulla. Nämä henkilöt vastaanottavat myös kaikki tulevaisuudessa tapahtuvat päivitykset.)"
@@ -680,10 +640,6 @@ msgstr "(Lähettää kopion tästä muutoksesta näihin sähköpostiosoitteisiin
 #: share/html/Admin/Scrips/Elements/EditCustomCode:52
 msgid "(Use these fields when you choose 'User Defined' for a condition or action)"
 msgstr "(Käytä näitä kenttiä kun valitset ehdoksi tai toiminnoksi 'Käyttäjän määrittelemä')"
-
-#: NOT FOUND IN SOURCE
-msgid "(Will not be sent email)"
-msgstr "(Ei lähetetä sähköpostia)"
 
 #: share/html/Admin/CustomFields/index.html:74
 msgid "(any)"
@@ -701,17 +657,13 @@ msgstr "(ei nimeä)"
 msgid "(no pubkey!)"
 msgstr "(ei julkista avainta!)"
 
-#: lib/RT/Report/Tickets.pm:812 lib/RT/Report/Tickets.pm:823 lib/RT/Report/Tickets/Entry.pm:78 lib/RT/Report/Tickets/Entry.pm:88 lib/RT/Transaction.pm:1067 lib/RT/Transaction.pm:1129 lib/RT/Transaction.pm:737 lib/RT/Transaction.pm:742 lib/RT/Transaction.pm:812 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:114 share/html/Elements/EditCustomFieldSelect:88 share/html/Elements/EditCustomFieldSelect:97 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowCustomFields:60 share/html/m/ticket/show:263
+#: lib/RT/Report/Tickets.pm:812 lib/RT/Report/Tickets.pm:823 lib/RT/Report/Tickets/Entry.pm:78 lib/RT/Report/Tickets/Entry.pm:88 lib/RT/Transaction.pm:1067 lib/RT/Transaction.pm:1129 lib/RT/Transaction.pm:1130 lib/RT/Transaction.pm:737 lib/RT/Transaction.pm:742 lib/RT/Transaction.pm:812 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:109 share/html/Elements/EditCustomFieldSelect:128 share/html/Elements/EditCustomFieldSelect:138 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowCustomFields:60 share/html/m/ticket/show:263
 msgid "(no value)"
 msgstr "(ei arvoa)"
 
 #: share/html/Admin/Elements/EditCustomFieldValues:49
 msgid "(no values)"
 msgstr "(ei arvoja)"
-
-#: NOT FOUND IN SOURCE
-msgid "(only one ticket)"
-msgstr "(vain yksi tiketti)"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:138
 #. ($count)
@@ -753,13 +705,13 @@ msgstr "--tapahtuman argumentti voi olla vain 'first', 'last' tai 'all'"
 
 #: lib/RT/Date.pm:383
 msgid "0 seconds"
-msgstr ""
+msgstr "0 sekuntia"
 
 #: lib/RT/Date.pm:383
 msgid "0s"
-msgstr ""
+msgstr "0 s"
 
-#: lib/RT/Template.pm:287 lib/RT/Template.pm:713
+#: lib/RT/Template.pm:287 lib/RT/Template.pm:717
 msgid "A Template with that name already exists"
 msgstr ""
 
@@ -868,10 +820,6 @@ msgstr "Lisää tilaaja"
 msgid "Add Value"
 msgstr "Lisää arvo"
 
-#: NOT FOUND IN SOURCE
-msgid "Add a scrip which will apply to all queues"
-msgstr "Lisää kaikille jonoille yhteinen toiminto"
-
 #: share/html/Search/Bulk.html:123
 msgid "Add comments or replies to selected tickets"
 msgstr "Lisää kommentteja tai vastauksia valituille tiketeille"
@@ -919,17 +867,17 @@ msgstr "Lisää, muokkaa ja poista kohteiden räätälöityjen kenttien arvoja"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:85
 msgid "Added"
-msgstr ""
+msgstr "Lisätty"
 
 #: lib/RT/Ticket.pm:642
 #. ($principal->Object->Name, $self->loc($args{'Type'}))
 msgid "Added %1 as a %2 for this ticket"
-msgstr ""
+msgstr "Lisätty %1 (%2) tälle tiketille"
 
 #: lib/RT/Queue.pm:605
 #. ($principal->Object->Name, $self->loc($args{'Type'}))
 msgid "Added %1 to members of %2 for this queue."
-msgstr ""
+msgstr "Lisätty %1 %2 jäsenille tähän jonoon"
 
 #: lib/RT/Class.pm:386
 #. ($cf->Name)
@@ -1094,7 +1042,7 @@ msgstr "Salli tallennettujen hakujen lataaminen"
 
 #: lib/RT/System.pm:93
 msgid "Allow writing Perl code in templates, scrips, etc"
-msgstr ""
+msgstr "Hyväksy Perl-koodi viestipohjissa, scripeissä, jne."
 
 #: lib/RT/Attachment.pm:747
 msgid "Already encrypted"
@@ -1121,10 +1069,6 @@ msgstr ""
 msgid "And/Or"
 msgstr "Ja/Tai"
 
-#: NOT FOUND IN SOURCE
-msgid "Annually"
-msgstr "Vuosittain"
-
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:74
 msgid "Any field"
 msgstr "Mikä tahansa kenttä"
@@ -1132,10 +1076,6 @@ msgstr "Mikä tahansa kenttä"
 #: share/html/Search/Simple.html:65
 msgid "Any word not recognized by RT is searched for in ticket subjects."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Applied"
-msgstr "Asetettu voimaan"
 
 #: share/html/Admin/CustomFields/Modify.html:94 share/html/Admin/Scrips/Modify.html:61 share/html/Elements/Tabs:370 share/html/Elements/Tabs:384 share/html/Elements/Tabs:430
 msgid "Applies to"
@@ -1239,10 +1179,6 @@ msgstr ""
 msgid "Article #%1: %2"
 msgstr "Artikkeli %1: %2"
 
-#: NOT FOUND IN SOURCE
-msgid "Article %1"
-msgstr "Artikkeli %1"
-
 #: lib/RT/Article.pm:216
 #. ($self->id)
 msgid "Article %1 created"
@@ -1281,10 +1217,6 @@ msgstr "Artikkelit ilman aihetta"
 #: share/html/Search/Elements/EditSort:79
 msgid "Asc"
 msgstr "Asc"
-
-#: NOT FOUND IN SOURCE
-msgid "Ascending"
-msgstr "Nouseva"
 
 #: lib/RT/Queue.pm:116
 msgid "Assign and remove queue custom fields"
@@ -1538,10 +1470,6 @@ msgstr "Ei voida tallentaa %1"
 msgid "Can't save this search"
 msgstr "Ei voida tallentaa tätä hakua"
 
-#: NOT FOUND IN SOURCE
-msgid "Can't specifiy both base and target"
-msgstr "Sekä juuren ja kohteen määritteleminen samalla ei ole mahdollista"
-
 #: lib/RT/Record.pm:1315 lib/RT/Record.pm:1459
 msgid "Can't specify both base and target"
 msgstr ""
@@ -1582,7 +1510,7 @@ msgstr "Muuta Hyväksytty tiketti avoimeksi"
 msgid "Change password"
 msgstr "Vaihda salasanaa"
 
-#: lib/RT/Template.pm:692
+#: lib/RT/Template.pm:696
 msgid "Changing queue is not implemented"
 msgstr ""
 
@@ -1605,10 +1533,6 @@ msgstr "Tarkista tietokantayhteyksien käyttäjätiedot"
 #: share/html/Ticket/Elements/AddAttachments:51 share/html/m/ticket/create:310 share/html/m/ticket/reply:126
 msgid "Check box to delete"
 msgstr "Valitse laatikko poistaaksesi"
-
-#: NOT FOUND IN SOURCE
-msgid "Check box to revoke right"
-msgstr "Valitse laatikko peruaksesi oikeuden"
 
 #: share/html/Search/Elements/SelectLinks:59
 msgid "Child"
@@ -1768,10 +1692,6 @@ msgstr "Ehto, Toiminto ja Malli"
 msgid "Config file %1 is locked"
 msgstr "Asetustiedosto %1 on lukittu"
 
-#: NOT FOUND IN SOURCE
-msgid "Configuration"
-msgstr "Ylläpito"
-
 #: share/html/Admin/Queues/Modify.html:182
 #. ($QueueObj->Name)
 msgid "Configuration for queue %1"
@@ -1874,18 +1794,10 @@ msgstr ""
 msgid "Could not find group '%1'"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Could not find or create that user"
-msgstr "Käyttäjää ei löydetty eikä pystytty luomaan"
-
 #: lib/RT/Record/Role/Roles.pm:387
 #. ($name)
 msgid "Could not find or create user '%1'"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Could not find that principal"
-msgstr "Tätä toimeksiantajaa ei löytynyt"
 
 #: lib/RT/SharedSetting.pm:244
 #. ($self->ObjectName)
@@ -1951,16 +1863,12 @@ msgstr "Ei voitu lisätä liitetiedostoa"
 msgid "Couldn't add member to group"
 msgstr "Jäsenen lisääminen ryhmään ei onnistunut"
 
-#: NOT FOUND IN SOURCE
-msgid "Couldn't apply custom field to an object as it's global already"
-msgstr "Omaa kenttää ei voitu lisätä objektiin, kenttä on jo lisätty globaalisti"
-
 #: lib/RT/Scrip.pm:713
 #. ($method, $code, $error)
 msgid "Couldn't compile %1 codeblock '%2': %3"
 msgstr "Kohteen %1 koodilohkon '%2' kääntäminen ei onnistunut: %3"
 
-#: lib/RT/Template.pm:815
+#: lib/RT/Template.pm:819
 #. ($fi_text, $error)
 msgid "Couldn't compile template codeblock '%1': %2"
 msgstr "Pohjan koodilohkon '%1' kääntäminen ei onnistunut: %2"
@@ -1971,7 +1879,7 @@ msgstr "Pohjan koodilohkon '%1' kääntäminen ei onnistunut: %2"
 msgid "Couldn't create a transaction: %1"
 msgstr "Tapahtuman luominen ei onnistunut: %1"
 
-#: lib/RT/CustomField.pm:1586
+#: lib/RT/CustomField.pm:1581
 #. ($msg)
 msgid "Couldn't create record: %1"
 msgstr "Tietueen luominen ei onnistunut: %1"
@@ -2155,10 +2063,6 @@ msgstr ""
 msgid "Couldn't parse Target URI: %1"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Couldn't parse address from '%1' string"
-msgstr "Ei voitu muodostaa osoitetta merkkijonosta '%1'"
-
 #: lib/RT/Group.pm:1088
 #. ($msg)
 msgid "Couldn't remove previous member: %1"
@@ -2174,14 +2078,6 @@ msgstr "Ei voitu korvata sisältöä salaamattomalla tiedolla: %1"
 msgid "Couldn't replace content with encrypted data: %1"
 msgstr "Ei voitu korvata sisältöä salatulla tiedolla: %1"
 
-#: NOT FOUND IN SOURCE
-msgid "Couldn't resolve '%1' into a Link."
-msgstr "Linkin muodostaminen kohteeseen '%1' ei onnistunut."
-
-#: NOT FOUND IN SOURCE
-msgid "Couldn't resolve '%1' into a URI."
-msgstr "Ei voitu muodostaa '%1' osoitteeksi."
-
 #: lib/RT/Record.pm:1351 lib/RT/Record.pm:1488
 #. ($remote_link)
 msgid "Couldn't resolve '%1' into a link."
@@ -2196,10 +2092,6 @@ msgstr "Ei voitu selvittää '%1' osoitteeksi."
 #. ($args{'Target'})
 msgid "Couldn't resolve target '%1' into a URI."
 msgstr "Ei voitu selvittää kohdetta '%1' osoitteeksi."
-
-#: NOT FOUND IN SOURCE
-msgid "Couldn't send email"
-msgstr "Ei voitu lähettää sähköpostia"
 
 #: lib/RT/Record/Role/Roles.pm:609
 #. ($role, $msg)
@@ -2281,10 +2173,6 @@ msgstr "Luo uusi jono"
 msgid "Create a scrip and add to queue %1"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Create a scrip for queue %1"
-msgstr "Luo toiminto jonolle %1"
-
 #: share/html/Admin/Global/Template.html:77
 msgid "Create a template"
 msgstr "Luo malli"
@@ -2332,10 +2220,6 @@ msgstr "Luo tiketti"
 #: lib/RT/Queue.pm:129
 msgid "Create tickets"
 msgstr "Luo tikettejä"
-
-#: NOT FOUND IN SOURCE
-msgid "Create tickets offline"
-msgstr "Luo tikettejä yhteydettömässä tilassa"
 
 #: lib/RT/Class.pm:98 lib/RT/Queue.pm:112
 msgid "Create, modify and delete Access Control List entries"
@@ -2432,10 +2316,6 @@ msgstr ""
 msgid "Current Links"
 msgstr "Viittaukset"
 
-#: NOT FOUND IN SOURCE
-msgid "Current Scrips"
-msgstr "Tämänhetkinen toiminto"
-
 #: share/html/Elements/Tabs:796
 msgid "Current Search"
 msgstr ""
@@ -2443,10 +2323,6 @@ msgstr ""
 #: share/html/Admin/Groups/Members.html:60
 msgid "Current members"
 msgstr "Tämänhetkiset jäsenet"
-
-#: NOT FOUND IN SOURCE
-msgid "Current rights"
-msgstr "Tämänhetkiset oikeudet"
 
 #: share/html/Search/Elements/EditQuery:49
 msgid "Current search"
@@ -2473,10 +2349,6 @@ msgstr "Erikoiskentät %1 varten"
 #. ($Object->Name)
 msgid "Custom Fields for queue %1"
 msgstr "Omat kentät jonolle %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Custom action cleanup code"
-msgstr "Erikoistoiminto cleanup-koodille"
 
 #: share/html/Admin/Scrips/Elements/EditCustomCode:73
 msgid "Custom action commit code"
@@ -2521,15 +2393,7 @@ msgstr "Kentällä %1 ei ole arvoa"
 msgid "Custom field %1 not found"
 msgstr "Erikoistkenttää %1 ei löydy"
 
-#: NOT FOUND IN SOURCE
-msgid "Custom field '%1'"
-msgstr "Erikoiskenttä '%1'"
-
-#: NOT FOUND IN SOURCE
-msgid "Custom field is already applied to the object"
-msgstr "Oma kenttä on jo käytössä"
-
-#: lib/RT/CustomField.pm:1695
+#: lib/RT/CustomField.pm:1690
 #. ($args{'Content'}, $self->Name)
 msgid "Custom field value %1 could not be found for custom field %2"
 msgstr "Kentän arvoa %1 ei löytynyt kentälle %2"
@@ -2538,11 +2402,11 @@ msgstr "Kentän arvoa %1 ei löytynyt kentälle %2"
 msgid "Custom field value could not be deleted"
 msgstr "Kentän arvoa ei pystytty poistamaan"
 
-#: lib/RT/CustomField.pm:1707
+#: lib/RT/CustomField.pm:1702
 msgid "Custom field value could not be found"
 msgstr "Kentän arvoa ei löydetty"
 
-#: lib/RT/CustomField.pm:1709 lib/RT/CustomField.pm:556
+#: lib/RT/CustomField.pm:1704 lib/RT/CustomField.pm:556
 msgid "Custom field value deleted"
 msgstr "Kentän arvo poistettu"
 
@@ -2626,7 +2490,7 @@ msgstr "Työtilaa ei voitu päivittää: %1"
 msgid "Dashboard updated"
 msgstr "Työtila päivitetty"
 
-#: etc/RT_Config.pm:1237 etc/initialdata:875 share/html/Dashboards/index.html:48 share/html/Elements/Dashboards:49
+#: etc/RT_Config.pm:1240 etc/initialdata:875 share/html/Dashboards/index.html:48 share/html/Elements/Dashboards:49
 msgid "Dashboards"
 msgstr "Työtilat"
 
@@ -2671,7 +2535,7 @@ msgstr ""
 msgid "Date format"
 msgstr "Päivämäärän muoto"
 
-#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:633 share/html/SelfService/Display.html:72 share/html/Ticket/Create.html:253 share/html/Ticket/Elements/ShowSummary:84 share/html/Ticket/ModifyAll.html:68 share/html/m/ticket/create:377 share/html/m/ticket/show:344
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:633 share/html/SelfService/Display.html:73 share/html/Ticket/Create.html:253 share/html/Ticket/Elements/ShowSummary:84 share/html/Ticket/ModifyAll.html:68 share/html/m/ticket/create:377 share/html/m/ticket/show:344
 msgid "Dates"
 msgstr "Päivämäärät"
 
@@ -2687,30 +2551,6 @@ msgstr "Pura salaus"
 msgid "Decryption error; contact the administrator"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Default Autoresponse template"
-msgstr "Vakio automaattivastausmalli"
-
-#: NOT FOUND IN SOURCE
-msgid "Default Queue"
-msgstr "Oletus jono"
-
-#: NOT FOUND IN SOURCE
-msgid "Default Requestor"
-msgstr "Oletusarvoinen tilaaja"
-
-#: NOT FOUND IN SOURCE
-msgid "Default admin comment template"
-msgstr "Vakio pääkäyttäjän kommentin malli"
-
-#: NOT FOUND IN SOURCE
-msgid "Default admin correspondence template"
-msgstr "Pääkäyttäjän vakiovastauksen malli"
-
-#: NOT FOUND IN SOURCE
-msgid "Default correspondence template"
-msgstr "Vakiovastauksen malli"
-
 #: lib/RT/Config.pm:150
 msgid "Default queue"
 msgstr "Oletus jono"
@@ -2718,10 +2558,6 @@ msgstr "Oletus jono"
 #: etc/initialdata:404 etc/upgrade/4.1.16/content:7
 msgid "Default reminder template"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Default transaction template"
-msgstr "Oletustapahtumamalli"
 
 #: share/html/Widgets/Form/Integer:61 share/html/Widgets/Form/String:69
 #. ($DefaultValue)
@@ -2736,7 +2572,7 @@ msgstr "Oletus: %1/%2 muutettu arvosta %3 arvoon %4"
 msgid "DefaultFormat"
 msgstr "Oletusmuoto"
 
-#: etc/RT_Config.pm:2771 etc/RT_Config.pm:2847 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:864 share/html/Elements/Tabs:889 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:2774 etc/RT_Config.pm:2850 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:864 share/html/Elements/Tabs:889 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
 msgid "Delete"
 msgstr "Poista"
 
@@ -2769,10 +2605,6 @@ msgstr "Elinkaaren hallinta estää poistamisen"
 #: lib/RT/Dashboard.pm:88
 msgid "Delete personal dashboards"
 msgstr "Poista henkilökohtaiset työtilat"
-
-#: NOT FOUND IN SOURCE
-msgid "Delete selected scrips"
-msgstr "Poista valitut automaattitoiminnot"
 
 #: lib/RT/Dashboard.pm:83
 msgid "Delete system dashboards"
@@ -2879,10 +2711,6 @@ msgstr "DependsOn"
 #: share/html/Search/Elements/EditSort:84
 msgid "Desc"
 msgstr "Kuvaus"
-
-#: NOT FOUND IN SOURCE
-msgid "Descending"
-msgstr "Laskeva"
 
 #: share/html/SelfService/Create.html:108 share/html/Ticket/Create.html:192 share/html/m/ticket/create:231
 msgid "Describe the issue below"
@@ -3288,14 +3116,6 @@ msgstr ""
 msgid "Error"
 msgstr "Virhe"
 
-#: NOT FOUND IN SOURCE
-msgid "Error in parameters to Ticket->AddWatcher"
-msgstr "Virhe parametreissa: Ticket->AddWatcher"
-
-#: NOT FOUND IN SOURCE
-msgid "Error in parameters to Ticket->DeleteWatcher"
-msgstr "Virhe parametrissa Ticket->DeleteWatcher"
-
 #: share/html/Search/Chart:460
 #. ($error)
 msgid "Error plotting chart: %1"
@@ -3351,7 +3171,7 @@ msgstr "Eskaloi tikettejä"
 msgid "Estimated"
 msgstr "Arvioitu"
 
-#: lib/RT/Handle.pm:703
+#: lib/RT/Handle.pm:712
 msgid "Everyone"
 msgstr "Kaikki"
 
@@ -3401,7 +3221,7 @@ msgstr "Muodosta artikkeli tiketistä #%1 luokkaan %2"
 msgid "Extract tags from a Transaction's subject and add them to the Ticket's subject."
 msgstr ""
 
-#: share/html/Install/DatabaseDetails.html:186
+#: share/html/Install/DatabaseDetails.html:196
 #. ($DBI::errstr)
 msgid "Failed to connect to database: %1"
 msgstr "Tietokantaan yhdistäminen ei onnistunut: %1"
@@ -3540,7 +3360,7 @@ msgstr "Etsi käyttäjät, joiden"
 msgid "Find tickets"
 msgstr "Hae tikettejä"
 
-#: etc/RT_Config.pm:1237
+#: etc/RT_Config.pm:1240
 msgid "FindUser"
 msgstr ""
 
@@ -3668,13 +3488,9 @@ msgstr ""
 msgid "General"
 msgstr "Yleiset"
 
-#: share/html/Admin/Elements/EditRightsCategoryTabs:86
+#: share/html/Admin/Elements/EditRightsCategoryTabs:87
 msgid "General rights"
 msgstr "Yleiset oikeudet"
-
-#: NOT FOUND IN SOURCE
-msgid "Get template from file"
-msgstr "Hae malli tiedostosta"
 
 #: share/html/Install/index.html:76
 msgid "Getting started"
@@ -3723,38 +3539,6 @@ msgstr ""
 #. ($args{'Template'})
 msgid "Global template '%1' not found"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Global template: %1"
-msgstr "Yleinen malli: %1"
-
-#: NOT FOUND IN SOURCE
-msgid "GnuPG"
-msgstr "GnuPG"
-
-#: NOT FOUND IN SOURCE
-msgid "GnuPG error. Contact with administrator"
-msgstr "GnuPG virhe. Ota yhteyttä ylläpitäjään."
-
-#: NOT FOUND IN SOURCE
-msgid "GnuPG integration is disabled"
-msgstr "GnuPG -integraatio ei ole käytössä"
-
-#: NOT FOUND IN SOURCE
-msgid "GnuPG issues"
-msgstr "GnuPG ongelmat"
-
-#: NOT FOUND IN SOURCE
-msgid "GnuPG private key(s) for %1"
-msgstr "GnuPG salaiset avaimet osoitteelle %1"
-
-#: NOT FOUND IN SOURCE
-msgid "GnuPG private keys"
-msgstr "GnuPG salaiset avaimet"
-
-#: NOT FOUND IN SOURCE
-msgid "GnuPG public key(s) for %1"
-msgstr "GnuPG julkiset avaimet osoitteelle %1"
 
 #: share/html/m/_elements/menu:67
 msgid "Go"
@@ -3852,7 +3636,7 @@ msgstr ""
 msgid "Grouped search results"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1747 lib/RT/CustomField.pm:206 share/html/Admin/Global/CustomFields/index.html:71 share/html/Admin/Groups/Members.html:88 share/html/Admin/Queues/People.html:102 share/html/Elements/Tabs:143 share/html/Elements/Tabs:257 share/html/Elements/Tabs:75
+#: lib/RT/CustomField.pm:1742 lib/RT/CustomField.pm:206 share/html/Admin/Global/CustomFields/index.html:71 share/html/Admin/Groups/Members.html:88 share/html/Admin/Queues/People.html:102 share/html/Elements/Tabs:143 share/html/Elements/Tabs:257 share/html/Elements/Tabs:75
 msgid "Groups"
 msgstr "Ryhmät"
 
@@ -3871,14 +3655,6 @@ msgstr ""
 #: share/html/Admin/Elements/MembershipsPage:69
 msgid "Groups the principal is not member of (check box to add)"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Groups the user is member of (check box to delete)"
-msgstr "Käyttäjä on jäsen ryhmissä (merkitse poistaaksesi)"
-
-#: NOT FOUND IN SOURCE
-msgid "Groups the user is not member of (check box to add)"
-msgstr "Käyttäjä ei ole jäsen ryhmissä (merkitse lisätäksesi)"
 
 #: share/html/Ticket/Elements/ShowRequestor:120
 msgid "Groups this user belongs to"
@@ -4017,14 +3793,6 @@ msgstr ""
 #: lib/RT/Approval/Rule/Rejected.pm:54
 msgid "If an approval is rejected, reject the original and delete pending approvals"
 msgstr "Jos hyväksyntä hylätään, hylkää alkuperäinen ja poista siitä riippuvat hyväksynnät"
-
-#: NOT FOUND IN SOURCE
-msgid "If no Requestor is specified, create tickets with this requestor."
-msgstr "Jos tilaajaa ei ole määritelty, luo tiketit tälle tilaajalle."
-
-#: NOT FOUND IN SOURCE
-msgid "If no queue is specified, create tickets in this queue."
-msgstr "Jos jonoa ei ole määritelty, luo tiketit tähän jonoon."
 
 #: share/html/Elements/LoginRedirectWarning:66
 msgid "If this is not what you expect, leave this page now without logging in."
@@ -4194,7 +3962,7 @@ msgstr ""
 msgid "Input error"
 msgstr "Virhe syötteessä"
 
-#: lib/RT/CustomField.pm:1540 lib/RT/CustomField.pm:1700 share/html/Elements/EditCustomFields:77 share/html/Elements/ValidateCustomFields:107
+#: lib/RT/CustomField.pm:1535 lib/RT/CustomField.pm:1695 share/html/Elements/EditCustomFields:77 share/html/Elements/ValidateCustomFields:107
 #. ($CF->FriendlyPattern)
 #. ($CustomField->FriendlyPattern)
 #. ($self->FriendlyPattern)
@@ -4253,10 +4021,6 @@ msgstr ""
 msgid "Invalid Group Name and Domain"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Invalid Group Type"
-msgstr "Ryhmän tyyppi ei kelpaa"
-
 #: lib/RT/Class.pm:311
 #. ($msg)
 msgid "Invalid Queue, unable to apply Class: %1"
@@ -4280,7 +4044,7 @@ msgstr "Kelpaamatonta dataa"
 msgid "Invalid key %1 for address '%2'"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1533
+#: lib/RT/CustomField.pm:1528
 msgid "Invalid object"
 msgstr ""
 
@@ -4480,10 +4244,6 @@ msgstr ""
 msgid "Link already exists"
 msgstr "Linkki on jo olemassa"
 
-#: NOT FOUND IN SOURCE
-msgid "Link could not be created"
-msgstr "Linkkiä ei voitu luoda"
-
 #: lib/RT/Record.pm:1383
 #. ($linkmsg)
 msgid "Link could not be created: %1"
@@ -4641,7 +4401,7 @@ msgstr ""
 msgid "Logout"
 msgstr "Kirjaudu ulos"
 
-#: lib/RT/CustomField.pm:1460
+#: lib/RT/CustomField.pm:1455
 msgid "Lookup type mismatch"
 msgstr ""
 
@@ -4669,10 +4429,6 @@ msgstr "Aseta tila"
 #: share/html/Search/Bulk.html:115
 msgid "Make date Due"
 msgstr "Aseta erääntymisaika"
-
-#: NOT FOUND IN SOURCE
-msgid "Make date Resolved"
-msgstr "Aseta päätösaika"
 
 #: share/html/Search/Bulk.html:111
 msgid "Make date Started"
@@ -4735,7 +4491,7 @@ msgstr ""
 msgid "Mar"
 msgstr "maalis"
 
-#: share/html/Ticket/Display.html:191 share/html/m/ticket/show:122
+#: share/html/SelfService/Display.html:153 share/html/Ticket/Display.html:191 share/html/m/ticket/show:122
 msgid "Marked all messages as seen"
 msgstr "Kaikki viestit merkitty luetuiksi"
 
@@ -4821,10 +4577,6 @@ msgstr "Jäsen poistettu"
 #: lib/RT/Group.pm:1286
 msgid "Member not deleted"
 msgstr "Jäsentä ei poistettu"
-
-#: NOT FOUND IN SOURCE
-msgid "Member of"
-msgstr "Jäsen:"
 
 #: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:124 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
 msgid "MemberOf"
@@ -4916,10 +4668,6 @@ msgstr "Viestikentän korkeus"
 msgid "Message box width"
 msgstr "Viestikentän leveys"
 
-#: NOT FOUND IN SOURCE
-msgid "Message box wrapping"
-msgstr "Viestikentän tekstin rivitys"
-
 #: lib/RT/Ticket.pm:1622
 msgid "Message could not be recorded"
 msgstr "Viestiä ei voitu tallentaa"
@@ -4976,7 +4724,7 @@ msgstr ""
 msgid "Minutes"
 msgstr "Minuuttia"
 
-#: share/html/Admin/Elements/EditRightsCategoryTabs:102
+#: share/html/Admin/Elements/EditRightsCategoryTabs:68
 msgid "Miscellaneous"
 msgstr "Sekalaiset"
 
@@ -5012,14 +4760,6 @@ msgstr "Muokkaa Scripejä"
 #. ($QueueObj->Name())
 msgid "Modify a CustomField for queue %1"
 msgstr "Muokkaa jonon %1 omaa kenttää"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify a scrip for queue %1"
-msgstr "Muokkaa jonon %1 toimintoa"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify a scrip that applies to all queues"
-msgstr "Muokkaa toimintoa, jota sovelletaan kaikkiin jonoihin"
 
 #: share/html/Elements/Tabs:172
 msgid "Modify and Create Classes"
@@ -5339,21 +5079,9 @@ msgstr ""
 msgid "Move"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Move down"
-msgstr "Siirrä alas"
-
 #: share/html/Admin/Articles/Elements/Topics:108
 msgid "Move here"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Move up"
-msgstr "Siirrä ylös"
-
-#: NOT FOUND IN SOURCE
-msgid "Multiple"
-msgstr "Monta"
 
 #: lib/RT/User.pm:172
 msgid "Must specify 'Name' attribute"
@@ -5396,11 +5124,11 @@ msgstr "Muistutukseni"
 msgid "My saved searches"
 msgstr "Tallennetut hakuni"
 
-#: etc/RT_Config.pm:1237
+#: etc/RT_Config.pm:1240
 msgid "MyAdminQueues"
 msgstr ""
 
-#: etc/RT_Config.pm:1237 etc/initialdata:867
+#: etc/RT_Config.pm:1240 etc/initialdata:867
 msgid "MyReminders"
 msgstr ""
 
@@ -5408,7 +5136,7 @@ msgstr ""
 msgid "MySQL"
 msgstr "MySQL"
 
-#: etc/RT_Config.pm:1237
+#: etc/RT_Config.pm:1240
 msgid "MySupportQueues"
 msgstr ""
 
@@ -5432,7 +5160,7 @@ msgstr "Nimi ja sähköposti"
 msgid "Name in use"
 msgstr "Nimi on käytössä"
 
-#: lib/RT/Template.pm:281 lib/RT/Template.pm:705
+#: lib/RT/Template.pm:281 lib/RT/Template.pm:709
 msgid "Name is required"
 msgstr ""
 
@@ -5488,10 +5216,6 @@ msgstr "Uusi salasana"
 msgid "New reminder:"
 msgstr "Uusi muistutus:"
 
-#: NOT FOUND IN SOURCE
-msgid "New rights"
-msgstr "Uudet oikeudet"
-
 #: share/html/Elements/Tabs:930 share/html/Elements/Tabs:932 share/html/m/_elements/menu:70
 msgid "New ticket"
 msgstr "Uusi tiketti"
@@ -5504,10 +5228,6 @@ msgstr "Uutta tikettiä ei ole olemassa"
 #. ($self->loc($args{'Status'}))
 msgid "New tickets can not have status '%1' in this queue."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "New user called"
-msgstr "Uusi käyttäjä pyydetty"
 
 #: share/html/Admin/Queues/People.html:72 share/html/Ticket/Elements/EditPeople:52
 msgid "New watchers"
@@ -5601,10 +5321,6 @@ msgstr "Ei kommentteja"
 msgid "No description for %1"
 msgstr "Ei kuvausta kohteelle %1"
 
-#: NOT FOUND IN SOURCE
-msgid "No details"
-msgstr "Ei yksityiskohtia"
-
 #: lib/RT/Scrip.pm:288
 #. ($tname)
 msgid "No global template %1"
@@ -5621,10 +5337,6 @@ msgstr "Ryhmää ei löydy."
 #: lib/RT/Attachment.pm:767
 msgid "No key suitable for encryption"
 msgstr "Ei salaamiseen soveltuvaa avainta"
-
-#: NOT FOUND IN SOURCE
-msgid "No keys for this address"
-msgstr "Ei avaimia tälle osoitteelle"
 
 #: share/html/Errors/WebRemoteUser/Deauthorized:48
 msgid "No longer authorized"
@@ -5655,7 +5367,7 @@ msgstr "Ei oikeutta luoda jonoja"
 msgid "No permission to create tickets in the queue '%1'"
 msgstr "Ei oikeutta luoda tikettejä jonoon '%1'"
 
-#: share/html/SelfService/Display.html:144
+#: share/html/SelfService/Display.html:145
 msgid "No permission to display that ticket"
 msgstr "Ei oikeutta tarkastella tätä tikettiä"
 
@@ -5679,10 +5391,6 @@ msgstr "Ei oikeutta Artikkelin katsomiseen"
 msgid "No permission to view update ticket"
 msgstr "Ei oikeutta nähdä tikettiä"
 
-#: NOT FOUND IN SOURCE
-msgid "No principal specified"
-msgstr "Toimeksiantajaa ei ole määritelty"
-
 #: share/html/Admin/Queues/People.html:172 share/html/Admin/Queues/People.html:183
 msgid "No principals selected."
 msgstr "Toimeksiantajia ei ole valittu."
@@ -5702,10 +5410,6 @@ msgstr ""
 #: share/html/Admin/Elements/EditRightsCategoryTabs:60
 msgid "No rights found"
 msgstr "Oikeuksia ei ole"
-
-#: NOT FOUND IN SOURCE
-msgid "No rights granted."
-msgstr "Ei myönnettyjä oikeuksia."
 
 #: lib/RT/Ticket.pm:527
 #. ($principal->Object->Name)
@@ -5792,10 +5496,6 @@ msgstr "Ei asetettu"
 #: share/html/m/_elements/full_site_link:48
 msgid "Not using a mobile browser?"
 msgstr "Etkö käytä mobiiliselainta?"
-
-#: NOT FOUND IN SOURCE
-msgid "Not yet implemented."
-msgstr "Ei vielä toteutettu."
 
 #: share/html/Approvals/Elements/Approve:95
 msgid "Notes"
@@ -5921,7 +5621,7 @@ msgstr "Objekti poistettu"
 msgid "Object passed is not loaded"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1489
+#: lib/RT/CustomField.pm:1484
 msgid "Object type mismatch"
 msgstr "Objektit ovat eri tyyppejä"
 
@@ -5932,14 +5632,6 @@ msgstr "Tyhjä objektiluettelo"
 #: lib/RT/Date.pm:100
 msgid "Oct"
 msgstr "loka"
-
-#: NOT FOUND IN SOURCE
-msgid "Offline"
-msgstr "Yhteydetön tila"
-
-#: NOT FOUND IN SOURCE
-msgid "Offline upload"
-msgstr "Yhteydetön tila - tietojen lisäys"
 
 #: lib/RT/Transaction.pm:389
 #. ($self->CreatedAsString, $self->CreatorObj->Name)
@@ -6040,7 +5732,7 @@ msgstr ""
 msgid "Open Inactive Tickets"
 msgstr ""
 
-#: etc/RT_Config.pm:2759 etc/RT_Config.pm:2788 etc/RT_Config.pm:2835 etc/RT_Config.pm:2864
+#: etc/RT_Config.pm:2762 etc/RT_Config.pm:2791 etc/RT_Config.pm:2838 etc/RT_Config.pm:2867
 msgid "Open It"
 msgstr ""
 
@@ -6079,6 +5771,10 @@ msgstr ""
 #: lib/RT/Installer.pm:71
 msgid "Oracle"
 msgstr "Oracle"
+
+#: share/html/Install/DatabaseDetails.html:152
+msgid "Oracle users cannot have empty passwords"
+msgstr ""
 
 #: share/html/Search/Elements/EditSort:55
 msgid "Order by"
@@ -6131,10 +5827,6 @@ msgstr ""
 msgid "Owner changed from %1 to %2"
 msgstr "Yhteyshenkilöksi %1 vaihdettu arvoon %2"
 
-#: NOT FOUND IN SOURCE
-msgid "Owner could not be set."
-msgstr "Yhteyshenkilöä ei voitu asettaa."
-
 #: lib/RT/Transaction.pm:1122 lib/RT/Transaction.pm:938
 #. (map { $self->_FormatUser($_) } $Old, $New)
 msgid "Owner forcibly changed from %1 to %2"
@@ -6183,10 +5875,6 @@ msgstr "Vanhemmat"
 #: share/html/Elements/Login:75 share/html/User/Prefs.html:117 share/html/m/_elements/login:73
 msgid "Password"
 msgstr "Salasana"
-
-#: NOT FOUND IN SOURCE
-msgid "Password Reminder"
-msgstr "Salasanan muistutus"
 
 #: lib/RT/Transaction.pm:1073 lib/RT/User.pm:867
 msgid "Password changed"
@@ -6273,7 +5961,7 @@ msgstr "Perl -kirjastojen hakujärjestys"
 msgid "Permanently wipeout data from RT"
 msgstr "Poista tietoja RT:stä pysyvästi"
 
-#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:737 lib/RT/Attachment.pm:738 lib/RT/Attachment.pm:797 lib/RT/Attachment.pm:798 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:386 lib/RT/Attribute.pm:395 lib/RT/Attribute.pm:408 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1464 lib/RT/CustomField.pm:1493 lib/RT/CustomField.pm:1536 lib/RT/CustomField.pm:1676 lib/RT/CustomField.pm:1826 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:513 lib/RT/CustomField.pm:540 lib/RT/CustomField.pm:922 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1247 lib/RT/Group.pm:1331 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:355 lib/RT/Queue.pm:381 lib/RT/Queue.pm:407 lib/RT/Queue.pm:799 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:274 lib/RT/Scrip.pm:307 lib/RT/Scrip.pm:621 lib/RT/Scrip.pm:629 lib/RT/Scrip.pm:638 lib/RT/Scrip.pm:643 lib/RT/Scrip.pm:651 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:313 lib/RT/Template.pm:479 lib/RT/Template.pm:730 lib/RT/Template.pm:747 lib/RT/Template.pm:765 lib/RT/Ticket.pm:1069 lib/RT/Ticket.pm:1280 lib/RT/Ticket.pm:1448 lib/RT/Ticket.pm:1498 lib/RT/Ticket.pm:1764 lib/RT/Ticket.pm:1778 lib/RT/Ticket.pm:2164 lib/RT/Ticket.pm:2176 lib/RT/Ticket.pm:2181 lib/RT/Ticket.pm:2199 lib/RT/Ticket.pm:2416 lib/RT/Ticket.pm:2645 lib/RT/Ticket.pm:3005 lib/RT/Ticket.pm:731 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:668 lib/RT/Transaction.pm:708 lib/RT/User.pm:1137 lib/RT/User.pm:139 lib/RT/User.pm:1566 lib/RT/User.pm:1813 lib/RT/User.pm:1846 lib/RT/User.pm:328 lib/RT/User.pm:735 lib/RT/User.pm:770 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97
+#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:737 lib/RT/Attachment.pm:738 lib/RT/Attachment.pm:797 lib/RT/Attachment.pm:798 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:386 lib/RT/Attribute.pm:395 lib/RT/Attribute.pm:408 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1459 lib/RT/CustomField.pm:1488 lib/RT/CustomField.pm:1531 lib/RT/CustomField.pm:1671 lib/RT/CustomField.pm:1821 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:513 lib/RT/CustomField.pm:540 lib/RT/CustomField.pm:922 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1247 lib/RT/Group.pm:1331 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:355 lib/RT/Queue.pm:381 lib/RT/Queue.pm:407 lib/RT/Queue.pm:799 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:274 lib/RT/Scrip.pm:307 lib/RT/Scrip.pm:621 lib/RT/Scrip.pm:629 lib/RT/Scrip.pm:638 lib/RT/Scrip.pm:643 lib/RT/Scrip.pm:651 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:317 lib/RT/Template.pm:483 lib/RT/Template.pm:734 lib/RT/Template.pm:751 lib/RT/Template.pm:769 lib/RT/Ticket.pm:1069 lib/RT/Ticket.pm:1280 lib/RT/Ticket.pm:1448 lib/RT/Ticket.pm:1498 lib/RT/Ticket.pm:1764 lib/RT/Ticket.pm:1778 lib/RT/Ticket.pm:2164 lib/RT/Ticket.pm:2176 lib/RT/Ticket.pm:2181 lib/RT/Ticket.pm:2199 lib/RT/Ticket.pm:2416 lib/RT/Ticket.pm:2645 lib/RT/Ticket.pm:3005 lib/RT/Ticket.pm:731 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:668 lib/RT/Transaction.pm:708 lib/RT/User.pm:1137 lib/RT/User.pm:139 lib/RT/User.pm:1566 lib/RT/User.pm:1813 lib/RT/User.pm:1846 lib/RT/User.pm:328 lib/RT/User.pm:735 lib/RT/User.pm:770 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97
 msgid "Permission Denied"
 msgstr "Pääsy kielletty"
 
@@ -6430,7 +6118,7 @@ msgstr ""
 msgid "Private keys"
 msgstr ""
 
-#: lib/RT/Handle.pm:704 share/html/Admin/Users/Modify.html:114
+#: lib/RT/Handle.pm:713 share/html/Admin/Users/Modify.html:114
 msgid "Privileged"
 msgstr "Erioikeutettu"
 
@@ -6447,7 +6135,7 @@ msgstr "Erioikeutetut käyttäjät"
 msgid "Processing without transaction, some conditions and actions may fail. Consider using --transaction argument"
 msgstr ""
 
-#: lib/RT/Handle.pm:717
+#: lib/RT/Handle.pm:726
 msgid "Pseudogroup for internal use"
 msgstr "Valeryhmä sisäiseen käyttöön"
 
@@ -6520,7 +6208,7 @@ msgstr "Jono käytössä"
 msgid "Queue id"
 msgstr "Jono id"
 
-#: lib/RT/CustomField.pm:285 share/html/SelfService/Display.html:109
+#: lib/RT/CustomField.pm:285 share/html/SelfService/Display.html:110
 msgid "Queue not found"
 msgstr "Jonoa ei löydy"
 
@@ -6548,7 +6236,7 @@ msgstr "JononNimi"
 msgid "QueueWatcher"
 msgstr "Jonon valvoja"
 
-#: lib/RT/CustomField.pm:1748 lib/RT/CustomField.pm:205 share/html/Admin/Global/CustomFields/index.html:77 share/html/Elements/Tabs:148 share/html/Elements/Tabs:255 share/html/Elements/Tabs:83
+#: lib/RT/CustomField.pm:1743 lib/RT/CustomField.pm:205 share/html/Admin/Global/CustomFields/index.html:77 share/html/Elements/Tabs:148 share/html/Elements/Tabs:255 share/html/Elements/Tabs:83
 msgid "Queues"
 msgstr "Jonot"
 
@@ -6568,11 +6256,11 @@ msgstr "Pikahaku"
 msgid "Quick ticket creation"
 msgstr "Tiketin pika-avaus"
 
-#: etc/RT_Config.pm:1237 etc/initialdata:860
+#: etc/RT_Config.pm:1240 etc/initialdata:860
 msgid "QuickCreate"
 msgstr ""
 
-#: etc/RT_Config.pm:1237 etc/initialdata:871
+#: etc/RT_Config.pm:1240 etc/initialdata:871
 msgid "Quicksearch"
 msgstr ""
 
@@ -6633,10 +6321,6 @@ msgstr ""
 msgid "RT core variables"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "RT couldn't store your session."
-msgstr "Tikettijärjestelmä ei voinut tallentaa istuntoasi."
-
 #: share/html/Elements/Logo:61 share/html/m/_elements/header:49 share/html/m/_elements/login:49 share/html/m/index.html:48
 #. (RT->Config->Get('rtname'))
 msgid "RT for %1"
@@ -6689,7 +6373,7 @@ msgstr ""
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr ""
 
-#: etc/RT_Config.pm:2791 etc/RT_Config.pm:2795 etc/RT_Config.pm:2867 etc/RT_Config.pm:2871
+#: etc/RT_Config.pm:2794 etc/RT_Config.pm:2798 etc/RT_Config.pm:2870 etc/RT_Config.pm:2874
 msgid "Re-open"
 msgstr "Avaa uudelleen"
 
@@ -6822,7 +6506,7 @@ msgstr "Päivitä hakutulokset 60 minuutin välein."
 msgid "Refresh this page every %1 minutes."
 msgstr "Päivitä tämä sivu %1 minuutin välein"
 
-#: etc/RT_Config.pm:1237 etc/initialdata:879
+#: etc/RT_Config.pm:1240 etc/initialdata:879
 msgid "RefreshHomepage"
 msgstr ""
 
@@ -6830,7 +6514,7 @@ msgstr ""
 msgid "Refused to add link which would create a circular relationship"
 msgstr ""
 
-#: etc/RT_Config.pm:2767 etc/RT_Config.pm:2783 etc/RT_Config.pm:2843 etc/RT_Config.pm:2859
+#: etc/RT_Config.pm:2770 etc/RT_Config.pm:2786 etc/RT_Config.pm:2846 etc/RT_Config.pm:2862
 msgid "Reject"
 msgstr "Hylkää"
 
@@ -6842,17 +6526,17 @@ msgstr "Muista oletusjono"
 msgid "Reminder"
 msgstr "Muistutus"
 
-#: lib/RT/Transaction.pm:1159
+#: lib/RT/Transaction.pm:1160
 #. ($subject)
 msgid "Reminder '%1' added"
 msgstr "Muistutus '%1' lisätty"
 
-#: lib/RT/Transaction.pm:1181
+#: lib/RT/Transaction.pm:1182
 #. ($subject)
 msgid "Reminder '%1' completed"
 msgstr "Muistutus '%1' valmis"
 
-#: lib/RT/Transaction.pm:1170
+#: lib/RT/Transaction.pm:1171
 #. ($subject)
 msgid "Reminder '%1' reopened"
 msgstr "Muistutus '%1' avattu uudelleen"
@@ -6978,7 +6662,7 @@ msgstr ""
 msgid "Residence"
 msgstr "Koti"
 
-#: etc/RT_Config.pm:2763 etc/RT_Config.pm:2779 etc/RT_Config.pm:2839 etc/RT_Config.pm:2855 share/html/Search/Elements/EditFormat:75
+#: etc/RT_Config.pm:2766 etc/RT_Config.pm:2782 etc/RT_Config.pm:2842 etc/RT_Config.pm:2858 share/html/Search/Elements/EditFormat:75
 msgid "Resolve"
 msgstr "Päätä"
 
@@ -7048,11 +6732,11 @@ msgstr "Oikeus peruttu"
 msgid "Rights could not be granted for %1"
 msgstr "Oikeuksia ei voitu myöntää: %1"
 
-#: share/html/Admin/Elements/EditRightsCategoryTabs:88
+#: share/html/Admin/Elements/EditRightsCategoryTabs:89
 msgid "Rights for Administrators"
 msgstr "Ylläpitäjien oikeudet"
 
-#: share/html/Admin/Elements/EditRightsCategoryTabs:87
+#: share/html/Admin/Elements/EditRightsCategoryTabs:88
 msgid "Rights for Staff"
 msgstr ""
 
@@ -7066,7 +6750,7 @@ msgstr ""
 msgid "Role group exists already"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3711
+#: lib/RT/Interface/Web.pm:3712
 msgid "Roles"
 msgstr "Roolit"
 
@@ -7148,10 +6832,6 @@ msgstr "Tallennettu %1 %2"
 msgid "Saved Search"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Saved Search %1 not found"
-msgstr "Tallennettua hakua %1 ei löydy"
-
 #: share/html/Elements/SavedSearches:48 share/html/Elements/Tabs:563
 msgid "Saved Searches"
 msgstr "Tallennetut haut"
@@ -7169,7 +6849,7 @@ msgstr ""
 msgid "Saved searches"
 msgstr "Tallennetut haut"
 
-#: etc/RT_Config.pm:1237
+#: etc/RT_Config.pm:1240
 msgid "SavedSearches"
 msgstr ""
 
@@ -7187,10 +6867,6 @@ msgstr "Toiminto #%1"
 msgid "Scrip Created"
 msgstr "Toiminto luotu"
 
-#: NOT FOUND IN SOURCE
-msgid "Scrip deleted"
-msgstr "Toiminto poistettu"
-
 #: lib/RT/Scrip.pm:315
 msgid "Scrip is not added"
 msgstr ""
@@ -7199,17 +6875,13 @@ msgstr ""
 msgid "Scrips"
 msgstr "Toiminnot"
 
-#: share/html/Ticket/Update.html:190
+#: share/html/Ticket/Update.html:194
 msgid "Scrips and Recipients"
 msgstr "Automaattitoiminnot ja vastaanottajat"
 
 #: share/html/Admin/Elements/EditScrips:54
 msgid "Scrips normally run after each individual change to a ticket."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Scrips which apply to all queues"
-msgstr "Toiminnot, joita sovelletaan kaikkiin jonoihin"
 
 #: share/html/Admin/Tools/Shredder/index.html:63 share/html/Articles/Article/Elements/ShowSearchCriteria:144 share/html/Elements/GotoUser:58 share/html/Elements/SimpleSearch:49 share/html/Elements/Tabs:491 share/html/Elements/Tabs:507 share/html/Elements/Tabs:874 share/html/Search/Simple.html:58 share/html/m/_elements/menu:64
 msgid "Search"
@@ -7536,10 +7208,6 @@ msgstr ""
 msgid "Sends mail to the owner"
 msgstr "Lähetä postia yhteyshenkilölle"
 
-#: NOT FOUND IN SOURCE
-msgid "Sent email successfully"
-msgstr "Lähetys onnistui"
-
 #: lib/RT/Date.pm:99
 msgid "Sep"
 msgstr ""
@@ -7583,10 +7251,6 @@ msgstr ""
 #: share/html/Search/Elements/EditFormat:54
 msgid "Show Columns"
 msgstr "Näytä sarakkeet"
-
-#: NOT FOUND IN SOURCE
-msgid "Show Configuration tab"
-msgstr "Näytä Asetukset-välilehti"
 
 #: share/html/Elements/Tabs:807
 msgid "Show Results"
@@ -7789,10 +7453,6 @@ msgstr "Yksinkertainen"
 msgid "Simple Search"
 msgstr "Haku"
 
-#: NOT FOUND IN SOURCE
-msgid "Single"
-msgstr "Yksittäinen"
-
 #: lib/RT/Installer.pm:143
 msgid "Site name"
 msgstr "Sivuston nimi"
@@ -7854,7 +7514,7 @@ msgstr ""
 msgid "Stage"
 msgstr "Vaihe"
 
-#: etc/RT_Config.pm:2775 etc/RT_Config.pm:2851
+#: etc/RT_Config.pm:2778 etc/RT_Config.pm:2854
 msgid "Stall"
 msgstr ""
 
@@ -7910,7 +7570,7 @@ msgstr ""
 msgid "Status changed from %1 to %2"
 msgstr "Tila muutettu arvosta %1 arvoon %2"
 
-#: share/html/Admin/Elements/EditRightsCategoryTabs:89
+#: share/html/Admin/Elements/EditRightsCategoryTabs:90
 msgid "Status changes"
 msgstr ""
 
@@ -8058,7 +7718,7 @@ msgstr "Sunnuntai"
 msgid "Suspended"
 msgstr "Keskeytetty"
 
-#: lib/RT/Interface/Web.pm:3668
+#: lib/RT/Interface/Web.pm:3669
 msgid "System"
 msgstr "Järjestelmä"
 
@@ -8091,7 +7751,7 @@ msgstr "Järjestelmävirhe"
 msgid "System error. Right not granted."
 msgstr "Järjestelmävirhe. Oikeutta ei luovutettu."
 
-#: lib/RT/Handle.pm:768
+#: lib/RT/Handle.pm:777
 msgid "SystemRolegroup for internal use"
 msgstr ""
 
@@ -8134,19 +7794,19 @@ msgstr ""
 msgid "Template '%1' not found"
 msgstr "Mallia '%1' ei löydy"
 
-#: lib/RT/Template.pm:818
+#: lib/RT/Template.pm:822
 msgid "Template compiles"
 msgstr ""
 
-#: lib/RT/Template.pm:785
+#: lib/RT/Template.pm:789
 msgid "Template does not include Perl code"
 msgstr ""
 
-#: lib/RT/Template.pm:483
+#: lib/RT/Template.pm:487
 msgid "Template is empty"
 msgstr "Malli on tyhjä"
 
-#: lib/RT/Template.pm:317
+#: lib/RT/Template.pm:321
 msgid "Template is in use"
 msgstr ""
 
@@ -8154,15 +7814,15 @@ msgstr ""
 msgid "Template is mandatory argument"
 msgstr "Malli on välttämätön argumentti"
 
-#: lib/RT/Template.pm:463
+#: lib/RT/Template.pm:467
 msgid "Template parsed"
 msgstr "Malli muodostettu"
 
-#: lib/RT/Template.pm:548
+#: lib/RT/Template.pm:552
 msgid "Template parsing error"
 msgstr "Mallin muodostamisessa on ongelma"
 
-#: lib/RT/Template.pm:568 lib/RT/Template.pm:796
+#: lib/RT/Template.pm:572 lib/RT/Template.pm:800
 #. ($Text::Template::ERROR)
 msgid "Template parsing error: %1"
 msgstr ""
@@ -8196,14 +7856,6 @@ msgstr ""
 #: lib/RT/CustomField.pm:549
 msgid "That is not a value for this custom field"
 msgstr "Ei ole arvo tälle kentälle"
-
-#: NOT FOUND IN SOURCE
-msgid "That is the same value"
-msgstr "Tämä on sama arvo"
-
-#: NOT FOUND IN SOURCE
-msgid "That queue does not exist"
-msgstr "Jonoa ei ole olemassa"
 
 #: lib/RT/Ticket.pm:2311
 msgid "That ticket has unresolved dependencies"
@@ -8241,7 +7893,7 @@ msgstr "Käyttäjä ei voi omistaa tikettejä jonossa"
 msgid "That's not a numerical id"
 msgstr "Ei ole numero"
 
-#: share/html/SelfService/Display.html:57 share/html/Ticket/Create.html:221 share/html/Ticket/Elements/ShowSummary:52 share/html/m/ticket/create:337 share/html/m/ticket/show:206
+#: share/html/SelfService/Display.html:58 share/html/Ticket/Create.html:221 share/html/Ticket/Elements/ShowSummary:52 share/html/m/ticket/create:337 share/html/m/ticket/show:206
 msgid "The Basics"
 msgstr "Perustiedot"
 
@@ -8362,10 +8014,6 @@ msgstr ""
 msgid "There was an error parsing your search query: %1.  Your RT admin can find more information in the error logs."
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "These comments aren't generally visible to the user"
-msgstr "Nämä viestit eivät ole yleisesti näkyvillä käyttäjille"
-
 #: share/html/Install/Basics.html:53
 msgid "These configuration options cover some of the basics needed to get RT up and running.  We need to know the name of your RT installation and the domain name where RT will live.  You will also need to set a password for your default administrative user."
 msgstr ""
@@ -8378,7 +8026,7 @@ msgstr ""
 msgid "This class does not apply to that object"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1498
+#: lib/RT/CustomField.pm:1493
 msgid "This custom field cannot be added to that object"
 msgstr ""
 
@@ -8482,7 +8130,7 @@ msgstr ""
 msgid "Ticket Search"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1745 lib/RT/CustomField.pm:203 share/html/Admin/Global/CustomFields/index.html:89 share/html/Elements/Tabs:158
+#: lib/RT/CustomField.pm:1740 lib/RT/CustomField.pm:203 share/html/Admin/Global/CustomFields/index.html:89 share/html/Elements/Tabs:158
 msgid "Ticket Transactions"
 msgstr ""
 
@@ -8535,7 +8183,7 @@ msgstr ""
 msgid "TicketSQL search module"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1744 lib/RT/CustomField.pm:202 share/html/Admin/Global/CustomFields/index.html:83 share/html/Elements/Tabs:153 share/html/Elements/Tabs:301 share/html/Elements/Tabs:493 share/html/Elements/Tabs:934
+#: lib/RT/CustomField.pm:1739 lib/RT/CustomField.pm:202 share/html/Admin/Global/CustomFields/index.html:83 share/html/Elements/Tabs:153 share/html/Elements/Tabs:301 share/html/Elements/Tabs:493 share/html/Elements/Tabs:934
 msgid "Tickets"
 msgstr "Tietokantahaku"
 
@@ -8688,7 +8336,7 @@ msgstr ""
 msgid "Transaction"
 msgstr ""
 
-#: lib/RT/Transaction.pm:1148
+#: lib/RT/Transaction.pm:1149
 #. ($self->Data)
 msgid "Transaction %1 purged"
 msgstr "Tapahtuma %1 puhdistettu"
@@ -8717,7 +8365,7 @@ msgstr ""
 msgid "Transactions"
 msgstr ""
 
-#: lib/RT/Transaction.pm:1217
+#: lib/RT/Transaction.pm:1218
 msgid "Transactions are immutable"
 msgstr "Tapahtumat ovat muuttumattomia"
 
@@ -8815,10 +8463,6 @@ msgstr ""
 msgid "Unable to subscribe to dashboard %1: Permission Denied"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Unable to subscribe to dashboard %1: Permission denied"
-msgstr "Ei voitu tilata työtilaa %1: Pääsy estetty"
-
 #: share/html/Errors/WebRemoteUser/NoInternalUser:48 share/html/Errors/WebRemoteUser/NoRemoteUser:48
 msgid "Unauthorized"
 msgstr ""
@@ -8828,7 +8472,7 @@ msgstr ""
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr ""
 
-#: etc/RT_Config.pm:2799 etc/RT_Config.pm:2875
+#: etc/RT_Config.pm:2802 etc/RT_Config.pm:2878
 msgid "Undelete"
 msgstr ""
 
@@ -8892,7 +8536,7 @@ msgstr ""
 msgid "Unowned tickets"
 msgstr ""
 
-#: lib/RT/Handle.pm:705
+#: lib/RT/Handle.pm:714
 msgid "Unprivileged"
 msgstr "Käyttöoikeudeton"
 
@@ -8932,7 +8576,7 @@ msgstr ""
 msgid "Update This Menu"
 msgstr ""
 
-#: share/html/SelfService/Update.html:96 share/html/Ticket/Update.html:187 share/html/m/ticket/reply:147
+#: share/html/SelfService/Update.html:96 share/html/Ticket/Update.html:189 share/html/m/ticket/reply:147
 msgid "Update Ticket"
 msgstr "Tallenna muutokset"
 
@@ -8962,7 +8606,7 @@ msgstr "Muokkaa tikettiä"
 msgid "Update ticket #%1"
 msgstr "Muokkaa tikettiä #%1"
 
-#: share/html/Ticket/Update.html:218 share/html/m/ticket/reply:175
+#: share/html/Ticket/Update.html:227 share/html/m/ticket/reply:175
 #. ($TicketObj->id, $TicketObj->Subject||'')
 #. ($t->id, $t->Subject)
 msgid "Update ticket #%1 (%2)"
@@ -8976,7 +8620,7 @@ msgstr "Päivityksen tyyppi ei ollut kirjeenvaihto eikä kommentti."
 msgid "UpdateStatus"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1829 lib/RT/Tickets.pm:157 share/html/Elements/SelectDateType:56 share/html/Ticket/Elements/ShowDates:79 share/html/m/ticket/show:379
+#: lib/RT/CustomField.pm:1824 lib/RT/Tickets.pm:157 share/html/Elements/SelectDateType:56 share/html/Ticket/Elements/ShowDates:79 share/html/m/ticket/show:379
 msgid "Updated"
 msgstr "Päivitetty"
 
@@ -9022,10 +8666,6 @@ msgstr ""
 msgid "Upload up to %1 images"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Upload your changes"
-msgstr "Lähetä muutokset"
-
 #: sbin/rt-email-digest:80
 msgid "Usage:"
 msgstr ""
@@ -9068,10 +8708,6 @@ msgstr ""
 msgid "User"
 msgstr "Käyttäjä"
 
-#: NOT FOUND IN SOURCE
-msgid "User '%1' could not be found."
-msgstr "Käyttäjää '%1' ei löydy."
-
 #: share/html/Admin/Elements/ShowKeyInfo:80
 msgid "User (created - expire)"
 msgstr ""
@@ -9084,7 +8720,7 @@ msgstr ""
 msgid "User Defined conditions and results"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3686
+#: lib/RT/Interface/Web.pm:3687
 msgid "User Groups"
 msgstr ""
 
@@ -9151,7 +8787,7 @@ msgstr "Käyttäjätunnus"
 msgid "Username format"
 msgstr "Käyttäjänimen esitystapa"
 
-#: lib/RT/CustomField.pm:1746 lib/RT/CustomField.pm:204 lib/RT/Interface/Web.pm:3739 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:500 share/html/Elements/Tabs:67
+#: lib/RT/CustomField.pm:1741 lib/RT/CustomField.pm:204 lib/RT/Interface/Web.pm:3740 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:500 share/html/Elements/Tabs:67
 msgid "Users"
 msgstr "Käyttäjät"
 
@@ -9284,7 +8920,7 @@ msgstr "Valvoja"
 msgid "We are able to find your database and connect as the DBA.  You can click on 'Customize Basics' to continue customizing RT."
 msgstr ""
 
-#: lib/RT/CustomField.pm:1057 lib/RT/CustomField.pm:1859
+#: lib/RT/CustomField.pm:1854
 msgid "We can't currently render as a List when basing categories on another custom field.  Please use another render type."
 msgstr ""
 
@@ -9467,7 +9103,7 @@ msgid "You are not authorized to use RT."
 msgstr ""
 
 #: share/html/Ticket/Elements/ShowUpdateStatus:54
-#. (RT->Config->Get('WebPath') ."/Ticket/Display.html?id=". $Ticket->id. "#txn-".$txn->id, RT->Config->Get('WebPath') ."/Ticket/Display.html?id=". $Ticket->id ."&MarkAsSeen=1&Anchor=txn-" . $txn->id)
+#. (RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id. "#txn-".$txn->id, RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id ."&MarkAsSeen=1&Anchor=txn-" . $txn->id)
 msgid "You can <a href=\"%1\">jump to the first unread message</a> or <a href=\"%2\">jump to the first unread message and mark all messages as seen</a>."
 msgstr "Voit <a href=\"%1\">hypätä ensimmäiseen uuteen viestiin</a> tai <a href=\"%2\">hypätä ensimmäiseen viestiin ja merkitä kaikki viestit luetuiksi</a>."
 
@@ -9529,17 +9165,13 @@ msgstr ""
 msgid "You have enabled encryption support but have not set a correspondence address for this queue."
 msgstr ""
 
-#: share/html/SelfService/Display.html:111
+#: share/html/SelfService/Display.html:112
 msgid "You have no permission to create tickets in that queue."
 msgstr "Sinulla ei ole valtuuksia luoda tikettejä tähän jonoon."
 
 #: share/html/Elements/AddLinks:60
 msgid "You may enter links to Articles as \"a:###\", where ### represents the number of the Article."
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "You may not create requests in that queue."
-msgstr "Et voi luoda tikettejä jonoon."
 
 #: share/html/Install/Basics.html:85
 msgid "You must enter an Administrative password"
@@ -9799,10 +9431,6 @@ msgstr ""
 msgid "group '%1'"
 msgstr "ryhmä %1"
 
-#: NOT FOUND IN SOURCE
-msgid "hours"
-msgstr "tuntia"
-
 #: lib/RT/Date.pm:121 share/html/Elements/Tabs:838
 msgid "iCal"
 msgstr "iCal"
@@ -9879,10 +9507,6 @@ msgstr "sisältää"
 msgid "maximum depth"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "min"
-msgstr "minuuttia"
-
 #: share/html/Tools/MyDay.html:62
 msgid "minutes"
 msgstr "minuuttia"
@@ -9912,10 +9536,6 @@ msgstr "kuukausittain"
 msgid "monthly (day %1) at %2"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "months"
-msgstr "kuukautta"
-
 #: share/html/Admin/Elements/ShowKeyInfo:72 share/html/Admin/Elements/ShowKeyInfo:75 share/html/Admin/Elements/ShowKeyInfo:82 share/html/Admin/Elements/ShowKeyInfo:83 share/html/Dashboards/Subscription.html:137
 msgid "never"
 msgstr "ei koskaan"
@@ -9927,10 +9547,6 @@ msgstr "Uusi"
 #: share/html/Elements/RT__Group/ColumnMap:60 share/html/Elements/RT__Group/ColumnMap:68 share/html/Elements/RT__Queue/ColumnMap:77 share/html/Elements/RT__Queue/ColumnMap:81
 msgid "no"
 msgstr "ei"
-
-#: NOT FOUND IN SOURCE
-msgid "no name"
-msgstr "ei nimeä"
 
 #: lib/RT/Crypt/GnuPG.pm:1743 share/html/Admin/Elements/EditQueueWatchers:50 share/html/Dashboards/Subscription.html:73 share/html/Ticket/Elements/EditWatchers:51
 msgid "none"
@@ -10013,10 +9629,6 @@ msgstr "oikealta vasemmalle"
 msgid "search"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "sec"
-msgstr "sec"
-
 #: share/html/Admin/Tools/Shredder/index.html:179
 msgid "see object list below"
 msgstr "objektit"
@@ -10036,10 +9648,6 @@ msgstr "Odottaa"
 #: share/html/Admin/Tools/Queries.html:88
 msgid "statement"
 msgstr "kysely"
-
-#: NOT FOUND IN SOURCE
-msgid "summary"
-msgstr "yhteenveto"
 
 #: share/html/Prefs/MyRT.html:86
 msgid "summary rows"
@@ -10147,10 +9755,6 @@ msgstr "mitä porttia WWW-palvelimesi kuuntelee, esim. 8080"
 #: share/html/Elements/ShowTransactionAttachments:64
 msgid "with headers"
 msgstr "otsikkotietojen kanssa"
-
-#: NOT FOUND IN SOURCE
-msgid "years"
-msgstr "vuosia"
 
 #: share/html/Elements/RT__Group/ColumnMap:60 share/html/Elements/RT__Group/ColumnMap:68 share/html/Elements/RT__Queue/ColumnMap:77 share/html/Elements/RT__Queue/ColumnMap:81
 msgid "yes"

@@ -1,21 +1,21 @@
 # Slovak translation for rt
-# Copyright (c) 2009 Rosetta Contributors and Canonical Ltd 2009
+# Copyright (c) 2013 Rosetta Contributors and Canonical Ltd 2013
 # This file is distributed under the same license as the rt package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2009.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2013.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2013-06-06 21:51+0000\n"
-"PO-Revision-Date: 2013-06-13 07:32+0000\n"
-"Last-Translator: erwinius <steffek@zos.sk>\n"
+"POT-Creation-Date: 2013-11-12 21:21+0000\n"
+"PO-Revision-Date: 2013-10-03 21:30+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Slovak <sk@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-10-03 20:12+0000\n"
-"X-Generator: Launchpad (build 16791)\n"
+"X-Launchpad-Export-Date: 2013-11-25 21:44+0000\n"
+"X-Generator: Launchpad (build 16840)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:62
 msgid "#"
@@ -57,10 +57,6 @@ msgstr ""
 msgid "%1 #%2: %3"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "%1 %2"
-msgstr "%1 %2"
-
 #: lib/RT/Tickets.pm:1367
 #. ($args{'FIELD'},        $args{'OPERATOR'}, $args{'VALUE'})
 msgid "%1 %2 %3"
@@ -87,10 +83,6 @@ msgstr "%1 %2 %3 %4:%5:%6 %7"
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
 msgid "%1 %2 added"
 msgstr "%1 %2 pridané"
-
-#: NOT FOUND IN SOURCE
-msgid "%1 %2 ago"
-msgstr "%1 %2 späť"
 
 #: lib/RT/Record.pm:2041 lib/RT/Transaction.pm:919
 #. ($cf->Name, $old_content, $new_content)
@@ -161,10 +153,6 @@ msgstr "%1 (z panela %2)"
 msgid "%1 - Adjust LogToSTDERR config option"
 msgstr "%1 - LogToSTDERR upraviť konfiguračné možnosti"
 
-#: NOT FOUND IN SOURCE
-msgid "%1 - Adjust LogToScreen config option"
-msgstr "%1 - LogToScreen upraviť konfiguračné možnosti"
-
 #: bin/rt-crontool:312 bin/rt-crontool:319 bin/rt-crontool:325
 #. ("--action-arg", "--action")
 #. ("--condition-arg", "--condition")
@@ -233,12 +221,12 @@ msgstr "%1 pridané ako hodnota pre %2"
 msgid "%1 ago"
 msgstr ""
 
-#: share/html/Install/DatabaseDetails.html:169
+#: share/html/Install/DatabaseDetails.html:179
 #. ($RT::DatabaseName)
 msgid "%1 already exists and has RT's tables in place, but does not contain RT's metadata. The 'Initialize Database' step later on can insert metadata into this existing database. If this is acceptable, click 'Customize Basics' below to continue customizing RT."
 msgstr "%1 už existuje a má tabulky RT na svojommieste, ale neobsahuje metadata RT. Neskorší krok 'Inicializovat databázu' vie vložiť metadata do tejto existujúcej databáze. Ak-lo to prijatelné, kliknite nížšie na 'Úprava základných údajov' pre pokračovanie v úprave RT."
 
-#: share/html/Install/DatabaseDetails.html:174
+#: share/html/Install/DatabaseDetails.html:184
 #. ($RT::DatabaseName)
 msgid "%1 already exists, but does not contain RT's tables or metadata. The 'Initialize Database' step later on can insert tables and metadata into this existing database. if this is acceptable, click 'Customize Basic' below to continue customizing RT."
 msgstr "%1 už existuje, ale neobsahuje RT tabuľky alebo metadáta. Neskôr v kroku 'Initialize Database' môžete vkladať tabuľky a metadáta do tejto existujúcej databázy. Ak je to prijateľné, kliknite na tlačidlo 'Customize Basic' nižšie pre pokračovanie prispôsobenia RT."
@@ -254,7 +242,7 @@ msgstr ""
 msgid "%1 appears to be a local object, but can't be found in the database"
 msgstr "%1 vypadá ako lokálny objekt, ale nie je v databázi"
 
-#: share/html/Install/DatabaseDetails.html:165
+#: share/html/Install/DatabaseDetails.html:175
 #. ($RT::DatabaseName)
 msgid "%1 appears to be fully initialized.  We won't need to create any tables or insert metadata, but you can continue to customize RT by clicking 'Customize Basics' below"
 msgstr "%1 sa zdá byť plne inicializována. Nebudeme potrebovať vytvoriť žiádne tabuľky ani vložiť metadata, ale môžete pokračovať v úprave RT kliknutím nižšie na 'Úprava základných údajov'"
@@ -271,9 +259,10 @@ msgstr "%1 uživaťeľom %2"
 msgid "%1 cannot be a group"
 msgstr ""
 
-#: lib/RT/Record.pm:526 lib/RT/Transaction.pm:1062 lib/RT/Transaction.pm:1067 lib/RT/Transaction.pm:1081 lib/RT/Transaction.pm:1090 lib/RT/Transaction.pm:1129 lib/RT/Transaction.pm:818
+#: lib/RT/Record.pm:526 lib/RT/Transaction.pm:1062 lib/RT/Transaction.pm:1067 lib/RT/Transaction.pm:1081 lib/RT/Transaction.pm:1090 lib/RT/Transaction.pm:1130 lib/RT/Transaction.pm:818
 #. ($self->loc($self->Field) , $q1->Name , $q2->Name)
 #. ($self->loc($self->Field),                    ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'")
+#. ($self->loc($self->Field),                    ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")),                    ($self->NewValue? "'".$self->NewValue ."'" : $self->loc("(no value)")))
 #. ($self->loc( $args{'Field'} ),                ( $old_val ? '"' . $old_val . '"' : $self->loc("(no value)") ),                '"' . $self->__Value( $args{'Field'}) . '"',)
 #. ($self->Field,            ( $self->OldValue ? "'" . $self->OldValue . "'" : $no_value ),            "'" . $self->NewValue . "'")
 #. ($self->loc($self->Field), $t2->AsString, $t1->AsString)
@@ -285,10 +274,6 @@ msgstr "%1 zmenené z %2 na %3"
 #. (loc("Field values source"), $original, $ValuesClass)
 msgid "%1 changed from '%2' to '%3'"
 msgstr "%1 zmenené z '%2' na '%3'"
-
-#: NOT FOUND IN SOURCE
-msgid "%1 chart by %2"
-msgstr "%1 graf podľa %2"
 
 #: share/html/Search/Elements/EditSearches:203
 #. ($SavedSearch->{'Object'}->Description)
@@ -353,7 +338,7 @@ msgstr ""
 msgid "%1 is already set to %2"
 msgstr ""
 
-#: lib/RT/Record/Role/Roles.pm:365 lib/RT/Record/Role/Roles.pm:373 share/html/Ticket/Create.html:418 share/html/Ticket/Update.html:282 share/html/m/ticket/create:189 share/html/m/ticket/reply:208
+#: lib/RT/Record/Role/Roles.pm:365 lib/RT/Record/Role/Roles.pm:373 share/html/Ticket/Create.html:418 share/html/Ticket/Update.html:291 share/html/m/ticket/create:189 share/html/m/ticket/reply:208
 #. ($email, $self->loc($type))
 #. ($name, $self->loc($type))
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
@@ -411,7 +396,7 @@ msgstr "%1 najnovšie články"
 msgid "%1 newest unowned tickets"
 msgstr "%1 najnovších požiadaviek bez vlastníka"
 
-#: lib/RT/CustomField.pm:1157
+#: lib/RT/CustomField.pm:1152
 msgid "%1 objects"
 msgstr "%1 objekty"
 
@@ -446,17 +431,13 @@ msgstr "%1 aktualizované"
 msgid "%1$unit"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1158
+#: lib/RT/CustomField.pm:1153
 msgid "%1's %2 objects"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1159
+#: lib/RT/CustomField.pm:1154
 msgid "%1's %2's %3 objects"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "%1's GnuPG keys"
-msgstr "%1's GnuPG kľúče"
 
 #: share/html/Elements/EditPassword:55
 #. ($session{'CurrentUser'}->Name())
@@ -587,10 +568,6 @@ msgstr ""
 msgid "%quant(%1,year)"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "'%1' is an invalid value for status"
-msgstr "'%1' neplatná hodnota pre stav"
-
 #: lib/RT/Queue.pm:323
 #. ($name)
 msgid "'%1' is not a valid name."
@@ -605,22 +582,6 @@ msgstr ""
 #. ($Class)
 msgid "'%1' isn't a valid class identifier"
 msgstr "'%1' je neplatný identifikátor triedy"
-
-#: NOT FOUND IN SOURCE
-msgid "'Roles'"
-msgstr "'Roly'"
-
-#: NOT FOUND IN SOURCE
-msgid "'System'"
-msgstr "'Systém'"
-
-#: NOT FOUND IN SOURCE
-msgid "'User Groups'"
-msgstr "'Skupiny užívateľov'"
-
-#: NOT FOUND IN SOURCE
-msgid "'Users'"
-msgstr "'Užívatelia'"
 
 #: share/html/Ticket/Elements/Reminders:105
 msgid "(Check box to complete)"
@@ -668,10 +629,6 @@ msgstr "(Žiadne skripty)"
 msgid "(No templates)"
 msgstr "(Žiadne šablóny)"
 
-#: NOT FOUND IN SOURCE
-msgid "(None)"
-msgstr "(Žiadne)"
-
 #: share/html/Ticket/Create.html:161 share/html/m/ticket/create:290
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)"
 msgstr ""
@@ -683,10 +640,6 @@ msgstr ""
 #: share/html/Admin/Scrips/Elements/EditCustomCode:52
 msgid "(Use these fields when you choose 'User Defined' for a condition or action)"
 msgstr "(Použite tieto polia, ak zvolíte 'User Defined' pre podmienku alebo akciu)"
-
-#: NOT FOUND IN SOURCE
-msgid "(Will not be sent email)"
-msgstr "(e-mail nebude odoslaný)"
 
 #: share/html/Admin/CustomFields/index.html:74
 msgid "(any)"
@@ -704,17 +657,13 @@ msgstr "(bez názvu)"
 msgid "(no pubkey!)"
 msgstr "(žiadny verejný kľúč!)"
 
-#: lib/RT/Report/Tickets.pm:812 lib/RT/Report/Tickets.pm:823 lib/RT/Report/Tickets/Entry.pm:78 lib/RT/Report/Tickets/Entry.pm:88 lib/RT/Transaction.pm:1067 lib/RT/Transaction.pm:1129 lib/RT/Transaction.pm:737 lib/RT/Transaction.pm:742 lib/RT/Transaction.pm:812 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:114 share/html/Elements/EditCustomFieldSelect:88 share/html/Elements/EditCustomFieldSelect:97 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowCustomFields:60 share/html/m/ticket/show:263
+#: lib/RT/Report/Tickets.pm:812 lib/RT/Report/Tickets.pm:823 lib/RT/Report/Tickets/Entry.pm:78 lib/RT/Report/Tickets/Entry.pm:88 lib/RT/Transaction.pm:1067 lib/RT/Transaction.pm:1129 lib/RT/Transaction.pm:1130 lib/RT/Transaction.pm:737 lib/RT/Transaction.pm:742 lib/RT/Transaction.pm:812 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:109 share/html/Elements/EditCustomFieldSelect:128 share/html/Elements/EditCustomFieldSelect:138 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowCustomFields:60 share/html/m/ticket/show:263
 msgid "(no value)"
 msgstr "(žiadna hodnota)"
 
 #: share/html/Admin/Elements/EditCustomFieldValues:49
 msgid "(no values)"
 msgstr "(žiadne hodnoty)"
-
-#: NOT FOUND IN SOURCE
-msgid "(only one ticket)"
-msgstr "(iba jedna požiadavka)"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:138
 #. ($count)
@@ -762,7 +711,7 @@ msgstr ""
 msgid "0s"
 msgstr ""
 
-#: lib/RT/Template.pm:287 lib/RT/Template.pm:713
+#: lib/RT/Template.pm:287 lib/RT/Template.pm:717
 msgid "A Template with that name already exists"
 msgstr ""
 
@@ -870,10 +819,6 @@ msgstr "Pridať žiadateľa"
 #: share/html/Admin/Elements/AddCustomFieldValue:48
 msgid "Add Value"
 msgstr "Pridať hodnotu"
-
-#: NOT FOUND IN SOURCE
-msgid "Add a scrip which will apply to all queues"
-msgstr "Pridať skript, ktorý sa bude vzťahovať na všetky fronty"
 
 #: share/html/Search/Bulk.html:123
 msgid "Add comments or replies to selected tickets"
@@ -1116,10 +1061,6 @@ msgstr "Nejaké pole"
 msgid "Any word not recognized by RT is searched for in ticket subjects."
 msgstr "Nejaké slovo"
 
-#: NOT FOUND IN SOURCE
-msgid "Applied"
-msgstr "Použité"
-
 #: share/html/Admin/CustomFields/Modify.html:94 share/html/Admin/Scrips/Modify.html:61 share/html/Elements/Tabs:370 share/html/Elements/Tabs:384 share/html/Elements/Tabs:430
 msgid "Applies to"
 msgstr "Platí pre"
@@ -1222,10 +1163,6 @@ msgstr ""
 msgid "Article #%1: %2"
 msgstr "Článok #%1: %2"
 
-#: NOT FOUND IN SOURCE
-msgid "Article %1"
-msgstr "Článok %1"
-
 #: lib/RT/Article.pm:216
 #. ($self->id)
 msgid "Article %1 created"
@@ -1264,10 +1201,6 @@ msgstr "Články bez tém"
 #: share/html/Search/Elements/EditSort:79
 msgid "Asc"
 msgstr "Stúp"
-
-#: NOT FOUND IN SOURCE
-msgid "Ascending"
-msgstr "Vzostupne"
 
 #: lib/RT/Queue.pm:116
 msgid "Assign and remove queue custom fields"
@@ -1521,10 +1454,6 @@ msgstr "Nemožno uložiť %1"
 msgid "Can't save this search"
 msgstr "Nemožno uložiť toto vyhľadávanie"
 
-#: NOT FOUND IN SOURCE
-msgid "Can't specifiy both base and target"
-msgstr "Nemožno špecifikovať základ a cieľ"
-
 #: lib/RT/Record.pm:1315 lib/RT/Record.pm:1459
 msgid "Can't specify both base and target"
 msgstr ""
@@ -1565,17 +1494,13 @@ msgstr "Schválenie zmeny tiketu do otvoreného stavu"
 msgid "Change password"
 msgstr "Zmeniť heslo"
 
-#: lib/RT/Template.pm:692
+#: lib/RT/Template.pm:696
 msgid "Changing queue is not implemented"
 msgstr ""
 
 #: share/html/Elements/Tabs:812
 msgid "Chart"
 msgstr "Graf"
-
-#: NOT FOUND IN SOURCE
-msgid "Chart Properties"
-msgstr "Vlastnosti grafu"
 
 #: share/html/Elements/Submit:102
 msgid "Check All"
@@ -1592,10 +1517,6 @@ msgstr "Skontrolujte, či databáza poverenia"
 #: share/html/Ticket/Elements/AddAttachments:51 share/html/m/ticket/create:310 share/html/m/ticket/reply:126
 msgid "Check box to delete"
 msgstr "Zaškrtávacie políčko pre odstrániť"
-
-#: NOT FOUND IN SOURCE
-msgid "Check box to revoke right"
-msgstr "Zaškrtávacie políčko pre zrušiť právo"
 
 #: share/html/Search/Elements/SelectLinks:59
 msgid "Child"
@@ -1755,10 +1676,6 @@ msgstr "Podmienka, Akcia a Šablóny"
 msgid "Config file %1 is locked"
 msgstr "Konfiguračný súbor %1 je zamknutý"
 
-#: NOT FOUND IN SOURCE
-msgid "Configuration"
-msgstr "Konfigurácia"
-
 #: share/html/Admin/Queues/Modify.html:182
 #. ($QueueObj->Name)
 msgid "Configuration for queue %1"
@@ -1861,18 +1778,10 @@ msgstr "Nemožno zmazať vyhľadávanie %1: %2"
 msgid "Could not find group '%1'"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Could not find or create that user"
-msgstr "Nemožno nájsť alebo vytvoriť tohto užívateľa"
-
 #: lib/RT/Record/Role/Roles.pm:387
 #. ($name)
 msgid "Could not find or create user '%1'"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Could not find that principal"
-msgstr "Nemožno nájsť tohto vedúceho"
 
 #: lib/RT/SharedSetting.pm:244
 #. ($self->ObjectName)
@@ -1943,7 +1852,7 @@ msgstr "Nemožno pridať člena do skupiny"
 msgid "Couldn't compile %1 codeblock '%2': %3"
 msgstr ""
 
-#: lib/RT/Template.pm:815
+#: lib/RT/Template.pm:819
 #. ($fi_text, $error)
 msgid "Couldn't compile template codeblock '%1': %2"
 msgstr "Nemožno skompilovať šablónu blok-kódu '%1': %2"
@@ -1954,7 +1863,7 @@ msgstr "Nemožno skompilovať šablónu blok-kódu '%1': %2"
 msgid "Couldn't create a transaction: %1"
 msgstr "Nemožno vytvoriť transakciu: %1"
 
-#: lib/RT/CustomField.pm:1586
+#: lib/RT/CustomField.pm:1581
 #. ($msg)
 msgid "Couldn't create record: %1"
 msgstr "Nemožno vytvoriť záznam: %1"
@@ -2138,10 +2047,6 @@ msgstr ""
 msgid "Couldn't parse Target URI: %1"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Couldn't parse address from '%1' string"
-msgstr "Nemožno analyzovať adresu z reťazeca '%1'"
-
 #: lib/RT/Group.pm:1088
 #. ($msg)
 msgid "Couldn't remove previous member: %1"
@@ -2157,14 +2062,6 @@ msgstr "Nemožno nahradiť obsah s dešifrovanými dátami: %1"
 msgid "Couldn't replace content with encrypted data: %1"
 msgstr "Nemožno nahradiť obsah s šifrovanými dátami: %1"
 
-#: NOT FOUND IN SOURCE
-msgid "Couldn't resolve '%1' into a Link."
-msgstr "Nemožno vyriešiť '%1' vložením linku."
-
-#: NOT FOUND IN SOURCE
-msgid "Couldn't resolve '%1' into a URI."
-msgstr "Nemožno vyriešiť '%1' vložením URI."
-
 #: lib/RT/Record.pm:1351 lib/RT/Record.pm:1488
 #. ($remote_link)
 msgid "Couldn't resolve '%1' into a link."
@@ -2179,10 +2076,6 @@ msgstr ""
 #. ($args{'Target'})
 msgid "Couldn't resolve target '%1' into a URI."
 msgstr "Nemôžem vyriešiť (rozoznať) cieľ '%1' v URI."
-
-#: NOT FOUND IN SOURCE
-msgid "Couldn't send email"
-msgstr "Nemožno poslať email"
 
 #: lib/RT/Record/Role/Roles.pm:609
 #. ($role, $msg)
@@ -2264,10 +2157,6 @@ msgstr "Vytvoriť frontu"
 msgid "Create a scrip and add to queue %1"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Create a scrip for queue %1"
-msgstr "Vytvoriť skript pre frontu %1"
-
 #: share/html/Admin/Global/Template.html:77
 msgid "Create a template"
 msgstr "Vytvoriť šablónu"
@@ -2315,10 +2204,6 @@ msgstr "Vytvoriť požiadavku"
 #: lib/RT/Queue.pm:129
 msgid "Create tickets"
 msgstr "Vytvoriť požiadavky"
-
-#: NOT FOUND IN SOURCE
-msgid "Create tickets offline"
-msgstr "Vytvoriť požiadavky offline"
 
 #: lib/RT/Class.pm:98 lib/RT/Queue.pm:112
 msgid "Create, modify and delete Access Control List entries"
@@ -2411,10 +2296,6 @@ msgstr ""
 msgid "Current Links"
 msgstr "Aktuálne prepojenia"
 
-#: NOT FOUND IN SOURCE
-msgid "Current Scrips"
-msgstr "Aktuálne skripty"
-
 #: share/html/Elements/Tabs:796
 msgid "Current Search"
 msgstr "Aktuálne vyhľadávanie"
@@ -2422,10 +2303,6 @@ msgstr "Aktuálne vyhľadávanie"
 #: share/html/Admin/Groups/Members.html:60
 msgid "Current members"
 msgstr "Súčasní členovia"
-
-#: NOT FOUND IN SOURCE
-msgid "Current rights"
-msgstr "Súčasné práva"
 
 #: share/html/Search/Elements/EditQuery:49
 msgid "Current search"
@@ -2452,10 +2329,6 @@ msgstr "Vlastné polia pre %1"
 #. ($Object->Name)
 msgid "Custom Fields for queue %1"
 msgstr "Vlastné polia pre frontu %1"
-
-#: NOT FOUND IN SOURCE
-msgid "Custom action cleanup code"
-msgstr "Vlastna akcia čistiaceho kódu"
 
 #: share/html/Admin/Scrips/Elements/EditCustomCode:73
 msgid "Custom action commit code"
@@ -2500,11 +2373,7 @@ msgstr "Vlastné pole %1 nemá hodnotu."
 msgid "Custom field %1 not found"
 msgstr "Vlastné pole %1 nenájdené"
 
-#: NOT FOUND IN SOURCE
-msgid "Custom field '%1'"
-msgstr "Vlastné pole '%1'"
-
-#: lib/RT/CustomField.pm:1695
+#: lib/RT/CustomField.pm:1690
 #. ($args{'Content'}, $self->Name)
 msgid "Custom field value %1 could not be found for custom field %2"
 msgstr ""
@@ -2513,11 +2382,11 @@ msgstr ""
 msgid "Custom field value could not be deleted"
 msgstr "Hodnota vlastného poľa nemôže byť zmazaná"
 
-#: lib/RT/CustomField.pm:1707
+#: lib/RT/CustomField.pm:1702
 msgid "Custom field value could not be found"
 msgstr "Hodnota vlastného poľa nenájdená"
 
-#: lib/RT/CustomField.pm:1709 lib/RT/CustomField.pm:556
+#: lib/RT/CustomField.pm:1704 lib/RT/CustomField.pm:556
 msgid "Custom field value deleted"
 msgstr "Hodnota vlastného poľa zmazaná"
 
@@ -2601,7 +2470,7 @@ msgstr "Panel sa nedá aktualizovať: %1"
 msgid "Dashboard updated"
 msgstr "Panel aktualizovaný"
 
-#: etc/RT_Config.pm:1237 etc/initialdata:875 share/html/Dashboards/index.html:48 share/html/Elements/Dashboards:49
+#: etc/RT_Config.pm:1240 etc/initialdata:875 share/html/Dashboards/index.html:48 share/html/Elements/Dashboards:49
 msgid "Dashboards"
 msgstr "Panely"
 
@@ -2646,7 +2515,7 @@ msgstr ""
 msgid "Date format"
 msgstr "Formát dátumu"
 
-#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:633 share/html/SelfService/Display.html:72 share/html/Ticket/Create.html:253 share/html/Ticket/Elements/ShowSummary:84 share/html/Ticket/ModifyAll.html:68 share/html/m/ticket/create:377 share/html/m/ticket/show:344
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:633 share/html/SelfService/Display.html:73 share/html/Ticket/Create.html:253 share/html/Ticket/Elements/ShowSummary:84 share/html/Ticket/ModifyAll.html:68 share/html/m/ticket/create:377 share/html/m/ticket/show:344
 msgid "Dates"
 msgstr "Dátumy"
 
@@ -2661,14 +2530,6 @@ msgstr "Dešifrovať"
 #: lib/RT/Attachment.pm:829
 msgid "Decryption error; contact the administrator"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Default Queue"
-msgstr "Štandardná Fronta"
-
-#: NOT FOUND IN SOURCE
-msgid "Default Requestor"
-msgstr "Štandardný žiadateľ"
 
 #: lib/RT/Config.pm:150
 msgid "Default queue"
@@ -2691,7 +2552,7 @@ msgstr "Štandard: %1/%2 zmenený z %3 na %4"
 msgid "DefaultFormat"
 msgstr "Štandardný rotmát"
 
-#: etc/RT_Config.pm:2771 etc/RT_Config.pm:2847 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:864 share/html/Elements/Tabs:889 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:2774 etc/RT_Config.pm:2850 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:864 share/html/Elements/Tabs:889 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
 msgid "Delete"
 msgstr "Odstrániť"
 
@@ -2724,10 +2585,6 @@ msgstr ""
 #: lib/RT/Dashboard.pm:88
 msgid "Delete personal dashboards"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Delete selected scrips"
-msgstr "Zmazať vybrané scripty"
 
 #: lib/RT/Dashboard.pm:83
 msgid "Delete system dashboards"
@@ -2830,10 +2687,6 @@ msgstr "Závisí na"
 #: share/html/Search/Elements/EditSort:84
 msgid "Desc"
 msgstr "Kles"
-
-#: NOT FOUND IN SOURCE
-msgid "Descending"
-msgstr "Klesajúco"
 
 #: share/html/SelfService/Create.html:108 share/html/Ticket/Create.html:192 share/html/m/ticket/create:231
 msgid "Describe the issue below"
@@ -3290,7 +3143,7 @@ msgstr ""
 msgid "Estimated"
 msgstr ""
 
-#: lib/RT/Handle.pm:703
+#: lib/RT/Handle.pm:712
 msgid "Everyone"
 msgstr ""
 
@@ -3336,7 +3189,7 @@ msgstr ""
 msgid "Extract tags from a Transaction's subject and add them to the Ticket's subject."
 msgstr ""
 
-#: share/html/Install/DatabaseDetails.html:186
+#: share/html/Install/DatabaseDetails.html:196
 #. ($DBI::errstr)
 msgid "Failed to connect to database: %1"
 msgstr ""
@@ -3475,7 +3328,7 @@ msgstr "Nájsť ľudí, ktorých"
 msgid "Find tickets"
 msgstr ""
 
-#: etc/RT_Config.pm:1237
+#: etc/RT_Config.pm:1240
 msgid "FindUser"
 msgstr ""
 
@@ -3599,13 +3452,9 @@ msgstr ""
 msgid "General"
 msgstr ""
 
-#: share/html/Admin/Elements/EditRightsCategoryTabs:86
+#: share/html/Admin/Elements/EditRightsCategoryTabs:87
 msgid "General rights"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Get template from file"
-msgstr "Získajte šablónu zo súboru"
 
 #: share/html/Install/index.html:76
 msgid "Getting started"
@@ -3751,7 +3600,7 @@ msgstr ""
 msgid "Grouped search results"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1747 lib/RT/CustomField.pm:206 share/html/Admin/Global/CustomFields/index.html:71 share/html/Admin/Groups/Members.html:88 share/html/Admin/Queues/People.html:102 share/html/Elements/Tabs:143 share/html/Elements/Tabs:257 share/html/Elements/Tabs:75
+#: lib/RT/CustomField.pm:1742 lib/RT/CustomField.pm:206 share/html/Admin/Global/CustomFields/index.html:71 share/html/Admin/Groups/Members.html:88 share/html/Admin/Queues/People.html:102 share/html/Elements/Tabs:143 share/html/Elements/Tabs:257 share/html/Elements/Tabs:75
 msgid "Groups"
 msgstr "Skupiny"
 
@@ -4077,7 +3926,7 @@ msgstr ""
 msgid "Input error"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1540 lib/RT/CustomField.pm:1700 share/html/Elements/EditCustomFields:77 share/html/Elements/ValidateCustomFields:107
+#: lib/RT/CustomField.pm:1535 lib/RT/CustomField.pm:1695 share/html/Elements/EditCustomFields:77 share/html/Elements/ValidateCustomFields:107
 #. ($CF->FriendlyPattern)
 #. ($CustomField->FriendlyPattern)
 #. ($self->FriendlyPattern)
@@ -4136,10 +3985,6 @@ msgstr ""
 msgid "Invalid Group Name and Domain"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Invalid Group Type"
-msgstr "Neplatný typ skupiny"
-
 #: lib/RT/Class.pm:311
 #. ($msg)
 msgid "Invalid Queue, unable to apply Class: %1"
@@ -4163,7 +4008,7 @@ msgstr "Neplatné dáta"
 msgid "Invalid key %1 for address '%2'"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1533
+#: lib/RT/CustomField.pm:1528
 msgid "Invalid object"
 msgstr "Neplatný objekt"
 
@@ -4363,10 +4208,6 @@ msgstr "Prepojenie"
 msgid "Link already exists"
 msgstr "Prepojenie už existuje"
 
-#: NOT FOUND IN SOURCE
-msgid "Link could not be created"
-msgstr "Prepojenie nemôže byť vytvorené"
-
 #: lib/RT/Record.pm:1383
 #. ($linkmsg)
 msgid "Link could not be created: %1"
@@ -4406,14 +4247,6 @@ msgstr "PrepojenéNa"
 #. ($self->loc(lc($remote_obj->RecordType)))
 msgid "Linking to a deleted %1 is not allowed"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Linking. Can't link to a deleted ticket"
-msgstr "Prepojenie. Nemôžete vytvárať odkazy na odstránené požiadavky"
-
-#: NOT FOUND IN SOURCE
-msgid "Linking. Permission denied"
-msgstr "Prepojenie. Povolenie odopreté"
 
 #: share/html/Articles/Article/Display.html:56 share/html/Articles/Article/Edit.html:79 share/html/Articles/Article/Elements/ShowSearchCriteria:117 share/html/Elements/Tabs:634 share/html/Ticket/Create.html:276 share/html/Ticket/Elements/ShowSummary:91 share/html/Ticket/ModifyAll.html:81 share/html/m/ticket/create:390 share/html/m/ticket/show:386
 msgid "Links"
@@ -4532,7 +4365,7 @@ msgstr ""
 msgid "Logout"
 msgstr "Odhlásiť sa"
 
-#: lib/RT/CustomField.pm:1460
+#: lib/RT/CustomField.pm:1455
 msgid "Lookup type mismatch"
 msgstr ""
 
@@ -4560,10 +4393,6 @@ msgstr "Priradiť status"
 #: share/html/Search/Bulk.html:115
 msgid "Make date Due"
 msgstr "Priradiť dátum splatnosti"
-
-#: NOT FOUND IN SOURCE
-msgid "Make date Resolved"
-msgstr "Priradiť dátum vyriešenia"
 
 #: share/html/Search/Bulk.html:111
 msgid "Make date Started"
@@ -4626,7 +4455,7 @@ msgstr ""
 msgid "Mar"
 msgstr "mar"
 
-#: share/html/Ticket/Display.html:191 share/html/m/ticket/show:122
+#: share/html/SelfService/Display.html:153 share/html/Ticket/Display.html:191 share/html/m/ticket/show:122
 msgid "Marked all messages as seen"
 msgstr ""
 
@@ -4859,7 +4688,7 @@ msgstr ""
 msgid "Minutes"
 msgstr "Minúty"
 
-#: share/html/Admin/Elements/EditRightsCategoryTabs:102
+#: share/html/Admin/Elements/EditRightsCategoryTabs:68
 msgid "Miscellaneous"
 msgstr ""
 
@@ -5166,21 +4995,9 @@ msgstr ""
 msgid "Move"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Move down"
-msgstr "Presunúť dolu"
-
 #: share/html/Admin/Articles/Elements/Topics:108
 msgid "Move here"
 msgstr "Presunúť sem"
-
-#: NOT FOUND IN SOURCE
-msgid "Move up"
-msgstr "Presunúť hore"
-
-#: NOT FOUND IN SOURCE
-msgid "Multiple"
-msgstr "Viacnásobný"
 
 #: lib/RT/User.pm:172
 msgid "Must specify 'Name' attribute"
@@ -5223,11 +5040,11 @@ msgstr "Moje pripomienky"
 msgid "My saved searches"
 msgstr "Moje uložené vyhľadávania"
 
-#: etc/RT_Config.pm:1237
+#: etc/RT_Config.pm:1240
 msgid "MyAdminQueues"
 msgstr ""
 
-#: etc/RT_Config.pm:1237 etc/initialdata:867
+#: etc/RT_Config.pm:1240 etc/initialdata:867
 msgid "MyReminders"
 msgstr ""
 
@@ -5235,7 +5052,7 @@ msgstr ""
 msgid "MySQL"
 msgstr "MySQL"
 
-#: etc/RT_Config.pm:1237
+#: etc/RT_Config.pm:1240
 msgid "MySupportQueues"
 msgstr ""
 
@@ -5259,7 +5076,7 @@ msgstr "Meno a emailová adresa"
 msgid "Name in use"
 msgstr "Meno je už použité"
 
-#: lib/RT/Template.pm:281 lib/RT/Template.pm:705
+#: lib/RT/Template.pm:281 lib/RT/Template.pm:709
 msgid "Name is required"
 msgstr ""
 
@@ -5314,10 +5131,6 @@ msgstr ""
 #: share/html/Ticket/Elements/Reminders:119
 msgid "New reminder:"
 msgstr "Nová pripomienka:"
-
-#: NOT FOUND IN SOURCE
-msgid "New rights"
-msgstr "Nové prava"
 
 #: share/html/Elements/Tabs:930 share/html/Elements/Tabs:932 share/html/m/_elements/menu:70
 msgid "New ticket"
@@ -5470,7 +5283,7 @@ msgstr ""
 msgid "No permission to create tickets in the queue '%1'"
 msgstr ""
 
-#: share/html/SelfService/Display.html:144
+#: share/html/SelfService/Display.html:145
 msgid "No permission to display that ticket"
 msgstr ""
 
@@ -5724,7 +5537,7 @@ msgstr "Objekt zmazaný"
 msgid "Object passed is not loaded"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1489
+#: lib/RT/CustomField.pm:1484
 msgid "Object type mismatch"
 msgstr "Typ Objektu je mišmaš"
 
@@ -5835,7 +5648,7 @@ msgstr "Zobraziť iba vlastné polia pre:"
 msgid "Open Inactive Tickets"
 msgstr ""
 
-#: etc/RT_Config.pm:2759 etc/RT_Config.pm:2788 etc/RT_Config.pm:2835 etc/RT_Config.pm:2864
+#: etc/RT_Config.pm:2762 etc/RT_Config.pm:2791 etc/RT_Config.pm:2838 etc/RT_Config.pm:2867
 msgid "Open It"
 msgstr "Otvorte ho"
 
@@ -5873,6 +5686,10 @@ msgstr "Možnosti"
 
 #: lib/RT/Installer.pm:71
 msgid "Oracle"
+msgstr ""
+
+#: share/html/Install/DatabaseDetails.html:152
+msgid "Oracle users cannot have empty passwords"
 msgstr ""
 
 #: share/html/Search/Elements/EditSort:55
@@ -5929,10 +5746,6 @@ msgstr ""
 #. ($OldOwnerObj->Name, $NewOwnerObj->Name)
 msgid "Owner changed from %1 to %2"
 msgstr "Vlastník zmenený z %1 na %2"
-
-#: NOT FOUND IN SOURCE
-msgid "Owner could not be set."
-msgstr "Vlastník nemohol byť nastavený"
 
 #: lib/RT/Transaction.pm:1122 lib/RT/Transaction.pm:938
 #. (map { $self->_FormatUser($_) } $Old, $New)
@@ -6068,7 +5881,7 @@ msgstr ""
 msgid "Permanently wipeout data from RT"
 msgstr ""
 
-#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:737 lib/RT/Attachment.pm:738 lib/RT/Attachment.pm:797 lib/RT/Attachment.pm:798 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:386 lib/RT/Attribute.pm:395 lib/RT/Attribute.pm:408 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1464 lib/RT/CustomField.pm:1493 lib/RT/CustomField.pm:1536 lib/RT/CustomField.pm:1676 lib/RT/CustomField.pm:1826 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:513 lib/RT/CustomField.pm:540 lib/RT/CustomField.pm:922 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1247 lib/RT/Group.pm:1331 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:355 lib/RT/Queue.pm:381 lib/RT/Queue.pm:407 lib/RT/Queue.pm:799 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:274 lib/RT/Scrip.pm:307 lib/RT/Scrip.pm:621 lib/RT/Scrip.pm:629 lib/RT/Scrip.pm:638 lib/RT/Scrip.pm:643 lib/RT/Scrip.pm:651 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:313 lib/RT/Template.pm:479 lib/RT/Template.pm:730 lib/RT/Template.pm:747 lib/RT/Template.pm:765 lib/RT/Ticket.pm:1069 lib/RT/Ticket.pm:1280 lib/RT/Ticket.pm:1448 lib/RT/Ticket.pm:1498 lib/RT/Ticket.pm:1764 lib/RT/Ticket.pm:1778 lib/RT/Ticket.pm:2164 lib/RT/Ticket.pm:2176 lib/RT/Ticket.pm:2181 lib/RT/Ticket.pm:2199 lib/RT/Ticket.pm:2416 lib/RT/Ticket.pm:2645 lib/RT/Ticket.pm:3005 lib/RT/Ticket.pm:731 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:668 lib/RT/Transaction.pm:708 lib/RT/User.pm:1137 lib/RT/User.pm:139 lib/RT/User.pm:1566 lib/RT/User.pm:1813 lib/RT/User.pm:1846 lib/RT/User.pm:328 lib/RT/User.pm:735 lib/RT/User.pm:770 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97
+#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:737 lib/RT/Attachment.pm:738 lib/RT/Attachment.pm:797 lib/RT/Attachment.pm:798 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:386 lib/RT/Attribute.pm:395 lib/RT/Attribute.pm:408 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1459 lib/RT/CustomField.pm:1488 lib/RT/CustomField.pm:1531 lib/RT/CustomField.pm:1671 lib/RT/CustomField.pm:1821 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:513 lib/RT/CustomField.pm:540 lib/RT/CustomField.pm:922 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1247 lib/RT/Group.pm:1331 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:355 lib/RT/Queue.pm:381 lib/RT/Queue.pm:407 lib/RT/Queue.pm:799 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:274 lib/RT/Scrip.pm:307 lib/RT/Scrip.pm:621 lib/RT/Scrip.pm:629 lib/RT/Scrip.pm:638 lib/RT/Scrip.pm:643 lib/RT/Scrip.pm:651 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:317 lib/RT/Template.pm:483 lib/RT/Template.pm:734 lib/RT/Template.pm:751 lib/RT/Template.pm:769 lib/RT/Ticket.pm:1069 lib/RT/Ticket.pm:1280 lib/RT/Ticket.pm:1448 lib/RT/Ticket.pm:1498 lib/RT/Ticket.pm:1764 lib/RT/Ticket.pm:1778 lib/RT/Ticket.pm:2164 lib/RT/Ticket.pm:2176 lib/RT/Ticket.pm:2181 lib/RT/Ticket.pm:2199 lib/RT/Ticket.pm:2416 lib/RT/Ticket.pm:2645 lib/RT/Ticket.pm:3005 lib/RT/Ticket.pm:731 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:668 lib/RT/Transaction.pm:708 lib/RT/User.pm:1137 lib/RT/User.pm:139 lib/RT/User.pm:1566 lib/RT/User.pm:1813 lib/RT/User.pm:1846 lib/RT/User.pm:328 lib/RT/User.pm:735 lib/RT/User.pm:770 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97
 msgid "Permission Denied"
 msgstr "Povolenie odmietnuté"
 
@@ -6225,7 +6038,7 @@ msgstr ""
 msgid "Private keys"
 msgstr ""
 
-#: lib/RT/Handle.pm:704 share/html/Admin/Users/Modify.html:114
+#: lib/RT/Handle.pm:713 share/html/Admin/Users/Modify.html:114
 msgid "Privileged"
 msgstr ""
 
@@ -6242,7 +6055,7 @@ msgstr ""
 msgid "Processing without transaction, some conditions and actions may fail. Consider using --transaction argument"
 msgstr ""
 
-#: lib/RT/Handle.pm:717
+#: lib/RT/Handle.pm:726
 msgid "Pseudogroup for internal use"
 msgstr ""
 
@@ -6315,7 +6128,7 @@ msgstr ""
 msgid "Queue id"
 msgstr ""
 
-#: lib/RT/CustomField.pm:285 share/html/SelfService/Display.html:109
+#: lib/RT/CustomField.pm:285 share/html/SelfService/Display.html:110
 msgid "Queue not found"
 msgstr ""
 
@@ -6343,7 +6156,7 @@ msgstr "NázovFronty"
 msgid "QueueWatcher"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1748 lib/RT/CustomField.pm:205 share/html/Admin/Global/CustomFields/index.html:77 share/html/Elements/Tabs:148 share/html/Elements/Tabs:255 share/html/Elements/Tabs:83
+#: lib/RT/CustomField.pm:1743 lib/RT/CustomField.pm:205 share/html/Admin/Global/CustomFields/index.html:77 share/html/Elements/Tabs:148 share/html/Elements/Tabs:255 share/html/Elements/Tabs:83
 msgid "Queues"
 msgstr "Fronty"
 
@@ -6355,10 +6168,6 @@ msgstr ""
 msgid "Queues I'm an AdminCc for"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Quick Create"
-msgstr "Rýchle vytvorenie"
-
 #: share/html/Articles/Elements/QuickSearch:48 share/html/Elements/Quicksearch:50 share/html/Elements/Tabs:561 share/html/Prefs/Quicksearch.html:79
 msgid "Quick search"
 msgstr "Rýchle vyhľadávanie"
@@ -6367,11 +6176,11 @@ msgstr "Rýchle vyhľadávanie"
 msgid "Quick ticket creation"
 msgstr "Rýchle vytvorenie požiadavky"
 
-#: etc/RT_Config.pm:1237 etc/initialdata:860
+#: etc/RT_Config.pm:1240 etc/initialdata:860
 msgid "QuickCreate"
 msgstr ""
 
-#: etc/RT_Config.pm:1237 etc/initialdata:871
+#: etc/RT_Config.pm:1240 etc/initialdata:871
 msgid "Quicksearch"
 msgstr ""
 
@@ -6484,7 +6293,7 @@ msgstr ""
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr ""
 
-#: etc/RT_Config.pm:2791 etc/RT_Config.pm:2795 etc/RT_Config.pm:2867 etc/RT_Config.pm:2871
+#: etc/RT_Config.pm:2794 etc/RT_Config.pm:2798 etc/RT_Config.pm:2870 etc/RT_Config.pm:2874
 msgid "Re-open"
 msgstr "Znova otvorenie"
 
@@ -6617,7 +6426,7 @@ msgstr ""
 msgid "Refresh this page every %1 minutes."
 msgstr "Obnovenie stránky po %quant(%1,minúte,minútach)."
 
-#: etc/RT_Config.pm:1237 etc/initialdata:879
+#: etc/RT_Config.pm:1240 etc/initialdata:879
 msgid "RefreshHomepage"
 msgstr ""
 
@@ -6625,7 +6434,7 @@ msgstr ""
 msgid "Refused to add link which would create a circular relationship"
 msgstr ""
 
-#: etc/RT_Config.pm:2767 etc/RT_Config.pm:2783 etc/RT_Config.pm:2843 etc/RT_Config.pm:2859
+#: etc/RT_Config.pm:2770 etc/RT_Config.pm:2786 etc/RT_Config.pm:2846 etc/RT_Config.pm:2862
 msgid "Reject"
 msgstr "Vyradiť"
 
@@ -6637,17 +6446,17 @@ msgstr "Zapamätať štandardnú frontu"
 msgid "Reminder"
 msgstr "Pripomienka"
 
-#: lib/RT/Transaction.pm:1159
+#: lib/RT/Transaction.pm:1160
 #. ($subject)
 msgid "Reminder '%1' added"
 msgstr "Pripomienka '%1' pridaná"
 
-#: lib/RT/Transaction.pm:1181
+#: lib/RT/Transaction.pm:1182
 #. ($subject)
 msgid "Reminder '%1' completed"
 msgstr "Pripomienka '%1' kompletná"
 
-#: lib/RT/Transaction.pm:1170
+#: lib/RT/Transaction.pm:1171
 #. ($subject)
 msgid "Reminder '%1' reopened"
 msgstr ""
@@ -6769,7 +6578,7 @@ msgstr ""
 msgid "Residence"
 msgstr ""
 
-#: etc/RT_Config.pm:2763 etc/RT_Config.pm:2779 etc/RT_Config.pm:2839 etc/RT_Config.pm:2855 share/html/Search/Elements/EditFormat:75
+#: etc/RT_Config.pm:2766 etc/RT_Config.pm:2782 etc/RT_Config.pm:2842 etc/RT_Config.pm:2858 share/html/Search/Elements/EditFormat:75
 msgid "Resolve"
 msgstr ""
 
@@ -6839,11 +6648,11 @@ msgstr ""
 msgid "Rights could not be granted for %1"
 msgstr ""
 
-#: share/html/Admin/Elements/EditRightsCategoryTabs:88
+#: share/html/Admin/Elements/EditRightsCategoryTabs:89
 msgid "Rights for Administrators"
 msgstr ""
 
-#: share/html/Admin/Elements/EditRightsCategoryTabs:87
+#: share/html/Admin/Elements/EditRightsCategoryTabs:88
 msgid "Rights for Staff"
 msgstr ""
 
@@ -6857,7 +6666,7 @@ msgstr ""
 msgid "Role group exists already"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3711
+#: lib/RT/Interface/Web.pm:3712
 msgid "Roles"
 msgstr ""
 
@@ -6956,7 +6765,7 @@ msgstr ""
 msgid "Saved searches"
 msgstr "Uložiť vyhľadávania"
 
-#: etc/RT_Config.pm:1237
+#: etc/RT_Config.pm:1240
 msgid "SavedSearches"
 msgstr ""
 
@@ -6974,14 +6783,6 @@ msgstr ""
 msgid "Scrip Created"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Scrip Fields"
-msgstr "Polia skriptu"
-
-#: NOT FOUND IN SOURCE
-msgid "Scrip deleted"
-msgstr "Skript zmazaný"
-
 #: lib/RT/Scrip.pm:315
 msgid "Scrip is not added"
 msgstr ""
@@ -6990,7 +6791,7 @@ msgstr ""
 msgid "Scrips"
 msgstr "Skripty"
 
-#: share/html/Ticket/Update.html:190
+#: share/html/Ticket/Update.html:194
 msgid "Scrips and Recipients"
 msgstr ""
 
@@ -7553,7 +7354,7 @@ msgstr ""
 msgid "Stage"
 msgstr "Fáza"
 
-#: etc/RT_Config.pm:2775 etc/RT_Config.pm:2851
+#: etc/RT_Config.pm:2778 etc/RT_Config.pm:2854
 msgid "Stall"
 msgstr "Odložiť"
 
@@ -7609,7 +7410,7 @@ msgstr ""
 msgid "Status changed from %1 to %2"
 msgstr ""
 
-#: share/html/Admin/Elements/EditRightsCategoryTabs:89
+#: share/html/Admin/Elements/EditRightsCategoryTabs:90
 msgid "Status changes"
 msgstr ""
 
@@ -7749,7 +7550,7 @@ msgstr "Nedeľa"
 msgid "Suspended"
 msgstr "Odročený"
 
-#: lib/RT/Interface/Web.pm:3668
+#: lib/RT/Interface/Web.pm:3669
 msgid "System"
 msgstr ""
 
@@ -7782,7 +7583,7 @@ msgstr ""
 msgid "System error. Right not granted."
 msgstr ""
 
-#: lib/RT/Handle.pm:768
+#: lib/RT/Handle.pm:777
 msgid "SystemRolegroup for internal use"
 msgstr ""
 
@@ -7829,19 +7630,19 @@ msgstr ""
 msgid "Template '%1' not found"
 msgstr ""
 
-#: lib/RT/Template.pm:818
+#: lib/RT/Template.pm:822
 msgid "Template compiles"
 msgstr ""
 
-#: lib/RT/Template.pm:785
+#: lib/RT/Template.pm:789
 msgid "Template does not include Perl code"
 msgstr ""
 
-#: lib/RT/Template.pm:483
+#: lib/RT/Template.pm:487
 msgid "Template is empty"
 msgstr ""
 
-#: lib/RT/Template.pm:317
+#: lib/RT/Template.pm:321
 msgid "Template is in use"
 msgstr ""
 
@@ -7849,15 +7650,15 @@ msgstr ""
 msgid "Template is mandatory argument"
 msgstr ""
 
-#: lib/RT/Template.pm:463
+#: lib/RT/Template.pm:467
 msgid "Template parsed"
 msgstr ""
 
-#: lib/RT/Template.pm:548
+#: lib/RT/Template.pm:552
 msgid "Template parsing error"
 msgstr ""
 
-#: lib/RT/Template.pm:568 lib/RT/Template.pm:796
+#: lib/RT/Template.pm:572 lib/RT/Template.pm:800
 #. ($Text::Template::ERROR)
 msgid "Template parsing error: %1"
 msgstr ""
@@ -7928,7 +7729,7 @@ msgstr ""
 msgid "That's not a numerical id"
 msgstr "Toto nie je číselné id"
 
-#: share/html/SelfService/Display.html:57 share/html/Ticket/Create.html:221 share/html/Ticket/Elements/ShowSummary:52 share/html/m/ticket/create:337 share/html/m/ticket/show:206
+#: share/html/SelfService/Display.html:58 share/html/Ticket/Create.html:221 share/html/Ticket/Elements/ShowSummary:52 share/html/m/ticket/create:337 share/html/m/ticket/show:206
 msgid "The Basics"
 msgstr "Základné"
 
@@ -8061,7 +7862,7 @@ msgstr ""
 msgid "This class does not apply to that object"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1498
+#: lib/RT/CustomField.pm:1493
 msgid "This custom field cannot be added to that object"
 msgstr ""
 
@@ -8129,10 +7930,6 @@ msgstr ""
 msgid "Ticket #%1 relationships graph"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Ticket #%1:"
-msgstr "Požiadavka #%1:"
-
 #: share/html/Approvals/Elements/ShowDependency:69
 #. ($link->BaseObj->Id, $link->BaseObj->Subject)
 msgid "Ticket #%1: %2"
@@ -8156,10 +7953,6 @@ msgstr ""
 msgid "Ticket %1: %2"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "Ticket Custom Fields"
-msgstr "Vlastné polia požiadavky"
-
 #: share/html/Ticket/History.html:48
 #. ($Ticket->Id, $Ticket->Subject)
 msgid "Ticket History # %1 %2"
@@ -8173,7 +7966,7 @@ msgstr "Požiadavka vyriešené"
 msgid "Ticket Search"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1745 lib/RT/CustomField.pm:203 share/html/Admin/Global/CustomFields/index.html:89 share/html/Elements/Tabs:158
+#: lib/RT/CustomField.pm:1740 lib/RT/CustomField.pm:203 share/html/Admin/Global/CustomFields/index.html:89 share/html/Elements/Tabs:158
 msgid "Ticket Transactions"
 msgstr ""
 
@@ -8226,7 +8019,7 @@ msgstr ""
 msgid "TicketSQL search module"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1744 lib/RT/CustomField.pm:202 share/html/Admin/Global/CustomFields/index.html:83 share/html/Elements/Tabs:153 share/html/Elements/Tabs:301 share/html/Elements/Tabs:493 share/html/Elements/Tabs:934
+#: lib/RT/CustomField.pm:1739 lib/RT/CustomField.pm:202 share/html/Admin/Global/CustomFields/index.html:83 share/html/Elements/Tabs:153 share/html/Elements/Tabs:301 share/html/Elements/Tabs:493 share/html/Elements/Tabs:934
 msgid "Tickets"
 msgstr "Požiadavky"
 
@@ -8379,7 +8172,7 @@ msgstr ""
 msgid "Transaction"
 msgstr "Transakcia"
 
-#: lib/RT/Transaction.pm:1148
+#: lib/RT/Transaction.pm:1149
 #. ($self->Data)
 msgid "Transaction %1 purged"
 msgstr ""
@@ -8387,10 +8180,6 @@ msgstr ""
 #: lib/RT/Transaction.pm:175
 msgid "Transaction Created"
 msgstr "Transakcia vytvorená"
-
-#: NOT FOUND IN SOURCE
-msgid "Transaction Custom Fields"
-msgstr "Vlastné polia transakcie"
 
 #: etc/initialdata:302 etc/upgrade/4.1.9/content:34
 msgid "Transaction in HTML"
@@ -8412,7 +8201,7 @@ msgstr ""
 msgid "Transactions"
 msgstr ""
 
-#: lib/RT/Transaction.pm:1217
+#: lib/RT/Transaction.pm:1218
 msgid "Transactions are immutable"
 msgstr ""
 
@@ -8519,7 +8308,7 @@ msgstr ""
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr ""
 
-#: etc/RT_Config.pm:2799 etc/RT_Config.pm:2875
+#: etc/RT_Config.pm:2802 etc/RT_Config.pm:2878
 msgid "Undelete"
 msgstr ""
 
@@ -8583,7 +8372,7 @@ msgstr ""
 msgid "Unowned tickets"
 msgstr "Požiadavky bez vlastníka"
 
-#: lib/RT/Handle.pm:705
+#: lib/RT/Handle.pm:714
 msgid "Unprivileged"
 msgstr "Bez privilégií"
 
@@ -8623,7 +8412,7 @@ msgstr "Aktualizovať diagram"
 msgid "Update This Menu"
 msgstr ""
 
-#: share/html/SelfService/Update.html:96 share/html/Ticket/Update.html:187 share/html/m/ticket/reply:147
+#: share/html/SelfService/Update.html:96 share/html/Ticket/Update.html:189 share/html/m/ticket/reply:147
 msgid "Update Ticket"
 msgstr "Aktualizovať požiadavku"
 
@@ -8653,7 +8442,7 @@ msgstr "Aktualizovať požiadavku"
 msgid "Update ticket #%1"
 msgstr "Aktualizovať požiadavku #%1"
 
-#: share/html/Ticket/Update.html:218 share/html/m/ticket/reply:175
+#: share/html/Ticket/Update.html:227 share/html/m/ticket/reply:175
 #. ($TicketObj->id, $TicketObj->Subject||'')
 #. ($t->id, $t->Subject)
 msgid "Update ticket #%1 (%2)"
@@ -8667,7 +8456,7 @@ msgstr ""
 msgid "UpdateStatus"
 msgstr "AktualizStatusu"
 
-#: lib/RT/CustomField.pm:1829 lib/RT/Tickets.pm:157 share/html/Elements/SelectDateType:56 share/html/Ticket/Elements/ShowDates:79 share/html/m/ticket/show:379
+#: lib/RT/CustomField.pm:1824 lib/RT/Tickets.pm:157 share/html/Elements/SelectDateType:56 share/html/Ticket/Elements/ShowDates:79 share/html/m/ticket/show:379
 msgid "Updated"
 msgstr "Aktualizované"
 
@@ -8755,10 +8544,6 @@ msgstr ""
 msgid "User"
 msgstr "Užívateľ"
 
-#: NOT FOUND IN SOURCE
-msgid "User '%1' could not be found."
-msgstr "Užívateľ '%1' sa nenašiel"
-
 #: share/html/Admin/Elements/ShowKeyInfo:80
 msgid "User (created - expire)"
 msgstr ""
@@ -8767,15 +8552,11 @@ msgstr ""
 msgid "User Defined"
 msgstr "Užívatľom definované"
 
-#: NOT FOUND IN SOURCE
-msgid "User Defined conditions and actions"
-msgstr "Užívateľom definované podmienky a akcie"
-
 #: share/html/Admin/Scrips/Elements/EditCustomCode:48
 msgid "User Defined conditions and results"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3686
+#: lib/RT/Interface/Web.pm:3687
 msgid "User Groups"
 msgstr ""
 
@@ -8842,7 +8623,7 @@ msgstr "Meno užív."
 msgid "Username format"
 msgstr "Formát užív. mena"
 
-#: lib/RT/CustomField.pm:1746 lib/RT/CustomField.pm:204 lib/RT/Interface/Web.pm:3739 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:500 share/html/Elements/Tabs:67
+#: lib/RT/CustomField.pm:1741 lib/RT/CustomField.pm:204 lib/RT/Interface/Web.pm:3740 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:500 share/html/Elements/Tabs:67
 msgid "Users"
 msgstr "Užívatelia"
 
@@ -8975,7 +8756,7 @@ msgstr "Strážci"
 msgid "We are able to find your database and connect as the DBA.  You can click on 'Customize Basics' to continue customizing RT."
 msgstr ""
 
-#: lib/RT/CustomField.pm:1057 lib/RT/CustomField.pm:1859
+#: lib/RT/CustomField.pm:1854
 msgid "We can't currently render as a List when basing categories on another custom field.  Please use another render type."
 msgstr ""
 
@@ -9158,7 +8939,7 @@ msgid "You are not authorized to use RT."
 msgstr ""
 
 #: share/html/Ticket/Elements/ShowUpdateStatus:54
-#. (RT->Config->Get('WebPath') ."/Ticket/Display.html?id=". $Ticket->id. "#txn-".$txn->id, RT->Config->Get('WebPath') ."/Ticket/Display.html?id=". $Ticket->id ."&MarkAsSeen=1&Anchor=txn-" . $txn->id)
+#. (RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id. "#txn-".$txn->id, RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id ."&MarkAsSeen=1&Anchor=txn-" . $txn->id)
 msgid "You can <a href=\"%1\">jump to the first unread message</a> or <a href=\"%2\">jump to the first unread message and mark all messages as seen</a>."
 msgstr ""
 
@@ -9220,17 +9001,13 @@ msgstr ""
 msgid "You have enabled encryption support but have not set a correspondence address for this queue."
 msgstr ""
 
-#: share/html/SelfService/Display.html:111
+#: share/html/SelfService/Display.html:112
 msgid "You have no permission to create tickets in that queue."
 msgstr ""
 
 #: share/html/Elements/AddLinks:60
 msgid "You may enter links to Articles as \"a:###\", where ### represents the number of the Article."
 msgstr "Môžete zadať odkazy na články ako \"a:###\", kde ### predstavuje číslo článku"
-
-#: NOT FOUND IN SOURCE
-msgid "You may not create requests in that queue."
-msgstr "Nemôžete vytvárať požiadavky v tejto fronte"
 
 #: share/html/Install/Basics.html:85
 msgid "You must enter an Administrative password"
@@ -9391,10 +9168,6 @@ msgstr ""
 msgid "create a ticket"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "custom field '%1'"
-msgstr "vlastné pole '%1'"
-
 #: share/html/Dashboards/Subscription.html:96
 msgid "daily"
 msgstr "denne"
@@ -9494,10 +9267,6 @@ msgstr ""
 msgid "group '%1'"
 msgstr "skupina '%1'"
 
-#: NOT FOUND IN SOURCE
-msgid "hours"
-msgstr "hod."
-
 #: lib/RT/Date.pm:121 share/html/Elements/Tabs:838
 msgid "iCal"
 msgstr ""
@@ -9574,10 +9343,6 @@ msgstr "obsahuje"
 msgid "maximum depth"
 msgstr "maximálna hĺbka"
 
-#: NOT FOUND IN SOURCE
-msgid "min"
-msgstr "min"
-
 #: share/html/Tools/MyDay.html:62
 msgid "minutes"
 msgstr "minút"
@@ -9607,10 +9372,6 @@ msgstr "mesačne"
 msgid "monthly (day %1) at %2"
 msgstr "mesačne (deň %1) do %2"
 
-#: NOT FOUND IN SOURCE
-msgid "months"
-msgstr "mesiace"
-
 #: share/html/Admin/Elements/ShowKeyInfo:72 share/html/Admin/Elements/ShowKeyInfo:75 share/html/Admin/Elements/ShowKeyInfo:82 share/html/Admin/Elements/ShowKeyInfo:83 share/html/Dashboards/Subscription.html:137
 msgid "never"
 msgstr "nikdy"
@@ -9622,10 +9383,6 @@ msgstr "nový"
 #: share/html/Elements/RT__Group/ColumnMap:60 share/html/Elements/RT__Group/ColumnMap:68 share/html/Elements/RT__Queue/ColumnMap:77 share/html/Elements/RT__Queue/ColumnMap:81
 msgid "no"
 msgstr "nie"
-
-#: NOT FOUND IN SOURCE
-msgid "no name"
-msgstr "bez názvu"
 
 #: lib/RT/Crypt/GnuPG.pm:1743 share/html/Admin/Elements/EditQueueWatchers:50 share/html/Dashboards/Subscription.html:73 share/html/Ticket/Elements/EditWatchers:51
 msgid "none"
@@ -9708,10 +9465,6 @@ msgstr "sprava doľava"
 msgid "search"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "sec"
-msgstr "sek"
-
 #: share/html/Admin/Tools/Shredder/index.html:179
 msgid "see object list below"
 msgstr "pozri nižšie uvedený zoznam objektov"
@@ -9731,10 +9484,6 @@ msgstr "pozastavené"
 #: share/html/Admin/Tools/Queries.html:88
 msgid "statement"
 msgstr "vyhlásenie"
-
-#: NOT FOUND IN SOURCE
-msgid "summary"
-msgstr "súhrn"
 
 #: share/html/Prefs/MyRT.html:86
 msgid "summary rows"
@@ -9842,10 +9591,6 @@ msgstr "na ktorom portebude váš webový server počúvať, napr. 8080"
 #: share/html/Elements/ShowTransactionAttachments:64
 msgid "with headers"
 msgstr "s hlavičkami"
-
-#: NOT FOUND IN SOURCE
-msgid "years"
-msgstr "roky"
 
 #: share/html/Elements/RT__Group/ColumnMap:60 share/html/Elements/RT__Group/ColumnMap:68 share/html/Elements/RT__Queue/ColumnMap:77 share/html/Elements/RT__Queue/ColumnMap:81
 msgid "yes"
