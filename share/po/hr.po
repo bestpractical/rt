@@ -516,7 +516,7 @@ msgstr "%1k"
 
 #: lib/RT/Date.pm:363
 msgid "%1m"
-msgstr "1%m"
+msgstr "%1m"
 
 #: lib/RT/Date.pm:362 share/html/Admin/Tools/Queries.html:110 share/html/Admin/Tools/Queries.html:81
 #. (sprintf('%.4f', $duration))

@@ -1772,7 +1772,7 @@ msgstr "No s'ha pogut canviar el propietari: %1"
 #: share/html/Admin/CustomFields/Modify.html:184 share/html/Admin/Elements/EditCustomField:116
 #. ($msg)
 msgid "Could not create CustomField: %1"
-msgstr "No s'ha pogut crear el camp personalitzat"
+msgstr "No s'ha pogut crear el camp personalitzat: %1"
 
 #: lib/RT/Group.pm:419 lib/RT/Group.pm:426
 msgid "Could not create group"
@@ -8455,7 +8455,7 @@ msgstr "No s'ha pogut afegir la pertinença al tema"
 #: lib/RT/Article.pm:485
 #. ($t->TopicObj->Name)
 msgid "Unable to delete topic membership in %1"
-msgstr "No s'ha pogut esborrar la pertinença al tema"
+msgstr "No s'ha pogut esborrar la pertinença al tema %1"
 
 #: share/html/Search/Elements/EditSearches:292
 msgid "Unable to determine object type or id"

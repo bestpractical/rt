@@ -4984,7 +4984,7 @@ msgstr "Изменить заявки"
 #: share/html/Admin/Articles/Classes/Topics.html:59
 #. ($ClassObj->Name)
 msgid "Modify topic for %1"
-msgstr "Изменить тему для $1"
+msgstr "Изменить тему для %1"
 
 #: lib/RT/Class.pm:96
 msgid "Modify topic hierarchy associated with this class"

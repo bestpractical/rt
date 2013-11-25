@@ -4965,7 +4965,7 @@ msgstr ""
 #: share/html/Ticket/ModifyPeople.html:60
 #. ($Ticket->Id)
 msgid "Modify who receives mail for ticket #%1"
-msgstr "Upraviť kto prijma poštu pre požiadavku"
+msgstr "Upraviť kto prijma poštu pre požiadavku #%1"
 
 #: share/html/Admin/Tools/Configuration.html:238
 msgid "Module"

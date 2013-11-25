@@ -7440,7 +7440,7 @@ msgstr "Picotador"
 #: share/html/Admin/Tools/Shredder/Elements/Error/NoStorage:55
 #. ($path_tag)
 msgid "Shredder needs a directory to write dumps to. Please ensure that the directory %1 exists and that it is writable by your web server."
-msgstr "O picotador precisa de um diretório para gravar seu lixo. Por favor, verifique se este diretório existe e é gravável pelo seu servidor WEB."
+msgstr "O picotador precisa de um diretório para gravar seu lixo. Por favor, verifique se este diretório (%1) existe e é gravável pelo seu servidor WEB."
 
 #: share/html/Dashboards/Queries.html:181
 msgid "Sidebar"

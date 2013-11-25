@@ -8548,7 +8548,7 @@ msgstr "Ukjent felt: %1"
 #: share/html/Search/Simple.html:81
 #. ($status_str)
 msgid "Unless you specify a specific status, only tickets with active statuses (%1) are searched."
-msgstr "Med mindre du spesifiserer en spesifikk status, blir bare saker med aktive statuser søkt på."
+msgstr "Med mindre du spesifiserer en spesifikk status, blir bare saker med aktive statuser (%1) søkt på."
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:65
 msgid "Unlimit"

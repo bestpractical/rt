@@ -344,7 +344,7 @@ msgstr ""
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
 #. ($email->format, loc(substr($field, 6)))
 msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
-msgstr "Η %1 είναι η διεύθυνση στην οποία το RT λαμβάνει αλληλογραφία. Η προσθήκη της σαν '"
+msgstr "Η %1 είναι η διεύθυνση στην οποία το RT λαμβάνει αλληλογραφία. Η προσθήκη της σαν '%2'"
 
 #: lib/RT/Ticket.pm:673
 #. ($principal->Object->Name,                         $self->loc($args{'Type'}))
@@ -1969,12 +1969,12 @@ msgstr "Δεν ήταν δυνατή η φόρτωση της ομάδας %1"
 
 #: lib/RT/Link.pm:267
 msgid "Couldn't load link"
-msgstr "Δεν ήταν δυνατή η φόρτωση του συνδέσμου %1"
+msgstr "Δεν ήταν δυνατή η φόρτωση του συνδέσμου"
 
 #: lib/RT/Link.pm:240
 #. ($msg)
 msgid "Couldn't load link: %1"
-msgstr ""
+msgstr "Δεν ήταν δυνατή η φόρτωση του συνδέσμου: %1"
 
 #: share/html/Admin/Articles/Classes/CustomFields.html:54 share/html/Admin/Queues/CustomFields.html:56 share/html/Admin/Users/CustomFields.html:56
 #. ($id)
@@ -2666,7 +2666,7 @@ msgstr "Διαγραφή αποθηκευμένης αναζήτησης"
 #: share/html/Articles/Article/Search.html:233
 #. ($searchname)
 msgid "Deleted search %1"
-msgstr "Διαγραφή αποθηκευμένης αναζήτησης"
+msgstr "Διαγραφή αποθηκευμένης αναζήτησης %1"
 
 #: lib/RT/Queue.pm:230
 msgid "Deleting this object would break referential integrity"
@@ -2759,7 +2759,7 @@ msgstr "Εμφάνιση Λίστας Ελέγχου Πρόσβασης"
 #: share/html/SelfService/Article/Display.html:48
 #. ($id)
 msgid "Display Article %1"
-msgstr "Εμφάνιση Άρθρου"
+msgstr "Εμφάνιση Άρθρου %1"
 
 #: share/html/Search/Elements/DisplayOptions:51
 msgid "Display Columns"
@@ -5282,7 +5282,7 @@ msgstr "Το %1 δεν φορτώθηκε"
 #: share/html/SelfService/Article/Search.html:66
 #. ($Articles_Content)
 msgid "No Articles match %1"
-msgstr "Δεν βρέθηκαν Άρθρα που να ταυτίζονται με #1"
+msgstr "Δεν βρέθηκαν Άρθρα που να ταυτίζονται με %1"
 
 #: share/html/Admin/Articles/Classes/GroupRights.html:62 share/html/Admin/Articles/Classes/UserRights.html:61 share/html/Admin/CustomFields/UserRights.html:62
 msgid "No Class defined"

@@ -1720,7 +1720,7 @@ msgstr "Prisijungta sėkmingai"
 #: share/html/Errors/WebRemoteUser/Wrapper:67
 #. (qq[<a href="mailto:$owner">], $owner, '</a>')
 msgid "Contact your RT administrator via %1email to %2%3."
-msgstr "Kreipkitės į RT administratorių  %el. laišku dėl %2%3."
+msgstr "Kreipkitės į RT administratorių  %1el. laišku dėl %2%3."
 
 #: share/html/Errors/WebRemoteUser/Wrapper:69
 msgid "Contact your RT administrator."
@@ -9160,7 +9160,7 @@ msgstr "Jūs pageidaujate užšifruoti išeinančius laiškus, bet ne viskas ger
 
 #: share/html/Errors/WebRemoteUser/NoRemoteUser:49
 msgid "You are not authorized to use RT."
-msgstr "Jūs (%1) neturite teisių naudoti RT."
+msgstr "Jūs neturite teisių naudoti RT."
 
 #: share/html/Ticket/Elements/ShowUpdateStatus:54
 #. (RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id. "#txn-".$txn->id, RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id ."&MarkAsSeen=1&Anchor=txn-" . $txn->id)

@@ -6809,7 +6809,7 @@ msgstr "Requêtes SQL"
 #: share/html/Admin/Elements/LoggingSummary:80
 #. ($m->interp->apply_escapes($level, 'h'), qq[<strong><a href="$url">], '</a></strong>')
 msgid "SQL queries are logged at the %1 level and also available in the %2query tool%3."
-msgstr "Les requêtes SQL sont écrites au niveau %1 et également disponibles dans l'%1outil de requêtes%2."
+msgstr "Les requêtes SQL sont écrites au niveau %1 et également disponibles dans l'%2outil de requêtes%3."
 
 #: share/html/Admin/Elements/LoggingSummary:82
 msgid "SQL queries are not logged."

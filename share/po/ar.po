@@ -95,7 +95,7 @@ msgstr "%1 %2 تغيرت إلى %3"
 #. ($field, $old)
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
 msgid "%1 %2 deleted"
-msgstr "تم حذف %1 2%"
+msgstr "تم حذف %2 %1"
 
 #: share/html/Widgets/SavedSearch:140
 #. (loc($self->{SearchType}), $self->{CurrentSearch}{Object}->Description)
