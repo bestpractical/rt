@@ -173,7 +173,7 @@ while (my $q = $queues->Next) {
 
         if (not $value) {
             my @other = grep {$_ ne $global{$setting}} @{$seen{lc $q->Name}{$action} || []};
-            warn "CorrespondAddress not set on $qname, but in aliases as "
+            warn "$setting not set on $qname, but in aliases as "
                 .join(" and ", @other) . "\n" if @other;
             next;
         }
