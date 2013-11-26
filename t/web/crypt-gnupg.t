@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use RT::Test::GnuPG
-  tests         => 102,
+  tests         => 104,
   gnupg_options => {
     passphrase    => 'recipient',
     'trust-model' => 'always',
@@ -444,5 +444,7 @@ like($content, qr/KR-general\@example.com-K/, "KeyRequestors does not issue no-p
 like($content, qr/KR-nokey\@example.com \(no pubkey!\)-K/, "KeyRequestors DOES issue no-pubkey warning for nokey\@example.com");
 
 $m->next_warning_like(qr/public key not found/);
+$m->next_warning_like(qr/above error may result from an unconfigured RT\/GPG/);
 $m->next_warning_like(qr/public key not found/);
+$m->next_warning_like(qr/above error may result from an unconfigured RT\/GPG/);
 $m->no_leftover_warnings_ok;

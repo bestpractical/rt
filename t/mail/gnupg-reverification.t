@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test::GnuPG tests => 216, gnupg_options => { passphrase => 'rt-test' };
+use RT::Test::GnuPG tests => 232, gnupg_options => { passphrase => 'rt-test' };
 
 diag "load Everyone group";
 my $everyone;
@@ -62,10 +62,12 @@ foreach my $file ( @files ) {
     $m->content_like(qr/This is .*ID:$eid/ims, "$eid: content is there and message is decrypted");
 
     $m->next_warning_like(qr/public key not found/);
+    $m->next_warning_like(qr/above error may result from an unconfigured RT\/GPG/);
 
     # some mails contain multiple signatures
     if ($eid == 5 || $eid == 17 || $eid == 18) {
         $m->next_warning_like(qr/public key not found/);
+        $m->next_warning_like(qr/above error may result from an unconfigured RT\/GPG/);
     }
 
     $m->no_leftover_warnings_ok;

@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test::GnuPG tests => 86, gnupg_options => { passphrase => 'rt-test' };
+use RT::Test::GnuPG tests => 88, gnupg_options => { passphrase => 'rt-test' };
 
 use RT::Action::SendEmail;
 
@@ -82,7 +82,10 @@ diag "check that things don't work if there is no key";
     my @mail = RT::Test->fetch_caught_mails;
     ok !@mail, 'there are no outgoing emails';
 
-    $m->next_warning_like(qr/public key not found/) for 1 .. 2;
+    for (1 .. 2) {
+        $m->next_warning_like(qr/public key not found/);
+        $m->next_warning_like(qr/above error may result from an unconfigured RT\/GPG/);
+    }
     $m->no_leftover_warnings_ok;
 }
 
