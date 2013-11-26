@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 98;
+use RT::Test nodata => 1, tests => 100;
 use RT::Ticket;
 
 my $q = RT::Test->load_or_create_queue( Name => 'Regression' );
@@ -70,6 +70,14 @@ $total += @tickets;
     is($tix->Count, $total, "found $total tickets");
 }
 run_tests();
+
+# make sure search by id is on LocalXXX columns
+{
+    my $tickets = RT::Tickets->new( RT->SystemUser );
+    $tickets->FromSQL('MemberOf = '. $tickets[0]->id);
+    like $tickets->BuildSelectQuery, qr/LocalBase/;
+    like $tickets->BuildSelectQuery, qr/LocalTarget/;
+}
 
 # another set with tests of combinations searches
 @tickets = RT::Test->create_tickets(
