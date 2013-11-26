@@ -50,5 +50,5 @@
 
 <![endif]-->
 <!--[if lt IE 7]>
-<link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/web2/msie6.css" type="text/css" media="all" />
+<link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/ballard/msie6.css" type="text/css" media="all" />
 <![endif]-->
