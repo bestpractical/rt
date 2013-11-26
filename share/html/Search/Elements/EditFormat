@@ -59,7 +59,7 @@
 <td valign="top"><select size="6" name="SelectDisplayColumns" multiple="multiple">
 % my %seen;
 % foreach my $field ( grep !$seen{lc $_}++, @$AvailableColumns) {
-<option value="<% $field %>"><% loc($field) %></option>
+<option value="<% $field %>"><% $field =~ /^CustomField\.{(.*)}$/ ? $1 : loc($field) %></option>
 % }
 </select></td>
 <td>
@@ -106,7 +106,7 @@
 <select size="4" name="CurrentDisplayColumns">
 % my $i=0;
 % foreach my $field ( @$CurrentFormat ) {
-<option value="<% $i++ %>><% $field->{Column} %>"><% loc( $field->{Column} ) %></option>
+<option value="<% $i++ %>><% $field->{Column} %>"><% $field->{Column} =~ /^CustomField\.{(.*)}$/ ? $1 : loc( $field->{Column} ) %></option>
 % }
 </select>
 <br />
