@@ -114,6 +114,7 @@ my @lines = (
                 Owner => loc('Owner'),
                 Creator => loc('Creator'),
                 LastUpdatedBy => loc('Last updated by'),
+                UpdatedBy => loc('Updated by'),
             ],
         },
         Op => {
