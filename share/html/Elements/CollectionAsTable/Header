@@ -95,6 +95,7 @@ foreach my $col ( @Format ) {
         if $span;
     $m->out('>');
 
+    my $loc_title;
     # if title is not defined then use defined attribute or last
     # one we saw in the format
     unless ( defined $col->{'title'} ) {
@@ -109,8 +110,9 @@ foreach my $col ( @Format ) {
         # in case title is not defined in ColumnMap 
         # the following regex changes $attr like from "ReferredToBy" to "Referred To By"
         $title = join ' ', split /(?<=[a-z])(?=[A-Z])/, $attr unless defined $title;
+        $loc_title = $attr =~ /^CustomField\.{.*}$/ ? $title : loc($title);
     } else {
-        $title = $m->comp('/Elements/ScrubHTML', Content => $title);
+        $loc_title = loc($m->comp('/Elements/ScrubHTML', Content => $title));
     }
 
     if ( $AllowSorting and $col->{'attribute'}
@@ -134,11 +136,11 @@ foreach my $col ( @Format ) {
                 %$generic_query_args,
                 OrderBy => $attr, Order => $new_order
             ), 'h')
-            . '">'. loc($title) .'</a>'
+            . '">'. $loc_title .'</a>'
         );
     }
     else {
-        $m->out( loc($title) );
+        $m->out( $loc_title );
     }
     $m->out('</th>');
 }
