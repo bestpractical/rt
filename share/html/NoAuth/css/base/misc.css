@@ -111,3 +111,7 @@ fieldset.cfedit {
     font-family: arial,helvetica,sans-serif !important;
 }
 
+textarea.messagebox, #cke_Content, #cke_UpdateContent {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
