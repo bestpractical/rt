@@ -24,14 +24,25 @@ sub add_description_to_all_scrips {
 
 sub gen_scrip_description {
     my $scrip = shift;
-    my $condition = $scrip->ConditionObj->Name
+
+    my $condition;
+    eval{
+      $condition = $scrip->ConditionObj->Name
         || $scrip->ConditionObj->Description
-        || ('On Condition #'. $scrip->Condition);
+	|| ('On Condition #'. $scrip->Condition);
+    };
+
+    if ($@){
+      print STDERR $@;
+      print STDERR "Reference to missing scrip condition found. If you have ScripCondition = 0 in the Scrips table, update with a real condition number.\n";
+      $condition = 'On undefined Condition # 0';
+    }
+
     my $action = $scrip->ActionObj->Name
         || $scrip->ActionObj->Description
         || ('Run Action #'. $scrip->Action);
     return join ' ', $condition, $action;
-}
+  }
 }
 
 1;
