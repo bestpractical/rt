@@ -241,7 +241,7 @@ foreach my $arg ( keys %ARGS ) {
             $value = "'$value'";
         }
 
-        if ($keyword =~ s/(['\\])/\\$1/g or $keyword =~ /\s/) {
+        if ($keyword =~ s/(['\\])/\\$1/g or $keyword =~ /[^{}\w\.]/) {
             $keyword = "'$keyword'";
         }
 
