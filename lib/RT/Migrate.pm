@@ -176,11 +176,20 @@ sub progress {
 sub setup_logging {
     my ($dir, $file) = @_;
 
-    $RT::LogToScreen    = 'warning';
-    $RT::LogToFile      = 'warning';
-    $RT::LogDir         = $dir;
-    $RT::LogToFileNamed = $file;
-    $RT::LogStackTraces = 'error';
+
+    if ( RT->can('Config') && RT->Config->can('Set') ) {
+        RT->Config->Set(LogToScreen    => 'warning');
+        RT->Config->Set(LogToFile      => 'warning');
+        RT->Config->Set(LogDir         => $dir);
+        RT->Config->Set(LogToFileNamed => $file);
+        RT->Config->Set(LogStackTraces => 'error');
+    } else { # running before 3.8
+        $RT::LogToScreen    = 'warning';
+        $RT::LogToFile      = 'warning';
+        $RT::LogDir         = $dir;
+        $RT::LogToFileNamed = $file;
+        $RT::LogStackTraces = 'error';
+    }
 
     undef $RT::Logger;
     RT->InitLogging();
