@@ -348,7 +348,7 @@ dirs:
 
 install: testdeps config-install dirs files-install fixperms instruct
 
-files-install: libs-install etc-install config-install bin-install sbin-install html-install local-install doc-install font-install po-install
+files-install: libs-install etc-install config-install bin-install sbin-install html-install doc-install font-install po-install
 
 config-install:
 @COMMENT_INPLACE_LAYOUT@	$(INSTALL) -m 0755 -o $(BIN_OWNER) -g $(RTGROUP) -d $(DESTDIR)$(CONFIG_FILE_PATH)
@@ -458,25 +458,6 @@ bin-install:
 @COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -o $(BIN_OWNER) -g $(RTGROUP) -m 0755 "bin/$$file" "$(DESTDIR)$(RT_BIN_PATH)/" ; \
 @COMMENT_INPLACE_LAYOUT@	done
 
-local-install:
-	-( cd local/html && find . -type d -print ) | while read dir ; do \
-	    $(INSTALL) -m 0755 -d "$(DESTDIR)$(MASON_LOCAL_HTML_PATH)/$$dir" ; \
-	done
-	-( cd local/html && find . -type f -print ) | while read file ; do \
-	    $(INSTALL) -m 0644 "local/html/$$file" "$(DESTDIR)$(MASON_LOCAL_HTML_PATH)/$$file" ; \
-	done
-	-( cd local/po && find . -type d -print ) | while read dir ; do \
-	    $(INSTALL) -m 0755 -d "$(DESTDIR)$(LOCAL_LEXICON_PATH)/$$dir" ; \
-	done
-	-( cd local/po && find . -type f -print ) | while read file ; do \
-	    $(INSTALL) -m 0644 "local/po/$$file" "$(DESTDIR)$(LOCAL_LEXICON_PATH)/$$file" ; \
-	done
-	-( cd local/etc && find . -type d -print ) | while read dir ; do \
-	    $(INSTALL) -m 0755 -d "$(DESTDIR)$(LOCAL_ETC_PATH)/$$dir" ; \
-	done
-	-( cd local/etc && find . -type f -print ) | while read file ; do \
-	    $(INSTALL) -m 0644 "etc/$$file" "$(DESTDIR)$(LOCAL_ETC_PATH)/$$file" ; \
-	done
 
 
 regenerate-catalogs:
