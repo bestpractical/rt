@@ -525,7 +525,7 @@ s!(?<=Your ticket has been (?:approved|rejected) by { eval { )\$Approval->OwnerO
         'RT::Group' => sub {
             my ($ref) = @_;
             $ref->{Name} = $ref->{Type}
-                if $ref->Domain =~ /^(ACLEquivalence|SystemInternal|.*-Role)$/;
+                if $ref->{Domain} =~ /^(ACLEquivalence|SystemInternal|.*-Role)$/;
         },
     },
 
