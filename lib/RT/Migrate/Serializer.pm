@@ -112,6 +112,9 @@ sub Metadata {
     # Determine the highest upgrade step that we run
     my @versions = ($RT::VERSION, keys %RT::Migrate::Incremental::UPGRADES);
     my ($max) = reverse sort cmp_version @versions;
+    # we don't want to run upgrades to 4.2.x if we're running
+    # the serializier on an 4.0 instance.
+    $max = $RT::VERSION unless $self->{Incremental};
 
     return {
         Format       => "0.8",
