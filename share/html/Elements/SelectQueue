@@ -99,7 +99,21 @@ if ( defined $session{$cache_key} &&
 if ( not defined $session{$cache_key} and not $Lite ) {
     my $q = RT::Queues->new($session{'CurrentUser'});
     $q->UnLimit;
-    
+
+    if ( $Default ) {
+        my $d = RT::Queue->new($session{'CurrentUser'});
+        $d->Load($Default);
+        unless ( $d->CurrentUserHasRight('SeeQueue') ) {
+            if ( $d->id ) {
+                push @{$session{$cache_key}{queues}}, {
+                    Id          => $d->id,
+                    Name        => '#' . $d->id,
+                    Description => '#' . $d->id,
+                };
+            }
+        }
+    }
+
     while (my $queue = $q->Next) {
         if ($ShowAllQueues || $queue->CurrentUserHasRight($CheckQueueRight)) {
             push @{$session{$cache_key}{queues}}, {
