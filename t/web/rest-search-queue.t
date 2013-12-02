@@ -2,9 +2,9 @@ use strict;
 use warnings;
 use RT::Test tests => undef;
 
-my $queue_foo = RT::Test->load_or_create_queue( Name => 'foo' );
-my $queue_bar = RT::Test->load_or_create_queue( Name => 'bar' );
-my $queue_baz = RT::Test->load_or_create_queue( Name => 'baz' );
+my $queue_foo = RT::Test->load_or_create_queue( Name => 'Foo' );
+my $queue_bar = RT::Test->load_or_create_queue( Name => 'Bar' );
+my $queue_baz = RT::Test->load_or_create_queue( Name => 'Baz' );
 $queue_baz->SetDisabled(1);
 
 my ( $baseurl, $m ) = RT::Test->started_ok;
@@ -42,37 +42,37 @@ search_queues_ok(
 
 search_queues_ok(
     { query => '', orderby => 'id' },
-    [ '1: General', $queue_foo->id . ': foo', $queue_bar->id . ': bar', ],
+    [ '1: General', $queue_foo->id . ': Foo', $queue_bar->id . ': Bar', ],
     'order by id'
 );
 
 search_queues_ok(
     { query => '', orderby => 'name' },
-    [ $queue_bar->id . ': bar', $queue_foo->id . ': foo', '1: General', ],
+    [ $queue_bar->id . ': Bar', $queue_foo->id . ': Foo', '1: General', ],
     'order by name'
 );
 
 search_queues_ok(
     { query => '', orderby => '+name' },
-    [ $queue_bar->id . ': bar', $queue_foo->id . ': foo', '1: General', ],
+    [ $queue_bar->id . ': Bar', $queue_foo->id . ': Foo', '1: General', ],
     'order by +name'
 );
 
 search_queues_ok(
     { query => '', orderby => '-name' },
-    [ '1: General', $queue_foo->id . ': foo', $queue_bar->id . ': bar', ],
+    [ '1: General', $queue_foo->id . ': Foo', $queue_bar->id . ': Bar', ],
     'order by -name'
 );
 
 search_queues_ok(
     { query => 'Disabled = 0', orderby => 'id' },
-    [ '1: General', $queue_foo->id . ': foo', $queue_bar->id . ': bar', ],
+    [ '1: General', $queue_foo->id . ': Foo', $queue_bar->id . ': Bar', ],
     'enabled queues'
 );
 
 search_queues_ok(
     { query => 'Disabled = 1', orderby => 'id' },
-    [ $queue_baz->id . ': baz', ],
+    [ $queue_baz->id . ': Baz', ],
     'disabled queues'
 );
 
