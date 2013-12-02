@@ -660,14 +660,22 @@ sub _DowngradeFromHTML {
 
     $orig_entity->head->mime_attr( "Content-Type" => 'text/html' );
     $orig_entity->head->mime_attr( "Content-Type.charset" => 'utf-8' );
-    $orig_entity->make_multipart('alternative', Force => 1);
 
     require Encode;
-    $new_entity->bodyhandle(MIME::Body::InCore->new(
+    my $html = eval {
+        my $body = $new_entity->bodyhandle->as_string;
         # need to decode_utf8, see the doc of MIMEObj method
-        \(RT::Interface::Email::ConvertHTMLToText(Encode::decode_utf8($new_entity->bodyhandle->as_string)))
-    ));
+        $body = Encode::decode_utf8( $body );
+        RT::Interface::Email::ConvertHTMLToText( $body );
+    };
+    if ($@) {
+        $RT::Logger->error("Failed to downgrade HTML to plain text: $@");
+        return;
+    }
 
+    $new_entity->bodyhandle(MIME::Body::InCore->new( \$html ));
+
+    $orig_entity->make_multipart('alternative', Force => 1);
     $orig_entity->add_part($new_entity, 0); # plain comes before html
     $self->{MIMEObj} = $orig_entity;
 
