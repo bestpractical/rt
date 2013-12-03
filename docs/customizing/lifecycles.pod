@@ -340,7 +340,7 @@ to experiment.
             # All the appropriate order statuses
             initial         => [ 'pending' ],
             active          => [ 'processing', 'delivery' ],
-            inactive        => [ 'delivered', 'returned', 'declined' ],
+            inactive        => [ 'delivered', 'returned', 'declined', 'deleted' ],
 
             # Default order statuses for certain actions
             defaults => {
