@@ -131,14 +131,24 @@ jQuery(function($) {
                            .text(v[0]));
     });
 
-    $("style#sitecss").text($('#user_css').val());
+    function update_sitecss(text) {
+        if (!text)
+            text = $('#user_css').val();
+
+        // IE 8 doesn't let us update the innerHTML of <style> tags (with jQuery.text())
+        // see: http://stackoverflow.com/questions/2692770/style-style-textcss-appendtohead-does-not-work-in-ie/2692861#2692861
+        $("style#sitecss").remove();
+        $("<style id='sitecss' type='text/css' media='all'>" + text + "</style>").appendTo('head');
+    }
+
+    update_sitecss();
     $('#try').click(function() {
-        $("style#sitecss").text($('#user_css').val());
+        update_sitecss();
     });
 
     $('#reset').click(function() {
         setTimeout(function() {
-          $("style#sitecss").text($('#user_css').val());
+            update_sitecss();
         }, 1000);
     });
 
@@ -174,7 +184,7 @@ jQuery(function($) {
           }
       }
       $('#user_css').val(css);
-      $("style#sitecss").text(css);
+      update_sitecss(css);
     }
 
     $('#color-picker').farbtastic(function(color){ change_color(color, this.hsl[2] > <% $text_threshold %> ? '#000' : '#fff') });
