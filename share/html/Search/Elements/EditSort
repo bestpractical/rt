@@ -68,7 +68,7 @@
 % if (defined $OrderBy[$o] and $fieldval eq $OrderBy[$o]) {
 selected="selected"
 % }
-><% loc($field) %></option>
+><% $field =~ /^(?:CustomField|CF)\./ ? $field : loc($field) %></option>
 % }
 </select>
 <select name="Order">
