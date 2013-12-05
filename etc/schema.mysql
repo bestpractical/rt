@@ -271,8 +271,6 @@ CREATE TABLE Tickets (
   IsMerged int2 NULL DEFAULT NULL,
   Queue integer NOT NULL DEFAULT 0  ,
   Type varchar(16) CHARACTER SET ascii NULL  ,
-  IssueStatement integer NOT NULL DEFAULT 0  ,
-  Resolution integer NOT NULL DEFAULT 0  ,
   Owner integer NOT NULL DEFAULT 0  ,
   Subject varchar(200) NULL DEFAULT '[no subject]' ,
   InitialPriority integer NOT NULL DEFAULT 0  ,

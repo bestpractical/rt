@@ -260,8 +260,6 @@ CREATE TABLE Tickets (
         IsMerged                NUMBER(11,0) DEFAULT NULL NULL,
         Queue                   NUMBER(11,0) DEFAULT 0 NOT NULL,
         Type                    VARCHAR2(16),           
-        IssueStatement          NUMBER(11,0) DEFAULT 0 NOT NULL,
-        Resolution              NUMBER(11,0) DEFAULT 0 NOT NULL,
         Owner                   NUMBER(11,0) DEFAULT 0 NOT NULL,
         Subject                 VARCHAR2(200) DEFAULT '[no subject]', 
         InitialPriority         NUMBER(11,0) DEFAULT 0 NOT NULL,

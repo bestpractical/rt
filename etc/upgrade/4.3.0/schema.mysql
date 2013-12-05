@@ -1,0 +1,3 @@
+ALTER TABLE Tickets
+  DROP COLUMN IssueStatement,
+  DROP COLUMN Resolution;

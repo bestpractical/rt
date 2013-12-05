@@ -290,8 +290,6 @@ CREATE TABLE Tickets (
   IsMerged int2 NULL DEFAULT NULL,
   Queue integer NULL DEFAULT 0 ,
   Type varchar(16) collate NOCASE NULL  ,
-  IssueStatement integer NULL DEFAULT 0 ,
-  Resolution integer NULL DEFAULT 0 ,
   Owner integer NULL DEFAULT 0 ,
   Subject varchar(200) collate NOCASE NULL DEFAULT '[no subject]' ,
   InitialPriority integer NULL DEFAULT 0 ,
