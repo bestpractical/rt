@@ -68,7 +68,6 @@ CREATE INDEX Links4 ON Links(Type,LocalBase);
 CREATE TABLE Principals (
         id INTEGER PRIMARY KEY,
         PrincipalType VARCHAR(16) collate NOCASE not null,
-        ObjectId integer,
         Disabled int2 NOT NULL DEFAULT 0 
         
 ) ;

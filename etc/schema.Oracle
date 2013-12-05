@@ -66,11 +66,8 @@ CREATE TABLE Principals (
         id              NUMBER(11,0) 
                 CONSTRAINT Principals_Key PRIMARY KEY,
         PrincipalType   VARCHAR2(16),
-        ObjectId        NUMBER(11,0),
         Disabled        NUMBER(11,0) DEFAULT 0 NOT NULL
 );
-CREATE UNIQUE  INDEX Principals2 ON Principals (ObjectId);
-
 
 CREATE SEQUENCE GROUPS_seq;
 CREATE TABLE Groups (
