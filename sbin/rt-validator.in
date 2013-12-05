@@ -258,7 +258,7 @@ push @CHECKS, 'User <-> ACL equivalence group' => sub {
             );
 
             my $gid = create_record( 'Groups',
-                Domain => 'ACLEquivalence', Type => 'UserEquiv', Instance => $id,
+                Domain => 'ACLEquivalence', Name => 'UserEquiv', Instance => $id,
             );
         },
     );
@@ -341,8 +341,8 @@ push @CHECKS, 'Tickets <-> Role Groups' => sub {
 };
 
 # additional CHECKS on groups
-push @CHECKS, 'Role Groups (Instance, Type) uniqueness' => sub {
-    # Check that Domain, Instance and Type are unique
+push @CHECKS, 'Role Groups (Instance, Name) uniqueness' => sub {
+    # Check that Domain, Instance and Name are unique
     return check_uniqueness(
         'Groups',
         columns     => ['Domain', 'Instance', 'Name'],
