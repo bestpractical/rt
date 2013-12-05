@@ -95,10 +95,6 @@ sub _OverlayAccessible {
           RealName              => { public => 1 },                 # loc_left_pair
           NickName              => { public => 1 },                 # loc_left_pair
           Lang                  => { public => 1 },                 # loc_left_pair
-          ExternalContactInfoId => { public => 1,  admin => 1 },
-          ContactInfoSystem     => { public => 1,  admin => 1 },
-          ExternalAuthId        => { public => 1,  admin => 1 },
-          AuthSystem            => { public => 1,  admin => 1 },
           Gecos                 => { public => 1,  admin => 1 },    # loc_left_pair
           PGPKey                => { public => 1,  admin => 1 },    # loc_left_pair
           SMIMECertificate      => { public => 1,  admin => 1 },    # loc_left_pair
@@ -1945,10 +1941,6 @@ Create takes a hash of values and creates a row in the database:
   varchar(120) 'RealName'.
   varchar(16) 'NickName'.
   varchar(16) 'Lang'.
-  varchar(100) 'ExternalContactInfoId'.
-  varchar(30) 'ContactInfoSystem'.
-  varchar(100) 'ExternalAuthId'.
-  varchar(30) 'AuthSystem'.
   varchar(16) 'Gecos'.
   varchar(30) 'HomePhone'.
   varchar(30) 'WorkPhone'.
@@ -2170,78 +2162,6 @@ Returns the current value of Lang.
 Set Lang to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 (In the database, Lang will be stored as a varchar(16).)
-
-
-=cut
-
-
-=head2 ExternalContactInfoId
-
-Returns the current value of ExternalContactInfoId. 
-(In the database, ExternalContactInfoId is stored as varchar(100).)
-
-
-
-=head2 SetExternalContactInfoId VALUE
-
-
-Set ExternalContactInfoId to VALUE. 
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, ExternalContactInfoId will be stored as a varchar(100).)
-
-
-=cut
-
-
-=head2 ContactInfoSystem
-
-Returns the current value of ContactInfoSystem. 
-(In the database, ContactInfoSystem is stored as varchar(30).)
-
-
-
-=head2 SetContactInfoSystem VALUE
-
-
-Set ContactInfoSystem to VALUE. 
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, ContactInfoSystem will be stored as a varchar(30).)
-
-
-=cut
-
-
-=head2 ExternalAuthId
-
-Returns the current value of ExternalAuthId. 
-(In the database, ExternalAuthId is stored as varchar(100).)
-
-
-
-=head2 SetExternalAuthId VALUE
-
-
-Set ExternalAuthId to VALUE. 
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, ExternalAuthId will be stored as a varchar(100).)
-
-
-=cut
-
-
-=head2 AuthSystem
-
-Returns the current value of AuthSystem. 
-(In the database, AuthSystem is stored as varchar(30).)
-
-
-
-=head2 SetAuthSystem VALUE
-
-
-Set AuthSystem to VALUE. 
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, AuthSystem will be stored as a varchar(30).)
 
 
 =cut
@@ -2563,14 +2483,6 @@ sub _CoreAccessible {
         {read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
         Lang => 
         {read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
-        ExternalContactInfoId => 
-        {read => 1, write => 1, sql_type => 12, length => 100,  is_blob => 0,  is_numeric => 0,  type => 'varchar(100)', default => ''},
-        ContactInfoSystem => 
-        {read => 1, write => 1, sql_type => 12, length => 30,  is_blob => 0,  is_numeric => 0,  type => 'varchar(30)', default => ''},
-        ExternalAuthId => 
-        {read => 1, write => 1, sql_type => 12, length => 100,  is_blob => 0,  is_numeric => 0,  type => 'varchar(100)', default => ''},
-        AuthSystem => 
-        {read => 1, write => 1, sql_type => 12, length => 30,  is_blob => 0,  is_numeric => 0,  type => 'varchar(30)', default => ''},
         Gecos => 
         {read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
         HomePhone => 
