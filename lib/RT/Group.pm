@@ -401,9 +401,7 @@ sub _Create {
     my $principal    = RT::Principal->new( $self->CurrentUser );
     my $principal_id = $principal->Create(
         PrincipalType => 'Group',
-        ObjectId      => '0'
     );
-    $principal->__Set(Field => 'ObjectId', Value => $principal_id);
 
     $self->SUPER::Create(
         id          => $principal_id,
@@ -1691,15 +1689,9 @@ sub PreInflate {
     my ($id) = $principal->Create(
         PrincipalType => 'Group',
         Disabled => $disabled,
-        ObjectId => 0,
     );
     $importer->Resolve( $principal_uid => ref($principal), $id );
-
-    $importer->Postpone(
-        for => $uid,
-        uid => $principal_uid,
-        column => "ObjectId",
-    );
+    $data->{id} = $id;
 
     return 1;
 }
