@@ -875,9 +875,6 @@ my %check_case_sensitivity = (
 );
 
 my %deprecated = (
-    groups => {
-        type => 'Name',
-    },
 );
 
 sub Limit {

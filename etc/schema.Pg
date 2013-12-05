@@ -132,7 +132,6 @@ CREATE TABLE Groups (
   Name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
   Domain varchar(64),
-  Type varchar(64),
   Instance integer,
   Creator integer NOT NULL DEFAULT 0  ,
   Created TIMESTAMP NULL  ,
@@ -141,7 +140,6 @@ CREATE TABLE Groups (
   PRIMARY KEY (id)
 
 );
-CREATE INDEX Groups1 ON Groups (LOWER(Domain), LOWER(Type), Instance);
 CREATE INDEX Groups2 ON Groups (LOWER(Domain), LOWER(Name), Instance);
 CREATE INDEX Groups3 On Groups (Instance);
 

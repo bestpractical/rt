@@ -279,7 +279,6 @@ sub LoadTicketRoleGroup {
         Instead => "RT::Group->LoadRoleGroup or RT::Ticket->RoleGroup",
         Remove => "4.4",
     );
-    $args{'Name'} = $args{'Type'} if exists $args{'Type'};
     $self->LoadByCols(
         Domain   => 'RT::Ticket-Role',
         Instance => $args{'Ticket'},
@@ -306,7 +305,6 @@ sub LoadQueueRoleGroup {
         Instead => "RT::Group->LoadRoleGroup or RT::Queue->RoleGroup",
         Remove => "4.4",
     );
-    $args{'Name'} = $args{'Type'} if exists $args{'Type'};
     $self->LoadByCols(
         Domain   => 'RT::Queue-Role',
         Instance => $args{'Queue'},
@@ -335,18 +333,6 @@ sub LoadSystemRoleGroup {
         Name     => $type
     );
 }
-
-sub LoadByCols {
-    my $self = shift;
-    my %args = ( @_ );
-    if ( exists $args{'Type'} ) {
-        RT->Deprecated( Instead => 'Name', Arguments => 'Type', Remove => '4.4' );
-        $args{'Name'} = $args{'Type'};
-    }
-    return $self->SUPER::LoadByCols( %args );
-}
-
-
 
 =head2 Create
 
@@ -382,12 +368,6 @@ sub _Create {
         _RecordTransaction => 1,
         @_
     );
-    if ( $args{'Type'} ) {
-        RT->Deprecated( Instead => 'Name', Arguments => 'Type', Remove => '4.4' );
-        $args{'Name'} = $args{'Type'};
-    } else {
-        $args{'Type'} = $args{'Name'};
-    }
 
     # Enforce uniqueness on user defined group names
     if ($args{'Domain'} and $args{'Domain'} eq 'UserDefined') {
@@ -620,11 +600,6 @@ sub CreateRoleGroup {
         return ( 0, $self->loc("Invalid Group Name and Domain") );
     }
 
-    if ( exists $args{'Type'} ) {
-        RT->Deprecated( Instead => 'Name', Arguments => 'Type', Remove => '4.4' );
-        $args{'Name'} = $args{'Type'};
-    }
-
     my %create = map { $_ => $args{$_} } qw(Domain Instance Name);
 
     my $duplicate = RT::Group->new( RT->SystemUser );
@@ -705,18 +680,6 @@ sub RoleGroupObject {
     my $obj = $class->new( $self->CurrentUser );
     $obj->Load( $self->Instance );
     return $obj;
-}
-
-sub Type {
-    my $self = shift;
-    RT->Deprecated( Instead => 'Name', Remove => '4.4' );
-    return $self->_Value('Type', @_);
-}
-
-sub SetType {
-    my $self = shift;
-    RT->Deprecated( Instead => 'Name', Remove => '4.4' );
-    return $self->SetName(@_);
 }
 
 sub SetName {
@@ -1495,25 +1458,6 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=head2 Type
-
-Returns the current value of Type.
-(In the database, Type is stored as varchar(64).)
-
-Deprecated, use Name instead, will be removed in 4.4.
-
-=head2 SetType VALUE
-
-
-Set Type to VALUE.
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Type will be stored as a varchar(64).)
-
-Deprecated, use SetName instead, will be removed in 4.4.
-
-=cut
-
-
 =head2 Instance
 
 Returns the current value of Instance.
@@ -1579,8 +1523,6 @@ sub _CoreAccessible {
         Description =>
                 {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         Domain =>
-                {read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
-        Type =>
                 {read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
         Instance =>
                 {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},

@@ -82,7 +82,6 @@ CREATE TABLE Groups (
   Name varchar(200) collate NOCASE NULL  ,
   Description varchar(255) collate NOCASE NULL  ,
   Domain varchar(64) collate NOCASE,
-  Type varchar(64) collate NOCASE,
   Instance integer,
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
@@ -91,7 +90,6 @@ CREATE TABLE Groups (
   
 ) ;
 
-CREATE INDEX Groups1 ON Groups (Domain,Type,Instance);
 CREATE INDEX Groups2 ON Groups (Domain,Name,Instance);
 CREATE INDEX Groups3 ON Groups (Instance);
 

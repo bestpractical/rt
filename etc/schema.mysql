@@ -75,7 +75,6 @@ CREATE TABLE Groups (
   Name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
   Domain varchar(64) CHARACTER SET ascii NULL,
-  Type varchar(64) CHARACTER SET ascii NULL,
   Instance integer,
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
@@ -84,7 +83,6 @@ CREATE TABLE Groups (
   PRIMARY KEY (id)
 ) ENGINE=InnoDB CHARACTER SET utf8;
 
-CREATE INDEX Groups1 ON Groups (Domain, Type, Instance);
 CREATE INDEX Groups2 ON Groups (Domain, Name, Instance);
 CREATE INDEX Groups3 On Groups (Instance);
 
