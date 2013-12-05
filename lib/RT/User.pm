@@ -95,8 +95,6 @@ sub _OverlayAccessible {
           RealName              => { public => 1 },                 # loc_left_pair
           NickName              => { public => 1 },                 # loc_left_pair
           Lang                  => { public => 1 },                 # loc_left_pair
-          EmailEncoding         => { public => 1 },
-          WebEncoding           => { public => 1 },
           ExternalContactInfoId => { public => 1,  admin => 1 },
           ContactInfoSystem     => { public => 1,  admin => 1 },
           ExternalAuthId        => { public => 1,  admin => 1 },
@@ -1947,8 +1945,6 @@ Create takes a hash of values and creates a row in the database:
   varchar(120) 'RealName'.
   varchar(16) 'NickName'.
   varchar(16) 'Lang'.
-  varchar(16) 'EmailEncoding'.
-  varchar(16) 'WebEncoding'.
   varchar(100) 'ExternalContactInfoId'.
   varchar(30) 'ContactInfoSystem'.
   varchar(100) 'ExternalAuthId'.
@@ -2174,42 +2170,6 @@ Returns the current value of Lang.
 Set Lang to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 (In the database, Lang will be stored as a varchar(16).)
-
-
-=cut
-
-
-=head2 EmailEncoding
-
-Returns the current value of EmailEncoding. 
-(In the database, EmailEncoding is stored as varchar(16).)
-
-
-
-=head2 SetEmailEncoding VALUE
-
-
-Set EmailEncoding to VALUE. 
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, EmailEncoding will be stored as a varchar(16).)
-
-
-=cut
-
-
-=head2 WebEncoding
-
-Returns the current value of WebEncoding. 
-(In the database, WebEncoding is stored as varchar(16).)
-
-
-
-=head2 SetWebEncoding VALUE
-
-
-Set WebEncoding to VALUE. 
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, WebEncoding will be stored as a varchar(16).)
 
 
 =cut
@@ -2602,10 +2562,6 @@ sub _CoreAccessible {
         NickName => 
         {read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
         Lang => 
-        {read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
-        EmailEncoding => 
-        {read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
-        WebEncoding => 
         {read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
         ExternalContactInfoId => 
         {read => 1, write => 1, sql_type => 12, length => 100,  is_blob => 0,  is_numeric => 0,  type => 'varchar(100)', default => ''},

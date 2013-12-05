@@ -361,8 +361,6 @@ CREATE TABLE Users (
   RealName varchar(120) NULL  ,
   NickName varchar(16) NULL  ,
   Lang varchar(16) NULL  ,
-  EmailEncoding varchar(16) NULL  ,
-  WebEncoding varchar(16) NULL  ,
   ExternalContactInfoId varchar(100) NULL  ,
   ContactInfoSystem varchar(30) NULL  ,
   ExternalAuthId varchar(100) NULL  ,

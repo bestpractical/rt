@@ -1,3 +1,7 @@
 ALTER TABLE Tickets
   DROP COLUMN IssueStatement,
   DROP COLUMN Resolution;
+
+ALTER TABLE Users
+  DROP COLUMN EmailEncoding,
+  DROP COLUMN WebEncoding;
