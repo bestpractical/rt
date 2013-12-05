@@ -161,16 +161,6 @@ sub EscapeHTML {
     $$ref =~ s/'/&#39;/g;
 }
 
-# Back-compat
-# XXX: Remove in 4.4
-sub EscapeUTF8 {
-    RT->Deprecated(
-        Instead => "EscapeHTML",
-        Remove => "4.4",
-    );
-    EscapeHTML(@_);
-}
-
 =head2 EscapeURI SCALARREF
 
 Escapes URI component according to RFC2396

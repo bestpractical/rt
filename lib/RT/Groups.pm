@@ -182,67 +182,6 @@ sub LimitToRolesForObject {
     $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => $object->id);
 }
 
-=head2 LimitToRolesForQueue QUEUE_ID
-
-B<DEPRECATED>. Use L</LimitToRolesForObject> instead.
-
-Limits the set of groups found to role groups for queue QUEUE_ID
-
-=cut
-
-sub LimitToRolesForQueue {
-    my $self = shift;
-    my $queue = shift;
-    RT->Deprecated(
-        Instead => "LimitToRolesForObject",
-        Remove => "4.4",
-    );
-    $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'RT::Queue-Role', CASESENSITIVE => 0 );
-    $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => $queue);
-}
-
-
-
-=head2 LimitToRolesForTicket Ticket_ID
-
-B<DEPRECATED>. Use L</LimitToRolesForObject> instead.
-
-Limits the set of groups found to role groups for Ticket Ticket_ID
-
-=cut
-
-sub LimitToRolesForTicket {
-    my $self = shift;
-    my $Ticket = shift;
-    RT->Deprecated(
-        Instead => "LimitToRolesForObject",
-        Remove => "4.4",
-    );
-    $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'RT::Ticket-Role', CASESENSITIVE => 0 );
-    $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => $Ticket);
-}
-
-
-
-=head2 LimitToRolesForSystem System_ID
-
-B<DEPRECATED>. Use L</LimitToRolesForObject> instead.
-
-Limits the set of groups found to role groups for System System_ID
-
-=cut
-
-sub LimitToRolesForSystem {
-    my $self = shift;
-    RT->Deprecated(
-        Instead => "LimitToRolesForObject",
-        Remove => "4.4",
-    );
-    $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'RT::System-Role', CASESENSITIVE => 0 );
-    $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => RT::System->Id );
-}
-
-
 =head2 WithMember {PrincipalId => PRINCIPAL_ID, Recursively => undef}
 
 Limits the set of groups returned to groups which have

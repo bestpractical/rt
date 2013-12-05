@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test nodata => 1, tests => 29;
+use RT::Test nodata => 1, tests => 22;
 use Test::Warn;
 
 
@@ -51,23 +51,3 @@ ok ($delval,"Deleting a cf value: $delmsg");
 
 
 }
-
-{
-
-ok(my $cf = RT::CustomField->new(RT->SystemUser));
-
-warning_like {
-ok($cf->ValidateType('SelectSingle'));
-} qr/deprecated/;
-
-warning_like {
-ok($cf->ValidateType('SelectMultiple'));
-} qr/deprecated/;
-
-warning_like {
-ok(!$cf->ValidateType('SelectFooMultiple'));
-} qr/deprecated/;
-
-
-}
-

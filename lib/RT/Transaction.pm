@@ -1365,25 +1365,13 @@ sub UpdateCustomFields {
     my $self = shift;
     my %args = (@_);
 
-    # This method used to have an API that took a hash of a single
-    # value "ARGSRef", which was a reference to a hash of arguments.
-    # This was insane. The next few lines of code preserve that API
-    # while giving us something saner.
-    my $args;
-    if ($args{'ARGSRef'}) {
-        RT->Deprecated( Arguments => "ARGSRef", Remove => "4.4" );
-        $args = $args{ARGSRef};
-    } else {
-        $args = \%args;
-    }
-
-    foreach my $arg ( keys %$args ) {
+    foreach my $arg ( keys %args ) {
         next
           unless ( $arg =~
             /^(?:Object-RT::Transaction--)?CustomField-(\d+)/ );
         next if $arg =~ /-Magic$/;
         my $cfid   = $1;
-        my $values = $args->{$arg};
+        my $values = $args{$arg};
         foreach
           my $value ( UNIVERSAL::isa( $values, 'ARRAY' ) ? @$values : $values )
         {

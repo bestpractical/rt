@@ -704,14 +704,6 @@ sub ValidateType {
     my $self = shift;
     my $type = shift;
 
-    if ( $type =~ s/(?:Single|Multiple)$// ) {
-        RT->Deprecated(
-            Arguments => "suffix 'Single' or 'Multiple'",
-            Instead   => "MaxValues",
-            Remove    => "4.4",
-        );
-    }
-
     if ( $FieldTypes{$type} ) {
         return 1;
     }
@@ -724,14 +716,6 @@ sub ValidateType {
 sub SetType {
     my $self = shift;
     my $type = shift;
-    if ($type =~ s/(?:(Single)|Multiple)$//) {
-        RT->Deprecated(
-            Arguments => "suffix 'Single' or 'Multiple'",
-            Instead   => "MaxValues",
-            Remove    => "4.4",
-        );
-        $self->SetMaxValues($1 ? 1 : 0);
-    }
     $self->_Set(Field => 'Type', Value =>$type);
 }
 
@@ -1349,13 +1333,6 @@ sub IsOnlyGlobal {
     return ($self->LookupType =~ /^RT::(?:Group|User)/io);
 
 }
-sub ApplyGlobally {
-    RT->Deprecated(
-        Instead   => "IsOnlyGlobal",
-        Remove    => "4.4",
-    );
-    return shift->IsOnlyGlobal(@_);
-}
 
 =head1 AddedTo
 
@@ -1372,13 +1349,6 @@ sub AddedTo {
     return RT::ObjectCustomField->new( $self->CurrentUser )
         ->AddedTo( CustomField => $self );
 }
-sub AppliedTo {
-    RT->Deprecated(
-        Instead   => "AddedTo",
-        Remove    => "4.4",
-    );
-    shift->AddedTo(@_);
-};
 
 =head1 NotAddedTo
 
@@ -1395,13 +1365,6 @@ sub NotAddedTo {
     return RT::ObjectCustomField->new( $self->CurrentUser )
         ->NotAddedTo( CustomField => $self );
 }
-sub NotAppliedTo {
-    RT->Deprecated(
-        Instead   => "NotAddedTo",
-        Remove    => "4.4",
-    );
-    shift->NotAddedTo(@_)
-};
 
 =head2 IsAdded
 
@@ -1419,13 +1382,6 @@ sub IsAdded {
     return undef unless $ocf->id;
     return $ocf;
 }
-sub IsApplied {
-    RT->Deprecated(
-        Instead   => "IsAdded",
-        Remove    => "4.4",
-    );
-    shift->IsAdded(@_);
-};
 
 sub IsGlobal { return shift->IsAdded(0) }
 
@@ -1758,16 +1714,6 @@ sub RegisterLookupType {
 
     $FRIENDLY_LOOKUP_TYPES{$path} = $friendly_name;
 }
-
-sub _ForObjectType {
-    RT->Deprecated(
-        Instead => 'RegisterLookupType',
-        Remove  => '4.4',
-    );
-    my $self = shift;
-    $self->RegisterLookupType(@_);
-}
-
 
 =head2 IncludeContentForValue [VALUE] (and SetIncludeContentForValue)
 

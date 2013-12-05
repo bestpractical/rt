@@ -1180,28 +1180,6 @@ sub DueObj {
     return $time;
 }
 
-
-
-=head2 DueAsString
-
-Returns this ticket's due date as a human readable string.
-
-B<DEPRECATED> and will be removed in 4.4; use C<<
-$ticket->DueObj->AsString >> instead.
-
-=cut
-
-sub DueAsString {
-    my $self = shift;
-    RT->Deprecated(
-        Instead => "->DueObj->AsString",
-        Remove => "4.4",
-    );
-    return $self->DueObj->AsString();
-}
-
-
-
 =head2 ResolvedObj
 
   Returns an RT::Date object of this ticket's 'resolved' time.
@@ -1346,33 +1324,6 @@ sub ToldObj {
     $time->Set( Format => 'sql', Value => $self->Told );
     return $time;
 }
-
-
-
-=head2 ToldAsString
-
-A convenience method that returns ToldObj->AsString
-
-B<DEPRECATED> and will be removed in 4.4; use C<<
-$ticket->ToldObj->AsString >> instead.
-
-=cut
-
-sub ToldAsString {
-    my $self = shift;
-    RT->Deprecated(
-        Instead => "->ToldObj->AsString",
-        Remove => "4.4",
-    );
-    if ( $self->Told ) {
-        return $self->ToldObj->AsString();
-    }
-    else {
-        return ("Never");
-    }
-}
-
-
 
 sub _DurationAsString {
     my $self = shift;

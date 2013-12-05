@@ -143,28 +143,6 @@ sub RecordType {
     return $res;
 }
 
-=head2 ObjectTypeStr
-
-DEPRECATED. Stays here for backwards. Returns localized L</RecordType>.
-
-=cut
-
-# we deprecate because of:
-# * ObjectType is used in several classes with ObjectId to store
-#   records of different types, for example transactions use those
-#   and it's unclear what this method should return 'Transaction'
-#   or type of referenced record
-# * returning localized thing is not good idea
-
-sub ObjectTypeStr {
-    my $self = shift;
-    RT->Deprecated(
-        Remove => "4.4",
-        Instead => "RecordType",
-    );
-    return $self->loc( $self->RecordType( @_ ) );
-}
-
 =head2 Attributes
 
 Return this object's attributes as an RT::Attributes object
@@ -440,31 +418,6 @@ sub CreatedObj {
     $obj->Set( Format => 'sql', Value => $self->Created );
 
     return $obj;
-}
-
-
-# B<DEPRECATED> and will be removed in 4.4
-sub AgeAsString {
-    my $self = shift;
-    RT->Deprecated(
-        Remove => "4.4",
-        Instead => "->CreatedObj->AgeAsString",
-    );
-    return ( $self->CreatedObj->AgeAsString() );
-}
-
-# B<DEPRECATED> and will be removed in 4.4
-sub LongSinceUpdateAsString {
-    my $self = shift;
-    RT->Deprecated(
-        Remove => "4.4",
-        Instead => "->LastUpdatedObj->AgeAsString",
-    );
-    if ( $self->LastUpdated ) {
-        return ( $self->LastUpdatedObj->AgeAsString() );
-    } else {
-        return "never";
-    }
 }
 
 sub LastUpdatedAsString {
