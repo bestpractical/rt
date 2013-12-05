@@ -373,7 +373,6 @@ CREATE TABLE Users (
   Zip varchar(16) NULL  ,
   Country varchar(50) NULL  ,
   Timezone varchar(50) NULL  ,
-  PGPKey text NULL,
   SMIMECertificate text NULL,
 
   Creator integer NOT NULL DEFAULT 0  ,

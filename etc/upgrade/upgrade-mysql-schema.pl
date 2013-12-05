@@ -257,7 +257,6 @@ my %charset = (
         Zip  => 'utf8',
         Country  => 'utf8',
         Timezone  => 'ascii',
-        PGPKey  => 'binary',
     },
 );
 

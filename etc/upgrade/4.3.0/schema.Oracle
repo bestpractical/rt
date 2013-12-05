@@ -3,4 +3,5 @@ ALTER TABLE Tickets
 
 ALTER TABLE Users
   DROP (EmailEncoding, WebEncoding,
-        ExternalContactInfoId, ContactInfoSystem, ExternalAuthId, AuthSystem);
+        ExternalContactInfoId, ContactInfoSystem, ExternalAuthId, AuthSystem,
+        PGPKey);

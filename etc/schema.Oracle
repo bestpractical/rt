@@ -234,7 +234,6 @@ CREATE TABLE Users (
         Zip                     VARCHAR2(16),
         Country                 VARCHAR2(50),
         Timezone                VARCHAR2(50),
-        PGPKey                  CLOB,
         SMIMECertificate        CLOB,
         Creator                 NUMBER(11,0) DEFAULT 0 NOT NULL,
         Created                 DATE,

@@ -8,4 +8,5 @@ ALTER TABLE Users
   DROP COLUMN ExternalContactInfoId,
   DROP COLUMN ContactInfoSystem,
   DROP COLUMN ExternalAuthId,
-  DROP COLUMN AuthSystem;
+  DROP COLUMN AuthSystem,
+  DROP COLUMN PGPKey;
