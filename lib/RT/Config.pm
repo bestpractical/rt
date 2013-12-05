@@ -383,23 +383,6 @@ our %META;
         },
 
     },
-    PlainTextPre => {
-        PostSet => sub {
-            my $self  = shift;
-            my $value = shift;
-            $self->SetFromConfig(
-                Option => \'PlainTextMono',
-                Value  => [$value],
-                %{$self->Meta('PlainTextPre')->{'Source'}}
-            );
-        },
-        PostLoadCheck => sub {
-            my $self = shift;
-            # XXX: deprecated, remove in 4.4
-            $RT::Logger->info("You set \$PlainTextPre in your config, which has been removed in favor of \$PlainTextMono.  Please update your config.")
-                if $self->Meta('PlainTextPre')->{'Source'}{'Package'};
-        },
-    },
     PlainTextMono => {
         Section         => 'Ticket display',
         Overridable     => 1,
@@ -879,18 +862,6 @@ our %META;
             }
         },
     },
-    LogToScreen => {
-        Deprecated => {
-            Instead => 'LogToSTDERR',
-            Remove  => '4.4',
-        },
-    },
-    UserAutocompleteFields => {
-        Deprecated => {
-            Instead => 'UserSearchFields',
-            Remove  => '4.4',
-        },
-    },
     CustomFieldGroupings => {
         Type            => 'HASH',
         PostLoadCheck   => sub {
@@ -933,12 +904,6 @@ our %META;
     ChartColors => {
         Type    => 'ARRAY',
     },
-    WebExternalAuth           => { Deprecated => { Instead => 'WebRemoteUserAuth',             Remove => '4.4' }},
-    WebExternalAuthContinuous => { Deprecated => { Instead => 'WebRemoteUserContinuous',       Remove => '4.4' }},
-    WebFallbackToInternalAuth => { Deprecated => { Instead => 'WebFallbackToRTLogin',          Remove => '4.4' }},
-    WebExternalGecos          => { Deprecated => { Instead => 'WebRemoteUserGecos',            Remove => '4.4' }},
-    WebExternalAuto           => { Deprecated => { Instead => 'WebRemoteUserAutocreate',       Remove => '4.4' }},
-    AutoCreate                => { Deprecated => { Instead => 'UserAutocreateDefaultsOnLogin', Remove => '4.4' }},
 );
 my %OPTIONS = ();
 my @LOADED_CONFIGS = ();
