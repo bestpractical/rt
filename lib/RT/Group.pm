@@ -1693,6 +1693,10 @@ sub PreInflate {
         Disabled => $disabled,
         ObjectId => 0,
     );
+
+    # Now we have a principal id, set the id for the group record
+    $data->{id} = $id;
+
     $importer->Resolve( $principal_uid => ref($principal), $id );
 
     $importer->Postpone(
