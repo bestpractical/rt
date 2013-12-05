@@ -407,7 +407,6 @@ sub _Create {
         id          => $principal_id,
         Name        => $args{'Name'},
         Description => $args{'Description'},
-        Type        => $args{'Type'},
         Domain      => $args{'Domain'},
         Instance    => ($args{'Instance'} || '0')
     );
@@ -670,12 +669,12 @@ registered role on the specified Domain.  Otherwise returns false.
 sub ValidateRoleGroup {
     my $self = shift;
     my %args = (@_);
-    return 0 unless $args{Domain} and ($args{Type} or $args{'Name'});
+    return 0 unless $args{Domain} and $args{'Name'};
 
     my $class = $self->RoleClass($args{Domain});
     return 0 unless $class;
 
-    return $class->HasRole($args{Type}||$args{'Name'});
+    return $class->HasRole($args{'Name'});
 }
 
 =head2 SingleMemberRoleGroup
@@ -726,11 +725,6 @@ sub SetName {
 
     my ($status, $msg) = $self->_Set( Field => 'Name', Value => $value );
     return ($status, $msg) unless $status;
-
-    {
-        my ($status, $msg) = $self->__Set( Field => 'Type', Value => $value );
-        RT->Logger->error("Couldn't set Type: $msg") unless $status;
-    }
 
     return ($status, $msg);
 }
@@ -1678,10 +1672,10 @@ sub PreInflate {
             return $duplicated->();
         }
     } elsif ($data->{Domain} =~ /^(SystemInternal|RT::System-Role)$/) {
-        $obj->LoadByCols( Domain => $data->{Domain}, Type => $data->{Type} );
+        $obj->LoadByCols( Domain => $data->{Domain}, Name => $data->{Name} );
         return $duplicated->() if $obj->Id;
     } elsif ($data->{Domain} eq "RT::Queue-Role") {
-        $obj->LoadQueueRoleGroup( Queue => $data->{Instance}, Type => $data->{Type} );
+        $obj->LoadQueueRoleGroup( Queue => $data->{Instance}, Name => $data->{Name} );
         return $duplicated->() if $obj->Id;
     }
 
