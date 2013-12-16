@@ -729,9 +729,12 @@ sub _Accessible  {
 
 }
 
-=head2 _EncodeLOB BODY MIME_TYPE
+=head2 _EncodeLOB BODY MIME_TYPE FILENAME
 
-Takes a potentially large attachment. Returns (ContentEncoding, EncodedBody) based on system configuration and selected database
+Takes a potentially large attachment. Returns (ContentEncoding,
+EncodedBody, MimeType, Filename) based on system configuration and
+selected database.  Returns a custom (short) text/plain message if
+DropLongAttachments causes an attachment to not be stored.
 
 =cut
 
