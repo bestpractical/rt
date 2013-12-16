@@ -2423,7 +2423,7 @@ sub PreInflate {
         my ($content_col) = grep {exists $ca{$_}} qw/LargeContent Content/;
         if (defined $data->{$content_col}) {
             my ($ContentEncoding, $Content) = $class->_EncodeLOB(
-                $data->{$content_col},
+                Encode::encode("UTF-8",$data->{$content_col},Encode::FB_CROAK),
                 $data->{ContentType},
             );
             $data->{ContentEncoding} = $ContentEncoding;
