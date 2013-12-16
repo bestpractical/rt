@@ -820,7 +820,7 @@ sub _DecodeLOB {
         return ( $self->loc( "Unknown ContentEncoding [_1]", $ContentEncoding ) );
     }
     if ( RT::I18N::IsTextualContentType($ContentType) ) {
-       $Content = Encode::decode_utf8($Content) unless Encode::is_utf8($Content);
+       $Content = Encode::decode('UTF-8',$Content,Encode::FB_PERLQQ) unless Encode::is_utf8($Content);
     }
         return ($Content);
 }
