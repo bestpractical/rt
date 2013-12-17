@@ -258,16 +258,6 @@ OBJECT:
                     $rv->{GroupDomain} = 'RT::Queue-Role';
                 }
             }
-            if ( $obj->LookupType eq 'RT::Queue-RT::Ticket' ) {
-                # XXX-TODO: unused CF's turn into global CF when importing
-                # as the sub InsertData in RT::Handle creates a global CF
-                # when no queue is specified.
-                $rv->{Queue} = [];
-                my $applies = $obj->AppliedTo;
-                while ( my $queue = $applies->Next ) {
-                    push @{ $rv->{Queue} }, $queue->Name;
-                }
-            }
         }
 
         if ( eval { require RT::Attributes; 1 } ) {
