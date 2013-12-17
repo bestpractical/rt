@@ -947,8 +947,10 @@ sub InsertData {
             if ( $item->{'BasedOn'} ) {
                 if ( $item->{'LookupType'} ) {
                     my $basedon = RT::CustomField->new($RT::SystemUser);
-                    my ($ok, $msg ) = $basedon->LoadByCols( Name => $item->{'BasedOn'},
-                                                            LookupType => $item->{'LookupType'} );
+                    my ($ok, $msg ) = $basedon->LoadByCols(
+                        Name => $item->{'BasedOn'},
+                        LookupType => $item->{'LookupType'},
+                        Disabled => 0 );
                     if ($ok) {
                         $item->{'BasedOn'} = $basedon->Id;
                     } else {
