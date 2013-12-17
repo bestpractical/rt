@@ -118,7 +118,10 @@ sub Create {
             $RT::Logger->error("Content is longer than 255 bytes and LargeContent specified");
         }
         else {
-            $args{'LargeContent'} = $args{'Content'};
+            # _EncodeLOB, and thus LargeContent, takes bytes; Content is
+            # in characters.  Encode it; this may replace illegal
+            # codepoints (e.g. \x{FDD0}) with \x{FFFD}.
+            $args{'LargeContent'} = Encode::encode("UTF-8",$args{'Content'});
             $args{'Content'} = undef;
             $args{'ContentType'} ||= 'text/plain';
         }
