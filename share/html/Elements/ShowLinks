@@ -47,6 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <table>
 % for my $type (@display) {
+% if ( $clone{$type} || $Object->$type->Count ) {
   <tr>
     <td class="labeltop">
       <& ShowRelationLabel, Object => $Object, Label => $labels{$type}.':', Relation => $type &>
@@ -58,7 +59,7 @@
       <& ShowLinksOfType, Object => $Object, Type => $type, Recurse => ($type eq 'Members') &>
     </td>
   </tr>
-% }
+% } }
 % # Allow people to add more rows to the table
 % $m->callback( %ARGS );
   <& /Elements/ShowCustomFields, Object => $Object, Grouping => 'Links', Table => 0 &>
