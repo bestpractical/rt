@@ -9,7 +9,7 @@ our @Initial = (
         $cfs->Limit( FIELD => 'LookupType', VALUE => 'RT::FM::Class-RT::FM::Article' );
         while ( my $cf = $cfs->Next ) {
             my ($ret, $msg) = $cf->__Set( Field => 'LookupType', Value => 'RT::Class-RT::Article' );
-            RT->Logger->warnings("Update Custom Field LookupType for CF.".$cf->Id." $msg");
+            RT->Logger->warning("Update Custom Field LookupType for CF.".$cf->Id." $msg");
         }
         return 1;
     },
