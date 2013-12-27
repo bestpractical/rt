@@ -32,7 +32,7 @@ sub setup_indexing {
         command        => $RT::SbinPath .'/rt-setup-fulltext-index',
         dba            => $ENV{'RT_DBA_USER'},
         'dba-password' => $ENV{'RT_DBA_PASSWORD'},
-        url            => "sphinx://localhost:$port/rt",
+        url            => "sphinx://127.0.0.1:$port/rt",
     );
     ok(!$exit_code, "setted up index");
     diag "output: $output" if $ENV{'TEST_VERBOSE'};
