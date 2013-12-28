@@ -91,8 +91,8 @@
     });
     jQuery(function() {
         jQuery("input[name=TxnSendMailTo]").change(function(ev) {
-            jQuery("input[name=TxnSendMailTo][value="+ev.target.value+"]")
-                  .attr("checked",jQuery(ev.target).attr('checked'));
+            var email = ev.target.value.replace(/([!"#$%&'()*+,.\/:;<=>?@[\]^`{|}~])/g, '\\$1');
+            jQuery("input[name=TxnSendMailTo][value="+email+"]").prop("checked",jQuery(ev.target).prop('checked'));
         });
     });
 </script>
