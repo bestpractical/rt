@@ -45,6 +45,6 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<span
+<div
     class="message-stanza-folder closed"
-    onclick="fold_message_stanza(this, <%loc('Show quoted text') |n,j%>, <%loc('Hide quoted text') |n,j%>);"><%loc('Show quoted text')%></span><br />\
+    onclick="fold_message_stanza(this, <%loc('Show quoted text') |n,j%>, <%loc('Hide quoted text') |n,j%>);"><%loc('Show quoted text')%></div>
