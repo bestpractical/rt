@@ -365,6 +365,9 @@ sub CreateDatabase {
     elsif ( $db_type eq 'Pg' ) {
         $status = $dbh->do("CREATE DATABASE $db_name WITH ENCODING='UNICODE' TEMPLATE template0");
     }
+    elsif ( $db_type eq 'mysql' ) {
+        $status = $dbh->do("CREATE DATABASE $db_name DEFAULT CHARACTER SET utf8");
+    }
     else {
         $status = $dbh->do("CREATE DATABASE $db_name");
     }
@@ -945,7 +948,9 @@ sub InsertData {
             my $apply_to = delete $item->{'ApplyTo'};
 
             if ( $item->{'BasedOn'} ) {
-                if ( $item->{'LookupType'} ) {
+                if ( $item->{'BasedOn'} =~ /^\d+$/) {
+                    # Already have an ID -- should be fine
+                } elsif ( $item->{'LookupType'} ) {
                     my $basedon = RT::CustomField->new($RT::SystemUser);
                     my ($ok, $msg ) = $basedon->LoadByCols(
                         Name => $item->{'BasedOn'},

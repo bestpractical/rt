@@ -147,7 +147,7 @@ sub IsSubscriptionReady {
     my $sub_hour      = $subscription->SubValue('Hour');
     my $sub_dow       = $subscription->SubValue('Dow');
     my $sub_dom       = $subscription->SubValue('Dom');
-    my $sub_fow       = $subscription->SubValue('Fow');
+    my $sub_fow       = $subscription->SubValue('Fow') || 1;
 
     my ($hour, $dow, $dom) = @{ $args{LocalTime} };
 
@@ -166,8 +166,6 @@ sub IsSubscriptionReady {
         return 0 if $sub_dow ne $dow;
 
         # does it match the "every N weeks" clause?
-        $sub_fow = 1 if !$sub_fow;
-
         return 1 if $counter % $sub_fow == 0;
 
         $subscription->SetSubValues(Counter => $counter + 1)

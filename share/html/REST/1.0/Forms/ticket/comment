@@ -53,7 +53,6 @@ $id
 </%ARGS> 
 <%INIT>
 use MIME::Entity;
-use LWP::MediaTypes;
 use RT::Interface::REST;
 
 $RT::Logger->debug("Got ticket id=$id for comment");

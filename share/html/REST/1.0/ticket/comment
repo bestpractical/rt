@@ -52,7 +52,6 @@ $content
 </%ARGS>
 <%INIT>
 use MIME::Entity;
-use LWP::MediaTypes;
 use RT::Interface::REST;
 
 my $ticket = RT::Ticket->new($session{CurrentUser});

@@ -47,6 +47,7 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Interface::REST;
+use LWP::MediaTypes qw(guess_media_type);
 use strict;
 use warnings;
 use RT;

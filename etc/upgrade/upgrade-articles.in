@@ -157,6 +157,7 @@ sub copy_tables {
     use RT::CustomFields;
     my $cfs = RT::CustomFields->new(RT->SystemUser);
     $cfs->Limit( FIELD => 'LookupType', VALUE => 'RT::FM::Class-RT::FM::Article' );
+    $cfs->{'find_disabled_rows'} = 1;
     while ( my $cf = $cfs->Next ) {
         my ($ret, $msg) = $cf->__Set( Field => 'LookupType', Value => 'RT::Class-RT::Article' );
         warn "Update Custom Field LookupType for CF.".$cf->Id." $msg";
@@ -167,6 +168,7 @@ sub copy_tables {
     use RT::ObjectCustomFieldValues;
     my $ocfvs = RT::ObjectCustomFieldValues->new(RT->System);
     $ocfvs->Limit( FIELD => 'ObjectType', VALUE => 'RT::FM::Article' );
+    $ocfvs->{'find_expired_rows'} = 1;
     while ( my $ocfv = $ocfvs->Next ) {
         my ($ret, $msg) = $ocfv->__Set( Field => 'ObjectType', Value => 'RT::Article' );
         warn "Updated CF ".$ocfv->__Value('CustomField')." Value for Article ".$ocfv->__Value('ObjectId');

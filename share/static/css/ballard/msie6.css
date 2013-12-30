@@ -1,3 +1,5 @@
+@import "../base/msie6.css";
+
 .topaction .select-queue {
     margin-top: 0;
 }
@@ -39,3 +41,10 @@ div#page-navigation ul#page-menu {
     width: expression(this.width > 401 ? 400 : true);
 }
 
+#page-navigation {
+    width: 100%;
+}
+
+.ticket-transaction div.metadata span.actions {
+    right: 1.1em;
+}

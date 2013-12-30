@@ -54,6 +54,8 @@ $Width => undef
 $Height => undef
 </%args>
 <%init>
+$m->callback( ARGSRef => \%ARGS, CallbackName => 'Initial' );
+
 $ARGS{Query} ||= 'id > 0';
 
 my $title = loc( "Grouped search results");
@@ -99,11 +101,17 @@ my %query;
 
 }
 
+$m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
 </%init>
 <& /Elements/Header, Title => $title &>
 <& /Elements/Tabs, QueryArgs => \%query &>
 <& /Elements/ListActions, actions => \@actions &>
+
+% $m->callback( ARGSRef => \%ARGS, CallbackName => 'BeforeChart' );
+
 <& /Search/Elements/Chart, %ARGS &>
+
+% $m->callback( ARGSRef => \%ARGS, CallbackName => 'AfterChart' );
 
 <div class="chart-meta">
 <div class="chart-type">
