@@ -684,13 +684,23 @@ my $build_main_nav = sub {
                     $actions->child( $key => title => loc( $key ), path => $url);
                 }
 
-                my ($can_take, $tmsg) = $obj->CurrentUserCanSetOwner( Type => 'Take' );
-                my ($can_steal, $smsg) = $obj->CurrentUserCanSetOwner( Type => 'Steal' );
-                if ( $can_take ){
-                    $actions->child( take => title => loc('Take'), path => "/Ticket/Display.html?Action=Take;id=" . $id );
-                }
-                elsif ( $can_steal ){
-                    $actions->child( steal => title => loc('Steal'), path => "/Ticket/Display.html?Action=Steal;id=" . $id );
+                if ( $obj->CurrentUserHasRight('OwnTicket') ) {
+                    my ($can_take, $tmsg) = $obj->CurrentUserCanSetOwner( Type => 'Take' );
+                    if ( $can_take && $obj->OwnerObj->id != RT->Nobody->id ) {
+                        $can_take = 0;
+                    }
+
+                    my ($can_steal, $smsg) = $obj->CurrentUserCanSetOwner( Type => 'Steal' );
+                    if ( $can_steal && ( $obj->OwnerObj->id == RT->Nobody->id || $obj->OwnerObj->id == $session{CurrentUser}->id )) {
+                        $can_steal = 0;
+                    }
+
+                    if ( $can_take ){
+                        $actions->child( take => title => loc('Take'), path => "/Ticket/Display.html?Action=Take;id=" . $id );
+                    }
+                    elsif ( $can_steal ){
+                        $actions->child( steal => title => loc('Steal'), path => "/Ticket/Display.html?Action=Steal;id=" . $id );
+                    }
                 }
 
                 # TODO needs a "Can extract article into a class applied to this queue" check
