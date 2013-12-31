@@ -2064,6 +2064,9 @@ are owned by Nobody because that is the context appropriate for the
 TakeTicket right. If you need to strictly test a user for a right,
 use HasRight to check for the right directly.
 
+For some custom types of owner changes (C<Take> and C<Steal>), it also
+verifies that those actions are possible given the current ticket owner.
+
 =head3 Rights to Set Owner
 
 The current user can set or change the Owner field in the following
@@ -2078,10 +2081,6 @@ to any user who has OwnTicket. This can be used to break an
 Owner lock held by another user (see below) and can be a convenient
 right for managers or administrators who need to assign tickets
 without necessarily owning them.
-
-However, if you are checking if current user can "Take" or "Steal"
-the ticket, it will also check the ticket's current owner to determine
-if "Take" or "Steal" action could be operated.
 
 =item *
 
@@ -2123,11 +2122,22 @@ in the GUI.
 
 This method accepts the following parameters as a paramshash:
 
-NewOwnerObj: Optional. A user object representing the proposed
-new owner of the ticket.
+=over
 
-Type: Optional. The type of set owner operation. Valid values are Take,
-Steal, or Force.
+=item C<NewOwnerObj>
+
+Optional; an L<RT::User> object representing the proposed new owner of
+the ticket.
+
+=item C<Type>
+
+Optional; the type of set owner operation. Valid values are C<Take>,
+C<Steal>, or C<Force>.  Note that if the type is C<Take>, this method
+will return false if the current user is already the owner; similarly,
+it will return false for C<Steal> if the ticket has no owner or the
+owner is the current user.
+
+=back
 
 As noted above, there are exceptions to the standard ticket-based rights
 described here. The Force option allows for these and is used
