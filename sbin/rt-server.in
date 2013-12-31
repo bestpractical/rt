@@ -127,7 +127,7 @@ EOF
 
     RT->InstallMode(1);
 } else {
-    RT->Init();
+    RT->Init( Heavy => 1 );
 
     my ($status, $msg) = RT::Handle->CheckCompatibility( $RT::Handle->dbh, 'post');
     unless ( $status ) {

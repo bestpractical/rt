@@ -181,6 +181,8 @@ up logging|/InitLogging>, and L<loads plugins|/InitPlugins>.
 =cut
 
 sub Init {
+    shift if @_%2; # code is inconsistent about calling as method
+    my %args = (@_);
 
     CheckPerlRequirements();
 
@@ -189,7 +191,7 @@ sub Init {
     #Get a database connection
     ConnectToDatabase();
     InitSystemObjects();
-    InitClasses();
+    InitClasses(%args);
     InitLogging();
     InitPlugins();
     RT::I18N->Init;
