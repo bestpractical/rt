@@ -2064,6 +2064,9 @@ are owned by Nobody because that is the context appropriate for the
 TakeTicket right. If you need to strictly test a user for a right,
 use HasRight to check for the right directly.
 
+For some custom types of owner changes (C<Take> and C<Steal>), it also
+verifies that those actions are possible given the current ticket owner.
+
 =head3 Rights to Set Owner
 
 The current user can set or change the Owner field in the following
@@ -2119,11 +2122,22 @@ in the GUI.
 
 This method accepts the following parameters as a paramshash:
 
-NewOwnerObj: Optional. A user object representing the proposed
-new owner of the ticket.
+=over
 
-Type: Optional. The type of set owner operation. Valid values are Take,
-Steal, or Force.
+=item C<NewOwnerObj>
+
+Optional; an L<RT::User> object representing the proposed new owner of
+the ticket.
+
+=item C<Type>
+
+Optional; the type of set owner operation. Valid values are C<Take>,
+C<Steal>, or C<Force>.  Note that if the type is C<Take>, this method
+will return false if the current user is already the owner; similarly,
+it will return false for C<Steal> if the ticket has no owner or the
+owner is the current user.
+
+=back
 
 As noted above, there are exceptions to the standard ticket-based rights
 described here. The Force option allows for these and is used
@@ -2145,8 +2159,10 @@ sub CurrentUserCanSetOwner {
         return ($ok, $message) if not $ok;
     }
 
-    # ReassignTicket unconditionally allows you to SetOwner
-    return (1, undef) if $self->CurrentUserHasRight('ReassignTicket');
+    # ReassignTicket allows you to SetOwner, but we also need to check ticket's
+    # current owner for Take and Steal Types
+    return ( 1, undef ) if $self->CurrentUserHasRight('ReassignTicket')
+        && $args{Type} ne 'Take' && $args{Type} ne 'Steal';
 
     # Ticket is unowned
     # Can set owner to yourself withn ModifyTicket or TakeTicket
@@ -2159,6 +2175,7 @@ sub CurrentUserCanSetOwner {
         }
 
         unless ( (  $self->CurrentUserHasRight('ModifyTicket')
+                 or $self->CurrentUserHasRight('ReassignTicket')
                  or $self->CurrentUserHasRight('TakeTicket') )
                  and $self->CurrentUserHasRight('OwnTicket') ) {
             return ( 0, $self->loc("Permission Denied") );
@@ -2172,6 +2189,7 @@ sub CurrentUserCanSetOwner {
             && $OldOwnerObj->Id != $self->CurrentUser->id ) {
 
         unless (    $self->CurrentUserHasRight('ModifyTicket')
+                 || $self->CurrentUserHasRight('ReassignTicket')
                  || $self->CurrentUserHasRight('StealTicket') ) {
             return ( 0, $self->loc("Permission Denied") )
         }
@@ -2187,7 +2205,8 @@ sub CurrentUserCanSetOwner {
                   and $args{'NewOwnerObj'}->id == $self->CurrentUser->id )) {
             return ( 0, $self->loc("You can only take tickets that are unowned") );
         }
-        else {
+
+        unless ( $self->CurrentUserHasRight('ReassignTicket') )  {
             return ( 0, $self->loc( "You can only reassign tickets that you own or that are unowned"));
         }
 
@@ -2195,7 +2214,12 @@ sub CurrentUserCanSetOwner {
     # You own the ticket
     # Untake falls through to here, so we don't need to explicitly handle that Type
     else {
-        unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
+        if ( $args{'Type'} eq 'Take' || $args{'Type'} eq 'Steal' ) {
+            return ( 0, $self->loc("You already own this ticket") );
+        }
+
+        unless ( $self->CurrentUserHasRight('ModifyTicket')
+            || $self->CurrentUserHasRight('ReassignTicket') ) {
             return ( 0, $self->loc("Permission Denied") );
         }
     }

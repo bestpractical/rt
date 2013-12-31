@@ -440,6 +440,10 @@ diag "user can assign ticket to new owner with ReassignTicket right";
     ok $id, 'created a ticket #' . $id or diag "error: $msg";
     is $ticket->Owner, RT->Nobody->id, 'correct owner';
 
+    $agent_c->goto_ticket($id);
+    ok !($agent_c->find_all_links( text => 'Take' ))[0], 'no Take link';
+    ok !($agent_c->find_all_links( text => 'Steal' ))[0], 'no Steal link';
+
     $agent_a->goto_ticket($id);
     $agent_a->content_lacks('Taken', 'no Taken');
     $agent_a->follow_link_ok( { text => 'Basics' }, 'Ticket -> Basics' );
@@ -454,6 +458,8 @@ diag "user can assign ticket to new owner with ReassignTicket right";
          qr{user_a\s*-\s*Taken}, 'got user_a Taken message' );
 
     $agent_c->goto_ticket($id);
+    ok !($agent_c->find_all_links( text => 'Take' ))[0], 'no Take link';
+    ok !($agent_c->find_all_links( text => 'Steal' ))[0], 'no Steal link';
     $agent_c->follow_link_ok( { text => 'Basics' }, 'Ticket -> Basics' );
     my $form = $agent_c->form_name('TicketModify');
     is $form->value('Owner'), $user_a->id, 'correct owner selected';
@@ -466,7 +472,49 @@ diag "user can assign ticket to new owner with ReassignTicket right";
         'got set message in Basics' );
     $agent_c->goto_ticket($id);
     $agent_c->content_like( qr{Owner forcibly changed}, 'got owner forcibly changed message' );
+    ok !($agent_c->find_all_links( text => 'Take' ))[0], 'no Take link';
+}
 
+ok(
+    RT::Test->add_rights(
+        { Principal => $user_c, Right => [qw(OwnTicket)] },
+    ),
+    'add rights'
+);
+diag "user can take/steal ticket with ReassignTicket+OwnTicket right";
+{
+    my $ticket = RT::Ticket->new($user_a);
+    my ( $id, $txn, $msg ) = $ticket->Create(
+        Queue   => $queue->id,
+        Subject => 'test',
+    );
+    ok $id, 'created a ticket #' . $id or diag "error: $msg";
+    is $ticket->Owner, RT->Nobody->id, 'correct owner';
+
+    $agent_c->goto_ticket($id);
+    ok( ($agent_c->find_all_links( text => 'Take' ))[0], 'has Take link' );
+    ok !($agent_c->find_all_links( text => 'Steal' ))[0], 'no Steal link';
+
+    $agent_a->goto_ticket($id);
+    $agent_a->content_lacks('Taken', 'no Taken');
+    $agent_a->follow_link_ok( { text => 'Basics' }, 'Ticket -> Basics' );
+    $agent_a->submit_form(
+        form_name => 'TicketModify',
+        fields    => { Owner => $user_a->id },
+    );
+    $agent_a->content_contains( 'Owner changed from Nobody to user_a',
+        'got set message in Basics' );
+    $agent_a->goto_ticket($id);
+    like($agent_a->dom->at('.transaction.people .description')->all_text,
+         qr{user_a\s*-\s*Taken}, 'got user_a Taken message' );
+
+    $agent_c->goto_ticket($id);
+    ok !($agent_c->find_all_links( text => 'Take' ))[0], 'no Take link';
+    ok( ($agent_c->find_all_links( text => 'Steal' ))[0], 'has Steal link' );
+    $agent_c->follow_link_ok( { text => 'Steal' }, 'Ticket -> Steal' );
+    $agent_c->content_contains( 'Owner changed from user_a to user_c', 'steal message' );
+    ok !($agent_c->find_all_links( text => 'Take' ))[0], 'no Take link';
+    ok !($agent_c->find_all_links( text => 'Steal' ))[0], 'no Steal link';
 }
 
 
