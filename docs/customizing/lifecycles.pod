@@ -378,10 +378,6 @@ to experiment.
                     label  => 'Open For Processing',
                     update => 'Comment',
                 },
-                'pending -> delivered' => {
-                    label  => 'Mark as being delivered',
-                    update => 'Comment',
-                },
                 'pending -> declined' => {
                     label  => 'Decline',
                     update => 'Respond',
