@@ -56,7 +56,7 @@ rows="<% $Rows %>" \
 % }
 name="<%$name%>s" id="<%$name%>s" wrap="off" class="CF-<%$CustomField->id%>-Edit"><% defined($Default) ? $Default : '' %></textarea>
 % } else {
-<input name="<%$name%>" id="<%$name%>" \
+<input type="text" name="<%$name%>" id="<%$name%>" \
 % if ( defined $Cols ) {
 size="<% $Cols %>" \
 % }
