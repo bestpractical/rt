@@ -352,10 +352,10 @@ if ($CloneTicket) {
         }
 
         if ( @cf_values > 1 && $cf->Type eq 'Select' ) {
-            $clone->{"Object-RT::Ticket--CustomField-$cf_id-Value"} = \@cf_values;
+            $clone->{GetCustomFieldInputName( CustomField => $cf )} = \@cf_values;
         }
         else {
-            $clone->{"Object-RT::Ticket--CustomField-$cf_id-Value"} = join "\n",
+            $clone->{GetCustomFieldInputName( CustomField => $cf )} = join "\n",
               @cf_values;
         }
     }

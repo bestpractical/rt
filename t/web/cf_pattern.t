@@ -29,12 +29,14 @@ for my $page ("/Ticket/Create.html?Queue=1", "/Ticket/Modify.html?id=".$ticket->
     $m->content_contains("Input must match [Digits]");
     $m->content_lacks("cfinvalidfield");
 
-    my $cfinput = join "-", "Object", "RT::Ticket", ($page =~ /Create/ ? "" : $ticket->id),
-                            "CustomField", $cf->id, "Value";
+    my $cfinput = RT::Interface::Web::GetCustomFieldInputName(
+        Object => ( $page =~ /Create/ ? RT::Ticket->new( RT->SystemUser ) : $ticket ),
+        CustomField => $cf,
+    );
     $m->submit_form_ok({
         with_fields => {
             $cfinput            => "too many",
-            "${cfinput}s-Magic" => "1",
+            "${cfinput}-Magic" => "1",
         },
     });
     $m->content_contains("Input must match [Digits]");
@@ -43,7 +45,7 @@ for my $page ("/Ticket/Create.html?Queue=1", "/Ticket/Modify.html?id=".$ticket->
     $m->submit_form_ok({
         with_fields => {
             $cfinput            => "42",
-            "${cfinput}s-Magic" => "1",
+            "${cfinput}-Magic" => "1",
         },
     });
 
