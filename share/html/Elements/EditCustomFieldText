@@ -46,10 +46,24 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % while ($Values and my $value = $Values->Next ) {
-<textarea cols="<%$Cols%>" rows="<%$Rows%>" name="<%$NamePrefix%><%$CustomField->Id%>-Values" class="CF-<%$CustomField->id%>-Edit"><% $value->Content %></textarea><br />
+<textarea \
+% if ( defined $Cols ) {
+cols="<% $Cols %>" \
+% }
+% if ( defined $Rows ) {
+rows="<% $Rows %>" \
+% }
+name="<%$NamePrefix%><%$CustomField->Id%>-Values" class="CF-<%$CustomField->id%>-Edit"><% $value->Content %></textarea><br />
 % }
 % if (!$MaxValues or !$Values or $Values->Count < $MaxValues) {
-<textarea cols="<%$Cols%>" rows="<%$Rows%>" name="<%$NamePrefix%><%$CustomField->Id%>-Values" class="CF-<%$CustomField->id%>-Edit"><% defined($Default) ? $Default : '' %></textarea>
+<textarea \
+% if ( defined $Cols ) {
+cols="<% $Cols %>" \
+% }
+% if ( defined $Rows ) {
+rows="<% $Rows %>" \
+% }
+name="<%$NamePrefix%><%$CustomField->Id%>-Values" class="CF-<%$CustomField->id%>-Edit"><% defined($Default) ? $Default : '' %></textarea>
 % }
 <%INIT>
 # XXX - MultiValue textarea is for now outlawed.
