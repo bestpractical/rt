@@ -177,7 +177,7 @@ sub setup_logging {
     my ($dir, $file) = @_;
 
 
-    RT->Config->Set(LogToScreen    => 'warning');
+    RT->Config->Set(LogToSTDERR    => 'warning');
     RT->Config->Set(LogToFile      => 'warning');
     RT->Config->Set(LogDir         => $dir);
     RT->Config->Set(LogToFileNamed => $file);
