@@ -135,4 +135,13 @@ ok( $unlimittickets->Count > 0, "UnLimited tickets object should return tickets"
     undef $count;
 }
 
+{
+    my $tickets = RT::Tickets->new( RT->SystemUser );
+    $tickets->LimitDate( FIELD => "Resolved", OPERATOR => "IS",     VALUE => "NULL" );
+    $tickets->LimitDate( FIELD => "Resolved", OPERATOR => "IS NOT", VALUE => "NULL" );
+    my $count = $tickets->Count();
+    ok $count > 1, "Found more than one ticket";
+    undef $count;
+}
+
 done_testing;

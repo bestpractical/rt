@@ -202,6 +202,8 @@ my %DefaultEA = (
         '!=' => 'AND'
     },
     DATE => {
+        'IS' => 'OR',
+        'IS NOT' => 'OR',
         '='  => 'OR',
         '>=' => 'AND',
         '<=' => 'AND',
