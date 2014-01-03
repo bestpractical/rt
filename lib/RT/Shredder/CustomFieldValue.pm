@@ -47,7 +47,7 @@
 # END BPS TAGGED BLOCK }}}
 
 use RT::CustomFieldValue ();
-package RT::CustomFieldValue;
+package RT::Shredder::CustomFieldValue;
 
 use strict;
 use warnings;

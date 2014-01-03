@@ -47,7 +47,7 @@
 # END BPS TAGGED BLOCK }}}
 
 use RT::ACE ();
-package RT::ACE;
+package RT::Shredder::ACE;
 
 use strict;
 use warnings;

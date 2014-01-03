@@ -47,7 +47,7 @@
 # END BPS TAGGED BLOCK }}}
 
 use RT::Link ();
-package RT::Link;
+package RT::Shredder::Link;
 
 use strict;
 use warnings;
