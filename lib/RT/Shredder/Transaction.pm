@@ -47,7 +47,7 @@
 # END BPS TAGGED BLOCK }}}
 
 use RT::Transaction ();
-package RT::Transaction;
+package RT::Shredder::Transaction;
 
 use strict;
 use warnings;

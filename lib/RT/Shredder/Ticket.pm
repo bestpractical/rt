@@ -47,7 +47,7 @@
 # END BPS TAGGED BLOCK }}}
 
 use RT::Ticket ();
-package RT::Ticket;
+package RT::Shredder::Ticket;
 
 use strict;
 use warnings;

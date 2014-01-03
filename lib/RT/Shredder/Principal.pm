@@ -47,7 +47,7 @@
 # END BPS TAGGED BLOCK }}}
 
 use RT::Principal ();
-package RT::Principal;
+package RT::Shredder::Principal;
 
 use strict;
 use warnings;

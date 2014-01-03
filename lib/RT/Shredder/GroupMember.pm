@@ -47,7 +47,7 @@
 # END BPS TAGGED BLOCK }}}
 
 use RT::GroupMember ();
-package RT::GroupMember;
+package RT::Shredder::GroupMember;
 
 use strict;
 use warnings;
