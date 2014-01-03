@@ -345,4 +345,12 @@ have been overridden by CSS since 4.0.0, and thus did not affect
 display.  They have been removed, and setting them will trigger an
 informational message that setting them is ineffective.
 
+=head1 UPGRADING FROM 4.2.9 AND EARLIER
+
+An additional optional dependency, L<HTML::FormatExternal>, has been
+added.  This allows RT to use C<w3m>, C<elinks>, C<html2text>, or other
+external tools to render HTML to text.  This dependency is not installed
+by default; however, its use is strongly encouraged, and will resolve
+issues with blank outgoing emails.
+
 =cut

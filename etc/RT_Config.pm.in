@@ -703,6 +703,26 @@ will use the address of the current user and remove RT's subject tag.
 
 Set($ForwardFromUser, 0);
 
+=item C<$HTMLFormatter>
+
+RT's default pure-perl formatter may fail to successfully convert even
+on some relatively simple HTML; this will result in blank C<text/plain>
+parts, which is particuarly unfortunate if HTML templates are not in
+use.
+
+If the optional dependency L<HTML::FormatExternal> is installed, RT will
+use external programs to render HTML to plain text.  The default is to
+try, in order, C<w3m>, C<elinks>, C<html2text>, C<links>, C<lynx>, and
+then fall back to the C<core> pure-perl formatter if none are installed.
+
+Set C<$HTMLFormatter> to one of the above programs (or the full path to
+such) to use a different program than the above would choose by default.
+Setting this requires that L<HTML::FormatExternal> be installed.
+
+=cut
+
+Set($HTMLFormatter, undef);
+
 =back
 
 =head2 Email dashboards

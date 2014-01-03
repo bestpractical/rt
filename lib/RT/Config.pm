@@ -631,6 +631,10 @@ our %META;
             $self->Set( MailCommand => 'sendmailpipe' );
         },
     },
+    HTMLFormatter => {
+        Type => 'SCALAR',
+        PostLoadCheck => sub { RT::Interface::Email->_HTMLFormatter },
+    },
     MailPlugins  => {
         Type => 'ARRAY',
         PostLoadCheck => sub {
