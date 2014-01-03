@@ -19,5 +19,5 @@ ok( $txn, 'got Create txn' );
 
 # ->Content converts from text/html to plain text if we don't explicitly ask
 # for html. Our html -> text converter seems to add an extra trailing newline
-is( $txn->Content, "this is body\n\n", "txn's html content converted to plain text" );
+like( $txn->Content, qr/^\s*this is body\s*$/, "txn's html content converted to plain text" );
 is( $txn->Content(Type => 'text/html'), "this is body\n", "txn's html content" );
