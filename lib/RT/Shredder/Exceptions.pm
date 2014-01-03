@@ -46,7 +46,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-package RT::Shredder::Exception;
+package RT::Shredder::Exceptions;
 
 use warnings;
 use strict;

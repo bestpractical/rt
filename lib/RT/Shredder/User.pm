@@ -47,7 +47,7 @@
 # END BPS TAGGED BLOCK }}}
 
 use RT::User ();
-package RT::User;
+package RT::Shredder::User;
 
 use strict;
 use warnings;

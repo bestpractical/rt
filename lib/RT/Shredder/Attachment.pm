@@ -47,7 +47,7 @@
 # END BPS TAGGED BLOCK }}}
 
 use RT::Attachment ();
-package RT::Attachment;
+package RT::Shredder::Attachment;
 
 use strict;
 use warnings;
