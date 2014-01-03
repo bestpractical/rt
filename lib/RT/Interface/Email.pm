@@ -1765,8 +1765,9 @@ sub _RecordSendEmailFailure {
 
 =head2 ConvertHTMLToText HTML
 
-Takes HTML and converts it to plain text.  Appropriate for generating a plain
-text part from an HTML part of an email.
+Takes HTML and converts it to plain text.  Appropriate for generating a
+plain text part from an HTML part of an email.  Returns undef if
+conversion fails.
 
 =cut
 
@@ -1774,19 +1775,26 @@ sub ConvertHTMLToText {
     my $html = shift;
 
     require HTML::FormatText::WithLinks::AndTables;
-    return HTML::FormatText::WithLinks::AndTables->convert(
-        $html => {
-            leftmargin      => 0,
-            rightmargin     => 78,
-            no_rowspacing   => 1,
-            before_link     => '',
-            after_link      => ' (%l)',
-            footnote        => '',
-            skip_linked_urls => 1,
-            with_emphasis   => 0,
-        }
-    );
+    my $text;
+    eval {
+        $text = HTML::FormatText::WithLinks::AndTables->convert(
+            $html => {
+                leftmargin      => 0,
+                rightmargin     => 78,
+                no_rowspacing   => 1,
+                before_link     => '',
+                after_link      => ' (%l)',
+                footnote        => '',
+                skip_linked_urls => 1,
+                with_emphasis   => 0,
+            }
+        );
+        $text //= '';
+    };
+    $RT::Logger->error("Failed to downgrade HTML to plain text: $@") if $@;
+    return $text;
 }
+
 
 RT::Base->_ImportOverlays();
 
