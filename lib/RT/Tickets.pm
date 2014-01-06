@@ -202,6 +202,8 @@ my %DefaultEA = (
         '!=' => 'AND'
     },
     DATE => {
+        'IS' => 'OR',
+        'IS NOT' => 'OR',
         '='  => 'OR',
         '>=' => 'AND',
         '<=' => 'AND',
@@ -550,11 +552,21 @@ sub _DateLimit {
     my ( $sb, $field, $op, $value, %rest ) = @_;
 
     die "Invalid Date Op: $op"
-        unless $op =~ /^(=|>|<|>=|<=)$/;
+        unless $op =~ /^(=|>|<|>=|<=|IS(\s+NOT)?)$/i;
 
     my $meta = $FIELD_METADATA{$field};
     die "Incorrect Meta Data for $field"
         unless ( defined $meta->[1] );
+
+    if ( $op =~ /^(IS(\s+NOT)?)$/i) {
+        return $sb->Limit(
+            FUNCTION => $sb->NotSetDateToNullFunction,
+            FIELD    => $meta->[1],
+            OPERATOR => $op,
+            VALUE    => "NULL",
+            %rest,
+        );
+    }
 
     if ( my $subkey = $rest{SUBKEY} ) {
         if ( $subkey eq 'DayOfWeek' && $op !~ /IS/i && $value =~ /[^0-9]/ ) {
