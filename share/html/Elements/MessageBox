@@ -50,29 +50,36 @@
 % $m->callback( %ARGS, SignatureRef => \$signature );
 <% $Default || '' %><% $message %><% $signature %></textarea>
 % $m->callback( %ARGS, CallbackName => 'AfterTextArea' );
-% if (RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'})) {
-<input type="text" style="display:none" name="<% $Name %>Type" id="<% $Name %>Type" value="<% $m->request_args->{$Name."Type"}||'' %>" />
+% if ($type eq 'text/html') {
+<input type="text" style="display:none" name="<% $Name %>Type" id="<% $Name %>Type" value="<% $m->request_args->{$Name."Type"}||$type %>" />
 % }
 <%INIT>
 
+my $type = RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ? 'text/html' : 'text/plain';
 my $message = '';
 
 if ( $QuoteTransaction ) {
     my $transaction = RT::Transaction->new( $session{'CurrentUser'} );
     $transaction->Load( $QuoteTransaction );
-    $message = $transaction->Content( Quote => 1 );
+    $message = $transaction->Content( Quote => 1, Type  => $type );
 }
 
 my $signature = '';
 if ( $IncludeSignature and my $text = $session{'CurrentUser'}->UserObj->Signature ) {
     $signature = "-- \n". $text;
+    if ($type eq 'text/html') {
+        $signature =~ s/&/&amp;/g;
+        $signature =~ s/</&lt;/g;
+        $signature =~ s/>/&gt;/g;
+        $signature =~ s/"/&quot;/g;  # "//;
+        $signature =~ s/'/&#39;/g;   # '//;
+        $signature =~ s{\n}{<br />}g;
+        $signature = "<p>$signature</p>";
+    }
 }
 
 # wrap="something" seems to really break IE + richtext
-my $wrap_type = '';
-if ( not RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ) {
-    $wrap_type = 'wrap="soft"';
-}
+my $wrap_type = $type eq 'text/html' ? '' : 'wrap="soft"';
 
 # If there's no cols specified, we want to set the width to 100% in CSS
 my $width_attr;

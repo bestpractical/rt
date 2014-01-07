@@ -343,10 +343,22 @@ sub Content {
         $content = $content_obj->Content ||'';
 
         if ( lc $content_obj->ContentType eq 'text/html' ) {
-            $content =~ s/<p>--\s+<br \/>.*?$//s if $args{'Quote'};
+            $content =~ s/(?:(<\/div>)|<p>|<br\s*\/?>|<div(\s+class="[^"]+")?>)\s*--\s+<br\s*\/?>.*?$/$1/s if $args{'Quote'};
 
             if ($args{Type} ne 'text/html') {
                 $content = RT::Interface::Email::ConvertHTMLToText($content);
+            } else {
+                # Scrub out <html>, <head>, <meta>, and <body>, and
+                # leave all else untouched.
+                my $scrubber = HTML::Scrubber->new();
+                $scrubber->rules(
+                    html => 0,
+                    head => 0,
+                    meta => 0,
+                    body => 0,
+                );
+                $scrubber->default( 1 => { '*' => 1 } );
+                $content = $scrubber->scrub( $content );
             }
         }
         else {
@@ -367,10 +379,18 @@ sub Content {
     }
 
     if ( $args{'Quote'} ) {
-        $content = $self->ApplyQuoteWrap(content => $content,
-                                         cols    => $args{'Wrap'} );
+        if ($args{Type} eq 'text/html') {
+            $content = '<div class="gmail_quote">'
+                . $self->QuoteHeader
+                . '<br /><blockquote class="gmail_quote" type="cite">'
+                . $content
+                . '</blockquote></div><br /><br />';
+        } else {
+            $content = $self->ApplyQuoteWrap(content => $content,
+                                             cols    => $args{'Wrap'} );
 
-        $content = $self->QuoteHeader . "\n$content\n\n";
+            $content = $self->QuoteHeader . "\n$content\n\n";
+        }
     }
 
     return ($content);
