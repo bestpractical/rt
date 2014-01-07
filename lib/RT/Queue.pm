@@ -1096,7 +1096,7 @@ sub FindDependencies {
 
     # Queue role groups( Cc, AdminCc )
     my $objs = RT::Groups->new( $self->CurrentUser );
-    $objs->Limit( FIELD => 'Domain', VALUE => 'RT::Queue-Role' );
+    $objs->Limit( FIELD => 'Domain', VALUE => 'RT::Queue-Role', CASESENSITIVE => 0 );
     $objs->Limit( FIELD => 'Instance', VALUE => $self->Id );
     $deps->Add( in => $objs );
 
@@ -1135,7 +1135,7 @@ sub FindDependencies {
 
     # Tickets
     $objs = RT::Tickets->new( $self->CurrentUser );
-    $objs->_SQLLimit( FIELD => "Queue", VALUE => $self->Id );
+    $objs->Limit( FIELD => "Queue", VALUE => $self->Id );
     $objs->{allow_deleted_search} = 1;
     $deps->Add( in => $objs );
 }

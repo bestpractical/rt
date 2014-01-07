@@ -3587,7 +3587,7 @@ sub FindDependencies {
 
     # Ticket role groups( Owner, Requestors, Cc, AdminCc )
     $objs = RT::Groups->new( $self->CurrentUser );
-    $objs->Limit( FIELD => 'Domain', VALUE => 'RT::Ticket-Role' );
+    $objs->Limit( FIELD => 'Domain', VALUE => 'RT::Ticket-Role', CASESENSITIVE => 0 );
     $objs->Limit( FIELD => 'Instance', VALUE => $self->Id );
     $deps->Add( in => $objs );
 

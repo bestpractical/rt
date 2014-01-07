@@ -427,7 +427,7 @@ sub CloseStream {
     # Take global CFs which we made and make them un-global
     my @queues = grep {$_} map {$self->LookupObj( $_ )} @{$self->{NewQueues}};
     for my $obj (map {$self->LookupObj( $_ )} @{$self->{NewCFs}}) {
-        my $ocf = $obj->IsApplied( 0 ) or next;
+        my $ocf = $obj->IsGlobal or next;
         $ocf->Delete;
         $obj->AddToObject( $_ ) for @queues;
     }

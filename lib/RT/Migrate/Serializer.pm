@@ -241,7 +241,7 @@ sub PushBasics {
 
     # System role groups
     my $systemroles = RT::Groups->new( RT->SystemUser );
-    $systemroles->LimitToRolesForSystem;
+    $systemroles->LimitToRolesForObject( RT->System );
     $self->PushObj( $systemroles );
 
     # CFs on Users, Groups, Queues

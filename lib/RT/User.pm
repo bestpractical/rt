@@ -2672,7 +2672,7 @@ sub FindDependencies {
 
     # ACL equivalence group
     my $objs = RT::Groups->new( $self->CurrentUser );
-    $objs->Limit( FIELD => 'Domain', VALUE => 'ACLEquivalence' );
+    $objs->Limit( FIELD => 'Domain', VALUE => 'ACLEquivalence', CASESENSITIVE => 0 );
     $objs->Limit( FIELD => 'Instance', VALUE => $self->Id );
     $deps->Add( in => $objs );
 
@@ -2695,6 +2695,7 @@ sub FindDependencies {
         ALIAS => $groups,
         FIELD => 'Domain',
         VALUE => 'SystemInternal',
+        CASESENSITIVE => 0
     );
     $deps->Add( in => $objs );
 
