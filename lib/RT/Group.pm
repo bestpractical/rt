@@ -1680,10 +1680,12 @@ sub PreInflate {
             return $duplicated->();
         }
     } elsif ($data->{Domain} =~ /^(SystemInternal|RT::System-Role)$/) {
-        $obj->LoadByCols( Domain => $data->{Domain}, Type => $data->{Type} );
+        $obj->LoadByCols( Domain => $data->{Domain}, Name => $data->{Name} );
         return $duplicated->() if $obj->Id;
     } elsif ($data->{Domain} eq "RT::Queue-Role") {
-        $obj->LoadQueueRoleGroup( Queue => $data->{Instance}, Type => $data->{Type} );
+        my $queue = RT::Queue->new( RT->SystemUser );
+        $queue->Load( $data->{Instance} );
+        $obj->LoadRoleGroup( Object => $queue, Name => $data->{Name} );
         return $duplicated->() if $obj->Id;
     }
 
