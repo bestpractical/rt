@@ -168,6 +168,7 @@ our %GROUPINGS_META = (
             $CustomFields->LimitToGlobal;
             while ( my $CustomField = $CustomFields->Next ) {
                 push @res, ["Custom field", $CustomField->Name], "CF.{". $CustomField->id ."}";
+                push @res, ["Custom field", $CustomField->Name], "CF.{". $CustomField->Name ."}";
             }
             return @res;
         },
