@@ -117,7 +117,7 @@ elsif (!$ShowHeaders)  {
     push @DisplayHeaders, 'RT-Send-Bcc' if RT->Config->Get('ShowBccHeader');
 }
 
-$m->callback(CallbackName => 'MassageDisplayHeaders', DisplayHeaders => \@DisplayHeaders, Transaction => $Transaction);
+$m->callback(CallbackName => 'MassageDisplayHeaders', DisplayHeaders => \@DisplayHeaders, Transaction => $Transaction, ShowHeaders => $ShowHeaders);
 
 my $render_attachment = sub {
     my $message = shift;
