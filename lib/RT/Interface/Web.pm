@@ -3836,6 +3836,12 @@ our %SCRUBBER_ALLOWED_ATTRIBUTES = (
                font-family: \s* [\w\s"',.\-]+       |
                font-weight: \s* [\w\-]+             |
 
+               border-style: \s* \w+                |
+               border-color: \s* [#\w]+             |
+               border-width: \s* [\s\w]+            |
+               padding: \s* [\s\w]+                 |
+               margin: \s* [\s\w]+                  |
+
                # MS Office styles, which are probably fine.  If we don't, then any
                # associated styles in the same attribute get stripped.
                mso-[\w\-]+?: \s* [\w\s"',.\-]+
