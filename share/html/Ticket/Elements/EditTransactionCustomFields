@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $m->callback( CallbackName => 'BeforeTransactionCustomFields', TicketObj => $TicketObj, QueueObj => $QueueObj );
+% $m->callback( CallbackName => 'BeforeTransactionCustomFields', TicketObj => $TicketObj, QueueObj => $QueueObj, InTable => $InTable );
 % if ( $WRAP ) {
 <<% $WRAP %> class="edit-transaction-custom-fields">
 % }
@@ -73,7 +73,7 @@
 % if ( $WRAP ) {
 </<% $WRAP %>>
 % }
-% $m->callback( CallbackName => 'AfterTransactionCustomFields', TicketObj => $TicketObj, QueueObj => $QueueObj );
+% $m->callback( CallbackName => 'AfterTransactionCustomFields', TicketObj => $TicketObj, QueueObj => $QueueObj, InTable => $InTable );
 
 <%INIT>
 my $CustomFields;
@@ -84,7 +84,7 @@ if ($TicketObj) {
     $CustomFields = $QueueObj->TicketTransactionCustomFields();
 }
 
-$m->callback( CallbackName => 'MassageTransactionCustomFields', CustomFields => $CustomFields );
+$m->callback( CallbackName => 'MassageTransactionCustomFields', CustomFields => $CustomFields, InTable => $InTable );
 
 $AsTable ||= $InTable;
 my $FIELD = $AsTable ? 'tr' : 'div';
