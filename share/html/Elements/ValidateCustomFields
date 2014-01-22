@@ -72,8 +72,25 @@ while ( my $CF = $CustomFields->Next ) {
 
     my @values = _NormalizeObjectCustomFieldValue(
         CustomField => $CF,
-        Value       => $submitted->{Values} || $submitted->{Value} || $submitted->{Upload},
+        Value       => ($submitted->{Values} // $submitted->{Value} // $submitted->{Upload}),
     );
+    if ($CF->Type =~ /^Date(?:Time)?$/) {
+        if (not @values) {
+            my $values = $Object->CustomFieldValues($CF->Id);
+            while (my $ocfv = $values->Next) {
+                push @values, $ocfv->Content;
+            }
+        }
+        @values = grep {
+            my $DateObj = RT::Date->new ( $session{'CurrentUser'} );
+            $DateObj->Set(
+                Format => 'unknown',
+                Value => $_,
+                ($CF->Type eq "Date" ? (Timezone => 'utc') : ())
+            );
+            $DateObj->Unix > 0
+        } @values;
+    }
     push @values, '' unless @values;
 
     for my $value( @values ) {
