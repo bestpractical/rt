@@ -190,7 +190,7 @@ $m->callback(
 );
 
 my @panes;
-for my $pane (keys %pane_name) {
+for my $pane (sort keys %pane_name) {
     my $sel = $m->comp(
         '/Widgets/SelectionBox:new',
         Action      => 'Queries.html',
