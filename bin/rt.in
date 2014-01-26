@@ -52,6 +52,23 @@
 use strict;
 use warnings;
 
+# fix lib paths, some may be relative
+BEGIN { # BEGIN RT CMD BOILERPLATE
+    require File::Spec;
+    require Cwd;
+    my @libs = ("@RT_LIB_PATH@", "@LOCAL_LIB_PATH@");
+    my $bin_path;
+
+    for my $lib (@libs) {
+        unless ( File::Spec->file_name_is_absolute($lib) ) {
+            $bin_path ||= ( File::Spec->splitpath(Cwd::abs_path(__FILE__)) )[1];
+            $lib = File::Spec->catfile( $bin_path, File::Spec->updir, $lib );
+        }
+        unshift @INC, $lib;
+    }
+
+}
+
 if ( $ARGV[0] && $ARGV[0] =~ /^(?:--help|-h)$/ ) {
     require Pod::Usage;
     print Pod::Usage::pod2usage( { verbose => 2 } );
