@@ -525,7 +525,7 @@ sub _ResolveRoles {
                 $roles->{$role} = $user->PrincipalObj;
             }
             unless ($roles->{$role} and $roles->{$role}->id) {
-                push @errors, $self->loc("Invalid value for [_1]",loc($role));
+                push @errors, $self->loc("Invalid value for [_1]",$self->loc($role));
                 $roles->{$role} = RT->Nobody->PrincipalObj;
             }
             # For consistency, we always return an arrayref
