@@ -1,20 +1,21 @@
 if (!window.RT)              window.RT = {}
 if (!window.RT.Autocomplete) window.RT.Autocomplete = {}
 
+window.RT.Autocomplete.Classes = {
+    Users: 'user',
+    Groups: 'group',
+    Tickets: 'tickets',
+    Queues: 'queues'
+};
+
 window.RT.Autocomplete.bind = function(from) {
-    var cssClassMap = {
-        Users: 'user',
-        Groups: 'group',
-        Tickets: 'tickets',
-        Queues: 'queues'
-    };
 
     jQuery("input[data-autocomplete]", from).each(function(){
         var input = jQuery(this);
         var what  = input.attr("data-autocomplete");
         var wants = input.attr("data-autocomplete-return");
 
-        if (!what || !what.match(/^(Users|Groups|Tickets|Queues)$/)) // Did you update cssClassMap above?
+        if (!what || !window.RT.Autocomplete.Classes[what])
             return;
 
         // Don't re-bind the autocompleter
@@ -94,7 +95,7 @@ window.RT.Autocomplete.bind = function(from) {
         if (queryargs.length)
             options.source += "?" + queryargs.join("&");
 
-        input.addClass('autocompletes-' + cssClassMap[what] )
+        input.addClass('autocompletes-' + window.RT.Autocomplete.Classes[what] )
             .autocomplete(options)
             .data("ui-autocomplete")
             ._renderItem = function(ul, item) {
