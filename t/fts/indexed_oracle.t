@@ -6,7 +6,7 @@ use RT::Test tests => undef;
 plan skip_all => 'Not Oracle' unless RT->Config->Get('DatabaseType') eq 'Oracle';
 plan tests => 13;
 
-RT->Config->Set( FullTextSearch => Enable => 1, Indexed => 1 );
+RT->Config->Set( FullTextSearch => Enable => 1, Indexed => 1, IndexName => 'rt_fts_index' );
 
 setup_indexing();
 

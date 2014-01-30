@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -225,6 +225,6 @@ if (defined $session{'tickets'} and ($ARGS{'Query'} or $session{'CurrentSearchHa
     $link_rel{first} = "Ticket/Display.html?id=" . $item_map->{first}                if $item_map->{$TicketObj->Id}{prev};
     $link_rel{prev}  = "Ticket/Display.html?id=" . $item_map->{$TicketObj->Id}{prev} if $item_map->{$TicketObj->Id}{prev};
     $link_rel{next}  = "Ticket/Display.html?id=" . $item_map->{$TicketObj->Id}{next} if $item_map->{$TicketObj->Id}{next};
-    $link_rel{last}  = "Ticket/Display.html?id=" . $item_map->{last}                 if $item_map->{$TicketObj->Id}{next};
+    $link_rel{last}  = "Ticket/Display.html?id=" . $item_map->{last}                 if $item_map->{$TicketObj->Id}{next} && $item_map->{last};
 }
 </%INIT>

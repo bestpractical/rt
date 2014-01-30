@@ -1,9 +1,8 @@
-#!@PERL@
 # BEGIN BPS TAGGED BLOCK {{{
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -46,50 +45,21 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
+
+package RT::DependencyWalker::FindDependencies;
+
 use strict;
 use warnings;
 
-use lib "@LOCAL_LIB_PATH@";
-use lib "@RT_LIB_PATH@";
-
-
-use RT;
-RT::LoadConfig();
-RT::Init();
-
-use RT::Queues;
-
-my $queues = RT::Queues->new( RT->SystemUser );
-$queues->UnLimit();
-while ( my $queue = $queues->Next ) {
-    print "Processing queue ". ($queue->Name || $queue->id) ."...\n";
-    my $old_attr = $queue->FirstAttribute('BrandedSubjectTag');
-    unless ( $old_attr ) {
-        print "\thas no old-style subject tag. skipping\n";
-        next;
-    }
-    my $old_value = $old_attr->Content;
-    unless ( $old_value ) {
-        print "\thas empty old-style subject tag\n";
-    } else {
-        my ($status, $msg) = $queue->SetSubjectTag( $old_value );
-        unless ( $status ) {
-            print STDERR "\tERROR. Couldn't set tag: $msg\n";
-            next;
-        } else {
-            print "\thave set new-style subject tag to '$old_value'\n";
-        }
-    }
-
-    my ($status, $msg) = $queue->DeleteAttribute('BrandedSubjectTag');
-    unless ( $status ) {
-        print STDERR "\tERROR. Couldn't delete old-style tag: $msg\n";
-        next;
-    } else {
-        print "\tdeleted old-style tag entry\n";
-    }
-    print "\tDONE\n";
+sub new {
+    my $class = shift;
+    return bless {out => [], in => []}, $class;
 }
 
-exit 0;
+sub Add {
+    my $self = shift;
+    my ($dir, $obj) = @_;
+    push @{$self->{$dir}}, $obj;
+}
 
+1;

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -67,13 +67,13 @@
     <&|/l&>GD is disabled or not installed. You can upload an image, but you won't get automatic color suggestions.</&>
 % }
     </div>
-    <input name="reset_logo" value="Reset to default RT Logo" type="submit" />
-    <input type="submit" value="Upload" />
+    <input name="reset_logo" value="<&|/l&>Reset to default RT Logo</&>" type="submit" />
+    <input type="submit" value="<&|/l&>Upload</&>" />
   </form>
 </div>
 
 <div id="customize-theme">
-  <h2>Customize the RT theme</h2>
+  <h2><&|/l&>Customize the RT theme</&></h2>
   <ol>
     <li>
       <label for="section"><&|/l&>Select a section</&>:</label>
@@ -105,14 +105,14 @@
 </div>
 
 <div id="custom-css">
-  <h2>Custom CSS (Advanced)</h2>
+  <h2><&|/l&>Custom CSS (Advanced)</&></h2>
 
   <form method="POST">
     <textarea rows=20 id="user_css" name="user_css" wrap="off"><% $user_css %></textarea><br />
-    <input id="try" type="button" class="button" value="Try" />
-    <input id="reset" type="reset" value="Reset" type="submit" />
-    <input name="reset_css" value="Reset to default RT Theme" type="submit" />
-    <input value="Save" type="submit" />
+    <input id="try" type="button" class="button" value="<&|/l&>Try</&>" />
+    <input id="reset" type="reset" value="<&|/l&>Reset</&>" type="submit" />
+    <input name="reset_css" value="<&|/l&>Reset to default RT Theme</&>" type="submit" />
+    <input value="<&|/l&>Save</&>" type="submit" />
   </form>
 </div>
 
@@ -138,14 +138,24 @@ jQuery(function($) {
                            .text(v[0]));
     });
 
-    $("style#sitecss").text($('#user_css').val());
+    function update_sitecss(text) {
+        if (!text)
+            text = $('#user_css').val();
+
+        // IE 8 doesn't let us update the innerHTML of <style> tags (with jQuery.text())
+        // see: http://stackoverflow.com/questions/2692770/style-style-textcss-appendtohead-does-not-work-in-ie/2692861#2692861
+        $("style#sitecss").remove();
+        $("<style id='sitecss' type='text/css' media='all'>" + text + "</style>").appendTo('head');
+    }
+
+    update_sitecss();
     $('#try').click(function() {
-        $("style#sitecss").text($('#user_css').val());
+        update_sitecss();
     });
 
     $('#reset').click(function() {
         setTimeout(function() {
-          $("style#sitecss").text($('#user_css').val());
+            update_sitecss();
         }, 1000);
     });
 
@@ -181,7 +191,7 @@ jQuery(function($) {
           }
       }
       $('#user_css').val(css);
-      $("style#sitecss").text(css);
+      update_sitecss(css);
     }
 
     $('#color-picker').farbtastic(function(color){ change_color(color, this.hsl[2] > <% $text_threshold %> ? '#000' : '#fff') });

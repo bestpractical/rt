@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -50,5 +50,5 @@
 
 <![endif]-->
 <!--[if lt IE 7]>
-<link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/static/css/web2/msie6.css" type="text/css" media="all" />
+<link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/static/css/ballard/msie6.css" type="text/css" media="all" />
 <![endif]-->

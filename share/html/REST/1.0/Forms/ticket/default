@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -194,7 +194,6 @@ else {
                     From => $session{CurrentUser}->EmailAddress,
                     Subject => $v{Subject},
                     'X-RT-Interface' => 'REST',
-                    'Content-Type' => $v{'Content-Type'} || 'text/plain',
                 );
             $v{MIMEObj}->attach(
                 Data => $text,

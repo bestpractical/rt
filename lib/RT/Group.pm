@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -85,16 +85,16 @@ use RT::GroupMembers;
 use RT::Principals;
 use RT::ACL;
 
-__PACKAGE__->AddRight( Admin => AdminGroup           => 'Modify group metadata or delete group'); # loc_pair
-__PACKAGE__->AddRight( Admin => AdminGroupMembership => 'Modify group membership roster'); # loc_pair
-__PACKAGE__->AddRight( Staff => ModifyOwnMembership  => 'Join or leave group'); # loc_pair
-__PACKAGE__->AddRight( Admin => EditSavedSearches    => 'Create, modify and delete saved searches'); # loc_pair
-__PACKAGE__->AddRight( Staff => ShowSavedSearches    => 'View saved searches'); # loc_pair
-__PACKAGE__->AddRight( Staff => SeeGroup             => 'View group'); # loc_pair
-__PACKAGE__->AddRight( Staff => SeeGroupDashboard    => 'View group dashboards'); # loc_pair
-__PACKAGE__->AddRight( Admin => CreateGroupDashboard => 'Create group dashboards'); # loc_pair
-__PACKAGE__->AddRight( Admin => ModifyGroupDashboard => 'Modify group dashboards'); # loc_pair
-__PACKAGE__->AddRight( Admin => DeleteGroupDashboard => 'Delete group dashboards'); # loc_pair
+__PACKAGE__->AddRight( Admin => AdminGroup           => 'Modify group metadata or delete group'); # loc
+__PACKAGE__->AddRight( Admin => AdminGroupMembership => 'Modify group membership roster'); # loc
+__PACKAGE__->AddRight( Staff => ModifyOwnMembership  => 'Join or leave group'); # loc
+__PACKAGE__->AddRight( Admin => EditSavedSearches    => 'Create, modify and delete saved searches'); # loc
+__PACKAGE__->AddRight( Staff => ShowSavedSearches    => 'View saved searches'); # loc
+__PACKAGE__->AddRight( Staff => SeeGroup             => 'View group'); # loc
+__PACKAGE__->AddRight( Staff => SeeGroupDashboard    => 'View group dashboards'); # loc
+__PACKAGE__->AddRight( Admin => CreateGroupDashboard => 'Create group dashboards'); # loc
+__PACKAGE__->AddRight( Admin => ModifyGroupDashboard => 'Modify group dashboards'); # loc
+__PACKAGE__->AddRight( Admin => DeleteGroupDashboard => 'Delete group dashboards'); # loc
 
 =head1 METHODS
 
@@ -1680,10 +1680,12 @@ sub PreInflate {
             return $duplicated->();
         }
     } elsif ($data->{Domain} =~ /^(SystemInternal|RT::System-Role)$/) {
-        $obj->LoadByCols( Domain => $data->{Domain}, Type => $data->{Type} );
+        $obj->LoadByCols( Domain => $data->{Domain}, Name => $data->{Name} );
         return $duplicated->() if $obj->Id;
     } elsif ($data->{Domain} eq "RT::Queue-Role") {
-        $obj->LoadQueueRoleGroup( Queue => $data->{Instance}, Type => $data->{Type} );
+        my $queue = RT::Queue->new( RT->SystemUser );
+        $queue->Load( $data->{Instance} );
+        $obj->LoadRoleGroup( Object => $queue, Name => $data->{Name} );
         return $duplicated->() if $obj->Id;
     }
 
@@ -1693,6 +1695,10 @@ sub PreInflate {
         Disabled => $disabled,
         ObjectId => 0,
     );
+
+    # Now we have a principal id, set the id for the group record
+    $data->{id} = $id;
+
     $importer->Resolve( $principal_uid => ref($principal), $id );
 
     $importer->Postpone(

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -83,16 +83,16 @@ L<DBIx::SearchBuilder::Handle>, using the C<DatabaseType> configuration.
 =cut
 
 sub FinalizeDatabaseType {
-    eval {
-        use base "DBIx::SearchBuilder::Handle::". RT->Config->Get('DatabaseType');
-    };
-
     my $db_type = RT->Config->Get('DatabaseType');
-    if ($@) {
+    my $package = "DBIx::SearchBuilder::Handle::$db_type";
+
+    unless (eval "require $package; 1;") {
         die "Unable to load DBIx::SearchBuilder database handle for '$db_type'.\n".
             "Perhaps you've picked an invalid database type or spelled it incorrectly.\n".
             $@;
     }
+
+    @RT::Handle::ISA = ($package);
 
     # We use COLLATE NOCASE to enforce case insensitivity on the normally
     # case-sensitive SQLite, LOWER() approach works, but lucks performance
@@ -365,6 +365,9 @@ sub CreateDatabase {
     elsif ( $db_type eq 'Pg' ) {
         $status = $dbh->do("CREATE DATABASE $db_name WITH ENCODING='UNICODE' TEMPLATE template0");
     }
+    elsif ( $db_type eq 'mysql' ) {
+        $status = $dbh->do("CREATE DATABASE $db_name DEFAULT CHARACTER SET utf8");
+    }
     else {
         $status = $dbh->do("CREATE DATABASE $db_name");
     }
@@ -550,6 +553,15 @@ sub InsertIndexes {
             unless -e $path;
     } else {
         $path = $base_path;
+    }
+
+    if ( $db_type eq 'Oracle' ) {
+        my $db_user = RT->Config->Get('DatabaseUser');
+        my $status = $dbh->do( "ALTER SESSION SET CURRENT_SCHEMA=$db_user" );
+        unless ( $status ) {
+            return $status, "Couldn't set current schema to $db_user."
+                ."\nError: ". $dbh->errstr;
+        }
     }
 
     local $@;
@@ -936,10 +948,14 @@ sub InsertData {
             my $apply_to = delete $item->{'ApplyTo'};
 
             if ( $item->{'BasedOn'} ) {
-                if ( $item->{'LookupType'} ) {
+                if ( $item->{'BasedOn'} =~ /^\d+$/) {
+                    # Already have an ID -- should be fine
+                } elsif ( $item->{'LookupType'} ) {
                     my $basedon = RT::CustomField->new($RT::SystemUser);
-                    my ($ok, $msg ) = $basedon->LoadByCols( Name => $item->{'BasedOn'},
-                                                            LookupType => $item->{'LookupType'} );
+                    my ($ok, $msg ) = $basedon->LoadByCols(
+                        Name => $item->{'BasedOn'},
+                        LookupType => $item->{'LookupType'},
+                        Disabled => 0 );
                     if ($ok) {
                         $item->{'BasedOn'} = $basedon->Id;
                     } else {
@@ -1301,8 +1317,8 @@ sub Indexes {
     }
     elsif ( $db_type eq 'Pg' ) {
         $list = $dbh->selectall_arrayref(
-            'select tablename, indexname from pg_indexes where schemaname = ?',
-            undef, 'public'
+            'select tablename, indexname from pg_indexes',
+            undef,
         );
     }
     elsif ( $db_type eq 'SQLite' ) {
@@ -1420,14 +1436,14 @@ sub IndexInfo {
         $res{'Unique'} = (grep lc $_->[1] eq lc $args{'Name'}, @$list)[0][2]? 1 : 0;
     }
     elsif ( $db_type eq 'Oracle' ) {
-        my $index = $dbh->selectrow_hashref(
+        my $index = $dbh->selectrow_arrayref(
             'select uniqueness, funcidx_status from dba_indexes
             where lower(table_name) = ? AND lower(index_name) = ? AND LOWER(Owner) = ?',
             undef, lc $args{'Table'}, lc $args{'Name'}, lc RT->Config->Get('DatabaseUser'),
         );
-        return () unless $index && keys %$index;
-        $res{'Unique'} = $index->{'uniqueness'} eq 'UNIQUE'? 1 : 0;
-        $res{'Functional'} = $index->{'funcidx_status'}? 1 : 0;
+        return () unless $index && @$index;
+        $res{'Unique'} = $index->[0] eq 'UNIQUE'? 1 : 0;
+        $res{'Functional'} = $index->[1] ? 1 : 0;
 
         my %columns = map @$_, @{ $dbh->selectall_arrayref(
             'select column_position, column_name from dba_ind_columns
@@ -1477,7 +1493,17 @@ sub DropIndex {
     }
     elsif ( $db_type eq 'Oracle' ) {
         my $user = RT->Config->Get('DatabaseUser');
-        $res = $dbh->do("drop index $user.$args{'Name'}");
+        # Check if it has constraints associated with it
+        my ($constraint) = $dbh->selectrow_arrayref(
+            'SELECT constraint_name, table_name FROM dba_constraints WHERE LOWER(owner) = ? AND LOWER(index_name) = ?',
+            undef, lc $user, lc $args{'Name'}
+        );
+        if ($constraint) {
+            my ($constraint_name, $table) = @{$constraint};
+            $res = $dbh->do("ALTER TABLE $user.$table DROP CONSTRAINT $constraint_name");
+        } else {
+            $res = $dbh->do("DROP INDEX $user.$args{'Name'}");
+        }
     }
     else {
         die "Not implemented";

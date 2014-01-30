@@ -1,0 +1,29 @@
+use strict;
+use warnings;
+
+our @Initial = (
+    sub {
+        use RT::CustomFields;
+        my $cfs = RT::CustomFields->new(RT->SystemUser);
+        $cfs->{'find_disabled_rows'} = 1;
+        $cfs->Limit( FIELD => 'LookupType', VALUE => 'RT::FM::Class-RT::FM::Article' );
+        while ( my $cf = $cfs->Next ) {
+            my ($ret, $msg) = $cf->__Set( Field => 'LookupType', Value => 'RT::Class-RT::Article' );
+            RT->Logger->warning("Update Custom Field LookupType for CF.".$cf->Id." $msg");
+        }
+        return 1;
+    },
+
+    sub {
+        use RT::ObjectCustomFieldValues;
+        my $ocfvs = RT::ObjectCustomFieldValues->new(RT->System);
+        $ocfvs->{'find_expired_rows'} = 1;
+        $ocfvs->Limit( FIELD => 'ObjectType', VALUE => 'RT::FM::Article' );
+        while ( my $ocfv = $ocfvs->Next ) {
+            my ($ret, $msg) = $ocfv->__Set( Field => 'ObjectType', Value => 'RT::Article' );
+            RT->Logger->warning("Updated CF ".$ocfv->__Value('CustomField')." Value for Article ".$ocfv->__Value('ObjectId'));
+        }
+        return 1;
+    },
+);
+

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -65,7 +65,8 @@ if ( blessed($Context) and $Context->can('RightCategories') ) {
     my %right_categories = %{$Context->RightCategories};
 
     for my $right (keys %available_rights) {
-        push @{$categories{$right_categories{$right}}}, $right;
+        my $category = $right_categories{$right} || 'Miscellaneous'; # loc
+        push @{$categories{$category}}, $right;
     }
 }
 
@@ -89,15 +90,22 @@ my %category_desc = (
     'Status'  => loc('Status changes'),
 );
 
-my %catsort = ( General => 1, Staff => 2, Admin => 3, Status => 4 );
+my %catsort = ( General => 1, Staff => 2, Admin => 3, Status => 4, Miscellaneous => 999 );
+my $i = 5;
+for my $category ( sort keys %categories ) {
+    next if $catsort{$category};
+    $catsort{$category} = $i++;
+}
 
 $acldesc ||= join '-', ($Principal ? $Principal->PrincipalId : 'addprincipal'),
                        ref($Context), $Context->Id;
+
+$available_rights{$_} = loc( $available_rights{$_} ) for keys %available_rights;
 </%init>
     <div class="category-tabs">
       <ul>
 % for my $category (sort { $catsort{$a} <=> $catsort{$b} } keys %categories) {
-        <li><a href="#<% "$id-$category" %>"><% $category_desc{$category} || loc('Miscellaneous') %></a></li>
+        <li><a href="#<% "$id-$category" %>"><% $category_desc{$category} || loc($category) %></a></li>
 % }
       </ul>
 % for my $category (sort { $catsort{$a} <=> $catsort{$b} } keys %categories) {
@@ -110,10 +118,10 @@ $acldesc ||= join '-', ($Principal ? $Principal->PrincipalId : 'addprincipal'),
                id="SetRights-<% $acldesc %>-<% $right %>"
                value="<% $right %>"
                <% $current_rights{$right} ? 'checked' : '' %> />
-        <label for="SetRights-<% $acldesc %>-<% $right %>" title="<% loc($right) %>">
-          <% loc($available_rights{$right}) %>
+        <label for="SetRights-<% $acldesc %>-<% $right %>" title="<% $right %>">
+          <% $available_rights{$right} %>
           <span class="separator">&mdash;</span>
-          <span class="rightname"><% loc($right) %></span>
+          <span class="rightname"><% $right %></span>
         </label>
       </li>
 %     }

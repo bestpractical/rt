@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -176,11 +176,12 @@ sub progress {
 sub setup_logging {
     my ($dir, $file) = @_;
 
-    $RT::LogToScreen    = 'warning';
-    $RT::LogToFile      = 'warning';
-    $RT::LogDir         = $dir;
-    $RT::LogToFileNamed = $file;
-    $RT::LogStackTraces = 'error';
+
+    RT->Config->Set(LogToSTDERR    => 'warning');
+    RT->Config->Set(LogToFile      => 'warning');
+    RT->Config->Set(LogDir         => $dir);
+    RT->Config->Set(LogToFileNamed => $file);
+    RT->Config->Set(LogStackTraces => 'error');
 
     undef $RT::Logger;
     RT->InitLogging();

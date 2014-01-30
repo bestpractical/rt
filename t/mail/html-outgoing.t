@@ -4,10 +4,11 @@ use RT::Test tests => undef;
 BEGIN {
     plan skip_all => 'Email::Abstract and Test::Email required.'
         unless eval { require Email::Abstract; require Test::Email; 1 };
-    plan tests => 18;
+    plan tests => 22;
 }
 
 use RT::Test::Email;
+use Test::Warn;
 
 my $root = RT::User->new(RT->SystemUser);
 $root->Load('root');
@@ -85,6 +86,29 @@ mail_ok {
     'Content-Type' => qr{multipart},
 };
 
+
+diag "Failing HTML -> Text conversion";
+warnings_like {
+    my $body = '<table><tr><td><table><tr><td>Foo</td></tr></table></td></tr></table>';
+    mail_ok {
+        ($ok, $tmsg) = $t->Correspond(
+            MIMEObj => HTML::Mason::Commands::MakeMIMEEntity(
+                Body => $body,
+                Type => 'text/html',
+            ),
+        );
+    } { from    => qr/RT System/,
+        bcc     => 'root@localhost',
+        subject => qr/\Q[example.com #1] The internet is broken\E/,
+        body    => qr{Ticket URL: <a href="(http://localhost:\d+/Ticket/Display\.html\?id=1)">\1</a>.+?$body}s,
+        'Content-Type' => qr{text/html},  # TODO
+    },{ from    => qr/RT System/,
+        to      => 'enduser@example.com',
+        subject => qr/\Q[example.com #1] The internet is broken\E/,
+        body    => qr{<table><tr><td><table><tr><td>Foo</td></tr></table></td></tr></table>},
+        'Content-Type' => qr{text/html},  # TODO
+    };
+} [(qr/uninitialized value/, qr/Failed to downgrade HTML/)x3];
 
 diag "Admin Comment in HTML";
 mail_ok {

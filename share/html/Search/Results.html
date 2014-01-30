@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -50,7 +50,8 @@
     LinkRel => \%link_rel &>
 <& /Elements/Tabs &>
 
-% $m->callback( ARGSRef => \%ARGS, CallbackName => 'BeforeResults' );
+% my $DisplayFormat;
+% $m->callback( ARGSRef => \%ARGS, Format => \$Format, DisplayFormat => \$DisplayFormat, CallbackName => 'BeforeResults' );
 
 % unless ($ok) {
 %    $msg =~ s{ at .*? line .*}{}s;
@@ -68,6 +69,7 @@
     Rows => $Rows,
     Page => $Page,
     Format => $Format,
+    DisplayFormat => $DisplayFormat, # in case we set it in callbacks
     Class => 'RT::Tickets',
     BaseURL => $BaseURL,
     SavedSearchId => $ARGS{'SavedSearchId'},

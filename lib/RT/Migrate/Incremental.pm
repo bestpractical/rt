@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -410,6 +410,18 @@ s!(?<=Your ticket has been (?:approved|rejected) by { eval { )\$Approval->OwnerO
         },
     },
 
+    '4.0.19' => {
+        'RT::CustomField' => sub {
+            my ($ref) = @_;
+            $ref->{LookupType} = 'RT::Class-RT::Article'
+                if $ref->{LookupType} eq 'RT::FM::Class-RT::FM::Article';
+        },
+        'RT::ObjectCustomFieldValue' => sub {
+            my ($ref) = @_;
+            $ref->{ObjectType} = 'RT::Article'
+                if $ref->{ObjectType} eq 'RT::FM::Article';
+        },
+    },
 
 
     '4.1.0' => {
@@ -525,7 +537,7 @@ s!(?<=Your ticket has been (?:approved|rejected) by { eval { )\$Approval->OwnerO
         'RT::Group' => sub {
             my ($ref) = @_;
             $ref->{Name} = $ref->{Type}
-                if $ref->Domain =~ /^(ACLEquivalence|SystemInternal|.*-Role)$/;
+                if $ref->{Domain} =~ /^(ACLEquivalence|SystemInternal|.*-Role)$/;
         },
     },
 
@@ -617,6 +629,29 @@ This is a forward of ticket #{ $Ticket->id }
             }
         },
     },
+
+    '4.2.1' => {
+        'RT::Attribute' => sub {
+            my ($ref, $classref) = @_;
+            if ($ref->{ObjectType} eq "RT::System" and $ref->{Name} eq "BrandedSubjectTag") {
+                $$classref = undef;
+            }
+        },
+    },
+
+    '4.2.2' => {
+        'RT::CustomField' => sub {
+            my ($ref) = @_;
+            $ref->{LookupType} = 'RT::Class-RT::Article'
+                if $ref->{LookupType} eq 'RT::FM::Class-RT::FM::Article';
+        },
+        'RT::ObjectCustomFieldValue' => sub {
+            my ($ref) = @_;
+            $ref->{ObjectType} = 'RT::Article'
+                if $ref->{ObjectType} eq 'RT::FM::Article';
+        },
+    },
+
 );
 
 1;

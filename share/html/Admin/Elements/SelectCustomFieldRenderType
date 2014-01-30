@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -56,11 +56,6 @@ $Default ||= $cf->DefaultRenderType($TypeComposite);
 
 my @types = $cf->RenderTypes($TypeComposite);
 
-# XXX: We currently don't support cascaded select CFs when
-# rendering as a list, so don't offer it for now.
-if ( $BasedOn ) {
-    @types = grep { not /List/ } @types;
-}
 </%INIT>
 <%ARGS>
 $Default => undef

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -1367,10 +1367,16 @@ our %is_whitelisted_component = (
     # While these can be used for denial-of-service against RT
     # (construct a very inefficient query and trick lots of users into
     # running them against RT) it's incredibly useful to be able to link
-    # to a search result or bookmark a result page.
+    # to a search result (or chart) or bookmark a result page.
     '/Search/Results.html' => 1,
     '/Search/Simple.html'  => 1,
-    '/m/tickets/search'     => 1,
+    '/m/tickets/search'    => 1,
+    '/Search/Chart.html'   => 1,
+
+    # This page takes Attachment and Transaction argument to figure
+    # out what to show, but it's read only and will deny information if you
+    # don't have ShowOutgoingEmail.
+    '/Ticket/ShowEmailRecord.html' => 1,
 );
 
 # Components which are blacklisted from automatic, argument-based whitelisting.
@@ -3641,7 +3647,8 @@ sub GetColumnMapEntry {
     }
 
     # complex things
-    elsif ( my ( $mainkey, $subkey ) = $args{'Name'} =~ /^(.*?)\.\{(.+)\}$/ ) {
+    elsif ( my ( $mainkey, $subkey ) = $args{'Name'} =~ /^(.*?)\.(.+)$/ ) {
+        $subkey =~ s/^\{(.*)\}$/$1/;
         return undef unless $args{'Map'}->{$mainkey};
         return $args{'Map'}{$mainkey}{ $args{'Attribute'} }
             unless ref $args{'Map'}{$mainkey}{ $args{'Attribute'} } eq 'CODE';

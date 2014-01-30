@@ -1,3 +1,5 @@
+@import "../base/msie6.css";
+
 div#body {
     top: 0em;
 }
@@ -36,4 +38,25 @@ div#body {
 
 #page-navigation ul {
     width: auto;
+}
+
+.ticket-transaction div.metadata span.actions {
+    right: 1.2em;
+}
+
+div.titlebox,
+#ticket-create-metadata,
+#ticket-update-metadata,
+#ticket-create-message,
+#ticket-update-message {
+    position: relative;
+}
+
+#Ticket-Create-details {
+    float: left;
+    position: relative;
+}
+
+div.submit .extra-buttons {
+    float: none;
 }

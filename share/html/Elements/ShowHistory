@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -81,6 +81,7 @@ if ( $ShowDisplayModes or $ShowTitle ) {
 
 <div class="history-container">
 <%perl>
+$m->callback( %ARGS, Object => $Object, CallbackName => 'BeforeTransactions' );
 my $i = 1;
 while ( my $Transaction = $Transactions->Next ) {
     my $skip = 0;
@@ -125,6 +126,7 @@ while ( my $Transaction = $Transactions->Next ) {
         RowNum            => $i,
         Attachments       => $trans_attachments->{$Transaction->id} || {},
         AttachmentContent => $trans_content,
+        HasTxnCFs         => $HasTxnCFs,
     );
 
     # manually flush the content buffer after each txn,
@@ -171,6 +173,8 @@ for my $attachment (@{$Attachments->ItemsArrayRef()}) {
 
 my $record_type = $Object->RecordType;
 my $histid      = "\L$record_type\E-" . $Object->id . "-history";
+
+my $HasTxnCFs = ($Object->can("TransactionCustomFields") and $Object->TransactionCustomFields->Count);
 </%INIT>
 <%ARGS>
 $Object

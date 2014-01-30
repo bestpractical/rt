@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -181,6 +181,8 @@ up logging|/InitLogging>, and L<loads plugins|/InitPlugins>.
 =cut
 
 sub Init {
+    shift if @_%2; # code is inconsistent about calling as method
+    my %args = (@_);
 
     CheckPerlRequirements();
 
@@ -189,7 +191,7 @@ sub Init {
     #Get a database connection
     ConnectToDatabase();
     InitSystemObjects();
-    InitClasses();
+    InitClasses(%args);
     InitLogging();
     InitPlugins();
     _BuildTableAttributes();

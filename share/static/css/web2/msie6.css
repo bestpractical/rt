@@ -1,3 +1,5 @@
+@import "../base/msie6.css";
+
 .topaction .select-queue {
     margin-top: 0;
 }
@@ -47,3 +49,6 @@ div#page-navigation {
     background-image: url(../../../static/css/images/arrows-grey.gif);
 }
 
+.ticket-transaction div.metadata span.actions {
+    right: 1.1em;
+}

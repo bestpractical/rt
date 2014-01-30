@@ -1,5 +1,5 @@
 function fold_message_stanza(e,showmsg, hidemsg) {
-    var box = jQuery(e).next("br").next('.message-stanza');
+    var box = jQuery(e).next('.message-stanza');
     if ( box.hasClass('closed') ) {
         jQuery([e, box[0]]).removeClass('closed').addClass('open');
         jQuery(e).text( hidemsg);

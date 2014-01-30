@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -72,8 +72,25 @@ while ( my $CF = $CustomFields->Next ) {
 
     my @values = _NormalizeObjectCustomFieldValue(
         CustomField => $CF,
-        Value       => $submitted->{Values} || $submitted->{Value} || $submitted->{Upload},
+        Value       => ($submitted->{Values} // $submitted->{Value} // $submitted->{Upload}),
     );
+    if ($CF->Type =~ /^Date(?:Time)?$/) {
+        if (not @values) {
+            my $values = $Object->CustomFieldValues($CF->Id);
+            while (my $ocfv = $values->Next) {
+                push @values, $ocfv->Content;
+            }
+        }
+        @values = grep {
+            my $DateObj = RT::Date->new ( $session{'CurrentUser'} );
+            $DateObj->Set(
+                Format => 'unknown',
+                Value => $_,
+                ($CF->Type eq "Date" ? (Timezone => 'utc') : ())
+            );
+            $DateObj->Unix > 0
+        } @values;
+    }
     push @values, '' unless @values;
 
     for my $value( @values ) {
@@ -85,7 +102,7 @@ while ( my $CF = $CustomFields->Next ) {
                     my $msg =
                       loc( "Input can not be parsed as an IP address" );
                     $m->notes( ( 'InvalidField-' . $CF->Id ) => $msg );
-                    push @res, loc($CF->Name) .': '. $msg;
+                    push @res, $CF->Name .': '. $msg;
                     $valid = 0;
                 }
             }
@@ -96,7 +113,7 @@ while ( my $CF = $CustomFields->Next ) {
                     my $msg =
                       loc( "Input can not be parsed as an IP address range" );
                     $m->notes( ( 'InvalidField-' . $CF->Id ) => $msg );
-                    push @res, loc($CF->Name) .': '. $msg;
+                    push @res, $CF->Name .': '. $msg;
                     $valid = 0;
                 }
             }
@@ -106,7 +123,7 @@ while ( my $CF = $CustomFields->Next ) {
 
         my $msg = loc("Input must match [_1]", $CF->FriendlyPattern);
         $m->notes( ('InvalidField-' . $CF->Id) => $msg );
-        push @res, loc($CF->Name) .': '. $msg;
+        push @res, $CF->Name .': '. $msg;
         $valid = 0;
     }
 }

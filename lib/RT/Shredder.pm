@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -164,6 +164,21 @@ your F<RT_SiteConfig.pm>:
 
 Be sure to specify an absolute path.
 
+=head1 Database Indexes
+
+We have found that the following indexes significantly speed up
+shredding on most databases.
+
+    CREATE INDEX SHREDDER_CGM1 ON CachedGroupMembers(MemberId, GroupId, Disabled);
+    CREATE INDEX SHREDDER_CGM2 ON CachedGroupMembers(ImmediateParentId,MemberId);
+    CREATE INDEX SHREDDER_CGM3 on CachedGroupMembers (Via, Id);
+
+    CREATE UNIQUE INDEX SHREDDER_GM1 ON GroupMembers(MemberId, GroupId);
+
+    CREATE INDEX SHREDDER_TXN1 ON Transactions(ReferenceType, OldReference);
+    CREATE INDEX SHREDDER_TXN2 ON Transactions(ReferenceType, NewReference);
+    CREATE INDEX SHREDDER_TXN3 ON Transactions(Type, OldValue);
+    CREATE INDEX SHREDDER_TXN4 ON Transactions(Type, NewValue)
 
 =head1 INFORMATION FOR DEVELOPERS
 

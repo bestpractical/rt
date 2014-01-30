@@ -1,0 +1,5 @@
+ALTER TABLE Users MODIFY EmailAddress varchar(120) CHARACTER SET utf8;
+ALTER TABLE Queues
+    MODIFY Lifecycle varchar(32) CHARACTER SET utf8,
+    MODIFY CorrespondAddress varchar(120) CHARACTER SET utf8,
+    MODIFY CommentAddress varchar(120) CHARACTER SET utf8;

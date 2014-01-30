@@ -44,6 +44,7 @@ my %location = (
     my $prefix = 'Object-RT::Ticket--CustomField:';
     my $dom = $m->dom;
     $m->form_name('TicketCreate');
+    $m->field("Subject", "CF grouping test");
 
     for my $grouping (@groupings) {
         my $input_name = $prefix . "$grouping-$CF{$grouping}-Value";

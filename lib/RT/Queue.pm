@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -106,37 +106,37 @@ use RT::Interface::Email;
 # $self->loc('rejected'); # For the string extractor to get a string to localize
 # $self->loc('deleted'); # For the string extractor to get a string to localize
 
-__PACKAGE__->AddRight( General => SeeQueue            => 'View queue' ); # loc_pair
-__PACKAGE__->AddRight( Admin   => AdminQueue          => 'Create, modify and delete queue' ); # loc_pair
-__PACKAGE__->AddRight( Admin   => ShowACL             => 'Display Access Control List' ); # loc_pair
-__PACKAGE__->AddRight( Admin   => ModifyACL           => 'Create, modify and delete Access Control List entries' ); # loc_pair
-__PACKAGE__->AddRight( Admin   => ModifyQueueWatchers => 'Modify queue watchers' ); # loc_pair
-__PACKAGE__->AddRight( General => SeeCustomField      => 'View custom field values' ); # loc_pair
-__PACKAGE__->AddRight( Staff   => ModifyCustomField   => 'Modify custom field values' ); # loc_pair
-__PACKAGE__->AddRight( Admin   => AssignCustomFields  => 'Assign and remove queue custom fields' ); # loc_pair
-__PACKAGE__->AddRight( Admin   => ModifyTemplate      => 'Modify Scrip templates' ); # loc_pair
-__PACKAGE__->AddRight( Admin   => ShowTemplate        => 'View Scrip templates' ); # loc_pair
+__PACKAGE__->AddRight( General => SeeQueue            => 'View queue' ); # loc
+__PACKAGE__->AddRight( Admin   => AdminQueue          => 'Create, modify and delete queue' ); # loc
+__PACKAGE__->AddRight( Admin   => ShowACL             => 'Display Access Control List' ); # loc
+__PACKAGE__->AddRight( Admin   => ModifyACL           => 'Create, modify and delete Access Control List entries' ); # loc
+__PACKAGE__->AddRight( Admin   => ModifyQueueWatchers => 'Modify queue watchers' ); # loc
+__PACKAGE__->AddRight( General => SeeCustomField      => 'View custom field values' ); # loc
+__PACKAGE__->AddRight( Staff   => ModifyCustomField   => 'Modify custom field values' ); # loc
+__PACKAGE__->AddRight( Admin   => AssignCustomFields  => 'Assign and remove queue custom fields' ); # loc
+__PACKAGE__->AddRight( Admin   => ModifyTemplate      => 'Modify Scrip templates' ); # loc
+__PACKAGE__->AddRight( Admin   => ShowTemplate        => 'View Scrip templates' ); # loc
 
-__PACKAGE__->AddRight( Admin   => ModifyScrips        => 'Modify Scrips' ); # loc_pair
-__PACKAGE__->AddRight( Admin   => ShowScrips          => 'View Scrips' ); # loc_pair
+__PACKAGE__->AddRight( Admin   => ModifyScrips        => 'Modify Scrips' ); # loc
+__PACKAGE__->AddRight( Admin   => ShowScrips          => 'View Scrips' ); # loc
 
-__PACKAGE__->AddRight( General => ShowTicket          => 'View ticket summaries' ); # loc_pair
-__PACKAGE__->AddRight( Staff   => ShowTicketComments  => 'View ticket private commentary' ); # loc_pair
-__PACKAGE__->AddRight( Staff   => ShowOutgoingEmail   => 'View exact outgoing email messages and their recipients' ); # loc_pair
+__PACKAGE__->AddRight( General => ShowTicket          => 'View ticket summaries' ); # loc
+__PACKAGE__->AddRight( Staff   => ShowTicketComments  => 'View ticket private commentary' ); # loc
+__PACKAGE__->AddRight( Staff   => ShowOutgoingEmail   => 'View exact outgoing email messages and their recipients' ); # loc
 
-__PACKAGE__->AddRight( General => Watch               => 'Sign up as a ticket Requestor or ticket or queue Cc' ); # loc_pair
-__PACKAGE__->AddRight( Staff   => WatchAsAdminCc      => 'Sign up as a ticket or queue AdminCc' ); # loc_pair
-__PACKAGE__->AddRight( General => CreateTicket        => 'Create tickets' ); # loc_pair
-__PACKAGE__->AddRight( General => ReplyToTicket       => 'Reply to tickets' ); # loc_pair
-__PACKAGE__->AddRight( General => CommentOnTicket     => 'Comment on tickets' ); # loc_pair
-__PACKAGE__->AddRight( Staff   => OwnTicket           => 'Own tickets' ); # loc_pair
-__PACKAGE__->AddRight( Staff   => ModifyTicket        => 'Modify tickets' ); # loc_pair
-__PACKAGE__->AddRight( Staff   => DeleteTicket        => 'Delete tickets' ); # loc_pair
-__PACKAGE__->AddRight( Staff   => TakeTicket          => 'Take tickets' ); # loc_pair
-__PACKAGE__->AddRight( Staff   => StealTicket         => 'Steal tickets' ); # loc_pair
-__PACKAGE__->AddRight( Staff   => ReassignTicket      => 'Modify ticket owner on owned tickets' ); # loc_pair
+__PACKAGE__->AddRight( General => Watch               => 'Sign up as a ticket Requestor or ticket or queue Cc' ); # loc
+__PACKAGE__->AddRight( Staff   => WatchAsAdminCc      => 'Sign up as a ticket or queue AdminCc' ); # loc
+__PACKAGE__->AddRight( General => CreateTicket        => 'Create tickets' ); # loc
+__PACKAGE__->AddRight( General => ReplyToTicket       => 'Reply to tickets' ); # loc
+__PACKAGE__->AddRight( General => CommentOnTicket     => 'Comment on tickets' ); # loc
+__PACKAGE__->AddRight( Staff   => OwnTicket           => 'Own tickets' ); # loc
+__PACKAGE__->AddRight( Staff   => ModifyTicket        => 'Modify tickets' ); # loc
+__PACKAGE__->AddRight( Staff   => DeleteTicket        => 'Delete tickets' ); # loc
+__PACKAGE__->AddRight( Staff   => TakeTicket          => 'Take tickets' ); # loc
+__PACKAGE__->AddRight( Staff   => StealTicket         => 'Steal tickets' ); # loc
+__PACKAGE__->AddRight( Staff   => ReassignTicket      => 'Modify ticket owner on owned tickets' ); # loc
 
-__PACKAGE__->AddRight( Staff   => ForwardMessage      => 'Forward messages outside of RT' ); # loc_pair
+__PACKAGE__->AddRight( Staff   => ForwardMessage      => 'Forward messages outside of RT' ); # loc
 
 =head2 Create(ARGS)
 
@@ -1096,7 +1096,7 @@ sub FindDependencies {
 
     # Queue role groups( Cc, AdminCc )
     my $objs = RT::Groups->new( $self->CurrentUser );
-    $objs->Limit( FIELD => 'Domain', VALUE => 'RT::Queue-Role' );
+    $objs->Limit( FIELD => 'Domain', VALUE => 'RT::Queue-Role', CASESENSITIVE => 0 );
     $objs->Limit( FIELD => 'Instance', VALUE => $self->Id );
     $deps->Add( in => $objs );
 
@@ -1135,7 +1135,7 @@ sub FindDependencies {
 
     # Tickets
     $objs = RT::Tickets->new( $self->CurrentUser );
-    $objs->_SQLLimit( FIELD => "Queue", VALUE => $self->Id );
+    $objs->Limit( FIELD => "Queue", VALUE => $self->Id );
     $objs->{allow_deleted_search} = 1;
     $deps->Add( in => $objs );
 }

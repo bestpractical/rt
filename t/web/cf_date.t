@@ -186,7 +186,7 @@ diag 'check invalid inputs';
 
     my @warnings = $m->get_warnings;
     chomp @warnings;
-    is_deeply( @warnings, q{Couldn't parse date 'foodate' by Time::ParseDate} );
+    is_deeply( \@warnings, [(q{Couldn't parse date 'foodate' by Time::ParseDate})x3] );
 }
 
 done_testing;

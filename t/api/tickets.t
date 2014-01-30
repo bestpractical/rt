@@ -2,8 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 18;
-
+use RT::Test tests => undef;
 
 {
 
@@ -114,3 +113,35 @@ ok( $unlimittickets->Count > 0, "UnLimited tickets object should return tickets"
     ok $count == 1, "found one ticket";
 }
 
+{
+    my $tickets = RT::Tickets->new( RT->SystemUser );
+    my ($ret, $msg) = $tickets->FromSQL("Resolved IS NULL");
+    ok $ret, "Ran query with IS NULL: $msg";
+    my $count = $tickets->Count();
+    ok $count > 1, "Found more than one ticket";
+    undef $count;
+}
+
+{
+    my $ticket = RT::Ticket->new( RT->SystemUser );
+    ok $ticket->Load(1), "Loaded test ticket 1";
+    ok $ticket->SetStatus('resolved'), "Set to resolved";
+
+    my $tickets = RT::Tickets->new( RT->SystemUser );
+    my ($ret, $msg) = $tickets->FromSQL("Resolved IS NOT NULL");
+    ok $ret, "Ran query with IS NOT NULL: $msg";
+    my $count = $tickets->Count();
+    ok $count == 1, "Found one ticket";
+    undef $count;
+}
+
+{
+    my $tickets = RT::Tickets->new( RT->SystemUser );
+    $tickets->LimitDate( FIELD => "Resolved", OPERATOR => "IS",     VALUE => "NULL" );
+    $tickets->LimitDate( FIELD => "Resolved", OPERATOR => "IS NOT", VALUE => "NULL" );
+    my $count = $tickets->Count();
+    ok $count > 1, "Found more than one ticket";
+    undef $count;
+}
+
+done_testing;

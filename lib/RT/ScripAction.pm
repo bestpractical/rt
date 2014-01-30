@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -193,8 +193,8 @@ sub TemplateObj {
         Remove => "4.4",
     );
 
-    return undef unless $self->{Template};
     if ( !$self->{'TemplateObj'} ) {
+        return undef unless $self->{Template};
         $self->{'TemplateObj'} = RT::Template->new( $self->CurrentUser );
         $self->{'TemplateObj'}->Load( $self->{'Template'} );
 

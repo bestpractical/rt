@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -120,7 +120,7 @@ EOF
 
     RT->InstallMode(1);
 } else {
-    RT->Init();
+    RT->Init( Heavy => 1 );
 
     my ($status, $msg) = RT::Handle->CheckCompatibility( $RT::Handle->dbh, 'post');
     unless ( $status ) {

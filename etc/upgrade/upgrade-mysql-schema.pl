@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -184,8 +184,8 @@ my %charset = (
     Queues                   => {
         Name  => 'utf8',
         Description  => 'utf8',
-        CorrespondAddress  => 'ascii',
-        CommentAddress  => 'ascii',
+        CorrespondAddress  => 'utf8',
+        CommentAddress  => 'utf8',
     },
     ScripActions             => {
         Name  => 'utf8',
@@ -239,7 +239,7 @@ my %charset = (
         Password  => 'binary',
         Comments  => 'utf8',
         Signature  => 'utf8',
-        EmailAddress  => 'ascii',
+        EmailAddress  => 'utf8',
         FreeformContactInfo  => 'utf8',
         Organization  => 'utf8',
         RealName  => 'utf8',

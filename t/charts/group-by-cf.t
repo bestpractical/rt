@@ -29,6 +29,7 @@ use_ok 'RT::Report::Tickets';
         GroupBy  => ["CF.{$cfid}"], # TODO: CF.{Name} is not supported at the moment
         Function => ['COUNT'],
     );
+    $report->SortEntries;
 
     my @colors = RT->Config->Get("ChartColors");
     my $expected = {

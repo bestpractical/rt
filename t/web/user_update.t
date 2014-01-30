@@ -33,7 +33,7 @@ $m->text_contains("Langは「'en_us'」から「'ja'」に変更されました"
 $m->text_contains("実名", "Page content is japanese");
 $m->submit_form_ok({ with_fields => { Lang => ''} },
                    "And set to the default");
-$m->text_contains("Lang changed from 'ja' to ''");
+$m->text_contains("Lang changed from 'ja' to (no value)");
 $m->text_contains("Real Name", "Page content is english");
 
 undef $m;

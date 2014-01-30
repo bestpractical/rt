@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -80,6 +80,7 @@
     <td class="label"><&|/l&>Timezone</&>:</td>
     <td class="value"><& /Elements/SelectTimezone, Name => 'Timezone', Default => $UserObj->Timezone &></td>
   </tr>
+<& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Identity', InTable => 1 &>
 </table>
 </&>
 <&| /Widgets/TitleBox, title => loc('Phone numbers'), id => "user-prefs-phone" &>
@@ -100,6 +101,7 @@
     <td class="label"><&|/l&>Pager</&>:</td>
     <td class="value"><input name="PagerPhone" value="<%$UserObj->PagerPhone || ''%>" size="13" /></td>
   </tr>
+<& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Phones', InTable => 1 &>
 </table>
 </&>
 
@@ -119,6 +121,9 @@
     User => $UserObj,
     Name => [qw(CurrentPass Pass1 Pass2)],
 &>
+
+<& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Access control' &>
+
 </&>
 
 <&| /Widgets/TitleBox, title => loc('Location'), id => "user-prefs-location" &>
@@ -151,21 +156,15 @@
     <td class="label"><&|/l&>Country</&>:</td>
     <td class="value"><input name="Country" value="<%$UserObj->Country || ''%>" /></td>
   </tr>
+<& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Location', InTable => 1 &>
 </table>
 </&>
 
-<&| /Widgets/TitleBox, title => loc('Custom Fields') &>
-<table>
-% my $CustomFields = $UserObj->CustomFields;
-% while ( my $CF = $CustomFields->Next ) {
-<tr valign="top">
-<td align="right"><% loc( $CF->Name ) %>:</td>
-<td><& /Elements/EditCustomField,
-    %ARGS, Object => $UserObj, CustomField => $CF
-&></td></tr>
-% }
-</table>
-</&>
+
+
+<& /Elements/EditCustomFieldCustomGroupings, Object => $UserObj &>
+
+
 
 <&| /Widgets/TitleBox, title => loc('Secret authentication token'), id => "user-prefs-feeds" &>
 

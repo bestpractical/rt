@@ -370,11 +370,14 @@ Set($StoreLoops, undef);
 
 C<$MaxAttachmentSize> sets the maximum size (in bytes) of attachments
 stored in the database.  This setting is irrelevant unless one of
-$TruncateLongAttachments or $DropLongAttachments (below) are set.
+$TruncateLongAttachments or $DropLongAttachments (below) are set, B<OR>
+the database is stored in Oracle.  On Oracle, attachments larger than
+this can be fully stored, but will be truncated to this length when
+read.
 
 =cut
 
-Set($MaxAttachmentSize, 10_000_000);
+Set($MaxAttachmentSize, 10_000_000);  # 10M
 
 =item C<$TruncateLongAttachments>
 
@@ -972,6 +975,8 @@ Set(@CSSFiles, qw//);
 This determines how user info is displayed. 'concise' will show the
 first of RealName, Name or EmailAddress that has a value. 'verbose' will
 show EmailAddress, and the first of RealName or Name which is defined.
+The default, 'role', uses 'verbose' for unprivileged users, and the Name
+followed by the RealName for privileged users.
 
 =cut
 
@@ -1297,7 +1302,7 @@ Set ($DefaultSearchResultFormat, qq{
    Owner,
    Priority,
    '__NEWLINE__',
-   '',
+   '__NBSP__',
    '<small>__Requestors__</small>',
    '<small>__CreatedRelative__</small>',
    '<small>__ToldRelative__</small>',
@@ -2467,7 +2472,7 @@ Set(%GnuPGOptions,
 #    'auto-key-locate' => 'keyserver',
 
 # enables the automatic retrieving of keys when verifying signatures
-#    'auto-key-retrieve' => undef,
+#    'keyserver-options' => 'auto-key-retrieve',
 );
 
 =back

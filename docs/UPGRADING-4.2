@@ -300,6 +300,14 @@ on C<configure> enabling these in F<RT_Config.pm> implicitly will need
 to pass C<--enable-gpg> to C<configure>, or alter their
 C<RT_SiteConfig.pm> to enable the functionality explicitly.
 
+=item *
+
+In TicketSQL, "Starts = '1970-01-01'" will no longer find tickets with
+no Starts date set.  Instead, use "Starts IS NULL".  As a direct
+consequence, "Starts < 'today'" will no longer also find tickets with no
+Starts date; use "Starts < 'today' OR Starts IS NULL" to have the
+equivalent results in RT 4.2.
+
 =back
 
 =cut

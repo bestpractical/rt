@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -288,7 +288,7 @@ sub Create {
             if $tmp->id;
     }
 
-    my $result = $self->SUPER::Create(
+    my ( $result, $msg ) = $self->SUPER::Create(
         Content     => $args{'Content'},
         Queue       => $args{'Queue'},
         Description => $args{'Description'},
@@ -296,7 +296,11 @@ sub Create {
         Type        => $args{'Type'},
     );
 
-    return ($result);
+    if ( wantarray ) {
+        return ( $result, $msg );
+    } else {
+        return ( $result );
+    }
 
 }
 
@@ -656,14 +660,17 @@ sub _DowngradeFromHTML {
 
     $orig_entity->head->mime_attr( "Content-Type" => 'text/html' );
     $orig_entity->head->mime_attr( "Content-Type.charset" => 'utf-8' );
-    $orig_entity->make_multipart('alternative', Force => 1);
 
     require Encode;
-    $new_entity->bodyhandle(MIME::Body::InCore->new(
-        # need to decode_utf8, see the doc of MIMEObj method
-        \(RT::Interface::Email::ConvertHTMLToText(Encode::decode_utf8($new_entity->bodyhandle->as_string)))
-    ));
+    my $body = $new_entity->bodyhandle->as_string;
+    # need to decode_utf8, see the doc of MIMEObj method
+    $body = Encode::decode_utf8( $body );
+    my $html = RT::Interface::Email::ConvertHTMLToText( $body );
+    return unless defined $html;
 
+    $new_entity->bodyhandle(MIME::Body::InCore->new( \$html ));
+
+    $orig_entity->make_multipart('alternative', Force => 1);
     $orig_entity->add_part($new_entity, 0); # plain comes before html
     $self->{MIMEObj} = $orig_entity;
 

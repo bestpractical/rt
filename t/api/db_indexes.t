@@ -17,11 +17,7 @@ note "test handle->Indexes method";
     my %indexes = $handle->Indexes;
     ok grep $_ eq 'tickets1', @{ $indexes{'tickets'} };
     ok grep $_ eq 'tickets2', @{ $indexes{'tickets'} };
-    if ($db_type eq 'Oracle') {
-        ok grep $_ eq 'users2', @{ $indexes{'users'} };
-    } else {
-        ok grep $_ eq 'users1', @{ $indexes{'users'} };
-    }
+    ok grep $_ eq 'users1', @{ $indexes{'users'} };
     ok grep $_ eq 'users4', @{ $indexes{'users'} };
 }
 

@@ -6,6 +6,7 @@ our @Initial = (
     sub {
         require RT::Scrips;
         my $scrips = RT::Scrips->new( RT->SystemUser );
+        $scrips->{'find_disabled_rows'} = 1;
         $scrips->UnLimit;
         while ( my $scrip = $scrips->Next ) {
             my $id = $scrip->Template;

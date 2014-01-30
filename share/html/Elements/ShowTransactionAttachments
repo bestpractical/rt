@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -117,7 +117,7 @@ elsif (!$ShowHeaders)  {
     push @DisplayHeaders, 'RT-Send-Bcc' if RT->Config->Get('ShowBccHeader');
 }
 
-$m->callback(CallbackName => 'MassageDisplayHeaders', DisplayHeaders => \@DisplayHeaders, Transaction => $Transaction);
+$m->callback(CallbackName => 'MassageDisplayHeaders', DisplayHeaders => \@DisplayHeaders, Transaction => $Transaction, ShowHeaders => $ShowHeaders);
 
 my $render_attachment = sub {
     my $message = shift;

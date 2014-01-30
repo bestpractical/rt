@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -210,10 +210,10 @@ __PACKAGE__->RegisterBuiltInGroupings(
     'RT::User'      => [ 'Identity', 'Access control', 'Location', 'Phones' ],
 );
 
-__PACKAGE__->AddRight( General => SeeCustomField         => 'View custom fields'); # loc_pair
-__PACKAGE__->AddRight( Admin   => AdminCustomField       => 'Create, modify and delete custom fields'); # loc_pair
-__PACKAGE__->AddRight( Admin   => AdminCustomFieldValues => 'Create, modify and delete custom fields values'); # loc_pair
-__PACKAGE__->AddRight( Staff   => ModifyCustomField      => 'Add, modify and delete custom field values for objects'); # loc_pair
+__PACKAGE__->AddRight( General => SeeCustomField         => 'View custom fields'); # loc
+__PACKAGE__->AddRight( Admin   => AdminCustomField       => 'Create, modify and delete custom fields'); # loc
+__PACKAGE__->AddRight( Admin   => AdminCustomFieldValues => 'Create, modify and delete custom fields values'); # loc
+__PACKAGE__->AddRight( Staff   => ModifyCustomField      => 'Add, modify and delete custom field values for objects'); # loc
 
 =head1 NAME
 
@@ -1050,11 +1050,6 @@ sub SetRenderType {
     if ( not grep { $_ eq $type } $self->RenderTypes ) {
         return (0, $self->loc("Invalid Render Type for custom field of type [_1]",
                                 $self->FriendlyType));
-    }
-
-    # XXX: Remove this restriction once we support lists and cascaded selects
-    if ( $self->BasedOnObj->id and $type =~ /List/ ) {
-        return (0, $self->loc("We can't currently render as a List when basing categories on another custom field.  Please use another render type."));
     }
 
     return $self->_Set( Field => 'RenderType', Value => $type, @_ );

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -112,6 +112,9 @@ sub Metadata {
     # Determine the highest upgrade step that we run
     my @versions = ($RT::VERSION, keys %RT::Migrate::Incremental::UPGRADES);
     my ($max) = reverse sort cmp_version @versions;
+    # we don't want to run upgrades to 4.2.x if we're running
+    # the serializier on an 4.0 instance.
+    $max = $RT::VERSION unless $self->{Incremental};
 
     return {
         Format       => "0.8",
@@ -238,7 +241,7 @@ sub PushBasics {
 
     # System role groups
     my $systemroles = RT::Groups->new( RT->SystemUser );
-    $systemroles->LimitToRolesForSystem;
+    $systemroles->LimitToRolesForObject( RT->System );
     $self->PushObj( $systemroles );
 
     # CFs on Users, Groups, Queues

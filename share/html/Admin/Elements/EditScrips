@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -51,7 +51,7 @@
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
 
 <h2><&|/l&>Scrips</&></h2>
-<div class="admin-hint">Scrips normally run after each individual change to a ticket.</div>
+<div class="admin-hint"><&|/l&>Scrips normally run after each individual change to a ticket.</&></div>
 % my $scrips = $find_scrips->(Stage => 'TransactionCreate');
 <& /Elements/CollectionList, %common_applied_args, Collection => $scrips &>
 % unless ( $scrips->Count ) {
@@ -59,7 +59,7 @@
 % }
 
 <h2><&|/l&>Batch scrips</&></h2>
-<div class="admin-hint">Batch scrips run after a set of related changes to a ticket.</div>
+<div class="admin-hint"><&|/l&>Batch scrips run after a set of related changes to a ticket.</&></div>
 % $scrips = $find_scrips->(Stage => 'TransactionBatch');
 <& /Elements/CollectionList, %common_applied_args, Collection => $scrips &>
 % unless ( $scrips->Count ) {

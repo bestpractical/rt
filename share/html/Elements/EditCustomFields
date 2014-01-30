@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -56,7 +56,7 @@
 
   <<% $FIELD %> class="edit-custom-field cftype-<% $Type %>">
     <<% $CELL %> class="cflabel">
-      <span class="name"><% loc($CustomField->Name) %>:</span><br />
+      <span class="name"><% $CustomField->Name %>:</span><br />
       <span class="type"><% $CustomField->FriendlyType %></span>
     </<% $CELL %>>
     <<% $CELL %> class="entry">

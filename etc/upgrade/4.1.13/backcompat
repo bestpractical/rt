@@ -5,6 +5,9 @@ $groups->Limit(
     FIELD => 'Name', OPERATOR => '!=', VALUE => 'main.Type', QUOTEVALUE => 0
 );
 $groups->Limit(
+    FIELD => 'Name', OPERATOR => 'IS', VALUE => 'NULL',
+);
+$groups->Limit(
     FIELD => 'Domain',
     VALUE => 'SystemInternal',
     CASESENSITIVE => 0,

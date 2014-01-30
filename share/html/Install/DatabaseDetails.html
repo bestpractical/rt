@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -142,7 +142,17 @@ if ( $Run ) {
             $dbh = DBI->connect(
                 RT::Handle->DSN, $ARGS{DatabaseAdmin}, $ARGS{DatabaseAdminPassword}, { RaiseError => 0, PrintError => 0 },
             );
-    
+
+            if ( $dbh and $db_type eq "Oracle") {
+                # The database _existing_ is itself insufficient for Oracle -- we need to check for the RT user
+                my $sth = $dbh->prepare('SELECT username FROM dba_users WHERE username = ?');
+                $sth->execute( $ARGS{DatabaseUser} );
+                undef $dbh unless $sth->fetchrow_array;
+
+                push @errors, loc("Oracle users cannot have empty passwords")
+                    unless $ARGS{DatabasePassword};
+            }
+
             if ( $dbh ) {
                 # check if table Users exists
                 eval {

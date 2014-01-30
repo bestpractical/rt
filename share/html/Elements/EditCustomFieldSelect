@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -64,50 +64,74 @@
 % } elsif ($CustomField->BasedOnObj->id) {
 <script type="text/javascript"><!--
 jQuery(  function () {
-    var basedon = document.getElementById(<% $NamePrefix . $CustomField->BasedOnObj->id . "-Values" |n,j%>);
-    if (basedon != null) {
-        var oldchange = basedon.onchange;
-        basedon.onchange = function () {
+    var basedon = jQuery('[name^="<% $NamePrefix .  $CustomField->BasedOnObj->id %>-Value"][type!="hidden"]:input:not(.hidden)');
+    basedon.each( function() {
+        var oldchange = jQuery(this).onchange;
+        jQuery(this).change( function () {
+            var vals;
+            if ( jQuery(this).is('select') ) {
+                vals = basedon.first().val();
+            }
+            else {
+                vals = [];
+                jQuery(basedon).each( function() {
+                    if ( jQuery(this).is(':checked') ) {
+                        vals.push(jQuery(this).val());
+                    }
+                });
+            }
             filter_cascade_by_id(
                 <% "$id-Values" |n,j%>,
-                jQuery(basedon).val(),
+                vals,
                 true
             );
             if (oldchange != null)
                 oldchange();
-        };
-        basedon.onchange();
+        });
+    });
+
+    if ( basedon.is('select') ) {
+        basedon.change();
+    }
+    else {
+        basedon.first().change();
     }
 });
 --></script>
 % }
-% if (@category) {
-%# this hidden select is to supply a full list of values,
-%# see filter_cascade() in js/cascaded.js
-      <select name="<%$id%>-Values-Complete" id="<%$id%>-Values-Complete" class="hidden" disabled="disabled">
-        <option value=""<% !$selected && qq[ selected="selected"] |n %>><&|/l&>(no value)</&></option>
-%       $m->out($out);
-      </select>
-% }
 
 % if ( $RenderType eq 'List' ) {
 <fieldset class="cfedit">
+<div name="<%$id%>-Values" id="<%$id%>-Values">
 %   if ( $checktype eq 'radio' ) {
-  <input type="<% $checktype %>" name="<% $name %>" id="<% $name %>-none" value="" <% keys %default ? '' : ' checked="checked"' |n%> />
+  <div class="none">
+  <input class="none" type="<% $checktype %>" name="<% $name %>" id="<% $name %>-none" value="" <% keys %default ? '' : ' checked="checked"' |n%> />
   <label for="<% $name %>-none"><&|/l&>(no value)</&></label><br />
+  </div>
 %   }
 %   my $CFVs = $CustomField->Values;
 %   while ( my $value = $CFVs->Next ) {
 %     my $content = $value->Name;
 %     my $labelid = "$name-". $value->id;
+<div name="<% $value->Category %>">
   <input type="<% $checktype %>" name="<% $name %>" id="<% $labelid %>" value="<% $content %>" <% $default{ lc $content }? ' checked="checked"' : '' |n%> />
   <label for="<% $labelid %>"><% $content %></label><br />
+</div>
 %   }
+</div>
 </fieldset>
 % } else {
+% if (@category) {
+%# this hidden select is to supply a full list of values,
+%# see filter_cascade_select() in js/cascaded.js
+      <select name="<%$id%>-Values-Complete" id="<%$id%>-Values-Complete" class="hidden" disabled="disabled">
+        <option value=""<% !$selected && qq[ selected="selected"] |n %>><&|/l&>(no value)</&></option>
+%       $m->out($out);
+      </select>
+% }
 <select
   name="<%$id%>-Values" id="<%$id%>-Values" class="CF-<%$CustomField->id%>-Edit"
-% if ( $Rows && ( $Multiple || !@category ) ) {
+% if ( $Rows && ( $Multiple || !@category || $RenderType eq 'Select box') ) {
   size="<% $Rows %>"
 % }
 <% $Multiple && qq[multiple="multiple"] |n %> >

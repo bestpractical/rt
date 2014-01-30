@@ -305,8 +305,10 @@ mapping, defining the most sensible mapping you can.
 If you don't provide a mapping, users will see an error when they try to
 move a ticket between queues with different lifecycles but no mapping.
 
-    Set( %Lifecycles, orders => {
-        # ...,
+    Set( %Lifecycles,
+        orders => {
+            # ...
+        },
         __maps__ => {
             'default -> orders' => {
                 'new'  => 'pending',
@@ -340,7 +342,7 @@ to experiment.
             # All the appropriate order statuses
             initial         => [ 'pending' ],
             active          => [ 'processing', 'delivery' ],
-            inactive        => [ 'delivered', 'returned', 'declined' ],
+            inactive        => [ 'delivered', 'returned', 'declined', 'deleted' ],
 
             # Default order statuses for certain actions
             defaults => {
@@ -374,10 +376,6 @@ to experiment.
             actions => [
                 'pending -> processing' => {
                     label  => 'Open For Processing',
-                    update => 'Comment',
-                },
-                'pending -> delivered' => {
-                    label  => 'Mark as being delivered',
                     update => 'Comment',
                 },
                 'pending -> declined' => {

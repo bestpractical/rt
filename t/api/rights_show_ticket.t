@@ -207,7 +207,6 @@ diag "Testing with UseSQLForACLChecks => $option";
 }
 
 sub have_no_rights {
-    $SIG{'INT'} = $SIG{'TERM'} = sub { print STDERR Carp::longmess('boo'); exit 1 };
     local $Test::Builder::Level = $Test::Builder::Level + 1;
     foreach my $u ( @_ ) {
         foreach my $q (

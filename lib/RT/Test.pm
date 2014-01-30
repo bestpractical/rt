@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -140,6 +140,8 @@ sub import {
         if $args{'requires'};
     push @{ $args{'plugins'} ||= [] }, $args{'testing'}
         if $args{'testing'};
+    push @{ $args{'plugins'} ||= [] }, split " ", $ENV{RT_TEST_PLUGINS}
+        if $ENV{RT_TEST_PLUGINS};
 
     $class->bootstrap_tempdir;
 
@@ -516,7 +518,7 @@ sub bootstrap_plugins_paths {
 
         if ( grep $name eq $_, @plugins ) {
             my $variants = join "(?:|::|-|_)", map "\Q$_\E", split /::/, $name;
-            my ($path) = map $ENV{$_}, grep /^CHIMPS_(?:$variants).*_ROOT$/i, keys %ENV;
+            my ($path) = map $ENV{$_}, grep /^RT_TEST_PLUGIN_(?:$variants).*_ROOT$/i, keys %ENV;
             return $path if $path;
         }
         return $old_func->(@_);
@@ -1610,9 +1612,7 @@ sub stop_server {
     my $in_end = shift;
     return unless @SERVERS;
 
-    my $sig = 'TERM';
-    $sig = 'INT' if $ENV{'RT_TEST_WEB_HANDLER'} eq "plack";
-    kill $sig, @SERVERS;
+    kill 'TERM', @SERVERS;
     foreach my $pid (@SERVERS) {
         if ($ENV{RT_TEST_WEB_HANDLER} =~ /^apache/) {
             sleep 1 while kill 0, $pid;

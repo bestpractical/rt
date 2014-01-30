@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -329,32 +329,53 @@ sub list {
         $data{orderby} =~ s/^\+?(.*)/-$1/;
     }
 
-    if (!defined $q) {
-        $q = $config{query}; 
-    }
-    
-    $q =~ s/^#//; # get rid of leading hash
-    if ($q =~ /^\d+$/) {
-        # only digits, must be an id, formulate a correct query
-        $q = "id=$q" if $q =~ /^\d+$/;
-    } else {
-        # a string only, take it as an owner or requestor (quoting done later)
-        $q = "(Owner=$q or Requestor like $q) and $config{query}"
-             if $q =~ /^[\w\-]+$/;
-        # always add a query for a specific queue or (comma separated) queues
-        $queue =~ s/,/ or Queue=/g if $queue;
-        $q .= " and (Queue=$queue)" if $queue and $q and $q !~ /Queue\s*=/i
-            and $q !~ /id\s*=/i;
-    }
-    # correctly quote strings in a query
-    $q =~ s/(=|like\s)\s*([^'\d\s]\S*)\b/$1\'$2\'/g;
-
     $type ||= "ticket";
-    unless ($type && defined $q) {
+
+    if (!defined $q ) {
+        if ( $type eq 'ticket' ) {
+            $q = $config{query};
+        }
+        else {
+            $q = '';
+        }
+    }
+
+    if ( $type ne 'ticket' ) {
+        $rawprint = 1;
+    }
+
+    unless (defined $q) {
         my $item = $type ? "query string" : "object type";
         whine "No $item specified.";
         $bad = 1;
     }
+
+    $q =~ s/^#//; # get rid of leading hash
+    if ( $type eq 'ticket' ) {
+        if ( $q =~ /^\d+$/ ) {
+
+            # only digits, must be an id, formulate a correct query
+            $q = "id=$q" if $q =~ /^\d+$/;
+        }
+        else {
+
+          # a string only, take it as an owner or requestor (quoting done later)
+            $q = "(Owner=$q or Requestor like $q) and $config{query}"
+              if $q =~ /^[\w\-]+$/;
+
+           # always add a query for a specific queue or (comma separated) queues
+            $queue =~ s/,/ or Queue=/g if $queue;
+            $q .= " and (Queue=$queue)"
+              if $queue
+                  and $q
+                  and $q !~ /Queue\s*=/i
+                  and $q !~ /id\s*=/i;
+        }
+
+        # correctly quote strings in a query
+        $q =~ s/(=|like\s)\s*([^'\d\s]\S*)\b/$1\'$2\'/g;
+    }
+
     #return help("list", $type) if $bad;
     return suggest_help("list", $type, $bad) if $bad;
 
@@ -2198,13 +2219,14 @@ Text:
     Displays a list of objects matching the specified conditions.
     ("ls", "list", and "search" are synonyms.)
 
-    Conditions are expressed in the SQL-like syntax used internally by
-    RT. (For more information, see "rt help query".) The query string
-    must be supplied as one argument.
+    The query string must be supplied as one argument.
 
-    (Right now, the server doesn't support listing anything but tickets.
-    Other types will be supported in future; this client will be able to
-    take advantage of that support without any changes.)
+    if on tickets, query is in the SQL-like syntax used internally by
+    RT. (For more information, see "rt help query".), otherwise, query
+    is plain string with format "FIELD OP VALUE", e.g. "Name = General".
+
+    if query string is absent, we limit to privileged ones on users and
+    user defined ones on groups automatically.
 
     Options:
 
@@ -2235,6 +2257,9 @@ Text:
         rt ls -t ticket "Subject like '[PATCH]%'"
         rt ls -q systems
         rt ls -f owner,subject
+        rt ls -t queue 'Name = General'
+        rt ls -t user 'EmailAddress like foo@bar.com'
+        rt ls -t group 'Name like foo'
 
 --
 

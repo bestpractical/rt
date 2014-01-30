@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -55,7 +55,7 @@
 % $Classes->LimitToEnabled();
 % while (my $Class = $Classes->Next) {
 <li><a href="ExtractIntoTopic.html?Ticket=<%$Ticket%>&Class=<%$Class->Id%>" onclick="document.getElementById('topics-'+<% $Class->Id |n,j%>).style.display = (document.getElementById('topics-'+<% $Class->Id |n,j%>).style.display == 'block') ? 'none' : 'block'; return false;"><%$Class->Name%></a>: 
-<%$Class->Description%>
+<%$Class->Description || ''%>
 <div id="topics-<%$Class->Id%>" style="display: none">
 <form action="ExtractFromTicket.html">
 <input type="hidden" name="Ticket" value="<% $Ticket %>" />

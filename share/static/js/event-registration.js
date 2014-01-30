@@ -7,11 +7,11 @@ jQuery(function() {
     jQuery(global_checkboxes.join(", "))
         .change(function(){
             var self    = jQuery(this);
-            var checked = self.attr("checked");
+            var checked = self.prop("checked");
 
             self.closest("form")
                 .find("table.collection input[type=checkbox]")
-                .attr("disabled", checked ? "disabled" : "");
+                .prop("disabled", checked);
         });
 });
 
@@ -76,7 +76,7 @@ jQuery(function() {
             var subfield = field.next("select[name=" + name + "]");
             var complete = subfield.next("select[name=" + name + "-Complete]");
             var value    = field.val();
-            filter_cascade( subfield[0], complete[0], value, true );
+            filter_cascade_select( subfield[0], complete[0], value, true );
         }).change();
     });
 });

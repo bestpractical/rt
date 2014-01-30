@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -49,8 +49,8 @@
 <&| /Widgets/TitleBox, title => loc('New messages'), title_href => "#txn-". $txn->id &>
 <&|/l&>There are unread messages on this ticket.</&>
 <&|/l, 
- RT->Config->Get('WebPath') ."/Ticket/Display.html?id=". $Ticket->id. "#txn-".$txn->id,
- RT->Config->Get('WebPath') ."/Ticket/Display.html?id=". $Ticket->id ."&MarkAsSeen=1&Anchor=txn-" . $txn->id
+ RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id. "#txn-".$txn->id,
+ RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id ."&MarkAsSeen=1&Anchor=txn-" . $txn->id
  &>You can <a href="[_1]">jump to the first unread message</a> or <a href="[_2]">jump to the first unread message and mark all messages as seen</a>.</&>
 </&>
 </div>
@@ -60,4 +60,6 @@ $Ticket
 <%INIT>
 return unless (RT->Config->Get( 'ShowUnreadMessageNotifications', $session{'CurrentUser'}));
 my $txn = $Ticket->SeenUpTo or return;
+
+my $DisplayPath = $session{'CurrentUser'}->Privileged ? 'Ticket' : 'SelfService';
 </%INIT>

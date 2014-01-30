@@ -57,6 +57,7 @@ diag "Walking through install screens setting defaults";
         $m->submit_form(with_fields => {
             DatabaseAdmin         => $ENV{RT_DBA_USER},
             DatabaseAdminPassword => $ENV{RT_DBA_PASSWORD},
+            DatabasePassword      => "rt_pass",
         });
     }
     $m->content_contains('Connection succeeded');

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -183,7 +183,7 @@ our %GROUPINGS_META = (
                 $cf = $obj->Name;
             }
 
-            return 'Custom field [_1]', $self->CurrentUser->loc( $cf );
+            return 'Custom field [_1]', $cf;
         },
     },
     Enum => {
@@ -191,8 +191,8 @@ our %GROUPINGS_META = (
     },
 );
 
-# loc'able strings below generated with:
-#   perl -MRT=-init -MRT::Report::Tickets -E 'say qq{\# loc("$_->[0]")} while $_ = splice @RT::Report::Tickets::STATISTICS, 0, 2'
+# loc'able strings below generated with (s/loq/loc/):
+#   perl -MRT=-init -MRT::Report::Tickets -E 'say qq{\# loq("$_->[0]")} while $_ = splice @RT::Report::Tickets::STATISTICS, 0, 2'
 #
 # loc("Ticket count")
 # loc("Summary of time worked")

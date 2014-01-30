@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -155,6 +155,7 @@ our %FIELD_METADATA = (
     TransactionCF    => [ 'CUSTOMFIELD' => 'Transaction' ], #loc_left_pair
     QueueCF          => [ 'CUSTOMFIELD' => 'Queue' ], #loc_left_pair
     Updated          => [ 'TRANSDATE', ], #loc_left_pair
+    UpdatedBy        => [ 'TRANSCREATOR', ], #loc_left_pair
     OwnerGroup       => [ 'MEMBERSHIPFIELD' => 'Owner', ], #loc_left_pair
     RequestorGroup   => [ 'MEMBERSHIPFIELD' => 'Requestor', ], #loc_left_pair
     CCGroup          => [ 'MEMBERSHIPFIELD' => 'Cc', ], #loc_left_pair
@@ -185,6 +186,7 @@ our %dispatch = (
     TRANSFIELD      => \&_TransLimit,
     TRANSCONTENT    => \&_TransContentLimit,
     TRANSDATE       => \&_TransDateLimit,
+    TRANSCREATOR    => \&_TransCreatorLimit,
     WATCHERFIELD    => \&_WatcherLimit,
     MEMBERSHIPFIELD => \&_WatcherMembershipLimit,
     CUSTOMFIELD     => \&_CustomFieldLimit,
@@ -200,6 +202,8 @@ my %DefaultEA = (
         '!=' => 'AND'
     },
     DATE => {
+        'IS' => 'OR',
+        'IS NOT' => 'OR',
         '='  => 'OR',
         '>=' => 'AND',
         '<=' => 'AND',
@@ -444,10 +448,6 @@ sub _LinkLimit {
     my $is_null = 0;
     $is_null = 1 if !$value || $value =~ /^null$/io;
 
-    unless ($is_null) {
-        $value = RT::URI->new( $sb->CurrentUser )->CanonicalizeURI( $value );
-    }
-
     my $direction = $meta->[1] || '';
     my ($matchfield, $linkfield) = ('', '');
     if ( $direction eq 'To' ) {
@@ -474,6 +474,7 @@ sub _LinkLimit {
         $op = ($op =~ /^(=|IS)$/i)? 'IS': 'IS NOT';
     }
     elsif ( $value =~ /\D/ ) {
+        $value = RT::URI->new( $sb->CurrentUser )->CanonicalizeURI( $value );
         $is_local = 0;
     }
     $matchfield = "Local$matchfield" if $is_local;
@@ -551,11 +552,21 @@ sub _DateLimit {
     my ( $sb, $field, $op, $value, %rest ) = @_;
 
     die "Invalid Date Op: $op"
-        unless $op =~ /^(=|>|<|>=|<=)$/;
+        unless $op =~ /^(=|>|<|>=|<=|IS(\s+NOT)?)$/i;
 
     my $meta = $FIELD_METADATA{$field};
     die "Incorrect Meta Data for $field"
         unless ( defined $meta->[1] );
+
+    if ( $op =~ /^(IS(\s+NOT)?)$/i) {
+        return $sb->Limit(
+            FUNCTION => $sb->NotSetDateToNullFunction,
+            FIELD    => $meta->[1],
+            OPERATOR => $op,
+            VALUE    => "NULL",
+            %rest,
+        );
+    }
 
     if ( my $subkey = $rest{SUBKEY} ) {
         if ( $subkey eq 'DayOfWeek' && $op !~ /IS/i && $value =~ /[^0-9]/ ) {
@@ -762,6 +773,21 @@ sub _TransDateLimit {
     }
 
     $sb->_CloseParen;
+}
+
+sub _TransCreatorLimit {
+    my ( $sb, $field, $op, $value, @rest ) = @_;
+    $op = "!=" if $op eq "<>";
+    die "Invalid Operation: $op for $field" unless $op eq "=" or $op eq "!=";
+
+    # See the comments for TransLimit, they apply here too
+    my $txn_alias = $sb->JoinTransactions;
+    if ( defined $value && $value !~ /^\d+$/ ) {
+        my $u = RT::User->new( $sb->CurrentUser );
+        $u->Load($value);
+        $value = $u->id || 0;
+    }
+    $sb->_SQLLimit( ALIAS => $txn_alias, FIELD => 'Creator', OPERATOR => $op, VALUE => $value, @rest );
 }
 
 =head2 _TransLimit

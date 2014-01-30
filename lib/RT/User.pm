@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -89,26 +89,26 @@ use Text::Password::Pronounceable;
 sub _OverlayAccessible {
     {
 
-        Name                    => { public => 1,  admin => 1 },
+          Name                  => { public => 1,  admin => 1 },    # loc_left_pair
           Password              => { read   => 0 },
-          EmailAddress          => { public => 1 },
-          Organization          => { public => 1,  admin => 1 },
-          RealName              => { public => 1 },
-          NickName              => { public => 1 },
-          Lang                  => { public => 1 },
+          EmailAddress          => { public => 1 },                 # loc_left_pair
+          Organization          => { public => 1,  admin => 1 },    # loc_left_pair
+          RealName              => { public => 1 },                 # loc_left_pair
+          NickName              => { public => 1 },                 # loc_left_pair
+          Lang                  => { public => 1 },                 # loc_left_pair
           EmailEncoding         => { public => 1 },
           WebEncoding           => { public => 1 },
           ExternalContactInfoId => { public => 1,  admin => 1 },
           ContactInfoSystem     => { public => 1,  admin => 1 },
           ExternalAuthId        => { public => 1,  admin => 1 },
           AuthSystem            => { public => 1,  admin => 1 },
-          Gecos                 => { public => 1,  admin => 1 },
-          PGPKey                => { public => 1,  admin => 1 },
-          SMIMECertificate      => { public => 1,  admin => 1 },
+          Gecos                 => { public => 1,  admin => 1 },    # loc_left_pair
+          PGPKey                => { public => 1,  admin => 1 },    # loc_left_pair
+          SMIMECertificate      => { public => 1,  admin => 1 },    # loc_left_pair
           PrivateKey            => {               admin => 1 },
-          City                  => { public => 1 },
-          Country               => { public => 1 },
-          Timezone              => { public => 1 },
+          City                  => { public => 1 },                 # loc_left_pair
+          Country               => { public => 1 },                 # loc_left_pair
+          Timezone              => { public => 1 },                 # loc_left_pair
     }
 }
 
@@ -2672,7 +2672,7 @@ sub FindDependencies {
 
     # ACL equivalence group
     my $objs = RT::Groups->new( $self->CurrentUser );
-    $objs->Limit( FIELD => 'Domain', VALUE => 'ACLEquivalence' );
+    $objs->Limit( FIELD => 'Domain', VALUE => 'ACLEquivalence', CASESENSITIVE => 0 );
     $objs->Limit( FIELD => 'Instance', VALUE => $self->Id );
     $deps->Add( in => $objs );
 
@@ -2695,6 +2695,7 @@ sub FindDependencies {
         ALIAS => $groups,
         FIELD => 'Domain',
         VALUE => 'SystemInternal',
+        CASESENSITIVE => 0
     );
     $deps->Add( in => $objs );
 
@@ -2751,6 +2752,10 @@ sub PreInflate {
         Disabled => $disabled,
         ObjectId => 0,
     );
+
+    # Now we have a principal id, set the id for the user record
+    $data->{id} = $id;
+
     $importer->Resolve( $principal_uid => ref($principal), $id );
 
     $importer->Postpone(

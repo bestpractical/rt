@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -51,7 +51,7 @@ package RT::DependencyWalker;
 use strict;
 use warnings;
 
-use RT::DependencyWalker::Dependencies;
+use RT::DependencyWalker::FindDependencies;
 use Carp;
 
 sub new {

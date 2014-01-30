@@ -94,7 +94,7 @@ my $current_user;
        '1970-01-01T00:00:00Z',
        "W3CDTF format with defaults");
     is($date->Get(Format =>'RFC2822'),
-       'Thu, 1 Jan 1970 00:00:00 +0000',
+       'Thu, 01 Jan 1970 00:00:00 +0000',
        "RFC2822 format with defaults");
     is($date->Get(Format =>'LocalizedDateTime'),
        'Thu, Jan 1, 1970 12:00:00 AM',
@@ -107,7 +107,7 @@ my $current_user;
        '1970-01-01',
        "W3CDTF format without time part");
     is($date->RFC2822(Time => 0),
-       'Thu, 1 Jan 1970',
+       'Thu, 01 Jan 1970',
        "RFC2822 format without time part");
     is($date->LocalizedDateTime(Time => 0),
        'Thu, Jan 1, 1970',
@@ -137,7 +137,7 @@ my $current_user;
        "RFC2822 format without date part and seconds");
 
     is($date->RFC2822(DayOfWeek => 0),
-       '1 Jan 1970 00:00:00 +0000',
+       '01 Jan 1970 00:00:00 +0000',
        "RFC2822 format without 'day of week' part");
     is($date->RFC2822(DayOfWeek => 0, Date => 0),
        '00:00:00 +0000',
@@ -163,7 +163,7 @@ my $current_user;
        '1970-01-01',
        "'Date' method, W3CDTF format");
     is($date->Date(Format => 'RFC2822'),
-       'Thu, 1 Jan 1970',
+       'Thu, 01 Jan 1970',
        "'Date' method, RFC2822 format");
     is($date->Date(Time => 1),
        '1970-01-01',
@@ -195,7 +195,7 @@ my $current_user;
        '1970-01-01T00:00:00Z',
        "'DateTime' method, W3CDTF format");
     is($date->DateTime(Format =>'RFC2822'),
-       'Thu, 1 Jan 1970 00:00:00 +0000',
+       'Thu, 01 Jan 1970 00:00:00 +0000',
        "'DateTime' method, RFC2822 format");
     is($date->DateTime(Date => 0, Time => 0),
        '1970-01-01 00:00:00',
@@ -209,14 +209,14 @@ my $current_user;
     $date->Set( Format => 'ISO', Timezone => 'utc', Value => '2005-01-01 15:10:00' );
     is($date->ISO( Timezone => 'user' ), '2005-01-01 18:10:00', "ISO");
     is($date->W3CDTF( Timezone => 'user' ), '2005-01-01T18:10:00+03:00', "W3C DTF");
-    is($date->RFC2822( Timezone => 'user' ), 'Sat, 1 Jan 2005 18:10:00 +0300', "RFC2822");
+    is($date->RFC2822( Timezone => 'user' ), 'Sat, 01 Jan 2005 18:10:00 +0300', "RFC2822");
 
     # DST
     $date = RT::Date->new( $current_user );
     $date->Set( Format => 'ISO', Timezone => 'utc', Value => '2005-07-01 15:10:00' );
     is($date->ISO( Timezone => 'user' ), '2005-07-01 19:10:00', "ISO");
     is($date->W3CDTF( Timezone => 'user' ), '2005-07-01T19:10:00+04:00', "W3C DTF");
-    is($date->RFC2822( Timezone => 'user' ), 'Fri, 1 Jul 2005 19:10:00 +0400', "RFC2822");
+    is($date->RFC2822( Timezone => 'user' ), 'Fri, 01 Jul 2005 19:10:00 +0400', "RFC2822");
 }
 
 { # negative timezone
@@ -225,14 +225,14 @@ my $current_user;
     $date->Set( Format => 'ISO', Timezone => 'utc', Value => '2005-01-01 15:10:00' );
     is($date->ISO( Timezone => 'user' ), '2005-01-01 10:10:00', "ISO");
     is($date->W3CDTF( Timezone => 'user' ), '2005-01-01T10:10:00-05:00', "W3C DTF");
-    is($date->RFC2822( Timezone => 'user' ), 'Sat, 1 Jan 2005 10:10:00 -0500', "RFC2822");
+    is($date->RFC2822( Timezone => 'user' ), 'Sat, 01 Jan 2005 10:10:00 -0500', "RFC2822");
 
     # DST
     $date = RT::Date->new( $current_user );
     $date->Set( Format => 'ISO', Timezone => 'utc', Value => '2005-07-01 15:10:00' );
     is($date->ISO( Timezone => 'user' ), '2005-07-01 11:10:00', "ISO");
     is($date->W3CDTF( Timezone => 'user' ), '2005-07-01T11:10:00-04:00', "W3C DTF");
-    is($date->RFC2822( Timezone => 'user' ), 'Fri, 1 Jul 2005 11:10:00 -0400', "RFC2822");
+    is($date->RFC2822( Timezone => 'user' ), 'Fri, 01 Jul 2005 11:10:00 -0400', "RFC2822");
 }
 
 warning_like
@@ -488,12 +488,12 @@ my $year = (localtime(time))[5] + 1900;
 
     RT->Config->Set( DateTimeFormat => 'RFC2822' );
     $date->Unix(1);
-    is($date->AsString, 'Thu, 1 Jan 1970 00:00:01 +0000', "correct string");
+    is($date->AsString, 'Thu, 01 Jan 1970 00:00:01 +0000', "correct string");
 
     RT->Config->Set( DateTimeFormat => { Format => 'RFC2822', Seconds => 0 } );
     $date->Unix(1);
-    is($date->AsString, 'Thu, 1 Jan 1970 00:00 +0000', "correct string");
-    is($date->AsString(Seconds => 1), 'Thu, 1 Jan 1970 00:00:01 +0000', "correct string");
+    is($date->AsString, 'Thu, 01 Jan 1970 00:00 +0000', "correct string");
+    is($date->AsString(Seconds => 1), 'Thu, 01 Jan 1970 00:00:01 +0000', "correct string");
 }
 
 { # DurationAsString

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -58,6 +58,19 @@
 </select>
 % } elsif ($CustomField->Type =~ /^Date(Time)?$/) {
 <& /Elements/SelectDate, ShowTime => ($1 ? 1 : 0), Name => $Name, Value => $Default &>
+% } elsif ( $CustomField->Type eq 'Autocomplete' )  {
+<input type="text" id="CF-<% $CustomField->id %>" name="<% $Name %>" size="20" value="<% $Default %>" />
+<script type="text/javascript">
+% my @options;
+% my $values = $CustomField->Values;
+% while (my $value = $values->Next) {
+%   push @options, {
+%       value => $value->Name,
+%       label => $value->Description ? $value->Name . ' (' . $value->Description . ')' : $value->Name,
+%   };
+% }
+jQuery('#'+'CF-' + <% $CustomField->id %>).autocomplete({ source: <% JSON::to_json(\@options) |n %> });
+</script>
 % } else {
 <input name="<%$Name%>" size="20" value="<% $Default %>" type="text" />
 % }

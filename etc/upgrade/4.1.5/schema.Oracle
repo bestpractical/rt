@@ -1,5 +1,6 @@
 # Template column
 ALTER TABLE Scrips RENAME COLUMN Template TO TemplateOld;
-ALTER TABLE Scrips ADD COLUMN Template VARCHAR2(200) NOT NULL;
-UPDATE TABLE Scrips SET Template = CAST(TemplateOld AS varchar2);
+ALTER TABLE Scrips ADD Template VARCHAR2(200);
+UPDATE Scrips SET Template = CAST(TemplateOld AS varchar2(200));
+ALTER TABLE Scrips MODIFY Template VARCHAR2(200) NOT NULL;
 ALTER TABLE Scrips DROP COLUMN TemplateOld;
