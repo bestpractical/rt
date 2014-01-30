@@ -504,12 +504,14 @@ sub WhoHaveGroupRight
     my ($check_objects) = ('');
     my @objects = $self->_GetEquivObjects( %args );
 
+    my %seen;
     if ( @objects ) {
         my @object_clauses;
         foreach my $obj ( @objects ) {
             my $type = ref($obj)? ref($obj): $obj;
-            my $id;
+            my $id = 0;
             $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
+            next if $seen{"$type-$id"}++;
 
             my $object_clause = "$acl.ObjectType = '$type'";
             $object_clause   .= " AND $acl.ObjectId   = $id" if $id;
