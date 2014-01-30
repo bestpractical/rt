@@ -51,7 +51,7 @@ package RT::Interface::Email::Auth::MailFrom;
 use strict;
 use warnings;
 
-use RT::Interface::Email qw(ParseSenderAddressFromHead CreateUser);
+use RT::Interface::Email;
 
 # This is what the ordinary, non-enhanced gateway does at the moment.
 
@@ -66,7 +66,7 @@ sub GetCurrentUser {
 
 
     # We don't need to do any external lookups
-    my ( $Address, $Name, @errors ) = ParseSenderAddressFromHead( $args{'Message'}->head );
+    my ( $Address, $Name, @errors ) = RT::Interface::Email::ParseSenderAddressFromHead( $args{'Message'}->head );
     $RT::Logger->warning("Failed to parse ".join(', ', @errors))
         if @errors;
 
@@ -175,7 +175,9 @@ sub GetCurrentUser {
         }
     }
 
-    $CurrentUser = CreateUser( undef, $Address, $Name, $Address, $args{'Message'} );
+    $CurrentUser = RT::Interface::Email::CreateUser(
+        undef, $Address, $Name, $Address, $args{'Message'}
+    );
 
     return ( $CurrentUser, 1 );
 }
