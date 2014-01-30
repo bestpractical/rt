@@ -362,7 +362,7 @@ sub _GetEquivObjects
     }
 
     if( $args{'IncludeSystemRights'} ) {
-        push @objects, 'RT::System';
+        push @objects, $RT::System;
     }
     push @objects, @{ $args{'EquivObjects'} };
     return grep $_, @objects;
