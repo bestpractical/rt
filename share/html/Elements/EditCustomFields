@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( CallbackName => 'BeforeCustomFields', Object => $Object,
-%               Grouping => $Grouping, ARGSRef => \%ARGS );
+%               Grouping => $Grouping, ARGSRef => \%ARGS, CustomFields => $CustomFields);
 % if ( $WRAP ) {
 <<% $WRAP %> class="edit-custom-fields">
 % }
