@@ -49,6 +49,7 @@
 <& /Elements/Tabs &>
     
 <& /Elements/GotoUser &>
+<& /Elements/ListActions, actions => \@results &>
 
 <%perl>
 $m->callback( CallbackName => 'BeforePortlets', User => $User );
@@ -64,6 +65,17 @@ my ($status, $msg) = $User->Load($id);
 unless ($status) {
     RT->Logger->error("Unable to load user $id: $msg");
     Abort("Unable to load User $id");
+}
+
+my @results;
+if ( $User->Disabled ){
+    if ( $session{'CurrentUser'}->HasRight(
+        Object => RT->System, Right => 'AdminUsers' ) ){
+        push @results, loc('User [_1] is currently disabled. Edit the user and select "Let this user access RT" to enable.', $User->Name);
+    }
+    else{
+        push @results, loc('User [_1] is currently disabled.', $User->Name);
+    }
 }
 
 my $portlets = RT->Config->Get('UserSummaryPortlets');
