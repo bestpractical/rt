@@ -47,18 +47,26 @@
 %# END BPS TAGGED BLOCK }}}
 % while ( $Values and my $value = $Values->Next ) {
 %# XXX - let user download the file(s) here?
-<input type="checkbox" name="<%$NamePrefix%><%$CustomField->Id%>-DeleteValueIds" class="checkbox CF-<%$CustomField->id%>-Edit" value="<% $value->Id %>" /><a href="<%RT->Config->Get('WebPath')%>/Download/CustomFieldValue/<% $value->Id %>/<% $value->Content |un %>"><% $value->Content %></a><br />
+<input type="checkbox" name="<%$delete_name%>" class="checkbox CF-<%$CustomField->id%>-Edit" value="<% $value->Id %>" /><a href="<%RT->Config->Get('WebPath')%>/Download/CustomFieldValue/<% $value->Id %>/<% $value->Content |un %>"><% $value->Content %></a><br />
 % }
 % if ($MaxValues && $Values && $Values->Count >= $MaxValues ) {
 <div class="hints">
 <&|/l&>Reached maximum number, so new values will override old ones.</&>
 </div>
 % }
-<input type="file" name="<% $NamePrefix %><% $CustomField->Id %>-Upload" class="CF-<%$CustomField->id%>-Edit" />
+<input type="file" name="<% $name %>" class="CF-<%$CustomField->id%>-Edit" />
+
+<%INIT>
+my $name = $Name || $NamePrefix . $CustomField->Id . '-Upload';
+my $delete_name = $name;
+$delete_name =~ s!-Upload$!-DeleteValueIds!;
+</%INIT>
+
 <%ARGS>
 $Object => undef
 $CustomField => undef
 $NamePrefix => undef
+$Name   => undef
 $Default => undef
 $Values => undef
 $MaxValues => undef

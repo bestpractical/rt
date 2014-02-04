@@ -125,7 +125,7 @@ if ($CloneTicket) {
         while ( my $cf_value = $cf_values->Next ) {
             push @cf_values, $cf_value->Content;
         }
-        $clone->{"Object-RT::Ticket--CustomField-$cf_id-Value"} = join "\n",
+        $clone->{GetCustomFieldInputName( CustomField => $cf )} = join "\n",
             @cf_values;
     }
 

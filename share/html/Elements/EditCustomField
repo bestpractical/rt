@@ -57,10 +57,6 @@ unless ( $Type ) {
 my $Values;
 if ( $Object ) {
     $Grouping =~ s/\W//g if $Grouping;
-    $NamePrefix ||= join '-',
-        'Object', ref($Object), ($Object->Id || ''),
-        'CustomField' . ($Grouping ? ":$Grouping" : ""),
-        '';
 
     if ( $Object->Id ) {
         $Values = $Object->CustomFieldValues( $CustomField->id );
@@ -74,11 +70,24 @@ if ( $Object ) {
     }
 }
 
+my $Name;
+if ( !$NamePrefix ) {
+    $Name = GetCustomFieldInputName(Object => $Object, CustomField => $CustomField, Grouping => $Grouping );
+}
+
 # Always fill $Default with submited values if it's empty
 if ( ( !defined $Default || !length $Default ) && $DefaultsFromTopArguments ) {
     my %TOP = %$DECODED_ARGS;
-    $Default = $TOP{ $NamePrefix .$CustomField->Id . '-Values' }
-            || $TOP{ $NamePrefix .$CustomField->Id . '-Value' };
+    $Default = $TOP{ $Name } if $Name;
+    # check both -Values and -Value for back compatibility
+    if ( $NamePrefix ) {
+        $Default //= $TOP{ $NamePrefix . $CustomField->Id . '-Values' }
+            // $TOP{ $NamePrefix . $CustomField->Id . '-Value' };
+    }
+    else {
+        my $prefix = GetCustomFieldInputNamePrefix(Object => $Object, CustomField => $CustomField, Grouping => $Grouping );
+        $Default //= $TOP{ $prefix . 'Values' } // $TOP{ $prefix . 'Value' };
+    }
 }
 
 my $MaxValues = $CustomField->MaxValues;
@@ -90,7 +99,10 @@ if ($MaxValues == 1 && $Values) {
 }
 # The "Magic" hidden input causes RT to know that we were trying to edit the field, even if 
 # we don't see a value later, since browsers aren't compelled to submit empty form fields
-$m->out("\n".'<input type="hidden" class="hidden" name="'.$m->interp->apply_escapes($NamePrefix, 'h').$CustomField->Id.'-Values-Magic" value="1" />'."\n");
+$m->out("\n".'<input type="hidden" class="hidden" name="'
+        . ($Name ? $m->interp->apply_escapes($Name, 'h') : $m->interp->apply_escapes($NamePrefix, 'h').$CustomField->Id.'-Values')
+        . '-Magic" value="1" />'."\n");
+
 
 my $EditComponent = "EditCustomField$Type";
 $m->callback( %ARGS, CallbackName => 'EditComponentName', Name => \$EditComponent, CustomField => $CustomField, Object => $Object );
@@ -108,6 +120,8 @@ return $m->comp(
     Multiple => ($MaxValues != 1),
     NamePrefix => $NamePrefix,
     CustomField => $CustomField,
+    Name => $Name,
+    $CustomField->BasedOn && $Name ? ( BasedOnName => GetCustomFieldInputName(Object => $Object, CustomField => $CustomField->BasedOnObj, Grouping => $Grouping) ) : (),
 );
 </%INIT>
 <%ARGS>
