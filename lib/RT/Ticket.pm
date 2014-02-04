@@ -470,6 +470,8 @@ sub Create {
     foreach my $arg ( keys %args ) {
         next unless $arg =~ /^CustomField-(\d+)$/i;
         my $cfid = $1;
+        my $cf = $self->LoadCustomFieldByIdentifier($cfid);
+        next unless $cf->ObjectTypeFromLookupType->isa(ref $self);
 
         foreach my $value (
             UNIVERSAL::isa( $args{$arg} => 'ARRAY' ) ? @{ $args{$arg} } : ( $args{$arg} ) )
