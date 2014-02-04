@@ -169,11 +169,8 @@ GENERAL INSTALLATION
       RT (such as 3.6.4) so that the appropriate set of database
       upgrades can be applied.
 
-      Finally, clear the Mason cache dir:
-
-          rm -fr /opt/rt4/var/mason_data/obj
-
-      You may then start your web server again.
+      If 'make upgrade-database' completes without error, your upgrade
+      has been successful and you may restart your webserver.
 
  7) Configure the web server, as described in docs/web_deployment.pod,
     and the email gateway, as described below.
