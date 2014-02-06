@@ -46,6 +46,7 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
+
 =head1 NAME
 
 rt-mailgate - Mail interface to RT.
@@ -438,9 +439,9 @@ email. If you have additional filters or authentication mechanisms, you
 can list them here and they will be called in order:
 
     Set( @MailPlugins =>
-        "Filter::SpamAssassin",
-        "Auth::LDAP",
-        # ...
+        "RT::Extension::SpamAssassin",
+        "Auth::Crypt",
+        "Auth::MailFrom",
     );
 
 See the documentation for any additional plugins you have.
