@@ -92,15 +92,6 @@ GENERAL INSTALLATION
     Some modules require user input or environment variables to install
     correctly, so it may be necessary to install them manually.
 
-    If you are installing with CPAN module older than 1.84, you will
-    need to start CPAN (by running perl -MCPAN -e shell) and upgrade the
-    CPAN shell with:
-
-        install CPAN
-
-    If you are unsure of your CPAN version, it will be printed when you
-    run the shell.
-
     If you are having trouble installing GD, refer to "Installing GD libraries"
     in docs/charts.pod.  Ticket relationship graphing requires the graphviz
     library which you should install using your distribution's package manager.
