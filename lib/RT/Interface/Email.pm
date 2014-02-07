@@ -510,64 +510,6 @@ EOT
     }
 }
 
-sub CreateUser {
-    my ( $Username, $Address, $Name, $ErrorsTo, $entity ) = @_;
-
-    my $NewUser = RT::User->new( RT->SystemUser );
-
-    my ( $Val, $Message ) = $NewUser->Create(
-        Name => ( $Username || $Address ),
-        EmailAddress => $Address,
-        RealName     => $Name,
-        Password     => undef,
-        Privileged   => 0,
-        Comments     => 'Autocreated on ticket submission',
-    );
-
-    unless ($Val) {
-
-        # Deal with the race condition of two account creations at once
-        if ($Username) {
-            $NewUser->LoadByName($Username);
-        }
-
-        unless ( $NewUser->Id ) {
-            $NewUser->LoadByEmail($Address);
-        }
-
-        unless ( $NewUser->Id ) {
-            MailError(
-                To          => $ErrorsTo,
-                Subject     => "User could not be created",
-                Explanation =>
-                    "User creation failed in mailgateway: $Message",
-                MIMEObj  => $entity,
-                LogLevel => 'crit',
-            );
-        }
-    }
-
-    #Load the new user object
-    my $CurrentUser = RT::CurrentUser->new;
-    $CurrentUser->LoadByEmail( $Address );
-
-    unless ( $CurrentUser->id ) {
-        $RT::Logger->warning(
-            "Couldn't load user '$Address'." . "giving up" );
-        MailError(
-            To          => $ErrorsTo,
-            Subject     => "User could not be loaded",
-            Explanation =>
-                "User  '$Address' could not be loaded in the mail gateway",
-            MIMEObj  => $entity,
-            LogLevel => 'crit'
-        );
-    }
-
-    return $CurrentUser;
-}
-
-
 =head3 ParseCcAddressesFromHead HASH
 
 Takes a hash containing QueueObj, Head and CurrentUser objects.

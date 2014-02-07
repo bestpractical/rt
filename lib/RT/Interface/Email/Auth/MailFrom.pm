@@ -178,9 +178,25 @@ sub GetCurrentUser {
         }
     }
 
-    $CurrentUser = RT::Interface::Email::CreateUser(
-        undef, $Address, $Name, $Address, $args{'Message'}
+    my $user = RT::User->new( RT->SystemUser );
+    $user->LoadOrCreateByEmail(
+        EmailAddress => $Address,
+        RealName     => $Name,
+        Comments     => 'Autocreated on ticket submission',
     );
+
+    $CurrentUser->LoadByEmail( $Address );
+
+    unless ( $CurrentUser->id ) {
+        MailError(
+            To          => $Address,
+            Subject     => "User could not be loaded",
+            Explanation =>
+                "User  '$Address' could not be loaded in the mail gateway",
+            MIMEObj  => $args{'Message'},
+            LogLevel => 'crit'
+        );
+    }
 
     return ( $CurrentUser, 1 );
 }
