@@ -412,9 +412,8 @@ sub _LoadPlugins {
             $Class->require or
                 do { $RT::Logger->error("Couldn't load $Class: $@"); next };
 
-            no strict 'refs';
-            unless ( defined *{ $Class . "::GetCurrentUser" }{CODE} ) {
-                $RT::Logger->crit( "No GetCurrentUser code found in $Class module");
+            unless ( $Class->DOES( "RT::Interface::Email::Role" ) ) {
+                $RT::Logger->crit( "$Class does not implement RT::Interface::Email::Role.  Mail plugins from RT 4.2 and earlier are not forward-compatible with RT 4.4.");
                 next;
             }
             push @res, $Class;
