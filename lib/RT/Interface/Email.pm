@@ -229,17 +229,15 @@ sub Gateway {
     );
 
     # If authentication fails and no new user was created, get out.
-    if ( !$CurrentUser || !$CurrentUser->id || $AuthStat == -1 ) {
+    if ( !$CurrentUser || !$CurrentUser->id ) {
 
         # If the plugins refused to create one, they lose.
-        unless ( $AuthStat == -1 ) {
-            _NoAuthorizedUserFound(
-                Right     => $Right,
-                Message   => $Message,
-                Requestor => $ErrorsTo,
-                Queue     => $args{'queue'}
-            );
-        }
+        _NoAuthorizedUserFound(
+            Right     => $Right,
+            Message   => $Message,
+            Requestor => $ErrorsTo,
+            Queue     => $args{'queue'}
+        );
         FAILURE("Could not load a valid user");
     }
 
@@ -451,9 +449,8 @@ sub GetAuthenticationLevel {
 # You get the highest level of authentication you were assigned, unless you get the magic -1
 # If a module returns a "-1" then we discard the ticket, so.
             $AuthStat = $NewAuthStat
-                if ( $NewAuthStat > $AuthStat or $NewAuthStat == -1 or $NewAuthStat == -2 );
+                if ( $NewAuthStat > $AuthStat or $NewAuthStat == -2 );
 
-            last if $AuthStat == -1;
             $skip_action{$action}++ if $AuthStat == -2;
         }
 
@@ -461,8 +458,6 @@ sub GetAuthenticationLevel {
         @{$args{Actions}} = grep !$skip_action{$_}, @{$args{Actions}}
             if $AuthStat == -2;
         last unless @{$args{Actions}};
-
-        last if $AuthStat == -1;
     }
 
     return $AuthStat if !wantarray;
