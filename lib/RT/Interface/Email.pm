@@ -163,27 +163,10 @@ sub Gateway {
     my $SystemQueueObj = RT::Queue->new( RT->SystemUser );
     $SystemQueueObj->Load( $args{'queue'} );
 
-    my %skip_plugin;
-    foreach my $class( grep !ref, @mail_plugins ) {
+    foreach my $class ( grep !ref, @mail_plugins ) {
         # check if we should apply filter before decoding
-        my $check_cb = do {
-            no strict 'refs';
-            *{ $class . "::ApplyBeforeDecode" }{CODE};
-        };
-        next unless defined $check_cb;
-        next unless $check_cb->(
-            Message       => $Message,
-            RawMessageRef => \$args{'message'},
-            Queue         => $SystemQueueObj,
-            Actions       => \@actions,
-        );
-
-        $skip_plugin{ $class }++;
-
-        my $Code = do {
-            no strict 'refs';
-            *{ $class . "::GetCurrentUser" }{CODE};
-        };
+        my $Code = $class->can("BeforeDecode");
+        next unless $Code;
         $Code->(
             Message       => $Message,
             RawMessageRef => \$args{'message'},
@@ -191,7 +174,7 @@ sub Gateway {
             Actions       => \@actions,
         );
     }
-    @mail_plugins = grep !$skip_plugin{"$_"}, @mail_plugins;
+
     $parser->_DecodeBodies;
     $parser->RescueOutlook;
     $parser->_PostProcessNewEntity;
@@ -450,8 +433,8 @@ sub GetAuthenticationLevel {
         if ( ref($_) eq "CODE" ) {
             $Code = $_;
         } else {
-            no strict 'refs';
-            $Code = *{ $_ . "::GetCurrentUser" }{CODE};
+            $Code = $_->can("GetCurrentUser");
+            next unless $Code;
         }
 
         foreach my $action (@{ $args{Actions} }) {
