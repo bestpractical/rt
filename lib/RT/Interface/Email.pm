@@ -416,7 +416,7 @@ sub GetAuthenticationLevel {
         @_,
     );
 
-    my ( $CurrentUser, $AuthStat, $error );
+    my ( $CurrentUser, $AuthStat );
 
     # Initalize AuthStat so comparisons work correctly
     $AuthStat = -9999999;
@@ -462,7 +462,7 @@ sub GetAuthenticationLevel {
 
     return $AuthStat if !wantarray;
 
-    return ($AuthStat, $CurrentUser, $error);
+    return ($AuthStat, $CurrentUser);
 }
 
 =head3 _NoAuthorizedUserFound
