@@ -47,9 +47,20 @@
 %# END BPS TAGGED BLOCK }}}
 % my $name = $NamePrefix . $CustomField->Id . '-Value';
 % if ($Multiple) {
-<textarea cols="<%$Cols%>" rows="<%$Rows%>" name="<%$name%>s" id="<%$name%>s" wrap="off" class="CF-<%$CustomField->id%>-Edit"><% defined($Default) ? $Default : '' %></textarea>
+<textarea \
+% if ( defined $Cols ) {
+cols="<% $Cols %>" \
+% }
+% if ( defined $Rows ) {
+rows="<% $Rows %>" \
+% }
+name="<%$name%>s" id="<%$name%>s" wrap="off" class="CF-<%$CustomField->id%>-Edit"><% defined($Default) ? $Default : '' %></textarea>
 % } else {
-<input name="<%$name%>" id="<%$name%>" size="<%$Cols%>" class="CF-<%$CustomField->id%>-Edit" value="<% defined($Default) ? $Default : ''%>" />
+<input name="<%$name%>" id="<%$name%>" \
+% if ( defined $Cols ) {
+size="<% $Cols %>" \
+% }
+class="CF-<%$CustomField->id%>-Edit" value="<% defined($Default) ? $Default : ''%>" />
 % }
 <%INIT>
 if ( $Multiple and $Values ) {
