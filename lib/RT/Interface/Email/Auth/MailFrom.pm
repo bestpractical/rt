@@ -75,7 +75,7 @@ sub GetCurrentUser {
 
     unless ( $Address ) {
         $RT::Logger->error("Couldn't parse or find sender's address");
-        return ( $args{'CurrentUser'}, -1 );
+        FAILURE("Couldn't parse or find sender's address");
     }
 
     my $CurrentUser = RT::CurrentUser->new;
@@ -90,14 +90,14 @@ sub GetCurrentUser {
     my $unpriv = RT->UnprivilegedUsers();
     unless ( $unpriv->Id ) {
         $RT::Logger->crit("Couldn't find the 'Unprivileged' internal group");
-        return ( $args{'CurrentUser'}, -1 );
+        FAILURE("Couldn't find the 'Unprivileged' internal group");
     }
 
     my $everyone = RT::Group->new( RT->SystemUser );
     $everyone->LoadSystemInternalGroup('Everyone');
     unless ( $everyone->Id ) {
         $RT::Logger->crit("Couldn't find the 'Everyone' internal group");
-        return ( $args{'CurrentUser'}, -1 );
+        FAILURE("Couldn't find the 'Everyone' internal group");
     }
 
     $RT::Logger->debug("Going to create user with address '$Address'" );
