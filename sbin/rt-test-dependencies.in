@@ -214,6 +214,7 @@ HTML::RewriteAttributes 0.05
 HTML::Scrubber 0.08
 HTTP::Message 6.0
 IPC::Run3
+JavaScript::Minifier::XS
 JSON
 LWP::Simple
 List::MoreUtils

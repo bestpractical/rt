@@ -1,4 +1,0 @@
-
-echo "// passthrough-jsmin added this";
-
-exec cat;
