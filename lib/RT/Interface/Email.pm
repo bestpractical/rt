@@ -185,7 +185,7 @@ sub Gateway {
             no strict 'refs';
             *{ $class . "::GetCurrentUser" }{CODE};
         };
-        my ($status, $msg) = $Code->(
+        $Code->(
             Message       => $Message,
             RawMessageRef => \$args{'message'},
             Queue         => $SystemQueueObj,
