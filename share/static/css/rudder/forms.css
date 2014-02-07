@@ -23,6 +23,8 @@ div.results .titlebox-title .left {
 div.error .titlebox-title span.left {
     border: none;
     border-right: 2px solid #b00;
+    margin-left: 0;
+    padding-left: 2.3em;
 }
 
 div.error .titlebox-content,
