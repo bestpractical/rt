@@ -64,10 +64,10 @@ function filter_cascade (id, vals) {
         }
         else {
             jQuery(element).find('div').hide().find('input').attr('disabled', 'disabled');
-            jQuery(element).find('div[name=]').show().find('input').attr('disabled', '');
+            jQuery(element).find('div[data-name=]').show().find('input').attr('disabled', '');
             jQuery(element).find('div.none').show().find('input').attr('disabled','');
             for ( var j = 0; j < vals.length; j++ ) {
-                jQuery(element).find('div[name^=' + vals[j] + ']').show().find('input').attr('disabled', '');
+                jQuery(element).find('div[data-name^=' + vals[j] + ']').show().find('input').attr('disabled', '');
             }
         }
     }
