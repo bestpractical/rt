@@ -191,10 +191,6 @@ sub Gateway {
             Queue         => $SystemQueueObj,
             Actions       => \@actions,
         );
-        next if $status > 0;
-
-        SUCCESS($msg) if $status == -2;
-        FAILURE($msg) if $status == -1;
     }
     @mail_plugins = grep !$skip_plugin{"$_"}, @mail_plugins;
     $parser->_DecodeBodies;

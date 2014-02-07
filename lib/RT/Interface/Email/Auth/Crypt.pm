@@ -107,6 +107,9 @@ sub ApplyBeforeDecode { return 1 }
 use RT::Crypt;
 use RT::EmailParser ();
 
+use Role::Basic 'with';
+with 'RT::Interface::Email::Role';
+
 sub GetCurrentUser {
     my %args = (
         Message       => undef,
@@ -139,7 +142,7 @@ sub GetCurrentUser {
                 Template  => 'Error: unencrypted message',
                 Arguments => { Message  => $args{'Message'} },
             );
-            return (-1, 'rejected because the message is unencrypted with RejectOnUnencrypted enabled');
+            FAILURE('rejected because the message is unencrypted with RejectOnUnencrypted enabled');
         }
         else {
             $args{'Message'}->head->replace(

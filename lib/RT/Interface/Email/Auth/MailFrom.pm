@@ -51,6 +51,9 @@ package RT::Interface::Email::Auth::MailFrom;
 use strict;
 use warnings;
 
+use Role::Basic 'with';
+with 'RT::Interface::Email::Role';
+
 use RT::Interface::Email;
 
 # This is what the ordinary, non-enhanced gateway does at the moment.
