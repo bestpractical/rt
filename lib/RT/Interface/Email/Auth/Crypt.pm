@@ -102,15 +102,13 @@ Read also: L<RT::Crypt> and L<RT::Crypt::SMIME>.
 
 =cut
 
-sub ApplyBeforeDecode { return 1 }
-
 use RT::Crypt;
 use RT::EmailParser ();
 
 use Role::Basic 'with';
 with 'RT::Interface::Email::Role';
 
-sub GetCurrentUser {
+sub BeforeDecode {
     my %args = (
         Message       => undef,
         RawMessageRef => undef,
