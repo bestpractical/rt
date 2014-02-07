@@ -55,7 +55,7 @@
 
 % unless ($ok) {
 %    $msg =~ s{ at .*? line .*}{}s;
-<&| /Widgets/TitleBox, title => loc("Error"), class => "error" &>
+<&| /Widgets/TitleBox, title => loc("Error"), class => "error-titlebox" &>
 <&|/l_unsafe, "<i>".$m->interp->apply_escapes($msg, "h")."</i>" &>There was an error parsing your search query: [_1].  Your RT admin can find more information in the error logs.</&>
 </&>
 % } else {
