@@ -149,7 +149,7 @@ sub GetCurrentUser {
                 'X-RT-Incoming-Encryption' => 'Not encrypted'
             );
         }
-        return 1;
+        return;
     }
 
     if ( grep {$_->{'exit_code'}} @res ) {
@@ -160,8 +160,7 @@ sub GetCurrentUser {
             $RT::Logger->warning("Failure during ".$fail->{Protocol}." ". lc($fail->{status}{Operation}) . ": ". $fail->{status}{Message});
         }
         my $reject = HandleErrors( Message => $args{'Message'}, Result => \@res );
-        return (0, 'rejected because of problems during decrypting and verifying')
-            if $reject;
+        return if $reject;
     }
 
     # attach the original encrypted message
@@ -204,8 +203,6 @@ sub GetCurrentUser {
     my %seen;
     $args{'Message'}->head->replace( 'X-RT-Privacy' => Encode::encode( "UTF-8", $_ ) )
         foreach grep !$seen{$_}++, @found;
-
-    return 1;
 }
 
 sub HandleErrors {
