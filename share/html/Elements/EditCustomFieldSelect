@@ -115,7 +115,7 @@ jQuery(  function () {
 %   while ( my $value = $CFVs->Next ) {
 %     my $content = $value->Name;
 %     my $labelid = "$name-". $value->id;
-<div name="<% $value->Category %>">
+<div name="<% $value->Category || '' %>">
   <input type="<% $checktype %>" name="<% $name %>" id="<% $labelid %>" value="<% $content %>" <% $default{ lc $content }? ' checked="checked"' : '' |n%> />
   <label for="<% $labelid %>"><% $content %></label><br />
 </div>
