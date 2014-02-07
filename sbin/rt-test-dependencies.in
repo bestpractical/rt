@@ -181,6 +181,7 @@ CGI::Emulate::PSGI
 CGI::PSGI 0.12
 Class::Accessor 0.34
 Crypt::Eksblowfish
+CSS::Minifier::XS
 CSS::Squish 0.06
 Data::GUID
 Date::Extract 0.02

@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 26;
+use RT::Test tests => undef;
 
 RT->Config->Set( DevelMode            => 0 );
 RT->Config->Set( WebDefaultStylesheet => 'aileron' );
@@ -14,9 +14,8 @@ diag "test squished files with devel mode disabled";
 
 $m->follow_link_ok( { url_regex => qr!aileron/squished-([a-f0-9]{32})\.css! },
     'follow squished css' );
-$m->content_like( qr!/\*\* End of .*?.css \*/!, 'squished css' );
-$m->content_lacks( 'counteract the titlebox',
-    'no mobile.css by default' );
+$m->content_like( qr/body\{font.*table\{font/, 'squished css' );
+$m->content_lacks( 'a#fullsite', 'no mobile.css by default' );
 
 $m->back;
 my ($js_link) =
@@ -36,9 +35,8 @@ RT->AddStyleSheets( 'mobile.css' );
 $m->login;
 $m->follow_link_ok( { url_regex => qr!aileron/squished-([a-f0-9]{32})\.css! },
     'follow squished css' );
-$m->content_like( qr!/\*\* End of .*?.css \*/!, 'squished css' );
-$m->content_contains( 'counteract the titlebox',
-    'has mobile.css' );
+$m->content_like( qr/body\{font.*table\{font/, 'squished css' );
+$m->content_contains( 'a#fullsite', 'has mobile.css' );
 
 $m->back;
 ($js_link) =
@@ -76,3 +74,4 @@ $m->content_contains('not-by-default.js', "found extra javascript resource");
 $m->content_contains('nottherebutwedontcare.css', "found extra css resource");
 $m->content_contains('jquery_noconflict.js', "found a default js resource");
 
+done_testing;
