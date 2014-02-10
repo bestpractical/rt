@@ -262,6 +262,10 @@ sub AddToObject {
     my $self = shift;
     my %args = @_%2? (ObjectId => @_) : (@_);
 
+    # Default Stage explicitly rather than in %args assignment to handle
+    # Stage coming in set to undef.
+    $args{'Stage'} //= 'TransactionCreate';
+
     my $queue;
     if ( $args{'ObjectId'} ) {
         $queue = RT::Queue->new( $self->CurrentUser );
