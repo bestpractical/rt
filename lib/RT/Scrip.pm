@@ -258,6 +258,27 @@ sub NotAddedTo {
         ->NotAddedTo( Scrip => $self );
 }
 
+=head2 AddToObject
+
+Adds (applies) the current scrip to the provided queue (ObjectId).
+
+Accepts a param hash of:
+
+ObjectId  => Queue name or id. 0 makes the scrip global.
+
+Stage     => Stage to run in. Valid stages are TransactionCreate or
+TransactionBatch. Defaults to TransactionCreate. As of RT 4.2, Disabled is no
+longer a stage.
+
+Template  => Name of global or queue-specific template for the scrip. Use
+'Blank' for non-notification scrips.
+
+SortOrder => Number indicating the relative order the scrip should run in.
+
+Returns (val, message). If val is false, the message contains an error message.
+
+=cut
+
 sub AddToObject {
     my $self = shift;
     my %args = @_%2? (ObjectId => @_) : (@_);
@@ -296,6 +317,18 @@ sub AddToObject {
     my $rec = RT::ObjectScrip->new( $self->CurrentUser );
     return $rec->Add( %args, Scrip => $self );
 }
+
+=head2 RemoveFromObject
+
+Removes the current scrip to the provided queue (ObjectId).
+
+Accepts a param hash of:
+
+ObjectId  => Queue name or id. 0 makes the scrip global.
+
+Returns (val, message). If val is false, the message contains an error message.
+
+=cut
 
 sub RemoveFromObject {
     my $self = shift;
