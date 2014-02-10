@@ -62,10 +62,13 @@ my %columns = $report->SetupGroupings(
     Function => \@ChartFunction,
 );
 
+$m->callback(CallbackName => 'BeforeSortEntries', ARGSRef => \%ARGS, ReportObj => $report, Query => $Query, GroupBy => \@GroupBy, Function => \@ChartFunction);
+
 $report->SortEntries;
 
 my $query_string = $m->comp('/Elements/QueryString', %ARGS, GroupBy => \@GroupBy );
 </%init>
+% $m->callback(CallbackName => 'BeforeChart', ARGSRef => \%ARGS, ReportObj => $report, QueryString => \$query_string);
 <div class="chart-wrapper">
 <span class="chart image">
 % if (RT->Config->Get('DisableGD')) {
@@ -77,6 +80,8 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS, GroupBy => \@GroupBy
 <img src="<% RT->Config->Get('WebPath') %>/Search/Chart?Cache=<% $key |un %>&<% $query_string |n %>" />
 % }
 </span>
+% $m->callback(CallbackName => 'BeforeChartTable', ARGSRef => \%ARGS, ReportObj => $report, QueryString => \$query_string);
 <& ChartTable, %ARGS, Table => { $report->FormatTable( %columns ) } &>
 <div class="query"><span class="label"><% loc('Query') %>:</span><span class="value"><% $Query %></span></div>
 </div>
+% $m->callback(CallbackName => 'AfterQueryString', ARGSRef => \%ARGS, ReportObj => $report, QueryString => \$query_string);
