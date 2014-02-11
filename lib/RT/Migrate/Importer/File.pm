@@ -85,7 +85,7 @@ sub Import {
     my $dir = $self->{Directory};
 
     if ($self->{Metadata} and $self->{Metadata}{Files}) {
-        $self->{Files} = [ map {s|^.*?/|$dir/|;$_} @{$self->{Metadata}{Files}} ];
+        $self->{Files} = [ map {s|^.*/|$dir/|;$_} @{$self->{Metadata}{Files}} ];
     } else {
         $self->{Files} = [ <$dir/*.dat> ];
     }
