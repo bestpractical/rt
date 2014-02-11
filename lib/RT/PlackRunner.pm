@@ -96,7 +96,9 @@ sub mangle_host_port_socket {
     my ($host, $port, $socket, @listen) = @_;
     return $self->SUPER::mangle_host_port_socket(@_)
         if @listen or $port or $socket;
-    return host => $host, port => $port, socket => $socket, listen => \@listen;
+
+    return host => $host, port => $port, socket => $socket,
+        @listen ? (listen => \@listen) : ();
 }
 
 sub app {
