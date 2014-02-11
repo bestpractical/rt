@@ -75,20 +75,21 @@
 
 <%INIT>
 
-my $exclude = [RT->Nobody->Id, RT->System->Id];
-my $users = RT::Users->new($session{'CurrentUser'});
-$users->SimpleSearch( Return    => 'Name',
-                      Term      => $UserString,
-                      Max       => 100,
-                      Exclude   => $exclude );
-
-my $first = $users->First;
-RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."User/Summary.html?id=".$first->Id)
-    if $users->Count == 1;
-
-$users->GotoFirstItem;
-
-my $Format = RT->Config->Get('UserSearchResultFormat');
+my $users;
+my $Format;
+if ( $UserString ) {
+    my $exclude = [RT->Nobody->Id, RT->System->Id];
+    $users = RT::Users->new($session{'CurrentUser'});
+    $users->SimpleSearch( Return    => 'Name',
+                          Term      => $UserString,
+                          Max       => 100,
+                          Exclude   => $exclude );
+    my $first = $users->First;
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."User/Summary.html?id=".$first->Id)
+        if $users->Count == 1;
+    $users->GotoFirstItem;
+    $Format = RT->Config->Get('UserSearchResultFormat');
+}
 
 my $search_fields = join ", ",
   sort map {s/^CF\.(?:\{(.*)}|(.*))/$1 || $2/e; loc($_)}
