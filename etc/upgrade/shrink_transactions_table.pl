@@ -87,6 +87,7 @@ $txns->Limit(
     OPERATOR => '=',
     VALUE => 'UserEquiv',
     QUOTEVALUE => 1,
+    CASESENSITIVE => 0,
     ENTRYAGGREGATOR => 'AND',
 );
 
