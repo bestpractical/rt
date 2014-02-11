@@ -83,10 +83,11 @@ $txns->Limit(
 
 $txns->Limit(
     ALIAS => $alias,
-    FIELD => 'Type',
+    FIELD => 'Name',
     OPERATOR => '=',
     VALUE => 'UserEquiv',
     QUOTEVALUE => 1,
+    CASESENSITIVE => 0,
     ENTRYAGGREGATOR => 'AND',
 );
 
