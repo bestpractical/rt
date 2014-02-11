@@ -58,7 +58,9 @@ $CustomFields->LimitToObjectId(0);
 foreach my $name (keys %queues) {
     my $queue = RT::Queue->new($session{'CurrentUser'});
     $queue->Load($name);
-    $CustomFields->LimitToObjectId($queue->Id) if $queue->Id;
+    next unless $queue->Id;
+    $CustomFields->LimitToObjectId($queue->Id);
+    $CustomFields->SetContextObject( $queue ) if keys %queues == 1;
 }
 
 my $has_cf = $CustomFields->First ? 1 : 0;

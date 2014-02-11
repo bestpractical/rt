@@ -54,7 +54,9 @@ foreach my $id (keys %queues) {
     # Gotta load up the $queue object, since queues get stored by name now.
     my $queue = RT::Queue->new($session{'CurrentUser'});
     $queue->Load($id);
-    $CustomFields->LimitToQueue($queue->Id) if $queue->Id;
+    next unless $queue->Id;
+    $CustomFields->LimitToQueue($queue->Id);
+    $CustomFields->SetContextObject( $queue ) if keys %queues == 1;
 }
 $CustomFields->LimitToGlobal;
 $CustomFields->OrderBy( FIELD => 'Name', ORDER => 'ASC' );
