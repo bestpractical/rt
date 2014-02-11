@@ -1,0 +1,46 @@
+# Samples of all things we support in initialdata
+
+@Queues = (
+    {
+        Name                => 'Test Queue',
+        CorrespondAddress   => 'help@example.com',
+        CommentAddress      => 'help-comment@example.com',
+    }
+);
+
+@Scrips = (
+    {
+        Description    => 'Test Without Stage',
+        ScripCondition => 'On Resolve',
+        ScripAction    => 'Notify Requestors',
+        Template       => 'Correspondence in HTML',
+    },
+    {
+        Queue          => 'General',
+        Description    => 'Test Without Stage and One Queue',
+        ScripCondition => 'On Resolve',
+        ScripAction    => 'Notify Requestors',
+        Template       => 'Correspondence in HTML',
+    },
+    {
+        Queue          => ['General', 'Test Queue'],
+        Description    => 'Test Without Stage and Two Queues',
+        ScripCondition => 'On Resolve',
+        ScripAction    => 'Notify Requestors',
+        Template       => 'Correspondence in HTML',
+    },
+    {
+        Description    => 'Test TransactionCreate',
+        ScripCondition => 'On Resolve',
+        ScripAction    => 'Notify Requestors',
+        Template       => 'Correspondence in HTML',
+        Stage          => 'TransactionCreate',
+    },
+    {
+        Description    => 'Test TransactionBatch',
+        ScripCondition => 'On Resolve',
+        ScripAction    => 'Notify Requestors',
+        Template       => 'Correspondence in HTML',
+        Stage          => 'TransactionBatch',
+    },
+);
