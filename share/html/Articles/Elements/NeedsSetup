@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 %# Stupidly long lines because our extract-message-catalog doesn't handle multiple lines!
-<&|/Widgets/TitleBox, id => "articles-needs-setup", class => "error", title => "Setup needed" &>
+<&|/Widgets/TitleBox, id => "articles-needs-setup", class => "error-titlebox", title => "Setup needed" &>
 <p><&|/l_unsafe, qq[<a href="@{[RT->Config->Get("WebPath")]}/Admin/Articles/">], '</a>' &>Before Articles can be used, your RT administrator must [_1]create Classes[_2], apply Article custom fields to them, and grant users rights on the classes and CFs.</&></p>
 <p><&|/l_unsafe, qq[<a href="http://bestpractical.com/rt/docs/$RT::MAJOR_VERSION.$RT::MINOR_VERSION/customizing/articles_introduction.html">], qq[<a href="http://bestpractical.com/rt/docs/$RT::MAJOR_VERSION.$RT::MINOR_VERSION/">], '</a>' &>An [_1]introduction to getting started with articles[_3] is available from [_2]Best Practical's online documentation[_3].</&></p>
 </&>
