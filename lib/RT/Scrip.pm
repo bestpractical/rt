@@ -264,18 +264,31 @@ Adds (applies) the current scrip to the provided queue (ObjectId).
 
 Accepts a param hash of:
 
-ObjectId  => Queue name or id. 0 makes the scrip global.
+=over
 
-Stage     => Stage to run in. Valid stages are TransactionCreate or
-TransactionBatch. Defaults to TransactionCreate. As of RT 4.2, Disabled is no
-longer a stage.
+=item C<ObjectId>
 
-Template  => Name of global or queue-specific template for the scrip. Use
-'Blank' for non-notification scrips.
+Queue name or id. 0 makes the scrip global.
 
-SortOrder => Number indicating the relative order the scrip should run in.
+=item C<Stage>
 
-Returns (val, message). If val is false, the message contains an error message.
+Stage to run in. Valid stages are TransactionCreate or
+TransactionBatch. Defaults to TransactionCreate. As of RT 4.2, Disabled
+is no longer a stage.
+
+=item C<Template>
+
+Name of global or queue-specific template for the scrip. Use 'Blank' for
+non-notification scrips.
+
+=item C<SortOrder>
+
+Number indicating the relative order the scrip should run in.
+
+=back
+
+Returns (val, message). If val is false, the message contains an error
+message.
 
 =cut
 
@@ -324,9 +337,16 @@ Removes the current scrip to the provided queue (ObjectId).
 
 Accepts a param hash of:
 
-ObjectId  => Queue name or id. 0 makes the scrip global.
+=over
 
-Returns (val, message). If val is false, the message contains an error message.
+=item C<ObjectId>
+
+Queue name or id. 0 makes the scrip global.
+
+=back
+
+Returns (val, message). If val is false, the message contains an error
+message.
 
 =cut
 
