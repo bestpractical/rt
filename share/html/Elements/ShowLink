@@ -49,7 +49,7 @@
 % if ($URI->IsLocal) {
 % my $member = $URI->Object;
 % my $has_name = UNIVERSAL::can($member, 'Name') || (UNIVERSAL::can($member, '_Accessible') && $member->_Accessible('Name', 'read'));
-% if (UNIVERSAL::isa($member, "RT::Ticket")) {
+% if (UNIVERSAL::isa($member, "RT::Ticket") and $member->CurrentUserHasRight('ShowTicket')) {
 % my $inactive = $member->QueueObj->IsInactiveStatus($member->Status);
 
 <span class="<% $inactive ? 'ticket-inactive' : '' %>">
