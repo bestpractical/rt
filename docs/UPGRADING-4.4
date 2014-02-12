@@ -42,6 +42,11 @@ Previously, if the C<CreateTicket> right was not granted to C<Everyone>
 or C<Unprivileged>, the email would be rejected without a user; now, the
 user to be created even when the mail is rejected.
 
+=item *
+The L<RT_Config/@MailPlugins> functionality has been rewritten; mail
+plugins written for previous versions of RT will not function as
+expected.  See F<docs/extending/mail_plugins.pod>
+
 =back
 
 =cut
