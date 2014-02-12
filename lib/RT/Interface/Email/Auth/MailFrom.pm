@@ -59,14 +59,10 @@ use RT::Interface::Email;
 # This is what the ordinary, non-enhanced gateway does at the moment.
 
 sub GetCurrentUser {
-    my %args = ( Message     => undef,
-                 CurrentUser => undef,
-                 AuthLevel   => undef,
-                 Ticket      => undef,
-                 Queue       => undef,
-                 Action      => undef,
-                 @_ );
-
+    my %args = (
+        Message => undef,
+        @_,
+    );
 
     # We don't need to do any external lookups
     my ( $Address, $Name, @errors ) = RT::Interface::Email::ParseSenderAddressFromHead( $args{'Message'}->head );
@@ -83,7 +79,7 @@ sub GetCurrentUser {
     $CurrentUser->LoadByName( $Address ) unless $CurrentUser->Id;
     if ( $CurrentUser->Id ) {
         $RT::Logger->debug("Mail from user #". $CurrentUser->Id ." ($Address)" );
-        return ( $CurrentUser, 1 );
+        return $CurrentUser;
     }
 
 
@@ -97,7 +93,22 @@ sub GetCurrentUser {
     $CurrentUser = RT::CurrentUser->new;
     $CurrentUser->Load( $user->id );
 
-    return (undef, 0) unless $CurrentUser->id;
+    return $CurrentUser;
+}
+
+
+sub CheckACL {
+    my %args = (
+        Message     => undef,
+        CurrentUser => undef,
+        AuthLevel   => undef,
+        Ticket      => undef,
+        Queue       => undef,
+        Action      => undef,
+        @_,
+    );
+
+    my $CurrentUser = $args{CurrentUser};
 
     if ( $args{'Ticket'} && $args{'Ticket'}->Id ) {
         my $qname = $args{'Queue'}->Name;
@@ -107,7 +118,7 @@ sub GetCurrentUser {
             # check to see whether if they can comment on the ticket
             unless ( $CurrentUser->PrincipalObj->HasRight( Object => $args{'Ticket'}, Right => 'CommentOnTicket' ) ) {
                 $RT::Logger->debug("Unprivileged users have no right to comment on ticket in queue '$qname'");
-                return ( $CurrentUser, 0 );
+                return 0;
             }
         }
         elsif ( $args{'Action'} =~ /^correspond$/i ) {
@@ -115,7 +126,7 @@ sub GetCurrentUser {
             # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
             unless ( $CurrentUser->PrincipalObj->HasRight( Object => $args{'Ticket'}, Right  => 'ReplyToTicket' ) ) {
                 $RT::Logger->debug("Unprivileged users have no right to reply to ticket in queue '$qname'");
-                return ( $CurrentUser, 0 );
+                return 0;
             }
         }
         elsif ( $args{'Action'} =~ /^take$/i ) {
@@ -123,7 +134,7 @@ sub GetCurrentUser {
             # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
             unless ( $CurrentUser->PrincipalObj->HasRight( Object => $args{'Ticket'}, Right  => 'OwnTicket' ) ) {
                 $RT::Logger->debug("Unprivileged users have no right to own ticket in queue '$qname'");
-                return ( $CurrentUser, 0 );
+                return 0;
             }
 
         }
@@ -132,13 +143,13 @@ sub GetCurrentUser {
             # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
             unless ( $CurrentUser->PrincipalObj->HasRight( Object => $args{'Ticket'}, Right  => 'ModifyTicket' ) ) {
                 $RT::Logger->debug("Unprivileged users have no right to resolve ticket in queue '$qname'");
-                return ( $CurrentUser, 0 );
+                return 0;
             }
 
         }
         else {
             $RT::Logger->warning("Action '". ($args{'Action'}||'') ."' is unknown");
-            return ( $CurrentUser, 0 );
+            return 0;
         }
     }
 
@@ -149,11 +160,11 @@ sub GetCurrentUser {
         # check to see whether "Everybody" or "Unprivileged users" can create tickets in this queue
         unless ( $CurrentUser->PrincipalObj->HasRight( Object => $args{'Queue'}, Right  => 'CreateTicket' ) ) {
             $RT::Logger->debug("Unprivileged users have no right to create ticket in queue '$qname'");
-            return ( $CurrentUser, 0 );
+            return 0;
         }
     }
 
-    return ( $CurrentUser, 1 );
+    return 1;
 }
 
 RT::Base->_ImportOverlays();

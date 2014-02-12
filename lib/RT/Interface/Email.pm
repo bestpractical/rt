@@ -213,27 +213,23 @@ sub Gateway {
     TMPFAIL("RT couldn't find the queue: " . $args{'queue'})
         unless $SystemTicket->id || $SystemQueueObj->id;
 
-    my ($AuthStat, $CurrentUser, $error) = GetAuthenticationLevel(
+    my $CurrentUser = GetCurrentUser(
+        ErrorsTo      => $ErrorsTo,
+        MailPlugins   => \@mail_plugins,
+        Message       => $Message,
+        RawMessageRef => \$args{message},
+        Ticket        => $SystemTicket,
+        Queue         => $SystemQueueObj,
+    );
+
+    my $AuthStat = CheckACL(
         MailPlugins   => \@mail_plugins,
         Actions       => \@actions,
         Message       => $Message,
-        RawMessageRef => \$args{message},
-        SystemTicket  => $SystemTicket,
-        SystemQueue   => $SystemQueueObj,
+        CurrentUser   => $CurrentUser,
+        Ticket        => $SystemTicket,
+        Queue         => $SystemQueueObj,
     );
-
-    # If authentication fails and no new user was created, get out.
-    if ( !$CurrentUser || !$CurrentUser->id ) {
-
-        # If the plugins refused to create one, they lose.
-        _NoAuthorizedUserFound(
-            Right     => $Right,
-            Message   => $Message,
-            Requestor => $ErrorsTo,
-            Queue     => $args{'queue'}
-        );
-        FAILURE("Could not load a valid user");
-    }
 
     # If we got a user, but they don't have the right to say things
     if ( $AuthStat == 0 ) {
@@ -391,7 +387,53 @@ sub _LoadPlugins {
     return @res;
 }
 
-=head3 GetAuthenticationLevel
+=head3 GetCurrentUser
+
+=cut
+
+sub GetCurrentUser {
+    my %args = (
+        ErrorsTo      => undef,
+        MailPlugins   => [],
+        Message       => undef,
+        RawMessageRef => undef,
+        Ticket        => undef,
+        Queue         => undef,
+        @_,
+    );
+
+    # Since this needs loading, no matter what
+    foreach (@{ $args{MailPlugins} }) {
+        my $Code;
+        if ( ref($_) eq "CODE" ) {
+            $Code = $_;
+        } else {
+            $Code = $_->can("GetCurrentUser");
+            next unless $Code;
+        }
+
+        my $CurrentUser = $Code->(
+            Message       => $args{Message},
+            RawMessageRef => $args{RawMessageRef},
+            Ticket        => $args{Ticket},
+            Queue         => $args{Queue},
+        );
+        return $CurrentUser if $CurrentUser and $CurrentUser->id;
+    }
+
+    # None of the GetCurrentUser plugins found a user.  This is
+    # rare; some non-Auth::MailFrom authentication plugin which
+    # doesn't always return a current user?
+    MailError(
+        To          => $args{ErrorsTo},
+        Subject     => "Permission Denied",
+        Explanation => "You do not have permission to communicate with RT",
+        MIMEObj     => $args{Message},
+    );
+    FAILURE("Could not load a valid user");
+}
+
+=head2 CheckACL
 
     # Authentication Level
     # -1 - Get out.  this user has been explicitly declined
@@ -401,45 +443,38 @@ sub _LoadPlugins {
 
 =cut
 
-sub GetAuthenticationLevel {
+sub CheckACL {
     my %args = (
         MailPlugins   => [],
         Actions       => [],
         Message       => undef,
-        RawMessageRef => undef,
-        SystemTicket  => undef,
-        SystemQueue   => undef,
+        CurrentUser   => undef,
+        Ticket        => undef,
+        Queue         => undef,
         @_,
     );
 
-    my ( $CurrentUser, $AuthStat );
-
     # Initalize AuthStat so comparisons work correctly
-    $AuthStat = -9999999;
+    my $AuthStat = -9999999;
 
     # if plugin returns AuthStat -2 we skip action
     # NOTE: this is experimental API and it would be changed
     my %skip_action = ();
 
     # Since this needs loading, no matter what
-    foreach (@{ $args{MailPlugins} }) {
-        my ($Code, $NewAuthStat);
-        if ( ref($_) eq "CODE" ) {
-            $Code = $_;
-        } else {
-            $Code = $_->can("GetCurrentUser");
-            next unless $Code;
-        }
+    for my $class (@{ $args{MailPlugins} }) {
+        my $Code = $class->can("CheckACL");
+        next unless $Code;
 
         foreach my $action (@{ $args{Actions} }) {
-            ( $CurrentUser, $NewAuthStat ) = $Code->(
+            my $NewAuthStat = $Code->(
                 Message       => $args{Message},
                 RawMessageRef => $args{RawMessageRef},
-                CurrentUser   => $CurrentUser,
+                CurrentUser   => $args{CurrentUser},
                 AuthLevel     => $AuthStat,
                 Action        => $action,
-                Ticket        => $args{SystemTicket},
-                Queue         => $args{SystemQueue},
+                Ticket        => $args{Ticket},
+                Queue         => $args{Queue},
             );
 
 # You get the highest level of authentication you were assigned, unless you get the magic -1
@@ -458,7 +493,7 @@ sub GetAuthenticationLevel {
 
     return $AuthStat if !wantarray;
 
-    return ($AuthStat, $CurrentUser);
+    return $AuthStat;
 }
 
 =head3 _NoAuthorizedUserFound

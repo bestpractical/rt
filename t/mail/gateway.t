@@ -729,8 +729,8 @@ ok( $status, "successfuly granted right: $msg" );
 my $ace_id = $status;
 ok( $user->HasRight( Right => 'ReplyToTicket', Object => $tick ), "User can reply to ticket" );
 
-$m->next_warning_like(qr/That user may not own tickets in that queue/);
-$m->next_warning_like(qr/Could not record email: Ticket not taken/);
+$m->next_warning_like(qr/Permission Denied: You do not have permission to communicate with RT/);
+$m->next_warning_like(qr/Could not record email: ext-mailgate@\S+ tried to submit a message to ext-mailgate without permission/);
 $m->no_leftover_warnings_ok;
 
 $! = 0;
