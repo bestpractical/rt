@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 
-use RT::Test config => 'Set( $UnsafeEmailCommands, 1);', tests => 228, actual_server => 1;
+use RT::Test config => 'Set( $UnsafeEmailCommands, 1);', tests => undef, actual_server => 1;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 use RT::Tickets;
@@ -192,14 +192,11 @@ EOF
 
     my $u = RT::User->new(RT->SystemUser);
     $u->Load("doesnotexist\@@{[RT->Config->Get('rtname')]}");
-    ok( !$u->Id, "user does not exist and was not created by failed ticket submission");
+    ok( $u->Id, "user was created by failed ticket submission");
 
-    $m->next_warning_like(qr/RT's configuration does not allow\s+for the creation of a new user for this email/);
-    $m->next_warning_like(qr/RT could not load a valid user/);
-    TODO: {
-        local $TODO = "we're a bit noisy for this warning case";
-        $m->no_leftover_warnings_ok;
-    }
+    $m->next_warning_like(qr/You do not have permission to communicate with RT/);
+    $m->next_warning_like(qr/Could not record email: doesnotexist\@\S+ tried to submit a message to General without permission/);
+    $m->no_leftover_warnings_ok;
 }
 
 diag "grant everybody with CreateTicket right";
@@ -234,7 +231,7 @@ EOF
 
     my $u = RT::User->new( RT->SystemUser );
     $u->Load( "doesnotexist\@@{[RT->Config->Get('rtname')]}" );
-    ok ($u->Id, "user does not exist and was created by ticket submission");
+    ok ($u->Id, "user does exist and was created by ticket submission");
     $ticket_id = $id;
     $m->no_warnings_ok;
 }
@@ -255,12 +252,10 @@ EOF
 
     my $u = RT::User->new(RT->SystemUser);
     $u->Load('doesnotexist-2@'.RT->Config->Get('rtname'));
-    ok( !$u->Id, " user does not exist and was not created by ticket correspondence submission");
-    $m->next_warning_like(qr/RT's configuration does not allow\s+for the creation of a new user for this email \(doesnotexist-2\@example\.com\)/);
-    TODO: {
-        local $TODO = "we're a bit noisy for this warning case";
-        $m->no_leftover_warnings_ok;
-    }
+    ok( $u->Id, "user was created by ticket correspondence submission");
+    $m->next_warning_like(qr/You do not have permission to communicate with RT/);
+    $m->next_warning_like(qr/Could not record email: doesnotexist-2\@\S+ tried to submit a message to General without permission/);
+    $m->no_leftover_warnings_ok;
 }
 
 diag "grant everyone 'ReplyToTicket' right";
@@ -341,12 +336,10 @@ EOF
 
     my $u = RT::User->new(RT->SystemUser);
     $u->Load('doesnotexist-3@'.RT->Config->Get('rtname'));
-    ok( !$u->Id, " user does not exist and was not created by ticket comment submission");
-    $m->next_warning_like(qr/RT's configuration does not allow\s+for the creation of a new user for this email \(doesnotexist-3\@example\.com\)/);
-    TODO: {
-        local $TODO = "we're a bit noisy for this warning case";
-        $m->no_leftover_warnings_ok;
-    }
+    ok( $u->Id, "user was created by ticket comment submission");
+    $m->next_warning_like(qr/You do not have permission to communicate with RT/);
+    $m->next_warning_like(qr/Could not record email: doesnotexist-3\@\S+ tried to submit a message to General without permission/);
+    $m->no_leftover_warnings_ok;
 }
 
 
@@ -826,3 +819,5 @@ $m->no_warnings_ok;
 
 };
 
+undef $m;
+done_testing;

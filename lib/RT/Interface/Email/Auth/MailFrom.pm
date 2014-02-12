@@ -86,80 +86,59 @@ sub GetCurrentUser {
         return ( $CurrentUser, 1 );
     }
 
-    # If the user can't be loaded, we may need to create one. Figure out the acl situation.
-    my $unpriv = RT->UnprivilegedUsers();
-    unless ( $unpriv->Id ) {
-        $RT::Logger->crit("Couldn't find the 'Unprivileged' internal group");
-        FAILURE("Couldn't find the 'Unprivileged' internal group");
-    }
 
-    my $everyone = RT::Group->new( RT->SystemUser );
-    $everyone->LoadSystemInternalGroup('Everyone');
-    unless ( $everyone->Id ) {
-        $RT::Logger->crit("Couldn't find the 'Everyone' internal group");
-        FAILURE("Couldn't find the 'Everyone' internal group");
-    }
+    my $user = RT::User->new( RT->SystemUser );
+    $user->LoadOrCreateByEmail(
+        RealName     => $Name,
+        EmailAddress => $Address,
+        Comments     => 'Autocreated on ticket submission',
+    );
 
-    $RT::Logger->debug("Going to create user with address '$Address'" );
+    $CurrentUser = RT::CurrentUser->new;
+    $CurrentUser->Load( $user->id );
 
-    # but before we do that, we need to make sure that the created user would have the right
-    # to do what we're doing.
+    return (undef, 0) unless $CurrentUser->id;
+
     if ( $args{'Ticket'} && $args{'Ticket'}->Id ) {
         my $qname = $args{'Queue'}->Name;
         # We have a ticket. that means we're commenting or corresponding
         if ( $args{'Action'} =~ /^comment$/i ) {
 
-            # check to see whether "Everyone" or "Unprivileged users" can comment on tickets
-            unless ( $everyone->PrincipalObj->HasRight( Object => $args{'Queue'},
-                                                        Right => 'CommentOnTicket' )
-                     || $unpriv->PrincipalObj->HasRight( Object => $args{'Queue'},
-                                                         Right => 'CommentOnTicket' ) )
-            {
+            # check to see whether if they can comment on the ticket
+            unless ( $CurrentUser->PrincipalObj->HasRight( Object => $args{'Ticket'}, Right => 'CommentOnTicket' ) ) {
                 $RT::Logger->debug("Unprivileged users have no right to comment on ticket in queue '$qname'");
-                return ( $args{'CurrentUser'}, 0 );
+                return ( $CurrentUser, 0 );
             }
         }
         elsif ( $args{'Action'} =~ /^correspond$/i ) {
 
             # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
-            unless ( $everyone->PrincipalObj->HasRight( Object => $args{'Queue'},
-                                                        Right  => 'ReplyToTicket' )
-                     || $unpriv->PrincipalObj->HasRight( Object => $args{'Queue'},
-                                                         Right  => 'ReplyToTicket' ) )
-            {
+            unless ( $CurrentUser->PrincipalObj->HasRight( Object => $args{'Ticket'}, Right  => 'ReplyToTicket' ) ) {
                 $RT::Logger->debug("Unprivileged users have no right to reply to ticket in queue '$qname'");
-                return ( $args{'CurrentUser'}, 0 );
+                return ( $CurrentUser, 0 );
             }
         }
         elsif ( $args{'Action'} =~ /^take$/i ) {
 
             # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
-            unless ( $everyone->PrincipalObj->HasRight( Object => $args{'Queue'},
-                                                        Right  => 'OwnTicket' )
-                     || $unpriv->PrincipalObj->HasRight( Object => $args{'Queue'},
-                                                         Right  => 'OwnTicket' ) )
-            {
+            unless ( $CurrentUser->PrincipalObj->HasRight( Object => $args{'Ticket'}, Right  => 'OwnTicket' ) ) {
                 $RT::Logger->debug("Unprivileged users have no right to own ticket in queue '$qname'");
-                return ( $args{'CurrentUser'}, 0 );
+                return ( $CurrentUser, 0 );
             }
 
         }
         elsif ( $args{'Action'} =~ /^resolve$/i ) {
 
             # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
-            unless ( $everyone->PrincipalObj->HasRight( Object => $args{'Queue'},
-                                                        Right  => 'ModifyTicket' )
-                     || $unpriv->PrincipalObj->HasRight( Object => $args{'Queue'},
-                                                         Right  => 'ModifyTicket' ) )
-            {
+            unless ( $CurrentUser->PrincipalObj->HasRight( Object => $args{'Ticket'}, Right  => 'ModifyTicket' ) ) {
                 $RT::Logger->debug("Unprivileged users have no right to resolve ticket in queue '$qname'");
-                return ( $args{'CurrentUser'}, 0 );
+                return ( $CurrentUser, 0 );
             }
 
         }
         else {
             $RT::Logger->warning("Action '". ($args{'Action'}||'') ."' is unknown");
-            return ( $args{'CurrentUser'}, 0 );
+            return ( $CurrentUser, 0 );
         }
     }
 
@@ -168,34 +147,10 @@ sub GetCurrentUser {
         my $qname = $args{'Queue'}->Name;
 
         # check to see whether "Everybody" or "Unprivileged users" can create tickets in this queue
-        unless ( $everyone->PrincipalObj->HasRight( Object => $args{'Queue'},
-                                                    Right  => 'CreateTicket' )
-                 || $unpriv->PrincipalObj->HasRight( Object => $args{'Queue'},
-                                                     Right  => 'CreateTicket' ) )
-        {
+        unless ( $CurrentUser->PrincipalObj->HasRight( Object => $args{'Queue'}, Right  => 'CreateTicket' ) ) {
             $RT::Logger->debug("Unprivileged users have no right to create ticket in queue '$qname'");
-            return ( $args{'CurrentUser'}, 0 );
+            return ( $CurrentUser, 0 );
         }
-    }
-
-    my $user = RT::User->new( RT->SystemUser );
-    $user->LoadOrCreateByEmail(
-        EmailAddress => $Address,
-        RealName     => $Name,
-        Comments     => 'Autocreated on ticket submission',
-    );
-
-    $CurrentUser->LoadByEmail( $Address );
-
-    unless ( $CurrentUser->id ) {
-        MailError(
-            To          => $Address,
-            Subject     => "User could not be loaded",
-            Explanation =>
-                "User  '$Address' could not be loaded in the mail gateway",
-            MIMEObj  => $args{'Message'},
-            LogLevel => 'crit'
-        );
     }
 
     return ( $CurrentUser, 1 );

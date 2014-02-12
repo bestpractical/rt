@@ -30,6 +30,13 @@ reporting.
 
 RT::Interface::Email no longer exports functions.
 
+=item *
+
+Incoming email now always creates users for the C<From:> address.
+Previously, if the C<CreateTicket> right was not granted to C<Everyone>
+or C<Unprivileged>, the email would be rejected without a user; now, the
+user to be created even when the mail is rejected.
+
 =back
 
 =cut
