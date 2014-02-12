@@ -203,12 +203,6 @@ sub Gateway {
 
     my $SystemTicket = RT::Ticket->new( RT->SystemUser );
     $SystemTicket->Load( $args{'ticket'} ) if ( $args{'ticket'} ) ;
-    my $Right;
-    if ( $SystemTicket->id ) {
-        $Right = 'ReplyToTicket';
-    } else {
-        $Right = 'CreateTicket';
-    }
 
     # We can safely have no queue of we have a known-good ticket
     TMPFAIL("RT couldn't find the queue: " . $args{'queue'})
