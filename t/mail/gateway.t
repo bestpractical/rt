@@ -194,8 +194,8 @@ EOF
     $u->Load("doesnotexist\@@{[RT->Config->Get('rtname')]}");
     ok( $u->Id, "user was created by failed ticket submission");
 
-    $m->next_warning_like(qr/You do not have permission to communicate with RT/);
-    $m->next_warning_like(qr/Could not record email: doesnotexist\@\S+ tried to submit a message to General without permission/);
+    $m->next_warning_like(qr/Permission Denied: doesnotexist\@\S+ has no right to create tickets in queue General/);
+    $m->next_warning_like(qr/Could not record email: doesnotexist\@\S+ has no right to create tickets in queue General/);
     $m->no_leftover_warnings_ok;
 }
 
@@ -253,8 +253,8 @@ EOF
     my $u = RT::User->new(RT->SystemUser);
     $u->Load('doesnotexist-2@'.RT->Config->Get('rtname'));
     ok( $u->Id, "user was created by ticket correspondence submission");
-    $m->next_warning_like(qr/You do not have permission to communicate with RT/);
-    $m->next_warning_like(qr/Could not record email: doesnotexist-2\@\S+ tried to submit a message to General without permission/);
+    $m->next_warning_like(qr/Permission Denied: doesnotexist-2\@\S+ has no right to reply to ticket $ticket_id in queue General/);
+    $m->next_warning_like(qr/Could not record email: doesnotexist-2\@\S+ has no right to reply to ticket $ticket_id in queue General/);
     $m->no_leftover_warnings_ok;
 }
 
@@ -337,8 +337,8 @@ EOF
     my $u = RT::User->new(RT->SystemUser);
     $u->Load('doesnotexist-3@'.RT->Config->Get('rtname'));
     ok( $u->Id, "user was created by ticket comment submission");
-    $m->next_warning_like(qr/You do not have permission to communicate with RT/);
-    $m->next_warning_like(qr/Could not record email: doesnotexist-3\@\S+ tried to submit a message to General without permission/);
+    $m->next_warning_like(qr/Permission Denied: doesnotexist-3\@\S+ has no right to comment on ticket $ticket_id in queue General/);
+    $m->next_warning_like(qr/Could not record email: doesnotexist-3\@\S+ has no right to comment on ticket $ticket_id in queue General/);
     $m->no_leftover_warnings_ok;
 }
 
@@ -729,8 +729,8 @@ ok( $status, "successfuly granted right: $msg" );
 my $ace_id = $status;
 ok( $user->HasRight( Right => 'ReplyToTicket', Object => $tick ), "User can reply to ticket" );
 
-$m->next_warning_like(qr/Permission Denied: You do not have permission to communicate with RT/);
-$m->next_warning_like(qr/Could not record email: ext-mailgate@\S+ tried to submit a message to ext-mailgate without permission/);
+$m->next_warning_like(qr/ext-mailgate\@localhost has no right to own ticket $id in queue ext-mailgate/);
+$m->next_warning_like(qr/Could not record email: ext-mailgate\@localhost has no right to own ticket $id in queue ext-mailgate/);
 $m->no_leftover_warnings_ok;
 
 $! = 0;
@@ -767,8 +767,8 @@ DBIx::SearchBuilder::Record::Cachable->FlushCache;
 cmp_ok( $tick->Owner, '!=', $user->id, "we didn't change owner" );
 is( $tick->Transactions->Count, 3, "no transactions added, user can't take ticket first" );
 
-$m->next_warning_like(qr/That user may not own tickets in that queue/);
-$m->next_warning_like(qr/Could not record email: Ticket not taken/);
+$m->next_warning_like(qr/ext-mailgate\@localhost has no right to own ticket $id in queue ext-mailgate/);
+$m->next_warning_like(qr/Could not record email: ext-mailgate\@localhost has no right to own ticket $id in queue ext-mailgate/);
 $m->no_leftover_warnings_ok;
 
 # revoke ReplyToTicket right

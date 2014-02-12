@@ -177,7 +177,6 @@ sub Gateway {
     $parser->_PostProcessNewEntity;
 
     my $head = $Message->head;
-    my $Sender = (ParseSenderAddressFromHead( $head ))[0];
     my $From = Encode::decode( "UTF-8", $head->get("From") );
     chomp $From if defined $From;
 
@@ -216,29 +215,17 @@ sub Gateway {
         Queue         => $SystemQueueObj,
     );
 
-    my $AuthStat = CheckACL(
+    # We only care about ACLs on the _first_ action, as later actions
+    # may have gotten rights by the time they happen.
+    CheckACL(
+        Action        => $actions[0],
+        ErrorsTo      => $ErrorsTo,
         MailPlugins   => \@mail_plugins,
-        Actions       => \@actions,
         Message       => $Message,
         CurrentUser   => $CurrentUser,
         Ticket        => $SystemTicket,
         Queue         => $SystemQueueObj,
     );
-
-    # If we got a user, but they don't have the right to say things
-    if ( $AuthStat == 0 ) {
-        MailError(
-            To          => $ErrorsTo,
-            Subject     => "Permission Denied",
-            Explanation =>
-                "You do not have permission to communicate with RT",
-            MIMEObj => $Message
-        );
-        FAILURE("$Sender tried to submit a message to "
-                . $args{'queue'}
-                . " without permission.",
-        );
-    }
 
     $head->replace('X-RT-Interface' => 'Email');
 
@@ -439,8 +426,9 @@ sub GetCurrentUser {
 
 sub CheckACL {
     my %args = (
+        Action        => undef,
+        ErrorsTo      => undef,
         MailPlugins   => [],
-        Actions       => [],
         Message       => undef,
         CurrentUser   => undef,
         Ticket        => undef,
@@ -448,46 +436,28 @@ sub CheckACL {
         @_,
     );
 
-    # Initalize AuthStat so comparisons work correctly
-    my $AuthStat = -9999999;
-
-    # if plugin returns AuthStat -2 we skip action
-    # NOTE: this is experimental API and it would be changed
-    my %skip_action = ();
-
-    # Since this needs loading, no matter what
     for my $class (@{ $args{MailPlugins} }) {
         my $Code = $class->can("CheckACL");
         next unless $Code;
 
-        foreach my $action (@{ $args{Actions} }) {
-            my $NewAuthStat = $Code->(
-                Message       => $args{Message},
-                RawMessageRef => $args{RawMessageRef},
-                CurrentUser   => $args{CurrentUser},
-                AuthLevel     => $AuthStat,
-                Action        => $action,
-                Ticket        => $args{Ticket},
-                Queue         => $args{Queue},
-            );
-
-# You get the highest level of authentication you were assigned, unless you get the magic -1
-# If a module returns a "-1" then we discard the ticket, so.
-            $AuthStat = $NewAuthStat
-                if ( $NewAuthStat > $AuthStat or $NewAuthStat == -2 );
-
-            $skip_action{$action}++ if $AuthStat == -2;
-        }
-
-        # strip actions we should skip
-        @{$args{Actions}} = grep !$skip_action{$_}, @{$args{Actions}}
-            if $AuthStat == -2;
-        last unless @{$args{Actions}};
+        return if $Code->(
+            ErrorsTo      => $args{ErrorsTo},
+            Message       => $args{Message},
+            CurrentUser   => $args{CurrentUser},
+            Action        => $args{Action},
+            Ticket        => $args{Ticket},
+            Queue         => $args{Queue},
+        );
     }
 
-    return $AuthStat if !wantarray;
-
-    return $AuthStat;
+    # Nobody said yes, and nobody said FAILURE; fail closed
+    MailError(
+        To          => $args{ErrorsTo},
+        Subject     => "Permission Denied",
+        Explanation => "You have no permission to $args{Action}",
+        MIMEObj     => $args{Message},
+    );
+    FAILURE( "You have no permission to $args{Action}" );
 }
 
 =head3 ParseCcAddressesFromHead HASH
