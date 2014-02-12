@@ -99,72 +99,74 @@ sub GetCurrentUser {
 
 sub CheckACL {
     my %args = (
+        ErrorsTo    => undef,
         Message     => undef,
         CurrentUser => undef,
-        AuthLevel   => undef,
         Ticket      => undef,
         Queue       => undef,
         Action      => undef,
         @_,
     );
 
-    my $CurrentUser = $args{CurrentUser};
+    my $principal = $args{CurrentUser}->PrincipalObj;
+    my $email     = $args{CurrentUser}->UserObj->EmailAddress;
 
+    my $msg;
     if ( $args{'Ticket'} && $args{'Ticket'}->Id ) {
         my $qname = $args{'Queue'}->Name;
+        my $tid   = $args{'Ticket'}->id;
         # We have a ticket. that means we're commenting or corresponding
         if ( $args{'Action'} =~ /^comment$/i ) {
 
             # check to see whether if they can comment on the ticket
-            unless ( $CurrentUser->PrincipalObj->HasRight( Object => $args{'Ticket'}, Right => 'CommentOnTicket' ) ) {
-                $RT::Logger->debug("Unprivileged users have no right to comment on ticket in queue '$qname'");
-                return 0;
-            }
+            return 1 if $principal->HasRight( Object => $args{'Ticket'}, Right => 'CommentOnTicket' );
+            $msg = "$email has no right to comment on ticket $tid in queue $qname";
         }
         elsif ( $args{'Action'} =~ /^correspond$/i ) {
 
             # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
-            unless ( $CurrentUser->PrincipalObj->HasRight( Object => $args{'Ticket'}, Right  => 'ReplyToTicket' ) ) {
-                $RT::Logger->debug("Unprivileged users have no right to reply to ticket in queue '$qname'");
-                return 0;
-            }
+            return 1 if $principal->HasRight( Object => $args{'Ticket'}, Right  => 'ReplyToTicket' );
+            $msg = "$email has no right to reply to ticket $tid in queue $qname";
         }
         elsif ( $args{'Action'} =~ /^take$/i ) {
 
             # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
-            unless ( $CurrentUser->PrincipalObj->HasRight( Object => $args{'Ticket'}, Right  => 'OwnTicket' ) ) {
-                $RT::Logger->debug("Unprivileged users have no right to own ticket in queue '$qname'");
-                return 0;
-            }
-
+            return 1 if $principal->HasRight( Object => $args{'Ticket'}, Right  => 'OwnTicket' );
+            $msg = "$email has no right to own ticket $tid in queue $qname";
         }
         elsif ( $args{'Action'} =~ /^resolve$/i ) {
 
             # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
-            unless ( $CurrentUser->PrincipalObj->HasRight( Object => $args{'Ticket'}, Right  => 'ModifyTicket' ) ) {
-                $RT::Logger->debug("Unprivileged users have no right to resolve ticket in queue '$qname'");
-                return 0;
-            }
-
+            return 1 if $principal->HasRight( Object => $args{'Ticket'}, Right  => 'ModifyTicket' );
+            $msg = "$email has no right to resolve ticket $tid in queue $qname";
         }
         else {
             $RT::Logger->warning("Action '". ($args{'Action'}||'') ."' is unknown");
-            return 0;
+            return;
         }
     }
 
     # We're creating a ticket
-    elsif ( $args{'Queue'} && $args{'Queue'}->Id ) {
+    elsif ( $args{'Action'} =~ /^(comment|correspond)$/i ) {
         my $qname = $args{'Queue'}->Name;
 
         # check to see whether "Everybody" or "Unprivileged users" can create tickets in this queue
-        unless ( $CurrentUser->PrincipalObj->HasRight( Object => $args{'Queue'}, Right  => 'CreateTicket' ) ) {
-            $RT::Logger->debug("Unprivileged users have no right to create ticket in queue '$qname'");
-            return 0;
-        }
+        return 1 if $principal->HasRight( Object => $args{'Queue'}, Right  => 'CreateTicket' );
+        $msg = "$email has no right to create tickets in queue $qname";
+    }
+    else {
+        $RT::Logger->warning("Action '". ($args{'Action'}||'') ."' is unknown with no ticket");
+        return;
     }
 
-    return 1;
+
+    MailError(
+        To          => $args{ErrorsTo},
+        Subject     => "Permission Denied",
+        Explanation => $msg,
+        MIMEObj     => $args{Message},
+    );
+    FAILURE( $msg );
 }
 
 RT::Base->_ImportOverlays();
