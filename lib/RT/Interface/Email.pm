@@ -245,10 +245,8 @@ sub Gateway {
                 "You do not have permission to communicate with RT",
             MIMEObj => $Message
         );
-        FAILURE(
-            ($CurrentUser->EmailAddress || $CurrentUser->Name)
-            . " ($Sender) tried to submit a message to "
-                . $args{'Queue'}
+        FAILURE("$Sender tried to submit a message to "
+                . $args{'queue'}
                 . " without permission.",
         );
     }
