@@ -201,10 +201,6 @@ sub Gateway {
 
     $args{'ticket'} ||= ExtractTicketId( $Message );
 
-    # ExtractTicketId may have been overridden, and edited the Subject
-    my $NewSubject = Encode::decode( "UTF-8", $Message->head->get('Subject') );
-    chomp $NewSubject;
-
     my $SystemTicket = RT::Ticket->new( RT->SystemUser );
     $SystemTicket->Load( $args{'ticket'} ) if ( $args{'ticket'} ) ;
     my $Right;
@@ -277,6 +273,10 @@ sub Gateway {
                 QueueObj    => $SystemQueueObj
             );
         }
+
+        # ExtractTicketId may have been overridden, and edited the Subject
+        my $NewSubject = Encode::decode( "UTF-8", $head->get('Subject') );
+        chomp $NewSubject;
 
         my ( $id, $Transaction, $ErrStr ) = $Ticket->Create(
             Queue     => $SystemQueueObj->Id,
