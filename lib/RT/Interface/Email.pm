@@ -124,8 +124,6 @@ sub Gateway {
     # Set the scope to return from with TMPFAIL/FAILURE/SUCCESS
     $SCOPE = HERE;
 
-    my $SystemTicket;
-
     # Validate the action
     my ( $status, @actions ) = IsCorrectAction( $args{'action'} );
     TMPFAIL(
@@ -207,7 +205,7 @@ sub Gateway {
     my $NewSubject = Encode::decode( "UTF-8", $Message->head->get('Subject') );
     chomp $NewSubject;
 
-    $SystemTicket = RT::Ticket->new( RT->SystemUser );
+    my $SystemTicket = RT::Ticket->new( RT->SystemUser );
     $SystemTicket->Load( $args{'ticket'} ) if ( $args{'ticket'} ) ;
     my $Right;
     if ( $SystemTicket->id ) {
