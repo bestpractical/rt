@@ -1,4 +1,4 @@
-
+DROP TABLE IF EXISTS ObjectScrips;
 CREATE TABLE ObjectScrips (
   id INTEGER NOT NULL  ,
   Scrip int NOT NULL  ,

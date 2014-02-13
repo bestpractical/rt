@@ -1,5 +1,7 @@
+DROP SEQUENCE IF EXISTS objectscrips_id_seq;
 CREATE SEQUENCE objectscrips_id_seq;
 
+DROP TABLE IF EXISTS ObjectScrips;
 CREATE TABLE ObjectScrips (
   id INTEGER DEFAULT nextval('objectscrips_id_seq'),
   Scrip integer NOT NULL,
