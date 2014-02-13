@@ -470,6 +470,12 @@ sub _ParseContentPerl {
         TYPE   => 'STRING',
         SOURCE => $args{Content},
     );
+    my ($ok) = $template->compile;
+    unless ($ok) {
+        $RT::Logger->error("Template parsing error in @{[$self->Name]} (#@{[$self->id]}): $Text::Template::ERROR");
+        return ( undef, $self->loc('Template parsing error: [_1]', $Text::Template::ERROR) );
+    }
+
     my $is_broken = 0;
     my $retval = $template->fill_in(
         HASH => $args{TemplateArgs},
