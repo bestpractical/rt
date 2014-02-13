@@ -84,7 +84,9 @@ additional options to fine-tune behaviour.
 
 However, note that you B<must> add the
 L<Auth::Crypt|RT::Interface::Email::Auth::Crypt> email filter to enable
-the handling of incoming encrypted/signed messages.
+the handling of incoming encrypted/signed messages.  It should be added
+in addition to the standard
+L<Auth::MailFrom|RT::Interface::Email::Auth::Crypt> plugin.
 
 =head2 %Crypt
 
