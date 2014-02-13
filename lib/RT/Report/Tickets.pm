@@ -643,13 +643,37 @@ sub SortEntries {
         my $idx = $i+1;
         my $method;
 
-        my $order = $group_by->{'META'}{Sort} || 'label';
+        # If this is a CF, traverse the values being used for labels.
+        # If they all look like numbers or undef, flag for a numeric sort
+
+        my $looks_like_number;
+        if ( $group_by->{'KEY'} eq 'CF' ){
+            $looks_like_number = 1;
+
+            foreach my $item (@data){
+                my $cf_label = $item->[0]->RawValue($group_by->{'NAME'});
+
+                $looks_like_number = 0
+                    unless (not defined $cf_label)
+                    or Scalar::Util::looks_like_number( $cf_label );
+            }
+        }
+
+        my $order = $looks_like_number ? 'numeric label' : 'label';
+        $order = $group_by->{'META'}{Sort} if exists $group_by->{'META'}{Sort};
+
         if ( $order eq 'label' ) {
             push @SORT_OPS, sub { $_[0][$idx] cmp $_[1][$idx] };
             $method = 'LabelValue';
         }
         elsif ( $order eq 'numeric label' ) {
-            push @SORT_OPS, sub { $_[0][$idx] <=> $_[1][$idx] };
+            my $nv = $self->loc("(no value)");
+            # Sort the (no value) elements first, by comparing for them
+            # first, and falling back to a numeric sort on all other
+            # values.
+            push @SORT_OPS, sub {
+                (($_[0][$idx] ne $nv) <=> ($_[1][$idx] ne $nv))
+             || ( $_[0][$idx]         <=>  $_[1][$idx]        ) };
             $method = 'LabelValue';
         }
         elsif ( $order eq 'raw' ) {
