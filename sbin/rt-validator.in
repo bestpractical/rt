@@ -222,7 +222,7 @@ foreach my $table ( qw(Users Groups) ) {
             bind_values => [ $type ],
             action => sub {
                 my $id = shift;
-                return unless my $a = prompt_action( ['Delete', 'create'], $msg );
+                return unless my $a = prompt_action( ['Create', 'delete'], $msg );
 
                 if ( $a eq 'd' ) {
                     delete_record( $table, $id );
@@ -1104,7 +1104,7 @@ sub prompt_action {
     my $token = shift || join ':', caller;
 
     return '' unless $opt{'resolve'};
-    return '' if $opt{'force'};
+    return lc substr $actions->[0], 0, 1 if $opt{'force'};
     return $cached_answer{ $token } if exists $cached_answer{ $token };
 
     print $msg, "\n";

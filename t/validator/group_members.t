@@ -2,104 +2,45 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 60;
-
-sub load_or_create_group {
-    my $name = shift;
-    my %args = (@_);
-
-    my $group = RT::Group->new( RT->SystemUser );
-    $group->LoadUserDefinedGroup( $name );
-    unless ( $group->id ) {
-        my ($id, $msg) = $group->CreateUserDefinedGroup(
-            Name => $name,
-        );
-        die "$msg" unless $id;
-    }
-
-    if ( $args{Members} ) {
-        my $cur = $group->MembersObj;
-        while ( my $entry = $cur->Next ) {
-            my ($status, $msg) = $entry->Delete;
-            die "$msg" unless $status;
-        }
-
-        foreach my $new ( @{ $args{Members} } ) {
-            my ($status, $msg) = $group->AddMember(
-                ref($new)? $new->id : $new,
-            );
-            die "$msg" unless $status;
-        }
-    }
-    
-    return $group;
-}
-
-my $validator_path = "$RT::SbinPath/rt-validator";
-sub run_validator {
-    my %args = (check => 1, resolve => 0, force => 1, @_ );
-
-    my $cmd = $validator_path;
-    die "Couldn't find $cmd command" unless -f $cmd;
-
-    while( my ($k,$v) = each %args ) {
-        next unless $v;
-        $cmd .= " --$k '$v'";
-    }
-    $cmd .= ' 2>&1';
-
-    require IPC::Open2;
-    my ($child_out, $child_in);
-    my $pid = IPC::Open2::open2($child_out, $child_in, $cmd);
-    close $child_in;
-
-    my $result = do { local $/; <$child_out> };
-    close $child_out;
-    waitpid $pid, 0;
-
-    DBIx::SearchBuilder::Record::Cachable->FlushCache
-        if $args{'resolve'};
-
-    return ($?, $result);
-}
+use RT::Test tests => 63;
 
 {
-    my ($ecode, $res) = run_validator();
+    my ($ecode, $res) = RT::Test->run_validator();
     is $res, '', 'empty result';
 }
 
 {
-    my $group = load_or_create_group('test', Members => [] );
+    my $group = RT::Test->load_or_create_group('test', Members => [] );
     ok $group, "loaded or created a group";
 
-    my ($ecode, $res) = run_validator();
+    my ($ecode, $res) = RT::Test->run_validator();
     is $res, '', 'empty result';
 }
 
 # G1 -> G2
 {
-    my $group1 = load_or_create_group( 'test1', Members => [] );
+    my $group1 = RT::Test->load_or_create_group( 'test1', Members => [] );
     ok $group1, "loaded or created a group";
 
-    my $group2 = load_or_create_group( 'test2', Members => [ $group1 ]);
+    my $group2 = RT::Test->load_or_create_group( 'test2', Members => [ $group1 ]);
     ok $group2, "loaded or created a group";
 
     ok $group2->HasMember( $group1->id ), "has member";
     ok $group2->HasMemberRecursively( $group1->id ), "has member";
 
-    my ($ecode, $res) = run_validator();
+    my ($ecode, $res) = RT::Test->run_validator();
     is $res, '', 'empty result';
 
     $RT::Handle->dbh->do("DELETE FROM CachedGroupMembers");
     DBIx::SearchBuilder::Record::Cachable->FlushCache;
     ok !$group2->HasMemberRecursively( $group1->id ), "has no member, broken DB";
 
-    ($ecode, $res) = run_validator(resolve => 1);
+    ($ecode, $res) = RT::Test->run_validator(resolve => 1);
 
     ok $group2->HasMember( $group1->id ), "has member";
     ok $group2->HasMemberRecursively( $group1->id ), "has member";
 
-    ($ecode, $res) = run_validator();
+    ($ecode, $res) = RT::Test->run_validator();
     is $res, '', 'empty result';
 }
 
@@ -109,7 +50,7 @@ sub run_validator {
     for (1..5) {
         my $child = @groups? $groups[-1]: undef;
 
-        my $group = load_or_create_group( 'test'. $_, Members => [ $child? ($child): () ] );
+        my $group = RT::Test->load_or_create_group( 'test'. $_, Members => [ $child? ($child): () ] );
         ok $group, "loaded or created a group";
 
         ok $group->HasMember( $child->id ), "has member"
@@ -120,7 +61,7 @@ sub run_validator {
         push @groups, $group;
     }
 
-    my ($ecode, $res) = run_validator();
+    my ($ecode, $res) = RT::Test->run_validator();
     is $res, '', 'empty result';
 
     $RT::Handle->dbh->do("DELETE FROM CachedGroupMembers");
@@ -128,7 +69,7 @@ sub run_validator {
 
     ok !$groups[1]->HasMemberRecursively( $groups[0]->id ), "has no member, broken DB";
 
-    ($ecode, $res) = run_validator(resolve => 1);
+    ($ecode, $res) = RT::Test->run_validator(resolve => 1);
 
     for ( my $i = 1; $i < @groups; $i++ ) {
         ok $groups[$i]->HasMember( $groups[$i-1]->id ), "has member";
@@ -136,7 +77,7 @@ sub run_validator {
             foreach 0..$i-1;
     }
 
-    ($ecode, $res) = run_validator();
+    ($ecode, $res) = RT::Test->run_validator();
     is $res, '', 'empty result';
 }
 
@@ -144,34 +85,51 @@ sub run_validator {
 {
     my @groups;
     for (2..5) {
-        my $group = load_or_create_group( 'test'. $_, Members => [] );
+        my $group = RT::Test->load_or_create_group( 'test'. $_, Members => [] );
         ok $group, "loaded or created a group";
         push @groups, $group;
     }
 
-    my $parent = load_or_create_group( 'test1', Members => \@groups );
+    my $parent = RT::Test->load_or_create_group( 'test1', Members => \@groups );
     ok $parent, "loaded or created a group";
 
-    my ($ecode, $res) = run_validator();
+    my ($ecode, $res) = RT::Test->run_validator();
     is $res, '', 'empty result';
 }
 
 # G1 <- (G2, G3, G4) <- G5
 {
-    my $gchild = load_or_create_group( 'test5', Members => [] );
+    my $gchild = RT::Test->load_or_create_group( 'test5', Members => [] );
     ok $gchild, "loaded or created a group";
     
     my @groups;
     for (2..4) {
-        my $group = load_or_create_group( 'test'. $_, Members => [ $gchild ] );
+        my $group = RT::Test->load_or_create_group( 'test'. $_, Members => [ $gchild ] );
         ok $group, "loaded or created a group";
         push @groups, $group;
     }
 
-    my $parent = load_or_create_group( 'test1', Members => \@groups );
+    my $parent = RT::Test->load_or_create_group( 'test1', Members => \@groups );
     ok $parent, "loaded or created a group";
 
-    my ($ecode, $res) = run_validator();
+    my ($ecode, $res) = RT::Test->run_validator();
     is $res, '', 'empty result';
 }
 
+# group without principal record and cgm records
+# was causing infinite loop as principal was not created
+{
+    my $group = RT::Test->load_or_create_group('Test');
+    ok $group && $group->id, 'loaded or created group';
+
+    my $dbh = $group->_Handle->dbh;
+    $dbh->do('DELETE FROM Principals WHERE id = ?', {RaiseError => 1}, $group->id);
+    $dbh->do('DELETE FROM CachedGroupMembers WHERE GroupId = ?', {RaiseError => 1}, $group->id);
+    DBIx::SearchBuilder::Record::Cachable->FlushCache;
+
+    my ($ecode, $res) = RT::Test->run_validator(resolve => 1, timeout => 30);
+    ok $res;
+
+    ($ecode, $res) = RT::Test->run_validator();
+    is $res, '', 'empty result';
+}
