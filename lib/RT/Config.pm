@@ -1208,11 +1208,14 @@ sub SetFromConfig {
             my $entry = ${$pack}{$k};
             next unless $entry;
 
-            # get entry for type we are looking for
-            # XXX skip references to scalars or other references.
-            # Otherwie 5.10 goes boom. maybe we should skip any
-            # reference
-            next if ref($entry) eq 'SCALAR' || ref($entry) eq 'REF';
+            # Inlined constants are simplified in the symbol table --
+            # namely, when possible, you only get a reference back in
+            # $entry, rather than a full GLOB.  In 5.10, scalar
+            # constants began being inlined this way; starting in 5.20,
+            # list constants are also inlined.  Notably, ref(GLOB) is
+            # undef, but inlined constants are currently either REF,
+            # SCALAR, or ARRAY.
+            next if ref($entry);
 
             my $ref_type = ref($ref);
 
