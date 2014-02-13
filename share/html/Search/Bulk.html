@@ -418,6 +418,8 @@ unless ( $ARGS{'AddMoreAttach'} ) {
 
     # Cleanup WebUI
     delete $session{'Attachments'};
+
+    $Tickets->RedoSearch();
 }
 
 my $TxnCFs = RT::CustomFields->new( $session{CurrentUser} );
