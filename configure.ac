@@ -408,6 +408,7 @@ dnl Configure the output files, and generate them.
 dnl Binaries that should be +x
 AC_CONFIG_FILES([
                  etc/upgrade/3.8-ical-extension
+                 etc/upgrade/4.0-customfield-checkbox-extension
                  etc/upgrade/split-out-cf-categories
                  etc/upgrade/generate-rtaddressregexp
                  etc/upgrade/upgrade-articles

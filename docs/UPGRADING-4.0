@@ -32,6 +32,9 @@ If you deploy RT with mod_perl, Apache will no longer start with C<SetHandler>
 set to `perl-script`. F<docs/web_deployment.pod> contains the
 new configuration.
 
+RT::Extension::CustomField::Checkbox has been integrated into core, so you
+MUST uninstall it before upgrading. In addition, you must run
+etc/upgrade/4.0-customfield-checkbox-extension script to convert old data.
 
 =head2 RT_SiteConfig.pm
 
