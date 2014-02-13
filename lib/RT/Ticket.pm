@@ -446,8 +446,9 @@ sub Create {
         AdminCc   => sub {
             my $principal = shift;
             return 1 if $self->CurrentUserHasRight('ModifyTicket');
-            return $principal->id == $self->CurrentUser->PrincipalId
-                and $self->CurrentUserHasRight("WatchAsAdminCc");
+            return unless $self->CurrentUserHasRight("WatchAsAdminCc");
+            return unless $principal->id == $self->CurrentUser->PrincipalId;
+            return 1;
         },
         Owner     => sub {
             my $principal = shift;
