@@ -461,6 +461,7 @@ sub test_dep {
         print $module, ': ', $version || 0, "\n"; 
     }
     else {
+        no warnings 'deprecated';
         eval "use $module $version ()";
         if ( my $error = $@ ) {
             return 0 unless wantarray;
