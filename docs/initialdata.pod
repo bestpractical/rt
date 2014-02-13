@@ -78,58 +78,21 @@ For a full list of fields, read the documentation for L<RT::User/Create>.
 =head2 C<@Groups>
 
     push @Groups, {
-        Domain      => 'UserDefined',
         Name        => 'Example Employees',
         Description => 'All of the employees of my company',
+        Members     => { Users =>  [ qw/ alexmv trs falcone / ],
+                         Groups => [ qw/ extras / ] },
     };
 
 Creates a new L<RT::Group> for each hashref.  In almost all cases you'll want
 to follow the example above to create a group just as if you had done it from
-the admin interface.  B<Do not> omit the C<< Domain => 'UserDefined' >> line.
+the admin interface.
 
-Additionally, the C<MemberOf> field is specially handled to make it easier to
-add the new group to other groups.  C<MemberOf> may be a single value or an
-array ref.  Each value should be a user-defined group name or hashref to pass
-into L<RT::Group/LoadByCols>.  Each group found will have the new group
-added as a member.
-
-Unfortunately you can't specify the I<members> of a group at this time.  As a
-workaround, you can push a subref into C<@Final> which adds members to your new
-groups.  An example, using a convenience function to avoid repeating yourself:
-
-    push @Final, sub {
-        add_members('My New Group Name' => qw(trs alex ruslan));
-        add_members('My Second Group'   => qw(jesse kevin sunnavy jim));
-    };
-
-    sub add_members {
-        my $group_name = shift;
-        my @members    = @_;
-
-        my $group = RT::Group->new( RT->SystemUser );
-        $group->LoadUserDefinedGroup($group_name);
-
-        if ($group->id) {
-            for my $name (@members) {
-                my $member = RT::User->new( RT->SystemUser );
-                $member->LoadByCols( Name => $name );
-
-                unless ($member->Id) {
-                    RT->Logger->error("Unable to find user '$name'");
-                    next;
-                }
-
-                my ($ok, $msg) = $group->AddMember( $member->PrincipalObj->Id );
-                if ($ok) {
-                    RT->Logger->info("Added member $name to $group_name");
-                } else {
-                    RT->Logger->error("Unable to AddMember $name to $group_name: $msg");
-                }
-            }
-        } else {
-            RT->Logger->error("Unable to find group '$group_name'!");
-        }
-    }
+In addition to the C<Members> option shown above, which can take both
+users and groups, the C<MemberOf> field may be a single value or an
+array ref.  Each value should be a user-defined group name or hashref to
+pass into L<RT::Group/LoadByCols>.  Each group found will have the new
+group added as a member.
 
 =head2 C<@Queues>
 
