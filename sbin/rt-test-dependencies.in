@@ -181,6 +181,12 @@ sub text_to_hash {
 
     return %hash;
 }
+sub set_dep {
+    my ($name, $module, $version) = @_;
+    my %list = @{$deps{$name}};
+    $list{$module} = ($version || '');
+    $deps{$name} = [ %list ];
+}
 
 $deps{'CORE'} = [ text_to_hash( << '.') ];
 Class::Accessor 0.34
@@ -253,6 +259,8 @@ Plack 0.9971
 Plack::Handler::Starlet
 CGI::Emulate::PSGI
 .
+set_dep( PSGI => CGI => 4.00 ) if $] > 5.019003;
+
 
 $deps{'MAILGATE'} = [ text_to_hash( << '.') ];
 Getopt::Long
