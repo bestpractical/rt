@@ -92,19 +92,20 @@ if ($anchor =~ /AddPrincipal/) {
       sync_anchor(<% $anchor |n,j %>);
 
       jQuery(".rights-editor").tabs({
-          select: function(ev, ui) {
-              sync_anchor(ui.tab.hash);
+          beforeActivate: function(ev, ui) {
+              sync_anchor(ui.newPanel.selector);
           }
       });
 
       jQuery(".rights-editor .category-tabs").tabs({
-          cookie: { name: "rights-category-tab" /* saves current tab in cookie */ },
-          show: function(ev, ui) {
+          active: jQuery.cookie('rights-category-tab') || 0,
+          activate: function(ev, ui) {
+              jQuery.cookie('rights-category-tab', ui.newTab.index());
               jQuery(".rights-editor .category-tabs").not(this).each(function() {
                   var item     = jQuery(this);
-                  var selected = item.tabs("option", "selected") || 0;
-                  if (selected != ui.index)
-                      item.tabs("select", ui.index);
+                  var selected = item.tabs("option", "active") || 0;
+                  if (selected != ui.newTab.index())
+                      item.tabs("option", "active", ui.newTab.index());
               });
           }
       });
