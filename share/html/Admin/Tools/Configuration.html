@@ -180,6 +180,15 @@ for my $type (qw/Tickets Queues Transactions Groups PrivilegedUsers Unprivileged
 </ol>
 </&>
 
+<&|/Widgets/TitleBox, title => loc("Static file search order") &>
+<ol>
+% foreach my $path ( (map {$_->{root}} RT->Config->Get('StaticRoots')),
+%                    RT::Interface::Web->StaticRoots ) {
+<li><% $path %></li>
+% }
+</ol>
+</&>
+
 <&|/Widgets/TitleBox, title => loc("Perl library search order") &>
 <ol>
 % foreach my $inc (@INC) {
