@@ -46,7 +46,14 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if ( $Multiple ) {
-<textarea cols="<% $Cols %>" rows="<% $Rows %>" name="<% $name %>" id="<% $name %>" class="CF-<%$CustomField->id%>-Edit"><% $Default || '' %></textarea>
+<textarea \
+% if ( defined $Cols ) {
+cols="<% $Cols %>" \
+% }
+% if ( defined $Rows ) {
+rows="<% $Rows %>" \
+% }
+name="<% $name %>" id="<% $name %>" class="CF-<%$CustomField->id%>-Edit"><% $Default || '' %></textarea>
 
 <script type="text/javascript">
 var id = <% "$name" |n,j%>;

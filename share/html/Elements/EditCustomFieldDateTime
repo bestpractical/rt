@@ -50,7 +50,7 @@
 
 <%INIT>
 my $DateObj = RT::Date->new ( $session{'CurrentUser'} );
-$DateObj->Set( Format => 'ISO', Value => $Default );
+$DateObj->Set( Format => $Format, Value => $Default );
 </%INIT>
 <%ARGS>
 $Object => undef
@@ -60,4 +60,5 @@ $Default => undef
 $Values => undef
 $MaxValues => 1
 $Name => undef
+$Format => 'ISO'
 </%ARGS>

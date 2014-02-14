@@ -102,7 +102,7 @@ jQuery(  function () {
 
 % if ( $RenderType eq 'List' ) {
 <fieldset class="cfedit">
-<div name="<%$name%>" id="<%$name%>">
+<div data-name="<%$name%>" id="<%$name%>">
 %   if ( $checktype eq 'radio' ) {
   <div class="none">
   <input class="none" type="<% $checktype %>" name="<% $name %>" id="<% $name %>-none" value="" <% keys %default ? '' : ' checked="checked"' |n%> />
@@ -113,7 +113,7 @@ jQuery(  function () {
 %   while ( my $value = $CFVs->Next ) {
 %     my $content = $value->Name;
 %     my $labelid = "$name-". $value->id;
-<div name="<% $value->Category %>">
+<div data-name="<% $value->Category || '' %>">
   <input type="<% $checktype %>" name="<% $name %>" id="<% $labelid %>" value="<% $content %>" <% $default{ lc $content }? ' checked="checked"' : '' |n%> />
   <label for="<% $labelid %>"><% $content %></label><br />
 </div>

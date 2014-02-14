@@ -286,6 +286,8 @@ unless ( $ARGS{'AddMoreAttach'} ) {
     }
 
     delete $session{'Attachments'}{ $ARGS{'Token'} };
+
+    $Tickets->RedoSearch();
 }
 
 my $TxnCFs = RT::CustomFields->new( $session{CurrentUser} );

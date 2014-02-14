@@ -195,7 +195,7 @@ It will be provided with:
     references which will get called when needed.  They should return
     the modified string. Note that subroutine must escape HTML.
 
- * 'handler': A reference to a subroutine reference; modify it if you
+ * 'handle': A reference to a subroutine reference; modify it if you
     have to. This can be used to add pre- or post-processing around
     all actions.
 

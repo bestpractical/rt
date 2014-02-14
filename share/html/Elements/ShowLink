@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % my $member = $URI->Object;
-% if (blessed($member) && $member->isa("RT::Ticket")) {
+% if (blessed($member) and $member->isa("RT::Ticket") and $member->CurrentUserHasRight('ShowTicket')) {
 % my $inactive = $member->QueueObj->IsInactiveStatus($member->Status);
 
 <span class="<% $inactive ? 'ticket-inactive' : '' %>">

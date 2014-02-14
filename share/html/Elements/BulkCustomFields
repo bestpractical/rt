@@ -72,11 +72,18 @@
 <td><& /Elements/EditCustomFieldCombobox, @add &></td>
 <td><& /Elements/EditCustomFieldCombobox, @del &><br />
 % } elsif ($cf->Type eq 'Freeform') {
-<td><& /Elements/EditCustomFieldFreeform, @add &>
+<td><& /Elements/EditCustomFieldFreeform, @add &></td>
 <td><& /Elements/EditCustomFieldFreeform, @del &><br />
 % } elsif ($cf->Type eq 'Text') {
-<td><& /Elements/EditCustomFieldText, @add &>
+<td><& /Elements/EditCustomFieldText, @add &></td>
 <td>
+% } elsif ($cf->Type eq 'Date') {
+<td><& /Elements/EditCustomFieldDate, @add, Default => undef &></td>
+<td><& /Elements/EditCustomFieldDate, @del, Default => undef &><br />
+% } elsif ($cf->Type eq 'DateTime') {
+% # Pass datemanip format to prevent another tz date conversion
+<td><& /Elements/EditCustomFieldDateTime, @add, Default => undef, Format => 'datemanip' &></td>
+<td><& /Elements/EditCustomFieldDateTime, @del, Default => undef, Format => 'datemanip' &><br />
 % } else {
 %   $RT::Logger->crit("Unknown CustomField type: " . $cf->Type);
 %   next

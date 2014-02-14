@@ -1,3 +1,4 @@
+#!@PERL@
 # BEGIN BPS TAGGED BLOCK {{{
 #
 # COPYRIGHT:
@@ -45,52 +46,41 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
-package RT::Shredder::Plugin::SQLDump;
-
 use strict;
 use warnings;
 
-use base qw(RT::Shredder::Plugin::Base::Dump);
-use RT::Shredder;
+use lib "@LOCAL_LIB_PATH@";
+use lib "@RT_LIB_PATH@";
 
-sub AppliesToStates { return 'after wiping dependencies' }
+use RT;
+RT::LoadConfig();
+RT::Init();
 
-sub SupportArgs
-{
-    my $self = shift;
-    return $self->SUPER::SupportArgs, qw(file_name from_storage);
+use RT::CustomFields;
+my $cfs = RT::CustomFields->new( RT->SystemUser );
+$cfs->{find_disabled_rows} = 1;
+$cfs->Limit(
+    FIELD => 'Type',
+    VALUE => 'SelectCheckbox',
+);
+
+while ( my $cf = $cfs->Next ) {
+    print 'Processing custom field #' . $cf->id . "\n";
+    my ( $ret, $msg ) = $cf->SetType('Select');
+    unless ($ret) {
+        warn "Failed to set custom field #"
+          . $cf->id
+          . " Type to 'Select': $msg\n";
+    }
+
+    ( $ret, $msg ) = $cf->SetRenderType('List');
+    unless ($ret) {
+        warn "Failed to set custom field #"
+          . $cf->id
+          . " RenderType to 'List': $msg\n";
+    }
 }
 
-sub TestArgs
-{
-    my $self = shift;
-    my %args = @_;
-    $args{'from_storage'} = 1 unless defined $args{'from_storage'};
-    my $file = $args{'file_name'} = RT::Shredder->GetFileName(
-        FileName    => $args{'file_name'},
-        FromStorage => delete $args{'from_storage'},
-    );
-    open $args{'file_handle'}, ">:raw", $file
-        or return (0, "Couldn't open '$file' for write: $!");
+print "DONE\n";
 
-    return $self->SUPER::TestArgs( %args );
-}
-
-sub FileName   { return $_[0]->{'opt'}{'file_name'}   }
-sub FileHandle { return $_[0]->{'opt'}{'file_handle'} }
-
-sub Run
-{
-    my $self = shift;
-    return (0, 'no handle') unless my $fh = $self->{'opt'}{'file_handle'};
-
-    my %args = ( Object => undef, @_ );
-    my $query = $args{'Object'}->_AsInsertQuery;
-    $query .= "\n" unless $query =~ /\n$/;
-
-    return 1 if print $fh $query;
-    return (0, "Couldn't write to filehandle");
-}
-
-1;
+exit 0;

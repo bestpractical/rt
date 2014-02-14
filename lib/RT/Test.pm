@@ -749,6 +749,39 @@ sub load_or_create_user {
     return $obj;
 }
 
+
+sub load_or_create_group {
+    my $self = shift;
+    my $name = shift;
+    my %args = (@_);
+
+    my $group = RT::Group->new( RT->SystemUser );
+    $group->LoadUserDefinedGroup( $name );
+    unless ( $group->id ) {
+        my ($id, $msg) = $group->CreateUserDefinedGroup(
+            Name => $name,
+        );
+        die "$msg" unless $id;
+    }
+
+    if ( $args{Members} ) {
+        my $cur = $group->MembersObj;
+        while ( my $entry = $cur->Next ) {
+            my ($status, $msg) = $entry->Delete;
+            die "$msg" unless $status;
+        }
+
+        foreach my $new ( @{ $args{Members} } ) {
+            my ($status, $msg) = $group->AddMember(
+                ref($new)? $new->id : $new,
+            );
+            die "$msg" unless $status;
+        }
+    }
+
+    return $group;
+}
+
 =head2 load_or_create_queue
 
 =cut

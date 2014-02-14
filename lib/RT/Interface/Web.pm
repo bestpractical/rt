@@ -1036,7 +1036,7 @@ not contain a slash-dot C</.>, and does not contain any nulls.
 sub ComponentPathIsSafe {
     my $self = shift;
     my $path = shift;
-    return $path !~ m{(?:^|/)\.} and $path !~ m{\0};
+    return($path !~ m{(?:^|/)\.} and $path !~ m{\0});
 }
 
 =head2 PathIsSafe
@@ -3656,6 +3656,16 @@ sub ProcessRecordBulkCustomFields {
             }
         }
         foreach my $value ( @{ $data->{'Delete'} || [] } ) {
+            # Convert for timezone. Without converstion,
+            # HasEntry and DeleteCustomFieldValue fail because
+            # the value in the DB is converted.
+            if ($data->{'cf'}->Type eq 'DateTime' or $data->{'cf'}->Type eq 'Date') {
+                my $DateObj = RT::Date->new( $session{'CurrentUser'} );
+                $DateObj->Set( Format => 'unknown',
+                               Value  => $value );
+                $value = $data->{'cf'}->Type eq 'DateTime' ? $DateObj->ISO
+                    : $DateObj->ISO(Time => 0, Seconds => 0);
+            }
             next unless $current_values->HasEntry($value);
 
             my ( $id, $msg ) = $args{'RecordObj'}->DeleteCustomFieldValue(
