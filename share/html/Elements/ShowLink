@@ -47,9 +47,12 @@
 %# END BPS TAGGED BLOCK }}}
 % my $member = $URI->Object;
 % if (blessed($member) && $member->isa("RT::Ticket")) {
-% my $inactive = $member->QueueObj->IsInactiveStatus($member->Status);
+% my $class = $member->QueueObj->IsInactiveStatus($member->Status)
+%     ? 'ticket-inactive'
+%     : 'ticket-active';
+% $class .= ' '.CSSClass($member->Status);
 
-<span class="<% $inactive ? 'ticket-inactive ' . CSSClass($member->Status) : '' %>">
+<span class="<% $class %>">
 <a href="<% $href %>"><%$member->Id%>: <%$member->Subject || ''%> [<% loc($member->Status) %>]</a> (<& /Elements/ShowUser, User => $member->OwnerObj &>)
 </span>
 
