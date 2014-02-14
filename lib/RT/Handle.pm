@@ -250,7 +250,7 @@ sub CheckIntegrity {
         return (0, 'no nobody user', "Couldn't find Nobody user in the DB '". $RT::Handle->DSN ."'");
     }
 
-    return $RT::Handle->dbh;
+    return 1;
 }
 
 sub CheckCompatibility {
