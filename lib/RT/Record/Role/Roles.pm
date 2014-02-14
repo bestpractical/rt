@@ -451,6 +451,12 @@ principal
 
 Required.  One of the valid roles for this record, as returned by L</Roles>.
 
+=item ACL
+
+Optional.  A subroutine reference which will be passed the role type and
+principal being removed.  If it returns false, the method will fail with a
+status of "Permission denied".
+
 =back
 
 One, and only one, of I<PrincipalId> or I<User> is required.
