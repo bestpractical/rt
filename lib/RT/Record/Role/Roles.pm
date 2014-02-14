@@ -483,7 +483,7 @@ sub DeleteRoleMember {
 
     my $acl = delete $args{ACL};
     return (0, $self->loc("Permission denied"))
-        if $acl and not $acl->($principal);
+        if $acl and not $acl->($args{Type} => $principal);
 
     my $group = $self->RoleGroup( $args{Type} );
     return (0, $self->loc("Role group '[_1]' not found", $args{Type}))
