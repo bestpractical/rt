@@ -1998,6 +1998,18 @@ sub _AddCustomFieldValue {
             } else {
                 $is_the_same = 0 if defined $old_content;
             }
+            if ( !$is_the_same && defined $old_content && defined $args{'Value'} 
+                && $cf->Type eq 'Date' ) { 
+
+                my $DateObj = RT::Date->new( $self->CurrentUser );
+                $DateObj->Set(
+                    Format   => 'unknown',
+                    Value    => $args{'Value'},
+                );
+                my $new_content = $DateObj->Date( Timezone => 'user' );
+
+                $is_the_same = 1 if $old_content eq $new_content;
+            }
             if ( $is_the_same ) {
                 my $old_content = $old_value->LargeContent;
                 if ( defined $args{'LargeContent'} ) {
