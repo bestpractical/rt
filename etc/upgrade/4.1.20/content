@@ -33,7 +33,7 @@ our @Initial = (
 });
         }
         else {
-            RT->Logger->error('Current "Forward" template is not the default version, please check docs/4.2-UPGRADING');
+            RT->Logger->error('Current "Forward" template is not the default version, please check docs/UPGRADING-4.2');
         }
 
         my $forward_ticket_template = RT::Template->new(RT->SystemUser);
@@ -50,7 +50,7 @@ This is a forward of ticket #{ $Ticket->id }
 
         }
         else {
-            RT->Logger->error('Current "Forward Ticket" template is not the default version, please check docs/4.2-UPGRADING');
+            RT->Logger->error('Current "Forward Ticket" template is not the default version, please check docs/UPGRADING-4.2');
         }
     },
 );
