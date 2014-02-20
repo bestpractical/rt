@@ -75,12 +75,6 @@ while ( my $CF = $CustomFields->Next ) {
         Value       => ($submitted->{Values} // $submitted->{Value} // $submitted->{Upload}),
     );
     if ($CF->Type =~ /^Date(?:Time)?$/) {
-        if (not @values) {
-            my $values = $Object->CustomFieldValues($CF->Id);
-            while (my $ocfv = $values->Next) {
-                push @values, $ocfv->Content;
-            }
-        }
         @values = grep {
             my $DateObj = RT::Date->new ( $session{'CurrentUser'} );
             $DateObj->Set(

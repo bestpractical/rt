@@ -60,5 +60,4 @@ $Default => undef
 $Values => undef
 $MaxValues => 1
 $Name => undef
-$KeepValue => undef
 </%ARGS>
