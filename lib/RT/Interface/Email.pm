@@ -1078,6 +1078,19 @@ sub PseudoReference {
     return '<RT-Ticket-'. $ticket->id .'@'. RT->Config->Get('Organization') .'>';
 }
 
+=head2 ExtractTicketId
+
+Passed a MIME::Entity.  Returns a ticket id or undef to signal 'new ticket'.
+
+This is a great entry point if you need to customize how ticket ids are
+handled for your site. RT-Extension-RepliesToResolved demonstrates one
+possible use for this extension.
+
+If the Subject of this ticket is modified, it will be reloaded by the
+mail gateway code before Ticket creation.
+
+=cut
+
 sub ExtractTicketId {
     my $entity = shift;
 
@@ -1085,6 +1098,14 @@ sub ExtractTicketId {
     chomp $subject;
     return ParseTicketId( $subject );
 }
+
+=head2 ParseTicketId
+
+Takes a string and searches for [subjecttag #id]
+
+Returns the id if a match is found.  Otherwise returns undef.
+
+=cut
 
 sub ParseTicketId {
     my $Subject = shift;
