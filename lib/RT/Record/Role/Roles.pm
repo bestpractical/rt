@@ -451,6 +451,12 @@ principal
 
 Required.  One of the valid roles for this record, as returned by L</Roles>.
 
+=item ACL
+
+Optional.  A subroutine reference which will be passed the role type and
+principal being removed.  If it returns false, the method will fail with a
+status of "Permission denied".
+
 =back
 
 One, and only one, of I<PrincipalId> or I<User> is required.
@@ -483,7 +489,7 @@ sub DeleteRoleMember {
 
     my $acl = delete $args{ACL};
     return (0, $self->loc("Permission denied"))
-        if $acl and not $acl->($principal);
+        if $acl and not $acl->($args{Type} => $principal);
 
     my $group = $self->RoleGroup( $args{Type} );
     return (0, $self->loc("Role group '[_1]' not found", $args{Type}))
@@ -524,9 +530,9 @@ sub _ResolveRoles {
                 $user->LoadByEmail( $value ) unless $user->id;
                 $roles->{$role} = $user->PrincipalObj;
             }
-            unless ($roles->{$role}->id) {
-                push @errors, $self->loc("Invalid value for [_1]",loc($role));
-                $roles->{$role} = RT->Nobody->PrincipalObj unless $roles->{$role}->id;
+            unless ($roles->{$role} and $roles->{$role}->id) {
+                push @errors, $self->loc("Invalid value for [_1]",$self->loc($role));
+                $roles->{$role} = RT->Nobody->PrincipalObj;
             }
             # For consistency, we always return an arrayref
             $roles->{$role} = [ $roles->{$role} ];

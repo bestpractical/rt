@@ -55,13 +55,16 @@ my $COLUMN_MAP = {
     Queue => {
         title     => 'Queue', # loc
         value     => sub {
-            return $_[0]->QueueObj->Name if $_[0]->Queue;
-            return $_[0]->loc('Global');
+            return $_[0]->loc('Global') if $_[0]->IsGlobal;
+            return join(", ", map {$_->Name} @{$_[0]->AddedTo->ItemsArrayRef});
         },
     },
     QueueId => {
         title     => 'Queue', # loc
-        value     => sub { $_[0]->Queue },
+        value     => sub {
+            return 0 if $_[0]->IsGlobal;
+            return join(", ", map {$_->Id} @{$_[0]->AddedTo->ItemsArrayRef});
+        },
     },
     Condition => {
         title     => 'Condition', # loc

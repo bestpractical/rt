@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#!@PERL@
 # BEGIN BPS TAGGED BLOCK {{{
 #
 # COPYRIGHT:
@@ -46,81 +46,41 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-use 5.10.1;
 use strict;
 use warnings;
 
+use lib "@LOCAL_LIB_PATH@";
+use lib "@RT_LIB_PATH@";
+
 use RT;
 RT::LoadConfig();
-RT->Config->Set('LogToSTDERR' => 'debug');
 RT::Init();
 
-use RT::Transactions;
-my $txns = RT::Transactions->new( RT->SystemUser );
-$txns->Limit(
-    FIELD => 'ObjectType',
-    OPERATOR => '=',
-    VALUE => 'RT::Group',
-    QUOTEVALUE => 1,
-    ENTRYAGGREGATOR => 'AND',
+use RT::CustomFields;
+my $cfs = RT::CustomFields->new( RT->SystemUser );
+$cfs->{find_disabled_rows} = 1;
+$cfs->Limit(
+    FIELD => 'Type',
+    VALUE => 'SelectCheckbox',
 );
 
-my $alias = $txns->Join(
-    TYPE   => 'LEFT',
-    FIELD1 => 'ObjectId',
-    TABLE2 => 'Groups',
-    FIELD2 => 'Id',
-);
-$txns->Limit(
-    ALIAS => $alias,
-    FIELD => 'Domain',
-    OPERATOR => '=',
-    VALUE => 'ACLEquivalence',
-    CASESENSITIVE => 0,
-    QUOTEVALUE => 1,
-    ENTRYAGGREGATOR => 'AND',
-);
-
-$txns->Limit(
-    ALIAS => $alias,
-    FIELD => 'Name',
-    OPERATOR => '=',
-    VALUE => 'UserEquiv',
-    QUOTEVALUE => 1,
-    CASESENSITIVE => 0,
-    ENTRYAGGREGATOR => 'AND',
-);
-
-$| = 1;
-my $total = $txns->Count;
-my $i = 0;
-
-FetchNext( $txns, 'init' );
-while ( my $rec = FetchNext( $txns ) ) {
-    $i++;
-    printf("\r%0.2f %%", 100 * $i / $total);
-    $RT::Handle->BeginTransaction;
-    my ($status) = $rec->Delete;
-    unless ($status) {
-        print STDERR "Couldn't delete TXN #". $rec->id;
-        exit 1;
-    }
-    $RT::Handle->Commit;
-}
-
-use constant PAGE_SIZE => 10000;
-sub FetchNext {
-    my ($objs, $init) = @_;
-    if ( $init ) {
-        $objs->RowsPerPage( PAGE_SIZE );
-        $objs->FirstPage;
-        return;
+while ( my $cf = $cfs->Next ) {
+    print 'Processing custom field #' . $cf->id . "\n";
+    my ( $ret, $msg ) = $cf->SetType('Select');
+    unless ($ret) {
+        warn "Failed to set custom field #"
+          . $cf->id
+          . " Type to 'Select': $msg\n";
     }
 
-    my $obj = $objs->Next;
-    return $obj if $obj;
-    $objs->RedoSearch;
-    $objs->FirstPage;
-    return $objs->Next;
+    ( $ret, $msg ) = $cf->SetRenderType('List');
+    unless ($ret) {
+        warn "Failed to set custom field #"
+          . $cf->id
+          . " RenderType to 'List': $msg\n";
+    }
 }
 
+print "DONE\n";
+
+exit 0;

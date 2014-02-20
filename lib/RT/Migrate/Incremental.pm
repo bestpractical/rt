@@ -590,7 +590,7 @@ s!(?<=Your ticket has been (?:approved|rejected) by { eval { )\$Approval->OwnerO
 { $ForwardTransaction->Content =~ /\S/ ? $ForwardTransaction->Content : "This is a forward of transaction #".$Transaction->id." of ticket #". $Ticket->id }
 };
                 } else {
-                    RT->Logger->error('Current "Forward" template is not the default version, please check docs/4.2-UPGRADING');
+                    RT->Logger->error('Current "Forward" template is not the default version, please check docs/UPGRADING-4.2');
                 }
             } elsif ($ref->{Name} eq 'Forward Ticket') {
                 $ref->{Description} = 'Forwarded ticket message';
@@ -602,7 +602,7 @@ This is a forward of ticket #{ $Ticket->id }
 { $ForwardTransaction->Content =~ /\S/ ? $ForwardTransaction->Content : "This is a forward of ticket #". $Ticket->id }
 };
                 } else {
-                    RT->Logger->error('Current "Forward Ticket" template is not the default version, please check docs/4.2-UPGRADING');
+                    RT->Logger->error('Current "Forward Ticket" template is not the default version, please check docs/UPGRADING-4.2');
                 }
             }
         },

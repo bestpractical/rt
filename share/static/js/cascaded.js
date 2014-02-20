@@ -18,10 +18,10 @@ function filter_cascade_by_id (id, vals, is_hierarchical) {
         }
         else {
             jQuery(element).find('div').hide().find('input').prop('disabled', true);
-            jQuery(element).find('div[name=]').show().find('input').prop('disabled', false);
+            jQuery(element).find('div[data-name=]').show().find('input').prop('disabled', false);
             jQuery(element).find('div.none').show().find('input').prop('disabled',false);
             for ( var j = 0; j < vals.length; j++ ) {
-                jQuery(element).find('div[name^=' + vals[j] + ']').show().find('input').prop('disabled', false);
+                jQuery(element).find('div[data-name^=' + vals[j] + ']').show().find('input').prop('disabled', false);
             }
         }
     }

@@ -45,11 +45,22 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% my $name = $NamePrefix . $CustomField->Id . '-Value';
+% my $name = $Name || $NamePrefix . $CustomField->Id . ( $Multiple ? '-Values' : '-Value' );
 % if ($Multiple) {
-<textarea cols="<%$Cols%>" rows="<%$Rows%>" name="<%$name%>s" id="<%$name%>s" wrap="off" class="CF-<%$CustomField->id%>-Edit"><% defined($Default) ? $Default : '' %></textarea>
+<textarea \
+% if ( defined $Cols ) {
+cols="<% $Cols %>" \
+% }
+% if ( defined $Rows ) {
+rows="<% $Rows %>" \
+% }
+name="<%$name%>" id="<%$name%>" wrap="off" class="CF-<%$CustomField->id%>-Edit"><% defined($Default) ? $Default : '' %></textarea>
 % } else {
-<input name="<%$name%>" id="<%$name%>" size="<%$Cols%>" class="CF-<%$CustomField->id%>-Edit" value="<% defined($Default) ? $Default : ''%>" />
+<input type="text" name="<%$name%>" id="<%$name%>" \
+% if ( defined $Cols ) {
+size="<% $Cols %>" \
+% }
+class="CF-<%$CustomField->id%>-Edit" value="<% defined($Default) ? $Default : ''%>" />
 % }
 <%INIT>
 if ( $Multiple and $Values ) {
@@ -63,6 +74,7 @@ unless ( $Multiple ) {
 $Object => undef
 $CustomField => undef
 $NamePrefix => undef
+$Name => undef
 $Default => undef
 $Values => undef
 $Multiple => undef

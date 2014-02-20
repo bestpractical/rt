@@ -52,7 +52,8 @@
 
 .titlebox.rolled-up  .titlebox-title .left,
 .titlebox.rolled-up  .titlebox-title .left a {
-    color: #ccc
+    color: #ccc;
+    line-height: 1.6em;
 }
 
 .titlebox.rolled-up .titlebox-title {

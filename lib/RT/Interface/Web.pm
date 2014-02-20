@@ -1036,7 +1036,7 @@ not contain a slash-dot C</.>, and does not contain any nulls.
 sub ComponentPathIsSafe {
     my $self = shift;
     my $path = shift;
-    return $path !~ m{(?:^|/)\.} and $path !~ m{\0};
+    return($path !~ m{(?:^|/)\.} and $path !~ m{\0});
 }
 
 =head2 PathIsSafe
@@ -1714,6 +1714,89 @@ sub RewriteInlineImages {
         return "cid:$cid";
     });
     return @rewritten;
+}
+
+=head2 GetCustomFieldInputName(CustomField => $cf_object, Object => $object, Grouping => $grouping_name)
+
+Returns the standard custom field input name; this is complementary to
+L</_ParseObjectCustomFieldArgs>.  Takes the following arguments:
+
+=over
+
+=item CustomField => I<L<RT::CustomField> object>
+
+Required.
+
+=item Object => I<object>
+
+The object that the custom field is applied to; optional.  If omitted,
+defaults to a new object of the appropriate class for the custom field.
+
+=item Grouping => I<CF grouping>
+
+The grouping that the custom field is being rendered in.  Groupings
+allow a custom field to appear in more than one location per form.
+
+=back
+
+=cut
+
+sub GetCustomFieldInputName {
+    my %args = (
+        CustomField => undef,
+        Object      => undef,
+        Grouping    => undef,
+        @_,
+    );
+
+    my $name = GetCustomFieldInputNamePrefix(%args);
+
+    if ( $args{CustomField}->Type eq 'Select' ) {
+        if ( $args{CustomField}->RenderType eq 'List' ) {
+            $name .= 'Value';
+        }
+        else {
+            $name .= 'Values';
+        }
+    }
+    elsif ( $args{CustomField}->Type =~ /^(?:Binary|Image)$/ ) {
+        $name .= 'Upload';
+    }
+    elsif ( $args{CustomField}->Type =~ /^(?:Date|DateTime|Text|Wikitext)$/ ) {
+        $name .= 'Values';
+    }
+    else {
+        if ( $args{CustomField}->SingleValue ) {
+            $name .= 'Value';
+        }
+        else {
+            $name .= 'Values';
+        }
+    }
+
+    return $name;
+}
+
+=head2 GetCustomFieldInputNamePrefix(CustomField => $cf_object, Object => $object, Grouping => $grouping_name)
+
+Returns the standard custom field input name prefix(without "Value" or alike suffix)
+
+=cut
+
+sub GetCustomFieldInputNamePrefix {
+    my %args = (
+        CustomField => undef,
+        Object      => undef,
+        Grouping    => undef,
+        @_,
+    );
+
+    my $prefix = join '-', 'Object', ref( $args{Object} ) || $args{CustomField}->ObjectTypeFromLookupType,
+        ( $args{Object} && $args{Object}->id ? $args{Object}->id : '' ),
+        'CustomField' . ( $args{Grouping} ? ":$args{Grouping}" : '' ),
+        $args{CustomField}->id, '';
+
+    return $prefix;
 }
 
 package HTML::Mason::Commands;
@@ -2970,13 +3053,14 @@ sub ProcessObjectCustomFieldUpdates {
                 }
                 push @results,
                     _ProcessObjectCustomFieldUpdates(
-                    # XXX FIXME: Prefix is not quite right, as $id almost
-                    # certainly started as blank for new objects and is now 0.
-                    # Only Image/Binary CFs on new objects should be affected.
-                    Prefix      => "Object-$class-$id-CustomField-$cf-",
-                    Object      => $Object,
-                    CustomField => $CustomFieldObj,
-                    ARGS        => $custom_fields_to_mod{$class}{$id}{$cf}{$groupings[0]},
+                        Prefix => GetCustomFieldInputNamePrefix(
+                            Object      => $Object,
+                            CustomField => $CustomFieldObj,
+                            Grouping    => $groupings[0],
+                        ),
+                        Object      => $Object,
+                        CustomField => $CustomFieldObj,
+                        ARGS        => $custom_fields_to_mod{$class}{$id}{$cf}{ $groupings[0] },
                     );
             }
         }
@@ -2991,6 +3075,7 @@ sub _ParseObjectCustomFieldArgs {
     foreach my $arg ( keys %$ARGSRef ) {
 
         # format: Object-<object class>-<object id>-CustomField[:<grouping>]-<CF id>-<commands>
+        # you can use GetCustomFieldInputName to generate the complement input name
         next unless $arg =~ /^Object-([\w:]+)-(\d*)-CustomField(?::(\w+))?-(\d+)-(.*)$/;
 
         # For each of those objects, find out what custom fields we want to work with.
@@ -3010,7 +3095,7 @@ sub _ProcessObjectCustomFieldUpdates {
     # the browser gives you a blank value which causes CFs to be processed twice
     if (   defined $args{'ARGS'}->{'Values'}
         && !length $args{'ARGS'}->{'Values'}
-        && $args{'ARGS'}->{'Values-Magic'} )
+        && ($args{'ARGS'}->{'Values-Magic'}) )
     {
         delete $args{'ARGS'}->{'Values'};
     }
@@ -3023,7 +3108,7 @@ sub _ProcessObjectCustomFieldUpdates {
 
         # since http won't pass in a form element with a null value, we need
         # to fake it
-        if ( $arg eq 'Values-Magic' ) {
+        if ( $arg =~ /-Magic$/ ) {
 
             # We don't care about the magic, if there's really a values element;
             next if defined $args{'ARGS'}->{'Value'}  && length $args{'ARGS'}->{'Value'};
@@ -3176,16 +3261,21 @@ sub ProcessObjectCustomFieldUpdatesForCreate {
             }
 
             my @values;
+            my $name_prefix = GetCustomFieldInputNamePrefix(
+                CustomField => $cf,
+                Grouping    => $groupings[0],
+            );
             while (my ($arg, $value) = each %{ $custom_fields{$class}{0}{$cfid}{$groupings[0]} }) {
                 # Values-Magic doesn't matter on create; no previous values are being removed
                 # Category is irrelevant for the actual value
-                next if $arg eq "Values-Magic" or $arg eq "Category";
+                next if $arg =~ /-Magic$/ or $arg eq "Category";
 
-                push @values, _NormalizeObjectCustomFieldValue(
+                push @values,
+                    _NormalizeObjectCustomFieldValue(
                     CustomField => $cf,
-                    Param       => "Object-$class--CustomField-$cfid-$arg",
+                    Param       => $name_prefix . $arg,
                     Value       => $value,
-                );
+                    );
             }
 
             $parsed{"CustomField-$cfid"} = \@values if @values;
@@ -3585,6 +3675,16 @@ sub ProcessRecordBulkCustomFields {
             }
         }
         foreach my $value ( @{ $data->{'Delete'} || [] } ) {
+            # Convert for timezone. Without converstion,
+            # HasEntry and DeleteCustomFieldValue fail because
+            # the value in the DB is converted.
+            if ($data->{'cf'}->Type eq 'DateTime' or $data->{'cf'}->Type eq 'Date') {
+                my $DateObj = RT::Date->new( $session{'CurrentUser'} );
+                $DateObj->Set( Format => 'unknown',
+                               Value  => $value );
+                $value = $data->{'cf'}->Type eq 'DateTime' ? $DateObj->ISO
+                    : $DateObj->ISO(Time => 0, Seconds => 0);
+            }
             next unless $current_values->HasEntry($value);
 
             my ( $id, $msg ) = $args{'RecordObj'}->DeleteCustomFieldValue(
@@ -3925,6 +4025,14 @@ sub CSSClass {
     return '' unless defined $value;
     $value =~ s/[^A-Za-z0-9_-]/_/g;
     return $value;
+}
+
+sub GetCustomFieldInputName {
+    RT::Interface::Web::GetCustomFieldInputName(@_);
+}
+
+sub GetCustomFieldInputNamePrefix {
+    RT::Interface::Web::GetCustomFieldInputNamePrefix(@_);
 }
 
 package RT::Interface::Web;

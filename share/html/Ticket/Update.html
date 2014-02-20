@@ -91,8 +91,7 @@
     });
     jQuery(function() {
         jQuery("input[name=TxnSendMailTo]").change(function(ev) {
-            jQuery("input[name=TxnSendMailTo][value="+ev.target.value+"]")
-                  .attr("checked",jQuery(ev.target).attr('checked'));
+            jQuery("input[name=TxnSendMailTo]").filter( function() { return this.value == ev.target.value; } ).prop("checked",jQuery(ev.target).prop('checked'));
         });
     });
 </script>
@@ -252,6 +251,9 @@ $CanComment = 1 if ( $TicketObj->CurrentUserHasRight('CommentOnTicket') or
 
 ProcessAttachments(ARGSRef => \%ARGS);
 
+my %squelched = ProcessTransactionSquelching( \%ARGS );
+$ARGS{'SquelchMailTo'} = [keys %squelched] if keys %squelched;
+
 my $gnupg_widget = $m->comp('/Elements/Crypt/SignEncryptWidget:new', Arguments => \%ARGS );
 $m->comp( '/Elements/Crypt/SignEncryptWidget:Process',
     self => $gnupg_widget,
@@ -259,9 +261,6 @@ $m->comp( '/Elements/Crypt/SignEncryptWidget:Process',
 );
 
 if ( $ARGS{'SubmitTicket'} ) {
-
-    my %squelched = ProcessTransactionSquelching( \%ARGS );
-    $ARGS{'SquelchMailTo'} = [keys %squelched] if keys %squelched;
 
     my ($status, @msg) = $m->comp(
         '/Elements/ValidateCustomFields',

@@ -354,6 +354,11 @@ dirs:
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(LOCAL_LEXICON_PATH)
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(LOCAL_STATIC_PATH)
 
+clean-mason-cache:
+	rm -rf $(DESTDIR)$(MASON_DATA_PATH)/cache/*
+	rm -rf $(DESTDIR)$(MASON_DATA_PATH)/etc/*
+	rm -rf $(DESTDIR)$(MASON_DATA_PATH)/obj/*
+
 install: testdeps config-install dirs files-install fixperms instruct
 
 files-install: libs-install etc-install config-install bin-install sbin-install html-install doc-install font-install po-install static-install
@@ -409,6 +414,7 @@ html-install:
 @COMMENT_INPLACE_LAYOUT@	-( cd share/html && find . -type f -print ) | while read file ; do \
 @COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -m 0644 "share/html/$$file" "$(DESTDIR)$(MASON_HTML_PATH)/$$file" ; \
 @COMMENT_INPLACE_LAYOUT@	done
+@COMMENT_INPLACE_LAYOUT@	$(MAKE) clean-mason-cache
 
 font-install:
 @COMMENT_INPLACE_LAYOUT@	[ -d $(DESTDIR)$(RT_FONT_PATH) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(RT_FONT_PATH)

@@ -158,6 +158,7 @@ size="60" value="<% $ARGS{UpdateSubject} || "" %>" /></td></tr>
 my $cfs = RT::CustomFields->new($session{'CurrentUser'});
 $cfs->LimitToGlobal();
 $cfs->LimitToQueue($_) for keys %$seen_queues;
+$cfs->SetContextObject( values %$seen_queues ) if keys %$seen_queues == 1;
 </%perl>
 
 % if ( $cfs->Count ) {
@@ -230,7 +231,8 @@ Abort( loc("No search to operate on.") ) unless ($Tickets);
 my $fields      = {};
 my $seen_queues = {};
 while ( my $ticket = $Tickets->Next ) {
-    next if $seen_queues->{ $ticket->Queue }++;
+    next if $seen_queues->{ $ticket->Queue };
+    $seen_queues->{ $ticket->Queue } ||= $ticket->QueueObj;
 
     my $custom_fields = $ticket->CustomFields;
     while ( my $field = $custom_fields->Next ) {
@@ -284,11 +286,14 @@ unless ( $ARGS{'AddMoreAttach'} ) {
     }
 
     delete $session{'Attachments'}{ $ARGS{'Token'} };
+
+    $Tickets->RedoSearch();
 }
 
 my $TxnCFs = RT::CustomFields->new( $session{CurrentUser} );
 $TxnCFs->LimitToLookupType( RT::Transaction->CustomFieldLookupType );
 $TxnCFs->LimitToGlobalOrObjectId( keys %$seen_queues );
+$TxnCFs->SetContextObject( values %$seen_queues ) if keys %$seen_queues == 1;
 
 </%INIT>
 <%args>

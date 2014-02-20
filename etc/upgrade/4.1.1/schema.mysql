@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS ObjectScrips;
 CREATE TABLE ObjectScrips (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Scrip integer NOT NULL  ,

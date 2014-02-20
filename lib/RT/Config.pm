@@ -215,10 +215,10 @@ our %META;
 
             $RT::Logger->warning(
                 "The default stylesheet ($value) does not exist in this instance of RT. "
-              . "Defaulting to aileron."
+              . "Defaulting to rudder."
             );
 
-            $self->Set('WebDefaultStylesheet', 'aileron');
+            $self->Set('WebDefaultStylesheet', 'rudder');
         },
     },
     TimeInICal => {
@@ -619,6 +619,10 @@ our %META;
         Type => 'ARRAY',
         PostLoadCheck => sub {
             my $self = shift;
+
+            # Make sure Crypt is post-loaded first
+            $META{Crypt}{'PostLoadCheck'}->( $self, $self->Get( 'Crypt' ) );
+
             my @plugins = $self->Get('MailPlugins');
             if ( grep $_ eq 'Auth::GnuPG' || $_ eq 'Auth::SMIME', @plugins ) {
                 $RT::Logger->warning(
@@ -635,6 +639,10 @@ our %META;
                         ? 'Auth::Crypt' : $_
                     } @plugins;
                 $self->Set( MailPlugins => @plugins );
+            }
+
+            if ( not @{$self->Get('Crypt')->{Incoming}} and grep $_ eq 'Auth::Crypt', @plugins ) {
+                $RT::Logger->warning("Auth::Crypt enabled in MailPlugins, but no available incoming encryption formats");
             }
         },
     },
@@ -665,11 +673,18 @@ our %META;
             $opt->{'Incoming'} = [ $opt->{'Incoming'} ]
                 if $opt->{'Incoming'} and not ref $opt->{'Incoming'};
             if ( $opt->{'Incoming'} && @{ $opt->{'Incoming'} } ) {
+                $RT::Logger->warning("$_ explicitly set as incoming Crypt plugin, but not marked Enabled; removing")
+                    for grep {not $enabled{$_}} @{$opt->{'Incoming'}};
                 $opt->{'Incoming'} = [ grep {$enabled{$_}} @{$opt->{'Incoming'}} ];
             } else {
                 $opt->{'Incoming'} = \@enabled;
             }
             if ( $opt->{'Outgoing'} ) {
+                if (not $enabled{$opt->{'Outgoing'}}) {
+                    $RT::Logger->warning($opt->{'Outgoing'}.
+                                             " explicitly set as outgoing Crypt plugin, but not marked Enabled; "
+                                             . (@enabled ? "using $enabled[0]" : "removing"));
+                }
                 $opt->{'Outgoing'} = $enabled[0] unless $enabled{$opt->{'Outgoing'}};
             } else {
                 $opt->{'Outgoing'} = $enabled[0];

@@ -50,11 +50,10 @@
 %# (perhaps by tweaking the .display style?)
 % my $selected = 0;
 % my @category;
-% my $id = $NamePrefix . $CustomField->Id;
 % my $out = $m->scomp('SELF:options', %ARGS, SelectedRef => \$selected, CategoryRef => \@category);
 % if (!$HideCategory and @category and not $CustomField->BasedOnObj->id) {
 %# XXX - Hide this select from w3m?
-  <select onchange="filter_cascade_by_id(<% "$id-Values" |n,j%>, this.value)" name="<% $id %>-Category" class="CF-<%$CustomField->id%>-Edit">
+  <select onchange="filter_cascade_by_id(<% $name |n,j %>, this.value)" name="<% $name %>-Category" class="CF-<%$CustomField->id%>-Edit">
     <option value=""<% !$selected && qq[ selected="selected"] |n %>><&|/l&>-</&></option>
 %   foreach my $cat (@category) {
 %     my ($depth, $name) = @$cat;
@@ -62,9 +61,10 @@
 %   }
     </select><br />
 % } elsif ($CustomField->BasedOnObj->id) {
+
 <script type="text/javascript"><!--
 jQuery(  function () {
-    var basedon = jQuery('[name^="<% $NamePrefix .  $CustomField->BasedOnObj->id %>-Value"][type!="hidden"]:input:not(.hidden)');
+    var basedon = jQuery('[name^="'+<% $BasedOnName || $NamePrefix . $CustomField->BasedOnObj->id . '-Value' |n,j %>+'"][type!="hidden"]:input:not(.hidden)');
     basedon.each( function() {
         var oldchange = jQuery(this).onchange;
         jQuery(this).change( function () {
@@ -81,7 +81,7 @@ jQuery(  function () {
                 });
             }
             filter_cascade_by_id(
-                <% "$id-Values" |n,j%>,
+                <% $name |n,j%>,
                 vals,
                 true
             );
@@ -102,7 +102,7 @@ jQuery(  function () {
 
 % if ( $RenderType eq 'List' ) {
 <fieldset class="cfedit">
-<div name="<%$id%>-Values" id="<%$id%>-Values">
+<div data-name="<%$name%>" id="<%$name%>">
 %   if ( $checktype eq 'radio' ) {
   <div class="none">
   <input class="none" type="<% $checktype %>" name="<% $name %>" id="<% $name %>-none" value="" <% keys %default ? '' : ' checked="checked"' |n%> />
@@ -113,7 +113,7 @@ jQuery(  function () {
 %   while ( my $value = $CFVs->Next ) {
 %     my $content = $value->Name;
 %     my $labelid = "$name-". $value->id;
-<div name="<% $value->Category %>">
+<div data-name="<% $value->Category || '' %>">
   <input type="<% $checktype %>" name="<% $name %>" id="<% $labelid %>" value="<% $content %>" <% $default{ lc $content }? ' checked="checked"' : '' |n%> />
   <label for="<% $labelid %>"><% $content %></label><br />
 </div>
@@ -124,13 +124,13 @@ jQuery(  function () {
 % if (@category) {
 %# this hidden select is to supply a full list of values,
 %# see filter_cascade_select() in js/cascaded.js
-      <select name="<%$id%>-Values-Complete" id="<%$id%>-Values-Complete" class="hidden" disabled="disabled">
+      <select name="<%$name%>-Complete" id="<%$name%>-Complete" class="hidden" disabled="disabled">
         <option value=""<% !$selected && qq[ selected="selected"] |n %>><&|/l&>(no value)</&></option>
 %       $m->out($out);
       </select>
 % }
 <select
-  name="<%$id%>-Values" id="<%$id%>-Values" class="CF-<%$CustomField->id%>-Edit"
+  name="<%$name%>" id="<%$name%>" class="CF-<%$CustomField->id%>-Edit"
 % if ( $Rows && ( $Multiple || !@category || $RenderType eq 'Select box') ) {
   size="<% $Rows %>"
 % }
@@ -149,10 +149,11 @@ if ( $RenderType eq 'Dropdown' ) {
 
 # The following is for rendering checkboxes / radio buttons only
 my ($checktype, $name);
+
 if ( $MaxValues == 1 ) {
-    ($checktype, $name) = ('radio', $NamePrefix . $CustomField->Id . '-Value');
+    ($checktype, $name) = ('radio', $Name || $NamePrefix . $CustomField->Id . '-Value');
 } else {
-    ($checktype, $name) = ('checkbox', $NamePrefix . $CustomField->Id . '-Values');
+    ($checktype, $name) = ('checkbox', $Name || $NamePrefix . $CustomField->Id . '-Values');
 }
 
 @Default = grep defined && length, @Default;
@@ -165,6 +166,8 @@ my %default = map {lc $_ => 1} @Default;
 $Object => undef
 $CustomField => undef
 $NamePrefix => undef
+$Name => undef
+$BasedOnName => undef
 @Default => ()
 $Values => undef
 $Multiple => 0

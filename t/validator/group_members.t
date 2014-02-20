@@ -2,43 +2,12 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 62;
-
-sub load_or_create_group {
-    my $name = shift;
-    my %args = (@_);
-
-    my $group = RT::Group->new( RT->SystemUser );
-    $group->LoadUserDefinedGroup( $name );
-    unless ( $group->id ) {
-        my ($id, $msg) = $group->CreateUserDefinedGroup(
-            Name => $name,
-        );
-        die "$msg" unless $id;
-    }
-
-    if ( $args{Members} ) {
-        my $cur = $group->MembersObj;
-        while ( my $entry = $cur->Next ) {
-            my ($status, $msg) = $entry->Delete;
-            die "$msg" unless $status;
-        }
-
-        foreach my $new ( @{ $args{Members} } ) {
-            my ($status, $msg) = $group->AddMember(
-                ref($new)? $new->id : $new,
-            );
-            die "$msg" unless $status;
-        }
-    }
-    
-    return $group;
-}
+use RT::Test tests => undef;
 
 RT::Test->db_is_valid;
 
 {
-    my $group = load_or_create_group('test', Members => [] );
+    my $group = RT::Test->load_or_create_group('test', Members => [] );
     ok $group, "loaded or created a group";
 
     RT::Test->db_is_valid;
@@ -46,10 +15,10 @@ RT::Test->db_is_valid;
 
 # G1 -> G2
 {
-    my $group1 = load_or_create_group( 'test1', Members => [] );
+    my $group1 = RT::Test->load_or_create_group( 'test1', Members => [] );
     ok $group1, "loaded or created a group";
 
-    my $group2 = load_or_create_group( 'test2', Members => [ $group1 ]);
+    my $group2 = RT::Test->load_or_create_group( 'test2', Members => [ $group1 ]);
     ok $group2, "loaded or created a group";
 
     ok $group2->HasMember( $group1->id ), "has member";
@@ -76,7 +45,7 @@ RT::Test->db_is_valid;
     for (1..5) {
         my $child = @groups? $groups[-1]: undef;
 
-        my $group = load_or_create_group( 'test'. $_, Members => [ $child? ($child): () ] );
+        my $group = RT::Test->load_or_create_group( 'test'. $_, Members => [ $child? ($child): () ] );
         ok $group, "loaded or created a group";
 
         ok $group->HasMember( $child->id ), "has member"
@@ -110,12 +79,12 @@ RT::Test->db_is_valid;
 {
     my @groups;
     for (2..5) {
-        my $group = load_or_create_group( 'test'. $_, Members => [] );
+        my $group = RT::Test->load_or_create_group( 'test'. $_, Members => [] );
         ok $group, "loaded or created a group";
         push @groups, $group;
     }
 
-    my $parent = load_or_create_group( 'test1', Members => \@groups );
+    my $parent = RT::Test->load_or_create_group( 'test1', Members => \@groups );
     ok $parent, "loaded or created a group";
 
     RT::Test->db_is_valid;
@@ -123,19 +92,37 @@ RT::Test->db_is_valid;
 
 # G1 <- (G2, G3, G4) <- G5
 {
-    my $gchild = load_or_create_group( 'test5', Members => [] );
+    my $gchild = RT::Test->load_or_create_group( 'test5', Members => [] );
     ok $gchild, "loaded or created a group";
     
     my @groups;
     for (2..4) {
-        my $group = load_or_create_group( 'test'. $_, Members => [ $gchild ] );
+        my $group = RT::Test->load_or_create_group( 'test'. $_, Members => [ $gchild ] );
         ok $group, "loaded or created a group";
         push @groups, $group;
     }
 
-    my $parent = load_or_create_group( 'test1', Members => \@groups );
+    my $parent = RT::Test->load_or_create_group( 'test1', Members => \@groups );
     ok $parent, "loaded or created a group";
 
     RT::Test->db_is_valid;
 }
 
+# group without principal record and cgm records
+# was causing infinite loop as principal was not created
+{
+    my $group = RT::Test->load_or_create_group('Test');
+    ok $group && $group->id, 'loaded or created group';
+
+    my $dbh = $group->_Handle->dbh;
+    $dbh->do('DELETE FROM Principals WHERE id = ?', {RaiseError => 1}, $group->id);
+    $dbh->do('DELETE FROM CachedGroupMembers WHERE GroupId = ?', {RaiseError => 1}, $group->id);
+    DBIx::SearchBuilder::Record::Cachable->FlushCache;
+
+    my ($ecode, $res) = RT::Test->run_validator(resolve => 1, timeout => 30);
+    isnt($ecode, 0, 'non-zero exit code');
+
+    RT::Test->db_is_valid;
+}
+
+done_testing;

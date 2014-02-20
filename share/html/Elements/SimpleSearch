@@ -46,11 +46,12 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <form action="<% RT->Config->Get('WebPath') %><% $SendTo %>" id="simple-search">
-  <input size="12" name="q" accesskey="0" class="field" value="<% $value %>" placeholder="<% loc('Search') %>..." />
+  <input size="12" name="q" accesskey="0" class="field" value="<% $value %>" placeholder="<% $Placeholder %>..." />
 </form>
 <%init>
 my $value = defined $DECODED_ARGS->{q} ? $DECODED_ARGS->{q} : '';
 </%init>
 <%ARGS>
 $SendTo => '/Search/Simple.html'
+$Placeholder => loc('Search')
 </%ARGS>

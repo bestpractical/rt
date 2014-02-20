@@ -446,8 +446,9 @@ sub Create {
         AdminCc   => sub {
             my $principal = shift;
             return 1 if $self->CurrentUserHasRight('ModifyTicket');
-            return $principal->id == $self->CurrentUser->PrincipalId
-                and $self->CurrentUserHasRight("WatchAsAdminCc");
+            return unless $self->CurrentUserHasRight("WatchAsAdminCc");
+            return unless $principal->id == $self->CurrentUser->PrincipalId;
+            return 1;
         },
         Owner     => sub {
             my $principal = shift;
@@ -470,6 +471,8 @@ sub Create {
     foreach my $arg ( keys %args ) {
         next unless $arg =~ /^CustomField-(\d+)$/i;
         my $cfid = $1;
+        my $cf = $self->LoadCustomFieldByIdentifier($cfid);
+        next unless $cf->ObjectTypeFromLookupType->isa(ref $self);
 
         foreach my $value (
             UNIVERSAL::isa( $args{$arg} => 'ARRAY' ) ? @{ $args{$arg} } : ( $args{$arg} ) )
@@ -1660,6 +1663,7 @@ sub DryRun {
         MIMEObj      => $Message,
         TimeTaken    => $args{'UpdateTimeWorked'},
         DryRun       => 1,
+        SquelchMailTo => $args{'SquelchMailTo'},
     );
     unless ( $Transaction ) {
         $RT::Logger->error("Couldn't fire '$action' action: $Description");

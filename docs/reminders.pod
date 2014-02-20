@@ -46,7 +46,7 @@ To schedule the reminders, add a line like the following to your RT crontab:
                    --search-arg 'Type = "reminder" and (Status = "open" or Status = "new")' \
                    --condition RT::Condition::BeforeDue \
                    --condition-arg 2d \
-                   --action RT::Action::SendEmail \
+                   --action RT::Action::Notify \
                    --action-arg Owner,AlwaysNotifyActor \
                    --transaction first \
                    --template 'Reminder'
