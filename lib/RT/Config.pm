@@ -215,10 +215,10 @@ our %META;
 
             $RT::Logger->warning(
                 "The default stylesheet ($value) does not exist in this instance of RT. "
-              . "Defaulting to aileron."
+              . "Defaulting to rudder."
             );
 
-            $self->Set('WebDefaultStylesheet', 'aileron');
+            $self->Set('WebDefaultStylesheet', 'rudder');
         },
     },
     TimeInICal => {
