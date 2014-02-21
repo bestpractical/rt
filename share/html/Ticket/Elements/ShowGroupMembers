@@ -52,9 +52,10 @@ my $post_user = sub {
     $m->comp("/Elements/ShowUserEmailFrequency", User => $user, Ticket => $Ticket);
     $m->callback( User => $user, Ticket => $Ticket, %ARGS, CallbackName => 'AboutThisUser' );
 };
-$m->comp("/Elements/ShowPrincipal", Object => $Group, Separator => "<br />", PostUser => $post_user);
+$m->comp("/Elements/ShowPrincipal", Object => $Group, Separator => "<br />", PostUser => $post_user, Link => $Link);
 </%init>
 <%ARGS>
 $Group       => undef
 $Ticket      => undef
+$Link        => 1
 </%ARGS>

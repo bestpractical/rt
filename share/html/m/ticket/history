@@ -61,7 +61,7 @@ my $history = $t->Transactions()->ItemsArrayRef;
 % for my $entry (reverse @$history) {
 <li>
 <span class="age"><% $entry->CreatedObj->AgeAsString() %></span> -
-<& /Elements/ShowUser, User => $entry->CreatorObj &> - 
+<& /Elements/ShowUser, User => $entry->CreatorObj, Link => 0 &> - 
 <%$entry->BriefDescription%>
 % if ($entry->Type !~ /EmailRecord/) {
 % if ($entry->ContentObj) {
