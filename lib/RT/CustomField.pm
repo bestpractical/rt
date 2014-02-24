@@ -736,7 +736,11 @@ sub SetType {
         );
         $self->SetMaxValues($1 ? 1 : 0);
     }
-    $self->_Set(Field => 'Type', Value =>$type);
+    my $need_to_update_hint;
+    $need_to_update_hint = 1 if $self->EntryHint && $self->EntryHint eq $self->FriendlyType;
+    my ( $ret, $msg ) = $self->_Set( Field => 'Type', Value => $type );
+    $self->SetEntryHint($self->FriendlyType) if $need_to_update_hint && $ret;
+    return ( $ret, $msg );
 }
 
 =head2 SetPattern STRING
