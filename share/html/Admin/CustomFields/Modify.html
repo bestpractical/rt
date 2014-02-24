@@ -97,6 +97,28 @@
         Default => $CustomFieldObj->LookupType || $LookupType, &>
 </td></tr>
 
+<script type="text/javascript">
+jQuery( function() {
+    var select = jQuery('select[name=TypeComposite]');
+    var default_hint = select.find('option:selected').text();
+    var hint_input = jQuery('input[name=EntryHint]');
+    select.change(function() {
+        var new_hint = jQuery(this).find('option:selected').text();
+        if ( hint_input.val() == default_hint ) {
+            hint_input.val(new_hint);
+        }
+        default_hint = new_hint;
+    });
+% if ( $id eq 'new' && not defined $EntryHint) {
+    hint_input.val(default_hint);
+% }
+});
+</script>
+
+<tr><td class="label"><&|/l&>Entry Hint</&></td>
+<td><input name="EntryHint" value="<% $CustomFieldObj->EntryHint // $EntryHint // '' %>" size="80" /></td></tr>
+
+
 <tr class="edit_validation"><td class="label"><&|/l&>Validation</&></td>
 <td><& /Widgets/ComboBox,
     Name    => 'Pattern',
@@ -179,6 +201,7 @@ else {
             IncludeContentForValue => $IncludeContentForValue,
             BasedOn       => $BasedOn,
             Disabled      => ($Enabled ? 0 : 1),
+            EntryHint     => $EntryHint,
         );
         if (!$val) {
             push @results, loc("Could not create CustomField: [_1]", $msg);
@@ -201,7 +224,7 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     #we're asking about enabled on the web page but really care about disabled.
     $ARGS{'Disabled'} = $Enabled? 0 : 1;
 
-    my @attribs = qw(Disabled Pattern Name TypeComposite LookupType Description LinkValueTo IncludeContentForValue);
+    my @attribs = qw(Disabled Pattern Name TypeComposite LookupType Description LinkValueTo IncludeContentForValue EntryHint);
     push @results, UpdateRecordObject(
         AttributesRef => \@attribs,
         Object        => $CustomFieldObj,
@@ -339,4 +362,5 @@ $RenderType => undef
 $LinkValueTo => undef
 $IncludeContentForValue => undef
 $BasedOn => undef
+$EntryHint => undef
 </%ARGS>
