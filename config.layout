@@ -130,34 +130,6 @@
   customplugindir:  ${customdir}/local/plugins
 </Layout>
 
-<Layout Win32>
-  prefix:		C:/Program Files/Request Tracker
-  exec_prefix:		${prefix}
-  bindir:		${exec_prefix}/bin
-  sbindir:		${exec_prefix}/sbin
-  sysconfdir:		${prefix}/etc
-  mandir:		${prefix}/man
-  plugindir:		${prefix}/plugins
-  libdir:		${prefix}/lib
-  datadir:		${prefix}
-  htmldir:		${datadir}/html
-  fontdir:		${datadir}/fonts
-  lexdir:		${datadir}/po
-  staticdir:	${datadir}/static
-  manualdir:		${datadir}/doc
-  localstatedir:	${prefix}/var
-  logfiledir:		${localstatedir}/log
-  masonstatedir:	${localstatedir}/mason_data
-  sessionstatedir:	${localstatedir}/session_data
-  customdir:		${prefix}/local
-  custometcdir:		${customdir}/etc
-  customhtmldir:	${customdir}/html
-  customlexdir:		${customdir}/po
-  customstaticdir:	${customdir}/static
-  customlibdir:		${customdir}/lib
-  customplugindir:  ${customdir}/plugins
-</Layout>
-
 #   RH path layout.
 <Layout RH>
   prefix:		/usr

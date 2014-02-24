@@ -1587,10 +1587,8 @@ sub start_plack_server {
     }
 
     require POSIX;
-    if ( $^O !~ /MSWin32/ ) {
-        POSIX::setsid()
-            or die "Can't start a new session: $!";
-    }
+    POSIX::setsid()
+          or die "Can't start a new session: $!";
 
     # stick this in a scope so that when $app is garbage collected,
     # StashWarnings can complain about unhandled warnings

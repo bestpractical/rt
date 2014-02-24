@@ -704,11 +704,6 @@ sub AttemptExternalAuth {
         $user = RT::Interface::Web::WebCanonicalizeInfo();
         my $load_method = RT->Config->Get('WebRemoteUserGecos') ? 'LoadByGecos' : 'Load';
 
-        if ( $^O eq 'MSWin32' and RT->Config->Get('WebRemoteUserGecos') ) {
-            my $NodeName = Win32::NodeName();
-            $user =~ s/^\Q$NodeName\E\\//i;
-        }
-
         my $next = RemoveNextPage($ARGS->{'next'});
            $next = $next->{'url'} if ref $next;
         InstantiateNewSession() unless _UserLoggedIn;
