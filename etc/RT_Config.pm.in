@@ -947,19 +947,6 @@ A list of additional JavaScript files to be included in head.
 
 Set(@JSFiles, qw//);
 
-=item C<$JSMinPath>
-
-Path to the jsmin binary; if specified, it will be used to minify
-C<JSFiles>.  The default, and the fallback if the binary cannot be
-found, is to simply concatenate the files.
-
-jsmin can be installed by running 'make jsmin' from the RT install
-directory, or from http://www.crockford.com/javascript/jsmin.html
-
-=cut
-
-# Set($JSMinPath, "/path/to/jsmin");
-
 =item C<@CSSFiles>
 
 A list of additional CSS files to be included in head.

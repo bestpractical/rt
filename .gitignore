@@ -43,9 +43,6 @@
 /config.status
 /config.log
 /config.pld
-/jsmin.c
-/jsmin
-/bin/jsmin
 /nytprof.out*
 /.prove
 *~
