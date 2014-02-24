@@ -254,6 +254,7 @@ sub Create {
         LookupType  => '',
         LinkValueTo => '',
         IncludeContentForValue => '',
+        EntryHint   => undef,
         @_,
     );
 
@@ -342,6 +343,8 @@ sub Create {
         if ( exists $args{'LinkValueTo'}) {
             $self->SetLinkValueTo($args{'LinkValueTo'});
         }
+
+        $self->SetEntryHint( $args{EntryHint} // $self->FriendlyType );
 
         if ( exists $args{'IncludeContentForValue'}) {
             $self->SetIncludeContentForValue($args{'IncludeContentForValue'});
