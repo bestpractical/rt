@@ -55,7 +55,7 @@
 <<% $FIELD %>>
 <<% $CELL %> class="label cflabel">
   <span class="name"><% $CF->Name %>:</span><br />
-  <span class="type"><% $CF->FriendlyType %></span>
+  <span class="type"><% $CF->EntryHint // '' %></span>
 </<% $CELL %>>
 <<% $CELL %>>
 <& /Elements/EditCustomField,

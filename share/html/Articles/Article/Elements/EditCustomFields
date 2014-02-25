@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 % while (my $CustomField = $CustomFields->Next()) {
 <tr>
-    <td class="labeltop"><b><%$CustomField->Name%></b><br /><i><%$CustomField->FriendlyType%></i></td>
+    <td class="labeltop"><b><%$CustomField->Name%></b><br /><i><%$CustomField->EntryHint // ''%></i></td>
     <td class="entry"><& /Elements/EditCustomField, 
         Object => $ArticleObj, 
         CustomField => $CustomField, 
