@@ -930,7 +930,10 @@ push @CHECKS, 'Links: wrong organization' => sub {
         { model => 'Link', column => 'Base' },
     );
 
-    my $rt_uri = RT::URI::fsck_com_rt->new( $RT::SystemUser );
+    my @rt_uris = rt_uri_modules();
+    foreach my $package (@rt_uris) {
+
+    my $rt_uri = $package->new( $RT::SystemUser );
     my $scheme = $rt_uri->Scheme;
     my $prefix = $rt_uri->LocalURIPrefix;
 
@@ -972,6 +975,7 @@ push @CHECKS, 'Links: wrong organization' => sub {
             last; # plenty of chances we covered all cases with one update
         }
     }
+    } # end foreach my $package (@rt_uris)
     return $res;
 };
 
@@ -1374,6 +1378,20 @@ sub prompt_integer {
     my $a = <STDIN>; chomp $a; $a = int($a);
     return $cached_answer{ $token } = $a;
 } }
+
+# Find all RT::URI modules RT has loaded
+
+sub rt_uri_modules {
+    my @uris = grep /^RT\/URI\/.+\.pm$/, keys %INC;
+    my @uri_modules;
+    foreach my $uri_path (@uris){
+        next if $uri_path =~ /base\.pm$/; # Skip base RT::URI object
+        $uri_path = substr $uri_path, 0, -3; # chop off .pm
+        push @uri_modules, join '::', split '/', $uri_path;
+    }
+
+    return @uri_modules;
+}
 
 1;
 
