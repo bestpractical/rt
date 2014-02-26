@@ -140,6 +140,7 @@ sub BeforeDecode {
                 Template  => 'Error: unencrypted message',
                 Arguments => { Message  => $args{'Message'} },
             );
+            $RT::Logger->warning("rejected because the message is unencrypted with RejectOnUnencrypted enabled");
             FAILURE('rejected because the message is unencrypted with RejectOnUnencrypted enabled');
         }
         else {
