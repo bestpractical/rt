@@ -243,7 +243,7 @@ function ReplaceAllTextareas() {
 
     for (var i=0; i < allTextAreas.length; i++) {
         var textArea = allTextAreas[i];
-        if (jQuery(textArea).hasClass("messagebox")) {
+        if (jQuery(textArea).hasClass("messagebox richtext")) {
             // Turn the original plain text content into HTML
             var type = jQuery("#"+textArea.name+"Type");
             if (type.val() != "text/html")
@@ -341,4 +341,5 @@ jQuery(function() {
             return true;
         });
     });
+    ReplaceAllTextareas();
 });

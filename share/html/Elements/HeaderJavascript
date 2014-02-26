@@ -55,9 +55,6 @@ $onload => undef
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%><% $jsfile %>"></script>
 % }
 
-% if ( $RichText and RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ) {
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/RichText/ckeditor.js"></script>
-% }
 <script type="text/javascript"><!--
 jQuery( loadTitleBoxStates );
 % if ( $focus ) {
@@ -66,14 +63,7 @@ jQuery( loadTitleBoxStates );
 % if ( $onload ) {
     jQuery( <% $onload |n %> );
 % }
-
-% if ( $RichText and RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'})) {
-    jQuery().ready(function ()  { ReplaceAllTextareas() });
-% }
 --></script>
-<%ARGS>
-$RichText => 1
-</%ARGS>
 <%INIT>
 
 my @js_files;

@@ -105,7 +105,7 @@ sub SquishedJS {
 =cut
 
 sub JSFiles {
-    return qw/
+    return qw{
       jquery-1.9.1.min.js
       jquery_noconflict.js
       jquery-ui-1.10.0.custom.min.js
@@ -127,7 +127,8 @@ sub JSFiles {
       forms.js
       event-registration.js
       late.js
-      /, RT->Config->Get('JSFiles');
+      /static/RichText/ckeditor.js
+      }, RT->Config->Get('JSFiles');
 }
 
 =head2 ClearSquished

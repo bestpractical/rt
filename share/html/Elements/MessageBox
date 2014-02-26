@@ -45,29 +45,28 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<textarea autocomplete="off" class="messagebox" <% $width_attr %>="<% $Width %>" rows="<% $Height %>" <% $wrap_type |n %> name="<% $Name %>" id="<% $Name %>">\
+<textarea autocomplete="off" class="messagebox <% $Type eq 'text/html' ? 'richtext' : '' %>" <% $width_attr %>="<% $Width %>" rows="<% $Height %>" <% $wrap_type |n %> name="<% $Name %>" id="<% $Name %>">\
 % $m->comp('/Articles/Elements/IncludeArticle', %ARGS) if $IncludeArticle;
 % $m->callback( %ARGS, SignatureRef => \$signature );
 <% $Default || '' %><% $message %><% $signature %></textarea>
 % $m->callback( %ARGS, CallbackName => 'AfterTextArea' );
-% if ($type eq 'text/html') {
-<input type="text" style="display:none" name="<% $Name %>Type" id="<% $Name %>Type" value="<% $m->request_args->{$Name."Type"}||$type %>" />
+% if ($Type eq 'text/html') {
+<input type="text" style="display:none" name="<% $Name %>Type" id="<% $Name %>Type" value="<% $m->request_args->{$Name."Type"}||$Type %>" />
 % }
 <%INIT>
 
-my $type = RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ? 'text/html' : 'text/plain';
 my $message = '';
 
 if ( $QuoteTransaction ) {
     my $transaction = RT::Transaction->new( $session{'CurrentUser'} );
     $transaction->Load( $QuoteTransaction );
-    $message = $transaction->Content( Quote => 1, Type  => $type );
+    $message = $transaction->Content( Quote => 1, Type  => $Type );
 }
 
 my $signature = '';
 if ( $IncludeSignature and my $text = $session{'CurrentUser'}->UserObj->Signature ) {
     $signature = "-- \n". $text;
-    if ($type eq 'text/html') {
+    if ($Type eq 'text/html') {
         $signature =~ s/&/&amp;/g;
         $signature =~ s/</&lt;/g;
         $signature =~ s/>/&gt;/g;
@@ -79,7 +78,7 @@ if ( $IncludeSignature and my $text = $session{'CurrentUser'}->UserObj->Signatur
 }
 
 # wrap="something" seems to really break IE + richtext
-my $wrap_type = $type eq 'text/html' ? '' : 'wrap="soft"';
+my $wrap_type = $Type eq 'text/html' ? '' : 'wrap="soft"';
 
 # If there's no cols specified, we want to set the width to 100% in CSS
 my $width_attr;
@@ -99,4 +98,5 @@ $Width            => RT->Config->Get('MessageBoxWidth', $session{'CurrentUser'} 
 $Height           => RT->Config->Get('MessageBoxHeight', $session{'CurrentUser'} ) || 15
 $IncludeSignature => RT->Config->Get('MessageBoxIncludeSignature');
 $IncludeArticle   => 1;
+$Type             => RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ? 'text/html' : 'text/plain';
 </%ARGS>
