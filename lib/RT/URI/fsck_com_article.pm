@@ -126,9 +126,9 @@ sub ParseURI {
                     . " have been deleted: $msg");
                 return undef;
             }
-            } else {
-                return undef;
-            }
+        } else {
+            return undef;
+        }
     }
 
     #If we couldn't find a article, return undef.
