@@ -131,6 +131,11 @@ sub ParseURI {
             }
     }
 
+    #If we couldn't find a article, return undef.
+    unless ( $article and $article->Id ) {
+        return undef;
+    }
+
     $self->{'object'} = $article;
     return ($article->Id);
 }
