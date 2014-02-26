@@ -498,53 +498,6 @@ sub CheckACL {
 }
 
 
-=head3 _NoAuthorizedUserFound
-
-Emails the RT Owner and the requestor when the auth plugins return "No auth user found"
-
-=cut
-
-sub _NoAuthorizedUserFound {
-    my %args = (
-        Right     => undef,
-        Message   => undef,
-        Requestor => undef,
-        Queue     => undef,
-        @_
-    );
-
-    # Notify the RT Admin of the failure.
-    MailError(
-        To          => RT->Config->Get('OwnerEmail'),
-        Subject     => "Could not load a valid user",
-        Explanation => <<EOT,
-RT could not load a valid user, and RT's configuration does not allow
-for the creation of a new user for this email (@{[$args{Requestor}]}).
-
-You might need to grant 'Everyone' the right '@{[$args{Right}]}' for the
-queue @{[$args{'Queue'}]}.
-
-EOT
-        MIMEObj  => $args{'Message'},
-        LogLevel => 'error'
-    );
-
-    # Also notify the requestor that his request has been dropped.
-    if ($args{'Requestor'} ne RT->Config->Get('OwnerEmail')) {
-    MailError(
-        To          => $args{'Requestor'},
-        Subject     => "Could not load a valid user",
-        Explanation => <<EOT,
-RT could not load a valid user, and RT's configuration does not allow
-for the creation of a new user for your email.
-
-EOT
-        MIMEObj  => $args{'Message'},
-        LogLevel => 'error'
-    );
-    }
-}
-
 =head3 ParseCcAddressesFromHead HASH
 
 Takes a hash containing QueueObj, Head and CurrentUser objects.
