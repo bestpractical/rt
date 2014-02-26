@@ -116,10 +116,14 @@ sub ParseURI {
         if ($self->{'uri'} =~ /^$local_uri_prefix\/article\/(\d+)$/) {
             my $id = $1;
             $article = RT::Article->new( $self->CurrentUser );
-            $article->Load($id);
+            my ($ret, $msg) = $article->Load($id);
 
             #If we couldn't find a article, return undef.
-            unless ( defined $article->Id ) {
+            unless ( $article and $article->Id ) {
+                # We got an id, but couldn't load it, so warn that it may
+                # have been deleted.
+                RT::Logger->warning("Unable to load article for id $id. It may"
+                    . " have been deleted: $msg");
                 return undef;
             }
             } else {
