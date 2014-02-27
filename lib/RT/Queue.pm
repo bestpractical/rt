@@ -440,7 +440,8 @@ sub Templates {
 
 =head2 CustomField NAME
 
-Load the queue-specific custom field named NAME
+Load the Ticket Custom Field applied to this Queue named NAME.
+Does not load Global custom fields.
 
 =cut
 
