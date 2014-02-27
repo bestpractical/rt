@@ -124,14 +124,12 @@ sub Gateway {
     # Set the scope to return from with TMPFAIL/FAILURE/SUCCESS
     $SCOPE = HERE;
 
-    # Validate the action
-    my ( $status, @actions ) = IsCorrectAction( $args{'action'} );
-    TMPFAIL(
-        "Invalid 'action' parameter "
-            . $actions[0]
-            . " for queue "
-            . $args{'queue'},
-    ) unless $status;
+    # Validate the actions
+    my @actions = grep $_, split /-/, $args{action};
+    for my $action (@actions) {
+        TMPFAIL( "Invalid 'action' parameter $action for queue $args{queue}" )
+            unless Plugins(Method => "Handle" . ucfirst($action));
+    }
 
     my $parser = RT::EmailParser->new();
     $parser->SmartParseMIMEEntityFromScalar(
@@ -221,117 +219,21 @@ sub Gateway {
 
     $head->replace('X-RT-Interface' => 'Email');
 
-    # if plugin's updated SystemTicket then update arguments
-    $args{'ticket'} = $SystemTicket->Id if $SystemTicket && $SystemTicket->Id;
-
     my $Ticket = RT::Ticket->new($CurrentUser);
+    $Ticket->Load( $SystemTicket->Id );
 
-    if ( !$args{'ticket'} && grep /^(comment|correspond)$/, @actions )
-    {
-
-        my @Cc;
-        my @Requestors = ( $CurrentUser->id );
-
-        if (RT->Config->Get('ParseNewMessageForTicketCcs')) {
-            @Cc = ParseCcAddressesFromHead(
-                Head        => $head,
-                CurrentUser => $CurrentUser,
-                QueueObj    => $SystemQueueObj
-            );
-        }
-
-        # ExtractTicketId may have been overridden, and edited the Subject
-        my $NewSubject = Encode::decode( "UTF-8", $head->get('Subject') );
-        chomp $NewSubject;
-
-        my ( $id, $Transaction, $ErrStr ) = $Ticket->Create(
-            Queue     => $SystemQueueObj->Id,
-            Subject   => $NewSubject,
-            Requestor => \@Requestors,
-            Cc        => \@Cc,
-            MIMEObj   => $Message
+    for my $action (@actions) {
+        HandleAction(
+            Action      => $action,
+            ErrorsTo    => $ErrorsTo,
+            Subject     => $Subject,
+            Message     => $Message,
+            Ticket      => $Ticket,
+            TicketId    => $args{ticket},
+            Queue       => $SystemQueueObj,
         );
-        if ( $id == 0 ) {
-            MailError(
-                To          => $ErrorsTo,
-                Subject     => "Ticket creation failed: $Subject",
-                Explanation => $ErrStr,
-                MIMEObj     => $Message
-            );
-            FAILURE("Ticket creation From: $From failed: $ErrStr", $Ticket );
-        }
-
-        # strip comments&corresponds from the actions we don't need
-        # to record them if we've created the ticket just now
-        @actions = grep !/^(comment|correspond)$/, @actions;
-        $args{'ticket'} = $id;
-
-    } elsif ( $args{'ticket'} ) {
-
-        $Ticket->Load( $args{'ticket'} );
-        unless ( $Ticket->Id ) {
-            my $error = "Could not find a ticket with id " . $args{'ticket'};
-            MailError(
-                To          => $ErrorsTo,
-                Subject     => "Message not recorded: $Subject",
-                Explanation => $error,
-                MIMEObj     => $Message
-            );
-
-            FAILURE( $error );
-        }
-        $args{'ticket'} = $Ticket->id;
-    } else {
-        SUCCESS( $Ticket );
-    }
-
-    # }}}
-
-    my $unsafe_actions = RT->Config->Get('UnsafeEmailCommands');
-    foreach my $action (@actions) {
-
-        #   If the action is comment, add a comment.
-        if ( $action =~ /^(?:comment|correspond)$/i ) {
-            my $method = ucfirst lc $action;
-            my ( $status, $msg ) = $Ticket->$method( MIMEObj => $Message );
-            unless ($status) {
-
-                #Warn the sender that we couldn't actually submit the comment.
-                MailError(
-                    To          => $ErrorsTo,
-                    Subject     => "Message not recorded ($method): $Subject",
-                    Explanation => $msg,
-                    MIMEObj     => $Message
-                );
-                FAILURE( "Message From: $From not recorded: $msg", $Ticket );
-            }
-        } elsif ($unsafe_actions) {
-            _RunUnsafeAction(
-                Action      => $action,
-                ErrorsTo    => $ErrorsTo,
-                Message     => $Message,
-                Ticket      => $Ticket,
-                CurrentUser => $CurrentUser,
-            );
-        }
     }
     SUCCESS( $Ticket );
-}
-
-=head3 IsCorrectAction
-
-Returns a list of valid actions we've found for this message
-
-=cut
-
-sub IsCorrectAction {
-    my $action = shift;
-    my @actions = grep $_, split /-/, $action;
-    return ( 0, '(no value)' ) unless @actions;
-    foreach ( @actions ) {
-        return ( 0, $_ ) unless /^(?:comment|correspond|take|resolve)$/;
-    }
-    return ( 1, @actions );
 }
 
 sub Plugins {
@@ -345,6 +247,7 @@ sub Plugins {
     unless (@PLUGINS) {
         my @mail_plugins = grep $_, RT->Config->Get('MailPlugins');
         push @mail_plugins, "Auth::MailFrom" unless @mail_plugins;
+        push @mail_plugins, "Action::Defaults";
 
         foreach my $plugin (@mail_plugins) {
             if ( ref($plugin) eq "CODE" ) {
@@ -452,34 +355,21 @@ sub CheckACL {
     FAILURE( "You have no permission to $args{Action}" );
 }
 
-=head3 ParseCcAddressesFromHead HASH
-
-Takes a hash containing QueueObj, Head and CurrentUser objects.
-Returns a list of all email addresses in the To and Cc
-headers b<except> the current Queue's email addresses, the CurrentUser's
-email address  and anything that the configuration sub RT::IsRTAddress matches.
-
-=cut
-
-sub ParseCcAddressesFromHead {
+sub HandleAction {
     my %args = (
-        Head        => undef,
-        QueueObj    => undef,
-        CurrentUser => undef,
+        Action   => undef,
+        ErrorsTo => undef,
+        Subject  => undef,
+        Message  => undef,
+        Ticket   => undef,
+        TicketId => undef,
+        Queue    => undef,
         @_
     );
 
-    my $current_address = lc $args{'CurrentUser'}->EmailAddress;
-    my $user = $args{'CurrentUser'}->UserObj;
-
-    return
-        grep $_ ne $current_address && !RT::EmailParser->IsRTAddress( $_ ),
-        map lc $user->CanonicalizeEmailAddress( $_->address ),
-        map RT::EmailParser->CleanupAddresses( Email::Address->parse(
-              Encode::decode( "UTF-8", $args{'Head'}->get( $_ ) ) ) ),
-        qw(To Cc);
+    my ($code) = Plugins(Method => "Handle" . ucfirst(delete $args{Action}));
+    $code->(%args);
 }
-
 
 
 =head3 ParseSenderAddressFromHead HEAD
@@ -780,50 +670,6 @@ sub ParseTicketId {
 
     $RT::Logger->debug("Found a ticket ID. It's $id");
     return $id;
-}
-
-sub _RunUnsafeAction {
-    my %args = (
-        Action      => undef,
-        ErrorsTo    => undef,
-        Message     => undef,
-        Ticket      => undef,
-        CurrentUser => undef,
-        @_
-    );
-
-    my $From = Encode::decode( "UTF-8", $args{Message}->head->get("From") );
-
-    if ( $args{'Action'} =~ /^take$/i ) {
-        my ( $status, $msg ) = $args{'Ticket'}->SetOwner( $args{'CurrentUser'}->id );
-        unless ($status) {
-            MailError(
-                To          => $args{'ErrorsTo'},
-                Subject     => "Ticket not taken",
-                Explanation => $msg,
-                MIMEObj     => $args{'Message'}
-            );
-            FAILURE( "Ticket not taken, by email From: $From" );
-        }
-    } elsif ( $args{'Action'} =~ /^resolve$/i ) {
-        my $new_status = $args{'Ticket'}->FirstInactiveStatus;
-        if ($new_status) {
-            my ( $status, $msg ) = $args{'Ticket'}->SetStatus($new_status);
-            unless ($status) {
-
-                #Warn the sender that we couldn't actually submit the comment.
-                MailError(
-                    To          => $args{'ErrorsTo'},
-                    Subject     => "Ticket not resolved",
-                    Explanation => $msg,
-                    MIMEObj     => $args{'Message'}
-                );
-                FAILURE( "Ticket not resolved, by email From: $From" );
-            }
-        }
-    } else {
-        FAILURE( "Not supported unsafe action $args{'Action'}, by email From: $From", $args{'Ticket'} );
-    }
 }
 
 =head3 MailError PARAM HASH
