@@ -56,7 +56,6 @@ with 'RT::Interface::Email::Role';
 
 sub HandleTake {
     my %args = (
-        ErrorsTo    => undef,
         Message     => undef,
         Ticket      => undef,
         Queue       => undef,
@@ -66,10 +65,8 @@ sub HandleTake {
     unless ( $args{Ticket}->Id ) {
         my $error = "Could not find a ticket with id " . $args{TicketId};
         MailError(
-            To          => $args{ErrorsTo},
             Subject     => "Message not recorded: $args{Subject}",
             Explanation => $error,
-            MIMEObj     => $args{Message}
         );
         FAILURE( $error );
     }
@@ -80,10 +77,8 @@ sub HandleTake {
     return if $status;
 
     MailError(
-        To          => $args{'ErrorsTo'},
         Subject     => "Ticket not taken",
         Explanation => $msg,
-        MIMEObj     => $args{'Message'}
     );
     FAILURE( "Ticket not taken, by email From: $From" );
 }

@@ -56,7 +56,6 @@ with 'RT::Interface::Email::Role';
 
 sub HandleResolve {
     my %args = (
-        ErrorsTo    => undef,
         Message     => undef,
         Ticket      => undef,
         Queue       => undef,
@@ -66,10 +65,8 @@ sub HandleResolve {
     unless ( $args{Ticket}->Id ) {
         my $error = "Could not find a ticket with id " . $args{TicketId};
         MailError(
-            To          => $args{ErrorsTo},
             Subject     => "Message not recorded: $args{Subject}",
             Explanation => $error,
-            MIMEObj     => $args{Message}
         );
         FAILURE( $error );
     }
@@ -84,10 +81,8 @@ sub HandleResolve {
 
     # Warn the sender that we couldn't actually resolve the ticket
     MailError(
-        To          => $args{'ErrorsTo'},
         Subject     => "Ticket not resolved",
         Explanation => $msg,
-        MIMEObj     => $args{'Message'}
     );
     FAILURE( "Ticket not resolved, by email From: $From" );
 }

@@ -56,7 +56,6 @@ with 'RT::Interface::Email::Role';
 
 sub CheckACL {
     my %args = (
-        ErrorsTo    => undef,
         Message     => undef,
         CurrentUser => undef,
         Ticket      => undef,
@@ -127,10 +126,8 @@ EOT
 
 
     MailError(
-        To          => $args{ErrorsTo},
         Subject     => "Permission Denied",
         Explanation => $msg,
-        MIMEObj     => $args{Message},
     );
     FAILURE( $msg );
 }
