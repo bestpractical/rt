@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 
-use RT::Test config => 'Set( $UnsafeEmailCommands, 1);', tests => undef, actual_server => 1;
+use RT::Test config => 'Set( @MailPlugins, "Auth::MailFrom", "Action::Take", "Action::Resolve");', tests => undef, actual_server => 1;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 use RT::Tickets;
@@ -600,10 +600,6 @@ EOF
 my ($val,$msg) = $everyone_group->PrincipalObj->RevokeRight(Right => 'CreateTicket');
 ok ($val, $msg);
 
-SKIP: {
-skip "Advanced mailgate actions require an unsafe configuration", 47
-    unless RT->Config->Get('UnsafeEmailCommands');
-
 # create new queue to be shure we don't mess with rights
 use RT::Queue;
 my $queue = RT::Queue->new(RT->SystemUser);
@@ -812,8 +808,6 @@ ok( $user->HasRight( Right => 'ReplyToTicket', Object => $tick ), "owner can rep
 is( $tick->Transactions->Count, 6, "transactions added" );
 
 $m->no_warnings_ok;
-
-};
 
 undef $m;
 done_testing;

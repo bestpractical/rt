@@ -474,15 +474,6 @@ L<RT::Interface::Email> to use; see L<rt-mailgate>
 
 =cut
 
-=item C<$UnsafeEmailCommands>
-
-C<$UnsafeEmailCommands>, if set to 1, enables 'take' and 'resolve'
-as possible actions via the mail gateway.  As its name implies, this
-is very unsafe, as it allows email with a forged sender to possibly
-resolve arbitrary tickets!
-
-=cut
-
 =item C<$ExtractSubjectTagMatch>, C<$ExtractSubjectTagNoMatch>
 
 The default "extract remote tracking tags" scrip settings; these
