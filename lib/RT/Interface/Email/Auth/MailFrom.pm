@@ -54,10 +54,6 @@ use warnings;
 use Role::Basic 'with';
 with 'RT::Interface::Email::Role';
 
-use RT::Interface::Email;
-
-# This is what the ordinary, non-enhanced gateway does at the moment.
-
 sub GetCurrentUser {
     my %args = (
         Message => undef,
@@ -95,100 +91,5 @@ sub GetCurrentUser {
 
     return $CurrentUser;
 }
-
-
-sub CheckACL {
-    my %args = (
-        ErrorsTo    => undef,
-        Message     => undef,
-        CurrentUser => undef,
-        Ticket      => undef,
-        Queue       => undef,
-        Action      => undef,
-        @_,
-    );
-
-    my $principal = $args{CurrentUser}->PrincipalObj;
-    my $email     = $args{CurrentUser}->UserObj->EmailAddress;
-
-    my $msg;
-    if ( $args{'Ticket'} && $args{'Ticket'}->Id ) {
-        my $qname = $args{'Queue'}->Name;
-        my $tid   = $args{'Ticket'}->id;
-        # We have a ticket. that means we're commenting or corresponding
-        if ( $args{'Action'} =~ /^comment$/i ) {
-
-            # check to see whether if they can comment on the ticket
-            return 1 if $principal->HasRight( Object => $args{'Ticket'}, Right => 'CommentOnTicket' );
-            $msg = "$email has no right to comment on ticket $tid in queue $qname";
-        }
-        elsif ( $args{'Action'} =~ /^correspond$/i ) {
-
-            # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
-            return 1 if $principal->HasRight( Object => $args{'Ticket'}, Right  => 'ReplyToTicket' );
-            $msg = "$email has no right to reply to ticket $tid in queue $qname";
-
-            # Also notify the owner
-            MailError(
-                To          => RT->Config->Get('OwnerEmail'),
-                Subject     => "Failed attempt to reply to a ticket by email, from $email",
-                Explanation => <<EOT,
-$email attempted to reply to a ticket via email in the queue $qname; you
-might need to grant 'Everyone' the ReplyToTicket right.
-EOT
-            );
-        }
-        elsif ( $args{'Action'} =~ /^take$/i ) {
-
-            # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
-            return 1 if $principal->HasRight( Object => $args{'Ticket'}, Right  => 'OwnTicket' );
-            $msg = "$email has no right to own ticket $tid in queue $qname";
-        }
-        elsif ( $args{'Action'} =~ /^resolve$/i ) {
-
-            # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
-            return 1 if $principal->HasRight( Object => $args{'Ticket'}, Right  => 'ModifyTicket' );
-            $msg = "$email has no right to resolve ticket $tid in queue $qname";
-        }
-        else {
-            $RT::Logger->warning("Action '". ($args{'Action'}||'') ."' is unknown");
-            return;
-        }
-    }
-
-    # We're creating a ticket
-    elsif ( $args{'Action'} =~ /^(comment|correspond)$/i ) {
-        my $qname = $args{'Queue'}->Name;
-
-        # check to see whether "Everybody" or "Unprivileged users" can create tickets in this queue
-        return 1 if $principal->HasRight( Object => $args{'Queue'}, Right  => 'CreateTicket' );
-        $msg = "$email has no right to create tickets in queue $qname";
-
-        # Also notify the owner
-        MailError(
-            To          => RT->Config->Get('OwnerEmail'),
-            Subject     => "Failed attempt to create a ticket by email, from $email",
-            Explanation => <<EOT,
-$email attempted to create a ticket via email in the queue $qname; you
-might need to grant 'Everyone' the CreateTicket right.
-EOT
-        );
-    }
-    else {
-        $RT::Logger->warning("Action '". ($args{'Action'}||'') ."' is unknown with no ticket");
-        return;
-    }
-
-
-    MailError(
-        To          => $args{ErrorsTo},
-        Subject     => "Permission Denied",
-        Explanation => $msg,
-        MIMEObj     => $args{Message},
-    );
-    FAILURE( $msg );
-}
-
-RT::Base->_ImportOverlays();
 
 1;

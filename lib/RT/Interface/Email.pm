@@ -248,6 +248,7 @@ sub Plugins {
     unless (@PLUGINS) {
         my @mail_plugins = grep $_, RT->Config->Get('MailPlugins');
         push @mail_plugins, "Auth::MailFrom" unless @mail_plugins;
+        push @mail_plugins, "Authz::Default";
         push @mail_plugins, "Action::Defaults";
 
         foreach my $plugin (@mail_plugins) {
