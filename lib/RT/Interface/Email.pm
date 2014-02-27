@@ -62,6 +62,7 @@ use RT::Util 'safe_run_child';
 use File::Spec;
 use MIME::Words ();
 use Scope::Upper qw/unwind HERE/;
+use 5.010;
 
 =head1 NAME
 
@@ -152,18 +153,11 @@ sub Gateway {
         );
     }
 
-    my @mail_plugins = grep $_, RT->Config->Get('MailPlugins');
-    push @mail_plugins, "Auth::MailFrom" unless @mail_plugins;
-    @mail_plugins = _LoadPlugins( @mail_plugins );
-
     #Set up a queue object
     my $SystemQueueObj = RT::Queue->new( RT->SystemUser );
     $SystemQueueObj->Load( $args{'queue'} );
 
-    foreach my $class ( grep !ref, @mail_plugins ) {
-        # check if we should apply filter before decoding
-        my $Code = $class->can("BeforeDecode");
-        next unless $Code;
+    for my $Code ( Plugins(Method => "BeforeDecode") ) {
         $Code->(
             Message       => $Message,
             RawMessageRef => \$args{'message'},
@@ -208,7 +202,6 @@ sub Gateway {
 
     my $CurrentUser = GetCurrentUser(
         ErrorsTo      => $ErrorsTo,
-        MailPlugins   => \@mail_plugins,
         Message       => $Message,
         RawMessageRef => \$args{message},
         Ticket        => $SystemTicket,
@@ -220,7 +213,6 @@ sub Gateway {
     CheckACL(
         Action        => $actions[0],
         ErrorsTo      => $ErrorsTo,
-        MailPlugins   => \@mail_plugins,
         Message       => $Message,
         CurrentUser   => $CurrentUser,
         Ticket        => $SystemTicket,
@@ -342,30 +334,43 @@ sub IsCorrectAction {
     return ( 1, @actions );
 }
 
-sub _LoadPlugins {
-    my @mail_plugins = @_;
+sub Plugins {
+    my %args = (
+        Code => 0,
+        Method => undef,
+        @_
+    );
+    state @PLUGINS;
 
-    my @res;
-    foreach my $plugin (@mail_plugins) {
-        if ( ref($plugin) eq "CODE" ) {
-            push @res, $plugin;
-        } elsif ( !ref $plugin ) {
-            my $Class = $plugin;
-            $Class = "RT::Interface::Email::" . $Class
-                unless $Class =~ /^RT::/;
-            $Class->require or
-                do { $RT::Logger->error("Couldn't load $Class: $@"); next };
+    unless (@PLUGINS) {
+        my @mail_plugins = grep $_, RT->Config->Get('MailPlugins');
+        push @mail_plugins, "Auth::MailFrom" unless @mail_plugins;
 
-            unless ( $Class->DOES( "RT::Interface::Email::Role" ) ) {
-                $RT::Logger->crit( "$Class does not implement RT::Interface::Email::Role.  Mail plugins from RT 4.2 and earlier are not forward-compatible with RT 4.4.");
-                next;
+        foreach my $plugin (@mail_plugins) {
+            if ( ref($plugin) eq "CODE" ) {
+                push @PLUGINS, $plugin;
+            } elsif ( !ref $plugin ) {
+                my $Class = $plugin;
+                $Class = "RT::Interface::Email::" . $Class
+                    unless $Class =~ /^RT::/;
+                $Class->require or
+                    do { $RT::Logger->error("Couldn't load $Class: $@"); next };
+
+                unless ( $Class->DOES( "RT::Interface::Email::Role" ) ) {
+                    $RT::Logger->crit( "$Class does not implement RT::Interface::Email::Role.  Mail plugins from RT 4.2 and earlier are not forward-compatible with RT 4.4.");
+                    next;
+                }
+                push @PLUGINS, $Class;
+            } else {
+                $RT::Logger->crit( "$plugin - is not class name or code reference");
             }
-            push @res, $Class;
-        } else {
-            $RT::Logger->crit( "$plugin - is not class name or code reference");
         }
     }
-    return @res;
+
+    my @list = @PLUGINS;
+    @list = grep {not ref} @list unless $args{Code};
+    @list = grep {$_} map {ref $_ ? $_ : $_->can($args{Method})} @list if $args{Method};
+    return @list;
 }
 
 =head3 GetCurrentUser
@@ -375,7 +380,6 @@ sub _LoadPlugins {
 sub GetCurrentUser {
     my %args = (
         ErrorsTo      => undef,
-        MailPlugins   => [],
         Message       => undef,
         RawMessageRef => undef,
         Ticket        => undef,
@@ -384,15 +388,7 @@ sub GetCurrentUser {
     );
 
     # Since this needs loading, no matter what
-    foreach (@{ $args{MailPlugins} }) {
-        my $Code;
-        if ( ref($_) eq "CODE" ) {
-            $Code = $_;
-        } else {
-            $Code = $_->can("GetCurrentUser");
-            next unless $Code;
-        }
-
+    for my $Code ( Plugins(Code => 1, Method => "GetCurrentUser") ) {
         my $CurrentUser = $Code->(
             Message       => $args{Message},
             RawMessageRef => $args{RawMessageRef},
@@ -428,7 +424,6 @@ sub CheckACL {
     my %args = (
         Action        => undef,
         ErrorsTo      => undef,
-        MailPlugins   => [],
         Message       => undef,
         CurrentUser   => undef,
         Ticket        => undef,
@@ -436,10 +431,7 @@ sub CheckACL {
         @_,
     );
 
-    for my $class (@{ $args{MailPlugins} }) {
-        my $Code = $class->can("CheckACL");
-        next unless $Code;
-
+    for my $Code ( Plugins( Method => "CheckACL" ) ) {
         return if $Code->(
             ErrorsTo      => $args{ErrorsTo},
             Message       => $args{Message},
