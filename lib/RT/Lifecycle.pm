@@ -298,7 +298,7 @@ sub IsActive {
     return 0;
 }
 
-=head3 inactive
+=head3 Inactive
 
 Returns an array of all inactive statuses for this lifecycle.
 
@@ -309,7 +309,7 @@ sub Inactive {
     return $self->Valid('inactive');
 }
 
-=head3 is_inactive
+=head3 IsInactive
 
 Takes a value and returns true if value is a valid inactive status.
 Otherwise, returns false.
