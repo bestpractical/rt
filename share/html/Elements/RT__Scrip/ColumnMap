@@ -150,6 +150,15 @@ my $COLUMN_MAP = {
             return @res;
         },
     },
+    Stage => {
+        title => 'Stage', # loc
+        value => sub {
+            my $os = RT::ObjectScrip->new( $_[0]->CurrentUser );
+            my $id = $_[0]->IsGlobal ? 0 : $_[-1];
+            $os->LoadByCols( Scrip =>  $_[0]->id, ObjectId => $id );
+            return $_[0]->loc( $os->FriendlyStage );
+        },
+    },
 };
 
 </%ONCE>

@@ -46,15 +46,11 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$Name%>">
-% foreach my $stage (@stages) {
-
-%# allow [stage, display] in place of a scalar stage name
-% my ($value, $display) = ref($stage) ? @$stage : ($stage, $stage);
-
+% foreach my $value (@stages) {
 <option value="<%$value%>"
 <% ($value eq $Default) && qq[ selected="selected"] |n %>
 <% ($value eq 'TransactionBatch' and not RT->Config->Get('UseTransactionBatch')) && qq[ disabled ] %>
-><% loc($display) %>
+><% loc( RT::Scrip->FriendlyStage($value) ) %>
 </option>
 
 % }
@@ -63,11 +59,7 @@
 if ( !defined $Default || $Default eq '') {
     $Default = 'TransactionCreate';
 }
-my @stages = ['TransactionCreate', loc('Normal')];
-
-push @stages, RT->Config->Get('UseTransactionBatch')
-            ? ['TransactionBatch', loc('Batch')]
-            : ['TransactionBatch', loc('Batch (disabled by config)')];
+my @stages = ('TransactionCreate', 'TransactionBatch');
 </%INIT>
 <%ARGS>
 $Default => 'TransactionCreate'
