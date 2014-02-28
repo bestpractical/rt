@@ -115,6 +115,7 @@ my %TYPE = (
 
 my @models = qw(
     ACE
+    Article
     Attachment
     Attribute
     CachedGroupMember
@@ -1059,7 +1060,10 @@ push @CHECKS, 'Links: missing object' => sub {
         { model => 'Link', column => 'Base' },
     );
 
-    my $rt_uri = RT::URI::fsck_com_rt->new( $RT::SystemUser );
+    my @rt_uris = rt_uri_modules();
+    foreach my $package (@rt_uris) {
+
+    my $rt_uri = $package->new( $RT::SystemUser );
     my $scheme = $rt_uri->Scheme;
     my $prefix = $rt_uri->LocalURIPrefix;
 
@@ -1072,6 +1076,8 @@ push @CHECKS, 'Links: missing object' => sub {
             my $ttable = m2t($tmodel);
 
             my $tprefix = $prefix .'/'. ($tclass eq 'RT::Ticket'? 'ticket' : $tclass) .'/';
+
+            $tprefix = $prefix . '/article/' if $tclass eq 'RT::Article';
 
             my $query = "SELECT s.id FROM $stable s LEFT JOIN $ttable t "
                 ." ON t.id = ". sql_str2int("SUBSTR(s.$scolumn, ?)")
@@ -1100,6 +1106,7 @@ push @CHECKS, 'Links: missing object' => sub {
             }
         }
     }
+    } # end foreach my $package (@rt_uris)
     return $res;
 };
 
