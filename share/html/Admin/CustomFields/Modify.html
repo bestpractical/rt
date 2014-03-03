@@ -122,7 +122,7 @@
 <i><&|/l&>Some browsers may only load content from the same domain as your RT server.</&></i>
 </div></td></tr>
 
-% if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType && !$CustomFieldObj->IsExternalValues ) {
+% if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType ) {
 <tr class="categoriesbasedon"><td class="label"><&|/l&>Categories are based on</&></td><td>
 <& /Admin/Elements/SelectCustomField,
     Name => "BasedOn",
