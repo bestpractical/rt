@@ -57,6 +57,10 @@ web interface. See L</Configuration>.
 This method should return an array reference of hash references.  The
 hash references should contain keys for C<name>, C<description>, and
 C<sortorder>. C<name> is most important one; the others are optional.
+You can also optionally provide a key for C<category> and use the
+"Categories are based on" option on the custom field configuration
+page to make the values displayed for this custom field vary based
+on the value selected in the "based on" custom field.
 
 =back
 
@@ -77,9 +81,9 @@ Here's a simple static example:
       # return reference to array ([])
       return [
           # each element of the array is a reference to hash that describe a value
-          # possible keys are name, description and sortorder
-          { name => 'value1', description => 'external value', sortorder => 1 },
-          { name => 'value2', description => 'another external value', sortorder => 2 },
+          # possible keys are name, description, sortorder, and category
+          { name => 'value1', description => 'external value', sortorder => 1, category => 'Other CF' },
+          { name => 'value2', description => 'another external value', sortorder => 2, category => 'Other CF' },
           # values without description are also valid, the default description is empty string
           { name => 'value3', sortorder => 3 },
           # you can skip sortorder too, but note that the default sortorder is 0 (zero)
