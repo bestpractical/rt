@@ -115,6 +115,7 @@ my %TYPE = (
 
 my @models = qw(
     ACE
+    Article
     Attachment
     Attribute
     CachedGroupMember
@@ -930,48 +931,52 @@ push @CHECKS, 'Links: wrong organization' => sub {
         { model => 'Link', column => 'Base' },
     );
 
-    my $rt_uri = RT::URI::fsck_com_rt->new( $RT::SystemUser );
-    my $scheme = $rt_uri->Scheme;
-    my $prefix = $rt_uri->LocalURIPrefix;
+    my @rt_uris = rt_uri_modules();
+    foreach my $package (@rt_uris) {
 
-    foreach my $use ( @URI_USES ) {
-        my $table = m2t( $use->{'model'} );
-        my $column = $use->{'column'};
+        my $rt_uri = $package->new( $RT::SystemUser );
+        my $scheme = $rt_uri->Scheme;
+        my $prefix = $rt_uri->LocalURIPrefix;
 
-        my $query = "SELECT id, $column FROM $table WHERE"
-            . " $column LIKE ? AND $column NOT LIKE ?";
-        my @binds = ($scheme ."://%", $prefix ."%");
+        foreach my $use ( @URI_USES ) {
+            my $table = m2t( $use->{'model'} );
+            my $column = $use->{'column'};
 
-        while ( my ($k, $v) = each %{ $use->{'Additional'} || {} } ) {
-            $query .= " AND $k = ?";
-            push @binds, $v;
+            my $query = "SELECT id, $column FROM $table WHERE"
+              . " $column LIKE ? AND $column NOT LIKE ?";
+            my @binds = ($scheme ."://%", $prefix ."%");
+
+            while ( my ($k, $v) = each %{ $use->{'Additional'} || {} } ) {
+                $query .= " AND $k = ?";
+                push @binds, $v;
+            }
+            my $sth = execute_query( $query, @binds );
+            while ( my ($id, $value) = $sth->fetchrow_array ) {
+                $res = 0;
+                print STDERR "Record #$id in $table. Value of $column column most probably is an incorrect link\n";
+                my ($wrong_org) = ( $value =~ m{^\Q$scheme\E://(.+)/[^/]+/[0-9]*$} );
+                next unless my $replace_with = prompt(
+                    'Replace',
+                    "Column $column in $table is a link. Local links has scheme '$scheme'"
+                    ." followed by organization name from the config file. There is record"
+                    ." #$id that has scheme '$scheme', but organization is '$wrong_org'."
+                    ." Most probably you changed organization, but didn't update links."
+                    ." It's ok to replace these wrong links.\n",
+                    "Links: wrong organization $wrong_org"
+                                                     );
+
+                print "Updating record(s) in $table\n" if $opt{'verbose'};
+                my $wrong_prefix = $scheme . '://'. $wrong_org;
+                my $query = "UPDATE $table SET $column = ". sql_concat('?', "SUBSTR($column, ?)")
+                  ." WHERE $column LIKE ?";
+                execute_query( $query, $prefix, length($wrong_prefix)+1, $wrong_prefix .'/%' );
+
+                $redo_check{'Links: wrong organization'} = 1;
+                $redo_check{'Links: LocalX for non-ticket'} = 1;
+                last; # plenty of chances we covered all cases with one update
+            }
         }
-        my $sth = execute_query( $query, @binds );
-        while ( my ($id, $value) = $sth->fetchrow_array ) {
-            $res = 0;
-            print STDERR "Record #$id in $table. Value of $column column most probably is an incorrect link\n";
-            my ($wrong_org) = ( $value =~ m{^\Q$scheme\E://(.+)/[^/]+/[0-9]*$} );
-            next unless my $replace_with = prompt(
-                'Replace',
-                "Column $column in $table is a link. Local links has scheme '$scheme'"
-                ." followed by organization name from the config file. There is record"
-                ." #$id that has scheme '$scheme', but organization is '$wrong_org'."
-                ." Most probably you changed organization, but didn't update links."
-                ." It's ok to replace these wrong links.\n",
-                "Links: wrong organization $wrong_org"
-            );
-
-            print "Updating record(s) in $table\n" if $opt{'verbose'};
-            my $wrong_prefix = $scheme . '://'. $wrong_org;
-            my $query = "UPDATE $table SET $column = ". sql_concat('?', "SUBSTR($column, ?)")
-                ." WHERE $column LIKE ?";
-            execute_query( $query, $prefix, length($wrong_prefix)+1, $wrong_prefix .'/%' );
-
-            $redo_check{'Links: wrong organization'} = 1;
-            $redo_check{'Links: LocalX for non-ticket'} = 1;
-            last; # plenty of chances we covered all cases with one update
-        }
-    }
+    } # end foreach my $package (@rt_uris)
     return $res;
 };
 
@@ -1055,47 +1060,53 @@ push @CHECKS, 'Links: missing object' => sub {
         { model => 'Link', column => 'Base' },
     );
 
-    my $rt_uri = RT::URI::fsck_com_rt->new( $RT::SystemUser );
-    my $scheme = $rt_uri->Scheme;
-    my $prefix = $rt_uri->LocalURIPrefix;
+    my @rt_uris = rt_uri_modules();
+    foreach my $package (@rt_uris) {
 
-    foreach my $use ( @URI_USES ) {
-        my $stable = m2t( $use->{'model'} );
-        my $scolumn = $use->{'column'};
+        my $rt_uri = $package->new( $RT::SystemUser );
+        my $scheme = $rt_uri->Scheme;
+        my $prefix = $rt_uri->LocalURIPrefix;
 
-        foreach my $tmodel ( @models ) {
-            my $tclass = 'RT::'. $tmodel;
-            my $ttable = m2t($tmodel);
+        foreach my $use ( @URI_USES ) {
+            my $stable = m2t( $use->{'model'} );
+            my $scolumn = $use->{'column'};
 
-            my $tprefix = $prefix .'/'. ($tclass eq 'RT::Ticket'? 'ticket' : $tclass) .'/';
+            foreach my $tmodel ( @models ) {
+                my $tclass = 'RT::'. $tmodel;
+                my $ttable = m2t($tmodel);
 
-            my $query = "SELECT s.id FROM $stable s LEFT JOIN $ttable t "
-                ." ON t.id = ". sql_str2int("SUBSTR(s.$scolumn, ?)")
-                ." WHERE s.$scolumn LIKE ? AND t.id IS NULL";
-            my @binds = (length($tprefix) + 1, $tprefix.'%');
+                my $tprefix = $prefix .'/'. ($tclass eq 'RT::Ticket'? 'ticket' : $tclass) .'/';
 
-            while ( my ($k, $v) = each %{ $use->{'Additional'} || {} } ) {
-                $query .= " AND s.$k = ?";
-                push @binds, $v;
-            }
+                $tprefix = $prefix . '/article/' if $tclass eq 'RT::Article';
 
-            my $sth = execute_query( $query, @binds );
-            while ( my ($sid) = $sth->fetchrow_array ) {
-                $res = 0;
-                print STDERR "Link in $scolumn column in record #$sid in $stable table points"
-                    ." to not existing object.\n";
-                next unless prompt(
-                    'Delete',
-                    "Column $scolumn in $stable table is a link to an object that doesn't exist."
-                    ." You can delete such records, however make sure there is no other"
-                    ." errors with links.\n",
-                    'Link to a missing object in $ttable'
-                );
+                my $query = "SELECT s.id FROM $stable s LEFT JOIN $ttable t "
+                  ." ON t.id = ". sql_str2int("SUBSTR(s.$scolumn, ?)")
+                    ." WHERE s.$scolumn LIKE ? AND t.id IS NULL";
+                my @binds = (length($tprefix) + 1, $tprefix.'%');
 
-                delete_record($stable, $sid);
+                while ( my ($k, $v) = each %{ $use->{'Additional'} || {} } ) {
+                    $query .= " AND s.$k = ?";
+                    push @binds, $v;
+                }
+
+                my $sth = execute_query( $query, @binds );
+                while ( my ($sid) = $sth->fetchrow_array ) {
+                    $res = 0;
+                    print STDERR "Link in $scolumn column in record #$sid in $stable table points"
+                      ." to not existing object.\n";
+                    next unless prompt(
+                        'Delete',
+                        "Column $scolumn in $stable table is a link to an object that doesn't exist."
+                        ." You can delete such records, however make sure there is no other"
+                        ." errors with links.\n",
+                        'Link to a missing object in $ttable'
+                                      );
+
+                    delete_record($stable, $sid);
+                }
             }
         }
-    }
+    } # end foreach my $package (@rt_uris)
     return $res;
 };
 
@@ -1374,6 +1385,20 @@ sub prompt_integer {
     my $a = <STDIN>; chomp $a; $a = int($a);
     return $cached_answer{ $token } = $a;
 } }
+
+# Find all RT::URI modules RT has loaded
+
+sub rt_uri_modules {
+    my @uris = grep /^RT\/URI\/.+\.pm$/, keys %INC;
+    my @uri_modules;
+    foreach my $uri_path (@uris){
+        next if $uri_path =~ /base\.pm$/; # Skip base RT::URI object
+        $uri_path = substr $uri_path, 0, -3; # chop off .pm
+        push @uri_modules, join '::', split '/', $uri_path;
+    }
+
+    return @uri_modules;
+}
 
 1;
 
