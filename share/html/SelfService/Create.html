@@ -55,7 +55,10 @@
 <input type="hidden" class="hidden" name="<% $key %>" value="<% $ARGS{$key} %>" />
 % }
 
+<% $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS, QueueObj => $queue_obj ) %>
+
 <table width="100%">
+<% $m->callback( CallbackName => 'BeforeQueue', ARGSRef => \%ARGS, QueueObj => $queue_obj ) %>
 <tr class="queue">
 <td class="label">
 <&|/l&>Queue</&>:
@@ -90,6 +93,7 @@
 <input name="Subject" size="60" maxsize="200" value="<%$ARGS{Subject} || ''%>" />
 </td>
 </tr>
+<% $m->callback( CallbackName => 'BeforeCustomFields', ARGSRef => \%ARGS, QueueObj => $queue_obj ) %>
 <tr class="custom-fields">
     <td colspan="2">
         <& /Elements/EditCustomFields,
