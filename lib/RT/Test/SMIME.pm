@@ -101,7 +101,6 @@ sub bootstrap_more_config {
             Keyring => q{$keyring},
             CAPath  => q{$ca},
         );
-        Set(\@MailPlugins => qw(Auth::MailFrom Auth::Crypt));
     };
 
 }
