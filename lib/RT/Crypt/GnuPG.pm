@@ -240,7 +240,7 @@ option is disabled.
 To enable handling of encrypted and signed message in the RT you should add
 'Auth::Crypt' mail plugin.
 
-    Set(@MailPlugins, 'Auth::MailFrom', 'Auth::Crypt', ...other filter...);
+    Set(@MailPlugins, 'Auth::Crypt', ...other filter...);
 
 See also `perldoc lib/RT/Interface/Email/Auth/Crypt.pm`.
 
