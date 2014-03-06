@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( CallbackName => 'BeforeCustomFields', Object => $Object,
-%               Grouping => $Grouping, ARGSRef => \%ARGS, CustomFields => $CustomFields );
+%               Grouping => $Grouping, ARGSRef => \%ARGS, CustomFields => $CustomFields, Table => $Table );
 % if ($Table) {
 <table>
 % }
@@ -70,20 +70,22 @@
 </ul>
 % }
     </td>
-% $m->callback( CallbackName => 'AfterCustomFieldValue', CustomField => $CustomField, Object => $Object, Grouping => $Grouping );
+% $m->callback( CallbackName => 'AfterCustomFieldValue', CustomField => $CustomField,
+%               Object => $Object, Grouping => $Grouping, Table => $Table );
   </tr>
 % }
 % if ($Table) {
 </table>
 % }
 % $m->callback( CallbackName => 'AfterCustomFields', Object => $Object,
-%               Grouping => $Grouping, ARGSRef => \%ARGS );
+%               Grouping => $Grouping, ARGSRef => \%ARGS, Table => $Table );
 <%INIT>
 $m->callback(
     %ARGS,
     CallbackName => 'MassageCustomFields',
-    Object => $Object,
+    Object       => $Object,
     CustomFields => $CustomFields,
+    Table        => $Table,
 );
 
 $CustomFields->LimitToGrouping( $Object => $Grouping ) if defined $Grouping;
@@ -105,6 +107,7 @@ my $print_value = sub {
         Name         => \$comp,
         CustomField  => $cf,
         Object       => $Object,
+        Table        => $Table,
     );
     if ( $m->comp_exists( $comp ) ) {
         $m->comp( $comp, Object => $value );
