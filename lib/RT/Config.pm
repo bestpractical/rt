@@ -670,15 +670,9 @@ our %META;
             # Make sure Crypt is post-loaded first
             $META{Crypt}{'PostLoadCheck'}->( $self, $self->Get( 'Crypt' ) );
 
-            RT::Interface::Email::Plugins(Add => ["Authz::Default", "Action::Defaults"]);
+            RT::Interface::Email::Plugins(Add => ["Authz::Default", "Action::Defaults", "Auth::Crypt"]);
             RT::Interface::Email::Plugins(Add => ["Auth::MailFrom"])
                   unless RT::Interface::Email::Plugins(Code => 1, Method => "GetCurrentUser");
-
-            my @plugins = RT::Interface::Email::Plugins();
-
-            if ( not @{$self->Get('Crypt')->{Incoming}} and grep $_ eq 'Auth::Crypt', @plugins ) {
-                $RT::Logger->warning("Auth::Crypt enabled in MailPlugins, but no available incoming encryption formats");
-            }
         },
     },
     Crypt        => {

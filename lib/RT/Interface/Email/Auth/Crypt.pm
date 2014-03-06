@@ -60,12 +60,6 @@ RT::Interface::Email::Auth::Crypt - decrypting and verifying protected emails
 This mail plugin decrypts and verifies incoming emails. Supported
 encryption protocols are GnuPG and SMIME.
 
-This code is independant from code that encrypts/sign outgoing emails, so
-it's possible to decrypt data without bringing in encryption. To enable
-it put the module in the mail plugins list:
-
-    Set(@MailPlugins, 'Auth::Crypt', ...other filters...);
-
 =head3 GnuPG
 
 To use the gnupg-secured mail gateway, you need to do the following:
