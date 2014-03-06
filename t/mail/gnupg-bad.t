@@ -10,7 +10,7 @@ use RT::Test::GnuPG
     ),
   };
 
-RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::Crypt' );
+RT->Config->Set( 'MailPlugins' => 'Auth::Crypt' );
 
 my ($baseurl, $m) = RT::Test->started_ok;
 

@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 
-use RT::Test config => 'Set( @MailPlugins, "Auth::MailFrom", "Action::Take", "Action::Resolve");', tests => undef, actual_server => 1;
+use RT::Test config => 'Set( @MailPlugins, "Action::Take", "Action::Resolve");', tests => undef, actual_server => 1;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 use RT::Tickets;

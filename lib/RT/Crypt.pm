@@ -84,9 +84,7 @@ additional options to fine-tune behaviour.
 
 However, note that you B<must> add the
 L<Auth::Crypt|RT::Interface::Email::Auth::Crypt> email filter to enable
-the handling of incoming encrypted/signed messages.  It should be added
-in addition to the standard
-L<Auth::MailFrom|RT::Interface::Email::Auth::Crypt> plugin.
+the handling of incoming encrypted/signed messages.
 
 =head2 %Crypt
 
@@ -132,7 +130,7 @@ will be displayed, as well as options to enable signing and encryption.
 To enable handling of encrypted and signed message in the RT you must
 enable the L<RT::Interface::Email::Auth::Crypt> mail plugin:
 
-    Set(@MailPlugins, 'Auth::MailFrom', 'Auth::Crypt', ...other filter...);
+    Set(@MailPlugins, 'Auth::Crypt', ...other filter...);
 
 =head2 Error handling
 

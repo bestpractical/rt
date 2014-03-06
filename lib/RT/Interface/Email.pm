@@ -241,17 +241,17 @@ sub Gateway {
 
 sub Plugins {
     my %args = (
+        Add => undef,
         Code => 0,
         Method => undef,
         @_
     );
+    state $INIT;
     state @PLUGINS;
 
-    unless (@PLUGINS) {
-        my @mail_plugins = grep $_, RT->Config->Get('MailPlugins');
-        push @mail_plugins, "Auth::MailFrom" unless @mail_plugins;
-        push @mail_plugins, "Authz::Default";
-        push @mail_plugins, "Action::Defaults";
+    if ($args{Add} or !$INIT) {
+        my @mail_plugins = $INIT ? () : RT->Config->Get('MailPlugins');
+        push @mail_plugins, @{$args{Add}} if $args{Add};
 
         foreach my $plugin (@mail_plugins) {
             if ( ref($plugin) eq "CODE" ) {
@@ -272,6 +272,7 @@ sub Plugins {
                 $RT::Logger->crit( "$plugin - is not class name or code reference");
             }
         }
+        $INIT = 1;
     }
 
     my @list = @PLUGINS;
