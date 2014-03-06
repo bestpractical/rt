@@ -284,20 +284,20 @@ my $print_value = sub {
 
  <div class="entry">
     <div class="label"><&|/l&>Owner</&>:</div>
-    <div class="value"><& /Elements/ShowUser, User => $Ticket->OwnerObj, Ticket => $Ticket &>
+    <div class="value"><& /Elements/ShowUser, User => $Ticket->OwnerObj, Ticket => $Ticket, Link => 0 &>
     </div>
   </div>
  <div class="entry">
     <div class="label"><&|/l&>Requestors</&>:</div>
-    <div class="value"><& /Ticket/Elements/ShowGroupMembers, Group => $Ticket->Requestors, Ticket => $Ticket &></div>
+    <div class="value"><& /Ticket/Elements/ShowGroupMembers, Group => $Ticket->Requestors, Ticket => $Ticket, Link => 0 &></div>
   </div>
  <div class="entry">
     <div class="label"><&|/l&>Cc</&>:</div>
-    <div class="value"><& /Ticket/Elements/ShowGroupMembers, Group => $Ticket->Cc, Ticket => $Ticket &></div>
+    <div class="value"><& /Ticket/Elements/ShowGroupMembers, Group => $Ticket->Cc, Ticket => $Ticket, Link => 0 &></div>
   </div>
  <div class="entry">
     <div class="label"><&|/l&>AdminCc</&>:</div>
-    <div class="value"><& /Ticket/Elements/ShowGroupMembers, Group => $Ticket->AdminCc, Ticket => $Ticket &></div>
+    <div class="value"><& /Ticket/Elements/ShowGroupMembers, Group => $Ticket->AdminCc, Ticket => $Ticket, Link => 0 &></div>
   </div>
 
     </&>

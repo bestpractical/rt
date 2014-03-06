@@ -91,9 +91,9 @@ loc("Found [quant,_1,ticket]",$collection->CountAll) &>
 <%perl>
 
 </%perl>
-<div class="requestors"><span class="label"><&|/l&>Requestors</&>:</span> <& /Ticket/Elements/ShowGroupMembers, Group => $ticket->Requestors, Ticket => $ticket &></div>
+<div class="requestors"><span class="label"><&|/l&>Requestors</&>:</span> <& /Ticket/Elements/ShowGroupMembers, Group => $ticket->Requestors, Ticket => $ticket, Link => 0 &></div>
 <div class="status"><span class="label"><&|/l&>Status</&>:</span> <%$ticket->Status%></div>
-<div class="owner"><span class="label"><&|/l&>Owner</&>:</span> <& /Elements/ShowUser, User => $ticket->OwnerObj, Ticket => $ticket &></div>
+<div class="owner"><span class="label"><&|/l&>Owner</&>:</span> <& /Elements/ShowUser, User => $ticket->OwnerObj, Ticket => $ticket, Link => 0 &></div>
 <div class="created"><span class="label"><&|/l&>Created</&>:</span> <%$ticket->CreatedObj->AgeAsString()%></div>
 % if ($ticket->Priority) {
 <div class="priority"><span class="label"><&|/l&>Priority</&>:</span> <%$ticket->Priority%></div>

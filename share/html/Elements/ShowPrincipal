@@ -50,11 +50,12 @@
 $Object
 $PostUser => undef
 $Separator => ", "
+$Link => 1
 </%args>
 <%init>
 if ($Object->isa("RT::Group")) {
     # Link the users (non-recursively)
-    my @ret = map {$m->scomp("ShowPrincipal", Object => $_->[1], PostUser => $PostUser)}
+    my @ret = map {$m->scomp("ShowPrincipal", Object => $_->[1], PostUser => $PostUser, Link => $Link)}
         sort {$a->[0] cmp $b->[0]}
         map {+[($_->EmailAddress||''), $_]}
         @{ $Object->UserMembersObj( Recursively => 0 )->ItemsArrayRef };
@@ -65,7 +66,7 @@ if ($Object->isa("RT::Group")) {
 
     $m->out( join($Separator, @ret) );
 } else {
-    $m->comp("/Elements/ShowUser", User => $Object);
+    $m->comp("/Elements/ShowUser", User => $Object, Link => $Link);
     $m->out( $PostUser->($Object) ) if $PostUser;
 }
 </%init>
