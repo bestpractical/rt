@@ -54,6 +54,20 @@ use warnings;
 use Role::Basic 'with';
 with 'RT::Interface::Email::Role';
 
+=head1 NAME
+
+RT::Interface::Email::Authz::Default - RT's core authorization for the mail gateway
+
+=head1 SYNOPSIS
+
+This module B<should not> be explicitly included in
+L<RT_Config/@MailPlugins>; RT includes it automatically.  It provides
+authorization checks for the core the C<comment> and C<correspond>
+actions, via examining RT's standard rights for C<CommentOnTicket>,
+C<ReplyToTicket>, or C<CreateTicket> as necessary.
+
+=cut
+
 sub CheckACL {
     my %args = (
         Message     => undef,

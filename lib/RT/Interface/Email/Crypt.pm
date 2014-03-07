@@ -55,6 +55,10 @@ use warnings;
 
 RT::Interface::Email::Crypt - decrypting and verifying protected emails
 
+=head1 SEE ALSO
+
+See L<RT::Crypt>.
+
 =cut
 
 use RT::Crypt;

@@ -54,6 +54,21 @@ use warnings;
 use Role::Basic 'with';
 with 'RT::Interface::Email::Role';
 
+=head1 NAME
+
+RT::Interface::Email::Action::Resolve - Resolve tickets via the mail gateway
+
+=head1 SYNOPSIS
+
+This plugin, if placed in L<RT_Config/@MailPlugins>, allows the mail
+gateway to specify a resolve action:
+
+    | rt-mailgate --action correspond-resolve --queue General --url http://localhost/
+
+This can alternately (and more flexibly) be accomplished with a Scrip.
+
+=cut
+
 sub CheckACL {
     my %args = (
         Message     => undef,
