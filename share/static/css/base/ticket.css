@@ -71,6 +71,7 @@
 .ticket-info-reminders .titlebox .titlebox-title .left { background-color: #369;  color: #fff;}
 .ticket-info-dates .titlebox .titlebox-title .left { background-color: #633063;  color: #fff;}
 .ticket-info-attachments .titlebox .titlebox-title .left { background-color: #993366;  color: #fff;}
+.ticket-info-articles .titlebox .titlebox-title .left { background-color: #316531;  color: #fff;}
 .ticket-info-generic .titlebox .titlebox-title .left { background-color: #547ccc;  color: #fff;}
 
 .ticket-summary .titlebox .titlebox-title .left a, .ticket-summary .titlebox .titlebox-title .left a:visited { color: #fff;}
