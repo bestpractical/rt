@@ -67,7 +67,7 @@ use 5.010;
 
 =head1 NAME
 
-  RT::Interface::Email - helper functions for parsing email sent to RT
+  RT::Interface::Email - helper functions for parsing and sending email
 
 =head1 METHODS
 
@@ -78,32 +78,41 @@ use 5.010;
 
 Takes parameters:
 
-    action
-    queue
-    message
+=over
 
+=item C<action>
 
-This performs all the "guts" of the mail rt-mailgate program, and is
-designed to be called from the web interface with a message, user
-object, and so on.
+A C<-> separated list of actions to run.  Standard actions, as detailed
+in L<bin/rt-mailgate>, are C<comment> and C<correspond>.  The
+L<RT::Interface::Email::Actions::Take> and
+L<RT::Interface::Email::Actions::Resolve> plugins can be added to
+L<RT_Config/@MailPlugins> to provide C<take> and C<resolve> actions,
+respectively.
 
-Can also take an optional 'ticket' parameter; this ticket id overrides
-any ticket id found in the subject.
+=item C<queue>
 
-Returns:
+The queue that tickets should be created in, if no ticket id is found on
+the message.  Can be either a name or an id; defaults to 1.
 
-    An array of:
+=item C<message>
 
-    (status code, message, optional ticket object)
+The content of the message, as obtained from the MTA.
 
-    status code is a numeric value.
+=item C<ticket>
 
-      for temporary failures, the status code should be -75
+Optional; this ticket id overrides any ticket number derived from the
+subject.
 
-      for permanent failures which are handled by RT, the status code
-      should be 0
+=back
 
-      for succces, the status code should be 1
+Secrypts and verifies the message, decodes the transfer encoding,
+determines the user that the mail was sent from, and performs the given
+actions.
+
+Returns a list of C<(status, message, ticket)>.  The C<status> is -75
+for a temporary failure (to be retried later bt the MTA), 0 for a
+permanent failure which did not result in a ticket, and 1 for a ticket
+that was found and acted on.
 
 =cut
 
@@ -248,6 +257,14 @@ sub Gateway {
     SUCCESS( $Ticket );
 }
 
+=head3 Plugins Method => C<name>, Code => 0
+
+Returns the list of subroutine references for the given method C<name>
+from the configured L<RT_Config/@MailPlugins>.  If C<Code> is passed a
+true value, includes anonymous subroutines found in C<@MailPlugins>.
+
+=cut
+
 sub Plugins {
     my %args = (
         Add => undef,
@@ -290,7 +307,21 @@ sub Plugins {
     return @list;
 }
 
-=head3 GetCurrentUser
+=head3 GetCurrentUser Message => C<message>, Ticket => C<ticket>, Queue => C<queue>
+
+Dispatches to the C<@MailPlugins> to find one the provides
+C<GetCurrentUser> that recognizes the current user.  Mail plugins are
+tried one at a time, and stops after the first to return a current user.
+Anonymous subroutine references found in C<@MailPlugins> are treated as
+C<GetCurrentUser> methods.
+
+The default GetCurrentUser authenticator simply looks at the From:
+address, and loads or creates a user accordingly; see
+L<RT::Interface::Email::Auth::MailFrom>.
+
+Returns the current user; on failure of any plugin to do so, stops
+processing with a permanent failure and sends a generic "Permission
+Denied" mail to the user.
 
 =cut
 
@@ -324,13 +355,19 @@ sub GetCurrentUser {
     );
 }
 
-=head2 CheckACL
+=head3 CheckACL Action => C<action>, CurrentUser => C<user>, Ticket => C<ticket>, Queue => C<queue>
 
-    # Authentication Level
-    # -1 - Get out.  this user has been explicitly declined
-    # 0 - User may not do anything (Not used at the moment)
-    # 1 - Normal user
-    # 2 - User is allowed to specify status updates etc. a la enhanced-mailgate
+Checks that the currentuser can perform a particular action.  While RT's
+standard permission controls apply, this allows a better error message,
+or more limited restrictions on the email gateway.
+
+Each plugin in C<@MailPlugins> which provides C<CheckACL> is given a
+chance to allow the action.  If any returns a true value, it
+short-circuits all later plugins.  Note that plugins may short-circuit
+and abort with failure of their own accord.
+
+Aborts processing, sending a "Permission Denied" mail to the user with
+the last plugin's failure message, on failure.
 
 =cut
 
@@ -363,6 +400,13 @@ sub CheckACL {
 }
 
 
+=head3 HandleAction Action => C<action>, Message => C<message>, Ticket => C<ticket>, Queue => C<queue>
+
+Dispatches to the first plugin in C<@MailPlugins> which provides a
+C<HandleFoo> where C<Foo> is C<ucfirst(action)>.
+
+=cut
+
 sub HandleAction {
     my %args = (
         Action   => undef,
@@ -385,14 +429,14 @@ sub HandleAction {
 
 =head3 ParseSenderAddressFromHead HEAD
 
-Takes a MIME::Header object. Returns (user@host, friendly name, errors)
-where the first two values are the From (evaluated in order of
-Reply-To:, From:, Sender).
+Takes a L<MIME::Header> object. Returns a list of (email address,
+friendly name, errors) where the address and name are the first address
+found in C<Reply-To>, C<From>, or C<Sender>.
 
-A list of error messages may be returned even when a Sender value is
-found, since it could be a parse error for another (checked earlier)
-sender field. In this case, the errors aren't fatal, but may be useful
-to investigate the parse failure.
+A list of error messages may be returned even when an address is found,
+since it could be a parse error for another (checked earlier) sender
+field. In this case, the errors aren't fatal, but may be useful to
+investigate the parse failure.
 
 =cut
 
@@ -414,9 +458,8 @@ sub ParseSenderAddressFromHead {
 
 =head3 ParseErrorsToAddressFromHead HEAD
 
-Takes a MIME::Header object. Return a single value : user@host
-of the From (evaluated in order of Return-path:,Errors-To:,Reply-To:,
-From:, Sender)
+Takes a L<MIME::Header> object. Returns the first email address found in
+C<Return-path>, C<Errors-To>, C<Reply-To>, C<From>, or C<Sender>.
 
 =cut
 
@@ -432,16 +475,9 @@ sub ParseErrorsToAddressFromHead {
     }
 }
 
-=head3 _HandleMachineGeneratedMail
+=head3 IsMachineGeneratedMail Message => C<message>
 
-Takes named params:
-    Message
-    ErrorsTo
-    Subject
-
-Checks the message to see if it's a bounce, if it looks like a loop, if it's autogenerated, etc.
-Returns a triple of ("Should we continue (boolean)", "New value for $ErrorsTo", "Status message",
-"This message appears to be a loop (boolean)" );
+Checks if the mail is machine-generated (via a bounce, mail headers,
 
 =cut
 
@@ -497,9 +533,8 @@ sub IsMachineGeneratedMail {
 
 =head3 CheckForLoops HEAD
 
-Takes a HEAD object of L<MIME::Head> class and returns true if the
-message's been sent by this RT instance. Uses "X-RT-Loop-Prevention"
-field of the head for test.
+Takes a L<MIME::Head> object and returns true if the message was sent by
+this RT instance, by checking the C<X-RT-Loop-Prevention> header.
 
 =cut
 
@@ -555,16 +590,17 @@ sub CheckForAutoGenerated {
 }
 
 
-=head2 ExtractTicketId
+=head3 ExtractTicketId
 
-Passed a MIME::Entity.  Returns a ticket id or undef to signal 'new ticket'.
+Passed a L<MIME::Entity> object, and returns a either ticket id or undef
+to signal 'new ticket'.
 
 This is a great entry point if you need to customize how ticket ids are
-handled for your site. RT-Extension-RepliesToResolved demonstrates one
-possible use for this extension.
+handled for your site. L<RT::Extension::RepliesToResolved> demonstrates
+one possible use for this extension.
 
-If the Subject of this ticket is modified, it will be reloaded by the
-mail gateway code before Ticket creation.
+If the Subject of the L<MIME::Entity> is modified, the updated subject
+will be used during ticket creation.
 
 =cut
 
@@ -576,7 +612,7 @@ sub ExtractTicketId {
     return ParseTicketId( $subject );
 }
 
-=head2 ParseTicketId
+=head3 ParseTicketId
 
 Takes a string and searches for [subjecttag #id]
 
@@ -614,21 +650,35 @@ Sends an error message. Takes a param hash:
 
 =over 4
 
-=item From - sender's address, by default is 'CorrespondAddress';
+=item From
 
-=item To - recipient, by default is 'OwnerEmail';
+Sender's address, defaults to L<RT_Config/$CorrespondAddress>;
 
-=item Subject - subject of the message, default is 'There has been an error';
+=item To
 
-=item Explanation - main content of the error, default value is 'Unexplained error';
+Recipient, defaults to L<RT_Config/$OwnerEmail>;
 
-=item MIMEObj - optional MIME entity that's attached to the error mail, as well we
-add 'In-Reply-To' field to the error that points to this message.
+=item Subject
 
-=item Attach - optional text that attached to the error as 'message/rfc822' part.
+Subject of the message, defaults to C<There has been an error>;
 
-=item LogLevel - log level under which we should write the subject and
-explanation message into the log, by default we log it as critical.
+=item Explanation
+
+Main content of the error, default value is C<Unexplained error>;
+
+=item MIMEObj
+
+Optional L<MIME::Entity> that is attached to the error mail.
+Additionally, the C<In-Reply-To> header will point to this message.
+
+=item Attach
+
+Optional text that attached to the error as a C<message/rfc822> part.
+
+=item LogLevel
+
+Log level the subject and explanation is written to the log; defaults to
+C<critical>.
 
 =back
 

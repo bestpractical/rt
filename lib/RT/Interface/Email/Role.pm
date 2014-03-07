@@ -55,6 +55,87 @@ use Role::Basic;
 
 use RT::Interface::Email;
 
+=head1 NAME
+
+RT::Interface::Email::Role - Role for mail plugins
+
+=head1 SYNOPSIS
+
+    package RT::Interface::Email::Action::Something;
+
+    use Role::Basic 'with';
+    with 'RT::Interface::Email::Role';
+
+    sub CheckACL { ... }
+    sub HandleSomething { ... }
+
+=head1 DESCRIPTION
+
+Provides a means to affect the handling of RT's mail gateway.  Mail
+plugins (which appear in L<RT_Config/@MailPlugins> should implement this
+role.
+
+See F<docs/extending/mail_plugins.pod> for a list of hook points which
+plugins can implement.
+
+=head1 METHODS
+
+=head2 TMPFAIL
+
+This should be called for configuration errors.  It results in a
+temporary failure code to the MTA, ensuring that the message is not
+lost, and will be retried later.
+
+This function should be passed the warning message to log with the
+temporary failure.  Does not return.
+
+
+=head2 FAILURE
+
+This should be used upon rejection of a message.  It will B<not> be
+retried by the MTA; as such, it should be used sparingly, and in
+conjunction with L</MailError> such that the sender is aware of the
+failure.
+
+The function should be passed a message to return to the mailgate.  Does
+not return.
+
+
+=head2 SUCCESS
+
+The message was successfully parsed.  The function takes an optional
+L<RT::Ticket> object to return to the mailgate. Does not return.
+
+
+=head2 MailError
+
+Sends an error concerning the email, or the processing thereof.  Takes
+the following arguments:
+
+=over
+
+=item To
+
+Only necessary in L</BeforeDecode> and L<BeforeDecrypt> hooks, where it
+defaults to L<RT_Config/OwnerEmail>; otherwise, defaults to the
+originator of the message.
+
+=item Subject
+
+Subject of the email
+
+=item Explanation
+
+The body of the email
+
+=item FAILURE
+
+If passed a true value, will call L</FAILURE> after sending the message.
+
+=back
+
+=cut
+
 sub TMPFAIL { RT::Interface::Email::TMPFAIL(@_) }
 sub FAILURE { RT::Interface::Email::FAILURE(@_) }
 sub SUCCESS { RT::Interface::Email::SUCCESS(@_) }

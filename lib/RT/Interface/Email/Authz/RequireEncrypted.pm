@@ -54,6 +54,18 @@ use warnings;
 use Role::Basic 'with';
 with 'RT::Interface::Email::Role';
 
+=head1 NAME
+
+RT::Interface::Email::Authz::RequireEncrypted - Require that incoming email be encrypted
+
+=head1 SYNOPSIS
+
+This plugin allows restricting incoming emails to those which were
+encrypted.  Plaintext emails are rejected, with a reply sent to the
+originator using the C<Error: unencrypted message> template.
+
+=cut
+
 sub BeforeDecode {
     my %args = (
         Action      => undef,

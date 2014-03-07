@@ -56,6 +56,18 @@ with 'RT::Interface::Email::Role';
 
 use RT::Interface::Email;
 
+=head1 NAME
+
+RT::Interface::Email::Action::Defaults - RT's core email integration
+
+=head1 SYNOPSIS
+
+This module B<should not> be explicitly included in
+L<RT_Config/@MailPlugins>; RT includes it automatically.  It provides
+the C<comment> and C<correspond> actions.
+
+=cut
+
 sub _HandleCreate {
     my %args = (
         Subject     => undef,

@@ -54,6 +54,23 @@ use warnings;
 use Role::Basic 'with';
 with 'RT::Interface::Email::Role';
 
+=head1 NAME
+
+RT::Interface::Email::Auth::MailFrom - The default mail gateway authenticator
+
+=head1 SYNOPSIS
+
+This is the default authentication plugin for RT's email gateway; no no
+other authentication plugin is found in L<RT_Config/@MailPlugins>, RT
+will default to this one.
+
+This plugin reads the first address found in the C<Reply-To>, C<From>,
+and C<Sender> headers, and loads or creates the user.  It performs no
+checking of the identity of the user, and trusts the headers of the
+incoming email.
+
+=cut
+
 sub GetCurrentUser {
     my %args = (
         Message => undef,
