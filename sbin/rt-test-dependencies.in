@@ -284,6 +284,7 @@ Test::Expect 0.31
 Test::LongString
 Test::MockTime
 Test::NoWarnings
+Test::Pod
 Test::Warn
 Test::WWW::Mechanize 1.30
 Test::WWW::Mechanize::PSGI
