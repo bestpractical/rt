@@ -46,65 +46,25 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-package RT::Interface::Email::Auth::Crypt;
+package RT::Interface::Email::Crypt;
 
 use strict;
 use warnings;
 
 =head1 NAME
 
-RT::Interface::Email::Auth::Crypt - decrypting and verifying protected emails
-
-=head2 DESCRIPTION
-
-This mail plugin decrypts and verifies incoming emails. Supported
-encryption protocols are GnuPG and SMIME.
-
-=head3 GnuPG
-
-To use the gnupg-secured mail gateway, you need to do the following:
-
-Set up a GnuPG key directory with a pubring containing only the keys
-you care about and specify the following in your SiteConfig.pm
-
-    Set(%GnuPGOptions, homedir => '/opt/rt4/var/data/GnuPG');
-
-Read also: L<RT::Crypt> and L<RT::Crypt::GnuPG>.
-
-=head3 SMIME
-
-To use the SMIME-secured mail gateway, you need to do the following:
-
-Set up a SMIME key directory with files containing keys for queues'
-addresses and specify the following in your SiteConfig.pm
-
-    Set(%SMIME,
-        Enable => 1,
-        OpenSSL => '/usr/bin/openssl',
-        Keyring => '/opt/rt4/var/data/smime',
-        CAPath  => '/opt/rt4/var/data/smime/signing-ca.pem',
-        Passphrase => {
-            'queue.address@example.com' => 'passphrase',
-            '' => 'fallback',
-        },
-    );
-
-Read also: L<RT::Crypt> and L<RT::Crypt::SMIME>.
+RT::Interface::Email::Crypt - decrypting and verifying protected emails
 
 =cut
 
 use RT::Crypt;
 use RT::EmailParser ();
 
-use Role::Basic 'with';
-with 'RT::Interface::Email::Role';
-
-sub BeforeDecode {
+sub VerifyDecrypt {
     my %args = (
         Message       => undef,
         RawMessageRef => undef,
         Queue         => undef,
-        Actions       => undef,
         @_
     );
 

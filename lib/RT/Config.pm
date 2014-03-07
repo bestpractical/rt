@@ -670,7 +670,7 @@ our %META;
             # Make sure Crypt is post-loaded first
             $META{Crypt}{'PostLoadCheck'}->( $self, $self->Get( 'Crypt' ) );
 
-            RT::Interface::Email::Plugins(Add => ["Authz::Default", "Action::Defaults", "Auth::Crypt"]);
+            RT::Interface::Email::Plugins(Add => ["Authz::Default", "Action::Defaults"]);
             RT::Interface::Email::Plugins(Add => ["Auth::MailFrom"])
                   unless RT::Interface::Email::Plugins(Code => 1, Method => "GetCurrentUser");
         },
