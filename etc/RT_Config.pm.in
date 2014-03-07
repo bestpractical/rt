@@ -1857,8 +1857,17 @@ It defaults to on.  Set this to 0 to disable it.
 
 Set($QuoteFolding, 1);
 
-=back
+=item C<$AllowLoginPasswordAutoComplete>
 
+Allow browsers to remember the user's password on login (in case the
+browser can do so, and has the appropriate setting enabled). Defaults
+to false.
+
+=cut
+
+Set($AllowLoginPasswordAutoComplete, 0);
+
+=back
 
 
 =head1 Application logic
