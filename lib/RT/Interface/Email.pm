@@ -52,6 +52,7 @@ use strict;
 use warnings;
 use 5.010;
 
+use RT::Interface::Email::Crypt;
 use Email::Address;
 use MIME::Entity;
 use RT::EmailParser;
@@ -154,6 +155,21 @@ sub Gateway {
     #Set up a queue object
     my $SystemQueueObj = RT::Queue->new( RT->SystemUser );
     $SystemQueueObj->Load( $args{'queue'} );
+
+    for my $Code ( Plugins(Method => "BeforeDecrypt") ) {
+        $Code->(
+            Message       => $Message,
+            RawMessageRef => \$args{'message'},
+            Queue         => $SystemQueueObj,
+            Actions       => \@actions,
+        );
+    }
+
+    RT::Interface::Email::Crypt::VerifyDecrypt(
+        Message       => $Message,
+        RawMessageRef => \$args{'message'},
+        Queue         => $SystemQueueObj,
+    );
 
     for my $Code ( Plugins(Method => "BeforeDecode") ) {
         $Code->(
