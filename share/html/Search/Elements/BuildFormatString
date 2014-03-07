@@ -99,6 +99,8 @@ my @fields = qw(
     NBSP
 ); # loc_qw
 
+# This callback will only run once and will be removed in 4.4
+# If you want to add a new item to @fields, use the Default callback below.
 $m->callback( CallbackOnce => 1, CallbackName => 'SetFieldsOnce', Fields => \@fields );
 
 my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
