@@ -187,9 +187,6 @@ sub Gateway {
     my $From = Encode::decode( "UTF-8", $head->get("From") );
     chomp $From if defined $From;
 
-    my $MessageId = Encode::decode( "UTF-8", $head->get('Message-ID') )
-        || "<no-message-id-". time . rand(2000) .'@'. RT->Config->Get('Organization') .'>';
-
     #Pull apart the subject line
     my $Subject = Encode::decode( "UTF-8", $head->get('Subject') || '');
     chomp $Subject;
@@ -200,7 +197,6 @@ sub Gateway {
         if IsMachineGeneratedMail(
             Message   => $Message,
             Subject   => $Subject,
-            MessageId => $MessageId,
         );
 
     # Make all errors from here on out bounce back to $ErrorsTo
@@ -454,7 +450,6 @@ sub IsMachineGeneratedMail {
     my %args = (
         Message => undef,
         Subject => undef,
-        MessageId => undef,
         @_
     );
     my $head = $args{'Message'}->head;
@@ -475,7 +470,8 @@ sub IsMachineGeneratedMail {
 
     # Warn someone if it's a loop, before we drop it on the ground
     if ($IsALoop) {
-        $RT::Logger->crit("RT Received mail (".$args{MessageId}.") from itself.");
+        my $MessageId = Encode::decode( "UTF-8", $head->get('Message-ID') );
+        $RT::Logger->crit("RT Received mail ($MessageId) from itself.");
 
         #Should we mail it to RTOwner?
         if ( RT->Config->Get('LoopsToRTOwner') ) {
