@@ -524,7 +524,8 @@ sub LoadOrCreateByEmail {
     } elsif ( UNIVERSAL::isa( $_[0] => 'Email::Address' ) ) {
         @create{'EmailAddress','RealName'} = ($_[0]->address, $_[0]->phrase);
     } else {
-        @create{'EmailAddress','RealName'} = RT::Interface::Email::ParseAddressFromHeader( $_[0] );
+        my ($addr) = RT::EmailParser->ParseEmailAddress( $_[0] );
+        @create{'EmailAddress','RealName'} = $addr ? ($addr->address, $addr->phrase) : (undef, undef);
     }
 
     $self->LoadByEmail( $create{EmailAddress} );
