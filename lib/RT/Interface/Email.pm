@@ -759,13 +759,7 @@ sub _HandleMachineGeneratedMail {
 
     # Squelch replies if necessary
     # Don't let the user stuff the RT-Squelch-Replies-To header.
-    if ( $head->get('RT-Squelch-Replies-To') ) {
-        $head->replace(
-            'RT-Relocated-Squelch-Replies-To',
-            $head->get('RT-Squelch-Replies-To')
-        );
-        $head->delete('RT-Squelch-Replies-To');
-    }
+    $head->delete('RT-Squelch-Replies-To');
 
     if ($SquelchReplies) {
 
