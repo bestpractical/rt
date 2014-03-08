@@ -405,15 +405,12 @@ to investigate the parse failure.
 
 sub ParseSenderAddressFromHead {
     my $head = shift;
-    my @sender_headers = ('Reply-To', 'From', 'Sender');
     my @errors;  # Accumulate any errors
 
-    #Figure out who's sending this message.
-    foreach my $header ( @sender_headers ) {
+    foreach my $header ( 'Reply-To', 'From', 'Sender' ) {
         my $addr_line = Encode::decode( "UTF-8", $head->get($header) ) || next;
-        my ($addr, $name) = ParseAddressFromHeader( $addr_line );
-        # only return if the address is not empty
-        return ($addr, $name, @errors) if $addr;
+        my ($addr) = RT::EmailParser->ParseEmailAddress( $addr_line );
+        return ($addr->address, $addr->phrase, @errors) if $addr;
 
         chomp $addr_line;
         push @errors, "$header: $addr_line";
@@ -433,42 +430,13 @@ From:, Sender)
 sub ParseErrorsToAddressFromHead {
     my $head = shift;
 
-    #Figure out who's sending this message.
-
     foreach my $header ( 'Errors-To', 'Reply-To', 'From', 'Sender' ) {
+        my $value = Encode::decode( "UTF-8", $head->get($header) );
+        next unless $value;
 
-        # If there's a header of that name
-        my $headerobj = Encode::decode( "UTF-8", $head->get($header) );
-        if ($headerobj) {
-            my ( $addr, $name ) = ParseAddressFromHeader($headerobj);
-
-            # If it's got actual useful content...
-            return ($addr) if ($addr);
-        }
+        my ( $email ) = RT::EmailParser->ParseEmailAddress($value);
+        return $email->address if $email;
     }
-}
-
-
-
-=head3 ParseAddressFromHeader ADDRESS
-
-Takes an address from C<$head->get('Line')> and returns a tuple: user@host, friendly name
-
-=cut
-
-sub ParseAddressFromHeader {
-    my $Addr = shift;
-
-    # Some broken mailers send:  ""Vincent, Jesse"" <jesse@fsck.com>. Hate
-    $Addr =~ s/\"\"(.*?)\"\"/\"$1\"/g;
-    my @Addresses = RT::EmailParser->ParseEmailAddress($Addr);
-
-    my ($AddrObj) = grep ref $_, @Addresses;
-    unless ( $AddrObj ) {
-        return ( undef, undef );
-    }
-
-    return ( $AddrObj->address, $AddrObj->phrase );
 }
 
 =head3 _HandleMachineGeneratedMail

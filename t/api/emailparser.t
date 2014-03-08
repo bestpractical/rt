@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 11;
+use RT::Test nodb => 1, tests => undef;
 
 ok(require RT::EmailParser);
 
@@ -19,20 +19,20 @@ my @after = ("frt\@example.com");
 ok(eq_array(RT::EmailParser->CullRTAddresses(@before),@after), "CullRTAddresses only culls RT addresses");
 
 {
-    require RT::Interface::Email;
-    my ( $addr, $name ) =
-      RT::Interface::Email::ParseAddressFromHeader('foo@example.com');
-    is( $addr, 'foo@example.com', 'addr for foo@example.com' );
-    is( $name, undef,             'no name for foo@example.com' );
+    my ( $addr ) =
+      RT::EmailParser->ParseEmailAddress('foo@example.com');
+    is( $addr->address, 'foo@example.com', 'addr for foo@example.com' );
+    is( $addr->phrase,  undef,             'no name for foo@example.com' );
 
-    ( $addr, $name ) =
-      RT::Interface::Email::ParseAddressFromHeader('Foo <foo@example.com>');
-    is( $addr, 'foo@example.com', 'addr for Foo <foo@example.com>' );
-    is( $name, 'Foo',             'name for Foo <foo@example.com>' );
+    ( $addr ) =
+      RT::EmailParser->ParseEmailAddress('Foo <foo@example.com>');
+    is( $addr->address, 'foo@example.com', 'addr for Foo <foo@example.com>' );
+    is( $addr->phrase,  'Foo',             'name for Foo <foo@example.com>' );
 
-    ( $addr, $name ) =
-      RT::Interface::Email::ParseAddressFromHeader('foo@example.com (Comment)');
-    is( $addr, 'foo@example.com', 'addr for foo@example.com (Comment)' );
-    is( $name, undef,             'no name for foo@example.com (Comment)' );
+    ( $addr ) =
+      RT::EmailParser->ParseEmailAddress('foo@example.com (Comment)');
+    is( $addr->address, 'foo@example.com', 'addr for foo@example.com (Comment)' );
+    is( $addr->phrase,  undef,             'no name for foo@example.com (Comment)' );
 }
 
+done_testing;

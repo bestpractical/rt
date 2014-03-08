@@ -497,6 +497,9 @@ sub ParseEmailAddress {
     my $self = shift;
     my $address_string = shift;
 
+    # Some broken mailers send:  ""Vincent, Jesse"" <jesse@fsck.com>. Hate
+    $address_string =~ s/\"\"(.*?)\"\"/\"$1\"/g;
+
     my @list = Email::Address::List->parse(
         $address_string,
         skip_comments => 1,
