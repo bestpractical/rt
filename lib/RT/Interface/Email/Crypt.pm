@@ -215,7 +215,7 @@ sub EmailErrorToSender {
     $args{'Arguments'} ||= {};
     $args{'Arguments'}{'TicketObj'} ||= $args{'Ticket'};
 
-    my $address = (RT::Interface::Email::ParseSenderAddressFromHead( $args{'Message'}->head ))[0];
+    my ($address) = RT::Interface::Email::ParseSenderAddressFromHead( $args{'Message'}->head );
     my ($status) = RT::Interface::Email::SendEmailUsingTemplate(
         To        => $address,
         Template  => $args{'Template'},
