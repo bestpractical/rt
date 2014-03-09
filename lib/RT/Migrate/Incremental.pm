@@ -652,6 +652,13 @@ This is a forward of ticket #{ $Ticket->id }
         },
     },
 
+    '4.3.1' => {
+        'RT::CustomField' => sub {
+            my ($ref) = @_;
+            $ref->{EntryHint} //= RT::CustomField->FriendlyType( $ref->{Type}, $ref->{MaxValues} );
+        },
+    },
+
 );
 
 1;
