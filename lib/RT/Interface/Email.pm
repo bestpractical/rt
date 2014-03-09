@@ -367,7 +367,11 @@ sub HandleAction {
         @_
     );
 
-    my ($code) = Plugins(Method => "Handle" . ucfirst(delete $args{Action}));
+    my $action = delete $args{Action};
+    my ($code) = Plugins(Method => "Handle" . ucfirst($action));
+    TMPFAIL( "Invalid 'action' parameter $action for queue ".$args{Queue}->Name )
+        unless $code;
+
     $code->(%args);
 }
 
