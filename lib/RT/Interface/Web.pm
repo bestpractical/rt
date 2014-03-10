@@ -1752,7 +1752,7 @@ sub GetCustomFieldInputName {
     my $name = GetCustomFieldInputNamePrefix(%args);
 
     if ( $args{CustomField}->Type eq 'Select' ) {
-        if ( $args{CustomField}->RenderType eq 'List' ) {
+        if ( $args{CustomField}->RenderType eq 'List' and $args{CustomField}->SingleValue ) {
             $name .= 'Value';
         }
         else {
