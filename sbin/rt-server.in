@@ -138,6 +138,7 @@ EOF
 
 # we must disconnect DB before fork
 if ($RT::Handle) {
+    $RT::Handle->dbh->disconnect if $RT::Handle->dbh;
     $RT::Handle->dbh(undef);
     undef $RT::Handle;
 }
