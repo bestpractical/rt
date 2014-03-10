@@ -99,8 +99,6 @@ my @fields = qw(
     NBSP
 ); # loc_qw
 
-$m->callback( CallbackOnce => 1, CallbackName => 'SetFieldsOnce', Fields => \@fields );
-
 my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
 foreach my $id (keys %queues) {
     # Gotta load up the $queue object, since queues get stored by name now.
