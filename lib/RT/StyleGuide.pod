@@ -2,6 +2,10 @@
 
 RT::StyleGuide - RT Style Guide
 
+=head1 CAVEATS
+
+This file is somewhat out of date; L<hacking> takes precedence over it.
+
 =head1 INTRODUCTION
 
 All code and documentation that is submitted to be included in the RT
@@ -92,21 +96,9 @@ versions.  Examples:
 	1.1.0		First development release of RT 1.2 (or 2.0)
 	2.0.0		First release of RT 2
 
-Versions can be modified with a hyphen followed by some text, for
-special versions, or to give extra information.  Examples:
+Versions may end in "rc" and a number if they are release candidates:
 
-	2.0.0-pre1	Notes that this is not final, but preview
-
-In perl 5.6.0, you can have versions like C<v2.0.0>, but this is not
-allowed in previous versions of perl.  So to convert a tuple version
-string to a string to use with $VERSION, use a regular integer for
-the revision, and three digits for version and subversion.  Examples:
-
-	1.1.6	->	1.001006
-	2.0.0	->	2.000000
-
-This way, perl can use the version strings in greater-than and
-less-than comparisons.
+	2.0.0rc1	First release candiate for real 2.0.0
 
 
 =head2 Comments
@@ -152,14 +144,6 @@ local() may also be used on elements of arrays and hashes, though there
 is seldom a need to do it, and you shouldn't.
 
 
-=head2 Exporting
-
-Do not export anything from a module by default.  Feel free to put
-anything you want to in @EXPORT_OK, so users of your modules can
-explicitly ask for symbols (e.g., "use Something::Something qw(getFoo
-setFoo)"), but do not export them by default.
-
-
 =head2 Pass by Reference
 
 Arrays and hashes should be passed to and from functions by reference
@@ -185,58 +169,6 @@ Although, usually, this is better (faster, easier to read, etc.):
 We need to talk about Class::ReturnValue here.
 
 
-=head2 Garbage Collection
-
-Perl does pretty good garbage collection for you.  It will automatically
-clean up lexical variables that have gone out of scope and objects whose
-references have gone away.  Normally you don't need to worry about
-cleaning up after yourself, if using lexicals.
-
-However, some glue code, code compiled in C and linked to Perl, might
-not automatically clean up for you.  In such cases, clean up for
-yourself.  If there is a method in that glue to dispose or destruct,
-then use it as appropriate.
-
-Also, if you have a long-running function that has a large data
-structure in it, it is polite to free up the memory as soon as you are
-done with it, if possible.
-
-	my $huge_data_structure = get_huge_data_structure();
-	do_something_with($huge_data_structure);
-	undef $huge_data_structure;
-
-=head2 DESTROY
-
-All object classes must provide a DESTROY method.  If it won't do
-anything, provide it anyway:
-
-	sub DESTROY { }
-
-
-
-=head2 die() and exit()
-
-Don't do it.  Do not die() or exit() from a web template or module.  Do
-not call C<kill 9, $$>.  Don't do it.
-
-In command-line programs, do as you please.
-
-
-=head2 shift and @_
-
-Do not use @_.  Use shift.  shift may take more lines, but Jesse thinks it 
-leads to cleaner code.
-
-	my $var = shift;			# right
-	my($var) = @_;				# ick. no
-	sub foo { uc $_[0] }			# icky. sometimes ok.
-
-
-	my($var1, $var2) = (shift, shift);	# Um, no.
-
-        my $var1 = shift;                       # right
-        my $var2 = shift;                       
-
 =head2 Method parameters
 
 If a method takes exactly one mandatory argument, the argument should be
@@ -249,15 +181,17 @@ In all other cases, the method needs to take named parameters, usually
 using a C<%args> hash to store them:
 
         my $self = shift;
-        my %args = ( Name => undef,
-                     Description => undef,
-                     @_ );
+        my %args = (
+            Name => undef,
+            Description => undef,
+            @_
+        );
 
 You may specify defaults to those named parameters instead of using
 C<undef> above, as long as it is documented as such.
 
 It is worth noting that the existing RT codebase had not followed this
-style perfectly; we are trying to fix it without breaking exsiting APIs.
+style perfectly; we are trying to fix it without breaking existing APIs.
 
 =head2 Tests
 
@@ -331,17 +265,6 @@ document, too.
 =head2 Terminology
 
 =over 4
-
-=item RT the name
-
-"RT" is the name of the project.  "RT" is, optionally, the
-specific name for the actual file distribution.  That's it. 
-
-While we sometimes use "RT2" or "RT3", that's shortand that's really
-not recommended. The name of the project is "RT".
-
-To specify a major version, use "RT 3.0".
-To specify a specific release, use "RT 3.0.12"
 
 =item function vs. sub(routine) vs. method
 
@@ -435,9 +358,9 @@ clear what is going on, or when it is required (such as with
 map() and grep()).
 
 	for (@list) {
-		print;			# OK; everyone knows this one
-		print uc;		# wrong; few people know this
-		print uc $_;		# better
+	    print;			# OK; everyone knows this one
+	    print uc;			# wrong; few people know this
+	    print uc $_;		# better
 	}
 
 Note that the special variable C<_> I<should> be used when possible.
@@ -448,9 +371,9 @@ C<_> for subsequent uses, is a performance hit.  You should be
 careful that the last-tested file is what you think it is, though.
 
 	if (-d $file) {		# $file is a directory
-		# ...
+	    # ...
 	} elsif (-l _) {	# $file is a symlink
-		# ...
+	    # ...
 	}
 
 Package names begin with a capital letter in each word, followed by
@@ -461,20 +384,16 @@ lower case letters (for the most part).  Multiple words should be StudlyCapped.
 	RT::Display::Provider	        # good
 	RT::CustomField			# not so good, but OK
 
-Plugin modules should begin with "RTx::", followed by the name
+Plugin modules should begin with "RT::Extension::", followed by the name
 of the plugin.  
 
 =head1 Code formatting
 
-Use perltidy. Anything we say here is wrong if it conflicts with what
-perltidy does. Your perltidyrc should read:
-
--lp -vt=2 -vtc=2 -nsfs -bar                                                                                             
+When in doubt, use perltidy; RT includes a F<.perltidyrc>.
 
 =head2 Indents and Blank Space
 
-All indents should be tabs.  Set your tab stops whatever you want them
-to be; I use 8 spaces per tabs.
+All indents should be four spaces; hard tabs are forbidden.
 
 No space before a semicolon that closes a statement.
 
@@ -507,15 +426,14 @@ An example:
 
 	# this is my function!
 	sub foo {
-                my $val = shift;
-		my $obj = new Constructor;
-		my($var1, $var2);
+	    my $val = shift;
+	    my $obj = new Constructor;
+	    my($var1, $var2);
 
-		$obj->SetFoo($val);
-		$var1 = $obj->Foo();
+	    $obj->SetFoo($val);
+	    $var1 = $obj->Foo();
 
-
-		return($val);
+	    return($val);
 	}
 
 	print 1;
@@ -555,14 +473,13 @@ the opening statement, or the opening parenthesis, whichever works best.
 Examples:
 
 	@list = qw(
-		bar
-		baz
+	    bar
+	    baz
 	);			# right
 
 	if ($foo && $bar && $baz
-		 && $buz && $xyzzy
-	) {
-		print $foo;
+	         && $buz && $xyzzy) {
+	    print $foo;
 	}
 
 Whether or not there is space following a closing parenthesis is
@@ -620,26 +537,16 @@ opening curly on the first line, and the ending curly lined up with the
 keyword at the end.
 
 	for (@list) {
-		print;
-		smell();
+	    print;
+	    smell();
 	}
 
-Generally, we prefer "uncuddled elses":
+Generally, we prefer "cuddled elses":
 
 	if ($foo) {
-		print;
-	}
-	else {
-		die;
-	}
-
-_If_ the if statement is very brief, sometimes "cuddling" the else makes code more readable. Feel free to cuddle them in that case:
-
-
-	if ($foo) {
-		print;
+	    print;
 	} else {
-		die;
+	    die;
 	}
 
 =head2 Operators
@@ -678,21 +585,21 @@ normally, you should, if there is any question at all -- then it doesn't
 matter which you use.  Use whichever is most readable and aesthetically
 pleasing to you at the time, and be consistent within your block of code.
 
-Break long lines AFTER operators, except for "and", "or", "&&", "||".
+Break long lines AFTER operators, except for ".", "and", "or", "&&", "||".
 Try to keep the two parts to a binary operator (an operator that
 has two operands) together when possible.
 
-	print "foo" . "bar" . "baz"
-		. "buz";			# wrong
-
 	print "foo" . "bar" . "baz" .
-		"buz";				# right
+	      "buz";				# wrong
+
+	print "foo" . "bar" . "baz"
+	    . "buz";				# right
 
 	print $foo unless $x == 3 && $y ==
-		4 && $z == 5;			# wrong
+	        4 && $z == 5;			# wrong
 
 	print $foo unless $x == 3 && $y == 4
-		&& $z == 5;			# right
+	               && $z == 5;		# right
 
 
 =head2 Other
@@ -722,7 +629,7 @@ When making compound statements, put the primary action first.
 
 Use here-docs instead of repeated print statements.
 
-		print <<EOT;
+	        print <<EOT;
 	This is a whole bunch of text.
 	I like it.  I don't need to worry about messing
 	with lots of print statements and lining them up.
@@ -754,7 +661,7 @@ grep the codebase for strings to be localized
 The string 		Foo
 			Bar
 			Baz
-			
+
 Should become		<&|/l&>Foo Bar Baz</&>
 
 
@@ -788,9 +695,8 @@ should become 	<& /Elements/TitleBoxStart,
 			titleright => loc("RT [_1] for [_2]",$RT::VERSION, RT->Config->Get('rtname')),
 			title => loc('Login'),
 	      	&>
-	
 
-=item Library code			
+=item Library code
 
 
 
@@ -855,19 +761,21 @@ guide contained in this document.
 =item Finish it up
 
 After the code is done (possibly going through multiple code reviews),
-if you do not have repository access, submit it to rt-<major-version>-bugs@fsck.com as a unified diff. From that point on, it'll be handled by someone with repository access.
+if you do not have repository access, submit it to rt-bugs@fsck.com as a
+unified diff. From that point on, it'll be handled by someone with
+repository access.
 
 =back
 
 
 =head1 BUG REPORTS, PATCHES
 
-Use rt-<major-version>-bugs@fsck.com for I<any> bug that is not
-being fixed immediately.  If it is not in RT, there
-is a good chance it will not be dealt with.
+Use rt-bugs@bestpractical.com for I<any> bug that is not being fixed
+immediately.  If it is not in RT, there is a good chance it will not be
+dealt with.
 
-Send patches to rt-<major-version>-bugs@fsck.com, too.  Use C<diff
--u> for patches.
+Send patches to rt-bugs@bestpractical.com, too.  Use C<diff -u> for
+patches.
 
 =head1 SCHEMA DESIGN
 
@@ -919,12 +827,3 @@ Talk about mason
 Talk about adding a new translation
 
 Talk more about logging
-
-=head1 CHANGES
-
-        Adapted from Slash Styleguide by jesse - 20 Dec, 2002
-
-
-=head1 VERSION
-
-0.1 
