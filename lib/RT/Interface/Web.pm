@@ -3104,7 +3104,7 @@ sub _ProcessObjectCustomFieldUpdates {
     foreach my $arg ( keys %{ $args{'ARGS'} } ) {
 
         # skip category argument
-        next if $arg eq 'Category';
+        next if $arg =~ /-Category$/;
 
         # since http won't pass in a form element with a null value, we need
         # to fake it
@@ -3255,7 +3255,7 @@ sub ProcessObjectCustomFieldUpdatesForCreate {
             while (my ($arg, $value) = each %{ $custom_fields{$class}{0}{$cfid}{$groupings[0]} }) {
                 # Values-Magic doesn't matter on create; no previous values are being removed
                 # Category is irrelevant for the actual value
-                next if $arg =~ /-Magic$/ or $arg eq "Category";
+                next if $arg =~ /-Magic$/ or $arg =~ /-Category$/;
 
                 push @values,
                     _NormalizeObjectCustomFieldValue(
@@ -3609,7 +3609,7 @@ sub ProcessRecordBulkCustomFields {
     foreach my $key ( keys %$ARGSRef ) {
         next unless $key =~ /^Bulk-(Add|Delete)-CustomField-(\d+)-(.*)$/;
         my ($op, $cfid, $rest) = ($1, $2, $3);
-        next if $rest eq "Category";
+        next if $rest =~ /-Category$/;
 
         my $res = $data{$cfid} ||= {};
         unless (keys %$res) {
