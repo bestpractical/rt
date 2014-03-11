@@ -85,20 +85,9 @@ sub VerifyDecrypt {
         Entity => $args{'Message'},
     );
     if ( !@res ) {
-        if (RT->Config->Get('Crypt')->{'RejectOnUnencrypted'}) {
-            EmailErrorToSender(
-                %args,
-                Template  => 'Error: unencrypted message',
-                Arguments => { Message  => $args{'Message'} },
-            );
-            $RT::Logger->warning("rejected because the message is unencrypted with RejectOnUnencrypted enabled");
-            FAILURE('rejected because the message is unencrypted with RejectOnUnencrypted enabled');
-        }
-        else {
-            $args{'Message'}->head->replace(
-                'X-RT-Incoming-Encryption' => 'Not encrypted'
-            );
-        }
+        $args{'Message'}->head->replace(
+            'X-RT-Incoming-Encryption' => 'Not encrypted'
+        );
         return;
     }
 
