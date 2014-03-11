@@ -97,8 +97,8 @@ sub _HandleCreate {
     MailError(
         Subject     => "Ticket creation failed: $args{Subject}",
         Explanation => $ErrStr,
+        FAILURE     => 1,
     );
-    FAILURE("Ticket creation failed: $ErrStr", $args{Ticket} );
 }
 
 sub HandleComment {
@@ -123,12 +123,11 @@ sub _HandleEither {
     return _HandleCreate(@_) unless $args{TicketId};
 
     unless ( $args{Ticket}->Id ) {
-        my $error = "Could not find a ticket with id " . $args{TicketId};
         MailError(
             Subject     => "Message not recorded: $args{Subject}",
-            Explanation => $error,
+            Explanation => "Could not find a ticket with id " . $args{TicketId},
+            FAILURE     => 1,
         );
-        FAILURE( $error );
     }
 
     my $action = ucfirst $args{Action};
