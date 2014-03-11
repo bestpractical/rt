@@ -63,12 +63,11 @@ sub HandleTake {
     );
 
     unless ( $args{Ticket}->Id ) {
-        my $error = "Could not find a ticket with id " . $args{TicketId};
         MailError(
             Subject     => "Message not recorded: $args{Subject}",
-            Explanation => $error,
+            Explanation => "Could not find a ticket with id " . $args{TicketId},
+            FAILURE     => 1,
         );
-        FAILURE( $error );
     }
 
     my $From = Encode::decode( "UTF-8", $args{Message}->head->get("From") );
@@ -79,8 +78,8 @@ sub HandleTake {
     MailError(
         Subject     => "Ticket not taken",
         Explanation => $msg,
+        FAILURE     => 1,
     );
-    FAILURE( "Ticket not taken, by email From: $From" );
 }
 
 1;

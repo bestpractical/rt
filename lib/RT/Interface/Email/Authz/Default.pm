@@ -128,8 +128,8 @@ EOT
     MailError(
         Subject     => "Permission Denied",
         Explanation => $msg,
+        FAILURE     => 1,
     );
-    FAILURE( $msg );
 }
 
 1;
