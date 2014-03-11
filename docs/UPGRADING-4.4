@@ -53,6 +53,12 @@ The C<$UnsafeEmailCommands> option has been replaced with two mail
 plugins, L<RT::Interface::Email::Action::Take>, and
 L<RT::Interface::Email::Action::Resolve>.
 
+=item *
+
+The C<RejectOnUnencrypted> option to L<RT_Config/%Crypt> has been
+replaced with a mail plugin,
+L<RT::Interface::Email::Authz::RequireEncrypted>.
+
 =back
 
 =cut

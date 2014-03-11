@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test::SMIME tests => undef, actual_server => 1, config => 'Set( %Crypt, RejectOnUnencrypted => 1 );';
+use RT::Test::SMIME tests => undef, actual_server => 1, config => 'Set( @MailPlugins, "Authz::RequireEncrypted" );';
 my $test = 'RT::Test::SMIME';
 
 use IPC::Run3 'run3';
