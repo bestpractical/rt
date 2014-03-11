@@ -194,6 +194,7 @@ EOF
     $u->Load("doesnotexist\@@{[RT->Config->Get('rtname')]}");
     ok( $u->Id, "user was created by failed ticket submission");
 
+    $m->next_warning_like(qr/Failed attempt to create a ticket by email, from doesnotexist\@\S+.*grant.*CreateTicket right/s);
     $m->next_warning_like(qr/Permission Denied: doesnotexist\@\S+ has no right to create tickets in queue General/);
     $m->next_warning_like(qr/Could not record email: doesnotexist\@\S+ has no right to create tickets in queue General/);
     $m->no_leftover_warnings_ok;
@@ -253,6 +254,7 @@ EOF
     my $u = RT::User->new(RT->SystemUser);
     $u->Load('doesnotexist-2@'.RT->Config->Get('rtname'));
     ok( $u->Id, "user was created by ticket correspondence submission");
+    $m->next_warning_like(qr/Failed attempt to reply to a ticket by email, from doesnotexist-2\@\S+.*grant.*ReplyToTicket right/s);
     $m->next_warning_like(qr/Permission Denied: doesnotexist-2\@\S+ has no right to reply to ticket $ticket_id in queue General/);
     $m->next_warning_like(qr/Could not record email: doesnotexist-2\@\S+ has no right to reply to ticket $ticket_id in queue General/);
     $m->no_leftover_warnings_ok;

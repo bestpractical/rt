@@ -127,6 +127,16 @@ sub CheckACL {
             # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
             return 1 if $principal->HasRight( Object => $args{'Ticket'}, Right  => 'ReplyToTicket' );
             $msg = "$email has no right to reply to ticket $tid in queue $qname";
+
+            # Also notify the owner
+            MailError(
+                To          => RT->Config->Get('OwnerEmail'),
+                Subject     => "Failed attempt to reply to a ticket by email, from $email",
+                Explanation => <<EOT,
+$email attempted to reply to a ticket via email in the queue $qname; you
+might need to grant 'Everyone' the ReplyToTicket right.
+EOT
+            );
         }
         elsif ( $args{'Action'} =~ /^take$/i ) {
 
@@ -153,6 +163,16 @@ sub CheckACL {
         # check to see whether "Everybody" or "Unprivileged users" can create tickets in this queue
         return 1 if $principal->HasRight( Object => $args{'Queue'}, Right  => 'CreateTicket' );
         $msg = "$email has no right to create tickets in queue $qname";
+
+        # Also notify the owner
+        MailError(
+            To          => RT->Config->Get('OwnerEmail'),
+            Subject     => "Failed attempt to create a ticket by email, from $email",
+            Explanation => <<EOT,
+$email attempted to create a ticket via email in the queue $qname; you
+might need to grant 'Everyone' the CreateTicket right.
+EOT
+        );
     }
     else {
         $RT::Logger->warning("Action '". ($args{'Action'}||'') ."' is unknown with no ticket");
