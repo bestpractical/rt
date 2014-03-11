@@ -146,10 +146,16 @@ if ( $DB{'type'} eq 'mysql' ) {
         default => $DEFAULT{'table'},
         silent  => !$OPT{'ask'},
     );
-    my $url = $OPT{'url'} || prompt(
+
+    my $url = 'sphinx://localhost:3312/rt';
+    my $version = ($dbh->selectrow_array("show variables like 'version'"))[1];
+    $url = 'sphinx://127.0.0.1:3312/rt'
+        if $version and $version =~ /^(\d+\.\d+)/ and $1 >= 5.5;
+
+    $url = $OPT{'url'} || prompt(
         message => "Enter URL of the sphinx search server; this should be of the form\n"
                  . "sphinx://<server>:<port>/<index name>",
-        default => 'sphinx://localhost:3312/rt',
+        default => $url,
         silent  => !$OPT{'ask'},
     );
     my $maxmatches = $OPT{'maxmatches'} || prompt(
