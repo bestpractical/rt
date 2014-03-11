@@ -54,6 +54,39 @@ use warnings;
 use Role::Basic 'with';
 with 'RT::Interface::Email::Role';
 
+sub CheckACL {
+    my %args = (
+        Message     => undef,
+        CurrentUser => undef,
+        Ticket      => undef,
+        Queue       => undef,
+        Action      => undef,
+        @_,
+    );
+
+    return unless lc $args{Action} eq "take";
+
+    unless ( $args{Ticket}->Id ) {
+        MailError(
+            Subject     => "Message not recorded: $args{Subject}",
+            Explanation => "Could not find a ticket with id $args{TicketId}",
+            FAILURE     => 1,
+        );
+    }
+
+    my $principal = $args{CurrentUser}->PrincipalObj;
+    return 1 if $principal->HasRight( Object => $args{'Ticket'}, Right  => 'OwnTicket' );
+
+    my $email = $args{CurrentUser}->UserObj->EmailAddress;
+    my $qname = $args{Queue}->Name;
+    my $tid   = $args{Ticket}->id;
+    MailError(
+        Subject     => "Permission Denied",
+        Explanation => "$email has no right to own ticket $tid in queue $qname",
+        FAILURE     => 1,
+    );
+}
+
 sub HandleTake {
     my %args = (
         Message     => undef,
@@ -61,14 +94,6 @@ sub HandleTake {
         Queue       => undef,
         @_,
     );
-
-    unless ( $args{Ticket}->Id ) {
-        MailError(
-            Subject     => "Message not recorded: $args{Subject}",
-            Explanation => "Could not find a ticket with id " . $args{TicketId},
-            FAILURE     => 1,
-        );
-    }
 
     my $From = Encode::decode( "UTF-8", $args{Message}->head->get("From") );
 

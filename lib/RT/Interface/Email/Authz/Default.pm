@@ -90,14 +90,6 @@ might need to grant 'Everyone' the ReplyToTicket right.
 EOT
             );
         }
-        elsif ( $args{'Action'} =~ /^take$/i ) {
-            return 1 if $principal->HasRight( Object => $args{'Ticket'}, Right  => 'OwnTicket' );
-            $msg = "$email has no right to own ticket $tid in queue $qname";
-        }
-        elsif ( $args{'Action'} =~ /^resolve$/i ) {
-            return 1 if $principal->HasRight( Object => $args{'Ticket'}, Right  => 'ModifyTicket' );
-            $msg = "$email has no right to resolve ticket $tid in queue $qname";
-        }
         else {
             $RT::Logger->warning("Action '". ($args{'Action'}||'') ."' is unknown");
             return;
