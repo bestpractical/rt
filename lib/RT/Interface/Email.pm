@@ -125,7 +125,6 @@ sub Gateway {
     $SCOPE = HERE;
 
     my $SystemTicket;
-    my $Right;
 
     # Validate the action
     my ( $status, @actions ) = IsCorrectAction( $args{'action'} );
@@ -210,6 +209,7 @@ sub Gateway {
 
     $SystemTicket = RT::Ticket->new( RT->SystemUser );
     $SystemTicket->Load( $args{'ticket'} ) if ( $args{'ticket'} ) ;
+    my $Right;
     if ( $SystemTicket->id ) {
         $Right = 'ReplyToTicket';
     } else {
