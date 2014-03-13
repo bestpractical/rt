@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use RT::Test::GnuPG
-  tests         => 6,
+  tests         => undef,
   gnupg_options => {
     passphrase    => 'rt-test',
     'trust-model' => 'always',
@@ -19,18 +19,24 @@ my $queue;
     ok !$queue->CorrespondAddress, 'address not set';
 }
 
-use Test::Warn;
-warnings_like {
-    my $ticket = RT::Ticket->new( RT->SystemUser );
-    my ($status, undef, $msg) = $ticket->Create(
-        Queue => $queue->id,
-        Subject => 'test',
-        Requestor => 'root@localhost',
-    );
-    ok $status, "created ticket" or diag "error: $msg";
+# We don't use Test::Warn here, because it apparently only captures up
+# to the first newline -- and the meat of this message is on the fourth
+# line.
+my @warnings;
+local $SIG{__WARN__} = sub {
+    push @warnings, "@_";
+};
 
-    my $log = RT::Test->file_content([RT::Test->temp_directory, 'rt.debug.log']);
-    like $log, qr{secret key not available}, 'error in the log';
-    unlike $log, qr{Scrip .*? died}m, "scrip didn't die";
-} [qr{gpg: keyring .*? created}];
+my $ticket = RT::Ticket->new( RT->SystemUser );
+my ($status, undef, $msg) = $ticket->Create(
+    Queue => $queue->id,
+    Subject => 'test',
+    Requestor => 'root@localhost',
+);
+ok( $status, "created ticket" ) or diag "error: $msg";
 
+is( scalar @warnings, 1, "Got a warning" );
+like( $warnings[0], qr{signing failed: secret key not available},
+    "Found warning of no secret key");
+
+done_testing;
