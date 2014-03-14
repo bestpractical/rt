@@ -56,14 +56,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <!-- The X-UA-Compatible <meta> tag above must be very early in <head> -->
 
-    <& /Elements/Framekiller &>
-
 % if ($Refresh && $Refresh =~ /^(\d+)/ && $1 > 0) {
 %   my $URL = $m->notes->{RefreshURL}; $URL = $URL ? ";URL=$URL" : "";
     <meta http-equiv="refresh" content="<% "$1$URL" %>" />
 % }
 
-<link rel="shortcut icon" href="<%RT->Config->Get('WebImagesURL')%>favicon.png" type="image/png" />
+<& JavascriptConfig &>
+
 % for my $cssfile ( @css_files ) {
 <link rel="stylesheet" href="<%RT->Config->Get('WebPath')%><% $cssfile %>" type="text/css" media="all" />
 % }
@@ -71,12 +70,11 @@
 % for (keys %{$LinkRel || {}}) {
     <link rel="<% $_ %>" href="<% RT->Config->Get('WebPath') . $LinkRel->{$_} %>" />
 % }
+<link rel="shortcut icon" href="<%RT->Config->Get('WebImagesURL')%>favicon.png" type="image/png" />
 
 % if ( $RSSAutoDiscovery ) {
     <link rel="alternate" href="<%$RSSAutoDiscovery%>" type="application/rss+xml" title="RSS RT Search" />
 % }
-
-<& HeaderJavascript, focus => $Focus, onload => $onload, RichText => $RichText &>
 
 % my $stylesheet_plugin = "/NoAuth/css/".$style."/InHeader";
 % if ($m->comp_exists($stylesheet_plugin) ) {
@@ -93,6 +91,10 @@
 </style>
 % # Leave %ARGS for backward compatibility
 % $m->callback( %ARGS, CallbackName => 'Head', ARGSRef => \%ARGS );
+
+<& HeaderJavascript, focus => $Focus, onload => $onload, RichText => $RichText &>
+
+<& /Elements/Framekiller &>
 
 </head>
   <body class="<% lc $style %><% RT->Config->Get("UseSideBySideLayout", $session{'CurrentUser'}) ? ' sidebyside' : '' %>" <% $id && qq[id="comp-$id"] |n %>>

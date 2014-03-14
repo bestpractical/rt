@@ -49,7 +49,6 @@
 $focus => undef
 $onload => undef
 </%args>
-<& JavascriptConfig &>
 
 % for my $jsfile ( @js_files ) {
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%><% $jsfile %>"></script>
