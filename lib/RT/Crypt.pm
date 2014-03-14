@@ -430,7 +430,11 @@ An un-localized error message desribing the problem.
 
 sub SignEncrypt {
     my $self = shift;
-    my %args = (@_);
+    my %args = (
+        Sign => 1,
+        Encrypt => 1,
+        @_,
+    );
 
     my $entity = $args{'Entity'};
     if ( $args{'Sign'} && !defined $args{'Signer'} ) {
