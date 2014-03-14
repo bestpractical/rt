@@ -44,6 +44,7 @@ $m->submit_form(
         LookupType => 'RT::Class-RT::Article',
         Name => 'img'.$$,
         Description => 'img',
+        EntryHint => 'Upload multiple images',
     },
 );
 $m->title_is(qq/Editing CustomField img$$/, 'admin-cf created');

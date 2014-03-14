@@ -21,6 +21,7 @@ diag "Create a CF";
             Name          => $cf_name,
             TypeComposite => 'Date-1',
             LookupType    => 'RT::Queue-RT::Ticket',
+            EntryHint     => 'Select date',
         },
     );
     $m->content_contains('Object created', 'created CF sucessfully' );
