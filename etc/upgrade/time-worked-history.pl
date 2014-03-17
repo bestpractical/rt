@@ -86,7 +86,7 @@ sub fix_time_worked_history {
         } elsif ( $txn->Type eq 'Set' && $txn->Field eq 'TimeWorked' ) {
             $history += $txn->NewValue - $txn->OldValue;
             $candidate = $txn;
-        } elsif ( $candidate && $txn->Field eq 'MergedInto' ) {
+        } elsif ( $candidate && ($txn->Field||'') eq 'MergedInto' ) {
             if ($candidate->Creator eq $txn->Creator ) {
                 push @delete, $candidate;
                 $delete_time += $candidate->NewValue - $candidate->OldValue;
