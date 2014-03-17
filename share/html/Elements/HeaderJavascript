@@ -78,7 +78,7 @@ $RichText => 1
 
 my @js_files;
 if ( RT->Config->Get('DevelMode') ) {
-    @js_files = map { "/static/js/$_" } RT::Interface::Web->JSFiles();
+    @js_files = map { $_ =~ m{^/} ? $_ : "/static/js/$_" } RT::Interface::Web->JSFiles();
 }
 else {
     my $key = RT::Interface::Web::SquishedJS()->Key;
