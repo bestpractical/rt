@@ -136,17 +136,23 @@ if ($DB{'type'} eq "mysql") {
     my $index_type = lc($OPT{'index-type'} || '');
 
     # Default to sphinx on < 5.6, and error if they provided mysql
+    my $msg;
     if ($RT::Handle->dbh->{mysql_serverversion} < 50600) {
-        $index_type ||= 'sphinx';
-        die "Native MySQL indexing is only supported in MySQL 5.6 and above"
-            if $index_type ne 'sphinx';
+        $msg = "Complete support for full-text search requires MySQL 5.6 or higher.  For prior\n"
+              ."versions such as yours, full-text indexing can either be provided using MyISAM\n"
+              ."tables, or the external Sphinx indexer.  Using MyISAM tables requires that your\n"
+              ."database be tuned to support them, as RT uses InnoDB tables for all other content.\n"
+              ."Using Sphinx will require recompiling MySQL.  Which indexing solution would you\n"
+              ."prefer?"
+    } else {
+        $msg = "MySQL 5.6 and above support native full-text indexing; for compatibility\n"
+              ."with earlier versions of RT, the external Sphinx indexer is still supported.\n"
+              ."Which indexing solution would you prefer?"
     }
 
     while ( $index_type ne 'sphinx' and $index_type ne 'mysql' ) {
         $index_type = lc prompt(
-            message => "MySQL 5.6 and above support native full-text indexing; for compatibility\n"
-                      ."with earlier versions of RT, the external Sphinx indexer is still supported.\n"
-                      ."Which indexing solution would you prefer?",
+            message => $msg,
             default => 'mysql',
             silent  => !$OPT{'ask'},
         );
@@ -166,9 +172,10 @@ if ( $DB{'type'} eq 'mysql' ) {
     do_error_is_ok( dba_handle() => "DROP TABLE $table" )
         unless $OPT{'dryrun'};
 
+    my $engine = $RT::Handle->dbh->{mysql_serverversion} < 50600 ? "MyISAM" : "InnoDB";
     my $schema = "CREATE TABLE $table ( "
         ."id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,"
-        ."Content LONGTEXT, FULLTEXT(Content) ) ENGINE=InnoDB CHARACTER SET utf8";
+        ."Content LONGTEXT, FULLTEXT(Content) ) ENGINE=$engine CHARACTER SET utf8";
     insert_schema( $schema );
 
     print_rt_config( Table => $table );

@@ -4,8 +4,6 @@ use warnings;
 
 use RT::Test tests => undef;
 plan skip_all => 'Not mysql' unless RT->Config->Get('DatabaseType') eq 'mysql';
-plan skip_all => "Need mysql 5.6 or higher"
-    unless $RT::Handle->dbh->{mysql_serverversion} > 50600;
 
 RT->Config->Set( FullTextSearch => Enable => 1, Indexed => 1, Table => 'AttachmentsIndex' );
 
@@ -68,14 +66,16 @@ sub run_test {
 
 @tickets = RT::Test->create_tickets(
     { Queue => $q->id },
-    { Subject => 'book', Content => 'book' },
-    { Subject => 'bar', Content => 'bar' },
+    { Subject => 'first', Content => 'english' },
+    { Subject => 'second',  Content => 'french' },
+    { Subject => 'third',  Content => 'spanish' },
+    { Subject => 'fourth',  Content => 'german' },
 );
 sync_index();
 
 run_tests(
-    "Content LIKE 'book'" => { book => 1, bar => 0 },
-    "Content LIKE 'bar'" => { book => 0, bar => 1 },
+    "Content LIKE 'english'" => { first => 1, second => 0, third => 0, fourth => 0 },
+    "Content LIKE 'french'" => { first => 0, second => 1, third => 0, fourth => 0 },
 );
 
 @tickets = ();

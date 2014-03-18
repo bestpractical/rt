@@ -61,15 +61,15 @@ C<cron>:
 
 =head1 MYSQL
 
-MySQL does not support full-text indexing natively until version 5.6 and
-above.  For prior versions, RT can integrate with the external Sphinx
-full-text search engine.
+On MySQL, full-text search can either be done using native support
+(which may use MyISAM tables on pre-5.6 versions of MySQL), or RT can
+integrate with the external Sphinx full-text search engine.
 
-=head2 MySQL 5.6 and above
+=head2 Native MySQL
 
-MySQL 5.6 includes full-text search of InnoDB tables.  However, as RT
-marks attachment data as C<BINARY>, it cannot index this content without
-creating additional tables.  To create the required table, run:
+As RT marks attachment data as C<BINARY>, MySQL cannot index this
+content without creating an additional table.  To create the required
+table (which is InnoDB on versions of MySQL which support it), run:
 
     /opt/rt4/sbin/rt-setup-fulltext-index
 

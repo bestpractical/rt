@@ -15,8 +15,6 @@ plan skip_all => "No searchd and indexer under PATH"
 
 plan tests => 15;
 
-RT->Config->Set( FullTextSearch => Enable => 1, Indexed => 1, Table => 'AttachmentsIndex', MaxMatches => 1000 );
-
 setup_indexing();
 
 my $q = RT::Test->load_or_create_queue( Name => 'General' );
@@ -33,6 +31,7 @@ sub setup_indexing {
         dba            => $ENV{'RT_DBA_USER'},
         'dba-password' => $ENV{'RT_DBA_PASSWORD'},
         url            => "sphinx://127.0.0.1:$port/rt",
+        'index-type'   => 'sphinx',
     );
     ok(!$exit_code, "setted up index");
     diag "output: $output" if $ENV{'TEST_VERBOSE'};
@@ -117,6 +116,8 @@ sub run_test {
     { Subject => 'bar', Content => 'bar' },
 );
 sync_index();
+
+RT->Config->Set( FullTextSearch => Enable => 1, Indexed => 1, Table => 'AttachmentsIndex', MaxMatches => 1000, Sphinx => 1 );
 
 run_tests(
     "Content LIKE 'book'" => { book => 1, bar => 0 },
