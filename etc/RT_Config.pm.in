@@ -426,7 +426,7 @@ Set($RTAddressRegexp, undef);
 RT provides functionality which allows the system to rewrite incoming
 email addresses.  In its simplest form, you can substitute the value
 in C<CanonicalizeEmailAddressMatch> for the value in
-C<CanonicalizeEmailAddressReplace>> (These values are passed to the
+C<CanonicalizeEmailAddressReplace> (These values are passed to the
 C<CanonicalizeEmailAddress> subroutine in F<RT/User.pm>)
 
 By default, that routine performs a C<s/$Match/$Replace/gi> on any
