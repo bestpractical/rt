@@ -212,9 +212,7 @@ AC_ARG_WITH(rt-group,
 AC_SUBST(RTGROUP)
 
 dnl INSTALL AS ME
-# XXX TODO: The command below to figure out the group brokenly relies on
-# output order (and "id -gn" doesn't work on all platforms).
-my_group=$(groups|cut -f1 -d' ')
+my_group=$($PERL -MPOSIX=getgid -le 'print scalar getgrgid getgid')
 my_user=${USER:-$LOGNAME}
 AC_ARG_WITH(my-user-group,
             AC_HELP_STRING([--with-my-user-group],
