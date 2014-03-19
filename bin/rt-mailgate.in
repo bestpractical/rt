@@ -400,12 +400,9 @@ equivalent.
 =head1 SETUP
 
 Much of the set up of the mail gateway depends on your MTA and mail
-routing configuration. However, you will need first of all to create an
-RT user for the mail gateway and assign it a password; this helps to
-ensure that mail coming into the web server did originate from the
-gateway.
+routing configuration.
 
-Next, you need to route mail to C<rt-mailgate> for the queues you're
+You need to route mail to C<rt-mailgate> for the queues you're
 monitoring. For instance, if you're using F</etc/aliases> and you have a
 "bugs" queue, you will want something like this:
 
