@@ -1,0 +1,1 @@
+ALTER TABLE CustomFields ADD EntryHint VARCHAR2(255) NULL;

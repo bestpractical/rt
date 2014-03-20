@@ -234,6 +234,7 @@ Create takes a hash of values and creates a row in the database:
   varchar(255) 'Description'.
   int(11) 'SortOrder'.
   varchar(255) 'LookupType'.
+  varchar(255) 'EntryHint'.
   smallint(6) 'Disabled'.
 
 C<LookupType> is generally the result of either
@@ -253,6 +254,7 @@ sub Create {
         LookupType  => '',
         LinkValueTo => '',
         IncludeContentForValue => '',
+        EntryHint   => undef,
         @_,
     );
 
@@ -341,6 +343,8 @@ sub Create {
         if ( exists $args{'LinkValueTo'}) {
             $self->SetLinkValueTo($args{'LinkValueTo'});
         }
+
+        $self->SetEntryHint( $args{EntryHint} // $self->FriendlyType );
 
         if ( exists $args{'IncludeContentForValue'}) {
             $self->SetIncludeContentForValue($args{'IncludeContentForValue'});
@@ -732,7 +736,11 @@ sub SetType {
         );
         $self->SetMaxValues($1 ? 1 : 0);
     }
-    $self->_Set(Field => 'Type', Value =>$type);
+    my $need_to_update_hint;
+    $need_to_update_hint = 1 if $self->EntryHint && $self->EntryHint eq $self->FriendlyType;
+    my ( $ret, $msg ) = $self->_Set( Field => 'Type', Value => $type );
+    $self->SetEntryHint($self->FriendlyType) if $need_to_update_hint && $ret;
+    return ( $ret, $msg );
 }
 
 =head2 SetPattern STRING
@@ -2043,6 +2051,16 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 =cut
 
+=head2 SetEntryHint VALUE
+
+
+Set EntryHint to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, EntryHint will be stored as a varchar(255).)
+
+
+=cut
+
 
 =head2 Creator
 
@@ -2124,6 +2142,8 @@ sub _CoreAccessible {
         {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         LookupType => 
         {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
+        EntryHint =>
+        {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0, is_numeric => 0,  type => 'varchar(255)', default => undef },
         Creator => 
         {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Created => 

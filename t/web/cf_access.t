@@ -56,6 +56,7 @@ diag "Create a CF";
             LookupType => 'RT::Queue-RT::Ticket',
             Name => 'img',
             Description => 'img',
+            EntryHint => 'Upload multiple images',
         },
     );
     $m->text_contains('Object created');

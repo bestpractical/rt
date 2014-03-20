@@ -12,6 +12,7 @@ $m->submit_form_ok({
         Name          => 'Images',
         TypeComposite => 'Image-1',
         LookupType    => 'RT::Queue-RT::Ticket',
+        EntryHint     => 'Upload one image',
     },
 });
 $m->content_contains("Object created");

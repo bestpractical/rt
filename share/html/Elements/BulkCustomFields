@@ -56,7 +56,7 @@
 % while (my $cf = $CustomFields->Next) {
 <tr class="<% ++$i%2 ? 'oddline': 'evenline' %>">
 <td class="label"><% $cf->Name %><br />
-<em>(<% $cf->FriendlyType %>)</em></td>
+<em>(<% $cf->EntryHint // '' %>)</em></td>
 % my $rows = 5;
 % my $cf_id = $cf->id;
 % my @add = (NamePrefix => 'Bulk-Add-CustomField-', CustomField => $cf, Rows => $rows,
