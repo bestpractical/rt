@@ -57,8 +57,11 @@ edge [
 "Scrips" [shape = record, fontsize = 18, label = "<col0> \N " ];
 "Scrips" -> "ScripConditions" [label="ScripCondition → id"];
 "Scrips" -> "ScripActions" [label="ScripAction → id"];
-"Scrips" -> "Templates" [label="Template → id"];
-"Scrips" -> "Queues" [label="Queue → id"];
+"Scrips" -> "Templates" [label="Template → Name"];
+"Scrips" -> "ObjectScrips" [label="id → Scrip"]
+
+"ObjectScrips" [shape = record, fontsize = 18, label = "<col0> \N " ];
+"ObjectScrips" -> "Queues" [label="ObjectId → id"];
 
 "Templates" [shape = record, fontsize = 18, label = "<col0> \N " ];
 "Templates" -> "Queues" [label ="Queue → id" ];
