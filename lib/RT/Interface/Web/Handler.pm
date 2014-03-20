@@ -313,7 +313,14 @@ sub PSGIApp {
                                             $self->CleanupRequest()
                                         });
     };
-    return $self->StaticWrap($mason);
+
+    my $app = $self->StaticWrap($mason);
+    for my $plugin (RT->Config->Get("Plugins")) {
+        my $wrap = $plugin->can("PSGIWrap")
+            or next;
+        $app = $wrap->($plugin, $app);
+    }
+    return $app;
 }
 
 sub StaticWrap {
