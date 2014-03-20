@@ -76,7 +76,7 @@ sub Squish {
     my $content = "";
 
     for my $file ( RT::Interface::Web->JSFiles ) {
-        my $uri = "/static/js/$file";
+        my $uri = $file =~ m{^/} ? $file : "/static/js/$file";
         my $res = RT::Interface::Web::Handler->GetStatic($uri);
 
         if ($res->is_success) {
