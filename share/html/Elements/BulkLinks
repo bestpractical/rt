@@ -154,7 +154,6 @@
 
 <%ARGS>
 $Collection
-$ShowMerge => 0
 </%ARGS>
 
 <%INIT>
