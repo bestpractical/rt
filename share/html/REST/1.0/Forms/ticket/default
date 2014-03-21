@@ -99,12 +99,16 @@ else {
     if (!keys(%data)) {
         # GET ticket/new: Return a suitable default form.
         # We get defaults from queue/1 (XXX: What if it isn't there?).
-        my $due = RT::Date->new($session{CurrentUser});
         my $queue = RT::Queue->new($session{CurrentUser});
-        my $starts = RT::Date->new($session{CurrentUser});
         $queue->Load(1);
-        $due->SetToNow;
-        $due->AddDays($queue->DefaultDueIn) if $queue->DefaultDueIn;
+
+        my $due;
+        if ($queue->DefaultDueIn) {
+            $due = RT::Date->new($session{CurrentUser});
+            $due->SetToNow;
+            $due->AddDays($queue->DefaultDueIn);
+        }
+        my $starts = RT::Date->new($session{CurrentUser});
         $starts->SetToNow;
 
         return [
@@ -125,7 +129,7 @@ else {
                 FinalPriority    => $queue->FinalPriority,
                 TimeEstimated    => 0,
                 Starts           => $starts->ISO,
-                Due              => $due->ISO,
+                Due              => $due ? $due->ISO : undef,
                 Attachment       => '',
                 Text             => "",
             },
