@@ -74,6 +74,8 @@ my @excludes;
 @excludes = split ' ', $prev if $prev;
 push @excludes, split ' ', $exclude if $exclude;
 
+$m->abort unless $term;
+
 my %fields = %{ RT->Config->Get('TicketAutocompleteFields')
                 || { id => 'STARTSWITH', Subject => 'LIKE' } };
 
