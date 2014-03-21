@@ -243,13 +243,17 @@ my @results;
 my $imgdata;
 
 if (my $file_hash = _UploadedFile( 'logo-upload' )) {
-    my ($id, $msg) = RT->System->SetAttribute( Name => "UserLogo",
-                                                Description => "User-provided logo",
-                                                Content => {
-                                                    type => $file_hash->{ContentType},
-                                                    data => $file_hash->{LargeContent},
-                                                    hash => md5_hex($file_hash->{LargeContent}),
-                                                } );
+    my $my_system = RT::System->new( $session{CurrentUser} );
+    my ( $id, $msg ) = $my_system->SetAttribute(
+        Name        => "UserLogo",
+        Description => "User-provided logo",
+        Content     => {
+            type => $file_hash->{ContentType},
+            data => $file_hash->{LargeContent},
+            hash => md5_hex($file_hash->{LargeContent}),
+        },
+    );
+
     push @results, loc("Unable to set UserLogo: [_1]", $msg) unless $id;
 
     $imgdata = $file_hash->{LargeContent};
