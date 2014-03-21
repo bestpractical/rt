@@ -70,16 +70,9 @@ $m->abort unless $CurrentUser->Privileged;
 
 my @excludes;
 
-if ( $term =~ /[^\d\s]/ ) { # to search subject, which may contain spaces
-    (my $prev, $term) = $term =~ /(.*?)\s*\b([^\d\s].*)/;
-    @excludes = split /\s+/, $prev if $prev;
-}
-else {
-    my @terms = split /\s+/, $term;
-    $term = pop @terms;
-    @excludes = @terms;
-}
-push @excludes, split /\s+/, $exclude if $exclude;
+(my $prev, $term) = $term =~ /^((?:\d+\s+)*)(.*)/;
+@excludes = split ' ', $prev if $prev;
+push @excludes, split ' ', $exclude if $exclude;
 
 my %fields = %{ RT->Config->Get('TicketAutocompleteFields')
                 || { id => 'STARTSWITH', Subject => 'LIKE' } };
