@@ -68,8 +68,6 @@ my $CurrentUser = $session{'CurrentUser'};
 # Require privileged users
 $m->abort unless $CurrentUser->Privileged;
 
-$term =~ s/(['\\])/\\$1/g;
-
 my @excludes;
 
 if ( $term =~ /[^\d\s]/ ) { # to search subject, which may contain spaces
@@ -89,6 +87,7 @@ my %fields = %{ RT->Config->Get('TicketAutocompleteFields')
 my $tickets = RT::Tickets->new( $CurrentUser );
 
 my @clauses;
+$term =~ s/(['\\])/\\$1/g;  #'
 while (my ($name, $op) = each %fields) {
     $op = 'STARTSWITH'
         unless $op =~ /^(?:LIKE|(?:START|END)SWITH|=|!=)$/i;
