@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#!@PERL@
 # BEGIN BPS TAGGED BLOCK {{{
 #
 # COPYRIGHT:
@@ -50,75 +50,41 @@ use 5.10.1;
 use strict;
 use warnings;
 
-use RT;
-RT::LoadConfig();
+use lib "@LOCAL_LIB_PATH@";
+use lib "@RT_LIB_PATH@";
+
+use RT -init;
 RT->Config->Set('LogToSTDERR' => 'debug');
-RT::Init();
-
-use RT::CachedGroupMembers;
-my $cgms = RT::CachedGroupMembers->new( RT->SystemUser );
-$cgms->Limit(
-    FIELD => 'id',
-    OPERATOR => '!=',
-    VALUE => 'main.Via',
-    QUOTEVALUE => 0,
-    ENTRYAGGREGATOR => 'AND',
-);
-$cgms->FindAllRows;
-
-my $alias = $cgms->Join(
-    TYPE   => 'LEFT',
-    FIELD1 => 'Via',
-    TABLE2 => 'CachedGroupMembers',
-    FIELD2 => 'id',
-);
-$cgms->Limit(
-    ALIAS => $alias,
-    FIELD => 'MemberId',
-    OPERATOR => '=',
-    VALUE => $alias .'.GroupId',
-    QUOTEVALUE => 0,
-    ENTRYAGGREGATOR => 'AND',
-);
-$cgms->Limit(
-    ALIAS => $alias,
-    FIELD => 'id',
-    OPERATOR => '=',
-    VALUE => $alias .'.Via',
-    QUOTEVALUE => 0,
-    ENTRYAGGREGATOR => 'AND',
-);
 
 $| = 1;
-my $total = $cgms->Count;
-my $i = 0;
 
-FetchNext( $cgms, 'init' );
-while ( my $rec = FetchNext( $cgms ) ) {
-    $i++;
-    printf("\r%0.2f %%", 100 * $i / $total);
-    $RT::Handle->BeginTransaction;
-    my ($status) = $rec->Delete;
-    unless ($status) {
-        print STDERR "Couldn't delete CGM #". $rec->id;
-        exit 1;
-    }
-    $RT::Handle->Commit;
-}
+use RT::Users;
+my $users = RT::Users->new( $RT::SystemUser );
+$users->UnLimit();
 
-use constant PAGE_SIZE => 10000;
-sub FetchNext {
-    my ($objs, $init) = @_;
-    if ( $init ) {
-        $objs->RowsPerPage( PAGE_SIZE );
-        $objs->FirstPage;
-        return;
+my @static_roots = RT::Interface::Web->StaticRoots;
+my %static_root_check_cache;
+sub stylesheet_exists {
+    my $stylesheet = shift;
+
+    return $static_root_check_cache{$stylesheet}
+        if exists $static_root_check_cache{$stylesheet};
+
+    for my $static_root (@static_roots) {
+        return ++$static_root_check_cache{$stylesheet}
+            if -d "$static_root/css/$stylesheet";
     }
 
-    my $obj = $objs->Next;
-    return $obj if $obj;
-    $objs->RedoSearch;
-    $objs->FirstPage;
-    return $objs->Next;
+    return $static_root_check_cache{$stylesheet} = 0;
 }
 
+my $system_stylesheet = RT->Config->Get('WebDefaultStylesheet');
+
+while (my $u = $users->Next) {
+    my $stylesheet = RT->Config->Get('WebDefaultStylesheet', $u);
+    unless (stylesheet_exists $stylesheet) {
+        my $prefs = $u->Preferences($RT::System);
+        $prefs->{WebDefaultStylesheet} = $system_stylesheet;
+        $u->SetPreferences($RT::System, $prefs);
+    }
+}

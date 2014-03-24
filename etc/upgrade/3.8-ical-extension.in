@@ -46,16 +46,16 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
+use 5.10.1;
 use strict;
 use warnings;
 
 use lib "@LOCAL_LIB_PATH@";
 use lib "@RT_LIB_PATH@";
 
+use RT -init;
 
-use RT;
-RT::LoadConfig();
-RT::Init();
+$| = 1;
 
 use RT::Attributes;
 my $attrs = RT::Attributes->new( RT->SystemUser );

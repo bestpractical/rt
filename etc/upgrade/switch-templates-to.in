@@ -46,13 +46,17 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
+use 5.10.1;
 use strict;
 use warnings;
 
 use lib "@LOCAL_LIB_PATH@";
 use lib "@RT_LIB_PATH@";
 
-use RT;
+use RT -init;
+RT->Config->Set('LogToSTDERR' => 'info');
+
+$| = 1;
 
 my $to = shift || '';
 my $from;
@@ -66,11 +70,6 @@ if ($to =~ /html|text/i) {
     exit 1;
 }
 
-RT::LoadConfig();
-RT->Config->Set('LogToSTDERR' => 'info');
-RT::Init();
-
-$| = 1;
 
 my @templates = (
     "Autoreply",
