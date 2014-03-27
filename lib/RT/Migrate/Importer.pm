@@ -291,6 +291,7 @@ sub Qualify {
     my ($string) = @_;
     return $string if $self->{Clone};
     return $string if not defined $self->{Organization};
+    return $string if $self->{Organization} eq $RT::Organization;
     return $self->{Organization}.": $string";
 }
 
