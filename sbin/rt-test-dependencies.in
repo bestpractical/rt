@@ -55,9 +55,13 @@ use strict;
 use warnings;
 no warnings qw(numeric redefine);
 use Getopt::Long;
+use Cwd qw(abs_path);
 my %args;
 my %deps;
 my @orig_argv = @ARGV;
+# Save our path because installers or tests can change cwd
+my $script_path = abs_path($0);
+
 GetOptions(
     \%args,                               'v|verbose',
     'install!',                           'with-MYSQL',
@@ -417,7 +421,7 @@ foreach my $type (sort grep $args{$_}, keys %args) {
 }
 
 if ( $args{'install'} && keys %Missing_By_Type ) {
-    exec($0, @orig_argv, '--no-install');
+    exec($script_path, @orig_argv, '--no-install');
 }
 else {
     conclude(%Missing_By_Type);
