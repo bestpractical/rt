@@ -275,7 +275,14 @@ sub PSGIApp {
             return $self->_psgi_response_cb( $res->finalize ) if $res;
         }
 
-        RT::ConnectToDatabase() unless RT->InstallMode;
+        unless (RT->InstallMode) {
+            unless (eval { RT::ConnectToDatabase() }) {
+                my $res = Plack::Response->new(503);
+                $res->content_type("text/plain");
+                $res->body("Database inaccessible; contact the RT administrator (".RT->Config->Get("OwnerEmail").")");
+                return $self->_psgi_response_cb( $res->finalize, sub { $self->CleanupRequest } );
+            }
+        }
 
         my $req = Plack::Request->new($env);
 
