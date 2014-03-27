@@ -103,7 +103,7 @@ __PACKAGE__->RegisterCustomFieldJoin(@$_) for
 # metadata.
 
 our %FIELD_METADATA = (
-    Status          => [ 'ENUM', ], #loc_left_pair
+    Status          => [ 'STRING', ], #loc_left_pair
     Queue           => [ 'ENUM' => 'Queue', ], #loc_left_pair
     Type            => [ 'ENUM', ], #loc_left_pair
     Creator         => [ 'ENUM' => 'User', ], #loc_left_pair
@@ -380,8 +380,6 @@ sub _EnumLimit {
         $value = $o->Id || 0;
     } elsif ( $field eq "Type" ) {
         $value = lc $value if $value =~ /^(ticket|approval|reminder)$/i;
-    } elsif ($field eq "Status") {
-        $value = lc $value;
     }
     $sb->Limit(
         FIELD    => $field,
@@ -696,6 +694,10 @@ sub _StringLimit {
             $op = 'IS';
         }
         $value = 'NULL';
+    }
+
+    if ($field eq "Status") {
+        $value = lc $value;
     }
 
     $sb->Limit(
