@@ -223,7 +223,7 @@ database.
 
 Set($DatabaseRequireSSL, undef);
 
-=item <$DatabaseAdmin>
+=item C<$DatabaseAdmin>
 
 The name of the database administrator to connect to the database as
 during upgrades.
