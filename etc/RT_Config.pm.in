@@ -159,7 +159,7 @@ Set( @StaticRoots, () );
 =item C<$DatabaseType>
 
 Database driver being used; case matters.  Valid types are "mysql",
-"Oracle" and "Pg".
+"Oracle", "Pg" and "SQLite".
 
 =cut
 
