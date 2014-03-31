@@ -6,6 +6,42 @@ But there can be any number of workflows where these status values
 don't completely fit. RT allows you to add new custom status values and
 define their behavior with a feature called Lifecycles.
 
+=head1 Adding a New Status
+
+Because Statuses are controlled via lifecycles, you must manipulate the entire
+lifecycle configuration to add a status. In earlier versions of RT new statuses
+could be added by adding a new element to an array in RT's config file. But
+because lifecyles are built around statuses, the entire lifecycle configuration
+must be modified even if you only need new statuses.
+
+=head2 Copy Lifecycle Config
+
+First, copy the C<%Lifecycles> hash from C<RT_Config.pm> and paste it into
+C<RT_SiteConfig.pm>.
+
+=head2 Add Status Value
+
+Add the status to the set where your new status belongs. This example adds
+C<approved> to the active statuses:
+
+    active => [ 'open', 'approved', 'stalled' ],
+
+=head2 Update Transitions
+
+Now the transitions section must be updated so that the new status can
+transition to the existing statuses and also so the existing statuses can
+transition to the new status.
+
+    new      => [qw(    open approved stalled resolved rejected deleted)],
+    open     => [qw(new      approved stalled resolved rejected deleted)],
+    approved => [qw(new open          stalled resolved rejected deleted)],
+    stalled  => [qw(new open approved         rejected resolved deleted)],
+    resolved => [qw(new open approved stalled          rejected deleted)],
+    rejected => [qw(new open approved stalled resolved          deleted)],
+    deleted  => [qw(new open approved stalled rejected resolved        )],
+
+=head1 Order Processing Example
+
 This guide demonstrates lifecycles using an order fulfillment
 system as a real-world example. You can find full lifecycles
 documentation in L<RT_Config/Lifecycles>.
@@ -20,12 +56,6 @@ add a new entry with:
 The detailed configuration options are discussed below. Once you add it
 and restart the server, the new lifecycle will be available on the
 queue configuration page.
-
-If you want to modify the default lifecycle, you can copy it from
-C<RT_Config.pm>, paste it into C<RT_SiteConfig.pm> and make your
-changes.
-
-=head1 Order Processing Example
 
 To show how you might use custom lifecycles, we're going to configure
 an RT lifecycle to process orders of some sort. In our order example,
