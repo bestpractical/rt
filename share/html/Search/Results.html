@@ -111,7 +111,6 @@ if ( !defined($Rows) ) {
 }
 $Page = 1 unless $Page && $Page > 0;
 
-my ($title, $ticketcount);
 $session{'i'}++;
 $session{'tickets'} = RT::Tickets->new($session{'CurrentUser'}) ;
 my ($ok, $msg) = $Query ? $session{'tickets'}->FromSQL($Query) : (1, "Vacuously OK");
@@ -141,11 +140,10 @@ $session{'CurrentSearchHash'} = {
 };
 
 
+my ($title, $ticketcount) = (loc("Found tickets"), 0);
 if ( $session{'tickets'}->Query()) {
     $ticketcount = $session{tickets}->CountAll();
     $title = loc('Found [quant,_1,ticket]', $ticketcount);
-} else {
-    $title = loc("Find tickets");
 }
 
 my $QueryString = "?".$m->comp('/Elements/QueryString',
