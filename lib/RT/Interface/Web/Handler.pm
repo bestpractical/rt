@@ -278,7 +278,7 @@ sub PSGIApp {
         # CGI.pm normalizes .. out of paths so when you requested
         # /NoAuth/../Ticket/Display.html we saw Ticket/Display.html
         # PSGI doesn't normalize .. so we have to deal ourselves.
-        if ( $req->path_info =~ m{/\.} ) {
+        if ( $req->path_info =~ m{(^|/)\.\.?(/|$)} ) {
             $RT::Logger->crit("Invalid request for ".$req->path_info." aborting");
             my $res = Plack::Response->new(400);
             return $self->_psgi_response_cb($res->finalize,sub { $self->CleanupRequest });
