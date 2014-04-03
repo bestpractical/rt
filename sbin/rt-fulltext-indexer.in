@@ -90,6 +90,14 @@ if ( $db_type eq 'Pg' ) {
     );
     push @OPT_LIST, 'limit=i', 'all!';
 }
+elsif ( $db_type eq 'mysql' ) {
+    %OPT = (
+        %OPT,
+        limit    => 0,
+        all      => 0,
+    );
+    push @OPT_LIST, 'limit=i', 'all!';
+}
 elsif ( $db_type eq 'Oracle' ) {
     %OPT = (
         %OPT,
@@ -147,7 +155,7 @@ if ( $db_type eq 'Oracle' ) {
         $index, $OPT{'memory'}
     );
     exit;
-} elsif ( $db_type eq 'mysql' ) {
+} elsif ( $fts_config->{Sphinx} ) {
     print STDERR <<EOT;
 
 Updates to the external Sphinx index are done via running the sphinx
@@ -249,6 +257,23 @@ sub process {
         error     => "No processer for $db_type DB",
         arguments => \@_,
     );
+}
+
+sub last_indexed_mysql { last_indexed_pg(@_); }
+sub process_mysql {
+    my ($type, $attachment, $text) = (@_);
+
+    my $dbh = $RT::Handle->dbh;
+    my $table = $fts_config->{'Table'};
+
+    my $query;
+    if ( my ($id) = $dbh->selectrow_array("SELECT id FROM $table WHERE id = ?", undef, $attachment->id) ) {
+        $query = "UPDATE $table SET Content = ? WHERE id = ?";
+    } else {
+        $query = "INSERT INTO $table(Content, id) VALUES(?, ?)";
+    }
+
+    $dbh->do( $query, undef, $$text, $attachment->id );
 }
 
 sub last_indexed_pg {

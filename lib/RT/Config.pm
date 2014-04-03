@@ -586,11 +586,25 @@ our %META;
                     $RT::Logger->error("No Table set for full-text index; disabling");
                     $v->{Enable} = $v->{Indexed} = 0;
                 } elsif ($v->{'Table'} eq "Attachments") {
-                    $RT::Logger->error("Table for full-text index is set to Attachments, not SphinxSE table; disabling");
+                    $RT::Logger->error("Table for full-text index is set to Attachments, not FTS table; disabling");
                     $v->{Enable} = $v->{Indexed} = 0;
-                } elsif (not $v->{'MaxMatches'}) {
-                    $RT::Logger->warn("No MaxMatches set for full-text index; defaulting to 10000");
-                    $v->{MaxMatches} = 10_000;
+                } else {
+                    my (undef, $create) = eval { $RT::Handle->dbh->selectrow_array("SHOW CREATE TABLE " . $v->{Table}); };
+                    my ($engine) = ($create||'') =~ /engine=(\S+)/i;
+                    if (not $create) {
+                        $RT::Logger->error("External table ".$v->{Table}." does not exist");
+                        $v->{Enable} = $v->{Indexed} = 0;
+                    } elsif (lc $engine eq "sphinx") {
+                        # External Sphinx indexer
+                        $v->{Sphinx} = 1;
+                        unless ($v->{'MaxMatches'}) {
+                            $RT::Logger->warn("No MaxMatches set for full-text index; defaulting to 10000");
+                            $v->{MaxMatches} = 10_000;
+                        }
+                    } else {
+                        # Internal, one-column table
+                        $v->{Column} = 'Content';
+                    }
                 }
             } else {
                 $RT::Logger->error("Indexed full-text-search not supported for $dbtype");

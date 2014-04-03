@@ -61,15 +61,78 @@ C<cron>:
 
 =head1 MYSQL
 
-MySQL does not support full-text indexing natively.  However, it does
-integrate with the external Sphinx engine, available from
+MySQL does not support full-text indexing natively until version 5.6 and
+above.  For prior versions, RT can integrate with the external Sphinx
+full-text search engine.
+
+=head2 MySQL 5.6 and above
+
+MySQL 5.6 includes full-text search of InnoDB tables.  However, as RT
+marks attachment data as C<BINARY>, it cannot index this content without
+creating additional tables.  To create the required table, run:
+
+    /opt/rt4/sbin/rt-setup-fulltext-index
+
+If you have a non-standard database administrator username or password,
+you may need to pass the C<--dba> or C<--dba-password> options:
+
+    /opt/rt4/sbin/rt-setup-fulltext-index --dba root --dba-password secret
+
+This will also output an appropriate C<%FullTextSearch> configuration to
+add to your F<RT_SiteConfig.pm>; you will need to restart your webserver
+after making these changes.  However, the index will also need to be
+filled before it can be used.  To update the index initially, run:
+
+    /opt/rt4/sbin/rt-fulltext-indexer --all
+
+This will tokenize and index all existing attachments in your database;
+it may take quite a while if your database already has a large number of
+tickets in it.
+
+=head3 Updating the index
+
+To keep the index up-to-date, you will need to run:
+
+    /opt/rt4/sbin/rt-fulltext-indexer
+
+...at regular intervals.  By default, this will only tokenize up to 100
+tickets at a time; you can adjust this upwards by passing
+C<--limit 500>.  Larger batch sizes will take longer and
+consume more memory.
+
+If there is already an instances of C<rt-fulltext-indexer> running, new
+ones will exit abnormally (with exit code 1) and the error message
+"rt-fulltext-indexer is already running."  You can suppress this message
+and end those processes normally (with exit code 0) using the C<--quiet>
+option; this is particularly useful when running the command via
+C<cron>:
+
+    /opt/rt4/sbin/rt-fulltext-indexer --quiet
+
+=head3 Caveats
+
+Searching is done in "boolean mode."  As such, the TicketSQL query
+C<Content LIKE 'winter 2014'> will return tickets with transactions that
+contain I<either> word.  To find transactions which contain both (but
+not necessarily adjacent), use C<Content LIKE '+winter +2014'>.  To find
+transactions containing the precise phrase, use C<Content LIKE '"winter
+2014">.
+
+See the mysql documentation, at
+L<http://dev.mysql.com/doc/refman/5.6/en/fulltext-boolean.html>, for a
+list of the full capabilities.
+
+
+=head2 MySQL with Sphinx
+
+RT can also integrate with the external Sphinx engine, available from
 L<http://sphinxsearch.com>.  Unfortunately, Sphinx integration (using
 SphinxSE) does require that you recompile MySQL from source.  Most
 distribution-provided packages for MySQL do not include SphinxSE
 integration, merely the external Sphinx tools; these are not sufficient
 for RT's needs.
 
-=head2 Compiling MySQL and SphinxSE
+=head3 Compiling MySQL and SphinxSE
 
 MySQL 5.1 supports adding pluggable storage engines; after compiling
 against the appropriate version of MySQL, the F<ha_sphinx.so> file is
@@ -83,7 +146,7 @@ versions may work as well.  Complete compilation and installation
 instructions for MySQL with SphinxSE can be found at
 L<http://sphinxsearch.com/docs/current.html#sphinxse-mysql51>.
 
-=head2 Creating and configuring the index
+=head3 Creating and configuring the index
 
 Once MySQL has been recompiled with SphinxSE, and Sphinx itself is
 installed, you may create the required SphinxSE communication table via:
@@ -110,7 +173,7 @@ Finally, start the Sphinx search daemon:
 
     searchd
 
-=head2 Updating the index
+=head3 Updating the index
 
 To keep the index up-to-date, you will need to run:
 
@@ -119,7 +182,7 @@ To keep the index up-to-date, you will need to run:
 ...at regular intervals in order to pick up new and updated attachments
 from RT's database.  Failure to do so will result in stale data.
 
-=head2 Caveats
+=head3 Caveats
 
 RT's integration with Sphinx relies on the use of a special index; there
 exist queries where the MySQL optimizer elects to I<not> use that index,

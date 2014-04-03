@@ -131,7 +131,48 @@ my $dbh = $RT::Handle->dbh;
 $dbh->{'RaiseError'} = 1;
 $dbh->{'PrintError'} = 1;
 
+# MySQL could either be native of sphinx; find out which
+if ($DB{'type'} eq "mysql") {
+    my $index_type = lc($OPT{'index-type'} || '');
+
+    # Default to sphinx on < 5.6, and error if they provided mysql
+    if ($RT::Handle->dbh->{mysql_serverversion} < 50600) {
+        $index_type ||= 'sphinx';
+        die "Native MySQL indexing is only supported in MySQL 5.6 and above"
+            if $index_type ne 'sphinx';
+    }
+
+    while ( $index_type ne 'sphinx' and $index_type ne 'mysql' ) {
+        $index_type = lc prompt(
+            message => "MySQL 5.6 and above support native full-text indexing; for compatibility\n"
+                      ."with earlier versions of RT, the external Sphinx indexer is still supported.\n"
+                      ."Which indexing solution would you prefer?",
+            default => 'mysql',
+            silent  => !$OPT{'ask'},
+        );
+    };
+    $DB{'type'} = $index_type;
+}
+
 if ( $DB{'type'} eq 'mysql' ) {
+    # MySQL 5.6 has FTS on InnoDB "text" columns -- which the
+    # Attachments table doesn't have, but we can make it have.
+    my $table = $OPT{'table'} || prompt(
+        message => "Enter the name of a new MySQL table that will be used to store the\n"
+                 . "full-text content and indexes:",
+        default => $DEFAULT{'table'},
+        silent  => !$OPT{'ask'},
+    );
+    do_error_is_ok( dba_handle() => "DROP TABLE $table" )
+        unless $OPT{'dryrun'};
+
+    my $schema = "CREATE TABLE $table ( "
+        ."id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,"
+        ."Content LONGTEXT, FULLTEXT(Content) ) ENGINE=InnoDB CHARACTER SET utf8";
+    insert_schema( $schema );
+
+    print_rt_config( Table => $table );
+} elsif ($DB{'type'} eq 'sphinx') {
     check_sphinx();
     my $table = $OPT{'table'} || prompt(
         message => "Enter name of a new MySQL table that will be used to connect to the\n"
