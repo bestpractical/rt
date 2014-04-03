@@ -172,6 +172,12 @@ sub text_to_hash {
 
     return %hash;
 }
+sub set_dep {
+    my ($name, $module, $version) = @_;
+    my %list = @{$deps{$name}};
+    $list{$module} = ($version || '');
+    $deps{$name} = [ %list ];
+}
 
 $deps{'CORE'} = [ text_to_hash( << '.') ];
 Apache::Session 1.53
@@ -247,6 +253,8 @@ Tree::Simple 1.04
 UNIVERSAL::require
 XML::RSS 1.05
 .
+set_dep( CORE => 'Symbol::Global::Name' => 0.05 ) if $] >= 5.019003;
+
 
 $deps{'MAILGATE'} = [ text_to_hash( << '.') ];
 Crypt::SSLeay
