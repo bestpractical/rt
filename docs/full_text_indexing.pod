@@ -71,11 +71,17 @@ for RT's needs.
 
 =head2 Compiling MySQL and SphinxSE
 
-SphinxSE requires MySQL 5.0 or 5.1; later versions of MySQL have not
-been tested at this time.  Sphinx version 2.0.1 has been tested to work,
-but version 0.9.9 may work as well.  Compilation and installation
+MySQL 5.1 supports adding pluggable storage engines; after compiling
+against the appropriate version of MySQL, the F<ha_sphinx.so> file is
+the only that needs to be installed in production, generally into
+C</usr/lib/mysql/plugin/>.  It can then be enabled via:
+
+    INSTALL PLUGIN Sphinx SONAME "ha_sphinx.so"
+
+Sphinx versions 0.9.x and 2.0.x are known-working versions, but later
+versions may work as well.  Complete compilation and installation
 instructions for MySQL with SphinxSE can be found at
-L<http://sphinxsearch.com/docs/current.html#sphinxse-installing>.
+L<http://sphinxsearch.com/docs/current.html#sphinxse-mysql51>.
 
 =head2 Creating and configuring the index
 
@@ -115,13 +121,21 @@ from RT's database.  Failure to do so will result in stale data.
 
 =head2 Caveats
 
-Sphinx only returns a finite number of matches to any query; this number
-is controlled by C<max_matches> in F</etc/sphinx.conf> and
+RT's integration with Sphinx relies on the use of a special index; there
+exist queries where the MySQL optimizer elects to I<not> use that index,
+instead electing to scan the table, which causes no results to be
+returned.  However, this is rare, and generally only occurs on complex
+queries.
+
+Sphinx also only returns a finite number of matches to any query; this
+number is controlled by C<max_matches> in F</etc/sphinx.conf> and
 C<%FullTextSearch>'s C<MaxMatches> in C<RT_SiteConfig.pm>, which must be
 kept in sync.  The default, set during C<rt-setup-fulltext-index>, is
 10000.  This limit may lead to false negatives in search results if the
 maximum number of matches is reached but the results returned do not
-match RT's other criteria.
+match RT's other criteria.  However, a too-large value will notably
+degrade performance, as it adds memory allocation overhead to every
+query.
 
 Take, for example, the instance where Sphinx is configured to return a
 maximum of three results, and tickets 1, 2, 3, 4, and 5 contain the
