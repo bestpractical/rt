@@ -2085,8 +2085,7 @@ Set($WebFallbackToRTLogin, undef);
 =item C<$WebRemoteUserGecos>
 
 C<$WebRemoteUserGecos> means to match 'gecos' field as the user
-identity; useful with C<mod_auth_pwcheck> and IIS Integrated Windows
-logon.
+identity; useful with C<mod_auth_external>.
 
 =cut
 
