@@ -55,12 +55,12 @@ $r->headers_out->{'Cache-control'} = 'no-cache';
 </%init>
 <html>
 <head>
-<& /Elements/Framekiller &>
 <link rel="stylesheet" type="text/css" href="<%RT->Config->Get('WebPath')%>/static/css/mobile.css"/>
 <title><%$title%></title>
 % my ($jquery) = grep { /^jquery-\d+\./ } RT::Interface::Web->JSFiles;
 <script src="<% RT->Config->Get('WebPath') %>/static/js/<% $jquery %>"></script>
 <meta name="viewport" content="width=device-width height=device-height user-scalable=yes"/>
+<& /Elements/Framekiller &>
 </head>
 <body>
 % if ($show_home_button) {
