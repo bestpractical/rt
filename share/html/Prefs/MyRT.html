@@ -97,18 +97,19 @@ if ( $ARGS{'UpdateSummaryRows'} ) {
 $ARGS{'SummaryRows'} ||= $user->Preferences('SummaryRows', RT->Config->Get('DefaultSummaryRows'));
 
 if ($ARGS{Reset}) {
-    my ($ok, $msg) = $user->SetPreferences('HomepageSettings', {});
-    push @results, $ok ? loc('Preferences saved.') : $msg;
-    delete $session{'my_rt_portlets'};
+    for my $pref_name ('HomepageSettings', 'SummaryRows') {
+        next unless $user->Preferences($pref_name);
+        my ($ok, $msg) = $user->DeletePreferences($pref_name);
+        push @results, $msg unless $ok;
+    }
+    push @results, loc('Preferences saved.') unless @results;
 }
 
-unless (exists $session{'my_rt_portlets'}) {
-    my ($default_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
-    my $portlets = $default_portlets ? $default_portlets->Content : {};
-
-    $session{'my_rt_portlets'} = $user->Preferences('HomepageSettings', $portlets);
+my $portlets = $user->Preferences('HomepageSettings');
+unless ($portlets) {
+    my ($defaults) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
+    $portlets = $defaults ? $defaults->Content : {};
 }
-my $portlets = $session{'my_rt_portlets'};
 
 my %seen;
 my @items = map ["component-$_", loc($_)], grep !$seen{$_}++, @{RT->Config->Get('HomepageComponents')};
@@ -157,7 +158,6 @@ my @panes = $m->comp(
         my ( $conf, $pane ) = @_;
         my ($ok, $msg) = $user->SetPreferences( 'HomepageSettings', $conf );
         push @results, $ok ? loc('Preferences saved for [_1].', $pane) : $msg;
-        delete $session{'my_rt_portlets'};
     }
 );
 
