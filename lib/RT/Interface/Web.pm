@@ -71,6 +71,7 @@ use Digest::MD5 ();
 use Encode qw();
 use List::MoreUtils qw();
 use JSON qw();
+use Plack::Util;
 
 =head2 SquishedCSS $style
 
@@ -961,13 +962,13 @@ sub Redirect {
     $HTML::Mason::Commands::m->abort;
 }
 
-=head2 CacheControlExpiresHeaders
+=head2 GetStaticHeaders
 
-set both Cache-Control and Expires http headers
+return an arrayref of Headers (currently, Cache-Control and Expires).
 
 =cut
 
-sub CacheControlExpiresHeaders {
+sub GetStaticHeaders {
     my %args = @_;
 
     my $Visibility = 'private';
@@ -984,13 +985,28 @@ sub CacheControlExpiresHeaders {
         ? sprintf "max-age=%d, %s", $args{Time}, $Visibility
         : 'no-cache'
     ;
-    $HTML::Mason::Commands::r->headers_out->{'Cache-Control'} = $CacheControl;
 
     my $expires = RT::Date->new(RT->SystemUser);
     $expires->SetToNow;
     $expires->AddSeconds( $args{Time} ) if $args{Time};
 
-    $HTML::Mason::Commands::r->headers_out->{'Expires'} = $expires->RFC2616;
+    return [
+        Expires => $expires->RFC2616,
+        'Cache-Control' => $CacheControl,
+    ];
+}
+
+=head2 CacheControlExpiresHeaders
+
+set both Cache-Control and Expires http headers
+
+=cut
+
+sub CacheControlExpiresHeaders {
+    Plack::Util::header_iter( GetStaticHeaders(@_), sub {
+        my ( $key, $val ) = @_;
+        $HTML::Mason::Commands::r->headers_out->{$key} = $val;
+    } );
 }
 
 =head2 StaticFileHeaders 
@@ -1003,20 +1019,12 @@ This routine could really use _accurate_ heuristics. (XXX TODO)
 =cut
 
 sub StaticFileHeaders {
-    my $date = RT::Date->new(RT->SystemUser);
-
     # remove any cookie headers -- if it is cached publicly, it
     # shouldn't include anyone's cookie!
     delete $HTML::Mason::Commands::r->err_headers_out->{'Set-Cookie'};
 
     # Expire things in a month.
     CacheControlExpiresHeaders( Time => 'forever' );
-
-    # if we set 'Last-Modified' then browser request a comp using 'If-Modified-Since'
-    # request, but we don't handle it and generate full reply again
-    # Last modified at server start time
-    # $date->Set( Value => $^T );
-    # $HTML::Mason::Commands::r->headers_out->{'Last-Modified'} = $date->RFC2616;
 }
 
 =head2 ComponentPathIsSafe PATH

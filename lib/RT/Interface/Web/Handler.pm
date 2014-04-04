@@ -335,8 +335,15 @@ sub StaticWrap {
     my $app     = shift;
     my $builder = Plack::Builder->new;
 
+    my $headers = RT::Interface::Web::GetStaticHeaders(Time => 'forever');
+
     for my $static ( RT->Config->Get('StaticRoots') ) {
         if ( ref $static && ref $static eq 'HASH' ) {
+            $builder->add_middleware(
+                '+RT::Interface::Web::Middleware::StaticHeaders',
+                path => $static->{'path'},
+                headers => $headers,
+            );
             $builder->add_middleware(
                 'Plack::Middleware::Static',
                 pass_through => 1,
@@ -349,10 +356,16 @@ sub StaticWrap {
         }
     }
 
+    my $path = sub { s!^/static/!! };
+    $builder->add_middleware(
+        '+RT::Interface::Web::Middleware::StaticHeaders',
+        path => $path,
+        headers => $headers,
+    );
     for my $root (RT::Interface::Web->StaticRoots) {
         $builder->add_middleware(
             'Plack::Middleware::Static',
-            path         => sub { s!^/static/!! },
+            path         => $path,
             root         => $root,
             pass_through => 1,
         );
