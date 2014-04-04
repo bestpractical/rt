@@ -56,6 +56,7 @@
 s!(?<=Your ticket has been (?:approved|rejected) by { eval { )\$Approval->OwnerObj->Name!\$Approver->Name!
               )
             {
+                $template->SetType('Perl');
                 $template->SetContent($content);
             }
         }
