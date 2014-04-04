@@ -284,7 +284,7 @@ sub _SetLifecycleColumn {
 
     my ($ok, $msg) = $self->_Set( Field => $column, Value => $new->id );
     if ($ok) {
-        if ( $new_status ) {
+        if ( $new_status and $new_status ne $self->Status ) {
             my $as_system = blessed($self)->new( RT->SystemUser );
             $as_system->Load( $self->Id );
             unless ( $as_system->Id ) {
