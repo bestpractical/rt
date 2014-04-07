@@ -159,7 +159,7 @@ ProcessAttachments(ARGSRef => \%ARGS);
 
 my @results;
 my $skip_update = 0;
-$m->callback( TicketObj => $Ticket, ARGSRef => \%ARGS, skip_update => \$skip_update );
+$m->callback( TicketObj => $Ticket, ARGSRef => \%ARGS, skip_update => \$skip_update, results => \@results );
 
 {
     my ($status, @msg) = $m->comp(
