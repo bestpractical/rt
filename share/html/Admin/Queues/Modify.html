@@ -68,14 +68,18 @@
 <td colspan="3"><input name="Description" value="<% $Create ? "" : $QueueObj->Description || $Description || '' %>" size="60" /></td>
 </tr>
 
-<tr><td align="right"><&|/l&>Lifecycle</&>:</td>
-<td colspan="3"><& /Widgets/Form/Select:InputOnly,
+<tr><td align="right"><&|/l&>Lifecycle</&>:</td><td colspan="3">
+% if ($InternalQueue) {
+<% $QueueObj->Lifecycle %>
+% } else {
+<& /Widgets/Form/Select:InputOnly,
     Name         => 'Lifecycle',
     Values       => [ sort { loc($a) cmp loc($b) } RT::Lifecycle->List ],
     CurrentValue => $Create ? "default" : $QueueObj->Lifecycle || $ARGS{'Lifecycle'},
     Default      => 0,
-&></td>
-</tr>
+&>
+% }
+</td></tr>
 
 <tr><td align="right"><&|/l&>Subject Tag</&>:</td>
 <td colspan="3"><input name="SubjectTag" value="<% $ARGS{'SubjectTag'} || ($Create ? "" : $QueueObj->SubjectTag || '' ) %>" size="60" /></td>
