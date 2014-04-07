@@ -56,9 +56,13 @@
 <input type="hidden" class="hidden" name="id" value="<% $Create? 'new': $QueueObj->Id %>" />
 
 <table>
-<tr><td align="right"><&|/l&>Queue Name</&>:</td>
-<td colspan="3"><input name="Name" value="<% $Create ? "" : $QueueObj->Name || $Name %>" /></td>
-</tr>
+<tr><td align="right"><&|/l&>Queue Name</&>:</td><td colspan="3">
+% if ($InternalQueue) {
+<% $QueueObj->Name %>
+% } else {
+<input name="Name" value="<% $Create ? "" : $QueueObj->Name || $Name %>" />
+% }
+</td></tr>
 
 <tr><td align="right"><&|/l&>Description</&>:</td>
 <td colspan="3"><input name="Description" value="<% $Create ? "" : $QueueObj->Description || $Description || '' %>" size="60" /></td>
@@ -226,6 +230,8 @@ if ( $QueueObj->Id ) {
 } else {
     $title = loc("Create a queue");
 }
+
+my $InternalQueue = ($QueueObj->Id and $QueueObj->Disabled == 2);
 
 # This code does automatic redirection if any updates happen.
 MaybeRedirectForResults(
