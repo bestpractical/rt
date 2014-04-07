@@ -52,7 +52,6 @@
 
 
 <form action="<%RT->Config->Get('WebPath')%>/Admin/Queues/Modify.html" name="ModifyQueue" method="post" enctype="multipart/form-data">
-<input type="hidden" class="hidden" name="SetEnabled" value="1" />
 <input type="hidden" class="hidden" name="id" value="<% $Create? 'new': $QueueObj->Id %>" />
 
 <table>
@@ -129,13 +128,17 @@
 <td colspan="3"><&|/l_unsafe, "<b>","</b>","<i>","</i>"&>Sign all auto-generated mail.  [_1]Caution[_2]: Enabling this option alters the signature from providing [_3]authentication[_4] to providing [_3]integrity[_4].</&></td></tr>
 % }
 
+% unless ($InternalQueue) {
 <tr><td align="right"><input type="checkbox" class="checkbox" id="Enabled" name="Enabled" value="1" <%$EnabledChecked|n%> /></td>
 <td colspan="3"><label for="Enabled"><&|/l&>Enabled (Unchecking this box disables this queue)</&></label><br />
+<input type="hidden" class="hidden" name="SetEnabled" value="1" />
 % $m->callback( %ARGS, QueueObj => $QueueObj, results => \@results );
 </td></tr>
+% }
 
 % if ( RT->Config->Get('Crypt')->{'Enable'} ) {
 <tr><td colspan="4">
+<input type="hidden" class="hidden" name="SetCrypt" value="1" />
 % if ( my $email = $QueueObj->CorrespondAddress || RT->Config->Get('CorrespondAddress') ) {
 <& /Admin/Elements/ShowKeyInfo, Type => 'private', EmailAddress => $email &>
 % } else {
@@ -194,8 +197,10 @@ if ( $QueueObj->Id ) {
     # we're asking about enabled on the web page but really care about disabled
     if ( $SetEnabled ) {
         $Disabled = $ARGS{'Disabled'} = $Enabled? 0: 1;
+    }
+    if ( $SetCrypt ) {
         $ARGS{$_} = 0 foreach grep !defined $ARGS{$_} || !length $ARGS{$_},
-            qw(Sign SignAuto Encrypt Disabled);
+            qw(Sign SignAuto Encrypt);
     }
 
     $m->callback(
@@ -259,5 +264,6 @@ $InitialPriority => undef
 $FinalPriority => undef
 $DefaultDueIn => undef
 $SetEnabled => undef
+$SetCrypt => undef
 $Enabled => undef
 </%ARGS>
