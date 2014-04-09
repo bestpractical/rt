@@ -58,6 +58,17 @@
     {
         Name        => 'Test Employees',
         Description => 'All of the employees of my company',
+        Attributes  => [
+            {
+                Name        => 'SavedSearch',
+                Description => 'Stalled Tickets in Test Queue',
+                Content     => {
+                    Query   => "Status = 'stalled' AND Queue = 'Test Queue'",
+                    OrderBy => 'id',
+                    Order   => 'DESC'
+                },
+            },
+        ],
     }
 );
 
