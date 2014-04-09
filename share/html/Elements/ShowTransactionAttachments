@@ -56,7 +56,7 @@ foreach my $message ( @{ $Attachments->{ $Parent || 0 } || [] } ) {
             );
 
     my $name = defined $message->Filename && length $message->Filename ?  $message->Filename : '';
-    if ( $message->ContentLength ) {
+    if ( $message->ContentLength or $name ) {
 </%PERL>
 <div class="downloadattachment">
 <a href="<% $AttachmentPath %>/<% $Transaction->Id %>/<% $message->Id %>/<% $name | u%>"><&|/l&>Download</&> <% length $name ? $name : loc('(untitled)') %></a>\
