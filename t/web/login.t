@@ -3,8 +3,6 @@ use warnings;
 
 use RT::Test;
 
-RT::Config->Set(AllowLoginPasswordAutoComplete => 1);
-
 my ( $baseurl, $m ) = RT::Test->started_ok;
 
 my $ticket = RT::Test->create_ticket(
