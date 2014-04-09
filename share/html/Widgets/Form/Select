@@ -80,11 +80,11 @@ $AlternativeLabel => loc('other...'),
 
 $Multiple         => 0,
 </%ARGS>
-<select name="<% $Name %>">
+<select name="<% $Name %>" <% $Multiple ? 'multiple="multiple"' : '' |n%>>
 
 % if ( $Default ) {
 % my $selected = '';
-% $selected = 'selected="selected"' unless @CurrentValue;
+% $selected = 'selected="selected"' unless $CurrentValue[0];
 <option value="__empty_value__" <% $selected |n %>><% $DefaultLabel %></option>
 % }
 
