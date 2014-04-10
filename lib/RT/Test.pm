@@ -1596,8 +1596,6 @@ sub file_content {
 
     $path = File::Spec->catfile( @$path ) if ref $path eq 'ARRAY';
 
-    Test::More::diag "reading content of '$path'" if $ENV{'TEST_VERBOSE'};
-
     open( my $fh, "<:raw", $path )
         or do {
             warn "couldn't open file '$path': $!" unless $args{noexist};
