@@ -457,7 +457,8 @@ sub SignEncryptRFC3156 {
         # required by RFC3156(Ch. 5) and RFC1847(Ch. 2.1)
         foreach ( grep !$_->is_multipart, $entity->parts_DFS ) {
             next if $_->effective_type =~ m{^message/};
-            my $tenc = $_->head->mime_encoding;
+            my $tenc = $_->head->mime_attr('content-transfer-encoding')
+                ? $_->head->mime_encoding : '8bit';
             unless ( $tenc =~ m/^(?:7bit|quoted-printable|base64)$/i ) {
                 $_->head->mime_attr( 'Content-Transfer-Encoding'
                     => $_->effective_type =~ m{^text/}? 'quoted-printable': 'base64'
