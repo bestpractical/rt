@@ -456,6 +456,7 @@ sub SignEncryptRFC3156 {
     if ( $args{'Sign'} && !$args{'Encrypt'} ) {
         # required by RFC3156(Ch. 5) and RFC1847(Ch. 2.1)
         foreach ( grep !$_->is_multipart, $entity->parts_DFS ) {
+            next if $_->effective_type =~ m{^message/};
             my $tenc = $_->head->mime_encoding;
             unless ( $tenc =~ m/^(?:7bit|quoted-printable|base64)$/i ) {
                 $_->head->mime_attr( 'Content-Transfer-Encoding'

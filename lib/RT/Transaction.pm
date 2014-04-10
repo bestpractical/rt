@@ -718,10 +718,21 @@ sub ContentAsMIME {
     my $top = $attachments->First;
     return unless $top;
 
-    my $entity = MIME::Entity->build(
+    my $entity = $top->ContentAsMIME(Children => 1);
+    foreach ( grep !$_->is_multipart, $entity->parts_DFS ) {
+        next if $_->effective_type =~ m{^message/};
+        my $tenc = $_->head->mime_encoding;
+        unless ( $tenc =~ m/^(?:7bit|quoted-printable|base64)$/i ) {
+            $_->head->mime_attr( 'Content-Transfer-Encoding'
+                => $_->effective_type =~ m{^text/}? 'quoted-printable': 'base64'
+            );
+        }
+    }
+
+    $entity = MIME::Entity->build(
         Type        => 'message/rfc822',
         Description => 'transaction ' . $self->id,
-        Data        => $top->ContentAsMIME(Children => 1)->as_string,
+        Data        => $entity->as_string,
     );
 
     return $entity;
