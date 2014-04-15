@@ -50,7 +50,7 @@
 <& /SelfService/Elements/MyRequests,
     %ARGS,
     status          => [ RT::Queue->InactiveStatusArray ],
-    friendly_status => loc('closed'), 
+    title           => loc('My closed tickets'),
     BaseURL         => RT->Config->Get('WebPath') ."/SelfService/Closed.html?",
     Page            => $Page,
 &>

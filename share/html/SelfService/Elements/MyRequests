@@ -59,7 +59,7 @@
 </&>
 
 <%INIT>
-my $title = loc("My [_1] tickets", $friendly_status);
+$title ||= loc("My [_1] tickets", $friendly_status);
 my $id = $session{'CurrentUser'}->id;
 my $Query = "( Watcher.id = $id )";
 if ( @status ) {
@@ -69,6 +69,7 @@ if ( @status ) {
 my $Format = RT->Config->Get('DefaultSelfServiceSearchResultFormat');
 </%INIT>
 <%ARGS>
+$title => undef
 $friendly_status => loc('open')
 @status => ()
 $BaseURL => undef
