@@ -60,48 +60,45 @@ if ($OrderBy =~ /\|/) {
 }
 $r->content_type('application/rss+xml; charset=utf-8');
 
+# create an RSS 1.0 file (http://purl.org/rss/1.0/)
+use XML::RSS;
+my $rss = XML::RSS->new(version => '1.0');
+
+my $url;
+if ( RT->Config->Get('CanonicalizeURLsInFeeds') ) {
+    $url = RT->Config->Get('WebURL');
+} else {
+    $url = RT::Interface::Web::GetWebURLFromRequest();
+}
+
+$rss->channel(
+    title        => RT->Config->Get('rtname').": Search " . $ARGS{'Query'},
+    link         => $url,
+    description  => "",
+    dc           => { },
+    generator    => "RT v" . $RT::VERSION,
+    syn => {
+        updatePeriod     => "hourly",
+        updateFrequency  => "1",
+        updateBase       => "1901-01-01T00:00+00:00",
+    },
+);
 
 
-        # create an RSS 1.0 file (http://purl.org/rss/1.0/)
-        use XML::RSS;
-        my $rss = XML::RSS->new(version => '1.0');
-
-        my $url;
-        if ( RT->Config->Get('CanonicalizeURLsInFeeds') ) {
-            $url = RT->Config->Get('WebURL');
-        }
-        else {
-            $url = RT::Interface::Web::GetWebURLFromRequest();
-        }
-
-        $rss->channel(
-          title        => RT->Config->Get('rtname').": Search " . $ARGS{'Query'},
-          link         => $url,
-          description  => "",
-          dc => {
-          },
-          generator    => "RT v" . $RT::VERSION,
-          syn => {
-            updatePeriod     => "hourly",
-            updateFrequency  => "1",
-            updateBase       => "1901-01-01T00:00+00:00",
-          },
-        );
-
-
-    while ( my $Ticket = $Tickets->Next()) {
-        my $creator_str = $Ticket->CreatorObj->Format;
-        $creator_str =~ s/[\r\n]//g;
-        $rss->add_item(
-          title       =>  $Ticket->Subject || loc('No Subject'),
-          link        => $url . "Ticket/Display.html?id=".$Ticket->id,
-          description => $Ticket->Transactions->First->Content,
-          dc          => { creator => $creator_str,
-                           date => $Ticket->CreatedObj->RFC2822,
-                         },
-          guid        => $Ticket->Queue . '_' . $Ticket->id,
-        );
-    }
+while ( my $Ticket = $Tickets->Next()) {
+    my $creator_str = $Ticket->CreatorObj->Format;
+    $creator_str =~ s/[\r\n]//g;
+    $rss->add_item(
+        title       => $Ticket->Subject || loc('No Subject'),
+        link        => $url . "Ticket/Display.html?id=".$Ticket->id,
+        description => $Ticket->Transactions->First->Content,
+        dc          => {
+            creator => $creator_str,
+            date    => $Ticket->CreatedObj->RFC2822,
+        },
+        guid        => $Ticket->Queue . '_' . $Ticket->id,
+    );
+}
 
 $m->out($rss->as_string);
 $m->abort();
