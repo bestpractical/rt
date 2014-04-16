@@ -2502,7 +2502,7 @@ sub MakeMIMEEntity {
                 Data     => \@content,
             );
             if ( !$args{'Subject'} && !( defined $args{'Body'} && length $args{'Body'} ) ) {
-                $Message->head->set( 'Subject' => $filename );
+                $Message->head->replace( 'Subject' => $filename );
             }
 
             # Attachment parts really shouldn't get a Message-ID or "interface"

@@ -110,12 +110,12 @@ sub Prepare {
     my $txn_attachment = $self->TransactionObj->Attachments->First;
     for my $header (qw/From To Cc Bcc/) {
         if ( $txn_attachment->GetHeader( $header ) ) {
-            $mime->head->set( $header => $txn_attachment->GetHeader($header) );
+            $mime->head->replace( $header => $txn_attachment->GetHeader($header) );
         }
     }
 
     if ( RT->Config->Get('ForwardFromUser') ) {
-        $mime->head->set( 'X-RT-Sign' => 0 );
+        $mime->head->replace( 'X-RT-Sign' => 0 );
     }
 
     $self->SUPER::Prepare();

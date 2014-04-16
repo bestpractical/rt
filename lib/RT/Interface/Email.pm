@@ -384,7 +384,7 @@ sub SendEmail {
     if (my $precedence = RT->Config->Get('DefaultMailPrecedence')
         and !$args{'Entity'}->head->get("Precedence")
     ) {
-        $args{'Entity'}->head->set( 'Precedence', $precedence );
+        $args{'Entity'}->head->replace( 'Precedence', $precedence );
     }
 
     if ( $TransactionObj && !$TicketObj
@@ -398,15 +398,15 @@ sub SendEmail {
         require RT::Date;
         my $date = RT::Date->new( RT->SystemUser );
         $date->SetToNow;
-        $head->set( 'Date', $date->RFC2822( Timezone => 'server' ) );
+        $head->replace( 'Date', $date->RFC2822( Timezone => 'server' ) );
     }
     unless ( $head->get('MIME-Version') ) {
         # We should never have to set the MIME-Version header
-        $head->set( 'MIME-Version', '1.0' );
+        $head->replace( 'MIME-Version', '1.0' );
     }
     unless ( $head->get('Content-Transfer-Encoding') ) {
         # fsck.com #5959: Since RT sends 8bit mail, we should say so.
-        $head->set( 'Content-Transfer-Encoding', '8bit' );
+        $head->replace( 'Content-Transfer-Encoding', '8bit' );
     }
 
     if ( RT->Config->Get('Crypt')->{'Enable'} ) {
@@ -585,10 +585,10 @@ sub SendEmailUsingTemplate {
         return -1;
     }
 
-    $mail->head->set( $_ => Encode::encode_utf8( $args{ $_ } ) )
+    $mail->head->replace( $_ => Encode::encode_utf8( $args{ $_ } ) )
         foreach grep defined $args{$_}, qw(To Cc Bcc From);
 
-    $mail->head->set( $_ => $args{ExtraHeaders}{$_} )
+    $mail->head->replace( $_ => $args{ExtraHeaders}{$_} )
         foreach keys %{ $args{ExtraHeaders} };
 
     SetInReplyTo( Message => $mail, InReplyTo => $args{'InReplyTo'} );
@@ -1011,7 +1011,7 @@ sub DeleteRecipientsFromHead {
     my %skip = map { lc $_ => 1 } @_;
 
     foreach my $field ( qw(To Cc Bcc) ) {
-        $head->set( $field =>
+        $head->replace( $field =>
             join ', ', map $_->format, grep !$skip{ lc $_->address },
                 Email::Address->parse( $head->get( $field ) )
         );
@@ -1069,8 +1069,8 @@ sub SetInReplyTo {
         if @references > 10;
 
     my $mail = $args{'Message'};
-    $mail->head->set( 'In-Reply-To' => Encode::encode_utf8(join ' ', @rtid? (@rtid) : (@id)) ) if @id || @rtid;
-    $mail->head->set( 'References' => Encode::encode_utf8(join ' ', @references) );
+    $mail->head->replace( 'In-Reply-To' => Encode::encode_utf8(join ' ', @rtid? (@rtid) : (@id)) ) if @id || @rtid;
+    $mail->head->replace( 'References' => Encode::encode_utf8(join ' ', @references) );
 }
 
 sub PseudoReference {
