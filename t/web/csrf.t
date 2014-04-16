@@ -20,19 +20,19 @@ ok $m->login, 'logged in';
 $m->add_header(Referer => $baseurl);
 $m->get_ok($test_page);
 $m->content_lacks("Possible cross-site request forgery");
-$m->title_is('Create a new ticket');
+$m->title_is('Create a new ticket in General');
 
 # off-site referer BUT provides auth
 $m->add_header(Referer => 'http://example.net');
 $m->get_ok("$test_page&user=root&pass=password");
 $m->content_lacks("Possible cross-site request forgery");
-$m->title_is('Create a new ticket');
+$m->title_is('Create a new ticket in General');
 
 # explicitly no referer BUT provides auth
 $m->add_header(Referer => undef);
 $m->get_ok("$test_page&user=root&pass=password");
 $m->content_lacks("Possible cross-site request forgery");
-$m->title_is('Create a new ticket');
+$m->title_is('Create a new ticket in General');
 
 # now send a referer from an attacker
 $m->add_header(Referer => 'http://example.net');
@@ -49,7 +49,7 @@ $m->delete_header('Referer');
 $m->follow_link(text_regex => qr{resume your request});
 $m->content_lacks("Possible cross-site request forgery");
 like($m->response->request->uri, qr{^http://[^/]+\Q$test_path\E\?CSRF_Token=\w+$});
-$m->title_is('Create a new ticket');
+$m->title_is('Create a new ticket in General');
 
 # try a whitelisted argument from an attacker
 $m->add_header(Referer => 'http://example.net');
@@ -83,7 +83,7 @@ $m->follow_link(text_regex => qr{resume your request});
 $m->content_lacks("Possible cross-site request forgery");
 is($m->response->redirects, 0, "no redirection");
 like($m->response->request->uri, qr{^http://[^/]+\Q$test_path\E\?CSRF_Token=\w+$});
-$m->title_is('Create a new ticket');
+$m->title_is('Create a new ticket in General');
 
 # try sending the wrong csrf token, then the right one
 $m->add_header(Referer => undef);
@@ -123,14 +123,14 @@ $m->title_is('Configuration for queue test');
 # Try the same page, but different query parameters, which are blatted by the token
 $m->get_ok("/Ticket/Create.html?Queue=$other_queue_id&CSRF_Token=$token");
 $m->content_lacks("Possible cross-site request forgery");
-$m->title_is('Create a new ticket');
+$m->title_is('Create a new ticket in General');
 $m->text_unlike(qr/Queue:\s*Other queue/);
 $m->text_like(qr/Queue:\s*General/);
 
 # Ensure that file uploads work across the interstitial
 $m->delete_header('Referer');
 $m->get_ok($test_page);
-$m->content_contains("Create a new ticket", 'ticket create page');
+$m->content_contains("Create a new ticket in General", 'ticket create page');
 $m->form_name('TicketCreate');
 $m->field('Subject', 'Attachments test');
 
@@ -173,7 +173,7 @@ $m->follow_link(text_regex => qr{resume your request});
 $m->content_lacks("Possible cross-site request forgery");
 is($m->response->redirects, 0, "no redirection");
 like($m->response->request->uri, qr{^http://[^/]+\Q/SelfService/Create.html\E\?CSRF_Token=\w+$});
-$m->title_is('Create a ticket');
+$m->title_is('Create a ticket in #1');
 $m->content_contains('Describe the issue below:');
 
 undef $m;
