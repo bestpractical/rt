@@ -1201,6 +1201,13 @@ sub send_via_mailgate {
 
     my ( $status, $error_message, $ticket )
         = RT::Interface::Email::Gateway( {%args, message => $message} );
+
+    # Invert the status to act like a syscall; failing return code is 1,
+    # and it will be right-shifted before being examined.
+    $status = ($status == 1)  ? 0
+            : ($status == -75) ? (-75 << 8)
+            : (1 << 8);
+
     return ( $status, $ticket ? $ticket->id : 0 );
 
 }

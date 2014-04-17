@@ -25,11 +25,11 @@ here's some content
          qr/Couldn't parse or find sender's address/
         ],
         'Got parse error for non-ASCII in From';
-    is( $status >> 8, 0, "The mail gateway exited normally" );
     TODO: {
-          local $TODO = "Currently don't handle non-ASCII for sender";
-          ok( $id, "Created ticket" );
-      }
+        local $TODO = "Currently don't handle non-ASCII for sender";
+        is( $status >> 8, 0, "The mail gateway exited normally" );
+        ok( $id, "Created ticket" );
+    }
 }
 
 diag "Testing non-ASCII latin1 in From: header with MIME-word-encoded phrase";
@@ -49,10 +49,10 @@ here's some content
          qr/Couldn't parse or find sender's address/
         ],
         'Got parse error for iso-8859-1 in From';
-    is( $status >> 8, 0, "The mail gateway exited normally" );
     TODO: {
-          local $TODO = "Currently don't handle non-ASCII in sender";
-          ok( $id, "Created ticket" );
+        local $TODO = "Currently don't handle non-ASCII in sender";
+        is( $status >> 8, 0, "The mail gateway exited normally" );
+        ok( $id, "Created ticket" );
       }
 }
 
@@ -70,6 +70,6 @@ here's some content
     warnings_like { ( $status, $id ) = RT::Test->send_via_mailgate($mail) }
         [qr/Couldn't parse or find sender's address/],
         'Got parse error with no sender fields';
-    is( $status >> 8, 0, "The mail gateway exited normally" );
+    is( $status >> 8, 1, "The mail gateway failed" );
     ok( !$id, "No ticket created" );
 }
