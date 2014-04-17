@@ -46,7 +46,7 @@ CREATE TABLE Links (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Base varchar(240) NULL,
   Target varchar(240) NULL,
-  Type varchar(20) NOT NULL,
+  Type varchar(20) CHARACTER SET ascii NOT NULL ,
   LocalTarget integer NOT NULL DEFAULT 0  ,
   LocalBase integer NOT NULL DEFAULT 0  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
@@ -54,7 +54,7 @@ CREATE TABLE Links (
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
   PRIMARY KEY (id)
-) ENGINE=InnoDB CHARACTER SET ascii;
+) ENGINE=InnoDB CHARACTER SET utf8;
 
 CREATE INDEX Links2 ON Links (Base,  Type) ;
 CREATE INDEX Links3 ON Links (Target,  Type) ;
