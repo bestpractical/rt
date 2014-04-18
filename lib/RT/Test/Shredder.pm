@@ -120,40 +120,16 @@ sub import {
 
 =head1 FUNCTIONS
 
-=head2 RT CONFIG
-
-=head3 rewrite_rtconfig
-
-Call this sub after C<RT::LoadConfig>. It changes the RT config
-options necessary to switch to a local SQLite database.
-
-=cut
-
-sub bootstrap_more_config {
-    my $self = shift;
-    my $config = shift;
-
-    print $config <<'END';
-Set($DatabaseType       , 'SQLite');
-Set($DatabaseHost       , 'localhost' );
-Set($DatabaseRTHost     , 'localhost' );
-Set($DatabasePort       , '' );
-END
-
-    print $config "Set(\$DatabaseName, '". $self->db_name ."');\n";
-    return;
-}
-
 =head2 DATABASES
 
 =head3 db_name
 
 Returns the absolute file path to the current DB.
-It is C<<RT::Test->temp_directory . 'main.db'>>.
+It is C<<$RT::VarPath . "rt4test" >>.
 
 =cut
 
-sub db_name { return File::Spec->catfile((shift)->temp_directory, "main.db") }
+sub db_name { return File::Spec->catfile($RT::VarPath, RT->Config->Get("DatabaseName")) }
 
 =head3 connect_sqlite
 
