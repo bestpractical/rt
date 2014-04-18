@@ -31,5 +31,6 @@ UPDATE ObjectScrips SET Stage = 'TransactionCreate' WHERE Stage = 'Disabled';
 
 CREATE UNIQUE INDEX ObjectScrips1 ON ObjectScrips (ObjectId, Scrip);
 
-ALTER TABLE Scrips DROP COLUMN Stage;
-ALTER TABLE Scrips DROP COLUMN Queue;
+ALTER TABLE Scrips
+    DROP COLUMN Stage,
+    DROP COLUMN Queue;

@@ -1,2 +1,3 @@
-ALTER TABLE Scrips DROP COLUMN ConditionRules;
-ALTER TABLE Scrips DROP COLUMN ActionRules;
+ALTER TABLE Scrips
+    DROP COLUMN ConditionRules,
+    DROP COLUMN ActionRules;
