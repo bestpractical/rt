@@ -106,7 +106,15 @@ Savepoints are named and you can create two or more savepoints.
 
 sub import {
     my $class = shift;
-    $class->SUPER::import(@_);
+
+    $class->SUPER::import(@_, tests => undef );
+
+    RT::Test::plan( skip_all => 'Shredder tests only work on SQLite' )
+          unless RT->Config->Get('DatabaseType') eq 'SQLite';
+
+    my %args = @_;
+    RT::Test::plan( tests => $args{'tests'} ) if $args{tests};
+
     $class->export_to_level(1);
 }
 
