@@ -148,14 +148,17 @@ for my $file (<README* UPGRADING*>) {
     open my $source, "<", $file
         or warn "Can't open $file: $!", next;
 
+    my $str = "";
+    $str .= encode_entities($_) while <$source>;
+    close $source;
+
+    $str = "<pre>$str</pre>";
+    $str =~ s{\bdocs/([a-z_-]+)\.pod\b}{<a href="$1.html">docs/$1.pod</a>}g;
+
     open my $html, ">", $dest
         or warn "Can't open $dest: $!", next;
-
-    print $html "<pre>";
-    print $html encode_entities($_) while <$source>;
-    print $html "</pre>";
-
-    close $source; close $html;
+    print $html $str;
+    close $html;
 
     $converter->note_for_contents_file([$name], $file, $dest);
 }
