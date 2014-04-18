@@ -97,6 +97,7 @@ my %Ignore = (
             id Created Creator LastUpdated LastUpdatedBy
             )
            ],
+    Users => [ qw( PrivateKey ) ],
 );
 
 my $SystemUserId = RT->SystemUser->Id;
