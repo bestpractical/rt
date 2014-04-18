@@ -26,35 +26,36 @@ ok $two_words_queue && $two_words_queue->id, 'loaded or created a queue';
         TicketsObj => $tickets,
         Argument   => '',
     );
-    is $parser->QueryToSQL("foo"), "$active AND ( Subject LIKE 'foo' )", "correct parsing";
+    is $parser->QueryToSQL("foo"), "( Subject LIKE 'foo' ) AND $active", "correct parsing";
+    is $parser->QueryToSQL("1 foo"), "( Subject LIKE 'foo' AND Subject LIKE '1' ) AND $active", "correct parsing";
     is $parser->QueryToSQL("1"), "( Id = 1 )", "correct parsing";
     is $parser->QueryToSQL("#1"), "( Id = 1 )", "correct parsing";
-    is $parser->QueryToSQL("'1'"), "$active AND ( Subject LIKE '1' )", "correct parsing";
+    is $parser->QueryToSQL("'1'"), "( Subject LIKE '1' ) AND $active", "correct parsing";
 
     is $parser->QueryToSQL("foo bar"),
-        "$active AND ( Subject LIKE 'foo' AND Subject LIKE 'bar' )",
+        "( Subject LIKE 'foo' AND Subject LIKE 'bar' ) AND $active",
         "correct parsing";
     is $parser->QueryToSQL("'foo bar'"),
-        "$active AND ( Subject LIKE 'foo bar' )",
+        "( Subject LIKE 'foo bar' ) AND $active",
         "correct parsing";
 
     is $parser->QueryToSQL("'foo \\' bar'"),
-        "$active AND ( Subject LIKE 'foo \\' bar' )",
+        "( Subject LIKE 'foo \\' bar' ) AND $active",
         "correct parsing";
     is $parser->QueryToSQL('"foo \' bar"'),
-        "$active AND ( Subject LIKE 'foo \\' bar' )",
+        "( Subject LIKE 'foo \\' bar' ) AND $active",
         "correct parsing";
     is $parser->QueryToSQL('"\f\o\o"'),
-        "$active AND ( Subject LIKE '\\\\f\\\\o\\\\o' )",
+        "( Subject LIKE '\\\\f\\\\o\\\\o' ) AND $active",
         "correct parsing";
 
     is $parser->QueryToSQL("General"), "( Queue = 'General' ) AND $active", "correct parsing";
-    is $parser->QueryToSQL("'Two Words'"), "$active AND ( Subject LIKE 'Two Words' )", "correct parsing";
+    is $parser->QueryToSQL("'Two Words'"), "( Subject LIKE 'Two Words' ) AND $active", "correct parsing";
     is $parser->QueryToSQL("queue:'Two Words'"), "( Queue = 'Two Words' ) AND $active", "correct parsing";
     is $parser->QueryToSQL("subject:'Two Words'"), "$active AND ( Subject LIKE 'Two Words' )", "correct parsing";
 
     is $parser->QueryToSQL("me"), "( Owner.id = '__CurrentUser__' ) AND $active", "correct parsing";
-    is $parser->QueryToSQL("'me'"), "$active AND ( Subject LIKE 'me' )", "correct parsing";
+    is $parser->QueryToSQL("'me'"), "( Subject LIKE 'me' ) AND $active", "correct parsing";
     is $parser->QueryToSQL("owner:me"), "( Owner.id = '__CurrentUser__' ) AND $active", "correct parsing";
     is $parser->QueryToSQL("owner:'me'"), "( Owner = 'me' ) AND $active", "correct parsing";
     is $parser->QueryToSQL('owner:root@localhost'), "( Owner.EmailAddress = 'root\@localhost' ) AND $active", "Email address as owner";
