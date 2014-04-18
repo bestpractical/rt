@@ -3796,8 +3796,13 @@ sub GetPrincipalsMap {
                 my $class = $object->RecordClassFromLookupType;
                 if ($class and $class->DOES("RT::Record::Role::Roles")) {
                     $roles->LimitToRolesForObject(RT->System);
-                    $roles->Limit( FIELD => "Name", VALUE => $_, CASESENSITIVE => 0 )
-                        for $class->Roles;
+                    $roles->Limit(
+                        FIELD         => "Name",
+                        FUNCTION      => 'LOWER(?)',
+                        OPERATOR      => "IN",
+                        VALUE         => [ map {lc $_} $class->Roles ],
+                        CASESENSITIVE => 1,
+                    );
                 } else {
                     # No roles to show; so show nothing
                     undef $roles;
