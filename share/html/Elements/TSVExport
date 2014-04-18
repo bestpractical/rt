@@ -113,7 +113,7 @@ while (my $row = $Collection->Next) {
             $val = loc($val) if $_->{should_loc};
             # remove tabs from all field values, they screw up the tsv
             $val = '' unless defined $val;
-            $val =~ s/(?:\n|\r)//g; $val =~ s{\t}{    }g;
+            $val =~ s/(?:\n|\r)+/ /g; $val =~ s{\t}{    }g;
             $val = $no_html->scrub($val);
             $val = HTML::Entities::decode_entities($val);
             Encode::encode_utf8($val);
