@@ -125,11 +125,11 @@ sub import {
 =head3 db_name
 
 Returns the absolute file path to the current DB.
-It is C<<$RT::VarPath . "rt4test" >>.
+It is C<<RT::Test->temp_directory . "rt4test" >>.
 
 =cut
 
-sub db_name { return File::Spec->catfile($RT::VarPath, RT->Config->Get("DatabaseName")) }
+sub db_name { return RT->Config->Get("DatabaseName") }
 
 =head3 connect_sqlite
 

@@ -159,6 +159,8 @@ sub import {
     RT::InitClasses();
 
     RT::I18N->Init();
+
+    $class->set_config_wrapper;
     $class->bootstrap_db( %args );
 
     __reconnect_rt()
@@ -169,8 +171,6 @@ sub import {
     RT->Plugins;
 
     RT->Config->PostLoadCheck;
-
-    $class->set_config_wrapper;
 
     $class->encode_output;
 
@@ -494,6 +494,11 @@ sub bootstrap_db {
     }
 
     my $db_type = RT->Config->Get('DatabaseType');
+
+    if ($db_type eq "SQLite") {
+        RT->Config->WriteSet( DatabaseName => File::Spec->catfile( $self->temp_directory, "rt4test" ) );
+    }
+
     __create_database();
     __reconnect_rt('as dba');
     $RT::Handle->InsertSchema;
