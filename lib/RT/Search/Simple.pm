@@ -173,6 +173,16 @@ sub Finalize {
     my $self = shift;
     my ($limits) = @_;
 
+    # Assume that numbers were actually "default"s if we have other limits
+    if ($limits->{id} and keys %{$limits} > 1) {
+        my $values = delete $limits->{id};
+        for my $value (@{$values}) {
+            $value =~ /(\d+)/ or next;
+            my ($key, @tsql) = $self->HandleDefault($1);
+            push @{$limits->{$key}}, @tsql;
+        }
+    }
+
     # Apply default "active status" limit if we don't have any status
     # limits ourselves, and we're not limited by id
     if (not $limits->{status} and not $limits->{id}
