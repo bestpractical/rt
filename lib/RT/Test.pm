@@ -397,6 +397,56 @@ sub set_config_wrapper {
 
     my $old_sub = \&RT::Config::Set;
     no warnings 'redefine';
+
+    *RT::Config::WriteSet = sub {
+        my ($self, $name) = @_;
+        my $type = $RT::Config::META{$name}->{'Type'} || 'SCALAR';
+        my %sigils = (
+            HASH   => '%',
+            ARRAY  => '@',
+            SCALAR => '$',
+        );
+        my $sigil = $sigils{$type} || $sigils{'SCALAR'};
+        open( my $fh, '<', $tmp{'config'}{'RT'} )
+            or die "Couldn't open config file: $!";
+        my @lines;
+        while (<$fh>) {
+            if (not @lines or /^Set\(/) {
+                push @lines, $_;
+            } else {
+                $lines[-1] .= $_;
+            }
+        }
+        close $fh;
+
+        # Traim trailing newlines and "1;"
+        $lines[-1] =~ s/(^1;\n|^\n)*\Z//m;
+
+        # Remove any previous definitions of this var
+        @lines = grep {not /^Set\(\s*\Q$sigil$name\E\b/} @lines;
+
+        # Format the new value for output
+        require Data::Dumper;
+        local $Data::Dumper::Terse = 1;
+        my $dump = Data::Dumper::Dumper([@_[2 .. $#_]]);
+        $dump =~ s/;?\s+\Z//;
+        push @lines, "Set( ${sigil}${name}, \@{". $dump ."});\n";
+        push @lines, "\n1;\n";
+
+        # Re-write the configuration file
+        open( $fh, '>', $tmp{'config'}{'RT'} )
+            or die "Couldn't open config file: $!";
+        print $fh $_ for @lines;
+        close $fh;
+
+        if ( @SERVERS ) {
+            warn "you're changing config option in a test file"
+                ." when server is active";
+        }
+
+        return $old_sub->(@_);
+    };
+
     *RT::Config::Set = sub {
         # Determine if the caller is either from a test script, or
         # from helper functions called by test script to alter
@@ -406,52 +456,9 @@ sub set_config_wrapper {
         my @caller = caller(1); # preserve list context
         @caller = caller(0) unless @caller;
 
-        if ( ($caller[1]||'') =~ /\.t$/) {
-            my ($self, $name) = @_;
-            my $type = $RT::Config::META{$name}->{'Type'} || 'SCALAR';
-            my %sigils = (
-                HASH   => '%',
-                ARRAY  => '@',
-                SCALAR => '$',
-            );
-            my $sigil = $sigils{$type} || $sigils{'SCALAR'};
-            open( my $fh, '<', $tmp{'config'}{'RT'} )
-                or die "Couldn't open config file: $!";
-            my @lines;
-            while (<$fh>) {
-                if (not @lines or /^Set\(/) {
-                    push @lines, $_;
-                } else {
-                    $lines[-1] .= $_;
-                }
-            }
-            close $fh;
+        return RT::Config::WriteSet(@_)
+            if ($caller[1]||'') =~ /\.t$/;
 
-            # Traim trailing newlines and "1;"
-            $lines[-1] =~ s/(^1;\n|^\n)*\Z//m;
-
-            # Remove any previous definitions of this var
-            @lines = grep {not /^Set\(\s*\Q$sigil$name\E\b/} @lines;
-
-            # Format the new value for output
-            require Data::Dumper;
-            local $Data::Dumper::Terse = 1;
-            my $dump = Data::Dumper::Dumper([@_[2 .. $#_]]);
-            $dump =~ s/;?\s+\Z//;
-            push @lines, "Set( ${sigil}${name}, \@{". $dump ."});\n";
-            push @lines, "\n1;\n";
-
-            # Re-write the configuration file
-            open( $fh, '>', $tmp{'config'}{'RT'} )
-                or die "Couldn't open config file: $!";
-            print $fh $_ for @lines;
-            close $fh;
-
-            if ( @SERVERS ) {
-                warn "you're changing config option in a test file"
-                    ." when server is active";
-            }
-        }
         return $old_sub->(@_);
     };
 }
