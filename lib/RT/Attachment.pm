@@ -482,22 +482,23 @@ sub ContentAsMIME {
         my ($h_key, $h_val) = split /:/, $header, 2;
         $entity->head->add( $h_key, RT::Interface::Email::EncodeToMIME( String => $h_val ) );
     }
-    
-    # since we want to return original content, let's use original encoding
-    $entity->head->mime_attr(
-        "Content-Type.charset" => $self->OriginalEncoding )
-      if $self->OriginalEncoding;
 
-    $entity->bodyhandle(
-        MIME::Body::Scalar->new( $self->OriginalContent )
-    );
-
-    if ($opts{'Children'} and not $self->IsMessageContentType) {
-        my $children = $self->Children;
-        while (my $child = $children->Next) {
-            $entity->make_multipart unless $entity->is_multipart;
-            $entity->add_part( $child->ContentAsMIME(%opts) );
+    if ($entity->is_multipart) {
+        if ($opts{'Children'} and not $self->IsMessageContentType) {
+            my $children = $self->Children;
+            while (my $child = $children->Next) {
+                $entity->add_part( $child->ContentAsMIME(%opts) );
+            }
         }
+    } else {
+        # since we want to return original content, let's use original encoding
+        $entity->head->mime_attr(
+            "Content-Type.charset" => $self->OriginalEncoding )
+          if $self->OriginalEncoding;
+
+        $entity->bodyhandle(
+            MIME::Body::Scalar->new( $self->OriginalContent )
+        );
     }
 
     return $entity;
