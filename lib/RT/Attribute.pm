@@ -292,7 +292,9 @@ sub SetContent {
             return(0, "Content couldn't be frozen");
         }
     }
-    return $self->_Set( Field => 'Content', Value => $content );
+    my ($ok, $msg) = $self->_Set( Field => 'Content', Value => $content );
+    return ($ok, $self->loc("Attribute updated")) if $ok;
+    return ($ok, $msg);
 }
 
 =head2 SubValue KEY
