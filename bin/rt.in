@@ -1065,10 +1065,10 @@ sub submit {
     my $how = $config{server} =~ /^https/ ? 'over SSL' : 'unencrypted';
     my($server) = $config{server} =~ m{^.*//([^/]+)};
     if ($config{externalauth}) {
-        $h->authorization_basic($config{user}, $config{passwd} || read_passwd() );
         print "   Password will be sent to $server $how\n",
               "   Press CTRL-C now if you do not want to continue\n"
             if ! $config{passwd};
+        $h->authorization_basic($config{user}, $config{passwd} || read_passwd() );
     } elsif ( $no_strong_auth ) {
         if (!defined $session->cookie) {
             print "   Strong encryption not available, $no_strong_auth\n",
