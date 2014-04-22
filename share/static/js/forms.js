@@ -1,13 +1,18 @@
 jQuery(function() {
-  jQuery('form').submit(function() {
-    jQuery(this).find('input[type="submit"]').attr('disabled','disabled');
-    return true;
-  })
-  jQuery('input[type="submit"]').click(function() {
-    var $this = jQuery(this);
-    var name = $this.attr('name');
-    if (!name) { return true; }
-    $this.after( jQuery('<input/>', {type: "hidden", name: name, value: $this.val()} ) );
-    return true;
-  })
+    // reset form submit info when user goes backward or forward for Safari
+    // other browsers don't need this trick and they can work directly.
+    if ( window.addEventListener ) {
+        window.addEventListener("popstate", function(e) {
+            jQuery('form').data('submitted', false);
+        });
+    }
+
+    jQuery('form').submit(function(e) {
+        var form = jQuery(this);
+        if (form.data('submitted') === true) {
+            e.preventDefault();
+        } else {
+            form.data('submitted', true);
+        }
+    });
 });
