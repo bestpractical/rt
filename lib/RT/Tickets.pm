@@ -1373,7 +1373,7 @@ sub Limit {
 
 =head2 LimitField
 
-Takes a paramhash with the fields FIELD, OPERATOR, VALUE and DESCRIPTION
+Takes a paramhash with the fields FIELD, OPERATOR, and VALUE
 Generally best called from LimitFoo methods
 
 =cut
@@ -1384,15 +1384,8 @@ sub LimitField {
         FIELD       => undef,
         OPERATOR    => '=',
         VALUE       => undef,
-        DESCRIPTION => undef,
         @_
     );
-    $args{'DESCRIPTION'} = $self->loc(
-        "[_1] [_2] [_3]",  $args{'FIELD'},
-        $args{'OPERATOR'}, $args{'VALUE'}
-        )
-        if ( !defined $args{'DESCRIPTION'} );
-
 
     if ($self->_isLimited > 1) {
         RT->Deprecated( Message => "Mixing old-style LimitFoo methods with Limit is deprecated" );
@@ -1446,9 +1439,6 @@ sub LimitQueue {
         FIELD       => 'Queue',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
-        DESCRIPTION => join(
-            ' ', $self->loc('Queue'), $args{'OPERATOR'}, $args{'VALUE'},
-        ),
     );
 
 }
@@ -1478,9 +1468,6 @@ sub LimitStatus {
         FIELD       => 'Status',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
-        DESCRIPTION => join( ' ',
-            $self->loc('Status'), $args{'OPERATOR'},
-            $self->loc( $args{'VALUE'} ) ),
     );
 }
 
@@ -1564,8 +1551,6 @@ sub LimitType {
         FIELD       => 'Type',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
-        DESCRIPTION => join( ' ',
-            $self->loc('Type'), $args{'OPERATOR'}, $args{'VALUE'}, ),
     );
 }
 
@@ -1588,8 +1573,6 @@ sub LimitSubject {
         FIELD       => 'Subject',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
-        DESCRIPTION => join( ' ',
-            $self->loc('Subject'), $args{'OPERATOR'}, $args{'VALUE'}, ),
     );
 }
 
@@ -1617,8 +1600,6 @@ sub LimitId {
         FIELD       => 'id',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
-        DESCRIPTION =>
-            join( ' ', $self->loc('Id'), $args{'OPERATOR'}, $args{'VALUE'}, ),
     );
 }
 
@@ -1639,9 +1620,6 @@ sub LimitPriority {
         FIELD       => 'Priority',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
-        DESCRIPTION => join( ' ',
-            $self->loc('Priority'),
-            $args{'OPERATOR'}, $args{'VALUE'}, ),
     );
 }
 
@@ -1663,9 +1641,6 @@ sub LimitInitialPriority {
         FIELD       => 'InitialPriority',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
-        DESCRIPTION => join( ' ',
-            $self->loc('Initial Priority'), $args{'OPERATOR'},
-            $args{'VALUE'}, ),
     );
 }
 
@@ -1686,9 +1661,6 @@ sub LimitFinalPriority {
         FIELD       => 'FinalPriority',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
-        DESCRIPTION => join( ' ',
-            $self->loc('Final Priority'), $args{'OPERATOR'},
-            $args{'VALUE'}, ),
     );
 }
 
@@ -1709,9 +1681,6 @@ sub LimitTimeWorked {
         FIELD       => 'TimeWorked',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
-        DESCRIPTION => join( ' ',
-            $self->loc('Time Worked'),
-            $args{'OPERATOR'}, $args{'VALUE'}, ),
     );
 }
 
@@ -1732,9 +1701,6 @@ sub LimitTimeLeft {
         FIELD       => 'TimeLeft',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
-        DESCRIPTION => join( ' ',
-            $self->loc('Time Left'),
-            $args{'OPERATOR'}, $args{'VALUE'}, ),
     );
 }
 
@@ -1757,9 +1723,6 @@ sub LimitContent {
         FIELD       => 'Content',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
-        DESCRIPTION => join( ' ',
-            $self->loc('Ticket content'), $args{'OPERATOR'},
-            $args{'VALUE'}, ),
     );
 }
 
@@ -1780,9 +1743,6 @@ sub LimitFilename {
         FIELD       => 'Filename',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
-        DESCRIPTION => join( ' ',
-            $self->loc('Attachment filename'), $args{'OPERATOR'},
-            $args{'VALUE'}, ),
     );
 }
 
@@ -1802,9 +1762,6 @@ sub LimitContentType {
         FIELD       => 'ContentType',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
-        DESCRIPTION => join( ' ',
-            $self->loc('Ticket content type'), $args{'OPERATOR'},
-            $args{'VALUE'}, ),
     );
 }
 
@@ -1835,8 +1792,6 @@ sub LimitOwner {
         FIELD       => 'Owner',
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
-        DESCRIPTION => join( ' ',
-            $self->loc('Owner'), $args{'OPERATOR'}, $owner->Name(), ),
     );
 
 }
@@ -1877,9 +1832,6 @@ sub LimitWatcher {
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
         TYPE        => $args{'TYPE'},
-        DESCRIPTION => join( ' ',
-            $self->loc($watcher_type),
-            $args{'OPERATOR'}, $args{'VALUE'}, ),
     );
 }
 
@@ -1913,11 +1865,6 @@ sub LimitLinkedTo {
         BASE        => undef,
         TARGET      => $args{'TARGET'},
         TYPE        => $args{'TYPE'},
-        DESCRIPTION => $self->loc(
-            "Tickets [_1] by [_2]",
-            $self->loc( $args{'TYPE'} ),
-            $args{'TARGET'}
-        ),
         OPERATOR    => $args{'OPERATOR'},
     );
 }
@@ -1956,11 +1903,6 @@ sub LimitLinkedFrom {
         TARGET      => undef,
         BASE        => $args{'BASE'},
         TYPE        => $type,
-        DESCRIPTION => $self->loc(
-            "Tickets [_1] [_2]",
-            $self->loc( $args{'TYPE'} ),
-            $args{'BASE'},
-        ),
         OPERATOR    => $args{'OPERATOR'},
     );
 }
@@ -2066,13 +2008,6 @@ sub LimitDate {
         @_
     );
 
-    #Set the description if we didn't get handed it above
-    unless ( $args{'DESCRIPTION'} ) {
-        $args{'DESCRIPTION'} = $args{'FIELD'} . " "
-            . $args{'OPERATOR'} . " "
-            . $args{'VALUE'} . " GMT";
-    }
-
     $self->LimitField(%args);
 
 }
@@ -2137,18 +2072,7 @@ sub LimitTransactionDate {
         @_
     );
 
-    #  <20021217042756.GK28744@pallas.fsck.com>
-    #    "Kill It" - Jesse.
-
-    #Set the description if we didn't get handed it above
-    unless ( $args{'DESCRIPTION'} ) {
-        $args{'DESCRIPTION'} = $args{'FIELD'} . " "
-            . $args{'OPERATOR'} . " "
-            . $args{'VALUE'} . " GMT";
-    }
-
     $self->LimitField(%args);
-
 }
 
 
@@ -2176,7 +2100,6 @@ sub LimitCustomField {
         VALUE       => undef,
         CUSTOMFIELD => undef,
         OPERATOR    => '=',
-        DESCRIPTION => undef,
         FIELD       => 'CustomFieldValue',
         QUOTEVALUE  => 1,
         @_
@@ -2192,22 +2115,6 @@ sub LimitCustomField {
             Queue => $args{QUEUE}
         );
         $args{CUSTOMFIELD} = $CF->Id;
-    }
-
-    #If we are looking to compare with a null value.
-    if ( $args{'OPERATOR'} =~ /^is$/i ) {
-        $args{'DESCRIPTION'}
-            ||= $self->loc( "Custom field [_1] has no value.", $CF->Name );
-    }
-    elsif ( $args{'OPERATOR'} =~ /^is not$/i ) {
-        $args{'DESCRIPTION'}
-            ||= $self->loc( "Custom field [_1] has a value.", $CF->Name );
-    }
-
-    # if we're not looking to compare with a null value
-    else {
-        $args{'DESCRIPTION'} ||= $self->loc( "Custom field [_1] [_2] [_3]",
-            $CF->Name, $args{OPERATOR}, $args{VALUE} );
     }
 
     if ( defined $args{'QUEUE'} && $args{'QUEUE'} =~ /\D/ ) {
