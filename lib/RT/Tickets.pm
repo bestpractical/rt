@@ -2125,11 +2125,18 @@ Takes a paramhash of key/value pairs with the following keys:
 
 =over 4
 
-=item CUSTOMFIELD - CustomField name or id.  If a name is passed, an additional parameter QUEUE may also be passed to distinguish the custom field.
+=item CUSTOMFIELD
 
-=item OPERATOR - The usual Limit operators
+CustomField name or id.  If a name is passed, an additional parameter
+QUEUE may also be passed to distinguish the custom field.
 
-=item VALUE - The value to compare against
+=item OPERATOR
+
+The usual Limit operators
+
+=item VALUE
+
+The value to compare against
 
 =back
 
@@ -2141,43 +2148,18 @@ sub LimitCustomField {
         VALUE       => undef,
         CUSTOMFIELD => undef,
         OPERATOR    => '=',
-        FIELD       => 'CustomFieldValue',
-        QUOTEVALUE  => 1,
+        QUEUE       => undef,
+        ENTRYAGGREGATOR => undef,
         @_
     );
 
-    my $CF = RT::CustomField->new( $self->CurrentUser );
-    if ( $args{CUSTOMFIELD} =~ /^\d+$/ ) {
-        $CF->Load( $args{CUSTOMFIELD} );
-    }
-    else {
-        $CF->LoadByName(
-            Name       => $args{CUSTOMFIELD},
-            LookupType => RT::Ticket->CustomFieldLookupType,
-            ObjectId   => $args{QUEUE},
-        );
-        $args{CUSTOMFIELD} = $CF->Id;
-    }
-
-    if ( defined $args{'QUEUE'} && $args{'QUEUE'} =~ /\D/ ) {
-        my $QueueObj = RT::Queue->new( $self->CurrentUser );
-        $QueueObj->Load( $args{'QUEUE'} );
-        $args{'QUEUE'} = $QueueObj->Id;
-    }
-    delete $args{'QUEUE'} unless defined $args{'QUEUE'} && length $args{'QUEUE'};
-
-    my @rest;
-    @rest = ( ENTRYAGGREGATOR => 'AND' )
-        if ( $CF->Type eq 'SelectMultiple' );
-
     $self->LimitField(
         VALUE => $args{VALUE},
-        FIELD => "CF"
-            .(defined $args{'QUEUE'}? ".$args{'QUEUE'}" : '' )
-            .".{" . $CF->Name . "}",
+        FIELD => "CF" . ( defined $args{'QUEUE'}? ".$args{'QUEUE'}" : '' )
+                      . ".{$args{CUSTOMFIELD}}",
         OPERATOR    => $args{OPERATOR},
         CUSTOMFIELD => 1,
-        @rest,
+        ENTRYAGGREGATOR => $args{ENTRYAGGREGATOR},
     );
 
     $self->{'RecalcTicketLimits'} = 1;
