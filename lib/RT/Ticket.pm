@@ -3035,6 +3035,9 @@ sub Forward {
 
     $args{$_} = join ", ", map { $_->format } RT::EmailParser->ParseEmailAddress( $args{$_} || '' ) for qw(To Cc Bcc);
 
+    return (0, $self->loc("Can't forward: no valid email addresses specified") )
+        unless grep {length $args{$_}} qw/To Cc Bcc/;
+
     my $mime = MIME::Entity->build(
         Subject => $args{Subject},
         Type    => $args{ContentType},
