@@ -58,7 +58,7 @@
 <tr><th colspan="2"><% loc('No [_1] keys for this address', $protocol) %></th></tr>
 % } else {
 
-<tr><th colspan="2"><% loc("[_1] key '[_2]'", $protocol, $res{'info'}{'id'} || $res{'info'}{'Fingerprint'} ) %></th></tr>
+<tr><th colspan="2"><% loc("[_1] key '[_2]'", $protocol, $res{'info'}{'Fingerprint'} ) %></th></tr>
 
 % if ( $Type ne 'private' && $res{'info'}{'Trust'} ) {
 <tr><th class="label"><% loc('Trust') %>:</th>  <td><% loc( $res{'info'}{'Trust'} ) %></td></tr>
