@@ -2476,9 +2476,6 @@ Set(%GnuPGOptions,
 # URL of a keyserver
 #    keyserver => 'hkp://subkeys.pgp.net',
 
-# enables the automatic retrieving of keys when encrypting
-#    'auto-key-locate' => 'keyserver',
-
 # enables the automatic retrieving of keys when verifying signatures
 #    'keyserver-options' => 'auto-key-retrieve',
 );
