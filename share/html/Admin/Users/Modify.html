@@ -231,9 +231,15 @@
 <%INIT>
 
 my $UserObj = RT::User->new($session{'CurrentUser'});
-my ($title, $Disabled, @results);
+my ($title, @results);
 
 my ($val, $msg);
+
+$ARGS{Privileged} = $ARGS{Privileged} ? 1 : 0;
+delete $ARGS{Privileged} unless $ARGS{SetPrivileged};
+
+$ARGS{Disabled} = $ARGS{Enabled} ? 0 : 1;
+delete $ARGS{Disabled} unless $ARGS{SetEnabled};
 
 if ($Create) {
     $title = loc("Create a new user");
@@ -271,7 +277,7 @@ else {
             Zip                   => $ARGS{'Zip'},
             Country               => $ARGS{'Country'},
             Privileged            => $ARGS{'Privileged'},
-            Disabled              => ($ARGS{'Enabled'} ? 0 : 1)
+            Disabled              => $ARGS{'Disabled'},
         );
 
         if ($val) {
@@ -315,17 +321,13 @@ if ($UserObj->Id && $id ne 'new') {
     push (@results,@fieldresults);
     push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $UserObj );
 
-    # {{{ Deal with special fields: Privileged, Enabled
-    if  ( $ARGS{SetPrivileged} and $ARGS{Privileged} != ($UserObj->Privileged || 0) ) {
-         my ($code, $msg) = $UserObj->SetPrivileged($ARGS{Privileged});
-         push @results, loc('Privileged status: [_1]', loc_fuzzy($msg));
+    if ( defined $ARGS{Privileged} and $ARGS{Privileged} != ($UserObj->Privileged || 0) ) {
+        my ($code, $msg) = $UserObj->SetPrivileged($ARGS{Privileged});
+        push @results, loc('Privileged status: [_1]', loc_fuzzy($msg));
     }
 
-    #we're asking about enabled on the web page but really care about disabled.
-    $Disabled = $ARGS{Enabled} ? 0 : 1;
-
-    if  ( ($ARGS{SetEnabled}) and ( $Disabled != $UserObj->Disabled) ) {
-        my  ($code, $msg) = $UserObj->SetDisabled($Disabled);
+    if ( defined $ARGS{Disabled} and $ARGS{Disabled} != $UserObj->Disabled ) {
+        my ($code, $msg) = $UserObj->SetDisabled($ARGS{Disabled});
         push @results, $msg;
     }
 }
