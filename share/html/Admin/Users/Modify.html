@@ -105,12 +105,13 @@
 <br />
 <&| /Widgets/TitleBox, title => loc('Access control'), class => 'user-info-access-control' &>
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
-<input type="checkbox" class="checkbox" id="Enabled" name="Enabled" value="1" <%$EnabledChecked%> />
+<input type="checkbox" class="checkbox" id="Enabled" name="Enabled" value="1" <% ($UserObj->Id && $UserObj->Disabled) ? '' : 'checked="checked"' |n%> />
 <label for="Enabled"><&|/l&>Let this user access RT</&></label><br />
 
 
+% my $PrivilegedChecked = ((!$Create && $UserObj->Privileged()) or (!$UserObj->Id and $ARGS{Privileged})) ? 'checked="checked"' : '';
 <input type="hidden" class="hidden" name="SetPrivileged" value="1" />
-<input type="checkbox" class="checkbox" id="Privileged" name="Privileged" value="1" <%$PrivilegedChecked||''%> />
+<input type="checkbox" class="checkbox" id="Privileged" name="Privileged" value="1" <%$PrivilegedChecked|n%> />
 <label for="Privileged"><&|/l&>Let this user be granted rights</&> (<&|/l&>Privileged</&>)</label><br />
 
 <& /Elements/EditPassword,
@@ -230,7 +231,7 @@
 <%INIT>
 
 my $UserObj = RT::User->new($session{'CurrentUser'});
-my ($title, $PrivilegedChecked, $EnabledChecked, $Disabled, $result, @results);
+my ($title, $Disabled, $result, @results);
 
 my ($val, $msg);
 
@@ -343,16 +344,6 @@ if ( $UserObj->Id ) {
     if ( $id eq 'new' && !$status ) {
         push @results, loc("A password was not set, so user won't be able to login.");
     }
-}
-
-
-# Do some setup for the ui
-unless ( $UserObj->id && $UserObj->Disabled ) {
-    $EnabledChecked = 'checked="checked"';
-}
-
-if ((!$Create && $UserObj->Privileged()) or (!$UserObj->Id and $ARGS{Privileged})) {
-    $PrivilegedChecked = 'checked="checked"';
 }
 
 # This code does automatic redirection if any updates happen.
