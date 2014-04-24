@@ -1789,11 +1789,11 @@ sub MergeInto {
 
     $RT::Handle->BeginTransaction();
 
-    $self->_MergeInto( $MergeInto );
+    my ($ok, $msg) = $self->_MergeInto( $MergeInto );
 
-    $RT::Handle->Commit();
+    $RT::Handle->Commit() if $ok;
 
-    return ( 1, $self->loc("Merge Successful") );
+    return ($ok, $msg);
 }
 
 sub _MergeInto {
@@ -1933,6 +1933,8 @@ sub _MergeInto {
     $self->AddLink( Type   => 'MergedInto', Target => $MergeInto->Id());
 
     $MergeInto->_SetLastUpdated;    
+
+    return ( 1, $self->loc("Merge Successful") );
 }
 
 =head2 Merged
