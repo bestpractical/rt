@@ -48,7 +48,7 @@
 <%args>
 $Query => "id > 0"
 $PrimaryGroupBy => 'Queue'
-$ChartStyle => 'bars'
+$ChartStyle => 'bar'
 </%args>
 <%init>
 my $chart_class;
