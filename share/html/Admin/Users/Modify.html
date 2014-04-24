@@ -291,8 +291,6 @@ if ($Create) {
     }
 }
 
-
-my %password_cond = $UserObj->CurrentUserRequireToSetPassword;
 if ( $UserObj->Id ) {
     # Deal with Password field
     my ($status, $msg) = $UserObj->SafeSetPassword(
