@@ -1777,6 +1777,11 @@ sub MergeInto {
         return ( 0, $self->loc("New ticket doesn't exist") );
     }
 
+    # Can't merge into yourself
+    if ( $MergeInto->Id == $self->Id ) {
+        return ( 0, $self->loc("Can't merge a ticket into itself") );
+    }
+
     # Make sure the current user can modify the new ticket.
     unless ( $MergeInto->CurrentUserHasRight('ModifyTicket') ) {
         return ( 0, $self->loc("Permission Denied") );
