@@ -250,44 +250,29 @@ my @fields = qw(Name Comments Signature EmailAddress FreeformContactInfo
 
 if ($Create) {
     $title = loc("Create a new user");
-}
-else {
-
-    if ( defined $id && $id eq 'new') {
-        ( $val, $msg ) = $UserObj->Create(
-            (map {($_ => $ARGS{$_})} @fields),
-            Privileged => $ARGS{'Privileged'},
-            Disabled   => $ARGS{'Disabled'},
-        );
-
-        if ($val) {
-            push @results, $msg;
-            push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $UserObj );
-        } else {
-            push @results, loc('User could not be created: [_1]', $msg);
-        }
-    } else {
-        $UserObj->Load($id) || $UserObj->Load($Name)
-            || Abort("Couldn't load user '" . ( $Name || '') . "'");
-        $val = $UserObj->Id();
-    }
+} elsif ( defined $id && $id eq 'new') {
+    ( $val, $msg ) = $UserObj->Create(
+        (map {($_ => $ARGS{$_})} @fields),
+        Privileged => $ARGS{'Privileged'},
+        Disabled   => $ARGS{'Disabled'},
+    );
 
     if ($val) {
+        push @results, $msg;
+        push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $UserObj );
         $title = loc("Modify the user [_1]", $UserObj->Name);
-    }
-
-    # If the create failed
-    else {
+    } else {
+        push @results, loc('User could not be created: [_1]', $msg);
         $title = loc("Create a new user");
         $Create = 1;
     }
-}
+} else {
+    $UserObj->Load($id) || $UserObj->Load($ARGS{Name})
+        || Abort("Couldn't load user '" . ( $ARGS{Name} || '') . "'");
 
-$m->callback( %ARGS, CallbackName => 'BeforeUpdate', User => $UserObj, ARGSRef => \%ARGS, Results => \@results );
+    $title = loc("Modify the user [_1]", $UserObj->Name);
 
-# If we have a user to modify, lets try.
-if ($UserObj->Id && $id ne 'new') {
-
+    $m->callback( %ARGS, CallbackName => 'BeforeUpdate', User => $UserObj, ARGSRef => \%ARGS, Results => \@results );
 
     my @fieldresults = UpdateRecordObject ( AttributesRef => \@fields,
                                             Object => $UserObj,
