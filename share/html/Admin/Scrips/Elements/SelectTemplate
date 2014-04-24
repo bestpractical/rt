@@ -74,7 +74,10 @@ if ( $Scrip && $Scrip->id && !$Scrip->IsAddedToAny ) {
     $global->LimitToGlobal;
 
     my %global;
-    $global{ lc $_ } = $_ foreach map $_->Name, @{ $global->ItemsArrayRef };
+
+    while (my $t = $global->Next) {
+        $global{ lc $t->Name } = $t->Name
+    }
 
     my @queues;
     push @queues, @{ $Scrip->AddedTo->ItemsArrayRef } if $Scrip && $Scrip->id;
