@@ -318,15 +318,15 @@ if ($UserObj->Id && $id ne 'new') {
 
 
     # {{{ Deal with special fields: Privileged, Enabled
-    if  ( $SetPrivileged and $Privileged != ($UserObj->Privileged || 0) ) {
-         my ($code, $msg) = $UserObj->SetPrivileged($Privileged);
+    if  ( $ARGS{SetPrivileged} and $ARGS{Privileged} != ($UserObj->Privileged || 0) ) {
+         my ($code, $msg) = $UserObj->SetPrivileged($ARGS{Privileged});
          push @results, loc('Privileged status: [_1]', loc_fuzzy($msg));
     }
 
     #we're asking about enabled on the web page but really care about disabled.
-    $Disabled = $Enabled ? 0 : 1;
+    $Disabled = $ARGS{Enabled} ? 0 : 1;
 
-    if  ( ($SetEnabled) and ( $Disabled != $UserObj->Disabled) ) { 
+    if  ( ($ARGS{SetEnabled}) and ( $Disabled != $UserObj->Disabled) ) {
         my  ($code, $msg) = $UserObj->SetDisabled($Disabled);
         push @results, $msg;
     }
@@ -356,7 +356,7 @@ unless ( $UserObj->id && $UserObj->Disabled ) {
     $EnabledChecked = 'checked="checked"';
 }
 
-if ((!$Create && $UserObj->Privileged()) or (!$UserObj->Id and $Privileged)) {  
+if ((!$Create && $UserObj->Privileged()) or (!$UserObj->Id and $ARGS{Privileged})) {
     $PrivilegedChecked = 'checked="checked"';
 }
 
