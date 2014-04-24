@@ -230,6 +230,7 @@ function textToHTML(value) {
                 .replace(/\n/g,   "\n<br />");
 };
 
+CKEDITOR_BASEPATH=RT.Config.WebPath + "/static/RichText/";
 function ReplaceAllTextareas() {
     var sAgent = navigator.userAgent.toLowerCase();
     if (!CKEDITOR.env.isCompatible ||
@@ -253,7 +254,6 @@ function ReplaceAllTextareas() {
             type.val("text/html");
 
             CKEDITOR.replace(textArea.name,{ width: '100%', height: RT.Config.MessageBoxRichTextHeight });
-            CKEDITOR.basePath = RT.Config.WebPath + "/static/RichText/";
 
             jQuery("#" + textArea.name + "___Frame").addClass("richtext-editor");
         }
