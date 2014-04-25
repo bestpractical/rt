@@ -328,7 +328,7 @@ sub process_attachments {
             Path => $tmp_fn,
             Type => $info->{'Content-Type'} || guess_media_type($tmp_fn),
             Filename => $file,
-            Disposition => "attachment",
+            Disposition => $info->{'Content-Disposition'} || "attachment",
         );
         $new_entity->bodyhandle->{'_dirty_hack_to_save_a_ref_tmp_fh'} = $tmp_fh;
         $i++;
