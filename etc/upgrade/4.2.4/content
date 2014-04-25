@@ -1,0 +1,18 @@
+use strict;
+use warnings;
+
+our @ScripActions = (
+    { Name        => 'Open Inactive Tickets',                             # loc
+      Description => 'Open inactive tickets',                             # loc
+      ExecModule  => 'AutoOpenInactive' },
+);
+
+# Ignore the above if there is already an AutoOpenInactive in the
+# database -- i.e. originally a 4.2 install, or someone added one
+# themselves.
+our @Initial;
+push @Initial, sub {
+    my $exist = RT::ScripAction->new( RT->SystemUser );
+    $exist->LoadByCols( ExecModule => 'AutoOpenInactive' );
+    @ScripActions = () if $exist->Id;
+};
