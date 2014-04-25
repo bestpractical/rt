@@ -94,6 +94,15 @@ subroutine B<must escape> HTML.
 A subroutine reference; modify it only if you have to. This can be used
 to add pre- or post-processing around all actions.
 
+=item cache
+
+An undefined variable that should be replaced with a subroutine
+reference. This subroutine will be called twice, once with the arguments
+fetch => content_ref and once with store => content_ref. In the fetch
+case, if a cached copy is found, return the cached content, otherwise
+return a false value. When passed store, you should populate your cache
+with the content. The return value is ignored in this case.
+
 =back
 
 =head2 Actions' arguments
