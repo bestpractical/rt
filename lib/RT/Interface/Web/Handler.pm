@@ -54,7 +54,6 @@ use CGI qw/-private_tempfiles/;
 use MIME::Entity;
 use Text::Wrapper;
 use CGI::Cookie;
-use Time::ParseDate;
 use Time::HiRes;
 use HTML::Scrubber;
 use RT::Interface::Web;
