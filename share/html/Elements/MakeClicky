@@ -96,6 +96,8 @@ my $handle = sub {
     }
 };
 
+my $cache; # only defined via callback
+
 # Hook to add more Clicky types
 # XXX Have to have Page argument, as Mason gets caller wrong in Callback?
 # This happens as we are in <%ONCE> block
@@ -104,6 +106,7 @@ $m->callback(
     types        => \@types,
     actions      => \%actions,
     handle       => \$handle,
+    cache        => \$cache,
 );
 
 
@@ -131,6 +134,15 @@ $html => undef
 </%ARGS>
 <%INIT>
 return unless defined $$content;
+if ( defined $cache ) {
+    my $cached_content = $cache->(fetch => $content);
+    if ( $cached_content ) {
+        RT->Logger->debug("Found MakeClicky cache");
+        $$content = $cached_content;
+        return;
+    }
+}
+
 unless ( $regexp ) {
     RT::Interface::Web::EscapeUTF8( $content ) unless $html;
     return;
@@ -165,6 +177,7 @@ substr( $$content, $pos ) = $escaper->( substr( $$content, $pos ) ) unless
 ($pos == length $$content) || $html;
 
 pos($$content) = 0;
+$cache->(store => $content) if defined $cache;
 
 </%INIT>
 <%doc>
@@ -198,6 +211,14 @@ It will be provided with:
  * 'handle': A reference to a subroutine reference; modify it if you
     have to. This can be used to add pre- or post-processing around
     all actions.
+
+ * 'cache': An undefined variable that should be replaced with a
+   subroutine reference. This subroutine will be called twice, once with
+   the arguments fetch => content_ref and once with store =>
+   content_ref. In the fetch case, if a cached copy is found, return the
+   cached content, otherwise return a false value. When passed store,
+   you should populate your cache with the content. The return value is
+   ignored in this case.
 
 Read more about writing new actions in docs/extending/clickable_links.pod
 
