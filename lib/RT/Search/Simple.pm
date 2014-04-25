@@ -71,6 +71,7 @@ use Regexp::Common qw/delimited/;
 # Only a subset of limit types AND themselves together.  "queue:foo
 # queue:bar" is an OR, but "subject:foo subject:bar" is an AND
 our %AND = (
+    default => 1,
     content => 1,
     subject => 1,
 );
@@ -173,6 +174,16 @@ sub Finalize {
     my $self = shift;
     my ($limits) = @_;
 
+    # Assume that numbers were actually "default"s if we have other limits
+    if ($limits->{id} and keys %{$limits} > 1) {
+        my $values = delete $limits->{id};
+        for my $value (@{$values}) {
+            $value =~ /(\d+)/ or next;
+            my ($key, @tsql) = $self->HandleDefault($1);
+            push @{$limits->{$key}}, @tsql;
+        }
+    }
+
     # Apply default "active status" limit if we don't have any status
     # limits ourselves, and we're not limited by id
     if (not $limits->{status} and not $limits->{id}
@@ -194,7 +205,7 @@ sub Finalize {
 }
 
 our @GUESS = (
-    [ 10 => sub { return "subject" if $_[1] } ],
+    [ 10 => sub { return "default" if $_[1] } ],
     [ 20 => sub { return "id" if /^#?\d+$/ } ],
     [ 30 => sub { return "requestor" if /\w+@\w+/} ],
     [ 35 => sub { return "domain" if /^@\w+/} ],
@@ -231,7 +242,14 @@ sub GuessType {
 # $_[2] is a boolean of "was quoted by the user?"
 #       ensure this is false before you do smart matching like $_[1] eq "me"
 # $_[3] is escaped subkey, if any (see HandleCf)
-sub HandleDefault   { return subject   => "Subject LIKE '$_[1]'"; }
+sub HandleDefault   {
+    my $fts = RT->Config->Get('FullTextSearch');
+    if ($fts->{Enable} and $fts->{Indexed}) {
+        return default => "(Subject LIKE '$_[1]' OR Content LIKE '$_[1]')";
+    } else {
+        return default => "Subject LIKE '$_[1]'";
+    }
+}
 sub HandleSubject   { return subject   => "Subject LIKE '$_[1]'"; }
 sub HandleFulltext  { return content   => "Content LIKE '$_[1]'"; }
 sub HandleContent   { return content   => "Content LIKE '$_[1]'"; }

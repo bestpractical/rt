@@ -34,8 +34,8 @@ my @tests = (
     "fulltext:jesse"       => "( Content LIKE 'jesse' ) AND ( $active_statuses )",
     $queue                 => "( Queue = '$queue' ) AND ( $active_statuses )",
     "root $queue"          => "( Owner = 'root' ) AND ( Queue = '$queue' ) AND ( $active_statuses )",
-    "notauser $queue"      => "( Queue = '$queue' ) AND ( $active_statuses ) AND ( Subject LIKE 'notauser' )",
-    "notauser $queue root" => "( Owner = 'root' ) AND ( Queue = '$queue' ) AND ( $active_statuses ) AND ( Subject LIKE 'notauser' )");
+    "notauser $queue"      => "( Subject LIKE 'notauser' ) AND ( Queue = '$queue' ) AND ( $active_statuses )",
+    "notauser $queue root" => "( Subject LIKE 'notauser' ) AND ( Owner = 'root' ) AND ( Queue = '$queue' ) AND ( $active_statuses )");
 
 while (my ($from, $to) = splice @tests, 0, 2) {
     is($quick->QueryToSQL($from), $to, "<$from> -> <$to>");
