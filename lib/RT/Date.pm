@@ -551,7 +551,8 @@ Returns new unix time.
 
 sub AddDays {
     my $self = shift;
-    my $days = shift || 1;
+    my $days = shift;
+    $days = 1 unless defined $days;
     return $self->AddSeconds( $days * $DAY );
 }
 

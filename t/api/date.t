@@ -472,6 +472,14 @@ my $year = (localtime(time))[5] + 1900;
     $date->Unix(0);
     $date->AddDays(31);
     is($date->ISO, '1970-02-01 00:00:00', "added one month");
+
+    $date->Unix(0);
+    $date->AddDays(0);
+    is($date->ISO, '1970-01-01 00:00:00', "added no days");
+
+    $date->Unix(0);
+    $date->AddDays();
+    is($date->ISO, '1970-01-02 00:00:00', "added one day with no argument");
 }
 
 {

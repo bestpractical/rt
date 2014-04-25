@@ -543,21 +543,31 @@ sub WhoHaveGroupRight
 }
 
 
-=head2 WhoBelongToGroups { Groups => ARRAYREF, IncludeSubgroupMembers => 1 }
+=head2 WhoBelongToGroups { Groups => ARRAYREF, IncludeSubgroupMembers => 1, IncludeUnprivileged => 0 }
+
+Return members who belong to any of the groups passed in the groups whose IDs
+are included in the Groups arrayref.
+
+If IncludeSubgroupMembers is true (default) then members of any group that's a
+member of one of the passed groups are returned. If it's cleared then only
+direct member users are returned.
+
+If IncludeUnprivileged is false (default) then only privileged members are
+returned; otherwise either privileged or unprivileged group members may be
+returned.
 
 =cut
 
-# XXX: should be generalized
 sub WhoBelongToGroups {
     my $self = shift;
     my %args = ( Groups                 => undef,
                  IncludeSubgroupMembers => 1,
+                 IncludeUnprivileged    => 0,
                  @_ );
 
-    # Unprivileged users can't be granted real system rights.
-    # is this really the right thing to be saying?
-    $self->LimitToPrivileged();
-
+    if (!$args{'IncludeUnprivileged'}) {
+        $self->LimitToPrivileged();
+    }
     my $group_members = $self->_JoinGroupMembers( %args );
 
     foreach my $groupid (@{$args{'Groups'}}) {

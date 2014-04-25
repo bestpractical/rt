@@ -48,7 +48,7 @@
 <%args>
 $Query => "id > 0"
 @GroupBy => ()
-$ChartStyle => 'bars'
+$ChartStyle => 'bar'
 @ChartFunction => 'COUNT'
 </%args>
 <%init>

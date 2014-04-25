@@ -322,8 +322,9 @@ Set(@LogToSyslogConf, ());
 =item C<$EmailSubjectTagRegex>
 
 This regexp controls what subject tags RT recognizes as its own.  If
-you're not dealing with historical C<$rtname> values, you'll likely
-never have to change this configuration.
+you're not dealing with historical C<$rtname> values, or historical
+queue-specific subject tags, you'll likely never have to change this
+configuration.
 
 Be B<very careful> with it. Note that it overrides C<$rtname> for
 subject token matching.
