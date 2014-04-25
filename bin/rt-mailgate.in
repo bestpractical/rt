@@ -218,6 +218,14 @@ sub upload_message {
 
     $ua->timeout( exists( $opts->{'timeout'} ) ? $opts->{'timeout'} : 180 );
     my $r = $ua->post( $full_url, $post_params, Content_Type => 'form-data' );
+
+    # Follow 3 redirects
+    my $n = 0;
+    while ($n++ < 3 and $r->is_redirect) {
+        $full_url = $r->header( "Location" );
+        $r = $ua->post( $full_url, $post_params, Content_Type => 'form-data' );
+    }
+
     $self->check_failure($r);
 
     my $content = $r->content;
