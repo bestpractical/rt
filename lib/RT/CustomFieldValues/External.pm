@@ -77,8 +77,10 @@ the identifier by which the user will see the dropdown.
 =head2 ExternalValues
 
 This method should return an array reference of hash references.  The
-hash references should contain keys for C<name>, C<description>, and
-C<sortorder>.
+hash references must contain a key for C<name> and can optionally contain
+keys for C<description>, C<sortorder>, and C<category>. If supplying a
+category, you must also set the category the custom field is based on in
+the custom field configuration page.
 
 =head1 SEE ALSO
 

@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS Classes;
 CREATE TABLE Classes (
   id int(11) NOT NULL auto_increment,
   Name varchar(255) NOT NULL default '',
@@ -12,6 +13,7 @@ CREATE TABLE Classes (
   PRIMARY KEY  (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS Articles;
 CREATE TABLE Articles (
   id int(11) NOT NULL auto_increment,
   Name varchar(255) NOT NULL default '',
@@ -27,6 +29,7 @@ CREATE TABLE Articles (
   PRIMARY KEY  (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS Topics;
 CREATE TABLE Topics (
   id int(11) NOT NULL auto_increment,
   Parent int(11) NOT NULL default '0',
@@ -37,6 +40,7 @@ CREATE TABLE Topics (
   PRIMARY KEY  (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS ObjectTopics;
 CREATE TABLE ObjectTopics (
   id int(11) NOT NULL auto_increment,
   Topic int(11) NOT NULL default '0',
@@ -45,6 +49,7 @@ CREATE TABLE ObjectTopics (
   PRIMARY KEY  (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS ObjectClasses;
 CREATE TABLE ObjectClasses (
   id int(11) NOT NULL auto_increment,
   Class int(11) NOT NULL default '0',

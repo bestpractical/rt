@@ -1762,6 +1762,7 @@ our %TRANSACTION_CLASSIFICATION = (
             Owner Creator LastUpdatedBy
         ) ),
     },
+    SystemError => 'error',
     __default => 'other',
 );
 

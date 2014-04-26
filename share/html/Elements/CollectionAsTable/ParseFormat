@@ -55,14 +55,13 @@ my @Columns;
 
 while ($Format =~ /($RE{delimited}{-delim=>qq{\'"}}|[{}\w.]+)/go) {
     my $col = $1;
+    my $colref = { original_string => $col };
 
     if ($col =~ /^$RE{quoted}$/o) {
         substr($col,0,1) = "";
         substr($col,-1,1) = "";
         $col =~ s/\\(.)/$1/g;
     }
-
-    my $colref = { };
 
     $m->callback(CallbackName => 'PreColumn', Column => $colref, col => \$col);
 

@@ -217,17 +217,17 @@ my @format_string;
 foreach my $field (@seen) {
     next unless $field;
     my $row = "";
-    if ( $field->{'output'} ) {
-        $row = join '', @{$field->{'output'}};
+    if ( $field->{'original_string'} ) {
+        $row = $field->{'original_string'};
     }
     else {
         $row .= $field->{'Prefix'} if defined $field->{'Prefix'};
         $row .= "__$field->{'Column'}__"
           unless ( $field->{'Column'} eq "<blank>" );
         $row .= $field->{'Suffix'} if defined $field->{'Suffix'};
+        $row =~ s!([\\'])!\\$1!g;
+        $row = "'$row'";
     }
-    $row =~ s!([\\'])!\\$1!g;
-    $row = "'$row'";
     push( @format_string, $row );
 }
 

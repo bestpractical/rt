@@ -293,12 +293,14 @@ size of each output file.
 =item B<--no-users>
 
 By default, all privileged users are serialized; passing C<--no-users>
-limits it to only those users which are strictly necessary.
+limits it to only those users which are referenced by serialized tickets
+and history, and are thus necessary for internal consistency.
 
 =item B<--no-groups>
 
 By default, all groups are serialized; passing C<--no-groups> limits it
-to only those groups which are strictly necessary.
+to only system-internal groups, which are needed for internal
+consistency.
 
 =item B<--no-deleted>
 

@@ -84,6 +84,9 @@ if (grep { m/help/ } @ARGV) {
 }
 
 require RT;
+die "Wrong version of RT $RT::VERSION found; need @RT_VERSION_MAJOR@.@RT_VERSION_MINOR@.*"
+    unless $RT::VERSION =~ /^@RT_VERSION_MAJOR@\.@RT_VERSION_MINOR@\./;
+
 RT->LoadConfig();
 RT->InitPluginPaths();
 RT->InitLogging();

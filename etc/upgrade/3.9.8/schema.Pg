@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS Classes;
 CREATE TABLE Classes (
 id SERIAL,
 Name varchar(255) NOT NULL DEFAULT '',
@@ -12,6 +13,7 @@ HotList smallint NOT NULL DEFAULT 0,
 PRIMARY KEY (id)
 );
 
+DROP TABLE IF EXISTS Articles;
 CREATE TABLE Articles (
 id SERIAL,
 Name varchar(255) NOT NULL DEFAULT '',
@@ -28,6 +30,7 @@ PRIMARY KEY (id)
 );
 
 
+DROP TABLE IF EXISTS Topics;
 CREATE TABLE Topics (
 id SERIAL,
 Parent integer NOT NULL DEFAULT 0,
@@ -39,6 +42,7 @@ PRIMARY KEY (id)
 );
 
 
+DROP TABLE IF EXISTS ObjectTopics;
 CREATE TABLE ObjectTopics (
 id SERIAL,
 Topic integer NOT NULL,
@@ -48,6 +52,7 @@ PRIMARY KEY (id)
 );
 
 
+DROP TABLE IF EXISTS ObjectClasses;
 CREATE TABLE ObjectClasses (
 id SERIAL,
 Class integer NOT NULL,

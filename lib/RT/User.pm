@@ -999,7 +999,7 @@ sub IsPassword {
         my $hash = MIME::Base64::decode_base64($stored);
         # Decoding yields 30 byes; first 4 are the salt, the rest are substr(SHA256,0,26)
         my $salt = substr($hash, 0, 4, "");
-        return 0 unless substr(Digest::SHA::sha256($salt . Digest::MD5::md5($value)), 0, 26) eq $hash;
+        return 0 unless substr(Digest::SHA::sha256($salt . Digest::MD5::md5(encode_utf8($value))), 0, 26) eq $hash;
     } elsif (length $stored == 32) {
         # Hex nonsalted-md5
         return 0 unless Digest::MD5::md5_hex(encode_utf8($value)) eq $stored;
@@ -1444,6 +1444,28 @@ sub SetPreferences {
     } else {
         return $self->AddAttribute( Name => $name, Content => $value );
     }
+}
+
+=head2 DeletePreferences NAME/OBJ VALUE
+
+Delete user preferences associated with given object or name.
+
+=cut
+
+sub DeletePreferences {
+    my $self = shift;
+    my $name = _PrefName( shift );
+
+    return (0, $self->loc("No permission to set preferences"))
+        unless $self->CurrentUserCanModify('Preferences');
+
+    my $attr = RT::Attribute->new( $self->CurrentUser );
+    $attr->LoadByNameAndObject( Object => $self, Name => $name );
+    if ( $attr->Id ) {
+        return $attr->Delete;
+    }
+
+    return (0, $self->loc("Preferences were not found"));
 }
 
 =head2 Stylesheet

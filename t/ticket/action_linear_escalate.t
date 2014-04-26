@@ -19,7 +19,7 @@ ok $q && $q->id, 'loaded or created queue';
 my $gecos = RT::Test->load_or_create_user(
     Name => 'gecos',
     Password => 'password',
-    Gecos => ($^O eq 'MSWin32') ? Win32::LoginName() : (getpwuid($<))[0],
+    Gecos => (getpwuid($<))[0],
 );
 ok $gecos && $gecos->id, 'loaded or created gecos user';
 

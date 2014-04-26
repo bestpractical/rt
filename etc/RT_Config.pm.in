@@ -159,7 +159,7 @@ Set( @StaticRoots, () );
 =item C<$DatabaseType>
 
 Database driver being used; case matters.  Valid types are "mysql",
-"Oracle" and "Pg".
+"Oracle", and "Pg".  "SQLite" is also available for non-production use.
 
 =cut
 
@@ -223,7 +223,7 @@ database.
 
 Set($DatabaseRequireSSL, undef);
 
-=item <$DatabaseAdmin>
+=item C<$DatabaseAdmin>
 
 The name of the database administrator to connect to the database as
 during upgrades.
@@ -322,8 +322,9 @@ Set(@LogToSyslogConf, ());
 =item C<$EmailSubjectTagRegex>
 
 This regexp controls what subject tags RT recognizes as its own.  If
-you're not dealing with historical C<$rtname> values, you'll likely
-never have to change this configuration.
+you're not dealing with historical C<$rtname> values, or historical
+queue-specific subject tags, you'll likely never have to change this
+configuration.
 
 Be B<very careful> with it. Note that it overrides C<$rtname> for
 subject token matching.
@@ -424,13 +425,13 @@ Set($RTAddressRegexp, undef);
 =item C<$CanonicalizeEmailAddressMatch>, C<$CanonicalizeEmailAddressReplace>
 
 RT provides functionality which allows the system to rewrite incoming
-email addresses.  In its simplest form, you can substitute the value
-in C<CanonicalizeEmailAddressReplace> for the value in
-C<CanonicalizeEmailAddressMatch> (These values are passed to the
-C<CanonicalizeEmailAddress> subroutine in F<RT/User.pm>)
-
-By default, that routine performs a C<s/$Match/$Replace/gi> on any
-address passed to it.
+email addresses, using L<RT::User/CanonicalizeEmailAddress>.  The
+default implementation replaces all occurrences of the regular
+expression in C<CanonicalizeEmailAddressMatch> with
+C<CanonicalizeEmailAddressReplace>, via C<s/$Match/$Replace/gi>.  The
+most common use of this is to replace C<@something.example.com> with
+C<@example.com>.  If more complex noramlization is required,
+L<RT::User/CanonicalizeEmailAddress> can be overridden to provide it.
 
 =cut
 
@@ -1844,8 +1845,17 @@ It defaults to on.  Set this to 0 to disable it.
 
 Set($QuoteFolding, 1);
 
-=back
+=item C<$AllowLoginPasswordAutoComplete>
 
+Allow browsers to remember the user's password on login (in case the
+browser can do so, and has the appropriate setting enabled). Defaults
+to false.
+
+=cut
+
+Set($AllowLoginPasswordAutoComplete, 0);
+
+=back
 
 
 =head1 Application logic
@@ -2063,8 +2073,7 @@ Set($WebFallbackToRTLogin, undef);
 =item C<$WebRemoteUserGecos>
 
 C<$WebRemoteUserGecos> means to match 'gecos' field as the user
-identity; useful with C<mod_auth_pwcheck> and IIS Integrated Windows
-logon.
+identity; useful with C<mod_auth_external>.
 
 =cut
 

@@ -342,3 +342,32 @@ sub parse_line {
         return ();
     }
 }
+
+__END__
+
+=head1 NAME
+
+rt-validate-aliases - Check an MTA alias file against RT queue configuration
+
+=head1 SYNOPSIS
+
+rt-validate-aliases [options] /etc/aliases
+
+=head1 OPTIONS
+
+=over
+
+=item C<--prefix>
+
+An expected address prefix used in the alias file
+
+=item C<--url>
+
+The root URL of your RT server (the same URL you expect to be passed to
+rt-mailgate)
+
+=item C<--host>
+
+The host part of your RT email addresses
+
+=back

@@ -2,7 +2,8 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 9;
+use RT::Test tests => undef;
+use Test::Warn;
 
 use_ok "RT::URI::fsck_com_article";
 my $uri = RT::URI::fsck_com_article->new( $RT::SystemUser );
@@ -12,7 +13,7 @@ isa_ok $uri, 'RT::URI::fsck_com_article';
 isa_ok $uri, 'RT::URI::base';
 isa_ok $uri, 'RT::Base';
 
-is $uri->LocalURIPrefix, 'fsck.com-article://example.com/article/';
+is $uri->LocalURIPrefix, 'fsck.com-article://example.com';
 
 my $class = RT::Class->new( $RT::SystemUser );
 $class->Create( Name => 'URItest - '. $$ );
@@ -26,5 +27,24 @@ my ($id, $msg) = $article->Create(
 ok($id,$msg);
 
 $uri = RT::URI::fsck_com_article->new( $article->CurrentUser );
-is $uri->LocalURIPrefix . $article->id, $uri->URIForObject( $article );
+is $uri->URIForObject( $article ),
+    'fsck.com-article://example.com/article/' . $article->id,
+        'Got correct URIForObject';
+my $article_id = $article->Id;
+ok ($uri->ParseURI("fsck.com-article://example.com/article/$article_id"),
+    'Parsed URI');
 
+ok ($article->Delete(), 'Deleted article');
+
+my $ret;
+warning_like {
+    $ret = $uri->ParseURI("fsck.com-article://example.com/article/$article_id");
+} qr/Unable to load article for id $article_id. It may have been deleted/,
+    "Warned about missing article";
+
+ok (!$ret, 'Returned false on missing article');
+
+ok (!$uri->ParseURI("fsck.com-article://foo.com/article/$article_id"),
+    'ParseURI returned false with incorrect Organization');
+
+done_testing();

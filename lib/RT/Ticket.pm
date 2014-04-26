@@ -1780,6 +1780,11 @@ sub MergeInto {
         return ( 0, $self->loc("New ticket doesn't exist") );
     }
 
+    # Can't merge into yourself
+    if ( $MergeInto->Id == $self->Id ) {
+        return ( 0, $self->loc("Can't merge a ticket into itself") );
+    }
+
     # Make sure the current user can modify the new ticket.
     unless ( $MergeInto->CurrentUserHasRight('ModifyTicket') ) {
         return ( 0, $self->loc("Permission Denied") );
@@ -1792,11 +1797,11 @@ sub MergeInto {
 
     $RT::Handle->BeginTransaction();
 
-    $self->_MergeInto( $MergeInto );
+    my ($ok, $msg) = $self->_MergeInto( $MergeInto );
 
-    $RT::Handle->Commit();
+    $RT::Handle->Commit() if $ok;
 
-    return ( 1, $self->loc("Merge Successful") );
+    return ($ok, $msg);
 }
 
 sub _MergeInto {
@@ -1936,6 +1941,8 @@ sub _MergeInto {
     $self->AddLink( Type   => 'MergedInto', Target => $MergeInto->Id());
 
     $MergeInto->_SetLastUpdated;    
+
+    return ( 1, $self->loc("Merge Successful") );
 }
 
 =head2 Merged
@@ -3037,6 +3044,9 @@ sub Forward {
     }
 
     $args{$_} = join ", ", map { $_->format } RT::EmailParser->ParseEmailAddress( $args{$_} || '' ) for qw(To Cc Bcc);
+
+    return (0, $self->loc("Can't forward: no valid email addresses specified") )
+        unless grep {length $args{$_}} qw/To Cc Bcc/;
 
     my $mime = MIME::Entity->build(
         Subject => $args{Subject},

@@ -426,6 +426,12 @@ sub LoadByName {
         $self->SetContextObject( $QueueObj )
             unless $self->ContextObject;
     }
+    if ( defined $args{'Queue'} ) {
+        # Set a LookupType for backcompat, otherwise we'll calculate
+        # one of RT::Queue from your ContextObj.  Older code was relying
+        # on us defaulting to RT::Queue-RT::Ticket in old LimitToQueue call.
+        $args{LookupType} ||= 'RT::Queue-RT::Ticket';
+    }
 
     # XXX - really naive implementation.  Slow. - not really. still just one query
 
@@ -450,7 +456,8 @@ sub LoadByName {
     # Don't limit to queue if queue is 0.  Trying to do so breaks
     # RT::Group type CFs.
     if ( defined $args{'Queue'} ) {
-        $CFs->LimitToQueue( $args{'Queue'} );
+        # don't use LimitToQueue because it forces a LookupType
+        $CFs->Limit ( ALIAS => $CFs->_OCFAlias, FIELD => 'ObjectId', VALUE => $args{'Queue'} );
     }
 
     # When loading by name, we _can_ load disabled fields, but prefer

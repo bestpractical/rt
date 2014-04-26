@@ -1,7 +1,9 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 34;
+use RT::Test;
+
+RT::Config->Set(AllowLoginPasswordAutoComplete => 1);
 
 my ( $baseurl, $m ) = RT::Test->started_ok;
 
@@ -17,6 +19,7 @@ diag "normal login";
     $m->get($baseurl);
     $m->title_is('Login');
     is( $m->uri, $baseurl, "right url" );
+    $m->content_lacks('autocomplete="off"');
 
     $m->submit_form(
         form_id => 'login',

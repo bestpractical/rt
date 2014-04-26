@@ -63,8 +63,7 @@ Returns the prefix for a local article URI
 
 sub LocalURIPrefix {
     my $self = shift;
-    my $prefix = $self->Scheme. "://". RT->Config->Get('Organization')
-        . "/article/";
+    my $prefix = $self->Scheme. "://". RT->Config->Get('Organization');
     return ($prefix);
 }
 
@@ -79,7 +78,7 @@ sub URIForObject {
     my $self = shift;
 
     my $obj = shift;
-    return ($self->LocalURIPrefix. $obj->Id);
+    return ($self->LocalURIPrefix . "/article/" . $obj->Id);
 }
 
 
@@ -114,18 +113,27 @@ sub ParseURI {
        #If it's a local URI, load the article object and return its URI
     if ( $self->IsLocal) {
         my $local_uri_prefix = $self->LocalURIPrefix;
-        if ($self->{'uri'} =~ /^$local_uri_prefix(\d+)$/) {
+        if ($self->{'uri'} =~ /^$local_uri_prefix\/article\/(\d+)$/) {
             my $id = $1;
             $article = RT::Article->new( $self->CurrentUser );
-            $article->Load($id);
+            my ($ret, $msg) = $article->Load($id);
 
             #If we couldn't find a article, return undef.
-            unless ( defined $article->Id ) {
+            unless ( $article and $article->Id ) {
+                # We got an id, but couldn't load it, so warn that it may
+                # have been deleted.
+                RT::Logger->warning("Unable to load article for id $id. It may"
+                    . " have been deleted: $msg");
                 return undef;
             }
-            } else {
-                return undef;
-            }
+        } else {
+            return undef;
+        }
+    }
+
+    #If we couldn't find a article, return undef.
+    unless ( $article and $article->Id ) {
+        return undef;
     }
 
     $self->{'object'} = $article;

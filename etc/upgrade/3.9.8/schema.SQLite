@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS Classes;
 CREATE TABLE Classes (
 id INTEGER PRIMARY KEY,
 Name varchar(255) NOT NULL DEFAULT '',
@@ -11,6 +12,7 @@ LastUpdated TIMESTAMP NULL,
 HotList smallint NOT NULL DEFAULT 0
 );
 
+DROP TABLE IF EXISTS Articles;
 CREATE TABLE Articles (
 id INTEGER PRIMARY KEY,
 Name varchar(255) NOT NULL DEFAULT '',
@@ -25,7 +27,7 @@ LastUpdatedBy integer NOT NULL DEFAULT 0,
 LastUpdated TIMESTAMP NULL
 );
 
-
+DROP TABLE IF EXISTS Topics;
 CREATE TABLE Topics (
 id INTEGER PRIMARY KEY,
 Parent integer NOT NULL DEFAULT 0,
@@ -36,6 +38,7 @@ ObjectId integer NOT NULL
 );
 
 
+DROP TABLE IF EXISTS ObjectTopics;
 CREATE TABLE ObjectTopics (
 id INTEGER PRIMARY KEY,
 Topic integer NOT NULL,
@@ -43,6 +46,7 @@ ObjectType varchar(64) NOT NULL DEFAULT '',
 ObjectId integer NOT NULL
 );
 
+DROP TABLE IF EXISTS ObjectClasses;
 CREATE TABLE ObjectClasses (
 id INTEGER PRIMARY KEY,
 Class integer NOT NULL,

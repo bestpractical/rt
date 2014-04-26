@@ -53,8 +53,8 @@ window.RT.Autocomplete.bind = function(from) {
                         var str = term + ''; // stringify integers to call .match
                         return str.match(/^\d+$/);
                     } );
-                    terms.push(''); // add trailing space so user can input another ticket id directly
                 }
+                terms.push(''); // add trailing delimeter so user can input another value directly
                 this.value = terms.join(what == 'Tickets' ? ' ' : ", ");
                 return false;
             }

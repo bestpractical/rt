@@ -147,10 +147,8 @@ if ( $RenderType eq 'Dropdown' ) {
     $Rows = 0;
 }
 
-# The following is for rendering checkboxes / radio buttons only
 my ($checktype, $name);
-
-if ( $MaxValues == 1 ) {
+if ( $MaxValues == 1 and $RenderType eq 'List' ) {
     ($checktype, $name) = ('radio', $Name || $NamePrefix . $CustomField->Id . '-Value');
 } else {
     ($checktype, $name) = ('checkbox', $Name || $NamePrefix . $CustomField->Id . '-Values');

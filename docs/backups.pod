@@ -31,7 +31,7 @@ RT. :)
 
 =head3 MySQL
 
-    ( mysqldump rt4 --tables sessions --no-data; \
+    ( mysqldump rt4 --tables sessions --no-data --single-transaction; \
       mysqldump rt4 --ignore-table rt4.sessions --single-transaction ) \
         | gzip > rt-`date +%Y%m%d`.sql.gz
 

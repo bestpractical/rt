@@ -54,7 +54,6 @@ use CGI qw/-private_tempfiles/;
 use MIME::Entity;
 use Text::Wrapper;
 use CGI::Cookie;
-use Time::ParseDate;
 use Time::HiRes;
 use HTML::Scrubber;
 use RT::Interface::Web;
@@ -275,14 +274,21 @@ sub PSGIApp {
             return $self->_psgi_response_cb( $res->finalize ) if $res;
         }
 
-        RT::ConnectToDatabase() unless RT->InstallMode;
+        unless (RT->InstallMode) {
+            unless (eval { RT::ConnectToDatabase() }) {
+                my $res = Plack::Response->new(503);
+                $res->content_type("text/plain");
+                $res->body("Database inaccessible; contact the RT administrator (".RT->Config->Get("OwnerEmail").")");
+                return $self->_psgi_response_cb( $res->finalize, sub { $self->CleanupRequest } );
+            }
+        }
 
         my $req = Plack::Request->new($env);
 
         # CGI.pm normalizes .. out of paths so when you requested
         # /NoAuth/../Ticket/Display.html we saw Ticket/Display.html
         # PSGI doesn't normalize .. so we have to deal ourselves.
-        if ( $req->path_info =~ m{/\.} ) {
+        if ( $req->path_info =~ m{(^|/)\.\.?(/|$)} ) {
             $RT::Logger->crit("Invalid request for ".$req->path_info." aborting");
             my $res = Plack::Response->new(400);
             return $self->_psgi_response_cb($res->finalize,sub { $self->CleanupRequest });
@@ -313,7 +319,14 @@ sub PSGIApp {
                                             $self->CleanupRequest()
                                         });
     };
-    return $self->StaticWrap($mason);
+
+    my $app = $self->StaticWrap($mason);
+    for my $plugin (RT->Config->Get("Plugins")) {
+        my $wrap = $plugin->can("PSGIWrap")
+            or next;
+        $app = $wrap->($plugin, $app);
+    }
+    return $app;
 }
 
 sub StaticWrap {
@@ -321,8 +334,15 @@ sub StaticWrap {
     my $app     = shift;
     my $builder = Plack::Builder->new;
 
+    my $headers = RT::Interface::Web::GetStaticHeaders(Time => 'forever');
+
     for my $static ( RT->Config->Get('StaticRoots') ) {
         if ( ref $static && ref $static eq 'HASH' ) {
+            $builder->add_middleware(
+                '+RT::Interface::Web::Middleware::StaticHeaders',
+                path => $static->{'path'},
+                headers => $headers,
+            );
             $builder->add_middleware(
                 'Plack::Middleware::Static',
                 pass_through => 1,
@@ -335,10 +355,16 @@ sub StaticWrap {
         }
     }
 
+    my $path = sub { s!^/static/!! };
+    $builder->add_middleware(
+        '+RT::Interface::Web::Middleware::StaticHeaders',
+        path => $path,
+        headers => $headers,
+    );
     for my $root (RT::Interface::Web->StaticRoots) {
         $builder->add_middleware(
             'Plack::Middleware::Static',
-            path         => sub { s!^/static/!! },
+            path         => $path,
             root         => $root,
             pass_through => 1,
         );

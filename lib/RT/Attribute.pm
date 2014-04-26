@@ -385,6 +385,12 @@ sub Delete {
     unless ($self->CurrentUserHasRight('delete')) {
         return (0,$self->loc('Permission Denied'));
     }
+
+    if ( $self->__Value('ObjectType') eq 'RT::User' ) {
+        delete $RT::User::PREFERENCES_CACHE
+            { $self->__Value('ObjectId') }{ $self->__Value('Name') };
+    }
+
     return($self->SUPER::Delete(@_));
 }
 
