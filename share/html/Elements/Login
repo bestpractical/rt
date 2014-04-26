@@ -73,7 +73,7 @@
 
 <div class="input-row">
     <span class="label"><&|/l&>Password</&>:</span>
-    <span class="input"><input type="password" name="pass" <% RT->Config->Get('AllowLoginPasswordAutoComplete') ? '' : 'autocomplete="off"' | n %> /></span>
+    <span class="input"><input type="password" name="pass" %> /></span>
 </div>
 
 <input type="hidden" name="next" value="<% $next %>" />
