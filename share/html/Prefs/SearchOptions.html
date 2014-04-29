@@ -86,8 +86,8 @@ if ($ARGS{'SavePreferences'}) {
 my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};
 
 $Format      ||= $prefs->{'Format'};
-$Order       ||= ($prefs->{'Order'} || 'ASC');
-$OrderBy     ||= ($prefs->{'OrderBy'} || 'id');
+$Order       ||= ($prefs->{'Order'} || RT->Config->Get('DefaultSearchResultOrder'));
+$OrderBy     ||= ($prefs->{'OrderBy'} || RT->Config->Get('DefaultSearchResultOrderBy'));
 ($RowsPerPage =  defined( $prefs->{'RowsPerPage'} ) ? $prefs->{'RowsPerPage'}  : 50) unless defined ($RowsPerPage);
 
 my ( $AvailableColumns, $CurrentFormat );
