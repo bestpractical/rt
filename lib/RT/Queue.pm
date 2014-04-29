@@ -245,11 +245,11 @@ sub SetDisabled {
     my $val = shift;
 
     $RT::Handle->BeginTransaction();
-    my $set_err = $self->_Set( Field =>'Disabled', Value => $val);
-    unless ($set_err) {
+    my ($ok, $msg) = $self->_Set( Field =>'Disabled', Value => $val);
+    unless ($ok) {
         $RT::Handle->Rollback();
-        $RT::Logger->warning("Couldn't ".($val == 1) ? "disable" : "enable"." queue ".$self->Name);
-        return (undef);
+        $RT::Logger->warning("Couldn't ".(($val == 1) ? "disable" : "enable")." queue ".$self->Name.": $msg");
+        return ($ok, $msg);
     }
     $self->_NewTransaction( Type => ($val == 1) ? "Disabled" : "Enabled" );
 
