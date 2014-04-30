@@ -3927,6 +3927,7 @@ our %SCRUBBER_ALLOWED_ATTRIBUTES = (
     href   => qr{^(?:https?:|ftp:|mailto:|/|__Web(?:Path|HomePath|BaseURL|URL)__)}i,
     face   => 1,
     size   => 1,
+    color  => 1,
     target => 1,
     style  => qr{
         ^(?:\s*
