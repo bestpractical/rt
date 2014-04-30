@@ -71,6 +71,30 @@ Alternately, if you don't set a due date, the Priority will be incremented by 1
 until it reaches the Final Priority.  If a ticket without a due date has a Priority
 greater than Final Priority, it will be decremented by 1.
 
+=head2 CONFIGURATION
+
+EsclatePriority's behavior can be controlled by two options:
+
+=over 4
+
+=item RecordTransaction
+
+If true (the default), the action casuses a transaction on the ticket
+when it is escalated.  If false, the action updates the priority without
+running scrips or recording a transaction.
+
+=item UpdateLastUpdated
+
+If true (the default), the action updates the LastUpdated field when the
+ticket is escalated.  You cannot set C<UpdateLastUpdated> to false unless
+C<RecordTransaction> is also false.
+
+=back
+
+To use these with C<rt-crontool>, specify them with C<--action-arg>:
+
+    --action-arg "RecordTransaction: 0, UpdateLastUpdated: 0"
+
 =cut
 
 
@@ -151,11 +175,58 @@ sub Prepare  {
 
 sub Commit {
     my $self = shift;
-   my ($val, $msg) = $self->TicketObj->SetPriority($self->{'prio'});
+    my $new_value = $self->{'prio'};
+    return 1 unless defined $new_value;
 
-   unless ($val) {
-        $RT::Logger->debug($self . " $msg");
-   }
+    my $ticket = $self->TicketObj;
+    return 1 if $ticket->Priority == $new_value;
+
+    # Overide defaults from argument
+    my($record, $update) = (1, 1);
+    {
+        my $arg = $self->Argument || '';
+        if ( $arg =~ /RecordTransaction:\s*(\d+)/i ) {
+            $record = $1;
+            $RT::Logger->debug("Overrode RecordTransaction: $record");
+        }
+        if ( $arg =~ /UpdateLastUpdated:\s*(\d+)/i ) {
+            $update = $1;
+            $RT::Logger->debug("Overrode UpdateLastUpdated: $update");
+        }
+        # If creating a transaction, we have to update lastupdated
+        $update = 1 if $record;
+    }
+
+    $RT::Logger->debug(
+       'Escalating priority of ticket #'. $ticket->Id
+       .' from '. $ticket->Priority .' to '. $new_value
+       .' and'. ($record? '': ' do not') .' record a transaction'
+       .' and'. ($update? '': ' do not') .' touch last updated field'
+    );
+
+    my ($val, $msg);
+    unless ( $record ) {
+        unless ( $update ) {
+            ( $val, $msg ) = $ticket->__Set(
+                Field => 'Priority',
+                Value => $new_value,
+            );
+        } else {
+            ( $val, $msg ) = $ticket->_Set(
+                Field => 'Priority',
+                Value => $new_value,
+                RecordTransaction => 0,
+            );
+        }
+    } else {
+        ($val, $msg) = $ticket->SetPriority($new_value);
+    }
+
+    unless ($val) {
+        $RT::Logger->error( "Couldn't set new priority value: $msg");
+        return (0, $msg);
+    }
+    return 1;
 }
 
 RT::Base->_ImportOverlays();
