@@ -59,10 +59,10 @@
 %# hang onto the queue id
 <input type="hidden" class="hidden" name="Queue" value="<%$Queue%>" />
 <& /Admin/Elements/ModifyTemplate,
-    Name        => $TemplateObj->Name,
-    Description => $TemplateObj->Description,
-    Content     => $TemplateObj->Content,
-    Type        => $TemplateObj->Type
+    Name        => $TemplateObj->Name // $ARGS{Name},
+    Description => $TemplateObj->Description // $ARGS{Description},
+    Content     => $TemplateObj->Content // $ARGS{Content},
+    Type        => $TemplateObj->Type // $ARGS{Type},
 &>
 <& /Elements/Submit, Label => $SubmitLabel, Reset => 1 &>
 </form>
@@ -80,7 +80,6 @@ if ( !$Create ) {
     if ( $Template eq 'new' ) {
         my ( $val, $msg )
             = $TemplateObj->Create( Queue => $Queue, Name => $Name, Type => $Type );
-        Abort( loc( "Could not create template: [_1]", $msg ) ) unless ($val);
         push @results, $msg;
     } else {
         $TemplateObj->Load($Template) || Abort( loc('No Template') );
@@ -102,6 +101,7 @@ if ( $TemplateObj->Id() ) {
     my ( $ok, $msg ) = $TemplateObj->CompileCheck;
     push @results, $msg if !$ok;
 } else {
+    $Create = 1;
     $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
     $QueueObj->Load($Queue);
 }
