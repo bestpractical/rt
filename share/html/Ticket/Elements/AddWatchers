@@ -112,22 +112,22 @@ if ($UserString) {
     $Users = RT::Users->new($session{'CurrentUser'});
     $Users->Limit(FIELD => $UserField, VALUE => $UserString, OPERATOR => $UserOp, CASESENSITIVE => 0);
     $Users->LimitToPrivileged if $PrivilegedOnly;
-     }
+}
 
 if ($GroupString) {
     $Groups = RT::Groups->new($session{'CurrentUser'});
     $Groups->LimitToUserDefinedGroups;
     $Groups->Limit(FIELD => $GroupField, VALUE => $GroupString, OPERATOR => $GroupOp, CASESENSITIVE => 0);
-     }
+}
 
 my @extras;
 for my $addr ( values %{$Ticket->TransactionAddresses} ) {
     my $is_watcher;
     for my $type ( qw/Owner Requestor Cc AdminCc/ ) {
-         if ($Ticket->IsWatcher( Email => $addr->address, Type => $type )) {
-             $is_watcher = 1;
-             last;
-         }
+        if ($Ticket->IsWatcher( Email => $addr->address, Type => $type )) {
+            $is_watcher = 1;
+            last;
+        }
     }
     push @extras, $addr unless $is_watcher;
 }
