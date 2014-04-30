@@ -640,7 +640,10 @@ sub _MassageSimpleTemplateArgs {
 
         my $cfs = $ticket->CustomFields;
         while (my $cf = $cfs->Next) {
-            $template_args->{"TicketCF" . $cf->Name} = $ticket->CustomFieldValuesAsString($cf->Name);
+            my $simple = $cf->Name;
+            $simple =~ s/\W//g;
+            $template_args->{"TicketCF" . $simple}
+                = $ticket->CustomFieldValuesAsString($cf->Name);
         }
     }
 
@@ -651,7 +654,10 @@ sub _MassageSimpleTemplateArgs {
 
         my $cfs = $txn->CustomFields;
         while (my $cf = $cfs->Next) {
-            $template_args->{"TransactionCF" . $cf->Name} = $txn->CustomFieldValuesAsString($cf->Name);
+            my $simple = $cf->Name;
+            $simple =~ s/\W//g;
+            $template_args->{"TransactionCF" . $simple}
+                = $txn->CustomFieldValuesAsString($cf->Name);
         }
     }
 }
