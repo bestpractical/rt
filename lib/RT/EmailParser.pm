@@ -473,10 +473,10 @@ sub _SetupMIMEParser {
     # of File::Spec->tmpdir (e.g., /tmp) beacuse it isn't always
     # writable.
     my $tmpdir;
-    if ( -w $RT::VarPath ) {
-        $tmpdir = File::Temp::tempdir( DIR => $RT::VarPath, CLEANUP => 1 );
-    } elsif (-w File::Spec->tmpdir) {
+    if (-w File::Spec->tmpdir) {
         $tmpdir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
+    } elsif ( -w $RT::VarPath ) {
+        $tmpdir = File::Temp::tempdir( DIR => $RT::VarPath, CLEANUP => 1 );
     } else {
         $RT::Logger->crit("Neither the RT var directory ($RT::VarPath) nor the system tmpdir (@{[File::Spec->tmpdir]}) are writable; falling back to in-memory parsing!");
     }
