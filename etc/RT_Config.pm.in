@@ -1101,24 +1101,6 @@ will be passed through C<loc> for localization.
 
 Set($LogoAltText, "Best Practical Solutions, LLC corporate logo");
 
-=item C<$LogoImageHeight>
-
-C<$LogoImageHeight> is the value of the C<height> attribute of the logo
-C<img> tag.
-
-=cut
-
-Set($LogoImageHeight, 38);
-
-=item C<$LogoImageWidth>
-
-C<$LogoImageWidth> is the value of the C<width> attribute of the logo
-C<img> tag.
-
-=cut
-
-Set($LogoImageWidth, 181);
-
 =item C<$WebNoAuthRegex>
 
 What portion of RT's URL space should not require authentication.  The
