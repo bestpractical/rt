@@ -73,34 +73,35 @@
 my $TemplateObj = RT::Template->new($session{'CurrentUser'});
 my  ($title, @results, $SubmitLabel);
 
-if ($Create) {
-  $title = loc("Create a template");
-  $SubmitLabel = loc('Create');
+if (!$Create) {
+    if (defined ($Template) && $Template eq 'new') {
+        my ($val, $msg) =  $TemplateObj->Create(Queue => $Queue, Name => $Name, Type => $Type);
+        Abort(loc("Could not create template: [_1]", $msg)) unless ($val);
+        push @results, $msg;
+    } else {
+        $TemplateObj->Load($Template) || Abort(loc('No Template'));
+    }
 }
 
-else {
-  if (defined ($Template) && $Template eq 'new') {
-      my ($val, $msg) =  $TemplateObj->Create(Queue => $Queue, Name => $Name, Type => $Type);
-      Abort(loc("Could not create template: [_1]", $msg)) unless ($val);
-     push @results, $msg;
-    }
-    else {
-       $TemplateObj->Load($Template) || Abort(loc('No Template'));
-    }
-     $title = loc('Modify template [_1]', loc($TemplateObj->Name())); 
-     $SubmitLabel = loc('Save Changes');
-    
-}
 if ($TemplateObj->Id()) {
-  my @attribs = qw( Name Description Queue Type Content );
-  my @aresults = UpdateRecordObject( AttributesRef => \@attribs, 
-                                     Object => $TemplateObj, 
-                                     ARGSRef => \%ARGS);
-  push @results, @aresults;
+    my @attribs = qw( Name Description Queue Type Content );
+    my @aresults = UpdateRecordObject( AttributesRef => \@attribs,
+                                       Object => $TemplateObj,
+                                       ARGSRef => \%ARGS);
+    push @results, @aresults;
 
-  my ($ok, $msg) = $TemplateObj->CompileCheck;
-  push @results, $msg if !$ok;
+    my ($ok, $msg) = $TemplateObj->CompileCheck;
+    push @results, $msg if !$ok;
 }
+
+if ($Create) {
+    $title = loc("Create a template");
+    $SubmitLabel = loc('Create');
+} else {
+    $title = loc('Modify template [_1]', loc($TemplateObj->Name()));
+    $SubmitLabel = loc('Save Changes');
+}
+
 
 </%INIT>
 <%ARGS>
