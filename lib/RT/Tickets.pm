@@ -171,7 +171,7 @@ our %LOWER_CASE_FIELDS = map { ( lc($_) => $_ ) } (keys %FIELD_METADATA);
 our %SEARCHABLE_SUBFIELDS = (
     User => [qw(
         EmailAddress Name RealName Nickname Organization Address1 Address2
-        WorkPhone HomePhone MobilePhone PagerPhone id
+        City State Zip Country WorkPhone HomePhone MobilePhone PagerPhone id
     )],
 );
 
