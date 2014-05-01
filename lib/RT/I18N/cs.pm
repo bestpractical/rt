@@ -81,9 +81,7 @@ sub quant {
 
   # Normal case:
   # Note that the formatting of $num is preserved.
-  #return( $handle->numf($num) . ' ' . $handle->numerate($num, @forms) );
-  return( $handle->numerate($num, @forms) );
-   # Most human languages put the number phrase before the qualified phrase.
+  return( $handle->numf($num) . ' ' . $handle->numerate($num, @forms) );
 }
 
 
