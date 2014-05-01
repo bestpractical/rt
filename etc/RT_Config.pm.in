@@ -1169,10 +1169,10 @@ RT comes with two TrueType fonts covering most available languages.
 
 Set(
     %ChartFont,
-    'zh-cn'  => "$RT::BasePath/share/fonts/DroidSansFallback.ttf",
-    'zh-tw'  => "$RT::BasePath/share/fonts/DroidSansFallback.ttf",
-    'ja'     => "$RT::BasePath/share/fonts/DroidSansFallback.ttf",
-    'others' => "$RT::BasePath/share/fonts/DroidSans.ttf",
+    'zh-cn'  => "$RT::FontPath/DroidSansFallback.ttf",
+    'zh-tw'  => "$RT::FontPath/DroidSansFallback.ttf",
+    'ja'     => "$RT::FontPath/DroidSansFallback.ttf",
+    'others' => "$RT::FontPath/DroidSans.ttf",
 );
 
 =item C<$ChartsTimezonesInDB>
