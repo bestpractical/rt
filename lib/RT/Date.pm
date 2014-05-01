@@ -359,21 +359,6 @@ Turn on short notation with one character units, for example
 
 =cut
 
-# loc("[_1]s")
-# loc("[_1]m")
-# loc("[_1]h")
-# loc("[_1]d")
-# loc("[_1]W")
-# loc("[_1]M")
-# loc("[_1]Y")
-# loc("[quant,_1,second,seconds]")
-# loc("[quant,_1,minute,minutes]")
-# loc("[quant,_1,hour,hours]")
-# loc("[quant,_1,day,days]")
-# loc("[quant,_1,week,weeks]")
-# loc("[quant,_1,month,months]")
-# loc("[quant,_1,year,years]")
-
 sub DurationAsString {
     my $self     = shift;
     my $duration = int shift;
@@ -387,61 +372,59 @@ sub DurationAsString {
     $negative = 1 if $duration < 0;
     $duration = abs $duration;
 
-    my %units = (
-        s => 1,
-        m => $MINUTE,
-        h => $HOUR,
-        d => $DAY,
-        W => $WEEK,
-        M => $MONTH,
-        Y => $YEAR,
-    );
-    my %long_units = (
-        s => 'second',
-        m => 'minute',
-        h => 'hour',
-        d => 'day',
-        W => 'week',
-        M => 'month',
-        Y => 'year',
-    );
-
     my @res;
 
     my $coef = 2;
     my $i = 0;
     while ( $duration > 0 && ++$i <= $args{'Show'} ) {
 
-        my $unit;
+        my ($locstr, $unit);
         if ( $duration < $MINUTE ) {
-            $unit = 's';
+            $locstr = $args{Short}
+                    ? '[_1]s'                      # loc
+                    : '[quant,_1,second,seconds]'; # loc
+            $unit = 1;
         }
         elsif ( $duration < ( $coef * $HOUR ) ) {
-            $unit = 'm';
+            $locstr = $args{Short}
+                    ? '[_1]m'                      # loc
+                    : '[quant,_1,minute,minutes]'; # loc
+            $unit = $MINUTE;
         }
         elsif ( $duration < ( $coef * $DAY ) ) {
-            $unit = 'h';
+            $locstr = $args{Short}
+                    ? '[_1]h'                      # loc
+                    : '[quant,_1,hour,hours]';     # loc
+            $unit = $HOUR;
         }
         elsif ( $duration < ( $coef * $WEEK ) ) {
-            $unit = 'd';
+            $locstr = $args{Short}
+                    ? '[_1]d'                      # loc
+                    : '[quant,_1,day,days]';       # loc
+            $unit = $DAY;
         }
         elsif ( $duration < ( $coef * $MONTH ) ) {
-            $unit = 'W';
+            $locstr = $args{Short}
+                    ? '[_1]W'                      # loc
+                    : '[quant,_1,week,weeks]';     # loc
+            $unit = $WEEK;
         }
         elsif ( $duration < $YEAR ) {
-            $unit = 'M';
+            $locstr = $args{Short}
+                    ? '[_1]M'                      # loc
+                    : '[quant,_1,month,months]';   # loc
+            $unit = $MONTH;
         }
         else {
-            $unit = 'Y';
+            $locstr = $args{Short}
+                    ? '[_1]Y'                      # loc
+                    : '[quant,_1,year,years]';     # loc
+            $unit = $YEAR;
         }
-        my $value = int( $duration / $units{$unit}  + ($i < $args{'Show'}? 0 : 0.5) );
-        $duration -= int( $value * $units{$unit} );
+        my $value = int( $duration / $unit  + ($i < $args{'Show'}? 0 : 0.5) );
+        $duration -= int( $value * $unit );
 
-        if ( $args{'Short'} ) {
-            push @res, $self->loc("[_1]$unit", $value);
-        } else {
-            push @res, $self->loc("[quant,_1,$long_units{$unit}]", $value);
-        }
+        push @res, $self->loc($locstr, $value);
 
         $coef = 1;
     }

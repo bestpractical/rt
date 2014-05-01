@@ -62,17 +62,17 @@ msgstr ""
 msgid "%1 %2 %3"
 msgstr "%1 %2 %3"
 
-#: lib/RT/Date.pm:712
+#: lib/RT/Date.pm:695
 #. ($wday,$mon,$mday,$year)
 msgid "%1 %2 %3 %4"
 msgstr "%1 %2 %3 %4"
 
-#: lib/RT/Date.pm:727
+#: lib/RT/Date.pm:710
 #. ($wday,$mon,$mday,$hour,$min,$year)
 msgid "%1 %2 %3 %4:%5 %6"
 msgstr "%1 %2 %3 %4:%5 %6"
 
-#: lib/RT/Date.pm:724
+#: lib/RT/Date.pm:707
 #. ($wday,$mon,$mday,$hour,$min,$sec,$year)
 msgid "%1 %2 %3 %4:%5:%6 %7"
 msgstr "%1 %2 %3 %4:%5:%6 %7"
@@ -216,7 +216,7 @@ msgstr ""
 msgid "%1 added as a value for %2"
 msgstr "%1 dodato kao vrednost za %2"
 
-#: lib/RT/Date.pm:450
+#: lib/RT/Date.pm:433
 #. (join ' ', @res)
 msgid "%1 ago"
 msgstr ""
@@ -421,11 +421,6 @@ msgstr "%1 ажурирање: Ништа није промењено"
 msgid "%1 updated"
 msgstr "%1 ажурирано"
 
-#: lib/RT/Date.pm:441
-#. ($value)
-msgid "%1$unit"
-msgstr ""
-
 #: lib/RT/CustomField.pm:1160
 msgid "%1's %2 objects"
 msgstr "%1-ових %2 објеката"
@@ -463,17 +458,17 @@ msgstr "Сачуване претраге корисника %1"
 msgid "%1: no attachment specified"
 msgstr "%1: додатак није наведен"
 
-#: lib/RT/Date.pm:719
+#: lib/RT/Date.pm:702
 #. ($hour,$min)
 msgid "%1:%2"
 msgstr "%1:%2"
 
-#: lib/RT/Date.pm:716
+#: lib/RT/Date.pm:699
 #. ($hour,$min,$sec)
 msgid "%1:%2:%3"
 msgstr "%1:%2:%3"
 
-#: lib/RT/Attachment.pm:453 lib/RT/Date.pm:367
+#: lib/RT/Attachment.pm:453 lib/RT/Date.pm:414
 #. (int( $size / 1024 / 102.4 ) / 10)
 msgid "%1M"
 msgstr ""
@@ -483,11 +478,11 @@ msgstr ""
 msgid "%1New ticket in%2&nbsp;%3"
 msgstr "%1 Нови листић у %2&nbsp;%3"
 
-#: lib/RT/Date.pm:366
+#: lib/RT/Date.pm:408
 msgid "%1W"
 msgstr ""
 
-#: lib/RT/Date.pm:368
+#: lib/RT/Date.pm:420
 msgid "%1Y"
 msgstr ""
 
@@ -496,11 +491,11 @@ msgstr ""
 msgid "%1b"
 msgstr "%1b"
 
-#: lib/RT/Date.pm:365
+#: lib/RT/Date.pm:402
 msgid "%1d"
 msgstr ""
 
-#: lib/RT/Date.pm:364
+#: lib/RT/Date.pm:396
 msgid "%1h"
 msgstr ""
 
@@ -509,31 +504,26 @@ msgstr ""
 msgid "%1k"
 msgstr "%1kB"
 
-#: lib/RT/Date.pm:363
+#: lib/RT/Date.pm:390
 msgid "%1m"
 msgstr "%1m"
 
-#: lib/RT/Date.pm:362 share/html/Admin/Tools/Queries.html:110 share/html/Admin/Tools/Queries.html:81
+#: lib/RT/Date.pm:384 share/html/Admin/Tools/Queries.html:110 share/html/Admin/Tools/Queries.html:81
 #. (sprintf('%.4f', $duration))
 #. (sprintf('%.4f', $seconds))
 msgid "%1s"
 msgstr "%1с"
-
-#: lib/RT/Date.pm:443
-#. ($value)
-msgid "%quant(%1,$long_units{$unit})"
-msgstr ""
 
 #: share/html/Articles/Elements/ShowTopicLink:61
 #. ($Articles->Count)
 msgid "%quant(%1,article,articles)"
 msgstr "%quant(%1, чланак)"
 
-#: lib/RT/Date.pm:372
+#: lib/RT/Date.pm:403
 msgid "%quant(%1,day,days)"
 msgstr ""
 
-#: lib/RT/Date.pm:371
+#: lib/RT/Date.pm:397
 msgid "%quant(%1,hour,hours)"
 msgstr "%quant(%1, сат)"
 
@@ -542,25 +532,25 @@ msgstr "%quant(%1, сат)"
 msgid "%quant(%1,hour,hours) (%quant(%2,minute,minutes))"
 msgstr ""
 
-#: lib/RT/Date.pm:370 share/html/Elements/ShowTransaction:135 share/html/Ticket/Elements/ShowTime:49
+#: lib/RT/Date.pm:391 share/html/Elements/ShowTransaction:135 share/html/Ticket/Elements/ShowTime:49
 #. ($Transaction->TimeTaken)
 #. ($minutes)
 msgid "%quant(%1,minute,minutes)"
 msgstr "%1 минута"
 
-#: lib/RT/Date.pm:374
+#: lib/RT/Date.pm:415
 msgid "%quant(%1,month,months)"
 msgstr ""
 
-#: lib/RT/Date.pm:369
+#: lib/RT/Date.pm:385
 msgid "%quant(%1,second,seconds)"
 msgstr ""
 
-#: lib/RT/Date.pm:373
+#: lib/RT/Date.pm:409
 msgid "%quant(%1,week,weeks)"
 msgstr ""
 
-#: lib/RT/Date.pm:375
+#: lib/RT/Date.pm:421
 msgid "%quant(%1,year,years)"
 msgstr ""
 
@@ -704,11 +694,11 @@ msgstr "--transaction аргумент може бити само 'first', 'last
 msgid "/Elements/ScrubHTML"
 msgstr ""
 
-#: lib/RT/Date.pm:383
+#: lib/RT/Date.pm:368
 msgid "0 seconds"
 msgstr ""
 
-#: lib/RT/Date.pm:383
+#: lib/RT/Date.pm:368
 msgid "0s"
 msgstr ""
 
@@ -5540,7 +5530,7 @@ msgstr "Није пронађено"
 msgid "Not logged in."
 msgstr "Нисте пријављени."
 
-#: lib/RT/Date.pm:483 share/html/Elements/ShowReminders:73 share/html/Ticket/Elements/Reminders:207
+#: lib/RT/Date.pm:466 share/html/Elements/ShowReminders:73 share/html/Ticket/Elements/Reminders:207
 msgid "Not set"
 msgstr "Није постављено"
 
