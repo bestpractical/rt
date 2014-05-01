@@ -377,11 +377,6 @@ msgstr ""
 msgid "%1 key '%2'"
 msgstr ""
 
-#: share/html/Ticket/Elements/ShowTime:49 share/html/Ticket/Elements/ShowTime:51
-#. ($minutes)
-msgid "%1 min"
-msgstr "%1 λεπτά"
-
 #: share/html/Articles/Elements/UpdatedArticles:48
 #. ($rows)
 msgid "%1 most recently updated articles"
@@ -538,19 +533,24 @@ msgstr "%quant(%1,άρθρο)"
 msgid "%quant(%1,day,days)"
 msgstr ""
 
-#: lib/RT/Date.pm:371 share/html/Ticket/Elements/ShowTime:51
-#. (sprintf("%.1f",$minutes / 60))
+#: lib/RT/Date.pm:371
 msgid "%quant(%1,hour,hours)"
 msgstr "%quant(%1,ώρα)"
+
+#: share/html/Ticket/Elements/ShowTime:51
+#. (sprintf("%.1f",$minutes / 60), $minutes)
+msgid "%quant(%1,hour,hours) (%quant(%2,minute,minutes))"
+msgstr ""
 
 #: share/html/Elements/ShowTransaction:135
 #. ($Transaction->TimeTaken)
 msgid "%quant(%1,min,min)"
 msgstr ""
 
-#: lib/RT/Date.pm:370
+#: lib/RT/Date.pm:370 share/html/Ticket/Elements/ShowTime:49
+#. ($minutes)
 msgid "%quant(%1,minute,minutes)"
-msgstr ""
+msgstr "%1 λεπτά"
 
 #: lib/RT/Date.pm:374
 msgid "%quant(%1,month,months)"
@@ -1656,7 +1656,7 @@ msgid "Combobox: Select or enter one value"
 msgstr "Συνδυασμένο Πλαίσιο: Επιλέξτε η εισάγετε μια τιμή"
 
 #: lib/RT/CustomField.pm:146
-msgid "Combobox: Select or enter up to %1 values"
+msgid "Combobox: Select or enter up to %quant(%1,value,values)"
 msgstr "Συνδυασμένο Πλαίσιο: Επιλέξτε η εισάγετε μέχρι και %1 τιμές"
 
 #: share/html/Elements/ShowTransaction:194 share/html/Elements/Tabs:650 share/html/Search/Elements/EditFormat:74
@@ -3127,19 +3127,19 @@ msgid "Enter time in hours by default"
 msgstr "Εισαγωγή προκαθορισμένου χρόνου σε ώρες"
 
 #: lib/RT/CustomField.pm:193
-msgid "Enter up to %1 IP address ranges"
+msgid "Enter up to %quant(%1,IP address range,IP address ranges)"
 msgstr "Εισαγωγή μέχρι και %1 πεδίων διευθύνσεων IP"
 
 #: lib/RT/CustomField.pm:184
-msgid "Enter up to %1 IP addresses"
+msgid "Enter up to %quant(%1,IP address,IP addresses)"
 msgstr "Εισαγωγή μέχρι και %1 διευθύνσεων IP"
 
 #: lib/RT/CustomField.pm:99
-msgid "Enter up to %1 values"
+msgid "Enter up to %quant(%1,value,values)"
 msgstr "Εισαγωγή μέχρι και %1 τιμών"
 
 #: lib/RT/CustomField.pm:155
-msgid "Enter up to %1 values with autocompletion"
+msgid "Enter up to %quant(%1,value,values) with autocompletion"
 msgstr "Εισαγωγή μέχρι και %1 τιμών με αυτοσυμπλήρωση"
 
 #: share/html/Search/Simple.html:77
@@ -3372,11 +3372,11 @@ msgid "Fill in this field with a URL."
 msgstr "Συμπλήρωση διεύθυνσης URL στο πεδίο"
 
 #: lib/RT/CustomField.pm:108
-msgid "Fill in up to %1 text areas"
+msgid "Fill in up to %quant(%1,text area,text areas)"
 msgstr "Συμπλήρωση μέχρι και %1 περιοχών κειμένου"
 
 #: lib/RT/CustomField.pm:117
-msgid "Fill in up to %1 wikitext areas"
+msgid "Fill in up to %quant(%1,wikitext area,wikitext areas)"
 msgstr "Συμπλήρωση μέχρι και %1 περιοχών βικικειμένου"
 
 #: lib/RT/Tickets.pm:1692 share/html/Search/Elements/PickBasics:202 share/html/Ticket/Create.html:230 share/html/m/ticket/create:347
@@ -5945,7 +5945,7 @@ msgstr "Δεν έχει οριστεί κωδικός."
 
 #: lib/RT/User.pm:306
 #. (RT->Config->Get('MinimumPasswordLength'))
-msgid "Password needs to be at least %1 characters long"
+msgid "Password needs to be at least %quant(%1,character,characters) long"
 msgstr "Ο κωδικός πρέπει να έχει τουλάχιστον %1 χαρακτήρες"
 
 #: share/html/Admin/Tools/Configuration.html:128 share/html/Admin/Tools/Configuration.html:91
@@ -6570,7 +6570,7 @@ msgstr "Ανανέωση αποτελεσμάτων αναζήτησης κάθ�
 
 #: share/html/Elements/Refresh:59
 #. ($value/60)
-msgid "Refresh this page every %1 minutes."
+msgid "Refresh this page every %quant(%1,minute,minutes)."
 msgstr "Ανανέωση αυτής της σελίδας κάθε %1 λεπτά."
 
 #: etc/RT_Config.pm:1241 etc/initialdata:879
@@ -7188,15 +7188,15 @@ msgid "Select topics for this article"
 msgstr "Επιλογή θεμάτων για αυτό το άρθρο"
 
 #: lib/RT/CustomField.pm:165
-msgid "Select up to %1 dates"
+msgid "Select up to %quant(%1,date,dates)"
 msgstr "Επιλογή μέχρι και %1 ημερομηνιών"
 
 #: lib/RT/CustomField.pm:174
-msgid "Select up to %1 datetimes"
+msgid "Select up to %quant(%1,datetime,datetimes)"
 msgstr "Επιλογή μέχρι %1 ωρών/ημερομηνιών"
 
 #: lib/RT/CustomField.pm:76
-msgid "Select up to %1 values"
+msgid "Select up to %quant(%1,value,values)"
 msgstr "Επιλογή μέχρι και %1 τιμών"
 
 #: share/html/Admin/Elements/EditCustomFields:55
@@ -8746,11 +8746,11 @@ msgid "Upload one image"
 msgstr "Ανέβασμα εικόνας"
 
 #: lib/RT/CustomField.pm:136
-msgid "Upload up to %1 files"
+msgid "Upload up to %quant(%1,file,files)"
 msgstr "Ανέβασμα μέχρι και %1 αρχείων"
 
 #: lib/RT/CustomField.pm:127
-msgid "Upload up to %1 images"
+msgid "Upload up to %quant(%1,image,images)"
 msgstr "Ανέβασμα μέχρι και %1 εικόνων"
 
 #: sbin/rt-email-digest:80
@@ -9179,7 +9179,7 @@ msgstr "Χρόνος Εργασίας"
 
 #: lib/RT/Transaction.pm:1164
 #. (sprintf("%.1f", $duration / 60), $duration)
-msgid "Worked %quant(%1,hour,hours) (%numf(%2) minutes)"
+msgid "Worked %quant(%1,hour,hours) (%quant(%2,minute,minutes))"
 msgstr ""
 
 #: lib/RT/Transaction.pm:1162

@@ -377,11 +377,6 @@ msgstr ""
 msgid "%1 key '%2'"
 msgstr ""
 
-#: share/html/Ticket/Elements/ShowTime:49 share/html/Ticket/Elements/ShowTime:51
-#. ($minutes)
-msgid "%1 min"
-msgstr "%1 Min"
-
 #: share/html/Articles/Elements/UpdatedArticles:48
 #. ($rows)
 msgid "%1 most recently updated articles"
@@ -538,17 +533,22 @@ msgstr "%quant(%1,Artikel)"
 msgid "%quant(%1,day,days)"
 msgstr ""
 
-#: lib/RT/Date.pm:371 share/html/Ticket/Elements/ShowTime:51
-#. (sprintf("%.1f",$minutes / 60))
+#: lib/RT/Date.pm:371
 msgid "%quant(%1,hour,hours)"
 msgstr "%quant(%1, Stunde, Stunden)"
+
+#: share/html/Ticket/Elements/ShowTime:51
+#. (sprintf("%.1f",$minutes / 60), $minutes)
+msgid "%quant(%1,hour,hours) (%quant(%2,minute,minutes))"
+msgstr ""
 
 #: share/html/Elements/ShowTransaction:135
 #. ($Transaction->TimeTaken)
 msgid "%quant(%1,min,min)"
 msgstr "%quant(%1,min,min)"
 
-#: lib/RT/Date.pm:370
+#: lib/RT/Date.pm:370 share/html/Ticket/Elements/ShowTime:49
+#. ($minutes)
 msgid "%quant(%1,minute,minutes)"
 msgstr ""
 
@@ -1656,7 +1656,7 @@ msgid "Combobox: Select or enter one value"
 msgstr "Combobox: Einen Wert auswählen oder eingeben"
 
 #: lib/RT/CustomField.pm:146
-msgid "Combobox: Select or enter up to %1 values"
+msgid "Combobox: Select or enter up to %quant(%1,value,values)"
 msgstr "Combobox: Bis zu %1 Werte auswählen oder eingeben"
 
 #: share/html/Elements/ShowTransaction:194 share/html/Elements/Tabs:650 share/html/Search/Elements/EditFormat:74
@@ -3128,19 +3128,19 @@ msgid "Enter time in hours by default"
 msgstr "Arbeitszeit in Stunden erfassen"
 
 #: lib/RT/CustomField.pm:193
-msgid "Enter up to %1 IP address ranges"
+msgid "Enter up to %quant(%1,IP address range,IP address ranges)"
 msgstr "Bis zu %1 IP-Adressbereiche eingeben"
 
 #: lib/RT/CustomField.pm:184
-msgid "Enter up to %1 IP addresses"
+msgid "Enter up to %quant(%1,IP address,IP addresses)"
 msgstr "Bis zu %1 IP-Adressen eingeben"
 
 #: lib/RT/CustomField.pm:99
-msgid "Enter up to %1 values"
+msgid "Enter up to %quant(%1,value,values)"
 msgstr "Bis zu %1 Werte eingeben"
 
 #: lib/RT/CustomField.pm:155
-msgid "Enter up to %1 values with autocompletion"
+msgid "Enter up to %quant(%1,value,values) with autocompletion"
 msgstr "Bis zu %1 Werte eingeben (mit automatischer Vervollständigung)"
 
 #: share/html/Search/Simple.html:77
@@ -3373,11 +3373,11 @@ msgid "Fill in this field with a URL."
 msgstr "Gib eine URL ein."
 
 #: lib/RT/CustomField.pm:108
-msgid "Fill in up to %1 text areas"
+msgid "Fill in up to %quant(%1,text area,text areas)"
 msgstr "%1 Textfelder füllen"
 
 #: lib/RT/CustomField.pm:117
-msgid "Fill in up to %1 wikitext areas"
+msgid "Fill in up to %quant(%1,wikitext area,wikitext areas)"
 msgstr "Schreibe bis zu %1 Wikitext Bereiche"
 
 #: lib/RT/Tickets.pm:1692 share/html/Search/Elements/PickBasics:202 share/html/Ticket/Create.html:230 share/html/m/ticket/create:347
@@ -5946,7 +5946,7 @@ msgstr "Das Passwort wurde nicht gesetzt"
 
 #: lib/RT/User.pm:306
 #. (RT->Config->Get('MinimumPasswordLength'))
-msgid "Password needs to be at least %1 characters long"
+msgid "Password needs to be at least %quant(%1,character,characters) long"
 msgstr "Das Passwort muss mindestens %1 Zeichen lang sein"
 
 #: share/html/Admin/Tools/Configuration.html:128 share/html/Admin/Tools/Configuration.html:91
@@ -6571,7 +6571,7 @@ msgstr "Ergebnis alle 60 Minuten aktualisieren."
 
 #: share/html/Elements/Refresh:59
 #. ($value/60)
-msgid "Refresh this page every %1 minutes."
+msgid "Refresh this page every %quant(%1,minute,minutes)."
 msgstr "Seite alle %1 Minuten aktualisieren."
 
 #: etc/RT_Config.pm:1241 etc/initialdata:879
@@ -7189,15 +7189,15 @@ msgid "Select topics for this article"
 msgstr "Wähle Themen für diesen Artikel"
 
 #: lib/RT/CustomField.pm:165
-msgid "Select up to %1 dates"
+msgid "Select up to %quant(%1,date,dates)"
 msgstr "Bis zu %1 Datumsangaben wählen"
 
 #: lib/RT/CustomField.pm:174
-msgid "Select up to %1 datetimes"
+msgid "Select up to %quant(%1,datetime,datetimes)"
 msgstr "Bis zu %1 Datums-/Zeitangaben wählen"
 
 #: lib/RT/CustomField.pm:76
-msgid "Select up to %1 values"
+msgid "Select up to %quant(%1,value,values)"
 msgstr "Wählen Sie bis zu %1 Werte aus"
 
 #: share/html/Admin/Elements/EditCustomFields:55
@@ -8747,11 +8747,11 @@ msgid "Upload one image"
 msgstr "Hochladen eines Bildes"
 
 #: lib/RT/CustomField.pm:136
-msgid "Upload up to %1 files"
+msgid "Upload up to %quant(%1,file,files)"
 msgstr "Hochladen von bis zu %1 Dateien"
 
 #: lib/RT/CustomField.pm:127
-msgid "Upload up to %1 images"
+msgid "Upload up to %quant(%1,image,images)"
 msgstr "Hochladen von bis zu %1 Bildern"
 
 #: sbin/rt-email-digest:80
@@ -9180,7 +9180,7 @@ msgstr "Gearbeitet"
 
 #: lib/RT/Transaction.pm:1164
 #. (sprintf("%.1f", $duration / 60), $duration)
-msgid "Worked %quant(%1,hour,hours) (%numf(%2) minutes)"
+msgid "Worked %quant(%1,hour,hours) (%quant(%2,minute,minutes))"
 msgstr ""
 
 #: lib/RT/Transaction.pm:1162

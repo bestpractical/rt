@@ -377,11 +377,6 @@ msgstr ""
 msgid "%1 key '%2'"
 msgstr ""
 
-#: share/html/Ticket/Elements/ShowTime:49 share/html/Ticket/Elements/ShowTime:51
-#. ($minutes)
-msgid "%1 min"
-msgstr "%1 min"
-
 #: share/html/Articles/Elements/UpdatedArticles:48
 #. ($rows)
 msgid "%1 most recently updated articles"
@@ -538,17 +533,22 @@ msgstr ""
 msgid "%quant(%1,day,days)"
 msgstr ""
 
-#: lib/RT/Date.pm:371 share/html/Ticket/Elements/ShowTime:51
-#. (sprintf("%.1f",$minutes / 60))
+#: lib/RT/Date.pm:371
 msgid "%quant(%1,hour,hours)"
 msgstr "%quant(%1,hour,hours)"
+
+#: share/html/Ticket/Elements/ShowTime:51
+#. (sprintf("%.1f",$minutes / 60), $minutes)
+msgid "%quant(%1,hour,hours) (%quant(%2,minute,minutes))"
+msgstr ""
 
 #: share/html/Elements/ShowTransaction:135
 #. ($Transaction->TimeTaken)
 msgid "%quant(%1,min,min)"
 msgstr ""
 
-#: lib/RT/Date.pm:370
+#: lib/RT/Date.pm:370 share/html/Ticket/Elements/ShowTime:49
+#. ($minutes)
 msgid "%quant(%1,minute,minutes)"
 msgstr ""
 
@@ -1652,7 +1652,7 @@ msgid "Combobox: Select or enter one value"
 msgstr "Valik: Vali või sisesta üks väärtus"
 
 #: lib/RT/CustomField.pm:146
-msgid "Combobox: Select or enter up to %1 values"
+msgid "Combobox: Select or enter up to %quant(%1,value,values)"
 msgstr "Valik: Vali või sisesta kuni %1 väärtust"
 
 #: share/html/Elements/ShowTransaction:194 share/html/Elements/Tabs:650 share/html/Search/Elements/EditFormat:74
@@ -3123,19 +3123,19 @@ msgid "Enter time in hours by default"
 msgstr "Lisa vaikimisi aeg tundides (vaikimisi)"
 
 #: lib/RT/CustomField.pm:193
-msgid "Enter up to %1 IP address ranges"
+msgid "Enter up to %quant(%1,IP address range,IP address ranges)"
 msgstr "Sisesta kuni %1 IP aadressi vahemikku"
 
 #: lib/RT/CustomField.pm:184
-msgid "Enter up to %1 IP addresses"
+msgid "Enter up to %quant(%1,IP address,IP addresses)"
 msgstr "Sisesta kuni %1 IP aadressi"
 
 #: lib/RT/CustomField.pm:99
-msgid "Enter up to %1 values"
+msgid "Enter up to %quant(%1,value,values)"
 msgstr "Sisesta kuni %1 väärtust"
 
 #: lib/RT/CustomField.pm:155
-msgid "Enter up to %1 values with autocompletion"
+msgid "Enter up to %quant(%1,value,values) with autocompletion"
 msgstr "Sisesta kuni %1 väärtust automaatlõpetusega"
 
 #: share/html/Search/Simple.html:77
@@ -3364,11 +3364,11 @@ msgid "Fill in this field with a URL."
 msgstr "Sisesta välja URL"
 
 #: lib/RT/CustomField.pm:108
-msgid "Fill in up to %1 text areas"
+msgid "Fill in up to %quant(%1,text area,text areas)"
 msgstr "Täida kuni %1 tekstilahtrit"
 
 #: lib/RT/CustomField.pm:117
-msgid "Fill in up to %1 wikitext areas"
+msgid "Fill in up to %quant(%1,wikitext area,wikitext areas)"
 msgstr "Täida kuni %1 vikitekstilahtrit"
 
 #: lib/RT/Tickets.pm:1692 share/html/Search/Elements/PickBasics:202 share/html/Ticket/Create.html:230 share/html/m/ticket/create:347
@@ -5885,7 +5885,7 @@ msgstr "Parool pole määratud"
 
 #: lib/RT/User.pm:306
 #. (RT->Config->Get('MinimumPasswordLength'))
-msgid "Password needs to be at least %1 characters long"
+msgid "Password needs to be at least %quant(%1,character,characters) long"
 msgstr "Parool peab olema vähemalt %1 märgi pikkune"
 
 #: share/html/Admin/Tools/Configuration.html:128 share/html/Admin/Tools/Configuration.html:91
@@ -6510,7 +6510,7 @@ msgstr "Värskenda otsingu tulemusi iga 60 minuti järel"
 
 #: share/html/Elements/Refresh:59
 #. ($value/60)
-msgid "Refresh this page every %1 minutes."
+msgid "Refresh this page every %quant(%1,minute,minutes)."
 msgstr "Värskenda otsingu tulemusi iga %1 minuti järel"
 
 #: etc/RT_Config.pm:1241 etc/initialdata:879
@@ -7100,15 +7100,15 @@ msgid "Select topics for this article"
 msgstr ""
 
 #: lib/RT/CustomField.pm:165
-msgid "Select up to %1 dates"
+msgid "Select up to %quant(%1,date,dates)"
 msgstr ""
 
 #: lib/RT/CustomField.pm:174
-msgid "Select up to %1 datetimes"
+msgid "Select up to %quant(%1,datetime,datetimes)"
 msgstr ""
 
 #: lib/RT/CustomField.pm:76
-msgid "Select up to %1 values"
+msgid "Select up to %quant(%1,value,values)"
 msgstr "Vali kuni %1 väärtust"
 
 #: share/html/Admin/Elements/EditCustomFields:55
@@ -8594,11 +8594,11 @@ msgid "Upload one image"
 msgstr ""
 
 #: lib/RT/CustomField.pm:136
-msgid "Upload up to %1 files"
+msgid "Upload up to %quant(%1,file,files)"
 msgstr ""
 
 #: lib/RT/CustomField.pm:127
-msgid "Upload up to %1 images"
+msgid "Upload up to %quant(%1,image,images)"
 msgstr ""
 
 #: sbin/rt-email-digest:80
@@ -9023,7 +9023,7 @@ msgstr "Tegeles"
 
 #: lib/RT/Transaction.pm:1164
 #. (sprintf("%.1f", $duration / 60), $duration)
-msgid "Worked %quant(%1,hour,hours) (%numf(%2) minutes)"
+msgid "Worked %quant(%1,hour,hours) (%quant(%2,minute,minutes))"
 msgstr ""
 
 #: lib/RT/Transaction.pm:1162

@@ -377,11 +377,6 @@ msgstr ""
 msgid "%1 key '%2'"
 msgstr ""
 
-#: share/html/Ticket/Elements/ShowTime:49 share/html/Ticket/Elements/ShowTime:51
-#. ($minutes)
-msgid "%1 min"
-msgstr "%1 %quant(%1,minuta,minuty,minut,minut)"
-
 #: share/html/Articles/Elements/UpdatedArticles:48
 #. ($rows)
 msgid "%1 most recently updated articles"
@@ -538,19 +533,24 @@ msgstr "%quant(%1,článek,články,článků)"
 msgid "%quant(%1,day,days)"
 msgstr ""
 
-#: lib/RT/Date.pm:371 share/html/Ticket/Elements/ShowTime:51
-#. (sprintf("%.1f",$minutes / 60))
+#: lib/RT/Date.pm:371
 msgid "%quant(%1,hour,hours)"
 msgstr "%quant(%1,hodina,hodiny,hodin)"
+
+#: share/html/Ticket/Elements/ShowTime:51
+#. (sprintf("%.1f",$minutes / 60), $minutes)
+msgid "%quant(%1,hour,hours) (%quant(%2,minute,minutes))"
+msgstr ""
 
 #: share/html/Elements/ShowTransaction:135
 #. ($Transaction->TimeTaken)
 msgid "%quant(%1,min,min)"
 msgstr ""
 
-#: lib/RT/Date.pm:370
+#: lib/RT/Date.pm:370 share/html/Ticket/Elements/ShowTime:49
+#. ($minutes)
 msgid "%quant(%1,minute,minutes)"
-msgstr ""
+msgstr "%1 %quant(%1,minuta,minuty,minut,minut)"
 
 #: lib/RT/Date.pm:374
 msgid "%quant(%1,month,months)"
@@ -1656,7 +1656,7 @@ msgid "Combobox: Select or enter one value"
 msgstr "Combobox: Vybrat nebo zadat jednu hodnotu"
 
 #: lib/RT/CustomField.pm:146
-msgid "Combobox: Select or enter up to %1 values"
+msgid "Combobox: Select or enter up to %quant(%1,value,values)"
 msgstr "Combobox: Vybrat nebo zadat nejvýše %1 %quant(%1,hodnotu,hodnoty,hodnot)"
 
 #: share/html/Elements/ShowTransaction:194 share/html/Elements/Tabs:650 share/html/Search/Elements/EditFormat:74
@@ -3127,19 +3127,19 @@ msgid "Enter time in hours by default"
 msgstr "Přednastavit vkládání času na hodiny"
 
 #: lib/RT/CustomField.pm:193
-msgid "Enter up to %1 IP address ranges"
+msgid "Enter up to %quant(%1,IP address range,IP address ranges)"
 msgstr "Zadejte až %1 rozsah(ů) IP adres"
 
 #: lib/RT/CustomField.pm:184
-msgid "Enter up to %1 IP addresses"
+msgid "Enter up to %quant(%1,IP address,IP addresses)"
 msgstr "Zadejte až %1 IP adres"
 
 #: lib/RT/CustomField.pm:99
-msgid "Enter up to %1 values"
+msgid "Enter up to %quant(%1,value,values)"
 msgstr "Zadejte nejvýše %1 %quant(%1,hodnotu,hodnoty,hodnot)"
 
 #: lib/RT/CustomField.pm:155
-msgid "Enter up to %1 values with autocompletion"
+msgid "Enter up to %quant(%1,value,values) with autocompletion"
 msgstr "Vyplnit nejvýše %1 %quant(%1,hodnotu,hodnoty,hodnot) s automatickým doplňováním"
 
 #: share/html/Search/Simple.html:77
@@ -3368,11 +3368,11 @@ msgid "Fill in this field with a URL."
 msgstr "Do této položky zadejte URL."
 
 #: lib/RT/CustomField.pm:108
-msgid "Fill in up to %1 text areas"
+msgid "Fill in up to %quant(%1,text area,text areas)"
 msgstr "Vyplnit nejvýše %1 %quant(%1,textovou oblast,textové oblasti,textových oblastí)"
 
 #: lib/RT/CustomField.pm:117
-msgid "Fill in up to %1 wikitext areas"
+msgid "Fill in up to %quant(%1,wikitext area,wikitext areas)"
 msgstr "Vyplnit nejvýše %1 wiki %quant(%1,textovou oblast,textové oblasti,textových oblastí)"
 
 #: lib/RT/Tickets.pm:1692 share/html/Search/Elements/PickBasics:202 share/html/Ticket/Create.html:230 share/html/m/ticket/create:347
@@ -5941,7 +5941,7 @@ msgstr "Heslo nebylo nastaveno"
 
 #: lib/RT/User.pm:306
 #. (RT->Config->Get('MinimumPasswordLength'))
-msgid "Password needs to be at least %1 characters long"
+msgid "Password needs to be at least %quant(%1,character,characters) long"
 msgstr "Heslo musí být dlouhé nejméně %1 %quant(%1,znak,znaky,znaků)"
 
 #: share/html/Admin/Tools/Configuration.html:128 share/html/Admin/Tools/Configuration.html:91
@@ -6566,7 +6566,7 @@ msgstr "Obnovení výsledků vyhledávání každých 60 minut."
 
 #: share/html/Elements/Refresh:59
 #. ($value/60)
-msgid "Refresh this page every %1 minutes."
+msgid "Refresh this page every %quant(%1,minute,minutes)."
 msgstr "Obnovit tuto stránku %quant(%1,každou,každé,každých) %numf(%1) %quant(%1,minutu,minuty,minut)."
 
 #: etc/RT_Config.pm:1241 etc/initialdata:879
@@ -7184,15 +7184,15 @@ msgid "Select topics for this article"
 msgstr "Vyberte témata pro tento článek"
 
 #: lib/RT/CustomField.pm:165
-msgid "Select up to %1 dates"
+msgid "Select up to %quant(%1,date,dates)"
 msgstr ""
 
 #: lib/RT/CustomField.pm:174
-msgid "Select up to %1 datetimes"
+msgid "Select up to %quant(%1,datetime,datetimes)"
 msgstr ""
 
 #: lib/RT/CustomField.pm:76
-msgid "Select up to %1 values"
+msgid "Select up to %quant(%1,value,values)"
 msgstr "Výběr nejvýše %1 %quant(%1,hodnoty,hodnot,hodnot)"
 
 #: share/html/Admin/Elements/EditCustomFields:55
@@ -8738,11 +8738,11 @@ msgid "Upload one image"
 msgstr "Odeslat jeden obrázek"
 
 #: lib/RT/CustomField.pm:136
-msgid "Upload up to %1 files"
+msgid "Upload up to %quant(%1,file,files)"
 msgstr "Odeslat nejvýše %1 %quant(%1,soubor,soubory,souborů)"
 
 #: lib/RT/CustomField.pm:127
-msgid "Upload up to %1 images"
+msgid "Upload up to %quant(%1,image,images)"
 msgstr "Odeslat nejvýše %1 %quant(%1,obrázek,obrázky,obrázků)"
 
 #: sbin/rt-email-digest:80
@@ -9171,7 +9171,7 @@ msgstr "Odpracováno"
 
 #: lib/RT/Transaction.pm:1164
 #. (sprintf("%.1f", $duration / 60), $duration)
-msgid "Worked %quant(%1,hour,hours) (%numf(%2) minutes)"
+msgid "Worked %quant(%1,hour,hours) (%quant(%2,minute,minutes))"
 msgstr ""
 
 #: lib/RT/Transaction.pm:1162

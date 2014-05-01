@@ -56,7 +56,7 @@
 % if  ( $Default && ($value == $Default)) {
 selected="selected"
 % }
-><&|/l, $value/60 &>Refresh this page every [_1] minutes.</&></option>
+><&|/l, $value/60 &>Refresh this page every [quant,_1,minute,minutes].</&></option>
 %}
 </select>
 
