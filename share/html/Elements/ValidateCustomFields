@@ -68,7 +68,7 @@ while ( my $CF = $CustomFields->Next ) {
     next if $submitted->{"Values-Magic"} and exists $submitted->{"Values"}
         and ref $submitted->{"Values"};
 
-    $m->notes(('Field-' . $CF->Id) => $submitted->{Value} );
+    $m->notes(('Field-' . $CF->Id) => $submitted->{Values} // $submitted->{Value});
 
     my @values = _NormalizeObjectCustomFieldValue(
         CustomField => $CF,
