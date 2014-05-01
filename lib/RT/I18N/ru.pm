@@ -61,7 +61,7 @@ sub quant {
     return $num unless @forms;
     return $forms[3] if !$num && $forms[3];
 
-    return $num .' '. $handle->numerate($num, @forms);
+    return $handle->numf($num) .' '. $handle->numerate($num, @forms);
 }
 
 sub numerate {
