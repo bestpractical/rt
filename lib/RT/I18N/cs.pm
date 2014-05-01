@@ -86,16 +86,16 @@ sub quant {
 
 
 sub numerate {
- # return this lexical item in a form appropriate to this number
-  my($handle, $num, @forms) = @_;
-  my $s = ($num == 1);
+    # return this lexical item in a form appropriate to this number
+    my($handle, $num, @forms) = @_;
 
-  return '' unless @forms;
-  return (
-   $s ? $forms[0] :
-   ( $num > 1 && $num < 5 ) ? $forms[1] :
-   $forms[2]
-  ) || (grep defined, @forms)[0];
+    return '' unless @forms;
+
+    my $fallback = (grep defined, @forms)[0];
+    return $forms[0] // $fallback if $num == 1;
+    return $forms[1] // $fallback
+        if $num > 1 and $num < 5;
+    return $forms[2] // $fallback;
 }
 
 #--------------------------------------------------------------------------
