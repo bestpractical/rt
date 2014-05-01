@@ -542,12 +542,8 @@ msgstr "%quant(%1,hour,hours)"
 msgid "%quant(%1,hour,hours) (%quant(%2,minute,minutes))"
 msgstr ""
 
-#: share/html/Elements/ShowTransaction:135
+#: lib/RT/Date.pm:370 share/html/Elements/ShowTransaction:135 share/html/Ticket/Elements/ShowTime:49
 #. ($Transaction->TimeTaken)
-msgid "%quant(%1,min,min)"
-msgstr "%quant(%1,min,min)"
-
-#: lib/RT/Date.pm:370 share/html/Ticket/Elements/ShowTime:49
 #. ($minutes)
 msgid "%quant(%1,minute,minutes)"
 msgstr "%1 dakika"
