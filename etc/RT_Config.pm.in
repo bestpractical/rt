@@ -1310,6 +1310,23 @@ Set ($DefaultSearchResultFormat, qq{
    '<small>__LastUpdatedRelative__</small>',
    '<small>__TimeLeft__</small>'});
 
+=item C<$DefaultSearchResultOrderBy>
+
+What Tickets column should we order by for RT Ticket search results.
+
+=cut
+
+Set($DefaultSearchResultOrderBy, 'id');
+
+=item C<$DefaultSearchResultOrder>
+
+When ordering RT Ticket search results by C<$DefaultSearchResultOrderBy>,
+should the sort be ascending (ASC) or descending (DESC).
+
+=cut
+
+Set($DefaultSearchResultOrder, 'ASC');
+
 =item C<$DefaultSelfServiceSearchResultFormat>
 
 C<$DefaultSelfServiceSearchResultFormat> is the default format of
