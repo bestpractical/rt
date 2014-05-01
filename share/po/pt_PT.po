@@ -905,6 +905,11 @@ msgstr "Morada (1)"
 msgid "Address2"
 msgstr "Morada (2)"
 
+#: lib/RT/Transaction.pm:1159
+#. ($duration)
+msgid "Adjusted time worked by %quant(%1,minute,minutes)"
+msgstr ""
+
 #: share/html/Elements/Tabs:64
 msgid "Admin"
 msgstr ""
@@ -9010,6 +9015,16 @@ msgstr ""
 
 #: share/html/Ticket/Elements/ShowBasics:65 share/html/Tools/MyDay.html:62 share/html/m/ticket/reply:81 share/html/m/ticket/show:227
 msgid "Worked"
+msgstr ""
+
+#: lib/RT/Transaction.pm:1164
+#. (sprintf("%.1f", $duration / 60), $duration)
+msgid "Worked %quant(%1,hour,hours) (%numf(%2) minutes)"
+msgstr ""
+
+#: lib/RT/Transaction.pm:1162
+#. ($duration)
+msgid "Worked %quant(%1,minute,minutes)"
 msgstr ""
 
 #: share/html/Articles/Article/Delete.html:70 share/html/Elements/RT__Template/ColumnMap:78 share/html/Widgets/Form/Boolean:77
