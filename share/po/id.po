@@ -19,7 +19,7 @@ msgstr ""
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:62
 msgid "#"
-msgstr "#"
+msgstr ""
 
 #: lib/RT/URI/fsck_com_rt.pm:222 share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/Helpers/Autocomplete/Tickets:108 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:197 share/html/m/ticket/history:56 share/html/m/ticket/show:202
 #. ($Ticket->Id, $Ticket->Subject || '')
@@ -30,7 +30,7 @@ msgstr "#"
 #. ($t->Id, $t->Subject || '')
 #. ($ticket->Id, $ticket->Subject)
 msgid "#%1: %2"
-msgstr "#%1: %2"
+msgstr ""
 
 #: lib/RT/Transaction.pm:1033 lib/RT/Transaction.pm:1072
 #. ($self->Data)
@@ -40,7 +40,7 @@ msgstr ""
 #: lib/RT/URI/fsck_com_rt.pm:229
 #. ($self->ObjectType, $object->Id)
 msgid "%1 #%2"
-msgstr "%1 #%2"
+msgstr ""
 
 #: lib/RT/Group.pm:131
 #. ($self->loc($class), $self->Instance, $self->Name)
@@ -60,7 +60,7 @@ msgstr ""
 #: lib/RT/Tickets.pm:1395
 #. ($args{'FIELD'},        $args{'OPERATOR'}, $args{'VALUE'})
 msgid "%1 %2 %3"
-msgstr "%1 %2 %3"
+msgstr ""
 
 #: lib/RT/Date.pm:695
 #. ($wday,$mon,$mday,$year)
@@ -75,7 +75,7 @@ msgstr ""
 #: lib/RT/Date.pm:707
 #. ($wday,$mon,$mday,$hour,$min,$sec,$year)
 msgid "%1 %2 %3 %4:%5:%6 %7"
-msgstr "%1 %2 %3 %4:%5:%6 %7"
+msgstr ""
 
 #: lib/RT/Record.pm:2067 lib/RT/Transaction.pm:933 lib/RT/Transaction.pm:976
 #. ($cf->Name, $new_content)
@@ -489,7 +489,7 @@ msgstr ""
 #: lib/RT/Attachment.pm:459
 #. ($size)
 msgid "%1b"
-msgstr "%1b"
+msgstr ""
 
 #: lib/RT/Date.pm:402
 msgid "%1d"
@@ -502,7 +502,7 @@ msgstr ""
 #: lib/RT/Attachment.pm:456
 #. (int( $size / 102.4 ) / 10)
 msgid "%1k"
-msgstr "%1k"
+msgstr ""
 
 #: lib/RT/Date.pm:390
 msgid "%1m"
@@ -902,7 +902,7 @@ msgstr ""
 
 #: share/html/Ticket/Create.html:152 share/html/m/ticket/create:284
 msgid "Admin Cc"
-msgstr "Admin Cc"
+msgstr ""
 
 #: etc/initialdata:376
 msgid "Admin Comment"
@@ -934,7 +934,7 @@ msgstr ""
 
 #: lib/RT/Report/Tickets.pm:70 lib/RT/Ticket.pm:103 lib/RT/Tickets.pm:146 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowPeople:66 share/html/m/ticket/show:299
 msgid "AdminCc"
-msgstr "AdminCc"
+msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:154
 msgid "AdminCcs"
@@ -1335,7 +1335,7 @@ msgstr ""
 
 #: share/html/Ticket/Forward.html:72
 msgid "Bcc"
-msgstr "Bcc"
+msgstr ""
 
 #: share/html/Articles/Elements/NeedsSetup:50
 #. (qq[<a href="@{[RT->Config->Get("WebPath")]}/Admin/Articles/">], '</a>')
@@ -1476,7 +1476,7 @@ msgstr ""
 
 #: lib/RT/Report/Tickets.pm:69 lib/RT/Ticket.pm:102 lib/RT/Tickets.pm:145 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:79 share/html/Ticket/Create.html:136 share/html/Ticket/Elements/EditPeople:79 share/html/Ticket/Elements/ShowPeople:62 share/html/Ticket/Forward.html:69 share/html/m/ticket/create:275 share/html/m/ticket/show:295
 msgid "Cc"
-msgstr "Cc"
+msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:154
 msgid "Ccs"
@@ -2740,7 +2740,7 @@ msgstr ""
 
 #: share/html/Elements/ShowTransactionAttachments:62
 msgid "Download"
-msgstr "Download"
+msgstr ""
 
 #: share/html/Admin/Tools/Shredder/Elements/DumpFileLink:49
 msgid "Download dumpfile"
@@ -2859,7 +2859,7 @@ msgstr ""
 
 #: share/html/Admin/Users/Modify.html:72 share/html/Ticket/Elements/AddWatchers:79 share/html/User/Prefs.html:65
 msgid "Email"
-msgstr "Email"
+msgstr ""
 
 #: share/html/Elements/RT__User/ColumnMap:71
 msgid "Email Address"
@@ -3333,7 +3333,7 @@ msgstr "Diubah dengan paksa"
 
 #: share/html/Search/Edit.html:59 share/html/Search/Elements/EditFormat:52
 msgid "Format"
-msgstr "Format"
+msgstr ""
 
 #: lib/RT/Config.pm:231
 msgid "Formats iCal feed events with date and time"
@@ -3444,7 +3444,7 @@ msgstr "Berikan ke %1"
 
 #: share/html/Admin/Scrips/Modify.html:64 share/html/Elements/RT__CustomField/ColumnMap:88 share/html/Elements/RT__Scrip/ColumnMap:58 share/html/Elements/RT__Template/ColumnMap:69 share/html/Elements/Tabs:111
 msgid "Global"
-msgstr "Global"
+msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:219
 msgid "Global Attributes"
@@ -3692,7 +3692,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:444 share/html/m/_elements/header:69
 msgid "Homepage"
-msgstr "Homepage"
+msgstr ""
 
 #: share/html/Dashboards/Subscription.html:141
 msgid "Hour"
@@ -3717,7 +3717,7 @@ msgstr ""
 
 #: lib/RT/Tickets.pm:1623 share/html/Ticket/Elements/ShowBasics:50 share/html/m/ticket/show:212
 msgid "Id"
-msgstr "Id"
+msgstr ""
 
 #: share/html/Admin/Users/Modify.html:63 share/html/User/Prefs.html:60
 msgid "Identity"
@@ -4065,7 +4065,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:638
 msgid "Jumbo"
-msgstr "Jumbo"
+msgstr ""
 
 #: lib/RT/Date.pm:96
 msgid "Jun"
@@ -4175,7 +4175,7 @@ msgstr ""
 
 #: share/html/Search/Elements/EditFormat:67
 msgid "Link"
-msgstr "Link"
+msgstr ""
 
 #: lib/RT/Record.pm:1393
 msgid "Link already exists"
@@ -4327,7 +4327,7 @@ msgstr ""
 
 #: share/html/Elements/Login:49 share/html/Elements/Login:62 share/html/Elements/Login:91 share/html/m/_elements/login:61 share/html/m/_elements/login:76
 msgid "Login"
-msgstr "Login"
+msgstr ""
 
 #: share/html/Elements/Logo:52 share/html/Elements/Logo:56
 #. ())
@@ -4336,7 +4336,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:580 share/html/Elements/Tabs:957 share/html/NoAuth/Logout.html:48 share/html/m/_elements/menu:107
 msgid "Logout"
-msgstr "Logout"
+msgstr ""
 
 #: lib/RT/CustomField.pm:1462
 msgid "Lookup type mismatch"
@@ -5747,7 +5747,7 @@ msgstr ""
 
 #: share/html/Admin/Users/Modify.html:191 share/html/User/Prefs.html:101
 msgid "Pager"
-msgstr "Pager"
+msgstr ""
 
 #: share/html/Elements/RT__User/ColumnMap:96
 msgid "Pager Phone"
@@ -6052,7 +6052,7 @@ msgstr ""
 
 #: share/html/Elements/RT__SavedSearch/ColumnMap:61 share/html/Search/Edit.html:56 share/html/Search/Elements/Chart:81
 msgid "Query"
-msgstr "Query"
+msgstr ""
 
 #: share/html/Search/Build.html:115
 msgid "Query Builder"
@@ -6171,7 +6171,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:835
 msgid "RSS"
-msgstr "RSS"
+msgstr ""
 
 #: share/html/Admin/index.html:48
 msgid "RT Administration"
@@ -6754,7 +6754,7 @@ msgstr ""
 #: share/html/Ticket/Elements/PreviewScrips:71
 #. ($scrip->id)
 msgid "Scrip #%1"
-msgstr "Scrip #%1"
+msgstr ""
 
 #: lib/RT/Scrip.pm:209
 msgid "Scrip Created"
@@ -7366,7 +7366,7 @@ msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:153 lib/RT/Report/Tickets.pm:60 lib/RT/Tickets.pm:106 lib/RT/Tickets.pm:1484 share/html/Elements/RT__Ticket/ColumnMap:111 share/html/Elements/RT__Ticket/ColumnMap:121 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:62 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Tools/MyDay.html:67 share/html/m/_elements/ticket_list:95 share/html/m/ticket/create:250 share/html/m/ticket/reply:63 share/html/m/ticket/show:216
 msgid "Status"
-msgstr "Status"
+msgstr ""
 
 #: lib/RT/Record/Role/Status.pm:163
 #. ($self->loc($new), $self->loc($lifecycle->Type))
@@ -7442,7 +7442,7 @@ msgstr ""
 
 #: share/html/Elements/Submit:99
 msgid "Submit"
-msgstr "Submit"
+msgstr ""
 
 #: share/html/Dashboards/Subscription.html:188
 msgid "Subscribe"
@@ -7586,7 +7586,7 @@ msgstr ""
 
 #: share/html/Admin/Scrips/Elements/EditBasics:64 share/html/Elements/RT__Scrip/ColumnMap:78
 msgid "Template"
-msgstr "Template"
+msgstr ""
 
 #: share/html/Admin/Elements/EditTemplates:111
 #. ($id)
@@ -7629,7 +7629,7 @@ msgstr ""
 
 #: lib/RT/Template.pm:467
 msgid "Template parsed"
-msgstr "Template parsed"
+msgstr ""
 
 #: lib/RT/Template.pm:558
 msgid "Template parsing error"
@@ -8457,7 +8457,7 @@ msgstr ""
 
 #: share/html/Admin/Tools/Theme.html:71
 msgid "Upload"
-msgstr "Upload"
+msgstr ""
 
 #: share/html/Admin/Tools/Theme.html:61
 msgid "Upload a new logo"
@@ -9067,7 +9067,7 @@ msgstr "Nama pengguna dan sandi anda tidak sama"
 
 #: share/html/Admin/Users/Modify.html:158 share/html/Elements/RT__User/ColumnMap:121 share/html/User/Prefs.html:152
 msgid "Zip"
-msgstr "Zip"
+msgstr ""
 
 #: share/html/Elements/RT__CustomField/ColumnMap:163
 msgid "[Down]"
@@ -9278,7 +9278,7 @@ msgstr ""
 
 #: lib/RT/Tickets.pm:113 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:53 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:56
 msgid "id"
-msgstr "id"
+msgstr ""
 
 #: lib/RT/Config.pm:372
 msgid "immediately"

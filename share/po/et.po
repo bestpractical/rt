@@ -19,7 +19,7 @@ msgstr ""
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:62
 msgid "#"
-msgstr "#"
+msgstr ""
 
 #: lib/RT/URI/fsck_com_rt.pm:222 share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/Helpers/Autocomplete/Tickets:108 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:197 share/html/m/ticket/history:56 share/html/m/ticket/show:202
 #. ($Ticket->Id, $Ticket->Subject || '')
@@ -30,7 +30,7 @@ msgstr "#"
 #. ($t->Id, $t->Subject || '')
 #. ($ticket->Id, $ticket->Subject)
 msgid "#%1: %2"
-msgstr "#%1: %2"
+msgstr ""
 
 #: lib/RT/Transaction.pm:1033 lib/RT/Transaction.pm:1072
 #. ($self->Data)
@@ -40,7 +40,7 @@ msgstr ""
 #: lib/RT/URI/fsck_com_rt.pm:229
 #. ($self->ObjectType, $object->Id)
 msgid "%1 #%2"
-msgstr "%1 #%2"
+msgstr ""
 
 #: lib/RT/Group.pm:131
 #. ($self->loc($class), $self->Instance, $self->Name)
@@ -65,7 +65,7 @@ msgstr "%1. %2 %3"
 #: lib/RT/Date.pm:695
 #. ($wday,$mon,$mday,$year)
 msgid "%1 %2 %3 %4"
-msgstr "%1 %2 %3 %4"
+msgstr ""
 
 #: lib/RT/Date.pm:710
 #. ($wday,$mon,$mday,$hour,$min,$year)
@@ -204,7 +204,7 @@ msgstr ""
 #. ('&#187;&#124;&#171;', $RT::VERSION, '2014', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #. ('', '', '2014', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 msgid "%1 RT %2 Copyright 1996-%3 %4."
-msgstr "%1 RT %2 Copyright 1996-%3 %4."
+msgstr ""
 
 #: share/html/Admin/Elements/UpgradeHistory:58
 #. ($package)
@@ -461,17 +461,17 @@ msgstr "%1: manused on määratlemata"
 #: lib/RT/Date.pm:702
 #. ($hour,$min)
 msgid "%1:%2"
-msgstr "%1:%2"
+msgstr ""
 
 #: lib/RT/Date.pm:699
 #. ($hour,$min,$sec)
 msgid "%1:%2:%3"
-msgstr "%1:%2:%3"
+msgstr ""
 
 #: lib/RT/Attachment.pm:453 lib/RT/Date.pm:414
 #. (int( $size / 1024 / 102.4 ) / 10)
 msgid "%1M"
-msgstr "%1M"
+msgstr ""
 
 #: share/html/Elements/CreateTicket:54
 #. ($button_start, $button_end, $queue_selector)
@@ -489,7 +489,7 @@ msgstr ""
 #: lib/RT/Attachment.pm:459
 #. ($size)
 msgid "%1b"
-msgstr "%1b"
+msgstr ""
 
 #: lib/RT/Date.pm:402
 msgid "%1d"
@@ -502,7 +502,7 @@ msgstr ""
 #: lib/RT/Attachment.pm:456
 #. (int( $size / 102.4 ) / 10)
 msgid "%1k"
-msgstr "%1k"
+msgstr ""
 
 #: lib/RT/Date.pm:390
 msgid "%1m"
@@ -512,7 +512,7 @@ msgstr "%1 m"
 #. (sprintf('%.4f', $duration))
 #. (sprintf('%.4f', $seconds))
 msgid "%1s"
-msgstr "%1s"
+msgstr ""
 
 #: share/html/Articles/Elements/ShowTopicLink:61
 #. ($Articles->Count)
@@ -525,7 +525,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:397
 msgid "%quant(%1,hour,hours)"
-msgstr "%quant(%1,hour,hours)"
+msgstr ""
 
 #: share/html/Ticket/Elements/ShowTime:51
 #. (sprintf("%.1f",$minutes / 60), $minutes)
@@ -679,7 +679,7 @@ msgstr "(mitteusaldusväärne!)"
 
 #: share/html/Articles/Elements/BeforeMessageBox:68 share/html/Elements/EditCustomFieldSelect:57
 msgid "-"
-msgstr "-"
+msgstr ""
 
 #: bin/rt-crontool:129
 msgid "--template-id is deprecated argument and can not be used with --template"
@@ -729,7 +729,7 @@ msgstr ""
 
 #: share/html/Search/Elements/SelectAndOr:48
 msgid "AND"
-msgstr "AND"
+msgstr ""
 
 #: share/html/Elements/Tabs:554
 msgid "About me"
@@ -1128,7 +1128,7 @@ msgstr "Nõustu"
 
 #: lib/RT/Date.pm:94
 msgid "Apr"
-msgstr "Apr"
+msgstr ""
 
 #: share/html/Articles/Article/Delete.html:56
 msgid "Are you sure you want to delete this article?"
@@ -1241,7 +1241,7 @@ msgstr "Atribuut kustutati"
 
 #: lib/RT/Date.pm:98
 msgid "Aug"
-msgstr "Aug"
+msgstr ""
 
 #: share/html/Errors/WebRemoteUser/UserAutocreateDefaultsOnLogin:48
 msgid "Automatic account setup failed"
@@ -1388,7 +1388,7 @@ msgstr "Koopia grupp"
 
 #: lib/RT/Report/Tickets.pm:81 lib/RT/Tickets.pm:153
 msgid "CF"
-msgstr "CF"
+msgstr ""
 
 #: share/html/Search/Simple.html:87
 #. ('<strong>cf.Name:value</strong>')
@@ -1708,7 +1708,7 @@ msgstr "Sisu tüüp"
 
 #: lib/RT/Tickets.pm:140
 msgid "ContentType"
-msgstr "ContentType"
+msgstr ""
 
 #: lib/RT/Installer.pm:180
 msgid "Correspond address"
@@ -2250,11 +2250,11 @@ msgstr "Loodud otsing %1"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "CreatedBy"
-msgstr "CreatedBy"
+msgstr ""
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "CreatedRelative"
-msgstr "CreatedRelative"
+msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:154 lib/RT/Report/Tickets.pm:65 lib/RT/Tickets.pm:109 share/html/Search/Elements/PickBasics:115
 msgid "Creator"
@@ -3713,11 +3713,11 @@ msgstr "Soovin algväärtustada oma salajast võtit."
 
 #: lib/RT/Date.pm:117
 msgid "ISO"
-msgstr "ISO"
+msgstr ""
 
 #: lib/RT/Tickets.pm:1623 share/html/Ticket/Elements/ShowBasics:50 share/html/m/ticket/show:212
 msgid "Id"
-msgstr "Id"
+msgstr ""
 
 #: share/html/Admin/Users/Modify.html:63 share/html/User/Prefs.html:60
 msgid "Identity"
@@ -5023,7 +5023,7 @@ msgstr ""
 
 #: lib/RT/Installer.pm:68
 msgid "MySQL"
-msgstr "MySQL"
+msgstr ""
 
 #: etc/RT_Config.pm:1241
 msgid "MySupportQueues"
@@ -5659,7 +5659,7 @@ msgstr "Valikud"
 
 #: lib/RT/Installer.pm:71
 msgid "Oracle"
-msgstr "Oracle"
+msgstr ""
 
 #: share/html/Install/DatabaseDetails.html:152
 msgid "Oracle users cannot have empty passwords"
@@ -9278,7 +9278,7 @@ msgstr ""
 
 #: lib/RT/Tickets.pm:113 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:53 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:56
 msgid "id"
-msgstr "id"
+msgstr ""
 
 #: lib/RT/Config.pm:372
 msgid "immediately"

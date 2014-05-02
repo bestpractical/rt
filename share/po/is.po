@@ -19,7 +19,7 @@ msgstr ""
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:62
 msgid "#"
-msgstr "#"
+msgstr ""
 
 #: lib/RT/URI/fsck_com_rt.pm:222 share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/Helpers/Autocomplete/Tickets:108 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:197 share/html/m/ticket/history:56 share/html/m/ticket/show:202
 #. ($Ticket->Id, $Ticket->Subject || '')
@@ -30,7 +30,7 @@ msgstr "#"
 #. ($t->Id, $t->Subject || '')
 #. ($ticket->Id, $ticket->Subject)
 msgid "#%1: %2"
-msgstr "#%1: %2"
+msgstr ""
 
 #: lib/RT/Transaction.pm:1033 lib/RT/Transaction.pm:1072
 #. ($self->Data)
@@ -40,7 +40,7 @@ msgstr ""
 #: lib/RT/URI/fsck_com_rt.pm:229
 #. ($self->ObjectType, $object->Id)
 msgid "%1 #%2"
-msgstr "%1 #%2"
+msgstr ""
 
 #: lib/RT/Group.pm:131
 #. ($self->loc($class), $self->Instance, $self->Name)
@@ -60,7 +60,7 @@ msgstr ""
 #: lib/RT/Tickets.pm:1395
 #. ($args{'FIELD'},        $args{'OPERATOR'}, $args{'VALUE'})
 msgid "%1 %2 %3"
-msgstr "%1 %2 %3"
+msgstr ""
 
 #: lib/RT/Date.pm:695
 #. ($wday,$mon,$mday,$year)
@@ -461,12 +461,12 @@ msgstr "%1: ekkert viðhengi tilgreint"
 #: lib/RT/Date.pm:702
 #. ($hour,$min)
 msgid "%1:%2"
-msgstr "%1:%2"
+msgstr ""
 
 #: lib/RT/Date.pm:699
 #. ($hour,$min,$sec)
 msgid "%1:%2:%3"
-msgstr "%1:%2:%3"
+msgstr ""
 
 #: lib/RT/Attachment.pm:453 lib/RT/Date.pm:414
 #. (int( $size / 1024 / 102.4 ) / 10)
@@ -3713,11 +3713,11 @@ msgstr ""
 
 #: lib/RT/Date.pm:117
 msgid "ISO"
-msgstr "ISO"
+msgstr ""
 
 #: lib/RT/Tickets.pm:1623 share/html/Ticket/Elements/ShowBasics:50 share/html/m/ticket/show:212
 msgid "Id"
-msgstr "Id"
+msgstr ""
 
 #: share/html/Admin/Users/Modify.html:63 share/html/User/Prefs.html:60
 msgid "Identity"
@@ -9274,7 +9274,7 @@ msgstr "hópur '%1'"
 
 #: lib/RT/Date.pm:121 share/html/Elements/Tabs:840
 msgid "iCal"
-msgstr "iCal"
+msgstr ""
 
 #: lib/RT/Tickets.pm:113 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:53 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:56
 msgid "id"

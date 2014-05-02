@@ -30,7 +30,7 @@ msgstr ""
 #. ($t->Id, $t->Subject || '')
 #. ($ticket->Id, $ticket->Subject)
 msgid "#%1: %2"
-msgstr "#%1: %2"
+msgstr ""
 
 #: lib/RT/Transaction.pm:1033 lib/RT/Transaction.pm:1072
 #. ($self->Data)
@@ -60,7 +60,7 @@ msgstr ""
 #: lib/RT/Tickets.pm:1395
 #. ($args{'FIELD'},        $args{'OPERATOR'}, $args{'VALUE'})
 msgid "%1 %2 %3"
-msgstr "%1 %2 %3"
+msgstr ""
 
 #: lib/RT/Date.pm:695
 #. ($wday,$mon,$mday,$year)
@@ -461,12 +461,12 @@ msgstr "%1: ez da eranskinik zehaztu"
 #: lib/RT/Date.pm:702
 #. ($hour,$min)
 msgid "%1:%2"
-msgstr "%1:%2"
+msgstr ""
 
 #: lib/RT/Date.pm:699
 #. ($hour,$min,$sec)
 msgid "%1:%2:%3"
-msgstr "%1:%2:%3"
+msgstr ""
 
 #: lib/RT/Attachment.pm:453 lib/RT/Date.pm:414
 #. (int( $size / 1024 / 102.4 ) / 10)
@@ -489,7 +489,7 @@ msgstr ""
 #: lib/RT/Attachment.pm:459
 #. ($size)
 msgid "%1b"
-msgstr "%1b"
+msgstr ""
 
 #: lib/RT/Date.pm:402
 msgid "%1d"
@@ -502,17 +502,17 @@ msgstr ""
 #: lib/RT/Attachment.pm:456
 #. (int( $size / 102.4 ) / 10)
 msgid "%1k"
-msgstr "%1k"
+msgstr ""
 
 #: lib/RT/Date.pm:390
 msgid "%1m"
-msgstr "%1m"
+msgstr ""
 
 #: lib/RT/Date.pm:384 share/html/Admin/Tools/Queries.html:110 share/html/Admin/Tools/Queries.html:81
 #. (sprintf('%.4f', $duration))
 #. (sprintf('%.4f', $seconds))
 msgid "%1s"
-msgstr "%1s"
+msgstr ""
 
 #: share/html/Articles/Elements/ShowTopicLink:61
 #. ($Articles->Count)
@@ -679,7 +679,7 @@ msgstr "(ez fidagarria!)"
 
 #: share/html/Articles/Elements/BeforeMessageBox:68 share/html/Elements/EditCustomFieldSelect:57
 msgid "-"
-msgstr "-"
+msgstr ""
 
 #: bin/rt-crontool:129
 msgid "--template-id is deprecated argument and can not be used with --template"
@@ -902,7 +902,7 @@ msgstr ""
 
 #: share/html/Ticket/Create.html:152 share/html/m/ticket/create:284
 msgid "Admin Cc"
-msgstr "Admin Cc"
+msgstr ""
 
 #: etc/initialdata:376
 msgid "Admin Comment"
@@ -930,15 +930,15 @@ msgstr ""
 
 #: lib/RT/Tickets.pm:162
 msgid "AdminCCGroup"
-msgstr "AdminCCGroup"
+msgstr ""
 
 #: lib/RT/Report/Tickets.pm:70 lib/RT/Ticket.pm:103 lib/RT/Tickets.pm:146 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowPeople:66 share/html/m/ticket/show:299
 msgid "AdminCc"
-msgstr "AdminCc"
+msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:154
 msgid "AdminCcs"
-msgstr "AdminCcs"
+msgstr ""
 
 #: share/html/Ticket/Elements/EditPeople:84
 msgid "Administrative Cc"
@@ -1384,7 +1384,7 @@ msgstr "Eguneraketa Masiboa"
 
 #: lib/RT/Tickets.pm:161
 msgid "CCGroup"
-msgstr "CCGroup"
+msgstr ""
 
 #: lib/RT/Report/Tickets.pm:81 lib/RT/Tickets.pm:153
 msgid "CF"
@@ -1708,7 +1708,7 @@ msgstr ""
 
 #: lib/RT/Tickets.pm:140
 msgid "ContentType"
-msgstr "ContentType"
+msgstr ""
 
 #: lib/RT/Installer.pm:180
 msgid "Correspond address"
@@ -2250,11 +2250,11 @@ msgstr "%1 bilaketa sortuta"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "CreatedBy"
-msgstr "CreatedBy"
+msgstr ""
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "CreatedRelative"
-msgstr "CreatedRelative"
+msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:154 lib/RT/Report/Tickets.pm:65 lib/RT/Tickets.pm:109 share/html/Search/Elements/PickBasics:115
 msgid "Creator"
@@ -2368,11 +2368,11 @@ msgstr "Eremu pertsonalizatuaren balioa ezabatuta"
 
 #: lib/RT/Tickets.pm:152 lib/RT/Transaction.pm:880 share/html/Elements/SelectGroups:54 share/html/Elements/SelectUsers:54
 msgid "CustomField"
-msgstr "CustomField"
+msgstr ""
 
 #: lib/RT/Tickets.pm:151
 msgid "CustomFieldValue"
-msgstr "CustomFieldValue"
+msgstr ""
 
 #: share/html/Prefs/DashboardsInMenu.html:74 share/html/Prefs/MyRT.html:81 share/html/Prefs/Quicksearch.html:79 share/html/Prefs/Search.html:81
 msgid "Customize"
@@ -2526,7 +2526,7 @@ msgstr "Lehenetsia: %1/%2 aldatuta %3tik %4ra"
 
 #: lib/RT/Date.pm:116
 msgid "DefaultFormat"
-msgstr "DefaultFormat"
+msgstr ""
 
 #: etc/RT_Config.pm:2800 etc/RT_Config.pm:2876 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:866 share/html/Elements/Tabs:891 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
 msgid "Delete"
@@ -2610,7 +2610,7 @@ msgstr "Menpean ditu"
 
 #: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:129 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
 msgid "DependedOnBy"
-msgstr "DependedOnBy"
+msgstr ""
 
 #: lib/RT/Transaction.pm:1014
 #. ($value)
@@ -2634,7 +2634,7 @@ msgstr "%1kiko menpekotasuna ezabatuta"
 
 #: lib/RT/Tickets.pm:128
 msgid "DependentOn"
-msgstr "DependentOn"
+msgstr ""
 
 #: share/html/Elements/AddLinks:74 share/html/Elements/BulkLinks:127 share/html/Elements/BulkLinks:54 share/html/Elements/EditLinks:55 share/html/Elements/ShowLinks:69 share/html/Search/Elements/SelectLinks:61 share/html/m/ticket/create:396 share/html/m/ticket/show:389
 msgid "Depends on"
@@ -2756,7 +2756,7 @@ msgstr "Mugaeguna"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "DueRelative"
-msgstr "DueRelative"
+msgstr ""
 
 #: share/html/Install/Initialize.html:132 share/html/Install/Initialize.html:94
 #. ($msg)
@@ -2842,7 +2842,7 @@ msgstr "%1 taldeko kidetasuna editatzen"
 
 #: lib/RT/Tickets.pm:112 share/html/Elements/RT__Ticket/ColumnMap:165
 msgid "EffectiveId"
-msgstr "EffectiveId"
+msgstr ""
 
 #: lib/RT/Record.pm:1360 lib/RT/Record.pm:1505
 msgid "Either base or target must be specified"
@@ -3126,7 +3126,7 @@ msgstr "Iraungi"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "ExtendedStatus"
-msgstr "ExtendedStatus"
+msgstr ""
 
 #: lib/RT/User.pm:1037
 msgid "External authentication enabled."
@@ -3279,7 +3279,7 @@ msgstr "Azkeneko Lehentasuna"
 
 #: lib/RT/Tickets.pm:115 share/html/Elements/RT__Ticket/ColumnMap:159 share/html/Search/Elements/BuildFormatString:100
 msgid "FinalPriority"
-msgstr "FinalPriority"
+msgstr ""
 
 #: share/html/Elements/FindUser:48
 msgid "Find a user"
@@ -3627,7 +3627,7 @@ msgstr ""
 
 #: lib/RT/Tickets.pm:127
 msgid "HasMember"
-msgstr "HasMember"
+msgstr ""
 
 #: etc/upgrade/3.8.6/content:7
 msgid "Heading of a forwarded Ticket"
@@ -3713,7 +3713,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:117
 msgid "ISO"
-msgstr "ISO"
+msgstr ""
 
 #: lib/RT/Tickets.pm:1623 share/html/Ticket/Elements/ShowBasics:50 share/html/m/ticket/show:212
 msgid "Id"
@@ -3881,7 +3881,7 @@ msgstr "Haserako lehentasuna"
 
 #: lib/RT/Tickets.pm:114 share/html/Elements/RT__Ticket/ColumnMap:153 share/html/Search/Elements/BuildFormatString:100
 msgid "InitialPriority"
-msgstr "InitialPriority"
+msgstr ""
 
 #: share/html/Install/Global.html:64 share/html/Install/Initialize.html:48 share/html/Install/Initialize.html:61
 msgid "Initialize Database"
@@ -4065,7 +4065,7 @@ msgstr "Uzt"
 
 #: share/html/Elements/Tabs:638
 msgid "Jumbo"
-msgstr "Jumbo"
+msgstr ""
 
 #: lib/RT/Date.pm:96
 msgid "Jun"
@@ -4122,11 +4122,11 @@ msgstr "Azken eguneraketaren egilea"
 
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:79 lib/RT/Tickets.pm:136 share/html/Search/Elements/BuildFormatString:100
 msgid "LastUpdated"
-msgstr "LastUpdated"
+msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:154 lib/RT/Report/Tickets.pm:66 lib/RT/Tickets.pm:110 share/html/Search/Elements/BuildFormatString:100
 msgid "LastUpdatedBy"
-msgstr "LastUpdatedBy"
+msgstr ""
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "LastUpdatedRelative"
@@ -4210,11 +4210,11 @@ msgstr "Estekatuta"
 
 #: lib/RT/Tickets.pm:123
 msgid "LinkedFrom"
-msgstr "LinkedFrom"
+msgstr ""
 
 #: lib/RT/Tickets.pm:122
 msgid "LinkedTo"
-msgstr "LinkedTo"
+msgstr ""
 
 #: lib/RT/Record.pm:1379
 #. ($self->loc(lc($remote_obj->RecordType)))
@@ -4282,7 +4282,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:122
 msgid "LocalizedDateTime"
-msgstr "LocalizedDateTime"
+msgstr ""
 
 #: share/html/Admin/Users/Modify.html:128 share/html/User/Prefs.html:129
 msgid "Location"
@@ -4426,7 +4426,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:93
 msgid "Mar"
-msgstr "Mar"
+msgstr ""
 
 #: share/html/SelfService/Display.html:153 share/html/Ticket/Display.html:191 share/html/m/ticket/show:122
 msgid "Marked all messages as seen"
@@ -4438,7 +4438,7 @@ msgstr ""
 
 #: share/html/Elements/RT__CustomField/ColumnMap:77
 msgid "MaxValues"
-msgstr "MaxValues"
+msgstr ""
 
 #: lib/RT/Report/Tickets.pm:227
 msgid "Maximum Created-LastUpdated"
@@ -4517,7 +4517,7 @@ msgstr "Kidea ez da ezabatu"
 
 #: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:124 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
 msgid "MemberOf"
-msgstr "MemberOf"
+msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:156 share/html/Elements/Tabs:349 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
 msgid "Members"
@@ -5023,7 +5023,7 @@ msgstr ""
 
 #: lib/RT/Installer.pm:68
 msgid "MySQL"
-msgstr "MySQL"
+msgstr ""
 
 #: etc/RT_Config.pm:1241
 msgid "MySupportQueues"
@@ -5659,7 +5659,7 @@ msgstr "Aukerak"
 
 #: lib/RT/Installer.pm:71
 msgid "Oracle"
-msgstr "Oracle"
+msgstr ""
 
 #: share/html/Install/DatabaseDetails.html:152
 msgid "Oracle users cannot have empty passwords"
@@ -5908,7 +5908,7 @@ msgstr ""
 
 #: lib/RT/Installer.pm:69
 msgid "PostgreSQL"
-msgstr "PostgreSQL"
+msgstr ""
 
 #: share/html/Elements/ShowSearch:97 share/html/m/tickets/search:81
 #. ($m->interp->apply_escapes($Name, 'h'))
@@ -6163,15 +6163,15 @@ msgstr ""
 
 #: lib/RT/Date.pm:120
 msgid "RFC2616"
-msgstr "RFC2616"
+msgstr ""
 
 #: lib/RT/Date.pm:119
 msgid "RFC2822"
-msgstr "RFC2822"
+msgstr ""
 
 #: share/html/Elements/Tabs:835
 msgid "RSS"
-msgstr "RSS"
+msgstr ""
 
 #: share/html/Admin/index.html:48
 msgid "RT Administration"
@@ -6678,7 +6678,7 @@ msgstr ""
 
 #: lib/RT/Installer.pm:70
 msgid "SQLite"
-msgstr "SQLite"
+msgstr ""
 
 #: share/html/Install/DatabaseType.html:58
 msgid "SQLite is a database that doesn't need a server or any configuration whatsoever. RT's authors recommend it for testing, demoing and development, but it's not quite right for a high-volume production RT server."

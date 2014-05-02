@@ -19,7 +19,7 @@ msgstr ""
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:62
 msgid "#"
-msgstr "#"
+msgstr ""
 
 #: lib/RT/URI/fsck_com_rt.pm:222 share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/Helpers/Autocomplete/Tickets:108 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:197 share/html/m/ticket/history:56 share/html/m/ticket/show:202
 #. ($Ticket->Id, $Ticket->Subject || '')
@@ -30,7 +30,7 @@ msgstr "#"
 #. ($t->Id, $t->Subject || '')
 #. ($ticket->Id, $ticket->Subject)
 msgid "#%1: %2"
-msgstr "#%1: %2"
+msgstr ""
 
 #: lib/RT/Transaction.pm:1033 lib/RT/Transaction.pm:1072
 #. ($self->Data)
@@ -40,12 +40,12 @@ msgstr ""
 #: lib/RT/URI/fsck_com_rt.pm:229
 #. ($self->ObjectType, $object->Id)
 msgid "%1 #%2"
-msgstr "%1 #%2"
+msgstr ""
 
 #: lib/RT/Group.pm:131
 #. ($self->loc($class), $self->Instance, $self->Name)
 msgid "%1 #%2 %3"
-msgstr "%1 #%2 %3"
+msgstr ""
 
 #: share/html/Elements/ShowTransaction:128
 #. (loc($record_type), $Transaction->ObjectId)
@@ -55,12 +55,12 @@ msgstr ""
 #: lib/RT/URI/fsck_com_rt.pm:227
 #. ($self->ObjectType, $object->Id, $name)
 msgid "%1 #%2: %3"
-msgstr "%1 #%2: %3"
+msgstr ""
 
 #: lib/RT/Tickets.pm:1395
 #. ($args{'FIELD'},        $args{'OPERATOR'}, $args{'VALUE'})
 msgid "%1 %2 %3"
-msgstr "%1 %2 %3"
+msgstr ""
 
 #: lib/RT/Date.pm:695
 #. ($wday,$mon,$mday,$year)
@@ -461,17 +461,17 @@ msgstr "%1: keine Anlage angegeben"
 #: lib/RT/Date.pm:702
 #. ($hour,$min)
 msgid "%1:%2"
-msgstr "%1:%2"
+msgstr ""
 
 #: lib/RT/Date.pm:699
 #. ($hour,$min,$sec)
 msgid "%1:%2:%3"
-msgstr "%1:%2:%3"
+msgstr ""
 
 #: lib/RT/Attachment.pm:453 lib/RT/Date.pm:414
 #. (int( $size / 1024 / 102.4 ) / 10)
 msgid "%1M"
-msgstr "%1M"
+msgstr ""
 
 #: share/html/Elements/CreateTicket:54
 #. ($button_start, $button_end, $queue_selector)
@@ -489,7 +489,7 @@ msgstr ""
 #: lib/RT/Attachment.pm:459
 #. ($size)
 msgid "%1b"
-msgstr "%1b"
+msgstr ""
 
 #: lib/RT/Date.pm:402
 msgid "%1d"
@@ -502,7 +502,7 @@ msgstr ""
 #: lib/RT/Attachment.pm:456
 #. (int( $size / 102.4 ) / 10)
 msgid "%1k"
-msgstr "%1k"
+msgstr ""
 
 #: lib/RT/Date.pm:390
 msgid "%1m"
@@ -679,7 +679,7 @@ msgstr "(unzuverlässig!)"
 
 #: share/html/Articles/Elements/BeforeMessageBox:68 share/html/Elements/EditCustomFieldSelect:57
 msgid "-"
-msgstr "-"
+msgstr ""
 
 #: bin/rt-crontool:129
 msgid "--template-id is deprecated argument and can not be used with --template"
@@ -934,11 +934,11 @@ msgstr "AdminCc-Gruppe"
 
 #: lib/RT/Report/Tickets.pm:70 lib/RT/Ticket.pm:103 lib/RT/Tickets.pm:146 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowPeople:66 share/html/m/ticket/show:299
 msgid "AdminCc"
-msgstr "AdminCc"
+msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:154
 msgid "AdminCcs"
-msgstr "AdminCcs"
+msgstr ""
 
 #: share/html/Ticket/Elements/EditPeople:84
 msgid "Administrative Cc"
@@ -1128,7 +1128,7 @@ msgstr "Freigeben"
 
 #: lib/RT/Date.pm:94
 msgid "Apr"
-msgstr "Apr"
+msgstr ""
 
 #: share/html/Articles/Article/Delete.html:56
 msgid "Are you sure you want to delete this article?"
@@ -1241,7 +1241,7 @@ msgstr "Attribut gelöscht"
 
 #: lib/RT/Date.pm:98
 msgid "Aug"
-msgstr "Aug"
+msgstr ""
 
 #: share/html/Errors/WebRemoteUser/UserAutocreateDefaultsOnLogin:48
 msgid "Automatic account setup failed"
@@ -1319,7 +1319,7 @@ msgstr "Grundsätzliches"
 
 #: share/html/Admin/Elements/SelectStage:69
 msgid "Batch"
-msgstr "Batch"
+msgstr ""
 
 #: share/html/Admin/Elements/SelectStage:70
 msgid "Batch (disabled by config)"
@@ -1388,7 +1388,7 @@ msgstr "CC Gruppe"
 
 #: lib/RT/Report/Tickets.pm:81 lib/RT/Tickets.pm:153
 msgid "CF"
-msgstr "CF"
+msgstr ""
 
 #: share/html/Search/Simple.html:87
 #. ('<strong>cf.Name:value</strong>')
@@ -1476,11 +1476,11 @@ msgstr "Kategorie"
 
 #: lib/RT/Report/Tickets.pm:69 lib/RT/Ticket.pm:102 lib/RT/Tickets.pm:145 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:79 share/html/Ticket/Create.html:136 share/html/Ticket/Elements/EditPeople:79 share/html/Ticket/Elements/ShowPeople:62 share/html/Ticket/Forward.html:69 share/html/m/ticket/create:275 share/html/m/ticket/show:295
 msgid "Cc"
-msgstr "Cc"
+msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:154
 msgid "Ccs"
-msgstr "Ccs"
+msgstr ""
 
 #: share/html/Install/index.html:64 share/html/Search/Results.html:89
 msgid "Change"
@@ -2372,7 +2372,7 @@ msgstr "BenutzerdefiniertesFeld"
 
 #: lib/RT/Tickets.pm:151
 msgid "CustomFieldValue"
-msgstr "CustomFieldValue"
+msgstr ""
 
 #: share/html/Prefs/DashboardsInMenu.html:74 share/html/Prefs/MyRT.html:81 share/html/Prefs/Quicksearch.html:79 share/html/Prefs/Search.html:81
 msgid "Customize"
@@ -2420,7 +2420,7 @@ msgstr "Tägliche Zusammenfassung"
 
 #: share/html/Dashboards/Queries.html:107 share/html/Dashboards/Queries.html:107 share/html/Dashboards/Subscription.html:59 share/html/Dashboards/Subscription.html:63
 msgid "Dashboard"
-msgstr "Dashboard"
+msgstr ""
 
 #: share/html/Dashboards/Modify.html:143
 #. ($Dashboard->Name, $msg)
@@ -2448,7 +2448,7 @@ msgstr "Dashboard aktualisiert"
 
 #: etc/RT_Config.pm:1241 etc/initialdata:875 share/html/Dashboards/index.html:48 share/html/Elements/Dashboards:49
 msgid "Dashboards"
-msgstr "Dashboards"
+msgstr ""
 
 #: share/html/Admin/Global/DashboardsInMenu.html:48 share/html/Admin/Global/DashboardsInMenu.html:54 share/html/Admin/Users/DashboardsInMenu.html:62 share/html/Elements/Tabs:211 share/html/Elements/Tabs:328 share/html/Elements/Tabs:558 share/html/Prefs/DashboardsInMenu.html:57
 msgid "Dashboards in menu"
@@ -2662,7 +2662,7 @@ msgstr "Detaillierte Informationen über Ihre RT-Installation"
 
 #: share/html/Ticket/Create.html:447
 msgid "Details"
-msgstr "Details"
+msgstr ""
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:50
 msgid "Direction"
@@ -2842,7 +2842,7 @@ msgstr "Bearbeite Mitgliedschaft für die Gruppe %1"
 
 #: lib/RT/Tickets.pm:112 share/html/Elements/RT__Ticket/ColumnMap:165
 msgid "EffectiveId"
-msgstr "EffectiveId"
+msgstr ""
 
 #: lib/RT/Record.pm:1360 lib/RT/Record.pm:1505
 msgid "Either base or target must be specified"
@@ -3216,11 +3216,11 @@ msgstr "Konnte Vorlage nicht analysieren"
 
 #: lib/RT/Date.pm:92
 msgid "Feb"
-msgstr "Feb"
+msgstr ""
 
 #: share/html/Elements/Tabs:816
 msgid "Feeds"
-msgstr "Feeds"
+msgstr ""
 
 #: share/html/Articles/Article/ExtractFromTicket.html:62
 msgid "Field"
@@ -3334,7 +3334,7 @@ msgstr "Änderung erzwingen"
 
 #: share/html/Search/Edit.html:59 share/html/Search/Elements/EditFormat:52
 msgid "Format"
-msgstr "Format"
+msgstr ""
 
 #: lib/RT/Config.pm:231
 msgid "Formats iCal feed events with date and time"
@@ -3445,7 +3445,7 @@ msgstr "An %1 übergeben"
 
 #: share/html/Admin/Scrips/Modify.html:64 share/html/Elements/RT__CustomField/ColumnMap:88 share/html/Elements/RT__Scrip/ColumnMap:58 share/html/Elements/RT__Template/ColumnMap:69 share/html/Elements/Tabs:111
 msgid "Global"
-msgstr "Global"
+msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:219
 msgid "Global Attributes"
@@ -3714,11 +3714,11 @@ msgstr "Ich möchte mein geheimes Passwort zurücksetzen."
 
 #: lib/RT/Date.pm:117
 msgid "ISO"
-msgstr "ISO"
+msgstr ""
 
 #: lib/RT/Tickets.pm:1623 share/html/Ticket/Elements/ShowBasics:50 share/html/m/ticket/show:212
 msgid "Id"
-msgstr "Id"
+msgstr ""
 
 #: share/html/Admin/Users/Modify.html:63 share/html/User/Prefs.html:60
 msgid "Identity"
@@ -4054,7 +4054,7 @@ msgstr "Kursiv"
 
 #: lib/RT/Date.pm:91
 msgid "Jan"
-msgstr "Jan"
+msgstr ""
 
 #: lib/RT/Group.pm:90
 msgid "Join or leave group"
@@ -4062,7 +4062,7 @@ msgstr "Gruppe beitreten oder verlassen"
 
 #: lib/RT/Date.pm:97
 msgid "Jul"
-msgstr "Jul"
+msgstr ""
 
 #: share/html/Elements/Tabs:638
 msgid "Jumbo"
@@ -4070,7 +4070,7 @@ msgstr "Alles"
 
 #: lib/RT/Date.pm:96
 msgid "Jun"
-msgstr "Jun"
+msgstr ""
 
 #: lib/RT/Installer.pm:80
 msgid "Keep 'localhost' if you're not sure. Leave blank to connect locally over a socket"
@@ -4283,7 +4283,7 @@ msgstr "Lokalisierung"
 
 #: lib/RT/Date.pm:122
 msgid "LocalizedDateTime"
-msgstr "LocalizedDateTime"
+msgstr ""
 
 #: share/html/Admin/Users/Modify.html:128 share/html/User/Prefs.html:129
 msgid "Location"
@@ -5024,7 +5024,7 @@ msgstr ""
 
 #: lib/RT/Installer.pm:68
 msgid "MySQL"
-msgstr "MySQL"
+msgstr ""
 
 #: etc/RT_Config.pm:1241
 msgid "MySupportQueues"
@@ -5040,7 +5040,7 @@ msgstr "neue Zeile"
 
 #: lib/RT/User.pm:92 share/html/Admin/CustomFields/Modify.html:63 share/html/Admin/Elements/AddCustomFieldValue:54 share/html/Admin/Elements/EditCustomField:57 share/html/Admin/Elements/EditCustomFieldValues:58 share/html/Admin/Elements/ModifyTemplate:50 share/html/Admin/Groups/Modify.html:64 share/html/Admin/Tools/Configuration.html:222 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Articles/Article/Elements/EditBasics:49 share/html/Articles/Article/Elements/ShowSearchCriteria:63 share/html/Articles/Elements/NewestArticles:52 share/html/Articles/Elements/UpdatedArticles:52 share/html/Dashboards/Modify.html:63 share/html/Elements/BulkCustomFields:51 share/html/Elements/RT__Article/ColumnMap:61 share/html/Elements/RT__Class/ColumnMap:56 share/html/Elements/RT__Dashboard/ColumnMap:56 share/html/Elements/RT__Group/ColumnMap:72 share/html/Elements/RT__SavedSearch/ColumnMap:56 share/html/Elements/RT__Template/ColumnMap:56 share/html/Elements/RT__User/ColumnMap:56
 msgid "Name"
-msgstr "Name"
+msgstr ""
 
 #: lib/RT/Config.pm:183
 msgid "Name and email address"
@@ -5056,7 +5056,7 @@ msgstr ""
 
 #: share/html/Articles/Article/Elements/ShowSavedSearches:55
 msgid "Name:"
-msgstr "Name:"
+msgstr ""
 
 #: lib/RT/Dashboard/Mailer.pm:330 share/html/Elements/RT__Dashboard/ColumnMap:102 share/html/Ticket/Elements/ShowDates:80 share/html/m/ticket/show:380
 msgid "Never"
@@ -5481,7 +5481,7 @@ msgstr "Benachrichtige mich über ungelesene Nachrichten"
 
 #: lib/RT/Date.pm:101
 msgid "Nov"
-msgstr "Nov"
+msgstr ""
 
 #: share/html/Search/Elements/SelectAndOr:49
 msgid "OR"
@@ -5652,7 +5652,7 @@ msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:61
 msgid "Option"
-msgstr "Option"
+msgstr ""
 
 #: share/html/Prefs/MyRT.html:64
 msgid "Options"
@@ -5660,7 +5660,7 @@ msgstr "Optionen"
 
 #: lib/RT/Installer.pm:71
 msgid "Oracle"
-msgstr "Oracle"
+msgstr ""
 
 #: share/html/Install/DatabaseDetails.html:152
 msgid "Oracle users cannot have empty passwords"
@@ -5748,7 +5748,7 @@ msgstr "Seite nicht gefunden"
 
 #: share/html/Admin/Users/Modify.html:191 share/html/User/Prefs.html:101
 msgid "Pager"
-msgstr "Pager"
+msgstr ""
 
 #: share/html/Elements/RT__User/ColumnMap:96
 msgid "Pager Phone"
@@ -5837,7 +5837,7 @@ msgstr "Führe eine benutzerdefinierte Aktion aus"
 
 #: share/html/Admin/Elements/ModifyTemplate:62
 msgid "Perl"
-msgstr "Perl"
+msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:283
 msgid "Perl configuration"
@@ -5909,7 +5909,7 @@ msgstr "eventuell nicht sichtbare Abfragen"
 
 #: lib/RT/Installer.pm:69
 msgid "PostgreSQL"
-msgstr "PostgreSQL"
+msgstr ""
 
 #: share/html/Elements/ShowSearch:97 share/html/m/tickets/search:81
 #. ($m->interp->apply_escapes($Name, 'h'))
@@ -6164,19 +6164,19 @@ msgstr ""
 
 #: lib/RT/Date.pm:120
 msgid "RFC2616"
-msgstr "RFC2616"
+msgstr ""
 
 #: lib/RT/Date.pm:119
 msgid "RFC2822"
-msgstr "RFC2822"
+msgstr ""
 
 #: share/html/Elements/Tabs:835
 msgid "RSS"
-msgstr "RSS"
+msgstr ""
 
 #: share/html/Admin/index.html:48
 msgid "RT Administration"
-msgstr "RT Administration"
+msgstr ""
 
 #: lib/RT/Installer.pm:165
 msgid "RT Administrator Email"
@@ -6679,7 +6679,7 @@ msgstr ""
 
 #: lib/RT/Installer.pm:70
 msgid "SQLite"
-msgstr "SQLite"
+msgstr ""
 
 #: share/html/Install/DatabaseType.html:58
 msgid "SQLite is a database that doesn't need a server or any configuration whatsoever. RT's authors recommend it for testing, demoing and development, but it's not quite right for a high-volume production RT server."
@@ -6755,7 +6755,7 @@ msgstr ""
 #: share/html/Ticket/Elements/PreviewScrips:71
 #. ($scrip->id)
 msgid "Scrip #%1"
-msgstr "Scrip #%1"
+msgstr ""
 
 #: lib/RT/Scrip.pm:209
 msgid "Scrip Created"
@@ -6767,7 +6767,7 @@ msgstr ""
 
 #: share/html/Admin/Elements/EditScrips:53 share/html/Elements/Tabs:102 share/html/Elements/Tabs:117 share/html/Elements/Tabs:296
 msgid "Scrips"
-msgstr "Scrips"
+msgstr ""
 
 #: share/html/Ticket/Update.html:193
 msgid "Scrips and Recipients"
@@ -7076,7 +7076,7 @@ msgstr "Sendet eine E-Mail an den Besitzer"
 
 #: lib/RT/Date.pm:99
 msgid "Sep"
-msgstr "Sep"
+msgstr ""
 
 #: share/html/Articles/Article/Elements/LinkEntryInstructions:49
 msgid "Separate multiple entries with spaces."
@@ -7367,7 +7367,7 @@ msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:153 lib/RT/Report/Tickets.pm:60 lib/RT/Tickets.pm:106 lib/RT/Tickets.pm:1484 share/html/Elements/RT__Ticket/ColumnMap:111 share/html/Elements/RT__Ticket/ColumnMap:121 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:62 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Tools/MyDay.html:67 share/html/m/_elements/ticket_list:95 share/html/m/ticket/create:250 share/html/m/ticket/reply:63 share/html/m/ticket/show:216
 msgid "Status"
-msgstr "Status"
+msgstr ""
 
 #: lib/RT/Record/Role/Status.pm:163
 #. ($self->loc($new), $self->loc($lifecycle->Type))
@@ -7534,7 +7534,7 @@ msgstr "Eingestellt"
 
 #: lib/RT/Interface/Web.pm:3779
 msgid "System"
-msgstr "System"
+msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:50 share/html/Elements/Tabs:227
 msgid "System Configuration"
@@ -7657,7 +7657,7 @@ msgstr "Vorlagen für Bereich %1"
 
 #: share/html/Admin/Tools/Theme.html:95
 msgid "Text"
-msgstr "Text"
+msgstr ""
 
 #: share/html/Elements/ShowTransactionAttachments:145
 msgid "Text file is not shown because it is disabled in preferences."
@@ -8650,11 +8650,11 @@ msgstr "Werte"
 
 #: share/html/Admin/Tools/Configuration.html:113 share/html/Admin/Tools/Configuration.html:293
 msgid "Variable"
-msgstr "Variable"
+msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:248
 msgid "Version"
-msgstr "Version"
+msgstr ""
 
 #: lib/RT/Queue.pm:118
 msgid "View Scrip templates"
@@ -8710,7 +8710,7 @@ msgstr "Zeige Zusammenfassungen der Anfragen"
 
 #: lib/RT/Date.pm:118
 msgid "W3CDTF"
-msgstr "W3CDTF"
+msgstr ""
 
 #: share/html/Articles/Article/Search.html:190
 msgid "WARNING: Saving search to user-level privacy"
@@ -9275,7 +9275,7 @@ msgstr "Gruppe '%1'"
 
 #: lib/RT/Date.pm:121 share/html/Elements/Tabs:840
 msgid "iCal"
-msgstr "iCal"
+msgstr ""
 
 #: lib/RT/Tickets.pm:113 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:53 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:56
 msgid "id"

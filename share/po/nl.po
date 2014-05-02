@@ -19,7 +19,7 @@ msgstr ""
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:62
 msgid "#"
-msgstr "#"
+msgstr ""
 
 #: lib/RT/URI/fsck_com_rt.pm:222 share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/Helpers/Autocomplete/Tickets:108 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:197 share/html/m/ticket/history:56 share/html/m/ticket/show:202
 #. ($Ticket->Id, $Ticket->Subject || '')
@@ -30,7 +30,7 @@ msgstr "#"
 #. ($t->Id, $t->Subject || '')
 #. ($ticket->Id, $ticket->Subject)
 msgid "#%1: %2"
-msgstr "#%1: %2"
+msgstr ""
 
 #: lib/RT/Transaction.pm:1033 lib/RT/Transaction.pm:1072
 #. ($self->Data)
@@ -40,12 +40,12 @@ msgstr ""
 #: lib/RT/URI/fsck_com_rt.pm:229
 #. ($self->ObjectType, $object->Id)
 msgid "%1 #%2"
-msgstr "%1 #%2"
+msgstr ""
 
 #: lib/RT/Group.pm:131
 #. ($self->loc($class), $self->Instance, $self->Name)
 msgid "%1 #%2 %3"
-msgstr "%1 #%2 %3"
+msgstr ""
 
 #: share/html/Elements/ShowTransaction:128
 #. (loc($record_type), $Transaction->ObjectId)
@@ -55,12 +55,12 @@ msgstr ""
 #: lib/RT/URI/fsck_com_rt.pm:227
 #. ($self->ObjectType, $object->Id, $name)
 msgid "%1 #%2: %3"
-msgstr "%1 #%2: %3"
+msgstr ""
 
 #: lib/RT/Tickets.pm:1395
 #. ($args{'FIELD'},        $args{'OPERATOR'}, $args{'VALUE'})
 msgid "%1 %2 %3"
-msgstr "%1 %2 %3"
+msgstr ""
 
 #: lib/RT/Date.pm:695
 #. ($wday,$mon,$mday,$year)
@@ -70,7 +70,7 @@ msgstr "%1 %3 %2 %4"
 #: lib/RT/Date.pm:710
 #. ($wday,$mon,$mday,$hour,$min,$year)
 msgid "%1 %2 %3 %4:%5 %6"
-msgstr "%1 %2 %3 %4:%5 %6"
+msgstr ""
 
 #: lib/RT/Date.pm:707
 #. ($wday,$mon,$mday,$hour,$min,$sec,$year)
@@ -461,17 +461,17 @@ msgstr "%1: geen bijlage gespecificeerd"
 #: lib/RT/Date.pm:702
 #. ($hour,$min)
 msgid "%1:%2"
-msgstr "%1:%2"
+msgstr ""
 
 #: lib/RT/Date.pm:699
 #. ($hour,$min,$sec)
 msgid "%1:%2:%3"
-msgstr "%1:%2:%3"
+msgstr ""
 
 #: lib/RT/Attachment.pm:453 lib/RT/Date.pm:414
 #. (int( $size / 1024 / 102.4 ) / 10)
 msgid "%1M"
-msgstr "%1M"
+msgstr ""
 
 #: share/html/Elements/CreateTicket:54
 #. ($button_start, $button_end, $queue_selector)
@@ -489,7 +489,7 @@ msgstr ""
 #: lib/RT/Attachment.pm:459
 #. ($size)
 msgid "%1b"
-msgstr "%1b"
+msgstr ""
 
 #: lib/RT/Date.pm:402
 msgid "%1d"
@@ -502,17 +502,17 @@ msgstr ""
 #: lib/RT/Attachment.pm:456
 #. (int( $size / 102.4 ) / 10)
 msgid "%1k"
-msgstr "%1k"
+msgstr ""
 
 #: lib/RT/Date.pm:390
 msgid "%1m"
-msgstr "%1m"
+msgstr ""
 
 #: lib/RT/Date.pm:384 share/html/Admin/Tools/Queries.html:110 share/html/Admin/Tools/Queries.html:81
 #. (sprintf('%.4f', $duration))
 #. (sprintf('%.4f', $seconds))
 msgid "%1s"
-msgstr "%1s"
+msgstr ""
 
 #: share/html/Articles/Elements/ShowTopicLink:61
 #. ($Articles->Count)
@@ -679,7 +679,7 @@ msgstr "(niet vertrouwd!)"
 
 #: share/html/Articles/Elements/BeforeMessageBox:68 share/html/Elements/EditCustomFieldSelect:57
 msgid "-"
-msgstr "-"
+msgstr ""
 
 #: bin/rt-crontool:129
 msgid "--template-id is deprecated argument and can not be used with --template"
@@ -962,7 +962,7 @@ msgstr "Nadat u bent ingelogd, wordt u doorgestuurd naar uw oorspronkelijke best
 
 #: share/html/Search/Elements/PickCriteria:62
 msgid "Aggregator"
-msgstr "Aggregator"
+msgstr ""
 
 #: etc/initialdata:526 etc/upgrade/3.8.2/content:85
 msgid "All Approvals Passed"
@@ -1128,7 +1128,7 @@ msgstr "Keur goed"
 
 #: lib/RT/Date.pm:94
 msgid "Apr"
-msgstr "Apr"
+msgstr ""
 
 #: share/html/Articles/Article/Delete.html:56
 msgid "Are you sure you want to delete this article?"
@@ -1241,7 +1241,7 @@ msgstr "Attribuut Verwijderd"
 
 #: lib/RT/Date.pm:98
 msgid "Aug"
-msgstr "Aug"
+msgstr ""
 
 #: share/html/Errors/WebRemoteUser/UserAutocreateDefaultsOnLogin:48
 msgid "Automatic account setup failed"
@@ -1319,7 +1319,7 @@ msgstr "Basis"
 
 #: share/html/Admin/Elements/SelectStage:69
 msgid "Batch"
-msgstr "Batch"
+msgstr ""
 
 #: share/html/Admin/Elements/SelectStage:70
 msgid "Batch (disabled by config)"
@@ -1335,7 +1335,7 @@ msgstr ""
 
 #: share/html/Ticket/Forward.html:72
 msgid "Bcc"
-msgstr "Bcc"
+msgstr ""
 
 #: share/html/Articles/Elements/NeedsSetup:50
 #. (qq[<a href="@{[RT->Config->Get("WebPath")]}/Admin/Articles/">], '</a>')
@@ -1476,7 +1476,7 @@ msgstr "Categorie"
 
 #: lib/RT/Report/Tickets.pm:69 lib/RT/Ticket.pm:102 lib/RT/Tickets.pm:145 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:79 share/html/Ticket/Create.html:136 share/html/Ticket/Elements/EditPeople:79 share/html/Ticket/Elements/ShowPeople:62 share/html/Ticket/Forward.html:69 share/html/m/ticket/create:275 share/html/m/ticket/show:295
 msgid "Cc"
-msgstr "Cc"
+msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:154
 msgid "Ccs"
@@ -2420,7 +2420,7 @@ msgstr ""
 
 #: share/html/Dashboards/Queries.html:107 share/html/Dashboards/Queries.html:107 share/html/Dashboards/Subscription.html:59 share/html/Dashboards/Subscription.html:63
 msgid "Dashboard"
-msgstr "Dashboard"
+msgstr ""
 
 #: share/html/Dashboards/Modify.html:143
 #. ($Dashboard->Name, $msg)
@@ -2448,7 +2448,7 @@ msgstr "Dashboard aangepast"
 
 #: etc/RT_Config.pm:1241 etc/initialdata:875 share/html/Dashboards/index.html:48 share/html/Elements/Dashboards:49
 msgid "Dashboards"
-msgstr "Dashboards"
+msgstr ""
 
 #: share/html/Admin/Global/DashboardsInMenu.html:48 share/html/Admin/Global/DashboardsInMenu.html:54 share/html/Admin/Users/DashboardsInMenu.html:62 share/html/Elements/Tabs:211 share/html/Elements/Tabs:328 share/html/Elements/Tabs:558 share/html/Prefs/DashboardsInMenu.html:57
 msgid "Dashboards in menu"
@@ -2461,7 +2461,7 @@ msgstr ""
 
 #: lib/RT/Installer.pm:78
 msgid "Database host"
-msgstr "Database host"
+msgstr ""
 
 #: lib/RT/Installer.pm:96
 msgid "Database name"
@@ -2497,7 +2497,7 @@ msgstr "Data"
 
 #: lib/RT/Date.pm:102
 msgid "Dec"
-msgstr "Dec"
+msgstr ""
 
 #: share/html/Ticket/Crypt.html:58
 msgid "Decrypt"
@@ -2662,7 +2662,7 @@ msgstr ""
 
 #: share/html/Ticket/Create.html:447
 msgid "Details"
-msgstr "Details"
+msgstr ""
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:50
 msgid "Direction"
@@ -2740,7 +2740,7 @@ msgstr ""
 
 #: share/html/Elements/ShowTransactionAttachments:62
 msgid "Download"
-msgstr "Download"
+msgstr ""
 
 #: share/html/Admin/Tools/Shredder/Elements/DumpFileLink:49
 msgid "Download dumpfile"
@@ -3717,7 +3717,7 @@ msgstr ""
 
 #: lib/RT/Tickets.pm:1623 share/html/Ticket/Elements/ShowBasics:50 share/html/m/ticket/show:212
 msgid "Id"
-msgstr "Id"
+msgstr ""
 
 #: share/html/Admin/Users/Modify.html:63 share/html/User/Prefs.html:60
 msgid "Identity"
@@ -4065,7 +4065,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:638
 msgid "Jumbo"
-msgstr "Jumbo"
+msgstr ""
 
 #: lib/RT/Date.pm:96
 msgid "Jun"
@@ -6000,7 +6000,7 @@ msgstr ""
 
 #: share/html/Articles/Article/Elements/ShowSavedSearches:56
 msgid "Privacy:"
-msgstr "Privacy:"
+msgstr ""
 
 #: share/html/Admin/Users/Keys.html:66
 msgid "Private Key"
@@ -6060,7 +6060,7 @@ msgstr "Zoek criteria"
 
 #: lib/RT/Graph/Tickets.pm:153 lib/RT/Record.pm:986 lib/RT/Report/Tickets.pm:62 lib/RT/Tickets.pm:107 lib/RT/Tickets.pm:1452 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:63 share/html/Elements/RT__Template/ColumnMap:66 share/html/Elements/RT__Template/ColumnMap:73 share/html/Elements/RT__Ticket/ColumnMap:102 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:61 share/html/Ticket/Elements/ShowBasics:82 share/html/m/ticket/create:248 share/html/m/ticket/show:242
 msgid "Queue"
-msgstr "Queue"
+msgstr ""
 
 #: share/html/Ticket/Create.html:374
 #. ($Queue||'')
@@ -6135,7 +6135,7 @@ msgstr ""
 
 #: lib/RT/CustomField.pm:1750 lib/RT/CustomField.pm:205 share/html/Admin/Global/CustomFields/index.html:77 share/html/Elements/Tabs:148 share/html/Elements/Tabs:255 share/html/Elements/Tabs:83
 msgid "Queues"
-msgstr "Queues"
+msgstr ""
 
 #: share/html/Elements/MyAdminQueues:48
 msgid "Queues I administer"
@@ -6171,7 +6171,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:835
 msgid "RSS"
-msgstr "RSS"
+msgstr ""
 
 #: share/html/Admin/index.html:48
 msgid "RT Administration"
@@ -6754,7 +6754,7 @@ msgstr ""
 #: share/html/Ticket/Elements/PreviewScrips:71
 #. ($scrip->id)
 msgid "Scrip #%1"
-msgstr "Scrip #%1"
+msgstr ""
 
 #: lib/RT/Scrip.pm:209
 msgid "Scrip Created"
@@ -6766,7 +6766,7 @@ msgstr ""
 
 #: share/html/Admin/Elements/EditScrips:53 share/html/Elements/Tabs:102 share/html/Elements/Tabs:117 share/html/Elements/Tabs:296
 msgid "Scrips"
-msgstr "Scrips"
+msgstr ""
 
 #: share/html/Ticket/Update.html:193
 msgid "Scrips and Recipients"
@@ -7366,7 +7366,7 @@ msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:153 lib/RT/Report/Tickets.pm:60 lib/RT/Tickets.pm:106 lib/RT/Tickets.pm:1484 share/html/Elements/RT__Ticket/ColumnMap:111 share/html/Elements/RT__Ticket/ColumnMap:121 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:62 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Tools/MyDay.html:67 share/html/m/_elements/ticket_list:95 share/html/m/ticket/create:250 share/html/m/ticket/reply:63 share/html/m/ticket/show:216
 msgid "Status"
-msgstr "Status"
+msgstr ""
 
 #: lib/RT/Record/Role/Status.pm:163
 #. ($self->loc($new), $self->loc($lifecycle->Type))
@@ -7910,14 +7910,14 @@ msgstr ""
 #: share/html/Approvals/Elements/ShowDependency:69
 #. ($link->BaseObj->Id, $link->BaseObj->Subject)
 msgid "Ticket #%1: %2"
-msgstr "Ticket #%1: %2"
+msgstr ""
 
 #: lib/RT/Action/CreateTickets.pm:1086 lib/RT/Action/CreateTickets.pm:1095 lib/RT/Action/CreateTickets.pm:334 lib/RT/Action/CreateTickets.pm:453 lib/RT/Action/CreateTickets.pm:465
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
 msgid "Ticket %1"
-msgstr "Ticket %1"
+msgstr ""
 
 #: lib/RT/Ticket.pm:549 lib/RT/Ticket.pm:571
 #. ($self->Id, $QueueObj->Name)
@@ -7928,7 +7928,7 @@ msgstr "Ticket %1 aangemaakt in queue '%2'"
 #. ($Ticket->Id, $_)
 #. ($id, $msg)
 msgid "Ticket %1: %2"
-msgstr "Ticket %1: %2"
+msgstr ""
 
 #: share/html/Ticket/History.html:48
 #. ($Ticket->Id, $Ticket->Subject)
@@ -7998,12 +7998,12 @@ msgstr ""
 
 #: lib/RT/CustomField.pm:1746 lib/RT/CustomField.pm:202 share/html/Admin/Global/CustomFields/index.html:83 share/html/Elements/Tabs:153 share/html/Elements/Tabs:301 share/html/Elements/Tabs:493 share/html/Elements/Tabs:936
 msgid "Tickets"
-msgstr "Tickets"
+msgstr ""
 
 #: lib/RT/Tickets.pm:1965
 #. ($self->loc( $args{'TYPE'} ),            $args{'BASE'},)
 msgid "Tickets %1 %2"
-msgstr "Tickets %1 %2"
+msgstr ""
 
 #: lib/RT/Tickets.pm:1922
 #. ($self->loc( $args{'TYPE'} ),            $args{'TARGET'})
@@ -8083,7 +8083,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:222 share/html/Elements/Tabs:510 share/html/Tools/index.html:48
 msgid "Tools"
-msgstr "Tools"
+msgstr ""
 
 #: share/html/Admin/Articles/Elements/Topics:56
 msgid "Topic Name"
@@ -8204,7 +8204,7 @@ msgstr ""
 
 #: lib/RT/Tickets.pm:108 lib/RT/Tickets.pm:1570 share/html/Admin/CustomFields/Modify.html:69 share/html/Admin/Elements/EditCustomField:67 share/html/Admin/Elements/ModifyTemplate:58 share/html/Elements/RT__Ticket/ColumnMap:170 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/AddWatchers:56 share/html/Ticket/Elements/AddWatchers:67 share/html/Ticket/Elements/AddWatchers:77
 msgid "Type"
-msgstr "Type"
+msgstr ""
 
 #: share/html/Articles/Article/Elements/LinkEntryInstructions:48
 msgid "Type <b>a:</b> before article numbers and <b>t:</b> before ticket numbers."
@@ -8299,7 +8299,7 @@ msgstr "Niet geïmplementeerd"
 
 #: share/html/Admin/Users/Modify.html:87 share/html/Elements/RT__User/ColumnMap:131
 msgid "Unix login"
-msgstr "Unix login"
+msgstr ""
 
 #: lib/RT/Crypt/GnuPG.pm:1749 lib/RT/Crypt/GnuPG.pm:1754
 msgid "Unknown (no trust value assigned)"
@@ -9278,7 +9278,7 @@ msgstr ""
 
 #: lib/RT/Tickets.pm:113 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:53 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:56
 msgid "id"
-msgstr "id"
+msgstr ""
 
 #: lib/RT/Config.pm:372
 msgid "immediately"
@@ -9310,7 +9310,7 @@ msgstr ""
 
 #: share/html/Elements/SelectBoolean:55 share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectIPRelation:61 share/html/Elements/SelectMatch:59 share/html/Search/Elements/PickBasics:153 share/html/Search/Elements/PickCFs:82
 msgid "is"
-msgstr "is"
+msgstr ""
 
 #: share/html/Elements/SelectBoolean:59 share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectIPRelation:61 share/html/Elements/SelectMatch:60 share/html/Search/Elements/PickCFs:83
 msgid "isn't"
@@ -9419,7 +9419,7 @@ msgstr ""
 
 #: lib/RT/Queue.pm:103 share/html/SelfService/Elements/MyRequests:72 share/html/SelfService/index.html:52
 msgid "open"
-msgstr "open"
+msgstr ""
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:155
 msgid "open/close"
@@ -9448,7 +9448,7 @@ msgstr ""
 #: lib/RT/Group.pm:123
 #. ($queue->Name, $self->Name)
 msgid "queue %1 %2"
-msgstr "queue %1 %2"
+msgstr ""
 
 #: lib/RT/Queue.pm:106
 msgid "rejected"
@@ -9527,7 +9527,7 @@ msgstr ""
 #: lib/RT/Group.pm:126
 #. ($self->Instance, $self->Name)
 msgid "ticket #%1 %2"
-msgstr "ticket #%1 %2"
+msgstr ""
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:51
 msgid "top to bottom"

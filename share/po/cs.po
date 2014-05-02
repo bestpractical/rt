@@ -19,7 +19,7 @@ msgstr ""
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:62
 msgid "#"
-msgstr "#"
+msgstr ""
 
 #: lib/RT/URI/fsck_com_rt.pm:222 share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/Helpers/Autocomplete/Tickets:108 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:197 share/html/m/ticket/history:56 share/html/m/ticket/show:202
 #. ($Ticket->Id, $Ticket->Subject || '')
@@ -30,7 +30,7 @@ msgstr "#"
 #. ($t->Id, $t->Subject || '')
 #. ($ticket->Id, $ticket->Subject)
 msgid "#%1: %2"
-msgstr "#%1: %2"
+msgstr ""
 
 #: lib/RT/Transaction.pm:1033 lib/RT/Transaction.pm:1072
 #. ($self->Data)
@@ -40,7 +40,7 @@ msgstr ""
 #: lib/RT/URI/fsck_com_rt.pm:229
 #. ($self->ObjectType, $object->Id)
 msgid "%1 #%2"
-msgstr "%1 #%2"
+msgstr ""
 
 #: lib/RT/Group.pm:131
 #. ($self->loc($class), $self->Instance, $self->Name)
@@ -60,7 +60,7 @@ msgstr ""
 #: lib/RT/Tickets.pm:1395
 #. ($args{'FIELD'},        $args{'OPERATOR'}, $args{'VALUE'})
 msgid "%1 %2 %3"
-msgstr "%1 %2 %3"
+msgstr ""
 
 #: lib/RT/Date.pm:695
 #. ($wday,$mon,$mday,$year)
@@ -70,7 +70,7 @@ msgstr "%1 %3.%2.%4"
 #: lib/RT/Date.pm:710
 #. ($wday,$mon,$mday,$hour,$min,$year)
 msgid "%1 %2 %3 %4:%5 %6"
-msgstr "%1 %2 %3 %4:%5 %6"
+msgstr ""
 
 #: lib/RT/Date.pm:707
 #. ($wday,$mon,$mday,$hour,$min,$sec,$year)
@@ -204,7 +204,7 @@ msgstr ""
 #. ('&#187;&#124;&#171;', $RT::VERSION, '2014', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #. ('', '', '2014', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 msgid "%1 RT %2 Copyright 1996-%3 %4."
-msgstr "%1 RT %2 Copyright 1996-%3 %4."
+msgstr ""
 
 #: share/html/Admin/Elements/UpgradeHistory:58
 #. ($package)
@@ -461,12 +461,12 @@ msgstr "%1: neudána příloha"
 #: lib/RT/Date.pm:702
 #. ($hour,$min)
 msgid "%1:%2"
-msgstr "%1:%2"
+msgstr ""
 
 #: lib/RT/Date.pm:699
 #. ($hour,$min,$sec)
 msgid "%1:%2:%3"
-msgstr "%1:%2:%3"
+msgstr ""
 
 #: lib/RT/Attachment.pm:453 lib/RT/Date.pm:414
 #. (int( $size / 1024 / 102.4 ) / 10)
@@ -506,13 +506,13 @@ msgstr "%1 kB"
 
 #: lib/RT/Date.pm:390
 msgid "%1m"
-msgstr "%1m"
+msgstr ""
 
 #: lib/RT/Date.pm:384 share/html/Admin/Tools/Queries.html:110 share/html/Admin/Tools/Queries.html:81
 #. (sprintf('%.4f', $duration))
 #. (sprintf('%.4f', $seconds))
 msgid "%1s"
-msgstr "%1s"
+msgstr ""
 
 #: share/html/Articles/Elements/ShowTopicLink:61
 #. ($Articles->Count)
@@ -679,7 +679,7 @@ msgstr "(nedůvěryhodný!)"
 
 #: share/html/Articles/Elements/BeforeMessageBox:68 share/html/Elements/EditCustomFieldSelect:57
 msgid "-"
-msgstr "-"
+msgstr ""
 
 #: bin/rt-crontool:129
 msgid "--template-id is deprecated argument and can not be used with --template"
@@ -729,7 +729,7 @@ msgstr ""
 
 #: share/html/Search/Elements/SelectAndOr:48
 msgid "AND"
-msgstr "AND"
+msgstr ""
 
 #: share/html/Elements/Tabs:554
 msgid "About me"
@@ -902,7 +902,7 @@ msgstr ""
 
 #: share/html/Ticket/Create.html:152 share/html/m/ticket/create:284
 msgid "Admin Cc"
-msgstr "Admin Cc"
+msgstr ""
 
 #: etc/initialdata:376
 msgid "Admin Comment"
@@ -934,11 +934,11 @@ msgstr ""
 
 #: lib/RT/Report/Tickets.pm:70 lib/RT/Ticket.pm:103 lib/RT/Tickets.pm:146 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowPeople:66 share/html/m/ticket/show:299
 msgid "AdminCc"
-msgstr "AdminCc"
+msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:154
 msgid "AdminCcs"
-msgstr "AdminCcs"
+msgstr ""
 
 #: share/html/Ticket/Elements/EditPeople:84
 msgid "Administrative Cc"
@@ -1043,7 +1043,7 @@ msgstr "Vyskytla se chyba"
 
 #: share/html/Search/Elements/EditQuery:60
 msgid "And/Or"
-msgstr "And/Or"
+msgstr ""
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:74
 msgid "Any field"
@@ -1388,7 +1388,7 @@ msgstr ""
 
 #: lib/RT/Report/Tickets.pm:81 lib/RT/Tickets.pm:153
 msgid "CF"
-msgstr "CF"
+msgstr ""
 
 #: share/html/Search/Simple.html:87
 #. ('<strong>cf.Name:value</strong>')
@@ -1476,11 +1476,11 @@ msgstr "Kategorie"
 
 #: lib/RT/Report/Tickets.pm:69 lib/RT/Ticket.pm:102 lib/RT/Tickets.pm:145 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:79 share/html/Ticket/Create.html:136 share/html/Ticket/Elements/EditPeople:79 share/html/Ticket/Elements/ShowPeople:62 share/html/Ticket/Forward.html:69 share/html/m/ticket/create:275 share/html/m/ticket/show:295
 msgid "Cc"
-msgstr "Cc"
+msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:154
 msgid "Ccs"
-msgstr "Ccs"
+msgstr ""
 
 #: share/html/Install/index.html:64 share/html/Search/Results.html:89
 msgid "Change"
@@ -1704,11 +1704,11 @@ msgstr "vložen neplatný IP adresní rozsah"
 
 #: share/html/Elements/SelectAttachmentField:53
 msgid "Content-Type"
-msgstr "Content-Type"
+msgstr ""
 
 #: lib/RT/Tickets.pm:140
 msgid "ContentType"
-msgstr "ContentType"
+msgstr ""
 
 #: lib/RT/Installer.pm:180
 msgid "Correspond address"
@@ -2859,7 +2859,7 @@ msgstr ""
 
 #: share/html/Admin/Users/Modify.html:72 share/html/Ticket/Elements/AddWatchers:79 share/html/User/Prefs.html:65
 msgid "Email"
-msgstr "Email"
+msgstr ""
 
 #: share/html/Elements/RT__User/ColumnMap:71
 msgid "Email Address"
@@ -3713,7 +3713,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:117
 msgid "ISO"
-msgstr "ISO"
+msgstr ""
 
 #: lib/RT/Tickets.pm:1623 share/html/Ticket/Elements/ShowBasics:50 share/html/m/ticket/show:212
 msgid "Id"
@@ -5023,7 +5023,7 @@ msgstr "Moje připomenutí"
 
 #: lib/RT/Installer.pm:68
 msgid "MySQL"
-msgstr "MySQL"
+msgstr ""
 
 #: etc/RT_Config.pm:1241
 msgid "MySupportQueues"
@@ -5484,7 +5484,7 @@ msgstr "lis"
 
 #: share/html/Search/Elements/SelectAndOr:49
 msgid "OR"
-msgstr "OR"
+msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:142
 msgid "Object"
@@ -5659,7 +5659,7 @@ msgstr "Volby"
 
 #: lib/RT/Installer.pm:71
 msgid "Oracle"
-msgstr "Oracle"
+msgstr ""
 
 #: share/html/Install/DatabaseDetails.html:152
 msgid "Oracle users cannot have empty passwords"
@@ -5747,7 +5747,7 @@ msgstr "Stránka nenalezena"
 
 #: share/html/Admin/Users/Modify.html:191 share/html/User/Prefs.html:101
 msgid "Pager"
-msgstr "Pager"
+msgstr ""
 
 #: share/html/Elements/RT__User/ColumnMap:96
 msgid "Pager Phone"
@@ -5836,7 +5836,7 @@ msgstr "Provedení uživatelem definované akce"
 
 #: share/html/Admin/Elements/ModifyTemplate:62
 msgid "Perl"
-msgstr "Perl"
+msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:283
 msgid "Perl configuration"
@@ -5908,7 +5908,7 @@ msgstr "Možné skryté dotazy"
 
 #: lib/RT/Installer.pm:69
 msgid "PostgreSQL"
-msgstr "PostgreSQL"
+msgstr ""
 
 #: share/html/Elements/ShowSearch:97 share/html/m/tickets/search:81
 #. ($m->interp->apply_escapes($Name, 'h'))
@@ -6163,15 +6163,15 @@ msgstr "Rychlé hledání"
 
 #: lib/RT/Date.pm:120
 msgid "RFC2616"
-msgstr "RFC2616"
+msgstr ""
 
 #: lib/RT/Date.pm:119
 msgid "RFC2822"
-msgstr "RFC2822"
+msgstr ""
 
 #: share/html/Elements/Tabs:835
 msgid "RSS"
-msgstr "RSS"
+msgstr ""
 
 #: share/html/Admin/index.html:48
 msgid "RT Administration"
@@ -6678,7 +6678,7 @@ msgstr "SQL dotazy nejsou logovány."
 
 #: lib/RT/Installer.pm:70
 msgid "SQLite"
-msgstr "SQLite"
+msgstr ""
 
 #: share/html/Install/DatabaseType.html:58
 msgid "SQLite is a database that doesn't need a server or any configuration whatsoever. RT's authors recommend it for testing, demoing and development, but it's not quite right for a high-volume production RT server."
@@ -6754,7 +6754,7 @@ msgstr ""
 #: share/html/Ticket/Elements/PreviewScrips:71
 #. ($scrip->id)
 msgid "Scrip #%1"
-msgstr "Scrip #%1"
+msgstr ""
 
 #: lib/RT/Scrip.pm:209
 msgid "Scrip Created"
@@ -8709,7 +8709,7 @@ msgstr "Zobrazit základní údaje požadavku"
 
 #: lib/RT/Date.pm:118
 msgid "W3CDTF"
-msgstr "W3CDTF"
+msgstr ""
 
 #: share/html/Articles/Article/Search.html:190
 msgid "WARNING: Saving search to user-level privacy"
@@ -8761,7 +8761,7 @@ msgstr "Potřebujeme znát jméno databáze, kterou bude RT používat a kde ji 
 
 #: lib/RT/Installer.pm:222
 msgid "Web port"
-msgstr "Web port"
+msgstr ""
 
 #: lib/RT/Date.pm:109
 msgid "Wed"
@@ -9274,7 +9274,7 @@ msgstr "skupina '%1'"
 
 #: lib/RT/Date.pm:121 share/html/Elements/Tabs:840
 msgid "iCal"
-msgstr "iCal"
+msgstr ""
 
 #: lib/RT/Tickets.pm:113 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:53 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:56
 msgid "id"
@@ -9301,7 +9301,7 @@ msgstr "zahrnuje %1"
 
 #: share/html/Admin/Tools/Queries.html:86
 msgid "index"
-msgstr "index"
+msgstr ""
 
 #: lib/RT/Interface/Web.pm:2977
 #. ($due)

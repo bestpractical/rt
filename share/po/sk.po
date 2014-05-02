@@ -19,7 +19,7 @@ msgstr ""
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:62
 msgid "#"
-msgstr "#"
+msgstr ""
 
 #: lib/RT/URI/fsck_com_rt.pm:222 share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/Helpers/Autocomplete/Tickets:108 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:197 share/html/m/ticket/history:56 share/html/m/ticket/show:202
 #. ($Ticket->Id, $Ticket->Subject || '')
@@ -30,7 +30,7 @@ msgstr "#"
 #. ($t->Id, $t->Subject || '')
 #. ($ticket->Id, $ticket->Subject)
 msgid "#%1: %2"
-msgstr "#%1: %2"
+msgstr ""
 
 #: lib/RT/Transaction.pm:1033 lib/RT/Transaction.pm:1072
 #. ($self->Data)
@@ -40,7 +40,7 @@ msgstr ""
 #: lib/RT/URI/fsck_com_rt.pm:229
 #. ($self->ObjectType, $object->Id)
 msgid "%1 #%2"
-msgstr "%1 #%2"
+msgstr ""
 
 #: lib/RT/Group.pm:131
 #. ($self->loc($class), $self->Instance, $self->Name)
@@ -60,12 +60,12 @@ msgstr ""
 #: lib/RT/Tickets.pm:1395
 #. ($args{'FIELD'},        $args{'OPERATOR'}, $args{'VALUE'})
 msgid "%1 %2 %3"
-msgstr "%1 %2 %3"
+msgstr ""
 
 #: lib/RT/Date.pm:695
 #. ($wday,$mon,$mday,$year)
 msgid "%1 %2 %3 %4"
-msgstr "%1 %2 %3 %4"
+msgstr ""
 
 #: lib/RT/Date.pm:710
 #. ($wday,$mon,$mday,$hour,$min,$year)
@@ -75,7 +75,7 @@ msgstr "%1 %2 %3 %4:%5:%6"
 #: lib/RT/Date.pm:707
 #. ($wday,$mon,$mday,$hour,$min,$sec,$year)
 msgid "%1 %2 %3 %4:%5:%6 %7"
-msgstr "%1 %2 %3 %4:%5:%6 %7"
+msgstr ""
 
 #: lib/RT/Record.pm:2067 lib/RT/Transaction.pm:933 lib/RT/Transaction.pm:976
 #. ($cf->Name, $new_content)
@@ -158,7 +158,7 @@ msgstr "%1 - LogToSTDERR upraviť konfiguračné možnosti"
 #. ("--condition-arg", "--condition")
 #. ("--search-arg", "--search")
 msgid "%1 - An argument to pass to %2"
-msgstr "%1 - An argument to pass to %2"
+msgstr ""
 
 #: bin/rt-crontool:339
 #. ("--verbose")
@@ -461,12 +461,12 @@ msgstr "%1:  nebola špecifikovaná príloha"
 #: lib/RT/Date.pm:702
 #. ($hour,$min)
 msgid "%1:%2"
-msgstr "%1:%2"
+msgstr ""
 
 #: lib/RT/Date.pm:699
 #. ($hour,$min,$sec)
 msgid "%1:%2:%3"
-msgstr "%1:%2:%3"
+msgstr ""
 
 #: lib/RT/Attachment.pm:453 lib/RT/Date.pm:414
 #. (int( $size / 1024 / 102.4 ) / 10)
@@ -489,7 +489,7 @@ msgstr ""
 #: lib/RT/Attachment.pm:459
 #. ($size)
 msgid "%1b"
-msgstr "%1b"
+msgstr ""
 
 #: lib/RT/Date.pm:402
 msgid "%1d"
@@ -502,7 +502,7 @@ msgstr ""
 #: lib/RT/Attachment.pm:456
 #. (int( $size / 102.4 ) / 10)
 msgid "%1k"
-msgstr "%1k"
+msgstr ""
 
 #: lib/RT/Date.pm:390
 msgid "%1m"
@@ -512,7 +512,7 @@ msgstr ""
 #. (sprintf('%.4f', $duration))
 #. (sprintf('%.4f', $seconds))
 msgid "%1s"
-msgstr "%1s"
+msgstr ""
 
 #: share/html/Articles/Elements/ShowTopicLink:61
 #. ($Articles->Count)
@@ -679,7 +679,7 @@ msgstr "(nedôveryhodný!)"
 
 #: share/html/Articles/Elements/BeforeMessageBox:68 share/html/Elements/EditCustomFieldSelect:57
 msgid "-"
-msgstr "-"
+msgstr ""
 
 #: bin/rt-crontool:129
 msgid "--template-id is deprecated argument and can not be used with --template"
@@ -902,7 +902,7 @@ msgstr ""
 
 #: share/html/Ticket/Create.html:152 share/html/m/ticket/create:284
 msgid "Admin Cc"
-msgstr "Admin Cc"
+msgstr ""
 
 #: etc/initialdata:376
 msgid "Admin Comment"
@@ -1128,7 +1128,7 @@ msgstr "Schváliť"
 
 #: lib/RT/Date.pm:94
 msgid "Apr"
-msgstr "Apr"
+msgstr ""
 
 #: share/html/Articles/Article/Delete.html:56
 msgid "Are you sure you want to delete this article?"
@@ -1241,7 +1241,7 @@ msgstr "Atribút zmazaný"
 
 #: lib/RT/Date.pm:98
 msgid "Aug"
-msgstr "Aug"
+msgstr ""
 
 #: share/html/Errors/WebRemoteUser/UserAutocreateDefaultsOnLogin:48
 msgid "Automatic account setup failed"
@@ -1388,7 +1388,7 @@ msgstr "CCSkupina"
 
 #: lib/RT/Report/Tickets.pm:81 lib/RT/Tickets.pm:153
 msgid "CF"
-msgstr "CF"
+msgstr ""
 
 #: share/html/Search/Simple.html:87
 #. ('<strong>cf.Name:value</strong>')
@@ -1480,7 +1480,7 @@ msgstr "Kópia"
 
 #: lib/RT/Graph/Tickets.pm:154
 msgid "Ccs"
-msgstr "Ccs"
+msgstr ""
 
 #: share/html/Install/index.html:64 share/html/Search/Results.html:89
 msgid "Change"
@@ -2497,7 +2497,7 @@ msgstr "Dátumy"
 
 #: lib/RT/Date.pm:102
 msgid "Dec"
-msgstr "Dec"
+msgstr ""
 
 #: share/html/Ticket/Crypt.html:58
 msgid "Decrypt"
@@ -2859,7 +2859,7 @@ msgstr ""
 
 #: share/html/Admin/Users/Modify.html:72 share/html/Ticket/Elements/AddWatchers:79 share/html/User/Prefs.html:65
 msgid "Email"
-msgstr "Email"
+msgstr ""
 
 #: share/html/Elements/RT__User/ColumnMap:71
 msgid "Email Address"
@@ -3215,7 +3215,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:92
 msgid "Feb"
-msgstr "Feb"
+msgstr ""
 
 #: share/html/Elements/Tabs:816
 msgid "Feeds"
@@ -3713,11 +3713,11 @@ msgstr ""
 
 #: lib/RT/Date.pm:117
 msgid "ISO"
-msgstr "ISO"
+msgstr ""
 
 #: lib/RT/Tickets.pm:1623 share/html/Ticket/Elements/ShowBasics:50 share/html/m/ticket/show:212
 msgid "Id"
-msgstr "Id"
+msgstr ""
 
 #: share/html/Admin/Users/Modify.html:63 share/html/User/Prefs.html:60
 msgid "Identity"
@@ -4053,7 +4053,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:91
 msgid "Jan"
-msgstr "Jan"
+msgstr ""
 
 #: lib/RT/Group.pm:90
 msgid "Join or leave group"
@@ -4349,7 +4349,7 @@ msgstr ""
 
 #: lib/RT/Config.pm:506 lib/RT/Config.pm:521
 msgid "Mail"
-msgstr "Mail"
+msgstr ""
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:58
 msgid "Main type of links"
@@ -5023,7 +5023,7 @@ msgstr ""
 
 #: lib/RT/Installer.pm:68
 msgid "MySQL"
-msgstr "MySQL"
+msgstr ""
 
 #: etc/RT_Config.pm:1241
 msgid "MySupportQueues"
@@ -5031,7 +5031,7 @@ msgstr ""
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "NBSP"
-msgstr "NBSP"
+msgstr ""
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "NEWLINE"
@@ -5480,7 +5480,7 @@ msgstr "Informujte ma o neprečítaných správ"
 
 #: lib/RT/Date.pm:101
 msgid "Nov"
-msgstr "Nov"
+msgstr ""
 
 #: share/html/Search/Elements/SelectAndOr:49
 msgid "OR"
@@ -5836,7 +5836,7 @@ msgstr ""
 
 #: share/html/Admin/Elements/ModifyTemplate:62
 msgid "Perl"
-msgstr "Perl"
+msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:283
 msgid "Perl configuration"
@@ -6163,15 +6163,15 @@ msgstr ""
 
 #: lib/RT/Date.pm:120
 msgid "RFC2616"
-msgstr "RFC2616"
+msgstr ""
 
 #: lib/RT/Date.pm:119
 msgid "RFC2822"
-msgstr "RFC2822"
+msgstr ""
 
 #: share/html/Elements/Tabs:835
 msgid "RSS"
-msgstr "RSS"
+msgstr ""
 
 #: share/html/Admin/index.html:48
 msgid "RT Administration"
@@ -7075,7 +7075,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:99
 msgid "Sep"
-msgstr "Sep"
+msgstr ""
 
 #: share/html/Articles/Article/Elements/LinkEntryInstructions:49
 msgid "Separate multiple entries with spaces."
@@ -7366,7 +7366,7 @@ msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:153 lib/RT/Report/Tickets.pm:60 lib/RT/Tickets.pm:106 lib/RT/Tickets.pm:1484 share/html/Elements/RT__Ticket/ColumnMap:111 share/html/Elements/RT__Ticket/ColumnMap:121 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:62 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Tools/MyDay.html:67 share/html/m/_elements/ticket_list:95 share/html/m/ticket/create:250 share/html/m/ticket/reply:63 share/html/m/ticket/show:216
 msgid "Status"
-msgstr "Status"
+msgstr ""
 
 #: lib/RT/Record/Role/Status.pm:163
 #. ($self->loc($new), $self->loc($lifecycle->Type))
@@ -7656,7 +7656,7 @@ msgstr "Šablóny pre frontu %1"
 
 #: share/html/Admin/Tools/Theme.html:95
 msgid "Text"
-msgstr "Text"
+msgstr ""
 
 #: share/html/Elements/ShowTransactionAttachments:145
 msgid "Text file is not shown because it is disabled in preferences."
@@ -9278,7 +9278,7 @@ msgstr ""
 
 #: lib/RT/Tickets.pm:113 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:53 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:56
 msgid "id"
-msgstr "id"
+msgstr ""
 
 #: lib/RT/Config.pm:372
 msgid "immediately"

@@ -30,7 +30,7 @@ msgstr "番号"
 #. ($t->Id, $t->Subject || '')
 #. ($ticket->Id, $ticket->Subject)
 msgid "#%1: %2"
-msgstr "#%1: %2"
+msgstr ""
 
 #: lib/RT/Transaction.pm:1033 lib/RT/Transaction.pm:1072
 #. ($self->Data)
@@ -40,7 +40,7 @@ msgstr ""
 #: lib/RT/URI/fsck_com_rt.pm:229
 #. ($self->ObjectType, $object->Id)
 msgid "%1 #%2"
-msgstr "%1 #%2"
+msgstr ""
 
 #: lib/RT/Group.pm:131
 #. ($self->loc($class), $self->Instance, $self->Name)
@@ -60,7 +60,7 @@ msgstr ""
 #: lib/RT/Tickets.pm:1395
 #. ($args{'FIELD'},        $args{'OPERATOR'}, $args{'VALUE'})
 msgid "%1 %2 %3"
-msgstr "%1 %2 %3"
+msgstr ""
 
 #: lib/RT/Date.pm:695
 #. ($wday,$mon,$mday,$year)
@@ -204,7 +204,7 @@ msgstr ""
 #. ('&#187;&#124;&#171;', $RT::VERSION, '2014', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #. ('', '', '2014', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 msgid "%1 RT %2 Copyright 1996-%3 %4."
-msgstr "%1 RT %2 Copyright 1996-%3 %4."
+msgstr ""
 
 #: share/html/Admin/Elements/UpgradeHistory:58
 #. ($package)
@@ -461,17 +461,17 @@ msgstr "%1:アタッチメントが指定されていません"
 #: lib/RT/Date.pm:702
 #. ($hour,$min)
 msgid "%1:%2"
-msgstr "%1:%2"
+msgstr ""
 
 #: lib/RT/Date.pm:699
 #. ($hour,$min,$sec)
 msgid "%1:%2:%3"
-msgstr "%1:%2:%3"
+msgstr ""
 
 #: lib/RT/Attachment.pm:453 lib/RT/Date.pm:414
 #. (int( $size / 1024 / 102.4 ) / 10)
 msgid "%1M"
-msgstr "%1M"
+msgstr ""
 
 #: share/html/Elements/CreateTicket:54
 #. ($button_start, $button_end, $queue_selector)
@@ -489,7 +489,7 @@ msgstr ""
 #: lib/RT/Attachment.pm:459
 #. ($size)
 msgid "%1b"
-msgstr "%1b"
+msgstr ""
 
 #: lib/RT/Date.pm:402
 msgid "%1d"
@@ -502,11 +502,11 @@ msgstr "%1 時間"
 #: lib/RT/Attachment.pm:456
 #. (int( $size / 102.4 ) / 10)
 msgid "%1k"
-msgstr "%1k"
+msgstr ""
 
 #: lib/RT/Date.pm:390
 msgid "%1m"
-msgstr "%1m"
+msgstr ""
 
 #: lib/RT/Date.pm:384 share/html/Admin/Tools/Queries.html:110 share/html/Admin/Tools/Queries.html:81
 #. (sprintf('%.4f', $duration))
@@ -679,7 +679,7 @@ msgstr ""
 
 #: share/html/Articles/Elements/BeforeMessageBox:68 share/html/Elements/EditCustomFieldSelect:57
 msgid "-"
-msgstr "-"
+msgstr ""
 
 #: bin/rt-crontool:129
 msgid "--template-id is deprecated argument and can not be used with --template"
@@ -1335,7 +1335,7 @@ msgstr ""
 
 #: share/html/Ticket/Forward.html:72
 msgid "Bcc"
-msgstr "Bcc"
+msgstr ""
 
 #: share/html/Articles/Elements/NeedsSetup:50
 #. (qq[<a href="@{[RT->Config->Get("WebPath")]}/Admin/Articles/">], '</a>')
@@ -1476,7 +1476,7 @@ msgstr ""
 
 #: lib/RT/Report/Tickets.pm:69 lib/RT/Ticket.pm:102 lib/RT/Tickets.pm:145 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:79 share/html/Ticket/Create.html:136 share/html/Ticket/Elements/EditPeople:79 share/html/Ticket/Elements/ShowPeople:62 share/html/Ticket/Forward.html:69 share/html/m/ticket/create:275 share/html/m/ticket/show:295
 msgid "Cc"
-msgstr "Cc"
+msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:154
 msgid "Ccs"
@@ -1704,7 +1704,7 @@ msgstr ""
 
 #: share/html/Elements/SelectAttachmentField:53
 msgid "Content-Type"
-msgstr "Content-Type"
+msgstr ""
 
 #: lib/RT/Tickets.pm:140
 msgid "ContentType"
@@ -3423,7 +3423,7 @@ msgstr ""
 
 #: lib/RT/Config.pm:198 lib/RT/Config.pm:290
 msgid "General"
-msgstr "General"
+msgstr ""
 
 #: share/html/Admin/Elements/EditRightsCategoryTabs:87
 msgid "General rights"
@@ -3479,7 +3479,7 @@ msgstr ""
 
 #: share/html/m/_elements/menu:67
 msgid "Go"
-msgstr "Go"
+msgstr ""
 
 #: share/html/Admin/Groups/index.html:55
 msgid "Go to group"
@@ -4167,7 +4167,7 @@ msgstr "このユーザーの権限を承認します"
 
 #: share/html/Install/index.html:79 share/html/Install/index.html:87
 msgid "Let's go!"
-msgstr "Let's go!"
+msgstr ""
 
 #: share/html/Admin/Queues/Modify.html:70
 msgid "Lifecycle"
@@ -5023,7 +5023,7 @@ msgstr ""
 
 #: lib/RT/Installer.pm:68
 msgid "MySQL"
-msgstr "MySQL"
+msgstr ""
 
 #: etc/RT_Config.pm:1241
 msgid "MySupportQueues"
@@ -5659,7 +5659,7 @@ msgstr "オプション"
 
 #: lib/RT/Installer.pm:71
 msgid "Oracle"
-msgstr "Oracle"
+msgstr ""
 
 #: share/html/Install/DatabaseDetails.html:152
 msgid "Oracle users cannot have empty passwords"
@@ -5908,7 +5908,7 @@ msgstr ""
 
 #: lib/RT/Installer.pm:69
 msgid "PostgreSQL"
-msgstr "PostgreSQL"
+msgstr ""
 
 #: share/html/Elements/ShowSearch:97 share/html/m/tickets/search:81
 #. ($m->interp->apply_escapes($Name, 'h'))
@@ -6171,7 +6171,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:835
 msgid "RSS"
-msgstr "RSS"
+msgstr ""
 
 #: share/html/Admin/index.html:48
 msgid "RT Administration"
@@ -6221,7 +6221,7 @@ msgstr ""
 #: share/html/Elements/Logo:61 share/html/m/_elements/header:49 share/html/m/_elements/login:49 share/html/m/index.html:48
 #. (RT->Config->Get('rtname'))
 msgid "RT for %1"
-msgstr "RT for %1"
+msgstr ""
 
 #: share/html/Elements/CSRF:55
 #. ($strong_start, $strong_end, $Reason, $action)
@@ -6678,7 +6678,7 @@ msgstr ""
 
 #: lib/RT/Installer.pm:70
 msgid "SQLite"
-msgstr "SQLite"
+msgstr ""
 
 #: share/html/Install/DatabaseType.html:58
 msgid "SQLite is a database that doesn't need a server or any configuration whatsoever. RT's authors recommend it for testing, demoing and development, but it's not quite right for a high-volume production RT server."
@@ -7442,7 +7442,7 @@ msgstr ""
 
 #: share/html/Elements/Submit:99
 msgid "Submit"
-msgstr "Submit"
+msgstr ""
 
 #: share/html/Dashboards/Subscription.html:188
 msgid "Subscribe"
@@ -9274,7 +9274,7 @@ msgstr "グループ'%1'"
 
 #: lib/RT/Date.pm:121 share/html/Elements/Tabs:840
 msgid "iCal"
-msgstr "iCal"
+msgstr ""
 
 #: lib/RT/Tickets.pm:113 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:53 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:56
 msgid "id"

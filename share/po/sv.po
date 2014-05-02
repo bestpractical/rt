@@ -19,7 +19,7 @@ msgstr ""
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:62
 msgid "#"
-msgstr "#"
+msgstr ""
 
 #: lib/RT/URI/fsck_com_rt.pm:222 share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/Helpers/Autocomplete/Tickets:108 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:197 share/html/m/ticket/history:56 share/html/m/ticket/show:202
 #. ($Ticket->Id, $Ticket->Subject || '')
@@ -30,7 +30,7 @@ msgstr "#"
 #. ($t->Id, $t->Subject || '')
 #. ($ticket->Id, $ticket->Subject)
 msgid "#%1: %2"
-msgstr "#%1: %2"
+msgstr ""
 
 #: lib/RT/Transaction.pm:1033 lib/RT/Transaction.pm:1072
 #. ($self->Data)
@@ -40,7 +40,7 @@ msgstr ""
 #: lib/RT/URI/fsck_com_rt.pm:229
 #. ($self->ObjectType, $object->Id)
 msgid "%1 #%2"
-msgstr "%1 #%2"
+msgstr ""
 
 #: lib/RT/Group.pm:131
 #. ($self->loc($class), $self->Instance, $self->Name)
@@ -60,7 +60,7 @@ msgstr ""
 #: lib/RT/Tickets.pm:1395
 #. ($args{'FIELD'},        $args{'OPERATOR'}, $args{'VALUE'})
 msgid "%1 %2 %3"
-msgstr "%1 %2 %3"
+msgstr ""
 
 #: lib/RT/Date.pm:695
 #. ($wday,$mon,$mday,$year)
@@ -204,7 +204,7 @@ msgstr ""
 #. ('&#187;&#124;&#171;', $RT::VERSION, '2014', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #. ('', '', '2014', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 msgid "%1 RT %2 Copyright 1996-%3 %4."
-msgstr "%1 RT %2 Copyright 1996-%3 %4."
+msgstr ""
 
 #: share/html/Admin/Elements/UpgradeHistory:58
 #. ($package)
@@ -461,12 +461,12 @@ msgstr "%1: inga bifogade filer angivna"
 #: lib/RT/Date.pm:702
 #. ($hour,$min)
 msgid "%1:%2"
-msgstr "%1:%2"
+msgstr ""
 
 #: lib/RT/Date.pm:699
 #. ($hour,$min,$sec)
 msgid "%1:%2:%3"
-msgstr "%1:%2:%3"
+msgstr ""
 
 #: lib/RT/Attachment.pm:453 lib/RT/Date.pm:414
 #. (int( $size / 1024 / 102.4 ) / 10)
@@ -489,7 +489,7 @@ msgstr ""
 #: lib/RT/Attachment.pm:459
 #. ($size)
 msgid "%1b"
-msgstr "%1b"
+msgstr ""
 
 #: lib/RT/Date.pm:402
 msgid "%1d"
@@ -502,11 +502,11 @@ msgstr ""
 #: lib/RT/Attachment.pm:456
 #. (int( $size / 102.4 ) / 10)
 msgid "%1k"
-msgstr "%1k"
+msgstr ""
 
 #: lib/RT/Date.pm:390
 msgid "%1m"
-msgstr "%1m"
+msgstr ""
 
 #: lib/RT/Date.pm:384 share/html/Admin/Tools/Queries.html:110 share/html/Admin/Tools/Queries.html:81
 #. (sprintf('%.4f', $duration))
@@ -679,7 +679,7 @@ msgstr "(ej betrodd!)"
 
 #: share/html/Articles/Elements/BeforeMessageBox:68 share/html/Elements/EditCustomFieldSelect:57
 msgid "-"
-msgstr "-"
+msgstr ""
 
 #: bin/rt-crontool:129
 msgid "--template-id is deprecated argument and can not be used with --template"
@@ -962,7 +962,7 @@ msgstr ""
 
 #: share/html/Search/Elements/PickCriteria:62
 msgid "Aggregator"
-msgstr "Aggregator"
+msgstr ""
 
 #: etc/initialdata:526 etc/upgrade/3.8.2/content:85
 msgid "All Approvals Passed"
@@ -1388,7 +1388,7 @@ msgstr "Kopiegrupp"
 
 #: lib/RT/Report/Tickets.pm:81 lib/RT/Tickets.pm:153
 msgid "CF"
-msgstr "CF"
+msgstr ""
 
 #: share/html/Search/Simple.html:87
 #. ('<strong>cf.Name:value</strong>')
@@ -2497,7 +2497,7 @@ msgstr "Datum"
 
 #: lib/RT/Date.pm:102
 msgid "Dec"
-msgstr "Dec"
+msgstr ""
 
 #: share/html/Ticket/Crypt.html:58
 msgid "Decrypt"
@@ -3138,7 +3138,7 @@ msgstr ""
 
 #: share/html/Admin/Users/Modify.html:97
 msgid "Extra info"
-msgstr "Extra info"
+msgstr ""
 
 #: share/html/Elements/Tabs:698
 msgid "Extract Article"
@@ -3215,7 +3215,7 @@ msgstr "Misslyckades med att tolka mall"
 
 #: lib/RT/Date.pm:92
 msgid "Feb"
-msgstr "Feb"
+msgstr ""
 
 #: share/html/Elements/Tabs:816
 msgid "Feeds"
@@ -3333,7 +3333,7 @@ msgstr "Genomtvinga ändring"
 
 #: share/html/Search/Edit.html:59 share/html/Search/Elements/EditFormat:52
 msgid "Format"
-msgstr "Format"
+msgstr ""
 
 #: lib/RT/Config.pm:231
 msgid "Formats iCal feed events with date and time"
@@ -3444,7 +3444,7 @@ msgstr "Har givits till %1"
 
 #: share/html/Admin/Scrips/Modify.html:64 share/html/Elements/RT__CustomField/ColumnMap:88 share/html/Elements/RT__Scrip/ColumnMap:58 share/html/Elements/RT__Template/ColumnMap:69 share/html/Elements/Tabs:111
 msgid "Global"
-msgstr "Global"
+msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:219
 msgid "Global Attributes"
@@ -3713,7 +3713,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:117
 msgid "ISO"
-msgstr "ISO"
+msgstr ""
 
 #: lib/RT/Tickets.pm:1623 share/html/Ticket/Elements/ShowBasics:50 share/html/m/ticket/show:212
 msgid "Id"
@@ -4053,7 +4053,7 @@ msgstr "Kursiv"
 
 #: lib/RT/Date.pm:91
 msgid "Jan"
-msgstr "Jan"
+msgstr ""
 
 #: lib/RT/Group.pm:90
 msgid "Join or leave group"
@@ -4061,15 +4061,15 @@ msgstr ""
 
 #: lib/RT/Date.pm:97
 msgid "Jul"
-msgstr "Jul"
+msgstr ""
 
 #: share/html/Elements/Tabs:638
 msgid "Jumbo"
-msgstr "Jumbo"
+msgstr ""
 
 #: lib/RT/Date.pm:96
 msgid "Jun"
-msgstr "Jun"
+msgstr ""
 
 #: lib/RT/Installer.pm:80
 msgid "Keep 'localhost' if you're not sure. Leave blank to connect locally over a socket"
@@ -5023,7 +5023,7 @@ msgstr ""
 
 #: lib/RT/Installer.pm:68
 msgid "MySQL"
-msgstr "MySQL"
+msgstr ""
 
 #: etc/RT_Config.pm:1241
 msgid "MySupportQueues"
@@ -5659,7 +5659,7 @@ msgstr "Alternativ"
 
 #: lib/RT/Installer.pm:71
 msgid "Oracle"
-msgstr "Oracle"
+msgstr ""
 
 #: share/html/Install/DatabaseDetails.html:152
 msgid "Oracle users cannot have empty passwords"
@@ -5836,7 +5836,7 @@ msgstr "Genomför en användardefinierad handling"
 
 #: share/html/Admin/Elements/ModifyTemplate:62
 msgid "Perl"
-msgstr "Perl"
+msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:283
 msgid "Perl configuration"
@@ -5908,7 +5908,7 @@ msgstr ""
 
 #: lib/RT/Installer.pm:69
 msgid "PostgreSQL"
-msgstr "PostgreSQL"
+msgstr ""
 
 #: share/html/Elements/ShowSearch:97 share/html/m/tickets/search:81
 #. ($m->interp->apply_escapes($Name, 'h'))
@@ -6171,7 +6171,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:835
 msgid "RSS"
-msgstr "RSS"
+msgstr ""
 
 #: share/html/Admin/index.html:48
 msgid "RT Administration"
@@ -6525,7 +6525,7 @@ msgstr "Nödvändig parameter '%1' ej specificerad"
 
 #: share/html/Admin/Tools/Theme.html:113 share/html/Elements/Submit:114 share/html/Prefs/Search.html:71
 msgid "Reset"
-msgstr "Reset"
+msgstr ""
 
 #: share/html/Prefs/MyRT.html:71
 msgid "Reset RT at a glance"
@@ -6678,7 +6678,7 @@ msgstr ""
 
 #: lib/RT/Installer.pm:70
 msgid "SQLite"
-msgstr "SQLite"
+msgstr ""
 
 #: share/html/Install/DatabaseType.html:58
 msgid "SQLite is a database that doesn't need a server or any configuration whatsoever. RT's authors recommend it for testing, demoing and development, but it's not quite right for a high-volume production RT server."
@@ -6754,7 +6754,7 @@ msgstr ""
 #: share/html/Ticket/Elements/PreviewScrips:71
 #. ($scrip->id)
 msgid "Scrip #%1"
-msgstr "Scrip #%1"
+msgstr ""
 
 #: lib/RT/Scrip.pm:209
 msgid "Scrip Created"
@@ -6766,7 +6766,7 @@ msgstr ""
 
 #: share/html/Admin/Elements/EditScrips:53 share/html/Elements/Tabs:102 share/html/Elements/Tabs:117 share/html/Elements/Tabs:296
 msgid "Scrips"
-msgstr "Scrips"
+msgstr ""
 
 #: share/html/Ticket/Update.html:193
 msgid "Scrips and Recipients"
@@ -7366,7 +7366,7 @@ msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:153 lib/RT/Report/Tickets.pm:60 lib/RT/Tickets.pm:106 lib/RT/Tickets.pm:1484 share/html/Elements/RT__Ticket/ColumnMap:111 share/html/Elements/RT__Ticket/ColumnMap:121 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:62 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Tools/MyDay.html:67 share/html/m/_elements/ticket_list:95 share/html/m/ticket/create:250 share/html/m/ticket/reply:63 share/html/m/ticket/show:216
 msgid "Status"
-msgstr "Status"
+msgstr ""
 
 #: lib/RT/Record/Role/Status.pm:163
 #. ($self->loc($new), $self->loc($lifecycle->Type))
@@ -7533,7 +7533,7 @@ msgstr "Avstängt"
 
 #: lib/RT/Interface/Web.pm:3779
 msgid "System"
-msgstr "System"
+msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:50 share/html/Elements/Tabs:227
 msgid "System Configuration"
@@ -8653,7 +8653,7 @@ msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:248
 msgid "Version"
-msgstr "Version"
+msgstr ""
 
 #: lib/RT/Queue.pm:118
 msgid "View Scrip templates"
@@ -9067,7 +9067,7 @@ msgstr "Ditt användarnamn eller lösenord är inte korrekt"
 
 #: share/html/Admin/Users/Modify.html:158 share/html/Elements/RT__User/ColumnMap:121 share/html/User/Prefs.html:152
 msgid "Zip"
-msgstr "Zip"
+msgstr ""
 
 #: share/html/Elements/RT__CustomField/ColumnMap:163
 msgid "[Down]"
@@ -9497,7 +9497,7 @@ msgstr "summeringsrader"
 #: lib/RT/Group.pm:118
 #. ($self->Name)
 msgid "system %1"
-msgstr "system %1"
+msgstr ""
 
 #: lib/RT/Group.pm:134
 #. ($self->Name)

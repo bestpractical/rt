@@ -35,7 +35,7 @@ msgstr "Nr. %1: %2"
 #: lib/RT/Transaction.pm:1033 lib/RT/Transaction.pm:1072
 #. ($self->Data)
 msgid "%1"
-msgstr "%1"
+msgstr ""
 
 #: lib/RT/URI/fsck_com_rt.pm:229
 #. ($self->ObjectType, $object->Id)
@@ -45,22 +45,22 @@ msgstr "%1 Nr. %2"
 #: lib/RT/Group.pm:131
 #. ($self->loc($class), $self->Instance, $self->Name)
 msgid "%1 #%2 %3"
-msgstr "%1 #%2 %3"
+msgstr ""
 
 #: share/html/Elements/ShowTransaction:128
 #. (loc($record_type), $Transaction->ObjectId)
 msgid "%1 #%2:"
-msgstr "%1 #%2:"
+msgstr ""
 
 #: lib/RT/URI/fsck_com_rt.pm:227
 #. ($self->ObjectType, $object->Id, $name)
 msgid "%1 #%2: %3"
-msgstr "%1 #%2: %3"
+msgstr ""
 
 #: lib/RT/Tickets.pm:1395
 #. ($args{'FIELD'},        $args{'OPERATOR'}, $args{'VALUE'})
 msgid "%1 %2 %3"
-msgstr "%1 %2 %3"
+msgstr ""
 
 #: lib/RT/Date.pm:695
 #. ($wday,$mon,$mday,$year)
@@ -70,7 +70,7 @@ msgstr "%1 %4.%2.%3"
 #: lib/RT/Date.pm:710
 #. ($wday,$mon,$mday,$hour,$min,$year)
 msgid "%1 %2 %3 %4:%5 %6"
-msgstr "%1 %2 %3 %4:%5 %6"
+msgstr ""
 
 #: lib/RT/Date.pm:707
 #. ($wday,$mon,$mday,$hour,$min,$sec,$year)
@@ -204,7 +204,7 @@ msgstr "%1 Papildomi laukai"
 #. ('&#187;&#124;&#171;', $RT::VERSION, '2014', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #. ('', '', '2014', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 msgid "%1 RT %2 Copyright 1996-%3 %4."
-msgstr "%1 RT %2 Copyright 1996-%3 %4."
+msgstr ""
 
 #: share/html/Admin/Elements/UpgradeHistory:58
 #. ($package)
@@ -461,17 +461,17 @@ msgstr "%1: nėra prikabintų failų"
 #: lib/RT/Date.pm:702
 #. ($hour,$min)
 msgid "%1:%2"
-msgstr "%1:%2"
+msgstr ""
 
 #: lib/RT/Date.pm:699
 #. ($hour,$min,$sec)
 msgid "%1:%2:%3"
-msgstr "%1:%2:%3"
+msgstr ""
 
 #: lib/RT/Attachment.pm:453 lib/RT/Date.pm:414
 #. (int( $size / 1024 / 102.4 ) / 10)
 msgid "%1M"
-msgstr "%1M"
+msgstr ""
 
 #: share/html/Elements/CreateTicket:54
 #. ($button_start, $button_end, $queue_selector)
@@ -489,7 +489,7 @@ msgstr "%1 met."
 #: lib/RT/Attachment.pm:459
 #. ($size)
 msgid "%1b"
-msgstr "%1b"
+msgstr ""
 
 #: lib/RT/Date.pm:402
 msgid "%1d"
@@ -502,11 +502,11 @@ msgstr "%1 val."
 #: lib/RT/Attachment.pm:456
 #. (int( $size / 102.4 ) / 10)
 msgid "%1k"
-msgstr "%1k"
+msgstr ""
 
 #: lib/RT/Date.pm:390
 msgid "%1m"
-msgstr "%1m"
+msgstr ""
 
 #: lib/RT/Date.pm:384 share/html/Admin/Tools/Queries.html:110 share/html/Admin/Tools/Queries.html:81
 #. (sprintf('%.4f', $duration))
@@ -517,7 +517,7 @@ msgstr "%1 sek."
 #: share/html/Articles/Elements/ShowTopicLink:61
 #. ($Articles->Count)
 msgid "%quant(%1,article,articles)"
-msgstr "%quant(%1,article,articles)"
+msgstr ""
 
 #: lib/RT/Date.pm:403
 msgid "%quant(%1,day,days)"
@@ -687,7 +687,7 @@ msgstr "--šablono identifikatorius yra nebetaikomas parametras ir nebegali būt
 
 #: bin/rt-crontool:124
 msgid "--transaction argument could be only 'first', 'last' or 'all'"
-msgstr "--transaction argument could be only 'first', 'last' or 'all'"
+msgstr ""
 
 #: share/html/Elements/CollectionAsTable/Header:126
 #. (Content => $title))
@@ -1388,7 +1388,7 @@ msgstr "Kopijų grupė"
 
 #: lib/RT/Report/Tickets.pm:81 lib/RT/Tickets.pm:153
 msgid "CF"
-msgstr "CF"
+msgstr ""
 
 #: share/html/Search/Simple.html:87
 #. ('<strong>cf.Name:value</strong>')
@@ -1508,7 +1508,7 @@ msgstr "Pažymėti visus"
 
 #: share/html/Install/DatabaseDetails.html:88
 msgid "Check Database Connectivity"
-msgstr "Check Database Connectivity"
+msgstr ""
 
 #: share/html/Install/Basics.html:63 share/html/Install/DatabaseDetails.html:48 share/html/Install/DatabaseType.html:70
 msgid "Check Database Credentials"
@@ -1579,11 +1579,11 @@ msgstr "Nepažymėti nei vieno"
 
 #: share/html/Install/Finish.html:52
 msgid "Click \"Finish Installation\" below to complete this wizard."
-msgstr "Click \"Finish Installation\" below to complete this wizard."
+msgstr ""
 
 #: share/html/Install/Initialize.html:54
 msgid "Click \"Initialize Database\" to create RT's database and insert initial metadata. This may take a few moments"
-msgstr "Click \"Initialize Database\" to create RT's database and insert initial metadata. This may take a few moments"
+msgstr ""
 
 #: share/html/Admin/Tools/Theme.html:101
 msgid "Click to choose a color"
@@ -2380,15 +2380,15 @@ msgstr "Keisti:"
 
 #: share/html/Install/Basics.html:48 share/html/Install/DatabaseDetails.html:72 share/html/Install/Sendmail.html:64
 msgid "Customize Basics"
-msgstr "Customize Basics"
+msgstr ""
 
 #: share/html/Install/Global.html:48 share/html/Install/Initialize.html:62 share/html/Install/Sendmail.html:63
 msgid "Customize Email Addresses"
-msgstr "Customize Email Addresses"
+msgstr ""
 
 #: share/html/Install/Basics.html:62 share/html/Install/Global.html:65 share/html/Install/Sendmail.html:48
 msgid "Customize Email Configuration"
-msgstr "Customize Email Configuration"
+msgstr ""
 
 #: share/html/Elements/Tabs:212
 msgid "Customize dashboards in menu"
@@ -2404,11 +2404,11 @@ msgstr "Keisti individualią RT išvaizdą"
 
 #: lib/RT/Installer.pm:113
 msgid "DBA password"
-msgstr "DBA password"
+msgstr ""
 
 #: lib/RT/Installer.pm:105
 msgid "DBA username"
-msgstr "DBA username"
+msgstr ""
 
 #: lib/RT/Dashboard/Mailer.pm:327
 msgid "Daily"
@@ -2461,7 +2461,7 @@ msgstr "Informacinės panelės, nurodytos naudotojo %1meniu"
 
 #: lib/RT/Installer.pm:78
 msgid "Database host"
-msgstr "Database host"
+msgstr ""
 
 #: lib/RT/Installer.pm:96
 msgid "Database name"
@@ -2469,19 +2469,19 @@ msgstr "Duomenų bazės pavadinimas"
 
 #: lib/RT/Installer.pm:129
 msgid "Database password for RT"
-msgstr "Database password for RT"
+msgstr ""
 
 #: lib/RT/Installer.pm:87
 msgid "Database port"
-msgstr "Database port"
+msgstr ""
 
 #: lib/RT/Installer.pm:60
 msgid "Database type"
-msgstr "Database type"
+msgstr ""
 
 #: lib/RT/Installer.pm:122
 msgid "Database username for RT"
-msgstr "Database username for RT"
+msgstr ""
 
 #: share/html/Admin/Elements/UpgradeHistory:56
 msgid "Date"
@@ -3165,7 +3165,7 @@ msgstr "Panaudoti žymes iš tranzakcijos pavadinimo ir įdėti jas į prašymo 
 #: share/html/Install/DatabaseDetails.html:197
 #. ($DBI::errstr)
 msgid "Failed to connect to database: %1"
-msgstr "Failed to connect to database: %1"
+msgstr ""
 
 #: lib/RT/SharedSetting.pm:219
 #. ($self->loc( $self->ObjectName ))
@@ -3431,7 +3431,7 @@ msgstr "Bendros teisės"
 
 #: share/html/Install/index.html:76
 msgid "Getting started"
-msgstr "Getting started"
+msgstr ""
 
 #: sbin/rt-email-digest:90
 msgid "Give output even on messages successfully sent"
@@ -3647,7 +3647,7 @@ msgstr "Labas!"
 
 #: share/html/Install/Global.html:52
 msgid "Help us set up some useful defaults for RT."
-msgstr "Help us set up some useful defaults for RT."
+msgstr ""
 
 #: share/html/Elements/ShowHistory:60
 msgid "Hide all quoted text"
@@ -3713,7 +3713,7 @@ msgstr "Noriu pakeisti savo slaptą žymą"
 
 #: lib/RT/Date.pm:117
 msgid "ISO"
-msgstr "ISO"
+msgstr ""
 
 #: lib/RT/Tickets.pm:1623 share/html/Ticket/Elements/ShowBasics:50 share/html/m/ticket/show:212
 msgid "Id"
@@ -3741,7 +3741,7 @@ msgstr "Jeigu ši programa nustatyta setgid, priešiškas naudotojas gali pasina
 
 #: share/html/Install/index.html:83
 msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server."
-msgstr "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server."
+msgstr ""
 
 #: share/html/Errors/WebRemoteUser/Wrapper:75
 #. (qq[<a href="$login_url">], '</a>')
@@ -3845,15 +3845,15 @@ msgstr "Asmeniniai pranešimai"
 
 #: etc/initialdata:645 etc/upgrade/3.7.10/content:18
 msgid "Inform RT owner that user(s) have problems with public keys"
-msgstr "Inform RT owner that user(s) have problems with public keys"
+msgstr ""
 
 #: etc/initialdata:707 etc/upgrade/3.7.87/content:9
 msgid "Inform user that a dashboard he subscribed to is missing"
-msgstr "Inform user that a dashboard he subscribed to is missing"
+msgstr ""
 
 #: etc/upgrade/3.7.10/content:43
 msgid "Inform user that a message he sent has invalid GnuPG data"
-msgstr "Inform user that a message he sent has invalid GnuPG data"
+msgstr ""
 
 #: etc/initialdata:670
 msgid "Inform user that a message he sent has invalid encryption data"
@@ -3861,11 +3861,11 @@ msgstr "Informuoti naudotoją, kad išsiųstame pranešime yra neteisingai užš
 
 #: etc/initialdata:636 etc/upgrade/3.7.10/content:9
 msgid "Inform user that he has problems with public key and couldn't recieve encrypted content"
-msgstr "Inform user that he has problems with public key and couldn't recieve encrypted content"
+msgstr ""
 
 #: etc/initialdata:682
 msgid "Inform user that his password has been reset"
-msgstr "Inform user that his password has been reset"
+msgstr ""
 
 #: etc/initialdata:627 etc/upgrade/4.1.22/content:79
 msgid "Inform user that their unencrypted mail has been rejected"
@@ -3873,7 +3873,7 @@ msgstr "Informuoti naudotoją, kad jo neužšifruotas laiškas buvo atmestas"
 
 #: etc/initialdata:658 etc/upgrade/3.7.10/content:31
 msgid "Inform user that we received an encrypted email and we have no private keys to decrypt"
-msgstr "Inform user that we received an encrypted email and we have no private keys to decrypt"
+msgstr ""
 
 #: lib/RT/Tickets.pm:1669 share/html/Search/Elements/PickBasics:201
 msgid "Initial Priority"
@@ -3885,7 +3885,7 @@ msgstr "Pradinis prioritetas"
 
 #: share/html/Install/Global.html:64 share/html/Install/Initialize.html:48 share/html/Install/Initialize.html:61
 msgid "Initialize Database"
-msgstr "Initialize Database"
+msgstr ""
 
 #: share/html/Elements/ValidateCustomFields:103
 msgid "Input can not be parsed as an IP address"
@@ -3939,12 +3939,12 @@ msgstr "Neteisingas %1 parametras"
 #. ($_, $ARGS{$_})
 #. ('Administrator Email', $ARGS{OwnerEmail})
 msgid "Invalid %1: '%2' doesn't look like an email address"
-msgstr "Invalid %1: '%2' doesn't look like an email address"
+msgstr ""
 
 #: share/html/Install/Basics.html:81
 #. ('WebPort')
 msgid "Invalid %1: it should be a number"
-msgstr "Invalid %1: it should be a number"
+msgstr ""
 
 #: lib/RT/Article.pm:109
 msgid "Invalid Class"
@@ -4073,7 +4073,7 @@ msgstr "Bir"
 
 #: lib/RT/Installer.pm:80
 msgid "Keep 'localhost' if you're not sure. Leave blank to connect locally over a socket"
-msgstr "Keep 'localhost' if you're not sure. Leave blank to connect locally over a socket"
+msgstr ""
 
 #: lib/RT/Search/Simple.pm:89
 #. (ref $self)
@@ -4139,11 +4139,11 @@ msgstr "Nepildykite, jei norite gauti dabartiniu adresu (%1)"
 
 #: lib/RT/Installer.pm:90
 msgid "Leave empty to use the default value for your database"
-msgstr "Leave empty to use the default value for your database"
+msgstr ""
 
 #: lib/RT/Installer.pm:104
 msgid "Leave this alone to use the default dba username for your database type"
-msgstr "Leave this alone to use the default dba username for your database type"
+msgstr ""
 
 #: share/html/Ticket/Elements/ShowBasics:71 share/html/m/ticket/show:233
 msgid "Left"
@@ -5023,7 +5023,7 @@ msgstr "Mano priminimai"
 
 #: lib/RT/Installer.pm:68
 msgid "MySQL"
-msgstr "MySQL"
+msgstr ""
 
 #: etc/RT_Config.pm:1241
 msgid "MySupportQueues"
@@ -5031,7 +5031,7 @@ msgstr "Mano prižiūrimos eilės"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "NBSP"
-msgstr "NBSP"
+msgstr ""
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "NEWLINE"
@@ -5436,7 +5436,7 @@ msgstr "Informuoti atsakingą asmenį apie prašymo atmetimą"
 
 #: etc/initialdata:586 etc/initialdata:598 etc/upgrade/3.8.2/content:114 etc/upgrade/4.1.9/content:179
 msgid "Notify Owner of their ticket has been approved and is ready to be acted on"
-msgstr "Notify Owner of their ticket has been approved and is ready to be acted on"
+msgstr ""
 
 #: lib/RT/Approval/Rule/Passed.pm:54
 msgid "Notify Owner of their ticket has been approved by some or all approvers"
@@ -5659,7 +5659,7 @@ msgstr "Pagrindiniai nustatymai"
 
 #: lib/RT/Installer.pm:71
 msgid "Oracle"
-msgstr "Oracle"
+msgstr ""
 
 #: share/html/Install/DatabaseDetails.html:152
 msgid "Oracle users cannot have empty passwords"
@@ -5805,7 +5805,7 @@ msgstr "Slaptažodžiai nesutampa"
 
 #: lib/RT/Installer.pm:189
 msgid "Path to sendmail"
-msgstr "Path to sendmail"
+msgstr ""
 
 #: share/html/Ticket/Elements/ShowDependencyStatus:54
 #. ($approvals)
@@ -5836,7 +5836,7 @@ msgstr "Įvykdyti naudotojo apibrėžtą veiksmą"
 
 #: share/html/Admin/Elements/ModifyTemplate:62
 msgid "Perl"
-msgstr "Perl"
+msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:283
 msgid "Perl configuration"
@@ -5908,7 +5908,7 @@ msgstr "Galimos paslėtos paieškos"
 
 #: lib/RT/Installer.pm:69
 msgid "PostgreSQL"
-msgstr "PostgreSQL"
+msgstr ""
 
 #: share/html/Elements/ShowSearch:97 share/html/m/tickets/search:81
 #. ($m->interp->apply_escapes($Name, 'h'))
@@ -5980,7 +5980,7 @@ msgstr "Naudotojas %1 nerastas."
 
 #: sbin/rt-email-digest:88
 msgid "Print the resulting digest messages to STDOUT; don't mail them. Do not mark them as sent"
-msgstr "Print the resulting digest messages to STDOUT; don't mail them. Do not mark them as sent"
+msgstr ""
 
 #: sbin/rt-email-digest:91
 msgid "Print this message"
@@ -6030,7 +6030,7 @@ msgstr "Privilegijuoti naudotojai"
 
 #: bin/rt-crontool:174
 msgid "Processing without transaction, some conditions and actions may fail. Consider using --transaction argument"
-msgstr "Processing without transaction, some conditions and actions may fail. Consider using --transaction argument"
+msgstr ""
 
 #: lib/RT/Handle.pm:729
 msgid "Pseudogroup for internal use"
@@ -6163,15 +6163,15 @@ msgstr "Greita paieška"
 
 #: lib/RT/Date.pm:120
 msgid "RFC2616"
-msgstr "RFC2616"
+msgstr ""
 
 #: lib/RT/Date.pm:119
 msgid "RFC2822"
-msgstr "RFC2822"
+msgstr ""
 
 #: share/html/Elements/Tabs:835
 msgid "RSS"
-msgstr "RSS"
+msgstr ""
 
 #: share/html/Admin/index.html:48
 msgid "RT Administration"
@@ -6179,7 +6179,7 @@ msgstr "RT nustatymai"
 
 #: lib/RT/Installer.pm:165
 msgid "RT Administrator Email"
-msgstr "RT Administrator Email"
+msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:58
 msgid "RT Configuration"
@@ -6204,7 +6204,7 @@ msgstr "RT apžvalga naudotojui %1"
 
 #: share/html/Install/Sendmail.html:53
 msgid "RT can communicate with your users about new tickets or new correspondence on tickets. Tell us where to find sendmail (or a sendmail compatible binary such as the one provided by postifx).  RT also needs to know who to notify when someone sends invalid email.  This must not be an address that feeds back into RT."
-msgstr "RT can communicate with your users about new tickets or new correspondence on tickets. Tell us where to find sendmail (or a sendmail compatible binary such as the one provided by postifx).  RT also needs to know who to notify when someone sends invalid email.  This must not be an address that feeds back into RT."
+msgstr ""
 
 #: share/html/Admin/CustomFields/Modify.html:119
 msgid "RT can include content from another web service when showing this custom field."
@@ -6230,7 +6230,7 @@ msgstr "RT nustatė galimą %1sufabrikuotą užklausą tarp svetainių%2, nes %3
 
 #: share/html/Install/index.html:71
 msgid "RT is an enterprise-grade issue tracking system designed to let you intelligently and efficiently manage tasks, issues, requests, defects or anything else that looks like an \"action item.\""
-msgstr "RT is an enterprise-grade issue tracking system designed to let you intelligently and efficiently manage tasks, issues, requests, defects or anything else that looks like an \"action item.\""
+msgstr ""
 
 #: share/html/Install/index.html:74
 msgid "RT is used by Fortune 100 companies, one-person businesses, government agencies, educational institutions, hospitals, nonprofits, NGOs, libraries, open source projects and all sorts of other organizations on all seven continents. (Yes, even Antarctica.)"
@@ -6242,11 +6242,11 @@ msgstr "RT atnaujinimo istorija"
 
 #: lib/RT/Installer.pm:123
 msgid "RT will connect to the database using this user.  It will be created for you."
-msgstr "RT will connect to the database using this user.  It will be created for you."
+msgstr ""
 
 #: lib/RT/Installer.pm:158
 msgid "RT will create a user called \"root\" and set this as their password"
-msgstr "RT will create a user called \"root\" and set this as their password"
+msgstr ""
 
 #: share/html/Admin/CustomFields/Modify.html:113 share/html/Admin/CustomFields/Modify.html:121
 #. ('<tt>__id__</tt>', '<tt>__CustomField__</tt>')
@@ -6255,11 +6255,11 @@ msgstr "RT pakeis %1 ir %2 prašymo numeriu ir papildomo lauko reikšme atitinka
 
 #: lib/RT/Installer.pm:144
 msgid "RT will use this string to uniquely identify your installation and looks for it in the subject of emails to decide what ticket a message applies to.  We recommend that you set this to your internet domain. (ex: example.com)"
-msgstr "RT will use this string to uniquely identify your installation and looks for it in the subject of emails to decide what ticket a message applies to.  We recommend that you set this to your internet domain. (ex: example.com)"
+msgstr ""
 
 #: share/html/Install/DatabaseType.html:52
 msgid "RT works with a number of different databases. <b>MySQL</b>, <b>PostgreSQL</b>, <b>Oracle</b> and <b>SQLite</b> are all supported."
-msgstr "RT works with a number of different databases. <b>MySQL</b>, <b>PostgreSQL</b>, <b>Oracle</b> and <b>SQLite</b> are all supported."
+msgstr ""
 
 #: share/html/Admin/Elements/LoggingSummary:86
 msgid "RT's logging configuration is summarized below:"
@@ -6678,7 +6678,7 @@ msgstr "SQL užklausos į žurnalą nerašomos"
 
 #: lib/RT/Installer.pm:70
 msgid "SQLite"
-msgstr "SQLite"
+msgstr ""
 
 #: share/html/Install/DatabaseType.html:58
 msgid "SQLite is a database that doesn't need a server or any configuration whatsoever. RT's authors recommend it for testing, demoing and development, but it's not quite right for a high-volume production RT server."
@@ -6869,7 +6869,7 @@ msgstr "Pasirinkti papildomus laukus aprašams visose kategorijose"
 
 #: share/html/Install/DatabaseDetails.html:73
 msgid "Select Database Type"
-msgstr "Select Database Type"
+msgstr ""
 
 #: share/html/Admin/Articles/Classes/index.html:48 share/html/Admin/Articles/Classes/index.html:52
 msgid "Select a Class"
@@ -6918,7 +6918,7 @@ msgstr "Pasirinti įtraukiamą aprašą"
 
 #: share/html/Install/index.html:59
 msgid "Select another language"
-msgstr "Select another language"
+msgstr ""
 
 #: lib/RT/CustomField.pm:83 lib/RT/CustomField.pm:86
 msgid "Select box"
@@ -7582,7 +7582,7 @@ msgstr "Paskirtas"
 
 #: share/html/Install/DatabaseDetails.html:53
 msgid "Tell us a little about how to find the database RT will be using"
-msgstr "Tell us a little about how to find the database RT will be using"
+msgstr ""
 
 #: share/html/Admin/Scrips/Elements/EditBasics:64 share/html/Elements/RT__Scrip/ColumnMap:78
 msgid "Template"
@@ -7721,7 +7721,7 @@ msgstr "Aprašo kategorija identifikuota %1 netaikoma šiai eilei"
 
 #: lib/RT/Installer.pm:114
 msgid "The DBA's database password"
-msgstr "The DBA's database password"
+msgstr ""
 
 #: lib/RT/Ticket.pm:103
 msgid "The administrative CC of a ticket"
@@ -7782,11 +7782,11 @@ msgstr "Prašymo autorius"
 #: share/html/Install/Finish.html:64
 #. (RT::Installer->ConfigFile)
 msgid "The settings you've chosen are stored in %1."
-msgstr "The settings you've chosen are stored in %1."
+msgstr ""
 
 #: share/html/Elements/Crypt/KeyIssues:53
 msgid "The system is unable to sign outgoing email messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately. The problem addresses are:"
-msgstr "The system is unable to sign outgoing email messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately. The problem addresses are:"
+msgstr ""
 
 #: lib/RT/Config.pm:203 share/html/Admin/Tools/Theme.html:49 share/html/Elements/Tabs:232
 msgid "Theme"
@@ -8056,7 +8056,7 @@ msgstr "Pavadinimas"
 
 #: share/html/Ticket/Forward.html:66
 msgid "To"
-msgstr "To"
+msgstr ""
 
 #: share/html/Elements/Footer:59
 #. ('<a href="mailto:sales@bestpractical.com">sales@bestpractical.com</a>')
@@ -8709,7 +8709,7 @@ msgstr "Peržiūrėti prašymo santraukas"
 
 #: lib/RT/Date.pm:118
 msgid "W3CDTF"
-msgstr "W3CDTF"
+msgstr ""
 
 #: share/html/Articles/Article/Search.html:190
 msgid "WARNING: Saving search to user-level privacy"
@@ -8749,7 +8749,7 @@ msgstr "Stebėtojai"
 
 #: share/html/Install/DatabaseDetails.html:64
 msgid "We are able to find your database and connect as the DBA.  You can click on 'Customize Basics' to continue customizing RT."
-msgstr "We are able to find your database and connect as the DBA.  You can click on 'Customize Basics' to continue customizing RT."
+msgstr ""
 
 #: lib/RT/CustomField.pm:1861
 msgid "We can't currently render as a List when basing categories on another custom field.  Please use another render type."
@@ -8801,7 +8801,7 @@ msgstr "Kurie prašymai rodomi sąraše \"Informacija apie prašymo autorių\""
 
 #: lib/RT/Installer.pm:166
 msgid "When RT can't handle an email message, where should it be forwarded?"
-msgstr "When RT can't handle an email message, where should it be forwarded?"
+msgstr ""
 
 #: share/html/Install/Global.html:54
 msgid "When RT sends an email it sets the From: and Reply-To: headers so users can add to the conversation by just hitting Reply in their mail client.  It uses different addresses for Replies and Comments.  These can be changed for each of your queues.  These addresses will need to be configured to use the <tt>rt-mailgate</tt> program."
@@ -8821,7 +8821,7 @@ msgstr "Kiekvieną kartą kai kas nors atsitinka"
 
 #: share/html/Install/DatabaseDetails.html:58
 msgid "When you click on 'Check Database Connectivity' there may be a small delay while RT tries to connect to your database"
-msgstr "When you click on 'Check Database Connectivity' there may be a small delay while RT tries to connect to your database"
+msgstr ""
 
 #: etc/initialdata:209 etc/upgrade/3.7.1/content:6
 msgid "Whenever a ticket is closed"
@@ -9037,7 +9037,7 @@ msgstr "Jūs būsite nukreipti į prisijungimo puslapį. Galite jungtis naudotoj
 
 #: share/html/Install/DatabaseType.html:55
 msgid "You should choose the database you or your local database administrator is most comfortable with."
-msgstr "You should choose the database you or your local database administrator is most comfortable with."
+msgstr ""
 
 #: share/html/Errors/WebRemoteUser/Deauthorized:49
 msgid "You were logged out of RT by your authentication system.  This may be a temporary hiccup, in which case refreshing this page may help."
@@ -9046,7 +9046,7 @@ msgstr "Jūs buvote atjungtas nuo RT. Tai gali būti laikinas sutrikimas, kuri g
 #: share/html/Install/index.html:79
 #. (loc("Let's go!"))
 msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click \"%1\" below, RT will guide you through setting up your RT server and database."
-msgstr "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click \"%1\" below, RT will guide you through setting up your RT server and database."
+msgstr ""
 
 #: share/html/NoAuth/Logout.html:59
 msgid "You're welcome to login again"
@@ -9274,7 +9274,7 @@ msgstr "grupė '%1'"
 
 #: lib/RT/Date.pm:121 share/html/Elements/Tabs:840
 msgid "iCal"
-msgstr "iCal"
+msgstr ""
 
 #: lib/RT/Tickets.pm:113 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:53 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:56
 msgid "id"
