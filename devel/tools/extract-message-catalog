@@ -112,7 +112,7 @@ foreach my $str ( sort keys %FILECAT ) {
         warn "Extraneous whitespace in '$str' at $location\n";
     }
 
-    if ($str =~ /([\$\@]\w+)/) {
+    if (grep {$_->[3]} @{$entry} and $str =~ /([\$\@]\w+)/) {
         warn "Interpolated variable '$1' in '$str' at $location\n";
     }
 }
@@ -173,13 +173,14 @@ sub extract_strings_from_code {
         my ( $vars, $str );
         next unless ( $match =~ /\(\s*($re_delim)(.*?)\s*\)$/so );
 
+        my $interp = (substr($1,0,1) eq '"' ? 1 : 0);
         $str = substr( $1, 1, -1 );       # $str comes before $vars now
         $vars = $9;
 
         $vars =~ s/[\n\r]//g;
         $str  =~ s/\\(['"\\])/$1/g;
 
-        push @{ $FILECAT{$str} }, [ $filename, $line, $vars ];
+        push @{ $FILECAT{$str} }, [ $filename, $line, $vars, $interp ];
     }
 
     my %seen;
@@ -194,9 +195,10 @@ sub extract_strings_from_code {
             warn "Couldn't process loc at $filename:$line:\n  str«$str»\n";
             next;
         }
+        my $interp = (substr($str,0,1) eq '"' ? 1 : 0);
         $str = substr($str, 1, -1);
         $str =~ s/\\(['"\\])/$1/g;
-        push @{ $FILECAT{$str} }, [ $filename, $line, '' ];
+        push @{ $FILECAT{$str} }, [ $filename, $line, '', $interp ];
     }
 
     # Comment-based mark for list to loc():  ("...", $foo, $bar)  # loc()
@@ -213,6 +215,7 @@ sub extract_strings_from_code {
             next;
         }
 
+        my $interp = (substr($1,0,1) eq '"' ? 1 : 0);
         $str = substr( $1, 1, -1 );       # $str comes before $vars now
         $vars = $9;
         $seen{$line}++;
@@ -220,7 +223,7 @@ sub extract_strings_from_code {
         $vars =~ s/[\n\r]//g;
         $str  =~ s/\\(['"\\])/$1/g;
 
-        push @{ $FILECAT{$str} }, [ $filename, $line, $vars ];
+        push @{ $FILECAT{$str} }, [ $filename, $line, $vars, $interp ];
     }
 
     # Comment-based qw mark: "qw(...)" # loc_qw
@@ -250,7 +253,9 @@ sub extract_strings_from_code {
             warn "Couldn't process loc_left_pair at $filename:$line:\n  key«$key»\n";
             next;
         }
+        my $interp = (substr($key,0,1) eq '"' ? 1 : 0);
         $key =~ s/\\(['"\\])/$1/g if $key =~ s/^(['"])(.*)\1$/$2/g; # dequote potentially quoted string
+        push @{ $FILECAT{$key} }, [ $filename, $line, '', $interp ];
     }
 
     # Comment-based pair mark: "..." => "..." # loc_pair
@@ -264,12 +269,14 @@ sub extract_strings_from_code {
             warn "Couldn't process loc_pair at $filename:$line:\n  key«$key»\n  val«$val»\n";
             next;
         }
+        my $interp_key = (substr($key,0,1) eq '"' ? 1 : 0);
         $key =~ s/\\(['"\\])/$1/g if $key =~ s/^(['"])(.*)\1$/$2/g; # dequote potentially quoted string
-        push @{ $FILECAT{$key} }, [ $filename, $line, '' ];
+        push @{ $FILECAT{$key} }, [ $filename, $line, '', $interp_key ];
 
+        my $interp_val = (substr($val,0,1) eq '"' ? 1 : 0);
         $val = substr($val, 1, -1);    # dequote always quoted string
         $val  =~ s/\\(['"\\])/$1/g;
-        push @{ $FILECAT{$val} }, [ $filename, $line, '' ];
+        push @{ $FILECAT{$val} }, [ $filename, $line, '', $interp_val ];
     }
 
     # Check for ones we missed
