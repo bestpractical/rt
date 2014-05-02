@@ -46,27 +46,80 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
-$Format => undef
-$Query => ''
-$OrderBy => 'id'
-$Order => 'ASC'
+$Collection
+$Format
 $PreserveNewLines => 0
 </%ARGS>
+<%ONCE>
+my $no_html = HTML::Scrubber->new( deny => '*' );
+</%ONCE>
 <%INIT>
-my $Tickets = RT::Tickets->new( $session{'CurrentUser'} );
-$Tickets->FromSQL( $Query );
-if ( $OrderBy =~ /\|/ ) {
-    # Multiple Sorts
-    my @OrderBy = split /\|/, $OrderBy;
-    my @Order   = split /\|/, $Order;
-    $Tickets->OrderByCols(
-        map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } }
-        ( 0 .. $#OrderBy )
-    );
+require HTML::Entities;
+
+$r->content_type('application/vnd.ms-excel');
+
+my $DisplayFormat = $m->comp('/Elements/ScrubHTML', Content => $Format);
+
+my @Format = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $DisplayFormat);
+
+my @columns;
+
+my $should_loc = { map { $_ => 1 } qw(Status) };
+
+my $col_entry = sub {
+    my $col = shift;
+    # in tsv output, "#" is often a comment character but we use it for "id"
+    delete $col->{title}
+        if $col->{title} and $col->{title} =~ /^\s*#\s*$/;
+    return {
+        header => Encode::encode_utf8(loc($col->{title} || $col->{attribute})),
+        map    => $m->comp(
+            "/Elements/ColumnMap",
+            Name  => $col->{attribute},
+            Attr  => 'value'
+        ),
+        should_loc => $should_loc->{$col->{attribute}},
+    }
+};
+
+if ($PreserveNewLines) {
+    my $col = [];
+    push @columns, $col;
+    for (@Format) {
+        if ($_->{title} eq 'NEWLINE') {
+            $col = [];
+            push @columns, $col;
+        }
+        else {
+            push @$col, $col_entry->($_);
+        }
+    }
 }
 else {
-    $Tickets->OrderBy( FIELD => $OrderBy, ORDER => $Order );
+    push @columns, [map { $_->{attribute}
+                          ? $col_entry->($_)
+                          : () } @Format];
 }
 
-$m->comp( "/Elements/TSVExport", Collection => $Tickets, Format => $Format, PreserveNewLines => $PreserveNewLines );
+for (@columns) {
+    $m->out(join("\t", map { $_->{header} } @$_)."\n");
+}
+
+my $ii = 0;
+while (my $row = $Collection->Next) {
+    for my $col (@columns) {
+        $m->out(join("\t", map {
+            my $val = ProcessColumnMapValue($_->{map}, Arguments => [$row, $ii++], Escape => 0);
+            $val = loc($val) if $_->{should_loc};
+            # remove tabs from all field values, they screw up the tsv
+            $val = '' unless defined $val;
+            $val =~ s/(?:\n|\r)+/ /g; $val =~ s{\t}{    }g;
+            $val = $no_html->scrub($val);
+            $val = HTML::Entities::decode_entities($val);
+            Encode::encode_utf8($val);
+        } @$col)."\n");
+    }
+}
+$m->abort();
+
 </%INIT>
