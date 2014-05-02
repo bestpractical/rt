@@ -158,7 +158,7 @@ sub extract_strings_from_code {
         my ( $all, $vars, $str ) = ( $1, $2, $3 );
         $vars =~ s/[\n\r]//g;
         $line += ( $all =~ tr/\n/\n/ );
-        $str =~ s/\\(['"])/$1/g;
+        $str =~ s/\\(['"\\])/$1/g;
         #print "STR IS $str\n";
         push @{ $FILECAT{$str} }, [ $filename, $line, $vars ];
     }
@@ -171,18 +171,13 @@ sub extract_strings_from_code {
         $line += ( $all =~ tr/\n/\n/ );
 
         my ( $vars, $str );
-        if ( $match =~
-                /\(\s*($re_delim)(.*?)\s*\)$/so ) {
+        next unless ( $match =~ /\(\s*($re_delim)(.*?)\s*\)$/so );
 
-            $str = substr( $1, 1, -1 );       # $str comes before $vars now
-            $vars = $9;
-        }
-        else {
-            next;
-        }
+        $str = substr( $1, 1, -1 );       # $str comes before $vars now
+        $vars = $9;
 
         $vars =~ s/[\n\r]//g;
-        $str  =~ s/\\(['"])/$1/g;
+        $str  =~ s/\\(['"\\])/$1/g;
 
         push @{ $FILECAT{$str} }, [ $filename, $line, $vars ];
     }
@@ -200,7 +195,7 @@ sub extract_strings_from_code {
             next;
         }
         $str = substr($str, 1, -1);
-        $str =~ s/\\(['"])/$1/g;
+        $str =~ s/\\(['"\\])/$1/g;
         push @{ $FILECAT{$str} }, [ $filename, $line, '' ];
     }
 
@@ -212,20 +207,18 @@ sub extract_strings_from_code {
         $line += ( $all =~ tr/\n/\n/ );
 
         my ( $vars, $str );
-        if ( $match =~
+        unless ( $match =~
                 /\(\s*($re_delim)(.*?)\s*\)$/so ) {
-
-            $str = substr( $1, 1, -1 );       # $str comes before $vars now
-            $vars = $9;
-        }
-        else {
             warn "Failed to match delimited against $match, line $line";
             next;
         }
+
+        $str = substr( $1, 1, -1 );       # $str comes before $vars now
+        $vars = $9;
         $seen{$line}++;
 
         $vars =~ s/[\n\r]//g;
-        $str  =~ s/\\(['"])/$1/g;
+        $str  =~ s/\\(['"\\])/$1/g;
 
         push @{ $FILECAT{$str} }, [ $filename, $line, $vars ];
     }
@@ -257,9 +250,7 @@ sub extract_strings_from_code {
             warn "Couldn't process loc_left_pair at $filename:$line:\n  key«$key»\n";
             next;
         }
-        $key  =~ s/^(['"])(.*)\1$/$2/g; # dequote potentially quoted string
-        $key  =~ s/\\(['"])/$1/g;
-        push @{ $FILECAT{$key} }, [ $filename, $line, '' ];
+        $key =~ s/\\(['"\\])/$1/g if $key =~ s/^(['"])(.*)\1$/$2/g; # dequote potentially quoted string
     }
 
     # Comment-based pair mark: "..." => "..." # loc_pair
@@ -273,11 +264,11 @@ sub extract_strings_from_code {
             warn "Couldn't process loc_pair at $filename:$line:\n  key«$key»\n  val«$val»\n";
             next;
         }
-        $key =~ s/^(['"])(.*)\1$/$2/g; # dequote potentially quoted string
-        $val = substr($val, 1, -1);    # dequote always quoted string
-        $key  =~ s/\\(['"])/$1/g;
-        $val  =~ s/\\(['"])/$1/g;
+        $key =~ s/\\(['"\\])/$1/g if $key =~ s/^(['"])(.*)\1$/$2/g; # dequote potentially quoted string
         push @{ $FILECAT{$key} }, [ $filename, $line, '' ];
+
+        $val = substr($val, 1, -1);    # dequote always quoted string
+        $val  =~ s/\\(['"\\])/$1/g;
         push @{ $FILECAT{$val} }, [ $filename, $line, '' ];
     }
 
