@@ -121,7 +121,7 @@ our %GROUPINGS_META = (
             Month Monthly
             Year Annually
             WeekOfYear
-        )],
+        )],  # loc_qw
         Function => 'GenerateDateFunction',
         Display => sub {
             my $self = shift;

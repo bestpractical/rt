@@ -1049,6 +1049,10 @@ msgstr "Vyskytla se chyba"
 msgid "And/Or"
 msgstr ""
 
+#: lib/RT/Report/Tickets.pm:124
+msgid "Annually"
+msgstr ""
+
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:74
 msgid "Any field"
 msgstr "Každé pole"
@@ -2414,7 +2418,7 @@ msgstr "Heslo DBA"
 msgid "DBA username"
 msgstr "Uživatelské jméno DBA"
 
-#: lib/RT/Dashboard/Mailer.pm:327
+#: lib/RT/Dashboard/Mailer.pm:327 lib/RT/Report/Tickets.pm:124
 msgid "Daily"
 msgstr "Denní"
 
@@ -2487,7 +2491,7 @@ msgstr "Typ databáze"
 msgid "Database username for RT"
 msgstr "Databázové uživatelské jméno pro RT"
 
-#: share/html/Admin/Elements/UpgradeHistory:56
+#: lib/RT/Report/Tickets.pm:124 share/html/Admin/Elements/UpgradeHistory:56
 msgid "Date"
 msgstr ""
 
@@ -2498,6 +2502,22 @@ msgstr "Formát datumu"
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:633 share/html/SelfService/Display.html:73 share/html/Ticket/Create.html:253 share/html/Ticket/Elements/ShowSummary:85 share/html/Ticket/ModifyAll.html:68 share/html/m/ticket/create:377 share/html/m/ticket/show:344
 msgid "Dates"
 msgstr "Termíny"
+
+#: lib/RT/Report/Tickets.pm:124
+msgid "Day"
+msgstr ""
+
+#: lib/RT/Report/Tickets.pm:124
+msgid "DayOfMonth"
+msgstr ""
+
+#: lib/RT/Report/Tickets.pm:124
+msgid "DayOfWeek"
+msgstr ""
+
+#: lib/RT/Report/Tickets.pm:124
+msgid "DayOfYear"
+msgstr ""
 
 #: lib/RT/Date.pm:102
 msgid "Dec"
@@ -3698,9 +3718,13 @@ msgstr "Interval obnovování domácí stránky."
 msgid "Homepage"
 msgstr "Domovská stránka"
 
-#: share/html/Dashboards/Subscription.html:141
+#: lib/RT/Report/Tickets.pm:124 share/html/Dashboards/Subscription.html:141
 msgid "Hour"
 msgstr "Hodina"
+
+#: lib/RT/Report/Tickets.pm:124
+msgid "Hourly"
+msgstr ""
 
 #: share/html/Elements/SelectTimeUnits:53
 msgid "Hours"
@@ -4955,7 +4979,11 @@ msgstr "Pondělí"
 msgid "Monday through Friday"
 msgstr "pondělí až pátek"
 
-#: lib/RT/Dashboard/Mailer.pm:329
+#: lib/RT/Report/Tickets.pm:124
+msgid "Month"
+msgstr ""
+
+#: lib/RT/Dashboard/Mailer.pm:329 lib/RT/Report/Tickets.pm:124
 msgid "Monthly"
 msgstr "Měsíčně"
 
@@ -8017,6 +8045,10 @@ msgstr "Požadavky, které vlastním"
 msgid "Tickets which depend on this approval:"
 msgstr "Požadavky, které záleží na tomto schválení:"
 
+#: lib/RT/Report/Tickets.pm:124
+msgid "Time"
+msgstr ""
+
 #: share/html/Elements/RT__Ticket/ColumnMap:186 share/html/Search/Elements/PickBasics:179 share/html/Ticket/Create.html:235 share/html/m/ticket/create:353
 msgid "Time Estimated"
 msgstr "Předpokládaný čas"
@@ -8770,6 +8802,10 @@ msgstr "St"
 msgid "Wednesday"
 msgstr "Středa"
 
+#: lib/RT/Report/Tickets.pm:124
+msgid "WeekOfYear"
+msgstr ""
+
 #: lib/RT/Dashboard/Mailer.pm:326
 msgid "Weekday"
 msgstr ""
@@ -8910,6 +8946,10 @@ msgstr ""
 #: lib/RT/Transaction.pm:1162
 #. ($duration)
 msgid "Worked %quant(%1,minute,minutes)"
+msgstr ""
+
+#: lib/RT/Report/Tickets.pm:124
+msgid "Year"
 msgstr ""
 
 #: share/html/Articles/Article/Delete.html:70 share/html/Elements/RT__Template/ColumnMap:78 share/html/Widgets/Form/Boolean:77

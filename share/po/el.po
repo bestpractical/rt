@@ -1049,6 +1049,10 @@ msgstr ""
 msgid "And/Or"
 msgstr "Και/Ή"
 
+#: lib/RT/Report/Tickets.pm:124
+msgid "Annually"
+msgstr ""
+
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:74
 msgid "Any field"
 msgstr "Οποιοδήποτε πεδίο"
@@ -2414,7 +2418,7 @@ msgstr "Κωδικός DBA"
 msgid "DBA username"
 msgstr "Όνομα χρήστη DBA"
 
-#: lib/RT/Dashboard/Mailer.pm:327
+#: lib/RT/Dashboard/Mailer.pm:327 lib/RT/Report/Tickets.pm:124
 msgid "Daily"
 msgstr "Ημερησίως"
 
@@ -2487,7 +2491,7 @@ msgstr "Τύπος βάσης δεδομένων"
 msgid "Database username for RT"
 msgstr "Όνομα χρήστη βάσης δεδομένων του RT"
 
-#: share/html/Admin/Elements/UpgradeHistory:56
+#: lib/RT/Report/Tickets.pm:124 share/html/Admin/Elements/UpgradeHistory:56
 msgid "Date"
 msgstr ""
 
@@ -2498,6 +2502,22 @@ msgstr "Μορφή ημερομηνίας"
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:633 share/html/SelfService/Display.html:73 share/html/Ticket/Create.html:253 share/html/Ticket/Elements/ShowSummary:85 share/html/Ticket/ModifyAll.html:68 share/html/m/ticket/create:377 share/html/m/ticket/show:344
 msgid "Dates"
 msgstr "Ημερομηνίες"
+
+#: lib/RT/Report/Tickets.pm:124
+msgid "Day"
+msgstr ""
+
+#: lib/RT/Report/Tickets.pm:124
+msgid "DayOfMonth"
+msgstr ""
+
+#: lib/RT/Report/Tickets.pm:124
+msgid "DayOfWeek"
+msgstr ""
+
+#: lib/RT/Report/Tickets.pm:124
+msgid "DayOfYear"
+msgstr ""
 
 #: lib/RT/Date.pm:102
 msgid "Dec"
@@ -3698,9 +3718,13 @@ msgstr "Χρόνος ανανέωσης αρχικής σελίδας"
 msgid "Homepage"
 msgstr "Αρχική σελίδα"
 
-#: share/html/Dashboards/Subscription.html:141
+#: lib/RT/Report/Tickets.pm:124 share/html/Dashboards/Subscription.html:141
 msgid "Hour"
 msgstr "Ώρα"
+
+#: lib/RT/Report/Tickets.pm:124
+msgid "Hourly"
+msgstr ""
 
 #: share/html/Elements/SelectTimeUnits:53
 msgid "Hours"
@@ -4955,7 +4979,11 @@ msgstr "Δευτέρα"
 msgid "Monday through Friday"
 msgstr "Δευτέρα έως Παρασκευή"
 
-#: lib/RT/Dashboard/Mailer.pm:329
+#: lib/RT/Report/Tickets.pm:124
+msgid "Month"
+msgstr ""
+
+#: lib/RT/Dashboard/Mailer.pm:329 lib/RT/Report/Tickets.pm:124
 msgid "Monthly"
 msgstr "Μηνιαία"
 
@@ -8017,6 +8045,10 @@ msgstr "Αιτήματα που έχω αναλάβει"
 msgid "Tickets which depend on this approval:"
 msgstr "Αιτήματα που εξαρτώνται από αυτή την έγκριση:"
 
+#: lib/RT/Report/Tickets.pm:124
+msgid "Time"
+msgstr ""
+
 #: share/html/Elements/RT__Ticket/ColumnMap:186 share/html/Search/Elements/PickBasics:179 share/html/Ticket/Create.html:235 share/html/m/ticket/create:353
 msgid "Time Estimated"
 msgstr "Εκτιμώμενος χρόνος"
@@ -8770,6 +8802,10 @@ msgstr "Τετ"
 msgid "Wednesday"
 msgstr "Τετάρτη"
 
+#: lib/RT/Report/Tickets.pm:124
+msgid "WeekOfYear"
+msgstr ""
+
 #: lib/RT/Dashboard/Mailer.pm:326
 msgid "Weekday"
 msgstr "Καθημερινά"
@@ -8910,6 +8946,10 @@ msgstr ""
 #: lib/RT/Transaction.pm:1162
 #. ($duration)
 msgid "Worked %quant(%1,minute,minutes)"
+msgstr ""
+
+#: lib/RT/Report/Tickets.pm:124
+msgid "Year"
 msgstr ""
 
 #: share/html/Articles/Article/Delete.html:70 share/html/Elements/RT__Template/ColumnMap:78 share/html/Widgets/Form/Boolean:77

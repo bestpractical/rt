@@ -1049,6 +1049,10 @@ msgstr "Ha ocurrido un error"
 msgid "And/Or"
 msgstr "Y/O"
 
+#: lib/RT/Report/Tickets.pm:124
+msgid "Annually"
+msgstr ""
+
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:74
 msgid "Any field"
 msgstr "Cualquier campo"
@@ -2414,7 +2418,7 @@ msgstr "Contraseña del administrador de la base de datos"
 msgid "DBA username"
 msgstr "Nombre del usuario para el Administrador de la Base de Datos"
 
-#: lib/RT/Dashboard/Mailer.pm:327
+#: lib/RT/Dashboard/Mailer.pm:327 lib/RT/Report/Tickets.pm:124
 msgid "Daily"
 msgstr "Diariamente"
 
@@ -2487,7 +2491,7 @@ msgstr "Tipo de base de datos"
 msgid "Database username for RT"
 msgstr "Usuario de la base de datos para RT"
 
-#: share/html/Admin/Elements/UpgradeHistory:56
+#: lib/RT/Report/Tickets.pm:124 share/html/Admin/Elements/UpgradeHistory:56
 msgid "Date"
 msgstr ""
 
@@ -2498,6 +2502,22 @@ msgstr "Formato de fecha"
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:633 share/html/SelfService/Display.html:73 share/html/Ticket/Create.html:253 share/html/Ticket/Elements/ShowSummary:85 share/html/Ticket/ModifyAll.html:68 share/html/m/ticket/create:377 share/html/m/ticket/show:344
 msgid "Dates"
 msgstr "Fechas"
+
+#: lib/RT/Report/Tickets.pm:124
+msgid "Day"
+msgstr ""
+
+#: lib/RT/Report/Tickets.pm:124
+msgid "DayOfMonth"
+msgstr ""
+
+#: lib/RT/Report/Tickets.pm:124
+msgid "DayOfWeek"
+msgstr ""
+
+#: lib/RT/Report/Tickets.pm:124
+msgid "DayOfYear"
+msgstr ""
 
 #: lib/RT/Date.pm:102
 msgid "Dec"
@@ -3698,9 +3718,13 @@ msgstr "Intervalo de refresco de la página de inicio"
 msgid "Homepage"
 msgstr "Inicio"
 
-#: share/html/Dashboards/Subscription.html:141
+#: lib/RT/Report/Tickets.pm:124 share/html/Dashboards/Subscription.html:141
 msgid "Hour"
 msgstr "Hora"
+
+#: lib/RT/Report/Tickets.pm:124
+msgid "Hourly"
+msgstr ""
 
 #: share/html/Elements/SelectTimeUnits:53
 msgid "Hours"
@@ -4955,7 +4979,11 @@ msgstr "Lunes"
 msgid "Monday through Friday"
 msgstr "De lunes a viernes"
 
-#: lib/RT/Dashboard/Mailer.pm:329
+#: lib/RT/Report/Tickets.pm:124
+msgid "Month"
+msgstr ""
+
+#: lib/RT/Dashboard/Mailer.pm:329 lib/RT/Report/Tickets.pm:124
 msgid "Monthly"
 msgstr "Mensualmente"
 
@@ -8017,6 +8045,10 @@ msgstr "Casos que me pertenecen"
 msgid "Tickets which depend on this approval:"
 msgstr "Casos que dependen de esta aprobación:"
 
+#: lib/RT/Report/Tickets.pm:124
+msgid "Time"
+msgstr ""
+
 #: share/html/Elements/RT__Ticket/ColumnMap:186 share/html/Search/Elements/PickBasics:179 share/html/Ticket/Create.html:235 share/html/m/ticket/create:353
 msgid "Time Estimated"
 msgstr "Tiempo Estimado"
@@ -8770,6 +8802,10 @@ msgstr "Mié"
 msgid "Wednesday"
 msgstr "Miércoles"
 
+#: lib/RT/Report/Tickets.pm:124
+msgid "WeekOfYear"
+msgstr ""
+
 #: lib/RT/Dashboard/Mailer.pm:326
 msgid "Weekday"
 msgstr "Día de la semana"
@@ -8910,6 +8946,10 @@ msgstr ""
 #: lib/RT/Transaction.pm:1162
 #. ($duration)
 msgid "Worked %quant(%1,minute,minutes)"
+msgstr ""
+
+#: lib/RT/Report/Tickets.pm:124
+msgid "Year"
 msgstr ""
 
 #: share/html/Articles/Article/Delete.html:70 share/html/Elements/RT__Template/ColumnMap:78 share/html/Widgets/Form/Boolean:77
