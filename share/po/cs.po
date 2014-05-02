@@ -536,7 +536,7 @@ msgstr ""
 #. ($Transaction->TimeTaken)
 #. ($minutes)
 msgid "%quant(%1,minute,minutes)"
-msgstr "%1 %quant(%1,minuta,minuty,minut,minut)"
+msgstr "%quant(%1,minuta,minuty,minut,minut)"
 
 #: lib/RT/Date.pm:415
 msgid "%quant(%1,month,months)"
@@ -1643,7 +1643,7 @@ msgstr "Combobox: Vybrat nebo zadat jednu hodnotu"
 
 #: lib/RT/CustomField.pm:146
 msgid "Combobox: Select or enter up to %quant(%1,value,values)"
-msgstr "Combobox: Vybrat nebo zadat nejvýše %1 %quant(%1,hodnotu,hodnoty,hodnot)"
+msgstr "Combobox: Vybrat nebo zadat nejvýše %quant(%1,hodnotu,hodnoty,hodnot)"
 
 #: share/html/Elements/ShowTransaction:194 share/html/Elements/Tabs:650 share/html/Search/Elements/EditFormat:74
 msgid "Comment"
@@ -3122,11 +3122,11 @@ msgstr "Zadejte až %1 IP adres"
 
 #: lib/RT/CustomField.pm:99
 msgid "Enter up to %quant(%1,value,values)"
-msgstr "Zadejte nejvýše %1 %quant(%1,hodnotu,hodnoty,hodnot)"
+msgstr "Zadejte nejvýše %quant(%1,hodnotu,hodnoty,hodnot)"
 
 #: lib/RT/CustomField.pm:155
 msgid "Enter up to %quant(%1,value,values) with autocompletion"
-msgstr "Vyplnit nejvýše %1 %quant(%1,hodnotu,hodnoty,hodnot) s automatickým doplňováním"
+msgstr "Vyplnit nejvýše %quant(%1,hodnotu,hodnoty,hodnot) s automatickým doplňováním"
 
 #: share/html/Search/Simple.html:77
 #. (map { "<strong>$_</strong>" } qw(initial active inactive any))
@@ -3355,11 +3355,11 @@ msgstr "Do této položky zadejte URL."
 
 #: lib/RT/CustomField.pm:108
 msgid "Fill in up to %quant(%1,text area,text areas)"
-msgstr "Vyplnit nejvýše %1 %quant(%1,textovou oblast,textové oblasti,textových oblastí)"
+msgstr "Vyplnit nejvýše %quant(%1,textovou oblast,textové oblasti,textových oblastí)"
 
 #: lib/RT/CustomField.pm:117
 msgid "Fill in up to %quant(%1,wikitext area,wikitext areas)"
-msgstr "Vyplnit nejvýše %1 wiki %quant(%1,textovou oblast,textové oblasti,textových oblastí)"
+msgstr "Vyplnit nejvýše %quant(%1,wiki textovou oblast,wiki textové oblasti,wiki textových oblastí)"
 
 #: lib/RT/Tickets.pm:1692 share/html/Search/Elements/PickBasics:202 share/html/Ticket/Create.html:230 share/html/m/ticket/create:347
 msgid "Final Priority"
@@ -3483,7 +3483,7 @@ msgstr ""
 #. ($ticketcount)
 #. ($collection->CountAll)
 msgid "Found %quant(%1,ticket,tickets)"
-msgstr "Nalezen%quant(%1,,y,o) %numf(%1) %quant(%1,požadavek,požadavky,požadavků)"
+msgstr "%numerate(%1,Nalezen,Nalezeny,Nalezeno) %quant(%1,požadavek,požadavky,požadavků)"
 
 #: lib/RT/Record.pm:1005
 msgid "Found Object"
@@ -5928,7 +5928,7 @@ msgstr "Heslo nebylo nastaveno"
 #: lib/RT/User.pm:306
 #. (RT->Config->Get('MinimumPasswordLength'))
 msgid "Password needs to be at least %quant(%1,character,characters) long"
-msgstr "Heslo musí být dlouhé nejméně %1 %quant(%1,znak,znaky,znaků)"
+msgstr "Heslo musí být dlouhé nejméně %quant(%1,znak,znaky,znaků)"
 
 #: share/html/Admin/Tools/Configuration.html:128 share/html/Admin/Tools/Configuration.html:91
 msgid "Password not printed"
@@ -6553,7 +6553,7 @@ msgstr "Obnovení výsledků vyhledávání každých 60 minut."
 #: share/html/Elements/Refresh:59
 #. ($value/60)
 msgid "Refresh this page every %quant(%1,minute,minutes)."
-msgstr "Obnovit tuto stránku %quant(%1,každou,každé,každých) %numf(%1) %quant(%1,minutu,minuty,minut)."
+msgstr "Obnovit tuto stránku %numerate(%1,každou,každé,každých) %quant(%1,minutu,minuty,minut)."
 
 #: etc/RT_Config.pm:1241 etc/initialdata:879
 msgid "RefreshHomepage"
@@ -7179,7 +7179,7 @@ msgstr ""
 
 #: lib/RT/CustomField.pm:76
 msgid "Select up to %quant(%1,value,values)"
-msgstr "Výběr nejvýše %1 %quant(%1,hodnoty,hodnot,hodnot)"
+msgstr "Výběr nejvýše %quant(%1,hodnoty,hodnot,hodnot)"
 
 #: share/html/Admin/Elements/EditCustomFields:55
 msgid "Selected Custom Fields"
@@ -8725,11 +8725,11 @@ msgstr "Odeslat jeden obrázek"
 
 #: lib/RT/CustomField.pm:136
 msgid "Upload up to %quant(%1,file,files)"
-msgstr "Odeslat nejvýše %1 %quant(%1,soubor,soubory,souborů)"
+msgstr "Odeslat nejvýše %quant(%1,soubor,soubory,souborů)"
 
 #: lib/RT/CustomField.pm:127
 msgid "Upload up to %quant(%1,image,images)"
-msgstr "Odeslat nejvýše %1 %quant(%1,obrázek,obrázky,obrázků)"
+msgstr "Odeslat nejvýše %quant(%1,obrázek,obrázky,obrázků)"
 
 #: sbin/rt-email-digest:80
 msgid "Usage:"
