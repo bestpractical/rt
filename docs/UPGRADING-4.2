@@ -310,4 +310,23 @@ equivalent results in RT 4.2.
 
 =back
 
+=head1 UPGRADING FROM 4.2.3 AND EARLIER
+
+RT 4.2.4's upgrade scripts contain two fixes to normalize upgraded RTs
+with those installed new from a release of RT 4.2.
+
+We neglected to add the "Open Inactive Tickets" action mentioned earlier
+in this documents. It was available to fresh installs but not on
+upgrades. This Scrip Action is now created if needed.
+
+RT expects the ___Approvals queue to have a special value in the
+Disabled column so that it is hidden B<but> tickets can still be created
+(normal disabled Queues disallow ticket creation).  Users who enabled
+and then disabled the Queue on earlier releases will have the incorrect
+Disabled value, so we fix that.  A similar problem applies to the
+lifecycle, which must be set to the internal "approvals" lifecycle --
+which is not listed as an option.  RT 4.2.4 also includes enhancements
+to the Queue admin page for ___Approvals to prevent editing things which
+might cause problems.
+
 =cut
