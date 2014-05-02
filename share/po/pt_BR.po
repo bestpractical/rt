@@ -4726,15 +4726,10 @@ msgstr "Modificar objetos associados para scrip #%1"
 msgid "Modify custom field values"
 msgstr "Modificar valores de campos personalizados"
 
-#: share/html/Ticket/ModifyDates.html:48
+#: share/html/Ticket/ModifyDates.html:48 share/html/Ticket/ModifyDates.html:57
 #. ($TicketObj->Id)
-msgid "Modify dates for #%1"
-msgstr "Modificar as datas para #%1"
-
-#: share/html/Ticket/ModifyDates.html:57
-#. ($TicketObj->Id)
-msgid "Modify dates for ticket # %1"
-msgstr "Modificar as datas para o tíquete # %1"
+msgid "Modify dates for ticket #%1"
+msgstr "Modificar as datas para o tíquete #%1"
 
 #: share/html/Elements/Tabs:217
 msgid "Modify global article topics"

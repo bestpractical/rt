@@ -4727,15 +4727,10 @@ msgstr ""
 msgid "Modify custom field values"
 msgstr "Modyfikuj wartości pól definiowanych przez użytkownika"
 
-#: share/html/Ticket/ModifyDates.html:48
+#: share/html/Ticket/ModifyDates.html:48 share/html/Ticket/ModifyDates.html:57
 #. ($TicketObj->Id)
-msgid "Modify dates for #%1"
-msgstr "Modyfikuj daty dla #%1"
-
-#: share/html/Ticket/ModifyDates.html:57
-#. ($TicketObj->Id)
-msgid "Modify dates for ticket # %1"
-msgstr "Modyfikuj daty dla zgłoszenia # %1"
+msgid "Modify dates for ticket #%1"
+msgstr "Modyfikuj daty dla zgłoszenia #%1"
 
 #: share/html/Elements/Tabs:217
 msgid "Modify global article topics"
