@@ -248,19 +248,19 @@ sub SetDisabled {
     my ($ok, $msg) = $self->_Set( Field =>'Disabled', Value => $val);
     unless ($ok) {
         $RT::Handle->Rollback();
-        $RT::Logger->warning("Couldn't ".(($val == 1) ? "disable" : "enable")." queue ".$self->Name.": $msg");
+        $RT::Logger->warning("Couldn't ".(($val == 0) ? "enable" : "disable")." queue ".$self->Name.": $msg");
         return ($ok, $msg);
     }
-    $self->_NewTransaction( Type => ($val == 1) ? "Disabled" : "Enabled" );
+    $self->_NewTransaction( Type => ($val == 0) ? "Enabled" : "Disabled" );
 
     $RT::Handle->Commit();
 
     RT->System->QueueCacheNeedsUpdate(1);
 
-    if ( $val == 1 ) {
-        return (1, $self->loc("Queue disabled"));
-    } else {
+    if ( $val == 0 ) {
         return (1, $self->loc("Queue enabled"));
+    } else {
+        return (1, $self->loc("Queue disabled"));
     }
 
 }
