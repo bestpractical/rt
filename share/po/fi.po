@@ -940,26 +940,6 @@ msgstr "Kopio ylläpidolle"
 msgid "AdminCcs"
 msgstr "AdminCcs"
 
-#: NOT FOUND IN SOURCE
-msgid "AdminCustomField"
-msgstr "AdminCustomField"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminGroup"
-msgstr "AdminGroup"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminGroupMembership"
-msgstr "AdminGroupMembership"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminQueue"
-msgstr "AdminQueue"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminUsers"
-msgstr "AdminUsers"
-
 #: share/html/Ticket/Elements/EditPeople:84
 msgid "Administrative Cc"
 msgstr "Kopio ylläpidolle"
@@ -1217,10 +1197,6 @@ msgstr "Asc"
 #: lib/RT/Queue.pm:116
 msgid "Assign and remove queue custom fields"
 msgstr "Lisää ja poista jonon omia kenttiä"
-
-#: NOT FOUND IN SOURCE
-msgid "AssignCustomFields"
-msgstr "AssignCustomFields"
 
 #: share/html/Ticket/Elements/AddAttachments:61
 msgid "Attach"
@@ -1648,10 +1624,6 @@ msgstr "Kommenttiosoite"
 #: lib/RT/Queue.pm:131
 msgid "Comment on tickets"
 msgstr "Kommentoi tikettejä"
-
-#: NOT FOUND IN SOURCE
-msgid "CommentOnTicket"
-msgstr "CommentOnTicket"
 
 #: share/html/Tools/MyDay.html:64
 msgid "Comments"
@@ -2253,30 +2225,6 @@ msgstr "Luo, muuta ja poista tallennettuja hakuja"
 msgid "Create, modify and delete users"
 msgstr "Luo, muuta ja poista käyttäjiä"
 
-#: NOT FOUND IN SOURCE
-msgid "CreateArticle"
-msgstr "LuoArtikkeli"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateDashboard"
-msgstr "Luo työtila"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateGroupDashboard"
-msgstr "Luo ryhmän työtila"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateOwnDashboard"
-msgstr "Luo oma työtila"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateSavedSearch"
-msgstr "Luo tallennettu haku"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateTicket"
-msgstr "CreateTicket"
-
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:73 lib/RT/Tickets.pm:137 share/html/Admin/Elements/ShowKeyInfo:71 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:69 share/html/Elements/ColumnMap:74 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:350
 msgid "Created"
 msgstr "Luotu"
@@ -2626,26 +2574,6 @@ msgstr "Poista tiketit"
 msgid "Delete values"
 msgstr "Poista arvot"
 
-#: NOT FOUND IN SOURCE
-msgid "DeleteArticle"
-msgstr "Poista artikkeli"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteDashboard"
-msgstr "Poista työtila"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteGroupDashboard"
-msgstr "Poista ryhmän työtila"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteOwnDashboard"
-msgstr "Poista oma työtila"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteTicket"
-msgstr "DeleteTicket"
-
 #: lib/RT/SharedSetting.pm:285
 #. ($self->ObjectName)
 msgid "Deleted %1"
@@ -2900,10 +2828,6 @@ msgstr "Muokkaa järjestelmäpohjia"
 #. ($ClassObj->Name)
 msgid "Edit topic hierarchy for %1"
 msgstr "Muokkaa luokan %1 aihehierarkiaa"
-
-#: NOT FOUND IN SOURCE
-msgid "EditSavedSearches"
-msgstr "Muokkaa tallennettuja hakuja"
 
 #: share/html/Admin/CustomFields/Modify.html:195 share/html/Admin/Elements/EditCustomField:123
 #. ($CustomFieldObj->Name)
@@ -3196,10 +3120,6 @@ msgstr "Kaikki"
 msgid "Example:"
 msgstr "Esimerkki:"
 
-#: NOT FOUND IN SOURCE
-msgid "ExecuteCode"
-msgstr "SuoritaKoodi"
-
 #: share/html/Admin/Elements/ShowKeyInfo:74
 msgid "Expire"
 msgstr ""
@@ -3448,10 +3368,6 @@ msgstr "Välitä tiketti #%1"
 #. ($txn->id)
 msgid "Forward transaction #%1"
 msgstr "Välitä tapahtuma #%1"
-
-#: NOT FOUND IN SOURCE
-msgid "ForwardMessage"
-msgstr "Välitä viesti"
 
 #: lib/RT/Transaction.pm:852
 #. ($self->Field, $recipients,            [\'<a href="#txn-', $self->Field, \'">'], \'</a>')
@@ -5024,54 +4940,6 @@ msgstr "Muokkaa jonoon %1 liittyviä käyttäjien oikeuksia"
 msgid "Modify who receives mail for ticket #%1"
 msgstr "Muokkaa tiketin #%1 sähköpostin vastaanottajia"
 
-#: NOT FOUND IN SOURCE
-msgid "ModifyACL"
-msgstr "MuutaACL"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyArticle"
-msgstr "MuutaArtikkeli"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyArticleTopics"
-msgstr "MuutaArtikkeliAiheet"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyCustomField"
-msgstr "MuutaOmakenttä"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyDashboard"
-msgstr "Muokkaa työtilaa"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyGroupDashboard"
-msgstr "Myökkaa ryhmän työtilaa"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyOwnDashboard"
-msgstr "Muokkaa omaa työtilaa"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyOwnMembership"
-msgstr "MuutaOmaJäsenyys"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyQueueWatchers"
-msgstr "MuutaJononSeuraajat"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyScrips"
-msgstr "MuutaScripejä"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyTemplate"
-msgstr "MuokkaaMallia"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyTicket"
-msgstr "MuutaTikettiä"
-
 #: share/html/Admin/Tools/Configuration.html:247
 msgid "Module"
 msgstr "Moduuli"
@@ -6634,10 +6502,6 @@ msgstr "Vastaa asiakkaille"
 msgid "Reply to tickets"
 msgstr "Vastaa tiketteihin"
 
-#: NOT FOUND IN SOURCE
-msgid "ReplyToTicket"
-msgstr "VastaaTikettiin"
-
 #: lib/RT/Report/Tickets.pm:68 lib/RT/Ticket.pm:101 lib/RT/Tickets.pm:143
 msgid "Requestor"
 msgstr "Tilaaja"
@@ -6995,34 +6859,6 @@ msgstr ""
 msgid "See that this class exists"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "SeeClass"
-msgstr "NäeLuokka"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeCustomField"
-msgstr "NäeOmakenttä"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeDashboard"
-msgstr "Esikatsele työtilaa"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeGroup"
-msgstr "NäeRyhmä"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeGroupDashboard"
-msgstr "Esikatsele ryhmän työtilaa"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeOwnDashboard"
-msgstr "Esikatsele omaa työtilaa"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeQueue"
-msgstr "NäeJono"
-
 #: share/html/Elements/Tabs:106 share/html/Elements/Tabs:121 share/html/Elements/Tabs:129 share/html/Elements/Tabs:171 share/html/Elements/Tabs:187 share/html/Elements/Tabs:274 share/html/Elements/Tabs:293 share/html/Elements/Tabs:297 share/html/Elements/Tabs:387 share/html/Elements/Tabs:393 share/html/Elements/Tabs:396 share/html/Elements/Tabs:404 share/html/Elements/Tabs:410 share/html/Elements/Tabs:422 share/html/Elements/Tabs:433 share/html/Elements/Tabs:71 share/html/Elements/Tabs:79 share/html/Elements/Tabs:87 share/html/Elements/Tabs:96
 msgid "Select"
 msgstr "Valitse"
@@ -7370,54 +7206,6 @@ msgstr "Näytä asiakkaan 10 tärkeintä tikettiä"
 msgid "Show ticket history"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "ShowACL"
-msgstr "NäeACL"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowApprovalsTab"
-msgstr "NäeHyväksynnätTab"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowArticle"
-msgstr "NäeArtikkeli"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowArticleHistory"
-msgstr "NäeArtikkelinHistoria"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowConfigTab"
-msgstr "NäeAsetuksetTab"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowGlobalTemplates"
-msgstr "NäeJärjestelmäpohjat"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowOutgoingEmail"
-msgstr "NäeLähetettyViesti"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowSavedSearches"
-msgstr "NäeTallennetutHaut"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowScrips"
-msgstr "NäeScripit"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowTemplate"
-msgstr "NäytäMalli"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowTicket"
-msgstr "NäeTiketti"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowTicketComments"
-msgstr "NäeTiketinKommentit"
-
 #: share/html/Admin/Tools/Shredder/index.html:74 share/html/Elements/Tabs:245 share/html/Elements/Tabs:852
 msgid "Shredder"
 msgstr "Silppuri"
@@ -7615,10 +7403,6 @@ msgstr "Kaappaa"
 msgid "Steal tickets"
 msgstr "Ota tikettejä"
 
-#: NOT FOUND IN SOURCE
-msgid "StealTicket"
-msgstr "OtaTiketti"
-
 #: share/html/Install/Basics.html:48 share/html/Install/DatabaseDetails.html:48 share/html/Install/DatabaseType.html:48 share/html/Install/Finish.html:48 share/html/Install/Global.html:48 share/html/Install/Initialize.html:48 share/html/Install/Sendmail.html:48
 #. (1, 7)
 #. (2, 7)
@@ -7672,10 +7456,6 @@ msgstr "Tilaa työtila %1"
 #: lib/RT/Dashboard.pm:78
 msgid "Subscribe to dashboards"
 msgstr "Tilaa työtiloja"
-
-#: NOT FOUND IN SOURCE
-msgid "SubscribeDashboard"
-msgstr "Tilaa työtila"
 
 #: share/html/Dashboards/Subscription.html:275
 #. ($Dashboard->Name)

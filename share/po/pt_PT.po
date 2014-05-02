@@ -940,38 +940,6 @@ msgstr "AdminCc"
 msgid "AdminCcs"
 msgstr "AdminCcs"
 
-#: NOT FOUND IN SOURCE
-msgid "AdminClass"
-msgstr "AdminClass"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminCustomField"
-msgstr "AdminCampoPerson"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminCustomFieldValues"
-msgstr "AdminValorCampoPerson"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminGroup"
-msgstr "AdminGroupo"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminGroupMembership"
-msgstr "AdminMembrosGrupo"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminQueue"
-msgstr "FilaAdmin"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminTopics"
-msgstr "AdminTopicos"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminUsers"
-msgstr "AdminUtilizadores"
-
 #: share/html/Ticket/Elements/EditPeople:84
 msgid "Administrative Cc"
 msgstr "Cc Administrativo"
@@ -1229,10 +1197,6 @@ msgstr "Asc"
 #: lib/RT/Queue.pm:116
 msgid "Assign and remove queue custom fields"
 msgstr "Atribuir e remover campos personalizados de uma queue"
-
-#: NOT FOUND IN SOURCE
-msgid "AssignCustomFields"
-msgstr "AtribuirCamposPerson"
 
 #: share/html/Ticket/Elements/AddAttachments:61
 msgid "Attach"
@@ -1660,10 +1624,6 @@ msgstr "Morada do comentário"
 #: lib/RT/Queue.pm:131
 msgid "Comment on tickets"
 msgstr "Comentar tickets"
-
-#: NOT FOUND IN SOURCE
-msgid "CommentOnTicket"
-msgstr "ComentarNaTarefa"
 
 #: share/html/Tools/MyDay.html:64
 msgid "Comments"
@@ -2265,30 +2225,6 @@ msgstr "Criar, modificar e apagar pesquisas gravadas"
 msgid "Create, modify and delete users"
 msgstr "Criar, modificar e apagar utilizadores"
 
-#: NOT FOUND IN SOURCE
-msgid "CreateArticle"
-msgstr "CriarArtigo"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateDashboard"
-msgstr "CriarPainel"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateGroupDashboard"
-msgstr "CriarGrupoPainel"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateOwnDashboard"
-msgstr "CriarPainelPróprio"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateSavedSearch"
-msgstr "CriarPesquisaGravada"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateTicket"
-msgstr "Criar Tarefa"
-
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:73 lib/RT/Tickets.pm:137 share/html/Admin/Elements/ShowKeyInfo:71 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:69 share/html/Elements/ColumnMap:74 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:350
 msgid "Created"
 msgstr "Criado"
@@ -2638,26 +2574,6 @@ msgstr "Apagar tickets"
 msgid "Delete values"
 msgstr "Apagar valores"
 
-#: NOT FOUND IN SOURCE
-msgid "DeleteArticle"
-msgstr "ApagarArtigo"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteDashboard"
-msgstr "ApagarPainel"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteGroupDashboard"
-msgstr "ApagarGrupoPainel"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteOwnDashboard"
-msgstr "ApagarDashboardPróprio"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteTicket"
-msgstr "ApagarTarefa"
-
 #: lib/RT/SharedSetting.pm:285
 #. ($self->ObjectName)
 msgid "Deleted %1"
@@ -2912,10 +2828,6 @@ msgstr "Editar modelos de sistema"
 #. ($ClassObj->Name)
 msgid "Edit topic hierarchy for %1"
 msgstr "Editar hierarquia de tópicos de %1"
-
-#: NOT FOUND IN SOURCE
-msgid "EditSavedSearches"
-msgstr "EditarPesquisasGravadas"
 
 #: share/html/Admin/CustomFields/Modify.html:195 share/html/Admin/Elements/EditCustomField:123
 #. ($CustomFieldObj->Name)
@@ -3208,10 +3120,6 @@ msgstr "Todos"
 msgid "Example:"
 msgstr "Exemplo:"
 
-#: NOT FOUND IN SOURCE
-msgid "ExecuteCode"
-msgstr "ExecutarCódigo"
-
 #: share/html/Admin/Elements/ShowKeyInfo:74
 msgid "Expire"
 msgstr "Expirar"
@@ -3460,10 +3368,6 @@ msgstr "Encaminhar ticket #%1"
 #. ($txn->id)
 msgid "Forward transaction #%1"
 msgstr "Encaminhar transcção #%1"
-
-#: NOT FOUND IN SOURCE
-msgid "ForwardMessage"
-msgstr "ReencaminharMensagem"
 
 #: lib/RT/Transaction.pm:852
 #. ($self->Field, $recipients,            [\'<a href="#txn-', $self->Field, \'">'], \'</a>')
@@ -4344,10 +4248,6 @@ msgstr "Carregar pesquisa gravada"
 #: share/html/Articles/Article/Search.html:73
 msgid "Load saved search:"
 msgstr "Carregar pesquisa gravada:"
-
-#: NOT FOUND IN SOURCE
-msgid "LoadSavedSearch"
-msgstr "CarregarPesquisaGravada"
 
 #: lib/RT/SharedSetting.pm:119
 #. ($self->ObjectName, $self->Name)

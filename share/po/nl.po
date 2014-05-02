@@ -940,26 +940,6 @@ msgstr "BeheerderCc"
 msgid "AdminCcs"
 msgstr "BeheerderCCs"
 
-#: NOT FOUND IN SOURCE
-msgid "AdminCustomField"
-msgstr "Beheerder custom field"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminGroup"
-msgstr "BeheerderGroep"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminGroupMembership"
-msgstr "BeheerderGroepLidmaatschap"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminQueue"
-msgstr "Beheerder queue"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminUsers"
-msgstr "BeheerderGebruikers"
-
 #: share/html/Ticket/Elements/EditPeople:84
 msgid "Administrative Cc"
 msgstr "Administratieve Cc"
@@ -1217,10 +1197,6 @@ msgstr "Oplopend"
 #: lib/RT/Queue.pm:116
 msgid "Assign and remove queue custom fields"
 msgstr "wachtrij aangepaste velden toewijzen en verwijderen"
-
-#: NOT FOUND IN SOURCE
-msgid "AssignCustomFields"
-msgstr "WijsSpecifiekeVeldenToe"
 
 #: share/html/Ticket/Elements/AddAttachments:61
 msgid "Attach"
@@ -1648,10 +1624,6 @@ msgstr ""
 #: lib/RT/Queue.pm:131
 msgid "Comment on tickets"
 msgstr "Commentaar op tickets"
-
-#: NOT FOUND IN SOURCE
-msgid "CommentOnTicket"
-msgstr "Commentaar op ticket"
 
 #: share/html/Tools/MyDay.html:64
 msgid "Comments"
@@ -2253,10 +2225,6 @@ msgstr "Creëer, wijzig en verwijder opgeslagen zoekopdrachten"
 msgid "Create, modify and delete users"
 msgstr "Creëer, wijzig en verwijder gebruikers"
 
-#: NOT FOUND IN SOURCE
-msgid "CreateTicket"
-msgstr "Creëer ticket"
-
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:73 lib/RT/Tickets.pm:137 share/html/Admin/Elements/ShowKeyInfo:71 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:69 share/html/Elements/ColumnMap:74 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:350
 msgid "Created"
 msgstr "Gecreëerd"
@@ -2606,10 +2574,6 @@ msgstr "Verwijder tickets"
 msgid "Delete values"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "DeleteTicket"
-msgstr "VerwijderTicket"
-
 #: lib/RT/SharedSetting.pm:285
 #. ($self->ObjectName)
 msgid "Deleted %1"
@@ -2864,10 +2828,6 @@ msgstr "Wijzig systeem sjablonen"
 #. ($ClassObj->Name)
 msgid "Edit topic hierarchy for %1"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "EditSavedSearches"
-msgstr "WijzigOpgeslagenZoekopdrachten"
 
 #: share/html/Admin/CustomFields/Modify.html:195 share/html/Admin/Elements/EditCustomField:123
 #. ($CustomFieldObj->Name)
@@ -4289,10 +4249,6 @@ msgstr ""
 msgid "Load saved search:"
 msgstr "Laad opgeslagen zoekopdracht:"
 
-#: NOT FOUND IN SOURCE
-msgid "LoadSavedSearch"
-msgstr "Laad opgeslagen zoekopdracht"
-
 #: lib/RT/SharedSetting.pm:119
 #. ($self->ObjectName, $self->Name)
 msgid "Loaded %1 %2"
@@ -4983,34 +4939,6 @@ msgstr "Wijzig gebruikersrechten voor queue %1"
 #. ($Ticket->Id)
 msgid "Modify who receives mail for ticket #%1"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyACL"
-msgstr "WijzigACL"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyOwnMembership"
-msgstr "WijzigEigenLidmaatschap"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyQueueWatchers"
-msgstr "Wijzig queue toeschouwers"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyScrips"
-msgstr "Wijzig scrips"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifySelf"
-msgstr "WijzigZelf"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyTemplate"
-msgstr "WijzigSjabloon"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyTicket"
-msgstr "WijzigTicket"
 
 #: share/html/Admin/Tools/Configuration.html:247
 msgid "Module"
@@ -5773,10 +5701,6 @@ msgstr ""
 #: lib/RT/Queue.pm:132
 msgid "Own tickets"
 msgstr "Eigen tickets"
-
-#: NOT FOUND IN SOURCE
-msgid "OwnTicket"
-msgstr "EigenTicket"
 
 #: lib/RT/Graph/Tickets.pm:154 lib/RT/Report/Tickets.pm:64 lib/RT/Ticket.pm:100 lib/RT/Tickets.pm:111 lib/RT/Tickets.pm:1841 share/html/Elements/QuickCreate:62 share/html/Elements/RT__Ticket/ColumnMap:106 share/html/Elements/RT__Ticket/ColumnMap:262 share/html/Elements/RT__Ticket/ColumnMap:279 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:137 share/html/Ticket/Elements/Reminders:175 share/html/Ticket/Elements/Reminders:84 share/html/Ticket/Elements/ShowPeople:50 share/html/m/_elements/ticket_list:96 share/html/m/ticket/create:258 share/html/m/ticket/reply:71 share/html/m/ticket/show:286
 msgid "Owner"
@@ -6578,10 +6502,6 @@ msgstr "Antwoord naar aanvragers"
 msgid "Reply to tickets"
 msgstr "Antwoord op tickets"
 
-#: NOT FOUND IN SOURCE
-msgid "ReplyToTicket"
-msgstr "Antwoord  op ticket"
-
 #: lib/RT/Report/Tickets.pm:68 lib/RT/Ticket.pm:101 lib/RT/Tickets.pm:143
 msgid "Requestor"
 msgstr "Aanvrager"
@@ -6939,18 +6859,6 @@ msgstr ""
 msgid "See that this class exists"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "SeeCustomField"
-msgstr "Bekijk custom field"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeGroup"
-msgstr "Bekijk groep"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeQueue"
-msgstr "Bekijk queue"
-
 #: share/html/Elements/Tabs:106 share/html/Elements/Tabs:121 share/html/Elements/Tabs:129 share/html/Elements/Tabs:171 share/html/Elements/Tabs:187 share/html/Elements/Tabs:274 share/html/Elements/Tabs:293 share/html/Elements/Tabs:297 share/html/Elements/Tabs:387 share/html/Elements/Tabs:393 share/html/Elements/Tabs:396 share/html/Elements/Tabs:404 share/html/Elements/Tabs:410 share/html/Elements/Tabs:422 share/html/Elements/Tabs:433 share/html/Elements/Tabs:71 share/html/Elements/Tabs:79 share/html/Elements/Tabs:87 share/html/Elements/Tabs:96
 msgid "Select"
 msgstr ""
@@ -7298,34 +7206,6 @@ msgstr ""
 msgid "Show ticket history"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "ShowACL"
-msgstr "ToonACL"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowOutgoingEmail"
-msgstr "ToonUitgaandeEmail"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowSavedSearches"
-msgstr "ToonOpgeslagenZoekopdrachten"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowScrips"
-msgstr "Toon scrips"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowTemplate"
-msgstr "Toon sjabloon"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowTicket"
-msgstr "Toon ticket"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowTicketComments"
-msgstr "Toon ticket commentaar"
-
 #: share/html/Admin/Tools/Shredder/index.html:74 share/html/Elements/Tabs:245 share/html/Elements/Tabs:852
 msgid "Shredder"
 msgstr ""
@@ -7523,10 +7403,6 @@ msgstr "Steel"
 msgid "Steal tickets"
 msgstr "Steel ticket"
 
-#: NOT FOUND IN SOURCE
-msgid "StealTicket"
-msgstr "SteelTicket"
-
 #: share/html/Install/Basics.html:48 share/html/Install/DatabaseDetails.html:48 share/html/Install/DatabaseType.html:48 share/html/Install/Finish.html:48 share/html/Install/Global.html:48 share/html/Install/Initialize.html:48 share/html/Install/Sendmail.html:48
 #. (1, 7)
 #. (2, 7)
@@ -7651,10 +7527,6 @@ msgstr ""
 msgid "Sunday"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "SuperUser"
-msgstr "Super gebruiker"
-
 #: lib/RT/Config.pm:516
 msgid "Suspended"
 msgstr ""
@@ -7703,10 +7575,6 @@ msgstr "Neem"
 #: lib/RT/Queue.pm:135
 msgid "Take tickets"
 msgstr "Neem ticket"
-
-#: NOT FOUND IN SOURCE
-msgid "TakeTicket"
-msgstr "NeemTicket"
 
 #: lib/RT/Transaction.pm:1120 lib/RT/Transaction.pm:948
 msgid "Taken"
@@ -8866,14 +8734,6 @@ msgstr ""
 #: share/html/Dashboards/Subscription.html:276
 msgid "Warning: you have no email address set, so you will not receive this dashboard until you have it set"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Watch"
-msgstr "Schouw toe"
-
-#: NOT FOUND IN SOURCE
-msgid "WatchAsAdminCc"
-msgstr "SchouwToeAlsAdminCc"
 
 #: lib/RT/Report/Tickets.pm:71 lib/RT/Tickets.pm:147
 msgid "Watcher"

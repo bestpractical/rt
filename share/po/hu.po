@@ -2225,10 +2225,6 @@ msgstr ""
 msgid "Create, modify and delete users"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "CreateTicket"
-msgstr "ProblémaLétrehozás"
-
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:73 lib/RT/Tickets.pm:137 share/html/Admin/Elements/ShowKeyInfo:71 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:69 share/html/Elements/ColumnMap:74 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:350
 msgid "Created"
 msgstr "Felvéve"
@@ -7531,10 +7527,6 @@ msgstr "Vas"
 #: share/html/Dashboards/Subscription.html:113
 msgid "Sunday"
 msgstr "Vasárnap"
-
-#: NOT FOUND IN SOURCE
-msgid "SuperUser"
-msgstr "RendszerAdmin"
 
 #: lib/RT/Config.pm:516
 msgid "Suspended"

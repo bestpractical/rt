@@ -940,26 +940,6 @@ msgstr "AdminCc"
 msgid "AdminCcs"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "AdminCustomField"
-msgstr "Kolom Kustom Admin"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminGroup"
-msgstr "Grup Admin"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminGroupMembership"
-msgstr "Keanggotaan Grup Admin"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminQueue"
-msgstr "Antrian Admin"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminUsers"
-msgstr "Pengguna Admin"
-
 #: share/html/Ticket/Elements/EditPeople:84
 msgid "Administrative Cc"
 msgstr "Cc Administrasi"
@@ -1217,10 +1197,6 @@ msgstr ""
 #: lib/RT/Queue.pm:116
 msgid "Assign and remove queue custom fields"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "AssignCustomFields"
-msgstr "Menentukan Kolom Kustom"
 
 #: share/html/Ticket/Elements/AddAttachments:61
 msgid "Attach"
@@ -1648,10 +1624,6 @@ msgstr ""
 #: lib/RT/Queue.pm:131
 msgid "Comment on tickets"
 msgstr "Komentar pada Tiket"
-
-#: NOT FOUND IN SOURCE
-msgid "CommentOnTicket"
-msgstr "Komentar Pada Tiket"
 
 #: share/html/Tools/MyDay.html:64
 msgid "Comments"
@@ -2253,14 +2225,6 @@ msgstr ""
 msgid "Create, modify and delete users"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "CreateSavedSearch"
-msgstr "Buat Pencarian yang Disimpan"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateTicket"
-msgstr "Buat Tiket"
-
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:73 lib/RT/Tickets.pm:137 share/html/Admin/Elements/ShowKeyInfo:71 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:69 share/html/Elements/ColumnMap:74 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:350
 msgid "Created"
 msgstr "sudah Dibuat"
@@ -2610,10 +2574,6 @@ msgstr "Hapus tiket"
 msgid "Delete values"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "DeleteTicket"
-msgstr "Hapus tiket"
-
 #: lib/RT/SharedSetting.pm:285
 #. ($self->ObjectName)
 msgid "Deleted %1"
@@ -2868,10 +2828,6 @@ msgstr "Ubah template sistem"
 #. ($ClassObj->Name)
 msgid "Edit topic hierarchy for %1"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "EditSavedSearches"
-msgstr "Ubah Pencarian yang Disimpan"
 
 #: share/html/Admin/CustomFields/Modify.html:195 share/html/Admin/Elements/EditCustomField:123
 #. ($CustomFieldObj->Name)
@@ -4293,10 +4249,6 @@ msgstr ""
 msgid "Load saved search:"
 msgstr "Memanggil pencarian yang disimpan:"
 
-#: NOT FOUND IN SOURCE
-msgid "LoadSavedSearch"
-msgstr "Memanggil pencarian yang disimpan"
-
 #: lib/RT/SharedSetting.pm:119
 #. ($self->ObjectName, $self->Name)
 msgid "Loaded %1 %2"
@@ -4987,38 +4939,6 @@ msgstr "Mengubah hak pengguna untuk antrian %1"
 #. ($Ticket->Id)
 msgid "Modify who receives mail for ticket #%1"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyACL"
-msgstr "Mengubah ACL"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyCustomField"
-msgstr "Mengubah Kolom Kustom"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyOwnMembership"
-msgstr "Mengubah Milik Keanggotaan"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyQueueWatchers"
-msgstr "Mengubah Pengamat Antrian"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyScrips"
-msgstr "Mengubah Scrip"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifySelf"
-msgstr "Mengubah Sendiri"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyTemplate"
-msgstr "Mengubah Template"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyTicket"
-msgstr "Mengubah Tiket"
 
 #: share/html/Admin/Tools/Configuration.html:247
 msgid "Module"
@@ -5781,10 +5701,6 @@ msgstr ""
 #: lib/RT/Queue.pm:132
 msgid "Own tickets"
 msgstr "Memiliki tiket-tiket"
-
-#: NOT FOUND IN SOURCE
-msgid "OwnTicket"
-msgstr "Memiliki tiket"
 
 #: lib/RT/Graph/Tickets.pm:154 lib/RT/Report/Tickets.pm:64 lib/RT/Ticket.pm:100 lib/RT/Tickets.pm:111 lib/RT/Tickets.pm:1841 share/html/Elements/QuickCreate:62 share/html/Elements/RT__Ticket/ColumnMap:106 share/html/Elements/RT__Ticket/ColumnMap:262 share/html/Elements/RT__Ticket/ColumnMap:279 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:137 share/html/Ticket/Elements/Reminders:175 share/html/Ticket/Elements/Reminders:84 share/html/Ticket/Elements/ShowPeople:50 share/html/m/_elements/ticket_list:96 share/html/m/ticket/create:258 share/html/m/ticket/reply:71 share/html/m/ticket/show:286
 msgid "Owner"
@@ -6586,10 +6502,6 @@ msgstr "Balas ke Pemohon"
 msgid "Reply to tickets"
 msgstr "Balas ke tiket"
 
-#: NOT FOUND IN SOURCE
-msgid "ReplyToTicket"
-msgstr "Balas ke Tiket"
-
 #: lib/RT/Report/Tickets.pm:68 lib/RT/Ticket.pm:101 lib/RT/Tickets.pm:143
 msgid "Requestor"
 msgstr "Pemohon"
@@ -6947,18 +6859,6 @@ msgstr ""
 msgid "See that this class exists"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "SeeCustomField"
-msgstr "Lihat Kolom Kustom"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeGroup"
-msgstr "Lihat Grup"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeQueue"
-msgstr "Lihat Antrian"
-
 #: share/html/Elements/Tabs:106 share/html/Elements/Tabs:121 share/html/Elements/Tabs:129 share/html/Elements/Tabs:171 share/html/Elements/Tabs:187 share/html/Elements/Tabs:274 share/html/Elements/Tabs:293 share/html/Elements/Tabs:297 share/html/Elements/Tabs:387 share/html/Elements/Tabs:393 share/html/Elements/Tabs:396 share/html/Elements/Tabs:404 share/html/Elements/Tabs:410 share/html/Elements/Tabs:422 share/html/Elements/Tabs:433 share/html/Elements/Tabs:71 share/html/Elements/Tabs:79 share/html/Elements/Tabs:87 share/html/Elements/Tabs:96
 msgid "Select"
 msgstr "Pilih"
@@ -7306,38 +7206,6 @@ msgstr ""
 msgid "Show ticket history"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "ShowACL"
-msgstr "Tampilkan ACL"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowConfigTab"
-msgstr "Tampilkan Tab Config"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowOutgoingEmail"
-msgstr "Tampilkan Email yang Keluar"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowSavedSearches"
-msgstr "Tampilkan Pencarian yang Disimpan"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowScrips"
-msgstr "Tampilkan Scrip"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowTemplate"
-msgstr "Tampilkan Template"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowTicket"
-msgstr "Tampilkan Tiket"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowTicketComments"
-msgstr "Tampilkan Komentar Tiket"
-
 #: share/html/Admin/Tools/Shredder/index.html:74 share/html/Elements/Tabs:245 share/html/Elements/Tabs:852
 msgid "Shredder"
 msgstr ""
@@ -7535,10 +7403,6 @@ msgstr "Curi"
 msgid "Steal tickets"
 msgstr "Curi tiket"
 
-#: NOT FOUND IN SOURCE
-msgid "StealTicket"
-msgstr "Curi Tiket"
-
 #: share/html/Install/Basics.html:48 share/html/Install/DatabaseDetails.html:48 share/html/Install/DatabaseType.html:48 share/html/Install/Finish.html:48 share/html/Install/Global.html:48 share/html/Install/Initialize.html:48 share/html/Install/Sendmail.html:48
 #. (1, 7)
 #. (2, 7)
@@ -7663,10 +7527,6 @@ msgstr ""
 msgid "Sunday"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "SuperUser"
-msgstr "PenggunaSuper"
-
 #: lib/RT/Config.pm:516
 msgid "Suspended"
 msgstr ""
@@ -7715,10 +7575,6 @@ msgstr "Ambil"
 #: lib/RT/Queue.pm:135
 msgid "Take tickets"
 msgstr "Ambil tiket"
-
-#: NOT FOUND IN SOURCE
-msgid "TakeTicket"
-msgstr "Ambil Tiket"
 
 #: lib/RT/Transaction.pm:1120 lib/RT/Transaction.pm:948
 msgid "Taken"
@@ -8878,14 +8734,6 @@ msgstr ""
 #: share/html/Dashboards/Subscription.html:276
 msgid "Warning: you have no email address set, so you will not receive this dashboard until you have it set"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Watch"
-msgstr "Amati"
-
-#: NOT FOUND IN SOURCE
-msgid "WatchAsAdminCc"
-msgstr "Amati Sebagai AdminCc"
 
 #: lib/RT/Report/Tickets.pm:71 lib/RT/Tickets.pm:147
 msgid "Watcher"

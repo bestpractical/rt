@@ -940,30 +940,6 @@ msgstr "管理Cc"
 msgid "AdminCcs"
 msgstr "管理CC"
 
-#: NOT FOUND IN SOURCE
-msgid "AdminCustomField"
-msgstr "カスタムフィールドの管理"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminCustomFieldValues"
-msgstr "カスタムフィールドに使う値の管理"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminGroup"
-msgstr "グループの管理"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminGroupMembership"
-msgstr "グループ所属メンバーの管理"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminQueue"
-msgstr "キューの管理"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminUsers"
-msgstr "ユーザの管理"
-
 #: share/html/Ticket/Elements/EditPeople:84
 msgid "Administrative Cc"
 msgstr "管理者Cc"
@@ -1221,10 +1197,6 @@ msgstr "昇順"
 #: lib/RT/Queue.pm:116
 msgid "Assign and remove queue custom fields"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "AssignCustomFields"
-msgstr "カスタムフィールドの割り当て"
 
 #: share/html/Ticket/Elements/AddAttachments:61
 msgid "Attach"
@@ -2253,14 +2225,6 @@ msgstr "保存した検索の作成、修正、削除"
 msgid "Create, modify and delete users"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "CreateArticle"
-msgstr "記事作成"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateDashboard"
-msgstr "ダッシュボードの作成"
-
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:73 lib/RT/Tickets.pm:137 share/html/Admin/Elements/ShowKeyInfo:71 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:69 share/html/Elements/ColumnMap:74 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:350
 msgid "Created"
 msgstr "作成日"
@@ -2610,10 +2574,6 @@ msgstr "チケットの削除"
 msgid "Delete values"
 msgstr "値の削除"
 
-#: NOT FOUND IN SOURCE
-msgid "DeleteArticle"
-msgstr "記事削除"
-
 #: lib/RT/SharedSetting.pm:285
 #. ($self->ObjectName)
 msgid "Deleted %1"
@@ -2868,10 +2828,6 @@ msgstr "システムテンプレートの編集"
 #. ($ClassObj->Name)
 msgid "Edit topic hierarchy for %1"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "EditSavedSearches"
-msgstr "保存した検索の編集"
 
 #: share/html/Admin/CustomFields/Modify.html:195 share/html/Admin/Elements/EditCustomField:123
 #. ($CustomFieldObj->Name)
@@ -4292,10 +4248,6 @@ msgstr "保存した検索のロード"
 #: share/html/Articles/Article/Search.html:73
 msgid "Load saved search:"
 msgstr "保存した検索のロード:"
-
-#: NOT FOUND IN SOURCE
-msgid "LoadSavedSearch"
-msgstr "保存した検索のロード"
 
 #: lib/RT/SharedSetting.pm:119
 #. ($self->ObjectName, $self->Name)
@@ -7253,10 +7205,6 @@ msgstr ""
 #: share/html/Ticket/Elements/ClickToShowHistory:50
 msgid "Show ticket history"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "ShowSavedSearches"
-msgstr "保存した検索の閲覧"
 
 #: share/html/Admin/Tools/Shredder/index.html:74 share/html/Elements/Tabs:245 share/html/Elements/Tabs:852
 msgid "Shredder"

@@ -940,26 +940,6 @@ msgstr "AdminCc"
 msgid "AdminCcs"
 msgstr "AdminCcs"
 
-#: NOT FOUND IN SOURCE
-msgid "AdminCustomField"
-msgstr "AdminCustomField"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminGroup"
-msgstr "AdminGroup"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminGroupMembership"
-msgstr "AdminGroupMembership"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminQueue"
-msgstr "AdminQueue"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminUsers"
-msgstr "AdminUsers"
-
 #: share/html/Ticket/Elements/EditPeople:84
 msgid "Administrative Cc"
 msgstr "Administratīvais Cc"
@@ -1217,10 +1197,6 @@ msgstr "Aug"
 #: lib/RT/Queue.pm:116
 msgid "Assign and remove queue custom fields"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "AssignCustomFields"
-msgstr "AssignCustomFields"
 
 #: share/html/Ticket/Elements/AddAttachments:61
 msgid "Attach"
@@ -1648,10 +1624,6 @@ msgstr "Piezīmes adrese"
 #: lib/RT/Queue.pm:131
 msgid "Comment on tickets"
 msgstr "Piezīme pieprasījumiem"
-
-#: NOT FOUND IN SOURCE
-msgid "CommentOnTicket"
-msgstr "CommentOnTicket"
 
 #: share/html/Tools/MyDay.html:64
 msgid "Comments"
@@ -2253,26 +2225,6 @@ msgstr ""
 msgid "Create, modify and delete users"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "CreateDashboard"
-msgstr "CreateDashboard"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateGroupDashboard"
-msgstr "CreateGroupDashboard"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateOwnDashboard"
-msgstr "CreateOwnDashboard"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateSavedSearch"
-msgstr "CreateSavedSearch"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateTicket"
-msgstr "CreateTicket"
-
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:73 lib/RT/Tickets.pm:137 share/html/Admin/Elements/ShowKeyInfo:71 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:69 share/html/Elements/ColumnMap:74 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:350
 msgid "Created"
 msgstr "Izveidots"
@@ -2622,22 +2574,6 @@ msgstr "Dzēst pieteikumus"
 msgid "Delete values"
 msgstr "Dzēst vērtības"
 
-#: NOT FOUND IN SOURCE
-msgid "DeleteDashboard"
-msgstr "DeleteDashboard"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteGroupDashboard"
-msgstr "DeleteGroupDashboard"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteOwnDashboard"
-msgstr "DeleteOwnDashboard"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteTicket"
-msgstr "DeleteTicket"
-
 #: lib/RT/SharedSetting.pm:285
 #. ($self->ObjectName)
 msgid "Deleted %1"
@@ -2892,10 +2828,6 @@ msgstr "Labot sistēmas šablonus"
 #. ($ClassObj->Name)
 msgid "Edit topic hierarchy for %1"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "EditSavedSearches"
-msgstr "labot saglabātos meklējumus"
 
 #: share/html/Admin/CustomFields/Modify.html:195 share/html/Admin/Elements/EditCustomField:123
 #. ($CustomFieldObj->Name)
@@ -3436,10 +3368,6 @@ msgstr "Pārsūtīt pieprasījumu #%1"
 #. ($txn->id)
 msgid "Forward transaction #%1"
 msgstr "Pārsūtīt saraksti #%1"
-
-#: NOT FOUND IN SOURCE
-msgid "ForwardMessage"
-msgstr "Pārs.Vēstule"
 
 #: lib/RT/Transaction.pm:852
 #. ($self->Field, $recipients,            [\'<a href="#txn-', $self->Field, \'">'], \'</a>')
@@ -5774,10 +5702,6 @@ msgstr ""
 msgid "Own tickets"
 msgstr "piederīgie pieprasījumi"
 
-#: NOT FOUND IN SOURCE
-msgid "OwnTicket"
-msgstr "Īpašn.Piepr."
-
 #: lib/RT/Graph/Tickets.pm:154 lib/RT/Report/Tickets.pm:64 lib/RT/Ticket.pm:100 lib/RT/Tickets.pm:111 lib/RT/Tickets.pm:1841 share/html/Elements/QuickCreate:62 share/html/Elements/RT__Ticket/ColumnMap:106 share/html/Elements/RT__Ticket/ColumnMap:262 share/html/Elements/RT__Ticket/ColumnMap:279 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:137 share/html/Ticket/Elements/Reminders:175 share/html/Ticket/Elements/Reminders:84 share/html/Ticket/Elements/ShowPeople:50 share/html/m/_elements/ticket_list:96 share/html/m/ticket/create:258 share/html/m/ticket/reply:71 share/html/m/ticket/show:286
 msgid "Owner"
 msgstr "Īpašnieks"
@@ -7603,10 +7527,6 @@ msgstr "Svētd."
 msgid "Sunday"
 msgstr "Svētdiena"
 
-#: NOT FOUND IN SOURCE
-msgid "SuperUser"
-msgstr "Sisadmins"
-
 #: lib/RT/Config.pm:516
 msgid "Suspended"
 msgstr "Iesaldēts"
@@ -8814,14 +8734,6 @@ msgstr ""
 #: share/html/Dashboards/Subscription.html:276
 msgid "Warning: you have no email address set, so you will not receive this dashboard until you have it set"
 msgstr "Uzmanību! Nav norādīta E-pasta adrese, dašbords netiks nosūtīts!"
-
-#: NOT FOUND IN SOURCE
-msgid "Watch"
-msgstr "Skatīt"
-
-#: NOT FOUND IN SOURCE
-msgid "WatchAsAdminCc"
-msgstr "SkatītKāAdminCc"
 
 #: lib/RT/Report/Tickets.pm:71 lib/RT/Tickets.pm:147
 msgid "Watcher"

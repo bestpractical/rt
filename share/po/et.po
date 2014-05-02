@@ -940,34 +940,6 @@ msgstr "Koopia haldusele"
 msgid "AdminCcs"
 msgstr "Halduse koopiad"
 
-#: NOT FOUND IN SOURCE
-msgid "AdminCustomField"
-msgstr "AdminKohandatudVäli"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminCustomFieldValues"
-msgstr "AdminKohandatudVäljaVäärtused"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminGroup"
-msgstr "AdminGrupp"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminGroupMembership"
-msgstr "AdminGrupiLiikmelisus"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminQueue"
-msgstr "AdminJärjekord"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminTopics"
-msgstr "AdminTeemad"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminUsers"
-msgstr "AdminKasutajad"
-
 #: share/html/Ticket/Elements/EditPeople:84
 msgid "Administrative Cc"
 msgstr "Administratiivne koopia"
@@ -1225,10 +1197,6 @@ msgstr "Kasvav"
 #: lib/RT/Queue.pm:116
 msgid "Assign and remove queue custom fields"
 msgstr "Määra ja eemalda järjekorra kohandatud välju"
-
-#: NOT FOUND IN SOURCE
-msgid "AssignCustomFields"
-msgstr "MääraKohandatudVälju"
 
 #: share/html/Ticket/Elements/AddAttachments:61
 msgid "Attach"
@@ -1656,10 +1624,6 @@ msgstr "Kommentaari aadress"
 #: lib/RT/Queue.pm:131
 msgid "Comment on tickets"
 msgstr "Kommenteeri juhtumeid"
-
-#: NOT FOUND IN SOURCE
-msgid "CommentOnTicket"
-msgstr "CommentOnTicket"
 
 #: share/html/Tools/MyDay.html:64
 msgid "Comments"
@@ -2261,30 +2225,6 @@ msgstr "Loo, muuda ja kustuta salvestatud otsinguid"
 msgid "Create, modify and delete users"
 msgstr "Loo, muuda ja kustuta kasutajaid"
 
-#: NOT FOUND IN SOURCE
-msgid "CreateArticle"
-msgstr "LooArtikkel"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateDashboard"
-msgstr "Loo töölaud"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateGroupDashboard"
-msgstr "Loo rühma töölaud"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateOwnDashboard"
-msgstr "Loo oma töölaud"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateSavedSearch"
-msgstr "Loo salvestatud otsing"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateTicket"
-msgstr "CreateTicket"
-
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:73 lib/RT/Tickets.pm:137 share/html/Admin/Elements/ShowKeyInfo:71 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:69 share/html/Elements/ColumnMap:74 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:350
 msgid "Created"
 msgstr "Loodud"
@@ -2634,26 +2574,6 @@ msgstr "Kustuta juhtumid"
 msgid "Delete values"
 msgstr "Kustuta väärtused"
 
-#: NOT FOUND IN SOURCE
-msgid "DeleteArticle"
-msgstr "KustutaArtikkel"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteDashboard"
-msgstr "KustutaTöölaud"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteGroupDashboard"
-msgstr "KustutaGrupiTöölaud"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteOwnDashboard"
-msgstr "KustutaOmaTöölaud"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteTicket"
-msgstr "KustutaJuhtum"
-
 #: lib/RT/SharedSetting.pm:285
 #. ($self->ObjectName)
 msgid "Deleted %1"
@@ -2908,10 +2828,6 @@ msgstr "Muuda süsteemi malle"
 #. ($ClassObj->Name)
 msgid "Edit topic hierarchy for %1"
 msgstr "Muuda teemade struktuuri %1 jaoks"
-
-#: NOT FOUND IN SOURCE
-msgid "EditSavedSearches"
-msgstr "MuudaSalvestatudOtsinguid"
 
 #: share/html/Admin/CustomFields/Modify.html:195 share/html/Admin/Elements/EditCustomField:123
 #. ($CustomFieldObj->Name)
@@ -3452,10 +3368,6 @@ msgstr "Edasta juhtum #%1"
 #. ($txn->id)
 msgid "Forward transaction #%1"
 msgstr "Edasta toiming #%1"
-
-#: NOT FOUND IN SOURCE
-msgid "ForwardMessage"
-msgstr "EdastaSõnum"
 
 #: lib/RT/Transaction.pm:852
 #. ($self->Field, $recipients,            [\'<a href="#txn-', $self->Field, \'">'], \'</a>')
@@ -4337,10 +4249,6 @@ msgstr "Lae salvestatud otsing"
 msgid "Load saved search:"
 msgstr "Laadi salvestatud otsing:"
 
-#: NOT FOUND IN SOURCE
-msgid "LoadSavedSearch"
-msgstr "LaeSalvestatudOtsing"
-
 #: lib/RT/SharedSetting.pm:119
 #. ($self->ObjectName, $self->Name)
 msgid "Loaded %1 %2"
@@ -5031,10 +4939,6 @@ msgstr "Muuda järjekorra %1 kasutajaõigusi"
 #. ($Ticket->Id)
 msgid "Modify who receives mail for ticket #%1"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyCustomField"
-msgstr "MuudaKohandatudVäli"
 
 #: share/html/Admin/Tools/Configuration.html:247
 msgid "Module"
@@ -6955,10 +6859,6 @@ msgstr ""
 msgid "See that this class exists"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "SeeCustomField"
-msgstr "KuvaKohandatudVäli"
-
 #: share/html/Elements/Tabs:106 share/html/Elements/Tabs:121 share/html/Elements/Tabs:129 share/html/Elements/Tabs:171 share/html/Elements/Tabs:187 share/html/Elements/Tabs:274 share/html/Elements/Tabs:293 share/html/Elements/Tabs:297 share/html/Elements/Tabs:387 share/html/Elements/Tabs:393 share/html/Elements/Tabs:396 share/html/Elements/Tabs:404 share/html/Elements/Tabs:410 share/html/Elements/Tabs:422 share/html/Elements/Tabs:433 share/html/Elements/Tabs:71 share/html/Elements/Tabs:79 share/html/Elements/Tabs:87 share/html/Elements/Tabs:96
 msgid "Select"
 msgstr "Vali"
@@ -8834,10 +8734,6 @@ msgstr ""
 #: share/html/Dashboards/Subscription.html:276
 msgid "Warning: you have no email address set, so you will not receive this dashboard until you have it set"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Watch"
-msgstr "Jälgi"
 
 #: lib/RT/Report/Tickets.pm:71 lib/RT/Tickets.pm:147
 msgid "Watcher"

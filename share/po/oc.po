@@ -940,22 +940,6 @@ msgstr "AdminCc"
 msgid "AdminCcs"
 msgstr "AdminCcs"
 
-#: NOT FOUND IN SOURCE
-msgid "AdminCustomField"
-msgstr "GerirCampPersonalizat"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminGroup"
-msgstr "GerirGropes"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminQueue"
-msgstr "GerirFila"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminUsers"
-msgstr "GerirUtilizaires"
-
 #: share/html/Ticket/Elements/EditPeople:84
 msgid "Administrative Cc"
 msgstr "Cc Administratiu"

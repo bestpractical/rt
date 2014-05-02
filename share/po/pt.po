@@ -940,38 +940,6 @@ msgstr "AdminCc"
 msgid "AdminCcs"
 msgstr "AdminCcs"
 
-#: NOT FOUND IN SOURCE
-msgid "AdminClass"
-msgstr "AdminClass"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminCustomField"
-msgstr "CampoPersonalizadoAdministrador"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminCustomFieldValues"
-msgstr "AdminValorCampoPerson"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminGroup"
-msgstr "AdminGroupo"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminGroupMembership"
-msgstr "AdminMembrosGrupo"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminQueue"
-msgstr "FilaAdmin"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminTopics"
-msgstr "AdminTopics"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminUsers"
-msgstr "AdminUtilizadores"
-
 #: share/html/Ticket/Elements/EditPeople:84
 msgid "Administrative Cc"
 msgstr "Cc Administrativo"
@@ -1229,10 +1197,6 @@ msgstr "Asc"
 #: lib/RT/Queue.pm:116
 msgid "Assign and remove queue custom fields"
 msgstr "Atribuir e remover campos personalizados de uma queue"
-
-#: NOT FOUND IN SOURCE
-msgid "AssignCustomFields"
-msgstr "AtribuirCamposPerson"
 
 #: share/html/Ticket/Elements/AddAttachments:61
 msgid "Attach"
@@ -1660,10 +1624,6 @@ msgstr "Endereço do comentário"
 #: lib/RT/Queue.pm:131
 msgid "Comment on tickets"
 msgstr "Comentar tickets"
-
-#: NOT FOUND IN SOURCE
-msgid "CommentOnTicket"
-msgstr "ComentarNaTarefa"
 
 #: share/html/Tools/MyDay.html:64
 msgid "Comments"
@@ -2265,30 +2225,6 @@ msgstr "Criar, modificar e apagar pesquisas gravadas"
 msgid "Create, modify and delete users"
 msgstr "Criar, modificar e apagar utilizadores"
 
-#: NOT FOUND IN SOURCE
-msgid "CreateArticle"
-msgstr "CriarArtigo"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateDashboard"
-msgstr "CriarDashboard"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateGroupDashboard"
-msgstr "CriarGrupoDashboard"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateOwnDashboard"
-msgstr "CriarDashboardPróprio"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateSavedSearch"
-msgstr "CriarPesquisaGravada"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateTicket"
-msgstr "Criar Tarefa"
-
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:73 lib/RT/Tickets.pm:137 share/html/Admin/Elements/ShowKeyInfo:71 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:69 share/html/Elements/ColumnMap:74 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:350
 msgid "Created"
 msgstr "Criado"
@@ -2638,26 +2574,6 @@ msgstr "Apagar tickets"
 msgid "Delete values"
 msgstr "Apagar valores"
 
-#: NOT FOUND IN SOURCE
-msgid "DeleteArticle"
-msgstr "ApagarArtigo"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteDashboard"
-msgstr "ApagarDashboard"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteGroupDashboard"
-msgstr "ApagarGrupoDashboard"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteOwnDashboard"
-msgstr "ApagarDashboardPróprio"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteTicket"
-msgstr "ApagarTarefa"
-
 #: lib/RT/SharedSetting.pm:285
 #. ($self->ObjectName)
 msgid "Deleted %1"
@@ -2912,10 +2828,6 @@ msgstr "Editar templates de sistema"
 #. ($ClassObj->Name)
 msgid "Edit topic hierarchy for %1"
 msgstr "Editar hierarquia de tópicos de %1"
-
-#: NOT FOUND IN SOURCE
-msgid "EditSavedSearches"
-msgstr "EditarPesquisasGravadas"
 
 #: share/html/Admin/CustomFields/Modify.html:195 share/html/Admin/Elements/EditCustomField:123
 #. ($CustomFieldObj->Name)
@@ -3208,10 +3120,6 @@ msgstr "Todos"
 msgid "Example:"
 msgstr "Exemplo:"
 
-#: NOT FOUND IN SOURCE
-msgid "ExecuteCode"
-msgstr "ExecutarCódigo"
-
 #: share/html/Admin/Elements/ShowKeyInfo:74
 msgid "Expire"
 msgstr "Expirar"
@@ -3460,10 +3368,6 @@ msgstr "Encaminhar ticket #%1"
 #. ($txn->id)
 msgid "Forward transaction #%1"
 msgstr "Encaminhar transacção #%1"
-
-#: NOT FOUND IN SOURCE
-msgid "ForwardMessage"
-msgstr "ReencaminharMensagem"
 
 #: lib/RT/Transaction.pm:852
 #. ($self->Field, $recipients,            [\'<a href="#txn-', $self->Field, \'">'], \'</a>')
@@ -4345,10 +4249,6 @@ msgstr "Carregar pesquisa gravada"
 msgid "Load saved search:"
 msgstr "Carregar pesquisa gravada:"
 
-#: NOT FOUND IN SOURCE
-msgid "LoadSavedSearch"
-msgstr "CarregarPesquisaGravada"
-
 #: lib/RT/SharedSetting.pm:119
 #. ($self->ObjectName, $self->Name)
 msgid "Loaded %1 %2"
@@ -5039,54 +4939,6 @@ msgstr "Alterar direitos de utilizador para a queue %1"
 #. ($Ticket->Id)
 msgid "Modify who receives mail for ticket #%1"
 msgstr "Alterar quem recebe email sobre o ticket #%1"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyACL"
-msgstr "ModificarACL"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyArticle"
-msgstr "AlterarArtigo"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyArticleTopics"
-msgstr "AlterarTópicosdeArtigo"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyCustomField"
-msgstr "AlterarCampoPerson"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyDashboard"
-msgstr "AlterarPainel"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyGroupDashboard"
-msgstr "AlterarPainelGrupo"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyOwnDashboard"
-msgstr "AlterarProprioPainel"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyOwnMembership"
-msgstr "AlterarPropriaAssociacao"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyScrips"
-msgstr "AlterarScrips"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifySelf"
-msgstr "Alterar-se"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyTemplate"
-msgstr "AlterarTemplate"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyTicket"
-msgstr "AlterarTicket"
 
 #: share/html/Admin/Tools/Configuration.html:247
 msgid "Module"
@@ -5849,10 +5701,6 @@ msgstr "Visão geral"
 #: lib/RT/Queue.pm:132
 msgid "Own tickets"
 msgstr "Próprios tickets"
-
-#: NOT FOUND IN SOURCE
-msgid "OwnTicket"
-msgstr "PróprioTicket"
 
 #: lib/RT/Graph/Tickets.pm:154 lib/RT/Report/Tickets.pm:64 lib/RT/Ticket.pm:100 lib/RT/Tickets.pm:111 lib/RT/Tickets.pm:1841 share/html/Elements/QuickCreate:62 share/html/Elements/RT__Ticket/ColumnMap:106 share/html/Elements/RT__Ticket/ColumnMap:262 share/html/Elements/RT__Ticket/ColumnMap:279 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:137 share/html/Ticket/Elements/Reminders:175 share/html/Ticket/Elements/Reminders:84 share/html/Ticket/Elements/ShowPeople:50 share/html/m/_elements/ticket_list:96 share/html/m/ticket/create:258 share/html/m/ticket/reply:71 share/html/m/ticket/show:286
 msgid "Owner"
@@ -6654,10 +6502,6 @@ msgstr "Responder aos Requerentes"
 msgid "Reply to tickets"
 msgstr "Resposta a tickets"
 
-#: NOT FOUND IN SOURCE
-msgid "ReplyToTicket"
-msgstr "ResponderAoTicket"
-
 #: lib/RT/Report/Tickets.pm:68 lib/RT/Ticket.pm:101 lib/RT/Tickets.pm:143
 msgid "Requestor"
 msgstr "Requerente"
@@ -7014,34 +6858,6 @@ msgstr "Ver alterações aos artigos nesta classe"
 #: lib/RT/Class.pm:87
 msgid "See that this class exists"
 msgstr "Verificar que esta classe existe"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeClass"
-msgstr "VerClasse"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeCustomField"
-msgstr "VerCampoPerson"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeDashboard"
-msgstr "VerPainel"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeGroup"
-msgstr "VerGrupo"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeGroupDashboard"
-msgstr "VerPaineldeGrupo"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeOwnDashboard"
-msgstr "VerProprioPainel"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeQueue"
-msgstr "VerQueue"
 
 #: share/html/Elements/Tabs:106 share/html/Elements/Tabs:121 share/html/Elements/Tabs:129 share/html/Elements/Tabs:171 share/html/Elements/Tabs:187 share/html/Elements/Tabs:274 share/html/Elements/Tabs:293 share/html/Elements/Tabs:297 share/html/Elements/Tabs:387 share/html/Elements/Tabs:393 share/html/Elements/Tabs:396 share/html/Elements/Tabs:404 share/html/Elements/Tabs:410 share/html/Elements/Tabs:422 share/html/Elements/Tabs:433 share/html/Elements/Tabs:71 share/html/Elements/Tabs:79 share/html/Elements/Tabs:87 share/html/Elements/Tabs:96
 msgid "Select"

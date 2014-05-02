@@ -941,26 +941,6 @@ msgstr "Admin-kopimottakar"
 msgid "AdminCcs"
 msgstr "AdminKopimottakarar"
 
-#: NOT FOUND IN SOURCE
-msgid "AdminCustomField"
-msgstr "AdminFleksifelt"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminGroup"
-msgstr "AdminGruppe"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminGroupMembership"
-msgstr "AdminGruppemedlemskap"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminQueue"
-msgstr "AdminKø"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminUsers"
-msgstr "AdminBrukarar"
-
 #: share/html/Ticket/Elements/EditPeople:84
 msgid "Administrative Cc"
 msgstr "Admin-kopimottakar"
@@ -1218,10 +1198,6 @@ msgstr "stigande"
 #: lib/RT/Queue.pm:116
 msgid "Assign and remove queue custom fields"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "AssignCustomFields"
-msgstr "TilordnaFleksifelt"
 
 #: share/html/Ticket/Elements/AddAttachments:61
 msgid "Attach"
@@ -1651,10 +1627,6 @@ msgstr "Kommentaradresse"
 #: lib/RT/Queue.pm:131
 msgid "Comment on tickets"
 msgstr "Kommenter saker"
-
-#: NOT FOUND IN SOURCE
-msgid "CommentOnTicket"
-msgstr "KommenterSak"
 
 #: share/html/Tools/MyDay.html:64
 msgid "Comments"
@@ -2256,26 +2228,6 @@ msgstr ""
 msgid "Create, modify and delete users"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "CreateDashboard"
-msgstr "OpprettUtforming"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateGroupDashboard"
-msgstr "OpprettGruppeutforming"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateOwnDashboard"
-msgstr "OpprettEigneUtformingar"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateSavedSearch"
-msgstr "OpprettLagraSøk"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateTicket"
-msgstr "OpprettSak"
-
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:73 lib/RT/Tickets.pm:137 share/html/Admin/Elements/ShowKeyInfo:71 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:69 share/html/Elements/ColumnMap:74 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:350
 msgid "Created"
 msgstr "Oppretta"
@@ -2627,22 +2579,6 @@ msgstr "Slett saker"
 msgid "Delete values"
 msgstr "Slett verdiar"
 
-#: NOT FOUND IN SOURCE
-msgid "DeleteDashboard"
-msgstr "SlettUtforming"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteGroupDashboard"
-msgstr "SlettGruppeUtforming"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteOwnDashboard"
-msgstr "SlettEigaUtforming"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteTicket"
-msgstr "SlettSak"
-
 #: lib/RT/SharedSetting.pm:285
 #. ($self->ObjectName)
 msgid "Deleted %1"
@@ -2897,10 +2833,6 @@ msgstr "Rediger systemmalar"
 #. ($ClassObj->Name)
 msgid "Edit topic hierarchy for %1"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "EditSavedSearches"
-msgstr "RedigerLagraSøk"
 
 #: share/html/Admin/CustomFields/Modify.html:195 share/html/Admin/Elements/EditCustomField:123
 #. ($CustomFieldObj->Name)
@@ -3441,10 +3373,6 @@ msgstr "Vidaresend sak %1"
 #. ($txn->id)
 msgid "Forward transaction #%1"
 msgstr "Vidaresend transaksjon %1"
-
-#: NOT FOUND IN SOURCE
-msgid "ForwardMessage"
-msgstr "Vidaresend melding"
 
 #: lib/RT/Transaction.pm:852
 #. ($self->Field, $recipients,            [\'<a href="#txn-', $self->Field, \'">'], \'</a>')
@@ -4326,10 +4254,6 @@ msgstr ""
 msgid "Load saved search:"
 msgstr "Opna lagra søk:"
 
-#: NOT FOUND IN SOURCE
-msgid "LoadSavedSearch"
-msgstr "OpnaLagraSøk"
-
 #: lib/RT/SharedSetting.pm:119
 #. ($self->ObjectName, $self->Name)
 msgid "Loaded %1 %2"
@@ -5020,50 +4944,6 @@ msgstr "Endra brukarløyve for køen %1"
 #. ($Ticket->Id)
 msgid "Modify who receives mail for ticket #%1"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyACL"
-msgstr "EndraACL"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyCustomField"
-msgstr "EndraFleksifelt"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyDashboard"
-msgstr "EndraUtforming"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyGroupDashboard"
-msgstr "EndraGruppeutforming"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyOwnDashboard"
-msgstr "EndreEigaUtforming"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyOwnMembership"
-msgstr "EndraEigeMedlemskap"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyQueueWatchers"
-msgstr "EndraKøovervakarar"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyScrips"
-msgstr "EndraUtløysarar"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifySelf"
-msgstr "EndraSegSjølv"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyTemplate"
-msgstr "EndraMal"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyTicket"
-msgstr "EndraSak"
 
 #: share/html/Admin/Tools/Configuration.html:247
 msgid "Module"
@@ -5827,10 +5707,6 @@ msgstr ""
 #: lib/RT/Queue.pm:132
 msgid "Own tickets"
 msgstr "Eigne saker"
-
-#: NOT FOUND IN SOURCE
-msgid "OwnTicket"
-msgstr "EigaSak"
 
 #: lib/RT/Graph/Tickets.pm:154 lib/RT/Report/Tickets.pm:64 lib/RT/Ticket.pm:100 lib/RT/Tickets.pm:111 lib/RT/Tickets.pm:1841 share/html/Elements/QuickCreate:62 share/html/Elements/RT__Ticket/ColumnMap:106 share/html/Elements/RT__Ticket/ColumnMap:262 share/html/Elements/RT__Ticket/ColumnMap:279 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:137 share/html/Ticket/Elements/Reminders:175 share/html/Ticket/Elements/Reminders:84 share/html/Ticket/Elements/ShowPeople:50 share/html/m/_elements/ticket_list:96 share/html/m/ticket/create:258 share/html/m/ticket/reply:71 share/html/m/ticket/show:286
 msgid "Owner"
@@ -6635,10 +6511,6 @@ msgstr "Svar til innmeldarar"
 msgid "Reply to tickets"
 msgstr "Svar på sak"
 
-#: NOT FOUND IN SOURCE
-msgid "ReplyToTicket"
-msgstr "SvarPåSak"
-
 #: lib/RT/Report/Tickets.pm:68 lib/RT/Ticket.pm:101 lib/RT/Tickets.pm:143
 msgid "Requestor"
 msgstr "Innmeldar"
@@ -6996,30 +6868,6 @@ msgstr ""
 msgid "See that this class exists"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "SeeCustomField"
-msgstr "SjåFleksifelt"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeDashboard"
-msgstr "SjåUtforming"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeGroup"
-msgstr "SjåGruppe"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeGroupDashboard"
-msgstr "SjåGruppeutforming"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeOwnDashboard"
-msgstr "SjåEigneUtformingar"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeQueue"
-msgstr "SjåKø"
-
 #: share/html/Elements/Tabs:106 share/html/Elements/Tabs:121 share/html/Elements/Tabs:129 share/html/Elements/Tabs:171 share/html/Elements/Tabs:187 share/html/Elements/Tabs:274 share/html/Elements/Tabs:293 share/html/Elements/Tabs:297 share/html/Elements/Tabs:387 share/html/Elements/Tabs:393 share/html/Elements/Tabs:396 share/html/Elements/Tabs:404 share/html/Elements/Tabs:410 share/html/Elements/Tabs:422 share/html/Elements/Tabs:433 share/html/Elements/Tabs:71 share/html/Elements/Tabs:79 share/html/Elements/Tabs:87 share/html/Elements/Tabs:96
 msgid "Select"
 msgstr "Vel"
@@ -7367,42 +7215,6 @@ msgstr ""
 msgid "Show ticket history"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "ShowACL"
-msgstr "VisACL"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowApprovalsTab"
-msgstr "VisGodkjenningsfane"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowConfigTab"
-msgstr "VisOppsettfane"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowOutgoingEmail"
-msgstr "VisUtgåandeEpost"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowSavedSearches"
-msgstr "VisLagraSøk"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowScrips"
-msgstr "VisUtløysarar"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowTemplate"
-msgstr "VisMal"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowTicket"
-msgstr "VisSak"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowTicketComments"
-msgstr "VisSakskommentarar"
-
 #: share/html/Admin/Tools/Shredder/index.html:74 share/html/Elements/Tabs:245 share/html/Elements/Tabs:852
 msgid "Shredder"
 msgstr "Makulering"
@@ -7600,10 +7412,6 @@ msgstr "Stel"
 msgid "Steal tickets"
 msgstr "Stel saker"
 
-#: NOT FOUND IN SOURCE
-msgid "StealTicket"
-msgstr "StelaSak"
-
 #: share/html/Install/Basics.html:48 share/html/Install/DatabaseDetails.html:48 share/html/Install/DatabaseType.html:48 share/html/Install/Finish.html:48 share/html/Install/Global.html:48 share/html/Install/Initialize.html:48 share/html/Install/Sendmail.html:48
 #. (1, 7)
 #. (2, 7)
@@ -7657,10 +7465,6 @@ msgstr "Abonner på utforminga %1"
 #: lib/RT/Dashboard.pm:78
 msgid "Subscribe to dashboards"
 msgstr "Abonner på utformingar"
-
-#: NOT FOUND IN SOURCE
-msgid "SubscribeDashboard"
-msgstr "AbonnerPåUtforming"
 
 #: share/html/Dashboards/Subscription.html:275
 #. ($Dashboard->Name)
@@ -7732,10 +7536,6 @@ msgstr "su."
 msgid "Sunday"
 msgstr "sundag"
 
-#: NOT FOUND IN SOURCE
-msgid "SuperUser"
-msgstr "Superbrukar"
-
 #: lib/RT/Config.pm:516
 msgid "Suspended"
 msgstr "Stoppa"
@@ -7784,10 +7584,6 @@ msgstr "Ta"
 #: lib/RT/Queue.pm:135
 msgid "Take tickets"
 msgstr "Ta saker"
-
-#: NOT FOUND IN SOURCE
-msgid "TakeTicket"
-msgstr "TaSak"
 
 #: lib/RT/Transaction.pm:1120 lib/RT/Transaction.pm:948
 msgid "Taken"
@@ -8948,14 +8744,6 @@ msgstr ""
 #: share/html/Dashboards/Subscription.html:276
 msgid "Warning: you have no email address set, so you will not receive this dashboard until you have it set"
 msgstr "Åtvaring: Du har ikkje noka lagra e-postadresse, og vil ikkje få utforminga før du skriv inn e-postadressa din."
-
-#: NOT FOUND IN SOURCE
-msgid "Watch"
-msgstr "Overvak"
-
-#: NOT FOUND IN SOURCE
-msgid "WatchAsAdminCc"
-msgstr "OvervakSomAdminkopimottakar"
 
 #: lib/RT/Report/Tickets.pm:71 lib/RT/Tickets.pm:147
 msgid "Watcher"

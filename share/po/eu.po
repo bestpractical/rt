@@ -940,38 +940,6 @@ msgstr "AdminCc"
 msgid "AdminCcs"
 msgstr "AdminCcs"
 
-#: NOT FOUND IN SOURCE
-msgid "AdminClass"
-msgstr "AdminClass"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminCustomField"
-msgstr "AdminCustomField"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminCustomFieldValues"
-msgstr "AdminCustomFieldValues"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminGroup"
-msgstr "AdminGroup"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminGroupMembership"
-msgstr "AdminGroupMembership"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminQueue"
-msgstr "AdminQueue"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminTopics"
-msgstr "AdminTopics"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminUsers"
-msgstr "AdminUsers"
-
 #: share/html/Ticket/Elements/EditPeople:84
 msgid "Administrative Cc"
 msgstr "Cc Administratiboa"
@@ -1229,10 +1197,6 @@ msgstr "Gora"
 #: lib/RT/Queue.pm:116
 msgid "Assign and remove queue custom fields"
 msgstr "Ilara eremu-pertsonalizatuak esleitu eta kendu"
-
-#: NOT FOUND IN SOURCE
-msgid "AssignCustomFields"
-msgstr "AssignCustomFields"
 
 #: share/html/Ticket/Elements/AddAttachments:61
 msgid "Attach"
@@ -1660,10 +1624,6 @@ msgstr "Iruzkin helbidea"
 #: lib/RT/Queue.pm:131
 msgid "Comment on tickets"
 msgstr "Lan-aginduak iruzkindu"
-
-#: NOT FOUND IN SOURCE
-msgid "CommentOnTicket"
-msgstr "CommentOnTicket"
 
 #: share/html/Tools/MyDay.html:64
 msgid "Comments"
@@ -2265,30 +2225,6 @@ msgstr "Gordetako bilaketak sortu, aldatu eta ezabatu"
 msgid "Create, modify and delete users"
 msgstr "Erabiltzaileak sortu, aldatu eta ezabatu"
 
-#: NOT FOUND IN SOURCE
-msgid "CreateArticle"
-msgstr "CreateArticle"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateDashboard"
-msgstr "CreateDashboard"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateGroupDashboard"
-msgstr "CreateGroupDashboard"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateOwnDashboard"
-msgstr "CreateOwnDashboard"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateSavedSearch"
-msgstr "CreateSavedSearch"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateTicket"
-msgstr "CreateTicket"
-
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:73 lib/RT/Tickets.pm:137 share/html/Admin/Elements/ShowKeyInfo:71 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:69 share/html/Elements/ColumnMap:74 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:350
 msgid "Created"
 msgstr "Sortuta"
@@ -2638,26 +2574,6 @@ msgstr "Lan-aginduak ezabatu"
 msgid "Delete values"
 msgstr "Balioak ezabatu"
 
-#: NOT FOUND IN SOURCE
-msgid "DeleteArticle"
-msgstr "DeleteArticle"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteDashboard"
-msgstr "DeleteDashboard"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteGroupDashboard"
-msgstr "DeleteGroupDashboard"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteOwnDashboard"
-msgstr "DeleteOwnDashboard"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteTicket"
-msgstr "DeleteTicket"
-
 #: lib/RT/SharedSetting.pm:285
 #. ($self->ObjectName)
 msgid "Deleted %1"
@@ -2912,10 +2828,6 @@ msgstr "Sistema txantiloiak editatu"
 #. ($ClassObj->Name)
 msgid "Edit topic hierarchy for %1"
 msgstr "%1(e)n gai hierarkia editatu"
-
-#: NOT FOUND IN SOURCE
-msgid "EditSavedSearches"
-msgstr "EditSavedSearches"
 
 #: share/html/Admin/CustomFields/Modify.html:195 share/html/Admin/Elements/EditCustomField:123
 #. ($CustomFieldObj->Name)
@@ -3208,10 +3120,6 @@ msgstr "Edonork"
 msgid "Example:"
 msgstr "Adibidea:"
 
-#: NOT FOUND IN SOURCE
-msgid "ExecuteCode"
-msgstr "ExecuteCode"
-
 #: share/html/Admin/Elements/ShowKeyInfo:74
 msgid "Expire"
 msgstr "Iraungi"
@@ -3460,10 +3368,6 @@ msgstr "#%1 lan-agindua birbidali"
 #. ($txn->id)
 msgid "Forward transaction #%1"
 msgstr "#%1 eragiketa birbidali"
-
-#: NOT FOUND IN SOURCE
-msgid "ForwardMessage"
-msgstr "ForwardMessage"
 
 #: lib/RT/Transaction.pm:852
 #. ($self->Field, $recipients,            [\'<a href="#txn-', $self->Field, \'">'], \'</a>')
@@ -4345,10 +4249,6 @@ msgstr "Kargatu gordetako bilaketa"
 msgid "Load saved search:"
 msgstr "Kargatu gordetako bilaketa:"
 
-#: NOT FOUND IN SOURCE
-msgid "LoadSavedSearch"
-msgstr "LoadSavedSearch"
-
 #: lib/RT/SharedSetting.pm:119
 #. ($self->ObjectName, $self->Name)
 msgid "Loaded %1 %2"
@@ -5039,58 +4939,6 @@ msgstr ""
 #. ($Ticket->Id)
 msgid "Modify who receives mail for ticket #%1"
 msgstr "#%1 lan-aginduaren posta nork jasoko duen aldatu"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyACL"
-msgstr "ModifyACL"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyArticle"
-msgstr "ModifyArticle"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyArticleTopics"
-msgstr "ModifyArticleTopics"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyCustomField"
-msgstr "ModifyCustomField"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyDashboard"
-msgstr "ModifyDashboard"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyGroupDashboard"
-msgstr "ModifyGroupDashboard"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyOwnDashboard"
-msgstr "ModifyOwnDashboard"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyOwnMembership"
-msgstr "ModifyOwnMembership"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyQueueWatchers"
-msgstr "ModifyQueueWatchers"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyScrips"
-msgstr "ModifyScrips"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifySelf"
-msgstr "ModifySelf"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyTemplate"
-msgstr "ModifyTemplate"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyTicket"
-msgstr "ModifyTicket"
 
 #: share/html/Admin/Tools/Configuration.html:247
 msgid "Module"

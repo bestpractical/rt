@@ -940,38 +940,6 @@ msgstr "管理員副本"
 msgid "AdminCcs"
 msgstr "管理員副本"
 
-#: NOT FOUND IN SOURCE
-msgid "AdminClass"
-msgstr "管理類別"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminCustomField"
-msgstr "管理自訂欄位"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminCustomFieldValues"
-msgstr "管理自定欄位值"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminGroup"
-msgstr "管理群組"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminGroupMembership"
-msgstr "管理群組成員"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminQueue"
-msgstr "管理表單"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminTopics"
-msgstr "管理主題"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminUsers"
-msgstr "管理使用者"
-
 #: share/html/Ticket/Elements/EditPeople:84
 msgid "Administrative Cc"
 msgstr "管理員副本"
@@ -1229,10 +1197,6 @@ msgstr "遞增"
 #: lib/RT/Queue.pm:116
 msgid "Assign and remove queue custom fields"
 msgstr "指派或移除表單自定欄位"
-
-#: NOT FOUND IN SOURCE
-msgid "AssignCustomFields"
-msgstr "指派自訂欄位"
 
 #: share/html/Ticket/Elements/AddAttachments:61
 msgid "Attach"
@@ -1660,10 +1624,6 @@ msgstr "評論位址"
 #: lib/RT/Queue.pm:131
 msgid "Comment on tickets"
 msgstr "對申請單提出評論"
-
-#: NOT FOUND IN SOURCE
-msgid "CommentOnTicket"
-msgstr "評論申請單"
 
 #: share/html/Tools/MyDay.html:64
 msgid "Comments"
@@ -2265,30 +2225,6 @@ msgstr "創建、修改與刪除訪問已存搜索"
 msgid "Create, modify and delete users"
 msgstr "創建、修改與刪除訪問使用者"
 
-#: NOT FOUND IN SOURCE
-msgid "CreateArticle"
-msgstr "創建文章"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateDashboard"
-msgstr "建立控制面板"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateGroupDashboard"
-msgstr "建立群組控制面板"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateOwnDashboard"
-msgstr "創建個人表單"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateSavedSearch"
-msgstr "新增預存查詢"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateTicket"
-msgstr "新增申請單"
-
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:73 lib/RT/Tickets.pm:137 share/html/Admin/Elements/ShowKeyInfo:71 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:69 share/html/Elements/ColumnMap:74 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:350
 msgid "Created"
 msgstr "新增日"
@@ -2638,26 +2574,6 @@ msgstr "刪除申請單"
 msgid "Delete values"
 msgstr "刪除值"
 
-#: NOT FOUND IN SOURCE
-msgid "DeleteArticle"
-msgstr "刪除文章"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteDashboard"
-msgstr "刪除控制面板"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteGroupDashboard"
-msgstr "刪除群組控制面板"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteOwnDashboard"
-msgstr "刪除自己的控制面板"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteTicket"
-msgstr "刪除申請單"
-
 #: lib/RT/SharedSetting.pm:285
 #. ($self->ObjectName)
 msgid "Deleted %1"
@@ -2912,10 +2828,6 @@ msgstr "編輯全域範本"
 #. ($ClassObj->Name)
 msgid "Edit topic hierarchy for %1"
 msgstr "編輯 %1 的主題層次"
-
-#: NOT FOUND IN SOURCE
-msgid "EditSavedSearches"
-msgstr "編輯預存查詢"
 
 #: share/html/Admin/CustomFields/Modify.html:195 share/html/Admin/Elements/EditCustomField:123
 #. ($CustomFieldObj->Name)
@@ -3208,10 +3120,6 @@ msgstr "所有人"
 msgid "Example:"
 msgstr "範例："
 
-#: NOT FOUND IN SOURCE
-msgid "ExecuteCode"
-msgstr "執行代碼"
-
 #: share/html/Admin/Elements/ShowKeyInfo:74
 msgid "Expire"
 msgstr "過期"
@@ -3460,10 +3368,6 @@ msgstr "轉發申請單#%1"
 #. ($txn->id)
 msgid "Forward transaction #%1"
 msgstr "轉發事務#%1"
-
-#: NOT FOUND IN SOURCE
-msgid "ForwardMessage"
-msgstr "轉發消息"
 
 #: lib/RT/Transaction.pm:852
 #. ($self->Field, $recipients,            [\'<a href="#txn-', $self->Field, \'">'], \'</a>')
@@ -4345,10 +4249,6 @@ msgstr "載入已存搜索"
 msgid "Load saved search:"
 msgstr "載入預存查詢："
 
-#: NOT FOUND IN SOURCE
-msgid "LoadSavedSearch"
-msgstr "載入預存查詢"
-
 #: lib/RT/SharedSetting.pm:119
 #. ($self->ObjectName, $self->Name)
 msgid "Loaded %1 %2"
@@ -5039,58 +4939,6 @@ msgstr "更改表單 %1 的使用者權限"
 #. ($Ticket->Id)
 msgid "Modify who receives mail for ticket #%1"
 msgstr "更改申請單 #%1 的郵件接收者"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyACL"
-msgstr "更改權限清單"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyArticle"
-msgstr "更改文章"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyArticleTopics"
-msgstr "更改文章主題"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyCustomField"
-msgstr "更改自訂欄位"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyDashboard"
-msgstr "修改控制面板"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyGroupDashboard"
-msgstr "修改群組控制面板"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyOwnDashboard"
-msgstr "修改自己的控制面板"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyOwnMembership"
-msgstr "更改自己是否屬於某群組"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyQueueWatchers"
-msgstr "更改表單視察員"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyScrips"
-msgstr "更改手續"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifySelf"
-msgstr "更改個人帳號"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyTemplate"
-msgstr "更改範本"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyTicket"
-msgstr "更改申請單"
 
 #: share/html/Admin/Tools/Configuration.html:247
 msgid "Module"
@@ -5852,10 +5700,6 @@ msgstr "總覽"
 
 #: lib/RT/Queue.pm:132
 msgid "Own tickets"
-msgstr "承辦申請單"
-
-#: NOT FOUND IN SOURCE
-msgid "OwnTicket"
 msgstr "承辦申請單"
 
 #: lib/RT/Graph/Tickets.pm:154 lib/RT/Report/Tickets.pm:64 lib/RT/Ticket.pm:100 lib/RT/Tickets.pm:111 lib/RT/Tickets.pm:1841 share/html/Elements/QuickCreate:62 share/html/Elements/RT__Ticket/ColumnMap:106 share/html/Elements/RT__Ticket/ColumnMap:262 share/html/Elements/RT__Ticket/ColumnMap:279 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:137 share/html/Ticket/Elements/Reminders:175 share/html/Ticket/Elements/Reminders:84 share/html/Ticket/Elements/ShowPeople:50 share/html/m/_elements/ticket_list:96 share/html/m/ticket/create:258 share/html/m/ticket/reply:71 share/html/m/ticket/show:286
@@ -6658,10 +6502,6 @@ msgstr "回覆申請人"
 msgid "Reply to tickets"
 msgstr "對申請單進行回覆"
 
-#: NOT FOUND IN SOURCE
-msgid "ReplyToTicket"
-msgstr "回覆申請單"
-
 #: lib/RT/Report/Tickets.pm:68 lib/RT/Ticket.pm:101 lib/RT/Tickets.pm:143
 msgid "Requestor"
 msgstr "申請人"
@@ -7019,34 +6859,6 @@ msgstr ""
 msgid "See that this class exists"
 msgstr "保證類型存在"
 
-#: NOT FOUND IN SOURCE
-msgid "SeeClass"
-msgstr "查看類型"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeCustomField"
-msgstr "查閱自訂欄位"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeDashboard"
-msgstr "檢視控制面板"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeGroup"
-msgstr "查閱群組"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeGroupDashboard"
-msgstr "檢視群組控制面板"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeOwnDashboard"
-msgstr "檢視自己的控制面板"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeQueue"
-msgstr "查閱表單"
-
 #: share/html/Elements/Tabs:106 share/html/Elements/Tabs:121 share/html/Elements/Tabs:129 share/html/Elements/Tabs:171 share/html/Elements/Tabs:187 share/html/Elements/Tabs:274 share/html/Elements/Tabs:293 share/html/Elements/Tabs:297 share/html/Elements/Tabs:387 share/html/Elements/Tabs:393 share/html/Elements/Tabs:396 share/html/Elements/Tabs:404 share/html/Elements/Tabs:410 share/html/Elements/Tabs:422 share/html/Elements/Tabs:433 share/html/Elements/Tabs:71 share/html/Elements/Tabs:79 share/html/Elements/Tabs:87 share/html/Elements/Tabs:96
 msgid "Select"
 msgstr "選擇"
@@ -7394,54 +7206,6 @@ msgstr "顯示申請者 10 個最優先的申請單"
 msgid "Show ticket history"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "ShowACL"
-msgstr "顯示權限清單"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowApprovalsTab"
-msgstr "顯示批准請求單標簽"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowArticle"
-msgstr "顯示文章"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowArticleHistory"
-msgstr "顯示文章歷史"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowConfigTab"
-msgstr "顯示設定頁籤"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowGlobalTemplates"
-msgstr "顯示全域範本"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowOutgoingEmail"
-msgstr "顯示寄送郵件"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowSavedSearches"
-msgstr "顯示預存查詢"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowScrips"
-msgstr "顯示手續"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowTemplate"
-msgstr "顯示範本"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowTicket"
-msgstr "顯示申請單"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowTicketComments"
-msgstr "顯示申請單的評論"
-
 #: share/html/Admin/Tools/Shredder/index.html:74 share/html/Elements/Tabs:245 share/html/Elements/Tabs:852
 msgid "Shredder"
 msgstr "粉碎機"
@@ -7639,10 +7403,6 @@ msgstr "強制更換承辦人"
 msgid "Steal tickets"
 msgstr "強制承辦申請單"
 
-#: NOT FOUND IN SOURCE
-msgid "StealTicket"
-msgstr "強制承辦申請單"
-
 #: share/html/Install/Basics.html:48 share/html/Install/DatabaseDetails.html:48 share/html/Install/DatabaseType.html:48 share/html/Install/Finish.html:48 share/html/Install/Global.html:48 share/html/Install/Initialize.html:48 share/html/Install/Sendmail.html:48
 #. (1, 7)
 #. (2, 7)
@@ -7696,10 +7456,6 @@ msgstr "訂閱控制面板 %1"
 #: lib/RT/Dashboard.pm:78
 msgid "Subscribe to dashboards"
 msgstr "控制面板訂閱"
-
-#: NOT FOUND IN SOURCE
-msgid "SubscribeDashboard"
-msgstr "訂閱控制面板"
 
 #: share/html/Dashboards/Subscription.html:275
 #. ($Dashboard->Name)
@@ -7771,10 +7527,6 @@ msgstr "星期日"
 msgid "Sunday"
 msgstr "星期日"
 
-#: NOT FOUND IN SOURCE
-msgid "SuperUser"
-msgstr "系統管理員"
-
 #: lib/RT/Config.pm:516
 msgid "Suspended"
 msgstr "暫時擱置的"
@@ -7822,10 +7574,6 @@ msgstr "受理"
 
 #: lib/RT/Queue.pm:135
 msgid "Take tickets"
-msgstr "自行承辦申請單"
-
-#: NOT FOUND IN SOURCE
-msgid "TakeTicket"
 msgstr "自行承辦申請單"
 
 #: lib/RT/Transaction.pm:1120 lib/RT/Transaction.pm:948
@@ -8986,14 +8734,6 @@ msgstr ""
 #: share/html/Dashboards/Subscription.html:276
 msgid "Warning: you have no email address set, so you will not receive this dashboard until you have it set"
 msgstr "警告: 您沒有設定 email 地址, 您將不會收到本控制面板的更新"
-
-#: NOT FOUND IN SOURCE
-msgid "Watch"
-msgstr "視察"
-
-#: NOT FOUND IN SOURCE
-msgid "WatchAsAdminCc"
-msgstr "以管理員副本收件人身份視察"
 
 #: lib/RT/Report/Tickets.pm:71 lib/RT/Tickets.pm:147
 msgid "Watcher"

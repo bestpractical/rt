@@ -940,38 +940,6 @@ msgstr "AdminCc"
 msgid "AdminCcs"
 msgstr "AdminCcs"
 
-#: NOT FOUND IN SOURCE
-msgid "AdminClass"
-msgstr "AdminClass"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminCustomField"
-msgstr "AdminCustomField"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminCustomFieldValues"
-msgstr "AdminCustomFieldValues"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminGroup"
-msgstr "AdminGroup"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminGroupMembership"
-msgstr "AdminGroupMembership"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminQueue"
-msgstr "AdminQueue"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminTopics"
-msgstr "AdminTopics"
-
-#: NOT FOUND IN SOURCE
-msgid "AdminUsers"
-msgstr "AdminUsers"
-
 #: share/html/Ticket/Elements/EditPeople:84
 msgid "Administrative Cc"
 msgstr "Административни Cc"
@@ -1229,10 +1197,6 @@ msgstr "Растуће"
 #: lib/RT/Queue.pm:116
 msgid "Assign and remove queue custom fields"
 msgstr "Додели и уклони прилагођена поља редова"
-
-#: NOT FOUND IN SOURCE
-msgid "AssignCustomFields"
-msgstr "AssignCustomFields"
 
 #: share/html/Ticket/Elements/AddAttachments:61
 msgid "Attach"
@@ -1660,10 +1624,6 @@ msgstr "Адреса коментара"
 #: lib/RT/Queue.pm:131
 msgid "Comment on tickets"
 msgstr "Коментар за листић"
-
-#: NOT FOUND IN SOURCE
-msgid "CommentOnTicket"
-msgstr "CommentOnTIcket"
 
 #: share/html/Tools/MyDay.html:64
 msgid "Comments"
@@ -2265,30 +2225,6 @@ msgstr "Направи, измени и обриши сачуване претр
 msgid "Create, modify and delete users"
 msgstr "Направи, измени и обриши кориснике"
 
-#: NOT FOUND IN SOURCE
-msgid "CreateArticle"
-msgstr "CreateArticle"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateDashboard"
-msgstr "НаправиИнструментТаблу"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateGroupDashboard"
-msgstr "НаправиГрупнуИнструментТаблу"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateOwnDashboard"
-msgstr "НаправиСопственуИнструментТаблу"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateSavedSearch"
-msgstr "НаправиСачувануПретрагу"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateTicket"
-msgstr "НаправиКарту"
-
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:73 lib/RT/Tickets.pm:137 share/html/Admin/Elements/ShowKeyInfo:71 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:69 share/html/Elements/ColumnMap:74 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:350
 msgid "Created"
 msgstr "Направљено"
@@ -2638,26 +2574,6 @@ msgstr "Обриши листиће"
 msgid "Delete values"
 msgstr "Обриши вредности"
 
-#: NOT FOUND IN SOURCE
-msgid "DeleteArticle"
-msgstr "ОбришиЧлан"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteDashboard"
-msgstr "ОбришиИнструментТаблу"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteGroupDashboard"
-msgstr "ОбришиГрупнуИнструментТаблу"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteOwnDashboard"
-msgstr "ОбришиСопственуИнструментТаблу"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteTicket"
-msgstr "ОбришиКарту"
-
 #: lib/RT/SharedSetting.pm:285
 #. ($self->ObjectName)
 msgid "Deleted %1"
@@ -2912,10 +2828,6 @@ msgstr "Уреди системске шаблоне"
 #. ($ClassObj->Name)
 msgid "Edit topic hierarchy for %1"
 msgstr "Уреди поредак тема за %1"
-
-#: NOT FOUND IN SOURCE
-msgid "EditSavedSearches"
-msgstr "УредиСачуванеПретраге"
 
 #: share/html/Admin/CustomFields/Modify.html:195 share/html/Admin/Elements/EditCustomField:123
 #. ($CustomFieldObj->Name)
@@ -3208,10 +3120,6 @@ msgstr "Сви"
 msgid "Example:"
 msgstr "Пример:"
 
-#: NOT FOUND IN SOURCE
-msgid "ExecuteCode"
-msgstr "ИзвршиКод"
-
 #: share/html/Admin/Elements/ShowKeyInfo:74
 msgid "Expire"
 msgstr "Истиче"
@@ -3460,10 +3368,6 @@ msgstr "Проследи поруку #%1"
 #. ($txn->id)
 msgid "Forward transaction #%1"
 msgstr "Проследи трансакцију #%1"
-
-#: NOT FOUND IN SOURCE
-msgid "ForwardMessage"
-msgstr "ПроследиПоруку"
 
 #: lib/RT/Transaction.pm:852
 #. ($self->Field, $recipients,            [\'<a href="#txn-', $self->Field, \'">'], \'</a>')
@@ -4345,10 +4249,6 @@ msgstr "Учитај сачувану претрагу"
 msgid "Load saved search:"
 msgstr "Учитај сачувану претрагу:"
 
-#: NOT FOUND IN SOURCE
-msgid "LoadSavedSearch"
-msgstr "УчитајСачувануПретрагу"
-
 #: lib/RT/SharedSetting.pm:119
 #. ($self->ObjectName, $self->Name)
 msgid "Loaded %1 %2"
@@ -5039,58 +4939,6 @@ msgstr "Измени корисничка права за ред %1"
 #. ($Ticket->Id)
 msgid "Modify who receives mail for ticket #%1"
 msgstr "Измени ко добија пошту за листић #%1"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyACL"
-msgstr "ИзмениАЦЛ"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyArticle"
-msgstr "ИзмениЧланак"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyArticleTopics"
-msgstr "ИзмениТемеЧланка"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyCustomField"
-msgstr "ИзмениПрилагођеноПоље"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyDashboard"
-msgstr "ИзмениИнструментТаблу"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyGroupDashboard"
-msgstr "ИзмениГрупнуИнструментТаблу"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyOwnDashboard"
-msgstr "ИзмениСопственуИнструментТаблу"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyOwnMembership"
-msgstr "ИзмениСопственоЧланство"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyQueueWatchers"
-msgstr "ИзмениПосматрачеРеда"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyScrips"
-msgstr "ИзмениЦедуље"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifySelf"
-msgstr "ИзмениСебе"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyTemplate"
-msgstr "ИзмениШаблон"
-
-#: NOT FOUND IN SOURCE
-msgid "ModifyTicket"
-msgstr "ИзмениЛистић"
 
 #: share/html/Admin/Tools/Configuration.html:247
 msgid "Module"
@@ -5853,10 +5701,6 @@ msgstr "Преглед"
 #: lib/RT/Queue.pm:132
 msgid "Own tickets"
 msgstr "Сопствени листићи"
-
-#: NOT FOUND IN SOURCE
-msgid "OwnTicket"
-msgstr "СопствениЛистић"
 
 #: lib/RT/Graph/Tickets.pm:154 lib/RT/Report/Tickets.pm:64 lib/RT/Ticket.pm:100 lib/RT/Tickets.pm:111 lib/RT/Tickets.pm:1841 share/html/Elements/QuickCreate:62 share/html/Elements/RT__Ticket/ColumnMap:106 share/html/Elements/RT__Ticket/ColumnMap:262 share/html/Elements/RT__Ticket/ColumnMap:279 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:137 share/html/Ticket/Elements/Reminders:175 share/html/Ticket/Elements/Reminders:84 share/html/Ticket/Elements/ShowPeople:50 share/html/m/_elements/ticket_list:96 share/html/m/ticket/create:258 share/html/m/ticket/reply:71 share/html/m/ticket/show:286
 msgid "Owner"
@@ -6658,10 +6502,6 @@ msgstr "Одговори захтеваоцима"
 msgid "Reply to tickets"
 msgstr "Одговори на листиће"
 
-#: NOT FOUND IN SOURCE
-msgid "ReplyToTicket"
-msgstr "ОдговориНаЛистић"
-
 #: lib/RT/Report/Tickets.pm:68 lib/RT/Ticket.pm:101 lib/RT/Tickets.pm:143
 msgid "Requestor"
 msgstr "Захтеваоц"
@@ -7019,34 +6859,6 @@ msgstr "Погледај промене чланака у овој класи"
 msgid "See that this class exists"
 msgstr "Погледај да ова класа постоји"
 
-#: NOT FOUND IN SOURCE
-msgid "SeeClass"
-msgstr "ПогледајКласу"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeCustomField"
-msgstr "ПогледајПрилагођеноПоље"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeDashboard"
-msgstr "ПогледајИнструментТаблу"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeGroup"
-msgstr "ПогледајГрупу"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeGroupDashboard"
-msgstr "ПогледајГрупнуИнструментТаблу"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeOwnDashboard"
-msgstr "ПогледајСопственуИнструментТаблу"
-
-#: NOT FOUND IN SOURCE
-msgid "SeeQueue"
-msgstr "ПогледајРед"
-
 #: share/html/Elements/Tabs:106 share/html/Elements/Tabs:121 share/html/Elements/Tabs:129 share/html/Elements/Tabs:171 share/html/Elements/Tabs:187 share/html/Elements/Tabs:274 share/html/Elements/Tabs:293 share/html/Elements/Tabs:297 share/html/Elements/Tabs:387 share/html/Elements/Tabs:393 share/html/Elements/Tabs:396 share/html/Elements/Tabs:404 share/html/Elements/Tabs:410 share/html/Elements/Tabs:422 share/html/Elements/Tabs:433 share/html/Elements/Tabs:71 share/html/Elements/Tabs:79 share/html/Elements/Tabs:87 share/html/Elements/Tabs:96
 msgid "Select"
 msgstr "Изабери"
@@ -7394,54 +7206,6 @@ msgstr "Прикажи захтеваочевих 10 листића са нај�
 msgid "Show ticket history"
 msgstr "Прикажи историју листића"
 
-#: NOT FOUND IN SOURCE
-msgid "ShowACL"
-msgstr "ПрикажиАЦЛ"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowApprovalsTab"
-msgstr "ПрикажиКартицуСаОдобрењима"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowArticle"
-msgstr "ПрикажиЧланак"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowArticleHistory"
-msgstr "ПрикажиИсторијуЧланка"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowConfigTab"
-msgstr "ПрикажиКартицуСаПоставкама"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowGlobalTemplates"
-msgstr "ПрикажиГлобалнеШаблоне"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowOutgoingEmail"
-msgstr "ПрикажиОдлазнуЕПошту"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowSavedSearches"
-msgstr "ПрикажиСачуванеПретраге"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowScrips"
-msgstr "ПрикажиЦедуље"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowTemplate"
-msgstr "ПрикажиШаблон"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowTicket"
-msgstr "ПрикажиЛистић"
-
-#: NOT FOUND IN SOURCE
-msgid "ShowTicketComments"
-msgstr "ПрикажиКоментареЛистића"
-
 #: share/html/Admin/Tools/Shredder/index.html:74 share/html/Elements/Tabs:245 share/html/Elements/Tabs:852
 msgid "Shredder"
 msgstr "Секач"
@@ -7639,10 +7403,6 @@ msgstr "Крађа"
 msgid "Steal tickets"
 msgstr "Крађа листића"
 
-#: NOT FOUND IN SOURCE
-msgid "StealTicket"
-msgstr "УкрадиЛистић"
-
 #: share/html/Install/Basics.html:48 share/html/Install/DatabaseDetails.html:48 share/html/Install/DatabaseType.html:48 share/html/Install/Finish.html:48 share/html/Install/Global.html:48 share/html/Install/Initialize.html:48 share/html/Install/Sendmail.html:48
 #. (1, 7)
 #. (2, 7)
@@ -7696,10 +7456,6 @@ msgstr "Претплати се на инструмент таблу %1"
 #: lib/RT/Dashboard.pm:78
 msgid "Subscribe to dashboards"
 msgstr "Претплати се на инструмент табле"
-
-#: NOT FOUND IN SOURCE
-msgid "SubscribeDashboard"
-msgstr "ПретплатиСеНаИнструментТаблу"
 
 #: share/html/Dashboards/Subscription.html:275
 #. ($Dashboard->Name)
@@ -7771,10 +7527,6 @@ msgstr "Нед"
 msgid "Sunday"
 msgstr "Недеља"
 
-#: NOT FOUND IN SOURCE
-msgid "SuperUser"
-msgstr "СуперКорисник"
-
 #: lib/RT/Config.pm:516
 msgid "Suspended"
 msgstr "Суспендовано"
@@ -7823,10 +7575,6 @@ msgstr "Узми"
 #: lib/RT/Queue.pm:135
 msgid "Take tickets"
 msgstr "Узми листиће"
-
-#: NOT FOUND IN SOURCE
-msgid "TakeTicket"
-msgstr "УзмиЛистић"
 
 #: lib/RT/Transaction.pm:1120 lib/RT/Transaction.pm:948
 msgid "Taken"
@@ -8986,14 +8734,6 @@ msgstr ""
 #: share/html/Dashboards/Subscription.html:276
 msgid "Warning: you have no email address set, so you will not receive this dashboard until you have it set"
 msgstr "Упозорење: немате подешену адресу е-поште, тако да нећете примати ову инструмент таблу док је не подесите"
-
-#: NOT FOUND IN SOURCE
-msgid "Watch"
-msgstr "Посматрај"
-
-#: NOT FOUND IN SOURCE
-msgid "WatchAsAdminCc"
-msgstr "ПосматрајКаоАдминИндигоКопија"
 
 #: lib/RT/Report/Tickets.pm:71 lib/RT/Tickets.pm:147
 msgid "Watcher"

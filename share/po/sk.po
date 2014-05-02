@@ -940,10 +940,6 @@ msgstr ""
 msgid "AdminCcs"
 msgstr "AdminCCs"
 
-#: NOT FOUND IN SOURCE
-msgid "AdminTopics"
-msgstr "AdminTopics"
-
 #: share/html/Ticket/Elements/EditPeople:84
 msgid "Administrative Cc"
 msgstr ""
@@ -1201,10 +1197,6 @@ msgstr "Stúp"
 #: lib/RT/Queue.pm:116
 msgid "Assign and remove queue custom fields"
 msgstr "Pridanie a odobratie užívateľských polí fronte"
-
-#: NOT FOUND IN SOURCE
-msgid "AssignCustomFields"
-msgstr "Pridanie užív. polí"
 
 #: share/html/Ticket/Elements/AddAttachments:61
 msgid "Attach"
@@ -1632,10 +1624,6 @@ msgstr "Adresa komentára"
 #: lib/RT/Queue.pm:131
 msgid "Comment on tickets"
 msgstr "Komentovať požiadavky"
-
-#: NOT FOUND IN SOURCE
-msgid "CommentOnTicket"
-msgstr "Komentár k požiadavke"
 
 #: share/html/Tools/MyDay.html:64
 msgid "Comments"
@@ -2237,26 +2225,6 @@ msgstr "Vytvárať, upravovať a mazať uložené vyhľadávania"
 msgid "Create, modify and delete users"
 msgstr "Vytvárať, upravovať a mazať užívateľa"
 
-#: NOT FOUND IN SOURCE
-msgid "CreateArticle"
-msgstr "Vytvárať články"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateDashboard"
-msgstr "Vytvárať panely"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateGroupDashboard"
-msgstr "Vytvárať skupinu panelu"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateOwnDashboard"
-msgstr "Vytvárať vlastný panel"
-
-#: NOT FOUND IN SOURCE
-msgid "CreateTicket"
-msgstr "Vytvárať požiadavky"
-
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:73 lib/RT/Tickets.pm:137 share/html/Admin/Elements/ShowKeyInfo:71 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:69 share/html/Elements/ColumnMap:74 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:350
 msgid "Created"
 msgstr "Vytvorené"
@@ -2605,22 +2573,6 @@ msgstr "Vymazať požiadavky"
 #: share/html/Elements/BulkCustomFields:53
 msgid "Delete values"
 msgstr "Vymazať hodnoty"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteArticle"
-msgstr "Vymazať článok"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteDashboard"
-msgstr "Vymazať panel"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteOwnDashboard"
-msgstr "Vymazať vlastný panel"
-
-#: NOT FOUND IN SOURCE
-msgid "DeleteTicket"
-msgstr "Vymazať požiadavku"
 
 #: lib/RT/SharedSetting.pm:285
 #. ($self->ObjectName)
@@ -5750,10 +5702,6 @@ msgstr "Prehľad"
 msgid "Own tickets"
 msgstr "Vlastniť požiadavky"
 
-#: NOT FOUND IN SOURCE
-msgid "OwnTicket"
-msgstr "Vlastniť požiadavku"
-
 #: lib/RT/Graph/Tickets.pm:154 lib/RT/Report/Tickets.pm:64 lib/RT/Ticket.pm:100 lib/RT/Tickets.pm:111 lib/RT/Tickets.pm:1841 share/html/Elements/QuickCreate:62 share/html/Elements/RT__Ticket/ColumnMap:106 share/html/Elements/RT__Ticket/ColumnMap:262 share/html/Elements/RT__Ticket/ColumnMap:279 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:137 share/html/Ticket/Elements/Reminders:175 share/html/Ticket/Elements/Reminders:84 share/html/Ticket/Elements/ShowPeople:50 share/html/m/_elements/ticket_list:96 share/html/m/ticket/create:258 share/html/m/ticket/reply:71 share/html/m/ticket/show:286
 msgid "Owner"
 msgstr "Vlastník"
@@ -7627,10 +7575,6 @@ msgstr "Prevziať"
 #: lib/RT/Queue.pm:135
 msgid "Take tickets"
 msgstr "Prevzaté požiadavky"
-
-#: NOT FOUND IN SOURCE
-msgid "TakeTicket"
-msgstr "Prevzatá požiadavka"
 
 #: lib/RT/Transaction.pm:1120 lib/RT/Transaction.pm:948
 msgid "Taken"
