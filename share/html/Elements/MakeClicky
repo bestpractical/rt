@@ -61,15 +61,19 @@ my %actions = (
     },
     url => sub {
         my %args = @_;
+        my $post = "";
+        $post = ")" if $args{value} !~ /\(/ and $args{value} =~ s/\)$//;
         $args{value} = $escaper->($args{value});
         my $result = qq{[<a target="new" href="$args{value}">}. loc('Open URL') .qq{</a>]};
-        return $args{value} . qq{ <span class="clickylink">$result</span>};
+        return $args{value} . qq{ <span class="clickylink">$result</span>$post};
     },
     url_overwrite => sub {
         my %args = @_;
+        my $post = "";
+        $post = ")" if $args{value} !~ /\(/ and $args{value} =~ s/\)$//;
         $args{value} = $escaper->($args{value});
         my $result = qq{<a target="new" href="$args{value}">$args{value}</a>};
-        return qq{<span class="clickylink">$result</span>};
+        return qq{<span class="clickylink">$result</span>$post};
     },
 );
 
