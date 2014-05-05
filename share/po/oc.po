@@ -468,9 +468,23 @@ msgstr "%1 : %2"
 msgid "%1:%2:%3"
 msgstr "%1 : %2 : %3"
 
-#: lib/RT/Attachment.pm:453 lib/RT/Date.pm:414
-#. (int( $size / 1024 / 102.4 ) / 10)
+#: lib/RT/Attachment.pm:459
+#. ($size)
+msgid "%1B"
+msgstr ""
+
+#: lib/RT/Attachment.pm:456
+#. (int( $size / 102.4 ) / 10)
+msgid "%1KiB"
+msgstr ""
+
+#: lib/RT/Date.pm:414
 msgid "%1M"
+msgstr ""
+
+#: lib/RT/Attachment.pm:453
+#. (int( $size / 1024 / 102.4 ) / 10)
+msgid "%1MiB"
 msgstr ""
 
 #: share/html/Elements/CreateTicket:54
@@ -486,22 +500,12 @@ msgstr ""
 msgid "%1Y"
 msgstr ""
 
-#: lib/RT/Attachment.pm:459
-#. ($size)
-msgid "%1b"
-msgstr ""
-
 #: lib/RT/Date.pm:402
 msgid "%1d"
 msgstr ""
 
 #: lib/RT/Date.pm:396
 msgid "%1h"
-msgstr ""
-
-#: lib/RT/Attachment.pm:456
-#. (int( $size / 102.4 ) / 10)
-msgid "%1k"
 msgstr ""
 
 #: lib/RT/Date.pm:390
