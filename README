@@ -66,10 +66,10 @@ GENERAL INSTALLATION
 
     If you are upgrading from a previous version of RT, please review
     the upgrade notes for the appropriate versions, which can be found
-    in docs/UPGRADING-* If you are coming from 3.8.6 to 4.0.x you should
-    review both the UPGRADING-3.8 and UPGRADING-4.0 file.  Similarly, if
-    you were coming from 3.6.7, you would want to review UPGRADING-3.6,
-    UPGRADING-3.8 and UPGRADING-4.0
+    in docs/UPGRADING-* If you are coming from 4.0.x to 4.2.x you should
+    review both the UPGRADING-4.0 and UPGRADING-4.2 file.  Similarly, if
+    you were coming from 3.8.x, you would want to review UPGRADING-3.8,
+    UPGRADING-4.0 and UPGRADING-4.2
 
     It is particularly important that you read the warnings at the top of
     UPGRADING-4.0 for some common issues.
@@ -157,7 +157,7 @@ GENERAL INSTALLATION
 
       You should back up your database before running this command.
       When you run it, you will be prompted for your previous version of
-      RT (such as 3.6.4) so that the appropriate set of database
+      RT (such as 3.8.1) so that the appropriate set of database
       upgrades can be applied.
 
       If 'make upgrade-database' completes without error, your upgrade
