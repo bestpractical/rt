@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2013-11-25 21:57+0000\n"
-"PO-Revision-Date: 2013-11-25 22:02+0000\n"
+"POT-Creation-Date: 2014-05-05 18:39+0000\n"
+"PO-Revision-Date: 2014-05-05 18:51+0000\n"
 "Last-Translator: Alex Vandiver <Unknown>\n"
 "Language-Team: Turkish <tr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-02-11 18:34+0000\n"
-"X-Generator: Launchpad (build 16916)\n"
+"X-Launchpad-Export-Date: 2014-05-05 18:58+0000\n"
+"X-Generator: Launchpad (build 16985)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:62
 msgid "#"
@@ -302,7 +302,7 @@ msgstr "%1 silindi"
 #: lib/RT/Transaction.pm:811
 #. ($self->FriendlyObjectType)
 msgid "%1 disabled"
-msgstr ""
+msgstr "%1 hizmet dışı"
 
 #: share/html/Install/Sendmail.html:86
 #. ($ARGS{SendmailPath})
@@ -312,7 +312,7 @@ msgstr "%1 mevcut değil"
 #: lib/RT/Transaction.pm:807
 #. ($self->FriendlyObjectType)
 msgid "%1 enabled"
-msgstr ""
+msgstr "%1 etkin"
 
 #: etc/initialdata:807
 msgid "%1 highest priority tickets I own"
@@ -375,7 +375,7 @@ msgstr "%1 sorun"
 #: share/html/Admin/Elements/ShowKeyInfo:61
 #. ($protocol, $res{'info'}{'id'} || $res{'info'}{'Fingerprint'})
 msgid "%1 key '%2'"
-msgstr ""
+msgstr "%1 tuş '%2'"
 
 #: share/html/Articles/Elements/UpdatedArticles:48
 #. ($rows)
@@ -645,7 +645,7 @@ msgstr "(isimsiz)"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:269 share/html/Elements/RT__Ticket/ColumnMap:88
 msgid "(no pubkey!)"
-msgstr ""
+msgstr "(genel anahtar yok!)"
 
 #: lib/RT/Report/Tickets.pm:670 lib/RT/Report/Tickets.pm:836 lib/RT/Report/Tickets.pm:847 lib/RT/Report/Tickets/Entry.pm:78 lib/RT/Report/Tickets/Entry.pm:88 lib/RT/Transaction.pm:1087 lib/RT/Transaction.pm:1149 lib/RT/Transaction.pm:1150 lib/RT/Transaction.pm:757 lib/RT/Transaction.pm:762 lib/RT/Transaction.pm:832 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:109 share/html/Elements/EditCustomFieldSelect:128 share/html/Elements/EditCustomFieldSelect:138 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowCustomFields:60 share/html/m/ticket/show:263
 msgid "(no value)"
@@ -1051,11 +1051,11 @@ msgstr "Ve/Veya"
 
 #: lib/RT/Report/Tickets.pm:124
 msgid "Annually"
-msgstr ""
+msgstr "Yıllık"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:74
 msgid "Any field"
-msgstr ""
+msgstr "Herhangi bir alan"
 
 #: share/html/Search/Simple.html:65
 msgid "Any word not recognized by RT is searched for in ticket subjects."
@@ -1116,11 +1116,11 @@ msgstr ""
 
 #: etc/initialdata:584 etc/upgrade/3.8.2/content:112
 msgid "Approval Ready for Owner"
-msgstr ""
+msgstr "sahibi için onay hazır"
 
 #: etc/initialdata:596 etc/upgrade/4.1.9/content:177
 msgid "Approval Ready for Owner in HTML"
-msgstr ""
+msgstr "HTML de sahibi için onay hazır"
 
 #: etc/initialdata:556 etc/upgrade/3.8.2/content:99
 msgid "Approval Rejected"
@@ -1128,7 +1128,7 @@ msgstr "Onay Reddedildi"
 
 #: etc/initialdata:569 etc/upgrade/4.1.9/content:162
 msgid "Approval Rejected in HTML"
-msgstr ""
+msgstr "HTML de onay reddedildi"
 
 #: share/html/Approvals/Elements/Approve:75
 msgid "Approve"
@@ -1140,63 +1140,63 @@ msgstr "Nis"
 
 #: share/html/Articles/Article/Delete.html:56
 msgid "Are you sure you want to delete this article?"
-msgstr ""
+msgstr "Bu maddeyi silmek istediğinizden emin misiniz"
 
 #: lib/RT/URI/fsck_com_article.pm:215
 #. ($object->id)
 msgid "Article #%1"
-msgstr ""
+msgstr "nesne  #%1"
 
 #: share/html/Articles/Article/Delete.html:97
 #. ($ArticleObj->Id)
 msgid "Article #%1 deleted"
-msgstr ""
+msgstr "Nesne  #%1 silindi"
 
 #: share/html/Articles/Article/History.html:61
 #. ($id)
 msgid "Article #%1 not found"
-msgstr ""
+msgstr "Nesne  #%1 bulunamadı"
 
 #: lib/RT/URI/fsck_com_article.pm:213 share/html/Articles/Article/Display.html:84 share/html/SelfService/Article/Display.html:66
 #. ($article->Id, $article->Name || loc("(no name)"))
 #. ($object->id, $object->Name)
 msgid "Article #%1: %2"
-msgstr ""
+msgstr "Nesne #%1: %2"
 
 #: lib/RT/Article.pm:216
 #. ($self->id)
 msgid "Article %1 created"
-msgstr ""
+msgstr "Nesne %1 oluşturuldu"
 
 #: share/html/Admin/Articles/index.html:48
 msgid "Article Administration"
-msgstr ""
+msgstr "Makale yönetimi"
 
 #: lib/RT/Article.pm:324
 msgid "Article Deleted"
-msgstr ""
+msgstr "Yazı silindi"
 
 #: share/html/Articles/Article/Display.html:76 share/html/SelfService/Article/Display.html:60
 msgid "Article not found"
-msgstr ""
+msgstr "Yazı bulunamadı"
 
 #: lib/RT/Article.pm:72 share/html/Admin/Global/CustomFields/index.html:95 share/html/Articles/index.html:48 share/html/Elements/Tabs:163 share/html/Elements/Tabs:168 share/html/Elements/Tabs:497 share/html/Elements/Tabs:503
 msgid "Articles"
-msgstr ""
+msgstr "Yazılar"
 
 #: share/html/Articles/Topics.html:99
 #. ($currtopic->Name)
 msgid "Articles in %1"
-msgstr ""
+msgstr "Yazılar %1 içinde"
 
 #: share/html/SelfService/Article/Search.html:64
 #. ($Articles_Content)
 msgid "Articles matching %1"
-msgstr ""
+msgstr "Uyan yazılar %1"
 
 #: share/html/Articles/Topics.html:101
 msgid "Articles with no topics"
-msgstr ""
+msgstr "Konusu olmayan yazılar"
 
 #: share/html/Search/Elements/EditSort:79
 msgid "Asc"
@@ -1241,7 +1241,7 @@ msgstr "Eklentiler"
 
 #: lib/RT/Attachment.pm:742
 msgid "Attachments encryption is disabled"
-msgstr ""
+msgstr "Eklentilerin şifrelenmesi kapatıldı"
 
 #: lib/RT/Attributes.pm:178
 msgid "Attribute Deleted"
@@ -1258,7 +1258,7 @@ msgstr "Otomatik hesap kurulumu yapılamadı"
 #: share/html/Admin/Tools/Theme.html:321
 #. ($valid_image_types)
 msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
-msgstr ""
+msgstr "Görüntü için otomatik önerilen tema yok. Bu yüklemiş olduğunuz görüntünün kurulu olan GD versiyonu tarafından tanınmadığından olabilir. Desteklenen türler: %1 dir. Diğer dosya türlerini desteklemesi için GD.pm ve libgd yi yeniden derleyebilirsiniz."
 
 #: etc/initialdata:227
 msgid "Autoreply"
@@ -1270,7 +1270,7 @@ msgstr "İstekçileri Otomatik Cevapla"
 
 #: etc/initialdata:257 etc/upgrade/4.1.9/content:8
 msgid "Autoreply in HTML"
-msgstr ""
+msgstr "HTML olarak otomatik cevap"
 
 #: share/html/Widgets/SelectionBox:170
 msgid "Available"
@@ -1278,39 +1278,39 @@ msgstr "Hazır"
 
 #: lib/RT/Report/Tickets.pm:225
 msgid "Average Created-LastUpdated"
-msgstr ""
+msgstr "Oluşturulma-Songüncelleme ortalaması"
 
 #: lib/RT/Report/Tickets.pm:220
 msgid "Average Created-Resolved"
-msgstr ""
+msgstr "Oluşturulma-Çözülme Ortalaması"
 
 #: lib/RT/Report/Tickets.pm:215
 msgid "Average Created-Started"
-msgstr ""
+msgstr "Oluşturulma-Başlama Ortalaması"
 
 #: lib/RT/Report/Tickets.pm:235
 msgid "Average Due-Resolved"
-msgstr ""
+msgstr "Gecikmiş-Çözülmüş Ortalaması"
 
 #: lib/RT/Report/Tickets.pm:240
 msgid "Average Started-Resolved"
-msgstr ""
+msgstr "Başlamış-Çözülmüş Ortalaması"
 
 #: lib/RT/Report/Tickets.pm:230
 msgid "Average Starts-Started"
-msgstr ""
+msgstr "Başlama-başlanan ortalaması"
 
 #: lib/RT/Report/Tickets.pm:205
 msgid "Average time estimated"
-msgstr ""
+msgstr "ortalama tahmini süre"
 
 #: lib/RT/Report/Tickets.pm:210
 msgid "Average time left"
-msgstr ""
+msgstr "Ortalama kalan süre"
 
 #: lib/RT/Report/Tickets.pm:200
 msgid "Average time worked"
-msgstr ""
+msgstr "ortalama çalışılan süre"
 
 #: share/html/Elements/Submit:109 share/html/Install/Basics.html:63 share/html/Install/DatabaseDetails.html:73 share/html/Install/DatabaseDetails.html:89 share/html/Install/Global.html:65 share/html/Install/Initialize.html:62 share/html/Install/Sendmail.html:64
 msgid "Back"
@@ -1339,7 +1339,7 @@ msgstr "Toplu işlemler"
 
 #: share/html/Admin/Elements/EditScrips:62
 msgid "Batch scrips run after a set of related changes to a ticket."
-msgstr ""
+msgstr "Toplu komutlar bilet ile ilgili birkaç değişiklik uygulandıktan sonra çalışır."
 
 #: share/html/Ticket/Forward.html:72
 msgid "Bcc"
@@ -1368,23 +1368,23 @@ msgstr "Yer İmi"
 
 #: share/html/Articles/Article/Search.html:114
 msgid "Bookmarkable link for this search"
-msgstr ""
+msgstr "Bu arama için yer imi konabilir"
 
 #: etc/initialdata:831 etc/initialdata:856 etc/upgrade/3.7.82/content:6
 msgid "Bookmarked Tickets"
-msgstr ""
+msgstr "Yer imi konmuş biletler"
 
 #: share/html/m/_elements/menu:73
 msgid "Bookmarked tickets"
-msgstr ""
+msgstr "Yer imi konmuş biletler"
 
 #: share/html/Articles/Topics.html:48 share/html/Articles/Topics.html:60
 msgid "Browse by topic"
-msgstr ""
+msgstr "Konu bazında gözatma"
 
 #: share/html/Elements/Tabs:240
 msgid "Browse the SQL queries made in this process"
-msgstr ""
+msgstr "Bu işlemde yapılan SQL sorgularına göz atma"
 
 #: share/html/Elements/Tabs:813
 msgid "Bulk Update"
@@ -1430,7 +1430,7 @@ msgstr "Üzerinde çalışılabilecek bir kaydedilmiş arama bulunamadı"
 
 #: lib/RT/Ticket.pm:3045
 msgid "Can't forward: no valid email addresses specified"
-msgstr ""
+msgstr "İletemiyorum: Geçerli email adresi girilmemiş"
 
 #: lib/RT/Link.pm:192
 msgid "Can't link a ticket to itself"
@@ -1438,16 +1438,16 @@ msgstr "Bir bileti kendisine bağlayamazsınız"
 
 #: lib/RT/Reminders.pm:126
 msgid "Can't link to a deleted ticket"
-msgstr ""
+msgstr "Silinen bir bilete kısayol verilemez"
 
 #: lib/RT/Ticket.pm:1782
 msgid "Can't merge a ticket into itself"
-msgstr ""
+msgstr "Bir bilet kendisi ile birleştirilemez"
 
 #: share/html/index.html:127
 #. ($QueueObj->Name)
 msgid "Can't quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
-msgstr ""
+msgstr "Kuyruktaki  %1 bile hızlı oluşturulamaz çünki bazı alanların doldurulması gerekmektedir. Lütfen normal bilet üretme sayfasını kullanarak işlemi bitiriniz."
 
 #: share/html/Widgets/SavedSearch:133
 #. (loc($self->{SearchType}))
@@ -1456,7 +1456,7 @@ msgstr "%1 kaydedilemedi"
 
 #: share/html/Search/Elements/EditSearches:320
 msgid "Can't save a search without a name"
-msgstr ""
+msgstr "İsim olmayan aramayı kaydedemezsiniz"
 
 #: share/html/Search/Elements/EditSearches:323
 msgid "Can't save this search"
@@ -1468,11 +1468,11 @@ msgstr ""
 
 #: lib/RT/Article.pm:382
 msgid "Cannot add link to plain number"
-msgstr ""
+msgstr "Sıradan numaralara kısayol ilave edilemez"
 
 #: share/html/Ticket/Create.html:380 share/html/m/ticket/create:147
 msgid "Cannot create tickets in a disabled queue."
-msgstr ""
+msgstr "Kapatılmış kuyruğa bilet oluşturulamaz."
 
 #: share/html/Admin/CustomFields/Modify.html:126
 msgid "Categories are based on"
@@ -1496,7 +1496,7 @@ msgstr "Değiştir"
 
 #: lib/RT/Approval/Rule/Created.pm:56
 msgid "Change Approval ticket to open status"
-msgstr ""
+msgstr "Durum açabilmek için onay biletini değiştir"
 
 #: share/html/SelfService/Prefs.html:70
 msgid "Change password"
@@ -1504,7 +1504,7 @@ msgstr "Parolayı değiştir"
 
 #: lib/RT/Template.pm:705
 msgid "Changing queue is not implemented"
-msgstr ""
+msgstr "Kuyruk değişikliği uygulanamaz"
 
 #: share/html/Elements/Tabs:814
 msgid "Chart"
@@ -1520,7 +1520,7 @@ msgstr "Veritabanı bağlanılabilirliğini kontrol et"
 
 #: share/html/Install/Basics.html:63 share/html/Install/DatabaseDetails.html:48 share/html/Install/DatabaseType.html:70
 msgid "Check Database Credentials"
-msgstr ""
+msgstr "Veritabanı yetkilerini kontrol edin"
 
 #: share/html/Ticket/Elements/AddAttachments:51 share/html/m/ticket/create:310 share/html/m/ticket/reply:126
 msgid "Check box to delete"
@@ -1591,7 +1591,7 @@ msgstr ""
 
 #: share/html/Install/Initialize.html:54
 msgid "Click \"Initialize Database\" to create RT's database and insert initial metadata. This may take a few moments"
-msgstr ""
+msgstr "RT'nin veritabanını oluşturup ilk metaveriyi oluşturmak için \"Veritabanını Sıfırla\" ya basın"
 
 #: share/html/Admin/Tools/Theme.html:101
 msgid "Click to choose a color"
@@ -1627,7 +1627,7 @@ msgstr "Yorum Adresi"
 
 #: lib/RT/Installer.pm:172
 msgid "Comment address"
-msgstr ""
+msgstr "Yorum adresi"
 
 #: lib/RT/Queue.pm:131
 msgid "Comment on tickets"
@@ -1661,7 +1661,7 @@ msgstr "Durum"
 #. ($args{'ScripCondition'})
 #. ($value)
 msgid "Condition '%1' not found"
-msgstr ""
+msgstr "'%1' Durumu bulunamadı"
 
 #: lib/RT/Scrip.pm:176 lib/RT/Scrip.pm:802
 msgid "Condition is mandatory argument"
@@ -1673,17 +1673,17 @@ msgstr "Durum eşleşiyor..."
 
 #: share/html/Elements/RT__Scrip/ColumnMap:82
 msgid "Condition, Action and Template"
-msgstr ""
+msgstr "Durum, Hareket ve şablon"
 
 #: share/html/Install/index.html:107
 #. ($file)
 msgid "Config file %1 is locked"
-msgstr ""
+msgstr "%1 yapılandırma dosyası kilitli"
 
 #: share/html/Admin/Queues/Modify.html:193
 #. ($QueueObj->Name)
 msgid "Configuration for queue %1"
-msgstr ""
+msgstr "%1 Kuyruğu için yapılandırma"
 
 #: share/html/Install/DatabaseDetails.html:140
 msgid "Connection succeeded"

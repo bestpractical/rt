@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2013-11-25 21:57+0000\n"
-"PO-Revision-Date: 2013-11-25 22:07+0000\n"
+"POT-Creation-Date: 2014-05-05 18:39+0000\n"
+"PO-Revision-Date: 2014-05-05 18:47+0000\n"
 "Last-Translator: Alex Vandiver <Unknown>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-02-11 18:34+0000\n"
-"X-Generator: Launchpad (build 16916)\n"
+"X-Launchpad-Export-Date: 2014-05-05 18:58+0000\n"
+"X-Generator: Launchpad (build 16985)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:62
 msgid "#"
@@ -219,7 +219,7 @@ msgstr "%1 toegevoegd als waarde voor %2"
 #: lib/RT/Date.pm:433
 #. (join ' ', @res)
 msgid "%1 ago"
-msgstr ""
+msgstr "%1 geleden"
 
 #: share/html/Install/DatabaseDetails.html:180
 #. ($RT::DatabaseName)
@@ -257,7 +257,7 @@ msgstr "%1 door %2"
 #: lib/RT/Record/Role/Roles.pm:418
 #. ($self->loc($type))
 msgid "%1 cannot be a group"
-msgstr ""
+msgstr "%1 kan geen groep zijn"
 
 #: lib/RT/Record.pm:526 lib/RT/Transaction.pm:1082 lib/RT/Transaction.pm:1087 lib/RT/Transaction.pm:1101 lib/RT/Transaction.pm:1110 lib/RT/Transaction.pm:1150 lib/RT/Transaction.pm:838
 #. ($self->loc($self->Field) , $q1->Name , $q2->Name)
@@ -1051,7 +1051,7 @@ msgstr "En/of"
 
 #: lib/RT/Report/Tickets.pm:124
 msgid "Annually"
-msgstr ""
+msgstr "Jaarlijks"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:74
 msgid "Any field"
@@ -1331,7 +1331,7 @@ msgstr ""
 
 #: share/html/Admin/Elements/SelectStage:70
 msgid "Batch (disabled by config)"
-msgstr ""
+msgstr "Batch (uitgeschakeld in RT configuratie)"
 
 #: share/html/Admin/Elements/EditScrips:61
 msgid "Batch scrips"
@@ -4989,7 +4989,7 @@ msgstr ""
 
 #: share/html/Ticket/Elements/ShowRequestor:61
 msgid "More about the requestors"
-msgstr ""
+msgstr "Meer over de aanvragers"
 
 #: share/html/Elements/RT__Scrip/ColumnMap:125
 msgid "Move"
@@ -6375,7 +6375,7 @@ msgstr "Verwijst naar"
 
 #: share/html/Elements/RefreshHomepage:48
 msgid "Refresh"
-msgstr ""
+msgstr "Vernieuwen"
 
 #: lib/RT/Config.pm:322
 msgid "Refresh home page every 10 minutes."
@@ -9369,7 +9369,7 @@ msgstr ""
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:52
 msgid "left to right"
-msgstr ""
+msgstr "van links naar rechts"
 
 #: share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectEqualityOperator:61 share/html/Elements/SelectIPRelation:61
 msgid "less than"
@@ -9418,7 +9418,7 @@ msgstr ""
 
 #: share/html/Admin/Elements/ShowKeyInfo:72 share/html/Admin/Elements/ShowKeyInfo:75 share/html/Admin/Elements/ShowKeyInfo:82 share/html/Admin/Elements/ShowKeyInfo:83 share/html/Dashboards/Subscription.html:137
 msgid "never"
-msgstr ""
+msgstr "nooit"
 
 #: lib/RT/Queue.pm:102
 msgid "new"
@@ -9438,7 +9438,7 @@ msgstr "niet gelijk aan"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:84
 msgid "nothing"
-msgstr ""
+msgstr "niets"
 
 #: share/html/Admin/Tools/Shredder/index.html:157
 msgid "objects were successfuly removed"

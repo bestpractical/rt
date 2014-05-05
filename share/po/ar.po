@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2013-11-25 21:57+0000\n"
-"PO-Revision-Date: 2013-11-25 22:49+0000\n"
+"POT-Creation-Date: 2014-05-05 18:39+0000\n"
+"PO-Revision-Date: 2014-05-05 18:41+0000\n"
 "Last-Translator: Alex Vandiver <Unknown>\n"
 "Language-Team: Arabic <ar@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-02-11 18:34+0000\n"
-"X-Generator: Launchpad (build 16916)\n"
+"X-Launchpad-Export-Date: 2014-05-05 18:56+0000\n"
+"X-Generator: Launchpad (build 16985)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:62
 msgid "#"
@@ -219,7 +219,7 @@ msgstr "عُيّنت %1 كقيمة %2"
 #: lib/RT/Date.pm:433
 #. (join ' ', @res)
 msgid "%1 ago"
-msgstr ""
+msgstr "منذ %1"
 
 #: share/html/Install/DatabaseDetails.html:180
 #. ($RT::DatabaseName)
@@ -257,7 +257,7 @@ msgstr "%1 بواسطة %2"
 #: lib/RT/Record/Role/Roles.pm:418
 #. ($self->loc($type))
 msgid "%1 cannot be a group"
-msgstr ""
+msgstr "%1 لا يمكن أن تكون مجموعة"
 
 #: lib/RT/Record.pm:526 lib/RT/Transaction.pm:1082 lib/RT/Transaction.pm:1087 lib/RT/Transaction.pm:1101 lib/RT/Transaction.pm:1110 lib/RT/Transaction.pm:1150 lib/RT/Transaction.pm:838
 #. ($self->loc($self->Field) , $q1->Name , $q2->Name)
@@ -287,7 +287,7 @@ msgstr "%1 التكوين الأساسي"
 
 #: lib/RT/Record.pm:994
 msgid "%1 could not be set to %2."
-msgstr ""
+msgstr "تعذر تعيين %1 بالقيمة %2."
 
 #: lib/RT/Transaction.pm:803
 #. ($self->FriendlyObjectType)
@@ -404,7 +404,7 @@ msgstr ""
 #: share/html/Admin/Tools/Configuration.html:74
 #. ($meta->{'Source'}{'Extension'})
 msgid "%1 site config"
-msgstr ""
+msgstr "إعدادات الموقع %1"
 
 #: lib/RT/SharedSetting.pm:259
 #. (ucfirst($self->ObjectName), $msg)
@@ -704,11 +704,11 @@ msgstr ""
 
 #: lib/RT/Date.pm:368
 msgid "0s"
-msgstr ""
+msgstr "0ث"
 
 #: lib/RT/Template.pm:287 lib/RT/Template.pm:726
 msgid "A Template with that name already exists"
-msgstr ""
+msgstr "هناك قالب بهذا الإسم موجود مسبقا"
 
 #: etc/initialdata:224
 msgid "A blank template"
@@ -862,12 +862,12 @@ msgstr ""
 
 #: share/html/Elements/RT__CustomField/ColumnMap:85
 msgid "Added"
-msgstr ""
+msgstr "اُضيفت"
 
 #: lib/RT/Ticket.pm:645
 #. ($principal->Object->Name, $self->loc($args{'Type'}))
 msgid "Added %1 as a %2 for this ticket"
-msgstr ""
+msgstr "تم إضافة %1 ك %2 لهذا الطلب"
 
 #: lib/RT/Queue.pm:606
 #. ($principal->Object->Name, $self->loc($args{'Type'}))
@@ -966,7 +966,7 @@ msgstr "بعد الولوج ستنقلون إلى غايتكم الأصلية:"
 
 #: share/html/Search/Elements/PickCriteria:62
 msgid "Aggregator"
-msgstr ""
+msgstr "مجمّع"
 
 #: etc/initialdata:526 etc/upgrade/3.8.2/content:85
 msgid "All Approvals Passed"
@@ -1014,11 +1014,11 @@ msgstr "كل الموضوعات"
 
 #: lib/RT/System.pm:92
 msgid "Allow creation of saved searches"
-msgstr ""
+msgstr "إسمح بإنشاء أبحاث محفوظة"
 
 #: lib/RT/System.pm:91
 msgid "Allow loading of saved searches"
-msgstr ""
+msgstr "إسمح بتحميل الأبحاث المحفوظة"
 
 #: lib/RT/System.pm:93
 msgid "Allow writing Perl code in templates, scrips, etc"
@@ -1051,7 +1051,7 @@ msgstr "أو/و"
 
 #: lib/RT/Report/Tickets.pm:124
 msgid "Annually"
-msgstr ""
+msgstr "سنويا"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:74
 msgid "Any field"
@@ -1253,7 +1253,7 @@ msgstr ""
 
 #: share/html/Errors/WebRemoteUser/UserAutocreateDefaultsOnLogin:48
 msgid "Automatic account setup failed"
-msgstr ""
+msgstr "فشل الإعداد التلقائي للحساب"
 
 #: share/html/Admin/Tools/Theme.html:321
 #. ($valid_image_types)
@@ -1270,7 +1270,7 @@ msgstr "قم بإرسال رد للطالب تلقائيا"
 
 #: etc/initialdata:257 etc/upgrade/4.1.9/content:8
 msgid "Autoreply in HTML"
-msgstr ""
+msgstr "الرد التلقائي بصيغة HTML"
 
 #: share/html/Widgets/SelectionBox:170
 msgid "Available"
@@ -1327,7 +1327,7 @@ msgstr "البيانات الأساسية"
 
 #: share/html/Admin/Elements/SelectStage:69
 msgid "Batch"
-msgstr ""
+msgstr "دفعة"
 
 #: share/html/Admin/Elements/SelectStage:70
 msgid "Batch (disabled by config)"
@@ -1343,7 +1343,7 @@ msgstr ""
 
 #: share/html/Ticket/Forward.html:72
 msgid "Bcc"
-msgstr ""
+msgstr "نسخة مخفية"
 
 #: share/html/Articles/Elements/NeedsSetup:50
 #. (qq[<a href="@{[RT->Config->Get("WebPath")]}/Admin/Articles/">], '</a>')
@@ -1364,7 +1364,7 @@ msgstr "عريض"
 
 #: share/html/Search/Elements/BuildFormatString:100 share/html/m/_elements/ticket_list:101 share/html/m/ticket/show:246
 msgid "Bookmark"
-msgstr ""
+msgstr "المفضلة"
 
 #: share/html/Articles/Article/Search.html:114
 msgid "Bookmarkable link for this search"
@@ -1380,7 +1380,7 @@ msgstr "طلبات مُعلّمة"
 
 #: share/html/Articles/Topics.html:48 share/html/Articles/Topics.html:60
 msgid "Browse by topic"
-msgstr ""
+msgstr "تصفّح حسب الموضوع"
 
 #: share/html/Elements/Tabs:240
 msgid "Browse the SQL queries made in this process"
@@ -1405,11 +1405,11 @@ msgstr ""
 
 #: share/html/Search/Chart.html:149
 msgid "Calculate"
-msgstr ""
+msgstr "إحسب"
 
 #: share/html/Search/Chart.html:151
 msgid "Calculate values of"
-msgstr ""
+msgstr "إحسب قيم"
 
 #: share/html/Search/Elements/EditSearches:176
 #. ($ARGS{'SavedSearchLoad'})
@@ -1438,7 +1438,7 @@ msgstr "لا يمكن ربط الطلب إلى ذاته"
 
 #: lib/RT/Reminders.pm:126
 msgid "Can't link to a deleted ticket"
-msgstr ""
+msgstr "لا يمكن إنشاء وصلة لطلب ممسوح"
 
 #: lib/RT/Ticket.pm:1782
 msgid "Can't merge a ticket into itself"
@@ -1595,7 +1595,7 @@ msgstr ""
 
 #: share/html/Admin/Tools/Theme.html:101
 msgid "Click to choose a color"
-msgstr ""
+msgstr "إضغط لاختيار لون"
 
 #: share/html/Ticket/Elements/ShowDates:75 share/html/m/ticket/show:375
 msgid "Closed"
@@ -1643,7 +1643,7 @@ msgstr "ملاحظات (لا تُرسَل إلى الطالب)"
 
 #: share/html/Admin/Users/Modify.html:209 share/html/Ticket/Elements/ShowRequestor:78
 msgid "Comments about this user"
-msgstr ""
+msgstr "تعليقات حول هذا المستخدم"
 
 #: lib/RT/Transaction.pm:876
 msgid "Comments added"
@@ -1696,7 +1696,7 @@ msgstr ""
 
 #: share/html/Errors/WebRemoteUser/Wrapper:69
 msgid "Contact your RT administrator."
-msgstr ""
+msgstr "إتصل بمدير RT."
 
 #: lib/RT/Tickets.pm:139 share/html/Admin/Elements/ModifyTemplate:70 share/html/Articles/Article/Display.html:53 share/html/Articles/Article/Edit.html:68 share/html/Articles/Article/Elements/ShowSearchCriteria:71 share/html/Elements/QuickCreate:74 share/html/Elements/SelectAttachmentField:51 share/html/Elements/Tabs:589 share/html/Ticket/Forward.html:76 share/html/Ticket/ModifyAll.html:121
 msgid "Content"
@@ -1762,7 +1762,7 @@ msgstr ""
 #: share/html/Admin/Global/Template.html:84 share/html/Admin/Queues/Template.html:83
 #. ($msg)
 msgid "Could not create template: %1"
-msgstr ""
+msgstr "تعذّر إنشاء الطلب: %1"
 
 #: lib/RT/Ticket.pm:260
 msgid "Could not create ticket. Queue not set"
@@ -1785,7 +1785,7 @@ msgstr ""
 #: lib/RT/Record/Role/Roles.pm:387
 #. ($name)
 msgid "Could not find or create user '%1'"
-msgstr ""
+msgstr "تعذّر إيجاد أو إنشاء المستخدم '%1'"
 
 #: lib/RT/SharedSetting.pm:244
 #. ($self->ObjectName)
@@ -1823,7 +1823,7 @@ msgstr ""
 #: lib/RT/Record/Role/Roles.pm:426
 #. ($principal->Object->Name, $self->loc($type))
 msgid "Could not make %1 a %2"
-msgstr ""
+msgstr "تعذّر جعل %1 %2"
 
 #: lib/RT/Record/Role/Roles.pm:507
 #. ($principal->Object->Name, $self->loc($args{Type}))
@@ -3365,19 +3365,19 @@ msgstr ""
 
 #: etc/initialdata:609 etc/upgrade/3.7.15/content:7 share/html/Elements/ShowTransaction:207 share/html/Elements/Tabs:654
 msgid "Forward"
-msgstr "أمام"
+msgstr "مرر"
 
 #: share/html/Ticket/Forward.html:91
 msgid "Forward Message"
-msgstr ""
+msgstr "مرّر الرسالة"
 
 #: share/html/Ticket/Forward.html:90
 msgid "Forward Message and Return"
-msgstr ""
+msgstr "مرر الرسالة وإرجع"
 
 #: etc/initialdata:617 etc/upgrade/3.8.6/content:6
 msgid "Forward Ticket"
-msgstr ""
+msgstr "مرر الطلب"
 
 #: lib/RT/Queue.pm:139
 msgid "Forward messages outside of RT"
@@ -3386,7 +3386,7 @@ msgstr "تمرير الرسائل خارج النظام"
 #: share/html/Ticket/Forward.html:123
 #. ($TicketObj->id)
 msgid "Forward ticket #%1"
-msgstr ""
+msgstr "مرر الرسالة #%1"
 
 #: share/html/Ticket/Forward.html:122
 #. ($txn->id)
@@ -3401,11 +3401,11 @@ msgstr ""
 #: lib/RT/Transaction.pm:860
 #. ($recipients)
 msgid "Forwarded Ticket to %1"
-msgstr ""
+msgstr "مرر الطلب إلى %1"
 
 #: etc/initialdata:610
 msgid "Forwarded message"
-msgstr ""
+msgstr "رسالة ممررة"
 
 #: etc/initialdata:618
 msgid "Forwarded ticket message"
@@ -5576,7 +5576,7 @@ msgstr "عند التمرير"
 
 #: etc/initialdata:138 etc/upgrade/4.0.3/content:14
 msgid "On Forward Ticket"
-msgstr ""
+msgstr "عند تمرير الطلب"
 
 #: etc/initialdata:145 etc/upgrade/4.0.3/content:21
 msgid "On Forward Transaction"
@@ -8836,7 +8836,7 @@ msgstr ""
 
 #: lib/RT/Installer.pm:166
 msgid "When RT can't handle an email message, where should it be forwarded?"
-msgstr ""
+msgstr "عندما يتعذر على RT التعامل مع رسالة إلكترونية، إلى أين يجب تمريرها؟"
 
 #: share/html/Install/Global.html:54
 msgid "When RT sends an email it sets the From: and Reply-To: headers so users can add to the conversation by just hitting Reply in their mail client.  It uses different addresses for Replies and Comments.  These can be changed for each of your queues.  These addresses will need to be configured to use the <tt>rt-mailgate</tt> program."
@@ -8864,7 +8864,7 @@ msgstr ""
 
 #: etc/initialdata:139 etc/upgrade/4.0.3/content:15
 msgid "Whenever a ticket is forwarded"
-msgstr ""
+msgstr "كلما مُررت رسالة"
 
 #: etc/initialdata:195 etc/upgrade/3.8.3/content:6
 msgid "Whenever a ticket is rejected"
@@ -9474,7 +9474,7 @@ msgstr ""
 
 #: share/html/Search/Elements/SelectChartType:55
 msgid "pie"
-msgstr ""
+msgstr "دائرة مقسّمة"
 
 #: share/html/Admin/Tools/Shredder/index.html:177
 msgid "plugin returned empty list"
@@ -9482,7 +9482,7 @@ msgstr "الملحق يرجع قائمة فارغة"
 
 #: share/html/Search/Chart.html:165 share/html/Search/Chart.html:168
 msgid "px"
-msgstr ""
+msgstr "عنصورة"
 
 #: lib/RT/Group.pm:123
 #. ($queue->Name, $self->Name)
@@ -9495,7 +9495,7 @@ msgstr "مرفوضة"
 
 #: share/html/Admin/Queues/Modify.html:104
 msgid "requires running rt-crontool"
-msgstr ""
+msgstr "يتطلب تشغيل rt-crontool"
 
 #: lib/RT/Queue.pm:105
 msgid "resolved"
@@ -9507,7 +9507,7 @@ msgstr "من اليمين إلى اليسار"
 
 #: lib/RT/SavedSearch.pm:80
 msgid "search"
-msgstr ""
+msgstr "بحث"
 
 #: share/html/Admin/Tools/Shredder/index.html:179
 msgid "see object list below"
@@ -9579,7 +9579,7 @@ msgstr ""
 #: lib/RT/Group.pm:137
 #. ($self->Id)
 msgid "undescribed group %1"
-msgstr ""
+msgstr "مجموعة غير موصوفة %1"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:81
 msgid "unlimited"
@@ -9634,7 +9634,7 @@ msgstr "ما المنفذ الذي يستمع عليه خادم الوِب لد�
 
 #: share/html/Elements/ShowTransactionAttachments:64
 msgid "with headers"
-msgstr "مع التفاصيل"
+msgstr "مع الترويسات"
 
 #: share/html/Elements/RT__Group/ColumnMap:60 share/html/Elements/RT__Group/ColumnMap:68 share/html/Elements/RT__Queue/ColumnMap:77 share/html/Elements/RT__Queue/ColumnMap:81
 msgid "yes"

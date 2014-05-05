@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2013-11-25 21:57+0000\n"
-"PO-Revision-Date: 2013-11-25 22:39+0000\n"
+"POT-Creation-Date: 2014-05-05 18:39+0000\n"
+"PO-Revision-Date: 2014-05-05 18:49+0000\n"
 "Last-Translator: Flashick <flashick@gmail.com>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-02-11 18:34+0000\n"
-"X-Generator: Launchpad (build 16916)\n"
+"X-Launchpad-Export-Date: 2014-05-05 18:58+0000\n"
+"X-Generator: Launchpad (build 16985)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:62
 msgid "#"
@@ -30,12 +30,12 @@ msgstr "Номер"
 #. ($t->Id, $t->Subject || '')
 #. ($ticket->Id, $ticket->Subject)
 msgid "#%1: %2"
-msgstr ""
+msgstr "№%1: %2"
 
 #: lib/RT/Transaction.pm:1033 lib/RT/Transaction.pm:1072
 #. ($self->Data)
 msgid "%1"
-msgstr ""
+msgstr "Автор — %1"
 
 #: lib/RT/URI/fsck_com_rt.pm:229
 #. ($self->ObjectType, $object->Id)
@@ -45,17 +45,17 @@ msgstr ""
 #: lib/RT/Group.pm:131
 #. ($self->loc($class), $self->Instance, $self->Name)
 msgid "%1 #%2 %3"
-msgstr ""
+msgstr "%1 №%2 %3"
 
 #: share/html/Elements/ShowTransaction:128
 #. (loc($record_type), $Transaction->ObjectId)
 msgid "%1 #%2:"
-msgstr ""
+msgstr "%1 №%2:"
 
 #: lib/RT/URI/fsck_com_rt.pm:227
 #. ($self->ObjectType, $object->Id, $name)
 msgid "%1 #%2: %3"
-msgstr ""
+msgstr "%1 №%2: %3"
 
 #: lib/RT/Tickets.pm:1395
 #. ($args{'FIELD'},        $args{'OPERATOR'}, $args{'VALUE'})
@@ -105,12 +105,12 @@ msgstr "%1 %2 удалено."
 #: lib/RT/Record/Role/Status.pm:256
 #. ($self->loc($column), $args{Value})
 msgid "%1 %2 does not exist"
-msgstr ""
+msgstr "%1 %2 не существует"
 
 #: lib/RT/Record/Role/Status.pm:261
 #. ($self->loc($column), $name)
 msgid "%1 %2 is disabled"
-msgstr ""
+msgstr "%1 %2 отключено"
 
 #: share/html/Widgets/SavedSearch:130
 #. (loc($self->{SearchType}), $args->{SavedSearchDescription})
@@ -219,7 +219,7 @@ msgstr "%1 добавлено как значение для %2"
 #: lib/RT/Date.pm:433
 #. (join ' ', @res)
 msgid "%1 ago"
-msgstr ""
+msgstr "%1 назад"
 
 #: share/html/Install/DatabaseDetails.html:180
 #. ($RT::DatabaseName)
@@ -480,7 +480,7 @@ msgstr "%1к"
 
 #: lib/RT/Date.pm:414
 msgid "%1M"
-msgstr ""
+msgstr "%1М"
 
 #: lib/RT/Attachment.pm:453
 #. (int( $size / 1024 / 102.4 ) / 10)
@@ -1030,7 +1030,7 @@ msgstr "Уже зашифровано"
 
 #: etc/initialdata:30
 msgid "Always sends a message to the requestors independent of message sender"
-msgstr ""
+msgstr "Всегда отправлять сообщение запросившему, независимо от отправителя сообщения"
 
 #: share/html/Articles/Elements/NeedsSetup:51
 #. (qq[<a href="http://bestpractical.com/rt/docs/$RT::MAJOR_VERSION.$RT::MINOR_VERSION/customizing/articles_introduction.html">], qq[<a href="http://bestpractical.com/rt/docs/$RT::MAJOR_VERSION.$RT::MINOR_VERSION/">], '</a>')
@@ -1051,7 +1051,7 @@ msgstr "И/Или"
 
 #: lib/RT/Report/Tickets.pm:124
 msgid "Annually"
-msgstr ""
+msgstr "Ежегодно"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:74
 msgid "Any field"
@@ -2274,7 +2274,7 @@ msgstr "Криптография"
 
 #: lib/RT/Attachment.pm:740 lib/RT/Attachment.pm:800
 msgid "Cryptography is disabled"
-msgstr ""
+msgstr "Шифрование отключено"
 
 #: share/html/Elements/BulkLinks:51 share/html/Elements/EditLinks:51
 msgid "Current Links"
@@ -2298,7 +2298,7 @@ msgstr "Текущие наблюдатели"
 
 #: share/html/Admin/Tools/Theme.html:108
 msgid "Custom CSS (Advanced)"
-msgstr ""
+msgstr "Пользовательский CSS (расширенный)"
 
 #: share/html/Elements/EditCustomFieldCustomGroupings:50 share/html/Elements/ShowCustomFieldCustomGroupings:51 share/html/Elements/Tabs:133 share/html/Elements/Tabs:183 share/html/Elements/Tabs:258 share/html/Elements/Tabs:300 share/html/Elements/Tabs:427 share/html/Elements/Tabs:92 share/html/m/ticket/show:252
 msgid "Custom Fields"
@@ -2404,7 +2404,7 @@ msgstr "Настройка панелей в меню"
 
 #: share/html/Admin/Tools/Theme.html:76
 msgid "Customize the RT theme"
-msgstr ""
+msgstr "Настроить тему RT"
 
 #: share/html/Elements/Tabs:233
 msgid "Customize the look of your RT"
@@ -2634,7 +2634,7 @@ msgstr "От неё зависят"
 
 #: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:129 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
 msgid "DependedOnBy"
-msgstr ""
+msgstr "ЗависитОтК"
 
 #: lib/RT/Transaction.pm:1014
 #. ($value)
@@ -2658,7 +2658,7 @@ msgstr "Удалена зависимость от %1"
 
 #: lib/RT/Tickets.pm:128
 msgid "DependentOn"
-msgstr ""
+msgstr "ЗависитОт"
 
 #: share/html/Elements/AddLinks:74 share/html/Elements/BulkLinks:127 share/html/Elements/BulkLinks:54 share/html/Elements/EditLinks:55 share/html/Elements/ShowLinks:69 share/html/Search/Elements/SelectLinks:61 share/html/m/ticket/create:396 share/html/m/ticket/show:389
 msgid "Depends on"
@@ -2723,7 +2723,7 @@ msgstr "Отображать сообщения как форматирован�
 
 #: lib/RT/Config.pm:409
 msgid "Display plain-text attachments in fixed-width font"
-msgstr ""
+msgstr "Показать простые текстовые вложения шрифтом фиксированной ширины"
 
 #: lib/RT/Config.pm:444
 msgid "Display ticket after \"Quick Create\""
@@ -2793,7 +2793,7 @@ msgstr "Быстрое изменение ваших открытых заяво
 
 #: share/html/Elements/Tabs:521
 msgid "Easy viewing of your reminders"
-msgstr ""
+msgstr "Простой просмотр ваших напоминаний"
 
 #: share/html/Elements/Dashboards:51 share/html/Elements/Quicksearch:52 share/html/Elements/ShowSearch:51 share/html/Elements/Tabs:902 share/html/Elements/Tabs:910 share/html/Ticket/Elements/ShowRequestor:124
 msgid "Edit"
@@ -2896,7 +2896,7 @@ msgstr "Email Дайджест"
 #: share/html/Ticket/ShowEmailRecord.html:116
 #. ($AttachmentObj->TransactionObj->ObjectId,        $AttachmentObj->Id)
 msgid "Email Source for Ticket %1, Attachment %2"
-msgstr ""
+msgstr "E-mail Источник для заявки %1, Приложение %2"
 
 #: lib/RT/User.pm:590
 msgid "Email address in use"
@@ -2920,7 +2920,7 @@ msgstr "Пусто"
 
 #: lib/RT/Config.pm:453
 msgid "Enable quote folding?"
-msgstr ""
+msgstr "Включить сворачивание цитат?"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:58 share/html/Elements/RT__Queue/ColumnMap:58 share/html/Elements/RT__Scrip/ColumnMap:97
 msgid "Enabled"
@@ -3079,7 +3079,7 @@ msgstr "Ошибка"
 
 #: share/html/Ticket/ShowEmailRecord.html:106
 msgid "Error loading attachment"
-msgstr ""
+msgstr "Ошибка загрузки вложения"
 
 #: share/html/Search/Chart:460
 #. ($error)
@@ -3100,11 +3100,11 @@ msgstr "Ошибка: неверные данные GnuPG"
 
 #: etc/initialdata:668
 msgid "Error: bad encrypted data"
-msgstr ""
+msgstr "Ошибка: плохо зашифрованные данные"
 
 #: share/html/Articles/Article/Search.html:209
 msgid "Error: cannot change privacy value of existing search"
-msgstr ""
+msgstr "Ошибка: невозможно изменить значение конфиденциальности существующего поиска"
 
 #: share/html/Articles/Article/Search.html:172
 #. ($ARGS{'LoadSavedSearch'}, $msg)
@@ -3126,7 +3126,7 @@ msgstr "Ошибка: поисковый запрос %1 не обновлен: 
 
 #: etc/initialdata:625 etc/upgrade/4.1.22/content:77
 msgid "Error: unencrypted message"
-msgstr ""
+msgstr "Ошибка: сообщение в незашифрованном виде"
 
 #: bin/rt-crontool:362
 msgid "Escalate tickets"
@@ -3158,7 +3158,7 @@ msgstr "Разрешена внешняя аутентификация"
 
 #: share/html/Elements/RT__User/ColumnMap:141
 msgid "Extra Info"
-msgstr ""
+msgstr "Доп. информация"
 
 #: share/html/Admin/Users/Modify.html:97
 msgid "Extra info"
@@ -3897,7 +3897,7 @@ msgstr "Проинформируйте пользователя, что его �
 
 #: etc/initialdata:627 etc/upgrade/4.1.22/content:79
 msgid "Inform user that their unencrypted mail has been rejected"
-msgstr ""
+msgstr "Информирование пользователя, что почта в незашифрованном виде отклонена"
 
 #: etc/initialdata:658 etc/upgrade/3.7.10/content:31
 msgid "Inform user that we received an encrypted email and we have no private keys to decrypt"
@@ -4110,7 +4110,7 @@ msgstr ""
 
 #: lib/RT/User.pm:98
 msgid "Lang"
-msgstr ""
+msgstr "Язык"
 
 #: share/html/Admin/Users/Modify.html:92 share/html/Elements/RT__User/ColumnMap:136 share/html/Install/index.html:56 share/html/SelfService/Prefs.html:59 share/html/User/Prefs.html:76
 msgid "Language"
@@ -4594,7 +4594,7 @@ msgstr "Ошибка объединения. Невозможно установ
 
 #: lib/RT/Ticket.pm:1828
 msgid "Merge failed. Couldn't set IsMerged"
-msgstr ""
+msgstr "Слияние не удалось. Не удалось установить статус IsMerged"
 
 #: lib/RT/Ticket.pm:1841
 msgid "Merge failed. Couldn't set Status"
@@ -6290,7 +6290,7 @@ msgstr "RT поддерживает различные СУБД: <b>MySQL</b>, <
 
 #: share/html/Admin/Elements/LoggingSummary:86
 msgid "RT's logging configuration is summarized below:"
-msgstr ""
+msgstr "Суммарная конфигурация логов RT приведена ниже:"
 
 #: share/html/Admin/Queues/Modify.html:236
 #. ($address)
@@ -9206,7 +9206,7 @@ msgstr "закрыто"
 
 #: share/html/Admin/Tools/Configuration.html:83
 msgid "core config"
-msgstr ""
+msgstr "Конфигурация ядра"
 
 #: lib/RT/Interface/Web.pm:1617 lib/RT/Interface/Web.pm:1626
 msgid "create a ticket"
@@ -9223,7 +9223,7 @@ msgstr "ежедневно в %1"
 
 #: lib/RT/Dashboard.pm:97
 msgid "dashboard"
-msgstr ""
+msgstr "Информационная панель"
 
 #: share/html/Prefs/DashboardsInMenu.html:74
 msgid "dashboards in menu"
@@ -9401,11 +9401,11 @@ msgstr "изменить панель"
 
 #: lib/RT/Interface/Web.pm:1625
 msgid "modify or access a search"
-msgstr ""
+msgstr "изменить или получить доступ к поиску"
 
 #: lib/RT/Interface/Web.pm:1624
 msgid "modify your preferences"
-msgstr ""
+msgstr "Изменить ваши настройки"
 
 #: share/html/Dashboards/Subscription.html:127
 msgid "monthly"
@@ -9450,7 +9450,7 @@ msgstr "На"
 
 #: share/html/Dashboards/Subscription.html:127
 msgid "on day"
-msgstr ""
+msgstr "в день"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:81
 msgid "one"
@@ -9470,7 +9470,7 @@ msgstr "другое..."
 
 #: share/html/Elements/CSRF:75 share/html/Elements/LoginRedirectWarning:57
 msgid "perform actions"
-msgstr ""
+msgstr "выполнить действия"
 
 #: share/html/Search/Elements/SelectChartType:55
 msgid "pie"
@@ -9495,7 +9495,7 @@ msgstr "отклонена"
 
 #: share/html/Admin/Queues/Modify.html:104
 msgid "requires running rt-crontool"
-msgstr ""
+msgstr "необходим запуск rt-crontool"
 
 #: lib/RT/Queue.pm:105
 msgid "resolved"
@@ -9591,7 +9591,7 @@ msgstr "обновить заявку"
 
 #: lib/RT/Interface/Web.pm:1620
 msgid "update an approval"
-msgstr ""
+msgstr "обновить подтверждение"
 
 #: lib/RT/Interface/Web.pm:1621
 msgid "update an article"

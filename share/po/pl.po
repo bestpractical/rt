@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2013-11-25 21:57+0000\n"
-"PO-Revision-Date: 2014-01-29 06:56+0000\n"
+"POT-Creation-Date: 2014-05-05 18:39+0000\n"
+"PO-Revision-Date: 2014-05-05 18:48+0000\n"
 "Last-Translator: Arkadiusz Miśkiewicz <arekm@pld-linux.org>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-02-11 18:34+0000\n"
-"X-Generator: Launchpad (build 16916)\n"
+"X-Launchpad-Export-Date: 2014-05-05 18:58+0000\n"
+"X-Generator: Launchpad (build 16985)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:62
 msgid "#"
@@ -4616,11 +4616,11 @@ msgstr "Wiadomość"
 
 #: share/html/Elements/ShowTransactionAttachments:149
 msgid "Message body is not shown because it is too large."
-msgstr ""
+msgstr "Treść wiadomości nie została wyświetlona ponieważ jest za duża."
 
 #: share/html/Elements/ShowTransactionAttachments:141
 msgid "Message body is not shown because sender requested not to inline it."
-msgstr ""
+msgstr "Treść wiadomości nie została wyświetlona ponieważ nadawca nie ustawił wyświetlania tej treści."
 
 #: share/html/Elements/ShowTransactionAttachments:287
 msgid "Message body not shown because it is not plain text."
@@ -7908,7 +7908,7 @@ msgstr "Nie określono zawartości tej transakcji"
 #: share/html/Ticket/Elements/ShowRequestorTickets:57
 #. ($Rows, $Description)
 msgid "This user's %1 highest priority %2 tickets"
-msgstr "%1 %s zgłoszeń o najwyższym priorytecie tego użytkownika"
+msgstr "%1 %2 zgłoszeń o najwyższym priorytecie tego użytkownika"
 
 #: share/html/User/Search.html:53
 msgid "This will search for users by looking in the following fields:"

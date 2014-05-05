@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2013-11-25 21:57+0000\n"
-"PO-Revision-Date: 2013-11-25 22:04+0000\n"
+"POT-Creation-Date: 2014-05-05 18:39+0000\n"
+"PO-Revision-Date: 2014-05-05 18:45+0000\n"
 "Last-Translator: Naoji Takahashi <nt.0118@gmail.com>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-02-11 18:33+0000\n"
-"X-Generator: Launchpad (build 16916)\n"
+"X-Launchpad-Export-Date: 2014-05-05 18:57+0000\n"
+"X-Generator: Launchpad (build 16985)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:62
 msgid "#"
@@ -219,7 +219,7 @@ msgstr "%2の値に%1が追加されました"
 #: lib/RT/Date.pm:433
 #. (join ' ', @res)
 msgid "%1 ago"
-msgstr ""
+msgstr "%1 前"
 
 #: share/html/Install/DatabaseDetails.html:180
 #. ($RT::DatabaseName)
@@ -257,7 +257,7 @@ msgstr "%1 (%2)"
 #: lib/RT/Record/Role/Roles.pm:418
 #. ($self->loc($type))
 msgid "%1 cannot be a group"
-msgstr ""
+msgstr "%1 をグループにすることは出来ません。"
 
 #: lib/RT/Record.pm:526 lib/RT/Transaction.pm:1082 lib/RT/Transaction.pm:1087 lib/RT/Transaction.pm:1101 lib/RT/Transaction.pm:1110 lib/RT/Transaction.pm:1150 lib/RT/Transaction.pm:838
 #. ($self->loc($self->Field) , $q1->Name , $q2->Name)
@@ -498,11 +498,11 @@ msgstr ""
 
 #: lib/RT/Date.pm:420
 msgid "%1Y"
-msgstr ""
+msgstr "%1 年"
 
 #: lib/RT/Date.pm:402
 msgid "%1d"
-msgstr ""
+msgstr "%1日"
 
 #: lib/RT/Date.pm:396
 msgid "%1h"
@@ -704,11 +704,11 @@ msgstr "0 秒"
 
 #: lib/RT/Date.pm:368
 msgid "0s"
-msgstr ""
+msgstr "0秒"
 
 #: lib/RT/Template.pm:287 lib/RT/Template.pm:726
 msgid "A Template with that name already exists"
-msgstr ""
+msgstr "入力されたテンプレートは既に使用されています。"
 
 #: etc/initialdata:224
 msgid "A blank template"
@@ -1094,7 +1094,7 @@ msgstr "承認状況"
 #. ($link->BaseObj->Id, $link->BaseObj->Subject)
 #. ($ticket->id, $msg)
 msgid "Approval #%1: %2"
-msgstr "承認状況"
+msgstr "承認状況「%1」: %2"
 
 #: share/html/Approvals/index.html:84
 #. ($ticket->Id)
@@ -2670,7 +2670,7 @@ msgstr ""
 
 #: share/html/Search/Elements/EditSort:84
 msgid "Desc"
-msgstr "詳細"
+msgstr "降順"
 
 #: share/html/SelfService/Create.html:108 share/html/Ticket/Create.html:192 share/html/m/ticket/create:231
 msgid "Describe the issue below"
