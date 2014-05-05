@@ -96,6 +96,9 @@ if ($anchor =~ /AddPrincipal/) {
       jQuery(".rights-editor").tabs({
           select: function(ev, ui) {
               sync_anchor(ui.tab.hash);
+              if ( jQuery(ui.tab).find('input[type=text]').size() > 0 ) {
+                  jQuery(ui.tab).find('input[type=text]:first').focus();
+              }
           }
       });
 
