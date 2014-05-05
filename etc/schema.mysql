@@ -429,6 +429,7 @@ CREATE TABLE Attributes (
   ContentType varchar(16) CHARACTER SET ascii,
   ObjectType varchar(64) CHARACTER SET ascii,
   ObjectId integer, # foreign key to anything
+  Status varchar(255) NULL  ,
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,

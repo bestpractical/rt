@@ -406,6 +406,7 @@ CREATE TABLE Attributes (
     ContentType VARCHAR(16),
         ObjectType      VARCHAR2(25) NOT NULL,
         ObjectId        NUMBER(11,0) DEFAULT 0 NOT NULL,
+        Status VARCHAR(255),
         Creator                 NUMBER(11,0) DEFAULT 0 NOT NULL,
         Created                 DATE,
         LastUpdatedBy           NUMBER(11,0) DEFAULT 0 NOT NULL,

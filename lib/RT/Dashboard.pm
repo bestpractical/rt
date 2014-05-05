@@ -138,6 +138,18 @@ sub UpdateAttribute {
         $self->{'Privacy'} = $args->{'Privacy'} if $status;
     }
 
+    if ($status) {
+        if ( $self->{'Privacy'} =~ /^RT::System/ ) {
+            if ( exists $args->{'Status'} ) {
+                ( $status, $msg ) = $self->{'Attribute'}->SetStatus( $args->{'Status'} )
+                    unless ( $self->Status || '' ) eq ( $args->{'Status'} || '' );
+            }
+        }
+        else {
+            ( $status, $msg ) = $self->{'Attribute'}->SetStatus('') if $self->Status;
+        }
+    }
+
     return ($status, $msg);
 }
 

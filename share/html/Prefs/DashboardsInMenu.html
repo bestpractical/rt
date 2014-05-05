@@ -89,7 +89,26 @@ my $dashboard_pref =
 
 my $current_dashboards = $dashboard_pref->{dashboards} || [];
 
-my @dashboards = map { [$_->id, $_->Name] } $m->comp("/Dashboards/Elements/ListOfDashboards", IncludeSuperuserGroups => 0 );
+my @mandatory =
+  map { $_->id }
+  grep { $_->Status && $_->Status eq 'mandatory' }
+  RT->System->Attributes->Named('Dashboard');
+my %existing = map { $_ => 1 } @$current_dashboards;
+push @$current_dashboards, grep { !$existing{$_} } @mandatory;
+
+my @dashboards = map {
+    [
+        $_->id,
+        $_->Name
+          . (
+            $_->Status && $_->Status eq 'mandatory'
+            ? ' (' . loc('mandatory') . ')'
+            : ''
+          )
+    ]
+  } $m->comp( "/Dashboards/Elements/ListOfDashboards", IncludeSuperuserGroups => 0 );
+
+
 
 my @panes = $m->comp(
     '/Admin/Elements/ConfigureDashboardsInMenu',
@@ -99,6 +118,16 @@ my @panes = $m->comp(
     current_portlets => $current_dashboards,
     OnSave => sub {
         my ( $conf ) = @_;
+        my @mandatory =
+          map { $_->id }
+          grep { $_->Status && $_->Status eq 'mandatory' }
+          RT->System->Attributes->Named('Dashboard');
+        my %existing = map { $_ => 1 } @{$conf->{dashboards}};
+        my @missing = grep { !$existing{$_} } @mandatory;
+        if ( @missing ) {
+            push @{$conf->{dashboards}}, @missing;
+            push @results, loc("Can't delete mandatory dashboards.");
+        }
         my ( $ok, $msg ) =
           $user->SetPreferences( 'DashboardsInMenu', $conf );
         push @results, $ok ? loc('Preferences saved for dashboards in menu.') : $msg;

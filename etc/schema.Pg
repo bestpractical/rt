@@ -631,6 +631,7 @@ CREATE TABLE Attributes (
   ContentType varchar(16),
   ObjectType varchar(64),
   ObjectId integer, 
+  Status varchar(255) NULL  ,
   Creator integer NOT NULL DEFAULT 0  ,
   Created TIMESTAMP NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,

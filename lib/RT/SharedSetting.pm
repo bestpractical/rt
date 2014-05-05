@@ -328,6 +328,18 @@ sub Privacy {
     return $self->{'Privacy'};
 }
 
+=head2 Status
+
+Returns the status of this shared setting.
+
+=cut
+
+sub Status {
+    my $self = shift;
+    return unless ref($self->{'Attribute'}) eq 'RT::Attribute';
+    return $self->{'Attribute'}->Status();
+}
+
 =head2 GetParameter
 
 Returns the given named parameter of the setting.

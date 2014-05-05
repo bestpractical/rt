@@ -67,13 +67,28 @@ my $default_dashboards_in_menu =
   ? $dashboard_attr->Content->{dashboards}
   : [];
 
+my @mandatory =
+  map { $_->id }
+  grep { $_->Status && $_->Status eq 'mandatory' }
+  RT->System->Attributes->Named('Dashboard');
+my %existing = map { $_ => 1 } @$default_dashboards_in_menu;
+push @$default_dashboards_in_menu, grep { !$existing{$_} } @mandatory;
+
 use RT::Dashboards;
 my $dashboards = RT::Dashboards->new( $RT::SystemUser );
 $dashboards->LimitToPrivacy('RT::System-' . $sys->id);
 
 my @dashboards;
 while ( my $dashboard = $dashboards->Next ) {
-    push @dashboards, [$dashboard->id, $dashboard->Name];
+    push @dashboards,
+      [
+        $dashboard->id,
+        $dashboard->Name
+          . (
+                 $dashboard->Status
+              && $dashboard->Status eq 'mandatory' ? ' (' . loc('mandatory') . ')' : ''
+          )
+      ];
 }
 
 my @panes = $m->comp(
@@ -85,6 +100,17 @@ my @panes = $m->comp(
     current_portlets => $default_dashboards_in_menu,
     OnSave => sub {
         my ( $conf ) = @_;
+        my @mandatory =
+          map { $_->id }
+          grep { $_->Status && $_->Status eq 'mandatory' }
+          RT->System->Attributes->Named('Dashboard');
+        my %existing = map { $_ => 1 } @{$conf->{dashboards}};
+        my @missing = grep { !$existing{$_} } @mandatory;
+        if ( @missing ) {
+            push @{$conf->{dashboards}}, @missing;
+            push @actions, loc("Can't delete mandatory dashboards.");
+        }
+
         my ( $status, $msg );
 
         if (!$has_right) {

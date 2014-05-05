@@ -66,7 +66,13 @@
     <tr>
     <td class="label"><&|/l&>Privacy</&>:</td>
     <td><& /Dashboards/Elements/SelectPrivacy, Name => "Privacy", Objects => \@privacies, Default => $Dashboard->Privacy &></td>
-</tr>
+    </tr>
+    <tr>
+% if ( $Dashboard->Privacy && $Dashboard->Privacy =~ /^RT::System/ ) {
+    <td class="label"><&|/l&>Status</&>:</td>
+    <td><& /Dashboards/Elements/SelectStatus, Name => "Status", Default => $Dashboard->Status &></td>
+    </tr>
+% }
 </table>
 </&>
 <& /Elements/Submit, Name => 'Save', Label =>( $Create ? loc('Create') : loc('Save Changes') ) &>
@@ -104,6 +110,7 @@ else {
         my ($val, $msg) = $Dashboard->Save(
             Name    => $ARGS{'Name'},
             Privacy => $ARGS{'Privacy'},
+            Status   => $ARGS{'Status'},
         );
 
         if (!$val) {
@@ -134,6 +141,7 @@ else {
 
 if (!$Create && !$tried_create && $id && $ARGS{'Save'}) {
     my ($ok, $msg) = $Dashboard->Update(Privacy  => $ARGS{'Privacy'},
+                                        Status   => $ARGS{'Status'},
                                         Name     => $ARGS{'Name'});
 
     if ($ok) {

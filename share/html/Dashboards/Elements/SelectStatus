@@ -45,28 +45,20 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% foreach my $Object (@Objects) {
-%   my $Dashboards = RT::Dashboards->new($session{CurrentUser});
-%   $Dashboards->LimitToPrivacy(join('-',ref($Object),$Object->Id));
-%   my $title;
-%   if (ref $Object eq 'RT::User' && $Object->Id == $session{CurrentUser}->Id) {
-%       $title = loc("My dashboards");
-%   } else {
-%       $title = loc("[_1]'s dashboards",$Object->Name);
-%   }
-%   $title = $m->interp->apply_escapes($title, 'h');
-<& /Elements/CollectionList,
-    %ARGS,
-    Format => qq{'<a href="__WebPath__/__ShowURL__">__Name__</a>/TITLE:$title', __Subscription__} .
-        ($Object->isa('RT::System') ? ', __Status__' : ''),
-    Collection => $Dashboards,
-&>
-% }
-<%init>
-use RT::Dashboards;
-
-my @Objects = RT::Dashboard->new($session{CurrentUser})->ObjectsForLoading(IncludeSuperuserGroups => $IncludeSuperuserGroups);
-</%init>
 <%args>
-$IncludeSuperuserGroups => 1
+$Name => undef
+$Default => undef
 </%args>
+<select name="<%$Name%>">
+<option
+% if ( !$Default || $Default ne 'mandatory' ) {
+selected="selected"
+% }
+value=""><% loc('Optional') %></option>
+
+<option
+% if ( $Default && $Default eq 'mandatory' ) {
+selected="selected"
+% }
+value="mandatory"><% loc('Mandatory') %></option>
+</select>

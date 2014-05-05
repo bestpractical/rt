@@ -460,6 +460,13 @@ my $build_main_nav = sub {
 
         $session{'dashboards_in_menu'} = $dashboards_in_menu->{dashboards} || [];
     }
+    
+    my @mandatory =
+      map { $_->id }
+      grep { $_->Status && $_->Status eq 'mandatory' }
+      RT->System->Attributes->Named('Dashboard');
+    my %existing = map { $_ => 1 } @{$session{'dashboards_in_menu'}};
+    push @{$session{'dashboards_in_menu'}}, grep { !$existing{$_} } @mandatory;
 
     my @dashboards;
     for my $id ( @{$session{'dashboards_in_menu'}} ) {

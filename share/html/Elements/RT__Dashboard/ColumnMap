@@ -119,7 +119,12 @@ my $COLUMN_MAP = {
 
             return "Dashboards/$id/$name";
         },
-    }
+    },
+    Status => {
+        title     => 'Status', # loc
+        attribute => 'Status',
+        value     => sub { return ucfirst($_[0]->Status || 'optional') }, # loc('optional')
+    },
 };
 
 </%ONCE>

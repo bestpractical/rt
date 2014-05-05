@@ -1,1 +1,2 @@
 ALTER TABLE CustomFields ADD EntryHint VARCHAR2(255) NULL;
+ALTER TABLE Attributes ADD Status VARCHAR(255) NULL;
