@@ -531,17 +531,17 @@ msgstr "%quant(%1,$long_units{$unit})"
 
 #: share/html/Articles/Elements/ShowTopicLink:61
 #. ($Articles->Count)
-msgid "%quant(%1,article)"
-msgstr "%quant(%1,article)"
+msgid "%quant(%1,article,articles)"
+msgstr "%quant(%1,article,articles)"
 
 #: lib/RT/Date.pm:372
-msgid "%quant(%1,day)"
-msgstr "%quant(%1,day)"
+msgid "%quant(%1,day,days)"
+msgstr "%quant(%1,day,days)"
 
 #: lib/RT/Date.pm:371 share/html/Ticket/Elements/ShowTime:51
 #. (sprintf("%.1f",$minutes / 60))
-msgid "%quant(%1,hour)"
-msgstr "%quant(%1,hour)"
+msgid "%quant(%1,hour,hours)"
+msgstr "%quant(%1,hour,hours)"
 
 #: share/html/Elements/ShowTransaction:135
 #. ($Transaction->TimeTaken)
@@ -549,24 +549,24 @@ msgid "%quant(%1,min,min)"
 msgstr "%quant(%1,min,min)"
 
 #: lib/RT/Date.pm:370
-msgid "%quant(%1,minute)"
-msgstr "%quant(%1,minute)"
+msgid "%quant(%1,minute,minutes)"
+msgstr "%quant(%1,minute,minutes)"
 
 #: lib/RT/Date.pm:374
-msgid "%quant(%1,month)"
-msgstr "%quant(%1,month)"
+msgid "%quant(%1,month,months)"
+msgstr "%quant(%1,month,months)"
 
 #: lib/RT/Date.pm:369
-msgid "%quant(%1,second)"
-msgstr "%quant(%1,second)"
+msgid "%quant(%1,second,seconds)"
+msgstr "%quant(%1,second,seconds)"
 
 #: lib/RT/Date.pm:373
-msgid "%quant(%1,week)"
-msgstr "%quant(%1,week)"
+msgid "%quant(%1,week,weeks)"
+msgstr "%quant(%1,week,weeks)"
 
 #: lib/RT/Date.pm:375
-msgid "%quant(%1,year)"
-msgstr "%quant(%1,year)"
+msgid "%quant(%1,year,years)"
+msgstr "%quant(%1,year,years)"
 
 #: lib/RT/Queue.pm:323
 #. ($name)
@@ -667,8 +667,8 @@ msgstr "(no values)"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:138
 #. ($count)
-msgid "(pending %quant(%1,other ticket))"
-msgstr "(pending %quant(%1,other ticket))"
+msgid "(pending %quant(%1,other ticket,other tickets))"
+msgstr "(pending %quant(%1,other ticket,other tickets))"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:130
 msgid "(pending approval)"
@@ -3465,8 +3465,8 @@ msgstr "Forwarded ticket message"
 #: share/html/Search/Results.html:150 share/html/m/_elements/ticket_list:83
 #. ($ticketcount)
 #. ($collection->CountAll)
-msgid "Found %quant(%1,ticket)"
-msgstr "Found %quant(%1,ticket)"
+msgid "Found %quant(%1,ticket,tickets)"
+msgstr "Found %quant(%1,ticket,tickets)"
 
 #: lib/RT/Record.pm:1005
 msgid "Found Object"
@@ -3779,8 +3779,8 @@ msgstr "Hours"
 
 #: lib/RT/Base.pm:125
 #. (6)
-msgid "I have %quant(%1,concrete mixer)."
-msgstr "I have %quant(%1,concrete mixer)."
+msgid "I have %quant(%1,concrete mixer,concrete mixers)."
+msgstr "I have %quant(%1,concrete mixer,concrete mixers)."
 
 #: share/html/User/Prefs.html:174
 msgid "I want to reset my secret token."

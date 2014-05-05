@@ -366,13 +366,13 @@ Turn on short notation with one character units, for example
 # loc("[_1]W")
 # loc("[_1]M")
 # loc("[_1]Y")
-# loc("[quant,_1,second]")
-# loc("[quant,_1,minute]")
-# loc("[quant,_1,hour]")
-# loc("[quant,_1,day]")
-# loc("[quant,_1,week]")
-# loc("[quant,_1,month]")
-# loc("[quant,_1,year]")
+# loc("[quant,_1,second,seconds]")
+# loc("[quant,_1,minute,minutes]")
+# loc("[quant,_1,hour,hours]")
+# loc("[quant,_1,day,days]")
+# loc("[quant,_1,week,weeks]")
+# loc("[quant,_1,month,months]")
+# loc("[quant,_1,year,years]")
 
 sub DurationAsString {
     my $self     = shift;

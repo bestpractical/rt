@@ -147,7 +147,7 @@ $session{'CurrentSearchHash'} = {
 my ($title, $ticketcount) = (loc("Find tickets"), 0);
 if ( $session{'tickets'}->Query()) {
     $ticketcount = $session{tickets}->CountAll();
-    $title = loc('Found [quant,_1,ticket]', $ticketcount);
+    $title = loc('Found [quant,_1,ticket,tickets]', $ticketcount);
 }
 
 my $QueryString = "?".$m->comp('/Elements/QueryString',

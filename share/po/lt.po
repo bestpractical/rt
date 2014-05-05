@@ -531,16 +531,16 @@ msgstr "%quant(%1,$long_units{$unit})"
 
 #: share/html/Articles/Elements/ShowTopicLink:61
 #. ($Articles->Count)
-msgid "%quant(%1,article)"
-msgstr "%quant(%1,article)"
+msgid "%quant(%1,article,articles)"
+msgstr "%quant(%1,article,articles)"
 
 #: lib/RT/Date.pm:372
-msgid "%quant(%1,day)"
+msgid "%quant(%1,day,days)"
 msgstr "%quant(%1,dien.)"
 
 #: lib/RT/Date.pm:371 share/html/Ticket/Elements/ShowTime:51
 #. (sprintf("%.1f",$minutes / 60))
-msgid "%quant(%1,hour)"
+msgid "%quant(%1,hour,hours)"
 msgstr "%quant(%1, valanda,valandos,valandų)"
 
 #: share/html/Elements/ShowTransaction:135
@@ -549,23 +549,23 @@ msgid "%quant(%1,min,min)"
 msgstr "%quant(%1,min.,min.)"
 
 #: lib/RT/Date.pm:370
-msgid "%quant(%1,minute)"
+msgid "%quant(%1,minute,minutes)"
 msgstr "%quant(%1,min.)"
 
 #: lib/RT/Date.pm:374
-msgid "%quant(%1,month)"
+msgid "%quant(%1,month,months)"
 msgstr "%quant(%1,mėn.)"
 
 #: lib/RT/Date.pm:369
-msgid "%quant(%1,second)"
+msgid "%quant(%1,second,seconds)"
 msgstr "%quant(%1,sek.)"
 
 #: lib/RT/Date.pm:373
-msgid "%quant(%1,week)"
+msgid "%quant(%1,week,weeks)"
 msgstr "%quant(%1,sav.)"
 
 #: lib/RT/Date.pm:375
-msgid "%quant(%1,year)"
+msgid "%quant(%1,year,years)"
 msgstr "%quant(%1,met.)"
 
 #: lib/RT/Queue.pm:323
@@ -667,7 +667,7 @@ msgstr "(reikšmės nenurodytos)"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:138
 #. ($count)
-msgid "(pending %quant(%1,other ticket))"
+msgid "(pending %quant(%1,other ticket,other tickets))"
 msgstr "(laukia %quant(%1,kitas prašymas,kiti prašymai,kitų prašymų))"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:130
@@ -3495,7 +3495,7 @@ msgstr "Persiųstas prašymo pranešimas"
 #: share/html/Search/Results.html:150 share/html/m/_elements/ticket_list:83
 #. ($ticketcount)
 #. ($collection->CountAll)
-msgid "Found %quant(%1,ticket)"
+msgid "Found %quant(%1,ticket,tickets)"
 msgstr "Rasta %quant(%1,prašymas,prašymai,prašymų)"
 
 #: lib/RT/Record.pm:1005
@@ -3809,7 +3809,7 @@ msgstr "Valandos"
 
 #: lib/RT/Base.pm:125
 #. (6)
-msgid "I have %quant(%1,concrete mixer)."
+msgid "I have %quant(%1,concrete mixer,concrete mixers)."
 msgstr "Turiu %quant(%1,concrete mixer)."
 
 #: share/html/User/Prefs.html:174
