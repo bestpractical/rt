@@ -253,24 +253,20 @@ sub get_transactions {
 # 
 # =cut
 
-{ my $cache = undef;
 sub get_template {
     my $ticket = shift;
     return undef unless $template;
 
     unless ( $template =~ /\D/ ) {
         # by id
-        return $cache if $cache;
-
-        my $cache = RT::Template->new( RT->SystemUser );
-        $cache->Load( $template );
+        my $template = RT::Template->new( RT->SystemUser );
+        $template->Load( $template );
         die "Failed to load template '$template'"
-            unless $cache->id;
-        return $cache;
+            unless $template->id;
+        return $template;
     }
 
     my $queue = $ticket->Queue;
-    return $cache->{ $queue } if $cache->{ $queue };
 
     my $res = RT::Template->new( RT->SystemUser );
     $res->LoadQueueTemplate( Queue => $queue, Name => $template );
@@ -279,8 +275,8 @@ sub get_template {
         die "Failed to load template '$template', either for queue #$queue or global"
             unless $res->id;
     }
-    return $cache->{ $queue } = $res;
-} }
+    return $res;
+}
 
 
 # =head2 load_module
