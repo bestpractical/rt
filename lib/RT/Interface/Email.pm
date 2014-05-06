@@ -50,6 +50,7 @@ package RT::Interface::Email;
 
 use strict;
 use warnings;
+use 5.010;
 
 use Email::Address;
 use MIME::Entity;
@@ -498,8 +499,29 @@ sub SendEmail {
             }
             return 0;
         }
-    }
-    else {
+    } elsif ( $mail_command eq 'mbox' ) {
+        my $now = RT::Date->new(RT->SystemUser);
+        $now->SetToNow;
+
+        state $logfile;
+        unless ($logfile) {
+            my $when = $now->ISO( Timezone => "server" );
+            $when =~ s/\s+/-/g;
+            $logfile = "$RT::VarPath/$when.mbox";
+            $RT::Logger->info("Storing outgoing emails in $logfile");
+        }
+
+        my $fh;
+        unless (open($fh, ">>", $logfile)) {
+            $RT::Logger->crit( "Can't open mbox file $logfile: $!" );
+            return 0;
+        }
+        my $content = $args{Entity}->stringify;
+        $content =~ s/^(>*From )/>$1/mg;
+        print $fh "From $ENV{USER}\@localhost  ".localtime."\n";
+        print $fh $content, "\n";
+        close $fh;
+    } else {
         local ($ENV{'MAILADDRESS'}, $ENV{'PERL_MAILERS'});
 
         my @mailer_args = ($mail_command);
