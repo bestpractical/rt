@@ -71,9 +71,9 @@ our %FieldTypes = (
         sort_order => 10,
         selection_type => 1,
 
-        labels => [ 'Select multiple values',      # loc
-                    'Select one value',            # loc
-                    'Select up to [_1] values',    # loc
+        labels => [ 'Select multiple values',               # loc
+                    'Select one value',                     # loc
+                    'Select up to [quant,_1,value,values]', # loc
                   ],
 
         render_types => {
@@ -94,27 +94,27 @@ our %FieldTypes = (
         sort_order => 20,
         selection_type => 0,
 
-        labels => [ 'Enter multiple values',       # loc
-                    'Enter one value',             # loc
-                    'Enter up to [_1] values',     # loc
+        labels => [ 'Enter multiple values',               # loc
+                    'Enter one value',                     # loc
+                    'Enter up to [quant,_1,value,values]', # loc
                   ]
                 },
     Text => {
         sort_order => 30,
         selection_type => 0,
         labels         => [
-                    'Fill in multiple text areas',      # loc
-                    'Fill in one text area',            # loc
-                    'Fill in up to [_1] text areas',    # loc
+                    'Fill in multiple text areas',                   # loc
+                    'Fill in one text area',                         # loc
+                    'Fill in up to [quant,_1,text area,text areas]', # loc
                   ]
             },
     Wikitext => {
         sort_order => 40,
         selection_type => 0,
         labels         => [
-                    'Fill in multiple wikitext areas',      # loc
-                    'Fill in one wikitext area',            # loc
-                    'Fill in up to [_1] wikitext areas',    # loc
+                    'Fill in multiple wikitext areas',                       # loc
+                    'Fill in one wikitext area',                             # loc
+                    'Fill in up to [quant,_1,wikitext area,wikitext areas]', # loc
                   ]
                 },
 
@@ -124,16 +124,16 @@ our %FieldTypes = (
         labels         => [
                     'Upload multiple images',               # loc
                     'Upload one image',                     # loc
-                    'Upload up to [_1] images',             # loc
+                    'Upload up to [quant,_1,image,images]', # loc
                   ]
              },
     Binary => {
         sort_order => 60,
         selection_type => 0,
         labels         => [
-                    'Upload multiple files',                # loc
-                    'Upload one file',                      # loc
-                    'Upload up to [_1] files',              # loc
+                    'Upload multiple files',              # loc
+                    'Upload one file',                    # loc
+                    'Upload up to [quant,_1,file,files]', # loc
                   ]
               },
 
@@ -141,18 +141,18 @@ our %FieldTypes = (
         sort_order => 70,
         selection_type => 1,
         labels         => [
-                    'Combobox: Select or enter multiple values',      # loc
-                    'Combobox: Select or enter one value',            # loc
-                    'Combobox: Select or enter up to [_1] values',    # loc
+                    'Combobox: Select or enter multiple values',               # loc
+                    'Combobox: Select or enter one value',                     # loc
+                    'Combobox: Select or enter up to [quant,_1,value,values]', # loc
                   ]
                 },
     Autocomplete => {
         sort_order => 80,
         selection_type => 1,
         labels         => [
-                    'Enter multiple values with autocompletion',      # loc
-                    'Enter one value with autocompletion',            # loc
-                    'Enter up to [_1] values with autocompletion',    # loc
+                    'Enter multiple values with autocompletion',               # loc
+                    'Enter one value with autocompletion',                     # loc
+                    'Enter up to [quant,_1,value,values] with autocompletion', # loc
                   ]
     },
 
@@ -160,18 +160,18 @@ our %FieldTypes = (
         sort_order => 90,
         selection_type => 0,
         labels         => [
-                    'Select multiple dates',                          # loc
-                    'Select date',                                    # loc
-                    'Select up to [_1] dates',                        # loc
+                    'Select multiple dates',              # loc
+                    'Select date',                        # loc
+                    'Select up to [quant,_1,date,dates]', # loc
                   ]
             },
     DateTime => {
         sort_order => 100,
         selection_type => 0,
         labels         => [
-                    'Select multiple datetimes',                      # loc
-                    'Select datetime',                                # loc
-                    'Select up to [_1] datetimes',                    # loc
+                    'Select multiple datetimes',                  # loc
+                    'Select datetime',                            # loc
+                    'Select up to [quant,_1,datetime,datetimes]', # loc
                   ]
                 },
 
@@ -179,18 +179,18 @@ our %FieldTypes = (
         sort_order => 110,
         selection_type => 0,
 
-        labels => [ 'Enter multiple IP addresses',       # loc
-                    'Enter one IP address',             # loc
-                    'Enter up to [_1] IP addresses',     # loc
+        labels => [ 'Enter multiple IP addresses',                    # loc
+                    'Enter one IP address',                           # loc
+                    'Enter up to [quant,_1,IP address,IP addresses]', # loc
                   ]
                 },
     IPAddressRange => {
         sort_order => 120,
         selection_type => 0,
 
-        labels => [ 'Enter multiple IP address ranges',       # loc
-                    'Enter one IP address range',             # loc
-                    'Enter up to [_1] IP address ranges',     # loc
+        labels => [ 'Enter multiple IP address ranges',                          # loc
+                    'Enter one IP address range',                                # loc
+                    'Enter up to [quant,_1,IP address range,IP address ranges]', # loc
                   ]
                 },
 );

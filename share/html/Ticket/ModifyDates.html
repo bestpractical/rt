@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc('Modify dates for #[_1]', $TicketObj->Id) &>
+<& /Elements/Header, Title => loc('Modify dates for ticket #[_1]', $TicketObj->Id) &>
 <& /Elements/Tabs &>
 
 % $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $TicketObj);
@@ -54,7 +54,7 @@
 <form method="post" action="ModifyDates.html" name="TicketDates">
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
 <input type="hidden" class="hidden" name="id" value="<%$TicketObj->Id%>" />
-<&| /Widgets/TitleBox,title => loc('Modify dates for ticket # [_1]', $TicketObj->Id), class=> 'ticket-info-dates' &>
+<&| /Widgets/TitleBox,title => loc('Modify dates for ticket #[_1]', $TicketObj->Id), class=> 'ticket-info-dates' &>
 <& Elements/EditDates, TicketObj => $TicketObj &>
 </&>
 <& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes') &>

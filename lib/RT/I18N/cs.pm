@@ -81,44 +81,21 @@ sub quant {
 
   # Normal case:
   # Note that the formatting of $num is preserved.
-  #return( $handle->numf($num) . ' ' . $handle->numerate($num, @forms) );
-  return( $handle->numerate($num, @forms) );
-   # Most human languages put the number phrase before the qualified phrase.
+  return( $handle->numf($num) . ' ' . $handle->numerate($num, @forms) );
 }
 
 
 sub numerate {
- # return this lexical item in a form appropriate to this number
-  my($handle, $num, @forms) = @_;
-  my $s = ($num == 1);
+    # return this lexical item in a form appropriate to this number
+    my($handle, $num, @forms) = @_;
 
-  return '' unless @forms;
-  return (
-   $s ? $forms[0] :
-   ( $num > 1 && $num < 5 ) ? $forms[1] :
-   $forms[2]
-  ) || (grep defined, @forms)[0];
-}
+    return '' unless @forms;
 
-#--------------------------------------------------------------------------
-
-sub numf {
-  my($handle, $num) = @_[0,1];
-  if($num < 10_000_000_000 and $num > -10_000_000_000 and $num == int($num)) {
-    $num += 0;  # Just use normal integer stringification.
-         # Specifically, don't let %G turn ten million into 1E+007
-  } else {
-    $num = CORE::sprintf("%G", $num);
-     # "CORE::" is there to avoid confusion with the above sub sprintf.
-  }
-  while( $num =~ s/^([-+]?\d+)(\d{3})/$1,$2/s ) {1}  # right from perlfaq5
-   # The initial \d+ gobbles as many digits as it can, and then we
-   #  backtrack so it un-eats the rightmost three, and then we
-   #  insert the comma there.
-
-  $num =~ tr<.,><,.> if ref($handle) and $handle->{'numf_comma'};
-   # This is just a lame hack instead of using Number::Format
-  return $num;
+    my $fallback = (grep defined, @forms)[0];
+    return $forms[0] // $fallback if $num == 1;
+    return $forms[1] // $fallback
+        if $num > 1 and $num < 5;
+    return $forms[2] // $fallback;
 }
 
 RT::Base->_ImportOverlays();

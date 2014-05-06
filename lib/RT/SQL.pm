@@ -192,7 +192,7 @@ sub Parse {
     }
 
     if( $depth ) {
-        my $msg = $loc->("Incomplete query, [quant,_1,unclosed paren] in '[_2]'", $depth, $string);
+        my $msg = $loc->("Incomplete query, [quant,_1,unclosed paren,unclosed parens] in '[_2]'", $depth, $string);
         return $cb->{'Error'}->( $msg ) if $cb->{'Error'};
         die $msg;
     }

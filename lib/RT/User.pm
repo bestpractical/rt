@@ -303,7 +303,7 @@ sub ValidatePassword {
     my $password = shift;
 
     if ( length($password) < RT->Config->Get('MinimumPasswordLength') ) {
-        return ( 0, $self->loc("Password needs to be at least [_1] characters long", RT->Config->Get('MinimumPasswordLength')) );
+        return ( 0, $self->loc("Password needs to be at least [quant,_1,character,characters] long", RT->Config->Get('MinimumPasswordLength')) );
     }
 
     return 1;

@@ -46,9 +46,9 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if ($minutes < 60) {
-<&|/l, $minutes &>[_1] min</&>
+<&|/l, $minutes &>[quant,_1,minute,minutes]</&>
 % } else {
-<&|/l, sprintf("%.1f",$minutes / 60) &>[quant,_1,hour]</&> (<&|/l, $minutes &>[_1] min</&>)
+<&|/l, sprintf("%.1f",$minutes / 60), $minutes &>[quant,_1,hour,hours] ([quant,_2,minute,minutes])</&>
 % }
 <%init>
 $minutes ||= 0;

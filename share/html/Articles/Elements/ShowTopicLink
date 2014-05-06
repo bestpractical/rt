@@ -58,7 +58,7 @@ $Class => 0
 % }
 
 % if ( $Articles->Count ) {
- (<&|/l, $Articles->Count &>[quant,_1,article]</&>)
+ (<&|/l, $Articles->Count &>[quant,_1,article,articles]</&>)
 % }
 
 % if ($Link) {

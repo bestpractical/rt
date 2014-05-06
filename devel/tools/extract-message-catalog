@@ -112,7 +112,7 @@ foreach my $str ( sort keys %FILECAT ) {
         warn "Extraneous whitespace in '$str' at $location\n";
     }
 
-    if ($str =~ /([\$\@]\w+)/) {
+    if (grep {$_->[3]} @{$entry} and $str =~ /([\$\@]\w+)/) {
         warn "Interpolated variable '$1' in '$str' at $location\n";
     }
 }
@@ -158,7 +158,7 @@ sub extract_strings_from_code {
         my ( $all, $vars, $str ) = ( $1, $2, $3 );
         $vars =~ s/[\n\r]//g;
         $line += ( $all =~ tr/\n/\n/ );
-        $str =~ s/\\(['"])/$1/g;
+        $str =~ s/\\(['"\\])/$1/g;
         #print "STR IS $str\n";
         push @{ $FILECAT{$str} }, [ $filename, $line, $vars ];
     }
@@ -171,20 +171,16 @@ sub extract_strings_from_code {
         $line += ( $all =~ tr/\n/\n/ );
 
         my ( $vars, $str );
-        if ( $match =~
-                /\(\s*($re_delim)(.*?)\s*\)$/so ) {
+        next unless ( $match =~ /\(\s*($re_delim)(.*?)\s*\)$/so );
 
-            $str = substr( $1, 1, -1 );       # $str comes before $vars now
-            $vars = $9;
-        }
-        else {
-            next;
-        }
+        my $interp = (substr($1,0,1) eq '"' ? 1 : 0);
+        $str = substr( $1, 1, -1 );       # $str comes before $vars now
+        $vars = $9;
 
         $vars =~ s/[\n\r]//g;
-        $str  =~ s/\\(['"])/$1/g;
+        $str  =~ s/\\(['"\\])/$1/g;
 
-        push @{ $FILECAT{$str} }, [ $filename, $line, $vars ];
+        push @{ $FILECAT{$str} }, [ $filename, $line, $vars, $interp ];
     }
 
     my %seen;
@@ -199,9 +195,10 @@ sub extract_strings_from_code {
             warn "Couldn't process loc at $filename:$line:\n  str«$str»\n";
             next;
         }
+        my $interp = (substr($str,0,1) eq '"' ? 1 : 0);
         $str = substr($str, 1, -1);
-        $str =~ s/\\(['"])/$1/g;
-        push @{ $FILECAT{$str} }, [ $filename, $line, '' ];
+        $str =~ s/\\(['"\\])/$1/g;
+        push @{ $FILECAT{$str} }, [ $filename, $line, '', $interp ];
     }
 
     # Comment-based mark for list to loc():  ("...", $foo, $bar)  # loc()
@@ -212,22 +209,21 @@ sub extract_strings_from_code {
         $line += ( $all =~ tr/\n/\n/ );
 
         my ( $vars, $str );
-        if ( $match =~
+        unless ( $match =~
                 /\(\s*($re_delim)(.*?)\s*\)$/so ) {
-
-            $str = substr( $1, 1, -1 );       # $str comes before $vars now
-            $vars = $9;
-        }
-        else {
             warn "Failed to match delimited against $match, line $line";
             next;
         }
+
+        my $interp = (substr($1,0,1) eq '"' ? 1 : 0);
+        $str = substr( $1, 1, -1 );       # $str comes before $vars now
+        $vars = $9;
         $seen{$line}++;
 
         $vars =~ s/[\n\r]//g;
-        $str  =~ s/\\(['"])/$1/g;
+        $str  =~ s/\\(['"\\])/$1/g;
 
-        push @{ $FILECAT{$str} }, [ $filename, $line, $vars ];
+        push @{ $FILECAT{$str} }, [ $filename, $line, $vars, $interp ];
     }
 
     # Comment-based qw mark: "qw(...)" # loc_qw
@@ -257,9 +253,9 @@ sub extract_strings_from_code {
             warn "Couldn't process loc_left_pair at $filename:$line:\n  key«$key»\n";
             next;
         }
-        $key  =~ s/^(['"])(.*)\1$/$2/g; # dequote potentially quoted string
-        $key  =~ s/\\(['"])/$1/g;
-        push @{ $FILECAT{$key} }, [ $filename, $line, '' ];
+        my $interp = (substr($key,0,1) eq '"' ? 1 : 0);
+        $key =~ s/\\(['"\\])/$1/g if $key =~ s/^(['"])(.*)\1$/$2/g; # dequote potentially quoted string
+        push @{ $FILECAT{$key} }, [ $filename, $line, '', $interp ];
     }
 
     # Comment-based pair mark: "..." => "..." # loc_pair
@@ -273,12 +269,14 @@ sub extract_strings_from_code {
             warn "Couldn't process loc_pair at $filename:$line:\n  key«$key»\n  val«$val»\n";
             next;
         }
-        $key =~ s/^(['"])(.*)\1$/$2/g; # dequote potentially quoted string
+        my $interp_key = (substr($key,0,1) eq '"' ? 1 : 0);
+        $key =~ s/\\(['"\\])/$1/g if $key =~ s/^(['"])(.*)\1$/$2/g; # dequote potentially quoted string
+        push @{ $FILECAT{$key} }, [ $filename, $line, '', $interp_key ];
+
+        my $interp_val = (substr($val,0,1) eq '"' ? 1 : 0);
         $val = substr($val, 1, -1);    # dequote always quoted string
-        $key  =~ s/\\(['"])/$1/g;
-        $val  =~ s/\\(['"])/$1/g;
-        push @{ $FILECAT{$key} }, [ $filename, $line, '' ];
-        push @{ $FILECAT{$val} }, [ $filename, $line, '' ];
+        $val  =~ s/\\(['"\\])/$1/g;
+        push @{ $FILECAT{$val} }, [ $filename, $line, '', $interp_val ];
     }
 
     # Check for ones we missed
