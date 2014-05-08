@@ -122,6 +122,12 @@ if ( $OPT{'help'} ) {
     );
 }
 
+use Fcntl ':flock';
+if ( !flock main::DATA, LOCK_EX | LOCK_NB ) {
+    print STDERR "$0 is already running\n";
+    exit 1;
+}
+
 my $fts_config = RT->Config->Get('FullTextSearch') || {};
 unless ( $fts_config->{'Enable'} ) {
     print STDERR <<EOT;
@@ -463,3 +469,4 @@ Alex Vandiver E<lt>alexmv@bestpractical.comE<gt>
 
 =cut
 
+__DATA__
