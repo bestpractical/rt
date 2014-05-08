@@ -201,8 +201,9 @@ our %META;
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
             Description => 'Theme',                  #loc
-            # XXX: we need support for 'get values callback'
-            Values => [qw(rudder web2 aileron ballard)],
+            Callback    => sub {
+                return { Values => [RT->Config->Get('WebStylesheets')] };
+            },
         },
         PostLoadCheck => sub {
             my $self = shift;

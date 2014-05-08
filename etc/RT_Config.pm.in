@@ -813,9 +813,9 @@ Set(@MailParams, ());
 
 =over 4
 
-=item C<$WebDefaultStylesheet>
+=item C<@WebStylesheets>
 
-This determines the default stylesheet the RT web interface will use.
+This defines a list of web stylesheets the RT web interface can use.
 RT ships with several themes by default:
 
   rudder          The default theme for RT 4.2
@@ -823,11 +823,20 @@ RT ships with several themes by default:
   web2            The default layout for RT 3.8
   ballard         Theme which doesn't rely on JavaScript for menuing
 
-This value actually specifies a directory in F<share/static/css/>
+The values actually are names of directories in F<share/static/css/>
 from which RT will try to load the file main.css (which should @import
 any other files the stylesheet needs).  This allows you to easily and
-cleanly create your own stylesheets to apply to RT.  This option can
-be overridden by users in their preferences.
+cleanly create your own stylesheets to apply to RT.
+
+
+=cut
+
+Set(@WebStylesheets, qw/rudder aileron web2 ballard/);
+
+=item C<$WebDefaultStylesheet>
+
+This determines the default stylesheet the RT web interface will use.
+This option can be overridden by users in their preferences.
 
 =cut
 
