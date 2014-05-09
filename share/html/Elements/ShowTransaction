@@ -237,6 +237,7 @@ $m->callback(
     Created     => \$date,
     TimeTaken   => \$time,
     Description => \$desc,
+    ShowBody    => \$ShowBody,
 );
 
 my $actions = '';
