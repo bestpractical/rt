@@ -634,8 +634,13 @@ sub _CanonicalizeCharset {
     elsif ( $charset eq 'euc-cn' ) {
         # gbk is superset of gb2312/euc-cn so it's safe
         return 'gbk';
-        # XXX TODO: gb18030 is an even larger, more permissive superset of gbk,
-        # but needs Encode::HanExtra installed
+    }
+    elsif ( $charset eq 'gb18030' ) {
+        eval { require Encode::HanExtra };
+        if ( $@ ) {
+            RT->Logger->error("Please install Encode::HanExtra to handle gb18030")
+        }
+        return $charset;
     }
     else {
         return $charset;
