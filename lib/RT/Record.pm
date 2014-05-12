@@ -747,72 +747,71 @@ evaluate and encode it.  It will return an octet string.
 =cut
 
 sub _EncodeLOB {
-        my $self = shift;
-        my $Body = shift;
-        my $MIMEType = shift || '';
-        my $Filename = shift;
+    my $self = shift;
+    my $Body = shift;
+    my $MIMEType = shift || '';
+    my $Filename = shift;
 
-        my $ContentEncoding = 'none';
+    my $ContentEncoding = 'none';
 
-        #get the max attachment length from RT
-        my $MaxSize = RT->Config->Get('MaxAttachmentSize');
+    #get the max attachment length from RT
+    my $MaxSize = RT->Config->Get('MaxAttachmentSize');
 
-        #if the current attachment contains nulls and the
-        #database doesn't support embedded nulls
+    #if the current attachment contains nulls and the
+    #database doesn't support embedded nulls
 
-        if ( ( !$RT::Handle->BinarySafeBLOBs ) && ( $Body =~ /\x00/ ) ) {
+    if ( ( !$RT::Handle->BinarySafeBLOBs ) && ( $Body =~ /\x00/ ) ) {
 
-            # set a flag telling us to mimencode the attachment
-            $ContentEncoding = 'base64';
+        # set a flag telling us to mimencode the attachment
+        $ContentEncoding = 'base64';
 
-            #cut the max attchment size by 25% (for mime-encoding overhead.
-            $RT::Logger->debug("Max size is $MaxSize");
-            $MaxSize = $MaxSize * 3 / 4;
-        # Some databases (postgres) can't handle non-utf8 data
-        } elsif (    !$RT::Handle->BinarySafeBLOBs
-                  && $Body =~ /\P{ASCII}/
-                  && !Encode::is_utf8( $Body, 1 ) ) {
-              $ContentEncoding = 'quoted-printable';
+        #cut the max attchment size by 25% (for mime-encoding overhead.
+        $RT::Logger->debug("Max size is $MaxSize");
+        $MaxSize = $MaxSize * 3 / 4;
+    # Some databases (postgres) can't handle non-utf8 data
+    } elsif (    !$RT::Handle->BinarySafeBLOBs
+              && $Body =~ /\P{ASCII}/
+              && !Encode::is_utf8( $Body, 1 ) ) {
+          $ContentEncoding = 'quoted-printable';
+    }
+
+    #if the attachment is larger than the maximum size
+    if ( ($MaxSize) and ( $MaxSize < length($Body) ) ) {
+
+        # if we're supposed to truncate large attachments
+        if (RT->Config->Get('TruncateLongAttachments')) {
+
+            # truncate the attachment to that length.
+            $Body = substr( $Body, 0, $MaxSize );
+
         }
 
-        #if the attachment is larger than the maximum size
-        if ( ($MaxSize) and ( $MaxSize < length($Body) ) ) {
+        # elsif we're supposed to drop large attachments on the floor,
+        elsif (RT->Config->Get('DropLongAttachments')) {
 
-            # if we're supposed to truncate large attachments
-            if (RT->Config->Get('TruncateLongAttachments')) {
-
-                # truncate the attachment to that length.
-                $Body = substr( $Body, 0, $MaxSize );
-
-            }
-
-            # elsif we're supposed to drop large attachments on the floor,
-            elsif (RT->Config->Get('DropLongAttachments')) {
-
-                # drop the attachment on the floor
-                $RT::Logger->info( "$self: Dropped an attachment of size "
-                                   . length($Body));
-                $RT::Logger->info( "It started: " . substr( $Body, 0, 60 ) );
-                $Filename .= ".txt" if $Filename;
-                return ("none", "Large attachment dropped", "text/plain", $Filename );
-            }
+            # drop the attachment on the floor
+            $RT::Logger->info( "$self: Dropped an attachment of size "
+                               . length($Body));
+            $RT::Logger->info( "It started: " . substr( $Body, 0, 60 ) );
+            $Filename .= ".txt" if $Filename;
+            return ("none", "Large attachment dropped", "text/plain", $Filename );
         }
+    }
 
-        # if we need to mimencode the attachment
-        if ( $ContentEncoding eq 'base64' ) {
+    # if we need to mimencode the attachment
+    if ( $ContentEncoding eq 'base64' ) {
 
-            # base64 encode the attachment
-            Encode::_utf8_off($Body);
-            $Body = MIME::Base64::encode_base64($Body);
+        # base64 encode the attachment
+        Encode::_utf8_off($Body);
+        $Body = MIME::Base64::encode_base64($Body);
 
-        } elsif ($ContentEncoding eq 'quoted-printable') {
-            Encode::_utf8_off($Body);
-            $Body = MIME::QuotedPrint::encode($Body);
-        }
+    } elsif ($ContentEncoding eq 'quoted-printable') {
+        Encode::_utf8_off($Body);
+        $Body = MIME::QuotedPrint::encode($Body);
+    }
 
 
-        return ($ContentEncoding, $Body, $MIMEType, $Filename );
-
+    return ($ContentEncoding, $Body, $MIMEType, $Filename );
 }
 
 =head2 _DecodeLOB
@@ -852,9 +851,9 @@ sub _DecodeLOB {
         return ( $self->loc( "Unknown ContentEncoding [_1]", $ContentEncoding ) );
     }
     if ( RT::I18N::IsTextualContentType($ContentType) ) {
-       $Content = Encode::decode('UTF-8',$Content,Encode::FB_PERLQQ) unless Encode::is_utf8($Content);
+        $Content = Encode::decode('UTF-8',$Content,Encode::FB_PERLQQ) unless Encode::is_utf8($Content);
     }
-        return ($Content);
+    return ($Content);
 }
 
 # A helper table for links mapping to make it easier
