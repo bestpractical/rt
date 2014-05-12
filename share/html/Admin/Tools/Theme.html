@@ -331,8 +331,20 @@ sub analyze_img {
     my $img = shift;
     my $color;
 
-    for my $i (0..$img->width-1) {
-        for my $j (0..$img->height-1) {
+    my @wsamples;
+    my @hsamples;
+    if ($img->width > 200) {
+        @wsamples = map { int($img->width*($_/200)) } (0..199);
+    } else {
+        @wsamples = ( 0 .. $img->width - 1 );
+    }
+    if ($img->height > 200) {
+        @hsamples = map { int($img->height*($_/200)) } (0..199);
+    } else {
+        @hsamples = ( 0 .. $img->height - 1 );
+    }
+    for my $i (@wsamples) {
+        for my $j (@hsamples) {
             my @color = $img->rgb( $img->getPixel($i,$j) );
             my $hsl = Convert::Color->new('rgb:'.join(',',map { $_ / 255 } @color))->convert_to('hsl');
             my $c = join(',',@color);
