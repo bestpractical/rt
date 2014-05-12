@@ -814,7 +814,7 @@ sub _EncodeLOB {
     return ($ContentEncoding, $Body, $MIMEType, $Filename );
 }
 
-=head2 _DecodeLOB
+=head2 _DecodeLOB C<ContentType>, C<ContentEncoding>, C<Content>
 
 Unpacks data stored in the database, which may be base64 or QP encoded
 because of our need to store binary and badly encoded data in columns
@@ -829,6 +829,12 @@ the invalid byte but won't run into problems treating the data as UTF-8 later.
 This is similar to how we filter all data coming in via the web UI in
 RT::Interface::Web::DecodeARGS. This filter should only end up being
 applied to old data from less UTF-8-safe versions of RT.
+
+If the passed C<ContentType> includes a character set, that will be used
+to decode textual data; the default character set is UTF-8.  This is
+necessary because while we attempt to store textual data as UTF-8, the
+definition of "textual" has migrated over time, and thus we may now need
+to attempt to decode data that was previously not trancoded on insertion.
 
 Important Note - This function expects an octet string and returns a
 character string for non-binary data.
@@ -851,7 +857,13 @@ sub _DecodeLOB {
         return ( $self->loc( "Unknown ContentEncoding [_1]", $ContentEncoding ) );
     }
     if ( RT::I18N::IsTextualContentType($ContentType) ) {
-        $Content = Encode::decode('UTF-8',$Content,Encode::FB_PERLQQ) unless Encode::is_utf8($Content);
+        my $entity = MIME::Entity->new();
+        $entity->head->add("Content-Type", $ContentType);
+        $entity->bodyhandle( MIME::Body::Scalar->new( $Content ) );
+        my $charset = RT::I18N::_FindOrGuessCharset($entity);
+        $charset = 'utf-8' if not $charset or not Encode::find_encoding($charset);
+
+        $Content = Encode::decode($charset,$Content,Encode::FB_PERLQQ) unless Encode::is_utf8($Content);
     }
     return ($Content);
 }

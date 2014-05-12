@@ -289,7 +289,7 @@ before returning it.
 sub Content {
     my $self = shift;
     return $self->_DecodeLOB(
-        $self->ContentType,
+        $self->GetHeader('Content-Type'),  # Includes charset, unlike ->ContentType
         $self->ContentEncoding,
         $self->_Value('Content', decode_utf8 => 0),
     );
