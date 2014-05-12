@@ -61,7 +61,7 @@
     <label for="logo-upload"><&|/l&>Upload a new logo</&>:</label>
     <input type="file" name="logo-upload" id="logo-upload" /><br />
     <div class="gd-support">
-% if (%gd_can) {
+% if ($valid_image_types) {
     <&|/l, $valid_image_types &>Your system supports automatic color suggestions for: [_1]</&>
 % } else {
     <&|/l&>GD is disabled or not installed. You can upload an image, but you won't get automatic color suggestions.</&>
@@ -302,13 +302,13 @@ use List::MoreUtils qw(uniq);
 
 my $has_color_analyzer = eval { require Convert::Color; 1 };
 my $colors;
-my %gd_can;
 my $valid_image_types;
 
 if (not RT->Config->Get('DisableGD') and $has_color_analyzer) {
     require GD;
 
     # Always find out what GD can read...
+    my %gd_can;
     for my $type (qw(Png Jpeg Gif)) {
         $gd_can{$type}++ if GD::Image->can("newFrom${type}Data");
     }
