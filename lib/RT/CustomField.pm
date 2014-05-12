@@ -415,7 +415,10 @@ sub LoadByName {
     }
 
     # if we're looking for a queue by name, make it a number
-    if ( defined $args{'Queue'} && ($args{'Queue'} =~ /\D/ || !$self->ContextObject) ) {
+    # Exclude 0 since it is a valid parameter, but will not load a valid queue
+    if ( defined $args{'Queue'}
+         && ($args{'Queue'} =~ /^\d+$/ ? $args{'Queue'} != 0 : 1)
+         && ($args{'Queue'} =~ /\D/ || !$self->ContextObject) ) {
         my $QueueObj = RT::Queue->new( $self->CurrentUser );
         my ($ret, $msg) = $QueueObj->Load( $args{'Queue'} );
 
