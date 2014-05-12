@@ -417,10 +417,20 @@ sub LoadByName {
     # if we're looking for a queue by name, make it a number
     if ( defined $args{'Queue'} && ($args{'Queue'} =~ /\D/ || !$self->ContextObject) ) {
         my $QueueObj = RT::Queue->new( $self->CurrentUser );
-        $QueueObj->Load( $args{'Queue'} );
-        $args{'Queue'} = $QueueObj->Id;
-        $self->SetContextObject( $QueueObj )
-            unless $self->ContextObject;
+        my ($ret, $msg) = $QueueObj->Load( $args{'Queue'} );
+
+        # Only set the context object if we successfully loaded a queue.
+        # This avoids creating a LookupType of RT::Queue below based on an empty
+        # queue object.
+
+        if ( $ret ){
+            $args{'Queue'} = $QueueObj->Id;
+            $self->SetContextObject( $QueueObj )
+                unless $self->ContextObject;
+        }
+        else {
+            RT::Logger->warning("Unable to load queue with id " . $args{'Queue'});
+        }
     }
     if ( defined $args{'Queue'} ) {
         # Set a LookupType for backcompat, otherwise we'll calculate
