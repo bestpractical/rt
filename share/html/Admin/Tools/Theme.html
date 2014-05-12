@@ -297,12 +297,12 @@ if (!$user_css) {
 }
 
 # XXX: move this to some other modules
-
-my $has_color_analyzer = eval { require Convert::Color; 1 };
 my $colors;
 my $valid_image_types;
+my $analyze_img = sub {
+    return undef if RT->Config->Get('DisableGD');
+    return undef unless eval { require Convert::Color; 1 };
 
-if (not RT->Config->Get('DisableGD') and $has_color_analyzer) {
     require GD;
 
     # Always find out what GD can read...
@@ -312,21 +312,18 @@ if (not RT->Config->Get('DisableGD') and $has_color_analyzer) {
     }
     $valid_image_types = join(", ", map { uc } sort { lc $a cmp lc $b } keys %gd_can);
 
-    # ...but only analyze the image if we have data
-    if ($imgdata) {
-        if ( my $img = GD::Image->new($imgdata) ) {
-            $colors = $analyze_img->($img);
-        }
-        else {
-            # This has to be one damn long line because the loc() needs to be
-            # source parsed correctly.
-            push @results, loc("Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: [_1]. You can recompile libgd and GD.pm to include support for other image types.", $valid_image_types);
-        }
-    }
-}
+    my $imgdata = shift;
+    return undef unless $imgdata;
 
-my $analyze_img = sub {
-    my $img = shift;
+    # ...but only analyze the image if we have data
+    my $img = GD::Image->new($imgdata);
+    unless ($img) {
+        # This has to be one damn long line because the loc() needs to be
+        # source parsed correctly.
+        push @results, loc("Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: [_1]. You can recompile libgd and GD.pm to include support for other image types.", $valid_image_types);
+        return undef;
+    }
+
     my %colors;
 
     my @wsamples;
@@ -360,6 +357,7 @@ my $analyze_img = sub {
                     (sort { $b->{rank} <=> $a->{rank} } values %colors)[0..5];
     return \@top5;
 };
+$analyze_img->($imgdata);
 </%INIT>
 <%ARGS>
 $user_css => ''
