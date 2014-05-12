@@ -358,9 +358,6 @@ my $analyze_img = sub {
     }
     my @top5 = grep { defined and $_->{'l'} and $_->{'c'} }
                     (sort { $b->{rank} <=> $a->{rank} } values %colors)[0..5];
-    if ((scalar uniq map {$_->{rank}} @top5) == 1) {
-        warn "bad";
-    }
     return \@top5;
 };
 </%INIT>
