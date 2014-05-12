@@ -298,8 +298,6 @@ if (!$user_css) {
 
 # XXX: move this to some other modules
 
-use List::MoreUtils qw(uniq);
-
 my $has_color_analyzer = eval { require Convert::Color; 1 };
 my $colors;
 my $valid_image_types;
@@ -354,6 +352,7 @@ my $analyze_img = sub {
         }
     }
 
+    use List::MoreUtils qw(uniq);
     for (values %colors) {
         $_->{rank} = $_->{s} * $_->{cnt};
     }
