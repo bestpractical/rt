@@ -242,61 +242,6 @@ my $text_threshold = 0.6;
 my @results;
 my $imgdata;
 
-if (my $file_hash = _UploadedFile( 'logo-upload' )) {
-    my $my_system = RT::System->new( $session{CurrentUser} );
-    my ( $id, $msg ) = $my_system->SetAttribute(
-        Name        => "UserLogo",
-        Description => "User-provided logo",
-        Content     => {
-            type => $file_hash->{ContentType},
-            data => $file_hash->{LargeContent},
-            hash => md5_hex($file_hash->{LargeContent}),
-        },
-    );
-
-    push @results, loc("Unable to set UserLogo: [_1]", $msg) unless $id;
-
-    $imgdata = $file_hash->{LargeContent};
-}
-elsif ($ARGS{'reset_logo'}) {
-    RT->System->DeleteAttribute('UserLogo');
-}
-else {
-    if (my $attr = RT->System->FirstAttribute('UserLogo')) {
-        my $content = $attr->Content;
-        if (ref($content) eq 'HASH') {
-            $imgdata = $content->{data};
-        }
-        else {
-            RT->System->DeleteAttribute('UserLogo');
-        }
-    }
-}
-
-if ($user_css) {
-    if ($ARGS{'reset_css'}) {
-        RT->System->DeleteAttribute('UserCSS');
-        undef $user_css;
-    }
-    else {
-        my ($id, $msg) = RT->System->SetAttribute( Name => "UserCSS",
-                                                    Description => "User-provided css",
-                                                    Content => $user_css );
-        push @results, loc("Unable to set UserCSS: [_1]", $msg) unless $id;
-    }
-}
-
-if (!$user_css) {
-    my $attr = RT->System->FirstAttribute('UserCSS');
-    $user_css = $attr ? $attr->Content : join(
-        "\n\n" => map {
-            join "\n" => "/* ". $_->[0] ." */",
-                         map { "$_ {}" } @{$_->[1]}
-        } @sections
-    );
-}
-
-# XXX: move this to some other modules
 my $colors;
 my $valid_image_types;
 my $analyze_img = sub {
@@ -357,7 +302,61 @@ my $analyze_img = sub {
                     (sort { $b->{rank} <=> $a->{rank} } values %colors)[0..5];
     return \@top5;
 };
+
+if (my $file_hash = _UploadedFile( 'logo-upload' )) {
+    my $my_system = RT::System->new( $session{CurrentUser} );
+    my ( $id, $msg ) = $my_system->SetAttribute(
+        Name        => "UserLogo",
+        Description => "User-provided logo",
+        Content     => {
+            type => $file_hash->{ContentType},
+            data => $file_hash->{LargeContent},
+            hash => md5_hex($file_hash->{LargeContent}),
+        },
+    );
+
+    push @results, loc("Unable to set UserLogo: [_1]", $msg) unless $id;
+
+    $imgdata = $file_hash->{LargeContent};
+}
+elsif ($ARGS{'reset_logo'}) {
+    RT->System->DeleteAttribute('UserLogo');
+}
+else {
+    if (my $attr = RT->System->FirstAttribute('UserLogo')) {
+        my $content = $attr->Content;
+        if (ref($content) eq 'HASH') {
+            $imgdata = $content->{data};
+        }
+        else {
+            RT->System->DeleteAttribute('UserLogo');
+        }
+    }
+}
 $analyze_img->($imgdata);
+
+if ($user_css) {
+    if ($ARGS{'reset_css'}) {
+        RT->System->DeleteAttribute('UserCSS');
+        undef $user_css;
+    }
+    else {
+        my ($id, $msg) = RT->System->SetAttribute( Name => "UserCSS",
+                                                    Description => "User-provided css",
+                                                    Content => $user_css );
+        push @results, loc("Unable to set UserCSS: [_1]", $msg) unless $id;
+    }
+}
+
+if (!$user_css) {
+    my $attr = RT->System->FirstAttribute('UserCSS');
+    $user_css = $attr ? $attr->Content : join(
+        "\n\n" => map {
+            join "\n" => "/* ". $_->[0] ." */",
+                         map { "$_ {}" } @{$_->[1]}
+        } @sections
+    );
+}
 </%INIT>
 <%ARGS>
 $user_css => ''
