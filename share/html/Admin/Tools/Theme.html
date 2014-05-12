@@ -329,7 +329,7 @@ if (not RT->Config->Get('DisableGD') and $has_color_analyzer) {
 
 my $analyze_img = sub {
     my $img = shift;
-    my $color;
+    my %colors;
 
     my @wsamples;
     my @hsamples;
@@ -349,16 +349,16 @@ my $analyze_img = sub {
             my $hsl = Convert::Color->new('rgb:'.join(',',map { $_ / 255 } @color))->convert_to('hsl');
             my $c = join(',',@color);
             next if $hsl->lightness < 0.1;
-            $color->{$c} ||= { h => $hsl->hue, s => $hsl->saturation, l => $hsl->lightness, cnt => 0, c => $c};
-            $color->{$c}->{cnt}++;
+            $colors{$c} ||= { h => $hsl->hue, s => $hsl->saturation, l => $hsl->lightness, cnt => 0, c => $c};
+            $colors{$c}->{cnt}++;
         }
     }
 
-    for (values %$color) {
+    for (values %colors) {
         $_->{rank} = $_->{s} * $_->{cnt};
     }
     my @top5 = grep { defined and $_->{'l'} and $_->{'c'} }
-                    (sort { $b->{rank} <=> $a->{rank} } values %$color)[0..5];
+                    (sort { $b->{rank} <=> $a->{rank} } values %colors)[0..5];
     if ((scalar uniq map {$_->{rank}} @top5) == 1) {
         warn "bad";
     }
