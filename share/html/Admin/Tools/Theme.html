@@ -317,7 +317,7 @@ if (not RT->Config->Get('DisableGD') and $has_color_analyzer) {
     # ...but only analyze the image if we have data
     if ($imgdata) {
         if ( my $img = GD::Image->new($imgdata) ) {
-            $colors = analyze_img($img);
+            $colors = $analyze_img->($img);
         }
         else {
             # This has to be one damn long line because the loc() needs to be
@@ -327,7 +327,7 @@ if (not RT->Config->Get('DisableGD') and $has_color_analyzer) {
     }
 }
 
-sub analyze_img {
+my $analyze_img = sub {
     my $img = shift;
     my $color;
 
@@ -363,7 +363,7 @@ sub analyze_img {
         warn "bad";
     }
     return \@top5;
-}
+};
 </%INIT>
 <%ARGS>
 $user_css => ''
