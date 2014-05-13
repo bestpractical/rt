@@ -333,13 +333,12 @@ sub OriginalContent {
         return( $self->loc("Unknown ContentEncoding [_1]", $self->ContentEncoding));
     }
 
-    local $@;
     if (!$enc || $enc eq '' ||  $enc eq 'utf8' || $enc eq 'utf-8') {
-        # If we somehow fail to do the decode, at least push out the raw bits
-        eval { return( Encode::decode_utf8($content)) } || return ($content);
+        return ($content);
     }
 
-    eval { Encode::from_to($content, 'utf8' => $enc) } if $enc;
+    local $@;
+    eval { Encode::from_to($content, 'utf8' => $enc) };
     if ($@) {
         $RT::Logger->error("Could not convert attachment from assumed utf8 to '$enc' :".$@);
     }
