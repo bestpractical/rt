@@ -320,7 +320,6 @@ sub OriginalContent {
     }
 
     return $self->Content unless RT::I18N::IsTextualContentType($self->ContentType);
-    my $enc = $self->OriginalEncoding;
 
     my $content;
     if ( !$self->ContentEncoding || $self->ContentEncoding eq 'none' ) {
@@ -333,14 +332,20 @@ sub OriginalContent {
         return( $self->loc("Unknown ContentEncoding [_1]", $self->ContentEncoding));
     }
 
-    if (!$enc || $enc eq '' ||  $enc eq 'utf8' || $enc eq 'utf-8') {
-        return ($content);
-    }
+    my $entity = MIME::Entity->new();
+    $entity->head->add("Content-Type", $self->GetHeader("Content-Type"));
+    $entity->bodyhandle( MIME::Body::Scalar->new( $content ) );
+    my $from = RT::I18N::_FindOrGuessCharset($entity);
+    $from = 'utf-8' if not $from or not Encode::find_encoding($from);
+
+    my $to = RT::I18N::_CanonicalizeCharset(
+        $self->OriginalEncoding || 'utf-8'
+    );
 
     local $@;
-    eval { Encode::from_to($content, 'utf8' => $enc) };
+    eval { Encode::from_to($content, $from => $to) };
     if ($@) {
-        $RT::Logger->error("Could not convert attachment from assumed utf8 to '$enc' :".$@);
+        $RT::Logger->error("Could not convert attachment from $from to $to: ".$@);
     }
     return $content;
 }
