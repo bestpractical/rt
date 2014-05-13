@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test nodata => 1, tests => 29;
+use RT::Test nodata => 1, tests => undef;
 use Test::Warn;
 
 
@@ -35,7 +35,6 @@ ok(my ($bad_id, $bad_msg)=  $cf->Create( Name => 'TestingCF-bad',
                                  Description => 'A Testing custom field with a bogus Type',
                                  Type=> 'SelectSingleton'), 'Created a global CustomField with a bogus type');
 is($bad_id , 0, 'Global custom field correctly decided to not create a cf with a bogus type ');
-
 
 }
 
@@ -71,3 +70,12 @@ ok(!$cf->ValidateType('SelectFooMultiple'));
 
 }
 
+{
+
+    my $cf = RT::CustomField->new(RT->SystemUser);
+    $cf->LoadByName(Queue => 0, Name => 'TestingCF');
+    ok($cf->Id, 'Loaded CF ' . $cf->Id);
+    ok(!$cf->ContextObject, 'Context object not set when queue is 0');
+}
+
+done_testing;
