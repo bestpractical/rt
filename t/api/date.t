@@ -83,6 +83,7 @@ my $current_user;
 
 {
     my $date = RT::Date->new(RT->SystemUser);
+    is($date->IsSet,0,"new date isn't set");
     is($date->Unix, 0, "new date returns 0 in Unix format");
     is($date->Get, '1970-01-01 00:00:00', "default is ISO format");
     warning_like {
@@ -207,6 +208,7 @@ my $current_user;
     $current_user->UserObj->__Set( Field => 'Timezone', Value => 'Europe/Moscow');
     my $date = RT::Date->new( $current_user );
     $date->Set( Format => 'ISO', Timezone => 'utc', Value => '2005-01-01 15:10:00' );
+    is($date->IsSet,1,"Date has been set");
     is($date->ISO( Timezone => 'user' ), '2005-01-01 18:10:00', "ISO");
     is($date->W3CDTF( Timezone => 'user' ), '2005-01-01T18:10:00+03:00', "W3C DTF");
     is($date->RFC2822( Timezone => 'user' ), 'Sat, 01 Jan 2005 18:10:00 +0300', "RFC2822");
@@ -251,10 +253,12 @@ warning_like
     foreach (undef, 0, ''){
         $date->Unix(1);
         is($date->ISO, '1970-01-01 00:00:01', "correct value");
+        is($date->IsSet,1,"Date has been set to a value");
 
         $date->Set(Format => 'unix', Value => $_);
         is($date->ISO, '1970-01-01 00:00:00', "Set a date to midnight 1/1/1970 GMT due to wrong call");
         is($date->Unix, 0, "unix is 0 => unset");
+        is($date->IsSet,0,"Date has been unset");
     }
 }
 

@@ -1135,6 +1135,20 @@ sub Timezone {
     return $tz;
 }
 
+=head3 IsSet
+
+Returns true if this Date is set in the database, otherwise returns a false value.
+
+This avoids needing to compare to 1970-01-01 in any of your code
+
+=cut
+
+sub IsSet {
+    my $self = shift;
+    return $self->Unix ? 1 : 0;
+
+}
+
 
 RT::Base->_ImportOverlays();
 
