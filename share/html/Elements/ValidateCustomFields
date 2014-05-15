@@ -88,7 +88,7 @@ while ( my $CF = $CustomFields->Next ) {
                 Value => $_,
                 ($CF->Type eq "Date" ? (Timezone => 'utc') : ())
             );
-            $DateObj->Unix > 0
+            $DateObj->IsSet
         } @values;
     }
     push @values, '' unless @values;

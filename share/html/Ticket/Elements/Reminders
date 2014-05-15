@@ -190,7 +190,7 @@ $Ticket
 $Index
 </%args>
 % my $dueobj = $Reminder->DueObj;
-% my $overdue = $dueobj->Unix > 0 && $dueobj->Diff < 0 ? 1 : 0;
+% my $overdue = $dueobj->IsSet && $dueobj->Diff < 0 ? 1 : 0;
 <tr class="<% $Index%2 ? 'oddline' : 'evenline' %>" id="reminder-<% $Reminder->id %>">
 
 <td class="collection-as-table">

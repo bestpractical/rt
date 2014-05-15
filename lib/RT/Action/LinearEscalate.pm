@@ -155,8 +155,7 @@ sub Prepare {
 
     my $ticket = $self->TicketObj;
 
-    my $due = $ticket->DueObj->Unix;
-    unless ( $due > 0 ) {
+    unless ( $ticket->DueObj->IsSet ) {
         $RT::Logger->debug('Due is not set. Not escalating.');
         return 1;
     }
@@ -181,9 +180,8 @@ sub Prepare {
     # now we know we have a due date. for every day that passes,
     # increment priority according to the formula
 
-    my $starts         = $ticket->StartsObj->Unix;
-    $starts            = $ticket->CreatedObj->Unix unless $starts > 0;
-    my $now            = time;
+    my $starts = $ticket->StartsObj->IsSet ? $ticket->StartsObj->Unix : $ticket->CreatedObj->Unix;
+    my $now    = time;
 
     # do nothing if we didn't reach starts or created date
     if ( $starts > $now ) {
@@ -191,6 +189,7 @@ sub Prepare {
         return 1;
     }
 
+    my $due = $ticket->DueObj->Unix;
     $due = $starts + 1 if $due <= $starts; # +1 to avoid div by zero
 
     my $percent_complete = ($now-$starts)/($due - $starts);

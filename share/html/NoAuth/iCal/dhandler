@@ -86,9 +86,9 @@ $feed->add_properties('method'   => ['publish']);
 $feed->add_properties('prodid'   => ["-//" . RT->Config->Get('rtname') ."//"]);
 
 while (my $t = $tickets->Next) {
-    next unless $t->DueObj->Unix > 0;
+    next unless $t->DueObj->IsSet;
 
-    my $starttime = $t->StartsObj->Unix > 0 ? $t->StartsObj : $t->CreatedObj;
+    my $starttime = $t->StartsObj->IsSet ? $t->StartsObj : $t->CreatedObj;
 
     my $url;
     if ( RT->Config->Get('CanonicalizeURLsInFeeds') ) {

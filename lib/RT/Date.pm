@@ -463,7 +463,7 @@ sub AsString {
     my $self = shift;
     my %args = (@_);
 
-    return $self->loc("Not set") unless $self->Unix > 0;
+    return $self->loc("Not set") unless $self->IsSet;
 
     my $format = RT->Config->Get( 'DateTimeFormat', $self->CurrentUser ) || 'DefaultFormat';
     $format = { Format => $format } unless ref $format;
