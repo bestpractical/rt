@@ -117,7 +117,8 @@ BEGIN {
 
 sub import {
     my $class = shift;
-    my %args = %rttest_opt = @_;
+    my %args = @_;
+    %rttest_opt = %args;
 
     $rttest_opt{'nodb'} = $args{'nodb'} = 1 if $^C;
 
