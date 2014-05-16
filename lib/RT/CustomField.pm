@@ -435,6 +435,9 @@ sub LoadByName {
         }
         else {
             RT::Logger->warning("Unable to load queue with id " . $args{'Queue'});
+            # Since we don't also include global results, there's no
+            # point in searching; abort
+            return wantarray ? (0, $self->loc("Not found")) : 0;
         }
     }
     if ( defined $args{'Queue'} ) {
