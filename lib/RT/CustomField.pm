@@ -414,10 +414,12 @@ sub LoadByName {
         return wantarray ? (0, $self->loc("No name provided")) : 0;
     }
 
-    # if we're looking for a queue by name, make it a number
-    # Exclude 0 since it is a valid parameter, but will not load a valid queue
-    if ( defined $args{'Queue'}
-         && ($args{'Queue'} =~ /^\d+$/ ? $args{'Queue'} != 0 : 1)
+    # Resolve the Queue; this is necessary to properly limit ObjectId,
+    # and also possibly useful to set a ContextObj if we are currently
+    # lacking one.  It is unnecessary if we have a context object and
+    # were passed a numeric Queue.  Also skip if we have a false
+    # Queue, which means "global" (0) or "not a queue" (undef)
+    if ( $args{Queue}
          && ($args{'Queue'} =~ /\D/ || !$self->ContextObject) ) {
         my $QueueObj = RT::Queue->new( $self->CurrentUser );
         my ($ret, $msg) = $QueueObj->Load( $args{'Queue'} );
