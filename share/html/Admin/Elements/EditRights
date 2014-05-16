@@ -94,6 +94,9 @@ if ($anchor =~ /AddPrincipal/) {
       jQuery(".rights-editor").tabs({
           beforeActivate: function(ev, ui) {
               sync_anchor(ui.newPanel.selector);
+              if ( ui.newTab.find('input[type=text]').size() > 0 ) {
+                  ui.newTab.find('input[type=text]:first').focus();
+              }
           }
       });
 
