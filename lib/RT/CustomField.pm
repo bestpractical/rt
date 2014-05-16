@@ -409,6 +409,12 @@ search custom fields that are applied globally.
 Whether it should return Disabled custom fields if they match; defaults
 to on, though non-Disabled custom fields are returned preferentially.
 
+=item IncludeGlobal => C<BOOLEAN>
+
+Whether to also search global custom fields, even if a value is provided
+for C<ObjectId>; defaults to off.  Non-global custom fields are returned
+preferentially.
+
 =back
 
 For backwards compatibility, a value passed for C<Queue> is equivalent
@@ -435,6 +441,7 @@ sub LoadByName {
         ObjectId   => undef,
 
         IncludeDisabled => 1,
+        IncludeGlobal   => 0,
 
         # Back-compat
         Queue => undef,
@@ -478,9 +485,15 @@ sub LoadByName {
                 unless $self->ContextObject;
         } else {
             $RT::Logger->warning("Failed to load $args{ObjectType} '$args{ObjectId}'");
-            # Since we don't also include global results, there's no
-            # point in searching; abort
-            return wantarray ? (0, $self->loc("Not found")) : 0;
+            if ($args{IncludeGlobal}) {
+                # Fall back to acting like we were only asked about the
+                # global case
+                $args{ObjectId} = 0;
+            } else {
+                # If they didn't also want global results, there's no
+                # point in searching; abort
+                return wantarray ? (0, $self->loc("Not found")) : 0;
+            }
         }
     } elsif (not $args{ObjectType} and $args{ObjectId}) {
         # If we skipped out on the above due to lack of ObjectType, make
@@ -519,11 +532,22 @@ sub LoadByName {
     );
 
     if (defined $args{ObjectId}) {
-        $CFs->Limit(
-            ALIAS => $CFs->_OCFAlias,
-            FIELD => 'ObjectId',
-            VALUE => $args{ObjectId},
-        );
+        if ($args{IncludeGlobal}) {
+            $CFs->Limit(
+                ALIAS    => $CFs->_OCFAlias,
+                FIELD    => 'ObjectId',
+                OPERATOR => 'IN',
+                VALUE    => [ $args{ObjectId}, 0 ],
+            );
+            # Find the queue-specific first
+            unshift @order, { ALIAS => $ocfs, FIELD => "ObjectId", ORDER => "DESC" };
+        } else {
+            $CFs->Limit(
+                ALIAS => $CFs->_OCFAlias,
+                FIELD => 'ObjectId',
+                VALUE => $args{ObjectId},
+            );
+        }
     }
 
     if ($args{IncludeDisabled}) {
