@@ -83,7 +83,7 @@ my $current_user;
 
 {
     my $date = RT::Date->new(RT->SystemUser);
-    is($date->IsSet,0,"new date isn't set");
+    is($date->IsSet,0, "new date isn't set");
     is($date->Unix, 0, "new date returns 0 in Unix format");
     is($date->Get, '1970-01-01 00:00:00', "default is ISO format");
     warning_like {
@@ -250,7 +250,7 @@ warning_like
     $date->Unix(1);
     is($date->ISO, '1970-01-01 00:00:01', "correct value");
 
-    foreach (undef, 0, ''){
+    foreach (undef, 0, '', -5){
         $date->Unix(1);
         is($date->ISO, '1970-01-01 00:00:01', "correct value");
         is($date->IsSet,1,"Date has been set to a value");
