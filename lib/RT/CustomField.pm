@@ -404,11 +404,20 @@ example, if a C<LookupType> of C<< RT::Ticket->CustomFieldLookupType >>
 is used, this is which Queue the CF must be applied to.  Pass 0 to only
 search custom fields that are applied globally.
 
+=item IncludeDisabled => C<BOOLEAN>
+
+Whether it should return Disabled custom fields if they match; defaults
+to on, though non-Disabled custom fields are returned preferentially.
+
 =back
 
 For backwards compatibility, a value passed for C<Queue> is equivalent
 to specifying a C<LookupType> of L<RT::Ticket/CustomFieldLookupType>,
 and a C<ObjectId> of the value passed as C<Queue>.
+
+If multiple custom fields match the above constraints, the first
+according to C<SortOrder> will be returned; ties are broken by C<id>,
+lowest-first.
 
 =cut
 
@@ -424,6 +433,8 @@ sub LoadByName {
         LookupType => undef,
         ObjectType => undef,
         ObjectId   => undef,
+
+        IncludeDisabled => 1,
 
         # Back-compat
         Queue => undef,
@@ -497,9 +508,16 @@ sub LoadByName {
     $CFs->Limit( FIELD => "LookupType", OPERATOR => "IN", VALUE => $args{LookupType} )
         if $args{LookupType};
 
-    # Limit to the specified object.  For backwards compatibility, we
-    # limit even for ObjectId 0, forcing callers to try loading twice to
-    # find Queue-specific and then Global CFs.
+    # Default to by SortOrder and id; this mirrors the standard ordering
+    # of RT::CustomFields (minus the Name, which is guaranteed to be
+    # fixed)
+    my @order = (
+        { FIELD => 'SortOrder',
+          ORDER => 'ASC' },
+        { FIELD => 'id',
+          ORDER => 'ASC' },
+    );
+
     if (defined $args{ObjectId}) {
         $CFs->Limit(
             ALIAS => $CFs->_OCFAlias,
@@ -508,12 +526,16 @@ sub LoadByName {
         );
     }
 
-    # When loading by name, we _can_ load disabled fields, but prefer
-    # non-disabled fields.
-    $CFs->FindAllRows;
-    $CFs->OrderByCols(
-        { FIELD => "Disabled", ORDER => 'ASC' },
-    );
+    if ($args{IncludeDisabled}) {
+        # Load disabled fields, but return them only as a last resort.
+        # This goes at the front of @order, as we prefer the
+        # non-disabled global CF to the disabled Queue-specific CF.
+        $CFs->FindAllRows;
+        unshift @order, { FIELD => "Disabled", ORDER => 'ASC' };
+    }
+
+    # Apply the above orderings
+    $CFs->OrderByCols( @order );
 
     # We only want one entry.
     $CFs->RowsPerPage(1);
