@@ -84,8 +84,9 @@ use RT::Interface::CLI ();
 my %OPT = (
     help        => 0,
     debug       => 0,
+    quiet       => 0,
 );
-my @OPT_LIST = qw(help|h! debug!);
+my @OPT_LIST = qw(help|h! debug! quiet);
 
 my $db_type = RT->Config->Get('DatabaseType');
 if ( $db_type eq 'Pg' ) {
@@ -120,6 +121,18 @@ if ( $OPT{'help'} ) {
     RT::Interface::CLI->ShowHelp(
         Sections => 'NAME|DESCRIPTION|'. uc($db_type),
     );
+}
+
+use Fcntl ':flock';
+if ( !flock main::DATA, LOCK_EX | LOCK_NB ) {
+    if ( $OPT{quiet} ) {
+        RT::Logger->info("$0 is already running; aborting silently, as requested");
+        exit;
+    }
+    else {
+        print STDERR "$0 is already running\n";
+        exit 1;
+    }
 }
 
 my $fts_config = RT->Config->Get('FullTextSearch') || {};
@@ -463,3 +476,4 @@ Alex Vandiver E<lt>alexmv@bestpractical.comE<gt>
 
 =cut
 
+__DATA__
