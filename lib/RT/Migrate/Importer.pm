@@ -145,7 +145,7 @@ sub InitStream {
     if ($self->{OriginalId}) {
         # Where to shove the original ticket ID
         my $cf = RT::CustomField->new( RT->SystemUser );
-        $cf->LoadByName( Queue => 0, Name => $self->{OriginalId} );
+        $cf->LoadByName( Name => $self->{OriginalId}, LookupType => RT::Ticket->CustomFieldLookupType, ObjectId => 0 );
         unless ($cf->Id) {
             warn "Failed to find global CF named $self->{OriginalId} -- creating one";
             $cf->Create(

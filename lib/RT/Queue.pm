@@ -449,7 +449,11 @@ sub CustomField {
     my $self = shift;
     my $name = shift;
     my $cf = RT::CustomField->new($self->CurrentUser);
-    $cf->LoadByName(Name => $name, Queue => $self->Id);
+    $cf->LoadByName(
+        Name       => $name,
+        LookupType => RT::Ticket->CustomFieldLookupType,
+        ObjectId   => $self->id,
+    );
     return ($cf);
 }
 
