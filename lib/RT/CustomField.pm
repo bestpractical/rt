@@ -532,9 +532,13 @@ sub LoadByName {
     );
 
     if (defined $args{ObjectId}) {
+        # The join to OCFs is distinct -- either we have a global
+        # application or an objectid match, but never both.  Even if
+        # this were not the case, we care only for the first row.
+        my $ocfs = $CFs->_OCFAlias( Distinct => 1);
         if ($args{IncludeGlobal}) {
             $CFs->Limit(
-                ALIAS    => $CFs->_OCFAlias,
+                ALIAS    => $ocfs,
                 FIELD    => 'ObjectId',
                 OPERATOR => 'IN',
                 VALUE    => [ $args{ObjectId}, 0 ],
@@ -543,7 +547,7 @@ sub LoadByName {
             unshift @order, { ALIAS => $ocfs, FIELD => "ObjectId", ORDER => "DESC" };
         } else {
             $CFs->Limit(
-                ALIAS => $CFs->_OCFAlias,
+                ALIAS => $ocfs,
                 FIELD => 'ObjectId',
                 VALUE => $args{ObjectId},
             );

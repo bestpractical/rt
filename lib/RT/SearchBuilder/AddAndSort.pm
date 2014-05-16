@@ -196,7 +196,7 @@ this join. Use Left to create LEFT JOIN rather than inner.
 sub JoinTargetToThis {
     my $self = shift;
     my $collection = shift;
-    my %args = ( New => 0, Left => 0, @_ );
+    my %args = ( New => 0, Left => 0, Distinct => 0, @_ );
 
     my $table = $self->Table;
     my $key = "_sql_${table}_alias";
@@ -209,6 +209,7 @@ sub JoinTargetToThis {
         FIELD1 => 'id',
         TABLE2 => $table,
         FIELD2 => $self->RecordClass->TargetField,
+        DISTINCT => $args{Distinct},
     );
     return $alias if $args{'New'};
     return $collection->{ $key } = $alias;
