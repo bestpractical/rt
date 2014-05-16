@@ -378,20 +378,37 @@ sub Load {
 
 
 
-=head2 LoadByName (Queue => QUEUEID, Name => NAME)
+=head2 LoadByName Name => C<NAME>, [...]
 
-Loads the Custom field named NAME.
+Loads the Custom field named NAME.  As other optional parameters, takes:
 
-Will load a Disabled Custom Field even if there is a non-disabled Custom Field
-with the same Name.
+=over
 
-If a Queue parameter is specified, only look for ticket custom fields tied to that Queue.
+=item LookupType => C<LOOKUPTYPE>
 
-If the Queue parameter is '0', look for global ticket custom fields.
+The type of Custom Field to look for; while this parameter is not
+required, it is highly suggested, or you may not find the Custom Field
+you are expecting.  It should be passed a C<LookupType> such as
+L<RT::Ticket/CustomFieldLookupType> or
+L<RT::User/CustomFieldLookupType>.
 
-If no queue parameter is specified, look for any and all custom fields with this name.
+=item ObjectType => C<CLASS>
 
-BUG/TODO, this won't let you specify that you only want user or group CFs.
+The class of object that the custom field is applied to.  This can be
+intuited from the provided C<LookupType>.
+
+=item ObjectId => C<ID>
+
+limits the custom field search to one applied to the relevant id.  For
+example, if a C<LookupType> of C<< RT::Ticket->CustomFieldLookupType >>
+is used, this is which Queue the CF must be applied to.  Pass 0 to only
+search custom fields that are applied globally.
+
+=back
+
+For backwards compatibility, a value passed for C<Queue> is equivalent
+to specifying a C<LookupType> of L<RT::Ticket/CustomFieldLookupType>,
+and a C<ObjectId> of the value passed as C<Queue>.
 
 =cut
 
@@ -403,9 +420,14 @@ BUG/TODO, this won't let you specify that you only want user or group CFs.
 sub LoadByName {
     my $self = shift;
     my %args = (
-        Queue => undef,
-        Name  => undef,
+        Name       => undef,
         LookupType => undef,
+        ObjectType => undef,
+        ObjectId   => undef,
+
+        # Back-compat
+        Queue => undef,
+
         @_,
     );
 
@@ -419,36 +441,42 @@ sub LoadByName {
         # one of RT::Queue from your ContextObj.  Older code was relying
         # on us defaulting to RT::Queue-RT::Ticket in old LimitToQueue call.
         $args{LookupType} ||= 'RT::Queue-RT::Ticket';
+        $args{ObjectId}   //= delete $args{Queue};
     }
 
-    # Resolve the Queue; this is necessary to properly limit ObjectId,
-    # and also possibly useful to set a ContextObj if we are currently
-    # lacking one.  It is not strictly necessary if we have a context
-    # object and were passed a numeric Queue, but it cannot hurt to
-    # verify its sanity.  Skip if we have a false Queue, which means
-    # "global" (0) or "not a queue" (undef)
-    if ($args{Queue}) {
-        my $QueueObj = RT::Queue->new( $self->CurrentUser );
-        my ($ret, $msg) = $QueueObj->Load( $args{'Queue'} );
+    # Default the ObjectType to the top category of the LookupType; it's
+    # what the CFs are assigned on.
+    $args{ObjectType} ||= $1 if $args{LookupType} and $args{LookupType} =~ /^([^-]+)/;
 
-        # Only set the context object if we successfully loaded a queue.
-        # This avoids creating a LookupType of RT::Queue below based on an empty
-        # queue object.
+    # Resolve the ObjectId/ObjectType; this is necessary to properly
+    # limit ObjectId, and also possibly useful to set a ContextObj if we
+    # are currently lacking one.  It is not strictly necessary if we
+    # have a context object and were passed a numeric ObjectId, but it
+    # cannot hurt to verify its sanity.  Skip if we have a false
+    # ObjectId, which means "global", or if we lack an ObjectType
+    if ($args{ObjectId} and $args{ObjectType}) {
+        my ($obj, $ok, $msg);
+        eval {
+            $obj = $args{ObjectType}->new( $self->CurrentUser );
+            ($ok, $msg) = $obj->Load( $args{ObjectId} );
+        };
 
-        if ( $ret ){
-            $args{'Queue'} = $QueueObj->Id;
-            $self->SetContextObject( $QueueObj )
+        if ($ok) {
+            $args{ObjectId} = $obj->id;
+            $self->SetContextObject( $obj )
                 unless $self->ContextObject;
-        }
-        else {
-            RT::Logger->warning("Unable to load queue with id " . $args{'Queue'});
+        } else {
+            $RT::Logger->warning("Failed to load $args{ObjectType} '$args{ObjectId}'");
             # Since we don't also include global results, there's no
             # point in searching; abort
             return wantarray ? (0, $self->loc("Not found")) : 0;
         }
+    } elsif (not $args{ObjectType} and $args{ObjectId}) {
+        # If we skipped out on the above due to lack of ObjectType, make
+        # sure we clear out ObjectId of anything lingering
+        $RT::Logger->warning("No LookupType or ObjectType passed; ignoring ObjectId");
+        delete $args{ObjectId};
     }
-
-    # XXX - really naive implementation.  Slow. - not really. still just one query
 
     my $CFs = RT::CustomFields->new( $self->CurrentUser );
     $CFs->SetContextObject( $self->ContextObject );
@@ -463,16 +491,21 @@ sub LoadByName {
             ($self->ContextObject, $self->ContextObject->ACLEquivalenceObjects) ]
         if $self->ContextObject;
 
+    # Apply LookupType limits
     $args{LookupType} = [ $args{LookupType} ]
         if $args{LookupType} and not ref($args{LookupType});
     $CFs->Limit( FIELD => "LookupType", OPERATOR => "IN", VALUE => $args{LookupType} )
         if $args{LookupType};
 
-    # Don't limit to queue if queue is 0.  Trying to do so breaks
-    # RT::Group type CFs.
-    if ( defined $args{'Queue'} ) {
-        # don't use LimitToQueue because it forces a LookupType
-        $CFs->Limit ( ALIAS => $CFs->_OCFAlias, FIELD => 'ObjectId', VALUE => $args{'Queue'} );
+    # Limit to the specified object.  For backwards compatibility, we
+    # limit even for ObjectId 0, forcing callers to try loading twice to
+    # find Queue-specific and then Global CFs.
+    if (defined $args{ObjectId}) {
+        $CFs->Limit(
+            ALIAS => $CFs->_OCFAlias,
+            FIELD => 'ObjectId',
+            VALUE => $args{ObjectId},
+        );
     }
 
     # When loading by name, we _can_ load disabled fields, but prefer
