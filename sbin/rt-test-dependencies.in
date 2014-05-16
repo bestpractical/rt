@@ -206,7 +206,7 @@ Digest::base
 Digest::MD5 2.27
 Digest::SHA
 Email::Address 1.897
-Email::Address::List
+Email::Address::List 0.02
 Encode 2.39
 Errno
 File::Glob
