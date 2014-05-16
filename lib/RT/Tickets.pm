@@ -2189,7 +2189,7 @@ sub LimitCustomField {
         $CF->Load( $args{CUSTOMFIELD} );
     }
     else {
-        $CF->LoadByNameAndQueue(
+        $CF->LoadByName(
             Name  => $args{CUSTOMFIELD},
             Queue => $args{QUEUE}
         );

@@ -2975,8 +2975,8 @@ sub LoadCustomFieldByIdentifier {
 
     my $cf = RT::CustomField->new( $self->CurrentUser );
     $cf->SetContextObject( $self );
-    $cf->LoadByNameAndQueue( Name => $field, Queue => $self->Queue );
-    $cf->LoadByNameAndQueue( Name => $field, Queue => 0 ) unless $cf->id;
+    $cf->LoadByName( Name => $field, Queue => $self->Queue );
+    $cf->LoadByName( Name => $field, Queue => 0 ) unless $cf->id;
     return $cf;
 }
 

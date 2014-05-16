@@ -425,6 +425,12 @@ If multiple custom fields match the above constraints, the first
 according to C<SortOrder> will be returned; ties are broken by C<id>,
 lowest-first.
 
+=head2 LoadNameAndQueue
+
+=head2 LoadByNameAndQueue
+
+Deprecated alternate names for L</LoadByName>.
+
 =cut
 
 # Compatibility for API change after 3.0 beta 1

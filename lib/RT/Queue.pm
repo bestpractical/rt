@@ -449,7 +449,7 @@ sub CustomField {
     my $self = shift;
     my $name = shift;
     my $cf = RT::CustomField->new($self->CurrentUser);
-    $cf->LoadByNameAndQueue(Name => $name, Queue => $self->Id); 
+    $cf->LoadByName(Name => $name, Queue => $self->Id);
     return ($cf);
 }
 
