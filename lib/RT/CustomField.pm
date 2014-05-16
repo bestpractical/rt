@@ -414,6 +414,13 @@ sub LoadByName {
         return wantarray ? (0, $self->loc("No name provided")) : 0;
     }
 
+    if ( defined $args{'Queue'} ) {
+        # Set a LookupType for backcompat, otherwise we'll calculate
+        # one of RT::Queue from your ContextObj.  Older code was relying
+        # on us defaulting to RT::Queue-RT::Ticket in old LimitToQueue call.
+        $args{LookupType} ||= 'RT::Queue-RT::Ticket';
+    }
+
     # Resolve the Queue; this is necessary to properly limit ObjectId,
     # and also possibly useful to set a ContextObj if we are currently
     # lacking one.  It is not strictly necessary if we have a context
@@ -439,12 +446,6 @@ sub LoadByName {
             # point in searching; abort
             return wantarray ? (0, $self->loc("Not found")) : 0;
         }
-    }
-    if ( defined $args{'Queue'} ) {
-        # Set a LookupType for backcompat, otherwise we'll calculate
-        # one of RT::Queue from your ContextObj.  Older code was relying
-        # on us defaulting to RT::Queue-RT::Ticket in old LimitToQueue call.
-        $args{LookupType} ||= 'RT::Queue-RT::Ticket';
     }
 
     # XXX - really naive implementation.  Slow. - not really. still just one query
