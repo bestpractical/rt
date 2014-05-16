@@ -1462,7 +1462,8 @@ sub test_app {
     }
 
     require Plack::Middleware::Test::StashWarnings;
-    my $stashwarnings = Plack::Middleware::Test::StashWarnings->new;
+    my $stashwarnings = Plack::Middleware::Test::StashWarnings->new(
+        $ENV{'RT_TEST_WEB_HANDLER'} && $ENV{'RT_TEST_WEB_HANDLER'} eq 'inline' ? ( verbose => 0 ) : () );
     $app = $stashwarnings->wrap($app);
 
     if ($server_opt{basic_auth}) {
