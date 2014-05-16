@@ -416,11 +416,11 @@ sub LoadByName {
 
     # Resolve the Queue; this is necessary to properly limit ObjectId,
     # and also possibly useful to set a ContextObj if we are currently
-    # lacking one.  It is unnecessary if we have a context object and
-    # were passed a numeric Queue.  Also skip if we have a false
-    # Queue, which means "global" (0) or "not a queue" (undef)
-    if ( $args{Queue}
-         && ($args{'Queue'} =~ /\D/ || !$self->ContextObject) ) {
+    # lacking one.  It is not strictly necessary if we have a context
+    # object and were passed a numeric Queue, but it cannot hurt to
+    # verify its sanity.  Skip if we have a false Queue, which means
+    # "global" (0) or "not a queue" (undef)
+    if ($args{Queue}) {
         my $QueueObj = RT::Queue->new( $self->CurrentUser );
         my ($ret, $msg) = $QueueObj->Load( $args{'Queue'} );
 
