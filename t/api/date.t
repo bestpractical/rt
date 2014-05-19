@@ -260,6 +260,17 @@ warning_like
         is($date->Unix, 0, "unix is 0 => unset");
         is($date->IsSet,0,"Date has been unset");
     }
+
+    foreach (undef, 0, '', -5){
+        $date->Unix(1);
+        is($date->ISO, '1970-01-01 00:00:01', "correct value");
+        is($date->IsSet,1,"Date has been set to a value");
+
+        $date->Unix($_);
+        is($date->ISO, '1970-01-01 00:00:00', "Set a date to midnight 1/1/1970 GMT due to wrong call");
+        is($date->Unix, 0, "unix is 0 => unset");
+        is($date->IsSet,0,"Date has been unset");
+    }
 }
 
 my $year = (localtime(time))[5] + 1900;

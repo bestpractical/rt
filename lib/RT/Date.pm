@@ -556,9 +556,9 @@ Returns the number of seconds since the epoch
 
 sub Unix {
     my $self = shift; 
-    my $time = shift;
 
-    if (defined $time) {
+    if (@_) {
+        my $time = int(shift || 0);
         if ($time < 0) {
             RT->Logger->notice("Passed a unix time less than 0, forcing to 0: [$time]");
             $time = 0;
