@@ -115,17 +115,11 @@ Set($Timezone, "US/Eastern");
 
 =item C<@Plugins>
 
-Set C<@Plugins> to a list of external RT plugins that should be
-enabled (those plugins have to be previously downloaded and
-installed).
+Once a plugin has been downloaded and installed, use C<Plugin()> to add
+to the enabled C<@Plugins> list:
 
-Example:
-
-C<Set(@Plugins, (qw(RT::Extension::SLA RT::Authen::ExternalAuth)));>
-
-=cut
-
-Set(@Plugins, ());
+    Plugin( "RT::Extension::SLA" );
+    Plugin( "RT::Authen::ExternalAuth" );
 
 =item C<@StaticRoots>
 
