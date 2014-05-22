@@ -121,7 +121,7 @@ installed).
 
 Example:
 
-C<Set(@Plugins, (qw(Extension::QuickDelete RT::Extension::CommandByMail)));>
+C<Set(@Plugins, (qw(RT::Extension::CommandByMail)));>
 
 =cut
 
