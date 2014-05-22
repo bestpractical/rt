@@ -312,7 +312,7 @@ my $build_admin_menu = sub {
             }
         }
     }
-    if ( $request_path =~ m{^(/Admin/Users|/User/(Summary|History)\.html)} and $admin->child("users") ) {
+    if ( $request_path =~ m{^(/Admin/Users|/User/(Summary|History)\.html|/Prefs/Other\.html)} and $admin->child("users") ) {
         if ( $DECODED_ARGS->{'id'} && $DECODED_ARGS->{'id'} =~ /^\d+$/ ) {
             my $id = $DECODED_ARGS->{'id'};
             my $obj = RT::User->new( $session{'CurrentUser'} );
@@ -332,6 +332,7 @@ my $build_admin_menu = sub {
                     $tabs->child( keys    => title => loc('Private keys'),   path => "/Admin/Users/Keys.html?id=" . $id );
                 }
                 $tabs->child( 'summary'   => title => loc('User Summary'),   path => "/User/Summary.html?id=" . $id );
+                $tabs->child( 'preferences' => title => loc('User Preferences'),   path => "/Prefs/Other.html?id=" . $id );
             }
         }
 
