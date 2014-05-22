@@ -121,6 +121,10 @@ to the enabled C<@Plugins> list:
     Plugin( "RT::Extension::SLA" );
     Plugin( "RT::Authen::ExternalAuth" );
 
+=cut
+
+Set(@Plugins, ());
+
 =item C<@StaticRoots>
 
 Set C<@StaticRoots> to serve extra paths with a static handler.  The
