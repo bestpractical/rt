@@ -1,7 +1,7 @@
 
 use strict;
 use warnings;
-use RT::Test tests => 74;
+use RT::Test;
 
 my $queue = RT::Test->load_or_create_queue( Name => 'General' );
 ok $queue && $queue->id, 'loaded or created queue';
@@ -188,6 +188,10 @@ note 'check applications vs. templates';
     ($status, $msg) = $scrip->AddToObject( $queue_B->id );
     ok(!$status, $msg);
     RT::Test->object_scrips_are($scrip, [$queue], [0, $queue_B]);
+    my $obj_scrip = RT::ObjectScrip->new( RT->SystemUser );
+    ok($obj_scrip->LoadByCols( Scrip => $scrip->id, ObjectId => $queue->id ));
+    is($obj_scrip->Stage, 'TransactionCreate');
+    is($obj_scrip->FriendlyStage, 'Normal');
 
     $template = RT::Template->new( RT->SystemUser );
     ($status, $msg) = $template->Create( Queue => $queue_B->id, Name => 'foo' );
@@ -251,4 +255,12 @@ note 'basic check for disabling scrips';
         ok($tid, "created ticket") or diag "error: $msg";
         isnt ($ticket->Priority , '87', "Ticket priority is set right");
     }
+
+    is($scrip->FriendlyStage('TransactionCreate'), 'Normal',
+        'Correct stage wording for TransactionCreate');
+    is($scrip->FriendlyStage('TransactionBatch'), 'Batch',
+        'Correct stage wording for TransactionBatch');
+    RT->Config->Set('UseTransactionBatch', 0);
+    is($scrip->FriendlyStage('TransactionBatch'), 'Batch (disabled by config)',
+        'Correct stage wording for TransactionBatch with UseTransactionBatch disabled');
 }
