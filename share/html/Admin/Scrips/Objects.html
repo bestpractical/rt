@@ -51,6 +51,7 @@
 
 <form action="Objects.html" method="post" name="AddRemoveScrip">
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
+<input type="hidden" class="hidden" name="From" value="<% $From || q{} %>" />
 
 % if ( $global ) {
 <h2><&|/l&>Applies to all objects</&></h2>
@@ -120,6 +121,7 @@ $id => undef
 $Stage => undef
 $Template => ''
 $Update => 0
+$From   => undef
 </%ARGS>
 <%INIT>
 my $scrip = RT::Scrip->new( $session{'CurrentUser'} );
@@ -152,7 +154,10 @@ if ( $Update ) {
     }
     MaybeRedirectForResults(
         Actions   => \@results,
-        Arguments => { id => $id },
+        Arguments => {
+            id => $id,
+            From => $From,
+        },
     );
 }
 

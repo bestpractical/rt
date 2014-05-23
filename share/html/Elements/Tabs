@@ -119,7 +119,7 @@ my $build_admin_menu = sub {
         path        => '/Admin/Global/Scrips.html',
     );
     $scrips->child( select => title => loc('Select'), path => "/Admin/Global/Scrips.html" );
-    $scrips->child( create => title => loc('Create'), path => "/Admin/Scrips/Create.html" );
+    $scrips->child( create => title => loc('Create'), path => "/Admin/Scrips/Create.html?Global=1" );
 
     my $templates = $admin_global->child( templates =>
         title       => loc('Templates'),
@@ -380,8 +380,30 @@ my $build_admin_menu = sub {
             $obj->Load($id);
 
             my $tabs = PageMenu();
-            $tabs->child( basics => title => loc('Basics') => path => "/Admin/Scrips/Modify.html?id=".$id );
-            $tabs->child( 'applies-to' => title => loc('Applies to'), path => "/Admin/Scrips/Objects.html?id=" . $id );
+
+            my ( $admin_cat, $create_path_arg, $from_query_param );
+            my $from_arg = $DECODED_ARGS->{'From'} || q{};
+            my ($from_queue) = $from_arg =~ /^(\d+)$/;
+            if ( $from_queue ) {
+                $admin_cat = "Queues/Scrips.html?id=$from_queue";
+                $create_path_arg = "?Queue=$from_queue";
+                $from_query_param = "&From=$from_queue";
+            }
+            elsif ( $from_arg eq 'Global' ) {
+                $admin_cat = 'Global/Scrips.html';
+                $create_path_arg = '?Global=1';
+                $from_query_param = '&From=Global';
+            }
+            else {
+                $admin_cat = 'Scrips';
+                $from_query_param = $create_path_arg = q{};
+            }
+            my $scrips = $tabs->child( scrips => title => loc('Scrips'), path => "/Admin/${admin_cat}" );
+            $scrips->child( select => title => loc('Select'), path => "/Admin/${admin_cat}" );
+            $scrips->child( create => title => loc('Create'), path => "/Admin/Scrips/Create.html${create_path_arg}" );
+
+            $tabs->child( basics => title => loc('Basics') => path => "/Admin/Scrips/Modify.html?id=" . $id . $from_query_param );
+            $tabs->child( 'applies-to' => title => loc('Applies to'), path => "/Admin/Scrips/Objects.html?id=" . $id . $from_query_param );
         }
         elsif ( $request_path =~ m{^/Admin/Scrips/(index\.html)?$} ) {
             PageMenu->child( select => title => loc('Select') => path => "/Admin/Scrips/" );
@@ -389,11 +411,15 @@ my $build_admin_menu = sub {
         }
         elsif ( $request_path =~ m{^/Admin/Scrips/Create\.html$} ) {
             my ($queue) = $DECODED_ARGS->{'Queue'} && $DECODED_ARGS->{'Queue'} =~ /^(\d+)$/;
+            my $global_arg = $DECODED_ARGS->{'Global'};
             if ($queue) {
                 PageMenu->child( select => title => loc('Select') => path => "/Admin/Queues/Scrips.html?id=$queue" );
                 PageMenu->child( create => title => loc('Create') => path => "/Admin/Scrips/Create.html?Queue=$queue" );
-            } else {
+            } elsif ($global_arg) {
                 PageMenu->child( select => title => loc('Select') => path => "/Admin/Global/Scrips.html" );
+                PageMenu->child( create => title => loc('Create') => path => "/Admin/Scrips/Create.html?Global=1" );
+            } else {
+                PageMenu->child( select => title => loc('Select') => path => "/Admin/Scrips" );
                 PageMenu->child( create => title => loc('Create') => path => "/Admin/Scrips/Create.html" );
             }
         }
@@ -402,7 +428,7 @@ my $build_admin_menu = sub {
     if ( $request_path =~ m{^/Admin/Global/Scrips\.html} ) {
         my $tabs = PageMenu();
         $tabs->child( select => title => loc('Select'), path => "/Admin/Global/Scrips.html" );
-        $tabs->child( create => title => loc('Create'), path => "/Admin/Scrips/Create.html" );
+        $tabs->child( create => title => loc('Create'), path => "/Admin/Scrips/Create.html?Global=1" );
     }
 
     if ( $request_path =~ m{^/Admin/Global/Templates?\.html} ) {
