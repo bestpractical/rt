@@ -115,10 +115,10 @@ sub LimitToObject {
 }
 
 
-=head2 HasEntry VALUE
+=head2 HasEntry CONTENT LARGE_CONTENT
 
-If this collection has an entry with content that eq VALUE then
-returns the entry, otherwise returns undef.
+If this collection has an entry with content that eq CONTENT and large content
+that eq LARGE_CONTENT then returns the entry, otherwise returns undef.
 
 =cut
 
@@ -126,11 +126,41 @@ returns the entry, otherwise returns undef.
 sub HasEntry {
     my $self = shift;
     my $value = shift;
+    my $large_content = shift;
     return undef unless defined $value && length $value;
 
+    my %canon_value;
     #TODO: this could cache and optimize a fair bit.
     foreach my $item ( @{$self->ItemsArrayRef} ) {
-        return $item if lc $item->Content eq lc $value;
+        my $cf = $item->CustomFieldObj;
+        my $args = $canon_value{ $cf->Type };
+        if ( !$args ) {
+            $args = { Content => $value, LargeContent => $large_content };
+            if ( my $canonicalizer =
+                $cf->can( '_CanonicalizeValue' . $cf->Type ) )
+            {
+                $canonicalizer->( $cf, $args );
+            }
+
+            $canon_value{ $cf->Type } = $args;
+        }
+
+        if ( $cf->Type eq 'Select' ) {
+            # select is case insensitive
+            return $item if lc $item->Content eq lc $args->{Content};
+        }
+        else {
+            if ( $item->Content eq $args->{Content} ) {
+                if ( defined $item->LargeContent ) {
+                    return $item
+                      if defined $args->{LargeContent}
+                      && $item->LargeContent eq $args->{LargeContent};
+                }
+                else {
+                    return $item unless defined $args->{LargeContent};
+                }
+            }
+        }
     }
     return undef;
 }

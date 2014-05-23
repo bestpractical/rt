@@ -375,24 +375,14 @@ unless ( $ARGS{'AddMoreAttach'} ) {
 
                 foreach my $value (@values) {
 
-                    # Convert for timezone. Without converstion,
-                    # HasEntry and DeleteCustomFieldValue fail because
-                    # the value in the DB is converted.
-                    if ( $op eq 'del'
-                         && ($cf->Type eq 'DateTime' || $cf->Type eq 'Date') ){
-                        my $DateObj = RT::Date->new( $session{'CurrentUser'} );
-                        $DateObj->Set( Format => 'unknown',
-                                       Value  => $value );
-                        $value = $cf->Type eq 'DateTime' ? $DateObj->ISO
-                            : $DateObj->ISO(Time => 0, Seconds => 0);
-                    }
-
-                    if ( $op eq 'del' && $current_values->HasEntry($value) ) {
-                        my ( $id, $msg ) = $Ticket->DeleteCustomFieldValue(
-                            Field => $cfid,
-                            Value => $value
-                        );
-                        push @cfresults, $msg;
+                    if ( $op eq 'del' ) {
+                        if ( my $entry = $current_values->HasEntry($value) ) {
+                            my ( $id, $msg ) = $Ticket->DeleteCustomFieldValue(
+                                Field => $cfid,
+                                ValueId => $entry->id,
+                            );
+                            push @cfresults, $msg;
+                        }
                     }
 
                     elsif ( $op eq 'add' && !$current_values->HasEntry($value) ) {

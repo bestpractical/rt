@@ -1743,30 +1743,13 @@ sub _AddCustomFieldValue {
             $values->RedoSearch if $i; # redo search if have deleted at least one value
         }
 
-        my ( $old_value, $old_content );
-        if ( $old_value = $values->First ) {
-            $old_content = $old_value->Content;
-            $old_content = undef if defined $old_content && !length $old_content;
-
-            my $is_the_same = 1;
-            if ( defined $args{'Value'} ) {
-                $is_the_same = 0 unless defined $old_content
-                    && $old_content eq $args{'Value'};
-            } else {
-                $is_the_same = 0 if defined $old_content;
-            }
-            if ( $is_the_same ) {
-                my $old_content = $old_value->LargeContent;
-                if ( defined $args{'LargeContent'} ) {
-                    $is_the_same = 0 unless defined $old_content
-                        && $old_content eq $args{'LargeContent'};
-                } else {
-                    $is_the_same = 0 if defined $old_content;
-                }
-            }
-
-            return $old_value->id if $is_the_same;
+        if ( my $entry = $values->HasEntry($args{'Value'}, $args{'LargeContent'}) ) {
+            return $entry->id;
         }
+
+        my $old_value = $values->First;
+        my $old_content;
+        $old_content = $old_value->Content if $old_value;
 
         my ( $new_value_id, $value_msg ) = $cf->AddValueForObject(
             Object       => $self,
@@ -1834,6 +1817,13 @@ sub _AddCustomFieldValue {
 
     # otherwise, just add a new value and record "new value added"
     else {
+        if ( !$cf->Repeated ) {
+            my $values = $cf->ValuesForObject($self);
+            if ( my $entry = $values->HasEntry($args{'Value'}, $args{'LargeContent'}) ) {
+                return $entry->id;
+            }
+        }
+
         my ($new_value_id, $msg) = $cf->AddValueForObject(
             Object       => $self,
             Content      => $args{'Value'},
