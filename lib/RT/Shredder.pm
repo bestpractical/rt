@@ -226,11 +226,9 @@ BEGIN {
 
     require RT;
 
-    require RT::Shredder::ACE;
     require RT::Shredder::Attachment;
     require RT::Shredder::CachedGroupMember;
     require RT::Shredder::CustomField;
-    require RT::Shredder::CustomFieldValue;
     require RT::Shredder::GroupMember;
     require RT::Shredder::Group;
     require RT::Shredder::Link;
@@ -240,7 +238,6 @@ BEGIN {
     require RT::Shredder::ScripAction;
     require RT::Shredder::ScripCondition;
     require RT::Shredder::Template;
-    require RT::Shredder::ObjectCustomFieldValue;
     require RT::Shredder::Ticket;
     require RT::Shredder::Transaction;
     require RT::Shredder::User;
