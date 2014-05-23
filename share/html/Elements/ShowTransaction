@@ -144,7 +144,6 @@ if ( $ShowBody && !$Attachments ) {
 }
 
 my @actions = ();
-if ( $ShowActions ) {
     my $txn_type = $Transaction->Type;
     if ( $txn_type =~ /EmailRecord$/ ) {
         push @actions, {
@@ -160,7 +159,7 @@ if ( $ShowActions ) {
     }
 
     # If the transaction has anything attached to it at all
-    elsif ( %$Attachments ) {
+    elsif ( %$Attachments && $ShowActions ) {
         my %has_right = map {
             $_ => RT::ACE->CanonicalizeRightName( $_ . $record_type )
         } qw(Modify CommentOn ReplyTo);
@@ -225,7 +224,6 @@ if ( $ShowActions ) {
             };
         }
     }
-}
 
 $m->callback(
     %ARGS,
