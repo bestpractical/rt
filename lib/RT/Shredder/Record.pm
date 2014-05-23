@@ -56,14 +56,6 @@ use warnings FATAL => 'redefine';
 use RT::Shredder::Constants;
 use RT::Shredder::Exceptions;
 
-=head2 _AsString
-
-Returns string in format ClassName-ObjectId.
-
-=cut
-
-sub _AsString { return ref($_[0]) ."-". $_[0]->id }
-
 =head2 _AsInsertQuery
 
 Returns INSERT query string that duplicates current record and
@@ -173,7 +165,7 @@ sub __DependsOn
 sub __Wipeout
 {
     my $self = shift;
-    my $msg = $self->_AsString ." wiped out";
+    my $msg = $self->UID ." wiped out";
     $self->SUPER::Delete;
     $RT::Logger->info( $msg );
     return;

@@ -80,9 +80,9 @@ sub Set
 sub AsString
 {
     my $self = shift;
-    my $res = $self->BaseObject->_AsString;
+    my $res = $self->BaseObject->UID;
     $res .= " ". $self->FlagsAsString;
-    $res .= " ". $self->TargetObject->_AsString;
+    $res .= " ". $self->TargetObject->UID;
     return $res;
 }
 

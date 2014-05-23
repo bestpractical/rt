@@ -48,12 +48,12 @@
 <%ARGS>
 $Object => undef
 </%ARGS>
-<input type="checkbox" name="WipeoutObject" value="<% $Object->_AsString %>" />
+<input type="checkbox" name="WipeoutObject" value="<% $Object->UID %>" />
 <span>
 % if( $m->comp_exists( $path ) ) {
 % $m->comp( $path, Object => $Object );
 % } else {
-<% $Object->_AsString %>
+<% $Object->UID %>
 % }
 </span><br />
 <%ONCE>

@@ -367,7 +367,14 @@ sub CastObjectsToRecords
         }
     } elsif ( UNIVERSAL::isa( $targets, 'SCALAR' ) || !ref $targets ) {
         $targets = $$targets if ref $targets;
-        my ($class, $id) = split /-/, $targets;
+        my ($class, $org, $id);
+        if ($targets =~ /-.*-/) {
+            ($class, $org, $id) = split /-/, $targets;
+            RT::Shredder::Exception->throw( "Can't wipeout remote object $targets" )
+                  unless $org eq RT->Config->Get('Organization');
+        } else {
+            ($class, $id) = split /-/, $targets;
+        }
         RT::Shredder::Exception->throw( "Unsupported class $class" )
               unless $class =~ /^\w+(::\w+)*$/;
         $class = 'RT::'. $class unless $class =~ /^RTx?::/i;
@@ -433,7 +440,7 @@ sub PutObject
         RT::Shredder::Exception->throw( "Unsupported type '". (ref $obj || $obj || '(undef)')."'" );
     }
 
-    my $str = $obj->_AsString;
+    my $str = $obj->UID;
     return ($self->{'cache'}->{ $str } ||= {
         State  => RT::Shredder::Constants::ON_STACK,
         Object => $obj
@@ -465,7 +472,7 @@ sub _ParseRefStrArgs
         Carp::croak( "both String and Object args passed" );
     }
     return $args{'String'} if $args{'String'};
-    return $args{'Object'}->_AsString if UNIVERSAL::can($args{'Object'}, '_AsString' );
+    return $args{'Object'}->UID if UNIVERSAL::can($args{'Object'}, 'UID' );
     return '';
 }
 
