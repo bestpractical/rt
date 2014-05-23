@@ -15,7 +15,7 @@ our @Initial = (sub {
         # Switch from "CreatedMonthly" to "Created.Monthly"
         $content->{GroupBy} ||= [delete $content->{PrimaryGroupBy}];
         for (@{$content->{GroupBy}}) {
-            next if /\./;
+            next if !defined || /\./;
             s/(?<=[a-z])(?=[A-Z])/./;
         }
 
