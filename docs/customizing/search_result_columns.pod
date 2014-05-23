@@ -1,0 +1,180 @@
+=head1 RT Search Results
+
+Ticket search results in RT are presented as a table with multiple heading
+rows, one for each element of ticket metadata you have selected. Each
+row in the table represents one ticket and the appropriate metadata is
+displayed in each column. You can see similar listings when you search
+for other objects in RT like users, queues, templates, etc.
+
+For tickets, the Query Builder allows you to modify the column layout using
+the Sorting and Display Columns sections at the bottom of the page. With
+them you can add and remove data elements to sort by, change the sort order,
+and add and remove which columns you want to see.
+
+Although the Add Columns box has an extensive list of available columns, there
+are times when you need a value not listed. Sometimes what you want is a
+value calculated based on existing ticket values, like finding the difference
+between two date fields. RT provides a way to add this sort of customization
+using something called a Column Map.
+
+=head2 Level of Difficulty
+
+The customizations described in this section require administrative access
+to the RT server and the RT filesystem, typically root or sudo level access.
+The customizations involve adding new code to RT, which is written in the
+L<Perl|http://www.perl.org/> programming language and uses the
+L<Mason|http://www.masonbook.com/> templating system. If you follow the example
+closely, you should be able to set up simple column maps with a basic
+understanding of these. For more complicated configurations, you may need
+to do more research to understand the Perl and Mason syntax.
+
+=head2 Column Maps
+
+Each column in a ticket listing gets run through a bit of code called a
+Column Map that allows you to perform transformations on the value before
+it is displayed. In some cases, the value is just passed through. In others,
+like DueRelative, a date is transformed to a relative time like "2 days ago."
+You can tap into this functionality to add your own transformations or even
+generate completely new values.
+
+To add to the existing Column Maps, you can use RT's callback
+mechanism. This allows you to add code to RT without modifying the core files,
+making upgrades much easier. As an example, we'll add a Column Map to the
+ticket display and explain the necessary callbacks. You can read more about
+callbacks in general in the L<writing_extensions/Callbacks> documentation.
+
+For our example, let's assume we want to display a response time column that
+shows the difference between when a ticket is created and when someone
+starts working on it (started date). The two initial values are already
+available on the ticket, but it would be convenient to display the
+calculated value in our search.
+
+=head2 Column Map Callback
+
+First we need to determine where to put our callback. RT's core Column Map code
+for tickets is here:
+
+    share/html/Elements/RT__Ticket/ColumnMap
+
+We'll look there first, both to see some sample Column Maps and also to look
+for an appropriate callback to use to add our own. Looking in that file,
+we see C<$COLUMN_MAP>, which is a large hashref with entries for each of the
+items you see in the Add Columns section of the Query Builder. That's where
+we need to add our new Column Map.
+
+Looking in the C<init> section, we find a callback with a C<CallbackName>
+"Once" and it passes the C<$COLUMN_MAP> reference as an argument, so that's
+the callback we need.
+
+Following the callback documentation, we determine we can put our callback
+here:
+
+    local/html/Callbacks/MyRT/Elements/RT__Ticket/ColumnMap/Once
+
+where F<Once> is the name of the file where we'll put our code.
+
+In the F<Once> file, we'll put the following code:
+
+    <%init>
+    $COLUMN_MAP->{'TimeToFirstResponse'} = {
+            title     => 'First Response', # loc
+            attribute => 'First Response',
+            value     => sub {
+                my $ticket = shift;
+                return $ticket->StartedObj->DiffAsString($ticket->CreatedObj);
+            }
+    };
+    </%init>
+    <%args>
+    $COLUMN_MAP
+    </%args>
+
+Starting with the C<args> section, the value we're interested in is
+the C<$COLUMN_MAP> hash reference. Since it's a reference, it's pointing
+to the actual data structure constructed in the core RT code. This means
+we can add more entries and RT will have access to them.
+
+=head2 Column Map Parameters
+
+As you can see in the examples in the core F<ColumnMap> file, each entry
+has a key and a hashref with several other parameters. The key needs to be a
+unique value. If you using an existing value, you'll overwrite the original
+values.
+
+The parameters in the hashref are as follows:
+
+=over
+
+=item title
+
+The title is what will be used in the header row to identify this value.
+The C<# loc> is some special markup that allows RT to replace the value
+with translations in other languages, if they are available.
+
+=item attribute
+
+This defines the value you can use to reference your new column map
+from an RT Format configuration. You can edit formats in the Query
+Builder's Advanced section. If you're not familiar with formats, it's
+usually safe to set the attribute to the same value as C<title>. It should
+be descriptive and unique.
+
+=item value
+
+This is where you can put code to transform or calculate the value that
+will be displayed. This sets the value you see in the search results
+for this column.
+
+=back
+
+=cut
+
+Each of these can be a value like a simple string or an anonymous
+subroutine with code that runs to calculate the value.
+
+If you write a subroutine, as we do for C<value> in our example, RT will
+pass the current object as the first parameter to the sub. Since
+we're creating a column map for tickets, as RT processes the ticket for
+each row in the search results, the ticket object for that ticket is made
+available as the first parameter to our subroutine.
+
+This allows us to then call methods on the L<RT::Ticket> object to access
+and process the value. In our case, we can get the L<RT::Date> objects for
+the two dates and use the L<RT::Date/DiffAsString> method to calculate and
+return the difference.
+
+When writing code to calculate values, remember that it will be run for each
+row in search results. You should avoid doing things that are too time
+intensive in that code, like calling a web service to fetch a value.
+
+=head2 Adding to Display Columns
+
+Now that we have our column map created, there is one more callback to add
+to make it available for all of our users in the Add Columns section in
+the Query Builder. This file builds the list of fields available:
+
+    share/html/Search/Elements/BuildFormatString
+
+Looking there, we see the default callback (the callback without an
+explicit C<CallbackName>) passes the C<@fields> array, so that will work.
+Create the file:
+
+    local/html/Callbacks/MyRT/Search/Elements/BuildFormatString/Default
+
+And put the following code in the F<Default> file:
+
+    <%INIT>
+    push @{$Fields}, 'TimeToFirstResponse';
+    </%INIT>
+    <%ARGS>
+    $Fields => undef
+    </%ARGS>
+
+This puts the hash key we chose for our column map in the fields list so it
+will be available in the list of available fields.
+
+=head2 Last Steps
+
+Once you have the code in place, stop the RT web server, clear the Mason
+cache, and restart the server. Watch the RT logs for any errors, and
+navigate to the Query Build to use your new column map.
