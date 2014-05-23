@@ -604,7 +604,7 @@ sub _LimitCustomField {
         } elsif ( $type =~ /^Date(?:Time)?$/ ) {
             my $date = RT::Date->new( $self->CurrentUser );
             $date->Set( Format => 'unknown', Value => $value );
-            if ( $date->Unix ) {
+            if ( $date->IsSet ) {
                 if (
                        $type eq 'Date'
                            # Heuristics to determine if a date, and not

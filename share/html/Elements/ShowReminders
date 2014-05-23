@@ -57,7 +57,7 @@ my $i =0;
 while ( my $reminder = $reminders->Next ) {
 $i++;
 my $dueobj = $reminder->DueObj;
-my $overdue = $dueobj->Unix > 0 && $dueobj->Diff < 0 ? 1 : 0;
+my $overdue = $dueobj->IsSet && $dueobj->Diff < 0 ? 1 : 0;
 
 my $targets = RT::Tickets->new($session{'CurrentUser'});
 $targets->{'allow_deleted_search'} = 1;

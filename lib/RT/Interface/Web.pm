@@ -2968,7 +2968,7 @@ sub ProcessTicketReminders {
                     Format => 'unknown',
                     Value  => $due,
                 );
-                if ( defined $DateObj->Unix
+                if ( $DateObj->IsSet
                     && $DateObj->Unix != $reminder->DueObj->Unix )
                 {
                     ( $status, $msg ) = $reminder->SetDue( $DateObj->ISO );
@@ -3429,7 +3429,7 @@ sub ProcessTicketDates {
         );
 
         my $obj = $field . "Obj";
-        if (    ( defined $DateObj->Unix )
+        if (    ( $DateObj->IsSet )
             and ( $DateObj->Unix != $Ticket->$obj()->Unix() ) )
         {
             my $method = "Set$field";

@@ -691,7 +691,7 @@ sub ParseLines {
             eval {
                 $dateobj->Set( Format => 'iso', Value => $args{$date} );
             };
-            if ($@ or $dateobj->Unix <= 0) {
+            if ($@ or not $dateobj->IsSet) {
                 $dateobj->Set( Format => 'unknown', Value => $args{$date} );
             }
         }

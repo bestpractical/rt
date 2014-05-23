@@ -463,7 +463,7 @@ sub AsString {
     my $self = shift;
     my %args = (@_);
 
-    return $self->loc("Not set") unless $self->Unix > 0;
+    return $self->loc("Not set") unless $self->IsSet;
 
     my $format = RT->Config->Get( 'DateTimeFormat', $self->CurrentUser ) || 'DefaultFormat';
     $format = { Format => $format } unless ref $format;
@@ -556,7 +556,15 @@ Returns the number of seconds since the epoch
 
 sub Unix {
     my $self = shift; 
-    $self->{'time'} = int(shift || 0) if @_;
+
+    if (@_) {
+        my $time = int(shift || 0);
+        if ($time < 0) {
+            RT->Logger->notice("Passed a unix time less than 0, forcing to 0: [$time]");
+            $time = 0;
+        }
+        $self->{'time'} = int $time;
+    }
     return $self->{'time'};
 }
 
@@ -1133,6 +1141,20 @@ sub Timezone {
     $tz ||= RT->Config->Get('Timezone') || 'UTC';
     $tz = 'UTC' if lc $tz eq 'gmt';
     return $tz;
+}
+
+=head3 IsSet
+
+Returns true if this Date is set in the database, otherwise returns a false value.
+
+This avoids needing to compare to 1970-01-01 in any of your code
+
+=cut
+
+sub IsSet {
+    my $self = shift;
+    return $self->Unix ? 1 : 0;
+
 }
 
 

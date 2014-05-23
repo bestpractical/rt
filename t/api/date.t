@@ -83,6 +83,7 @@ my $current_user;
 
 {
     my $date = RT::Date->new(RT->SystemUser);
+    is($date->IsSet,0, "new date isn't set");
     is($date->Unix, 0, "new date returns 0 in Unix format");
     is($date->Get, '1970-01-01 00:00:00', "default is ISO format");
     warning_like {
@@ -207,6 +208,7 @@ my $current_user;
     $current_user->UserObj->__Set( Field => 'Timezone', Value => 'Europe/Moscow');
     my $date = RT::Date->new( $current_user );
     $date->Set( Format => 'ISO', Timezone => 'utc', Value => '2005-01-01 15:10:00' );
+    is($date->IsSet,1,"Date has been set");
     is($date->ISO( Timezone => 'user' ), '2005-01-01 18:10:00', "ISO");
     is($date->W3CDTF( Timezone => 'user' ), '2005-01-01T18:10:00+03:00', "W3C DTF");
     is($date->RFC2822( Timezone => 'user' ), 'Sat, 01 Jan 2005 18:10:00 +0300', "RFC2822");
@@ -239,7 +241,7 @@ warning_like
 { # bad format
     my $date = RT::Date->new(RT->SystemUser);
     $date->Set( Format => 'bad' );
-    is($date->Unix, 0, "bad format");
+    ok(!$date->IsSet, "bad format");
 } qr{Unknown Date format: bad};
 
 
@@ -248,13 +250,26 @@ warning_like
     $date->Unix(1);
     is($date->ISO, '1970-01-01 00:00:01', "correct value");
 
-    foreach (undef, 0, ''){
+    foreach (undef, 0, '', -5){
         $date->Unix(1);
         is($date->ISO, '1970-01-01 00:00:01', "correct value");
+        is($date->IsSet,1,"Date has been set to a value");
 
         $date->Set(Format => 'unix', Value => $_);
         is($date->ISO, '1970-01-01 00:00:00', "Set a date to midnight 1/1/1970 GMT due to wrong call");
         is($date->Unix, 0, "unix is 0 => unset");
+        is($date->IsSet,0,"Date has been unset");
+    }
+
+    foreach (undef, 0, '', -5){
+        $date->Unix(1);
+        is($date->ISO, '1970-01-01 00:00:01', "correct value");
+        is($date->IsSet,1,"Date has been set to a value");
+
+        $date->Unix($_);
+        is($date->ISO, '1970-01-01 00:00:00', "Set a date to midnight 1/1/1970 GMT due to wrong call");
+        is($date->Unix, 0, "unix is 0 => unset");
+        is($date->IsSet,0,"Date has been unset");
     }
 }
 
@@ -265,7 +280,7 @@ my $year = (localtime(time))[5] + 1900;
     warning_like {
         $date->Set(Format => 'ISO', Value => 'weird date');
     } qr/Couldn't parse date 'weird date' as a ISO format/;
-    is($date->Unix, 0, "date was wrong => unix == 0");
+    ok(!$date->IsSet, "date was wrong => unix == 0");
 
     # XXX: ISO format has more feature than we suport
     # http://www.cl.cam.ac.uk/~mgk25/iso-time.html
@@ -297,15 +312,15 @@ my $year = (localtime(time))[5] + 1900;
     warning_like {
         $date->Set(Format => 'ISO', Value => '2005-13-28 15:10:00');
     } qr/Invalid date/;
-    is($date->Unix, 0, "wrong month value");
+    ok(!$date->IsSet, "wrong month value");
 
     warning_like {
         $date->Set(Format => 'ISO', Value => '2005-00-28 15:10:00');
     } qr/Invalid date/;
-    is($date->Unix, 0, "wrong month value");
+    ok(!$date->IsSet, "wrong month value");
 
     $date->Set(Format => 'ISO', Value => '1960-01-28 15:10:00');
-    is($date->Unix, 0, "too old, we don't support");
+    ok(!$date->IsSet, "too old, we don't support");
 }
 
 { # set+datemanip format(Time::ParseDate)
@@ -330,7 +345,7 @@ my $year = (localtime(time))[5] + 1900;
     warnings_like {
         $date->Set(Format => 'unknown', Value => 'weird date');
     } qr{Couldn't parse date 'weird date' by Time::ParseDate};
-    is($date->Unix, 0, "date was wrong");
+    ok(!$date->IsSet, "date was wrong");
 
     RT->Config->Set( Timezone => 'Europe/Moscow' );
     $date->Set(Format => 'unknown', Value => '2005-11-28 15:10:00');
@@ -582,13 +597,13 @@ my $year = (localtime(time))[5] + 1900;
     # set unknown format: edge cases
     my $date = RT::Date->new(RT->SystemUser);
     $date->Set( Value => 0, Format => 'unknown' );
-    is( $date->Unix(), 0, "unix is 0 with Value => 0, Format => 'unknown'" );
+    ok( !$date->IsSet, "unix is 0 with Value => 0, Format => 'unknown'" );
 
     $date->Set( Value => '', Format => 'unknown' );
-    is( $date->Unix(), 0, "unix is 0 with Value => '', Format => 'unknown'" );
+    ok( !$date->IsSet, "unix is 0 with Value => '', Format => 'unknown'" );
 
     $date->Set( Value => ' ', Format => 'unknown' );
-    is( $date->Unix(), 0, "unix is 0 with Value => ' ', Format => 'unknown'" );
+    ok( !$date->IsSet, "unix is 0 with Value => ' ', Format => 'unknown'" );
 }
 
 #TODO: AsString

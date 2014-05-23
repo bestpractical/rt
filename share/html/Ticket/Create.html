@@ -312,7 +312,7 @@ if ($CloneTicket) {
         Status TimeLeft/;
 
     $clone->{$_} = $CloneTicketObj->$_->AsString
-        for grep { $CloneTicketObj->$_->Unix }
+        for grep { $CloneTicketObj->$_->IsSet }
         map      { $_ . "Obj" } qw/Starts Started Due Resolved/;
 
     my $get_link_value = sub {

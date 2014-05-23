@@ -2376,7 +2376,7 @@ sub _SetStatus {
     if ( $args{SetStarted}
              && $args{Lifecycle}->IsInitial($old)
              && !$args{NewLifecycle}->IsInitial($args{Status})
-             && !$raw_started->Unix) {
+             && !$raw_started->IsSet) {
         # Set the Started time to "now"
         $self->_Set(
             Field             => 'Started',
