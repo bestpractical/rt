@@ -1,16 +1,10 @@
 use strict;
 use warnings;
 
-BEGIN {
-    require RT::Test;
+use RT::Test tests => undef;
 
-    if (eval { require GD; 1 }) {
-        RT::Test->import(tests => undef);
-    }
-    else {
-        RT::Test->import(skip_all => 'GD required.');
-    }
-}
+plan skip_all => 'GD required'
+    unless GD->require;
 
 for my $n (1..7) {
     my $ticket = RT::Ticket->new( RT->SystemUser );

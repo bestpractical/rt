@@ -196,8 +196,7 @@ sub estimate {
     for my $class (@types) {
         print "Estimating $class count...";
         my $collection = $class . "s";
-        eval "require $collection";
-        unless ($@) {
+        if ($collection->require) {
             my $objs = $collection->new( RT->SystemUser );
             $objs->FindAllRows;
             $objs->UnLimit;

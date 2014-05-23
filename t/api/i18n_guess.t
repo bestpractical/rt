@@ -6,8 +6,8 @@ use RT::Test tests => 16;
 
 use Encode qw(encode);
 
-use constant HAS_ENCODE_GUESS => do { local $@; eval { require Encode::Guess; 1 } };
-use constant HAS_ENCODE_DETECT => do { local $@; eval { require Encode::Detect::Detector; 1 } };
+use constant HAS_ENCODE_GUESS => Encode::Guess->require;
+use constant HAS_ENCODE_DETECT => Encode::Detect::Detector->require;
 
 my $string = "\x{442}\x{435}\x{441}\x{442} \x{43f}\x{43e}\x{434}\x{434}\x{435}\x{440}\x{436}\x{43a}\x{430}";
 

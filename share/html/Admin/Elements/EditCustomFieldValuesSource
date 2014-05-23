@@ -60,9 +60,7 @@ my @sources;
 foreach my $class( 'RT::CustomFieldValues', RT->Config->Get('CustomFieldValuesSources') ) {
     next unless $class;
 
-    local $@;
-    eval "require $class";
-    if( $@ ) {
+    unless ($class->require) {
         $RT::Logger->crit("Couldn't load class '$class': $@");
         next;
     }

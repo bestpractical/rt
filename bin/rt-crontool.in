@@ -287,8 +287,7 @@ sub get_template {
 
 sub load_module {
     my $modname = shift;
-    eval "require $modname";
-    if ($@) {
+    unless ($modname->require) {
         die loc( "Failed to load module [_1]. ([_2])", $modname, $@ );
     }
 

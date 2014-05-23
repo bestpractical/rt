@@ -604,9 +604,7 @@ our %META;
             my $self  = shift;
             my $value = shift;
             return if $value;
-            return if $INC{'GraphViz.pm'};
-            local $@;
-            return if eval {require GraphViz; 1};
+            return if GraphViz->require;
             $RT::Logger->debug("You've enabled GraphViz, but we couldn't load the module: $@");
             $self->Set( DisableGraphViz => 1 );
         },
@@ -617,9 +615,7 @@ our %META;
             my $self  = shift;
             my $value = shift;
             return if $value;
-            return if $INC{'GD.pm'};
-            local $@;
-            return if eval {require GD; 1};
+            return if GD->require;
             $RT::Logger->debug("You've enabled GD, but we couldn't load the module: $@");
             $self->Set( DisableGD => 1 );
         },

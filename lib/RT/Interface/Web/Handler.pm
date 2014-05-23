@@ -106,7 +106,6 @@ sub InitSessionDir {
 }
 
 
-use UNIVERSAL::require;
 sub NewHandler {
     my $class = shift;
     $class->require or die $!;

@@ -56,6 +56,7 @@ package RT;
 use File::Spec ();
 use Cwd ();
 use Scalar::Util qw(blessed);
+use UNIVERSAL::require;
 
 use vars qw($Config $System $SystemUser $Nobody $Handle $Logger $_Privileged $_Unprivileged $_INSTALL_MODE);
 
@@ -495,8 +496,7 @@ sub InitClasses {
         }
 
         foreach my $class ( grep $_, RT->Config->Get('CustomFieldValuesSources') ) {
-            local $@;
-            eval "require $class; 1" or $RT::Logger->error(
+            $class->require or $RT::Logger->error(
                 "Class '$class' is listed in CustomFieldValuesSources option"
                 ." in the config, but we failed to load it:\n$@\n"
             );

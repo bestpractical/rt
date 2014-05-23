@@ -368,8 +368,7 @@ sub CastObjectsToRecords
         RT::Shredder::Exception->throw( "Unsupported class $class" )
               unless $class =~ /^\w+(::\w+)*$/;
         $class = 'RT::'. $class unless $class =~ /^RTx?::/i;
-        eval "require $class";
-        die "Couldn't load '$class' module" if $@;
+        $class->require or die "Failed to load $class: $@";
         my $obj = $class->new( RT->SystemUser );
         die "Couldn't construct new '$class' object" unless $obj;
         $obj->Load( $id );

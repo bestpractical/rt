@@ -601,7 +601,7 @@ sub Values {
 
     my $class = $self->ValuesClass;
     if ( $class ne 'RT::CustomFieldValues') {
-        eval "require $class" or die "$@";
+        $class->require or die "Can't load $class: $@";
     }
     my $cf_values = $class->new( $self->CurrentUser );
     # if the user has no rights, return an empty object

@@ -277,7 +277,7 @@ sub LoadImplementation {
     my $class = 'RT::Crypt::'. $proto;
     return $cache{ $class } if exists $cache{ $class };
 
-    if (eval "require $class; 1") {
+    if ($class->require) {
         return $cache{ $class } = $class;
     } else {
         RT->Logger->warn( "Could not load $class: $@" );
