@@ -58,7 +58,7 @@
       <& /Ticket/Elements/ShowCustomFields, Ticket => $approving &>
 % }
 % if ($ShowHistory) {
-      <& /Elements/ShowHistory, Object => $approving, ShowTitle => 0, ShowHeaders => 0, ShowDisplayModes => 0, ShowTitleBarCommands => 0, PathPrefix => RT->Config->Get('WebPath')."/Ticket/" &>
+      <& /Elements/ShowHistory, Object => $approving, ShowTitle => 0, ShowHeaders => 0, ShowDisplayModes => 0, ShowActions => 0, PathPrefix => RT->Config->Get('WebPath')."/Ticket/" &>
 % }
     </div>
   </div>
