@@ -51,8 +51,10 @@ package RT::Config;
 use strict;
 use warnings;
 
+use 5.010;
 use File::Spec ();
 use Symbol::Global::Name;
+use List::MoreUtils 'uniq';
 
 =head1 NAME
 
@@ -201,8 +203,26 @@ our %META;
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
             Description => 'Theme',                  #loc
-            # XXX: we need support for 'get values callback'
-            Values => [qw(rudder web2 aileron ballard)],
+            Callback    => sub {
+                state @stylesheets;
+                unless (@stylesheets) {
+                    for my $static_path ( RT::Interface::Web->StaticRoots ) {
+                        my $css_path =
+                          File::Spec->catdir( $static_path, 'css' );
+                        next unless -d $css_path;
+                        if ( opendir my $dh, $css_path ) {
+                            push @stylesheets, grep {
+                                -e File::Spec->catfile( $css_path, $_, 'base.css' )
+                            } readdir $dh;
+                        }
+                        else {
+                            RT->Logger->error("Can't read $css_path: $!");
+                        }
+                    }
+                    @stylesheets = sort { lc $a cmp lc $b } uniq @stylesheets;
+                }
+                return { Values => \@stylesheets };
+            },
         },
         PostLoadCheck => sub {
             my $self = shift;
