@@ -85,7 +85,7 @@ $m->callback( CallbackName => 'ModifyDropdownLimit', DropdownLimit => \$dropdown
 if (keys(%user_uniq_hash) > $dropdown_limit ) {
     if ($Objects->[0]->id) {
         my $desc = $Objects->[0]->RecordType." ".$Objects->[0]->id;
-        RT->Logger->notice("More than $dropdown_limit possible Owners found for $desc; switching to autocompleter");
+        RT->Logger->notice("More than $dropdown_limit possible Owners found for $desc; switching to autocompleter.  See the \$AutocompleteOwners configuration option");
     }
     $m->comp("/Elements/SelectOwnerAutocomplete", %ARGS);
     return;
