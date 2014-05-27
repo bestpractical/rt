@@ -144,86 +144,84 @@ if ( $ShowBody && !$Attachments ) {
 }
 
 my @actions = ();
-if ( $ShowActions ) {
-    my $txn_type = $Transaction->Type;
-    if ( $txn_type =~ /EmailRecord$/ ) {
+my $txn_type = $Transaction->Type;
+if ( $txn_type =~ /EmailRecord$/ ) {
+    push @actions, {
+        title  => loc('Show'),
+        target => '_blank',
+        path   => $EmailRecordPath
+            .'?id='. $Object->id
+            .'&Transaction='. $Transaction->id
+            .'&Attachment='. ( $Attachments->{0}[0] && $Attachments->{0}[0]->id ),
+    } if $EmailRecordPath;
+
+    $ShowBody = 0;
+}
+
+# If the transaction has anything attached to it at all
+elsif ( %$Attachments && $ShowActions ) {
+    my %has_right = map {
+        $_ => RT::ACE->CanonicalizeRightName( $_ . $record_type )
+    } qw(Modify CommentOn ReplyTo);
+    $has_right{'Forward'} = RT::ACE->CanonicalizeRightName('ForwardMessage');
+
+    my $can_modify = $has_right{'Modify'}
+        && $Object->CurrentUserHasRight( $has_right{'Modify'} );
+
+    if ( $UpdatePath && $has_right{'ReplyTo'}
+        && ( $can_modify
+            || $Object->CurrentUserHasRight( $has_right{'ReplyTo'} )
+        )
+    ) {
         push @actions, {
-            title  => loc('Show'),
-            target => '_blank',
-            path   => $EmailRecordPath
+            class  => "reply-link",
+            title  => loc('Reply'),
+            path   => $UpdatePath
                 .'?id='. $Object->id
-                .'&Transaction='. $Transaction->id
-                .'&Attachment='. ( $Attachments->{0}[0] && $Attachments->{0}[0]->id ),
-        } if $EmailRecordPath;
-
-        $ShowBody = 0;
+                .'&QuoteTransaction='. $Transaction->id
+                .'&Action=Respond'
+            ,
+        };
     }
-
-    # If the transaction has anything attached to it at all
-    elsif ( %$Attachments ) {
-        my %has_right = map {
-            $_ => RT::ACE->CanonicalizeRightName( $_ . $record_type )
-        } qw(Modify CommentOn ReplyTo);
-        $has_right{'Forward'} = RT::ACE->CanonicalizeRightName('ForwardMessage');
-
-        my $can_modify = $has_right{'Modify'}
-            && $Object->CurrentUserHasRight( $has_right{'Modify'} );
-
-        if ( $UpdatePath && $has_right{'ReplyTo'}
-            && ( $can_modify
-                || $Object->CurrentUserHasRight( $has_right{'ReplyTo'} )
-            )
-        ) {
-            push @actions, {
-                class  => "reply-link",
-                title  => loc('Reply'),
-                path   => $UpdatePath
-                    .'?id='. $Object->id
-                    .'&QuoteTransaction='. $Transaction->id
-                    .'&Action=Respond'
-                ,
-            };
-        }
-        if ( $UpdatePath && $has_right{'CommentOn'}
-            && ( $can_modify
-                || $Object->CurrentUserHasRight( $has_right{'CommentOn'} )
-            )
-        ) {
-            push @actions, {
-                class  => "comment-link",
-                title  => loc('Comment'),
-                path   => $UpdatePath
-                    .'?id='. $Object->id
-                    .'&QuoteTransaction='. $Transaction->id
-                    .'&Action=Comment'
-                ,
-            };
-        }
-        if ( $ForwardPath && $has_right{'Forward'}
-            && $Object->CurrentUserHasRight( $has_right{'Forward'} )
-        ) {
-            push @actions, {
-                class  => "forward-link",
-                title  => loc('Forward'),
-                path   => $ForwardPath
-                    .'?id='. $Object->id
-                    .'&QuoteTransaction='. $Transaction->id
-                ,
-            };
-        }
-        if ( $EncryptionPath && $can_modify
-            && RT->Config->Get('Crypt')->{'Enable'}
-            && RT->Config->Get('Crypt')->{'AllowEncryptDataInDB'}
-        ) {
-            push @actions, {
-                class  => "encryption-link",
-                title  => loc('Encrypt/Decrypt'),
-                path   => $EncryptionPath
-                    .'?id='. $Transaction->id
-                    .'&QuoteTransaction='. $Transaction->id
-                ,
-            };
-        }
+    if ( $UpdatePath && $has_right{'CommentOn'}
+        && ( $can_modify
+            || $Object->CurrentUserHasRight( $has_right{'CommentOn'} )
+        )
+    ) {
+        push @actions, {
+            class  => "comment-link",
+            title  => loc('Comment'),
+            path   => $UpdatePath
+                .'?id='. $Object->id
+                .'&QuoteTransaction='. $Transaction->id
+                .'&Action=Comment'
+            ,
+        };
+    }
+    if ( $ForwardPath && $has_right{'Forward'}
+        && $Object->CurrentUserHasRight( $has_right{'Forward'} )
+    ) {
+        push @actions, {
+            class  => "forward-link",
+            title  => loc('Forward'),
+            path   => $ForwardPath
+                .'?id='. $Object->id
+                .'&QuoteTransaction='. $Transaction->id
+            ,
+        };
+    }
+    if ( $EncryptionPath && $can_modify
+        && RT->Config->Get('Crypt')->{'Enable'}
+        && RT->Config->Get('Crypt')->{'AllowEncryptDataInDB'}
+    ) {
+        push @actions, {
+            class  => "encryption-link",
+            title  => loc('Encrypt/Decrypt'),
+            path   => $EncryptionPath
+                .'?id='. $Transaction->id
+                .'&QuoteTransaction='. $Transaction->id
+            ,
+        };
     }
 }
 
