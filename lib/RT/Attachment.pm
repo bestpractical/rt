@@ -341,7 +341,7 @@ before returning it.
 sub Content {
     my $self = shift;
     return $self->_DecodeLOB(
-        $self->ContentType,
+        $self->GetHeader('Content-Type'),  # Includes charset, unlike ->ContentType
         $self->ContentEncoding,
         $self->_Value('Content', decode_utf8 => 0),
     );
@@ -372,7 +372,6 @@ sub OriginalContent {
     }
 
     return $self->Content unless RT::I18N::IsTextualContentType($self->ContentType);
-    my $enc = $self->OriginalEncoding;
 
     my $content;
     if ( !$self->ContentEncoding || $self->ContentEncoding eq 'none' ) {
@@ -385,18 +384,20 @@ sub OriginalContent {
         return( $self->loc("Unknown ContentEncoding [_1]", $self->ContentEncoding));
     }
 
-    # Turn *off* the SvUTF8 bits here so decode_utf8 and from_to below can work.
+    my $entity = MIME::Entity->new();
+    $entity->head->add("Content-Type", $self->GetHeader("Content-Type"));
+    $entity->bodyhandle( MIME::Body::Scalar->new( $content ) );
+    my $from = RT::I18N::_FindOrGuessCharset($entity);
+    $from = 'utf-8' if not $from or not Encode::find_encoding($from);
+
+    my $to = RT::I18N::_CanonicalizeCharset(
+        $self->OriginalEncoding || 'utf-8'
+    );
+
     local $@;
-    Encode::_utf8_off($content);
-
-    if (!$enc || $enc eq '' ||  $enc eq 'utf8' || $enc eq 'utf-8') {
-        # If we somehow fail to do the decode, at least push out the raw bits
-        eval { return( Encode::decode_utf8($content)) } || return ($content);
-    }
-
-    eval { Encode::from_to($content, 'utf8' => $enc) } if $enc;
+    eval { Encode::from_to($content, $from => $to) };
     if ($@) {
-        $RT::Logger->error("Could not convert attachment from assumed utf8 to '$enc' :".$@);
+        $RT::Logger->error("Could not convert attachment from $from to $to: ".$@);
     }
     return $content;
 }
