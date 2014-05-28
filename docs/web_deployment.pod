@@ -29,6 +29,9 @@ C<mod_speling> will cause RT's CSS and JS to not be loaded, making RT
 appear unstyled. C<mod_cache> will cache cookies, making users be
 spontaneously logged in as other users in the system.
 
+See also L<authentication/Apache configuration>, in case you intend to
+use Apache to provide authentication.
+
 =head3 mod_fastcgi
 
     # Tell FastCGI to put its temporary files somewhere sane; this may
@@ -230,4 +233,3 @@ C<Location> directive.
 
 If you're not using Apache, please see L<Plack::Handler::FCGI> or the web
 server's own documentation for configuration examples.
-
