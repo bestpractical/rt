@@ -2425,10 +2425,17 @@ sub Serialize {
     $store{$_} = $values{lc $_} for @cols;
     $store{id} = $values{id}; # Explicitly necessary in some cases
 
-    # Un-encode things with a ContentEncoding for transfer
+    # Un-apply the _transfer_ encoding, but don't mess with the octets
+    # themselves.  Calling ->Content directly would, in some cases,
+    # decode from some mostly-unknown character set -- which reversing
+    # on the far end would be complicated.
     if ($ca{ContentEncoding} and $ca{ContentType}) {
         my ($content_col) = grep {exists $ca{$_}} qw/LargeContent Content/;
-        $store{$content_col} = $self->$content_col;
+        $store{$content_col} = $self->_DecodeLOB(
+            "application/octet-stream", # Lie so that we get bytes, not characters
+            $self->ContentEncoding,
+            $self->_Value( $content_col, decode_utf8 => 0 )
+        );
         delete $store{ContentEncoding};
     }
     return %store unless $args{UIDs};
@@ -2467,8 +2474,7 @@ sub PreInflate {
         my ($content_col) = grep {exists $ca{$_}} qw/LargeContent Content/;
         if (defined $data->{$content_col}) {
             my ($ContentEncoding, $Content) = $class->_EncodeLOB(
-                Encode::encode("UTF-8",$data->{$content_col},Encode::FB_CROAK),
-                $data->{ContentType},
+                $data->{$content_col}, $data->{ContentType},
             );
             $data->{ContentEncoding} = $ContentEncoding;
             $data->{$content_col} = $Content;
