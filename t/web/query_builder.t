@@ -197,7 +197,7 @@ diag "click advanced, enter 'C1 OR ( C2 AND C3 )', apply, aggregators should sta
 # create a custom field with nonascii name and try to add a condition
 {
     my $cf = RT::CustomField->new( RT->SystemUser );
-    $cf->LoadByName( Name => "\x{442}", Queue => 0 );
+    $cf->LoadByName( Name => "\x{442}", LookupType => RT::Ticket->CustomFieldLookupType, ObjectId => 0 );
     if ( $cf->id ) {
         is($cf->Type, 'Freeform', 'loaded and type is correct');
     } else {

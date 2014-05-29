@@ -2189,9 +2189,10 @@ sub LimitCustomField {
         $CF->Load( $args{CUSTOMFIELD} );
     }
     else {
-        $CF->LoadByNameAndQueue(
-            Name  => $args{CUSTOMFIELD},
-            Queue => $args{QUEUE}
+        $CF->LoadByName(
+            Name       => $args{CUSTOMFIELD},
+            LookupType => RT::Ticket->CustomFieldLookupType,
+            ObjectId   => $args{QUEUE},
         );
         $args{CUSTOMFIELD} = $CF->Id;
     }

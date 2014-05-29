@@ -945,7 +945,11 @@ sub load_or_create_custom_field {
     my %args = ( Disabled => 0, @_ );
     my $obj = RT::CustomField->new( RT->SystemUser );
     if ( $args{'Name'} ) {
-        $obj->LoadByName( Name => $args{'Name'}, Queue => $args{'Queue'} );
+        $obj->LoadByName(
+            Name       => $args{'Name'},
+            LookupType => RT::Ticket->CustomFieldLookupType,
+            ObjectId   => $args{'Queue'},
+        );
     } else {
         die "Name is required";
     }
