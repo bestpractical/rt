@@ -172,7 +172,7 @@ sub PushAll {
     $self->PushCollections(qw(ACL));
 
     # Scrips
-    $self->PushCollections(qw(Scrips ScripActions ScripConditions Templates));
+    $self->PushCollections(qw(Scrips ObjectScrips ScripActions ScripConditions Templates));
 
     # Attributes
     $self->PushCollections(qw(Attributes));
