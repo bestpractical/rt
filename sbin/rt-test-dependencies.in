@@ -258,7 +258,7 @@ UNIVERSAL::require
 XML::RSS 1.05
 .
 set_dep( CORE => 'Symbol::Global::Name' => 0.05 ) if $] >= 5.019003;
-
+set_dep( CORE => CGI => 4.00 )                    if $] > 5.019003;
 
 $deps{'MAILGATE'} = [ text_to_hash( << '.') ];
 Crypt::SSLeay
@@ -286,7 +286,7 @@ File::Which
 Locale::PO
 Log::Dispatch::Perl
 Mojo::DOM
-Plack::Middleware::Test::StashWarnings 0.06
+Plack::Middleware::Test::StashWarnings 0.08
 Set::Tiny
 String::ShellQuote 0 # needed for gnupg-incoming.t
 Test::Builder 0.90 # needed for is_passing
@@ -456,6 +456,7 @@ sub test_dep {
         print $module, ': ', $version || 0, "\n"; 
     }
     else {
+        no warnings 'deprecated';
         eval "{ local \$ENV{__WARN__}; use $module $version () }";
         if ( my $error = $@ ) {
             return 0 unless wantarray;

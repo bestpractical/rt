@@ -3639,8 +3639,12 @@ sub ProcessRecordBulkCustomFields {
     }
 
     while ( my ($cfid, $data) = each %data ) {
+        my $current_values = $args{'RecordObj'}->CustomFieldValues( $cfid );
+
         # just add one value for fields with single value
         if ( $data->{'Add'} && $data->{'cf'}->MaxValues == 1 ) {
+            next if $current_values->HasEntry($data->{Add}[-1]);
+
             my ( $id, $msg ) = $args{'RecordObj'}->AddCustomFieldValue(
                 Field => $cfid,
                 Value => $data->{'Add'}[-1],
@@ -3649,7 +3653,6 @@ sub ProcessRecordBulkCustomFields {
             next;
         }
 
-        my $current_values = $args{'RecordObj'}->CustomFieldValues( $cfid );
         if ( $data->{'DeleteAll'} ) {
             while ( my $value = $current_values->Next ) {
                 my ( $id, $msg ) = $args{'RecordObj'}->DeleteCustomFieldValue(
@@ -3660,21 +3663,12 @@ sub ProcessRecordBulkCustomFields {
             }
         }
         foreach my $value ( @{ $data->{'Delete'} || [] } ) {
-            # Convert for timezone. Without converstion,
-            # HasEntry and DeleteCustomFieldValue fail because
-            # the value in the DB is converted.
-            if ($data->{'cf'}->Type eq 'DateTime' or $data->{'cf'}->Type eq 'Date') {
-                my $DateObj = RT::Date->new( $session{'CurrentUser'} );
-                $DateObj->Set( Format => 'unknown',
-                               Value  => $value );
-                $value = $data->{'cf'}->Type eq 'DateTime' ? $DateObj->ISO
-                    : $DateObj->ISO(Time => 0, Seconds => 0);
-            }
-            next unless $current_values->HasEntry($value);
+            my $entry = $current_values->HasEntry($value);
+            next unless $entry;
 
             my ( $id, $msg ) = $args{'RecordObj'}->DeleteCustomFieldValue(
-                Field => $cfid,
-                Value => $value
+                Field   => $cfid,
+                ValueId => $entry->id,
             );
             push @results, $msg;
         }
