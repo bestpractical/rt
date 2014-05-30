@@ -524,6 +524,7 @@ sub _BuildTableAttributes {
         RT::ScripAction
         RT::ScripCondition
         RT::Scrip
+        RT::ObjectScrip
         RT::Group
         RT::GroupMember
         RT::CustomField
