@@ -52,7 +52,6 @@ select {
     font-size: 1.0em;
     -moz-border-radius: 0;
     -webkit-border-radius: 0;
-    border-radius: 0;
 }
 
 input[type=reset],
