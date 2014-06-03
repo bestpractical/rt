@@ -1058,6 +1058,7 @@ sub InsertData {
                 $object = RT::CustomField->new( RT->SystemUser );
                 my @columns = ( Name => $item->{'CF'} );
                 push @columns, LookupType => $item->{'LookupType'} if $item->{'LookupType'};
+                push @columns, ObjectId => $item->{'ObjectId'} if $item->{'ObjectId'};
                 push @columns, Queue => $item->{'Queue'} if $item->{'Queue'} and not ref $item->{'Queue'};
                 my ($ok, $msg) = $object->LoadByName( @columns );
                 unless ( $ok ) {
