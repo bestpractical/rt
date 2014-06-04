@@ -140,6 +140,8 @@ sub LoadByCols {
     if ( $args{CustomField} ) {
         $cf = RT::CustomField->new( $self->CurrentUser );
         $cf->Load( $args{CustomField} );
+        return (0, $self->loc("Cannot load custom field [_1]",$args{CustomField})) unless $cf->id;
+
         if ( $cf->Type && $cf->Type eq 'IPAddressRange' ) {
 
             my ( $sIP, $eIP ) = $cf->ParseIPRange( $args{'Content'} );
