@@ -16,6 +16,12 @@
     border-bottom: 1px solid #eee;
 }
 
+@-moz-document url-prefix() {
+    .titlebox .titlebox-content {
+        border-top: 0.3em solid #aaa;
+    }
+}
+
 * html .titlebox {
     border-top: none;
     border-left: none;
