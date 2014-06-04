@@ -89,33 +89,6 @@ sub Create {
 
     $cf->_CanonicalizeValue(\%args);
 
-    if($cf->_Value('Type') eq 'IPAddress') {
-        if ( $args{'Content'} ) {
-            $args{'Content'} = $self->ParseIP( $args{'Content'} );
-        }
-
-        unless ( defined $args{'Content'} ) {
-            return
-              wantarray
-              ? ( 0, $self->loc("Content is an invalid IP address") )
-              : 0;
-        }
-    }
-
-    if($cf->_Value('Type') eq 'IPAddressRange') {
-        if ($args{'Content'}) {
-            ($args{'Content'}, $args{'LargeContent'}) = $self->ParseIPRange( $args{'Content'} );
-        }
-        $args{'ContentType'} = 'text/plain';
-
-        unless ( defined $args{'Content'} ) {
-            return
-              wantarray
-              ? ( 0, $self->loc("Content is an invalid IP address range") )
-              : 0;
-        }
-    }
-
     if ( defined $args{'Content'} && length( Encode::encode_utf8($args{'Content'}) ) > 255 ) {
         if ( defined $args{'LargeContent'} && length $args{'LargeContent'} ) {
             $RT::Logger->error("Content is longer than 255 bytes and LargeContent specified");

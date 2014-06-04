@@ -1586,6 +1586,26 @@ sub _CanonicalizeValueDate {
     $args->{'Content'} = $DateObj->Date( Timezone => 'user' );
 }
 
+sub _CanonicalizeValueIPAddress {
+    my $self = shift;
+    my $args = shift;
+
+    $args->{Content} = RT::ObjectCustomFieldValue->ParseIP( $args->{Content} );
+}
+
+sub _CanonicalizeValueIPAddressRange {
+    my $self = shift;
+    my $args = shift;
+
+    my $content = $args->{Content};
+    $content .= "-".$args->{LargeContent} if $args->{LargeContent};
+
+    ($args->{Content}, $args->{LargeContent})
+        = RT::ObjectCustomFieldValue->ParseIPRange( $content );
+
+    $args->{ContentType} = 'text/plain';
+}
+
 =head2 MatchPattern STRING
 
 Tests the incoming string against the Pattern of this custom field object
