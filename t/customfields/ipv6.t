@@ -150,7 +150,7 @@ diag "check that we parse correct IPs only" if $ENV{'TEST_VERBOSE'};
             }
         );
 
-        $agent->content_contains( 'can not be parsed as an IP address',
+        $agent->content_contains( 'is not a valid IP address',
             'ticket fails to create' );
     }
 }
