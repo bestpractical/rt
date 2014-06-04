@@ -141,16 +141,8 @@ sub LoadByCols {
         $cf->Load( $args{CustomField} );
         return (0, $self->loc("Cannot load custom field [_1]",$args{CustomField})) unless $cf->id;
 
-        if ( $cf->Type && $cf->Type eq 'IPAddressRange' ) {
-
-            my ( $sIP, $eIP ) = $cf->ParseIPRange( $args{'Content'} );
-            if ( $sIP && $eIP ) {
-                $self->SUPER::LoadByCols( %args,
-                                          Content      => $sIP,
-                                          LargeContent => $eIP
-                                        );
-            }
-        }
+        my ($ok, $msg) = $cf->_CanonicalizeValue(\%args);
+        return ($ok, $msg) unless $ok;
     }
     return $self->SUPER::LoadByCols(%args);
 }
