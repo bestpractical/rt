@@ -136,7 +136,8 @@ sub HasEntry {
         my $args = $canon_value{ $cf->Type };
         if ( !$args ) {
             $args = { Content => $value, LargeContent => $large_content };
-            $cf->_CanonicalizeValue( $args );
+            my ($ok, $msg) = $cf->_CanonicalizeValue( $args );
+            next unless $ok;
             $canon_value{ $cf->Type } = $args;
         }
 

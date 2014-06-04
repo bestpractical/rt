@@ -1556,10 +1556,10 @@ sub _CanonicalizeValue {
     my $args = shift;
 
     my $type = $self->_Value('Type');
-    return unless $type;
+    return 1 unless $type;
 
     my $method = '_CanonicalizeValue'. $type;
-    return unless $self->can($method);
+    return 1 unless $self->can($method);
     $self->$method($args);
 }
 
@@ -1570,6 +1570,7 @@ sub _CanonicalizeValueDateTime {
     $DateObj->Set( Format => 'unknown',
                    Value  => $args->{'Content'} );
     $args->{'Content'} = $DateObj->ISO;
+    return 1;
 }
 
 # For date, we need to store Content as ISO date
@@ -1584,6 +1585,7 @@ sub _CanonicalizeValueDate {
                    Value    => $args->{'Content'},
                  );
     $args->{'Content'} = $DateObj->Date( Timezone => 'user' );
+    return 1;
 }
 
 sub _CanonicalizeValueIPAddress {
@@ -1591,6 +1593,9 @@ sub _CanonicalizeValueIPAddress {
     my $args = shift;
 
     $args->{Content} = RT::ObjectCustomFieldValue->ParseIP( $args->{Content} );
+    return (0, $self->loc("Content is not a valid IP address"))
+        unless $args->{Content};
+    return 1;
 }
 
 sub _CanonicalizeValueIPAddressRange {
@@ -1604,6 +1609,9 @@ sub _CanonicalizeValueIPAddressRange {
         = RT::ObjectCustomFieldValue->ParseIPRange( $content );
 
     $args->{ContentType} = 'text/plain';
+    return (0, $self->loc("Content is not a valid IP address range"))
+        unless $args->{Content};
+    return 1;
 }
 
 =head2 MatchPattern STRING

@@ -87,7 +87,8 @@ sub Create {
     my $cf = RT::CustomField->new( $self->CurrentUser );
     $cf->Load( $args{CustomField} );
 
-    $cf->_CanonicalizeValue(\%args);
+    my ($val, $msg) = $cf->_CanonicalizeValue(\%args);
+    return ($val, $msg) unless $val;
 
     if ( defined $args{'Content'} && length( Encode::encode_utf8($args{'Content'}) ) > 255 ) {
         if ( defined $args{'LargeContent'} && length $args{'LargeContent'} ) {
