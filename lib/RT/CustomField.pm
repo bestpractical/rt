@@ -1675,8 +1675,6 @@ sub AddValueForObject {
         }
     }
 
-    $self->_CanonicalizeValue(\%args);
-
     my $newval = RT::ObjectCustomFieldValue->new( $self->CurrentUser );
     my ($val, $msg) = $newval->Create(
         ObjectType   => ref($obj),
@@ -1702,9 +1700,10 @@ sub _CanonicalizeValue {
     my $self = shift;
     my $args = shift;
 
-    return unless $self->Type;
+    my $type = $self->_Value('Type');
+    return unless $type;
 
-    my $method = '_CanonicalizeValue'.$self->Type;
+    my $method = '_CanonicalizeValue'. $type;
     return unless $self->can($method);
     $self->$method($args);
 }

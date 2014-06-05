@@ -82,11 +82,12 @@ sub Create {
         @_,
     );
 
+    my $cf = RT::CustomField->new( $self->CurrentUser );
+    $cf->Load( $args{CustomField} );
 
-    my $cf_as_sys = RT::CustomField->new(RT->SystemUser);
-    $cf_as_sys->Load($args{'CustomField'});
+    $cf->_CanonicalizeValue(\%args);
 
-    if($cf_as_sys->Type eq 'IPAddress') {
+    if($cf->_Value('Type') eq 'IPAddress') {
         if ( $args{'Content'} ) {
             $args{'Content'} = $self->ParseIP( $args{'Content'} );
         }
@@ -99,7 +100,7 @@ sub Create {
         }
     }
 
-    if($cf_as_sys->Type eq 'IPAddressRange') {
+    if($cf->_Value('Type') eq 'IPAddressRange') {
         if ($args{'Content'}) {
             ($args{'Content'}, $args{'LargeContent'}) = $self->ParseIPRange( $args{'Content'} );
         }
