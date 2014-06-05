@@ -135,12 +135,8 @@ sub HasEntry {
         my $args = $canon_value{ $cf->Type };
         if ( !$args ) {
             $args = { Content => $value, LargeContent => $large_content };
-            if ( my $canonicalizer =
-                $cf->can( '_CanonicalizeValue' . $cf->Type ) )
-            {
-                $canonicalizer->( $cf, $args );
-            }
-
+            my ($ok, $msg) = $cf->_CanonicalizeValue( $args );
+            next unless $ok;
             $canon_value{ $cf->Type } = $args;
         }
 
@@ -149,7 +145,7 @@ sub HasEntry {
             return $item if lc $item->Content eq lc $args->{Content};
         }
         else {
-            if ( $item->Content eq $args->{Content} ) {
+            if ( $item->_Value('Content') eq $args->{Content} ) {
                 if ( defined $item->LargeContent ) {
                     return $item
                       if defined $args->{LargeContent}

@@ -82,36 +82,11 @@ sub Create {
         @_,
     );
 
+    my $cf = RT::CustomField->new( $self->CurrentUser );
+    $cf->Load( $args{CustomField} );
 
-    my $cf_as_sys = RT::CustomField->new(RT->SystemUser);
-    $cf_as_sys->Load($args{'CustomField'});
-
-    if($cf_as_sys->Type eq 'IPAddress') {
-        if ( $args{'Content'} ) {
-            $args{'Content'} = $self->ParseIP( $args{'Content'} );
-        }
-
-        unless ( defined $args{'Content'} ) {
-            return
-              wantarray
-              ? ( 0, $self->loc("Content is an invalid IP address") )
-              : 0;
-        }
-    }
-
-    if($cf_as_sys->Type eq 'IPAddressRange') {
-        if ($args{'Content'}) {
-            ($args{'Content'}, $args{'LargeContent'}) = $self->ParseIPRange( $args{'Content'} );
-        }
-        $args{'ContentType'} = 'text/plain';
-
-        unless ( defined $args{'Content'} ) {
-            return
-              wantarray
-              ? ( 0, $self->loc("Content is an invalid IP address range") )
-              : 0;
-        }
-    }
+    my ($val, $msg) = $cf->_CanonicalizeValue(\%args);
+    return ($val, $msg) unless $val;
 
     if ( defined $args{'Content'} && length( Encode::encode_utf8($args{'Content'}) ) > 255 ) {
         if ( defined $args{'LargeContent'} && length $args{'LargeContent'} ) {
@@ -165,16 +140,10 @@ sub LoadByCols {
     if ( $args{CustomField} ) {
         $cf = RT::CustomField->new( $self->CurrentUser );
         $cf->Load( $args{CustomField} );
-        if ( $cf->Type && $cf->Type eq 'IPAddressRange' ) {
+        return (0, $self->loc("Cannot load custom field [_1]",$args{CustomField})) unless $cf->id;
 
-            my ( $sIP, $eIP ) = $cf->ParseIPRange( $args{'Content'} );
-            if ( $sIP && $eIP ) {
-                $self->SUPER::LoadByCols( %args,
-                                          Content      => $sIP,
-                                          LargeContent => $eIP
-                                        );
-            }
-        }
+        my ($ok, $msg) = $cf->_CanonicalizeValue(\%args);
+        return ($ok, $msg) unless $ok;
     }
     return $self->SUPER::LoadByCols(%args);
 }
