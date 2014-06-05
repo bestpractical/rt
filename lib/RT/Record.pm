@@ -1726,8 +1726,8 @@ sub _AddCustomFieldValue {
                 $i++;
                 if ( $i < $cf_values ) {
                     my ( $val, $msg ) = $cf->DeleteValueForObject(
-                        Object  => $self,
-                        Content => $value->Content
+                        Object => $self,
+                        Id     => $value->id,
                     );
                     unless ($val) {
                         return ( 0, $msg );
