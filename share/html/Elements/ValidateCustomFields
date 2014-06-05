@@ -83,27 +83,12 @@ while ( my $CF = $CustomFields->Next ) {
 
     for my $value( @values ) {
         if ($value) {
-            if ( $CF->Type eq 'IPAddress' ) {
-                use Regexp::Common qw(RE_net_IPv4);
-                my $ip = RT::ObjectCustomFieldValue->ParseIP( $value );
-                unless ( $ip ) {
-                    my $msg =
-                      loc( "Input can not be parsed as an IP address" );
-                    $m->notes( ( 'InvalidField-' . $CF->Id ) => $msg );
-                    push @res, $msg;
-                    $valid = 0;
-                }
-            }
-            elsif ( $CF->Type eq 'IPAddressRange' ) {
-                my ( $start_ip, $end_ip ) =
-                  RT::ObjectCustomFieldValue->ParseIPRange($value);
-                unless ( $start_ip && $end_ip ) {
-                    my $msg =
-                      loc( "Input can not be parsed as an IP address range" );
-                    $m->notes( ( 'InvalidField-' . $CF->Id ) => $msg );
-                    push @res, $msg;
-                    $valid = 0;
-                }
+            my $ref = { Content => $value };
+            my ($ok, $msg) = $CF->_CanonicalizeValue( $ref );
+            unless ($ok) {
+                $m->notes( ( 'InvalidField-' . $CF->Id ) => $msg );
+                push @res, $msg;
+                $valid = 0;
             }
         }
 
