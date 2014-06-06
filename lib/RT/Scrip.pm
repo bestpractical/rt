@@ -737,10 +737,7 @@ sub _Set {
 sub _Value {
     my $self = shift;
 
-    unless ( $self->CurrentUserHasRight('ShowScrips') ) {
-        $RT::Logger->debug( "CurrentUser can't see scrip #". $self->__Value('id') );
-        return (undef);
-    }
+    return unless $self->CurrentUserHasRight('ShowScrips');
 
     return $self->__Value(@_);
 }
