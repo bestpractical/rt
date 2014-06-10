@@ -944,7 +944,7 @@ push @CHECKS, 'Links: wrong organization' => sub {
 
             my $query = "SELECT id, $column FROM $table WHERE"
               . " $column LIKE ? AND $column NOT LIKE ?";
-            my @binds = ($scheme ."://%", $prefix ."%");
+            my @binds = (sql_escape_like($scheme) ."://%", sql_escape_like($prefix) ."%");
 
             while ( my ($k, $v) = each %{ $use->{'Additional'} || {} } ) {
                 $query .= " AND $k = ?";
@@ -969,7 +969,7 @@ push @CHECKS, 'Links: wrong organization' => sub {
                 my $wrong_prefix = $scheme . '://'. $wrong_org;
                 my $query = "UPDATE $table SET $column = ". sql_concat('?', "SUBSTR($column, ?)")
                   ." WHERE $column LIKE ?";
-                execute_query( $query, $prefix, length($wrong_prefix)+1, $wrong_prefix .'/%' );
+                execute_query( $query, $prefix, length($wrong_prefix)+1, sql_escape_like($wrong_prefix) .'/%' );
 
                 $redo_check{'Links: wrong organization'} = 1;
                 $redo_check{'Links: LocalX for non-ticket'} = 1;
@@ -991,7 +991,7 @@ push @CHECKS, 'Links: LocalX for non-ticket' => sub {
         # we look only at links with correct organization, previouse check deals
         # with incorrect orgs
         my $where = "Local$dir > 0 AND $dir LIKE ? AND $dir NOT LIKE ?";
-        my @binds = ($prefix ."/%", $prefix ."/ticket/%");
+        my @binds = (sql_escape_like($prefix) ."/%", sql_escape_like($prefix) ."/ticket/%");
 
         my $sth = execute_query( "SELECT id FROM $table WHERE $where", @binds );
         while ( my ($id, $value) = $sth->fetchrow_array ) {
@@ -1027,7 +1027,7 @@ push @CHECKS, 'Links: LocalX != X' => sub {
         # XXX: we have issue with MergedInto links - "LocalX !~ X"
         my $where = "Local$dir > 0 AND $dir LIKE ? AND $dir != ". sql_concat('?', "Local$dir")
             ." AND Type != ?";
-        my @binds = ($prefix ."%", $prefix, 'MergedInto');
+        my @binds = (sql_escape_like($prefix) ."%", $prefix, 'MergedInto');
 
         my $sth = execute_query( "SELECT id FROM $table WHERE $where", @binds );
         while ( my ($id, $value) = $sth->fetchrow_array ) {
@@ -1082,7 +1082,7 @@ push @CHECKS, 'Links: missing object' => sub {
                 my $query = "SELECT s.id FROM $stable s LEFT JOIN $ttable t "
                   ." ON t.id = ". sql_str2int("SUBSTR(s.$scolumn, ?)")
                     ." WHERE s.$scolumn LIKE ? AND t.id IS NULL";
-                my @binds = (length($tprefix) + 1, $tprefix.'%');
+                my @binds = (length($tprefix) + 1, sql_escape_like($tprefix).'%');
 
                 while ( my ($k, $v) = each %{ $use->{'Additional'} || {} } ) {
                     $query .= " AND s.$k = ?";
@@ -1328,6 +1328,12 @@ sub sql_str2int {
         return "($_[0])::integer";
     }
     return $_[0];
+}
+
+sub sql_escape_like {
+    my ($string) = @_;
+    $string =~ s/([%_\\])/\\$1/g;
+    return $string;
 }
 
 { my %cached_answer;
