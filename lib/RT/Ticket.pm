@@ -468,11 +468,13 @@ sub Create {
     }
 
     # Add all the custom fields
+    my %cf_added;
     foreach my $arg ( keys %args ) {
         next unless $arg =~ /^CustomField-(\d+)$/i;
         my $cfid = $1;
         my $cf = $self->LoadCustomFieldByIdentifier($cfid);
         next unless $cf->ObjectTypeFromLookupType->isa(ref $self);
+        $cf_added{$cfid}++;
 
         foreach my $value (
             UNIVERSAL::isa( $args{$arg} => 'ARRAY' ) ? @{ $args{$arg} } : ( $args{$arg} ) )
@@ -489,6 +491,25 @@ sub Create {
                     : (Value => $value)
                 ),
                 Field             => $cfid,
+                RecordTransaction => 0,
+            );
+            push @non_fatal_errors, $msg unless $status;
+        }
+    }
+
+    my $cfs = $self->QueueObj->TicketCustomFields;
+    while ( my $cf = $cfs->Next ) {
+        next if $cf_added{$cf->id} || !$cf->SupportDefaultValues;
+        my $values = $cf->DefaultValues(Object => RT->System); # TODO support queue-level default values
+        foreach my $value ( UNIVERSAL::isa( $values => 'ARRAY' ) ? @$values : $values ) {
+            next if $self->CustomFieldValueIsEmpty(
+                Field => $cf->id,
+                Value => $value,
+            );
+
+            my ( $status, $msg ) = $self->_AddCustomFieldValue(
+                Field             => $cf->id,
+                Value             => $value,
                 RecordTransaction => 0,
             );
             push @non_fatal_errors, $msg unless $status;

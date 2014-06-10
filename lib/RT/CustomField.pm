@@ -1884,9 +1884,116 @@ sub BasedOnObj {
 }
 
 
+sub SupportDefaultValues {
+    my $self = shift;
+    return 0 unless $self->id;
+    return 0 unless $self->LookupType =~ /RT::Ticket$/;
+    return $self->Type !~ /^(?:Image|Binary)$/;
+}
 
+sub DefaultValues {
+    my $self = shift;
+    my %args = (
+        Object => RT->System,
+        @_,
+    );
+    my $attr = $args{Object}->FirstAttribute('CustomFieldDefaultValues');
+    return $attr->Content->{$self->id} if $attr && $attr->Content;
+    return undef;
+}
 
+sub SetDefaultValues {
+    my $self = shift;
+    my %args = (
+        Object => RT->System,
+        Values => undef,
+        @_,
+    );
+    my $attr = $args{Object}->FirstAttribute( 'CustomFieldDefaultValues' );
+    my ( $old_content, $old_values );
+    $old_content = $attr->Content if $attr && $attr->Content;
+    $old_values = $old_content->{ $self->id } if $old_content;
 
+    my $ret = $args{Object}->SetAttribute(
+        Name    => 'CustomFieldDefaultValues',
+        Content => {
+            %{ $old_content || {} }, $self->id => $args{Values},
+        },
+    );
+
+    if ( defined $old_values && length $old_values ) {
+        $old_values = join ', ', @$old_values if ref $old_values eq 'ARRAY';
+    }
+    else {
+        $old_values = $self->loc('(no value)');
+    }
+
+    my $new_values = $args{Values};
+    if ( defined $new_values && length $new_values ) {
+        $new_values = join ', ', @$new_values if ref $new_values eq 'ARRAY';
+    }
+    else {
+        $new_values = $self->loc( '(no value)' );
+    }
+
+    if ( $ret ) {
+        return ( $ret, $self->loc( 'Default values changed from [_1] to [_2]', $old_values, $new_values ) );
+    }
+    else {
+        return ( $ret, $self->loc( "Can't change default values from [_1] to [_2]", $old_values, $new_values ) );
+    }
+}
+
+sub CleanupDefaultValues {
+    my $self  = shift;
+    my $attrs = RT::Attributes->new( $self->CurrentUser );
+    $attrs->Limit( FIELD => 'Name', VALUE => 'CustomFieldDefaultValues' );
+
+    my @values;
+    if ( $self->Type eq 'Select' ) {
+        @values = map { $_->Name } @{ $self->Values->ItemsArrayRef || [] };
+    }
+
+    while ( my $attr = $attrs->Next ) {
+        my $content = $attr->Content;
+        next unless $content;
+        my $changed;
+        if ( $self->SupportDefaultValues ) {
+            if ( $self->MaxValues == 1 && ref $content->{ $self->id } eq 'ARRAY' ) {
+                $content->{ $self->id } = $content->{ $self->id }[ 0 ];
+                $changed ||= 1;
+            }
+
+            my $default_values = $content->{ $self->id };
+            if ( $default_values && $self->Type eq 'Select' ) {
+                if ( ref $default_values eq 'ARRAY' ) {
+                    my @new_defaults;
+                    for my $default ( @$default_values ) {
+                        if ( grep { $_ eq $default } @values ) {
+                            push @new_defaults, $default;
+                        }
+                        else {
+                            $changed ||= 1;
+                        }
+                    }
+
+                    $content->{ $self->id } = \@new_defaults if $changed;
+                }
+                elsif ( !grep { $_ eq $default_values } @values ) {
+                    delete $content->{ $self->id };
+                    $changed ||= 1;
+                }
+            }
+        }
+        else {
+            if ( exists $content->{ $self->id } ) {
+                delete $content->{ $self->id };
+                $changed ||= 1;
+            }
+        }
+        $attr->SetContent( $content ) if $changed;
+    }
+}
 
 =head2 id
 

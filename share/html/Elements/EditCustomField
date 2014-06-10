@@ -90,6 +90,10 @@ if ( ( !defined $Default || !length $Default ) && $DefaultsFromTopArguments ) {
     }
 }
 
+if ( (!$Object || !$Object->id) && ( !defined $Default || !length $Default ) && $CustomField->SupportDefaultValues ) {
+    $Default = $CustomField->DefaultValues;
+}
+
 my $MaxValues = $CustomField->MaxValues;
 if ($MaxValues == 1 && $Values) {
     # what exactly is this doing?  Without the "unless" it breaks RTFM

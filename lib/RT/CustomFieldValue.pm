@@ -119,6 +119,16 @@ sub _Set {
     return $self->SUPER::_Set( @_ ); 
 } 
 
+sub SetName {
+    my $self = shift;
+    my $value = shift;
+    my ( $ret, $msg ) = $self->_Set(
+        Field => 'Name',
+        Value => $value,
+    );
+
+    return ( $ret, $msg );
+}
 
 =head2 id
 

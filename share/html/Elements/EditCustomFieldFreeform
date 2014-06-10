@@ -69,6 +69,8 @@ if ( $Multiple and $Values ) {
 unless ( $Multiple ) {
     $Default =~ s/\s*\n+\s*/ /g if $Default;
 }
+
+$Default = join "\n", @$Default if $Default && ref $Default eq 'ARRAY';
 </%INIT>
 <%ARGS>
 $Object => undef

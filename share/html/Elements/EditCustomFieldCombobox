@@ -45,6 +45,8 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% $Name ||= $NamePrefix . $CustomField->Id . ( $Multiple ? '-Values' : '-Value' );
+
 % while ($Values and my $value = $Values->Next and $Multiple) {
 <input type="checkbox" id="<%$delete_name%>" class="checkbox CF-<%$CustomField->id%>-Edit" name="<%$delete_name%>" class="CF-<%$CustomField->id%>-Edit" value="<% $value->Id %>" />
 <label for="<%$delete_name%>"><% $value->Content %></label>
