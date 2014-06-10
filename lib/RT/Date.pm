@@ -1124,7 +1124,7 @@ sub Timezone {
     my $self = shift;
 
     if (@_ == 0) {
-        Carp::carp "RT::Date->Timezone is a setter only";
+        Carp::carp 'RT::Date->Timezone requires a context argument';
         return undef;
     }
 
