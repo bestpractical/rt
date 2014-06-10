@@ -241,6 +241,7 @@ sub FilterWithoutTickets {
 
 sub _WithoutTickets {
     my ($self, $user) = @_;
+    return unless $user and $user->Id;
     my $tickets = RT::Tickets->new( RT->SystemUser );
     $tickets->{'allow_deleted_search'} = 1;
     $tickets->FromSQL( 'Watcher.id = '. $user->id );
