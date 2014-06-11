@@ -309,7 +309,7 @@ sub analyze_img {
     my @top5 = grep { defined and $_->{'l'} and $_->{'c'} }
                     (sort { $b->{rank} <=> $a->{rank} } values %$color)[0..5];
     if ((scalar uniq map {$_->{rank}} @top5) == 1) {
-        warn "bad";
+        $RT::Logger->info("Only one color found in logo image");
     }
     return \@top5;
 }
