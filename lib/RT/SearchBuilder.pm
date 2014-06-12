@@ -529,13 +529,6 @@ sub _LimitCustomField {
                 $RT::Logger->warn("$value is not a valid IPAddress");
             }
         } elsif ( $type eq 'IPAddressRange' ) {
-            if ( $value =~ /^\s*$RE{net}{CIDR}{IPv4}{-keep}\s*$/o ) {
-                # convert incomplete 192.168/24 to 192.168.0.0/24 format
-                $value =
-                  join( '.', map $_ || 0, ( split /\./, $1 )[ 0 .. 3 ] ) . "/$2"
-                  || $value;
-            }
-
             my ( $start_ip, $end_ip ) =
               RT::ObjectCustomFieldValue->ParseIPRange($value);
             if ( $start_ip && $end_ip ) {

@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-05-05 18:39+0000\n"
-"PO-Revision-Date: 2014-05-02 03:19+0000\n"
-"Last-Translator: Alex Vandiver <Unknown>\n"
+"POT-Creation-Date: 2014-06-06 00:21+0000\n"
+"PO-Revision-Date: 2014-05-14 07:36+0000\n"
+"Last-Translator: Andi Chandler <Unknown>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-05-05 18:56+0000\n"
-"X-Generator: Launchpad (build 16985)\n"
+"X-Launchpad-Export-Date: 2014-06-06 00:38+0000\n"
+"X-Generator: Launchpad (build 17031)\n"
 
 #: share/html/Install/DatabaseDetails.html:180
 #. ($RT::DatabaseName)
@@ -87,7 +87,7 @@ msgstr "Click \"Initialise Database\" to create RT's database and insert initial
 msgid "Click to choose a color"
 msgstr "Click to choose a colour"
 
-#: lib/RT/Scrip.pm:176 lib/RT/Scrip.pm:802
+#: lib/RT/Scrip.pm:176 lib/RT/Scrip.pm:821
 msgid "Condition is mandatory argument"
 msgstr "Condition is a mandatory argument"
 
@@ -164,7 +164,7 @@ msgstr "RT is used by Fortune 100 companies, one-person businesses, government a
 msgid "RT's logging configuration is summarized below:"
 msgstr "RT's logging configuration is summarised below:"
 
-#: lib/RT/Config.pm:338
+#: lib/RT/Config.pm:358
 msgid "Rich text (HTML) shows formatting such as colored text, bold, italics, and more"
 msgstr "Rich text (HTML) shows formatting such as coloured text, bold, italics, and more"
 
