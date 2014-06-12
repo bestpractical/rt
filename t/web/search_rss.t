@@ -39,14 +39,11 @@ my $rss_content = $agent->content;
 $agent->get_ok($rdf_path);
 is($agent->content, $rss_content, 'old Results.rdf still works');
 
-SKIP: {
-    eval { require XML::Simple; };
-    skip 'no XML::Simple found', 6 if $@;
-    my $rss = XML::Simple::XMLin( $rss_content );
-    is( scalar @{ $rss->{item} }, 5, 'item number' );
-    for ( 1 .. 5 ) {
-        is( $rss->{item}[$_-1]{title}, 'Ticket ' . $_, 'title' . $_ );
-    }
+use XML::Simple;
+my $rss = XML::Simple::XMLin( $rss_content );
+is( scalar @{ $rss->{item} }, 5, 'item number' );
+for ( 1 .. 5 ) {
+    is( $rss->{item}[$_-1]{title}, 'Ticket ' . $_, 'title' . $_ );
 }
 
 # not login at all

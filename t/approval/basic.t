@@ -1,10 +1,6 @@
 use strict;
 use warnings;
 use RT::Test tests => undef;
-BEGIN {
-    plan skip_all => 'Email::Abstract and Test::Email required.'
-        unless eval { require Email::Abstract; require Test::Email; 1 };
-}
 
 use RT::Test::Email;
 
