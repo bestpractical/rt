@@ -1,0 +1,31 @@
+use strict;
+use warnings;
+
+our @Initial = (
+    sub {
+        use RT::Queues;
+        my $queues = RT::Queues->new(RT->SystemUser);
+        $queues->UnLimit;
+        $queues->{'find_disabled_rows'} = 1;
+        while ( my $queue = $queues->Next ) {
+            next if $queue->FirstAttribute('DefaultValues');
+            my %default;
+            for my $priority ( qw/InitialPriority FinalPriority/ ) {
+                $default{$priority} = $queue->__Value($priority) if $queue->__Value($priority);
+            }
+            if ( my $due = $queue->__Value('DefaultDueIn') ) {
+                if ( $due == 1 ) {
+                    $default{Due} = "$due day";
+                }
+                else {
+                    $default{Due} = "$due days";
+                }
+            }
+            if ( %default ) {
+                $queue->SetAttribute( Name => 'DefaultValues', Content => \%default );
+                RT->Logger->warning("updated default values for queue " . $queue->Name);
+            }
+        }
+        return 1;
+    },
+);

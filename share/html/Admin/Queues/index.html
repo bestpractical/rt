@@ -76,7 +76,7 @@
 % }
 
 <select name="QueueField">
-% foreach my $col (qw(Name Description CorrespondAddress CommentAddress InitialPriority FinalPriority DefaultDueIn)) {
+% foreach my $col (qw(Name Description CorrespondAddress CommentAddress FinalPriority )) {
 <option <% $QueueField eq $col ? 'selected="selected"' : '' |n %> value="<% $col %>"><% loc($col) %></option>
 % }
 </select>

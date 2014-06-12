@@ -92,22 +92,6 @@
 <br /><span><em><&|/l , RT->Config->Get('CommentAddress')&>(If left blank, will default to [_1])</&></em></span></td>
 </tr>
 
-<tr><td align="right"><&|/l&>Priority starts at</&>:</td>
-<td><& /Elements/SelectPriority,
-    Name => "InitialPriority",
-    Default => $Create? 0: $QueueObj->InitialPriority || $InitialPriority,
-&></td>
-<td align="right"><&|/l&>Over time, priority moves toward</&>:</td>
-<td><& /Elements/SelectPriority,
-    Name => "FinalPriority",
-    Default => $Create? 0: $QueueObj->FinalPriority || $FinalPriority,
-&><br /><span><em><&|/l&>requires running rt-crontool</&></em></span></td>
-</tr>
-
-<tr><td align="right"><&|/l&>Requests should be due in</&>:</td>
-<td colspan="3"><input name="DefaultDueIn" value="<% ($Create) ? "" : $QueueObj->DefaultDueIn || $DefaultDueIn || "" %>" /> <&|/l&>days</&>.</td>
-</tr>
-
 % my $CFs = $QueueObj->CustomFields;
 % while (my $CF = $CFs->Next) {
 <tr valign="top"><td align="right">
@@ -192,7 +176,7 @@ unless ($Create) {
 if ( $QueueObj->Id ) {
     $title = loc('Configuration for queue [_1]', $QueueObj->Name );
     my @attribs= qw(Description CorrespondAddress CommentAddress Name
-        InitialPriority FinalPriority DefaultDueIn Sign SignAuto Encrypt Lifecycle SubjectTag Disabled);
+        Sign SignAuto Encrypt Lifecycle SubjectTag Disabled);
 
     # we're asking about enabled on the web page but really care about disabled
     if ( $SetEnabled ) {
@@ -260,9 +244,6 @@ $Create => undef
 $Description => undef
 $CorrespondAddress => undef
 $CommentAddress => undef
-$InitialPriority => undef
-$FinalPriority => undef
-$DefaultDueIn => undef
 $SetEnabled => undef
 $SetCrypt => undef
 $Enabled => undef

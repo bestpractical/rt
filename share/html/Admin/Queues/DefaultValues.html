@@ -51,6 +51,23 @@
 
 <form method="post" action="DefaultValues.html" name="ModifyDefaultValues" id="ModifyDefaultValues">
 <input type="hidden" name="id" value="<% $queue->id %>" />
+
+<h2><&|/l&>Core Fields</&></h2>
+<table border="0">
+<tr><td class="label"><&|/l&>Priority</&>:</td>
+<td><& /Elements/SelectPriority,
+    Name => "InitialPriority",
+    Default => $queue->DefaultValue('InitialPriority'),
+&></td></tr>
+<tr><td class="label"><&|/l&>Final Priority</&>:</td>
+<td><& /Elements/SelectPriority,
+    Name => "FinalPriority",
+    Default => $queue->DefaultValue('FinalPriority'),
+&><br /><span><em><&|/l&>requires running rt-crontool</&></em></span></td></tr>
+<tr><td class="label"><&|/l&>Starts</&>:</td><td><& /Elements/SelectDate, Name => "Starts", Default => $queue->DefaultValue('Starts') || '' &></td></tr>
+<tr><td class="label"><&|/l&>Due</&>:</td><td><& /Elements/SelectDate, Name => "Due", Default => $queue->DefaultValue('Due') || '' &></td></tr>
+</table>
+
 <h2><&|/l&>Ticket Custom Fields</&></h2>
 <& /Elements/EditCustomFields, CustomFields => $ticket_cfs, NamePrefix => 'Default-', Object => RT::Ticket->new($session{CurrentUser}), QueueObj => $queue &>
 
@@ -66,6 +83,14 @@ my $ticket_cfs = $queue->TicketCustomFields;
 
 my @results;
 if ( $ARGS{Update} ) {
+    for my $field ( qw/InitialPriority FinalPriority Starts Due/ ) {
+        my ($ret, $msg) = $queue->SetDefaultValue(
+            Name => $field,
+            Value => $ARGS{$field},
+        );
+        push @results, $msg;
+    }
+
     for my $cf_id ( map { /^Default-(\d+)-/ ? $1 : ()  } keys %ARGS ) {
         my $cf = RT::CustomField->new($session{CurrentUser});
         $cf->Load($cf_id);

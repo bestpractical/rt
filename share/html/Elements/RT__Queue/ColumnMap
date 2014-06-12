@@ -57,10 +57,6 @@ my $COLUMN_MAP = {
         attribute => 'Disabled',
         value     => sub { return $_[0]->Disabled? $_[0]->loc('Disabled'): $_[0]->loc('Enabled') },
     },
-    Priority => {
-        title     => 'Priority', # loc
-        value     => sub { return $_[0]->InitialPriority .'-'. $_[0]->FinalPriority },
-    },
     Address  => {
         title     => 'Address', # loc
         value     => sub { return ($_[0]->CorrespondAddress||'-') .'/'. ($_[0]->CommentAddress||'-') },
@@ -98,7 +94,6 @@ my $COLUMN_MAP = {
 
 foreach my $field (qw(
     Name Description CorrespondAddress CommentAddress
-    InitialPriority FinalPriority DefaultDueIn
 )) {
     $COLUMN_MAP->{$field} = {
         title => $field,

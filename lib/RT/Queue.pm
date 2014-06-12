@@ -146,9 +146,6 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   Description
   CorrespondAddress
   CommentAddress
-  InitialPriority
-  FinalPriority
-  DefaultDueIn
  
 If you pass the ACL check, it creates the queue and returns its queue id.
 
@@ -164,9 +161,6 @@ sub Create {
         CommentAddress    => '',
         Lifecycle         => 'default',
         SubjectTag        => undef,
-        InitialPriority   => 0,
-        FinalPriority     => 0,
-        DefaultDueIn      => 0,
         Sign              => undef,
         SignAuto          => undef,
         Encrypt           => undef,
@@ -943,60 +937,6 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=head2 InitialPriority
-
-Returns the current value of InitialPriority. 
-(In the database, InitialPriority is stored as int(11).)
-
-
-
-=head2 SetInitialPriority VALUE
-
-
-Set InitialPriority to VALUE. 
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, InitialPriority will be stored as a int(11).)
-
-
-=cut
-
-
-=head2 FinalPriority
-
-Returns the current value of FinalPriority. 
-(In the database, FinalPriority is stored as int(11).)
-
-
-
-=head2 SetFinalPriority VALUE
-
-
-Set FinalPriority to VALUE. 
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, FinalPriority will be stored as a int(11).)
-
-
-=cut
-
-
-=head2 DefaultDueIn
-
-Returns the current value of DefaultDueIn. 
-(In the database, DefaultDueIn is stored as int(11).)
-
-
-
-=head2 SetDefaultDueIn VALUE
-
-
-Set DefaultDueIn to VALUE. 
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, DefaultDueIn will be stored as a int(11).)
-
-
-=cut
-
-
 =head2 Creator
 
 Returns the current value of Creator. 
@@ -1069,12 +1009,6 @@ sub _CoreAccessible {
         {read => 1, write => 1, sql_type => 12, length => 120,  is_blob => 0,  is_numeric => 0,  type => 'varchar(120)', default => ''},
         Lifecycle => 
         {read => 1, write => 1, sql_type => 12, length => 32,  is_blob => 0, is_numeric => 0,  type => 'varchar(32)', default => 'default'},
-        InitialPriority => 
-        {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
-        FinalPriority => 
-        {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
-        DefaultDueIn => 
-        {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Creator => 
         {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Created => 
@@ -1155,6 +1089,56 @@ sub PreInflate {
     return 1;
 }
 
+sub DefaultValue {
+    my $self = shift;
+    my $field = shift;
+    return undef unless $field =~ /^(?:(?:Initial|Final)Priority|Due|Starts)$/;
+    my $attr = $self->FirstAttribute('DefaultValues');
+    return undef unless $attr && $attr->Content;
+    return $attr->Content->{$field};
+}
+
+sub SetDefaultValue {
+    my $self = shift;
+    my %args = (
+        Name  => undef,
+        Value => undef,
+        @_
+    );
+    my $field = shift;
+    my $attr = $self->FirstAttribute('DefaultValues');
+
+    my ($old_value, $old_content, $new_value);
+    if ( $attr && $attr->Content ) {
+        $old_content = $attr->Content;
+        $old_value = $old_content->{$args{Name}};
+    }
+
+    unless ( defined $old_value && length $old_value ) {
+        $old_value = $self->loc('(no value)');
+    }
+
+    $new_value = $args{Value};
+    unless ( defined $new_value && length $new_value ) {
+        $new_value = $self->loc( '(no value)' );
+    }
+
+    return 1 if $new_value eq $old_value;
+
+    my $ret = $self->SetAttribute(
+        Name    => 'DefaultValues',
+        Content => {
+            %{ $old_content || {} }, $args{Name} => $args{Value},
+        },
+    );
+
+    if ( $ret ) {
+        return ( $ret, $self->loc( 'Default value of [_1] changed from [_2] to [_3]', $args{Name}, $old_value, $new_value ) );
+    }
+    else {
+        return ( $ret, $self->loc( "Can't change default value of [_1] from [_2] to [_3]", $args{Name}, $old_value, $new_value ) );
+    }
+}
 
 
 RT::Base->_ImportOverlays();
