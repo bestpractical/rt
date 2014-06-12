@@ -104,10 +104,12 @@ jQuery(  function () {
 <fieldset class="cfedit">
 <div data-name="<%$name%>" id="<%$name%>">
 %   if ( $checktype eq 'radio' ) {
+% if ( $show_empty_option ) {
   <div class="none">
   <input class="none" type="<% $checktype %>" name="<% $name %>" id="<% $name %>-none" value="" <% keys %default ? '' : ' checked="checked"' |n%> />
   <label for="<% $name %>-none"><&|/l&>(no value)</&></label><br />
   </div>
+% }
 %   }
 %   my $CFVs = $CustomField->Values;
 %   while ( my $value = $CFVs->Next ) {
@@ -125,7 +127,9 @@ jQuery(  function () {
 %# this hidden select is to supply a full list of values,
 %# see filter_cascade_select() in js/cascaded.js
       <select name="<%$name%>-Complete" id="<%$name%>-Complete" class="hidden" disabled="disabled">
+% if ( $show_empty_option ) {
         <option value=""<% !$selected && qq[ selected="selected"] |n %>><&|/l&>(no value)</&></option>
+% }
 %       $m->out($out);
       </select>
 % }
@@ -135,7 +139,9 @@ jQuery(  function () {
   size="<% $Rows %>"
 % }
 <% $Multiple && qq[multiple="multiple"] |n %> >
+% if ( $show_empty_option ) {
 <option value=""<% !$selected && qq[ selected="selected"] |n %>><&|/l&>(no value)</&></option>
+% }
 % $m->out($out);
 </select>
 % }
@@ -159,6 +165,22 @@ if ( !@Default && $Values ) {
     @Default = map $_->Content, @{ $Values->ItemsArrayRef };
 }
 my %default = map {lc $_ => 1} @Default;
+
+my $show_empty_option;
+if ( exists $ARGS{ShowEmptyOption} ) {
+    $show_empty_option = $ARGS{ShowEmptyOption};
+}
+else {
+    if ( $CustomField->MatchPattern('') ) {
+        $show_empty_option = 1;
+    }
+    elsif ( $CustomField->SupportDefaultValues ) {
+        my ( $on ) = grep { $_->isa( $CustomField->RecordClassFromLookupType ) } $CustomField->ACLEquivalenceObjects;
+        my $default_values = $CustomField->DefaultValues( Object => $on || RT->System );
+        $show_empty_option = 1 unless defined $default_values && length $default_values;
+    }
+}
+
 </%init>
 <%ARGS>
 $Object => undef
