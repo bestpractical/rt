@@ -53,21 +53,6 @@
 <h2><% loc("Custom Fields for [_1]", $tmp->FriendlyLookupType( $Type )) %></h2>
 % }
 
-<& /Elements/CollectionList,
-    OrderBy       => 'LookupType|Name',
-    Order         => 'ASC|ASC',
-    Rows          => 50,
-    %ARGS,
-    Collection    => $CustomFields,
-    Format        => $Format,
-    DisplayFormat => ($Type? '' : '__FriendlyLookupType__,'). $Format,
-    AllowSorting  => 1,
-    PassArguments => [
-        qw(Format Rows Page Order OrderBy),
-        qw(Type ShowDisabled)
-    ],
-&>
-
 <form action="<%RT->Config->Get('WebPath')%>/Admin/CustomFields/index.html" method="get">
 <&|/l&>Only show custom fields for:</&>
 <select name="Type">
@@ -85,6 +70,21 @@
 
 <input type="submit" value="<% loc('Go!') %>" />
 </form>
+
+<& /Elements/CollectionList,
+    OrderBy       => 'LookupType|Name',
+    Order         => 'ASC|ASC',
+    Rows          => 50,
+    %ARGS,
+    Collection    => $CustomFields,
+    Format        => $Format,
+    DisplayFormat => ($Type? '' : '__FriendlyLookupType__,'). $Format,
+    AllowSorting  => 1,
+    PassArguments => [
+        qw(Format Rows Page Order OrderBy),
+        qw(Type ShowDisabled)
+    ],
+&>
 
 <%args>
 $Type => ''
