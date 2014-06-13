@@ -67,10 +67,11 @@
 my %allowed_components = map {$_ => 1} @{RT->Config->Get('HomepageComponents')};
 
 my $user = $session{'CurrentUser'}->UserObj;
-$Portlets ||= $user->Preferences('HomepageSettings');
 unless ( $Portlets ) {
     my ($defaults) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
-    $Portlets = $defaults ? $defaults->Content : {};
+    $Portlets = $user->Preferences(
+        HomepageSettings => $defaults ? $defaults->Content : {}
+    );
 }
 
 $m->callback( CallbackName => 'MassagePortlets', Portlets => $Portlets );
