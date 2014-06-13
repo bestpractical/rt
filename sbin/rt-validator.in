@@ -615,6 +615,19 @@ push @CHECKS, 'Tickets -> other' => sub {
     );
     $res *= check_integrity(
         'Tickets', 'Owner' => 'Users', 'id',
+         action => sub {
+             my ($id, %prop) = @_;
+             return unless my $replace_with = prompt_integer(
+                 'Replace',
+                 "Column Owner should point to a user, but there is record #$id in Tickets\n"
+                 ."where it's not true. It's ok to replace these wrong references with id of any user.\n"
+                 ."Note that id you enter is not checked. You can pick any user from your DB, but it's\n"
+                 ."may be better to create a special user for this, for example 'user_that_has_been_deleted'\n"
+                 ."or something like that.",
+                 "Tickets.Owner -> user #$prop{Owner}"
+             );
+             update_records( 'Tickets', { id => $id, Owner => $prop{Owner} }, { Owner => $replace_with } );
+         },
     );
     # XXX: check that owner is only member of owner role group
     return $res;
