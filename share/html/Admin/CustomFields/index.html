@@ -49,9 +49,7 @@
 <& /Elements/Tabs &>
 
 % my $tmp = RT::CustomField->new( $session{'CurrentUser'} );
-% if ( $Type ) {
-<h2><% loc("Custom Fields for [_1]", $tmp->FriendlyLookupType( $Type )) %></h2>
-% }
+<h1><% loc("Custom Fields for [_1]", $Type ? $tmp->FriendlyLookupType( $Type ) : loc('any Object') ) %></h1>
 
 <form action="<%RT->Config->Get('WebPath')%>/Admin/CustomFields/index.html" method="get">
 <&|/l&>Only show custom fields for:</&>
