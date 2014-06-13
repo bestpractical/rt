@@ -259,11 +259,11 @@ sub get_template {
 
     unless ( $template =~ /\D/ ) {
         # by id
-        my $template = RT::Template->new( RT->SystemUser );
-        $template->Load( $template );
+        my $template_obj = RT::Template->new( RT->SystemUser );
+        $template_obj->Load( $template );
         die "Failed to load template '$template'"
-            unless $template->id;
-        return $template;
+            unless $template_obj->id;
+        return $template_obj;
     }
 
     my $queue = $ticket->Queue;
