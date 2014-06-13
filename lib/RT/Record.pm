@@ -499,12 +499,15 @@ sub _Set {
     }
 
     my $old_val = $self->__Value($args{'Field'});
-     $self->_SetLastUpdated();
     my $ret = $self->SUPER::_Set(
         Field => $args{'Field'},
         Value => $args{'Value'},
         IsSQL => $args{'IsSQL'}
     );
+
+    $self->_SetLastUpdated() 
+        unless ( $self->__Value( $args{'Field'} ) eq $old_val ) ;
+
         my ($status, $msg) =  $ret->as_array();
 
         # @values has two values, a status code and a message.
