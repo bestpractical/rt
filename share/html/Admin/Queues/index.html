@@ -48,8 +48,6 @@
 <& /Admin/Elements/Header, Title => loc("Admin queues") &>
 <& /Elements/Tabs &>
 
-
-
 <h1><%$caption%></h1>
 
 <form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Queues/index.html">
@@ -69,7 +67,7 @@
 
 <input type="checkbox" class="checkbox" id="FindDisabledQueues" name="FindDisabledQueues" value="1" <% $FindDisabledQueues? 'checked="checked"': '' |n%> />
 <label for="FindDisabledQueues"><&|/l&>Include disabled queues in listing.</&></label>
-<div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
+<div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div>
 </form>
 
 <p><&|/l&>Select a queue</&>:</p>
