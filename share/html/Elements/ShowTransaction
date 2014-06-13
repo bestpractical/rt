@@ -68,7 +68,7 @@
 
   <div class="content">
 <%PERL>
-$m->comp('/Elements/ShowCustomFields', Object => $Transaction ) if $HasTxnCFs;
+$m->comp('/Elements/ShowCustomFields', Object => $Transaction, HideEmpty => 1 ) if $HasTxnCFs;
 $m->comp(
     'ShowTransactionAttachments',
     %ARGS,
