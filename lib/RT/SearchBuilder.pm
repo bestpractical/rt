@@ -518,6 +518,31 @@ sub _LimitCustomField {
         return %args;
     };
 
+    # Special Limit (we can exit early)
+    # IS NULL and IS NOT NULL checks
+    if ( $op =~ /^IS( NOT)?$/i ) {
+        my ($ocfvalias, $CFs) = $self->_CustomFieldJoin( $cfkey, $cf, $ltype );
+        $self->_OpenParen( $args{SUBCLAUSE} );
+        $self->Limit(
+            %args,
+            ALIAS    => $ocfvalias,
+            FIELD    => ($column || 'id'),
+            OPERATOR => $op,
+            VALUE    => $value,
+        );
+        # See below for an explanation of this limit
+        $self->Limit(
+            ALIAS      => $CFs,
+            FIELD      => 'Name',
+            OPERATOR   => 'IS NOT',
+            VALUE      => 'NULL',
+            ENTRYAGGREGATOR => 'AND',
+            SUBCLAUSE  => $args{SUBCLAUSE},
+        ) if $CFs;
+        $self->_CloseParen( $args{SUBCLAUSE} );
+        return;
+    }
+
     ########## Content pre-parsing if we know things about the CF
     if ( blessed($cf) and delete $args{PREPARSE} ) {
         my $type = $cf->Type;
@@ -652,29 +677,6 @@ sub _LimitCustomField {
     }
 
     ########## Limits
-    # IS NULL and IS NOT NULL checks
-    if ( $op =~ /^IS( NOT)?$/i ) {
-        my ($ocfvalias, $CFs) = $self->_CustomFieldJoin( $cfkey, $cf, $ltype );
-        $self->_OpenParen( $args{SUBCLAUSE} );
-        $self->Limit(
-            %args,
-            ALIAS    => $ocfvalias,
-            FIELD    => ($column || 'id'),
-            OPERATOR => $op,
-            VALUE    => $value,
-        );
-        # See below for an explanation of this limit
-        $self->Limit(
-            ALIAS      => $CFs,
-            FIELD      => 'Name',
-            OPERATOR   => 'IS NOT',
-            VALUE      => 'NULL',
-            ENTRYAGGREGATOR => 'AND',
-            SUBCLAUSE  => $args{SUBCLAUSE},
-        ) if $CFs;
-        $self->_CloseParen( $args{SUBCLAUSE} );
-        return;
-    }
 
     my $single_value = !blessed($cf) || $cf->SingleValue;
     my $negative_op = ($op eq '!=' || $op =~ /\bNOT\b/i);

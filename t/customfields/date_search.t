@@ -3,7 +3,7 @@ use Test::MockTime qw(set_fixed_time restore_time);
 use warnings;
 use strict;
 
-use RT::Test nodata => 1, tests => 21;
+use RT::Test nodata => 1, tests => undef;
 
 RT::Test->set_rights(
     { Principal => 'Everyone', Right => [qw(
@@ -134,6 +134,28 @@ is( $ticket->CustomFieldValues->First->Content, '2010-05-04', 'date in db is' );
     is( $tickets->Count, 0, 'did not find the ticket with > 2010-05-05' );
 }
 
+{
+    my $tickets = RT::Tickets->new(RT->SystemUser);
+    $tickets->LimitCustomField(
+        CUSTOMFIELD => $cf->id,
+        OPERATOR    => 'IS',
+        VALUE       => 'NULL',
+    );
+
+    is( $tickets->Count, 0, 'did not find the ticket with date IS NULL' );
+}
+
+{
+    my $tickets = RT::Tickets->new(RT->SystemUser);
+    $tickets->LimitCustomField(
+        CUSTOMFIELD => $cf->id,
+        OPERATOR    => 'IS NOT',
+        VALUE       => 'NULL',
+    );
+
+    is( $tickets->Count, 1, 'did find the ticket with date IS NOT NULL' );
+}
+
 # relative search by users in different TZs
 {
     my $ticket = RT::Ticket->new(RT->SystemUser);
@@ -164,3 +186,4 @@ is( $ticket->CustomFieldValues->First->Content, '2010-05-04', 'date in db is' );
     is( $tickets->Count, 1, 'found the tickets' );
 }
 
+done_testing;
