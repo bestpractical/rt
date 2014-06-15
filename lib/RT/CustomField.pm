@@ -1898,7 +1898,15 @@ sub DefaultValues {
         @_,
     );
     my $attr = $args{Object}->FirstAttribute('CustomFieldDefaultValues');
-    return $attr->Content->{$self->id} if $attr && $attr->Content;
+    my $values;
+    $values = $attr->Content->{$self->id} if $attr && $attr->Content;
+    return $values if defined $values;
+
+    if ( !$args{Object}->isa( 'RT::System' ) ) {
+        my $system_attr = RT::System->FirstAttribute( 'CustomFieldDefaultValues' );
+        $values = $system_attr->Content->{$self->id} if $system_attr && $system_attr->Content;
+        return $values if defined $values;
+    }
     return undef;
 }
 
@@ -1910,16 +1918,18 @@ sub SetDefaultValues {
         @_,
     );
     my $attr = $args{Object}->FirstAttribute( 'CustomFieldDefaultValues' );
-    my ( $old_content, $old_values );
-    $old_content = $attr->Content if $attr && $attr->Content;
-    $old_values = $old_content->{ $self->id } if $old_content;
+    my ( $old_values, $old_content, $new_values );
+    if ( $attr && $attr->Content ) {
+        $old_content = $attr->Content;
+        $old_values = $old_content->{ $self->id };
+    }
 
-    my $ret = $args{Object}->SetAttribute(
-        Name    => 'CustomFieldDefaultValues',
-        Content => {
-            %{ $old_content || {} }, $self->id => $args{Values},
-        },
-    );
+    if ( !$args{Object}->isa( 'RT::System' ) && !defined $old_values ) {
+        my $system_attr = RT::System->FirstAttribute( 'CustomFieldDefaultValues' );
+        if ( $system_attr && $system_attr->Content ) {
+            $old_values = $system_attr->Content->{ $self->id };
+        }
+    }
 
     if ( defined $old_values && length $old_values ) {
         $old_values = join ', ', @$old_values if ref $old_values eq 'ARRAY';
@@ -1928,13 +1938,22 @@ sub SetDefaultValues {
         $old_values = $self->loc('(no value)');
     }
 
-    my $new_values = $args{Values};
+    $new_values = $args{Values};
     if ( defined $new_values && length $new_values ) {
         $new_values = join ', ', @$new_values if ref $new_values eq 'ARRAY';
     }
     else {
         $new_values = $self->loc( '(no value)' );
     }
+
+    return 1 if $new_values eq $old_values;
+
+    my $ret = $args{Object}->SetAttribute(
+        Name    => 'CustomFieldDefaultValues',
+        Content => {
+            %{ $old_content || {} }, $self->id => $args{Values},
+        },
+    );
 
     if ( $ret ) {
         return ( $ret, $self->loc( 'Default values changed from [_1] to [_2]', $old_values, $new_values ) );

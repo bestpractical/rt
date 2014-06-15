@@ -95,6 +95,7 @@ $exclude .= qq| data-autocomplete-exclude="$id"| if $Object->id;
     <td class="entry"> <input name="RefersTo-<%$id%>" value="<% $ARGSRef->{"RefersTo-$id"} || '' %>" <% $exclude |n%>/></td>
   </tr>
   <& /Elements/EditCustomFields,
+        %ARGS,
         Object          => $Object,
         Grouping        => 'Links',
         InTable         => 1,

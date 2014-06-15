@@ -500,7 +500,7 @@ sub Create {
     my $cfs = $self->QueueObj->TicketCustomFields;
     while ( my $cf = $cfs->Next ) {
         next if $cf_added{$cf->id} || !$cf->SupportDefaultValues;
-        my $values = $cf->DefaultValues(Object => RT->System); # TODO support queue-level default values
+        my $values = $cf->DefaultValues(Object => $self->QueueObj);
         foreach my $value ( UNIVERSAL::isa( $values => 'ARRAY' ) ? @$values : $values ) {
             next if $self->CustomFieldValueIsEmpty(
                 Field => $cf->id,
