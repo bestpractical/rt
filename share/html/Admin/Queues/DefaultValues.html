@@ -52,26 +52,83 @@
 <form method="post" action="DefaultValues.html" name="ModifyDefaultValues" id="ModifyDefaultValues">
 <input type="hidden" name="id" value="<% $queue->id %>" />
 
-<h2><&|/l&>Core Fields</&></h2>
-<table border="0">
-<tr><td class="label"><&|/l&>Priority</&>:</td>
-<td><& /Elements/SelectPriority,
-    Name => "InitialPriority",
-    Default => $queue->DefaultValue('InitialPriority'),
-&></td></tr>
-<tr><td class="label"><&|/l&>Final Priority</&>:</td>
-<td><& /Elements/SelectPriority,
-    Name => "FinalPriority",
-    Default => $queue->DefaultValue('FinalPriority'),
-&><br /><span><em><&|/l&>requires running rt-crontool</&></em></span></td></tr>
-<tr><td class="label"><&|/l&>Starts</&>:</td><td><& /Elements/SelectDate, Name => "Starts", Default => $queue->DefaultValue('Starts') || '' &></td></tr>
-<tr><td class="label"><&|/l&>Due</&>:</td><td><& /Elements/SelectDate, Name => "Due", Default => $queue->DefaultValue('Due') || '' &></td></tr>
-</table>
+<div class="ticket-info-basics">
+    <&| /Widgets/TitleBox, title => loc('Basics') &>
+    <table border="0">
+    <tr><td class="label"><&|/l&>Priority</&>:</td>
+    <td><& /Elements/SelectPriority,
+        Name => "InitialPriority",
+        Default => $queue->DefaultValue('InitialPriority'),
+    &></td></tr>
+    <tr><td class="label"><&|/l&>Final Priority</&>:</td>
+    <td><& /Elements/SelectPriority,
+        Name => "FinalPriority",
+        Default => $queue->DefaultValue('FinalPriority'),
+    &><br /><span><em><&|/l&>requires running rt-crontool</&></em></span></td></tr>
+    <& /Elements/EditCustomFields,
+        NamePrefix => 'Default-',
+        Object => RT::Ticket->new($session{CurrentUser}),
+        CustomFields => $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes,
+        Grouping => 'Basics',
+        InTable => 1,
+    &>
+    </table>
+    </&>
+</div>
 
-<h2><&|/l&>Ticket Custom Fields</&></h2>
-<& /Elements/EditCustomFields, CustomFields => $ticket_cfs, NamePrefix => 'Default-', Object => RT::Ticket->new($session{CurrentUser}), QueueObj => $queue &>
+<div class="ticket-info-dates">
+    <&|/Widgets/TitleBox, title => loc("Dates") &>
+    <table>
+    <tr><td class="label"><&|/l&>Starts</&>:</td><td><& /Elements/SelectDate, Name => "Starts", Default => $queue->DefaultValue('Starts') || '' &></td></tr>
+    <tr><td class="label"><&|/l&>Due</&>:</td><td><& /Elements/SelectDate, Name => "Due", Default => $queue->DefaultValue('Due') || '' &></td></tr>
+    <& /Elements/EditCustomFields,
+        NamePrefix => 'Default-',
+        Object => RT::Ticket->new($session{CurrentUser}),
+        CustomFields => $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes,
+        Grouping => 'Dates',
+        InTable => 1,
+    &>
+    </table>
+    </&>
+</div>
+
+% my $groupings = RT->Config->Get('CustomFieldGroupings');
+% if ( $groupings && $groupings->{'RT::Ticket'} && grep { $_ eq 'People' } @{$groupings->{'RT::Ticket'}} ) {
+<div class="ticket-info-people">
+    <&|/Widgets/TitleBox, title => loc("People") &>
+    <table>
+    <& /Elements/EditCustomFields,
+        NamePrefix => 'Default-',
+        Object => RT::Ticket->new($session{CurrentUser}),
+        CustomFields => $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes,
+        Grouping => 'People',
+        InTable => 1,
+    &>
+    </table>
+    </&>
+</div>
+% }
+
+% if ( $groupings && $groupings->{'RT::Ticket'} && grep { $_ eq 'Links' } @{$groupings->{'RT::Ticket'}} ) {
+<div class="ticket-info-links">
+    <&|/Widgets/TitleBox, title => loc("Links") &>
+    <table>
+    <& /Elements/EditCustomFields,
+        NamePrefix => 'Default-',
+        Object => RT::Ticket->new($session{CurrentUser}),
+        CustomFields => $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes,
+        Grouping => 'Links',
+        InTable => 1,
+    &>
+    </table>
+    </&>
+</div>
+% }
+
+<& /Elements/EditCustomFieldCustomGroupings, CustomFieldGenerator => sub { $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes }, NamePrefix => 'Default-', Object => RT::Ticket->new($session{CurrentUser}) &>
 
 <& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>
+<& /Elements/Submit, Name => 'Reset', Label => loc('Reset Custom Field Values to Default') &>
 </form>
 
 <%INIT>
@@ -79,10 +136,16 @@ my $queue = RT::Queue->new( $session{CurrentUser} );
 $queue->Load($id) || Abort( loc( "Couldn't load object [_1]", $id ) );
 
 my $title = loc( 'Default Values for queue [_1]', $queue->Name );
-my $ticket_cfs = $queue->TicketCustomFields;
 
 my @results;
-if ( $ARGS{Update} ) {
+if ( $ARGS{Reset} ) {
+    my $attr = $queue->FirstAttribute( 'CustomFieldDefaultValues' );
+    if ( $attr ) {
+        $attr->Delete;
+        push @results, "Custom Field default values are reset";
+    }
+}
+elsif ( $ARGS{Update} ) {
     for my $field ( qw/InitialPriority FinalPriority Starts Due/ ) {
         my ($ret, $msg) = $queue->SetDefaultValue(
             Name => $field,
@@ -103,6 +166,11 @@ if ( $ARGS{Update} ) {
         }
     }
 }
+
+MaybeRedirectForResults(
+    Actions   => \@results,
+    Arguments => { id => $queue->id },
+);
 </%INIT>
 <%ARGS>
 $id => undef
