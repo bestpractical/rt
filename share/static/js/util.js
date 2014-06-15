@@ -186,8 +186,15 @@ jQuery(function() {
         changeMonth: true,
         changeYear: true,
         showOtherMonths: true,
+        showOn: 'none',
         selectOtherMonths: true
     };
+    jQuery(".datepicker").focus(function() {
+        var val = jQuery(this).val();
+        if ( !val.match(/[a-z]/i) ) {
+            jQuery(this).datepicker('show');
+        }
+    });
     jQuery(".datepicker:not(.withtime)").datepicker(opts);
     jQuery(".datepicker.withtime").datetimepicker( jQuery.extend({}, opts, {
         stepHour: 1,
