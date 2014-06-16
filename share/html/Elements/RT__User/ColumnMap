@@ -142,6 +142,10 @@ my $COLUMN_MAP = {
         attribute   => 'FreeformContactInfo',
         value       => sub { return $_[0]->FreeformContactInfo() },
     },
+    Disabled => {
+        title     => 'Status', # loc
+        value     => sub { return $_[0]->Disabled? $_[0]->loc('Disabled'): $_[0]->loc('Enabled') },
+    },
 };
 
 </%ONCE>
