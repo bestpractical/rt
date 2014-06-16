@@ -48,12 +48,7 @@ input[type=submit],
 input[class=button],
 button,
 input,
-select {
-    font-size: 1.0em;
-    -moz-border-radius: 0;
-    -webkit-border-radius: 0;
-    border-radius: 0;
-}
+select { font-size: 1.0em }
 
 input[type=reset],
 input[type=submit],
