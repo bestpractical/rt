@@ -1106,25 +1106,23 @@ sub Timelocal {
 
 =head3 Timezone $context
 
-Returns the timezone name.
-
-Takes one argument, C<$context> argument which could be C<user>, C<server> or C<utc>.
+Returns the timezone name for the specified context.  C<$context>
+should be one of these values:
 
 =over
 
-=item user
+=item C<user>
 
-Default value is C<user> that mean it returns current user's Timezone value.
+The current user's Timezone value will be returned.
 
-=item server
+=item C<server>
 
-If context is C<server> it returns value of the C<Timezone> RT config option.
-
-=item  utc
-
-If both server's and user's timezone names are undefined returns 'UTC'.
+The value of the C<Timezone> RT config option will be returned.
 
 =back
+
+For any other value of C<$context>, or if the specified context has no
+defined timezone, C<UTC> is returned.
 
 =cut
 
@@ -1132,7 +1130,7 @@ sub Timezone {
     my $self = shift;
 
     if (@_ == 0) {
-        Carp::carp "RT::Date->Timezone is a setter only";
+        Carp::carp 'RT::Date->Timezone requires a context argument';
         return undef;
     }
 
