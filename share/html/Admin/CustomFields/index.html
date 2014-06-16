@@ -49,24 +49,7 @@
 <& /Elements/Tabs &>
 
 % my $tmp = RT::CustomField->new( $session{'CurrentUser'} );
-% if ( $Type ) {
-<h2><% loc("Custom Fields for [_1]", $tmp->FriendlyLookupType( $Type )) %></h2>
-% }
-
-<& /Elements/CollectionList,
-    OrderBy       => 'LookupType|Name',
-    Order         => 'ASC|ASC',
-    Rows          => 50,
-    %ARGS,
-    Collection    => $CustomFields,
-    Format        => $Format,
-    DisplayFormat => ($Type? '' : '__FriendlyLookupType__,'). $Format,
-    AllowSorting  => 1,
-    PassArguments => [
-        qw(Format Rows Page Order OrderBy),
-        qw(Type ShowDisabled)
-    ],
-&>
+<h1><% loc("Custom Fields for [_1]", $Type ? $tmp->FriendlyLookupType( $Type ) : loc('any Object') ) %></h1>
 
 <form action="<%RT->Config->Get('WebPath')%>/Admin/CustomFields/index.html" method="get">
 <&|/l&>Only show custom fields for:</&>
@@ -83,8 +66,23 @@
 
 % $m->callback(CallbackName => 'BeforeSubmit');
 
-<input type="submit" value="<% loc('Go!') %>" />
+<div align="right"><input type="submit" value="<% loc('Go!') %>" /></div>
 </form>
+
+<& /Elements/CollectionList,
+    OrderBy       => 'LookupType|Name',
+    Order         => 'ASC|ASC',
+    Rows          => 50,
+    %ARGS,
+    Collection    => $CustomFields,
+    Format        => $Format,
+    DisplayFormat => ($Type? '' : '__FriendlyLookupType__,'). $Format,
+    AllowSorting  => 1,
+    PassArguments => [
+        qw(Format Rows Page Order OrderBy),
+        qw(Type ShowDisabled)
+    ],
+&>
 
 <%args>
 $Type => ''
