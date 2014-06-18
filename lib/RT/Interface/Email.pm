@@ -1824,6 +1824,7 @@ sub _HTMLFormatter {
                 next;
             }
 
+            my $path = $prog =~ s{(.*/)}{} ? $1 : undef;
             my $package = "HTML::FormatText::" . ucfirst($prog);
             unless ($package->require) {
                 RT->Logger->warn("$prog is not a valid formatter provided by HTML::FormatExternal")
@@ -1831,8 +1832,15 @@ sub _HTMLFormatter {
                 next;
             }
 
-            unless (defined $package->program_version) {
-                RT->Logger->warn("Could not find external '$prog' HTML formatter; is it installed?")
+            if ($path) {
+                local $ENV{PATH} = $path;
+                if (not defined $package->program_version) {
+                    RT->Logger->warn("Could not find or run external '$prog' HTML formatter in $path$prog")
+                        if $wanted;
+                    next;
+                }
+            } elsif (not defined $package->program_version) {
+                RT->Logger->warn("Could not find or run external '$prog' HTML formatter in \$PATH ($ENV{PATH}) -- you may need to install it or provide the full path")
                     if $wanted;
                 next;
             }
@@ -1841,6 +1849,7 @@ sub _HTMLFormatter {
             $formatter = sub {
                 my $html = shift;
                 RT::Util::safe_run_child {
+                    local $ENV{PATH} = $path || $ENV{PATH};
                     $package->format_string($html, leftmargin => 0, rightmargin => 78);
                 };
             };

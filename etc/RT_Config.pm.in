@@ -719,6 +719,9 @@ Set C<$HTMLFormatter> to one of the above programs (or the full path to
 such) to use a different program than the above would choose by default.
 Setting this requires that L<HTML::FormatExternal> be installed.
 
+If the chosen formatter is not in the webserver's $PATH, you may set
+this option the full path to one of the aforementioned executables.
+
 =cut
 
 Set($HTMLFormatter, undef);
