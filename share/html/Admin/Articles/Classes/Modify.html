@@ -82,7 +82,7 @@
 </tr>
 </table>
 
-<h3>When inserting articles in this class into emails:</h3>
+<h3><&|/l&>When inserting articles in this class into emails:</&></h3>
 <ul>
 <li>
     <input type="checkbox" id="Include-Name" name="Include-Name" value="1" <% $include{Name} %>>
@@ -94,7 +94,7 @@
 </li>
 % if ( $cfs ) {
 % while (my $cf = $cfs->Next) {
-<li>Include custom field '<% $cf->Name %>'
+<li><% loc("Include custom field '[_1]'", $cf->Name) %>
   <ul>
     <li>
         <input type="checkbox" id="Include-CF-Title-<% $cf->Id %>" name="Include-CF-Title-<% $cf->Id %>" <% $include{"CF-Title-".$cf->Id} %> />
@@ -110,12 +110,12 @@
 </ul>
 
 % if ( @$subject_cfs ) {
-<h3>Change email subject:</h3>
+<h3><&|/l&>Change email subject:</&></h3>
 <p><&|/l&>If a Custom Field is selected, the Subject of your outgoing email will be overridden by this article.</&></p>
 
 <& /Widgets/Form/Select,
     Name         => 'SubjectOverride',
-    DefaultLabel => 'No Subject Override',
+    DefaultLabel => loc('No Subject Override'),
     Values       => $subject_cfs,
     ValuesLabel  => $subject_cf_labels,
     CurrentValue => $ClassObj->SubjectOverride,
