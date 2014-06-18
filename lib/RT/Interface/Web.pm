@@ -1376,6 +1376,7 @@ our %is_whitelisted_component = (
     '/Search/Simple.html'  => 1,
     '/m/tickets/search'    => 1,
     '/Search/Chart.html'   => 1,
+    '/User/Search.html'    => 1,
 
     # This page takes Attachment and Transaction argument to figure
     # out what to show, but it's read only and will deny information if you
