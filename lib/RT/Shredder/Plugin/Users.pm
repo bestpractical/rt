@@ -197,22 +197,32 @@ sub Run
     if( $self->{'opt'}{'member_of'} ) {
         $objs->MemberOfGroup( $self->{'opt'}{'member_of'} );
     }
+    my @filter;
     if( $self->{'opt'}{'not_member_of'} ) {
-        return $self->FilterNotMemberOfGroup(
+        push @filter, $self->FilterNotMemberOfGroup(
             Shredder => $args{'Shredder'},
-            Objects  => $objs,
             GroupId  => $self->{'opt'}{'not_member_of'},
         );
     }
     if( $self->{'opt'}{'no_tickets'} ) {
-        return $self->FilterWithoutTickets(
+        push @filter, $self->FilterWithoutTickets(
             Shredder => $args{'Shredder'},
-            Objects  => $objs,
         );
-    } else {
-        if( $self->{'opt'}{'limit'} ) {
-            $objs->RowsPerPage( $self->{'opt'}{'limit'} );
+    }
+
+    if (@filter) {
+        $self->FetchNext( $objs, 'init' );
+        my @res;
+        USER: while ( my $user = $self->FetchNext( $objs ) ) {
+            for my $filter (@filter) {
+                next USER unless $filter->($user);
+            }
+            push @res, $user;
+            last if $self->{'opt'}{'limit'} && @res >= $self->{'opt'}{'limit'};
         }
+        $objs = \@res;
+    } elsif ( $self->{'opt'}{'limit'} ) {
+        $objs->RowsPerPage( $self->{'opt'}{'limit'} );
     }
     return (1, $objs);
 }
@@ -241,7 +251,6 @@ sub FilterNotMemberOfGroup {
     my $self = shift;
     my %args = (
         Shredder => undef,
-        Objects  => undef,
         GroupId  => undef,
         @_,
     );
@@ -249,15 +258,10 @@ sub FilterNotMemberOfGroup {
     my $group = RT::Group->new(RT->SystemUser);
     $group->Load($args{'GroupId'});
 
-    my $users = $args{Objects};
-    $self->FetchNext( $users, 'init' );
-
-    my @res;
-    while ( my $user = $self->FetchNext( $users ) ) {
-        push @res, $user unless $group->HasMemberRecursively($user->Id);
-        return (1, \@res) if $self->{'opt'}{'limit'} && @res >= $self->{'opt'}{'limit'};
-    }
-    return (1, \@res);
+    return sub {
+        my $user = shift;
+        not $group->HasMemberRecursively($user->id);
+    };
 }
 
 sub FilterWithoutTickets {
@@ -267,15 +271,11 @@ sub FilterWithoutTickets {
         Objects  => undef,
         @_,
     );
-    my $users = $args{Objects};
-    $self->FetchNext( $users, 'init' );
 
-    my @res;
-    while ( my $user = $self->FetchNext( $users ) ) {
-        push @res, $user if $self->_WithoutTickets( $user );
-        return (1, \@res) if $self->{'opt'}{'limit'} && @res >= $self->{'opt'}{'limit'};
-    }
-    return (1, \@res);
+    return sub {
+        my $user = shift;
+        $self->_WithoutTickets( $user )
+    };
 }
 
 sub _WithoutTickets {
