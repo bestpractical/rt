@@ -73,7 +73,7 @@
     Order   => 'ASC',
     Rows    => 20,
     %ARGS,
-    DisplayFormat => "__CheckBox.{Add}__,'__HasMemberRecursively.{$id}__/TITLE:Recursive',$Format",
+    DisplayFormat => "__CheckBox.{Add}__,'__HasMemberRecursively.{$id}__/TITLE:$loc_Recursive',$Format",
     Format => $Format,
     Collection => $is_not_member,
     AllowSorting => 1,
@@ -85,6 +85,7 @@
 </form>
 
 <%INIT>
+my $loc_Recursive = loc('Recursive');
 my $principal = RT::Principal->new( $session{'CurrentUser'} );
 $principal->Load( $id ) || Abort(loc("Couldn't load principal #[_1]", $id));
 
