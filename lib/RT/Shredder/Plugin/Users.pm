@@ -79,6 +79,11 @@ be selected for deletion. Identifier is name of user defined group
 or id of a group, as well C<Privileged> or <unprivileged> can used
 to select people from system groups.
 
+=head2 not_member_of - group identifier
+
+Like member_of, but selects users who are not members of the provided
+group.
+
 =head2 replace_relations - user identifier
 
 When you delete user there are could be minor links to him in RT DB.
@@ -108,7 +113,7 @@ want to use C<replace_relations> option.
 sub SupportArgs
 {
     return $_[0]->SUPER::SupportArgs,
-           qw(status name email member_of replace_relations no_tickets);
+           qw(status name email member_of not_member_of replace_relations no_tickets);
 }
 
 sub TestArgs
@@ -128,19 +133,22 @@ sub TestArgs
     if( $args{'name'} ) {
         $args{'name'} = $self->ConvertMaskToSQL( $args{'name'} );
     }
-    if( $args{'member_of'} ) {
-        my $group = RT::Group->new( RT->SystemUser );
-        if ( $args{'member_of'} =~ /^(Everyone|Privileged|Unprivileged)$/i ) {
-            $group->LoadSystemInternalGroup( $args{'member_of'} );
-        }
-        else {
-            $group->LoadUserDefinedGroup( $args{'member_of'} );
-        }
-        unless ( $group->id ) {
-            return (0, "Couldn't load group '$args{'member_of'}'" );
-        }
-        $args{'member_of'} = $group->id;
+    if( $args{'member_of'} or $args{'not_member_of'} ) {
+        foreach my $group_option ( qw(member_of not_member_of) ){
+            next unless $args{$group_option};
 
+            my $group = RT::Group->new( RT->SystemUser );
+            if ( $args{$group_option} =~ /^(Everyone|Privileged|Unprivileged)$/i ) {
+                $group->LoadSystemInternalGroup( $args{$group_option} );
+            }
+            else {
+                $group->LoadUserDefinedGroup( $args{$group_option} );
+            }
+            unless ( $group->id ) {
+                return (0, "Couldn't load group '$args{$group_option}'" );
+            }
+            $args{$group_option} = $group->id;
+        }
     }
     if( $args{'replace_relations'} ) {
         my $uid = $args{'replace_relations'};
@@ -189,6 +197,13 @@ sub Run
     if( $self->{'opt'}{'member_of'} ) {
         $objs->MemberOfGroup( $self->{'opt'}{'member_of'} );
     }
+    if( $self->{'opt'}{'not_member_of'} ) {
+        return $self->FilterNotMemberOfGroup(
+            Shredder => $args{'Shredder'},
+            Objects  => $objs,
+            GroupId  => $self->{'opt'}{'not_member_of'},
+        );
+    }
     if( $self->{'opt'}{'no_tickets'} ) {
         return $self->FilterWithoutTickets(
             Shredder => $args{'Shredder'},
@@ -220,6 +235,29 @@ sub SetResolvers
         $args{'Shredder'}->PutResolver( BaseClass => 'RT::User', Code => $resolver );
     }
     return (1);
+}
+
+sub FilterNotMemberOfGroup {
+    my $self = shift;
+    my %args = (
+        Shredder => undef,
+        Objects  => undef,
+        GroupId  => undef,
+        @_,
+    );
+
+    my $group = RT::Group->new(RT->SystemUser);
+    $group->Load($args{'GroupId'});
+
+    my $users = $args{Objects};
+    $self->FetchNext( $users, 'init' );
+
+    my @res;
+    while ( my $user = $self->FetchNext( $users ) ) {
+        push @res, $user unless $group->HasMemberRecursively($user->Id);
+        return (1, \@res) if $self->{'opt'}{'limit'} && @res >= $self->{'opt'}{'limit'};
+    }
+    return (1, \@res);
 }
 
 sub FilterWithoutTickets {
