@@ -94,7 +94,7 @@
 </li>
 % if ( $cfs ) {
 % while (my $cf = $cfs->Next) {
-<li><% loc("Include custom field '[_1]'", $cf->Name) %>
+<li><&|/l, $cf->Name &>Include custom field '[_1]'</&>
   <ul>
     <li>
         <input type="checkbox" id="Include-CF-Title-<% $cf->Id %>" name="Include-CF-Title-<% $cf->Id %>" <% $include{"CF-Title-".$cf->Id} %> />
