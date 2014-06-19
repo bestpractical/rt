@@ -206,12 +206,12 @@
 </td></tr>
 <tr>
 <td colspan="2">
-<&| /Widgets/TitleBox, title => loc('Comments about this user') &>
+<&| /Widgets/TitleBox, title => loc('Comments about this user'), class => 'user-info-comments' &>
 <textarea class="comments" name="Comments" cols="80" rows="5" wrap="virtual"><%$UserObj->Comments||$Comments||''%></textarea>
 </&>
 %if (!$Create && $UserObj->Privileged) {
 <br />
-<&| /Widgets/TitleBox, title => loc('Signature') &>
+<&| /Widgets/TitleBox, title => loc('Signature'), class => 'user-info-signature' &>
 <textarea class="signature" cols="80" rows="5" name="Signature" wrap="hard"><%$UserObj->Signature||$Signature||''%></textarea>
 </&>
 % }
