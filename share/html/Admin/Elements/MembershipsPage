@@ -73,7 +73,7 @@
     Order   => 'ASC',
     Rows    => 20,
     %ARGS,
-    DisplayFormat => "__CheckBox.{Add}__,'__HasMemberRecursively.{$id}__/TITLE:Recursive',$Format",
+    DisplayFormat => "__CheckBox.{Add}__,'__HasMemberRecursively.{$id}__/TITLE:Recursive member',$Format",
     Format => $Format,
     Collection => $is_not_member,
     AllowSorting => 1,
