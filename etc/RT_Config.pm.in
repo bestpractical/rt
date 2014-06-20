@@ -521,18 +521,11 @@ doesn't work well for you, try 'sendmail'.  'qmail' is also a supported
 value.
 
 For testing purposes, or to simply disable sending mail out into the
-world, you can set C<$MailCommand> to 'testfile' which writes all mail
-to a temporary file.  RT will log the location of the temporary file
-so you can extract mail from it afterward.
-
-On shutdown, RT will clean up the temporary file created when using
-the 'testfile' option. If testing while the RT server is still running,
-you can find the files in the location noted in the log file. If you run
-a tool like C<rt-crontool> however, or if you look after stopping the server,
-the files will have been deleted when the process completed. If you need to
-keep the files for development or debugging, you can manually set
-C<< UNLINK => 0 >> where the testfile config is processed in
-F<lib/RT/Interface/Email.pm>.
+world, you can set C<$MailCommand> to 'mbox' which logs all mail, in
+mbox format, to files in F</opt/rt4/var/> based in the process start
+time.  The 'testfile' option is similar, but the files that it creates
+(under /tmp) are temporary, and removed upon process completion; the
+format is also not mbox-compatable.
 
 =cut
 
