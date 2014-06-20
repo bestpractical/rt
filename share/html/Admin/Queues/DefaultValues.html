@@ -72,6 +72,7 @@
         Grouping => 'Basics',
         InTable => 1,
     &>
+    <& /Elements/EditCustomFields, CustomFields => $queue->TicketTransactionCustomFields->LimitToDefaultValuesSupportedTypes, NamePrefix => 'Default-', Object => RT::Transaction->new($session{CurrentUser}), QueueObj => $queue &>
     </table>
     </&>
 </div>

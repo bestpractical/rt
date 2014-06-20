@@ -1398,6 +1398,7 @@ sub UpdateCustomFields {
         $args = \%args;
     }
 
+    my %cf_added;
     foreach my $arg ( keys %$args ) {
         next
           unless ( $arg =~
@@ -1407,6 +1408,7 @@ sub UpdateCustomFields {
         my $values = $args->{$arg};
         my $cf = $self->LoadCustomFieldByIdentifier($cfid);
         next unless $cf->ObjectTypeFromLookupType->isa(ref $self);
+        $cf_added{$cfid}++;
         foreach
           my $value ( UNIVERSAL::isa( $values, 'ARRAY' ) ? @$values : $values )
         {
@@ -1421,6 +1423,25 @@ sub UpdateCustomFields {
             );
         }
     }
+
+    my $cfs = $self->Object->TransactionCustomFields;
+    while ( my $cf = $cfs->Next ) {
+        next if $cf_added{$cf->id} || !$cf->SupportDefaultValues;
+        my $values = $cf->DefaultValues(Object => RT->System); # TODO support queue-level default values
+        foreach my $value ( UNIVERSAL::isa( $values => 'ARRAY' ) ? @$values : $values ) {
+            next if $self->CustomFieldValueIsEmpty(
+                Field => $cf->id,
+                Value => $value,
+            );
+
+            $self->_AddCustomFieldValue(
+                Field             => $cf->id,
+                Value             => $value,
+                RecordTransaction => 0,
+            );
+        }
+    }
+    $self->Object->_expire if $self->Object->can('_expire');
 }
 
 =head2 LoadCustomFieldByIdentifier
