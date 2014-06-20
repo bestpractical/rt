@@ -531,7 +531,7 @@ sub Addresses {
     my $self = shift;
 
     my %data = ();
-    my $current_user_address = lc $self->CurrentUser->EmailAddress;
+    my $current_user_address = lc($self->CurrentUser->EmailAddress || '');
     foreach my $hdr (@ADDRESS_HEADERS) {
         my @Addresses;
         my $line = $self->GetHeader($hdr);
