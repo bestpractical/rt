@@ -112,7 +112,7 @@ The ticket has been approved, you may now start to act on it.
         my $sys = RT::System->new(RT->SystemUser);
 
         my $attrs = RT::Attributes->new( RT->SystemUser );
-        $attrs->UnLimit;
+        $attrs->Limit( FIELD => "Name", VALUE => "Dashboard");
         my @dashboards = $attrs->Named('Dashboard');
 
         if (@dashboards == 0) {
