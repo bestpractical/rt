@@ -3,6 +3,16 @@ use warnings;
 
 our @Initial = (
     sub {
+        # We do the delete in pure SQL because Attribute collections
+        # otherwise attempt to hash everything in memory.  As this may
+        # be a large list, do it directly.
+        RT->DatabaseHandle->dbh->do(<<EOSQL);
+            DELETE FROM Attributes
+             WHERE Name = 'DeferredRecipients'
+               AND Content IS NULL;
+EOSQL
+    },
+    sub {
         RT->Logger->warning(
             "Going to add [OLD] prefix to all templates in approvals queue."
             ." If you have never used approvals, you can safely delete all the"
