@@ -89,11 +89,6 @@
                 .addClass("action-"+ev.target.value);
         });
     });
-    jQuery(function() {
-        jQuery("input[name=TxnSendMailTo]").change(function(ev) {
-            jQuery("input[name=TxnSendMailTo]").filter( function() { return this.value == ev.target.value; } ).prop("checked",jQuery(ev.target).prop('checked'));
-        });
-    });
 </script>
 
 % $m->callback( %ARGS, CallbackName => 'AfterUpdateType' );
@@ -141,7 +136,10 @@
 </div>
 
 <div id="ticket-update-message">
-  <& /Ticket/Elements/ShowSimplifiedRecipients, TicketObj => $TicketObj, %ARGS &>
+% if ( RT->Config->Get('SimplifiedRecipients', $session{'CurrentUser'}) ) {
+    <&|/Widgets/TitleBox, title => loc('Recipients'), id => 'recipients' &>
+    </&>
+%}
 
   <&|/Widgets/TitleBox, title => loc('Message'), class => 'messagedetails' &>
   <table width="100%" border="0">
@@ -191,22 +189,38 @@
 
 % if ($TicketObj->CurrentUserHasRight('ShowOutgoingEmail')) {
   <&|/Widgets/TitleBox, title => loc('Scrips and Recipients'), id => 'previewscrips', rolledup => RT->Config->Get('SimplifiedRecipients', $session{'CurrentUser'}) &>
-    <& /Ticket/Elements/PreviewScrips, TicketObj => $TicketObj, %ARGS &>
   </&>
 % }
 </div>
 
 % $m->callback( %ARGS, CallbackName => 'AfterScrips', Ticket => $TicketObj );
 
-% if (my $recips = $m->notes("DryRun-Recipients-".$TicketObj->Id)) {
-<input type="hidden" name="TxnRecipients" value="<% join ",",sort keys %{$recips} %>" />
-% }
-
 </form>
 <hr class="clear" />
 
 % $m->callback( %ARGS, CallbackName => 'AfterForm', Ticket => $TicketObj );
 
+% if ($TicketObj->CurrentUserHasRight('ShowOutgoingEmail') or RT->Config->Get('SimplifiedRecipients', $session{'CurrentUser'})) {
+<script type="text/javascript">
+jQuery( function() {
+   var updateScrips = function() {
+       var syncCheckboxes = function(ev) {
+           jQuery("input[name=TxnSendMailTo]").filter( function() { return this.value == ev.target.value; } ).prop("checked",jQuery(ev.target).prop('checked'));
+       };
+       jQuery('#recipients div.titlebox-content').load( '<% RT->Config->Get('WebPath')%>/Helpers/ShowSimplifiedRecipients',
+           jQuery('form[name=TicketUpdate]').serialize(),
+           function() { jQuery("#recipients input[name=TxnSendMailTo]").change( syncCheckboxes ); }
+       );
+       jQuery('#previewscrips div.titlebox-content').load( '<% RT->Config->Get('WebPath')%>/Helpers/PreviewScrips',
+           jQuery('form[name=TicketUpdate]').serialize(),
+           function() { jQuery("#previewscrips input[name=TxnSendMailTo]").change( syncCheckboxes ); }
+       );
+   };
+   updateScrips();
+   jQuery("#ticket-update-metadata :input, input[name^=UpdateCc], input[name^=UpdateBcc]").change( updateScrips );
+});
+</script>
+% }
 <%INIT>
 my $CanRespond = 0;
 my $CanComment = 0;

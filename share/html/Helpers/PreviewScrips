@@ -45,13 +45,24 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%args>
-$TicketObj => undef
-</%args>
 <%init>
-my $Object = $m->notes("DryRun-".$TicketObj->Id) || $TicketObj->DryRun(%ARGS);
-my %recips = %{ $m->notes("DryRun-Recipients-".$TicketObj->Id) || {} };
-return unless $Object;
+my $TicketObj = RT::Ticket->new($session{CurrentUser});
+$TicketObj->Load($ARGS{id});
+$m->abort unless $TicketObj->id && $ARGS{UpdateType};
+
+$m->abort unless $TicketObj->CurrentUserHasRight('ShowOutgoingEmail');
+if ( $ARGS{UpdateType} eq 'private' ) {
+    $m->abort
+      unless $TicketObj->CurrentUserHasRight( 'CommentOnTicket' ) || $TicketObj->CurrentUserHasRight( 'ModifyTicket' );
+}
+else {
+    $m->abort
+      unless $TicketObj->CurrentUserHasRight( 'ReplyToTicket' ) || $TicketObj->CurrentUserHasRight( 'ModifyTicket' );
+}
+
+my $Object = $TicketObj->DryRun(%ARGS);
+my %recips;
+$m->abort unless $Object;
 
 my %squelched = ProcessTransactionSquelching( \%ARGS );
 </%init>
@@ -72,7 +83,8 @@ my %squelched = ProcessTransactionSquelching( \%ARGS );
           <&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->Template)&>[_1] [_2] with template [_3]</&>
           <br />
 %         for my $type (qw(To Cc Bcc)) {
-%             my @addresses =  $scrip->ActionObj->Action->$type();
+%             my $action = $scrip->ActionObj->Action;
+%             my @addresses =  $action->$type();
 %             next unless @addresses;
               <ul>
 %             for my $addr (@addresses) {
@@ -80,9 +92,26 @@ my %squelched = ProcessTransactionSquelching( \%ARGS );
 %                 my $checked = not $squelched{$addr->address};
 %                 $m->callback(CallbackName => 'BeforeAddress', Ticket => $TicketObj, Address => $addr, Type => $type, Checked => \$checked);
 %                 $recips{$addr->address}++;
-                  <b><%loc($type)%></b>: <input type="checkbox" class="checkbox" name="TxnSendMailTo" <% $checked ? 'checked="checked"' : '' |n%> value="<%$addr->address%>" id="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>" />
+                  <b><%loc($type)%></b>:
+%                 my $show_checkbox = 1;
+%                 if ( grep {$_ eq $addr} @{$action->{NoSquelch}{$type}} ) {
+%                     $show_checkbox = 0;
+%                 }
+
+%                 if ( $show_checkbox ) {
+                      <input type="checkbox" class="checkbox" name="TxnSendMailTo" <% $checked ? 'checked="checked"' : '' |n%> value="<%$addr->address%>" id="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>" />
+%                 }
+
                   <label for="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>"><& /Elements/ShowUser, Address => $addr &></label>
 %                 $m->callback(CallbackName => 'AfterAddress', Ticket => $TicketObj, Address => $addr, Type => $type);
+%                 unless ( $show_checkbox ) {
+%                     if ( $type eq 'Cc' ) {
+                          (<&|/l&>explicit one-time Cc</&>)
+%                     }
+%                     else {
+                          (<&|/l&>explicit one-time Bcc</&>)
+%                     }
+%                 }
                   </li>
 %             }
               </ul>
@@ -120,4 +149,5 @@ my %squelched = ProcessTransactionSquelching( \%ARGS );
 
 % $m->callback( CallbackName => 'AfterRecipients', TicketObj => $TicketObj );
 
-% $m->notes("DryRun-Recipients-".$TicketObj->Id, \%recips);
+<input type="hidden" name="TxnRecipients" value="<% join ",",sort keys %recips %>" />
+% $m->abort();
