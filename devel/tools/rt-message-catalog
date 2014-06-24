@@ -99,7 +99,7 @@ sub stats {
     my %res = ();
 
     foreach my $po_file (<$dir/*.po>) {
-        my $array = Locale::PO->load_file_asarray( $po_file );
+        my $array = Locale::PO->load_file_asarray( $po_file, "utf-8" );
 
         $res{$po_file} = 0;
 
@@ -126,7 +126,7 @@ sub clean {
     my $dir = shift || PO_DIR;
 
     foreach my $po_file (<$dir/*.po>) {
-        my $array = Locale::PO->load_file_asarray( $po_file );
+        my $array = Locale::PO->load_file_asarray( $po_file, "utf-8" );
         foreach my $entry ( splice @$array, 1 ) {
             # Replace identical translations with the empty string
             $entry->msgstr("") if $entry->msgstr eq $entry->msgid;
@@ -137,7 +137,7 @@ sub clean {
 
             push @$array, $entry;
         }
-        Locale::PO->save_file_fromarray($po_file, $array);
+        Locale::PO->save_file_fromarray($po_file, $array, "utf-8");
     }
 }
 
@@ -177,11 +177,11 @@ sub rosetta {
 
         my $load_from = $fn_orig;
         $load_from = PO_DIR . "/rt.pot" unless -e $load_from;
-        my $orig = Locale::PO->load_file_ashash( $fn_orig );
+        my $orig = Locale::PO->load_file_ashash( $fn_orig, "utf-8" );
 
         print "$file -> $fn_orig\n";
 
-        my $rosetta = Locale::PO->load_file_asarray( $file );
+        my $rosetta = Locale::PO->load_file_asarray( $file, "utf-8" );
 
         # We're merging in the current hash as fallbacks for the rosetta hash
         my $translated = 0;
@@ -214,7 +214,7 @@ sub rosetta {
             next;
         }
 
-        Locale::PO->save_file_fromarray($fn_orig, $rosetta);
+        Locale::PO->save_file_fromarray($fn_orig, $rosetta, "utf-8");
     }
     extract();
 }
