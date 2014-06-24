@@ -98,41 +98,28 @@ sub stats {
     my $max = 0;
     my %res = ();
 
-    use constant TRANSLATED => 0;
-    use constant DISTINCT => 1;
-
     foreach my $po_file (<$dir/*.po>) {
         my $array = Locale::PO->load_file_asarray( $po_file );
 
-        $res{$po_file} = [0, 0];
+        $res{$po_file} = 0;
 
         my $size = 0;
         foreach my $entry ( splice @$array, 1 ) {
+            next if $entry->obsolete;
             next if $entry->reference && $entry->reference =~ /NOT FOUND IN SOURCE/;
             $size++;
             next unless $entry->dequote( $entry->msgstr );
-            $res{$po_file}[TRANSLATED]++;
-            next if $entry->msgstr eq $entry->msgid;
-            $res{$po_file}[DISTINCT]++;
+            $res{$po_file}++;
         }
         $max = $size if $max < $size;
     }
 
-    my $legend = "<file>: <translated>[(<distinct>)]/<size> (<%>)";
-
-    print "\n$legend\n\n";
-
-    foreach my $po_file ( sort { $res{$b}[TRANSLATED] <=> $res{$a}[TRANSLATED] } keys %res ) {
-        my ($tr, $dist) = @{ $res{$po_file} };
+    my $width = length($max);
+    foreach my $po_file ( sort { $res{$b} <=> $res{$a} } keys %res ) {
+        my $tr = $res{$po_file};
         my $perc = int($tr*1000/$max)/10;
-        if ( $tr == $dist ) {
-            printf "%s:\t%d/%d\t(%.1f%%)\n", $po_file, $tr, $max, $perc;
-        } else {
-            printf "%s:\t%d(%d)/%d\t(%.1f%%)\n", $po_file, $tr, $dist, $max, $perc;
-        }
+        printf "%-20s %${width}d/%${width}d (%.1f%%)\n", "$po_file:", $tr, $max, $perc;
     }
-
-    print "\n$legend\n";
 }
 
 sub clean {
