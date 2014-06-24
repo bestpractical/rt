@@ -171,50 +171,50 @@ sub rosetta {
         exit;
     }
 
-    require Locale::Maketext::Extract;
-    Locale::Maketext::Lexicon::set_option('use_fuzzy', 1);
-    Locale::Maketext::Lexicon::set_option('allow_empty', 1);
-
-    require Locale::PO;
-
-    for ( @files ) {
-        my ($lang) = m/([\w_]+)\.po/;
+    for my $file ( @files ) {
+        my ($lang) = $file =~ m/([\w_]+)\.po/;
         my $fn_orig = PO_DIR . "/$lang.po";
 
-        print "$_ -> $fn_orig\n";
+        my $load_from = $fn_orig;
+        $load_from = PO_DIR . "/rt.pot" unless -e $load_from;
+        my $orig = Locale::PO->load_file_ashash( $fn_orig );
 
-        # retain the "NOT FOUND IN SOURCE" entries
-        my $tmp = File::Temp->new;
-        system("sed -e 's/^#~ //' $_ > $tmp");
-        my $ext = Locale::Maketext::Extract->new;
-        $ext->read_po($tmp);
+        print "$file -> $fn_orig\n";
 
-        my $po_orig = Locale::PO->load_file_ashash( -e $fn_orig? $fn_orig : PO_DIR . '/rt.pot' );
-        # don't want empty vales to override ours.
-        # don't want fuzzy flag as when uploading to rosetta again it's not accepted by rosetta.
-        foreach my $msgid ($ext->msgids) {
-            my $entry = $po_orig->{Locale::PO->quote($msgid)} or next;
-            my $msgstr = $entry->dequote($entry->{msgstr}) or next;
-            $ext->set_msgstr($msgid, $msgstr)
-                if $ext->msgstr($msgid) eq '' && $msgstr;
-        }
-        if ( $lang !~ /^en(_[A-Z]{2})?$/ ) { # en[_**] are exceptional
-            my @ids = $ext->msgids;
-            my $translated = 0;
-            foreach my $id ( @ids ) {
-                next unless $ext->msgstr( $id );
-                next if $ext->msgstr( $id ) eq $id;
-                $translated++;
+        my $rosetta = Locale::PO->load_file_asarray( $file );
+
+        # We're merging in the current hash as fallbacks for the rosetta hash
+        my $translated = 0;
+        foreach my $entry ( splice @$rosetta, 1 ) {
+            # Skip no longer in source entries
+            next if $entry->obsolete;
+            next if $entry->reference && $entry->reference =~ /NOT FOUND IN SOURCE/;
+
+            # Update to what the old po file had, if we have nothing
+            my $oldval = $orig->{$entry->msgid};
+            if (not $entry->dequote($entry->msgstr) and $oldval) {
+                $entry->msgstr($oldval->dequote($oldval->msgstr));
             }
-            my $perc = int($translated/@ids * 100 + 0.5);
-            if ( $perc < BOUNDARY ) {
-                print "Only $perc% translated for '$lang' when @{[BOUNDARY]}% required.\n";
-                print "Deleting '$fn_orig'...\n";
-                unlink $fn_orig;
-                next;
-            }
+
+            # Replace identical translations with the empty string
+            $entry->msgstr("") if $entry->msgstr eq $entry->msgid;
+
+            # Drop "fuzzy" information
+            $entry->fuzzy_msgctxt(undef);
+            $entry->fuzzy_msgid(undef);
+            $entry->fuzzy_msgid_plural(undef);
+
+            $translated++ if $entry->dequote($entry->msgstr);
+            push @$rosetta, $entry;
         }
-        $ext->write_po($fn_orig);
+
+        my $perc = int($translated/(@$rosetta - 1) * 100 + 0.5);
+        if ( $perc < BOUNDARY and $lang !~ /^en(_[A-Z]{2})?$/) {
+            unlink $fn_orig;
+            next;
+        }
+
+        Locale::PO->save_file_fromarray($fn_orig, $rosetta);
     }
     extract();
 }
