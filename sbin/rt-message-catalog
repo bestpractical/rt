@@ -58,9 +58,11 @@ use constant PO_DIR => 'share/po';
 my %commands = (
     stats   => { },
     clean   => { },
-    rosetta => { 'boundary=i' => 20 },
+    rosetta => { },
     extract => { },
 );
+
+use constant BOUNDARY => 20;
 
 sub usage {
     warn @_, "\n\n" if @_;
@@ -69,20 +71,15 @@ usages:
 
     rt-message-catalog stats [po-directory]
     rt-message-catalog clean
-    rt-message-catalog rosetta [--boundary PERCENT] download-url
+    rt-message-catalog rosetta download-url
     rt-message-catalog extract [po-file ...]
 
 stats: Print stats for each translation.
 
 clean: Remove unused and identity translations
 
-rosetta: Merge translations from Launchpad's Rosetta.
-
-    Requires a Launchpad translations export url.
-
-    --boundary PERCENT      Acceptable threshold of percentage of strings
-                            translated.  Translations with less than this are
-                            discarded.  Default is 20.
+rosetta: Merge translations from Launchpad's Rosetta; Requires a
+  Launchpad translations export url.
 
 extract: Extract message catalogs from source code and report common errors.
 
@@ -234,7 +231,7 @@ sub rosetta {
             $ext->set_msgstr($msgid, $msgstr)
                 if $ext->msgstr($msgid) eq '' && $msgstr;
         }
-        if ( $opt{'boundary'} && $lang !~ /^en(_[A-Z]{2})?$/ ) { # en[_**] are exceptional
+        if ( $lang !~ /^en(_[A-Z]{2})?$/ ) { # en[_**] are exceptional
             my @ids = $ext->msgids;
             my $translated = 0;
             foreach my $id ( @ids ) {
@@ -243,8 +240,8 @@ sub rosetta {
                 $translated++;
             }
             my $perc = int($translated/@ids * 100 + 0.5);
-            if ( $perc < $opt{'boundary'} ) {
-                print "Only $perc% translated for '$lang' when $opt{'boundary'}% required.\n";
+            if ( $perc < BOUNDARY ) {
+                print "Only $perc% translated for '$lang' when @{[BOUNDARY]}% required.\n";
                 print "Deleting '$fn_orig'...\n";
                 unlink $fn_orig;
                 next;
