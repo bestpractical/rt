@@ -57,8 +57,7 @@ use constant PO_DIR => 'share/po';
 
 my %commands = (
     stats   => { },
-    shrink  => { 'update!' => 1, 'keep=s@' => [] },
-    clean   => { 'update!' => 1 },
+    clean   => { },
     rosetta => { 'boundary=i' => 20 },
     extract => { },
 );
@@ -69,22 +68,13 @@ sub usage {
 usages:
 
     rt-message-catalog stats [po-directory]
-    rt-message-catalog shrink [--no-update] [--keep CLASS] [po-directory]
-    rt-message-catalog clean [--no-update] [po-directory]
+    rt-message-catalog clean
     rt-message-catalog rosetta [--boundary PERCENT] download-url
     rt-message-catalog extract [po-file ...]
 
 stats: Print stats for each translation.
 
-shrink: Reduce translations, optionally keeping classes of strings.
-
-    --no-update     Just report what could be shrunk.
-    --keep CLASS    Don't remove strings in the specified class:
-                        not-referenced, not-translated, equal
-
-                    May be specified more than once.
-
-clean: Equivalent to `shrink --keep not-translated --keep equal`
+clean: Remove unused and identity translations
 
 rosetta: Merge translations from Launchpad's Rosetta.
 
@@ -166,62 +156,24 @@ sub stats {
     print "\n$legend\n";
 }
 
-sub shrink {
+sub clean {
     my %opt = %{ shift() };
     my $dir = shift || PO_DIR;
 
-    my %keep = map { $_ => 1 } @{ $opt{'keep'} };
-
-    my %stats = ();
-
     foreach my $po_file (<$dir/*.po>) {
         my $array = Locale::PO->load_file_asarray( $po_file );
-        $stats{ $po_file } = { };
         foreach my $entry ( splice @$array, 1 ) {
-            if ( !$keep{'not-referenced'} && $entry->reference && $entry->reference =~ /NOT FOUND IN SOURCE/ ) {
-                $stats{ $po_file }{'not-referenced'}++;
-                next;
-            }
-            elsif ( !$keep{'not-translated'} && !$entry->dequote( $entry->msgstr ) ) {
-                $stats{ $po_file }{'not-translated'}++;
-                next;
-            }
-            elsif ( !$keep{'equal'} && $entry->msgstr eq $entry->msgid ) {
-                $stats{ $po_file }{'equal'}++;
-                next;
-            }
+            # Replace identical translations with the empty string
+            $entry->msgstr("") if $entry->msgstr eq $entry->msgid;
+
+            # Skip NOT FOUND IN SOURCE entries
+            next if $entry->obsolete;
+            next if $entry->reference && $entry->reference =~ /NOT FOUND IN SOURCE/;
+
             push @$array, $entry;
         }
-        $stats{ $po_file }{'total'} += $_ for values %{ $stats{ $po_file } };
-        Locale::PO->save_file_fromarray($po_file, $array) if $opt{'update'};
+        Locale::PO->save_file_fromarray($po_file, $array);
     }
-
-    my $legend = "<file>: <total> (<details>)";
-    print "\n$legend\n\n";
-
-    foreach my $po_file ( sort { $stats{$a}{'total'} <=> $stats{$b}{'total'} } keys %stats ) {
-        my $res = sprintf "%s:\t%d ", $po_file, $stats{ $po_file }{'total'};
-        my @tmp;
-        foreach ( qw(not-referenced not-translated equal) ) {
-            next unless my $v = $stats{ $po_file }{ $_ };
-            push @tmp, "$_: $v";
-        }
-        if ( @tmp > 1 ) {
-            $res .= " (". join( ', ', @tmp ) .")";
-        }
-        elsif ( @tmp == 1 ) {
-            $res .= " (". (split /:/, $tmp[0])[0] .")";
-        }
-        print $res, "\n";
-    }
-
-    print "\n$legend\n";
-}
-
-sub clean {
-    my %opt = %{ shift() };
-    $opt{'keep'} = [qw(not-translated equal)];
-    return shrink( \%opt, @_ );
 }
 
 sub rosetta {
