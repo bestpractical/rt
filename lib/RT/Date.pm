@@ -831,7 +831,7 @@ sub ISO {
     my $res = '';
     $res .= sprintf("%04d-%02d-%02d", $year, $mon, $mday) if $args{'Date'};
     $res .= sprintf(' %02d:%02d', $hour, $min) if $args{'Time'};
-    $res .= sprintf(':%02d', $sec, $min) if $args{'Time'} && $args{'Seconds'};
+    $res .= sprintf(':%02d', $sec) if $args{'Time'} && $args{'Seconds'};
     $res =~ s/^\s+//;
 
     return $res;
@@ -871,7 +871,7 @@ sub W3CDTF {
     $res .= sprintf("%04d-%02d-%02d", $year, $mon, $mday);
     if ( $args{'Time'} ) {
         $res .= sprintf('T%02d:%02d', $hour, $min);
-        $res .= sprintf(':%02d', $sec, $min) if $args{'Seconds'};
+        $res .= sprintf(':%02d', $sec) if $args{'Seconds'};
         if ( $offset ) {
             $res .= sprintf "%s%02d:%02d", $self->_SplitOffset( $offset );
         } else {
