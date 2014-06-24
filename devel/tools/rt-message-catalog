@@ -108,7 +108,7 @@ sub stats {
             next if $entry->obsolete;
             next if $entry->reference && $entry->reference =~ /NOT FOUND IN SOURCE/;
             $size++;
-            next unless $entry->dequote( $entry->msgstr );
+            next unless length $entry->dequote( $entry->msgstr );
             $res{$po_file}++;
         }
         $max = $size if $max < $size;
@@ -192,7 +192,7 @@ sub rosetta {
 
             # Update to what the old po file had, if we have nothing
             my $oldval = $orig->{$entry->msgid};
-            if (not $entry->dequote($entry->msgstr) and $oldval) {
+            if (not length $entry->dequote($entry->msgstr) and $oldval) {
                 $entry->msgstr($oldval->dequote($oldval->msgstr));
             }
 
@@ -204,7 +204,7 @@ sub rosetta {
             $entry->fuzzy_msgid(undef);
             $entry->fuzzy_msgid_plural(undef);
 
-            $translated++ if $entry->dequote($entry->msgstr);
+            $translated++ if length $entry->dequote($entry->msgstr);
             push @$rosetta, $entry;
         }
 
