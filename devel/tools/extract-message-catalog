@@ -391,18 +391,18 @@ sub update {
 
 
         next if (!$f && $_ && !$Lexicon{$_});
+        foreach my $entry ( sort { $a->[2] cmp $b->[2] } grep { $_->[2] } @{ $FILECAT{$_} } ) {
+            my ( $file, $line, $var ) = @{$entry};
+            $var =~ s/^\s*,\s*//;
+            $var =~ s/\s*$//;
+            $out .= "#. ($var)\n" unless $seen{$var}++;
+        }
         if ( $f && $f !~ /^\s+$/ ) {
 
             $out .= "#: $f\n";
         }
         elsif ($_) {
             $out .= "#: NOT FOUND IN SOURCE\n";
-        }
-        foreach my $entry ( sort { $a->[2] cmp $b->[2] } grep { $_->[2] } @{ $FILECAT{$_} } ) {
-            my ( $file, $line, $var ) = @{$entry};
-            $var =~ s/^\s*,\s*//;
-            $var =~ s/\s*$//;
-            $out .= "#. ($var)\n" unless $seen{$var}++;
         }
         $out .= 'msgid ' . fmt($_) . "msgstr \"$Lexicon{$_}\"\n\n";
     }
