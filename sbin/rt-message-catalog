@@ -55,13 +55,6 @@ use File::Temp 'tempdir';
 
 use constant PO_DIR => 'share/po';
 
-my %commands = (
-    stats   => { },
-    clean   => { },
-    rosetta => { },
-    extract => { },
-);
-
 use constant BOUNDARY => 20;
 
 sub usage {
@@ -93,24 +86,13 @@ extract: Extract message catalogs from source code and report common errors.
 my $command = shift;
 usage() unless $command;
 usage("Unknown command '$command'")
-    unless $commands{ $command };
+    unless main->can($command);
 
-my $opt = $commands{ $command };
-my %opt = ();
-if ( $opt && keys %$opt ) {
-    while ( my ($k, $v) = each %$opt ) {
-        my ($target) = ($k =~ /^(.*?)(?:[:!+=|]|$)/);
-        $opt{$target} = $v;
-    }
-    GetOptions( \%opt, keys %$opt );
-}
-
-{ no strict 'refs'; &$command( \%opt, @ARGV ); }
+main->can($command)->( @ARGV );
 
 exit;
 
 sub stats {
-    my %opt = %{ shift() };
     my $dir = shift || PO_DIR;
 
     my $max = 0;
@@ -154,7 +136,6 @@ sub stats {
 }
 
 sub clean {
-    my %opt = %{ shift() };
     my $dir = shift || PO_DIR;
 
     foreach my $po_file (<$dir/*.po>) {
@@ -174,7 +155,6 @@ sub clean {
 }
 
 sub rosetta {
-    my %opt = %{ shift() };
     my $url = shift or die 'must provide Rosetta download url or directory with new po files';
 
     my $dir;
@@ -249,11 +229,9 @@ sub rosetta {
         }
         $ext->write_po($fn_orig);
     }
-    extract({});
+    extract();
 }
 
 sub extract {
-    shift;
     system($^X, 'devel/tools/extract-message-catalog', @_);
 }
-
