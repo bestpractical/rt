@@ -3075,7 +3075,9 @@ msgstr "Εισαγωγή μέχρι και %1 τιμών με αυτοσυμπλ
 #. (map { "<strong>$_</strong>" } qw(initial active inactive any))
 #: share/html/Search/Simple.html:77
 msgid "Entering %1, %2, %3, or %4 limits results to tickets with one of the respective types of statuses.  Any individual status name limits results to just the statuses named."
-msgstr "Η εισαγωγή %1, %2, %3, ή %4 περιορίζει τα αποτελέσματα για τα αιτήματα με έναν από τους αντίστοιχους τύπους των καταστάσεων.\r\nΚάθε επιμέρους κατάσταση ονόματος περιορίζει τα αποτελέσματα μόνο σε καταστάσεις που αναφέρονται."
+msgstr ""
+"Η εισαγωγή %1, %2, %3, ή %4 περιορίζει τα αποτελέσματα για τα αιτήματα με έναν από τους αντίστοιχους τύπους των καταστάσεων.\r\n"
+"Κάθε επιμέρους κατάσταση ονόματος περιορίζει τα αποτελέσματα μόνο σε καταστάσεις που αναφέρονται."
 
 #: share/html/Admin/Tools/Configuration.html:290
 msgid "Environment variables"
@@ -6852,7 +6854,9 @@ msgstr "Αναζήτηση για αιτήματα"
 #. (@strong)
 #: share/html/Search/Simple.html:63
 msgid "Search for tickets by entering %1id%2 numbers, subject words %1\"in quotes\"%2, %1queues%2 by name, Owners by %1username%2, Requestors by %1email address%2, and ticket %1statuses%2.  Searching for %1@domainname.com%2 will return tickets with requestors from that domain."
-msgstr "Αναζήτηση για αιτήματα εισάγωντας %1αναγνωριστικό%2 αριθμών, θέμα λέξεων %1\"σε εισαγωγικά\"%2, %1ουρές%2 με βάση το όνομα%2, Κάτοχοι με βάση %1το όνομα χρήστη%2, Αιτούντες με βάση %1τη διεύθυνση ηλεκτρονικού ταχυδρομίου%2, και αίτημα %1καταστάσεων%2.\r\nΗ αναζήτηση για %1@όνομα τομέα.com%2 θα επιστρέψει αιτήματα με αιτούντες από αυτό τον τομέα."
+msgstr ""
+"Αναζήτηση για αιτήματα εισάγωντας %1αναγνωριστικό%2 αριθμών, θέμα λέξεων %1\"σε εισαγωγικά\"%2, %1ουρές%2 με βάση το όνομα%2, Κάτοχοι με βάση %1το όνομα χρήστη%2, Αιτούντες με βάση %1τη διεύθυνση ηλεκτρονικού ταχυδρομίου%2, και αίτημα %1καταστάσεων%2.\r\n"
+"Η αναζήτηση για %1@όνομα τομέα.com%2 θα επιστρέψει αιτήματα με αιτούντες από αυτό τον τομέα."
 
 #: share/html/Elements/Tabs:581
 msgid "Search options"

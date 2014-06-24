@@ -6203,7 +6203,9 @@ msgstr "RechercheRapide"
 
 #: lib/RT/Date.pm:120
 msgid "RFC2616"
-msgstr "RFC2616Copy text   \t\r\nRFC2616"
+msgstr ""
+"RFC2616Copy text   \t\r\n"
+"RFC2616"
 
 #: lib/RT/Date.pm:119
 msgid "RFC2822"
@@ -8757,7 +8759,9 @@ msgstr "Voir les informations de base des tickets"
 
 #: lib/RT/Date.pm:118
 msgid "W3CDTF"
-msgstr "Copy text   \t\r\nW3CDTF"
+msgstr ""
+"Copy text   \t\r\n"
+"W3CDTF"
 
 #: share/html/Articles/Article/Search.html:190
 msgid "WARNING: Saving search to user-level privacy"

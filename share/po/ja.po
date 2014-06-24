@@ -224,12 +224,18 @@ msgstr "%1 前"
 #. ($RT::DatabaseName)
 #: share/html/Install/DatabaseDetails.html:180
 msgid "%1 already exists and has RT's tables in place, but does not contain RT's metadata. The 'Initialize Database' step later on can insert metadata into this existing database. If this is acceptable, click 'Customize Basics' below to continue customizing RT."
-msgstr "%1はすでに存在しRTのテーブルに配置されていますがRTのメタデータがありません。\r\n後の'Initialize Database'の段階でこの既存のデータベースにメタデータを追加することが可能です。\r\nそうする場合は以下の'Customize Basics'をクリックしてRTのカスタマイズを続けてください。"
+msgstr ""
+"%1はすでに存在しRTのテーブルに配置されていますがRTのメタデータがありません。\r\n"
+"後の'Initialize Database'の段階でこの既存のデータベースにメタデータを追加することが可能です。\r\n"
+"そうする場合は以下の'Customize Basics'をクリックしてRTのカスタマイズを続けてください。"
 
 #. ($RT::DatabaseName)
 #: share/html/Install/DatabaseDetails.html:185
 msgid "%1 already exists, but does not contain RT's tables or metadata. The 'Initialize Database' step later on can insert tables and metadata into this existing database. if this is acceptable, click 'Customize Basic' below to continue customizing RT."
-msgstr "%1はすでに存在しますがRTのテーブルやメタデータがありません。\r\n後の'Initialize Database'の段階でこの既存のデータベースにテーブルやメタデータを追加することが可能です。\r\nそうする場合は以下の'Customize Basics'をクリックしてRTのカスタマイズを続けてください。"
+msgstr ""
+"%1はすでに存在しますがRTのテーブルやメタデータがありません。\r\n"
+"後の'Initialize Database'の段階でこの既存のデータベースにテーブルやメタデータを追加することが可能です。\r\n"
+"そうする場合は以下の'Customize Basics'をクリックしてRTのカスタマイズを続けてください。"
 
 #. ($princ_obj->Object->Name)
 #: lib/RT/ACE.pm:272
@@ -245,7 +251,10 @@ msgstr "%1はローカルオブジェクトのようですがデータベース�
 #. ($RT::DatabaseName)
 #: share/html/Install/DatabaseDetails.html:176
 msgid "%1 appears to be fully initialized.  We won't need to create any tables or insert metadata, but you can continue to customize RT by clicking 'Customize Basics' below"
-msgstr "%1は完全に初期化されているようです。\r\nテーブルの作成やメタデータの追加は必要ありませんが、\r\n以下の'Customize Basics'をクリックしてRTのカスタマイズを続けることが可能です。"
+msgstr ""
+"%1は完全に初期化されているようです。\r\n"
+"テーブルの作成やメタデータの追加は必要ありませんが、\r\n"
+"以下の'Customize Basics'をクリックしてRTのカスタマイズを続けることが可能です。"
 
 #. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)
 #. ($Ticket->LastUpdatedAsString, $m->scomp('/Elements/ShowUser', User => $Ticket->LastUpdatedByObj))
