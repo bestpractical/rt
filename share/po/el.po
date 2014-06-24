@@ -314,7 +314,7 @@ msgstr "Το %1 δεν υπάρχει."
 msgid "%1 enabled"
 msgstr "Το %1 ενεργοποιήθηκε"
 
-#: etc/initialdata:807
+#: etc/initialdata:811
 msgid "%1 highest priority tickets I own"
 msgstr "Τα %1 πιο επείγοντα αιτήματα που έχω αναλάβει"
 
@@ -387,7 +387,7 @@ msgstr "Τα %1 πιο πρόσφατα ενημερωμένα άρθρα"
 msgid "%1 newest articles"
 msgstr "Τα %1 νεώτερα άρθρα"
 
-#: etc/initialdata:818
+#: etc/initialdata:822
 msgid "%1 newest unowned tickets"
 msgstr "Τα %1 πιο πρόσφατα αιτήματα που δεν έχουν αναληφθεί"
 
@@ -631,7 +631,7 @@ msgstr "Αποστολή πιστού αντίγραφου αυτής της ε�
 msgid "(Use these fields when you choose 'User Defined' for a condition or action)"
 msgstr "(Χρησιμοποιείστε αυτά τα πεδία όταν επιλέγετε 'Ορισμένο από το χρήστη' για κάποια συνθήκη ή ενέργεια)"
 
-#: share/html/Admin/CustomFields/index.html:74
+#: share/html/Admin/CustomFields/index.html:57
 msgid "(any)"
 msgstr "(οποιοδήποτε)"
 
@@ -647,7 +647,7 @@ msgstr "(απουσία ονόματος)"
 msgid "(no pubkey!)"
 msgstr "(δεν υπάρχει δημόσιο κλειδί)"
 
-#: lib/RT/Report/Tickets.pm:670 lib/RT/Report/Tickets.pm:836 lib/RT/Report/Tickets.pm:847 lib/RT/Report/Tickets/Entry.pm:78 lib/RT/Report/Tickets/Entry.pm:88 lib/RT/Transaction.pm:1087 lib/RT/Transaction.pm:1149 lib/RT/Transaction.pm:1150 lib/RT/Transaction.pm:757 lib/RT/Transaction.pm:762 lib/RT/Transaction.pm:832 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:109 share/html/Elements/EditCustomFieldSelect:128 share/html/Elements/EditCustomFieldSelect:138 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowCustomFields:60 share/html/m/ticket/show:263
+#: lib/RT/Report/Tickets.pm:670 lib/RT/Report/Tickets.pm:836 lib/RT/Report/Tickets.pm:847 lib/RT/Report/Tickets/Entry.pm:78 lib/RT/Report/Tickets/Entry.pm:88 lib/RT/Transaction.pm:1087 lib/RT/Transaction.pm:1149 lib/RT/Transaction.pm:1150 lib/RT/Transaction.pm:757 lib/RT/Transaction.pm:762 lib/RT/Transaction.pm:832 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:109 share/html/Elements/EditCustomFieldSelect:128 share/html/Elements/EditCustomFieldSelect:138 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowCustomFields:61 share/html/m/ticket/show:263
 msgid "(no value)"
 msgstr "(χωρίς τιμή)"
 
@@ -710,7 +710,7 @@ msgstr "0 δευτερόλεπτα"
 msgid "A Template with that name already exists"
 msgstr "Ένα πρότυπο με αυτό το όνομα υπάρχει ήδη"
 
-#: etc/initialdata:224
+#: etc/initialdata:228
 msgid "A blank template"
 msgstr "Κενό πρότυπο σελίδας"
 
@@ -747,7 +747,7 @@ msgstr "Έλεγχος πρόσβασης"
 msgid "Action"
 msgstr "Ενέργεια"
 
-#: lib/RT/Scrip.pm:153 lib/RT/Scrip.pm:807
+#: lib/RT/Scrip.pm:153 lib/RT/Scrip.pm:804
 #. ($args{'ScripAction'})
 #. ($value)
 msgid "Action '%1' not found"
@@ -757,7 +757,7 @@ msgstr "Δεν βρέθηκε η Ενέργεια '%1'"
 msgid "Action committed."
 msgstr "Ολοκλήρωση ενέργειας"
 
-#: lib/RT/Scrip.pm:149 lib/RT/Scrip.pm:802
+#: lib/RT/Scrip.pm:149 lib/RT/Scrip.pm:799
 msgid "Action is mandatory argument"
 msgstr "Η Ενέργεια είναι υποχρεωτικό όρισμα"
 
@@ -908,19 +908,19 @@ msgstr "Διαχειριστής"
 msgid "Admin Cc"
 msgstr ""
 
-#: etc/initialdata:376
+#: etc/initialdata:380
 msgid "Admin Comment"
 msgstr "Σχόλιο Admin"
 
-#: etc/initialdata:390 etc/upgrade/4.1.9/content:77
+#: etc/initialdata:394 etc/upgrade/4.1.9/content:77
 msgid "Admin Comment in HTML"
 msgstr "Σχόλιο Διαχειριστή σε HTML"
 
-#: etc/initialdata:336
+#: etc/initialdata:340
 msgid "Admin Correspondence"
 msgstr "Αλληλογραφία Admin"
 
-#: etc/initialdata:347 etc/upgrade/4.1.9/content:56
+#: etc/initialdata:351 etc/upgrade/4.1.9/content:56
 msgid "Admin Correspondence in HTML"
 msgstr "Διαχειριστής Αλληλογραφίας σε HTML"
 
@@ -968,11 +968,11 @@ msgstr "Μετά την συνδεσή σας, θα σας αποσταλεί σ
 msgid "Aggregator"
 msgstr "Συλλέκτης"
 
-#: etc/initialdata:526 etc/upgrade/3.8.2/content:85
+#: etc/initialdata:530 etc/upgrade/3.8.2/content:85
 msgid "All Approvals Passed"
 msgstr "Όλες οι Εγκρίσεις έχουν περάσει"
 
-#: etc/initialdata:540 etc/upgrade/4.1.9/content:146
+#: etc/initialdata:544 etc/upgrade/4.1.9/content:146
 msgid "All Approvals Passed in HTML"
 msgstr "Όλες οι εγκρίσεις πέρασαν σε HTML"
 
@@ -983,6 +983,10 @@ msgstr "Όλα τα Άρθρα σε αυτή την κλάση θα πρέπει
 #: share/html/Admin/Articles/Classes/index.html:77
 msgid "All Classes"
 msgstr "Όλες οι Κλάσεις"
+
+#: share/html/Admin/CustomFields/index.html:52
+msgid "All Custom Fields"
+msgstr ""
 
 #: share/html/Elements/Tabs:511
 msgid "All Dashboards"
@@ -1106,27 +1110,27 @@ msgstr "Έγκριση #%1: Οι σημειώσεις δεν καταγράφη�
 msgid "Approval #%1: Notes recorded"
 msgstr "Έγκριση #%1: Οι σημειώσεις καταγράφηκαν"
 
-#: etc/initialdata:496 etc/upgrade/3.8.2/content:71
+#: etc/initialdata:500 etc/upgrade/3.8.2/content:71
 msgid "Approval Passed"
 msgstr "Η Έγκριση έχει περάσει"
 
-#: etc/initialdata:510 etc/upgrade/4.1.9/content:130
+#: etc/initialdata:514 etc/upgrade/4.1.9/content:130
 msgid "Approval Passed in HTML"
 msgstr "Η έγκριση πέρασε σε HTML"
 
-#: etc/initialdata:584 etc/upgrade/3.8.2/content:112
+#: etc/initialdata:588 etc/upgrade/3.8.2/content:112
 msgid "Approval Ready for Owner"
 msgstr "Η Έγκριση είναι έτοιμη για τον Υπεύθυνο"
 
-#: etc/initialdata:596 etc/upgrade/4.1.9/content:177
+#: etc/initialdata:600 etc/upgrade/4.1.9/content:177
 msgid "Approval Ready for Owner in HTML"
 msgstr "Έγκριση \"Έτοιμος\" για τον κάτοχο σε HTML"
 
-#: etc/initialdata:556 etc/upgrade/3.8.2/content:99
+#: etc/initialdata:560 etc/upgrade/3.8.2/content:99
 msgid "Approval Rejected"
 msgstr "Η Έγκριση έχει απορριφθεί"
 
-#: etc/initialdata:569 etc/upgrade/4.1.9/content:162
+#: etc/initialdata:573 etc/upgrade/4.1.9/content:162
 msgid "Approval Rejected in HTML"
 msgstr "Η έγκριση απορρίπτεται σε μορφή HTML"
 
@@ -1260,7 +1264,7 @@ msgstr "Απέτυχε η εγκατάσταση του αυτόματου λο�
 msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 msgstr "Δεν υπάρχουν αυτόματα συνιστώμενα θέματα χρωμάτων για την εικόνα σας. Αυτό μπορεί να συμβαίνει επειδή φορτώσατε ένα τύπο εικόνας που δεν υποστηρίζεται από αυτή την έκδοση του GD. Τύποι που υποστηρίζονται είναι: %1. Μπορείτε να ξανά-μεταγλωττίσετε την libgd και το GD.pm για να περιλαμβάνει υποστήριξη και άλλων τύπων εικόνας."
 
-#: etc/initialdata:227
+#: etc/initialdata:231
 msgid "Autoreply"
 msgstr "Αυτόματη απάντηση"
 
@@ -1268,7 +1272,7 @@ msgstr "Αυτόματη απάντηση"
 msgid "Autoreply To Requestors"
 msgstr "Αυτόματη απάντηση στους Αιτητές"
 
-#: etc/initialdata:257 etc/upgrade/4.1.9/content:8
+#: etc/initialdata:261 etc/upgrade/4.1.9/content:8
 msgid "Autoreply in HTML"
 msgstr "Αυτόματη απάντηση σε HTML"
 
@@ -1350,7 +1354,7 @@ msgstr ""
 msgid "Before Articles can be used, your RT administrator must %1create Classes%2, apply Article custom fields to them, and grant users rights on the classes and CFs."
 msgstr "Πριν χρησιμοποιηθούν τα άρθρα, ο RT διαχειριστής σας πρέπει να %1δημιουργήσει Κατηγορίες%2, εφαρμόσει τo άρθρo σε αυτά τα προσαρμοσμένα πεδία, και να χορηγήσει δικαιώματα χρηστών για τις Κατηγορίες και για CFs."
 
-#: etc/initialdata:223
+#: etc/initialdata:227
 msgid "Blank"
 msgstr "Κενό"
 
@@ -1370,7 +1374,7 @@ msgstr "Σελιδοδείκτης"
 msgid "Bookmarkable link for this search"
 msgstr "Σύνδεσμος σελιδοδείκτης για αυτή την αναζήτηση"
 
-#: etc/initialdata:831 etc/initialdata:856 etc/upgrade/3.7.82/content:6
+#: etc/initialdata:835 etc/initialdata:860 etc/upgrade/3.7.82/content:6
 msgid "Bookmarked Tickets"
 msgstr "Σελιδοδείκτες Αιτημάτων"
 
@@ -1497,6 +1501,10 @@ msgstr "Αλλαγή"
 #: lib/RT/Approval/Rule/Created.pm:56
 msgid "Change Approval ticket to open status"
 msgstr "Αλλαγή αιτήματος Έγκρισης σε κατάσταση «Ανοικτό»"
+
+#: share/html/Admin/Articles/Classes/Modify.html:113
+msgid "Change email subject:"
+msgstr ""
 
 #: share/html/SelfService/Prefs.html:70
 msgid "Change password"
@@ -1657,13 +1665,13 @@ msgstr "Ολοκλήρωση Στελεχωμένων"
 msgid "Condition"
 msgstr "Συνθήκη"
 
-#: lib/RT/Scrip.pm:180 lib/RT/Scrip.pm:828
+#: lib/RT/Scrip.pm:180 lib/RT/Scrip.pm:825
 #. ($args{'ScripCondition'})
 #. ($value)
 msgid "Condition '%1' not found"
 msgstr "Η συνθήκη '%1' δε βρέθηκε"
 
-#: lib/RT/Scrip.pm:176 lib/RT/Scrip.pm:821
+#: lib/RT/Scrip.pm:176 lib/RT/Scrip.pm:818
 msgid "Condition is mandatory argument"
 msgstr "Η συνθήκη είναι υποχρεωτικό όρισμα"
 
@@ -1722,7 +1730,7 @@ msgstr ""
 msgid "Correspond address"
 msgstr "Διεύθυνση αλληλογραφίας"
 
-#: etc/initialdata:359
+#: etc/initialdata:363
 msgid "Correspondence"
 msgstr "Αλληλογραφία"
 
@@ -1730,7 +1738,7 @@ msgstr "Αλληλογραφία"
 msgid "Correspondence added"
 msgstr "Προστέθηκε Αλληλογραφία"
 
-#: etc/initialdata:367 etc/upgrade/4.1.9/content:68
+#: etc/initialdata:371 etc/upgrade/4.1.9/content:68
 msgid "Correspondence in HTML"
 msgstr "Αλληλογραφία σε HTML"
 
@@ -1851,7 +1859,7 @@ msgstr "Δεν ήταν δυνατή η προσθήκη επισύναψης"
 msgid "Couldn't add member to group"
 msgstr "Δεν ήταν δυνατή η προσθήκη μέλους στην ομάδα"
 
-#: lib/RT/Scrip.pm:789
+#: lib/RT/Scrip.pm:786
 #. ($method, $code, $error)
 msgid "Couldn't compile %1 codeblock '%2': %3"
 msgstr "Δεν ήταν δυνατή η μεταγλώττιση τμήματος κώδικα %1 '%2': %3"
@@ -2003,7 +2011,7 @@ msgstr "Δεν ήταν δυνατή η φόρτωση του αυτοματισ
 msgid "Couldn't load template #%1"
 msgstr "Δεν ήταν δυνατή η φόρτωση του προτύπου σελίδας #%1"
 
-#: lib/RT/Interface/Web.pm:2622
+#: lib/RT/Interface/Web.pm:2623
 msgid "Couldn't load the specified principal"
 msgstr "Δεν ήταν δυνατή η φόρτωση του καθορισμένου εντολέα"
 
@@ -2098,11 +2106,11 @@ msgstr "Δεν ήταν δυνατό να αναιρεθεί ιδιωτικό κ
 msgid "Country"
 msgstr "Χώρα"
 
-#: share/html/Admin/Articles/Classes/Modify.html:128 share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/Elements/EditCustomField:87 share/html/Admin/Global/Template.html:78 share/html/Admin/Groups/Modify.html:91 share/html/Admin/Queues/Modify.html:165 share/html/Admin/Queues/Template.html:111 share/html/Admin/Scrips/Create.html:74 share/html/Admin/Scrips/Create.html:81 share/html/Admin/Users/Modify.html:224 share/html/Articles/Article/Edit.html:102 share/html/Articles/Article/ExtractFromTicket.html:83 share/html/Articles/Article/ExtractIntoClass.html:68 share/html/Articles/Article/ExtractIntoTopic.html:60 share/html/Dashboards/Modify.html:72 share/html/Elements/QuickCreate:77 share/html/Elements/ShowLinks:54 share/html/Elements/Tabs:107 share/html/Elements/Tabs:122 share/html/Elements/Tabs:130 share/html/Elements/Tabs:176 share/html/Elements/Tabs:191 share/html/Elements/Tabs:275 share/html/Elements/Tabs:294 share/html/Elements/Tabs:298 share/html/Elements/Tabs:403 share/html/Elements/Tabs:410 share/html/Elements/Tabs:417 share/html/Elements/Tabs:420 share/html/Elements/Tabs:423 share/html/Elements/Tabs:431 share/html/Elements/Tabs:437 share/html/Elements/Tabs:449 share/html/Elements/Tabs:460 share/html/Elements/Tabs:532 share/html/Elements/Tabs:72 share/html/Elements/Tabs:80 share/html/Elements/Tabs:88 share/html/Elements/Tabs:97 share/html/Ticket/Create.html:211 share/html/Ticket/Create.html:289 share/html/m/ticket/create:235 share/html/m/ticket/create:408
+#: share/html/Admin/Articles/Classes/Modify.html:128 share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/Elements/EditCustomField:87 share/html/Admin/Global/Template.html:78 share/html/Admin/Groups/Modify.html:91 share/html/Admin/Queues/Modify.html:165 share/html/Admin/Queues/Template.html:111 share/html/Admin/Scrips/Create.html:74 share/html/Admin/Scrips/Create.html:81 share/html/Admin/Users/Modify.html:224 share/html/Articles/Article/Edit.html:102 share/html/Articles/Article/ExtractFromTicket.html:83 share/html/Articles/Article/ExtractIntoClass.html:68 share/html/Articles/Article/ExtractIntoTopic.html:60 share/html/Dashboards/Modify.html:72 share/html/Elements/QuickCreate:77 share/html/Elements/ShowLinks:54 share/html/Elements/Tabs:107 share/html/Elements/Tabs:122 share/html/Elements/Tabs:130 share/html/Elements/Tabs:176 share/html/Elements/Tabs:191 share/html/Elements/Tabs:275 share/html/Elements/Tabs:294 share/html/Elements/Tabs:298 share/html/Elements/Tabs:403 share/html/Elements/Tabs:410 share/html/Elements/Tabs:417 share/html/Elements/Tabs:420 share/html/Elements/Tabs:423 share/html/Elements/Tabs:431 share/html/Elements/Tabs:437 share/html/Elements/Tabs:449 share/html/Elements/Tabs:460 share/html/Elements/Tabs:532 share/html/Elements/Tabs:72 share/html/Elements/Tabs:80 share/html/Elements/Tabs:88 share/html/Elements/Tabs:97 share/html/Ticket/Create.html:211 share/html/Ticket/Create.html:289 share/html/User/Elements/Portlets/CreateTicket:53 share/html/m/ticket/create:235 share/html/m/ticket/create:408
 msgid "Create"
 msgstr "Δημιουργία"
 
-#: etc/initialdata:94
+#: etc/initialdata:98
 msgid "Create Tickets"
 msgstr "Δημιουργία αιτημάτων"
 
@@ -2189,7 +2197,7 @@ msgstr "Δημιουργία άρθρων σε αυτή την κλάση"
 msgid "Create group dashboards"
 msgstr "Δημιουργία πινακίδων ομάδας"
 
-#: etc/initialdata:96
+#: etc/initialdata:100
 msgid "Create new tickets based on this scrip's template"
 msgstr "Δημιουργία νέου αιτήματος βασισμένου στο πρότυπο αυτού του αυτοματισμού"
 
@@ -2304,8 +2312,8 @@ msgstr "Προσαρμοσμένo CSS (Για προχωρημένους)"
 msgid "Custom Fields"
 msgstr "Ειδικά Πεδία"
 
-#: share/html/Admin/CustomFields/index.html:53
-#. ($tmp->FriendlyLookupType( $Type ))
+#: share/html/Admin/CustomFields/index.html:52
+#. ($Type)
 msgid "Custom Fields for %1"
 msgstr "Ειδικά Πεδία για %1"
 
@@ -2454,7 +2462,7 @@ msgstr "Δεν ήταν δυνατή η ενημέρωση της Πινακίδ
 msgid "Dashboard updated"
 msgstr "Το Ταμπλό ενημερώθηκε"
 
-#: etc/RT_Config.pm:1239 etc/initialdata:875 share/html/Dashboards/index.html:48 share/html/Elements/Dashboards:49
+#: etc/RT_Config.pm:1239 etc/initialdata:879 share/html/Dashboards/index.html:48 share/html/Elements/Dashboards:49
 msgid "Dashboards"
 msgstr "Ταμπλό"
 
@@ -2535,7 +2543,7 @@ msgstr "Σφάλμα αποκρυπτογράφησης, επικοινωνήσ�
 msgid "Default queue"
 msgstr "Προκαθορισμένη ουρά"
 
-#: etc/initialdata:404 etc/upgrade/4.1.16/content:7
+#: etc/initialdata:408 etc/upgrade/4.1.16/content:7
 msgid "Default reminder template"
 msgstr "Προεπιλεγμένο πρότυπο υπενθύμισης"
 
@@ -2692,7 +2700,7 @@ msgstr "Λεπτομέρειες"
 msgid "Direction"
 msgstr "Κατεύθυνση"
 
-#: share/html/Elements/RT__CustomField/ColumnMap:58 share/html/Elements/RT__Queue/ColumnMap:58 share/html/Elements/RT__Scrip/ColumnMap:112
+#: share/html/Elements/RT__Class/ColumnMap:68 share/html/Elements/RT__CustomField/ColumnMap:58 share/html/Elements/RT__Group/ColumnMap:83 share/html/Elements/RT__Queue/ColumnMap:58 share/html/Elements/RT__Scrip/ColumnMap:112 share/html/Elements/RT__User/ColumnMap:147
 msgid "Disabled"
 msgstr "Απενεργοποιημένα"
 
@@ -2889,7 +2897,7 @@ msgstr "Αλληλογραφία"
 msgid "Email Address"
 msgstr "Διεύθυνση Αλληλογραφία"
 
-#: etc/initialdata:695 etc/upgrade/3.7.85/content:7
+#: etc/initialdata:699 etc/upgrade/3.7.85/content:7
 msgid "Email Digest"
 msgstr "Σύνοψη Ηλεκτρονικής Αλληλογραφίας"
 
@@ -2906,7 +2914,7 @@ msgstr "Η διεύθυνση αλληλογραφίας χρησιμοποιε�
 msgid "Email delivery"
 msgstr "Παράδοση Αλληλογραφίας"
 
-#: etc/initialdata:696 etc/upgrade/3.7.85/content:8
+#: etc/initialdata:700 etc/upgrade/3.7.85/content:8
 msgid "Email template for periodic notification digests"
 msgstr "Πρότυπο ηλεκτρονικής αλληλογραφίας για περιοδική αποστολή σύνοψης"
 
@@ -2922,7 +2930,7 @@ msgstr "Κενό"
 msgid "Enable quote folding?"
 msgstr "Ενεργοποίηση παράθεση αναδίπλωσης ;"
 
-#: share/html/Elements/RT__CustomField/ColumnMap:58 share/html/Elements/RT__Queue/ColumnMap:58 share/html/Elements/RT__Scrip/ColumnMap:112
+#: share/html/Elements/RT__Class/ColumnMap:68 share/html/Elements/RT__CustomField/ColumnMap:58 share/html/Elements/RT__Group/ColumnMap:83 share/html/Elements/RT__Queue/ColumnMap:58 share/html/Elements/RT__Scrip/ColumnMap:112 share/html/Elements/RT__User/ColumnMap:147
 msgid "Enabled"
 msgstr "Ενεργοποιημένα"
 
@@ -3086,11 +3094,11 @@ msgstr "Σφάλμα κατά τη φόρτωση συνημμένου"
 msgid "Error plotting chart: %1"
 msgstr "Σφάλμα στη σχεδίαση γραφήματος: %1"
 
-#: etc/initialdata:643 etc/upgrade/3.7.10/content:16
+#: etc/initialdata:647 etc/upgrade/3.7.10/content:16
 msgid "Error to RT owner: public key"
 msgstr "Σφάλμα στο χρήστη RT: δημόσιο κλειδί"
 
-#: etc/initialdata:705 etc/upgrade/3.7.87/content:7
+#: etc/initialdata:709 etc/upgrade/3.7.87/content:7
 msgid "Error: Missing dashboard"
 msgstr "Σφάλμα: η Πινακίδα λείπει"
 
@@ -3098,7 +3106,7 @@ msgstr "Σφάλμα: η Πινακίδα λείπει"
 msgid "Error: bad GnuPG data"
 msgstr "Σφάλμα: εσφαλμένα δεδομένα GnuPG"
 
-#: etc/initialdata:668
+#: etc/initialdata:672
 msgid "Error: bad encrypted data"
 msgstr "Σφάλμα: κακή κρυπτογράφηση δεδομένων"
 
@@ -3111,11 +3119,11 @@ msgstr "Σφάλμα: δεν ήταν δυνατή η αλλαγή της τιμ
 msgid "Error: could not load saved search %1: %2"
 msgstr "Σφάλμα: δεν ήταν δυνατή η φόρτωση της αποθηκευμένης αναζήτησης  %1: %2"
 
-#: etc/initialdata:656 etc/upgrade/3.7.10/content:29
+#: etc/initialdata:660 etc/upgrade/3.7.10/content:29
 msgid "Error: no private key"
 msgstr "Σφάλμα: δεν υπάρχει ιδιωτικό κλειδί"
 
-#: etc/initialdata:634 etc/upgrade/3.7.10/content:7
+#: etc/initialdata:638 etc/upgrade/3.7.10/content:7
 msgid "Error: public key"
 msgstr "Σφάλμα: δημόσιο κλειδί"
 
@@ -3124,7 +3132,7 @@ msgstr "Σφάλμα: δημόσιο κλειδί"
 msgid "Error: search %1 not updated: %2"
 msgstr "Σφάλμα: η αναζήτηση %1 δεν ενημερώθηκε: %2"
 
-#: etc/initialdata:625 etc/upgrade/4.1.22/content:77
+#: etc/initialdata:629 etc/upgrade/4.1.22/content:77
 msgid "Error: unencrypted message"
 msgstr "Σφάλμα: μη κρυπτογραφημένο μήνυμα"
 
@@ -3168,7 +3176,7 @@ msgstr "Επιπρόσθετες πληροφορίες"
 msgid "Extract Article"
 msgstr "Εξαγωγή Άρθρου"
 
-#: etc/initialdata:104 etc/upgrade/3.8.3/content:78
+#: etc/initialdata:108 etc/upgrade/3.8.3/content:78
 msgid "Extract Subject Tag"
 msgstr "Εξαγωγή Ετικέτας Θέματος"
 
@@ -3182,7 +3190,7 @@ msgstr "Εξαγωγή νέου άρθρου από αίτημα #%1"
 msgid "Extract article from ticket #%1 into class %2"
 msgstr "Εξαγωγή άρθρου από αίτημα #%1 στη κλάση %2"
 
-#: etc/initialdata:105 etc/upgrade/3.8.3/content:79
+#: etc/initialdata:109 etc/upgrade/3.8.3/content:79
 msgid "Extract tags from a Transaction's subject and add them to the Ticket's subject."
 msgstr "Εξαγωγή ετικετών από το θέμα της Συναλλαγής και προσθήκη στο θέμα του αιτήματος"
 
@@ -3363,7 +3371,7 @@ msgstr "Μορφοποίηση"
 msgid "Formats iCal feed events with date and time"
 msgstr "Οι  iCal μορφές τροφοδοτούν συμβάντα με ημερομηνία και ώρα"
 
-#: etc/initialdata:609 etc/upgrade/3.7.15/content:7 share/html/Elements/ShowTransaction:206 share/html/Elements/Tabs:680
+#: etc/initialdata:613 etc/upgrade/3.7.15/content:7 share/html/Elements/ShowTransaction:206 share/html/Elements/Tabs:680
 msgid "Forward"
 msgstr "Προώθηση"
 
@@ -3375,7 +3383,7 @@ msgstr "Προώθηση μηνύματος"
 msgid "Forward Message and Return"
 msgstr "Προώθηση μηνύματος και επιστροφή"
 
-#: etc/initialdata:617 etc/upgrade/3.8.6/content:6
+#: etc/initialdata:621 etc/upgrade/3.8.6/content:6
 msgid "Forward Ticket"
 msgstr "Προώθηση αιτήματος"
 
@@ -3403,11 +3411,11 @@ msgstr "Προώθηση %3Συναλλαγής #%1%4 σε %2"
 msgid "Forwarded Ticket to %1"
 msgstr "Προώθηση αιτήματος σε %1"
 
-#: etc/initialdata:610
+#: etc/initialdata:614
 msgid "Forwarded message"
 msgstr "Προωθημένο μήνυμα"
 
-#: etc/initialdata:618
+#: etc/initialdata:622
 msgid "Forwarded ticket message"
 msgstr "Προωθημένο μήνυμα αιτήματος"
 
@@ -3513,7 +3521,7 @@ msgstr "Μετάβαση σε ομάδα"
 msgid "Go to user"
 msgstr "Μετάβαση σε χρήστη"
 
-#: share/html/Admin/Articles/Classes/index.html:70 share/html/Admin/CustomFields/index.html:86 share/html/Admin/Groups/index.html:71 share/html/Admin/Queues/People.html:76 share/html/Admin/Queues/People.html:80 share/html/Admin/Queues/index.html:89 share/html/Admin/Users/index.html:81 share/html/Approvals/index.html:54 share/html/Elements/RefreshHomepage:52 share/html/Ticket/Elements/EditPeople:55 share/html/Ticket/Elements/EditPeople:59
+#: share/html/Admin/Articles/Classes/index.html:70 share/html/Admin/CustomFields/index.html:69 share/html/Admin/Groups/index.html:71 share/html/Admin/Queues/People.html:76 share/html/Admin/Queues/People.html:80 share/html/Admin/Queues/index.html:70 share/html/Admin/Users/index.html:81 share/html/Approvals/index.html:54 share/html/Elements/RefreshHomepage:52 share/html/Ticket/Elements/EditPeople:55 share/html/Ticket/Elements/EditPeople:59
 msgid "Go!"
 msgstr "Μετάβαση!"
 
@@ -3621,31 +3629,31 @@ msgstr "Ομάδες που ο εντολέας δεν είναι μέλος τ�
 msgid "Groups this user belongs to"
 msgstr "Ομάδες στις οποίες ανήκει ο χρήστης"
 
-#: etc/initialdata:258 etc/upgrade/4.1.9/content:9
+#: etc/initialdata:262 etc/upgrade/4.1.9/content:9
 msgid "HTML Autoresponse template"
 msgstr "Πρότυπο αυτόματης απάντησης σε HTML"
 
-#: etc/initialdata:450 etc/upgrade/4.1.9/content:103
+#: etc/initialdata:454 etc/upgrade/4.1.9/content:103
 msgid "HTML Ticket Resolved"
 msgstr "Το αίτημα επιλύθηκε σε μορφή HTML"
 
-#: etc/initialdata:427 etc/upgrade/4.1.9/content:91
+#: etc/initialdata:431 etc/upgrade/4.1.9/content:91
 msgid "HTML Ticket status changed"
 msgstr "Η κατάσταση αιτήματος άλλαξε σε HTML"
 
-#: etc/initialdata:391 etc/upgrade/4.1.9/content:78
+#: etc/initialdata:395 etc/upgrade/4.1.9/content:78
 msgid "HTML admin comment template"
 msgstr "Πρότυπο σχολίου διαχειριστή σε HTML"
 
-#: etc/initialdata:348 etc/upgrade/4.1.9/content:57
+#: etc/initialdata:352 etc/upgrade/4.1.9/content:57
 msgid "HTML admin correspondence template"
 msgstr "Πρότυπο αλληλογραφίας διαχειριστή σε HTML"
 
-#: etc/initialdata:368 etc/upgrade/4.1.9/content:69
+#: etc/initialdata:372 etc/upgrade/4.1.9/content:69
 msgid "HTML correspondence template"
 msgstr "Πρότυπο αλληλογραφίας σε HTML"
 
-#: etc/initialdata:303 etc/upgrade/4.1.9/content:35
+#: etc/initialdata:307 etc/upgrade/4.1.9/content:35
 msgid "HTML transaction template"
 msgstr "Πρότυπο συναλλαγής σε HTML"
 
@@ -3830,11 +3838,16 @@ msgstr "Περιλαμβάνει όνομα άρθρου"
 msgid "Include article summary"
 msgstr "Περιλαμβάνει σύνοψη άρθρου"
 
+#: share/html/Admin/Articles/Classes/Modify.html:97
+#. ($cf->Name)
+msgid "Include custom field '%1'"
+msgstr ""
+
 #: share/html/Admin/Articles/Classes/index.html:69
 msgid "Include disabled classes in listing."
 msgstr "Συμπερίληψη απενεργοποιημένων κλάσεων στη λίστα."
 
-#: share/html/Admin/CustomFields/index.html:81
+#: share/html/Admin/CustomFields/index.html:64
 msgid "Include disabled custom fields in listing."
 msgstr "Συμπερίληψη απενεργοποιημένων ειδικών πεδίων στην λίστα."
 
@@ -3842,7 +3855,7 @@ msgstr "Συμπερίληψη απενεργοποιημένων ειδικών
 msgid "Include disabled groups in listing."
 msgstr "Συμπερίληψη απενεργοποιημένων ομάδων στην λίστα."
 
-#: share/html/Admin/Queues/index.html:88
+#: share/html/Admin/Queues/index.html:69
 msgid "Include disabled queues in listing."
 msgstr "Συμπερίληψη απενεργοποιημένων ουρών στην λίστα."
 
@@ -3871,11 +3884,11 @@ msgstr "Ενημερώσεις δείκτη από %1"
 msgid "Individual messages"
 msgstr "Ατομικά μηνύματα"
 
-#: etc/initialdata:645 etc/upgrade/3.7.10/content:18
+#: etc/initialdata:649 etc/upgrade/3.7.10/content:18
 msgid "Inform RT owner that user(s) have problems with public keys"
 msgstr "Ενημέρωση του διαχειριστή του RT ότι οι χρήστες έχουν προβλήματα με τα δημόσια κλειδιά τους"
 
-#: etc/initialdata:707 etc/upgrade/3.7.87/content:9
+#: etc/initialdata:711 etc/upgrade/3.7.87/content:9
 msgid "Inform user that a dashboard he subscribed to is missing"
 msgstr "Ενημέρωση του χρήστη ότι η πινακίδα στην οποία έκανε συνδρομή λείπει"
 
@@ -3883,23 +3896,23 @@ msgstr "Ενημέρωση του χρήστη ότι η πινακίδα στη
 msgid "Inform user that a message he sent has invalid GnuPG data"
 msgstr "Ενημέρωση του χρήστη ότι το μήνυμα που έστειλε έχει λανθασμένα δεδομένα GnuPG"
 
-#: etc/initialdata:670
+#: etc/initialdata:674
 msgid "Inform user that a message he sent has invalid encryption data"
 msgstr "Ενημερώστε το χρήστη ότι το μήνυμα που έστειλε έχει έγκυρα δεδομένα κρυπτογράφησης"
 
-#: etc/initialdata:636 etc/upgrade/3.7.10/content:9
+#: etc/initialdata:640 etc/upgrade/3.7.10/content:9
 msgid "Inform user that he has problems with public key and couldn't recieve encrypted content"
 msgstr "Ενημέρωση του χρήστη ότι έχει προβλήματα με τα δημόσια κλειδιά και δεν μπορεί να λάβει κρυπτογραφημένο περιεχόμενο."
 
-#: etc/initialdata:682
+#: etc/initialdata:686
 msgid "Inform user that his password has been reset"
 msgstr "Ενημέρωση του χρήστη ότι έχει γίνει επαναφορά του κωδικού πρόσβασης"
 
-#: etc/initialdata:627 etc/upgrade/4.1.22/content:79
+#: etc/initialdata:631 etc/upgrade/4.1.22/content:79
 msgid "Inform user that their unencrypted mail has been rejected"
 msgstr "Ενημερώστε το χρήστη ότι η μη κρυπτογραφημένη αλληλογραφία τους έχει απορριφθεί"
 
-#: etc/initialdata:658 etc/upgrade/3.7.10/content:31
+#: etc/initialdata:662 etc/upgrade/3.7.10/content:31
 msgid "Inform user that we received an encrypted email and we have no private keys to decrypt"
 msgstr "Ενημέρωση χρήστη σχετικά με λήψη ένα κρυπτογραφημένου μηνύματος ηλεκτρονικής αλληλογραφίας και απουσίας ιδιωτικών κλειδιών για αποκρυπτογράφηση"
 
@@ -5012,7 +5025,7 @@ msgstr "Η Ημέρα μου"
 msgid "My Reminders"
 msgstr "Οι υπενθυμίσεις μου"
 
-#: etc/initialdata:848
+#: etc/initialdata:852
 msgid "My Tickets"
 msgstr "Τα αιτήματά μου"
 
@@ -5036,7 +5049,7 @@ msgstr "Οι αποθηκευμένες αναζητήσεις μου"
 msgid "MyAdminQueues"
 msgstr "Οι ουρές διαχείρισής μου"
 
-#: etc/RT_Config.pm:1239 etc/initialdata:867
+#: etc/RT_Config.pm:1239 etc/initialdata:871
 msgid "MyReminders"
 msgstr "Οι υπενθυμίσεις μου"
 
@@ -5096,11 +5109,11 @@ msgstr "Νέα Πινακίδα"
 msgid "New Links"
 msgstr "Νέοι Σύνδεσμοι"
 
-#: etc/initialdata:458 etc/upgrade/3.8.2/content:52
+#: etc/initialdata:462 etc/upgrade/3.8.2/content:52
 msgid "New Pending Approval"
 msgstr "Νέα έγκριση εν αναμονή"
 
-#: etc/initialdata:477 etc/upgrade/4.1.9/content:111
+#: etc/initialdata:481 etc/upgrade/4.1.9/content:111
 msgid "New Pending Approval in HTML"
 msgstr "Εν αναμονή νέα έγκριση σε μορφή HTML"
 
@@ -5208,6 +5221,10 @@ msgstr "Δεν βρέθηκε ο χρήστης RT. Παρακαλώ συμβο�
 msgid "No Subject"
 msgstr "Χωρίς Θέμα"
 
+#: share/html/Admin/Articles/Classes/Modify.html:118
+msgid "No Subject Override"
+msgstr ""
+
 #: share/html/Admin/Global/Template.html:88 share/html/Admin/Queues/Template.html:86
 msgid "No Template"
 msgstr "Χωρίς πρότυπο"
@@ -5307,7 +5324,7 @@ msgstr "Δεν έχει επιλεγεί εντολέας"
 msgid "No private key"
 msgstr "Δεν υπάρχει ιδιωτικό κλειδί"
 
-#: share/html/Admin/Queues/index.html:56
+#: share/html/Admin/Queues/index.html:75
 msgid "No queues matching search criteria found."
 msgstr "Δεν βρέθηκαν ουρές που να πληρούν τα κριτήρια αναζήτησης"
 
@@ -5429,11 +5446,11 @@ msgstr "Ειδοποίηση Ccs"
 msgid "Notify Ccs as Comment"
 msgstr "Ειδοποίηση Ccs σαν Σχόλιο"
 
-#: etc/initialdata:87
+#: etc/initialdata:91
 msgid "Notify Other Recipients"
 msgstr "Ειδοποίηση άλλων Παραληπτών"
 
-#: etc/initialdata:83
+#: etc/initialdata:87
 msgid "Notify Other Recipients as Comment"
 msgstr "Ειδοποίηση άλλων Παραληπτών σαν Σχόλιο"
 
@@ -5449,11 +5466,11 @@ msgstr "Ιδοποίηση Κατόχου και AdminCcs"
 msgid "Notify Owner as Comment"
 msgstr "Ειδοποίηση Υπεύθυνου σαν σχόλιο"
 
-#: etc/initialdata:558 etc/initialdata:571 etc/upgrade/3.8.2/content:101 etc/upgrade/4.1.9/content:164
+#: etc/initialdata:562 etc/initialdata:575 etc/upgrade/3.8.2/content:101 etc/upgrade/4.1.9/content:164
 msgid "Notify Owner of their rejected ticket"
 msgstr "Ειδοποίηση Υπεύθυνου για το απορριφθέν αίτημα του"
 
-#: etc/initialdata:586 etc/initialdata:598 etc/upgrade/3.8.2/content:114 etc/upgrade/4.1.9/content:179
+#: etc/initialdata:590 etc/initialdata:602 etc/upgrade/3.8.2/content:114 etc/upgrade/4.1.9/content:179
 msgid "Notify Owner of their ticket has been approved and is ready to be acted on"
 msgstr "Ειδοποίηση Υπεύθυνου για την έγκριση του αιτήματος του και ότι είναι έτοιμο για ενέργειες"
 
@@ -5461,23 +5478,27 @@ msgstr "Ειδοποίηση Υπεύθυνου για την έγκριση τ�
 msgid "Notify Owner of their ticket has been approved by some or all approvers"
 msgstr "Ειδοποίηση Υπεύθυνου για την έγκριση του αιτήματος από κάποιο ή όλους τους υπεύθυνους έγκρισης"
 
-#: etc/initialdata:79
+#: etc/initialdata:65 etc/upgrade/4.2.6/content:5
+msgid "Notify Owner or AdminCcs"
+msgstr ""
+
+#: etc/initialdata:83
 msgid "Notify Owner, Requestors, Ccs and AdminCcs"
 msgstr "Ειδοποίηση Υπεύθυνου, Αιτητή, Ccs και AdminCcs"
 
-#: etc/initialdata:75
+#: etc/initialdata:79
 msgid "Notify Owner, Requestors, Ccs and AdminCcs as Comment"
 msgstr "Ειδοποίηση Υπεύθυνου, Αιτητών, Ccs και AdminCcs σαν Σχόλιο"
 
-#: etc/initialdata:460 etc/initialdata:478 etc/upgrade/3.8.2/content:54 etc/upgrade/4.1.9/content:112
+#: etc/initialdata:464 etc/initialdata:482 etc/upgrade/3.8.2/content:54 etc/upgrade/4.1.9/content:112
 msgid "Notify Owners and AdminCcs of new items pending their approval"
 msgstr "Ειδοποίηση Υπευθύνων και AdminCcs για καινούργια θέματα εν αναμονή έγκρισης"
 
-#: etc/initialdata:528 etc/initialdata:542 etc/upgrade/3.8.2/content:87 etc/upgrade/4.1.9/content:148
+#: etc/initialdata:532 etc/initialdata:546 etc/upgrade/3.8.2/content:87 etc/upgrade/4.1.9/content:148
 msgid "Notify Requestor of their ticket has been approved by all approvers"
 msgstr "Ειδοποίηση Αιτητή ότι το αίτημα του έχει εγκριθεί από όλους τους υπεύθυνους έγκρισης"
 
-#: etc/initialdata:498 etc/initialdata:512 etc/upgrade/3.8.2/content:73 etc/upgrade/4.1.9/content:132
+#: etc/initialdata:502 etc/initialdata:516 etc/upgrade/3.8.2/content:73 etc/upgrade/4.1.9/content:132
 msgid "Notify Requestor of their ticket has been approved by some approver"
 msgstr "Ειδοποίηση Αιτητή ότι το αίτημα του έχει εγκριθεί από κάποιους υπεύθυνους έγκρισης"
 
@@ -5485,11 +5506,11 @@ msgstr "Ειδοποίηση Αιτητή ότι το αίτημα του έχε
 msgid "Notify Requestors"
 msgstr "Ειδοποίηση Αιτητών"
 
-#: etc/initialdata:70
+#: etc/initialdata:74
 msgid "Notify Requestors and Ccs"
 msgstr "Ειδοποίηση Αιτητών και Ccs"
 
-#: etc/initialdata:65
+#: etc/initialdata:69
 msgid "Notify Requestors and Ccs as Comment"
 msgstr "Ειδοποίηση Αιτητών και Ccs σαν Σχόλιο"
 
@@ -5546,63 +5567,63 @@ msgstr "Οκτ"
 msgid "On %1, %2 wrote:"
 msgstr "Με το %1, το %2 έγραψε:"
 
-#: etc/initialdata:208 etc/upgrade/3.7.1/content:5
+#: etc/initialdata:212 etc/upgrade/3.7.1/content:5
 msgid "On Close"
 msgstr "Με το Κλείσιμο"
 
-#: etc/initialdata:152
+#: etc/initialdata:156
 msgid "On Comment"
 msgstr "Με τον Σχολιασμό"
 
-#: etc/initialdata:124
+#: etc/initialdata:128
 msgid "On Correspond"
 msgstr "Με την Επικοινωνία"
 
-#: etc/initialdata:113
+#: etc/initialdata:117
 msgid "On Create"
 msgstr "Με την Δημιουργία"
 
-#: etc/initialdata:131 etc/upgrade/4.0.3/content:7
+#: etc/initialdata:135 etc/upgrade/4.0.3/content:7
 msgid "On Forward"
 msgstr "Με την Προώθηση"
 
-#: etc/initialdata:138 etc/upgrade/4.0.3/content:14
+#: etc/initialdata:142 etc/upgrade/4.0.3/content:14
 msgid "On Forward Ticket"
 msgstr "Με την Προώθηση Αιτήματος"
 
-#: etc/initialdata:145 etc/upgrade/4.0.3/content:21
+#: etc/initialdata:149 etc/upgrade/4.0.3/content:21
 msgid "On Forward Transaction"
 msgstr "Με την Προώθηση Συναλλαγής"
 
-#: etc/initialdata:173
+#: etc/initialdata:177
 msgid "On Owner Change"
 msgstr "Με την Αλλαγή Υπευθύνου"
 
-#: etc/initialdata:166 etc/upgrade/3.1.17/content:18
+#: etc/initialdata:170 etc/upgrade/3.1.17/content:18
 msgid "On Priority Change"
 msgstr "Με την αλλαγή Προτεραιότητας"
 
-#: etc/initialdata:181
+#: etc/initialdata:185
 msgid "On Queue Change"
 msgstr "Με την αλλαγή Ουράς"
 
-#: etc/initialdata:194 etc/upgrade/3.8.3/content:5
+#: etc/initialdata:198 etc/upgrade/3.8.3/content:5
 msgid "On Reject"
 msgstr "Με την Απόρριψη"
 
-#: etc/initialdata:213 etc/upgrade/3.7.1/content:10
+#: etc/initialdata:217 etc/upgrade/3.7.1/content:10
 msgid "On Reopen"
 msgstr "Με το Άνοιγμα Ξανά"
 
-#: etc/initialdata:187
+#: etc/initialdata:191
 msgid "On Resolve"
 msgstr "Με την Επίλυση"
 
-#: etc/initialdata:158
+#: etc/initialdata:162
 msgid "On Status Change"
 msgstr "Με την Αλλαγή Κατάστασης"
 
-#: etc/initialdata:118
+#: etc/initialdata:122
 msgid "On Transaction"
 msgstr "Με την δημιουργία Συναλλαγής"
 
@@ -5632,11 +5653,11 @@ msgstr "Δείξε μόνο εγκρίσεις για τις αιτήσεις π
 msgid "Only show approvals for requests created before %1"
 msgstr "Δείξε μόνο εγκρίσεις για τις αιτήσεις που δημιουργήθηκαν πριν από %1"
 
-#: share/html/Admin/CustomFields/index.html:72
+#: share/html/Admin/CustomFields/index.html:55
 msgid "Only show custom fields for:"
 msgstr "Προβολή μόνο των ειδικών πεδίων για:"
 
-#: etc/initialdata:101 etc/upgrade/4.2.4/content:5
+#: etc/initialdata:105 etc/upgrade/4.2.4/content:5
 msgid "Open Inactive Tickets"
 msgstr "Ανοικτά Απενεργοποιημένα Αιτήματα"
 
@@ -5644,7 +5665,7 @@ msgstr "Ανοικτά Απενεργοποιημένα Αιτήματα"
 msgid "Open It"
 msgstr "Άνοιξε το"
 
-#: etc/initialdata:98
+#: etc/initialdata:102
 msgid "Open Tickets"
 msgstr "Ανοιχτά Αιτήματα"
 
@@ -5652,7 +5673,7 @@ msgstr "Ανοιχτά Αιτήματα"
 msgid "Open URL"
 msgstr "Άνοιγμα URL"
 
-#: etc/initialdata:102 etc/upgrade/4.2.4/content:6
+#: etc/initialdata:106 etc/upgrade/4.2.4/content:6
 msgid "Open inactive tickets"
 msgstr "Ανοικτά απενεργοποιημένα αιτήματα"
 
@@ -5660,7 +5681,7 @@ msgstr "Ανοικτά απενεργοποιημένα αιτήματα"
 msgid "Open tickets"
 msgstr "Ανοιχτά αιτήματα"
 
-#: etc/initialdata:99
+#: etc/initialdata:103
 msgid "Open tickets on correspondence"
 msgstr "Άνοιγμα αιτημάτων για Αλληλογραφία"
 
@@ -5814,7 +5835,7 @@ msgstr "Κωδικός πρόσβασης: %1"
 msgid "Password: Permission Denied"
 msgstr "Κωδικός Πρόσβασης: Δεν επιτρέπεται η πρόσβαση"
 
-#: etc/initialdata:680
+#: etc/initialdata:684
 msgid "PasswordChange"
 msgstr ""
 
@@ -5849,7 +5870,7 @@ msgstr "Άτομα"
 msgid "People related to queue %1"
 msgstr "Άτομα που σχετίζονται με την ουρά %1"
 
-#: etc/initialdata:92
+#: etc/initialdata:96
 msgid "Perform a user-defined action"
 msgstr "Εκτέλεση ενέργειας καθορισμένης από χρήστη"
 
@@ -5885,23 +5906,23 @@ msgstr "Αριθμοί τηλεφώνου"
 msgid "Picture"
 msgstr "Εικόνα"
 
-#: etc/initialdata:228
+#: etc/initialdata:232
 msgid "Plain text Autoresponse template"
 msgstr "Πρότυπο αυτόματης απάντησης απλού κειμένου"
 
-#: etc/initialdata:377
+#: etc/initialdata:381
 msgid "Plain text admin comment template"
 msgstr "Απλο κείμενο διαχείρισης φόρμας σχολίου"
 
-#: etc/initialdata:337
+#: etc/initialdata:341
 msgid "Plain text admin correspondence template"
 msgstr "Απλό κείμενο διαχείρισης φόρμας αλληλογραφίας"
 
-#: etc/initialdata:360
+#: etc/initialdata:364
 msgid "Plain text correspondence template"
 msgstr "Απλό κείμενο, φόρμα αλληλογραφίας"
 
-#: etc/initialdata:284
+#: etc/initialdata:288
 msgid "Plain text transaction template"
 msgstr "Πρότυπο συναλλαγής απλού κειμένου"
 
@@ -6172,11 +6193,11 @@ msgstr "Γρήγορη αναζήτηση"
 msgid "Quick ticket creation"
 msgstr "Γρήγορη δημιουργία αιτήματος"
 
-#: etc/RT_Config.pm:1239 etc/initialdata:860
+#: etc/RT_Config.pm:1239 etc/initialdata:864
 msgid "QuickCreate"
 msgstr "Γρήγορη Δημιουργία"
 
-#: etc/RT_Config.pm:1239 etc/initialdata:871
+#: etc/RT_Config.pm:1239 etc/initialdata:875
 msgid "Quicksearch"
 msgstr "Γρήγορη Αναζήτηση"
 
@@ -6422,7 +6443,7 @@ msgstr "Ανανέωση αποτελεσμάτων αναζήτησης κάθ�
 msgid "Refresh this page every %quant(%1,minute,minutes)."
 msgstr "Ανανέωση αυτής της σελίδας κάθε %1 λεπτά."
 
-#: etc/RT_Config.pm:1239 etc/initialdata:879
+#: etc/RT_Config.pm:1239 etc/initialdata:883
 msgid "RefreshHomepage"
 msgstr "Ανανέωση αρχικής σελίδας"
 
@@ -6438,7 +6459,7 @@ msgstr "Απόρριψη"
 msgid "Remember default queue"
 msgstr "Απομνημόνευση προκαθορισμένης ουράς"
 
-#: etc/initialdata:403 etc/upgrade/4.1.16/content:6 share/html/Elements/ShowReminders:51 share/html/Ticket/Elements/Reminders:82
+#: etc/initialdata:407 etc/upgrade/4.1.16/content:6 share/html/Elements/ShowReminders:51 share/html/Ticket/Elements/Reminders:82
 msgid "Reminder"
 msgstr "Υπενθύμιση"
 
@@ -6457,7 +6478,7 @@ msgstr "Ολοκλήρωση υπενθύμισης '%1'"
 msgid "Reminder '%1' reopened"
 msgstr "Επαναενεργοποίηση υπενθύμισης '%1'"
 
-#: lib/RT/Interface/Web.pm:2984 lib/RT/Interface/Web.pm:3002
+#: lib/RT/Interface/Web.pm:2985 lib/RT/Interface/Web.pm:3003
 #. ($args->{'NewReminder-Subject'}, loc("Created"))
 #. ($old_subject || $reminder->Subject, $_)
 msgid "Reminder '%1': %2"
@@ -6583,11 +6604,11 @@ msgstr "Επίλυση"
 msgid "Resolve ticket #%1 (%2)"
 msgstr "Επίλυση αιτήματος #%1 (%2)"
 
-#: etc/initialdata:440 lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:76 lib/RT/Tickets.pm:135 share/html/Elements/RT__Ticket/ColumnMap:218 share/html/Elements/RT__Ticket/ColumnMap:243 share/html/Elements/SelectDateType:51 share/html/Search/Elements/BuildFormatString:100
+#: etc/initialdata:444 lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:76 lib/RT/Tickets.pm:135 share/html/Elements/RT__Ticket/ColumnMap:218 share/html/Elements/RT__Ticket/ColumnMap:243 share/html/Elements/SelectDateType:51 share/html/Search/Elements/BuildFormatString:100
 msgid "Resolved"
 msgstr "Επιλυμένα"
 
-#: etc/initialdata:449 etc/upgrade/4.1.9/content:102
+#: etc/initialdata:453 etc/upgrade/4.1.9/content:102
 msgid "Resolved in HTML"
 msgstr "Επιλύθηκε σε μορφή HTML"
 
@@ -6639,7 +6660,7 @@ msgstr "Το Δικαίωμα δεν έχει φορτωθεί"
 msgid "Right revoked"
 msgstr "Ανάκληση Δικαιώματος"
 
-#: lib/RT/Interface/Web.pm:2580 lib/RT/Interface/Web.pm:2680
+#: lib/RT/Interface/Web.pm:2581 lib/RT/Interface/Web.pm:2681
 #. ($object_type)
 msgid "Rights could not be granted for %1"
 msgstr "Τα δικαιώματα δεν μπόρεσαν να παραχωρηθούν στο %1"
@@ -6662,7 +6683,7 @@ msgstr "Ο ρόλος της ομάδας '%1' δε βρέθηκε"
 msgid "Role group exists already"
 msgstr "Ο ρόλος της ομάδας υπάρχει ήδη"
 
-#: lib/RT/Interface/Web.pm:3816
+#: lib/RT/Interface/Web.pm:3817
 msgid "Roles"
 msgstr "Ρόλοι"
 
@@ -6862,7 +6883,7 @@ msgstr "Μυστικό κουπόνι ταυτοποίησης"
 msgid "Security:"
 msgstr "Ασφάλεια:"
 
-#: share/html/Elements/ShowCustomFields:124 share/html/m/ticket/show:191
+#: share/html/Elements/ShowCustomFields:125 share/html/m/ticket/show:191
 msgid "See also:"
 msgstr "Δείτε επίσης:"
 
@@ -6894,7 +6915,7 @@ msgstr "Επιλογή Τύπου Βάσης Δεδομένων"
 msgid "Select a Class"
 msgstr "Επιλογή Κλάσης"
 
-#: share/html/Admin/CustomFields/index.html:96
+#: share/html/Admin/CustomFields/index.html:94
 msgid "Select a Custom Field"
 msgstr "Επιλογή Ειδικού Πεδίου"
 
@@ -6910,7 +6931,7 @@ msgstr "Επιλογή χρώματος για αυτό το τμήμα"
 msgid "Select a group"
 msgstr "Επιλογή ομάδας"
 
-#: share/html/Admin/Queues/index.html:54 share/html/m/ticket/select_create_queue:55
+#: share/html/Admin/Queues/index.html:73 share/html/m/ticket/select_create_queue:55
 msgid "Select a queue"
 msgstr "Επιλογή ουράς"
 
@@ -7036,27 +7057,27 @@ msgstr "Επιλεγμένα αντικείμενα"
 msgid "Selections modified. Please save your changes"
 msgstr "Οι επιλογές έχουν μεταβληθεί. Παρακαλώ αποθηκεύστε τις αλλαγές σας"
 
-#: etc/initialdata:107
+#: etc/initialdata:111
 msgid "Send Forward"
 msgstr "Αποστολή προώθησης"
 
-#: etc/initialdata:108
+#: etc/initialdata:112
 msgid "Send forwarded message"
 msgstr "Αποστολή προωθημένου μηνύματος"
 
-#: etc/initialdata:80
+#: etc/initialdata:84
 msgid "Send mail to owner and all watchers"
 msgstr "Αποστολή μηνύματος σε υπεύθυνο και όλους τους παρατηρητές"
 
-#: etc/initialdata:76
+#: etc/initialdata:80
 msgid "Send mail to owner and all watchers as a \"comment\""
 msgstr "Αποστολή μηνύματος σε υπεύθυνο και όλους τους παρατηρητές σαν σχόλιο"
 
-#: etc/initialdata:71
+#: etc/initialdata:75
 msgid "Send mail to requestors and Ccs"
 msgstr "Αποστολή μηνύματος σε αιτητές και Ccs"
 
-#: etc/initialdata:66
+#: etc/initialdata:70
 msgid "Send mail to requestors and Ccs as a comment"
 msgstr "Αποστολή μηνύματος σε αιτητές και Ccs σαν σχόλιο"
 
@@ -7064,7 +7085,7 @@ msgstr "Αποστολή μηνύματος σε αιτητές και Ccs σα�
 msgid "Sends a message to the requestors"
 msgstr "Αποστολή μηνύματος στους αιτητές"
 
-#: etc/initialdata:84 etc/initialdata:88
+#: etc/initialdata:88 etc/initialdata:92
 msgid "Sends mail to explicitly listed Ccs and Bccs"
 msgstr "Αποστολή μηνύματος στη λίστα των Ccs και Bccs"
 
@@ -7079,6 +7100,10 @@ msgstr "Αποστολή μηνύματος στους Ccs σαν σχόλιο"
 #: etc/initialdata:62 etc/upgrade/4.1.15/content:6
 msgid "Sends mail to the Owner and administrative Ccs"
 msgstr "Αποστολή μηνύματος στο Κάτοχο και στο διαχειριστή Ccs"
+
+#: etc/initialdata:66 etc/upgrade/4.2.6/content:6
+msgid "Sends mail to the Owner if set, otherwise administrative Ccs"
+msgstr ""
 
 #: etc/initialdata:58
 msgid "Sends mail to the administrative Ccs"
@@ -7383,7 +7408,7 @@ msgstr "Πολιτεία"
 msgid "Static file search order"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Report/Tickets.pm:60 lib/RT/Tickets.pm:106 lib/RT/Tickets.pm:1484 share/html/Elements/RT__Ticket/ColumnMap:111 share/html/Elements/RT__Ticket/ColumnMap:121 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:62 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Tools/MyDay.html:67 share/html/m/_elements/ticket_list:95 share/html/m/ticket/create:250 share/html/m/ticket/reply:63 share/html/m/ticket/show:216
+#: lib/RT/Graph/Tickets.pm:153 lib/RT/Report/Tickets.pm:60 lib/RT/Tickets.pm:106 lib/RT/Tickets.pm:1484 share/html/Elements/RT__Class/ColumnMap:66 share/html/Elements/RT__CustomField/ColumnMap:56 share/html/Elements/RT__Group/ColumnMap:82 share/html/Elements/RT__Queue/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:110 share/html/Elements/RT__Ticket/ColumnMap:111 share/html/Elements/RT__Ticket/ColumnMap:121 share/html/Elements/RT__User/ColumnMap:146 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:62 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Tools/MyDay.html:67 share/html/m/_elements/ticket_list:95 share/html/m/ticket/create:250 share/html/m/ticket/reply:63 share/html/m/ticket/show:216
 msgid "Status"
 msgstr "Κατάσταση"
 
@@ -7397,11 +7422,11 @@ msgstr "Η κατάσταση '%1' δεν είναι μια έγκυρη κατ�
 msgid "Status '%1' isn't a valid status for tickets in this queue."
 msgstr "Η κατάσταση '%1' δεν είναι έγκυρη για τα αιτήματα σε αυτή την ουρά."
 
-#: etc/initialdata:415
+#: etc/initialdata:419
 msgid "Status Change"
 msgstr "Αλλαγή κατάστασης"
 
-#: etc/initialdata:426 etc/upgrade/4.1.9/content:90
+#: etc/initialdata:430 etc/upgrade/4.1.9/content:90
 msgid "Status Change in HTML"
 msgstr "Αλλαγή Κατάστασης σε μορφή HTML"
 
@@ -7550,7 +7575,7 @@ msgstr "Κυριακή"
 msgid "Suspended"
 msgstr "Παγωμένο"
 
-#: lib/RT/Interface/Web.pm:3773
+#: lib/RT/Interface/Web.pm:3774
 msgid "System"
 msgstr "Σύστημα"
 
@@ -7562,7 +7587,7 @@ msgstr "Ρυθμίσεις συστήματος"
 msgid "System Default"
 msgstr "Προεπιλογή Συστήματος"
 
-#: lib/RT/Interface/Web.pm:2580 lib/RT/Interface/Web.pm:2680 share/html/Admin/Elements/EditRightsCategoryTabs:60
+#: lib/RT/Interface/Web.pm:2581 lib/RT/Interface/Web.pm:2681 share/html/Admin/Elements/EditRightsCategoryTabs:60
 msgid "System Error"
 msgstr "Σφάλμα Συστήματος"
 
@@ -7587,7 +7612,7 @@ msgstr "Σφάλμα συστήματος. Αδυναμία παραχώρηση
 msgid "SystemRolegroup for internal use"
 msgstr "SystemRolegroup για εσωτερική χρήση"
 
-#: etc/initialdata:820 share/html/Elements/Tabs:716 share/html/Search/Elements/EditFormat:72
+#: etc/initialdata:824 share/html/Elements/Tabs:716 share/html/Search/Elements/EditFormat:72
 msgid "Take"
 msgstr "Ανάληψη"
 
@@ -7620,7 +7645,7 @@ msgstr "Το πρότυπο  '%1' δεν είναι καθολικό"
 msgid "Template '%1' is not global nor queue specific"
 msgstr "Το πρότυπο '%1' δεν είναι καθολικό ούτε συγκεκριμένης ουράς"
 
-#: lib/RT/Scrip.pm:167 lib/RT/Scrip.pm:847
+#: lib/RT/Scrip.pm:167 lib/RT/Scrip.pm:844
 #. ($args{'Template'})
 #. ($value)
 msgid "Template '%1' not found"
@@ -7642,7 +7667,7 @@ msgstr "Το πρότυπο είναι κενό"
 msgid "Template is in use"
 msgstr "Το πρότυπο  είναι σε χρήση"
 
-#: lib/RT/Scrip.pm:156 lib/RT/Scrip.pm:842
+#: lib/RT/Scrip.pm:156 lib/RT/Scrip.pm:839
 msgid "Template is mandatory argument"
 msgstr "Το πρότυπο είναι υποχρεωτική παράμετρος"
 
@@ -7954,7 +7979,7 @@ msgstr "Αίτημα %1: %2"
 msgid "Ticket History # %1 %2"
 msgstr "Ιστορικό Αιτήματος # %1 %2"
 
-#: etc/initialdata:441
+#: etc/initialdata:445
 msgid "Ticket Resolved"
 msgstr "Το Αίτημα Επιλύθηκε"
 
@@ -8002,7 +8027,7 @@ msgstr "Εμφάνιση αιτήματος"
 msgid "Ticket metadata"
 msgstr "Μεταδεδομένα αιτήματος"
 
-#: etc/initialdata:416
+#: etc/initialdata:420
 msgid "Ticket status changed"
 msgstr "Η κατάσταση του αιτήματος άλλαξε"
 
@@ -8168,7 +8193,7 @@ msgstr "Συνολικός χρόνος αριστερά"
 msgid "Total time worked"
 msgstr "Συνολικός χρόνος εργασίας"
 
-#: etc/initialdata:283
+#: etc/initialdata:287
 msgid "Transaction"
 msgstr "Συναλλαγή"
 
@@ -8181,7 +8206,7 @@ msgstr "Η συναλλαγή %1 διαγράφηκε"
 msgid "Transaction Created"
 msgstr "Η συναλλαγή δημιουργήθηκε"
 
-#: etc/initialdata:302 etc/upgrade/4.1.9/content:34
+#: etc/initialdata:306 etc/upgrade/4.1.9/content:34
 msgid "Transaction in HTML"
 msgstr "Συναλλαγή σε HTML"
 
@@ -8364,7 +8389,7 @@ msgstr "Πινακίδα χωρίς όνομα"
 msgid "Unnamed search"
 msgstr "Ανώνυμη αναζήτηση"
 
-#: etc/initialdata:852
+#: etc/initialdata:856
 msgid "Unowned Tickets"
 msgstr "Αιτήματα χωρίς κάτοχο"
 
@@ -8428,7 +8453,7 @@ msgstr "Ενημέρωση μορφής και αναζήτηση"
 msgid "Update multiple tickets"
 msgstr "Ενημέρωση πολλαπλών αιτημάτων"
 
-#: lib/RT/Action/CreateTickets.pm:474 lib/RT/Interface/Web.pm:2351
+#: lib/RT/Action/CreateTickets.pm:474 lib/RT/Interface/Web.pm:2352
 msgid "Update not recorded."
 msgstr "Μη καταγραφή ενημέρωσης."
 
@@ -8448,7 +8473,7 @@ msgstr "Ενημέρωση αιτήματος #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Ενημέρωση αιτήματος #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:472 lib/RT/Interface/Web.pm:2351
+#: lib/RT/Action/CreateTickets.pm:472 lib/RT/Interface/Web.pm:2352
 msgid "Update type was neither correspondence nor comment."
 msgstr "Ο τύπος ενημέρωσης δεν ήταν ούτε αλληλογραφία ούτε σχόλιο."
 
@@ -8566,7 +8591,7 @@ msgstr "Ο χρήστης %1 είναι προς το παρόν απενεργ�
 msgid "User (created - expire)"
 msgstr "Χρήστης (δημιουργήθηκε - έληξε)"
 
-#: etc/initialdata:201 etc/initialdata:91
+#: etc/initialdata:205 etc/initialdata:95
 msgid "User Defined"
 msgstr "Ορισμένο από χρήστη"
 
@@ -8574,7 +8599,7 @@ msgstr "Ορισμένο από χρήστη"
 msgid "User Defined conditions and results"
 msgstr "Από το χρήστη ορίζονται οι προϋποθέσεις και τα αποτελέσματα"
 
-#: lib/RT/Interface/Web.pm:3791
+#: lib/RT/Interface/Web.pm:3792
 msgid "User Groups"
 msgstr "Ομάδες Χρηστών"
 
@@ -8594,7 +8619,7 @@ msgstr "Αναζήτηση Χρήστη"
 msgid "User Summary"
 msgstr "Σύνοψη χρήστη"
 
-#: lib/RT/Interface/Web.pm:3201
+#: lib/RT/Interface/Web.pm:3202
 #. ($cf->Name, ref $args{'Object'},                    $args{'Object'}->id)
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
 msgstr "Ο χρήστης ζήτησε αγνώστου τύπου ενημέρωση για το ειδικό πεδίο %1 για το %2 αντικείμενο #%3"
@@ -8641,7 +8666,7 @@ msgstr "Όνομα Χρήστη"
 msgid "Username format"
 msgstr "Μορφή Ονόματος Χρήστη"
 
-#: lib/RT/CustomField.pm:1889 lib/RT/CustomField.pm:204 lib/RT/Interface/Web.pm:3844 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:526 share/html/Elements/Tabs:67
+#: lib/RT/CustomField.pm:1889 lib/RT/CustomField.pm:204 lib/RT/Interface/Web.pm:3845 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:526 share/html/Elements/Tabs:67
 msgid "Users"
 msgstr "Χρήστες"
 
@@ -8834,7 +8859,7 @@ msgstr "Όταν το  RT δεν μπορεί να χειριστεί ένα μ�
 msgid "When RT sends an email it sets the From: and Reply-To: headers so users can add to the conversation by just hitting Reply in their mail client.  It uses different addresses for Replies and Comments.  These can be changed for each of your queues.  These addresses will need to be configured to use the <tt>rt-mailgate</tt> program."
 msgstr "Όταν το RT στέλνει ένα μήνυμα ορίζει τις κεφαλίδες From: και Reply-To: έτσι έτσι ώστε οι χρήστες να μπορούν να το προσθέσουν στην συνομιλία πατώντας απλώς Reply στο πρόγραμμα αλληλογραφίας τους. Χρησιμοποιεί διαφορετικές διευθύνσεις για Αλληλογραφία και Σχόλια. Αυτές μπορεί να αλλαχθούν για κάθε ουρά. Οι διευθύνσεις αυτές θα πρέπει να οριστούν πριν χρησιμοποιηθεί το πρόγραμμα <tt>rt-mailgate</tt>"
 
-#: etc/initialdata:114
+#: etc/initialdata:118
 msgid "When a ticket is created"
 msgstr "Όταν δημιουργείται αίτημα"
 
@@ -8842,67 +8867,71 @@ msgstr "Όταν δημιουργείται αίτημα"
 msgid "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval"
 msgstr "Όταν δημιουργείται ένα αίτημα, να ειδοποιηθούν ο Υπεύθυνος και οι AdminCC για το θέμα που αναμένει την έγκριση τους"
 
-#: etc/initialdata:119
+#: etc/initialdata:123
 msgid "When anything happens"
 msgstr "Όταν συμβαίνει οτιδήποτε"
+
+#: share/html/Admin/Articles/Classes/Modify.html:85
+msgid "When inserting articles in this class into emails:"
+msgstr ""
 
 #: share/html/Install/DatabaseDetails.html:58
 msgid "When you click on 'Check Database Connectivity' there may be a small delay while RT tries to connect to your database"
 msgstr "Όταν πατήσετε το 'Ελέγξτε Συνδεσιμότητα Βάσης Δεδομένων' ενδεχομένως να  υπάρχει μια μικρή καθυστέρηση καθώς το RT προσπαθεί να συνδεθεί με την βάση"
 
-#: etc/initialdata:209 etc/upgrade/3.7.1/content:6
+#: etc/initialdata:213 etc/upgrade/3.7.1/content:6
 msgid "Whenever a ticket is closed"
 msgstr "Όποτε κλείνει ένα αίτημα"
 
-#: etc/initialdata:139 etc/upgrade/4.0.3/content:15
+#: etc/initialdata:143 etc/upgrade/4.0.3/content:15
 msgid "Whenever a ticket is forwarded"
 msgstr "Όποτε προωθείται ένα αίτημα"
 
-#: etc/initialdata:195 etc/upgrade/3.8.3/content:6
+#: etc/initialdata:199 etc/upgrade/3.8.3/content:6
 msgid "Whenever a ticket is rejected"
 msgstr "Όποτε απορρίπτεται ένα αίτημα"
 
-#: etc/initialdata:214 etc/upgrade/3.7.1/content:11
+#: etc/initialdata:218 etc/upgrade/3.7.1/content:11
 msgid "Whenever a ticket is reopened"
 msgstr "Όποτε ένα αίτημα ανοίγει ξανά"
 
-#: etc/initialdata:188
+#: etc/initialdata:192
 msgid "Whenever a ticket is resolved"
 msgstr "Όποτε ένα αίτημα επιλύεται"
 
-#: etc/initialdata:132 etc/upgrade/4.0.3/content:8
+#: etc/initialdata:136 etc/upgrade/4.0.3/content:8
 msgid "Whenever a ticket or transaction is forwarded"
 msgstr "Όποτε προωθείται ένα αίτημα ή συναλλαγή"
 
-#: etc/initialdata:174
+#: etc/initialdata:178
 msgid "Whenever a ticket's owner changes"
 msgstr "Όποτε ο αλλάζει ο υπεύθυνος ενός αιτήματος"
 
-#: etc/initialdata:167 etc/upgrade/3.1.17/content:19
+#: etc/initialdata:171 etc/upgrade/3.1.17/content:19
 msgid "Whenever a ticket's priority changes"
 msgstr "Όποτε αλλάζει η προτεραιότητα ενός αιτήματος"
 
-#: etc/initialdata:182
+#: etc/initialdata:186
 msgid "Whenever a ticket's queue changes"
 msgstr "Όποτε αλλάζει η ουρά ενός αιτήματος"
 
-#: etc/initialdata:159
+#: etc/initialdata:163
 msgid "Whenever a ticket's status changes"
 msgstr "Όποτε αλλάζει η κατάσταση ενός αιτήματος"
 
-#: etc/initialdata:146 etc/upgrade/4.0.3/content:22
+#: etc/initialdata:150 etc/upgrade/4.0.3/content:22
 msgid "Whenever a transaction is forwarded"
 msgstr "Όποτε προωθείται μια συναλλαγή"
 
-#: etc/initialdata:202
+#: etc/initialdata:206
 msgid "Whenever a user-defined condition occurs"
 msgstr "Όποτε δημιουργείται μια συνθήκη ορισμένη από χρήστη"
 
-#: etc/initialdata:153
+#: etc/initialdata:157
 msgid "Whenever comments come in"
 msgstr "Όποτε λαμβάνονται σχόλια"
 
-#: etc/initialdata:125
+#: etc/initialdata:129
 msgid "Whenever correspondence comes in"
 msgstr "Όποτε λαμβάνεται αλληλογραφία"
 
@@ -9152,7 +9181,7 @@ msgstr "μπάρα"
 msgid "before"
 msgstr "πριν από"
 
-#: etc/initialdata:844 share/html/Admin/Global/MyRT.html:86
+#: etc/initialdata:848 share/html/Admin/Global/MyRT.html:86
 msgid "body"
 msgstr "σώμα"
 
@@ -9200,7 +9229,7 @@ msgstr "κλειστό"
 msgid "core config"
 msgstr "κεντρικές ρυθμίσεις"
 
-#: lib/RT/Interface/Web.pm:1617 lib/RT/Interface/Web.pm:1626
+#: lib/RT/Interface/Web.pm:1618 lib/RT/Interface/Web.pm:1627
 msgid "create a ticket"
 msgstr "δημιουργία αιτήματος"
 
@@ -9334,7 +9363,7 @@ msgstr "περιλαμβάνει %1"
 msgid "index"
 msgstr "ευρετήριο"
 
-#: lib/RT/Interface/Web.pm:2977
+#: lib/RT/Interface/Web.pm:2978
 #. ($due)
 msgid "invalid due date: %1"
 msgstr "μη έγκυρη ημερομηνία λήξης: %1"
@@ -9383,19 +9412,19 @@ msgstr "μέγιστο βάθος"
 msgid "minutes"
 msgstr "λεπτά"
 
-#: lib/RT/Interface/Web.pm:1619
+#: lib/RT/Interface/Web.pm:1620
 msgid "modify RT's configuration"
 msgstr "τροποποιήστε τη διαμόρφωση του RT"
 
-#: lib/RT/Interface/Web.pm:1622
+#: lib/RT/Interface/Web.pm:1623
 msgid "modify a dashboard"
 msgstr "τροποποιήστε το ταμπλό"
 
-#: lib/RT/Interface/Web.pm:1625
+#: lib/RT/Interface/Web.pm:1626
 msgid "modify or access a search"
 msgstr "τροποποίηση ή πρόσβαση σε αναζήτηση"
 
-#: lib/RT/Interface/Web.pm:1624
+#: lib/RT/Interface/Web.pm:1625
 msgid "modify your preferences"
 msgstr "τροποποιήστε τις προτιμήσεις σας"
 
@@ -9505,7 +9534,7 @@ msgstr "αναζήτηση"
 msgid "see object list below"
 msgstr "δείτε την λίστα αντικειμένων πιο κάτω"
 
-#: etc/initialdata:863 share/html/Admin/Global/MyRT.html:87
+#: etc/initialdata:867 share/html/Admin/Global/MyRT.html:87
 msgid "sidebar"
 msgstr "πλαϊνή μπάρα"
 
@@ -9535,11 +9564,11 @@ msgstr "σύστημα %1"
 msgid "system group '%1'"
 msgstr "ομάδα συστήματος '%1'"
 
-#: lib/RT/Interface/Web.pm:1533
+#: lib/RT/Interface/Web.pm:1534
 msgid "the Referrer header supplied by your browser (%1) is not allowed by RT's configured hostname (%2)"
 msgstr "η κεφαλίδα παραπομπής που παρέχεται από το πρόγραμμα περιήγησης σας (%1) δεν είναι επιτρεπτή από το διαμορφωμένο όνομα του κεντρικού υπολογιστή (%2) του RT"
 
-#: lib/RT/Interface/Web.pm:1526
+#: lib/RT/Interface/Web.pm:1527
 msgid "the Referrer header supplied by your browser (%1) is not allowed by RT's configured hostname (%2) or whitelisted hosts (%3)"
 msgstr "η κεφαλίδα παραπομπής που παρέχεται από το πρόγραμμα περιήγησης σας (%1) δεν είναι επιτρεπτή από το διαμορφωμένο όνομα του κεντρικού υπολογιστή (%2) του RT ή από τη λίστα των επιτρεπόμενων κεντρικών υπολογιστών (%3)"
 
@@ -9577,15 +9606,15 @@ msgstr "ομάδα χωρίς περιγραφή %1"
 msgid "unlimited"
 msgstr "απεριόριστα"
 
-#: lib/RT/Interface/Web.pm:1618 lib/RT/Interface/Web.pm:1623 lib/RT/Interface/Web.pm:1627
+#: lib/RT/Interface/Web.pm:1619 lib/RT/Interface/Web.pm:1624 lib/RT/Interface/Web.pm:1628
 msgid "update a ticket"
 msgstr "ενημέρωση ενός αιτήματος"
 
-#: lib/RT/Interface/Web.pm:1620
+#: lib/RT/Interface/Web.pm:1621
 msgid "update an approval"
 msgstr "ενημέρωση μιας έγκρισης"
 
-#: lib/RT/Interface/Web.pm:1621
+#: lib/RT/Interface/Web.pm:1622
 msgid "update an article"
 msgstr "ενημέρωση ενός άρθρου"
 
@@ -9632,7 +9661,7 @@ msgstr "με κεφαλίδες"
 msgid "yes"
 msgstr "ναι"
 
-#: lib/RT/Interface/Web.pm:1518
+#: lib/RT/Interface/Web.pm:1519
 msgid "your browser did not supply a Referrer header"
 msgstr "το πρόγραμμα περιήγησης δε παρείχε κεφαλίδα παραπομπής"
 

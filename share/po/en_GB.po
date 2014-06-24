@@ -87,7 +87,7 @@ msgstr "Click \"Initialise Database\" to create RT's database and insert initial
 msgid "Click to choose a color"
 msgstr "Click to choose a colour"
 
-#: lib/RT/Scrip.pm:176 lib/RT/Scrip.pm:821
+#: lib/RT/Scrip.pm:176 lib/RT/Scrip.pm:818
 msgid "Condition is mandatory argument"
 msgstr "Condition is a mandatory argument"
 

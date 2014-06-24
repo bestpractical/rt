@@ -314,7 +314,7 @@ msgstr "%1 não existe."
 msgid "%1 enabled"
 msgstr "%1 habilitado"
 
-#: etc/initialdata:807
+#: etc/initialdata:811
 msgid "%1 highest priority tickets I own"
 msgstr "%1 tíquetes de mais alta prioridade que eu possuo"
 
@@ -387,7 +387,7 @@ msgstr "%1 artigos atualizados mais recentes"
 msgid "%1 newest articles"
 msgstr "%1 mais novos artigos"
 
-#: etc/initialdata:818
+#: etc/initialdata:822
 msgid "%1 newest unowned tickets"
 msgstr "%1 tíquetes mais recentes sem proprietário"
 
@@ -631,7 +631,7 @@ msgstr "(Envia uma cópia desta atualização para uma lista de endereços de e-
 msgid "(Use these fields when you choose 'User Defined' for a condition or action)"
 msgstr "(Use estes campos quando você escolhar 'Definido pelo Usuário' para uma condição ou ação)"
 
-#: share/html/Admin/CustomFields/index.html:74
+#: share/html/Admin/CustomFields/index.html:57
 msgid "(any)"
 msgstr "(qualquer)"
 
@@ -647,7 +647,7 @@ msgstr "(sem nome)"
 msgid "(no pubkey!)"
 msgstr "(sem chave pública!)"
 
-#: lib/RT/Report/Tickets.pm:670 lib/RT/Report/Tickets.pm:836 lib/RT/Report/Tickets.pm:847 lib/RT/Report/Tickets/Entry.pm:78 lib/RT/Report/Tickets/Entry.pm:88 lib/RT/Transaction.pm:1087 lib/RT/Transaction.pm:1149 lib/RT/Transaction.pm:1150 lib/RT/Transaction.pm:757 lib/RT/Transaction.pm:762 lib/RT/Transaction.pm:832 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:109 share/html/Elements/EditCustomFieldSelect:128 share/html/Elements/EditCustomFieldSelect:138 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowCustomFields:60 share/html/m/ticket/show:263
+#: lib/RT/Report/Tickets.pm:670 lib/RT/Report/Tickets.pm:836 lib/RT/Report/Tickets.pm:847 lib/RT/Report/Tickets/Entry.pm:78 lib/RT/Report/Tickets/Entry.pm:88 lib/RT/Transaction.pm:1087 lib/RT/Transaction.pm:1149 lib/RT/Transaction.pm:1150 lib/RT/Transaction.pm:757 lib/RT/Transaction.pm:762 lib/RT/Transaction.pm:832 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:109 share/html/Elements/EditCustomFieldSelect:128 share/html/Elements/EditCustomFieldSelect:138 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowCustomFields:61 share/html/m/ticket/show:263
 msgid "(no value)"
 msgstr "(sem valor)"
 
@@ -710,7 +710,7 @@ msgstr ""
 msgid "A Template with that name already exists"
 msgstr "Um modelo com este nome já existe"
 
-#: etc/initialdata:224
+#: etc/initialdata:228
 msgid "A blank template"
 msgstr "Um modelo vazio"
 
@@ -747,7 +747,7 @@ msgstr "Controle de acesso"
 msgid "Action"
 msgstr "Ação"
 
-#: lib/RT/Scrip.pm:153 lib/RT/Scrip.pm:807
+#: lib/RT/Scrip.pm:153 lib/RT/Scrip.pm:804
 #. ($args{'ScripAction'})
 #. ($value)
 msgid "Action '%1' not found"
@@ -757,7 +757,7 @@ msgstr "Ação '%1' não encontrada"
 msgid "Action committed."
 msgstr "Ação executada."
 
-#: lib/RT/Scrip.pm:149 lib/RT/Scrip.pm:802
+#: lib/RT/Scrip.pm:149 lib/RT/Scrip.pm:799
 msgid "Action is mandatory argument"
 msgstr "Ação é um argumento obrigatório."
 
@@ -908,19 +908,19 @@ msgstr ""
 msgid "Admin Cc"
 msgstr ""
 
-#: etc/initialdata:376
+#: etc/initialdata:380
 msgid "Admin Comment"
 msgstr "Comentário do Administrador"
 
-#: etc/initialdata:390 etc/upgrade/4.1.9/content:77
+#: etc/initialdata:394 etc/upgrade/4.1.9/content:77
 msgid "Admin Comment in HTML"
 msgstr "Comentário do Admin no HTML"
 
-#: etc/initialdata:336
+#: etc/initialdata:340
 msgid "Admin Correspondence"
 msgstr "Correspondência do Administrador"
 
-#: etc/initialdata:347 etc/upgrade/4.1.9/content:56
+#: etc/initialdata:351 etc/upgrade/4.1.9/content:56
 msgid "Admin Correspondence in HTML"
 msgstr "Correspondência do Admin em HTML"
 
@@ -968,11 +968,11 @@ msgstr "Após efetuar login, você será direcionado a seu destino original:"
 msgid "Aggregator"
 msgstr "Agregador"
 
-#: etc/initialdata:526 etc/upgrade/3.8.2/content:85
+#: etc/initialdata:530 etc/upgrade/3.8.2/content:85
 msgid "All Approvals Passed"
 msgstr "Todas as Aprovações Concedidas"
 
-#: etc/initialdata:540 etc/upgrade/4.1.9/content:146
+#: etc/initialdata:544 etc/upgrade/4.1.9/content:146
 msgid "All Approvals Passed in HTML"
 msgstr "Todas Aprovações Passadas em HTML"
 
@@ -983,6 +983,10 @@ msgstr "Todos os artigos nesta classe podem ser listados em um dropdown da pági
 #: share/html/Admin/Articles/Classes/index.html:77
 msgid "All Classes"
 msgstr "Todas as Classes"
+
+#: share/html/Admin/CustomFields/index.html:52
+msgid "All Custom Fields"
+msgstr ""
 
 #: share/html/Elements/Tabs:511
 msgid "All Dashboards"
@@ -1106,27 +1110,27 @@ msgstr "Aprovação #%1: Anotações não registradas devido a um erro de sistem
 msgid "Approval #%1: Notes recorded"
 msgstr "Aprovação #%1: Anotações registradas"
 
-#: etc/initialdata:496 etc/upgrade/3.8.2/content:71
+#: etc/initialdata:500 etc/upgrade/3.8.2/content:71
 msgid "Approval Passed"
 msgstr "Aprovação Concedida"
 
-#: etc/initialdata:510 etc/upgrade/4.1.9/content:130
+#: etc/initialdata:514 etc/upgrade/4.1.9/content:130
 msgid "Approval Passed in HTML"
 msgstr "Aprovação passou em HTML"
 
-#: etc/initialdata:584 etc/upgrade/3.8.2/content:112
+#: etc/initialdata:588 etc/upgrade/3.8.2/content:112
 msgid "Approval Ready for Owner"
 msgstr "Aprovação pronta pelo Dono"
 
-#: etc/initialdata:596 etc/upgrade/4.1.9/content:177
+#: etc/initialdata:600 etc/upgrade/4.1.9/content:177
 msgid "Approval Ready for Owner in HTML"
 msgstr "Aprovação Pronta para Proprietário em HTML"
 
-#: etc/initialdata:556 etc/upgrade/3.8.2/content:99
+#: etc/initialdata:560 etc/upgrade/3.8.2/content:99
 msgid "Approval Rejected"
 msgstr "Aprovação Rejeitada"
 
-#: etc/initialdata:569 etc/upgrade/4.1.9/content:162
+#: etc/initialdata:573 etc/upgrade/4.1.9/content:162
 msgid "Approval Rejected in HTML"
 msgstr "Aprovação Rejeitada em HTML"
 
@@ -1260,7 +1264,7 @@ msgstr "Configuração automática de conta falhou"
 msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 msgstr "Tema de cores sugeridos automaticamente não estão disponíveis para sua imagem. Isso pode ser porque você carregou um tipo de imagem que a versão instalada do GD não suporta. Os tipos suportados são: %1. Você pode recompilar a libgd e GD.pm para incluir suporte para outros tipos de imagem"
 
-#: etc/initialdata:227
+#: etc/initialdata:231
 msgid "Autoreply"
 msgstr "RespostaAutomatica"
 
@@ -1268,7 +1272,7 @@ msgstr "RespostaAutomatica"
 msgid "Autoreply To Requestors"
 msgstr "Responder Automaticamente para Requisitantes"
 
-#: etc/initialdata:257 etc/upgrade/4.1.9/content:8
+#: etc/initialdata:261 etc/upgrade/4.1.9/content:8
 msgid "Autoreply in HTML"
 msgstr "Auto-resposta em HTML"
 
@@ -1350,7 +1354,7 @@ msgstr "Cópia oculta"
 msgid "Before Articles can be used, your RT administrator must %1create Classes%2, apply Article custom fields to them, and grant users rights on the classes and CFs."
 msgstr "Antes que os Artigos possam ser usados, seu administrador RT deve %1criar Classes%2, aplicar campos personalizados a elas, e atribuir direitos aos usuários nas classes e campos personalizados."
 
-#: etc/initialdata:223
+#: etc/initialdata:227
 msgid "Blank"
 msgstr "Vazio"
 
@@ -1370,7 +1374,7 @@ msgstr "Favorito"
 msgid "Bookmarkable link for this search"
 msgstr "link para favorito para esta pesquisa"
 
-#: etc/initialdata:831 etc/initialdata:856 etc/upgrade/3.7.82/content:6
+#: etc/initialdata:835 etc/initialdata:860 etc/upgrade/3.7.82/content:6
 msgid "Bookmarked Tickets"
 msgstr "Tíquetes em Favoritos"
 
@@ -1497,6 +1501,10 @@ msgstr "Alterar"
 #: lib/RT/Approval/Rule/Created.pm:56
 msgid "Change Approval ticket to open status"
 msgstr "Mudança no tíquete de Aprovação para estado aberto"
+
+#: share/html/Admin/Articles/Classes/Modify.html:113
+msgid "Change email subject:"
+msgstr ""
 
 #: share/html/SelfService/Prefs.html:70
 msgid "Change password"
@@ -1657,13 +1665,13 @@ msgstr "Execução Abortada"
 msgid "Condition"
 msgstr "Condição"
 
-#: lib/RT/Scrip.pm:180 lib/RT/Scrip.pm:828
+#: lib/RT/Scrip.pm:180 lib/RT/Scrip.pm:825
 #. ($args{'ScripCondition'})
 #. ($value)
 msgid "Condition '%1' not found"
 msgstr "Condição '%1' não encontrada"
 
-#: lib/RT/Scrip.pm:176 lib/RT/Scrip.pm:821
+#: lib/RT/Scrip.pm:176 lib/RT/Scrip.pm:818
 msgid "Condition is mandatory argument"
 msgstr "Condição é um argumento obrigatório"
 
@@ -1722,7 +1730,7 @@ msgstr ""
 msgid "Correspond address"
 msgstr "Endereço de correspondência"
 
-#: etc/initialdata:359
+#: etc/initialdata:363
 msgid "Correspondence"
 msgstr "Correspondência"
 
@@ -1730,7 +1738,7 @@ msgstr "Correspondência"
 msgid "Correspondence added"
 msgstr "Correspondência adicionada"
 
-#: etc/initialdata:367 etc/upgrade/4.1.9/content:68
+#: etc/initialdata:371 etc/upgrade/4.1.9/content:68
 msgid "Correspondence in HTML"
 msgstr "Correspondência em HTML"
 
@@ -1851,7 +1859,7 @@ msgstr "Não foi possível adicionar anexo"
 msgid "Couldn't add member to group"
 msgstr "Não foi possível adicionar o membro ao grupo"
 
-#: lib/RT/Scrip.pm:789
+#: lib/RT/Scrip.pm:786
 #. ($method, $code, $error)
 msgid "Couldn't compile %1 codeblock '%2': %3"
 msgstr "Não foi possível compilar %1 bloco de código '%2': %3"
@@ -2003,7 +2011,7 @@ msgstr "Não foi possível carregar scrip #%1"
 msgid "Couldn't load template #%1"
 msgstr "Não foi possível carregar modelo #%1"
 
-#: lib/RT/Interface/Web.pm:2622
+#: lib/RT/Interface/Web.pm:2623
 msgid "Couldn't load the specified principal"
 msgstr "Não foi possível carregar o principal especificado"
 
@@ -2098,11 +2106,11 @@ msgstr "Náo foi possível excluir definição da chave privada"
 msgid "Country"
 msgstr "País"
 
-#: share/html/Admin/Articles/Classes/Modify.html:128 share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/Elements/EditCustomField:87 share/html/Admin/Global/Template.html:78 share/html/Admin/Groups/Modify.html:91 share/html/Admin/Queues/Modify.html:165 share/html/Admin/Queues/Template.html:111 share/html/Admin/Scrips/Create.html:74 share/html/Admin/Scrips/Create.html:81 share/html/Admin/Users/Modify.html:224 share/html/Articles/Article/Edit.html:102 share/html/Articles/Article/ExtractFromTicket.html:83 share/html/Articles/Article/ExtractIntoClass.html:68 share/html/Articles/Article/ExtractIntoTopic.html:60 share/html/Dashboards/Modify.html:72 share/html/Elements/QuickCreate:77 share/html/Elements/ShowLinks:54 share/html/Elements/Tabs:107 share/html/Elements/Tabs:122 share/html/Elements/Tabs:130 share/html/Elements/Tabs:176 share/html/Elements/Tabs:191 share/html/Elements/Tabs:275 share/html/Elements/Tabs:294 share/html/Elements/Tabs:298 share/html/Elements/Tabs:403 share/html/Elements/Tabs:410 share/html/Elements/Tabs:417 share/html/Elements/Tabs:420 share/html/Elements/Tabs:423 share/html/Elements/Tabs:431 share/html/Elements/Tabs:437 share/html/Elements/Tabs:449 share/html/Elements/Tabs:460 share/html/Elements/Tabs:532 share/html/Elements/Tabs:72 share/html/Elements/Tabs:80 share/html/Elements/Tabs:88 share/html/Elements/Tabs:97 share/html/Ticket/Create.html:211 share/html/Ticket/Create.html:289 share/html/m/ticket/create:235 share/html/m/ticket/create:408
+#: share/html/Admin/Articles/Classes/Modify.html:128 share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/Elements/EditCustomField:87 share/html/Admin/Global/Template.html:78 share/html/Admin/Groups/Modify.html:91 share/html/Admin/Queues/Modify.html:165 share/html/Admin/Queues/Template.html:111 share/html/Admin/Scrips/Create.html:74 share/html/Admin/Scrips/Create.html:81 share/html/Admin/Users/Modify.html:224 share/html/Articles/Article/Edit.html:102 share/html/Articles/Article/ExtractFromTicket.html:83 share/html/Articles/Article/ExtractIntoClass.html:68 share/html/Articles/Article/ExtractIntoTopic.html:60 share/html/Dashboards/Modify.html:72 share/html/Elements/QuickCreate:77 share/html/Elements/ShowLinks:54 share/html/Elements/Tabs:107 share/html/Elements/Tabs:122 share/html/Elements/Tabs:130 share/html/Elements/Tabs:176 share/html/Elements/Tabs:191 share/html/Elements/Tabs:275 share/html/Elements/Tabs:294 share/html/Elements/Tabs:298 share/html/Elements/Tabs:403 share/html/Elements/Tabs:410 share/html/Elements/Tabs:417 share/html/Elements/Tabs:420 share/html/Elements/Tabs:423 share/html/Elements/Tabs:431 share/html/Elements/Tabs:437 share/html/Elements/Tabs:449 share/html/Elements/Tabs:460 share/html/Elements/Tabs:532 share/html/Elements/Tabs:72 share/html/Elements/Tabs:80 share/html/Elements/Tabs:88 share/html/Elements/Tabs:97 share/html/Ticket/Create.html:211 share/html/Ticket/Create.html:289 share/html/User/Elements/Portlets/CreateTicket:53 share/html/m/ticket/create:235 share/html/m/ticket/create:408
 msgid "Create"
 msgstr "Criar"
 
-#: etc/initialdata:94
+#: etc/initialdata:98
 msgid "Create Tickets"
 msgstr "Criar Tíquetes"
 
@@ -2189,7 +2197,7 @@ msgstr "Criar artigos nesta classe"
 msgid "Create group dashboards"
 msgstr "Criar painéis de grupo"
 
-#: etc/initialdata:96
+#: etc/initialdata:100
 msgid "Create new tickets based on this scrip's template"
 msgstr "Criar novos tíquetes baseados no modelo deste scrip"
 
@@ -2304,8 +2312,8 @@ msgstr "CSS Personalizado (Avançado)"
 msgid "Custom Fields"
 msgstr "Campos Personalizados"
 
-#: share/html/Admin/CustomFields/index.html:53
-#. ($tmp->FriendlyLookupType( $Type ))
+#: share/html/Admin/CustomFields/index.html:52
+#. ($Type)
 msgid "Custom Fields for %1"
 msgstr "Campos Personalizados para %1"
 
@@ -2454,7 +2462,7 @@ msgstr "Painel não pôde ser atualizado: %1"
 msgid "Dashboard updated"
 msgstr "Painel atualizado"
 
-#: etc/RT_Config.pm:1239 etc/initialdata:875 share/html/Dashboards/index.html:48 share/html/Elements/Dashboards:49
+#: etc/RT_Config.pm:1239 etc/initialdata:879 share/html/Dashboards/index.html:48 share/html/Elements/Dashboards:49
 msgid "Dashboards"
 msgstr "Painéis"
 
@@ -2535,7 +2543,7 @@ msgstr "Erro de desencriptação; contate o administrador"
 msgid "Default queue"
 msgstr "Fila padrão"
 
-#: etc/initialdata:404 etc/upgrade/4.1.16/content:7
+#: etc/initialdata:408 etc/upgrade/4.1.16/content:7
 msgid "Default reminder template"
 msgstr "Modelo de lembrete padrão"
 
@@ -2692,7 +2700,7 @@ msgstr "Detalhes"
 msgid "Direction"
 msgstr "Direção"
 
-#: share/html/Elements/RT__CustomField/ColumnMap:58 share/html/Elements/RT__Queue/ColumnMap:58 share/html/Elements/RT__Scrip/ColumnMap:112
+#: share/html/Elements/RT__Class/ColumnMap:68 share/html/Elements/RT__CustomField/ColumnMap:58 share/html/Elements/RT__Group/ColumnMap:83 share/html/Elements/RT__Queue/ColumnMap:58 share/html/Elements/RT__Scrip/ColumnMap:112 share/html/Elements/RT__User/ColumnMap:147
 msgid "Disabled"
 msgstr "Desativado"
 
@@ -2889,7 +2897,7 @@ msgstr "Mensagem"
 msgid "Email Address"
 msgstr "Endereço de E-mail"
 
-#: etc/initialdata:695 etc/upgrade/3.7.85/content:7
+#: etc/initialdata:699 etc/upgrade/3.7.85/content:7
 msgid "Email Digest"
 msgstr "Resenha de Email"
 
@@ -2906,7 +2914,7 @@ msgstr "Endereço de e-mail já está em uso"
 msgid "Email delivery"
 msgstr "Envio de email"
 
-#: etc/initialdata:696 etc/upgrade/3.7.85/content:8
+#: etc/initialdata:700 etc/upgrade/3.7.85/content:8
 msgid "Email template for periodic notification digests"
 msgstr "Modelo de email para notificação periódica de resenhas"
 
@@ -2922,7 +2930,7 @@ msgstr "Vazio"
 msgid "Enable quote folding?"
 msgstr "Habilitar ocultar citações"
 
-#: share/html/Elements/RT__CustomField/ColumnMap:58 share/html/Elements/RT__Queue/ColumnMap:58 share/html/Elements/RT__Scrip/ColumnMap:112
+#: share/html/Elements/RT__Class/ColumnMap:68 share/html/Elements/RT__CustomField/ColumnMap:58 share/html/Elements/RT__Group/ColumnMap:83 share/html/Elements/RT__Queue/ColumnMap:58 share/html/Elements/RT__Scrip/ColumnMap:112 share/html/Elements/RT__User/ColumnMap:147
 msgid "Enabled"
 msgstr "Ativado"
 
@@ -3086,11 +3094,11 @@ msgstr ""
 msgid "Error plotting chart: %1"
 msgstr "Erro ao traçar gráfico: %1"
 
-#: etc/initialdata:643 etc/upgrade/3.7.10/content:16
+#: etc/initialdata:647 etc/upgrade/3.7.10/content:16
 msgid "Error to RT owner: public key"
 msgstr "Erro proprietário RT: chave pública"
 
-#: etc/initialdata:705 etc/upgrade/3.7.87/content:7
+#: etc/initialdata:709 etc/upgrade/3.7.87/content:7
 msgid "Error: Missing dashboard"
 msgstr "Erro: Falta painel"
 
@@ -3098,7 +3106,7 @@ msgstr "Erro: Falta painel"
 msgid "Error: bad GnuPG data"
 msgstr "Erro: dado GnuPG inválido"
 
-#: etc/initialdata:668
+#: etc/initialdata:672
 msgid "Error: bad encrypted data"
 msgstr "Erro: dados encriptados inconsistentes"
 
@@ -3111,11 +3119,11 @@ msgstr "Erro: o valor de privacidade de uma pesquisa existente não pode ser mud
 msgid "Error: could not load saved search %1: %2"
 msgstr "Erro:não foi possível carregar a pesquisa salva  %1: %2"
 
-#: etc/initialdata:656 etc/upgrade/3.7.10/content:29
+#: etc/initialdata:660 etc/upgrade/3.7.10/content:29
 msgid "Error: no private key"
 msgstr "Erro: sem chave privada"
 
-#: etc/initialdata:634 etc/upgrade/3.7.10/content:7
+#: etc/initialdata:638 etc/upgrade/3.7.10/content:7
 msgid "Error: public key"
 msgstr "Erro: chave pública"
 
@@ -3124,7 +3132,7 @@ msgstr "Erro: chave pública"
 msgid "Error: search %1 not updated: %2"
 msgstr "Erro: pesquisa %1 não foi atualizada: %2"
 
-#: etc/initialdata:625 etc/upgrade/4.1.22/content:77
+#: etc/initialdata:629 etc/upgrade/4.1.22/content:77
 msgid "Error: unencrypted message"
 msgstr "Erro: mensagem não-encriptada"
 
@@ -3168,7 +3176,7 @@ msgstr "Informação adicional"
 msgid "Extract Article"
 msgstr "Extrair Artigo"
 
-#: etc/initialdata:104 etc/upgrade/3.8.3/content:78
+#: etc/initialdata:108 etc/upgrade/3.8.3/content:78
 msgid "Extract Subject Tag"
 msgstr "Extrair Tag Assunto"
 
@@ -3182,7 +3190,7 @@ msgstr "Extrair do tíquete #%1 um novo artigo"
 msgid "Extract article from ticket #%1 into class %2"
 msgstr "Extrair um artigo do tíquete #%1 dentro da Classe %2"
 
-#: etc/initialdata:105 etc/upgrade/3.8.3/content:79
+#: etc/initialdata:109 etc/upgrade/3.8.3/content:79
 msgid "Extract tags from a Transaction's subject and add them to the Ticket's subject."
 msgstr "Extrair tags de um Assunto de transação e adicioná-la ao Assunto de ticket."
 
@@ -3363,7 +3371,7 @@ msgstr "Formato"
 msgid "Formats iCal feed events with date and time"
 msgstr "Formata eventos de notificação iCal com data e hora"
 
-#: etc/initialdata:609 etc/upgrade/3.7.15/content:7 share/html/Elements/ShowTransaction:206 share/html/Elements/Tabs:680
+#: etc/initialdata:613 etc/upgrade/3.7.15/content:7 share/html/Elements/ShowTransaction:206 share/html/Elements/Tabs:680
 msgid "Forward"
 msgstr "Reencaminhar"
 
@@ -3375,7 +3383,7 @@ msgstr "Reencaminhar Mensagem"
 msgid "Forward Message and Return"
 msgstr "Reencaminhar Mensagem e Voltar"
 
-#: etc/initialdata:617 etc/upgrade/3.8.6/content:6
+#: etc/initialdata:621 etc/upgrade/3.8.6/content:6
 msgid "Forward Ticket"
 msgstr "Reencaminhar Tíquete"
 
@@ -3403,11 +3411,11 @@ msgstr "Encaminhada %3Transação #%1%4 para %2"
 msgid "Forwarded Ticket to %1"
 msgstr "Reencaminhar Tíquete para #%1"
 
-#: etc/initialdata:610
+#: etc/initialdata:614
 msgid "Forwarded message"
 msgstr "Mensagem encaminhada"
 
-#: etc/initialdata:618
+#: etc/initialdata:622
 msgid "Forwarded ticket message"
 msgstr "Encaminhada mensagem de tíquete"
 
@@ -3513,7 +3521,7 @@ msgstr "Ir para o grupo"
 msgid "Go to user"
 msgstr "Ir para usuário"
 
-#: share/html/Admin/Articles/Classes/index.html:70 share/html/Admin/CustomFields/index.html:86 share/html/Admin/Groups/index.html:71 share/html/Admin/Queues/People.html:76 share/html/Admin/Queues/People.html:80 share/html/Admin/Queues/index.html:89 share/html/Admin/Users/index.html:81 share/html/Approvals/index.html:54 share/html/Elements/RefreshHomepage:52 share/html/Ticket/Elements/EditPeople:55 share/html/Ticket/Elements/EditPeople:59
+#: share/html/Admin/Articles/Classes/index.html:70 share/html/Admin/CustomFields/index.html:69 share/html/Admin/Groups/index.html:71 share/html/Admin/Queues/People.html:76 share/html/Admin/Queues/People.html:80 share/html/Admin/Queues/index.html:70 share/html/Admin/Users/index.html:81 share/html/Approvals/index.html:54 share/html/Elements/RefreshHomepage:52 share/html/Ticket/Elements/EditPeople:55 share/html/Ticket/Elements/EditPeople:59
 msgid "Go!"
 msgstr "Ir!"
 
@@ -3621,31 +3629,31 @@ msgstr "Agrupa 'o principal não é membro de' (marque caixa para apagar)"
 msgid "Groups this user belongs to"
 msgstr "Grupos a que este usuário pertence"
 
-#: etc/initialdata:258 etc/upgrade/4.1.9/content:9
+#: etc/initialdata:262 etc/upgrade/4.1.9/content:9
 msgid "HTML Autoresponse template"
 msgstr "Modelo de autoresposta HTML"
 
-#: etc/initialdata:450 etc/upgrade/4.1.9/content:103
+#: etc/initialdata:454 etc/upgrade/4.1.9/content:103
 msgid "HTML Ticket Resolved"
 msgstr "Tíquete HTML Resolvido"
 
-#: etc/initialdata:427 etc/upgrade/4.1.9/content:91
+#: etc/initialdata:431 etc/upgrade/4.1.9/content:91
 msgid "HTML Ticket status changed"
 msgstr "Estado de tíquete HTML alterado"
 
-#: etc/initialdata:391 etc/upgrade/4.1.9/content:78
+#: etc/initialdata:395 etc/upgrade/4.1.9/content:78
 msgid "HTML admin comment template"
 msgstr "Modelo de comentário de admin HTML"
 
-#: etc/initialdata:348 etc/upgrade/4.1.9/content:57
+#: etc/initialdata:352 etc/upgrade/4.1.9/content:57
 msgid "HTML admin correspondence template"
 msgstr "modelo de correspondência de admin HTML"
 
-#: etc/initialdata:368 etc/upgrade/4.1.9/content:69
+#: etc/initialdata:372 etc/upgrade/4.1.9/content:69
 msgid "HTML correspondence template"
 msgstr "Modelo de correspondência HTML"
 
-#: etc/initialdata:303 etc/upgrade/4.1.9/content:35
+#: etc/initialdata:307 etc/upgrade/4.1.9/content:35
 msgid "HTML transaction template"
 msgstr "Modelo de transação HTML"
 
@@ -3830,11 +3838,16 @@ msgstr "Inclua nome do artigo"
 msgid "Include article summary"
 msgstr "Inclua sumário do artigo"
 
+#: share/html/Admin/Articles/Classes/Modify.html:97
+#. ($cf->Name)
+msgid "Include custom field '%1'"
+msgstr ""
+
 #: share/html/Admin/Articles/Classes/index.html:69
 msgid "Include disabled classes in listing."
 msgstr "Incluir classes desativados na listagem."
 
-#: share/html/Admin/CustomFields/index.html:81
+#: share/html/Admin/CustomFields/index.html:64
 msgid "Include disabled custom fields in listing."
 msgstr "Incluir campos personalizados desativados na listagem."
 
@@ -3842,7 +3855,7 @@ msgstr "Incluir campos personalizados desativados na listagem."
 msgid "Include disabled groups in listing."
 msgstr "Incluir grupos desativados na listagem."
 
-#: share/html/Admin/Queues/index.html:88
+#: share/html/Admin/Queues/index.html:69
 msgid "Include disabled queues in listing."
 msgstr "Incluir filas desativadas na listagem."
 
@@ -3871,11 +3884,11 @@ msgstr "Atualizações de índice de %1"
 msgid "Individual messages"
 msgstr "Mensagens individuais"
 
-#: etc/initialdata:645 etc/upgrade/3.7.10/content:18
+#: etc/initialdata:649 etc/upgrade/3.7.10/content:18
 msgid "Inform RT owner that user(s) have problems with public keys"
 msgstr "Informar proprietário de RT que usuário(s) tem problemas com chaves públicas"
 
-#: etc/initialdata:707 etc/upgrade/3.7.87/content:9
+#: etc/initialdata:711 etc/upgrade/3.7.87/content:9
 msgid "Inform user that a dashboard he subscribed to is missing"
 msgstr "Informar usuário que um painel subscrito por ele está faltando"
 
@@ -3883,23 +3896,23 @@ msgstr "Informar usuário que um painel subscrito por ele está faltando"
 msgid "Inform user that a message he sent has invalid GnuPG data"
 msgstr "Informar usuário que uma mensagem enviada por ele tem dado GnuPG inválido"
 
-#: etc/initialdata:670
+#: etc/initialdata:674
 msgid "Inform user that a message he sent has invalid encryption data"
 msgstr "Informe usuário que a mensagem que ele enviou tem dados inválidos de criptografia"
 
-#: etc/initialdata:636 etc/upgrade/3.7.10/content:9
+#: etc/initialdata:640 etc/upgrade/3.7.10/content:9
 msgid "Inform user that he has problems with public key and couldn't recieve encrypted content"
 msgstr "Informar ao usuário que ele tem problemas com a chave pública e náo pode receber conteúdo encriptado"
 
-#: etc/initialdata:682
+#: etc/initialdata:686
 msgid "Inform user that his password has been reset"
 msgstr "Informar ao usuário que sua senha foi apagada"
 
-#: etc/initialdata:627 etc/upgrade/4.1.22/content:79
+#: etc/initialdata:631 etc/upgrade/4.1.22/content:79
 msgid "Inform user that their unencrypted mail has been rejected"
 msgstr "Informar usuário que o email não encriptado dele foi rejeitado"
 
-#: etc/initialdata:658 etc/upgrade/3.7.10/content:31
+#: etc/initialdata:662 etc/upgrade/3.7.10/content:31
 msgid "Inform user that we received an encrypted email and we have no private keys to decrypt"
 msgstr "Informar ao usuário que recebemos um email encriptado e não temos chaves privadas para decriptar"
 
@@ -5012,7 +5025,7 @@ msgstr "Meu Dia"
 msgid "My Reminders"
 msgstr "Meus Lembretes"
 
-#: etc/initialdata:848
+#: etc/initialdata:852
 msgid "My Tickets"
 msgstr "Meus Tíquetes"
 
@@ -5036,7 +5049,7 @@ msgstr "Minhas buscas salvas"
 msgid "MyAdminQueues"
 msgstr ""
 
-#: etc/RT_Config.pm:1239 etc/initialdata:867
+#: etc/RT_Config.pm:1239 etc/initialdata:871
 msgid "MyReminders"
 msgstr "MeusLembretes"
 
@@ -5096,11 +5109,11 @@ msgstr "Novo painel"
 msgid "New Links"
 msgstr "Novos Vínculos"
 
-#: etc/initialdata:458 etc/upgrade/3.8.2/content:52
+#: etc/initialdata:462 etc/upgrade/3.8.2/content:52
 msgid "New Pending Approval"
 msgstr "Nova Aprovação Pendente"
 
-#: etc/initialdata:477 etc/upgrade/4.1.9/content:111
+#: etc/initialdata:481 etc/upgrade/4.1.9/content:111
 msgid "New Pending Approval in HTML"
 msgstr "Nova Aprovação pendente em HTML"
 
@@ -5208,6 +5221,10 @@ msgstr "Nenhum usuário do RT encontrado. Por favor, consulte o administrador do
 msgid "No Subject"
 msgstr "Nenhum Assunto"
 
+#: share/html/Admin/Articles/Classes/Modify.html:118
+msgid "No Subject Override"
+msgstr ""
+
 #: share/html/Admin/Global/Template.html:88 share/html/Admin/Queues/Template.html:86
 msgid "No Template"
 msgstr "Nenhum Modelo"
@@ -5307,7 +5324,7 @@ msgstr "Nenhum usuário/grupo selecionado."
 msgid "No private key"
 msgstr "Sem chave privada"
 
-#: share/html/Admin/Queues/index.html:56
+#: share/html/Admin/Queues/index.html:75
 msgid "No queues matching search criteria found."
 msgstr "Nenhuma fila satisfaz o critério de busca."
 
@@ -5429,11 +5446,11 @@ msgstr "Notificar Ccs"
 msgid "Notify Ccs as Comment"
 msgstr "Notificar Ccs como Comentário"
 
-#: etc/initialdata:87
+#: etc/initialdata:91
 msgid "Notify Other Recipients"
 msgstr "Notificar Outros Destinatários"
 
-#: etc/initialdata:83
+#: etc/initialdata:87
 msgid "Notify Other Recipients as Comment"
 msgstr "Notificar Outros Destinatários como Comentário"
 
@@ -5449,11 +5466,11 @@ msgstr "Notificar Proprietário e AdminCcs"
 msgid "Notify Owner as Comment"
 msgstr "Notificar Proprietário como Comentário"
 
-#: etc/initialdata:558 etc/initialdata:571 etc/upgrade/3.8.2/content:101 etc/upgrade/4.1.9/content:164
+#: etc/initialdata:562 etc/initialdata:575 etc/upgrade/3.8.2/content:101 etc/upgrade/4.1.9/content:164
 msgid "Notify Owner of their rejected ticket"
 msgstr "Notificar Proprietário sobre seus tíquetes rejeitados"
 
-#: etc/initialdata:586 etc/initialdata:598 etc/upgrade/3.8.2/content:114 etc/upgrade/4.1.9/content:179
+#: etc/initialdata:590 etc/initialdata:602 etc/upgrade/3.8.2/content:114 etc/upgrade/4.1.9/content:179
 msgid "Notify Owner of their ticket has been approved and is ready to be acted on"
 msgstr "Notificar Proprietário que seu chamado foi aprovado e está pronto para ser desenvolvido."
 
@@ -5461,23 +5478,27 @@ msgstr "Notificar Proprietário que seu chamado foi aprovado e está pronto para
 msgid "Notify Owner of their ticket has been approved by some or all approvers"
 msgstr "Notificar o proprietário de que seus tickets foram aprovados por alguns ou todos aprovadores."
 
-#: etc/initialdata:79
+#: etc/initialdata:65 etc/upgrade/4.2.6/content:5
+msgid "Notify Owner or AdminCcs"
+msgstr ""
+
+#: etc/initialdata:83
 msgid "Notify Owner, Requestors, Ccs and AdminCcs"
 msgstr "Notificar Proprietários, Requisitantes, Ccs e AdminCcs"
 
-#: etc/initialdata:75
+#: etc/initialdata:79
 msgid "Notify Owner, Requestors, Ccs and AdminCcs as Comment"
 msgstr "Notificar Proprietário, Requisitante, Ccs e AdminCcs como comentário"
 
-#: etc/initialdata:460 etc/initialdata:478 etc/upgrade/3.8.2/content:54 etc/upgrade/4.1.9/content:112
+#: etc/initialdata:464 etc/initialdata:482 etc/upgrade/3.8.2/content:54 etc/upgrade/4.1.9/content:112
 msgid "Notify Owners and AdminCcs of new items pending their approval"
 msgstr "Notificar Proprietários e AdminCcs sobre novos itens dependendo de suas aprovações"
 
-#: etc/initialdata:528 etc/initialdata:542 etc/upgrade/3.8.2/content:87 etc/upgrade/4.1.9/content:148
+#: etc/initialdata:532 etc/initialdata:546 etc/upgrade/3.8.2/content:87 etc/upgrade/4.1.9/content:148
 msgid "Notify Requestor of their ticket has been approved by all approvers"
 msgstr "Notificar os Requisitantes que seus tickets foram aprovados por todos aprovadores."
 
-#: etc/initialdata:498 etc/initialdata:512 etc/upgrade/3.8.2/content:73 etc/upgrade/4.1.9/content:132
+#: etc/initialdata:502 etc/initialdata:516 etc/upgrade/3.8.2/content:73 etc/upgrade/4.1.9/content:132
 msgid "Notify Requestor of their ticket has been approved by some approver"
 msgstr "Notificar os Requisitantes que seus tickets forma aprovados por alguns dos aprovadores"
 
@@ -5485,11 +5506,11 @@ msgstr "Notificar os Requisitantes que seus tickets forma aprovados por alguns d
 msgid "Notify Requestors"
 msgstr "Notificar Requisitantes"
 
-#: etc/initialdata:70
+#: etc/initialdata:74
 msgid "Notify Requestors and Ccs"
 msgstr "Notificar Requisitantes e Ccs"
 
-#: etc/initialdata:65
+#: etc/initialdata:69
 msgid "Notify Requestors and Ccs as Comment"
 msgstr "Notificar Requisitantes e Ccs como Comentário"
 
@@ -5546,63 +5567,63 @@ msgstr "Out"
 msgid "On %1, %2 wrote:"
 msgstr "Em %1, %2 escreveu:"
 
-#: etc/initialdata:208 etc/upgrade/3.7.1/content:5
+#: etc/initialdata:212 etc/upgrade/3.7.1/content:5
 msgid "On Close"
 msgstr "No Encerramento"
 
-#: etc/initialdata:152
+#: etc/initialdata:156
 msgid "On Comment"
 msgstr "Num Comentário"
 
-#: etc/initialdata:124
+#: etc/initialdata:128
 msgid "On Correspond"
 msgstr "Numa Correspondência"
 
-#: etc/initialdata:113
+#: etc/initialdata:117
 msgid "On Create"
 msgstr "Na Criação"
 
-#: etc/initialdata:131 etc/upgrade/4.0.3/content:7
+#: etc/initialdata:135 etc/upgrade/4.0.3/content:7
 msgid "On Forward"
 msgstr "Encaminhado"
 
-#: etc/initialdata:138 etc/upgrade/4.0.3/content:14
+#: etc/initialdata:142 etc/upgrade/4.0.3/content:14
 msgid "On Forward Ticket"
 msgstr "Ticjket encaminhado"
 
-#: etc/initialdata:145 etc/upgrade/4.0.3/content:21
+#: etc/initialdata:149 etc/upgrade/4.0.3/content:21
 msgid "On Forward Transaction"
 msgstr "Transação encaminhada"
 
-#: etc/initialdata:173
+#: etc/initialdata:177
 msgid "On Owner Change"
 msgstr "Na Alteração de Proprietário"
 
-#: etc/initialdata:166 etc/upgrade/3.1.17/content:18
+#: etc/initialdata:170 etc/upgrade/3.1.17/content:18
 msgid "On Priority Change"
 msgstr "Na Alteração de Prioridade"
 
-#: etc/initialdata:181
+#: etc/initialdata:185
 msgid "On Queue Change"
 msgstr "Na Alteração de Fila"
 
-#: etc/initialdata:194 etc/upgrade/3.8.3/content:5
+#: etc/initialdata:198 etc/upgrade/3.8.3/content:5
 msgid "On Reject"
 msgstr "Quando Rejeitado"
 
-#: etc/initialdata:213 etc/upgrade/3.7.1/content:10
+#: etc/initialdata:217 etc/upgrade/3.7.1/content:10
 msgid "On Reopen"
 msgstr "Na Reabertura"
 
-#: etc/initialdata:187
+#: etc/initialdata:191
 msgid "On Resolve"
 msgstr "Na Resolução"
 
-#: etc/initialdata:158
+#: etc/initialdata:162
 msgid "On Status Change"
 msgstr "Na Alteração de Estado"
 
-#: etc/initialdata:118
+#: etc/initialdata:122
 msgid "On Transaction"
 msgstr "Numa Transação"
 
@@ -5632,11 +5653,11 @@ msgstr "Só apresentar aprovações para requisições criadas depois de %1"
 msgid "Only show approvals for requests created before %1"
 msgstr "Só apresentar aprovações para requisições criadas antes de %1"
 
-#: share/html/Admin/CustomFields/index.html:72
+#: share/html/Admin/CustomFields/index.html:55
 msgid "Only show custom fields for:"
 msgstr "Somente apresentar campos personalizados para:"
 
-#: etc/initialdata:101 etc/upgrade/4.2.4/content:5
+#: etc/initialdata:105 etc/upgrade/4.2.4/content:5
 msgid "Open Inactive Tickets"
 msgstr "Abrir Tíquetes Inativos"
 
@@ -5644,7 +5665,7 @@ msgstr "Abrir Tíquetes Inativos"
 msgid "Open It"
 msgstr "Abrir"
 
-#: etc/initialdata:98
+#: etc/initialdata:102
 msgid "Open Tickets"
 msgstr "Abrir Tíquetes"
 
@@ -5652,7 +5673,7 @@ msgstr "Abrir Tíquetes"
 msgid "Open URL"
 msgstr "Abrir URL"
 
-#: etc/initialdata:102 etc/upgrade/4.2.4/content:6
+#: etc/initialdata:106 etc/upgrade/4.2.4/content:6
 msgid "Open inactive tickets"
 msgstr "Abrir tíquetes inativos"
 
@@ -5660,7 +5681,7 @@ msgstr "Abrir tíquetes inativos"
 msgid "Open tickets"
 msgstr "Abrir tíquetes"
 
-#: etc/initialdata:99
+#: etc/initialdata:103
 msgid "Open tickets on correspondence"
 msgstr "Abrir tíquetes na correspondência"
 
@@ -5814,7 +5835,7 @@ msgstr "Senha: %1"
 msgid "Password: Permission Denied"
 msgstr "Senha: Permissão Negada"
 
-#: etc/initialdata:680
+#: etc/initialdata:684
 msgid "PasswordChange"
 msgstr "TrocadeSenha"
 
@@ -5849,7 +5870,7 @@ msgstr "Pessoas"
 msgid "People related to queue %1"
 msgstr "Pessoas relacionadas a fila %1"
 
-#: etc/initialdata:92
+#: etc/initialdata:96
 msgid "Perform a user-defined action"
 msgstr "Realizar uma ação definida pelo usuário"
 
@@ -5885,23 +5906,23 @@ msgstr "Telefones"
 msgid "Picture"
 msgstr "Imagem"
 
-#: etc/initialdata:228
+#: etc/initialdata:232
 msgid "Plain text Autoresponse template"
 msgstr "Modelo de Autoresposta em texto puro"
 
-#: etc/initialdata:377
+#: etc/initialdata:381
 msgid "Plain text admin comment template"
 msgstr "Modelo de comentário do admin em texto puro"
 
-#: etc/initialdata:337
+#: etc/initialdata:341
 msgid "Plain text admin correspondence template"
 msgstr "Modelo de correspondência do admin em texto puro"
 
-#: etc/initialdata:360
+#: etc/initialdata:364
 msgid "Plain text correspondence template"
 msgstr "Modelo de correspondência em texto puro"
 
-#: etc/initialdata:284
+#: etc/initialdata:288
 msgid "Plain text transaction template"
 msgstr "Modelo de transação em texto puro"
 
@@ -6172,11 +6193,11 @@ msgstr "Busca rápida"
 msgid "Quick ticket creation"
 msgstr "Criação rápida de tíquete"
 
-#: etc/RT_Config.pm:1239 etc/initialdata:860
+#: etc/RT_Config.pm:1239 etc/initialdata:864
 msgid "QuickCreate"
 msgstr "Criação rápida"
 
-#: etc/RT_Config.pm:1239 etc/initialdata:871
+#: etc/RT_Config.pm:1239 etc/initialdata:875
 msgid "Quicksearch"
 msgstr "Busca rápida"
 
@@ -6422,7 +6443,7 @@ msgstr "Atualiza resultados da pesquisa a cada 60 minutos."
 msgid "Refresh this page every %quant(%1,minute,minutes)."
 msgstr "Recarregar esta página a cada %1 minutos."
 
-#: etc/RT_Config.pm:1239 etc/initialdata:879
+#: etc/RT_Config.pm:1239 etc/initialdata:883
 msgid "RefreshHomepage"
 msgstr "Atualizar página inicial"
 
@@ -6438,7 +6459,7 @@ msgstr "Rejeitar"
 msgid "Remember default queue"
 msgstr "Lembrar fila padrão"
 
-#: etc/initialdata:403 etc/upgrade/4.1.16/content:6 share/html/Elements/ShowReminders:51 share/html/Ticket/Elements/Reminders:82
+#: etc/initialdata:407 etc/upgrade/4.1.16/content:6 share/html/Elements/ShowReminders:51 share/html/Ticket/Elements/Reminders:82
 msgid "Reminder"
 msgstr "Lembrete"
 
@@ -6457,7 +6478,7 @@ msgstr "Lembrete '%1' completado"
 msgid "Reminder '%1' reopened"
 msgstr "Lembrete '%1' reaberto"
 
-#: lib/RT/Interface/Web.pm:2984 lib/RT/Interface/Web.pm:3002
+#: lib/RT/Interface/Web.pm:2985 lib/RT/Interface/Web.pm:3003
 #. ($args->{'NewReminder-Subject'}, loc("Created"))
 #. ($old_subject || $reminder->Subject, $_)
 msgid "Reminder '%1': %2"
@@ -6583,11 +6604,11 @@ msgstr "Resolver"
 msgid "Resolve ticket #%1 (%2)"
 msgstr "Resolver tíquete #%1 (%2)"
 
-#: etc/initialdata:440 lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:76 lib/RT/Tickets.pm:135 share/html/Elements/RT__Ticket/ColumnMap:218 share/html/Elements/RT__Ticket/ColumnMap:243 share/html/Elements/SelectDateType:51 share/html/Search/Elements/BuildFormatString:100
+#: etc/initialdata:444 lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:76 lib/RT/Tickets.pm:135 share/html/Elements/RT__Ticket/ColumnMap:218 share/html/Elements/RT__Ticket/ColumnMap:243 share/html/Elements/SelectDateType:51 share/html/Search/Elements/BuildFormatString:100
 msgid "Resolved"
 msgstr "Resolvido"
 
-#: etc/initialdata:449 etc/upgrade/4.1.9/content:102
+#: etc/initialdata:453 etc/upgrade/4.1.9/content:102
 msgid "Resolved in HTML"
 msgstr "Resolvido em HTML"
 
@@ -6639,7 +6660,7 @@ msgstr "Direito de acesso não carregado."
 msgid "Right revoked"
 msgstr "Direito de acesso revogado"
 
-#: lib/RT/Interface/Web.pm:2580 lib/RT/Interface/Web.pm:2680
+#: lib/RT/Interface/Web.pm:2581 lib/RT/Interface/Web.pm:2681
 #. ($object_type)
 msgid "Rights could not be granted for %1"
 msgstr "Direitos de acesso não puderam ser outorgados a %1"
@@ -6662,7 +6683,7 @@ msgstr "Grupo de Papel '%1' não encontrado"
 msgid "Role group exists already"
 msgstr "}EsGrupo de Papel já existe"
 
-#: lib/RT/Interface/Web.pm:3816
+#: lib/RT/Interface/Web.pm:3817
 msgid "Roles"
 msgstr "Papéis"
 
@@ -6862,7 +6883,7 @@ msgstr "Token de autenticaço secreto"
 msgid "Security:"
 msgstr "Segurança:"
 
-#: share/html/Elements/ShowCustomFields:124 share/html/m/ticket/show:191
+#: share/html/Elements/ShowCustomFields:125 share/html/m/ticket/show:191
 msgid "See also:"
 msgstr "Ver também:"
 
@@ -6894,7 +6915,7 @@ msgstr "Seleciontar Tipo de Banco de Dados"
 msgid "Select a Class"
 msgstr "Selecione uma classe"
 
-#: share/html/Admin/CustomFields/index.html:96
+#: share/html/Admin/CustomFields/index.html:94
 msgid "Select a Custom Field"
 msgstr "Selecionar um Campo Personalizado"
 
@@ -6910,7 +6931,7 @@ msgstr "Selecione uma cor para esta seção"
 msgid "Select a group"
 msgstr "Selecionar um grupo"
 
-#: share/html/Admin/Queues/index.html:54 share/html/m/ticket/select_create_queue:55
+#: share/html/Admin/Queues/index.html:73 share/html/m/ticket/select_create_queue:55
 msgid "Select a queue"
 msgstr "Selecionar uma fila"
 
@@ -7036,27 +7057,27 @@ msgstr "Selecionar Objetos"
 msgid "Selections modified. Please save your changes"
 msgstr "Seleções alteradas.Por favor, salve suas alterações"
 
-#: etc/initialdata:107
+#: etc/initialdata:111
 msgid "Send Forward"
 msgstr "Enviar em frente"
 
-#: etc/initialdata:108
+#: etc/initialdata:112
 msgid "Send forwarded message"
 msgstr "Encaminhar mensagem para frente"
 
-#: etc/initialdata:80
+#: etc/initialdata:84
 msgid "Send mail to owner and all watchers"
 msgstr "Enviar mensagem com proprietário e todos os observadores"
 
-#: etc/initialdata:76
+#: etc/initialdata:80
 msgid "Send mail to owner and all watchers as a \"comment\""
 msgstr "Mandar mensagem para proprietário e todos os observadores como \"comentário\""
 
-#: etc/initialdata:71
+#: etc/initialdata:75
 msgid "Send mail to requestors and Ccs"
 msgstr "Enviar mensagem aos requisitantes e Ccs"
 
-#: etc/initialdata:66
+#: etc/initialdata:70
 msgid "Send mail to requestors and Ccs as a comment"
 msgstr "Enviar mensagem aos requisitantes e Ccs como um comentário"
 
@@ -7064,7 +7085,7 @@ msgstr "Enviar mensagem aos requisitantes e Ccs como um comentário"
 msgid "Sends a message to the requestors"
 msgstr "Envia uma mensagem aos requisitantes"
 
-#: etc/initialdata:84 etc/initialdata:88
+#: etc/initialdata:88 etc/initialdata:92
 msgid "Sends mail to explicitly listed Ccs and Bccs"
 msgstr "Envia uma mensagem aos Ccs e Bccs explicitamente listados"
 
@@ -7079,6 +7100,10 @@ msgstr "Envie mail para os Ccs como um comentário"
 #: etc/initialdata:62 etc/upgrade/4.1.15/content:6
 msgid "Sends mail to the Owner and administrative Ccs"
 msgstr "Envia mensagem para o Proprietários e Ccs administrativos"
+
+#: etc/initialdata:66 etc/upgrade/4.2.6/content:6
+msgid "Sends mail to the Owner if set, otherwise administrative Ccs"
+msgstr ""
 
 #: etc/initialdata:58
 msgid "Sends mail to the administrative Ccs"
@@ -7383,7 +7408,7 @@ msgstr "Estado"
 msgid "Static file search order"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Report/Tickets.pm:60 lib/RT/Tickets.pm:106 lib/RT/Tickets.pm:1484 share/html/Elements/RT__Ticket/ColumnMap:111 share/html/Elements/RT__Ticket/ColumnMap:121 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:62 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Tools/MyDay.html:67 share/html/m/_elements/ticket_list:95 share/html/m/ticket/create:250 share/html/m/ticket/reply:63 share/html/m/ticket/show:216
+#: lib/RT/Graph/Tickets.pm:153 lib/RT/Report/Tickets.pm:60 lib/RT/Tickets.pm:106 lib/RT/Tickets.pm:1484 share/html/Elements/RT__Class/ColumnMap:66 share/html/Elements/RT__CustomField/ColumnMap:56 share/html/Elements/RT__Group/ColumnMap:82 share/html/Elements/RT__Queue/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:110 share/html/Elements/RT__Ticket/ColumnMap:111 share/html/Elements/RT__Ticket/ColumnMap:121 share/html/Elements/RT__User/ColumnMap:146 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:62 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Tools/MyDay.html:67 share/html/m/_elements/ticket_list:95 share/html/m/ticket/create:250 share/html/m/ticket/reply:63 share/html/m/ticket/show:216
 msgid "Status"
 msgstr "Estado"
 
@@ -7397,11 +7422,11 @@ msgstr "Estado '%1' não é um estado válido para %2."
 msgid "Status '%1' isn't a valid status for tickets in this queue."
 msgstr "O status '%1' não é um status válido para os tickets desta fila"
 
-#: etc/initialdata:415
+#: etc/initialdata:419
 msgid "Status Change"
 msgstr "Alteração de Estado"
 
-#: etc/initialdata:426 etc/upgrade/4.1.9/content:90
+#: etc/initialdata:430 etc/upgrade/4.1.9/content:90
 msgid "Status Change in HTML"
 msgstr "Mudança de Estado em HTML"
 
@@ -7550,7 +7575,7 @@ msgstr "Domigo"
 msgid "Suspended"
 msgstr "Suspenso"
 
-#: lib/RT/Interface/Web.pm:3773
+#: lib/RT/Interface/Web.pm:3774
 msgid "System"
 msgstr "Sistema"
 
@@ -7562,7 +7587,7 @@ msgstr "Configuração do Sistema"
 msgid "System Default"
 msgstr "Padrão do Sistema"
 
-#: lib/RT/Interface/Web.pm:2580 lib/RT/Interface/Web.pm:2680 share/html/Admin/Elements/EditRightsCategoryTabs:60
+#: lib/RT/Interface/Web.pm:2581 lib/RT/Interface/Web.pm:2681 share/html/Admin/Elements/EditRightsCategoryTabs:60
 msgid "System Error"
 msgstr "Erro do Sistema"
 
@@ -7587,7 +7612,7 @@ msgstr "Erro do sistema. Direito de acesso não outorgado."
 msgid "SystemRolegroup for internal use"
 msgstr "SystemRolegroup para uso interno"
 
-#: etc/initialdata:820 share/html/Elements/Tabs:716 share/html/Search/Elements/EditFormat:72
+#: etc/initialdata:824 share/html/Elements/Tabs:716 share/html/Search/Elements/EditFormat:72
 msgid "Take"
 msgstr "Tomar"
 
@@ -7620,7 +7645,7 @@ msgstr "Modelo '%1' não é global"
 msgid "Template '%1' is not global nor queue specific"
 msgstr "Modelo '%1' não é global nem específico de fila"
 
-#: lib/RT/Scrip.pm:167 lib/RT/Scrip.pm:847
+#: lib/RT/Scrip.pm:167 lib/RT/Scrip.pm:844
 #. ($args{'Template'})
 #. ($value)
 msgid "Template '%1' not found"
@@ -7642,7 +7667,7 @@ msgstr "Modelo está vazio"
 msgid "Template is in use"
 msgstr "Modelo está em uso"
 
-#: lib/RT/Scrip.pm:156 lib/RT/Scrip.pm:842
+#: lib/RT/Scrip.pm:156 lib/RT/Scrip.pm:839
 msgid "Template is mandatory argument"
 msgstr "Modelo é um argumento obrigatório"
 
@@ -7954,7 +7979,7 @@ msgstr "Tíquete %1: %2"
 msgid "Ticket History # %1 %2"
 msgstr "Histórico do Tíquete # %1 %2"
 
-#: etc/initialdata:441
+#: etc/initialdata:445
 msgid "Ticket Resolved"
 msgstr "Tíquete Resolvido"
 
@@ -8002,7 +8027,7 @@ msgstr "Exibição de tíquete"
 msgid "Ticket metadata"
 msgstr "Metadados do tíquete"
 
-#: etc/initialdata:416
+#: etc/initialdata:420
 msgid "Ticket status changed"
 msgstr "Estado do tíquete alterado"
 
@@ -8168,7 +8193,7 @@ msgstr "Total de tempo restante"
 msgid "Total time worked"
 msgstr "Total de tempo trabalhado"
 
-#: etc/initialdata:283
+#: etc/initialdata:287
 msgid "Transaction"
 msgstr "Transação"
 
@@ -8181,7 +8206,7 @@ msgstr "Transação %1 removida"
 msgid "Transaction Created"
 msgstr "Transação Criada"
 
-#: etc/initialdata:302 etc/upgrade/4.1.9/content:34
+#: etc/initialdata:306 etc/upgrade/4.1.9/content:34
 msgid "Transaction in HTML"
 msgstr "Transação em HTML"
 
@@ -8364,7 +8389,7 @@ msgstr "Painel não nomeado"
 msgid "Unnamed search"
 msgstr "Busca sem nome"
 
-#: etc/initialdata:852
+#: etc/initialdata:856
 msgid "Unowned Tickets"
 msgstr "Tíquetes sem dono"
 
@@ -8428,7 +8453,7 @@ msgstr "Atualizar formato e Buscar"
 msgid "Update multiple tickets"
 msgstr "Atualizar múltiplos tíquetes"
 
-#: lib/RT/Action/CreateTickets.pm:474 lib/RT/Interface/Web.pm:2351
+#: lib/RT/Action/CreateTickets.pm:474 lib/RT/Interface/Web.pm:2352
 msgid "Update not recorded."
 msgstr "Atualização não registrada."
 
@@ -8448,7 +8473,7 @@ msgstr "Atualizar o tíquete #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Atualizar tíquete #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:472 lib/RT/Interface/Web.pm:2351
+#: lib/RT/Action/CreateTickets.pm:472 lib/RT/Interface/Web.pm:2352
 msgid "Update type was neither correspondence nor comment."
 msgstr "O tipo da atualização não foi nem correspondência e nem comentário."
 
@@ -8566,7 +8591,7 @@ msgstr ""
 msgid "User (created - expire)"
 msgstr "Usuário (criado - expira)"
 
-#: etc/initialdata:201 etc/initialdata:91
+#: etc/initialdata:205 etc/initialdata:95
 msgid "User Defined"
 msgstr "Definido pelo Usuário"
 
@@ -8574,7 +8599,7 @@ msgstr "Definido pelo Usuário"
 msgid "User Defined conditions and results"
 msgstr "Condições Definidas pelo Usuário e resultados"
 
-#: lib/RT/Interface/Web.pm:3791
+#: lib/RT/Interface/Web.pm:3792
 msgid "User Groups"
 msgstr "Grupos de usuários"
 
@@ -8594,7 +8619,7 @@ msgstr "Procurar por usuário"
 msgid "User Summary"
 msgstr "Sumário de Usuário"
 
-#: lib/RT/Interface/Web.pm:3201
+#: lib/RT/Interface/Web.pm:3202
 #. ($cf->Name, ref $args{'Object'},                    $args{'Object'}->id)
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
 msgstr "Usuário solicitou uma atualização de tipo desconhecido do campo personalizado %1 para %2 objeto #%3"
@@ -8641,7 +8666,7 @@ msgstr "Nome de usuário"
 msgid "Username format"
 msgstr "Formato de nome de usuário"
 
-#: lib/RT/CustomField.pm:1889 lib/RT/CustomField.pm:204 lib/RT/Interface/Web.pm:3844 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:526 share/html/Elements/Tabs:67
+#: lib/RT/CustomField.pm:1889 lib/RT/CustomField.pm:204 lib/RT/Interface/Web.pm:3845 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:526 share/html/Elements/Tabs:67
 msgid "Users"
 msgstr "Usuários"
 
@@ -8834,7 +8859,7 @@ msgstr "Quando RT não pode manipular uma mensagem de email, para onde ela é en
 msgid "When RT sends an email it sets the From: and Reply-To: headers so users can add to the conversation by just hitting Reply in their mail client.  It uses different addresses for Replies and Comments.  These can be changed for each of your queues.  These addresses will need to be configured to use the <tt>rt-mailgate</tt> program."
 msgstr "Quando RT envia um email ele define os cabeçalhos From: (De:) e Reply-To: (Responder para:) de maneira que usuários podem manter uma conversação simplesmente selecionando Responder em seu cliente de email. RT usa endereços diferentes para Respostas e Comentários. Estes podem ser trocadas para cada uma de suas filas. Estes endereços precisam ser configurados para permitir o uso do programa <tt>rt-mailgate</tt>."
 
-#: etc/initialdata:114
+#: etc/initialdata:118
 msgid "When a ticket is created"
 msgstr "Quando um tíquete é criado"
 
@@ -8842,67 +8867,71 @@ msgstr "Quando um tíquete é criado"
 msgid "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval"
 msgstr "Quando um tíquete de aprovação é criado, notificar o Proprietário e o AdminCc do í­tem aguardando por  aprovação"
 
-#: etc/initialdata:119
+#: etc/initialdata:123
 msgid "When anything happens"
 msgstr "Quando qualquer coisa acontecer"
+
+#: share/html/Admin/Articles/Classes/Modify.html:85
+msgid "When inserting articles in this class into emails:"
+msgstr ""
 
 #: share/html/Install/DatabaseDetails.html:58
 msgid "When you click on 'Check Database Connectivity' there may be a small delay while RT tries to connect to your database"
 msgstr "Quando você pressionar em 'Verificar Conectividade com Banco de Dados' pode acontecer um pequeno atraso enquanto RT tenta se conectar a seu banco de dados"
 
-#: etc/initialdata:209 etc/upgrade/3.7.1/content:6
+#: etc/initialdata:213 etc/upgrade/3.7.1/content:6
 msgid "Whenever a ticket is closed"
 msgstr "Sempre que um tíquete for fechado"
 
-#: etc/initialdata:139 etc/upgrade/4.0.3/content:15
+#: etc/initialdata:143 etc/upgrade/4.0.3/content:15
 msgid "Whenever a ticket is forwarded"
 msgstr "Sempre que um ticket é enviado"
 
-#: etc/initialdata:195 etc/upgrade/3.8.3/content:6
+#: etc/initialdata:199 etc/upgrade/3.8.3/content:6
 msgid "Whenever a ticket is rejected"
 msgstr "Quando um chamado é rejeitado"
 
-#: etc/initialdata:214 etc/upgrade/3.7.1/content:11
+#: etc/initialdata:218 etc/upgrade/3.7.1/content:11
 msgid "Whenever a ticket is reopened"
 msgstr "Sempre que um tíquete for reaberto"
 
-#: etc/initialdata:188
+#: etc/initialdata:192
 msgid "Whenever a ticket is resolved"
 msgstr "Sempre que um tíquete for resolvido"
 
-#: etc/initialdata:132 etc/upgrade/4.0.3/content:8
+#: etc/initialdata:136 etc/upgrade/4.0.3/content:8
 msgid "Whenever a ticket or transaction is forwarded"
 msgstr "Sempre que um ticket ou transação é enviada"
 
-#: etc/initialdata:174
+#: etc/initialdata:178
 msgid "Whenever a ticket's owner changes"
 msgstr "Sempre que o proprietário de um tíquete for alterado"
 
-#: etc/initialdata:167 etc/upgrade/3.1.17/content:19
+#: etc/initialdata:171 etc/upgrade/3.1.17/content:19
 msgid "Whenever a ticket's priority changes"
 msgstr "Sempre que a prioridade de um tíquete for alterada"
 
-#: etc/initialdata:182
+#: etc/initialdata:186
 msgid "Whenever a ticket's queue changes"
 msgstr "Sempre que a fila de um tíquete for alterada"
 
-#: etc/initialdata:159
+#: etc/initialdata:163
 msgid "Whenever a ticket's status changes"
 msgstr "Sempre que o estado de um tíquete for alterado"
 
-#: etc/initialdata:146 etc/upgrade/4.0.3/content:22
+#: etc/initialdata:150 etc/upgrade/4.0.3/content:22
 msgid "Whenever a transaction is forwarded"
 msgstr "Sempre que uma transação é enviada"
 
-#: etc/initialdata:202
+#: etc/initialdata:206
 msgid "Whenever a user-defined condition occurs"
 msgstr "Sempre que ocorrer uma condição definida por usuário"
 
-#: etc/initialdata:153
+#: etc/initialdata:157
 msgid "Whenever comments come in"
 msgstr "Sempre que um novo comentário é adicionado"
 
-#: etc/initialdata:125
+#: etc/initialdata:129
 msgid "Whenever correspondence comes in"
 msgstr "Sempre que uma nova correspondência é adicionada"
 
@@ -9152,7 +9181,7 @@ msgstr "barra"
 msgid "before"
 msgstr "Antes de"
 
-#: etc/initialdata:844 share/html/Admin/Global/MyRT.html:86
+#: etc/initialdata:848 share/html/Admin/Global/MyRT.html:86
 msgid "body"
 msgstr "corpo"
 
@@ -9200,7 +9229,7 @@ msgstr "fechado"
 msgid "core config"
 msgstr "configuração principal"
 
-#: lib/RT/Interface/Web.pm:1617 lib/RT/Interface/Web.pm:1626
+#: lib/RT/Interface/Web.pm:1618 lib/RT/Interface/Web.pm:1627
 msgid "create a ticket"
 msgstr "Criar um ticket"
 
@@ -9334,7 +9363,7 @@ msgstr "Inclui %1"
 msgid "index"
 msgstr "índice"
 
-#: lib/RT/Interface/Web.pm:2977
+#: lib/RT/Interface/Web.pm:2978
 #. ($due)
 msgid "invalid due date: %1"
 msgstr "data devida inválida: %1"
@@ -9383,19 +9412,19 @@ msgstr "profundidade máxima"
 msgid "minutes"
 msgstr "minutos"
 
-#: lib/RT/Interface/Web.pm:1619
+#: lib/RT/Interface/Web.pm:1620
 msgid "modify RT's configuration"
 msgstr "Modificar configuração do RT"
 
-#: lib/RT/Interface/Web.pm:1622
+#: lib/RT/Interface/Web.pm:1623
 msgid "modify a dashboard"
 msgstr "Modificar um painel"
 
-#: lib/RT/Interface/Web.pm:1625
+#: lib/RT/Interface/Web.pm:1626
 msgid "modify or access a search"
 msgstr "Modificar ou acessar uma Pesquisa"
 
-#: lib/RT/Interface/Web.pm:1624
+#: lib/RT/Interface/Web.pm:1625
 msgid "modify your preferences"
 msgstr "modificar suas preferências"
 
@@ -9505,7 +9534,7 @@ msgstr "pesquisar"
 msgid "see object list below"
 msgstr "observar listas abaixo"
 
-#: etc/initialdata:863 share/html/Admin/Global/MyRT.html:87
+#: etc/initialdata:867 share/html/Admin/Global/MyRT.html:87
 msgid "sidebar"
 msgstr "barra lateral"
 
@@ -9535,11 +9564,11 @@ msgstr "sistema %1"
 msgid "system group '%1'"
 msgstr "grupo do sistema '%1'"
 
-#: lib/RT/Interface/Web.pm:1533
+#: lib/RT/Interface/Web.pm:1534
 msgid "the Referrer header supplied by your browser (%1) is not allowed by RT's configured hostname (%2)"
 msgstr "O cabeçalho de referência fornecido pelo seu browser (%1) não é permitido pela configuração de hostname (%2) do RT."
 
-#: lib/RT/Interface/Web.pm:1526
+#: lib/RT/Interface/Web.pm:1527
 msgid "the Referrer header supplied by your browser (%1) is not allowed by RT's configured hostname (%2) or whitelisted hosts (%3)"
 msgstr "O cabeçalho de referência fornecido pelo seu browser (%1) não é permitido pela configuração de hostname (%2) do RT ou na White List de hosts (%3)."
 
@@ -9577,15 +9606,15 @@ msgstr "grupo %1 sem descrição"
 msgid "unlimited"
 msgstr "ilimitado"
 
-#: lib/RT/Interface/Web.pm:1618 lib/RT/Interface/Web.pm:1623 lib/RT/Interface/Web.pm:1627
+#: lib/RT/Interface/Web.pm:1619 lib/RT/Interface/Web.pm:1624 lib/RT/Interface/Web.pm:1628
 msgid "update a ticket"
 msgstr "atualizar um tíquete"
 
-#: lib/RT/Interface/Web.pm:1620
+#: lib/RT/Interface/Web.pm:1621
 msgid "update an approval"
 msgstr "atualizar uma aprovação"
 
-#: lib/RT/Interface/Web.pm:1621
+#: lib/RT/Interface/Web.pm:1622
 msgid "update an article"
 msgstr "Atualizar um artigo"
 
@@ -9632,7 +9661,7 @@ msgstr "com cabeçalhos"
 msgid "yes"
 msgstr "sim"
 
-#: lib/RT/Interface/Web.pm:1518
+#: lib/RT/Interface/Web.pm:1519
 msgid "your browser did not supply a Referrer header"
 msgstr "Seu browser não suporta um cabeçalho de referência."
 

@@ -299,7 +299,7 @@ msgstr ""
 msgid "%1 enabled"
 msgstr ""
 
-#: etc/initialdata:807
+#: etc/initialdata:811
 msgid "%1 highest priority tickets I own"
 msgstr ""
 
@@ -372,7 +372,7 @@ msgstr ""
 msgid "%1 newest articles"
 msgstr ""
 
-#: etc/initialdata:818
+#: etc/initialdata:822
 msgid "%1 newest unowned tickets"
 msgstr ""
 
@@ -616,7 +616,7 @@ msgstr ""
 msgid "(Use these fields when you choose 'User Defined' for a condition or action)"
 msgstr ""
 
-#: share/html/Admin/CustomFields/index.html:74
+#: share/html/Admin/CustomFields/index.html:57
 msgid "(any)"
 msgstr ""
 
@@ -632,7 +632,7 @@ msgstr ""
 msgid "(no pubkey!)"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:670 lib/RT/Report/Tickets.pm:836 lib/RT/Report/Tickets.pm:847 lib/RT/Report/Tickets/Entry.pm:78 lib/RT/Report/Tickets/Entry.pm:88 lib/RT/Transaction.pm:1087 lib/RT/Transaction.pm:1149 lib/RT/Transaction.pm:1150 lib/RT/Transaction.pm:757 lib/RT/Transaction.pm:762 lib/RT/Transaction.pm:832 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:109 share/html/Elements/EditCustomFieldSelect:128 share/html/Elements/EditCustomFieldSelect:138 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowCustomFields:60 share/html/m/ticket/show:263
+#: lib/RT/Report/Tickets.pm:670 lib/RT/Report/Tickets.pm:836 lib/RT/Report/Tickets.pm:847 lib/RT/Report/Tickets/Entry.pm:78 lib/RT/Report/Tickets/Entry.pm:88 lib/RT/Transaction.pm:1087 lib/RT/Transaction.pm:1149 lib/RT/Transaction.pm:1150 lib/RT/Transaction.pm:757 lib/RT/Transaction.pm:762 lib/RT/Transaction.pm:832 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:109 share/html/Elements/EditCustomFieldSelect:128 share/html/Elements/EditCustomFieldSelect:138 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowCustomFields:61 share/html/m/ticket/show:263
 msgid "(no value)"
 msgstr ""
 
@@ -695,7 +695,7 @@ msgstr ""
 msgid "A Template with that name already exists"
 msgstr ""
 
-#: etc/initialdata:224
+#: etc/initialdata:228
 msgid "A blank template"
 msgstr ""
 
@@ -732,7 +732,7 @@ msgstr ""
 msgid "Action"
 msgstr ""
 
-#: lib/RT/Scrip.pm:153 lib/RT/Scrip.pm:807
+#: lib/RT/Scrip.pm:153 lib/RT/Scrip.pm:804
 #. ($args{'ScripAction'})
 #. ($value)
 msgid "Action '%1' not found"
@@ -742,7 +742,7 @@ msgstr ""
 msgid "Action committed."
 msgstr ""
 
-#: lib/RT/Scrip.pm:149 lib/RT/Scrip.pm:802
+#: lib/RT/Scrip.pm:149 lib/RT/Scrip.pm:799
 msgid "Action is mandatory argument"
 msgstr ""
 
@@ -893,19 +893,19 @@ msgstr ""
 msgid "Admin Cc"
 msgstr ""
 
-#: etc/initialdata:376
+#: etc/initialdata:380
 msgid "Admin Comment"
 msgstr ""
 
-#: etc/initialdata:390 etc/upgrade/4.1.9/content:77
+#: etc/initialdata:394 etc/upgrade/4.1.9/content:77
 msgid "Admin Comment in HTML"
 msgstr ""
 
-#: etc/initialdata:336
+#: etc/initialdata:340
 msgid "Admin Correspondence"
 msgstr ""
 
-#: etc/initialdata:347 etc/upgrade/4.1.9/content:56
+#: etc/initialdata:351 etc/upgrade/4.1.9/content:56
 msgid "Admin Correspondence in HTML"
 msgstr ""
 
@@ -953,11 +953,11 @@ msgstr ""
 msgid "Aggregator"
 msgstr ""
 
-#: etc/initialdata:526 etc/upgrade/3.8.2/content:85
+#: etc/initialdata:530 etc/upgrade/3.8.2/content:85
 msgid "All Approvals Passed"
 msgstr ""
 
-#: etc/initialdata:540 etc/upgrade/4.1.9/content:146
+#: etc/initialdata:544 etc/upgrade/4.1.9/content:146
 msgid "All Approvals Passed in HTML"
 msgstr ""
 
@@ -967,6 +967,10 @@ msgstr ""
 
 #: share/html/Admin/Articles/Classes/index.html:77
 msgid "All Classes"
+msgstr ""
+
+#: share/html/Admin/CustomFields/index.html:52
+msgid "All Custom Fields"
 msgstr ""
 
 #: share/html/Elements/Tabs:511
@@ -1091,27 +1095,27 @@ msgstr ""
 msgid "Approval #%1: Notes recorded"
 msgstr ""
 
-#: etc/initialdata:496 etc/upgrade/3.8.2/content:71
+#: etc/initialdata:500 etc/upgrade/3.8.2/content:71
 msgid "Approval Passed"
 msgstr ""
 
-#: etc/initialdata:510 etc/upgrade/4.1.9/content:130
+#: etc/initialdata:514 etc/upgrade/4.1.9/content:130
 msgid "Approval Passed in HTML"
 msgstr ""
 
-#: etc/initialdata:584 etc/upgrade/3.8.2/content:112
+#: etc/initialdata:588 etc/upgrade/3.8.2/content:112
 msgid "Approval Ready for Owner"
 msgstr ""
 
-#: etc/initialdata:596 etc/upgrade/4.1.9/content:177
+#: etc/initialdata:600 etc/upgrade/4.1.9/content:177
 msgid "Approval Ready for Owner in HTML"
 msgstr ""
 
-#: etc/initialdata:556 etc/upgrade/3.8.2/content:99
+#: etc/initialdata:560 etc/upgrade/3.8.2/content:99
 msgid "Approval Rejected"
 msgstr ""
 
-#: etc/initialdata:569 etc/upgrade/4.1.9/content:162
+#: etc/initialdata:573 etc/upgrade/4.1.9/content:162
 msgid "Approval Rejected in HTML"
 msgstr ""
 
@@ -1245,7 +1249,7 @@ msgstr ""
 msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 msgstr ""
 
-#: etc/initialdata:227
+#: etc/initialdata:231
 msgid "Autoreply"
 msgstr ""
 
@@ -1253,7 +1257,7 @@ msgstr ""
 msgid "Autoreply To Requestors"
 msgstr ""
 
-#: etc/initialdata:257 etc/upgrade/4.1.9/content:8
+#: etc/initialdata:261 etc/upgrade/4.1.9/content:8
 msgid "Autoreply in HTML"
 msgstr ""
 
@@ -1335,7 +1339,7 @@ msgstr ""
 msgid "Before Articles can be used, your RT administrator must %1create Classes%2, apply Article custom fields to them, and grant users rights on the classes and CFs."
 msgstr ""
 
-#: etc/initialdata:223
+#: etc/initialdata:227
 msgid "Blank"
 msgstr ""
 
@@ -1355,7 +1359,7 @@ msgstr ""
 msgid "Bookmarkable link for this search"
 msgstr ""
 
-#: etc/initialdata:831 etc/initialdata:856 etc/upgrade/3.7.82/content:6
+#: etc/initialdata:835 etc/initialdata:860 etc/upgrade/3.7.82/content:6
 msgid "Bookmarked Tickets"
 msgstr ""
 
@@ -1481,6 +1485,10 @@ msgstr ""
 
 #: lib/RT/Approval/Rule/Created.pm:56
 msgid "Change Approval ticket to open status"
+msgstr ""
+
+#: share/html/Admin/Articles/Classes/Modify.html:113
+msgid "Change email subject:"
 msgstr ""
 
 #: share/html/SelfService/Prefs.html:70
@@ -1642,13 +1650,13 @@ msgstr ""
 msgid "Condition"
 msgstr ""
 
-#: lib/RT/Scrip.pm:180 lib/RT/Scrip.pm:828
+#: lib/RT/Scrip.pm:180 lib/RT/Scrip.pm:825
 #. ($args{'ScripCondition'})
 #. ($value)
 msgid "Condition '%1' not found"
 msgstr ""
 
-#: lib/RT/Scrip.pm:176 lib/RT/Scrip.pm:821
+#: lib/RT/Scrip.pm:176 lib/RT/Scrip.pm:818
 msgid "Condition is mandatory argument"
 msgstr ""
 
@@ -1707,7 +1715,7 @@ msgstr ""
 msgid "Correspond address"
 msgstr ""
 
-#: etc/initialdata:359
+#: etc/initialdata:363
 msgid "Correspondence"
 msgstr ""
 
@@ -1715,7 +1723,7 @@ msgstr ""
 msgid "Correspondence added"
 msgstr ""
 
-#: etc/initialdata:367 etc/upgrade/4.1.9/content:68
+#: etc/initialdata:371 etc/upgrade/4.1.9/content:68
 msgid "Correspondence in HTML"
 msgstr ""
 
@@ -1836,7 +1844,7 @@ msgstr ""
 msgid "Couldn't add member to group"
 msgstr ""
 
-#: lib/RT/Scrip.pm:789
+#: lib/RT/Scrip.pm:786
 #. ($method, $code, $error)
 msgid "Couldn't compile %1 codeblock '%2': %3"
 msgstr ""
@@ -1988,7 +1996,7 @@ msgstr ""
 msgid "Couldn't load template #%1"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:2622
+#: lib/RT/Interface/Web.pm:2623
 msgid "Couldn't load the specified principal"
 msgstr ""
 
@@ -2083,11 +2091,11 @@ msgstr ""
 msgid "Country"
 msgstr ""
 
-#: share/html/Admin/Articles/Classes/Modify.html:128 share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/Elements/EditCustomField:87 share/html/Admin/Global/Template.html:78 share/html/Admin/Groups/Modify.html:91 share/html/Admin/Queues/Modify.html:165 share/html/Admin/Queues/Template.html:111 share/html/Admin/Scrips/Create.html:74 share/html/Admin/Scrips/Create.html:81 share/html/Admin/Users/Modify.html:224 share/html/Articles/Article/Edit.html:102 share/html/Articles/Article/ExtractFromTicket.html:83 share/html/Articles/Article/ExtractIntoClass.html:68 share/html/Articles/Article/ExtractIntoTopic.html:60 share/html/Dashboards/Modify.html:72 share/html/Elements/QuickCreate:77 share/html/Elements/ShowLinks:54 share/html/Elements/Tabs:107 share/html/Elements/Tabs:122 share/html/Elements/Tabs:130 share/html/Elements/Tabs:176 share/html/Elements/Tabs:191 share/html/Elements/Tabs:275 share/html/Elements/Tabs:294 share/html/Elements/Tabs:298 share/html/Elements/Tabs:403 share/html/Elements/Tabs:410 share/html/Elements/Tabs:417 share/html/Elements/Tabs:420 share/html/Elements/Tabs:423 share/html/Elements/Tabs:431 share/html/Elements/Tabs:437 share/html/Elements/Tabs:449 share/html/Elements/Tabs:460 share/html/Elements/Tabs:532 share/html/Elements/Tabs:72 share/html/Elements/Tabs:80 share/html/Elements/Tabs:88 share/html/Elements/Tabs:97 share/html/Ticket/Create.html:211 share/html/Ticket/Create.html:289 share/html/m/ticket/create:235 share/html/m/ticket/create:408
+#: share/html/Admin/Articles/Classes/Modify.html:128 share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/Elements/EditCustomField:87 share/html/Admin/Global/Template.html:78 share/html/Admin/Groups/Modify.html:91 share/html/Admin/Queues/Modify.html:165 share/html/Admin/Queues/Template.html:111 share/html/Admin/Scrips/Create.html:74 share/html/Admin/Scrips/Create.html:81 share/html/Admin/Users/Modify.html:224 share/html/Articles/Article/Edit.html:102 share/html/Articles/Article/ExtractFromTicket.html:83 share/html/Articles/Article/ExtractIntoClass.html:68 share/html/Articles/Article/ExtractIntoTopic.html:60 share/html/Dashboards/Modify.html:72 share/html/Elements/QuickCreate:77 share/html/Elements/ShowLinks:54 share/html/Elements/Tabs:107 share/html/Elements/Tabs:122 share/html/Elements/Tabs:130 share/html/Elements/Tabs:176 share/html/Elements/Tabs:191 share/html/Elements/Tabs:275 share/html/Elements/Tabs:294 share/html/Elements/Tabs:298 share/html/Elements/Tabs:403 share/html/Elements/Tabs:410 share/html/Elements/Tabs:417 share/html/Elements/Tabs:420 share/html/Elements/Tabs:423 share/html/Elements/Tabs:431 share/html/Elements/Tabs:437 share/html/Elements/Tabs:449 share/html/Elements/Tabs:460 share/html/Elements/Tabs:532 share/html/Elements/Tabs:72 share/html/Elements/Tabs:80 share/html/Elements/Tabs:88 share/html/Elements/Tabs:97 share/html/Ticket/Create.html:211 share/html/Ticket/Create.html:289 share/html/User/Elements/Portlets/CreateTicket:53 share/html/m/ticket/create:235 share/html/m/ticket/create:408
 msgid "Create"
 msgstr ""
 
-#: etc/initialdata:94
+#: etc/initialdata:98
 msgid "Create Tickets"
 msgstr ""
 
@@ -2174,7 +2182,7 @@ msgstr ""
 msgid "Create group dashboards"
 msgstr ""
 
-#: etc/initialdata:96
+#: etc/initialdata:100
 msgid "Create new tickets based on this scrip's template"
 msgstr ""
 
@@ -2289,8 +2297,8 @@ msgstr ""
 msgid "Custom Fields"
 msgstr ""
 
-#: share/html/Admin/CustomFields/index.html:53
-#. ($tmp->FriendlyLookupType( $Type ))
+#: share/html/Admin/CustomFields/index.html:52
+#. ($Type)
 msgid "Custom Fields for %1"
 msgstr ""
 
@@ -2439,7 +2447,7 @@ msgstr ""
 msgid "Dashboard updated"
 msgstr ""
 
-#: etc/RT_Config.pm:1239 etc/initialdata:875 share/html/Dashboards/index.html:48 share/html/Elements/Dashboards:49
+#: etc/RT_Config.pm:1239 etc/initialdata:879 share/html/Dashboards/index.html:48 share/html/Elements/Dashboards:49
 msgid "Dashboards"
 msgstr ""
 
@@ -2520,7 +2528,7 @@ msgstr ""
 msgid "Default queue"
 msgstr ""
 
-#: etc/initialdata:404 etc/upgrade/4.1.16/content:7
+#: etc/initialdata:408 etc/upgrade/4.1.16/content:7
 msgid "Default reminder template"
 msgstr ""
 
@@ -2677,7 +2685,7 @@ msgstr ""
 msgid "Direction"
 msgstr ""
 
-#: share/html/Elements/RT__CustomField/ColumnMap:58 share/html/Elements/RT__Queue/ColumnMap:58 share/html/Elements/RT__Scrip/ColumnMap:112
+#: share/html/Elements/RT__Class/ColumnMap:68 share/html/Elements/RT__CustomField/ColumnMap:58 share/html/Elements/RT__Group/ColumnMap:83 share/html/Elements/RT__Queue/ColumnMap:58 share/html/Elements/RT__Scrip/ColumnMap:112 share/html/Elements/RT__User/ColumnMap:147
 msgid "Disabled"
 msgstr ""
 
@@ -2876,7 +2884,7 @@ msgstr ""
 msgid "Email Address"
 msgstr ""
 
-#: etc/initialdata:695 etc/upgrade/3.7.85/content:7
+#: etc/initialdata:699 etc/upgrade/3.7.85/content:7
 msgid "Email Digest"
 msgstr ""
 
@@ -2893,7 +2901,7 @@ msgstr ""
 msgid "Email delivery"
 msgstr ""
 
-#: etc/initialdata:696 etc/upgrade/3.7.85/content:8
+#: etc/initialdata:700 etc/upgrade/3.7.85/content:8
 msgid "Email template for periodic notification digests"
 msgstr ""
 
@@ -2909,7 +2917,7 @@ msgstr ""
 msgid "Enable quote folding?"
 msgstr ""
 
-#: share/html/Elements/RT__CustomField/ColumnMap:58 share/html/Elements/RT__Queue/ColumnMap:58 share/html/Elements/RT__Scrip/ColumnMap:112
+#: share/html/Elements/RT__Class/ColumnMap:68 share/html/Elements/RT__CustomField/ColumnMap:58 share/html/Elements/RT__Group/ColumnMap:83 share/html/Elements/RT__Queue/ColumnMap:58 share/html/Elements/RT__Scrip/ColumnMap:112 share/html/Elements/RT__User/ColumnMap:147
 msgid "Enabled"
 msgstr ""
 
@@ -3073,11 +3081,11 @@ msgstr ""
 msgid "Error plotting chart: %1"
 msgstr ""
 
-#: etc/initialdata:643 etc/upgrade/3.7.10/content:16
+#: etc/initialdata:647 etc/upgrade/3.7.10/content:16
 msgid "Error to RT owner: public key"
 msgstr ""
 
-#: etc/initialdata:705 etc/upgrade/3.7.87/content:7
+#: etc/initialdata:709 etc/upgrade/3.7.87/content:7
 msgid "Error: Missing dashboard"
 msgstr ""
 
@@ -3085,7 +3093,7 @@ msgstr ""
 msgid "Error: bad GnuPG data"
 msgstr ""
 
-#: etc/initialdata:668
+#: etc/initialdata:672
 msgid "Error: bad encrypted data"
 msgstr ""
 
@@ -3098,11 +3106,11 @@ msgstr ""
 msgid "Error: could not load saved search %1: %2"
 msgstr ""
 
-#: etc/initialdata:656 etc/upgrade/3.7.10/content:29
+#: etc/initialdata:660 etc/upgrade/3.7.10/content:29
 msgid "Error: no private key"
 msgstr ""
 
-#: etc/initialdata:634 etc/upgrade/3.7.10/content:7
+#: etc/initialdata:638 etc/upgrade/3.7.10/content:7
 msgid "Error: public key"
 msgstr ""
 
@@ -3111,7 +3119,7 @@ msgstr ""
 msgid "Error: search %1 not updated: %2"
 msgstr ""
 
-#: etc/initialdata:625 etc/upgrade/4.1.22/content:77
+#: etc/initialdata:629 etc/upgrade/4.1.22/content:77
 msgid "Error: unencrypted message"
 msgstr ""
 
@@ -3155,7 +3163,7 @@ msgstr ""
 msgid "Extract Article"
 msgstr ""
 
-#: etc/initialdata:104 etc/upgrade/3.8.3/content:78
+#: etc/initialdata:108 etc/upgrade/3.8.3/content:78
 msgid "Extract Subject Tag"
 msgstr ""
 
@@ -3169,7 +3177,7 @@ msgstr ""
 msgid "Extract article from ticket #%1 into class %2"
 msgstr ""
 
-#: etc/initialdata:105 etc/upgrade/3.8.3/content:79
+#: etc/initialdata:109 etc/upgrade/3.8.3/content:79
 msgid "Extract tags from a Transaction's subject and add them to the Ticket's subject."
 msgstr ""
 
@@ -3350,7 +3358,7 @@ msgstr ""
 msgid "Formats iCal feed events with date and time"
 msgstr ""
 
-#: etc/initialdata:609 etc/upgrade/3.7.15/content:7 share/html/Elements/ShowTransaction:206 share/html/Elements/Tabs:680
+#: etc/initialdata:613 etc/upgrade/3.7.15/content:7 share/html/Elements/ShowTransaction:206 share/html/Elements/Tabs:680
 msgid "Forward"
 msgstr ""
 
@@ -3362,7 +3370,7 @@ msgstr ""
 msgid "Forward Message and Return"
 msgstr ""
 
-#: etc/initialdata:617 etc/upgrade/3.8.6/content:6
+#: etc/initialdata:621 etc/upgrade/3.8.6/content:6
 msgid "Forward Ticket"
 msgstr ""
 
@@ -3390,11 +3398,11 @@ msgstr ""
 msgid "Forwarded Ticket to %1"
 msgstr ""
 
-#: etc/initialdata:610
+#: etc/initialdata:614
 msgid "Forwarded message"
 msgstr ""
 
-#: etc/initialdata:618
+#: etc/initialdata:622
 msgid "Forwarded ticket message"
 msgstr ""
 
@@ -3500,7 +3508,7 @@ msgstr ""
 msgid "Go to user"
 msgstr ""
 
-#: share/html/Admin/Articles/Classes/index.html:70 share/html/Admin/CustomFields/index.html:86 share/html/Admin/Groups/index.html:71 share/html/Admin/Queues/People.html:76 share/html/Admin/Queues/People.html:80 share/html/Admin/Queues/index.html:89 share/html/Admin/Users/index.html:81 share/html/Approvals/index.html:54 share/html/Elements/RefreshHomepage:52 share/html/Ticket/Elements/EditPeople:55 share/html/Ticket/Elements/EditPeople:59
+#: share/html/Admin/Articles/Classes/index.html:70 share/html/Admin/CustomFields/index.html:69 share/html/Admin/Groups/index.html:71 share/html/Admin/Queues/People.html:76 share/html/Admin/Queues/People.html:80 share/html/Admin/Queues/index.html:70 share/html/Admin/Users/index.html:81 share/html/Approvals/index.html:54 share/html/Elements/RefreshHomepage:52 share/html/Ticket/Elements/EditPeople:55 share/html/Ticket/Elements/EditPeople:59
 msgid "Go!"
 msgstr ""
 
@@ -3608,31 +3616,31 @@ msgstr ""
 msgid "Groups this user belongs to"
 msgstr ""
 
-#: etc/initialdata:258 etc/upgrade/4.1.9/content:9
+#: etc/initialdata:262 etc/upgrade/4.1.9/content:9
 msgid "HTML Autoresponse template"
 msgstr ""
 
-#: etc/initialdata:450 etc/upgrade/4.1.9/content:103
+#: etc/initialdata:454 etc/upgrade/4.1.9/content:103
 msgid "HTML Ticket Resolved"
 msgstr ""
 
-#: etc/initialdata:427 etc/upgrade/4.1.9/content:91
+#: etc/initialdata:431 etc/upgrade/4.1.9/content:91
 msgid "HTML Ticket status changed"
 msgstr ""
 
-#: etc/initialdata:391 etc/upgrade/4.1.9/content:78
+#: etc/initialdata:395 etc/upgrade/4.1.9/content:78
 msgid "HTML admin comment template"
 msgstr ""
 
-#: etc/initialdata:348 etc/upgrade/4.1.9/content:57
+#: etc/initialdata:352 etc/upgrade/4.1.9/content:57
 msgid "HTML admin correspondence template"
 msgstr ""
 
-#: etc/initialdata:368 etc/upgrade/4.1.9/content:69
+#: etc/initialdata:372 etc/upgrade/4.1.9/content:69
 msgid "HTML correspondence template"
 msgstr ""
 
-#: etc/initialdata:303 etc/upgrade/4.1.9/content:35
+#: etc/initialdata:307 etc/upgrade/4.1.9/content:35
 msgid "HTML transaction template"
 msgstr ""
 
@@ -3817,11 +3825,16 @@ msgstr ""
 msgid "Include article summary"
 msgstr ""
 
+#: share/html/Admin/Articles/Classes/Modify.html:97
+#. ($cf->Name)
+msgid "Include custom field '%1'"
+msgstr ""
+
 #: share/html/Admin/Articles/Classes/index.html:69
 msgid "Include disabled classes in listing."
 msgstr ""
 
-#: share/html/Admin/CustomFields/index.html:81
+#: share/html/Admin/CustomFields/index.html:64
 msgid "Include disabled custom fields in listing."
 msgstr ""
 
@@ -3829,7 +3842,7 @@ msgstr ""
 msgid "Include disabled groups in listing."
 msgstr ""
 
-#: share/html/Admin/Queues/index.html:88
+#: share/html/Admin/Queues/index.html:69
 msgid "Include disabled queues in listing."
 msgstr ""
 
@@ -3858,11 +3871,11 @@ msgstr ""
 msgid "Individual messages"
 msgstr ""
 
-#: etc/initialdata:645 etc/upgrade/3.7.10/content:18
+#: etc/initialdata:649 etc/upgrade/3.7.10/content:18
 msgid "Inform RT owner that user(s) have problems with public keys"
 msgstr ""
 
-#: etc/initialdata:707 etc/upgrade/3.7.87/content:9
+#: etc/initialdata:711 etc/upgrade/3.7.87/content:9
 msgid "Inform user that a dashboard he subscribed to is missing"
 msgstr ""
 
@@ -3870,23 +3883,23 @@ msgstr ""
 msgid "Inform user that a message he sent has invalid GnuPG data"
 msgstr ""
 
-#: etc/initialdata:670
+#: etc/initialdata:674
 msgid "Inform user that a message he sent has invalid encryption data"
 msgstr ""
 
-#: etc/initialdata:636 etc/upgrade/3.7.10/content:9
+#: etc/initialdata:640 etc/upgrade/3.7.10/content:9
 msgid "Inform user that he has problems with public key and couldn't recieve encrypted content"
 msgstr ""
 
-#: etc/initialdata:682
+#: etc/initialdata:686
 msgid "Inform user that his password has been reset"
 msgstr ""
 
-#: etc/initialdata:627 etc/upgrade/4.1.22/content:79
+#: etc/initialdata:631 etc/upgrade/4.1.22/content:79
 msgid "Inform user that their unencrypted mail has been rejected"
 msgstr ""
 
-#: etc/initialdata:658 etc/upgrade/3.7.10/content:31
+#: etc/initialdata:662 etc/upgrade/3.7.10/content:31
 msgid "Inform user that we received an encrypted email and we have no private keys to decrypt"
 msgstr ""
 
@@ -4999,7 +5012,7 @@ msgstr ""
 msgid "My Reminders"
 msgstr ""
 
-#: etc/initialdata:848
+#: etc/initialdata:852
 msgid "My Tickets"
 msgstr ""
 
@@ -5023,7 +5036,7 @@ msgstr ""
 msgid "MyAdminQueues"
 msgstr ""
 
-#: etc/RT_Config.pm:1239 etc/initialdata:867
+#: etc/RT_Config.pm:1239 etc/initialdata:871
 msgid "MyReminders"
 msgstr ""
 
@@ -5084,11 +5097,11 @@ msgstr ""
 msgid "New Links"
 msgstr ""
 
-#: etc/initialdata:458 etc/upgrade/3.8.2/content:52
+#: etc/initialdata:462 etc/upgrade/3.8.2/content:52
 msgid "New Pending Approval"
 msgstr ""
 
-#: etc/initialdata:477 etc/upgrade/4.1.9/content:111
+#: etc/initialdata:481 etc/upgrade/4.1.9/content:111
 msgid "New Pending Approval in HTML"
 msgstr ""
 
@@ -5196,6 +5209,10 @@ msgstr ""
 msgid "No Subject"
 msgstr ""
 
+#: share/html/Admin/Articles/Classes/Modify.html:118
+msgid "No Subject Override"
+msgstr ""
+
 #: share/html/Admin/Global/Template.html:88 share/html/Admin/Queues/Template.html:86
 msgid "No Template"
 msgstr ""
@@ -5295,7 +5312,7 @@ msgstr ""
 msgid "No private key"
 msgstr ""
 
-#: share/html/Admin/Queues/index.html:56
+#: share/html/Admin/Queues/index.html:75
 msgid "No queues matching search criteria found."
 msgstr ""
 
@@ -5417,11 +5434,11 @@ msgstr ""
 msgid "Notify Ccs as Comment"
 msgstr ""
 
-#: etc/initialdata:87
+#: etc/initialdata:91
 msgid "Notify Other Recipients"
 msgstr ""
 
-#: etc/initialdata:83
+#: etc/initialdata:87
 msgid "Notify Other Recipients as Comment"
 msgstr ""
 
@@ -5437,11 +5454,11 @@ msgstr ""
 msgid "Notify Owner as Comment"
 msgstr ""
 
-#: etc/initialdata:558 etc/initialdata:571 etc/upgrade/3.8.2/content:101 etc/upgrade/4.1.9/content:164
+#: etc/initialdata:562 etc/initialdata:575 etc/upgrade/3.8.2/content:101 etc/upgrade/4.1.9/content:164
 msgid "Notify Owner of their rejected ticket"
 msgstr ""
 
-#: etc/initialdata:586 etc/initialdata:598 etc/upgrade/3.8.2/content:114 etc/upgrade/4.1.9/content:179
+#: etc/initialdata:590 etc/initialdata:602 etc/upgrade/3.8.2/content:114 etc/upgrade/4.1.9/content:179
 msgid "Notify Owner of their ticket has been approved and is ready to be acted on"
 msgstr ""
 
@@ -5449,23 +5466,27 @@ msgstr ""
 msgid "Notify Owner of their ticket has been approved by some or all approvers"
 msgstr ""
 
-#: etc/initialdata:79
+#: etc/initialdata:65 etc/upgrade/4.2.6/content:5
+msgid "Notify Owner or AdminCcs"
+msgstr ""
+
+#: etc/initialdata:83
 msgid "Notify Owner, Requestors, Ccs and AdminCcs"
 msgstr ""
 
-#: etc/initialdata:75
+#: etc/initialdata:79
 msgid "Notify Owner, Requestors, Ccs and AdminCcs as Comment"
 msgstr ""
 
-#: etc/initialdata:460 etc/initialdata:478 etc/upgrade/3.8.2/content:54 etc/upgrade/4.1.9/content:112
+#: etc/initialdata:464 etc/initialdata:482 etc/upgrade/3.8.2/content:54 etc/upgrade/4.1.9/content:112
 msgid "Notify Owners and AdminCcs of new items pending their approval"
 msgstr ""
 
-#: etc/initialdata:528 etc/initialdata:542 etc/upgrade/3.8.2/content:87 etc/upgrade/4.1.9/content:148
+#: etc/initialdata:532 etc/initialdata:546 etc/upgrade/3.8.2/content:87 etc/upgrade/4.1.9/content:148
 msgid "Notify Requestor of their ticket has been approved by all approvers"
 msgstr ""
 
-#: etc/initialdata:498 etc/initialdata:512 etc/upgrade/3.8.2/content:73 etc/upgrade/4.1.9/content:132
+#: etc/initialdata:502 etc/initialdata:516 etc/upgrade/3.8.2/content:73 etc/upgrade/4.1.9/content:132
 msgid "Notify Requestor of their ticket has been approved by some approver"
 msgstr ""
 
@@ -5473,11 +5494,11 @@ msgstr ""
 msgid "Notify Requestors"
 msgstr ""
 
-#: etc/initialdata:70
+#: etc/initialdata:74
 msgid "Notify Requestors and Ccs"
 msgstr ""
 
-#: etc/initialdata:65
+#: etc/initialdata:69
 msgid "Notify Requestors and Ccs as Comment"
 msgstr ""
 
@@ -5534,63 +5555,63 @@ msgstr ""
 msgid "On %1, %2 wrote:"
 msgstr ""
 
-#: etc/initialdata:208 etc/upgrade/3.7.1/content:5
+#: etc/initialdata:212 etc/upgrade/3.7.1/content:5
 msgid "On Close"
 msgstr ""
 
-#: etc/initialdata:152
+#: etc/initialdata:156
 msgid "On Comment"
 msgstr ""
 
-#: etc/initialdata:124
+#: etc/initialdata:128
 msgid "On Correspond"
 msgstr ""
 
-#: etc/initialdata:113
+#: etc/initialdata:117
 msgid "On Create"
 msgstr ""
 
-#: etc/initialdata:131 etc/upgrade/4.0.3/content:7
+#: etc/initialdata:135 etc/upgrade/4.0.3/content:7
 msgid "On Forward"
 msgstr ""
 
-#: etc/initialdata:138 etc/upgrade/4.0.3/content:14
+#: etc/initialdata:142 etc/upgrade/4.0.3/content:14
 msgid "On Forward Ticket"
 msgstr ""
 
-#: etc/initialdata:145 etc/upgrade/4.0.3/content:21
+#: etc/initialdata:149 etc/upgrade/4.0.3/content:21
 msgid "On Forward Transaction"
 msgstr ""
 
-#: etc/initialdata:173
+#: etc/initialdata:177
 msgid "On Owner Change"
 msgstr ""
 
-#: etc/initialdata:166 etc/upgrade/3.1.17/content:18
+#: etc/initialdata:170 etc/upgrade/3.1.17/content:18
 msgid "On Priority Change"
 msgstr ""
 
-#: etc/initialdata:181
+#: etc/initialdata:185
 msgid "On Queue Change"
 msgstr ""
 
-#: etc/initialdata:194 etc/upgrade/3.8.3/content:5
+#: etc/initialdata:198 etc/upgrade/3.8.3/content:5
 msgid "On Reject"
 msgstr ""
 
-#: etc/initialdata:213 etc/upgrade/3.7.1/content:10
+#: etc/initialdata:217 etc/upgrade/3.7.1/content:10
 msgid "On Reopen"
 msgstr ""
 
-#: etc/initialdata:187
+#: etc/initialdata:191
 msgid "On Resolve"
 msgstr ""
 
-#: etc/initialdata:158
+#: etc/initialdata:162
 msgid "On Status Change"
 msgstr ""
 
-#: etc/initialdata:118
+#: etc/initialdata:122
 msgid "On Transaction"
 msgstr ""
 
@@ -5620,11 +5641,11 @@ msgstr ""
 msgid "Only show approvals for requests created before %1"
 msgstr ""
 
-#: share/html/Admin/CustomFields/index.html:72
+#: share/html/Admin/CustomFields/index.html:55
 msgid "Only show custom fields for:"
 msgstr ""
 
-#: etc/initialdata:101 etc/upgrade/4.2.4/content:5
+#: etc/initialdata:105 etc/upgrade/4.2.4/content:5
 msgid "Open Inactive Tickets"
 msgstr ""
 
@@ -5632,7 +5653,7 @@ msgstr ""
 msgid "Open It"
 msgstr ""
 
-#: etc/initialdata:98
+#: etc/initialdata:102
 msgid "Open Tickets"
 msgstr ""
 
@@ -5640,7 +5661,7 @@ msgstr ""
 msgid "Open URL"
 msgstr ""
 
-#: etc/initialdata:102 etc/upgrade/4.2.4/content:6
+#: etc/initialdata:106 etc/upgrade/4.2.4/content:6
 msgid "Open inactive tickets"
 msgstr ""
 
@@ -5648,7 +5669,7 @@ msgstr ""
 msgid "Open tickets"
 msgstr ""
 
-#: etc/initialdata:99
+#: etc/initialdata:103
 msgid "Open tickets on correspondence"
 msgstr ""
 
@@ -5802,7 +5823,7 @@ msgstr ""
 msgid "Password: Permission Denied"
 msgstr ""
 
-#: etc/initialdata:680
+#: etc/initialdata:684
 msgid "PasswordChange"
 msgstr ""
 
@@ -5837,7 +5858,7 @@ msgstr ""
 msgid "People related to queue %1"
 msgstr ""
 
-#: etc/initialdata:92
+#: etc/initialdata:96
 msgid "Perform a user-defined action"
 msgstr ""
 
@@ -5873,23 +5894,23 @@ msgstr ""
 msgid "Picture"
 msgstr ""
 
-#: etc/initialdata:228
+#: etc/initialdata:232
 msgid "Plain text Autoresponse template"
 msgstr ""
 
-#: etc/initialdata:377
+#: etc/initialdata:381
 msgid "Plain text admin comment template"
 msgstr ""
 
-#: etc/initialdata:337
+#: etc/initialdata:341
 msgid "Plain text admin correspondence template"
 msgstr ""
 
-#: etc/initialdata:360
+#: etc/initialdata:364
 msgid "Plain text correspondence template"
 msgstr ""
 
-#: etc/initialdata:284
+#: etc/initialdata:288
 msgid "Plain text transaction template"
 msgstr ""
 
@@ -6160,11 +6181,11 @@ msgstr ""
 msgid "Quick ticket creation"
 msgstr ""
 
-#: etc/RT_Config.pm:1239 etc/initialdata:860
+#: etc/RT_Config.pm:1239 etc/initialdata:864
 msgid "QuickCreate"
 msgstr ""
 
-#: etc/RT_Config.pm:1239 etc/initialdata:871
+#: etc/RT_Config.pm:1239 etc/initialdata:875
 msgid "Quicksearch"
 msgstr ""
 
@@ -6420,7 +6441,7 @@ msgstr ""
 msgid "Refresh this page every %quant(%1,minute,minutes)."
 msgstr ""
 
-#: etc/RT_Config.pm:1239 etc/initialdata:879
+#: etc/RT_Config.pm:1239 etc/initialdata:883
 msgid "RefreshHomepage"
 msgstr ""
 
@@ -6436,7 +6457,7 @@ msgstr ""
 msgid "Remember default queue"
 msgstr ""
 
-#: etc/initialdata:403 etc/upgrade/4.1.16/content:6 share/html/Elements/ShowReminders:51 share/html/Ticket/Elements/Reminders:82
+#: etc/initialdata:407 etc/upgrade/4.1.16/content:6 share/html/Elements/ShowReminders:51 share/html/Ticket/Elements/Reminders:82
 msgid "Reminder"
 msgstr ""
 
@@ -6455,7 +6476,7 @@ msgstr ""
 msgid "Reminder '%1' reopened"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:2984 lib/RT/Interface/Web.pm:3002
+#: lib/RT/Interface/Web.pm:2985 lib/RT/Interface/Web.pm:3003
 #. ($args->{'NewReminder-Subject'}, loc("Created"))
 #. ($old_subject || $reminder->Subject, $_)
 msgid "Reminder '%1': %2"
@@ -6581,11 +6602,11 @@ msgstr ""
 msgid "Resolve ticket #%1 (%2)"
 msgstr ""
 
-#: etc/initialdata:440 lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:76 lib/RT/Tickets.pm:135 share/html/Elements/RT__Ticket/ColumnMap:218 share/html/Elements/RT__Ticket/ColumnMap:243 share/html/Elements/SelectDateType:51 share/html/Search/Elements/BuildFormatString:100
+#: etc/initialdata:444 lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:76 lib/RT/Tickets.pm:135 share/html/Elements/RT__Ticket/ColumnMap:218 share/html/Elements/RT__Ticket/ColumnMap:243 share/html/Elements/SelectDateType:51 share/html/Search/Elements/BuildFormatString:100
 msgid "Resolved"
 msgstr ""
 
-#: etc/initialdata:449 etc/upgrade/4.1.9/content:102
+#: etc/initialdata:453 etc/upgrade/4.1.9/content:102
 msgid "Resolved in HTML"
 msgstr ""
 
@@ -6637,7 +6658,7 @@ msgstr ""
 msgid "Right revoked"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:2580 lib/RT/Interface/Web.pm:2680
+#: lib/RT/Interface/Web.pm:2581 lib/RT/Interface/Web.pm:2681
 #. ($object_type)
 msgid "Rights could not be granted for %1"
 msgstr ""
@@ -6660,7 +6681,7 @@ msgstr ""
 msgid "Role group exists already"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3816
+#: lib/RT/Interface/Web.pm:3817
 msgid "Roles"
 msgstr ""
 
@@ -6860,7 +6881,7 @@ msgstr ""
 msgid "Security:"
 msgstr ""
 
-#: share/html/Elements/ShowCustomFields:124 share/html/m/ticket/show:191
+#: share/html/Elements/ShowCustomFields:125 share/html/m/ticket/show:191
 msgid "See also:"
 msgstr ""
 
@@ -6892,7 +6913,7 @@ msgstr ""
 msgid "Select a Class"
 msgstr ""
 
-#: share/html/Admin/CustomFields/index.html:96
+#: share/html/Admin/CustomFields/index.html:94
 msgid "Select a Custom Field"
 msgstr ""
 
@@ -6908,7 +6929,7 @@ msgstr ""
 msgid "Select a group"
 msgstr ""
 
-#: share/html/Admin/Queues/index.html:54 share/html/m/ticket/select_create_queue:55
+#: share/html/Admin/Queues/index.html:73 share/html/m/ticket/select_create_queue:55
 msgid "Select a queue"
 msgstr ""
 
@@ -7034,27 +7055,27 @@ msgstr ""
 msgid "Selections modified. Please save your changes"
 msgstr ""
 
-#: etc/initialdata:107
+#: etc/initialdata:111
 msgid "Send Forward"
 msgstr ""
 
-#: etc/initialdata:108
+#: etc/initialdata:112
 msgid "Send forwarded message"
 msgstr ""
 
-#: etc/initialdata:80
+#: etc/initialdata:84
 msgid "Send mail to owner and all watchers"
 msgstr ""
 
-#: etc/initialdata:76
+#: etc/initialdata:80
 msgid "Send mail to owner and all watchers as a \"comment\""
 msgstr ""
 
-#: etc/initialdata:71
+#: etc/initialdata:75
 msgid "Send mail to requestors and Ccs"
 msgstr ""
 
-#: etc/initialdata:66
+#: etc/initialdata:70
 msgid "Send mail to requestors and Ccs as a comment"
 msgstr ""
 
@@ -7062,7 +7083,7 @@ msgstr ""
 msgid "Sends a message to the requestors"
 msgstr ""
 
-#: etc/initialdata:84 etc/initialdata:88
+#: etc/initialdata:88 etc/initialdata:92
 msgid "Sends mail to explicitly listed Ccs and Bccs"
 msgstr ""
 
@@ -7076,6 +7097,10 @@ msgstr ""
 
 #: etc/initialdata:62 etc/upgrade/4.1.15/content:6
 msgid "Sends mail to the Owner and administrative Ccs"
+msgstr ""
+
+#: etc/initialdata:66 etc/upgrade/4.2.6/content:6
+msgid "Sends mail to the Owner if set, otherwise administrative Ccs"
 msgstr ""
 
 #: etc/initialdata:58
@@ -7382,7 +7407,7 @@ msgstr ""
 msgid "Static file search order"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Report/Tickets.pm:60 lib/RT/Tickets.pm:106 lib/RT/Tickets.pm:1484 share/html/Elements/RT__Ticket/ColumnMap:111 share/html/Elements/RT__Ticket/ColumnMap:121 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:62 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Tools/MyDay.html:67 share/html/m/_elements/ticket_list:95 share/html/m/ticket/create:250 share/html/m/ticket/reply:63 share/html/m/ticket/show:216
+#: lib/RT/Graph/Tickets.pm:153 lib/RT/Report/Tickets.pm:60 lib/RT/Tickets.pm:106 lib/RT/Tickets.pm:1484 share/html/Elements/RT__Class/ColumnMap:66 share/html/Elements/RT__CustomField/ColumnMap:56 share/html/Elements/RT__Group/ColumnMap:82 share/html/Elements/RT__Queue/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:110 share/html/Elements/RT__Ticket/ColumnMap:111 share/html/Elements/RT__Ticket/ColumnMap:121 share/html/Elements/RT__User/ColumnMap:146 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:62 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Tools/MyDay.html:67 share/html/m/_elements/ticket_list:95 share/html/m/ticket/create:250 share/html/m/ticket/reply:63 share/html/m/ticket/show:216
 msgid "Status"
 msgstr ""
 
@@ -7396,11 +7421,11 @@ msgstr ""
 msgid "Status '%1' isn't a valid status for tickets in this queue."
 msgstr ""
 
-#: etc/initialdata:415
+#: etc/initialdata:419
 msgid "Status Change"
 msgstr ""
 
-#: etc/initialdata:426 etc/upgrade/4.1.9/content:90
+#: etc/initialdata:430 etc/upgrade/4.1.9/content:90
 msgid "Status Change in HTML"
 msgstr ""
 
@@ -7549,7 +7574,7 @@ msgstr ""
 msgid "Suspended"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3773
+#: lib/RT/Interface/Web.pm:3774
 msgid "System"
 msgstr ""
 
@@ -7561,7 +7586,7 @@ msgstr ""
 msgid "System Default"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:2580 lib/RT/Interface/Web.pm:2680 share/html/Admin/Elements/EditRightsCategoryTabs:60
+#: lib/RT/Interface/Web.pm:2581 lib/RT/Interface/Web.pm:2681 share/html/Admin/Elements/EditRightsCategoryTabs:60
 msgid "System Error"
 msgstr ""
 
@@ -7586,7 +7611,7 @@ msgstr ""
 msgid "SystemRolegroup for internal use"
 msgstr ""
 
-#: etc/initialdata:820 share/html/Elements/Tabs:716 share/html/Search/Elements/EditFormat:72
+#: etc/initialdata:824 share/html/Elements/Tabs:716 share/html/Search/Elements/EditFormat:72
 msgid "Take"
 msgstr ""
 
@@ -7619,7 +7644,7 @@ msgstr ""
 msgid "Template '%1' is not global nor queue specific"
 msgstr ""
 
-#: lib/RT/Scrip.pm:167 lib/RT/Scrip.pm:847
+#: lib/RT/Scrip.pm:167 lib/RT/Scrip.pm:844
 #. ($args{'Template'})
 #. ($value)
 msgid "Template '%1' not found"
@@ -7641,7 +7666,7 @@ msgstr ""
 msgid "Template is in use"
 msgstr ""
 
-#: lib/RT/Scrip.pm:156 lib/RT/Scrip.pm:842
+#: lib/RT/Scrip.pm:156 lib/RT/Scrip.pm:839
 msgid "Template is mandatory argument"
 msgstr ""
 
@@ -7953,7 +7978,7 @@ msgstr ""
 msgid "Ticket History # %1 %2"
 msgstr ""
 
-#: etc/initialdata:441
+#: etc/initialdata:445
 msgid "Ticket Resolved"
 msgstr ""
 
@@ -8001,7 +8026,7 @@ msgstr ""
 msgid "Ticket metadata"
 msgstr ""
 
-#: etc/initialdata:416
+#: etc/initialdata:420
 msgid "Ticket status changed"
 msgstr ""
 
@@ -8167,7 +8192,7 @@ msgstr ""
 msgid "Total time worked"
 msgstr ""
 
-#: etc/initialdata:283
+#: etc/initialdata:287
 msgid "Transaction"
 msgstr ""
 
@@ -8180,7 +8205,7 @@ msgstr ""
 msgid "Transaction Created"
 msgstr ""
 
-#: etc/initialdata:302 etc/upgrade/4.1.9/content:34
+#: etc/initialdata:306 etc/upgrade/4.1.9/content:34
 msgid "Transaction in HTML"
 msgstr ""
 
@@ -8363,7 +8388,7 @@ msgstr ""
 msgid "Unnamed search"
 msgstr ""
 
-#: etc/initialdata:852
+#: etc/initialdata:856
 msgid "Unowned Tickets"
 msgstr ""
 
@@ -8427,7 +8452,7 @@ msgstr ""
 msgid "Update multiple tickets"
 msgstr ""
 
-#: lib/RT/Action/CreateTickets.pm:474 lib/RT/Interface/Web.pm:2351
+#: lib/RT/Action/CreateTickets.pm:474 lib/RT/Interface/Web.pm:2352
 msgid "Update not recorded."
 msgstr ""
 
@@ -8447,7 +8472,7 @@ msgstr ""
 msgid "Update ticket #%1 (%2)"
 msgstr ""
 
-#: lib/RT/Action/CreateTickets.pm:472 lib/RT/Interface/Web.pm:2351
+#: lib/RT/Action/CreateTickets.pm:472 lib/RT/Interface/Web.pm:2352
 msgid "Update type was neither correspondence nor comment."
 msgstr ""
 
@@ -8565,7 +8590,7 @@ msgstr ""
 msgid "User (created - expire)"
 msgstr ""
 
-#: etc/initialdata:201 etc/initialdata:91
+#: etc/initialdata:205 etc/initialdata:95
 msgid "User Defined"
 msgstr ""
 
@@ -8573,7 +8598,7 @@ msgstr ""
 msgid "User Defined conditions and results"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3791
+#: lib/RT/Interface/Web.pm:3792
 msgid "User Groups"
 msgstr ""
 
@@ -8593,7 +8618,7 @@ msgstr ""
 msgid "User Summary"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3201
+#: lib/RT/Interface/Web.pm:3202
 #. ($cf->Name, ref $args{'Object'},                    $args{'Object'}->id)
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
 msgstr ""
@@ -8640,7 +8665,7 @@ msgstr ""
 msgid "Username format"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1889 lib/RT/CustomField.pm:204 lib/RT/Interface/Web.pm:3844 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:526 share/html/Elements/Tabs:67
+#: lib/RT/CustomField.pm:1889 lib/RT/CustomField.pm:204 lib/RT/Interface/Web.pm:3845 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:526 share/html/Elements/Tabs:67
 msgid "Users"
 msgstr ""
 
@@ -8833,7 +8858,7 @@ msgstr ""
 msgid "When RT sends an email it sets the From: and Reply-To: headers so users can add to the conversation by just hitting Reply in their mail client.  It uses different addresses for Replies and Comments.  These can be changed for each of your queues.  These addresses will need to be configured to use the <tt>rt-mailgate</tt> program."
 msgstr ""
 
-#: etc/initialdata:114
+#: etc/initialdata:118
 msgid "When a ticket is created"
 msgstr ""
 
@@ -8841,67 +8866,71 @@ msgstr ""
 msgid "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval"
 msgstr ""
 
-#: etc/initialdata:119
+#: etc/initialdata:123
 msgid "When anything happens"
+msgstr ""
+
+#: share/html/Admin/Articles/Classes/Modify.html:85
+msgid "When inserting articles in this class into emails:"
 msgstr ""
 
 #: share/html/Install/DatabaseDetails.html:58
 msgid "When you click on 'Check Database Connectivity' there may be a small delay while RT tries to connect to your database"
 msgstr ""
 
-#: etc/initialdata:209 etc/upgrade/3.7.1/content:6
+#: etc/initialdata:213 etc/upgrade/3.7.1/content:6
 msgid "Whenever a ticket is closed"
 msgstr ""
 
-#: etc/initialdata:139 etc/upgrade/4.0.3/content:15
+#: etc/initialdata:143 etc/upgrade/4.0.3/content:15
 msgid "Whenever a ticket is forwarded"
 msgstr ""
 
-#: etc/initialdata:195 etc/upgrade/3.8.3/content:6
+#: etc/initialdata:199 etc/upgrade/3.8.3/content:6
 msgid "Whenever a ticket is rejected"
 msgstr ""
 
-#: etc/initialdata:214 etc/upgrade/3.7.1/content:11
+#: etc/initialdata:218 etc/upgrade/3.7.1/content:11
 msgid "Whenever a ticket is reopened"
 msgstr ""
 
-#: etc/initialdata:188
+#: etc/initialdata:192
 msgid "Whenever a ticket is resolved"
 msgstr ""
 
-#: etc/initialdata:132 etc/upgrade/4.0.3/content:8
+#: etc/initialdata:136 etc/upgrade/4.0.3/content:8
 msgid "Whenever a ticket or transaction is forwarded"
 msgstr ""
 
-#: etc/initialdata:174
+#: etc/initialdata:178
 msgid "Whenever a ticket's owner changes"
 msgstr ""
 
-#: etc/initialdata:167 etc/upgrade/3.1.17/content:19
+#: etc/initialdata:171 etc/upgrade/3.1.17/content:19
 msgid "Whenever a ticket's priority changes"
 msgstr ""
 
-#: etc/initialdata:182
+#: etc/initialdata:186
 msgid "Whenever a ticket's queue changes"
 msgstr ""
 
-#: etc/initialdata:159
+#: etc/initialdata:163
 msgid "Whenever a ticket's status changes"
 msgstr ""
 
-#: etc/initialdata:146 etc/upgrade/4.0.3/content:22
+#: etc/initialdata:150 etc/upgrade/4.0.3/content:22
 msgid "Whenever a transaction is forwarded"
 msgstr ""
 
-#: etc/initialdata:202
+#: etc/initialdata:206
 msgid "Whenever a user-defined condition occurs"
 msgstr ""
 
-#: etc/initialdata:153
+#: etc/initialdata:157
 msgid "Whenever comments come in"
 msgstr ""
 
-#: etc/initialdata:125
+#: etc/initialdata:129
 msgid "Whenever correspondence comes in"
 msgstr ""
 
@@ -9151,7 +9180,7 @@ msgstr ""
 msgid "before"
 msgstr ""
 
-#: etc/initialdata:844 share/html/Admin/Global/MyRT.html:86
+#: etc/initialdata:848 share/html/Admin/Global/MyRT.html:86
 msgid "body"
 msgstr ""
 
@@ -9199,7 +9228,7 @@ msgstr ""
 msgid "core config"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1617 lib/RT/Interface/Web.pm:1626
+#: lib/RT/Interface/Web.pm:1618 lib/RT/Interface/Web.pm:1627
 msgid "create a ticket"
 msgstr ""
 
@@ -9333,7 +9362,7 @@ msgstr ""
 msgid "index"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:2977
+#: lib/RT/Interface/Web.pm:2978
 #. ($due)
 msgid "invalid due date: %1"
 msgstr ""
@@ -9382,19 +9411,19 @@ msgstr ""
 msgid "minutes"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1619
+#: lib/RT/Interface/Web.pm:1620
 msgid "modify RT's configuration"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1622
+#: lib/RT/Interface/Web.pm:1623
 msgid "modify a dashboard"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1625
+#: lib/RT/Interface/Web.pm:1626
 msgid "modify or access a search"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1624
+#: lib/RT/Interface/Web.pm:1625
 msgid "modify your preferences"
 msgstr ""
 
@@ -9504,7 +9533,7 @@ msgstr ""
 msgid "see object list below"
 msgstr ""
 
-#: etc/initialdata:863 share/html/Admin/Global/MyRT.html:87
+#: etc/initialdata:867 share/html/Admin/Global/MyRT.html:87
 msgid "sidebar"
 msgstr ""
 
@@ -9534,11 +9563,11 @@ msgstr ""
 msgid "system group '%1'"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1533
+#: lib/RT/Interface/Web.pm:1534
 msgid "the Referrer header supplied by your browser (%1) is not allowed by RT's configured hostname (%2)"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1526
+#: lib/RT/Interface/Web.pm:1527
 msgid "the Referrer header supplied by your browser (%1) is not allowed by RT's configured hostname (%2) or whitelisted hosts (%3)"
 msgstr ""
 
@@ -9576,15 +9605,15 @@ msgstr ""
 msgid "unlimited"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1618 lib/RT/Interface/Web.pm:1623 lib/RT/Interface/Web.pm:1627
+#: lib/RT/Interface/Web.pm:1619 lib/RT/Interface/Web.pm:1624 lib/RT/Interface/Web.pm:1628
 msgid "update a ticket"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1620
+#: lib/RT/Interface/Web.pm:1621
 msgid "update an approval"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1621
+#: lib/RT/Interface/Web.pm:1622
 msgid "update an article"
 msgstr ""
 
@@ -9631,7 +9660,7 @@ msgstr ""
 msgid "yes"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1518
+#: lib/RT/Interface/Web.pm:1519
 msgid "your browser did not supply a Referrer header"
 msgstr ""
 
