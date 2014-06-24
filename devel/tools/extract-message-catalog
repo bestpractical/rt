@@ -58,6 +58,7 @@ use File::Find;
 use File::Copy;
 use Regexp::Common;
 use Carp;
+use Locale::PO;
 $| = 1;
 
 # po dir is for extensions
@@ -71,17 +72,37 @@ File::Find::find( { wanted => \&extract_strings_from_code, follow => 1 }, qw(bin
 
 # ensure proper escaping and [_1] => %1 transformation
 foreach my $str ( sort keys %FILECAT ) {
-    my $entry = $FILECAT{$str};
-    my $oldstr = $str;
+    my $entry = delete $FILECAT{$str};
+    next unless @{$entry};
 
-    $str =~ s/\\/\\\\/g;
-    $str =~ s/"/\\"/g;
+    my ($filename, $line) = @{ $entry->[0] };
+    my $location = "$filename line $line" . (@{$entry} > 1 ? " (and ".(@{$entry}-1)." other places)" : "");
+
+    if ($str =~ /^\s/m || $str =~ /\s$/m || $str =~ /\\n$/m) {
+        warn "Extraneous whitespace in '$str' at $location\n";
+    }
+    if (grep {$_->[3]} @{$entry} and $str =~ /([\$\@]\w+)/) {
+        warn "Interpolated variable '$1' in '$str' at $location\n";
+    }
+
+    my $escape = sub { $_ = shift; s/\b_(\d+)/%$1/; $_ };
     $str =~ s/((?<!~)(?:~~)*)\[_(\d+)\]/$1%$2/g;
-    $str =~ s/((?<!~)(?:~~)*)\[([A-Za-z#*]\w*),([^\]]+)\]/"$1%$2(".escape($3).")"/eg;
+    $str =~ s/((?<!~)(?:~~)*)\[([A-Za-z#*]\w*),([^\]]+)\]/"$1%$2(".$escape->($3).")"/eg;
     $str =~ s/~([\[\]])/$1/g;
 
-    delete $FILECAT{$oldstr};
-    $FILECAT{$str} = $entry;
+    my $po = Locale::PO->new(-msgid => $str);
+    $po->reference( join ( ' ', sort map $_->[0].":".$_->[1], @{ $entry } ) );
+    my %seen;
+    my @vars;
+    foreach my $find ( sort { $a->[2] cmp $b->[2] } grep { $_->[2] } @{ $entry } ) {
+        my ( $file, $line, $var ) = @{$find};
+        $var =~ s/^\s*,\s*//;
+        $var =~ s/\s*$//;
+        push @vars, "($var)" unless $seen{$var}++;
+    }
+    $po->automatic( join( "\n", @vars) );
+
+    $FILECAT{$po->msgid} = $po;
 }
 
 # update all language dictionaries
@@ -96,28 +117,6 @@ foreach my $dict (@ARGV) {
 
     update($lang, $dict);
 }
-
-# warn about various red flags in loc strings
-foreach my $str ( sort keys %FILECAT ) {
-    my $entry = $FILECAT{$str};
-    my $entry_count = @$entry;
-
-    # doesn't exist in the current codebase, ignore for now
-    next if $entry_count == 0;
-
-    my ($filename, $line) = @{ $entry->[0] };
-
-    my $location = "$filename line $line" . ($entry_count > 1 ? " (and ".($entry_count-1)." other places)" : "");
-
-    if ($str =~ /^\s/m || $str =~ /\s$/m || $str =~ /\\n$/m) {
-        warn "Extraneous whitespace in '$str' at $location\n";
-    }
-
-    if (grep {$_->[3]} @{$entry} and $str =~ /([\$\@]\w+)/) {
-        warn "Interpolated variable '$1' in '$str' at $location\n";
-    }
-}
-
 
 sub extract_strings_from_code {
     my $file = $_;
@@ -314,112 +313,66 @@ sub uniq {
 sub update {
     my $lang = shift;
     my $file = shift;
-    my ( %Lexicon, %Header);
-    my $out = '';
 
     unless (!-e $file or -w $file) {
         warn "Can't write to $lang, skipping...\n";
         return;
     }
 
-    print "Updating $lang...\n";
-
-    my @lines;
-    @lines = (<LEXICON>) if open LEXICON, '<', $file;
-    @lines = grep { !/^(#(:|\.)\s*|$)/ } @lines;
-    while (@lines) {
-        my $msghdr = "";
-        $msghdr .= shift @lines while ( $lines[0] && $lines[0] !~ /^(#~ )?msgid/ );
-        
-        my $msgid  = "";
-
-# '#~ ' is the prefix of launchpad for msg that's not found the the source
-# we'll remove the prefix later so we can still show them with our own mark
-
-        $msgid .= shift @lines while ( $lines[0] && $lines[0] =~ /^(#~ )?(msgid|")/ );
-        my $msgstr = "";
-        $msgstr .= shift @lines while ( $lines[0] && $lines[0] =~ /^(#~ )?(msgstr|")/ );
-
-        last unless $msgid;
-
-        chomp $msgid;
-        chomp $msgstr;
-
-        $msgid  =~ s/^#~ //mg;
-        $msgstr =~ s/^#~ //mg;
-
-        $msgid  =~ s/^msgid "(.*)"\s*?$/$1/m    or warn "$msgid in $file";
-
-        if ( $msgid eq '' ) {
-            # null msgid, msgstr will have head info
-            $msgstr =~ s/^msgstr "(.*)"\s*?$/$1/ms or warn "$msgstr  in $file";
-        }
-        else {
-            $msgstr =~ s/^msgstr "(.*)"\s*?$/$1/m or warn "$msgstr  in $file";
-        }
-
-        if ( $msgid ne ''  ) {
-            for my $msg ( \$msgid, \$msgstr ) {
-                if ( $$msg =~ /\n/ ) {
-                    my @lines = split /\n/, $$msg;
-                    $$msg =
-                      shift @lines;   # first line don't need to handle any more
-                    for (@lines) {
-                        if (/^"(.*)"\s*$/) {
-                            $$msg .= $1;
-                        }
-                    }
-                }
-
-                # convert \\n back to \n
-                $$msg =~ s/(?!\\)\\n/\n/g;
-            }
-        }
-
-        $Lexicon{$msgid} = $msgstr;
-        $Header{$msgid}  = $msghdr;
-
-        validate_msgstr($lang, $msgid, $msgstr);
-    }
-
     my $is_english = ( $lang =~ /^en(?:[^A-Za-z]|$)/ );
 
-    foreach my $str ( keys %FILECAT ) {
-        $Lexicon{$str} ||= '';
+    print "Updating $lang";
+    my $lexicon = Locale::PO->load_file_ashash( $file, "utf-8" );
+
+    # Default to the empty string for new ones
+    $lexicon->{$_->msgid} ||= $_
+        for values %FILECAT;
+
+    my $errors = 0;
+    for my $msgid ( keys %{$lexicon} ) {
+        my $entry = $lexicon->{$msgid};
+
+        # Don't output empty translations for english
+        if (not length $entry->dequote($entry->msgstr) and $is_english) {
+            delete $lexicon->{$msgid};
+            next;
+        }
+
+        # The PO properties at the top are always fine to leave as-is
+        next if not length $entry->dequote($msgid);
+
+        # Not found in source?  Drop it
+        my $source = $FILECAT{$msgid};
+        if (not $source) {
+            delete $lexicon->{$msgid};
+            next;
+        }
+
+        # Pull in the properties from the source
+        $entry->reference( $source->reference );
+        $entry->automatic( $source->automatic );
+
+        my $fail = validate_msgstr($lang,
+                                   map {$entry->dequote($_)}
+                                       $entry->msgid, $entry->msgstr);
+        next unless $fail;
+        print "\n" unless $errors++;
+        print $fail;
     }
-    foreach ( sort keys %Lexicon ) {
-        my $f = join ( ' ', sort map $_->[0].":".$_->[1], @{ $FILECAT{$_} } );
-        my $nospace = $_;
-        $nospace =~ s/ +$//;
 
-        if ( !$Lexicon{$_} and $Lexicon{$nospace} ) {
-            $Lexicon{$_} =
-              $Lexicon{$nospace} . ( ' ' x ( length($_) - length($nospace) ) );
-        }
+    my @order = map {$_->[0]}
+                sort {$a->[1] cmp $b->[1]}
+                map {[$_, $_->dequote($_->msgid)]}
+                values %{$lexicon};
 
-        next if !length( $Lexicon{$_} ) and $is_english;
+    Locale::PO->save_file_fromarray($file, \@order, "utf-8")
+          or die "Couldn't update '$file': $!";
 
-        my %seen;
-        $out .= $Header{$_} if exists $Header{$_};
-
-
-        next if (!$f && $_);
-        foreach my $entry ( sort { $a->[2] cmp $b->[2] } grep { $_->[2] } @{ $FILECAT{$_} } ) {
-            my ( $file, $line, $var ) = @{$entry};
-            $var =~ s/^\s*,\s*//;
-            $var =~ s/\s*$//;
-            $out .= "#. ($var)\n" unless $seen{$var}++;
-        }
-        if ( $f && $f !~ /^\s+$/ ) {
-            $out .= "#: $f\n";
-        }
-        $out .= 'msgid ' . fmt($_) . "msgstr \"$Lexicon{$_}\"\n\n";
+    if ($errors) {
+        print "\n";
+    } else {
+        print "\r", " "x100, "\r";
     }
-
-    open PO, '>', $file or die "Couldn't open '$file' for writing: $!";
-    print PO $out;
-    close PO;
-
     return 1;
 }
 
@@ -428,8 +381,7 @@ sub validate_msgstr {
     my $msgid  = shift;
     my $msgstr = shift;
 
-    return if $msgstr eq ''; # no translation for this string
-    return if $msgid eq '';  # special case: po file metadata
+    return if not defined $msgstr or $msgstr eq ''; # no translation for this string
 
     # we uniq because a string can use a placeholder more than once
     # (eg %1 %quant(%1, ...) like in our czech localization
@@ -440,33 +392,8 @@ sub validate_msgstr {
     # unlike a simple @expected_variables == @got_variables
     my $expected = join ", ", sort @expected_variables;
     my $got      = join ", ", sort @got_variables;
-    return 0 if $expected eq $got;
+    return if $expected eq $got;
 
-    warn "$lang string does not have the same placeholders\n";
-    warn "expected (" . $expected . ") in msgid: $msgid\n";
-    warn "     got (" . $got      . ") in msgstr: $msgstr\n\n";
-
-    return 1;
-}
-
-sub escape {
-    my $text = shift;
-    $text =~ s/\b_(\d+)/%$1/;
-    return $text;
-}
-
-sub fmt {
-    my $str = shift;
-    return "\"$str\"\n" unless $str =~ /\n/;
-
-    my $multi_line = ($str =~ /\n(?!\z)/);
-    $str =~ s/\n/\\n"\n"/g;
-
-    if ($str =~ /\n"$/) {
-        chop $str;
-    }
-    else {
-        $str .= "\"\n";
-    }
-    return $multi_line ? qq(""\n"$str) : qq("$str);
+    return "  expected (" . $expected . ") in msgid: $msgid\n" .
+           "       got (" . $got      . ") in msgstr: $msgstr\n";
 }
