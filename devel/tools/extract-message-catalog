@@ -58,6 +58,7 @@ use File::Find;
 use File::Copy;
 use Regexp::Common;
 use Carp;
+$| = 1;
 
 # po dir is for extensions
 @ARGV = (<share/po/*.po>, <share/po/*.pot>, <po/*.po>, <po/*.pot>) unless @ARGV;
@@ -132,15 +133,17 @@ sub extract_strings_from_code {
     return if ( /^[\.#]/ );
     return if ( -f "$_.in" );
 
-    print "Looking at $File::Find::name\n";
+    print "Looking at $File::Find::name";
     my $filename = $File::Find::name;
     $filename =~ s'^\./'';
     $filename =~ s'\.in$'';
 
     unless (open _, '<', $file) {
-        print "Cannot open $file for reading ($!), skipping.\n";
+        print "\n  Cannot open $file for reading ($!), skipping.\n\n";
         return;
     }
+
+    my $errors = 0;
 
     my $re_space_wo_nl = qr{(?!\n)\s};
     my $re_loc_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc $re_space_wo_nl* $}mx;
@@ -159,7 +162,6 @@ sub extract_strings_from_code {
         $vars =~ s/[\n\r]//g;
         $line += ( $all =~ tr/\n/\n/ );
         $str =~ s/\\(['"\\])/$1/g;
-        #print "STR IS $str\n";
         push @{ $FILECAT{$str} }, [ $filename, $line, $vars ];
     }
 
@@ -192,7 +194,8 @@ sub extract_strings_from_code {
         $line += ( $all =~ tr/\n/\n/ );
         $seen{$line}++;
         unless ( defined $str ) {
-            warn "Couldn't process loc at $filename:$line:\n  str«$str»\n";
+            print "\n" unless $errors++;
+            print "  Couldn't process loc at $filename:$line:\n  str«$str»\n";
             next;
         }
         my $interp = (substr($str,0,1) eq '"' ? 1 : 0);
@@ -211,7 +214,8 @@ sub extract_strings_from_code {
         my ( $vars, $str );
         unless ( $match =~
                 /\(\s*($re_delim)(.*?)\s*\)$/so ) {
-            warn "Failed to match delimited against $match, line $line";
+            print "\n" unless $errors++;
+            print "  Failed to match delimited against $match, line $line";
             next;
         }
 
@@ -234,7 +238,8 @@ sub extract_strings_from_code {
         $line += ( $all =~ tr/\n/\n/ );
         $seen{$line}++;
         unless ( defined $str ) {
-            warn "Couldn't process loc_qw at $filename:$line:\n  str«$str»\n";
+            print "\n" unless $errors++;
+            print "  Couldn't process loc_qw at $filename:$line:\n  str«$str»\n";
             next;
         }
         foreach my $value (split ' ', $str) {
@@ -250,7 +255,8 @@ sub extract_strings_from_code {
         $line += ( $all =~ tr/\n/\n/ );
         $seen{$line}++;
         unless ( defined $key ) {
-            warn "Couldn't process loc_left_pair at $filename:$line:\n  key«$key»\n";
+            print "\n" unless $errors++;
+            print "  Couldn't process loc_left_pair at $filename:$line:\n  key«$key»\n";
             next;
         }
         my $interp = (substr($key,0,1) eq '"' ? 1 : 0);
@@ -266,7 +272,8 @@ sub extract_strings_from_code {
         $line += ( $all =~ tr/\n/\n/ );
         $seen{$line}++;
         unless ( defined $key && defined $val ) {
-            warn "Couldn't process loc_pair at $filename:$line:\n  key«$key»\n  val«$val»\n";
+            print "\n" unless $errors++;
+            print "  Couldn't process loc_pair at $filename:$line:\n  key«$key»\n  val«$val»\n";
             next;
         }
         my $interp_key = (substr($key,0,1) eq '"' ? 1 : 0);
@@ -286,7 +293,14 @@ sub extract_strings_from_code {
         my ($all, $loc_type) = ($1, $2);
         $line += ( $all =~ tr/\n/\n/ );
         next if $seen{$line};
-        warn "$loc_type that did not match, line $line of $filename\n";
+        print "\n" unless $errors++;
+        print "  $loc_type that did not match, line $line of $filename\n";
+    }
+
+    if ($errors) {
+        print "\n"
+    } else {
+        print "\r", " " x 100, "\r";
     }
 
     close (_);
