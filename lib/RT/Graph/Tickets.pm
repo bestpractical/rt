@@ -299,9 +299,12 @@ sub TicketLinks {
     }
 
     $args{'Seen'} ||= {};
-    return $args{'Graph'} if $args{'Seen'}{ $args{'Ticket'}->id }++;
-
-    $self->AddTicket( %args );
+    if ( $args{'Seen'}{ $args{'Ticket'}->id } && $args{'Seen'}{ $args{'Ticket'}->id } <= $args{'CurrentDepth'} ) {
+      return $args{'Graph'};
+    } elsif ( ! defined $args{'Seen'}{ $args{'Ticket'}->id } ) {
+      $self->AddTicket( %args );
+    }
+    $args{'Seen'}{ $args{'Ticket'}->id } = $args{'CurrentDepth'};
 
     return $args{'Graph'} if $args{'MaxDepth'} && $args{'CurrentDepth'} >= $args{'MaxDepth'};
 
