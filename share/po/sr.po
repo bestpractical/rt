@@ -21,7 +21,6 @@ msgstr ""
 msgid "#"
 msgstr ""
 
-#: lib/RT/URI/fsck_com_rt.pm:222 share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/Helpers/Autocomplete/Tickets:102 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:197 share/html/m/ticket/history:56 share/html/m/ticket/show:202
 #. ($Ticket->Id, $Ticket->Subject || '')
 #. ($Ticket->id, $Ticket->Subject)
 #. ($TicketObj->Id, $TicketObj->Subject || '')
@@ -29,259 +28,260 @@ msgstr ""
 #. ($object->Id, $object->Subject || '')
 #. ($t->Id, $t->Subject || '')
 #. ($ticket->Id, $ticket->Subject)
+#: lib/RT/URI/fsck_com_rt.pm:222 share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/Helpers/Autocomplete/Tickets:102 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:197 share/html/m/ticket/history:56 share/html/m/ticket/show:202
 msgid "#%1: %2"
 msgstr ""
 
-#: lib/RT/Transaction.pm:1033 lib/RT/Transaction.pm:1072
 #. ($self->Data)
+#: lib/RT/Transaction.pm:1033 lib/RT/Transaction.pm:1072
 msgid "%1"
 msgstr ""
 
-#: lib/RT/URI/fsck_com_rt.pm:229
 #. ($self->ObjectType, $object->Id)
+#: lib/RT/URI/fsck_com_rt.pm:229
 msgid "%1 #%2"
 msgstr ""
 
-#: lib/RT/Group.pm:131
 #. ($self->loc($class), $self->Instance, $self->Name)
+#: lib/RT/Group.pm:131
 msgid "%1 #%2 %3"
 msgstr ""
 
-#: share/html/Elements/ShowTransaction:128
 #. (loc($record_type), $Transaction->ObjectId)
+#: share/html/Elements/ShowTransaction:128
 msgid "%1 #%2:"
 msgstr ""
 
-#: lib/RT/URI/fsck_com_rt.pm:227
 #. ($self->ObjectType, $object->Id, $name)
+#: lib/RT/URI/fsck_com_rt.pm:227
 msgid "%1 #%2: %3"
 msgstr ""
 
-#: lib/RT/Tickets.pm:1395
 #. ($args{'FIELD'},        $args{'OPERATOR'}, $args{'VALUE'})
+#: lib/RT/Tickets.pm:1395
 msgid "%1 %2 %3"
 msgstr ""
 
-#: lib/RT/Date.pm:703
 #. ($wday,$mon,$mday,$year)
+#: lib/RT/Date.pm:703
 msgid "%1 %2 %3 %4"
 msgstr ""
 
-#: lib/RT/Date.pm:718
 #. ($wday,$mon,$mday,$hour,$min,$year)
+#: lib/RT/Date.pm:718
 msgid "%1 %2 %3 %4:%5 %6"
 msgstr ""
 
-#: lib/RT/Date.pm:715
 #. ($wday,$mon,$mday,$hour,$min,$sec,$year)
+#: lib/RT/Date.pm:715
 msgid "%1 %2 %3 %4:%5:%6 %7"
 msgstr ""
 
-#: lib/RT/Record.pm:2061 lib/RT/Transaction.pm:933 lib/RT/Transaction.pm:976
 #. ($cf->Name, $new_content)
 #. ($field, $new)
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
+#: lib/RT/Record.pm:2061 lib/RT/Transaction.pm:933 lib/RT/Transaction.pm:976
 msgid "%1 %2 added"
 msgstr "%1 %2 dodato"
 
-#: lib/RT/Record.pm:2068 lib/RT/Transaction.pm:939
 #. ($cf->Name, $old_content, $new_content)
 #. ($field, $old, $new)
+#: lib/RT/Record.pm:2068 lib/RT/Transaction.pm:939
 msgid "%1 %2 changed to %3"
 msgstr "%1 %2 promenjeno u %3"
 
-#: lib/RT/Record.pm:2065 lib/RT/Transaction.pm:936 lib/RT/Transaction.pm:982
 #. ($cf->Name, $old_content)
 #. ($field, $old)
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
+#: lib/RT/Record.pm:2065 lib/RT/Transaction.pm:936 lib/RT/Transaction.pm:982
 msgid "%1 %2 deleted"
 msgstr "%1 %2 obrisano"
 
-#: share/html/Widgets/SavedSearch:140
 #. (loc($self->{SearchType}), $self->{CurrentSearch}{Object}->Description)
+#: share/html/Widgets/SavedSearch:140
 msgid "%1 %2 deleted."
 msgstr "%1 %2 obrisano"
 
-#: lib/RT/Record/Role/Status.pm:256
 #. ($self->loc($column), $args{Value})
+#: lib/RT/Record/Role/Status.pm:256
 msgid "%1 %2 does not exist"
 msgstr ""
 
-#: lib/RT/Record/Role/Status.pm:261
 #. ($self->loc($column), $name)
+#: lib/RT/Record/Role/Status.pm:261
 msgid "%1 %2 is disabled"
 msgstr ""
 
-#: share/html/Widgets/SavedSearch:130
 #. (loc($self->{SearchType}), $args->{SavedSearchDescription})
+#: share/html/Widgets/SavedSearch:130
 msgid "%1 %2 saved."
 msgstr "%1 %2 sačuvan."
 
-#: share/html/Widgets/SavedSearch:114
 #. (loc($self->{SearchType}), $args->{SavedSearchDescription})
+#: share/html/Widgets/SavedSearch:114
 msgid "%1 %2 updated."
 msgstr "%1 %2 ажуриран"
 
-#: share/html/Elements/RT__Scrip/ColumnMap:102 share/html/Ticket/Elements/PreviewScrips:72
 #. ($_[0]->loc($_[0]->ConditionObj->Name),            $_[0]->loc($_[0]->ActionObj->Name),            $_[0]->loc($_[0]->Template),)
 #. (loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->Template))
+#: share/html/Elements/RT__Scrip/ColumnMap:102 share/html/Ticket/Elements/PreviewScrips:72
 msgid "%1 %2 with template %3"
 msgstr "%1 %2 sa šablonom %3"
 
-#: share/html/Ticket/Elements/ShowAttachments:62 share/html/m/ticket/show:319
 #. ($rev->CreatedAsString, $rev->FriendlyContentLength, $m->scomp('/Elements/ShowUser', User => $rev->CreatorObj))
 #. ($rev->CreatedAsString, $rev->FriendlyContentLength, $rev->CreatorObj->Name)
+#: share/html/Ticket/Elements/ShowAttachments:62 share/html/m/ticket/show:319
 msgid "%1 (%2) by %3"
 msgstr "%1 (%2) od %3"
 
-#: share/html/Approvals/Elements/Approve:72 share/html/Approvals/Elements/Approve:81 share/html/Ticket/Elements/SelectStatus:64 share/html/Ticket/Update.html:120 share/html/m/ticket/reply:77
 #. ($TicketObj->OwnerObj->Format)
 #. ($t->OwnerObj->Format)
 #. (loc($TicketObj->Status))
 #. (loc('Approve'))
 #. (loc('Deny'))
+#: share/html/Approvals/Elements/Approve:72 share/html/Approvals/Elements/Approve:81 share/html/Ticket/Elements/SelectStatus:64 share/html/Ticket/Update.html:120 share/html/m/ticket/reply:77
 msgid "%1 (Unchanged)"
 msgstr "%1 (Nepromenjen)"
 
-#: share/html/Dashboards/Elements/Deleted:57
 #. (($_->{description} || $_->{name}), $_->{pane})
+#: share/html/Dashboards/Elements/Deleted:57
 msgid "%1 (from pane %2)"
 msgstr "%1 (из панела %2)"
 
-#: bin/rt-crontool:333
 #. ("--log")
+#: bin/rt-crontool:333
 msgid "%1 - Adjust LogToSTDERR config option"
 msgstr ""
 
-#: bin/rt-crontool:308 bin/rt-crontool:315 bin/rt-crontool:321
 #. ("--action-arg", "--action")
 #. ("--condition-arg", "--condition")
 #. ("--search-arg", "--search")
+#: bin/rt-crontool:308 bin/rt-crontool:315 bin/rt-crontool:321
 msgid "%1 - An argument to pass to %2"
 msgstr "%1 - Argument za prosledjivanje %2"
 
-#: bin/rt-crontool:335
 #. ("--verbose")
+#: bin/rt-crontool:335
 msgid "%1 - Output status updates to STDOUT"
 msgstr "%1 - Izlazni status se ažurira u  STDOUT"
 
-#: bin/rt-crontool:327
 #. ("--transaction")
+#: bin/rt-crontool:327
 msgid "%1 - Specify if you want to use either 'first', 'last' or 'all' transactions"
 msgstr "%1 - Specifiraj da li hoces da koristiš  'prva, 'zadnja' ili 'sve' transakcije"
 
-#: bin/rt-crontool:324
 #. ("--template")
+#: bin/rt-crontool:324
 msgid "%1 - Specify name or id of template(s) you want to use"
 msgstr "%1 - Наведите име или идентификациони број шаблона који(е) желите да користите"
 
-#: bin/rt-crontool:318
 #. ("--action")
+#: bin/rt-crontool:318
 msgid "%1 - Specify the action module you want to use"
 msgstr "%1 - Specifiraj akcijski modul koji hoćeš da koristiš"
 
-#: bin/rt-crontool:330
 #. ("--transaction-type")
+#: bin/rt-crontool:330
 msgid "%1 - Specify the comma separated list of transactions' types you want to use"
 msgstr "%1 - Specifiraj listu transakcijskih tipova koji hoćeš da koristiš"
 
-#: bin/rt-crontool:312
 #. ("--condition")
+#: bin/rt-crontool:312
 msgid "%1 - Specify the condition module you want to use"
 msgstr "%1 - Specifiraj modul uslova koji hoćeš da koristiš"
 
-#: bin/rt-crontool:305
 #. ("--search")
+#: bin/rt-crontool:305
 msgid "%1 - Specify the search module you want to use"
 msgstr "%1 - Specifiraj modul pretrage koji hoćeš da koristiš"
 
-#: share/html/Search/Elements/PickObjectCFs:72
 #. (loc($Class))
+#: share/html/Search/Elements/PickObjectCFs:72
 msgid "%1 CFs"
 msgstr ""
 
-#: share/html/Elements/Footer:56 share/html/m/_elements/footer:51
 #. ('&#187;&#124;&#171;', $RT::VERSION, '2014', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #. ('', '', '2014', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#: share/html/Elements/Footer:56 share/html/m/_elements/footer:51
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr ""
 
-#: share/html/Admin/Elements/UpgradeHistory:58
 #. ($package)
+#: share/html/Admin/Elements/UpgradeHistory:58
 msgid "%1 Version"
 msgstr ""
 
-#: lib/RT/Record.pm:2101
 #. ($args{'Value'}, $cf->Name)
+#: lib/RT/Record.pm:2101
 msgid "%1 added as a value for %2"
 msgstr "%1 dodato kao vrednost za %2"
 
-#: lib/RT/Date.pm:433
 #. (join ' ', @res)
+#: lib/RT/Date.pm:433
 msgid "%1 ago"
 msgstr ""
 
-#: share/html/Install/DatabaseDetails.html:180
 #. ($RT::DatabaseName)
+#: share/html/Install/DatabaseDetails.html:180
 msgid "%1 already exists and has RT's tables in place, but does not contain RT's metadata. The 'Initialize Database' step later on can insert metadata into this existing database. If this is acceptable, click 'Customize Basics' below to continue customizing RT."
 msgstr "%1 već postoji i ima RT tablele na mestu, ali ne sadrži RT meta podatke. 'Inicijalizujte Databazu' može kasnije uneti meta podatke u ovu postojeću bazu podataka. Ukoliko je ovo prihvatljivo, klikni na 'Preradi Osnove' ispod da nastavis preradu RT-a."
 
-#: share/html/Install/DatabaseDetails.html:185
 #. ($RT::DatabaseName)
+#: share/html/Install/DatabaseDetails.html:185
 msgid "%1 already exists, but does not contain RT's tables or metadata. The 'Initialize Database' step later on can insert tables and metadata into this existing database. if this is acceptable, click 'Customize Basic' below to continue customizing RT."
 msgstr "%1 već postoji i ima RT tablele na mestu, ali ne sadrži RT meta podatke. 'Inicijalizujte Databazu' može kasnije uneti meta podatke u ovu postojeću bazu podataka. Ukoliko je ovo prihvatljivo, klikni na 'Preradi Osnove' ispod da nastavis preradu RT-a."
 
-#: lib/RT/ACE.pm:272
 #. ($princ_obj->Object->Name)
+#: lib/RT/ACE.pm:272
 msgid "%1 already has that right"
 msgstr "%1 већ има то право"
 
-#: lib/RT/Link.pm:176 lib/RT/Link.pm:184
 #. ($args{'Base'})
 #. ($args{'Target'})
+#: lib/RT/Link.pm:176 lib/RT/Link.pm:184
 msgid "%1 appears to be a local object, but can't be found in the database"
 msgstr "%1 nije pronađen u datoteci iako izgleda da je lokalni objekt"
 
-#: share/html/Install/DatabaseDetails.html:176
 #. ($RT::DatabaseName)
+#: share/html/Install/DatabaseDetails.html:176
 msgid "%1 appears to be fully initialized.  We won't need to create any tables or insert metadata, but you can continue to customize RT by clicking 'Customize Basics' below"
 msgstr "%1 izgleda da je potpuno inicijalizovana.  Mi nemamo potrebe da kreiramo tabele i unosimo meta podatke, ali Vi možete nastaviti da prerađujete RT klikom na 'Preradi Osnovu' ispod"
 
-#: lib/RT/Transaction.pm:695 share/html/Ticket/Elements/ShowDates:80 share/html/m/ticket/show:380
 #. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)
 #. ($Ticket->LastUpdatedAsString, $m->scomp('/Elements/ShowUser', User => $Ticket->LastUpdatedByObj))
 #. ($self->BriefDescription , $self->CreatorObj->Name)
+#: lib/RT/Transaction.pm:695 share/html/Ticket/Elements/ShowDates:80 share/html/m/ticket/show:380
 msgid "%1 by %2"
 msgstr "%1 od %2"
 
-#: lib/RT/Record/Role/Roles.pm:418
 #. ($self->loc($type))
+#: lib/RT/Record/Role/Roles.pm:418
 msgid "%1 cannot be a group"
 msgstr ""
 
-#: lib/RT/Record.pm:526 lib/RT/Transaction.pm:1082 lib/RT/Transaction.pm:1087 lib/RT/Transaction.pm:1101 lib/RT/Transaction.pm:1110 lib/RT/Transaction.pm:1150 lib/RT/Transaction.pm:838
 #. ($self->loc($self->Field) , $q1->Name , $q2->Name)
 #. ($self->loc($self->Field),                    ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'")
 #. ($self->loc($self->Field),                    ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")),                    ($self->NewValue? "'".$self->NewValue ."'" : $self->loc("(no value)")))
 #. ($self->loc( $args{'Field'} ),                ( $old_val ? '"' . $old_val . '"' : $self->loc("(no value)") ),                '"' . $self->__Value( $args{'Field'}) . '"',)
 #. ($self->Field,            ( $self->OldValue ? "'" . $self->OldValue . "'" : $no_value ),            "'" . $self->NewValue . "'")
 #. ($self->loc($self->Field), $t2->AsString, $t1->AsString)
+#: lib/RT/Record.pm:526 lib/RT/Transaction.pm:1082 lib/RT/Transaction.pm:1087 lib/RT/Transaction.pm:1101 lib/RT/Transaction.pm:1110 lib/RT/Transaction.pm:1150 lib/RT/Transaction.pm:838
 msgid "%1 changed from %2 to %3"
 msgstr "%1 promenjeno od %2 u %3"
 
-#: share/html/Admin/CustomFields/Modify.html:215 share/html/Admin/CustomFields/Modify.html:231
 #. (loc("Render Type"), $original, $RenderType)
 #. (loc("Field values source"), $original, $ValuesClass)
+#: share/html/Admin/CustomFields/Modify.html:215 share/html/Admin/CustomFields/Modify.html:231
 msgid "%1 changed from '%2' to '%3'"
 msgstr "%1 промењено из '%2' у '%3'"
 
-#: share/html/Search/Elements/EditSearches:203
 #. ($SavedSearch->{'Object'}->Description)
+#: share/html/Search/Elements/EditSearches:203
 msgid "%1 copy"
 msgstr "%1 kopija"
 
-#: share/html/Admin/Tools/Configuration.html:77
 #. ($meta->{'Source'}{'Extension'})
+#: share/html/Admin/Tools/Configuration.html:77
 msgid "%1 core config"
 msgstr "%1 основна подешавања"
 
@@ -289,28 +289,28 @@ msgstr "%1 основна подешавања"
 msgid "%1 could not be set to %2."
 msgstr "%1 ne može se namestiti na %2."
 
-#: lib/RT/Transaction.pm:803
 #. ($self->FriendlyObjectType)
+#: lib/RT/Transaction.pm:803
 msgid "%1 created"
 msgstr "%1 napravljen"
 
-#: lib/RT/Transaction.pm:817
 #. ($self->FriendlyObjectType)
+#: lib/RT/Transaction.pm:817
 msgid "%1 deleted"
 msgstr "%1 obrisan"
 
-#: lib/RT/Transaction.pm:811
 #. ($self->FriendlyObjectType)
+#: lib/RT/Transaction.pm:811
 msgid "%1 disabled"
 msgstr "%1 онемогућено"
 
-#: share/html/Install/Sendmail.html:86
 #. ($ARGS{SendmailPath})
+#: share/html/Install/Sendmail.html:86
 msgid "%1 doesn't exist."
 msgstr "%1 ne postoji."
 
-#: lib/RT/Transaction.pm:807
 #. ($self->FriendlyObjectType)
+#: lib/RT/Transaction.pm:807
 msgid "%1 enabled"
 msgstr "%1 омогућено"
 
@@ -318,72 +318,72 @@ msgstr "%1 омогућено"
 msgid "%1 highest priority tickets I own"
 msgstr "%1 zahtevi najvišeg prioriteta koje posedujem"
 
-#: bin/rt-crontool:300
 #. ($0)
+#: bin/rt-crontool:300
 msgid "%1 is a tool to act on tickets from an external scheduling tool, such as cron."
 msgstr "%1 je alat za obradu zahteva preko eksternog alata za automatizaciju poput crona"
 
-#: sbin/rt-email-digest:84
 #. ($0)
+#: sbin/rt-email-digest:84
 msgid "%1 is a utility, meant to be run from cron, that dispatches all deferred RT notifications as a per-user digest."
 msgstr "%1 je alat namenjen za pokretanje pomoću crona, koji raspoređuje odložene RT notifikacije po korisničkom izboru."
 
-#: lib/RT/Record/Role/Roles.pm:415
 #. ($principal->Object->Name, $self->loc($type))
+#: lib/RT/Record/Role/Roles.pm:415
 msgid "%1 is already a %2"
 msgstr ""
 
-#: lib/RT/Record/Role/Status.pm:264
 #. ($self->loc($column), $name)
+#: lib/RT/Record/Role/Status.pm:264
 msgid "%1 is already set to %2"
 msgstr ""
 
-#: lib/RT/Record/Role/Roles.pm:365 lib/RT/Record/Role/Roles.pm:373 share/html/Ticket/Create.html:424 share/html/Ticket/Update.html:290 share/html/m/ticket/create:189 share/html/m/ticket/reply:208
 #. ($email, $self->loc($type))
 #. ($name, $self->loc($type))
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
 #. ($email->format, loc(substr($field, 6)))
+#: lib/RT/Record/Role/Roles.pm:365 lib/RT/Record/Role/Roles.pm:373 share/html/Ticket/Create.html:424 share/html/Ticket/Update.html:290 share/html/m/ticket/create:189 share/html/m/ticket/reply:208
 msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
 msgstr "%1 је адреса на коју РТ прима пошту. Додавањем као '%2' би настала петља у слању"
 
-#: lib/RT/Ticket.pm:676
 #. ($principal->Object->Name,                         $self->loc($args{'Type'}))
+#: lib/RT/Ticket.pm:676
 msgid "%1 is no longer a %2 for this ticket."
 msgstr "%1 više nije %2 za ovaj zahtev."
 
-#: lib/RT/Record.pm:2166
 #. ($old_value, $cf->Name)
+#: lib/RT/Record.pm:2166
 msgid "%1 is no longer a value for custom field %2"
 msgstr "%1 više nije vrednost za sopstveno polje %2"
 
-#: lib/RT/Record/Role/Roles.pm:499
 #. ($principal->Object->Name, $self->loc($args{Type}))
+#: lib/RT/Record/Role/Roles.pm:499
 msgid "%1 is not a %2"
 msgstr ""
 
-#: lib/RT/Queue.pm:189 lib/RT/Record/Role/Lifecycle.pm:126
 #. ($args{'Lifecycle'})
 #. ($value)
+#: lib/RT/Queue.pm:189 lib/RT/Record/Role/Lifecycle.pm:126
 msgid "%1 is not a valid lifecycle"
 msgstr "%1 није важећи животни век"
 
-#: share/html/Elements/Crypt/KeyIssues:50
 #. (RT->Config->Get('Crypt')->{'Outgoing'})
+#: share/html/Elements/Crypt/KeyIssues:50
 msgid "%1 issues"
 msgstr ""
 
-#: share/html/Admin/Elements/ShowKeyInfo:61
 #. ($protocol, $res{'info'}{'id'} || $res{'info'}{'Fingerprint'})
+#: share/html/Admin/Elements/ShowKeyInfo:61
 msgid "%1 key '%2'"
 msgstr ""
 
-#: share/html/Articles/Elements/UpdatedArticles:48
 #. ($rows)
+#: share/html/Articles/Elements/UpdatedArticles:48
 msgid "%1 most recently updated articles"
 msgstr "%1 најскорије ажурираних чланака"
 
-#: share/html/Articles/Elements/NewestArticles:48
 #. ($rows)
+#: share/html/Articles/Elements/NewestArticles:48
 msgid "%1 newest articles"
 msgstr "%1 најновијих чланака"
 
@@ -395,29 +395,29 @@ msgstr "%1 најновијих карата без власника"
 msgid "%1 objects"
 msgstr "%1 објеката"
 
-#: lib/RT/Group.pm:1131 lib/RT/Transaction.pm:988
 #. ($self->loc($self->Name), $new_member_obj->Object->Name)
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
+#: lib/RT/Group.pm:1131 lib/RT/Transaction.pm:988
 msgid "%1 set to %2"
 msgstr ""
 
-#: share/html/Admin/Tools/Configuration.html:74
 #. ($meta->{'Source'}{'Extension'})
+#: share/html/Admin/Tools/Configuration.html:74
 msgid "%1 site config"
 msgstr "%1 подешавања сајта"
 
-#: lib/RT/SharedSetting.pm:259
 #. (ucfirst($self->ObjectName), $msg)
+#: lib/RT/SharedSetting.pm:259
 msgid "%1 update: %2"
 msgstr "%1 ажурирање: %2"
 
-#: lib/RT/SharedSetting.pm:252
 #. (ucfirst($self->ObjectName))
+#: lib/RT/SharedSetting.pm:252
 msgid "%1 update: Nothing changed"
 msgstr "%1 ажурирање: Ништа није промењено"
 
-#: lib/RT/Record.pm:519 lib/RT/SharedSetting.pm:256
 #. ($self->loc( $args{'Field'} ),)
+#: lib/RT/Record.pm:519 lib/RT/SharedSetting.pm:256
 msgid "%1 updated"
 msgstr "%1 ажурирано"
 
@@ -429,52 +429,52 @@ msgstr "%1-ових %2 објеката"
 msgid "%1's %2's %3 objects"
 msgstr "%1-ових %2-ових %3 објеката"
 
-#: share/html/Elements/EditPassword:55
 #. ($session{'CurrentUser'}->Name())
+#: share/html/Elements/EditPassword:55
 msgid "%1's current password"
 msgstr "Тренутна лозинка корисника %1"
 
-#: share/html/Dashboards/Elements/SelectPrivacy:63 share/html/Dashboards/Elements/SelectPrivacy:65 share/html/Dashboards/Elements/ShowDashboards:55
 #. ($object->Format)
 #. ($object->Name)
 #. ($Object->Name)
+#: share/html/Dashboards/Elements/SelectPrivacy:63 share/html/Dashboards/Elements/SelectPrivacy:65 share/html/Dashboards/Elements/ShowDashboards:55
 msgid "%1's dashboards"
 msgstr "Инструмент табла корисника %1"
 
-#: share/html/Admin/Users/Keys.html:48
 #. ($UserObj->Name)
+#: share/html/Admin/Users/Keys.html:48
 msgid "%1's encryption keys"
 msgstr ""
 
-#: share/html/Articles/Article/Elements/SelectSavedSearches:56 share/html/Elements/SavedSearches:56 share/html/Search/Elements/SearchPrivacy:56 share/html/Search/Elements/SearchPrivacy:58
 #. ($Object->Format)
 #. ($Object->Name)
 #. ($privacies{$privacy}->Name)
+#: share/html/Articles/Article/Elements/SelectSavedSearches:56 share/html/Elements/SavedSearches:56 share/html/Search/Elements/SearchPrivacy:56 share/html/Search/Elements/SearchPrivacy:58
 msgid "%1's saved searches"
 msgstr "Сачуване претраге корисника %1"
 
-#: lib/RT/Transaction.pm:637
 #. ($self)
+#: lib/RT/Transaction.pm:637
 msgid "%1: no attachment specified"
 msgstr "%1: додатак није наведен"
 
-#: lib/RT/Date.pm:710
 #. ($hour,$min)
+#: lib/RT/Date.pm:710
 msgid "%1:%2"
 msgstr ""
 
-#: lib/RT/Date.pm:707
 #. ($hour,$min,$sec)
+#: lib/RT/Date.pm:707
 msgid "%1:%2:%3"
 msgstr ""
 
-#: lib/RT/Attachment.pm:460
 #. ($size)
+#: lib/RT/Attachment.pm:460
 msgid "%1B"
 msgstr ""
 
-#: lib/RT/Attachment.pm:457
 #. (int( $size / 102.4 ) / 10)
+#: lib/RT/Attachment.pm:457
 msgid "%1KiB"
 msgstr "%1kB"
 
@@ -482,13 +482,13 @@ msgstr "%1kB"
 msgid "%1M"
 msgstr ""
 
-#: lib/RT/Attachment.pm:454
 #. (int( $size / 1024 / 102.4 ) / 10)
+#: lib/RT/Attachment.pm:454
 msgid "%1MiB"
 msgstr ""
 
-#: share/html/Elements/CreateTicket:54
 #. ($button_start, $button_end, $queue_selector)
+#: share/html/Elements/CreateTicket:54
 msgid "%1New ticket in%2&nbsp;%3"
 msgstr "%1 Нови листић у %2&nbsp;%3"
 
@@ -512,14 +512,14 @@ msgstr ""
 msgid "%1m"
 msgstr ""
 
-#: lib/RT/Date.pm:384 share/html/Admin/Tools/Queries.html:110 share/html/Admin/Tools/Queries.html:81
 #. (sprintf('%.4f', $duration))
 #. (sprintf('%.4f', $seconds))
+#: lib/RT/Date.pm:384 share/html/Admin/Tools/Queries.html:110 share/html/Admin/Tools/Queries.html:81
 msgid "%1s"
 msgstr "%1с"
 
-#: share/html/Articles/Elements/ShowTopicLink:61
 #. ($Articles->Count)
+#: share/html/Articles/Elements/ShowTopicLink:61
 msgid "%quant(%1,article,articles)"
 msgstr "%quant(%1, чланак)"
 
@@ -531,14 +531,14 @@ msgstr ""
 msgid "%quant(%1,hour,hours)"
 msgstr "%quant(%1, сат)"
 
-#: share/html/Ticket/Elements/ShowTime:51
 #. (sprintf("%.1f",$minutes / 60), $minutes)
+#: share/html/Ticket/Elements/ShowTime:51
 msgid "%quant(%1,hour,hours) (%quant(%2,minute,minutes))"
 msgstr ""
 
-#: lib/RT/Date.pm:391 share/html/Elements/ShowTransaction:135 share/html/Ticket/Elements/ShowTime:49
 #. ($Transaction->TimeTaken)
 #. ($minutes)
+#: lib/RT/Date.pm:391 share/html/Elements/ShowTransaction:135 share/html/Ticket/Elements/ShowTime:49
 msgid "%quant(%1,minute,minutes)"
 msgstr "%1 минута"
 
@@ -558,18 +558,18 @@ msgstr ""
 msgid "%quant(%1,year,years)"
 msgstr ""
 
-#: lib/RT/Queue.pm:323
 #. ($name)
+#: lib/RT/Queue.pm:323
 msgid "'%1' is not a valid name."
 msgstr "'%1' није важеће име"
 
-#: share/html/Articles/Article/Edit.html:121
 #. ($Class)
+#: share/html/Articles/Article/Edit.html:121
 msgid "'%1' isn't a valid class"
 msgstr ""
 
-#: share/html/Articles/Article/ExtractFromTicket.html:93 share/html/Articles/Article/ExtractIntoTopic.html:70
 #. ($Class)
+#: share/html/Articles/Article/ExtractFromTicket.html:93 share/html/Articles/Article/ExtractIntoTopic.html:70
 msgid "'%1' isn't a valid class identifier"
 msgstr "'%1' није важећи идентификатор класе"
 
@@ -589,9 +589,9 @@ msgstr "(Штиклирајте поља како би обрисали)"
 msgid "(Enter ticket ids or URLs, separated with spaces)"
 msgstr "(Унесите идентификаторе листића или њихове URL-ове, одвојене размацима)"
 
-#: share/html/Admin/Queues/Modify.html:89 share/html/Admin/Queues/Modify.html:92
 #. (RT->Config->Get('CommentAddress'))
 #. (RT->Config->Get('CorrespondAddress'))
+#: share/html/Admin/Queues/Modify.html:89 share/html/Admin/Queues/Modify.html:92
 msgid "(If left blank, will default to %1)"
 msgstr "(уколико се остави празно, подразумеваће се %1)"
 
@@ -655,8 +655,8 @@ msgstr "(нема вредност)"
 msgid "(no values)"
 msgstr "(нема вредности)"
 
-#: share/html/Elements/RT__Ticket/ColumnMap:138
 #. ($count)
+#: share/html/Elements/RT__Ticket/ColumnMap:138
 msgid "(pending %quant(%1,other ticket,other tickets))"
 msgstr "(у току %quant(%1, други листић))"
 
@@ -668,8 +668,8 @@ msgstr "(одобравање у току)"
 msgid "(required)"
 msgstr "(обавезно)"
 
-#: share/html/Elements/Crypt/SelectKeyForEncryption:53
 #. ($key->{'TrustTerse'})
+#: share/html/Elements/Crypt/SelectKeyForEncryption:53
 msgid "(trust: %1)"
 msgstr "(веровати: %1)"
 
@@ -693,8 +693,8 @@ msgstr "--template-id је застарео аргумент и не може б
 msgid "--transaction argument could be only 'first', 'last' or 'all'"
 msgstr "--transaction аргумент може бити само 'first', 'last' или 'all'"
 
-#: share/html/Elements/CollectionAsTable/Header:126
 #. (Content => $title))
+#: share/html/Elements/CollectionAsTable/Header:126
 msgid "/Elements/ScrubHTML"
 msgstr ""
 
@@ -726,8 +726,8 @@ msgstr "ACE није пронађен"
 msgid "ACEs can only be created and deleted."
 msgstr "ACE-ови могу бити само направљени и обрисани."
 
-#: share/html/Admin/Elements/UpgradeHistoryRow:62
 #. ($row->{filename})
+#: share/html/Admin/Elements/UpgradeHistoryRow:62
 msgid "ACL updates from %1"
 msgstr ""
 
@@ -747,9 +747,9 @@ msgstr "Контрола приступа"
 msgid "Action"
 msgstr "Акција"
 
-#: lib/RT/Scrip.pm:153 lib/RT/Scrip.pm:804
 #. ($args{'ScripAction'})
 #. ($value)
+#: lib/RT/Scrip.pm:153 lib/RT/Scrip.pm:804
 msgid "Action '%1' not found"
 msgstr "Акција '%1' није пронађена"
 
@@ -773,13 +773,13 @@ msgstr "Акције"
 msgid "Active Tickets"
 msgstr "Активни листићи"
 
-#: share/html/Tools/MyDay.html:53
 #. ($session{'CurrentUser'}->Name)
+#: share/html/Tools/MyDay.html:53
 msgid "Active tickets for %1"
 msgstr "Активни листићи за %1"
 
-#: share/html/Admin/Elements/EditRights:138
 #. (loc($AddPrincipal))
+#: share/html/Admin/Elements/EditRights:138
 msgid "Add %1"
 msgstr "Додај %1"
 
@@ -835,8 +835,8 @@ msgstr "Додај чланове"
 msgid "Add new watchers"
 msgstr "Додај нове посматраче"
 
-#: share/html/Admin/Elements/EditRights:204
 #. (loc($AddPrincipal))
+#: share/html/Admin/Elements/EditRights:204
 msgid "Add rights for this %1"
 msgstr "Додај права за овај %1"
 
@@ -864,18 +864,18 @@ msgstr "Додај, измени и обриши прилагођене вред
 msgid "Added"
 msgstr ""
 
-#: lib/RT/Ticket.pm:645
 #. ($principal->Object->Name, $self->loc($args{'Type'}))
+#: lib/RT/Ticket.pm:645
 msgid "Added %1 as a %2 for this ticket"
 msgstr "Додато %1 као %2 за овај листић"
 
-#: lib/RT/Queue.pm:610
 #. ($principal->Object->Name, $self->loc($args{'Type'}))
+#: lib/RT/Queue.pm:610
 msgid "Added %1 to members of %2 for this queue."
 msgstr "Додато %1 члановима %2 за овај ред"
 
-#: lib/RT/Class.pm:386
 #. ($cf->Name)
+#: lib/RT/Class.pm:386
 msgid "Added Subject Override: %1"
 msgstr ""
 
@@ -895,8 +895,8 @@ msgstr "Адреса1"
 msgid "Address2"
 msgstr "Адреса2"
 
-#: lib/RT/Transaction.pm:1159
 #. ($duration)
+#: lib/RT/Transaction.pm:1159
 msgid "Adjusted time worked by %quant(%1,minute,minutes)"
 msgstr ""
 
@@ -1036,8 +1036,8 @@ msgstr "Већ је шифровано"
 msgid "Always sends a message to the requestors independent of message sender"
 msgstr ""
 
-#: share/html/Articles/Elements/NeedsSetup:51
 #. (qq[<a href="http://bestpractical.com/rt/docs/$RT::MAJOR_VERSION.$RT::MINOR_VERSION/customizing/articles_introduction.html">], qq[<a href="http://bestpractical.com/rt/docs/$RT::MAJOR_VERSION.$RT::MINOR_VERSION/">], '</a>')
+#: share/html/Articles/Elements/NeedsSetup:51
 msgid "An %1introduction to getting started with articles%3 is available from %2Best Practical's online documentation%3."
 msgstr ""
 
@@ -1093,20 +1093,20 @@ msgstr "Примени промене"
 msgid "Approval"
 msgstr "Одобрење"
 
-#: share/html/Approvals/Display.html:64 share/html/Approvals/Elements/ShowDependency:65 share/html/Approvals/index.html:95
 #. ($Ticket->Id, $Ticket->Subject)
 #. ($link->BaseObj->Id, $link->BaseObj->Subject)
 #. ($ticket->id, $msg)
+#: share/html/Approvals/Display.html:64 share/html/Approvals/Elements/ShowDependency:65 share/html/Approvals/index.html:95
 msgid "Approval #%1: %2"
 msgstr "Одобрење #%1: %2"
 
-#: share/html/Approvals/index.html:84
 #. ($ticket->Id)
+#: share/html/Approvals/index.html:84
 msgid "Approval #%1: Notes not recorded due to a system error"
 msgstr "Одобрење #%1: Белешке нису снимљене због системске грешке"
 
-#: share/html/Approvals/index.html:82
 #. ($ticket->Id)
+#: share/html/Approvals/index.html:82
 msgid "Approval #%1: Notes recorded"
 msgstr "Одобрење #%1: Белешке снимљене"
 
@@ -1146,29 +1146,29 @@ msgstr "Апр"
 msgid "Are you sure you want to delete this article?"
 msgstr "Да ли сте сигурни да желите да обришете овај чланак?"
 
-#: lib/RT/URI/fsck_com_article.pm:215
 #. ($object->id)
+#: lib/RT/URI/fsck_com_article.pm:215
 msgid "Article #%1"
 msgstr ""
 
-#: share/html/Articles/Article/Delete.html:97
 #. ($ArticleObj->Id)
+#: share/html/Articles/Article/Delete.html:97
 msgid "Article #%1 deleted"
 msgstr "Чланак #%1: обрисан"
 
-#: share/html/Articles/Article/History.html:61
 #. ($id)
+#: share/html/Articles/Article/History.html:61
 msgid "Article #%1 not found"
 msgstr ""
 
-#: lib/RT/URI/fsck_com_article.pm:213 share/html/Articles/Article/Display.html:84 share/html/SelfService/Article/Display.html:66
 #. ($article->Id, $article->Name || loc("(no name)"))
 #. ($object->id, $object->Name)
+#: lib/RT/URI/fsck_com_article.pm:213 share/html/Articles/Article/Display.html:84 share/html/SelfService/Article/Display.html:66
 msgid "Article #%1: %2"
 msgstr "Чланак #%1: %2"
 
-#: lib/RT/Article.pm:216
 #. ($self->id)
+#: lib/RT/Article.pm:216
 msgid "Article %1 created"
 msgstr "Чланак %1 направљен"
 
@@ -1188,13 +1188,13 @@ msgstr "Чланак није пронађен"
 msgid "Articles"
 msgstr "Чланци"
 
-#: share/html/Articles/Topics.html:99
 #. ($currtopic->Name)
+#: share/html/Articles/Topics.html:99
 msgid "Articles in %1"
 msgstr "Чланци у %1"
 
-#: share/html/SelfService/Article/Search.html:64
 #. ($Articles_Content)
+#: share/html/SelfService/Article/Search.html:64
 msgid "Articles matching %1"
 msgstr "Чланци који одговарају %1"
 
@@ -1226,8 +1226,8 @@ msgstr "Приложена датотека"
 msgid "Attachment"
 msgstr "Прилог"
 
-#: share/html/Ticket/ShowEmailRecord.html:107
 #. ($Attachment)
+#: share/html/Ticket/ShowEmailRecord.html:107
 msgid "Attachment '%1' could not be loaded"
 msgstr "Прилог '%1' не може бити учитан"
 
@@ -1259,8 +1259,8 @@ msgstr "Авг"
 msgid "Automatic account setup failed"
 msgstr ""
 
-#: share/html/Admin/Tools/Theme.html:321
 #. ($valid_image_types)
+#: share/html/Admin/Tools/Theme.html:321
 msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 msgstr "Аутоматски сугерисане боје теме нису доступне за вашу слику. Могуће да је то због тога што сте отпремили тип слике који ваша инсталирана верзија ГД-а не подржава. Подржани типови су: %1. Можете поново превести libgd и GD.pm како би садржавали подршку за друге типове слика."
 
@@ -1320,8 +1320,8 @@ msgstr ""
 msgid "Back"
 msgstr "Назад"
 
-#: lib/RT/SharedSetting.pm:151
 #. ($id)
+#: lib/RT/SharedSetting.pm:151
 msgid "Bad privacy for attribute %1"
 msgstr "Лоша приватност за атрибут %1"
 
@@ -1349,8 +1349,8 @@ msgstr ""
 msgid "Bcc"
 msgstr "Невидљива копија (Bcc)"
 
-#: share/html/Articles/Elements/NeedsSetup:50
 #. (qq[<a href="@{[RT->Config->Get("WebPath")]}/Admin/Articles/">], '</a>')
+#: share/html/Articles/Elements/NeedsSetup:50
 msgid "Before Articles can be used, your RT administrator must %1create Classes%2, apply Article custom fields to them, and grant users rights on the classes and CFs."
 msgstr ""
 
@@ -1402,8 +1402,8 @@ msgstr "CCCGroup"
 msgid "CF"
 msgstr ""
 
-#: share/html/Search/Simple.html:87
 #. ('<strong>cf.Name:value</strong>')
+#: share/html/Search/Simple.html:87
 msgid "CFs may be searched using a similar syntax as above with %1."
 msgstr "CF-ови могу бити претраживани коришћењем сличне синтаксе као горе са %1."
 
@@ -1415,8 +1415,8 @@ msgstr ""
 msgid "Calculate values of"
 msgstr ""
 
-#: share/html/Search/Elements/EditSearches:176
 #. ($ARGS{'SavedSearchLoad'})
+#: share/html/Search/Elements/EditSearches:176
 msgid "Can not load saved search \"%1\""
 msgstr "Сачувана претрага \"%1\" не може бити учитана"
 
@@ -1448,13 +1448,13 @@ msgstr "Не може се повезати са обрисаним листић
 msgid "Can't merge a ticket into itself"
 msgstr ""
 
-#: share/html/index.html:127
 #. ($QueueObj->Name)
+#: share/html/index.html:127
 msgid "Can't quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
 msgstr ""
 
-#: share/html/Widgets/SavedSearch:133
 #. (loc($self->{SearchType}))
+#: share/html/Widgets/SavedSearch:133
 msgid "Can't save %1"
 msgstr "Не може се сачувати %1"
 
@@ -1546,8 +1546,8 @@ msgstr "Деца"
 msgid "Choose Database Engine"
 msgstr "Изаберите покретач (engine) базе података"
 
-#: share/html/Articles/Elements/BeforeMessageBox:97
 #. ($QueueObj->Name)
+#: share/html/Articles/Elements/BeforeMessageBox:97
 msgid "Choose from Topics for %1"
 msgstr "Изаберите из тема за %1"
 
@@ -1563,8 +1563,8 @@ msgstr "Класа"
 msgid "Class Name"
 msgstr "Име класе"
 
-#: share/html/Admin/Articles/Classes/Modify.html:149
 #. ($msg)
+#: share/html/Admin/Articles/Classes/Modify.html:149
 msgid "Class could not be created: %1"
 msgstr "Класа није могла бити креирана: %1"
 
@@ -1576,8 +1576,8 @@ msgstr "Идентификатор класе"
 msgid "Class is already applied Globally"
 msgstr "Класа је већ примењена глобално"
 
-#: lib/RT/Class.pm:317
 #. ($queue->Name)
+#: lib/RT/Class.pm:317
 msgid "Class is already applied to %1"
 msgstr "Класа је већ примењена на %1"
 
@@ -1665,9 +1665,9 @@ msgstr "Изврши скраћено"
 msgid "Condition"
 msgstr "Услов"
 
-#: lib/RT/Scrip.pm:180 lib/RT/Scrip.pm:825
 #. ($args{'ScripCondition'})
 #. ($value)
+#: lib/RT/Scrip.pm:180 lib/RT/Scrip.pm:825
 msgid "Condition '%1' not found"
 msgstr "Услов \"%1\" није пронађен"
 
@@ -1683,13 +1683,13 @@ msgstr "Услов одговара..."
 msgid "Condition, Action and Template"
 msgstr "Услов, Акција и Шаблон"
 
-#: share/html/Install/index.html:107
 #. ($file)
+#: share/html/Install/index.html:107
 msgid "Config file %1 is locked"
 msgstr "Датотека са подешавањима %1 је закључана"
 
-#: share/html/Admin/Queues/Modify.html:193
 #. ($QueueObj->Name)
+#: share/html/Admin/Queues/Modify.html:193
 msgid "Configuration for queue %1"
 msgstr "Поставке за ред %1"
 
@@ -1697,8 +1697,8 @@ msgstr "Поставке за ред %1"
 msgid "Connection succeeded"
 msgstr "Веза је успела"
 
-#: share/html/Errors/WebRemoteUser/Wrapper:67
 #. (qq[<a href="mailto:$owner">], $owner, '</a>')
+#: share/html/Errors/WebRemoteUser/Wrapper:67
 msgid "Contact your RT administrator via %1email to %2%3."
 msgstr ""
 
@@ -1742,19 +1742,19 @@ msgstr "Преписка је додата"
 msgid "Correspondence in HTML"
 msgstr ""
 
-#: lib/RT/Record.pm:2017 lib/RT/Record.pm:2088
 #. ($msg)
 #. ($value_msg)
+#: lib/RT/Record.pm:2017 lib/RT/Record.pm:2088
 msgid "Could not add new custom field value: %1"
 msgstr "Није успело додавање нове вредности прилагођеног поља: %1"
 
-#: lib/RT/Ticket.pm:2054
 #. ($msg)
+#: lib/RT/Ticket.pm:2054
 msgid "Could not change owner: %1"
 msgstr "Није успела промена власника: %1"
 
-#: share/html/Admin/CustomFields/Modify.html:184 share/html/Admin/Elements/EditCustomField:116
 #. ($msg)
+#: share/html/Admin/CustomFields/Modify.html:184 share/html/Admin/Elements/EditCustomField:116
 msgid "Could not create CustomField: %1"
 msgstr "Није успело прављење прилагођеног поља: %1"
 
@@ -1762,13 +1762,13 @@ msgstr "Није успело прављење прилагођеног поља
 msgid "Could not create group"
 msgstr "Није успело прављење групе"
 
-#: share/html/Articles/Article/Search.html:204
 #. ($msg)
+#: share/html/Articles/Article/Search.html:204
 msgid "Could not create search: %1"
 msgstr "Није успело прављење претраге: %1"
 
-#: share/html/Admin/Global/Template.html:84 share/html/Admin/Queues/Template.html:83
 #. ($msg)
+#: share/html/Admin/Global/Template.html:84 share/html/Admin/Queues/Template.html:83
 msgid "Could not create template: %1"
 msgstr "Није успело прављење шаблона: %1"
 
@@ -1780,23 +1780,23 @@ msgstr "Није успело прављење листића. Ред није �
 msgid "Could not create user"
 msgstr "Није успело прављење корисника"
 
-#: share/html/Articles/Article/Search.html:244
 #. ($searchname, $msg)
+#: share/html/Articles/Article/Search.html:244
 msgid "Could not delete search %1: %2"
 msgstr "Није успело брисање претраге %1: %2"
 
-#: lib/RT/Record/Role/Roles.pm:397
 #. ($name)
+#: lib/RT/Record/Role/Roles.pm:397
 msgid "Could not find group '%1'"
 msgstr ""
 
-#: lib/RT/Record/Role/Roles.pm:387
 #. ($name)
+#: lib/RT/Record/Role/Roles.pm:387
 msgid "Could not find or create user '%1'"
 msgstr ""
 
-#: lib/RT/SharedSetting.pm:244
 #. ($self->ObjectName)
+#: lib/RT/SharedSetting.pm:244
 msgid "Could not load %1 attribute"
 msgstr "Није успело учитавање %1 атрибута"
 
@@ -1804,8 +1804,8 @@ msgstr "Није успело учитавање %1 атрибута"
 msgid "Could not load Class %1"
 msgstr "Није успело учитавање класе %1"
 
-#: share/html/Admin/CustomFields/Objects.html:109
 #. ($id)
+#: share/html/Admin/CustomFields/Objects.html:109
 msgid "Could not load CustomField %1"
 msgstr "Није успело учитавање CustomField %1"
 
@@ -1813,28 +1813,28 @@ msgstr "Није успело учитавање CustomField %1"
 msgid "Could not load group"
 msgstr "Није успело учитавање групе"
 
-#: lib/RT/SharedSetting.pm:127
 #. ($privacy)
+#: lib/RT/SharedSetting.pm:127
 msgid "Could not load object for %1"
 msgstr "Није успело учитавање објекта за %1"
 
-#: share/html/Admin/Scrips/Objects.html:128
 #. ($id)
+#: share/html/Admin/Scrips/Objects.html:128
 msgid "Could not load scrip #%1"
 msgstr ""
 
-#: lib/RT/Record/Role/Roles.pm:479
 #. ($args{User})
+#: lib/RT/Record/Role/Roles.pm:479
 msgid "Could not load user '%1'"
 msgstr ""
 
-#: lib/RT/Record/Role/Roles.pm:426
 #. ($principal->Object->Name, $self->loc($type))
+#: lib/RT/Record/Role/Roles.pm:426
 msgid "Could not make %1 a %2"
 msgstr ""
 
-#: lib/RT/Record/Role/Roles.pm:507
 #. ($principal->Object->Name, $self->loc($args{Type}))
+#: lib/RT/Record/Role/Roles.pm:507
 msgid "Could not remove %1 as a %2"
 msgstr ""
 
@@ -1842,8 +1842,8 @@ msgstr ""
 msgid "Could not set user info"
 msgstr "Није успело постављање корисничких информација"
 
-#: lib/RT/Group.pm:1106
 #. ($col, $msg)
+#: lib/RT/Group.pm:1106
 msgid "Could not update column %1: %2"
 msgstr ""
 
@@ -1859,29 +1859,29 @@ msgstr "Није успело додавање прилога"
 msgid "Couldn't add member to group"
 msgstr "Није успело додавање члана групи"
 
-#: lib/RT/Scrip.pm:786
 #. ($method, $code, $error)
+#: lib/RT/Scrip.pm:786
 msgid "Couldn't compile %1 codeblock '%2': %3"
 msgstr "Није успело превођење %1 блока кода '%2': %3"
 
-#: lib/RT/Template.pm:828
 #. ($fi_text, $error)
+#: lib/RT/Template.pm:828
 msgid "Couldn't compile template codeblock '%1': %2"
 msgstr "Није успело превођење шаблона блока кода '%1': %2"
 
-#: lib/RT/Record.pm:2098 lib/RT/Record.pm:2148
 #. ($Msg)
 #. ($msg)
+#: lib/RT/Record.pm:2098 lib/RT/Record.pm:2148
 msgid "Couldn't create a transaction: %1"
 msgstr "Није успело прављење трансакције: %1"
 
-#: lib/RT/CustomField.pm:1690
 #. ($msg)
+#: lib/RT/CustomField.pm:1690
 msgid "Couldn't create record: %1"
 msgstr "Није успело прављење записа: %1"
 
-#: share/html/Dashboards/Modify.html:154
 #. ($id, $msg)
+#: share/html/Dashboards/Modify.html:154
 msgid "Couldn't delete dashboard %1: %2"
 msgstr "Није успело брисање инструмент табле %1: %2"
 
@@ -1901,53 +1901,53 @@ msgstr "Није успело проналажење тог директора"
 msgid "Couldn't find that value"
 msgstr "Није успело проналажење те вредности"
 
-#: share/html/Admin/Elements/ShowKeyInfo:56
 #. ($protocol)
+#: share/html/Admin/Elements/ShowKeyInfo:56
 msgid "Couldn't get %1 keys information"
 msgstr ""
 
-#: share/html/Admin/Articles/Classes/GroupRights.html:66 share/html/Admin/Articles/Classes/UserRights.html:65 share/html/Admin/CustomFields/UserRights.html:66
 #. ($id)
+#: share/html/Admin/Articles/Classes/GroupRights.html:66 share/html/Admin/Articles/Classes/UserRights.html:65 share/html/Admin/CustomFields/UserRights.html:66
 msgid "Couldn't load Class %1"
 msgstr "Није успело учитавање класе %1"
 
-#: lib/RT/CustomFieldValue.pm:112 lib/RT/CustomFieldValue.pm:86
 #. ($cf_id)
+#: lib/RT/CustomFieldValue.pm:112 lib/RT/CustomFieldValue.pm:86
 msgid "Couldn't load Custom Field #%1"
 msgstr "Није успело учитавање прилагођеног поља #%1"
 
-#: share/html/Admin/Elements/EditCustomFields:134 share/html/Admin/Elements/EditCustomFields:145
 #. ($cf_id)
+#: share/html/Admin/Elements/EditCustomFields:134 share/html/Admin/Elements/EditCustomFields:145
 msgid "Couldn't load CustomField #%1"
 msgstr "Није успело учитавање CustomField #%1"
 
-#: share/html/Admin/CustomFields/GroupRights.html:66
 #. ($id)
+#: share/html/Admin/CustomFields/GroupRights.html:66
 msgid "Couldn't load CustomField %1"
 msgstr "Није успело учитавање CustomField %1"
 
-#: lib/RT/Record/Role/Status.pm:291
 #. (blessed($self), $self->Id)
+#: lib/RT/Record/Role/Status.pm:291
 msgid "Couldn't load copy of %1 #%2"
 msgstr ""
 
-#: lib/RT/Ticket.pm:1090
 #. ($self->Id)
+#: lib/RT/Ticket.pm:1090
 msgid "Couldn't load copy of ticket #%1."
 msgstr "Није успело учитавање копије листића #%1."
 
-#: share/html/Dashboards/Modify.html:122 share/html/Dashboards/Queries.html:81 share/html/Dashboards/Render.html:100 share/html/Dashboards/Subscription.html:201
 #. ($id, $msg)
+#: share/html/Dashboards/Modify.html:122 share/html/Dashboards/Queries.html:81 share/html/Dashboards/Render.html:100 share/html/Dashboards/Subscription.html:201
 msgid "Couldn't load dashboard %1: %2"
 msgstr "Није успело учитавање инструмент табле %1: %2"
 
-#: share/html/Admin/Elements/MembershipsPage:100 share/html/Admin/Elements/MembershipsPage:110
 #. ($gid)
+#: share/html/Admin/Elements/MembershipsPage:100 share/html/Admin/Elements/MembershipsPage:110
 msgid "Couldn't load group #%1"
 msgstr "Није успело учитавање групе #%1"
 
-#: share/html/Admin/Groups/GroupRights.html:66 share/html/Admin/Groups/UserRights.html:67
 #. ($id)
+#: share/html/Admin/Groups/GroupRights.html:66 share/html/Admin/Groups/UserRights.html:67
 msgid "Couldn't load group %1"
 msgstr "Није успело учитавање групе %1"
 
@@ -1955,59 +1955,59 @@ msgstr "Није успело учитавање групе %1"
 msgid "Couldn't load link"
 msgstr "Није успело учитавање везе"
 
-#: lib/RT/Link.pm:240
 #. ($msg)
+#: lib/RT/Link.pm:240
 msgid "Couldn't load link: %1"
 msgstr "Није успело учитавање везе: %1"
 
-#: share/html/Admin/Articles/Classes/CustomFields.html:54 share/html/Admin/Queues/CustomFields.html:56 share/html/Admin/Users/CustomFields.html:56
 #. ($id)
+#: share/html/Admin/Articles/Classes/CustomFields.html:54 share/html/Admin/Queues/CustomFields.html:56 share/html/Admin/Users/CustomFields.html:56
 msgid "Couldn't load object %1"
 msgstr "Није успело учитавање објекта %1"
 
-#: lib/RT/Record/Role/Roles.pm:567
 #. ($msg)
+#: lib/RT/Record/Role/Roles.pm:567
 msgid "Couldn't load or create user: %1"
 msgstr "Није успело учитавање или прављење корисника: %1"
 
-#: share/html/Admin/Elements/MembershipsPage:89
 #. ($id)
+#: share/html/Admin/Elements/MembershipsPage:89
 msgid "Couldn't load principal #%1"
 msgstr ""
 
-#: lib/RT/Record/Role/Roles.pm:552
 #. ($msg)
+#: lib/RT/Record/Role/Roles.pm:552
 msgid "Couldn't load principal: %1"
 msgstr ""
 
-#: share/html/Admin/Queues/People.html:132
 #. ($id)
+#: share/html/Admin/Queues/People.html:132
 msgid "Couldn't load queue"
 msgstr "Није успело учитавање реда"
 
-#: share/html/Admin/Elements/EditScrips:107
 #. ($id)
+#: share/html/Admin/Elements/EditScrips:107
 msgid "Couldn't load queue #%1"
 msgstr "Није успело учитавање реда #%1"
 
-#: share/html/Admin/Queues/GroupRights.html:71 share/html/Admin/Queues/UserRights.html:72 share/html/Admin/Scrips/Create.html:101
 #. ($Queue)
 #. ($id)
+#: share/html/Admin/Queues/GroupRights.html:71 share/html/Admin/Queues/UserRights.html:72 share/html/Admin/Scrips/Create.html:101
 msgid "Couldn't load queue %1"
 msgstr "Није успело учитавање реда %1"
 
-#: share/html/Admin/Queues/Modify.html:188
 #. ($Name)
+#: share/html/Admin/Queues/Modify.html:188
 msgid "Couldn't load queue '%1'"
 msgstr "Није успело учитавање реда '%1'"
 
-#: share/html/Admin/Scrips/Modify.html:105
 #. ($id)
+#: share/html/Admin/Scrips/Modify.html:105
 msgid "Couldn't load scrip #%1"
 msgstr "Није успело учитавање цедуље #%1"
 
-#: share/html/Admin/Elements/EditTemplates:105
 #. ($id)
+#: share/html/Admin/Elements/EditTemplates:105
 msgid "Couldn't load template #%1"
 msgstr "Није успело учитавање шаблона #%1"
 
@@ -2015,8 +2015,8 @@ msgstr "Није успело учитавање шаблона #%1"
 msgid "Couldn't load the specified principal"
 msgstr "Није успело учитавање назначеног директора"
 
-#: lib/RT/Action/CreateTickets.pm:404
 #. ($id)
+#: lib/RT/Action/CreateTickets.pm:404
 msgid "Couldn't load ticket '%1'"
 msgstr "Није успело учитавање листића '%1'"
 
@@ -2024,9 +2024,9 @@ msgstr "Није успело учитавање листића '%1'"
 msgid "Couldn't load topic membership while trying to delete it"
 msgstr "Није успело учитавање чланства теме док је покушавано њено брисање"
 
-#: share/html/Ticket/Crypt.html:71 share/html/Ticket/Forward.html:104
 #. ($QuoteTransaction)
 #. ($id)
+#: share/html/Ticket/Crypt.html:71 share/html/Ticket/Forward.html:104
 msgid "Couldn't load transaction #%1"
 msgstr "Није успело учитавање трансакције #%1"
 
@@ -2034,63 +2034,63 @@ msgstr "Није успело учитавање трансакције #%1"
 msgid "Couldn't load user"
 msgstr "Није успело учитавање корисника"
 
-#: share/html/Admin/Users/Keys.html:95 share/html/User/Prefs.html:210
 #. ($id)
+#: share/html/Admin/Users/Keys.html:95 share/html/User/Prefs.html:210
 msgid "Couldn't load user #%1"
 msgstr "Није успело учитавање корисника #%1"
 
-#: share/html/User/Prefs.html:208
 #. ($id, $Name)
+#: share/html/User/Prefs.html:208
 msgid "Couldn't load user #%1 or user '%2'"
 msgstr "Није успело учитавање корисника #%1 или корисника '%2'"
 
-#: share/html/User/Prefs.html:212
 #. ($Name)
+#: share/html/User/Prefs.html:212
 msgid "Couldn't load user '%1'"
 msgstr "Није успело учитавање корисника '%1'"
 
-#: lib/RT/Link.pm:229
 #. ($args{Base})
+#: lib/RT/Link.pm:229
 msgid "Couldn't parse Base URI: %1"
 msgstr "Није успело рашчлањивање Base URI: %1"
 
-#: lib/RT/Link.pm:233
 #. ($args{Target})
+#: lib/RT/Link.pm:233
 msgid "Couldn't parse Target URI: %1"
 msgstr "Није успело рашчлањивање Target URI: %1"
 
-#: lib/RT/Group.pm:1088
 #. ($msg)
+#: lib/RT/Group.pm:1088
 msgid "Couldn't remove previous member: %1"
 msgstr ""
 
-#: lib/RT/Attachment.pm:835
 #. ($msg)
+#: lib/RT/Attachment.pm:835
 msgid "Couldn't replace content with decrypted data: %1"
 msgstr "Није успела замена садржаја са дешифрованим подацима: %1"
 
-#: lib/RT/Attachment.pm:784
 #. ($msg)
+#: lib/RT/Attachment.pm:784
 msgid "Couldn't replace content with encrypted data: %1"
 msgstr "Није успела замена садржаја са шифрованим подацима: %1"
 
-#: lib/RT/Record.pm:1394 lib/RT/Record.pm:1531
 #. ($remote_link)
+#: lib/RT/Record.pm:1394 lib/RT/Record.pm:1531
 msgid "Couldn't resolve '%1' into a link."
 msgstr ""
 
-#: lib/RT/Link.pm:155
 #. ($args{'Base'})
+#: lib/RT/Link.pm:155
 msgid "Couldn't resolve base '%1' into a URI."
 msgstr "Није успело разрешавање основног '%1' у URI."
 
-#: lib/RT/Link.pm:162
 #. ($args{'Target'})
+#: lib/RT/Link.pm:162
 msgid "Couldn't resolve target '%1' into a URI."
 msgstr "Није успело разрешавање '%1' у URI"
 
-#: lib/RT/Record/Role/Roles.pm:616
 #. ($role, $msg)
+#: lib/RT/Record/Role/Roles.pm:616
 msgid "Couldn't set %1 watcher: %2"
 msgstr "Није успело постављање %1 посматрача: %2"
 
@@ -2122,8 +2122,8 @@ msgstr "Направи класу"
 msgid "Create a CustomField"
 msgstr "Направи CustomField"
 
-#: share/html/Admin/Queues/CustomField.html:65
 #. ($QueueObj->Name())
+#: share/html/Admin/Queues/CustomField.html:65
 msgid "Create a CustomField for queue %1"
 msgstr "Направи CustomField за ред %1"
 
@@ -2147,8 +2147,8 @@ msgstr "Направи нову инструмент таблу"
 msgid "Create a new group"
 msgstr "Направи нову групу"
 
-#: share/html/Admin/Queues/Template.html:110
 #. ($QueueObj->Name)
+#: share/html/Admin/Queues/Template.html:110
 msgid "Create a new template for queue %1"
 msgstr "Направи нови шаблон за ред %1"
 
@@ -2164,8 +2164,8 @@ msgstr "Направи новог корисника"
 msgid "Create a queue"
 msgstr "Направи ред"
 
-#: share/html/Admin/Scrips/Create.html:107
 #. ($queue_obj->Name)
+#: share/html/Admin/Scrips/Create.html:107
 msgid "Create a scrip and add to queue %1"
 msgstr ""
 
@@ -2249,9 +2249,9 @@ msgstr "Направљено"
 msgid "Created By"
 msgstr "Аутори"
 
-#: share/html/Admin/CustomFields/Modify.html:189 share/html/Admin/Elements/EditCustomField:120
 #. ($CustomFieldObj->Name)
 #. ($CustomFieldObj->Name())
+#: share/html/Admin/CustomFields/Modify.html:189 share/html/Admin/Elements/EditCustomField:120
 msgid "Created CustomField %1"
 msgstr "Направљено ПрилагођеноПоље %1"
 
@@ -2259,8 +2259,8 @@ msgstr "Направљено ПрилагођеноПоље %1"
 msgid "Created by"
 msgstr "Аутори"
 
-#: share/html/Articles/Article/Search.html:200
 #. ($search->Name)
+#: share/html/Articles/Article/Search.html:200
 msgid "Created search %1"
 msgstr "Направљена претрага %1"
 
@@ -2312,13 +2312,13 @@ msgstr ""
 msgid "Custom Fields"
 msgstr "Прилагођена поља"
 
-#: share/html/Admin/CustomFields/index.html:52
 #. ($Type)
+#: share/html/Admin/CustomFields/index.html:52
 msgid "Custom Fields for %1"
 msgstr "Прилагођена поља за %1"
 
-#: share/html/Admin/Queues/CustomFields.html:61
 #. ($Object->Name)
+#: share/html/Admin/Queues/CustomFields.html:61
 msgid "Custom Fields for queue %1"
 msgstr "Прилагођена поља за ред %1"
 
@@ -2334,39 +2334,39 @@ msgstr "Код за припрему прилагођене акције"
 msgid "Custom condition"
 msgstr "Прилагођени услов"
 
-#: share/html/Admin/Elements/EditCustomFields:109 share/html/Admin/Elements/EditCustomFields:120
 #. ($MoveCustomFieldDown)
 #. ($MoveCustomFieldUp)
+#: share/html/Admin/Elements/EditCustomFields:109 share/html/Admin/Elements/EditCustomFields:120
 msgid "Custom field #%1 is not applied to this object"
 msgstr "Прилагођено поље #%1 није примењено на овај објекат"
 
-#: lib/RT/Tickets.pm:2213
 #. ($CF->Name, $args{OPERATOR}, $args{VALUE})
+#: lib/RT/Tickets.pm:2213
 msgid "Custom field %1 %2 %3"
 msgstr "Прилагођено поље %1 %2 %3"
 
-#: lib/RT/Record.pm:1952
 #. (ref $args{'Field'} ? $args{'Field'}->id : $args{'Field'})
+#: lib/RT/Record.pm:1952
 msgid "Custom field %1 does not apply to this object"
 msgstr "Прилагођено поље %1 није примењено на овај објекат"
 
-#: lib/RT/Tickets.pm:2207
 #. ($CF->Name)
+#: lib/RT/Tickets.pm:2207
 msgid "Custom field %1 has a value."
 msgstr "Прилагођено поље %1 има вредност"
 
-#: lib/RT/Tickets.pm:2203
 #. ($CF->Name)
+#: lib/RT/Tickets.pm:2203
 msgid "Custom field %1 has no value."
 msgstr "Прилагођено поље %1 нема вредност"
 
-#: lib/RT/Record.pm:1941 lib/RT/Record.pm:2129
 #. ($args{'Field'})
+#: lib/RT/Record.pm:1941 lib/RT/Record.pm:2129
 msgid "Custom field %1 not found"
 msgstr "Прилагођено поље %1 није пронађено"
 
-#: lib/RT/CustomField.pm:1838
 #. ($args{'Content'}, $self->Name)
+#: lib/RT/CustomField.pm:1838
 msgid "Custom field value %1 could not be found for custom field %2"
 msgstr "Вредност прилагођеног поља %1 није пронађено за прилагођено поље %2"
 
@@ -2438,23 +2438,23 @@ msgstr "Дневни сажети преглед"
 msgid "Dashboard"
 msgstr "Инструмент табла"
 
-#: share/html/Dashboards/Modify.html:143
 #. ($Dashboard->Name, $msg)
+#: share/html/Dashboards/Modify.html:143
 msgid "Dashboard %1 could not be updated: %2"
 msgstr ""
 
-#: share/html/Dashboards/Modify.html:140
 #. ($Dashboard->Name)
+#: share/html/Dashboards/Modify.html:140
 msgid "Dashboard %1 updated"
 msgstr ""
 
-#: share/html/Dashboards/Modify.html:110
 #. ($msg)
+#: share/html/Dashboards/Modify.html:110
 msgid "Dashboard could not be created: %1"
 msgstr "Није успело креирање инструмент табле: %1"
 
-#: share/html/Dashboards/Queries.html:261
 #. ($msg)
+#: share/html/Dashboards/Queries.html:261
 msgid "Dashboard could not be updated: %1"
 msgstr "Није успело ажурирање инструмент табле: %1"
 
@@ -2470,8 +2470,8 @@ msgstr "Инструмент табле"
 msgid "Dashboards in menu"
 msgstr ""
 
-#: share/html/Admin/Users/DashboardsInMenu.html:71
 #. ($UserObj->Name)
+#: share/html/Admin/Users/DashboardsInMenu.html:71
 msgid "Dashboards in menu for the user %1"
 msgstr ""
 
@@ -2547,8 +2547,8 @@ msgstr "Подразумевани ред"
 msgid "Default reminder template"
 msgstr ""
 
-#: share/html/Widgets/Form/Integer:61 share/html/Widgets/Form/String:69
 #. ($DefaultValue)
+#: share/html/Widgets/Form/Integer:61 share/html/Widgets/Form/String:69
 msgid "Default: %1"
 msgstr "Подразумевано: %1"
 
@@ -2568,8 +2568,8 @@ msgstr "Обриши"
 msgid "Delete Template"
 msgstr "Обриши шаблон"
 
-#: share/html/Articles/Article/Delete.html:101
 #. ($ArticleObj->Id)
+#: share/html/Articles/Article/Delete.html:101
 msgid "Delete article #%1"
 msgstr "Обриши чланак #%1"
 
@@ -2577,8 +2577,8 @@ msgstr "Обриши чланак #%1"
 msgid "Delete articles in this class"
 msgstr "Обриши артикле у овој класи"
 
-#: lib/RT/SharedSetting.pm:287
 #. ($msg)
+#: lib/RT/SharedSetting.pm:287
 msgid "Delete failed: %1"
 msgstr "Брисање неуспело: %1"
 
@@ -2606,8 +2606,8 @@ msgstr "Обриши листиће"
 msgid "Delete values"
 msgstr "Обриши вредности"
 
-#: lib/RT/SharedSetting.pm:285
 #. ($self->ObjectName)
+#: lib/RT/SharedSetting.pm:285
 msgid "Deleted %1"
 msgstr "Обрисано %1"
 
@@ -2619,8 +2619,8 @@ msgstr "Обрисани упити"
 msgid "Deleted saved search"
 msgstr "Обрисане сачуване претраге"
 
-#: share/html/Articles/Article/Search.html:233
 #. ($searchname)
+#: share/html/Articles/Article/Search.html:233
 msgid "Deleted search %1"
 msgstr "Обрисане претраге %1"
 
@@ -2644,23 +2644,23 @@ msgstr "Од овога зависе"
 msgid "DependedOnBy"
 msgstr "ОдОвогаЗависе"
 
-#: lib/RT/Transaction.pm:1014
 #. ($value)
+#: lib/RT/Transaction.pm:1014
 msgid "Dependency by %1 added"
 msgstr "Зависност од %1 додата"
 
-#: lib/RT/Transaction.pm:1056
 #. ($value)
+#: lib/RT/Transaction.pm:1056
 msgid "Dependency by %1 deleted"
 msgstr "Зависност од %1 обрисана"
 
-#: lib/RT/Transaction.pm:1011
 #. ($value)
+#: lib/RT/Transaction.pm:1011
 msgid "Dependency on %1 added"
 msgstr "Зависност за %1 додата"
 
-#: lib/RT/Transaction.pm:1053
 #. ($value)
+#: lib/RT/Transaction.pm:1053
 msgid "Dependency on %1 deleted"
 msgstr "Зависност за %1 обрисана"
 
@@ -2712,8 +2712,8 @@ msgstr "Приказ"
 msgid "Display Access Control List"
 msgstr "Прикажи листу контроле приступа"
 
-#: share/html/SelfService/Article/Display.html:48
 #. ($id)
+#: share/html/SelfService/Article/Display.html:48
 msgid "Display Article %1"
 msgstr "Прикажи чланак %1"
 
@@ -2737,8 +2737,8 @@ msgstr ""
 msgid "Display ticket after \"Quick Create\""
 msgstr ""
 
-#: share/html/Elements/Footer:59
 #. ('<a href="http://www.gnu.org/licenses/gpl-2.0.html">', '</a>')
+#: share/html/Elements/Footer:59
 msgid "Distributed under %1version 2 of the GNU GPL%2."
 msgstr "Дистрибуирано под %1 верзија 2 ГНУ ГПЛ %2"
 
@@ -2790,8 +2790,8 @@ msgstr "Рок"
 msgid "DueRelative"
 msgstr "РелативанРок"
 
-#: share/html/Install/Initialize.html:132 share/html/Install/Initialize.html:94
 #. ($msg)
+#: share/html/Install/Initialize.html:132 share/html/Install/Initialize.html:94
 msgid "ERROR: %1"
 msgstr "ГРЕШКА: %1"
 
@@ -2811,8 +2811,8 @@ msgstr "Уреди"
 msgid "Edit Custom Fields"
 msgstr "Уреди прилагођена поља"
 
-#: share/html/Admin/Articles/Classes/CustomFields.html:59 share/html/Admin/Users/CustomFields.html:61
 #. ($Object->Name)
+#: share/html/Admin/Articles/Classes/CustomFields.html:59 share/html/Admin/Users/CustomFields.html:61
 msgid "Edit Custom Fields for %1"
 msgstr "Уреди прилагођена поља за %1"
 
@@ -2856,19 +2856,19 @@ msgstr "Уреди поредак глобалних тема"
 msgid "Edit system templates"
 msgstr "Уреди системске шаблоне"
 
-#: share/html/Admin/Articles/Classes/Topics.html:60
 #. ($ClassObj->Name)
+#: share/html/Admin/Articles/Classes/Topics.html:60
 msgid "Edit topic hierarchy for %1"
 msgstr "Уреди поредак тема за %1"
 
-#: share/html/Admin/CustomFields/Modify.html:195 share/html/Admin/Elements/EditCustomField:123
 #. ($CustomFieldObj->Name)
 #. ($CustomFieldObj->Name())
+#: share/html/Admin/CustomFields/Modify.html:195 share/html/Admin/Elements/EditCustomField:123
 msgid "Editing CustomField %1"
 msgstr "Уређивање ПрилагођеноПоље %1"
 
-#: share/html/Admin/Groups/Members.html:55
 #. ($Group->Name)
+#: share/html/Admin/Groups/Members.html:55
 msgid "Editing membership for group %1"
 msgstr "Урељивање чланства за групу %1"
 
@@ -2880,8 +2880,8 @@ msgstr "ЕфективниИдентификатор"
 msgid "Either base or target must be specified"
 msgstr "Морају бити назначени или основа или одредиште"
 
-#: share/html/Elements/ShowSearch:67
 #. ($m->interp->apply_escapes($SavedSearch, 'h'))
+#: share/html/Elements/ShowSearch:67
 msgid "Either you have no rights to view saved search %1 or identifier is incorrect"
 msgstr "Или немате права да прегледате сачувану претрагу %1 или идентификатор није тачан"
 
@@ -2901,8 +2901,8 @@ msgstr "Адреса е-поште"
 msgid "Email Digest"
 msgstr "Сажетак е-поште"
 
-#: share/html/Ticket/ShowEmailRecord.html:116
 #. ($AttachmentObj->TransactionObj->ObjectId,        $AttachmentObj->Id)
+#: share/html/Ticket/ShowEmailRecord.html:116
 msgid "Email Source for Ticket %1, Attachment %2"
 msgstr ""
 
@@ -2966,8 +2966,8 @@ msgstr "Омогућени упити"
 msgid "Enabled queues matching search criteria"
 msgstr "Омогућени редови који одговарају критеријуму претраге"
 
-#: share/html/Admin/Articles/Classes/Modify.html:207 share/html/Admin/Elements/EditCustomField:139
 #. (loc_fuzzy($msg))
+#: share/html/Admin/Articles/Classes/Modify.html:207 share/html/Admin/Elements/EditCustomField:139
 msgid "Enabled status %1"
 msgstr "Омогућен статус %1"
 
@@ -2983,8 +2983,8 @@ msgstr "Шифруј подразумевано"
 msgid "Encrypt/Decrypt"
 msgstr "Шифруј/Дешифруј"
 
-#: share/html/Ticket/Crypt.html:99
 #. ($id, $txn->Ticket)
+#: share/html/Ticket/Crypt.html:99
 msgid "Encrypt/Decrypt transaction #%1 of ticket #%2"
 msgstr "Шифруј/Дешифруј трансакцију #%1 листића #%2"
 
@@ -3072,8 +3072,8 @@ msgstr "Унесите до %1 вредности"
 msgid "Enter up to %quant(%1,value,values) with autocompletion"
 msgstr "Унесите до %1 вредности са аутоматским довршавањем"
 
-#: share/html/Search/Simple.html:77
 #. (map { "<strong>$_</strong>" } qw(initial active inactive any))
+#: share/html/Search/Simple.html:77
 msgid "Entering %1, %2, %3, or %4 limits results to tickets with one of the respective types of statuses.  Any individual status name limits results to just the statuses named."
 msgstr "Уношењем %1, %2, %3 или %4 ограничавају се резултати на листиће који имају један од типова статуса, тим редом. Било које појединачно име статуса ограничава резултате на само оне статусе који су именовани."
 
@@ -3089,8 +3089,8 @@ msgstr "Грeшкa"
 msgid "Error loading attachment"
 msgstr ""
 
-#: share/html/Search/Chart:460
 #. ($error)
+#: share/html/Search/Chart:460
 msgid "Error plotting chart: %1"
 msgstr ""
 
@@ -3114,8 +3114,8 @@ msgstr ""
 msgid "Error: cannot change privacy value of existing search"
 msgstr "Грешка: није успела промена вредности за приватност постојеће претраге"
 
-#: share/html/Articles/Article/Search.html:172
 #. ($ARGS{'LoadSavedSearch'}, $msg)
+#: share/html/Articles/Article/Search.html:172
 msgid "Error: could not load saved search %1: %2"
 msgstr "Грешка: није успело учитавање сачуване претраге %1: %2"
 
@@ -3127,8 +3127,8 @@ msgstr "Грешка: нема приватног кључа"
 msgid "Error: public key"
 msgstr "Грешка: јавни кључ"
 
-#: share/html/Articles/Article/Search.html:224
 #. ($search->Name, $msg)
+#: share/html/Articles/Article/Search.html:224
 msgid "Error: search %1 not updated: %2"
 msgstr "Грешка: претрага %1 није ажурирана: %2"
 
@@ -3180,13 +3180,13 @@ msgstr "Издвоји чланак"
 msgid "Extract Subject Tag"
 msgstr "Издвоји ознаку теме"
 
-#: share/html/Articles/Article/ExtractIntoClass.html:48 share/html/Articles/Article/ExtractIntoTopic.html:48
 #. ($Ticket)
+#: share/html/Articles/Article/ExtractIntoClass.html:48 share/html/Articles/Article/ExtractIntoTopic.html:48
 msgid "Extract a new article from ticket #%1"
 msgstr "Издвој нови чланак из листића #%1"
 
-#: share/html/Articles/Article/ExtractFromTicket.html:48
 #. ($Ticket, $ClassObj->Name)
+#: share/html/Articles/Article/ExtractFromTicket.html:48
 msgid "Extract article from ticket #%1 into class %2"
 msgstr "Издвој чланак из листића #%1 у класу %2"
 
@@ -3194,13 +3194,13 @@ msgstr "Издвој чланак из листића #%1 у класу %2"
 msgid "Extract tags from a Transaction's subject and add them to the Ticket's subject."
 msgstr "Издвоји ознаке из предмета трансакције и додај их у тему листића."
 
-#: share/html/Install/DatabaseDetails.html:197
 #. ($DBI::errstr)
+#: share/html/Install/DatabaseDetails.html:197
 msgid "Failed to connect to database: %1"
 msgstr "Неуспело повезивање са базом: %1"
 
-#: lib/RT/SharedSetting.pm:219
 #. ($self->loc( $self->ObjectName ))
+#: lib/RT/SharedSetting.pm:219
 msgid "Failed to create %1 attribute"
 msgstr "Неуспело прављење %1 атрибута"
 
@@ -3212,23 +3212,23 @@ msgstr "Неуспело проналажење псеудогрупе 'Прив
 msgid "Failed to find 'Unprivileged' users pseudogroup"
 msgstr "Неуспело проналажење псеудогрупе 'Неривилегованих' корисника"
 
-#: lib/RT/SharedSetting.pm:123
 #. ($self->ObjectName, $id)
+#: lib/RT/SharedSetting.pm:123
 msgid "Failed to load %1 %2"
 msgstr "Неуспело учитавање %1 %2"
 
-#: lib/RT/SharedSetting.pm:147
 #. ($self->ObjectName, $id, $msg)
+#: lib/RT/SharedSetting.pm:147
 msgid "Failed to load %1 %2: %3"
 msgstr "неуспело учитавање %1 %2: %3"
 
-#: bin/rt-crontool:292
 #. ($modname, $@)
+#: bin/rt-crontool:292
 msgid "Failed to load module %1. (%2)"
 msgstr "Неуспело учитавање модула %1. (%2)"
 
-#: lib/RT/SharedSetting.pm:202
 #. ($privacy)
+#: lib/RT/SharedSetting.pm:202
 msgid "Failed to load object for %1"
 msgstr "Неуспело учитавање објекта за %1"
 
@@ -3236,8 +3236,8 @@ msgstr "Неуспело учитавање објекта за %1"
 msgid "Failed to load template"
 msgstr "Неуспело учитавање шаблона"
 
-#: lib/RT/Reminders.pm:122
 #. ($self->Ticket)
+#: lib/RT/Reminders.pm:122
 msgid "Failed to load ticket %1"
 msgstr "Неуспело учитавање листића %1"
 
@@ -3349,13 +3349,13 @@ msgstr "Завршити"
 msgid "First"
 msgstr "Прво"
 
-#: share/html/Elements/LoginHelp:49
 #. (RT->Config->Get('OwnerEmail'))
+#: share/html/Elements/LoginHelp:49
 msgid "For local help, please contact %1"
 msgstr ""
 
-#: share/html/Search/Simple.html:91
 #. ($link_start, $link_end)
+#: share/html/Search/Simple.html:91
 msgid "For the full power of RT's searches, please visit the %1search builder interface%2."
 msgstr "За пуну моћ РТ-ових претрага, молим посетите %1 интерфејс за прављење претрага %2."
 
@@ -3391,23 +3391,23 @@ msgstr "Проследи листић"
 msgid "Forward messages outside of RT"
 msgstr "Проследи поруке ван РТ-а"
 
-#: share/html/Ticket/Forward.html:123
 #. ($TicketObj->id)
+#: share/html/Ticket/Forward.html:123
 msgid "Forward ticket #%1"
 msgstr "Проследи поруку #%1"
 
-#: share/html/Ticket/Forward.html:122
 #. ($txn->id)
+#: share/html/Ticket/Forward.html:122
 msgid "Forward transaction #%1"
 msgstr "Проследи трансакцију #%1"
 
-#: lib/RT/Transaction.pm:852
 #. ($self->Field, $recipients,            [\'<a href="#txn-', $self->Field, \'">'], \'</a>')
+#: lib/RT/Transaction.pm:852
 msgid "Forwarded %3Transaction #%1%4 to %2"
 msgstr ""
 
-#: lib/RT/Transaction.pm:860
 #. ($recipients)
+#: lib/RT/Transaction.pm:860
 msgid "Forwarded Ticket to %1"
 msgstr "Прослеђена порука за %1"
 
@@ -3419,9 +3419,9 @@ msgstr ""
 msgid "Forwarded ticket message"
 msgstr ""
 
-#: share/html/Search/Results.html:150 share/html/m/_elements/ticket_list:83
 #. ($ticketcount)
 #. ($collection->CountAll)
+#: share/html/Search/Results.html:150 share/html/m/_elements/ticket_list:83
 msgid "Found %quant(%1,ticket,tickets)"
 msgstr "Пронађен %quant(%1, листић)"
 
@@ -3469,8 +3469,8 @@ msgstr "Почетак"
 msgid "Give output even on messages successfully sent"
 msgstr ""
 
-#: lib/RT/Transaction.pm:1123 lib/RT/Transaction.pm:1135 lib/RT/Transaction.pm:970
 #. ($self->_FormatUser($New))
+#: lib/RT/Transaction.pm:1123 lib/RT/Transaction.pm:1135 lib/RT/Transaction.pm:970
 msgid "Given to %1"
 msgstr "Дато %1"
 
@@ -3494,18 +3494,18 @@ msgstr "Глобална прилагођена поља поставки"
 msgid "Global dashboards in menu saved."
 msgstr ""
 
-#: lib/RT/Scrip.pm:163
 #. ($args{'Template'})
+#: lib/RT/Scrip.pm:163
 msgid "Global or queue specific template '%1' not found"
 msgstr ""
 
-#: share/html/Admin/Global/MyRT.html:100
 #. ($pane)
+#: share/html/Admin/Global/MyRT.html:100
 msgid "Global portlet %1 saved."
 msgstr "Глобални портлет %1 сачуван."
 
-#: lib/RT/Scrip.pm:161
 #. ($args{'Template'})
+#: lib/RT/Scrip.pm:161
 msgid "Global template '%1' not found"
 msgstr ""
 
@@ -3553,8 +3553,8 @@ msgstr "Група"
 msgid "Group Rights"
 msgstr "Групна права"
 
-#: lib/RT/Group.pm:1060
 #. ($new_member_obj->Object->Name)
+#: lib/RT/Group.pm:1060
 msgid "Group already has member: %1"
 msgstr "Група већ има члана: %1"
 
@@ -3562,8 +3562,8 @@ msgstr "Група већ има члана: %1"
 msgid "Group by"
 msgstr ""
 
-#: share/html/Admin/Groups/Modify.html:111
 #. ($create_msg)
+#: share/html/Admin/Groups/Modify.html:111
 msgid "Group could not be created: %1"
 msgstr "Није успело креирање групе: %1"
 
@@ -3583,8 +3583,8 @@ msgstr "Група омогућена"
 msgid "Group has no such member"
 msgstr "Група нема оваквог члана"
 
-#: lib/RT/Group.pm:502
 #. ($value)
+#: lib/RT/Group.pm:502
 msgid "Group name '%1' is already in use"
 msgstr "Име групе '%1' је већ у употреби"
 
@@ -3596,8 +3596,8 @@ msgstr "Група није пронађена"
 msgid "Group tickets by"
 msgstr ""
 
-#: share/html/Elements/ShowPrincipal:64
 #. ($_->Name)
+#: share/html/Elements/ShowPrincipal:64
 msgid "Group: %1"
 msgstr ""
 
@@ -3693,24 +3693,24 @@ msgstr "Сакриј цитирани текст"
 msgid "History"
 msgstr "Историјат"
 
-#: share/html/Articles/Article/History.html:48
 #. ($id)
+#: share/html/Articles/Article/History.html:48
 msgid "History for article #%1"
 msgstr "Историјат за чланак #%1"
 
-#: share/html/Admin/Groups/History.html:60
 #. ($GroupObj->Name)
+#: share/html/Admin/Groups/History.html:60
 msgid "History of the group %1"
 msgstr "Историјат групе %1"
 
-#: share/html/Admin/Queues/History.html:60
 #. ($QueueObj->Name)
+#: share/html/Admin/Queues/History.html:60
 msgid "History of the queue %1"
 msgstr "Историјат реда %1"
 
-#: share/html/Admin/Users/History.html:60 share/html/User/History.html:48
 #. ($User->Format)
 #. ($UserObj->Name)
+#: share/html/Admin/Users/History.html:60 share/html/User/History.html:48
 msgid "History of the user %1"
 msgstr "Историјат корисника %1"
 
@@ -3738,8 +3738,8 @@ msgstr "На сваки сат"
 msgid "Hours"
 msgstr "Сати"
 
-#: lib/RT/Base.pm:125
 #. (6)
+#: lib/RT/Base.pm:125
 msgid "I have %quant(%1,concrete mixer,concrete mixers)."
 msgstr "Имам %quant(%1, мешалица за бетон)."
 
@@ -3779,13 +3779,13 @@ msgstr "Да је овај алат setgid, непријатељски лока�
 msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server."
 msgstr "Уколико већ имате РТ сервер и базу података који раде, требало би да искористите ову прилику да се уверите да  је ваш сервер базе података покренут и да РТ сервер може са њиме да се повеже. Када то урадите, зауставите и покрените РТ сервер."
 
-#: share/html/Errors/WebRemoteUser/Wrapper:75
 #. (qq[<a href="$login_url">], '</a>')
+#: share/html/Errors/WebRemoteUser/Wrapper:75
 msgid "If you have an internal RT login, you may %1try it instead%2."
 msgstr ""
 
-#: share/html/Elements/CSRF:59
 #. ($escaped_path, $action, $start, $end)
+#: share/html/Elements/CSRF:59
 msgid "If you really intended to visit %1 and %2, then %3click here to resume your request%4."
 msgstr "Уколико сте заиста намеравали да посетите %1 и %2, онда %3 кликните овде да наставите са вашим захтевом %4."
 
@@ -3797,8 +3797,8 @@ msgstr "Уколико сте променили порт на коме је Р�
 msgid "If you've updated anything above, be sure to"
 msgstr "Уколико сте ажурирали било шта одозго, уверите се да"
 
-#: share/html/Install/DatabaseType.html:61
 #. ('<a href="http://search.cpan.org" target="_new">CPAN</a>')
+#: share/html/Install/DatabaseType.html:61
 msgid "If your preferred database isn't listed in the dropdown below, that means RT couldn't find a <i>database driver</i> for it installed locally. You may be able to remedy this by using %1 to download and install DBD::MySQL, DBD::Oracle or DBD::Pg."
 msgstr "Уколико ваша жељена база података није наведена у падајућем менију испод, то значи да РТ не може да пронађе   инсталирани <i>драјвер базе података</i> за њу. Можда ћете моћи ово да исправите користећи %1 да преузмете и инсталирате DBD::MySQL, DBD::Oracle или DBD::Pg."
 
@@ -3838,8 +3838,8 @@ msgstr ""
 msgid "Include article summary"
 msgstr ""
 
-#: share/html/Admin/Articles/Classes/Modify.html:97
 #. ($cf->Name)
+#: share/html/Admin/Articles/Classes/Modify.html:97
 msgid "Include custom field '%1'"
 msgstr ""
 
@@ -3875,8 +3875,8 @@ msgstr "Укључи подтеме"
 msgid "Include time in iCal feed events?"
 msgstr ""
 
-#: share/html/Admin/Elements/UpgradeHistoryRow:64
 #. ($row->{filename})
+#: share/html/Admin/Elements/UpgradeHistoryRow:64
 msgid "Index updates from %1"
 msgstr ""
 
@@ -3932,15 +3932,15 @@ msgstr "Започни базу података"
 msgid "Input error"
 msgstr "Грешка уноса"
 
-#: lib/RT/CustomField.pm:1650 lib/RT/CustomField.pm:1843 share/html/Elements/EditCustomFields:77 share/html/Elements/ValidateCustomFields:109
 #. ($CF->FriendlyPattern)
 #. ($CustomField->FriendlyPattern)
 #. ($self->FriendlyPattern)
+#: lib/RT/CustomField.pm:1650 lib/RT/CustomField.pm:1843 share/html/Elements/EditCustomFields:77 share/html/Elements/ValidateCustomFields:109
 msgid "Input must match %1"
 msgstr "Унос мора да одговара %1"
 
-#: share/html/Admin/Elements/UpgradeHistoryRow:58
 #. ($row->{filename})
+#: share/html/Admin/Elements/UpgradeHistoryRow:58
 msgid "Insert from %1"
 msgstr ""
 
@@ -3948,34 +3948,34 @@ msgstr ""
 msgid "Internal Error"
 msgstr "Унутрашња грешка"
 
-#: lib/RT/Record.pm:342
 #. ($id->{error_message})
+#: lib/RT/Record.pm:342
 msgid "Internal Error: %1"
 msgstr "Унутрашња грешка: %1"
 
-#: lib/RT/Article.pm:212
 #. ($txn_msg)
+#: lib/RT/Article.pm:212
 msgid "Internal error: %1"
 msgstr "Унутрашња грешка: %1"
 
-#: share/html/Admin/Elements/EditRights:162
 #. ($type)
+#: share/html/Admin/Elements/EditRights:162
 msgid "Invalid %1"
 msgstr "Неважеће %1"
 
-#: share/html/Articles/Article/Search.html:175
 #. ('LoadSavedSearch')
+#: share/html/Articles/Article/Search.html:175
 msgid "Invalid %1 argument"
 msgstr "Неважећи %1 аргумент"
 
-#: share/html/Install/Global.html:89 share/html/Install/Sendmail.html:92
 #. ($_, $ARGS{$_})
 #. ('Administrator Email', $ARGS{OwnerEmail})
+#: share/html/Install/Global.html:89 share/html/Install/Sendmail.html:92
 msgid "Invalid %1: '%2' doesn't look like an email address"
 msgstr "Неважеће %1: '%2' не личи на адресу е-поште"
 
-#: share/html/Install/Basics.html:81
 #. ('WebPort')
+#: share/html/Install/Basics.html:81
 msgid "Invalid %1: it should be a number"
 msgstr "Неважеће %1: требало би да буде број"
 
@@ -3991,8 +3991,8 @@ msgstr "Неважећи извор вредности прилагођеног 
 msgid "Invalid Group Name and Domain"
 msgstr ""
 
-#: lib/RT/Class.pm:311
 #. ($msg)
+#: lib/RT/Class.pm:311
 msgid "Invalid Queue, unable to apply Class: %1"
 msgstr "Неважећи ред, није успело примењивање класе: %1"
 
@@ -4000,8 +4000,8 @@ msgstr "Неважећи ред, није успело примењивање к
 msgid "Invalid Render Type"
 msgstr "Неважећи тип исцртавања"
 
-#: lib/RT/CustomField.pm:1167
 #. ($self->FriendlyType)
+#: lib/RT/CustomField.pm:1167
 msgid "Invalid Render Type for custom field of type %1"
 msgstr "Неважећи тип исцртавања за прилагођено поље типа %1"
 
@@ -4009,8 +4009,8 @@ msgstr "Неважећи тип исцртавања за прилагођено
 msgid "Invalid data"
 msgstr "Неисправни подаци"
 
-#: share/html/Admin/Users/Keys.html:119
 #. ($ARGS{'PrivateKey'}, $email)
+#: share/html/Admin/Users/Keys.html:119
 msgid "Invalid key %1 for address '%2'"
 msgstr "Неважећи кључ %1 за адресу '%2'"
 
@@ -4018,14 +4018,14 @@ msgstr "Неважећи кључ %1 за адресу '%2'"
 msgid "Invalid object"
 msgstr "Неважећи објекат"
 
-#: lib/RT/CustomField.pm:295 lib/RT/CustomField.pm:870
 #. ($msg)
+#: lib/RT/CustomField.pm:295 lib/RT/CustomField.pm:870
 msgid "Invalid pattern: %1"
 msgstr "Неважећи шаблон: %1"
 
-#: share/html/Dashboards/Elements/ShowPortlet/component:61 share/html/Elements/MyRT:92
 #. ($name)
 #. ($path)
+#: share/html/Dashboards/Elements/ShowPortlet/component:61 share/html/Elements/MyRT:92
 msgid "Invalid portlet %1"
 msgstr ""
 
@@ -4041,8 +4041,8 @@ msgstr ""
 msgid "Invalid right"
 msgstr "Неважеће право"
 
-#: lib/RT/ACE.pm:123 lib/RT/ACE.pm:246
 #. ($args{'RightName'})
+#: lib/RT/ACE.pm:123 lib/RT/ACE.pm:246
 msgid "Invalid right. Couldn't canonicalize right '%1'"
 msgstr "Неважеће право. Није успела канонизација права '%1'"
 
@@ -4050,9 +4050,9 @@ msgstr "Неважеће право. Није успела канонизаци�
 msgid "Invalid syntax for email address"
 msgstr "Неважећа синтакса за адресу е-поште"
 
-#: lib/RT/Record.pm:310 lib/RT/Record/Role/Roles.pm:535
 #. ($key)
 #. ($self->loc($role))
+#: lib/RT/Record.pm:310 lib/RT/Record/Role/Roles.pm:535
 msgid "Invalid value for %1"
 msgstr "Неважећа вредност за %1"
 
@@ -4108,8 +4108,8 @@ msgstr "Јун"
 msgid "Keep 'localhost' if you're not sure. Leave blank to connect locally over a socket"
 msgstr "Оставите 'localhost' уколико нисте сигурни. Оставите празно како би се повезали локално преко сокета"
 
-#: lib/RT/Search/Simple.pm:89
 #. (ref $self)
+#: lib/RT/Search/Simple.pm:89
 msgid "Keyword and intuition-based searching"
 msgstr "Претрага заснована на кључним речима и интуицији"
 
@@ -4165,8 +4165,8 @@ msgstr "ПоследњеАжурираноОд"
 msgid "LastUpdatedRelative"
 msgstr "ПоследњеАжуриранСродник"
 
-#: share/html/Dashboards/Subscription.html:177
 #. ($session{'CurrentUser'}->EmailAddress)
+#: share/html/Dashboards/Subscription.html:177
 msgid "Leave blank to send to your current email address (%1)"
 msgstr "Оставите празно како би послали на вашу тренутну адресу е-поште (%1)"
 
@@ -4214,13 +4214,13 @@ msgstr "Веза"
 msgid "Link already exists"
 msgstr "Веза већ постоји"
 
-#: lib/RT/Record.pm:1426
 #. ($linkmsg)
+#: lib/RT/Record.pm:1426
 msgid "Link could not be created: %1"
 msgstr ""
 
-#: lib/RT/Record.pm:1561
 #. ($msg)
+#: lib/RT/Record.pm:1561
 msgid "Link could not be deleted: %1"
 msgstr ""
 
@@ -4228,8 +4228,8 @@ msgstr ""
 msgid "Link not found"
 msgstr "Веза није пронађена"
 
-#: share/html/Ticket/ModifyLinks.html:48
 #. ($Ticket->Id)
+#: share/html/Ticket/ModifyLinks.html:48
 msgid "Link ticket #%1"
 msgstr "Повежи листић #%1"
 
@@ -4249,8 +4249,8 @@ msgstr "ПовезаноОд"
 msgid "LinkedTo"
 msgstr "ПовезаноЗа"
 
-#: lib/RT/Record.pm:1390
 #. ($self->loc(lc($remote_obj->RecordType)))
+#: lib/RT/Record.pm:1390
 msgid "Linking to a deleted %1 is not allowed"
 msgstr ""
 
@@ -4282,8 +4282,8 @@ msgstr "Учитај сачувану претрагу"
 msgid "Load saved search:"
 msgstr "Учитај сачувану претрагу:"
 
-#: lib/RT/SharedSetting.pm:119
 #. ($self->ObjectName, $self->Name)
+#: lib/RT/SharedSetting.pm:119
 msgid "Loaded %1 %2"
 msgstr "Учитано %1 %2"
 
@@ -4291,8 +4291,8 @@ msgstr "Учитано %1 %2"
 msgid "Loaded config files"
 msgstr ""
 
-#: share/html/Search/Elements/EditSearches:169
 #. ($SavedSearch->{'Description'})
+#: share/html/Search/Elements/EditSearches:169
 msgid "Loaded original \"%1\" saved search"
 msgstr "Учитана оригинална \"%1\" сачувана претрага"
 
@@ -4300,8 +4300,8 @@ msgstr "Учитана оригинална \"%1\" сачувана претра
 msgid "Loaded perl modules"
 msgstr "Учитани перл модули"
 
-#: share/html/Search/Elements/EditSearches:171
 #. ($SavedSearch->{'Description'})
+#: share/html/Search/Elements/EditSearches:171
 msgid "Loaded saved search \"%1\""
 msgstr "Учитана сачувана претрага \"%1\""
 
@@ -4325,8 +4325,8 @@ msgstr "Место"
 msgid "Logged in"
 msgstr "Пријављен(а)"
 
-#: share/html/Elements/Tabs:569 share/html/Elements/Tabs:971
 #. ($username)
+#: share/html/Elements/Tabs:569 share/html/Elements/Tabs:971
 msgid "Logged in as %1"
 msgstr "Пријављен(а) као %1"
 
@@ -4334,23 +4334,23 @@ msgstr "Пријављен(а) као %1"
 msgid "Logged out"
 msgstr "Одјављен(а)"
 
-#: share/html/Admin/Elements/LoggingSummary:59
 #. ($level, $logger->{filename})
+#: share/html/Admin/Elements/LoggingSummary:59
 msgid "Logging %1 level messages and higher to %2"
 msgstr ""
 
-#: share/html/Admin/Elements/LoggingSummary:52
 #. ($level)
+#: share/html/Admin/Elements/LoggingSummary:52
 msgid "Logging %1 level messages and higher to STDERR, which will usually end up in your webserver's error logs."
 msgstr ""
 
-#: share/html/Admin/Elements/LoggingSummary:66
 #. ($level, $conf)
+#: share/html/Admin/Elements/LoggingSummary:66
 msgid "Logging %1 level messages and higher to syslog with the following configuration: %2"
 msgstr ""
 
-#: share/html/Admin/Elements/LoggingSummary:68
 #. ($level)
+#: share/html/Admin/Elements/LoggingSummary:68
 msgid "Logging %1 level messages and higher to syslog."
 msgstr ""
 
@@ -4362,8 +4362,8 @@ msgstr ""
 msgid "Login"
 msgstr "Пријава"
 
-#: share/html/Elements/Logo:52 share/html/Elements/Logo:56
 #. ())
+#: share/html/Elements/Logo:52 share/html/Elements/Logo:56
 msgid "LogoAltText"
 msgstr "ЛогоАлтТекст"
 
@@ -4375,8 +4375,8 @@ msgstr "Одјава"
 msgid "Lookup type mismatch"
 msgstr "Тип за потражњу није одговарајући"
 
-#: share/html/Elements/RT__Dashboard/ColumnMap:99
 #. ($hour)
+#: share/html/Elements/RT__Dashboard/ColumnMap:99
 msgid "M-F at %1"
 msgstr "П-П у %1"
 
@@ -4452,8 +4452,8 @@ msgstr ""
 msgid "Manage users and passwords"
 msgstr "Управљај корисницима и лозинкама"
 
-#: lib/RT/Record/Role/Status.pm:281
 #. ($old_lifecycle->Name, $new_lifecycle->Name)
+#: lib/RT/Record/Role/Status.pm:281
 msgid "Mapping between lifecycle %1 and %2 is incomplete. Contact your system administrator."
 msgstr ""
 
@@ -4525,18 +4525,18 @@ msgstr "Ја"
 msgid "Member"
 msgstr "Члан"
 
-#: lib/RT/Transaction.pm:1026
 #. ($value)
+#: lib/RT/Transaction.pm:1026
 msgid "Member %1 added"
 msgstr "Члан %1 додат"
 
-#: lib/RT/Transaction.pm:1068
 #. ($value)
+#: lib/RT/Transaction.pm:1068
 msgid "Member %1 deleted"
 msgstr "Члан %1 обрисан"
 
-#: lib/RT/Group.pm:1134
 #. ($new_member_obj->Object->Name)
+#: lib/RT/Group.pm:1134
 msgid "Member added: %1"
 msgstr "Члан додат: %1"
 
@@ -4556,13 +4556,13 @@ msgstr "Члан"
 msgid "Members"
 msgstr "Чланови"
 
-#: lib/RT/Transaction.pm:1023
 #. ($value)
+#: lib/RT/Transaction.pm:1023
 msgid "Membership in %1 added"
 msgstr "Чланство у %1 додато"
 
-#: lib/RT/Transaction.pm:1065
 #. ($value)
+#: lib/RT/Transaction.pm:1065
 msgid "Membership in %1 deleted"
 msgstr "Чланство у %1 обрисано"
 
@@ -4570,18 +4570,18 @@ msgstr "Чланство у %1 обрисано"
 msgid "Memberships"
 msgstr "Чланства"
 
-#: share/html/Admin/Elements/MembershipsPage:137
 #. ($object->Name)
+#: share/html/Admin/Elements/MembershipsPage:137
 msgid "Memberships of the group %1"
 msgstr ""
 
-#: share/html/Admin/Elements/MembershipsPage:139
 #. ($id)
+#: share/html/Admin/Elements/MembershipsPage:139
 msgid "Memberships of the principal #%1"
 msgstr ""
 
-#: share/html/Admin/Elements/MembershipsPage:135
 #. ($object->Name)
+#: share/html/Admin/Elements/MembershipsPage:135
 msgid "Memberships of the user %1"
 msgstr "Чланства корисника %1"
 
@@ -4609,8 +4609,8 @@ msgstr "Спајање неуспело. Није успело поставља�
 msgid "Merge into"
 msgstr "Споји у"
 
-#: lib/RT/Transaction.pm:1029
 #. ($value)
+#: lib/RT/Transaction.pm:1029
 msgid "Merged into %1"
 msgstr "Спојено у %1"
 
@@ -4726,8 +4726,8 @@ msgstr "Измени шаблоне цедуља"
 msgid "Modify Scrips"
 msgstr "Измени цедуље"
 
-#: share/html/Admin/Queues/CustomField.html:63
 #. ($QueueObj->Name())
+#: share/html/Admin/Queues/CustomField.html:63
 msgid "Modify a CustomField for queue %1"
 msgstr "Измени ПрилагођеноПоље за ред %1"
 
@@ -4739,19 +4739,19 @@ msgstr "Измени и направи класе"
 msgid "Modify and Create Custom Fields for Articles"
 msgstr "Измени и направи прилагођена поља за чланке"
 
-#: share/html/Articles/Article/Edit.html:173 share/html/Articles/Article/Edit.html:276
 #. ($ArticleObj->Id)
+#: share/html/Articles/Article/Edit.html:173 share/html/Articles/Article/Edit.html:276
 msgid "Modify article #%1"
 msgstr "измени чланак #%1"
 
-#: share/html/Admin/Articles/Classes/Objects.html:147 share/html/Admin/CustomFields/Objects.html:153
 #. ($CF->Name)
 #. ($Class->Name)
+#: share/html/Admin/Articles/Classes/Objects.html:147 share/html/Admin/CustomFields/Objects.html:153
 msgid "Modify associated objects for %1"
 msgstr "Измени објекте повезане са %1"
 
-#: share/html/Admin/Scrips/Objects.html:169
 #. ($id)
+#: share/html/Admin/Scrips/Objects.html:169
 msgid "Modify associated objects for scrip #%1"
 msgstr ""
 
@@ -4759,8 +4759,8 @@ msgstr ""
 msgid "Modify custom field values"
 msgstr "Измени вредности прилагођених поља"
 
-#: share/html/Ticket/ModifyDates.html:48 share/html/Ticket/ModifyDates.html:57
 #. ($TicketObj->Id)
+#: share/html/Ticket/ModifyDates.html:48 share/html/Ticket/ModifyDates.html:57
 msgid "Modify dates for ticket #%1"
 msgstr "Измени датуме за листић #%1"
 
@@ -4796,23 +4796,23 @@ msgstr "Измени списак имена глобалног чланства
 msgid "Modify group metadata or delete group"
 msgstr "Измени метаподатке групе или обриши групу"
 
-#: share/html/Admin/Articles/Classes/GroupRights.html:48
 #. ($ClassObj->Name)
+#: share/html/Admin/Articles/Classes/GroupRights.html:48
 msgid "Modify group rights for Class %1"
 msgstr "Измени групна права за класу %1"
 
-#: share/html/Admin/CustomFields/GroupRights.html:70
 #. ($CustomFieldObj->Name)
+#: share/html/Admin/CustomFields/GroupRights.html:70
 msgid "Modify group rights for custom field %1"
 msgstr "Измени групна права за прилагођено поље %1"
 
-#: share/html/Admin/Groups/GroupRights.html:48
 #. ($GroupObj->Name)
+#: share/html/Admin/Groups/GroupRights.html:48
 msgid "Modify group rights for group %1"
 msgstr "Измени групна права за групу %1"
 
-#: share/html/Admin/Queues/GroupRights.html:48
 #. ($QueueObj->Name)
+#: share/html/Admin/Queues/GroupRights.html:48
 msgid "Modify group rights for queue %1"
 msgstr "Измени групна права за ред %1"
 
@@ -4828,9 +4828,9 @@ msgstr "Измени нечији РТ налог"
 msgid "Modify or delete articles in this class"
 msgstr "Измени или обриши чланке у овој класи"
 
-#: share/html/Ticket/ModifyPeople.html:48 share/html/Ticket/ModifyPeople.html:57
 #. ($Ticket->Id)
 #. ($Ticket->id)
+#: share/html/Ticket/ModifyPeople.html:48 share/html/Ticket/ModifyPeople.html:57
 msgid "Modify people related to ticket #%1"
 msgstr "Измени људе везане за листић #%1"
 
@@ -4842,13 +4842,13 @@ msgstr "Измени личну инструмент таблу"
 msgid "Modify queue watchers"
 msgstr "Измени посматраче реда"
 
-#: share/html/Admin/Scrips/Modify.html:48
 #. ($id)
+#: share/html/Admin/Scrips/Modify.html:48
 msgid "Modify scrip #%1"
 msgstr ""
 
-#: share/html/Admin/Queues/Scrips.html:56
 #. ($QueueObj->Name)
+#: share/html/Admin/Queues/Scrips.html:56
 msgid "Modify scrips for queue %1"
 msgstr "Измени цедуље за ред %1"
 
@@ -4860,13 +4860,13 @@ msgstr "Измени цедуље које се примењују на све �
 msgid "Modify system dashboards"
 msgstr "Измени системску инструмент таблу"
 
-#: share/html/Admin/Global/Template.html:90
 #. (loc($TemplateObj->Name()))
+#: share/html/Admin/Global/Template.html:90
 msgid "Modify template %1"
 msgstr "Измени шаблон %1"
 
-#: share/html/Admin/Queues/Template.html:114
 #. (loc( $TemplateObj->Name()), $QueueObj->Name)
+#: share/html/Admin/Queues/Template.html:114
 msgid "Modify template %1 for queue %2"
 msgstr "Измени шаблон %1 за ред %2"
 
@@ -4874,18 +4874,18 @@ msgstr "Измени шаблон %1 за ред %2"
 msgid "Modify templates which apply to all queues"
 msgstr "Измени шаблоне који се примењују на све редове"
 
-#: share/html/Admin/Articles/Classes/Modify.html:157
 #. ($ClassObj->Name)
+#: share/html/Admin/Articles/Classes/Modify.html:157
 msgid "Modify the Class %1"
 msgstr "Измени класу %1"
 
-#: share/html/Dashboards/Queries.html:82
 #. ($Dashboard->Name)
+#: share/html/Dashboards/Queries.html:82
 msgid "Modify the content of dashboard %1"
 msgstr "Измени садржај инструмент табле %1"
 
-#: share/html/Dashboards/Modify.html:126
 #. ($Dashboard->Name)
+#: share/html/Dashboards/Modify.html:126
 msgid "Modify the dashboard %1"
 msgstr "Измени инструмент таблу %1"
 
@@ -4893,18 +4893,18 @@ msgstr "Измени инструмент таблу %1"
 msgid "Modify the default \"RT at a glance\" view"
 msgstr "Измени подразумевани \"РТ на први поглед\" изглед"
 
-#: share/html/Admin/Groups/Members.html:117 share/html/Admin/Groups/Modify.html:118
 #. ($Group->Name)
+#: share/html/Admin/Groups/Members.html:117 share/html/Admin/Groups/Modify.html:118
 msgid "Modify the group %1"
 msgstr "Измени групу %1"
 
-#: share/html/Dashboards/Subscription.html:287
 #. ($Dashboard->Name)
+#: share/html/Dashboards/Subscription.html:287
 msgid "Modify the subscription to dashboard %1"
 msgstr "Измени претплату на инструмент таблу %1"
 
-#: share/html/Admin/Users/Modify.html:289
 #. ($UserObj->Name)
+#: share/html/Admin/Users/Modify.html:289
 msgid "Modify the user %1"
 msgstr "Измени корисника %1"
 
@@ -4912,13 +4912,13 @@ msgstr "Измени корисника %1"
 msgid "Modify this search..."
 msgstr "Измени ову претрагу..."
 
-#: share/html/Ticket/ModifyAll.html:59
 #. ($Ticket->Id)
+#: share/html/Ticket/ModifyAll.html:59
 msgid "Modify ticket # %1"
 msgstr "Измени листић # %1"
 
-#: share/html/Ticket/Modify.html:48 share/html/Ticket/Modify.html:58
 #. ($TicketObj->Id)
+#: share/html/Ticket/Modify.html:48 share/html/Ticket/Modify.html:58
 msgid "Modify ticket #%1"
 msgstr "Измени листић #%1"
 
@@ -4930,8 +4930,8 @@ msgstr ""
 msgid "Modify tickets"
 msgstr "Измени листиће"
 
-#: share/html/Admin/Articles/Classes/Topics.html:59
 #. ($ClassObj->Name)
+#: share/html/Admin/Articles/Classes/Topics.html:59
 msgid "Modify topic for %1"
 msgstr "Измени тему за %1"
 
@@ -4943,28 +4943,28 @@ msgstr "Измени хијерархију тема везаних за ову 
 msgid "Modify topics for articles in this class"
 msgstr "Измени теме за чланке у овој класи"
 
-#: share/html/Admin/Articles/Classes/UserRights.html:48
 #. ($ClassObj->Name)
+#: share/html/Admin/Articles/Classes/UserRights.html:48
 msgid "Modify user rights for class %1"
 msgstr "Измени корисничка права за класу %1"
 
-#: share/html/Admin/CustomFields/UserRights.html:68
 #. ($CustomFieldObj->Name)
+#: share/html/Admin/CustomFields/UserRights.html:68
 msgid "Modify user rights for custom field %1"
 msgstr "Измени корисничка права за прилагођено поље %1"
 
-#: share/html/Admin/Groups/UserRights.html:48
 #. ($GroupObj->Name)
+#: share/html/Admin/Groups/UserRights.html:48
 msgid "Modify user rights for group %1"
 msgstr "Измени корисничка права за групу %1"
 
-#: share/html/Admin/Queues/UserRights.html:48
 #. ($QueueObj->Name)
+#: share/html/Admin/Queues/UserRights.html:48
 msgid "Modify user rights for queue %1"
 msgstr "Измени корисничка права за ред %1"
 
-#: share/html/Ticket/ModifyPeople.html:60
 #. ($Ticket->Id)
+#: share/html/Ticket/ModifyPeople.html:60
 msgid "Modify who receives mail for ticket #%1"
 msgstr "Измени ко добија пошту за листић #%1"
 
@@ -5008,8 +5008,8 @@ msgstr "Помери овде"
 msgid "Must specify 'Name' attribute"
 msgstr "Мора се назначити атрибут 'Име'"
 
-#: share/html/SelfService/Elements/MyRequests:62
 #. ($friendly_status)
+#: share/html/SelfService/Elements/MyRequests:62
 msgid "My %1 tickets"
 msgstr "Моји %1 листићи"
 
@@ -5145,8 +5145,8 @@ msgstr "Нови листић"
 msgid "New ticket doesn't exist"
 msgstr "Нови листић не постоји"
 
-#: lib/RT/Ticket.pm:293
 #. ($self->loc($args{'Status'}))
+#: lib/RT/Ticket.pm:293
 msgid "New tickets can not have status '%1' in this queue."
 msgstr "Нови листићи не могу имати статус '%1' у овом реду."
 
@@ -5170,18 +5170,18 @@ msgstr "Надимак"
 msgid "No"
 msgstr "Не"
 
-#: share/html/Admin/Elements/ShowKeyInfo:58
 #. ($protocol)
+#: share/html/Admin/Elements/ShowKeyInfo:58
 msgid "No %1 keys for this address"
 msgstr ""
 
-#: lib/RT/SharedSetting.pm:243
 #. ($self->ObjectName)
+#: lib/RT/SharedSetting.pm:243
 msgid "No %1 loaded"
 msgstr "Ниједан %1 није учитан"
 
-#: share/html/SelfService/Article/Search.html:66
 #. ($Articles_Content)
+#: share/html/SelfService/Article/Search.html:66
 msgid "No Articles match %1"
 msgstr "Ниједан чланак не одговара %1"
 
@@ -5241,13 +5241,13 @@ msgstr "Нема назначене колоне"
 msgid "No comment entered about this user"
 msgstr "Нема унетих коментара о овом кориснику"
 
-#: lib/RT/Action.pm:163 lib/RT/Condition.pm:183 lib/RT/Search.pm:125 lib/RT/Search/ActiveTicketsInQueue.pm:75
 #. (ref $self)
+#: lib/RT/Action.pm:163 lib/RT/Condition.pm:183 lib/RT/Search.pm:125 lib/RT/Search/ActiveTicketsInQueue.pm:75
 msgid "No description for %1"
 msgstr "Нема описа за %1"
 
-#: lib/RT/Scrip.pm:326
 #. ($tname)
+#: lib/RT/Scrip.pm:326
 msgid "No global template %1"
 msgstr ""
 
@@ -5287,8 +5287,8 @@ msgstr "Лозинка није постављена"
 msgid "No permission to create queues"
 msgstr "Нема дозволе за прављење редова"
 
-#: lib/RT/Ticket.pm:274
 #. ($QueueObj->Name)
+#: lib/RT/Ticket.pm:274
 msgid "No permission to create tickets in the queue '%1'"
 msgstr "Нема дозволе за прављење лозинки у реду '%1'"
 
@@ -5336,8 +5336,8 @@ msgstr "Нема назначених права"
 msgid "No rights found"
 msgstr "Ниједно право није пронађено"
 
-#: lib/RT/Ticket.pm:530
 #. ($principal->Object->Name)
+#: lib/RT/Ticket.pm:530
 msgid "No rights to add '%1' as an AdminCc on this ticket"
 msgstr ""
 
@@ -5353,8 +5353,8 @@ msgstr "Нема теме"
 msgid "No such key or it's not suitable for signing"
 msgstr "Нема таквог кључа или није погодан за потписивање"
 
-#: lib/RT/Scrip.pm:324
 #. ($tname, $queue->Name||$queue->id)
+#: lib/RT/Scrip.pm:324
 msgid "No template %1 in queue %2 or global"
 msgstr ""
 
@@ -5562,8 +5562,8 @@ msgstr "Списак објеката је празан"
 msgid "Oct"
 msgstr "Окт"
 
-#: lib/RT/Transaction.pm:409
 #. ($self->CreatedAsString, $self->CreatorObj->Name)
+#: lib/RT/Transaction.pm:409
 msgid "On %1, %2 wrote:"
 msgstr "На %1, %2 је написао(ла):"
 
@@ -5643,13 +5643,13 @@ msgstr "Једнократна индиго копија"
 msgid "Only for entry, not display"
 msgstr "Само за унос, не и за приказ"
 
-#: share/html/Approvals/Elements/PendingMyApproval:75
 #. (qq{<input size='15' class="datepicker" value='}.( $created_after->IsSet && $created_after->ISO(Timezone => 'user'))."' name='CreatedAfter' id='CreatedAfter' />")
+#: share/html/Approvals/Elements/PendingMyApproval:75
 msgid "Only show approvals for requests created after %1"
 msgstr "Прикажи одобрења само за захтеве направљене после %1"
 
-#: share/html/Approvals/Elements/PendingMyApproval:73
 #. (qq{<input size='15' class="datepicker" value='}.($created_before->IsSet &&$created_before->ISO(Timezone => 'user'))."' name='CreatedBefore' id='CreatedBefore' />")
+#: share/html/Approvals/Elements/PendingMyApproval:73
 msgid "Only show approvals for requests created before %1"
 msgstr "Прикажи одобрења само за захтеве направљене пре %1"
 
@@ -5713,8 +5713,8 @@ msgstr "Поређај по"
 msgid "Organization"
 msgstr "Организација"
 
-#: share/html/Approvals/Elements/Approve:55
 #. ($approving->Id, $approving->Subject)
+#: share/html/Approvals/Elements/Approve:55
 msgid "Originating ticket: #%1"
 msgstr "Листић од кога води порекло: #%1"
 
@@ -5746,18 +5746,18 @@ msgstr "Сопствени листићи"
 msgid "Owner"
 msgstr "Власник"
 
-#: lib/RT/Ticket.pm:524
 #. ($owner->Name)
+#: lib/RT/Ticket.pm:524
 msgid "Owner '%1' does not have rights to own this ticket."
 msgstr "Власник '%1' нема права да поседује овај листић."
 
-#: lib/RT/Ticket.pm:2058
 #. ($OldOwnerObj->Name, $NewOwnerObj->Name)
+#: lib/RT/Ticket.pm:2058
 msgid "Owner changed from %1 to %2"
 msgstr "Власник је промењен из %1 у %2"
 
-#: lib/RT/Transaction.pm:1142 lib/RT/Transaction.pm:958
 #. (map { $self->_FormatUser($_) } $Old, $New)
+#: lib/RT/Transaction.pm:1142 lib/RT/Transaction.pm:958
 msgid "Owner forcibly changed from %1 to %2"
 msgstr "Власник је насилно промењен из %1 у %2"
 
@@ -5813,8 +5813,8 @@ msgstr "Лозинка промењена"
 msgid "Password has not been set."
 msgstr "Лозинка није постављена."
 
-#: lib/RT/User.pm:306
 #. (RT->Config->Get('MinimumPasswordLength'))
+#: lib/RT/User.pm:306
 msgid "Password needs to be at least %quant(%1,character,characters) long"
 msgstr "Лозинка мора бити дугачка најмање %1 карактера"
 
@@ -5826,8 +5826,8 @@ msgstr "Лозинка није одштампана"
 msgid "Password set"
 msgstr "Лозинка је постављена"
 
-#: share/html/SelfService/Prefs.html:94 share/html/User/Prefs.html:262
 #. ($msg)
+#: share/html/SelfService/Prefs.html:94 share/html/User/Prefs.html:262
 msgid "Password: %1"
 msgstr "Лозинка: %1"
 
@@ -5847,13 +5847,13 @@ msgstr "Лозинке се не подударају."
 msgid "Path to sendmail"
 msgstr "Путања до sendmail-а"
 
-#: share/html/Ticket/Elements/ShowDependencyStatus:54
 #. ($approvals)
+#: share/html/Ticket/Elements/ShowDependencyStatus:54
 msgid "Pending %quant(%1,approval,approvals)."
 msgstr ""
 
-#: share/html/Ticket/Elements/ShowDependencyStatus:59
 #. ($depends)
+#: share/html/Ticket/Elements/ShowDependencyStatus:59
 msgid "Pending %quant(%1,ticket,tickets)."
 msgstr ""
 
@@ -5865,8 +5865,8 @@ msgstr ""
 msgid "People"
 msgstr "Особе"
 
-#: share/html/Admin/Queues/People.html:185
 #. ($QueueObj->Name)
+#: share/html/Admin/Queues/People.html:185
 msgid "People related to queue %1"
 msgstr "Особе повезане са редом %1"
 
@@ -5950,9 +5950,9 @@ msgstr "Могуће скривене претраге"
 msgid "PostgreSQL"
 msgstr ""
 
-#: share/html/Elements/ShowSearch:97 share/html/m/tickets/search:81
 #. ($m->interp->apply_escapes($Name, 'h'))
 #. ($m->interp->apply_escapes($name, 'h'))
+#: share/html/Elements/ShowSearch:97 share/html/m/tickets/search:81
 msgid "Predefined search %1 not found"
 msgstr "Предефинисана претрага %1 није пронађена"
 
@@ -5960,8 +5960,8 @@ msgstr "Предефинисана претрага %1 није пронађен
 msgid "Preferences"
 msgstr "Поставке"
 
-#: share/html/Admin/Users/MyRT.html:117
 #. ($pane, $UserObj->Name)
+#: share/html/Admin/Users/MyRT.html:117
 msgid "Preferences %1 for user %2."
 msgstr "Поставке %1 за корисника %2."
 
@@ -5969,9 +5969,9 @@ msgstr "Поставке %1 за корисника %2."
 msgid "Preferences reset."
 msgstr ""
 
-#: share/html/Prefs/MyRT.html:158 share/html/Prefs/MyRT.html:91
 #. ($pane)
 #. (loc('summary rows'))
+#: share/html/Prefs/MyRT.html:158 share/html/Prefs/MyRT.html:91
 msgid "Preferences saved for %1."
 msgstr "Поставке сачуване за %1."
 
@@ -5979,8 +5979,8 @@ msgstr "Поставке сачуване за %1."
 msgid "Preferences saved for dashboards in menu."
 msgstr ""
 
-#: share/html/Admin/Users/DashboardsInMenu.html:75 share/html/Admin/Users/MyRT.html:75
 #. ($UserObj->Name)
+#: share/html/Admin/Users/DashboardsInMenu.html:75 share/html/Admin/Users/MyRT.html:75
 msgid "Preferences saved for user %1."
 msgstr "Поставке сачуване за корисника %1."
 
@@ -5992,8 +5992,8 @@ msgstr "Поставке сачуване."
 msgid "Preferences were not found"
 msgstr ""
 
-#: share/html/Prefs/Other.html:88
 #. ($msg)
+#: share/html/Prefs/Other.html:88
 msgid "Preferred Key: %1"
 msgstr "Жељени кључ: %1"
 
@@ -6013,8 +6013,8 @@ msgstr "Пре"
 msgid "Previous"
 msgstr "Претходно"
 
-#: lib/RT/ACE.pm:135 lib/RT/ACE.pm:220
 #. ($args{'PrincipalId'})
+#: lib/RT/ACE.pm:135 lib/RT/ACE.pm:220
 msgid "Principal %1 not found."
 msgstr "Уредник %1 није пронађен."
 
@@ -6046,8 +6046,8 @@ msgstr "Приватност:"
 msgid "Private Key"
 msgstr "Приватни кључ"
 
-#: share/html/Admin/Elements/ShowKeyInfo:110
 #. ($EmailAddress)
+#: share/html/Admin/Elements/ShowKeyInfo:110
 msgid "Private key(s) for %1"
 msgstr ""
 
@@ -6059,8 +6059,8 @@ msgstr ""
 msgid "Privileged"
 msgstr "Привилеговано"
 
-#: share/html/Admin/Users/Modify.html:323 share/html/User/Prefs.html:252
 #. (loc_fuzzy($msg))
+#: share/html/Admin/Users/Modify.html:323 share/html/User/Prefs.html:252
 msgid "Privileged status: %1"
 msgstr "Привилегован статус: %1"
 
@@ -6076,13 +6076,13 @@ msgstr "Обрађивање без трансакције, неки услов�
 msgid "Pseudogroup for internal use"
 msgstr "Псеудогрупа за интерну употребу"
 
-#: share/html/Elements/CryptStatus:150
 #. ($line->{'Key'})
+#: share/html/Elements/CryptStatus:150
 msgid "Public key '0x%1' is required to verify signature"
 msgstr "Јавни кључ '0x%1' је неопходан за проверу потписа"
 
-#: share/html/Admin/Elements/ShowKeyInfo:108
 #. ($EmailAddress)
+#: share/html/Admin/Elements/ShowKeyInfo:108
 msgid "Public key(s) for %1"
 msgstr ""
 
@@ -6102,14 +6102,14 @@ msgstr "Градитељ упита"
 msgid "Queue"
 msgstr "Ред"
 
-#: share/html/Ticket/Create.html:374
 #. ($Queue||'')
+#: share/html/Ticket/Create.html:374
 msgid "Queue %1 could not be loaded."
 msgstr ""
 
-#: share/html/Admin/Queues/CustomField.html:60 share/html/Admin/Queues/Scrips.html:54 share/html/Admin/Queues/Templates.html:58
 #. ($Queue)
 #. ($id)
+#: share/html/Admin/Queues/CustomField.html:60 share/html/Admin/Queues/Scrips.html:54 share/html/Admin/Queues/Templates.html:58
 msgid "Queue %1 not found"
 msgstr "Ред %1 није пронађен"
 
@@ -6237,8 +6237,8 @@ msgstr "Величина РТ-а"
 msgid "RT at a glance"
 msgstr "РТ на први поглед"
 
-#: share/html/Admin/Users/MyRT.html:71
 #. ($UserObj->Name)
+#: share/html/Admin/Users/MyRT.html:71
 msgid "RT at a glance for the user %1"
 msgstr "РТ на први поглед за корисника %1"
 
@@ -6258,13 +6258,13 @@ msgstr "РТ може претворити вредности овог прил�
 msgid "RT core variables"
 msgstr "РТ основне променљиве"
 
-#: share/html/Elements/Logo:61 share/html/m/_elements/header:49 share/html/m/_elements/login:49 share/html/m/index.html:48
 #. (RT->Config->Get('rtname'))
+#: share/html/Elements/Logo:61 share/html/m/_elements/header:49 share/html/m/_elements/login:49 share/html/m/index.html:48
 msgid "RT for %1"
 msgstr "РТ за %1"
 
-#: share/html/Elements/CSRF:55
 #. ($strong_start, $strong_end, $Reason, $action)
+#: share/html/Elements/CSRF:55
 msgid "RT has detected a possible %1cross-site request forgery%2 for this request, because %3.  A malicious attacker may be trying to %1%4%2 on your behalf. If you did not initiate this request, then you should alert your security team."
 msgstr "РТ је открио могуће %1фалсификовање захтева између сајтова%2 за овај захтев, јер %3. Малициозни нападач можда покушава да %1%4%2 у ваше име. Уколико ви нисте покренули овај захтев, онда би требало да упозорите ваш тим за безбедност."
 
@@ -6288,8 +6288,8 @@ msgstr "РТ ће се повезати са базом података кор�
 msgid "RT will create a user called \"root\" and set this as their password"
 msgstr "РТ ће направити корисника званог \"root\" и поставити ово као његову лозинку"
 
-#: share/html/Admin/CustomFields/Modify.html:113 share/html/Admin/CustomFields/Modify.html:121
 #. ('<tt>__id__</tt>', '<tt>__CustomField__</tt>')
+#: share/html/Admin/CustomFields/Modify.html:113 share/html/Admin/CustomFields/Modify.html:121
 msgid "RT will replace %1 and %2 with the record's id and the custom field's value, respectively."
 msgstr "РТ ће заменити %1 и %2 са, редом, идентификатором записа и вредношћу прилагођеног поља."
 
@@ -6305,8 +6305,8 @@ msgstr "РТ ради са неколико различитих база под
 msgid "RT's logging configuration is summarized below:"
 msgstr ""
 
-#: share/html/Admin/Queues/Modify.html:236
 #. ($address)
+#: share/html/Admin/Queues/Modify.html:236
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr "RTAddressRegexp опција у подешавањима не одговара %1"
 
@@ -6350,23 +6350,23 @@ msgstr "Рекурзивни члан"
 msgid "Refer to"
 msgstr "Упути на"
 
-#: lib/RT/Transaction.pm:1020
 #. ($value)
+#: lib/RT/Transaction.pm:1020
 msgid "Reference by %1 added"
 msgstr "Референца од %1 додата"
 
-#: lib/RT/Transaction.pm:1062
 #. ($value)
+#: lib/RT/Transaction.pm:1062
 msgid "Reference by %1 deleted"
 msgstr "Референца од %1 обрисана"
 
-#: lib/RT/Transaction.pm:1017
 #. ($value)
+#: lib/RT/Transaction.pm:1017
 msgid "Reference to %1 added"
 msgstr "Референца за %1 додата"
 
-#: lib/RT/Transaction.pm:1059
 #. ($value)
+#: lib/RT/Transaction.pm:1059
 msgid "Reference to %1 deleted"
 msgstr "Упут ка %1 обрисан"
 
@@ -6438,8 +6438,8 @@ msgstr "Освежи резултате претраге сваких 5 мину
 msgid "Refresh search results every 60 minutes."
 msgstr "Освежи резултате претраге сваких 60 минута."
 
-#: share/html/Elements/Refresh:59
 #. ($value/60)
+#: share/html/Elements/Refresh:59
 msgid "Refresh this page every %quant(%1,minute,minutes)."
 msgstr "Освежи ову страну сваких %1 минута"
 
@@ -6463,24 +6463,24 @@ msgstr "Запамти подразумевани ред"
 msgid "Reminder"
 msgstr "Подсетник"
 
-#: lib/RT/Transaction.pm:1180
 #. ($subject)
+#: lib/RT/Transaction.pm:1180
 msgid "Reminder '%1' added"
 msgstr "Подсетник '%1' додат"
 
-#: lib/RT/Transaction.pm:1202
 #. ($subject)
+#: lib/RT/Transaction.pm:1202
 msgid "Reminder '%1' completed"
 msgstr "Подсетник '%1' завршен"
 
-#: lib/RT/Transaction.pm:1191
 #. ($subject)
+#: lib/RT/Transaction.pm:1191
 msgid "Reminder '%1' reopened"
 msgstr "Подсетник '%1' поново отворен"
 
-#: lib/RT/Interface/Web.pm:2985 lib/RT/Interface/Web.pm:3003
 #. ($args->{'NewReminder-Subject'}, loc("Created"))
 #. ($old_subject || $reminder->Subject, $_)
+#: lib/RT/Interface/Web.pm:2985 lib/RT/Interface/Web.pm:3003
 msgid "Reminder '%1': %2"
 msgstr ""
 
@@ -6488,8 +6488,8 @@ msgstr ""
 msgid "Reminders"
 msgstr "Подсетници"
 
-#: share/html/Ticket/Reminders.html:48
 #. ($Ticket->Id)
+#: share/html/Ticket/Reminders.html:48
 msgid "Reminders for ticket #%1"
 msgstr "Подсетници за листић #%1"
 
@@ -6509,8 +6509,8 @@ msgstr "Уклони индиго копију"
 msgid "Remove Requestor"
 msgstr "Уклони захтеваоца"
 
-#: lib/RT/Queue.pm:640
 #. ($principal->Object->Name, $self->loc($args{'Type'}))
+#: lib/RT/Queue.pm:640
 msgid "Removed %1 from members of %2 for this queue."
 msgstr "Уклоњено %1 од чланова %2 за овај ред."
 
@@ -6558,8 +6558,8 @@ msgstr "Захтеваоци"
 msgid "Requests should be due in"
 msgstr "Захтеви би требало да постану застарели за"
 
-#: lib/RT/Attribute.pm:154
 #. ('Object')
+#: lib/RT/Attribute.pm:154
 msgid "Required parameter '%1' not specified"
 msgstr "Захтевани параметар '%1' није назначен"
 
@@ -6599,8 +6599,8 @@ msgstr "Пребивалиште"
 msgid "Resolve"
 msgstr "Разреши"
 
-#: share/html/m/ticket/reply:173
 #. ($t->id, $t->Subject)
+#: share/html/m/ticket/reply:173
 msgid "Resolve ticket #%1 (%2)"
 msgstr "Разреши листић #%1 (%2)"
 
@@ -6660,8 +6660,8 @@ msgstr "Право није учитано."
 msgid "Right revoked"
 msgstr "Право је опозвано"
 
-#: lib/RT/Interface/Web.pm:2581 lib/RT/Interface/Web.pm:2681
 #. ($object_type)
+#: lib/RT/Interface/Web.pm:2581 lib/RT/Interface/Web.pm:2681
 msgid "Rights could not be granted for %1"
 msgstr "Није успело давање права %1"
 
@@ -6673,9 +6673,9 @@ msgstr "Права за администраторе"
 msgid "Rights for Staff"
 msgstr "Права за особље"
 
-#: lib/RT/Record/Role/Roles.pm:411 lib/RT/Record/Role/Roles.pm:495
 #. ($args{Type})
 #. ($type)
+#: lib/RT/Record/Role/Roles.pm:411 lib/RT/Record/Role/Roles.pm:495
 msgid "Role group '%1' not found"
 msgstr ""
 
@@ -6707,8 +6707,8 @@ msgstr ""
 msgid "SQL Queries"
 msgstr "SQL упити"
 
-#: share/html/Admin/Elements/LoggingSummary:80
 #. ($m->interp->apply_escapes($level, 'h'), qq[<strong><a href="$url">], '</a></strong>')
+#: share/html/Admin/Elements/LoggingSummary:80
 msgid "SQL queries are logged at the %1 level and also available in the %2query tool%3."
 msgstr ""
 
@@ -6756,8 +6756,8 @@ msgstr "Сачувај ново"
 msgid "Save this search"
 msgstr "Саувај ову претрагу"
 
-#: lib/RT/SharedSetting.pm:215
 #. ($self->loc( $self->ObjectName ), $name)
+#: lib/RT/SharedSetting.pm:215
 msgid "Saved %1 %2"
 msgstr "Сачувано %1 %2"
 
@@ -6773,8 +6773,8 @@ msgstr "Сачуване претраге"
 msgid "Saved charts"
 msgstr "Сачувани графикони"
 
-#: share/html/Elements/ShowSearch:73
 #. ($m->interp->apply_escapes($SavedSearch, 'h'))
+#: share/html/Elements/ShowSearch:73
 msgid "Saved search %1 not found"
 msgstr ""
 
@@ -6786,13 +6786,13 @@ msgstr "Сачуване претраге"
 msgid "SavedSearches"
 msgstr ""
 
-#: share/html/Admin/Elements/UpgradeHistoryRow:60
 #. ($row->{filename})
+#: share/html/Admin/Elements/UpgradeHistoryRow:60
 msgid "Schema updates from %1"
 msgstr ""
 
-#: share/html/Ticket/Elements/PreviewScrips:71
 #. ($scrip->id)
+#: share/html/Ticket/Elements/PreviewScrips:71
 msgid "Scrip #%1"
 msgstr "Цедуља #%1"
 
@@ -6820,8 +6820,8 @@ msgstr ""
 msgid "Search"
 msgstr "Тражи"
 
-#: share/html/Articles/Article/Search.html:221
 #. ($search->Name)
+#: share/html/Articles/Article/Search.html:221
 msgid "Search %1 updated"
 msgstr "Претрага %1 ажурирана"
 
@@ -6849,8 +6849,8 @@ msgstr "Претражуј чланке"
 msgid "Search for tickets"
 msgstr "Претражуј листиће"
 
-#: share/html/Search/Simple.html:63
 #. (@strong)
+#: share/html/Search/Simple.html:63
 msgid "Search for tickets by entering %1id%2 numbers, subject words %1\"in quotes\"%2, %1queues%2 by name, Owners by %1username%2, Requestors by %1email address%2, and ticket %1statuses%2.  Searching for %1@domainname.com%2 will return tickets with requestors from that domain."
 msgstr ""
 
@@ -6870,8 +6870,8 @@ msgstr "Интервал освежавања резултата претраг�
 msgid "Searches"
 msgstr ""
 
-#: share/html/Search/Simple.html:73
 #. ($fulltext_keyword)
+#: share/html/Search/Simple.html:73
 msgid "Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history by typing <b>%1<i>word</i></b>."
 msgstr "Претраживање свег текста свих листића може дуго да потраје, али ако вам је то потребно, можете тражити било коју реч у целој историји листића куцајући  <b>%1<i>реч</i></b>"
 
@@ -6947,8 +6947,8 @@ msgstr "Изабери одељак"
 msgid "Select a user"
 msgstr "Изабери корисника"
 
-#: share/html/Articles/Elements/BeforeMessageBox:114
 #. ($included_topic->Name)
+#: share/html/Articles/Elements/BeforeMessageBox:114
 msgid "Select an Article from %1"
 msgstr "Изабери чланак из %1"
 
@@ -7020,8 +7020,8 @@ msgstr "Изабери редове који ће бити приказани н
 msgid "Select scrip stage for newly added queues:"
 msgstr ""
 
-#: share/html/Articles/Article/ExtractIntoClass.html:63 share/html/Articles/Article/ExtractIntoTopic.html:52
 #. ()
+#: share/html/Articles/Article/ExtractIntoClass.html:63 share/html/Articles/Article/ExtractIntoTopic.html:52
 msgid "Select topics for this article"
 msgstr "Изабери теме за овај чланак"
 
@@ -7165,8 +7165,8 @@ msgstr "Прикажи колоне"
 msgid "Show Results"
 msgstr "Прикажи резултате"
 
-#: share/html/Ticket/Graphs/Elements/EditGraphProperties:154
 #. ($Level)
+#: share/html/Ticket/Graphs/Elements/EditGraphProperties:154
 msgid "Show Tickets Properties on %1 level"
 msgstr "Прикажи особине листића на %1 нивоу"
 
@@ -7254,8 +7254,8 @@ msgstr "Прикажи историју листића"
 msgid "Shredder"
 msgstr "Секач"
 
-#: share/html/Admin/Tools/Shredder/Elements/Error/NoStorage:55
 #. ($path_tag)
+#: share/html/Admin/Tools/Shredder/Elements/Error/NoStorage:55
 msgid "Shredder needs a directory to write dumps to. Please ensure that the directory %1 exists and that it is writable by your web server."
 msgstr "Секачу је потребна фасцикла у коју ће уписивати дампове. Молим осигурајте да фасцикла %1 постоји и да у њу може уписивати ваш веб сервер."
 
@@ -7267,8 +7267,8 @@ msgstr "Бочна трака"
 msgid "Sign"
 msgstr "Потпиши"
 
-#: share/html/Admin/Queues/Modify.html:128
 #. ("<b>","</b>","<i>","</i>")
+#: share/html/Admin/Queues/Modify.html:128
 msgid "Sign all auto-generated mail.  %1Caution%2: Enabling this option alters the signature from providing %3authentication%4 to providing %3integrity%4."
 msgstr "Потпиши сву аутоматски генерисану пошту. %1Опрез%2: Омогућавањем ове опције се мења потпис из снабдевајуће  %3аутентификације%4 у снабдевајући %3интегритет%4."
 
@@ -7284,13 +7284,13 @@ msgstr "Претплати се као захтевалац листића ил�
 msgid "Sign up as a ticket or queue AdminCc"
 msgstr "Претплати се као листић или ред АдминистраторскеИндигоКопије"
 
-#: share/html/Elements/Crypt/SignEncryptWidget:64
 #. ($columnsplit,    $m->scomp('/Widgets/Form/Boolean:InputOnly',        Name => 'Sign', CurrentValue => $self->{'Sign'}    ),)
+#: share/html/Elements/Crypt/SignEncryptWidget:64
 msgid "Sign%1%2"
 msgstr ""
 
-#: share/html/Elements/Crypt/SignEncryptWidget:57
 #. ($columnsplit,    $m->scomp('/Widgets/Form/Boolean:InputOnly',        Name => 'Sign', CurrentValue => $self->{'Sign'}    ),    $m->scomp('SelectKeyForSigning', User => $session{'CurrentUser'}->UserObj ),)
+#: share/html/Elements/Crypt/SignEncryptWidget:57
 msgid "Sign%1%2 using %3"
 msgstr "Потпиши %1%2 користећи %3"
 
@@ -7362,8 +7362,8 @@ msgstr "Назначи да ли је ово дневно или недељно 
 msgid "Spreadsheet"
 msgstr "Унакрсна табела"
 
-#: share/html/Admin/Elements/LoggingSummary:73
 #. ($level)
+#: share/html/Admin/Elements/LoggingSummary:73
 msgid "Stack traces are added to message levels %1 and higher."
 msgstr ""
 
@@ -7379,8 +7379,8 @@ msgstr "Етапа"
 msgid "Stall"
 msgstr "Зауставити"
 
-#: share/html/Search/Simple.html:85
 #. (map { "<strong>$_</strong>" } 'queue:"Example Queue"', 'owner:email@example.com')
+#: share/html/Search/Simple.html:85
 msgid "Start the search term with the name of a supported field followed by a colon, as in %1 and %2, to explicitly specify the search type."
 msgstr "Започните појам за претрагу са називом подржаног поља праћеног двотачком, као у %1 и %2, како би експлицитно назначили тип претраге."
 
@@ -7412,13 +7412,13 @@ msgstr ""
 msgid "Status"
 msgstr "Статус"
 
-#: lib/RT/Record/Role/Status.pm:163
 #. ($self->loc($new), $self->loc($lifecycle->Type))
+#: lib/RT/Record/Role/Status.pm:163
 msgid "Status '%1' isn't a valid status for this %2."
 msgstr ""
 
-#: lib/RT/Ticket.pm:286
 #. ($self->loc($args{'Status'}))
+#: lib/RT/Ticket.pm:286
 msgid "Status '%1' isn't a valid status for tickets in this queue."
 msgstr "Статус '%1' није важећи статус за листић у овом реду"
 
@@ -7430,8 +7430,8 @@ msgstr "Промена статуса"
 msgid "Status Change in HTML"
 msgstr ""
 
-#: lib/RT/Transaction.pm:827
 #. ("'" . $self->loc( $canon->($self->OldValue) ) . "'",                    "'" . $self->loc( $canon->($self->NewValue) ) . "'")
+#: lib/RT/Transaction.pm:827
 msgid "Status changed from %1 to %2"
 msgstr "Статус је промењен из %1 у %2"
 
@@ -7447,7 +7447,6 @@ msgstr "Крађа"
 msgid "Steal tickets"
 msgstr "Крађа листића"
 
-#: share/html/Install/Basics.html:48 share/html/Install/DatabaseDetails.html:48 share/html/Install/DatabaseType.html:48 share/html/Install/Finish.html:48 share/html/Install/Global.html:48 share/html/Install/Initialize.html:48 share/html/Install/Sendmail.html:48
 #. (1, 7)
 #. (2, 7)
 #. (3, 7)
@@ -7455,11 +7454,12 @@ msgstr "Крађа листића"
 #. (5, 7)
 #. (6, 7)
 #. (7, 7)
+#: share/html/Install/Basics.html:48 share/html/Install/DatabaseDetails.html:48 share/html/Install/DatabaseType.html:48 share/html/Install/Finish.html:48 share/html/Install/Global.html:48 share/html/Install/Initialize.html:48 share/html/Install/Sendmail.html:48
 msgid "Step %1 of %2"
 msgstr "Корак %1 од %2"
 
-#: lib/RT/Transaction.pm:1128 lib/RT/Transaction.pm:964
 #. ($self->_FormatUser($Old))
+#: lib/RT/Transaction.pm:1128 lib/RT/Transaction.pm:964
 msgid "Stolen from %1"
 msgstr "Украден из %1"
 
@@ -7475,8 +7475,8 @@ msgstr "Тема"
 msgid "Subject Tag"
 msgstr "Ознака теме"
 
-#: lib/RT/Transaction.pm:992
 #. ($self->Data)
+#: lib/RT/Transaction.pm:992
 msgid "Subject changed to %1"
 msgstr "Тема промењена у %1"
 
@@ -7492,8 +7492,8 @@ msgstr "Пошаљи"
 msgid "Subscribe"
 msgstr "Претплати се"
 
-#: share/html/Dashboards/Subscription.html:290
 #. ($Dashboard->Name)
+#: share/html/Dashboards/Subscription.html:290
 msgid "Subscribe to dashboard %1"
 msgstr "Претплати се на инструмент таблу %1"
 
@@ -7501,8 +7501,8 @@ msgstr "Претплати се на инструмент таблу %1"
 msgid "Subscribe to dashboards"
 msgstr "Претплати се на инструмент табле"
 
-#: share/html/Dashboards/Subscription.html:275
 #. ($Dashboard->Name)
+#: share/html/Dashboards/Subscription.html:275
 msgid "Subscribed to dashboard %1"
 msgstr "Претплаћено на инструмент таблу %1"
 
@@ -7510,8 +7510,8 @@ msgstr "Претплаћено на инструмент таблу %1"
 msgid "Subscription"
 msgstr "Претплата"
 
-#: share/html/Dashboards/Subscription.html:280
 #. ($msg)
+#: share/html/Dashboards/Subscription.html:280
 msgid "Subscription could not be created: %1"
 msgstr "Није успело прављење претплате: %1"
 
@@ -7591,8 +7591,8 @@ msgstr "Подразумеване вредности система"
 msgid "System Error"
 msgstr "Системска грешка"
 
-#: lib/RT/Transaction.pm:270 lib/RT/Transaction.pm:276
 #. ($msg)
+#: lib/RT/Transaction.pm:270 lib/RT/Transaction.pm:276
 msgid "System Error: %1"
 msgstr "Системска грешка: %1"
 
@@ -7632,8 +7632,8 @@ msgstr "Реците нам нешто о томе како пронаћи ба�
 msgid "Template"
 msgstr "Шаблон"
 
-#: share/html/Admin/Elements/EditTemplates:111
 #. ($id)
+#: share/html/Admin/Elements/EditTemplates:111
 msgid "Template #%1 deleted"
 msgstr "Шаблон #%1 је обрисан"
 
@@ -7645,9 +7645,9 @@ msgstr ""
 msgid "Template '%1' is not global nor queue specific"
 msgstr ""
 
-#: lib/RT/Scrip.pm:167 lib/RT/Scrip.pm:844
 #. ($args{'Template'})
 #. ($value)
+#: lib/RT/Scrip.pm:167 lib/RT/Scrip.pm:844
 msgid "Template '%1' not found"
 msgstr "Шаблон '%1' није пронађен"
 
@@ -7679,13 +7679,13 @@ msgstr "Шаблон је рашчлањен"
 msgid "Template parsing error"
 msgstr "Грешка рашчлањивања шаблона"
 
-#: lib/RT/Template.pm:544 lib/RT/Template.pm:578 lib/RT/Template.pm:809
 #. ($Text::Template::ERROR)
+#: lib/RT/Template.pm:544 lib/RT/Template.pm:578 lib/RT/Template.pm:809
 msgid "Template parsing error: %1"
 msgstr "Грешка рашчлањивања шаблона: %1"
 
-#: share/html/Admin/Scrips/Objects.html:137
 #. ($msg)
+#: share/html/Admin/Scrips/Objects.html:137
 msgid "Template: %1"
 msgstr ""
 
@@ -7693,8 +7693,8 @@ msgstr ""
 msgid "Templates"
 msgstr "Шаблони"
 
-#: share/html/Admin/Queues/Templates.html:60
 #. ($QueueObj->Name)
+#: share/html/Admin/Queues/Templates.html:60
 msgid "Templates for queue %1"
 msgstr "Шаблони за ред %1"
 
@@ -7758,8 +7758,8 @@ msgstr "Основе"
 msgid "The CC of a ticket"
 msgstr "Индиго копија листића"
 
-#: lib/RT/Article.pm:625
 #. ($Value)
+#: lib/RT/Article.pm:625
 msgid "The Class of the Article identified by %1 is not applied to the current Queue"
 msgstr "Класа чланка идентификованог са %1 није примењена на тренутни ред"
 
@@ -7823,8 +7823,8 @@ msgstr "Страница коју сте захтевали није прона�
 msgid "The requestor of a ticket"
 msgstr "Захтевалац листића"
 
-#: share/html/Install/Finish.html:64
 #. (RT::Installer->ConfigFile)
+#: share/html/Install/Finish.html:64
 msgid "The settings you've chosen are stored in %1."
 msgstr "Подешавања која сте одабрали су смештена у %1."
 
@@ -7848,8 +7848,8 @@ msgstr "Постоје непрочитане поруке за овај лис�
 msgid "There is marginal trust in this key"
 msgstr "Постоји маргинално поверење у овај кључ"
 
-#: share/html/Admin/Groups/Modify.html:141
 #. ($Group->Name)
+#: share/html/Admin/Groups/Modify.html:141
 msgid "There is more than one group with the name '%1'.  This may cause inconsistency in parts of the admin interface, and therefore it's recommended you rename the conflicting groups."
 msgstr "Постоји више од једне групе са називом '%1'. Ово може проузроковати неусаглашеност између делова администраторског интерфејса и, према томе, препоручује се да преименујете групе које се сукобљавају."
 
@@ -7857,8 +7857,8 @@ msgstr "Постоји више од једне групе са називом '
 msgid "There is no key suitable for encryption."
 msgstr "Нема кључа погодног за шифровање."
 
-#: lib/RT/Record/Role/Status.pm:278
 #. ($old_lifecycle->Name, $new_lifecycle->Name)
+#: lib/RT/Record/Role/Status.pm:278
 msgid "There is no mapping for statuses between lifecycle %1 and %2. Contact your system administrator."
 msgstr ""
 
@@ -7866,8 +7866,8 @@ msgstr ""
 msgid "There is one suitable key, but trust level is not set."
 msgstr "Има само један погодан кључ, али ниво поверења није подешен."
 
-#: share/html/Search/Results.html:59
 #. ("<i>".$m->interp->apply_escapes($msg, "h")."</i>")
+#: share/html/Search/Results.html:59
 msgid "There was an error parsing your search query: %1.  Your RT admin can find more information in the error logs."
 msgstr ""
 
@@ -7907,8 +7907,8 @@ msgstr "Овај серверски процес није забележио н�
 msgid "This ticket cannot be resolved until it is approved."
 msgstr ""
 
-#: share/html/Ticket/Elements/ShowDependencyStatus:60
 #. ($depends)
+#: share/html/Ticket/Elements/ShowDependencyStatus:60
 msgid "This ticket cannot be resolved until its %numerate(%1,dependency is,dependencies are) resolved."
 msgstr ""
 
@@ -7920,8 +7920,8 @@ msgstr "Овај алат омогућава кориснику да покре�
 msgid "This transaction appears to have no content"
 msgstr "Изгледа да ова трансакција нема садржај"
 
-#: share/html/Ticket/Elements/ShowRequestorTickets:57
 #. ($Rows, $Description)
+#: share/html/Ticket/Elements/ShowRequestorTickets:57
 msgid "This user's %1 highest priority %2 tickets"
 msgstr "%1 %2 листића највишег приоритета овог корисника"
 
@@ -7941,41 +7941,41 @@ msgstr "Четвртак"
 msgid "Ticket"
 msgstr "Листић"
 
-#: share/html/Ticket/ModifyAll.html:48
 #. ($Ticket->Id, $Ticket->Subject)
+#: share/html/Ticket/ModifyAll.html:48
 msgid "Ticket #%1 Jumbo update: %2"
 msgstr "Листић #%1 Џамбо закрпа: %2"
 
-#: share/html/Ticket/Graphs/index.html:109
 #. ($id)
+#: share/html/Ticket/Graphs/index.html:109
 msgid "Ticket #%1 relationships graph"
 msgstr "Графикон односа листића #%1"
 
-#: share/html/Approvals/Elements/ShowDependency:69
 #. ($link->BaseObj->Id, $link->BaseObj->Subject)
+#: share/html/Approvals/Elements/ShowDependency:69
 msgid "Ticket #%1: %2"
 msgstr "Листић #%1: %2"
 
-#: lib/RT/Action/CreateTickets.pm:1094 lib/RT/Action/CreateTickets.pm:1103 lib/RT/Action/CreateTickets.pm:334 lib/RT/Action/CreateTickets.pm:453 lib/RT/Action/CreateTickets.pm:465
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
+#: lib/RT/Action/CreateTickets.pm:1094 lib/RT/Action/CreateTickets.pm:1103 lib/RT/Action/CreateTickets.pm:334 lib/RT/Action/CreateTickets.pm:453 lib/RT/Action/CreateTickets.pm:465
 msgid "Ticket %1"
 msgstr "Листић %1"
 
-#: lib/RT/Ticket.pm:549 lib/RT/Ticket.pm:571
 #. ($self->Id, $QueueObj->Name)
+#: lib/RT/Ticket.pm:549 lib/RT/Ticket.pm:571
 msgid "Ticket %1 created in queue '%2'"
 msgstr "Листић %1 направљен у реду  '%2'"
 
-#: share/html/Search/Bulk.html:283 share/html/Tools/MyDay.html:90 share/html/Tools/MyDay.html:93 share/html/Tools/MyDay.html:99
 #. ($Ticket->Id, $_)
 #. ($id, $msg)
+#: share/html/Search/Bulk.html:283 share/html/Tools/MyDay.html:90 share/html/Tools/MyDay.html:93 share/html/Tools/MyDay.html:99
 msgid "Ticket %1: %2"
 msgstr "Листић %1: %2"
 
-#: share/html/Ticket/History.html:48
 #. ($Ticket->Id, $Ticket->Subject)
+#: share/html/Ticket/History.html:48
 msgid "Ticket History # %1 %2"
 msgstr "Историја листића # %1 %2"
 
@@ -8035,8 +8035,8 @@ msgstr "Статус листића је промењен"
 msgid "Ticket update"
 msgstr "Закрпа листића"
 
-#: lib/RT/Search/FromSQL.pm:80
 #. (ref $self)
+#: lib/RT/Search/FromSQL.pm:80
 msgid "TicketSQL search module"
 msgstr "Модул претраге TicketSQL"
 
@@ -8044,13 +8044,13 @@ msgstr "Модул претраге TicketSQL"
 msgid "Tickets"
 msgstr "Листићи"
 
-#: lib/RT/Tickets.pm:1965
 #. ($self->loc( $args{'TYPE'} ),            $args{'BASE'},)
+#: lib/RT/Tickets.pm:1965
 msgid "Tickets %1 %2"
 msgstr "Листићи %1 %2"
 
-#: lib/RT/Tickets.pm:1922
 #. ($self->loc( $args{'TYPE'} ),            $args{'TARGET'})
+#: lib/RT/Tickets.pm:1922
 msgid "Tickets %1 by %2"
 msgstr "Листићи %1 од %2"
 
@@ -8106,18 +8106,18 @@ msgstr "Наслов"
 msgid "To"
 msgstr "За"
 
-#: share/html/Elements/Footer:59
 #. ('<a href="mailto:sales@bestpractical.com">sales@bestpractical.com</a>')
+#: share/html/Elements/Footer:59
 msgid "To inquire about support, training, custom development or licensing, please contact %1."
 msgstr "Како би се распитали о подршци, тренингу, прилагођеном развоју или лиценцирању, молим контактирајте %1."
 
-#: share/html/Admin/Tools/Queries.html:82
 #. ($count)
+#: share/html/Admin/Tools/Queries.html:82
 msgid "Toggle %quant(%1,query,queries)"
 msgstr "Пребаци %quant(%1, упит, упити)"
 
-#: share/html/Admin/Tools/Queries.html:118
 #. ()
+#: share/html/Admin/Tools/Queries.html:118
 msgid "Toggle stack trace"
 msgstr "Пребаци траг стека"
 
@@ -8197,8 +8197,8 @@ msgstr ""
 msgid "Transaction"
 msgstr "Трансакција"
 
-#: lib/RT/Transaction.pm:1169
 #. ($self->Data)
+#: lib/RT/Transaction.pm:1169
 msgid "Transaction %1 purged"
 msgstr "Трансакција %1 је очишћена"
 
@@ -8258,8 +8258,8 @@ msgstr "Тип"
 msgid "Type <b>a:</b> before article numbers and <b>t:</b> before ticket numbers."
 msgstr "Тип <b>a:</b> пре бројева чланака и <b>t:</b> пре бројева листића."
 
-#: lib/RT/CustomField.pm:1108
 #. ($self->FriendlyTypeComposite( $old ),        $self->FriendlyTypeComposite( $composite ),)
+#: lib/RT/CustomField.pm:1108
 msgid "Type changed from '%1' to '%2'"
 msgstr "Тип је промењен из '%1' у '%2'"
 
@@ -8267,13 +8267,13 @@ msgstr "Тип је промењен из '%1' у '%2'"
 msgid "Un-apply selected scrips"
 msgstr ""
 
-#: lib/RT/Record/Role/Links.pm:128
 #. ($self->loc($type), $msg)
+#: lib/RT/Record/Role/Links.pm:128
 msgid "Unable to add %1 link: %2"
 msgstr ""
 
-#: lib/RT/Class.pm:387 lib/RT/Class.pm:391
 #. ($cf->Name, $msg)
+#: lib/RT/Class.pm:387 lib/RT/Class.pm:391
 msgid "Unable to add Subject Override: %1 %2"
 msgstr ""
 
@@ -8281,8 +8281,8 @@ msgstr ""
 msgid "Unable to add topic membership"
 msgstr "Није успело додавање чланства за тему"
 
-#: lib/RT/Article.pm:485
 #. ($t->TopicObj->Name)
+#: lib/RT/Article.pm:485
 msgid "Unable to delete topic membership in %1"
 msgstr "Није успело брисање чланства за тему у %1"
 
@@ -8294,33 +8294,33 @@ msgstr "Није успело одређивање типа објекта ил�
 msgid "Unable to load article"
 msgstr "Није успело учитавање чланка"
 
-#: share/html/Admin/Tools/Theme.html:281
 #. ($msg)
+#: share/html/Admin/Tools/Theme.html:281
 msgid "Unable to set UserCSS: %1"
 msgstr "Није успело подешавање КорисникCSS: %1"
 
-#: share/html/Admin/Tools/Theme.html:253
 #. ($msg)
+#: share/html/Admin/Tools/Theme.html:253
 msgid "Unable to set UserLogo: %1"
 msgstr "Није усело подешавање КорисничкиЛого: %1"
 
-#: share/html/Search/Elements/EditSearches:280
 #. ($msg)
+#: share/html/Search/Elements/EditSearches:280
 msgid "Unable to set privacy id: %1"
 msgstr "Није успело подешавање идентификатора приватности: %1"
 
-#: share/html/Search/Elements/EditSearches:289
 #. (loc('Permission Denied'))
+#: share/html/Search/Elements/EditSearches:289
 msgid "Unable to set privacy object or id: %1"
 msgstr "Није успело подешавање објекта приватности или идентификатора: %1"
 
-#: share/html/Search/Elements/EditSearches:272
 #. ($msg)
+#: share/html/Search/Elements/EditSearches:272
 msgid "Unable to set privacy object: %1"
 msgstr "Није успело подешавање објекта приватности: %1"
 
-#: share/html/Dashboards/Subscription.html:263
 #. ($id)
+#: share/html/Dashboards/Subscription.html:263
 msgid "Unable to subscribe to dashboard %1: Permission Denied"
 msgstr ""
 
@@ -8328,8 +8328,8 @@ msgstr ""
 msgid "Unauthorized"
 msgstr ""
 
-#: share/html/Ticket/Elements/PreviewScrips:60 share/html/Ticket/Elements/ShowSimplifiedRecipients:100
 #. (RT->Config->Get('WebPath')."/Ticket/ModifyPeople.html?id=".$TicketObj->Id,)
+#: share/html/Ticket/Elements/PreviewScrips:60 share/html/Ticket/Elements/ShowSimplifiedRecipients:100
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr "Уклоните ознаку са поља како би онемогућили обавештења наведеним примаоцима <b>за само ову трансакцију</b>; упорним потискивањем се управља на <a href=\"%1\">Страница са људима</a>."
 
@@ -8357,19 +8357,19 @@ msgstr "Непознато (није додељена вредност пове�
 msgid "Unknown (this value is new to the system)"
 msgstr "Непознато (ова вредност је нова систему)"
 
-#: lib/RT/Attachment.pm:384 lib/RT/Record.pm:873
 #. ($ContentEncoding)
 #. ($self->ContentEncoding)
+#: lib/RT/Attachment.pm:384 lib/RT/Record.pm:873
 msgid "Unknown ContentEncoding %1"
 msgstr "Непознато ШифровањеСадржаја %1"
 
-#: lib/RT/Interface/Web/QueryBuilder/Tree.pm:269
 #. ($key)
+#: lib/RT/Interface/Web/QueryBuilder/Tree.pm:269
 msgid "Unknown field: %1"
 msgstr "Непознато поље: %1"
 
-#: share/html/Search/Simple.html:81
 #. ($status_str)
+#: share/html/Search/Simple.html:81
 msgid "Unless you specify a specific status, only tickets with active statuses (%1) are searched."
 msgstr "Уколико не назначите одређени статус, само листићи са активним статусима (%1) бивају претражени."
 
@@ -8461,15 +8461,15 @@ msgstr "Ажурирање није снимљено."
 msgid "Update ticket"
 msgstr "Ажурирај листић"
 
-#: share/html/SelfService/Update.html:107 share/html/SelfService/Update.html:49 share/html/m/ticket/reply:48
 #. ($Ticket->id)
 #. ($t->id)
+#: share/html/SelfService/Update.html:107 share/html/SelfService/Update.html:49 share/html/m/ticket/reply:48
 msgid "Update ticket #%1"
 msgstr "Ажурирај листић #%1"
 
-#: share/html/Ticket/Update.html:226 share/html/m/ticket/reply:175
 #. ($TicketObj->id, $TicketObj->Subject||'')
 #. ($t->id, $t->Subject)
+#: share/html/Ticket/Update.html:226 share/html/m/ticket/reply:175
 msgid "Update ticket #%1 (%2)"
 msgstr "Ажурирај листић #%1 (%2)"
 
@@ -8489,8 +8489,8 @@ msgstr "Ажурирано"
 msgid "Updated by"
 msgstr ""
 
-#: share/html/Search/Elements/EditSearches:294
 #. ($desc)
+#: share/html/Search/Elements/EditSearches:294
 msgid "Updated saved search \"%1\""
 msgstr "Ажурирана сачувана претрага \"%1\""
 
@@ -8498,8 +8498,8 @@ msgstr "Ажурирана сачувана претрага \"%1\""
 msgid "UpdatedBy"
 msgstr ""
 
-#: share/html/Admin/Elements/UpgradeHistoryRow:56
 #. ($row->{'from'}, $row->{'to'})
+#: share/html/Admin/Elements/UpgradeHistoryRow:56
 msgid "Upgrade from %1 to %2"
 msgstr ""
 
@@ -8551,8 +8551,8 @@ msgstr "Користити распоред у две колоне за форм
 msgid "Use autocomplete to find owners?"
 msgstr "Користити  аутоматско довршавање за проналажење власника?"
 
-#: share/html/Widgets/Form/Boolean:68
 #. ($DefaultValue? loc('Yes'): loc('No'))
+#: share/html/Widgets/Form/Boolean:68
 msgid "Use default (%1)"
 msgstr "Користи подразумевано (%1)"
 
@@ -8560,8 +8560,8 @@ msgstr "Користи подразумевано (%1)"
 msgid "Use other RT administrative tools"
 msgstr "Користи друге РТ административне алате"
 
-#: share/html/Widgets/Form/Select:125
 #. (join ', ', map loc($ValuesLabel{$_} || $_), grep defined,            @DefaultValue)
+#: share/html/Widgets/Form/Select:125
 msgid "Use system default (%1)"
 msgstr "Користи подразумеване системске вредности (%1)"
 
@@ -8577,13 +8577,13 @@ msgstr ""
 msgid "User"
 msgstr "Корисник"
 
-#: share/html/User/Summary.html:77
 #. ($User->Name)
+#: share/html/User/Summary.html:77
 msgid "User %1 is currently disabled."
 msgstr ""
 
-#: share/html/User/Summary.html:74
 #. ($User->Name)
+#: share/html/User/Summary.html:74
 msgid "User %1 is currently disabled. Edit the user and select \"Let this user access RT\" to enable."
 msgstr ""
 
@@ -8619,13 +8619,13 @@ msgstr ""
 msgid "User Summary"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3202
 #. ($cf->Name, ref $args{'Object'},                    $args{'Object'}->id)
+#: lib/RT/Interface/Web.pm:3202
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
 msgstr "Корисник је затражио непознат тип закрпе за прилагођено поље %1 за %2 објекат #%3"
 
-#: share/html/Admin/Users/Modify.html:280
 #. ($msg)
+#: share/html/Admin/Users/Modify.html:280
 msgid "User could not be created: %1"
 msgstr "Није успело прављење корисника: %1"
 
@@ -8653,8 +8653,8 @@ msgstr "Корисник је учитан"
 msgid "User-defined groups"
 msgstr "Кориснички дефинисане групе"
 
-#: share/html/User/Summary.html:48
 #. ($User->Format)
+#: share/html/User/Summary.html:48
 msgid "User: %1"
 msgstr ""
 
@@ -8674,8 +8674,8 @@ msgstr "Корисници"
 msgid "Users matching search criteria"
 msgstr "Корисници који одговарају критеријуму претраге"
 
-#: bin/rt-crontool:166
 #. ($txn->id)
+#: bin/rt-crontool:166
 msgid "Using transaction #%1..."
 msgstr "Користим трансакцију #%1..."
 
@@ -8959,13 +8959,13 @@ msgstr "Телефон на послу"
 msgid "Worked"
 msgstr "Рађено"
 
-#: lib/RT/Transaction.pm:1164
 #. (sprintf("%.1f", $duration / 60), $duration)
+#: lib/RT/Transaction.pm:1164
 msgid "Worked %quant(%1,hour,hours) (%quant(%2,minute,minutes))"
 msgstr ""
 
-#: lib/RT/Transaction.pm:1162
 #. ($duration)
+#: lib/RT/Transaction.pm:1162
 msgid "Worked %quant(%1,minute,minutes)"
 msgstr ""
 
@@ -8977,13 +8977,13 @@ msgstr ""
 msgid "Yes"
 msgstr "Да"
 
-#: share/html/Errors/WebRemoteUser/NoInternalUser:49
 #. ($ARGS{User})
+#: share/html/Errors/WebRemoteUser/NoInternalUser:49
 msgid "You (%1) are not authorized to use RT."
 msgstr ""
 
-#: share/html/Dashboards/Render.html:85
 #. ($edit, $subscription)
+#: share/html/Dashboards/Render.html:85
 msgid "You <a href=\"%1\">may edit this dashboard</a> and <a href=\"%2\">your subscription</a> to it in RT."
 msgstr "Ви <a href=\"%1\">можете уређивати ову инструмент таблу</a> и <a href=\"%2\">ваше претплате</a> на њу у РТ-у."
 
@@ -9003,8 +9003,8 @@ msgstr ""
 msgid "You are not authorized to use RT."
 msgstr ""
 
-#: share/html/Ticket/Elements/ShowUpdateStatus:54
 #. (RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id. "#txn-".$txn->id, RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id ."&MarkAsSeen=1&Anchor=txn-" . $txn->id)
+#: share/html/Ticket/Elements/ShowUpdateStatus:54
 msgid "You can <a href=\"%1\">jump to the first unread message</a> or <a href=\"%2\">jump to the first unread message and mark all messages as seen</a>."
 msgstr "Ви можете <a href=\"%1\">да скокнете до прве непрочитане поруке</a> или <a href=\"%2\">да скокнете до прве непрочитане поруке и означите све поруке као погледане</a>."
 
@@ -9040,13 +9040,13 @@ msgstr ""
 msgid "You can only take tickets that are unowned"
 msgstr "Ви можете узети само оне листиће који немају власника"
 
-#: share/html/Search/Simple.html:71
 #. ($fulltext_keyword)
+#: share/html/Search/Simple.html:71
 msgid "You can search for any word in full ticket history by typing <b>%1<i>word</i></b>."
 msgstr "Можете претражити било коју реч у целој историји листића куцајући <b>%1<i>реч</i></b>."
 
-#: lib/RT/Record/Role/Status.pm:167
 #. ($self->loc($old), $self->loc($new))
+#: lib/RT/Record/Role/Status.pm:167
 msgid "You can't change status from '%1' to '%2'."
 msgstr "Не можете променити статус из '%1' у '%2'."
 
@@ -9090,8 +9090,8 @@ msgstr ""
 msgid "You must set a correspondence address for this queue in order to configure a private key."
 msgstr ""
 
-#: share/html/Install/Finish.html:56
 #. ('<tt>root</tt>')
+#: share/html/Install/Finish.html:56
 msgid "You should be taken directly to a login page. You'll be able to log in with username of %1 and the password you set earlier."
 msgstr "Требало би да будете директно преусмерени на страницу за пријављивање. Моћи ћете да се пријавите са корисничким именом %1 и лозинком коју сте подесили раније."
 
@@ -9103,8 +9103,8 @@ msgstr "Требало би да изаберете базу података к
 msgid "You were logged out of RT by your authentication system.  This may be a temporary hiccup, in which case refreshing this page may help."
 msgstr ""
 
-#: share/html/Install/index.html:79
 #. (loc("Let's go!"))
+#: share/html/Install/index.html:79
 msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click \"%1\" below, RT will guide you through setting up your RT server and database."
 msgstr "Ви видите овај екран јер сте покренули РТ сервер без базе података која ради. Највероватније ви први пут покрећете РТ. Уколико кликнете на \"%1\" испод, РТ ће вас провести кроз постављање вашег РТ сервера и базе података."
 
@@ -9116,8 +9116,8 @@ msgstr "Добро дошли сте да се поново пријавите"
 msgid "Your password is not set."
 msgstr "Ваша лозинка није подешена."
 
-#: share/html/Admin/Tools/Theme.html:65
 #. ($valid_image_types)
+#: share/html/Admin/Tools/Theme.html:65
 msgid "Your system supports automatic color suggestions for: %1"
 msgstr "Ваш систем подржава аутоматске сугестије боја за: %1"
 
@@ -9237,8 +9237,8 @@ msgstr "направи листић"
 msgid "daily"
 msgstr "дневно"
 
-#: share/html/Elements/RT__Dashboard/ColumnMap:96
 #. ($hour)
+#: share/html/Elements/RT__Dashboard/ColumnMap:96
 msgid "daily at %1"
 msgstr "дневно у %1"
 
@@ -9322,13 +9322,13 @@ msgstr "веће од"
 msgid "group"
 msgstr "група"
 
-#: lib/RT/Transaction.pm:786
 #. ($principal->Object->Name)
+#: lib/RT/Transaction.pm:786
 msgid "group %1"
 msgstr ""
 
-#: lib/RT/Group.pm:115
 #. ($self->Name)
+#: lib/RT/Group.pm:115
 msgid "group '%1'"
 msgstr "група '%1'"
 
@@ -9344,9 +9344,9 @@ msgstr "идентификатор"
 msgid "immediately"
 msgstr ""
 
-#: share/html/Articles/Article/PreCreate.html:57 share/html/Articles/Article/Search.html:66
 #. ($Class->Name)
 #. ($class->Name)
+#: share/html/Articles/Article/PreCreate.html:57 share/html/Articles/Article/Search.html:66
 msgid "in class %1"
 msgstr "у класи %1"
 
@@ -9354,8 +9354,8 @@ msgstr "у класи %1"
 msgid "inactive"
 msgstr "неактивно"
 
-#: share/html/Admin/Elements/EditRights:189
 #. ($inc)
+#: share/html/Admin/Elements/EditRights:189
 msgid "includes %1"
 msgstr "укључује %1"
 
@@ -9363,8 +9363,8 @@ msgstr "укључује %1"
 msgid "index"
 msgstr "индекс"
 
-#: lib/RT/Interface/Web.pm:2978
 #. ($due)
+#: lib/RT/Interface/Web.pm:2978
 msgid "invalid due date: %1"
 msgstr ""
 
@@ -9432,8 +9432,8 @@ msgstr "измените ваше преференције"
 msgid "monthly"
 msgstr "месечно"
 
-#: share/html/Elements/RT__Dashboard/ColumnMap:93
 #. ($Subscription->SubValue('Dom'), $hour)
+#: share/html/Elements/RT__Dashboard/ColumnMap:93
 msgid "monthly (day %1) at %2"
 msgstr "месечно (дан %1) у %2"
 
@@ -9505,8 +9505,8 @@ msgstr "додатак је вратио празан списак"
 msgid "px"
 msgstr ""
 
-#: lib/RT/Group.pm:123
 #. ($queue->Name, $self->Name)
+#: lib/RT/Group.pm:123
 msgid "queue %1 %2"
 msgstr "ред %1 %2"
 
@@ -9554,13 +9554,13 @@ msgstr "изјава"
 msgid "summary rows"
 msgstr "редови сажетка"
 
-#: lib/RT/Group.pm:118
 #. ($self->Name)
+#: lib/RT/Group.pm:118
 msgid "system %1"
 msgstr "систем %1"
 
-#: lib/RT/Group.pm:134
 #. ($self->Name)
+#: lib/RT/Group.pm:134
 msgid "system group '%1'"
 msgstr "системска група '%1'"
 
@@ -9584,8 +9584,8 @@ msgstr "подразумевана адреса која ће бити испи�
 msgid "the default addresses that will be listed in From: and Reply-To: headers of correspondence mail."
 msgstr "подразумевана адреса која ће бити исписана у  From: и Reply-To: заглављима поште преписке."
 
-#: lib/RT/Group.pm:126
 #. ($self->Instance, $self->Name)
+#: lib/RT/Group.pm:126
 msgid "ticket #%1 %2"
 msgstr "листић #%1 %2"
 
@@ -9597,8 +9597,8 @@ msgstr "одозго на доле"
 msgid "ultimate"
 msgstr "коначно"
 
-#: lib/RT/Group.pm:137
 #. ($self->Id)
+#: lib/RT/Group.pm:137
 msgid "undescribed group %1"
 msgstr "група без описа %1"
 
@@ -9622,8 +9622,8 @@ msgstr "ажурирај чланак"
 msgid "user"
 msgstr "корисник"
 
-#: lib/RT/Group.pm:112
 #. ($user->Object->Name)
+#: lib/RT/Group.pm:112
 msgid "user %1"
 msgstr "корисник %1"
 
@@ -9635,8 +9635,8 @@ msgstr "Корисничко име"
 msgid "weekly"
 msgstr "недељно"
 
-#: share/html/Elements/RT__Dashboard/ColumnMap:90
 #. (loc($day), $hour)
+#: share/html/Elements/RT__Dashboard/ColumnMap:90
 msgid "weekly (on %1) at %2"
 msgstr "недељно ( %1 у %2)"
 
@@ -9644,8 +9644,8 @@ msgstr "недељно ( %1 у %2)"
 msgid "weeks"
 msgstr "седмице"
 
-#: share/html/Elements/LoginRedirectWarning:64
 #. ("<strong>$consequence</strong>")
+#: share/html/Elements/LoginRedirectWarning:64
 msgid "which may %1 on your behalf."
 msgstr "који може да %1 у ваше име."
 
