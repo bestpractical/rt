@@ -88,6 +88,10 @@ Second file is F<RT_SiteConfig.pm> - site config file. You can use it
 to customize your RT instance. In this file you can override any option
 listed in core config file.
 
+You may also split settings into separate files under the
+F<etc/RT_SiteConfig.d/> directory.  All files ending in C<.pm> will be parsed,
+in alphabetical order, after F<RT_SiteConfig.pm> is loaded.
+
 RT extensions could also provide their config files. Extensions should
 use F<< <NAME>_Config.pm >> and F<< <NAME>_SiteConfig.pm >> names for
 config files, where <NAME> is extension name.
@@ -1015,13 +1019,19 @@ sub LoadConfig {
     my $self = shift;
     my %args = ( File => '', @_ );
     $args{'File'} =~ s/(?<!Site)(?=Config\.pm$)/Site/;
-    if ( $args{'File'} eq 'RT_SiteConfig.pm'
-        and my $site_config = $ENV{RT_SITE_CONFIG} )
-    {
-        $self->_LoadConfig( %args, File => $site_config );
+    if ( $args{'File'} eq 'RT_SiteConfig.pm' ) {
+        my $load = $ENV{RT_SITE_CONFIG} || $args{'File'};
+        $self->_LoadConfig( %args, File => $load );
         # to allow load siteconfig again and again in case it's updated
-        delete $INC{ $site_config };
-    } else {
+        delete $INC{$load};
+
+        my $dir = $ENV{RT_SITE_CONFIG_DIR} || "$RT::EtcPath/RT_SiteConfig.d";
+        for my $file ( sort <$dir/*.pm> ) {
+            $self->_LoadConfig( %args, File => $file, Site => 1, Extension => '' );
+            delete $INC{$file};
+        }
+    }
+    else {
         $self->_LoadConfig(%args);
         delete $INC{$args{'File'}};
     }
@@ -1036,7 +1046,11 @@ sub _LoadConfig {
     my %args = ( File => '', @_ );
 
     my ($is_ext, $is_site);
-    if ( $args{'File'} eq ($ENV{RT_SITE_CONFIG}||'') ) {
+    if ( defined $args{Site} && defined $args{Extension} ) {
+        $is_ext = $args{Extension};
+        $is_site = $args{Site};
+    }
+    elsif ( $args{'File'} eq ($ENV{RT_SITE_CONFIG}||'') ) {
         ($is_ext, $is_site) = ('', 1);
     } else {
         $is_ext = $args{'File'} =~ /^(?!RT_)(?:(.*)_)(?:Site)?Config/ ? $1 : '';

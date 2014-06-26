@@ -454,6 +454,7 @@ doc-install:
 
 etc-install:
 @COMMENT_INPLACE_LAYOUT@	[ -d $(DESTDIR)$(RT_ETC_PATH) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(RT_ETC_PATH)
+@COMMENT_INPLACE_LAYOUT@	[ -d "$(DESTDIR)$(RT_ETC_PATH)/RT_SiteConfig.d" ] || $(INSTALL) -m 0755 -d "$(DESTDIR)$(RT_ETC_PATH)/RT_SiteConfig.d"
 @COMMENT_INPLACE_LAYOUT@	for file in $(ETC_FILES) ; do \
 @COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -m 0644 "etc/$$file" "$(DESTDIR)$(RT_ETC_PATH)/" ; \
 @COMMENT_INPLACE_LAYOUT@	done
