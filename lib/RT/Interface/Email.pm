@@ -1839,17 +1839,22 @@ sub _HTMLFormatter {
                         if $wanted;
                     next;
                 }
-            } elsif (not defined $package->program_version) {
-                RT->Logger->warn("Could not find or run external '$prog' HTML formatter in \$PATH ($ENV{PATH}) -- you may need to install it or provide the full path")
-                    if $wanted;
-                next;
+            } else {
+                local $ENV{PATH} = '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+                    unless defined $ENV{PATH};
+                if (not defined $package->program_version) {
+                    RT->Logger->warn("Could not find or run external '$prog' HTML formatter in \$PATH ($ENV{PATH}) -- you may need to install it or provide the full path")
+                        if $wanted;
+                    next;
+                }
             }
 
             RT->Logger->info("Using $prog for HTML -> text conversion");
             $formatter = sub {
                 my $html = shift;
                 RT::Util::safe_run_child {
-                    local $ENV{PATH} = $path || $ENV{PATH};
+                    local $ENV{PATH} = $path || $ENV{PATH}
+                        || '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin';
                     $package->format_string($html, leftmargin => 0, rightmargin => 78);
                 };
             };
