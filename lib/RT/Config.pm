@@ -88,7 +88,7 @@ Second file is F<RT_SiteConfig.pm> - site config file. You can use it
 to customize your RT instance. In this file you can override any option
 listed in core config file.
 
-RT extensions could also provide thier config files. Extensions should
+RT extensions could also provide their config files. Extensions should
 use F<< <NAME>_Config.pm >> and F<< <NAME>_SiteConfig.pm >> names for
 config files, where <NAME> is extension name.
 
