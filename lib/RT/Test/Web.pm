@@ -67,6 +67,12 @@ sub new {
     my $self = $instance = $class->SUPER::new(@args);
     weaken $instance;
     $self->cookie_jar(HTTP::Cookies->new);
+    # Clear our caches of anything that the server process may have done
+    $self->add_handler(
+        response_done => sub {
+            RT::Record->FlushCache;
+        },
+    ) if RT::Record->can( "FlushCache" );
 
     return $self;
 }
