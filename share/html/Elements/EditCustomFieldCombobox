@@ -52,7 +52,7 @@
 % }
 % (!$Multiple or !$MaxValues or !$Values or $Values->Count < $MaxValues) or return;
 <& /Widgets/ComboBox,
-    Name    => $Name,
+    Name    => $name,
     Default => $Default,
     Rows    => $Rows,
     Class   => "CF-".$CustomField->id."-Edit",
