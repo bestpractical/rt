@@ -68,7 +68,6 @@ $m->form_name('UpdateReminders');
 $m->field("Reminder-Subject-$reminder_id" => "changed the subject");
 $m->submit;
 
-DBIx::SearchBuilder::Record::Cachable->FlushCache;
 $reminder = RT::Ticket->new($user);
 $reminder->Load($reminder_id);
 is($reminder->Subject, 'changed the subject');
@@ -79,7 +78,6 @@ $m->form_name('UpdateReminders');
 $m->tick("Complete-Reminder-$reminder_id" => 1);
 $m->submit;
 
-DBIx::SearchBuilder::Record::Cachable->FlushCache;
 $reminder = RT::Ticket->new($user);
 $reminder->Load($reminder_id);
 is($reminder->Status, 'resolved');
@@ -101,7 +99,6 @@ $m->goto_ticket($ticket->id);
 $m->form_name('UpdateReminders');
 $m->submit;
 
-DBIx::SearchBuilder::Record::Cachable->FlushCache;
 $reminder = RT::Ticket->new($user);
 $reminder->Load($reminder_id);
 is($reminder->Status, 'resolved');
