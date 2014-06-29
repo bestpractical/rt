@@ -110,7 +110,12 @@ else {
             $due->SetToNow;
         }
 
-        $starts->SetToNow;
+        if ( $queue->DefaultValue('Starts') ) {
+            $starts->Set( Format => 'unknown', Value => $queue->DefaultValue('Starts') );
+        }
+        else {
+            $starts->SetToNow;
+        }
 
         return [
             "# Required: id, Queue",

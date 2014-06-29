@@ -79,6 +79,7 @@
 <div class="ticket-info-dates">
     <&|/Widgets/TitleBox, title => loc("Dates") &>
     <table>
+    <tr><td class="label"><&|/l&>Starts</&>:</td><td><& /Elements/SelectDate, Name => "Starts", Default => $queue->DefaultValue('Starts') || '' &></td></tr>
     <tr><td class="label"><&|/l&>Due</&>:</td><td><& /Elements/SelectDate, Name => "Due", Default => $queue->DefaultValue('Due') || '' &></td></tr>
     <& /Elements/EditCustomFields,
         NamePrefix => 'Default-',
@@ -152,7 +153,7 @@ if ( $ARGS{Reset} ) {
     }
 }
 elsif ( $ARGS{Update} ) {
-    for my $field ( qw/InitialPriority FinalPriority Due/ ) {
+    for my $field ( qw/InitialPriority FinalPriority Starts Due/ ) {
         my ($ret, $msg) = $queue->SetDefaultValue(
             Name => $field,
             Value => $ARGS{$field},

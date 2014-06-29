@@ -380,7 +380,7 @@ $showrows->(
 
 <%perl>
 $showrows->(
-    loc("Starts") => $m->scomp( "/Elements/SelectDate", Name => "Starts", Default => ( $ARGS{Starts} || '' )),
+    loc("Starts") => $m->scomp( "/Elements/SelectDate", Name => "Starts", Default => ( $ARGS{Starts} || $QueueObj->DefaultValue('Starts') || '' )),
     loc("Due")    => $m->scomp( "/Elements/SelectDate", Name => "Due",    Default => ($ARGS{Due} || $QueueObj->DefaultValue('Due') || '' ))
 );
 

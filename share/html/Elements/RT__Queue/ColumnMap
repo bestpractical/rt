@@ -73,6 +73,10 @@ my $COLUMN_MAP = {
         title     => 'DefaultDueIn', # loc
         value     => sub { return $_[0]->DefaultValue('Due') || '' },
     },
+    DefaultStarts => {
+        title     => 'DefaultStarts', # loc
+        value     => sub { return $_[0]->DefaultValue('Starts') || '' },
+    },
     Address  => {
         title     => 'Address', # loc
         value     => sub { return ($_[0]->CorrespondAddress||'-') .'/'. ($_[0]->CommentAddress||'-') },

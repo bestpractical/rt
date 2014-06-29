@@ -330,6 +330,9 @@ sub Create {
     if ( defined $args{'Starts'} ) {
         $Starts->Set( Format => 'ISO', Value => $args{'Starts'} );
     }
+    elsif ( my $default = $QueueObj->DefaultValue('Starts') ) {
+        $Starts->Set( Format => 'unknown', Value => $default );
+    }
 
     my $Started = RT::Date->new( $self->CurrentUser );
     if ( defined $args{'Started'} ) {
