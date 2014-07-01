@@ -1,0 +1,224 @@
+#!/usr/bin/env perl 
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
+use strict;
+use warnings;
+
+use Locale::PO;
+use Getopt::Long;
+use File::Temp 'tempdir';
+
+use constant PO_DIR => 'share/po';
+
+use constant BOUNDARY => 20;
+
+sub usage {
+    warn @_, "\n\n" if @_;
+    warn <<'    USAGE';
+usages:
+
+    rt-message-catalog stats [po-directory]
+    rt-message-catalog clean
+    rt-message-catalog rosetta download-url
+    rt-message-catalog extract [po-file ...]
+
+stats: Print stats for each translation.
+
+clean: Remove unused and identity translations
+
+rosetta: Merge translations from Launchpad's Rosetta; Requires a
+  Launchpad translations export url.
+
+extract: Extract message catalogs from source code and report common errors.
+
+    If passed a specific translation file, only that file is updated.
+    (Not recommended except for debugging.)
+
+    USAGE
+    exit 1;
+}
+
+my $command = shift;
+usage() unless $command;
+usage("Unknown command '$command'")
+    unless main->can($command);
+
+main->can($command)->( @ARGV );
+
+exit;
+
+sub stats {
+    my $dir = shift || PO_DIR;
+
+    my $max = 0;
+    my %res = ();
+
+    foreach my $po_file (<$dir/*.po>) {
+        my $array = Locale::PO->load_file_asarray( $po_file, "utf-8" );
+
+        $res{$po_file} = 0;
+
+        my $size = 0;
+        foreach my $entry ( splice @$array, 1 ) {
+            next if $entry->obsolete;
+            next if $entry->reference && $entry->reference =~ /NOT FOUND IN SOURCE/;
+            $size++;
+            next unless length $entry->dequote( $entry->msgstr );
+            $res{$po_file}++;
+        }
+        $max = $size if $max < $size;
+    }
+
+    my $width = length($max);
+    foreach my $po_file ( sort { $res{$b} <=> $res{$a} } keys %res ) {
+        my $tr = $res{$po_file};
+        my $perc = int($tr*1000/$max)/10;
+        printf "%-20s %${width}d/%${width}d (%.1f%%)\n", "$po_file:", $tr, $max, $perc;
+    }
+}
+
+sub clean {
+    my $dir = shift || PO_DIR;
+
+    foreach my $po_file (<$dir/*.po>) {
+        my $array = Locale::PO->load_file_asarray( $po_file, "utf-8" );
+        foreach my $entry ( splice @$array, 1 ) {
+            # Replace identical translations with the empty string
+            $entry->msgstr("") if $entry->msgstr eq $entry->msgid;
+
+            # Skip NOT FOUND IN SOURCE entries
+            next if $entry->obsolete;
+            next if $entry->reference && $entry->reference =~ /NOT FOUND IN SOURCE/;
+
+            push @$array, $entry;
+        }
+        Locale::PO->save_file_fromarray($po_file, $array, "utf-8");
+    }
+}
+
+sub rosetta {
+    my $url = shift or die 'must provide Rosetta download url or directory with new po files';
+
+    my $dir;
+    if ( $url =~ m{^[a-z]+://} ) {
+        $dir = tempdir();
+        my ($fname) = $url =~ m{([^/]+)$};
+
+        print "Downloading $url\n";
+        require LWP::Simple;
+        LWP::Simple::getstore($url => "$dir/$fname");
+
+        print "Extracting $dir/$fname\n";
+        require Archive::Extract;
+        my $ae = Archive::Extract->new(archive => "$dir/$fname");
+        my $ok = $ae->extract( to => $dir );
+    }
+    elsif ( -e $url && -d _ ) {
+        $dir = $url;
+    }
+    else {
+        die "Is not URL or directory: '$url'";
+    }
+
+    my @files = ( <$dir/*/*/*.po>, <$dir/*/*.po>, <$dir/*.po> );
+    unless ( @files ) {
+        print STDERR "No files in $dir/rt/*.po and $dir/*.po\n";
+        exit;
+    }
+
+    for my $file ( @files ) {
+        my ($lang) = $file =~ m/([\w_]+)\.po/;
+        my $fn_orig = PO_DIR . "/$lang.po";
+
+        my $load_from = $fn_orig;
+        $load_from = PO_DIR . "/rt.pot" unless -e $load_from;
+        my $orig = Locale::PO->load_file_ashash( $fn_orig, "utf-8" );
+
+        print "$file -> $fn_orig\n";
+
+        my $rosetta = Locale::PO->load_file_asarray( $file, "utf-8" );
+
+        # We're merging in the current hash as fallbacks for the rosetta hash
+        my $translated = 0;
+        foreach my $entry ( splice @$rosetta, 1 ) {
+            # Skip no longer in source entries
+            next if $entry->obsolete;
+            next if $entry->reference && $entry->reference =~ /NOT FOUND IN SOURCE/;
+
+            # Update to what the old po file had, if we have nothing
+            my $oldval = $orig->{$entry->msgid};
+            if (not length $entry->dequote($entry->msgstr) and $oldval) {
+                $entry->msgstr($oldval->dequote($oldval->msgstr));
+            }
+
+            # Replace identical translations with the empty string
+            $entry->msgstr("") if $entry->msgstr eq $entry->msgid;
+
+            # Drop "fuzzy" information
+            $entry->fuzzy_msgctxt(undef);
+            $entry->fuzzy_msgid(undef);
+            $entry->fuzzy_msgid_plural(undef);
+
+            $translated++ if length $entry->dequote($entry->msgstr);
+            push @$rosetta, $entry;
+        }
+
+        my $perc = int($translated/(@$rosetta - 1) * 100 + 0.5);
+        if ( $perc < BOUNDARY and $lang !~ /^en(_[A-Z]{2})?$/) {
+            unlink $fn_orig;
+            next;
+        }
+
+        Locale::PO->save_file_fromarray($fn_orig, $rosetta, "utf-8");
+    }
+    extract();
+}
+
+sub extract {
+    system($^X, 'devel/tools/extract-message-catalog', @_);
+}
