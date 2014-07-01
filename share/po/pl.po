@@ -2560,7 +2560,7 @@ msgstr "Domyślnie: %1/%2 zmieniane z \"%3\" na \"%4\""
 msgid "DefaultFormat"
 msgstr ""
 
-#: etc/RT_Config.pm:2798 etc/RT_Config.pm:2874 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:892 share/html/Elements/Tabs:917 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:2788 etc/RT_Config.pm:2832 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:892 share/html/Elements/Tabs:917 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
 msgid "Delete"
 msgstr "Usuń"
 
@@ -5662,7 +5662,7 @@ msgstr "Pokaż pola definiowane przez użytkownika tylko dla:"
 msgid "Open Inactive Tickets"
 msgstr ""
 
-#: etc/RT_Config.pm:2786 etc/RT_Config.pm:2815 etc/RT_Config.pm:2862 etc/RT_Config.pm:2891
+#: etc/RT_Config.pm:2785 etc/RT_Config.pm:2792 etc/RT_Config.pm:2829 etc/RT_Config.pm:2836
 msgid "Open It"
 msgstr "Otwórz"
 
@@ -6311,7 +6311,7 @@ msgstr ""
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr ""
 
-#: etc/RT_Config.pm:2818 etc/RT_Config.pm:2822 etc/RT_Config.pm:2894 etc/RT_Config.pm:2898
+#: etc/RT_Config.pm:2793 etc/RT_Config.pm:2794 etc/RT_Config.pm:2837 etc/RT_Config.pm:2838
 msgid "Re-open"
 msgstr "Otwórz ponownie"
 
@@ -6452,7 +6452,7 @@ msgstr ""
 msgid "Refused to add link which would create a circular relationship"
 msgstr ""
 
-#: etc/RT_Config.pm:2794 etc/RT_Config.pm:2810 etc/RT_Config.pm:2870 etc/RT_Config.pm:2886
+#: etc/RT_Config.pm:2787 etc/RT_Config.pm:2791 etc/RT_Config.pm:2831 etc/RT_Config.pm:2835
 msgid "Reject"
 msgstr "Odrzuć"
 
@@ -6481,7 +6481,7 @@ msgstr ""
 
 #. ($args->{'NewReminder-Subject'}, loc("Created"))
 #. ($old_subject || $reminder->Subject, $_)
-#: lib/RT/Interface/Web.pm:2985 lib/RT/Interface/Web.pm:3003
+#: lib/RT/Interface/Web.pm:2983 lib/RT/Interface/Web.pm:3001
 msgid "Reminder '%1': %2"
 msgstr "Przypomnienie '%1': %2"
 
@@ -6596,7 +6596,7 @@ msgstr ""
 msgid "Residence"
 msgstr "Tel. domowy"
 
-#: etc/RT_Config.pm:2790 etc/RT_Config.pm:2806 etc/RT_Config.pm:2866 etc/RT_Config.pm:2882 share/html/Search/Elements/EditFormat:75
+#: etc/RT_Config.pm:2786 etc/RT_Config.pm:2790 etc/RT_Config.pm:2830 etc/RT_Config.pm:2834 share/html/Search/Elements/EditFormat:75
 msgid "Resolve"
 msgstr "Zamknij"
 
@@ -6684,7 +6684,7 @@ msgstr ""
 msgid "Role group exists already"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3817
+#: lib/RT/Interface/Web.pm:3813
 msgid "Roles"
 msgstr "Role"
 
@@ -7377,7 +7377,7 @@ msgstr ""
 msgid "Stage"
 msgstr "Etap"
 
-#: etc/RT_Config.pm:2802 etc/RT_Config.pm:2878
+#: etc/RT_Config.pm:2789 etc/RT_Config.pm:2833
 msgid "Stall"
 msgstr "Zamroź"
 
@@ -7577,7 +7577,7 @@ msgstr "Niedziela"
 msgid "Suspended"
 msgstr "Zawieszony"
 
-#: lib/RT/Interface/Web.pm:3774
+#: lib/RT/Interface/Web.pm:3770
 msgid "System"
 msgstr ""
 
@@ -8335,7 +8335,7 @@ msgstr ""
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr "Nie zaznaczaj pola by wyłączyć powiadomienia do podanych odbiorców <b>ale tylko dla tej transakcji</b>; usuwanie odbiorców na stałe możliwe jest przez stronę <a href=\"%1\">Osoby</a>."
 
-#: etc/RT_Config.pm:2826 etc/RT_Config.pm:2902
+#: etc/RT_Config.pm:2795 etc/RT_Config.pm:2839
 msgid "Undelete"
 msgstr ""
 
@@ -8601,7 +8601,7 @@ msgstr "Definiowany przez użytkownika"
 msgid "User Defined conditions and results"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3792
+#: lib/RT/Interface/Web.pm:3788
 msgid "User Groups"
 msgstr ""
 
@@ -8622,7 +8622,7 @@ msgid "User Summary"
 msgstr ""
 
 #. ($cf->Name, ref $args{'Object'},                    $args{'Object'}->id)
-#: lib/RT/Interface/Web.pm:3202
+#: lib/RT/Interface/Web.pm:3200
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
 msgstr ""
 
@@ -8668,7 +8668,7 @@ msgstr "Nazwa"
 msgid "Username format"
 msgstr "Format nazwy użytkownika"
 
-#: lib/RT/CustomField.pm:1889 lib/RT/CustomField.pm:204 lib/RT/Interface/Web.pm:3845 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:526 share/html/Elements/Tabs:67
+#: lib/RT/CustomField.pm:1889 lib/RT/CustomField.pm:204 lib/RT/Interface/Web.pm:3841 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:526 share/html/Elements/Tabs:67
 msgid "Users"
 msgstr "Użytkownicy"
 
@@ -9366,7 +9366,7 @@ msgid "index"
 msgstr ""
 
 #. ($due)
-#: lib/RT/Interface/Web.pm:2978
+#: lib/RT/Interface/Web.pm:2976
 msgid "invalid due date: %1"
 msgstr ""
 
