@@ -185,6 +185,7 @@ diag "WebRemoteUserAutocreate";
         $m->auth("conflicting");
         $m->get($url);
         is $m->status, 403, "Forbidden";
+        $m->next_warning_like(qr/Couldn't auto-create user 'conflicting' when attempting WebRemoteUser: Email address in use/, 'found failed auth warning');
 
         my $user = RT::User->new( RT->SystemUser );
         $user->Load("conflicting");

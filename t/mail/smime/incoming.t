@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test::SMIME tests => undef;
+use RT::Test::SMIME tests => undef, actual_server => 1;
 my $test = 'RT::Test::SMIME';
 
 use IPC::Run3 'run3';
