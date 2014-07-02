@@ -125,6 +125,13 @@ $values->Limit(
     SUBCLAUSE       => 'autocomplete',
     CASESENSITIVE   => 0,
 );
+$m->callback(
+    CallbackName => 'ModifyMaxResults',
+    max => \$ARGS{max},
+    term => $term,
+    CustomField => $CustomFieldObj,
+);
+$values->RowsPerPage( $ARGS{max} // 10 );
 
 my @suggestions;
 
