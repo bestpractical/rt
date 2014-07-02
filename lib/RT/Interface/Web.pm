@@ -1376,6 +1376,7 @@ our %is_whitelisted_component = (
     '/Search/Simple.html'  => 1,
     '/m/tickets/search'    => 1,
     '/Search/Chart.html'   => 1,
+    '/User/Search.html'    => 1,
 
     # This page takes Attachment and Transaction argument to figure
     # out what to show, but it's read only and will deny information if you
@@ -2968,9 +2969,7 @@ sub ProcessTicketReminders {
                     Format => 'unknown',
                     Value  => $due,
                 );
-                if ( defined $DateObj->Unix
-                    && $DateObj->Unix != $reminder->DueObj->Unix )
-                {
+                if ( $DateObj->Unix != $reminder->DueObj->Unix ) {
                     ( $status, $msg ) = $reminder->SetDue( $DateObj->ISO );
                 }
                 else {
@@ -3435,7 +3434,7 @@ sub ProcessTicketDates {
         my $method = "Set$field";
 
         if ( $ARGSRef->{ $field . '_Date' } eq '' ) {
-            if ( $Ticket->$obj->Unix ) {
+            if ( $Ticket->$obj->IsSet ) {
                 my ( $code, $msg ) = $Ticket->$method( '1970-01-01 00:00:00' );
                 push @results, $msg;
             }
@@ -3448,8 +3447,7 @@ sub ProcessTicketDates {
                 Value  => $ARGSRef->{ $field . '_Date' }
             );
 
-            if (    ( defined $DateObj->Unix )
-                and ( $DateObj->Unix != $Ticket->$obj()->Unix() ) )
+            if ( $DateObj->Unix != $Ticket->$obj()->Unix() )
             {
                 my ( $code, $msg ) = $Ticket->$method( $DateObj->ISO );
                 push @results, $msg;
@@ -3658,8 +3656,12 @@ sub ProcessRecordBulkCustomFields {
     }
 
     while ( my ($cfid, $data) = each %data ) {
+        my $current_values = $args{'RecordObj'}->CustomFieldValues( $cfid );
+
         # just add one value for fields with single value
         if ( $data->{'Add'} && $data->{'cf'}->MaxValues == 1 ) {
+            next if $current_values->HasEntry($data->{Add}[-1]);
+
             my ( $id, $msg ) = $args{'RecordObj'}->AddCustomFieldValue(
                 Field => $cfid,
                 Value => $data->{'Add'}[-1],
@@ -3668,7 +3670,6 @@ sub ProcessRecordBulkCustomFields {
             next;
         }
 
-        my $current_values = $args{'RecordObj'}->CustomFieldValues( $cfid );
         if ( $data->{'DeleteAll'} ) {
             while ( my $value = $current_values->Next ) {
                 my ( $id, $msg ) = $args{'RecordObj'}->DeleteCustomFieldValue(
@@ -3679,21 +3680,12 @@ sub ProcessRecordBulkCustomFields {
             }
         }
         foreach my $value ( @{ $data->{'Delete'} || [] } ) {
-            # Convert for timezone. Without converstion,
-            # HasEntry and DeleteCustomFieldValue fail because
-            # the value in the DB is converted.
-            if ($data->{'cf'}->Type eq 'DateTime' or $data->{'cf'}->Type eq 'Date') {
-                my $DateObj = RT::Date->new( $session{'CurrentUser'} );
-                $DateObj->Set( Format => 'unknown',
-                               Value  => $value );
-                $value = $data->{'cf'}->Type eq 'DateTime' ? $DateObj->ISO
-                    : $DateObj->ISO(Time => 0, Seconds => 0);
-            }
-            next unless $current_values->HasEntry($value);
+            my $entry = $current_values->HasEntry($value);
+            next unless $entry;
 
             my ( $id, $msg ) = $args{'RecordObj'}->DeleteCustomFieldValue(
-                Field => $cfid,
-                Value => $value
+                Field   => $cfid,
+                ValueId => $entry->id,
             );
             push @results, $msg;
         }
@@ -3951,6 +3943,7 @@ our %SCRUBBER_ALLOWED_ATTRIBUTES = (
     href   => qr{^(?:https?:|ftp:|mailto:|/|__Web(?:Path|HomePath|BaseURL|URL)__)}i,
     face   => 1,
     size   => 1,
+    color  => 1,
     target => 1,
     style  => qr{
         ^(?:\s*
@@ -3963,6 +3956,12 @@ our %SCRUBBER_ALLOWED_ATTRIBUTES = (
                font-size: \s* [\w.\-]+              |
                font-family: \s* [\w\s"',.\-]+       |
                font-weight: \s* [\w\-]+             |
+
+               border-style: \s* \w+                |
+               border-color: \s* [#\w]+             |
+               border-width: \s* [\s\w]+            |
+               padding: \s* [\s\w]+                 |
+               margin: \s* [\s\w]+                  |
 
                # MS Office styles, which are probably fine.  If we don't, then any
                # associated styles in the same attribute get stripped.
@@ -3996,6 +3995,22 @@ if (RT->Config->Get('ShowTransactionImages') or RT->Config->Get('ShowRemoteImage
 sub _NewScrubber {
     require HTML::Scrubber;
     my $scrubber = HTML::Scrubber->new();
+
+    if (eval "require HTML::Gumbo; 1") {
+        no warnings 'redefine';
+        my $orig = \&HTML::Scrubber::scrub;
+        *HTML::Scrubber::scrub = sub {
+            my $self = shift;
+
+            eval { $_[0] = HTML::Gumbo->new->parse( $_[0] ); chomp $_[0] };
+            warn "HTML::Gumbo pre-parse failed: $@" if $@;
+            return $orig->($self, @_);
+        };
+        push @SCRUBBER_ALLOWED_TAGS, qw/TABLE THEAD TBODY TFOOT TR TD TH/;
+        $SCRUBBER_ALLOWED_ATTRIBUTES{$_} = 1 for
+            qw/colspan rowspan align valign cellspacing cellpadding border width height/;
+    }
+
     $scrubber->default(
         0,
         {

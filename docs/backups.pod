@@ -6,7 +6,7 @@ absolutely necessary to ensure you can recover quickly from an incident.
 Make sure you take backups.  Make sure they I<work>.
 
 There are many issues that can cause broken backups, such as a
-max_attachment_size too low for MySQL (in either the client or server), or
+C<max_allowed_packet> too low for MySQL (in either the client or server), or
 encoding issues, or running out of disk space.
 
 Make sure your backup cronjobs notify someone if they fail instead of failing
@@ -34,10 +34,6 @@ RT. :)
     ( mysqldump rt4 --tables sessions --no-data --single-transaction; \
       mysqldump rt4 --ignore-table rt4.sessions --single-transaction ) \
         | gzip > rt-`date +%Y%m%d`.sql.gz
-
-If you're using a MySQL version older than 4.1.2 (only supported on RT 3.8.x
-and older), you should be also pass the C<--default-character-set=binary>
-option to the second C<mysqldump> command.
 
 The dump will be much faster if you can connect to the MySQL server over
 localhost.  This will use a local socket instead of the network.

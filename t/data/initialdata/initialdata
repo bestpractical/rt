@@ -44,3 +44,28 @@
         Stage          => 'TransactionBatch',
     },
 );
+
+@CustomFields = (
+    {
+        Name        => 'Favorite color',
+        Type        => 'FreeformSingle',
+        LookupType  => 'RT::Queue-RT::Ticket',
+        Queue       => 'Test Queue',
+    },
+);
+
+@Groups = (
+    {
+        Name        => 'Test Employees',
+        Description => 'All of the employees of my company',
+    }
+);
+
+@ACL = (
+    { GroupId       => 'Test Employees',
+      GroupDomain   => 'UserDefined',
+      CF            => 'Favorite Color',
+      Queue         => 'Test Queue',
+      Right         => 'SeeCustomField',
+    },
+);

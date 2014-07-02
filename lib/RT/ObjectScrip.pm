@@ -54,6 +54,7 @@ use base 'RT::Record::AddAndSort';
 
 use RT::Scrip;
 use RT::ObjectScrips;
+use Scalar::Util 'blessed';
 
 =head1 NAME
 
@@ -129,7 +130,17 @@ Returns the current value of id.
 Returns the current value of Scrip.
 (In the database, Scrip is stored as int(11).)
 
+=head2 FriendlyStage
 
+Returns a localized human-readable version of the stage.
+
+=cut
+
+sub FriendlyStage {
+    my $self = shift;
+    my $scrip_class = blessed($self->ScripObj);
+    return $scrip_class->FriendlyStage($self->Stage);
+}
 
 =head2 SetScrip VALUE
 

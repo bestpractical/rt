@@ -686,6 +686,10 @@ sub FillCache {
                 unless $from eq '*' or $lifecycle->{canonical_case}{lc $from};
             warn "Nonexistant status @{[lc $to]} in right transition in $name lifecycle"
                 unless $to eq '*' or $lifecycle->{canonical_case}{lc $to};
+
+            warn "Invalid right name ($lifecycle->{rights}{$schema}) in $name lifecycle; right names must be ASCII"
+                if $lifecycle->{rights}{$schema} =~ /\P{ASCII}/;
+
             $lifecycle->{rights}{lc($from) . " -> " .lc($to)}
                 = delete $lifecycle->{rights}{$schema};
         }

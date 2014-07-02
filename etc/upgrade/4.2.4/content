@@ -16,3 +16,32 @@ push @Initial, sub {
     $exist->LoadByCols( ExecModule => 'AutoOpenInactive' );
     @ScripActions = () if $exist->Id;
 };
+
+push @Initial, sub {
+    my $queue = RT::Queue->new( RT->SystemUser );
+    my ($ok, $msg) = $queue->Load('___Approvals');
+    unless ($ok) {
+        RT->Logger->warning("Unable to load ___Approvals: $msg");
+        return;
+    }
+    unless ($queue->Disabled == 2) {
+        RT->Logger->warning("Going to force ___Approvals queue to be Disabled = 2");
+        ($ok, $msg) = $queue->SetDisabled( 2 );
+        unless ($ok) {
+            RT->Logger->error("Unable to set ___Approvals.Disabled = 2: $msg");
+            return;
+        }
+    }
+
+    unless ($queue->Lifecycle eq "approvals") {
+        RT->Logger->warning("Going to force ___Approvals queue to the approvals lifecycle");
+        ($ok, $msg) = $queue->SetLifecycle( "approvals" );
+        unless ($ok) {
+            RT->Logger->error("Unable to set ___Approvals lifecycle: $msg");
+            return;
+        }
+    }
+
+    return 1;
+
+};

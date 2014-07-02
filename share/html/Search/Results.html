@@ -98,8 +98,8 @@ my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {}
 # These variables are what define a search_hash; this is also
 # where we give sane defaults.
 $Format      ||= $prefs->{'Format'} || RT->Config->Get('DefaultSearchResultFormat');
-$Order       ||= $prefs->{'Order'} || 'ASC';
-$OrderBy     ||= $prefs->{'OrderBy'} || 'id';
+$Order       ||= $prefs->{'Order'} || RT->Config->Get('DefaultSearchResultOrder');
+$OrderBy     ||= $prefs->{'OrderBy'} || RT->Config->Get('DefaultSearchResultOrderBy');
 
 # Some forms pass in "RowsPerPage" rather than "Rows"
 # We call it RowsPerPage everywhere else.
@@ -144,10 +144,10 @@ $session{'CurrentSearchHash'} = {
 };
 
 
-my ($title, $ticketcount) = (loc("Found tickets"), 0);
+my ($title, $ticketcount) = (loc("Find tickets"), 0);
 if ( $session{'tickets'}->Query()) {
     $ticketcount = $session{tickets}->CountAll();
-    $title = loc('Found [quant,_1,ticket]', $ticketcount);
+    $title = loc('Found [quant,_1,ticket,tickets]', $ticketcount);
 }
 
 my $QueryString = "?".$m->comp('/Elements/QueryString',

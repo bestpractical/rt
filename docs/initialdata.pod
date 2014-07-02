@@ -279,6 +279,14 @@ granted.  This is B<different> than the user/group/role receiving the right.
     CF      => 'Name',
     Queue   => 'Name',
 
+=item Granted on a custom field applied to some other object
+
+    # This finds the CF named "Name" applied to Articles in the
+    # "Responses" class
+    CF         => 'Name',
+    LookupType => RT::Article->CustomFieldLookupType,
+    ObjectId   => 'Responses',
+
 =item Granted on some other object (article Classes, etc)
 
     ObjectType => 'RT::Class',

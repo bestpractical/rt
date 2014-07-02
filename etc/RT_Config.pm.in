@@ -115,13 +115,11 @@ Set($Timezone, "US/Eastern");
 
 =item C<@Plugins>
 
-Set C<@Plugins> to a list of external RT plugins that should be
-enabled (those plugins have to be previously downloaded and
-installed).
+Once a plugin has been downloaded and installed, use C<Plugin()> to add
+to the enabled C<@Plugins> list:
 
-Example:
-
-C<Set(@Plugins, (qw(Extension::QuickDelete RT::Extension::CommandByMail)));>
+    Plugin( "RT::Extension::SLA" );
+    Plugin( "RT::Authen::ExternalAuth" );
 
 =cut
 
@@ -1297,6 +1295,23 @@ Set ($DefaultSearchResultFormat, qq{
    '<small>__LastUpdatedRelative__</small>',
    '<small>__TimeLeft__</small>'});
 
+=item C<$DefaultSearchResultOrderBy>
+
+What Tickets column should we order by for RT Ticket search results.
+
+=cut
+
+Set($DefaultSearchResultOrderBy, 'id');
+
+=item C<$DefaultSearchResultOrder>
+
+When ordering RT Ticket search results by C<$DefaultSearchResultOrderBy>,
+should the sort be ascending (ASC) or descending (DESC).
+
+=cut
+
+Set($DefaultSearchResultOrder, 'ASC');
+
 =item C<$DefaultSelfServiceSearchResultFormat>
 
 C<$DefaultSelfServiceSearchResultFormat> is the default format of
@@ -1752,10 +1767,18 @@ Set($AlwaysDownloadAttachments, undef);
 
 =item C<$PreferRichText>
 
-By default, RT shows rich text (HTML) messages if possible.
+By default, RT shows rich text (HTML) messages if possible.  If
+C<$PreferRichText> is set to 0, RT will show plain text messages in
+preference to any rich text alternatives.
 
-If C<$PreferRichText> is set to 0, RT will show plain text messages
-in preference to any rich text alternatives.
+As a security precaution, RT limits the HTML that is displayed to a
+known-good subset -- as allowing arbitrary HTML to be displayed exposes
+multiple vectors for XSS and phishing attacks.  If
+L</$TrustHTMLAttachments> is enabled, the original HTML is available for
+viewing via the "Download" link.
+
+If the optional L<HTML::Gumbo> dependency is installed, RT will leverage
+this to allow a broader set of HTML through, including tables.
 
 =cut
 
@@ -2744,49 +2767,17 @@ Set(%Lifecycles,
             '* -> *'        => 'ModifyTicket',
         },
         actions => [
-            'new -> open'      => {
-                label  => 'Open It', # loc
-                update => 'Respond',
-            },
-            'new -> resolved'  => {
-                label  => 'Resolve', # loc
-                update => 'Comment',
-            },
-            'new -> rejected'  => {
-                label  => 'Reject', # loc
-                update => 'Respond',
-            },
-            'new -> deleted'   => {
-                label  => 'Delete', # loc
-            },
-
-            'open -> stalled'  => {
-                label  => 'Stall', # loc
-                update => 'Comment',
-            },
-            'open -> resolved' => {
-                label  => 'Resolve', # loc
-                update => 'Comment',
-            },
-            'open -> rejected' => {
-                label  => 'Reject', # loc
-                update => 'Respond',
-            },
-
-            'stalled -> open'  => {
-                label  => 'Open It', # loc
-            },
-            'resolved -> open' => {
-                label  => 'Re-open', # loc
-                update => 'Comment',
-            },
-            'rejected -> open' => {
-                label  => 'Re-open', # loc
-                update => 'Comment',
-            },
-            'deleted -> open'  => {
-                label  => 'Undelete', # loc
-            },
+            'new -> open'      => { label  => 'Open It', update => 'Respond' }, # loc{label}
+            'new -> resolved'  => { label  => 'Resolve', update => 'Comment' }, # loc{label}
+            'new -> rejected'  => { label  => 'Reject',  update => 'Respond' }, # loc{label}
+            'new -> deleted'   => { label  => 'Delete',                      }, # loc{label}
+            'open -> stalled'  => { label  => 'Stall',   update => 'Comment' }, # loc{label}
+            'open -> resolved' => { label  => 'Resolve', update => 'Comment' }, # loc{label}
+            'open -> rejected' => { label  => 'Reject',  update => 'Respond' }, # loc{label}
+            'stalled -> open'  => { label  => 'Open It',                     }, # loc{label}
+            'resolved -> open' => { label  => 'Re-open', update => 'Comment' }, # loc{label}
+            'rejected -> open' => { label  => 'Re-open', update => 'Comment' }, # loc{label}
+            'deleted -> open'  => { label  => 'Undelete',                    }, # loc{label}
         ],
     },
 # don't change lifecyle of the approvals, they are not capable to deal with
@@ -2820,49 +2811,17 @@ Set(%Lifecycles,
             '* -> *'        => 'ModifyTicket',
         },
         actions => [
-            'new -> open'      => {
-                label  => 'Open It', # loc
-                update => 'Respond',
-            },
-            'new -> resolved'  => {
-                label  => 'Resolve', # loc
-                update => 'Comment',
-            },
-            'new -> rejected'  => {
-                label  => 'Reject', # loc
-                update => 'Respond',
-            },
-            'new -> deleted'   => {
-                label  => 'Delete', # loc
-            },
-
-            'open -> stalled'  => {
-                label  => 'Stall', # loc
-                update => 'Comment',
-            },
-            'open -> resolved' => {
-                label  => 'Resolve', # loc
-                update => 'Comment',
-            },
-            'open -> rejected' => {
-                label  => 'Reject', # loc
-                update => 'Respond',
-            },
-
-            'stalled -> open'  => {
-                label  => 'Open It', # loc
-            },
-            'resolved -> open' => {
-                label  => 'Re-open', # loc
-                update => 'Comment',
-            },
-            'rejected -> open' => {
-                label  => 'Re-open', # loc
-                update => 'Comment',
-            },
-            'deleted -> open'  => {
-                label  => 'Undelete', # loc
-            },
+            'new -> open'      => { label  => 'Open It', update => 'Respond' }, # loc{label}
+            'new -> resolved'  => { label  => 'Resolve', update => 'Comment' }, # loc{label}
+            'new -> rejected'  => { label  => 'Reject',  update => 'Respond' }, # loc{label}
+            'new -> deleted'   => { label  => 'Delete',                      }, # loc{label}
+            'open -> stalled'  => { label  => 'Stall',   update => 'Comment' }, # loc{label}
+            'open -> resolved' => { label  => 'Resolve', update => 'Comment' }, # loc{label}
+            'open -> rejected' => { label  => 'Reject',  update => 'Respond' }, # loc{label}
+            'stalled -> open'  => { label  => 'Open It',                     }, # loc{label}
+            'resolved -> open' => { label  => 'Re-open', update => 'Comment' }, # loc{label}
+            'rejected -> open' => { label  => 'Re-open', update => 'Comment' }, # loc{label}
+            'deleted -> open'  => { label  => 'Undelete',                    }, # loc{label}
         ],
     },
 );
@@ -2905,26 +2864,26 @@ Set(%AdminSearchResultFormat,
     Queues =>
         q{'<a href="__WebPath__/Admin/Queues/Modify.html?id=__id__">__id__</a>/TITLE:#'}
         .q{,'<a href="__WebPath__/Admin/Queues/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}
-        .q{,__Description__,__Address__,__Priority__,__DefaultDueIn__,__Disabled__,__Lifecycle__},
+        .q{,__Description__,__Address__,__Priority__,__DefaultDueIn__,__Lifecycle__,__SubjectTag__,__Disabled__},
 
     Groups =>
         q{'<a href="__WebPath__/Admin/Groups/Modify.html?id=__id__">__id__</a>/TITLE:#'}
         .q{,'<a href="__WebPath__/Admin/Groups/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}
-        .q{,'__Description__'},
+        .q{,'__Description__',__Disabled__},
 
     Users =>
         q{'<a href="__WebPath__/Admin/Users/Modify.html?id=__id__">__id__</a>/TITLE:#'}
         .q{,'<a href="__WebPath__/Admin/Users/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}
-        .q{,__RealName__, __EmailAddress__},
+        .q{,__RealName__, __EmailAddress__,__Disabled__},
 
     CustomFields =>
         q{'<a href="__WebPath__/Admin/CustomFields/Modify.html?id=__id__">__id__</a>/TITLE:#'}
         .q{,'<a href="__WebPath__/Admin/CustomFields/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}
-        .q{,__AddedTo__, __EntryHint__, __FriendlyPattern__},
+        .q{,__AddedTo__, __EntryHint__, __FriendlyPattern__,__Disabled__},
 
     Scrips =>
-        q{'<a href="__WebPath__/Admin/Scrips/Modify.html?id=__id__">__id__</a>/TITLE:#'}
-        .q{,'<a href="__WebPath__/Admin/Scrips/Modify.html?id=__id__">__Description__</a>/TITLE:Description'}
+        q{'<a href="__WebPath__/Admin/Scrips/Modify.html?id=__id____From__">__id__</a>/TITLE:#'}
+        .q{,'<a href="__WebPath__/Admin/Scrips/Modify.html?id=__id____From__">__Description__</a>/TITLE:Description'}
         .q{,__Condition__, __Action__, __Template__, __Disabled__},
 
     Templates =>
@@ -2934,7 +2893,7 @@ Set(%AdminSearchResultFormat,
     Classes =>
         q{ '<a href="__WebPath__/Admin/Articles/Classes/Modify.html?id=__id__">__id__</a>/TITLE:#'}
         .q{,'<a href="__WebPath__/Admin/Articles/Classes/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}
-        .q{,__Description__},
+        .q{,__Description__,__Disabled__},
 );
 
 =back

@@ -518,6 +518,31 @@ sub _LimitCustomField {
         return %args;
     };
 
+    # Special Limit (we can exit early)
+    # IS NULL and IS NOT NULL checks
+    if ( $op =~ /^IS( NOT)?$/i ) {
+        my ($ocfvalias, $CFs) = $self->_CustomFieldJoin( $cfkey, $cf, $ltype );
+        $self->_OpenParen( $args{SUBCLAUSE} );
+        $self->Limit(
+            %args,
+            ALIAS    => $ocfvalias,
+            FIELD    => ($column || 'id'),
+            OPERATOR => $op,
+            VALUE    => $value,
+        );
+        # See below for an explanation of this limit
+        $self->Limit(
+            ALIAS      => $CFs,
+            FIELD      => 'Name',
+            OPERATOR   => 'IS NOT',
+            VALUE      => 'NULL',
+            ENTRYAGGREGATOR => 'AND',
+            SUBCLAUSE  => $args{SUBCLAUSE},
+        ) if $CFs;
+        $self->_CloseParen( $args{SUBCLAUSE} );
+        return;
+    }
+
     ########## Content pre-parsing if we know things about the CF
     if ( blessed($cf) and delete $args{PREPARSE} ) {
         my $type = $cf->Type;
@@ -529,13 +554,6 @@ sub _LimitCustomField {
                 $RT::Logger->warn("$value is not a valid IPAddress");
             }
         } elsif ( $type eq 'IPAddressRange' ) {
-            if ( $value =~ /^\s*$RE{net}{CIDR}{IPv4}{-keep}\s*$/o ) {
-                # convert incomplete 192.168/24 to 192.168.0.0/24 format
-                $value =
-                  join( '.', map $_ || 0, ( split /\./, $1 )[ 0 .. 3 ] ) . "/$2"
-                  || $value;
-            }
-
             my ( $start_ip, $end_ip ) =
               RT::ObjectCustomFieldValue->ParseIPRange($value);
             if ( $start_ip && $end_ip ) {
@@ -604,7 +622,7 @@ sub _LimitCustomField {
         } elsif ( $type =~ /^Date(?:Time)?$/ ) {
             my $date = RT::Date->new( $self->CurrentUser );
             $date->Set( Format => 'unknown', Value => $value );
-            if ( $date->Unix ) {
+            if ( $date->IsSet ) {
                 if (
                        $type eq 'Date'
                            # Heuristics to determine if a date, and not
@@ -659,29 +677,6 @@ sub _LimitCustomField {
     }
 
     ########## Limits
-    # IS NULL and IS NOT NULL checks
-    if ( $op =~ /^IS( NOT)?$/i ) {
-        my ($ocfvalias, $CFs) = $self->_CustomFieldJoin( $cfkey, $cf, $ltype );
-        $self->_OpenParen( $args{SUBCLAUSE} );
-        $self->Limit(
-            %args,
-            ALIAS    => $ocfvalias,
-            FIELD    => ($column || 'id'),
-            OPERATOR => $op,
-            VALUE    => $value,
-        );
-        # See below for an explanation of this limit
-        $self->Limit(
-            ALIAS      => $CFs,
-            FIELD      => 'Name',
-            OPERATOR   => 'IS NOT',
-            VALUE      => 'NULL',
-            ENTRYAGGREGATOR => 'AND',
-            SUBCLAUSE  => $args{SUBCLAUSE},
-        ) if $CFs;
-        $self->_CloseParen( $args{SUBCLAUSE} );
-        return;
-    }
 
     my $single_value = !blessed($cf) || $cf->SingleValue;
     my $negative_op = ($op eq '!=' || $op =~ /\bNOT\b/i);

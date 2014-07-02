@@ -1,11 +1,6 @@
 use strict;
 use warnings;
 use RT::Test tests => undef;
-BEGIN {
-    plan skip_all => 'Email::Abstract and Test::Email required.'
-        unless eval { require Email::Abstract; require Test::Email; 1 };
-    plan tests => 22;
-}
 
 use RT::Test::Email;
 use Test::Warn;
@@ -175,6 +170,7 @@ mail_ok {
     'Content-Type' => qr{multipart},
 };
 
+done_testing;
 
 sub parts_regex {
     my ($text, $html) = @_;

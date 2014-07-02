@@ -153,8 +153,14 @@ C<#loc_left_pair> is used for declaring that the I<key> of a
 particular C<< key => value >> pair is translatable. This is of
 very limited usefulness.
 
-C<#loc_right_pair> does NOT exist. C<#loc> works in such cases since
-its parser does not extend beyond the string at the end of a line.
+C<#loc_right_pair> does NOT exist. C<#loc> works in such cases since its
+parser does not extend beyond the string at the end of a line.  However,
+if the string is I<not> at the end of the line, C<#loc{word}> declares
+that the value associated with the key I<word> (earlier on the same
+line) is to be loc'd.  This is useful for inline hashes:
+
+    # Note the string "baz" is to be loc'd
+    foo => { bar => "baz", troz => "zort" },  # loc{bar}
 
 =head1 Development tips
 

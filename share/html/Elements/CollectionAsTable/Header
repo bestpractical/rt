@@ -71,6 +71,8 @@ $generic_query_args->{'Format'} = $FormatString if grep $_ eq 'Format', @PassArg
 
 my $item = 0;
 foreach my $col ( @Format ) {
+    my $attr = $col->{'attribute'} || $col->{'last_attribute'};
+
     my $title = $col->{'title'} || '';
     if ( $title eq 'NEWLINE' ) {
         while ( $item < $maxitems ) {
@@ -93,13 +95,22 @@ foreach my $col ( @Format ) {
     $m->out('<th class="collection-as-table"');
     $m->out(' colspan="' . $m->interp->apply_escapes($span  => 'h') . '"')
         if $span;
+
+    my $align = $col->{'align'} || do {
+        my $tmp_columnmap = $m->comp( '/Elements/ColumnMap',
+            Class => $Class,
+            Name => $attr,
+            Attr => 'align',
+        );
+        ProcessColumnMapValue( $tmp_columnmap, Arguments => [ $attr ] );
+    };
+    $m->out(qq{ style="text-align: $align"}) if $align;
     $m->out('>');
 
     my $loc_title;
     # if title is not defined then use defined attribute or last
     # one we saw in the format
     unless ( defined $col->{'title'} ) {
-        my $attr = $col->{'attribute'} || $col->{'last_attribute'};
         my $tmp = $m->comp( '/Elements/ColumnMap',
             Class => $Class,
             Name  => $attr,

@@ -945,7 +945,11 @@ sub load_or_create_custom_field {
     my %args = ( Disabled => 0, @_ );
     my $obj = RT::CustomField->new( RT->SystemUser );
     if ( $args{'Name'} ) {
-        $obj->LoadByName( Name => $args{'Name'}, Queue => $args{'Queue'} );
+        $obj->LoadByName(
+            Name       => $args{'Name'},
+            LookupType => RT::Ticket->CustomFieldLookupType,
+            ObjectId   => $args{'Queue'},
+        );
     } else {
         die "Name is required";
     }
@@ -1531,7 +1535,8 @@ sub test_app {
     }
 
     require Plack::Middleware::Test::StashWarnings;
-    my $stashwarnings = Plack::Middleware::Test::StashWarnings->new;
+    my $stashwarnings = Plack::Middleware::Test::StashWarnings->new(
+        $ENV{'RT_TEST_WEB_HANDLER'} && $ENV{'RT_TEST_WEB_HANDLER'} eq 'inline' ? ( verbose => 0 ) : () );
     $app = $stashwarnings->wrap($app);
 
     if ($server_opt{basic_auth}) {
@@ -1665,8 +1670,6 @@ sub file_content {
     my %args = @_;
 
     $path = File::Spec->catfile( @$path ) if ref $path eq 'ARRAY';
-
-    Test::More::diag "reading content of '$path'" if $ENV{'TEST_VERBOSE'};
 
     open( my $fh, "<:raw", $path )
         or do {

@@ -140,7 +140,11 @@ if ( $NewQuery ) {
 
     my $current = $session{'CurrentSearchHash'};
     my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};
-    my $default = { Query => '', Format => '', OrderBy => 'id', Order => 'ASC', RowsPerPage => 50 };
+    my $default = { Query => '',
+                    Format => '',
+                    OrderBy => RT->Config->Get('DefaultSearchResultOrderBy'),
+                    Order => RT->Config->Get('DefaultSearchResultOrder'),
+                    RowsPerPage => 50 };
 
     for( qw(Query Format OrderBy Order RowsPerPage) ) {
         $query{$_} = $current->{$_} unless defined $query{$_};

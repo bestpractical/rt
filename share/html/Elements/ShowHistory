@@ -165,9 +165,10 @@ for my $attachment (@{$Attachments->ItemsArrayRef()}) {
         EncryptionPath  => 'Crypt.html',
     );
 
+    my $prefix = $ARGS{PathPrefix}||'';
     while ( my ($arg, $path) = each %tmp ) {
         next if defined $ARGS{ $arg };
-        $ARGS{ $arg } = $path;
+        $ARGS{ $arg } = $prefix.$path;
     }
 }
 
@@ -185,4 +186,6 @@ $AttachmentContent => $Object->TextAttachments
 $ShowHeaders       => 0
 $ShowTitle         => 1
 $ShowDisplayModes  => 1
+
+$PathPrefix        => ''
 </%ARGS>

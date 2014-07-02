@@ -1,4 +1,3 @@
-#!/usr/bin/env perl
 # BEGIN BPS TAGGED BLOCK {{{
 #
 # COPYRIGHT:
@@ -46,6 +45,32 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
+
+package RT::Action::NotifyOwnerOrAdminCc;
+
 use strict;
 use warnings;
-exec('sbin/rt-message-catalog', 'rosetta', @ARGV);
+
+use base qw(RT::Action::Notify);
+
+use Email::Address;
+
+=head1 Notify Owner or AdminCc
+
+If the owner of this ticket is Nobody, notify the AdminCcs.  Otherwise, only notify the Owner.
+
+=cut
+
+sub Argument {
+    my $self = shift;
+    my $ticket = $self->TicketObj;
+    if ($ticket->Owner == RT->Nobody->id) {
+        return 'AdminCc';
+    } else {
+        return 'Owner';
+    }
+}
+
+RT::Base->_ImportOverlays();
+
+1;

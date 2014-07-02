@@ -56,7 +56,7 @@
 
 =head1 DESCRIPTION
 
-RT Date is a simple Date Object designed to be speedy and easy for RT to use
+RT Date is a simple Date Object designed to be speedy and easy for RT to use.
 
 The fact that it assumes that a time of 0 means "never" is probably a bug.
 
@@ -359,21 +359,6 @@ Turn on short notation with one character units, for example
 
 =cut
 
-# loc("[_1]s")
-# loc("[_1]m")
-# loc("[_1]h")
-# loc("[_1]d")
-# loc("[_1]W")
-# loc("[_1]M")
-# loc("[_1]Y")
-# loc("[quant,_1,second]")
-# loc("[quant,_1,minute]")
-# loc("[quant,_1,hour]")
-# loc("[quant,_1,day]")
-# loc("[quant,_1,week]")
-# loc("[quant,_1,month]")
-# loc("[quant,_1,year]")
-
 sub DurationAsString {
     my $self     = shift;
     my $duration = int shift;
@@ -387,61 +372,59 @@ sub DurationAsString {
     $negative = 1 if $duration < 0;
     $duration = abs $duration;
 
-    my %units = (
-        s => 1,
-        m => $MINUTE,
-        h => $HOUR,
-        d => $DAY,
-        W => $WEEK,
-        M => $MONTH,
-        Y => $YEAR,
-    );
-    my %long_units = (
-        s => 'second',
-        m => 'minute',
-        h => 'hour',
-        d => 'day',
-        W => 'week',
-        M => 'month',
-        Y => 'year',
-    );
-
     my @res;
 
     my $coef = 2;
     my $i = 0;
     while ( $duration > 0 && ++$i <= $args{'Show'} ) {
 
-        my $unit;
+        my ($locstr, $unit);
         if ( $duration < $MINUTE ) {
-            $unit = 's';
+            $locstr = $args{Short}
+                    ? '[_1]s'                      # loc
+                    : '[quant,_1,second,seconds]'; # loc
+            $unit = 1;
         }
         elsif ( $duration < ( $coef * $HOUR ) ) {
-            $unit = 'm';
+            $locstr = $args{Short}
+                    ? '[_1]m'                      # loc
+                    : '[quant,_1,minute,minutes]'; # loc
+            $unit = $MINUTE;
         }
         elsif ( $duration < ( $coef * $DAY ) ) {
-            $unit = 'h';
+            $locstr = $args{Short}
+                    ? '[_1]h'                      # loc
+                    : '[quant,_1,hour,hours]';     # loc
+            $unit = $HOUR;
         }
         elsif ( $duration < ( $coef * $WEEK ) ) {
-            $unit = 'd';
+            $locstr = $args{Short}
+                    ? '[_1]d'                      # loc
+                    : '[quant,_1,day,days]';       # loc
+            $unit = $DAY;
         }
         elsif ( $duration < ( $coef * $MONTH ) ) {
-            $unit = 'W';
+            $locstr = $args{Short}
+                    ? '[_1]W'                      # loc
+                    : '[quant,_1,week,weeks]';     # loc
+            $unit = $WEEK;
         }
         elsif ( $duration < $YEAR ) {
-            $unit = 'M';
+            $locstr = $args{Short}
+                    ? '[_1]M'                      # loc
+                    : '[quant,_1,month,months]';   # loc
+            $unit = $MONTH;
         }
         else {
-            $unit = 'Y';
+            $locstr = $args{Short}
+                    ? '[_1]Y'                      # loc
+                    : '[quant,_1,year,years]';     # loc
+            $unit = $YEAR;
         }
-        my $value = int( $duration / $units{$unit}  + ($i < $args{'Show'}? 0 : 0.5) );
-        $duration -= int( $value * $units{$unit} );
+        my $value = int( $duration / $unit  + ($i < $args{'Show'}? 0 : 0.5) );
+        $duration -= int( $value * $unit );
 
-        if ( $args{'Short'} ) {
-            push @res, $self->loc("[_1]$unit", $value);
-        } else {
-            push @res, $self->loc("[quant,_1,$long_units{$unit}]", $value);
-        }
+        push @res, $self->loc($locstr, $value);
 
         $coef = 1;
     }
@@ -456,7 +439,7 @@ sub DurationAsString {
 
 =head2 AgeAsString
 
-Takes nothing. Returns a string that's the differnce between the
+Takes nothing. Returns a string that's the difference between the
 time in the object and now.
 
 =cut
@@ -467,10 +450,10 @@ sub AgeAsString { return $_[0]->DiffAsString }
 
 =head2 AsString
 
-Returns the object's time as a localized string with curent user's prefered
+Returns the object's time as a localized string with curent user's preferred
 format and timezone.
 
-If the current user didn't choose prefered format then system wide setting is
+If the current user didn't choose preferred format then system wide setting is
 used or L</DefaultFormat> if the latter is not specified. See config option
 C<DateTimeFormat>.
 
@@ -480,7 +463,7 @@ sub AsString {
     my $self = shift;
     my %args = (@_);
 
-    return $self->loc("Not set") unless $self->Unix > 0;
+    return $self->loc("Not set") unless $self->IsSet;
 
     my $format = RT->Config->Get( 'DateTimeFormat', $self->CurrentUser ) || 'DefaultFormat';
     $format = { Format => $format } unless ref $format;
@@ -573,13 +556,21 @@ Returns the number of seconds since the epoch
 
 sub Unix {
     my $self = shift; 
-    $self->{'time'} = int(shift || 0) if @_;
+
+    if (@_) {
+        my $time = int(shift || 0);
+        if ($time < 0) {
+            RT->Logger->notice("Passed a unix time less than 0, forcing to 0: [$time]");
+            $time = 0;
+        }
+        $self->{'time'} = int $time;
+    }
     return $self->{'time'};
 }
 
 =head2 DateTime
 
-Alias for L</Get> method. Arguments C<Date> and <Time>
+Alias for L</Get> method. Arguments C<Date> and C<Time>
 are fixed to true values, other arguments could be used
 as described in L</Get>.
 
@@ -619,7 +610,7 @@ sub Time {
 
 =head2 Get
 
-Returnsa a formatted and localized string that represets time of
+Returns a formatted and localized string that represents the time of
 the current object.
 
 
@@ -657,7 +648,7 @@ Each method takes several arguments:
 
 Formatters may also add own arguments to the list, for example
 in RFC2822 format day of time in output is optional so it
-understand boolean argument C<DayOfTime>.
+understands boolean argument C<DayOfTime>.
 
 =head3 Formatters
 
@@ -814,11 +805,11 @@ sub LocalizedDateTime
 =head3 ISO
 
 Returns the object's date in ISO format C<YYYY-MM-DD mm:hh:ss>.
-ISO format is locale independant, but adding timezone offset info
+ISO format is locale-independent, but adding timezone offset info
 is not implemented yet.
 
 Supports arguments: C<Timezone>, C<Date>, C<Time> and C<Seconds>.
-See </Output formatters> for description of arguments.
+See L</Output formatters> for description of arguments.
 
 =cut
 
@@ -840,7 +831,7 @@ sub ISO {
     my $res = '';
     $res .= sprintf("%04d-%02d-%02d", $year, $mon, $mday) if $args{'Date'};
     $res .= sprintf(' %02d:%02d', $hour, $min) if $args{'Time'};
-    $res .= sprintf(':%02d', $sec, $min) if $args{'Time'} && $args{'Seconds'};
+    $res .= sprintf(':%02d', $sec) if $args{'Time'} && $args{'Seconds'};
     $res =~ s/^\s+//;
 
     return $res;
@@ -851,12 +842,12 @@ sub ISO {
 Returns the object's date and time in W3C date time format
 (L<http://www.w3.org/TR/NOTE-datetime>).
 
-Format is locale independand and is close enought to ISO, but
+Format is locale-independent and is close enough to ISO, but
 note that date part is B<not optional> and output string
 has timezone offset mark in C<[+-]hh:mm> format.
 
 Supports arguments: C<Timezone>, C<Time> and C<Seconds>.
-See </Output formatters> for description of arguments.
+See L</Output formatters> for description of arguments.
 
 =cut
 
@@ -880,7 +871,7 @@ sub W3CDTF {
     $res .= sprintf("%04d-%02d-%02d", $year, $mon, $mday);
     if ( $args{'Time'} ) {
         $res .= sprintf('T%02d:%02d', $hour, $min);
-        $res .= sprintf(':%02d', $sec, $min) if $args{'Seconds'};
+        $res .= sprintf(':%02d', $sec) if $args{'Seconds'};
         if ( $offset ) {
             $res .= sprintf "%s%02d:%02d", $self->_SplitOffset( $offset );
         } else {
@@ -896,11 +887,11 @@ sub W3CDTF {
 
 Returns the object's date and time in RFC2822 format,
 for example C<Sun, 06 Nov 1994 08:49:37 +0000>.
-Format is locale independand as required by RFC. Time
+Format is locale-independent as required by RFC. Time
 part always has timezone offset in digits with sign prefix.
 
 Supports arguments: C<Timezone>, C<Date>, C<Time>, C<DayOfWeek>
-and C<Seconds>. See </Output formatters> for description of
+and C<Seconds>. See L</Output formatters> for description of
 arguments.
 
 =cut
@@ -938,8 +929,8 @@ Returns the object's date and time in RFC2616 (HTTP/1.1) format,
 for example C<Sun, 06 Nov 1994 08:49:37 GMT>. While the RFC describes
 version 1.1 of HTTP, but the same form date can be used in version 1.0.
 
-Format is fixed length, locale independand and always represented in GMT
-what makes it quite useless for users, but any date in HTTP transfers
+Format is fixed-length, locale-independent and always represented in GMT
+which makes it quite useless for users, but any date in HTTP transfers
 must be presented using this format.
 
     HTTP-date = rfc1123 | ...
@@ -954,7 +945,7 @@ must be presented using this format.
 
 Supports arguments: C<Date> and C<Time>, but you should use them only for
 some personal reasons, RFC2616 doesn't define any optional parts.
-See </Output formatters> for description of arguments.
+See L</Output formatters> for description of arguments.
 
 =cut
 
@@ -974,11 +965,11 @@ sub RFC2616 {
 =head4 iCal
 
 Returns the object's date and time in iCalendar format.
-If only date requested then users timezone is used, otherwise
+If only date requested then user's timezone is used, otherwise
 it's UTC.
 
 Supports arguments: C<Date> and C<Time>.
-See </Output formatters> for description of arguments.
+See L</Output formatters> for description of arguments.
 
 =cut
 
@@ -1029,10 +1020,18 @@ argument unix C<$time>, default value is the current unix time.
 Returns object's date and time in the format provided by perl's
 builtin functions C<localtime> and C<gmtime> with two exceptions:
 
-1) "Year" is a four-digit year, rather than "years since 1900"
+=over
 
-2) The last element of the array returned is C<offset>, which
+=item 1)
+
+"Year" is a four-digit year, rather than "years since 1900"
+
+=item 2)
+
+The last element of the array returned is C<offset>, which
 represents timezone offset against C<UTC> in seconds.
+
+=back
 
 =cut
 
@@ -1055,7 +1054,7 @@ sub Localtime
             POSIX::tzset();
             @local = localtime($unix);
         }
-        POSIX::tzset(); # return back previouse value
+        POSIX::tzset(); # return back previous value
     }
     $local[5] += 1900; # change year to 4+ digits format
     my $offset = Time::Local::timegm_nocheck(@local) - $unix;
@@ -1067,16 +1066,16 @@ sub Localtime
 Takes argument C<$context>, which determines whether we should
 treat C<@time> as "user local", "system" or "UTC" time.
 
-C<@time> is array returned by L<Localtime> functions. Only first
+C<@time> is array returned by L</Localtime> functions. Only first
 six elements are mandatory - $sec, $min, $hour, $mday, $mon and $year.
 You may pass $wday, $yday and $isdst, these are ignored.
 
 If you pass C<$offset> as ninth argument, it's used instead of
 C<$context>. It's done such way as code 
-C<$self->Timelocal('utc', $self->Localtime('server'))> doesn't
-makes much sense and most probably would produce unexpected
-result, so the method ignore 'utc' context and uses offset
-returned by L<Localtime> method.
+C<< $self->Timelocal('utc', $self->Localtime('server')) >> doesn't
+make much sense and most probably would produce unexpected
+results, so the method ignores 'utc' context and uses the offset
+returned by the L</Localtime> method.
 
 =cut
 
@@ -1107,25 +1106,23 @@ sub Timelocal {
 
 =head3 Timezone $context
 
-Returns the timezone name.
-
-Takes one argument, C<$context> argument which could be C<user>, C<server> or C<utc>.
+Returns the timezone name for the specified context.  C<$context>
+should be one of these values:
 
 =over
 
-=item user
+=item C<user>
 
-Default value is C<user> that mean it returns current user's Timezone value.
+The current user's Timezone value will be returned.
 
-=item server
+=item C<server>
 
-If context is C<server> it returns value of the C<Timezone> RT config option.
-
-=item  utc
-
-If both server's and user's timezone names are undefined returns 'UTC'.
+The value of the C<Timezone> RT config option will be returned.
 
 =back
+
+For any other value of C<$context>, or if the specified context has no
+defined timezone, C<UTC> is returned.
 
 =cut
 
@@ -1133,7 +1130,7 @@ sub Timezone {
     my $self = shift;
 
     if (@_ == 0) {
-        Carp::carp "RT::Date->Timezone is a setter only";
+        Carp::carp 'RT::Date->Timezone requires a context argument';
         return undef;
     }
 
@@ -1150,6 +1147,20 @@ sub Timezone {
     $tz ||= RT->Config->Get('Timezone') || 'UTC';
     $tz = 'UTC' if lc $tz eq 'gmt';
     return $tz;
+}
+
+=head3 IsSet
+
+Returns true if this Date is set in the database, otherwise returns a false value.
+
+This avoids needing to compare to 1970-01-01 in any of your code.
+
+=cut
+
+sub IsSet {
+    my $self = shift;
+    return $self->Unix ? 1 : 0;
+
 }
 
 

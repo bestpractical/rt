@@ -339,7 +339,11 @@ sub custom_field_input {
     my $cf_name = shift;
 
     my $cf_obj = RT::CustomField->new( $RT::SystemUser );
-    $cf_obj->LoadByName( Queue => $queue, Name => $cf_name );
+    $cf_obj->LoadByName(
+        Name => $cf_name,
+        LookupType => RT::Ticket->CustomFieldLookupType,
+        ObjectId => $queue,
+    );
     unless ( $cf_obj->id ) {
         Test::More::diag("Can not load custom field '$cf_name' in queue '$queue'");
         return undef;

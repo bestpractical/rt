@@ -1,12 +1,14 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 22;
+use RT::Test tests => undef;
 
 my $ticket = RT::Test->create_ticket(
     Subject => 'test bulk update',
     Queue   => 1,
 );
+
+RT->Config->Set(AutocompleteOwners => 1);
 
 my ( $url, $m ) = RT::Test->started_ok;
 ok( $m->login, 'logged in' );
@@ -24,12 +26,6 @@ $m->content_lacks("this is update content", 'textarea is clear');
 
 $m->get_ok($url . '/Ticket/Display.html?id=' . $ticket->id );
 $m->content_contains("this is update content", 'updated content in display page');
-
-# NOTE http://issues.bestpractical.com/Ticket/Display.html?id=18284
-RT::Test->stop_server;
-RT->Config->Set(AutocompleteOwners => 1);
-($url, $m) = RT::Test->started_ok;
-$m->login;
 
 $m->get_ok($url . '/Ticket/ModifyAll.html?id=' . $ticket->id);
 
@@ -57,10 +53,18 @@ $m->field('Told_Date' => "2015-01-01 00:00:00");
 $m->click('SubmitTicket');
 $m->text_contains("Last Contact:  (Thu Jan 01 00:00:00 2015)", 'told date successfully updated');
 
-$m->form_name('TicketModifyAll');
-$m->field('Due_Date' => "2016-01-01 00:00:00");
-$m->click('SubmitTicket');
-$m->text_contains("Due: (Fri Jan 01 00:00:00 2016)", 'due date successfully updated');
+for my $unset ("0", "-", " ") {
+    $m->form_name('TicketModifyAll');
+    $m->field('Due_Date' => "2016-01-01 00:00:00");
+    $m->click('SubmitTicket');
+    $m->text_contains("Due: (Fri Jan 01 00:00:00 2016)", 'due date successfully updated');
+
+    $m->form_name('TicketModifyAll');
+    $m->field('Due_Date' => $unset);
+    $m->click('SubmitTicket');
+    $m->text_contains("Due: (Not set)", "due date successfully cleared with '$unset'");
+    $m->warning_like(qr/Couldn't parse date '-'/) if $unset eq "-";
+}
 
 $m->get( $url . '/Ticket/ModifyAll.html?id=' . $ticket->id );
 $m->form_name('TicketModifyAll');
@@ -80,4 +84,5 @@ $m->text_contains(
     'no duplicate watchers',
 );
 
-# XXX TODO test other parts, i.e. links
+undef $m;
+done_testing;

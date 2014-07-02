@@ -57,7 +57,7 @@ my $i =0;
 while ( my $reminder = $reminders->Next ) {
 $i++;
 my $dueobj = $reminder->DueObj;
-my $overdue = $dueobj->Unix > 0 && $dueobj->Diff < 0 ? 1 : 0;
+my $overdue = $dueobj->IsSet && $dueobj->Diff < 0 ? 1 : 0;
 
 my $targets = RT::Tickets->new($session{'CurrentUser'});
 $targets->{'allow_deleted_search'} = 1;
@@ -76,7 +76,7 @@ if ( my $ticket= $targets->First ) {
 <a href="<% RT->Config->Get( 'WebPath' ) %>/Ticket/Display.html?id=<% $ticket->id %>">#<% $ticket->Id %>: <% $ticket->Subject %></a>
 </td>
 % } else {
-<td colspan="3" class="collection-as-table>
+<td colspan="3" class="collection-as-table">
 <div class="error"><div class="error">Couldn't find Ticket for reminder <% $reminder->id %>. Please contact administrator.</div></div>
 </td>
 % }

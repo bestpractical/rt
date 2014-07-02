@@ -763,75 +763,74 @@ evaluate and encode it.  It will return an octet string.
 =cut
 
 sub _EncodeLOB {
-        my $self = shift;
-        my $Body = shift;
-        my $MIMEType = shift || '';
-        my $Filename = shift;
+    my $self = shift;
+    my $Body = shift;
+    my $MIMEType = shift || '';
+    my $Filename = shift;
 
-        my $ContentEncoding = 'none';
+    my $ContentEncoding = 'none';
 
-        #get the max attachment length from RT
-        my $MaxSize = RT->Config->Get('MaxAttachmentSize');
+    #get the max attachment length from RT
+    my $MaxSize = RT->Config->Get('MaxAttachmentSize');
 
-        #if the current attachment contains nulls and the
-        #database doesn't support embedded nulls
+    #if the current attachment contains nulls and the
+    #database doesn't support embedded nulls
 
-        if ( ( !$RT::Handle->BinarySafeBLOBs ) && ( $Body =~ /\x00/ ) ) {
+    if ( ( !$RT::Handle->BinarySafeBLOBs ) && ( $Body =~ /\x00/ ) ) {
 
-            # set a flag telling us to mimencode the attachment
-            $ContentEncoding = 'base64';
+        # set a flag telling us to mimencode the attachment
+        $ContentEncoding = 'base64';
 
-            #cut the max attchment size by 25% (for mime-encoding overhead.
-            $RT::Logger->debug("Max size is $MaxSize");
-            $MaxSize = $MaxSize * 3 / 4;
-        # Some databases (postgres) can't handle non-utf8 data
-        } elsif (    !$RT::Handle->BinarySafeBLOBs
-                  && $Body =~ /\P{ASCII}/
-                  && !Encode::is_utf8( $Body, 1 ) ) {
-              $ContentEncoding = 'quoted-printable';
+        #cut the max attchment size by 25% (for mime-encoding overhead.
+        $RT::Logger->debug("Max size is $MaxSize");
+        $MaxSize = $MaxSize * 3 / 4;
+    # Some databases (postgres) can't handle non-utf8 data
+    } elsif (    !$RT::Handle->BinarySafeBLOBs
+              && $Body =~ /\P{ASCII}/
+              && !Encode::is_utf8( $Body, 1 ) ) {
+          $ContentEncoding = 'quoted-printable';
+    }
+
+    #if the attachment is larger than the maximum size
+    if ( ($MaxSize) and ( $MaxSize < length($Body) ) ) {
+
+        # if we're supposed to truncate large attachments
+        if (RT->Config->Get('TruncateLongAttachments')) {
+
+            # truncate the attachment to that length.
+            $Body = substr( $Body, 0, $MaxSize );
+
         }
 
-        #if the attachment is larger than the maximum size
-        if ( ($MaxSize) and ( $MaxSize < length($Body) ) ) {
+        # elsif we're supposed to drop large attachments on the floor,
+        elsif (RT->Config->Get('DropLongAttachments')) {
 
-            # if we're supposed to truncate large attachments
-            if (RT->Config->Get('TruncateLongAttachments')) {
-
-                # truncate the attachment to that length.
-                $Body = substr( $Body, 0, $MaxSize );
-
-            }
-
-            # elsif we're supposed to drop large attachments on the floor,
-            elsif (RT->Config->Get('DropLongAttachments')) {
-
-                # drop the attachment on the floor
-                $RT::Logger->info( "$self: Dropped an attachment of size "
-                                   . length($Body));
-                $RT::Logger->info( "It started: " . substr( $Body, 0, 60 ) );
-                $Filename .= ".txt" if $Filename;
-                return ("none", "Large attachment dropped", "text/plain", $Filename );
-            }
+            # drop the attachment on the floor
+            $RT::Logger->info( "$self: Dropped an attachment of size "
+                               . length($Body));
+            $RT::Logger->info( "It started: " . substr( $Body, 0, 60 ) );
+            $Filename .= ".txt" if $Filename;
+            return ("none", "Large attachment dropped", "text/plain", $Filename );
         }
+    }
 
-        # if we need to mimencode the attachment
-        if ( $ContentEncoding eq 'base64' ) {
+    # if we need to mimencode the attachment
+    if ( $ContentEncoding eq 'base64' ) {
 
-            # base64 encode the attachment
-            Encode::_utf8_off($Body);
-            $Body = MIME::Base64::encode_base64($Body);
+        # base64 encode the attachment
+        Encode::_utf8_off($Body);
+        $Body = MIME::Base64::encode_base64($Body);
 
-        } elsif ($ContentEncoding eq 'quoted-printable') {
-            Encode::_utf8_off($Body);
-            $Body = MIME::QuotedPrint::encode($Body);
-        }
+    } elsif ($ContentEncoding eq 'quoted-printable') {
+        Encode::_utf8_off($Body);
+        $Body = MIME::QuotedPrint::encode($Body);
+    }
 
 
-        return ($ContentEncoding, $Body, $MIMEType, $Filename );
-
+    return ($ContentEncoding, $Body, $MIMEType, $Filename );
 }
 
-=head2 _DecodeLOB
+=head2 _DecodeLOB C<ContentType>, C<ContentEncoding>, C<Content>
 
 Unpacks data stored in the database, which may be base64 or QP encoded
 because of our need to store binary and badly encoded data in columns
@@ -846,6 +845,12 @@ the invalid byte but won't run into problems treating the data as UTF-8 later.
 This is similar to how we filter all data coming in via the web UI in
 RT::Interface::Web::DecodeARGS. This filter should only end up being
 applied to old data from less UTF-8-safe versions of RT.
+
+If the passed C<ContentType> includes a character set, that will be used
+to decode textual data; the default character set is UTF-8.  This is
+necessary because while we attempt to store textual data as UTF-8, the
+definition of "textual" has migrated over time, and thus we may now need
+to attempt to decode data that was previously not trancoded on insertion.
 
 Important Note - This function expects an octet string and returns a
 character string for non-binary data.
@@ -868,9 +873,15 @@ sub _DecodeLOB {
         return ( $self->loc( "Unknown ContentEncoding [_1]", $ContentEncoding ) );
     }
     if ( RT::I18N::IsTextualContentType($ContentType) ) {
-       $Content = Encode::decode('UTF-8',$Content,Encode::FB_PERLQQ) unless Encode::is_utf8($Content);
+        my $entity = MIME::Entity->new();
+        $entity->head->add("Content-Type", $ContentType);
+        $entity->bodyhandle( MIME::Body::Scalar->new( $Content ) );
+        my $charset = RT::I18N::_FindOrGuessCharset($entity);
+        $charset = 'utf-8' if not $charset or not Encode::find_encoding($charset);
+
+        $Content = Encode::decode($charset,$Content,Encode::FB_PERLQQ) unless Encode::is_utf8($Content);
     }
-        return ($Content);
+    return ($Content);
 }
 
 =head2 Update  ARGSHASH
@@ -1970,8 +1981,8 @@ sub _AddCustomFieldValue {
                 $i++;
                 if ( $i < $cf_values ) {
                     my ( $val, $msg ) = $cf->DeleteValueForObject(
-                        Object  => $self,
-                        Content => $value->Content
+                        Object => $self,
+                        Id     => $value->id,
                     );
                     unless ($val) {
                         return ( 0, $msg );
@@ -1987,30 +1998,13 @@ sub _AddCustomFieldValue {
             $values->RedoSearch if $i; # redo search if have deleted at least one value
         }
 
-        my ( $old_value, $old_content );
-        if ( $old_value = $values->First ) {
-            $old_content = $old_value->Content;
-            $old_content = undef if defined $old_content && !length $old_content;
-
-            my $is_the_same = 1;
-            if ( defined $args{'Value'} ) {
-                $is_the_same = 0 unless defined $old_content
-                    && $old_content eq $args{'Value'};
-            } else {
-                $is_the_same = 0 if defined $old_content;
-            }
-            if ( $is_the_same ) {
-                my $old_content = $old_value->LargeContent;
-                if ( defined $args{'LargeContent'} ) {
-                    $is_the_same = 0 unless defined $old_content
-                        && $old_content eq $args{'LargeContent'};
-                } else {
-                    $is_the_same = 0 if defined $old_content;
-                }
-            }
-
-            return $old_value->id if $is_the_same;
+        if ( my $entry = $values->HasEntry($args{'Value'}, $args{'LargeContent'}) ) {
+            return $entry->id;
         }
+
+        my $old_value = $values->First;
+        my $old_content;
+        $old_content = $old_value->Content if $old_value;
 
         my ( $new_value_id, $value_msg ) = $cf->AddValueForObject(
             Object       => $self,
@@ -2078,6 +2072,11 @@ sub _AddCustomFieldValue {
 
     # otherwise, just add a new value and record "new value added"
     else {
+        my $values = $cf->ValuesForObject($self);
+        if ( my $entry = $values->HasEntry($args{'Value'}, $args{'LargeContent'}) ) {
+            return $entry->id;
+        }
+
         my ($new_value_id, $msg) = $cf->AddValueForObject(
             Object       => $self,
             Content      => $args{'Value'},
@@ -2133,7 +2132,7 @@ sub CustomFieldValueIsEmpty {
                 Value  => $value,
                 $cf->Type eq 'Date' ? ( Timezone => 'UTC' ) : (),
             );
-            return 1 unless $DateObj->Unix;
+            return 1 unless $DateObj->IsSet;
         }
     }
     return 0;
@@ -2448,10 +2447,17 @@ sub Serialize {
     $store{$_} = $values{lc $_} for @cols;
     $store{id} = $values{id}; # Explicitly necessary in some cases
 
-    # Un-encode things with a ContentEncoding for transfer
+    # Un-apply the _transfer_ encoding, but don't mess with the octets
+    # themselves.  Calling ->Content directly would, in some cases,
+    # decode from some mostly-unknown character set -- which reversing
+    # on the far end would be complicated.
     if ($ca{ContentEncoding} and $ca{ContentType}) {
         my ($content_col) = grep {exists $ca{$_}} qw/LargeContent Content/;
-        $store{$content_col} = $self->$content_col;
+        $store{$content_col} = $self->_DecodeLOB(
+            "application/octet-stream", # Lie so that we get bytes, not characters
+            $self->ContentEncoding,
+            $self->_Value( $content_col, decode_utf8 => 0 )
+        );
         delete $store{ContentEncoding};
     }
     return %store unless $args{UIDs};
@@ -2490,8 +2496,7 @@ sub PreInflate {
         my ($content_col) = grep {exists $ca{$_}} qw/LargeContent Content/;
         if (defined $data->{$content_col}) {
             my ($ContentEncoding, $Content) = $class->_EncodeLOB(
-                Encode::encode("UTF-8",$data->{$content_col},Encode::FB_CROAK),
-                $data->{ContentType},
+                $data->{$content_col}, $data->{ContentType},
             );
             $data->{ContentEncoding} = $ContentEncoding;
             $data->{$content_col} = $Content;

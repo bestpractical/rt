@@ -2,11 +2,6 @@
 use strict;
 use warnings;
 use Test::More;
-BEGIN {
-    eval { require Email::Abstract; require Test::Email; 1 }
-        or plan skip_all => 'require Email::Abstract and Test::Email';
-}
-
 
 use RT;
 use RT::Test tests => "no_declare";

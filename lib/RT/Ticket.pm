@@ -183,7 +183,7 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   Priority -- an integer from 0 to 99
   InitialPriority -- an integer from 0 to 99
   FinalPriority -- an integer from 0 to 99
-  Status -- any valid status (Defined in RT::Queue)
+  Status -- any valid status for Queue's Lifecycle, otherwises uses on_create from Lifecycle default
   TimeEstimated -- an integer. estimated time for this task in minutes
   TimeWorked -- an integer. time worked so far in minutes
   TimeLeft -- an integer. time remaining in minutes
@@ -2379,7 +2379,7 @@ sub _SetStatus {
     if ( $args{SetStarted}
              && $args{Lifecycle}->IsInitial($old)
              && !$args{NewLifecycle}->IsInitial($args{Status})
-             && !$raw_started->Unix) {
+             && !$raw_started->IsSet) {
         # Set the Started time to "now"
         $self->_Set(
             Field             => 'Started',
@@ -2978,8 +2978,12 @@ sub LoadCustomFieldByIdentifier {
 
     my $cf = RT::CustomField->new( $self->CurrentUser );
     $cf->SetContextObject( $self );
-    $cf->LoadByNameAndQueue( Name => $field, Queue => $self->Queue );
-    $cf->LoadByNameAndQueue( Name => $field, Queue => 0 ) unless $cf->id;
+    $cf->LoadByName(
+        Name          => $field,
+        LookupType    => $self->CustomFieldLookupType,
+        ObjectId      => $self->Queue,
+        IncludeGlobal => 1,
+    );
     return $cf;
 }
 

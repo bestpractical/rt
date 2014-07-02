@@ -66,6 +66,21 @@ my $COLUMN_MAP = {
             return join(", ", map {$_->Id} @{$_[0]->AddedTo->ItemsArrayRef});
         },
     },
+    From => {
+        title     => 'Queue',
+        value     => sub {
+            my $request_path = $HTML::Mason::Commands::r->path_info;
+            my $queue_id = $m->request_args->{'id'};
+            if ( $request_path =~ m{/Admin/Queues/Scrips\.html} and $queue_id ) {
+                return '&From=' . $queue_id;
+            } elsif ( $request_path =~ m{/Admin/Global/Scrips\.html} ) {
+                return '&From=Global';
+            }
+            else {
+                return q{};
+            }
+        },
+    },
     Condition => {
         title     => 'Condition', # loc
         value     => sub { return $_[0]->loc( $_[0]->ScripConditionObj->Name ) },
@@ -92,7 +107,7 @@ my $COLUMN_MAP = {
         value     => sub { return $_[0]->Description() },
     },
     Disabled => {
-        title     => \'&nbsp;',
+        title     => 'Status', # loc
         attribute => 'Disabled',
         value     => sub { return $_[0]->Disabled? $_[0]->loc('Disabled'): $_[0]->loc('Enabled') },
     },
@@ -148,6 +163,15 @@ my $COLUMN_MAP = {
             );
 
             return @res;
+        },
+    },
+    Stage => {
+        title => 'Stage', # loc
+        value => sub {
+            my $os = RT::ObjectScrip->new( $_[0]->CurrentUser );
+            my $id = $_[0]->IsGlobal ? 0 : $_[-1];
+            $os->LoadByCols( Scrip =>  $_[0]->id, ObjectId => $id );
+            return $_[0]->loc( $os->FriendlyStage );
         },
     },
 };

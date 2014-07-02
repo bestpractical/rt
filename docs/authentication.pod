@@ -60,7 +60,31 @@ In order to keep user data in sync, this type of external auth is almost always
 used in combination with one or both of L</RT::Authen::ExternalAuth> and
 L</RT::Extension::LDAPImport>.
 
-=head3 Configuration options
+=head3 Apache configuration
+
+When configuring Apache to protect RT, remember that the RT mail gateway
+uses the web interface to upload the incoming email messages.  You will
+thus need to provide an exception for the mail gateway endpoint.
+
+An example of using LDAP authentication and HTTP Basic auth:
+
+    <Location />
+        Require valid-user
+        AuthType Basic
+        AuthName "RT access"
+        AuthBasicProvider ldap
+        AuthLDAPURL \
+            "ldap://ldap.example.com/dc=example,dc=com"
+    </Location>
+    <Location /REST/1.0/NoAuth/mail-gateway>
+        Order deny,allow
+        Deny from all
+        Allow from localhost
+        Satisfy any
+    </Location>
+
+
+=head3 RT configuration options
 
 All of the following options control the behaviour of RT's built-in external
 authentication which relies on the web server.  They are documented in detail

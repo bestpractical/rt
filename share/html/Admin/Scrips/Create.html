@@ -51,6 +51,7 @@
 
 <form method="post" action="Create.html" id="CreateScrip" name="CreateScrip">
 <input type="hidden" class="hidden" name="Queue" value="<% $Queue %>" />
+<input type="hidden" class="hidden" name="Global" value="<% $Global || q{} %>" />
 
 <&| /Widgets/TitleBox, title => loc('Basics') &>
 <table>
@@ -86,6 +87,7 @@
 <%ARGS>
 $Queue => 0
 $Create => undef
+$Global => undef
 </%ARGS>
 <%INIT>
 my @results;
@@ -129,7 +131,14 @@ if ( $Create ) {
         Force     => 1,
         Actions   => [ $msg ],
         Path      => 'Admin/Scrips/Modify.html',
-        Arguments => { id => $scrip->id },
+        Arguments => {
+            id => $scrip->id,
+            $Queue ? (
+                From => $Queue,
+            ) : $Global ? (
+                From => 'Global',
+            ) : ()
+        },
     ) if $status;
 
     push @results, $msg;

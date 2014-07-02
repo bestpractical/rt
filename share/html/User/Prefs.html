@@ -106,7 +106,7 @@
 </&>
 
 %if ($UserObj->Privileged) {
-<&| /Widgets/TitleBox, title => loc('Signature') &>
+<&| /Widgets/TitleBox, title => loc('Signature'), id => "user-prefs-signature" &>
 <textarea cols="80" rows="5" name="Signature" class="signature" wrap="hard">
 <%$UserObj->Signature || ''%></textarea>
 </&>

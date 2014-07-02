@@ -80,7 +80,7 @@
   <tr class="date due">
     <td class="label"><&|/l&>Due</&>:</td>\
 % my $due = $Ticket->DueObj;
-% if ( $due && $due->Unix > 0 && $due->Diff < 0 ) {
+% if ( $due && $due->IsSet && $due->Diff < 0 ) {
     <td class="value"><span class="overdue"><% $due->AsString  %></span></td>
 % } else {
     <td class="value"><% $due->AsString  %></td>

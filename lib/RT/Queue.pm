@@ -245,22 +245,22 @@ sub SetDisabled {
     my $val = shift;
 
     $RT::Handle->BeginTransaction();
-    my $set_err = $self->_Set( Field =>'Disabled', Value => $val);
-    unless ($set_err) {
+    my ($ok, $msg) = $self->_Set( Field =>'Disabled', Value => $val);
+    unless ($ok) {
         $RT::Handle->Rollback();
-        $RT::Logger->warning("Couldn't ".($val == 1) ? "disable" : "enable"." queue ".$self->Name);
-        return (undef);
+        $RT::Logger->warning("Couldn't ".(($val == 0) ? "enable" : "disable")." queue ".$self->Name.": $msg");
+        return ($ok, $msg);
     }
-    $self->_NewTransaction( Type => ($val == 1) ? "Disabled" : "Enabled" );
+    $self->_NewTransaction( Type => ($val == 0) ? "Enabled" : "Disabled" );
 
     $RT::Handle->Commit();
 
     RT->System->QueueCacheNeedsUpdate(1);
 
-    if ( $val == 1 ) {
-        return (1, $self->loc("Queue disabled"));
-    } else {
+    if ( $val == 0 ) {
         return (1, $self->loc("Queue enabled"));
+    } else {
+        return (1, $self->loc("Queue disabled"));
     }
 
 }
@@ -449,7 +449,11 @@ sub CustomField {
     my $self = shift;
     my $name = shift;
     my $cf = RT::CustomField->new($self->CurrentUser);
-    $cf->LoadByNameAndQueue(Name => $name, Queue => $self->Id); 
+    $cf->LoadByName(
+        Name       => $name,
+        LookupType => RT::Ticket->CustomFieldLookupType,
+        ObjectId   => $self->id,
+    );
     return ($cf);
 }
 
@@ -557,7 +561,7 @@ Returns whether the passed-in type is a manageable role group type.
 sub IsManageableRoleGroupType {
     my $self = shift;
     my $type = shift;
-    return not $self->Role($type)->{ACLOnly};
+    return( $self->HasRole($type) and not $self->Role($type)->{ACLOnly} );
 }
 
 

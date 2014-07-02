@@ -42,8 +42,8 @@ diag "dates on create for default schema";
             Status => 'new',
         );
         ok $id, 'created a ticket';
-        ok $ticket->StartedObj->Unix <= 0, 'started is not set';
-        ok $ticket->ResolvedObj->Unix <= 0, 'resolved is not set';
+        ok !$ticket->StartedObj->IsSet, 'started is not set';
+        ok !$ticket->ResolvedObj->IsSet, 'resolved is not set';
     }
     {
         my $ticket = RT::Ticket->new( RT->SystemUser );
@@ -53,8 +53,8 @@ diag "dates on create for default schema";
             Status => 'open',
         );
         ok $id, 'created a ticket';
-        ok $ticket->StartedObj->Unix > 0, 'started is set';
-        ok $ticket->ResolvedObj->Unix <= 0, 'resolved is not set';
+        ok $ticket->StartedObj->IsSet, 'started is set';
+        ok !$ticket->ResolvedObj->IsSet, 'resolved is not set';
     }
     {
         my $ticket = RT::Ticket->new( RT->SystemUser );
@@ -64,8 +64,8 @@ diag "dates on create for default schema";
             Status => 'resolved',
         );
         ok $id, 'created a ticket';
-        ok $ticket->StartedObj->Unix > 0, 'started is set';
-        ok $ticket->ResolvedObj->Unix > 0, 'resolved is set';
+        ok $ticket->StartedObj->IsSet, 'started is set';
+        ok $ticket->ResolvedObj->IsSet, 'resolved is set';
     }
 
     my $test_date = '2008-11-28 12:00:00';
@@ -135,7 +135,7 @@ diag "dates on create for delivery schema";
         is $ticket->Status, 'ordered', "Status is ordered";
         my ($statusval,$statusmsg) = $ticket->SetStatus('on way');
         ok($statusval,$statusmsg);
-        ok $ticket->StartedObj->Unix > 0, 'started is set to ' .$ticket->StartedObj->AsString ;
+        ok $ticket->StartedObj->IsSet, 'started is set to ' .$ticket->StartedObj->AsString ;
         is $ticket->ResolvedObj->Unix, 0, 'resolved is not set';
     }
     {
@@ -152,8 +152,8 @@ diag "dates on create for delivery schema";
         ($statusval,$statusmsg) = $ticket->SetStatus('delivered');
         ok($statusval,$statusmsg);
 
-        ok $ticket->StartedObj->Unix > 0, 'started is set';
-        ok $ticket->ResolvedObj->Unix > 0, 'resolved is set';
+        ok $ticket->StartedObj->IsSet, 'started is set';
+        ok $ticket->ResolvedObj->IsSet, 'resolved is set';
     }
 
     my $test_date = '2008-11-28 12:00:00';
@@ -215,30 +215,30 @@ diag "dates on status change for default schema";
         Status => 'new',
     );
     ok $id, 'created a ticket';
-    ok $ticket->StartedObj->Unix <= 0, 'started is not set';
-    ok $ticket->ResolvedObj->Unix <= 0, 'resolved is not set';
+    ok !$ticket->StartedObj->IsSet, 'started is not set';
+    ok !$ticket->ResolvedObj->IsSet, 'resolved is not set';
 
     (my $status, $msg) = $ticket->SetStatus('open');
     ok $status, 'changed status' or diag "error: $msg";
-    ok $ticket->StartedObj->Unix > 0, 'started is set';
-    ok $ticket->ResolvedObj->Unix <= 0, 'resolved is not set';
+    ok $ticket->StartedObj->IsSet, 'started is set';
+    ok !$ticket->ResolvedObj->IsSet, 'resolved is not set';
 
     my $started = $ticket->StartedObj->Unix;
 
     ($status, $msg) = $ticket->SetStatus('stalled');
     ok $status, 'changed status' or diag "error: $msg";
     is $ticket->StartedObj->Unix, $started, 'started is set and the same';
-    ok $ticket->ResolvedObj->Unix <= 0, 'resolved is not set';
+    ok !$ticket->ResolvedObj->IsSet, 'resolved is not set';
 
     ($status, $msg) = $ticket->SetStatus('open');
     ok $status, 'changed status' or diag "error: $msg";
     is $ticket->StartedObj->Unix, $started, 'started is set and the same';
-    ok $ticket->ResolvedObj->Unix <= 0, 'resolved is not set';
+    ok !$ticket->ResolvedObj->IsSet, 'resolved is not set';
 
     ($status, $msg) = $ticket->SetStatus('resolved');
     ok $status, 'changed status' or diag "error: $msg";
     is $ticket->StartedObj->Unix, $started, 'started is set and the same';
-    ok $ticket->ResolvedObj->Unix > 0, 'resolved is set';
+    ok $ticket->ResolvedObj->IsSet, 'resolved is set';
 }
 
 diag "dates on status change for delivery schema";
@@ -250,25 +250,25 @@ diag "dates on status change for delivery schema";
         Status => 'ordered',
     );
     ok $id, 'created a ticket';
-    ok $ticket->StartedObj->Unix <= 0, 'started is not set';
-    ok $ticket->ResolvedObj->Unix <= 0, 'resolved is not set';
+    ok !$ticket->StartedObj->IsSet, 'started is not set';
+    ok !$ticket->ResolvedObj->IsSet, 'resolved is not set';
 
     (my $status, $msg) = $ticket->SetStatus('delayed');
     ok $status, 'changed status' or diag "error: $msg";
-    ok $ticket->StartedObj->Unix > 0, 'started is set';
-    ok $ticket->ResolvedObj->Unix <= 0, 'resolved is not set';
+    ok $ticket->StartedObj->IsSet, 'started is set';
+    ok !$ticket->ResolvedObj->IsSet, 'resolved is not set';
 
     my $started = $ticket->StartedObj->Unix;
 
     ($status, $msg) = $ticket->SetStatus('on way');
     ok $status, 'changed status' or diag "error: $msg";
     is $ticket->StartedObj->Unix, $started, 'started is set and the same';
-    ok $ticket->ResolvedObj->Unix <= 0, 'resolved is not set';
+    ok !$ticket->ResolvedObj->IsSet, 'resolved is not set';
 
     ($status, $msg) = $ticket->SetStatus('delivered');
     ok $status, 'changed status' or diag "error: $msg";
     is $ticket->StartedObj->Unix, $started, 'started is set and the same';
-    ok $ticket->ResolvedObj->Unix > 0, 'resolved is set';
+    ok $ticket->ResolvedObj->IsSet, 'resolved is set';
 }
 
 diag "add partial map between general->delivery";
@@ -294,20 +294,20 @@ diag "check date changes on moving a ticket";
         Status => 'new',
     );
     ok $id, 'created a ticket';
-    ok $ticket->StartedObj->Unix <= 0, 'started is not set';
-    ok $ticket->ResolvedObj->Unix <= 0, 'resolved is not set';
+    ok !$ticket->StartedObj->IsSet, 'started is not set';
+    ok !$ticket->ResolvedObj->IsSet, 'resolved is not set';
 
     (my $status, $msg) = $ticket->SetQueue( $delivery->id );
     ok $status, "moved ticket between queues with different schemas";
     is $ticket->Status, 'on way', 'status has been changed';
-    ok $ticket->StartedObj->Unix > 0, 'started is set';
-    ok $ticket->ResolvedObj->Unix <= 0, 'resolved is not set';
+    ok $ticket->StartedObj->IsSet, 'started is set';
+    ok !$ticket->ResolvedObj->IsSet, 'resolved is not set';
 
     ($status, $msg) = $ticket->SetQueue( $general->id );
     ok $status, "moved ticket between queues with different schemas";
     is $ticket->Status, 'resolved', 'status has been changed';
-    ok $ticket->StartedObj->Unix > 0, 'started is set';
-    ok $ticket->ResolvedObj->Unix > 0, 'resolved is set';
+    ok $ticket->StartedObj->IsSet, 'started is set';
+    ok $ticket->ResolvedObj->IsSet, 'resolved is set';
 }
 
 done_testing;

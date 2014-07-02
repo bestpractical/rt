@@ -691,7 +691,7 @@ sub ParseLines {
             eval {
                 $dateobj->Set( Format => 'iso', Value => $args{$date} );
             };
-            if ($@ or $dateobj->Unix <= 0) {
+            if ($@ or not $dateobj->IsSet) {
                 $dateobj->Set( Format => 'unknown', Value => $args{$date} );
             }
         }
@@ -756,14 +756,22 @@ sub ParseLines {
             $ticketargs{ "CustomField-" . $1 } = $args{$tag};
         } elsif ( $orig_tag =~ /^(?:customfield|cf)-?(.+)$/i ) {
             my $cf = RT::CustomField->new( $self->CurrentUser );
-            $cf->LoadByName( Name => $1, Queue => $ticketargs{Queue} );
-            $cf->LoadByName( Name => $1, Queue => 0 ) unless $cf->id;
+            $cf->LoadByName(
+                Name          => $1,
+                LookupType    => RT::Ticket->CustomFieldLookupType,
+                ObjectId      => $ticketargs{Queue},
+                IncludeGlobal => 1,
+            );
             next unless $cf->id;
             $ticketargs{ "CustomField-" . $cf->id } = $args{$tag};
         } elsif ($orig_tag) {
             my $cf = RT::CustomField->new( $self->CurrentUser );
-            $cf->LoadByName( Name => $orig_tag, Queue => $ticketargs{Queue} );
-            $cf->LoadByName( Name => $orig_tag, Queue => 0 ) unless $cf->id;
+            $cf->LoadByName(
+                Name          => $orig_tag,
+                LookupType    => RT::Ticket->CustomFieldLookupType,
+                ObjectId      => $ticketargs{Queue},
+                IncludeGlobal => 1,
+            );
             next unless $cf->id;
             $ticketargs{ "CustomField-" . $cf->id } = $args{$tag};
 

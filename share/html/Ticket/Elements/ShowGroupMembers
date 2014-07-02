@@ -50,7 +50,7 @@
 my $post_user = sub {
     my $user = shift;
     $m->comp("/Elements/ShowUserEmailFrequency", User => $user, Ticket => $Ticket);
-    $m->callback( User => $user, Ticket => $Ticket, %ARGS, CallbackName => 'AboutThisUser' );
+    $m->callback( User => $user, Ticket => $Ticket, %ARGS, CallbackName => 'AboutThisUser', CallbackPage => '/Ticket/Elements/ShowGroupMembers' );
 };
 $m->comp("/Elements/ShowPrincipal", Object => $Group, Separator => "<br />", PostUser => $post_user, Link => $Link);
 </%init>

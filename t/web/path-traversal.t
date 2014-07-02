@@ -30,6 +30,7 @@ is($agent->status, $ENV{RT_TEST_WEB_HANDLER} =~ /^apache/ ? 400 : 403);
 # dotfiles, for example.
 $agent->get("$baseurl/Ticket/Attachment/28/9/.bashrc");
 is($agent->status, 200); # Even for a file not found, we return 200
+$agent->next_warning_like(qr/could not be loaded/, "couldn't loaded warning");
 $agent->content_like(qr/Attachment \S+ could not be loaded/);
 
 # do not reject these URLs, even though they contain /. outside the path

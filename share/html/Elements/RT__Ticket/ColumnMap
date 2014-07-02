@@ -135,7 +135,7 @@ $COLUMN_MAP = {
 
                     my $SearchURL = RT->Config->Get('WebPath') . '/Search/Results.html?' . $m->comp('/Elements/QueryString', Query => $Query);
 
-                    return \'<a href="',$SearchURL,\'">', loc('(pending [quant,_1,other ticket])',$count), \'</a>';
+                    return \'<a href="',$SearchURL,\'">', loc('(pending [quant,_1,other ticket,other tickets])',$count), \'</a>';
                 }
             }
             else {
@@ -207,7 +207,7 @@ $COLUMN_MAP = {
         value     => sub { 
             my $date = $_[0]->DueObj;
             # Highlight the date if it was due in the past, and it's still active
-            if ( $date && $date->Unix > 0 && $date->Diff < 0 && $_[0]->QueueObj->IsActiveStatus($_[0]->Status)) {
+            if ( $date && $date->IsSet && $date->Diff < 0 && $_[0]->QueueObj->IsActiveStatus($_[0]->Status)) {
                 return (\'<span class="overdue">' , $date->AgeAsString , \'</span>');
             } else {
                 return $date->AgeAsString;

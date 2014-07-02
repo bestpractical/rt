@@ -19,8 +19,8 @@
 Set( $rtname, 'example.com');
 
 # You must install Plugins on your own, this is only an example
-# of the correct syntax to use when activating them.
-# Plugin( "RT::Extension::QuickDelete" );
-# Plugin( "RT::Extension::CommandByMail" );
+# of the correct syntax to use when activating them:
+#     Plugin( "RT::Extension::SLA" );
+#     Plugin( "RT::Authen::ExternalAuth" );
 
 1;

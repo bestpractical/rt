@@ -86,7 +86,7 @@ sub IsApplicable {
     my $cur = RT::Date->new( RT->SystemUser );
     $cur->SetToNow();
     my $due = $self->TicketObj->DueObj;
-    return (undef) if $due->Unix <= 0;
+    return (undef) unless $due->IsSet;
 
     my $diff = $due->Diff($cur);
     if ( $diff >= 0 and $diff <= $elapse ) {

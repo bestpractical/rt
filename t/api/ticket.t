@@ -100,7 +100,7 @@ ok( $t->Create(Queue => 'General', Due => '2002-05-21 00:00:00', ReferredToBy =>
 ok ( my $id = $t->Id, "Got ticket id");
 like ($t->RefersTo->First->Target , qr/fsck.com/, "Got refers to");
 like ($t->ReferredToBy->First->Base , qr/cpan.org/, "Got referredtoby");
-is ($t->ResolvedObj->Unix, 0, "It hasn't been resolved - ". $t->ResolvedObj->Unix);
+ok (!$t->ResolvedObj->IsSet, "It hasn't been resolved");
 
 
 }

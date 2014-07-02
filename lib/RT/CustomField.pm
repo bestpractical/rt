@@ -71,9 +71,9 @@ our %FieldTypes = (
         sort_order => 10,
         selection_type => 1,
 
-        labels => [ 'Select multiple values',      # loc
-                    'Select one value',            # loc
-                    'Select up to [_1] values',    # loc
+        labels => [ 'Select multiple values',               # loc
+                    'Select one value',                     # loc
+                    'Select up to [quant,_1,value,values]', # loc
                   ],
 
         render_types => {
@@ -94,27 +94,27 @@ our %FieldTypes = (
         sort_order => 20,
         selection_type => 0,
 
-        labels => [ 'Enter multiple values',       # loc
-                    'Enter one value',             # loc
-                    'Enter up to [_1] values',     # loc
+        labels => [ 'Enter multiple values',               # loc
+                    'Enter one value',                     # loc
+                    'Enter up to [quant,_1,value,values]', # loc
                   ]
                 },
     Text => {
         sort_order => 30,
         selection_type => 0,
         labels         => [
-                    'Fill in multiple text areas',      # loc
-                    'Fill in one text area',            # loc
-                    'Fill in up to [_1] text areas',    # loc
+                    'Fill in multiple text areas',                   # loc
+                    'Fill in one text area',                         # loc
+                    'Fill in up to [quant,_1,text area,text areas]', # loc
                   ]
             },
     Wikitext => {
         sort_order => 40,
         selection_type => 0,
         labels         => [
-                    'Fill in multiple wikitext areas',      # loc
-                    'Fill in one wikitext area',            # loc
-                    'Fill in up to [_1] wikitext areas',    # loc
+                    'Fill in multiple wikitext areas',                       # loc
+                    'Fill in one wikitext area',                             # loc
+                    'Fill in up to [quant,_1,wikitext area,wikitext areas]', # loc
                   ]
                 },
 
@@ -124,16 +124,16 @@ our %FieldTypes = (
         labels         => [
                     'Upload multiple images',               # loc
                     'Upload one image',                     # loc
-                    'Upload up to [_1] images',             # loc
+                    'Upload up to [quant,_1,image,images]', # loc
                   ]
              },
     Binary => {
         sort_order => 60,
         selection_type => 0,
         labels         => [
-                    'Upload multiple files',                # loc
-                    'Upload one file',                      # loc
-                    'Upload up to [_1] files',              # loc
+                    'Upload multiple files',              # loc
+                    'Upload one file',                    # loc
+                    'Upload up to [quant,_1,file,files]', # loc
                   ]
               },
 
@@ -141,18 +141,18 @@ our %FieldTypes = (
         sort_order => 70,
         selection_type => 1,
         labels         => [
-                    'Combobox: Select or enter multiple values',      # loc
-                    'Combobox: Select or enter one value',            # loc
-                    'Combobox: Select or enter up to [_1] values',    # loc
+                    'Combobox: Select or enter multiple values',               # loc
+                    'Combobox: Select or enter one value',                     # loc
+                    'Combobox: Select or enter up to [quant,_1,value,values]', # loc
                   ]
                 },
     Autocomplete => {
         sort_order => 80,
         selection_type => 1,
         labels         => [
-                    'Enter multiple values with autocompletion',      # loc
-                    'Enter one value with autocompletion',            # loc
-                    'Enter up to [_1] values with autocompletion',    # loc
+                    'Enter multiple values with autocompletion',               # loc
+                    'Enter one value with autocompletion',                     # loc
+                    'Enter up to [quant,_1,value,values] with autocompletion', # loc
                   ]
     },
 
@@ -160,18 +160,18 @@ our %FieldTypes = (
         sort_order => 90,
         selection_type => 0,
         labels         => [
-                    'Select multiple dates',                          # loc
-                    'Select date',                                    # loc
-                    'Select up to [_1] dates',                        # loc
+                    'Select multiple dates',              # loc
+                    'Select date',                        # loc
+                    'Select up to [quant,_1,date,dates]', # loc
                   ]
             },
     DateTime => {
         sort_order => 100,
         selection_type => 0,
         labels         => [
-                    'Select multiple datetimes',                      # loc
-                    'Select datetime',                                # loc
-                    'Select up to [_1] datetimes',                    # loc
+                    'Select multiple datetimes',                  # loc
+                    'Select datetime',                            # loc
+                    'Select up to [quant,_1,datetime,datetimes]', # loc
                   ]
                 },
 
@@ -179,18 +179,18 @@ our %FieldTypes = (
         sort_order => 110,
         selection_type => 0,
 
-        labels => [ 'Enter multiple IP addresses',       # loc
-                    'Enter one IP address',             # loc
-                    'Enter up to [_1] IP addresses',     # loc
+        labels => [ 'Enter multiple IP addresses',                    # loc
+                    'Enter one IP address',                           # loc
+                    'Enter up to [quant,_1,IP address,IP addresses]', # loc
                   ]
                 },
     IPAddressRange => {
         sort_order => 120,
         selection_type => 0,
 
-        labels => [ 'Enter multiple IP address ranges',       # loc
-                    'Enter one IP address range',             # loc
-                    'Enter up to [_1] IP address ranges',     # loc
+        labels => [ 'Enter multiple IP address ranges',                          # loc
+                    'Enter one IP address range',                                # loc
+                    'Enter up to [quant,_1,IP address range,IP address ranges]', # loc
                   ]
                 },
 );
@@ -382,20 +382,58 @@ sub Load {
 
 
 
-=head2 LoadByName (Queue => QUEUEID, Name => NAME)
+=head2 LoadByName Name => C<NAME>, [...]
 
-Loads the Custom field named NAME.
+Loads the Custom field named NAME.  As other optional parameters, takes:
 
-Will load a Disabled Custom Field even if there is a non-disabled Custom Field
-with the same Name.
+=over
 
-If a Queue parameter is specified, only look for ticket custom fields tied to that Queue.
+=item LookupType => C<LOOKUPTYPE>
 
-If the Queue parameter is '0', look for global ticket custom fields.
+The type of Custom Field to look for; while this parameter is not
+required, it is highly suggested, or you may not find the Custom Field
+you are expecting.  It should be passed a C<LookupType> such as
+L<RT::Ticket/CustomFieldLookupType> or
+L<RT::User/CustomFieldLookupType>.
 
-If no queue parameter is specified, look for any and all custom fields with this name.
+=item ObjectType => C<CLASS>
 
-BUG/TODO, this won't let you specify that you only want user or group CFs.
+The class of object that the custom field is applied to.  This can be
+intuited from the provided C<LookupType>.
+
+=item ObjectId => C<ID>
+
+limits the custom field search to one applied to the relevant id.  For
+example, if a C<LookupType> of C<< RT::Ticket->CustomFieldLookupType >>
+is used, this is which Queue the CF must be applied to.  Pass 0 to only
+search custom fields that are applied globally.
+
+=item IncludeDisabled => C<BOOLEAN>
+
+Whether it should return Disabled custom fields if they match; defaults
+to on, though non-Disabled custom fields are returned preferentially.
+
+=item IncludeGlobal => C<BOOLEAN>
+
+Whether to also search global custom fields, even if a value is provided
+for C<ObjectId>; defaults to off.  Non-global custom fields are returned
+preferentially.
+
+=back
+
+For backwards compatibility, a value passed for C<Queue> is equivalent
+to specifying a C<LookupType> of L<RT::Ticket/CustomFieldLookupType>,
+and a C<ObjectId> of the value passed as C<Queue>.
+
+If multiple custom fields match the above constraints, the first
+according to C<SortOrder> will be returned; ties are broken by C<id>,
+lowest-first.
+
+=head2 LoadNameAndQueue
+
+=head2 LoadByNameAndQueue
+
+Deprecated alternate names for L</LoadByName>.
 
 =cut
 
@@ -407,9 +445,17 @@ BUG/TODO, this won't let you specify that you only want user or group CFs.
 sub LoadByName {
     my $self = shift;
     my %args = (
-        Queue => undef,
-        Name  => undef,
+        Name       => undef,
         LookupType => undef,
+        ObjectType => undef,
+        ObjectId   => undef,
+
+        IncludeDisabled => 1,
+        IncludeGlobal   => 0,
+
+        # Back-compat
+        Queue => undef,
+
         @_,
     );
 
@@ -418,22 +464,53 @@ sub LoadByName {
         return wantarray ? (0, $self->loc("No name provided")) : 0;
     }
 
-    # if we're looking for a queue by name, make it a number
-    if ( defined $args{'Queue'} && ($args{'Queue'} =~ /\D/ || !$self->ContextObject) ) {
-        my $QueueObj = RT::Queue->new( $self->CurrentUser );
-        $QueueObj->Load( $args{'Queue'} );
-        $args{'Queue'} = $QueueObj->Id;
-        $self->SetContextObject( $QueueObj )
-            unless $self->ContextObject;
-    }
     if ( defined $args{'Queue'} ) {
         # Set a LookupType for backcompat, otherwise we'll calculate
         # one of RT::Queue from your ContextObj.  Older code was relying
         # on us defaulting to RT::Queue-RT::Ticket in old LimitToQueue call.
         $args{LookupType} ||= 'RT::Queue-RT::Ticket';
+        $args{ObjectId}   //= delete $args{Queue};
     }
 
-    # XXX - really naive implementation.  Slow. - not really. still just one query
+    # Default the ObjectType to the top category of the LookupType; it's
+    # what the CFs are assigned on.
+    $args{ObjectType} ||= $1 if $args{LookupType} and $args{LookupType} =~ /^([^-]+)/;
+
+    # Resolve the ObjectId/ObjectType; this is necessary to properly
+    # limit ObjectId, and also possibly useful to set a ContextObj if we
+    # are currently lacking one.  It is not strictly necessary if we
+    # have a context object and were passed a numeric ObjectId, but it
+    # cannot hurt to verify its sanity.  Skip if we have a false
+    # ObjectId, which means "global", or if we lack an ObjectType
+    if ($args{ObjectId} and $args{ObjectType}) {
+        my ($obj, $ok, $msg);
+        eval {
+            $obj = $args{ObjectType}->new( $self->CurrentUser );
+            ($ok, $msg) = $obj->Load( $args{ObjectId} );
+        };
+
+        if ($ok) {
+            $args{ObjectId} = $obj->id;
+            $self->SetContextObject( $obj )
+                unless $self->ContextObject;
+        } else {
+            $RT::Logger->warning("Failed to load $args{ObjectType} '$args{ObjectId}'");
+            if ($args{IncludeGlobal}) {
+                # Fall back to acting like we were only asked about the
+                # global case
+                $args{ObjectId} = 0;
+            } else {
+                # If they didn't also want global results, there's no
+                # point in searching; abort
+                return wantarray ? (0, $self->loc("Not found")) : 0;
+            }
+        }
+    } elsif (not $args{ObjectType} and $args{ObjectId}) {
+        # If we skipped out on the above due to lack of ObjectType, make
+        # sure we clear out ObjectId of anything lingering
+        $RT::Logger->warning("No LookupType or ObjectType passed; ignoring ObjectId");
+        delete $args{ObjectId};
+    }
 
     my $CFs = RT::CustomFields->new( $self->CurrentUser );
     $CFs->SetContextObject( $self->ContextObject );
@@ -448,24 +525,55 @@ sub LoadByName {
             ($self->ContextObject, $self->ContextObject->ACLEquivalenceObjects) ]
         if $self->ContextObject;
 
+    # Apply LookupType limits
     $args{LookupType} = [ $args{LookupType} ]
         if $args{LookupType} and not ref($args{LookupType});
     $CFs->Limit( FIELD => "LookupType", OPERATOR => "IN", VALUE => $args{LookupType} )
         if $args{LookupType};
 
-    # Don't limit to queue if queue is 0.  Trying to do so breaks
-    # RT::Group type CFs.
-    if ( defined $args{'Queue'} ) {
-        # don't use LimitToQueue because it forces a LookupType
-        $CFs->Limit ( ALIAS => $CFs->_OCFAlias, FIELD => 'ObjectId', VALUE => $args{'Queue'} );
+    # Default to by SortOrder and id; this mirrors the standard ordering
+    # of RT::CustomFields (minus the Name, which is guaranteed to be
+    # fixed)
+    my @order = (
+        { FIELD => 'SortOrder',
+          ORDER => 'ASC' },
+        { FIELD => 'id',
+          ORDER => 'ASC' },
+    );
+
+    if (defined $args{ObjectId}) {
+        # The join to OCFs is distinct -- either we have a global
+        # application or an objectid match, but never both.  Even if
+        # this were not the case, we care only for the first row.
+        my $ocfs = $CFs->_OCFAlias( Distinct => 1);
+        if ($args{IncludeGlobal}) {
+            $CFs->Limit(
+                ALIAS    => $ocfs,
+                FIELD    => 'ObjectId',
+                OPERATOR => 'IN',
+                VALUE    => [ $args{ObjectId}, 0 ],
+            );
+            # Find the queue-specific first
+            unshift @order, { ALIAS => $ocfs, FIELD => "ObjectId", ORDER => "DESC" };
+        } else {
+            $CFs->Limit(
+                ALIAS => $ocfs,
+                FIELD => 'ObjectId',
+                VALUE => $args{ObjectId},
+            );
+        }
     }
 
-    # When loading by name, we _can_ load disabled fields, but prefer
-    # non-disabled fields.
-    $CFs->FindAllRows;
-    $CFs->OrderByCols(
-        { FIELD => "Disabled", ORDER => 'ASC' },
-    );
+    if ($args{IncludeDisabled}) {
+        # Load disabled fields, but return them only as a last resort.
+        # This goes at the front of @order, as we prefer the
+        # non-disabled global CF to the disabled Queue-specific CF.
+        $CFs->FindAllRows;
+        unshift @order, { FIELD => "Disabled", ORDER => 'ASC' };
+    }
+
+    # Apply the above orderings
+    $CFs->OrderByCols( @order );
 
     # We only want one entry.
     $CFs->RowsPerPage(1);
@@ -1575,12 +1683,6 @@ sub AddValueForObject {
         }
     }
 
-    if (my $canonicalizer = $self->can('_CanonicalizeValue'.$self->Type)) {
-         $canonicalizer->($self, \%args);
-    }
-
-
-
     my $newval = RT::ObjectCustomFieldValue->new( $self->CurrentUser );
     my ($val, $msg) = $newval->Create(
         ObjectType   => ref($obj),
@@ -1602,6 +1704,17 @@ sub AddValueForObject {
 }
 
 
+sub _CanonicalizeValue {
+    my $self = shift;
+    my $args = shift;
+
+    my $type = $self->_Value('Type');
+    return 1 unless $type;
+
+    my $method = '_CanonicalizeValue'. $type;
+    return 1 unless $self->can($method);
+    $self->$method($args);
+}
 
 sub _CanonicalizeValueDateTime {
     my $self    = shift;
@@ -1610,6 +1723,7 @@ sub _CanonicalizeValueDateTime {
     $DateObj->Set( Format => 'unknown',
                    Value  => $args->{'Content'} );
     $args->{'Content'} = $DateObj->ISO;
+    return 1;
 }
 
 # For date, we need to store Content as ISO date
@@ -1624,6 +1738,33 @@ sub _CanonicalizeValueDate {
                    Value    => $args->{'Content'},
                  );
     $args->{'Content'} = $DateObj->Date( Timezone => 'user' );
+    return 1;
+}
+
+sub _CanonicalizeValueIPAddress {
+    my $self = shift;
+    my $args = shift;
+
+    $args->{Content} = RT::ObjectCustomFieldValue->ParseIP( $args->{Content} );
+    return (0, $self->loc("Content is not a valid IP address"))
+        unless $args->{Content};
+    return 1;
+}
+
+sub _CanonicalizeValueIPAddressRange {
+    my $self = shift;
+    my $args = shift;
+
+    my $content = $args->{Content};
+    $content .= "-".$args->{LargeContent} if $args->{LargeContent};
+
+    ($args->{Content}, $args->{LargeContent})
+        = RT::ObjectCustomFieldValue->ParseIPRange( $content );
+
+    $args->{ContentType} = 'text/plain';
+    return (0, $self->loc("Content is not a valid IP address range"))
+        unless $args->{Content};
+    return 1;
 }
 
 =head2 MatchPattern STRING

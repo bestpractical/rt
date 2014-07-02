@@ -171,7 +171,7 @@ our %LOWER_CASE_FIELDS = map { ( lc($_) => $_ ) } (keys %FIELD_METADATA);
 our %SEARCHABLE_SUBFIELDS = (
     User => [qw(
         EmailAddress Name RealName Nickname Organization Address1 Address2
-        WorkPhone HomePhone MobilePhone PagerPhone id
+        City State Zip Country WorkPhone HomePhone MobilePhone PagerPhone id
     )],
 );
 
@@ -2189,9 +2189,10 @@ sub LimitCustomField {
         $CF->Load( $args{CUSTOMFIELD} );
     }
     else {
-        $CF->LoadByNameAndQueue(
-            Name  => $args{CUSTOMFIELD},
-            Queue => $args{QUEUE}
+        $CF->LoadByName(
+            Name       => $args{CUSTOMFIELD},
+            LookupType => RT::Ticket->CustomFieldLookupType,
+            ObjectId   => $args{QUEUE},
         );
         $args{CUSTOMFIELD} = $CF->Id;
     }

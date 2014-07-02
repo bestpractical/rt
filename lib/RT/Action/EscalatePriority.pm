@@ -104,7 +104,7 @@ sub Prepare  {
 
     # If we don't have a due date, adjust the priority by one
     # until we hit the final priority
-    if ($due->Unix() < 1) {
+    if (not $due->IsSet) {
         if ( $self->TicketObj->Priority > $self->TicketObj->FinalPriority ){
             $self->{'prio'} = ($self->TicketObj->Priority - 1);
             return 1;

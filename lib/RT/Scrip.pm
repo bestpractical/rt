@@ -458,6 +458,25 @@ sub Stage {
     return undef;
 }
 
+=head2 FriendlyStage($Stage)
+
+Helper function that returns a localized human-readable version of the
+C<$Stage> argument.
+
+=cut
+
+sub FriendlyStage {
+    my ( $class, $stage ) = @_;
+    my $stage_i18n_lookup = {
+        TransactionCreate => 'Normal', # loc
+        TransactionBatch => 'Batch', # loc
+        TransactionBatchDisabled => 'Batch (disabled by config)', # loc
+    };
+    $stage = 'TransactionBatchDisabled'
+        if $stage eq 'TransactionBatch'
+            and not RT->Config->Get('UseTransactionBatch');
+    return $stage_i18n_lookup->{$stage};
+}
 
 =head2 Apply { TicketObj => undef, TransactionObj => undef}
 
@@ -718,10 +737,7 @@ sub _Set {
 sub _Value {
     my $self = shift;
 
-    unless ( $self->CurrentUserHasRight('ShowScrips') ) {
-        $RT::Logger->debug( "CurrentUser can't see scrip #". $self->__Value('id') );
-        return (undef);
-    }
+    return unless $self->CurrentUserHasRight('ShowScrips');
 
     return $self->__Value(@_);
 }

@@ -368,7 +368,7 @@ sub Content {
                 $content =~ s/&/&#38;/g;
                 $content =~ s/</&lt;/g;
                 $content =~ s/>/&gt;/g;
-                $content = "<div style='white-space: pre-wrap; font-family: monospace;'>$content</div>";
+                $content = "<pre><div style='white-space: pre-wrap; font-family: monospace;'>$content</div></pre>";
             }
         }
     }
@@ -1156,12 +1156,12 @@ sub _FormatUser {
         my $new  = $self->NewValue || 0;
         my $duration = $new - $old;
         if ($duration < 0) {
-            return ("Adjusted time worked by [quant,_1,minute,minutes]", $duration);
+            return ("Adjusted time worked by [quant,_1,minute,minutes]", $duration); # loc()
         }
         elsif ($duration < 60) {
-            return ("Worked [quant,_1,minute,minutes]", $duration);
+            return ("Worked [quant,_1,minute,minutes]", $duration); # loc()
         } else {
-            return ("Worked [quant,_1,hour,hours] ([numf,_2] minutes)", sprintf("%.1f", $duration / 60), $duration);
+            return ("Worked [quant,_1,hour,hours] ([quant,_2,minute,minutes])", sprintf("%.1f", $duration / 60), $duration); # loc()
         }
     },
     PurgeTransaction => sub {
