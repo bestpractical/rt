@@ -3932,6 +3932,12 @@ our %SCRUBBER_ALLOWED_ATTRIBUTES = (
                font-family: \s* [\w\s"',.\-]+       |
                font-weight: \s* [\w\-]+             |
 
+               border-style: \s* \w+                |
+               border-color: \s* [#\w]+             |
+               border-width: \s* [\s\w]+            |
+               padding: \s* [\s\w]+                 |
+               margin: \s* [\s\w]+                  |
+
                # MS Office styles, which are probably fine.  If we don't, then any
                # associated styles in the same attribute get stripped.
                mso-[\w\-]+?: \s* [\w\s"',.\-]+
@@ -3964,6 +3970,22 @@ if (RT->Config->Get('ShowTransactionImages') or RT->Config->Get('ShowRemoteImage
 sub _NewScrubber {
     require HTML::Scrubber;
     my $scrubber = HTML::Scrubber->new();
+
+    if (eval "require HTML::Gumbo; 1") {
+        no warnings 'redefine';
+        my $orig = \&HTML::Scrubber::scrub;
+        *HTML::Scrubber::scrub = sub {
+            my $self = shift;
+
+            eval { $_[0] = HTML::Gumbo->new->parse( $_[0] ); chomp $_[0] };
+            warn "HTML::Gumbo pre-parse failed: $@" if $@;
+            return $orig->($self, @_);
+        };
+        push @SCRUBBER_ALLOWED_TAGS, qw/TABLE THEAD TBODY TFOOT TR TD TH/;
+        $SCRUBBER_ALLOWED_ATTRIBUTES{$_} = 1 for
+            qw/colspan rowspan align valign cellspacing cellpadding border width height/;
+    }
+
     $scrubber->default(
         0,
         {

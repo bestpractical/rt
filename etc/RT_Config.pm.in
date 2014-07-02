@@ -1780,10 +1780,18 @@ Set($AlwaysDownloadAttachments, undef);
 
 =item C<$PreferRichText>
 
-By default, RT shows rich text (HTML) messages if possible.
+By default, RT shows rich text (HTML) messages if possible.  If
+C<$PreferRichText> is set to 0, RT will show plain text messages in
+preference to any rich text alternatives.
 
-If C<$PreferRichText> is set to 0, RT will show plain text messages
-in preference to any rich text alternatives.
+As a security precaution, RT limits the HTML that is displayed to a
+known-good subset -- as allowing arbitrary HTML to be displayed exposes
+multiple vectors for XSS and phishing attacks.  If
+L</$TrustHTMLAttachments> is enabled, the original HTML is available for
+viewing via the "Download" link.
+
+If the optional L<HTML::Gumbo> dependency is installed, RT will leverage
+this to allow a broader set of HTML through, including tables.
 
 =cut
 
