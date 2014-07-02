@@ -139,7 +139,6 @@ sub LoadByCols {
     if ( $args{CustomField} ) {
         $cf = RT::CustomField->new( $self->CurrentUser );
         $cf->Load( $args{CustomField} );
-        return (0, $self->loc("Cannot load custom field [_1]",$args{CustomField})) unless $cf->id;
 
         my ($ok, $msg) = $cf->_CanonicalizeValue(\%args);
         return ($ok, $msg) unless $ok;
