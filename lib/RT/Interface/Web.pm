@@ -3971,7 +3971,7 @@ sub _NewScrubber {
     require HTML::Scrubber;
     my $scrubber = HTML::Scrubber->new();
 
-    if (eval "require HTML::Gumbo; 1") {
+    if (HTML::Gumbo->require) {
         no warnings 'redefine';
         my $orig = \&HTML::Scrubber::scrub;
         *HTML::Scrubber::scrub = sub {
