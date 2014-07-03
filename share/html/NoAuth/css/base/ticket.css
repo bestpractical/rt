@@ -143,4 +143,7 @@
     display: none;
 }
 
+.unread-messages .titlebox-content :link {
+    text-decoration: underline;
+}
 
