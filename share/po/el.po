@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
-"POT-Creation-Date: 2014-06-06 00:21+0000\n"
+"POT-Creation-Date: 2014-07-01 23:12+0000\n"
 "PO-Revision-Date: 2014-06-06 00:24+0000\n"
 "Last-Translator: Geniko_Nosokomeio_Artas <rt.gnartas@gmail.com>\n"
 "Language-Team: Greek <el@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-06-06 00:37+0000\n"
-"X-Generator: Launchpad (build 17031)\n"
+"X-Launchpad-Export-Date: 2014-07-07 21:41+0000\n"
+"X-Generator: Launchpad (build 17086)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:62
 msgid "#"
@@ -149,49 +149,49 @@ msgid "%1 (from pane %2)"
 msgstr "%1 (από πλαίσιο %2)"
 
 #. ("--log")
-#: bin/rt-crontool:333
+#: bin/rt-crontool:332
 msgid "%1 - Adjust LogToSTDERR config option"
 msgstr "%1 - Ρύθμιση επιλογής LogToSTDERR"
 
 #. ("--action-arg", "--action")
 #. ("--condition-arg", "--condition")
 #. ("--search-arg", "--search")
-#: bin/rt-crontool:308 bin/rt-crontool:315 bin/rt-crontool:321
+#: bin/rt-crontool:307 bin/rt-crontool:314 bin/rt-crontool:320
 msgid "%1 - An argument to pass to %2"
 msgstr "%1 - Παράμετρος για να περαστεί σε %2"
 
 #. ("--verbose")
-#: bin/rt-crontool:335
+#: bin/rt-crontool:334
 msgid "%1 - Output status updates to STDOUT"
 msgstr "%1 - Εκτύπωση αποτελεσμάτων στη Τυπική Έξοδο (STDOUT)"
 
 #. ("--transaction")
-#: bin/rt-crontool:327
+#: bin/rt-crontool:326
 msgid "%1 - Specify if you want to use either 'first', 'last' or 'all' transactions"
 msgstr "%1 - Επιλέξτε τη χρήση \"πρώτης\", \"τελευταίας\" ή \"όλων\" των συναλλαγών"
 
 #. ("--template")
-#: bin/rt-crontool:324
+#: bin/rt-crontool:323
 msgid "%1 - Specify name or id of template(s) you want to use"
 msgstr "%1 - Επιλέξτε το όνομα ή την ταυτότητα του προτύπου σελίδας που θα χρησιμοποιήσετε"
 
 #. ("--action")
-#: bin/rt-crontool:318
+#: bin/rt-crontool:317
 msgid "%1 - Specify the action module you want to use"
 msgstr "%1 - Προσδιορίστε το άρθρωμα δράσης που θέλετε να χρησιμοποιήσετε"
 
 #. ("--transaction-type")
-#: bin/rt-crontool:330
+#: bin/rt-crontool:329
 msgid "%1 - Specify the comma separated list of transactions' types you want to use"
 msgstr "%1 - Προσδιορίστε τους τύπους ενεργειών που θέλετε να χρησιμοποιήσετε σε λίστα, χωρισμένους με κόμματα"
 
 #. ("--condition")
-#: bin/rt-crontool:312
+#: bin/rt-crontool:311
 msgid "%1 - Specify the condition module you want to use"
 msgstr "%1 - Προσδιορίστε το άρθρωμα συνθήκης που θέλετε να χρησιμοποιήσετε"
 
 #. ("--search")
-#: bin/rt-crontool:305
+#: bin/rt-crontool:304
 msgid "%1 - Specify the search module you want to use"
 msgstr "%1 - Προσδιορίστε το άρθρωμα αναζήτησης που θέλετε να χρησιμοποιήσετε"
 
@@ -319,7 +319,7 @@ msgid "%1 highest priority tickets I own"
 msgstr "Τα %1 πιο επείγοντα αιτήματα που έχω αναλάβει"
 
 #. ($0)
-#: bin/rt-crontool:300
+#: bin/rt-crontool:299
 msgid "%1 is a tool to act on tickets from an external scheduling tool, such as cron."
 msgstr "Το %1 είναι ένα εργαλείο για ενέργειες σε αιτήματα από ένα εξωτερικό χρονοπρόγραμμα όπως το cron."
 
@@ -1260,7 +1260,7 @@ msgid "Automatic account setup failed"
 msgstr "Απέτυχε η εγκατάσταση του αυτόματου λογαριασμού"
 
 #. ($valid_image_types)
-#: share/html/Admin/Tools/Theme.html:321
+#: share/html/Admin/Tools/Theme.html:268
 msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 msgstr "Δεν υπάρχουν αυτόματα συνιστώμενα θέματα χρωμάτων για την εικόνα σας. Αυτό μπορεί να συμβαίνει επειδή φορτώσατε ένα τύπο εικόνας που δεν υποστηρίζεται από αυτή την έκδοση του GD. Τύποι που υποστηρίζονται είναι: %1. Μπορείτε να ξανά-μεταγλωττίσετε την libgd και το GD.pm για να περιλαμβάνει υποστήριξη και άλλων τύπων εικόνας."
 
@@ -2560,7 +2560,7 @@ msgstr "Προκαθορισμένο: %1/%2 αλλαγή από %3 σε %4"
 msgid "DefaultFormat"
 msgstr ""
 
-#: etc/RT_Config.pm:2788 etc/RT_Config.pm:2832 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:892 share/html/Elements/Tabs:917 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:2796 etc/RT_Config.pm:2840 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:892 share/html/Elements/Tabs:917 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
 msgid "Delete"
 msgstr "Διαγραφή"
 
@@ -3138,7 +3138,7 @@ msgstr "Σφάλμα: η αναζήτηση %1 δεν ενημερώθηκε: %2
 msgid "Error: unencrypted message"
 msgstr "Σφάλμα: μη κρυπτογραφημένο μήνυμα"
 
-#: bin/rt-crontool:358
+#: bin/rt-crontool:357
 msgid "Escalate tickets"
 msgstr "Κλιμάκωση αιτήματος"
 
@@ -3146,11 +3146,11 @@ msgstr "Κλιμάκωση αιτήματος"
 msgid "Estimated"
 msgstr "Εκτιμώμενο"
 
-#: lib/RT/Handle.pm:715
+#: lib/RT/Handle.pm:714
 msgid "Everyone"
 msgstr "Όλοι"
 
-#: bin/rt-crontool:344
+#: bin/rt-crontool:343
 msgid "Example:"
 msgstr "Παράδειγμα:"
 
@@ -3225,7 +3225,7 @@ msgid "Failed to load %1 %2: %3"
 msgstr "Αποτυχία φόρτωσης %1 %2: %3"
 
 #. ($modname, $@)
-#: bin/rt-crontool:292
+#: bin/rt-crontool:291
 msgid "Failed to load module %1. (%2)"
 msgstr "Αποτυχία φόρτωσης αρθρώματος %1. (%2)"
 
@@ -3773,7 +3773,7 @@ msgstr "Αν μια έγκριση απορριφθεί, να απορριφθε
 msgid "If this is not what you expect, leave this page now without logging in."
 msgstr "Εάν αυτό δεν είναι ό,τι περιμένετε, αφήστε αυτή τη σελίδα τώρα χωρίς να συνδεθείτε."
 
-#: bin/rt-crontool:340
+#: bin/rt-crontool:339
 msgid "If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT."
 msgstr "Αν αυτό το εργαλείο είναι setgid, ένας κακόβουλος τοπικός χρήστης θα μπορούσε να το χρησιμοποιήσει για να αποκτήσει πρόσβαση διαχειριστή στο RT"
 
@@ -3930,7 +3930,7 @@ msgstr ""
 msgid "Initialize Database"
 msgstr "Αρχικοποίηση Βάσης Δεδομένων"
 
-#: lib/RT/ScripAction.pm:122
+#: lib/RT/ScripAction.pm:123
 msgid "Input error"
 msgstr "Σφάλμα εισόδου"
 
@@ -4070,15 +4070,15 @@ msgstr "Έχει ήδη προστεθεί στο αντικείμενο"
 msgid "Is not encrypted"
 msgstr "Δεν είναι κρυπτογραφημένο"
 
-#: bin/rt-crontool:341
+#: bin/rt-crontool:340
 msgid "It is incredibly important that nonprivileged users not be allowed to run this tool."
 msgstr "Είναι εξαιρετικά σημαντικό μην επιτρέπεται σε μη προνομιούχοι χρήστες να τρέξουν αυτό το εργαλείο."
 
-#: bin/rt-crontool:342
+#: bin/rt-crontool:341
 msgid "It is suggested that you create a non-privileged unix user with the correct group membership and RT access to run this tool."
 msgstr "Συστήνεται η δημιουργία ενός μη προνομιούχου χρήστη unix, μέλος της σωστής ομάδας και με πρόσβαση στο RT για να τρέχει αυτό το εργαλείο."
 
-#: bin/rt-crontool:302
+#: bin/rt-crontool:301
 msgid "It takes several arguments:"
 msgstr "Παίρνει αρκετές παραμέτρους:"
 
@@ -5663,7 +5663,7 @@ msgstr "Προβολή μόνο των ειδικών πεδίων για:"
 msgid "Open Inactive Tickets"
 msgstr "Ανοικτά Απενεργοποιημένα Αιτήματα"
 
-#: etc/RT_Config.pm:2785 etc/RT_Config.pm:2792 etc/RT_Config.pm:2829 etc/RT_Config.pm:2836
+#: etc/RT_Config.pm:2793 etc/RT_Config.pm:2800 etc/RT_Config.pm:2837 etc/RT_Config.pm:2844
 msgid "Open It"
 msgstr "Άνοιξε το"
 
@@ -5671,7 +5671,7 @@ msgstr "Άνοιξε το"
 msgid "Open Tickets"
 msgstr "Ανοιχτά Αιτήματα"
 
-#: share/html/Elements/MakeClicky:65
+#: share/html/Elements/MakeClicky:67
 msgid "Open URL"
 msgstr "Άνοιγμα URL"
 
@@ -6057,7 +6057,7 @@ msgstr "Ιδιωτικό κλειδί(ιά) για %1"
 msgid "Private keys"
 msgstr "Ιδιωτικά κλειδιά"
 
-#: lib/RT/Handle.pm:716 share/html/Admin/Users/Modify.html:114
+#: lib/RT/Handle.pm:715 share/html/Admin/Users/Modify.html:114
 msgid "Privileged"
 msgstr "Προνομιούχοι"
 
@@ -6074,7 +6074,7 @@ msgstr "Προνομιούχοι χρήστες"
 msgid "Processing without transaction, some conditions and actions may fail. Consider using --transaction argument"
 msgstr "Επεξεργασία άνευ συναλλαγής, κάποιες συνθήκες και ενέργειες μπορεί να αποτύχουν. Εξετάστε την χρήση της παραμέτρου --transaction"
 
-#: lib/RT/Handle.pm:729
+#: lib/RT/Handle.pm:728
 msgid "Pseudogroup for internal use"
 msgstr "Ψευδοομάδα για εσωτερική χρήση"
 
@@ -6312,7 +6312,7 @@ msgstr "Η καταγραφή της ρύθμισης του RT συνοψίζε
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr "Η επιλογή RTAddressRegexp στις ρυθμίσεις δεν ταυτίζεται με %1"
 
-#: etc/RT_Config.pm:2793 etc/RT_Config.pm:2794 etc/RT_Config.pm:2837 etc/RT_Config.pm:2838
+#: etc/RT_Config.pm:2801 etc/RT_Config.pm:2802 etc/RT_Config.pm:2845 etc/RT_Config.pm:2846
 msgid "Re-open"
 msgstr "Άνοιγμα ξανά"
 
@@ -6453,7 +6453,7 @@ msgstr "Ανανέωση αρχικής σελίδας"
 msgid "Refused to add link which would create a circular relationship"
 msgstr "Αρνηθήκατε να προσθέσετε σύνδεσμο που θα δημιουργούσε μια κυκλική σχέση"
 
-#: etc/RT_Config.pm:2787 etc/RT_Config.pm:2791 etc/RT_Config.pm:2831 etc/RT_Config.pm:2835
+#: etc/RT_Config.pm:2795 etc/RT_Config.pm:2799 etc/RT_Config.pm:2839 etc/RT_Config.pm:2843
 msgid "Reject"
 msgstr "Απόρριψη"
 
@@ -6597,7 +6597,7 @@ msgstr "Επαναφορά στο αρχικό θέμα RT"
 msgid "Residence"
 msgstr "Κατοικία"
 
-#: etc/RT_Config.pm:2786 etc/RT_Config.pm:2790 etc/RT_Config.pm:2830 etc/RT_Config.pm:2834 share/html/Search/Elements/EditFormat:75
+#: etc/RT_Config.pm:2794 etc/RT_Config.pm:2798 etc/RT_Config.pm:2838 etc/RT_Config.pm:2842 share/html/Search/Elements/EditFormat:75
 msgid "Resolve"
 msgstr "Επίλυση"
 
@@ -6883,7 +6883,7 @@ msgstr "Η αναζήτηση πλήρες κειμένου σε κάθε αίτ
 msgid "Secret authentication token"
 msgstr "Μυστικό κουπόνι ταυτοποίησης"
 
-#: bin/rt-crontool:338
+#: bin/rt-crontool:337
 msgid "Security:"
 msgstr "Ασφάλεια:"
 
@@ -7379,7 +7379,7 @@ msgstr "Τα ίχνη σωρού δε καταγράφονται."
 msgid "Stage"
 msgstr "Στάδιο"
 
-#: etc/RT_Config.pm:2789 etc/RT_Config.pm:2833
+#: etc/RT_Config.pm:2797 etc/RT_Config.pm:2841
 msgid "Stall"
 msgstr "Αναμονή"
 
@@ -7612,7 +7612,7 @@ msgstr "Σφάλμα συστήματος"
 msgid "System error. Right not granted."
 msgstr "Σφάλμα συστήματος. Αδυναμία παραχώρησης δικαιώματος"
 
-#: lib/RT/Handle.pm:780
+#: lib/RT/Handle.pm:779
 msgid "SystemRolegroup for internal use"
 msgstr "SystemRolegroup για εσωτερική χρήση"
 
@@ -7779,7 +7779,7 @@ msgstr "Ο AdminCc ενός αιτήματος"
 msgid "The domain name of your database server (like 'db.example.com')."
 msgstr "Το όνομα τομέα της βάσης δεδομένων σας (πχ 'db.example.com')"
 
-#: bin/rt-crontool:348
+#: bin/rt-crontool:347
 msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they are overdue:"
 msgstr "Η ακόλουθη εντολή θα εντοπίσει όλα τα ενεργά αιτήματα στην ουρά 'general' και θα ορίσει την προτεραιότητα τους στο 99 όταν θα είναι εκπρόθεσμα:"
 
@@ -7916,7 +7916,7 @@ msgstr "Το παρόν αίτημα δεν είναι δυνατό να επι�
 msgid "This ticket cannot be resolved until its %numerate(%1,dependency is,dependencies are) resolved."
 msgstr "Το παρόν αίτημα δε μπορεί να επιλυθεί μέχρι το %numarate(%1, dependency is,dependencies are) επιλυθεί."
 
-#: bin/rt-crontool:339
+#: bin/rt-crontool:338
 msgid "This tool allows the user to run arbitrary perl modules from within RT."
 msgstr "Αυτό το εργαλείο επιτρέπει την γενική χρήση αρθρωμάτων perl μέσα από το RT."
 
@@ -8299,12 +8299,12 @@ msgid "Unable to load article"
 msgstr "Αδυναμία φόρτωσης άρθρου"
 
 #. ($msg)
-#: share/html/Admin/Tools/Theme.html:281
+#: share/html/Admin/Tools/Theme.html:362
 msgid "Unable to set UserCSS: %1"
 msgstr "Αδυναμία καθορισμού UserCSS: %1"
 
 #. ($msg)
-#: share/html/Admin/Tools/Theme.html:253
+#: share/html/Admin/Tools/Theme.html:321
 msgid "Unable to set UserLogo: %1"
 msgstr "Αδυναμία καθορισμού UserLogo: %1"
 
@@ -8337,7 +8337,7 @@ msgstr "Μη εξουσιοδοτημένος"
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr "Αποεπιλέξτε τα πλαίσια για απενεργοποίηση των ειδοποιήσεων στους εγγεγραμμένους παραλήπτες <b>μόνο για αυτή την συναλλαγή</b>. Για μονιμότερη αποσιωποίηση των ειδοποιήσεων μπορείτε να επισκεφθείτε την <a href=\"%1\">Σελίδα χρηστών</a>."
 
-#: etc/RT_Config.pm:2795 etc/RT_Config.pm:2839
+#: etc/RT_Config.pm:2803 etc/RT_Config.pm:2847
 msgid "Undelete"
 msgstr "Αποδιαγραφή"
 
@@ -8345,7 +8345,7 @@ msgstr "Αποδιαγραφή"
 msgid "Unfortunately, RT couldn't automatically setup an account for you. Your RT administator will find more information in the logs."
 msgstr "Δυστυχώς, το RT δε θα μπορούσε να δημιουργήσει αυτόματα έναν λογαριασμό για εσάς. Ο RT διαχειριστής σας θα βρει περισσότερες πληροφορίες στα αρχεία καταγραφής."
 
-#: lib/RT/ScripCondition.pm:118
+#: lib/RT/ScripCondition.pm:119
 msgid "Unimplemented"
 msgstr "Μη υλοποιημένο"
 
@@ -8401,7 +8401,7 @@ msgstr "Αιτήματα χωρίς κάτοχο"
 msgid "Unowned tickets"
 msgstr "Αιτήματα χωρίς κάτοχο"
 
-#: lib/RT/Handle.pm:717
+#: lib/RT/Handle.pm:716
 msgid "Unprivileged"
 msgstr "Μη προνομιούχοι"
 

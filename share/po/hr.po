@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-06-06 00:21+0000\n"
+"POT-Creation-Date: 2014-07-01 23:12+0000\n"
 "PO-Revision-Date: 2014-06-06 00:26+0000\n"
 "Last-Translator: Alex Vandiver <Unknown>\n"
 "Language-Team: Croatian <hr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-06-06 00:38+0000\n"
-"X-Generator: Launchpad (build 17031)\n"
+"X-Launchpad-Export-Date: 2014-07-07 21:42+0000\n"
+"X-Generator: Launchpad (build 17086)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:62
 msgid "#"
@@ -149,49 +149,49 @@ msgid "%1 (from pane %2)"
 msgstr "%1 (sa ploče %2)"
 
 #. ("--log")
-#: bin/rt-crontool:333
+#: bin/rt-crontool:332
 msgid "%1 - Adjust LogToSTDERR config option"
 msgstr "%1 - Ažuriraj postavku logiranja na ekran"
 
 #. ("--action-arg", "--action")
 #. ("--condition-arg", "--condition")
 #. ("--search-arg", "--search")
-#: bin/rt-crontool:308 bin/rt-crontool:315 bin/rt-crontool:321
+#: bin/rt-crontool:307 bin/rt-crontool:314 bin/rt-crontool:320
 msgid "%1 - An argument to pass to %2"
 msgstr "%1 - Argument za prosljeđivanje na %2"
 
 #. ("--verbose")
-#: bin/rt-crontool:335
+#: bin/rt-crontool:334
 msgid "%1 - Output status updates to STDOUT"
 msgstr "%1 - Izmjene statusa se prikazuju na standardnom izlazu"
 
 #. ("--transaction")
-#: bin/rt-crontool:327
+#: bin/rt-crontool:326
 msgid "%1 - Specify if you want to use either 'first', 'last' or 'all' transactions"
 msgstr "%1 - Zadajte želite li koristiti 'first', 'last' ili 'all' transakcije"
 
 #. ("--template")
-#: bin/rt-crontool:324
+#: bin/rt-crontool:323
 msgid "%1 - Specify name or id of template(s) you want to use"
 msgstr "%1 - Zadajte naziv ili identifikator predložaka koje želite koristiti"
 
 #. ("--action")
-#: bin/rt-crontool:318
+#: bin/rt-crontool:317
 msgid "%1 - Specify the action module you want to use"
 msgstr "%1 - Navedi koji će se modul rada koristiti"
 
 #. ("--transaction-type")
-#: bin/rt-crontool:330
+#: bin/rt-crontool:329
 msgid "%1 - Specify the comma separated list of transactions' types you want to use"
 msgstr "%1 - Zadajte zarezom odijeljenu listu tipova transakcija koje želite koristiti"
 
 #. ("--condition")
-#: bin/rt-crontool:312
+#: bin/rt-crontool:311
 msgid "%1 - Specify the condition module you want to use"
 msgstr "%1 - Navedi koji će se modul uvjetovanja koristiti"
 
 #. ("--search")
-#: bin/rt-crontool:305
+#: bin/rt-crontool:304
 msgid "%1 - Specify the search module you want to use"
 msgstr "%1 - Navedi koji će se modul pretraživanja koristiti"
 
@@ -319,7 +319,7 @@ msgid "%1 highest priority tickets I own"
 msgstr "%1 zahtjeva najvišeg prioriteta koje posjedujem"
 
 #. ($0)
-#: bin/rt-crontool:300
+#: bin/rt-crontool:299
 msgid "%1 is a tool to act on tickets from an external scheduling tool, such as cron."
 msgstr "%1 je alat za obradu zahtjeva preko vanjskog radnog alata kao što je cron"
 
@@ -1260,7 +1260,7 @@ msgid "Automatic account setup failed"
 msgstr ""
 
 #. ($valid_image_types)
-#: share/html/Admin/Tools/Theme.html:321
+#: share/html/Admin/Tools/Theme.html:268
 msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 msgstr "Automatski prijedlozi boja teme nisu dostupni za vašu sliku. Moguće da format slike koju ste poslali nije podržan. Podržani formati su: %1. Možete ponovo prevesti libgd i GD.pm tako da podržavaju i druge formate slike."
 
@@ -2560,7 +2560,7 @@ msgstr "Standard: %1/%2 iz \"%3\" u \"%4\" promijenjen."
 msgid "DefaultFormat"
 msgstr "Standardni format"
 
-#: etc/RT_Config.pm:2788 etc/RT_Config.pm:2832 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:892 share/html/Elements/Tabs:917 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:2796 etc/RT_Config.pm:2840 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:892 share/html/Elements/Tabs:917 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
 msgid "Delete"
 msgstr "Obriši"
 
@@ -3136,7 +3136,7 @@ msgstr "Greška: pretraga %1 nije ažurirana: %2"
 msgid "Error: unencrypted message"
 msgstr ""
 
-#: bin/rt-crontool:358
+#: bin/rt-crontool:357
 msgid "Escalate tickets"
 msgstr "Eskalirati zahtjeve"
 
@@ -3144,11 +3144,11 @@ msgstr "Eskalirati zahtjeve"
 msgid "Estimated"
 msgstr "Očekivano"
 
-#: lib/RT/Handle.pm:715
+#: lib/RT/Handle.pm:714
 msgid "Everyone"
 msgstr "Svatko"
 
-#: bin/rt-crontool:344
+#: bin/rt-crontool:343
 msgid "Example:"
 msgstr "Primjer:"
 
@@ -3223,7 +3223,7 @@ msgid "Failed to load %1 %2: %3"
 msgstr "Učitavanje nije moguće za %1 %2: %3"
 
 #. ($modname, $@)
-#: bin/rt-crontool:292
+#: bin/rt-crontool:291
 msgid "Failed to load module %1. (%2)"
 msgstr "Modul %1 nije mogao biti učitan. (%2)"
 
@@ -3771,7 +3771,7 @@ msgstr "Ako je odobrenje odbijeno, odbij original i pobriši odobrenja na čekan
 msgid "If this is not what you expect, leave this page now without logging in."
 msgstr "Ako niste to očekivali napustite ovu stranicu bez prijave."
 
-#: bin/rt-crontool:340
+#: bin/rt-crontool:339
 msgid "If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT."
 msgstr "Ako je ovaj alat 'setgid', neprijateljski lokalni korisnik bi mogao koristiti ovaj alat za dobivanje administratorskog pristupa RT-u."
 
@@ -3928,7 +3928,7 @@ msgstr "Početni prioritet"
 msgid "Initialize Database"
 msgstr "Inicijalizacija baze podataka"
 
-#: lib/RT/ScripAction.pm:122
+#: lib/RT/ScripAction.pm:123
 msgid "Input error"
 msgstr "Greška pri unosu"
 
@@ -4068,15 +4068,15 @@ msgstr ""
 msgid "Is not encrypted"
 msgstr "Nije kriptirano"
 
-#: bin/rt-crontool:341
+#: bin/rt-crontool:340
 msgid "It is incredibly important that nonprivileged users not be allowed to run this tool."
 msgstr "Vrlo je važno da neprivilegiranim korisnicima nije dopušteno koristiti ovaj alat."
 
-#: bin/rt-crontool:342
+#: bin/rt-crontool:341
 msgid "It is suggested that you create a non-privileged unix user with the correct group membership and RT access to run this tool."
 msgstr "Preporučljivo je napraviti neprivilegiranog unix korisnika s ispravnim članstvom u grupi i RT pristupom za korištenje ovog alata."
 
-#: bin/rt-crontool:302
+#: bin/rt-crontool:301
 msgid "It takes several arguments:"
 msgstr "Potrebno je nekoliko parametara:"
 
@@ -5661,7 +5661,7 @@ msgstr "Prikaži samo vlastita polja za:"
 msgid "Open Inactive Tickets"
 msgstr ""
 
-#: etc/RT_Config.pm:2785 etc/RT_Config.pm:2792 etc/RT_Config.pm:2829 etc/RT_Config.pm:2836
+#: etc/RT_Config.pm:2793 etc/RT_Config.pm:2800 etc/RT_Config.pm:2837 etc/RT_Config.pm:2844
 msgid "Open It"
 msgstr "Otvori"
 
@@ -5669,7 +5669,7 @@ msgstr "Otvori"
 msgid "Open Tickets"
 msgstr "Otvori zahtjeve"
 
-#: share/html/Elements/MakeClicky:65
+#: share/html/Elements/MakeClicky:67
 msgid "Open URL"
 msgstr "Otvori URL"
 
@@ -6055,7 +6055,7 @@ msgstr ""
 msgid "Private keys"
 msgstr ""
 
-#: lib/RT/Handle.pm:716 share/html/Admin/Users/Modify.html:114
+#: lib/RT/Handle.pm:715 share/html/Admin/Users/Modify.html:114
 msgid "Privileged"
 msgstr "Privilegirani"
 
@@ -6072,7 +6072,7 @@ msgstr "Privilegirani korisnici"
 msgid "Processing without transaction, some conditions and actions may fail. Consider using --transaction argument"
 msgstr "Koristi se obrada bez transakcija, neki uvjeti i radnje možda neće uspjeti. Razmislite o korištenju opcije --transaction"
 
-#: lib/RT/Handle.pm:729
+#: lib/RT/Handle.pm:728
 msgid "Pseudogroup for internal use"
 msgstr "Pseudogrupa za internu uporabu"
 
@@ -6310,7 +6310,7 @@ msgstr ""
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr "Postavka RTAddressRegexp iz konfiguracije ne odgovara %1"
 
-#: etc/RT_Config.pm:2793 etc/RT_Config.pm:2794 etc/RT_Config.pm:2837 etc/RT_Config.pm:2838
+#: etc/RT_Config.pm:2801 etc/RT_Config.pm:2802 etc/RT_Config.pm:2845 etc/RT_Config.pm:2846
 msgid "Re-open"
 msgstr "Ponovno otvaranje"
 
@@ -6451,7 +6451,7 @@ msgstr ""
 msgid "Refused to add link which would create a circular relationship"
 msgstr ""
 
-#: etc/RT_Config.pm:2787 etc/RT_Config.pm:2791 etc/RT_Config.pm:2831 etc/RT_Config.pm:2835
+#: etc/RT_Config.pm:2795 etc/RT_Config.pm:2799 etc/RT_Config.pm:2839 etc/RT_Config.pm:2843
 msgid "Reject"
 msgstr "Odbij"
 
@@ -6595,7 +6595,7 @@ msgstr ""
 msgid "Residence"
 msgstr "Kuća"
 
-#: etc/RT_Config.pm:2786 etc/RT_Config.pm:2790 etc/RT_Config.pm:2830 etc/RT_Config.pm:2834 share/html/Search/Elements/EditFormat:75
+#: etc/RT_Config.pm:2794 etc/RT_Config.pm:2798 etc/RT_Config.pm:2838 etc/RT_Config.pm:2842 share/html/Search/Elements/EditFormat:75
 msgid "Resolve"
 msgstr "Riješi"
 
@@ -6879,7 +6879,7 @@ msgstr "Pretraživanje cijelog sadržaja svih zahtjeva može potrajati, ali ako 
 msgid "Secret authentication token"
 msgstr "Tajna autentikacijska značka"
 
-#: bin/rt-crontool:338
+#: bin/rt-crontool:337
 msgid "Security:"
 msgstr "Sigurnost:"
 
@@ -7375,7 +7375,7 @@ msgstr ""
 msgid "Stage"
 msgstr "Stadij"
 
-#: etc/RT_Config.pm:2789 etc/RT_Config.pm:2833
+#: etc/RT_Config.pm:2797 etc/RT_Config.pm:2841
 msgid "Stall"
 msgstr "Zadržano"
 
@@ -7608,7 +7608,7 @@ msgstr "Greška sustava"
 msgid "System error. Right not granted."
 msgstr "Greška sustava. Ovlast nije odobrena."
 
-#: lib/RT/Handle.pm:780
+#: lib/RT/Handle.pm:779
 msgid "SystemRolegroup for internal use"
 msgstr "Sistemska uloga grupe za internu uporabu"
 
@@ -7775,7 +7775,7 @@ msgstr "Administrativni CC zahtjeva"
 msgid "The domain name of your database server (like 'db.example.com')."
 msgstr "Naziv domene poslužitelja baze podataka (kao 'db.example.com')."
 
-#: bin/rt-crontool:348
+#: bin/rt-crontool:347
 msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they are overdue:"
 msgstr "Sljedeća naredba će pronaći sve aktivne zahtjeve u kategoriji 'Općenito' i postaviti njihov prioritet na 99 ako su u zakašnjenju:"
 
@@ -7912,7 +7912,7 @@ msgstr ""
 msgid "This ticket cannot be resolved until its %numerate(%1,dependency is,dependencies are) resolved."
 msgstr ""
 
-#: bin/rt-crontool:339
+#: bin/rt-crontool:338
 msgid "This tool allows the user to run arbitrary perl modules from within RT."
 msgstr "Ovaj alat dopušta korisniku rad s proizvoljnim Perl modulima iz RT-a."
 
@@ -8295,12 +8295,12 @@ msgid "Unable to load article"
 msgstr "Nije uspjelo učitavanje članka"
 
 #. ($msg)
-#: share/html/Admin/Tools/Theme.html:281
+#: share/html/Admin/Tools/Theme.html:362
 msgid "Unable to set UserCSS: %1"
 msgstr "Nije uspjelo postavljanje korisničkog CSS-a: %1"
 
 #. ($msg)
-#: share/html/Admin/Tools/Theme.html:253
+#: share/html/Admin/Tools/Theme.html:321
 msgid "Unable to set UserLogo: %1"
 msgstr "Nije uspjelo postavljanje korisničkog loga: %1"
 
@@ -8333,7 +8333,7 @@ msgstr ""
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr "Uklanjanjam oznake isključuju se obavijesti za dotične primatelje <b>samo za ovu transakciju</b>; trajno isključivanje obavijesti može se podesiti na stranici <a href=\"%1\">Osobe</a>."
 
-#: etc/RT_Config.pm:2795 etc/RT_Config.pm:2839
+#: etc/RT_Config.pm:2803 etc/RT_Config.pm:2847
 msgid "Undelete"
 msgstr "Vraćanje obrisanog"
 
@@ -8341,7 +8341,7 @@ msgstr "Vraćanje obrisanog"
 msgid "Unfortunately, RT couldn't automatically setup an account for you. Your RT administator will find more information in the logs."
 msgstr ""
 
-#: lib/RT/ScripCondition.pm:118
+#: lib/RT/ScripCondition.pm:119
 msgid "Unimplemented"
 msgstr "Nije implementirano"
 
@@ -8397,7 +8397,7 @@ msgstr ""
 msgid "Unowned tickets"
 msgstr "Zahtjevi bez rješavatelja"
 
-#: lib/RT/Handle.pm:717
+#: lib/RT/Handle.pm:716
 msgid "Unprivileged"
 msgstr "Neprivilegirani"
 

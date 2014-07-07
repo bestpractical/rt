@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-06-06 00:21+0000\n"
-"PO-Revision-Date: 2014-05-14 07:36+0000\n"
+"POT-Creation-Date: 2014-07-01 23:12+0000\n"
+"PO-Revision-Date: 2014-06-23 17:04+0000\n"
 "Last-Translator: Andi Chandler <Unknown>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-06-06 00:38+0000\n"
-"X-Generator: Launchpad (build 17031)\n"
+"X-Launchpad-Export-Date: 2014-07-07 21:42+0000\n"
+"X-Generator: Launchpad (build 17086)\n"
 
 #. ($RT::DatabaseName)
 #: share/html/Install/DatabaseDetails.html:180
@@ -57,7 +57,7 @@ msgid "Any word not recognized by RT is searched for in ticket subjects."
 msgstr "Any word not recognised by RT is searched for in ticket subjects."
 
 #. ($valid_image_types)
-#: share/html/Admin/Tools/Theme.html:321
+#: share/html/Admin/Tools/Theme.html:268
 msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 msgstr "Automatically suggested theme colours are not available for your image. This might be because you uploaded an image type that your installed version of GD does not support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 
