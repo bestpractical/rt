@@ -21,7 +21,10 @@ function filter_cascade_by_id (id, vals, is_hierarchical) {
             jQuery(element).find('div[data-name=]').show().find('input').prop('disabled', false);
             jQuery(element).find('div.none').show().find('input').prop('disabled',false);
             for ( var j = 0; j < vals.length; j++ ) {
-                jQuery(element).find('div[data-name^=' + vals[j] + ']').show().find('input').prop('disabled', false);
+                var match = jQuery(element).find('div[data-name]').filter(function(){
+                    return jQuery(this).data('name').indexOf(vals[j]) == 0
+                });
+                match.show().find('input').prop('disabled', false);
             }
         }
     }
