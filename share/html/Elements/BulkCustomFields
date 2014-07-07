@@ -77,6 +77,9 @@
 % } elsif ($cf->Type eq 'Text') {
 <td><& /Elements/EditCustomFieldText, @add &></td>
 <td>
+% } elsif ($cf->Type eq 'Wikitext') {
+<td><& /Elements/EditCustomFieldWikitext, @add &></td>
+<td>
 % } elsif ($cf->Type eq 'Date') {
 <td><& /Elements/EditCustomFieldDate, @add, Default => undef &></td>
 <td><& /Elements/EditCustomFieldDate, @del, Default => undef &><br />
