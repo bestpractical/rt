@@ -1346,10 +1346,8 @@ sub Preferences {
     my $name = _PrefName (shift);
     my $default = shift;
 
-    my $attr = RT::Attribute->new( $self->CurrentUser );
-    $attr->LoadByNameAndObject( Object => $self, Name => $name );
-
-    my $content = $attr->Id ? $attr->Content : undef;
+    my ($attr) = $self->Attributes->Named( $name );
+    my $content = $attr ? $attr->Content : undef;
     unless ( ref $content eq 'HASH' ) {
         return defined $content ? $content : $default;
     }
@@ -1378,9 +1376,8 @@ sub SetPreferences {
     return (0, $self->loc("No permission to set preferences"))
         unless $self->CurrentUserCanModify('Preferences');
 
-    my $attr = RT::Attribute->new( $self->CurrentUser );
-    $attr->LoadByNameAndObject( Object => $self, Name => $name );
-    if ( $attr->Id ) {
+    my ($attr) = $self->Attributes->Named( $name );
+    if ( $attr ) {
         my ($ok, $msg) = $attr->SetContent( $value );
         return (1, "No updates made")
             if $msg eq "That is already the current value";
@@ -1403,9 +1400,8 @@ sub DeletePreferences {
     return (0, $self->loc("No permission to set preferences"))
         unless $self->CurrentUserCanModify('Preferences');
 
-    my $attr = RT::Attribute->new( $self->CurrentUser );
-    $attr->LoadByNameAndObject( Object => $self, Name => $name );
-    if ( $attr->Id ) {
+    my ($attr) = $self->Attributes->Named( $name );
+    if ( $attr ) {
         return $attr->Delete;
     }
 
