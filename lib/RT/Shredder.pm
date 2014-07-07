@@ -789,7 +789,7 @@ sub PushDumpMark {
 sub PopDumpMark {
     my $self = shift;
     foreach (@{ $self->{'dump_plugins'} }) {
-        my ($state, $msg) = $_->PushMark( @_ );
+        my ($state, $msg) = $_->PopMark( @_ );
         die "Couldn't pop mark: $msg" unless $state;
     }
 }
