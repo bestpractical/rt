@@ -1400,12 +1400,11 @@ sub DeletePreferences {
     return (0, $self->loc("No permission to set preferences"))
         unless $self->CurrentUserCanModify('Preferences');
 
-    my ($attr) = $self->Attributes->Named( $name );
-    if ( $attr ) {
-        return $attr->Delete;
-    }
+    my ($attr) = $self->DeleteAttribute( $name );
+    return (0, $self->loc("Preferences were not found"))
+        unless $attr;
 
-    return (0, $self->loc("Preferences were not found"));
+    return 1;
 }
 
 =head2 Stylesheet
