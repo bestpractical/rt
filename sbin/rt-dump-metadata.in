@@ -260,7 +260,7 @@ OBJECT:
             }
         }
 
-        if ( eval { require RT::Attributes; 1 } ) {
+        if ( RT::Attributes->require ) {
             my $attributes = $obj->Attributes;
             while ( my $attribute = $attributes->Next ) {
                 my $content = $attribute->Content;

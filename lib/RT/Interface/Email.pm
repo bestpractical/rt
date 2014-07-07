@@ -55,7 +55,6 @@ use Email::Address;
 use MIME::Entity;
 use RT::EmailParser;
 use File::Temp;
-use UNIVERSAL::require;
 use Mail::Mailer ();
 use Text::ParseWords qw/shellwords/;
 

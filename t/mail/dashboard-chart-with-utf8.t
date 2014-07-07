@@ -1,16 +1,10 @@
 use strict;
 use warnings;
 
-BEGIN {
-    require RT::Test;
+use RT::Test tests => undef;
 
-    if (eval { require GD }) {
-        RT::Test->import(tests => 15);
-    }
-    else {
-        RT::Test->import(skip_all => 'GD required.');
-    }
-}
+plan skip_all => 'GD required'
+    unless GD->require;
 
 use utf8;
 
@@ -90,3 +84,5 @@ if ( my $io = $handle->open('r') ) {
 }
 is( $mail_image_data, $image, 'image in mail is the same one in web' );
 
+undef $m;
+done_testing;

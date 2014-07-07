@@ -65,7 +65,7 @@ sub import {
     my $t     = $class->builder;
 
     $t->plan( skip_all => 'GnuPG required.' )
-      unless eval { require GnuPG::Interface; 1 };
+      unless GnuPG::Interface->require;
     $t->plan( skip_all => 'gpg executable is required.' )
       unless RT::Test->find_executable('gpg');
 

@@ -46,8 +46,8 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use RT::User ();
 package RT::User;
+use RT::User ();
 
 use strict;
 use warnings;

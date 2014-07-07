@@ -246,7 +246,7 @@ my $colors;
 my $valid_image_types;
 my $analyze_img = sub {
     return undef if RT->Config->Get('DisableGD');
-    return undef unless eval { require Convert::Color; 1 };
+    return undef unless Convert::Color->require;
 
     require GD;
 

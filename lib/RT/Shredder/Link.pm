@@ -46,8 +46,8 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use RT::Link ();
 package RT::Link;
+use RT::Link ();
 
 use strict;
 use warnings;

@@ -132,7 +132,7 @@ sub Run
     }
     return (0, "Internal error: '". $sth->err ."'. Please send bug report.") if $sth->err;
 
-    map { $_ = "RT::Attachment-$_" } @objs;
+    @objs = map {"RT::Attachment-$_"} @objs;
 
     return (1, @objs);
 }

@@ -46,8 +46,8 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use RT::Attachment ();
 package RT::Attachment;
+use RT::Attachment ();
 
 use strict;
 use warnings;

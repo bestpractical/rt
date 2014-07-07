@@ -537,8 +537,8 @@ use Encode::Guess to try to figure it out the string's encoding.
 
 =cut
 
-use constant HAS_ENCODE_GUESS => do { local $@; eval { require Encode::Guess; 1 } };
-use constant HAS_ENCODE_DETECT => do { local $@; eval { require Encode::Detect::Detector; 1 } };
+use constant HAS_ENCODE_GUESS => Encode::Guess->require;
+use constant HAS_ENCODE_DETECT => Encode::Detect::Detector->require;
 
 sub _GuessCharset {
     my $fallback = _CanonicalizeCharset('iso-8859-1');
@@ -636,8 +636,7 @@ sub _CanonicalizeCharset {
         return 'gbk';
     }
     elsif ( $charset =~ /^(?:(?:big5(-1984|-2003|ext|plus))|cccii|unisys|euc-tw|gb18030|(?:cns11643-\d+))$/ ) {
-        eval { require Encode::HanExtra };
-        if ( $@ ) {
+        unless ( Encode::HanExtra->require ) {
             RT->Logger->error("Please install Encode::HanExtra to handle $charset");
         }
         return $charset;

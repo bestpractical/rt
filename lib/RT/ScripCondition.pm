@@ -75,6 +75,7 @@ use warnings;
 
 use base 'RT::Record';
 
+
 sub Table {'ScripConditions'}
 
 
@@ -161,7 +162,7 @@ sub LoadCondition  {
     my $module = $1;
     my $type = "RT::Condition::". $module;
 
-    eval "require $type" || die "Require of $type failed.\n$@\n";
+    $type->require or die "Require of $type condition module failed.\n$@\n";
 
     $self->{'Condition'}  = $type->new ( 'ScripConditionObj' => $self,
                                          'TicketObj' => $args{'TicketObj'},
