@@ -368,7 +368,7 @@ sub Content {
                 $content =~ s/&/&#38;/g;
                 $content =~ s/</&lt;/g;
                 $content =~ s/>/&gt;/g;
-                $content = "<pre><div style='white-space: pre-wrap; font-family: monospace;'>$content</div></pre>";
+                $content = qq|<pre style="white-space: pre-wrap; font-family: monospace;">$content</pre>|;
             }
         }
     }
