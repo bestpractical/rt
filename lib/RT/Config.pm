@@ -970,6 +970,18 @@ our %META;
     WebExternalGecos          => { Deprecated => { Instead => 'WebRemoteUserGecos',            Remove => '4.4' }},
     WebExternalAuto           => { Deprecated => { Instead => 'WebRemoteUserAutocreate',       Remove => '4.4' }},
     AutoCreate                => { Deprecated => { Instead => 'UserAutocreateDefaultsOnLogin', Remove => '4.4' }},
+    LogoImageHeight => {
+        Deprecated => {
+            LogLevel => "info",
+            Message => "The LogoImageHeight configuration option did not affect display, and has been removed; please remove it from your RT_SiteConfig.pm",
+        },
+    },
+    LogoImageWidth => {
+        Deprecated => {
+            LogLevel => "info",
+            Message => "The LogoImageWidth configuration option did not affect display, and has been removed; please remove it from your RT_SiteConfig.pm",
+        },
+    },
 );
 my %OPTIONS = ();
 my @LOADED_CONFIGS = ();
