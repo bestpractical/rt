@@ -295,6 +295,22 @@ push @CHECKS, 'Queues <-> Role Groups' => sub {
             'Queues', 'id' => 'Groups', 'Instance',
             join_condition   => 't.Domain = ? AND t.Name = ?',
             bind_values => [ 'RT::Queue-Role', $role ],
+            action => sub {
+                my $id = shift;
+                return unless prompt(
+                    'Create', "Found a queue missing a $role role group"
+                );
+
+                my $group = RT::Group->new( RT->SystemUser );
+                $group->_Create(
+                    Domain   => 'RT::Queue-Role',
+                    Name     => $role,
+                    Instance => $id,
+                );
+                $redo_check{ $_ } = 1 for
+                    @{ $redo_on{'Create'}{ Principals } || [] },
+                    @{ $redo_on{'Create'}{ Groups } || [] };
+            },
         );
     }
     # from group to queue
@@ -323,6 +339,22 @@ push @CHECKS, 'Tickets <-> Role Groups' => sub {
             'Tickets', 'id' => 'Groups', 'Instance',
             join_condition   => 't.Domain = ? AND t.Name = ?',
             bind_values => [ 'RT::Ticket-Role', $role ],
+            action => sub {
+                my $id = shift;
+                return unless prompt(
+                    'Create', "Found a ticket missing a $role role group"
+                );
+
+                my $group = RT::Group->new( RT->SystemUser );
+                $group->_Create(
+                    Domain   => 'RT::Ticket-Role',
+                    Name     => $role,
+                    Instance => $id,
+                );
+                $redo_check{ $_ } = 1 for
+                    @{ $redo_on{'Create'}{ Principals } || [] },
+                    @{ $redo_on{'Create'}{ Groups } || [] };
+            },
         );
     }
     # from group to ticket
