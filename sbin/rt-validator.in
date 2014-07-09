@@ -288,14 +288,15 @@ push @CHECKS, 'User <-> ACL equivalence group' => sub {
 
 # check integrity of Queue role groups
 push @CHECKS, 'Queues <-> Role Groups' => sub {
-    # XXX: we check only that there is at least one group for a queue
     # from queue to group
     my $res = 1;
-    $res *= check_integrity(
-        'Queues', 'id' => 'Groups', 'Instance',
-        join_condition   => 't.Domain = ?',
-        bind_values => [ 'RT::Queue-Role' ],
-    );
+    for my $role (qw/Requestor Owner Cc AdminCc/ ) {
+        $res *= check_integrity(
+            'Queues', 'id' => 'Groups', 'Instance',
+            join_condition   => 't.Domain = ? AND t.Name = ?',
+            bind_values => [ 'RT::Queue-Role', $role ],
+        );
+    }
     # from group to queue
     $res *= check_integrity(
         'Groups', 'Instance' => 'Queues', 'id',
@@ -315,14 +316,15 @@ push @CHECKS, 'Queues <-> Role Groups' => sub {
 
 # check integrity of Ticket role groups
 push @CHECKS, 'Tickets <-> Role Groups' => sub {
-    # XXX: we check only that there is at least one group for a queue
     # from queue to group
     my $res = 1;
-    $res *= check_integrity(
-        'Tickets', 'id' => 'Groups', 'Instance',
-        join_condition   => 't.Domain = ?',
-        bind_values => [ 'RT::Ticket-Role' ],
-    );
+    for my $role (qw/Requestor Owner Cc AdminCc/ ) {
+        $res *= check_integrity(
+            'Tickets', 'id' => 'Groups', 'Instance',
+            join_condition   => 't.Domain = ? AND t.Name = ?',
+            bind_values => [ 'RT::Ticket-Role', $role ],
+        );
+    }
     # from group to ticket
     $res *= check_integrity(
         'Groups', 'Instance' => 'Tickets', 'id',
