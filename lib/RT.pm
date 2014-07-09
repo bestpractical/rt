@@ -917,6 +917,7 @@ sub Deprecated {
         Instead => undef,
         Message => undef,
         Stack   => 1,
+        LogLevel => "warn",
         @_,
     );
 
@@ -953,7 +954,9 @@ sub Deprecated {
         if $args{Object};
 
     $msg .= "  Call stack:\n$stack" if $args{Stack};
-    RT->Logger->warn($msg);
+
+    my $loglevel = $args{LogLevel};
+    RT->Logger->$loglevel($msg);
 }
 
 =head1 BUGS
