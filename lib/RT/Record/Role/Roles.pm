@@ -539,8 +539,15 @@ sub _ResolveRoles {
             $roles->{$role} = [ $roles->{$role} ];
         } else {
             $roles->{$role} = [];
-            my @values = ref $args{ $role } ? @{ $args{$role} } : ($args{$role});
+            my @values = ref $args{ $role } eq 'ARRAY' ? @{ $args{$role} } : ($args{$role});
             for my $value (grep {defined} @values) {
+                if (Scalar::Util::blessed($value)
+                      and ($value->isa("RT::User") or $value->isa("RT::Group"))) {
+                    # Accept a user or group object
+                    next unless $value->id;
+                    $value = $value->PrincipalObj->id;
+                }
+
                 if ( $value =~ /^\d+$/ ) {
                     # This implicitly allows groups, if passed by id.
                     my $principal = RT::Principal->new( $self->CurrentUser );
