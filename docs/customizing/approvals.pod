@@ -9,7 +9,7 @@ This document walks through the steps to set up a
 "Change requests" queue with approvals. You should try
 this in a test instance first. If you don't have a test RT
 instance, you should read through the entire document first,
-change the details as needed for you approval scenario, and then
+change the details as needed for your approval scenario, and then
 set up approvals.
 
 =head2 Overview
