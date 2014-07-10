@@ -338,4 +338,11 @@ want to modify or remove the Notify Owner and AdminCcs scrip to avoid
 duplicate notifications. This Scrip Action is not used in any default
 Scrips at this time.
 
+=head1 UPGRADING FROM 4.2.6 AND EARLIER
+
+The C<$LogoImageHeight> and C<$LogoImageWidth> configuration options
+have been overridden by CSS since 4.0.0, and thus did not affect
+display.  They have been removed, and setting them will trigger an
+informational message that setting them is ineffective.
+
 =cut
