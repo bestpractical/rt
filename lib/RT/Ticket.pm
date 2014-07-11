@@ -1461,8 +1461,9 @@ sub Comment {
     }
 
     my @results = $self->_RecordNote(%args);
-    if ($args{'DryRun'}) {
-        $RT::Handle->Rollback();
+
+    if ( not $results[0] or $args{'DryRun'}) {
+        $RT::Handle->RollBack();
     } else {
         $RT::Handle->Commit();
     }
