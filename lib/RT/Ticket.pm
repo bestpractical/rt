@@ -237,7 +237,6 @@ sub Create {
         Resolved           => undef,
         MIMEObj            => undef,
         _RecordTransaction => 1,
-        DryRun             => 0,
         @_
     );
 
@@ -540,7 +539,6 @@ sub Create {
             Type         => "Create",
             TimeTaken    => $args{'TimeWorked'},
             MIMEObj      => $args{'MIMEObj'},
-            CommitScrips => !$args{'DryRun'},
             SquelchMailTo => $args{'TransSquelchMailTo'},
         );
 
@@ -560,10 +558,6 @@ sub Create {
             return ( 0, 0, $self->loc( "Ticket could not be created due to an internal error"));
         }
 
-        if ( $args{'DryRun'} ) {
-            $RT::Handle->Rollback();
-            return ($self->id, $TransObj, $ErrStr);
-        }
         $RT::Handle->Commit();
         return ( $self->Id, $TransObj->Id, $ErrStr );
     }
@@ -1428,10 +1422,7 @@ Takes a hash with the following attributes:
 If MIMEObj is undefined, Content will be used to build a MIME::Entity for this
 comment.
 
-MIMEObj, TimeTaken, CcMessageTo, BccMessageTo, Content, DryRun
-
-If DryRun is defined, this update WILL NOT BE RECORDED. Scrips will not be committed.
-They will, however, be prepared and you'll be able to access them through the TransactionObj
+MIMEObj, TimeTaken, CcMessageTo, BccMessageTo, Content
 
 Returns: Transaction id, Error Message, Transaction Object
 (note the different order from Create()!)
@@ -1446,7 +1437,6 @@ sub Comment {
                  MIMEObj      => undef,
                  Content      => undef,
                  TimeTaken => 0,
-                 DryRun     => 0, 
                  @_ );
 
     unless (    ( $self->CurrentUserHasRight('CommentOnTicket') )
@@ -1456,16 +1446,13 @@ sub Comment {
     $args{'NoteType'} = 'Comment';
 
     $RT::Handle->BeginTransaction();
-    if ($args{'DryRun'}) {
-        $args{'CommitScrips'} = 0;
-    }
 
     my @results = $self->_RecordNote(%args);
 
-    if ( not $results[0] or $args{'DryRun'}) {
-        $RT::Handle->RollBack();
+    if ( not $results[0] ) {
+        $RT::Handle->Rollback();
     } else {
-        $RT::Handle->Commit();
+        $RT::Handle->Commit;
     }
 
     return(@results);
@@ -1478,12 +1465,9 @@ Correspond on this ticket.
 Takes a hashref with the following attributes:
 
 
-MIMEObj, TimeTaken, CcMessageTo, BccMessageTo, Content, DryRun
+MIMEObj, TimeTaken, CcMessageTo, BccMessageTo, Content
 
 if there's no MIMEObj, Content is used to build a MIME::Entity object
-
-If DryRun is defined, this update WILL NOT BE RECORDED. Scrips will not be committed.
-They will, however, be prepared and you'll be able to access them through the TransactionObj
 
 Returns: Transaction id, Error Message, Transaction Object
 (note the different order from Create()!)
@@ -1507,9 +1491,6 @@ sub Correspond {
     $args{'NoteType'} = 'Correspond';
 
     $RT::Handle->BeginTransaction();
-    if ($args{'DryRun'}) {
-        $args{'CommitScrips'} = 0;
-    }
 
     my @results = $self->_RecordNote(%args);
 
@@ -1527,11 +1508,7 @@ sub Correspond {
             if grep {not $squelch{$_}} $self->Requestors->MemberEmailAddresses;
     }
 
-    if ($args{'DryRun'}) {
-        $RT::Handle->Rollback();
-    } else {
-        $RT::Handle->Commit();
-    }
+    $RT::Handle->Commit;
 
     return (@results);
 
@@ -1558,7 +1535,6 @@ sub _RecordNote {
         Content      => undef,
         NoteType     => 'Correspond',
         TimeTaken    => 0,
-        CommitScrips => 1,
         SquelchMailTo => undef,
         @_
     );
@@ -1620,7 +1596,6 @@ sub _RecordNote {
              Data => ( $args{'MIMEObj'}->head->get('subject') || 'No Subject' ),
              TimeTaken => $args{'TimeTaken'},
              MIMEObj   => $args{'MIMEObj'}, 
-             CommitScrips => $args{'CommitScrips'},
              SquelchMailTo => $args{'SquelchMailTo'},
     );
 
@@ -1635,89 +1610,32 @@ sub _RecordNote {
 
 =head2 DryRun
 
-Builds a MIME object from the given C<UpdateSubject> and
-C<UpdateContent>, then calls L</Comment> or L</Correspond> with
-C<< DryRun => 1 >>, and returns the transaction so produced.
 
 =cut
 
 sub DryRun {
     my $self = shift;
-    my %args = @_;
-    my $action;
-    if (($args{'UpdateType'} || $args{Action}) =~ /^respon(d|se)$/i ) {
-        $action = 'Correspond';
-    } else {
-        $action = 'Comment';
+
+    my ($subref) = @_;
+
+    my @transactions;
+
+    $RT::Handle->BeginTransaction();
+    {
+        # Getting nested "commit"s inside this rollback is fine
+        local %DBIx::SearchBuilder::Handle::TRANSROLLBACK;
+        local $self->{DryRun} = \@transactions;
+        eval { $subref->() };
+        warn "Error is $@" if $@;
+        $self->ApplyTransactionBatch;
     }
 
-    my $Message = MIME::Entity->build(
-        Type    => 'text/plain',
-        Subject => defined $args{UpdateSubject} ? Encode::encode_utf8( $args{UpdateSubject} ) : "",
-        Charset => 'UTF-8',
-        Data    => $args{'UpdateContent'} || "",
-    );
+    @transactions = grep {$_} @transactions;
 
-    my ( $Transaction, $Description, $Object ) = $self->$action(
-        CcMessageTo  => $args{'UpdateCc'},
-        BccMessageTo => $args{'UpdateBcc'},
-        MIMEObj      => $Message,
-        TimeTaken    => $args{'UpdateTimeWorked'},
-        DryRun       => 1,
-        SquelchMailTo => $args{'SquelchMailTo'},
-    );
-    unless ( $Transaction ) {
-        $RT::Logger->error("Couldn't fire '$action' action: $Description");
-    }
+    $RT::Handle->Rollback();
 
-    return $Object;
+    return wantarray ? @transactions : $transactions[0];
 }
-
-=head2 DryRunCreate
-
-Prepares a MIME mesage with the given C<Subject>, C<Cc>, and
-C<Content>, then calls L</Create> with C<< DryRun => 1 >> and returns
-the resulting L<RT::Transaction>.
-
-=cut
-
-sub DryRunCreate {
-    my $self = shift;
-    my %args = @_;
-    my $Message = MIME::Entity->build(
-        Type    => 'text/plain',
-        Subject => defined $args{Subject} ? Encode::encode_utf8( $args{'Subject'} ) : "",
-        (defined $args{'Cc'} ?
-             ( Cc => Encode::encode_utf8( $args{'Cc'} ) ) : ()),
-        Charset => 'UTF-8',
-        Data    => $args{'Content'} || "",
-    );
-
-    my ( $Transaction, $Object, $Description ) = $self->Create(
-        Type            => $args{'Type'} || 'ticket',
-        Queue           => $args{'Queue'},
-        Owner           => $args{'Owner'},
-        Requestor       => $args{'Requestors'},
-        Cc              => $args{'Cc'},
-        AdminCc         => $args{'AdminCc'},
-        InitialPriority => $args{'InitialPriority'},
-        FinalPriority   => $args{'FinalPriority'},
-        TimeLeft        => $args{'TimeLeft'},
-        TimeEstimated   => $args{'TimeEstimated'},
-        TimeWorked      => $args{'TimeWorked'},
-        Subject         => $args{'Subject'},
-        Status          => $args{'Status'},
-        MIMEObj         => $Message,
-        DryRun          => 1,
-    );
-    unless ( $Transaction ) {
-        $RT::Logger->error("Couldn't fire Create action: $Description");
-    }
-
-    return $Object;
-}
-
-
 
 sub _Links {
     my $self = shift;
@@ -2591,7 +2509,8 @@ sub _ApplyTransactionBatch {
     my $types = join ',', grep !$seen{$_}++, grep defined, map $_->__Value('Type'), grep defined, @{$batch};
 
     require RT::Scrips;
-    RT::Scrips->new(RT->SystemUser)->Apply(
+    my $scrips = RT::Scrips->new(RT->SystemUser);
+    $scrips->Prepare(
         Stage          => 'TransactionBatch',
         TicketObj      => $self,
         TransactionObj => $batch->[0],
@@ -2605,7 +2524,16 @@ sub _ApplyTransactionBatch {
         TransactionObj => $batch->[0],
         Type           => $types,
     );
-    RT::Ruleset->CommitRules($rules);
+
+    if ($self->{DryRun}) {
+        my $fake_txn = RT::Transaction->new( $self->CurrentUser );
+        $fake_txn->{scrips} = $scrips;
+        $fake_txn->{rules} = $rules;
+        push @{$self->{DryRun}}, $fake_txn;
+    } else {
+        $scrips->Commit;
+        RT::Ruleset->CommitRules($rules);
+    }
 }
 
 sub DESTROY {
@@ -3039,8 +2967,6 @@ sub Forward {
         Bcc            => '',
         Content        => '',
         ContentType    => 'text/plain',
-        DryRun         => 0,
-        CommitScrips   => 1,
         @_
     );
 
@@ -3071,11 +2997,6 @@ sub Forward {
         )
     );
 
-    if ($args{'DryRun'}) {
-        $RT::Handle->BeginTransaction();
-        $args{'CommitScrips'} = 0;
-    }
-
     my ( $ret, $msg ) = $self->_NewTransaction(
         $args{Transaction}
         ? (
@@ -3088,16 +3009,12 @@ sub Forward {
         ),
         Data  => join( ', ', grep { length } $args{To}, $args{Cc}, $args{Bcc} ),
         MIMEObj => $mime,
-        CommitScrips => $args{'CommitScrips'},
     );
 
     unless ($ret) {
         $RT::Logger->error("Failed to create transaction: $msg");
     }
 
-    if ($args{'DryRun'}) {
-        $RT::Handle->Rollback();
-    }
     return ( $ret, $self->loc('Message recorded') );
 }
 

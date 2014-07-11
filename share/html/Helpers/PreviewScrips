@@ -60,7 +60,18 @@ else {
       unless $TicketObj->CurrentUserHasRight( 'ReplyToTicket' ) || $TicketObj->CurrentUserHasRight( 'ModifyTicket' );
 }
 
-my $Object = $TicketObj->DryRun(%ARGS);
+my $Object = $TicketObj->DryRun(
+    sub {
+        local $ARGS{UpdateContent} ||= "Content";
+        ProcessUpdateMessage(ARGSRef  => \%ARGS, TicketObj => $TicketObj );
+        ProcessTicketWatchers(ARGSRef => \%ARGS, TicketObj => $TicketObj );
+        ProcessTicketBasics(  ARGSRef => \%ARGS, TicketObj => $TicketObj );
+        ProcessTicketLinks(   ARGSRef => \%ARGS, TicketObj => $TicketObj );
+        ProcessTicketDates(   ARGSRef => \%ARGS, TicketObj => $TicketObj );
+        ProcessObjectCustomFieldUpdates(ARGSRef => \%ARGS, TicketObj => $TicketObj );
+        ProcessTicketReminders( ARGSRef => \%ARGS, TicketObj => $TicketObj );
+    }
+);
 my %recips;
 $m->abort unless $Object;
 

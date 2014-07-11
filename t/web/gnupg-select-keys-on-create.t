@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test::GnuPG tests => 79, gnupg_options => { passphrase => 'rt-test' };
+use RT::Test::GnuPG tests => undef, gnupg_options => { passphrase => 'rt-test' };
 use RT::Action::SendEmail;
 
 my $queue = RT::Test->load_or_create_queue(
@@ -66,7 +66,7 @@ diag "check that things don't work if there is no key";
     my @mail = RT::Test->fetch_caught_mails;
     ok !@mail, 'there are no outgoing emails';
 
-    $m->next_warning_like(qr/public key not found/) for 1 .. 4;
+    $m->next_warning_like(qr/public key not found/) for 1 .. 2;
     $m->no_leftover_warnings_ok;
 }
 
@@ -273,3 +273,5 @@ diag "check encrypting of attachments";
     $m->no_warnings_ok;
 }
 
+undef $m;
+done_testing;

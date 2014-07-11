@@ -1641,7 +1641,6 @@ sub _NewTransaction {
         Field     => undef,
         MIMEObj   => undef,
         ActivateScrips => 1,
-        CommitScrips => 1,
         SquelchMailTo => undef,
         @_
     );
@@ -1680,7 +1679,7 @@ sub _NewTransaction {
         ReferenceType => $ref_type,
         MIMEObj   => $args{'MIMEObj'},
         ActivateScrips => $args{'ActivateScrips'},
-        CommitScrips => $args{'CommitScrips'},
+        DryRun => $self->{DryRun},
         SquelchMailTo => $args{'SquelchMailTo'},
     );
 
@@ -1695,7 +1694,7 @@ sub _NewTransaction {
         $self->_UpdateTimeTaken( $args{'TimeTaken'}, Transaction => $trans );
     }
     if ( RT->Config->Get('UseTransactionBatch') and $transaction ) {
-            push @{$self->{_TransactionBatch}}, $trans if $args{'CommitScrips'};
+        push @{$self->{_TransactionBatch}}, $trans;
     }
 
     RT->DatabaseHandle->Commit unless $in_txn;
