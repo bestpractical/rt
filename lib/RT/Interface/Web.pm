@@ -2378,6 +2378,8 @@ sub _ProcessUpdateMessageRecipients {
     $message_args->{SquelchMailTo} = \@txn_squelch
         if @txn_squelch;
 
+    $args{TicketObj}->{TransSquelchMailTo} ||= $message_args->{'SquelchMailTo'};
+
     unless ( $args{'ARGSRef'}->{'UpdateIgnoreAddressCheckboxes'} ) {
         foreach my $key ( keys %{ $args{ARGSRef} } ) {
             next unless $key =~ /^Update(Cc|Bcc)-(.*)$/;

@@ -1680,7 +1680,7 @@ sub _NewTransaction {
         MIMEObj   => $args{'MIMEObj'},
         ActivateScrips => $args{'ActivateScrips'},
         DryRun => $self->{DryRun},
-        SquelchMailTo => $args{'SquelchMailTo'},
+        SquelchMailTo => $args{'SquelchMailTo'} || $self->{TransSquelchMailTo},
     );
 
     # Rationalize the object since we may have done things to it during the caching.
