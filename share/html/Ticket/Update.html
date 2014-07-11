@@ -214,6 +214,7 @@
 <script type="text/javascript">
 jQuery( function() {
    var updateScrips = function() {
+       CKEDITOR.instances['UpdateContent'].updateElement();
        var syncCheckboxes = function(ev) {
            jQuery("input[name=TxnSendMailTo]").filter( function() { return this.value == ev.target.value; } ).prop("checked",jQuery(ev.target).prop('checked'));
        };
@@ -227,6 +228,7 @@ jQuery( function() {
        );
    };
    updateScrips();
+   CKEDITOR.instances['UpdateContent'].on('blur', updateScrips );
    jQuery("#ticket-update-metadata :input, input[name^=UpdateCc], input[name^=UpdateBcc]").change( updateScrips );
 });
 </script>
