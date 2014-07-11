@@ -60,7 +60,7 @@ else {
       unless $TicketObj->CurrentUserHasRight( 'ReplyToTicket' ) || $TicketObj->CurrentUserHasRight( 'ModifyTicket' );
 }
 
-my $Object = $TicketObj->DryRun(
+my @dryrun = $TicketObj->DryRun(
     sub {
         local $ARGS{UpdateContent} ||= "Content";
         ProcessUpdateMessage(ARGSRef  => \%ARGS, TicketObj => $TicketObj );
@@ -73,7 +73,7 @@ my $Object = $TicketObj->DryRun(
     }
 );
 my %recips;
-$m->abort unless $Object;
+$m->abort unless @dryrun;
 
 my %squelched = ProcessTransactionSquelching( \%ARGS );
 </%init>
@@ -82,13 +82,9 @@ my %squelched = ProcessTransactionSquelching( \%ARGS );
 &>Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href="[_1]">People page</a>.</&>
 </p>
 
-% if ( $Object->Scrips ) {
-%     # Sort scrips with recipients before those without
-%     my @scrips = map { $_->[0] }
-%                  sort { ($b->[1]?1:0) <=> ($a->[1]?1:0) }
-%                  map { [$_, $_->ActionObj->Action->To + $_->ActionObj->Action->Cc + $_->ActionObj->Action->Bcc] }
-%                  grep {$_->ActionObj->Action->isa('RT::Action::SendEmail')}
-%                  @{$Object->Scrips->Prepared};
+% my @scrips = grep {$_->ActionObj->Action->isa('RT::Action::SendEmail')}
+%              map {@{$_->Scrips->Prepared}} @dryrun;
+% if (@scrips) {
 %     for my $scrip (@scrips) {
           <b><% $scrip->Description || loc('Scrip #[_1]',$scrip->id) %></b><br />
           <&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->Template)&>[_1] [_2] with template [_3]</&>
@@ -134,8 +130,9 @@ my %squelched = ProcessTransactionSquelching( \%ARGS );
 %     }
 % }
 
-% if ( $Object->Rules ) {
-%     for my $rule (@{$Object->Rules}) {
+% my @rules = map {@{$_->Rules}} @dryrun;
+% if ( @rules ) {
+%     for my $rule (@rules) {
 %         next unless $rule->{hints} && $rule->{hints}{class} eq 'SendEmail';
           <b><% $rule->Describe %></b>
 %         my $data = $rule->{hints}{recipients};

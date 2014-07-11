@@ -61,7 +61,7 @@ else {
       unless $TicketObj->CurrentUserHasRight( 'ReplyToTicket' ) || $TicketObj->CurrentUserHasRight( 'ModifyTicket' );
 }
 
-my $Object = $TicketObj->DryRun(
+my @dryrun = $TicketObj->DryRun(
     sub {
         local $ARGS{UpdateContent} ||= "Content";
         ProcessUpdateMessage(ARGSRef  => \%ARGS, TicketObj => $TicketObj );
@@ -73,12 +73,13 @@ my $Object = $TicketObj->DryRun(
         ProcessTicketReminders( ARGSRef => \%ARGS, TicketObj => $TicketObj );
     }
 );
-$m->abort unless $Object;
+$m->abort unless @dryrun;
 
 my %headers = (To => {}, Cc => {}, Bcc => {});
 my %no_squelch = (To => {}, Cc => {}, Bcc => {});
-if ($Object->Scrips) {
-    for my $scrip (grep $_->ActionObj->Action->isa('RT::Action::SendEmail'), @{$Object->Scrips->Prepared}) {
+my @scrips = map {@{$_->Scrips->Prepared}} @dryrun;
+if (@scrips) {
+    for my $scrip (grep $_->ActionObj->Action->isa('RT::Action::SendEmail'), @scrips) {
         my $action = $scrip->ActionObj->Action;
         for my $type (qw(To Cc Bcc)) {
             for my $addr ($action->$type()) {
@@ -91,8 +92,9 @@ if ($Object->Scrips) {
         }
     }
 }
-if ($Object->Rules) {
-    for my $rule (grep {$_->{hints} and $_->{hints}{class} eq "SendEmail"} @{$Object->Rules}) {
+my @rules = map {@{$_->Rules}} @dryrun;
+if (@rules) {
+    for my $rule (grep {$_->{hints} and $_->{hints}{class} eq "SendEmail"} @rules) {
         for my $type (qw(To Cc Bcc)) {
             $headers{$type}{$_} ||= @{[Email::Address->parse($_)]}[0] # Hate list context
                 for @{$rule->{hints}{recipients}{$type}};
