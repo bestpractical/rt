@@ -76,6 +76,9 @@ my %recips;
 $m->abort unless @dryrun;
 
 my %squelched = ProcessTransactionSquelching( \%ARGS );
+my $squelched_config = !( RT->Config->Get('SquelchedRecipients', $session{'CurrentUser'}) );
+my %submitted;
+$submitted{$_} = 1 for split /,/, $ARGS{TxnRecipients};
 </%init>
 <p>
 <&|/l, RT->Config->Get('WebPath')."/Ticket/ModifyPeople.html?id=".$TicketObj->Id,
@@ -96,7 +99,7 @@ my %squelched = ProcessTransactionSquelching( \%ARGS );
               <ul>
 %             for my $addr (@addresses) {
                   <li>
-%                 my $checked = not $squelched{$addr->address};
+%                 my $checked = $submitted{$addr->address} ? not $squelched{$addr->address} : $squelched_config;
 %                 $m->callback(CallbackName => 'BeforeAddress', Ticket => $TicketObj, Address => $addr, Type => $type, Checked => \$checked);
 %                 $recips{$addr->address}++;
                   <b><%loc($type)%></b>:
