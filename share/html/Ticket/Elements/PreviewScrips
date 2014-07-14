@@ -75,9 +75,11 @@ my %squelched = ProcessTransactionSquelching( \%ARGS );
 %             my @addresses =  $scrip->ActionObj->Action->$type();
 %             next unless @addresses;
               <ul>
+%             my $squelched_recipients = RT->Config->Get('SquelchedRecipients', $session{'CurrentUser'});
 %             for my $addr (@addresses) {
                   <li>
 %                 my $checked = not $squelched{$addr->address};
+%                    $checked = $checked ? not $squelched_recipients : $checked;
 %                 $m->callback(CallbackName => 'BeforeAddress', Ticket => $TicketObj, Address => $addr, Type => $type, Checked => \$checked);
 %                 $recips{$addr->address}++;
                   <b><%loc($type)%></b>: <input type="checkbox" class="checkbox" name="TxnSendMailTo" <% $checked ? 'checked="checked"' : '' |n%> value="<%$addr->address%>" id="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>" />

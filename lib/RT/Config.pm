@@ -455,10 +455,19 @@ our %META;
             Description => "Show simplified recipient list on ticket update",                #loc
         },
     },
+    SquelchedRecipients => {
+        Section         => 'Ticket display',                       #loc
+        Overridable     => 1,
+        SortOrder       => 8,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => "Start with squelch checkboxes unchecked/checked on ticket update", #loc
+        },
+    },
     DisplayTicketAfterQuickCreate => {
         Section         => 'Ticket display',
         Overridable     => 1,
-        SortOrder       => 8,
+        SortOrder       => 9,
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
             Description => 'Display ticket after "Quick Create"', #loc
@@ -467,7 +476,7 @@ our %META;
     QuoteFolding => {
         Section => 'Ticket display',
         Overridable => 1,
-        SortOrder => 9,
+        SortOrder => 10,
         Widget => '/Widgets/Form/Boolean',
         WidgetArguments => {
             Description => 'Enable quote folding?' # loc
