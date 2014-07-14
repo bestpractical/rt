@@ -748,7 +748,7 @@ sub _Accessible  {
 =head2 _EncodeLOB BODY MIME_TYPE FILENAME
 
 Takes a potentially large attachment. Returns (ContentEncoding,
-EncodedBody, MimeType, Filename) based on system configuration and
+EncodedBody, MimeType, Filename, NoteArgs) based on system configuration and
 selected database.  Returns a custom (short) text/plain message if
 DropLongAttachments causes an attachment to not be stored.
 
@@ -760,6 +760,10 @@ encoded on databases which are strict.
 This function expects to receive an octet string in order to properly
 evaluate and encode it.  It will return an octet string.
 
+NoteArgs is currently used to indicate caller that the message is too long and
+is truncated or dropped. It's a hashref which is expected to be passed to
+L<RT::Record/_NewTransaction>.
+
 =cut
 
 sub _EncodeLOB {
@@ -769,6 +773,7 @@ sub _EncodeLOB {
     my $Filename = shift;
 
     my $ContentEncoding = 'none';
+    my $note_args;
 
     #get the max attachment length from RT
     my $MaxSize = RT->Config->Get('MaxAttachmentSize');
@@ -794,11 +799,21 @@ sub _EncodeLOB {
     #if the attachment is larger than the maximum size
     if ( ($MaxSize) and ( $MaxSize < length($Body) ) ) {
 
+        my $size = length $Body;
         # if we're supposed to truncate large attachments
         if (RT->Config->Get('TruncateLongAttachments')) {
 
+            $RT::Logger->info("$self: Truncated an attachment of size $size");
+
             # truncate the attachment to that length.
             $Body = substr( $Body, 0, $MaxSize );
+            $note_args = {
+                Type           => 'AttachmentTruncate',
+                Data           => $Filename,
+                OldValue       => $size,
+                NewValue       => $MaxSize,
+                ActivateScrips => 0,
+            };
 
         }
 
@@ -806,11 +821,17 @@ sub _EncodeLOB {
         elsif (RT->Config->Get('DropLongAttachments')) {
 
             # drop the attachment on the floor
-            $RT::Logger->info( "$self: Dropped an attachment of size "
-                               . length($Body));
+            $RT::Logger->info( "$self: Dropped an attachment of size $size" );
             $RT::Logger->info( "It started: " . substr( $Body, 0, 60 ) );
-            $Filename .= ".txt" if $Filename;
-            return ("none", "Large attachment dropped", "text/plain", $Filename );
+            $note_args = {
+                Type           => 'AttachmentDrop',
+                Data           => $Filename,
+                OldValue       => $size,
+                NewValue       => $MaxSize,
+                ActivateScrips => 0,
+            };
+            $Filename .= ".txt" if $Filename && $Filename !~ /\.txt$/;
+            return ("none", "Large attachment dropped", "text/plain", $Filename, $note_args );
         }
     }
 
@@ -827,7 +848,7 @@ sub _EncodeLOB {
     }
 
 
-    return ($ContentEncoding, $Body, $MIMEType, $Filename );
+    return ($ContentEncoding, $Body, $MIMEType, $Filename, $note_args );
 }
 
 =head2 _DecodeLOB C<ContentType>, C<ContentEncoding>, C<Content>
