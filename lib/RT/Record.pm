@@ -1795,6 +1795,8 @@ our %TRANSACTION_CLASSIFICATION = (
         ) ),
     },
     SystemError => 'error',
+    AttachmentTruncate => 'attachment-truncate',
+    AttachmentDrop => 'attachment-drop',
     __default => 'other',
 );
 
