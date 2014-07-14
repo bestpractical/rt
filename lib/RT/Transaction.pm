@@ -839,7 +839,7 @@ sub _FormatUser {
     },
     SystemError => sub {
         my $self = shift;
-        return ("System error"); #loc()
+        return $self->Data // ("System error"); #loc()
     },
     AttachmentTruncate => sub {
         my $self = shift;

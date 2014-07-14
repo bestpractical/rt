@@ -1771,9 +1771,10 @@ sub IsCorrectAction {
 sub _RecordSendEmailFailure {
     my $ticket = shift;
     if ($ticket) {
-        $ticket->_RecordNote(
-            NoteType => 'SystemError',
-            Content => "Sending the previous mail has failed.  Please contact your admin, they can find more details in the logs.",
+        $ticket->_NewTransaction(
+            Type => "SystemError",
+            Data => "Sending the previous mail has failed.  Please contact your admin, they can find more details in the logs.", #loc
+            ActivateScrips => 0,
         );
         return 1;
     }
