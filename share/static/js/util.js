@@ -82,6 +82,8 @@ function set_rollup_state(e,e2,state) {
 
 function setCheckbox(input, name, val) {
     if (val == null) val = input.checked;
+    var allfield = jQuery('input[name=' + input.name + ']');
+    allfield.prop('checked', val);
 
     // Find inputs within the current form or collection list, whichever is closest.
     var container = jQuery(input).closest("form, table.collection-as-table").get(0);

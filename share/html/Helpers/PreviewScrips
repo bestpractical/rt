@@ -88,6 +88,14 @@ $submitted{$_} = 1 for split /,/, $ARGS{TxnRecipients};
 % my @scrips = grep {$_->ActionObj->Action->isa('RT::Action::SendEmail')}
 %              map {@{$_->Scrips->Prepared}} @dryrun;
 % if (@scrips) {
+%   if ( grep {
+%          my $s = $_;
+%          my $action = $s->ActionObj->Action;
+%          scalar(map { $action->$_ } qw(To Cc Bcc))
+%        } @scrips ) {
+<input type="checkbox" class="checkbox" name="TxnSendMailToAll" value="1" onclick="setCheckbox(this,'TxnSendMailTo')">
+<label for="TxnSendMailToAll"><b><% loc('All recipients') %></b></label><br />
+%   }
 %     for my $scrip (@scrips) {
           <b><% $scrip->Description || loc('Scrip #[_1]',$scrip->id) %></b><br />
           <&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->Template)&>[_1] [_2] with template [_3]</&>
