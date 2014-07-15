@@ -77,6 +77,15 @@ my %squelched = ProcessTransactionSquelching( \%ARGS );
 </%init>
 <&|/Widgets/TitleBox, title => loc('Recipients'), id => 'recipients' &>
 <table>
+%   if ( scalar(map { keys %{$headers{$_}} } qw(To Cc Bcc)) ) {
+<tr>
+<td>&nbsp;</td>
+<td>
+<input type="checkbox" name="TxnSendMailToAll" value="1" checked="checked" onclick="setCheckbox(this,'TxnSendMailTo')">
+<label for="TxnSendMailToAll"><b><% loc('All recipients') %></b></label>
+</td>
+</tr>
+% }
 % for my $type (qw(To Cc Bcc)) {
 %     next unless keys %{$headers{$type}};
 <tr>

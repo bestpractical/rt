@@ -67,6 +67,14 @@ my %squelched = ProcessTransactionSquelching( \%ARGS );
 %                  map { [$_, $_->ActionObj->Action->To + $_->ActionObj->Action->Cc + $_->ActionObj->Action->Bcc] }
 %                  grep {$_->ActionObj->Action->isa('RT::Action::SendEmail')}
 %                  @{$Object->Scrips->Prepared};
+%   if ( grep {
+%          my $s = $_;
+%          my $action = $s->ActionObj->Action;
+%          scalar(map { $action->$_ } qw(To Cc Bcc))
+%        } @scrips ) {
+<input type="checkbox" name="TxnSendMailToAll" value="1" checked="checked" onclick="setCheckbox(this,'TxnSendMailTo')">
+<label for="TxnSendMailToAll"><b><% loc('All recipients') %></b></label><br />
+%   }
 %     for my $scrip (@scrips) {
           <b><% $scrip->Description || loc('Scrip #[_1]',$scrip->id) %></b><br />
           <&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->Template)&>[_1] [_2] with template [_3]</&>
