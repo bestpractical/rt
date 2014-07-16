@@ -382,6 +382,7 @@ HTML::Entities
 
 my %AVOID = (
     'DBD::Oracle' => [qw(1.23)],
+    'DBD::Pg' => [qw(3.3.0)],
     'Email::Address' => [qw(1.893 1.894)],
     'Devel::StackTrace' => [qw(1.28 1.29)],
 );
