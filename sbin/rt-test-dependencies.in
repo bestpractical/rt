@@ -378,6 +378,7 @@ Pod::Simple 3.24
 
 my %AVOID = (
     'DBD::Oracle' => [qw(1.23)],
+    'DBD::Pg' => [qw(3.3.0)],
     'Devel::StackTrace' => [qw(1.28 1.29)],
 );
 
