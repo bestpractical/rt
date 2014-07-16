@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-06-06 00:21+0000\n"
-"PO-Revision-Date: 2014-06-06 00:23+0000\n"
-"Last-Translator: Joerg Sommer <joerg@alea.gnuu.de>\n"
+"POT-Creation-Date: 2014-07-01 23:12+0000\n"
+"PO-Revision-Date: 2014-07-07 10:50+0000\n"
+"Last-Translator: Torsten Brumm <Unknown>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-06-06 00:37+0000\n"
-"X-Generator: Launchpad (build 17031)\n"
+"X-Launchpad-Export-Date: 2014-07-07 21:41+0000\n"
+"X-Generator: Launchpad (build 17086)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:62
 msgid "#"
@@ -149,49 +149,49 @@ msgid "%1 (from pane %2)"
 msgstr "%1 (von Ansicht %2)"
 
 #. ("--log")
-#: bin/rt-crontool:333
+#: bin/rt-crontool:332
 msgid "%1 - Adjust LogToSTDERR config option"
 msgstr "%1 - LogToSTDERR Konfigurationsoption anpassen"
 
 #. ("--action-arg", "--action")
 #. ("--condition-arg", "--condition")
 #. ("--search-arg", "--search")
-#: bin/rt-crontool:308 bin/rt-crontool:315 bin/rt-crontool:321
+#: bin/rt-crontool:307 bin/rt-crontool:314 bin/rt-crontool:320
 msgid "%1 - An argument to pass to %2"
 msgstr "%1 - Ein Argument zur Übergabe an %2"
 
 #. ("--verbose")
-#: bin/rt-crontool:335
+#: bin/rt-crontool:334
 msgid "%1 - Output status updates to STDOUT"
 msgstr "%1 - Statusausgabe auf STDOUT"
 
 #. ("--transaction")
-#: bin/rt-crontool:327
+#: bin/rt-crontool:326
 msgid "%1 - Specify if you want to use either 'first', 'last' or 'all' transactions"
 msgstr "%1 - Möchtest Du die 'erste', 'letzte' oder 'alle' Transaktionen nutzen"
 
 #. ("--template")
-#: bin/rt-crontool:324
+#: bin/rt-crontool:323
 msgid "%1 - Specify name or id of template(s) you want to use"
 msgstr "%1 - Namen oder die ID der Vorlage/n angeben, die Sie verwenden möchten"
 
 #. ("--action")
-#: bin/rt-crontool:318
+#: bin/rt-crontool:317
 msgid "%1 - Specify the action module you want to use"
 msgstr "%1 - Gibt an, welches Action-Modul benutzt werden soll"
 
 #. ("--transaction-type")
-#: bin/rt-crontool:330
+#: bin/rt-crontool:329
 msgid "%1 - Specify the comma separated list of transactions' types you want to use"
 msgstr "%1 - Kommagetrennte Liste der Transaktionstypen angeben, die Sie verwenden möchten"
 
 #. ("--condition")
-#: bin/rt-crontool:312
+#: bin/rt-crontool:311
 msgid "%1 - Specify the condition module you want to use"
 msgstr "%1 - Gibt an, welches Condition-Modul benutzt werden soll"
 
 #. ("--search")
-#: bin/rt-crontool:305
+#: bin/rt-crontool:304
 msgid "%1 - Specify the search module you want to use"
 msgstr "%1 - Gibt an, welches Search-Modul benutzt werden soll"
 
@@ -319,7 +319,7 @@ msgid "%1 highest priority tickets I own"
 msgstr "Meine %1 dringensten Tickets"
 
 #. ($0)
-#: bin/rt-crontool:300
+#: bin/rt-crontool:299
 msgid "%1 is a tool to act on tickets from an external scheduling tool, such as cron."
 msgstr "%1 ist ein Tool um auf Anfragen von externen Programmen (wie cron) zu reagieren."
 
@@ -516,7 +516,7 @@ msgstr ""
 #. (sprintf('%.4f', $seconds))
 #: lib/RT/Date.pm:384 share/html/Admin/Tools/Queries.html:110 share/html/Admin/Tools/Queries.html:81
 msgid "%1s"
-msgstr "%1 Sek."
+msgstr ""
 
 #. ($Articles->Count)
 #: share/html/Articles/Elements/ShowTopicLink:61
@@ -1260,7 +1260,7 @@ msgid "Automatic account setup failed"
 msgstr ""
 
 #. ($valid_image_types)
-#: share/html/Admin/Tools/Theme.html:321
+#: share/html/Admin/Tools/Theme.html:268
 msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 msgstr "Automatisch vorgeschlagene Farben für das Design sind für Ihr Bild nicht verfügbar. Vielleicht haben Sie einen Bildtyp hochgeladen, der von GD nicht unterstützt wird. Unterstützte Bildtypen sind: %1. Sie können libgb und GD.pm neu kompilieren um Unterstützung für andere Bildtypen zu aktivieren."
 
@@ -2428,7 +2428,7 @@ msgstr "DBA Benutzername"
 
 #: lib/RT/Dashboard/Mailer.pm:327 lib/RT/Report/Tickets.pm:124
 msgid "Daily"
-msgstr "Tägliches"
+msgstr "täglich"
 
 #: lib/RT/Config.pm:534
 msgid "Daily digest"
@@ -2501,7 +2501,7 @@ msgstr "Datenbank Benutzername für RT"
 
 #: lib/RT/Report/Tickets.pm:124 share/html/Admin/Elements/UpgradeHistory:56
 msgid "Date"
-msgstr ""
+msgstr "Datum"
 
 #: lib/RT/Config.pm:483
 msgid "Date format"
@@ -2513,19 +2513,19 @@ msgstr "Datumsangaben"
 
 #: lib/RT/Report/Tickets.pm:124
 msgid "Day"
-msgstr ""
+msgstr "Tag"
 
 #: lib/RT/Report/Tickets.pm:124
 msgid "DayOfMonth"
-msgstr ""
+msgstr "Tag des Monats"
 
 #: lib/RT/Report/Tickets.pm:124
 msgid "DayOfWeek"
-msgstr ""
+msgstr "Wochentag"
 
 #: lib/RT/Report/Tickets.pm:124
 msgid "DayOfYear"
-msgstr ""
+msgstr "Tag des Jahres"
 
 #: lib/RT/Date.pm:102
 msgid "Dec"
@@ -2560,7 +2560,7 @@ msgstr "Standardwert: %1/%2 von \"%3\" auf \"%4\" geändert."
 msgid "DefaultFormat"
 msgstr "Standard-Format"
 
-#: etc/RT_Config.pm:2788 etc/RT_Config.pm:2832 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:892 share/html/Elements/Tabs:917 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:2796 etc/RT_Config.pm:2840 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:892 share/html/Elements/Tabs:917 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
 msgid "Delete"
 msgstr "Löschen"
 
@@ -3137,7 +3137,7 @@ msgstr "Fehler: Suche %1 konnte nicht aktualisiert werden: %2"
 msgid "Error: unencrypted message"
 msgstr ""
 
-#: bin/rt-crontool:358
+#: bin/rt-crontool:357
 msgid "Escalate tickets"
 msgstr "Eskaliere Tickets"
 
@@ -3145,11 +3145,11 @@ msgstr "Eskaliere Tickets"
 msgid "Estimated"
 msgstr "Geschätzt"
 
-#: lib/RT/Handle.pm:715
+#: lib/RT/Handle.pm:714
 msgid "Everyone"
 msgstr "Jeder"
 
-#: bin/rt-crontool:344
+#: bin/rt-crontool:343
 msgid "Example:"
 msgstr "Beispiel:"
 
@@ -3224,7 +3224,7 @@ msgid "Failed to load %1 %2: %3"
 msgstr "Konnte %1 %2: %3 nicht laden"
 
 #. ($modname, $@)
-#: bin/rt-crontool:292
+#: bin/rt-crontool:291
 msgid "Failed to load module %1. (%2)"
 msgstr "Konnte Modul %1 nicht laden. (%2)"
 
@@ -3772,7 +3772,7 @@ msgstr "Wenn eine Freigabe abgewiesen wird, weise das Original ab und lösche wa
 msgid "If this is not what you expect, leave this page now without logging in."
 msgstr "Wenn das nicht ihren Erwartungen entspricht, verlassen sie diese Seite ohne einzuloggen."
 
-#: bin/rt-crontool:340
+#: bin/rt-crontool:339
 msgid "If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT."
 msgstr "Wenn dieses Programm setgid ist, könnte ein böswilliger lokaler Nutzer Administrator Rechte auf dem RT bekommen."
 
@@ -3929,7 +3929,7 @@ msgstr "Startpriorität"
 msgid "Initialize Database"
 msgstr "Initialisiere Datenbank"
 
-#: lib/RT/ScripAction.pm:122
+#: lib/RT/ScripAction.pm:123
 msgid "Input error"
 msgstr "Eingabefehler"
 
@@ -4069,15 +4069,15 @@ msgstr "Ist bereits dem Objekt zugeordnet"
 msgid "Is not encrypted"
 msgstr "Ist nicht verschlüsselt"
 
-#: bin/rt-crontool:341
+#: bin/rt-crontool:340
 msgid "It is incredibly important that nonprivileged users not be allowed to run this tool."
 msgstr "Es ist wichtig, dass nicht authorisierte Benutzer dieses Programm nicht starten können."
 
-#: bin/rt-crontool:342
+#: bin/rt-crontool:341
 msgid "It is suggested that you create a non-privileged unix user with the correct group membership and RT access to run this tool."
 msgstr "Es wird empfohlen einen nicht priviligierten Unix User mit korrekten Gruppenrechten anzulegen um dieses Programm zu nutzen."
 
-#: bin/rt-crontool:302
+#: bin/rt-crontool:301
 msgid "It takes several arguments:"
 msgstr "Es verarbeitet verschiedene Parameter:"
 
@@ -4987,11 +4987,11 @@ msgstr "Montag bis Freitag"
 
 #: lib/RT/Report/Tickets.pm:124
 msgid "Month"
-msgstr ""
+msgstr "Monat"
 
 #: lib/RT/Dashboard/Mailer.pm:329 lib/RT/Report/Tickets.pm:124
 msgid "Monthly"
-msgstr "Monatliches"
+msgstr "monatlich"
 
 #: share/html/Ticket/Elements/ShowRequestor:61
 msgid "More about the requestors"
@@ -5662,7 +5662,7 @@ msgstr "Nur Benutzerdefinierte Felder anzeigen für:"
 msgid "Open Inactive Tickets"
 msgstr ""
 
-#: etc/RT_Config.pm:2785 etc/RT_Config.pm:2792 etc/RT_Config.pm:2829 etc/RT_Config.pm:2836
+#: etc/RT_Config.pm:2793 etc/RT_Config.pm:2800 etc/RT_Config.pm:2837 etc/RT_Config.pm:2844
 msgid "Open It"
 msgstr "Öffnen"
 
@@ -5670,7 +5670,7 @@ msgstr "Öffnen"
 msgid "Open Tickets"
 msgstr "Öffne Tickets"
 
-#: share/html/Elements/MakeClicky:65
+#: share/html/Elements/MakeClicky:67
 msgid "Open URL"
 msgstr "Adresse öffnen"
 
@@ -6056,7 +6056,7 @@ msgstr ""
 msgid "Private keys"
 msgstr ""
 
-#: lib/RT/Handle.pm:716 share/html/Admin/Users/Modify.html:114
+#: lib/RT/Handle.pm:715 share/html/Admin/Users/Modify.html:114
 msgid "Privileged"
 msgstr "Privilegiert"
 
@@ -6073,7 +6073,7 @@ msgstr "Privilegierte Benutzer"
 msgid "Processing without transaction, some conditions and actions may fail. Consider using --transaction argument"
 msgstr "Bearbeitung ohne Transaktion, einige Bedinungen and Aktionen könnten nicht funktionieren. Erwäge die Nutzung des --transaction Argumentes"
 
-#: lib/RT/Handle.pm:729
+#: lib/RT/Handle.pm:728
 msgid "Pseudogroup for internal use"
 msgstr "Pseudogruppe für internen Gebrauch"
 
@@ -6311,7 +6311,7 @@ msgstr ""
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr "RTAddressRegexp in den Einstellungen entspricht nicht %1"
 
-#: etc/RT_Config.pm:2793 etc/RT_Config.pm:2794 etc/RT_Config.pm:2837 etc/RT_Config.pm:2838
+#: etc/RT_Config.pm:2801 etc/RT_Config.pm:2802 etc/RT_Config.pm:2845 etc/RT_Config.pm:2846
 msgid "Re-open"
 msgstr "Erneut öffnen"
 
@@ -6452,7 +6452,7 @@ msgstr ""
 msgid "Refused to add link which would create a circular relationship"
 msgstr ""
 
-#: etc/RT_Config.pm:2787 etc/RT_Config.pm:2791 etc/RT_Config.pm:2831 etc/RT_Config.pm:2835
+#: etc/RT_Config.pm:2795 etc/RT_Config.pm:2799 etc/RT_Config.pm:2839 etc/RT_Config.pm:2843
 msgid "Reject"
 msgstr "Abweisen"
 
@@ -6596,7 +6596,7 @@ msgstr ""
 msgid "Residence"
 msgstr "Zuhause"
 
-#: etc/RT_Config.pm:2786 etc/RT_Config.pm:2790 etc/RT_Config.pm:2830 etc/RT_Config.pm:2834 share/html/Search/Elements/EditFormat:75
+#: etc/RT_Config.pm:2794 etc/RT_Config.pm:2798 etc/RT_Config.pm:2838 etc/RT_Config.pm:2842 share/html/Search/Elements/EditFormat:75
 msgid "Resolve"
 msgstr "Erledigen"
 
@@ -6880,7 +6880,7 @@ msgstr "Volltext-Suche nimmt für jedes Ticket viel Zeit in Anspruch. Wenn Sie d
 msgid "Secret authentication token"
 msgstr "Geheimer Authentifikationstoken"
 
-#: bin/rt-crontool:338
+#: bin/rt-crontool:337
 msgid "Security:"
 msgstr "Sicherheit:"
 
@@ -7376,7 +7376,7 @@ msgstr ""
 msgid "Stage"
 msgstr "Phase"
 
-#: etc/RT_Config.pm:2789 etc/RT_Config.pm:2833
+#: etc/RT_Config.pm:2797 etc/RT_Config.pm:2841
 msgid "Stall"
 msgstr "Zurückstellen"
 
@@ -7609,7 +7609,7 @@ msgstr "Systemfehler"
 msgid "System error. Right not granted."
 msgstr "Systemfehler. Recht nicht gewährt."
 
-#: lib/RT/Handle.pm:780
+#: lib/RT/Handle.pm:779
 msgid "SystemRolegroup for internal use"
 msgstr "SystemRolegroup für internen Gebrauch"
 
@@ -7776,7 +7776,7 @@ msgstr "Der administrative Cc eines Ticket"
 msgid "The domain name of your database server (like 'db.example.com')."
 msgstr "Der Domain-Name des Datenbank Server (z.B. 'db.example.com')."
 
-#: bin/rt-crontool:348
+#: bin/rt-crontool:347
 msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they are overdue:"
 msgstr ""
 
@@ -7913,7 +7913,7 @@ msgstr "Dieses Ticket kann nicht abgeschlossen werden, bis es bestätigt wurde."
 msgid "This ticket cannot be resolved until its %numerate(%1,dependency is,dependencies are) resolved."
 msgstr "Dieses Ticket kann nicht erledigt werden bis die %numerate(%1,Abhängigkeit erledigt ist,Abhängigkeiten erledigt sind)."
 
-#: bin/rt-crontool:339
+#: bin/rt-crontool:338
 msgid "This tool allows the user to run arbitrary perl modules from within RT."
 msgstr "Dieses Werkzeug erlaubt es Benutzern beliebige Perl-Module von RT aus aufzurufen."
 
@@ -8065,7 +8065,7 @@ msgstr "Tickets die von dieser Freigabe abhängen:"
 
 #: lib/RT/Report/Tickets.pm:124
 msgid "Time"
-msgstr ""
+msgstr "Zeit"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:186 share/html/Search/Elements/PickBasics:179 share/html/Ticket/Create.html:235 share/html/m/ticket/create:353
 msgid "Time Estimated"
@@ -8296,12 +8296,12 @@ msgid "Unable to load article"
 msgstr "Artikel kann nicht geladen werden"
 
 #. ($msg)
-#: share/html/Admin/Tools/Theme.html:281
+#: share/html/Admin/Tools/Theme.html:362
 msgid "Unable to set UserCSS: %1"
 msgstr "Benutzerdefiniertes CSS konnte nicht gesetzt werden: %1"
 
 #. ($msg)
-#: share/html/Admin/Tools/Theme.html:253
+#: share/html/Admin/Tools/Theme.html:321
 msgid "Unable to set UserLogo: %1"
 msgstr "Benutzerdefiniertes Logo konnte nicht gesetzt werden: %1"
 
@@ -8334,7 +8334,7 @@ msgstr ""
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr "Abwählen um Benachrichtigung der aufgelisteten Empfänger <b>nur für diese Transaktion</b> zu deaktivieren. Dauerhaftes deaktivieren kann auf der <a href=\"%1\">Personen Seite</a> verwaltet werden."
 
-#: etc/RT_Config.pm:2795 etc/RT_Config.pm:2839
+#: etc/RT_Config.pm:2803 etc/RT_Config.pm:2847
 msgid "Undelete"
 msgstr "Wiederherstellen"
 
@@ -8342,7 +8342,7 @@ msgstr "Wiederherstellen"
 msgid "Unfortunately, RT couldn't automatically setup an account for you. Your RT administator will find more information in the logs."
 msgstr ""
 
-#: lib/RT/ScripCondition.pm:118
+#: lib/RT/ScripCondition.pm:119
 msgid "Unimplemented"
 msgstr "Nicht implementiert"
 
@@ -8398,7 +8398,7 @@ msgstr "Tickets ohne Besitzer"
 msgid "Unowned tickets"
 msgstr "Tickets ohne Besitzer"
 
-#: lib/RT/Handle.pm:717
+#: lib/RT/Handle.pm:716
 msgid "Unprivileged"
 msgstr "Unprivilegiert"
 
@@ -8822,7 +8822,7 @@ msgstr "Mittwoch"
 
 #: lib/RT/Report/Tickets.pm:124
 msgid "WeekOfYear"
-msgstr ""
+msgstr "Kalenderwoche"
 
 #: lib/RT/Dashboard/Mailer.pm:326
 msgid "Weekday"
@@ -8972,7 +8972,7 @@ msgstr ""
 
 #: lib/RT/Report/Tickets.pm:124
 msgid "Year"
-msgstr ""
+msgstr "Jahr"
 
 #: share/html/Articles/Article/Delete.html:70 share/html/Elements/RT__Template/ColumnMap:78 share/html/Widgets/Form/Boolean:77
 msgid "Yes"
@@ -9403,7 +9403,7 @@ msgstr "geringfügig"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:64 share/html/Articles/Article/Elements/ShowSearchCriteria:68 share/html/Articles/Article/Elements/ShowSearchCriteria:74 share/html/Articles/Article/Elements/ShowSearchCriteria:79 share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectMatch:57 share/html/Search/Elements/PickBasics:73
 msgid "matches"
-msgstr "entspricht"
+msgstr "enthält"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:64
 msgid "maximum depth"

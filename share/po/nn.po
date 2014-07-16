@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-06-06 00:21+0000\n"
+"POT-Creation-Date: 2014-07-01 23:12+0000\n"
 "PO-Revision-Date: 2014-05-05 18:48+0000\n"
 "Last-Translator: Alex Vandiver <Unknown>\n"
 "Language-Team: Norwegian Nynorsk <nn@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-06-06 00:37+0000\n"
-"X-Generator: Launchpad (build 17031)\n"
+"X-Launchpad-Export-Date: 2014-07-07 21:41+0000\n"
+"X-Generator: Launchpad (build 17086)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:62
 msgid "#"
@@ -149,49 +149,49 @@ msgid "%1 (from pane %2)"
 msgstr "%1 (frå rute %2)"
 
 #. ("--log")
-#: bin/rt-crontool:333
+#: bin/rt-crontool:332
 msgid "%1 - Adjust LogToSTDERR config option"
 msgstr "%1 – endra innstillinga «LogToSTDERR»"
 
 #. ("--action-arg", "--action")
 #. ("--condition-arg", "--condition")
 #. ("--search-arg", "--search")
-#: bin/rt-crontool:308 bin/rt-crontool:315 bin/rt-crontool:321
+#: bin/rt-crontool:307 bin/rt-crontool:314 bin/rt-crontool:320
 msgid "%1 - An argument to pass to %2"
 msgstr "%1 – eit argument som skal sendast til %2"
 
 #. ("--verbose")
-#: bin/rt-crontool:335
+#: bin/rt-crontool:334
 msgid "%1 - Output status updates to STDOUT"
 msgstr "%1 – send statusoppdateringar til standard ut"
 
 #. ("--transaction")
-#: bin/rt-crontool:327
+#: bin/rt-crontool:326
 msgid "%1 - Specify if you want to use either 'first', 'last' or 'all' transactions"
 msgstr "%1 – om du vil bruka «first» (første), «last» (siste) eller «all» (alle) transaksjonar"
 
 #. ("--template")
-#: bin/rt-crontool:324
+#: bin/rt-crontool:323
 msgid "%1 - Specify name or id of template(s) you want to use"
 msgstr "%1 – namn eller ID til malan(e) du vil bruka"
 
 #. ("--action")
-#: bin/rt-crontool:318
+#: bin/rt-crontool:317
 msgid "%1 - Specify the action module you want to use"
 msgstr "%1 – handlingsmodulen du vil bruka"
 
 #. ("--transaction-type")
-#: bin/rt-crontool:330
+#: bin/rt-crontool:329
 msgid "%1 - Specify the comma separated list of transactions' types you want to use"
 msgstr "%1 – kommadelt liste over transaksjonstypane du vil bruka"
 
 #. ("--condition")
-#: bin/rt-crontool:312
+#: bin/rt-crontool:311
 msgid "%1 - Specify the condition module you want to use"
 msgstr "%1 – vilkårsmodulen du vil bruka"
 
 #. ("--search")
-#: bin/rt-crontool:305
+#: bin/rt-crontool:304
 msgid "%1 - Specify the search module you want to use"
 msgstr "%1 – søkjemodulen du vil bruka"
 
@@ -319,7 +319,7 @@ msgid "%1 highest priority tickets I own"
 msgstr "%1 høgast prioriterte saker eg eig"
 
 #. ($0)
-#: bin/rt-crontool:300
+#: bin/rt-crontool:299
 msgid "%1 is a tool to act on tickets from an external scheduling tool, such as cron."
 msgstr "%1 er eit verktøy for å handtera saker frå eksterne verktøy, som cron."
 
@@ -1261,7 +1261,7 @@ msgid "Automatic account setup failed"
 msgstr ""
 
 #. ($valid_image_types)
-#: share/html/Admin/Tools/Theme.html:321
+#: share/html/Admin/Tools/Theme.html:268
 msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 msgstr ""
 
@@ -2565,7 +2565,7 @@ msgstr "Standard: %1/%2 endra frå %3 til %4"
 msgid "DefaultFormat"
 msgstr "Standardformat"
 
-#: etc/RT_Config.pm:2788 etc/RT_Config.pm:2832 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:892 share/html/Elements/Tabs:917 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:2796 etc/RT_Config.pm:2840 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:892 share/html/Elements/Tabs:917 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
 msgid "Delete"
 msgstr "Slett"
 
@@ -3141,7 +3141,7 @@ msgstr ""
 msgid "Error: unencrypted message"
 msgstr ""
 
-#: bin/rt-crontool:358
+#: bin/rt-crontool:357
 msgid "Escalate tickets"
 msgstr "Auk saksprioritetar"
 
@@ -3149,11 +3149,11 @@ msgstr "Auk saksprioritetar"
 msgid "Estimated"
 msgstr "Estimert"
 
-#: lib/RT/Handle.pm:715
+#: lib/RT/Handle.pm:714
 msgid "Everyone"
 msgstr "Alle"
 
-#: bin/rt-crontool:344
+#: bin/rt-crontool:343
 msgid "Example:"
 msgstr "Eksempel:"
 
@@ -3228,7 +3228,7 @@ msgid "Failed to load %1 %2: %3"
 msgstr "Klarte ikkje lasta %1 %2: %3"
 
 #. ($modname, $@)
-#: bin/rt-crontool:292
+#: bin/rt-crontool:291
 msgid "Failed to load module %1. (%2)"
 msgstr "Klarte ikkje lasta modulen %1. (%2)"
 
@@ -3776,7 +3776,7 @@ msgstr "Viss ei godkjenning vert avvist, avvis originalen, og slett ventande god
 msgid "If this is not what you expect, leave this page now without logging in."
 msgstr ""
 
-#: bin/rt-crontool:340
+#: bin/rt-crontool:339
 msgid "If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT."
 msgstr "Viss dette verktøyet var «setgid», kunne ein vondsinna lokal brukar bruka det for å få administrativ tilgang til RT."
 
@@ -3933,7 +3933,7 @@ msgstr "Startprioritet"
 msgid "Initialize Database"
 msgstr "Gjer klar databasen"
 
-#: lib/RT/ScripAction.pm:122
+#: lib/RT/ScripAction.pm:123
 msgid "Input error"
 msgstr "Feil i inndata"
 
@@ -4073,15 +4073,15 @@ msgstr ""
 msgid "Is not encrypted"
 msgstr "Er ikkje kryptert"
 
-#: bin/rt-crontool:341
+#: bin/rt-crontool:340
 msgid "It is incredibly important that nonprivileged users not be allowed to run this tool."
 msgstr "Det er svært viktig at brukarar utan utvida løyve ikkje får køyra dette verktøyet."
 
-#: bin/rt-crontool:342
+#: bin/rt-crontool:341
 msgid "It is suggested that you create a non-privileged unix user with the correct group membership and RT access to run this tool."
 msgstr "Det er anbefalt at du opprettar ein vanlig Unix/Linux-brukar med riktig gruppemedlemskap og tilgang til RT for å køyra dette verktøyet."
 
-#: bin/rt-crontool:302
+#: bin/rt-crontool:301
 msgid "It takes several arguments:"
 msgstr "Du kan bruka fleire kommandolinjeargument:"
 
@@ -5667,7 +5667,7 @@ msgstr "Vis berre fleksifelt for:"
 msgid "Open Inactive Tickets"
 msgstr ""
 
-#: etc/RT_Config.pm:2785 etc/RT_Config.pm:2792 etc/RT_Config.pm:2829 etc/RT_Config.pm:2836
+#: etc/RT_Config.pm:2793 etc/RT_Config.pm:2800 etc/RT_Config.pm:2837 etc/RT_Config.pm:2844
 msgid "Open It"
 msgstr ""
 
@@ -5675,7 +5675,7 @@ msgstr ""
 msgid "Open Tickets"
 msgstr "Opne saker"
 
-#: share/html/Elements/MakeClicky:65
+#: share/html/Elements/MakeClicky:67
 msgid "Open URL"
 msgstr "Opna adresse"
 
@@ -6063,7 +6063,7 @@ msgstr ""
 msgid "Private keys"
 msgstr ""
 
-#: lib/RT/Handle.pm:716 share/html/Admin/Users/Modify.html:114
+#: lib/RT/Handle.pm:715 share/html/Admin/Users/Modify.html:114
 msgid "Privileged"
 msgstr "Med utvida løyve"
 
@@ -6080,7 +6080,7 @@ msgstr "Brukarar med utvida løyve"
 msgid "Processing without transaction, some conditions and actions may fail. Consider using --transaction argument"
 msgstr "Køyrer utan transaksjon. Det kan oppstå feil for nokre vilkår og handlingar. Vurder å bruka argumentet «--transaction»."
 
-#: lib/RT/Handle.pm:729
+#: lib/RT/Handle.pm:728
 msgid "Pseudogroup for internal use"
 msgstr "Pseduogruppe for intern bruk"
 
@@ -6318,7 +6318,7 @@ msgstr ""
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr "«RTAddressRegexp»-valet i oppsettet er ikkje i samsvar med «%1»"
 
-#: etc/RT_Config.pm:2793 etc/RT_Config.pm:2794 etc/RT_Config.pm:2837 etc/RT_Config.pm:2838
+#: etc/RT_Config.pm:2801 etc/RT_Config.pm:2802 etc/RT_Config.pm:2845 etc/RT_Config.pm:2846
 msgid "Re-open"
 msgstr ""
 
@@ -6460,7 +6460,7 @@ msgstr ""
 msgid "Refused to add link which would create a circular relationship"
 msgstr ""
 
-#: etc/RT_Config.pm:2787 etc/RT_Config.pm:2791 etc/RT_Config.pm:2831 etc/RT_Config.pm:2835
+#: etc/RT_Config.pm:2795 etc/RT_Config.pm:2799 etc/RT_Config.pm:2839 etc/RT_Config.pm:2843
 msgid "Reject"
 msgstr ""
 
@@ -6604,7 +6604,7 @@ msgstr ""
 msgid "Residence"
 msgstr "Heime"
 
-#: etc/RT_Config.pm:2786 etc/RT_Config.pm:2790 etc/RT_Config.pm:2830 etc/RT_Config.pm:2834 share/html/Search/Elements/EditFormat:75
+#: etc/RT_Config.pm:2794 etc/RT_Config.pm:2798 etc/RT_Config.pm:2838 etc/RT_Config.pm:2842 share/html/Search/Elements/EditFormat:75
 msgid "Resolve"
 msgstr "Løys"
 
@@ -6888,7 +6888,7 @@ msgstr ""
 msgid "Secret authentication token"
 msgstr "Hemmeleg brukarkode"
 
-#: bin/rt-crontool:338
+#: bin/rt-crontool:337
 msgid "Security:"
 msgstr "Tryggleik:"
 
@@ -7384,7 +7384,7 @@ msgstr ""
 msgid "Stage"
 msgstr "Nivå"
 
-#: etc/RT_Config.pm:2789 etc/RT_Config.pm:2833
+#: etc/RT_Config.pm:2797 etc/RT_Config.pm:2841
 msgid "Stall"
 msgstr ""
 
@@ -7617,7 +7617,7 @@ msgstr ""
 msgid "System error. Right not granted."
 msgstr "Systemfeil. Løyvet vart ikkje tildelt."
 
-#: lib/RT/Handle.pm:780
+#: lib/RT/Handle.pm:779
 msgid "SystemRolegroup for internal use"
 msgstr "Systemrollegruppe for intern bruk"
 
@@ -7785,7 +7785,7 @@ msgstr "Administrativ kopimottakar for ei sak"
 msgid "The domain name of your database server (like 'db.example.com')."
 msgstr "Domenenamnet til databasetenaren (eksempel: «db.eksempel.no»)"
 
-#: bin/rt-crontool:348
+#: bin/rt-crontool:347
 msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they are overdue:"
 msgstr ""
 
@@ -7922,7 +7922,7 @@ msgstr ""
 msgid "This ticket cannot be resolved until its %numerate(%1,dependency is,dependencies are) resolved."
 msgstr ""
 
-#: bin/rt-crontool:339
+#: bin/rt-crontool:338
 msgid "This tool allows the user to run arbitrary perl modules from within RT."
 msgstr "Dette verktøyet lèt brukaren køyra Perl-modular frå RT."
 
@@ -8305,12 +8305,12 @@ msgid "Unable to load article"
 msgstr ""
 
 #. ($msg)
-#: share/html/Admin/Tools/Theme.html:281
+#: share/html/Admin/Tools/Theme.html:362
 msgid "Unable to set UserCSS: %1"
 msgstr ""
 
 #. ($msg)
-#: share/html/Admin/Tools/Theme.html:253
+#: share/html/Admin/Tools/Theme.html:321
 msgid "Unable to set UserLogo: %1"
 msgstr ""
 
@@ -8343,7 +8343,7 @@ msgstr ""
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr ""
 
-#: etc/RT_Config.pm:2795 etc/RT_Config.pm:2839
+#: etc/RT_Config.pm:2803 etc/RT_Config.pm:2847
 msgid "Undelete"
 msgstr ""
 
@@ -8351,7 +8351,7 @@ msgstr ""
 msgid "Unfortunately, RT couldn't automatically setup an account for you. Your RT administator will find more information in the logs."
 msgstr ""
 
-#: lib/RT/ScripCondition.pm:118
+#: lib/RT/ScripCondition.pm:119
 msgid "Unimplemented"
 msgstr "Ikkje implementert"
 
@@ -8407,7 +8407,7 @@ msgstr ""
 msgid "Unowned tickets"
 msgstr ""
 
-#: lib/RT/Handle.pm:717
+#: lib/RT/Handle.pm:716
 msgid "Unprivileged"
 msgstr "Utan utvida løyve"
 
