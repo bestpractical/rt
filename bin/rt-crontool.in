@@ -288,7 +288,8 @@ sub get_template {
 sub load_module {
     my $modname = shift;
     unless ($modname->require) {
-        die loc( "Failed to load module [_1]. ([_2])", $modname, $@ );
+        my $error = $@;
+        die loc( "Failed to load module [_1]. ([_2])", $modname, $error );
     }
 
 }
