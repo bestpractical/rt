@@ -180,6 +180,8 @@ shredding on most databases.
     CREATE INDEX SHREDDER_TXN3 ON Transactions(Type, OldValue);
     CREATE INDEX SHREDDER_TXN4 ON Transactions(Type, NewValue)
 
+    CREATE INDEX SHREDDER_ATTACHMENTS1 ON Attachments(Creator);
+
 =head1 INFORMATION FOR DEVELOPERS
 
 =head2 General API
