@@ -1089,7 +1089,10 @@ sub _LoadConfig {
         push @etc_dirs, RT->PluginDirs('etc') if $is_ext;
         push @etc_dirs, $RT::EtcPath, @INC;
         local @INC = @etc_dirs;
-        require $args{'File'};
+        eval { require $args{'File'} };
+        if ( $@ && $@ !~ /did not return a true value/ ) {
+            die $@;
+        }
     };
     if ($@) {
         return 1 if $is_site && $@ =~ /^Can't locate \Q$args{File}/;
