@@ -1603,7 +1603,7 @@ sub _RecordNote {
     my $org = RT->Config->Get('Organization');
     my $msgid = $args{'MIMEObj'}->head->get('Message-ID');
     unless (defined $msgid && $msgid =~ /<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@\Q$org\E>/) {
-        $args{'MIMEObj'}->head->set(
+        $args{'MIMEObj'}->head->replace(
             'RT-Message-ID' => Encode::encode_utf8(
                 RT::Interface::Email::GenMessageId( Ticket => $self )
             )
@@ -3055,10 +3055,10 @@ sub Forward {
         Data    => $args{Content},
     );
 
-    $mime->head->set(
+    $mime->head->replace(
         $_ => RT::Interface::Email::EncodeToMIME( String => $args{$_} ) )
       for grep defined $args{$_}, qw(Subject To Cc Bcc);
-    $mime->head->set(
+    $mime->head->replace(
         From => RT::Interface::Email::EncodeToMIME(
             String => RT::Interface::Email::GetForwardFrom(
                 Transaction => $args{Transaction},
