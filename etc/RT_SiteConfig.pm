@@ -15,6 +15,11 @@
 #   perl -c /path/to/your/etc/RT_SiteConfig.pm
 #
 # You must restart your webserver after making changes to this file.
+#
+
+# You may also split settings into separate files under the etc/RT_SiteConfig.d/
+# directory.  All files ending in ".pm" will be parsed, in alphabetical order,
+# after this file is loaded.
 
 Set( $rtname, 'example.com');
 
