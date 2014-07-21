@@ -130,6 +130,9 @@ check( $_, exec => -1 )
     for grep {m{^t/data/}} @files;
 
 check( $_, exec => -1, bps_tag => -1 )
+    for grep {m{^etc/[^/]+$}} @files;
+
+check( $_, exec => -1, bps_tag => -1 )
     for grep {m{^etc/upgrade/[^/]+/}} @files;
 
 check( $_, warnings => 1, strict => 1, compile_perl => 1, no_tabs => 1 )
