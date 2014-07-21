@@ -135,4 +135,10 @@ check( $_, exec => -1, bps_tag => -1 )
 check( $_, warnings => 1, strict => 1, compile_perl => 1, no_tabs => 1 )
     for grep {m{^etc/upgrade/.*/content$}} @files;
 
+check( $_, shebang => 1, exec => 1, warnings => 1, strict => 1, bps_tag => 1, no_tabs => 1 )
+    for grep {m{^etc/upgrade/[^/]+$}} @files;
+
+check( $_, compile_perl => 1, exec => 1 )
+    for grep{ -f $_} map {s/\.in$//; $_} grep {m{^etc/upgrade/[^/]+$}} @files;
+
 done_testing;
