@@ -85,7 +85,7 @@ for my $domain (sort keys %merged) {
         }
     }
     if (@addresses > 1) {
-        push @domains, "(?:".join("|", @addresses).")\Q\@".$domain."\E";
+        push @domains, "(?:".join("|", @addresses).")\Q\@$domain\E";
     } else {
         push @domains, "$addresses[0]\Q\@$domain\E";
     }
