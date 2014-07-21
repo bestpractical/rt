@@ -11,7 +11,7 @@ find( { wanted   => sub {
             $File::Find::prune = 1 if $_ eq "t/tmp" or m{/\.git$};
         },
         no_chdir => 1 },
-      qw{etc lib share t bin sbin devel/tools} );
+      qw{etc lib share t bin sbin devel/tools docs} );
 
 if ( my $dir = `git rev-parse --git-dir 2>/dev/null` ) {
     # We're in a git repo, use the ignore list
@@ -143,5 +143,8 @@ check( $_, shebang => 1, exec => 1, warnings => 1, strict => 1, bps_tag => 1, no
 
 check( $_, compile_perl => 1, exec => 1 )
     for grep{ -f $_} map {s/\.in$//; $_} grep {m{^etc/upgrade/[^/]+$}} @files;
+
+check( $_, exec => -1 )
+    for grep {m{^docs/}} @files;
 
 done_testing;
