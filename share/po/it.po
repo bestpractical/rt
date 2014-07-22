@@ -1001,7 +1001,7 @@ msgid "All Tickets"
 msgstr "Tutti i Ticket"
 
 #: share/html/User/Prefs.html:171
-msgid "All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below."
+msgid "All iCal feeds embed a secret token which authorizes you.  If the URL for one of your iCal feeds was exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b>, below."
 msgstr "Tutti i feed iCal includono un token segreto di autorizzazione. Se l'URL di un tuo feed iCal è stato reso pubblico per errore, è meglio generare un nuovo token segreto qui sotto, <b>invalidando tutti i feed iCal precedenti</b>."
 
 #: share/html/Admin/Queues/index.html:99
