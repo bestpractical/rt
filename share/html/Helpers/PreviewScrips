@@ -130,31 +130,6 @@ my %squelched = ProcessTransactionSquelching( \%ARGS );
 %     }
 % }
 
-% my @rules = map {@{$_->Rules}} @dryrun;
-% if ( @rules ) {
-%     for my $rule (@rules) {
-%         next unless $rule->{hints} && $rule->{hints}{class} eq 'SendEmail';
-          <b><% $rule->Describe %></b>
-%         my $data = $rule->{hints}{recipients};
-%         for my $type (qw(To Cc Bcc)) {
-%             next unless @{$data->{$type}};
-              <ul>
-%             for my $address (@{$data->{$type}}) {
-                  <li>
-%                 my $checked = not $squelched{$address};
-%                 $m->callback(CallbackName => 'BeforeAddress', Ticket => $TicketObj, Address => Email::Address->parse($address), Type => $type, Checked => \$checked);
-%                 $recips{$address}++;
-                  <b><%loc($type)%></b>: <input type="checkbox" class="checkbox" name="TxnSendMailTo" <% $checked ? 'checked="checked"' : '' |n%> value="<%$address%>" id="TxnSendMailTo-<% $address %>-<% $recips{$address} %>" />
-                  <label for="TxnSendMailTo-<% $address %>-<% $recips{$address} %>"><%$address%></label>
-%                 $m->callback(CallbackName => 'AfterAddress', Ticket => $TicketObj, Address => Email::Address->parse($address), Type => $type);
-                  </li>
-%             }
-              </ul>
-%         }
-          <br />
-%     }
-% }
-
 % $m->callback( CallbackName => 'AfterRecipients', TicketObj => $TicketObj );
 
 <input type="hidden" name="TxnRecipients" value="<% join ",",sort keys %recips %>" />

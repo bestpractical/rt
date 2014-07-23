@@ -92,15 +92,6 @@ if (@scrips) {
         }
     }
 }
-my @rules = map {@{$_->Rules}} @dryrun;
-if (@rules) {
-    for my $rule (grep {$_->{hints} and $_->{hints}{class} eq "SendEmail"} @rules) {
-        for my $type (qw(To Cc Bcc)) {
-            $headers{$type}{$_} ||= @{[Email::Address->parse($_)]}[0] # Hate list context
-                for @{$rule->{hints}{recipients}{$type}};
-        }
-    }
-}
 my %recips;
 my %squelched = ProcessTransactionSquelching( \%ARGS );
 </%init>
