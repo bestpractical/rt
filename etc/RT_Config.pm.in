@@ -2626,6 +2626,14 @@ all possible transitions in each lifecycle using the following format:
         ...
     },
 
+The order of items in the listing for each transition line affects
+the order they appear in the drop-down. If you change the config
+for 'open' state listing to:
+
+    open     => [qw(stalled rejected deleted resolved)],
+
+then the 'resolved' status will appear as the last item in the drop-down.
+
 =head3 Statuses available during ticket creation
 
 By default users can create tickets with a status of new,
