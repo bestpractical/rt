@@ -118,9 +118,11 @@ sub LimitToGrouping {
     my $obj = shift;
     my $grouping = shift;
 
+    my $grouping_class = $self->NewItem->_GroupingClass($obj);
+
     my $config = RT->Config->Get('CustomFieldGroupings');
        $config = {} unless ref($config) eq 'HASH';
-       $config = $config->{ref($obj) || $obj} || [];
+       $config = $config->{$grouping_class} || [];
     my %h = ref $config eq "ARRAY" ? @{$config} : %{$config};
 
     if ( $grouping ) {
