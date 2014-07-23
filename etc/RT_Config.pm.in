@@ -2757,7 +2757,7 @@ Set(%Lifecycles,
         },
 
         transitions => {
-            ''       => [qw(new open resolved)],
+            ""       => [qw(new open resolved)],
 
             # from   => [ to list ],
             new      => [qw(open stalled resolved rejected deleted)],
