@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% foreach my $group ( RT::CustomField->CustomGroupings( $Object ), '' ) {
+% foreach my $group ( @Groupings ) {
 <&| /Widgets/TitleBox,
     title => $group? loc($group) : loc('Custom Fields'),
     class => $css_class .' '. ($group? CSSClass("$css_class-$group") : ''),
@@ -59,6 +59,7 @@
 <%ARGS>
 $Object
 $CustomFieldGenerator => undef,
+@Groupings => (RT::CustomField->CustomGroupings( $Object ), '')
 </%ARGS>
 <%INIT>
 my $css_class = lc(ref($Object)||$Object);
