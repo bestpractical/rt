@@ -319,11 +319,6 @@ This is a helper script to keep full text indexes in sync with data.
 Read F<docs/full_text_indexing.pod> for complete details on how and when
 to run it.
 
-=head1 AUTHOR
-
-Ruslan Zakirov E<lt>ruz@bestpractical.comE<gt>,
-Alex Vandiver E<lt>alexmv@bestpractical.comE<gt>
-
 =cut
 
 __DATA__
