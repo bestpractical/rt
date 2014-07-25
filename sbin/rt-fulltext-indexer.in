@@ -83,11 +83,7 @@ GetOptions( \%OPT,
     "memory=s",
 );
 
-if ( $OPT{'help'} ) {
-    RT::Interface::CLI->ShowHelp(
-        Sections => 'NAME|DESCRIPTION|'. uc($db_type),
-    );
-}
+RT::Interface::CLI->ShowHelp if $OPT{help};
 
 use Fcntl ':flock';
 if ( !flock main::DATA, LOCK_EX | LOCK_NB ) {
