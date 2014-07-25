@@ -187,7 +187,8 @@ sub process_mysql {
 
     ($LAST) = $dbh->selectrow_array("SELECT MAX(id) FROM $table");
 
-    my $sth = $dbh->prepare("INSERT INTO $table(Content, id) VALUES(?, ?)");
+    my $insert = $fts_config->{Engine} eq "MyISAM" ? "INSERT DELAYED" : "INSERT";
+    my $sth = $dbh->prepare("$insert INTO $table(Content, id) VALUES(?, ?)");
 
     attachment_loop( sub {
         my ($attachments) = @_;
