@@ -90,15 +90,6 @@ if ( $db_type eq 'Pg' ) {
     );
     push @OPT_LIST, 'limit=i', 'all!';
 }
-elsif ( $db_type eq 'mysql' ) {
-    %OPT = (
-        %OPT,
-        limit    => 0,
-        all      => 0,
-        xmlpipe2 => 0,
-    );
-    push @OPT_LIST, 'limit=i', 'all!', 'xmlpipe2!';
-}
 elsif ( $db_type eq 'Oracle' ) {
     %OPT = (
         %OPT,
@@ -157,8 +148,7 @@ if ( $db_type eq 'Oracle' ) {
     );
     exit;
 } elsif ( $db_type eq 'mysql' ) {
-    unless ($OPT{'xmlpipe2'}) {
-        print STDERR <<EOT;
+    print STDERR <<EOT;
 
 Updates to the external Sphinx index are done via running the sphinx
 `indexer` tool:
@@ -166,8 +156,7 @@ Updates to the external Sphinx index are done via running the sphinx
     indexer rt
 
 EOT
-        exit 1;
-    }
+    exit 1;
 }
 
 my @types = qw(text html);
@@ -276,58 +265,6 @@ sub clean {
         suffix    => $db_type,
         arguments => \@_,
     );
-}
-
-{
-sub last_indexed_mysql {
-    my $type = shift;
-    my $attr = $RT::System->FirstAttribute('LastIndexedAttachments');
-    return 0 unless $attr;
-    return 0 unless exists $attr->{ $type };
-    return $attr->{ $type } || 0;
-}
-
-sub process_mysql {
-    my ($type, $attachment, $text) = (@_);
-
-    my $doc = sphinx_template();
-
-    my $element = $doc->createElement('sphinx:document');
-    $element->setAttribute( id => $attachment->id );
-    $element->appendTextChild( content => $$text );
-
-    $doc->documentElement->appendChild( $element );
-}
-
-my $doc = undef;
-sub sphinx_template {
-    return $doc if $doc;
-
-    require XML::LibXML;
-    $doc = XML::LibXML::Document->new('1.0', 'UTF-8');
-    my $root = $doc->createElement('sphinx:docset');
-    $doc->setDocumentElement( $root );
-
-    my $schema = $doc->createElement('sphinx:schema');
-    $root->appendChild( $schema );
-    foreach ( qw(content) ) {
-        my $field = $doc->createElement('sphinx:field');
-        $field->setAttribute( name => $_ );
-        $schema->appendChild( $field );
-    }
-
-    return $doc;
-}
-
-sub finalize_mysql {
-    my ($type, $attachments) = @_;
-    sphinx_template()->toFH(*STDOUT, 1);
-}
-
-sub clean_mysql {
-    $doc = undef;
-}
-
 }
 
 sub last_indexed_pg {
