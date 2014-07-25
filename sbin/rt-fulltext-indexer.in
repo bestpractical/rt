@@ -147,6 +147,7 @@ EOT
     *RT::Attachments::Next  = \&DBIx::SearchBuilder::Next;
 }
 
+my $LAST = last_indexed();
 {
     my $attachments = RT::Attachments->new( RT->SystemUser );
     $attachments->Limit(
@@ -157,7 +158,7 @@ EOT
     $attachments->Limit(
         FIELD => 'id',
         OPERATOR => '>',
-        VALUE => last_indexed()
+        VALUE => $LAST,
     );
     $attachments->OrderBy( FIELD => 'id', ORDER => 'asc' );
     $attachments->RowsPerPage( $OPT{'limit'} || 100 );
@@ -175,6 +176,7 @@ EOT
         }
         debug("Processed attachment #". $a->id );
     }
+    $LAST = $attachments->Last->id if $attachments->Count;
     redo if $OPT{'all'} and $attachments->Count == ($OPT{'limit'} || 100);
 }
 
