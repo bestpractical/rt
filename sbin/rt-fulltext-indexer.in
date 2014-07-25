@@ -204,12 +204,7 @@ sub process_mysql {
     my $dbh = $RT::Handle->dbh;
     my $table = $fts_config->{'Table'};
 
-    my $query;
-    if ( my ($id) = $dbh->selectrow_array("SELECT id FROM $table WHERE id = ?", undef, $attachment->id) ) {
-        $query = "UPDATE $table SET Content = ? WHERE id = ?";
-    } else {
-        $query = "INSERT INTO $table(Content, id) VALUES(?, ?)";
-    }
+    my $query = "INSERT INTO $table(Content, id) VALUES(?, ?)";
 
     $dbh->do( $query, undef, $$text, $attachment->id );
 }
@@ -222,12 +217,8 @@ sub process_pg {
     my $column = $fts_config->{'Column'};
 
     my $query;
-    if ( $table ) {
-        if ( my ($id) = $dbh->selectrow_array("SELECT id FROM $table WHERE id = ?", undef, $attachment->id) ) {
-            $query = "UPDATE $table SET $column = to_tsvector(?) WHERE id = ?";
-        } else {
-            $query = "INSERT INTO $table($column, id) VALUES(to_tsvector(?), ?)";
-        }
+    if ( $table ne 'Attachments' ) {
+        $query = "INSERT INTO $table($column, id) VALUES(to_tsvector(?), ?)";
     } else {
         $query = "UPDATE Attachments SET $column = to_tsvector(?) WHERE id = ?";
     }
