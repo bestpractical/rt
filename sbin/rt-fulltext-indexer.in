@@ -67,11 +67,7 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 
 }
 
-BEGIN {
-    use RT;
-    RT::LoadConfig();
-    RT::Init();
-};
+use RT -init;
 use RT::Interface::CLI ();
 
 my %OPT = (
