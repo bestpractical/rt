@@ -189,17 +189,30 @@ sub process_mysql {
 
     ($LAST) = $dbh->selectrow_array("SELECT MAX(id) FROM $table");
 
+    # Doing large inserts is faster than individual statements, but
+    # comes at a parsing cost; cache the statement handles (99% of which
+    # will be the same size) for a notable (2x) speed gain.
+    my %sthandles;
     my $insert = $fts_config->{Engine} eq "MyISAM" ? "INSERT DELAYED" : "INSERT";
-    my $sth = $dbh->prepare("$insert INTO $table(Content, id) VALUES(?, ?)");
 
     attachment_loop( sub {
         my ($attachments) = @_;
+        my @insert;
+        my $found = 0;
         while ( my $a = $attachments->Next ) {
             debug("Found attachment #". $a->id );
             my $text = $a->Content // "";
             HTML::Entities::decode_entities($text) if $a->ContentType eq "text/html";
-            $sth->execute( $text, $a->id );
+            push @insert, $text, $a->id;
+            $found++;
         }
+        return unless $found;
+
+        # $found should be the limit size on all but the last go-around.
+        $sthandles{$found} ||=
+            $dbh->prepare("$insert INTO $table(Content, id) VALUES "
+                              . join(", ", ("(?,?)") x $found));
+        $sthandles{$found}->execute(@insert);
     });
 }
 
