@@ -173,7 +173,11 @@ EOT
         # but Pg doesn't index them; decode to something it can index.
         HTML::Entities::decode_entities($text) if $a->ContentType eq "text/html";
         $found++;
-        process( $a, \$text );
+        if ($db_type eq 'mysql') {
+            process_mysql( $a, \$text );
+        } elsif ($db_type eq 'Pg') {
+            process_pg( $a, \$text );
+        }
         debug("Processed attachment #". $a->id );
     }
     redo if $OPT{'all'} and $attachments->Count == ($OPT{'limit'} || 100);
@@ -206,14 +210,6 @@ sub last_indexed {
     my $res = $attachments->First;
     return 0 unless $res;
     return $res->id;
-}
-
-sub process {
-    return goto_specific(
-        suffix    => $db_type,
-        error     => "No processer for $db_type DB",
-        arguments => \@_,
-    );
 }
 
 
@@ -266,20 +262,6 @@ sub process_pg {
         eval { $dbh->do( $query, undef, "", $attachment->id ) }
             or die "Failed to insert empty tsvector: " . $dbh->errstr;
     }
-}
-
-sub goto_specific {
-    my %args = (@_);
-
-    my $func = (caller(1))[3];
-    $func =~ s/.*:://;
-    my $call = $func ."_". lc $args{'suffix'};
-    unless ( defined &$call ) {
-        return undef unless $args{'error'};
-        require Carp; Carp::croak( $args{'error'} );
-    }
-    @_ = @{ $args{'arguments'} };
-    goto &$call;
 }
 
 
