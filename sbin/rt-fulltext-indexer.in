@@ -181,7 +181,6 @@ foreach my $type ( @types ) {
 
     my $found = 0;
     while ( my $a = $attachments->Next ) {
-        next if filter( $type, $a );
         debug("Found attachment #". $a->id );
         my $text = $a->Content;
         next unless defined $text && length($text);
@@ -230,14 +229,6 @@ sub last_indexed {
     return goto_specific(
         suffix => $db_type,
         error => "Don't know how to find last indexed $type attachment for $db_type DB",
-        arguments => \@_,
-    );
-}
-
-sub filter {
-    my $type = shift;
-    return goto_specific(
-        suffix    => $type,
         arguments => \@_,
     );
 }
@@ -325,16 +316,6 @@ sub process_pg {
         eval { $dbh->do( $query, undef, "", $attachment->id ) }
             or die "Failed to insert empty tsvector: " . $dbh->errstr;
     }
-}
-
-sub filter_html {
-    my $attachment = shift;
-    if ( my $parent = $attachment->ParentObj ) {
-# skip html parts that are alternatives
-        return 1 if $parent->id
-            && $parent->ContentType eq 'mulitpart/alternative';
-    }
-    return 0;
 }
 
 sub goto_specific {
