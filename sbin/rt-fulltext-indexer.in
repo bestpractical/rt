@@ -49,6 +49,7 @@
 use strict;
 use warnings;
 no warnings 'once';
+use 5.010;
 
 # fix lib paths, some may be relative
 BEGIN { # BEGIN RT CMD BOILERPLATE
@@ -168,7 +169,7 @@ my $LAST = last_indexed();
     my $found = 0;
     while ( my $a = $attachments->Next ) {
         debug("Found attachment #". $a->id );
-        my $text = $a->Content;
+        my $text = $a->Content // "";
         next unless defined $text && length($text);
         # The rich text editor generates html entities for characters
         # but Pg doesn't index them; decode to something it can index.
