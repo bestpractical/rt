@@ -45,10 +45,9 @@ To keep the index up-to-date, you will need to run:
 
     /opt/rt4/sbin/rt-fulltext-indexer
 
-...at regular intervals.  By default, this will only tokenize up to 100
-tickets at a time; you can adjust this upwards by passing
-C<--limit 500>.  Larger batch sizes will take longer and
-consume more memory.
+...at regular intervals.  By default, this will only tokenize up to 200
+tickets at a time; you can adjust this upwards by passing C<--limit
+500>.  Larger batch sizes will take longer and consume more memory.
 
 If there is already an instances of C<rt-fulltext-indexer> running, new
 ones will exit abnormally (with exit code 1) and the error message
@@ -95,10 +94,9 @@ To keep the index up-to-date, you will need to run:
 
     /opt/rt4/sbin/rt-fulltext-indexer
 
-...at regular intervals.  By default, this will only tokenize up to 100
-tickets at a time; you can adjust this upwards by passing
-C<--limit 500>.  Larger batch sizes will take longer and
-consume more memory.
+...at regular intervals.  By default, this will only tokenize up to 200
+tickets at a time; you can adjust this upwards by passing C<--limit
+500>.  Larger batch sizes will take longer and consume more memory.
 
 If there is already an instances of C<rt-fulltext-indexer> running, new
 ones will exit abnormally (with exit code 1) and the error message
