@@ -189,7 +189,7 @@ sub process_mysql {
 
     ($LAST) = $dbh->selectrow_array("SELECT MAX(id) FROM $table");
 
-    my $query = "INSERT INTO $table(Content, id) VALUES(?, ?)";
+    my $sth = $dbh->prepare("INSERT INTO $table(Content, id) VALUES(?, ?)");
 
     attachment_loop( sub {
         my ($attachments) = @_;
@@ -197,7 +197,7 @@ sub process_mysql {
             debug("Found attachment #". $a->id );
             my $text = $a->Content // "";
             HTML::Entities::decode_entities($text) if $a->ContentType eq "text/html";
-            $dbh->do( $query, undef, $text, $a->id );
+            $sth->execute( $text, $a->id );
         }
     });
 }
@@ -213,11 +213,11 @@ sub process_pg {
         ($LAST) = $dbh->selectrow_array("SELECT MAX(id) FROM Attachments WHERE $column IS NOT NULL");
     }
 
-    my $query;
+    my $sth;
     if ( $table ne 'Attachments' ) {
-        $query = "INSERT INTO $table($column, id) VALUES(to_tsvector(?), ?)";
+        $sth = $dbh->prepare("INSERT INTO $table($column, id) VALUES(to_tsvector(?), ?)");
     } else {
-        $query = "UPDATE Attachments SET $column = to_tsvector(?) WHERE id = ?";
+        $sth = $dbh->prepare("UPDATE Attachments SET $column = to_tsvector(?) WHERE id = ?");
     }
 
     attachment_loop( sub {
@@ -228,7 +228,7 @@ sub process_pg {
             my $text = $a->Content // "";
             HTML::Entities::decode_entities($text) if $a->ContentType eq "text/html";
 
-            my $status = eval { $dbh->do( $query, undef, $text, $a->id ) };
+            my $status = eval { $sth->execute( $text, $a->id ) };
             unless ( $status ) {
                 if ( $dbh->err == 7  && $dbh->state eq '54000' ) {
                     warn "Attachment @{[$a->id]} cannot be indexed. Most probably it contains too many unique words. Error: ". $dbh->errstr;
@@ -240,7 +240,7 @@ sub process_pg {
 
                 # Insert an empty tsvector, so we count this row as "indexed"
                 # for purposes of knowing where to pick up
-                eval { $dbh->do( $query, undef, "", $a->id ) }
+                eval { $sth->execute( "", $a->id ) }
                     or die "Failed to insert empty row: " . $dbh->errstr;
             }
         }
