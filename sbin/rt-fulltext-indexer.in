@@ -48,7 +48,6 @@
 # END BPS TAGGED BLOCK }}}
 use strict;
 use warnings;
-no warnings 'once';
 use 5.010;
 
 # fix lib paths, some may be relative
@@ -150,71 +149,69 @@ EOT
     *RT::Attachments::Next  = \&DBIx::SearchBuilder::Next;
 }
 
-my $LAST = last_indexed();
-{
-    my $attachments = RT::Attachments->new( RT->SystemUser );
-    $attachments->Limit(
-        FIELD    => 'ContentType',
-        OPERATOR => 'IN',
-        VALUE    => ['text/plain', 'text/html'],
-    );
-    $attachments->Limit(
-        FIELD => 'id',
-        OPERATOR => '>',
-        VALUE => $LAST,
-    );
-    $attachments->OrderBy( FIELD => 'id', ORDER => 'asc' );
-    $attachments->RowsPerPage( $OPT{'limit'} || 100 );
-
-    my $found = 0;
-    while ( my $a = $attachments->Next ) {
-        debug("Found attachment #". $a->id );
-        my $text = $a->Content // "";
-        next unless defined $text && length($text);
-        # The rich text editor generates html entities for characters
-        # but Pg doesn't index them; decode to something it can index.
-        HTML::Entities::decode_entities($text) if $a->ContentType eq "text/html";
-        $found++;
-        if ($db_type eq 'mysql') {
-            process_mysql( $a, \$text );
-        } elsif ($db_type eq 'Pg') {
-            process_pg( $a, \$text );
-        }
-        debug("Processed attachment #". $a->id );
-    }
-    $LAST = $attachments->Last->id if $attachments->Count;
-    redo if $OPT{'all'} and $attachments->Count == ($OPT{'limit'} || 100);
+my $LAST;
+if ($db_type eq 'mysql') {
+    process_mysql();
+} elsif ($db_type eq 'Pg') {
+    process_pg();
 }
 
-sub last_indexed {
-    if ( $db_type eq "mysql" ) {
-        return $dbh->selectrow_arrayref("SELECT MAX(id) FROM $table")->[0];
-    } elsif ( $db_type eq "pg" ) {
-        if ( $fts_config->{'Table'} && $fts_config->{'Table'} ne 'Attachments' ) {
-            return $dbh->selectrow_array("SELECT MAX(id) FROM $table")->[0];
-        } else {
-            return $dbh->selectrow_array("SELECT MAX(id) FROM Attachments WHERE $column IS NOT NULL")->[0];
-        }
+sub attachment_loop {
+    my $subref = shift;
+    my $table = $fts_config->{'Table'};
+    $LAST //= 0;
+
+    # Fetch in batches of size --limit
+    {
+        # Indexes all text/plain and text/html attachments
+        my $attachments = RT::Attachments->new( RT->SystemUser );
+        $attachments->Limit(
+            FIELD    => 'ContentType',
+            OPERATOR => 'IN',
+            VALUE    => ['text/plain', 'text/html'],
+        );
+        $attachments->Limit( FIELD => 'id', OPERATOR => '>', VALUE => $LAST );
+        $attachments->OrderBy( FIELD => 'id', ORDER => 'asc' );
+        $attachments->RowsPerPage( $OPT{'limit'} || 100 );
+
+        # Call back to the DB-specific part
+        $subref->($attachments);
+
+        $LAST = $attachments->Last->id if $attachments->Count;
+
+        redo if $OPT{'all'} and $attachments->Count == ($OPT{'limit'} || 100);
     }
 }
 
 sub process_mysql {
-    my ($attachment, $text) = (@_);
-
     my $dbh = $RT::Handle->dbh;
     my $table = $fts_config->{'Table'};
+
+    ($LAST) = $dbh->selectrow_array("SELECT MAX(id) FROM $table");
 
     my $query = "INSERT INTO $table(Content, id) VALUES(?, ?)";
 
-    $dbh->do( $query, undef, $$text, $attachment->id );
+    attachment_loop( sub {
+        my ($attachments) = @_;
+        while ( my $a = $attachments->Next ) {
+            debug("Found attachment #". $a->id );
+            my $text = $a->Content // "";
+            HTML::Entities::decode_entities($text) if $a->ContentType eq "text/html";
+            $dbh->do( $query, undef, $text, $a->id );
+        }
+    });
 }
 
 sub process_pg {
-    my ($attachment, $text) = (@_);
-
     my $dbh = $RT::Handle->dbh;
     my $table = $fts_config->{'Table'};
     my $column = $fts_config->{'Column'};
+
+    if ( $table ne 'Attachments' ) {
+        ($LAST) = $dbh->selectrow_array("SELECT MAX(id) FROM $table");
+    } else {
+        ($LAST) = $dbh->selectrow_array("SELECT MAX(id) FROM Attachments WHERE $column IS NOT NULL");
+    }
 
     my $query;
     if ( $table ne 'Attachments' ) {
@@ -223,21 +220,31 @@ sub process_pg {
         $query = "UPDATE Attachments SET $column = to_tsvector(?) WHERE id = ?";
     }
 
-    my $status = eval { $dbh->do( $query, undef, $$text, $attachment->id ) };
-    unless ( $status ) {
-        if ( $dbh->err == 7  && $dbh->state eq '54000' ) {
-            warn "Attachment @{[$attachment->id]} cannot be indexed. Most probably it contains too many unique words. Error: ". $dbh->errstr;
-        } elsif ( $dbh->err == 7 && $dbh->state eq '22021' ) {
-            warn "Attachment @{[$attachment->id]} cannot be indexed. Most probably it contains invalid UTF8 bytes. Error: ". $dbh->errstr;
-        } else {
-            die "error: ". $dbh->errstr;
-        }
+    attachment_loop( sub {
+        my ($attachments) = @_;
+        while ( my $a = $attachments->Next ) {
+            debug("Found attachment #". $a->id );
 
-        # Insert an empty tsvector, so we count this row as "indexed"
-        # for purposes of knowing where to pick up
-        eval { $dbh->do( $query, undef, "", $attachment->id ) }
-            or die "Failed to insert empty tsvector: " . $dbh->errstr;
-    }
+            my $text = $a->Content // "";
+            HTML::Entities::decode_entities($text) if $a->ContentType eq "text/html";
+
+            my $status = eval { $dbh->do( $query, undef, $text, $a->id ) };
+            unless ( $status ) {
+                if ( $dbh->err == 7  && $dbh->state eq '54000' ) {
+                    warn "Attachment @{[$a->id]} cannot be indexed. Most probably it contains too many unique words. Error: ". $dbh->errstr;
+                } elsif ( $dbh->err == 7 && $dbh->state eq '22021' ) {
+                    warn "Attachment @{[$a->id]} cannot be indexed. Most probably it contains invalid UTF8 bytes. Error: ". $dbh->errstr;
+                } else {
+                    die "error: ". $dbh->errstr;
+                }
+
+                # Insert an empty tsvector, so we count this row as "indexed"
+                # for purposes of knowing where to pick up
+                eval { $dbh->do( $query, undef, "", $a->id ) }
+                    or die "Failed to insert empty row: " . $dbh->errstr;
+            }
+        }
+    });
 }
 
 
