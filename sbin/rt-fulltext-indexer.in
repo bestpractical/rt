@@ -218,12 +218,11 @@ sub attachments {
         OPERATOR => '!=',
         VALUE => 'deleted'
     );
-
-    return goto_specific(
-        suffix => $type,
-        error => "Don't know how to find $type attachments",
-        arguments => [$res],
+    $res->Limit(
+        FIELD => 'ContentType',
+        VALUE => ($type eq "html" ? "text/html" : "text/plain"),
     );
+    return $res;
 }
 
 sub last_indexed {
@@ -326,18 +325,6 @@ sub process_pg {
         eval { $dbh->do( $query, undef, "", $attachment->id ) }
             or die "Failed to insert empty tsvector: " . $dbh->errstr;
     }
-}
-
-sub attachments_text {
-    my $res = shift;
-    $res->Limit( FIELD => 'ContentType', VALUE => 'text/plain' );
-    return $res;
-}
-
-sub attachments_html {
-    my $res = shift;
-    $res->Limit( FIELD => 'ContentType', VALUE => 'text/html' );
-    return $res;
 }
 
 sub filter_html {
