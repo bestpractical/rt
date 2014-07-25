@@ -138,6 +138,15 @@ EOT
     exit 1;
 }
 
+# Skip ACL checks.  This saves a large number of unnecessary queries
+# (for tickets, ACLs, and users) which are unnecessary, as we are
+# running as the system user.
+{
+    no warnings 'redefine';
+    *RT::Attachment::_Value = \&DBIx::SearchBuilder::Record::_Value;
+    *RT::Attachments::Next  = \&DBIx::SearchBuilder::Next;
+}
+
 my @types = qw(text html);
 foreach my $type ( @types ) {
   REDO:
