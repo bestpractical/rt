@@ -148,7 +148,12 @@ EOT
 }
 
 {
-    my $attachments = attachments();
+    my $attachments = RT::Attachments->new( RT->SystemUser );
+    $attachments->Limit(
+        FIELD    => 'ContentType',
+        OPERATOR => 'IN',
+        VALUE    => ['text/plain', 'text/html'],
+    );
     $attachments->Limit(
         FIELD => 'id',
         OPERATOR => '>',
@@ -167,39 +172,6 @@ EOT
         debug("Processed attachment #". $a->id );
     }
     redo if $OPT{'all'} and $attachments->Count == ($OPT{'limit'} || 100);
-}
-
-sub attachments {
-    my $res = RT::Attachments->new( RT->SystemUser );
-    my $txn_alias = $res->Join(
-        ALIAS1 => 'main',
-        FIELD1 => 'TransactionId',
-        TABLE2 => 'Transactions',
-        FIELD2 => 'id',
-    );
-    $res->Limit(
-        ALIAS => $txn_alias,
-        FIELD => 'ObjectType',
-        VALUE => 'RT::Ticket',
-    );
-    my $ticket_alias = $res->Join(
-        ALIAS1 => $txn_alias,
-        FIELD1 => 'ObjectId',
-        TABLE2 => 'Tickets',
-        FIELD2 => 'id',
-    );
-    $res->Limit(
-        ALIAS => $ticket_alias,
-        FIELD => 'Status',
-        OPERATOR => '!=',
-        VALUE => 'deleted'
-    );
-    $res->Limit(
-        FIELD    => 'ContentType',
-        OPERATOR => 'IN',
-        VALUE    => ['text/plain', 'text/html'],
-    );
-    return $res;
 }
 
 sub last_indexed {
@@ -236,7 +208,12 @@ sub process_mysql {
 }
 
 sub last_indexed_pg {
-    my $attachments = attachments();
+    my $attachments = RT::Attachments->new( RT->SystemUser );
+    $attachments->Limit(
+        FIELD    => 'ContentType',
+        OPERATOR => 'IN',
+        VALUE    => ['text/plain', 'text/html'],
+    );
     my $alias = 'main';
     if ( $fts_config->{'Table'} && $fts_config->{'Table'} ne 'Attachments' ) {
         $alias = $attachments->Join(
