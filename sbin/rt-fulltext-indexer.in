@@ -70,40 +70,18 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 use RT -init;
 use RT::Interface::CLI ();
 
-my %OPT = (
-    help        => 0,
-    debug       => 0,
-    quiet       => 0,
-);
-my @OPT_LIST = qw(help|h! debug! quiet);
-
-my $db_type = RT->Config->Get('DatabaseType');
-if ( $db_type eq 'Pg' ) {
-    %OPT = (
-        %OPT,
-        limit  => 0,
-        all    => 0,
-    );
-    push @OPT_LIST, 'limit=i', 'all!';
-}
-elsif ( $db_type eq 'mysql' ) {
-    %OPT = (
-        %OPT,
-        limit    => 0,
-        all      => 0,
-    );
-    push @OPT_LIST, 'limit=i', 'all!';
-}
-elsif ( $db_type eq 'Oracle' ) {
-    %OPT = (
-        %OPT,
-        memory => '2M',
-    );
-    push @OPT_LIST, qw(memory=s);
-}
-
 use Getopt::Long qw(GetOptions);
-GetOptions( \%OPT, @OPT_LIST );
+my %OPT = ( memory => '2M', limit => 0 );
+GetOptions( \%OPT,
+    "help|h!",
+    "debug!",
+    "quiet!",
+
+    "all!",
+    "limit=i",
+
+    "memory=s",
+);
 
 if ( $OPT{'help'} ) {
     RT::Interface::CLI->ShowHelp(
@@ -123,6 +101,7 @@ if ( !flock main::DATA, LOCK_EX | LOCK_NB ) {
     }
 }
 
+my $db_type = RT->Config->Get('DatabaseType');
 my $fts_config = RT->Config->Get('FullTextSearch') || {};
 unless ( $fts_config->{'Enable'} ) {
     print STDERR <<EOT;
