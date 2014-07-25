@@ -180,8 +180,6 @@ foreach my $type ( @types ) {
         process( $type, $a, $txt );
         debug("Processed attachment #". $a->id );
     }
-    finalize( $type, $attachments ) if $found;
-    clean( $type );
     goto REDO if $OPT{'all'} and $attachments->Count == ($OPT{'limit'} || 100)
 }
 
@@ -249,20 +247,6 @@ sub process {
     return goto_specific(
         suffix    => $db_type,
         error     => "No processer for $db_type DB",
-        arguments => \@_,
-    );
-}
-
-sub finalize {
-    return goto_specific(
-        suffix    => $db_type,
-        arguments => \@_,
-    );
-}
-
-sub clean {
-    return goto_specific(
-        suffix    => $db_type,
         arguments => \@_,
     );
 }
