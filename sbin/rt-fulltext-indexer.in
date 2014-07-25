@@ -179,34 +179,16 @@ EOT
 }
 
 sub last_indexed {
-    my $attachments = RT::Attachments->new( RT->SystemUser );
-    $attachments->Limit(
-        FIELD    => 'ContentType',
-        OPERATOR => 'IN',
-        VALUE    => ['text/plain', 'text/html'],
-    );
-    my $alias = 'main';
-    if ( $fts_config->{'Table'} && $fts_config->{'Table'} ne 'Attachments' ) {
-        $alias = $attachments->Join(
-            TYPE    => 'left',
-            FIELD1 => 'id',
-            TABLE2  => $fts_config->{'Table'},
-            FIELD2 => 'id',
-        );
+    if ( $db_type eq "mysql" ) {
+        return $dbh->selectrow_arrayref("SELECT MAX(id) FROM $table")->[0];
+    } elsif ( $db_type eq "pg" ) {
+        if ( $fts_config->{'Table'} && $fts_config->{'Table'} ne 'Attachments' ) {
+            return $dbh->selectrow_array("SELECT MAX(id) FROM $table")->[0];
+        } else {
+            return $dbh->selectrow_array("SELECT MAX(id) FROM Attachments WHERE $column IS NOT NULL")->[0];
+        }
     }
-    $attachments->Limit(
-        ALIAS => $alias,
-        FIELD => $fts_config->{'Column'},
-        OPERATOR => 'IS NOT',
-        VALUE => 'NULL',
-    );
-    $attachments->OrderBy( FIELD => 'id', ORDER => 'desc' );
-    $attachments->RowsPerPage( 1 );
-    my $res = $attachments->First;
-    return 0 unless $res;
-    return $res->id;
 }
-
 
 sub process_mysql {
     my ($attachment, $text) = (@_);
