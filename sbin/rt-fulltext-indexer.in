@@ -147,14 +147,12 @@ EOT
     *RT::Attachments::Next  = \&DBIx::SearchBuilder::Next;
 }
 
-my @types = qw(text html);
-foreach my $type ( @types ) {
-  REDO:
-    my $attachments = attachments($type);
+{
+    my $attachments = attachments();
     $attachments->Limit(
         FIELD => 'id',
         OPERATOR => '>',
-        VALUE => last_indexed($type)
+        VALUE => last_indexed()
     );
     $attachments->OrderBy( FIELD => 'id', ORDER => 'asc' );
     $attachments->RowsPerPage( $OPT{'limit'} || 100 );
@@ -165,14 +163,13 @@ foreach my $type ( @types ) {
         my $text = $a->Content;
         next unless defined $text && length($text);
         $found++;
-        process( $type, $a, \$text );
+        process( $a, \$text );
         debug("Processed attachment #". $a->id );
     }
-    goto REDO if $OPT{'all'} and $attachments->Count == ($OPT{'limit'} || 100)
+    redo if $OPT{'all'} and $attachments->Count == ($OPT{'limit'} || 100);
 }
 
 sub attachments {
-    my $type = shift;
     my $res = RT::Attachments->new( RT->SystemUser );
     my $txn_alias = $res->Join(
         ALIAS1 => 'main',
@@ -198,17 +195,17 @@ sub attachments {
         VALUE => 'deleted'
     );
     $res->Limit(
-        FIELD => 'ContentType',
-        VALUE => ($type eq "html" ? "text/html" : "text/plain"),
+        FIELD    => 'ContentType',
+        OPERATOR => 'IN',
+        VALUE    => ['text/plain', 'text/html'],
     );
     return $res;
 }
 
 sub last_indexed {
-    my ($type) = (@_);
     return goto_specific(
         suffix => $db_type,
-        error => "Don't know how to find last indexed $type attachment for $db_type DB",
+        error => "Don't know how to find last indexed attachment for $db_type DB",
         arguments => \@_,
     );
 }
@@ -223,7 +220,7 @@ sub process {
 
 sub last_indexed_mysql { last_indexed_pg(@_); }
 sub process_mysql {
-    my ($type, $attachment, $text) = (@_);
+    my ($attachment, $text) = (@_);
 
     my $dbh = $RT::Handle->dbh;
     my $table = $fts_config->{'Table'};
@@ -239,8 +236,7 @@ sub process_mysql {
 }
 
 sub last_indexed_pg {
-    my $type = shift;
-    my $attachments = attachments( $type );
+    my $attachments = attachments();
     my $alias = 'main';
     if ( $fts_config->{'Table'} && $fts_config->{'Table'} ne 'Attachments' ) {
         $alias = $attachments->Join(
@@ -264,7 +260,7 @@ sub last_indexed_pg {
 }
 
 sub process_pg {
-    my ($type, $attachment, $text) = (@_);
+    my ($attachment, $text) = (@_);
 
     my $dbh = $RT::Handle->dbh;
     my $table = $fts_config->{'Table'};
