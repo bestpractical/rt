@@ -183,9 +183,10 @@ foreach my $type ( @types ) {
     while ( my $a = $attachments->Next ) {
         next if filter( $type, $a );
         debug("Found attachment #". $a->id );
-        my $txt = extract($type, $a) or next;
+        my $text = $a->Content;
+        next unless defined $text && length($text);
         $found++;
-        process( $type, $a, $txt );
+        process( $type, $a, \$text );
         debug("Processed attachment #". $a->id );
     }
     goto REDO if $OPT{'all'} and $attachments->Count == ($OPT{'limit'} || 100)
@@ -238,15 +239,6 @@ sub filter {
     my $type = shift;
     return goto_specific(
         suffix    => $type,
-        arguments => \@_,
-    );
-}
-
-sub extract {
-    my $type = shift;
-    return goto_specific(
-        suffix    => $type,
-        error     => "No way to convert $type attachment into text",
         arguments => \@_,
     );
 }
@@ -342,13 +334,6 @@ sub attachments_text {
     return $res;
 }
 
-sub extract_text {
-    my $attachment = shift;
-    my $text = $attachment->Content;
-    return undef unless defined $text && length($text);
-    return \$text;
-}
-
 sub attachments_html {
     my $res = shift;
     $res->Limit( FIELD => 'ContentType', VALUE => 'text/html' );
@@ -363,14 +348,6 @@ sub filter_html {
             && $parent->ContentType eq 'mulitpart/alternative';
     }
     return 0;
-}
-
-sub extract_html {
-    my $attachment = shift;
-    my $text = $attachment->Content;
-    return undef unless defined $text && length($text);
-# TODO: html -> text
-    return \$text;
 }
 
 sub goto_specific {
