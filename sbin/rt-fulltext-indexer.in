@@ -180,39 +180,6 @@ EOT
 }
 
 sub last_indexed {
-    return goto_specific(
-        suffix => $db_type,
-        error => "Don't know how to find last indexed attachment for $db_type DB",
-        arguments => \@_,
-    );
-}
-
-sub process {
-    return goto_specific(
-        suffix    => $db_type,
-        error     => "No processer for $db_type DB",
-        arguments => \@_,
-    );
-}
-
-sub last_indexed_mysql { last_indexed_pg(@_); }
-sub process_mysql {
-    my ($attachment, $text) = (@_);
-
-    my $dbh = $RT::Handle->dbh;
-    my $table = $fts_config->{'Table'};
-
-    my $query;
-    if ( my ($id) = $dbh->selectrow_array("SELECT id FROM $table WHERE id = ?", undef, $attachment->id) ) {
-        $query = "UPDATE $table SET Content = ? WHERE id = ?";
-    } else {
-        $query = "INSERT INTO $table(Content, id) VALUES(?, ?)";
-    }
-
-    $dbh->do( $query, undef, $$text, $attachment->id );
-}
-
-sub last_indexed_pg {
     my $attachments = RT::Attachments->new( RT->SystemUser );
     $attachments->Limit(
         FIELD    => 'ContentType',
@@ -239,6 +206,31 @@ sub last_indexed_pg {
     my $res = $attachments->First;
     return 0 unless $res;
     return $res->id;
+}
+
+sub process {
+    return goto_specific(
+        suffix    => $db_type,
+        error     => "No processer for $db_type DB",
+        arguments => \@_,
+    );
+}
+
+
+sub process_mysql {
+    my ($attachment, $text) = (@_);
+
+    my $dbh = $RT::Handle->dbh;
+    my $table = $fts_config->{'Table'};
+
+    my $query;
+    if ( my ($id) = $dbh->selectrow_array("SELECT id FROM $table WHERE id = ?", undef, $attachment->id) ) {
+        $query = "UPDATE $table SET Content = ? WHERE id = ?";
+    } else {
+        $query = "INSERT INTO $table(Content, id) VALUES(?, ?)";
+    }
+
+    $dbh->do( $query, undef, $$text, $attachment->id );
 }
 
 sub process_pg {
