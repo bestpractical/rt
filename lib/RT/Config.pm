@@ -608,6 +608,7 @@ our %META;
                     } else {
                         # Internal, one-column table
                         $v->{Column} = 'Content';
+                        $v->{Engine} = $engine;
                     }
                 }
             } else {
