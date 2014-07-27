@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % my $name = $NamePrefix.$CustomField->Id.'-Values';
-<& /Elements/SelectDate, Name => "$name", current => 0 &> (<%$DateObj->AsString%>)
+<& /Elements/SelectDate, Name => "$name", current => 0, $KeepValue && $Default ? (Default => $Default) : () &> (<%$DateObj->AsString($KeepValue ? ( Timezone => 'utc' ) : () )%>)
 
 <%INIT>
 my $DateObj = RT::Date->new ( $session{'CurrentUser'} );
@@ -60,4 +60,5 @@ $Default => undef
 $Values => undef
 $MaxValues => 1
 $Format => 'ISO'
+$KeepValue => undef
 </%ARGS>
