@@ -111,11 +111,11 @@ ok($val,$msg);
 
 # add a comment to ticket
     expect_send("comment -m 'comment-$$' $ticket_id", "Adding a comment...");
-    expect_like(qr/Message recorded/, "Added the comment");
+    expect_like(qr/Comments added/, "Added the comment");
     ### should test to make sure it actually got added
     # add correspondance to ticket (?)
     expect_send("correspond -m 'correspond-$$' $ticket_id", "Adding correspondence...");
-    expect_like(qr/Message recorded/, "Added the correspondence");
+    expect_like(qr/Correspondence added/, "Added the correspondence");
     ### should test to make sure it actually got added
 
     my $test_email = RT::Test::get_relocatable_file('lorem-ipsum',
@@ -522,7 +522,7 @@ sub check_attachment {
     my $attachment_path = shift;
     (my $filename = $attachment_path) =~ s/.*\/(.*)$/$1/;
     expect_send("comment -m 'attach file' -a $attachment_path $ticket_id", "Adding an attachment ($filename)");
-    expect_like(qr/Message recorded/, "Added the attachment");
+    expect_like(qr/Comments added/, "Added the attachment");
     expect_send("show ticket/$ticket_id/attachments","Finding Attachment");
     my $attachment_regex = qr/(\d+):\s+$filename/;
     expect_like($attachment_regex,"Attachment Uploaded");

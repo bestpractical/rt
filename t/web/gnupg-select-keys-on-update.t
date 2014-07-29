@@ -250,7 +250,7 @@ diag "check that key selector works and we can select trusted key";
 
     $m->select( 'UseKey-rt-test@example.com' => $fpr1 );
     $m->click('SubmitTicket');
-    $m->content_contains('Message recorded', 'Message recorded' );
+    $m->content_contains('Correspondence added', 'Correspondence added' );
 
     my @mail = RT::Test->fetch_caught_mails;
     ok @mail, 'there are some emails';
@@ -286,7 +286,7 @@ diag "check encrypting of attachments";
 
     $m->select( 'UseKey-rt-test@example.com' => $fpr1 );
     $m->click('SubmitTicket');
-    $m->content_contains('Message recorded', 'Message recorded' );
+    $m->content_contains('Correspondence added', 'Correspondence added' );
 
     my @mail = RT::Test->fetch_caught_mails;
     ok @mail, 'there are some emails';
