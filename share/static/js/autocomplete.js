@@ -56,6 +56,7 @@ window.RT.Autocomplete.bind = function(from) {
                 }
                 terms.push(''); // add trailing delimeter so user can input another value directly
                 this.value = terms.join(what == 'Tickets' ? ' ' : ", ");
+                jQuery(this).change();
                 return false;
             }
         }
