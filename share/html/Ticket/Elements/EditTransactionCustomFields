@@ -60,7 +60,8 @@
 <<% $CELL %>>
 <& /Elements/EditCustomField,
     CustomField => $CF,
-    NamePrefix => $NamePrefix
+    NamePrefix => $NamePrefix,
+    %ARGS,
 &>
 %  if (my $msg = $m->notes('InvalidField-' . $CF->Id)) {
         <br />

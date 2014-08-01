@@ -189,4 +189,85 @@ diag 'check invalid inputs';
     is_deeply( @warnings, q{Couldn't parse date 'foodate' by Time::ParseDate} );
 }
 
+diag 'retain values when adding attachments';
+{
+    my ( $ticket, $id );
+
+    my $txn_cf = RT::CustomField->new( RT->SystemUser );
+    my ( $ret, $msg ) = $txn_cf->Create(
+        Name          => 'test txn cf date',
+        TypeComposite => 'Date-1',
+        LookupType    => 'RT::Queue-RT::Ticket-RT::Transaction',
+    );
+    ok( $ret, "created 'txn datetime': $msg" );
+    $txn_cf->AddToObject(RT::Queue->new(RT->SystemUser));
+    my $txn_cfid = $txn_cf->id;
+
+    $m->submit_form(
+        form_name => "CreateTicketInQueue",
+        fields    => { Queue => 'General' },
+    );
+    $m->content_contains('test cf date', 'has cf' );
+    $m->content_contains('test txn cf date', 'has txn cf' );
+
+    $m->submit_form_ok(
+        {
+            form_name => "TicketCreate",
+            fields    => {
+                Subject => 'test 2015-06-04',
+                Content => 'test',
+                "Object-RT::Ticket--CustomField-$cfid-Values" => '2015-06-04',
+                "Object-RT::Transaction--CustomField-$txn_cfid-Values" => '2015-08-15',
+            },
+            button => 'AddMoreAttach',
+        },
+        'create test ticket'
+    );
+    $m->form_name("TicketCreate");
+    is( $m->value( "Object-RT::Ticket--CustomField-$cfid-Values" ),
+        "2015-06-04", "ticket cf date value still on form" );
+    is( $m->value( "Object-RT::Transaction--CustomField-$txn_cfid-Values" ),
+        "2015-08-15", "txn cf date date value still on form" );
+
+    $m->submit_form();
+    ok( ($id) = $m->content =~ /Ticket (\d+) created/, "created ticket $id" );
+
+    $m->follow_link_ok( {text => 'Reply'} );
+    $m->title_like( qr/Update/ );
+    $m->content_contains('test txn cf date', 'has txn cf');
+    $m->submit_form_ok(
+        {
+            form_name => "TicketUpdate",
+            fields    => {
+                Content => 'test',
+                "Object-RT::Transaction--CustomField-$txn_cfid-Values" => '2015-09-16',
+            },
+            button => 'AddMoreAttach',
+        },
+        'Update test ticket'
+    );
+    $m->form_name("TicketUpdate");
+    is( $m->value( "Object-RT::Transaction--CustomField-$txn_cfid-Values" ),
+        "2015-09-16", "txn date value still on form" );
+
+    $m->follow_link_ok( {text => 'Jumbo'} );
+    $m->title_like( qr/Jumbo/ );
+
+    $m->submit_form_ok(
+        {
+            form_name => "TicketModifyAll",
+            fields    => {
+                "Object-RT::Transaction--CustomField-$txn_cfid-Values" =>
+                  '2015-12-16',
+            },
+            button => 'AddMoreAttach',
+        },
+        'jumbo form'
+    );
+
+    $m->form_name("TicketModifyAll");
+    is( $m->value( "Object-RT::Transaction--CustomField-$txn_cfid-Values" ),
+        "2015-12-16", "txn date value still on form" );
+}
+
 done_testing;
