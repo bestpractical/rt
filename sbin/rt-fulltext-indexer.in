@@ -213,7 +213,22 @@ sub process_mysql {
         $sthandles{$found} ||=
             $dbh->prepare("$insert INTO $table(Content, id) VALUES "
                               . join(", ", ("(?,?)") x $found));
-        $sthandles{$found}->execute(@insert);
+      TRY: {
+            my $status = eval { $sthandles{$found}->execute(@insert); };
+            unless ( $status ) {
+                my ($row) = $dbh->errstr =~ /\brow (\d+)\b/;
+                die $dbh->errstr unless $row;
+
+                my ($content, $id) = ($insert[($row - 1)*2], $insert[($row - 1)*2 +1]);
+                if ($dbh->err == 1366 and $dbh->state eq "HY000") {
+                    warn "Attachment $id cannot be indexed. Most probably it contains invalid UTF8 bytes. Error: ". $dbh->errstr;
+                    $insert[($row - 1)*2] = "";
+                    redo TRY;
+                } else {
+                    die "Attachment $id: ".$dbh->errstr;
+                }
+            }
+        }
     });
 }
 
