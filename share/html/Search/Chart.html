@@ -45,24 +45,23 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%args>
-@GroupBy => 'Status'
-$ChartStyle => 'bar'
-@ChartFunction => ('COUNT')
-$Description => undef
-$Width => undef
-$Height => undef
-</%args>
 <%init>
+my $default_value = {
+    Query => 'id > 0',
+    GroupBy => ['Status'],
+    ChartStyle => ['bar'],
+    ChartFunction => ['COUNT'],
+};
+    
 $m->callback( ARGSRef => \%ARGS, CallbackName => 'Initial' );
-
-$ARGS{Query} ||= 'id > 0';
 
 my $title = loc( "Grouped search results");
 
+my @search_fields = qw(Query GroupBy ChartStyle ChartFunction Width Height);
 my $saved_search = $m->comp( '/Widgets/SavedSearch:new',
     SearchType   => 'Chart',
-    SearchFields => [qw(Query GroupBy ChartStyle ChartFunction Width Height)] );
+    SearchFields => [@search_fields],
+);
 
 my @actions = $m->comp( '/Widgets/SavedSearch:process', args => \%ARGS, self => $saved_search );
 
@@ -101,7 +100,21 @@ my %query;
 
 }
 
+foreach (@search_fields) {
+    if ( ref $default_value->{$_} ) {
+        $query{$_} = ref $ARGS{$_} ? $ARGS{$_} : [ $ARGS{$_} ];
+        $query{$_} = $default_value->{$_}
+            unless defined $query{$_} && defined $query{$_}[0];
+    }
+    else {
+        $query{$_} = ref $ARGS{$_} ? $ARGS{$_} : $ARGS{$_};
+        $query{$_} = $default_value->{$_}
+            unless defined $query{$_};
+    }
+}
+
 $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
+
 </%init>
 <& /Elements/Header, Title => $title &>
 <& /Elements/Tabs, QueryArgs => \%query &>
@@ -117,30 +130,30 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
 <div class="chart-type">
 
 <form method="get" action="<% RT->Config->Get('WebPath') %>/Search/Chart.html">
-<input type="hidden" class="hidden" name="Query" value="<% $ARGS{Query} %>" />
+<input type="hidden" class="hidden" name="Query" value="<% $query{Query} %>" />
 <input type="hidden" class="hidden" name="SavedChartSearchId" value="<% $saved_search->{SearchId} || 'new' %>" />
 
 <&| /Widgets/TitleBox, title => loc('Group by'), class => "chart-group-by" &>
 <fieldset><legend><% loc('Group tickets by') %></legend>
 <& Elements/SelectGroupBy,
     Name => 'GroupBy',
-    Query => $ARGS{Query},
-    Default => $GroupBy[0],
+    Query => $query{Query},
+    Default => $query{'GroupBy'}[0],
     &>
 </fieldset>
 <fieldset><legend><% loc('and then') %></legend>
 <& Elements/SelectGroupBy,
     Name => 'GroupBy',
-    Query => $ARGS{Query},
-    Default => $GroupBy[1],
+    Query => $query{Query},
+    Default => $query{'GroupBy'}[1] // q{},
     ShowEmpty => 1,
     &>
 </fieldset>
 <fieldset><legend><% loc('and then') %></legend>
 <& Elements/SelectGroupBy,
     Name => 'GroupBy',
-    Query => $ARGS{Query},
-    Default => $GroupBy[2],
+    Query => $query{Query},
+    Default => $query{'GroupBy'}[2] // q{},
     ShowEmpty => 1,
     &>
 </fieldset>
@@ -149,23 +162,23 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
 <&| /Widgets/TitleBox, title => loc("Calculate"), class => "chart-calculate" &>
 
 <fieldset><legend><% loc('Calculate values of') %></legend>
-<& Elements/SelectChartFunction, Default => $ChartFunction[0] &>
+<& Elements/SelectChartFunction, Default => $query{'ChartFunction'}[0] &>
 </fieldset>
 <fieldset><legend><% loc('and then') %></legend>
-<& Elements/SelectChartFunction, Default => $ChartFunction[1], ShowEmpty => 1 &>
+<& Elements/SelectChartFunction, Default => $query{'ChartFunction'}[1] // q{}, ShowEmpty => 1 &>
 </fieldset>
 <fieldset><legend><% loc('and then') %></legend>
-<& Elements/SelectChartFunction, Default => $ChartFunction[2], ShowEmpty => 1 &>
+<& Elements/SelectChartFunction, Default => $query{'ChartFunction'}[2] // q{}, ShowEmpty => 1 &>
 </fieldset>
 
 </&>
 
 <&| /Widgets/TitleBox, title => loc('Picture'), class => "chart-picture" &>
-<label><% loc('Style') %>: <& Elements/SelectChartType, Default => $ChartStyle, Name => 'ChartStyle' &></label>
-<label><% loc("Width") %>: <input type="text" name="Width" value="<% $Width || "" %>"> <% loc("px") %></label>
+<label><% loc('Style') %>: <& Elements/SelectChartType, Default => $query{ChartStyle}[0], Name => 'ChartStyle' &></label>
+<label><% loc("Width") %>: <input type="text" name="Width" value="<% $query{'Width'} || q{} %>"> <% loc("px") %></label>
 <span class="height">
   &#x00d7;
-  <label><% loc("Height") %>: <input type="text" name="Height" value="<% $Height || "" %>"> <% loc("px") %></label>
+  <label><% loc("Height") %>: <input type="text" name="Height" value="<% $query{'Height'} || q{} %>"> <% loc("px") %></label>
 </span>
 </&>
 <script type="text/javascript">
