@@ -166,11 +166,9 @@ sub LoadAction  {
         $self->{'TemplateObj'} = $args{'TemplateObj'};
     }
 
-    $self->ExecModule =~ /^(\w+)$/;
-    my $module = $1;
-    my $type = "RT::Action::". $module;
-
-    eval "require $type" || die "Require of $type failed.\n$@\n";
+    my $module = $self->ExecModule;
+    my $type = 'RT::Action::' . $module;
+    $type->require or die "Could not find Action class: $@";
 
     return $self->{'Action'} = $type->new(
         %args,
