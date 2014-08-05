@@ -223,22 +223,6 @@ div#ticket-history .messagebody .messagebody{
 
 .ticket-summary .titlebox-title .left a, .ticket-summary .titlebox-title .left a:visited { color: #fff;}
 
-.unread-messages .titlebox , .unread-messages .titlebox-title .left {
-  border: 1px solid #99a;
-  border-right: 2px solid #aab;
-  border-bottom: 2px solid #aab;
-
-}
-
-
-.unread-messages .titlebox {
-  background-color: #dde;
-}
-
-.unread-messages .titlebox-title .left {
-  background-color: #cce;
-}
-
 .ticket-inactive {
   text-decoration: line-through;
   color: #666
