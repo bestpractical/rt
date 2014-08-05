@@ -105,8 +105,9 @@
           CustomFields => $QueueObj->TicketCustomFields,
           Grouping => 'Basics',
           InTable => 1,
+          KeepValue => 1,
       &>
-      <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, QueueObj => $QueueObj, InTable => 1 &>
+      <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, QueueObj => $QueueObj, InTable => 1, KeepValue => 1, &>
     </table>
   </&>
 % $m->callback( CallbackName => 'AfterBasics', QueueObj => $QueueObj, ARGSRef => \%ARGS );
@@ -115,6 +116,7 @@
     %ARGS,
     Object => $ticket,
     CustomFieldGenerator => sub { $QueueObj->TicketCustomFields },
+    KeepValue => 1,
 &>
 
 </div>
@@ -169,6 +171,7 @@
     CustomFields => $QueueObj->TicketCustomFields,
     Grouping => 'People',
     InTable => 1,
+    KeepValue => 1,
 &>
 
 <tr>
@@ -263,6 +266,7 @@
     CustomFields => $QueueObj->TicketCustomFields,
     Grouping => 'Dates',
     InTable => 1,
+    KeepValue => 1,
 &>
 </table>
 </&>
