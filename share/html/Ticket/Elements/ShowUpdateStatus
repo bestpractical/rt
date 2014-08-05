@@ -56,10 +56,10 @@
 </div>
 <%ARGS>
 $Ticket
+$DisplayPath => $session{'CurrentUser'}->Privileged ? 'Ticket' : 'SelfService'
 </%ARGS>
 <%INIT>
 return unless (RT->Config->Get( 'ShowUnreadMessageNotifications', $session{'CurrentUser'}));
 my $txn = $Ticket->SeenUpTo or return;
 
-my $DisplayPath = $session{'CurrentUser'}->Privileged ? 'Ticket' : 'SelfService';
 </%INIT>
