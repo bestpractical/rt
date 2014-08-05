@@ -3511,6 +3511,7 @@ msgstr ""
 
 #: share/html/Admin/Users/Keys.html:63
 msgid "GnuPG private key"
+msgstr ""
 
 #: share/html/m/_elements/menu:67
 msgid "Go"
@@ -5038,6 +5039,7 @@ msgstr "表單簽核"
 
 #: share/html/SelfService/Closed.html:53
 msgid "My closed tickets"
+msgstr ""
 
 #: share/html/Dashboards/Elements/SelectPrivacy:62 share/html/Dashboards/Elements/ShowDashboards:53
 msgid "My dashboards"
@@ -5045,6 +5047,7 @@ msgstr "我的控制面板"
 
 #: share/html/SelfService/index.html:52
 msgid "My open tickets"
+msgstr ""
 
 #: share/html/Elements/MyReminders:50 share/html/Tools/MyReminders.html:48
 msgid "My reminders"
@@ -6240,6 +6243,7 @@ msgstr "RT 錯誤"
 
 #: share/html/Admin/Elements/Portal:49
 msgid "RT Portal"
+msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:139
 msgid "RT Size"
@@ -6713,6 +6717,7 @@ msgstr "每頁筆數"
 
 #: share/html/Admin/Users/Keys.html:75
 msgid "SMIME Certificate"
+msgstr ""
 
 #: lib/RT/User.pm:107
 msgid "SMIMECertificate"
@@ -7150,6 +7155,7 @@ msgstr "設定"
 
 #: share/html/Articles/Elements/NeedsSetup:49
 msgid "Setup needed"
+msgstr ""
 
 #: lib/RT/Config.pm:184
 msgid "Short usernames"

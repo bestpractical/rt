@@ -90,7 +90,7 @@ foreach my $str ( sort keys %FILECAT ) {
     $str =~ s/((?<!~)(?:~~)*)\[([A-Za-z#*]\w*),([^\]]+)\]/"$1%$2(".$escape->($3).")"/eg;
     $str =~ s/~([\[\]])/$1/g;
 
-    my $po = Locale::PO->new(-msgid => $str);
+    my $po = Locale::PO->new(-msgid => $str, -msgstr => "");
     $po->reference( join ( ' ', sort map $_->[0].":".$_->[1], @{ $entry } ) );
     my %seen;
     my @vars;
