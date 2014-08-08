@@ -549,13 +549,13 @@ sub SetMIMEHeadToEncoding {
 
     return if $charset eq $enc and $preserve_words;
 
+    RT::Util::assert_bytes( $head->as_string );
     foreach my $tag ( $head->tags ) {
         next unless $tag; # seen in wild: headers with no name
         my @values = $head->get_all($tag);
         $head->delete($tag);
         foreach my $value (@values) {
             if ( $charset ne $enc || $enc =~ /^utf-?8(?:-strict)?$/i ) {
-                Encode::_utf8_off($value);
                 Encode::from_to( $value, $charset => $enc );
             }
             $value = DecodeMIMEWordsToEncoding( $value, $enc, $tag )
