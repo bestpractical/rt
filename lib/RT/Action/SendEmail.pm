@@ -967,7 +967,8 @@ sub GetFriendlyName {
 
 =head2 SetHeader FIELD, VALUE
 
-Set the FIELD of the current MIME object into VALUE.
+Set the FIELD of the current MIME object into VALUE, which should be in
+characters, not bytes.  Returns the new header, in bytes.
 
 =cut
 
@@ -980,7 +981,7 @@ sub SetHeader {
     chomp $field;
     my $head = $self->TemplateObj->MIMEObj->head;
     $head->fold_length( $field, 10000 );
-    $head->replace( $field, $val );
+    $head->replace( $field, Encode::encode( "UTF-8", $val ) );
     return $head->get($field);
 }
 
@@ -1021,7 +1022,7 @@ sub SetSubject {
 
     $subject =~ s/(\r\n|\n|\s)/ /g;
 
-    $self->SetHeader( 'Subject', Encode::encode_utf8( $subject ) );
+    $self->SetHeader( 'Subject', $subject );
 
 }
 
@@ -1037,11 +1038,9 @@ sub SetSubjectToken {
     my $head = $self->TemplateObj->MIMEObj->head;
     $self->SetHeader(
         Subject =>
-            Encode::encode_utf8(
-                RT::Interface::Email::AddSubjectTag(
-                    Encode::decode_utf8( $head->get('Subject') ),
-                    $self->TicketObj,
-                ),
+            RT::Interface::Email::AddSubjectTag(
+                Encode::decode_utf8( $head->get('Subject') ),
+                $self->TicketObj,
             ),
     );
 }
