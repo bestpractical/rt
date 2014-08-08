@@ -754,6 +754,8 @@ sub _EncodeLOB {
 
     my $ContentEncoding = 'none';
 
+    RT::Util::assert_bytes( $Body );
+
     #get the max attachment length from RT
     my $MaxSize = RT->Config->Get('MaxAttachmentSize');
 
@@ -800,16 +802,12 @@ sub _EncodeLOB {
 
     # if we need to mimencode the attachment
     if ( $ContentEncoding eq 'base64' ) {
-
         # base64 encode the attachment
-        Encode::_utf8_off($Body);
         $Body = MIME::Base64::encode_base64($Body);
 
     } elsif ($ContentEncoding eq 'quoted-printable') {
-        Encode::_utf8_off($Body);
         $Body = MIME::QuotedPrint::encode($Body);
     }
-
 
     return ($ContentEncoding, $Body, $MIMEType, $Filename );
 }
@@ -847,6 +845,8 @@ sub _DecodeLOB {
     my $ContentEncoding = shift || 'none';
     my $Content         = shift;
 
+    RT::Util::assert_bytes( $Content );
+
     if ( $ContentEncoding eq 'base64' ) {
         $Content = MIME::Base64::decode_base64($Content);
     }
@@ -863,7 +863,7 @@ sub _DecodeLOB {
         my $charset = RT::I18N::_FindOrGuessCharset($entity);
         $charset = 'utf-8' if not $charset or not Encode::find_encoding($charset);
 
-        $Content = Encode::decode($charset,$Content,Encode::FB_PERLQQ) unless Encode::is_utf8($Content);
+        $Content = Encode::decode($charset,$Content,Encode::FB_PERLQQ);
     }
     return ($Content);
 }
