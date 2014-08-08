@@ -656,12 +656,16 @@ sub __Value {
 
     return undef if (!defined $value);
 
+    # Pg returns character columns as character strings; mysql and
+    # sqlite return them as bytes.  While mysql can be made to return
+    # characters, using the mysql_enable_utf8 flag, the "Content" column
+    # is bytes on mysql and characters on Postgres, making true
+    # consistency impossible.
     if ( $args{'decode_utf8'} ) {
-        if ( !utf8::is_utf8($value) ) {
+        if ( !utf8::is_utf8($value) ) { # mysql/sqlite
             utf8::decode($value);
         }
-    }
-    else {
+    } else {
         if ( utf8::is_utf8($value) ) {
             utf8::encode($value);
         }

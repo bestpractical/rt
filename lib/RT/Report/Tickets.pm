@@ -745,6 +745,9 @@ sub MapSubValues {
         my $dst = $item->{'values'}{ lc $to } = { };
         while (my ($k, $v) = each %{ $map } ) {
             $dst->{ $k } = delete $item->{'values'}{ lc $v->{'NAME'} };
+            # This mirrors the logic in RT::Record::__Value When that
+            # ceases tp use the UTF-8 flag as a character/byte
+            # distinction from the database, this can as well.
             utf8::decode( $dst->{ $k } )
                 if defined $dst->{ $k }
                and not utf8::is_utf8( $dst->{ $k } );
