@@ -231,7 +231,7 @@ sub SetMIMEEntityToEncoding {
     );
 
     # If this is a textual entity, we'd need to preserve its original encoding
-    $head->replace( "X-RT-Original-Encoding" => $charset )
+    $head->replace( "X-RT-Original-Encoding" => Encode::encode( "UTF-8", $charset ) )
 	if $head->mime_attr('content-type.charset') or IsTextualContentType($head->mime_type);
 
     return unless IsTextualContentType($head->mime_type);
@@ -243,7 +243,7 @@ sub SetMIMEEntityToEncoding {
 
         $RT::Logger->debug( "Converting '$charset' to '$enc' for "
               . $head->mime_type . " - "
-              . ( $head->get('subject') || 'Subjectless message' ) );
+              . ( Encode::decode("UTF-8",$head->get('subject')) || 'Subjectless message' ) );
 
         # NOTE:: see the comments at the end of the sub.
         Encode::_utf8_off($string);

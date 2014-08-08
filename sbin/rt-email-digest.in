@@ -179,8 +179,10 @@ sub send_digest {
     }
 
     # Set our sender and recipient.
-    $digest_template->MIMEObj->head->replace( 'From', RT::Config->Get('CorrespondAddress') );
-    $digest_template->MIMEObj->head->replace( 'To',   $to );
+    $digest_template->MIMEObj->head->replace(
+        'From', Encode::encode( "UTF-8", RT::Config->Get('CorrespondAddress') ) );
+    $digest_template->MIMEObj->head->replace(
+        'To',   Encode::encode( "UTF-8", $to ) );
 
     if ($print) {
         $digest_template->MIMEObj->print;

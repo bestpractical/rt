@@ -401,14 +401,15 @@ sub SignEncrypt {
 
     my $entity = $args{'Entity'};
     if ( $args{'Sign'} && !defined $args{'Signer'} ) {
+        my @addresses = Email::Address->parse( Encode::decode("UTF-8",$entity->head->get( 'From' )));
         $args{'Signer'} = UseKeyForSigning()
-            || (Email::Address->parse( $entity->head->get( 'From' ) ))[0]->address;
+            || $addresses[0]->address;
     }
     if ( $args{'Encrypt'} && !$args{'Recipients'} ) {
         my %seen;
         $args{'Recipients'} = [
             grep $_ && !$seen{ $_ }++, map $_->address,
-            map Email::Address->parse( $entity->head->get( $_ ) ),
+            map Email::Address->parse( Encode::decode("UTF-8",$entity->head->get( $_ ) ) ),
             qw(To Cc Bcc)
         ];
     }
@@ -520,7 +521,7 @@ sub SignEncryptRFC3156 {
         $gnupg->options->push_recipients( $_ ) foreach 
             map UseKeyForEncryption($_) || $_,
             grep !$seen{ $_ }++, map $_->address,
-            map Email::Address->parse( $entity->head->get( $_ ) ),
+            map Email::Address->parse( Encode::decode( "UTF-8", $entity->head->get( $_ ) ) ),
             qw(To Cc Bcc);
 
         my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );

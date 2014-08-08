@@ -118,7 +118,7 @@ sub GetCurrentUser {
     foreach my $part ( $args{'Message'}->parts_DFS ) {
         my $decrypted;
 
-        my $status = $part->head->get( 'X-RT-GnuPG-Status' );
+        my $status = Encode::decode( "UTF-8", $part->head->get( 'X-RT-GnuPG-Status' ) );
         if ( $status ) {
             for ( RT::Crypt::GnuPG::ParseStatus( $status ) ) {
                 if ( $_->{Operation} eq 'Decrypt' && $_->{Status} eq 'DONE' ) {
@@ -126,7 +126,7 @@ sub GetCurrentUser {
                 }
                 if ( $_->{Operation} eq 'Verify' && $_->{Status} eq 'DONE' ) {
                     $part->head->replace(
-                        'X-RT-Incoming-Signature' => $_->{UserString}
+                        'X-RT-Incoming-Signature' => Encode::encode( "UTF-8", $_->{UserString} )
                     );
                 }
             }

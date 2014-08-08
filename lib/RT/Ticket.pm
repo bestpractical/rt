@@ -2297,7 +2297,7 @@ sub _RecordNote {
     # internal Message-ID now, so all emails sent because of this
     # message have a common Message-ID
     my $org = RT->Config->Get('Organization');
-    my $msgid = $args{'MIMEObj'}->head->get('Message-ID');
+    my $msgid = Encode::decode( "UTF-8", $args{'MIMEObj'}->head->get('Message-ID') );
     unless (defined $msgid && $msgid =~ /<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@\Q$org\E>/) {
         $args{'MIMEObj'}->head->set(
             'RT-Message-ID' => Encode::encode_utf8(
@@ -2309,7 +2309,7 @@ sub _RecordNote {
     #Record the correspondence (write the transaction)
     my ( $Trans, $msg, $TransObj ) = $self->_NewTransaction(
              Type => $args{'NoteType'},
-             Data => ( $args{'MIMEObj'}->head->get('subject') || 'No Subject' ),
+             Data => ( Encode::decode( "UTF-8", $args{'MIMEObj'}->head->get('Subject') ) || 'No Subject' ),
              TimeTaken => $args{'TimeTaken'},
              MIMEObj   => $args{'MIMEObj'}, 
              CommitScrips => $args{'CommitScrips'},

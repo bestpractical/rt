@@ -128,19 +128,17 @@ sub Create {
     $Attachment->make_singlepart;
 
     # Get the subject
-    my $Subject = $Attachment->head->get( 'subject', 0 );
+    my $Subject = Encode::decode( 'UTF-8', $Attachment->head->get( 'subject' ) );
     $Subject = '' unless defined $Subject;
     chomp $Subject;
-    utf8::decode( $Subject ) unless utf8::is_utf8( $Subject );
 
     #Get the Message-ID
-    my $MessageId = $Attachment->head->get( 'Message-ID', 0 );
+    my $MessageId = Encode::decode( "UTF-8", $Attachment->head->get( 'Message-ID' ) );
     defined($MessageId) or $MessageId = '';
     chomp ($MessageId);
     $MessageId =~ s/^<(.*?)>$/$1/o;
 
     #Get the filename
-
     my $Filename = mime_recommended_filename($Attachment);
 
     # remove path part. 
@@ -148,8 +146,7 @@ sub Create {
 
     # MIME::Head doesn't support perl strings well and can return
     # octets which later will be double encoded in low-level code
-    my $head = $Attachment->head->as_string;
-    utf8::decode( $head ) unless utf8::is_utf8( $head );
+    my $head = Encode::decode( 'UTF-8', $Attachment->head->as_string );
 
     # If a message has no bodyhandle, that means that it has subparts (or appears to)
     # and we should act accordingly.  
