@@ -1219,15 +1219,11 @@ sub DecodeARGS {
         # passed just one, a scalar whatever they are, mark them as utf8
         my $type = ref($_);
         ( !$type )
-            ? Encode::is_utf8($_)
-                ? $_
-                : Encode::decode( 'UTF-8' => $_, Encode::FB_PERLQQ )
+            ? Encode::decode( 'UTF-8', $_, Encode::FB_PERLQQ )
             : ( $type eq 'ARRAY' )
-            ? [ map { ( ref($_) or Encode::is_utf8($_) ) ? $_ : Encode::decode( 'UTF-8' => $_, Encode::FB_PERLQQ ) }
-                @$_ ]
+            ? [ map { ref($_) ? $_ : Encode::decode( 'UTF-8', $_, Encode::FB_PERLQQ ) } @$_ ]
             : ( $type eq 'HASH' )
-            ? { map { ( ref($_) or Encode::is_utf8($_) ) ? $_ : Encode::decode( 'UTF-8' => $_, Encode::FB_PERLQQ ) }
-                %$_ }
+            ? { map { ref($_) ? $_ : Encode::decode( 'UTF-8', $_, Encode::FB_PERLQQ ) } %$_ }
             : $_
     } %$ARGS;
 }
