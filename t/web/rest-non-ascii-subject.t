@@ -4,7 +4,6 @@ use warnings;
 use RT::Test tests => 9;
 
 use Encode;
-# \x{XX} where XX is less than 255 is not treated as unicode code point
 my $subject = Encode::decode('latin1', "Sujet accentu\x{e9}");
 my $text = Encode::decode('latin1', "Contenu accentu\x{e9}");
 

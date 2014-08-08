@@ -1085,7 +1085,8 @@ sub PseudoReference {
 
 =head2 SetHeaderAsEncoding($field_name, $charset_encoding)
 
-This routine converts the field into specified charset encoding.
+This routine converts the field into specified charset encoding, then
+applies the MIME-Header transfer encoding.
 
 =cut
 

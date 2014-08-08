@@ -261,14 +261,8 @@ sub SetMIMEEntityToEncoding {
 =head2 DecodeMIMEWordsToUTF8 $raw
 
 An utility method which mimics MIME::Words::decode_mimewords, but only
-limited functionality.  This function returns an utf-8 string.
-
-It returns the decoded string, or the original string if it's not
-encoded.  Since the subroutine converts specified string into utf-8
-charset, it should not alter a subject written in English.
-
-Why not use MIME::Words directly?  Because it fails in RT when I
-tried.  Maybe it's ok now.
+limited functionality.  Despite its name, this function returns the
+bytes of the string, in UTF-8.
 
 =cut
 

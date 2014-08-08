@@ -307,10 +307,9 @@ sub IsEmpty {
 Returns L<MIME::Entity> object parsed using L</Parse> method. Returns
 undef if last call to L</Parse> failed or never be called.
 
-Note that content of the template is UTF-8, but L<MIME::Parser> is not
-good at handling it and all data of the entity should be treated as
-octets and converted to perl strings using Encode::decode_utf8 or
-something else.
+Note that content of the template is characters, but the contents of all
+L<MIME::Entity> objects (including the one returned by this function,
+are bytes in UTF-8.
 
 =cut
 
