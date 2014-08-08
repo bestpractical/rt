@@ -253,7 +253,7 @@ use Plack::Builder;
 use Plack::Request;
 use Plack::Response;
 use Plack::Util;
-use Encode qw(encode_utf8);
+use Encode;
 
 sub PSGIApp {
     my $self = shift;
@@ -389,7 +389,7 @@ sub _psgi_response_cb {
                          $cleanup->();
                          return '';
                      }
-                     return utf8::is_utf8($_[0]) ? encode_utf8($_[0]) : $_[0];
+                     return utf8::is_utf8($_[0]) ? Encode::encode( "UTF-8", $_[0]) : $_[0];
                      return $_[0];
                  };
              });

@@ -61,7 +61,7 @@ diag('test real mail outgoing') if $ENV{TEST_VERBOSE};
 
     # $mail is utf8 encoded
     my ($mail) = RT::Test->fetch_caught_mails;
-    $mail = decode_utf8 $mail;
+    $mail = Encode::decode("UTF-8", $mail );
     like( $mail, qr/你好.*你好/s,    'mail has éèà€' );
     like( $mail, qr/éèà€.*éèà€/s, 'mail has éèà€' );
     like( $mail, qr/标题.*标题/s,    'mail has ticket subject 标题' );

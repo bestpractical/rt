@@ -452,8 +452,8 @@ sub _Parse {
 
     ### Should we forgive normally-fatal errors?
     $parser->ignore_errors(1);
-    # MIME::Parser doesn't play well with perl strings
-    utf8::encode($content);
+    # Always provide bytes, not characters, to MIME objects
+    $content = Encode::encode( 'UTF-8', $content );
     $self->{'MIMEObj'} = eval { $parser->parse_data( \$content ) };
     if ( my $error = $@ || $parser->last_error ) {
         $RT::Logger->error( "$error" );
@@ -675,8 +675,7 @@ sub _DowngradeFromHTML {
 
     require Encode;
     my $body = $new_entity->bodyhandle->as_string;
-    # need to decode_utf8, see the doc of MIMEObj method
-    $body = Encode::decode_utf8( $body );
+    $body = Encode::decode( "UTF-8", $body );
     my $html = RT::Interface::Email::ConvertHTMLToText( $body );
     $html = Encode::encode( "UTF-8", $html );
     return unless defined $html;
