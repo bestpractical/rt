@@ -48,7 +48,6 @@
 
 use strict;
 use warnings;
-use utf8;
 
 package RT::I18N::fr;
 use base 'RT::I18N';
@@ -59,8 +58,8 @@ use warnings;
 sub numf {
 	my ($handle, $num) = @_[0,1];
 	my $fr_num = $handle->SUPER::numf($num);
-	# French prefer to print 1000 as 1 000 rather than 1,000
-	$fr_num =~ tr<.,><, >;
+	# French prefer to print 1000 as 1(nbsp)000 rather than 1,000
+	$fr_num =~ tr<.,><,\x{A0}>;
 	return $fr_num;
 }
 
