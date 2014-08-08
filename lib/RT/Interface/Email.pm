@@ -987,9 +987,6 @@ sub EncodeToMIME {
 
     $value =~ s/\s+$//;
 
-    # we need perl string to split thing char by char
-    Encode::_utf8_on($value) unless Encode::is_utf8($value);
-
     my ( $tmp, @chunks ) = ( '', () );
     while ( length $value ) {
         my $char = substr( $value, 0, 1, '' );
