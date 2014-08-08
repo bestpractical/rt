@@ -564,7 +564,8 @@ sub GetResource {
         $HTML::Mason::Commands::r->path_info($path);
 
         # grab the query arguments
-        my %args = map { $_ => [ $uri->query_param($_) ] } $uri->query_param;
+        my %args = map { $_ => [ map {Encode::decode("UTF-8",$_)}
+                                     $uri->query_param($_) ] } $uri->query_param;
         # Convert empty and single element arrayrefs to a non-ref scalar
         @$_ < 2 and $_ = $_->[0]
             for values %args;
