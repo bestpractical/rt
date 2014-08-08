@@ -388,7 +388,11 @@ sub _psgi_response_cb {
                          $cleanup->();
                          return '';
                      }
-                     return utf8::is_utf8($_[0]) ? Encode::encode( "UTF-8", $_[0]) : $_[0];
+                     # XXX: Ideally, responses should flag if they need
+                     # to be encoded, rather than relying on the UTF-8
+                     # flag
+                     return Encode::encode("UTF-8",$_[0]) if utf8::is_utf8($_[0]);
+                     return $_[0];
                  };
              });
 }
