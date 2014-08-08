@@ -676,13 +676,13 @@ sub SetMIMEHeadToEncoding {
 
     return if $charset eq $enc and $preserve_words;
 
+    RT::Util::assert_bytes( $head->as_string );
     foreach my $tag ( $head->tags ) {
         next unless $tag; # seen in wild: headers with no name
         my @values = $head->get_all($tag);
         $head->delete($tag);
         foreach my $value (@values) {
             if ( $charset ne $enc || $enc =~ /^utf-?8(?:-strict)?$/i ) {
-                Encode::_utf8_off($value);
                 my $orig_value = $value;
                 ( my $success, $value ) = EncodeFromToWithCroak( $orig_value, $charset => $enc );
                 if ( !$success ) {
