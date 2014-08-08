@@ -62,7 +62,6 @@ use Locale::Maketext 1.04;
 use Locale::Maketext::Lexicon 0.25;
 use base 'Locale::Maketext::Fuzzy';
 
-use Encode;
 use MIME::Entity;
 use MIME::Head;
 use File::Glob;

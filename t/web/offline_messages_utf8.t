@@ -2,7 +2,6 @@ use strict;
 use warnings;
 
 use RT::Test tests => 8;
-use Encode;
 use RT::Ticket;
 
 my ( $url, $m ) = RT::Test->started_ok;

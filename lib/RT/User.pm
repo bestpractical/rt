@@ -81,7 +81,6 @@ use Digest::MD5;
 use RT::Principals;
 use RT::ACE;
 use RT::Interface::Email;
-use Encode;
 use Text::Password::Pronounceable;
 
 sub _OverlayAccessible {

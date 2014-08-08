@@ -70,7 +70,6 @@ use warnings;
 use RT::Date;
 use RT::User;
 use RT::Attributes;
-use Encode qw();
 
 our $_TABLE_ATTR = { };
 use base RT->Config->Get('RecordBaseClass');

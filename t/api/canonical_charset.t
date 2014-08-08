@@ -3,7 +3,6 @@ use strict;
 
 use RT::Test nodata => 1, tests => 11;
 use RT::I18N;
-use Encode;
 
 my %map = (
     'euc-cn'  => 'gbk',

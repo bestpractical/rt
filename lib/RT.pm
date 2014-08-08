@@ -52,6 +52,7 @@ use warnings;
 package RT;
 
 
+use Encode ();
 use File::Spec ();
 use Cwd ();
 

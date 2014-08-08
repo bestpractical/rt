@@ -114,7 +114,6 @@ if ($ARGS{'Parse'} && $ARGS{'Template'}) {
 	    $template .= $buffer;
     }
     my $encode = RT::I18N::_GuessCharset( $template );
-    require Encode;
     $template = Encode::decode( $encode, $template );
     $template =~ s/\r\n/\n/gs;
     $action->Parse(Content => $template, Queue => $qname, Requestor => $requestoraddress);

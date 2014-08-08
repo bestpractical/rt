@@ -20,7 +20,6 @@ use HTML::Mason;
 use HTML::Mason::Compiler;
 use HTML::Mason::Compiler::ToObject;
 BEGIN { require RT::Test; }
-use Encode;
 
 sub compile_file {
     my $file = shift;

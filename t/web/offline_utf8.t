@@ -3,8 +3,6 @@ use warnings;
 
 use RT::Test tests => 9;
 
-use Encode;
-
 use RT::Ticket;
 my $file = File::Spec->catfile( RT::Test->temp_directory, 'template' );
 open my $fh, '>', $file or die $!;

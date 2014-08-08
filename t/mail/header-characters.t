@@ -3,7 +3,6 @@ use warnings;
 
 use RT::Test tests => 12;
 use Test::Warn;
-use Encode;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 

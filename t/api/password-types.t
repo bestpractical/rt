@@ -3,7 +3,6 @@ use warnings;
 
 use RT::Test;
 use Digest::MD5;
-use Encode;
 
 my $default = "sha512";
 

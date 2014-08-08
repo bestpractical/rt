@@ -3,7 +3,6 @@ use strict;
 use warnings;
 use RT::Test tests => 9;
 
-use Encode;
 my $subject = Encode::decode('latin1', "Sujet accentu\x{e9}");
 my $text = Encode::decode('latin1', "Contenu accentu\x{e9}");
 

@@ -251,7 +251,6 @@ use CGI::Emulate::PSGI;
 use Plack::Request;
 use Plack::Response;
 use Plack::Util;
-use Encode;
 
 sub PSGIApp {
     my $self = shift;
