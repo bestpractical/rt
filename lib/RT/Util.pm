@@ -133,6 +133,23 @@ sub mime_recommended_filename {
     return;
 }
 
+sub assert_bytes {
+    my $string = shift;
+    return unless utf8::is_utf8($string);
+    return unless $string =~ /([^\x00-\x7F])/;
+
+    my $msg;
+    if (ord($1) > 255) {
+        $msg = "Expecting a byte string, but was passed characters";
+    } else {
+        $msg = "Expecting a byte string, but was possibly passed charcters;"
+            ." if the string is actually bytes, please use utf8::downgrade";
+    }
+    $RT::Logger->warn($msg, Carp::longmess());
+
+}
+
+
 RT::Base->_ImportOverlays();
 
 1;
