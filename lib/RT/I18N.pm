@@ -240,13 +240,12 @@ sub SetMIMEEntityToEncoding {
 
     if ( $body && ($enc ne $charset || $enc =~ /^utf-?8(?:-strict)?$/i) ) {
         my $string = $body->as_string or return;
+        RT::Util::assert_bytes($string);
 
         $RT::Logger->debug( "Converting '$charset' to '$enc' for "
               . $head->mime_type . " - "
               . ( Encode::decode("UTF-8",$head->get('subject')) || 'Subjectless message' ) );
 
-        # NOTE:: see the comments at the end of the sub.
-        Encode::_utf8_off($string);
         Encode::from_to( $string, $charset => $enc );
 
         my $new_body = MIME::Body::InCore->new($string);
@@ -258,19 +257,6 @@ sub SetMIMEEntityToEncoding {
         $entity->bodyhandle($new_body);
     }
 }
-
-# NOTES:  Why Encode::_utf8_off before Encode::from_to
-#
-# All the strings in RT are utf-8 now.  Quotes from Encode POD:
-#
-# [$length =] from_to($octets, FROM_ENC, TO_ENC [, CHECK])
-# ... The data in $octets must be encoded as octets and not as
-# characters in Perl's internal format. ...
-#
-# Not turning off the UTF-8 flag in the string will prevent the string
-# from conversion.
-
-
 
 =head2 DecodeMIMEWordsToUTF8 $raw
 
