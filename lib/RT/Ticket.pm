@@ -1564,8 +1564,11 @@ sub _RecordNote {
     }
 
     unless ( $args{'MIMEObj'} ) {
+        my $data = ref $args{'Content'}? $args{'Content'} : [ $args{'Content'} ];
         $args{'MIMEObj'} = MIME::Entity->build(
-            Data => ( ref $args{'Content'}? $args{'Content'}: [ $args{'Content'} ] )
+            Type    => "text/plain",
+            Charset => "UTF-8",
+            Data    => [ map {Encode::encode("UTF-8", $_)} @{$data} ],
         );
     }
 
@@ -1656,7 +1659,7 @@ sub DryRun {
         Type    => 'text/plain',
         Subject => defined $args{UpdateSubject} ? Encode::encode_utf8( $args{UpdateSubject} ) : "",
         Charset => 'UTF-8',
-        Data    => $args{'UpdateContent'} || "",
+        Data    => Encode::encode("UTF-8", $args{'UpdateContent'} || ""),
     );
 
     my ( $Transaction, $Description, $Object ) = $self->$action(
@@ -1686,12 +1689,12 @@ sub DryRunCreate {
     my $self = shift;
     my %args = @_;
     my $Message = MIME::Entity->build(
-        Type    => 'text/plain',
         Subject => defined $args{Subject} ? Encode::encode_utf8( $args{'Subject'} ) : "",
         (defined $args{'Cc'} ?
              ( Cc => Encode::encode_utf8( $args{'Cc'} ) ) : ()),
+        Type    => 'text/plain',
         Charset => 'UTF-8',
-        Data    => $args{'Content'} || "",
+        Data    => Encode::encode( "UTF-8", $args{'Content'} || ""),
     );
 
     my ( $Transaction, $Object, $Description ) = $self->Create(
@@ -3057,7 +3060,7 @@ sub Forward {
     my $mime = MIME::Entity->build(
         Subject => $args{Subject},
         Type    => $args{ContentType},
-        Data    => $args{Content},
+        Data    => Encode::encode( "UTF-8", $args{Content} ),
     );
 
     $mime->head->replace(

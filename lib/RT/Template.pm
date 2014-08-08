@@ -678,6 +678,7 @@ sub _DowngradeFromHTML {
     # need to decode_utf8, see the doc of MIMEObj method
     $body = Encode::decode_utf8( $body );
     my $html = RT::Interface::Email::ConvertHTMLToText( $body );
+    $html = Encode::encode( "UTF-8", $html );
     return unless defined $html;
 
     $new_entity->bodyhandle(MIME::Body::InCore->new( \$html ));

@@ -869,7 +869,9 @@ sub create_ticket {
         $args{'MIMEObj'} = MIME::Entity->build(
             From    => $args{'Requestor'},
             Subject => $args{'Subject'},
-            Data    => $content,
+            Type    => "text/plain",
+            Charset => "UTF-8",
+            Data    => Encode::encode( "UTF-8", $content ),
         );
     }
 

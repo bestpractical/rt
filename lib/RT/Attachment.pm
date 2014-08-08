@@ -150,12 +150,9 @@ sub Create {
     my $content;
     unless ( $head->get('Content-Length') ) {
         my $length = 0;
-        if ( defined $Attachment->bodyhandle ) {
-            $content = $Attachment->bodyhandle->as_string;
-            utf8::encode( $content ) if utf8::is_utf8( $content );
-            $length = length $content;
-        }
-        $head->replace( 'Content-Length' => $length );
+        $length = length $Attachment->bodyhandle->as_string
+            if defined $Attachment->bodyhandle;
+        $head->replace( 'Content-Length' => Encode::encode( "UTF-8", $length ) );
     }
     $head = $head->as_string;
 

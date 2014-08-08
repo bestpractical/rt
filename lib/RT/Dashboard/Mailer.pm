@@ -386,9 +386,14 @@ sub BuildEmail {
 
             $cid_of{$uri} = time() . $$ . int(rand(1e6));
 
-            # downgrade non-text strings, because all strings are utf8 by
-            # default, which is wrong for non-text strings.
-            if ( $mimetype !~ m{text/} ) {
+            # Encode textual data in UTF-8, and downgrade (treat
+            # codepoints as codepoints, and ensure the UTF-8 flag is
+            # off) everything else.
+            my @extra;
+            if ( $mimetype =~ m{text/} ) {
+                $data = Encode::encode( "UTF-8", $data );
+                @extra = ( Charset => "UTF-8" );
+            } else {
                 utf8::downgrade( $data, 1 ) or $RT::Logger->warning("downgrade $data failed");
             }
 
@@ -400,6 +405,7 @@ sub BuildEmail {
                 Disposition  => 'inline',
                 Name         => RT::Interface::Email::EncodeToMIME( String => $filename ),
                 'Content-Id' => $cid_of{$uri},
+                @extra,
             );
 
             return "cid:$cid_of{$uri}";

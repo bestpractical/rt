@@ -736,10 +736,10 @@ sub ParseLines {
     );
 
     if ( $args{content} ) {
-        my $mimeobj = MIME::Entity->new();
-        $mimeobj->build(
-            Type => $args{'contenttype'} || 'text/plain',
-            Data => $args{'content'}
+        my $mimeobj = MIME::Entity->build(
+            Type    => $args{'contenttype'} || 'text/plain',
+            Charset => 'UTF-8',
+            Data    => [ map {Encode::encode( "UTF-8", $_ )} @{$args{'content'}} ],
         );
         $ticketargs{MIMEObj} = $mimeobj;
         $ticketargs{UpdateType} = $args{'updatetype'} || 'correspond';
