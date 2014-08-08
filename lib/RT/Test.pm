@@ -685,12 +685,7 @@ sub __init_logging {
         $filter = $SIG{__WARN__};
     }
     $SIG{__WARN__} = sub {
-        if ($filter) {
-            my $status = $filter->(@_);
-            if ($status and $status eq 'IGNORE') {
-                return; # pretend the bad dream never happened
-            }
-        }
+        $filter->(@_) if $filter;
         # Avoid reporting this anonymous call frame as the source of the warning.
         goto &$Test_NoWarnings_Catcher;
     };
