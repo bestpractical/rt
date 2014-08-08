@@ -1,6 +1,5 @@
 use strict;
 use warnings;
-use utf8;
 
 # trs: I'd write a quick t/web/caching-headers.t file which loops the available
 #      endpoints checking for the right headers.

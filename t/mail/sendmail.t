@@ -6,7 +6,6 @@ use RT::Test tests => undef;
 use File::Spec ();
 use Email::Abstract;
 use Encode;
-use utf8;
 
 # We're not testing acls here.
 my $everyone = RT::Group->new(RT->SystemUser);
@@ -89,7 +88,7 @@ for my $encoding ('ISO-8859-1', 'UTF-8') {
           "We recorded the content type right");
     is( count_attachs($ticket), 1,
         "Has one attachment, presumably a text-plain");
-    is( $ticket->Subject, "тест тест",
+    is( $ticket->Subject, Encode::decode("UTF-8","тест тест"),
         "Recorded the subject right");
 
     is(@mail, 1);
