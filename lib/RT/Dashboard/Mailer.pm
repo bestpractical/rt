@@ -553,6 +553,9 @@ sub GetResource {
 
         for ($k, $v) { s/%(..)/chr hex $1/ge }
 
+        # Decode from bytes to characters
+        $_ = Encode::decode( "UTF-8", $_ ) for $k, $v;
+
         # no value yet, simple key=value
         if (!exists $args{$k}) {
             $args{$k} = $v;
