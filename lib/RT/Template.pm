@@ -602,17 +602,17 @@ sub _DowngradeFromHTML {
 
     require HTML::FormatText;
     require HTML::TreeBuilder;
-    require Encode;
-    # need to decode_utf8, see the doc of MIMEObj method
+    # MIME objects are always bytes, not characters
     my $tree = HTML::TreeBuilder->new_from_content(
-        Encode::decode_utf8($new_entity->bodyhandle->as_string)
+        Encode::decode( 'UTF-8', $new_entity->bodyhandle->as_string)
     );
-    $new_entity->bodyhandle(MIME::Body::InCore->new(
-        \(scalar HTML::FormatText->new(
-            leftmargin  => 0,
-            rightmargin => 78,
-        )->format( $tree ))
-    ));
+    my $text = HTML::FormatText->new(
+        leftmargin  => 0,
+        rightmargin => 78,
+    )->format( $tree );
+    $text = Encode::encode( "UTF-8", $text );
+
+    $new_entity->bodyhandle(MIME::Body::InCore->new( \$text ));
     $tree->delete;
 
     $orig_entity->add_part($new_entity, 0); # plain comes before html

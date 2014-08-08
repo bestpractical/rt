@@ -268,7 +268,11 @@ sub MailError {
     my $entity = MIME::Entity->build(%entity_args);
     SetInReplyTo( Message => $entity, InReplyTo => $args{'MIMEObj'} );
 
-    $entity->attach( Data => $args{'Explanation'} . "\n" );
+    $entity->attach(
+        Type    => "text/plain",
+        Charset => "UTF-8",
+        Data    => Encode::encode( "UTF-8", $args{'Explanation'} . "\n" ),
+    );
 
     if ( $args{'MIMEObj'} ) {
         $args{'MIMEObj'}->sync_headers;
@@ -276,7 +280,7 @@ sub MailError {
     }
 
     if ( $args{'Attach'} ) {
-        $entity->attach( Data => $args{'Attach'}, Type => 'message/rfc822' );
+        $entity->attach( Data => Encode::encode( "UTF-8", $args{'Attach'} ), Type => 'message/rfc822' );
 
     }
 
@@ -760,8 +764,9 @@ sub SendForward {
                 . $txn->id ." of a ticket #". $txn->ObjectId;
         }
         $mail = MIME::Entity->build(
-            Type => 'text/plain',
-            Data => $description,
+            Type    => 'text/plain',
+            Charset => "UTF-8",
+            Data    => Encode::encode( "UTF-8", $description ),
         );
     }
 

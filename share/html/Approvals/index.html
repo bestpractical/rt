@@ -72,12 +72,9 @@ foreach my $arg ( keys %ARGS ) {
     next if $skip_update;
 
     if ( $ARGS{ "Approval-" . $ticket->Id . "-Notes" } ) {
-        my $notes = MIME::Entity->build(
-	    Data => [ $ARGS{ "Approval-" . $ticket->Id . "-Notes" } ]
-	);
-	RT::I18N::SetMIMEEntityToUTF8($notes); # convert text parts into utf-8
-
-        my ( $notesval, $notesmsg ) = $ticket->Correspond( MIMEObj => $notes );
+        my ( $notesval, $notesmsg ) = $ticket->Correspond(
+            Content => $ARGS{ "Approval-" . $ticket->Id . "-Notes" }
+        );
         if ($notesval) {
                 push ( @actions, loc("Approval #[_1]: Notes recorded",$ticket->Id ));
         } else {

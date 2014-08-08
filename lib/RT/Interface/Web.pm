@@ -2154,7 +2154,7 @@ sub MakeMIMEEntity {
         $Message->attach(
             Type    => $args{'Type'} || 'text/plain',
             Charset => 'UTF-8',
-            Data    => $args{'Body'},
+            Data    => Encode::encode( "UTF-8", $args{'Body'} ),
         );
     }
 
@@ -2177,7 +2177,7 @@ sub MakeMIMEEntity {
             $Message->attach(
                 Type     => $uploadinfo->{'Content-Type'},
                 Filename => $filename,
-                Data     => \@content,
+                Data     => \@content, # Bytes, as read directly from the file, above
             );
             if ( !$args{'Subject'} && !( defined $args{'Body'} && length $args{'Body'} ) ) {
                 $Message->head->set( 'Subject' => $filename );
