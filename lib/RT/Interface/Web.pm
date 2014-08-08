@@ -1483,8 +1483,12 @@ sub StoreRequestToken {
     if ($ARGS->{Attach}) {
         my $attachment = HTML::Mason::Commands::MakeMIMEEntity( AttachmentFieldName => 'Attach' );
         my $file_path = delete $ARGS->{'Attach'};
+
+        # This needs to be decoded because the value is a reference;
+        # hence it was not decoded along with all of the standard
+        # arguments in DecodeARGS
         $data->{attach} = {
-            filename => Encode::decode_utf8("$file_path"),
+            filename => Encode::decode("UTF-8", "$file_path"),
             mime     => $attachment,
         };
     }
@@ -1975,7 +1979,7 @@ sub ProcessUpdateMessage {
         Interface => RT::Interface::Web::MobileClient() ? 'Mobile' : 'Web',
     );
 
-    $Message->head->replace( 'Message-ID' => Encode::encode_utf8(
+    $Message->head->replace( 'Message-ID' => Encode::encode( "UTF-8",
         RT::Interface::Email::GenMessageId( Ticket => $args{'TicketObj'} )
     ) );
     my $old_txn = RT::Transaction->new( $session{'CurrentUser'} );
@@ -2102,7 +2106,10 @@ sub ProcessAttachments {
     {    # attachment?
         my $attachment = MakeMIMEEntity( AttachmentFieldName => 'Attach' );
 
-        my $file_path = Encode::decode_utf8("$ARGSRef->{'Attach'}");
+        # This needs to be decoded because the value is a reference;
+        # hence it was not decoded along with all of the standard
+        # arguments in DecodeARGS
+        my $file_path = Encode::decode("UTF-8", "$ARGSRef->{'Attach'}");
         $session{'Attachments'} =
           { %{ $session{'Attachments'} || {} }, $file_path => $attachment, };
     }
@@ -2140,9 +2147,9 @@ sub MakeMIMEEntity {
     );
     my $Message = MIME::Entity->build(
         Type    => 'multipart/mixed',
-        "Message-Id" => Encode::encode_utf8( RT::Interface::Email::GenMessageId ),
+        "Message-Id" => Encode::encode( "UTF-8", RT::Interface::Email::GenMessageId ),
         "X-RT-Interface" => $args{Interface},
-        map { $_ => Encode::encode_utf8( $args{ $_} ) }
+        map { $_ => Encode::encode( "UTF-8", $args{ $_} ) }
             grep defined $args{$_}, qw(Subject From Cc)
     );
 

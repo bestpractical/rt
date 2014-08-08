@@ -990,7 +990,7 @@ sub SetSubjectToken {
     $self->SetHeader(
         Subject =>
             RT::Interface::Email::AddSubjectTag(
-                Encode::decode_utf8( $head->get('Subject') ),
+                Encode::decode( "UTF-8", $head->get('Subject') ),
                 $self->TicketObj,
             ),
     );

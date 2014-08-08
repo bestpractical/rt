@@ -630,7 +630,7 @@ sub SendEmailUsingTemplate {
         return -1;
     }
 
-    $mail->head->set( $_ => Encode::encode_utf8( $args{ $_ } ) )
+    $mail->head->set( $_ => Encode::encode( "UTF-8", $args{ $_ } ) )
         foreach grep defined $args{$_}, qw(To Cc Bcc From);
 
     $mail->head->set( $_ => Encode::encode( "UTF-8", $args{ExtraHeaders}{$_} ) )
@@ -1249,8 +1249,8 @@ sub SetInReplyTo {
         if @references > 10;
 
     my $mail = $args{'Message'};
-    $mail->head->set( 'In-Reply-To' => Encode::encode_utf8(join ' ', @rtid? (@rtid) : (@id)) ) if @id || @rtid;
-    $mail->head->set( 'References' => Encode::encode_utf8(join ' ', @references) );
+    $mail->head->set( 'In-Reply-To' => Encode::encode( "UTF-8", join ' ', @rtid? (@rtid) : (@id)) ) if @id || @rtid;
+    $mail->head->set( 'References' => Encode::encode( "UTF-8", join ' ', @references) );
 }
 
 sub ExtractTicketId {

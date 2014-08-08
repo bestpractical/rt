@@ -879,7 +879,7 @@ sub _GeneratePassword_sha512 {
 
     my $sha = Digest::SHA->new(512);
     $sha->add($salt);
-    $sha->add(encode_utf8($password));
+    $sha->add(Encode::encode( 'UTF-8', $password));
     return join("!", "", "sha512", $salt, $sha->b64digest);
 }
 
@@ -956,16 +956,16 @@ sub IsPassword {
         my $hash = MIME::Base64::decode_base64($stored);
         # Decoding yields 30 byes; first 4 are the salt, the rest are substr(SHA256,0,26)
         my $salt = substr($hash, 0, 4, "");
-        return 0 unless substr(Digest::SHA::sha256($salt . Digest::MD5::md5(encode_utf8($value))), 0, 26) eq $hash;
+        return 0 unless substr(Digest::SHA::sha256($salt . Digest::MD5::md5(Encode::encode( "UTF-8", $value))), 0, 26) eq $hash;
     } elsif (length $stored == 32) {
         # Hex nonsalted-md5
-        return 0 unless Digest::MD5::md5_hex(encode_utf8($value)) eq $stored;
+        return 0 unless Digest::MD5::md5_hex(Encode::encode( "UTF-8", $value)) eq $stored;
     } elsif (length $stored == 22) {
         # Base64 nonsalted-md5
-        return 0 unless Digest::MD5::md5_base64(encode_utf8($value)) eq $stored;
+        return 0 unless Digest::MD5::md5_base64(Encode::encode( "UTF-8", $value)) eq $stored;
     } elsif (length $stored == 13) {
         # crypt() output
-        return 0 unless crypt(encode_utf8($value), $stored) eq $stored;
+        return 0 unless crypt(Encode::encode( "UTF-8", $value), $stored) eq $stored;
     } else {
         $RT::Logger->warning("Unknown password form");
         return 0;
@@ -1054,8 +1054,7 @@ sub GenerateAuthString {
     my $self = shift;
     my $protect = shift;
 
-    my $str = $self->AuthToken . $protect;
-    utf8::encode($str);
+    my $str = Encode::encode( "UTF-8", $self->AuthToken . $protect );
 
     return substr(Digest::MD5::md5_hex($str),0,16);
 }
@@ -1072,8 +1071,7 @@ sub ValidateAuthString {
     my $auth_string = shift;
     my $protected = shift;
 
-    my $str = $self->AuthToken . $protected;
-    utf8::encode( $str );
+    my $str = Encode::encode( "UTF-8", $self->AuthToken . $protected );
 
     return $auth_string eq substr(Digest::MD5::md5_hex($str),0,16);
 }

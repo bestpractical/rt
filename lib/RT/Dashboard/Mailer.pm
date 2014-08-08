@@ -415,16 +415,16 @@ sub BuildEmail {
     );
 
     my $entity = MIME::Entity->build(
-        From    => Encode::encode_utf8($args{From}),
-        To      => Encode::encode_utf8($args{To}),
+        From    => Encode::encode("UTF-8", $args{From}),
+        To      => Encode::encode("UTF-8", $args{To}),
         Subject => RT::Interface::Email::EncodeToMIME( String => $args{Subject} ),
         Type    => "multipart/mixed",
     );
 
     $entity->attach(
-        Data        => Encode::encode_utf8($content),
         Type        => 'text/html',
         Charset     => 'UTF-8',
+        Data        => Encode::encode("UTF-8", $content),
         Disposition => 'inline',
         Encoding    => "base64",
     );

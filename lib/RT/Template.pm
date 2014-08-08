@@ -384,8 +384,8 @@ sub _Parse {
 
     ### Should we forgive normally-fatal errors?
     $parser->ignore_errors(1);
-    # MIME::Parser doesn't play well with perl strings
-    utf8::encode($content);
+    # Always provide bytes, not characters, to MIME objects
+    $content = Encode::encode( 'UTF-8', $content );
     $self->{'MIMEObj'} = eval { $parser->parse_data( \$content ) };
     if ( my $error = $@ || $parser->last_error ) {
         $RT::Logger->error( "$error" );

@@ -2283,13 +2283,13 @@ sub _RecordNote {
             my $addresses = join ', ', (
                 map { RT::User->CanonicalizeEmailAddress( $_->address ) }
                     Email::Address->parse( $args{ $type . 'MessageTo' } ) );
-            $args{'MIMEObj'}->head->replace( 'RT-Send-' . $type, Encode::encode_utf8( $addresses ) );
+            $args{'MIMEObj'}->head->replace( 'RT-Send-' . $type, Encode::encode( "UTF-8", $addresses ) );
         }
     }
 
     foreach my $argument (qw(Encrypt Sign)) {
         $args{'MIMEObj'}->head->replace(
-            "X-RT-$argument" => Encode::encode_utf8( $args{ $argument } )
+            "X-RT-$argument" => Encode::encode( "UTF-8", $args{ $argument } )
         ) if defined $args{ $argument };
     }
 
@@ -2300,7 +2300,7 @@ sub _RecordNote {
     my $msgid = Encode::decode( "UTF-8", $args{'MIMEObj'}->head->get('Message-ID') );
     unless (defined $msgid && $msgid =~ /<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@\Q$org\E>/) {
         $args{'MIMEObj'}->head->set(
-            'RT-Message-ID' => Encode::encode_utf8(
+            'RT-Message-ID' => Encode::encode( "UTF-8",
                 RT::Interface::Email::GenMessageId( Ticket => $self )
             )
         );
@@ -2344,8 +2344,8 @@ sub DryRun {
     }
 
     my $Message = MIME::Entity->build(
+        Subject => defined $args{UpdateSubject} ? Encode::encode( "UTF-8", $args{UpdateSubject} ) : "",
         Type    => 'text/plain',
-        Subject => defined $args{UpdateSubject} ? Encode::encode_utf8( $args{UpdateSubject} ) : "",
         Charset => 'UTF-8',
         Data    => Encode::encode("UTF-8", $args{'UpdateContent'} || ""),
     );
@@ -2376,9 +2376,9 @@ sub DryRunCreate {
     my $self = shift;
     my %args = @_;
     my $Message = MIME::Entity->build(
-        Subject => defined $args{Subject} ? Encode::encode_utf8( $args{'Subject'} ) : "",
+        Subject => defined $args{Subject} ? Encode::encode( "UTF-8", $args{'Subject'} ) : "",
         (defined $args{'Cc'} ?
-             ( Cc => Encode::encode_utf8( $args{'Cc'} ) ) : ()),
+             ( Cc => Encode::encode( "UTF-8", $args{'Cc'} ) ) : ()),
         Type    => 'text/plain',
         Charset => 'UTF-8',
         Data    => Encode::encode( "UTF-8", $args{'Content'} || ""),

@@ -81,7 +81,7 @@ $hideable = 1 if $rolledup;
 #
 my $page = $m->request_comp->path;
 
-my $title_b64 = MIME::Base64::encode_base64(Encode::encode_utf8($title), '');
+my $title_b64 = MIME::Base64::encode_base64(Encode::encode( "UTF-8", $title), '');
 
 my $tid  = "TitleBox--$page--" .
             join '--', ($class, $bodyclass, $title_b64, $id);

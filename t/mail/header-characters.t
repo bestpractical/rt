@@ -14,7 +14,7 @@ SKIP:{
       . "you have $Email::Address::VERSION", 3,
       if $Email::Address::VERSION < 1.893;
 
-    my $mail = encode( 'iso-8859-1', <<'.' );
+    my $mail = Encode::encode( 'iso-8859-1', <<'.' );
 From: René@example.com>
 Reply-To: =?iso-8859-1?Q?Ren=E9?= <René@example.com>
 Subject: testing non-ASCII From
@@ -42,7 +42,7 @@ SKIP:{
       . "you have $Email::Address::VERSION", 3,
       if $Email::Address::VERSION < 1.893;
 
-    my $mail = encode( 'iso-8859-1', <<'.' );
+    my $mail = Encode::encode( 'iso-8859-1', <<'.' );
 From: =?iso-8859-1?Q?Ren=E9?= <René@example.com>
 Reply-To: =?iso-8859-1?Q?Ren=E9?= <René@example.com>
 Subject: testing non-ASCII From

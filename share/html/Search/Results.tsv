@@ -70,7 +70,7 @@ my $col_entry = sub {
     delete $col->{title}
         if $col->{title} and $col->{title} =~ /^\s*#\s*$/;
     return {
-        header => Encode::encode_utf8(loc($col->{title} || $col->{attribute})),
+        header => Encode::encode( "UTF-8", loc($col->{title} || $col->{attribute})),
         map    => $m->comp(
             "/Elements/ColumnMap",
             Name  => $col->{attribute},
@@ -127,7 +127,7 @@ while (my $row = $Tickets->Next) {
             # remove tabs from all field values, they screw up the tsv
             $val = '' unless defined $val;
             $val =~ s/(?:\n|\r)//g; $val =~ s{\t}{    }g;
-            Encode::encode_utf8($val);
+            Encode::encode( "UTF-8", $val);
         } @$col)."\n");
     }
 }

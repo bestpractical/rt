@@ -72,7 +72,7 @@ foreach my $set ( 'ru', 'latin1' ) {
     my $status = 1;
     foreach my $mail ( @mails ) {
         my $entity = parse_mail( $mail );
-        my $subject = Encode::decode_utf8( $entity->head->get('Subject') );
+        my $subject = Encode::decode( "UTF-8", $entity->head->get('Subject') );
         $subject =~ /$string{$set}{test}/
             or do { $status = 0; diag "wrong subject: $subject" };
     }
@@ -101,7 +101,7 @@ diag "ascii subject with non-ascii subject tag";
     my $status = 1;
     foreach my $mail ( @mails ) {
         my $entity = parse_mail( $mail );
-        my $subject = Encode::decode_utf8( $entity->head->get('Subject') );
+        my $subject = Encode::decode( "UTF-8", $entity->head->get('Subject') );
         $subject =~ /$string{$tag_set}{support}/
             or do { $status = 0; diag "wrong subject: $subject" };
     }
@@ -122,7 +122,7 @@ foreach my $set ( 'ru', 'latin1' ) {
     my $status = 1;
     foreach my $mail ( @mails ) {
         my $entity = parse_mail( $mail );
-        my $subject = Encode::decode_utf8( $entity->head->get('Subject') );
+        my $subject = Encode::decode( "UTF-8", $entity->head->get('Subject') );
         $subject =~ /$string{$tag_set}{support}/
             or do { $status = 0; diag "wrong subject: $subject" };
         $subject =~ /$string{$set}{test}/
@@ -171,7 +171,7 @@ diag "ascii subject with non-ascii subject prefix in template";
     my $status = 1;
     foreach my $mail ( @mails ) {
         my $entity = parse_mail( $mail );
-        my $subject = Encode::decode_utf8( $entity->head->get('Subject') );
+        my $subject = Encode::decode( "UTF-8", $entity->head->get('Subject') );
         $subject =~ /$string{$prefix_set}{autoreply}/
             or do { $status = 0; diag "wrong subject: $subject" };
     }
@@ -192,7 +192,7 @@ foreach my $set ( 'ru', 'latin1' ) {
     my $status = 1;
     foreach my $mail ( @mails ) {
         my $entity = parse_mail( $mail );
-        my $subject = Encode::decode_utf8( $entity->head->get('Subject') );
+        my $subject = Encode::decode( "UTF-8", $entity->head->get('Subject') );
         $subject =~ /$string{$prefix_set}{autoreply}/
             or do { $status = 0; diag "wrong subject: $subject" };
         $subject =~ /$string{$set}{test}/
@@ -222,7 +222,7 @@ foreach my $set ( 'ru', 'latin1' ) {
     my $status = 1;
     foreach my $mail ( @mails ) {
         my $entity = parse_mail( $mail );
-        my $subject = Encode::decode_utf8( $entity->head->get('Subject') );
+        my $subject = Encode::decode( "UTF-8", $entity->head->get('Subject') );
         $subject =~ /$string{$prefix_set}{autoreply}/
             or do { $status = 0; diag "wrong subject: $subject" };
         $subject =~ /$string{$tag_set}{support}/
@@ -275,7 +275,7 @@ foreach my $set ( 'ru', 'latin1' ) {
     my $status = 1;
     foreach my $mail ( @mails ) {
         my $entity = parse_mail( $mail );
-        my $subject = Encode::decode_utf8( $entity->head->get('Subject') );
+        my $subject = Encode::decode( "UTF-8", $entity->head->get('Subject') );
         $subject =~ /$string{$set}{test}/
             or do { $status = 0; diag "wrong subject: $subject" };
     }
@@ -303,7 +303,7 @@ foreach my $set ( 'ru', 'latin1' ) {
     my $status = 1;
     foreach my $mail ( @mails ) {
         my $entity = parse_mail( $mail );
-        my $subject = Encode::decode_utf8( $entity->head->get('Subject') );
+        my $subject = Encode::decode( "UTF-8", $entity->head->get('Subject') );
         $subject =~ /$string{$set}{test}/
             or do { $status = 0; diag "wrong subject: $subject" };
         $subject =~ /$string{$tag_set}{support}/

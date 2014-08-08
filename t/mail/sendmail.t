@@ -115,7 +115,7 @@ for my $encoding ('ISO-8859-1', 'UTF-8') {
     my $encoded_subject = $mail[0]->head->get("Subject");
     chomp $encoded_subject;
     my $subject = decode('MIME-Header',$encoded_subject);
-    like($subject, qr/Niv\x{e5}er/, encode_utf8("The subject matches the word - $subject"));
+    like($subject, qr/Niv\x{e5}er/, Encode::encode("UTF-8", "The subject matches the word - $subject"));
 }
 
 {
