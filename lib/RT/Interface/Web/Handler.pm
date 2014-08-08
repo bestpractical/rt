@@ -329,7 +329,6 @@ sub _psgi_response_cb {
                          return '';
                      }
                      return utf8::is_utf8($_[0]) ? Encode::encode( "UTF-8", $_[0]) : $_[0];
-                     return $_[0];
                  };
              });
     }
