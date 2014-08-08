@@ -299,8 +299,8 @@ sub ParseCcAddressesFromHead {
 
     my (@Addresses);
 
-    my @ToObjs = Email::Address->parse( $self->Head->get('To') );
-    my @CcObjs = Email::Address->parse( $self->Head->get('Cc') );
+    my @ToObjs = Email::Address->parse( Encode::decode( "UTF-8", $self->Head->get('To') ) );
+    my @CcObjs = Email::Address->parse( Encode::decode( "UTF-8", $self->Head->get('Cc') ) );
 
     foreach my $AddrObj ( @ToObjs, @CcObjs ) {
         my $Address = $AddrObj->address;

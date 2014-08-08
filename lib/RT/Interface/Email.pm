@@ -110,7 +110,7 @@ sub CheckForLoops {
     my $head = shift;
 
     # If this instance of RT sent it our, we don't want to take it in
-    my $RTLoop = $head->get("X-RT-Loop-Prevention") || "";
+    my $RTLoop = Encode::decode( "UTF-8", $head->get("X-RT-Loop-Prevention") || "" );
     chomp ($RTLoop); # remove that newline
     if ( $RTLoop eq RT->Config->Get('rtname') ) {
         return 1;
@@ -248,16 +248,17 @@ sub MailError {
     # the colons are necessary to make ->build include non-standard headers
     my %entity_args = (
         Type                    => "multipart/mixed",
-        From                    => $args{'From'},
-        Bcc                     => $args{'Bcc'},
-        To                      => $args{'To'},
-        Subject                 => $args{'Subject'},
-        'X-RT-Loop-Prevention:' => RT->Config->Get('rtname'),
+        From                    => Encode::encode( "UTF-8", $args{'From'} ),
+        Bcc                     => Encode::encode( "UTF-8", $args{'Bcc'} ),
+        To                      => Encode::encode( "UTF-8", $args{'To'} ),
+        Subject                 => EncodeToMIME( String => $args{'Subject'} ),
+        'X-RT-Loop-Prevention:' => Encode::encode( "UTF-8", RT->Config->Get('rtname') ),
     );
 
     # only set precedence if the sysadmin wants us to
     if (defined(RT->Config->Get('DefaultErrorMailPrecedence'))) {
-        $entity_args{'Precedence:'} = RT->Config->Get('DefaultErrorMailPrecedence');
+        $entity_args{'Precedence:'} =
+            Encode::encode( "UTF-8", RT->Config->Get('DefaultErrorMailPrecedence') );
     }
 
     my $entity = MIME::Entity->build(%entity_args);
@@ -366,7 +367,7 @@ sub SendEmail {
         return 0;
     }
 
-    my $msgid = $args{'Entity'}->head->get('Message-ID') || '';
+    my $msgid = Encode::decode( "UTF-8", $args{'Entity'}->head->get('Message-ID') || '' );
     chomp $msgid;
     
     # If we don't have any recipients to send to, don't send a message;
@@ -386,7 +387,7 @@ sub SendEmail {
     if (my $precedence = RT->Config->Get('DefaultMailPrecedence')
         and !$args{'Entity'}->head->get("Precedence")
     ) {
-        $args{'Entity'}->head->replace( 'Precedence', $precedence );
+        $args{'Entity'}->head->replace( 'Precedence', Encode::encode("UTF-8",$precedence) );
     }
 
     if ( $TransactionObj && !$TicketObj
@@ -400,7 +401,7 @@ sub SendEmail {
         require RT::Date;
         my $date = RT::Date->new( RT->SystemUser );
         $date->SetToNow;
-        $head->replace( 'Date', $date->RFC2822( Timezone => 'server' ) );
+        $head->replace( 'Date', Encode::encode("UTF-8",$date->RFC2822( Timezone => 'server' ) ) );
     }
     unless ( $head->get('MIME-Version') ) {
         # We should never have to set the MIME-Version header
@@ -590,7 +591,7 @@ sub SendEmailUsingTemplate {
     $mail->head->replace( $_ => Encode::encode_utf8( $args{ $_ } ) )
         foreach grep defined $args{$_}, qw(To Cc Bcc From);
 
-    $mail->head->replace( $_ => $args{ExtraHeaders}{$_} )
+    $mail->head->replace( $_ => Encode::encode( "UTF-8", $args{ExtraHeaders}{$_} ) )
         foreach keys %{ $args{ExtraHeaders} };
 
     SetInReplyTo( Message => $mail, InReplyTo => $args{'InReplyTo'} );
@@ -673,7 +674,7 @@ sub SignEncrypt {
     );
     return 1 unless $args{'Sign'} || $args{'Encrypt'};
 
-    my $msgid = $args{'Entity'}->head->get('Message-ID') || '';
+    my $msgid = Encode::decode( "UTF-8", $args{'Entity'}->head->get('Message-ID') || '' );
     chomp $msgid;
 
     $RT::Logger->debug("$msgid Signing message") if $args{'Sign'};
@@ -914,7 +915,8 @@ sub ParseCcAddressesFromHead {
     return
         grep $_ ne $current_address && !RT::EmailParser->IsRTAddress( $_ ),
         map lc $user->CanonicalizeEmailAddress( $_->address ),
-        map RT::EmailParser->CleanupAddresses( Email::Address->parse( $args{'Head'}->get( $_ ) ) ),
+        map RT::EmailParser->CleanupAddresses( Email::Address->parse(
+              Encode::decode( "UTF-8", $args{'Head'}->get( $_ ) ) ) ),
         qw(To Cc);
 }
 
@@ -940,7 +942,7 @@ sub ParseSenderAddressFromHead {
 
     #Figure out who's sending this message.
     foreach my $header ( @sender_headers ) {
-        my $addr_line = $head->get($header) || next;
+        my $addr_line = Encode::decode( "UTF-8", $head->get($header) ) || next;
         my ($addr, $name) = ParseAddressFromHeader( $addr_line );
         # only return if the address is not empty
         return ($addr, $name, @errors) if $addr;
@@ -968,7 +970,7 @@ sub ParseErrorsToAddressFromHead {
     foreach my $header ( 'Errors-To', 'Reply-To', 'From', 'Sender' ) {
 
         # If there's a header of that name
-        my $headerobj = $head->get($header);
+        my $headerobj = Encode::decode( "UTF-8", $head->get($header) );
         if ($headerobj) {
             my ( $addr, $name ) = ParseAddressFromHeader($headerobj);
 
@@ -1013,9 +1015,9 @@ sub DeleteRecipientsFromHead {
     my %skip = map { lc $_ => 1 } @_;
 
     foreach my $field ( qw(To Cc Bcc) ) {
-        $head->replace( $field =>
+        $head->replace( $field => Encode::encode( "UTF-8",
             join ', ', map $_->format, grep !$skip{ lc $_->address },
-                Email::Address->parse( $head->get( $field ) )
+                Email::Address->parse( Encode::decode( "UTF-8", $head->get( $field ) ) ) )
         );
     }
 }
@@ -1048,7 +1050,7 @@ sub SetInReplyTo {
     my $get_header = sub {
         my @res;
         if ( $args{'InReplyTo'}->isa('MIME::Entity') ) {
-            @res = $args{'InReplyTo'}->head->get( shift );
+            @res = map {Encode::decode("UTF-8", $_)} $args{'InReplyTo'}->head->get( shift );
         } else {
             @res = $args{'InReplyTo'}->GetHeader( shift ) || '';
         }
@@ -1096,7 +1098,7 @@ mail gateway code before Ticket creation.
 sub ExtractTicketId {
     my $entity = shift;
 
-    my $subject = $entity->head->get('Subject') || '';
+    my $subject = Encode::decode( "UTF-8", $entity->head->get('Subject') || '' );
     chomp $subject;
     return ParseTicketId( $subject );
 }
@@ -1319,14 +1321,14 @@ sub Gateway {
     my $head = $Message->head;
     my $ErrorsTo = ParseErrorsToAddressFromHead( $head );
     my $Sender = (ParseSenderAddressFromHead( $head ))[0];
-    my $From = $head->get("From");
+    my $From = Encode::decode( "UTF-8", $head->get("From") );
     chomp $From if defined $From;
 
-    my $MessageId = $head->get('Message-ID')
+    my $MessageId = Encode::decode( "UTF-8", $head->get('Message-ID') )
         || "<no-message-id-". time . rand(2000) .'@'. RT->Config->Get('Organization') .'>';
 
     #Pull apart the subject line
-    my $Subject = $head->get('Subject') || '';
+    my $Subject = Encode::decode( "UTF-8", $head->get('Subject') || '');
     chomp $Subject;
     
     # Lets check for mail loops of various sorts.
@@ -1349,7 +1351,7 @@ sub Gateway {
     $args{'ticket'} ||= ExtractTicketId( $Message );
 
     # ExtractTicketId may have been overridden, and edited the Subject
-    my $NewSubject = $Message->head->get('Subject');
+    my $NewSubject = Encode::decode( "UTF-8", $Message->head->get('Subject') );
     chomp $NewSubject;
 
     $SystemTicket = RT::Ticket->new( RT->SystemUser );
@@ -1593,7 +1595,7 @@ sub _RunUnsafeAction {
         @_
     );
 
-    my $From = $args{Message}->head->get("From");
+    my $From = Encode::decode( "UTF-8", $args{Message}->head->get("From") );
 
     if ( $args{'Action'} =~ /^take$/i ) {
         my ( $status, $msg ) = $args{'Ticket'}->SetOwner( $args{'CurrentUser'}->id );
@@ -1749,7 +1751,7 @@ sub _HandleMachineGeneratedMail {
         # to the scrip. We might want to notify nobody. Or just
         # the RT Owner. Or maybe all Privileged watchers.
         my ( $Sender, $junk ) = ParseSenderAddressFromHead($head);
-        $head->replace( 'RT-Squelch-Replies-To',    $Sender );
+        $head->replace( 'RT-Squelch-Replies-To',    Encode::encode("UTF-8", $Sender ) );
         $head->replace( 'RT-DetectedAutoGenerated', 'true' );
     }
     return ( 1, $ErrorsTo, "Handled machine detection", $IsALoop );

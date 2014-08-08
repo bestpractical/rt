@@ -193,8 +193,8 @@ else {
             $v{MIMEObj} =
                 MIME::Entity->build(
                     Type => "multipart/mixed",
-                    From => $session{CurrentUser}->EmailAddress,
-                    Subject => $v{Subject},
+                    From => Encode::encode( "UTF-8", $session{CurrentUser}->EmailAddress ),
+                    Subject => Encode::encode( "UTF-8", $v{Subject}),
                     'X-RT-Interface' => 'REST',
                 );
             $v{MIMEObj}->attach(

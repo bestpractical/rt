@@ -867,8 +867,8 @@ sub create_ticket {
 
     if ( my $content = delete $args{'Content'} ) {
         $args{'MIMEObj'} = MIME::Entity->build(
-            From    => $args{'Requestor'},
-            Subject => $args{'Subject'},
+            From    => Encode::encode( "UTF-8", $args{'Requestor'} ),
+            Subject => RT::Interface::Email::EncodeToMIME( String => $args{'Subject'} ),
             Type    => "text/plain",
             Charset => "UTF-8",
             Data    => Encode::encode( "UTF-8", $content ),

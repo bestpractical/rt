@@ -125,7 +125,7 @@ sub mime_recommended_filename {
     $head = $head->head if $head->isa('MIME::Entity');
 
     for my $attr_name (qw( content-disposition.filename content-type.name )) {
-        my $value = $head->mime_attr($attr_name);
+        my $value = Encode::decode("UTF-8",$head->mime_attr($attr_name));
         if ( defined $value && $value =~ /\S/ ) {
             return $value;
         }

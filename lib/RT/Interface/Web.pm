@@ -2494,16 +2494,16 @@ sub MakeMIMEEntity {
 
             my $uploadinfo = $cgi_object->uploadInfo($filehandle);
 
-            my $filename = "$filehandle";
+            my $filename = Encode::decode("UTF-8","$filehandle");
             $filename =~ s{^.*[\\/]}{};
 
             $Message->attach(
                 Type     => $uploadinfo->{'Content-Type'},
-                Filename => $filename,
+                Filename => Encode::encode("UTF-8",$filename),
                 Data     => \@content, # Bytes, as read directly from the file, above
             );
             if ( !$args{'Subject'} && !( defined $args{'Body'} && length $args{'Body'} ) ) {
-                $Message->head->replace( 'Subject' => $filename );
+                $Message->head->replace( 'Subject' => Encode::encode( "UTF-8", $filename ) );
             }
 
             # Attachment parts really shouldn't get a Message-ID or "interface"

@@ -110,7 +110,7 @@ sub Prepare {
     my $txn_attachment = $self->TransactionObj->Attachments->First;
     for my $header (qw/From To Cc Bcc/) {
         if ( $txn_attachment->GetHeader( $header ) ) {
-            $mime->head->replace( $header => $txn_attachment->GetHeader($header) );
+            $mime->head->replace( $header => Encode::encode( "UTF-8", $txn_attachment->GetHeader($header) ) );
         }
     }
 
