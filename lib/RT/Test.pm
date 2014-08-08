@@ -164,6 +164,8 @@ sub import {
 
     $class->set_config_wrapper;
 
+    $class->encode_output;
+
     my $screen_logger = $RT::Logger->remove( 'screen' );
     require Log::Dispatch::Perl;
     $RT::Logger->add( Log::Dispatch::Perl->new
@@ -415,6 +417,13 @@ sub set_config_wrapper {
         }
         return $old_sub->(@_);
     };
+}
+
+sub encode_output {
+    my $builder = Test::More->builder;
+    binmode $builder->output,         ":encoding(utf8)";
+    binmode $builder->failure_output, ":encoding(utf8)";
+    binmode $builder->todo_output,    ":encoding(utf8)";
 }
 
 sub bootstrap_db {
