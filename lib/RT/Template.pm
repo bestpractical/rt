@@ -672,7 +672,6 @@ sub _DowngradeFromHTML {
     $orig_entity->head->mime_attr( "Content-Type" => 'text/html' );
     $orig_entity->head->mime_attr( "Content-Type.charset" => 'utf-8' );
 
-    require Encode;
     my $body = $new_entity->bodyhandle->as_string;
     $body = Encode::decode( "UTF-8", $body );
     my $html = RT::Interface::Email::ConvertHTMLToText( $body );

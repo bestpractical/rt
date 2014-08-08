@@ -68,7 +68,6 @@ use URI qw();
 use RT::Interface::Web::Menu;
 use RT::Interface::Web::Session;
 use Digest::MD5 ();
-use Encode qw();
 use List::MoreUtils qw();
 use JSON qw();
 use Plack::Util;

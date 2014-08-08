@@ -53,6 +53,7 @@ use 5.010;
 package RT;
 
 
+use Encode ();
 use File::Spec ();
 use Cwd ();
 use Scalar::Util qw(blessed);

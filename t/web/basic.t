@@ -1,7 +1,6 @@
 
 use strict;
 use warnings;
-use Encode;
 
 use RT::Test tests => 24;
 

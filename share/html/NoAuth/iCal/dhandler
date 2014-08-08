@@ -48,7 +48,6 @@
 <%init>
 use Data::ICal;
 use Data::ICal::Entry::Event;
-use Encode ();
 
 my $path = $m->dhandler_arg;
 

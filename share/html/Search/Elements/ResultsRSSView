@@ -46,8 +46,6 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-use Encode ();
-
 my $old_current_user;
 
 if ( $m->request_comp->path =~ RT->Config->Get('WebNoAuthRegex') ) {

@@ -75,7 +75,6 @@ require RT::User;
 require RT::Attributes;
 require RT::Transactions;
 require RT::Link;
-use Encode qw();
 
 our $_TABLE_ATTR = { };
 

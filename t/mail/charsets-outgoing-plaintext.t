@@ -1,6 +1,5 @@
 use strict;
 use warnings;
-use Encode;
 
 use RT::Test tests => 79, text_templates => 1;
 
