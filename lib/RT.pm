@@ -261,6 +261,9 @@ sub InitLogging {
             $frame++ while caller($frame) && caller($frame) =~ /^Log::/;
             my ($package, $filename, $line) = caller($frame);
 
+            # Encode to bytes, so we don't send wide characters
+            $p{message} = Encode::encode("UTF-8", $p{message});
+
             $p{'message'} =~ s/(?:\r*\n)+$//;
             return "[$$] [". gmtime(time) ."] [". $p{'level'} ."]: "
                 . $p{'message'} ." ($filename:$line)\n";
@@ -276,8 +279,8 @@ sub InitLogging {
             $frame++ while caller($frame) && caller($frame) =~ /^Log::/;
             my ($package, $filename, $line) = caller($frame);
 
-            # syswrite() cannot take utf8; turn it off here.
-            Encode::_utf8_off($p{message});
+            # Encode to bytes, so we don't send wide characters
+            $p{message} = Encode::encode("UTF-8", $p{message});
 
             $p{message} =~ s/(?:\r*\n)+$//;
             if ($p{level} eq 'debug') {

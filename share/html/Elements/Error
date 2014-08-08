@@ -78,11 +78,7 @@ $SuppressHeader => 0,
 my $error = "WebRT: $Why";
 $error .= " ($Details)" if defined $Details && length $Details;
 
-# TODO: Log::Dispatch isn't UTF-8 safe. Autrijus needs to talk to dave rolsky about getting this fixed
-use Encode ();
-Encode::_utf8_off($error);
-
-$RT::Logger->error($error);
+$RT::Logger->error( $error );
 
 if ( $session{'REST'} ) {
     $r->content_type('text/plain');
