@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 use File::Spec;
-use utf8;
 
 $ENV{RT_TEST_WEB_HANDLER} = 'plack+rt-server';
 use RT::Test
@@ -32,10 +31,10 @@ $m->get_ok($url);
 is( $m->uri, $url . '/Install/index.html', 'install page' );
 $m->select( 'Lang', 'zh-cn' );
 $m->click('ChangeLang');
-$m->content_contains( '语言', 'select chinese' );
+$m->content_contains( Encode::decode("UTF-8",'语言'), 'select chinese' );
 
 $m->click('Run');
-$m->content_contains( '数据库', 'select db type in chinese' );
+$m->content_contains( Encode::decode("UTF-8",'数据库'), 'select db type in chinese' );
 
 $m->back;
 $m->select( 'Lang', 'en' );

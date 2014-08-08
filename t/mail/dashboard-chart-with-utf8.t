@@ -6,8 +6,6 @@ use RT::Test tests => undef;
 plan skip_all => 'GD required'
     unless GD->require;
 
-use utf8;
-
 my $root = RT::Test->load_or_create_user( Name => 'root' );
 
 my ( $baseurl, $m ) = RT::Test->started_ok;
@@ -15,11 +13,11 @@ ok( $m->login, 'logged in' );
 my $ticket = RT::Ticket->new( $RT::SystemUser );
 $ticket->Create(
     Queue   => 'General',
-    Subject => 'test äöü',
+    Subject => Encode::decode("UTF-8",'test äöü'),
 );
 ok( $ticket->id, 'created ticket' );
 
-$m->get_ok(q{/Search/Chart.html?Query=Subject LIKE 'test äöü'});
+$m->get_ok(Encode::decode("UTF-8", q{/Search/Chart.html?Query=Subject LIKE 'test äöü'}));
 $m->submit_form(
     form_name => 'SaveSearch',
     fields    => {
@@ -52,7 +50,7 @@ $m->field( 'Hour'      => '06:00' );
 $m->click_button( name => 'Save' );
 $m->content_contains('Subscribed to dashboard dashboard foo');
 
-my $c     = $m->get(q{/Search/Chart?Query=Subject LIKE 'test äöü'});
+my $c     = $m->get(Encode::decode("UTF-8",q{/Search/Chart?Query=Subject LIKE 'test äöü'}));
 my $image = $c->content;
 RT::Test->run_and_capture(
     command => $RT::SbinPath . '/rt-email-dashboards', all => 1
