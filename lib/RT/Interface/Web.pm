@@ -1121,6 +1121,14 @@ sub StripContent {
 sub DecodeARGS {
     my $ARGS = shift;
 
+    # Later in the code we use
+    # $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %ARGS );
+    # instead of $m->call_next to avoid problems with UTF8 keys in
+    # arguments.  Specifically, the call_next method pass through
+    # original arguments, which are still the encoded bytes, not
+    # characters.  "{ base_comp => $m->request_comp }" is copied from
+    # mason's source to get the same results as we get from call_next
+    # method; this feature is not documented.
     %{$ARGS} = map {
 
         # if they've passed multiple values, they'll be an array. if they've
@@ -1142,17 +1150,6 @@ sub DecodeARGS {
 
 sub PreprocessTimeUpdates {
     my $ARGS = shift;
-
-    # Later in the code we use
-    # $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %ARGS );
-    # instead of $m->call_next to avoid problems with UTF8 keys in arguments.
-    # The call_next method pass through original arguments and if you have
-    # an argument with unicode key then in a next component you'll get two
-    # records in the args hash: one with key without UTF8 flag and another
-    # with the flag, which may result into errors. "{ base_comp => $m->request_comp }"
-    # is copied from mason's source to get the same results as we get from
-    # call_next method, this feature is not documented, so we just leave it
-    # here to avoid possible side effects.
 
     # This code canonicalizes time inputs in hours into minutes
     foreach my $field ( keys %$ARGS ) {
