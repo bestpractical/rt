@@ -283,10 +283,8 @@ our %STATISTICS_META = (
             my $self = shift;
             my $field = shift || 'id';
 
-            # UseSQLForACLChecks may add late joins
-            my $joined = ($self->_isJoined || RT->Config->Get('UseSQLForACLChecks')) ? 1 : 0;
             return (
-                FUNCTION => ($joined ? 'DISTINCT COUNT' : 'COUNT'),
+                FUNCTION => 'COUNT',
                 FIELD    => 'id'
             );
         },
@@ -463,6 +461,29 @@ sub SetupGroupings {
     );
 
     $self->FromSQL( $args{'Query'} ) if $args{'Query'};
+
+    # Apply ACL checks
+    $self->CurrentUserCanSee if RT->Config->Get('UseSQLForACLChecks');
+
+    # See if our query is distinct
+    if (not $self->{'joins_are_distinct'} and $self->_isJoined) {
+        # If it isn't, we need to do this in two stages -- first, find
+        # the distinct matching tickets (with no group by), then search
+        # within the matching tickets grouped by what is wanted.
+        my @match;
+        $self->Columns( 'id' );
+        while (my $row = $self->Next) {
+            push @match, $row->id;
+        }
+
+        # Replace the query with one that matches precisely those
+        # tickets, with no joins.  We then mark it as having been ACL'd,
+        # since it was by dint of being in the search results above
+        $self->CleanSlate;
+        $self->Limit( FIELD => 'Id', OPERATOR => 'IN', VALUE => \@match );
+        $self->{'_sql_current_user_can_see_applied'} = 1
+    }
+
 
     %GROUPINGS = @GROUPINGS unless keys %GROUPINGS;
 
