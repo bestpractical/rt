@@ -220,11 +220,19 @@ jQuery( function() {
        };
        jQuery('#recipients div.titlebox-content').load( '<% RT->Config->Get('WebPath')%>/Helpers/ShowSimplifiedRecipients',
            jQuery('form[name=TicketUpdate]').serialize(),
-           function() { jQuery("#recipients input[name=TxnSendMailTo]").change( syncCheckboxes ); }
+           function() {
+               var txn_send_field = jQuery("#recipients input[name=TxnSendMailTo]");
+               txn_send_field.change( syncCheckboxes );
+               setCheckbox(txn_send_field);
+           }
        );
        jQuery('#previewscrips div.titlebox-content').load( '<% RT->Config->Get('WebPath')%>/Helpers/PreviewScrips',
            jQuery('form[name=TicketUpdate]').serialize(),
-           function() { jQuery("#previewscrips input[name=TxnSendMailTo]").change( syncCheckboxes ); }
+           function() {
+               var txn_send_field = jQuery("#previewscrips input[name=TxnSendMailTo]");
+               txn_send_field.change( syncCheckboxes );
+               setCheckbox(txn_send_field);
+           }
        );
    };
    updateScrips();

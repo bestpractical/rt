@@ -91,7 +91,7 @@ function setCheckbox(input, name, val) {
 
     var is_set_event = false;
     if ( !name ) {
-        name = input.name;
+        name = input.name || input.attr('name');
         is_set_event = true;
     }
     else {
