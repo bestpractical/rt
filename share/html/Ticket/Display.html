@@ -67,7 +67,7 @@
 % $m->callback( Ticket => $TicketObj, %ARGS, Transactions => $transactions, Attachments => $attachments, CallbackName => 'BeforeShowHistory' );
 
 % my $ShowHistory = RT->Config->Get("ShowHistory", $session{'CurrentUser'});
-% if (not $ForceShowHistory and $ShowHistory eq "delay") {
+% if ($ShowHistory eq "delay") {
     <& /Ticket/Elements/DelayShowHistory,
         Ticket => $TicketObj,
         ShowHeaders => $ARGS{'ShowHeaders'},
