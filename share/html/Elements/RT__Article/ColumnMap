@@ -70,6 +70,11 @@ $COLUMN_MAP = {
         title     => 'Class id',                   # loc
         value     => sub { $_[0]->Class },
     },
+    URI => {
+        attribute => 'URI',
+        title     => 'URI',                   # loc
+        value     => sub { $_[0]->URI },
+    },
     ClassName => {
         attribute => 'Class',
         title     => 'Class',                               # loc
