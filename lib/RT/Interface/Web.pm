@@ -823,7 +823,7 @@ sub AttemptPasswordAuthentication {
         InstantiateNewSession();
         $HTML::Mason::Commands::session{'CurrentUser'} = $user_obj;
 
-        $m->callback( %$ARGS, CallbackName => 'SuccessfulLogin', CallbackPage => '/autohandler' );
+        $m->callback( %$ARGS, CallbackName => 'SuccessfulLogin', CallbackPage => '/autohandler', RedirectTo => \$next );
 
         # Really the only time we don't want to redirect here is if we were
         # passed user and pass as query params in the URL.
