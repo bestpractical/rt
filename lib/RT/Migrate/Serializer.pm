@@ -398,7 +398,7 @@ sub Observe {
         return $self->{FollowTickets};
     } elsif ($obj->isa("RT::ACE")) {
         return $self->{FollowACL};
-    } elsif ($obj->isa("RT::Scrip") or $obj->isa("RT::Template")) {
+    } elsif ($obj->isa("RT::Scrip") or $obj->isa("RT::Template") or $obj->isa("RT::ObjectScrip")) {
         return $self->{FollowScrips};
     } elsif ($obj->isa("RT::GroupMember")) {
         my $grp = $obj->GroupObj->Object;

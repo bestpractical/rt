@@ -1106,8 +1106,15 @@ sub FindDependencies {
     $deps->Add( in => $objs );
 
     # Scrips
-    $objs = RT::Scrips->new( $self->CurrentUser );
-    $objs->LimitToQueue( $self->id );
+    $objs = RT::ObjectScrips->new( $self->CurrentUser );
+    $objs->Limit( FIELD           => 'ObjectId',
+                  OPERATOR        => '=',
+                  VALUE           => $self->id,
+                  ENTRYAGGREGATOR => 'OR' );
+    $objs->Limit( FIELD           => 'ObjectId',
+                  OPERATOR        => '=',
+                  VALUE           => 0,
+                  ENTRYAGGREGATOR => 'OR' );
     $deps->Add( in => $objs );
 
     # Templates (global ones have already been dealt with)
