@@ -54,12 +54,15 @@ $TicketObj->Load($id);
 
 my $attachments = $TicketObj->Attachments;
 my $attachment_content = $TicketObj->TextAttachments;
+my %extra_args;
+$m->callback( CallbackName => 'ExtraShowHistoryArguments', Ticket => $TicketObj, ExtraArgs => \%extra_args );
 </%INIT>
 <& /Elements/ShowHistory,
     Object => $TicketObj,
     ShowHeaders => $ARGS{'ShowHeaders'},
     Attachments => $attachments,
-    AttachmentContent => $attachment_content
+    AttachmentContent => $attachment_content,
+    %extra_args,
     &>
 <script type="text/javascript">ReplaceUserReferences()</script>
 % $m->abort();
