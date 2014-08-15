@@ -1,2 +1,3 @@
-ALTER TABLE Templates DROP COLUMN Language;
-ALTER TABLE Templates DROP COLUMN TranslationOf;
+ALTER TABLE Templates
+    DROP COLUMN Language,
+    DROP COLUMN TranslationOf;

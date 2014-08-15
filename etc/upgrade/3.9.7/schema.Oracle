@@ -1,6 +1,12 @@
 ALTER TABLE Users ADD AuthToken VARCHAR2(16) NULL;
-ALTER TABLE CustomFields ADD BasedOn NUMBER(11,0) NULL;
-ALTER TABLE CustomFields ADD RenderType VARCHAR2(64) NULL;
-ALTER TABLE CustomFields ADD ValuesClass VARCHAR2(64) NULL;
-ALTER TABLE Queues ADD SubjectTag VARCHAR2(120) NULL;
-ALTER TABLE Queues ADD Lifecycle VARCHAR2(32) NULL;
+
+ALTER TABLE CustomFields ADD(
+    BasedOn NUMBER(11,0) NULL,
+    RenderType VARCHAR2(64) NULL,
+    ValuesClass VARCHAR2(64) NULL
+);
+
+ALTER TABLE Queues ADD(
+    SubjectTag VARCHAR2(120) NULL,
+    Lifecycle VARCHAR2(32) NULL
+);
