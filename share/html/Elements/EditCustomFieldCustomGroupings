@@ -49,6 +49,7 @@
 <&| /Widgets/TitleBox,
     title => $group? loc($group) : loc('Custom Fields'),
     class => $css_class .' '. ($group? CSSClass("$css_class-$group") : ''),
+    ($group ? (id => CSSClass("$css_class-$group")) : ()),
     hide_empty => 1,
     %$TitleBoxARGS,
 &>
