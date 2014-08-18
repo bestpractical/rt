@@ -9,7 +9,7 @@ find( {
     no_chdir => 1,
     wanted   => sub {
         return if /(?:\.(?:jpe?g|png|gif|rej)|\~)$/i;
-        return if m{/\.[^/]+\.swp$}; # vim swap files
+        return if m{/\.[^/]+\.sw[op]$}; # vim swap files
         return unless -f $_;
         local ($@);
         ok( eval { compile_file($_) }, "Compiled $File::Find::name ok: $@");

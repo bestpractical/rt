@@ -31,6 +31,7 @@ my @endpoints = (
 find({
   wanted => sub {
     if ( -f $_ && $_ !~ m|autohandler$| ) {
+      return if m{/\.[^/]+\.sw[op]$}; # vim swap files
       ( my $endpoint = $_ ) =~ s|^$docroot||;
       push @endpoints, $endpoint;
     }
