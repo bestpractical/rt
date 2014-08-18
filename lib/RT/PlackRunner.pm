@@ -133,7 +133,7 @@ sub run {
     # Plack::Handler::FCGI has its own catch for this, but doesn't
     # notice that listen is an empty list, and we can also provide a
     # better error message.
-    if ($self->{server} eq "FCGI" and not -S STDIN and not @{$args{listen}}) {
+    if ($self->{server} eq "FCGI" and not -S STDIN and not @{$args{listen} || []}) {
         print STDERR "STDIN is not a socket, and no --listen, --socket, or --port provided\n";
         exit 1;
     }
