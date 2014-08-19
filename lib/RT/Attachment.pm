@@ -198,12 +198,9 @@ sub Create {
     #If it's not multipart
     else {
 
-        my ($encoding, $type);
-        ($encoding, $content, $type, $Filename) = $self->_EncodeLOB(
-            $Attachment->bodyhandle->as_string,
-            $Attachment->mime_type,
-            $Filename
-        );
+        my ( $encoding, $type, $note_args );
+        ( $encoding, $content, $type, $Filename, $note_args ) =
+                $self->_EncodeLOB( $Attachment->bodyhandle->as_string, $Attachment->mime_type, $Filename, );
 
         my $id = $self->SUPER::Create(
             TransactionId   => $args{'TransactionId'},
@@ -217,7 +214,12 @@ sub Create {
             MessageId       => $MessageId,
         );
 
-        unless ($id) {
+        if ($id) {
+            if ($note_args) {
+                $self->TransactionObj->Object->_NewTransaction( %$note_args );
+            }
+        }
+        else {
             $RT::Logger->crit("Attachment insert failed: ". $RT::Handle->dbh->errstr);
         }
         return $id;

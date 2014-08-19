@@ -839,7 +839,29 @@ sub _FormatUser {
     },
     SystemError => sub {
         my $self = shift;
-        return ("System error"); #loc()
+        return $self->Data // ("System error"); #loc()
+    },
+    AttachmentTruncate => sub {
+        my $self = shift;
+        if ( defined $self->Data ) {
+            return ( "File '[_1]' truncated because its size ([_2] bytes) exceeded configured maximum size setting ([_3] bytes).",
+                $self->Data, $self->OldValue, $self->NewValue ); #loc()
+        }
+        else {
+            return ( "Content truncated because its size ([_1] bytes) exceeded configured maximum size setting ([_2] bytes).",
+                $self->OldValue, $self->NewValue ); #loc()
+        }
+    },
+    AttachmentDrop => sub {
+        my $self = shift;
+        if ( defined $self->Data ) {
+            return ( "File '[_1]' dropped because its size ([_2] bytes) exceeded configured maximum size setting ([_3] bytes).",
+                $self->Data, $self->OldValue, $self->NewValue ); #loc()
+        }
+        else {
+            return ( "Content dropped because its size ([_1] bytes) exceeded configured maximum size setting ([_2] bytes).",
+                $self->OldValue, $self->NewValue ); #loc()
+        }
     },
     "Forward Transaction" => sub {
         my $self = shift;
