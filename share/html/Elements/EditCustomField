@@ -91,7 +91,8 @@ if ( ( !defined $Default || !length $Default ) && $DefaultsFromTopArguments ) {
 }
 
 if ( (!$Object || !$Object->id) && ( !defined $Default || !length $Default ) && $CustomField->SupportDefaultValues ) {
-    $Default = $CustomField->DefaultValues(Object => RT->System);
+    my ( $on ) = grep {$_->isa($CustomField->RecordClassFromLookupType)} $CustomField->ACLEquivalenceObjects;
+    $Default = $CustomField->DefaultValues(Object => $on || RT->System);
 }
 
 my $MaxValues = $CustomField->MaxValues;

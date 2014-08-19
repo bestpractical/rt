@@ -2114,7 +2114,8 @@ sub AddCustomFieldDefaultValues {
     my @msgs;
     while ( my $cf = $cfs->Next ) {
         next if $self->CustomFieldValues($cf->id)->Count || !$cf->SupportDefaultValues;
-        my $values = $cf->DefaultValues( Object => RT->System );
+        my ( $on ) = grep { $_->isa( $cf->RecordClassFromLookupType ) } $cf->ACLEquivalenceObjects;
+        my $values = $cf->DefaultValues( Object => $on || RT->System );
         foreach my $value ( UNIVERSAL::isa( $values => 'ARRAY' ) ? @$values : $values ) {
             next if $self->CustomFieldValueIsEmpty(
                 Field => $cf->id,

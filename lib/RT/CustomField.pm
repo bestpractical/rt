@@ -2044,7 +2044,14 @@ sub DefaultValues {
     my $attr = $args{Object}->FirstAttribute('CustomFieldDefaultValues');
     my $values;
     $values = $attr->Content->{$self->id} if $attr && $attr->Content;
-    return $values;
+    return $values if defined $values;
+
+    if ( !$args{Object}->isa( 'RT::System' ) ) {
+        my $system_attr = RT::System->FirstAttribute( 'CustomFieldDefaultValues' );
+        $values = $system_attr->Content->{$self->id} if $system_attr && $system_attr->Content;
+        return $values if defined $values;
+    }
+    return undef;
 }
 
 sub SetDefaultValues {
@@ -2059,6 +2066,13 @@ sub SetDefaultValues {
     if ( $attr && $attr->Content ) {
         $old_content = $attr->Content;
         $old_values = $old_content->{ $self->id };
+    }
+
+    if ( !$args{Object}->isa( 'RT::System' ) && !defined $old_values ) {
+        my $system_attr = RT::System->FirstAttribute( 'CustomFieldDefaultValues' );
+        if ( $system_attr && $system_attr->Content ) {
+            $old_values = $system_attr->Content->{ $self->id };
+        }
     }
 
     if ( defined $old_values && length $old_values ) {

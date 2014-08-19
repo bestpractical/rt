@@ -307,6 +307,7 @@ my $build_admin_menu = sub {
                 $queue->child( 'group-rights' => title => loc('Group Rights'), path => "/Admin/Queues/GroupRights.html?id=".$id );
                 $queue->child( 'user-rights' => title => loc('User Rights'), path => "/Admin/Queues/UserRights.html?id=" . $id );
                 $queue->child( 'history' => title => loc('History'), path => "/Admin/Queues/History.html?id=" . $id );
+                $queue->child( 'default-values' => title => loc('Default Values'), path => "/Admin/Queues/DefaultValues.html?id=" . $id );
 
                 $m->callback( CallbackName => 'PrivilegedQueue', queue_id => $id, page_menu => $queue);
             }
