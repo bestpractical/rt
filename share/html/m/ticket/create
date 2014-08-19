@@ -342,12 +342,12 @@ $showrows->(
     loc("Priority") => $m->scomp(
         "/Elements/SelectPriority",
         Name    => "InitialPriority",
-        Default => $ARGS{InitialPriority} ? $ARGS{InitialPriority} : $QueueObj->InitialPriority,
+        Default => $ARGS{InitialPriority} ? $ARGS{InitialPriority} : $QueueObj->DefaultValue('InitialPriority'),
     ),
     loc("Final Priority") => $m->scomp(
         "/Elements/SelectPriority",
         Name    => "FinalPriority",
-        Default => $ARGS{FinalPriority} ? $ARGS{FinalPriority} : $QueueObj->FinalPriority,
+        Default => $ARGS{FinalPriority} ? $ARGS{FinalPriority} : $QueueObj->DefaultValue('FinalPriority'),
     ),
 
     loc("Time Estimated") => '<span class="timefield">'.$m->scomp(
@@ -381,7 +381,7 @@ $showrows->(
 <%perl>
 $showrows->(
     loc("Starts") => $m->scomp( "/Elements/SelectDate", Name => "Starts", Default => ( $ARGS{Starts} || '' )),
-    loc("Due")    => $m->scomp( "/Elements/SelectDate", Name => "Due",    Default => ($ARGS{Due}    || '' ))
+    loc("Due")    => $m->scomp( "/Elements/SelectDate", Name => "Due",    Default => ($ARGS{Due} || $QueueObj->DefaultValue('Due') || '' ))
 );
 
 </%perl>

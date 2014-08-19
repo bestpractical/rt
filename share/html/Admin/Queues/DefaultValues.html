@@ -52,10 +52,19 @@
 <form method="post" action="DefaultValues.html" name="ModifyDefaultValues" id="ModifyDefaultValues">
 <input type="hidden" name="id" value="<% $queue->id %>" />
 
-% if ( RT->Config->ObjectHasCustomFieldGrouping(Object => RT::Ticket->new($session{CurrentUser}), Grouping => 'Basics') ) {
 <div class="ticket-info-basics">
     <&| /Widgets/TitleBox, title => loc('Basics') &>
     <table>
+    <tr><td class="label"><&|/l&>Priority</&>:</td>
+    <td><& /Elements/SelectPriority,
+        Name => "InitialPriority",
+        Default => $queue->DefaultValue('InitialPriority'),
+    &></td></tr>
+    <tr><td class="label"><&|/l&>Final Priority</&>:</td>
+    <td><& /Elements/SelectPriority,
+        Name => "FinalPriority",
+        Default => $queue->DefaultValue('FinalPriority'),
+    &><br /><span><em><&|/l&>requires running rt-crontool</&></em></span></td></tr>
     <& /Elements/EditCustomFields,
         NamePrefix => 'Default-',
         Object => RT::Ticket->new($session{CurrentUser}),
@@ -66,12 +75,11 @@
     </table>
     </&>
 </div>
-% }
 
-% if ( RT->Config->ObjectHasCustomFieldGrouping(Object => RT::Ticket->new($session{CurrentUser}), Grouping => 'Dates') ) {
 <div class="ticket-info-dates">
     <&|/Widgets/TitleBox, title => loc("Dates") &>
     <table>
+    <tr><td class="label"><&|/l&>Due</&>:</td><td><& /Elements/SelectDate, Name => "Due", Default => $queue->DefaultValue('Due') || '' &></td></tr>
     <& /Elements/EditCustomFields,
         NamePrefix => 'Default-',
         Object => RT::Ticket->new($session{CurrentUser}),
@@ -82,7 +90,6 @@
     </table>
     </&>
 </div>
-% }
 
 % if ( RT->Config->ObjectHasCustomFieldGrouping(Object => RT::Ticket->new($session{CurrentUser}), Grouping => 'People') ) {
 <div class="ticket-info-people">
@@ -145,6 +152,13 @@ if ( $ARGS{Reset} ) {
     }
 }
 elsif ( $ARGS{Update} ) {
+    for my $field ( qw/InitialPriority FinalPriority Due/ ) {
+        my ($ret, $msg) = $queue->SetDefaultValue(
+            Name => $field,
+            Value => $ARGS{$field},
+        );
+        push @results, $msg;
+    }
     for my $cf_id ( map { /^Default-(\d+)-/ ? $1 : ()  } keys %ARGS ) {
         my $cf = RT::CustomField->new($session{CurrentUser});
         $cf->Load($cf_id);

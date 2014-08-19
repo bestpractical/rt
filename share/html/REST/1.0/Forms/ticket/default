@@ -103,8 +103,13 @@ else {
         my $queue = RT::Queue->new($session{CurrentUser});
         my $starts = RT::Date->new($session{CurrentUser});
         $queue->Load(1);
-        $due->SetToNow;
-        $due->AddDays($queue->DefaultDueIn) if $queue->DefaultDueIn;
+        if ( $queue->DefaultValue('Due') ) {
+            $due->Set( Format => 'unknown', Value => $queue->DefaultValue('Due') );
+        }
+        else {
+            $due->SetToNow;
+        }
+
         $starts->SetToNow;
 
         return [
@@ -120,9 +125,9 @@ else {
                 AdminCc          => [],
                 Owner            => "",
                 Status           => "new",
-                Priority         => $queue->InitialPriority,
-                InitialPriority  => $queue->InitialPriority,
-                FinalPriority    => $queue->FinalPriority,
+                Priority         => $queue->DefaultValue('InitialPriority'),
+                InitialPriority  => $queue->DefaultValue('InitialPriority'),
+                FinalPriority    => $queue->DefaultValue('FinalPriority'),
                 TimeEstimated    => 0,
                 Starts           => $starts->ISO,
                 Due              => $due->ISO,

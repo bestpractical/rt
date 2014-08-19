@@ -225,12 +225,12 @@
 <tr><td class="label"><&|/l&>Priority</&>:</td>
 <td><& /Elements/SelectPriority,
     Name => "InitialPriority",
-    Default => $ARGS{InitialPriority} ? $ARGS{InitialPriority} : $QueueObj->InitialPriority,
+    Default => $ARGS{InitialPriority} ? $ARGS{InitialPriority} : $QueueObj->DefaultValue('InitialPriority'),
 &></td></tr>
 <tr><td class="label"><&|/l&>Final Priority</&>:</td>
 <td><& /Elements/SelectPriority,
     Name => "FinalPriority",
-    Default => $ARGS{FinalPriority} ? $ARGS{FinalPriority} : $QueueObj->FinalPriority,
+    Default => $ARGS{FinalPriority} ? $ARGS{FinalPriority} : $QueueObj->DefaultValue('FinalPriority'),
 &></td></tr>
 <tr><td class="label"><&|/l&>Time Estimated</&>:</td>
 <td>
@@ -256,7 +256,7 @@
 
 <table>
 <tr><td class="label"><&|/l&>Starts</&>:</td><td><& /Elements/SelectDate, Name => "Starts", Default => $ARGS{Starts} || '' &></td></tr>
-<tr><td class="label"><&|/l&>Due</&>:</td><td><& /Elements/SelectDate, Name => "Due", Default => $ARGS{Due} || '' &></td></tr>
+<tr><td class="label"><&|/l&>Due</&>:</td><td><& /Elements/SelectDate, Name => "Due", Default => $ARGS{Due} || $QueueObj->DefaultValue('Due') || '' &></td></tr>
 <& /Elements/EditCustomFields,
     %ARGS,
     Object => $ticket,

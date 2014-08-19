@@ -300,12 +300,12 @@ sub Create {
 
     #Initial Priority
     # If there's no queue default initial priority and it's not set, set it to 0
-    $args{'InitialPriority'} = $QueueObj->InitialPriority || 0
+    $args{'InitialPriority'} = $QueueObj->DefaultValue('InitialPriority') || 0
         unless defined $args{'InitialPriority'};
 
     #Final priority
     # If there's no queue default final priority and it's not set, set it to 0
-    $args{'FinalPriority'} = $QueueObj->FinalPriority || 0
+    $args{'FinalPriority'} = $QueueObj->DefaultValue('FinalPriority') || 0
         unless defined $args{'FinalPriority'};
 
     # Priority may have changed from InitialPriority, for the case
@@ -322,9 +322,8 @@ sub Create {
     if ( defined $args{'Due'} ) {
         $Due->Set( Format => 'ISO', Value => $args{'Due'} );
     }
-    elsif ( my $due_in = $QueueObj->DefaultDueIn ) {
-        $Due->SetToNow;
-        $Due->AddDays( $due_in );
+    elsif ( my $default = $QueueObj->DefaultValue('Due') ) {
+        $Due->Set( Format => 'unknown', Value => $default );
     }
 
     my $Starts = RT::Date->new( $self->CurrentUser );
