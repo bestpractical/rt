@@ -33,7 +33,7 @@ msgid "#%1: %2"
 msgstr ""
 
 #. ($self->Data)
-#: lib/RT/Transaction.pm:1033 lib/RT/Transaction.pm:1072
+#: lib/RT/Transaction.pm:1055 lib/RT/Transaction.pm:1094
 msgid "%1"
 msgstr ""
 
@@ -80,20 +80,20 @@ msgstr ""
 #. ($cf->Name, $new_content)
 #. ($field, $new)
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
-#: lib/RT/Record.pm:2061 lib/RT/Transaction.pm:933 lib/RT/Transaction.pm:976
+#: lib/RT/Record.pm:2084 lib/RT/Transaction.pm:955 lib/RT/Transaction.pm:998
 msgid "%1 %2 added"
 msgstr "%1 %2 dodato"
 
 #. ($cf->Name, $old_content, $new_content)
 #. ($field, $old, $new)
-#: lib/RT/Record.pm:2068 lib/RT/Transaction.pm:939
+#: lib/RT/Record.pm:2091 lib/RT/Transaction.pm:961
 msgid "%1 %2 changed to %3"
 msgstr "%1 %2 promenjeno u %3"
 
 #. ($cf->Name, $old_content)
 #. ($field, $old)
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
-#: lib/RT/Record.pm:2065 lib/RT/Transaction.pm:936 lib/RT/Transaction.pm:982
+#: lib/RT/Record.pm:2088 lib/RT/Transaction.pm:1004 lib/RT/Transaction.pm:958
 msgid "%1 %2 deleted"
 msgstr "%1 %2 obrisano"
 
@@ -212,7 +212,7 @@ msgid "%1 Version"
 msgstr ""
 
 #. ($args{'Value'}, $cf->Name)
-#: lib/RT/Record.pm:2101
+#: lib/RT/Record.pm:2124
 msgid "%1 added as a value for %2"
 msgstr "%1 dodato kao vrednost za %2"
 
@@ -265,7 +265,7 @@ msgstr ""
 #. ($self->loc( $args{'Field'} ),                ( $old_val ? '"' . $old_val . '"' : $self->loc("(no value)") ),                '"' . $self->__Value( $args{'Field'}) . '"',)
 #. ($self->Field,            ( $self->OldValue ? "'" . $self->OldValue . "'" : $no_value ),            "'" . $self->NewValue . "'")
 #. ($self->loc($self->Field), $t2->AsString, $t1->AsString)
-#: lib/RT/Record.pm:526 lib/RT/Transaction.pm:1082 lib/RT/Transaction.pm:1087 lib/RT/Transaction.pm:1101 lib/RT/Transaction.pm:1110 lib/RT/Transaction.pm:1150 lib/RT/Transaction.pm:838
+#: lib/RT/Record.pm:526 lib/RT/Transaction.pm:1104 lib/RT/Transaction.pm:1109 lib/RT/Transaction.pm:1123 lib/RT/Transaction.pm:1132 lib/RT/Transaction.pm:1172 lib/RT/Transaction.pm:838
 msgid "%1 changed from %2 to %3"
 msgstr "%1 promenjeno od %2 u %3"
 
@@ -285,7 +285,7 @@ msgstr "%1 kopija"
 msgid "%1 core config"
 msgstr "%1 основна подешавања"
 
-#: lib/RT/Record.pm:1005
+#: lib/RT/Record.pm:1026
 msgid "%1 could not be set to %2."
 msgstr "%1 ne može se namestiti na %2."
 
@@ -352,7 +352,7 @@ msgid "%1 is no longer a %2 for this ticket."
 msgstr "%1 više nije %2 za ovaj zahtev."
 
 #. ($old_value, $cf->Name)
-#: lib/RT/Record.pm:2166
+#: lib/RT/Record.pm:2189
 msgid "%1 is no longer a value for custom field %2"
 msgstr "%1 više nije vrednost za sopstveno polje %2"
 
@@ -397,7 +397,7 @@ msgstr "%1 објеката"
 
 #. ($self->loc($self->Name), $new_member_obj->Object->Name)
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
-#: lib/RT/Group.pm:1131 lib/RT/Transaction.pm:988
+#: lib/RT/Group.pm:1131 lib/RT/Transaction.pm:1010
 msgid "%1 set to %2"
 msgstr ""
 
@@ -469,12 +469,12 @@ msgid "%1:%2:%3"
 msgstr ""
 
 #. ($size)
-#: lib/RT/Attachment.pm:460
+#: lib/RT/Attachment.pm:462
 msgid "%1B"
 msgstr ""
 
 #. (int( $size / 102.4 ) / 10)
-#: lib/RT/Attachment.pm:457
+#: lib/RT/Attachment.pm:459
 msgid "%1KiB"
 msgstr "%1kB"
 
@@ -483,7 +483,7 @@ msgid "%1M"
 msgstr ""
 
 #. (int( $size / 1024 / 102.4 ) / 10)
-#: lib/RT/Attachment.pm:454
+#: lib/RT/Attachment.pm:456
 msgid "%1MiB"
 msgstr ""
 
@@ -647,7 +647,7 @@ msgstr "(без имена)"
 msgid "(no pubkey!)"
 msgstr "(нема pubkey-а!)"
 
-#: lib/RT/Report/Tickets.pm:670 lib/RT/Report/Tickets.pm:836 lib/RT/Report/Tickets.pm:847 lib/RT/Report/Tickets/Entry.pm:78 lib/RT/Report/Tickets/Entry.pm:88 lib/RT/Transaction.pm:1087 lib/RT/Transaction.pm:1149 lib/RT/Transaction.pm:1150 lib/RT/Transaction.pm:757 lib/RT/Transaction.pm:762 lib/RT/Transaction.pm:832 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:109 share/html/Elements/EditCustomFieldSelect:128 share/html/Elements/EditCustomFieldSelect:138 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowCustomFields:61 share/html/m/ticket/show:263
+#: lib/RT/Report/Tickets.pm:670 lib/RT/Report/Tickets.pm:836 lib/RT/Report/Tickets.pm:847 lib/RT/Report/Tickets/Entry.pm:78 lib/RT/Report/Tickets/Entry.pm:88 lib/RT/Transaction.pm:1109 lib/RT/Transaction.pm:1171 lib/RT/Transaction.pm:1172 lib/RT/Transaction.pm:757 lib/RT/Transaction.pm:762 lib/RT/Transaction.pm:832 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:109 share/html/Elements/EditCustomFieldSelect:128 share/html/Elements/EditCustomFieldSelect:138 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowCustomFields:61 share/html/m/ticket/show:263
 msgid "(no value)"
 msgstr "(нема вредност)"
 
@@ -896,7 +896,7 @@ msgid "Address2"
 msgstr "Адреса2"
 
 #. ($duration)
-#: lib/RT/Transaction.pm:1159
+#: lib/RT/Transaction.pm:1181
 msgid "Adjusted time worked by %quant(%1,minute,minutes)"
 msgstr ""
 
@@ -1028,7 +1028,7 @@ msgstr "Дозволи учитавање сачуваних претрага"
 msgid "Allow writing Perl code in templates, scrips, etc"
 msgstr "Дозволи писање Перл кода у шаблонима, цедуљама, итд."
 
-#: lib/RT/Attachment.pm:748
+#: lib/RT/Attachment.pm:750
 msgid "Already encrypted"
 msgstr "Већ је шифровано"
 
@@ -1243,7 +1243,7 @@ msgstr "Назив датотеке прилога"
 msgid "Attachments"
 msgstr "Прилози"
 
-#: lib/RT/Attachment.pm:743
+#: lib/RT/Attachment.pm:745
 msgid "Attachments encryption is disabled"
 msgstr "Шифровање прилога је онемогућено"
 
@@ -1466,7 +1466,7 @@ msgstr ""
 msgid "Can't save this search"
 msgstr "Не може се сачувати ова претрага"
 
-#: lib/RT/Record.pm:1358 lib/RT/Record.pm:1502
+#: lib/RT/Record.pm:1379 lib/RT/Record.pm:1523
 msgid "Can't specify both base and target"
 msgstr ""
 
@@ -1653,7 +1653,7 @@ msgstr "Коментари (Не шаљу се захтеваоцима)"
 msgid "Comments about this user"
 msgstr "Коментари о овом кориснику"
 
-#: lib/RT/Ticket.pm:1629 lib/RT/Transaction.pm:876
+#: lib/RT/Ticket.pm:1629 lib/RT/Transaction.pm:898
 msgid "Comments added"
 msgstr "Коментари су додати"
 
@@ -1710,6 +1710,11 @@ msgstr ""
 msgid "Content"
 msgstr "Садржај"
 
+#. ($self->OldValue, $self->NewValue)
+#: lib/RT/Transaction.pm:863
+msgid "Content dropped because its size (%1 bytes) exceeded configured maximum size setting (%2 bytes)."
+msgstr ""
+
 #: lib/RT/CustomField.pm:1741
 msgid "Content is not a valid IP address"
 msgstr "Садржај је неважећа IP адреса"
@@ -1717,6 +1722,11 @@ msgstr "Садржај је неважећа IP адреса"
 #: lib/RT/CustomField.pm:1757
 msgid "Content is not a valid IP address range"
 msgstr "Садржај је неважећи опсег IP адреса"
+
+#. ($self->OldValue, $self->NewValue)
+#: lib/RT/Transaction.pm:852
+msgid "Content truncated because its size (%1 bytes) exceeded configured maximum size setting (%2 bytes)."
+msgstr ""
 
 #: share/html/Elements/SelectAttachmentField:53
 msgid "Content-Type"
@@ -1734,7 +1744,7 @@ msgstr "Адреса преписке"
 msgid "Correspondence"
 msgstr "Преписка"
 
-#: lib/RT/Ticket.pm:1631 lib/RT/Transaction.pm:872
+#: lib/RT/Ticket.pm:1631 lib/RT/Transaction.pm:894
 msgid "Correspondence added"
 msgstr "Преписка је додата"
 
@@ -1744,7 +1754,7 @@ msgstr ""
 
 #. ($msg)
 #. ($value_msg)
-#: lib/RT/Record.pm:2017 lib/RT/Record.pm:2088
+#: lib/RT/Record.pm:2040 lib/RT/Record.pm:2111
 msgid "Could not add new custom field value: %1"
 msgstr "Није успело додавање нове вредности прилагођеног поља: %1"
 
@@ -1871,7 +1881,7 @@ msgstr "Није успело превођење шаблона блока ко�
 
 #. ($Msg)
 #. ($msg)
-#: lib/RT/Record.pm:2098 lib/RT/Record.pm:2148
+#: lib/RT/Record.pm:2121 lib/RT/Record.pm:2171
 msgid "Couldn't create a transaction: %1"
 msgstr "Није успело прављење трансакције: %1"
 
@@ -1885,7 +1895,7 @@ msgstr "Није успело прављење записа: %1"
 msgid "Couldn't delete dashboard %1: %2"
 msgstr "Није успело брисање инструмент табле %1: %2"
 
-#: lib/RT/Record.pm:1014
+#: lib/RT/Record.pm:1035
 msgid "Couldn't find row"
 msgstr "Није успело проналажење реда"
 
@@ -2065,17 +2075,17 @@ msgid "Couldn't remove previous member: %1"
 msgstr ""
 
 #. ($msg)
-#: lib/RT/Attachment.pm:835
+#: lib/RT/Attachment.pm:837
 msgid "Couldn't replace content with decrypted data: %1"
 msgstr "Није успела замена садржаја са дешифрованим подацима: %1"
 
 #. ($msg)
-#: lib/RT/Attachment.pm:784
+#: lib/RT/Attachment.pm:786
 msgid "Couldn't replace content with encrypted data: %1"
 msgstr "Није успела замена садржаја са шифрованим подацима: %1"
 
 #. ($remote_link)
-#: lib/RT/Record.pm:1394 lib/RT/Record.pm:1531
+#: lib/RT/Record.pm:1415 lib/RT/Record.pm:1552
 msgid "Couldn't resolve '%1' into a link."
 msgstr ""
 
@@ -2280,7 +2290,7 @@ msgstr "Стваралац"
 msgid "Cryptography"
 msgstr "Шифровање"
 
-#: lib/RT/Attachment.pm:741 lib/RT/Attachment.pm:801
+#: lib/RT/Attachment.pm:743 lib/RT/Attachment.pm:803
 msgid "Cryptography is disabled"
 msgstr ""
 
@@ -2346,7 +2356,7 @@ msgid "Custom field %1 %2 %3"
 msgstr "Прилагођено поље %1 %2 %3"
 
 #. (ref $args{'Field'} ? $args{'Field'}->id : $args{'Field'})
-#: lib/RT/Record.pm:1952
+#: lib/RT/Record.pm:1975
 msgid "Custom field %1 does not apply to this object"
 msgstr "Прилагођено поље %1 није примењено на овај објекат"
 
@@ -2361,7 +2371,7 @@ msgid "Custom field %1 has no value."
 msgstr "Прилагођено поље %1 нема вредност"
 
 #. ($args{'Field'})
-#: lib/RT/Record.pm:1941 lib/RT/Record.pm:2129
+#: lib/RT/Record.pm:1964 lib/RT/Record.pm:2152
 msgid "Custom field %1 not found"
 msgstr "Прилагођено поље %1 није пронађено"
 
@@ -2382,7 +2392,7 @@ msgstr "Вредност прилагођеног поља није пронађ
 msgid "Custom field value deleted"
 msgstr "Вредност прилагођеног поља је обрисано"
 
-#: lib/RT/Tickets.pm:152 lib/RT/Transaction.pm:880 share/html/Elements/SelectGroups:54 share/html/Elements/SelectUsers:54
+#: lib/RT/Tickets.pm:152 lib/RT/Transaction.pm:902 share/html/Elements/SelectGroups:54 share/html/Elements/SelectUsers:54
 msgid "CustomField"
 msgstr "ПрилагођеноПоље"
 
@@ -2535,7 +2545,7 @@ msgstr "Дец"
 msgid "Decrypt"
 msgstr "Дешифруј"
 
-#: lib/RT/Attachment.pm:830
+#: lib/RT/Attachment.pm:832
 msgid "Decryption error; contact the administrator"
 msgstr ""
 
@@ -2645,22 +2655,22 @@ msgid "DependedOnBy"
 msgstr "ОдОвогаЗависе"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1014
+#: lib/RT/Transaction.pm:1036
 msgid "Dependency by %1 added"
 msgstr "Зависност од %1 додата"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1056
+#: lib/RT/Transaction.pm:1078
 msgid "Dependency by %1 deleted"
 msgstr "Зависност од %1 обрисана"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1011
+#: lib/RT/Transaction.pm:1033
 msgid "Dependency on %1 added"
 msgstr "Зависност за %1 додата"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1053
+#: lib/RT/Transaction.pm:1075
 msgid "Dependency on %1 deleted"
 msgstr "Зависност за %1 обрисана"
 
@@ -2876,7 +2886,7 @@ msgstr "Урељивање чланства за групу %1"
 msgid "EffectiveId"
 msgstr "ЕфективниИдентификатор"
 
-#: lib/RT/Record.pm:1371 lib/RT/Record.pm:1516
+#: lib/RT/Record.pm:1392 lib/RT/Record.pm:1537
 msgid "Either base or target must be specified"
 msgstr "Морају бити назначени или основа или одредиште"
 
@@ -2996,7 +3006,7 @@ msgstr "Шифрофање онемогућено"
 msgid "Encrypting enabled"
 msgstr "Шифрофање омогућено"
 
-#: lib/RT/Attachment.pm:779
+#: lib/RT/Attachment.pm:781
 msgid "Encryption error; contact the administrator"
 msgstr ""
 
@@ -3261,6 +3271,16 @@ msgstr "Поље"
 msgid "Field values source:"
 msgstr "Извор вредности поља:"
 
+#. ($self->Data, $self->OldValue, $self->NewValue)
+#: lib/RT/Transaction.pm:859
+msgid "File '%1' dropped because its size (%2 bytes) exceeded configured maximum size setting (%3 bytes)."
+msgstr ""
+
+#. ($self->Data, $self->OldValue, $self->NewValue)
+#: lib/RT/Transaction.pm:848
+msgid "File '%1' truncated because its size (%2 bytes) exceeded configured maximum size setting (%3 bytes)."
+msgstr ""
+
 #: lib/RT/Tickets.pm:141 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:53 share/html/Elements/SelectAttachmentField:54
 msgid "Filename"
 msgstr "Назив датотеке"
@@ -3402,12 +3422,12 @@ msgid "Forward transaction #%1"
 msgstr "Проследи трансакцију #%1"
 
 #. ($self->Field, $recipients,            [\'<a href="#txn-', $self->Field, \'">'], \'</a>')
-#: lib/RT/Transaction.pm:852
+#: lib/RT/Transaction.pm:874
 msgid "Forwarded %3Transaction #%1%4 to %2"
 msgstr ""
 
 #. ($recipients)
-#: lib/RT/Transaction.pm:860
+#: lib/RT/Transaction.pm:882
 msgid "Forwarded Ticket to %1"
 msgstr "Прослеђена порука за %1"
 
@@ -3425,7 +3445,7 @@ msgstr ""
 msgid "Found %quant(%1,ticket,tickets)"
 msgstr "Пронађен %quant(%1, листић)"
 
-#: lib/RT/Record.pm:1016
+#: lib/RT/Record.pm:1037
 msgid "Found Object"
 msgstr "Пронађен објекат"
 
@@ -3470,7 +3490,7 @@ msgid "Give output even on messages successfully sent"
 msgstr ""
 
 #. ($self->_FormatUser($New))
-#: lib/RT/Transaction.pm:1123 lib/RT/Transaction.pm:1135 lib/RT/Transaction.pm:970
+#: lib/RT/Transaction.pm:1145 lib/RT/Transaction.pm:1157 lib/RT/Transaction.pm:992
 msgid "Given to %1"
 msgstr "Дато %1"
 
@@ -3549,7 +3569,7 @@ msgstr "Особине графикона"
 msgid "Graphical charts are not available."
 msgstr "Графикони нису доступни."
 
-#: lib/RT/Record.pm:996 share/html/Search/Elements/SelectPersonType:54 share/html/Ticket/Elements/AddWatchers:69
+#: lib/RT/Record.pm:1017 share/html/Search/Elements/SelectPersonType:54 share/html/Ticket/Elements/AddWatchers:69
 msgid "Group"
 msgstr "Група"
 
@@ -3806,7 +3826,7 @@ msgstr "Уколико сте ажурирали било шта одозго, �
 msgid "If your preferred database isn't listed in the dropdown below, that means RT couldn't find a <i>database driver</i> for it installed locally. You may be able to remedy this by using %1 to download and install DBD::MySQL, DBD::Oracle or DBD::Pg."
 msgstr "Уколико ваша жељена база података није наведена у падајућем менију испод, то значи да РТ не може да пронађе   инсталирани <i>драјвер базе података</i> за њу. Можда ћете моћи ово да исправите користећи %1 да преузмете и инсталирате DBD::MySQL, DBD::Oracle или DBD::Pg."
 
-#: lib/RT/Record.pm:1008
+#: lib/RT/Record.pm:1029
 msgid "Illegal value for %1"
 msgstr "Недозвољена вредност за %1"
 
@@ -3822,7 +3842,7 @@ msgstr ""
 msgid "Image not shown because sender requested not to inline it."
 msgstr ""
 
-#: lib/RT/Record.pm:1011
+#: lib/RT/Record.pm:1032
 msgid "Immutable field"
 msgstr "Непроменљиво поље"
 
@@ -4009,7 +4029,7 @@ msgstr "Неважећи тип исцртавања"
 msgid "Invalid Render Type for custom field of type %1"
 msgstr "Неважећи тип исцртавања за прилагођено поље типа %1"
 
-#: lib/RT/Record.pm:1013
+#: lib/RT/Record.pm:1034
 msgid "Invalid data"
 msgstr "Неисправни подаци"
 
@@ -4060,7 +4080,7 @@ msgstr "Неважећа синтакса за адресу е-поште"
 msgid "Invalid value for %1"
 msgstr "Неважећа вредност за %1"
 
-#: lib/RT/Record.pm:1962
+#: lib/RT/Record.pm:1985
 msgid "Invalid value for custom field"
 msgstr "Неважећа вредност за прилагођено поље"
 
@@ -4068,7 +4088,7 @@ msgstr "Неважећа вредност за прилагођено поље"
 msgid "Is already added to the object"
 msgstr ""
 
-#: lib/RT/Attachment.pm:812
+#: lib/RT/Attachment.pm:814
 msgid "Is not encrypted"
 msgstr "Није шифровано"
 
@@ -4214,21 +4234,21 @@ msgstr "Животни циклус"
 msgid "Link"
 msgstr "Веза"
 
-#: lib/RT/Record.pm:1404
+#: lib/RT/Record.pm:1425
 msgid "Link already exists"
 msgstr "Веза већ постоји"
 
 #. ($linkmsg)
-#: lib/RT/Record.pm:1426
+#: lib/RT/Record.pm:1447
 msgid "Link could not be created: %1"
 msgstr ""
 
 #. ($msg)
-#: lib/RT/Record.pm:1561
+#: lib/RT/Record.pm:1582
 msgid "Link could not be deleted: %1"
 msgstr ""
 
-#: lib/RT/Record.pm:1548
+#: lib/RT/Record.pm:1569
 msgid "Link not found"
 msgstr "Веза није пронађена"
 
@@ -4254,7 +4274,7 @@ msgid "LinkedTo"
 msgstr "ПовезаноЗа"
 
 #. ($self->loc(lc($remote_obj->RecordType)))
-#: lib/RT/Record.pm:1390
+#: lib/RT/Record.pm:1411
 msgid "Linking to a deleted %1 is not allowed"
 msgstr ""
 
@@ -4530,12 +4550,12 @@ msgid "Member"
 msgstr "Члан"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1026
+#: lib/RT/Transaction.pm:1048
 msgid "Member %1 added"
 msgstr "Члан %1 додат"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1068
+#: lib/RT/Transaction.pm:1090
 msgid "Member %1 deleted"
 msgstr "Члан %1 обрисан"
 
@@ -4561,12 +4581,12 @@ msgid "Members"
 msgstr "Чланови"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1023
+#: lib/RT/Transaction.pm:1045
 msgid "Membership in %1 added"
 msgstr "Чланство у %1 додато"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1065
+#: lib/RT/Transaction.pm:1087
 msgid "Membership in %1 deleted"
 msgstr "Чланство у %1 обрисано"
 
@@ -4614,7 +4634,7 @@ msgid "Merge into"
 msgstr "Споји у"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1029
+#: lib/RT/Transaction.pm:1051
 msgid "Merged into %1"
 msgstr "Спојено у %1"
 
@@ -4702,7 +4722,7 @@ msgstr "Минути"
 msgid "Miscellaneous"
 msgstr "Разно"
 
-#: lib/RT/Record.pm:1015
+#: lib/RT/Record.pm:1036
 msgid "Missing a primary key?: %1"
 msgstr "Недостаје примарни кључ?: %1"
 
@@ -5245,7 +5265,7 @@ msgstr "Нема шаблона"
 msgid "No action"
 msgstr "Нема акције"
 
-#: lib/RT/Record.pm:1010
+#: lib/RT/Record.pm:1031
 msgid "No column specified"
 msgstr "Нема назначене колоне"
 
@@ -5271,7 +5291,7 @@ msgstr "Нема назначене групе"
 msgid "No groups matching search criteria found."
 msgstr "Нема пронађених група које одговарају критеријуму претраге"
 
-#: lib/RT/Attachment.pm:768
+#: lib/RT/Attachment.pm:770
 msgid "No key suitable for encryption"
 msgstr "Нема кључа погодног за шифровање"
 
@@ -5287,7 +5307,7 @@ msgstr "Нема приложених порука"
 msgid "No name provided"
 msgstr "Није обезбеђено име"
 
-#: lib/RT/Attachment.pm:750
+#: lib/RT/Attachment.pm:752
 msgid "No need to encrypt"
 msgstr "Нема потребе за шифровањем"
 
@@ -5394,7 +5414,7 @@ msgstr ""
 msgid "No valid Type specified"
 msgstr ""
 
-#: lib/RT/Record.pm:1007
+#: lib/RT/Record.pm:1028
 msgid "No value sent to _Set!"
 msgstr "Није постављена вредност за _Set!"
 
@@ -5406,7 +5426,7 @@ msgstr "Нико"
 msgid "None"
 msgstr "Ништа"
 
-#: lib/RT/Record.pm:1012
+#: lib/RT/Record.pm:1033
 msgid "Nonexistant field?"
 msgstr "Непостојеће поље?"
 
@@ -5730,11 +5750,11 @@ msgstr "Организација"
 msgid "Originating ticket: #%1"
 msgstr "Листић од кога води порекло: #%1"
 
-#: lib/RT/Transaction.pm:864
+#: lib/RT/Transaction.pm:886
 msgid "Outgoing email about a comment recorded"
 msgstr "Одлазна е-пошта о коментару снимљена"
 
-#: lib/RT/Transaction.pm:868
+#: lib/RT/Transaction.pm:890
 msgid "Outgoing email recorded"
 msgstr "Одлазна е-пошта снимљена"
 
@@ -5769,7 +5789,7 @@ msgid "Owner changed from %1 to %2"
 msgstr "Власник је промењен из %1 у %2"
 
 #. (map { $self->_FormatUser($_) } $Old, $New)
-#: lib/RT/Transaction.pm:1142 lib/RT/Transaction.pm:958
+#: lib/RT/Transaction.pm:1164 lib/RT/Transaction.pm:980
 msgid "Owner forcibly changed from %1 to %2"
 msgstr "Власник је насилно промењен из %1 у %2"
 
@@ -5817,7 +5837,7 @@ msgstr "Родитељи"
 msgid "Password"
 msgstr "Лозинка"
 
-#: lib/RT/Transaction.pm:1093 lib/RT/User.pm:867
+#: lib/RT/Transaction.pm:1115 lib/RT/User.pm:867
 msgid "Password changed"
 msgstr "Лозинка промењена"
 
@@ -5902,11 +5922,11 @@ msgstr "Редослед претраге Перл библиотека"
 msgid "Permanently wipeout data from RT"
 msgstr "Трајно обриши податке из РТ-а"
 
-#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:738 lib/RT/Attachment.pm:739 lib/RT/Attachment.pm:798 lib/RT/Attachment.pm:799 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:386 lib/RT/Attribute.pm:401 lib/RT/Attribute.pm:414 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1037 lib/RT/CustomField.pm:1574 lib/RT/CustomField.pm:1603 lib/RT/CustomField.pm:1646 lib/RT/CustomField.pm:1819 lib/RT/CustomField.pm:1969 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:628 lib/RT/CustomField.pm:655 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1247 lib/RT/Group.pm:1331 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:355 lib/RT/Queue.pm:381 lib/RT/Queue.pm:407 lib/RT/Queue.pm:804 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:317 lib/RT/Template.pm:483 lib/RT/Template.pm:743 lib/RT/Template.pm:760 lib/RT/Template.pm:778 lib/RT/Ticket.pm:1072 lib/RT/Ticket.pm:1283 lib/RT/Ticket.pm:1451 lib/RT/Ticket.pm:1501 lib/RT/Ticket.pm:1773 lib/RT/Ticket.pm:1792 lib/RT/Ticket.pm:2197 lib/RT/Ticket.pm:2210 lib/RT/Ticket.pm:2215 lib/RT/Ticket.pm:2239 lib/RT/Ticket.pm:2456 lib/RT/Ticket.pm:2685 lib/RT/Ticket.pm:3049 lib/RT/Ticket.pm:734 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:688 lib/RT/Transaction.pm:728 lib/RT/User.pm:1137 lib/RT/User.pm:139 lib/RT/User.pm:1588 lib/RT/User.pm:1835 lib/RT/User.pm:1868 lib/RT/User.pm:328 lib/RT/User.pm:735 lib/RT/User.pm:770 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97 share/html/Ticket/ShowEmailRecord.html:110 share/html/Ticket/ShowEmailRecord.html:111
+#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:740 lib/RT/Attachment.pm:741 lib/RT/Attachment.pm:800 lib/RT/Attachment.pm:801 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:386 lib/RT/Attribute.pm:401 lib/RT/Attribute.pm:414 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1037 lib/RT/CustomField.pm:1574 lib/RT/CustomField.pm:1603 lib/RT/CustomField.pm:1646 lib/RT/CustomField.pm:1819 lib/RT/CustomField.pm:1969 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:628 lib/RT/CustomField.pm:655 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1247 lib/RT/Group.pm:1331 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:355 lib/RT/Queue.pm:381 lib/RT/Queue.pm:407 lib/RT/Queue.pm:804 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:317 lib/RT/Template.pm:483 lib/RT/Template.pm:743 lib/RT/Template.pm:760 lib/RT/Template.pm:778 lib/RT/Ticket.pm:1072 lib/RT/Ticket.pm:1283 lib/RT/Ticket.pm:1451 lib/RT/Ticket.pm:1501 lib/RT/Ticket.pm:1773 lib/RT/Ticket.pm:1792 lib/RT/Ticket.pm:2197 lib/RT/Ticket.pm:2210 lib/RT/Ticket.pm:2215 lib/RT/Ticket.pm:2239 lib/RT/Ticket.pm:2456 lib/RT/Ticket.pm:2685 lib/RT/Ticket.pm:3049 lib/RT/Ticket.pm:734 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:688 lib/RT/Transaction.pm:728 lib/RT/User.pm:1137 lib/RT/User.pm:139 lib/RT/User.pm:1588 lib/RT/User.pm:1835 lib/RT/User.pm:1868 lib/RT/User.pm:328 lib/RT/User.pm:735 lib/RT/User.pm:770 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97 share/html/Ticket/ShowEmailRecord.html:110 share/html/Ticket/ShowEmailRecord.html:111
 msgid "Permission Denied"
 msgstr "Дозвола је одбијена"
 
-#: lib/RT/Record.pm:1382 lib/RT/Record.pm:1526 lib/RT/Record/Role/Roles.pm:407 lib/RT/Record/Role/Roles.pm:491
+#: lib/RT/Record.pm:1403 lib/RT/Record.pm:1547 lib/RT/Record/Role/Roles.pm:407 lib/RT/Record/Role/Roles.pm:491
 msgid "Permission denied"
 msgstr "Дозвола одбијена"
 
@@ -6110,7 +6130,7 @@ msgstr "Упит"
 msgid "Query Builder"
 msgstr "Градитељ упита"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Record.pm:997 lib/RT/Report/Tickets.pm:62 lib/RT/Tickets.pm:107 lib/RT/Tickets.pm:1452 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:63 share/html/Elements/RT__Template/ColumnMap:66 share/html/Elements/RT__Template/ColumnMap:73 share/html/Elements/RT__Ticket/ColumnMap:102 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:61 share/html/Ticket/Elements/ShowBasics:82 share/html/m/ticket/create:248 share/html/m/ticket/show:242
+#: lib/RT/Graph/Tickets.pm:153 lib/RT/Record.pm:1018 lib/RT/Report/Tickets.pm:62 lib/RT/Tickets.pm:107 lib/RT/Tickets.pm:1452 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:63 share/html/Elements/RT__Template/ColumnMap:66 share/html/Elements/RT__Template/ColumnMap:73 share/html/Elements/RT__Ticket/ColumnMap:102 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:61 share/html/Ticket/Elements/ShowBasics:82 share/html/m/ticket/create:248 share/html/m/ticket/show:242
 msgid "Queue"
 msgstr "Ред"
 
@@ -6367,22 +6387,22 @@ msgid "Refer to"
 msgstr "Упути на"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1020
+#: lib/RT/Transaction.pm:1042
 msgid "Reference by %1 added"
 msgstr "Референца од %1 додата"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1062
+#: lib/RT/Transaction.pm:1084
 msgid "Reference by %1 deleted"
 msgstr "Референца од %1 обрисана"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1017
+#: lib/RT/Transaction.pm:1039
 msgid "Reference to %1 added"
 msgstr "Референца за %1 додата"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1059
+#: lib/RT/Transaction.pm:1081
 msgid "Reference to %1 deleted"
 msgstr "Упут ка %1 обрисан"
 
@@ -6463,7 +6483,7 @@ msgstr "Освежи ову страну сваких %1 минута"
 msgid "RefreshHomepage"
 msgstr ""
 
-#: lib/RT/Record.pm:1414
+#: lib/RT/Record.pm:1435
 msgid "Refused to add link which would create a circular relationship"
 msgstr ""
 
@@ -6480,17 +6500,17 @@ msgid "Reminder"
 msgstr "Подсетник"
 
 #. ($subject)
-#: lib/RT/Transaction.pm:1180
+#: lib/RT/Transaction.pm:1202
 msgid "Reminder '%1' added"
 msgstr "Подсетник '%1' додат"
 
 #. ($subject)
-#: lib/RT/Transaction.pm:1202
+#: lib/RT/Transaction.pm:1224
 msgid "Reminder '%1' completed"
 msgstr "Подсетник '%1' завршен"
 
 #. ($subject)
-#: lib/RT/Transaction.pm:1191
+#: lib/RT/Transaction.pm:1213
 msgid "Reminder '%1' reopened"
 msgstr "Подсетник '%1' поново отворен"
 
@@ -7101,6 +7121,10 @@ msgstr "Пошаљи е-пошту захтеваоцима и индиго ко
 msgid "Send mail to requestors and Ccs as a comment"
 msgstr "Пошаљи е-пошту захтеваоцима и индиго копијама као коментар"
 
+#: lib/RT/Interface/Email.pm:1776
+msgid "Sending the previous mail has failed.  Please contact your admin, they can find more details in the logs."
+msgstr ""
+
 #: etc/initialdata:34
 msgid "Sends a message to the requestors"
 msgstr "Шаље поруку захтеваоцима"
@@ -7483,7 +7507,7 @@ msgid "Step %1 of %2"
 msgstr "Корак %1 од %2"
 
 #. ($self->_FormatUser($Old))
-#: lib/RT/Transaction.pm:1128 lib/RT/Transaction.pm:964
+#: lib/RT/Transaction.pm:1150 lib/RT/Transaction.pm:986
 msgid "Stolen from %1"
 msgstr "Украден из %1"
 
@@ -7500,7 +7524,7 @@ msgid "Subject Tag"
 msgstr "Ознака теме"
 
 #. ($self->Data)
-#: lib/RT/Transaction.pm:992
+#: lib/RT/Transaction.pm:1014
 msgid "Subject changed to %1"
 msgstr "Тема промењена у %1"
 
@@ -7539,11 +7563,11 @@ msgstr "Претплата"
 msgid "Subscription could not be created: %1"
 msgstr "Није успело прављење претплате: %1"
 
-#: lib/RT/Attachment.pm:840
+#: lib/RT/Attachment.pm:842
 msgid "Successfuly decrypted data"
 msgstr "Подаци су успешно дешифровани"
 
-#: lib/RT/Attachment.pm:791
+#: lib/RT/Attachment.pm:793
 msgid "Successfuly encrypted data"
 msgstr "Подаци су успешно шифровани"
 
@@ -7644,7 +7668,7 @@ msgstr "Узми"
 msgid "Take tickets"
 msgstr "Узми листиће"
 
-#: lib/RT/Transaction.pm:1120 lib/RT/Transaction.pm:948
+#: lib/RT/Transaction.pm:1142 lib/RT/Transaction.pm:970
 msgid "Taken"
 msgstr "Узето"
 
@@ -7730,7 +7754,7 @@ msgstr "Текст"
 msgid "Text file is not shown because it is disabled in preferences."
 msgstr "Текстуална датотека није приказана јер је онемогућена у преференцијама."
 
-#: lib/RT/Record.pm:1006
+#: lib/RT/Record.pm:1027
 msgid "That is already the current value"
 msgstr "Ово је већ тренутна вредност"
 
@@ -7831,7 +7855,7 @@ msgstr "Кључ је у потпуности поверљив"
 msgid "The key is ultimately trusted"
 msgstr "Кључу се може ултимативно веровати"
 
-#: lib/RT/Record.pm:1009
+#: lib/RT/Record.pm:1030
 msgid "The new value has been set."
 msgstr "Нова вредност је постављена"
 
@@ -7961,7 +7985,7 @@ msgstr "Чет"
 msgid "Thursday"
 msgstr "Четвртак"
 
-#: lib/RT/Record.pm:994 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/ShowReminders:53
+#: lib/RT/Record.pm:1015 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/ShowReminders:53
 msgid "Ticket"
 msgstr "Листић"
 
@@ -8222,7 +8246,7 @@ msgid "Transaction"
 msgstr "Трансакција"
 
 #. ($self->Data)
-#: lib/RT/Transaction.pm:1169
+#: lib/RT/Transaction.pm:1191
 msgid "Transaction %1 purged"
 msgstr "Трансакција %1 је очишћена"
 
@@ -8250,7 +8274,7 @@ msgstr "ДатумТрансакције"
 msgid "Transactions"
 msgstr ""
 
-#: lib/RT/Transaction.pm:1238
+#: lib/RT/Transaction.pm:1260
 msgid "Transactions are immutable"
 msgstr "Трансакције нису изменљиве"
 
@@ -8383,7 +8407,7 @@ msgstr "Непознато (ова вредност је нова систему
 
 #. ($ContentEncoding)
 #. ($self->ContentEncoding)
-#: lib/RT/Attachment.pm:384 lib/RT/Record.pm:873
+#: lib/RT/Attachment.pm:386 lib/RT/Record.pm:894
 msgid "Unknown ContentEncoding %1"
 msgstr "Непознато ШифровањеСадржаја %1"
 
@@ -8441,7 +8465,7 @@ msgstr "Необележени објекти"
 msgid "Unset private key"
 msgstr "Уклони приватни кључ"
 
-#: lib/RT/Transaction.pm:1132 lib/RT/Transaction.pm:944
+#: lib/RT/Transaction.pm:1154 lib/RT/Transaction.pm:966
 msgid "Untaken"
 msgstr "Неузети"
 
@@ -8597,7 +8621,7 @@ msgstr "Користи падајуће меније како би одабра�
 msgid "Used by scrips"
 msgstr ""
 
-#: lib/RT/Record.pm:995 share/html/Admin/Elements/ShowKeyInfo:85 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52
+#: lib/RT/Record.pm:1016 share/html/Admin/Elements/ShowKeyInfo:85 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52
 msgid "User"
 msgstr "Корисник"
 
@@ -8984,12 +9008,12 @@ msgid "Worked"
 msgstr "Рађено"
 
 #. (sprintf("%.1f", $duration / 60), $duration)
-#: lib/RT/Transaction.pm:1164
+#: lib/RT/Transaction.pm:1186
 msgid "Worked %quant(%1,hour,hours) (%quant(%2,minute,minutes))"
 msgstr ""
 
 #. ($duration)
-#: lib/RT/Transaction.pm:1162
+#: lib/RT/Transaction.pm:1184
 msgid "Worked %quant(%1,minute,minutes)"
 msgstr ""
 
@@ -9165,7 +9189,7 @@ msgstr "[Горе]"
 msgid "[none]"
 msgstr "[ништа]"
 
-#: lib/RT/Transaction.pm:888
+#: lib/RT/Transaction.pm:910
 msgid "a custom field"
 msgstr "прилагођено поље"
 

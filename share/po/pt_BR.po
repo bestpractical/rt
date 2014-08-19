@@ -33,7 +33,7 @@ msgid "#%1: %2"
 msgstr ""
 
 #. ($self->Data)
-#: lib/RT/Transaction.pm:1033 lib/RT/Transaction.pm:1072
+#: lib/RT/Transaction.pm:1055 lib/RT/Transaction.pm:1094
 msgid "%1"
 msgstr ""
 
@@ -80,20 +80,20 @@ msgstr ""
 #. ($cf->Name, $new_content)
 #. ($field, $new)
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
-#: lib/RT/Record.pm:2061 lib/RT/Transaction.pm:933 lib/RT/Transaction.pm:976
+#: lib/RT/Record.pm:2084 lib/RT/Transaction.pm:955 lib/RT/Transaction.pm:998
 msgid "%1 %2 added"
 msgstr "%1 %2 adicionado"
 
 #. ($cf->Name, $old_content, $new_content)
 #. ($field, $old, $new)
-#: lib/RT/Record.pm:2068 lib/RT/Transaction.pm:939
+#: lib/RT/Record.pm:2091 lib/RT/Transaction.pm:961
 msgid "%1 %2 changed to %3"
 msgstr "%1 %2 alterado para %3"
 
 #. ($cf->Name, $old_content)
 #. ($field, $old)
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
-#: lib/RT/Record.pm:2065 lib/RT/Transaction.pm:936 lib/RT/Transaction.pm:982
+#: lib/RT/Record.pm:2088 lib/RT/Transaction.pm:1004 lib/RT/Transaction.pm:958
 msgid "%1 %2 deleted"
 msgstr "%1 %2 removido"
 
@@ -212,7 +212,7 @@ msgid "%1 Version"
 msgstr "Versão %1"
 
 #. ($args{'Value'}, $cf->Name)
-#: lib/RT/Record.pm:2101
+#: lib/RT/Record.pm:2124
 msgid "%1 added as a value for %2"
 msgstr "%1 adicionado como um valor de %2"
 
@@ -265,7 +265,7 @@ msgstr "%1 não pode ser um grupo"
 #. ($self->loc( $args{'Field'} ),                ( $old_val ? '"' . $old_val . '"' : $self->loc("(no value)") ),                '"' . $self->__Value( $args{'Field'}) . '"',)
 #. ($self->Field,            ( $self->OldValue ? "'" . $self->OldValue . "'" : $no_value ),            "'" . $self->NewValue . "'")
 #. ($self->loc($self->Field), $t2->AsString, $t1->AsString)
-#: lib/RT/Record.pm:526 lib/RT/Transaction.pm:1082 lib/RT/Transaction.pm:1087 lib/RT/Transaction.pm:1101 lib/RT/Transaction.pm:1110 lib/RT/Transaction.pm:1150 lib/RT/Transaction.pm:838
+#: lib/RT/Record.pm:526 lib/RT/Transaction.pm:1104 lib/RT/Transaction.pm:1109 lib/RT/Transaction.pm:1123 lib/RT/Transaction.pm:1132 lib/RT/Transaction.pm:1172 lib/RT/Transaction.pm:838
 msgid "%1 changed from %2 to %3"
 msgstr "%1 alterado de %2 para %3"
 
@@ -285,7 +285,7 @@ msgstr "%1 copiado"
 msgid "%1 core config"
 msgstr "%1 configuração do núcleo"
 
-#: lib/RT/Record.pm:1005
+#: lib/RT/Record.pm:1026
 msgid "%1 could not be set to %2."
 msgstr "%1 não pôde ser alterado para %2"
 
@@ -352,7 +352,7 @@ msgid "%1 is no longer a %2 for this ticket."
 msgstr "%1 não é mais um %2 deste tíquete."
 
 #. ($old_value, $cf->Name)
-#: lib/RT/Record.pm:2166
+#: lib/RT/Record.pm:2189
 msgid "%1 is no longer a value for custom field %2"
 msgstr "%1 não é mais um valor para o campo personalizado %2"
 
@@ -397,7 +397,7 @@ msgstr "%1 objetos"
 
 #. ($self->loc($self->Name), $new_member_obj->Object->Name)
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
-#: lib/RT/Group.pm:1131 lib/RT/Transaction.pm:988
+#: lib/RT/Group.pm:1131 lib/RT/Transaction.pm:1010
 msgid "%1 set to %2"
 msgstr "%1 está configurado para %2"
 
@@ -469,12 +469,12 @@ msgid "%1:%2:%3"
 msgstr ""
 
 #. ($size)
-#: lib/RT/Attachment.pm:460
+#: lib/RT/Attachment.pm:462
 msgid "%1B"
 msgstr ""
 
 #. (int( $size / 102.4 ) / 10)
-#: lib/RT/Attachment.pm:457
+#: lib/RT/Attachment.pm:459
 msgid "%1KiB"
 msgstr ""
 
@@ -483,7 +483,7 @@ msgid "%1M"
 msgstr ""
 
 #. (int( $size / 1024 / 102.4 ) / 10)
-#: lib/RT/Attachment.pm:454
+#: lib/RT/Attachment.pm:456
 msgid "%1MiB"
 msgstr ""
 
@@ -647,7 +647,7 @@ msgstr "(sem nome)"
 msgid "(no pubkey!)"
 msgstr "(sem chave pública!)"
 
-#: lib/RT/Report/Tickets.pm:670 lib/RT/Report/Tickets.pm:836 lib/RT/Report/Tickets.pm:847 lib/RT/Report/Tickets/Entry.pm:78 lib/RT/Report/Tickets/Entry.pm:88 lib/RT/Transaction.pm:1087 lib/RT/Transaction.pm:1149 lib/RT/Transaction.pm:1150 lib/RT/Transaction.pm:757 lib/RT/Transaction.pm:762 lib/RT/Transaction.pm:832 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:109 share/html/Elements/EditCustomFieldSelect:128 share/html/Elements/EditCustomFieldSelect:138 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowCustomFields:61 share/html/m/ticket/show:263
+#: lib/RT/Report/Tickets.pm:670 lib/RT/Report/Tickets.pm:836 lib/RT/Report/Tickets.pm:847 lib/RT/Report/Tickets/Entry.pm:78 lib/RT/Report/Tickets/Entry.pm:88 lib/RT/Transaction.pm:1109 lib/RT/Transaction.pm:1171 lib/RT/Transaction.pm:1172 lib/RT/Transaction.pm:757 lib/RT/Transaction.pm:762 lib/RT/Transaction.pm:832 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:109 share/html/Elements/EditCustomFieldSelect:128 share/html/Elements/EditCustomFieldSelect:138 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowCustomFields:61 share/html/m/ticket/show:263
 msgid "(no value)"
 msgstr "(sem valor)"
 
@@ -896,7 +896,7 @@ msgid "Address2"
 msgstr "Endereço2"
 
 #. ($duration)
-#: lib/RT/Transaction.pm:1159
+#: lib/RT/Transaction.pm:1181
 msgid "Adjusted time worked by %quant(%1,minute,minutes)"
 msgstr ""
 
@@ -1028,7 +1028,7 @@ msgstr "Permitir o carregamento de pesquisas salvas"
 msgid "Allow writing Perl code in templates, scrips, etc"
 msgstr "Permitir escrever código Perl nos modelos, scrips, etc"
 
-#: lib/RT/Attachment.pm:748
+#: lib/RT/Attachment.pm:750
 msgid "Already encrypted"
 msgstr "Já encriptado"
 
@@ -1243,7 +1243,7 @@ msgstr "Nome do arquivo anexo"
 msgid "Attachments"
 msgstr "Anexos"
 
-#: lib/RT/Attachment.pm:743
+#: lib/RT/Attachment.pm:745
 msgid "Attachments encryption is disabled"
 msgstr "Encriptação de anexos está desativada"
 
@@ -1466,7 +1466,7 @@ msgstr ""
 msgid "Can't save this search"
 msgstr "Não é possível salvar esta busca"
 
-#: lib/RT/Record.pm:1358 lib/RT/Record.pm:1502
+#: lib/RT/Record.pm:1379 lib/RT/Record.pm:1523
 msgid "Can't specify both base and target"
 msgstr "Não é possível especificar base e alvo ao mesmo tempo"
 
@@ -1653,7 +1653,7 @@ msgstr "Comentários (Não enviados aos requisitantes)"
 msgid "Comments about this user"
 msgstr "Comentários sobre este usuário"
 
-#: lib/RT/Ticket.pm:1629 lib/RT/Transaction.pm:876
+#: lib/RT/Ticket.pm:1629 lib/RT/Transaction.pm:898
 msgid "Comments added"
 msgstr "Comentários adicionados"
 
@@ -1710,6 +1710,11 @@ msgstr "Contate seu administrador do RT."
 msgid "Content"
 msgstr "Conteúdo"
 
+#. ($self->OldValue, $self->NewValue)
+#: lib/RT/Transaction.pm:863
+msgid "Content dropped because its size (%1 bytes) exceeded configured maximum size setting (%2 bytes)."
+msgstr ""
+
 #: lib/RT/CustomField.pm:1741
 msgid "Content is not a valid IP address"
 msgstr "Conteúdo é um endereço IP inválido"
@@ -1717,6 +1722,11 @@ msgstr "Conteúdo é um endereço IP inválido"
 #: lib/RT/CustomField.pm:1757
 msgid "Content is not a valid IP address range"
 msgstr "Conteúdo é um intervalo de endereço IP inválido"
+
+#. ($self->OldValue, $self->NewValue)
+#: lib/RT/Transaction.pm:852
+msgid "Content truncated because its size (%1 bytes) exceeded configured maximum size setting (%2 bytes)."
+msgstr ""
 
 #: share/html/Elements/SelectAttachmentField:53
 msgid "Content-Type"
@@ -1734,7 +1744,7 @@ msgstr "Endereço de correspondência"
 msgid "Correspondence"
 msgstr "Correspondência"
 
-#: lib/RT/Ticket.pm:1631 lib/RT/Transaction.pm:872
+#: lib/RT/Ticket.pm:1631 lib/RT/Transaction.pm:894
 msgid "Correspondence added"
 msgstr "Correspondência adicionada"
 
@@ -1744,7 +1754,7 @@ msgstr "Correspondência em HTML"
 
 #. ($msg)
 #. ($value_msg)
-#: lib/RT/Record.pm:2017 lib/RT/Record.pm:2088
+#: lib/RT/Record.pm:2040 lib/RT/Record.pm:2111
 msgid "Could not add new custom field value: %1"
 msgstr "Não foi possível adicionar novo valor do campo personalizado: %1"
 
@@ -1871,7 +1881,7 @@ msgstr "Não foi possível compilar o modelo de bloco de código '%1': %2"
 
 #. ($Msg)
 #. ($msg)
-#: lib/RT/Record.pm:2098 lib/RT/Record.pm:2148
+#: lib/RT/Record.pm:2121 lib/RT/Record.pm:2171
 msgid "Couldn't create a transaction: %1"
 msgstr "Não foi possível criar uma transação: %1"
 
@@ -1885,7 +1895,7 @@ msgstr "Não foi possível criar o registro: %1"
 msgid "Couldn't delete dashboard %1: %2"
 msgstr "Não foi possível remover painel %1: %2"
 
-#: lib/RT/Record.pm:1014
+#: lib/RT/Record.pm:1035
 msgid "Couldn't find row"
 msgstr "Não foi possível encontrar o registro"
 
@@ -2065,17 +2075,17 @@ msgid "Couldn't remove previous member: %1"
 msgstr "Não foi possível remover membro prévio: %1"
 
 #. ($msg)
-#: lib/RT/Attachment.pm:835
+#: lib/RT/Attachment.pm:837
 msgid "Couldn't replace content with decrypted data: %1"
 msgstr "Não foi possível substituir o conteúdo com dado decriptado: %1"
 
 #. ($msg)
-#: lib/RT/Attachment.pm:784
+#: lib/RT/Attachment.pm:786
 msgid "Couldn't replace content with encrypted data: %1"
 msgstr "Não foi possível substituir o conteúdo com dado encriptado: %1"
 
 #. ($remote_link)
-#: lib/RT/Record.pm:1394 lib/RT/Record.pm:1531
+#: lib/RT/Record.pm:1415 lib/RT/Record.pm:1552
 msgid "Couldn't resolve '%1' into a link."
 msgstr "Não foi possível transformar '%1' em um link."
 
@@ -2280,7 +2290,7 @@ msgstr "Criador"
 msgid "Cryptography"
 msgstr "Criptografia"
 
-#: lib/RT/Attachment.pm:741 lib/RT/Attachment.pm:801
+#: lib/RT/Attachment.pm:743 lib/RT/Attachment.pm:803
 msgid "Cryptography is disabled"
 msgstr "Criptografia está desabilitada"
 
@@ -2346,7 +2356,7 @@ msgid "Custom field %1 %2 %3"
 msgstr "Campo personalizado %1 %2 %3"
 
 #. (ref $args{'Field'} ? $args{'Field'}->id : $args{'Field'})
-#: lib/RT/Record.pm:1952
+#: lib/RT/Record.pm:1975
 msgid "Custom field %1 does not apply to this object"
 msgstr "Campo personalizado %1 não se aplica a este objeto"
 
@@ -2361,7 +2371,7 @@ msgid "Custom field %1 has no value."
 msgstr "Campo personalizado %1 não tem valor."
 
 #. ($args{'Field'})
-#: lib/RT/Record.pm:1941 lib/RT/Record.pm:2129
+#: lib/RT/Record.pm:1964 lib/RT/Record.pm:2152
 msgid "Custom field %1 not found"
 msgstr "Campo personalizado %1 não encontrado"
 
@@ -2382,7 +2392,7 @@ msgstr "Valor de campo personalizado não pôde ser encontrado"
 msgid "Custom field value deleted"
 msgstr "Valor do campo personalizado removido"
 
-#: lib/RT/Tickets.pm:152 lib/RT/Transaction.pm:880 share/html/Elements/SelectGroups:54 share/html/Elements/SelectUsers:54
+#: lib/RT/Tickets.pm:152 lib/RT/Transaction.pm:902 share/html/Elements/SelectGroups:54 share/html/Elements/SelectUsers:54
 msgid "CustomField"
 msgstr "CampoPersonalizado"
 
@@ -2535,7 +2545,7 @@ msgstr "Dez"
 msgid "Decrypt"
 msgstr "Decriptar"
 
-#: lib/RT/Attachment.pm:830
+#: lib/RT/Attachment.pm:832
 msgid "Decryption error; contact the administrator"
 msgstr "Erro de desencriptação; contate o administrador"
 
@@ -2645,22 +2655,22 @@ msgid "DependedOnBy"
 msgstr ""
 
 #. ($value)
-#: lib/RT/Transaction.pm:1014
+#: lib/RT/Transaction.pm:1036
 msgid "Dependency by %1 added"
 msgstr "Dependência por %1 adicionada"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1056
+#: lib/RT/Transaction.pm:1078
 msgid "Dependency by %1 deleted"
 msgstr "Dependência por %1 removida"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1011
+#: lib/RT/Transaction.pm:1033
 msgid "Dependency on %1 added"
 msgstr "Dependência de %1 adicionada"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1053
+#: lib/RT/Transaction.pm:1075
 msgid "Dependency on %1 deleted"
 msgstr "Dependência de %1 removida"
 
@@ -2876,7 +2886,7 @@ msgstr "Editando afiliados do grupo %1"
 msgid "EffectiveId"
 msgstr ""
 
-#: lib/RT/Record.pm:1371 lib/RT/Record.pm:1516
+#: lib/RT/Record.pm:1392 lib/RT/Record.pm:1537
 msgid "Either base or target must be specified"
 msgstr "Ou origem ou destino deve ser especificado"
 
@@ -2996,7 +3006,7 @@ msgstr "Encriptação desativada"
 msgid "Encrypting enabled"
 msgstr "Encriptação ativada"
 
-#: lib/RT/Attachment.pm:779
+#: lib/RT/Attachment.pm:781
 msgid "Encryption error; contact the administrator"
 msgstr "Erro de encriptação; contate o administrador"
 
@@ -3261,6 +3271,16 @@ msgstr "Campo"
 msgid "Field values source:"
 msgstr "Fonte de valores de campo:"
 
+#. ($self->Data, $self->OldValue, $self->NewValue)
+#: lib/RT/Transaction.pm:859
+msgid "File '%1' dropped because its size (%2 bytes) exceeded configured maximum size setting (%3 bytes)."
+msgstr ""
+
+#. ($self->Data, $self->OldValue, $self->NewValue)
+#: lib/RT/Transaction.pm:848
+msgid "File '%1' truncated because its size (%2 bytes) exceeded configured maximum size setting (%3 bytes)."
+msgstr ""
+
 #: lib/RT/Tickets.pm:141 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:53 share/html/Elements/SelectAttachmentField:54
 msgid "Filename"
 msgstr "Nome de arquivo"
@@ -3402,12 +3422,12 @@ msgid "Forward transaction #%1"
 msgstr "Reencaminhar transação #%1"
 
 #. ($self->Field, $recipients,            [\'<a href="#txn-', $self->Field, \'">'], \'</a>')
-#: lib/RT/Transaction.pm:852
+#: lib/RT/Transaction.pm:874
 msgid "Forwarded %3Transaction #%1%4 to %2"
 msgstr "Encaminhada %3Transação #%1%4 para %2"
 
 #. ($recipients)
-#: lib/RT/Transaction.pm:860
+#: lib/RT/Transaction.pm:882
 msgid "Forwarded Ticket to %1"
 msgstr "Reencaminhar Tíquete para #%1"
 
@@ -3425,7 +3445,7 @@ msgstr "Encaminhada mensagem de tíquete"
 msgid "Found %quant(%1,ticket,tickets)"
 msgstr "%numerate(%1,Encontrado,Encontrados) %quant(%1,tíquete,tíquetes)"
 
-#: lib/RT/Record.pm:1016
+#: lib/RT/Record.pm:1037
 msgid "Found Object"
 msgstr "Objeto Encontrado"
 
@@ -3470,7 +3490,7 @@ msgid "Give output even on messages successfully sent"
 msgstr "Dar retorno mesmo para mensagens enviadas com sucesso"
 
 #. ($self->_FormatUser($New))
-#: lib/RT/Transaction.pm:1123 lib/RT/Transaction.pm:1135 lib/RT/Transaction.pm:970
+#: lib/RT/Transaction.pm:1145 lib/RT/Transaction.pm:1157 lib/RT/Transaction.pm:992
 msgid "Given to %1"
 msgstr "Dado a %1"
 
@@ -3549,7 +3569,7 @@ msgstr "Propriedades do Gráfico"
 msgid "Graphical charts are not available."
 msgstr "Gráficos não estão disponíveis."
 
-#: lib/RT/Record.pm:996 share/html/Search/Elements/SelectPersonType:54 share/html/Ticket/Elements/AddWatchers:69
+#: lib/RT/Record.pm:1017 share/html/Search/Elements/SelectPersonType:54 share/html/Ticket/Elements/AddWatchers:69
 msgid "Group"
 msgstr "Grupo"
 
@@ -3806,7 +3826,7 @@ msgstr "Se você alterou qualquer coisa acima, não se esqueça de"
 msgid "If your preferred database isn't listed in the dropdown below, that means RT couldn't find a <i>database driver</i> for it installed locally. You may be able to remedy this by using %1 to download and install DBD::MySQL, DBD::Oracle or DBD::Pg."
 msgstr "Se seu banco de dados preferido não estiver listado abaixo, isto significa que RT não pode encontrar um <i>driver de banco de dados</i> para ele instalado localmente. Você pode consertar isto usando %1 para baixar e instalar DBD::MySQL, DBD::Oracle ou DBD::Pg."
 
-#: lib/RT/Record.pm:1008
+#: lib/RT/Record.pm:1029
 msgid "Illegal value for %1"
 msgstr "Valor ilegal para %1"
 
@@ -3822,7 +3842,7 @@ msgstr "Imagem não exibida porque exibição está desabilitada na configuraç�
 msgid "Image not shown because sender requested not to inline it."
 msgstr "Imagem não exibida porque o remetente pediu para não exibi-la embutida."
 
-#: lib/RT/Record.pm:1011
+#: lib/RT/Record.pm:1032
 msgid "Immutable field"
 msgstr "Campo imutável"
 
@@ -4009,7 +4029,7 @@ msgstr "Tipo de retorno inválido"
 msgid "Invalid Render Type for custom field of type %1"
 msgstr "Tipo de retorno inválido para o campo personalizado do tipo %1"
 
-#: lib/RT/Record.pm:1013
+#: lib/RT/Record.pm:1034
 msgid "Invalid data"
 msgstr "Dado inválido"
 
@@ -4060,7 +4080,7 @@ msgstr "Sintaxe inválida para endereço de email"
 msgid "Invalid value for %1"
 msgstr "Valor inválido para %1"
 
-#: lib/RT/Record.pm:1962
+#: lib/RT/Record.pm:1985
 msgid "Invalid value for custom field"
 msgstr "Valor inválido para campo personalizado"
 
@@ -4068,7 +4088,7 @@ msgstr "Valor inválido para campo personalizado"
 msgid "Is already added to the object"
 msgstr "Já foi adicionado ao objeto"
 
-#: lib/RT/Attachment.pm:812
+#: lib/RT/Attachment.pm:814
 msgid "Is not encrypted"
 msgstr "Não está encriptado"
 
@@ -4214,21 +4234,21 @@ msgstr "Ciclo de vida"
 msgid "Link"
 msgstr "Vínculo"
 
-#: lib/RT/Record.pm:1404
+#: lib/RT/Record.pm:1425
 msgid "Link already exists"
 msgstr "Vínculo já existe"
 
 #. ($linkmsg)
-#: lib/RT/Record.pm:1426
+#: lib/RT/Record.pm:1447
 msgid "Link could not be created: %1"
 msgstr "Vínculo não pôde ser criado: %1"
 
 #. ($msg)
-#: lib/RT/Record.pm:1561
+#: lib/RT/Record.pm:1582
 msgid "Link could not be deleted: %1"
 msgstr "Vínculo não pode ser apagado: %1"
 
-#: lib/RT/Record.pm:1548
+#: lib/RT/Record.pm:1569
 msgid "Link not found"
 msgstr "Vínculo não encontrado"
 
@@ -4254,7 +4274,7 @@ msgid "LinkedTo"
 msgstr "VinculadoCom"
 
 #. ($self->loc(lc($remote_obj->RecordType)))
-#: lib/RT/Record.pm:1390
+#: lib/RT/Record.pm:1411
 msgid "Linking to a deleted %1 is not allowed"
 msgstr "Vincular com um %1 apagado não é permitido"
 
@@ -4530,12 +4550,12 @@ msgid "Member"
 msgstr "Membro"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1026
+#: lib/RT/Transaction.pm:1048
 msgid "Member %1 added"
 msgstr "Membro %1 adicionado"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1068
+#: lib/RT/Transaction.pm:1090
 msgid "Member %1 deleted"
 msgstr "Membro %1 removido"
 
@@ -4561,12 +4581,12 @@ msgid "Members"
 msgstr "Membros"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1023
+#: lib/RT/Transaction.pm:1045
 msgid "Membership in %1 added"
 msgstr "Filiação em %1 adicionada"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1065
+#: lib/RT/Transaction.pm:1087
 msgid "Membership in %1 deleted"
 msgstr "Filiação em %1 removida"
 
@@ -4614,7 +4634,7 @@ msgid "Merge into"
 msgstr "Unir a"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1029
+#: lib/RT/Transaction.pm:1051
 msgid "Merged into %1"
 msgstr "Unido a %1"
 
@@ -4702,7 +4722,7 @@ msgstr "Minutos"
 msgid "Miscellaneous"
 msgstr "Extras"
 
-#: lib/RT/Record.pm:1015
+#: lib/RT/Record.pm:1036
 msgid "Missing a primary key?: %1"
 msgstr "Faltando uma chave primária?: %1"
 
@@ -5245,7 +5265,7 @@ msgstr "Nenhum Modelo"
 msgid "No action"
 msgstr "Nenhuma ação"
 
-#: lib/RT/Record.pm:1010
+#: lib/RT/Record.pm:1031
 msgid "No column specified"
 msgstr "Nenhuma coluna especificada"
 
@@ -5271,7 +5291,7 @@ msgstr "Nenhum grupo especificado"
 msgid "No groups matching search criteria found."
 msgstr "Nenhum grupo satisfaz o critério de busca."
 
-#: lib/RT/Attachment.pm:768
+#: lib/RT/Attachment.pm:770
 msgid "No key suitable for encryption"
 msgstr "Nenhuma chave aceitável para encriptação"
 
@@ -5287,7 +5307,7 @@ msgstr "Nenhuma mensagem anexada"
 msgid "No name provided"
 msgstr "Nenhum nome fornecido"
 
-#: lib/RT/Attachment.pm:750
+#: lib/RT/Attachment.pm:752
 msgid "No need to encrypt"
 msgstr "Não há necessidade de  encriptar"
 
@@ -5394,7 +5414,7 @@ msgstr "Não há PrincipalId válido"
 msgid "No valid Type specified"
 msgstr "Não há Type válido especificado"
 
-#: lib/RT/Record.pm:1007
+#: lib/RT/Record.pm:1028
 msgid "No value sent to _Set!"
 msgstr "Nenhum valor enviado para _Set!"
 
@@ -5406,7 +5426,7 @@ msgstr "Ninguém"
 msgid "None"
 msgstr "Nenhum"
 
-#: lib/RT/Record.pm:1012
+#: lib/RT/Record.pm:1033
 msgid "Nonexistant field?"
 msgstr "Campo inexistente?"
 
@@ -5730,11 +5750,11 @@ msgstr "Organização"
 msgid "Originating ticket: #%1"
 msgstr "Tíquete originador: #%1"
 
-#: lib/RT/Transaction.pm:864
+#: lib/RT/Transaction.pm:886
 msgid "Outgoing email about a comment recorded"
 msgstr "E-mail de saida sobre um comentário registrado"
 
-#: lib/RT/Transaction.pm:868
+#: lib/RT/Transaction.pm:890
 msgid "Outgoing email recorded"
 msgstr "E-mail de saida registrado"
 
@@ -5769,7 +5789,7 @@ msgid "Owner changed from %1 to %2"
 msgstr "Proprietário alterado de %1 para %2"
 
 #. (map { $self->_FormatUser($_) } $Old, $New)
-#: lib/RT/Transaction.pm:1142 lib/RT/Transaction.pm:958
+#: lib/RT/Transaction.pm:1164 lib/RT/Transaction.pm:980
 msgid "Owner forcibly changed from %1 to %2"
 msgstr "Proprietário alterado à força de %1 para %2"
 
@@ -5817,7 +5837,7 @@ msgstr "Pais"
 msgid "Password"
 msgstr "Senha"
 
-#: lib/RT/Transaction.pm:1093 lib/RT/User.pm:867
+#: lib/RT/Transaction.pm:1115 lib/RT/User.pm:867
 msgid "Password changed"
 msgstr "Senha trocada"
 
@@ -5902,11 +5922,11 @@ msgstr "Ordem de pesquisa na biblioteca Perl"
 msgid "Permanently wipeout data from RT"
 msgstr "Apagar permanentemente os dados do RT"
 
-#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:738 lib/RT/Attachment.pm:739 lib/RT/Attachment.pm:798 lib/RT/Attachment.pm:799 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:386 lib/RT/Attribute.pm:401 lib/RT/Attribute.pm:414 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1037 lib/RT/CustomField.pm:1574 lib/RT/CustomField.pm:1603 lib/RT/CustomField.pm:1646 lib/RT/CustomField.pm:1819 lib/RT/CustomField.pm:1969 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:628 lib/RT/CustomField.pm:655 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1247 lib/RT/Group.pm:1331 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:355 lib/RT/Queue.pm:381 lib/RT/Queue.pm:407 lib/RT/Queue.pm:804 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:317 lib/RT/Template.pm:483 lib/RT/Template.pm:743 lib/RT/Template.pm:760 lib/RT/Template.pm:778 lib/RT/Ticket.pm:1072 lib/RT/Ticket.pm:1283 lib/RT/Ticket.pm:1451 lib/RT/Ticket.pm:1501 lib/RT/Ticket.pm:1773 lib/RT/Ticket.pm:1792 lib/RT/Ticket.pm:2197 lib/RT/Ticket.pm:2210 lib/RT/Ticket.pm:2215 lib/RT/Ticket.pm:2239 lib/RT/Ticket.pm:2456 lib/RT/Ticket.pm:2685 lib/RT/Ticket.pm:3049 lib/RT/Ticket.pm:734 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:688 lib/RT/Transaction.pm:728 lib/RT/User.pm:1137 lib/RT/User.pm:139 lib/RT/User.pm:1588 lib/RT/User.pm:1835 lib/RT/User.pm:1868 lib/RT/User.pm:328 lib/RT/User.pm:735 lib/RT/User.pm:770 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97 share/html/Ticket/ShowEmailRecord.html:110 share/html/Ticket/ShowEmailRecord.html:111
+#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:740 lib/RT/Attachment.pm:741 lib/RT/Attachment.pm:800 lib/RT/Attachment.pm:801 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:386 lib/RT/Attribute.pm:401 lib/RT/Attribute.pm:414 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1037 lib/RT/CustomField.pm:1574 lib/RT/CustomField.pm:1603 lib/RT/CustomField.pm:1646 lib/RT/CustomField.pm:1819 lib/RT/CustomField.pm:1969 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:628 lib/RT/CustomField.pm:655 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1247 lib/RT/Group.pm:1331 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:355 lib/RT/Queue.pm:381 lib/RT/Queue.pm:407 lib/RT/Queue.pm:804 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:317 lib/RT/Template.pm:483 lib/RT/Template.pm:743 lib/RT/Template.pm:760 lib/RT/Template.pm:778 lib/RT/Ticket.pm:1072 lib/RT/Ticket.pm:1283 lib/RT/Ticket.pm:1451 lib/RT/Ticket.pm:1501 lib/RT/Ticket.pm:1773 lib/RT/Ticket.pm:1792 lib/RT/Ticket.pm:2197 lib/RT/Ticket.pm:2210 lib/RT/Ticket.pm:2215 lib/RT/Ticket.pm:2239 lib/RT/Ticket.pm:2456 lib/RT/Ticket.pm:2685 lib/RT/Ticket.pm:3049 lib/RT/Ticket.pm:734 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:688 lib/RT/Transaction.pm:728 lib/RT/User.pm:1137 lib/RT/User.pm:139 lib/RT/User.pm:1588 lib/RT/User.pm:1835 lib/RT/User.pm:1868 lib/RT/User.pm:328 lib/RT/User.pm:735 lib/RT/User.pm:770 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97 share/html/Ticket/ShowEmailRecord.html:110 share/html/Ticket/ShowEmailRecord.html:111
 msgid "Permission Denied"
 msgstr "Permissão Negada"
 
-#: lib/RT/Record.pm:1382 lib/RT/Record.pm:1526 lib/RT/Record/Role/Roles.pm:407 lib/RT/Record/Role/Roles.pm:491
+#: lib/RT/Record.pm:1403 lib/RT/Record.pm:1547 lib/RT/Record/Role/Roles.pm:407 lib/RT/Record/Role/Roles.pm:491
 msgid "Permission denied"
 msgstr "Permissão negada"
 
@@ -6110,7 +6130,7 @@ msgstr "Consulta"
 msgid "Query Builder"
 msgstr "Construtor de Consulta"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Record.pm:997 lib/RT/Report/Tickets.pm:62 lib/RT/Tickets.pm:107 lib/RT/Tickets.pm:1452 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:63 share/html/Elements/RT__Template/ColumnMap:66 share/html/Elements/RT__Template/ColumnMap:73 share/html/Elements/RT__Ticket/ColumnMap:102 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:61 share/html/Ticket/Elements/ShowBasics:82 share/html/m/ticket/create:248 share/html/m/ticket/show:242
+#: lib/RT/Graph/Tickets.pm:153 lib/RT/Record.pm:1018 lib/RT/Report/Tickets.pm:62 lib/RT/Tickets.pm:107 lib/RT/Tickets.pm:1452 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:63 share/html/Elements/RT__Template/ColumnMap:66 share/html/Elements/RT__Template/ColumnMap:73 share/html/Elements/RT__Ticket/ColumnMap:102 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:61 share/html/Ticket/Elements/ShowBasics:82 share/html/m/ticket/create:248 share/html/m/ticket/show:242
 msgid "Queue"
 msgstr "Fila"
 
@@ -6367,22 +6387,22 @@ msgid "Refer to"
 msgstr "Referente a"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1020
+#: lib/RT/Transaction.pm:1042
 msgid "Reference by %1 added"
 msgstr "Referenciado por %1 adicionado"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1062
+#: lib/RT/Transaction.pm:1084
 msgid "Reference by %1 deleted"
 msgstr "Referenciado por %1 removido"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1017
+#: lib/RT/Transaction.pm:1039
 msgid "Reference to %1 added"
 msgstr "Referência a %1 adicionada"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1059
+#: lib/RT/Transaction.pm:1081
 msgid "Reference to %1 deleted"
 msgstr "Referência a %1 removida"
 
@@ -6463,7 +6483,7 @@ msgstr "Recarregar esta página a cada %1 minutos."
 msgid "RefreshHomepage"
 msgstr "Atualizar página inicial"
 
-#: lib/RT/Record.pm:1414
+#: lib/RT/Record.pm:1435
 msgid "Refused to add link which would create a circular relationship"
 msgstr "Recusada a adição de vínculo que iria criar um relacionamento circular"
 
@@ -6480,17 +6500,17 @@ msgid "Reminder"
 msgstr "Lembrete"
 
 #. ($subject)
-#: lib/RT/Transaction.pm:1180
+#: lib/RT/Transaction.pm:1202
 msgid "Reminder '%1' added"
 msgstr "Lembrete '%1' adicionado"
 
 #. ($subject)
-#: lib/RT/Transaction.pm:1202
+#: lib/RT/Transaction.pm:1224
 msgid "Reminder '%1' completed"
 msgstr "Lembrete '%1' completado"
 
 #. ($subject)
-#: lib/RT/Transaction.pm:1191
+#: lib/RT/Transaction.pm:1213
 msgid "Reminder '%1' reopened"
 msgstr "Lembrete '%1' reaberto"
 
@@ -7101,6 +7121,10 @@ msgstr "Enviar mensagem aos requisitantes e Ccs"
 msgid "Send mail to requestors and Ccs as a comment"
 msgstr "Enviar mensagem aos requisitantes e Ccs como um comentário"
 
+#: lib/RT/Interface/Email.pm:1776
+msgid "Sending the previous mail has failed.  Please contact your admin, they can find more details in the logs."
+msgstr ""
+
 #: etc/initialdata:34
 msgid "Sends a message to the requestors"
 msgstr "Envia uma mensagem aos requisitantes"
@@ -7483,7 +7507,7 @@ msgid "Step %1 of %2"
 msgstr "Etapa %1 de %2"
 
 #. ($self->_FormatUser($Old))
-#: lib/RT/Transaction.pm:1128 lib/RT/Transaction.pm:964
+#: lib/RT/Transaction.pm:1150 lib/RT/Transaction.pm:986
 msgid "Stolen from %1"
 msgstr "Roubado de %1"
 
@@ -7500,7 +7524,7 @@ msgid "Subject Tag"
 msgstr "Rótulo do assunto"
 
 #. ($self->Data)
-#: lib/RT/Transaction.pm:992
+#: lib/RT/Transaction.pm:1014
 msgid "Subject changed to %1"
 msgstr "Assunto alterado para %1"
 
@@ -7539,11 +7563,11 @@ msgstr "Subscrição"
 msgid "Subscription could not be created: %1"
 msgstr "Subscrição não pode ser criada: %1"
 
-#: lib/RT/Attachment.pm:840
+#: lib/RT/Attachment.pm:842
 msgid "Successfuly decrypted data"
 msgstr "Dado decriptado com sucesso"
 
-#: lib/RT/Attachment.pm:791
+#: lib/RT/Attachment.pm:793
 msgid "Successfuly encrypted data"
 msgstr "Dado encriptado com sucesso"
 
@@ -7644,7 +7668,7 @@ msgstr "Tomar"
 msgid "Take tickets"
 msgstr "Tomar tíquetes"
 
-#: lib/RT/Transaction.pm:1120 lib/RT/Transaction.pm:948
+#: lib/RT/Transaction.pm:1142 lib/RT/Transaction.pm:970
 msgid "Taken"
 msgstr "Tomado"
 
@@ -7730,7 +7754,7 @@ msgstr "Texto"
 msgid "Text file is not shown because it is disabled in preferences."
 msgstr "O arquivo de texto não é mostrador porque foi desabilitado nas preferências."
 
-#: lib/RT/Record.pm:1006
+#: lib/RT/Record.pm:1027
 msgid "That is already the current value"
 msgstr "Este já é o valor atual"
 
@@ -7831,7 +7855,7 @@ msgstr "Chave totalmente confiável"
 msgid "The key is ultimately trusted"
 msgstr "Em última análise, a chave é confiável"
 
-#: lib/RT/Record.pm:1009
+#: lib/RT/Record.pm:1030
 msgid "The new value has been set."
 msgstr "O novo valor foi atribuído."
 
@@ -7961,7 +7985,7 @@ msgstr "Qui"
 msgid "Thursday"
 msgstr "Quinta"
 
-#: lib/RT/Record.pm:994 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/ShowReminders:53
+#: lib/RT/Record.pm:1015 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/ShowReminders:53
 msgid "Ticket"
 msgstr "Tíquete"
 
@@ -8222,7 +8246,7 @@ msgid "Transaction"
 msgstr "Transação"
 
 #. ($self->Data)
-#: lib/RT/Transaction.pm:1169
+#: lib/RT/Transaction.pm:1191
 msgid "Transaction %1 purged"
 msgstr "Transação %1 removida"
 
@@ -8250,7 +8274,7 @@ msgstr "DataTransacao"
 msgid "Transactions"
 msgstr "Transações"
 
-#: lib/RT/Transaction.pm:1238
+#: lib/RT/Transaction.pm:1260
 msgid "Transactions are immutable"
 msgstr "Transações são imutáveis"
 
@@ -8383,7 +8407,7 @@ msgstr "Desconhecido (este valor é novo para o sistema)"
 
 #. ($ContentEncoding)
 #. ($self->ContentEncoding)
-#: lib/RT/Attachment.pm:384 lib/RT/Record.pm:873
+#: lib/RT/Attachment.pm:386 lib/RT/Record.pm:894
 msgid "Unknown ContentEncoding %1"
 msgstr "Codificação de conteúdo desconhecida %1"
 
@@ -8441,7 +8465,7 @@ msgstr "Objetos não selecionados"
 msgid "Unset private key"
 msgstr "Chave privada não definida"
 
-#: lib/RT/Transaction.pm:1132 lib/RT/Transaction.pm:944
+#: lib/RT/Transaction.pm:1154 lib/RT/Transaction.pm:966
 msgid "Untaken"
 msgstr "Não tomado"
 
@@ -8597,7 +8621,7 @@ msgstr "Use menus suspensos para selecionar qual atualização de ticket você d
 msgid "Used by scrips"
 msgstr "Usado por scrips"
 
-#: lib/RT/Record.pm:995 share/html/Admin/Elements/ShowKeyInfo:85 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52
+#: lib/RT/Record.pm:1016 share/html/Admin/Elements/ShowKeyInfo:85 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52
 msgid "User"
 msgstr "Usuário"
 
@@ -8984,12 +9008,12 @@ msgid "Worked"
 msgstr "Trabalhado"
 
 #. (sprintf("%.1f", $duration / 60), $duration)
-#: lib/RT/Transaction.pm:1164
+#: lib/RT/Transaction.pm:1186
 msgid "Worked %quant(%1,hour,hours) (%quant(%2,minute,minutes))"
 msgstr ""
 
 #. ($duration)
-#: lib/RT/Transaction.pm:1162
+#: lib/RT/Transaction.pm:1184
 msgid "Worked %quant(%1,minute,minutes)"
 msgstr ""
 
@@ -9165,7 +9189,7 @@ msgstr "[Cima]"
 msgid "[none]"
 msgstr "[nenhum]"
 
-#: lib/RT/Transaction.pm:888
+#: lib/RT/Transaction.pm:910
 msgid "a custom field"
 msgstr "um campo customizado"
 

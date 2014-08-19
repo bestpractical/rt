@@ -33,7 +33,7 @@ msgid "#%1: %2"
 msgstr ""
 
 #. ($self->Data)
-#: lib/RT/Transaction.pm:1033 lib/RT/Transaction.pm:1072
+#: lib/RT/Transaction.pm:1055 lib/RT/Transaction.pm:1094
 msgid "%1"
 msgstr ""
 
@@ -80,20 +80,20 @@ msgstr ""
 #. ($cf->Name, $new_content)
 #. ($field, $new)
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
-#: lib/RT/Record.pm:2061 lib/RT/Transaction.pm:933 lib/RT/Transaction.pm:976
+#: lib/RT/Record.pm:2084 lib/RT/Transaction.pm:955 lib/RT/Transaction.pm:998
 msgid "%1 %2 added"
 msgstr "%1 %2 προστέθηκε"
 
 #. ($cf->Name, $old_content, $new_content)
 #. ($field, $old, $new)
-#: lib/RT/Record.pm:2068 lib/RT/Transaction.pm:939
+#: lib/RT/Record.pm:2091 lib/RT/Transaction.pm:961
 msgid "%1 %2 changed to %3"
 msgstr "%1 %2 τροποποίηση σε %3"
 
 #. ($cf->Name, $old_content)
 #. ($field, $old)
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
-#: lib/RT/Record.pm:2065 lib/RT/Transaction.pm:936 lib/RT/Transaction.pm:982
+#: lib/RT/Record.pm:2088 lib/RT/Transaction.pm:1004 lib/RT/Transaction.pm:958
 msgid "%1 %2 deleted"
 msgstr "%1 %2 διαγράφηκε"
 
@@ -212,7 +212,7 @@ msgid "%1 Version"
 msgstr "%1 έκδοση"
 
 #. ($args{'Value'}, $cf->Name)
-#: lib/RT/Record.pm:2101
+#: lib/RT/Record.pm:2124
 msgid "%1 added as a value for %2"
 msgstr "Προστέθηκε η τιμή %1 για %2"
 
@@ -265,7 +265,7 @@ msgstr "%1 δε μπορεί να είναι μια ομάδα"
 #. ($self->loc( $args{'Field'} ),                ( $old_val ? '"' . $old_val . '"' : $self->loc("(no value)") ),                '"' . $self->__Value( $args{'Field'}) . '"',)
 #. ($self->Field,            ( $self->OldValue ? "'" . $self->OldValue . "'" : $no_value ),            "'" . $self->NewValue . "'")
 #. ($self->loc($self->Field), $t2->AsString, $t1->AsString)
-#: lib/RT/Record.pm:526 lib/RT/Transaction.pm:1082 lib/RT/Transaction.pm:1087 lib/RT/Transaction.pm:1101 lib/RT/Transaction.pm:1110 lib/RT/Transaction.pm:1150 lib/RT/Transaction.pm:838
+#: lib/RT/Record.pm:526 lib/RT/Transaction.pm:1104 lib/RT/Transaction.pm:1109 lib/RT/Transaction.pm:1123 lib/RT/Transaction.pm:1132 lib/RT/Transaction.pm:1172 lib/RT/Transaction.pm:838
 msgid "%1 changed from %2 to %3"
 msgstr "Το %1 άλλαξε από %2 σε %3"
 
@@ -285,7 +285,7 @@ msgstr "%1 αντίγραφο"
 msgid "%1 core config"
 msgstr "κεντρικές ρυθμίσεις %1"
 
-#: lib/RT/Record.pm:1005
+#: lib/RT/Record.pm:1026
 msgid "%1 could not be set to %2."
 msgstr "%1 δεν ήταν δυνατό να ορισθεί σε %2."
 
@@ -352,7 +352,7 @@ msgid "%1 is no longer a %2 for this ticket."
 msgstr "Ο/Η %1 δεν είναι πλέον %2 για αυτό το αίτημα"
 
 #. ($old_value, $cf->Name)
-#: lib/RT/Record.pm:2166
+#: lib/RT/Record.pm:2189
 msgid "%1 is no longer a value for custom field %2"
 msgstr "Το %1 δεν είναι πλέον τιμή για το ειδικό πεδίο %2"
 
@@ -397,7 +397,7 @@ msgstr "%1 αντικείμενα"
 
 #. ($self->loc($self->Name), $new_member_obj->Object->Name)
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
-#: lib/RT/Group.pm:1131 lib/RT/Transaction.pm:988
+#: lib/RT/Group.pm:1131 lib/RT/Transaction.pm:1010
 msgid "%1 set to %2"
 msgstr "%1 να ορισθεί σε %2"
 
@@ -469,12 +469,12 @@ msgid "%1:%2:%3"
 msgstr ""
 
 #. ($size)
-#: lib/RT/Attachment.pm:460
+#: lib/RT/Attachment.pm:462
 msgid "%1B"
 msgstr ""
 
 #. (int( $size / 102.4 ) / 10)
-#: lib/RT/Attachment.pm:457
+#: lib/RT/Attachment.pm:459
 msgid "%1KiB"
 msgstr "%1 KiB"
 
@@ -483,7 +483,7 @@ msgid "%1M"
 msgstr "%1Μ"
 
 #. (int( $size / 1024 / 102.4 ) / 10)
-#: lib/RT/Attachment.pm:454
+#: lib/RT/Attachment.pm:456
 msgid "%1MiB"
 msgstr "%1Μ"
 
@@ -647,7 +647,7 @@ msgstr "(απουσία ονόματος)"
 msgid "(no pubkey!)"
 msgstr "(δεν υπάρχει δημόσιο κλειδί)"
 
-#: lib/RT/Report/Tickets.pm:670 lib/RT/Report/Tickets.pm:836 lib/RT/Report/Tickets.pm:847 lib/RT/Report/Tickets/Entry.pm:78 lib/RT/Report/Tickets/Entry.pm:88 lib/RT/Transaction.pm:1087 lib/RT/Transaction.pm:1149 lib/RT/Transaction.pm:1150 lib/RT/Transaction.pm:757 lib/RT/Transaction.pm:762 lib/RT/Transaction.pm:832 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:109 share/html/Elements/EditCustomFieldSelect:128 share/html/Elements/EditCustomFieldSelect:138 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowCustomFields:61 share/html/m/ticket/show:263
+#: lib/RT/Report/Tickets.pm:670 lib/RT/Report/Tickets.pm:836 lib/RT/Report/Tickets.pm:847 lib/RT/Report/Tickets/Entry.pm:78 lib/RT/Report/Tickets/Entry.pm:88 lib/RT/Transaction.pm:1109 lib/RT/Transaction.pm:1171 lib/RT/Transaction.pm:1172 lib/RT/Transaction.pm:757 lib/RT/Transaction.pm:762 lib/RT/Transaction.pm:832 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:109 share/html/Elements/EditCustomFieldSelect:128 share/html/Elements/EditCustomFieldSelect:138 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowCustomFields:61 share/html/m/ticket/show:263
 msgid "(no value)"
 msgstr "(χωρίς τιμή)"
 
@@ -896,7 +896,7 @@ msgid "Address2"
 msgstr "Διεύθυνση 2"
 
 #. ($duration)
-#: lib/RT/Transaction.pm:1159
+#: lib/RT/Transaction.pm:1181
 msgid "Adjusted time worked by %quant(%1,minute,minutes)"
 msgstr "Προσαρμοδμένος χρόνος εργασίας από %quant(%1,λεπτό,λεπτά)"
 
@@ -1028,7 +1028,7 @@ msgstr "Δικαίωμα φόρτωσης αποθηκευμένων αναζη�
 msgid "Allow writing Perl code in templates, scrips, etc"
 msgstr "Δικαίωμα εισαγωγής κώδικα Perl σε πρότυπα σελίδων, αυτοματισμών, κτλ"
 
-#: lib/RT/Attachment.pm:748
+#: lib/RT/Attachment.pm:750
 msgid "Already encrypted"
 msgstr "Έχει ήδη κρυπτογραφηθεί"
 
@@ -1243,7 +1243,7 @@ msgstr "Όνομα συνημμένου αρχείου"
 msgid "Attachments"
 msgstr "Συνημμένα"
 
-#: lib/RT/Attachment.pm:743
+#: lib/RT/Attachment.pm:745
 msgid "Attachments encryption is disabled"
 msgstr "Η κρυπτογράφηση των συνημμένων έχει απενεργοποιηθεί"
 
@@ -1466,7 +1466,7 @@ msgstr "Δεν είναι δυνατή η αποθήκευση μιας αναζ
 msgid "Can't save this search"
 msgstr "Δεν είναι δυνατή η αποθήκευση της αναζήτησης"
 
-#: lib/RT/Record.pm:1358 lib/RT/Record.pm:1502
+#: lib/RT/Record.pm:1379 lib/RT/Record.pm:1523
 msgid "Can't specify both base and target"
 msgstr "Δε μπορείτε να καθορίσετε τη βάση και το στόχο"
 
@@ -1653,7 +1653,7 @@ msgstr "Σχόλια (δε θα σταλούν στους αιτούντες)"
 msgid "Comments about this user"
 msgstr "Σχόλια για το χρήστη"
 
-#: lib/RT/Ticket.pm:1629 lib/RT/Transaction.pm:876
+#: lib/RT/Ticket.pm:1629 lib/RT/Transaction.pm:898
 msgid "Comments added"
 msgstr "Τα Σχόλια προστέθηκαν"
 
@@ -1710,6 +1710,11 @@ msgstr "Επικοινωνήστε με τον RT διαχειριστή σας.
 msgid "Content"
 msgstr "Περιεχόμενο"
 
+#. ($self->OldValue, $self->NewValue)
+#: lib/RT/Transaction.pm:863
+msgid "Content dropped because its size (%1 bytes) exceeded configured maximum size setting (%2 bytes)."
+msgstr ""
+
 #: lib/RT/CustomField.pm:1741
 msgid "Content is not a valid IP address"
 msgstr "Μη έγκυρη διεύθυνση ΙΡ"
@@ -1717,6 +1722,11 @@ msgstr "Μη έγκυρη διεύθυνση ΙΡ"
 #: lib/RT/CustomField.pm:1757
 msgid "Content is not a valid IP address range"
 msgstr "Μη έγκυρο πεδίο διευθύνσεων ΙΡ"
+
+#. ($self->OldValue, $self->NewValue)
+#: lib/RT/Transaction.pm:852
+msgid "Content truncated because its size (%1 bytes) exceeded configured maximum size setting (%2 bytes)."
+msgstr ""
 
 #: share/html/Elements/SelectAttachmentField:53
 msgid "Content-Type"
@@ -1734,7 +1744,7 @@ msgstr "Διεύθυνση αλληλογραφίας"
 msgid "Correspondence"
 msgstr "Αλληλογραφία"
 
-#: lib/RT/Ticket.pm:1631 lib/RT/Transaction.pm:872
+#: lib/RT/Ticket.pm:1631 lib/RT/Transaction.pm:894
 msgid "Correspondence added"
 msgstr "Προστέθηκε Αλληλογραφία"
 
@@ -1744,7 +1754,7 @@ msgstr "Αλληλογραφία σε HTML"
 
 #. ($msg)
 #. ($value_msg)
-#: lib/RT/Record.pm:2017 lib/RT/Record.pm:2088
+#: lib/RT/Record.pm:2040 lib/RT/Record.pm:2111
 msgid "Could not add new custom field value: %1"
 msgstr "Δεν έχει προστεθεί η νέα τιμή ειδικού πεδίου: %1"
 
@@ -1871,7 +1881,7 @@ msgstr "Δεν ήταν δυνατή η μεταγλώττιση τμήματο�
 
 #. ($Msg)
 #. ($msg)
-#: lib/RT/Record.pm:2098 lib/RT/Record.pm:2148
+#: lib/RT/Record.pm:2121 lib/RT/Record.pm:2171
 msgid "Couldn't create a transaction: %1"
 msgstr "Δεν ήταν δυνατή η δημιουργία συναλλαγής: %1"
 
@@ -1885,7 +1895,7 @@ msgstr "Δεν ήταν δυνατή η δημιουργία εγγραφής: %
 msgid "Couldn't delete dashboard %1: %2"
 msgstr "Δεν ήταν δυνατή η διαγραφή της πινακίδας %1: %2"
 
-#: lib/RT/Record.pm:1014
+#: lib/RT/Record.pm:1035
 msgid "Couldn't find row"
 msgstr "Δεν ήταν δυνατή η εύρεση της γραμμής"
 
@@ -2065,17 +2075,17 @@ msgid "Couldn't remove previous member: %1"
 msgstr "Δεν ήταν δυνατή η κατάργηση προηγούμενου μέλους: %1"
 
 #. ($msg)
-#: lib/RT/Attachment.pm:835
+#: lib/RT/Attachment.pm:837
 msgid "Couldn't replace content with decrypted data: %1"
 msgstr "Δεν ήταν δυνατή η αντικατάσταση του περιεχομένου με αποκρυπτογραφημένα δεδομένα: '%1'"
 
 #. ($msg)
-#: lib/RT/Attachment.pm:784
+#: lib/RT/Attachment.pm:786
 msgid "Couldn't replace content with encrypted data: %1"
 msgstr "Δεν ήταν δυνατή η αντικατάσταση του περιεχομένου με κρυπτογραφημένα δεδομένα: '%1'"
 
 #. ($remote_link)
-#: lib/RT/Record.pm:1394 lib/RT/Record.pm:1531
+#: lib/RT/Record.pm:1415 lib/RT/Record.pm:1552
 msgid "Couldn't resolve '%1' into a link."
 msgstr "Δεν ήταν δυνατή η επίλυση '%1' σε μια σύνδεση"
 
@@ -2280,7 +2290,7 @@ msgstr "Δημιουργός"
 msgid "Cryptography"
 msgstr "Κρυπτογραφία"
 
-#: lib/RT/Attachment.pm:741 lib/RT/Attachment.pm:801
+#: lib/RT/Attachment.pm:743 lib/RT/Attachment.pm:803
 msgid "Cryptography is disabled"
 msgstr "Η Κρυπτογραφία έχει απενεργοποιηθεί"
 
@@ -2346,7 +2356,7 @@ msgid "Custom field %1 %2 %3"
 msgstr "Ειδικό πεδίο %1 %2 %3"
 
 #. (ref $args{'Field'} ? $args{'Field'}->id : $args{'Field'})
-#: lib/RT/Record.pm:1952
+#: lib/RT/Record.pm:1975
 msgid "Custom field %1 does not apply to this object"
 msgstr "Το ειδικό πεδίο %1 δεν εφαρμόζεται σε αυτό το αντικείμενο"
 
@@ -2361,7 +2371,7 @@ msgid "Custom field %1 has no value."
 msgstr "Το ειδικό πεδίο %1 δεν έχει τιμή"
 
 #. ($args{'Field'})
-#: lib/RT/Record.pm:1941 lib/RT/Record.pm:2129
+#: lib/RT/Record.pm:1964 lib/RT/Record.pm:2152
 msgid "Custom field %1 not found"
 msgstr "Το ειδικό πεδίο %1 δεν βρέθηκε"
 
@@ -2382,7 +2392,7 @@ msgstr "Η τιμή του ειδικού πεδίου δεν βρέθηκε"
 msgid "Custom field value deleted"
 msgstr "Η τιμή του ειδικού πεδίου διαγράφηκε"
 
-#: lib/RT/Tickets.pm:152 lib/RT/Transaction.pm:880 share/html/Elements/SelectGroups:54 share/html/Elements/SelectUsers:54
+#: lib/RT/Tickets.pm:152 lib/RT/Transaction.pm:902 share/html/Elements/SelectGroups:54 share/html/Elements/SelectUsers:54
 msgid "CustomField"
 msgstr ""
 
@@ -2535,7 +2545,7 @@ msgstr "Δεκ"
 msgid "Decrypt"
 msgstr "Αποκρυπτογράφηση"
 
-#: lib/RT/Attachment.pm:830
+#: lib/RT/Attachment.pm:832
 msgid "Decryption error; contact the administrator"
 msgstr "Σφάλμα αποκρυπτογράφησης, επικοινωνήστε με τον διαχειριστή"
 
@@ -2645,22 +2655,22 @@ msgid "DependedOnBy"
 msgstr ""
 
 #. ($value)
-#: lib/RT/Transaction.pm:1014
+#: lib/RT/Transaction.pm:1036
 msgid "Dependency by %1 added"
 msgstr "Προστέθηκε η εξάρτηση από %1"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1056
+#: lib/RT/Transaction.pm:1078
 msgid "Dependency by %1 deleted"
 msgstr "Διαγράφηκε η εξάρτηση από %1"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1011
+#: lib/RT/Transaction.pm:1033
 msgid "Dependency on %1 added"
 msgstr "Προστέθηκε η εξάρτηση σε %1"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1053
+#: lib/RT/Transaction.pm:1075
 msgid "Dependency on %1 deleted"
 msgstr "Διαγράφηκε η εξάρτηση σε %1"
 
@@ -2876,7 +2886,7 @@ msgstr "Επεξεργασία μελών για ομάδα %1"
 msgid "EffectiveId"
 msgstr ""
 
-#: lib/RT/Record.pm:1371 lib/RT/Record.pm:1516
+#: lib/RT/Record.pm:1392 lib/RT/Record.pm:1537
 msgid "Either base or target must be specified"
 msgstr "Η βάση ή ο στόχος πρέπει να καθοριστούν"
 
@@ -2996,7 +3006,7 @@ msgstr "Απενεργοποίηση κρυπτογράφησης"
 msgid "Encrypting enabled"
 msgstr "Ενεργοποίηση κρυπτογράφησης"
 
-#: lib/RT/Attachment.pm:779
+#: lib/RT/Attachment.pm:781
 msgid "Encryption error; contact the administrator"
 msgstr "Σφάλμα Κρυπτογράφησης, επικοινωνήστε με τον διαχειριστή"
 
@@ -3263,6 +3273,16 @@ msgstr "Πεδίο"
 msgid "Field values source:"
 msgstr "Πηγή τιμών πεδίου:"
 
+#. ($self->Data, $self->OldValue, $self->NewValue)
+#: lib/RT/Transaction.pm:859
+msgid "File '%1' dropped because its size (%2 bytes) exceeded configured maximum size setting (%3 bytes)."
+msgstr ""
+
+#. ($self->Data, $self->OldValue, $self->NewValue)
+#: lib/RT/Transaction.pm:848
+msgid "File '%1' truncated because its size (%2 bytes) exceeded configured maximum size setting (%3 bytes)."
+msgstr ""
+
 #: lib/RT/Tickets.pm:141 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:53 share/html/Elements/SelectAttachmentField:54
 msgid "Filename"
 msgstr "Όνομα αρχείου"
@@ -3404,12 +3424,12 @@ msgid "Forward transaction #%1"
 msgstr "Προώθηση συναλλαγής #%1"
 
 #. ($self->Field, $recipients,            [\'<a href="#txn-', $self->Field, \'">'], \'</a>')
-#: lib/RT/Transaction.pm:852
+#: lib/RT/Transaction.pm:874
 msgid "Forwarded %3Transaction #%1%4 to %2"
 msgstr "Προώθηση %3Συναλλαγής #%1%4 σε %2"
 
 #. ($recipients)
-#: lib/RT/Transaction.pm:860
+#: lib/RT/Transaction.pm:882
 msgid "Forwarded Ticket to %1"
 msgstr "Προώθηση αιτήματος σε %1"
 
@@ -3427,7 +3447,7 @@ msgstr "Προωθημένο μήνυμα αιτήματος"
 msgid "Found %quant(%1,ticket,tickets)"
 msgstr "Βρέθηκε %quant(%1,ticket)"
 
-#: lib/RT/Record.pm:1016
+#: lib/RT/Record.pm:1037
 msgid "Found Object"
 msgstr "Βρέθηκε Αντικείμενο"
 
@@ -3472,7 +3492,7 @@ msgid "Give output even on messages successfully sent"
 msgstr "Δώστε έξοδο ακόμη και για τα μηνύματα που αποστέλλονται με επιτυχία"
 
 #. ($self->_FormatUser($New))
-#: lib/RT/Transaction.pm:1123 lib/RT/Transaction.pm:1135 lib/RT/Transaction.pm:970
+#: lib/RT/Transaction.pm:1145 lib/RT/Transaction.pm:1157 lib/RT/Transaction.pm:992
 msgid "Given to %1"
 msgstr "Δόθηκε σε %1"
 
@@ -3551,7 +3571,7 @@ msgstr "Ιδιότητες γραφήματος"
 msgid "Graphical charts are not available."
 msgstr "Οι γραφικές παραστάσεις δεν είναι διαθέσιμες"
 
-#: lib/RT/Record.pm:996 share/html/Search/Elements/SelectPersonType:54 share/html/Ticket/Elements/AddWatchers:69
+#: lib/RT/Record.pm:1017 share/html/Search/Elements/SelectPersonType:54 share/html/Ticket/Elements/AddWatchers:69
 msgid "Group"
 msgstr "Ομάδα"
 
@@ -3808,7 +3828,7 @@ msgstr "Αν ενημερώσατε κάτι από τα  πιο πάνω, βε�
 msgid "If your preferred database isn't listed in the dropdown below, that means RT couldn't find a <i>database driver</i> for it installed locally. You may be able to remedy this by using %1 to download and install DBD::MySQL, DBD::Oracle or DBD::Pg."
 msgstr "Αν η βάση δεδομένων της προτίμησης σας δεν βρίσκεται στο αναδυόμενο μενού πιο κάτω, αυτό σημαίνει ότι το RT δεν βρήκε τον σχετικό <i>οδηγό βάσης δεδομένων</i> εγκατεστημένο τοπικά. θα μπορείτε να το επιλύσετε αυτό χρησιμοποιώντας το %1 για να κατεβάστε και να εγκαταστήσετε το DBD::MySQL, DBD::Oracle ή DBD::Pg."
 
-#: lib/RT/Record.pm:1008
+#: lib/RT/Record.pm:1029
 msgid "Illegal value for %1"
 msgstr "Μη επιτρεπτή τιμή για %1"
 
@@ -3824,7 +3844,7 @@ msgstr "Η εικόνα δε φαίνεται διότι η οθόνη είνα�
 msgid "Image not shown because sender requested not to inline it."
 msgstr "Η εικόνα δεν εμφανίζεται επειδή ο αποστολέας ζήτησε να μην  ενσωματωθεί."
 
-#: lib/RT/Record.pm:1011
+#: lib/RT/Record.pm:1032
 msgid "Immutable field"
 msgstr "Αμετάβλητο πεδίο"
 
@@ -4011,7 +4031,7 @@ msgstr "Άκυρος Τύπος Αποτύπωσης"
 msgid "Invalid Render Type for custom field of type %1"
 msgstr "Άκυρος Τύπος Αποτύπωσης για ειδικό πεδίο του τύπου %1"
 
-#: lib/RT/Record.pm:1013
+#: lib/RT/Record.pm:1034
 msgid "Invalid data"
 msgstr "Άκυρα δεδομένα"
 
@@ -4062,7 +4082,7 @@ msgstr "Άκυρη σύνταξη για διεύθυνση ηλεκτρονικ
 msgid "Invalid value for %1"
 msgstr "Άκυρη τιμή για %1"
 
-#: lib/RT/Record.pm:1962
+#: lib/RT/Record.pm:1985
 msgid "Invalid value for custom field"
 msgstr "Άκυρη τιμή για ειδικό πεδίο"
 
@@ -4070,7 +4090,7 @@ msgstr "Άκυρη τιμή για ειδικό πεδίο"
 msgid "Is already added to the object"
 msgstr "Έχει ήδη προστεθεί στο αντικείμενο"
 
-#: lib/RT/Attachment.pm:812
+#: lib/RT/Attachment.pm:814
 msgid "Is not encrypted"
 msgstr "Δεν είναι κρυπτογραφημένο"
 
@@ -4216,21 +4236,21 @@ msgstr "Κύκλος Ζωής"
 msgid "Link"
 msgstr "Σύνδεσμος"
 
-#: lib/RT/Record.pm:1404
+#: lib/RT/Record.pm:1425
 msgid "Link already exists"
 msgstr "Ο σύνδεσμος υπάρχει ήδη"
 
 #. ($linkmsg)
-#: lib/RT/Record.pm:1426
+#: lib/RT/Record.pm:1447
 msgid "Link could not be created: %1"
 msgstr "Δεν ήταν δυνατό να δημιουργηθεί η σύνδεση: %1"
 
 #. ($msg)
-#: lib/RT/Record.pm:1561
+#: lib/RT/Record.pm:1582
 msgid "Link could not be deleted: %1"
 msgstr "Δεν ήταν δυνατό να διαγραφεί η σύνδεση: %1"
 
-#: lib/RT/Record.pm:1548
+#: lib/RT/Record.pm:1569
 msgid "Link not found"
 msgstr "Ο σύνδεσμος δε βρέθηκε"
 
@@ -4256,7 +4276,7 @@ msgid "LinkedTo"
 msgstr ""
 
 #. ($self->loc(lc($remote_obj->RecordType)))
-#: lib/RT/Record.pm:1390
+#: lib/RT/Record.pm:1411
 msgid "Linking to a deleted %1 is not allowed"
 msgstr "Η σύνδεση με ένα διαγραμμένο %1 δεν επιτρέπεται"
 
@@ -4532,12 +4552,12 @@ msgid "Member"
 msgstr "Μέλος"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1026
+#: lib/RT/Transaction.pm:1048
 msgid "Member %1 added"
 msgstr "Το μέλος %1 προστέθηκε"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1068
+#: lib/RT/Transaction.pm:1090
 msgid "Member %1 deleted"
 msgstr "Το μέλος %1 διαγράφηκε"
 
@@ -4563,12 +4583,12 @@ msgid "Members"
 msgstr "Μέλη"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1023
+#: lib/RT/Transaction.pm:1045
 msgid "Membership in %1 added"
 msgstr "Προστέθηκε η ιδιότητα μέλους σε %1"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1065
+#: lib/RT/Transaction.pm:1087
 msgid "Membership in %1 deleted"
 msgstr "Διαγράφηκε η ιδιότητα μέλους σε %1"
 
@@ -4616,7 +4636,7 @@ msgid "Merge into"
 msgstr "Συγχώνευση σε"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1029
+#: lib/RT/Transaction.pm:1051
 msgid "Merged into %1"
 msgstr "Συγχώνευση σε %1"
 
@@ -4704,7 +4724,7 @@ msgstr "Λεπτά"
 msgid "Miscellaneous"
 msgstr "Διάφορα"
 
-#: lib/RT/Record.pm:1015
+#: lib/RT/Record.pm:1036
 msgid "Missing a primary key?: %1"
 msgstr "Απουσία πρωτεύοντος κλειδιού;: %1"
 
@@ -5247,7 +5267,7 @@ msgstr "Χωρίς πρότυπο"
 msgid "No action"
 msgstr "Καμία ενέργεια"
 
-#: lib/RT/Record.pm:1010
+#: lib/RT/Record.pm:1031
 msgid "No column specified"
 msgstr "Δεν έχει οριστεί στήλη"
 
@@ -5273,7 +5293,7 @@ msgstr "Δεν έχει οριστεί ομάδα"
 msgid "No groups matching search criteria found."
 msgstr "Δεν βρέθηκαν ομάδες να πληρούν τα κριτήρια αναζήτησης"
 
-#: lib/RT/Attachment.pm:768
+#: lib/RT/Attachment.pm:770
 msgid "No key suitable for encryption"
 msgstr "Δεν βρέθηκε κλειδί κατάλληλο για κρυπτογράφηση"
 
@@ -5289,7 +5309,7 @@ msgstr "Δεν βρέθηκε επισυναπτόμενο μήνυμα"
 msgid "No name provided"
 msgstr "Δεν βρέθηκε όνομα"
 
-#: lib/RT/Attachment.pm:750
+#: lib/RT/Attachment.pm:752
 msgid "No need to encrypt"
 msgstr "Δεν υπάρχει ανάγκη για κρυπτογράφηση"
 
@@ -5396,7 +5416,7 @@ msgstr "Μη έγκυρο Αναγνωριστικό Εντολέα"
 msgid "No valid Type specified"
 msgstr "Μη έγκυρος καθορισμένος Τύπος"
 
-#: lib/RT/Record.pm:1007
+#: lib/RT/Record.pm:1028
 msgid "No value sent to _Set!"
 msgstr "Δεν στάληκε τιμή στο _Set!"
 
@@ -5408,7 +5428,7 @@ msgstr "Κανένας"
 msgid "None"
 msgstr "Κανένα"
 
-#: lib/RT/Record.pm:1012
+#: lib/RT/Record.pm:1033
 msgid "Nonexistant field?"
 msgstr "Πεδίο που δεν υπάρχει;"
 
@@ -5732,11 +5752,11 @@ msgstr "Οργανισμός"
 msgid "Originating ticket: #%1"
 msgstr "Αρχικό αίτημα #%1"
 
-#: lib/RT/Transaction.pm:864
+#: lib/RT/Transaction.pm:886
 msgid "Outgoing email about a comment recorded"
 msgstr "Καταγράφηκε το εξερχόμενο μήνυμα για σχόλιο"
 
-#: lib/RT/Transaction.pm:868
+#: lib/RT/Transaction.pm:890
 msgid "Outgoing email recorded"
 msgstr "Καταγράφηκε εξερχόμενο μήνυμα"
 
@@ -5771,7 +5791,7 @@ msgid "Owner changed from %1 to %2"
 msgstr "Ο υπεύθυνος άλλαξε από %1 σε %2"
 
 #. (map { $self->_FormatUser($_) } $Old, $New)
-#: lib/RT/Transaction.pm:1142 lib/RT/Transaction.pm:958
+#: lib/RT/Transaction.pm:1164 lib/RT/Transaction.pm:980
 msgid "Owner forcibly changed from %1 to %2"
 msgstr "Ο Υπεύθυνος αλλάχτηκε επιτακτικά από %1 σε %2"
 
@@ -5819,7 +5839,7 @@ msgstr "Γονείς"
 msgid "Password"
 msgstr "Κωδικός πρόσβασης"
 
-#: lib/RT/Transaction.pm:1093 lib/RT/User.pm:867
+#: lib/RT/Transaction.pm:1115 lib/RT/User.pm:867
 msgid "Password changed"
 msgstr "Ο κωδικός άλλαξε"
 
@@ -5904,11 +5924,11 @@ msgstr "Σειρά αναζήτησης βιβλιοθηκών Perl"
 msgid "Permanently wipeout data from RT"
 msgstr "Οριστική διαγραφή δεδομένων από RT"
 
-#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:738 lib/RT/Attachment.pm:739 lib/RT/Attachment.pm:798 lib/RT/Attachment.pm:799 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:386 lib/RT/Attribute.pm:401 lib/RT/Attribute.pm:414 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1037 lib/RT/CustomField.pm:1574 lib/RT/CustomField.pm:1603 lib/RT/CustomField.pm:1646 lib/RT/CustomField.pm:1819 lib/RT/CustomField.pm:1969 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:628 lib/RT/CustomField.pm:655 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1247 lib/RT/Group.pm:1331 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:355 lib/RT/Queue.pm:381 lib/RT/Queue.pm:407 lib/RT/Queue.pm:804 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:317 lib/RT/Template.pm:483 lib/RT/Template.pm:743 lib/RT/Template.pm:760 lib/RT/Template.pm:778 lib/RT/Ticket.pm:1072 lib/RT/Ticket.pm:1283 lib/RT/Ticket.pm:1451 lib/RT/Ticket.pm:1501 lib/RT/Ticket.pm:1773 lib/RT/Ticket.pm:1792 lib/RT/Ticket.pm:2197 lib/RT/Ticket.pm:2210 lib/RT/Ticket.pm:2215 lib/RT/Ticket.pm:2239 lib/RT/Ticket.pm:2456 lib/RT/Ticket.pm:2685 lib/RT/Ticket.pm:3049 lib/RT/Ticket.pm:734 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:688 lib/RT/Transaction.pm:728 lib/RT/User.pm:1137 lib/RT/User.pm:139 lib/RT/User.pm:1588 lib/RT/User.pm:1835 lib/RT/User.pm:1868 lib/RT/User.pm:328 lib/RT/User.pm:735 lib/RT/User.pm:770 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97 share/html/Ticket/ShowEmailRecord.html:110 share/html/Ticket/ShowEmailRecord.html:111
+#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:740 lib/RT/Attachment.pm:741 lib/RT/Attachment.pm:800 lib/RT/Attachment.pm:801 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:386 lib/RT/Attribute.pm:401 lib/RT/Attribute.pm:414 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1037 lib/RT/CustomField.pm:1574 lib/RT/CustomField.pm:1603 lib/RT/CustomField.pm:1646 lib/RT/CustomField.pm:1819 lib/RT/CustomField.pm:1969 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:628 lib/RT/CustomField.pm:655 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1247 lib/RT/Group.pm:1331 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:355 lib/RT/Queue.pm:381 lib/RT/Queue.pm:407 lib/RT/Queue.pm:804 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:317 lib/RT/Template.pm:483 lib/RT/Template.pm:743 lib/RT/Template.pm:760 lib/RT/Template.pm:778 lib/RT/Ticket.pm:1072 lib/RT/Ticket.pm:1283 lib/RT/Ticket.pm:1451 lib/RT/Ticket.pm:1501 lib/RT/Ticket.pm:1773 lib/RT/Ticket.pm:1792 lib/RT/Ticket.pm:2197 lib/RT/Ticket.pm:2210 lib/RT/Ticket.pm:2215 lib/RT/Ticket.pm:2239 lib/RT/Ticket.pm:2456 lib/RT/Ticket.pm:2685 lib/RT/Ticket.pm:3049 lib/RT/Ticket.pm:734 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:688 lib/RT/Transaction.pm:728 lib/RT/User.pm:1137 lib/RT/User.pm:139 lib/RT/User.pm:1588 lib/RT/User.pm:1835 lib/RT/User.pm:1868 lib/RT/User.pm:328 lib/RT/User.pm:735 lib/RT/User.pm:770 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97 share/html/Ticket/ShowEmailRecord.html:110 share/html/Ticket/ShowEmailRecord.html:111
 msgid "Permission Denied"
 msgstr "Δεν επιτρέπεται η πρόσβαση"
 
-#: lib/RT/Record.pm:1382 lib/RT/Record.pm:1526 lib/RT/Record/Role/Roles.pm:407 lib/RT/Record/Role/Roles.pm:491
+#: lib/RT/Record.pm:1403 lib/RT/Record.pm:1547 lib/RT/Record/Role/Roles.pm:407 lib/RT/Record/Role/Roles.pm:491
 msgid "Permission denied"
 msgstr "Δεν επιτρέπεται η πρόσβαση"
 
@@ -6112,7 +6132,7 @@ msgstr "Ερώτημα"
 msgid "Query Builder"
 msgstr "Δημιουργία Ερωτημάτων"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Record.pm:997 lib/RT/Report/Tickets.pm:62 lib/RT/Tickets.pm:107 lib/RT/Tickets.pm:1452 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:63 share/html/Elements/RT__Template/ColumnMap:66 share/html/Elements/RT__Template/ColumnMap:73 share/html/Elements/RT__Ticket/ColumnMap:102 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:61 share/html/Ticket/Elements/ShowBasics:82 share/html/m/ticket/create:248 share/html/m/ticket/show:242
+#: lib/RT/Graph/Tickets.pm:153 lib/RT/Record.pm:1018 lib/RT/Report/Tickets.pm:62 lib/RT/Tickets.pm:107 lib/RT/Tickets.pm:1452 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:63 share/html/Elements/RT__Template/ColumnMap:66 share/html/Elements/RT__Template/ColumnMap:73 share/html/Elements/RT__Ticket/ColumnMap:102 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:61 share/html/Ticket/Elements/ShowBasics:82 share/html/m/ticket/create:248 share/html/m/ticket/show:242
 msgid "Queue"
 msgstr "Ουρά"
 
@@ -6369,22 +6389,22 @@ msgid "Refer to"
 msgstr "Αναφορά σε"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1020
+#: lib/RT/Transaction.pm:1042
 msgid "Reference by %1 added"
 msgstr "Προστέθηκε η παραπομπή από %1"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1062
+#: lib/RT/Transaction.pm:1084
 msgid "Reference by %1 deleted"
 msgstr "Διαγράφηκε η παραπομπή από %1"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1017
+#: lib/RT/Transaction.pm:1039
 msgid "Reference to %1 added"
 msgstr "Προστέθηκε η παραπομπή στο %1"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1059
+#: lib/RT/Transaction.pm:1081
 msgid "Reference to %1 deleted"
 msgstr "Διαγράφηκε η παραπομπή στο %1"
 
@@ -6465,7 +6485,7 @@ msgstr "Ανανέωση αυτής της σελίδας κάθε %1 λεπτά
 msgid "RefreshHomepage"
 msgstr "Ανανέωση αρχικής σελίδας"
 
-#: lib/RT/Record.pm:1414
+#: lib/RT/Record.pm:1435
 msgid "Refused to add link which would create a circular relationship"
 msgstr "Αρνηθήκατε να προσθέσετε σύνδεσμο που θα δημιουργούσε μια κυκλική σχέση"
 
@@ -6482,17 +6502,17 @@ msgid "Reminder"
 msgstr "Υπενθύμιση"
 
 #. ($subject)
-#: lib/RT/Transaction.pm:1180
+#: lib/RT/Transaction.pm:1202
 msgid "Reminder '%1' added"
 msgstr "Προσθήκη υπενθύμισης '%1'"
 
 #. ($subject)
-#: lib/RT/Transaction.pm:1202
+#: lib/RT/Transaction.pm:1224
 msgid "Reminder '%1' completed"
 msgstr "Ολοκλήρωση υπενθύμισης '%1'"
 
 #. ($subject)
-#: lib/RT/Transaction.pm:1191
+#: lib/RT/Transaction.pm:1213
 msgid "Reminder '%1' reopened"
 msgstr "Επαναενεργοποίηση υπενθύμισης '%1'"
 
@@ -7105,6 +7125,10 @@ msgstr "Αποστολή μηνύματος σε αιτητές και Ccs"
 msgid "Send mail to requestors and Ccs as a comment"
 msgstr "Αποστολή μηνύματος σε αιτητές και Ccs σαν σχόλιο"
 
+#: lib/RT/Interface/Email.pm:1776
+msgid "Sending the previous mail has failed.  Please contact your admin, they can find more details in the logs."
+msgstr ""
+
 #: etc/initialdata:34
 msgid "Sends a message to the requestors"
 msgstr "Αποστολή μηνύματος στους αιτητές"
@@ -7487,7 +7511,7 @@ msgid "Step %1 of %2"
 msgstr "Βήμα %1 από %2"
 
 #. ($self->_FormatUser($Old))
-#: lib/RT/Transaction.pm:1128 lib/RT/Transaction.pm:964
+#: lib/RT/Transaction.pm:1150 lib/RT/Transaction.pm:986
 msgid "Stolen from %1"
 msgstr "Ανάκτηση από %1"
 
@@ -7504,7 +7528,7 @@ msgid "Subject Tag"
 msgstr "Ετικέτα θέματος"
 
 #. ($self->Data)
-#: lib/RT/Transaction.pm:992
+#: lib/RT/Transaction.pm:1014
 msgid "Subject changed to %1"
 msgstr "Το θέμα άλλαξε σε %1"
 
@@ -7543,11 +7567,11 @@ msgstr "Εγγραφή"
 msgid "Subscription could not be created: %1"
 msgstr "Η εγγραφή δεν ήταν δυνατό να δημιουργηθεί: %1"
 
-#: lib/RT/Attachment.pm:840
+#: lib/RT/Attachment.pm:842
 msgid "Successfuly decrypted data"
 msgstr "Επιτυχής αποκρυπτογράφηση δεδομένων"
 
-#: lib/RT/Attachment.pm:791
+#: lib/RT/Attachment.pm:793
 msgid "Successfuly encrypted data"
 msgstr "Επιτυχής κρυπτογράφηση δεδομένων"
 
@@ -7648,7 +7672,7 @@ msgstr "Ανάληψη"
 msgid "Take tickets"
 msgstr "Ανάληψη αιτημάτων"
 
-#: lib/RT/Transaction.pm:1120 lib/RT/Transaction.pm:948
+#: lib/RT/Transaction.pm:1142 lib/RT/Transaction.pm:970
 msgid "Taken"
 msgstr "Αναλήφθηκε"
 
@@ -7734,7 +7758,7 @@ msgstr "Κείμενο"
 msgid "Text file is not shown because it is disabled in preferences."
 msgstr "Το αρχείο κειμένου δεν εμφανίζεται γιατί έχει απενεργοποιηθεί στις προτιμήσεις."
 
-#: lib/RT/Record.pm:1006
+#: lib/RT/Record.pm:1027
 msgid "That is already the current value"
 msgstr "Αυτή είναι ήδη η τρέχουσα τιμή"
 
@@ -7835,7 +7859,7 @@ msgstr "Το κλειδί είναι πλήρως έμπιστο"
 msgid "The key is ultimately trusted"
 msgstr "Το κλειδί είναι απολύτως έμπιστο"
 
-#: lib/RT/Record.pm:1009
+#: lib/RT/Record.pm:1030
 msgid "The new value has been set."
 msgstr "Έχει οριστεί ή νέα τιμή."
 
@@ -7965,7 +7989,7 @@ msgstr "Πεμ"
 msgid "Thursday"
 msgstr "Πέμπτη"
 
-#: lib/RT/Record.pm:994 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/ShowReminders:53
+#: lib/RT/Record.pm:1015 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/ShowReminders:53
 msgid "Ticket"
 msgstr "Αίτημα"
 
@@ -8226,7 +8250,7 @@ msgid "Transaction"
 msgstr "Συναλλαγή"
 
 #. ($self->Data)
-#: lib/RT/Transaction.pm:1169
+#: lib/RT/Transaction.pm:1191
 msgid "Transaction %1 purged"
 msgstr "Η συναλλαγή %1 διαγράφηκε"
 
@@ -8254,7 +8278,7 @@ msgstr ""
 msgid "Transactions"
 msgstr "Συναλλαγές"
 
-#: lib/RT/Transaction.pm:1238
+#: lib/RT/Transaction.pm:1260
 msgid "Transactions are immutable"
 msgstr "Οι συναλλαγές είναι αμετάβλητες"
 
@@ -8387,7 +8411,7 @@ msgstr "Άγνωστο (αυτή η τιμή είναι καινούργια γ�
 
 #. ($ContentEncoding)
 #. ($self->ContentEncoding)
-#: lib/RT/Attachment.pm:384 lib/RT/Record.pm:873
+#: lib/RT/Attachment.pm:386 lib/RT/Record.pm:894
 msgid "Unknown ContentEncoding %1"
 msgstr "Άγνωστη Κωδικοποίηση Περιεχομένου %1"
 
@@ -8445,7 +8469,7 @@ msgstr "Απεπιλεγμένα αντικείμενα"
 msgid "Unset private key"
 msgstr "Ακύρωση ιδιωτικού κλειδιού"
 
-#: lib/RT/Transaction.pm:1132 lib/RT/Transaction.pm:944
+#: lib/RT/Transaction.pm:1154 lib/RT/Transaction.pm:966
 msgid "Untaken"
 msgstr "Χωρίς ανάληψη"
 
@@ -8601,7 +8625,7 @@ msgstr "Χρήση αναδυόμενων μενού για επιλογή τω�
 msgid "Used by scrips"
 msgstr "Χρησιμοποιείται από αυτοματισμούς"
 
-#: lib/RT/Record.pm:995 share/html/Admin/Elements/ShowKeyInfo:85 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52
+#: lib/RT/Record.pm:1016 share/html/Admin/Elements/ShowKeyInfo:85 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52
 msgid "User"
 msgstr "Χρήστης"
 
@@ -8988,12 +9012,12 @@ msgid "Worked"
 msgstr "Χρόνος Εργασίας"
 
 #. (sprintf("%.1f", $duration / 60), $duration)
-#: lib/RT/Transaction.pm:1164
+#: lib/RT/Transaction.pm:1186
 msgid "Worked %quant(%1,hour,hours) (%quant(%2,minute,minutes))"
 msgstr "Εργάστηκε %quant(%1,ώρα,ώρες) (%quant(%2,λεπτό,λεπτά))"
 
 #. ($duration)
-#: lib/RT/Transaction.pm:1162
+#: lib/RT/Transaction.pm:1184
 msgid "Worked %quant(%1,minute,minutes)"
 msgstr "Εργάστηκε %quant(%1,λεπτό,λεπτά)"
 
@@ -9169,7 +9193,7 @@ msgstr "[Πάνω]"
 msgid "[none]"
 msgstr "[κανένα]"
 
-#: lib/RT/Transaction.pm:888
+#: lib/RT/Transaction.pm:910
 msgid "a custom field"
 msgstr "ειδικό πεδίο"
 

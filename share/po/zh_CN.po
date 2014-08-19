@@ -33,7 +33,7 @@ msgid "#%1: %2"
 msgstr ""
 
 #. ($self->Data)
-#: lib/RT/Transaction.pm:1033 lib/RT/Transaction.pm:1072
+#: lib/RT/Transaction.pm:1055 lib/RT/Transaction.pm:1094
 msgid "%1"
 msgstr ""
 
@@ -80,20 +80,20 @@ msgstr "%7-%2-%3 %4:%5:%6 %1"
 #. ($cf->Name, $new_content)
 #. ($field, $new)
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
-#: lib/RT/Record.pm:2061 lib/RT/Transaction.pm:933 lib/RT/Transaction.pm:976
+#: lib/RT/Record.pm:2084 lib/RT/Transaction.pm:955 lib/RT/Transaction.pm:998
 msgid "%1 %2 added"
 msgstr "%2 已创建为 %1"
 
 #. ($cf->Name, $old_content, $new_content)
 #. ($field, $old, $new)
-#: lib/RT/Record.pm:2068 lib/RT/Transaction.pm:939
+#: lib/RT/Record.pm:2091 lib/RT/Transaction.pm:961
 msgid "%1 %2 changed to %3"
 msgstr "%1已从%2改为%3"
 
 #. ($cf->Name, $old_content)
 #. ($field, $old)
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
-#: lib/RT/Record.pm:2065 lib/RT/Transaction.pm:936 lib/RT/Transaction.pm:982
+#: lib/RT/Record.pm:2088 lib/RT/Transaction.pm:1004 lib/RT/Transaction.pm:958
 msgid "%1 %2 deleted"
 msgstr "%2 已自%1删除"
 
@@ -212,7 +212,7 @@ msgid "%1 Version"
 msgstr ""
 
 #. ($args{'Value'}, $cf->Name)
-#: lib/RT/Record.pm:2101
+#: lib/RT/Record.pm:2124
 msgid "%1 added as a value for %2"
 msgstr "创建%1作为%2的值"
 
@@ -265,7 +265,7 @@ msgstr ""
 #. ($self->loc( $args{'Field'} ),                ( $old_val ? '"' . $old_val . '"' : $self->loc("(no value)") ),                '"' . $self->__Value( $args{'Field'}) . '"',)
 #. ($self->Field,            ( $self->OldValue ? "'" . $self->OldValue . "'" : $no_value ),            "'" . $self->NewValue . "'")
 #. ($self->loc($self->Field), $t2->AsString, $t1->AsString)
-#: lib/RT/Record.pm:526 lib/RT/Transaction.pm:1082 lib/RT/Transaction.pm:1087 lib/RT/Transaction.pm:1101 lib/RT/Transaction.pm:1110 lib/RT/Transaction.pm:1150 lib/RT/Transaction.pm:838
+#: lib/RT/Record.pm:526 lib/RT/Transaction.pm:1104 lib/RT/Transaction.pm:1109 lib/RT/Transaction.pm:1123 lib/RT/Transaction.pm:1132 lib/RT/Transaction.pm:1172 lib/RT/Transaction.pm:838
 msgid "%1 changed from %2 to %3"
 msgstr "%1 的值从%2改为 %3"
 
@@ -285,7 +285,7 @@ msgstr "%1复制"
 msgid "%1 core config"
 msgstr "%1 核心配置"
 
-#: lib/RT/Record.pm:1005
+#: lib/RT/Record.pm:1026
 msgid "%1 could not be set to %2."
 msgstr "无法将%1设定为 %2。"
 
@@ -352,7 +352,7 @@ msgid "%1 is no longer a %2 for this ticket."
 msgstr "%1已不再是此申请单的%2."
 
 #. ($old_value, $cf->Name)
-#: lib/RT/Record.pm:2166
+#: lib/RT/Record.pm:2189
 msgid "%1 is no longer a value for custom field %2"
 msgstr "%1已不再是自定字段%2的值"
 
@@ -397,7 +397,7 @@ msgstr "%1对象"
 
 #. ($self->loc($self->Name), $new_member_obj->Object->Name)
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
-#: lib/RT/Group.pm:1131 lib/RT/Transaction.pm:988
+#: lib/RT/Group.pm:1131 lib/RT/Transaction.pm:1010
 msgid "%1 set to %2"
 msgstr ""
 
@@ -469,12 +469,12 @@ msgid "%1:%2:%3"
 msgstr ""
 
 #. ($size)
-#: lib/RT/Attachment.pm:460
+#: lib/RT/Attachment.pm:462
 msgid "%1B"
 msgstr "%1字节"
 
 #. (int( $size / 102.4 ) / 10)
-#: lib/RT/Attachment.pm:457
+#: lib/RT/Attachment.pm:459
 msgid "%1KiB"
 msgstr "%1k字节"
 
@@ -483,7 +483,7 @@ msgid "%1M"
 msgstr ""
 
 #. (int( $size / 1024 / 102.4 ) / 10)
-#: lib/RT/Attachment.pm:454
+#: lib/RT/Attachment.pm:456
 msgid "%1MiB"
 msgstr ""
 
@@ -647,7 +647,7 @@ msgstr "(没有名称)"
 msgid "(no pubkey!)"
 msgstr "(没有公钥!)"
 
-#: lib/RT/Report/Tickets.pm:670 lib/RT/Report/Tickets.pm:836 lib/RT/Report/Tickets.pm:847 lib/RT/Report/Tickets/Entry.pm:78 lib/RT/Report/Tickets/Entry.pm:88 lib/RT/Transaction.pm:1087 lib/RT/Transaction.pm:1149 lib/RT/Transaction.pm:1150 lib/RT/Transaction.pm:757 lib/RT/Transaction.pm:762 lib/RT/Transaction.pm:832 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:109 share/html/Elements/EditCustomFieldSelect:128 share/html/Elements/EditCustomFieldSelect:138 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowCustomFields:61 share/html/m/ticket/show:263
+#: lib/RT/Report/Tickets.pm:670 lib/RT/Report/Tickets.pm:836 lib/RT/Report/Tickets.pm:847 lib/RT/Report/Tickets/Entry.pm:78 lib/RT/Report/Tickets/Entry.pm:88 lib/RT/Transaction.pm:1109 lib/RT/Transaction.pm:1171 lib/RT/Transaction.pm:1172 lib/RT/Transaction.pm:757 lib/RT/Transaction.pm:762 lib/RT/Transaction.pm:832 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:109 share/html/Elements/EditCustomFieldSelect:128 share/html/Elements/EditCustomFieldSelect:138 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowCustomFields:61 share/html/m/ticket/show:263
 msgid "(no value)"
 msgstr "(无)"
 
@@ -896,7 +896,7 @@ msgid "Address2"
 msgstr "住址(续)"
 
 #. ($duration)
-#: lib/RT/Transaction.pm:1159
+#: lib/RT/Transaction.pm:1181
 msgid "Adjusted time worked by %quant(%1,minute,minutes)"
 msgstr ""
 
@@ -1028,7 +1028,7 @@ msgstr "允许加载已存搜索"
 msgid "Allow writing Perl code in templates, scrips, etc"
 msgstr "允许在模板、脚本等处写 Perl 代码"
 
-#: lib/RT/Attachment.pm:748
+#: lib/RT/Attachment.pm:750
 msgid "Already encrypted"
 msgstr "已经加密"
 
@@ -1243,7 +1243,7 @@ msgstr "附件档名"
 msgid "Attachments"
 msgstr "附件"
 
-#: lib/RT/Attachment.pm:743
+#: lib/RT/Attachment.pm:745
 msgid "Attachments encryption is disabled"
 msgstr "附件加密被禁用"
 
@@ -1466,7 +1466,7 @@ msgstr ""
 msgid "Can't save this search"
 msgstr "无法保存此项搜索"
 
-#: lib/RT/Record.pm:1358 lib/RT/Record.pm:1502
+#: lib/RT/Record.pm:1379 lib/RT/Record.pm:1523
 msgid "Can't specify both base and target"
 msgstr ""
 
@@ -1653,7 +1653,7 @@ msgstr "注释(不发送给申请人)"
 msgid "Comments about this user"
 msgstr "该用户的注释"
 
-#: lib/RT/Ticket.pm:1629 lib/RT/Transaction.pm:876
+#: lib/RT/Ticket.pm:1629 lib/RT/Transaction.pm:898
 msgid "Comments added"
 msgstr "创建注释完成"
 
@@ -1710,6 +1710,11 @@ msgstr ""
 msgid "Content"
 msgstr "内容"
 
+#. ($self->OldValue, $self->NewValue)
+#: lib/RT/Transaction.pm:863
+msgid "Content dropped because its size (%1 bytes) exceeded configured maximum size setting (%2 bytes)."
+msgstr ""
+
 #: lib/RT/CustomField.pm:1741
 msgid "Content is not a valid IP address"
 msgstr "内容是无效的IP地址"
@@ -1717,6 +1722,11 @@ msgstr "内容是无效的IP地址"
 #: lib/RT/CustomField.pm:1757
 msgid "Content is not a valid IP address range"
 msgstr "内容是无效的IP地址范围"
+
+#. ($self->OldValue, $self->NewValue)
+#: lib/RT/Transaction.pm:852
+msgid "Content truncated because its size (%1 bytes) exceeded configured maximum size setting (%2 bytes)."
+msgstr ""
 
 #: share/html/Elements/SelectAttachmentField:53
 msgid "Content-Type"
@@ -1734,7 +1744,7 @@ msgstr "回复地址"
 msgid "Correspondence"
 msgstr "回复"
 
-#: lib/RT/Ticket.pm:1631 lib/RT/Transaction.pm:872
+#: lib/RT/Ticket.pm:1631 lib/RT/Transaction.pm:894
 msgid "Correspondence added"
 msgstr "创建申请单回复"
 
@@ -1744,7 +1754,7 @@ msgstr ""
 
 #. ($msg)
 #. ($value_msg)
-#: lib/RT/Record.pm:2017 lib/RT/Record.pm:2088
+#: lib/RT/Record.pm:2040 lib/RT/Record.pm:2111
 msgid "Could not add new custom field value: %1"
 msgstr "无法创建自定字段值：%1"
 
@@ -1871,7 +1881,7 @@ msgstr "无法编译模板码块 '%1': %2"
 
 #. ($Msg)
 #. ($msg)
-#: lib/RT/Record.pm:2098 lib/RT/Record.pm:2148
+#: lib/RT/Record.pm:2121 lib/RT/Record.pm:2171
 msgid "Couldn't create a transaction: %1"
 msgstr "无法创建事务： %1"
 
@@ -1885,7 +1895,7 @@ msgstr "无法创建记录: %1"
 msgid "Couldn't delete dashboard %1: %2"
 msgstr "无法删除表单 %1:%2"
 
-#: lib/RT/Record.pm:1014
+#: lib/RT/Record.pm:1035
 msgid "Couldn't find row"
 msgstr "找不到该行"
 
@@ -2065,17 +2075,17 @@ msgid "Couldn't remove previous member: %1"
 msgstr ""
 
 #. ($msg)
-#: lib/RT/Attachment.pm:835
+#: lib/RT/Attachment.pm:837
 msgid "Couldn't replace content with decrypted data: %1"
 msgstr "无法用解密的数据替换内容： %1"
 
 #. ($msg)
-#: lib/RT/Attachment.pm:784
+#: lib/RT/Attachment.pm:786
 msgid "Couldn't replace content with encrypted data: %1"
 msgstr "无法用加密的数据替换内容： %1"
 
 #. ($remote_link)
-#: lib/RT/Record.pm:1394 lib/RT/Record.pm:1531
+#: lib/RT/Record.pm:1415 lib/RT/Record.pm:1552
 msgid "Couldn't resolve '%1' into a link."
 msgstr ""
 
@@ -2280,7 +2290,7 @@ msgstr "创建者"
 msgid "Cryptography"
 msgstr "加密系统"
 
-#: lib/RT/Attachment.pm:741 lib/RT/Attachment.pm:801
+#: lib/RT/Attachment.pm:743 lib/RT/Attachment.pm:803
 msgid "Cryptography is disabled"
 msgstr ""
 
@@ -2346,7 +2356,7 @@ msgid "Custom field %1 %2 %3"
 msgstr "自定字段%1 %2 %3"
 
 #. (ref $args{'Field'} ? $args{'Field'}->id : $args{'Field'})
-#: lib/RT/Record.pm:1952
+#: lib/RT/Record.pm:1975
 msgid "Custom field %1 does not apply to this object"
 msgstr "自定字段%1没有应用到该对象"
 
@@ -2361,7 +2371,7 @@ msgid "Custom field %1 has no value."
 msgstr "自定字段%1没有值"
 
 #. ($args{'Field'})
-#: lib/RT/Record.pm:1941 lib/RT/Record.pm:2129
+#: lib/RT/Record.pm:1964 lib/RT/Record.pm:2152
 msgid "Custom field %1 not found"
 msgstr "找不到自定字段 %1"
 
@@ -2382,7 +2392,7 @@ msgstr "找不到自定字段值"
 msgid "Custom field value deleted"
 msgstr "自定字段值删除成功"
 
-#: lib/RT/Tickets.pm:152 lib/RT/Transaction.pm:880 share/html/Elements/SelectGroups:54 share/html/Elements/SelectUsers:54
+#: lib/RT/Tickets.pm:152 lib/RT/Transaction.pm:902 share/html/Elements/SelectGroups:54 share/html/Elements/SelectUsers:54
 msgid "CustomField"
 msgstr "自定字段"
 
@@ -2535,7 +2545,7 @@ msgstr "十二月"
 msgid "Decrypt"
 msgstr "解密"
 
-#: lib/RT/Attachment.pm:830
+#: lib/RT/Attachment.pm:832
 msgid "Decryption error; contact the administrator"
 msgstr ""
 
@@ -2645,22 +2655,22 @@ msgid "DependedOnBy"
 msgstr "可连续处理"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1014
+#: lib/RT/Transaction.pm:1036
 msgid "Dependency by %1 added"
 msgstr "已加入可连续处理的申请单 %1"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1056
+#: lib/RT/Transaction.pm:1078
 msgid "Dependency by %1 deleted"
 msgstr "已移除可连续处理的申请单 %1"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1011
+#: lib/RT/Transaction.pm:1033
 msgid "Dependency on %1 added"
 msgstr "已加入需先处理的申请单 %1"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1053
+#: lib/RT/Transaction.pm:1075
 msgid "Dependency on %1 deleted"
 msgstr "已移除需先处理的申请单 %1"
 
@@ -2876,7 +2886,7 @@ msgstr "编辑群组%1的成员信息"
 msgid "EffectiveId"
 msgstr "有效编号"
 
-#: lib/RT/Record.pm:1371 lib/RT/Record.pm:1516
+#: lib/RT/Record.pm:1392 lib/RT/Record.pm:1537
 msgid "Either base or target must be specified"
 msgstr "需要指定源申请单或目标申请单"
 
@@ -2996,7 +3006,7 @@ msgstr "已停用加密"
 msgid "Encrypting enabled"
 msgstr "已启用加密"
 
-#: lib/RT/Attachment.pm:779
+#: lib/RT/Attachment.pm:781
 msgid "Encryption error; contact the administrator"
 msgstr ""
 
@@ -3261,6 +3271,16 @@ msgstr "字段"
 msgid "Field values source:"
 msgstr "字段值来源:"
 
+#. ($self->Data, $self->OldValue, $self->NewValue)
+#: lib/RT/Transaction.pm:859
+msgid "File '%1' dropped because its size (%2 bytes) exceeded configured maximum size setting (%3 bytes)."
+msgstr ""
+
+#. ($self->Data, $self->OldValue, $self->NewValue)
+#: lib/RT/Transaction.pm:848
+msgid "File '%1' truncated because its size (%2 bytes) exceeded configured maximum size setting (%3 bytes)."
+msgstr ""
+
 #: lib/RT/Tickets.pm:141 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:53 share/html/Elements/SelectAttachmentField:54
 msgid "Filename"
 msgstr "文件名"
@@ -3402,12 +3422,12 @@ msgid "Forward transaction #%1"
 msgstr "转发事务#%1"
 
 #. ($self->Field, $recipients,            [\'<a href="#txn-', $self->Field, \'">'], \'</a>')
-#: lib/RT/Transaction.pm:852
+#: lib/RT/Transaction.pm:874
 msgid "Forwarded %3Transaction #%1%4 to %2"
 msgstr ""
 
 #. ($recipients)
-#: lib/RT/Transaction.pm:860
+#: lib/RT/Transaction.pm:882
 msgid "Forwarded Ticket to %1"
 msgstr "转发申请单至 %1"
 
@@ -3425,7 +3445,7 @@ msgstr ""
 msgid "Found %quant(%1,ticket,tickets)"
 msgstr "找到%1张申请单"
 
-#: lib/RT/Record.pm:1016
+#: lib/RT/Record.pm:1037
 msgid "Found Object"
 msgstr "找到对象"
 
@@ -3470,7 +3490,7 @@ msgid "Give output even on messages successfully sent"
 msgstr ""
 
 #. ($self->_FormatUser($New))
-#: lib/RT/Transaction.pm:1123 lib/RT/Transaction.pm:1135 lib/RT/Transaction.pm:970
+#: lib/RT/Transaction.pm:1145 lib/RT/Transaction.pm:1157 lib/RT/Transaction.pm:992
 msgid "Given to %1"
 msgstr "交给%1"
 
@@ -3549,7 +3569,7 @@ msgstr "图标属性"
 msgid "Graphical charts are not available."
 msgstr "图表已停用"
 
-#: lib/RT/Record.pm:996 share/html/Search/Elements/SelectPersonType:54 share/html/Ticket/Elements/AddWatchers:69
+#: lib/RT/Record.pm:1017 share/html/Search/Elements/SelectPersonType:54 share/html/Ticket/Elements/AddWatchers:69
 msgid "Group"
 msgstr "群组"
 
@@ -3806,7 +3826,7 @@ msgstr "若已更新以上数据，请记得"
 msgid "If your preferred database isn't listed in the dropdown below, that means RT couldn't find a <i>database driver</i> for it installed locally. You may be able to remedy this by using %1 to download and install DBD::MySQL, DBD::Oracle or DBD::Pg."
 msgstr "如果你想用的数据库不再列表里，说明RT找不到<i>数据库驱动</i>。可以尝试使用%1下载并安装DBD::MySQL，DBD::Oracle或者DBD::Pg"
 
-#: lib/RT/Record.pm:1008
+#: lib/RT/Record.pm:1029
 msgid "Illegal value for %1"
 msgstr "%1的值错误"
 
@@ -3822,7 +3842,7 @@ msgstr ""
 msgid "Image not shown because sender requested not to inline it."
 msgstr ""
 
-#: lib/RT/Record.pm:1011
+#: lib/RT/Record.pm:1032
 msgid "Immutable field"
 msgstr "此字段值不可更改"
 
@@ -4009,7 +4029,7 @@ msgstr "无效渲染类型"
 msgid "Invalid Render Type for custom field of type %1"
 msgstr "无效的类型 %1 自定字段渲染类型"
 
-#: lib/RT/Record.pm:1013
+#: lib/RT/Record.pm:1034
 msgid "Invalid data"
 msgstr "无效的数据"
 
@@ -4060,7 +4080,7 @@ msgstr "无效的邮箱"
 msgid "Invalid value for %1"
 msgstr "无效的%1的值"
 
-#: lib/RT/Record.pm:1962
+#: lib/RT/Record.pm:1985
 msgid "Invalid value for custom field"
 msgstr "无效的自定字段值"
 
@@ -4068,7 +4088,7 @@ msgstr "无效的自定字段值"
 msgid "Is already added to the object"
 msgstr ""
 
-#: lib/RT/Attachment.pm:812
+#: lib/RT/Attachment.pm:814
 msgid "Is not encrypted"
 msgstr "没有加密"
 
@@ -4214,21 +4234,21 @@ msgstr "生命周期"
 msgid "Link"
 msgstr "链接"
 
-#: lib/RT/Record.pm:1404
+#: lib/RT/Record.pm:1425
 msgid "Link already exists"
 msgstr "此链接已存在"
 
 #. ($linkmsg)
-#: lib/RT/Record.pm:1426
+#: lib/RT/Record.pm:1447
 msgid "Link could not be created: %1"
 msgstr ""
 
 #. ($msg)
-#: lib/RT/Record.pm:1561
+#: lib/RT/Record.pm:1582
 msgid "Link could not be deleted: %1"
 msgstr ""
 
-#: lib/RT/Record.pm:1548
+#: lib/RT/Record.pm:1569
 msgid "Link not found"
 msgstr "找不到链接"
 
@@ -4254,7 +4274,7 @@ msgid "LinkedTo"
 msgstr "链接到"
 
 #. ($self->loc(lc($remote_obj->RecordType)))
-#: lib/RT/Record.pm:1390
+#: lib/RT/Record.pm:1411
 msgid "Linking to a deleted %1 is not allowed"
 msgstr ""
 
@@ -4530,12 +4550,12 @@ msgid "Member"
 msgstr "成员"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1026
+#: lib/RT/Transaction.pm:1048
 msgid "Member %1 added"
 msgstr "成员%1已创建"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1068
+#: lib/RT/Transaction.pm:1090
 msgid "Member %1 deleted"
 msgstr "成员%1已删除"
 
@@ -4561,12 +4581,12 @@ msgid "Members"
 msgstr "成员"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1023
+#: lib/RT/Transaction.pm:1045
 msgid "Membership in %1 added"
 msgstr "已加入群组%1"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1065
+#: lib/RT/Transaction.pm:1087
 msgid "Membership in %1 deleted"
 msgstr "已从群组%1移除"
 
@@ -4614,7 +4634,7 @@ msgid "Merge into"
 msgstr "整合到"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1029
+#: lib/RT/Transaction.pm:1051
 msgid "Merged into %1"
 msgstr "已整合到%1"
 
@@ -4702,7 +4722,7 @@ msgstr "分钟"
 msgid "Miscellaneous"
 msgstr "杂项"
 
-#: lib/RT/Record.pm:1015
+#: lib/RT/Record.pm:1036
 msgid "Missing a primary key?: %1"
 msgstr "缺少主键?:(%1)"
 
@@ -5245,7 +5265,7 @@ msgstr "没有模板"
 msgid "No action"
 msgstr "暂不处理"
 
-#: lib/RT/Record.pm:1010
+#: lib/RT/Record.pm:1031
 msgid "No column specified"
 msgstr "未指定字段"
 
@@ -5271,7 +5291,7 @@ msgstr "未指定群组"
 msgid "No groups matching search criteria found."
 msgstr "找不到符合搜索条件的群组。"
 
-#: lib/RT/Attachment.pm:768
+#: lib/RT/Attachment.pm:770
 msgid "No key suitable for encryption"
 msgstr "没有适合的密钥"
 
@@ -5287,7 +5307,7 @@ msgstr "没有附上消息"
 msgid "No name provided"
 msgstr "没有提供名字"
 
-#: lib/RT/Attachment.pm:750
+#: lib/RT/Attachment.pm:752
 msgid "No need to encrypt"
 msgstr "不许要加密"
 
@@ -5394,7 +5414,7 @@ msgstr ""
 msgid "No valid Type specified"
 msgstr ""
 
-#: lib/RT/Record.pm:1007
+#: lib/RT/Record.pm:1028
 msgid "No value sent to _Set!"
 msgstr "没有发送至 _Set的值!"
 
@@ -5406,7 +5426,7 @@ msgstr "没人"
 msgid "None"
 msgstr "从不"
 
-#: lib/RT/Record.pm:1012
+#: lib/RT/Record.pm:1033
 msgid "Nonexistant field?"
 msgstr "字段不存在？"
 
@@ -5730,11 +5750,11 @@ msgstr "组织名称"
 msgid "Originating ticket: #%1"
 msgstr "原申请单：#%1"
 
-#: lib/RT/Transaction.pm:864
+#: lib/RT/Transaction.pm:886
 msgid "Outgoing email about a comment recorded"
 msgstr "已记录发送的注释邮件"
 
-#: lib/RT/Transaction.pm:868
+#: lib/RT/Transaction.pm:890
 msgid "Outgoing email recorded"
 msgstr "已记录发送的邮件"
 
@@ -5769,7 +5789,7 @@ msgid "Owner changed from %1 to %2"
 msgstr "拥有人已从%1改为%2"
 
 #. (map { $self->_FormatUser($_) } $Old, $New)
-#: lib/RT/Transaction.pm:1142 lib/RT/Transaction.pm:958
+#: lib/RT/Transaction.pm:1164 lib/RT/Transaction.pm:980
 msgid "Owner forcibly changed from %1 to %2"
 msgstr "强制将拥有人从%1改为%2"
 
@@ -5817,7 +5837,7 @@ msgstr "父申请单"
 msgid "Password"
 msgstr "密码"
 
-#: lib/RT/Transaction.pm:1093 lib/RT/User.pm:867
+#: lib/RT/Transaction.pm:1115 lib/RT/User.pm:867
 msgid "Password changed"
 msgstr "密码更改完成"
 
@@ -5902,11 +5922,11 @@ msgstr "Perl库的搜索顺序"
 msgid "Permanently wipeout data from RT"
 msgstr "永久删除 RT 的数据"
 
-#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:738 lib/RT/Attachment.pm:739 lib/RT/Attachment.pm:798 lib/RT/Attachment.pm:799 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:386 lib/RT/Attribute.pm:401 lib/RT/Attribute.pm:414 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1037 lib/RT/CustomField.pm:1574 lib/RT/CustomField.pm:1603 lib/RT/CustomField.pm:1646 lib/RT/CustomField.pm:1819 lib/RT/CustomField.pm:1969 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:628 lib/RT/CustomField.pm:655 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1247 lib/RT/Group.pm:1331 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:355 lib/RT/Queue.pm:381 lib/RT/Queue.pm:407 lib/RT/Queue.pm:804 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:317 lib/RT/Template.pm:483 lib/RT/Template.pm:743 lib/RT/Template.pm:760 lib/RT/Template.pm:778 lib/RT/Ticket.pm:1072 lib/RT/Ticket.pm:1283 lib/RT/Ticket.pm:1451 lib/RT/Ticket.pm:1501 lib/RT/Ticket.pm:1773 lib/RT/Ticket.pm:1792 lib/RT/Ticket.pm:2197 lib/RT/Ticket.pm:2210 lib/RT/Ticket.pm:2215 lib/RT/Ticket.pm:2239 lib/RT/Ticket.pm:2456 lib/RT/Ticket.pm:2685 lib/RT/Ticket.pm:3049 lib/RT/Ticket.pm:734 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:688 lib/RT/Transaction.pm:728 lib/RT/User.pm:1137 lib/RT/User.pm:139 lib/RT/User.pm:1588 lib/RT/User.pm:1835 lib/RT/User.pm:1868 lib/RT/User.pm:328 lib/RT/User.pm:735 lib/RT/User.pm:770 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97 share/html/Ticket/ShowEmailRecord.html:110 share/html/Ticket/ShowEmailRecord.html:111
+#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:740 lib/RT/Attachment.pm:741 lib/RT/Attachment.pm:800 lib/RT/Attachment.pm:801 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:386 lib/RT/Attribute.pm:401 lib/RT/Attribute.pm:414 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1037 lib/RT/CustomField.pm:1574 lib/RT/CustomField.pm:1603 lib/RT/CustomField.pm:1646 lib/RT/CustomField.pm:1819 lib/RT/CustomField.pm:1969 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:628 lib/RT/CustomField.pm:655 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1247 lib/RT/Group.pm:1331 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:355 lib/RT/Queue.pm:381 lib/RT/Queue.pm:407 lib/RT/Queue.pm:804 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:317 lib/RT/Template.pm:483 lib/RT/Template.pm:743 lib/RT/Template.pm:760 lib/RT/Template.pm:778 lib/RT/Ticket.pm:1072 lib/RT/Ticket.pm:1283 lib/RT/Ticket.pm:1451 lib/RT/Ticket.pm:1501 lib/RT/Ticket.pm:1773 lib/RT/Ticket.pm:1792 lib/RT/Ticket.pm:2197 lib/RT/Ticket.pm:2210 lib/RT/Ticket.pm:2215 lib/RT/Ticket.pm:2239 lib/RT/Ticket.pm:2456 lib/RT/Ticket.pm:2685 lib/RT/Ticket.pm:3049 lib/RT/Ticket.pm:734 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:688 lib/RT/Transaction.pm:728 lib/RT/User.pm:1137 lib/RT/User.pm:139 lib/RT/User.pm:1588 lib/RT/User.pm:1835 lib/RT/User.pm:1868 lib/RT/User.pm:328 lib/RT/User.pm:735 lib/RT/User.pm:770 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97 share/html/Ticket/ShowEmailRecord.html:110 share/html/Ticket/ShowEmailRecord.html:111
 msgid "Permission Denied"
 msgstr "没有权限"
 
-#: lib/RT/Record.pm:1382 lib/RT/Record.pm:1526 lib/RT/Record/Role/Roles.pm:407 lib/RT/Record/Role/Roles.pm:491
+#: lib/RT/Record.pm:1403 lib/RT/Record.pm:1547 lib/RT/Record/Role/Roles.pm:407 lib/RT/Record/Role/Roles.pm:491
 msgid "Permission denied"
 msgstr "没有权限"
 
@@ -6110,7 +6130,7 @@ msgstr "搜索"
 msgid "Query Builder"
 msgstr "创建搜索"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Record.pm:997 lib/RT/Report/Tickets.pm:62 lib/RT/Tickets.pm:107 lib/RT/Tickets.pm:1452 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:63 share/html/Elements/RT__Template/ColumnMap:66 share/html/Elements/RT__Template/ColumnMap:73 share/html/Elements/RT__Ticket/ColumnMap:102 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:61 share/html/Ticket/Elements/ShowBasics:82 share/html/m/ticket/create:248 share/html/m/ticket/show:242
+#: lib/RT/Graph/Tickets.pm:153 lib/RT/Record.pm:1018 lib/RT/Report/Tickets.pm:62 lib/RT/Tickets.pm:107 lib/RT/Tickets.pm:1452 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:63 share/html/Elements/RT__Template/ColumnMap:66 share/html/Elements/RT__Template/ColumnMap:73 share/html/Elements/RT__Ticket/ColumnMap:102 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:61 share/html/Ticket/Elements/ShowBasics:82 share/html/m/ticket/create:248 share/html/m/ticket/show:242
 msgid "Queue"
 msgstr "队列"
 
@@ -6367,22 +6387,22 @@ msgid "Refer to"
 msgstr "参考"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1020
+#: lib/RT/Transaction.pm:1042
 msgid "Reference by %1 added"
 msgstr "已加入%1为参考本申请单"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1062
+#: lib/RT/Transaction.pm:1084
 msgid "Reference by %1 deleted"
 msgstr "已移除%1为参考本申请单"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1017
+#: lib/RT/Transaction.pm:1039
 msgid "Reference to %1 added"
 msgstr "已加入参考申请单%1"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1059
+#: lib/RT/Transaction.pm:1081
 msgid "Reference to %1 deleted"
 msgstr "已移除参考申请单%1"
 
@@ -6463,7 +6483,7 @@ msgstr "每%1分钟刷新此页面"
 msgid "RefreshHomepage"
 msgstr ""
 
-#: lib/RT/Record.pm:1414
+#: lib/RT/Record.pm:1435
 msgid "Refused to add link which would create a circular relationship"
 msgstr ""
 
@@ -6480,17 +6500,17 @@ msgid "Reminder"
 msgstr "提醒"
 
 #. ($subject)
-#: lib/RT/Transaction.pm:1180
+#: lib/RT/Transaction.pm:1202
 msgid "Reminder '%1' added"
 msgstr "已创建提醒项目'%1'"
 
 #. ($subject)
-#: lib/RT/Transaction.pm:1202
+#: lib/RT/Transaction.pm:1224
 msgid "Reminder '%1' completed"
 msgstr "已完成提醒项目'%1'"
 
 #. ($subject)
-#: lib/RT/Transaction.pm:1191
+#: lib/RT/Transaction.pm:1213
 msgid "Reminder '%1' reopened"
 msgstr "已重新打开提醒项目'%1'"
 
@@ -7101,6 +7121,10 @@ msgstr "发送邮件给申请人及抄送人"
 msgid "Send mail to requestors and Ccs as a comment"
 msgstr "以注释方式发送邮件给申请人及抄送人"
 
+#: lib/RT/Interface/Email.pm:1776
+msgid "Sending the previous mail has failed.  Please contact your admin, they can find more details in the logs."
+msgstr ""
+
 #: etc/initialdata:34
 msgid "Sends a message to the requestors"
 msgstr "发送邮件给申请人"
@@ -7483,7 +7507,7 @@ msgid "Step %1 of %2"
 msgstr "%2的步骤%1"
 
 #. ($self->_FormatUser($Old))
-#: lib/RT/Transaction.pm:1128 lib/RT/Transaction.pm:964
+#: lib/RT/Transaction.pm:1150 lib/RT/Transaction.pm:986
 msgid "Stolen from %1"
 msgstr "拥有人从%1强制更换"
 
@@ -7500,7 +7524,7 @@ msgid "Subject Tag"
 msgstr "主题标签"
 
 #. ($self->Data)
-#: lib/RT/Transaction.pm:992
+#: lib/RT/Transaction.pm:1014
 msgid "Subject changed to %1"
 msgstr "标题已改为%1"
 
@@ -7539,11 +7563,11 @@ msgstr "订阅"
 msgid "Subscription could not be created: %1"
 msgstr "无法创建订阅: %1"
 
-#: lib/RT/Attachment.pm:840
+#: lib/RT/Attachment.pm:842
 msgid "Successfuly decrypted data"
 msgstr "已解密数据"
 
-#: lib/RT/Attachment.pm:791
+#: lib/RT/Attachment.pm:793
 msgid "Successfuly encrypted data"
 msgstr "已加密数据"
 
@@ -7644,7 +7668,7 @@ msgstr "受理"
 msgid "Take tickets"
 msgstr "自行拥有申请单"
 
-#: lib/RT/Transaction.pm:1120 lib/RT/Transaction.pm:948
+#: lib/RT/Transaction.pm:1142 lib/RT/Transaction.pm:970
 msgid "Taken"
 msgstr "已受理"
 
@@ -7730,7 +7754,7 @@ msgstr "文字"
 msgid "Text file is not shown because it is disabled in preferences."
 msgstr "首选项里停用，所以文本文件未予显示"
 
-#: lib/RT/Record.pm:1006
+#: lib/RT/Record.pm:1027
 msgid "That is already the current value"
 msgstr "已经是目前字段的值"
 
@@ -7831,7 +7855,7 @@ msgstr "密钥被完全信任(fully)"
 msgid "The key is ultimately trusted"
 msgstr "密钥被终极信任(ultimately)"
 
-#: lib/RT/Record.pm:1009
+#: lib/RT/Record.pm:1030
 msgid "The new value has been set."
 msgstr "新的字段值已设定。"
 
@@ -7961,7 +7985,7 @@ msgstr "星期四"
 msgid "Thursday"
 msgstr "星期四"
 
-#: lib/RT/Record.pm:994 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/ShowReminders:53
+#: lib/RT/Record.pm:1015 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/ShowReminders:53
 msgid "Ticket"
 msgstr "申请单"
 
@@ -8222,7 +8246,7 @@ msgid "Transaction"
 msgstr "事务"
 
 #. ($self->Data)
-#: lib/RT/Transaction.pm:1169
+#: lib/RT/Transaction.pm:1191
 msgid "Transaction %1 purged"
 msgstr "事务%1被清除"
 
@@ -8250,7 +8274,7 @@ msgstr "事务日期"
 msgid "Transactions"
 msgstr ""
 
-#: lib/RT/Transaction.pm:1238
+#: lib/RT/Transaction.pm:1260
 msgid "Transactions are immutable"
 msgstr "不可更改事务"
 
@@ -8383,7 +8407,7 @@ msgstr "未知的(该值是新添加的)"
 
 #. ($ContentEncoding)
 #. ($self->ContentEncoding)
-#: lib/RT/Attachment.pm:384 lib/RT/Record.pm:873
+#: lib/RT/Attachment.pm:386 lib/RT/Record.pm:894
 msgid "Unknown ContentEncoding %1"
 msgstr "未知的内容编码%1"
 
@@ -8441,7 +8465,7 @@ msgstr "未选择的对象"
 msgid "Unset private key"
 msgstr "未设定主密钥"
 
-#: lib/RT/Transaction.pm:1132 lib/RT/Transaction.pm:944
+#: lib/RT/Transaction.pm:1154 lib/RT/Transaction.pm:966
 msgid "Untaken"
 msgstr "未被受理"
 
@@ -8597,7 +8621,7 @@ msgstr "使用下拉列表菜单来选择您想要提取为新文章的申请单
 msgid "Used by scrips"
 msgstr ""
 
-#: lib/RT/Record.pm:995 share/html/Admin/Elements/ShowKeyInfo:85 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52
+#: lib/RT/Record.pm:1016 share/html/Admin/Elements/ShowKeyInfo:85 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52
 msgid "User"
 msgstr "用户"
 
@@ -8984,12 +9008,12 @@ msgid "Worked"
 msgstr "工作时间"
 
 #. (sprintf("%.1f", $duration / 60), $duration)
-#: lib/RT/Transaction.pm:1164
+#: lib/RT/Transaction.pm:1186
 msgid "Worked %quant(%1,hour,hours) (%quant(%2,minute,minutes))"
 msgstr ""
 
 #. ($duration)
-#: lib/RT/Transaction.pm:1162
+#: lib/RT/Transaction.pm:1184
 msgid "Worked %quant(%1,minute,minutes)"
 msgstr ""
 
@@ -9165,7 +9189,7 @@ msgstr "[上]"
 msgid "[none]"
 msgstr "[无]"
 
-#: lib/RT/Transaction.pm:888
+#: lib/RT/Transaction.pm:910
 msgid "a custom field"
 msgstr "自定字段"
 
