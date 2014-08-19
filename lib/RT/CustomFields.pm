@@ -321,6 +321,19 @@ sub LimitToGlobal  {
   $self->LimitToLookupType( 'RT::Queue-RT::Ticket' );
 }
 
+=head2 LimitToDefaultValuesSupportedTypes
+
+Limits the Custom Field collection to ones of which types support default values.
+
+=cut
+
+sub LimitToDefaultValuesSupportedTypes {
+    my $self = shift;
+    $self->Limit( FIELD => 'Type', VALUE => 'Binary', OPERATOR => '!=', ENTRYAGGREGATOR => 'AND' );
+    $self->Limit( FIELD => 'Type', VALUE => 'Image', OPERATOR => '!=', ENTRYAGGREGATOR => 'AND' );
+    return $self;
+}
+
 
 =head2 ApplySortOrder
 

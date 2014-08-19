@@ -127,6 +127,14 @@ jQuery( function() {
     Values  => \@CFvalidations,
 &></td></tr>
 
+% if ( $CustomFieldObj->SupportDefaultValues ) {
+<tr class="edit_default_values"><td class="label"><&|/l, $CustomFieldObj->MaxValues &>Default [numerate,_1,value,values]</&></td>
+<td>
+<& /Elements/EditCustomField, NamePrefix => 'Default-', CustomField => $CustomFieldObj &>
+</td>
+</tr>
+% }
+
 <tr><td class="label"><&|/l&>Link values to</&></td><td>
 <input size="60" name="LinkValueTo"  value="<% $CustomFieldObj->LinkValueTo || $LinkValueTo || '' %>" />
 <div class="hints">
@@ -264,6 +272,14 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
 
     if (($CustomFieldObj->BasedOn||'') ne ($BasedOn||'')) {
         my ($good, $msg) = $CustomFieldObj->SetBasedOn( $BasedOn );
+        push @results, $msg;
+    }
+
+    if ( $CustomFieldObj->SupportDefaultValues ) {
+        my ($ret, $msg) = $CustomFieldObj->SetDefaultValues(
+            Object => RT->System,
+            Values => $ARGS{'Default-' . $CustomFieldObj->id . '-Value'} // $ARGS{'Default-' . $CustomFieldObj->id . '-Values'},
+        );
         push @results, $msg;
     }
 

@@ -495,6 +495,9 @@ sub Create {
         }
     }
 
+    my ( $status, @msgs ) = $self->AddCustomFieldDefaultValues;
+    push @non_fatal_errors, @msgs unless $status;
+
     # Deal with setting up links
 
     # TODO: Adding link may fire scrips on other end and those scrips

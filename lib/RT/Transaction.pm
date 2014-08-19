@@ -1421,6 +1421,8 @@ sub UpdateCustomFields {
             );
         }
     }
+
+    $self->AddCustomFieldDefaultValues;
 }
 
 =head2 LoadCustomFieldByIdentifier

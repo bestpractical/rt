@@ -100,9 +100,16 @@ sub ValidateName {
     return defined $_[1] && length $_[1];
 };
 
+sub Delete {
+    my $self = shift;
+    my ( $ret, $msg ) = $self->SUPER::Delete;
+    $self->CustomFieldObj->CleanupDefaultValues;
+    return ( $ret, $msg );
+}
+
 sub _Set { 
     my $self = shift; 
-
+    my %args = @_;
     my $cf_id = $self->CustomField; 
 
     my $cf = RT::CustomField->new( $self->CurrentUser ); 
@@ -116,8 +123,12 @@ sub _Set {
         return (0, $self->loc('Permission Denied')); 
     } 
 
-    return $self->SUPER::_Set( @_ ); 
-} 
+    my ($ret, $msg) = $self->SUPER::_Set( @_ ); 
+    if ( $args{Field} eq 'Name' ) {
+        $cf->CleanupDefaultValues;
+    }
+    return ($ret, $msg);
+}
 
 
 =head2 id

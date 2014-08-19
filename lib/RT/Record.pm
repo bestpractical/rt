@@ -2102,6 +2102,37 @@ sub _AddCustomFieldValue {
     }
 }
 
+=head2 AddCustomFieldDefaultValues
+
+Add default values to object's empty custom fields.
+
+=cut
+
+sub AddCustomFieldDefaultValues {
+    my $self = shift;
+    my $cfs  = $self->CustomFields;
+    my @msgs;
+    while ( my $cf = $cfs->Next ) {
+        next if $self->CustomFieldValues($cf->id)->Count || !$cf->SupportDefaultValues;
+        my $values = $cf->DefaultValues( Object => RT->System );
+        foreach my $value ( UNIVERSAL::isa( $values => 'ARRAY' ) ? @$values : $values ) {
+            next if $self->CustomFieldValueIsEmpty(
+                Field => $cf->id,
+                Value => $value,
+            );
+
+            my ( $status, $msg ) = $self->_AddCustomFieldValue(
+                Field             => $cf->id,
+                Value             => $value,
+                RecordTransaction => 0,
+            );
+            push @msgs, $msg unless $status;
+        }
+    }
+    return ( 0, @msgs ) if @msgs;
+    return 1;
+}
+
 =head2 CustomFieldValueIsEmpty { Field => FIELD, Value => VALUE }
 
 Check if the custom field value is empty.
