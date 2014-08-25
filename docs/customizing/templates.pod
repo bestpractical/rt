@@ -129,7 +129,9 @@ use.  Among them:
 
 =item $TicketCF(Name)
 
-For example, C<$TicketCFDepartment>.
+For example, C<$TicketCFDepartment>.  For CFs with more complicated
+names, all non-word characters (anything that is not letters, numbers,
+or underscores) are stripped to determine the appropriate variable name.
 
 =item $TransactionType
 
