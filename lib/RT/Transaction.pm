@@ -118,7 +118,7 @@ sub Create {
         NewValue       => undef,
         MIMEObj        => undef,
         ActivateScrips => 1,
-        CommitScrips   => 1,
+        DryRun         => undef,
         ObjectType     => 'RT::Ticket',
         ObjectId       => 0,
         ReferenceType  => undef,
@@ -182,6 +182,8 @@ sub Create {
         return @return;
     }
 
+    push @{$args{DryRun}}, $self if $args{DryRun};
+
     $self->{'scrips'} = RT::Scrips->new(RT->SystemUser);
 
     $RT::Logger->debug('About to prepare scrips for transaction #' .$self->Id); 
@@ -206,7 +208,7 @@ sub Create {
         TransactionObj => $txn,
    );
 
-    if ($args{'CommitScrips'} ) {
+    unless ($args{DryRun} ) {
         $RT::Logger->debug('About to commit scrips for transaction #' .$self->Id);
         $self->{'scrips'}->Commit();
         RT::Ruleset->CommitRules($rules);

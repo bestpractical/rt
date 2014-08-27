@@ -108,7 +108,13 @@ unless ($OnlySearchForPeople or $OnlySearchForGroup) {
 }
 
 # Use the ticket's scrips to figure out the new list of recipients.
-my @txns = grep {defined} map {$Ticket->DryRun( Action => $_ )} qw/comment respond/;
+my @txns = $Ticket->DryRun(
+    sub {
+        my $MIME = MIME::Entity->build( Type => "text/plain", Data => "" );
+        $Ticket->Comment(MIMEObj => $MIME);
+        $Ticket->Correspond(MIMEObj => $MIME);
+    }
+);
 my %recips=();
 for my $scrip (map {@{$_->Scrips->Prepared}} @txns) {
     next unless $scrip->ActionObj->Action->isa('RT::Action::SendEmail');

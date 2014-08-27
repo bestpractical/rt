@@ -1583,6 +1583,17 @@ detailed breakdown by scrip.
 
 Set($SimplifiedRecipients, 0);
 
+=item C<$SquelchedRecipients>
+
+If C<$SquelchedRecipients> is set, the checkbox list of who will receive
+B<any> kind of mail on the ticket reply page are displayed initially as
+B<un>checked - which means nobody in that list would get any mail. It
+does not affect correspondence done via email yet.
+
+=cut
+
+Set($SquelchedRecipients, 0);
+
 =item C<$HideResolveActionsWithDependencies>
 
 If set to 1, this option will skip ticket menu actions which can't be

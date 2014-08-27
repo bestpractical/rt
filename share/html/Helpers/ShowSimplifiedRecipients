@@ -61,13 +61,25 @@ else {
       unless $TicketObj->CurrentUserHasRight( 'ReplyToTicket' ) || $TicketObj->CurrentUserHasRight( 'ModifyTicket' );
 }
 
-my $Object = $TicketObj->DryRun(%ARGS);
-$m->abort unless $Object;
+my @dryrun = $TicketObj->DryRun(
+    sub {
+        local $ARGS{UpdateContent} ||= "Content";
+        ProcessUpdateMessage(ARGSRef  => \%ARGS, TicketObj => $TicketObj );
+        ProcessTicketWatchers(ARGSRef => \%ARGS, TicketObj => $TicketObj );
+        ProcessTicketBasics(  ARGSRef => \%ARGS, TicketObj => $TicketObj );
+        ProcessTicketLinks(   ARGSRef => \%ARGS, TicketObj => $TicketObj );
+        ProcessTicketDates(   ARGSRef => \%ARGS, TicketObj => $TicketObj );
+        ProcessObjectCustomFieldUpdates(ARGSRef => \%ARGS, TicketObj => $TicketObj );
+        ProcessTicketReminders( ARGSRef => \%ARGS, TicketObj => $TicketObj );
+    }
+);
+$m->abort unless @dryrun;
 
 my %headers = (To => {}, Cc => {}, Bcc => {});
 my %no_squelch = (To => {}, Cc => {}, Bcc => {});
-if ($Object->Scrips) {
-    for my $scrip (grep $_->ActionObj->Action->isa('RT::Action::SendEmail'), @{$Object->Scrips->Prepared}) {
+my @scrips = map {@{$_->Scrips->Prepared}} @dryrun;
+if (@scrips) {
+    for my $scrip (grep $_->ActionObj->Action->isa('RT::Action::SendEmail'), @scrips) {
         my $action = $scrip->ActionObj->Action;
         for my $type (qw(To Cc Bcc)) {
             for my $addr ($action->$type()) {
@@ -80,25 +92,29 @@ if ($Object->Scrips) {
         }
     }
 }
-if ($Object->Rules) {
-    for my $rule (grep {$_->{hints} and $_->{hints}{class} eq "SendEmail"} @{$Object->Rules}) {
-        for my $type (qw(To Cc Bcc)) {
-            $headers{$type}{$_} ||= @{[Email::Address->parse($_)]}[0] # Hate list context
-                for @{$rule->{hints}{recipients}{$type}};
-        }
-    }
-}
 my %recips;
 my %squelched = ProcessTransactionSquelching( \%ARGS );
+my $squelched_config = !( RT->Config->Get('SquelchedRecipients', $session{'CurrentUser'}) );
+my %submitted;
+$submitted{$_} = 1 for split /,/, $ARGS{TxnRecipients};
 </%init>
 <table>
+%   if ( scalar(map { keys %{$headers{$_}} } qw(To Cc Bcc)) ) {
+<tr>
+<td>&nbsp;</td>
+<td>
+<input type="checkbox" class="checkbox" name="TxnSendMailToAll" value="1">
+<label for="TxnSendMailToAll"><b><% loc('All recipients') %></b></label>
+</td>
+</tr>
+% }
 % for my $type (qw(To Cc Bcc)) {
 %     next unless keys %{$headers{$type}} or keys %{$no_squelch{$type}};
 <tr>
 <td valign="top"><% $type %>:</td>
 <td valign="top">
 %     for my $addr (sort {$a->address cmp $b->address} values %{$headers{$type}}) {
-%         my $checked = not $squelched{$addr->address};
+%         my $checked = $submitted{$addr->address} ? not $squelched{$addr->address} : $squelched_config;
 %         $m->callback(CallbackName => 'BeforeAddress', Ticket => $TicketObj, Address => $addr, Type => $type, Checked => \$checked);
 %         $recips{$addr->address}++;
 <input type="checkbox" class="checkbox" name="TxnSendMailTo" <% $checked ? 'checked="checked"' : '' |n%> value="<%$addr->address%>" id="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>" />
