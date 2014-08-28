@@ -65,6 +65,7 @@
 </table>
 <%INIT>
 my @display = qw(DependsOn DependedOnBy MemberOf Members RefersTo ReferredToBy);
+$m->callback( %ARGS, CallbackName => 'ChangeDisplay', display => \@display );
 my %labels  = (
     DependsOn       => loc('Depends on'),
     DependedOnBy    => loc('Depended on by'),
