@@ -365,7 +365,7 @@ my $print_value = sub {
  <div class="entry">
     <div class="label date due"><&|/l&>Due</&>:</div>
 % my $due = $Ticket->DueObj;
-% if ( $due && $due->IsSet && $due->Diff < 0 ) {
+% if ( $due && $due->IsSet && $due->Diff < 0 && $Ticket->QueueObj->IsActiveStatus($Ticket->Status) ) {
     <div class="value date due"><span class="overdue"><% $due->AsString  %></span></div>
 % } else {
     <div class="value date due"><% $due->AsString  %></div>
