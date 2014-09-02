@@ -2909,6 +2909,23 @@ Set(%AdminSearchResultFormat,
         .q{,__Description__,__Disabled__},
 );
 
+=item C<%AdminSearchResultRows>
+
+Use C<%AdminSearchResultRows> to define the search result rows in the admin
+interface on a per-RT-class basis.
+
+=cut
+
+Set(%AdminSearchResultRows,
+    Queues       => 50,
+    Groups       => 50,
+    Users        => 50,
+    CustomFields => 50,
+    Scrips       => 50,
+    Templates    => 50,
+    Classes      => 50,
+);
+
 =back
 
 

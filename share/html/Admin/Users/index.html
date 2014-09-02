@@ -89,7 +89,7 @@ jQuery(function(){
 <& /Elements/CollectionList,
     OrderBy => 'Name',
     Order => 'ASC',
-    Rows  => 100,
+    Rows  => $Rows,
     %ARGS,
     Format => $Format,
     Collection => $users,
@@ -129,6 +129,7 @@ else {
 }
 
 $Format ||= RT->Config->Get('AdminSearchResultFormat')->{'Users'};
+my $Rows = RT->Config->Get('AdminSearchResultRows')->{'Users'} || 50;
 
 # Build up the list of fields to display for searching
 my $i = 0;

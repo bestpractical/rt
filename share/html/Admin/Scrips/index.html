@@ -51,7 +51,7 @@
 <& /Elements/CollectionList,
     OrderBy       => 'Description',
     Order         => 'ASC',
-    Rows          => 50,
+    Rows          => $Rows,
     %ARGS,
     Collection    => $scrips,
     Format        => $Format,
@@ -68,4 +68,5 @@ $scrips->UnLimit;
 $m->callback(CallbackName => 'Massage', Scrips => $scrips);
 
 $Format ||= RT->Config->Get('AdminSearchResultFormat')->{'Scrips'};
+my $Rows = RT->Config->Get('AdminSearchResultRows')->{'Scrips'} || 50;
 </%INIT>
