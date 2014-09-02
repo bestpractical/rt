@@ -1968,18 +1968,20 @@ sub _URLTemplate {
         unless ( $self->CurrentUserHasRight('AdminCustomField') ) {
             return ( 0, $self->loc('Permission Denied') );
         }
-        $self->SetAttribute( Name => $template_name, Content => $value );
+        if (length $value and defined $value) {
+            $self->SetAttribute( Name => $template_name, Content => $value );
+        } else {
+            $self->DeleteAttribute( $template_name );
+        }
         return ( 1, $self->loc('Updated') );
     } else {
         unless ( $self->id && $self->CurrentUserHasRight('SeeCustomField') ) {
             return (undef);
         }
 
-        my @attr = $self->Attributes->Named($template_name);
-        my $attr = shift @attr;
-
-        if ($attr) { return $attr->Content }
-
+        my ($attr) = $self->Attributes->Named($template_name);
+        return undef unless $attr;
+        return $attr->Content;
     }
 }
 
