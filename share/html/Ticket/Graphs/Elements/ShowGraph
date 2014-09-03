@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div><img src="<% RT->Config->Get('WebPath') %>/Ticket/Graphs/<% $id %>?<% $m->comp('/Elements/QueryString', %ARGS) %>" usemap="#<% $graph->{'NAME'} || 'test' %>" style="border: none" />
-<% safe_run_child { Encode::decode_utf8( $graph->as_cmapx ) } |n %>
+<% safe_run_child { Encode::decode( "UTF-8", $graph->as_cmapx ) } |n %>
 </div>
 <& ShowLegends, %ARGS, Ticket => $ticket &>
 <%ARGS>

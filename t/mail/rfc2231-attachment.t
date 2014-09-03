@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 
-use utf8;
 use RT::Test tests => undef;
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
@@ -20,7 +19,7 @@ diag "encoded attachment filename with parameter continuations";
     ok( $id, "Created ticket" );
 
     $m->get_ok("/Ticket/Display.html?id=$id");
-    $m->content_contains("新しいテキスト ドキュメント.txt", "found full filename");
+    $m->content_contains(Encode::decode("UTF-8","新しいテキスト ドキュメント.txt"), "found full filename");
 }
 
 undef $m;

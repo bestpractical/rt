@@ -108,7 +108,11 @@ my $ent = MIME::Entity->build(
     Type => "multipart/mixed",
     'X-RT-Interface' => 'REST',
 );
-$ent->attach(Data => $k->{Text}) if $k->{Text};
+$ent->attach(
+    Type    => "text/plain",
+    Charset => "UTF-8",
+    Data    => Encode::encode( "UTF-8", $k->{Text} ),
+) if $k->{Text};
 
 {
     my ($res, $msg) = process_attachments($ent, @atts);

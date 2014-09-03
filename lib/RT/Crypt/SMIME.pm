@@ -220,7 +220,7 @@ sub SignEncrypt {
     if ( $args{'Encrypt'} ) {
         my %seen;
         $args{'Recipients'} = [
-            grep !$seen{$_}++, map $_->address, map Email::Address->parse($_),
+            grep !$seen{$_}++, map $_->address, map Email::Address->parse(Encode::decode("UTF-8",$_)),
             grep defined && length, map $entity->head->get($_), qw(To Cc Bcc)
         ];
     }
@@ -742,7 +742,8 @@ sub CheckIfProtected {
 
         if ( $security_type eq 'encrypted' ) {
             my $top = $args{'TopEntity'}->head;
-            $res{'Recipients'} = [grep defined && length, map $top->get($_), 'To', 'Cc'];
+            $res{'Recipients'} = [map {Encode::decode("UTF-8", $_)}
+                                      grep defined && length, map $top->get($_), 'To', 'Cc'];
         }
 
         return %res;

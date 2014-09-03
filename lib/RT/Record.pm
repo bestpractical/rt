@@ -75,7 +75,6 @@ require RT::User;
 require RT::Attributes;
 require RT::Transactions;
 require RT::Link;
-use Encode qw();
 
 our $_TABLE_ATTR = { };
 
@@ -657,12 +656,16 @@ sub __Value {
 
     return undef if (!defined $value);
 
+    # Pg returns character columns as character strings; mysql and
+    # sqlite return them as bytes.  While mysql can be made to return
+    # characters, using the mysql_enable_utf8 flag, the "Content" column
+    # is bytes on mysql and characters on Postgres, making true
+    # consistency impossible.
     if ( $args{'decode_utf8'} ) {
-        if ( !utf8::is_utf8($value) ) {
+        if ( !utf8::is_utf8($value) ) { # mysql/sqlite
             utf8::decode($value);
         }
-    }
-    else {
+    } else {
         if ( utf8::is_utf8($value) ) {
             utf8::encode($value);
         }
@@ -775,6 +778,8 @@ sub _EncodeLOB {
     my $ContentEncoding = 'none';
     my $note_args;
 
+    RT::Util::assert_bytes( $Body );
+
     #get the max attachment length from RT
     my $MaxSize = RT->Config->Get('MaxAttachmentSize');
 
@@ -837,13 +842,10 @@ sub _EncodeLOB {
 
     # if we need to mimencode the attachment
     if ( $ContentEncoding eq 'base64' ) {
-
         # base64 encode the attachment
-        Encode::_utf8_off($Body);
         $Body = MIME::Base64::encode_base64($Body);
 
     } elsif ($ContentEncoding eq 'quoted-printable') {
-        Encode::_utf8_off($Body);
         $Body = MIME::QuotedPrint::encode($Body);
     }
 
@@ -884,6 +886,8 @@ sub _DecodeLOB {
     my $ContentEncoding = shift || 'none';
     my $Content         = shift;
 
+    RT::Util::assert_bytes( $Content );
+
     if ( $ContentEncoding eq 'base64' ) {
         $Content = MIME::Base64::decode_base64($Content);
     }
@@ -900,7 +904,7 @@ sub _DecodeLOB {
         my $charset = RT::I18N::_FindOrGuessCharset($entity);
         $charset = 'utf-8' if not $charset or not Encode::find_encoding($charset);
 
-        $Content = Encode::decode($charset,$Content,Encode::FB_PERLQQ) unless Encode::is_utf8($Content);
+        $Content = Encode::decode($charset,$Content,Encode::FB_PERLQQ);
     }
     return ($Content);
 }

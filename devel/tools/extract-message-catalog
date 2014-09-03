@@ -51,7 +51,6 @@
 use strict;
 use warnings;
 
-use utf8;
 use open qw/ :std :encoding(UTF-8) /;
 
 use File::Find;
@@ -194,7 +193,7 @@ sub extract_strings_from_code {
         $seen{$line}++;
         unless ( defined $str ) {
             print "\n" unless $errors++;
-            print "  Couldn't process loc at $filename:$line:\n  str«$str»\n";
+            print "  Couldn't process loc at $filename:$line:\n  $str\n";
             next;
         }
         my $interp = (substr($str,0,1) eq '"' ? 1 : 0);
@@ -238,7 +237,7 @@ sub extract_strings_from_code {
         $seen{$line}++;
         unless ( defined $str ) {
             print "\n" unless $errors++;
-            print "  Couldn't process loc_qw at $filename:$line:\n  str«$str»\n";
+            print "  Couldn't process loc_qw at $filename:$line:\n  $str\n";
             next;
         }
         foreach my $value (split ' ', $str) {
@@ -255,7 +254,7 @@ sub extract_strings_from_code {
         $seen{$line}++;
         unless ( defined $key ) {
             print "\n" unless $errors++;
-            print "  Couldn't process loc_left_pair at $filename:$line:\n  key«$key»\n";
+            print "  Couldn't process loc_left_pair at $filename:$line:\n  $key\n";
             next;
         }
         my $interp = (substr($key,0,1) eq '"' ? 1 : 0);
@@ -272,7 +271,7 @@ sub extract_strings_from_code {
         $seen{$line}++;
         unless ( defined $key && defined $val ) {
             print "\n" unless $errors++;
-            print "  Couldn't process loc_pair at $filename:$line:\n  key«$key»\n  val«$val»\n";
+            print "  Couldn't process loc_pair at $filename:$line:\n  $key\n  $val\n";
             next;
         }
         my $interp_key = (substr($key,0,1) eq '"' ? 1 : 0);
@@ -293,7 +292,7 @@ sub extract_strings_from_code {
         $line += ( $all =~ tr/\n/\n/ );
         $seen{$line}++;
         unless ( defined $key && defined $val ) {
-            warn "Couldn't process loc_pair at $filename:$line:\n  key«$key»\n  val«$val»\n";
+            warn "Couldn't process loc_pair at $filename:$line:\n  $key\n  $val\n";
             next;
         }
         $val = substr($val, 1, -1);    # dequote always quoted string

@@ -437,15 +437,17 @@ sub SignEncrypt {
         $args{'Signer'} =
             $self->UseKeyForSigning
             || do {
-                my $addr = (Email::Address->parse( $entity->head->get( 'From' ) ))[0];
-                $addr? $addr->address : undef
+                my ($addr) = map {Email::Address->parse( Encode::decode( "UTF-8", $_ ) )}
+                    $entity->head->get( 'From' );
+                $addr ? $addr->address : undef
             };
     }
     if ( $args{'Encrypt'} && !$args{'Recipients'} ) {
         my %seen;
         $args{'Recipients'} = [
             grep $_ && !$seen{ $_ }++, map $_->address,
-            map Email::Address->parse( $entity->head->get( $_ ) ),
+            map Email::Address->parse( Encode::decode("UTF-8", $_ ) ),
+            map $entity->head->get( $_ ),
             qw(To Cc Bcc)
         ];
     }

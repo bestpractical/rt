@@ -386,9 +386,14 @@ sub BuildEmail {
 
             $cid_of{$uri} = time() . $$ . int(rand(1e6));
 
-            # downgrade non-text strings, because all strings are utf8 by
-            # default, which is wrong for non-text strings.
-            if ( $mimetype !~ m{text/} ) {
+            # Encode textual data in UTF-8, and downgrade (treat
+            # codepoints as codepoints, and ensure the UTF-8 flag is
+            # off) everything else.
+            my @extra;
+            if ( $mimetype =~ m{text/} ) {
+                $data = Encode::encode( "UTF-8", $data );
+                @extra = ( Charset => "UTF-8" );
+            } else {
                 utf8::downgrade( $data, 1 ) or $RT::Logger->warning("downgrade $data failed");
             }
 
@@ -400,6 +405,7 @@ sub BuildEmail {
                 Disposition  => 'inline',
                 Name         => RT::Interface::Email::EncodeToMIME( String => $filename ),
                 'Content-Id' => $cid_of{$uri},
+                @extra,
             );
 
             return "cid:$cid_of{$uri}";
@@ -413,16 +419,16 @@ sub BuildEmail {
     );
 
     my $entity = MIME::Entity->build(
-        From    => Encode::encode_utf8($args{From}),
-        To      => Encode::encode_utf8($args{To}),
+        From    => Encode::encode("UTF-8", $args{From}),
+        To      => Encode::encode("UTF-8", $args{To}),
         Subject => RT::Interface::Email::EncodeToMIME( String => $args{Subject} ),
         Type    => "multipart/mixed",
     );
 
     $entity->attach(
-        Data        => Encode::encode_utf8($content),
         Type        => 'text/html',
         Charset     => 'UTF-8',
+        Data        => Encode::encode("UTF-8", $content),
         Disposition => 'inline',
         Encoding    => "base64",
     );
@@ -558,7 +564,8 @@ sub GetResource {
         $HTML::Mason::Commands::r->path_info($path);
 
         # grab the query arguments
-        my %args = map { $_ => [ $uri->query_param($_) ] } $uri->query_param;
+        my %args = map { $_ => [ map {Encode::decode("UTF-8",$_)}
+                                     $uri->query_param($_) ] } $uri->query_param;
         # Convert empty and single element arrayrefs to a non-ref scalar
         @$_ < 2 and $_ = $_->[0]
             for values %args;

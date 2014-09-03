@@ -72,7 +72,7 @@ my $col_entry = sub {
     delete $col->{title}
         if $col->{title} and $col->{title} =~ /^\s*#\s*$/;
     return {
-        header => Encode::encode_utf8(loc($col->{title} || $col->{attribute})),
+        header => loc($col->{title} || $col->{attribute}),
         map    => $m->comp(
             "/Elements/ColumnMap",
             Name  => $col->{attribute},
@@ -116,7 +116,7 @@ while (my $row = $Collection->Next) {
             $val =~ s/(?:\n|\r)+/ /g; $val =~ s{\t}{    }g;
             $val = $no_html->scrub($val);
             $val = HTML::Entities::decode_entities($val);
-            Encode::encode_utf8($val);
+            $val;
         } @$col)."\n");
     }
 }

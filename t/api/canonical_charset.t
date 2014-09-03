@@ -3,7 +3,6 @@ use strict;
 
 use RT::Test nodata => 1, tests => 11;
 use RT::I18N;
-use Encode;
 
 my %map = (
     'euc-cn'  => 'gbk',
@@ -22,7 +21,7 @@ for my $charset ( keys %map ) {
 
 my $mime   = MIME::Entity->build(
     Type => 'text/plain; charset=gb2312',
-    Data => [encode('gbk', decode_utf8("法新社倫敦11日電"))],
+    Data => [Encode::encode("gbk", Encode::decode( "UTF-8", "法新社倫敦11日電"))],
 );
 
 RT::I18N::SetMIMEEntityToUTF8($mime);

@@ -130,13 +130,12 @@ sub Create {
     my $head = $Attachment->head;
 
     # Get the subject
-    my $Subject = $head->get( 'subject', 0 );
+    my $Subject = Encode::decode( 'UTF-8', $head->get( 'subject' ) );
     $Subject = '' unless defined $Subject;
     chomp $Subject;
-    utf8::decode( $Subject ) unless utf8::is_utf8( $Subject );
 
     #Get the Message-ID
-    my $MessageId = $head->get( 'Message-ID', 0 );
+    my $MessageId = Encode::decode( "UTF-8", $head->get( 'Message-ID' ) );
     defined($MessageId) or $MessageId = '';
     chomp ($MessageId);
     $MessageId =~ s/^<(.*?)>$/$1/o;
@@ -150,18 +149,15 @@ sub Create {
     my $content;
     unless ( $head->get('Content-Length') ) {
         my $length = 0;
-        if ( defined $Attachment->bodyhandle ) {
-            $content = $Attachment->bodyhandle->as_string;
-            utf8::encode( $content ) if utf8::is_utf8( $content );
-            $length = length $content;
-        }
-        $head->replace( 'Content-Length' => $length );
+        $length = length $Attachment->bodyhandle->as_string
+            if defined $Attachment->bodyhandle;
+        $head->replace( 'Content-Length' => Encode::encode( "UTF-8", $length ) );
     }
     $head = $head->as_string;
 
     # MIME::Head doesn't support perl strings well and can return
     # octets which later will be double encoded in low-level code
-    utf8::decode( $head ) unless utf8::is_utf8( $head );
+    $head = Encode::decode( 'UTF-8', $head );
 
     # If a message has no bodyhandle, that means that it has subparts (or appears to)
     # and we should act accordingly.  

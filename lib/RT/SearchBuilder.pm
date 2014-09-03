@@ -680,7 +680,7 @@ sub _LimitCustomField {
 
     my $single_value = !blessed($cf) || $cf->SingleValue;
     my $negative_op = ($op eq '!=' || $op =~ /\bNOT\b/i);
-    my $value_is_long = (length( Encode::encode_utf8($value)) > 255) ? 1 : 0;
+    my $value_is_long = (length( Encode::encode( "UTF-8", $value)) > 255) ? 1 : 0;
 
     $cfkey .= '.'. $self->{'_sql_multiple_cfs_index'}++
         if not $single_value and $op =~ /^(!?=|(NOT )?LIKE)$/i;

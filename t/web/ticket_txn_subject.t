@@ -1,6 +1,5 @@
 use strict;
 use warnings;
-use utf8;
 
 use RT::Test tests => undef;
 
@@ -14,10 +13,10 @@ diag "create a ticket via the API";
     my $ticket = RT::Ticket->new( RT->SystemUser );
     my ($id, $txn, $msg) = $ticket->Create(
         Queue => 'General',
-        Subject => 'bad subject‽',
+        Subject => Encode::decode("UTF-8",'bad subject‽'),
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
-    is $ticket->Subject, 'bad subject‽', 'correct subject';
+    is $ticket->Subject, Encode::decode("UTF-8",'bad subject‽'), 'correct subject';
     push @tickets, $id;
 }
 
@@ -29,10 +28,10 @@ diag "create a ticket via the web";
     }, 'create ticket in Queue');
     $m->submit_form_ok({
         with_fields => {
-            Subject => 'bad subject #2‽',
+            Subject => Encode::decode("UTF-8",'bad subject #2‽'),
         },
     }, 'create ticket');
-    $m->content_contains('bad subject #2‽', 'correct subject');
+    $m->content_contains(Encode::decode("UTF-8",'bad subject #2‽'), 'correct subject');
     push @tickets, 2;
 }
 
@@ -58,12 +57,12 @@ for my $tid (@tickets) {
         $m->follow_link_ok({ id => 'page-actions-reply' }, "Actions -> Reply");
         $m->submit_form_ok({
             with_fields => {
-                UpdateSubject => 'bad subject‽ without attachment',
+                UpdateSubject => Encode::decode("UTF-8",'bad subject‽ without attachment'),
                 UpdateContent => 'testing unicode txn subjects',
             },
             button => 'SubmitTicket',
         }, 'submit reply');
-        $m->content_contains('bad subject‽ without attachment', "found txn subject");
+        $m->content_contains(Encode::decode("UTF-8",'bad subject‽ without attachment'), "found txn subject");
     }
 
     diag "add a reply which adds to the subject with an attachment";
@@ -72,13 +71,13 @@ for my $tid (@tickets) {
         $m->follow_link_ok({ id => 'page-actions-reply' }, "Actions -> Reply");
         $m->submit_form_ok({
             with_fields => {
-                UpdateSubject => 'bad subject‽ with attachment',
+                UpdateSubject => Encode::decode("UTF-8",'bad subject‽ with attachment'),
                 UpdateContent => 'testing unicode txn subjects',
                 Attach => RT::Test::get_relocatable_file('bpslogo.png', '..', 'data'),
             },
             button => 'SubmitTicket',
         }, 'submit reply');
-        $m->content_contains('bad subject‽ with attachment', "found txn subject");
+        $m->content_contains(Encode::decode("UTF-8",'bad subject‽ with attachment'), "found txn subject");
     }
 }
 

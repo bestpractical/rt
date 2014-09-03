@@ -4,8 +4,6 @@ use warnings;
 
 use RT::Test tests => 16;
 
-use Encode qw(encode);
-
 use constant HAS_ENCODE_GUESS => Encode::Guess->require;
 use constant HAS_ENCODE_DETECT => Encode::Detect::Detector->require;
 

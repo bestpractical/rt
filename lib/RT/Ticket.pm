@@ -1564,8 +1564,11 @@ sub _RecordNote {
     }
 
     unless ( $args{'MIMEObj'} ) {
+        my $data = ref $args{'Content'}? $args{'Content'} : [ $args{'Content'} ];
         $args{'MIMEObj'} = MIME::Entity->build(
-            Data => ( ref $args{'Content'}? $args{'Content'}: [ $args{'Content'} ] )
+            Type    => "text/plain",
+            Charset => "UTF-8",
+            Data    => [ map {Encode::encode("UTF-8", $_)} @{$data} ],
         );
     }
 
@@ -1587,7 +1590,7 @@ sub _RecordNote {
             my $addresses = join ', ', (
                 map { RT::User->CanonicalizeEmailAddress( $_->address ) }
                     Email::Address->parse( $args{ $type . 'MessageTo' } ) );
-            $args{'MIMEObj'}->head->replace( 'RT-Send-' . $type, Encode::encode_utf8( $addresses ) );
+            $args{'MIMEObj'}->head->replace( 'RT-Send-' . $type, Encode::encode( "UTF-8", $addresses ) );
         }
     }
 
@@ -1601,10 +1604,10 @@ sub _RecordNote {
     # internal Message-ID now, so all emails sent because of this
     # message have a common Message-ID
     my $org = RT->Config->Get('Organization');
-    my $msgid = $args{'MIMEObj'}->head->get('Message-ID');
+    my $msgid = Encode::decode( "UTF-8", $args{'MIMEObj'}->head->get('Message-ID') );
     unless (defined $msgid && $msgid =~ /<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@\Q$org\E>/) {
         $args{'MIMEObj'}->head->replace(
-            'RT-Message-ID' => Encode::encode_utf8(
+            'RT-Message-ID' => Encode::encode( "UTF-8",
                 RT::Interface::Email::GenMessageId( Ticket => $self )
             )
         );
@@ -1613,7 +1616,7 @@ sub _RecordNote {
     #Record the correspondence (write the transaction)
     my ( $Trans, $msg, $TransObj ) = $self->_NewTransaction(
              Type => $args{'NoteType'},
-             Data => ( $args{'MIMEObj'}->head->get('subject') || 'No Subject' ),
+             Data => ( Encode::decode( "UTF-8", $args{'MIMEObj'}->head->get('Subject') ) || 'No Subject' ),
              TimeTaken => $args{'TimeTaken'},
              MIMEObj   => $args{'MIMEObj'}, 
              CommitScrips => $args{'CommitScrips'},
@@ -1653,10 +1656,10 @@ sub DryRun {
     }
 
     my $Message = MIME::Entity->build(
+        Subject => defined $args{UpdateSubject} ? Encode::encode( "UTF-8", $args{UpdateSubject} ) : "",
         Type    => 'text/plain',
-        Subject => defined $args{UpdateSubject} ? Encode::encode_utf8( $args{UpdateSubject} ) : "",
         Charset => 'UTF-8',
-        Data    => $args{'UpdateContent'} || "",
+        Data    => Encode::encode("UTF-8", $args{'UpdateContent'} || ""),
     );
 
     my ( $Transaction, $Description, $Object ) = $self->$action(
@@ -1686,12 +1689,12 @@ sub DryRunCreate {
     my $self = shift;
     my %args = @_;
     my $Message = MIME::Entity->build(
-        Type    => 'text/plain',
-        Subject => defined $args{Subject} ? Encode::encode_utf8( $args{'Subject'} ) : "",
+        Subject => defined $args{Subject} ? Encode::encode( "UTF-8", $args{'Subject'} ) : "",
         (defined $args{'Cc'} ?
-             ( Cc => Encode::encode_utf8( $args{'Cc'} ) ) : ()),
+             ( Cc => Encode::encode( "UTF-8", $args{'Cc'} ) ) : ()),
+        Type    => 'text/plain',
         Charset => 'UTF-8',
-        Data    => $args{'Content'} || "",
+        Data    => Encode::encode( "UTF-8", $args{'Content'} || ""),
     );
 
     my ( $Transaction, $Object, $Description ) = $self->Create(
@@ -3055,9 +3058,8 @@ sub Forward {
         unless grep {length $args{$_}} qw/To Cc Bcc/;
 
     my $mime = MIME::Entity->build(
-        Subject => $args{Subject},
         Type    => $args{ContentType},
-        Data    => $args{Content},
+        Data    => Encode::encode( "UTF-8", $args{Content} ),
     );
 
     $mime->head->replace(
