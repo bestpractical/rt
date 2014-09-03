@@ -68,7 +68,6 @@ use URI qw();
 use RT::Interface::Web::Menu;
 use RT::Interface::Web::Session;
 use Digest::MD5 ();
-use Encode qw();
 use List::MoreUtils qw();
 use JSON qw();
 
@@ -1121,38 +1120,31 @@ sub StripContent {
 sub DecodeARGS {
     my $ARGS = shift;
 
+    # Later in the code we use
+    # $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %ARGS );
+    # instead of $m->call_next to avoid problems with UTF8 keys in
+    # arguments.  Specifically, the call_next method pass through
+    # original arguments, which are still the encoded bytes, not
+    # characters.  "{ base_comp => $m->request_comp }" is copied from
+    # mason's source to get the same results as we get from call_next
+    # method; this feature is not documented.
     %{$ARGS} = map {
 
         # if they've passed multiple values, they'll be an array. if they've
         # passed just one, a scalar whatever they are, mark them as utf8
         my $type = ref($_);
         ( !$type )
-            ? Encode::is_utf8($_)
-                ? $_
-                : Encode::decode( 'UTF-8' => $_, Encode::FB_PERLQQ )
+            ? Encode::decode( 'UTF-8', $_, Encode::FB_PERLQQ )
             : ( $type eq 'ARRAY' )
-            ? [ map { ( ref($_) or Encode::is_utf8($_) ) ? $_ : Encode::decode( 'UTF-8' => $_, Encode::FB_PERLQQ ) }
-                @$_ ]
+            ? [ map { ref($_) ? $_ : Encode::decode( 'UTF-8', $_, Encode::FB_PERLQQ ) } @$_ ]
             : ( $type eq 'HASH' )
-            ? { map { ( ref($_) or Encode::is_utf8($_) ) ? $_ : Encode::decode( 'UTF-8' => $_, Encode::FB_PERLQQ ) }
-                %$_ }
+            ? { map { ref($_) ? $_ : Encode::decode( 'UTF-8', $_, Encode::FB_PERLQQ ) } %$_ }
             : $_
     } %$ARGS;
 }
 
 sub PreprocessTimeUpdates {
     my $ARGS = shift;
-
-    # Later in the code we use
-    # $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %ARGS );
-    # instead of $m->call_next to avoid problems with UTF8 keys in arguments.
-    # The call_next method pass through original arguments and if you have
-    # an argument with unicode key then in a next component you'll get two
-    # records in the args hash: one with key without UTF8 flag and another
-    # with the flag, which may result into errors. "{ base_comp => $m->request_comp }"
-    # is copied from mason's source to get the same results as we get from
-    # call_next method, this feature is not documented, so we just leave it
-    # here to avoid possible side effects.
 
     # This code canonicalizes time inputs in hours into minutes
     foreach my $field ( keys %$ARGS ) {
@@ -1483,8 +1475,12 @@ sub StoreRequestToken {
     if ($ARGS->{Attach}) {
         my $attachment = HTML::Mason::Commands::MakeMIMEEntity( AttachmentFieldName => 'Attach' );
         my $file_path = delete $ARGS->{'Attach'};
+
+        # This needs to be decoded because the value is a reference;
+        # hence it was not decoded along with all of the standard
+        # arguments in DecodeARGS
         $data->{attach} = {
-            filename => Encode::decode_utf8("$file_path"),
+            filename => Encode::decode("UTF-8", "$file_path"),
             mime     => $attachment,
         };
     }
@@ -1975,7 +1971,7 @@ sub ProcessUpdateMessage {
         Interface => RT::Interface::Web::MobileClient() ? 'Mobile' : 'Web',
     );
 
-    $Message->head->replace( 'Message-ID' => Encode::encode_utf8(
+    $Message->head->replace( 'Message-ID' => Encode::encode( "UTF-8",
         RT::Interface::Email::GenMessageId( Ticket => $args{'TicketObj'} )
     ) );
     my $old_txn = RT::Transaction->new( $session{'CurrentUser'} );
@@ -2102,7 +2098,10 @@ sub ProcessAttachments {
     {    # attachment?
         my $attachment = MakeMIMEEntity( AttachmentFieldName => 'Attach' );
 
-        my $file_path = Encode::decode_utf8("$ARGSRef->{'Attach'}");
+        # This needs to be decoded because the value is a reference;
+        # hence it was not decoded along with all of the standard
+        # arguments in DecodeARGS
+        my $file_path = Encode::decode("UTF-8", "$ARGSRef->{'Attach'}");
         $session{'Attachments'} =
           { %{ $session{'Attachments'} || {} }, $file_path => $attachment, };
     }
@@ -2140,9 +2139,9 @@ sub MakeMIMEEntity {
     );
     my $Message = MIME::Entity->build(
         Type    => 'multipart/mixed',
-        "Message-Id" => Encode::encode_utf8( RT::Interface::Email::GenMessageId ),
+        "Message-Id" => Encode::encode( "UTF-8", RT::Interface::Email::GenMessageId ),
         "X-RT-Interface" => $args{Interface},
-        map { $_ => Encode::encode_utf8( $args{ $_} ) }
+        map { $_ => Encode::encode( "UTF-8", $args{ $_} ) }
             grep defined $args{$_}, qw(Subject From Cc)
     );
 
@@ -2154,7 +2153,7 @@ sub MakeMIMEEntity {
         $Message->attach(
             Type    => $args{'Type'} || 'text/plain',
             Charset => 'UTF-8',
-            Data    => $args{'Body'},
+            Data    => Encode::encode( "UTF-8", $args{'Body'} ),
         );
     }
 
@@ -2171,16 +2170,16 @@ sub MakeMIMEEntity {
 
             my $uploadinfo = $cgi_object->uploadInfo($filehandle);
 
-            my $filename = "$filehandle";
+            my $filename = Encode::decode("UTF-8","$filehandle");
             $filename =~ s{^.*[\\/]}{};
 
             $Message->attach(
                 Type     => $uploadinfo->{'Content-Type'},
-                Filename => $filename,
-                Data     => \@content,
+                Filename => Encode::encode("UTF-8",$filename),
+                Data     => \@content, # Bytes, as read directly from the file, above
             );
             if ( !$args{'Subject'} && !( defined $args{'Body'} && length $args{'Body'} ) ) {
-                $Message->head->set( 'Subject' => $filename );
+                $Message->head->set( 'Subject' => Encode::encode( "UTF-8", $filename ) );
             }
 
             # Attachment parts really shouldn't get a Message-ID or "interface"

@@ -62,7 +62,6 @@ use Locale::Maketext 1.04;
 use Locale::Maketext::Lexicon 0.25;
 use base 'Locale::Maketext::Fuzzy';
 
-use Encode;
 use MIME::Entity;
 use MIME::Head;
 use File::Glob;
@@ -231,7 +230,7 @@ sub SetMIMEEntityToEncoding {
     );
 
     # If this is a textual entity, we'd need to preserve its original encoding
-    $head->replace( "X-RT-Original-Encoding" => $charset )
+    $head->replace( "X-RT-Original-Encoding" => Encode::encode( "UTF-8", $charset ) )
 	if $head->mime_attr('content-type.charset') or IsTextualContentType($head->mime_type);
 
     return unless IsTextualContentType($head->mime_type);
@@ -240,13 +239,12 @@ sub SetMIMEEntityToEncoding {
 
     if ( $body && ($enc ne $charset || $enc =~ /^utf-?8(?:-strict)?$/i) ) {
         my $string = $body->as_string or return;
+        RT::Util::assert_bytes($string);
 
         $RT::Logger->debug( "Converting '$charset' to '$enc' for "
               . $head->mime_type . " - "
-              . ( $head->get('subject') || 'Subjectless message' ) );
+              . ( Encode::decode("UTF-8",$head->get('subject')) || 'Subjectless message' ) );
 
-        # NOTE:: see the comments at the end of the sub.
-        Encode::_utf8_off($string);
         Encode::from_to( $string, $charset => $enc );
 
         my $new_body = MIME::Body::InCore->new($string);
@@ -259,30 +257,11 @@ sub SetMIMEEntityToEncoding {
     }
 }
 
-# NOTES:  Why Encode::_utf8_off before Encode::from_to
-#
-# All the strings in RT are utf-8 now.  Quotes from Encode POD:
-#
-# [$length =] from_to($octets, FROM_ENC, TO_ENC [, CHECK])
-# ... The data in $octets must be encoded as octets and not as
-# characters in Perl's internal format. ...
-#
-# Not turning off the UTF-8 flag in the string will prevent the string
-# from conversion.
-
-
-
 =head2 DecodeMIMEWordsToUTF8 $raw
 
 An utility method which mimics MIME::Words::decode_mimewords, but only
-limited functionality.  This function returns an utf-8 string.
-
-It returns the decoded string, or the original string if it's not
-encoded.  Since the subroutine converts specified string into utf-8
-charset, it should not alter a subject written in English.
-
-Why not use MIME::Words directly?  Because it fails in RT when I
-tried.  Maybe it's ok now.
+limited functionality.  Despite its name, this function returns the
+bytes of the string, in UTF-8.
 
 =cut
 
@@ -563,13 +542,13 @@ sub SetMIMEHeadToEncoding {
 
     return if $charset eq $enc and $preserve_words;
 
+    RT::Util::assert_bytes( $head->as_string );
     foreach my $tag ( $head->tags ) {
         next unless $tag; # seen in wild: headers with no name
         my @values = $head->get_all($tag);
         $head->delete($tag);
         foreach my $value (@values) {
             if ( $charset ne $enc || $enc =~ /^utf-?8(?:-strict)?$/i ) {
-                Encode::_utf8_off($value);
                 Encode::from_to( $value, $charset => $enc );
             }
             $value = DecodeMIMEWordsToEncoding( $value, $enc, $tag )

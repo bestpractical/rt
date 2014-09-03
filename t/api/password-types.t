@@ -3,8 +3,6 @@ use warnings;
 
 use RT::Test;
 use Digest::MD5;
-use Encode 'encode_utf8';
-use utf8;
 
 my $default = "sha512";
 
@@ -43,9 +41,9 @@ like($root->__Value("Password"), qr/^\!$default\!/, "And is now upgraded to salt
 
 # Non-ASCII salted truncated SHA-256
 my $non_ascii_trunc = MIME::Base64::encode_base64(
-    "salt" . substr(Digest::SHA::sha256("salt".Digest::MD5::md5(encode_utf8("áěšý"))),0,26),
+    "salt" . substr(Digest::SHA::sha256("salt".Digest::MD5::md5("áěšý")),0,26),
     ""
 );
 $root->_Set( Field => "Password", Value => $non_ascii_trunc);
-ok($root->IsPassword("áěšý"), "Unsalted MD5 base64 works");
+ok($root->IsPassword(Encode::decode("UTF-8", "áěšý")), "Unsalted MD5 base64 works");
 like($root->__Value("Password"), qr/^\!$default\!/, "And is now upgraded to salted $default");

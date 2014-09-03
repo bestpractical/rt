@@ -3,7 +3,6 @@ use warnings;
 use HTTP::Request::Common;
 use HTTP::Cookies;
 use LWP;
-use Encode;
 use RT::Test tests => 70;
 
 my $cookie_jar = HTTP::Cookies->new;

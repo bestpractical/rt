@@ -2,16 +2,16 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 19;
-use Encode;
+use RT::Test tests => undef;
 my ( $baseurl, $m ) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
-
-use utf8;
 
 diag('make Autoreply template a html one and add utf8 chars')
   if $ENV{TEST_VERBOSE};
 
+my $template = Encode::decode("UTF-8", "你好 éèà€");
+my $subject  = Encode::decode("UTF-8", "标题");
+my $content  = Encode::decode("UTF-8", "测试");
 {
     $m->follow_link_ok( { id => 'tools-config-global-templates' },     '-> Templates' );
     $m->follow_link_ok( { text => 'Autoreply' },     '-> Autoreply' );
@@ -19,20 +19,20 @@ diag('make Autoreply template a html one and add utf8 chars')
     $m->submit_form(
         form_name => 'ModifyTemplate',
         fields => {
-            Content => <<'EOF',
-Subject: AutoReply: {$Ticket->Subject}
+            Content => <<EOF,
+Subject: AutoReply: {\$Ticket->Subject}
 Content-Type: text/html
 
-你好 éèà€
-{$Ticket->Subject}
+$template
+{\$Ticket->Subject}
 -------------------------------------------------------------------------
-{$Transaction->Content()}
+{\$Transaction->Content()}
 
 EOF
         },
     );
     $m->content_like( qr/Content updated/, 'content is changed' );
-    $m->content_contains( '你好', 'content is really updated' );
+    $m->content_contains( $template, 'content is really updated' );
 }
 
 diag('create a ticket to see the autoreply mail') if $ENV{TEST_VERBOSE};
@@ -42,17 +42,16 @@ diag('create a ticket to see the autoreply mail') if $ENV{TEST_VERBOSE};
 
     $m->submit_form(
         form_name => 'TicketCreate',
-        fields      => { Subject => '标题', Content => '<h1>测试</h1>',
+        fields      => { Subject => $subject, Content => "<h1>$content</h1>",
         ContentType => 'text/html' },
     );
     $m->content_like( qr/Ticket \d+ created/i, 'created the ticket' );
     $m->follow_link( text => 'Show' );
-    $m->content_contains( '你好',    'html has 你好' );
-    $m->content_contains( 'éèà€', 'html has éèà€' );
-    $m->content_contains( '标题',
-        'html has ticket subject 标题' );
-    $m->content_contains( '&lt;h1&gt;测试&lt;/h1&gt;',
-        'html has ticket html content 测试' );
+    $m->content_contains( $template, "html has $template" );
+    $m->content_contains( $subject,
+        "html has ticket subject $subject" );
+    $m->content_contains( "&lt;h1&gt;$content&lt;/h1&gt;",
+        "html has ticket html content $content" );
 }
 
 diag('test real mail outgoing') if $ENV{TEST_VERBOSE};
@@ -61,11 +60,12 @@ diag('test real mail outgoing') if $ENV{TEST_VERBOSE};
 
     # $mail is utf8 encoded
     my ($mail) = RT::Test->fetch_caught_mails;
-    $mail = decode_utf8 $mail;
-    like( $mail, qr/你好.*你好/s,    'mail has éèà€' );
-    like( $mail, qr/éèà€.*éèà€/s, 'mail has éèà€' );
-    like( $mail, qr/标题.*标题/s,    'mail has ticket subject 标题' );
-    like( $mail, qr/测试.*测试/s,    'mail has ticket content 测试' );
-    like( $mail, qr!<h1>测试</h1>!,    'mail has ticket html content 测试' );
+    $mail = Encode::decode("UTF-8", $mail );
+    like( $mail, qr/$template.*$template/s, 'mail has template content $template twice' );
+    like( $mail, qr/$subject.*$subject/s,   'mail has ticket subject $sujbect twice' );
+    like( $mail, qr/$content.*$content/s,   'mail has ticket content $content twice' );
+    like( $mail, qr!<h1>$content</h1>!,     'mail has ticket html content <h1>$content</h1>' );
 }
 
+undef $m;
+done_testing;

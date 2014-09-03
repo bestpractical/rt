@@ -3,10 +3,8 @@ use warnings;
 use RT::Test nodb => 1, tests => 6;
 
 use_ok('RT::I18N');
-use utf8;
-use Encode;
-my $test_string    = 'À';
-my $encoded_string = encode( 'iso-8859-1', $test_string );
+my $test_string    = Encode::decode("UTF-8", 'À');
+my $encoded_string = Encode::encode( 'iso-8859-1', $test_string );
 my $mime           = MIME::Entity->build(
     "Subject" => $encoded_string,
     "Data"    => [$encoded_string],
@@ -40,10 +38,10 @@ like(
 "We can't encode something into the wrong encoding without Encode complaining"
 );
 
-my $subject = decode( 'iso-8859-1', $mime->head->get('Subject') );
+my $subject = Encode::decode( 'iso-8859-1', $mime->head->get('Subject') );
 chomp $subject;
 is( $subject, $test_string, 'subject is set to iso-8859-1' );
-my $body = decode( 'iso-8859-1', $mime->stringify_body );
+my $body = Encode::decode( 'iso-8859-1', $mime->stringify_body );
 chomp $body;
 is( $body, $test_string, 'body is set to iso-8859-1' );
 }

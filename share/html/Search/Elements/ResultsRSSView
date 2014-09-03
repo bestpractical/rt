@@ -46,8 +46,6 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-use Encode ();
-
 my $old_current_user;
 
 if ( $m->request_comp->path =~ RT->Config->Get('WebNoAuthRegex') ) {
@@ -67,8 +65,8 @@ if ( $m->request_comp->path =~ RT->Config->Get('WebNoAuthRegex') ) {
     # Unescape parts
     $name =~ s/\%([0-9a-z]{2})/chr(hex($1))/gei;
 
-    # convert to perl strings
-    $name = Encode::decode_utf8($name);
+    # Decode from bytes to characters
+    $name = Encode::decode( "UTF-8", $name );
 
     my $user = RT::User->new(RT->SystemUser);
     $user->Load($name);

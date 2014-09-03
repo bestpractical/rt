@@ -307,10 +307,9 @@ sub IsEmpty {
 Returns L<MIME::Entity> object parsed using L</Parse> method. Returns
 undef if last call to L</Parse> failed or never be called.
 
-Note that content of the template is UTF-8, but L<MIME::Parser> is not
-good at handling it and all data of the entity should be treated as
-octets and converted to perl strings using Encode::decode_utf8 or
-something else.
+Note that content of the template is characters, but the contents of all
+L<MIME::Entity> objects (including the one returned by this function,
+are bytes in UTF-8.
 
 =cut
 
@@ -384,8 +383,8 @@ sub _Parse {
 
     ### Should we forgive normally-fatal errors?
     $parser->ignore_errors(1);
-    # MIME::Parser doesn't play well with perl strings
-    utf8::encode($content);
+    # Always provide bytes, not characters, to MIME objects
+    $content = Encode::encode( 'UTF-8', $content );
     $self->{'MIMEObj'} = eval { $parser->parse_data( \$content ) };
     if ( my $error = $@ || $parser->last_error ) {
         $RT::Logger->error( "$error" );
@@ -602,17 +601,17 @@ sub _DowngradeFromHTML {
 
     require HTML::FormatText;
     require HTML::TreeBuilder;
-    require Encode;
-    # need to decode_utf8, see the doc of MIMEObj method
+    # MIME objects are always bytes, not characters
     my $tree = HTML::TreeBuilder->new_from_content(
-        Encode::decode_utf8($new_entity->bodyhandle->as_string)
+        Encode::decode( 'UTF-8', $new_entity->bodyhandle->as_string)
     );
-    $new_entity->bodyhandle(MIME::Body::InCore->new(
-        \(scalar HTML::FormatText->new(
-            leftmargin  => 0,
-            rightmargin => 78,
-        )->format( $tree ))
-    ));
+    my $text = HTML::FormatText->new(
+        leftmargin  => 0,
+        rightmargin => 78,
+    )->format( $tree );
+    $text = Encode::encode( "UTF-8", $text );
+
+    $new_entity->bodyhandle(MIME::Body::InCore->new( \$text ));
     $tree->delete;
 
     $orig_entity->add_part($new_entity, 0); # plain comes before html

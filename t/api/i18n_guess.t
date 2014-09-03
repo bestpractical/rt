@@ -4,8 +4,6 @@ use warnings;
 
 use RT::Test tests => 16;
 
-use Encode qw(encode);
-
 use constant HAS_ENCODE_GUESS => do { local $@; eval { require Encode::Guess; 1 } };
 use constant HAS_ENCODE_DETECT => do { local $@; eval { require Encode::Detect::Detector; 1 } };
 

@@ -58,10 +58,9 @@ is ($#headers, 2, "testing a bunch of singline multiple headers" );
     my $mime = $attachment->ContentAsMIME;
     like( $mime->head->get('Content-Type'),
         qr/charset="iso-8859-1"/, 'content type of ContentAsMIME is original' );
-    require Encode;
     is(
         Encode::decode( 'iso-8859-1', $mime->stringify_body ),
-        Encode::decode( 'utf8',       "Håvard\n" ),
+        Encode::decode( 'UTF-8',      "Håvard\n" ),
         'body of ContentAsMIME is original'
     );
 }

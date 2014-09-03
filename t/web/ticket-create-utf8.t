@@ -4,8 +4,6 @@ use warnings;
 
 use RT::Test tests => 43;
 
-use Encode;
-
 my $ru_test = "\x{442}\x{435}\x{441}\x{442}";
 my $ru_support = "\x{43f}\x{43e}\x{434}\x{434}\x{435}\x{440}\x{436}\x{43a}\x{430}";
 

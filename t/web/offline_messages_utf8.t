@@ -2,7 +2,6 @@ use strict;
 use warnings;
 
 use RT::Test tests => 8;
-use Encode;
 use RT::Ticket;
 
 my ( $url, $m ) = RT::Test->started_ok;
@@ -35,7 +34,7 @@ EOF
         fields    => { string => $template, },
         button    => 'UpdateTickets',
     );
-    my $content = encode 'utf8', $m->content;
+    my $content = Encode::encode("UTF-8", $m->content);
     ok( $content =~ m/申請單 #(\d+) 成功新增於 &#39;General&#39; 表單/, 'message is shown right' );
     $ticket_id = $1;
 }
@@ -55,7 +54,7 @@ EOF
         button    => 'UpdateTickets',
     );
 
-    my $content = encode 'utf8', $m->content;
+    my $content = Encode::encode("UTF-8", $m->content);
     ok(
         $content =~
 qr/主題\s*的值從\s*&#39;test message&#39;\s*改為\s*&#39;test message update&#39;/,

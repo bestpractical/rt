@@ -13,10 +13,10 @@ $m->content_contains('<html lang="en">');
 
 $m->add_header('Accept-Language' => 'zh-tw,zh;q=0.8,en-gb;q=0.5,en;q=0.3');
 $m->get_ok('/');
-use utf8;
-Encode::_utf8_on($m->{content});
-$m->title_is('登入', 'Page title properly translated to chinese');
-$m->content_contains('密碼','Password properly translated');
+$m->title_is( Encode::decode("UTF-8",'登入'),
+              'Page title properly translated to chinese');
+$m->content_contains( Encode::decode("UTF-8",'密碼'),
+                      'Password properly translated');
 {
     local $TODO = "We fail to correctly advertise the langauage in the <html> block";
     $m->content_contains('<html lang="zh-tw">');

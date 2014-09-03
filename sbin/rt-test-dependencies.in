@@ -334,6 +334,7 @@ DBD::Oracle
 .
 
 $deps{'POSTGRESQL'} = [ text_to_hash( << '.') ];
+DBIx::SearchBuilder 1.66
 DBD::Pg 1.43
 .
 
@@ -382,7 +383,6 @@ HTML::Entities
 
 my %AVOID = (
     'DBD::Oracle' => [qw(1.23)],
-    'DBD::Pg' => [qw(3.3.0)],
     'Email::Address' => [qw(1.893 1.894)],
     'Devel::StackTrace' => [qw(1.28 1.29)],
 );

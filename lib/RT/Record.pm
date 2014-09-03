@@ -70,7 +70,6 @@ use warnings;
 use RT::Date;
 use RT::User;
 use RT::Attributes;
-use Encode qw();
 
 our $_TABLE_ATTR = { };
 use base RT->Config->Get('RecordBaseClass');
@@ -645,12 +644,16 @@ sub __Value {
 
     return undef if (!defined $value);
 
+    # Pg returns character columns as character strings; mysql and
+    # sqlite return them as bytes.  While mysql can be made to return
+    # characters, using the mysql_enable_utf8 flag, the "Content" column
+    # is bytes on mysql and characters on Postgres, making true
+    # consistency impossible.
     if ( $args{'decode_utf8'} ) {
-        if ( !utf8::is_utf8($value) ) {
+        if ( !utf8::is_utf8($value) ) { # mysql/sqlite
             utf8::decode($value);
         }
-    }
-    else {
+    } else {
         if ( utf8::is_utf8($value) ) {
             utf8::encode($value);
         }
@@ -747,75 +750,72 @@ evaluate and encode it.  It will return an octet string.
 =cut
 
 sub _EncodeLOB {
-        my $self = shift;
-        my $Body = shift;
-        my $MIMEType = shift || '';
-        my $Filename = shift;
+    my $self = shift;
+    my $Body = shift;
+    my $MIMEType = shift || '';
+    my $Filename = shift;
 
-        my $ContentEncoding = 'none';
+    my $ContentEncoding = 'none';
 
-        #get the max attachment length from RT
-        my $MaxSize = RT->Config->Get('MaxAttachmentSize');
+    RT::Util::assert_bytes( $Body );
 
-        #if the current attachment contains nulls and the
-        #database doesn't support embedded nulls
+    #get the max attachment length from RT
+    my $MaxSize = RT->Config->Get('MaxAttachmentSize');
 
-        if ( ( !$RT::Handle->BinarySafeBLOBs ) && ( $Body =~ /\x00/ ) ) {
+    #if the current attachment contains nulls and the
+    #database doesn't support embedded nulls
 
-            # set a flag telling us to mimencode the attachment
-            $ContentEncoding = 'base64';
+    if ( ( !$RT::Handle->BinarySafeBLOBs ) && ( $Body =~ /\x00/ ) ) {
 
-            #cut the max attchment size by 25% (for mime-encoding overhead.
-            $RT::Logger->debug("Max size is $MaxSize");
-            $MaxSize = $MaxSize * 3 / 4;
-        # Some databases (postgres) can't handle non-utf8 data
-        } elsif (    !$RT::Handle->BinarySafeBLOBs
-                  && $Body =~ /\P{ASCII}/
-                  && !Encode::is_utf8( $Body, 1 ) ) {
-              $ContentEncoding = 'quoted-printable';
+        # set a flag telling us to mimencode the attachment
+        $ContentEncoding = 'base64';
+
+        #cut the max attchment size by 25% (for mime-encoding overhead.
+        $RT::Logger->debug("Max size is $MaxSize");
+        $MaxSize = $MaxSize * 3 / 4;
+    # Some databases (postgres) can't handle non-utf8 data
+    } elsif (    !$RT::Handle->BinarySafeBLOBs
+              && $Body =~ /\P{ASCII}/
+              && !Encode::is_utf8( $Body, 1 ) ) {
+          $ContentEncoding = 'quoted-printable';
+    }
+
+    #if the attachment is larger than the maximum size
+    if ( ($MaxSize) and ( $MaxSize < length($Body) ) ) {
+
+        # if we're supposed to truncate large attachments
+        if (RT->Config->Get('TruncateLongAttachments')) {
+
+            # truncate the attachment to that length.
+            $Body = substr( $Body, 0, $MaxSize );
+
         }
 
-        #if the attachment is larger than the maximum size
-        if ( ($MaxSize) and ( $MaxSize < length($Body) ) ) {
+        # elsif we're supposed to drop large attachments on the floor,
+        elsif (RT->Config->Get('DropLongAttachments')) {
 
-            # if we're supposed to truncate large attachments
-            if (RT->Config->Get('TruncateLongAttachments')) {
-
-                # truncate the attachment to that length.
-                $Body = substr( $Body, 0, $MaxSize );
-
-            }
-
-            # elsif we're supposed to drop large attachments on the floor,
-            elsif (RT->Config->Get('DropLongAttachments')) {
-
-                # drop the attachment on the floor
-                $RT::Logger->info( "$self: Dropped an attachment of size "
-                                   . length($Body));
-                $RT::Logger->info( "It started: " . substr( $Body, 0, 60 ) );
-                $Filename .= ".txt" if $Filename;
-                return ("none", "Large attachment dropped", "text/plain", $Filename );
-            }
+            # drop the attachment on the floor
+            $RT::Logger->info( "$self: Dropped an attachment of size "
+                               . length($Body));
+            $RT::Logger->info( "It started: " . substr( $Body, 0, 60 ) );
+            $Filename .= ".txt" if $Filename;
+            return ("none", "Large attachment dropped", "text/plain", $Filename );
         }
+    }
 
-        # if we need to mimencode the attachment
-        if ( $ContentEncoding eq 'base64' ) {
+    # if we need to mimencode the attachment
+    if ( $ContentEncoding eq 'base64' ) {
+        # base64 encode the attachment
+        $Body = MIME::Base64::encode_base64($Body);
 
-            # base64 encode the attachment
-            Encode::_utf8_off($Body);
-            $Body = MIME::Base64::encode_base64($Body);
+    } elsif ($ContentEncoding eq 'quoted-printable') {
+        $Body = MIME::QuotedPrint::encode($Body);
+    }
 
-        } elsif ($ContentEncoding eq 'quoted-printable') {
-            Encode::_utf8_off($Body);
-            $Body = MIME::QuotedPrint::encode($Body);
-        }
-
-
-        return ($ContentEncoding, $Body, $MIMEType, $Filename );
-
+    return ($ContentEncoding, $Body, $MIMEType, $Filename );
 }
 
-=head2 _DecodeLOB
+=head2 _DecodeLOB C<ContentType>, C<ContentEncoding>, C<Content>
 
 Unpacks data stored in the database, which may be base64 or QP encoded
 because of our need to store binary and badly encoded data in columns
@@ -831,6 +831,12 @@ This is similar to how we filter all data coming in via the web UI in
 RT::Interface::Web::DecodeARGS. This filter should only end up being
 applied to old data from less UTF-8-safe versions of RT.
 
+If the passed C<ContentType> includes a character set, that will be used
+to decode textual data; the default character set is UTF-8.  This is
+necessary because while we attempt to store textual data as UTF-8, the
+definition of "textual" has migrated over time, and thus we may now need
+to attempt to decode data that was previously not trancoded on insertion.
+
 Important Note - This function expects an octet string and returns a
 character string for non-binary data.
 
@@ -842,6 +848,8 @@ sub _DecodeLOB {
     my $ContentEncoding = shift || 'none';
     my $Content         = shift;
 
+    RT::Util::assert_bytes( $Content );
+
     if ( $ContentEncoding eq 'base64' ) {
         $Content = MIME::Base64::decode_base64($Content);
     }
@@ -852,9 +860,15 @@ sub _DecodeLOB {
         return ( $self->loc( "Unknown ContentEncoding [_1]", $ContentEncoding ) );
     }
     if ( RT::I18N::IsTextualContentType($ContentType) ) {
-       $Content = Encode::decode('UTF-8',$Content,Encode::FB_PERLQQ) unless Encode::is_utf8($Content);
+        my $entity = MIME::Entity->new();
+        $entity->head->add("Content-Type", $ContentType);
+        $entity->bodyhandle( MIME::Body::Scalar->new( $Content ) );
+        my $charset = RT::I18N::_FindOrGuessCharset($entity);
+        $charset = 'utf-8' if not $charset or not Encode::find_encoding($charset);
+
+        $Content = Encode::decode($charset,$Content,Encode::FB_PERLQQ);
     }
-        return ($Content);
+    return ($Content);
 }
 
 # A helper table for links mapping to make it easier

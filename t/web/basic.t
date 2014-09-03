@@ -1,7 +1,6 @@
 
 use strict;
 use warnings;
-use Encode;
 
 use RT::Test tests => 23;
 
@@ -27,7 +26,7 @@ my $url = $agent->rt_base_url;
     $agent->goto_create_ticket(1);
     is ($agent->status, 200, "Loaded Create.html");
     $agent->form_name('TicketCreate');
-    my $string = Encode::decode_utf8("I18N Web Testing æøå");
+    my $string = Encode::decode("UTF-8","I18N Web Testing æøå");
     $agent->field('Subject' => "Ticket with utf8 body");
     $agent->field('Content' => $string);
     ok($agent->submit, "Created new ticket with $string as Content");
@@ -49,7 +48,7 @@ my $url = $agent->rt_base_url;
     is ($agent->status, 200, "Loaded Create.html");
     $agent->form_name('TicketCreate');
 
-    my $string = Encode::decode_utf8("I18N Web Testing æøå");
+    my $string = Encode::decode( "UTF-8","I18N Web Testing æøå");
     $agent->field('Subject' => $string);
     $agent->field('Content' => "Ticket with utf8 subject");
     ok($agent->submit, "Created new ticket with $string as Content");

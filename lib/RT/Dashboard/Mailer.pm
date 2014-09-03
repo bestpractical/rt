@@ -382,9 +382,14 @@ sub BuildEmail {
             $cid_of{$uri} = time() . $$ . int(rand(1e6));
             my ($data, $filename, $mimetype, $encoding) = GetResource($uri);
 
-            # downgrade non-text strings, because all strings are utf8 by
-            # default, which is wrong for non-text strings.
-            if ( $mimetype !~ m{text/} ) {
+            # Encode textual data in UTF-8, and downgrade (treat
+            # codepoints as codepoints, and ensure the UTF-8 flag is
+            # off) everything else.
+            my @extra;
+            if ( $mimetype =~ m{text/} ) {
+                $data = Encode::encode( "UTF-8", $data );
+                @extra = ( Charset => "UTF-8" );
+            } else {
                 utf8::downgrade( $data, 1 ) or $RT::Logger->warning("downgrade $data failed");
             }
 
@@ -396,6 +401,7 @@ sub BuildEmail {
                 Disposition  => 'inline',
                 Name         => RT::Interface::Email::EncodeToMIME( String => $filename ),
                 'Content-Id' => $cid_of{$uri},
+                @extra,
             );
 
             return "cid:$cid_of{$uri}";
@@ -409,16 +415,16 @@ sub BuildEmail {
     );
 
     my $entity = MIME::Entity->build(
-        From    => Encode::encode_utf8($args{From}),
-        To      => Encode::encode_utf8($args{To}),
+        From    => Encode::encode("UTF-8", $args{From}),
+        To      => Encode::encode("UTF-8", $args{To}),
         Subject => RT::Interface::Email::EncodeToMIME( String => $args{Subject} ),
         Type    => "multipart/mixed",
     );
 
     $entity->attach(
-        Data        => Encode::encode_utf8($content),
         Type        => 'text/html',
         Charset     => 'UTF-8',
+        Data        => Encode::encode("UTF-8", $content),
         Disposition => 'inline',
         Encoding    => "base64",
     );
@@ -546,6 +552,9 @@ sub GetResource {
             or die "Unable to parse query parameter '$_'";
 
         for ($k, $v) { s/%(..)/chr hex $1/ge }
+
+        # Decode from bytes to characters
+        $_ = Encode::decode( "UTF-8", $_ ) for $k, $v;
 
         # no value yet, simple key=value
         if (!exists $args{$k}) {

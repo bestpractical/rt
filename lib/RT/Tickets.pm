@@ -1715,7 +1715,7 @@ sub _CustomFieldLimit {
                     $self->_CloseParen;
             }
             elsif ( $op eq '=' || $op eq '!=' || $op eq '<>' ) {
-                if ( length( Encode::encode_utf8($value) ) < 256 ) {
+                if ( length( Encode::encode( "UTF-8", $value) ) < 256 ) {
                     $self->_SQLLimit(
                         ALIAS    => $ObjectCFs,
                         FIELD    => 'Content',

@@ -90,7 +90,8 @@ sub Create {
     my ($val, $msg) = $cf->_CanonicalizeValue(\%args);
     return ($val, $msg) unless $val;
 
-    if ( defined $args{'Content'} && length( Encode::encode_utf8($args{'Content'}) ) > 255 ) {
+    my $encoded = Encode::encode("UTF-8", $args{'Content'});
+    if ( defined $args{'Content'} && length( $encoded ) > 255 ) {
         if ( defined $args{'LargeContent'} && length $args{'LargeContent'} ) {
             $RT::Logger->error("Content is longer than 255 bytes and LargeContent specified");
         }
