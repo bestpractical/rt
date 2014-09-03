@@ -1013,7 +1013,6 @@ sub Get {
 
     my $res;
     if ( $user && $user->id && $META{$name}->{'Overridable'} ) {
-        $user = $user->UserObj if $user->isa('RT::CurrentUser');
         my $prefs = $user->Preferences($RT::System);
         $res = $prefs->{$name} if $prefs;
     }
