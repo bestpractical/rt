@@ -103,7 +103,7 @@
 <br />
 <&| /Widgets/TitleBox, title => loc('Access control') &>
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
-<input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked%> />
+<input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked||''%> />
 <&|/l&>Let this user access RT</&><br />
 
 
