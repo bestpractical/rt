@@ -72,7 +72,7 @@
 <& /Elements/CollectionList,
     OrderBy       => 'LookupType|Name',
     Order         => 'ASC|ASC',
-    Rows          => 50,
+    Rows          => $Rows,
     %ARGS,
     Collection    => $CustomFields,
     Format        => $Format,
@@ -101,5 +101,6 @@ $CustomFields->LimitToLookupType( $Type ) if $Type;
 $m->callback(CallbackName => 'MassageCustomFields', CustomFields => $CustomFields);
 
 $Format ||= RT->Config->Get('AdminSearchResultFormat')->{'CustomFields'};
+my $Rows = RT->Config->Get('AdminSearchResultRows')->{'CustomFields'} || 50;
 
 </%INIT>

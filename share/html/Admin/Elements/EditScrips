@@ -75,7 +75,7 @@
 <h2><&|/l&>Not applied scrips</&></h2>
 % $scrips = $find_scrips->(Added => 0);
 <& /Elements/CollectionList,
-    Rows => 50,
+    Rows => $Rows,
     Page => 1,
     %ARGS,
     Collection => $scrips,
@@ -121,6 +121,7 @@ my $find_scrips = sub {
 };
 
 $Format ||= RT->Config->Get('AdminSearchResultFormat')->{'Scrips'};
+my $Rows = RT->Config->Get('AdminSearchResultRows')->{'Scrips'} || 50;
 my $DisplayFormat = $Format;
 if ( $id ) {
     $DisplayFormat = "__RemoveCheckBox__, $DisplayFormat";

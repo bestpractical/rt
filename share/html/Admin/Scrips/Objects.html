@@ -95,7 +95,7 @@
     Order   => 'ASC',
     %ARGS,
     Collection    => $not_added,
-    Rows          => 50,
+    Rows          => $rows,
     Format        => $format,
     DisplayFormat => "'__CheckBox.{AddScrip-". $id ."}__',". $format,
     AllowSorting  => 1,
@@ -165,6 +165,7 @@ my $added = $scrip->AddedTo;
 my $not_added = $scrip->NotAddedTo;
 
 my $format = RT->Config->Get('AdminSearchResultFormat')->{'Queues'};
+my $rows = RT->Config->Get('AdminSearchResultRows')->{'Queues'} || 50;
 
 my $title = loc('Modify associated objects for scrip #[_1]', $id);
 

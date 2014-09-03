@@ -77,7 +77,7 @@
 <& /Elements/CollectionList,
     OrderBy => 'Name',
     Order => 'ASC',
-    Rows => 50,
+    Rows  => $Rows,
     %ARGS,
     Format => $Format,
     Collection => $queues,
@@ -113,6 +113,7 @@ if ( defined $QueueString && length $QueueString ) {
 }
 
 $Format ||= RT->Config->Get('AdminSearchResultFormat')->{'Queues'};
+my $Rows = RT->Config->Get('AdminSearchResultRows')->{'Queues'} || 50;
 
 </%INIT>
 <%ARGS>
