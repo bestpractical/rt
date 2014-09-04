@@ -181,9 +181,6 @@ sub Create {
         $args{'ContentType'} = 'storable';
     }
 
-    delete $RT::User::PREFERENCES_CACHE{ $args{'ObjectId'} }{ $args{'Name'} }
-        if $args{'ObjectType'} eq 'RT::User';
-
     $self->SUPER::Create(
                          Name => $args{'Name'},
                          Content => $args{'Content'},
@@ -277,11 +274,6 @@ sub _SerializeContent {
 sub SetContent {
     my $self = shift;
     my $content = shift;
-
-    if ( $self->__Value('ObjectType') eq 'RT::User' ) {
-        delete $RT::User::PREFERENCES_CACHE
-            { $self->__Value('ObjectId') }{ $self->__Value('Name') };
-    }
 
     # Call __Value to avoid ACL check.
     if ( ($self->__Value('ContentType')||'') eq 'storable' ) {
@@ -384,11 +376,6 @@ sub Delete {
     my $self = shift;
     unless ($self->CurrentUserHasRight('delete')) {
         return (0,$self->loc('Permission Denied'));
-    }
-
-    if ( $self->__Value('ObjectType') eq 'RT::User' ) {
-        delete $RT::User::PREFERENCES_CACHE
-            { $self->__Value('ObjectId') }{ $self->__Value('Name') };
     }
 
     return($self->SUPER::Delete(@_));

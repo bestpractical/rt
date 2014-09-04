@@ -322,6 +322,7 @@ sub list {
     }
     if ( ! $rawprint and ! exists $data{format} ) {
         $data{format} = 'l';
+        $data{fields} = 'subject,status,queue,created,told,owner,requestors';
     }
     if ( $reverse_sort and $data{orderby} =~ /^-/ ) {
         $data{orderby} =~ s/^-/+/;

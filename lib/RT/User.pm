@@ -104,7 +104,6 @@ sub _OverlayAccessible {
           Gecos                 => { public => 1,  admin => 1 },    # loc_left_pair
           PGPKey                => { public => 1,  admin => 1 },    # loc_left_pair
           SMIMECertificate      => { public => 1,  admin => 1 },    # loc_left_pair
-          PrivateKey            => {               admin => 1 },
           City                  => { public => 1 },                 # loc_left_pair
           Country               => { public => 1 },                 # loc_left_pair
           Timezone              => { public => 1 },                 # loc_left_pair
@@ -1383,24 +1382,13 @@ override the entries with user preferences.
 
 =cut
 
-our %PREFERENCES_CACHE = ();
-
 sub Preferences {
     my $self  = shift;
     my $name = _PrefName(shift);
     my $default = shift;
 
-    my $content;
-    if ( exists $PREFERENCES_CACHE{ $self->id }{ $name } ) {
-        $content = $PREFERENCES_CACHE{ $self->id }{ $name };
-    }
-    else {
-        my $attr = RT::Attribute->new( $self->CurrentUser );
-        $attr->LoadByNameAndObject( Object => $self, Name => $name );
-        $PREFERENCES_CACHE{ $self->id }{ $name } = $content
-            = $attr->Id ? $attr->Content : undef;
-    }
-
+    my ($attr) = $self->Attributes->Named( $name );
+    my $content = $attr ? $attr->Content : undef;
     unless ( ref $content eq 'HASH' ) {
         return defined $content ? $content : $default;
     }
@@ -1429,11 +1417,8 @@ sub SetPreferences {
     return (0, $self->loc("No permission to set preferences"))
         unless $self->CurrentUserCanModify('Preferences');
 
-    # we clear cache in RT::Attribute
-
-    my $attr = RT::Attribute->new( $self->CurrentUser );
-    $attr->LoadByNameAndObject( Object => $self, Name => $name );
-    if ( $attr->Id ) {
+    my ($attr) = $self->Attributes->Named( $name );
+    if ( $attr ) {
         my ($ok, $msg) = $attr->SetContent( $value );
         return (1, "No updates made")
             if $msg eq "That is already the current value";
@@ -1456,13 +1441,11 @@ sub DeletePreferences {
     return (0, $self->loc("No permission to set preferences"))
         unless $self->CurrentUserCanModify('Preferences');
 
-    my $attr = RT::Attribute->new( $self->CurrentUser );
-    $attr->LoadByNameAndObject( Object => $self, Name => $name );
-    if ( $attr->Id ) {
-        return $attr->Delete;
-    }
+    my ($attr) = $self->DeleteAttribute( $name );
+    return (0, $self->loc("Preferences were not found"))
+        unless $attr;
 
-    return (0, $self->loc("Preferences were not found"));
+    return 1;
 }
 
 =head2 Stylesheet
@@ -1828,7 +1811,8 @@ sub SetPrivateKey {
     my $self = shift;
     my $key = shift;
 
-    unless ($self->CurrentUserCanModify('PrivateKey')) {
+    # Users should not be able to change their own PrivateKey values
+    unless ( $self->CurrentUser->HasRight(Right => 'AdminUsers', Object => $RT::System) ) {
         return (0, $self->loc("Permission Denied"));
     }
 
