@@ -162,6 +162,8 @@ my $status_link_text = {Active   => loc('Active Tickets'),
 my $status_order = [qw/Active Inactive All/];
 $m->callback( CallbackName => 'AddStatus', status_link_text => \$status_link_text, status_order => \$status_order );
 
+$ShowTickets = 0 if $DefaultTicketsTab eq 'None';
+
 unless ( $DefaultTicketsTab eq 'None' ) {
     for (0 .. (@$status_order - 1)) {
         $selected = $_ && last
