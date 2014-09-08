@@ -267,7 +267,7 @@ push @CHECKS, 'User <-> ACL equivalence group' => sub {
         action => sub {
             my $id = shift;
             return unless prompt(
-                'Create', "Found an user that has no ACL equivalence group."
+                'Create', "Found a user that has no ACL equivalence group."
             );
 
             my $gid = create_record( 'Groups',
@@ -283,7 +283,7 @@ push @CHECKS, 'User <-> ACL equivalence group' => sub {
         action => sub {
             my $id = shift;
             return unless prompt(
-                'Delete', "Found an user ACL equivalence group, but there is no user."
+                'Delete', "Found a user ACL equivalence group, but there is no user."
             );
 
             delete_record( 'Groups', $id );
