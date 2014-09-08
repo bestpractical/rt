@@ -62,49 +62,46 @@ if ($Pages == 1) {
   $m->out(loc('Page 1 of 1'));
 }
 else{
-$m->out(loc('Page') . ' ');
-my $prev = $m->interp->apply_escapes($m->comp(
-                    '/Elements/QueryString',
-                    %$URLParams,
-                    Page    => ( $CurrentPage - 1 )
-                   ), 'h');
-my $next = $m->interp->apply_escapes($m->comp(
-                    '/Elements/QueryString',
-                    %$URLParams,
-                    Page    => ( $CurrentPage + 1 )
-                   ), 'h');
-my %show;
-$show{1} = 1;
-$show{$_} = 1 for (($CurrentPage - 2)..($CurrentPage + 2));
-$show{$Pages} = 1;
-my $dots;
+  $m->out(loc('Page') . ' ');
 
-for my $number ( 1 .. $Pages ) {
-    if ( $show{$number} ) {
-        $dots = undef;
-        my $qs =
-          $m->interp->apply_escapes($m->comp( '/Elements/QueryString', %$URLParams, Page => $number ), 'h');
-        $m->out(qq{<span class="pagenum">});
-        if ( $number == $CurrentPage ) {
-            $m->out(qq{<span class="currentpage">$number</span> });
+  use Data::Page;
+  use Data::Page::Pageset;
+
+  my $pager = Data::Page->new($TotalFound, $Rows, $CurrentPage);
+  my $pageset = Data::Page::Pageset->new($pager);
+
+  for my $chunk ( $pageset->total_pagesets ) {
+    $m->out(qq{<span class="pagenum">});
+    if ( $chunk->is_current ) {
+        for my $number ( $chunk->first .. $chunk->last ) {
+            if ( $number == $CurrentPage ) {
+              $m->out(qq{<span class="currentpage">$number</span> });
+            }
+            else {
+              my $qs = $m->interp->apply_escapes(
+                $m->comp('/Elements/QueryString',
+                  %$URLParams,
+                  Page => $number
+                ),
+                'h',
+              );
+              $m->out(qq{<a href="$BaseURL$qs">$number</a> });
+            }
         }
-        else {
-            $m->out(qq{<a href="$BaseURL$qs">$number</a> });
-        }
-    }
-    elsif ( not $dots ) {
-        $dots = 1;
-        $m->out(qq{<span class="dots">...</span>});
+    } else {
+      my $qs = $m->interp->apply_escapes(
+        $m->comp('/Elements/QueryString',
+          %$URLParams,
+          Page => $chunk->first,
+        ),
+        'h',
+      );
+      $m->out(qq{<a href="$BaseURL$qs">$chunk</a>});
     }
     $m->out(qq{</span>});
+  }
+
 }
 
-if ($CurrentPage > 1) {
-  $m->out(qq{<a href="$BaseURL$prev" class="nav">}.loc('Previous') . qq{</a>});
-}
-if (($CurrentPage * $Rows) < $TotalFound) {
-  $m->out(qq{<a href="$BaseURL$next" class="nav">}.loc('Next').qq{</a>});
-}
-}
 $m->out(qq{</div>});
 </%INIT>
