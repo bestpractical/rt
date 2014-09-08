@@ -200,6 +200,7 @@ Crypt::Eksblowfish
 CSS::Minifier::XS
 CSS::Squish 0.06
 Data::GUID
+Data::Page::Pageset
 Date::Extract 0.02
 Date::Manip
 DateTime 0.44
