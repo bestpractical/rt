@@ -440,14 +440,15 @@ sub SendEmail {
             my $Overrides = RT->Config->Get('OverrideOutgoingMailFrom') || {};
 
             if ($TicketObj) {
-                my $QueueName = $TicketObj->QueueObj->Name;
-                my $QueueAddressOverride = $Overrides->{$QueueName};
+                my $Queue = $TicketObj->QueueObj;
+                my $QueueAddressOverride = $Overrides->{$Queue->id} 
+                    || $Overrides->{$Queue->Name};
 
                 if ($QueueAddressOverride) {
                     $OutgoingMailAddress = $QueueAddressOverride;
                 } else {
-                    $OutgoingMailAddress ||= $TicketObj->QueueObj->CorrespondAddress
-                                             || RT->Config->Get('CorrespondAddress');
+                    $OutgoingMailAddress ||= $Queue->CorrespondAddress
+                        || RT->Config->Get('CorrespondAddress');
                 }
             }
             elsif ($Overrides->{'Default'}) {

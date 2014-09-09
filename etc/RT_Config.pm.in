@@ -565,7 +565,7 @@ address of the queue as it is handed to sendmail -f. This helps force
 the From_ header away from www-data or other email addresses that show
 up in the "Sent by" line in Outlook.
 
-The option is a hash reference of queue name to email address.  If
+The option is a hash reference of queue id/name to email address. If
 there is no ticket involved, then the value of the C<Default> key will
 be used.
 
