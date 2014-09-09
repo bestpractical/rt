@@ -67,18 +67,6 @@ sub Queues {
     return $queues;
 }
 
-=head3 DefaultOnMerge
-
-Returns the status that should be used when tickets
-are merged.
-
-=cut
-
-sub DefaultOnMerge {
-    my $self = shift;
-    return $self->DefaultStatus('on_merge');
-}
-
 =head3 ReminderStatusOnOpen
 
 Returns the status that should be used when reminders are opened.

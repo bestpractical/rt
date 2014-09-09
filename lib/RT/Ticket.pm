@@ -1750,20 +1750,6 @@ sub _MergeInto {
         return ( 0, $self->loc("Merge failed. Couldn't set IsMerged") );
     }
 
-    my $force_status = $self->LifecycleObj->DefaultOnMerge;
-    if ( $force_status && $force_status ne $self->__Value('Status') ) {
-        my ( $status_val, $status_msg )
-            = $self->__Set( Field => 'Status', Value => $force_status );
-
-        unless ($status_val) {
-            $RT::Handle->Rollback();
-            $RT::Logger->error(
-                "Couldn't set status to $force_status. RT's Database may be inconsistent."
-            );
-            return ( 0, $self->loc("Merge failed. Couldn't set Status") );
-        }
-    }
-
     # update all the links that point to that old ticket
     my $old_links_to = RT::Links->new($self->CurrentUser);
     $old_links_to->Limit(FIELD => 'Target', VALUE => $self->URI);

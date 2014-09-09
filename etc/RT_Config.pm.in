@@ -2587,12 +2587,6 @@ If you (or your code) doesn't specify a status when creating a ticket,
 RT will use the this status. See also L</Statuses available during
 ticket creation>.
 
-=item on_merge
-
-When tickets are merged, the status of the ticket that was merged
-away is forced to this value.  It should be one of inactive statuses;
-'resolved' or its equivalent is most probably the best candidate.
-
 =item approved
 
 When an approval is accepted, the status of depending tickets will
@@ -2755,7 +2749,6 @@ Set(%Lifecycles,
 
         defaults => {
             on_create => 'new',
-            on_merge  => 'resolved',
             approved  => 'open',
             denied    => 'rejected',
             reminder_on_open     => 'open',
@@ -2800,7 +2793,6 @@ Set(%Lifecycles,
 
         defaults => {
             on_create => 'new',
-            on_merge => 'resolved',
             reminder_on_open     => 'open',
             reminder_on_resolve  => 'resolved',
         },

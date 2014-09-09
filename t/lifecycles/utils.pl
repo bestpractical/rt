@@ -13,7 +13,6 @@ Set(\%Lifecycles,
         inactive => [qw(resolved rejected deleted)],
         defaults => {
             on_create => 'new',
-            on_merge => 'resolved',
         },
         transitions => {
             ''       => [qw(new open resolved)],
@@ -46,7 +45,6 @@ Set(\%Lifecycles,
         inactive => ['delivered'],
         defaults => {
             on_create => 'ordered',
-            on_merge => 'delivered',
         },
         transitions => {
             ''        => ['ordered'],
