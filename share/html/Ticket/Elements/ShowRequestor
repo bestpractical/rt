@@ -162,17 +162,20 @@ my $status_link_text = {Active   => loc('Active Tickets'),
 my $status_order = [qw/Active Inactive All/];
 $m->callback( CallbackName => 'AddStatus', status_link_text => \$status_link_text, status_order => \$status_order );
 
-unless ( $DefaultTicketsTab eq 'None' ) {
+$ShowTickets = 0 if $DefaultTicketsTab eq 'None';
+
+my $TicketTemplate;
+if ($ShowTickets) {
     for (0 .. (@$status_order - 1)) {
         $selected = $_ && last
             if $status_order->[$_] eq $DefaultTicketsTab;
     }
-}
 
-my $TicketTemplate = "ShowRequestorTickets$DefaultTicketsTab";
-$TicketTemplate = "ShowRequestorTicketsActive"
-    unless RT::Interface::Web->ComponentPathIsSafe($TicketTemplate)
-       and $m->comp_exists($TicketTemplate);
+    $TicketTemplate = "ShowRequestorTickets$DefaultTicketsTab";
+    $TicketTemplate = "ShowRequestorTicketsActive"
+        unless RT::Interface::Web->ComponentPathIsSafe($TicketTemplate)
+            and $m->comp_exists($TicketTemplate);
+}
 </%INIT>
 <%ARGS>
 $Ticket=>undef
