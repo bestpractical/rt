@@ -11,6 +11,7 @@ close $fh;
 
 my $name = ( File::Spec->splitpath($path) )[2];
 
+RT->Config->Set( 'WebSessionClass', "Apache::Session::File");
 RT->Config->Set( 'MaxAttachmentSize', 1000 );
 RT->Config->Set( 'TruncateLongAttachments', '0' );
 RT->Config->Set( 'DropLongAttachments',     '1' );
