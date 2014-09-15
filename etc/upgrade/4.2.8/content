@@ -3,9 +3,10 @@ use warnings;
 
 our @Initial = (
     sub {
-        # We do the delete in pure SQL because Attribute collections
-        # otherwise attempt to hash everything in memory.  As this may
-        # be a large list, do it directly.
+        # This upgrade step is identical to the 4.2.7 upgrade, but only
+        # runs on Oracle because 4.2.7 was originally released with
+        # flawed SQL which did not run on Oracle.
+        return unless RT->Config->Get('DatabaseType') eq 'Oracle';
         RT->DatabaseHandle->dbh->do(<<EOSQL);
             DELETE FROM Attributes
              WHERE (Name = 'LinkValueTo' OR Name = 'IncludeContentForValue')
