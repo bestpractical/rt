@@ -62,6 +62,11 @@
 <td valign="top" class="boxcontainer">
 <&| /Widgets/TitleBox, title => loc('Identity') &>
 
+%# dummy elements to get safari/chrome not to autofill the real username/password fields
+%# a simple "display:none" style doesn't work for safari(works for chrome though)
+<input type="text" style="width: 0; height: 0; border: 0;" />
+<input type="password" style="width: 0; height: 0; border: 0;" />
+
 <table>
 <tr><td align="right">
 <&|/l&>Username</&>:
