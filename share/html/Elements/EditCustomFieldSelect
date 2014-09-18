@@ -90,7 +90,7 @@
       </select>
 % }
 <select
-  name="<%$name%>" id="<%$name%>" class="CF-<%$CustomField->id%>-Edit"
+  name="<%$name%>" id="<%$name%>" class="CF-<%$CustomField->id%>-Edit<% $use_chosen ? ' chosen' : '' %>"
 % if ($CustomField->BasedOnObj->id) {
   data-cascade-based-on-name="<% $BasedOnName || $NamePrefix . $CustomField->BasedOnObj->id . '-Value' |n %>"
 % }
@@ -140,6 +140,11 @@ else {
     }
 }
 
+my $use_chosen = $CustomField->Values->Count >= 10 ? 1 : 0;
+$m->callback( CallbackName => 'Chosen', UseChosen => \$use_chosen, CustomField => $CustomField );
+
+# it's weird to see "(no value) X" in the input when selecting multiple values
+$show_empty_option = 0 if $use_chosen && $Multiple;
 </%init>
 <%ARGS>
 $Object => undef

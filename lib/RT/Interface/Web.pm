@@ -122,6 +122,7 @@ sub JSFiles {
       superfish.js
       supersubs.js
       jquery.supposition.js
+      chosen.jquery.min.js
       history-folding.js
       cascaded.js
       forms.js
