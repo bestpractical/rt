@@ -55,6 +55,20 @@ use Storable qw//;
 use File::Spec;
 use Carp qw/carp/;
 
+=head1 NAME
+
+RT::Migrate::Importer - 
+
+=head1 SYNOPSIS
+
+
+
+=head1 DESCRIPTION
+
+
+
+=cut
+
 sub new {
     my $class = shift;
     my $self = bless {}, $class;
@@ -105,6 +119,10 @@ sub Init {
     # To know what global CFs need to be unglobal'd and applied to what
     $self->{NewQueues} = [];
     $self->{NewCFs} = [];
+}
+
+sub Import {
+    die "Abstract base class; use RT::Migrate::Importer::File";
 }
 
 sub Metadata {
@@ -160,6 +178,15 @@ sub InitStream {
     }
 }
 
+=head2 Resolve C<UID>, C<CLASS>, C<ID>
+
+Called when an object has been successfully created in the database, and
+thus the C<UID> has been locally resolved to the given C<CLASS> and
+C<ID>.  Calling this automatically triggers any pending column updates
+that were waiting on the C<UID> to be completely resolved.
+
+=cut
+
 sub Resolve {
     my $self = shift;
     my ($uid, $class, $id) = @_;
@@ -189,6 +216,13 @@ sub Resolve {
     delete $self->{Pending}{$uid};
 }
 
+=head2 Lookup C<UID>
+
+Returns an array reference of C<[ CLASS, ID ]> if the C<UID> has been
+resolved, or undefined if it has been to be created locally.
+
+=cut
+
 sub Lookup {
     my $self = shift;
     my ($uid) = @_;
@@ -198,6 +232,13 @@ sub Lookup {
     }
     return $self->{UIDs}{$uid};
 }
+
+=head2 LookupObj C<UID>
+
+Returns an object if the C<UID> has been resolved locally, or undefined
+if it has not been.
+
+=cut
 
 sub LookupObj {
     my $self = shift;
@@ -210,6 +251,36 @@ sub LookupObj {
     $obj->Load( $id );
     return $obj;
 }
+
+=head2 Postpone
+
+Takes the following arguments:
+
+=over
+
+=item C<for>
+
+This should be a UID which is not yet resolved.  When this UID is
+resolved locally, its information will be used.
+
+=item C<uid>
+
+When the C<for> UID is resolved, the object with this UID (which must be
+resolved prior to the C<Postpone> call) will be updated using
+information from C<for>.
+
+=item C<column>, C<classcolumn>, or C<uri>
+
+One or more of these must be specified, and determine how the C<uid>
+object is updated with the C<for> object's information.  The C<uid>
+object's C<column> will be set to the C<for> object's id.  The C<uid>
+object's column named C<classcolumn> will be set to the C<for> object's
+class.  The C<uid> object's column named C<uri> will be set to the
+internal URI of the C<for> object.
+
+=back
+
+=cut
 
 sub Postpone {
     my $self = shift;
@@ -224,6 +295,10 @@ sub Postpone {
     my $uid = delete $args{for};
 
     if (defined $uid) {
+        warn "The 'for' argument to Postpone ($uid) should still be unresolved!"
+            if $self->Lookup($uid);
+        warn "The 'uid' argument to Postpone ($args{uid}) should already be resolved!"
+            unless $self->Lookup($args{uid});
         push @{$self->{Pending}{$uid}}, \%args;
     } else {
         push @{$self->{Invalid}}, \%args;
@@ -465,10 +540,24 @@ sub Invalid {
                      : $self->{Invalid};
 }
 
+=head2 Organization
+
+Returns the organization the serialized data was read 
+
+=cut
+
 sub Organization {
     my $self = shift;
     return $self->{Organization};
 }
+
+=head2 Progress [C<SUBREF>]
+
+Gets or sets the progress callback; this will be called with each object
+as it is finished being imported, or with undef (and a second value of
+C<force>) when the stream is finally closed.
+
+=cut
 
 sub Progress {
     my $self = shift;
