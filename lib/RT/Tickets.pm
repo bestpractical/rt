@@ -789,7 +789,7 @@ sub _TransCreatorLimit {
         $u->Load($value);
         $value = $u->id || 0;
     }
-    $sb->_SQLLimit( ALIAS => $txn_alias, FIELD => 'Creator', OPERATOR => $op, VALUE => $value, @rest );
+    $sb->Limit( ALIAS => $txn_alias, FIELD => 'Creator', OPERATOR => $op, VALUE => $value, @rest );
 }
 
 =head2 _TransLimit
