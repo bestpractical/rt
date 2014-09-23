@@ -69,13 +69,13 @@ sub LabelValue {
     my $name = shift;
 
     my $raw = $self->RawValue( $name, @_ );
+    return $self->loc('(no value)') unless defined $raw && length $raw;
 
     if ( my $code = $self->Report->LabelValueCode( $name ) ) {
         return $code->( $self, %{ $self->Report->ColumnInfo( $name ) }, VALUE => $raw );
     }
 
     unless ( ref $raw ) {
-        return $self->loc('(no value)') unless defined $raw && length $raw;
         return $self->loc($raw) if $self->Report->ColumnInfo( $name )->{'META'}{'Localize'};
         return $raw;
     } else {
