@@ -52,7 +52,7 @@
 $return => 'Name'
 $limit => undef
 $term => undef
-$max => 10
+$max => undef
 </%ARGS>
 <%INIT>
 # Only allow certain return fields
@@ -68,6 +68,9 @@ my $CurrentUser = $session{'CurrentUser'};
 my %user_uniq_hash;
 my $isSU = $session{CurrentUser}
     ->HasRight( Right => 'SuperUser', Object => $RT::System );
+
+$m->callback( CallbackName => 'ModifyMaxResults', max => \$max );
+$max //= 10;
 
 # Turn RT::Ticket-1|RT::Queue-2 into ['RT::Ticket', 1], ['RT::Queue', 2]
 foreach my $spec (map { [split /\-/, $_, 2] } split /\|/, $limit) {

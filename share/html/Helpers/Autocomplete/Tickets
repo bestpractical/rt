@@ -51,7 +51,7 @@
 <%ARGS>
 $return => ''
 $term => undef
-$max => 10
+$max => undef
 $exclude => ''
 </%ARGS>
 <%INIT>
@@ -92,6 +92,9 @@ my $sql = join ' OR ', @clauses;
 if ( @excludes ) { # exclude ids already these
     $sql = join ' AND ', "($sql)", map { qq{id != '$_'} } @excludes;
 }
+
+$m->callback( CallbackName => 'ModifyMaxResults', max => \$max );
+$max //= 10;
 
 $tickets->FromSQL($sql);
 $tickets->RowsPerPage( $max );

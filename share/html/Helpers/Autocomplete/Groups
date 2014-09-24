@@ -50,7 +50,7 @@
 % $m->abort;
 <%ARGS>
 $term => undef
-$max => 10
+$max => undef
 $exclude => ''
 $op => 'LIKE'
 </%ARGS>
@@ -65,6 +65,9 @@ $m->abort unless $CurrentUser->Privileged;
 
 # Sanity check the operator
 $op = 'LIKE' unless $op =~ /^(?:LIKE|(?:START|END)SWITH|=|!=)$/i;
+
+$m->callback( CallbackName => 'ModifyMaxResults', max => \$max );
+$max //= 10;
 
 my $groups = RT::Groups->new( $CurrentUser );
 $groups->RowsPerPage( $max );

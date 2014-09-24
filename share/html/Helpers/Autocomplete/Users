@@ -52,7 +52,7 @@
 $return => ''
 $term => undef
 $delim => undef
-$max => 10
+$max => undef
 $privileged => undef
 $exclude => ''
 $op => undef
@@ -87,6 +87,9 @@ $m->abort unless $CurrentUser->Privileged
 # the API wants a list of ids
 my @exclude = split /\s*,\s*/, $exclude;
 push @exclude, RT->SystemUser->id, RT->Nobody->id;
+
+$m->callback( CallbackName => 'ModifyMaxResults', max => \$max );
+$max //= 10;
 
 my $users = RT::Users->new($CurrentUser);
 $users->SimpleSearch( Privileged => $privileged,
