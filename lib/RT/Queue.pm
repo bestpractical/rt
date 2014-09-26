@@ -584,9 +584,9 @@ sub _HasModifyWatcherRight {
 
 =head2 AddWatcher
 
-Applies access control checking, then calls L<RT::Record/AddRoleMember>.
-Additionally, C<Email> is accepted as an alternative argument name for
-C<User>.
+Applies access control checking, then calls
+L<RT::Record::Role::Roles/AddRoleMember>.  Additionally, C<Email> is
+accepted as an alternative argument name for C<User>.
 
 Returns a tuple of (status, message).
 
@@ -613,9 +613,9 @@ sub AddWatcher {
 
 =head2 DeleteWatcher
 
-Applies access control checking, then calls L<RT::Record/DeleteRoleMember>.
-Additionally, C<Email> is accepted as an alternative argument name for
-C<User>.
+Applies access control checking, then calls
+L<RT::Record::Role::Roles/DeleteRoleMember>.  Additionally, C<Email> is
+accepted as an alternative argument name for C<User>.
 
 Returns a tuple of (status, message).
 
