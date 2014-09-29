@@ -89,8 +89,7 @@ my $redirect_to ='/Dashboards/Modify.html';
 use RT::Dashboard;
 
 my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
-my $method = $Create ? 'ObjectsForCreating' : 'ObjectsForModifying';
-my @privacies = $Dashboard->$method;
+my @privacies = grep { $Create ? $Dashboard->CurrentUserCanCreate($_) : $Dashboard->CurrentUserCanModify($_) } $Dashboard->_PrivacyObjects;
 
 Abort(loc("Permission Denied")) if @privacies == 0;
 
@@ -101,7 +100,7 @@ else {
     if ($id eq 'new') {
         $tried_create = 1;
 
-        my ($val, $msg) = $Dashboard->Save(
+        my ($val, $msg) = $Dashboard->Create(
             Name    => $ARGS{'Name'},
             Privacy => $ARGS{'Privacy'},
         );
@@ -133,16 +132,15 @@ else {
 }
 
 if (!$Create && !$tried_create && $id && $ARGS{'Save'}) {
-    my ($ok, $msg) = $Dashboard->Update(Privacy  => $ARGS{'Privacy'},
-                                        Name     => $ARGS{'Name'});
-
-    if ($ok) {
-        push @results, loc("Dashboard [_1] updated", $Dashboard->Name);
+    my ( $ok, $msg );
+    if ( $Dashboard->Privacy ne $ARGS{'Privacy'} ) {
+        ( $ok, $msg ) = $Dashboard->SetPrivacy($ARGS{'Privacy'}) ;
+        push @results, $msg;
     }
-    else {
-        push @results, loc("Dashboard [_1] could not be updated: [_2]", $Dashboard->Name, $msg);
+    if ( $Dashboard->Name ne $ARGS{'Name'} ) {
+        ( $ok, $msg ) = $Dashboard->SetName($ARGS{'Name'});
+        push @results, $msg;
     }
-
 }
 
 

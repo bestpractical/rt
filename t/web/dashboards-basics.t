@@ -68,7 +68,7 @@ $m->form_name('ModifyDashboard');
 $m->field("Name" => 'different dashboard');
 $m->content_lacks('Delete', "Delete button hidden because we are creating");
 $m->click_button(value => 'Create');
-$m->content_contains("Saved dashboard different dashboard");
+$m->content_like(qr/Dashboard \d+ created/);
 $user_obj->PrincipalObj->GrantRight(Right => 'SeeOwnDashboard', Object => $RT::System);
 $m->get($url."Dashboards/index.html");
 $m->follow_link_ok({ text => 'different dashboard'});
@@ -194,13 +194,13 @@ $m->content_contains('Delete', "Delete button shows because we have DeleteOwnDas
 
 $m->form_name('ModifyDashboard');
 $m->click_button(name => 'Delete');
-$m->content_contains("Deleted dashboard");
+$m->content_like(qr/Dashboard \d+ deleted/);
 
 $m->get("/Dashboards/Modify.html?id=$id");
 $m->content_lacks("different dashboard", "dashboard was deleted");
-$m->content_contains("Failed to load dashboard $id");
+$m->text_contains("Couldn't load dashboard $id");
 
-$m->warning_like(qr/Failed to load dashboard.*Couldn't find row/, "the dashboard was deleted");
+$m->warning_like(qr/Couldn't load dashboard.*Couldn't find row/, "the dashboard was deleted");
 
 $user_obj->PrincipalObj->GrantRight(Right => "SuperUser", Object => $RT::System);
 
@@ -225,7 +225,7 @@ $m->field("Privacy" => 'RT::System-1');
 $m->content_lacks('Delete', "Delete button hidden because we are creating");
 $m->click_button(value => 'Create');
 $m->content_lacks("No permission to create dashboards");
-$m->content_contains("Saved dashboard system dashboard");
+$m->content_like(qr/Dashboard \d+ created/);
 
 $m->follow_link_ok({id => 'page-content'});
 
@@ -262,7 +262,7 @@ my ($bad_id) = $personal =~ /^search-(\d+)/;
 
 for my $page (qw/Modify Queries Render Subscription/) {
     $m->get("/Dashboards/$page.html?id=$bad_id");
-    $m->content_like(qr/Couldn.+t load dashboard $bad_id: Invalid object type/);
-    $m->warning_like(qr/Couldn't load dashboard $bad_id: Invalid object type/);
+    $m->text_like(qr/Couldn't load dashboard $bad_id/);
+    $m->warning_like(qr/Couldn't load dashboard $bad_id/);
 }
 

@@ -58,6 +58,8 @@ sub acl {
         ObjectTopics
         objectclasses_id_seq
         ObjectClasses
+        dashboards_id_seq
+        Dashboards
     );
 
     my $db_user = RT->Config->Get('DatabaseUser');

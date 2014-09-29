@@ -1,0 +1,86 @@
+use strict;
+use warnings;
+my %new_id_for;
+
+my $convert_attributes = sub {
+    my $obj = shift;
+
+    for my $attr ($obj->Attributes->Named('Dashboard')) {
+        my $attr_id = $attr->id;
+
+        my $dashboard = RT::Dashboard->new($RT::SystemUser);
+
+        my ($ok, $msg) = $dashboard->Create(
+            Name       => $attr->Description,
+            Content    => $attr->Content,
+            ObjectType => ref($obj),
+            ObjectId   => $obj->id,
+        );
+
+        if (!$ok) {
+            $RT::Logger->error("Unable to reify attribute $attr_id into a dashboard: $msg");
+            next;
+        }
+
+        $new_id_for{$attr_id} = $dashboard->id;
+
+        ($ok, $msg) = $attr->Delete;
+
+        if (!$ok) {
+            $RT::Logger->error("Reified attribute $attr_id into dashboard " . $dashboard->id . " but couldn't delete attribute: $msg");
+            next;
+        }
+
+        $RT::Logger->debug("Reified attribute $attr_id into a dashboard: $msg");
+    }
+};
+
+our @Final = (
+    sub {
+        my $users = RT::Users->new($RT::SystemUser);
+        $users->UnLimit;
+
+        while (my $user = $users->Next) {
+            $convert_attributes->($user);
+        }
+    },
+    sub {
+        my $groups = RT::Groups->new($RT::SystemUser);
+        $groups->UnLimit;
+
+        while (my $group = $groups->Next) {
+            $convert_attributes->($group);
+        }
+    },
+    sub {
+        my $system = RT::System->new($RT::SystemUser);
+        $convert_attributes->($system);
+    },
+
+    sub {
+        my $users = RT::Users->new($RT::SystemUser);
+        $users->UnLimit;
+
+        while (my $user = $users->Next) {
+            for my $subscription ($users->Attributes->Named('Subscription')) {
+                my $old_id = $subscription->SubValue('DashboardId');
+                my $new_id = $new_id_for{$old_id};
+
+                if (!$new_id) {
+                    $RT::Logger->error("Can't update subscription " . $subscription->id . " for old-style dashboard $old_id since it has no new-style ID");
+                    next;
+                }
+
+                my ($ok, $msg) = $subscription->SetSubValue(DashboardId => $new_id);
+
+                if (!$ok) {
+                    $RT::Logger->error("Unable to update subscription " . $subscription->id . " from dashboard $old_id to $new_id: $msg");
+                    next;
+                }
+
+                $RT::Logger->debug("Updated subscription " . $subscription->id . " from dashboard $old_id to $new_id");
+            }
+        }
+    },
+);
+

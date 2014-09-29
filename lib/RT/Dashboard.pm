@@ -48,17 +48,13 @@
 
 =head1 NAME
 
-  RT::Dashboard - an API for saving and retrieving dashboards
+  RT::Dashboard - Dashboard
 
 =head1 SYNOPSIS
 
-  use RT::Dashboard
+  use RT::Dashboard;
 
 =head1 DESCRIPTION
-
-  Dashboard is an object that can belong to either an RT::User or an
-  RT::Group.  It consists of an ID, a name, and a number of
-  saved searches and portlets.
 
 =head1 METHODS
 
@@ -70,11 +66,16 @@ package RT::Dashboard;
 use strict;
 use warnings;
 
-use base qw/RT::SharedSetting/;
+use base 'RT::Record';
 
 use RT::SavedSearch;
-
 use RT::System;
+use Storable qw/nfreeze thaw/;
+use MIME::Base64;
+use Scalar::Util 'blessed';
+
+sub Table { 'Dashboards' }
+
 'RT::System'->AddRight( Staff   => SubscribeDashboard => 'Subscribe to dashboards'); # loc
 
 'RT::System'->AddRight( General => SeeDashboard       => 'View system dashboards'); # loc
@@ -87,71 +88,30 @@ use RT::System;
 'RT::System'->AddRight( Staff   => ModifyOwnDashboard => 'Modify personal dashboards'); # loc
 'RT::System'->AddRight( Staff   => DeleteOwnDashboard => 'Delete personal dashboards'); # loc
 
+=head2 Create
 
-=head2 ObjectName
-
-An object of this class is called "dashboard"
-
-=cut
-
-sub ObjectName { "dashboard" } # loc
-
-sub SaveAttribute {
-    my $self   = shift;
-    my $object = shift;
-    my $args   = shift;
-
-    return $object->AddAttribute(
-        'Name'        => 'Dashboard',
-        'Description' => $args->{'Name'},
-        'Content'     => {Panes => $args->{'Panes'}},
-    );
-}
-
-sub UpdateAttribute {
-    my $self = shift;
-    my $args = shift;
-
-    my ($status, $msg) = (1, undef);
-    if (defined $args->{'Panes'}) {
-        ($status, $msg) = $self->{'Attribute'}->SetSubValues(
-            Panes => $args->{'Panes'},
-        );
-    }
-
-    if ($status && $args->{'Name'}) {
-        ($status, $msg) = $self->{'Attribute'}->SetDescription($args->{'Name'})
-            unless $self->Name eq $args->{'Name'};
-    }
-
-    if ($status && $args->{'Privacy'}) {
-        my ($new_obj_type, $new_obj_id) = split /-/, $args->{'Privacy'};
-        my ($obj_type, $obj_id) = split /-/, $self->Privacy;
-
-        my $attr = $self->{'Attribute'};
-        if ($new_obj_type ne $obj_type) {
-            ($status, $msg) = $attr->SetObjectType($new_obj_type);
-        }
-        if ($status && $new_obj_id != $obj_id ) {
-            ($status, $msg) = $attr->SetObjectId($new_obj_id);
-        }
-        $self->{'Privacy'} = $args->{'Privacy'} if $status;
-    }
-
-    return ($status, $msg);
-}
-
-=head2 PostLoadValidate
-
-Ensure that the ID corresponds to an actual dashboard object, since it's all
-attributes under the hood.
+Accepts a C<Privacy> instead of an C<ObjectType> and C<ObjectId>.
 
 =cut
 
-sub PostLoadValidate {
+sub Create {
     my $self = shift;
-    return (0, "Invalid object type") unless $self->{'Attribute'}->Name eq 'Dashboard';
-    return 1;
+    my %args = ( Content => {}, @_ );
+
+
+    eval  {$args{'Content'} = $self->_SerializeContent($args{'Content'}); };
+    if ($@) {
+        return(0, $@);
+    }
+
+    # canonicalize Privacy into ObjectType and ObjectId
+    if ($args{Privacy}) {
+        ($args{ObjectType}, $args{ObjectId}) = split '-', delete $args{Privacy};
+    }
+
+    my ( $ret, $msg ) = $self->SUPER::Create(%args);
+    return ( $ret, $msg ) unless $ret;
+    return ( $ret, $self->loc('Dashboard [_1] created',$self->id) );
 }
 
 =head2 Panes
@@ -162,8 +122,13 @@ Returns a hashref of pane name to portlets
 
 sub Panes {
     my $self = shift;
-    return unless ref($self->{'Attribute'}) eq 'RT::Attribute';
-    return $self->{'Attribute'}->SubValue('Panes') || {};
+    return $self->Content->{Panes} || {};
+}
+
+sub SetPanes {
+    my $self = shift;
+    my $panes = shift || {};
+    return $self->SetContent({ %{$self->Content}, Panes => $panes });
 }
 
 =head2 Portlets
@@ -390,21 +355,16 @@ sub ObjectsForLoading {
         Recursively => 1,
         PrincipalId => $CurrentUser->UserObj->PrincipalId
     );
-    my $attrs = $groups->Join(
+    my $dashboards = $groups->Join(
         ALIAS1 => 'main',
         FIELD1 => 'id',
-        TABLE2 => 'Attributes',
+        TABLE2 => 'Dashboards',
         FIELD2 => 'ObjectId',
     );
     $groups->Limit(
-        ALIAS => $attrs,
+        ALIAS => $dashboards,
         FIELD => 'ObjectType',
         VALUE => 'RT::Group',
-    );
-    $groups->Limit(
-        ALIAS => $attrs,
-        FIELD => 'Name',
-        VALUE => 'Dashboard',
     );
     push @objects, @{ $groups->ItemsArrayRef };
 
@@ -449,6 +409,10 @@ Returns a tuple of status and message, where status is true upon success.
 sub Delete {
     my $self = shift;
     my $id = $self->id;
+    unless ($self->CurrentUserCanDelete) {
+        return (0,$self->loc('Permission Denied'));
+    }
+
     my ( $status, $msg ) = $self->SUPER::Delete(@_);
     if ( $status ) {
         # delete all the subscriptions
@@ -464,10 +428,267 @@ sub Delete {
         while ( my $subscription = $subscriptions->Next ) {
             $subscription->Delete();
         }
+        return ( $status, $self->loc('Dashboard [_1] deleted', $id) );
     }
 
     return ( $status, $msg );
 }
+
+sub Object {
+    my $self  = shift;
+    return unless $self->__Value('ObjectId');
+    my $Object = $self->__Value('ObjectType')->new($self->CurrentUser);
+    $Object->Load($self->__Value('ObjectId'));
+    return $Object;
+}
+
+sub Content {
+    my $self = shift;
+    my $content = $self->_Value('Content');
+    return $self->_DeserializeContent($content);
+}
+
+sub SetContent {
+    my $self    = shift;
+    my $content = shift;
+    return $self->_Set( Field => 'Content', Value => $self->_SerializeContent( $content ) );
+}
+
+
+sub _SerializeContent {
+    my $self = shift;
+    my $content = shift;
+    return encode_base64(nfreeze($content));
+}
+
+sub _DeserializeContent {
+    my $self = shift;
+    my $content = shift;
+    return thaw(decode_base64($content));
+}
+
+sub _build_privacy {
+    my $self = shift;
+    my $object = shift || $self->Object;
+    return undef unless $object;
+    return ref($object) . '-' . $object->id;
+}
+
+sub _load_privacy_object {
+    my ($self, $obj_type, $obj_id) = @_;
+    if ( $obj_type eq 'RT::User' ) {
+        if ( $obj_id == $self->CurrentUser->Id ) {
+            return $self->CurrentUser->UserObj;
+        } else {
+            $RT::Logger->warning("User #". $self->CurrentUser->Id ." tried to load container user #". $obj_id);
+            return undef;
+        }
+    }
+    elsif ($obj_type eq 'RT::Group') {
+        my $group = RT::Group->new($self->CurrentUser);
+        $group->Load($obj_id);
+        return $group;
+    }
+    elsif ($obj_type eq 'RT::System') {
+        return RT::System->new($self->CurrentUser);
+    }
+
+    $RT::Logger->error(
+        "Tried to load a ". $self->ObjectName
+        ." belonging to an $obj_type, which is neither a user nor a group"
+    );
+
+    return undef;
+}
+
+sub _GetObject {
+    my $self = shift;
+    my $privacy = shift;
+
+    # short circuit: if they pass the object we want anyway, just return it
+    if (blessed($privacy) && $privacy->isa('RT::Record')) {
+        return $privacy;
+    }
+
+    my ($obj_type, $obj_id) = split(/\-/, ($privacy || ''));
+
+    unless ($obj_type && $obj_id) {
+        $privacy = '(undef)' if !defined($privacy);
+        $RT::Logger->debug("Invalid privacy string '$privacy'");
+        return undef;
+    }
+
+    my $object = $self->_load_privacy_object($obj_type, $obj_id);
+
+    unless (ref($object) eq $obj_type) {
+        $RT::Logger->error("Could not load object of type $obj_type with ID $obj_id, got object of type " . (ref($object) || 'undef'));
+        return undef;
+    }
+
+    # Do not allow the loading of a user object other than the current
+    # user, or of a group object of which the current user is not a member.
+
+    if ($obj_type eq 'RT::User' && $object->Id != $self->CurrentUser->UserObj->Id) {
+        $RT::Logger->debug("Permission denied for user other than self");
+        return undef;
+    }
+
+    if (   $obj_type eq 'RT::Group'
+        && !$object->HasMemberRecursively($self->CurrentUser->PrincipalObj)
+        && !$self->CurrentUser->HasRight( Object => $RT::System, Right => 'SuperUser' ) ) {
+        $RT::Logger->debug("Permission denied, ".$self->CurrentUser->Name.
+                           " is not a member of group");
+        return undef;
+    }
+
+    return $object;
+}
+
+sub Privacy {
+    my $self = shift;
+    return $self->_build_privacy;
+}
+
+sub SetPrivacy {
+    my $self = shift;
+    my $privacy = shift;
+    my ($object_type, $object_id) = split '-', $privacy, 2;
+    $RT::Handle->BeginTransaction();
+    if ( $self->ObjectType ne $object_type ) {
+        my ($ret, $msg) = $self->SetObjectType($object_type);
+        unless ( $ret ) {
+            $RT::Handle->Rollback();
+            return ($ret, $msg);
+        }
+    }
+
+    if ( $self->ObjectId != $object_id ) {
+        my ($ret, $msg) = $self->SetObjectId($object_id);
+        unless ( $ret ) {
+            $RT::Handle->Rollback();
+            return ($ret, $msg);
+        }
+    }
+    $RT::Handle->Commit();
+    return( 1, 'Privacy updated' ); # loc
+}
+
+sub IsVisibleTo {
+    my $self    = shift;
+    my $to      = shift;
+    my $privacy = $self->Privacy || '';
+
+    # if the privacies are the same, then they can be seen. this handles
+    # a personal setting being visible to that user.
+    return 1 if $privacy eq $to;
+
+    # If the setting is systemwide, then any user can see it.
+    return 1 if $privacy =~ /^RT::System/;
+
+    # Only privacies that are RT::System can be seen by everyone.
+    return 0 if $to =~ /^RT::System/;
+
+    # If the setting is group-wide...
+    if ($privacy =~ /^RT::Group-(\d+)$/) {
+        my $setting_group = RT::Group->new($self->CurrentUser);
+        $setting_group->Load($1);
+
+        if ($to =~ /-(\d+)$/) {
+            my $to_id = $1;
+
+            # then any principal that is a member of the setting's group can see
+            # the setting
+            return $setting_group->HasMemberRecursively($to_id);
+        }
+    }
+
+    return 0;
+}
+
+=head2 id
+
+Returns the current value of id.
+(In the database, id is stored as int(11).)
+
+=head2 Name
+
+Returns the current value of Name.
+(In the database, Name is stored as varchar(255).)
+
+=head2 SetName VALUE
+
+Set Name to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Name will be stored as a varchar(255).)
+
+=head2 Content
+
+Returns the current value of Content.
+(In the database, Content is stored as blob.)
+
+=head2 SetContent VALUE
+
+Set Content to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Content will be stored as a blob.)
+
+=head2 ObjectType
+
+Returns the current value of ObjectType.
+(In the database, ObjectType is stored as varchar(64).)
+
+=head2 SetObjectType VALUE
+
+Set ObjectType to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ObjectType will be stored as a varchar(64).)
+
+=head2 ObjectId
+
+Returns the current value of ObjectId.
+(In the database, ObjectId is stored as int(11).)
+
+=head2 SetObjectId VALUE
+
+Set ObjectId to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ObjectId will be stored as a int(11).)
+
+=head2 Creator
+
+Returns the current value of Creator.
+(In the database, Creator is stored as int(11).)
+
+=head2 Created
+
+Returns the current value of Created.
+(In the database, Created is stored as datetime.)
+
+=head2 LastUpdatedBy
+
+Returns the current value of LastUpdatedBy.
+(In the database, LastUpdatedBy is stored as int(11).)
+
+=head2 LastUpdated
+
+Returns the current value of LastUpdated.
+(In the database, LastUpdated is stored as datetime.)
+
+=cut
+
+sub _CoreAccessible {
+    {
+        id => {read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        Name => {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
+        Content => {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'blob', default => ''},
+        ObjectType => {read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
+        ObjectId => {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        Creator => {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        Created => {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+        LastUpdatedBy => {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        LastUpdated => {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+ }
+};
 
 RT::Base->_ImportOverlays();
 

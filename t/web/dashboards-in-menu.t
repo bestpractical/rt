@@ -5,13 +5,13 @@ use RT::Test tests => 31;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $system_foo = RT::Dashboard->new($RT::SystemUser);
-$system_foo->Save(
+$system_foo->Create(
     Name    => 'system foo',
     Privacy => 'RT::System-' . $RT::System->id,
 );
 
 my $system_bar = RT::Dashboard->new($RT::SystemUser);
-$system_bar->Save(
+$system_bar->Create(
     Name    => 'system bar',
     Privacy => 'RT::System-' . $RT::System->id,
 );
@@ -42,9 +42,9 @@ diag "setting in admin users";
 my $root = RT::CurrentUser->new( $RT::SystemUser );
 ok( $root->Load('root') );
 my $self_foo = RT::Dashboard->new($root);
-$self_foo->Save( Name => 'self foo', Privacy => 'RT::User-' . $root->id );
+$self_foo->Create( Name => 'self foo', Privacy => 'RT::User-' . $root->id );
 my $self_bar = RT::Dashboard->new($root);
-$self_bar->Save( Name => 'self bar', Privacy => 'RT::User-' . $root->id );
+$self_bar->Create( Name => 'self bar', Privacy => 'RT::User-' . $root->id );
 
 ok( !$m->find_link( text => 'self foo' ), 'no self foo link' );
 $m->get_ok( $baseurl."/Admin/Users/DashboardsInMenu.html?id=" . $root->id);

@@ -48,17 +48,11 @@
 
 =head1 NAME
 
-  RT::Dashboards - a pseudo-collection for Dashboard objects.
+  RT::Dashboards - a collection for Dashboard objects
 
 =head1 SYNOPSIS
 
-  use RT::Dashboards
-
-=head1 DESCRIPTION
-
-  Dashboards is an object consisting of a number of Dashboard objects.
-  It works more or less like a DBIx::SearchBuilder collection, although it
-  is not.
+  use RT::Dashboards;
 
 =head1 METHODS
 
@@ -69,43 +63,44 @@ package RT::Dashboards;
 
 use strict;
 use warnings;
-use base 'RT::SharedSettings';
+
+use base 'RT::SearchBuilder';
 
 use RT::Dashboard;
 
-sub RecordClass {
-    return 'RT::Dashboard';
-}
+sub Table { 'Dashboards' }
 
-=head2 LimitToPrivacy
+=head2 LimitToObject
 
-Takes one argument: a privacy string, of the format "<class>-<id>", as produced
-by RT::Dashboard::Privacy(). The Dashboards object will load the dashboards
-belonging to that user or group. Repeated calls to the same object should DTRT.
+The Dashboards object will load the dashboards belonging to the passed-in user
+or group. Repeated calls to the same object should DTRT.
 
 =cut
 
-sub LimitToPrivacy {
+sub LimitToObject {
     my $self = shift;
-    my $privacy = shift;
+    my $obj  = shift;
 
-    my $object = $self->_GetObject($privacy);
+    $self->Limit(
+        FIELD => 'ObjectType',
+        VALUE => ref($obj),
+    );
 
-    if ($object) {
-        $self->{'objects'} = [];
-        my @dashboard_atts = $object->Attributes->Named('Dashboard');
-        foreach my $att (@dashboard_atts) {
-            my $dashboard = RT::Dashboard->new($self->CurrentUser);
-            $dashboard->Load($privacy, $att->Id);
-            push(@{$self->{'objects'}}, $dashboard);
-        }
-    } else {
-        $RT::Logger->error("Could not load object $privacy");
-    }
+    $self->Limit(
+        FIELD => 'ObjectId',
+        VALUE => $obj->id,
+    );
 }
 
-sub ColumnMapClassName {
-    return 'RT__Dashboard';
+=head2 NewItem
+
+Returns an empty new L<RT::Dashboard> record.
+
+=cut
+
+sub NewItem {
+    my $self = shift;
+    return RT::Dashboard->new($self->CurrentUser);
 }
 
 RT::Base->_ImportOverlays();

@@ -252,7 +252,7 @@ for my $pane (sort keys %pane_name) {
                 panes        => $panes,
             );
 
-            my ($ok, $msg) = $Dashboard->Update(Panes => $panes);
+            my ($ok, $msg) = $Dashboard->SetPanes($panes);
 
             if ($ok) {
                 push @results, loc("Dashboard updated");

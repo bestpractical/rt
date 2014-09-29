@@ -80,7 +80,7 @@ $m->field("Name" => 'inner dashboard');
 $m->field("Privacy" => "RT::Group-" . $inner_group->Id);
 $m->click_button(value => 'Create');
 $m->content_lacks("Permission Denied", "we now have SeeGroupDashboard");
-$m->content_contains("Saved dashboard inner dashboard");
+$m->content_like(qr/Dashboard \d+ created/);
 $m->content_lacks('Delete', "Delete button hidden because we lack DeleteDashboard");
 
 my $dashboard = RT::Dashboard->new($currentuser);
@@ -97,7 +97,6 @@ $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->content_contains("inner dashboard", "we now have SeeGroupDashboard right");
 $m->content_lacks("Permission Denied");
 $m->content_contains('Subscription', "Subscription link not hidden because we have SubscribeDashboard");
-
 
 $m->get_ok("/Dashboards/index.html");
 $m->content_contains("inner dashboard", "We can see the inner dashboard from the UI");

@@ -25,7 +25,7 @@ $m->get_ok("$url/Dashboards/Modify.html?Create=1");
 $m->form_name('ModifyDashboard');
 $m->field('Name' => 'inner dashboard');
 $m->click_button(value => 'Create');
-$m->text_contains('Saved dashboard inner dashboard');
+$m->text_like(qr/Dashboard \d+ created/);
 
 my ($inner_id) = $m->content =~ /name="id" value="(\d+)"/;
 ok($inner_id, "got an ID, $inner_id");
@@ -35,7 +35,7 @@ $m->get_ok("$url/Dashboards/Modify.html?Create=1");
 $m->form_name('ModifyDashboard');
 $m->field('Name' => 'cachey dashboard');
 $m->click_button(value => 'Create');
-$m->text_contains('Saved dashboard cachey dashboard');
+$m->text_like(qr/Dashboard \d+ created/);
 
 my ($dashboard_id) = $m->content =~ /name="id" value="(\d+)"/;
 ok($dashboard_id, "got an ID, $dashboard_id");
@@ -91,7 +91,7 @@ $m->get_ok("/Dashboards/Modify.html?id=$inner_id");
 $m->form_name('ModifyDashboard');
 $m->field('Name' => 'recursive dashboard');
 $m->click_button(value => 'Save Changes');
-$m->text_contains('Dashboard recursive dashboard updated');
+$m->text_contains('Name changed');
 
 # check subscription page again
 $m->get_ok("/Dashboards/Subscription.html?id=$dashboard_id");

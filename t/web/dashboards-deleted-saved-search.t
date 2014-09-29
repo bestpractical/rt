@@ -37,7 +37,7 @@ $m->submit_form(
     fields    => { Name => 'bar' },
 );
 
-$m->content_contains('Saved dashboard bar', 'dashboard saved' );
+$m->content_like(qr/Dashboard \d+ created/, 'dashboard created' );
 my $dashboard_queries_link = $m->find_link( text_regex => qr/Content/ );
 my ( $dashboard_id ) = $dashboard_queries_link->url =~ /id=(\d+)/;
 
