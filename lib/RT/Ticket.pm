@@ -2172,6 +2172,9 @@ sub CurrentUserCanSetOwner {
                  @_);
     my $OldOwnerObj = $self->OwnerObj;
 
+    $args{NewOwnerObj} ||= $self->CurrentUser->UserObj
+        if $args{Type} eq "Take" or $args{Type} eq "Steal";
+
     # Confirm rights for new owner if we got one
     if ( $args{'NewOwnerObj'} ){
         my ($ok, $message) = $self->_NewOwnerCanOwnTicket($args{'NewOwnerObj'}, $OldOwnerObj);
