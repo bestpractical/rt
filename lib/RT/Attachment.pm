@@ -174,6 +174,11 @@ sub Create {
 
         unless ($id) {
             $RT::Logger->crit("Attachment insert failed - ". $RT::Handle->dbh->errstr);
+            my $txn = RT::Transaction->new($self->CurrentUser);
+            $txn->Load($args{'TransactionId'});
+            if ( $txn->id ) {
+                $txn->Object->_NewTransaction( Type => 'AttachmentError', ActivateScrips => 0, Data => $Filename );
+            }
             return ($id);
         }
 
@@ -218,6 +223,11 @@ sub Create {
         }
         else {
             $RT::Logger->crit("Attachment insert failed: ". $RT::Handle->dbh->errstr);
+            my $txn = RT::Transaction->new($self->CurrentUser);
+            $txn->Load($args{'TransactionId'});
+            if ( $txn->id ) {
+                $txn->Object->_NewTransaction( Type => 'AttachmentError', ActivateScrips => 0, Data => $Filename );
+            }
         }
         return $id;
     }
