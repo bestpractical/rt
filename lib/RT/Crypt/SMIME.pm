@@ -327,7 +327,7 @@ sub _SignEncrypt {
 
     my $opts = RT->Config->Get('SMIME');
 
-    my @command;
+    my @commands;
     if ( $args{'Sign'} ) {
         my $file = $self->CheckKeyring( Key => $args{'Signer'} );
         unless ($file) {
@@ -343,14 +343,14 @@ sub _SignEncrypt {
         $args{'Passphrase'} = $self->GetPassphrase( Address => $args{'Signer'} )
             unless defined $args{'Passphrase'};
 
-        push @command, join ' ', shell_quote(
+        push @commands, [
             $self->OpenSSLPath, qw(smime -sign),
             -signer => $file,
             -inkey  => $file,
             (defined $args{'Passphrase'} && length $args{'Passphrase'})
                 ? (qw(-passin env:SMIME_PASS))
                 : (),
-        );
+        ];
     }
     if ( $args{'Encrypt'} ) {
         foreach my $key ( @keys ) {
@@ -359,23 +359,32 @@ sub _SignEncrypt {
             close $key_file;
             $key = $key_file;
         }
-        push @command, join ' ', shell_quote(
+        push @commands, [
             $self->OpenSSLPath, qw(smime -encrypt -des3),
             map { $_->filename } @keys
-        );
+        ];
     }
 
-    my ($buf, $err) = ('', '');
-    {
-        local $ENV{'SMIME_PASS'} = $args{'Passphrase'};
-        local $SIG{'CHLD'} = 'DEFAULT';
-        safe_run_child { run3(
-            join( ' | ', @command ),
-            $args{'Content'},
-            \$buf, \$err
-        ) };
+    my $buf = ${ $args{'Content'} };
+    for my $command (@commands) {
+        my ($out, $err) = ('', '');
+        {
+            local $ENV{'SMIME_PASS'} = $args{'Passphrase'};
+            local $SIG{'CHLD'} = 'DEFAULT';
+            safe_run_child { run3(
+                $command,
+                \$buf,
+                \$out, \$err
+            ) };
+        }
+
+        $RT::Logger->debug( "openssl stderr: " . $err ) if length $err;
+
+        # copy output from the first command to the second command
+        # similar to the pipe we used to use to pipe signing -> encryption
+        # Using the pipe forced us to invoke the shell, this avoids any use of shell.
+        $buf = $out;
     }
-    $RT::Logger->debug( "openssl stderr: " . $err ) if length $err;
 
     if ($buf) {
         $res{'status'} .= $self->FormatStatus({
