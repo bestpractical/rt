@@ -46,6 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
+$Class => undef
 $Collection
 $Format
 $PreserveNewLines => 0
@@ -55,6 +56,7 @@ my $no_html = HTML::Scrubber->new( deny => '*' );
 </%ONCE>
 <%INIT>
 require HTML::Entities;
+$Class ||= $Collection->ColumnMapClassName;
 
 $r->content_type('application/vnd.ms-excel');
 
@@ -76,7 +78,8 @@ my $col_entry = sub {
         map    => $m->comp(
             "/Elements/ColumnMap",
             Name  => $col->{attribute},
-            Attr  => 'value'
+            Attr  => 'value',
+            Class => $Class,
         ),
         should_loc => $should_loc->{$col->{attribute}},
     }
