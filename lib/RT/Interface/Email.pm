@@ -78,8 +78,10 @@ BEGIN {
         &MailError
         &ParseCcAddressesFromHead
         &ParseSenderAddressFromHead
+        &ParseSenderAddressesFromHead
         &ParseErrorsToAddressFromHead
         &ParseAddressFromHeader
+        &ParseAddressesFromHeader
         &Gateway);
 
 }
@@ -1109,6 +1111,22 @@ to investigate the parse failure.
 =cut
 
 sub ParseSenderAddressFromHead {
+    my ( $list, @errors ) = ParseSenderAddressesFromHead(@_);
+    if ( $list ) {
+        return ( $list->[0]->address, $list->[0]->phrase, @errors );
+    }
+    else {
+        return ( undef, undef, @errors );
+    }
+}
+
+=head2 ParseSenderAddressesFromHead HEAD
+
+Takes a MIME::Header object. Returns ([list of addreses], errors)
+
+=cut
+
+sub ParseSenderAddressesFromHead {
     my $head = shift;
     my @sender_headers = ('Reply-To', 'From', 'Sender');
     my @errors;  # Accumulate any errors
@@ -1116,15 +1134,16 @@ sub ParseSenderAddressFromHead {
     #Figure out who's sending this message.
     foreach my $header ( @sender_headers ) {
         my $addr_line = Encode::decode( "UTF-8", $head->get($header) ) || next;
-        my ($addr, $name) = ParseAddressFromHeader( $addr_line );
-        # only return if the address is not empty
-        return ($addr, $name, @errors) if $addr;
+        my @list = ParseAddressesFromHeader( $addr_line );
+        if ( @list ) {
+            return (\@list, @errors);
+        }
 
         chomp $addr_line;
         push @errors, "$header: $addr_line";
     }
 
-    return (undef, undef, @errors);
+    return (undef, @errors);
 }
 
 =head2 ParseErrorsToAddressFromHead HEAD
@@ -1162,18 +1181,26 @@ Takes an address from C<$head->get('Line')> and returns a tuple: user@host, frie
 =cut
 
 sub ParseAddressFromHeader {
+    my @addresses = ParseAddressesFromHeader(@_);
+    if ( @addresses ) {
+        return ($addresses[0]->address, $addresses[0]->phrase);
+    }
+    return undef;
+}
+
+=head2 ParseAddressesFromHeader ADDRESS
+
+Takes an address from C<$head->get('Line')> and returns a list of addresses
+
+=cut
+
+sub ParseAddressesFromHeader {
     my $Addr = shift;
 
     # Some broken mailers send:  ""Vincent, Jesse"" <jesse@fsck.com>. Hate
     $Addr =~ s/\"\"(.*?)\"\"/\"$1\"/g;
-    my @Addresses = RT::EmailParser->ParseEmailAddress($Addr);
-
-    my ($AddrObj) = grep ref $_, @Addresses;
-    unless ( $AddrObj ) {
-        return ( undef, undef );
-    }
-
-    return ( $AddrObj->address, $AddrObj->phrase );
+    my @addresses = grep ref $_, RT::EmailParser->ParseEmailAddress($Addr);
+    return @addresses;
 }
 
 =head2 DeleteRecipientsFromHead HEAD RECIPIENTS
