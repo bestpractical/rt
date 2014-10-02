@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-08-20 03:16+0000\n"
-"PO-Revision-Date: 2014-09-03 08:44+0000\n"
+"POT-Creation-Date: 2014-09-18 00:17+0000\n"
+"PO-Revision-Date: 2014-09-18 12:14+0000\n"
 "Last-Translator: Christian Loos <cloos@netsandbox.de>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-09-04 22:18+0000\n"
+"X-Launchpad-Export-Date: 2014-10-01 21:13+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:62
@@ -28,7 +28,7 @@ msgstr ""
 #. ($object->Id, $object->Subject || '')
 #. ($t->Id, $t->Subject || '')
 #. ($ticket->Id, $ticket->Subject)
-#: lib/RT/URI/fsck_com_rt.pm:222 share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/Helpers/Autocomplete/Tickets:102 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:197 share/html/m/ticket/history:56 share/html/m/ticket/show:202
+#: lib/RT/URI/fsck_com_rt.pm:222 share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/Helpers/Autocomplete/Tickets:105 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:197 share/html/m/ticket/history:56 share/html/m/ticket/show:202
 msgid "#%1: %2"
 msgstr ""
 
@@ -224,12 +224,12 @@ msgstr "vor %1"
 #. ($RT::DatabaseName)
 #: share/html/Install/DatabaseDetails.html:180
 msgid "%1 already exists and has RT's tables in place, but does not contain RT's metadata. The 'Initialize Database' step later on can insert metadata into this existing database. If this is acceptable, click 'Customize Basics' below to continue customizing RT."
-msgstr "Die Datenbank %1 existiert bereits und enthält RT-Tabellen aber keine RT-Metadaten. Der Schritt 'Initialisiere Datenbank' kann später diese Metadaten in die bestehende Datenbank einfügen. Wenn Sie das wollen, klicken Sie 'Grundeinstellungen anpassen' und fahren mit der Anpassung des RT fort."
+msgstr "Die Datenbank %1 existiert bereits und enthält RT Tabellen aber keine RT Metadaten. Der Schritt 'Initialisiere Datenbank' kann später diese Metadaten in die bestehende Datenbank einfügen. Wenn Sie das wollen, klicken Sie 'Grundeinstellungen anpassen' und fahren mit der Anpassung des RT fort."
 
 #. ($RT::DatabaseName)
 #: share/html/Install/DatabaseDetails.html:185
 msgid "%1 already exists, but does not contain RT's tables or metadata. The 'Initialize Database' step later on can insert tables and metadata into this existing database. if this is acceptable, click 'Customize Basic' below to continue customizing RT."
-msgstr "%1 existiert bereits und enthält weder RT-Tabellen noch RT-Metadaten. Der Schritt 'Initialisiere Datenbank' kann später die Tabellen und Metadaten in die bestehende Datenbank einfügen. Wenn Sie das wollen, klicken Sie 'Grundeinstellungen anpassen' und fahren mit der Anpassung des RT fort."
+msgstr "%1 existiert bereits und enthält weder RT Tabellen noch RT Metadaten. Der Schritt 'Initialisiere Datenbank' kann später die Tabellen und Metadaten in die bestehende Datenbank einfügen. Wenn Sie das wollen, klicken Sie 'Grundeinstellungen anpassen' und fahren mit der Anpassung des RT fort."
 
 #. ($princ_obj->Object->Name)
 #: lib/RT/ACE.pm:272
@@ -283,7 +283,7 @@ msgstr "%1 kopieren"
 #. ($meta->{'Source'}{'Extension'})
 #: share/html/Admin/Tools/Configuration.html:77
 msgid "%1 core config"
-msgstr "%1 Core-Einstellungen"
+msgstr "%1 Core Einstellung"
 
 #: lib/RT/Record.pm:1030
 msgid "%1 could not be set to %2."
@@ -1063,7 +1063,7 @@ msgstr "Jedes Feld"
 
 #: share/html/Search/Simple.html:65
 msgid "Any word not recognized by RT is searched for in ticket subjects."
-msgstr "Von RT nicht erkannte Wörter werden im Betreff der Vorgänge gesucht"
+msgstr "Vom RT nicht erkannte Wörter werden im Betreff der Tickets gesucht."
 
 #: share/html/Admin/CustomFields/Modify.html:94 share/html/Admin/Scrips/Modify.html:62 share/html/Elements/Tabs:370 share/html/Elements/Tabs:406 share/html/Elements/Tabs:456
 msgid "Applies to"
@@ -1282,7 +1282,7 @@ msgstr "Verfügbar"
 
 #: lib/RT/Report/Tickets.pm:225
 msgid "Average Created-LastUpdated"
-msgstr "Durchschnitt Erstellt-Zuletzt geändert"
+msgstr "Durchschnitt Erstellt-Zuletzt aktualisiert"
 
 #: lib/RT/Report/Tickets.pm:220
 msgid "Average Created-Resolved"
@@ -1713,7 +1713,7 @@ msgstr "Inhalt"
 #. ($self->OldValue, $self->NewValue)
 #: lib/RT/Transaction.pm:863
 msgid "Content dropped because its size (%1 bytes) exceeded configured maximum size setting (%2 bytes)."
-msgstr "Inhalt gelöscht, da die Größe (%1 bytes) die konfigurierte maximale Größe (%2 bytes) überschreitet."
+msgstr "Inhalt verworfen da die Größe (%1 Bytes) die konfigurierte maximale Größe (%2 Bytes) überschreitet."
 
 #: lib/RT/CustomField.pm:1741
 msgid "Content is not a valid IP address"
@@ -1726,7 +1726,7 @@ msgstr "Inhalt ist ein ungültiger IP-Adressbereich"
 #. ($self->OldValue, $self->NewValue)
 #: lib/RT/Transaction.pm:852
 msgid "Content truncated because its size (%1 bytes) exceeded configured maximum size setting (%2 bytes)."
-msgstr "Inhalt abgeschnitten, da die Größe (%1 bytes) die konfigurierte maximale Größe (%2 bytes) überschreitet."
+msgstr "Inhalt abgeschnitten da die Größe (%1 Bytes) die konfigurierte maximale Größe (%2 Bytes) überschreitet."
 
 #: share/html/Elements/SelectAttachmentField:53
 msgid "Content-Type"
@@ -2422,7 +2422,7 @@ msgstr "Dashboards in Menü anpassen"
 
 #: share/html/Admin/Tools/Theme.html:76
 msgid "Customize the RT theme"
-msgstr "RT Theme anpassen"
+msgstr "RT Design anpassen"
 
 #: share/html/Elements/Tabs:233
 msgid "Customize the look of your RT"
@@ -2547,7 +2547,7 @@ msgstr "Entschlüsseln"
 
 #: lib/RT/Attachment.pm:828
 msgid "Decryption error; contact the administrator"
-msgstr "Fehler bei der Entschlüsselung; Bitte Administrator verständigen"
+msgstr "Entschlüsselungsfehler; Administrator kontaktieren"
 
 #: lib/RT/Config.pm:152
 msgid "Default queue"
@@ -2700,7 +2700,7 @@ msgstr "Beschreibung"
 
 #: share/html/Elements/Tabs:228
 msgid "Detailed information about your RT setup"
-msgstr "Detaillierte Informationen über Ihre RT-Installation"
+msgstr "Detaillierte Informationen über Ihre RT Installation"
 
 #: share/html/Ticket/Create.html:451
 msgid "Details"
@@ -2897,7 +2897,7 @@ msgstr "Entweder hast du keine Rechte die gespeicherte Suche %1 anzuzeigen oder 
 
 #: share/html/Admin/Elements/UpgradeHistory:57
 msgid "Elapsed"
-msgstr "Verstrichen"
+msgstr "Laufzeit"
 
 #: share/html/Admin/Users/Modify.html:72 share/html/Ticket/Elements/AddWatchers:79 share/html/User/Prefs.html:65
 msgid "Email"
@@ -2914,7 +2914,7 @@ msgstr "E-Mail Zusammenfassung"
 #. ($AttachmentObj->TransactionObj->ObjectId,        $AttachmentObj->Id)
 #: share/html/Ticket/ShowEmailRecord.html:116
 msgid "Email Source for Ticket %1, Attachment %2"
-msgstr "Mail Quellcode für Ticket %1, Anhang %2"
+msgstr "E-Mail Quelltext für Ticket %1, Anhang %2"
 
 #: lib/RT/User.pm:588
 msgid "Email address in use"
@@ -3009,7 +3009,7 @@ msgstr "Verschlüsselung aktiviert"
 
 #: lib/RT/Attachment.pm:777
 msgid "Encryption error; contact the administrator"
-msgstr "Fehler bei der Verschlüsselung; Bitte Administrator verständigen"
+msgstr "Verschlüsselungsfehler; Administrator kontaktieren"
 
 #: share/html/Articles/Article/Elements/EditLinks:50
 msgid "Enter articles, tickets, or other URLs related to this article."
@@ -3061,7 +3061,7 @@ msgstr "Gib Tickets oder URIs ein um zu anderen Tickets zu verlinken. Trenne meh
 
 #: share/html/Elements/BulkLinks:123
 msgid "Enter tickets or URIs to link to. Separate multiple entries with spaces."
-msgstr "Zu verlinkende Tickets oder URLs eingeben. Mehrfache Einträge durch Leerzeichen trennen."
+msgstr "Gib Tickets oder URIs zum verlinken ein. Trenne mehrere Einträge mit Leerzeichen."
 
 #: lib/RT/Config.pm:305
 msgid "Enter time in hours by default"
@@ -3086,7 +3086,7 @@ msgstr "Bis zu %1 Werte eingeben (mit automatischer Vervollständigung)"
 #. (map { "<strong>$_</strong>" } qw(initial active inactive any))
 #: share/html/Search/Simple.html:77
 msgid "Entering %1, %2, %3, or %4 limits results to tickets with one of the respective types of statuses.  Any individual status name limits results to just the statuses named."
-msgstr "Die Eingabe von %1, %2, %3 oder %4 schränkt die angezeigten Ticket-Ergebnisse auf dessen jeweiligen Status ein. Jeder abweichende Status schränkt die Ticket-Ergebnisse auf Suchtreffer mit der vorgenommenen Eingabe ein."
+msgstr "Die Eingabe von %1, %2, %3 oder %4 schränkt die Ticket Ergebnisse auf den jeweiligen Status Typ ein. Jeder individuelle Status Name schränkt die Ergebnisse auf den angegebenen Status Namen ein."
 
 #: share/html/Admin/Tools/Configuration.html:290
 msgid "Environment variables"
@@ -3107,7 +3107,7 @@ msgstr "Fehler beim Zeichnen von Diagramm '%1'"
 
 #: etc/initialdata:647 etc/upgrade/3.7.10/content:16
 msgid "Error to RT owner: public key"
-msgstr "Fehler an RT-Verwalter: öffentlicher Schlüssel"
+msgstr "Fehler an RT Verwalter: öffentlicher Schlüssel"
 
 #: etc/initialdata:709 etc/upgrade/3.7.87/content:7
 msgid "Error: Missing dashboard"
@@ -3275,12 +3275,12 @@ msgstr "Quelle des Feldwertes:"
 #. ($self->Data, $self->OldValue, $self->NewValue)
 #: lib/RT/Transaction.pm:859
 msgid "File '%1' dropped because its size (%2 bytes) exceeded configured maximum size setting (%3 bytes)."
-msgstr "Datei '%1' gelöscht, da die Dateigröße (%2 Bytes) größer als die maximal erlaubte Größe (%3 bytes) ist."
+msgstr "Datei '%1' verworfen da die Größe (%2 Bytes) die konfigurierte maximale Größe (%3 Bytes) überschreitet."
 
 #. ($self->Data, $self->OldValue, $self->NewValue)
 #: lib/RT/Transaction.pm:848
 msgid "File '%1' truncated because its size (%2 bytes) exceeded configured maximum size setting (%3 bytes)."
-msgstr "Datei '%1' abgeschnitten, da die Dateigröße (%2 Bytes) größer als die maximal erlaubte Größe (%3 Bytes) ist."
+msgstr "Datei '%1' abgeschnitten da die Größe (%2 Bytes) die konfigurierte maximale Größe (%3 Bytes) überschreitet."
 
 #: lib/RT/Tickets.pm:141 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:53 share/html/Elements/SelectAttachmentField:54
 msgid "Filename"
@@ -3378,7 +3378,7 @@ msgstr "Für lokale Hilfe kontaktieren Sie bitte %1"
 #. ($link_start, $link_end)
 #: share/html/Search/Simple.html:91
 msgid "For the full power of RT's searches, please visit the %1search builder interface%2."
-msgstr "Gehen sie zum %1 Suchassisten%2 um die volle Funktionalität der RT-Suche zu nutzen."
+msgstr "Für die volle Leistung der RT Suche gehe zum %1Suchassistenten%2."
 
 #: share/html/Search/Bulk.html:84
 msgid "Force change"
@@ -3911,7 +3911,7 @@ msgstr "Individuelle Nachricht"
 
 #: etc/initialdata:649 etc/upgrade/3.7.10/content:18
 msgid "Inform RT owner that user(s) have problems with public keys"
-msgstr "Informiere den RT-Verwalter, dass Benutzer Probleme mit öffentlichen Schlüsseln haben"
+msgstr "Informiere den RT Verwalter, dass Benutzer Probleme mit öffentlichen Schlüsseln haben"
 
 #: etc/initialdata:711 etc/upgrade/3.7.87/content:9
 msgid "Inform user that a dashboard he subscribed to is missing"
@@ -4172,7 +4172,7 @@ msgstr "Zuletzt aktualisiert von"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:107
 msgid "Last updated"
-msgstr "zuletzt geändert"
+msgstr "Zuletzt aktualisiert"
 
 #: share/html/Search/Elements/PickBasics:116
 msgid "Last updated by"
@@ -4180,7 +4180,7 @@ msgstr "Zuletzt aktualisiert von"
 
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:79 lib/RT/Tickets.pm:136 share/html/Search/Elements/BuildFormatString:100
 msgid "LastUpdated"
-msgstr "Zuletzt geändert am"
+msgstr "Zuletzt aktualisiert"
 
 #: lib/RT/Graph/Tickets.pm:154 lib/RT/Report/Tickets.pm:66 lib/RT/Tickets.pm:110 share/html/Search/Elements/BuildFormatString:100
 msgid "LastUpdatedBy"
@@ -4217,7 +4217,7 @@ msgstr "Länge in Zeichen; Nutze '0' um alle Nachrichten inline darzustellen una
 
 #: share/html/Admin/Users/Modify.html:109
 msgid "Let this user access RT"
-msgstr "Diesem Benutzer RT-Zugriff gewähren"
+msgstr "Diesem Benutzer RT Zugriff gewähren"
 
 #: share/html/Admin/Users/Modify.html:114
 msgid "Let this user be granted rights"
@@ -4372,12 +4372,12 @@ msgstr ""
 #. ($level, $conf)
 #: share/html/Admin/Elements/LoggingSummary:66
 msgid "Logging %1 level messages and higher to syslog with the following configuration: %2"
-msgstr ""
+msgstr "Schreibe Nachrichten der Stufe %1 und höher in's Syslog mit folgender Konfiguration: %2"
 
 #. ($level)
 #: share/html/Admin/Elements/LoggingSummary:68
 msgid "Logging %1 level messages and higher to syslog."
-msgstr ""
+msgstr "Schreibe Nachrichten der Stufe %1 und höher in's Syslog"
 
 #: share/html/Admin/Tools/Configuration.html:212
 msgid "Logging summary"
@@ -4480,7 +4480,7 @@ msgstr "Benutzer und Passworte verwalten"
 #. ($old_lifecycle->Name, $new_lifecycle->Name)
 #: lib/RT/Record/Role/Status.pm:281
 msgid "Mapping between lifecycle %1 and %2 is incomplete. Contact your system administrator."
-msgstr ""
+msgstr "Die Abbildung der Lebenszyklen %1 und %2  ist unvollständig. benachrichtigen Sie Ihren Systemadministrator."
 
 #: lib/RT/Date.pm:93
 msgid "Mar"
@@ -4500,7 +4500,7 @@ msgstr "Maximalwerte"
 
 #: lib/RT/Report/Tickets.pm:227
 msgid "Maximum Created-LastUpdated"
-msgstr "Maximum Erstellt-Zuletzt geändert"
+msgstr "Maximum Erstellt-Zuletzt aktualisiert"
 
 #: lib/RT/Report/Tickets.pm:222
 msgid "Maximum Created-Resolved"
@@ -4624,7 +4624,7 @@ msgstr "Vereinigung fehlgeschlagen. Konnte EffectiveId nicht setzen"
 
 #: lib/RT/Ticket.pm:1836
 msgid "Merge failed. Couldn't set IsMerged"
-msgstr ""
+msgstr "Zusammenfügen fehlgeschlagen. Das Attribut IsMerged konnte nicht gesetzt werden."
 
 #: lib/RT/Ticket.pm:1849
 msgid "Merge failed. Couldn't set Status"
@@ -4677,7 +4677,7 @@ msgstr "Nachricht gespeichert"
 
 #: lib/RT/Report/Tickets.pm:226
 msgid "Minimum Created-LastUpdated"
-msgstr "Minimum Erstellt-Zuletzt geändert"
+msgstr "Minimum Erstellt-Zuletzt aktualisiert"
 
 #: lib/RT/Report/Tickets.pm:221
 msgid "Minimum Created-Resolved"
@@ -4847,7 +4847,7 @@ msgstr "Metadaten und benutzerdefinierte Felder dieser Klasse ändern"
 
 #: lib/RT/System.pm:86
 msgid "Modify one's own RT account"
-msgstr "Eigenes RT-Benutzerkonto ändern"
+msgstr "Eigenes RT Benutzerkonto ändern"
 
 #: lib/RT/Class.pm:92
 msgid "Modify or delete articles in this class"
@@ -4949,7 +4949,7 @@ msgstr "Ändere Ticket #%1"
 
 #: lib/RT/Queue.pm:137
 msgid "Modify ticket owner on owned tickets"
-msgstr "Ticket-Eigentümer für Tickets mit vorhandenem Eigentümer ändern"
+msgstr "Ändere Ticket Besitzer von Tickets mit Besitzer"
 
 #: lib/RT/Queue.pm:133
 msgid "Modify tickets"
@@ -4991,7 +4991,7 @@ msgstr "Ändere Benutzerrechte für den Bereich %1"
 #. ($Ticket->Id)
 #: share/html/Ticket/ModifyPeople.html:60
 msgid "Modify who receives mail for ticket #%1"
-msgstr "Ändere wer E-Mails für Ticket #%1 enthält"
+msgstr "Ändere wer E-Mails für Ticket #%1 erhält"
 
 #: share/html/Admin/Tools/Configuration.html:247
 msgid "Module"
@@ -5248,7 +5248,7 @@ msgstr "Kein Bereich vorhanden"
 
 #: bin/rt-crontool:116
 msgid "No RT user found. Please consult your RT administrator."
-msgstr "Kein RT-Benutzer gefunden. Bitte kontaktieren Sie Ihren RT-Administrator"
+msgstr "Kein RT Benutzer gefunden. Bitte kontaktieren Sie Ihren RT Administrator"
 
 #: share/html/Search/Elements/ResultsRSSView:132
 msgid "No Subject"
@@ -5298,7 +5298,7 @@ msgstr "Kein passender Schlüssel für Verschlüsselung"
 
 #: share/html/Errors/WebRemoteUser/Deauthorized:48
 msgid "No longer authorized"
-msgstr ""
+msgstr "Nicht länger authorisiert"
 
 #: lib/RT/Ticket.pm:1563
 msgid "No message attached"
@@ -5437,7 +5437,7 @@ msgstr ""
 
 #: share/html/Admin/Elements/EditScrips:75
 msgid "Not applied scrips"
-msgstr "Nicht angewendet Skrips"
+msgstr "Nicht angewendete Skrips"
 
 #: lib/RT/CustomField.pm:501 lib/RT/CustomField.pm:579
 msgid "Not found"
@@ -5493,7 +5493,7 @@ msgstr "Benachrichtige Besitzer"
 
 #: etc/initialdata:61 etc/upgrade/4.1.15/content:5
 msgid "Notify Owner and AdminCcs"
-msgstr ""
+msgstr "Benachrichtige Eigentümer und AdminCcs"
 
 #: etc/initialdata:37
 msgid "Notify Owner as Comment"
@@ -5581,7 +5581,7 @@ msgstr "Objekt gelöscht"
 
 #: lib/RT/Group.pm:254
 msgid "Object passed is not loaded"
-msgstr ""
+msgstr "Das übergebene Objekt ost nicht geladen"
 
 #: lib/RT/CustomField.pm:1599
 msgid "Object type mismatch"
@@ -5662,7 +5662,7 @@ msgstr "Bei einer Transaktion"
 
 #: lib/RT/Record/Role/Roles.pm:352
 msgid "One, and only one, of PrincipalId/User/Group is required"
-msgstr ""
+msgstr "Es muß genau eines der Felder PrincipalId, Benutzer oder Gruppe gefüllt werden"
 
 #: share/html/Ticket/Elements/UpdateCc:69 share/html/m/ticket/reply:106
 msgid "One-time Bcc"
@@ -6000,7 +6000,7 @@ msgstr "Voreinstellung %1 für Benutzer %2"
 
 #: share/html/Prefs/Search.html:96
 msgid "Preferences reset."
-msgstr "Voreinstellungen zurücksetzen."
+msgstr "Voreinstellungen zurückgesetzt."
 
 #. ($pane)
 #. (loc('summary rows'))
@@ -6232,7 +6232,7 @@ msgstr ""
 
 #: etc/RT_Config.pm:1221 etc/initialdata:875
 msgid "Quicksearch"
-msgstr ""
+msgstr "Schnellsuche"
 
 #: lib/RT/Date.pm:120
 msgid "RFC2616"
@@ -6256,11 +6256,11 @@ msgstr "RT Administrator E-Mail"
 
 #: share/html/Admin/Tools/Configuration.html:58
 msgid "RT Configuration"
-msgstr "RT-Einstellungen"
+msgstr "RT Einstellungen"
 
 #: share/html/Elements/Error:69
 msgid "RT Error"
-msgstr "RT-Fehler"
+msgstr "RT Fehler"
 
 #: share/html/Admin/Elements/Portal:49
 msgid "RT Portal"
@@ -6268,7 +6268,7 @@ msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:139
 msgid "RT Size"
-msgstr "RT-Größe"
+msgstr "RT Größe"
 
 #: lib/RT/Config.pm:331 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:54 share/html/Admin/Users/MyRT.html:62 share/html/Elements/Tabs:206 share/html/Elements/Tabs:326 share/html/Elements/Tabs:582 share/html/Prefs/MyRT.html:57 share/html/Prefs/MyRT.html:81 share/html/index.html:4
 msgid "RT at a glance"
@@ -6293,7 +6293,7 @@ msgstr "RT kann die Inhalte dieser benutzerdefinierten Felder in Hyperlinks zu a
 
 #: share/html/Admin/Tools/Configuration.html:110
 msgid "RT core variables"
-msgstr "Wichtige RT-Variablen"
+msgstr "RT Core Variablen"
 
 #. (RT->Config->Get('rtname'))
 #: share/html/Elements/Logo:59 share/html/m/_elements/header:49 share/html/m/_elements/login:49 share/html/m/index.html:48
@@ -6311,7 +6311,7 @@ msgstr ""
 
 #: share/html/Install/index.html:74
 msgid "RT is used by Fortune 100 companies, one-person businesses, government agencies, educational institutions, hospitals, nonprofits, NGOs, libraries, open source projects and all sorts of other organizations on all seven continents. (Yes, even Antarctica.)"
-msgstr ""
+msgstr "RT wird von Fortue-100-Firmen, Ein-Mann-Unternehmen, Regierungsstellen, Bildungseinrichtungen, Krankenhäusern, Vereinen, Nicht-Regierungs-Organisationen, Bibliotheken, Open-Source-Projekten  und vielen anderen Arten von Organisationen auf allen sieben Kontinenten genutzt. (Ja, sogar in Antarktika.)"
 
 #: share/html/Admin/Tools/Configuration.html:279
 msgid "RT upgrade history"
@@ -6622,7 +6622,7 @@ msgstr "Zurücksetzen"
 
 #: share/html/Admin/Tools/Theme.html:70
 msgid "Reset to default RT Logo"
-msgstr "Auf standard RT Logo zurücksetzen"
+msgstr "Auf Standard RT Logo zurücksetzen"
 
 #: share/html/Admin/Tools/Theme.html:114
 msgid "Reset to default RT Theme"
@@ -6817,7 +6817,7 @@ msgstr "Gespeicherte Grafiken"
 #. ($m->interp->apply_escapes($SavedSearch, 'h'))
 #: share/html/Elements/ShowSearch:73
 msgid "Saved search %1 not found"
-msgstr "Gespeicherte Suche '%1' nicht gefunden"
+msgstr "Gespeicherte Suche %1 nicht gefunden"
 
 #: share/html/Articles/Article/Elements/ShowSavedSearches:48 share/html/Articles/Article/Search.html:72 share/html/Search/Elements/EditSearches:136 share/html/Widgets/SavedSearch:186
 msgid "Saved searches"
@@ -6946,7 +6946,7 @@ msgstr "Auswählen"
 
 #: share/html/Admin/Global/CustomFields/index.html:96 share/html/Elements/Tabs:164
 msgid "Select Custom Fields for Articles in all Classes"
-msgstr "Benutzerdefinierte Felder für Artikel in allen Classen wählen"
+msgstr "Benutzerdefinierte Felder für Artikel in allen Klassen wählen"
 
 #: share/html/Install/DatabaseDetails.html:73
 msgid "Select Database Type"
@@ -6978,7 +6978,7 @@ msgstr "Bereich auswählen"
 
 #: share/html/SelfService/CreateTicketInQueue.html:50
 msgid "Select a queue for your new ticket"
-msgstr "Wählen Sie einen Bereich für Ihre neues Ticket"
+msgstr "Wählen Sie einen Bereich für Ihr neues Ticket"
 
 #: share/html/Admin/Tools/Theme.html:79
 msgid "Select a section"
@@ -7019,7 +7019,7 @@ msgstr "Wählen Sie benutzerdefinierte Felder für alle Benutzer aus"
 
 #: share/html/Admin/Global/CustomFields/index.html:84 share/html/Elements/Tabs:154
 msgid "Select custom fields for tickets in all queues"
-msgstr "Wählen Sie benutzerdefinierte Felder fürTickets in allen Bereichen aus"
+msgstr "Wählen Sie benutzerdefinierte Felder für Tickets in allen Bereichen aus"
 
 #: share/html/Admin/Global/CustomFields/index.html:91 share/html/Elements/Tabs:159
 msgid "Select custom fields for transactions on tickets in all queues"
@@ -7124,7 +7124,7 @@ msgstr "Sende eine E-Mail an die Auftraggeber und Ccs als Kommentar"
 
 #: lib/RT/Interface/Email.pm:1779
 msgid "Sending the previous mail has failed.  Please contact your admin, they can find more details in the logs."
-msgstr "Der Versand des letzten Mails ist fehlgeschlagen. Bitte kontaktieren Sie Ihren Administrator, dieser kann weitere Informationen in den Logdateien finden."
+msgstr "Der Versand des letzten E-Mail ist fehlgeschlagen. Bitte kontaktieren Sie Ihren Administrator, dieser kann weitere Informationen in den Logdateien finden."
 
 #: etc/initialdata:34
 msgid "Sends a message to the requestors"
@@ -7196,7 +7196,7 @@ msgstr "Anzeigen"
 
 #: lib/RT/System.pm:88
 msgid "Show Admin menu"
-msgstr "Administrations-Menü anzeigen"
+msgstr "Administrator Menü anzeigen"
 
 #: lib/RT/System.pm:89
 msgid "Show Approvals tab"
@@ -7204,7 +7204,7 @@ msgstr "Registerkarte \"Freigaben\" anzeigen"
 
 #: lib/RT/System.pm:87
 msgid "Show Articles menu"
-msgstr "Artikel-Menü anzeigen"
+msgstr "Artikel Menü anzeigen"
 
 #: share/html/Search/Elements/EditFormat:54
 msgid "Show Columns"
@@ -7281,7 +7281,7 @@ msgstr "Zeige Tickets die auf Freigabe warten"
 
 #: lib/RT/Config.pm:455
 msgid "Show simplified recipient list on ticket update"
-msgstr "Zeigen vereinfachte Empfängerliste bei Ticket Updates"
+msgstr "Zeige vereinfachte Empfängerliste bei Ticket Updates"
 
 #: lib/RT/Config.pm:442
 msgid "Show the Requestor's 10 highest priority active tickets"
@@ -7431,7 +7431,7 @@ msgstr "Zurückstellen"
 #. (map { "<strong>$_</strong>" } 'queue:"Example Queue"', 'owner:email@example.com')
 #: share/html/Search/Simple.html:85
 msgid "Start the search term with the name of a supported field followed by a colon, as in %1 and %2, to explicitly specify the search type."
-msgstr "Beginne die Suche mit dem Namen eines unterstützen Feldes gefolgt von einem Doppelpunkt, wie in %1 und %2, um explizit die Art der Suche anzugeben."
+msgstr "Beginne den Suchebegriff mit dem Namen eines unterstützen Feldes gefolgt von einem Doppelpunkt, wie in %1 und %2, um explizit die Art der Suche anzugeben."
 
 #: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:75 lib/RT/Tickets.pm:133 share/html/Elements/RT__Ticket/ColumnMap:195 share/html/Elements/RT__Ticket/ColumnMap:228 share/html/Elements/SelectDateType:50 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/EditDates:55 share/html/Ticket/Elements/ShowDates:58 share/html/m/ticket/show:358
 msgid "Started"
@@ -7578,7 +7578,7 @@ msgstr "Zusammenfassung"
 
 #: lib/RT/Report/Tickets.pm:223
 msgid "Summary of Created-LastUpdated"
-msgstr "Übersicht von Erstellt-Zuletzt geändert"
+msgstr "Übersicht von Erstellt-Zuletzt aktualisiert"
 
 #: lib/RT/Report/Tickets.pm:218
 msgid "Summary of Created-Resolved"
@@ -7822,7 +7822,7 @@ msgstr "Der administrative Cc eines Ticket"
 
 #: share/html/Ticket/ModifyPeople.html:62
 msgid "The checked users may receive email related to this ticket depending on the action taken. Uncheck users to stop sending email to them about this ticket."
-msgstr ""
+msgstr "Die ausgewählten Benutzer erhalten E-Mails zu diesem Ticket je nach gewähltem Aktualisierungstyp. Deaktivieren Sie die Benutzer um das senden von E-Mails zu diesem Ticket zu verhindern."
 
 #: lib/RT/Installer.pm:81
 msgid "The domain name of your database server (like 'db.example.com')."
@@ -8212,7 +8212,7 @@ msgstr "Summe"
 
 #: lib/RT/Report/Tickets.pm:224
 msgid "Total Created-LastUpdated"
-msgstr "Gesamt Erstellt-Zuletzt geändert"
+msgstr "Gesamt Erstellt-Zuletzt aktualisiert"
 
 #: lib/RT/Report/Tickets.pm:219
 msgid "Total Created-Resolved"
@@ -8638,7 +8638,7 @@ msgstr "Der Benutzer %1 ist momentan deaktiviert."
 #. ($User->Name)
 #: share/html/User/Summary.html:74
 msgid "User %1 is currently disabled. Edit the user and select \"Let this user access RT\" to enable."
-msgstr "Benutzer %1 ist aktuell deaktiviert. Bearbeite den Benutzer und markiere \"Diesem Benutzer RT-Zugriff gewähren\" um ihn zu aktivieren."
+msgstr "Benutzer %1 ist aktuell deaktiviert. Bearbeite den Benutzer und markiere \"Diesem Benutzer RT Zugriff gewähren\" um ihn zu aktivieren."
 
 #: share/html/Admin/Elements/ShowKeyInfo:80
 msgid "User (created - expire)"
@@ -8670,7 +8670,7 @@ msgstr "Benutzersuche"
 
 #: share/html/Elements/Tabs:334
 msgid "User Summary"
-msgstr "Benutzer-Übersicht"
+msgstr "Benutzer Übersicht"
 
 #. ($cf->Name, ref $args{'Object'},                    $args{'Object'}->id)
 #: lib/RT/Interface/Web.pm:3199
@@ -9033,7 +9033,7 @@ msgstr "Ja"
 #. ($ARGS{User})
 #: share/html/Errors/WebRemoteUser/NoInternalUser:49
 msgid "You (%1) are not authorized to use RT."
-msgstr "Sie (%1) sind nicht berechtigt, RT zu verwenden."
+msgstr "Sie (%1) sind nicht berechtigt RT zu verwenden."
 
 #. ($edit, $subscription)
 #: share/html/Dashboards/Render.html:85
@@ -9054,7 +9054,7 @@ msgstr ""
 
 #: share/html/Errors/WebRemoteUser/NoRemoteUser:49
 msgid "You are not authorized to use RT."
-msgstr "Sie sind nicht berechtigt, RT zu verwenden"
+msgstr "Sie sind nicht berechtigt RT zu verwenden"
 
 #. (RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id. "#txn-".$txn->id, RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id ."&MarkAsSeen=1&Anchor=txn-" . $txn->id)
 #: share/html/Ticket/Elements/ShowUpdateStatus:54
@@ -9063,7 +9063,7 @@ msgstr "Springe zur <a href=\"%1\"> ungelesenen Nachricht</a> oder springe zur <
 
 #: share/html/Admin/Tools/Theme.html:86
 msgid "You can also click on the logo above to get colors!"
-msgstr "Sie können auch auf das Logo oben klicken, um die Farben zu bekommen!"
+msgstr "Sie können auch auf das Logo oben klicken um die Farben zu bekommen!"
 
 #: share/html/Prefs/Search.html:54
 msgid "You can also edit the predefined search itself"
@@ -9276,7 +9276,7 @@ msgstr "Klicken zum markieren/demarkieren aller Objekte auf einmal"
 
 #: share/html/Admin/Tools/Configuration.html:83
 msgid "core config"
-msgstr "Core-Einstellungen"
+msgstr "Core Einstellung"
 
 #: lib/RT/Interface/Web.pm:1614 lib/RT/Interface/Web.pm:1623
 msgid "create a ticket"
@@ -9415,7 +9415,7 @@ msgstr "Index"
 #. ($due)
 #: lib/RT/Interface/Web.pm:2975
 msgid "invalid due date: %1"
-msgstr "Ungültiges Fällig-Datum: %1"
+msgstr "Ungültiges Fällig Datum: %1"
 
 #: share/html/Elements/SelectBoolean:55 share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectIPRelation:61 share/html/Elements/SelectMatch:59 share/html/Search/Elements/PickBasics:153 share/html/Search/Elements/PickCFs:82
 msgid "is"
@@ -9463,7 +9463,7 @@ msgstr "Minuten"
 
 #: lib/RT/Interface/Web.pm:1616
 msgid "modify RT's configuration"
-msgstr "Konfiguration von RT verändern"
+msgstr "Konfiguration von RT ändern"
 
 #: lib/RT/Interface/Web.pm:1619
 msgid "modify a dashboard"
@@ -9528,7 +9528,7 @@ msgstr "ein"
 
 #: lib/RT/Queue.pm:103 share/html/SelfService/Elements/MyRequests:73
 msgid "open"
-msgstr "offenen"
+msgstr "offen"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:155
 msgid "open/close"
@@ -9615,11 +9615,11 @@ msgstr "Systemgruppe '%1'"
 
 #: lib/RT/Interface/Web.pm:1526
 msgid "the Referrer header supplied by your browser (%1) is not allowed by RT's configured hostname (%2)"
-msgstr "Der \"Referrer-Header\", der durch Ihren Browser (%1) angegeben wurde, ist aufgrund des angegebenen RT-Hostnamens (%2) nicht erlaubt."
+msgstr "Der \"Referrer-Header\", der durch Ihren Browser (%1) angegeben wurde, ist aufgrund des angegebenen RT Hostnamens (%2) nicht erlaubt."
 
 #: lib/RT/Interface/Web.pm:1519
 msgid "the Referrer header supplied by your browser (%1) is not allowed by RT's configured hostname (%2) or whitelisted hosts (%3)"
-msgstr "Der \"Referrer-Header\", der durch Ihren Browser (%1) angegeben wurde, ist aufgrund des angegebenen RT-Hostnamens (%2) nicht erlaubt und auch nicht als Whitelisted-Host gelistet (%3)."
+msgstr "Der \"Referrer-Header\", der durch Ihren Browser (%1) angegeben wurde, ist aufgrund des angegebenen RT Hostnamens (%2) nicht erlaubt und auch nicht als Whitelisted-Host gelistet (%3)."
 
 #: share/html/Elements/Error:70
 msgid "the calling component did not specify why"
@@ -9661,7 +9661,7 @@ msgstr "Ticket aktualisieren"
 
 #: lib/RT/Interface/Web.pm:1617
 msgid "update an approval"
-msgstr "Freigabe aktualisiern"
+msgstr "Freigabe aktualisieren"
 
 #: lib/RT/Interface/Web.pm:1618
 msgid "update an article"
