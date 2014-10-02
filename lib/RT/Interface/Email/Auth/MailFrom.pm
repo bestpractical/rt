@@ -51,7 +51,7 @@ package RT::Interface::Email::Auth::MailFrom;
 use strict;
 use warnings;
 
-use RT::Interface::Email qw(ParseSenderAddressFromHead CreateUser);
+use RT::Interface::Email qw(ParseSenderAddressesFromHead CreateUser);
 
 # This is what the ordinary, non-enhanced gateway does at the moment.
 
@@ -66,21 +66,11 @@ sub GetCurrentUser {
 
 
     # We don't need to do any external lookups
-    my ( $Address, $Name, @errors ) = ParseSenderAddressFromHead( $args{'Message'}->head );
-    $RT::Logger->warning("Failed to parse ".join(', ', @errors))
-        if @errors;
-
-    unless ( $Address ) {
+    my ($addresses, @errors) = ParseSenderAddressesFromHead( $args{'Message'}->head );
+    $RT::Logger->warning("Failed to parse ".join(', ', @errors)) if @errors;
+    unless ( $addresses ) {
         $RT::Logger->error("Couldn't parse or find sender's address");
         return ( $args{'CurrentUser'}, -1 );
-    }
-
-    my $CurrentUser = RT::CurrentUser->new;
-    $CurrentUser->LoadByEmail( $Address );
-    $CurrentUser->LoadByName( $Address ) unless $CurrentUser->Id;
-    if ( $CurrentUser->Id ) {
-        $RT::Logger->debug("Mail from user #". $CurrentUser->Id ." ($Address)" );
-        return ( $CurrentUser, 1 );
     }
 
     # If the user can't be loaded, we may need to create one. Figure out the acl situation.
@@ -97,25 +87,51 @@ sub GetCurrentUser {
         return ( $args{'CurrentUser'}, -1 );
     }
 
-    $RT::Logger->debug("Going to create user with address '$Address'" );
-
-    # but before we do that, we need to make sure that the created user would have the right
-    # to do what we're doing.
-    my ($right, $error) = WhichRightShouldBeChecked( %args );
+    my ($right, $right_error) = WhichRightShouldBeChecked( %args );
     return ( $args{'CurrentUser'}, 0 ) unless $right;
 
-    unless ( $everyone->PrincipalObj->HasRight( Object => $args{'Queue'},
-                                                Right => $right )
-             || $unpriv->PrincipalObj->HasRight( Object => $args{'Queue'},
-                                                 Right => $right )
-    ) {
-        $RT::Logger->debug( $error );
-        return ( $args{'CurrentUser'}, 0 );
+    my $check_right = sub {
+        if ( my $user = shift ) {
+            return $user->PrincipalObj->HasRight(
+                Object => $args{'Queue'}, Right => $right
+            );
+        }
+        return
+            $everyone->PrincipalObj->HasRight(
+                Object => $args{'Queue'}, Right => $right
+            ) || $unpriv->PrincipalObj->HasRight(
+                Object => $args{'Queue'}, Right => $right,
+            )
+        ;
+    };
+
+    my $user;
+    foreach my $addr ( @$addresses ) {
+        $RT::Logger->debug("Testing $addr as sender");
+
+        my $CurrentUser = RT::CurrentUser->new;
+        $CurrentUser->LoadByEmail( $addr->address );
+        $CurrentUser->LoadByName( $addr->address ) unless $CurrentUser->Id;
+        if ( $CurrentUser->Id ) {
+            $RT::Logger->debug("$addr belongs to user #". $CurrentUser->Id );
+            return ( $CurrentUser, 1 ) if $check_right->( $CurrentUser );
+
+            $user ||= $CurrentUser;
+            $RT::Logger->debug( "User has $right_error. Skipping $addr" );
+        }
+        elsif ( $check_right->() ) {
+            $RT::Logger->debug("Going to create user $addr" );
+            $CurrentUser = CreateUser(
+                undef, $addr->address, $addr->phrase, $addr->address,
+                $args{'Message'}
+            );
+            return ( $CurrentUser, 1 );
+        } else {
+            $RT::Logger->debug( "Unprivileged users have $right_error. Skipping $addr" );
+        }
     }
-
-    $CurrentUser = CreateUser( undef, $Address, $Name, $Address, $args{'Message'} );
-
-    return ( $CurrentUser, 1 );
+    $RT::Logger->debug("Sender(s) has no enough rights");
+    return $user ? ($user, 1) : ($args{'CurrentUser'}, 0);
 }
 
 sub WhichRightShouldBeChecked {
@@ -128,25 +144,25 @@ sub WhichRightShouldBeChecked {
         if ( $args{'Action'} =~ /^comment$/i ) {
             return (
                 'CommentOnTicket',
-                "Unprivileged users have no right to comment on ticket in queue '$qname'",
+                "no right to comment on ticket in queue '$qname'",
             );
         }
         elsif ( $args{'Action'} =~ /^correspond$/i ) {
             return (
                 'ReplyToTicket',
-                "Unprivileged users have no right to reply to ticket in queue '$qname'",
+                "no right to reply to ticket in queue '$qname'",
             );
         }
         elsif ( $args{'Action'} =~ /^take$/i ) {
             return (
                 'OwnTicket',
-                "Unprivileged users have no right to own ticket in queue '$qname'",
+                "no right to own ticket in queue '$qname'",
             );
         }
         elsif ( $args{'Action'} =~ /^resolve$/i ) {
             return (
                 'ModifyTicket',
-                "Unprivileged users have no right to resolve ticket in queue '$qname'",
+                "no right to resolve ticket in queue '$qname'",
             );
         }
         else {
@@ -160,7 +176,7 @@ sub WhichRightShouldBeChecked {
         # check to see whether "Everybody" or "Unprivileged users" can create tickets in this queue
         return (
             'CreateTicket',
-            "Unprivileged users have no right to create ticket in queue '$qname'",
+            "no right to create ticket in queue '$qname'",
         );
     }
     return;
