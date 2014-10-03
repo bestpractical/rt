@@ -24,7 +24,7 @@ sub mail_in_ticket {
 
     RT::Test->clean_caught_mails;
     my ($status, $id) = RT::Test->send_via_mailgate( $content );
-    ok( $status, "Fed $filename into mailgate");
+    ok( !$status, "Fed $filename into mailgate");
 
     my $ticket = RT::Ticket->new(RT->SystemUser);
     $ticket->Load($id);
