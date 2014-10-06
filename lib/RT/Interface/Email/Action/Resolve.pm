@@ -89,15 +89,17 @@ sub CheckACL {
         );
     }
 
-    my $principal = $args{CurrentUser}->PrincipalObj;
-    return 1 if $principal->HasRight( Object => $args{'Ticket'}, Right  => 'ModifyTicket' );
-
-    my $email = $args{CurrentUser}->UserObj->EmailAddress;
+    my @emails;
+    for my $CurrentUser ( ref $args{CurrentUser} eq 'ARRAY' ? @{ $args{CurrentUser} } : $args{CurrentUser} ) {
+        my $principal = $CurrentUser->PrincipalObj;
+        return $CurrentUser if $principal->HasRight( Object => $args{'Ticket'}, Right => 'ModifyTicket' );
+        push @emails, $CurrentUser->UserObj->EmailAddress;
+    }
     my $qname = $args{Queue}->Name;
     my $tid   = $args{Ticket}->id;
     MailError(
         Subject     => "Permission Denied",
-        Explanation => "$email has no right to own ticket $tid in queue $qname",
+        Explanation => (@emails == 1 ? "@emails has" : join(", ", @emails) . " have") . " no right to own ticket $tid in queue $qname",
         FAILURE     => 1,
     );
 }

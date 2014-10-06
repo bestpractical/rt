@@ -64,10 +64,9 @@ This is the default authentication plugin for RT's email gateway; no no
 other authentication plugin is found in L<RT_Config/@MailPlugins>, RT
 will default to this one.
 
-This plugin reads the first address found in the C<Reply-To>, C<From>,
-and C<Sender> headers, and loads or creates the user.  It performs no
-checking of the identity of the user, and trusts the headers of the
-incoming email.
+This plugin reads addresses found in the C<Reply-To>, C<From>, and C<Sender>
+headers, and loads or creates users accordingly. It performs no checking of
+the identity of the users, and trusts the headers of the incoming email.
 
 =cut
 
@@ -78,35 +77,35 @@ sub GetCurrentUser {
     );
 
     # We don't need to do any external lookups
-    my ( $Address, $Name, @errors ) = RT::Interface::Email::ParseSenderAddressFromHead( $args{'Message'}->head );
-    $RT::Logger->warning("Failed to parse ".join(', ', @errors))
-        if @errors;
-
-    unless ( $Address ) {
+    my ($addresses, @errors) = RT::Interface::Email::ParseSenderAddressesFromHead( $args{'Message'}->head );
+    $RT::Logger->warning("Failed to parse ".join(', ', @errors)) if @errors;
+    unless ( $addresses ) {
         $RT::Logger->error("Couldn't parse or find sender's address");
         FAILURE("Couldn't parse or find sender's address");
     }
 
-    my $CurrentUser = RT::CurrentUser->new;
-    $CurrentUser->LoadByEmail( $Address );
-    $CurrentUser->LoadByName( $Address ) unless $CurrentUser->Id;
-    if ( $CurrentUser->Id ) {
-        $RT::Logger->debug("Mail from user #". $CurrentUser->Id ." ($Address)" );
-        return $CurrentUser;
+    my @CurrentUsers;
+    foreach my $addr ( @$addresses ) {
+        $RT::Logger->debug("Testing $addr as sender");
+
+        my $CurrentUser = RT::CurrentUser->new;
+        $CurrentUser->LoadByEmail( $addr->address );
+        $CurrentUser->LoadByName( $addr->address ) unless $CurrentUser->Id;
+        unless ( $CurrentUser->Id ) {
+            my $user = RT::User->new( RT->SystemUser );
+            $user->LoadOrCreateByEmail(
+                RealName     => $addr->phrase,
+                EmailAddress => $addr->address,
+                Comments     => 'Autocreated on ticket submission',
+            );
+
+            $CurrentUser = RT::CurrentUser->new;
+            $CurrentUser->Load( $user->id );
+        }
+        push @CurrentUsers, $CurrentUser;
     }
 
-
-    my $user = RT::User->new( RT->SystemUser );
-    $user->LoadOrCreateByEmail(
-        RealName     => $Name,
-        EmailAddress => $Address,
-        Comments     => 'Autocreated on ticket submission',
-    );
-
-    $CurrentUser = RT::CurrentUser->new;
-    $CurrentUser->Load( $user->id );
-
-    return $CurrentUser;
+    return @CurrentUsers;
 }
 
 1;
