@@ -50,6 +50,8 @@
 
 % if (not $classes_configured) {
 <& /Articles/Elements/NeedsSetup &>
+% } elsif (not @classes) {
+<i><&|/l&>You don't have permission to create Articles in any Class</&></i>
 % } else {
 <ul>
 % for my $Class (@classes) {
