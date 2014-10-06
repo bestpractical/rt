@@ -52,7 +52,7 @@
 <& /Articles/Elements/NeedsSetup &>
 % } else {
 <ul>
-% while (my $Class = $Classes->Next) {
+% for my $Class (@classes) {
 % my $qs = $m->comp("/Elements/QueryString", %ARGS, Class=> $Class->Id);
 <li><a href="Edit.html?<% $qs|n %>"><&|/l, $Class->Name &>in class [_1]</&></a></li>
 % }
@@ -65,4 +65,10 @@ $Classes->LimitToEnabled();
 # This is a COUNT(), which doesn't apply ACLs; as such, we don't display
 # the warning if there are classes, but the user can't see them.
 my $classes_configured = $Classes->Count;
+
+# ->Next applies SeeClass, but we also want to check CreateArticle
+my @classes;
+while (my $class = $Classes->Next) {
+    push @classes, $class if $class->CurrentUserHasRight("CreateArticle");
+}
 </%init>
