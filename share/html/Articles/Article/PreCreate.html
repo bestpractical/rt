@@ -47,16 +47,22 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => loc('Create an article in class...') &>
 <& /Elements/Tabs &>
+
+% if (not $classes_configured) {
+<& /Articles/Elements/NeedsSetup &>
+% } else {
 <ul>
-% my $Classes = RT::Classes->new($session{'CurrentUser'});
-% $Classes->LimitToEnabled();
-% my $have_classes = 0;
 % while (my $Class = $Classes->Next) {
-% $have_classes++;
 % my $qs = $m->comp("/Elements/QueryString", %ARGS, Class=> $Class->Id);
 <li><a href="Edit.html?<% $qs|n %>"><&|/l, $Class->Name &>in class [_1]</&></a></li>
 % }
 </ul>
-% unless ( $have_classes ) {
-<& /Articles/Elements/NeedsSetup &>
 % }
+<%init>
+my $Classes = RT::Classes->new($session{'CurrentUser'});
+$Classes->LimitToEnabled();
+
+# This is a COUNT(), which doesn't apply ACLs; as such, we don't display
+# the warning if there are classes, but the user can't see them.
+my $classes_configured = $Classes->Count;
+</%init>

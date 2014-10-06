@@ -48,7 +48,8 @@
 <%init>
 my $Classes = RT::Classes->new( $session{'CurrentUser'} );
 $Classes->LimitToEnabled();
-$Classes->RowsPerPage(1);
-return if $Classes->First;
+# This is a COUNT(), which doesn't apply ACLs; as such, we don't display
+# the warning if there are classes, but the user can't see them.
+return if $Classes->Count;
 </%init>
 <& NeedsSetup &>
