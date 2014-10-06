@@ -73,4 +73,11 @@ my @classes;
 while (my $class = $Classes->Next) {
     push @classes, $class if $class->CurrentUserHasRight("CreateArticle");
 }
+
+# If there is only one, redirect to it
+MaybeRedirectForResults(
+    Path  => "/Articles/Article/Edit.html",
+    Force => 1,
+    Arguments => { Class => $classes[0]->id },
+) if @classes == 1;
 </%init>

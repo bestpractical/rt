@@ -118,6 +118,7 @@ $Classes->LimitToEnabled();
 # the warning if there are classes, but the user can't see them.
 my $classes_configured = $Classes->Count;
 my @classes = @{ $Classes->ItemsArrayRef };
+$ARGS{Class} = $classes[0]->id if @classes == 1;
 
 use RT::SavedSearch;
 my @results;
