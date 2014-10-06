@@ -221,7 +221,7 @@ sub Gateway {
     TMPFAIL("RT couldn't find the queue: " . $args{'queue'})
         unless $SystemTicket->id || $SystemQueueObj->id;
 
-    my $CurrentUser = GetCurrentUser(
+    my @CurrentUsers = GetCurrentUser(
         Message       => $Message,
         RawMessageRef => \$args{message},
         Ticket        => $SystemTicket,
@@ -230,10 +230,10 @@ sub Gateway {
 
     # We only care about ACLs on the _first_ action, as later actions
     # may have gotten rights by the time they happen.
-    CheckACL(
+    my $CurrentUser = CheckACL(
         Action        => $actions[0],
         Message       => $Message,
-        CurrentUser   => $CurrentUser,
+        CurrentUser  => \@CurrentUsers,
         Ticket        => $SystemTicket,
         Queue         => $SystemQueueObj,
     );
@@ -310,15 +310,15 @@ sub Plugins {
 
 Dispatches to the C<@MailPlugins> to find one the provides
 C<GetCurrentUser> that recognizes the current user.  Mail plugins are
-tried one at a time, and stops after the first to return a current user.
+tried one at a time, and stops after the first to return at least one current user.
 Anonymous subroutine references found in C<@MailPlugins> are treated as
 C<GetCurrentUser> methods.
 
 The default GetCurrentUser authenticator simply looks at the From:
-address, and loads or creates a user accordingly; see
+address, and loads or creates users accordingly; see
 L<RT::Interface::Email::Auth::MailFrom>.
 
-Returns the current user; on failure of any plugin to do so, stops
+Returns a list of possible CurrentUsers; on failure of any plugin to do so, stops
 processing with a permanent failure and sends a generic "Permission
 Denied" mail to the user.
 
@@ -335,13 +335,13 @@ sub GetCurrentUser {
 
     # Since this needs loading, no matter what
     for my $Code ( Plugins(Code => 1, Method => "GetCurrentUser") ) {
-        my $CurrentUser = $Code->(
+        my @CurrentUsers = $Code->(
             Message       => $args{Message},
             RawMessageRef => $args{RawMessageRef},
             Ticket        => $args{Ticket},
             Queue         => $args{Queue},
         );
-        return $CurrentUser if $CurrentUser and $CurrentUser->id;
+        return @CurrentUsers if @CurrentUsers;
     }
 
     # None of the GetCurrentUser plugins found a user.  This is
@@ -354,9 +354,9 @@ sub GetCurrentUser {
     );
 }
 
-=head3 CheckACL Action => C<action>, CurrentUser => C<user>, Ticket => C<ticket>, Queue => C<queue>
+=head3 CheckACL Action => C<action>, CurrentUser => [C<user>] or C<user>, Ticket => C<ticket>, Queue => C<queue>
 
-Checks that the currentuser can perform a particular action.  While RT's
+Checks that the currentusers can perform a particular action.  While RT's
 standard permission controls apply, this allows a better error message,
 or more limited restrictions on the email gateway.
 
@@ -367,6 +367,8 @@ and abort with failure of their own accord.
 
 Aborts processing, sending a "Permission Denied" mail to the user with
 the last plugin's failure message, on failure.
+
+Returns the first user that passed the check.
 
 =cut
 
@@ -381,13 +383,14 @@ sub CheckACL {
     );
 
     for my $Code ( Plugins( Method => "CheckACL" ) ) {
-        return if $Code->(
-            Message       => $args{Message},
-            CurrentUser   => $args{CurrentUser},
-            Action        => $args{Action},
-            Ticket        => $args{Ticket},
-            Queue         => $args{Queue},
+        my $CurrentUser = $Code->(
+            Message     => $args{Message},
+            CurrentUser => $args{CurrentUser},
+            Action      => $args{Action},
+            Ticket      => $args{Ticket},
+            Queue       => $args{Queue},
         );
+        return $CurrentUser if $CurrentUser;
     }
 
     # Nobody said yes, and nobody said FAILURE; fail closed
@@ -439,19 +442,39 @@ investigate the parse failure.
 =cut
 
 sub ParseSenderAddressFromHead {
+    my ( $list, @errors ) = ParseSenderAddressesFromHead(@_);
+    if ( $list ) {
+        return ( $list->[0]->address, $list->[0]->phrase, @errors );
+    }
+    else {
+        return ( undef, undef, @errors );
+    }
+}
+
+=head2 ParseSenderAddressesFromHead HEAD
+
+Takes a MIME::Header object. Returns ([list of addreses], errors)
+where the addresses are found in C<Reply-To>, C<From> and C<Sender>.
+
+=cut
+
+sub ParseSenderAddressesFromHead {
     my $head = shift;
     my @errors;  # Accumulate any errors
 
+    my @addr;
     foreach my $header ( 'Reply-To', 'From', 'Sender' ) {
         my $addr_line = Encode::decode( "UTF-8", $head->get($header) ) || next;
-        my ($addr) = RT::EmailParser->ParseEmailAddress( $addr_line );
-        return ($addr->address, $addr->phrase, @errors) if $addr;
+        push @addr, RT::EmailParser->ParseEmailAddress( $addr_line );
 
-        chomp $addr_line;
-        push @errors, "$header: $addr_line";
+        unless ( @addr ) {
+            chomp $addr_line;
+            push @errors, "$header: $addr_line";
+        }
     }
 
-    return (undef, undef, @errors);
+    return (\@addr, @errors) if @addr;
+    return (undef, @errors);
 }
 
 =head3 ParseErrorsToAddressFromHead HEAD

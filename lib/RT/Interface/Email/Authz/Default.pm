@@ -78,21 +78,45 @@ sub CheckACL {
         @_,
     );
 
-    my $principal = $args{CurrentUser}->PrincipalObj;
-    my $email     = $args{CurrentUser}->UserObj->EmailAddress;
-    my $qname     = $args{'Queue'}->Name;
+    my @emails;
+    for my $CurrentUser ( ref $args{CurrentUser} eq 'ARRAY' ? @{ $args{CurrentUser} } : $args{CurrentUser} ) {
+        my $principal = $CurrentUser->PrincipalObj;
+        push @emails, $CurrentUser->UserObj->EmailAddress;
+
+        if ( $args{'Ticket'} && $args{'Ticket'}->Id ) {
+            if ( $args{'Action'} =~ /^comment$/i ) {
+                return $CurrentUser if $principal->HasRight( Object => $args{'Ticket'}, Right => 'CommentOnTicket' );
+            }
+            elsif ( $args{'Action'} =~ /^correspond$/i ) {
+                return $CurrentUser if $principal->HasRight( Object => $args{'Ticket'}, Right => 'ReplyToTicket' );
+            }
+            else {
+                $RT::Logger->warning("Action '". ($args{'Action'}||'') ."' is unknown");
+                return;
+            }
+        }
+
+        # We're creating a ticket
+        elsif ( $args{'Action'} =~ /^(comment|correspond)$/i ) {
+            return $CurrentUser if $principal->HasRight( Object => $args{'Queue'}, Right => 'CreateTicket' );
+        }
+        else {
+            $RT::Logger->warning( "Action '" . ( $args{'Action'} || '' ) . "' is unknown with no ticket" );
+            return;
+        }
+    }
 
     my $msg;
+    my $email = join ", ", @emails;
+    my $qname = $args{'Queue'}->Name;
     if ( $args{'Ticket'} && $args{'Ticket'}->Id ) {
-        my $tid   = $args{'Ticket'}->id;
+        my $tid = $args{'Ticket'}->id;
 
         if ( $args{'Action'} =~ /^comment$/i ) {
-            return 1 if $principal->HasRight( Object => $args{'Ticket'}, Right => 'CommentOnTicket' );
-            $msg = "$email has no right to comment on ticket $tid in queue $qname";
+            $msg = (@emails ? "$email has" : "$email have") . " no right to comment on ticket $tid in queue $qname";
         }
         elsif ( $args{'Action'} =~ /^correspond$/i ) {
-            return 1 if $principal->HasRight( Object => $args{'Ticket'}, Right  => 'ReplyToTicket' );
-            $msg = "$email has no right to reply to ticket $tid in queue $qname";
+            $msg = (@emails ? "$email has" : "$email have") . " no right to reply to ticket $tid in queue $qname";
 
             # Also notify the owner
             MailError(
@@ -104,16 +128,10 @@ might need to grant 'Everyone' the ReplyToTicket right.
 EOT
             );
         }
-        else {
-            $RT::Logger->warning("Action '". ($args{'Action'}||'') ."' is unknown");
-            return;
-        }
     }
-
     # We're creating a ticket
     elsif ( $args{'Action'} =~ /^(comment|correspond)$/i ) {
-        return 1 if $principal->HasRight( Object => $args{'Queue'}, Right  => 'CreateTicket' );
-        $msg = "$email has no right to create tickets in queue $qname";
+        $msg = (@emails ? "$email has" : "$email have") . " no right to create tickets in queue $qname";
 
         # Also notify the owner
         MailError(
@@ -125,11 +143,6 @@ might need to grant 'Everyone' the CreateTicket right.
 EOT
         );
     }
-    else {
-        $RT::Logger->warning("Action '". ($args{'Action'}||'') ."' is unknown with no ticket");
-        return;
-    }
-
 
     MailError(
         Subject     => "Permission Denied",
