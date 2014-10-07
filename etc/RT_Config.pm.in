@@ -1514,9 +1514,9 @@ Set($UserSearchFields, {
 
 =item C<$AllowUserAutocompleteForUnprivileged>
 
-Should unprivileged users be allowed to autocomplete users.  Setting
-this option to 1 means unprivileged users will be able to search all
-your users.
+Should unprivileged users (users of SelfService) be allowed to
+autocomplete users. Setting this option to 1 means unprivileged users
+will be able to search all your users.
 
 =cut
 
