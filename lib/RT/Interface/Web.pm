@@ -2265,13 +2265,16 @@ sub ProcessUpdateMessage {
 
     # If, after stripping the signature, we have no message, move the
     # UpdateTimeWorked into adjusted TimeWorked, so that a later
-    # ProcessBasics can deal -- then bail out.
+    # ProcessBasics can deal.  Also store the squelching information in
+    # the ticket object, for notifications triggered by other parts of
+    # the request; then bail out.
     if (    not @attachments
         and not length $args{ARGSRef}->{'UpdateContent'} )
     {
         if ( $args{ARGSRef}->{'UpdateTimeWorked'} ) {
             $args{ARGSRef}->{TimeWorked} = $args{TicketObj}->TimeWorked + delete $args{ARGSRef}->{'UpdateTimeWorked'};
         }
+        _ProcessUpdateMessageRecipients( MessageArgs => {}, %args );
         return;
     }
 
