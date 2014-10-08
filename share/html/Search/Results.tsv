@@ -118,6 +118,7 @@ else {
     $Tickets->OrderBy( FIELD => $OrderBy, ORDER => $Order );
 }
 
+my $i = 0;
 my $ii = 0;
 while (my $row = $Tickets->Next) {
     for my $col (@columns) {
@@ -130,6 +131,7 @@ while (my $row = $Tickets->Next) {
             $val;
         } @$col)."\n");
     }
+    $m->flush_buffer unless ++$i % 10;
 }
 $m->abort();
 
