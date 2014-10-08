@@ -145,7 +145,7 @@ sub HasEntry {
             return $item if lc $item->Content eq lc $args->{Content};
         }
         else {
-            if ( $item->_Value('Content') eq $args->{Content} ) {
+            if ( ($item->_Value('Content') || '') eq $args->{Content} ) {
                 if ( defined $item->LargeContent ) {
                     return $item
                       if defined $args->{LargeContent}
@@ -154,6 +154,8 @@ sub HasEntry {
                 else {
                     return $item unless defined $args->{LargeContent};
                 }
+            } elsif ( $item->LargeContent && $args->{Content} ) {
+                return $item if ($item->LargeContent eq $args->{Content});
             }
         }
     }
