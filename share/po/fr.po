@@ -1459,7 +1459,7 @@ msgid "Can't save %1"
 msgstr "Impossible de sauvegarder %1"
 
 #: share/html/Search/Elements/EditSearches:320
-msgid "Can't save a search without a name"
+msgid "Can't save a search without a Description"
 msgstr "Impossible de sauvegarder une recherche sans nom"
 
 #: share/html/Search/Elements/EditSearches:323

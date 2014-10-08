@@ -1468,7 +1468,7 @@ msgid "Can't save %1"
 msgstr ""
 
 #: share/html/Search/Elements/EditSearches:320
-msgid "Can't save a search without a name"
+msgid "Can't save a search without a Description"
 msgstr ""
 
 #: share/html/Search/Elements/EditSearches:323
