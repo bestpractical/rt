@@ -90,6 +90,11 @@ if ( ( !defined $Default || !length $Default ) && $DefaultsFromTopArguments ) {
     }
 }
 
+if ( (!$Object || !$Object->id) && ( !defined $Default || !length $Default ) && $CustomField->SupportDefaultValues ) {
+    my ( $on ) = grep {$_->isa($CustomField->RecordClassFromLookupType)} $CustomField->ACLEquivalenceObjects;
+    $Default = $CustomField->DefaultValues(Object => $on || RT->System);
+}
+
 my $MaxValues = $CustomField->MaxValues;
 if ($MaxValues == 1 && $Values) {
     # what exactly is this doing?  Without the "unless" it breaks RTFM

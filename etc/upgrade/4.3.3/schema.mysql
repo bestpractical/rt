@@ -1,0 +1,4 @@
+ALTER TABLE Queues
+    DROP COLUMN InitialPriority,
+    DROP COLUMN FinalPriority,
+    DROP COLUMN DefaultDueIn;

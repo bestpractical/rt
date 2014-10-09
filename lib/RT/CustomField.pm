@@ -1040,12 +1040,15 @@ sub ValidateContextObject {
 
 sub _Set {
     my $self = shift;
-
+    my %args = @_;
     unless ( $self->CurrentUserHasRight('AdminCustomField') ) {
         return ( 0, $self->loc('Permission Denied') );
     }
-    return $self->SUPER::_Set( @_ );
-
+    my ($ret, $msg) = $self->SUPER::_Set( @_ );
+    if ( $args{Field} =~ /^(?:MaxValues|Type|LookupType|ValuesClass)$/ ) {
+        $self->CleanupDefaultValues;
+    }
+    return ($ret, $msg);
 }
 
 
@@ -2025,9 +2028,155 @@ sub BasedOnObj {
 }
 
 
+sub SupportDefaultValues {
+    my $self = shift;
+    return 0 unless $self->id;
+    return 0 unless $self->LookupType =~ /RT::(?:Ticket|Transaction)$/;
+    return $self->Type !~ /^(?:Image|Binary)$/;
+}
 
+sub DefaultValues {
+    my $self = shift;
+    my %args = (
+        Object => RT->System,
+        @_,
+    );
+    my $attr = $args{Object}->FirstAttribute('CustomFieldDefaultValues');
+    my $values;
+    $values = $attr->Content->{$self->id} if $attr && $attr->Content;
+    return $values if defined $values;
 
+    if ( !$args{Object}->isa( 'RT::System' ) ) {
+        my $system_attr = RT::System->FirstAttribute( 'CustomFieldDefaultValues' );
+        $values = $system_attr->Content->{$self->id} if $system_attr && $system_attr->Content;
+        return $values if defined $values;
+    }
+    return undef;
+}
 
+sub SetDefaultValues {
+    my $self = shift;
+    my %args = (
+        Object => RT->System,
+        Values => undef,
+        @_,
+    );
+    my $attr = $args{Object}->FirstAttribute( 'CustomFieldDefaultValues' );
+    my ( $old_values, $old_content, $new_values );
+    if ( $attr && $attr->Content ) {
+        $old_content = $attr->Content;
+        $old_values = $old_content->{ $self->id };
+    }
+
+    if ( !$args{Object}->isa( 'RT::System' ) && !defined $old_values ) {
+        my $system_attr = RT::System->FirstAttribute( 'CustomFieldDefaultValues' );
+        if ( $system_attr && $system_attr->Content ) {
+            $old_values = $system_attr->Content->{ $self->id };
+        }
+    }
+
+    if ( defined $old_values && length $old_values ) {
+        $old_values = join ', ', @$old_values if ref $old_values eq 'ARRAY';
+    }
+
+    $new_values = $args{Values};
+    if ( defined $new_values && length $new_values ) {
+        $new_values = join ', ', @$new_values if ref $new_values eq 'ARRAY';
+    }
+
+    return 1 if ( $new_values // '' ) eq ( $old_values // '' );
+
+    my ($ret, $msg) = $args{Object}->SetAttribute(
+        Name    => 'CustomFieldDefaultValues',
+        Content => {
+            %{ $old_content || {} }, $self->id => $args{Values},
+        },
+    );
+
+    $old_values = $self->loc('(no value)') unless defined $old_values && length $old_values;
+    $new_values = $self->loc( '(no value)' ) unless defined $new_values && length $new_values;
+
+    if ( $ret ) {
+        return ( $ret, $self->loc( 'Default values changed from [_1] to [_2]', $old_values, $new_values ) );
+    }
+    else {
+        return ( $ret, $self->loc( "Can't change default values from [_1] to [_2]: [_3]", $old_values, $new_values, $msg ) );
+    }
+}
+
+sub CleanupDefaultValues {
+    my $self  = shift;
+    my $attrs = RT::Attributes->new( $self->CurrentUser );
+    $attrs->Limit( FIELD => 'Name', VALUE => 'CustomFieldDefaultValues' );
+
+    my @values;
+    if ( $self->Type eq 'Select' ) {
+        # Select has a limited list valid values, we need to exclude invalid ones
+        @values = map { $_->Name } @{ $self->Values->ItemsArrayRef || [] };
+    }
+
+    while ( my $attr = $attrs->Next ) {
+        my $content = $attr->Content;
+        next unless $content;
+        my $changed;
+        if ( $self->SupportDefaultValues ) {
+            if ( $self->MaxValues == 1 && ref $content->{ $self->id } eq 'ARRAY' ) {
+                $content->{ $self->id } = $content->{ $self->id }[ 0 ];
+                $changed = 1;
+            }
+
+            my $default_values = $content->{ $self->id };
+            if ( $default_values ) {
+                if ( $self->Type eq 'Select' ) {
+                    if ( ref $default_values ne 'ARRAY' && $default_values =~ /\n/ ) {
+
+                        # e.g. multiple values Freeform cf has 2 default values: foo and "bar",
+                        # the values will be stored as "foo\nbar".  so we need to convert it to ARRAY for Select cf.
+                        # this could happen when we change a Freeform cf into a Select one
+
+                        $default_values = [ split /\s*\n+\s*/, $default_values ];
+                        $content->{ $self->id } = $default_values;
+                        $changed = 1;
+                    }
+
+                    if ( ref $default_values eq 'ARRAY' ) {
+                        my @new_defaults;
+                        for my $default ( @$default_values ) {
+                            if ( grep { $_ eq $default } @values ) {
+                                push @new_defaults, $default;
+                            }
+                            else {
+                                $changed = 1;
+                            }
+                        }
+
+                        $content->{ $self->id } = \@new_defaults if $changed;
+                    }
+                    elsif ( !grep { $_ eq $default_values } @values ) {
+                        delete $content->{ $self->id };
+                        $changed = 1;
+                    }
+                }
+                else {
+                    # ARRAY default values only happen for Select cf. we need to convert it to a scalar for other cfs.
+                    # this could happen when we change a Select cf into a Freeform one
+
+                    if ( ref $default_values eq 'ARRAY' ) {
+                        $content->{ $self->id } = join "\n", @$default_values;
+                        $changed = 1;
+                    }
+                }
+            }
+        }
+        else {
+            if ( exists $content->{ $self->id } ) {
+                delete $content->{ $self->id };
+                $changed = 1;
+            }
+        }
+        $attr->SetContent( $content ) if $changed;
+    }
+}
 
 =head2 id
 

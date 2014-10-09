@@ -1580,6 +1580,16 @@ sub UpdateOption {
     return 1;
 }
 
+sub ObjectHasCustomFieldGrouping {
+    my $self        = shift;
+    my %args        = ( Object => undef, Grouping => undef, @_ );
+    my $object_type = RT::CustomField->_GroupingClass($args{Object});
+    my $groupings   = RT->Config->Get( 'CustomFieldGroupings' );
+    return 0 unless $groupings;
+    return 1 if $groupings->{$object_type} && grep { $_ eq $args{Grouping} } @{ $groupings->{$object_type} };
+    return 0;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

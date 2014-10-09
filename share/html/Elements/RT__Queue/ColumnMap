@@ -57,9 +57,25 @@ my $COLUMN_MAP = {
         attribute => 'Disabled',
         value     => sub { return $_[0]->Disabled? $_[0]->loc('Disabled'): $_[0]->loc('Enabled') },
     },
+    InitialPriority => {
+        title     => 'InitialPriority', # loc
+        value     => sub { $_[0]->DefaultValue('InitialPriority') || '' },
+    },
+    FinalPriority => {
+        title     => 'FinalPriority', # loc
+        value     => sub { $_[0]->DefaultValue('FinalPriority') || '' },
+    },
     Priority => {
         title     => 'Priority', # loc
-        value     => sub { return $_[0]->InitialPriority .'-'. $_[0]->FinalPriority },
+        value     => sub { return join '-', $_[0]->DefaultValue('InitialPriority') || '', $_[0]->DefaultValue('FinalPriority') || '' },
+    },
+    DefaultDueIn => {
+        title     => 'DefaultDueIn', # loc
+        value     => sub { return $_[0]->DefaultValue('Due') || '' },
+    },
+    DefaultStarts => {
+        title     => 'DefaultStarts', # loc
+        value     => sub { return $_[0]->DefaultValue('Starts') || '' },
     },
     Address  => {
         title     => 'Address', # loc
@@ -97,7 +113,6 @@ my $COLUMN_MAP = {
 
 foreach my $field (qw(
     Name Description CorrespondAddress CommentAddress
-    InitialPriority FinalPriority DefaultDueIn
 )) {
     $COLUMN_MAP->{$field} = {
         title => $field,

@@ -120,7 +120,6 @@ $form->value('Searches-body-Available' => $my_tickets );
 $m->click_button(name => 'add');
 $m->content_contains("Dashboard updated");
 
-RT::Record->FlushCache if RT::Record->can('FlushCache');
 $dashboard = RT::Dashboard->new($currentuser);
 $dashboard->LoadById($id);
 
