@@ -54,6 +54,7 @@
 %   } else {
 %       $title = loc("[_1]'s dashboards",$Object->Name);
 %   }
+%   $title =~ s/([\\'])/\\$1/g;
 %   $title = $m->interp->apply_escapes($title, 'h');
 <& /Elements/CollectionList,
     %ARGS,
