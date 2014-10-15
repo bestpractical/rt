@@ -2,9 +2,9 @@ use strict;
 use warnings;
 
 use RT::Test tests => 13;
-
+use CGI::PSGI;
 my $r = $HTML::Mason::Commands::r = bless {}, 'R';
-my $m = $HTML::Mason::Commands::m = bless {}, 'M';
+my $m = $HTML::Mason::Commands::m = bless { cgi_object => CGI::PSGI->new( {} ) }, 'M';
 
 set_config(
     CanonicalizeRedirectURLs => 0,
@@ -39,11 +39,11 @@ is( RT->Config->Get('WebURL'), 'https://localhost/' );
 
 redirect_ok(
     'https://localhost/Ticket/', 'https://localhost/Ticket/',
-    { SERVER_NAME => 'localhost', SERVER_PORT => 443, HTTPS => 'on' },
+    { SERVER_NAME => 'localhost', SERVER_PORT => 443, 'psgi.url_scheme' => 'https' },
 );
 redirect_ok(
     '/Ticket/', 'https://localhost/Ticket/',
-    { SERVER_NAME => 'localhost', SERVER_PORT => 443, HTTPS => 'on' },
+    { SERVER_NAME => 'localhost', SERVER_PORT => 443, 'psgi.url_scheme' => 'https' },
 );
 redirect_ok(
     'https://localhost/Ticket/', 'http://localhost/Ticket/',
@@ -59,7 +59,7 @@ redirect_ok(
 );
 redirect_ok(
     'https://localhost/Ticket/', 'https://example.com/Ticket/',
-    { SERVER_NAME => 'example.com', SERVER_PORT => 443, HTTPS => 'on' },
+    { SERVER_NAME => 'example.com', SERVER_PORT => 443, 'psgi.url_scheme' => 'https' },
 );
 
 sub set_config {
@@ -87,10 +87,7 @@ sub set_config {
 sub redirect_ok {
     my ($to, $expected, $env, $details) = @_;
 
-    local %ENV = %ENV;
-    while ( my ($k, $v) = each %{ $env || {} } ) {
-        $ENV{ $k } = $v;
-    }
+    %{$m->cgi_object->env} = %$env;
     RT::Interface::Web::Redirect( $to );
     is($m->redirect, $expected, $details || "correct for '$to'");
 }
@@ -101,4 +98,5 @@ sub status {};
 package M;
 sub redirect { $_[0]{'last'} = $_[1] if @_ > 1; return $_[0]{'last'} }
 sub abort {}
+sub cgi_object { $_[0]{'cgi_object'} }
 
