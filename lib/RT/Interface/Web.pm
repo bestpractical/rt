@@ -795,7 +795,7 @@ sub _SessionCookieName {
 
 sub LoadSessionFromCookie {
 
-    my %cookies       = CGI::Cookie->fetch;
+    my %cookies       = CGI::Cookie->parse(ENV('HTTP_COOKIE'));
     my $cookiename    = _SessionCookieName();
     my $SessionCookie = ( $cookies{$cookiename} ? $cookies{$cookiename}->value : undef );
     tie %HTML::Mason::Commands::session, 'RT::Interface::Web::Session', $SessionCookie;
@@ -863,7 +863,7 @@ sub Redirect {
         && $uri->host eq $server_uri->host
         && $uri->port eq $server_uri->port )
     {
-        if ( defined ENV('HTTPS') and ENV('HTTPS') eq 'on' ) {
+        if ( ENV('psgi.url_scheme') && ENV('psgi.url_scheme') eq 'https' ) {
             $uri->scheme('https');
         } else {
             $uri->scheme('http');
@@ -1542,7 +1542,8 @@ sub PotentialPageAction {
 
 sub ENV {
     my $name = shift;
-    return $name ? $ENV{$name} : \%ENV;
+    my $env = $HTML::Mason::Commands::m->cgi_object->env;
+    return $name ? $env->{$name} : $env;
 }
 
 package HTML::Mason::Commands;

@@ -286,9 +286,7 @@ sub PSGIApp {
 
         my $ret;
         {
-            # XXX: until we get rid of all $ENV stuff.
-            local %ENV = (%ENV, CGI::Emulate::PSGI->emulate_environment($env));
-
+            local %ENV = (%ENV, map { $_ => $env->{$_} } grep { exists $env->{$_} } qw/HTTP_ACCEPT_LANGUAGE REQUEST_METHOD PATH/);
             $ret = $h->handle_psgi($env);
         }
 
@@ -298,7 +296,7 @@ sub PSGIApp {
             my $orig_ret = $ret;
             $ret = sub {
                 my $respond = shift;
-                local %ENV = (%ENV, CGI::Emulate::PSGI->emulate_environment($env));
+                local %ENV = (%ENV, map { $_ => $env->{$_} } grep { exists $env->{$_} } qw/HTTP_ACCEPT_LANGUAGE REQUEST_METHOD PATH/);
                 $orig_ret->($respond);
             };
         }
