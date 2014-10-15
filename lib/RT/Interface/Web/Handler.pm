@@ -266,6 +266,15 @@ sub PSGIApp {
     my $mason = sub {
         my $env = shift;
 
+        # mod_fastcgi starts with an empty %ENV, but provides it on each
+        # request.  Pick it up and cache it during the first request.
+        $ENV{PATH} //= $env->{PATH};
+
+        # HTML::Mason::Utils::cgi_request_args uses $ENV{QUERY_STRING} to
+        # determine if to call url_param or not
+        # (see comments in HTML::Mason::Utils::cgi_request_args)
+        $ENV{QUERY_STRING} = $env->{QUERY_STRING};
+
         {
             my $res = $self->CheckModPerlHandler($env);
             return $self->_psgi_response_cb( $res->finalize ) if $res;
@@ -292,29 +301,7 @@ sub PSGIApp {
         }
         $env->{PATH_INFO} = $self->_mason_dir_index( $h->interp, $req->path_info);
 
-        my $ret;
-        {
-            # XXX: until we get rid of all $ENV stuff.
-            local %ENV = (%ENV, CGI::Emulate::PSGI->emulate_environment($env));
-
-            $ret = $h->handle_psgi($env);
-        }
-
-        $RT::Logger->crit($@) if $@ && $RT::Logger;
-        warn $@ if $@ && !$RT::Logger;
-        if (ref($ret) eq 'CODE') {
-            my $orig_ret = $ret;
-            $ret = sub {
-                my $respond = shift;
-                local %ENV = (%ENV, CGI::Emulate::PSGI->emulate_environment($env));
-                $orig_ret->($respond);
-            };
-        }
-
-        return $self->_psgi_response_cb($ret,
-                                        sub {
-                                            $self->CleanupRequest()
-                                        });
+        return $self->_psgi_response_cb($h->handle_psgi($env), sub { $self->CleanupRequest() });
     };
 
     my $app = $self->StaticWrap($mason);

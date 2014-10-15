@@ -220,6 +220,12 @@ sub LanguageHandle {
         elsif ( $self->id && ($self->id == (RT->SystemUser->id||0) || $self->id == (RT->Nobody->id||0)) ) {
             # don't use ENV magic for system users
             push @_, 'en';
+        } elsif ($HTML::Mason::Commands::m) {
+            # Detect from the HTTP header.
+            require I18N::LangTags::Detect;
+            push @_, I18N::LangTags::Detect->http_accept_langs(
+                RT::Interface::Web::RequestENV('HTTP_ACCEPT_LANGUAGE')
+            );
         }
 
         $self->{'LangHandle'} = RT::I18N->get_handle(@_);

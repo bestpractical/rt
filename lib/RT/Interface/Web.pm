@@ -853,7 +853,7 @@ sub _SessionCookieName {
 
 sub LoadSessionFromCookie {
 
-    my %cookies       = CGI::Cookie->fetch;
+    my %cookies       = CGI::Cookie->parse(RequestENV('HTTP_COOKIE'));
     my $cookiename    = _SessionCookieName();
     my $SessionCookie = ( $cookies{$cookiename} ? $cookies{$cookiename}->value : undef );
     tie %HTML::Mason::Commands::session, 'RT::Interface::Web::Session', $SessionCookie;
@@ -902,12 +902,7 @@ sub GetWebURLFromRequest {
 
     my $uri = URI->new( RT->Config->Get('WebURL') );
 
-    if ( defined RequestENV('HTTPS') and RequestENV('HTTPS') eq 'on' ) {
-        $uri->scheme('https');
-    }
-    else {
-        $uri->scheme('http');
-    }
+    $uri->scheme(RequestENV('psgi.url_scheme') || 'http');
 
     # [rt3.fsck.com #12716] Apache recommends use of $SERVER_HOST
     $uri->host( RequestENV('SERVER_HOST') || RequestENV('HTTP_HOST') || RequestENV('SERVER_NAME') );
@@ -1803,7 +1798,8 @@ sub GetCustomFieldInputNamePrefix {
 
 sub RequestENV {
     my $name = shift;
-    return $name ? $ENV{$name} : \%ENV;
+    my $env = $HTML::Mason::Commands::m->cgi_object->env;
+    return $name ? $env->{$name} : $env;
 }
 
 package HTML::Mason::Commands;
