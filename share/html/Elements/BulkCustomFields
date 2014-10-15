@@ -91,7 +91,8 @@
 %   $RT::Logger->crit("Unknown CustomField type: " . $cf->Type);
 %   next
 % }
-  <label><input type="checkbox" name="Bulk-Delete-CustomField-<% $cf_id %>-AllValues" value="1"><em>check to delete all values</em></label>
+  <label><input type="checkbox" name="Bulk-Delete-CustomField-<% $cf_id %>-AllValues" value="1">
+    <em><&|/l&>(Check to delete all values)</&></em></label>
 </td>
 </tr>
 % }
