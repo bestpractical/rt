@@ -54,6 +54,7 @@ use File::Temp;
 use File::Spec;
 use File::Path qw(make_path rmtree);
 use File::Copy qw(copy);
+use Encode qw(decode_utf8);
 use HTML::Entities qw(encode_entities);
 use List::Util qw(first);
 use RT::Pod::HTMLBatch;
@@ -149,7 +150,7 @@ for my $file (<README* UPGRADING*>) {
         or warn "Can't open $file: $!", next;
 
     my $str = "";
-    $str .= encode_entities($_) while <$source>;
+    $str .= encode_entities(decode_utf8($_)) while <$source>;
     close $source;
 
     $str = "<pre>$str</pre>";
