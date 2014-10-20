@@ -1,0 +1,1 @@
+ALTER TABLE Articles ADD COLUMN Disabled int(2) NOT NULL DEFAULT 0;

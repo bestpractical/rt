@@ -64,6 +64,17 @@
 % }
 </td>
 </tr>
+% if ($ARGS{'id'} eq 'new' || $ArticleObj->CurrentUserHasRight('DeleteArticle')) {
+<tr>
+<td class="label"><&|/l&>Disabled</&></td>
+<td>
+    <select name="Disabled">
+        <option <% ( $ArticleObj->id && $ArticleObj->Disabled || $ARGS{'Disabled'} ) ? 'selected="selected"' : '' |n %> value="1"><&|/l&>Yes</&></option>
+        <option <% ( $ArticleObj->id && $ArticleObj->Disabled || $ARGS{'Disabled'} ) ? '' : 'selected="selected"' |n %> value="0"><&|/l&>No</&></option>
+    </select>
+</td>
+</tr>
+% }
 <%INIT>
 </%INIT>
 <%ARGS>

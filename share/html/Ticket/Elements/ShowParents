@@ -47,6 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <ul>
 % while (my $link = $member_of->Next) {
+% next if (UNIVERSAL::isa($link->TargetObj, 'RT::Article')) && $link->TargetObj->Disabled;
 <li><& /Elements/ShowLink, URI => $link->TargetURI &><br />
 % }
 </ul>

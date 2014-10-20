@@ -198,6 +198,7 @@ elsif ( $id eq 'new' ) {
         Name    => $ARGS{'Name'},
         Class   => $ARGS{'Class'},
         Topics  => $ARGS{'Topics'},
+        Disabled => $ARGS{'Disabled'},
         %create_args
     );
     push( @results, $msg );
@@ -239,7 +240,7 @@ else {
             Why => loc("Unable to load article") );
     }
 
-    my @attribs = qw(Name Summary Class);
+    my @attribs = qw(Name Summary Class Disabled);
 
     @results = UpdateRecordObject(
         AttributesRef => \@attribs,

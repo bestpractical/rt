@@ -59,6 +59,7 @@ $depends_on = $Ticket->DependsOn;
 
 while ( my $link = $depends_on->Next ) {
     my $target = $link->TargetObj;
+    next if UNIVERSAL::isa($target,'RT::Article') && $target->Disabled;
     if ( $target && $target->isa('RT::Ticket') ) {
         if ( $target->QueueObj->IsInactiveStatus( $target->Status ) ) {
             push( @inactive, $link->TargetURI );
@@ -88,6 +89,7 @@ while ( my $link = $depends_on->Next ) {
     <td class="value">
 <ul>
 % while (my $Link = $Ticket->DependedOnBy->Next) {
+% next if UNIVERSAL::isa($Link->BaseObj, 'RT::Article') && $Link->BaseObj->Disabled;
 <li><& ShowLink, URI => $Link->BaseURI &></li>
 % }
 </ul>
@@ -118,6 +120,7 @@ while ( my $link = $depends_on->Next ) {
     <td class="value">
 <ul>
 % while (my $Link = $Ticket->RefersTo->Next) {
+% next if UNIVERSAL::isa($Link->TargetObj, 'RT::Article') && $Link->TargetObj->Disabled;
 <li><& ShowLink, URI => $Link->TargetURI &></li>
 % }
 </ul>
@@ -132,6 +135,7 @@ while ( my $link = $depends_on->Next ) {
     <td class="value">
     <ul>
 % while (my $Link = $Ticket->ReferredToBy->Next) {
+% next if UNIVERSAL::isa($Link->BaseObj, 'RT::Article') && $Link->BaseObj->Disabled;
 % next if (UNIVERSAL::isa($Link->BaseObj, 'RT::Ticket')  && $Link->BaseObj->Type eq 'reminder');
 <li><& ShowLink, URI => $Link->BaseURI &></li>
 % }

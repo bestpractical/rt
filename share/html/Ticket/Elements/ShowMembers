@@ -47,6 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <ul>
 % while (my $link = $members->Next) {
+% next if (UNIVERSAL::isa($link->BaseObj, 'RT::Article')) && $link->BaseObj->Disabled;
 <li><& /Elements/ShowLink, URI => $link->BaseURI &><br />
 % next if $link->BaseObj and $checked->{$link->BaseObj->id};
 % if ($depth < 8) {

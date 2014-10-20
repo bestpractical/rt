@@ -80,7 +80,7 @@ ok ($val, "Article Deleted: $msg");
 
  $a2 = RT::Article->new($RT::SystemUser);
 $a2->Load($id);
-ok (!$a2->Id, "Did not find the article");
+ok ($a2->Disabled, "the article is disabled");
 
 # NOT OK
 #$RT::Handle->SimpleQuery("DELETE FROM Links");
