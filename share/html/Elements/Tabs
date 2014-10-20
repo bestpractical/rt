@@ -482,7 +482,7 @@ my $build_main_nav = sub {
         $settings->child( about_me       => title => loc('About me'),       path => '/User/Prefs.html' );
         $settings->child( search_options => title => loc('Search options'), path => '/Prefs/SearchOptions.html' );
         $settings->child( myrt           => title => loc('RT at a glance'), path => '/Prefs/MyRT.html' );
-        $settings->child( quicksearch    => title => loc('Quick search'),   path => '/Prefs/Quicksearch.html' );
+        $settings->child( queue_list    => title => loc('Queue list'),   path => '/Prefs/QueueList.html' );
 
         my $search_menu = $settings->child( 'saved-searches' => title => loc('Saved Searches') );
         my $searches = [ $m->comp( "/Search/Elements/SearchesForObject",

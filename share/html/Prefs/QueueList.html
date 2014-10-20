@@ -45,22 +45,64 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="ticket-overview">
-<&|/Widgets/TitleBox,
-    title => loc("Quick search"),
-    bodyclass => "",
-    titleright => loc("Edit"),
-    titleright_href => RT->Config->Get('WebPath').'/Prefs/Quicksearch.html',
+<& /Elements/Header, Title => $title &>
+<& /Elements/Tabs
 &>
-<& $comp,
-   queue_filter => sub { $_->CurrentUserHasRight('ShowTicket') && !exists $unwanted->{$_->Name} },
-&>
-</&>
-</div>
+<& /Elements/ListActions, actions => \@actions &>
+<h1><&|/l&>Select queues to be displayed on the "RT at a glance" page</&></h1>
+<form method="post" action="QueueList.html" name="Preferences">
+<ul>
+% for my $queue (@queues) {
+<li><input type="checkbox" class="checkbox" name="Want-<%$queue->Name%>" value="1"
+% unless ($unwanted->{$queue->Name}) {
+checked="checked"
+% }
+/><%$queue->Name%><% $queue->Description ? ': '.$queue->Description : '' %></li>
+% }
+</ul>
+
+<& /Elements/Submit,
+    Caption             => loc("Save Changes"),
+    Label               => loc('Save'),
+    Name                => 'Save',
+    Reset               => 1,
+    CheckAll            => 1,
+    ClearAll            => 1,
+    CheckboxNameRegex   => '/^Want-/',
+    &>
+
+</form>
+
 <%INIT>
-my $unwanted = $session{'CurrentUser'}->UserObj->Preferences('QuickSearch', {});
-my $comp = $SplitByLifecycle? '/Elements/QueueSummaryByLifecycle' : '/Elements/QueueSummaryByStatus';
+my @actions;
+my $title = loc("Customize").' '.loc("Queue list");
+my $user = $session{'CurrentUser'}->UserObj;
+my $unwanted = $user->Preferences('QueueList', {});
+my $Queues = RT::Queues->new($session{'CurrentUser'});
+$Queues->UnLimit;
+
+my $right = 'ShowTicket';
+$m->callback(
+    CallbackName    => 'ModifyQueues',
+    Queues          => \$Queues,
+    Right           => \$right,
+    Unwanted        => $unwanted,
+);
+
+my @queues = grep { $right ? $_->CurrentUserHasRight($right) : 1 } @{$Queues->ItemsArrayRef};
+
+if ($ARGS{'Save'}) {
+    for my $queue (@queues) {
+        if ($ARGS{"Want-".$queue->Name}) {
+	    delete $unwanted->{$queue->Name};
+	}
+        else {
+	    ++$unwanted->{$queue->Name};
+        }
+    }
+
+    my ($ok, $msg) = $user->SetPreferences('QueueList', $unwanted);
+    push @actions, $ok ? loc('Preferences saved.') : $msg;
+}
+
 </%INIT>
-<%ARGS>
-$SplitByLifecycle => 1
-</%ARGS>
