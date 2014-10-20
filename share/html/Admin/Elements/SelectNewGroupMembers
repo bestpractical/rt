@@ -48,7 +48,7 @@
 <table>
 % if ( $Show ne 'Groups' ) {
 <tr>
-<td class="label"><&|/l&>Add user</&>:</td>
+<td class="label"><label for="<% $Name %>Users"><&|/l&>Add user</&>:</label></td>
 <td>
 <input type="text" value="" name="<% $Name %>Users" id="<% $Name %>Users" data-autocomplete="Users" data-autocomplete-return="Name" data-autocomplete-privileged="1" data-autocomplete-exclude="<% $user_ids |n %>" />
 <script type="text/javascript">
@@ -66,7 +66,7 @@ jQuery(function(){
 
 % if ( $Show ne 'Users' ) {
 <tr>
-<td class="label"><&|/l&>Add group</&>:</td>
+<td class="label"><label for="<% $Name %>Groups"><&|/l&>Add group</&>:</label></td>
 <td>
 <input type="text" value="" name="<% $Name %>Groups" id="<% $Name %>Groups" data-autocomplete="Groups" data-autocomplete-exclude="<% $group_ids |n %>" />
 <script type="text/javascript">
