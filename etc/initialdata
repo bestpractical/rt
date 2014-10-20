@@ -872,7 +872,7 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
                 },
                 {
                     type => 'component',
-                    name => 'Quicksearch'           # loc
+                    name => 'QueueList'           # loc
                 },
                 {
                     type => 'component',

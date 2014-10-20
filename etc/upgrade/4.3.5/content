@@ -1,0 +1,73 @@
+use strict;
+use warnings;
+our @Final = (
+    sub {
+        my $attrs = RT::Attributes->new(RT->SystemUser);
+        $attrs->Limit( FIELD => 'Name', VALUE => 'HomepageSettings' );
+        $attrs->Limit( FIELD => 'Name', VALUE => 'Pref-HomepageSettings' );
+        while ( my $attr = $attrs->Next ) {
+            my $content = $attr->Content;
+            my $changed;
+            for my $pane ( qw/body sidebar/ ) {
+                my @new;
+                for my $value ( @{$content->{$pane}} ) {
+                    if ( $value->{name} eq 'Quicksearch' && $value->{type} eq 'component' ) {
+                        push @new, { %$value, name => 'QueueList' };
+                        $changed = 1;
+                    }
+                    else {
+                        push @new, $value;
+                    }
+                }
+                $content->{$pane} = \@new;
+            }
+            if ( $changed ) {
+                my ( $ret, $msg ) = $attr->SetContent($content);
+                unless ( $ret ) {
+                    RT->Logger->error( "Failed to update content of attribute #" . $attr->id . ": $msg");
+                }
+            }
+        }
+
+        $attrs = RT::Attributes->new(RT->SystemUser);
+        $attrs->Limit( FIELD => 'Name', VALUE => 'Dashboard' );
+        while ( my $attr = $attrs->Next ) {
+            my $content = $attr->Content;
+            my $changed;
+            for my $pane ( qw/body sidebar/ ) {
+                my @new;
+                for my $value ( @{$content->{Panes}{$pane}} ) {
+                    if ( $value->{component} eq 'Quicksearch' ) {
+                        push @new,
+                          {
+                            %$value,
+                            component   => 'QueueList',
+                            description => 'QueueList',
+                            path        => '/Elements/QueueList',
+                          };
+                        $changed = 1;
+                    }
+                    else {
+                        push @new, $value;
+                    }
+                }
+                $content->{Panes}{$pane} = \@new;
+            }
+            if ( $changed ) {
+                my ( $ret, $msg ) = $attr->SetContent($content);
+                unless ( $ret ) {
+                    RT->Logger->error( "Failed to update content of attribute #" . $attr->id . ": $msg");
+                }
+            }
+        }
+
+        $attrs = RT::Attributes->new(RT->SystemUser);
+        $attrs->Limit( FIELD => 'Name', VALUE => 'Pref-QuickSearch' );
+        while ( my $attr = $attrs->Next ) {
+            my ( $ret, $msg ) = $attr->SetName('Pref-QueueList');
+            unless ( $ret ) {
+                RT->Logger->error( "Failed to update name of attribute #" . $attr->id . ": $msg");
+            }
+        }
+    },
+);

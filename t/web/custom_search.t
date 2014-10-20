@@ -22,7 +22,7 @@ like ($t_link->url, qr/$id/, 'link to the ticket we created');
 $m->content_lacks ('customsearch@localhost', 'requestor not displayed ');
 $m->get ( $url.'Prefs/MyRT.html' );
 my $cus_hp = $m->find_link( text => "My Tickets" );
-my $cus_qs = $m->find_link( text => "Quick search" );
+my $cus_qs = $m->find_link( text => "Queue list" );
 $m->get ($cus_hp);
 $m->content_contains('highest priority tickets');
 
@@ -58,7 +58,7 @@ $m->get( $url );
 $m->content_lacks ('customsearch@localhost', 'requestor not displayed ');
 
 
-# try to disable General from quick search
+# try to disable General from queue list
 
 # Note that there's a small problem in the current implementation,
 # since ticked quese are wanted, we do the invesrsion.  So any
