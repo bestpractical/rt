@@ -53,7 +53,7 @@
 <th><&|/l&>Sort</&></th>
 <th><&|/l&>Name</&></th>
 <th><&|/l&>Description</&></th>
-% if ( $CustomField->Type ne 'Combobox' ) {
+% if ( $CustomField->Type ne 'Combobox' && $Categories ) {
 <th class="categoryheader"><&|/l&>Category</&></th>
 % }
 </tr>
@@ -63,18 +63,12 @@
 <td><input type="text" size="3"  name="<% $paramtag %>-SortOrder"   /></td>
 <td><input type="text" size="25" name="<% $paramtag %>-Name"        /></td>
 <td><input type="text" size="45" name="<% $paramtag %>-Description" /></td>
-% if ( $CustomField->Type ne 'Combobox' ) {
+% if ( $CustomField->Type ne 'Combobox' && $Categories ) {
 <td>
-% my $BasedOnObj = $CustomField->BasedOnObj;
-% if ( $BasedOnObj and $BasedOnObj->id ) {
-% my $Categories = $BasedOnObj->Values;
 <select class="editcategory" name="<% $paramtag %>-Category" size="1">
 <option value=""><&|/l&>(no value)</&></option>
 % while (my $Value = $Categories->Next) {
 <option value="<% $Value->Name %>"><% $Value->Name %></option>
-% }
-%   } else {
-<input type="text" size="10" class="editcategory" name="<% $paramtag %>-Category" value="" />
 %   }
 </td>
 % }
@@ -83,6 +77,15 @@
 </tr>
 
 </table>
+
+<%init>
+my $BasedOnObj = $CustomField->BasedOnObj;
+my $Categories;
+if ($BasedOnObj and $BasedOnObj->Id) {
+    $Categories = $BasedOnObj->Values;
+}
+</%init>
+
 <%args>
 $CustomField => undef
 </%args>

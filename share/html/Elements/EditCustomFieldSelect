@@ -51,16 +51,7 @@
 % my $selected = 0;
 % my @category;
 % my $out = $m->scomp('SELF:options', %ARGS, SelectedRef => \$selected, CategoryRef => \@category);
-% if (!$HideCategory and @category and not $CustomField->BasedOnObj->id) {
-%# XXX - Hide this select from w3m?
-  <select onchange="filter_cascade_by_id(<% $name |n,j %>, this.value)" name="<% $name %>-Category" class="CF-<%$CustomField->id%>-Edit">
-    <option value=""<% !$selected && qq[ selected="selected"] |n %>><&|/l&>-</&></option>
-%   foreach my $cat (@category) {
-%     my ($depth, $name) = @$cat;
-      <option value="<% $name %>"><% '&nbsp;' x $depth |n %><% $name %></option>
-%   }
-    </select><br />
-% } elsif ($CustomField->BasedOnObj->id) {
+% if ($CustomField->BasedOnObj->id) {
 
 <script type="text/javascript"><!--
 jQuery(  function () {
