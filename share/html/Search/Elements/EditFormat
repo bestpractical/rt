@@ -59,7 +59,8 @@
 <td valign="top"><select size="6" name="SelectDisplayColumns" multiple="multiple">
 % my %seen;
 % foreach my $field ( grep !$seen{lc $_}++, @$AvailableColumns) {
-<option value="<% $field %>"><% $field =~ /^(?:CustomField|CF)\./ ? $field : loc($field) %></option>
+<option value="<% $field %>" <% $selected{$field} ? 'selected="selected"' : '' |n%>>\
+<% $field =~ /^(?:CustomField|CF)\./ ? $field : loc($field) %></option>
 % }
 </select></td>
 <td>
@@ -105,8 +106,10 @@
 <td valign="top">
 <select size="4" name="CurrentDisplayColumns">
 % my $i=0;
+% my $current = $ARGS{CurrentDisplayColumns} || ''; $current =~ s/^\d+>//;
 % foreach my $field ( @$CurrentFormat ) {
-<option value="<% $i++ %>><% $field->{Column} %>"><% $field->{Column} =~ /^(?:CustomField|CF)\./ ? $field->{Column} : loc( $field->{Column} ) %></option>
+<option value="<% $i++ %>><% $field->{Column} %>" <% $field->{Column} eq $current ? 'selected="selected"' : '' |n%>>\
+<% $field->{Column} =~ /^(?:CustomField|CF)\./ ? $field->{Column} : loc( $field->{Column} ) %></option>
 % }
 </select>
 <br />
@@ -120,6 +123,12 @@
 </tr>
 </table>
 
+<%init>
+my $selected = $ARGS{SelectDisplayColumns};
+$selected = [ $selected ] unless ref $selected;
+my %selected;
+$selected{$_}++ for grep {defined} @{ $selected };
+</%init>
 <%ARGS>
 $CurrentFormat => undef
 $AvailableColumns => undef
