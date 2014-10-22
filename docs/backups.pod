@@ -46,11 +46,98 @@ you have more resources, you can also setup replication to a slave using binary
 logs and backup from there as necessary.  This not only duplicates the data,
 but lets you take backups without putting load on your production server.
 
+=head4 Restoring from backups
+
+=over
+
+=item New Database Server (Catastrophic Failure)
+
+If you are starting fresh with a new database server (because your old
+one no longer works or because you want to set up a dev machine to
+test on) you will need to create a fresh database and database user
+for RT to use.  RT can do that for you using:
+
+    /opt/rt4/sbin/rt-setup-database --action create,acl
+
+By default, this will create an rt4 database and an rt_user user.  If
+you've specified a custom password in RT_SiteConfig.pm, RT will use
+that.  Once the database and user exist, you can restore from your
+backup using:
+
+    gunzip -c rt-20141014.sql.gz | mysql -uroot -p rt4
+
+Changing -uroot -p as needed to access the database as a user with
+enough rights to handle creating tables.
+
+=item Restore over an existing database
+
+If something terrible happened this morning and you want to roll back to
+your backups, or if you want to update a dev server using your backups,
+this is straightforward on MySQL.
+
+    gunzip -c rt-20141014.sql.gz | mysql -uroot -p rt4
+
+MySQL will drop any existing tables before recreating and repopulating
+them.  It will leave the database and the rt_user untouched.  This is
+not suitable for restoring on a fresh database install since there will
+be no rt4 database or rt_user user.
+
+=back
+
 =head3 PostgreSQL
 
     ( pg_dump rt4 --table=sessions --schema-only; \
       pg_dump rt4 --exclude-table=sessions ) \
         | gzip > rt-`date +%Y%m%d`.sql.gz
+
+=head4 Restoring from backups
+
+=over
+
+=item New Database Server (Catastrophic Failure)
+
+If you are starting fresh with a new database server (because your old
+one no longer works or because you want to set up a dev machine to
+test on) you will need to create a fresh database and database user
+for RT to use.  RT can do part of that for you using:
+
+    /opt/rt4/sbin/rt-setup-database --action create
+
+You will need to create the rt_user separately.
+
+    createuser -P rt_user
+
+This will prompt you for a password.  You should ensure that it is the
+same password you have configured in RT_SiteConfig.pm or RT_Config.pm
+using C<$DatabasePassword>.
+
+Once the database and user exist, you can restore from your backup which
+will create tables, insert data and configure rights for your rt_user
+user.
+
+    gunzip -c rt-20141014.sql.gz | psql rt4
+
+This may need to be run as the postgres user or some other admin level
+user who can create tables.
+
+=item Restore over an existing database
+
+If something terrible happened this morning and you want to roll back to
+your backups, or if you want to update a dev server using your backups,
+you will need to drop your database and recreate a fresh one to restore
+into.  RT can drop and recreate the database for you using:
+
+    /opt/rt4/sbin/rt-setup-database --action drop
+    /opt/rt4/sbin/rt-setup-database --action create
+
+Remember that this will completely destroy the existing data and create
+a fresh database.  Your rt_user user will remain untouched.  Once this
+is complete, you can restore from your backup which will create tables
+and insert data and configure rights for the rt_user.
+
+    gunzip -c rt-20141014.sql.gz | psql rt4
+
+=back
 
 =head2 FILESYSTEM
 
