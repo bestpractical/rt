@@ -1428,7 +1428,7 @@ sub UpdateCustomFields {
         my $cfid   = $1;
         my $values = $args->{$arg};
         my $cf = $self->LoadCustomFieldByIdentifier($cfid);
-        next unless $cf->ObjectTypeFromLookupType->isa(ref $self);
+        next unless $cf->ObjectTypeFromLookupType($cf->__Value('LookupType'))->isa(ref $self);
         foreach
           my $value ( UNIVERSAL::isa( $values, 'ARRAY' ) ? @$values : $values )
         {
