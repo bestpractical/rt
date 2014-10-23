@@ -61,6 +61,10 @@ our @GROUPINGS = (
 
     Queue  => 'Queue',                  #loc_left_pair
 
+    InitialPriority => 'Priority',          #loc_left_pair
+    FinalPriority   => 'Priority',          #loc_left_pair
+    Priority        => 'Priority',          #loc_left_pair
+
     Owner         => 'User',            #loc_left_pair
     Creator       => 'User',            #loc_left_pair
     LastUpdatedBy => 'User',            #loc_left_pair
@@ -93,6 +97,9 @@ our %GROUPINGS_META = (
             return $queue->Name;
         },
         Localize => 1,
+    },
+    Priority => {
+        Sort => 'numeric raw',
     },
     User => {
         SubFields => [grep RT::User->_Accessible($_, "public"), qw(
