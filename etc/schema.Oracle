@@ -279,8 +279,7 @@ CREATE TABLE Tickets (
         LastUpdatedBy           NUMBER(11,0) DEFAULT 0 NOT NULL,
         LastUpdated             DATE,
         Creator                 NUMBER(11,0) DEFAULT 0 NOT NULL,
-        Created                 DATE,
-        Disabled                NUMBER(11,0) DEFAULT 0 NOT NULL
+        Created                 DATE
 );
 CREATE INDEX Tickets1 ON Tickets (Queue, Status);
 CREATE INDEX Tickets2 ON Tickets (Owner);

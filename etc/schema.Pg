@@ -435,7 +435,6 @@ CREATE TABLE Tickets (
   LastUpdated TIMESTAMP NULL  ,
   Creator integer NOT NULL DEFAULT 0  ,
   Created TIMESTAMP NULL  ,
-  Disabled integer NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
 
 );
