@@ -128,7 +128,7 @@ sub __DependsOn
 
 # Object custom field values
     my $objs = $self->CustomFieldValues;
-    $objs->{'find_expired_rows'} = 1;
+    $objs->{'find_disabled_rows'} = 1;
     push( @$list, $objs );
 
 # Object attributes

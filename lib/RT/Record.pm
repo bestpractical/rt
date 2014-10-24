@@ -2440,7 +2440,7 @@ sub FindDependencies {
             and $self->can("CustomFieldValues") )
     {
         $objs = $self->CustomFieldValues; # Actually OCFVs
-        $objs->{find_expired_rows} = 1;
+        $objs->{find_disabled_rows} = 1;
         $deps->Add( in => $objs );
     }
 
