@@ -353,21 +353,18 @@ $showrows->(
         "/Elements/EditTimeValue",
         Name    => 'TimeEstimated',
         Default => $ARGS{TimeEstimated} || '',
-        InUnits => $ARGS{'TimeEstimated-TimeUnits'}
         ).'</span>',
 
     loc("Time Worked") => '<span class="timefield">'.$m->scomp(
         "/Elements/EditTimeValue",
         Name    => 'TimeWorked',
         Default => $ARGS{TimeWorked} || '',
-        InUnits => $ARGS{'TimeWorked-TimeUnits'}
     ). '</span>',
 
     loc("Time Left") => '<span class="timefield">'.$m->scomp(
         "/Elements/EditTimeValue",
         Name    => 'TimeLeft',
         Default => $ARGS{TimeLeft} || '',
-        InUnits => $ARGS{'TimeLeft-TimeUnits'}
     ).'</span>',
 );
 

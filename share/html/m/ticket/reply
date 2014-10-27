@@ -78,7 +78,6 @@
 <& /Elements/EditTimeValue,
     Name => 'UpdateTimeWorked',
     Default => $ARGS{UpdateTimeWorked}||'',
-    InUnits => $ARGS{'UpdateTimeWorked-TimeUnits'}||'minutes',
 &>
 </span></div>
 % $m->callback( %ARGS, CallbackName => 'AfterWorked', Ticket => $t );
