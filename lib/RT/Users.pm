@@ -386,19 +386,34 @@ sub WhoHaveRight {
         return (undef);
     }
 
+    my @ids = (0);
+
     my $from_role = $self->Clone;
     $from_role->WhoHaveRoleRight( %args );
+    $from_role->Columns( 'id' );
+    $from_role->OrderBy();
+    $from_role->{'joins_are_distinct'} = 1;
+    while (my $row = $from_role->Next) {
+        push @ids, $row->id;
+    }
 
     my $from_group = $self->Clone;
     $from_group->WhoHaveGroupRight( %args );
+    $from_group->Columns( 'id' );
+    $from_group->OrderBy();
+    $from_group->{'joins_are_distinct'} = 1;
+    while (my $row = $from_group->Next) {
+        push @ids, $row->id;
+    }
 
-    #XXX: DIRTY HACK
-    use DBIx::SearchBuilder::Union;
-    my $union = DBIx::SearchBuilder::Union->new();
-    $union->add( $from_group );
-    $union->add( $from_role );
+    my $union = RT::Users->new( $self->CurrentUser );
+    while ( @ids > 1000 ) {
+        my @batch = splice( @ids, 0, 1000 );
+        $union->Limit( FIELD => 'id', OPERATOR => 'IN', VALUE => \@batch );
+    }
+    $union->Limit( FIELD => 'id', OPERATOR => 'IN', VALUE => \@ids );
+    $union->{'handled_disabled_column'} = 1;
     %$self = %$union;
-    bless $self, ref($union);
 
     return;
 }
