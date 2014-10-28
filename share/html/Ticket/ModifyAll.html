@@ -95,7 +95,7 @@
   <tr>
     <td class="label"><&|/l&>Update Type</&>:</td>
     <td class="entry">
-      <select name="UpdateType">
+      <select name="UpdateType" id="UpdateType">
 % if ($CanComment) {
         <option value="private" ><&|/l&>Comments (Not sent to requestors)</&></option>
 % }
@@ -119,7 +119,7 @@
 
   <tr>
     <td class="labeltop"><&|/l&>Content</&>:</td>
-    <td class="entry">
+    <td class="entry messagebox-container action-<% $ARGS{UpdateType} || ($CanComment ? 'private' : 'response') %>">
 % $m->callback( %ARGS, CallbackName => 'BeforeMessageBox' );
 % if (defined $ARGS{UpdateContent} && length($ARGS{UpdateContent})) {
     <& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent}, IncludeSignature => 0 &>

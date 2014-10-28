@@ -100,3 +100,11 @@ jQuery( function() {
         }
     });
 });
+
+jQuery(function() {
+    jQuery("#UpdateType").change(function(ev) {
+        jQuery(".messagebox-container")
+            .removeClass("action-response action-private")
+            .addClass("action-"+ev.target.value);
+    });
+});
