@@ -512,6 +512,7 @@ sub WhoHaveGroupRight
             my $id = 0;
             $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
             next if $seen{"$type-$id"}++;
+            next unless $type->DOES("RT::Record::Role::Rights");
 
             my $object_clause = "$acl.ObjectType = '$type'";
             $object_clause   .= " AND $acl.ObjectId   = $id" if $id;
@@ -524,6 +525,7 @@ sub WhoHaveGroupRight
             $check_objects = "($acl.ObjectType != 'RT::System')";
         }
     }
+    $check_objects ||= "$acl.id = 0";
     $self->_AddSubClause( "WhichObject", "($check_objects)" );
     
     my $group_members = $self->_JoinGroupMembersForGroupRights( %args, ACLAlias => $acl );
