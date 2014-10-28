@@ -944,6 +944,7 @@ push @CHECKS, 'Links: wrong organization' => sub {
         { model => 'Link', column => 'Base' },
     );
 
+    my $right_org = RT->Config->Get('Organization');
     my @rt_uris = rt_uri_modules();
     foreach my $package (@rt_uris) {
 
@@ -970,11 +971,11 @@ push @CHECKS, 'Links: wrong organization' => sub {
                 my ($wrong_org) = ( $value =~ m{^\Q$scheme\E://(.+)/[^/]+/[0-9]*$} );
                 next unless my $replace_with = prompt(
                     'Replace',
-                    "Column $column in $table is a link. Local links has scheme '$scheme'"
-                    ." followed by organization name from the config file. There is record"
-                    ." #$id that has scheme '$scheme', but organization is '$wrong_org'."
-                    ." Most probably you changed organization, but didn't update links."
-                    ." It's ok to replace these wrong links.\n",
+                    "Column $column in $table is a link.  There is record #$id that has a"
+                    ." local scheme of '$scheme', but its organization is '$wrong_org'"
+                    ." instead of '$right_org'.  Most probably the Organization was"
+                    ." changed from '$wrong_org' to '$right_org' at some point.  It is"
+                    ." generally a good idea to replace these wrong links.\n",
                     "Links: wrong organization $wrong_org"
                                                      );
 
