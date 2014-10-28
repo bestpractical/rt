@@ -123,7 +123,7 @@
 <&| /Widgets/TitleBox, title => loc('Add comments or replies to selected tickets') &>
 <table>
 <tr><td align="right"><&|/l&>Update Type</&>:</td>
-<td><select name="UpdateType">
+<td><select name="UpdateType" id="UpdateType">
   <option value="private" <% $ARGS{UpdateType} && $ARGS{UpdateType} eq 'private' ? 'selected="selected"' : '' %> ><&|/l&>Comments (Not sent to requestors)</&></option>
 <option value="response" <% $ARGS{UpdateType} && $ARGS{UpdateType} eq 'response' ? 'selected="selected"' : '' %>><&|/l&>Reply to requestors</&></option>
 </select> 
@@ -142,7 +142,8 @@ size="60" value="<% $ARGS{UpdateSubject} || "" %>" /></td></tr>
 
 <& /Ticket/Elements/AddAttachments, %ARGS &>
 
- <tr><td class="labeltop"><&|/l&>Message</&>:</td><td>
+ <tr><td class="labeltop"><&|/l&>Message</&>:</td>
+ <td class="messagebox-container action-<% $ARGS{UpdateType} || 'private' %>">
 %# Currently, bulk update always starts with Comment not Reply selected, so we check this unconditionally
 % my $IncludeSignature = RT->Config->Get('MessageBoxIncludeSignatureOnComment');
 <& /Elements/MessageBox, Name => "UpdateContent", 
@@ -151,6 +152,16 @@ size="60" value="<% $ARGS{UpdateSubject} || "" %>" /></td></tr>
         &>
  </td></tr>
  </table>
+<script type="text/javascript">
+    jQuery(function() {
+        jQuery("#UpdateType").change(function(ev) {
+            jQuery(".messagebox-container")
+                .removeClass("action-response action-private")
+                .addClass("action-"+ev.target.value);
+        });
+    });
+</script>
+
 
 </&>
 
