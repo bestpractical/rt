@@ -308,8 +308,7 @@ if ($CloneTicket) {
     };
 
     $clone->{$_} = $CloneTicketObj->$_()
-        for qw/Owner Subject FinalPriority TimeEstimated TimeWorked
-        Status TimeLeft/;
+        for qw/Owner Subject FinalPriority Status/;
 
     $clone->{$_} = $CloneTicketObj->$_->AsString
         for grep { $CloneTicketObj->$_->IsSet }
