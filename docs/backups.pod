@@ -137,6 +137,13 @@ and insert data and configure rights for the rt_user.
 
     gunzip -c rt-20141014.sql.gz | psql rt4
 
+=item After Restoring
+
+Postgres will generally perform poorly after restoring from backups
+because it has outdated index statistics. You should run C<analyze>
+after your restore is complete. If you'd like to watch the progress, you
+can run C<analyze verbose>.
+
 =back
 
 =head2 FILESYSTEM
