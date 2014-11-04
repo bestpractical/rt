@@ -36,18 +36,18 @@ diag "Forward Ticket" if $ENV{TEST_VERBOSE};
     $m->submit_form(
         form_name => 'ForwardMessage',
         fields    => {
-            To  => 'rt-to@example.com, rt-too@example.com',
+            To  => '"Foo" <rt-foo@example.com>, rt-too@example.com',
             Cc  => 'rt-cc@example.com',
             Bcc => 'root',
         },
         button => 'ForwardAndReturn'
     );
     $m->content_contains(
-        'Forwarded Ticket to &lt;rt-to@example.com&gt;, &lt;rt-too@example.com&gt;, &lt;rt-cc@example.com&gt;, root &#40;Enoch Root&#41;',
+        'Forwarded Ticket to Foo &lt;rt-foo@example.com&gt;, &lt;rt-too@example.com&gt;, &lt;rt-cc@example.com&gt;, root &#40;Enoch Root&#41;',
         'txn msg' );
     my ($mail) = RT::Test->fetch_caught_mails;
     like( $mail, qr!Subject: test forward!,           'Subject field' );
-    like( $mail, qr!To: .*?rt-to\@example.com!i,      'To field' );
+    like( $mail, qr!To: .*?rt-foo\@example.com!i,     'To field' );
     like( $mail, qr!To: .*?rt-too\@example.com!i,     'To field' );
     like( $mail, qr!Cc: rt-cc\@example.com!i,         'Cc field' );
     like( $mail, qr!Bcc: root\@localhost!i,  'Bcc field' );
@@ -108,7 +108,7 @@ diag "Forward Transaction with attachments but empty content" if $ENV{TEST_VERBO
 
     $m->form_name('TicketCreate');
     my $attach = $m->current_form->find_input('Attach');
-    $attach->filename("awesome.patch");
+    $attach->filename('awesome.pátch');
     $attach->headers('Content-Type' => 'text/x-diff');
     $m->set_fields(
         Subject => 'test forward, empty content but attachments',
@@ -123,8 +123,8 @@ diag "Forward Transaction with attachments but empty content" if $ENV{TEST_VERBO
         Attach  => RT::Test::get_relocatable_file('bpslogo.png', '..', 'data'), # an image!
     );
     $m->submit;
-    $m->content_like( qr/Ticket \d+ created/i, 'created the ticket' );
-    $m->content_like( qr/awesome\.patch/,   'uploaded patch file' );
+    $m->content_like( qr/Ticket \d+ created/i,  'created the ticket' );
+    $m->content_like( qr/awesome.p\%C3\%A1tch/, 'uploaded patch file' );
     $m->content_like( qr/text\/x-diff/,     'uploaded patch file content type' );
     $m->content_like( qr/bpslogo\.png/,     'uploaded image file' );
     $m->content_like( qr/image\/png/,       'uploaded image file content type' );
@@ -143,7 +143,7 @@ diag "Forward Transaction with attachments but empty content" if $ENV{TEST_VERBO
     like( $mail, qr/Subject: test forward, empty content but attachments/, 'Subject field' );
     like( $mail, qr/To: rt-test\@example.com/,         'To field' );
     like( $mail, qr/This is a forward of transaction/, 'content' );
-    like( $mail, qr/awesome\.patch/,                   'att file name' );
+    like( $mail, qr/filename\*\=\"UTF\-8\'\'awesome.p\%C3\%A1tch\"/, 'att file name' );
     like( $mail, qr/this is an attachment/,            'att content' );
     like( $mail, qr/text\/x-diff/,                     'att content type' );
     like( $mail, qr/bpslogo\.png/,                     'att image file name' );
@@ -153,7 +153,7 @@ diag "Forward Transaction with attachments but empty content" if $ENV{TEST_VERBO
 diag "Forward Transaction with attachments but no 'content' part" if $ENV{TEST_VERBOSE};
 {
     my $mime = MIME::Entity->build(
-        From    => 'test@example.com',
+        From    => '"Tést" <test@example.com>',
         Subject => 'attachments for everyone',
         Type    => 'multipart/mixed',
     );
@@ -214,6 +214,7 @@ diag "Forward Transaction with attachments but no 'content' part" if $ENV{TEST_V
     like( $forward_txn, qr/This is a forward of transaction/, 'forward description' );
     like( $forward_ticket, qr/Subject: $tag test forward, attachments but no "content"/, 'Subject field is from ticket' );
     like( $forward_ticket, qr/This is a forward of ticket/, 'forward description' );
+    like( $forward_ticket, qr/From: \=\?UTF-8\?.* \<test\@example\.com\>/i );
 
     for my $mail ($forward_txn, $forward_ticket) {
         like( $mail, qr/To: rt-test\@example.com/,         'To field' );
