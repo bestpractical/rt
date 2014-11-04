@@ -362,12 +362,16 @@ sub Process {
         @_
     );
 
-    my $uid = $args{object}->UID;
+    my $obj = $args{object};
+    my $uid = $obj->UID;
 
-    # Skip all dependency walking if we're cloning.  Marking UIDs as seen
-    # forces them to be visited immediately.
-    $self->{seen}{$uid}++
-        if $self->{Clone} and $uid;
+    # Skip all dependency walking if we're cloning; go straight to
+    # visiting them.
+    if ($self->{Clone} and $uid) {
+        return if $obj->isa("RT::System");
+        $self->{progress}->($obj) if $self->{progress};
+        return $self->Visit(%args);
+    }
 
     return $self->SUPER::Process( @_ );
 }

@@ -76,8 +76,9 @@ BEGIN {
 
 use RT;
 RT::LoadConfig();
-RT->Config->Set(RecordBaseClass => "DBIx::SearchBuilder::Record");
 RT::Init();
+
+@RT::Record::ISA = qw( DBIx::SearchBuilder::Record RT::Base );
 
 use RT::Migrate;
 use RT::Migrate::Importer::File;
