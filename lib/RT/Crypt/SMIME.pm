@@ -338,7 +338,7 @@ sub _SignEncrypt {
                 KeyType   => "secret",
             });
             $res{exit_code} = 1;
-            return %res;
+            return (undef, %res);
         }
         $args{'Passphrase'} = $self->GetPassphrase( Address => $args{'Signer'} )
             unless defined $args{'Passphrase'};
