@@ -1459,7 +1459,7 @@ msgid "Can't save %1"
 msgstr "Ezin da %1 gorde"
 
 #: share/html/Search/Elements/EditSearches:320
-msgid "Can't save a search without a name"
+msgid "Can't save a search without a Description"
 msgstr "Ezin da bilaketa bat gorde izen gabe"
 
 #: share/html/Search/Elements/EditSearches:323
