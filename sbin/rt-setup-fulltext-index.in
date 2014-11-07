@@ -307,16 +307,20 @@ elsif ( $DB{'type'} eq 'Pg' ) {
         silent  => !$OPT{'ask'},
     );
 
-    my $schema;
+    my @schema;
     my $drop;
     if ( lc($table) eq 'attachments' ) {
         $drop = "ALTER TABLE $table DROP COLUMN $column";
-        $schema = "ALTER TABLE $table ADD COLUMN $column tsvector";
+        push @schema, "ALTER TABLE $table ADD COLUMN $column tsvector";
     } else {
         $drop = "DROP TABLE $table";
-        $schema = "CREATE TABLE $table ( "
-            ."id INTEGER NOT NULL,"
-            ."$column tsvector )";
+        push @schema, split /;\n+/, <<SCHEMA;
+CREATE TABLE $table (
+    id SERIAL,
+    $column tsvector
+);
+GRANT SELECT, INSERT, UPDATE, DELETE ON $table TO "$DB{user}"
+SCHEMA
     }
 
     my $index_type = lc($OPT{'index-type'} || '');
@@ -328,11 +332,11 @@ elsif ( $DB{'type'} eq 'Pg' ) {
             silent  => !$OPT{'ask'},
         );
     }
+    push @schema, "CREATE INDEX ${column}_idx ON $table USING $index_type($column)";
 
     do_error_is_ok( dba_handle() => $drop )
         unless $OPT{'dryrun'};
-    insert_schema( $schema );
-    insert_schema("CREATE INDEX ${column}_idx ON $table USING $index_type($column)");
+    insert_schema( $_ ) for @schema;
 
     print_rt_config( Table => $table, Column => $column );
 }
