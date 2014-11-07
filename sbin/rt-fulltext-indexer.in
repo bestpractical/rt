@@ -298,31 +298,54 @@ sub process_pg_update {
 
     ($LAST) = $dbh->selectrow_array("SELECT MAX(id) FROM Attachments WHERE $column IS NOT NULL");
 
-    $sth = $dbh->prepare("UPDATE Attachments SET $column = to_tsvector(?) WHERE id = ?");
+    my $sth = $dbh->prepare("UPDATE Attachments SET $column = TO_TSVECTOR(?) WHERE id = ?");
 
     attachment_loop( sub {
         my ($attachments) = @_;
+        my @insert;
         while ( my $a = $attachments->Next ) {
             debug("Found attachment #". $a->id );
 
             my $text = $a->Content // "";
             HTML::Entities::decode_entities($text) if $a->ContentType eq "text/html";
 
-            my $status = eval { $sth->execute( $text, $a->id ) };
-            unless ( $status ) {
-                if ( $dbh->err == 7  && $dbh->state eq '54000' ) {
-                    warn "Attachment @{[$a->id]} cannot be indexed. Most probably it contains too many unique words. Error: ". $dbh->errstr;
-                } elsif ( $dbh->err == 7 && $dbh->state eq '22021' ) {
-                    warn "Attachment @{[$a->id]} cannot be indexed. Most probably it contains invalid UTF8 bytes. Error: ". $dbh->errstr;
-                } else {
-                    die "error: ". $dbh->errstr;
-                }
+            push @insert, [$text, $a->id];
+        }
 
-                # Insert an empty tsvector, so we count this row as "indexed"
-                # for purposes of knowing where to pick up
-                eval { $sth->execute( "", $a->id ) }
-                    or die "Failed to insert empty row: " . $dbh->errstr;
+        # Try in one database transaction; if it fails, we roll it back
+        # and try one statement at a time.
+        $dbh->begin_work;
+        my $ok = 1;
+        for (@insert) {
+            $ok = eval { $sth->execute( $_->[0], $_->[1] ) };
+            last unless $ok;
+        }
+        if ($ok) {
+            $dbh->commit;
+            return;
+        }
+        $dbh->rollback;
+
+        # Things didn't go well.  Retry the UPDATE statements one row at
+        # a time, outside of the transaction.
+        for (@insert) {
+            my ($content, $id) = ($_->[0], $_->[1]);
+            next if eval { $sth->execute( $content, $id ) };
+            if ( $dbh->err == 7  && $dbh->state eq '54000' ) {
+                warn "Attachment $id cannot be indexed. Most probably it contains too many unique words. ".
+                  "Error: ". $dbh->errstr;
+            } elsif ( $dbh->err == 7 && $dbh->state eq '22021' ) {
+                warn "Attachment $id cannot be indexed. Most probably it contains invalid UTF8 bytes. ".
+                  "Error: ". $dbh->errstr;
+            } else {
+                die "Attachment $id cannot be indexed: " . $dbh->errstr;
             }
+
+            # If this was a semi-expected error, insert an empty
+            # tsvector, so we count this row as "indexed" for
+            # purposes of knowing where to pick up
+            eval { $sth->execute( "", $id ) }
+                or die "Failed to insert empty row for attachment $id: " . $dbh->errstr;
         }
     });
 }
