@@ -184,17 +184,17 @@ sub attachment_loop {
     }
 }
 
-sub process_mysql {
+sub process_bulk_insert {
     my $dbh = $RT::Handle->dbh;
-    my $table = $fts_config->{'Table'};
-
-    ($LAST) = $dbh->selectrow_array("SELECT MAX(id) FROM $table");
+    my ($statement, $error) = @_;
 
     # Doing large inserts is faster than individual statements, but
     # comes at a parsing cost; cache the statement handles (99% of which
     # will be the same size) for a notable (2x) speed gain.
     my %sthandles;
-    my $insert = $fts_config->{Engine} eq "MyISAM" ? "INSERT DELAYED" : "INSERT";
+
+    $sthandles{1} =
+        $dbh->prepare($statement->(1));
 
     attachment_loop( sub {
         my ($attachments) = @_;
@@ -210,45 +210,95 @@ sub process_mysql {
         return unless $found;
 
         # $found should be the limit size on all but the last go-around.
-        $sthandles{$found} ||=
-            $dbh->prepare("$insert INTO $table(Content, id) VALUES "
-                              . join(", ", ("(?,?)") x $found));
-      TRY: {
-            my $status = eval { $sthandles{$found}->execute(@insert); };
-            unless ( $status ) {
-                my ($row) = $dbh->errstr =~ /\brow (\d+)\b/;
-                die $dbh->errstr unless $row;
+        $sthandles{$found} ||= $dbh->prepare($statement->($found));
 
-                my ($content, $id) = ($insert[($row - 1)*2], $insert[($row - 1)*2 +1]);
-                if ($dbh->err == 1366 and $dbh->state eq "HY000") {
-                    warn "Attachment $id cannot be indexed. Most probably it contains invalid UTF8 bytes. Error: ". $dbh->errstr;
-                    $insert[($row - 1)*2] = "";
-                    redo TRY;
-                } else {
-                    die "Attachment $id: ".$dbh->errstr;
-                }
-            }
+        return if eval { $sthandles{$found}->execute(@insert); };
+
+        # We can catch and recover from some errors; re-do row-by-row to
+        # know which row had which errors
+        while (@insert) {
+            my ($content, $id) = splice(@insert,0,2);
+            next if eval { $sthandles{1}->execute($content, $id); };
+            $error->($id, $content);
+
+            # If this was a semi-expected error, insert an empty
+            # tsvector, so we count this row as "indexed" for
+            # purposes of knowing where to pick up
+            eval { $sthandles{1}->execute( "", $id ) }
+                or die "Failed to insert empty row for attachment $id: " . $dbh->errstr;
         }
     });
 }
 
+sub process_mysql {
+    my $dbh = $RT::Handle->dbh;
+    my $table = $fts_config->{'Table'};
+
+    ($LAST) = $dbh->selectrow_array("SELECT MAX(id) FROM $table");
+
+    my $insert = $fts_config->{Engine} eq "MyISAM" ? "INSERT DELAYED" : "INSERT";
+
+    process_bulk_insert(
+        sub {
+            my ($n) = @_;
+            return "$insert INTO $table(Content, id) VALUES "
+                . join(", ", ("(?,?)") x $n);
+        },
+        sub {
+            my ($id) = @_;
+            if ($dbh->err == 1366 and $dbh->state eq "HY000") {
+                warn "Attachment $id cannot be indexed. Most probably it contains invalid UTF8 bytes. ".
+                    "Error: ". $dbh->errstr;
+            } else {
+                die "Attachment $id cannot be indexed: " . $dbh->errstr;
+            }
+        }
+    );
+}
+
+
 sub process_pg {
+    if ( $fts_config->{'Table'} ne 'Attachments' ) {
+        process_pg_insert();
+    } else {
+        process_pg_update();
+    }
+}
+
+sub process_pg_insert {
     my $dbh = $RT::Handle->dbh;
     my $table = $fts_config->{'Table'};
     my $column = $fts_config->{'Column'};
+    ($LAST) = $dbh->selectrow_array("SELECT MAX(id) FROM $table");
 
-    if ( $table ne 'Attachments' ) {
-        ($LAST) = $dbh->selectrow_array("SELECT MAX(id) FROM $table");
-    } else {
-        ($LAST) = $dbh->selectrow_array("SELECT MAX(id) FROM Attachments WHERE $column IS NOT NULL");
-    }
+    process_bulk_insert(
+        sub {
+            my ($n) = @_;
+            return "INSERT INTO $table($column, id) VALUES "
+                . join(", ", ("(TO_TSVECTOR(?),?)") x $n);
+        },
+        sub {
+            my ($id) = @_;
+            if ( $dbh->err == 7 && $dbh->state eq '54000' ) {
+                warn "Attachment $id cannot be indexed. Most probably it contains too many unique words. ".
+                  "Error: ". $dbh->errstr;
+            } elsif ( $dbh->err == 7 && $dbh->state eq '22021' ) {
+                warn "Attachment $id cannot be indexed. Most probably it contains invalid UTF8 bytes. ".
+                  "Error: ". $dbh->errstr;
+            } else {
+                die "Attachment $id cannot be indexed: " . $dbh->errstr;
+            }
+        }
+    );
+}
 
-    my $sth;
-    if ( $table ne 'Attachments' ) {
-        $sth = $dbh->prepare("INSERT INTO $table($column, id) VALUES(to_tsvector(?), ?)");
-    } else {
-        $sth = $dbh->prepare("UPDATE Attachments SET $column = to_tsvector(?) WHERE id = ?");
-    }
+sub process_pg_update {
+    my $dbh = $RT::Handle->dbh;
+    my $column = $fts_config->{'Column'};
+
+    ($LAST) = $dbh->selectrow_array("SELECT MAX(id) FROM Attachments WHERE $column IS NOT NULL");
+
+    $sth = $dbh->prepare("UPDATE Attachments SET $column = to_tsvector(?) WHERE id = ?");
 
     attachment_loop( sub {
         my ($attachments) = @_;
