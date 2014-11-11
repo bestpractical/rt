@@ -99,7 +99,8 @@ if ( !flock main::DATA, LOCK_EX | LOCK_NB ) {
 }
 
 my $db_type = RT->Config->Get('DatabaseType');
-my $fts_config = RT->Config->Get('FullTextSearch') || {};
+my $fts_config = $ENV{RT_FTS_CONFIG} ? JSON::from_json($ENV{RT_FTS_CONFIG})
+    : RT->Config->Get('FullTextSearch') || {};
 unless ( $fts_config->{'Enable'} ) {
     print STDERR <<EOT;
 
