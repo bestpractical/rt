@@ -121,6 +121,7 @@ GetOptions(
 
     'dba=s'          => \$DB{'admin'},
     'dba-password=s' => \$DB{'admin_password'},
+    'limit=i'        => \$DB{'batch-size'},
 ) or show_help();
 
 if ( $OPT{'help'} || (!$DB{'admin'} && $DB{'type'} eq 'Oracle' ) ) {
@@ -175,8 +176,12 @@ if ( $DB{'type'} eq 'mysql' ) {
     my $engine = $RT::Handle->dbh->{mysql_serverversion} < 50600 ? "MyISAM" : "InnoDB";
     my $schema = "CREATE TABLE $table ( "
         ."id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,"
-        ."Content LONGTEXT, FULLTEXT(Content) ) ENGINE=$engine CHARACTER SET utf8";
+        ."Content LONGTEXT ) ENGINE=$engine CHARACTER SET utf8";
     insert_schema( $schema );
+
+    insert_data( Table => $table, Engine => $engine );
+
+    insert_schema( "CREATE FULLTEXT INDEX $table ON $table(Content)" );
 
     print_rt_config( Table => $table );
 } elsif ($DB{'type'} eq 'sphinx') {
@@ -332,11 +337,14 @@ SCHEMA
             silent  => !$OPT{'ask'},
         );
     }
-    push @schema, "CREATE INDEX ${column}_idx ON $table USING $index_type($column)";
 
     do_error_is_ok( dba_handle() => $drop )
         unless $OPT{'dryrun'};
     insert_schema( $_ ) for @schema;
+
+    insert_data( Table => $table, Column => $column );
+
+    insert_schema( "CREATE INDEX ${column}_idx ON $table USING $index_type($column)" );
 
     print_rt_config( Table => $table, Column => $column );
 }
@@ -727,6 +735,16 @@ sub insert_schema {
     unless ( $res ) {
         die "Couldn't run DDL query: ". $dbh->errstr;
     }
+}
+
+sub insert_data {
+    return if $OPT{dryrun};
+
+    print "Indexing existing data...\n";
+
+    $ENV{RT_FTS_CONFIG} = JSON::to_json( {Enable => 1, Indexed => 1, @_});
+    system( "$RT::SbinPath/rt-fulltext-indexer", "--all",
+            ($DB{'batch-size'} ? ("--limit", $DB{'batch-size'}) : ()));
 }
 
 =head1 NAME
