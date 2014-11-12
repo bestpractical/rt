@@ -55,7 +55,7 @@ my $chart_class;
 use GD;
 use GD::Text;
 
-if ($ChartStyle eq 'pie') {
+if ($ChartStyle =~ /pie/) {
     require GD::Graph::pie;
     $chart_class = "GD::Graph::pie";
 } else {

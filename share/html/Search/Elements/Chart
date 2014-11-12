@@ -100,6 +100,7 @@ my ($i,$total);
 <img src="<%RT->Config->Get('WebPath')%>/Search/Chart?<%$query_string|n%>" />
 % }
 </span>
+% if ( !$ChartStyle || $ChartStyle !~ / only$/ ) {
 <table class="collection-as-table chart">
 <tr>
 <th class="collection-as-table"><% loc($tix->Label($PrimaryGroupBy)) %>
@@ -150,4 +151,5 @@ my ($i,$total);
 
 </table>
 <div class="query"><span class="label"><% loc('Query') %>:</span><span class="value"><% $Query %></span></div>
+% }
 </div>
