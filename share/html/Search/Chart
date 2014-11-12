@@ -49,7 +49,7 @@
 $Cache => undef
 $Query => "id > 0"
 @GroupBy => ()
-$ChartStyle => 'bar'
+$ChartStyle => 'bar+table+sql'
 @ChartFunction => 'COUNT'
 $Width  => undef
 $Height => undef
@@ -64,8 +64,8 @@ my $font = $font_config{ $session{CurrentUser}->UserObj->Lang || '' }
 
 s/\D//g for grep defined, $Width, $Height;
 $Width  ||= 600;
-$Height ||= ($ChartStyle eq 'pie' ? $Width : 400);
-$Height = $Width if $ChartStyle eq 'pie';
+$Height ||= ($ChartStyle =~ /\bpie\b/ ? $Width : 400);
+$Height = $Width if $ChartStyle =~ /\bpie\b/;
 
 my $plot_error = sub {
     my $text = shift;
@@ -148,10 +148,10 @@ while ( my $entry = $report->Next ) {
     }
 }
 
-$ChartStyle = 'bar' if @data > 2;
+$ChartStyle =~ s/\bpie\b/bar/ if @data > 2;
 
 my $chart_class;
-if ($ChartStyle eq 'pie') {
+if ($ChartStyle =~ /\bpie\b/) {
     require GD::Graph::pie;
     $chart_class = "GD::Graph::pie";
 } else {
