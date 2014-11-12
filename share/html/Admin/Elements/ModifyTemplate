@@ -48,7 +48,7 @@
 <table>
 <tr>
 <td class="label"><&|/l&>Name</&>:</td>
-<td class="value"><input name="Name" value="<%$Name||''%>" size="20" /></td>
+<td class="value"><input name="Name" value="<%$Name||''%>" size="80" /></td>
 </tr>
 <tr>
 <td class="label"><&|/l&>Description</&>:</td>
