@@ -130,7 +130,7 @@ jQuery( function() {
 % if ( $CustomFieldObj->SupportDefaultValues ) {
 <tr class="edit_default_values"><td class="label"><&|/l, $CustomFieldObj->MaxValues &>Default [numerate,_1,value,values]</&></td>
 <td>
-<& /Elements/EditCustomField, NamePrefix => 'Default-', CustomField => $CustomFieldObj &>
+<& /Elements/EditCustomField, NamePrefix => 'Default-', CustomField => $CustomFieldObj, ShowEmptyOption => 1 &>
 </td>
 </tr>
 % }
