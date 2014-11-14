@@ -1072,7 +1072,7 @@ sub add_rights {
 
 =head2 switch_templates_to TYPE
 
-This runs etc/upgrade/switch-templates-to in order to change the templates from
+This runs /opt/rt4/etc/upgrade/switch-templates-to in order to change the templates from
 HTML to text or vice versa.  TYPE is the type to switch to, either C<html> or
 C<text>.
 
@@ -1102,7 +1102,7 @@ sub switch_templates_ok {
     
     if ($exit >> 8) {
         Test::More::fail("Switched templates to $type cleanly");
-        diag("**** etc/upgrade/switch-templates-to exited with ".($exit >> 8).":\n$output");
+        diag("**** $RT::EtcPath/upgrade/switch-templates-to exited with ".($exit >> 8).":\n$output");
     } else {
         Test::More::pass("Switched templates to $type cleanly");
     }

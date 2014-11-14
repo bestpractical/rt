@@ -175,7 +175,7 @@ GENERAL INSTALLATION
     logout for inactive sessions. For more information about how to do
     that, run:
 
-        perldoc /path/to/rt/sbin/rt-clean-sessions
+        perldoc /opt/rt4/sbin/rt-clean-sessions
 
  8) Set up users, groups, queues, scrips and access control.
 

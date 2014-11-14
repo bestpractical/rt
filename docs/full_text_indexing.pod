@@ -21,19 +21,19 @@ Postgres 8.3 and above support full-text searching natively; to set up
 the required C<ts_vector> column, and create either a C<GiN> or C<GiST>
 index on it, run:
 
-    sbin/rt-setup-fulltext-index
+    /opt/rt4/sbin/rt-setup-fulltext-index
 
 If you have a non-standard database administrator username or password,
 you may need to pass the C<--dba> or C<--dba-password> options:
 
-    sbin/rt-setup-fulltext-index --dba postgres --dba-password secret
+    /opt/rt4/sbin/rt-setup-fulltext-index --dba postgres --dba-password secret
 
 This will also output an appropriate C<%FullTextSearch> configuration to
 add to your F<RT_SiteConfig.pm>; you will need to restart your webserver
 after making these changes.  However, the index will also need to be
 filled before it can be used.  To update the index initially, run:
 
-    sbin/rt-fulltext-indexer --all
+    /opt/rt4/sbin/rt-fulltext-indexer --all
 
 This will tokenize and index all existing attachments in your database;
 it may take quite a while if your database already has a large number of
@@ -43,7 +43,7 @@ tickets in it.
 
 To keep the index up-to-date, you will need to run:
 
-    sbin/rt-fulltext-indexer
+    /opt/rt4/sbin/rt-fulltext-indexer
 
 ...at regular intervals.  By default, this will only tokenize up to 100
 tickets at a time; you can adjust this upwards by passing
@@ -57,7 +57,7 @@ and end those processes normally (with exit code 0) using the C<--quiet>
 option; this is particularly useful when running the command via
 C<cron>:
 
-    sbin/rt-fulltext-indexer --quiet
+    /opt/rt4/sbin/rt-fulltext-indexer --quiet
 
 =head1 MYSQL
 
@@ -82,12 +82,12 @@ L<http://sphinxsearch.com/docs/current.html#sphinxse-installing>.
 Once MySQL has been recompiled with SphinxSE, and Sphinx itself is
 installed, you may create the required SphinxSE communication table via:
 
-    sbin/rt-setup-fulltext-index
+    /opt/rt4/sbin/rt-setup-fulltext-index
 
 If you have a non-standard database administrator username or password,
 you may need to pass the C<--dba> or C<--dba-password> options:
 
-    sbin/rt-setup-fulltext-index --dba root --dba-password secret
+    /opt/rt4/sbin/rt-setup-fulltext-index --dba root --dba-password secret
 
 This will also provide you with the appropriate C<%FullTextSearch>
 configuration to add to your F<RT_SiteConfig.pm>; you will need to
@@ -142,12 +142,12 @@ C<RT_SiteConfig.pm> must be updated.
 Oracle supports full-text indexing natively using the Oracle Text
 package.  Once Oracle Text is installed and configured, run:
 
-    sbin/rt-setup-fulltext-index
+    /opt/rt4/sbin/rt-setup-fulltext-index
 
 If you have a non-standard database administrator username or password,
 you may need to pass the C<--dba> or C<--dba-password> options:
 
-    sbin/rt-setup-fulltext-index --dba sysdba --dba-password secret
+    /opt/rt4/sbin/rt-setup-fulltext-index --dba sysdba --dba-password secret
 
 This will create an Oracle CONTEXT index on the Content column in the
 Attachments table, as well as several preferences, functions and
@@ -160,7 +160,7 @@ F<RT_SiteConfig>.
 To update the index, you will need to run the following at regular
 intervals:
 
-    sbin/rt-fulltext-indexer
+    /opt/rt4/sbin/rt-fulltext-indexer
 
 This, in effect, simply runs:
 
@@ -180,7 +180,7 @@ and end those processes normally (with exit code 0) using the C<--quiet>
 option; this is particularly useful when running the command via
 C<cron>:
 
-    sbin/rt-fulltext-indexer --quiet
+    /opt/rt4/sbin/rt-fulltext-indexer --quiet
 
 Instead of being run via C<cron>, this may instead be run via a
 DBMS_JOB; read the B<Managing DML Operations for a CONTEXT Index>

@@ -131,7 +131,7 @@ extra transactions, and keeping the summed time spent consistent.
 In order to fix the history records of old ticket you can run the following
 command:
 
-    perl -I /opt/rt4/local/lib/ -I /opt/rt4/lib/ etc/upgrade/time-worked-history.pl
+    /opt/rt4/etc/upgrade/time-worked-history
 
 This command deletes records from the Transactions table. This script can only fix
 TimeWorked mismatches, but not TimeLeft or TimeEstimated.
