@@ -1120,6 +1120,17 @@ sub FindDependencies {
     $deps->Add( out => $self->TemplateObj );
 }
 
+sub Serialize {
+    my $self = shift;
+    my %args = (@_);
+    my %store = $self->SUPER::Serialize(@_);
+
+    # Store the string, not a reference to the object
+    $store{Template} = $self->Template;
+
+    return %store;
+}
+
 RT::Base->_ImportOverlays();
 
 1;
