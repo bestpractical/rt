@@ -636,15 +636,13 @@ sub GetForwardAttachments {
         $attachments->Limit( FIELD => 'TransactionId', VALUE => $txn->id );
     }
     else {
-        my $txns = $ticket->Transactions;
-        $txns->Limit(
-            FIELD => 'Type',
-            VALUE => $_,
-        ) for qw(Create Correspond);
-
-        while ( my $txn = $txns->Next ) {
-            $attachments->Limit( FIELD => 'TransactionId', VALUE => $txn->id );
-        }
+        $attachments->LimitByTicket( $ticket->id );
+        $attachments->Limit(
+            ALIAS         => $attachments->TransactionAlias,
+            FIELD         => 'Type',
+            OPERATOR      => 'IN',
+            VALUE         => [ qw(Create Correspond) ],
+        );
     }
     return $attachments;
 }

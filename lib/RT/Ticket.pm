@@ -1007,16 +1007,12 @@ sub TransactionAddresses {
     $attachments->LimitByTicket( $self->id );
     $attachments->Columns( qw( id Headers TransactionId));
 
-
-    foreach my $type (qw(Create Comment Correspond)) {
-        $attachments->Limit( ALIAS    => $attachments->TransactionAlias,
-                             FIELD    => 'Type',
-                             OPERATOR => '=',
-                             VALUE    => $type,
-                             ENTRYAGGREGATOR => 'OR',
-                             CASESENSITIVE   => 1
-                           );
-    }
+    $attachments->Limit(
+        ALIAS         => $attachments->TransactionAlias,
+        FIELD         => 'Type',
+        OPERATOR      => 'IN',
+        VALUE         => [ qw(Create Comment Correspond) ],
+    );
 
     while ( my $att = $attachments->Next ) {
         foreach my $addrlist ( values %{$att->Addresses } ) {
@@ -1746,14 +1742,9 @@ sub _Links {
     # at least to myself
     $links->Limit(
         FIELD           => $limit_on,
-        VALUE           => $self->id,
-        ENTRYAGGREGATOR => 'OR',
+        OPERATOR        => 'IN',
+        VALUE           => [ $self->id, $self->Merged ],
     );
-    $links->Limit(
-        FIELD           => $limit_on,
-        VALUE           => $_,
-        ENTRYAGGREGATOR => 'OR',
-    ) foreach $self->Merged;
     $links->Limit(
         FIELD => 'Type',
         VALUE => $type,

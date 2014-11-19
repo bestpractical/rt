@@ -92,9 +92,10 @@ sub Prepare {
     else {
         my $txns = $self->TicketObj->Transactions;
         $txns->Limit(
-            FIELD => 'Type',
-            VALUE => $_,
-        ) for qw(Create Correspond);
+            FIELD    => 'Type',
+            OPERATOR => 'IN',
+            VALUE    => [qw(Create Correspond)],
+        );
 
         $entity = MIME::Entity->build(
             Type        => 'multipart/mixed',

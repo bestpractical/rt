@@ -462,11 +462,11 @@ sub AddTicket {
 
     my $attachs   = RT::Attachments->new( $self->TransactionObj->CreatorObj );
     my $txn_alias = $attachs->TransactionAlias;
-    $attachs->Limit( ALIAS => $txn_alias, FIELD => 'Type', VALUE => 'Create' );
     $attachs->Limit(
-        ALIAS => $txn_alias,
-        FIELD => 'Type',
-        VALUE => 'Correspond'
+        ALIAS    => $txn_alias,
+        FIELD    => 'Type',
+        OPERATOR => 'IN',
+        VALUE    => [qw(Create Correspond)],
     );
     $attachs->LimitByTicket($tid);
     $attachs->LimitNotEmpty;

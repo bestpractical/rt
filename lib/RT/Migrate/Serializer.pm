@@ -248,8 +248,9 @@ sub PushBasics {
     my $cfs = RT::CustomFields->new( RT->SystemUser );
     $cfs->Limit(
         FIELD => 'LookupType',
-        VALUE => $_
-    ) for qw/RT::User RT::Group RT::Queue/;
+        OPERATOR => 'IN',
+        VALUE => [ qw/RT::User RT::Group RT::Queue/ ],
+    );
     $self->PushObj( $cfs );
 
     # Global attributes
