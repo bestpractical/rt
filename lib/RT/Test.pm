@@ -172,6 +172,8 @@ sub import {
 
     $class->set_config_wrapper;
 
+    $class->encode_output;
+
     my $screen_logger = $RT::Logger->remove( 'screen' );
     require Log::Dispatch::Perl;
     $RT::Logger->add( Log::Dispatch::Perl->new
@@ -454,6 +456,13 @@ sub set_config_wrapper {
     };
 }
 
+sub encode_output {
+    my $builder = Test::More->builder;
+    binmode $builder->output,         ":encoding(utf8)";
+    binmode $builder->failure_output, ":encoding(utf8)";
+    binmode $builder->todo_output,    ":encoding(utf8)";
+}
+
 sub bootstrap_db {
     my $self = shift;
     my %args = @_;
@@ -676,12 +685,7 @@ sub __init_logging {
         $filter = $SIG{__WARN__};
     }
     $SIG{__WARN__} = sub {
-        if ($filter) {
-            my $status = $filter->(@_);
-            if ($status and $status eq 'IGNORE') {
-                return; # pretend the bad dream never happened
-            }
-        }
+        $filter->(@_) if $filter;
         # Avoid reporting this anonymous call frame as the source of the warning.
         goto &$Test_NoWarnings_Catcher;
     };
@@ -867,9 +871,11 @@ sub create_ticket {
 
     if ( my $content = delete $args{'Content'} ) {
         $args{'MIMEObj'} = MIME::Entity->build(
-            From    => $args{'Requestor'},
-            Subject => $args{'Subject'},
-            Data    => $content,
+            From    => Encode::encode( "UTF-8", $args{'Requestor'} ),
+            Subject => RT::Interface::Email::EncodeToMIME( String => $args{'Subject'} ),
+            Type    => "text/plain",
+            Charset => "UTF-8",
+            Data    => Encode::encode( "UTF-8", $content ),
         );
     }
 
@@ -1066,7 +1072,7 @@ sub add_rights {
 
 =head2 switch_templates_to TYPE
 
-This runs etc/upgrade/switch-templates-to in order to change the templates from
+This runs /opt/rt4/etc/upgrade/switch-templates-to in order to change the templates from
 HTML to text or vice versa.  TYPE is the type to switch to, either C<html> or
 C<text>.
 
@@ -1096,7 +1102,7 @@ sub switch_templates_ok {
     
     if ($exit >> 8) {
         Test::More::fail("Switched templates to $type cleanly");
-        diag("**** etc/upgrade/switch-templates-to exited with ".($exit >> 8).":\n$output");
+        diag("**** $RT::EtcPath/upgrade/switch-templates-to exited with ".($exit >> 8).":\n$output");
     } else {
         Test::More::pass("Switched templates to $type cleanly");
     }
@@ -1205,6 +1211,13 @@ sub send_via_mailgate {
 
     my ( $status, $error_message, $ticket )
         = RT::Interface::Email::Gateway( {%args, message => $message} );
+
+    # Invert the status to act like a syscall; failing return code is 1,
+    # and it will be right-shifted before being examined.
+    $status = ($status == 1)  ? 0
+            : ($status == -75) ? (-75 << 8)
+            : (1 << 8);
+
     return ( $status, $ticket ? $ticket->id : 0 );
 
 }

@@ -329,6 +329,7 @@ DBD::Oracle
 .
 
 $deps{'PG'} = [ text_to_hash( << '.') ];
+DBIx::SearchBuilder 1.66
 DBD::Pg 1.43
 .
 

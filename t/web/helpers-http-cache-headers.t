@@ -1,6 +1,5 @@
 use strict;
 use warnings;
-use utf8;
 
 # trs: I'd write a quick t/web/caching-headers.t file which loops the available
 #      endpoints checking for the right headers.
@@ -31,6 +30,7 @@ my @endpoints = (
 find({
   wanted => sub {
     if ( -f $_ && $_ !~ m|autohandler$| ) {
+      return if m{/\.[^/]+\.sw[op]$}; # vim swap files
       ( my $endpoint = $_ ) =~ s|^$docroot||;
       push @endpoints, $endpoint;
     }

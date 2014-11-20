@@ -60,7 +60,7 @@
 <input type="hidden" class="hidden" name="id" value="<% $UserObj->Id %>" />
 
 % if (RT::Crypt->UseForOutgoing eq 'GnuPG') {
-<&|/Widgets/TitleBox, title => 'GnuPG private key'&>
+<&|/Widgets/TitleBox, title => loc('GnuPG private key') &>
 <& /Widgets/Form/Select,
     Name         => 'PrivateKey',
     Description  => loc('Private Key'),
@@ -72,7 +72,7 @@
 % }
 
 % if (RT::Crypt->UseForOutgoing eq 'SMIME') {
-<&|/Widgets/TitleBox, title => 'SMIME Certificate' &>
+<&|/Widgets/TitleBox, title => loc('SMIME Certificate') &>
 <textarea name="SMIMECertificate"><% $UserObj->SMIMECertificate || '' %></textarea>
 </&>
 % }

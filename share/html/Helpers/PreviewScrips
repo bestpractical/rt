@@ -134,7 +134,7 @@ $submitted{$_} = 1 for split /,/, $ARGS{TxnRecipients};
               </ul>
 %         }
 %         if (RT->Config->Get('PreviewScripMessages')) {
-              <textarea cols="80" rows="5"><%$scrip->ActionObj->Action->TemplateObj->MIMEObj->as_string%></textarea>
+              <textarea cols="80" rows="5"><% Encode::decode( "UTF-8", $scrip->ActionObj->Action->TemplateObj->MIMEObj->as_string )%></textarea>
 %         }
           <br />
 %     }

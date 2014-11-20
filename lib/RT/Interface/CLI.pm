@@ -121,11 +121,11 @@ loaded with that user.  if the current user isn't found, returns a copy of RT::N
 =cut
 
 sub GetCurrentUser  {
-    
+
     require RT::CurrentUser;
-    
+
     #Instantiate a user object
-    
+
     my $Gecos= (getpwuid($<))[0];
 
     #If the current user is 0, then RT will assume that the User object
@@ -133,9 +133,9 @@ sub GetCurrentUser  {
 
     $CurrentUser = RT::CurrentUser->new();
     $CurrentUser->LoadByGecos($Gecos);
-    
+
     unless ($CurrentUser->Id) {
-        $RT::Logger->debug("No user with a unix login of '$Gecos' was found. ");
+        $RT::Logger->error("No user with a GECOS (unix login) of '$Gecos' was found.");
     }
 
     return($CurrentUser);

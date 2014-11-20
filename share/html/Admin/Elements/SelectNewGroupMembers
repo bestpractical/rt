@@ -45,9 +45,12 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<table>
 % if ( $Show ne 'Groups' ) {
-<label for="<% $Name %>Users"><&|/l&>Add user</&>:</label>
-<input type="text" value="" name="<% $Name %>Users" id="<% $Name %>Users" data-autocomplete="Users" data-autocomplete-return="Name" data-autocomplete-privileged="1" data-autocomplete-exclude="<% $user_ids |n %>" /><br />
+<tr>
+<td class="label"><label for="<% $Name %>Users"><&|/l&>Add user</&>:</label></td>
+<td>
+<input type="text" value="" name="<% $Name %>Users" id="<% $Name %>Users" data-autocomplete="Users" data-autocomplete-return="Name" data-autocomplete-privileged="1" data-autocomplete-exclude="<% $user_ids |n %>" />
 <script type="text/javascript">
 jQuery(function(){
     // Auto-submit once a user is chosen
@@ -57,11 +60,15 @@ jQuery(function(){
     });
 });
 </script>
+</td>
+</tr>
 % }
 
 % if ( $Show ne 'Users' ) {
-<label for="<% $Name %>Groups"><&|/l&>Add group</&>:</label>
-<input type="text" value="" name="<% $Name %>Groups" id="<% $Name %>Groups" data-autocomplete="Groups" data-autocomplete-exclude="<% $group_ids |n %>" /><br />
+<tr>
+<td class="label"><label for="<% $Name %>Groups"><&|/l&>Add group</&>:</label></td>
+<td>
+<input type="text" value="" name="<% $Name %>Groups" id="<% $Name %>Groups" data-autocomplete="Groups" data-autocomplete-exclude="<% $group_ids |n %>" />
 <script type="text/javascript">
 jQuery(function(){
     // Auto-submit once a group is chosen
@@ -71,7 +78,10 @@ jQuery(function(){
     });
 });
 </script>
+</td>
+</tr>
 % }
+</table>
 <%INIT>
 my $user_ids  = join(',', grep { $SkipUsers->{$_} } keys %$SkipUsers);
 my $group_ids = join(',', grep { $SkipGroups->{$_} } keys %$SkipGroups);

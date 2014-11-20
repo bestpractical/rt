@@ -103,6 +103,7 @@ sub _Init
     my $self = shift;
     my %args = ( @_ );
     $self->{'opt'} = \%args;
+    return;
 }
 
 =head2 List
@@ -137,7 +138,7 @@ sub List
     delete $res{'Base'};
     foreach my $name( keys %res ) {
         my $class = join '::', qw(RT Shredder Plugin), $name;
-        unless( eval "require $class" ) {
+        unless( $class->require ) {
             delete $res{ $name };
             next;
         }
@@ -171,9 +172,8 @@ sub LoadByName
     my $name = shift or return (0, "Name not specified");
     $name =~ /^\w+(::\w+)*$/ or return (0, "Invalid plugin name");
 
-    local $@;
     my $plugin = "RT::Shredder::Plugin::$name";
-    eval "require $plugin" or return( 0, $@ );
+    $plugin->require or return( 0, "Failed to load $plugin" );
     return wantarray ? ( 0, "Plugin '$plugin' has no method new") : 0 unless $plugin->can('new');
 
     my $obj = eval { $plugin->new( @_ ) };

@@ -3,7 +3,6 @@ use strict;
 
 use RT::Test nodata => 1, tests => undef;
 use RT::I18N;
-use Encode;
 use Test::Warn;
 
 diag "normal mime encoding conversion: utf8 => iso-8859-1";

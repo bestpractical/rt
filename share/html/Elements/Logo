@@ -53,9 +53,7 @@
 % } else {
 <a href="<%$ARGS{'LogoLinkURL'}||RT->Config->Get('LogoLinkURL')%>"><img
     src="<%$ARGS{'LogoURL'}||RT->Config->Get('LogoURL')%>"
-    alt="<%loc($ARGS{'LogoAltText'}||RT->Config->Get('LogoAltText'))%>"
-    width="<%$ARGS{'LogoImageWidth'}||RT->Config->Get('LogoImageWidth')%>"
-    height="<%$ARGS{'LogoImageHeight'}||RT->Config->Get('LogoImageHeight')%>" /></a>
+    alt="<%loc($ARGS{'LogoAltText'}||RT->Config->Get('LogoAltText'))%>" /></a>
 % }
 % if ( $ShowName ) {
     <span class="rtname"><% $Name || loc("RT for [_1]", RT->Config->Get('rtname')) %></span>

@@ -37,6 +37,7 @@
     #header {
         padding: 0 !important;
         background: transparent !important;
+        position: inherit !important;
     }
 
     #quickbar,

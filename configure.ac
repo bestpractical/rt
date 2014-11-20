@@ -429,11 +429,15 @@ dnl Binaries that should be +x
 AC_CONFIG_FILES([
                  etc/upgrade/3.8-ical-extension
                  etc/upgrade/4.0-customfield-checkbox-extension
-                 etc/upgrade/split-out-cf-categories
                  etc/upgrade/generate-rtaddressregexp
+                 etc/upgrade/sanity-check-stylesheets
+                 etc/upgrade/shrink-cgm-table
+                 etc/upgrade/shrink-transactions-table
+                 etc/upgrade/split-out-cf-categories
+                 etc/upgrade/switch-templates-to
+                 etc/upgrade/time-worked-history
                  etc/upgrade/upgrade-articles
                  etc/upgrade/vulnerable-passwords
-                 etc/upgrade/switch-templates-to
                  sbin/rt-attributes-viewer
                  sbin/rt-preferences-viewer
                  sbin/rt-session-viewer

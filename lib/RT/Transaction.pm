@@ -370,7 +370,7 @@ sub Content {
                 $content =~ s/&/&#38;/g;
                 $content =~ s/</&lt;/g;
                 $content =~ s/>/&gt;/g;
-                $content = "<pre><div style='white-space: pre-wrap; font-family: monospace;'>$content</div></pre>";
+                $content = qq|<pre style="white-space: pre-wrap; font-family: monospace;">$content</pre>|;
             }
         }
     }
@@ -841,7 +841,29 @@ sub _FormatUser {
     },
     SystemError => sub {
         my $self = shift;
-        return ("System error"); #loc()
+        return $self->Data // ("System error"); #loc()
+    },
+    AttachmentTruncate => sub {
+        my $self = shift;
+        if ( defined $self->Data ) {
+            return ( "File '[_1]' truncated because its size ([_2] bytes) exceeded configured maximum size setting ([_3] bytes).",
+                $self->Data, $self->OldValue, $self->NewValue ); #loc()
+        }
+        else {
+            return ( "Content truncated because its size ([_1] bytes) exceeded configured maximum size setting ([_2] bytes).",
+                $self->OldValue, $self->NewValue ); #loc()
+        }
+    },
+    AttachmentDrop => sub {
+        my $self = shift;
+        if ( defined $self->Data ) {
+            return ( "File '[_1]' dropped because its size ([_2] bytes) exceeded configured maximum size setting ([_3] bytes).",
+                $self->Data, $self->OldValue, $self->NewValue ); #loc()
+        }
+        else {
+            return ( "Content dropped because its size ([_1] bytes) exceeded configured maximum size setting ([_2] bytes).",
+                $self->OldValue, $self->NewValue ); #loc()
+        }
     },
     "Forward Transaction" => sub {
         my $self = shift;
@@ -1408,7 +1430,7 @@ sub UpdateCustomFields {
         my $cfid   = $1;
         my $values = $args->{$arg};
         my $cf = $self->LoadCustomFieldByIdentifier($cfid);
-        next unless $cf->ObjectTypeFromLookupType->isa(ref $self);
+        next unless $cf->ObjectTypeFromLookupType($cf->__Value('LookupType'))->isa(ref $self);
         foreach
           my $value ( UNIVERSAL::isa( $values, 'ARRAY' ) ? @$values : $values )
         {

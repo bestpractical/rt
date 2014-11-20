@@ -329,20 +329,15 @@ sub _BookmarkLimit {
         TABLE2 => 'Tickets',
         FIELD2 => 'EffectiveId',
     );
-    $sb->_OpenParen;
-    my $first = 1;
-    my $ea = $op eq '='? 'OR': 'AND';
-    foreach my $id ( sort @bookmarks ) {
-        $sb->Limit(
-            ALIAS    => $tickets_alias,
-            FIELD    => 'id',
-            OPERATOR => $op,
-            VALUE    => $id,
-            $first? (@rest): ( ENTRYAGGREGATOR => $ea )
-        );
-        $first = 0 if $first;
-    }
-    $sb->_CloseParen;
+
+    $op = $op eq '='? 'IN': 'NOT IN';
+    $sb->Limit(
+        ALIAS    => $tickets_alias,
+        FIELD    => 'id',
+        OPERATOR => $op,
+        VALUE    => [ @bookmarks ],
+        @rest,
+    );
 }
 
 =head2 _EnumLimit
@@ -789,7 +784,7 @@ sub _TransCreatorLimit {
         $u->Load($value);
         $value = $u->id || 0;
     }
-    $sb->_SQLLimit( ALIAS => $txn_alias, FIELD => 'Creator', OPERATOR => $op, VALUE => $value, @rest );
+    $sb->Limit( ALIAS => $txn_alias, FIELD => 'Creator', OPERATOR => $op, VALUE => $value, @rest );
 }
 
 =head2 _TransLimit
@@ -2511,9 +2506,13 @@ sub CurrentUserCanSee {
 
         my $groups = RT::Groups->new( RT->SystemUser );
         $groups->Limit( FIELD => 'Domain', VALUE => 'RT::Queue-Role', CASESENSITIVE => 0 );
-        foreach ( @tmp ) {
-            $groups->Limit( FIELD => 'Name', VALUE => $_, CASESENSITIVE => 0 );
-        }
+        $groups->Limit(
+            FIELD         => 'Name',
+            FUNCTION      => 'LOWER(?)',
+            OPERATOR      => 'IN',
+            VALUE         => [ map {lc $_} @tmp ],
+            CASESENSITIVE => 1,
+        );
         my $principal_alias = $groups->Join(
             ALIAS1 => 'main',
             FIELD1 => 'id',
@@ -2564,28 +2563,14 @@ sub CurrentUserCanSee {
             my @queues = @_;
 
             return unless @queues;
-            if ( @queues == 1 ) {
-                $self->Limit(
-                    SUBCLAUSE => 'ACL',
-                    ALIAS => 'main',
-                    FIELD => 'Queue',
-                    VALUE => $_[0],
-                    ENTRYAGGREGATOR => $ea,
-                );
-            } else {
-                $self->SUPER::_OpenParen('ACL');
-                foreach my $q ( @queues ) {
-                    $self->Limit(
-                        SUBCLAUSE => 'ACL',
-                        ALIAS => 'main',
-                        FIELD => 'Queue',
-                        VALUE => $q,
-                        ENTRYAGGREGATOR => $ea,
-                    );
-                    $ea = 'OR';
-                }
-                $self->SUPER::_CloseParen('ACL');
-            }
+            $self->Limit(
+                SUBCLAUSE       => 'ACL',
+                ALIAS           => 'main',
+                FIELD           => 'Queue',
+                OPERATOR        => 'IN',
+                VALUE           => [ @queues ],
+                ENTRYAGGREGATOR => $ea,
+            );
             return 1;
         };
 

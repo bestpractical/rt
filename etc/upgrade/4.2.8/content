@@ -1,0 +1,16 @@
+use strict;
+use warnings;
+
+our @Initial = (
+    sub {
+        # This upgrade step is identical to the 4.2.7 upgrade, but only
+        # runs on Oracle because 4.2.7 was originally released with
+        # flawed SQL which did not run on Oracle.
+        return unless RT->Config->Get('DatabaseType') eq 'Oracle';
+        RT->DatabaseHandle->dbh->do(<<EOSQL);
+            DELETE FROM Attributes
+             WHERE (Name = 'LinkValueTo' OR Name = 'IncludeContentForValue')
+               AND (LENGTH(Content) = 0 OR Content IS NULL)
+EOSQL
+    },
+);

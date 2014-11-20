@@ -375,10 +375,9 @@ sub IsOverride {
 Returns L<MIME::Entity> object parsed using L</Parse> method. Returns
 undef if last call to L</Parse> failed or never be called.
 
-Note that content of the template is UTF-8, but L<MIME::Parser> is not
-good at handling it and all data of the entity should be treated as
-octets and converted to perl strings using Encode::decode_utf8 or
-something else.
+Note that content of the template is characters, but the contents of all
+L<MIME::Entity> objects (including the one returned by this function,
+are bytes in UTF-8.
 
 =cut
 
@@ -452,8 +451,8 @@ sub _Parse {
 
     ### Should we forgive normally-fatal errors?
     $parser->ignore_errors(1);
-    # MIME::Parser doesn't play well with perl strings
-    utf8::encode($content);
+    # Always provide bytes, not characters, to MIME objects
+    $content = Encode::encode( 'UTF-8', $content );
     $self->{'MIMEObj'} = eval { $parser->parse_data( \$content ) };
     if ( my $error = $@ || $parser->last_error ) {
         $RT::Logger->error( "$error" );
@@ -640,7 +639,10 @@ sub _MassageSimpleTemplateArgs {
 
         my $cfs = $ticket->CustomFields;
         while (my $cf = $cfs->Next) {
-            $template_args->{"TicketCF" . $cf->Name} = $ticket->CustomFieldValuesAsString($cf->Name);
+            my $simple = $cf->Name;
+            $simple =~ s/\W//g;
+            $template_args->{"TicketCF" . $simple}
+                = $ticket->CustomFieldValuesAsString($cf->Name);
         }
     }
 
@@ -651,7 +653,10 @@ sub _MassageSimpleTemplateArgs {
 
         my $cfs = $txn->CustomFields;
         while (my $cf = $cfs->Next) {
-            $template_args->{"TransactionCF" . $cf->Name} = $txn->CustomFieldValuesAsString($cf->Name);
+            my $simple = $cf->Name;
+            $simple =~ s/\W//g;
+            $template_args->{"TransactionCF" . $simple}
+                = $txn->CustomFieldValuesAsString($cf->Name);
         }
     }
 }
@@ -667,11 +672,10 @@ sub _DowngradeFromHTML {
     $orig_entity->head->mime_attr( "Content-Type" => 'text/html' );
     $orig_entity->head->mime_attr( "Content-Type.charset" => 'utf-8' );
 
-    require Encode;
     my $body = $new_entity->bodyhandle->as_string;
-    # need to decode_utf8, see the doc of MIMEObj method
-    $body = Encode::decode_utf8( $body );
+    $body = Encode::decode( "UTF-8", $body );
     my $html = RT::Interface::Email::ConvertHTMLToText( $body );
+    $html = Encode::encode( "UTF-8", $html );
     return unless defined $html;
 
     $new_entity->bodyhandle(MIME::Body::InCore->new( \$html ));

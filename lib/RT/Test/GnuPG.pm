@@ -65,7 +65,7 @@ sub import {
     my $t     = $class->builder;
 
     $t->plan( skip_all => 'GnuPG required.' )
-      unless eval { require GnuPG::Interface; 1 };
+      unless GnuPG::Interface->require;
     $t->plan( skip_all => 'gpg executable is required.' )
       unless RT::Test->find_executable('gpg');
 
@@ -166,7 +166,7 @@ sub update_ticket {
 
     $m->click('SubmitTicket');
     is $m->status, 200, "request successful";
-    $m->content_contains("Message recorded", 'Message recorded') or diag $m->content;
+    $m->content_contains("Correspondence added", 'Correspondence added') or diag $m->content;
 
 
     my @mail = RT::Test->fetch_caught_mails;

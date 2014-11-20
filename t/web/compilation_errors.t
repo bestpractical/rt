@@ -15,7 +15,6 @@ BEGIN {
 use HTTP::Request::Common;
 use HTTP::Cookies;
 use LWP;
-use Encode;
 
 my $cookie_jar = HTTP::Cookies->new;
 

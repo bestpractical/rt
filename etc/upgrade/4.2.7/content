@@ -1,0 +1,15 @@
+use strict;
+use warnings;
+
+our @Initial = (
+    sub {
+        # We do the delete in pure SQL because Attribute collections
+        # otherwise attempt to hash everything in memory.  As this may
+        # be a large list, do it directly.
+        RT->DatabaseHandle->dbh->do(<<EOSQL);
+            DELETE FROM Attributes
+             WHERE (Name = 'LinkValueTo' OR Name = 'IncludeContentForValue')
+               AND (LENGTH(Content) = 0 OR Content IS NULL)
+EOSQL
+    },
+);

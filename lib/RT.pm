@@ -53,9 +53,11 @@ use 5.010;
 package RT;
 
 
+use Encode ();
 use File::Spec ();
 use Cwd ();
 use Scalar::Util qw(blessed);
+use UNIVERSAL::require;
 
 use vars qw($Config $System $SystemUser $Nobody $Handle $Logger $_Privileged $_Unprivileged $_INSTALL_MODE);
 
@@ -262,6 +264,9 @@ sub InitLogging {
             $frame++ while caller($frame) && caller($frame) =~ /^Log::/;
             my ($package, $filename, $line) = caller($frame);
 
+            # Encode to bytes, so we don't send wide characters
+            $p{message} = Encode::encode("UTF-8", $p{message});
+
             $p{'message'} =~ s/(?:\r*\n)+$//;
             return "[$$] [". gmtime(time) ."] [". $p{'level'} ."]: "
                 . $p{'message'} ." ($filename:$line)\n";
@@ -277,8 +282,8 @@ sub InitLogging {
             $frame++ while caller($frame) && caller($frame) =~ /^Log::/;
             my ($package, $filename, $line) = caller($frame);
 
-            # syswrite() cannot take utf8; turn it off here.
-            Encode::_utf8_off($p{message});
+            # Encode to bytes, so we don't send wide characters
+            $p{message} = Encode::encode("UTF-8", $p{message});
 
             $p{message} =~ s/(?:\r*\n)+$//;
             if ($p{level} eq 'debug') {
@@ -368,19 +373,9 @@ sub InitSignalHandlers {
 ## mechanism (see above).
 
     $SIG{__WARN__} = sub {
-        # The 'wide character' warnings has to be silenced for now, at least
-        # until HTML::Mason offers a sane way to process both raw output and
-        # unicode strings.
         # use 'goto &foo' syntax to hide ANON sub from stack
-        if( index($_[0], 'Wide character in ') != 0 ) {
-            unshift @_, $RT::Logger, qw(level warning message);
-            goto &Log::Dispatch::log;
-        }
-        # Return value is used only by RT::Test to filter warnings from
-        # reaching the Test::NoWarnings catcher.  If Log::Dispatch::log() ever
-        # starts returning 'IGNORE', we'll need to switch to something more
-        # clever.  I don't expect that to happen.
-        return 'IGNORE';
+        unshift @_, $RT::Logger, qw(level warning message);
+        goto &Log::Dispatch::log;
     };
 
 #When we call die, trap it and log->crit with the value of the die.
@@ -495,8 +490,7 @@ sub InitClasses {
         }
 
         foreach my $class ( grep $_, RT->Config->Get('CustomFieldValuesSources') ) {
-            local $@;
-            eval "require $class; 1" or $RT::Logger->error(
+            $class->require or $RT::Logger->error(
                 "Class '$class' is listed in CustomFieldValuesSources option"
                 ." in the config, but we failed to load it:\n$@\n"
             );
@@ -917,6 +911,7 @@ sub Deprecated {
         Instead => undef,
         Message => undef,
         Stack   => 1,
+        LogLevel => "warn",
         @_,
     );
 
@@ -953,7 +948,9 @@ sub Deprecated {
         if $args{Object};
 
     $msg .= "  Call stack:\n$stack" if $args{Stack};
-    RT->Logger->warn($msg);
+
+    my $loglevel = $args{LogLevel};
+    RT->Logger->$loglevel($msg);
 }
 
 =head1 BUGS

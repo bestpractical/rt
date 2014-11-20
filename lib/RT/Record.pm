@@ -75,7 +75,6 @@ require RT::User;
 require RT::Attributes;
 require RT::Transactions;
 require RT::Link;
-use Encode qw();
 
 our $_TABLE_ATTR = { };
 
@@ -657,12 +656,16 @@ sub __Value {
 
     return undef if (!defined $value);
 
+    # Pg returns character columns as character strings; mysql and
+    # sqlite return them as bytes.  While mysql can be made to return
+    # characters, using the mysql_enable_utf8 flag, the "Content" column
+    # is bytes on mysql and characters on Postgres, making true
+    # consistency impossible.
     if ( $args{'decode_utf8'} ) {
-        if ( !utf8::is_utf8($value) ) {
+        if ( !utf8::is_utf8($value) ) { # mysql/sqlite
             utf8::decode($value);
         }
-    }
-    else {
+    } else {
         if ( utf8::is_utf8($value) ) {
             utf8::encode($value);
         }
@@ -748,7 +751,7 @@ sub _Accessible  {
 =head2 _EncodeLOB BODY MIME_TYPE FILENAME
 
 Takes a potentially large attachment. Returns (ContentEncoding,
-EncodedBody, MimeType, Filename) based on system configuration and
+EncodedBody, MimeType, Filename, NoteArgs) based on system configuration and
 selected database.  Returns a custom (short) text/plain message if
 DropLongAttachments causes an attachment to not be stored.
 
@@ -760,6 +763,10 @@ encoded on databases which are strict.
 This function expects to receive an octet string in order to properly
 evaluate and encode it.  It will return an octet string.
 
+NoteArgs is currently used to indicate caller that the message is too long and
+is truncated or dropped. It's a hashref which is expected to be passed to
+L<RT::Record/_NewTransaction>.
+
 =cut
 
 sub _EncodeLOB {
@@ -769,6 +776,9 @@ sub _EncodeLOB {
     my $Filename = shift;
 
     my $ContentEncoding = 'none';
+    my $note_args;
+
+    RT::Util::assert_bytes( $Body );
 
     #get the max attachment length from RT
     my $MaxSize = RT->Config->Get('MaxAttachmentSize');
@@ -794,11 +804,21 @@ sub _EncodeLOB {
     #if the attachment is larger than the maximum size
     if ( ($MaxSize) and ( $MaxSize < length($Body) ) ) {
 
+        my $size = length $Body;
         # if we're supposed to truncate large attachments
         if (RT->Config->Get('TruncateLongAttachments')) {
 
+            $RT::Logger->info("$self: Truncated an attachment of size $size");
+
             # truncate the attachment to that length.
             $Body = substr( $Body, 0, $MaxSize );
+            $note_args = {
+                Type           => 'AttachmentTruncate',
+                Data           => $Filename,
+                OldValue       => $size,
+                NewValue       => $MaxSize,
+                ActivateScrips => 0,
+            };
 
         }
 
@@ -806,28 +826,31 @@ sub _EncodeLOB {
         elsif (RT->Config->Get('DropLongAttachments')) {
 
             # drop the attachment on the floor
-            $RT::Logger->info( "$self: Dropped an attachment of size "
-                               . length($Body));
+            $RT::Logger->info( "$self: Dropped an attachment of size $size" );
             $RT::Logger->info( "It started: " . substr( $Body, 0, 60 ) );
-            $Filename .= ".txt" if $Filename;
-            return ("none", "Large attachment dropped", "text/plain", $Filename );
+            $note_args = {
+                Type           => 'AttachmentDrop',
+                Data           => $Filename,
+                OldValue       => $size,
+                NewValue       => $MaxSize,
+                ActivateScrips => 0,
+            };
+            $Filename .= ".txt" if $Filename && $Filename !~ /\.txt$/;
+            return ("none", "Large attachment dropped", "text/plain", $Filename, $note_args );
         }
     }
 
     # if we need to mimencode the attachment
     if ( $ContentEncoding eq 'base64' ) {
-
         # base64 encode the attachment
-        Encode::_utf8_off($Body);
         $Body = MIME::Base64::encode_base64($Body);
 
     } elsif ($ContentEncoding eq 'quoted-printable') {
-        Encode::_utf8_off($Body);
         $Body = MIME::QuotedPrint::encode($Body);
     }
 
 
-    return ($ContentEncoding, $Body, $MIMEType, $Filename );
+    return ($ContentEncoding, $Body, $MIMEType, $Filename, $note_args );
 }
 
 =head2 _DecodeLOB C<ContentType>, C<ContentEncoding>, C<Content>
@@ -863,6 +886,8 @@ sub _DecodeLOB {
     my $ContentEncoding = shift || 'none';
     my $Content         = shift;
 
+    RT::Util::assert_bytes( $Content );
+
     if ( $ContentEncoding eq 'base64' ) {
         $Content = MIME::Base64::decode_base64($Content);
     }
@@ -879,7 +904,7 @@ sub _DecodeLOB {
         my $charset = RT::I18N::_FindOrGuessCharset($entity);
         $charset = 'utf-8' if not $charset or not Encode::find_encoding($charset);
 
-        $Content = Encode::decode($charset,$Content,Encode::FB_PERLQQ) unless Encode::is_utf8($Content);
+        $Content = Encode::decode($charset,$Content,Encode::FB_PERLQQ);
     }
     return ($Content);
 }
@@ -1773,6 +1798,8 @@ our %TRANSACTION_CLASSIFICATION = (
         ) ),
     },
     SystemError => 'error',
+    AttachmentTruncate => 'attachment-truncate',
+    AttachmentDrop => 'attachment-drop',
     __default => 'other',
 );
 

@@ -118,9 +118,11 @@ sub LimitToGrouping {
     my $obj = shift;
     my $grouping = shift;
 
+    my $grouping_class = $self->NewItem->_GroupingClass($obj);
+
     my $config = RT->Config->Get('CustomFieldGroupings');
        $config = {} unless ref($config) eq 'HASH';
-       $config = $config->{ref($obj) || $obj} || [];
+       $config = $config->{$grouping_class} || [];
     my %h = ref $config eq "ARRAY" ? @{$config} : %{$config};
 
     if ( $grouping ) {
@@ -128,24 +130,26 @@ sub LimitToGrouping {
         unless ( $list and ref($list) eq 'ARRAY' and @$list ) {
             return $self->Limit( FIELD => 'id', VALUE => 0, ENTRYAGGREGATOR => 'AND' );
         }
-        foreach ( @$list ) {
-            $self->Limit( FIELD => 'Name', VALUE => $_, CASESENSITIVE => 0 );
-        }
+        $self->Limit(
+            FIELD         => 'Name',
+            FUNCTION      => 'LOWER(?)',
+            OPERATOR      => 'IN',
+            VALUE         => [map {lc $_} @{$list}],
+            CASESENSITIVE => 1,
+        );
     } else {
         my @list = map {@$_} grep defined && ref($_) eq 'ARRAY',
             values %h;
 
         return unless @list;
-        foreach ( @list ) {
-            $self->Limit(
-                FIELD => 'Name',
-                OPERATOR => '!=',
-                VALUE => $_,
-                ENTRYAGGREGATOR => 'AND',
-                CASESENSITIVE => 0,
-            );
-        }
 
+        $self->Limit(
+            FIELD         => 'Name',
+            FUNCTION      => 'LOWER(?)',
+            OPERATOR      => 'NOT IN',
+            VALUE         => [ map {lc $_} @list ],
+            CASESENSITIVE => 1,
+        );
     }
     return;
 }

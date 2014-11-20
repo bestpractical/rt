@@ -322,6 +322,7 @@ sub list {
     }
     if ( ! $rawprint and ! exists $data{format} ) {
         $data{format} = 'l';
+        $data{fields} = 'subject,status,queue,created,told,owner,requestors';
     }
     if ( $reverse_sort and $data{orderby} =~ /^-/ ) {
         $data{orderby} =~ s/^-/+/;
@@ -792,6 +793,7 @@ sub comment {
     my ($action) = @_;
     my (%data, $id, @files, @bcc, @cc, $msg, $content_type, $wtime, $edit);
     my $bad = 0;
+    my $status = '';
 
     while (@ARGV) {
         $_ = shift @ARGV;
@@ -799,7 +801,7 @@ sub comment {
         if (/^-e$/) {
             $edit = 1;
         }
-        elsif (/^-(?:[abcmw]|ct)$/) {
+        elsif (/^-(?:[abcmws]|ct)$/) {
             unless (@ARGV) {
                 whine "No argument specified with $_.";
                 $bad = 1; last;
@@ -814,6 +816,9 @@ sub comment {
             }
             elsif (/-ct/) {
                 $content_type = shift @ARGV;
+            }
+            elsif (/-s/) {
+                $status = shift @ARGV;
             }
             elsif (/-([bc])/) {
                 my $a = $_ eq "-b" ? \@bcc : \@cc;
@@ -857,9 +862,12 @@ sub comment {
             TimeWorked => $wtime || '',
             'Content-Type' => $content_type || 'text/plain',
             Text       => $msg || '',
-            Status => ''
+            Status => $status
         }
     ];
+    if ($status ne '') {
+      push(@{$form->[1]}, "Status");
+    }
 
     my $text = Form::compose([ $form ]);
 
@@ -2402,6 +2410,8 @@ Text:
                         than once to attach multiple files.)
         -c <addrs>      A comma-separated list of Cc addresses.
         -b <addrs>      A comma-separated list of Bcc addresses.
+        -s <status>     Set a new status for the ticket (default will
+                        leave the status unchanged)
         -w <time>       Specify the time spent working on this ticket.
         -e              Starts an editor before the submission, even if
                         arguments from the command line were sufficient.

@@ -69,3 +69,22 @@
       Right         => 'SeeCustomField',
     },
 );
+
+@Attributes = ({
+    Name        => 'SavedSearch',
+    Description => 'New Tickets in Test Queue',
+    Object      => sub {
+        my $GroupName = 'Test Employees';
+        my $group     = RT::Group->new( RT->SystemUser );
+
+        my( $ret, $msg ) = $group->LoadUserDefinedGroup( $GroupName );
+        die $msg unless $ret;
+
+        return $group;
+    },
+    Content     => {
+        Query   => "Status = 'new' AND Queue = 'Test Queue'",
+        OrderBy => 'id',
+        Order   => 'DESC'
+    },
+});

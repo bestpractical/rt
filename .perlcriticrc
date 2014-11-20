@@ -4,3 +4,23 @@
 exclude = Subroutines::ProhibitExplicitReturnUndef  Modules::RequireFilenameMatchesPackage TestingAndDebugging::ProhibitNoStrict
 color = 1
 verbose = 7
+
+
+# we don't unpack @_ right away as we mostly use named vars with defaults:
+# sub foo {
+#     my $self = shift;
+#     my %args = ( default => 'value', ..., @_ );
+# ...
+[-Subroutines::RequireArgUnpacking]
+
+# Readonly superiority is not convincing, especially considering
+# that 'use constant' participates in constants folding during
+# compilation
+[-ValuesAndExpressions::ProhibitConstantPragma]
+
+# brutal
+[BuiltinFunctions::RequireBlockGrep]
+severity = 1
+
+[BuiltinFunctions::RequireBlockMap]
+severity = 1

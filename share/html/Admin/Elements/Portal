@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div id="rt-portal">
-<&| /Widgets/TitleBox, title => 'RT Portal' &>
+<&| /Widgets/TitleBox, title => loc('RT Portal') &>
 <iframe src="https://bestpractical.com/rt/integration/news?utm_source=rt&utm_medium=iframe&utm_campaign=<%$RT::VERSION%>"></iframe>
 </&>
 </div>

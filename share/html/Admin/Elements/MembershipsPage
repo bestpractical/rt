@@ -58,7 +58,7 @@
     OrderBy => 'Name',
     Order   => 'ASC',
     %ARGS,
-    Rows    => 20,
+    Rows          => $Rows,
     DisplayFormat => "__CheckBox.{Delete}__,$Format",
     Format => $Format,
     Collection => $is_member,
@@ -71,9 +71,9 @@
 <& /Elements/CollectionList,
     OrderBy => 'Name',
     Order   => 'ASC',
-    Rows    => 20,
+    Rows    => $Rows,
     %ARGS,
-    DisplayFormat => "__CheckBox.{Add}__,'__HasMemberRecursively.{$id}__/TITLE:Recursive',$Format",
+    DisplayFormat => "__CheckBox.{Add}__,'__HasMemberRecursively.{$id}__/TITLE:Recursive member',$Format",
     Format => $Format,
     Collection => $is_not_member,
     AllowSorting => 1,
@@ -129,6 +129,7 @@ $is_not_member->WithoutMember( PrincipalId => $id );
 $is_not_member->Limit( FIELD => 'id', OPERATOR => '!=', VALUE => $id );
 
 $Format ||= RT->Config->Get('AdminSearchResultFormat')->{'Groups'};
+my $Rows = RT->Config->Get('AdminSearchResultRows')->{'Groups'} || 50;
 
 my $title;
 if ( $principal->IsUser ) {

@@ -128,8 +128,7 @@ foreach my $field (@format) {
 
 if ( $RemoveCol ) {
     # we do this regex match to avoid a non-numeric warning
-    my ($index) = $CurrentDisplayColumns =~ /^(\d+)/;
-    my $column = $seen[$index];
+    my ($index) = ($CurrentDisplayColumns // '') =~ /^(\d+)/;
     if ( defined($index) ) {
         delete $seen[$index];
         my @temp = @seen;
@@ -194,7 +193,7 @@ elsif ( $AddCol ) {
     }
 }
 elsif ( $ColUp ) {
-    my $index = $CurrentDisplayColumns;
+    my ($index) = ($CurrentDisplayColumns // '') =~ /^(\d+)/;
     if ( defined $index && ( $index - 1 ) >= 0 ) {
         my $column = $seen[$index];
         $seen[$index]       = $seen[ $index - 1 ];
@@ -203,7 +202,7 @@ elsif ( $ColUp ) {
     }
 }
 elsif ( $ColDown ) {
-    my $index = $CurrentDisplayColumns;
+    my ($index) = ($CurrentDisplayColumns // '') =~ /^(\d+)/;
     if ( defined $index && ( $index + 1 ) < scalar @seen ) {
         my $column = $seen[$index];
         $seen[$index]       = $seen[ $index + 1 ];

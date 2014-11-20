@@ -54,7 +54,7 @@
 
     use RT::CurrentUser;
 
-    # laod
+    # load
     my $current_user = RT::CurrentUser->new;
     $current_user->Load(...);
     # or
@@ -253,9 +253,6 @@ sub loc {
 sub loc_fuzzy {
     my $self = shift;
     return '' if !defined $_[0] || $_[0] eq '';
-
-    # XXX: work around perl's deficiency when matching utf8 data
-    return $_[0] if Encode::is_utf8($_[0]);
 
     return $self->LanguageHandle->maketext_fuzzy( @_ );
 }

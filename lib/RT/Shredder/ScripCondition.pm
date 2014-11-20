@@ -46,8 +46,8 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use RT::ScripCondition ();
 package RT::ScripCondition;
+use RT::ScripCondition ();
 
 use strict;
 use warnings;

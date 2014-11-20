@@ -61,14 +61,14 @@ sub new
 {
     my $proto = shift;
     my $self = bless( {}, ref $proto || $proto );
-    $self->_Init( @_ );
-    return $self;
+    return $self->_Init( @_ );
 }
 
 sub _Init
 {
     my $self = shift;
     $self->{'opt'} = { @_ };
+    return $self;
 }
 
 =head1 USAGE
@@ -125,8 +125,9 @@ sub HasSupportForArgs
     foreach my $a( @args ) {
         push @unsupported, $a unless grep $_ eq $a, $self->SupportArgs;
     }
-    return( 1 ) unless @unsupported;
-    return( 0, "Plugin doesn't support argument(s): @unsupported" ) if @unsupported;
+    return( 0, "Plugin doesn't support argument(s): @unsupported" )
+        if @unsupported;
+    return( 1 );
 }
 
 =head3 TestArgs

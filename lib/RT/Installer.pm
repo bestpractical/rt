@@ -288,7 +288,9 @@ sub SaveConfig {
             # remove obsolete settings we'll add later
             $content =~ s/^\s* Set \s* \( \s* \$$_ .*$//xm;
 
-            $content .= "Set( \$$_, '$RT::Installer->{InstallConfig}{$_}' );\n";
+            my $value = $RT::Installer->{InstallConfig}{$_};
+            $value =~ s/(['\\])/\\$1/g;
+            $content .= "Set( \$$_, '$value' );\n";
         }
         $content .= "1;\n";
         print $fh $content;

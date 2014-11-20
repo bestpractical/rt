@@ -406,12 +406,11 @@ sub LimitTopics {
 
     my $topics = $self->NewAlias('ObjectTopics');
     $self->Limit(
-        ALIAS           => $topics,
-        FIELD           => 'Topic',
-        VALUE           => $_,
-        ENTRYAGGREGATOR => 'OR'
-      )
-      for @topics;
+        ALIAS    => $topics,
+        FIELD    => 'Topic',
+        OPERATOR => 'IN',
+        VALUE    => [ @topics ],
+    );
 
     $self->Limit(
         ALIAS => $topics,

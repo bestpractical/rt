@@ -299,8 +299,8 @@ sub ParseCcAddressesFromHead {
 
     my (@Addresses);
 
-    my @ToObjs = Email::Address->parse( $self->Head->get('To') );
-    my @CcObjs = Email::Address->parse( $self->Head->get('Cc') );
+    my @ToObjs = Email::Address->parse( Encode::decode( "UTF-8", $self->Head->get('To') ) );
+    my @CcObjs = Email::Address->parse( Encode::decode( "UTF-8", $self->Head->get('Cc') ) );
 
     foreach my $AddrObj ( @ToObjs, @CcObjs ) {
         my $Address = $AddrObj->address;
@@ -634,7 +634,7 @@ sub RescueOutlook {
     # Add base64 since we've seen examples of double newlines with
     # this type too. Need an example of a multi-part base64 to
     # handle that permutation if it exists.
-    elsif ( $mime->head->get('Content-Transfer-Encoding') =~ m{base64} ) {
+    elsif ( ($mime->head->get('Content-Transfer-Encoding')||'') =~ m{base64} ) {
         $text_part = $mime;    # Assuming single part, already decoded.
     }
 

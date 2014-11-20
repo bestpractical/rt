@@ -106,9 +106,6 @@ else {
         if ( $queue->DefaultValue('Due') ) {
             $due->Set( Format => 'unknown', Value => $queue->DefaultValue('Due') );
         }
-        else {
-            $due->SetToNow;
-        }
 
         if ( $queue->DefaultValue('Starts') ) {
             $starts->Set( Format => 'unknown', Value => $queue->DefaultValue('Starts') );
@@ -134,8 +131,8 @@ else {
                 InitialPriority  => $queue->DefaultValue('InitialPriority'),
                 FinalPriority    => $queue->DefaultValue('FinalPriority'),
                 TimeEstimated    => 0,
-                Starts           => $starts->ISO,
-                Due              => $due->ISO,
+                Starts           => $starts->ISO(Timezone => 'user'),
+                Due              => $due->IsSet ? $due->ISO(Timezone => 'user') : undef,
                 Attachment       => '',
                 Text             => "",
             },
@@ -203,13 +200,14 @@ else {
             $v{MIMEObj} =
                 MIME::Entity->build(
                     Type => "multipart/mixed",
-                    From => $session{CurrentUser}->EmailAddress,
-                    Subject => $v{Subject},
+                    From => Encode::encode( "UTF-8", $session{CurrentUser}->EmailAddress ),
+                    Subject => Encode::encode( "UTF-8", $v{Subject}),
                     'X-RT-Interface' => 'REST',
                 );
             $v{MIMEObj}->attach(
-                Data => $text,
-                'Content-Type' => $v{'Content-Type'} || 'text/plain',
+                Type    => $v{'Content-Type'} || 'text/plain',
+                Charset => "UTF-8",
+                Data    => Encode::encode( "UTF-8", $text ),
             ) if $text;
             my ($status, $msg) = process_attachments($v{'MIMEObj'}, @atts);
             unless ($status) {

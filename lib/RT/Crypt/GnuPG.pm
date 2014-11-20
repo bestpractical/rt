@@ -494,7 +494,8 @@ sub SignEncryptRFC3156 {
     }
     if ( $args{'Encrypt'} ) {
         my @recipients = map $_->address,
-            map Email::Address->parse( $entity->head->get( $_ ) ),
+            map Email::Address->parse( Encode::decode( "UTF-8", $_ ) ),
+            map $entity->head->get( $_ ),
             qw(To Cc Bcc);
 
         my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );

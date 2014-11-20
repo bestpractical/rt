@@ -131,7 +131,7 @@ extra transactions, and keeping the summed time spent consistent.
 In order to fix the history records of old ticket you can run the following
 command:
 
-    perl -I /opt/rt4/local/lib/ -I /opt/rt4/lib/ etc/upgrade/time-worked-history.pl
+    /opt/rt4/etc/upgrade/time-worked-history
 
 This command deletes records from the Transactions table. This script can only fix
 TimeWorked mismatches, but not TimeLeft or TimeEstimated.
@@ -337,5 +337,12 @@ otherwise it will notify the AdminCcs. If using this, you will likely
 want to modify or remove the Notify Owner and AdminCcs scrip to avoid
 duplicate notifications. This Scrip Action is not used in any default
 Scrips at this time.
+
+=head1 UPGRADING FROM 4.2.6 AND EARLIER
+
+The C<$LogoImageHeight> and C<$LogoImageWidth> configuration options
+have been overridden by CSS since 4.0.0, and thus did not affect
+display.  They have been removed, and setting them will trigger an
+informational message that setting them is ineffective.
 
 =cut

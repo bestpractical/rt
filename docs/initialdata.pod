@@ -427,8 +427,33 @@ L<RT::Template/Create> for the fields you can use.
 
 An array of L<RT::Attribute>s to create.  You likely don't need to mess with
 this.  If you do, know that the key C<Object> is expected to be an
-L<RT::Record> object on which to call C<AddAttribute>.  If you don't provide
-C<Object> or it's undefined, C<< RT->System >> will be used.
+L<RT::Record> object or a subroutine reference that returns an object on which
+to call C<AddAttribute>.  If you don't provide C<Object> or it's undefined,
+C<< RT->System >> will be used.
+
+Here is an example of using a subroutine reference as a value for Object:
+
+    @Attributes = ({
+        Name        => 'SavedSearch',
+        Description => 'New Tickets in SomeQueue',
+        Object      => sub {
+            my $GroupName = 'SomeQueue Group';
+            my $group     = RT::Group->new( RT->SystemUser );
+    
+            my( $ret, $msg ) = $group->LoadUserDefinedGroup( $GroupName );
+            die $msg unless $ret;
+    
+            return $group;
+        },
+        Content     => {
+            Format =>  <<'        END_OF_FORMAT',
+    ....
+            END_OF_FORMAT
+            Query   => "Status = 'new' AND Queue = 'SomeQueue'",
+            OrderBy => 'id',
+            Order   => 'DESC'
+        },
+    });
 
 =head2 C<@Initial>
 
@@ -452,7 +477,7 @@ to easily create B<Classes>, B<Topics>, or B<Articles> from initialdata files.
 
 =head1 Running an initialdata file
 
-    sbin/rt-setup-database --action insert --datafile /path/to/your/initialdata
+    /opt/rt4/sbin/rt-setup-database --action insert --datafile /path/to/your/initialdata
 
 This may prompt you for a database password.
 

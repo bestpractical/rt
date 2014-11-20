@@ -113,7 +113,7 @@ my $CurrentUser = GetCurrentUser();
 help() if $help;
 
 unless ( $CurrentUser->Id ) {
-    print loc("No RT user found. Please consult your RT administrator.");
+    print loc("No RT user found. Please consult your RT administrator.") . "\n";
     exit(1);
 }
 
@@ -287,9 +287,9 @@ sub get_template {
 
 sub load_module {
     my $modname = shift;
-    eval "require $modname";
-    if ($@) {
-        die loc( "Failed to load module [_1]. ([_2])", $modname, $@ );
+    unless ($modname->require) {
+        my $error = $@;
+        die loc( "Failed to load module [_1]. ([_2])", $modname, $error );
     }
 
 }

@@ -175,7 +175,7 @@ sub GetCurrentUser {
 
         foreach my $protocol ( @check_protocols ) {
             my @status = grep defined && length,
-                $part->head->get( "X-RT-$protocol-Status" );
+                map Encode::decode( "UTF-8", $_), $part->head->get( "X-RT-$protocol-Status" );
             next unless @status;
 
             push @found, $protocol;
@@ -186,20 +186,20 @@ sub GetCurrentUser {
                 }
                 if ( $_->{Operation} eq 'Verify' && $_->{Status} eq 'DONE' ) {
                     $part->head->replace(
-                        'X-RT-Incoming-Signature' => $_->{UserString}
+                        'X-RT-Incoming-Signature' => Encode::encode( "UTF-8", $_->{UserString} )
                     );
                 }
             }
         }
 
         $part->head->replace(
-            'X-RT-Incoming-Encryption' => 
+            'X-RT-Incoming-Encryption' =>
                 $decrypted ? 'Success' : 'Not encrypted'
         );
     }
 
     my %seen;
-    $args{'Message'}->head->replace( 'X-RT-Privacy' => $_ )
+    $args{'Message'}->head->replace( 'X-RT-Privacy' => Encode::encode( "UTF-8", $_ ) )
         foreach grep !$seen{$_}++, @found;
 
     return 1;

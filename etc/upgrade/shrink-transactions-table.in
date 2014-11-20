@@ -1,3 +1,4 @@
+#!@PERL@
 # BEGIN BPS TAGGED BLOCK {{{
 #
 # COPYRIGHT:
@@ -45,43 +46,83 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
+use 5.10.1;
 use strict;
 use warnings;
 
-use RT;
-RT::LoadConfig();
+use lib "@LOCAL_LIB_PATH@";
+use lib "@RT_LIB_PATH@";
+
+use RT -init;
 RT->Config->Set('LogToSTDERR' => 'debug');
-RT::Init();
 
 $| = 1;
 
-use RT::Users;
-my $users = RT::Users->new( $RT::SystemUser );
-$users->UnLimit();
+use RT::Transactions;
+my $txns = RT::Transactions->new( RT->SystemUser );
+$txns->Limit(
+    FIELD => 'ObjectType',
+    OPERATOR => '=',
+    VALUE => 'RT::Group',
+    QUOTEVALUE => 1,
+    ENTRYAGGREGATOR => 'AND',
+);
 
-my @static_roots = RT::Interface::Web->StaticRoots;
-my %static_root_check_cache;
-sub stylesheet_exists {
-    my $stylesheet = shift;
+my $alias = $txns->Join(
+    TYPE   => 'LEFT',
+    FIELD1 => 'ObjectId',
+    TABLE2 => 'Groups',
+    FIELD2 => 'Id',
+);
+$txns->Limit(
+    ALIAS => $alias,
+    FIELD => 'Domain',
+    OPERATOR => '=',
+    VALUE => 'ACLEquivalence',
+    CASESENSITIVE => 0,
+    QUOTEVALUE => 1,
+    ENTRYAGGREGATOR => 'AND',
+);
 
-    return $static_root_check_cache{$stylesheet}
-        if exists $static_root_check_cache{$stylesheet};
+$txns->Limit(
+    ALIAS => $alias,
+    FIELD => 'Name',
+    OPERATOR => '=',
+    VALUE => 'UserEquiv',
+    QUOTEVALUE => 1,
+    CASESENSITIVE => 0,
+    ENTRYAGGREGATOR => 'AND',
+);
 
-    for my $static_root (@static_roots) {
-        return ++$static_root_check_cache{$stylesheet}
-            if -d "$static_root/css/$stylesheet";
+my $total = $txns->Count;
+my $i = 0;
+
+FetchNext( $txns, 'init' );
+while ( my $rec = FetchNext( $txns ) ) {
+    $i++;
+    printf("\r%0.2f %%", 100 * $i / $total);
+    $RT::Handle->BeginTransaction;
+    my ($status) = $rec->Delete;
+    unless ($status) {
+        print STDERR "Couldn't delete TXN #". $rec->id;
+        exit 1;
     }
-
-    return $static_root_check_cache{$stylesheet} = 0;
+    $RT::Handle->Commit;
 }
 
-my $system_stylesheet = RT->Config->Get('WebDefaultStylesheet');
-
-while (my $u = $users->Next) {
-    my $stylesheet = RT->Config->Get('WebDefaultStylesheet', $u);
-    unless (stylesheet_exists $stylesheet) {
-        my $prefs = $u->Preferences($RT::System);
-        $prefs->{WebDefaultStylesheet} = $system_stylesheet;
-        $u->SetPreferences($RT::System, $prefs);
+use constant PAGE_SIZE => 10000;
+sub FetchNext {
+    my ($objs, $init) = @_;
+    if ( $init ) {
+        $objs->RowsPerPage( PAGE_SIZE );
+        $objs->FirstPage;
+        return;
     }
+
+    my $obj = $objs->Next;
+    return $obj if $obj;
+    $objs->RedoSearch;
+    $objs->FirstPage;
+    return $objs->Next;
 }
+

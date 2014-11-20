@@ -1,6 +1,5 @@
 use strict;
 use warnings;
-use utf8;
 
 use RT::Test tests => 22;
 RT->Config->Set( NotifyActor => 1 );

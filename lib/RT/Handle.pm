@@ -86,11 +86,10 @@ sub FinalizeDatabaseType {
     my $db_type = RT->Config->Get('DatabaseType');
     my $package = "DBIx::SearchBuilder::Handle::$db_type";
 
-    unless (eval "require $package; 1;") {
+    $package->require or
         die "Unable to load DBIx::SearchBuilder database handle for '$db_type'.\n".
             "Perhaps you've picked an invalid database type or spelled it incorrectly.\n".
             $@;
-    }
 
     @RT::Handle::ISA = ($package);
 
@@ -1209,7 +1208,12 @@ sub InsertData {
         my $sys = RT::System->new(RT->SystemUser);
 
         for my $item (@Attributes) {
-            my $obj = delete $item->{Object}; # XXX: make this something loadable
+            my $obj = delete $item->{Object};
+
+            if ( ref $obj eq 'CODE' ) {
+                $obj = $obj->();
+            }
+
             $obj ||= $sys;
             my ( $return, $msg ) = $obj->AddAttribute (%$item);
             unless ( $return ) {

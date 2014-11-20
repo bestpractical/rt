@@ -77,8 +77,8 @@ should wipeout.
 Outputs INSERT queries into file. This dump can be used to restore data
 after wiping out.
 
-By default creates files
-F<< <RT_home>/var/data/RT-Shredder/<ISO_date>-XXXX.sql >>
+By default creates files named F<< <ISO_date>-XXXX.sql >> in the current
+directory.
 
 =head2 --object (DEPRECATED)
 

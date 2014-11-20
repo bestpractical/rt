@@ -473,7 +473,7 @@ sub Create {
         next unless $arg =~ /^CustomField-(\d+)$/i;
         my $cfid = $1;
         my $cf = $self->LoadCustomFieldByIdentifier($cfid);
-        next unless $cf->ObjectTypeFromLookupType->isa(ref $self);
+        next unless $cf->ObjectTypeFromLookupType($cf->__Value('LookupType'))->isa(ref $self);
 
         foreach my $value (
             UNIVERSAL::isa( $args{$arg} => 'ARRAY' ) ? @{ $args{$arg} } : ( $args{$arg} ) )
@@ -618,9 +618,9 @@ sub _HasModifyWatcherRight {
 
 =head2 AddWatcher
 
-Applies access control checking, then calls L<RT::Record/AddRoleMember>.
-Additionally, C<Email> is accepted as an alternative argument name for
-C<User>.
+Applies access control checking, then calls
+L<RT::Record::Role::Roles/AddRoleMember>.  Additionally, C<Email> is
+accepted as an alternative argument name for C<User>.
 
 Returns a tuple of (status, message).
 
@@ -650,9 +650,9 @@ sub AddWatcher {
 
 =head2 DeleteWatcher
 
-Applies access control checking, then calls L<RT::Record/DeleteRoleMember>.
-Additionally, C<Email> is accepted as an alternative argument name for
-C<User>.
+Applies access control checking, then calls
+L<RT::Record::Role::Roles/DeleteRoleMember>.  Additionally, C<Email> is
+accepted as an alternative argument name for C<User>.
 
 Returns a tuple of (status, message).
 
@@ -1009,16 +1009,12 @@ sub TransactionAddresses {
     $attachments->LimitByTicket( $self->id );
     $attachments->Columns( qw( id Headers TransactionId));
 
-
-    foreach my $type (qw(Create Comment Correspond)) {
-        $attachments->Limit( ALIAS    => $attachments->TransactionAlias,
-                             FIELD    => 'Type',
-                             OPERATOR => '=',
-                             VALUE    => $type,
-                             ENTRYAGGREGATOR => 'OR',
-                             CASESENSITIVE   => 1
-                           );
-    }
+    $attachments->Limit(
+        ALIAS         => $attachments->TransactionAlias,
+        FIELD         => 'Type',
+        OPERATOR      => 'IN',
+        VALUE         => [ qw(Create Comment Correspond) ],
+    );
 
     while ( my $att = $attachments->Next ) {
         foreach my $addrlist ( values %{$att->Addresses } ) {
@@ -1549,8 +1545,11 @@ sub _RecordNote {
     }
 
     unless ( $args{'MIMEObj'} ) {
+        my $data = ref $args{'Content'}? $args{'Content'} : [ $args{'Content'} ];
         $args{'MIMEObj'} = MIME::Entity->build(
-            Data => ( ref $args{'Content'}? $args{'Content'}: [ $args{'Content'} ] )
+            Type    => "text/plain",
+            Charset => "UTF-8",
+            Data    => [ map {Encode::encode("UTF-8", $_)} @{$data} ],
         );
     }
 
@@ -1572,7 +1571,7 @@ sub _RecordNote {
             my $addresses = join ', ', (
                 map { RT::User->CanonicalizeEmailAddress( $_->address ) }
                     Email::Address->parse( $args{ $type . 'MessageTo' } ) );
-            $args{'MIMEObj'}->head->replace( 'RT-Send-' . $type, Encode::encode_utf8( $addresses ) );
+            $args{'MIMEObj'}->head->replace( 'RT-Send-' . $type, Encode::encode( "UTF-8", $addresses ) );
         }
     }
 
@@ -1586,10 +1585,10 @@ sub _RecordNote {
     # internal Message-ID now, so all emails sent because of this
     # message have a common Message-ID
     my $org = RT->Config->Get('Organization');
-    my $msgid = $args{'MIMEObj'}->head->get('Message-ID');
+    my $msgid = Encode::decode( "UTF-8", $args{'MIMEObj'}->head->get('Message-ID') );
     unless (defined $msgid && $msgid =~ /<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@\Q$org\E>/) {
-        $args{'MIMEObj'}->head->set(
-            'RT-Message-ID' => Encode::encode_utf8(
+        $args{'MIMEObj'}->head->replace(
+            'RT-Message-ID' => Encode::encode( "UTF-8",
                 RT::Interface::Email::GenMessageId( Ticket => $self )
             )
         );
@@ -1598,7 +1597,7 @@ sub _RecordNote {
     #Record the correspondence (write the transaction)
     my ( $Trans, $msg, $TransObj ) = $self->_NewTransaction(
              Type => $args{'NoteType'},
-             Data => ( $args{'MIMEObj'}->head->get('subject') || 'No Subject' ),
+             Data => ( Encode::decode( "UTF-8", $args{'MIMEObj'}->head->get('Subject') ) || 'No Subject' ),
              TimeTaken => $args{'TimeTaken'},
              MIMEObj   => $args{'MIMEObj'}, 
              SquelchMailTo => $args{'SquelchMailTo'},
@@ -1609,7 +1608,12 @@ sub _RecordNote {
         return ( $Trans, $self->loc("Message could not be recorded"), undef );
     }
 
-    return ( $Trans, $self->loc("Message recorded"), $TransObj );
+    if ($args{NoteType} eq "Comment") {
+        $msg = $self->loc("Comments added");
+    } else {
+        $msg = $self->loc("Correspondence added");
+    }
+    return ( $Trans, $msg, $TransObj );
 }
 
 
@@ -1665,14 +1669,9 @@ sub _Links {
     # at least to myself
     $links->Limit(
         FIELD           => $limit_on,
-        VALUE           => $self->id,
-        ENTRYAGGREGATOR => 'OR',
+        OPERATOR        => 'IN',
+        VALUE           => [ $self->id, $self->Merged ],
     );
-    $links->Limit(
-        FIELD           => $limit_on,
-        VALUE           => $_,
-        ENTRYAGGREGATOR => 'OR',
-    ) foreach $self->Merged;
     $links->Limit(
         FIELD => 'Type',
         VALUE => $type,
@@ -2985,15 +2984,14 @@ sub Forward {
         unless grep {length $args{$_}} qw/To Cc Bcc/;
 
     my $mime = MIME::Entity->build(
-        Subject => $args{Subject},
         Type    => $args{ContentType},
-        Data    => $args{Content},
+        Data    => Encode::encode( "UTF-8", $args{Content} ),
     );
 
-    $mime->head->set(
+    $mime->head->replace(
         $_ => RT::Interface::Email::EncodeToMIME( String => $args{$_} ) )
       for grep defined $args{$_}, qw(Subject To Cc Bcc);
-    $mime->head->set(
+    $mime->head->replace(
         From => RT::Interface::Email::EncodeToMIME(
             String => RT::Interface::Email::GetForwardFrom(
                 Transaction => $args{Transaction},

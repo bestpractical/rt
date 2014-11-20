@@ -79,7 +79,7 @@ jQuery(function(){
 <& /Elements/CollectionList,
     OrderBy => 'Name',
     Order => 'ASC',
-    Rows  => 100,
+    Rows  => $Rows,
     %ARGS,
     Format => $Format,
     Collection => $Groups,
@@ -122,6 +122,7 @@ else {
 }
 
 $Format ||= RT->Config->Get('AdminSearchResultFormat')->{'Groups'};
+my $Rows = RT->Config->Get('AdminSearchResultRows')->{'Groups'} || 50;
 
 </%INIT>
 <%ARGS>

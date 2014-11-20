@@ -83,7 +83,6 @@ use Crypt::Eksblowfish::Bcrypt qw();
 use RT::Principals;
 use RT::ACE;
 use RT::Interface::Email;
-use Encode;
 use Text::Password::Pronounceable;
 
 sub _OverlayAccessible {
@@ -105,7 +104,6 @@ sub _OverlayAccessible {
           Gecos                 => { public => 1,  admin => 1 },    # loc_left_pair
           PGPKey                => { public => 1,  admin => 1 },    # loc_left_pair
           SMIMECertificate      => { public => 1,  admin => 1 },    # loc_left_pair
-          PrivateKey            => {               admin => 1 },
           City                  => { public => 1 },                 # loc_left_pair
           Country               => { public => 1 },                 # loc_left_pair
           Timezone              => { public => 1 },                 # loc_left_pair
@@ -897,7 +895,7 @@ sub _GeneratePassword_bcrypt {
         key_nul => 1,
         cost    => $rounds,
         salt    => $salt,
-    }, Digest::SHA::sha512( encode_utf8($password) ) );
+    }, Digest::SHA::sha512( Encode::encode( 'UTF-8', $password) ) );
 
     return join("!", "", "bcrypt", sprintf("%02d", $rounds),
                 Crypt::Eksblowfish::Bcrypt::en_base64( $salt ).
@@ -918,7 +916,7 @@ sub _GeneratePassword_sha512 {
 
     my $sha = Digest::SHA->new(512);
     $sha->add($salt);
-    $sha->add(encode_utf8($password));
+    $sha->add(Encode::encode( 'UTF-8', $password));
     return join("!", "", "sha512", $salt, $sha->b64digest);
 }
 
@@ -999,16 +997,16 @@ sub IsPassword {
         my $hash = MIME::Base64::decode_base64($stored);
         # Decoding yields 30 byes; first 4 are the salt, the rest are substr(SHA256,0,26)
         my $salt = substr($hash, 0, 4, "");
-        return 0 unless substr(Digest::SHA::sha256($salt . Digest::MD5::md5(encode_utf8($value))), 0, 26) eq $hash;
+        return 0 unless substr(Digest::SHA::sha256($salt . Digest::MD5::md5(Encode::encode( "UTF-8", $value))), 0, 26) eq $hash;
     } elsif (length $stored == 32) {
         # Hex nonsalted-md5
-        return 0 unless Digest::MD5::md5_hex(encode_utf8($value)) eq $stored;
+        return 0 unless Digest::MD5::md5_hex(Encode::encode( "UTF-8", $value)) eq $stored;
     } elsif (length $stored == 22) {
         # Base64 nonsalted-md5
-        return 0 unless Digest::MD5::md5_base64(encode_utf8($value)) eq $stored;
+        return 0 unless Digest::MD5::md5_base64(Encode::encode( "UTF-8", $value)) eq $stored;
     } elsif (length $stored == 13) {
         # crypt() output
-        return 0 unless crypt(encode_utf8($value), $stored) eq $stored;
+        return 0 unless crypt(Encode::encode( "UTF-8", $value), $stored) eq $stored;
     } else {
         $RT::Logger->warning("Unknown password form");
         return 0;
@@ -1097,8 +1095,7 @@ sub GenerateAuthString {
     my $self = shift;
     my $protect = shift;
 
-    my $str = $self->AuthToken . $protect;
-    utf8::encode($str);
+    my $str = Encode::encode( "UTF-8", $self->AuthToken . $protect );
 
     return substr(Digest::MD5::md5_hex($str),0,16);
 }
@@ -1115,8 +1112,7 @@ sub ValidateAuthString {
     my $auth_string = shift;
     my $protected = shift;
 
-    my $str = $self->AuthToken . $protected;
-    utf8::encode( $str );
+    my $str = Encode::encode( "UTF-8", $self->AuthToken . $protected );
 
     return $auth_string eq substr(Digest::MD5::md5_hex($str),0,16);
 }
@@ -1386,24 +1382,13 @@ override the entries with user preferences.
 
 =cut
 
-our %PREFERENCES_CACHE = ();
-
 sub Preferences {
     my $self  = shift;
     my $name = _PrefName(shift);
     my $default = shift;
 
-    my $content;
-    if ( exists $PREFERENCES_CACHE{ $self->id }{ $name } ) {
-        $content = $PREFERENCES_CACHE{ $self->id }{ $name };
-    }
-    else {
-        my $attr = RT::Attribute->new( $self->CurrentUser );
-        $attr->LoadByNameAndObject( Object => $self, Name => $name );
-        $PREFERENCES_CACHE{ $self->id }{ $name } = $content
-            = $attr->Id ? $attr->Content : undef;
-    }
-
+    my ($attr) = $self->Attributes->Named( $name );
+    my $content = $attr ? $attr->Content : undef;
     unless ( ref $content eq 'HASH' ) {
         return defined $content ? $content : $default;
     }
@@ -1432,11 +1417,8 @@ sub SetPreferences {
     return (0, $self->loc("No permission to set preferences"))
         unless $self->CurrentUserCanModify('Preferences');
 
-    # we clear cache in RT::Attribute
-
-    my $attr = RT::Attribute->new( $self->CurrentUser );
-    $attr->LoadByNameAndObject( Object => $self, Name => $name );
-    if ( $attr->Id ) {
+    my ($attr) = $self->Attributes->Named( $name );
+    if ( $attr ) {
         my ($ok, $msg) = $attr->SetContent( $value );
         return (1, "No updates made")
             if $msg eq "That is already the current value";
@@ -1459,13 +1441,11 @@ sub DeletePreferences {
     return (0, $self->loc("No permission to set preferences"))
         unless $self->CurrentUserCanModify('Preferences');
 
-    my $attr = RT::Attribute->new( $self->CurrentUser );
-    $attr->LoadByNameAndObject( Object => $self, Name => $name );
-    if ( $attr->Id ) {
-        return $attr->Delete;
-    }
+    my ($attr) = $self->DeleteAttribute( $name );
+    return (0, $self->loc("Preferences were not found"))
+        unless $attr;
 
-    return (0, $self->loc("Preferences were not found"));
+    return 1;
 }
 
 =head2 Stylesheet
@@ -1831,7 +1811,8 @@ sub SetPrivateKey {
     my $self = shift;
     my $key = shift;
 
-    unless ($self->CurrentUserCanModify('PrivateKey')) {
+    # Users should not be able to change their own PrivateKey values
+    unless ( $self->CurrentUser->HasRight(Right => 'AdminUsers', Object => $RT::System) ) {
         return (0, $self->loc("Permission Denied"));
     }
 

@@ -76,8 +76,9 @@ BEGIN {
 
 use RT;
 RT::LoadConfig();
-RT->Config->Set(RecordBaseClass => "DBIx::SearchBuilder::Record");
 RT::Init();
+
+@RT::Record::ISA = qw( DBIx::SearchBuilder::Record RT::Base );
 
 use RT::Migrate;
 use RT::Migrate::Importer::File;
@@ -273,7 +274,7 @@ which are only suitable for inserting into a schema with no data in it.
 You can setup the required database state for the receiving RT instance
 by running:
 
-    sbin/rt-setup-database --action create,schema,acl --prompt-for-dba-password
+    @RT_SBIN_PATH_R@/rt-setup-database --action create,schema,acl --prompt-for-dba-password
 
 The normal C<make initdb> step will B<not> work because it also inserts
 core system data.

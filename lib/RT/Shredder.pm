@@ -180,6 +180,8 @@ shredding on most databases.
     CREATE INDEX SHREDDER_TXN3 ON Transactions(Type, OldValue);
     CREATE INDEX SHREDDER_TXN4 ON Transactions(Type, NewValue)
 
+    CREATE INDEX SHREDDER_ATTACHMENTS1 ON Attachments(Creator);
+
 =head1 INFORMATION FOR DEVELOPERS
 
 =head2 General API
@@ -288,6 +290,7 @@ sub Init
     %opt = @_;
     RT::LoadConfig();
     RT::Init();
+    return;
 }
 
 =head4 new
@@ -304,8 +307,7 @@ sub new
 {
     my $proto = shift;
     my $self = bless( {}, ref $proto || $proto );
-    $self->_Init( @_ );
-    return $self;
+    return $self->_Init( @_ );
 }
 
 sub _Init
@@ -315,6 +317,7 @@ sub _Init
     $self->{'cache'}        = {};
     $self->{'resolver'}     = {};
     $self->{'dump_plugins'} = [];
+    return $self;
 }
 
 =head4 CastObjectsToRecords( Objects => undef )
@@ -368,8 +371,7 @@ sub CastObjectsToRecords
         RT::Shredder::Exception->throw( "Unsupported class $class" )
               unless $class =~ /^\w+(::\w+)*$/;
         $class = 'RT::'. $class unless $class =~ /^RTx?::/i;
-        eval "require $class";
-        die "Couldn't load '$class' module" if $@;
+        $class->require or die "Failed to load $class: $@";
         my $obj = $class->new( RT->SystemUser );
         die "Couldn't construct new '$class' object" unless $obj;
         $obj->Load( $id );
@@ -557,6 +559,7 @@ sub WipeoutAll
         next if $cache_val->{'State'} & (WIPED | IN_WIPING);
         $self->Wipeout( Object => $cache_val->{'Object'} );
     }
+    return;
 }
 
 sub Wipeout
@@ -577,6 +580,7 @@ sub Wipeout
         die $error if RT::Shredder::Exception::Info->caught;
         die "Couldn't wipeout object: $error";
     }
+    return;
 }
 
 sub _Wipeout
@@ -774,6 +778,7 @@ sub DumpObject {
         my ($state, $msg) = $_->Run( %args );
         die "Couldn't run plugin: $msg" unless $state;
     }
+    return;
 }
 
 { my $mark = 1; # XXX: integer overflows?
@@ -789,9 +794,10 @@ sub PushDumpMark {
 sub PopDumpMark {
     my $self = shift;
     foreach (@{ $self->{'dump_plugins'} }) {
-        my ($state, $msg) = $_->PushMark( @_ );
+        my ($state, $msg) = $_->PopMark( @_ );
         die "Couldn't pop mark: $msg" unless $state;
     }
+    return;
 }
 sub RollbackDumpTo {
     my $self = shift;
@@ -799,6 +805,7 @@ sub RollbackDumpTo {
         my ($state, $msg) = $_->RollbackTo( @_ );
         die "Couldn't rollback to mark: $msg" unless $state;
     }
+    return;
 }
 }
 

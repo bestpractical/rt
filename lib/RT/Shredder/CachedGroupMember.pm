@@ -46,8 +46,8 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use RT::CachedGroupMember ();
 package RT::CachedGroupMember;
+use RT::CachedGroupMember ();
 
 use strict;
 use warnings;

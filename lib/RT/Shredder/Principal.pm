@@ -46,8 +46,8 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use RT::Principal ();
 package RT::Principal;
+use RT::Principal ();
 
 use strict;
 use warnings;

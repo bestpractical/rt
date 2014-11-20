@@ -177,8 +177,7 @@ sub JoinTargetToAdded {
         ALIAS      => $alias,
         FIELD      => 'ObjectId',
         OPERATOR   => 'IN',
-        QUOTEVALUE => 0,
-        VALUE      => "(". join( ',', map $dbh->quote($_), @ids ) .")",
+        VALUE      => [ @ids ],
     );
 
     return $alias;

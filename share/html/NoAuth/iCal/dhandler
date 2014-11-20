@@ -48,7 +48,6 @@
 <%init>
 use Data::ICal;
 use Data::ICal::Entry::Event;
-use Encode ();
 
 my $path = $m->dhandler_arg;
 
@@ -62,8 +61,8 @@ $notfound->() unless $path =~ m!^([^/]+)/([^/]+)/(.*)(\.(ical|ics))?!;
 my ($name, $auth, $search) = ($1, $2, $3);
 # Unescape parts
 $_ =~ s/\%([0-9a-z]{2})/chr(hex($1))/gei for $name, $search;
-# convert to perl strings
-$_ = Encode::decode_utf8( $_ ) for $name, $search;
+# Decode from bytes to characters
+$_ = Encode::decode( "UTF-8", $_ ) for $name, $search;
 
 my $user = RT::User->new( RT->SystemUser );
 $user->Load( $name );

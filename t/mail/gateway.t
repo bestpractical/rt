@@ -504,8 +504,7 @@ EOF
     is ($tick->Id, $id, "correct ticket");
     is ($tick->Subject , 'This is a test of I18N ticket creation', "Created the ticket - ". $tick->Subject);
 
-    my $unistring = "\303\241\303\251\303\255\303\263\303\272";
-    Encode::_utf8_on($unistring);
+    my $unistring = Encode::decode("UTF-8","\303\241\303\251\303\255\303\263\303\272");
     is (
         $tick->Transactions->First->Content,
         $tick->Transactions->First->Attachments->First->Content,
@@ -542,8 +541,7 @@ EOF
     is ($tick->Id, $id, "correct ticket");
     is ($tick->Subject , 'This is a test of I18N ticket creation', "Created the ticket");
 
-    my $unistring = "\303\241\303\251\303\255\303\263\303\272";
-    Encode::_utf8_on($unistring);
+    my $unistring = Encode::decode("UTF-8","\303\241\303\251\303\255\303\263\303\272");
 
     ok (
         $tick->Transactions->First->Content =~ $unistring,
@@ -573,8 +571,7 @@ EOF
     my $tick = RT::Test->last_ticket;
     is ($tick->Id, $id, "correct ticket");
 
-    my $content = $tick->Transactions->First->Content;
-    Encode::_utf8_off($content);
+    my $content = Encode::encode("UTF-8",$tick->Transactions->First->Content);
 
     like $content, qr{informaci\303\263n confidencial};
     like $content, qr{informaci\357\277\275n confidencial};

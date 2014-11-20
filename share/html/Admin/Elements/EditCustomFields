@@ -74,7 +74,7 @@
     Order         => 'ASC',
     %ARGS,
     Collection    => $not_added_cfs,
-    Rows          => 50,
+    Rows          => $rows,
     Format        => $format,
     DisplayFormat => "'__CheckBox.{AddCustomField}__',". $format,
     AllowSorting  => 1,
@@ -163,6 +163,7 @@ $not_added_cfs->LimitToLookupType($lookup);
 $not_added_cfs->LimitToNotAdded( $id ? ($id, 0) : (0) );
 
 my $format = RT->Config->Get('AdminSearchResultFormat')->{'CustomFields'};
+my $rows = RT->Config->Get('AdminSearchResultRows')->{'CustomFields'} || 50;
 
 my $display_format = $id
             ? ("'__RemoveCheckBox.{$id}__',". $format .", '__MoveCF.{$id}__'")

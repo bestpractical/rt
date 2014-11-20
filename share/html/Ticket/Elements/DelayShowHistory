@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div id="delayed_ticket_history">
-    <& /Widgets/TitleBoxStart, title => 'History' &>
+    <& /Widgets/TitleBoxStart, title => loc('History') &>
         <&|/l&>Loading...</&>
     <& /Widgets/TitleBoxEnd &>
 </div>

@@ -78,7 +78,7 @@ sub IsApplicable {
     # and 3 minutes and 4 seconds.
     my %e;
     foreach (qw(d h m s)) {
-        my @vals = $self->Argument =~ m/(\d+)$_/;
+        my @vals = $self->Argument =~ m/(\d+)$_/i;
         $e{$_} = pop @vals || 0;
     }
     my $elapse = $e{'d'} * 24*60*60 + $e{'h'} * 60*60 + $e{'m'} * 60 + $e{'s'};

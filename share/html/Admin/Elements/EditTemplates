@@ -58,6 +58,7 @@
 <& /Elements/CollectionList,
     OrderBy       => 'id',
     Order         => 'ASC',
+    Rows          => $Rows,
     %ARGS,
     DisplayFormat => '__CheckBox.{DeleteTemplates}__,'. $Format,
     Format        => $Format,
@@ -74,6 +75,7 @@
 
 <%INIT>
 $Format ||= RT->Config->Get('AdminSearchResultFormat')->{'Templates'};
+my $Rows = RT->Config->Get('AdminSearchResultRows')->{'Templates'} || 50;
 
 my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
 $QueueObj->Load( $id ) if $id;

@@ -257,7 +257,7 @@ sub Bcc {
 sub AddressesFromHeader {
     my $self      = shift;
     my $field     = shift;
-    my $header    = $self->TemplateObj->MIMEObj->head->get($field);
+    my $header    = Encode::decode("UTF-8",$self->TemplateObj->MIMEObj->head->get($field));
     my @addresses = Email::Address->parse($header);
 
     return (@addresses);
@@ -276,7 +276,7 @@ sub SendMessage {
     # ability to pass @_ to a 'post' routine.
     my ( $self, $MIMEObj ) = @_;
 
-    my $msgid = $MIMEObj->head->get('Message-ID');
+    my $msgid = Encode::decode( "UTF-8", $MIMEObj->head->get('Message-ID') );
     chomp $msgid;
 
     $self->ScripActionObj->{_Message_ID}++;
@@ -299,7 +299,7 @@ sub SendMessage {
 
     my $success = $msgid . " sent ";
     foreach (@EMAIL_RECIPIENT_HEADERS) {
-        my $recipients = $MIMEObj->head->get($_);
+        my $recipients = Encode::decode( "UTF-8", $MIMEObj->head->get($_) );
         $success .= " $_: " . $recipients if $recipients;
     }
 
@@ -462,11 +462,11 @@ sub AddTicket {
 
     my $attachs   = RT::Attachments->new( $self->TransactionObj->CreatorObj );
     my $txn_alias = $attachs->TransactionAlias;
-    $attachs->Limit( ALIAS => $txn_alias, FIELD => 'Type', VALUE => 'Create' );
     $attachs->Limit(
-        ALIAS => $txn_alias,
-        FIELD => 'Type',
-        VALUE => 'Correspond'
+        ALIAS    => $txn_alias,
+        FIELD    => 'Type',
+        OPERATOR => 'IN',
+        VALUE    => [qw(Create Correspond)],
     );
     $attachs->LimitByTicket($tid);
     $attachs->LimitNotEmpty;
@@ -531,7 +531,7 @@ sub RecordOutgoingMailTransaction {
         $type = 'EmailRecord';
     }
 
-    my $msgid = $MIMEObj->head->get('Message-ID');
+    my $msgid = Encode::decode( "UTF-8", $MIMEObj->head->get('Message-ID') );
     chomp $msgid;
 
     my ( $id, $msg ) = $transaction->Create(
@@ -643,7 +643,7 @@ sub DeferDigestRecipients {
 
         # Have to get the list of addresses directly from the MIME header
         # at this point.
-        $RT::Logger->debug( $self->TemplateObj->MIMEObj->head->as_string );
+        $RT::Logger->debug( Encode::decode( "UTF-8", $self->TemplateObj->MIMEObj->head->as_string ) );
         foreach my $rcpt ( map { $_->address } $self->AddressesFromHeader($mailfield) ) {
             next unless $rcpt;
             my $user_obj = RT::User->new(RT->SystemUser);
@@ -752,7 +752,7 @@ sub RemoveInappropriateRecipients {
     # If there are no recipients, don't try to send the message.
     # If the transaction has content and has the header RT-Squelch-Replies-To
 
-    my $msgid = $self->TemplateObj->MIMEObj->head->get('Message-Id');
+    my $msgid = Encode::decode( "UTF-8", $self->TemplateObj->MIMEObj->head->get('Message-Id') );
     chomp $msgid;
 
     if ( my $attachment = $self->TransactionObj->Attachments->First ) {
@@ -967,7 +967,8 @@ sub GetFriendlyName {
 
 =head2 SetHeader FIELD, VALUE
 
-Set the FIELD of the current MIME object into VALUE.
+Set the FIELD of the current MIME object into VALUE, which should be in
+characters, not bytes.  Returns the new header, in bytes.
 
 =cut
 
@@ -980,7 +981,7 @@ sub SetHeader {
     chomp $field;
     my $head = $self->TemplateObj->MIMEObj->head;
     $head->fold_length( $field, 10000 );
-    $head->replace( $field, $val );
+    $head->replace( $field, Encode::encode( "UTF-8", $val ) );
     return $head->get($field);
 }
 
@@ -1021,7 +1022,7 @@ sub SetSubject {
 
     $subject =~ s/(\r\n|\n|\s)/ /g;
 
-    $self->SetHeader( 'Subject', Encode::encode_utf8( $subject ) );
+    $self->SetHeader( 'Subject', $subject );
 
 }
 
@@ -1037,11 +1038,9 @@ sub SetSubjectToken {
     my $head = $self->TemplateObj->MIMEObj->head;
     $self->SetHeader(
         Subject =>
-            Encode::encode_utf8(
-                RT::Interface::Email::AddSubjectTag(
-                    Encode::decode_utf8( $head->get('Subject') ),
-                    $self->TicketObj,
-                ),
+            RT::Interface::Email::AddSubjectTag(
+                Encode::decode( "UTF-8", $head->get('Subject') ),
+                $self->TicketObj,
             ),
     );
 }
@@ -1130,7 +1129,8 @@ sub PseudoReference {
 
 =head2 SetHeaderAsEncoding($field_name, $charset_encoding)
 
-This routine converts the field into specified charset encoding.
+This routine converts the field into specified charset encoding, then
+applies the MIME-Header transfer encoding.
 
 =cut
 
@@ -1140,8 +1140,8 @@ sub SetHeaderAsEncoding {
 
     my $head = $self->TemplateObj->MIMEObj->head;
 
-    my $value = $head->get( $field );
-    $value = $self->MIMEEncodeString( $value, $enc );
+    my $value = Encode::decode("UTF-8", $head->get( $field ));
+    $value = $self->MIMEEncodeString( $value, $enc ); # Returns bytes
     $head->replace( $field, $value );
 
 }
@@ -1151,7 +1151,8 @@ sub SetHeaderAsEncoding {
 Takes a perl string and optional encoding pass it over
 L<RT::Interface::Email/EncodeToMIME>.
 
-Basicly encode a string using B encoding according to RFC2047.
+Basicly encode a string using B encoding according to RFC2047, returning
+bytes.
 
 =cut
 

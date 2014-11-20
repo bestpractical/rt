@@ -535,15 +535,11 @@ sub _ParseMultilineTemplate {
     my %args = (@_);
 
     my $template_id;
-    require Encode;
-    require utf8;
     my ( $queue, $requestor );
         $RT::Logger->debug("Line: ===");
         foreach my $line ( split( /\n/, $args{'Content'} ) ) {
             $line =~ s/\r$//;
-            $RT::Logger->debug( "Line: " . utf8::is_utf8($line)
-                ? Encode::encode_utf8($line)
-                : $line );
+            $RT::Logger->debug( "Line: $line" );
             if ( $line =~ /^===/ ) {
                 if ( $template_id && !$queue && $args{'Queue'} ) {
                     $self->{'templates'}->{$template_id}
@@ -740,10 +736,10 @@ sub ParseLines {
     );
 
     if ( $args{content} ) {
-        my $mimeobj = MIME::Entity->new();
-        $mimeobj->build(
-            Type => $args{'contenttype'} || 'text/plain',
-            Data => $args{'content'}
+        my $mimeobj = MIME::Entity->build(
+            Type    => $args{'contenttype'} || 'text/plain',
+            Charset => 'UTF-8',
+            Data    => [ map {Encode::encode( "UTF-8", $_ )} @{$args{'content'}} ],
         );
         $ticketargs{MIMEObj} = $mimeobj;
         $ticketargs{UpdateType} = $args{'updatetype'} || 'correspond';

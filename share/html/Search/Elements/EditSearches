@@ -317,7 +317,7 @@ elsif ( $id eq 'new' and defined $desc and length $desc ) {
     }
 }
 elsif ( $id eq 'new' ) {
-    push @results, loc("Can't save a search without a name");
+    push @results, loc("Can't save a search without a Description");
 }
 else {
     push @results, loc("Can't save this search");

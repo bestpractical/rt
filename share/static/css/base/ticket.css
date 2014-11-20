@@ -91,6 +91,10 @@
   background-color: #cce;
 }
 
+.unread-messages .titlebox-content :link {
+    text-decoration: underline;
+}
+
 .ticket-inactive {
   text-decoration: line-through;
   color: #666

@@ -134,7 +134,6 @@
 
 #topactions input,
 #topactions select,
-#topactions input[type=submit],
 #topactions button {
     font-size: 1em;
     padding-top: 0.25em;

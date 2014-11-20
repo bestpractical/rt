@@ -565,7 +565,7 @@ address of the queue as it is handed to sendmail -f. This helps force
 the From_ header away from www-data or other email addresses that show
 up in the "Sent by" line in Outlook.
 
-The option is a hash reference of queue name to email address.  If
+The option is a hash reference of queue id/name to email address. If
 there is no ticket involved, then the value of the C<Default> key will
 be used.
 
@@ -1088,24 +1088,6 @@ will be passed through C<loc> for localization.
 
 Set($LogoAltText, "Best Practical Solutions, LLC corporate logo");
 
-=item C<$LogoImageHeight>
-
-C<$LogoImageHeight> is the value of the C<height> attribute of the logo
-C<img> tag.
-
-=cut
-
-Set($LogoImageHeight, 38);
-
-=item C<$LogoImageWidth>
-
-C<$LogoImageWidth> is the value of the C<width> attribute of the logo
-C<img> tag.
-
-=cut
-
-Set($LogoImageWidth, 181);
-
 =item C<$WebNoAuthRegex>
 
 What portion of RT's URL space should not require authentication.  The
@@ -1519,9 +1501,9 @@ Set($UserSearchFields, {
 
 =item C<$AllowUserAutocompleteForUnprivileged>
 
-Should unprivileged users be allowed to autocomplete users.  Setting
-this option to 1 means unprivileged users will be able to search all
-your users.
+Should unprivileged users (users of SelfService) be allowed to
+autocomplete users. Setting this option to 1 means unprivileged users
+will be able to search all your users.
 
 =cut
 
@@ -1690,7 +1672,7 @@ Set($MessageBoxIncludeSignature, 1);
 =item C<$MessageBoxIncludeSignatureOnComment>
 
 Should your users' signatures (from their Preferences page) be
-included in Comments. Setting this to false overrides
+included in Comments. Setting this to 0 overrides
 C<$MessageBoxIncludeSignature>.
 
 =cut
@@ -1975,7 +1957,7 @@ defaults alone.
 
 =item C<$DisallowExecuteCode>
 
-If set to a true value, the C<ExecuteCode> right will be removed from
+If set to 1, the C<ExecuteCode> right will be removed from
 all users, B<including> the superuser.  This is intended for when RT is
 installed into a shared environment where even the superuser should not
 be allowed to run arbitrary Perl code on the server via scrips.
@@ -1986,7 +1968,7 @@ Set($DisallowExecuteCode, 0);
 
 =item C<$Framebusting>
 
-If set to a false value, framekiller javascript will be disabled and the
+If set to 0, framekiller javascript will be disabled and the
 X-Frame-Options: DENY header will be suppressed from all responses.
 This disables RT's clickjacking protection.
 
@@ -1996,7 +1978,7 @@ Set($Framebusting, 1);
 
 =item C<$RestrictReferrer>
 
-If set to a false value, the HTTP C<Referer> (sic) header will not be
+If set to 0, the HTTP C<Referer> (sic) header will not be
 checked to ensure that requests come from RT's own domain.  As RT allows
 for GET requests to alter state, disabling this opens RT up to
 cross-site request forgery (CSRF) attacks.
@@ -2007,9 +1989,9 @@ Set($RestrictReferrer, 1);
 
 =item C<$RestrictLoginReferrer>
 
-If set to a false value, RT will allow the user to log in from any link
+If set to 0, RT will allow the user to log in from any link
 or request, merely by passing in C<user> and C<pass> parameters; setting
-it to a true value forces all logins to come from the login box, so the
+it to 1 forces all logins to come from the login box, so the
 user is aware that they are being logged in.  The default is off, for
 backwards compatability.
 
@@ -2077,7 +2059,7 @@ Set($WebRemoteUserAuth, undef);
 
 If C<$WebRemoteUserContinuous> is defined, RT will check for the
 REMOTE_USER on each access.  If you would prefer this to only happen
-once (at initial login) set this to a false value.  The default
+once (at initial login) set this to 0.  The default
 setting will help ensure that if your webserver's authentication layer
 deauthenticates a user, RT notices as soon as possible.
 
@@ -2350,13 +2332,13 @@ used. Use the C<Outgoing> option to set a security protocol that should
 be used in outgoing emails.  At this moment, only one protocol can be
 used to protect outgoing emails.
 
-Set C<RejectOnUnencrypted> to true if all incoming email must be
+Set C<RejectOnUnencrypted> to 1 if all incoming email must be
 properly encrypted.  All unencrypted emails will be rejected by RT.
 
-Set C<RejectOnMissingPrivateKey> to false if you don't want to reject
+Set C<RejectOnMissingPrivateKey> to 0 if you don't want to reject
 emails encrypted for key RT doesn't have and can not decrypt.
 
-Set C<RejectOnBadData> to false if you don't want to reject letters
+Set C<RejectOnBadData> to 0 if you don't want to reject letters
 with incorrect data.
 
 If you want to allow people to encrypt attachments inside the DB then
@@ -2395,7 +2377,7 @@ L<RT::Crypt::SMIME>.
 
 =item C<%SMIME>
 
-Set C<Enable> to false or true value to disable or enable SMIME for
+Set C<Enable> to 0 or 1 to disable or enable SMIME for
 encrypting and signing messages.
 
 Set C<OpenSSL> to path to F<openssl> executable.
@@ -2450,7 +2432,7 @@ be found by running the command `perldoc L<RT::Crypt::GnuPG>` (or
 
 =item C<%GnuPG>
 
-Set C<Enable> to false or true value to disable or enable GnuPG interfaces
+Set C<Enable> to 0 or 1 to disable or enable GnuPG interfaces
 for encrypting and signing outgoing messages.
 
 Set C<GnuPG> to the name or path of the gpg binary to use.
@@ -2632,6 +2614,14 @@ all possible transitions in each lifecycle using the following format:
         ...
     },
 
+The order of items in the listing for each transition line affects
+the order they appear in the drop-down. If you change the config
+for 'open' state listing to:
+
+    open     => [qw(stalled rejected deleted resolved)],
+
+then the 'resolved' status will appear as the last item in the drop-down.
+
 =head3 Statuses available during ticket creation
 
 By default users can create tickets with a status of new,
@@ -2734,8 +2724,8 @@ For example:
 
 Unless there is an explicit mapping between statuses in two different
 lifecycles, you can not move tickets between queues with these
-lifecycles.  This is true even if the different lifecycles use the exact
-same set of statuses.  Such a mapping is defined as follows:
+lifecycles -- even if both use the exact same set of statuses.
+Such a mapping is defined as follows:
 
     __maps__ => {
         'from lifecycle -> to lifecycle' => {
@@ -2763,15 +2753,15 @@ Set(%Lifecycles,
         },
 
         transitions => {
-            ''       => [qw(new open resolved)],
+            ""       => [qw(new open resolved)],
 
             # from   => [ to list ],
-            new      => [qw(open stalled resolved rejected deleted)],
-            open     => [qw(new stalled resolved rejected deleted)],
-            stalled  => [qw(new open rejected resolved deleted)],
-            resolved => [qw(new open stalled rejected deleted)],
-            rejected => [qw(new open stalled resolved deleted)],
-            deleted  => [qw(new open stalled rejected resolved)],
+            new      => [qw(    open stalled resolved rejected deleted)],
+            open     => [qw(new      stalled resolved rejected deleted)],
+            stalled  => [qw(new open         rejected resolved deleted)],
+            resolved => [qw(new open stalled          rejected deleted)],
+            rejected => [qw(new open stalled resolved          deleted)],
+            deleted  => [qw(new open stalled rejected resolved        )],
         },
         rights => {
             '* -> deleted'  => 'DeleteTicket',
@@ -2857,7 +2847,7 @@ which asks the administrator's browser to show an inline page from
 Best Practical's website.
 
 If you'd rather not make this feature available to your
-administrators, set C<$ShowRTPortal> to a false value.
+administrators, set C<$ShowRTPortal> to 0.
 
 =cut
 
@@ -2905,6 +2895,23 @@ Set(%AdminSearchResultFormat,
         q{ '<a href="__WebPath__/Admin/Articles/Classes/Modify.html?id=__id__">__id__</a>/TITLE:#'}
         .q{,'<a href="__WebPath__/Admin/Articles/Classes/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}
         .q{,__Description__,__Disabled__},
+);
+
+=item C<%AdminSearchResultRows>
+
+Use C<%AdminSearchResultRows> to define the search result rows in the admin
+interface on a per-RT-class basis.
+
+=cut
+
+Set(%AdminSearchResultRows,
+    Queues       => 50,
+    Groups       => 50,
+    Users        => 50,
+    CustomFields => 50,
+    Scrips       => 50,
+    Templates    => 50,
+    Classes      => 50,
 );
 
 =back

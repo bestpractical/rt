@@ -46,8 +46,8 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use RT::Template ();
 package RT::Template;
+use RT::Template ();
 
 use strict;
 use warnings;

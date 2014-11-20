@@ -605,7 +605,7 @@ sub Values {
 
     my $class = $self->ValuesClass;
     if ( $class ne 'RT::CustomFieldValues') {
-        eval "require $class" or die "$@";
+        $class->require or die "Can't load $class: $@";
     }
     my $cf_values = $class->new( $self->CurrentUser );
     # if the user has no rights, return an empty object
@@ -1979,18 +1979,20 @@ sub _URLTemplate {
         unless ( $self->CurrentUserHasRight('AdminCustomField') ) {
             return ( 0, $self->loc('Permission Denied') );
         }
-        $self->SetAttribute( Name => $template_name, Content => $value );
+        if (length $value and defined $value) {
+            $self->SetAttribute( Name => $template_name, Content => $value );
+        } else {
+            $self->DeleteAttribute( $template_name );
+        }
         return ( 1, $self->loc('Updated') );
     } else {
         unless ( $self->id && $self->CurrentUserHasRight('SeeCustomField') ) {
             return (undef);
         }
 
-        my @attr = $self->Attributes->Named($template_name);
-        my $attr = shift @attr;
-
-        if ($attr) { return $attr->Content }
-
+        my ($attr) = $self->Attributes->Named($template_name);
+        return undef unless $attr;
+        return $attr->Content;
     }
 }
 
