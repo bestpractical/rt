@@ -53,6 +53,7 @@
     <td class="message-header-value <% join(' ', map {CSSClass($_)} @{$header->{Classes} || []}) %>">
       <% $header->{'Value'} | n %></td>
   </tr>
+% $m->callback( CallbackName => 'AfterHeaders', message => $Message );
 % }
 </table>
 % }
