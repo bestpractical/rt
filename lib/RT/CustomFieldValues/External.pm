@@ -196,6 +196,7 @@ sub _DoSearch {
         $value->LoadFromHash( { %defaults, %$_ } );
         next if $check && !$check->( $self, $value );
         $self->AddRecord( $value );
+        last if $self->RowsPerPage and ++$i >= $self->RowsPerPage;
     }
     $self->{'must_redo_search'} = 0;
     return $self->_RecordCount;
