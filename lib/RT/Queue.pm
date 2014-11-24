@@ -99,13 +99,6 @@ use RT::Groups;
 use RT::ACL;
 use RT::Interface::Email;
 
-# $self->loc('new'); # For the string extractor to get a string to localize
-# $self->loc('open'); # For the string extractor to get a string to localize
-# $self->loc('stalled'); # For the string extractor to get a string to localize
-# $self->loc('resolved'); # For the string extractor to get a string to localize
-# $self->loc('rejected'); # For the string extractor to get a string to localize
-# $self->loc('deleted'); # For the string extractor to get a string to localize
-
 __PACKAGE__->AddRight( General => SeeQueue            => 'View queue' ); # loc
 __PACKAGE__->AddRight( Admin   => AdminQueue          => 'Create, modify and delete queue' ); # loc
 __PACKAGE__->AddRight( Admin   => ShowACL             => 'Display Access Control List' ); # loc

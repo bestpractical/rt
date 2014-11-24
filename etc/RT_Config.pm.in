@@ -2751,9 +2751,9 @@ Such a mapping is defined as follows:
 
 Set(%Lifecycles,
     default => {
-        initial         => [ 'new' ],
-        active          => [ 'open', 'stalled' ],
-        inactive        => [ 'resolved', 'rejected', 'deleted' ],
+        initial         => [qw(new)], # loc_qw
+        active          => [qw(open stalled)], # loc_qw
+        inactive        => [qw(resolved rejected deleted)], # loc_qw
 
         defaults => {
             on_create => 'new',
