@@ -242,7 +242,7 @@ jQuery( function() {
    };
    updateScrips();
    CKEDITOR.instances['UpdateContent'].on('blur', updateScrips );
-   jQuery("#ticket-update-metadata :input, input[name^=UpdateCc], input[name^=UpdateBcc]").change( updateScrips );
+   jQuery("#ticket-update-metadata :input, #UpdateCc, #UpdateBcc").change( updateScrips );
 });
 </script>
 % }

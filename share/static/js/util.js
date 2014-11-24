@@ -200,6 +200,7 @@ function checkboxToInput(target,checkbox,val){
         tar.val(tar.val().replace(val,''));
     }
     jQuery('#UpdateIgnoreAddressCheckboxes').val(true);
+    tar.change();
 }
 
 // ahah for back compatibility as plugins may still use it
