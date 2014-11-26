@@ -188,4 +188,18 @@ chapter of Oracle's B<Text Application Developer's Guide> for details
 how to keep the index optimized, perform garbage collection, and other
 tasks.
 
+=head1 UNINDEXED SEARCH
+
+It is also possible to enable full-text search without database indexing
+support, simply by setting the C<Enable> key of the C<%FullTextSearch>
+option to 1, while leaving C<Indexed> set to 0:
+
+    Set(%FullTextSearch,
+        Enable  => 1,
+        Indexed => 0,
+    );
+
+This is not generally suggested, as unindexed full-text searching can
+cause severe performance problems.
+
 =cut
