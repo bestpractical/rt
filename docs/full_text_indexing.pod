@@ -171,7 +171,7 @@ This, in effect, simply runs:
 The amount of memory used for the sync can be controlled with the
 C<--memory> option:
 
-    rt-fulltext-indexer --memory 10M
+    /opt/rt4/sbin/rt-fulltext-indexer --memory 10M
 
 If there is already an instance of C<rt-fulltext-indexer> running, new
 ones will exit abnormally (with exit code 1) and the error message
