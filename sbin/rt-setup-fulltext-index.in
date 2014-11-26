@@ -91,7 +91,7 @@ my %OPT = (
 my %DEFAULT;
 if ( $DB{'type'} eq 'Pg' ) {
     %DEFAULT = (
-        table  => 'Attachments',
+        table  => 'AttachmentsIndex',
         column => 'ContentIndex',
     );
 }
@@ -302,7 +302,7 @@ elsif ( $DB{'type'} eq 'Pg' ) {
     my $table = $OPT{'table'} || prompt(
         message => "Enter the name of a DB table that will be used to store the Pg tsvector.\n"
                  . "You may either use the existing Attachments table, or create a new\n"
-                 . "table.",
+                 . "table.  Creating a new table makes initial indexing faster.",
         default => $DEFAULT{'table'},
         silent  => !$OPT{'ask'},
     );

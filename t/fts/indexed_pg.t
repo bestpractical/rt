@@ -11,7 +11,7 @@ plan skip_all => "Need Pg 8.2 or higher; we have $major.$minor"
 
 plan tests => 36;
 
-RT->Config->Set( FullTextSearch => Enable => 1, Indexed => 1, Column => 'ContentIndex', Table => 'Attachments' );
+RT->Config->Set( FullTextSearch => Enable => 1, Indexed => 1, Column => 'ContentIndex', Table => 'AttachmentsIndex' );
 
 setup_indexing();
 
