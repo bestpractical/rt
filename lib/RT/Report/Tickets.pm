@@ -705,7 +705,7 @@ sub SortEntries {
             $method = 'LabelValue';
         }
         elsif ( $order eq 'raw' ) {
-            push @SORT_OPS, sub { $_[0][$idx] cmp $_[1][$idx] };
+            push @SORT_OPS, sub { ($_[0][$idx]//'') cmp ($_[1][$idx]//'') };
             $method = 'RawValue';
         }
         elsif ( $order eq 'numeric raw' ) {
