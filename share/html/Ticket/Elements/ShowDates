@@ -54,6 +54,7 @@
     <td class="label"><&|/l&>Starts</&>:</td>\
     <td class="value"><% $Ticket->StartsObj->AsString %></td>
   </tr>
+% $m->callback( %ARGS, CallbackName => 'AfterStarts', TicketObj => $Ticket );  
   <tr class="date started">
     <td class="label"><&|/l&>Started</&>:</td>\
     <td class="value"><% $Ticket->StartedObj->AsString %></td>
@@ -71,6 +72,7 @@
     <td class="value"><% $due->AsString  %></td>
 % }
   </tr>
+% $m->callback( %ARGS, CallbackName => 'AfterDue', TicketObj => $Ticket );
   <tr class="date resolved">
     <td class="label"><&|/l&>Closed</&>:</td>\
     <td class="value"><% $Ticket->ResolvedObj->AsString  %></td>
