@@ -156,15 +156,8 @@ sub loc {
 
 sub debug {
     my $val = shift;
-    my ($debug);
     if ($val) {
         $RT::Logger->debug($val);
-        if ($debug) {
-            print STDERR "$val\n";
-        }
-    }
-    if ($debug) {
-        return(1);
     }
 }
 
