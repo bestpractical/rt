@@ -627,6 +627,12 @@ sub FillCache {
 
     my $map = RT->Config->Get('Lifecycles') or return;
 
+    for my $name ( RT::Queues->new( RT->SystemUser )->DistinctFieldValues( 'Lifecycle' ) ) {
+        unless ( $map->{$name} ) {
+            warn "Lifecycle $name is missing in %Lifecycles config";
+        }
+    }
+
     %LIFECYCLES_CACHE = %LIFECYCLES = %$map;
     $_ = { %$_ } foreach values %LIFECYCLES_CACHE;
 
