@@ -62,13 +62,10 @@ our @EXPORT_OK = qw(CleanEnv GetCurrentUser debug loc);
 
   use lib "/opt/rt4/local/lib", "/opt/rt4/lib";
 
-  use RT::Interface::CLI  qw(CleanEnv GetCurrentUser loc);
+  use RT::Interface::CLI  qw(GetCurrentUser loc);
 
   # Connect to the database, etc
   use RT -init;
-
-  # Clean out all the nasties from the environment
-  CleanEnv();
 
   # Get the current user all loaded
   my $CurrentUser = GetCurrentUser();
@@ -91,6 +88,8 @@ Removes some of the nastiest nasties from the user's environment.
 =cut
 
 sub CleanEnv {
+    RT->Deprecated( Remove => "4.4" );
+
     $ENV{'PATH'} = '/bin:/usr/bin';    # or whatever you need
     $ENV{'CDPATH'} = '' if defined $ENV{'CDPATH'};
     $ENV{'SHELL'} = '/bin/sh' if defined $ENV{'SHELL'};
