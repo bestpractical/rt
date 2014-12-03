@@ -60,27 +60,20 @@ our @EXPORT_OK = qw(CleanEnv GetCurrentUser debug loc);
 
 =head1 SYNOPSIS
 
-  use lib "/path/to/rt/libraries/";
+  use lib "/opt/rt4/local/lib", "/opt/rt4/lib";
 
-  use RT::Interface::CLI  qw(CleanEnv
-                             GetCurrentUser loc);
+  use RT::Interface::CLI  qw(CleanEnv GetCurrentUser loc);
 
-  #let's talk to RT'
-  use RT;
-
-  #Load RT's config file
-  RT::LoadConfig();
-
-  # Connect to the database. set up loggign
-  RT::Init();
+  # Connect to the database, etc
+  use RT -init;
 
   # Clean out all the nasties from the environment
   CleanEnv();
 
-  #Get the current user all loaded
+  # Get the current user all loaded
   my $CurrentUser = GetCurrentUser();
 
-  print loc('Hello!'); # Synonym of $CuurentUser->loc('Hello!');
+  print loc('Hello!'); # Synonym of $CurrentUser->loc('Hello!');
 
 =head1 DESCRIPTION
 
