@@ -52,7 +52,7 @@ use warnings;
 use RT;
 
 use base 'Exporter';
-our @EXPORT_OK = qw(CleanEnv GetCurrentUser GetMessageContent debug loc);
+our @EXPORT_OK = qw(CleanEnv GetCurrentUser debug loc);
 
 =head1 NAME
 
@@ -63,7 +63,7 @@ our @EXPORT_OK = qw(CleanEnv GetCurrentUser GetMessageContent debug loc);
   use lib "/path/to/rt/libraries/";
 
   use RT::Interface::CLI  qw(CleanEnv
-                             GetCurrentUser GetMessageContent loc);
+                             GetCurrentUser loc);
 
   #let's talk to RT'
   use RT;
@@ -141,8 +141,6 @@ sub GetCurrentUser  {
     return($CurrentUser);
 }
 
-
-
 =head2 loc
 
   Synonym of $CurrentUser->loc().
@@ -155,70 +153,6 @@ sub loc {
 }
 
 }
-
-
-
-=head2 GetMessageContent
-
-Takes two arguments a source file and a boolean "edit".  If the source file
-is undef or "", assumes an empty file.  Returns an edited file as an 
-array of lines.
-
-=cut
-
-sub GetMessageContent {
-    my %args = (  Source => undef,
-                  Content => undef,
-                  Edit => undef,
-                  CurrentUser => undef,
-                 @_);
-    my $source = $args{'Source'};
-
-    my $edit = $args{'Edit'};
-
-    my $currentuser = $args{'CurrentUser'};
-    my @lines;
-
-    use File::Temp qw/ tempfile/;
-
-    #Load the sourcefile, if it's been handed to us
-    if ($source) {
-        open( SOURCE, '<', $source ) or die $!;
-        @lines = (<SOURCE>) or die $!;
-        close (SOURCE) or die $!;
-    }
-    elsif ($args{'Content'}) {
-        @lines = split('\n',$args{'Content'});
-    }
-    #get us a tempfile.
-    my ($fh, $filename) = tempfile();
-
-    #write to a tmpfile
-    for (@lines) {
-        print $fh $_;
-    }
-    close ($fh) or die $!;
-
-    #Edit the file if we need to
-    if ($edit) {
-
-        unless ($ENV{'EDITOR'}) {
-            $RT::Logger->crit('No $EDITOR variable defined');
-            return undef;
-        }
-        system ($ENV{'EDITOR'}, $filename);
-    }
-
-    open( READ, '<', $filename ) or die $!;
-    my @newlines = (<READ>);
-    close (READ) or die $!;
-
-    unlink ($filename) unless (debug());
-    return(\@newlines);
-
-}
-
-
 
 sub debug {
     my $val = shift;
