@@ -155,10 +155,8 @@ sub loc {
 }
 
 sub debug {
-    my $val = shift;
-    if ($val) {
-        $RT::Logger->debug($val);
-    }
+    RT->Deprecated( Remove => "4.4", Instead => '$RT::Logger->debug' );
+    $RT::Logger->debug(@_);
 }
 
 sub ShowHelp {
