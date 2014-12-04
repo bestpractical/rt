@@ -52,7 +52,7 @@ use warnings;
 use RT;
 
 use base 'Exporter';
-our @EXPORT_OK = qw(CleanEnv GetCurrentUser debug loc);
+our @EXPORT_OK = qw(CleanEnv GetCurrentUser debug loc Init);
 
 =head1 NAME
 
@@ -164,6 +164,51 @@ sub ShowHelp {
             : 'NAME|USAGE|OPTIONS|DESCRIPTION'
         ),
     );
+}
+
+=head2 Init
+
+A shim for L<Getopt::Long/GetOptions> which automatically adds a
+C<--help> option if it is not supplied.
+
+=cut
+
+sub Init {
+    require Getopt::Long;
+    require Pod::Usage;
+
+    my %exists;
+    my @args;
+    my $hash;
+    if (ref $_[0]) {
+        $hash = shift(@_);
+        for (@_) {
+            m/^([a-zA-Z0-9-]+)/;
+            $exists{$1}++;
+            push @args, $_ => \($hash->{$1});
+        }
+    } else {
+        $hash = {};
+        @args = @_;
+        while (@_) {
+            my $key = shift(@_);
+            $exists{$key}++;
+            shift(@_);
+        }
+    }
+
+    push @args, "help|h!" => \($hash->{help})
+        unless $exists{help};
+
+    my $ok = Getopt::Long::GetOptions( @args );
+    Pod::Usage::pod2usage(1) if not $ok and not defined wantarray;
+
+    return unless $ok;
+
+    Pod::Usage::pod2usage({ verbose => 2})
+          if not $exists{help} and $hash->{help};
+
+    return $ok;
 }
 
 RT::Base->_ImportOverlays();
