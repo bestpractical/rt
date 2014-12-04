@@ -1273,13 +1273,15 @@ sub fetch_caught_mails {
 sub clean_caught_mails {
     unlink $tmp{'mailbox'};
 }
-my $validator_path = "$RT::SbinPath/rt-validator";
+
 sub run_validator {
     my $self = shift;
-    my %args = (check => 1, resolve => 0, force => 1, @_ );
+    my %args = (check => 1, resolve => 0, force => 1, timeout => 0, @_ );
 
-    my $cmd = $validator_path;
+    my $cmd = "$RT::SbinPath/rt-validator";
     die "Couldn't find $cmd command" unless -f $cmd;
+
+    my $timeout = delete $args{timeout};
 
     while( my ($k,$v) = each %args ) {
         next unless $v;
@@ -1292,9 +1294,14 @@ sub run_validator {
     my $pid = IPC::Open2::open2($child_out, $child_in, $cmd);
     close $child_in;
 
-    my $result = do { local $/; <$child_out> };
+    local $SIG{ALRM} = sub { kill KILL => $pid; die "Timeout!" };
+
+    alarm $timeout if $timeout;
+    my $result = eval { local $/; <$child_out> };
+    warn $@ if $@;
     close $child_out;
     waitpid $pid, 0;
+    alarm 0;
 
     DBIx::SearchBuilder::Record::Cachable->FlushCache
         if $args{'resolve'};
