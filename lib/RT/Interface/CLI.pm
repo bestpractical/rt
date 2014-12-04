@@ -174,6 +174,9 @@ A shim for L<Getopt::Long/GetOptions> which automatically adds a
 C<--help> option if it is not supplied.  It then calls L<RT/LoadConfig>
 and L<RT/Init>.
 
+It sets the C<LogToSTDERR> setting to C<warning>, to ensure that the
+user sees all relevant warnings.
+
 =cut
 
 sub Init {
@@ -213,6 +216,9 @@ sub Init {
 
     require RT;
     RT::LoadConfig();
+
+    RT->Config->Set(LogToSTDERR => "warning");
+
     RT::Init();
 
     $| = 1;
