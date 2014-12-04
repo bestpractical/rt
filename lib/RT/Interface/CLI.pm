@@ -175,7 +175,9 @@ C<--help> option if it is not supplied.  It then calls L<RT/LoadConfig>
 and L<RT/Init>.
 
 It sets the C<LogToSTDERR> setting to C<warning>, to ensure that the
-user sees all relevant warnings.
+user sees all relevant warnings.  It also adds C<--quiet> and
+C<--verbose> options, which adjust the C<LogToSTDERR> value to C<error>
+or C<debug>, respectively.
 
 =cut
 
@@ -206,6 +208,12 @@ sub Init {
     push @args, "help|h!" => \($hash->{help})
         unless $exists{help};
 
+    push @args, "verbose|v!" => \($hash->{verbose})
+        unless $exists{verbose};
+
+    push @args, "quiet|q!" => \($hash->{quiet})
+        unless $exists{quiet};
+
     my $ok = Getopt::Long::GetOptions( @args );
     Pod::Usage::pod2usage(1) if not $ok and not defined wantarray;
 
@@ -217,7 +225,13 @@ sub Init {
     require RT;
     RT::LoadConfig();
 
-    RT->Config->Set(LogToSTDERR => "warning");
+    if (not $exists{quiet} and $hash->{quiet}) {
+        RT->Config->Set(LogToSTDERR => "error");
+    } elsif (not $exists{verbose} and $hash->{verbose}) {
+        RT->Config->Set(LogToSTDERR => "debug");
+    } else {
+        RT->Config->Set(LogToSTDERR => "warning");
+    }
 
     RT::Init();
 
