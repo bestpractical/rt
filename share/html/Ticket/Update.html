@@ -253,9 +253,16 @@ $CanComment = 1 if ( $TicketObj->CurrentUserHasRight('CommentOnTicket') or
 
 ProcessAttachments(ARGSRef => \%ARGS);
 
-my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', Arguments => \%ARGS );
+my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new',
+    Arguments => { UpdateType => $type, %ARGS }
+);
 $m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
     self => $gnupg_widget,
+    TicketObj => $TicketObj,
+);
+
+$m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
+    self      => $gnupg_widget,
     TicketObj => $TicketObj,
 );
 
@@ -278,11 +285,7 @@ if ( $ARGS{'SubmitTicket'} ) {
             push @results, loc($CF->Name) . ': ' . $msg;
         }
     }
-    my $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
-        self      => $gnupg_widget,
-        TicketObj => $TicketObj,
-    );
-    $checks_failure = 1 unless $status;
+
 }
 
 # check email addresses for RT's
