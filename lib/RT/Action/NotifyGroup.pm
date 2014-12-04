@@ -73,6 +73,10 @@ require RT::Group;
 =head2 SetRecipients
 
 Sets the recipients of this message to Groups and/or Users.
+Respects RT's NotifyActor configuration.
+
+To send email to the selected receipients regardless of RT's NotifyActor
+configuration, include AlwaysNotifyActor in the list of arguments.
 
 =cut
 
@@ -84,16 +88,6 @@ sub SetRecipients {
         $self->_HandleArgument( $_ );
     }
 
-    my $creatorObj = $self->TransactionObj->CreatorObj;
-    my $creator = $creatorObj->EmailAddress();
-
-    my $TransactionCurrentUser = RT::CurrentUser->new;
-    $TransactionCurrentUser->LoadByName($creatorObj->Name);
-
-    unless (RT->Config->Get('NotifyActor',$TransactionCurrentUser)) {
-        @{ $self->{'To'} } = grep ( !/^\Q$creator\E$/, @{ $self->{'To'} } );
-    }
-
     $self->{'seen_ueas'} = {};
 
     return 1;
@@ -102,6 +96,8 @@ sub SetRecipients {
 sub _HandleArgument {
     my $self = shift;
     my $instance = shift;
+
+    return if ( $instance eq 'AlwaysNotifyActor' );
 
     if ( $instance !~ /\D/ ) {
         my $obj = RT::Principal->new( $self->CurrentUser );
