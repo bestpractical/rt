@@ -102,7 +102,7 @@ while ( my $rec = FetchNext( $txns ) ) {
     $RT::Handle->BeginTransaction;
     my ($status) = $rec->Delete;
     unless ($status) {
-        print STDERR "Couldn't delete TXN #". $rec->id;
+        $RT::Logger->error( "Couldn't delete TXN #". $rec->id );
         exit 1;
     }
     $RT::Handle->Commit;
