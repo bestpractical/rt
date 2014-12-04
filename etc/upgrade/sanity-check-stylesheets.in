@@ -53,10 +53,8 @@ use warnings;
 use lib "@LOCAL_LIB_PATH@";
 use lib "@RT_LIB_PATH@";
 
-use RT -init;
-RT->Config->Set('LogToSTDERR' => 'debug');
-
-$| = 1;
+use RT::Interface::CLI qw(Init);
+Init();
 
 use RT::Users;
 my $users = RT::Users->new( $RT::SystemUser );
