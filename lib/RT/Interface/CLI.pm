@@ -49,7 +49,8 @@
 package RT::Interface::CLI;
 use strict;
 use warnings;
-use RT;
+
+use RT::Base;
 
 use base 'Exporter';
 our @EXPORT_OK = qw(CleanEnv GetCurrentUser debug loc Init);
@@ -62,10 +63,11 @@ our @EXPORT_OK = qw(CleanEnv GetCurrentUser debug loc Init);
 
   use lib "/opt/rt4/local/lib", "/opt/rt4/lib";
 
-  use RT::Interface::CLI  qw(GetCurrentUser loc);
+  use RT::Interface::CLI  qw(GetCurrentUser Init loc);
 
-  # Connect to the database, etc
-  use RT -init;
+  # Process command-line arguments, load the configuration, and connect
+  # to the database
+  Init();
 
   # Get the current user all loaded
   my $CurrentUser = GetCurrentUser();
@@ -169,7 +171,8 @@ sub ShowHelp {
 =head2 Init
 
 A shim for L<Getopt::Long/GetOptions> which automatically adds a
-C<--help> option if it is not supplied.
+C<--help> option if it is not supplied.  It then calls L<RT/LoadConfig>
+and L<RT/Init>.
 
 =cut
 
@@ -207,6 +210,12 @@ sub Init {
 
     Pod::Usage::pod2usage({ verbose => 2})
           if not $exists{help} and $hash->{help};
+
+    require RT;
+    RT::LoadConfig();
+    RT::Init();
+
+    $| = 1;
 
     return $ok;
 }
