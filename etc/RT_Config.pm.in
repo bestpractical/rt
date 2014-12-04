@@ -1779,14 +1779,14 @@ Set($PreferRichText, 1);
 
 =item C<$MaxInlineBody>
 
-C<$MaxInlineBody> is the maximum attachment size that we want to see
-inline when viewing a transaction.  RT will inline any text if the
+C<$MaxInlineBody> is the maximum textual attachment size that we want to
+see inline when viewing a transaction.  RT will inline any text if the
 value is undefined or 0.  This option can be overridden by users in
-their preferences.
+their preferences.  The default is 25k.
 
 =cut
 
-Set($MaxInlineBody, 12000);
+Set($MaxInlineBody, 25 * 1024);
 
 =item C<$ShowTransactionImages>
 
