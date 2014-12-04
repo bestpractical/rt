@@ -436,16 +436,6 @@ L<RT::User/CanonicalizeEmailAddress> can be overridden to provide it.
 # Set($CanonicalizeEmailAddressMatch, '@subdomain\.example\.com$');
 # Set($CanonicalizeEmailAddressReplace, '@example.com');
 
-=item C<$CanonicalizeOnCreate>
-
-Set this to 1 and the create new user page will use the values that
-you enter in the form but use the function CanonicalizeUserInfo in
-F<RT/User_Local.pm>
-
-=cut
-
-Set($CanonicalizeOnCreate, 0);
-
 =item C<$ValidateUserEmailAddresses>
 
 By default C<$ValidateUserEmailAddresses> is 1, and RT will refuse to create
