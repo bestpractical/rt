@@ -119,6 +119,23 @@ sub CustomFieldObject {
     return $self->{'custom_field'};
 }
 
+=head2 AddRecord
+
+Propagates the CustomField object from the Collection
+down to individual CustomFieldValue objects.
+
+=cut
+
+sub AddRecord {
+    my $self = shift;
+    my $CFV = shift;
+
+    $CFV->SetCustomFieldObj($self->CustomFieldObject);
+
+    push @{$self->{'items'}}, $CFV;
+    $self->{'rows'}++;
+}
+
 
 RT::Base->_ImportOverlays();
 
