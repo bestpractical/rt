@@ -71,8 +71,10 @@ GENERAL INSTALLATION
     you were coming from 3.6.7, you would want to review UPGRADING-3.6,
     UPGRADING-3.8 and UPGRADING-4.0
 
-    It is particularly important that you read the warnings at the top of
-    UPGRADING-4.0 for some common issues.
+    Any upgrade steps given in version-specific UPGRADING files should
+    be run after the rest of the steps below; however, please read the
+    relevant documentation before beginning the upgrade, soas to be
+    aware of important changes.
 
     RT stores the arguments given to ./configure at the top of the
     etc/RT_Config.pm file in case you need to recreate your previous use
@@ -173,7 +175,10 @@ GENERAL INSTALLATION
 
           rm -fr /opt/rt4/var/mason_data/obj
 
-      You may then start your web server again.
+      If 'make upgrade-database' completes without error, your upgrade
+      has been successful; you should now run any commands that were
+      supplied in version-specific UPGRADING documentation.  You should
+      then restart your webserver.
 
  7) Configure the web server, as described in docs/web_deployment.pod,
     and the email gateway, as described below.
