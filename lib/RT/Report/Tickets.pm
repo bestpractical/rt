@@ -477,7 +477,7 @@ sub SetupGroupings {
         # If it isn't, we need to do this in two stages -- first, find
         # the distinct matching tickets (with no group by), then search
         # within the matching tickets grouped by what is wanted.
-        my @match;
+        my @match = (0);
         $self->Columns( 'id' );
         while (my $row = $self->Next) {
             push @match, $row->id;

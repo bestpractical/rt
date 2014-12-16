@@ -403,6 +403,7 @@ sub LimitCustomField {
 sub LimitTopics {
     my $self   = shift;
     my @topics = @_;
+    return unless @topics;
 
     my $topics = $self->NewAlias('ObjectTopics');
     $self->Limit(
