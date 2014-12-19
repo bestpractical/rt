@@ -3,7 +3,7 @@ use warnings;
 use strict;
 
 use RT;
-use RT::Test nodata => 1, tests => 13;
+use RT::Test nodata => 1, tests => undef;
 
 sub new (*) {
     my $class = shift;
@@ -51,6 +51,10 @@ isa_ok( $cf, 'RT::CustomField' );
     }
     ok( !$failure, "all values have name" );
     is( $values->Count, $count, "count is correct" );
+    is( $values->CustomFieldObject->id, $cf->id, "Values stored the CF id" );
+    is( $values->CustomFieldObject, $cf, "Values stored the identical CF object" );
+    is( $values->First->CustomFieldObj->id, $cf->id, "A value stored the CF id" );
+    is( $values->First->CustomFieldObj, $cf, "A value stored the identical CF object" );
 }
 
 {
@@ -59,3 +63,5 @@ isa_ok( $cf, 'RT::CustomField' );
     ($ret, $msg) = $cf->SetValuesClass('RT::CustomFieldValues::Groups');
     ok $ret, 'Reverting this CF as external source values based' or diag "error: $msg";
 }
+
+done_testing;

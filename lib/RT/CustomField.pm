@@ -604,6 +604,7 @@ sub Values {
         $class->require or die "Can't load $class: $@";
     }
     my $cf_values = $class->new( $self->CurrentUser );
+    $cf_values->SetCustomFieldObject( $self );
     # if the user has no rights, return an empty object
     if ( $self->id && $self->CurrentUserHasRight( 'SeeCustomField') ) {
         $cf_values->LimitToCustomField( $self->Id );
@@ -1028,7 +1029,6 @@ sub ValidateContextObject {
     return unless $added_to;
     return $self->IsAdded($added_to->id);
 }
-
 
 sub _Set {
     my $self = shift;
