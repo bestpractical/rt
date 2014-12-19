@@ -75,8 +75,8 @@
 <em><&|/l&>No queues matching search criteria found.</&></em>
 % } else {
 <& /Elements/CollectionList,
-    OrderBy => 'Name',
-    Order => 'ASC',
+    OrderBy => ['SortOrder','Name'],
+    Order => ['ASC','ASC'],
     Rows  => $Rows,
     %ARGS,
     Format => $Format,
