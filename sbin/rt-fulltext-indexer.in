@@ -435,7 +435,10 @@ sub extract_html {
     my $attachment = shift;
     my $text = $attachment->Content;
     return undef unless defined $text && length($text);
-# TODO: html -> text
+# the rich text editor generates html entities for characters
+# but Pg doesn't index them, so decode to something it can index.
+    require HTML::Entities;
+    HTML::Entities::decode_entities($text);
     return \$text;
 }
 
