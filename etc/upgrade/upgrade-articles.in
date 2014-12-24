@@ -168,7 +168,7 @@ sub copy_tables {
     use RT::ObjectCustomFieldValues;
     my $ocfvs = RT::ObjectCustomFieldValues->new(RT->System);
     $ocfvs->Limit( FIELD => 'ObjectType', VALUE => 'RT::FM::Article' );
-    $ocfvs->{'find_expired_rows'} = 1;
+    $ocfvs->{'find_disabled_rows'} = 1;
     while ( my $ocfv = $ocfvs->Next ) {
         my ($ret, $msg) = $ocfv->__Set( Field => 'ObjectType', Value => 'RT::Article' );
         warn "Updated CF ".$ocfv->__Value('CustomField')." Value for Article ".$ocfv->__Value('ObjectId');

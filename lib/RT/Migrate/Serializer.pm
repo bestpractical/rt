@@ -198,7 +198,7 @@ sub PushCollections {
             }
             elsif ($collection->isa('RT::ObjectCustomFieldValues')) {
                 # FindAllRows (find_disabled_rows) isn't used by OCFVs
-                $collection->{find_expired_rows} = 1;
+                $collection->{find_disabled_rows} = 1;
             }
 
             if ($self->{Incremental}) {

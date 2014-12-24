@@ -59,6 +59,7 @@ sub Table { 'ObjectCustomFieldValues'}
 
 sub _Init {
     my $self = shift;
+    $self->{'with_disabled_column'} = 1;
 
   # By default, order by SortOrder
   $self->OrderByCols(
@@ -164,25 +165,23 @@ sub HasEntry {
 
 sub _DoSearch {
     my $self = shift;
-    
-    # unless we really want to find disabled rows,
-    # make sure we're only finding enabled ones.
-    unless ( $self->{'find_expired_rows'} ) {
-        $self->LimitToEnabled();
+
+    if ( exists $self->{'find_expired_rows'} ) {
+        RT->Deprecated( Arguments => "find_expired_rows", Instead => 'find_disabled_rows', Remove => '4.6' );
+        $self->{'find_disabled_rows'} = $self->{'find_expired_rows'};
     }
-    
+
     return $self->SUPER::_DoSearch(@_);
 }
 
 sub _DoCount {
     my $self = shift;
-    
-    # unless we really want to find disabled rows,
-    # make sure we're only finding enabled ones.
-    unless ( $self->{'find_expired_rows'} ) {
-        $self->LimitToEnabled();
+
+    if ( exists $self->{'find_expired_rows'} ) {
+        RT->Deprecated( Arguments => "find_expired_rows", Instead => 'find_disabled_rows', Remove => '4.6' );
+        $self->{'find_disabled_rows'} = $self->{'find_expired_rows'};
     }
-    
+
     return $self->SUPER::_DoCount(@_);
 }
 
