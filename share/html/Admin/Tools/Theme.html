@@ -295,7 +295,6 @@ my $analyze_img = sub {
         }
     }
 
-    use List::MoreUtils qw(uniq);
     for (values %colors) {
         $_->{rank} = $_->{s} * $_->{cnt};
     }
