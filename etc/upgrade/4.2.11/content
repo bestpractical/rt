@@ -1,0 +1,31 @@
+use strict;
+use warnings;
+
+our @Initial = (
+    sub {
+        # Remove globally-granted role rights which couldn't also apply
+        # to some other object.  That is, globally granting that
+        # AdminCcs have SuperUser makes no sense.
+
+        # Find rights which apply globally
+        no warnings 'once';
+        my @rights = sort map {$_->{Name}} values %{$RT::ACE::RIGHTS{'RT::System'}};
+
+        # Those are not allowed to be granted on global role groups
+        my $invalid = RT::ACL->new( RT->SystemUser );
+        $invalid->LimitToObject( 'RT::System' );
+        $invalid->LimitToPrincipal( Id => RT::System->RoleGroup($_)->PrincipalId )
+            for RT::System->Roles;
+        $invalid->Limit( FIELD => 'RightName', OPERATOR => 'IN', VALUE => \@rights );
+
+        return unless $invalid->Count;
+
+        # Remove them, warning in the process
+        $RT::Logger->warning("There are invalid global role rights; removing:");
+        while (my $right = $invalid->Next) {
+            $RT::Logger->warning("  ".$right->RightName." granted globally to ".$right->PrincipalObj->Object->Name);
+            my ($ok, $msg) = $right->Delete;
+            $RT::Logger->error("Failed to remove right ".$right->id.": $msg") unless $ok;
+        }
+    },
+);
