@@ -661,6 +661,8 @@ sub EmailFrequency {
         if $frequency =~ /daily/i;
     return 'receives weekly digests' # loc
         if $frequency =~ /weekly/i;
+    return 'email delivery suspended' # loc
+        if $frequency =~ /suspend/i;
     return '';
 }
 
