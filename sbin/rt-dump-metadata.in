@@ -105,7 +105,6 @@ my @classes      = qw(
     Templates Scrips ACL CustomFields
     );
 foreach my $class (@classes) {
-    require "RT/$class.pm";
     my $objects = "RT::$class"->new( RT->SystemUser );
     $objects->{find_disabled_rows} = 1 unless $opt{'skip-disabled'};
     $objects->UnLimit;
