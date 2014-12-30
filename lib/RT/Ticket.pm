@@ -2854,7 +2854,7 @@ sub CurrentUserCanSee {
     my ($what, $txn) = @_;
     return 0 unless $self->CurrentUserHasRight('ShowTicket');
 
-    return 1 if $what ne "Transaction";
+    return 1 unless $what and $what eq "Transaction";
 
     # If it's a comment, we need to be extra special careful
     my $type = $txn->__Value('Type');
