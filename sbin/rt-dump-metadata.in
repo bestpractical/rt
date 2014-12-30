@@ -233,7 +233,7 @@ OBJECT:
                     # An internal user group
                     if ( /^SystemInternal$/ ) {
                         $rv->{GroupDomain} = $group->Domain;
-                        $rv->{GroupType} = $group->Type;
+                        $rv->{GroupType}   = $group->Name;
                     }
                     # An individual user
                     elsif ( /^ACLEquivalence$/ ) {
