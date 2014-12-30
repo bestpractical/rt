@@ -1358,15 +1358,28 @@ sub _Set {
 
 =head2 CurrentUserCanSee
 
-Always returns 1; unfortunately, for historical reasons, users have
-always been able to examine groups they have indirect access to, even if
-they do not have SeeGroup explicitly.
+Returns 1 if the group is user-defined and the user has SeeGroup on it;
+returns 1 for internal groups, or role groups on objects which the user
+has permissions to see.
 
 =cut
 
 sub CurrentUserCanSee {
     my $self = shift;
-    return 1;
+
+    if ($self->Domain eq "UserDefined") {
+        return $self->CurrentUserHasRight("SeeGroup");
+    } elsif ($self->Domain eq "SystemInternal") {
+        return 1;
+    } elsif ($self->Domain eq "ACLEquivalence") {
+        return 1;
+    } elsif ($self->RoleClass) {
+        my $role = $self->RoleGroupObject;
+        return $role->CurrentUserCanSee if $role->can("CurrentUserCanSee");
+        return 1;
+    } else {
+        return 1;
+    }
 }
 
 
