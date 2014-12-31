@@ -1834,6 +1834,7 @@ sub _HTMLFormatter {
 
             if ($path) {
                 local $ENV{PATH} = $path;
+                local $ENV{HOME} = $RT::VarPath;
                 if (not defined $package->program_version) {
                     RT->Logger->warn("Could not find or run external '$prog' HTML formatter in $path$prog")
                         if $wanted;
@@ -1842,6 +1843,7 @@ sub _HTMLFormatter {
             } else {
                 local $ENV{PATH} = '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
                     unless defined $ENV{PATH};
+                local $ENV{HOME} = $RT::VarPath;
                 if (not defined $package->program_version) {
                     RT->Logger->warn("Could not find or run external '$prog' HTML formatter in \$PATH ($ENV{PATH}) -- you may need to install it or provide the full path")
                         if $wanted;
@@ -1855,6 +1857,7 @@ sub _HTMLFormatter {
                 RT::Util::safe_run_child {
                     local $ENV{PATH} = $path || $ENV{PATH}
                         || '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin';
+                    local $ENV{HOME} = $RT::VarPath;
                     $package->format_string($html, leftmargin => 0, rightmargin => 78);
                 };
             };
