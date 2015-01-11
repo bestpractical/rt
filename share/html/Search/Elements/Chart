@@ -67,8 +67,8 @@ $report->SortEntries;
 my $query_string = $m->comp('/Elements/QueryString', %ARGS, GroupBy => \@GroupBy );
 </%init>
 <div class="chart-wrapper">
-% if ( ($ChartStyle || '') =~ /\b(?:pie|bar)\b/ ) {
-<span class="chart image">
+% if ( ($ChartStyle || '') =~ /\b(pie|bar)\b/ ) {
+<span class="chart image <% $1 %>">
 % if (RT->Config->Get('DisableGD')) {
 <% loc('Graphical charts are not available.') %><br />
 % } else {
