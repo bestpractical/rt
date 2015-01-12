@@ -141,7 +141,11 @@ foreach my $field (qw(Members DependedOnBy ReferredToBy)) {
         while ( my $link = $links->Next ) {
             next if UNIVERSAL::isa($link->BaseObj, 'RT::Article') && $link->BaseObj->Disabled;
             next if $field eq 'ReferredToBy' && UNIVERSAL::isa($link->BaseObj, 'RT::Ticket') && $link->BaseObj->Type eq 'reminder';
-            push @string, $link->BaseObj->id;
+            my $prefix =
+                UNIVERSAL::isa( $link->BaseObj, 'RT::Ticket' ) ? ''
+              : UNIVERSAL::isa( $link->BaseObj, 'RT::Article' ) ? 'a:'
+              :                                                   $link->BaseURI->Scheme . ':';
+            push @string, $prefix . $link->BaseObj->id;
         }
         return join ', ', @string;
     };
@@ -152,7 +156,11 @@ foreach my $field (qw(MemberOf DependsOn RefersTo)) {
         my @string;
         while ( my $link = $links->Next ) {
             next if UNIVERSAL::isa($link->TargetObj, 'RT::Article') && $link->TargetObj->Disabled;
-            push @string, $link->TargetObj->id;
+            my $prefix =
+                UNIVERSAL::isa( $link->TargetObj, 'RT::Ticket' ) ? ''
+              : UNIVERSAL::isa( $link->TargetObj, 'RT::Article' ) ? 'a:'
+              :                                                   $link->TargetURI->Scheme . ':';
+            push @string, $prefix . $link->TargetObj->id;
         }
         return join ', ', @string;
     };
