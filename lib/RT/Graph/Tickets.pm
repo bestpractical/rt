@@ -136,12 +136,25 @@ foreach my $field (qw(Told Starts Started Due Resolved LastUpdated Created)) {
 }
 foreach my $field (qw(Members DependedOnBy ReferredToBy)) {
     $property_cb{ $field } = sub {
-        return join ', ', map $_->BaseObj->id, @{ $_[0]->$field->ItemsArrayRef };
+        my $links = $_[0]->$field;
+        my @string;
+        while ( my $link = $links->Next ) {
+            next if UNIVERSAL::isa($link->BaseObj, 'RT::Article') && $link->BaseObj->Disabled;
+            next if $field eq 'ReferredToBy' && UNIVERSAL::isa($link->BaseObj, 'RT::Ticket') && $link->BaseObj->Type eq 'reminder';
+            push @string, $link->BaseObj->id;
+        }
+        return join ', ', @string;
     };
 }
 foreach my $field (qw(MemberOf DependsOn RefersTo)) {
     $property_cb{ $field } = sub {
-        return join ', ', map $_->TargetObj->id, @{ $_[0]->$field->ItemsArrayRef };
+        my $links = $_[0]->$field;
+        my @string;
+        while ( my $link = $links->Next ) {
+            next if UNIVERSAL::isa($link->TargetObj, 'RT::Article') && $link->TargetObj->Disabled;
+            push @string, $link->TargetObj->id;
+        }
+        return join ', ', @string;
     };
 }
 
