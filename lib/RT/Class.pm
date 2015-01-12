@@ -89,7 +89,7 @@ __PACKAGE__->AddRight( Staff   => CreateArticle       => 'Create articles in thi
 __PACKAGE__->AddRight( General => ShowArticle         => 'See articles in this class'); # loc
 __PACKAGE__->AddRight( Staff   => ShowArticleHistory  => 'See changes to articles in this class'); # loc
 __PACKAGE__->AddRight( General => SeeCustomField      => 'View custom field values' ); # loc
-__PACKAGE__->AddRight( Staff   => ModifyArticle       => 'Modify or delete articles in this class'); # loc
+__PACKAGE__->AddRight( Staff   => ModifyArticle       => 'Modify articles in this class'); # loc
 __PACKAGE__->AddRight( Staff   => ModifyArticleTopics => 'Modify topics for articles in this class'); # loc
 __PACKAGE__->AddRight( Staff   => ModifyCustomField   => 'Modify custom field values' ); # loc
 __PACKAGE__->AddRight( Admin   => AdminClass          => 'Modify metadata and custom fields for this class'); # loc
