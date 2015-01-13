@@ -76,7 +76,7 @@ jQuery(function() {
             var subfield = field.next("select[name=" + name + "]");
             var complete = subfield.next("select[name=" + name + "-Complete]");
             var value    = field.val();
-            filter_cascade_select( subfield[0], complete[0], value, true );
+            filter_cascade_select( subfield[0], complete[0], value );
         }).change();
     });
 });

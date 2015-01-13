@@ -73,8 +73,7 @@ jQuery(  function () {
             }
             filter_cascade_by_id(
                 <% $name |n,j%>,
-                vals,
-                true
+                vals
             );
             if (oldchange != null)
                 oldchange();
