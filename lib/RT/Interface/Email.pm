@@ -1412,6 +1412,8 @@ sub Gateway {
         return ( 0, $result, undef );
     }
 
+    $head->replace('X-RT-Interface' => 'Email');
+
     # if plugin's updated SystemTicket then update arguments
     $args{'ticket'} = $SystemTicket->Id if $SystemTicket && $SystemTicket->Id;
 
@@ -1430,8 +1432,6 @@ sub Gateway {
                 QueueObj    => $SystemQueueObj
             );
         }
-
-        $head->replace('X-RT-Interface' => 'Email');
 
         my ( $id, $Transaction, $ErrStr ) = $Ticket->Create(
             Queue     => $SystemQueueObj->Id,
