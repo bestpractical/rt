@@ -40,7 +40,7 @@ function filter_cascade_select (select, complete_select, vals) {
 
     jQuery(select).children().remove();
 
-    var complete_children = complete_select.childNodes;
+    var complete_children = jQuery(complete_select).children();
 
     var cloned_labels = {};
     var cloned_empty_label;
@@ -51,34 +51,28 @@ function filter_cascade_select (select, complete_select, vals) {
         }
         else {
             var labels_to_clone = {};
-            for (i = 0; i < complete_children.length; i++) {
-                if (!complete_children[i].label ||
-                      (complete_children[i].hasAttribute &&
-                            !complete_children[i].hasAttribute('label') ) ) {
-                    if ( cloned_empty_label ) {
-                        continue;
+            complete_children.each( function() {
+                var label = jQuery(this).attr('label');
+                var need_clone;
+                if ( !label ) {
+                    if ( !cloned_empty_label ) {
+                        need_clone = true;
                     }
                 }
-                else if ( complete_children[i].label == val ) {
-                    if ( cloned_labels[complete_children[i].label] ) {
-                        continue;
+                else if ( label == val ) {
+                    if ( !cloned_labels[label] ) {
+                        need_clone = true;
                     }
-                    labels_to_clone[complete_children[i].label] = true;
-                }
-                else {
-                    continue;
                 }
 
-                jQuery(select).append(jQuery(complete_children[i]).clone());
-            }
+                if ( need_clone ) {
+                    jQuery(select).append(jQuery(this).clone());
+                    cloned_labels[label] = true;
+                }
+            });
 
             if ( !cloned_empty_label )
                 cloned_empty_label = true;
-
-            for ( label in labels_to_clone ) {
-                if ( !cloned_labels[label] )
-                    cloned_labels[label] = true;
-            }
         }
     }
 }
