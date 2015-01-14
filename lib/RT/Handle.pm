@@ -1112,15 +1112,18 @@ sub InsertData {
             }
 
             # Grant it
-            my ( $return, $msg ) = $princ->PrincipalObj->GrantRight(
-                Right => $item->{'Right'},
-                Object => $object
-            );
-            unless ( $return ) {
-                $RT::Logger->error( $msg );
-            }
-            else {
-                $RT::Logger->debug( $return ."." );
+            my @rights = ref($item->{'Right'}) eq 'ARRAY' ? @{$item->{'Right'}} : $item->{'Right'};
+            foreach my $right ( @rights ) {
+                my ( $return, $msg ) = $princ->PrincipalObj->GrantRight(
+                    Right => $right,
+                    Object => $object
+                );
+                unless ( $return ) {
+                    $RT::Logger->error( $msg );
+                }
+                else {
+                    $RT::Logger->debug( $return ."." );
+                }
             }
         }
         $RT::Logger->debug("done.");

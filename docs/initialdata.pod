@@ -252,10 +252,11 @@ C<@ACL> is very useful for granting rights on your newly created records or
 setting up a standard system configuration.  It is one of the most complex
 initialdata structures.
 
-=head3 Pick a Right
+=head3 Pick one or more C<Right>s
 
-All ACL definitions expect a key named C<Right> with the internal right name
-you want to grant.  The internal right names are visible in RT's admin
+All ACL definitions expect a key named C<Right> with the internal right
+name you want to grant; alternately, it may contain an array reference
+of right names.  The internal right names are visible in RT's admin
 interface in grey next to the longer descriptions.
 
 =head3 Pick a level: on a queue, on a CF, or globally
