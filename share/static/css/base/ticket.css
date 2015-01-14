@@ -75,22 +75,6 @@
 
 .ticket-summary .titlebox .titlebox-title .left a, .ticket-summary .titlebox .titlebox-title .left a:visited { color: #fff;}
 
-.unread-messages .titlebox , .unread-messages .titlebox .titlebox-title .left {
-  border: 1px solid #99a;
-  border-right: 2px solid #aab;
-  border-bottom: 2px solid #aab;
-
-}
-
-
-.unread-messages .titlebox {
-  background-color: #dde;
-}
-
-.unread-messages .titlebox .titlebox-title .left {
-  background-color: #cce;
-}
-
 .unread-messages .titlebox-content :link {
     text-decoration: underline;
 }
