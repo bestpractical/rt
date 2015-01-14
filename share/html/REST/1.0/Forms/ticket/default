@@ -163,7 +163,52 @@ else {
                     delete $data{$k};
                     next;
                 }
-                $v{"CustomField-".$cf->Id()} = delete $data{$k};
+                my $val = delete $data{$k};
+                next unless defined $val && length $val;
+                if ( $cf->SingleValue ) {
+                    $v{"CustomField-".$cf->Id()} = $val;
+                }
+                else {
+                    my @new;
+
+                    # back compatbility
+                    # to support multiple lines format:
+                    # CF.{foo}: bar
+                    # CF.{foo}: baz
+                    $val = join ',', @$val if ref $val eq 'ARRAY';
+
+                    my ( $a, $b ) = split /\s*,\s*/, $val, 2;
+                    while ($a) {
+                        no warnings 'uninitialized';
+                        if ( $a =~ /^'/ ) {
+                            my $s = $a;
+                            while ( $a !~ /'$/ || ( $a !~ /(\\\\)+'$/
+                                            && $a =~ /(\\)+'$/ ) ) {
+                                ( $a, $b ) = split /\s*,\s*/, $b, 2;
+                                $s .= ',' . $a;
+                            }
+                            $s =~ s/^'//;
+                            $s =~ s/'$//;
+                            $s =~ s/\\'/'/g;
+                            push @new, $s;
+                        }
+                        elsif ( $a =~ /^q\{/ ) {
+                            my $s = $a;
+                            while ( $a !~ /\}$/ ) {
+                                ( $a, $b ) = split /\s*,\s*/, $b, 2;
+                                $s .= ',' . $a;
+                            }
+                            $s =~ s/^q\{//;
+                            $s =~ s/\}//;
+                            push @new, $s;
+                        }
+                        else {
+                            push @new, $a;
+                        }
+                        ( $a, $b ) = split /\s*,\s*/, $b, 2;
+                    }
+                    $v{"CustomField-".$cf->Id()} = \@new;
+                }
             }
             elsif (lc $k eq 'text') {
                 $text = delete $data{$k};
