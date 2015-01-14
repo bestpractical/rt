@@ -51,48 +51,14 @@
 % my $selected = 0;
 % my @category;
 % my $out = $m->scomp('SELF:options', %ARGS, SelectedRef => \$selected, CategoryRef => \@category);
-% if ($CustomField->BasedOnObj->id) {
-
-<script type="text/javascript"><!--
-jQuery(  function () {
-    var basedon = jQuery('[name^="'+<% $BasedOnName || $NamePrefix . $CustomField->BasedOnObj->id . '-Value' |n,j %>+'"][type!="hidden"]:input:not(.hidden)');
-    basedon.each( function() {
-        var oldchange = jQuery(this).onchange;
-        jQuery(this).change( function () {
-            var vals;
-            if ( jQuery(this).is('select') ) {
-                vals = basedon.first().val();
-            }
-            else {
-                vals = [];
-                jQuery(basedon).each( function() {
-                    if ( jQuery(this).is(':checked') ) {
-                        vals.push(jQuery(this).val());
-                    }
-                });
-            }
-            filter_cascade_by_id(
-                <% $name |n,j%>,
-                vals
-            );
-            if (oldchange != null)
-                oldchange();
-        });
-    });
-
-    if ( basedon.is('select') ) {
-        basedon.change();
-    }
-    else {
-        basedon.first().change();
-    }
-});
---></script>
-% }
 
 % if ( $RenderType eq 'List' ) {
 <fieldset class="cfedit">
-<div data-name="<%$name%>" id="<%$name%>">
+<div data-name="<%$name%>" id="<%$name%>"
+% if ($CustomField->BasedOnObj->id) {
+  data-cascade-based-on-name="<% $BasedOnName || $NamePrefix . $CustomField->BasedOnObj->id . '-Value' |n %>"
+% }
+>
 %   if ( $checktype eq 'radio' ) {
 % if ( $show_empty_option ) {
   <div class="none">
@@ -125,6 +91,9 @@ jQuery(  function () {
 % }
 <select
   name="<%$name%>" id="<%$name%>" class="CF-<%$CustomField->id%>-Edit"
+% if ($CustomField->BasedOnObj->id) {
+  data-cascade-based-on-name="<% $BasedOnName || $NamePrefix . $CustomField->BasedOnObj->id . '-Value' |n %>"
+% }
 % if ( $Rows && ( $Multiple || !@category || $RenderType eq 'Select box') ) {
   size="<% $Rows %>"
 % }
