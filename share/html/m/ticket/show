@@ -167,7 +167,7 @@ my $print_value = sub {
     my $linked = $value->LinkValueTo;
     if ( defined $linked && length $linked ) {
         my $linked = $m->interp->apply_escapes( $linked, 'h' );
-        $m->out('<a href="'. $linked .'" target="_new">');
+        $m->out('<a href="'. $linked .'" target="_blank">');
     }
     my $comp = "ShowCustomField". $cf->Type;
     $m->callback(
