@@ -449,7 +449,7 @@ our %META = (
                     'The RTAddressRegexp option is not set in the config.'
                     .' Not setting this option results in additional SQL queries to'
                     .' check whether each address belongs to RT or not.'
-                    .' It is especially important to set this option if RT recieves'
+                    .' It is especially important to set this option if RT receives'
                     .' emails on addresses that are not in the database or config.'
                 );
             } elsif (ref $value and ref $value eq "Regexp") {
