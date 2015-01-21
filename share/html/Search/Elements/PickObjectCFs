@@ -48,6 +48,7 @@
 <%ARGS>
 $Class
 %queues => ()
+$LimitedQueues => 0
 </%ARGS>
 <%init>
 my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'} );
@@ -55,12 +56,11 @@ $CustomFields->ApplySortOrder;
 $CustomFields->LimitToLookupType( "RT::$Class"->CustomFieldLookupType );
 $CustomFields->LimitToObjectId(0);
 
-foreach my $name (keys %queues) {
-    my $queue = RT::Queue->new($session{'CurrentUser'});
-    $queue->Load($name);
-    next unless $queue->Id;
-    $CustomFields->LimitToObjectId($queue->Id);
-    $CustomFields->SetContextObject( $queue ) if keys %queues == 1;
+if ($LimitedQueues) {
+    foreach my $queue (values %queues) {
+        $CustomFields->LimitToObjectId($queue->Id);
+        $CustomFields->SetContextObject( $queue ) if keys %queues == 1;
+    }
 }
 
 my $has_cf = $CustomFields->First ? 1 : 0;

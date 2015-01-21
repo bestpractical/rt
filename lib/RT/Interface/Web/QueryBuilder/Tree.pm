@@ -90,34 +90,90 @@ sub TraversePrePost {
    $postfunc->($self) if $postfunc;
 }
 
-=head2 GetReferencedQueues
+=head2 GetReferencedQueues [C<CurrentUser> => I<USER>]
 
-Returns a hash reference; each queue referenced with an '=' operation
-will appear as a key whose value is 1.
+Returns a hash reference; the keys are the ids of each queue which
+results may appear in, and the values are the respective queue objects.
+
+In array context, returns a true/false value as a second return value,
+which is if any explicit queue limits were found.
 
 =cut
 
 sub GetReferencedQueues {
     my $self = shift;
-
-    my $queues = {};
-
-    $self->traverse(
-        sub {
-            my $node = shift;
-
-            return if $node->isRoot;
-            return unless $node->isLeaf;
-
-            my $clause = $node->getNodeValue();
-            return unless $clause->{Key} eq 'Queue';
-            return unless $clause->{Op} eq '=';
-
-            $queues->{ $clause->{RawValue} } = 1;
-        }
+    my %args = (
+        CurrentUser => undef,
+        @_,
     );
 
-    return $queues;
+    my $q_refs = $self->clone;
+    $q_refs->TraversePrePost(
+        sub {
+            my $node = shift;
+            my $clause = $node->getNodeValue();
+            return unless $node->isLeaf and ref $clause;
+            return if $clause->{Key} eq 'Queue';
+
+            # This is a leaf node not dealing with queues; remove it
+            if ($node->isRoot) {
+                $node->setNodeValue(0);
+            } else {
+                $node->getParent->removeChild($node);
+                $node->DESTROY;
+            }
+        },
+        sub {
+            my $node = shift;
+            my $clause = $node->getNodeValue();
+            return unless $node->isLeaf and not ref $clause;
+
+            # This is a AND/OR node with no children
+            if ($node->isRoot) {
+                $node->setNodeValue(0);
+            } else {
+                $node->getParent->removeChild($node);
+                $node->DESTROY;
+            }
+        }
+    );
+    my $limits = 0;
+    my $queues = RT::Queues->new( $args{CurrentUser} );
+    $q_refs->TraversePrePost(
+        sub {
+            my $node = shift;
+            if ($node->isLeaf) {
+                my $clause = $node->getNodeValue();
+                return unless $clause;
+                $queues->Limit(
+                    FIELD    => ($clause->{RawValue} =~ /\D/ ? "Name" : "id"),
+                    CASESENSITIVE => ($clause->{RawValue} =~ /\D/ ? 0 : 1),
+                    OPERATOR => $clause->{Op},
+                    VALUE    => $clause->{RawValue},
+                    ENTRYAGGREGATOR => (
+                        $node->isRoot ? "OR" :
+                        $node->getParent->getNodeValue),
+                    SUBCLAUSE => "referenced",
+                );
+                $limits++;
+            } else {
+                $queues->_OpenParen("referenced");
+            }
+        },
+        sub {
+            my $node = shift;
+            return if $node->isLeaf;
+            $queues->_CloseParen("referenced");
+        }
+    );
+    $queues->UnLimit unless $limits;
+
+    my %queues;
+    while (my $q = $queues->Next) {
+        $queues{$q->id} = $q;
+    }
+
+    return wantarray ? (\%queues, $limits) : \%queues;
 }
 
 =head2 GetQueryAndOptionList SELECTED_NODES
