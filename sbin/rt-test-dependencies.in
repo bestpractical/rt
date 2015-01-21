@@ -189,7 +189,7 @@ sub set_dep {
 }
 
 $deps{'CORE'} = [ text_to_hash( << '.') ];
-Class::Accessor 0.34
+Class::Accessor::Fast
 DateTime 0.44
 DateTime::Locale 0.40
 Digest::base
