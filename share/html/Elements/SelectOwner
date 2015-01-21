@@ -60,11 +60,7 @@ if ($TicketObj) {
 } elsif ($QueueObj) {
     @objects = ($QueueObj);
 } elsif (%Queues) {
-    for my $name (keys %Queues) {
-        my $q = RT::Queue->new($session{'CurrentUser'});
-        $q->Load($name);
-        push @objects, $q;
-    }
+    push @objects, values %Queues;
 } else {
     # Let's check rights on an empty queue object. that will do a search
     # for any queue.

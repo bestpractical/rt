@@ -153,24 +153,20 @@ our %GROUPINGS_META = (
             my $args = shift;
 
 
-            my $queues = $args->{'Queues'};
-            if ( !$queues && $args->{'Query'} ) {
+            unless ( $args->{Queues} ) {
                 require RT::Interface::Web::QueryBuilder::Tree;
                 my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
                 $tree->ParseSQL( Query => $args->{'Query'}, CurrentUser => $self->CurrentUser );
-                $queues = $args->{'Queues'} = $tree->GetReferencedQueues;
+                @$args{qw/Queues LimitedQueues/} = $tree->GetReferencedQueues( CurrentUser => $self->CurrentUser );
             }
-            return () unless $queues;
 
             my @res;
 
             my $CustomFields = RT::CustomFields->new( $self->CurrentUser );
-            foreach my $id (keys %$queues) {
-                my $queue = RT::Queue->new( $self->CurrentUser );
-                $queue->Load($id);
-                next unless $queue->id;
-
-                $CustomFields->LimitToQueue($queue->id);
+            if ($args->{LimitedQueues}) {
+                foreach my $queue (values %{ $args->{Queues} }) {
+                    $CustomFields->LimitToQueue($queue->id);
+                }
             }
             $CustomFields->LimitToGlobal;
             while ( my $CustomField = $CustomFields->Next ) {

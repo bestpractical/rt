@@ -111,7 +111,7 @@ is_deeply(
     \@owners, [ '', qw/Nobody root user_b/], 'no user_a'
 );
 
-diag "limit queue to general too";
+diag "limit queue to general AND foo (impossible)";
 
 $m->submit_form(
     fields => { ValueOfQueue => 'General' },
@@ -119,8 +119,8 @@ $m->submit_form(
 );
 
 $form = $m->form_name('BuildQuery');
-ok( $form->find_input("ValueOfCF.{general_cf}"), 'found general_cf' );
-ok( $form->find_input("ValueOfCF.{foo_cf}"), 'found foo_cf' );
+ok( !$form->find_input("ValueOfCF.{general_cf}"), 'no general_cf' );
+ok( !$form->find_input("ValueOfCF.{foo_cf}"), 'no foo_cf' );
 ok( $form->find_input("ValueOfCF.{global_cf}"), 'found global_cf' );
 $status_input = $form->find_input('ValueOfStatus');
 @statuses     = sort $status_input->possible_values;
@@ -135,7 +135,7 @@ is_deeply(
     \@owners, [ '', qw/Nobody root user_a user_b/], 'found all users again'
 );
 
-diag "limit queue to != foo";
+diag "limit queue to != foo (same as = general)";
 $m->get_ok( $url . '/Search/Build.html?NewQuery=1' );
 $m->submit_form(
     form_name => 'BuildQuery',
@@ -146,17 +146,17 @@ $m->submit_form(
 $form = $m->form_name('BuildQuery');
 ok( $form->find_input("ValueOfCF.{global_cf}"), 'found global_cf' );
 ok( !$form->find_input("ValueOfCF.{foo_cf}"), 'no foo_cf' );
-ok( !$form->find_input("ValueOfCF.{general_cf}"), 'no general_cf' );
+ok( $form->find_input("ValueOfCF.{general_cf}"), 'found general_cf' );
 $status_input = $form->find_input('ValueOfStatus');
 @statuses     = sort $status_input->possible_values;
 is_deeply(
-    \@statuses, [ '', qw/initial new open open rejected resolved resolved stalled/],
-    'found all statuses'
+    \@statuses, [ '', qw/new open rejected resolved stalled/],
+    'found only general statuses'
 ) or diag "Statuses are: ", explain \@statuses;
 $owner_input = $form->find_input('ValueOfActor');
 @owners     = sort $owner_input->possible_values;
 is_deeply(
-    \@owners, [ '', qw/Nobody root user_a user_b/], 'found all users'
+    \@owners, [ '', qw/Nobody root user_a/], 'users from general'
 );
 
 diag "limit queue to General OR foo";

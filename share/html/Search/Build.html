@@ -78,7 +78,7 @@
 
 
 <div id="pick-criteria">
-    <& Elements/PickCriteria, query => $query{'Query'}, queues => $queues &>
+    <& Elements/PickCriteria, query => $query{'Query'}, queues => $queues, LimitedQueues => $limited_queues &>
 </div>
 <& /Elements/Submit,  Label => loc('Add these terms'), SubmitId => 'AddClause', Name => 'AddClause'&>
 <& /Elements/Submit, Label => loc('Add these terms and Search'), SubmitId => 'DoSearch', Name => 'DoSearch'&>
@@ -277,8 +277,7 @@ my $optionlist = join "\n", map { qq(<option value="$_->{INDEX}" $_->{SELECTED}>
                                   . ("&nbsp;" x (5 * $_->{DEPTH}))
                                   . $m->interp->apply_escapes($_->{TEXT}, 'h') . qq(</option>) } @$optionlist_arrayref;
 
-
-my $queues = $tree->GetReferencedQueues;
+my ($queues, $limited_queues) = $tree->GetReferencedQueues( CurrentUser => $session{CurrentUser} );
 
 # Deal with format changes
 my ( $AvailableColumns, $CurrentFormat );
@@ -286,6 +285,7 @@ my ( $AvailableColumns, $CurrentFormat );
     'Elements/BuildFormatString',
     %ARGS,
     queues => $queues,
+    LimitedQueues => $limited_queues,
     Format => $query{'Format'},
 );
 

@@ -53,12 +53,7 @@
    Type => 'ticket',
 &>
 <%INIT>
-my @Lifecycles;
-for my $id (keys %Queues) {
-    my $queue = RT::Queue->new($session{'CurrentUser'});
-    $queue->Load($id);
-    push @Lifecycles, $queue->LifecycleObj if $queue->id;
-}
+my @Lifecycles = map {$_->LifecycleObj} values %Queues;
 
 if ($TicketObj) {
     $ARGS{DefaultLabel} = loc("[_1] (Unchanged)", loc($TicketObj->Status));
