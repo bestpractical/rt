@@ -248,7 +248,7 @@ my $print_value = sub {
   </div>
     </&>
 
-% if ($Ticket->CustomFields->First) {
+% if ($CustomFields->Count) {
     <&| /Widgets/TitleBox, title => loc('Custom Fields'),
         class => 'ticket-info-cfs',
     &>
