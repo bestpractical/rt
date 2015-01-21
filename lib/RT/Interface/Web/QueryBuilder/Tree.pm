@@ -113,9 +113,32 @@ sub GetReferencedQueues {
             my $node = shift;
             my $clause = $node->getNodeValue();
             return unless $node->isLeaf and ref $clause;
-            return if $clause->{Key} eq 'Queue';
+            if ($clause->{Key} eq "Queue") {
+                return;
+            } elsif ($clause->{Key} =~ /^QueueCF\.(.*)$/) {
+                # Check we can find the CF; if we can't, we fall through
+                # to the below and trim out the node.
+                my $subkey = $1;
+                $subkey =~ s/^\{(.*?)\}$/$1/;
 
-            # This is a leaf node not dealing with queues; remove it
+                my $cf;
+                if ( $subkey =~ /\D/ ) {
+                    my $cfs = RT::CustomFields->new( $args{CurrentUser} );
+                    $cfs->Limit( FIELD => 'Name', VALUE => $subkey, CASESENSITIVE => 0 );
+                    $cfs->LimitToLookupType(RT::Queue->CustomFieldLookupType);
+                    $cf = $cfs->First;
+                } else {
+                    $cf = RT::CustomField->new( $args{CurrentUser} );
+                    $cf->Load($subkey);
+                }
+                if ($cf and $cf->id) {
+                    $clause->{CF} = $cf;
+                    return;
+                }
+            }
+
+            # This is a leaf node not dealing with queues, or a Queue CF
+            # we couldn't find; remove it
             if ($node->isRoot) {
                 $node->setNodeValue(0);
             } else {
@@ -145,16 +168,28 @@ sub GetReferencedQueues {
             if ($node->isLeaf) {
                 my $clause = $node->getNodeValue();
                 return unless $clause;
-                $queues->Limit(
-                    FIELD    => ($clause->{RawValue} =~ /\D/ ? "Name" : "id"),
-                    CASESENSITIVE => ($clause->{RawValue} =~ /\D/ ? 0 : 1),
-                    OPERATOR => $clause->{Op},
-                    VALUE    => $clause->{RawValue},
-                    ENTRYAGGREGATOR => (
-                        $node->isRoot ? "OR" :
-                        $node->getParent->getNodeValue),
-                    SUBCLAUSE => "referenced",
-                );
+                if ($clause->{Key} eq "Queue") {
+                    $queues->Limit(
+                        FIELD    => ($clause->{RawValue} =~ /\D/ ? "Name" : "id"),
+                        CASESENSITIVE => ($clause->{RawValue} =~ /\D/ ? 0 : 1),
+                        OPERATOR => $clause->{Op},
+                        VALUE    => $clause->{RawValue},
+                        ENTRYAGGREGATOR => (
+                            $node->isRoot ? "OR" :
+                            $node->getParent->getNodeValue),
+                        SUBCLAUSE => "referenced",
+                    );
+                } else {
+                    $queues->LimitCustomField(
+                        CUSTOMFIELD => $clause->{CF},
+                        OPERATOR    => $clause->{Op},
+                        VALUE       => $clause->{RawValue},
+                        ENTRYAGGREGATOR => (
+                            $node->isRoot ? "OR" :
+                            $node->getParent->getNodeValue),
+                        SUBCLAUSE => "referenced",
+                    );
+                }
                 $limits++;
             } else {
                 $queues->_OpenParen("referenced");
