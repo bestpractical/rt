@@ -79,6 +79,7 @@ use Scalar::Util qw/blessed/;
 
 use RT::Ticket;
 use RT::SQL;
+use RT::Tickets::Tree;
 
 sub Table { 'Tickets'}
 

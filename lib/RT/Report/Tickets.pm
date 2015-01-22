@@ -154,8 +154,7 @@ our %GROUPINGS_META = (
 
 
             unless ( $args->{Queues} ) {
-                require RT::Interface::Web::QueryBuilder::Tree;
-                my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
+                my $tree = RT::Tickets::Tree->new('AND');
                 $tree->ParseSQL( Query => $args->{'Query'}, CurrentUser => $self->CurrentUser );
                 @$args{qw/Queues LimitedQueues/} = $tree->GetReferencedQueues( CurrentUser => $self->CurrentUser );
             }
