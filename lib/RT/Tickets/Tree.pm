@@ -65,6 +65,22 @@ It is a subclass of L<Tree::Simple>.
 
 =head1 METHODS
 
+=head2 new
+
+=cut
+
+sub new {
+    my $class = shift;
+    my ($val, $parent) = @_;
+    if (ref $val) {
+        $val->{Op} = uc $val->{Op};
+        $val->{Op} = 'IS'      if uc $val->{Value} eq 'NULL' and $val->{Op} eq '=';
+        $val->{Op} = 'IS NOT'  if uc $val->{Value} eq 'NULL' and $val->{Op} eq '!=';
+        $val->{Value} = 'NULL' if $val->{Op} =~ /^IS( NOT)?$/i;
+    }
+    return $class->SUPER::new( $val, $parent );
+}
+
 =head2 traverse PREFUNC POSTFUNC
 
 Override's L<Tree::Simple/traverse>, to call its functions on the root
