@@ -143,7 +143,6 @@ sub GetReferencedQueues {
                 $node->setNodeValue(0);
             } else {
                 $node->getParent->removeChild($node);
-                $node->DESTROY;
             }
         },
         sub {
@@ -156,7 +155,6 @@ sub GetReferencedQueues {
                 $node->setNodeValue(0);
             } else {
                 $node->getParent->removeChild($node);
-                $node->DESTROY;
             }
         }
     );
@@ -261,7 +259,6 @@ sub PruneChildlessAggregators {
 
             # OK, this is a childless aggregator.  Remove self.
             $node->getParent->removeChild($node);
-            $node->DESTROY;
         }
     );
 }
