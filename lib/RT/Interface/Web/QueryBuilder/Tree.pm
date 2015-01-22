@@ -65,28 +65,18 @@ It is a subclass of L<Tree::Simple>.
 
 =head1 METHODS
 
-=head2 TraversePrePost PREFUNC POSTFUNC
+=head2 traverse PREFUNC POSTFUNC
 
-Traverses the tree depth-first.  Before processing the node's children,
-calls PREFUNC with the node as its argument; after processing all of the
-children, calls POSTFUNC with the node as its argument.
-
-(Note that unlike Tree::Simple's C<traverse>, it actually calls its functions
-on the root node passed to it.)
+Override's L<Tree::Simple/traverse>, to call its functions on the root
+node passed to it.
 
 =cut
 
-sub TraversePrePost {
+sub traverse {
    my ($self, $prefunc, $postfunc) = @_;
 
-   # XXX: if pre or post action changes siblings (delete or adds)
-   # we could have problems
    $prefunc->($self) if $prefunc;
-
-   foreach my $child ($self->getAllChildren()) { 
-           $child->TraversePrePost($prefunc, $postfunc);
-   }
-   
+   $_->traverse( $prefunc, $postfunc ) for $self->getAllChildren();
    $postfunc->($self) if $postfunc;
 }
 
@@ -108,7 +98,7 @@ sub GetReferencedQueues {
     );
 
     my $q_refs = $self->clone;
-    $q_refs->TraversePrePost(
+    $q_refs->traverse(
         sub {
             my $node = shift;
             my $clause = $node->getNodeValue();
@@ -160,7 +150,7 @@ sub GetReferencedQueues {
     );
     my $limits = 0;
     my $queues = RT::Queues->new( $args{CurrentUser} );
-    $q_refs->TraversePrePost(
+    $q_refs->traverse(
         sub {
             my $node = shift;
             if ($node->isLeaf) {
@@ -246,7 +236,7 @@ or parenthesizations with no children, get rid of them.
 sub PruneChildlessAggregators {
     my $self = shift;
 
-    $self->TraversePrePost(
+    $self->traverse(
         undef,
         sub {
             my $node = shift;
@@ -281,7 +271,7 @@ sub __LinearizeTree {
 
     my ($list, $i) = ([], 0);
 
-    $self->TraversePrePost( sub {
+    $self->traverse( sub {
         my $node = shift;
         return if $node->isRoot;
 
