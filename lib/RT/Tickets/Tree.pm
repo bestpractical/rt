@@ -158,10 +158,10 @@ sub GetReferencedQueues {
                 return unless $clause;
                 if ($clause->{Key} eq "Queue") {
                     $queues->Limit(
-                        FIELD    => ($clause->{RawValue} =~ /\D/ ? "Name" : "id"),
-                        CASESENSITIVE => ($clause->{RawValue} =~ /\D/ ? 0 : 1),
+                        FIELD    => ($clause->{Value} =~ /\D/ ? "Name" : "id"),
+                        CASESENSITIVE => ($clause->{Value} =~ /\D/ ? 0 : 1),
                         OPERATOR => $clause->{Op},
-                        VALUE    => $clause->{RawValue},
+                        VALUE    => $clause->{Value},
                         ENTRYAGGREGATOR => (
                             $node->isRoot ? "OR" :
                             $node->getParent->getNodeValue),
@@ -171,7 +171,7 @@ sub GetReferencedQueues {
                     $queues->LimitCustomField(
                         CUSTOMFIELD => $clause->{CF},
                         OPERATOR    => $clause->{Op},
-                        VALUE       => $clause->{RawValue},
+                        VALUE       => $clause->{Value},
                         ENTRYAGGREGATOR => (
                             $node->isRoot ? "OR" :
                             $node->getParent->getNodeValue),
@@ -285,10 +285,20 @@ sub __LinearizeTree {
         } else {
 
             my $clause = $node->getNodeValue;
-            $str .= $clause->{Key};
-            $str .= " ". $clause->{Op};
-            $str .= " ". $clause->{Value};
+            my $key = $clause->{Key};
+            $key .= "." . $clause->{Subkey} if defined $clause->{Subkey};
+            if ($key =~ s/(['\\])/\\$1/g or $key =~ /[^{}\w\.]/) {
+                $key = "'$key'";
+            }
+            my $value = $clause->{Value};
+            if ( $clause->{Op} =~ /^IS( NOT)?$/i ) {
+                $value = 'NULL';
+            } elsif ( $value !~ /^[+-]?[0-9]+$/ ) {
+                $value =~ s/(['\\])/\\$1/g;
+                $value = "'$value'";
+            }
 
+            $str .= $key ." ". $clause->{Op} . " " . $value;
         }
         $str =~ s/^\s+|\s+$//;
 
@@ -333,32 +343,20 @@ sub ParseSQL {
     $callback{'EntryAggregator'} = sub { $node->setNodeValue( $_[0] ) };
     $callback{'Condition'} = sub {
         my ($key, $op, $value) = @_;
-        my $rawvalue = $value;
 
-        my ($main_key) = split /[.]/, $key;
+        my ($main_key, $subkey) = split /[.]/, $key, 2;
 
-        my $class;
-        if ( exists $lcfield{ lc $main_key } ) {
-            $key =~ s/^[^.]+/ $lcfield{ lc $main_key } /e;
-            ($main_key) = split /[.]/, $key;  # make the case right
-            $class = $field{ $main_key }->[0];
-        }
-        unless( $class ) {
+        unless( $lcfield{ lc $main_key} ) {
             push @results, [ $args{'CurrentUser'}->loc("Unknown field: [_1]", $key), -1 ]
         }
+        $main_key = $lcfield{ lc $main_key };
 
-        if ( lc $op eq 'is' || lc $op eq 'is not' ) {
-            $value = 'NULL'; # just fix possible mistakes here
-        } elsif ( $value !~ /^[+-]?[0-9]+$/ ) {
-            $value =~ s/(['\\])/\\$1/g;
-            $value = "'$value'";
-        }
+        # Hardcode value for IS / IS NOT
+        $value = 'NULL' if $op =~ /^IS( NOT)?$/i;
 
-        if ($key =~ s/(['\\])/\\$1/g or $key =~ /[^{}\w\.]/) {
-            $key = "'$key'";
-        }
-
-        my $clause = { Key => $key, Op => $op, Value => $value, RawValue => $rawvalue };
+        my $clause = { Key => $main_key, Subkey => $subkey,
+                       Meta => $field{ $main_key },
+                       Op => $op, Value => $value };
         $node->addChild( __PACKAGE__->new( $clause ) );
     };
     $callback{'Error'} = sub { push @results, @_ };

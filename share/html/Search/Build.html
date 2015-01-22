@@ -227,30 +227,11 @@ foreach my $arg ( keys %ARGS ) {
     for ( my $i = 0; $i < @ops; $i++ ) {
         my ( $op, $value ) = ( $ops[$i], $values[$i] );
         next if !defined $value || $value eq '';
-        my $rawvalue = $value;
-
-        if ( $value =~ /^NULL$/i && $op =~ /=/ ) {
-            if ( $op eq '=' ) {
-                $op = "IS";
-            }
-            elsif ( $op eq '!=' ) {
-                $op = "IS NOT";
-            }
-        }
-        elsif ($value =~ /\D/) {
-            $value =~ s/(['\\])/\\$1/g;
-            $value = "'$value'";
-        }
-
-        if ($keyword =~ s/(['\\])/\\$1/g or $keyword =~ /[^{}\w\.]/) {
-            $keyword = "'$keyword'";
-        }
 
         my $clause = {
             Key   => $keyword,
             Op    => $op,
             Value => $value,
-            RawValue => $rawvalue,
         };
 
         push @new_values, RT::Tickets::Tree->new($clause);
