@@ -2936,6 +2936,27 @@ sub _parser {
         CurrentUser => $self->CurrentUser,
     );
 
+    # Perform an optimization pass looking for watcher bundling
+    $tree->traverse(
+        sub {
+            my $node = shift;
+            return if $node->isLeaf;
+            return unless ($node->getNodeValue||'') eq "OR";
+            my %refs;
+            my @kids = grep {$_->{Meta}[0] eq "WATCHERFIELD"}
+                map {$_->getNodeValue}
+                grep {$_->isLeaf} $node->getAllChildren;
+            for (@kids) {
+                my $node = $_;
+                my ($key, $subkey, $op) = @{$node}{qw/Key Subkey Op/};
+                next if $node->{Meta}[1] and RT::Ticket->Role($node->{Meta}[1])->{Column};
+                next if $op =~ /^!=$|\bNOT\b/i;
+                next if $op =~ /^IS( NOT)?$/i and not $subkey;
+                $node->{Bundle} = $refs{$node->{Meta}[1] || ''} ||= [];
+            }
+        }
+    );
+
     my $ea = '';
     $tree->traverse(
         sub {
@@ -2943,8 +2964,8 @@ sub _parser {
             $ea = $node->getParent->getNodeValue if $node->getIndex > 0;
             return $self->_OpenParen unless $node->isLeaf;
 
-            my ($key, $subkey, $meta, $op, $value)
-                = @{$node->getNodeValue}{qw/Key Subkey Meta Op Value/};
+            my ($key, $subkey, $meta, $op, $value, $bundle)
+                = @{$node->getNodeValue}{qw/Key Subkey Meta Op Value Bundle/};
 
             # normalize key and get class (type)
             my $class = $meta->[0];
@@ -2960,6 +2981,7 @@ sub _parser {
             $sub->( $self, $key, $op, $value,
                     ENTRYAGGREGATOR => $ea,
                     SUBKEY          => $subkey,
+                    BUNDLE          => $bundle,
                   );
         },
         sub {
