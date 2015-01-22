@@ -70,22 +70,6 @@ my $re_op          = qr[=|!=|>=|<=|>|<|(?i:IS NOT)|(?i:IS)|(?i:NOT LIKE)|(?i:LIK
 my $re_open_paren  = qr[\(];
 my $re_close_paren = qr[\)];
 
-sub ParseToArray {
-    my ($string) = shift;
-
-    my ($tree, $node, @pnodes);
-    $node = $tree = [];
-
-    my %callback;
-    $callback{'OpenParen'} = sub { push @pnodes, $node; $node = []; push @{ $pnodes[-1] }, $node };
-    $callback{'CloseParen'} = sub { $node = pop @pnodes };
-    $callback{'EntryAggregator'} = sub { push @$node, $_[0] };
-    $callback{'Condition'} = sub { push @$node, { key => $_[0], op => $_[1], value => $_[2] } };
-
-    Parse($string, \%callback);
-    return $tree;
-}
-
 sub Parse {
     my ($string, $cb) = @_;
     my $loc = sub {HTML::Mason::Commands::loc(@_)};
