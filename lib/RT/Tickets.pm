@@ -2928,52 +2928,45 @@ failure.
 
 sub _parser {
     my ($self,$string) = @_;
+
+    require RT::Interface::Web::QueryBuilder::Tree;
+    my $tree = RT::Interface::Web::QueryBuilder::Tree->new;
+    $tree->ParseSQL(
+        Query => $string,
+        CurrentUser => $self->CurrentUser,
+    );
+
     my $ea = '';
+    $tree->traverse(
+        sub {
+            my $node = shift;
+            $ea = $node->getParent->getNodeValue if $node->getIndex > 0;
+            return $self->_OpenParen unless $node->isLeaf;
 
-    my %callback;
-    $callback{'OpenParen'} = sub {
-      $self->_OpenParen;
-    };
-    $callback{'CloseParen'} = sub {
-      $self->_CloseParen;
-    };
-    $callback{'EntryAggregator'} = sub {
-      $ea = $_[0] || '';
-    };
-    $callback{'Condition'} = sub {
-        my ($key, $op, $value) = @_;
+            my ($key, $subkey, $meta, $op, $value)
+                = @{$node->getNodeValue}{qw/Key Subkey Meta Op Value/};
 
-        # key has dot then it's compound variant and we have subkey
-        my $subkey = '';
-        ($key, $subkey) = ($1, $2) if $key =~ /^([^\.]+)\.(.+)$/;
+            # normalize key and get class (type)
+            my $class = $meta->[0];
 
-        # normalize key and get class (type)
-        my $class;
-        if (exists $LOWER_CASE_FIELDS{lc $key}) {
-            $key = $LOWER_CASE_FIELDS{lc $key};
-            $class = $FIELD_METADATA{$key}->[0];
+            # replace __CurrentUser__ with id
+            $value = $self->CurrentUser->id if $value eq '__CurrentUser__';
+
+            my $sub = $dispatch{ $class }
+                or die "No dispatch method for class '$class'";
+
+            # A reference to @res may be pushed onto $sub_tree{$key} from
+            # above, and we fill it here.
+            $sub->( $self, $key, $op, $value,
+                    ENTRYAGGREGATOR => $ea,
+                    SUBKEY          => $subkey,
+                  );
+        },
+        sub {
+            my $node = shift;
+            return $self->_CloseParen unless $node->isLeaf;
         }
-        die "Unknown field '$key' in '$string'" unless $class;
-
-        # replace __CurrentUser__ with id
-        $value = $self->CurrentUser->id if $value eq '__CurrentUser__';
-
-
-        unless( $dispatch{ $class } ) {
-            die "No dispatch method for class '$class'"
-        }
-        my $sub = $dispatch{ $class };
-
-        # A reference to @res may be pushed onto $sub_tree{$key} from
-        # above, and we fill it here.
-        $sub->( $self, $key, $op, $value,
-                SUBCLAUSE       => '',  # don't need anymore
-                ENTRYAGGREGATOR => $ea,
-                SUBKEY          => $subkey,
-              );
-        $ea = '';
-    };
-    RT::SQL::Parse($string, \%callback);
+    );
 }
 
 sub FromSQL {
