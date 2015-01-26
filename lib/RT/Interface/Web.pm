@@ -2096,10 +2096,15 @@ sub CreateTicket {
         CurrentUser    => $current_user,
     );
 
+    my $date_now = RT::Date->new( $current_user );
+    $date_now->SetToNow;
     my $MIMEObj = MakeMIMEEntity(
         Subject => $ARGS{'Subject'},
-        From    => $ARGS{'From'},
+        From    => $ARGS{'From'} || $current_user->EmailAddress,
+        To      => $ARGS{'To'} || $Queue->CorrespondAddress
+                               || RT->Config->Get('CorrespondAddress'),
         Cc      => $ARGS{'Cc'},
+        Date    => $date_now->RFC2822(Timezone => 'user'),
         Body    => $sigless,
         Type    => $ARGS{'ContentType'},
         Interface => RT::Interface::Web::MobileClient() ? 'Mobile' : 'Web',
@@ -2466,7 +2471,7 @@ sub MakeMIMEEntity {
         "Message-Id" => Encode::encode( "UTF-8", RT::Interface::Email::GenMessageId ),
         "X-RT-Interface" => $args{Interface},
         map { $_ => Encode::encode( "UTF-8", $args{ $_} ) }
-            grep defined $args{$_}, qw(Subject From Cc)
+            grep defined $args{$_}, qw(Subject From Cc To Date)
     );
 
     if ( defined $args{'Body'} && length $args{'Body'} ) {
