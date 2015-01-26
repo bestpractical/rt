@@ -299,6 +299,8 @@ $m->callback( CallbackName => "Init", ARGSRef => \%ARGS );
 my $Queue = $ARGS{Queue};
 $session{DefaultQueue} = $Queue;
 
+my $current_user = $session{'CurrentUser'};
+
 if ($CloneTicket) {
     my $CloneTicketObj = RT::Ticket->new( $session{CurrentUser} );
     $CloneTicketObj->Load($CloneTicket)
@@ -374,7 +376,7 @@ my @results;
 
 my $title = loc("Create a new ticket");
 
-my $QueueObj = RT::Queue->new($session{'CurrentUser'});
+my $QueueObj = RT::Queue->new($current_user);
 $QueueObj->Load($Queue) || Abort(loc("Queue [_1] could not be loaded.", $Queue||''));
 
 $m->callback( QueueObj => $QueueObj, title => \$title, results => \@results, ARGSRef => \%ARGS );
@@ -383,7 +385,7 @@ $m->scomp( '/Articles/Elements/SubjectOverride', ARGSRef => \%ARGS, QueueObj => 
 
 $QueueObj->Disabled && Abort(loc("Cannot create tickets in a disabled queue."));
 
-my $ticket = RT::Ticket->new($session{'CurrentUser'}); # empty ticket object
+my $ticket = RT::Ticket->new($current_user); # empty ticket object
 
 ProcessAttachments(ARGSRef => \%ARGS);
 

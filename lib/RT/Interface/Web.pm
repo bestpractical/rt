@@ -2066,9 +2066,10 @@ sub CreateTicket {
 
     my (@Actions);
 
-    my $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
+    my $current_user = $session{'CurrentUser'};
+    my $Ticket = RT::Ticket->new( $current_user );
 
-    my $Queue = RT::Queue->new( $session{'CurrentUser'} );
+    my $Queue = RT::Queue->new( $current_user );
     unless ( $Queue->Load( $ARGS{'Queue'} ) ) {
         Abort('Queue not found');
     }
@@ -2079,12 +2080,12 @@ sub CreateTicket {
 
     my $due;
     if ( defined $ARGS{'Due'} and $ARGS{'Due'} =~ /\S/ ) {
-        $due = RT::Date->new( $session{'CurrentUser'} );
+        $due = RT::Date->new( $current_user );
         $due->Set( Format => 'unknown', Value => $ARGS{'Due'} );
     }
     my $starts;
     if ( defined $ARGS{'Starts'} and $ARGS{'Starts'} =~ /\S/ ) {
-        $starts = RT::Date->new( $session{'CurrentUser'} );
+        $starts = RT::Date->new( $current_user );
         $starts->Set( Format => 'unknown', Value => $ARGS{'Starts'} );
     }
 
@@ -2092,7 +2093,7 @@ sub CreateTicket {
         Content        => $ARGS{Content},
         ContentType    => $ARGS{ContentType},
         StripSignature => 1,
-        CurrentUser    => $session{'CurrentUser'},
+        CurrentUser    => $current_user,
     );
 
     my $MIMEObj = MakeMIMEEntity(
