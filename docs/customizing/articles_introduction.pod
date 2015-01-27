@@ -150,6 +150,10 @@ will get a Search box at the top of their interface.  This allows users
 to look through your Articles for answers to questions before creating
 a Ticket.
 
+If you grant Unprivileged users ShowArticlesMenu, they will get a
+dropdown menu that links to your Topics hierarchy page and the ability
+to search articles from a link off of that menu.
+
 =head1 Configuration Options
 
 =head2 ArticleOnTicketCreate

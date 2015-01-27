@@ -987,6 +987,12 @@ my $build_selfservice_nav = sub {
         PageWidgets->child( 'goto-article' => raw_html => $m->scomp('/SelfService/Elements/SearchArticle') );
     }
 
+    if ($session{'CurrentUser'}->HasRight( Right => 'ShowArticlesMenu', Object => RT->System )) {
+        my $articles = Menu->child( articles => title => loc('Articles'), path => "/SelfService/Article/Search.html");
+        $articles->child( topics   => title => loc('Topics'),   path => "/SelfService/Topics.html" );
+        $articles->child( search   => title => loc('Search'),   path => "/SelfService/Article/Search.html" );
+    }
+
     PageWidgets->child( goto => raw_html => $m->scomp('/SelfService/Elements/GotoTicket') );
 
     $m->callback( CallbackName => 'SelfService', Path => $request_path );
