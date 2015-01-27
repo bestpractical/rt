@@ -145,7 +145,7 @@ The Class needs to be set up and Applied for the dropdown to appear
 
 =head2 SelfService Interface
 
-If you grant the Unprivileged user group the right ShowArticle, they
+If you grant the Unprivileged user group the right ShowArticle globally, they
 will get a Search box at the top of their interface.  This allows users
 to look through your Articles for answers to questions before creating
 a Ticket.
