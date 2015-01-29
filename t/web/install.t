@@ -64,7 +64,7 @@ SKIP: {
     $m->select( 'DatabaseType', 'Pg' );
     $m->click;
     for my $field (
-        qw/Name Host Port Admin AdminPassword User Password RequireSSL/)
+        qw/Name Host Port Admin AdminPassword User Password/)
     {
         ok( $m->current_form->find_input("Database$field"),
             "db Pg has field Database$field" );

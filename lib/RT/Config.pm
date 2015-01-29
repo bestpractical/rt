@@ -1000,6 +1000,12 @@ our %META;
             Message => "The LogoImageWidth configuration option did not affect display, and has been removed; please remove it from your RT_SiteConfig.pm",
         },
     },
+    DatabaseRequireSSL => {
+        Deprecated => {
+            LogLevel => "info",
+            Message => "The DatabaseRequireSSL configuration option did not enable SSL connections to the database, and has been removed; please remove it from your RT_SiteConfig.pm",
+        },
+    },
 );
 my %OPTIONS = ();
 my @LOADED_CONFIGS = ();

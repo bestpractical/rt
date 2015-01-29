@@ -131,12 +131,6 @@ my %Meta = (
             Hints       => 'The password RT should use to connect to the database.',
         },
     },
-    DatabaseRequireSSL => {
-        Widget          => '/Widgets/Form/Boolean',
-        WidgetArguments => {
-            Description => 'Use SSL?',    # loc
-        },
-    },
     rtname => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {

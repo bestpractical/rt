@@ -211,16 +211,6 @@ SID and database objects are created in C<$DatabaseUser>'s schema.
 
 Set($DatabaseName, q{@DB_DATABASE@});
 
-=item C<$DatabaseRequireSSL>
-
-If you're using PostgreSQL and have compiled in SSL support, set
-C<$DatabaseRequireSSL> to 1 to turn on SSL communication with the
-database.
-
-=cut
-
-Set($DatabaseRequireSSL, undef);
-
 =item C<$DatabaseAdmin>
 
 The name of the database administrator to connect to the database as

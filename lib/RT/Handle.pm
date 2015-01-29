@@ -165,7 +165,6 @@ sub BuildDSN {
         Database   => $db_name,
         Port       => $db_port,
         Driver     => $db_type,
-        RequireSSL => RT->Config->Get('DatabaseRequireSSL'),
     );
     if ( $db_type eq 'Oracle' && $db_host ) {
         $args{'SID'} = delete $args{'Database'};
