@@ -211,6 +211,31 @@ SID and database objects are created in C<$DatabaseUser>'s schema.
 
 Set($DatabaseName, q{@DB_DATABASE@});
 
+=item C<%DatabaseExtraDSN>
+
+Allows additional properties to be passed to the database connection
+step.  Possible properties are specific to the database-type; see
+https://metacpan.org/pod/DBI#connect
+
+For PostgreSQL, for instance, the following enables SSL (but does no
+certificate checking, providing data hiding but no MITM protection):
+
+   # See https://metacpan.org/pod/DBD::Pg#connect
+   # and http://www.postgresql.org/docs/8.4/static/libpq-ssl.html
+   Set( %DatabaseExtraDSN, sslmode => 'require' );
+
+For MySQL, the following acts similarly if the server has enabled SSL.
+Otherwise, it provides no protection; MySQL provides no way to I<force>
+SSL connections:
+
+   # See https://metacpan.org/pod/DBD::mysql#connect
+   # and http://dev.mysql.com/doc/refman/5.1/en/ssl-options.html
+   Set( %DatabaseExtraDSN, mysql_ssl => 1 );
+
+=cut
+
+Set(%DatabaseExtraDSN, ());
+
 =item C<$DatabaseAdmin>
 
 The name of the database administrator to connect to the database as

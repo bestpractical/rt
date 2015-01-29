@@ -559,6 +559,10 @@ our %META;
     },
 
     # Internal config options
+    DatabaseExtraDSN => {
+        Type => 'HASH',
+    },
+
     FullTextSearch => {
         Type => 'HASH',
         PostLoadCheck => sub {
@@ -1002,8 +1006,9 @@ our %META;
     },
     DatabaseRequireSSL => {
         Deprecated => {
+            Remove => '4.4',
             LogLevel => "info",
-            Message => "The DatabaseRequireSSL configuration option did not enable SSL connections to the database, and has been removed; please remove it from your RT_SiteConfig.pm",
+            Message => "The DatabaseRequireSSL configuration option did not enable SSL connections to the database, and has been removed; please remove it from your RT_SiteConfig.pm.  Use DatabaseExtraDSN to accomplish the same purpose.",
         },
     },
 );

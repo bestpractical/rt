@@ -356,8 +356,9 @@ issues with blank outgoing emails.
 =head1 UPGRADING FROM 4.2.10 AND EARLIER
 
 The C<$DatabaseRequireSSL> option has never affected whether the
-database connection was performed using SSL, even under Postgres.  It
-has been removed, and setting it will trigger an informational message
-that setting it is ineffective.
+database connection was performed using SSL, even under Postgres; the
+functionality can now be implemented via C<%DatabaseExtraDSN>.
+C<$DatabaseRequireSSL> has been removed, and setting it will trigger an
+informational message that setting it is ineffective.
 
 =cut

@@ -170,6 +170,13 @@ sub BuildDSN {
         $args{'SID'} = delete $args{'Database'};
     }
     $self->SUPER::BuildDSN( %args );
+
+    if (RT->Config->Get('DatabaseExtraDSN')) {
+        my %extra = RT->Config->Get('DatabaseExtraDSN');
+        $self->{'dsn'} .= ";$_=$extra{$_}"
+            for sort keys %extra;
+    }
+    return $self->{'dsn'};
 }
 
 =head2 DSN
