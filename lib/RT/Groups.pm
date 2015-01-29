@@ -459,22 +459,13 @@ sub LimitToDeleted {
 
 
 
-sub Next {
+sub AddRecord {
     my $self = shift;
+    my ($record) = @_;
 
     # Don't show groups which the user isn't allowed to see.
-
-    my $Group = $self->SUPER::Next();
-    if ((defined($Group)) and (ref($Group))) {
-        unless ($Group->CurrentUserHasRight('SeeGroup')) {
-            return $self->Next();
-        }
-
-        return $Group;
-    }
-    else {
-        return undef;
-    }
+    return unless $record->CurrentUserHasRight('SeeGroup');
+    return $self->SUPER::AddRecord( $record );
 }
 
 
