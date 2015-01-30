@@ -212,7 +212,7 @@ our %META;
                         next unless -d $css_path;
                         if ( opendir my $dh, $css_path ) {
                             push @stylesheets, grep {
-                                -e File::Spec->catfile( $css_path, $_, 'base.css' )
+                                $_ ne 'base' && -e File::Spec->catfile( $css_path, $_, 'main.css' )
                             } readdir $dh;
                         }
                         else {
