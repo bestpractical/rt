@@ -624,13 +624,19 @@ sub SimpleSearch {
 
         if ($name =~ /^CF\.(?:\{(.*)}|(.*))$/) {
             my $cfname = $1 || $2;
-            $self->LimitCustomField(
-                CUSTOMFIELD     => $cfname,
-                OPERATOR        => $op,
-                VALUE           => $args{Term},
-                ENTRYAGGREGATOR => 'OR',
-                SUBCLAUSE       => 'autocomplete',
-            );
+            my $cf = RT::CustomField->new(RT->SystemUser);
+            my ($ok, $msg) = $cf->LoadByName( Name => $cfname, LookupType => 'RT::User');
+            if ( $ok ) {
+                $self->LimitCustomField(
+                    CUSTOMFIELD     => $cf->Id,
+                    OPERATOR        => $op,
+                    VALUE           => $args{Term},
+                    ENTRYAGGREGATOR => 'OR',
+                    SUBCLAUSE       => 'autocomplete',
+                );
+            } else {
+                RT->Logger->warning("Asked to search custom field $name but unable to load a User CF with the name $cfname: $msg");
+            }
         } else {
             $self->Limit(
                 FIELD           => $name,
