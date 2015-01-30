@@ -71,6 +71,11 @@ if ( RT->Config->Get('CanonicalizeURLsInFeeds') ) {
     $url = RT::Interface::Web::GetWebURLFromRequest();
 }
 
+
+my $base_date = RT::Date->new( RT->SystemUser );
+$base_date->SetToNow;
+$base_date->SetToMidnight;
+
 $rss->channel(
     title        => RT->Config->Get('rtname').": Search " . $ARGS{'Query'},
     link         => $url,
@@ -80,7 +85,7 @@ $rss->channel(
     syn => {
         updatePeriod     => "hourly",
         updateFrequency  => "1",
-        updateBase       => "1901-01-01T00:00+00:00",
+        updateBase       => $base_date->W3CDTF,
     },
 );
 
