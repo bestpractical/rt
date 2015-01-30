@@ -94,7 +94,7 @@ while ( my $Ticket = $Tickets->Next()) {
         description => $Ticket->Transactions->First->Content,
         dc          => {
             creator => $creator_str,
-            date    => $Ticket->CreatedObj->RFC2822,
+            date    => $Ticket->CreatedObj->W3CDTF,
         },
         guid        => $Ticket->Queue . '_' . $Ticket->id,
     );
