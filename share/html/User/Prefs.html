@@ -167,6 +167,8 @@
 </table>
 </&>
 
+<& /Elements/Submit, Label => loc('Save Preferences') &>
+
 <&| /Widgets/TitleBox, title => loc('Secret authentication token'), id => "user-prefs-feeds" &>
 
 <&|/l&>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</&>
@@ -196,7 +198,6 @@
 
 % $m->callback( %ARGS, UserObj => $UserObj, CallbackName => 'FormEnd' );
 
-<& /Elements/Submit, Label => loc('Save Preferences') &>
 </form>
 
 

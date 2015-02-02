@@ -53,6 +53,7 @@
 
 <form method="post" action="ModifyAll.html" name="TicketModifyAll" enctype="multipart/form-data">
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
+<input type="submit" name="SubmitTicket" value="Save Changes" style="display:none">
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->Id%>" />
 
 <&| /Widgets/TitleBox, title => loc('Modify ticket # [_1]', $Ticket->Id), class=>'ticket-info-basics' &>
