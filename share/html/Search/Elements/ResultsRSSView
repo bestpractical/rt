@@ -60,7 +60,6 @@ if ($OrderBy =~ /\|/) {
 }
 $r->content_type('application/rss+xml; charset=utf-8');
 
-# create an RSS 1.0 file (http://purl.org/rss/1.0/)
 use XML::RSS;
 my $rss = XML::RSS->new(version => '1.0');
 
