@@ -13,11 +13,6 @@ div.results .titlebox-content {
     background: #ffc;
 }
 
-div.results .titlebox-title .left {
-    border: solid #aa9;
-    border-width: 1px 1px 0 1px;
-}
-
 div.error .titlebox-content {
     background-color: #fcc;
     padding: 1em;
@@ -26,10 +21,6 @@ div.error .titlebox-content {
 div#body>div.error {
     background-color: #fcc;
     padding: 1em;
-}
-
-div.error .titlebox-title .widget a {
-    background-position: center -7px
 }
 
 input[type=reset],
