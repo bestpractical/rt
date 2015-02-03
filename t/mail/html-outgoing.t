@@ -39,7 +39,7 @@ mail_ok {
     to      => 'enduser@example.com',
     subject => qr/\Q[example.com #1] AutoReply: The internet is broken\E/,
     body    => parts_regex(
-        'trouble ticket regarding The internet is broken',
+        'trouble ticket regarding \*?The internet is broken\*?',
         'trouble ticket regarding <b>The internet is broken</b>'
     ),
     'Content-Type' => qr{multipart},
@@ -47,7 +47,7 @@ mail_ok {
     bcc     => 'root@localhost',
     subject => qr/\Q[example.com #1] The internet is broken\E/,
     body    => parts_regex(
-        'Request 1 \(http://localhost:\d+/Ticket/Display\.html\?id=1\)\s+?was acted upon by RT_System',
+        'Request (\[\d+\])?1(\s*[(<]http://localhost:\d+/Ticket/Display\.html\?id=1[)>])?\s*was acted upon by RT_System',
         'Request <a href="http://localhost:\d+/Ticket/Display\.html\?id=1">1</a> was acted upon by RT_System\.</b>'
     ),
     'Content-Type' => qr{multipart},
@@ -65,8 +65,8 @@ mail_ok {
     bcc     => 'root@localhost',
     subject => qr/\Q[example.com #1] The internet is broken\E/,
     body    => parts_regex(
-        'Ticket URL: http://localhost:\d+/Ticket/Display\.html\?id=1.+?'.
-        'This is a test of HTML correspondence\.',
+        'Ticket URL: (?:\[\d+\])?http://localhost:\d+/Ticket/Display\.html\?id=1.+?'.
+        'This is a test of \*?HTML\*? correspondence\.',
         'Ticket URL: <a href="(http://localhost:\d+/Ticket/Display\.html\?id=1)">\1</a>.+?'.
         '<p>This is a test of <b>HTML</b> correspondence\.</p>'
     ),
@@ -75,35 +75,39 @@ mail_ok {
     to      => 'enduser@example.com',
     subject => qr/\Q[example.com #1] The internet is broken\E/,
     body    => parts_regex(
-        'This is a test of HTML correspondence\.',
+        'This is a test of \*?HTML\*? correspondence\.',
         '<p>This is a test of <b>HTML</b> correspondence\.</p>'
     ),
     'Content-Type' => qr{multipart},
 };
 
+SKIP: {
+    skip "Only fails on core HTMLFormatter", 9
+        unless RT->Config->Get("HTMLFormatter") eq "core";
+    diag "Failing HTML -> Text conversion";
+    warnings_like {
+        my $body = '<table><tr><td><table><tr><td>Foo</td></tr></table></td></tr></table>';
+        mail_ok {
+            ($ok, $tmsg) = $t->Correspond(
+                MIMEObj => HTML::Mason::Commands::MakeMIMEEntity(
+                    Body => $body,
+                    Type => 'text/html',
+                ),
+            );
+        } { from    => qr/RT System/,
+            bcc     => 'root@localhost',
+            subject => qr/\Q[example.com #1] The internet is broken\E/,
+            body    => qr{Ticket URL: <a href="(http://localhost:\d+/Ticket/Display\.html\?id=1)">\1</a>.+?$body}s,
+            'Content-Type' => qr{text/html},  # TODO
+        },{ from    => qr/RT System/,
+            to      => 'enduser@example.com',
+            subject => qr/\Q[example.com #1] The internet is broken\E/,
+            body    => qr{$body},
+            'Content-Type' => qr{text/html},  # TODO
+        };
+    } [(qr/uninitialized value/, qr/Failed to downgrade HTML/)x3];
+}
 
-diag "Failing HTML -> Text conversion";
-warnings_like {
-    my $body = '<table><tr><td><table><tr><td>Foo</td></tr></table></td></tr></table>';
-    mail_ok {
-        ($ok, $tmsg) = $t->Correspond(
-            MIMEObj => HTML::Mason::Commands::MakeMIMEEntity(
-                Body => $body,
-                Type => 'text/html',
-            ),
-        );
-    } { from    => qr/RT System/,
-        bcc     => 'root@localhost',
-        subject => qr/\Q[example.com #1] The internet is broken\E/,
-        body    => qr{Ticket URL: <a href="(http://localhost:\d+/Ticket/Display\.html\?id=1)">\1</a>.+?$body}s,
-        'Content-Type' => qr{text/html},  # TODO
-    },{ from    => qr/RT System/,
-        to      => 'enduser@example.com',
-        subject => qr/\Q[example.com #1] The internet is broken\E/,
-        body    => qr{<table><tr><td><table><tr><td>Foo</td></tr></table></td></tr></table>},
-        'Content-Type' => qr{text/html},  # TODO
-    };
-} [(qr/uninitialized value/, qr/Failed to downgrade HTML/)x3];
 
 diag "Admin Comment in HTML";
 mail_ok {
@@ -117,9 +121,9 @@ mail_ok {
     bcc     => 'root@localhost',
     subject => qr/\Q[example.com #1] [Comment] The internet is broken\E/,
     body    => parts_regex(
-        'This is a comment about ticket 1 \(http://localhost:\d+/Ticket/Display\.html\?id=1\)\..+?'.
+        'This is a comment about (\[\d+\])?ticket.1(\s*[(<]http://localhost:\d+/Ticket/Display\.html\?id=1[)>])?\..+?'.
         'It is not sent to the Requestor\(s\):.+?'.
-        'Comment test, please!',
+        'Comment test, _?please!_?',
 
         '<p>This is a comment about <a href="http://localhost:\d+/Ticket/Display\.html\?id=1">ticket 1</a>\. '.
         'It is not sent to the Requestor\(s\):</p>.+?'.

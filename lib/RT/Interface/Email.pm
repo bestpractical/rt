@@ -50,6 +50,7 @@ package RT::Interface::Email;
 
 use strict;
 use warnings;
+use 5.010;
 
 use Email::Address;
 use MIME::Entity;
@@ -57,6 +58,7 @@ use RT::EmailParser;
 use File::Temp;
 use Mail::Mailer ();
 use Text::ParseWords qw/shellwords/;
+use RT::Util 'safe_run_child';
 
 BEGIN {
     use base 'Exporter';
@@ -1794,9 +1796,81 @@ conversion fails.
 =cut
 
 sub ConvertHTMLToText {
+    return _HTMLFormatter()->(@_);
+}
+
+sub _HTMLFormatter {
+    state $formatter;
+    return $formatter if defined $formatter;
+
+    my $wanted = RT->Config->Get("HTMLFormatter");
+
+    my @order;
+    if ($wanted) {
+        @order = ($wanted, "core");
+    } else {
+        @order = ("w3m", "elinks", "html2text", "links", "lynx", "core");
+    }
+    # Always fall back to core, even if it is not listed
+    for my $prog (@order) {
+        if ($prog eq "core") {
+            RT->Logger->info("Using internal Perl HTML -> text conversion");
+            require HTML::FormatText::WithLinks::AndTables;
+            $formatter = \&_HTMLFormatText;
+        } else {
+            unless (HTML::FormatExternal->require) {
+                RT->Logger->warn("HTML::FormatExternal is not installed; falling back to internal perl formatter")
+                    if $wanted;
+                next;
+            }
+
+            my $path = $prog =~ s{(.*/)}{} ? $1 : undef;
+            my $package = "HTML::FormatText::" . ucfirst($prog);
+            unless ($package->require) {
+                RT->Logger->warn("$prog is not a valid formatter provided by HTML::FormatExternal")
+                    if $wanted;
+                next;
+            }
+
+            if ($path) {
+                local $ENV{PATH} = $path;
+                local $ENV{HOME} = $RT::VarPath;
+                if (not defined $package->program_version) {
+                    RT->Logger->warn("Could not find or run external '$prog' HTML formatter in $path$prog")
+                        if $wanted;
+                    next;
+                }
+            } else {
+                local $ENV{PATH} = '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+                    unless defined $ENV{PATH};
+                local $ENV{HOME} = $RT::VarPath;
+                if (not defined $package->program_version) {
+                    RT->Logger->warn("Could not find or run external '$prog' HTML formatter in \$PATH ($ENV{PATH}) -- you may need to install it or provide the full path")
+                        if $wanted;
+                    next;
+                }
+            }
+
+            RT->Logger->info("Using $prog for HTML -> text conversion");
+            $formatter = sub {
+                my $html = shift;
+                RT::Util::safe_run_child {
+                    local $ENV{PATH} = $path || $ENV{PATH}
+                        || '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin';
+                    local $ENV{HOME} = $RT::VarPath;
+                    $package->format_string($html, leftmargin => 0, rightmargin => 78);
+                };
+            };
+        }
+        RT->Config->Set( HTMLFormatter => $prog );
+        last;
+    }
+    return $formatter;
+}
+
+sub _HTMLFormatText {
     my $html = shift;
 
-    require HTML::FormatText::WithLinks::AndTables;
     my $text;
     eval {
         $text = HTML::FormatText::WithLinks::AndTables->convert(
