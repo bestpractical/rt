@@ -69,7 +69,7 @@
 <&|/l&>Group</&>
 </td></tr>
 % while (my $g = $Groups->Next ) {
-<tr><td><&/Elements/SelectWatcherType, Name => "Ticket-AddWatcher-Principal-".$g->PrincipalId, Scope => 'queue' &></td><td><%$g->Name%> (<%$g->Description%>)</td></tr>
+<tr><td><&/Elements/SelectWatcherType, Name => "Ticket-AddWatcher-Principal-".$g->PrincipalId &></td><td><%$g->Name%> (<%$g->Description%>)</td></tr>
 % }
 % }
 
