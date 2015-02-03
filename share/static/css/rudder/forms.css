@@ -1,10 +1,8 @@
 /* These override the base titlebox rules in base/forms.css. They try not to
    duplicate properties. */
 
-div.results .titlebox,
-div.error-titlebox {
+div.results .titlebox, div.error div.error {
     border: none;
-    background: none;
     font-weight: bold;
 }
 
@@ -20,16 +18,7 @@ div.results .titlebox-title .left {
     border-width: 1px 1px 0 1px;
 }
 
-div.error-titlebox .titlebox-title span.left {
-    border: none;
-    border-right: 2px solid #b00;
-    margin-left: 0;
-    padding-left: 2.3em;
-    background-color: #f00;
-    color: #fff;
-}
-
-div.error-titlebox .titlebox-content {
+div.error .titlebox-content {
     background-color: #fcc;
     padding: 1em;
 }
