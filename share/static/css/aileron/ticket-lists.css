@@ -125,10 +125,13 @@ padding-bottom: 1em;
 }
 
 .chart.image {
-    margin-top: -1em;
     padding-right: 2em;
     float: left;
     clear: both;
+}
+
+.chart.image.bar {
+    margin-top: -1em;
 }
 
 .chart-wrapper {
@@ -177,6 +180,7 @@ padding-bottom: 1em;
 .chart-meta {
     padding-top: 2em;
     border-top: 1px solid #ccc;
+    clear: both;
 }
 
 .chart-meta .chart-type {

@@ -49,7 +49,7 @@
 my $default_value = {
     Query => 'id > 0',
     GroupBy => ['Status'],
-    ChartStyle => ['bar'],
+    ChartStyle => ['bar+table+sql'],
     ChartFunction => ['COUNT'],
 };
     
@@ -174,18 +174,43 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
 </&>
 
 <&| /Widgets/TitleBox, title => loc('Picture'), class => "chart-picture" &>
-<label><% loc('Style') %>: <& Elements/SelectChartType, Default => $query{ChartStyle}[0], Name => 'ChartStyle' &></label>
+<input name="ChartStyle" type="hidden" value="<% $query{ChartStyle}[0] %>" />
+<label><% loc('Style') %>: <& Elements/SelectChartType, Default => $query{ChartStyle}[0] =~ /^(pie|bar|table)\b/ ? $1 : undef &></label>
+<span class="width">
 <label><% loc("Width") %>: <input type="text" name="Width" value="<% $query{'Width'} || q{} %>"> <% loc("px") %></label>
+</span>
 <span class="height">
   &#x00d7;
   <label><% loc("Height") %>: <input type="text" name="Height" value="<% $query{'Height'} || q{} %>"> <% loc("px") %></label>
 </span>
+<div class="include-table">
+    <input type="checkbox" name="ChartStyleIncludeTable" <% $query{ChartStyle}[0] =~ /\btable\b/ ? 'checked="checked"' : '' |n %>> <% loc('Include data table') %>
+</div>
+<div class="include-sql">
+    <input type="checkbox" name="ChartStyleIncludeSQL" <% $query{ChartStyle}[0] =~ /\bsql\b/ ? 'checked="checked"' : '' |n %>> <% loc('Include TicketSQL query') %>
+</div>
 </&>
 <script type="text/javascript">
-jQuery(".chart-picture [name=ChartStyle]").change(function(){
+var updateChartStyle = function() {
+    var val = jQuery(".chart-picture [name=ChartType]").val();
+    if ( val != 'table' && jQuery(".chart-picture [name=ChartStyleIncludeTable]").is(':checked') ) {
+        val += '+table';
+    }
+    if ( jQuery(".chart-picture [name=ChartStyleIncludeSQL]").is(':checked') ) {
+        val += '+sql';
+    }
+    jQuery(".chart-picture [name=ChartStyle]").val(val);
+};
+jQuery(".chart-picture [name=ChartType]").change(function(){
     var t = jQuery(this);
-    t.closest("form").find("[name=Height]").closest(".height").toggle( t.val() !== "pie" );
+    t.closest("form").find("[name=Height]").closest(".height").toggle( t.val() == 'bar' );
+    t.closest("form").find("[name=Width]").closest(".width").toggle( t.val() !== 'table' );
+    t.closest("form .chart-picture").find("div.include-table").toggle( t.val() !== 'table' );
+    updateChartStyle();
 }).change();
+
+jQuery(".chart-picture [name=ChartStyleIncludeTable]").change( updateChartStyle );
+jQuery(".chart-picture [name=ChartStyleIncludeSQL]").change( updateChartStyle );
 </script>
 
 <& /Elements/Submit, Label => loc('Update Chart'), Name => 'Update' &>

@@ -1,0 +1,19 @@
+use strict;
+use warnings;
+
+our @Initial = (
+    sub {
+        my $attrs = RT::Attributes->new(RT->SystemUser);
+        $attrs->Limit( FIELD => 'Name', VALUE => 'SavedSearch' );
+        while ( my $attr = $attrs->Next ) {
+            my $content = $attr->Content;
+            if ( $content->{ChartStyle} && $content->{ChartStyle} =~ /^(?:pie|bar)$/ ) {
+                $content->{ChartStyle} .= '+table+sql';
+                my ($ret, $msg) = $attr->SetContent($content);
+                unless ( $ret ) {
+                    RT->Logger->error("Failed to update ChartStyle for SavedSearch #" . $attr->id . ": $msg");
+                }
+            }
+        }
+    },
+);
