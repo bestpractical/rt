@@ -199,7 +199,7 @@ sub Init {
     _BuildTableAttributes();
     RT::I18N->Init;
     RT->Config->PostLoadCheck;
-    RT::Lifecycle->new->FillCache;
+    RT::Lifecycle->FillCache;
 }
 
 =head2 ConnectToDatabase
