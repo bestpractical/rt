@@ -1063,7 +1063,7 @@ sub submit {
 
     # Should we send authentication information to start a new session?
     my $how = $config{server} =~ /^https/ ? 'over SSL' : 'unencrypted';
-    (my $server = $config{server}) =~ s/^.*\/\/([^\/]+)\/?/$1/;
+    my($server) = $config{server} =~ m{^.*//([^/]+)};
     if ($config{externalauth}) {
         $h->authorization_basic($config{user}, $config{passwd} || read_passwd() );
         print "   Password will be sent to $server $how\n",
@@ -1108,7 +1108,7 @@ sub submit {
 
         # "RT/3.0.1 401 Credentials required"
         if ($status !~ m#^RT/\d+(?:\S+) (\d+) ([\w\s]+)$#) {
-            warn "rt: Malformed RT response from $config{server}.\n";
+            warn "rt: Malformed RT response from $server.\n";
             warn "(Rerun with RTDEBUG=3 for details.)\n" if $config{debug} < 3;
             exit -1;
         }

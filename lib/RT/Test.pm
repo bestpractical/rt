@@ -873,7 +873,7 @@ sub create_ticket {
         $args{'MIMEObj'} = MIME::Entity->build(
             From    => Encode::encode( "UTF-8", $args{'Requestor'} ),
             Subject => RT::Interface::Email::EncodeToMIME( String => $args{'Subject'} ),
-            Type    => "text/plain",
+            Type    => $args{ContentType} // "text/plain",
             Charset => "UTF-8",
             Data    => Encode::encode( "UTF-8", $content ),
         );

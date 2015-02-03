@@ -108,6 +108,7 @@ for (@columns) {
     $m->out(join("\t", map { $_->{header} } @$_)."\n");
 }
 
+my $i = 0;
 my $ii = 0;
 while (my $row = $Collection->Next) {
     for my $col (@columns) {
@@ -122,6 +123,7 @@ while (my $row = $Collection->Next) {
             $val;
         } @$col)."\n");
     }
+    $m->flush_buffer unless ++$i % 10;
 }
 $m->abort();
 

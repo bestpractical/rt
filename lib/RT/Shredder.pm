@@ -178,7 +178,7 @@ shredding on most databases.
     CREATE INDEX SHREDDER_TXN1 ON Transactions(ReferenceType, OldReference);
     CREATE INDEX SHREDDER_TXN2 ON Transactions(ReferenceType, NewReference);
     CREATE INDEX SHREDDER_TXN3 ON Transactions(Type, OldValue);
-    CREATE INDEX SHREDDER_TXN4 ON Transactions(Type, NewValue)
+    CREATE INDEX SHREDDER_TXN4 ON Transactions(Type, NewValue);
 
     CREATE INDEX SHREDDER_ATTACHMENTS1 ON Attachments(Creator);
 
