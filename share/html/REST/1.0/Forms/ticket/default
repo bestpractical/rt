@@ -169,7 +169,9 @@ else {
                     delete $data{$k};
                     next;
                 }
-                $v{"CustomField-".$cf->Id()} = delete $data{$k};
+                my $val = delete $data{$k};
+                next unless defined $val && length $val;
+                $v{"CustomField-".$cf->Id()} = $cf->SingleValue ? $val : vsplit($val,1);
             }
             elsif (lc $k eq 'text') {
                 $text = delete $data{$k};
