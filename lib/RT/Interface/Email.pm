@@ -1858,7 +1858,10 @@ sub _HTMLFormatter {
                     local $ENV{PATH} = $path || $ENV{PATH}
                         || '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin';
                     local $ENV{HOME} = $RT::VarPath;
-                    $package->format_string($html, leftmargin => 0, rightmargin => 78);
+                    $package->format_string(
+                        Encode::encode( "UTF-8", $html),
+                        leftmargin => 0, rightmargin => 78
+                    );
                 };
             };
         }
