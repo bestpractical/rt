@@ -1789,9 +1789,9 @@ sub _RecordSendEmailFailure {
 
 =head2 ConvertHTMLToText HTML
 
-Takes HTML and converts it to plain text.  Appropriate for generating a
-plain text part from an HTML part of an email.  Returns undef if
-conversion fails.
+Takes HTML characters and converts it to plain text characters.
+Appropriate for generating a plain text part from an HTML part of an
+email.  Returns undef if conversion fails.
 
 =cut
 
@@ -1809,7 +1809,7 @@ sub _HTMLFormatter {
     if ($wanted) {
         @order = ($wanted, "core");
     } else {
-        @order = ("w3m", "elinks", "html2text", "links", "lynx", "core");
+        @order = ("w3m", "elinks", "links", "html2text", "lynx", "core");
     }
     # Always fall back to core, even if it is not listed
     for my $prog (@order) {
@@ -1854,15 +1854,19 @@ sub _HTMLFormatter {
             RT->Logger->info("Using $prog for HTML -> text conversion");
             $formatter = sub {
                 my $html = shift;
-                RT::Util::safe_run_child {
+                my $text = RT::Util::safe_run_child {
                     local $ENV{PATH} = $path || $ENV{PATH}
                         || '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin';
                     local $ENV{HOME} = $RT::VarPath;
                     $package->format_string(
-                        Encode::encode( "UTF-8", $html),
+                        Encode::encode( "UTF-8", $html ),
+                        input_charset => "UTF-8",
+                        output_charset => "UTF-8",
                         leftmargin => 0, rightmargin => 78
                     );
                 };
+                $text = Encode::decode( "UTF-8", $text );
+                return $text;
             };
         }
         RT->Config->Set( HTMLFormatter => $prog );
