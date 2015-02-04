@@ -4,18 +4,8 @@ use warnings;
 
 use RT::Test tests => undef;
 plan skip_all => 'Not mysql' unless RT->Config->Get('DatabaseType') eq 'mysql';
-plan skip_all => "No SphinxSE in mysql" unless $RT::Handle->CheckSphinxSE;
 
-my %sphinx;
-$sphinx{'searchd'} = RT::Test->find_executable('searchd');
-$sphinx{'indexer'} = RT::Test->find_executable('indexer');
-
-plan skip_all => "No searchd and indexer under PATH"
-    unless $sphinx{'searchd'} && $sphinx{'indexer'};
-
-plan tests => 15;
-
-RT->Config->Set( FullTextSearch => Enable => 1, Indexed => 1, Table => 'AttachmentsIndex', MaxMatches => 1000 );
+RT->Config->Set( FullTextSearch => Enable => 1, Indexed => 1, Table => 'AttachmentsIndex' );
 
 setup_indexing();
 
@@ -24,59 +14,22 @@ ok $q && $q->id, 'loaded or created queue';
 my $queue = $q->Name;
 
 sub setup_indexing {
-    # Since we're not running a webserver in this test, use the
-    # known-safe port we determined at test setup
-    my $port = $RT::Test::port;
-    my ($exit_code, $output) = RT::Test->run_and_capture(
+    my %args = (
         'no-ask'       => 1,
         command        => $RT::SbinPath .'/rt-setup-fulltext-index',
         dba            => $ENV{'RT_DBA_USER'},
         'dba-password' => $ENV{'RT_DBA_PASSWORD'},
-        url            => "sphinx://127.0.0.1:$port/rt",
     );
-    ok(!$exit_code, "setted up index");
-    diag "output: $output" if $ENV{'TEST_VERBOSE'};
-
-    my $tmp = $sphinx{'directory'} = File::Spec->catdir( RT::Test->temp_directory, 'sphinx' );
-    mkdir $tmp;
-
-    my $sphinx_conf = $output;
-    $sphinx_conf =~ s/.*?source rt \{/source rt {/ms;
-    $sphinx_conf =~ s{\Q$RT::VarPath\E/sphinx/}{$tmp/}g;
-
-    $sphinx{'config'} = File::Spec->catfile( $tmp, 'sphinx.conf' );
-    {
-        open my $fh, ">", $sphinx{'config'};
-        print $fh $sphinx_conf;
-        close $fh;
-    }
-
-    sync_index();
-
-    {
-        my ($exit_code, $output) = RT::Test->run_and_capture(
-            command => $sphinx{'searchd'},
-            config => $sphinx{'config'},
-        );
-        ok(!$exit_code, "setted up index") or diag "output: $output";
-        $sphinx{'started'} = 1 if !$exit_code;
-    }
+    my ($exit_code, $output) = RT::Test->run_and_capture( %args );
+    ok(!$exit_code, "setted up index") or diag "output: $output";
 }
 
 sub sync_index {
-    local $SIG{'CHLD'} = 'DEFAULT';
-    local $SIG{'PIPE'} = 'DEFAULT';
-    open my $fh, '-|',  $sphinx{'indexer'}, '--all',
-        '--config' => $sphinx{'config'},
-        $sphinx{'started'}? ('--rotate') : (),
-    ;
-    my $output = <$fh>;
-    close $fh;
-    my $exit_code = $?>>8;
-    ok(!$exit_code, "indexed") or diag "output: $output";
-
-    # We may need to wait a second for searchd to pick up the changes
-    sleep 1;
+    my %args = (
+        command => $RT::SbinPath .'/rt-fulltext-indexer',
+    );
+    my ($exit_code, $output) = RT::Test->run_and_capture( %args );
+    ok(!$exit_code, "setted up index") or diag "output: $output";
 }
 
 sub run_tests {
@@ -113,21 +66,18 @@ sub run_test {
 
 @tickets = RT::Test->create_tickets(
     { Queue => $q->id },
-    { Subject => 'book', Content => 'book' },
-    { Subject => 'bar', Content => 'bar' },
+    { Subject => 'first', Content => 'english' },
+    { Subject => 'second',  Content => 'french' },
+    { Subject => 'third',  Content => 'spanish' },
+    { Subject => 'fourth',  Content => 'german' },
 );
 sync_index();
 
 run_tests(
-    "Content LIKE 'book'" => { book => 1, bar => 0 },
-    "Content LIKE 'bar'" => { book => 0, bar => 1 },
+    "Content LIKE 'english'" => { first => 1, second => 0, third => 0, fourth => 0 },
+    "Content LIKE 'french'" => { first => 0, second => 1, third => 0, fourth => 0 },
 );
 
-END {
-    my $Test = RT::Test->builder;
-    return if $Test->{Original_Pid} != $$;
-    return unless $sphinx{'started'};
+@tickets = ();
 
-    my $pid = int RT::Test->file_content([$sphinx{'directory'}, 'searchd.pid']);
-    kill TERM => $pid if $pid;
-}
+done_testing;
