@@ -49,12 +49,26 @@ for my $encoding ('ISO-8859-1', 'UTF-8') {
     is(@mail, 1);
     like( $mail[0]->head->get('Content-Type'), qr/multipart\/alternative/,
           "Its content type is multipart/alternative" );
-    like( $mail[0]->parts(0)->head->get('Content-Type'), qr/text\/plain.+?$encoding/,
-          "First part's content type is text/plain $encoding" );
+
+    # The text/html part is guaranteed to not have had non-latin-1
+    # characters introduced by the HTML-to-text conversion, so it is
+    # guaranteed to be able to be represented in latin-1
     like( $mail[0]->parts(1)->head->get('Content-Type'), qr/text\/html.+?$encoding/,
           "Second part's content type is text/html $encoding" );
-    my $message_as_string = $mail[0]->parts(0)->bodyhandle->as_string();
+    my $message_as_string = $mail[0]->parts(1)->bodyhandle->as_string();
     $message_as_string = Encode::decode($encoding, $message_as_string);
+    like( $message_as_string , qr/H\x{e5}vard/,
+          "The message's content contains havard's name in $encoding");
+
+    # The text/plain part may have utf-8 characters in it.  Accept either encoding.
+    like( $mail[0]->parts(0)->head->get('Content-Type'), qr/text\/plain.+?(ISO-8859-1|UTF-8)/i,
+          "First part's content type is text/plain (ISO-8859-1 or UTF-8)" );
+
+    # Make sure it checks out in whatever encoding it ended up in
+    $mail[0]->parts(0)->head->get('Content-Type') =~ /text\/plain.+?(ISO-8859-1|UTF-8)/i;
+    my $found = $1 || $encoding;
+    $message_as_string = $mail[0]->parts(0)->bodyhandle->as_string();
+    $message_as_string = Encode::decode($found, $message_as_string);
     like( $message_as_string , qr/H\x{e5}vard/,
           "The message's content contains havard's name in $encoding");
 }
