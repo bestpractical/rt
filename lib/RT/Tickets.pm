@@ -154,6 +154,7 @@ our %FIELD_METADATA = (
     TxnCF            => [ 'CUSTOMFIELD' => 'Transaction' ], #loc_left_pair
     TransactionCF    => [ 'CUSTOMFIELD' => 'Transaction' ], #loc_left_pair
     QueueCF          => [ 'CUSTOMFIELD' => 'Queue' ], #loc_left_pair
+    Lifecycle        => [ 'LIFECYCLE' ], #loc_left_pair
     Updated          => [ 'TRANSDATE', ], #loc_left_pair
     UpdatedBy        => [ 'TRANSCREATOR', ], #loc_left_pair
     OwnerGroup       => [ 'MEMBERSHIPFIELD' => 'Owner', ], #loc_left_pair
@@ -191,6 +192,7 @@ our %dispatch = (
     MEMBERSHIPFIELD => \&_WatcherMembershipLimit,
     CUSTOMFIELD     => \&_CustomFieldLimit,
     HASATTRIBUTE    => \&_HasAttributeLimit,
+    LIFECYCLE       => \&_LifecycleLimit,
 );
 
 # Default EntryAggregator per type
@@ -1235,6 +1237,26 @@ sub _HasAttributeLimit {
     );
 }
 
+
+sub _LifecycleLimit {
+    my ( $self, $field, $op, $value, %rest ) = @_;
+
+    die "Invalid Operator $op for $field" if $op =~ /^(IS|IS NOT)$/io;
+    my $queue = $self->{_sql_aliases}{queues} ||= $_[0]->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'Queue',
+        TABLE2 => 'Queues',
+        FIELD2 => 'id',
+    );
+
+    $self->Limit(
+        ALIAS    => $queue,
+        FIELD    => 'Lifecycle',
+        OPERATOR => $op,
+        VALUE    => $value,
+        %rest,
+    );
+}
 
 # End Helper Functions
 
