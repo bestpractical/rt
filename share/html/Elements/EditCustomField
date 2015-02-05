@@ -105,7 +105,7 @@ $m->out("\n".'<input type="hidden" class="hidden" name="'
 
 
 my $EditComponent = "EditCustomField$Type";
-$m->callback( %ARGS, CallbackName => 'EditComponentName', Name => \$EditComponent, CustomField => $CustomField, Object => $Object );
+$m->callback( %ARGS, CallbackName => 'EditComponentName', Name => \$EditComponent, CustomField => $CustomField, Object => $Object, Rows => \$Rows, Cols => \$Cols);
 $EditComponent = "EditCustomField$Type" unless $m->comp_exists($EditComponent);
 
 return $m->comp(
