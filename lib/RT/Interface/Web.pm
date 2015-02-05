@@ -2066,9 +2066,10 @@ sub CreateTicket {
 
     my (@Actions);
 
-    my $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
+    my $current_user = $session{'CurrentUser'};
+    my $Ticket = RT::Ticket->new( $current_user );
 
-    my $Queue = RT::Queue->new( $session{'CurrentUser'} );
+    my $Queue = RT::Queue->new( $current_user );
     unless ( $Queue->Load( $ARGS{'Queue'} ) ) {
         Abort('Queue not found');
     }
@@ -2079,12 +2080,12 @@ sub CreateTicket {
 
     my $due;
     if ( defined $ARGS{'Due'} and $ARGS{'Due'} =~ /\S/ ) {
-        $due = RT::Date->new( $session{'CurrentUser'} );
+        $due = RT::Date->new( $current_user );
         $due->Set( Format => 'unknown', Value => $ARGS{'Due'} );
     }
     my $starts;
     if ( defined $ARGS{'Starts'} and $ARGS{'Starts'} =~ /\S/ ) {
-        $starts = RT::Date->new( $session{'CurrentUser'} );
+        $starts = RT::Date->new( $current_user );
         $starts->Set( Format => 'unknown', Value => $ARGS{'Starts'} );
     }
 
@@ -2092,13 +2093,18 @@ sub CreateTicket {
         Content        => $ARGS{Content},
         ContentType    => $ARGS{ContentType},
         StripSignature => 1,
-        CurrentUser    => $session{'CurrentUser'},
+        CurrentUser    => $current_user,
     );
 
+    my $date_now = RT::Date->new( $current_user );
+    $date_now->SetToNow;
     my $MIMEObj = MakeMIMEEntity(
         Subject => $ARGS{'Subject'},
-        From    => $ARGS{'From'},
+        From    => $ARGS{'From'} || $current_user->EmailAddress,
+        To      => $ARGS{'To'} || $Queue->CorrespondAddress
+                               || RT->Config->Get('CorrespondAddress'),
         Cc      => $ARGS{'Cc'},
+        Date    => $date_now->RFC2822(Timezone => 'user'),
         Body    => $sigless,
         Type    => $ARGS{'ContentType'},
         Interface => RT::Interface::Web::MobileClient() ? 'Mobile' : 'Web',
@@ -2465,7 +2471,7 @@ sub MakeMIMEEntity {
         "Message-Id" => Encode::encode( "UTF-8", RT::Interface::Email::GenMessageId ),
         "X-RT-Interface" => $args{Interface},
         map { $_ => Encode::encode( "UTF-8", $args{ $_} ) }
-            grep defined $args{$_}, qw(Subject From Cc)
+            grep defined $args{$_}, qw(Subject From Cc To Date)
     );
 
     if ( defined $args{'Body'} && length $args{'Body'} ) {
