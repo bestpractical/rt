@@ -119,10 +119,17 @@ $r->content_type('application/rss+xml');
     while ( my $Ticket = $Tickets->Next()) {
         my $creator_str = $m->scomp('/Elements/ShowUser', User => $Ticket->CreatorObj);
         $creator_str =~ s/[\r\n]//g;
+
+        # Get the plain-text content; it is interpreted as HTML by RSS
+        # readers, so it must be escaped (and is escaped _again_ when
+        # inserted into the XML).
+        my $content = $Ticket->Transactions->First->Content;
+        $content = $m->interp->apply_escapes( $content, 'h');
+
         $rss->add_item(
           title       =>  $Ticket->Subject || loc('No Subject'),
           link        => RT->Config->Get('WebURL')."Ticket/Display.html?id=".$Ticket->id,
-          description => $Ticket->Transactions->First->Content,
+          description => $content,
           dc          => { creator => $creator_str,
                            date => $Ticket->CreatedObj->RFC2822,
                          },
