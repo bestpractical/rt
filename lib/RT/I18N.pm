@@ -245,7 +245,10 @@ sub SetMIMEEntityToEncoding {
               . $head->mime_type . " - "
               . ( Encode::decode("UTF-8",$head->get('subject')) || 'Subjectless message' ) );
 
-        Encode::from_to( $string, $charset => $enc );
+        {
+            no warnings 'utf8';
+            $string = Encode::encode( $enc, Encode::decode( $charset, $string) );
+        }
 
         my $new_body = MIME::Body::InCore->new($string);
 
@@ -549,7 +552,8 @@ sub SetMIMEHeadToEncoding {
         $head->delete($tag);
         foreach my $value (@values) {
             if ( $charset ne $enc || $enc =~ /^utf-?8(?:-strict)?$/i ) {
-                Encode::from_to( $value, $charset => $enc );
+                no warnings 'utf8';
+                $value = Encode::encode( $enc, Encode::decode( $charset, $value) );
             }
             $value = DecodeMIMEWordsToEncoding( $value, $enc, $tag )
                 unless $preserve_words;
