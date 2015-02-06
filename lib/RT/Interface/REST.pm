@@ -324,11 +324,17 @@ sub process_attachments {
         }
 
         my $info = $cgi->uploadInfo($fh);
+        # If Content-ID exists for attachment then we need multipart/related
+        # to be able to refer to this Content-Id in core of mime message
+        if($info->{'Content-ID'}) {
+            $entity->head->set('Content-Type', 'multipart/related');
+        }
         my $new_entity = $entity->attach(
             Path => $tmp_fn,
             Type => $info->{'Content-Type'} || guess_media_type($tmp_fn),
             Filename => $file,
             Disposition => $info->{'Content-Disposition'} || "attachment",
+            'Content-ID' => $info->{'Content-ID'},
         );
         $new_entity->bodyhandle->{'_dirty_hack_to_save_a_ref_tmp_fh'} = $tmp_fh;
         $i++;
