@@ -162,8 +162,7 @@ sub _PrivacyObjects {
 
     my $groups = RT::Groups->new($CurrentUser);
     $groups->LimitToUserDefinedGroups;
-    $groups->WithMember( PrincipalId => $CurrentUser->Id,
-                         Recursively => 1 );
+    $groups->WithCurrentUser;
     if ($has_attr) {
         my $attrs = $groups->Join(
             ALIAS1 => 'main',

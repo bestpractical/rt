@@ -222,34 +222,21 @@ sub LimitToPrincipal {
 
 
 
-sub Next {
+sub AddRecord {
     my $self = shift;
+    my ($record) = @_;
 
-    my $ACE = $self->SUPER::Next();
     # Short-circuit having to load up the ->Object
-    return $ACE
-        if $self->CurrentUser->PrincipalObj->Id == RT->SystemUser->Id;
-    if ( ( defined($ACE) ) and ( ref($ACE) ) ) {
+    return $self->SUPER::AddRecord( $record )
+        if $record->CurrentUser->PrincipalObj->Id == RT->SystemUser->Id;
 
-        if ( $self->CurrentUser->HasRight( Right  => 'ShowACL',
-                                           Object => $ACE->Object )
-             or $self->CurrentUser->HasRight( Right  => 'ModifyACL',
-                                              Object => $ACE->Object )
-          ) {
-            return ($ACE);
-        }
+    my $obj = $record->Object;
+    return unless $self->CurrentUser->HasRight( Right  => 'ShowACL',
+                                                Object => $obj )
+               or $self->CurrentUser->HasRight( Right  => 'ModifyACL',
+                                                Object => $obj );
 
-        #If the user doesn't have the right to show this ACE
-        else {
-            return ( $self->Next() );
-        }
-    }
-
-    #if there never was any ACE
-    else {
-        return (undef);
-    }
-
+    return $self->SUPER::AddRecord( $record );
 }
 
 
