@@ -283,4 +283,35 @@ like($tix->BuildSelectCountQuery, qr/\bNULL\b/, "Contains upper-case NULL");
 unlike($tix->BuildSelectCountQuery, qr/\bnull\b/, "Lacks lower-case NULL");
 
 
+# tests for searching by queue lifecycle
+$tix = RT::Tickets->new(RT->SystemUser);
+$tix->FromSQL('Lifecycle="default"');
+is($tix->Count,7,"We found all 7 tickets in a queue with the default lifecycle");
+
+$tix = RT::Tickets->new(RT->SystemUser);
+$tix->FromSQL('Lifecycle ="approvals" OR Lifecycle="default"');
+is($tix->Count,7,"We found 7 tickets in a queue with a lifecycle of default or approvals");
+
+$tix = RT::Tickets->new(RT->SystemUser);
+$tix->FromSQL('Lifecycle ="approvals" AND Lifecycle="default"');
+is($tix->Count,0,"We found 0 tickets in a queue with a lifecycle of default AND approvals...(because that's impossible");
+
+$tix = RT::Tickets->new(RT->SystemUser);
+$tix->FromSQL('Queue="'.$queue.'" AND Lifecycle="default"');
+is($tix->Count,7,"We found 7 tickets in $queue with a lifecycle of default");
+
+
+$tix = RT::Tickets->new(RT->SystemUser);
+$tix->FromSQL('Lifecycle !="approvals"');
+is($tix->Count,7,"We found 7 tickets in a queue with a lifecycle other than approvals");
+
+$tix = RT::Tickets->new(RT->SystemUser);
+$tix->FromSQL('Lifecycle!="default"');
+is($tix->Count,0,"We found 0 tickets in a queue with a lifecycle other than default");
+
+$tix = RT::Tickets->new(RT->SystemUser);
+$tix->FromSQL('Lifecycle="approvals"');
+is($tix->Count,0,"We found 0 tickets in a queue with the approvals lifecycle");
+
+
 done_testing;
