@@ -192,7 +192,7 @@ With the nginx configuration:
         fastcgi.server = (
             "/" => (
                 "rt" => (
-                    "port"        => "9000",
+                    "socket"      => "/opt/rt4/var/socket",
                     "bin-path"    => "/opt/rt4/sbin/rt-server.fcgi",
                     "check-local" => "disable",
                     "fix-root-scriptname" => "enable",
