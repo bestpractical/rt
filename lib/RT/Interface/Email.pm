@@ -59,6 +59,7 @@ use File::Temp;
 use Mail::Mailer ();
 use Text::ParseWords qw/shellwords/;
 use RT::Util 'safe_run_child';
+use File::Spec;
 
 BEGIN {
     use base 'Exporter';
@@ -1834,7 +1835,7 @@ sub _HTMLFormatter {
 
             if ($path) {
                 local $ENV{PATH} = $path;
-                local $ENV{HOME} = $RT::VarPath;
+                local $ENV{HOME} = File::Spec->tmpdir();
                 if (not defined $package->program_version) {
                     RT->Logger->warn("Could not find or run external '$prog' HTML formatter in $path$prog")
                         if $wanted;
@@ -1843,7 +1844,7 @@ sub _HTMLFormatter {
             } else {
                 local $ENV{PATH} = '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
                     unless defined $ENV{PATH};
-                local $ENV{HOME} = $RT::VarPath;
+                local $ENV{HOME} = File::Spec->tmpdir();
                 if (not defined $package->program_version) {
                     RT->Logger->warn("Could not find or run external '$prog' HTML formatter in \$PATH ($ENV{PATH}) -- you may need to install it or provide the full path")
                         if $wanted;
@@ -1857,7 +1858,7 @@ sub _HTMLFormatter {
                 my $text = RT::Util::safe_run_child {
                     local $ENV{PATH} = $path || $ENV{PATH}
                         || '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin';
-                    local $ENV{HOME} = $RT::VarPath;
+                    local $ENV{HOME} = File::Spec->tmpdir();
                     $package->format_string(
                         Encode::encode( "UTF-8", $html ),
                         input_charset => "UTF-8",
