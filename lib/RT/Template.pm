@@ -487,9 +487,6 @@ sub _ParseContent {
     }
 
     my $content = $self->SUPER::_Value('Content');
-    # We need to untaint the content of the template, since we'll be working
-    # with it
-    $content =~ s/^(.*)$/$1/;
 
     $args{'Ticket'} = delete $args{'TicketObj'} if $args{'TicketObj'};
     $args{'Transaction'} = delete $args{'TransactionObj'} if $args{'TransactionObj'};

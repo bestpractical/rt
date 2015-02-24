@@ -122,10 +122,8 @@ sub SmartParseMIMEEntityFromScalar {
             close($fh);
             if ( -f $temp_file ) {
 
-                # We have to trust the temp file's name -- untaint it
-                $temp_file =~ /(.*)/;
-                my $entity = $self->ParseMIMEEntityFromFile( $1, $args{'Decode'}, $args{'Exact'} );
-                unlink($1);
+                my $entity = $self->ParseMIMEEntityFromFile( $temp_file, $args{'Decode'}, $args{'Exact'} );
+                unlink($temp_file);
                 return $entity;
             }
         }
