@@ -634,7 +634,7 @@ sub FillCache {
         # this could die. we also don't want to frighten them by the errors out
         eval {
             local $RT::Logger = Log::Dispatch->new;
-            @lifecycles = RT::Queues->new( RT->SystemUser )->DistinctFieldValues( 'Lifecycle' );
+            @lifecycles = grep { defined } RT::Queues->new( RT->SystemUser )->DistinctFieldValues( 'Lifecycle' );
         };
         unless ( $@ ) {
             for my $name ( @lifecycles ) {
