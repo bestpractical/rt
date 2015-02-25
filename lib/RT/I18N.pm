@@ -728,7 +728,10 @@ sub EncodeFromToWithCroak {
     my $from   = shift;
     my $to     = shift;
 
-    eval { Encode::from_to( $string, $from => $to, Encode::FB_CROAK ); };
+    eval {
+        no warnings 'utf8';
+        $string = Encode::encode( $to, Encode::decode( $from, $string ), Encode::FB_CROAK );
+    };
     return $@ ? ( 0, $@ ) : ( 1, $string );
 }
 
