@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-09-18 00:17+0000\n"
-"PO-Revision-Date: 2014-09-20 16:40+0000\n"
+"POT-Creation-Date: 2014-11-04 23:18+0000\n"
+"PO-Revision-Date: 2014-11-05 10:34+0000\n"
 "Last-Translator: Andi Chandler <Unknown>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-10-01 21:14+0000\n"
-"X-Generator: Launchpad (build 17196)\n"
+"X-Launchpad-Export-Date: 2015-02-06 19:01+0000\n"
+"X-Generator: Launchpad (build 17331)\n"
 
 #. ($RT::DatabaseName)
 #: share/html/Install/DatabaseDetails.html:180
@@ -36,7 +36,7 @@ msgstr "%1 appears to be fully initialised. We won't need to create any tables o
 #. ($name, $self->loc($type))
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
 #. ($email->format, loc(substr($field, 6)))
-#: lib/RT/Record/Role/Roles.pm:365 lib/RT/Record/Role/Roles.pm:373 share/html/Ticket/Create.html:428 share/html/Ticket/Update.html:290 share/html/m/ticket/create:189 share/html/m/ticket/reply:208
+#: lib/RT/Record/Role/Roles.pm:365 lib/RT/Record/Role/Roles.pm:373 share/html/Ticket/Create.html:431 share/html/Ticket/Update.html:290 share/html/m/ticket/create:189 share/html/m/ticket/reply:208
 msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
 msgstr "%1 is an address where RT receives mail. Adding it as a '%2' would create a mail loop"
 
@@ -48,7 +48,7 @@ msgstr "(Tick box to delete)"
 msgid "After logging in you'll be sent to your original destination:"
 msgstr "After logging in you will be sent to your original destination:"
 
-#: share/html/User/Prefs.html:171
+#: share/html/User/Prefs.html:173
 msgid "All iCal feeds embed a secret token which authorizes you.  If the URL for one of your iCal feeds was exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b>, below."
 msgstr "All iCal feeds embed a secret token which authorises you.  If the URL for one of your iCal feeds was exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b>, below."
 
@@ -75,7 +75,7 @@ msgid "Can't link to a deleted ticket"
 msgstr "Cannot link to a deleted ticket"
 
 #. ($QueueObj->Name)
-#: share/html/index.html:127
+#: share/html/index.html:130
 msgid "Can't quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
 msgstr "Cannot quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
 

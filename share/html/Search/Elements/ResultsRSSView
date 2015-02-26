@@ -92,10 +92,17 @@ $rss->channel(
 while ( my $Ticket = $Tickets->Next()) {
     my $creator_str = $Ticket->CreatorObj->Format;
     $creator_str =~ s/[\r\n]//g;
+
+    # Get the plain-text content; it is interpreted as HTML by RSS
+    # readers, so it must be escaped (and is escaped _again_ when
+    # inserted into the XML).
+    my $content = $Ticket->Transactions->First->Content;
+    $content = $m->interp->apply_escapes( $content, 'h');
+
     $rss->add_item(
         title       => $Ticket->Subject || loc('No Subject'),
         link        => $url . "Ticket/Display.html?id=".$Ticket->id,
-        description => $Ticket->Transactions->First->Content,
+        description => $content,
         dc          => {
             creator => $creator_str,
             date    => $Ticket->CreatedObj->W3CDTF,
