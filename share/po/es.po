@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-09-18 00:17+0000\n"
+"POT-Creation-Date: 2014-11-04 23:18+0000\n"
 "PO-Revision-Date: 2014-06-06 00:24+0000\n"
 "Last-Translator: Alex Vandiver <Unknown>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-10-01 21:14+0000\n"
-"X-Generator: Launchpad (build 17196)\n"
+"X-Launchpad-Export-Date: 2015-02-06 19:01+0000\n"
+"X-Generator: Launchpad (build 17331)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:62
 msgid "#"
@@ -58,7 +58,7 @@ msgid "%1 #%2: %3"
 msgstr ""
 
 #. ($args{'FIELD'},        $args{'OPERATOR'}, $args{'VALUE'})
-#: lib/RT/Tickets.pm:1395
+#: lib/RT/Tickets.pm:1434
 msgid "%1 %2 %3"
 msgstr ""
 
@@ -80,20 +80,20 @@ msgstr ""
 #. ($cf->Name, $new_content)
 #. ($field, $new)
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
-#: lib/RT/Record.pm:2088 lib/RT/Transaction.pm:955 lib/RT/Transaction.pm:998
+#: lib/RT/Record.pm:2087 lib/RT/Transaction.pm:955 lib/RT/Transaction.pm:998
 msgid "%1 %2 added"
 msgstr "Añadido %1 %2"
 
 #. ($cf->Name, $old_content, $new_content)
 #. ($field, $old, $new)
-#: lib/RT/Record.pm:2095 lib/RT/Transaction.pm:961
+#: lib/RT/Record.pm:2094 lib/RT/Transaction.pm:961
 msgid "%1 %2 changed to %3"
 msgstr "%1 ha cambiado de %2 a %3"
 
 #. ($cf->Name, $old_content)
 #. ($field, $old)
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
-#: lib/RT/Record.pm:2092 lib/RT/Transaction.pm:1004 lib/RT/Transaction.pm:958
+#: lib/RT/Record.pm:2091 lib/RT/Transaction.pm:1004 lib/RT/Transaction.pm:958
 msgid "%1 %2 deleted"
 msgstr "%1 %2 eliminados"
 
@@ -200,8 +200,8 @@ msgstr "%1 - Especifique el modulo de búsqueda que quiere utilizar"
 msgid "%1 CFs"
 msgstr ""
 
-#. ('&#187;&#124;&#171;', $RT::VERSION, '2014', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-#. ('', '', '2014', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('&#187;&#124;&#171;', $RT::VERSION, '2015', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('', '', '2015', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #: share/html/Elements/Footer:56 share/html/m/_elements/footer:51
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr ""
@@ -212,7 +212,7 @@ msgid "%1 Version"
 msgstr ""
 
 #. ($args{'Value'}, $cf->Name)
-#: lib/RT/Record.pm:2128
+#: lib/RT/Record.pm:2127
 msgid "%1 added as a value for %2"
 msgstr "%1 añadido como un valor de %2"
 
@@ -250,7 +250,7 @@ msgstr "%1 parece estar ya personalizado. No tenemos que crear las tablas ni los
 #. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)
 #. ($Ticket->LastUpdatedAsString, $m->scomp('/Elements/ShowUser', User => $Ticket->LastUpdatedByObj))
 #. ($self->BriefDescription , $self->CreatorObj->Name)
-#: lib/RT/Transaction.pm:695 share/html/Ticket/Elements/ShowDates:80 share/html/m/ticket/show:380
+#: lib/RT/Transaction.pm:695 share/html/Ticket/Elements/ShowDates:86 share/html/m/ticket/show:380
 msgid "%1 by %2"
 msgstr "%1 por %2"
 
@@ -285,7 +285,7 @@ msgstr "%1 copiar"
 msgid "%1 core config"
 msgstr "%1 configuración principal"
 
-#: lib/RT/Record.pm:1030
+#: lib/RT/Record.pm:1029
 msgid "%1 could not be set to %2."
 msgstr "%1 no se ha podido fijar a %2"
 
@@ -342,7 +342,7 @@ msgstr "%1 ya está establecido en %2"
 #. ($name, $self->loc($type))
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
 #. ($email->format, loc(substr($field, 6)))
-#: lib/RT/Record/Role/Roles.pm:365 lib/RT/Record/Role/Roles.pm:373 share/html/Ticket/Create.html:428 share/html/Ticket/Update.html:290 share/html/m/ticket/create:189 share/html/m/ticket/reply:208
+#: lib/RT/Record/Role/Roles.pm:365 lib/RT/Record/Role/Roles.pm:373 share/html/Ticket/Create.html:431 share/html/Ticket/Update.html:290 share/html/m/ticket/create:189 share/html/m/ticket/reply:208
 msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
 msgstr "%1 es una dirección en la cual RT recibe correo. Añadirla como un '%2' podría crear un bucle de correo"
 
@@ -352,7 +352,7 @@ msgid "%1 is no longer a %2 for this ticket."
 msgstr "%1 ha dejado de ser un %2 para este caso."
 
 #. ($old_value, $cf->Name)
-#: lib/RT/Record.pm:2193
+#: lib/RT/Record.pm:2192
 msgid "%1 is no longer a value for custom field %2"
 msgstr "%1 ya no es un valor para el campo personalizado %2"
 
@@ -363,7 +363,7 @@ msgstr "%1 no es un(a) %2"
 
 #. ($args{'Lifecycle'})
 #. ($value)
-#: lib/RT/Queue.pm:189 lib/RT/Record/Role/Lifecycle.pm:126
+#: lib/RT/Queue.pm:182 lib/RT/Record/Role/Lifecycle.pm:126
 msgid "%1 is not a valid lifecycle"
 msgstr "%1 no es un ciclo de vida válido"
 
@@ -469,12 +469,12 @@ msgid "%1:%2:%3"
 msgstr ""
 
 #. ($size)
-#: lib/RT/Attachment.pm:458
+#: lib/RT/Attachment.pm:459
 msgid "%1B"
 msgstr ""
 
 #. (int( $size / 102.4 ) / 10)
-#: lib/RT/Attachment.pm:455
+#: lib/RT/Attachment.pm:456
 msgid "%1KiB"
 msgstr ""
 
@@ -483,7 +483,7 @@ msgid "%1M"
 msgstr ""
 
 #. (int( $size / 1024 / 102.4 ) / 10)
-#: lib/RT/Attachment.pm:452
+#: lib/RT/Attachment.pm:453
 msgid "%1MiB"
 msgstr ""
 
@@ -559,7 +559,7 @@ msgid "%quant(%1,year,years)"
 msgstr ""
 
 #. ($name)
-#: lib/RT/Queue.pm:323
+#: lib/RT/Queue.pm:316
 msgid "'%1' is not a valid name."
 msgstr "«%1» no es un nombre válido."
 
@@ -585,6 +585,10 @@ msgstr "(Marque la caja para borrar)"
 msgid "(Check boxes to delete)"
 msgstr "(Marque las cajas para borrar)"
 
+#: share/html/Elements/BulkCustomFields:95
+msgid "(Check to delete all values)"
+msgstr ""
+
 #: share/html/m/ticket/create:392
 msgid "(Enter ticket ids or URLs, separated with spaces)"
 msgstr "(Ingresar los numeros id o los URL de los casos, separados por espacios)"
@@ -599,7 +603,7 @@ msgstr "(Si se deja vacío, pasará por omisión a %1)"
 msgid "(Incomplete)"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:424
+#: lib/RT/Report/Tickets.pm:429
 msgid "(Incorrect data)"
 msgstr ""
 
@@ -619,11 +623,11 @@ msgstr "(Sin acciones)"
 msgid "(No templates)"
 msgstr "(Sin plantillas)"
 
-#: share/html/Ticket/Create.html:163 share/html/m/ticket/create:290
+#: share/html/Ticket/Create.html:164 share/html/m/ticket/create:290
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)"
 msgstr "(Envía una copia de esta actualización a una lista delimitada por comas de direcciones de email administrativas. Estas personas <strong>recibirán</strong> futuras actualizaciones.)"
 
-#: share/html/Ticket/Create.html:147 share/html/m/ticket/create:281
+#: share/html/Ticket/Create.html:148 share/html/m/ticket/create:281
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)"
 msgstr "(Envía una copia de esta actualización a una lista de direcciones de correo delimitada por comas. Estas personas <strong>recibirán</strong> futuras actualizaciones."
 
@@ -647,7 +651,7 @@ msgstr "(sin nombre)"
 msgid "(no pubkey!)"
 msgstr "(¡no hay clave pública!)"
 
-#: lib/RT/Report/Tickets.pm:670 lib/RT/Report/Tickets.pm:839 lib/RT/Report/Tickets.pm:850 lib/RT/Report/Tickets/Entry.pm:78 lib/RT/Report/Tickets/Entry.pm:88 lib/RT/Transaction.pm:1109 lib/RT/Transaction.pm:1171 lib/RT/Transaction.pm:1172 lib/RT/Transaction.pm:757 lib/RT/Transaction.pm:762 lib/RT/Transaction.pm:832 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:109 share/html/Elements/EditCustomFieldSelect:128 share/html/Elements/EditCustomFieldSelect:138 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowCustomFields:61 share/html/m/ticket/show:263
+#: lib/RT/Report/Tickets.pm:698 lib/RT/Report/Tickets.pm:867 lib/RT/Report/Tickets.pm:878 lib/RT/Report/Tickets/Entry.pm:75 lib/RT/Report/Tickets/Entry.pm:80 lib/RT/Report/Tickets/Entry.pm:90 lib/RT/Transaction.pm:1109 lib/RT/Transaction.pm:1171 lib/RT/Transaction.pm:1172 lib/RT/Transaction.pm:757 lib/RT/Transaction.pm:762 lib/RT/Transaction.pm:832 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:109 share/html/Elements/EditCustomFieldSelect:128 share/html/Elements/EditCustomFieldSelect:138 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowCustomFields:61 share/html/m/ticket/show:263
 msgid "(no value)"
 msgstr "(sin valor)"
 
@@ -819,7 +823,7 @@ msgstr "Añadir Valor"
 msgid "Add comments or replies to selected tickets"
 msgstr "Añadir comentarios o respuestas a los casos seleccionados"
 
-#: share/html/Admin/Elements/SelectNewGroupMembers:63
+#: share/html/Admin/Elements/SelectNewGroupMembers:69
 msgid "Add group"
 msgstr "Añadir grupo"
 
@@ -848,7 +852,7 @@ msgstr "Agregar estos términos"
 msgid "Add these terms and Search"
 msgstr "Agregar estos términos y Buscar"
 
-#: share/html/Admin/Elements/SelectNewGroupMembers:49
+#: share/html/Admin/Elements/SelectNewGroupMembers:51
 msgid "Add user"
 msgstr "Añadir usuario"
 
@@ -870,7 +874,7 @@ msgid "Added %1 as a %2 for this ticket"
 msgstr "%1 fue agregado como %2 para este caso"
 
 #. ($principal->Object->Name, $self->loc($args{'Type'}))
-#: lib/RT/Queue.pm:610
+#: lib/RT/Queue.pm:603
 msgid "Added %1 to members of %2 for this queue."
 msgstr "Añadido %1 a miembros de %2 para este queue"
 
@@ -904,7 +908,7 @@ msgstr ""
 msgid "Admin"
 msgstr "Administrador"
 
-#: share/html/Ticket/Create.html:154 share/html/m/ticket/create:284
+#: share/html/Ticket/Create.html:155 share/html/m/ticket/create:284
 msgid "Admin Cc"
 msgstr ""
 
@@ -932,11 +936,11 @@ msgstr "Administración de colas"
 msgid "Admin/Global configuration"
 msgstr "Administración de la configuración global"
 
-#: lib/RT/Tickets.pm:162
+#: lib/RT/Tickets.pm:163
 msgid "AdminCCGroup"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:70 lib/RT/Ticket.pm:103 lib/RT/Tickets.pm:146 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowPeople:66 share/html/m/ticket/show:299
+#: lib/RT/Report/Tickets.pm:74 lib/RT/Ticket.pm:103 lib/RT/Tickets.pm:146 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowPeople:66 share/html/m/ticket/show:299
 msgid "AdminCc"
 msgstr ""
 
@@ -1000,7 +1004,7 @@ msgstr "Todas las colas"
 msgid "All Tickets"
 msgstr "Todos los tickets"
 
-#: share/html/User/Prefs.html:171
+#: share/html/User/Prefs.html:173
 msgid "All iCal feeds embed a secret token which authorizes you.  If the URL for one of your iCal feeds was exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b>, below."
 msgstr "Todos los feeds de iCal incluyen un token secreto que le da autorización. Si la URL uno de sus feeds iCal se vio expuesta al mundo exterior, puede conseguir un nuevo token, <b>rompiendo todos los feeds de iCal existentes</b> debajo."
 
@@ -1028,7 +1032,7 @@ msgstr "Permitir carga de búsquedas guardadas"
 msgid "Allow writing Perl code in templates, scrips, etc"
 msgstr "Permitir la escritura de código Perl en plantillas, scrips, etc"
 
-#: lib/RT/Attachment.pm:746
+#: lib/RT/Attachment.pm:787
 msgid "Already encrypted"
 msgstr "Ya encriptado"
 
@@ -1053,7 +1057,7 @@ msgstr "Ha ocurrido un error"
 msgid "And/Or"
 msgstr "Y/O"
 
-#: lib/RT/Report/Tickets.pm:124
+#: lib/RT/Report/Tickets.pm:131
 msgid "Annually"
 msgstr "Anualmente"
 
@@ -1206,7 +1210,7 @@ msgstr "Artículos sin tópicos"
 msgid "Asc"
 msgstr ""
 
-#: lib/RT/Queue.pm:116
+#: lib/RT/Queue.pm:109
 msgid "Assign and remove queue custom fields"
 msgstr "Asignar y remover campos personalizados de la cola"
 
@@ -1235,7 +1239,7 @@ msgstr "Archivo adjunto '%1' no pudo ser cargado"
 msgid "Attachment created"
 msgstr "Archivo adjunto creado"
 
-#: lib/RT/Tickets.pm:1786
+#: lib/RT/Tickets.pm:1825
 msgid "Attachment filename"
 msgstr "Nombre del archivo adjunto"
 
@@ -1243,13 +1247,17 @@ msgstr "Nombre del archivo adjunto"
 msgid "Attachments"
 msgstr "Archivos adjuntos"
 
-#: lib/RT/Attachment.pm:741
+#: lib/RT/Attachment.pm:782
 msgid "Attachments encryption is disabled"
 msgstr "La encriptación de adjuntos está deshablitada"
 
 #: lib/RT/Attributes.pm:178
 msgid "Attribute Deleted"
 msgstr "Atributo borrado"
+
+#: lib/RT/Attribute.pm:288
+msgid "Attribute updated"
+msgstr ""
 
 #: lib/RT/Date.pm:98
 msgid "Aug"
@@ -1280,39 +1288,39 @@ msgstr "Autorespuesta en HTML"
 msgid "Available"
 msgstr "Disponible"
 
-#: lib/RT/Report/Tickets.pm:225
+#: lib/RT/Report/Tickets.pm:232
 msgid "Average Created-LastUpdated"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:220
+#: lib/RT/Report/Tickets.pm:227
 msgid "Average Created-Resolved"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:215
+#: lib/RT/Report/Tickets.pm:222
 msgid "Average Created-Started"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:235
+#: lib/RT/Report/Tickets.pm:242
 msgid "Average Due-Resolved"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:240
+#: lib/RT/Report/Tickets.pm:247
 msgid "Average Started-Resolved"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:230
+#: lib/RT/Report/Tickets.pm:237
 msgid "Average Starts-Started"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:205
+#: lib/RT/Report/Tickets.pm:212
 msgid "Average time estimated"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:210
+#: lib/RT/Report/Tickets.pm:217
 msgid "Average time left"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:200
+#: lib/RT/Report/Tickets.pm:207
 msgid "Average time worked"
 msgstr ""
 
@@ -1325,7 +1333,7 @@ msgstr "Atrás"
 msgid "Bad privacy for attribute %1"
 msgstr "Privacidad errónea para atributo %1"
 
-#: share/html/Admin/Scrips/Create.html:56 share/html/Admin/Scrips/Modify.html:56 share/html/Articles/Article/Display.html:50 share/html/Articles/Article/Edit.html:57 share/html/Articles/Article/Elements/ShowSearchCriteria:55 share/html/Dashboards/Modify.html:60 share/html/Elements/Tabs:289 share/html/Elements/Tabs:323 share/html/Elements/Tabs:348 share/html/Elements/Tabs:366 share/html/Elements/Tabs:405 share/html/Elements/Tabs:451 share/html/Elements/Tabs:614 share/html/Elements/Tabs:650 share/html/Ticket/Create.html:450 share/html/Ticket/Create.html:69 share/html/m/_elements/ticket_menu:60
+#: share/html/Admin/Scrips/Create.html:56 share/html/Admin/Scrips/Modify.html:56 share/html/Articles/Article/Display.html:50 share/html/Articles/Article/Edit.html:57 share/html/Articles/Article/Elements/ShowSearchCriteria:55 share/html/Dashboards/Modify.html:60 share/html/Elements/Tabs:289 share/html/Elements/Tabs:323 share/html/Elements/Tabs:348 share/html/Elements/Tabs:366 share/html/Elements/Tabs:405 share/html/Elements/Tabs:451 share/html/Elements/Tabs:614 share/html/Elements/Tabs:650 share/html/Ticket/Create.html:453 share/html/Ticket/Create.html:70 share/html/m/_elements/ticket_menu:60
 msgid "Basics"
 msgstr "Básicos"
 
@@ -1362,7 +1370,7 @@ msgstr "Vacio"
 msgid "Body"
 msgstr "Cuerpo"
 
-#: share/html/Search/Elements/EditFormat:96
+#: share/html/Search/Elements/EditFormat:97
 msgid "Bold"
 msgstr "Negrita"
 
@@ -1394,11 +1402,11 @@ msgstr "Buscar las consultas SQL hechas en este proceso"
 msgid "Bulk Update"
 msgstr "Actualización en bloque"
 
-#: lib/RT/Tickets.pm:161
+#: lib/RT/Tickets.pm:162
 msgid "CCGroup"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:81 lib/RT/Tickets.pm:153
+#: lib/RT/Report/Tickets.pm:85 lib/RT/Tickets.pm:153
 msgid "CF"
 msgstr ""
 
@@ -1424,7 +1432,7 @@ msgstr "No puede cargar la busqueda salvada \"%1\""
 msgid "Can not modify system users"
 msgstr "No se pueden modificar los usuarios del sistema"
 
-#: lib/RT/CustomField.pm:633
+#: lib/RT/CustomField.pm:634
 msgid "Can't add a custom field value without a name"
 msgstr "No puede agregar un valor de campo personalizado sin nombre"
 
@@ -1432,7 +1440,7 @@ msgstr "No puede agregar un valor de campo personalizado sin nombre"
 msgid "Can't find a saved search to work with"
 msgstr "No se puede encontrar una búsqueda guardada para trabajar"
 
-#: lib/RT/Ticket.pm:3057
+#: lib/RT/Ticket.pm:3048
 msgid "Can't forward: no valid email addresses specified"
 msgstr ""
 
@@ -1444,12 +1452,12 @@ msgstr "No se puede relacionar un caso consigo mismo"
 msgid "Can't link to a deleted ticket"
 msgstr "No se puede enlazar a un caso borrado"
 
-#: lib/RT/Ticket.pm:1790
+#: lib/RT/Ticket.pm:1781
 msgid "Can't merge a ticket into itself"
 msgstr ""
 
 #. ($QueueObj->Name)
-#: share/html/index.html:127
+#: share/html/index.html:130
 msgid "Can't quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
 msgstr "No se puede crear el caso en la cola %1 porque los campos personalizados son requeridos. Por favor finalice este proceso a través de la página de creación de caso."
 
@@ -1466,7 +1474,7 @@ msgstr ""
 msgid "Can't save this search"
 msgstr "No se puede grabar esta búsqueda"
 
-#: lib/RT/Record.pm:1383 lib/RT/Record.pm:1527
+#: lib/RT/Record.pm:1382 lib/RT/Record.pm:1526
 msgid "Can't specify both base and target"
 msgstr ""
 
@@ -1474,7 +1482,7 @@ msgstr ""
 msgid "Cannot add link to plain number"
 msgstr "No se puede agregar vínculo solo a un número"
 
-#: share/html/Ticket/Create.html:384 share/html/m/ticket/create:147
+#: share/html/Ticket/Create.html:387 share/html/m/ticket/create:147
 msgid "Cannot create tickets in a disabled queue."
 msgstr "No es posible crear casos en una cola deshabilitada"
 
@@ -1486,7 +1494,7 @@ msgstr "Las categorías se basan en"
 msgid "Category"
 msgstr "Categoría"
 
-#: lib/RT/Report/Tickets.pm:69 lib/RT/Ticket.pm:102 lib/RT/Tickets.pm:145 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:79 share/html/Ticket/Create.html:138 share/html/Ticket/Elements/EditPeople:79 share/html/Ticket/Elements/ShowPeople:62 share/html/Ticket/Forward.html:69 share/html/m/ticket/create:275 share/html/m/ticket/show:295
+#: lib/RT/Report/Tickets.pm:73 lib/RT/Ticket.pm:102 lib/RT/Tickets.pm:145 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:79 share/html/Ticket/Create.html:139 share/html/Ticket/Elements/EditPeople:79 share/html/Ticket/Elements/ShowPeople:62 share/html/Ticket/Forward.html:69 share/html/m/ticket/create:275 share/html/m/ticket/show:295
 msgid "Cc"
 msgstr ""
 
@@ -1605,7 +1613,7 @@ msgstr "Haga click  en \"Inicializar base de datos\" para crear la base de datos
 msgid "Click to choose a color"
 msgstr "Haga click para seleccionar un color"
 
-#: share/html/Ticket/Elements/ShowDates:75 share/html/m/ticket/show:375
+#: share/html/Ticket/Elements/ShowDates:80 share/html/m/ticket/show:375
 msgid "Closed"
 msgstr "Cerrado"
 
@@ -1625,7 +1633,7 @@ msgstr "Combobox: Seleccione o ingrese un valor"
 msgid "Combobox: Select or enter up to %quant(%1,value,values)"
 msgstr "Combobox: Seleccione o ingrese hasta %1 valores"
 
-#: share/html/Elements/ShowTransaction:193 share/html/Elements/Tabs:676 share/html/Search/Elements/EditFormat:74
+#: share/html/Elements/ShowTransaction:193 share/html/Elements/Tabs:676 share/html/Search/Elements/EditFormat:75
 msgid "Comment"
 msgstr "Comentario"
 
@@ -1637,7 +1645,7 @@ msgstr "Dirección de comentario"
 msgid "Comment address"
 msgstr "Dirección de comentario"
 
-#: lib/RT/Queue.pm:131
+#: lib/RT/Queue.pm:124
 msgid "Comment on tickets"
 msgstr "Comentar sobre los casos"
 
@@ -1645,7 +1653,7 @@ msgstr "Comentar sobre los casos"
 msgid "Comments"
 msgstr "Comentarios"
 
-#: share/html/Search/Bulk.html:127 share/html/Ticket/ModifyAll.html:100 share/html/Ticket/Update.html:77 share/html/m/ticket/reply:93
+#: share/html/Search/Bulk.html:127 share/html/Ticket/ModifyAll.html:101 share/html/Ticket/Update.html:77 share/html/m/ticket/reply:93
 msgid "Comments (Not sent to requestors)"
 msgstr "Comentarios (no se envían a los solicitantes)"
 
@@ -1653,7 +1661,7 @@ msgstr "Comentarios (no se envían a los solicitantes)"
 msgid "Comments about this user"
 msgstr "Comentarios acerca de este usuario"
 
-#: lib/RT/Ticket.pm:1632 lib/RT/Transaction.pm:898
+#: lib/RT/Ticket.pm:1628 lib/RT/Transaction.pm:898
 msgid "Comments added"
 msgstr "Comentarios añadidos"
 
@@ -1706,7 +1714,7 @@ msgstr "Contacte a su administrador de RT vía %1 mail a %2 %3."
 msgid "Contact your RT administrator."
 msgstr "Contacte a su administrador de RT."
 
-#: lib/RT/Tickets.pm:139 share/html/Admin/Elements/ModifyTemplate:70 share/html/Articles/Article/Display.html:53 share/html/Articles/Article/Edit.html:68 share/html/Articles/Article/Elements/ShowSearchCriteria:71 share/html/Elements/QuickCreate:74 share/html/Elements/SelectAttachmentField:51 share/html/Elements/Tabs:615 share/html/Ticket/Forward.html:76 share/html/Ticket/ModifyAll.html:121
+#: lib/RT/Tickets.pm:139 share/html/Admin/Elements/ModifyTemplate:70 share/html/Articles/Article/Display.html:53 share/html/Articles/Article/Edit.html:68 share/html/Articles/Article/Elements/ShowSearchCriteria:71 share/html/Elements/QuickCreate:75 share/html/Elements/SelectAttachmentField:51 share/html/Elements/Tabs:615 share/html/Ticket/Forward.html:76 share/html/Ticket/ModifyAll.html:122
 msgid "Content"
 msgstr "Contenido"
 
@@ -1744,7 +1752,7 @@ msgstr "Dirección de correspondencia"
 msgid "Correspondence"
 msgstr "Correspondencia"
 
-#: lib/RT/Ticket.pm:1634 lib/RT/Transaction.pm:894
+#: lib/RT/Ticket.pm:1630 lib/RT/Transaction.pm:894
 msgid "Correspondence added"
 msgstr "Correspondencia agregada"
 
@@ -1754,12 +1762,12 @@ msgstr "Correspondencia en HTML"
 
 #. ($msg)
 #. ($value_msg)
-#: lib/RT/Record.pm:2044 lib/RT/Record.pm:2115
+#: lib/RT/Record.pm:2043 lib/RT/Record.pm:2114
 msgid "Could not add new custom field value: %1"
 msgstr "No fue posible agregar el valor del campo personalizado: %1"
 
 #. ($msg)
-#: lib/RT/Ticket.pm:2062
+#: lib/RT/Ticket.pm:2053
 msgid "Could not change owner: %1"
 msgstr "No fue posible cambiar el propietario: %1"
 
@@ -1881,7 +1889,7 @@ msgstr "No se pudo compilar el bloque de código de plantilla '%1': %2"
 
 #. ($Msg)
 #. ($msg)
-#: lib/RT/Record.pm:2125 lib/RT/Record.pm:2175
+#: lib/RT/Record.pm:2124 lib/RT/Record.pm:2174
 msgid "Couldn't create a transaction: %1"
 msgstr "No se pudo crear la transacción: %1"
 
@@ -1895,7 +1903,7 @@ msgstr "No se pudo crear el registro: %1"
 msgid "Couldn't delete dashboard %1: %2"
 msgstr "No fue posible borrar el cuadro de mandos %1: %2"
 
-#: lib/RT/Record.pm:1039
+#: lib/RT/Record.pm:1038
 msgid "Couldn't find row"
 msgstr "No se pudo encontrar la fila"
 
@@ -1907,7 +1915,7 @@ msgstr "No se pudo encontrar una traducción adecuada, omitiendolo"
 msgid "Couldn't find that principal"
 msgstr "No pudo enconcontrar ese principal"
 
-#: lib/RT/CustomField.pm:661
+#: lib/RT/CustomField.pm:662
 msgid "Couldn't find that value"
 msgstr "No se pudo encontrar ese valor"
 
@@ -1942,7 +1950,7 @@ msgid "Couldn't load copy of %1 #%2"
 msgstr "No se pudo cargar una copia de %1 #%2"
 
 #. ($self->Id)
-#: lib/RT/Ticket.pm:1090
+#: lib/RT/Ticket.pm:1086
 msgid "Couldn't load copy of ticket #%1."
 msgstr "No fue posible cargar la copia del pedido #%1."
 
@@ -2021,7 +2029,7 @@ msgstr "No fue posible cargar la acción #%1"
 msgid "Couldn't load template #%1"
 msgstr "No fue posible cargar la plantilla #%1"
 
-#: lib/RT/Interface/Web.pm:2622
+#: lib/RT/Interface/Web.pm:2628
 msgid "Couldn't load the specified principal"
 msgstr "No se pudo cargar la entidad especificada"
 
@@ -2040,22 +2048,22 @@ msgstr "No se pudo cargar la membresía del tema al tratar de eliminarlo."
 msgid "Couldn't load transaction #%1"
 msgstr "No fue posible cargar la transacción #%1"
 
-#: share/html/User/Prefs.html:214
+#: share/html/User/Prefs.html:215
 msgid "Couldn't load user"
 msgstr "No se pudo cargar al usuario"
 
 #. ($id)
-#: share/html/Admin/Users/Keys.html:95 share/html/User/Prefs.html:210
+#: share/html/Admin/Users/Keys.html:95 share/html/User/Prefs.html:211
 msgid "Couldn't load user #%1"
 msgstr "No fue posible cargar al usuario  #%1"
 
 #. ($id, $Name)
-#: share/html/User/Prefs.html:208
+#: share/html/User/Prefs.html:209
 msgid "Couldn't load user #%1 or user '%2'"
 msgstr "No se pudo cargar al usuario #%1 ni al usuario '%2'"
 
 #. ($Name)
-#: share/html/User/Prefs.html:212
+#: share/html/User/Prefs.html:213
 msgid "Couldn't load user '%1'"
 msgstr "No se pudo cargar al usuario '%1'"
 
@@ -2075,17 +2083,17 @@ msgid "Couldn't remove previous member: %1"
 msgstr "No se pudo remover el miembro anterior: %1"
 
 #. ($msg)
-#: lib/RT/Attachment.pm:833
+#: lib/RT/Attachment.pm:874
 msgid "Couldn't replace content with decrypted data: %1"
 msgstr "No fue posible reemplazar el contenido con la información desencriptada: %1"
 
 #. ($msg)
-#: lib/RT/Attachment.pm:782
+#: lib/RT/Attachment.pm:823
 msgid "Couldn't replace content with encrypted data: %1"
 msgstr "No fue posible reemplazar el contenido con la información encriptada: %1"
 
 #. ($remote_link)
-#: lib/RT/Record.pm:1419 lib/RT/Record.pm:1556
+#: lib/RT/Record.pm:1418 lib/RT/Record.pm:1555
 msgid "Couldn't resolve '%1' into a link."
 msgstr "No se pudo reconocer '%1' como un enlace."
 
@@ -2116,7 +2124,7 @@ msgstr "No se pudo desconfigurar la clave privada"
 msgid "Country"
 msgstr "País"
 
-#: share/html/Admin/Articles/Classes/Modify.html:128 share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/Elements/EditCustomField:87 share/html/Admin/Global/Template.html:78 share/html/Admin/Groups/Modify.html:91 share/html/Admin/Queues/Modify.html:165 share/html/Admin/Queues/Template.html:111 share/html/Admin/Scrips/Create.html:74 share/html/Admin/Scrips/Create.html:81 share/html/Admin/Users/Modify.html:224 share/html/Articles/Article/Edit.html:102 share/html/Articles/Article/ExtractFromTicket.html:83 share/html/Articles/Article/ExtractIntoClass.html:68 share/html/Articles/Article/ExtractIntoTopic.html:60 share/html/Dashboards/Modify.html:72 share/html/Elements/QuickCreate:77 share/html/Elements/ShowLinks:54 share/html/Elements/Tabs:107 share/html/Elements/Tabs:122 share/html/Elements/Tabs:130 share/html/Elements/Tabs:176 share/html/Elements/Tabs:191 share/html/Elements/Tabs:275 share/html/Elements/Tabs:294 share/html/Elements/Tabs:298 share/html/Elements/Tabs:403 share/html/Elements/Tabs:410 share/html/Elements/Tabs:417 share/html/Elements/Tabs:420 share/html/Elements/Tabs:423 share/html/Elements/Tabs:431 share/html/Elements/Tabs:437 share/html/Elements/Tabs:449 share/html/Elements/Tabs:460 share/html/Elements/Tabs:532 share/html/Elements/Tabs:72 share/html/Elements/Tabs:80 share/html/Elements/Tabs:88 share/html/Elements/Tabs:97 share/html/Ticket/Create.html:214 share/html/Ticket/Create.html:293 share/html/User/Elements/Portlets/CreateTicket:53 share/html/m/ticket/create:235 share/html/m/ticket/create:408
+#: share/html/Admin/Articles/Classes/Modify.html:128 share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/Elements/EditCustomField:87 share/html/Admin/Global/Template.html:78 share/html/Admin/Groups/Modify.html:91 share/html/Admin/Queues/Modify.html:165 share/html/Admin/Queues/Template.html:111 share/html/Admin/Scrips/Create.html:74 share/html/Admin/Scrips/Create.html:81 share/html/Admin/Users/Modify.html:224 share/html/Articles/Article/Edit.html:102 share/html/Articles/Article/ExtractFromTicket.html:83 share/html/Articles/Article/ExtractIntoClass.html:68 share/html/Articles/Article/ExtractIntoTopic.html:60 share/html/Dashboards/Modify.html:72 share/html/Elements/QuickCreate:78 share/html/Elements/ShowLinks:54 share/html/Elements/Tabs:107 share/html/Elements/Tabs:122 share/html/Elements/Tabs:130 share/html/Elements/Tabs:176 share/html/Elements/Tabs:191 share/html/Elements/Tabs:275 share/html/Elements/Tabs:294 share/html/Elements/Tabs:298 share/html/Elements/Tabs:403 share/html/Elements/Tabs:410 share/html/Elements/Tabs:417 share/html/Elements/Tabs:420 share/html/Elements/Tabs:423 share/html/Elements/Tabs:431 share/html/Elements/Tabs:437 share/html/Elements/Tabs:449 share/html/Elements/Tabs:460 share/html/Elements/Tabs:532 share/html/Elements/Tabs:72 share/html/Elements/Tabs:80 share/html/Elements/Tabs:88 share/html/Elements/Tabs:97 share/html/Ticket/Create.html:215 share/html/Ticket/Create.html:294 share/html/User/Elements/Portlets/CreateTicket:53 share/html/m/ticket/create:235 share/html/m/ticket/create:408
 msgid "Create"
 msgstr "Crear"
 
@@ -2162,7 +2170,7 @@ msgstr "Crear un nuevo grupo"
 msgid "Create a new template for queue %1"
 msgstr "Crear una nueva plantilla para la cola %1"
 
-#: share/html/Ticket/Create.html:375
+#: share/html/Ticket/Create.html:378
 msgid "Create a new ticket"
 msgstr "Crear un nuevo caso"
 
@@ -2223,11 +2231,11 @@ msgstr "Crear cuadros de mandos del sistema"
 msgid "Create ticket"
 msgstr "Crear caso"
 
-#: lib/RT/Queue.pm:129
+#: lib/RT/Queue.pm:122
 msgid "Create tickets"
 msgstr "Crear casos"
 
-#: lib/RT/Class.pm:98 lib/RT/Queue.pm:112
+#: lib/RT/Class.pm:98 lib/RT/Queue.pm:105
 msgid "Create, modify and delete Access Control List entries"
 msgstr "Crear, modificar y eliminar entradas en la lista de control de acceso"
 
@@ -2239,7 +2247,7 @@ msgstr "Crear, modificar y eliminar campos personalizados"
 msgid "Create, modify and delete custom fields values"
 msgstr "Crear, modificar y eliminar valores de campos personalizados"
 
-#: lib/RT/Queue.pm:110
+#: lib/RT/Queue.pm:103
 msgid "Create, modify and delete queue"
 msgstr "Crear, modificar y eliminar colas"
 
@@ -2251,7 +2259,7 @@ msgstr "Crear, modificar y eliminar búsquedas almacenadas"
 msgid "Create, modify and delete users"
 msgstr "Crear, modificar y eliminar usuarios"
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:73 lib/RT/Tickets.pm:137 share/html/Admin/Elements/ShowKeyInfo:71 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:69 share/html/Elements/ColumnMap:74 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:350
+#: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:77 lib/RT/Tickets.pm:137 share/html/Admin/Elements/ShowKeyInfo:71 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:69 share/html/Elements/ColumnMap:74 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:350
 msgid "Created"
 msgstr "Creado"
 
@@ -2282,7 +2290,7 @@ msgstr "CreadoPor"
 msgid "CreatedRelative"
 msgstr "CreadoRelativo"
 
-#: lib/RT/Graph/Tickets.pm:154 lib/RT/Report/Tickets.pm:65 lib/RT/Tickets.pm:109 share/html/Search/Elements/PickBasics:115
+#: lib/RT/Graph/Tickets.pm:154 lib/RT/Report/Tickets.pm:69 lib/RT/Tickets.pm:109 share/html/Search/Elements/PickBasics:115
 msgid "Creator"
 msgstr "Creador"
 
@@ -2290,7 +2298,7 @@ msgstr "Creador"
 msgid "Cryptography"
 msgstr "Criptografía"
 
-#: lib/RT/Attachment.pm:739 lib/RT/Attachment.pm:799
+#: lib/RT/Attachment.pm:780 lib/RT/Attachment.pm:840
 msgid "Cryptography is disabled"
 msgstr ""
 
@@ -2351,27 +2359,27 @@ msgid "Custom field #%1 is not applied to this object"
 msgstr "El campo personalizado #%1 no se aplica a este objeto"
 
 #. ($CF->Name, $args{OPERATOR}, $args{VALUE})
-#: lib/RT/Tickets.pm:2213
+#: lib/RT/Tickets.pm:2252
 msgid "Custom field %1 %2 %3"
 msgstr "Campo personalizado %1 %2 %3"
 
 #. (ref $args{'Field'} ? $args{'Field'}->id : $args{'Field'})
-#: lib/RT/Record.pm:1979
+#: lib/RT/Record.pm:1978
 msgid "Custom field %1 does not apply to this object"
 msgstr "El campo personalizado %1 no se aplica a este objeto"
 
 #. ($CF->Name)
-#: lib/RT/Tickets.pm:2207
+#: lib/RT/Tickets.pm:2246
 msgid "Custom field %1 has a value."
 msgstr "Campo personalizado %1 tiene un valor."
 
 #. ($CF->Name)
-#: lib/RT/Tickets.pm:2203
+#: lib/RT/Tickets.pm:2242
 msgid "Custom field %1 has no value."
 msgstr "Campo personalizado %1 no tiene un valor."
 
 #. ($args{'Field'})
-#: lib/RT/Record.pm:1968 lib/RT/Record.pm:2156
+#: lib/RT/Record.pm:1967 lib/RT/Record.pm:2155
 msgid "Custom field %1 not found"
 msgstr "Campo personalizado %1 no encontrado"
 
@@ -2380,7 +2388,7 @@ msgstr "Campo personalizado %1 no encontrado"
 msgid "Custom field value %1 could not be found for custom field %2"
 msgstr "El valor del campo personalizado %1 no pudo ser encontrado para el campo personalizado %2"
 
-#: lib/RT/CustomField.pm:669
+#: lib/RT/CustomField.pm:670
 msgid "Custom field value could not be deleted"
 msgstr "El valor del campo personalizado no pudo ser borrado"
 
@@ -2388,7 +2396,7 @@ msgstr "El valor del campo personalizado no pudo ser borrado"
 msgid "Custom field value could not be found"
 msgstr "El valor del campo personalizado no pudo se encontrado"
 
-#: lib/RT/CustomField.pm:1852 lib/RT/CustomField.pm:671
+#: lib/RT/CustomField.pm:1852 lib/RT/CustomField.pm:672
 msgid "Custom field value deleted"
 msgstr "Valor del campo personalizado borrado"
 
@@ -2436,7 +2444,7 @@ msgstr "Contraseña del administrador de la base de datos"
 msgid "DBA username"
 msgstr "Nombre del usuario para el Administrador de la Base de Datos"
 
-#: lib/RT/Dashboard/Mailer.pm:327 lib/RT/Report/Tickets.pm:124
+#: lib/RT/Dashboard/Mailer.pm:327 lib/RT/Report/Tickets.pm:131
 msgid "Daily"
 msgstr "Diariamente"
 
@@ -2472,7 +2480,7 @@ msgstr "No fue posible actualizar Cuadro de Mandos: %1"
 msgid "Dashboard updated"
 msgstr "Cuadro de Mandos actualizado"
 
-#: etc/RT_Config.pm:1221 etc/initialdata:879 share/html/Dashboards/index.html:48 share/html/Elements/Dashboards:49
+#: etc/RT_Config.pm:1234 etc/initialdata:879 share/html/Dashboards/index.html:48 share/html/Elements/Dashboards:49
 msgid "Dashboards"
 msgstr "Cuadros de Mandos"
 
@@ -2509,7 +2517,7 @@ msgstr "Tipo de base de datos"
 msgid "Database username for RT"
 msgstr "Usuario de la base de datos para RT"
 
-#: lib/RT/Report/Tickets.pm:124 share/html/Admin/Elements/UpgradeHistory:56
+#: lib/RT/Report/Tickets.pm:131 share/html/Admin/Elements/UpgradeHistory:56
 msgid "Date"
 msgstr ""
 
@@ -2517,23 +2525,23 @@ msgstr ""
 msgid "Date format"
 msgstr "Formato de fecha"
 
-#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:659 share/html/SelfService/Display.html:73 share/html/Ticket/Create.html:256 share/html/Ticket/Elements/ShowSummary:85 share/html/Ticket/ModifyAll.html:68 share/html/m/ticket/create:377 share/html/m/ticket/show:344
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:659 share/html/SelfService/Display.html:73 share/html/Ticket/Create.html:257 share/html/Ticket/Elements/ShowSummary:85 share/html/Ticket/ModifyAll.html:69 share/html/m/ticket/create:377 share/html/m/ticket/show:344
 msgid "Dates"
 msgstr "Fechas"
 
-#: lib/RT/Report/Tickets.pm:124
+#: lib/RT/Report/Tickets.pm:131
 msgid "Day"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:124
+#: lib/RT/Report/Tickets.pm:131
 msgid "DayOfMonth"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:124
+#: lib/RT/Report/Tickets.pm:131
 msgid "DayOfWeek"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:124
+#: lib/RT/Report/Tickets.pm:131
 msgid "DayOfYear"
 msgstr ""
 
@@ -2545,7 +2553,7 @@ msgstr "Dic"
 msgid "Decrypt"
 msgstr "Desencriptar"
 
-#: lib/RT/Attachment.pm:828
+#: lib/RT/Attachment.pm:869
 msgid "Decryption error; contact the administrator"
 msgstr ""
 
@@ -2570,7 +2578,7 @@ msgstr "Por omisión: %1/%2 ha cambiado de %3 a %4"
 msgid "DefaultFormat"
 msgstr "FormatoPredefinido"
 
-#: etc/RT_Config.pm:2786 etc/RT_Config.pm:2830 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:892 share/html/Elements/Tabs:917 share/html/Search/Elements/EditFormat:116 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:2799 etc/RT_Config.pm:2843 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:892 share/html/Elements/Tabs:917 share/html/Search/Elements/EditFormat:119 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
 msgid "Delete"
 msgstr "Borrar"
 
@@ -2596,7 +2604,7 @@ msgstr "Borrado fallido: %1"
 msgid "Delete group dashboards"
 msgstr "Eliminar paneles de grupo"
 
-#: lib/RT/Ticket.pm:2440 lib/RT/Ticket.pm:2440
+#: lib/RT/Ticket.pm:2431 lib/RT/Ticket.pm:2431
 msgid "Delete operation is disabled by lifecycle configuration"
 msgstr "La eliminación ha sido desactivada por la configuración del ciclo de vida"
 
@@ -2608,7 +2616,7 @@ msgstr "Borrar cuadros de mandos personales"
 msgid "Delete system dashboards"
 msgstr "Borrar cuadros de mando del sistema"
 
-#: lib/RT/Queue.pm:134
+#: lib/RT/Queue.pm:127
 msgid "Delete tickets"
 msgstr "Borrar casos"
 
@@ -2634,7 +2642,7 @@ msgstr "Búsqueda salvada, eliminada"
 msgid "Deleted search %1"
 msgstr "Búsqueda %1 eliminada"
 
-#: lib/RT/Queue.pm:230
+#: lib/RT/Queue.pm:223
 msgid "Deleting this object would break referential integrity"
 msgstr "Al borrar este objeto, se romperá la integridad referencial"
 
@@ -2690,7 +2698,7 @@ msgstr "DependeDe"
 msgid "Desc"
 msgstr ""
 
-#: share/html/SelfService/Create.html:108 share/html/Ticket/Create.html:195 share/html/m/ticket/create:231
+#: share/html/SelfService/Create.html:108 share/html/Ticket/Create.html:196 share/html/m/ticket/create:231
 msgid "Describe the issue below"
 msgstr "Describa el problema debajo"
 
@@ -2702,7 +2710,7 @@ msgstr "Descripción"
 msgid "Detailed information about your RT setup"
 msgstr "Información detallada sobre su instalación de RT"
 
-#: share/html/Ticket/Create.html:451
+#: share/html/Ticket/Create.html:454
 msgid "Details"
 msgstr "Detalles"
 
@@ -2714,11 +2722,11 @@ msgstr "Dirección"
 msgid "Disabled"
 msgstr "Deshabilitado"
 
-#: share/html/Elements/Tabs:634 share/html/Elements/Tabs:889 share/html/Elements/Tabs:910 share/html/Search/Elements/EditFormat:71
+#: share/html/Elements/Tabs:634 share/html/Elements/Tabs:889 share/html/Elements/Tabs:910 share/html/Search/Elements/EditFormat:72
 msgid "Display"
 msgstr "Despliegue"
 
-#: lib/RT/Class.pm:97 lib/RT/Queue.pm:111
+#: lib/RT/Class.pm:97 lib/RT/Queue.pm:104
 msgid "Display Access Control List"
 msgstr "Mostrar Lista de Control de Acceso"
 
@@ -2792,7 +2800,7 @@ msgstr "Descargar archivo de volcado (dump)"
 msgid "Dropdown"
 msgstr "Desplegable"
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:77 lib/RT/Tickets.pm:134 share/html/Elements/RT__Ticket/ColumnMap:205 share/html/Elements/RT__Ticket/ColumnMap:238 share/html/Elements/SelectDateType:55 share/html/Elements/ShowReminders:52 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:262 share/html/Ticket/Elements/EditDates:68 share/html/Ticket/Elements/Reminders:141 share/html/Ticket/Elements/Reminders:177 share/html/Ticket/Elements/Reminders:83 share/html/Ticket/Elements/ShowDates:66 share/html/m/ticket/create:384 share/html/m/ticket/show:366
+#: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:81 lib/RT/Tickets.pm:134 share/html/Elements/RT__Ticket/ColumnMap:205 share/html/Elements/RT__Ticket/ColumnMap:238 share/html/Elements/SelectDateType:55 share/html/Elements/ShowReminders:52 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:263 share/html/Ticket/Elements/EditDates:68 share/html/Ticket/Elements/Reminders:141 share/html/Ticket/Elements/Reminders:177 share/html/Ticket/Elements/Reminders:83 share/html/Ticket/Elements/ShowDates:70 share/html/m/ticket/create:384 share/html/m/ticket/show:366
 msgid "Due"
 msgstr "Fecha límite"
 
@@ -2817,7 +2825,7 @@ msgstr "Vista fácil de sus recordatorios"
 msgid "Edit"
 msgstr "Editar"
 
-#: share/html/Search/Bulk.html:165
+#: share/html/Search/Bulk.html:172
 msgid "Edit Custom Fields"
 msgstr "Editar campos personalizados"
 
@@ -2846,7 +2854,7 @@ msgstr "Editar campos personalizados para los artículos de todas las clases"
 msgid "Edit Custom Fields for tickets in all queues"
 msgstr "Editar Campos Personalizados para casos en todas las colas"
 
-#: share/html/Search/Bulk.html:170 share/html/Ticket/ModifyLinks.html:59
+#: share/html/Search/Bulk.html:177 share/html/Ticket/ModifyLinks.html:59
 msgid "Edit Links"
 msgstr "Editar enlaces"
 
@@ -2886,7 +2894,7 @@ msgstr "Editando los miembros del grupo %1"
 msgid "EffectiveId"
 msgstr "IdEfectivo"
 
-#: lib/RT/Record.pm:1396 lib/RT/Record.pm:1541
+#: lib/RT/Record.pm:1395 lib/RT/Record.pm:1540
 msgid "Either base or target must be specified"
 msgstr "La base o el destinatario deben ser especificados"
 
@@ -2998,15 +3006,15 @@ msgstr "Codificar/Decodificar"
 msgid "Encrypt/Decrypt transaction #%1 of ticket #%2"
 msgstr "Codificar/Descodificar transacción #%1 del caso #%2"
 
-#: lib/RT/Queue.pm:417
+#: lib/RT/Queue.pm:410
 msgid "Encrypting disabled"
 msgstr "Codificación deshabilitada"
 
-#: lib/RT/Queue.pm:416
+#: lib/RT/Queue.pm:409
 msgid "Encrypting enabled"
 msgstr "Codificación habilitada"
 
-#: lib/RT/Attachment.pm:777
+#: lib/RT/Attachment.pm:818
 msgid "Encryption error; contact the administrator"
 msgstr ""
 
@@ -3054,7 +3062,7 @@ msgstr "Introduzca un valor con autocompletado"
 msgid "Enter queues or URIs to link queues to. Separate multiple entries with spaces."
 msgstr "Introduzca colas o URIs a los que enlazar las colas. Separe las entradas múltiples mediante espacios."
 
-#: share/html/Elements/AddLinks:62 share/html/Search/Bulk.html:171
+#: share/html/Elements/AddLinks:62 share/html/Search/Bulk.html:178
 msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with spaces."
 msgstr "Ingrese los números de caso o las URI que enlazan a casos. Separe multiples entradas con espacios"
 
@@ -3154,7 +3162,7 @@ msgstr "Escalar casos"
 msgid "Estimated"
 msgstr "Estimado"
 
-#: lib/RT/Handle.pm:714
+#: lib/RT/Handle.pm:717
 msgid "Everyone"
 msgstr "Todos"
 
@@ -3325,11 +3333,11 @@ msgstr "Rellenar en hasta %1 areas de texto"
 msgid "Fill in up to %quant(%1,wikitext area,wikitext areas)"
 msgstr "Rellenar en hasta %1 areas wikitext"
 
-#: lib/RT/Tickets.pm:1692 share/html/Search/Elements/PickBasics:202 share/html/Ticket/Create.html:233 share/html/m/ticket/create:347
+#: lib/RT/Tickets.pm:1731 share/html/Search/Elements/PickBasics:202 share/html/Ticket/Create.html:234 share/html/m/ticket/create:347
 msgid "Final Priority"
 msgstr "Prioridad Final"
 
-#: lib/RT/Tickets.pm:115 share/html/Elements/RT__Ticket/ColumnMap:159 share/html/Search/Elements/BuildFormatString:100
+#: lib/RT/Report/Tickets.pm:65 lib/RT/Tickets.pm:115 share/html/Elements/RT__Ticket/ColumnMap:159 share/html/Search/Elements/BuildFormatString:100
 msgid "FinalPriority"
 msgstr ""
 
@@ -3353,7 +3361,7 @@ msgstr "Encontrar usuarios que"
 msgid "Find tickets"
 msgstr "Encontrar casos"
 
-#: etc/RT_Config.pm:1221
+#: etc/RT_Config.pm:1234
 msgid "FindUser"
 msgstr "EncontrarUsuario"
 
@@ -3407,7 +3415,7 @@ msgstr "Reenviar mensaje y retornar"
 msgid "Forward Ticket"
 msgstr "Reenviar Caso"
 
-#: lib/RT/Queue.pm:139
+#: lib/RT/Queue.pm:132
 msgid "Forward messages outside of RT"
 msgstr "Transferir mensajes fuera de RT"
 
@@ -3445,7 +3453,7 @@ msgstr ""
 msgid "Found %quant(%1,ticket,tickets)"
 msgstr "Mostrando %quant(%1,caso)"
 
-#: lib/RT/Record.pm:1041
+#: lib/RT/Record.pm:1040
 msgid "Found Object"
 msgstr "Objeto encontrado"
 
@@ -3565,11 +3573,11 @@ msgstr "Gráfico"
 msgid "Graph Properties"
 msgstr "Propiedades de gráfico"
 
-#: share/html/Search/Elements/Chart:72
+#: share/html/Search/Elements/Chart:73
 msgid "Graphical charts are not available."
 msgstr "Diagramas de gráficos no están disponibles."
 
-#: lib/RT/Record.pm:1021 share/html/Search/Elements/SelectPersonType:54 share/html/Ticket/Elements/AddWatchers:69
+#: lib/RT/Record.pm:1020 share/html/Search/Elements/SelectPersonType:54 share/html/Ticket/Elements/AddWatchers:69
 msgid "Group"
 msgstr "Grupo"
 
@@ -3693,7 +3701,7 @@ msgstr "Encabezado de un caso reenviado"
 msgid "Heading of a forwarded message"
 msgstr "Encabezado de un mensaje reenviado"
 
-#: share/html/Search/Chart.html:181
+#: share/html/Search/Chart.html:184
 msgid "Height"
 msgstr ""
 
@@ -3750,11 +3758,11 @@ msgstr "Intervalo de refresco de la página de inicio"
 msgid "Homepage"
 msgstr "Inicio"
 
-#: lib/RT/Report/Tickets.pm:124 share/html/Dashboards/Subscription.html:141
+#: lib/RT/Report/Tickets.pm:131 share/html/Dashboards/Subscription.html:141
 msgid "Hour"
 msgstr "Hora"
 
-#: lib/RT/Report/Tickets.pm:124
+#: lib/RT/Report/Tickets.pm:131
 msgid "Hourly"
 msgstr "Cada hora"
 
@@ -3767,7 +3775,7 @@ msgstr "Horas"
 msgid "I have %quant(%1,concrete mixer,concrete mixers)."
 msgstr "Tengo %quant(%1,concrete mixer)."
 
-#: share/html/User/Prefs.html:174
+#: share/html/User/Prefs.html:176
 msgid "I want to reset my secret token."
 msgstr "Quiero restablecer mi token de seguridad"
 
@@ -3775,7 +3783,7 @@ msgstr "Quiero restablecer mi token de seguridad"
 msgid "ISO"
 msgstr ""
 
-#: lib/RT/Tickets.pm:1623 share/html/Ticket/Elements/ShowBasics:50 share/html/m/ticket/show:212
+#: lib/RT/Tickets.pm:1662 share/html/Ticket/Elements/ShowBasics:50 share/html/m/ticket/show:212
 msgid "Id"
 msgstr ""
 
@@ -3817,7 +3825,7 @@ msgstr "Si en verdad era su intención visitar %1 y %2, entonces %3haga clic aqu
 msgid "If you've changed the Port that RT runs on, you'll need to restart the server in order to log in."
 msgstr "Si ha cambiado el puerto en el que trabaja RT, necesitará reiniciar el servicio para poder acceder."
 
-#: share/html/Admin/Queues/People.html:124 share/html/Ticket/Modify.html:68 share/html/Ticket/ModifyAll.html:137 share/html/Ticket/ModifyPeople.html:75
+#: share/html/Admin/Queues/People.html:124 share/html/Ticket/Modify.html:68 share/html/Ticket/ModifyAll.html:138 share/html/Ticket/ModifyPeople.html:76
 msgid "If you've updated anything above, be sure to"
 msgstr "Si ha actualizado algo más arriba, no olvide"
 
@@ -3826,7 +3834,7 @@ msgstr "Si ha actualizado algo más arriba, no olvide"
 msgid "If your preferred database isn't listed in the dropdown below, that means RT couldn't find a <i>database driver</i> for it installed locally. You may be able to remedy this by using %1 to download and install DBD::MySQL, DBD::Oracle or DBD::Pg."
 msgstr "Si su base de datos preferida no está listada en el desplegable de abajo, significa que RT no pudo encontrar un <i>driver de base de datos</i> para ella, instalado localmente. Podría remediar esto utilizando %1 para descargar e instalar DBD::MySQL, DBD::Oracle ó DBD::Pg."
 
-#: lib/RT/Record.pm:1033
+#: lib/RT/Record.pm:1032
 msgid "Illegal value for %1"
 msgstr "Valor ilegal para %1"
 
@@ -3842,7 +3850,7 @@ msgstr ""
 msgid "Image not shown because sender requested not to inline it."
 msgstr ""
 
-#: lib/RT/Record.pm:1036
+#: lib/RT/Record.pm:1035
 msgid "Immutable field"
 msgstr "Campo inmutable"
 
@@ -3853,6 +3861,10 @@ msgstr "Casos inactivos"
 #: share/html/Articles/Elements/BeforeMessageBox:59
 msgid "Include Article:"
 msgstr "Incluir artículo:"
+
+#: share/html/Search/Chart.html:190
+msgid "Include TicketSQL query"
+msgstr ""
 
 #: share/html/Admin/Articles/Classes/Modify.html:89
 msgid "Include article name"
@@ -3865,6 +3877,10 @@ msgstr ""
 #. ($cf->Name)
 #: share/html/Admin/Articles/Classes/Modify.html:97
 msgid "Include custom field '%1'"
+msgstr ""
+
+#: share/html/Search/Chart.html:187
+msgid "Include data table"
 msgstr ""
 
 #: share/html/Admin/Articles/Classes/index.html:70
@@ -3940,11 +3956,11 @@ msgstr ""
 msgid "Inform user that we received an encrypted email and we have no private keys to decrypt"
 msgstr "Informar al usuario de que hemos recibido un correo electrónico codificado y no tenemos las claves privadas para descifrar los"
 
-#: lib/RT/Tickets.pm:1669 share/html/Search/Elements/PickBasics:201
+#: lib/RT/Tickets.pm:1708 share/html/Search/Elements/PickBasics:201
 msgid "Initial Priority"
 msgstr "Prioridad inicial"
 
-#: lib/RT/Tickets.pm:114 share/html/Elements/RT__Ticket/ColumnMap:153 share/html/Search/Elements/BuildFormatString:100
+#: lib/RT/Report/Tickets.pm:64 lib/RT/Tickets.pm:114 share/html/Elements/RT__Ticket/ColumnMap:153 share/html/Search/Elements/BuildFormatString:100
 msgid "InitialPriority"
 msgstr "PrioridadInicial"
 
@@ -4007,7 +4023,7 @@ msgstr "Inválido %1: se espera un número"
 msgid "Invalid Class"
 msgstr "Clase inválida"
 
-#: lib/RT/CustomField.pm:321 lib/RT/CustomField.pm:766
+#: lib/RT/CustomField.pm:321 lib/RT/CustomField.pm:767
 msgid "Invalid Custom Field values source"
 msgstr "Origen de valores para campos personalizados inválido"
 
@@ -4029,7 +4045,7 @@ msgstr "Tipo de presentación inválido"
 msgid "Invalid Render Type for custom field of type %1"
 msgstr "Tipo de presentación inválido para campo personalizado del tipo %1"
 
-#: lib/RT/Record.pm:1038
+#: lib/RT/Record.pm:1037
 msgid "Invalid data"
 msgstr "Datos no válidos"
 
@@ -4043,13 +4059,13 @@ msgid "Invalid object"
 msgstr "Objeto no válido"
 
 #. ($msg)
-#: lib/RT/CustomField.pm:295 lib/RT/CustomField.pm:870
+#: lib/RT/CustomField.pm:295 lib/RT/CustomField.pm:871
 msgid "Invalid pattern: %1"
 msgstr "Patron inválido: %1"
 
 #. ($name)
 #. ($path)
-#: share/html/Dashboards/Elements/ShowPortlet/component:61 share/html/Elements/MyRT:92
+#: share/html/Dashboards/Elements/ShowPortlet/component:61 share/html/Elements/MyRT:93
 msgid "Invalid portlet %1"
 msgstr ""
 
@@ -4080,7 +4096,7 @@ msgstr "Sintaxis no válida para la dirección de correo electrónico"
 msgid "Invalid value for %1"
 msgstr "Valor inválido para %1"
 
-#: lib/RT/Record.pm:1989
+#: lib/RT/Record.pm:1988
 msgid "Invalid value for custom field"
 msgstr "Valor no válido para el campo personalizado"
 
@@ -4088,7 +4104,7 @@ msgstr "Valor no válido para el campo personalizado"
 msgid "Is already added to the object"
 msgstr ""
 
-#: lib/RT/Attachment.pm:810
+#: lib/RT/Attachment.pm:851
 msgid "Is not encrypted"
 msgstr "No está encriptado"
 
@@ -4104,7 +4120,7 @@ msgstr "Es recomendable crear un usuario unix sin privilegios que pertenezca al 
 msgid "It takes several arguments:"
 msgstr "Tiene varios parámetros:"
 
-#: share/html/Search/Elements/EditFormat:97
+#: share/html/Search/Elements/EditFormat:98
 msgid "Italic"
 msgstr "Cursiva"
 
@@ -4145,7 +4161,7 @@ msgstr "Lenguaje"
 msgid "Language"
 msgstr "Idioma"
 
-#: share/html/Search/Elements/EditFormat:88
+#: share/html/Search/Elements/EditFormat:89
 msgid "Large"
 msgstr "Grande"
 
@@ -4153,7 +4169,7 @@ msgstr "Grande"
 msgid "Last"
 msgstr "Último"
 
-#: share/html/Ticket/Elements/EditDates:61 share/html/Ticket/Elements/ShowDates:62 share/html/m/ticket/show:362
+#: share/html/Ticket/Elements/EditDates:61 share/html/Ticket/Elements/ShowDates:65 share/html/m/ticket/show:362
 msgid "Last Contact"
 msgstr "Último contacto"
 
@@ -4177,11 +4193,11 @@ msgstr "Última actualización"
 msgid "Last updated by"
 msgstr "Última actualización por"
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:79 lib/RT/Tickets.pm:136 share/html/Search/Elements/BuildFormatString:100
+#: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:83 lib/RT/Tickets.pm:136 share/html/Search/Elements/BuildFormatString:100
 msgid "LastUpdated"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:154 lib/RT/Report/Tickets.pm:66 lib/RT/Tickets.pm:110 share/html/Search/Elements/BuildFormatString:100
+#: lib/RT/Graph/Tickets.pm:154 lib/RT/Report/Tickets.pm:70 lib/RT/Tickets.pm:110 share/html/Search/Elements/BuildFormatString:100
 msgid "LastUpdatedBy"
 msgstr ""
 
@@ -4226,29 +4242,29 @@ msgstr "Dar a este usuario permisos adicionales"
 msgid "Let's go!"
 msgstr "¡Vámonos!"
 
-#: share/html/Admin/Queues/Modify.html:70
+#: lib/RT/Tickets.pm:157 share/html/Admin/Queues/Modify.html:70
 msgid "Lifecycle"
 msgstr "Ciclo de vida"
 
-#: share/html/Search/Elements/EditFormat:67
+#: share/html/Search/Elements/EditFormat:68
 msgid "Link"
 msgstr "Enlace"
 
-#: lib/RT/Record.pm:1429
+#: lib/RT/Record.pm:1428
 msgid "Link already exists"
 msgstr "El vínculo ya existe"
 
 #. ($linkmsg)
-#: lib/RT/Record.pm:1451
+#: lib/RT/Record.pm:1450
 msgid "Link could not be created: %1"
 msgstr ""
 
 #. ($msg)
-#: lib/RT/Record.pm:1586
+#: lib/RT/Record.pm:1585
 msgid "Link could not be deleted: %1"
 msgstr ""
 
-#: lib/RT/Record.pm:1573
+#: lib/RT/Record.pm:1572
 msgid "Link not found"
 msgstr "Vínculo no encontrado"
 
@@ -4274,11 +4290,11 @@ msgid "LinkedTo"
 msgstr ""
 
 #. ($self->loc(lc($remote_obj->RecordType)))
-#: lib/RT/Record.pm:1415
+#: lib/RT/Record.pm:1414
 msgid "Linking to a deleted %1 is not allowed"
 msgstr ""
 
-#: share/html/Articles/Article/Display.html:56 share/html/Articles/Article/Edit.html:79 share/html/Articles/Article/Elements/ShowSearchCriteria:117 share/html/Elements/Tabs:660 share/html/Ticket/Create.html:280 share/html/Ticket/Elements/ShowSummary:92 share/html/Ticket/ModifyAll.html:81 share/html/m/ticket/create:390 share/html/m/ticket/show:386
+#: share/html/Articles/Article/Display.html:56 share/html/Articles/Article/Edit.html:79 share/html/Articles/Article/Elements/ShowSearchCriteria:117 share/html/Elements/Tabs:660 share/html/Ticket/Create.html:281 share/html/Ticket/Elements/ShowSummary:92 share/html/Ticket/ModifyAll.html:82 share/html/m/ticket/create:390 share/html/m/ticket/show:386
 msgid "Links"
 msgstr "Enlaces"
 
@@ -4497,27 +4513,27 @@ msgstr "Orden de búsqueda de template de Mason"
 msgid "MaxValues"
 msgstr "ValoresMax"
 
-#: lib/RT/Report/Tickets.pm:227
+#: lib/RT/Report/Tickets.pm:234
 msgid "Maximum Created-LastUpdated"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:222
+#: lib/RT/Report/Tickets.pm:229
 msgid "Maximum Created-Resolved"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:217
+#: lib/RT/Report/Tickets.pm:224
 msgid "Maximum Created-Started"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:237
+#: lib/RT/Report/Tickets.pm:244
 msgid "Maximum Due-Resolved"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:242
+#: lib/RT/Report/Tickets.pm:249
 msgid "Maximum Started-Resolved"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:232
+#: lib/RT/Report/Tickets.pm:239
 msgid "Maximum Starts-Started"
 msgstr ""
 
@@ -4525,15 +4541,15 @@ msgstr ""
 msgid "Maximum inline message length"
 msgstr "Longitud máxima del mensaje en línea"
 
-#: lib/RT/Report/Tickets.pm:207
+#: lib/RT/Report/Tickets.pm:214
 msgid "Maximum time estimated"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:212
+#: lib/RT/Report/Tickets.pm:219
 msgid "Maximum time left"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:202
+#: lib/RT/Report/Tickets.pm:209
 msgid "Maximum time worked"
 msgstr ""
 
@@ -4541,7 +4557,7 @@ msgstr ""
 msgid "May"
 msgstr ""
 
-#: share/html/Elements/QuickCreate:64
+#: share/html/Elements/QuickCreate:65
 msgid "Me"
 msgstr "Yo"
 
@@ -4609,23 +4625,23 @@ msgstr ""
 msgid "Memberships of the user %1"
 msgstr "Pertenencias del usuario %1"
 
-#: share/html/Search/Bulk.html:175 share/html/Ticket/ModifyAll.html:87 share/html/Ticket/ModifyLinks.html:63
+#: share/html/Search/Bulk.html:182 share/html/Ticket/ModifyAll.html:88 share/html/Ticket/ModifyLinks.html:63
 msgid "Merge"
 msgstr ""
 
-#: lib/RT/Ticket.pm:1950
+#: lib/RT/Ticket.pm:1941
 msgid "Merge Successful"
 msgstr "Fusión exitosa"
 
-#: lib/RT/Ticket.pm:1830
+#: lib/RT/Ticket.pm:1821
 msgid "Merge failed. Couldn't set EffectiveId"
 msgstr "Fusión fallida. No se pudo establecer el EffectiveId"
 
-#: lib/RT/Ticket.pm:1836
+#: lib/RT/Ticket.pm:1827
 msgid "Merge failed. Couldn't set IsMerged"
 msgstr ""
 
-#: lib/RT/Ticket.pm:1849
+#: lib/RT/Ticket.pm:1840
 msgid "Merge failed. Couldn't set Status"
 msgstr "Unión fallida. No se pudo establecer el Estado"
 
@@ -4638,7 +4654,7 @@ msgstr "Fusionar dentro de"
 msgid "Merged into %1"
 msgstr "Unido en %1"
 
-#: share/html/Search/Bulk.html:145 share/html/Ticket/Update.html:146 share/html/Ticket/Update.html:164 share/html/m/ticket/reply:108
+#: share/html/Search/Bulk.html:151 share/html/Ticket/Update.html:146 share/html/Ticket/Update.html:164 share/html/m/ticket/reply:108
 msgid "Message"
 msgstr "Mensaje"
 
@@ -4662,7 +4678,7 @@ msgstr "Altura del cuadro de texto"
 msgid "Message box width"
 msgstr "Ancho del cuadro de texto"
 
-#: lib/RT/Ticket.pm:1628
+#: lib/RT/Ticket.pm:1624
 msgid "Message could not be recorded"
 msgstr "Mensaje no pudo ser grabado"
 
@@ -4670,31 +4686,31 @@ msgstr "Mensaje no pudo ser grabado"
 msgid "Message for user"
 msgstr "Mensaje al usuario"
 
-#: lib/RT/Ticket.pm:3104
+#: lib/RT/Ticket.pm:3095
 msgid "Message recorded"
 msgstr "Mensaje grabado"
 
-#: lib/RT/Report/Tickets.pm:226
+#: lib/RT/Report/Tickets.pm:233
 msgid "Minimum Created-LastUpdated"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:221
+#: lib/RT/Report/Tickets.pm:228
 msgid "Minimum Created-Resolved"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:216
+#: lib/RT/Report/Tickets.pm:223
 msgid "Minimum Created-Started"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:236
+#: lib/RT/Report/Tickets.pm:243
 msgid "Minimum Due-Resolved"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:241
+#: lib/RT/Report/Tickets.pm:248
 msgid "Minimum Started-Resolved"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:231
+#: lib/RT/Report/Tickets.pm:238
 msgid "Minimum Starts-Started"
 msgstr ""
 
@@ -4702,15 +4718,15 @@ msgstr ""
 msgid "Minimum password length"
 msgstr "Longitud mínima de la contraseña"
 
-#: lib/RT/Report/Tickets.pm:206
+#: lib/RT/Report/Tickets.pm:213
 msgid "Minimum time estimated"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:211
+#: lib/RT/Report/Tickets.pm:218
 msgid "Minimum time left"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:201
+#: lib/RT/Report/Tickets.pm:208
 msgid "Minimum time worked"
 msgstr ""
 
@@ -4722,7 +4738,7 @@ msgstr "Minutos"
 msgid "Miscellaneous"
 msgstr "Miscelánea"
 
-#: lib/RT/Record.pm:1040
+#: lib/RT/Record.pm:1039
 msgid "Missing a primary key?: %1"
 msgstr "¿Falta una clave primaria?: %1"
 
@@ -4742,11 +4758,11 @@ msgstr "Modificar"
 msgid "Modify Members"
 msgstr "Modificar Miembros"
 
-#: lib/RT/Queue.pm:117
+#: lib/RT/Queue.pm:110
 msgid "Modify Scrip templates"
 msgstr "Modificar plantillas de Scrip"
 
-#: lib/RT/Queue.pm:120
+#: lib/RT/Queue.pm:113
 msgid "Modify Scrips"
 msgstr "Modificar scrips"
 
@@ -4779,7 +4795,7 @@ msgstr "Modificar objetos asociados para %1"
 msgid "Modify associated objects for scrip #%1"
 msgstr ""
 
-#: lib/RT/Class.pm:94 lib/RT/Queue.pm:115
+#: lib/RT/Class.pm:94 lib/RT/Queue.pm:108
 msgid "Modify custom field values"
 msgstr "Modificar valores de campo personalizado"
 
@@ -4854,7 +4870,7 @@ msgstr "Modificar o eliminar artículos en esta clase"
 
 #. ($Ticket->Id)
 #. ($Ticket->id)
-#: share/html/Ticket/ModifyPeople.html:48 share/html/Ticket/ModifyPeople.html:57
+#: share/html/Ticket/ModifyPeople.html:48 share/html/Ticket/ModifyPeople.html:58
 msgid "Modify people related to ticket #%1"
 msgstr "Modificar personas relacionadas con el caso #%1"
 
@@ -4862,7 +4878,7 @@ msgstr "Modificar personas relacionadas con el caso #%1"
 msgid "Modify personal dashboards"
 msgstr "Modificar los cuadros de mandos personales"
 
-#: lib/RT/Queue.pm:113
+#: lib/RT/Queue.pm:106
 msgid "Modify queue watchers"
 msgstr "Modificar observadores de la cola"
 
@@ -4923,7 +4939,7 @@ msgid "Modify the group %1"
 msgstr "Modificar el grupo %1"
 
 #. ($Dashboard->Name)
-#: share/html/Dashboards/Subscription.html:287
+#: share/html/Dashboards/Subscription.html:283
 msgid "Modify the subscription to dashboard %1"
 msgstr "Modificar la suscripción al cuadro de mandos %1"
 
@@ -4937,7 +4953,7 @@ msgid "Modify this search..."
 msgstr "Modificar esta búsqueda..."
 
 #. ($Ticket->Id)
-#: share/html/Ticket/ModifyAll.html:59
+#: share/html/Ticket/ModifyAll.html:60
 msgid "Modify ticket # %1"
 msgstr "Modificar el caso # %1"
 
@@ -4946,11 +4962,11 @@ msgstr "Modificar el caso # %1"
 msgid "Modify ticket #%1"
 msgstr "Modificar el caso #%1"
 
-#: lib/RT/Queue.pm:137
+#: lib/RT/Queue.pm:130
 msgid "Modify ticket owner on owned tickets"
 msgstr ""
 
-#: lib/RT/Queue.pm:133
+#: lib/RT/Queue.pm:126
 msgid "Modify tickets"
 msgstr "Modificar casos"
 
@@ -4988,7 +5004,7 @@ msgid "Modify user rights for queue %1"
 msgstr "Modificar permisos de usuario para la cola %1"
 
 #. ($Ticket->Id)
-#: share/html/Ticket/ModifyPeople.html:60
+#: share/html/Ticket/ModifyPeople.html:61
 msgid "Modify who receives mail for ticket #%1"
 msgstr "Modificar quién recibe mensajes de correo para el caso #%1"
 
@@ -5008,11 +5024,11 @@ msgstr "Lunes"
 msgid "Monday through Friday"
 msgstr "De lunes a viernes"
 
-#: lib/RT/Report/Tickets.pm:124
+#: lib/RT/Report/Tickets.pm:131
 msgid "Month"
 msgstr ""
 
-#: lib/RT/Dashboard/Mailer.pm:329 lib/RT/Report/Tickets.pm:124
+#: lib/RT/Dashboard/Mailer.pm:329 lib/RT/Report/Tickets.pm:131
 msgid "Monthly"
 msgstr "Mensualmente"
 
@@ -5077,11 +5093,11 @@ msgstr "Mis recordatorios"
 msgid "My saved searches"
 msgstr "Mis búsquedas salvadas"
 
-#: etc/RT_Config.pm:1221
+#: etc/RT_Config.pm:1234
 msgid "MyAdminQueues"
 msgstr ""
 
-#: etc/RT_Config.pm:1221 etc/initialdata:871
+#: etc/RT_Config.pm:1234 etc/initialdata:871
 msgid "MyReminders"
 msgstr "MisRecordatorios"
 
@@ -5089,7 +5105,7 @@ msgstr "MisRecordatorios"
 msgid "MySQL"
 msgstr ""
 
-#: etc/RT_Config.pm:1221
+#: etc/RT_Config.pm:1234
 msgid "MySupportQueues"
 msgstr ""
 
@@ -5121,7 +5137,7 @@ msgstr ""
 msgid "Name:"
 msgstr "Nombre:"
 
-#: lib/RT/Dashboard/Mailer.pm:330 share/html/Elements/RT__Dashboard/ColumnMap:102 share/html/Ticket/Elements/ShowDates:80 share/html/m/ticket/show:380
+#: lib/RT/Dashboard/Mailer.pm:330 share/html/Elements/RT__Dashboard/ColumnMap:102 share/html/Ticket/Elements/ShowDates:86 share/html/m/ticket/show:380
 msgid "Never"
 msgstr "Nunca"
 
@@ -5173,7 +5189,7 @@ msgstr "Nuevo recordatorio:"
 msgid "New ticket"
 msgstr "Nuevo caso"
 
-#: lib/RT/Ticket.pm:1785
+#: lib/RT/Ticket.pm:1776
 msgid "New ticket doesn't exist"
 msgstr "El caso nuevo no existe"
 
@@ -5237,7 +5253,7 @@ msgstr "No existe CustomField definido"
 msgid "No Group defined"
 msgstr "No hay grupo definido"
 
-#: lib/RT/Tickets.pm:3021
+#: lib/RT/Tickets.pm:3050
 msgid "No Query"
 msgstr "No existe Consulta"
 
@@ -5249,7 +5265,7 @@ msgstr "No hay cola definida"
 msgid "No RT user found. Please consult your RT administrator."
 msgstr "Usuario de RT no encontrado. Por favor consulte con su administrador de RT."
 
-#: share/html/Search/Elements/ResultsRSSView:132
+#: share/html/Search/Elements/ResultsRSSView:96
 msgid "No Subject"
 msgstr "Sin asunto"
 
@@ -5265,7 +5281,7 @@ msgstr "No hay plantilla"
 msgid "No action"
 msgstr "Sin acción"
 
-#: lib/RT/Record.pm:1035
+#: lib/RT/Record.pm:1034
 msgid "No column specified"
 msgstr "No se ha especificado ninguna columna"
 
@@ -5291,7 +5307,7 @@ msgstr "No hay grupo especificado"
 msgid "No groups matching search criteria found."
 msgstr "No existen grupos que coincidan con el criterio de búsqueda."
 
-#: lib/RT/Attachment.pm:766
+#: lib/RT/Attachment.pm:807
 msgid "No key suitable for encryption"
 msgstr "No existe clave adecuada para la encriptación"
 
@@ -5299,7 +5315,7 @@ msgstr "No existe clave adecuada para la encriptación"
 msgid "No longer authorized"
 msgstr ""
 
-#: lib/RT/Ticket.pm:1563
+#: lib/RT/Ticket.pm:1559
 msgid "No message attached"
 msgstr "Mensaje no adjuntado"
 
@@ -5307,7 +5323,7 @@ msgstr "Mensaje no adjuntado"
 msgid "No name provided"
 msgstr "No se introdujo nombre"
 
-#: lib/RT/Attachment.pm:748
+#: lib/RT/Attachment.pm:789
 msgid "No need to encrypt"
 msgstr "No es necesario encriptar"
 
@@ -5315,7 +5331,7 @@ msgstr "No es necesario encriptar"
 msgid "No password set"
 msgstr "No hay contraseña definida"
 
-#: lib/RT/Queue.pm:179
+#: lib/RT/Queue.pm:172
 msgid "No permission to create queues"
 msgstr "No tiene permisos para crear colas"
 
@@ -5373,7 +5389,7 @@ msgstr "No se encontraron permisos"
 msgid "No rights to add '%1' as an AdminCc on this ticket"
 msgstr ""
 
-#: share/html/Search/Bulk.html:226
+#: share/html/Search/Bulk.html:233
 msgid "No search to operate on."
 msgstr "No hay búsqueda sobre la que operar"
 
@@ -5414,11 +5430,11 @@ msgstr ""
 msgid "No valid Type specified"
 msgstr ""
 
-#: lib/RT/Record.pm:1032
+#: lib/RT/Record.pm:1031
 msgid "No value sent to _Set!"
 msgstr "¡No se envió ningún valor a _Set!"
 
-#: share/html/Elements/QuickCreate:65
+#: share/html/Elements/QuickCreate:66
 msgid "Nobody"
 msgstr "Nadie"
 
@@ -5426,7 +5442,7 @@ msgstr "Nadie"
 msgid "None"
 msgstr "Ninguno"
 
-#: lib/RT/Record.pm:1037
+#: lib/RT/Record.pm:1036
 msgid "Nonexistant field?"
 msgstr "¿Campo no existente?"
 
@@ -5693,7 +5709,7 @@ msgstr "Solo mostrar campos personalizados para:"
 msgid "Open Inactive Tickets"
 msgstr ""
 
-#: etc/RT_Config.pm:2783 etc/RT_Config.pm:2790 etc/RT_Config.pm:2827 etc/RT_Config.pm:2834
+#: etc/RT_Config.pm:2796 etc/RT_Config.pm:2803 etc/RT_Config.pm:2840 etc/RT_Config.pm:2847
 msgid "Open It"
 msgstr "Abrirlo"
 
@@ -5770,11 +5786,11 @@ msgstr "Pasado el tiempo, la prioridad se mueve a"
 msgid "Overview"
 msgstr "Vista general"
 
-#: lib/RT/Queue.pm:132
+#: lib/RT/Queue.pm:125
 msgid "Own tickets"
 msgstr "Casos propios"
 
-#: lib/RT/Graph/Tickets.pm:154 lib/RT/Report/Tickets.pm:64 lib/RT/Ticket.pm:100 lib/RT/Tickets.pm:111 lib/RT/Tickets.pm:1841 share/html/Elements/QuickCreate:62 share/html/Elements/RT__Ticket/ColumnMap:106 share/html/Elements/RT__Ticket/ColumnMap:270 share/html/Elements/RT__Ticket/ColumnMap:287 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:137 share/html/Ticket/Elements/Reminders:175 share/html/Ticket/Elements/Reminders:84 share/html/Ticket/Elements/ShowPeople:50 share/html/m/_elements/ticket_list:96 share/html/m/ticket/create:258 share/html/m/ticket/reply:71 share/html/m/ticket/show:286
+#: lib/RT/Graph/Tickets.pm:154 lib/RT/Report/Tickets.pm:68 lib/RT/Ticket.pm:100 lib/RT/Tickets.pm:111 lib/RT/Tickets.pm:1880 share/html/Elements/QuickCreate:62 share/html/Elements/RT__Ticket/ColumnMap:106 share/html/Elements/RT__Ticket/ColumnMap:270 share/html/Elements/RT__Ticket/ColumnMap:287 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:137 share/html/Ticket/Elements/Reminders:175 share/html/Ticket/Elements/Reminders:84 share/html/Ticket/Elements/ShowPeople:50 share/html/m/_elements/ticket_list:96 share/html/m/ticket/create:258 share/html/m/ticket/reply:71 share/html/m/ticket/show:286
 msgid "Owner"
 msgstr "Propietario"
 
@@ -5784,7 +5800,7 @@ msgid "Owner '%1' does not have rights to own this ticket."
 msgstr "El propietario '%1'  no tiene permisos para poseer este caso"
 
 #. ($OldOwnerObj->Name, $NewOwnerObj->Name)
-#: lib/RT/Ticket.pm:2066
+#: lib/RT/Ticket.pm:2057
 msgid "Owner changed from %1 to %2"
 msgstr "Propietario cambiado de %1 a %2"
 
@@ -5793,7 +5809,7 @@ msgstr "Propietario cambiado de %1 a %2"
 msgid "Owner forcibly changed from %1 to %2"
 msgstr "Propietario cambiado forzosamente de %1 a %2"
 
-#: lib/RT/Tickets.pm:159
+#: lib/RT/Tickets.pm:160
 msgid "OwnerGroup"
 msgstr ""
 
@@ -5859,7 +5875,7 @@ msgid "Password set"
 msgstr "Contraseña establecida"
 
 #. ($msg)
-#: share/html/SelfService/Prefs.html:94 share/html/User/Prefs.html:262
+#: share/html/SelfService/Prefs.html:94 share/html/User/Prefs.html:263
 msgid "Password: %1"
 msgstr "Contraseña: %1"
 
@@ -5893,7 +5909,7 @@ msgstr ""
 msgid "Pending approval."
 msgstr ""
 
-#: share/html/Elements/Tabs:655 share/html/Ticket/Elements/ShowSummary:62 share/html/Ticket/ModifyAll.html:75 share/html/m/ticket/show:282
+#: share/html/Elements/Tabs:655 share/html/Ticket/Elements/ShowSummary:62 share/html/Ticket/ModifyAll.html:76 share/html/m/ticket/show:282
 msgid "People"
 msgstr "Personas"
 
@@ -5922,11 +5938,11 @@ msgstr "Orden de búsqueda de librería Perl"
 msgid "Permanently wipeout data from RT"
 msgstr "Eliminar datos de RT de forma definitiva"
 
-#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:736 lib/RT/Attachment.pm:737 lib/RT/Attachment.pm:796 lib/RT/Attachment.pm:797 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:378 lib/RT/Attribute.pm:388 lib/RT/Attribute.pm:401 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1037 lib/RT/CustomField.pm:1574 lib/RT/CustomField.pm:1603 lib/RT/CustomField.pm:1646 lib/RT/CustomField.pm:1819 lib/RT/CustomField.pm:1969 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:628 lib/RT/CustomField.pm:655 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1247 lib/RT/Group.pm:1331 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:355 lib/RT/Queue.pm:381 lib/RT/Queue.pm:407 lib/RT/Queue.pm:804 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:317 lib/RT/Template.pm:482 lib/RT/Template.pm:747 lib/RT/Template.pm:764 lib/RT/Template.pm:782 lib/RT/Ticket.pm:1072 lib/RT/Ticket.pm:1283 lib/RT/Ticket.pm:1451 lib/RT/Ticket.pm:1501 lib/RT/Ticket.pm:1776 lib/RT/Ticket.pm:1795 lib/RT/Ticket.pm:2200 lib/RT/Ticket.pm:2213 lib/RT/Ticket.pm:2218 lib/RT/Ticket.pm:2242 lib/RT/Ticket.pm:2459 lib/RT/Ticket.pm:2688 lib/RT/Ticket.pm:3052 lib/RT/Ticket.pm:734 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:688 lib/RT/Transaction.pm:728 lib/RT/User.pm:1133 lib/RT/User.pm:137 lib/RT/User.pm:1568 lib/RT/User.pm:1816 lib/RT/User.pm:1849 lib/RT/User.pm:326 lib/RT/User.pm:733 lib/RT/User.pm:768 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97 share/html/Ticket/ShowEmailRecord.html:110 share/html/Ticket/ShowEmailRecord.html:111
+#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:777 lib/RT/Attachment.pm:778 lib/RT/Attachment.pm:837 lib/RT/Attachment.pm:838 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:380 lib/RT/Attribute.pm:390 lib/RT/Attribute.pm:403 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1037 lib/RT/CustomField.pm:1574 lib/RT/CustomField.pm:1603 lib/RT/CustomField.pm:1646 lib/RT/CustomField.pm:1819 lib/RT/CustomField.pm:1969 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:629 lib/RT/CustomField.pm:656 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1247 lib/RT/Group.pm:1331 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:348 lib/RT/Queue.pm:374 lib/RT/Queue.pm:400 lib/RT/Queue.pm:797 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:317 lib/RT/Template.pm:482 lib/RT/Template.pm:747 lib/RT/Template.pm:764 lib/RT/Template.pm:782 lib/RT/Ticket.pm:1068 lib/RT/Ticket.pm:1279 lib/RT/Ticket.pm:1447 lib/RT/Ticket.pm:1497 lib/RT/Ticket.pm:1767 lib/RT/Ticket.pm:1786 lib/RT/Ticket.pm:2191 lib/RT/Ticket.pm:2204 lib/RT/Ticket.pm:2209 lib/RT/Ticket.pm:2233 lib/RT/Ticket.pm:2450 lib/RT/Ticket.pm:2679 lib/RT/Ticket.pm:3043 lib/RT/Ticket.pm:734 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:688 lib/RT/Transaction.pm:728 lib/RT/User.pm:1133 lib/RT/User.pm:137 lib/RT/User.pm:1568 lib/RT/User.pm:1816 lib/RT/User.pm:1849 lib/RT/User.pm:326 lib/RT/User.pm:733 lib/RT/User.pm:768 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97 share/html/Ticket/ShowEmailRecord.html:110 share/html/Ticket/ShowEmailRecord.html:111
 msgid "Permission Denied"
 msgstr "Permiso denegado"
 
-#: lib/RT/Record.pm:1407 lib/RT/Record.pm:1551 lib/RT/Record/Role/Roles.pm:407 lib/RT/Record/Role/Roles.pm:491
+#: lib/RT/Record.pm:1406 lib/RT/Record.pm:1550 lib/RT/Record/Role/Roles.pm:407 lib/RT/Record/Role/Roles.pm:491
 msgid "Permission denied"
 msgstr "Permiso denegado"
 
@@ -6058,7 +6074,7 @@ msgstr "Imprimir los mensajes resumidos a STDOUT, no enviarlos por mail. No marc
 msgid "Print this message"
 msgstr "Imprimir este mensaje"
 
-#: lib/RT/Tickets.pm:116 lib/RT/Tickets.pm:1645 share/html/Elements/RT__Queue/ColumnMap:61 share/html/Elements/RT__Ticket/ColumnMap:148 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:200 share/html/Ticket/Create.html:228 share/html/Ticket/Elements/ShowBasics:76 share/html/m/_elements/ticket_list:99 share/html/m/ticket/create:342 share/html/m/ticket/show:238
+#: lib/RT/Report/Tickets.pm:66 lib/RT/Tickets.pm:116 lib/RT/Tickets.pm:1684 share/html/Elements/RT__Queue/ColumnMap:61 share/html/Elements/RT__Ticket/ColumnMap:148 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:200 share/html/Ticket/Create.html:229 share/html/Ticket/Elements/ShowBasics:76 share/html/m/_elements/ticket_list:99 share/html/m/ticket/create:342 share/html/m/ticket/show:238
 msgid "Priority"
 msgstr "Prioridad"
 
@@ -6087,12 +6103,12 @@ msgstr ""
 msgid "Private keys"
 msgstr ""
 
-#: lib/RT/Handle.pm:715 share/html/Admin/Users/Modify.html:114
+#: lib/RT/Handle.pm:718 share/html/Admin/Users/Modify.html:114
 msgid "Privileged"
 msgstr "Privilegiado"
 
 #. (loc_fuzzy($msg))
-#: share/html/Admin/Users/Modify.html:323 share/html/User/Prefs.html:252
+#: share/html/Admin/Users/Modify.html:323 share/html/User/Prefs.html:253
 msgid "Privileged status: %1"
 msgstr "Estado privilegiado: %1"
 
@@ -6104,7 +6120,7 @@ msgstr "Usuarios privilegiados:"
 msgid "Processing without transaction, some conditions and actions may fail. Consider using --transaction argument"
 msgstr "Procesando sin transacción, algunas condiciones y acciones podrían fallar. Considere usar el argumento --transaction"
 
-#: lib/RT/Handle.pm:728
+#: lib/RT/Handle.pm:731
 msgid "Pseudogroup for internal use"
 msgstr "Pseudogrupo para uso interno"
 
@@ -6122,7 +6138,7 @@ msgstr ""
 msgid "Queries"
 msgstr "Consultas"
 
-#: share/html/Elements/RT__SavedSearch/ColumnMap:61 share/html/Search/Edit.html:56 share/html/Search/Elements/Chart:81
+#: share/html/Elements/RT__SavedSearch/ColumnMap:61 share/html/Search/Edit.html:56 share/html/Search/Elements/Chart:88
 msgid "Query"
 msgstr "Consulta"
 
@@ -6130,12 +6146,12 @@ msgstr "Consulta"
 msgid "Query Builder"
 msgstr "Constructor de Consulta"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Record.pm:1022 lib/RT/Report/Tickets.pm:62 lib/RT/Tickets.pm:107 lib/RT/Tickets.pm:1452 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:63 share/html/Elements/RT__Template/ColumnMap:66 share/html/Elements/RT__Template/ColumnMap:73 share/html/Elements/RT__Ticket/ColumnMap:102 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:61 share/html/Ticket/Elements/ShowBasics:82 share/html/m/ticket/create:248 share/html/m/ticket/show:242
+#: lib/RT/Graph/Tickets.pm:153 lib/RT/Record.pm:1021 lib/RT/Report/Tickets.pm:62 lib/RT/Tickets.pm:107 lib/RT/Tickets.pm:1491 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:63 share/html/Elements/RT__Template/ColumnMap:66 share/html/Elements/RT__Template/ColumnMap:73 share/html/Elements/RT__Ticket/ColumnMap:102 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:61 share/html/Ticket/Elements/ShowBasics:82 share/html/m/ticket/create:248 share/html/m/ticket/show:242
 msgid "Queue"
 msgstr "Cola"
 
 #. ($Queue||'')
-#: share/html/Ticket/Create.html:378
+#: share/html/Ticket/Create.html:381
 msgid "Queue %1 could not be loaded."
 msgstr ""
 
@@ -6149,11 +6165,11 @@ msgstr "Cola %1 no encontrada"
 msgid "Queue Name"
 msgstr "Nombre de la cola"
 
-#: lib/RT/Queue.pm:331
+#: lib/RT/Queue.pm:324
 msgid "Queue already exists"
 msgstr "La cola ya existe"
 
-#: lib/RT/Queue.pm:199 lib/RT/Queue.pm:205
+#: lib/RT/Queue.pm:192 lib/RT/Queue.pm:198
 msgid "Queue could not be created"
 msgstr "La cola no se pudo crear"
 
@@ -6161,15 +6177,15 @@ msgstr "La cola no se pudo crear"
 msgid "Queue could not be loaded."
 msgstr "La cola no se pudo cargar"
 
-#: lib/RT/Queue.pm:222
+#: lib/RT/Queue.pm:215
 msgid "Queue created"
 msgstr "Cola creada"
 
-#: lib/RT/Queue.pm:263
+#: lib/RT/Queue.pm:256
 msgid "Queue disabled"
 msgstr "Cola desactivada"
 
-#: lib/RT/Queue.pm:261
+#: lib/RT/Queue.pm:254
 msgid "Queue enabled"
 msgstr "Cola activada"
 
@@ -6225,11 +6241,11 @@ msgstr "Búsqueda rápida"
 msgid "Quick ticket creation"
 msgstr "Creación rápida de caso"
 
-#: etc/RT_Config.pm:1221 etc/initialdata:864
+#: etc/RT_Config.pm:1234 etc/initialdata:864
 msgid "QuickCreate"
 msgstr "CreaciónRápida"
 
-#: etc/RT_Config.pm:1221 etc/initialdata:875
+#: etc/RT_Config.pm:1234 etc/initialdata:875
 msgid "Quicksearch"
 msgstr ""
 
@@ -6346,7 +6362,7 @@ msgstr ""
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr "La opción RTDireccionRegexp de la configuración no coincide con %1"
 
-#: etc/RT_Config.pm:2791 etc/RT_Config.pm:2792 etc/RT_Config.pm:2835 etc/RT_Config.pm:2836
+#: etc/RT_Config.pm:2804 etc/RT_Config.pm:2805 etc/RT_Config.pm:2848 etc/RT_Config.pm:2849
 msgid "Re-open"
 msgstr "Reabrir"
 
@@ -6370,7 +6386,7 @@ msgstr "Destinatario"
 msgid "Recipient must be an email address"
 msgstr "El destinatario debe ser una dirección de correo electrónico"
 
-#: share/html/Ticket/Elements/ShowSimplifiedRecipients:78
+#: share/html/Ticket/Elements/ShowSimplifiedRecipients:70
 msgid "Recipients"
 msgstr "Destinatarios"
 
@@ -6479,15 +6495,15 @@ msgstr "Refrescar resultados de la búsqueda cada 60 minutos."
 msgid "Refresh this page every %quant(%1,minute,minutes)."
 msgstr "Refrescar esta página cada %1 minutos"
 
-#: etc/RT_Config.pm:1221 etc/initialdata:883
+#: etc/RT_Config.pm:1234 etc/initialdata:883
 msgid "RefreshHomepage"
 msgstr "RecargarPaginaDeInicio"
 
-#: lib/RT/Record.pm:1439
+#: lib/RT/Record.pm:1438
 msgid "Refused to add link which would create a circular relationship"
 msgstr ""
 
-#: etc/RT_Config.pm:2785 etc/RT_Config.pm:2789 etc/RT_Config.pm:2829 etc/RT_Config.pm:2833
+#: etc/RT_Config.pm:2798 etc/RT_Config.pm:2802 etc/RT_Config.pm:2842 etc/RT_Config.pm:2846
 msgid "Reject"
 msgstr "Rechazar"
 
@@ -6516,7 +6532,7 @@ msgstr "Recordatorio '%1' reabierto"
 
 #. ($args->{'NewReminder-Subject'}, loc("Created"))
 #. ($old_subject || $reminder->Subject, $_)
-#: lib/RT/Interface/Web.pm:2982 lib/RT/Interface/Web.pm:3000
+#: lib/RT/Interface/Web.pm:2988 lib/RT/Interface/Web.pm:3006
 msgid "Reminder '%1': %2"
 msgstr ""
 
@@ -6546,7 +6562,7 @@ msgid "Remove Requestor"
 msgstr "Quitar solicitante"
 
 #. ($principal->Object->Name, $self->loc($args{'Type'}))
-#: lib/RT/Queue.pm:640
+#: lib/RT/Queue.pm:633
 msgid "Removed %1 from members of %2 for this queue."
 msgstr "%1 removido de los miembros de %2 para esta cola."
 
@@ -6570,23 +6586,23 @@ msgstr "Responder"
 msgid "Reply Address"
 msgstr "Direccion de Respuesta"
 
-#: share/html/Search/Bulk.html:128 share/html/Ticket/ModifyAll.html:103 share/html/Ticket/Update.html:80 share/html/m/ticket/reply:96
+#: share/html/Search/Bulk.html:128 share/html/Ticket/ModifyAll.html:104 share/html/Ticket/Update.html:80 share/html/m/ticket/reply:96
 msgid "Reply to requestors"
 msgstr "Responder a solicitantes"
 
-#: lib/RT/Queue.pm:130
+#: lib/RT/Queue.pm:123
 msgid "Reply to tickets"
 msgstr "Responder a los casos"
 
-#: lib/RT/Report/Tickets.pm:68 lib/RT/Ticket.pm:101 lib/RT/Tickets.pm:143
+#: lib/RT/Report/Tickets.pm:72 lib/RT/Ticket.pm:101 lib/RT/Tickets.pm:143
 msgid "Requestor"
 msgstr "Solicitante"
 
-#: lib/RT/Tickets.pm:160
+#: lib/RT/Tickets.pm:161
 msgid "RequestorGroup"
 msgstr "GrupoSolicitante"
 
-#: lib/RT/Graph/Tickets.pm:154 lib/RT/Tickets.pm:144 share/html/Elements/QuickCreate:70 share/html/Elements/RT__Ticket/ColumnMap:265 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:71 share/html/Ticket/Create.html:129 share/html/Ticket/Elements/EditPeople:74 share/html/Ticket/Elements/ShowPeople:58 share/html/m/_elements/ticket_list:94 share/html/m/ticket/create:268 share/html/m/ticket/show:291
+#: lib/RT/Graph/Tickets.pm:154 lib/RT/Tickets.pm:144 share/html/Elements/QuickCreate:71 share/html/Elements/RT__Ticket/ColumnMap:265 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:71 share/html/Ticket/Create.html:130 share/html/Ticket/Elements/EditPeople:74 share/html/Ticket/Elements/ShowPeople:58 share/html/m/_elements/ticket_list:94 share/html/m/ticket/create:268 share/html/m/ticket/show:291
 msgid "Requestors"
 msgstr "Solicitantes"
 
@@ -6611,7 +6627,7 @@ msgstr "Reiniciar RT de un vistazo"
 msgid "Reset dashboards in menu"
 msgstr ""
 
-#: share/html/User/Prefs.html:177
+#: share/html/User/Prefs.html:179
 msgid "Reset secret authentication token"
 msgstr "Resetear token de autenticación secreto"
 
@@ -6631,7 +6647,7 @@ msgstr ""
 msgid "Residence"
 msgstr "Residencia"
 
-#: etc/RT_Config.pm:2784 etc/RT_Config.pm:2788 etc/RT_Config.pm:2828 etc/RT_Config.pm:2832 share/html/Search/Elements/EditFormat:75
+#: etc/RT_Config.pm:2797 etc/RT_Config.pm:2801 etc/RT_Config.pm:2841 etc/RT_Config.pm:2845 share/html/Search/Elements/EditFormat:76
 msgid "Resolve"
 msgstr "Resolver"
 
@@ -6640,7 +6656,7 @@ msgstr "Resolver"
 msgid "Resolve ticket #%1 (%2)"
 msgstr "Resolver caso #%1 (%2)"
 
-#: etc/initialdata:444 lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:76 lib/RT/Tickets.pm:135 share/html/Elements/RT__Ticket/ColumnMap:218 share/html/Elements/RT__Ticket/ColumnMap:251 share/html/Elements/SelectDateType:51 share/html/Search/Elements/BuildFormatString:100
+#: etc/initialdata:444 lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:80 lib/RT/Tickets.pm:135 share/html/Elements/RT__Ticket/ColumnMap:218 share/html/Elements/RT__Ticket/ColumnMap:251 share/html/Elements/SelectDateType:51 share/html/Search/Elements/BuildFormatString:100
 msgid "Resolved"
 msgstr "Resuelto"
 
@@ -6652,7 +6668,7 @@ msgstr ""
 msgid "ResolvedRelative"
 msgstr ""
 
-#: share/html/Search/Elements/EditFormat:73
+#: share/html/Search/Elements/EditFormat:74
 msgid "Respond"
 msgstr "Responder"
 
@@ -6697,7 +6713,7 @@ msgid "Right revoked"
 msgstr "Permiso revocado"
 
 #. ($object_type)
-#: lib/RT/Interface/Web.pm:2580 lib/RT/Interface/Web.pm:2680
+#: lib/RT/Interface/Web.pm:2586 lib/RT/Interface/Web.pm:2686
 msgid "Rights could not be granted for %1"
 msgstr "No se pudieron conceder los permisos a %1"
 
@@ -6719,7 +6735,7 @@ msgstr ""
 msgid "Role group exists already"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3812
+#: lib/RT/Interface/Web.pm:3823
 msgid "Roles"
 msgstr ""
 
@@ -6776,11 +6792,11 @@ msgstr "Sábado"
 msgid "Save"
 msgstr "Guardar"
 
-#: share/html/Admin/Articles/Classes/GroupRights.html:57 share/html/Admin/Articles/Classes/Modify.html:130 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:91 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:93 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:167 share/html/Admin/Queues/People.html:124 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Scrips/Modify.html:89 share/html/Admin/Scrips/Modify.html:93 share/html/Admin/Users/Keys.html:80 share/html/Admin/Users/Modify.html:226 share/html/Articles/Article/Edit.html:102 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:186 share/html/Prefs/Other.html:76 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:62 share/html/SelfService/Prefs.html:79 share/html/Ticket/Modify.html:68 share/html/Ticket/ModifyAll.html:136 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:67 share/html/Ticket/ModifyPeople.html:75 share/html/Ticket/Reminders.html:63
+#: share/html/Admin/Articles/Classes/GroupRights.html:57 share/html/Admin/Articles/Classes/Modify.html:130 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:91 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:93 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:167 share/html/Admin/Queues/People.html:124 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Scrips/Modify.html:89 share/html/Admin/Scrips/Modify.html:93 share/html/Admin/Users/Keys.html:80 share/html/Admin/Users/Modify.html:226 share/html/Articles/Article/Edit.html:102 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:186 share/html/Prefs/Other.html:76 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:62 share/html/SelfService/Prefs.html:79 share/html/Ticket/Modify.html:68 share/html/Ticket/ModifyAll.html:137 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:67 share/html/Ticket/ModifyPeople.html:76 share/html/Ticket/Reminders.html:63
 msgid "Save Changes"
 msgstr "Guardar Cambios"
 
-#: share/html/User/Prefs.html:198
+#: share/html/User/Prefs.html:169
 msgid "Save Preferences"
 msgstr "Guardar Preferencias"
 
@@ -6809,7 +6825,7 @@ msgstr ""
 msgid "Saved Searches"
 msgstr "Búsquedas guardadas"
 
-#: share/html/Search/Chart.html:196
+#: share/html/Search/Chart.html:221
 msgid "Saved charts"
 msgstr "Gráficas salvadas"
 
@@ -6822,7 +6838,7 @@ msgstr ""
 msgid "Saved searches"
 msgstr "Búsquedas guardadas"
 
-#: etc/RT_Config.pm:1221
+#: etc/RT_Config.pm:1234
 msgid "SavedSearches"
 msgstr "BusquedasGuardadas"
 
@@ -6915,7 +6931,7 @@ msgstr ""
 msgid "Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history by typing <b>%1<i>word</i></b>."
 msgstr "Buscar en el texto completo de cada caso puede tomar mucho tiempo, pero si necesita hacerlo, puede buscar cualquier palabra en el historial del caso escribiendo <b>%1<i>palabra</i></b>."
 
-#: share/html/User/Prefs.html:169
+#: share/html/User/Prefs.html:171
 msgid "Secret authentication token"
 msgstr "Token de autenticación secreto"
 
@@ -7324,11 +7340,11 @@ msgstr "Firmar todos los mensajes de correo auto-generados. %1Precaución%2: Act
 msgid "Sign by default"
 msgstr "Firmar por defecto"
 
-#: lib/RT/Queue.pm:127
+#: lib/RT/Queue.pm:120
 msgid "Sign up as a ticket Requestor or ticket or queue Cc"
 msgstr "Validarse como solicitante de caso o CC del caso o cola"
 
-#: lib/RT/Queue.pm:128
+#: lib/RT/Queue.pm:121
 msgid "Sign up as a ticket or queue AdminCc"
 msgstr "Validarse como AdminCc del caso o cola"
 
@@ -7346,11 +7362,11 @@ msgstr "Firmar %1%2 usando %3"
 msgid "Signature"
 msgstr "Firma"
 
-#: lib/RT/Queue.pm:365 lib/RT/Queue.pm:391
+#: lib/RT/Queue.pm:358 lib/RT/Queue.pm:384
 msgid "Signing disabled"
 msgstr "No está habilitado el uso de firmas"
 
-#: lib/RT/Queue.pm:364 lib/RT/Queue.pm:390
+#: lib/RT/Queue.pm:357 lib/RT/Queue.pm:383
 msgid "Signing enabled"
 msgstr "Uso de firmas habilitado"
 
@@ -7366,7 +7382,7 @@ msgstr "Búsqueda simple"
 msgid "Site name"
 msgstr "Nombre del sitio"
 
-#: share/html/Admin/Tools/Configuration.html:143 share/html/Search/Elements/EditFormat:84
+#: share/html/Admin/Tools/Configuration.html:143 share/html/Search/Elements/EditFormat:85
 msgid "Size"
 msgstr "Tamaño"
 
@@ -7378,7 +7394,7 @@ msgstr "Saltar Menu"
 msgid "Skipping disabled user"
 msgstr "Saltando usuario deshabilitado"
 
-#: share/html/Search/Elements/EditFormat:87
+#: share/html/Search/Elements/EditFormat:88
 msgid "Small"
 msgstr "Pequeño/a"
 
@@ -7423,7 +7439,7 @@ msgstr ""
 msgid "Stage"
 msgstr "Fase"
 
-#: etc/RT_Config.pm:2787 etc/RT_Config.pm:2831
+#: etc/RT_Config.pm:2800 etc/RT_Config.pm:2844
 msgid "Stall"
 msgstr "Casilla"
 
@@ -7432,7 +7448,7 @@ msgstr "Casilla"
 msgid "Start the search term with the name of a supported field followed by a colon, as in %1 and %2, to explicitly specify the search type."
 msgstr "Empiece el término de búsqueda con el nombre de un campo soportado seguido por dos puntos, como en %1 y %2, para indicar explícitamente el tipo de búsqueda."
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:75 lib/RT/Tickets.pm:133 share/html/Elements/RT__Ticket/ColumnMap:195 share/html/Elements/RT__Ticket/ColumnMap:228 share/html/Elements/SelectDateType:50 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/EditDates:55 share/html/Ticket/Elements/ShowDates:58 share/html/m/ticket/show:358
+#: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:79 lib/RT/Tickets.pm:133 share/html/Elements/RT__Ticket/ColumnMap:195 share/html/Elements/RT__Ticket/ColumnMap:228 share/html/Elements/SelectDateType:50 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/EditDates:55 share/html/Ticket/Elements/ShowDates:60 share/html/m/ticket/show:358
 msgid "Started"
 msgstr "Comenzado"
 
@@ -7440,7 +7456,7 @@ msgstr "Comenzado"
 msgid "StartedRelative"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:74 lib/RT/Tickets.pm:132 share/html/Elements/RT__Ticket/ColumnMap:190 share/html/Elements/RT__Ticket/ColumnMap:223 share/html/Elements/SelectDateType:54 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:261 share/html/Ticket/Elements/EditDates:50 share/html/Ticket/Elements/ShowDates:54 share/html/m/ticket/create:383 share/html/m/ticket/show:354
+#: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:78 lib/RT/Tickets.pm:132 share/html/Elements/RT__Ticket/ColumnMap:190 share/html/Elements/RT__Ticket/ColumnMap:223 share/html/Elements/SelectDateType:54 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:262 share/html/Ticket/Elements/EditDates:50 share/html/Ticket/Elements/ShowDates:55 share/html/m/ticket/create:383 share/html/m/ticket/show:354
 msgid "Starts"
 msgstr "Comienzo"
 
@@ -7456,7 +7472,7 @@ msgstr "Estado"
 msgid "Static file search order"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Report/Tickets.pm:60 lib/RT/Tickets.pm:106 lib/RT/Tickets.pm:1484 share/html/Elements/RT__Class/ColumnMap:66 share/html/Elements/RT__CustomField/ColumnMap:56 share/html/Elements/RT__Group/ColumnMap:82 share/html/Elements/RT__Queue/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:110 share/html/Elements/RT__Ticket/ColumnMap:111 share/html/Elements/RT__Ticket/ColumnMap:121 share/html/Elements/RT__User/ColumnMap:146 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:62 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Tools/MyDay.html:67 share/html/m/_elements/ticket_list:95 share/html/m/ticket/create:250 share/html/m/ticket/reply:63 share/html/m/ticket/show:216
+#: lib/RT/Graph/Tickets.pm:153 lib/RT/Report/Tickets.pm:60 lib/RT/Tickets.pm:106 lib/RT/Tickets.pm:1523 share/html/Elements/RT__Class/ColumnMap:66 share/html/Elements/RT__CustomField/ColumnMap:56 share/html/Elements/RT__Group/ColumnMap:82 share/html/Elements/RT__Queue/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:110 share/html/Elements/RT__Ticket/ColumnMap:111 share/html/Elements/RT__Ticket/ColumnMap:121 share/html/Elements/RT__User/ColumnMap:146 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:62 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Tools/MyDay.html:67 share/html/m/_elements/ticket_list:95 share/html/m/ticket/create:250 share/html/m/ticket/reply:63 share/html/m/ticket/show:216
 msgid "Status"
 msgstr "Estado"
 
@@ -7491,7 +7507,7 @@ msgstr "Cambios de estado"
 msgid "Steal"
 msgstr "Robar"
 
-#: lib/RT/Queue.pm:136
+#: lib/RT/Queue.pm:129
 msgid "Steal tickets"
 msgstr "Robar casos"
 
@@ -7511,11 +7527,11 @@ msgstr "Paso %1 de %2"
 msgid "Stolen from %1"
 msgstr "Robado a %1"
 
-#: share/html/Search/Chart.html:177 share/html/Search/Elements/EditFormat:93
+#: share/html/Search/Chart.html:178 share/html/Search/Elements/EditFormat:94
 msgid "Style"
 msgstr "Estilo"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Tickets.pm:138 lib/RT/Tickets.pm:1594 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/QuickCreate:57 share/html/Elements/RT__Ticket/ColumnMap:116 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:131 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:87 share/html/SelfService/Update.html:73 share/html/Ticket/Create.html:179 share/html/Ticket/Elements/Reminders:133 share/html/Ticket/Elements/Reminders:164 share/html/Ticket/Forward.html:63 share/html/Ticket/ModifyAll.html:110 share/html/Ticket/Update.html:160 share/html/m/ticket/create:229 share/html/m/ticket/reply:100
+#: lib/RT/Graph/Tickets.pm:153 lib/RT/Tickets.pm:138 lib/RT/Tickets.pm:1633 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/QuickCreate:57 share/html/Elements/RT__Ticket/ColumnMap:116 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:132 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:87 share/html/SelfService/Update.html:73 share/html/Ticket/Create.html:180 share/html/Ticket/Elements/Reminders:133 share/html/Ticket/Elements/Reminders:164 share/html/Ticket/Forward.html:63 share/html/Ticket/ModifyAll.html:111 share/html/Ticket/Update.html:160 share/html/m/ticket/create:229 share/html/m/ticket/reply:100
 msgid "Subject"
 msgstr "Asunto"
 
@@ -7541,7 +7557,7 @@ msgid "Subscribe"
 msgstr "Suscribir"
 
 #. ($Dashboard->Name)
-#: share/html/Dashboards/Subscription.html:290
+#: share/html/Dashboards/Subscription.html:286
 msgid "Subscribe to dashboard %1"
 msgstr "Suscribirse al cuadro de mandos %1"
 
@@ -7550,7 +7566,7 @@ msgid "Subscribe to dashboards"
 msgstr "Suscribirse a cuadros de mandos"
 
 #. ($Dashboard->Name)
-#: share/html/Dashboards/Subscription.html:275
+#: share/html/Dashboards/Subscription.html:271
 msgid "Subscribed to dashboard %1"
 msgstr "Suscrito al cuadro de mandos %1"
 
@@ -7559,15 +7575,19 @@ msgid "Subscription"
 msgstr "Subscripción"
 
 #. ($msg)
-#: share/html/Dashboards/Subscription.html:280
+#: share/html/Dashboards/Subscription.html:276
 msgid "Subscription could not be created: %1"
 msgstr "La suscripción no pudo crearse: %1"
 
-#: lib/RT/Attachment.pm:838
+#: share/html/Dashboards/Subscription.html:254
+msgid "Subscription updated"
+msgstr ""
+
+#: lib/RT/Attachment.pm:879
 msgid "Successfuly decrypted data"
 msgstr "Datos exitosamente desencriptados"
 
-#: lib/RT/Attachment.pm:789
+#: lib/RT/Attachment.pm:830
 msgid "Successfuly encrypted data"
 msgstr "Datos exitosamente encriptados"
 
@@ -7575,39 +7595,39 @@ msgstr "Datos exitosamente encriptados"
 msgid "Summary"
 msgstr "Resumen"
 
-#: lib/RT/Report/Tickets.pm:223
+#: lib/RT/Report/Tickets.pm:230
 msgid "Summary of Created-LastUpdated"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:218
+#: lib/RT/Report/Tickets.pm:225
 msgid "Summary of Created-Resolved"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:213
+#: lib/RT/Report/Tickets.pm:220
 msgid "Summary of Created-Started"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:233
+#: lib/RT/Report/Tickets.pm:240
 msgid "Summary of Due-Resolved"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:238
+#: lib/RT/Report/Tickets.pm:245
 msgid "Summary of Started-Resolved"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:228
+#: lib/RT/Report/Tickets.pm:235
 msgid "Summary of Starts-Started"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:203
+#: lib/RT/Report/Tickets.pm:210
 msgid "Summary of time estimated"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:208
+#: lib/RT/Report/Tickets.pm:215
 msgid "Summary of time left"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:198
+#: lib/RT/Report/Tickets.pm:205
 msgid "Summary of time worked"
 msgstr ""
 
@@ -7623,7 +7643,7 @@ msgstr "Domingo"
 msgid "Suspended"
 msgstr "Suspendido"
 
-#: lib/RT/Interface/Web.pm:3769
+#: lib/RT/Interface/Web.pm:3775
 msgid "System"
 msgstr "Sistema"
 
@@ -7635,7 +7655,7 @@ msgstr "Configuración del Sistema"
 msgid "System Default"
 msgstr "Predeterminado del Sistema"
 
-#: lib/RT/Interface/Web.pm:2580 lib/RT/Interface/Web.pm:2680 share/html/Admin/Elements/EditRightsCategoryTabs:60
+#: lib/RT/Interface/Web.pm:2586 lib/RT/Interface/Web.pm:2686 share/html/Admin/Elements/EditRightsCategoryTabs:60
 msgid "System Error"
 msgstr "Error del sistema"
 
@@ -7656,15 +7676,15 @@ msgstr "Error de sistema"
 msgid "System error. Right not granted."
 msgstr "Error del sistema. Permiso no otorgado"
 
-#: lib/RT/Handle.pm:779
+#: lib/RT/Handle.pm:782
 msgid "SystemRolegroup for internal use"
 msgstr "GrupoDeRolesDeSistema de uso interno"
 
-#: etc/initialdata:824 share/html/Elements/Tabs:716 share/html/Search/Elements/EditFormat:72
+#: etc/initialdata:824 share/html/Elements/Tabs:716 share/html/Search/Elements/EditFormat:73
 msgid "Take"
 msgstr "Coger"
 
-#: lib/RT/Queue.pm:135
+#: lib/RT/Queue.pm:128
 msgid "Take tickets"
 msgstr "Coger casos"
 
@@ -7754,23 +7774,23 @@ msgstr "Texto"
 msgid "Text file is not shown because it is disabled in preferences."
 msgstr "El archivo de texto no se muestra porque está deshabilitado en las preferencias"
 
-#: lib/RT/Record.pm:1031
+#: lib/RT/Record.pm:1030
 msgid "That is already the current value"
 msgstr "Ese es el valor actual"
 
-#: lib/RT/CustomField.pm:664
+#: lib/RT/CustomField.pm:665
 msgid "That is not a value for this custom field"
 msgstr "Ese no es un valor para este campo personalizado"
 
-#: lib/RT/Ticket.pm:2354
+#: lib/RT/Ticket.pm:2345
 msgid "That ticket has unresolved dependencies"
 msgstr "Ese caso tiene dependencias sin resolver"
 
-#: lib/RT/Action/CreateTickets.pm:434 lib/RT/Ticket.pm:2267
+#: lib/RT/Action/CreateTickets.pm:434 lib/RT/Ticket.pm:2258
 msgid "That user already owns that ticket"
 msgstr "Ese usuario ya posee ese caso"
 
-#: lib/RT/Ticket.pm:2257
+#: lib/RT/Ticket.pm:2248
 msgid "That user does not exist"
 msgstr "Ese usuario no existe"
 
@@ -7790,7 +7810,7 @@ msgstr "Ese usuario ahora es privilegiado"
 msgid "That user is now unprivileged"
 msgstr "Ese usuario ahora es no privilegiado"
 
-#: lib/RT/Ticket.pm:2262
+#: lib/RT/Ticket.pm:2253
 msgid "That user may not own tickets in that queue"
 msgstr "Ese usuario puede no poseer casos en esa cola"
 
@@ -7798,7 +7818,7 @@ msgstr "Ese usuario puede no poseer casos en esa cola"
 msgid "That's not a numerical id"
 msgstr "Ese no es un identificador numérico"
 
-#: share/html/SelfService/Display.html:58 share/html/Ticket/Create.html:224 share/html/Ticket/Elements/ShowSummary:52 share/html/m/ticket/create:337 share/html/m/ticket/show:206
+#: share/html/SelfService/Display.html:58 share/html/Ticket/Create.html:225 share/html/Ticket/Elements/ShowSummary:52 share/html/m/ticket/create:337 share/html/m/ticket/show:206
 msgid "The Basics"
 msgstr "Lo básico"
 
@@ -7819,7 +7839,7 @@ msgstr "La contraseña del administrador de la base de datos para la base de dat
 msgid "The administrative CC of a ticket"
 msgstr "El CC administrativo de un caso"
 
-#: share/html/Ticket/ModifyPeople.html:62
+#: share/html/Ticket/ModifyPeople.html:63
 msgid "The checked users may receive email related to this ticket depending on the action taken. Uncheck users to stop sending email to them about this ticket."
 msgstr ""
 
@@ -7859,7 +7879,7 @@ msgstr "La clave es totalmente confiable"
 msgid "The key is ultimately trusted"
 msgstr "La clave es fundamentalmente confiable"
 
-#: lib/RT/Record.pm:1034
+#: lib/RT/Record.pm:1033
 msgid "The new value has been set."
 msgstr "Ha sido establecido el nuevo valor"
 
@@ -7927,7 +7947,7 @@ msgstr ""
 msgid "These configuration options cover some of the basics needed to get RT up and running.  We need to know the name of your RT installation and the domain name where RT will live.  You will also need to set a password for your default administrative user."
 msgstr "Estas opciones de configuración cubren algunas de las bases necesarios para hacer funcionar RT. Es necesario que proporcione el nombre de su instalación RT y el nombre de dominio en el que se incluye RT. También necesitará configurar una contraseña para su usuario administrador por defecto."
 
-#: lib/RT/CustomField.pm:317 lib/RT/CustomField.pm:762
+#: lib/RT/CustomField.pm:317 lib/RT/CustomField.pm:763
 msgid "This Custom Field can not have list of values"
 msgstr "Este campo personalizado no puede tener listas de valores"
 
@@ -7989,7 +8009,7 @@ msgstr "Jue"
 msgid "Thursday"
 msgstr "Jueves"
 
-#: lib/RT/Record.pm:1019 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/ShowReminders:53
+#: lib/RT/Record.pm:1018 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/ShowReminders:53
 msgid "Ticket"
 msgstr "Caso"
 
@@ -8011,7 +8031,7 @@ msgstr "Caso #%1: %2"
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
-#: lib/RT/Action/CreateTickets.pm:1090 lib/RT/Action/CreateTickets.pm:1099 lib/RT/Action/CreateTickets.pm:334 lib/RT/Action/CreateTickets.pm:453 lib/RT/Action/CreateTickets.pm:465
+#: lib/RT/Action/CreateTickets.pm:1097 lib/RT/Action/CreateTickets.pm:1106 lib/RT/Action/CreateTickets.pm:334 lib/RT/Action/CreateTickets.pm:453 lib/RT/Action/CreateTickets.pm:465
 msgid "Ticket %1"
 msgstr "Caso %1"
 
@@ -8022,7 +8042,7 @@ msgstr "Caso %1 creado en la cola '%2'"
 
 #. ($Ticket->Id, $_)
 #. ($id, $msg)
-#: share/html/Search/Bulk.html:283 share/html/Tools/MyDay.html:90 share/html/Tools/MyDay.html:93 share/html/Tools/MyDay.html:99
+#: share/html/Search/Bulk.html:290 share/html/Tools/MyDay.html:90 share/html/Tools/MyDay.html:93 share/html/Tools/MyDay.html:99
 msgid "Ticket %1: %2"
 msgstr "Caso %1: %2"
 
@@ -8051,11 +8071,11 @@ msgstr "Caso y transacción"
 msgid "Ticket composition"
 msgstr "Redacción de caso"
 
-#: lib/RT/Tickets.pm:1763
+#: lib/RT/Tickets.pm:1802
 msgid "Ticket content"
 msgstr "Contenido del caso"
 
-#: lib/RT/Tickets.pm:1808
+#: lib/RT/Tickets.pm:1847
 msgid "Ticket content type"
 msgstr "Tipo de contenido del caso"
 
@@ -8063,11 +8083,11 @@ msgstr "Tipo de contenido del caso"
 msgid "Ticket could not be created due to an internal error"
 msgstr "No se pudo crear el caso debido a un error interno"
 
-#: share/html/Ticket/Create.html:305 share/html/m/ticket/create:76
+#: share/html/Ticket/Create.html:308 share/html/m/ticket/create:76
 msgid "Ticket could not be loaded"
 msgstr "El caso no pudo ser cargado"
 
-#: lib/RT/Report/Tickets.pm:197
+#: lib/RT/Report/Tickets.pm:204
 msgid "Ticket count"
 msgstr ""
 
@@ -8097,12 +8117,12 @@ msgid "Tickets"
 msgstr "Casos"
 
 #. ($self->loc( $args{'TYPE'} ),            $args{'BASE'},)
-#: lib/RT/Tickets.pm:1965
+#: lib/RT/Tickets.pm:2004
 msgid "Tickets %1 %2"
 msgstr "Casos %1 %2"
 
 #. ($self->loc( $args{'TYPE'} ),            $args{'TARGET'})
-#: lib/RT/Tickets.pm:1922
+#: lib/RT/Tickets.pm:1961
 msgid "Tickets %1 by %2"
 msgstr "Casos %1 por %2"
 
@@ -8114,19 +8134,19 @@ msgstr "Casos que me pertenecen"
 msgid "Tickets which depend on this approval:"
 msgstr "Casos que dependen de esta aprobación:"
 
-#: lib/RT/Report/Tickets.pm:124
+#: lib/RT/Report/Tickets.pm:131
 msgid "Time"
 msgstr ""
 
-#: share/html/Elements/RT__Ticket/ColumnMap:186 share/html/Search/Elements/PickBasics:179 share/html/Ticket/Create.html:238 share/html/m/ticket/create:353
+#: share/html/Elements/RT__Ticket/ColumnMap:186 share/html/Search/Elements/PickBasics:179 share/html/Ticket/Create.html:239 share/html/m/ticket/create:353
 msgid "Time Estimated"
 msgstr "Tiempo Estimado"
 
-#: lib/RT/Tickets.pm:1738 share/html/Elements/RT__Ticket/ColumnMap:181 share/html/Search/Elements/PickBasics:180 share/html/Ticket/Create.html:248 share/html/m/ticket/create:367
+#: lib/RT/Tickets.pm:1777 share/html/Elements/RT__Ticket/ColumnMap:181 share/html/Search/Elements/PickBasics:180 share/html/Ticket/Create.html:249 share/html/m/ticket/create:367
 msgid "Time Left"
 msgstr "Tiempo Restante"
 
-#: lib/RT/Tickets.pm:1715 share/html/Elements/RT__Ticket/ColumnMap:176 share/html/Search/Elements/PickBasics:178 share/html/Ticket/Create.html:243 share/html/m/ticket/create:360
+#: lib/RT/Tickets.pm:1754 share/html/Elements/RT__Ticket/ColumnMap:176 share/html/Search/Elements/PickBasics:178 share/html/Ticket/Create.html:244 share/html/m/ticket/create:360
 msgid "Time Worked"
 msgstr "Tiempo Trabajado"
 
@@ -8150,7 +8170,7 @@ msgstr "TiempoTrabajado"
 msgid "Timezone"
 msgstr "Zona horaria"
 
-#: share/html/Admin/Articles/Classes/Modify.html:101 share/html/Search/Elements/EditFormat:80
+#: share/html/Admin/Articles/Classes/Modify.html:101 share/html/Search/Elements/EditFormat:81
 msgid "Title"
 msgstr "Título"
 
@@ -8173,7 +8193,7 @@ msgstr "Mostrar/ocultar %quant(%1,consulta,consultas)"
 msgid "Toggle stack trace"
 msgstr "Mostrar/ocultar rastreo de pila"
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:78 lib/RT/Tickets.pm:131 share/html/Elements/RT__Ticket/ColumnMap:200 share/html/Elements/RT__Ticket/ColumnMap:233 share/html/Search/Elements/BuildFormatString:100
+#: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:82 lib/RT/Tickets.pm:131 share/html/Elements/RT__Ticket/ColumnMap:200 share/html/Elements/RT__Ticket/ColumnMap:233 share/html/Search/Elements/BuildFormatString:100
 msgid "Told"
 msgstr "Última actualización"
 
@@ -8205,43 +8225,43 @@ msgstr "Tema no encontrado"
 msgid "Topics"
 msgstr "Temas"
 
-#: lib/RT/Report/Tickets.pm:966
+#: lib/RT/Report/Tickets.pm:994
 msgid "Total"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:224
+#: lib/RT/Report/Tickets.pm:231
 msgid "Total Created-LastUpdated"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:219
+#: lib/RT/Report/Tickets.pm:226
 msgid "Total Created-Resolved"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:214
+#: lib/RT/Report/Tickets.pm:221
 msgid "Total Created-Started"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:234
+#: lib/RT/Report/Tickets.pm:241
 msgid "Total Due-Resolved"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:239
+#: lib/RT/Report/Tickets.pm:246
 msgid "Total Started-Resolved"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:229
+#: lib/RT/Report/Tickets.pm:236
 msgid "Total Starts-Started"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:204
+#: lib/RT/Report/Tickets.pm:211
 msgid "Total time estimated"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:209
+#: lib/RT/Report/Tickets.pm:216
 msgid "Total time left"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:199
+#: lib/RT/Report/Tickets.pm:206
 msgid "Total time worked"
 msgstr ""
 
@@ -8302,7 +8322,7 @@ msgstr "Martes"
 msgid "TxnCF"
 msgstr ""
 
-#: lib/RT/Tickets.pm:108 lib/RT/Tickets.pm:1570 share/html/Admin/CustomFields/Modify.html:69 share/html/Admin/Elements/EditCustomField:67 share/html/Admin/Elements/ModifyTemplate:58 share/html/Elements/RT__Ticket/ColumnMap:170 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/AddWatchers:56 share/html/Ticket/Elements/AddWatchers:67 share/html/Ticket/Elements/AddWatchers:77
+#: lib/RT/Tickets.pm:108 lib/RT/Tickets.pm:1609 share/html/Admin/CustomFields/Modify.html:69 share/html/Admin/Elements/EditCustomField:67 share/html/Admin/Elements/ModifyTemplate:58 share/html/Elements/RT__Ticket/ColumnMap:170 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/AddWatchers:56 share/html/Ticket/Elements/AddWatchers:67 share/html/Ticket/Elements/AddWatchers:77
 msgid "Type"
 msgstr "Tipo"
 
@@ -8372,7 +8392,7 @@ msgid "Unable to set privacy object: %1"
 msgstr "Imposible definir objeto de privacidad: %1"
 
 #. ($id)
-#: share/html/Dashboards/Subscription.html:263
+#: share/html/Dashboards/Subscription.html:259
 msgid "Unable to subscribe to dashboard %1: Permission Denied"
 msgstr ""
 
@@ -8381,11 +8401,11 @@ msgid "Unauthorized"
 msgstr ""
 
 #. (RT->Config->Get('WebPath')."/Ticket/ModifyPeople.html?id=".$TicketObj->Id,)
-#: share/html/Ticket/Elements/PreviewScrips:60 share/html/Ticket/Elements/ShowSimplifiedRecipients:100
+#: share/html/Ticket/Elements/PreviewScrips:60 share/html/Ticket/Elements/ShowSimplifiedRecipients:92
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr "Desactive las casillas para deshabilitar notificaciones a los destinatarios listados <b>solo para esta transacción</b>; el silenciamiento persistente es administrado en la página <a href=\"%1\">Personas</a>."
 
-#: etc/RT_Config.pm:2793 etc/RT_Config.pm:2837
+#: etc/RT_Config.pm:2806 etc/RT_Config.pm:2850
 msgid "Undelete"
 msgstr "Recuperar"
 
@@ -8411,7 +8431,7 @@ msgstr "Desconocido (este valor es nuevo para el sistema)"
 
 #. ($ContentEncoding)
 #. ($self->ContentEncoding)
-#: lib/RT/Attachment.pm:382 lib/RT/Record.pm:898
+#: lib/RT/Attachment.pm:383 lib/RT/Record.pm:897
 msgid "Unknown ContentEncoding %1"
 msgstr "Codificación de contenido desconocida: %1"
 
@@ -8449,7 +8469,7 @@ msgstr "Casos sin dueño"
 msgid "Unowned tickets"
 msgstr "Casos sin propietario"
 
-#: lib/RT/Handle.pm:716
+#: lib/RT/Handle.pm:719
 msgid "Unprivileged"
 msgstr "No privilegiado"
 
@@ -8473,11 +8493,11 @@ msgstr "Quitar valor de clave privada"
 msgid "Untaken"
 msgstr "No cogido"
 
-#: share/html/Admin/Elements/EditScrips:72 share/html/Admin/Elements/EditScrips:96 share/html/Admin/Elements/MembershipsPage:83 share/html/Articles/Article/Elements/ShowSavedSearches:58 share/html/Articles/Elements/NewestArticles:62 share/html/Articles/Elements/UpdatedArticles:63 share/html/Elements/RT__Ticket/ColumnMap:302 share/html/Search/Bulk.html:179 share/html/Search/Bulk.html:74 share/html/Search/Elements/EditSearches:71 share/html/Widgets/SelectionBox:201
+#: share/html/Admin/Elements/EditScrips:72 share/html/Admin/Elements/EditScrips:96 share/html/Admin/Elements/MembershipsPage:83 share/html/Articles/Article/Elements/ShowSavedSearches:58 share/html/Articles/Elements/NewestArticles:62 share/html/Articles/Elements/UpdatedArticles:63 share/html/Elements/RT__Ticket/ColumnMap:302 share/html/Search/Bulk.html:186 share/html/Search/Bulk.html:74 share/html/Search/Elements/EditSearches:71 share/html/Widgets/SelectionBox:201
 msgid "Update"
 msgstr "Actualizar"
 
-#: share/html/Search/Chart.html:191
+#: share/html/Search/Chart.html:216
 msgid "Update Chart"
 msgstr "Actualizar gráfico"
 
@@ -8493,7 +8513,7 @@ msgstr ""
 msgid "Update Ticket"
 msgstr "Actualizar Caso"
 
-#: share/html/Search/Bulk.html:125 share/html/Ticket/ModifyAll.html:96 share/html/Ticket/Update.html:74 share/html/m/ticket/reply:90
+#: share/html/Search/Bulk.html:125 share/html/Ticket/ModifyAll.html:97 share/html/Ticket/Update.html:74 share/html/m/ticket/reply:90
 msgid "Update Type"
 msgstr "Actualizar tipo"
 
@@ -8501,15 +8521,15 @@ msgstr "Actualizar tipo"
 msgid "Update format and Search"
 msgstr "Actualizar formato y buscar"
 
-#: share/html/Search/Bulk.html:190
+#: share/html/Search/Bulk.html:197
 msgid "Update multiple tickets"
 msgstr "Actualizar múltiples casos"
 
-#: lib/RT/Action/CreateTickets.pm:474 lib/RT/Interface/Web.pm:2348
+#: lib/RT/Action/CreateTickets.pm:474 lib/RT/Interface/Web.pm:2354
 msgid "Update not recorded."
 msgstr "Actualización no grabada."
 
-#: share/html/Ticket/ModifyAll.html:93
+#: share/html/Ticket/ModifyAll.html:94
 msgid "Update ticket"
 msgstr "Actualizar caso"
 
@@ -8525,7 +8545,7 @@ msgstr "Actualizar caso #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Actualizar caso #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:472 lib/RT/Interface/Web.pm:2348
+#: lib/RT/Action/CreateTickets.pm:472 lib/RT/Interface/Web.pm:2354
 msgid "Update type was neither correspondence nor comment."
 msgstr "El tipo de actualización no fue ni respuesta ni comentario"
 
@@ -8533,7 +8553,7 @@ msgstr "El tipo de actualización no fue ni respuesta ni comentario"
 msgid "UpdateStatus"
 msgstr "EstadoActualizacion"
 
-#: lib/RT/CustomField.pm:1976 lib/RT/Tickets.pm:157 share/html/Elements/SelectDateType:56 share/html/Ticket/Elements/ShowDates:79 share/html/m/ticket/show:379
+#: lib/RT/CustomField.pm:1976 lib/RT/Tickets.pm:158 share/html/Elements/SelectDateType:56 share/html/Ticket/Elements/ShowDates:85 share/html/m/ticket/show:379
 msgid "Updated"
 msgstr "Actualizado"
 
@@ -8546,7 +8566,7 @@ msgstr ""
 msgid "Updated saved search \"%1\""
 msgstr "búsqueda guardada actualizada \"%1\""
 
-#: lib/RT/Tickets.pm:158
+#: lib/RT/Tickets.pm:159
 msgid "UpdatedBy"
 msgstr ""
 
@@ -8625,7 +8645,7 @@ msgstr "Usar los menús desplegables para seleccionar cuales actualizaciones de 
 msgid "Used by scrips"
 msgstr ""
 
-#: lib/RT/Record.pm:1020 share/html/Admin/Elements/ShowKeyInfo:85 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52
+#: lib/RT/Record.pm:1019 share/html/Admin/Elements/ShowKeyInfo:85 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52
 msgid "User"
 msgstr "Usuario"
 
@@ -8651,7 +8671,7 @@ msgstr "Definido por el usuario"
 msgid "User Defined conditions and results"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3787
+#: lib/RT/Interface/Web.pm:3793
 msgid "User Groups"
 msgstr ""
 
@@ -8672,7 +8692,7 @@ msgid "User Summary"
 msgstr ""
 
 #. ($cf->Name, ref $args{'Object'},                    $args{'Object'}->id)
-#: lib/RT/Interface/Web.pm:3199
+#: lib/RT/Interface/Web.pm:3205
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
 msgstr "El usuario solicitó un tipo de actualización desconocida para el campo personalizado %1 para %2 objeto #%3"
 
@@ -8718,7 +8738,7 @@ msgstr "Nombre de usuario"
 msgid "Username format"
 msgstr "Formato para el nombre del usuario"
 
-#: lib/RT/CustomField.pm:1889 lib/RT/CustomField.pm:204 lib/RT/Interface/Web.pm:3840 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:526 share/html/Elements/Tabs:67
+#: lib/RT/CustomField.pm:1889 lib/RT/CustomField.pm:204 lib/RT/Interface/Web.pm:3851 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:526 share/html/Elements/Tabs:67
 msgid "Users"
 msgstr "Usuarios"
 
@@ -8731,7 +8751,7 @@ msgstr "Usuarios que concuerdan con los criterios de búsqueda"
 msgid "Using transaction #%1..."
 msgstr "Usando transacción #%1..."
 
-#: lib/RT/Tickets.pm:3062
+#: lib/RT/Tickets.pm:3091
 msgid "Valid Query"
 msgstr "Consulta Válida"
 
@@ -8755,15 +8775,15 @@ msgstr ""
 msgid "Version"
 msgstr "Versión"
 
-#: lib/RT/Queue.pm:118
+#: lib/RT/Queue.pm:111
 msgid "View Scrip templates"
 msgstr "Ver plantillas de Scrip"
 
-#: lib/RT/Queue.pm:121
+#: lib/RT/Queue.pm:114
 msgid "View Scrips"
 msgstr "Ver scrips"
 
-#: lib/RT/Class.pm:91 lib/RT/Queue.pm:114
+#: lib/RT/Class.pm:91 lib/RT/Queue.pm:107
 msgid "View custom field values"
 msgstr "Ver valores de campos personalizados"
 
@@ -8771,7 +8791,7 @@ msgstr "Ver valores de campos personalizados"
 msgid "View custom fields"
 msgstr "Ver campos personalizados"
 
-#: lib/RT/Queue.pm:125
+#: lib/RT/Queue.pm:118
 msgid "View exact outgoing email messages and their recipients"
 msgstr "Ver detalles de los mensajes de correo saliente y sus destinatarios"
 
@@ -8787,7 +8807,7 @@ msgstr "Ver tableros de grupo"
 msgid "View personal dashboards"
 msgstr "Ver cuadros de mandos personales"
 
-#: lib/RT/Queue.pm:109
+#: lib/RT/Queue.pm:102
 msgid "View queue"
 msgstr "Ver cola"
 
@@ -8799,11 +8819,11 @@ msgstr "Ver búsquedas guardadas"
 msgid "View system dashboards"
 msgstr "Ver cuadros de mandos del sistema"
 
-#: lib/RT/Queue.pm:124
+#: lib/RT/Queue.pm:117
 msgid "View ticket private commentary"
 msgstr "Ver comentarios privados del caso"
 
-#: lib/RT/Queue.pm:123
+#: lib/RT/Queue.pm:116
 msgid "View ticket summaries"
 msgstr "Ver resumen del caso"
 
@@ -8831,15 +8851,15 @@ msgstr "¡Atención! ¡NO está firmado!"
 msgid "Warning: merging is a non-reversible action! Enter a single ticket number to be merged into."
 msgstr ""
 
-#: share/html/Dashboards/Subscription.html:276
+#: share/html/Dashboards/Subscription.html:272
 msgid "Warning: you have no email address set, so you will not receive this dashboard until you have it set"
 msgstr "Aviso: usted no tiene registrada una dirección de correo electronico, así que no recibirá este cuadro de mandos hasta que la tenga."
 
-#: lib/RT/Report/Tickets.pm:71 lib/RT/Tickets.pm:147
+#: lib/RT/Report/Tickets.pm:75 lib/RT/Tickets.pm:147
 msgid "Watcher"
 msgstr "Observador"
 
-#: lib/RT/Tickets.pm:163
+#: lib/RT/Tickets.pm:164
 msgid "WatcherGroup"
 msgstr "GrupoObservadores"
 
@@ -8871,7 +8891,7 @@ msgstr "Mié"
 msgid "Wednesday"
 msgstr "Miércoles"
 
-#: lib/RT/Report/Tickets.pm:124
+#: lib/RT/Report/Tickets.pm:131
 msgid "WeekOfYear"
 msgstr ""
 
@@ -8991,7 +9011,7 @@ msgstr "Al recibir correspondencia"
 msgid "Where to find your sendmail binary."
 msgstr "Donde encontrar el programa sendmail"
 
-#: share/html/Search/Chart.html:178
+#: share/html/Search/Chart.html:180
 msgid "Width"
 msgstr ""
 
@@ -9021,7 +9041,7 @@ msgstr ""
 msgid "Worked %quant(%1,minute,minutes)"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:124
+#: lib/RT/Report/Tickets.pm:131
 msgid "Year"
 msgstr ""
 
@@ -9039,7 +9059,7 @@ msgstr ""
 msgid "You <a href=\"%1\">may edit this dashboard</a> and <a href=\"%2\">your subscription</a> to it in RT."
 msgstr "Usted <a href=\"%1\">puede editar este panel</a> y <a href=\"%2\">su suscripción</a> a el en RT."
 
-#: lib/RT/Ticket.pm:2237 lib/RT/Ticket.pm:2310
+#: lib/RT/Ticket.pm:2228 lib/RT/Ticket.pm:2301
 msgid "You already own this ticket"
 msgstr "Usted ya es propietario de este caso"
 
@@ -9080,15 +9100,15 @@ msgstr "Puede ingresar contenido del caso en cualquier campo de texto libre, tex
 msgid "You can not set password."
 msgstr "No puede introducir la contraseña"
 
-#: lib/RT/Ticket.pm:2229
+#: lib/RT/Ticket.pm:2220
 msgid "You can only reassign tickets that you own or that are unowned"
 msgstr "Sólo puede reasignar casos que posee o que no tienen propietario"
 
-#: lib/RT/Ticket.pm:2193
+#: lib/RT/Ticket.pm:2184
 msgid "You can only steal a ticket owned by someone else"
 msgstr ""
 
-#: lib/RT/Ticket.pm:2225
+#: lib/RT/Ticket.pm:2216
 msgid "You can only take tickets that are unowned"
 msgstr "Sólo puede tomar casos que no tienen propietario."
 
@@ -9302,7 +9322,7 @@ msgstr ""
 msgid "days"
 msgstr "días"
 
-#: lib/RT/Queue.pm:107
+#: etc/RT_Config.pm:2769
 msgid "deleted"
 msgstr "borrado"
 
@@ -9412,7 +9432,7 @@ msgid "index"
 msgstr "índice"
 
 #. ($due)
-#: lib/RT/Interface/Web.pm:2975
+#: lib/RT/Interface/Web.pm:2981
 msgid "invalid due date: %1"
 msgstr ""
 
@@ -9489,7 +9509,7 @@ msgstr "mensualmente (día %1) a las %2"
 msgid "never"
 msgstr "nunca"
 
-#: lib/RT/Queue.pm:102
+#: etc/RT_Config.pm:2767
 msgid "new"
 msgstr "nuevo"
 
@@ -9525,7 +9545,7 @@ msgstr "el día"
 msgid "one"
 msgstr "uno"
 
-#: lib/RT/Queue.pm:103 share/html/SelfService/Elements/MyRequests:73
+#: etc/RT_Config.pm:2768 share/html/SelfService/Elements/MyRequests:73
 msgid "open"
 msgstr "abierto"
 
@@ -9549,7 +9569,7 @@ msgstr "Queso"
 msgid "plugin returned empty list"
 msgstr "el plugin devolvió una lista vacía"
 
-#: share/html/Search/Chart.html:178 share/html/Search/Chart.html:181
+#: share/html/Search/Chart.html:180 share/html/Search/Chart.html:184
 msgid "px"
 msgstr ""
 
@@ -9558,7 +9578,7 @@ msgstr ""
 msgid "queue %1 %2"
 msgstr "Cola %1 %2"
 
-#: lib/RT/Queue.pm:106
+#: etc/RT_Config.pm:2769
 msgid "rejected"
 msgstr "rechazado"
 
@@ -9566,7 +9586,7 @@ msgstr "rechazado"
 msgid "requires running rt-crontool"
 msgstr "requiere que rt-crontool esté ejecutándose"
 
-#: lib/RT/Queue.pm:105
+#: etc/RT_Config.pm:2769
 msgid "resolved"
 msgstr "resuelto"
 
@@ -9590,7 +9610,7 @@ msgstr ""
 msgid "site config"
 msgstr "configuración del sitio"
 
-#: lib/RT/Queue.pm:104
+#: etc/RT_Config.pm:2768
 msgid "stalled"
 msgstr "parado"
 
@@ -9611,6 +9631,10 @@ msgstr "sistema %1"
 #: lib/RT/Group.pm:134
 msgid "system group '%1'"
 msgstr "grupo del sistema '%1'"
+
+#: share/html/Search/Elements/SelectChartType:56
+msgid "table"
+msgstr ""
 
 #: lib/RT/Interface/Web.pm:1526
 msgid "the Referrer header supplied by your browser (%1) is not allowed by RT's configured hostname (%2)"

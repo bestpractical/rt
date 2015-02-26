@@ -103,6 +103,7 @@ if ( $ARGS{'QuickCreate'} ) {
     );
 
 
+    my $created;
     if ( $ValidCFs && !$skip_create ) {
         my ($t, $msg) = CreateTicket( 
                         Queue => $ARGS{'Queue'},
@@ -110,17 +111,19 @@ if ( $ARGS{'QuickCreate'} ) {
                         Status => $ARGS{'Status'},
                         # yes! it's Requestors, not Requestor
                         Requestors => $ARGS{'Requestors'},
-                        From => $session{'CurrentUser'}->EmailAddress,
                         Content => $ARGS{'Content'},
                         Subject => $ARGS{'Subject'});
         push @results, $msg;
 
-        if ( $t && $t->Id && RT->Config->Get('DisplayTicketAfterQuickCreate', $session{'CurrentUser'}) ) {
-            MaybeRedirectForResults(
-                Actions   => \@results,
-                Path      => '/Ticket/Display.html',
-                Arguments => { id => $t->Id },
-            );
+        if ( $t && $t->Id ) {
+            $created = 1;
+            if ( RT->Config->Get('DisplayTicketAfterQuickCreate', $session{'CurrentUser'}) ) {
+                MaybeRedirectForResults(
+                    Actions   => \@results,
+                    Path      => '/Ticket/Display.html',
+                    Arguments => { id => $t->Id },
+                );
+            }
         }
     }
     elsif ( !$ValidCFs ) {
@@ -142,6 +145,9 @@ if ( $ARGS{'QuickCreate'} ) {
             },
         );
     }
+
+    $session{QuickCreate} = \%ARGS unless $created;
+
     MaybeRedirectForResults(
         Actions   => \@results,
         Path      => '/',

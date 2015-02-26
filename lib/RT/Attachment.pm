@@ -80,6 +80,7 @@ use MIME::Base64;
 use MIME::QuotedPrint;
 use MIME::Body;
 use RT::Util 'mime_recommended_filename';
+use URI;
 
 sub _OverlayAccessible {
   {
@@ -469,6 +470,44 @@ recursively added to the entity.
 
 =cut
 
+sub _EncodeHeaderToMIME {
+    my ( $self, $header_name, $header_val ) = @_;
+    if ($header_name =~ /^Content-/i) {
+        my $params = MIME::Field::ParamVal->parse_params($header_val);
+        $header_val = delete $params->{'_'};
+        foreach my $key ( sort keys %$params ) {
+            my $value = $params->{$key};
+            if ( $value =~ /[^\x00-\x7f]/ ) { # check for non-ASCII
+                $value = q{UTF-8''} . URI->new(
+                    Encode::encode('UTF-8', $value)
+                );
+                $value =~ s/(["\\])/\\$1/g;
+                $header_val .= qq{; ${key}*="$value"};
+            }
+            else {
+                $header_val .= qq{; $key="$value"};
+            }
+        }
+    }
+    elsif ( $header_name =~ /^(?:Resent-)?(?:To|From|B?Cc|Sender|Reply-To)$/i ) {
+        my @addresses = RT::EmailParser->ParseEmailAddress( $header_val );
+        foreach my $address ( @addresses ) {
+            foreach my $field (qw(phrase comment)) {
+                my $v = $address->$field() or next;
+                $v = RT::Interface::Email::EncodeToMIME( String => $v );
+                $address->$field($v);
+            }
+        }
+        $header_val = join ', ', map $_->format, @addresses;
+    }
+    else {
+        $header_val = RT::Interface::Email::EncodeToMIME(
+            String => $header_val
+        );
+    }
+    return $header_val;
+}
+
 sub ContentAsMIME {
     my $self = shift;
     my %opts = (
@@ -479,7 +518,9 @@ sub ContentAsMIME {
     my $entity = MIME::Entity->new();
     foreach my $header ($self->SplitHeaders) {
         my ($h_key, $h_val) = split /:/, $header, 2;
-        $entity->head->add( $h_key, RT::Interface::Email::EncodeToMIME( String => $h_val ) );
+        $entity->head->add(
+            $h_key, $self->_EncodeHeaderToMIME($h_key, $h_val)
+        );
     }
     
     # since we want to return original content, let's use original encoding
@@ -858,12 +899,10 @@ sub _Value {
     return $self->__Value( $field, @_ );
 }
 
-# Transactions don't change. by adding this cache congif directiove,
+# Attachments don't change; by adding this cache config directive,
 # we don't lose pathalogically on long tickets.
 sub _CacheConfig {
     {
-        'cache_p'       => 1,
-        'fast_update_p' => 1,
         'cache_for_sec' => 180,
     }
 }

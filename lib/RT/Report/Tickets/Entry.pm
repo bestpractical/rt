@@ -71,7 +71,9 @@ sub LabelValue {
     my $raw = $self->RawValue( $name, @_ );
 
     if ( my $code = $self->Report->LabelValueCode( $name ) ) {
-        return $code->( $self, %{ $self->Report->ColumnInfo( $name ) }, VALUE => $raw );
+        $raw = $code->( $self, %{ $self->Report->ColumnInfo( $name ) }, VALUE => $raw );
+        return $self->loc('(no value)') unless defined $raw && length $raw;
+        return $raw;
     }
 
     unless ( ref $raw ) {

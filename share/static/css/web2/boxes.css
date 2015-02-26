@@ -142,3 +142,17 @@
 .titlebox.rolled-up .titlebox-title .widget a {
     background-image: url(../../../static/images/css/rolldown-arrow.gif);
 }
+
+.unread-messages .titlebox , .unread-messages .titlebox .titlebox-title .left {
+  border: 1px solid #99a;
+  border-right: 2px solid #aab;
+  border-bottom: 2px solid #aab;
+}
+
+.unread-messages .titlebox {
+  background-color: #dde;
+}
+
+.unread-messages .titlebox .titlebox-title .left {
+  background-color: #cce;
+}

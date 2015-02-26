@@ -574,7 +574,7 @@ sub WhoBelongToGroups {
         ALIAS      => $group_members,
         FIELD      => 'GroupId',
         OPERATOR   => 'IN',
-        VALUE      => $args{'Groups'},
+        VALUE      => [ 0, @{$args{'Groups'}} ],
     );
 }
 

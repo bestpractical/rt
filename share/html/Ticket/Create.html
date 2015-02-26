@@ -53,6 +53,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="<% RT->Config->Get('WebPath') %>/Ticket/Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">
+  <input type="submit" name="SubmitTicket" value="Create" style="display:none">
   <input type="hidden" class="hidden" name="id" value="new" />
   <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
   
@@ -299,6 +300,8 @@ $m->callback( CallbackName => "Init", ARGSRef => \%ARGS );
 my $Queue = $ARGS{Queue};
 $session{DefaultQueue} = $Queue;
 
+my $current_user = $session{'CurrentUser'};
+
 if ($CloneTicket) {
     my $CloneTicketObj = RT::Ticket->new( $session{CurrentUser} );
     $CloneTicketObj->Load($CloneTicket)
@@ -371,7 +374,7 @@ if ($CloneTicket) {
 
 my @results;
 
-my $QueueObj = RT::Queue->new($session{'CurrentUser'});
+my $QueueObj = RT::Queue->new($current_user);
 $QueueObj->Load($Queue) || Abort(loc("Queue [_1] could not be loaded.", $Queue||''));
 
 my $title = loc("Create a new ticket in [_1]", $m->scomp("/Ticket/Elements/ShowQueue", QueueObj => $QueueObj));
@@ -382,7 +385,7 @@ $m->scomp( '/Articles/Elements/SubjectOverride', ARGSRef => \%ARGS, QueueObj => 
 
 $QueueObj->Disabled && Abort(loc("Cannot create tickets in a disabled queue."));
 
-my $ticket = RT::Ticket->new($session{'CurrentUser'}); # empty ticket object
+my $ticket = RT::Ticket->new($current_user); # empty ticket object
 
 ProcessAttachments(ARGSRef => \%ARGS);
 

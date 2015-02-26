@@ -154,6 +154,7 @@ our %FIELD_METADATA = (
     TxnCF            => [ 'CUSTOMFIELD' => 'Transaction' ], #loc_left_pair
     TransactionCF    => [ 'CUSTOMFIELD' => 'Transaction' ], #loc_left_pair
     QueueCF          => [ 'CUSTOMFIELD' => 'Queue' ], #loc_left_pair
+    Lifecycle        => [ 'LIFECYCLE' ], #loc_left_pair
     Updated          => [ 'TRANSDATE', ], #loc_left_pair
     UpdatedBy        => [ 'TRANSCREATOR', ], #loc_left_pair
     OwnerGroup       => [ 'MEMBERSHIPFIELD' => 'Owner', ], #loc_left_pair
@@ -191,6 +192,7 @@ our %dispatch = (
     MEMBERSHIPFIELD => \&_WatcherMembershipLimit,
     CUSTOMFIELD     => \&_CustomFieldLimit,
     HASATTRIBUTE    => \&_HasAttributeLimit,
+    LIFECYCLE       => \&_LifecycleLimit,
 );
 
 # Default EntryAggregator per type
@@ -927,6 +929,28 @@ sub _TransContentLimit {
                 QUOTEVALUE  => 0,
             );
         }
+        elsif ( $db_type eq 'mysql' and not $config->{Sphinx}) {
+            my $dbh = $RT::Handle->dbh;
+            $self->Limit(
+                %rest,
+                FUNCTION    => "MATCH($alias.Content)",
+                OPERATOR    => 'AGAINST',
+                VALUE       => "(". $dbh->quote($value) ." IN BOOLEAN MODE)",
+                QUOTEVALUE  => 0,
+            );
+            # As with Oracle, above, this forces the LEFT JOINs into
+            # JOINS, which allows the FULLTEXT index to be used.
+            # Orthogonally, the IS NOT NULL clause also helps the
+            # optimizer decide to use the index.
+            $self->Limit(
+                ENTRYAGGREGATOR => 'AND',
+                ALIAS           => $alias,
+                FIELD           => "Content",
+                OPERATOR        => 'IS NOT',
+                VALUE           => 'NULL',
+                QUOTEVALUE      => 0,
+            );
+        }
         elsif ( $db_type eq 'mysql' ) {
             # XXX: We could theoretically skip the join to Attachments,
             # and have Sphinx simply index and group by the TicketId,
@@ -1213,6 +1237,26 @@ sub _HasAttributeLimit {
     );
 }
 
+
+sub _LifecycleLimit {
+    my ( $self, $field, $op, $value, %rest ) = @_;
+
+    die "Invalid Operator $op for $field" if $op =~ /^(IS|IS NOT)$/io;
+    my $queue = $self->{_sql_aliases}{queues} ||= $_[0]->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'Queue',
+        TABLE2 => 'Queues',
+        FIELD2 => 'id',
+    );
+
+    $self->Limit(
+        ALIAS    => $queue,
+        FIELD    => 'Lifecycle',
+        OPERATOR => $op,
+        VALUE    => $value,
+        %rest,
+    );
+}
 
 # End Helper Functions
 

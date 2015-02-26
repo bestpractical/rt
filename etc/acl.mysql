@@ -12,7 +12,7 @@ sub acl {
         RT->Logger->warn("DatabaseUser is root. Skipping...");
         return;
     }
-    $db_name =~ s/([_%])/\\$1/g;
+    $db_name =~ s/([_%\\])/\\$1/g;
     return (
         "GRANT SELECT,INSERT,CREATE,INDEX,UPDATE,DELETE
                ON `$db_name`.*

@@ -238,35 +238,19 @@ sub ApplySortOrder {
     } );
 }
 
-# {{{ sub Next 
+=head2 AddRecord
 
-=head2 Next
-
-Returns the next scrip that this user can see.
+Overrides the collection to ensure that only scrips the user can see are
+returned.
 
 =cut
 
-sub Next {
+sub AddRecord {
     my $self = shift;
+    my ($record) = @_;
 
-
-    my $Scrip = $self->SUPER::Next();
-    if ((defined($Scrip)) and (ref($Scrip))) {
-
-        if ($Scrip->CurrentUserHasRight('ShowScrips')) {
-            return($Scrip);
-        }
-
-        #If the user doesn't have the right to show this scrip
-        else {
-            return($self->Next());
-        }
-    }
-    #if there never was any scrip
-    else {
-        return(undef);
-    }
-
+    return unless $record->CurrentUserHasRight('ShowScrips');
+    return $self->SUPER::AddRecord( $record );
 }
 
 =head2 Apply
@@ -439,10 +423,8 @@ sub _SetupSourceObjects {
 
 =head2 _FindScrips
 
-Find only the apropriate scrips for whatever we're doing now.  Order them 
-by their description.  (Most common use case is to prepend a number to the
-description, forcing the scrips to display and run in ascending alphanumerical 
-order.)
+Find only the appropriate scrips for whatever we're doing now.  Order
+them by the SortOrder field from the ObjectScrips table.
 
 =cut
 

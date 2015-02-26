@@ -45,4 +45,37 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Search/Elements/ResultsRSSView, %ARGS &>
+<%init>
+my $path = $m->dhandler_arg;
+
+my $notfound = sub {
+    my $mesg = shift;
+    $r->headers_out->{'Status'} = '404 Not Found';
+    $RT::Logger->info("Error encountered in rss generation: $mesg");
+    $m->clear_and_abort;
+};
+
+$notfound->("Invalid path: $path") unless $path =~ m!^([^/]+)/([^/]+)/?!;
+
+my ( $name, $auth ) = ( $1, $2 );
+
+# Unescape parts
+$name =~ s/\%([0-9a-z]{2})/chr(hex($1))/gei;
+
+# convert to perl strings
+$name = Encode::decode( "UTF-8", $name);
+
+my $user = RT::User->new(RT->SystemUser);
+$user->Load($name);
+$notfound->("Invalid user: $user") unless $user->id;
+
+$notfound->("Invalid authstring")
+  unless $user->ValidateAuthString( $auth,
+          $ARGS{Query} . $ARGS{Order} . $ARGS{OrderBy} );
+
+my $cu = RT::CurrentUser->new;
+$cu->Load($user);
+local $session{'CurrentUser'} = $cu;
+
+$m->comp("/Search/Elements/ResultsRSSView", %ARGS);
+</%init>

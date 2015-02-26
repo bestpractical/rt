@@ -23,6 +23,7 @@ $m->submit_form(
     fields    => {
         SavedSearchDescription => 'chart foo',
         SavedSearchOwner       => 'RT::User-' . $root->id,
+        ChartStyle             => 'bar',
     },
     button => 'SavedSearchSave',
 );

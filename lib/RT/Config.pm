@@ -216,7 +216,7 @@ our %META;
                         next unless -d $css_path;
                         if ( opendir my $dh, $css_path ) {
                             push @stylesheets, grep {
-                                -e File::Spec->catfile( $css_path, $_, 'base.css' )
+                                $_ ne 'base' && -e File::Spec->catfile( $css_path, $_, 'main.css' )
                             } readdir $dh;
                         }
                         else {
@@ -519,7 +519,7 @@ our %META;
                     'The RTAddressRegexp option is not set in the config.'
                     .' Not setting this option results in additional SQL queries to'
                     .' check whether each address belongs to RT or not.'
-                    .' It is especially important to set this option if RT recieves'
+                    .' It is especially important to set this option if RT receives'
                     .' emails on addresses that are not in the database or config.'
                 );
             } elsif (ref $value and ref $value eq "Regexp") {
@@ -599,11 +599,25 @@ our %META;
                     $RT::Logger->error("No Table set for full-text index; disabling");
                     $v->{Enable} = $v->{Indexed} = 0;
                 } elsif ($v->{'Table'} eq "Attachments") {
-                    $RT::Logger->error("Table for full-text index is set to Attachments, not SphinxSE table; disabling");
+                    $RT::Logger->error("Table for full-text index is set to Attachments, not FTS table; disabling");
                     $v->{Enable} = $v->{Indexed} = 0;
-                } elsif (not $v->{'MaxMatches'}) {
-                    $RT::Logger->warn("No MaxMatches set for full-text index; defaulting to 10000");
-                    $v->{MaxMatches} = 10_000;
+                } else {
+                    my (undef, $create) = eval { $RT::Handle->dbh->selectrow_array("SHOW CREATE TABLE " . $v->{Table}); };
+                    my ($engine) = ($create||'') =~ /engine=(\S+)/i;
+                    if (not $create) {
+                        $RT::Logger->error("External table ".$v->{Table}." does not exist");
+                        $v->{Enable} = $v->{Indexed} = 0;
+                    } elsif (lc $engine eq "sphinx") {
+                        # External Sphinx indexer
+                        $v->{Sphinx} = 1;
+                        unless ($v->{'MaxMatches'}) {
+                            $RT::Logger->warn("No MaxMatches set for full-text index; defaulting to 10000");
+                            $v->{MaxMatches} = 10_000;
+                        }
+                    } else {
+                        # Internal, one-column table
+                        $v->{Column} = 'Content';
+                    }
                 }
             } else {
                 $RT::Logger->error("Indexed full-text-search not supported for $dbtype");
@@ -643,6 +657,10 @@ our %META;
             $RT::Logger->error("Unknown value for \$MailCommand: $value; defaulting to sendmailpipe");
             $self->Set( MailCommand => 'sendmailpipe' );
         },
+    },
+    HTMLFormatter => {
+        Type => 'SCALAR',
+        PostLoadCheck => sub { RT::Interface::Email->_HTMLFormatter },
     },
     MailPlugins  => {
         Type => 'ARRAY',

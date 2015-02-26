@@ -272,6 +272,15 @@ sub WithMember {
     return $members;
 }
 
+sub WithCurrentUser {
+    my $self = shift;
+    $self->{with_current_user} = 1;
+    return $self->WithMember(
+        PrincipalId => $self->CurrentUser->PrincipalId,
+        Recursively => 1,
+    );
+}
+
 sub WithoutMember {
     my $self = shift;
     my %args = (
@@ -459,22 +468,16 @@ sub LimitToDeleted {
 
 
 
-sub Next {
+sub AddRecord {
     my $self = shift;
+    my ($record) = @_;
 
-    # Don't show groups which the user isn't allowed to see.
+    # If we've explicitly limited to groups the user is a member of (for
+    # dashboard or savedsearch privacy objects), skip the ACL.
+    return unless $self->{with_current_user}
+        or $record->CurrentUserHasRight('SeeGroup');
 
-    my $Group = $self->SUPER::Next();
-    if ((defined($Group)) and (ref($Group))) {
-        unless ($Group->CurrentUserHasRight('SeeGroup')) {
-            return $self->Next();
-        }
-
-        return $Group;
-    }
-    else {
-        return undef;
-    }
+    return $self->SUPER::AddRecord( $record );
 }
 
 

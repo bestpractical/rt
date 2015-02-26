@@ -50,6 +50,7 @@ package RT::Interface::Email;
 
 use strict;
 use warnings;
+use 5.010;
 
 use Email::Address;
 use MIME::Entity;
@@ -57,6 +58,8 @@ use RT::EmailParser;
 use File::Temp;
 use Mail::Mailer ();
 use Text::ParseWords qw/shellwords/;
+use RT::Util 'safe_run_child';
+use File::Spec;
 
 BEGIN {
     use base 'Exporter';
@@ -1412,6 +1415,8 @@ sub Gateway {
         return ( 0, $result, undef );
     }
 
+    $head->replace('X-RT-Interface' => 'Email');
+
     # if plugin's updated SystemTicket then update arguments
     $args{'ticket'} = $SystemTicket->Id if $SystemTicket && $SystemTicket->Id;
 
@@ -1430,8 +1435,6 @@ sub Gateway {
                 QueueObj    => $SystemQueueObj
             );
         }
-
-        $head->replace('X-RT-Interface' => 'Email');
 
         my ( $id, $Transaction, $ErrStr ) = $Ticket->Create(
             Queue     => $SystemQueueObj->Id,
@@ -1787,16 +1790,95 @@ sub _RecordSendEmailFailure {
 
 =head2 ConvertHTMLToText HTML
 
-Takes HTML and converts it to plain text.  Appropriate for generating a
-plain text part from an HTML part of an email.  Returns undef if
-conversion fails.
+Takes HTML characters and converts it to plain text characters.
+Appropriate for generating a plain text part from an HTML part of an
+email.  Returns undef if conversion fails.
 
 =cut
 
 sub ConvertHTMLToText {
+    return _HTMLFormatter()->(@_);
+}
+
+sub _HTMLFormatter {
+    state $formatter;
+    return $formatter if defined $formatter;
+
+    my $wanted = RT->Config->Get("HTMLFormatter");
+
+    my @order;
+    if ($wanted) {
+        @order = ($wanted, "core");
+    } else {
+        @order = ("w3m", "elinks", "links", "html2text", "lynx", "core");
+    }
+    # Always fall back to core, even if it is not listed
+    for my $prog (@order) {
+        if ($prog eq "core") {
+            RT->Logger->info("Using internal Perl HTML -> text conversion");
+            require HTML::FormatText::WithLinks::AndTables;
+            $formatter = \&_HTMLFormatText;
+        } else {
+            unless (HTML::FormatExternal->require) {
+                RT->Logger->warn("HTML::FormatExternal is not installed; falling back to internal perl formatter")
+                    if $wanted;
+                next;
+            }
+
+            my $path = $prog =~ s{(.*/)}{} ? $1 : undef;
+            my $package = "HTML::FormatText::" . ucfirst($prog);
+            unless ($package->require) {
+                RT->Logger->warn("$prog is not a valid formatter provided by HTML::FormatExternal")
+                    if $wanted;
+                next;
+            }
+
+            if ($path) {
+                local $ENV{PATH} = $path;
+                local $ENV{HOME} = File::Spec->tmpdir();
+                if (not defined $package->program_version) {
+                    RT->Logger->warn("Could not find or run external '$prog' HTML formatter in $path$prog")
+                        if $wanted;
+                    next;
+                }
+            } else {
+                local $ENV{PATH} = '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+                    unless defined $ENV{PATH};
+                local $ENV{HOME} = File::Spec->tmpdir();
+                if (not defined $package->program_version) {
+                    RT->Logger->warn("Could not find or run external '$prog' HTML formatter in \$PATH ($ENV{PATH}) -- you may need to install it or provide the full path")
+                        if $wanted;
+                    next;
+                }
+            }
+
+            RT->Logger->info("Using $prog for HTML -> text conversion");
+            $formatter = sub {
+                my $html = shift;
+                my $text = RT::Util::safe_run_child {
+                    local $ENV{PATH} = $path || $ENV{PATH}
+                        || '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin';
+                    local $ENV{HOME} = File::Spec->tmpdir();
+                    $package->format_string(
+                        Encode::encode( "UTF-8", $html ),
+                        input_charset => "UTF-8",
+                        output_charset => "UTF-8",
+                        leftmargin => 0, rightmargin => 78
+                    );
+                };
+                $text = Encode::decode( "UTF-8", $text );
+                return $text;
+            };
+        }
+        RT->Config->Set( HTMLFormatter => $prog );
+        last;
+    }
+    return $formatter;
+}
+
+sub _HTMLFormatText {
     my $html = shift;
 
-    require HTML::FormatText::WithLinks::AndTables;
     my $text;
     eval {
         $text = HTML::FormatText::WithLinks::AndTables->convert(

@@ -436,16 +436,6 @@ L<RT::User/CanonicalizeEmailAddress> can be overridden to provide it.
 # Set($CanonicalizeEmailAddressMatch, '@subdomain\.example\.com$');
 # Set($CanonicalizeEmailAddressReplace, '@example.com');
 
-=item C<$CanonicalizeOnCreate>
-
-Set this to 1 and the create new user page will use the values that
-you enter in the form but use the function CanonicalizeUserInfo in
-F<RT/User_Local.pm>
-
-=cut
-
-Set($CanonicalizeOnCreate, 0);
-
 =item C<$ValidateUserEmailAddresses>
 
 By default C<$ValidateUserEmailAddresses> is 1, and RT will refuse to create
@@ -712,6 +702,29 @@ will use the address of the current user and remove RT's subject tag.
 =cut
 
 Set($ForwardFromUser, 0);
+
+=item C<$HTMLFormatter>
+
+RT's default pure-perl formatter may fail to successfully convert even
+on some relatively simple HTML; this will result in blank C<text/plain>
+parts, which is particuarly unfortunate if HTML templates are not in
+use.
+
+If the optional dependency L<HTML::FormatExternal> is installed, RT will
+use external programs to render HTML to plain text.  The default is to
+try, in order, C<w3m>, C<elinks>, C<html2text>, C<links>, C<lynx>, and
+then fall back to the C<core> pure-perl formatter if none are installed.
+
+Set C<$HTMLFormatter> to one of the above programs (or the full path to
+such) to use a different program than the above would choose by default.
+Setting this requires that L<HTML::FormatExternal> be installed.
+
+If the chosen formatter is not in the webserver's $PATH, you may set
+this option the full path to one of the aforementioned executables.
+
+=cut
+
+Set($HTMLFormatter, undef);
 
 =back
 
@@ -2739,9 +2752,9 @@ Such a mapping is defined as follows:
 
 Set(%Lifecycles,
     default => {
-        initial         => [ 'new' ],
-        active          => [ 'open', 'stalled' ],
-        inactive        => [ 'resolved', 'rejected', 'deleted' ],
+        initial         => [qw(new)], # loc_qw
+        active          => [qw(open stalled)], # loc_qw
+        inactive        => [qw(resolved rejected deleted)], # loc_qw
 
         defaults => {
             on_create => 'new',

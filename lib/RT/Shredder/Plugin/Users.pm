@@ -86,13 +86,13 @@ group.
 
 =head2 replace_relations - user identifier
 
-When you delete an user there could be minor links to them in the RT database.
+When you delete a user there could be minor links to them in the RT database.
 This option allow you to replace these links with links to the new user.
 The replaceable links are Creator and LastUpdatedBy, but NOT any watcher roles.
 This means that if the user is a watcher(Requestor, Owner,
 Cc or AdminCc) of the ticket or queue then the link would be deleted.
 
-This argument could be an user id or name.
+This argument could be a user id or name.
 
 =head2 no_tickets - boolean
 

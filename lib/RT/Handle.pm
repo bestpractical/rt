@@ -365,7 +365,7 @@ sub CreateDatabase {
         $status = $dbh->do("CREATE DATABASE $db_name WITH ENCODING='UNICODE' TEMPLATE template0");
     }
     elsif ( $db_type eq 'mysql' ) {
-        $status = $dbh->do("CREATE DATABASE $db_name DEFAULT CHARACTER SET utf8");
+        $status = $dbh->do("CREATE DATABASE `$db_name` DEFAULT CHARACTER SET utf8");
     }
     else {
         $status = $dbh->do("CREATE DATABASE $db_name");
@@ -406,6 +406,9 @@ sub DropDatabase {
         $path = "$RT::VarPath/$path" unless substr($path, 0, 1) eq '/';
         unlink $path or return (0, "Couldn't remove '$path': $!");
         return (1);
+    } elsif ( $db_type eq 'mysql' ) {
+        $dbh->do("DROP DATABASE `$db_name`")
+            or return (0, $DBI::errstr);
     } else {
         $dbh->do("DROP DATABASE ". $db_name)
             or return (0, $DBI::errstr);
@@ -1112,15 +1115,18 @@ sub InsertData {
             }
 
             # Grant it
-            my ( $return, $msg ) = $princ->PrincipalObj->GrantRight(
-                Right => $item->{'Right'},
-                Object => $object
-            );
-            unless ( $return ) {
-                $RT::Logger->error( $msg );
-            }
-            else {
-                $RT::Logger->debug( $return ."." );
+            my @rights = ref($item->{'Right'}) eq 'ARRAY' ? @{$item->{'Right'}} : $item->{'Right'};
+            foreach my $right ( @rights ) {
+                my ( $return, $msg ) = $princ->PrincipalObj->GrantRight(
+                    Right => $right,
+                    Object => $object
+                );
+                unless ( $return ) {
+                    $RT::Logger->error( $msg );
+                }
+                else {
+                    $RT::Logger->debug( $return ."." );
+                }
             }
         }
         $RT::Logger->debug("done.");

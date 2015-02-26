@@ -679,7 +679,6 @@ sub __Value {
 
 sub _CacheConfig {
   {
-     'cache_p'        => 1,
      'cache_for_sec'  => 30,
   }
 }

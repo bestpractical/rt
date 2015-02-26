@@ -55,6 +55,7 @@
   </tr>
 % }
 </table>
+% $m->callback( CallbackName => 'AfterHeaders', message => $Message );
 % }
 <%INIT>
 my @headers;

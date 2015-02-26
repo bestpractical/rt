@@ -231,16 +231,6 @@ AC_MSG_CHECKING([if database name is set])
                 [ AC_MSG_ERROR([no.  database name is not set]) ]
                )
 
-AS_IF([ test "$DB_TYPE" = "mysql" ],
-      [ AC_MSG_CHECKING([if database name is valid])
-          AS_IF([ echo $DB_DATABASE | $PERL -e 'exit(1) if <> =~ /-/'],
-                [ AC_MSG_RESULT([yes]) ],
-                [ AC_MSG_ERROR([no.  database name ($DB_DATABASE) contains '-' which is not valid for mysql]) ]
-               )
-      ]
-     )
-
-
 dnl Dependencies for testing and developing RT
 AC_ARG_WITH(developer,[],RT_DEVELOPER=$withval,RT_DEVELOPER="0")
 AC_ARG_ENABLE(developer,

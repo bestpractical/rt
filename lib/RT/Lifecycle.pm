@@ -627,6 +627,24 @@ sub FillCache {
 
     my $map = RT->Config->Get('Lifecycles') or return;
 
+    {
+        my @lifecycles;
+
+        # if users are upgrading from 3.* where we don't have lifecycle column yet,
+        # this could die. we also don't want to frighten them by the errors out
+        eval {
+            local $RT::Logger = Log::Dispatch->new;
+            @lifecycles = grep { defined } RT::Queues->new( RT->SystemUser )->DistinctFieldValues( 'Lifecycle' );
+        };
+        unless ( $@ ) {
+            for my $name ( @lifecycles ) {
+                unless ( $map->{$name} ) {
+                    warn "Lifecycle $name is missing in %Lifecycles config";
+                }
+            }
+        }
+    }
+
     %LIFECYCLES_CACHE = %LIFECYCLES = %$map;
     $_ = { %$_ } foreach values %LIFECYCLES_CACHE;
 

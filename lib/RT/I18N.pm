@@ -101,12 +101,6 @@ sub Init {
 
     # Load language-specific functions
     foreach my $file ( File::Glob::bsd_glob(substr(__FILE__, 0, -3) . "/*.pm") ) {
-        unless ( $file =~ /^([-\w\s\.\/\\~:]+)$/ ) {
-            warn("$file is tainted. not loading");
-            next;
-        }
-        $file = $1;
-
         my ($lang) = ($file =~ /([^\\\/]+?)\.pm$/);
         next unless grep $_ eq '*' || $_ eq $lang, @lang;
         require $file;
@@ -728,7 +722,10 @@ sub EncodeFromToWithCroak {
     my $from   = shift;
     my $to     = shift;
 
-    eval { Encode::from_to( $string, $from => $to, Encode::FB_CROAK ); };
+    eval {
+        no warnings 'utf8';
+        $string = Encode::encode( $to, Encode::decode( $from, $string ), Encode::FB_CROAK );
+    };
     return $@ ? ( 0, $@ ) : ( 1, $string );
 }
 

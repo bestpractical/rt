@@ -9,8 +9,6 @@ my ($major, $minor) = $RT::Handle->dbh->get_info(18) =~ /^0*(\d+)\.0*(\d+)/;
 plan skip_all => "Need Pg 8.2 or higher; we have $major.$minor"
     if "$major.$minor" < 8.2;
 
-plan tests => 36;
-
 RT->Config->Set( FullTextSearch => Enable => 1, Indexed => 1, Column => 'ContentIndex', Table => 'Attachments' );
 
 setup_indexing();
@@ -70,10 +68,11 @@ sub run_test {
     diag "Wrong SQL query for '$query':". $tix->BuildSelectQuery if $error;
 }
 
+my $blase = Encode::decode_utf8("blasé");
 @tickets = RT::Test->create_tickets(
     { Queue => $q->id },
-    { Subject => 'fts test 1', Content => 'book' },
-    { Subject => 'fts test 2', Content => 'bars'  },
+    { Subject => 'fts test 1', Content => "book $blase" },
+    { Subject => 'fts test 2', Content => "bars blas&eacute;", ContentType => 'text/html'  },
 );
 sync_index();
 
@@ -83,6 +82,11 @@ my $bars = $tickets[1];
 run_tests(
     "Content LIKE 'book'" => { $book->id => 1, $bars->id => 0 },
     "Content LIKE 'bars'" => { $book->id => 0, $bars->id => 1 },
+
+    # Unicode searching
+    "Content LIKE '$blase'" => { $book->id => 1, $bars->id => 1 },
+    "Content LIKE 'blase'"  => { $book->id => 0, $bars->id => 0 },
+    "Content LIKE 'blas'"   => { $book->id => 0, $bars->id => 0 },
 
     # make sure that Pg stemming works
     "Content LIKE 'books'" => { $book->id => 1, $bars->id => 0 },
@@ -116,3 +120,5 @@ run_tests(
 );
 
 @tickets = ();
+
+done_testing;

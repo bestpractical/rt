@@ -487,9 +487,6 @@ sub _ParseContent {
     }
 
     my $content = $self->SUPER::_Value('Content');
-    # We need to untaint the content of the template, since we'll be working
-    # with it
-    $content =~ s/^(.*)$/$1/;
 
     $args{'Ticket'} = delete $args{'TicketObj'} if $args{'TicketObj'};
     $args{'Transaction'} = delete $args{'TransactionObj'} if $args{'TransactionObj'};
@@ -842,10 +839,14 @@ sub CompileCheck {
 sub CurrentUserCanRead {
     my $self =shift;
 
-    return 1 if $self->CurrentUserHasQueueRight('ShowTemplate');
-
-    return $self->CurrentUser->HasRight( Right =>'ShowGlobalTemplates', Object => $RT::System )
-        if !$self->QueueObj->Id;
+    if ($self->__Value('Queue')) {
+        my $queue = RT::Queue->new( RT->SystemUser );
+        $queue->Load( $self->__Value('Queue'));
+        return 1 if $self->CurrentUser->HasRight( Right => 'ShowTemplate', Object => $queue );
+    } else {
+        return 1 if $self->CurrentUser->HasRight( Right => 'ShowGlobalTemplates', Object => $RT::System );
+        return 1 if $self->CurrentUser->HasRight( Right => 'ShowTemplate',        Object => $RT::System );
+    }
 
     return;
 }

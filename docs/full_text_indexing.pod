@@ -61,23 +61,92 @@ C<cron>:
 
 =head1 MYSQL
 
-MySQL does not support full-text indexing natively.  However, it does
-integrate with the external Sphinx engine, available from
+On MySQL, full-text search can either be done using native support
+(which may use MyISAM tables on pre-5.6 versions of MySQL), or RT can
+integrate with the external Sphinx full-text search engine.
+
+=head2 Native MySQL
+
+As RT marks attachment data as C<BINARY>, MySQL cannot index this
+content without creating an additional table.  To create the required
+table (which is InnoDB on versions of MySQL which support it), run:
+
+    /opt/rt4/sbin/rt-setup-fulltext-index
+
+If you have a non-standard database administrator username or password,
+you may need to pass the C<--dba> or C<--dba-password> options:
+
+    /opt/rt4/sbin/rt-setup-fulltext-index --dba root --dba-password secret
+
+This will also output an appropriate C<%FullTextSearch> configuration to
+add to your F<RT_SiteConfig.pm>; you will need to restart your webserver
+after making these changes.  However, the index will also need to be
+filled before it can be used.  To update the index initially, run:
+
+    /opt/rt4/sbin/rt-fulltext-indexer --all
+
+This will tokenize and index all existing attachments in your database;
+it may take quite a while if your database already has a large number of
+tickets in it.
+
+=head3 Updating the index
+
+To keep the index up-to-date, you will need to run:
+
+    /opt/rt4/sbin/rt-fulltext-indexer
+
+...at regular intervals.  By default, this will only tokenize up to 100
+tickets at a time; you can adjust this upwards by passing
+C<--limit 500>.  Larger batch sizes will take longer and
+consume more memory.
+
+If there is already an instances of C<rt-fulltext-indexer> running, new
+ones will exit abnormally (with exit code 1) and the error message
+"rt-fulltext-indexer is already running."  You can suppress this message
+and end those processes normally (with exit code 0) using the C<--quiet>
+option; this is particularly useful when running the command via
+C<cron>:
+
+    /opt/rt4/sbin/rt-fulltext-indexer --quiet
+
+=head3 Caveats
+
+Searching is done in "boolean mode."  As such, the TicketSQL query
+C<Content LIKE 'winter 2014'> will return tickets with transactions that
+contain I<either> word.  To find transactions which contain both (but
+not necessarily adjacent), use C<Content LIKE '+winter +2014'>.  To find
+transactions containing the precise phrase, use C<Content LIKE '"winter
+2014">.
+
+See the mysql documentation, at
+L<http://dev.mysql.com/doc/refman/5.6/en/fulltext-boolean.html>, for a
+list of the full capabilities.
+
+
+=head2 MySQL with Sphinx
+
+RT can also integrate with the external Sphinx engine, available from
 L<http://sphinxsearch.com>.  Unfortunately, Sphinx integration (using
 SphinxSE) does require that you recompile MySQL from source.  Most
 distribution-provided packages for MySQL do not include SphinxSE
 integration, merely the external Sphinx tools; these are not sufficient
 for RT's needs.
 
-=head2 Compiling MySQL and SphinxSE
+=head3 Compiling MySQL and SphinxSE
 
-SphinxSE requires MySQL 5.0 or 5.1; later versions of MySQL have not
-been tested at this time.  Sphinx version 2.0.1 has been tested to work,
-but version 0.9.9 may work as well.  Compilation and installation
+MySQL 5.1 supports adding pluggable storage engines; after compiling
+against the appropriate version of MySQL, the F<ha_sphinx.so> file is
+the only that needs to be installed in production, generally into
+C</usr/lib/mysql/plugin/>.  It can then be enabled via:
+
+    INSTALL PLUGIN Sphinx SONAME "ha_sphinx.so"
+
+Sphinx versions 0.9.x and 2.0.x are known-working versions, but later
+versions may work as well.  Complete compilation and installation
 instructions for MySQL with SphinxSE can be found at
-L<http://sphinxsearch.com/docs/current.html#sphinxse-installing>.
+L<http://sphinxsearch.com/docs/current.html#sphinxse-mysql51>.
 
-=head2 Creating and configuring the index
+=head3 Creating and configuring the index
 
 Once MySQL has been recompiled with SphinxSE, and Sphinx itself is
 installed, you may create the required SphinxSE communication table via:
@@ -104,7 +173,7 @@ Finally, start the Sphinx search daemon:
 
     searchd
 
-=head2 Updating the index
+=head3 Updating the index
 
 To keep the index up-to-date, you will need to run:
 
@@ -113,15 +182,23 @@ To keep the index up-to-date, you will need to run:
 ...at regular intervals in order to pick up new and updated attachments
 from RT's database.  Failure to do so will result in stale data.
 
-=head2 Caveats
+=head3 Caveats
 
-Sphinx only returns a finite number of matches to any query; this number
-is controlled by C<max_matches> in F</etc/sphinx.conf> and
+RT's integration with Sphinx relies on the use of a special index; there
+exist queries where the MySQL optimizer elects to I<not> use that index,
+instead electing to scan the table, which causes no results to be
+returned.  However, this is rare, and generally only occurs on complex
+queries.
+
+Sphinx also only returns a finite number of matches to any query; this
+number is controlled by C<max_matches> in F</etc/sphinx.conf> and
 C<%FullTextSearch>'s C<MaxMatches> in C<RT_SiteConfig.pm>, which must be
 kept in sync.  The default, set during C<rt-setup-fulltext-index>, is
 10000.  This limit may lead to false negatives in search results if the
 maximum number of matches is reached but the results returned do not
-match RT's other criteria.
+match RT's other criteria.  However, a too-large value will notably
+degrade performance, as it adds memory allocation overhead to every
+query.
 
 Take, for example, the instance where Sphinx is configured to return a
 maximum of three results, and tickets 1, 2, 3, 4, and 5 contain the
@@ -171,7 +248,7 @@ This, in effect, simply runs:
 The amount of memory used for the sync can be controlled with the
 C<--memory> option:
 
-    rt-fulltext-indexer --memory 10M
+    /opt/rt4/sbin/rt-fulltext-indexer --memory 10M
 
 If there is already an instance of C<rt-fulltext-indexer> running, new
 ones will exit abnormally (with exit code 1) and the error message
@@ -187,5 +264,19 @@ DBMS_JOB; read the B<Managing DML Operations for a CONTEXT Index>
 chapter of Oracle's B<Text Application Developer's Guide> for details
 how to keep the index optimized, perform garbage collection, and other
 tasks.
+
+=head1 UNINDEXED SEARCH
+
+It is also possible to enable full-text search without database indexing
+support, simply by setting the C<Enable> key of the C<%FullTextSearch>
+option to 1, while leaving C<Indexed> set to 0:
+
+    Set(%FullTextSearch,
+        Enable  => 1,
+        Indexed => 0,
+    );
+
+This is not generally suggested, as unindexed full-text searching can
+cause severe performance problems.
 
 =cut

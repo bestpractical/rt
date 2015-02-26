@@ -50,20 +50,21 @@
     <td class="label"><&|/l&>Created</&>:</td>\
     <td class="value"><% $Ticket->CreatedObj->AsString %></td>
   </tr>
+% $m->callback( %ARGS, CallbackName => 'AfterCreated', TicketObj => $Ticket );
 % if ( $Ticket->StartsObj->Unix ) {
   <tr class="date starts">
     <td class="label"><&|/l&>Starts</&>:</td>\
     <td class="value"><% $Ticket->StartsObj->AsString %></td>
   </tr>
+% $m->callback( %ARGS, CallbackName => 'AfterStarts', TicketObj => $Ticket );
 % }
 % if ( $Ticket->StartedObj->Unix ) {
   <tr class="date started">
     <td class="label"><&|/l&>Started</&>:</td>\
     <td class="value"><% $Ticket->StartedObj->AsString %></td>
   </tr>
+% $m->callback( %ARGS, CallbackName => 'AfterStarted', TicketObj => $Ticket );
 % }
-
-
 % if ( $Ticket->ToldObj->Unix || $Ticket->CurrentUserHasRight('ModifyTicket') ) {
   <tr class="date told">
     <td class="label">
@@ -74,6 +75,7 @@
 % }
 </td><td class="value"><% $Ticket->ToldObj->AsString %></td>
   </tr>
+% $m->callback( %ARGS, CallbackName => 'AfterTold', TicketObj => $Ticket );
 % }
 
 % if ( $Ticket->DueObj->Unix ) {
@@ -86,6 +88,7 @@
     <td class="value"><% $due->AsString  %></td>
 % }
   </tr>
+% $m->callback( %ARGS, CallbackName => 'AfterDue', TicketObj => $Ticket );
 % }
 
 % if ( $Ticket->ResolvedObj->Unix ) {
@@ -93,6 +96,7 @@
     <td class="label"><&|/l&>Closed</&>:</td>\
     <td class="value"><% $Ticket->ResolvedObj->AsString  %></td>
   </tr>
+% $m->callback( %ARGS, CallbackName => 'AfterResolved', TicketObj => $Ticket );
 % }
 
   <tr class="date updated">
@@ -104,6 +108,7 @@
     <td class="value"><% $UpdatedString | n %></td>
 % }
   </tr>
+% $m->callback( %ARGS, CallbackName => 'AfterUpdated', TicketObj => $Ticket );
   <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Grouping => 'Dates', Table => 0 &>
 % $m->callback( %ARGS, CallbackName => 'EndOfList', TicketObj => $Ticket );
 </table>

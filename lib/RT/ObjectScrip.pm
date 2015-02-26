@@ -258,6 +258,20 @@ sub _CoreAccessible {
  }
 };
 
+sub FindDependencies {
+    my $self = shift;
+    my ($walker, $deps) = @_;
+
+    $self->SUPER::FindDependencies($walker, $deps);
+
+    $deps->Add( out => $self->ScripObj );
+    if ($self->ObjectId) {
+        my $obj = RT::Queue->new( $self->CurrentUser );
+        $obj->Load( $self->ObjectId );
+        $deps->Add( out => $obj );
+    }
+}
+
 RT::Base->_ImportOverlays();
 
 1;

@@ -93,6 +93,50 @@ sub LimitToCustomField {
     );
 }
 
+=head2 SetCustomFieldObject
+
+Store the CustomField object which loaded this CustomFieldValues collection.
+Consumers of CustomFieldValues collection (such as External Custom Fields)
+can now work out how they were loaded (off a Queue or Ticket or something else)
+by inspecting the CustomField.
+
+=cut
+
+sub SetCustomFieldObject {
+    my $self = shift;
+    return $self->{'custom_field'} = shift;
+}
+
+=head2 CustomFieldObject
+
+Returns the CustomField object used to load this CustomFieldValues collection.
+Relies on $CustomField->Values having been called, is not set on manual loads.
+
+=cut
+
+sub CustomFieldObject {
+    my $self = shift;
+    return $self->{'custom_field'};
+}
+
+=head2 AddRecord
+
+Propagates the CustomField object from the Collection
+down to individual CustomFieldValue objects.
+
+=cut
+
+sub AddRecord {
+    my $self = shift;
+    my $CFV = shift;
+
+    $CFV->SetCustomFieldObj($self->CustomFieldObject);
+
+    push @{$self->{'items'}}, $CFV;
+    $self->{'rows'}++;
+}
+
+
 RT::Base->_ImportOverlays();
 
 1;
