@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-my $old_current_user;
+my $current_user = $session{CurrentUser};
 
 if ( $m->request_comp->path =~ RT->Config->Get('WebNoAuthRegex') ) {
     my $path = $m->dhandler_arg;
@@ -76,13 +76,11 @@ if ( $m->request_comp->path =~ RT->Config->Get('WebNoAuthRegex') ) {
       unless $user->ValidateAuthString( $auth,
               $ARGS{Query} . $ARGS{Order} . $ARGS{OrderBy} );
 
-    $old_current_user = $session{'CurrentUser'};
-    my $cu               = RT::CurrentUser->new;
-    $cu->Load($user);
-    $session{'CurrentUser'} = $cu;
+    $current_user = RT::CurrentUser->new;
+    $current_user->Load($user);
 }
 
-my $Tickets = RT::Tickets->new($session{'CurrentUser'});
+my $Tickets = RT::Tickets->new($current_user);
 $Tickets->FromSQL($ARGS{'Query'});
 if ($OrderBy =~ /\|/) {
     # Multiple Sorts
@@ -119,10 +117,17 @@ $r->content_type('application/rss+xml');
     while ( my $Ticket = $Tickets->Next()) {
         my $creator_str = $m->scomp('/Elements/ShowUser', User => $Ticket->CreatorObj);
         $creator_str =~ s/[\r\n]//g;
+
+        # Get the plain-text content; it is interpreted as HTML by RSS
+        # readers, so it must be escaped (and is escaped _again_ when
+        # inserted into the XML).
+        my $content = $Ticket->Transactions->First->Content;
+        $content = $m->interp->apply_escapes( $content, 'h');
+
         $rss->add_item(
           title       =>  $Ticket->Subject || loc('No Subject'),
           link        => RT->Config->Get('WebURL')."Ticket/Display.html?id=".$Ticket->id,
-          description => $Ticket->Transactions->First->Content,
+          description => $content,
           dc          => { creator => $creator_str,
                            date => $Ticket->CreatedObj->RFC2822,
                          },
@@ -131,7 +136,6 @@ $r->content_type('application/rss+xml');
     }
 
 $m->out($rss->as_string);
-$session{'CurrentUser'} = $old_current_user if $old_current_user;
 $m->abort();
 </%INIT>
 <%ARGS>

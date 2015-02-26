@@ -270,8 +270,7 @@ sub _PrivacyObjects {
 
     my $groups = RT::Groups->new($CurrentUser);
     $groups->LimitToUserDefinedGroups;
-    $groups->WithMember( PrincipalId => $CurrentUser->Id,
-                         Recursively => 1 );
+    $groups->WithCurrentUser;
     push @objects, @{ $groups->ItemsArrayRef };
 
     push @objects, RT::System->new($CurrentUser);
@@ -401,10 +400,7 @@ sub ObjectsForLoading {
         Right             => 'SeeGroupDashboard',
         IncludeSuperusers => $args{IncludeSuperuserGroups},
     );
-    $groups->WithMember(
-        Recursively => 1,
-        PrincipalId => $CurrentUser->UserObj->PrincipalId
-    );
+    $groups->WithCurrentUser;
     my $attrs = $groups->Join(
         ALIAS1 => 'main',
         FIELD1 => 'id',
