@@ -384,5 +384,5 @@ jQuery(function() {
         });
     });
     ReplaceAllTextareas();
-    jQuery('select.chosen').chosen({ width: '20em', placeholder_text_multiple: ' ', no_results_text: ' ' });
+    jQuery('select.chosen').chosen({ width: '20em', placeholder_text_multiple: ' ', no_results_text: ' ', search_contains: true });
 });
