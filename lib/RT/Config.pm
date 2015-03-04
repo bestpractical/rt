@@ -644,7 +644,7 @@ our %META;
             my $self = shift;
             my $value = $self->Get('MailCommand');
             return if ref($value) eq "CODE"
-                or $value =~/^(sendmail|sendmailpipe|qmail|testfile)$/;
+                or $value =~/^(sendmail|sendmailpipe|qmail|testfile|mbox)$/;
             $RT::Logger->error("Unknown value for \$MailCommand: $value; defaulting to sendmailpipe");
             $self->Set( MailCommand => 'sendmailpipe' );
         },
