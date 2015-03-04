@@ -165,12 +165,18 @@ sub BuildDSN {
         Database   => $db_name,
         Port       => $db_port,
         Driver     => $db_type,
-        RequireSSL => RT->Config->Get('DatabaseRequireSSL'),
     );
     if ( $db_type eq 'Oracle' && $db_host ) {
         $args{'SID'} = delete $args{'Database'};
     }
     $self->SUPER::BuildDSN( %args );
+
+    if (RT->Config->Get('DatabaseExtraDSN')) {
+        my %extra = RT->Config->Get('DatabaseExtraDSN');
+        $self->{'dsn'} .= ";$_=$extra{$_}"
+            for sort keys %extra;
+    }
+    return $self->{'dsn'};
 }
 
 =head2 DSN

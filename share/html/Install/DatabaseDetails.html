@@ -105,9 +105,6 @@ unless ( $db_type eq 'SQLite' ) {
     push @Types, 'DatabaseHost', 'DatabasePort', 'DatabaseAdmin',
         'DatabaseAdminPassword', 'DatabaseUser', 'DatabasePassword';
 }
-if ( $db_type eq 'Pg' ) {
-    push @Types, 'DatabaseRequireSSL';
-}
 
 
 if ( $Run ) {
