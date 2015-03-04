@@ -62,7 +62,7 @@
 <% $child->raw_html |n %>
 % } else {
 % my $url = $m->interp->apply_escapes((not $child->path or $child->path =~ m{^\w+:/}) ? $child->path : RT->Config->Get('WebPath').$child->path, 'h');
-<a id="<%$item_id%>" class="menu-item <% $child->class || '' %>"<% $child->path ? ' href="'.$url.'"' : '' |n%><% $child->target ? ' target="'.$m->interp->apply_escapes($child->target, 'h').'"' : '' |n %>>\
+<a id="<%$item_id%>" class="menu-item <% $child->class || '' %>" href="<% $url || "#" |n%>"<% $child->target ? ' target="'.$m->interp->apply_escapes($child->target, 'h').'"' : '' |n %>>\
 <% $child->escape_title ? $m->interp->apply_escapes($child->title, 'h') : $child->title |n %>\
 </a>\
 % }
