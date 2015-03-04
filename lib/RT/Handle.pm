@@ -834,6 +834,7 @@ sub InsertData {
     if ( @Groups ) {
         $RT::Logger->debug("Creating groups...");
         foreach my $item (@Groups) {
+            my $attributes = delete $item->{ Attributes };
             my $new_entry = RT::Group->new( RT->SystemUser );
             $item->{'Domain'} ||= 'UserDefined';
             my $member_of = delete $item->{'MemberOf'};
@@ -844,6 +845,8 @@ sub InsertData {
                 next;
             } else {
                 $RT::Logger->debug($return .".");
+                $_->{Object} = $new_entry for @{$attributes || []};
+                push @Attributes, @{$attributes || []};
             }
             if ( $member_of ) {
                 $member_of = [ $member_of ] unless ref $member_of eq 'ARRAY';
@@ -892,12 +895,15 @@ sub InsertData {
             if ( $item->{'Name'} eq 'root' && $root_password ) {
                 $item->{'Password'} = $root_password;
             }
+            my $attributes = delete $item->{ Attributes };
             my $new_entry = RT::User->new( RT->SystemUser );
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless ( $return ) {
                 $RT::Logger->error( $msg );
             } else {
                 $RT::Logger->debug( $return ."." );
+                $_->{Object} = $new_entry for @{$attributes || []};
+                push @Attributes, @{$attributes || []};
             }
             if ( $member_of ) {
                 $member_of = [ $member_of ] unless ref $member_of eq 'ARRAY';
@@ -963,12 +969,15 @@ sub InsertData {
     if ( @Queues ) {
         $RT::Logger->debug("Creating queues...");
         for my $item (@Queues) {
+            my $attributes = delete $item->{ Attributes };
             my $new_entry = RT::Queue->new(RT->SystemUser);
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless ( $return ) {
                 $RT::Logger->error( $msg );
             } else {
                 $RT::Logger->debug( $return ."." );
+                $_->{Object} = $new_entry for @{$attributes || []};
+                push @Attributes, @{$attributes || []};
             }
         }
         $RT::Logger->debug("done.");
@@ -976,6 +985,7 @@ sub InsertData {
     if ( @CustomFields ) {
         $RT::Logger->debug("Creating custom fields...");
         for my $item ( @CustomFields ) {
+            my $attributes = delete $item->{ Attributes };
             my $new_entry = RT::CustomField->new( RT->SystemUser );
             my $values    = delete $item->{'Values'};
 
@@ -1051,6 +1061,9 @@ sub InsertData {
                     }
                 }
             }
+
+            $_->{Object} = $new_entry for @{$attributes || []};
+            push @Attributes, @{$attributes || []};
         }
 
         $RT::Logger->debug("done.");
