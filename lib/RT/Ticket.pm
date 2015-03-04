@@ -2090,6 +2090,9 @@ sub CurrentUserCanSetOwner {
                  @_);
     my $OldOwnerObj = $self->OwnerObj;
 
+    $args{NewOwnerObj} ||= $self->CurrentUser->UserObj
+        if $args{Type} eq "Take" or $args{Type} eq "Steal";
+
     # Confirm rights for new owner if we got one
     if ( $args{'NewOwnerObj'} ){
         my ($ok, $message) = $self->_NewOwnerCanOwnTicket($args{'NewOwnerObj'}, $OldOwnerObj);
@@ -2102,8 +2105,6 @@ sub CurrentUserCanSetOwner {
         && $args{Type} ne 'Take' && $args{Type} ne 'Steal';
 
     # Ticket is unowned
-    # Can set owner to yourself withn ModifyTicket or TakeTicket
-    # and OwnTicket.
     if ( $OldOwnerObj->Id == RT->Nobody->Id ) {
 
         # Steal is not applicable for unowned tickets.
@@ -2111,11 +2112,23 @@ sub CurrentUserCanSetOwner {
             return ( 0, $self->loc("You can only steal a ticket owned by someone else") )
         }
 
-        unless ( (  $self->CurrentUserHasRight('ModifyTicket')
-                 or $self->CurrentUserHasRight('ReassignTicket')
-                 or $self->CurrentUserHasRight('TakeTicket') )
-                 and $self->CurrentUserHasRight('OwnTicket') ) {
-            return ( 0, $self->loc("Permission Denied") );
+        # Can set owner to yourself with ModifyTicket, ReassignTicket,
+        # or TakeTicket; in all of these cases, OwnTicket is checked by
+        # _NewOwnerCanOwnTicket above.
+        if ( $args{'Type'} eq 'Take'
+             or ( $args{'NewOwnerObj'}
+                  and $args{'NewOwnerObj'}->id == $self->CurrentUser->id )) {
+            unless (    $self->CurrentUserHasRight('ModifyTicket')
+                     or $self->CurrentUserHasRight('ReassignTicket')
+                     or $self->CurrentUserHasRight('TakeTicket') ) {
+                return ( 0, $self->loc("Permission Denied") );
+            }
+        } else {
+            # Nobody -> someone else requires ModifyTicket or ReassignTicket
+            unless (    $self->CurrentUserHasRight('ModifyTicket')
+                     or $self->CurrentUserHasRight('ReassignTicket') ) {
+                return ( 0, $self->loc("Permission Denied") );
+            }
         }
     }
 
