@@ -312,12 +312,9 @@ Deletes the subvalue with the key NAME
 sub DeleteSubValue {
     my $self = shift;
     my $key = shift;
-    my %values = $self->Content();
-    delete $values{$key};
-    $self->SetContent(%values);
-
-    
-
+    my $values = $self->Content();
+    delete $values->{$key};
+    $self->SetContent($values);
 }
 
 
