@@ -1863,8 +1863,8 @@ sub RenderMenu {
 
             my $path = $child->path;
             my $url = (not $path or $path =~ m{^\w+:/}) ? $path : $web_path . $path;
-            $res .= ' href="'. $interp->apply_escapes($url, 'h') .'"'
-                if $url;
+            $url ||= "#";
+            $res .= ' href="'. $interp->apply_escapes($url, 'h') .'"';
 
             if ( $tmp = $child->target ) {
                 $res .= ' target="'. $interp->apply_escapes($tmp, 'h') .'"'
