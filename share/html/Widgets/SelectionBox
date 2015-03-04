@@ -176,7 +176,7 @@ $self => undef
 </select>
 
 % unless ($self->{ReadOnly}) {
-<input name="add" type="submit" class="button" value=" &rarr; " />
+<input aria-label="Add" name="add" type="submit" class="button" value=" &rarr; " />
 % }
 
 <select name="<%$name%>-Selected" id="<%$name%>-Selected" size="<%$size%>" multiple="multiple">
@@ -190,8 +190,8 @@ selected="selected"
 </select>
 % unless ($self->{'ReadOnly'}) {
 % unless ($ARGS{'NoArrows'}) {
- <input name="moveup" type="submit" class="button" value=" &uarr; " />
- <input name="movedown" type="submit" class="button" value=" &darr; " />
+ <input aria-label="Move up" name="moveup" type="submit" class="button" value=" &uarr; " />
+ <input aria-label="Move down" name="movedown" type="submit" class="button" value=" &darr; " />
 % }
  <input name="remove" type="submit" class="button" value="<&|/l&>Delete</&>" />
 % if ($ARGS{'Clear'}) {
