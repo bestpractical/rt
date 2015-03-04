@@ -49,10 +49,11 @@
 package RT::Interface::CLI;
 use strict;
 use warnings;
-use RT;
+
+use RT::Base;
 
 use base 'Exporter';
-our @EXPORT_OK = qw(CleanEnv GetCurrentUser GetMessageContent debug loc);
+our @EXPORT_OK = qw(CleanEnv GetCurrentUser debug loc Init);
 
 =head1 NAME
 
@@ -60,27 +61,18 @@ our @EXPORT_OK = qw(CleanEnv GetCurrentUser GetMessageContent debug loc);
 
 =head1 SYNOPSIS
 
-  use lib "/path/to/rt/libraries/";
+  use lib "/opt/rt4/local/lib", "/opt/rt4/lib";
 
-  use RT::Interface::CLI  qw(CleanEnv
-                             GetCurrentUser GetMessageContent loc);
+  use RT::Interface::CLI  qw(GetCurrentUser Init loc);
 
-  #let's talk to RT'
-  use RT;
+  # Process command-line arguments, load the configuration, and connect
+  # to the database
+  Init();
 
-  #Load RT's config file
-  RT::LoadConfig();
-
-  # Connect to the database. set up loggign
-  RT::Init();
-
-  # Clean out all the nasties from the environment
-  CleanEnv();
-
-  #Get the current user all loaded
+  # Get the current user all loaded
   my $CurrentUser = GetCurrentUser();
 
-  print loc('Hello!'); # Synonym of $CuurentUser->loc('Hello!');
+  print loc('Hello!'); # Synonym of $CurrentUser->loc('Hello!');
 
 =head1 DESCRIPTION
 
@@ -98,6 +90,8 @@ Removes some of the nastiest nasties from the user's environment.
 =cut
 
 sub CleanEnv {
+    RT->Deprecated( Remove => "4.4" );
+
     $ENV{'PATH'} = '/bin:/usr/bin';    # or whatever you need
     $ENV{'CDPATH'} = '' if defined $ENV{'CDPATH'};
     $ENV{'SHELL'} = '/bin/sh' if defined $ENV{'SHELL'};
@@ -141,8 +135,6 @@ sub GetCurrentUser  {
     return($CurrentUser);
 }
 
-
-
 =head2 loc
 
   Synonym of $CurrentUser->loc().
@@ -156,82 +148,9 @@ sub loc {
 
 }
 
-
-
-=head2 GetMessageContent
-
-Takes two arguments a source file and a boolean "edit".  If the source file
-is undef or "", assumes an empty file.  Returns an edited file as an 
-array of lines.
-
-=cut
-
-sub GetMessageContent {
-    my %args = (  Source => undef,
-                  Content => undef,
-                  Edit => undef,
-                  CurrentUser => undef,
-                 @_);
-    my $source = $args{'Source'};
-
-    my $edit = $args{'Edit'};
-
-    my $currentuser = $args{'CurrentUser'};
-    my @lines;
-
-    use File::Temp qw/ tempfile/;
-
-    #Load the sourcefile, if it's been handed to us
-    if ($source) {
-        open( SOURCE, '<', $source ) or die $!;
-        @lines = (<SOURCE>) or die $!;
-        close (SOURCE) or die $!;
-    }
-    elsif ($args{'Content'}) {
-        @lines = split('\n',$args{'Content'});
-    }
-    #get us a tempfile.
-    my ($fh, $filename) = tempfile();
-
-    #write to a tmpfile
-    for (@lines) {
-        print $fh $_;
-    }
-    close ($fh) or die $!;
-
-    #Edit the file if we need to
-    if ($edit) {
-
-        unless ($ENV{'EDITOR'}) {
-            $RT::Logger->crit('No $EDITOR variable defined');
-            return undef;
-        }
-        system ($ENV{'EDITOR'}, $filename);
-    }
-
-    open( READ, '<', $filename ) or die $!;
-    my @newlines = (<READ>);
-    close (READ) or die $!;
-
-    unlink ($filename) unless (debug());
-    return(\@newlines);
-
-}
-
-
-
 sub debug {
-    my $val = shift;
-    my ($debug);
-    if ($val) {
-        $RT::Logger->debug($val);
-        if ($debug) {
-            print STDERR "$val\n";
-        }
-    }
-    if ($debug) {
-        return(1);
-    }
+    RT->Deprecated( Remove => "4.4", Instead => '$RT::Logger->debug' );
+    $RT::Logger->debug(@_);
 }
 
 sub ShowHelp {
@@ -247,6 +166,78 @@ sub ShowHelp {
             : 'NAME|USAGE|OPTIONS|DESCRIPTION'
         ),
     );
+}
+
+=head2 Init
+
+A shim for L<Getopt::Long/GetOptions> which automatically adds a
+C<--help> option if it is not supplied.  It then calls L<RT/LoadConfig>
+and L<RT/Init>.
+
+It sets the C<LogToSTDERR> setting to C<warning>, to ensure that the
+user sees all relevant warnings.  It also adds C<--quiet> and
+C<--verbose> options, which adjust the C<LogToSTDERR> value to C<error>
+or C<debug>, respectively.
+
+=cut
+
+sub Init {
+    require Getopt::Long;
+    require Pod::Usage;
+
+    my %exists;
+    my @args;
+    my $hash;
+    if (ref $_[0]) {
+        $hash = shift(@_);
+        for (@_) {
+            m/^([a-zA-Z0-9-]+)/;
+            $exists{$1}++;
+            push @args, $_ => \($hash->{$1});
+        }
+    } else {
+        $hash = {};
+        @args = @_;
+        while (@_) {
+            my $key = shift(@_);
+            $exists{$key}++;
+            shift(@_);
+        }
+    }
+
+    push @args, "help|h!" => \($hash->{help})
+        unless $exists{help};
+
+    push @args, "verbose|v!" => \($hash->{verbose})
+        unless $exists{verbose};
+
+    push @args, "quiet|q!" => \($hash->{quiet})
+        unless $exists{quiet};
+
+    my $ok = Getopt::Long::GetOptions( @args );
+    Pod::Usage::pod2usage(1) if not $ok and not defined wantarray;
+
+    return unless $ok;
+
+    Pod::Usage::pod2usage({ verbose => 2})
+          if not $exists{help} and $hash->{help};
+
+    require RT;
+    RT::LoadConfig();
+
+    if (not $exists{quiet} and $hash->{quiet}) {
+        RT->Config->Set(LogToSTDERR => "error");
+    } elsif (not $exists{verbose} and $hash->{verbose}) {
+        RT->Config->Set(LogToSTDERR => "debug");
+    } else {
+        RT->Config->Set(LogToSTDERR => "warning");
+    }
+
+    RT::Init();
+
+    $| = 1;
+
+    return $ok;
 }
 
 RT::Base->_ImportOverlays();

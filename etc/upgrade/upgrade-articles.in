@@ -53,11 +53,8 @@ use warnings;
 use lib "@LOCAL_LIB_PATH@";
 use lib "@RT_LIB_PATH@";
 
-use RT -init;
-
-RT->Config->Set('LogToSTDERR' => 'debug');
-
-$| = 1;
+use RT::Interface::CLI qw(Init);
+Init();
 
 my $db_name = RT->Config->Get('DatabaseName');
 my $db_type = RT->Config->Get('DatabaseType');

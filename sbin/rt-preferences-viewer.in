@@ -66,21 +66,9 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 
 }
 
-BEGIN {
-    use RT;
-    RT::LoadConfig();
-    RT::Init();
-};
-
-use Getopt::Long;
+use RT::Interface::CLI qw(Init);
 my %opt;
-GetOptions( \%opt, 'help|h', 'user|u=s', 'option|o=s' );
-
-if ( $opt{help} ) {
-    require Pod::Usage;
-    Pod::Usage::pod2usage({ verbose => 2 });
-    exit;
-}
+Init( \%opt, 'user|u=s', 'option|o=s' );
 
 require RT::Attributes;
 my $attrs = RT::Attributes->new( RT->SystemUser );

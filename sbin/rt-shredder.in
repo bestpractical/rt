@@ -46,6 +46,7 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
+
 =head1 NAME
 
 rt-shredder - Script which wipe out tickets from RT DB

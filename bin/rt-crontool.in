@@ -71,7 +71,7 @@ use RT;
 
 use Getopt::Long;
 
-use RT::Interface::CLI qw(CleanEnv GetCurrentUser GetMessageContent loc);
+use RT::Interface::CLI qw(GetCurrentUser loc);
 
 my ( $search, $condition, $action, $search_arg, $condition_arg, $action_arg,
      $template, $template_id, $transaction, $transaction_type, $help, $log, $verbose );
@@ -99,9 +99,6 @@ RT->Config->Set( LogToSTDERR => $log ) if $log;
 
 #Connect to the database and get RT::SystemUser and RT::Nobody loaded
 RT::Init();
-
-# Clean out all the nasties from the environment
-CleanEnv();
 
 require RT::Tickets;
 require RT::Template;

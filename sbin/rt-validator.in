@@ -66,23 +66,18 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 
 }
 
-use Getopt::Long;
+use RT::Interface::CLI qw(Init);
 my %opt = ();
-GetOptions(
+Init(
     \%opt,
     'check|c',
     'resolve',
     'force',
     'verbose|v',
-    'help|h',
     'links-only',
 );
 
-if ( $opt{help} || !$opt{check} ) {
-    require Pod::Usage;
-    print Pod::Usage::pod2usage( { verbose => 2 } );
-    exit 2;
-}
+Pod::Usage::pod2usage( { verbose => 2 } ) unless $opt{check};
 
 usage_warning() if $opt{'resolve'} && !$opt{'force'};
 
@@ -99,10 +94,6 @@ END
 # Read a line of text, any line of text
     <STDIN>;
 }
-
-use RT;
-RT::LoadConfig();
-RT::Init();
 
 my $dbh = $RT::Handle->dbh;
 my $db_type = RT->Config->Get('DatabaseType');

@@ -49,19 +49,12 @@
 use strict;
 use warnings;
 use Term::EditorEdit;
-use Getopt::Long;
-my ($help, $key, $id);
-GetOptions('help|h' => \$help, 'key|k=s' => \$key, 'id=i' => \$id);
 
-if ( $help || !$id ) {
-    require Pod::Usage;
-    Pod::Usage::pod2usage({ verbose => 2 });
-    exit;
-}
+use RT::Interface::CLI qw(Init);
+my ($key, $id);
+Init('key|k=s' => \$key, 'id=i' => \$id);
 
-require RT;
-RT::LoadConfig();
-RT::Init();
+Pod::Usage::pod2usage({ verbose => 2 }) unless $id;
 
 require RT::Attribute;
 my $attr = RT::Attribute->new( RT->SystemUser );
