@@ -60,6 +60,7 @@ $EtcPath = '@RT_ETC_PATH@';
 $BinPath = '@RT_BIN_PATH@';
 $SbinPath = '@RT_SBIN_PATH@';
 $VarPath = '@RT_VAR_PATH@';
+$FontPath = '@RT_FONT_PATH@';
 $LexiconPath = '@RT_LEXICON_PATH@';
 $StaticPath = '@RT_STATIC_PATH@';
 $PluginPath = '@RT_PLUGIN_PATH@';

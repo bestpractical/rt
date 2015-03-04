@@ -66,6 +66,7 @@ use vars qw($BasePath
  $BinPath
  $SbinPath
  $VarPath
+ $FontPath
  $LexiconPath
  $StaticPath
  $PluginPath
@@ -786,7 +787,7 @@ sub CanonicalizeGeneratedPaths {
 
         for my $path (
                     qw/EtcPath BinPath SbinPath VarPath LocalPath StaticPath LocalEtcPath
-                    LocalLibPath LexiconPath LocalLexiconPath PluginPath
+                    LocalLibPath LexiconPath LocalLexiconPath PluginPath FontPath
                     LocalPluginPath LocalStaticPath MasonComponentRoot MasonLocalComponentRoot
                     MasonDataDir MasonSessionDir/
                      )
