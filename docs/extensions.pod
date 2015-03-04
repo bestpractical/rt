@@ -1,0 +1,102 @@
+=head1 Introduction
+
+RT has a lot of core features, but sometimes you have a problem to solve
+that's beyond the scope of just configuration. The standard way to add
+features to RT is with an extension, or plugin -- RT uses the terms
+interchangably.
+
+=head1 Finding extensions
+
+Most of the extensions written by Best Practical (and quite a few
+contributed by the community) are available from CPAN; a L<search for
+RT::Extension|https://metacpan.org/search?q=RT::Extension::> will turn
+up most of them.  The Best Practical website also maintains a list, at
+L<http://www.bestpractical.com/rt/extensions.html>
+
+=head1 Installing extensions
+
+RT extensions should be installed by downloading the C<.tar.gz> file for
+the extensions, extracting it (with C<tar xzf filename.tar.gz>), and
+following the instructions in its included F<README>.
+
+The instructions under C<INSTALLING> in the F<README> always take
+precedence over those found here.  In general, however, the process is
+as follows:
+
+=over
+
+=item 1.
+
+B<Run C<perl Makefile.PL>> to check for dependencies, and minimum
+versions of RT.  If your RT is in an unusual location (not
+C</opt/rt4/>), you may need to set the C<RTHOME> environment variable to
+the root of your RT location.
+
+=item 2.
+
+B<Run C<make>> to prepare the package for installation.
+
+=item 3.
+
+B<Run C<make install>>; you may need to run this step as C<root>, or at
+least a user that has permission to install into RT's directories.
+
+=item 4.
+
+If the extension contains database changes or new queues, scrips,
+templates, or the like, you will need to B<run C<make initdb>> to install
+them.  Not all extensions have database changes, and most of them only
+need this step run when they are first installed, and not on later
+updates.  Refer to the C<INSTALLING> section of the module's
+documentation.
+
+=item 5.
+
+B<Add the plugin to RT's configuration.> By default, newly installed
+plugins are not enabled.  On RT 4.2, each plugin should be enabled by
+the C<Plugin()> command:
+
+    Plugin( 'RT::Extension::Example' );
+    Plugin( 'RT::Extension::Sample' );
+
+
+On RT 4.0, enabling them instead requires adding them to the C<@Plugins>
+configuration:
+
+    Set( @Plugins, 'RT::Extension::Example', 'RT::Extension::Sample' );
+
+=item 6.
+
+B<Configure any additional settings> that the extension requires.  Many
+options that must be set before the plugin can be used.  Read the
+documentation carefully.
+
+=item 7.
+
+Next, B<clear the cache>.  RT caches the files it serves, and installing
+a plugin requires clearing this cache to ensure that the changes are
+served.  This is done by removing files in the
+F</opt/rt4/var/mason_data/obj> directory:
+
+   rm -rf /opt/rt4/var/mason_data/obj
+
+This step may not be necessary if the extension does not affect RT's
+display.
+
+=item 8.
+
+Finally, B<restart your webserver>.  The steps for this will vary from
+webserver to webserver.
+
+=back
+
+Again, the above are generalizations.  The C<README> shipped with the
+extension always takes precedence over the above steps.
+
+
+We do not suggest using the command-line C<cpan> or C<cpanm> client to
+install RT extensions, despite them being available from CPAN.  Those
+command-line clients are not aware of steps 4-8 listed above, and may
+result in an incomplete installation.
+
+=cut
