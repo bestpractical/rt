@@ -633,25 +633,13 @@ sub SetEmailAddress {
 
 =head2 EmailFrequency
 
-Takes optional Ticket argument in paramhash. Returns 'no email',
-'squelched', 'daily', 'weekly' or empty string depending on
-user preferences.
+Takes optional Ticket argument in paramhash. Returns a string, suitable
+for localization, describing any notable properties about email delivery
+to the user.  This includes lack of email address, ticket-level
+squelching (if C<Ticket> is provided in the paramhash), or user email
+delivery preferences.
 
-=over 4
-
-=item 'no email' - user has no email, so can not recieve notifications.
-
-=item 'squelched' - returned only when Ticket argument is provided and
-notifications to the user has been supressed for this ticket.
-
-=item 'daily' - retruned when user recieve daily messages digest instead
-of immediate delivery.
-
-=item 'weekly' - previous, but weekly.
-
-=item empty string returned otherwise.
-
-=back
+Returns the empty string if there are no notable properties.
 
 =cut
 
@@ -663,12 +651,18 @@ sub EmailFrequency {
     );
     return '' unless $self->id && $self->id != RT->Nobody->id
         && $self->id != RT->SystemUser->id;
-    return 'no email address' unless my $email = $self->EmailAddress;
-    return 'email disabled for ticket' if $args{'Ticket'} &&
-        grep lc $email eq lc $_->Content, $args{'Ticket'}->SquelchMailTo;
+    return 'no email address set'  # loc
+        unless my $email = $self->EmailAddress;
+    return 'email disabled for ticket' # loc
+        if $args{'Ticket'} &&
+            grep lc $email eq lc $_->Content, $args{'Ticket'}->SquelchMailTo;
     my $frequency = RT->Config->Get( 'EmailFrequency', $self ) || '';
-    return 'daily' if $frequency =~ /daily/i;
-    return 'weekly' if $frequency =~ /weekly/i;
+    return 'receives daily digests' # loc
+        if $frequency =~ /daily/i;
+    return 'receives weekly digests' # loc
+        if $frequency =~ /weekly/i;
+    return 'email delivery suspended' # loc
+        if $frequency =~ /suspend/i;
     return '';
 }
 
