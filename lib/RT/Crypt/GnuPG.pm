@@ -1650,6 +1650,13 @@ sub GetKeysInfo {
 
     @info = $self->ParseKeysInfo( @info );
     $res{'info'} = \@info;
+
+    for my $key (@{$res{info}}) {
+        $key->{Formatted} =
+            join("; ", map {$_->{String}} @{$key->{User}})
+                . " (".substr($key->{Fingerprint}, -8) . ")";
+    }
+
     return %res;
 }
 

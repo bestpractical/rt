@@ -1773,11 +1773,11 @@ sub PreferredKey
     return undef if @keys == 0;
 
     if (@keys == 1) {
-        $prefkey = $keys[0]->{'id'} || $keys[0]->{'Fingerprint'};
+        $prefkey = $keys[0]->{'Fingerprint'};
     } else {
         # prefer the maximally trusted key
         @keys = sort { $b->{'TrustLevel'} <=> $a->{'TrustLevel'} } @keys;
-        $prefkey = $keys[0]->{'id'} || $keys[0]->{'Fingerprint'};
+        $prefkey = $keys[0]->{'Fingerprint'};
     }
 
     $self->SetAttribute(Name => 'PreferredKey', Content => $prefkey);

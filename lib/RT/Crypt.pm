@@ -819,6 +819,10 @@ An L<RT::Date> of the date the key expires; undef if the key does not expire.
 
 A fingerprint unique to this key
 
+=item Formatted
+
+A formatted string representation of the key
+
 =item User
 
 An array reference of associated user data, each of which is a hashref
