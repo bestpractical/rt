@@ -244,10 +244,7 @@ my $imgdata;
 
 my $colors;
 my $valid_image_types;
-my $analyze_img = sub {
-    return undef if RT->Config->Get('DisableGD');
-    return undef unless Convert::Color->require;
-
+if (not RT->Config->Get('DisableGD') and Convert::Color->require) {
     require GD;
 
     # Always find out what GD can read...
@@ -256,6 +253,10 @@ my $analyze_img = sub {
         $gd_can{$type}++ if GD::Image->can("newFrom${type}Data");
     }
     $valid_image_types = join(", ", map { uc } sort { lc $a cmp lc $b } keys %gd_can);
+}
+
+my $analyze_img = sub {
+    return undef unless $valid_image_types;
 
     my $imgdata = shift;
     return undef unless $imgdata;
@@ -294,7 +295,6 @@ my $analyze_img = sub {
         }
     }
 
-    use List::MoreUtils qw(uniq);
     for (values %colors) {
         $_->{rank} = $_->{s} * $_->{cnt};
     }
