@@ -787,6 +787,7 @@ sub _EncodeLOB {
 
     #if the current attachment contains nulls and the
     #database doesn't support embedded nulls
+    local $@;
 
     if ( ( !$RT::Handle->BinarySafeBLOBs ) && ( $Body =~ /\x00/ ) ) {
 
@@ -799,7 +800,7 @@ sub _EncodeLOB {
     # Some databases (postgres) can't handle non-utf8 data
     } elsif (    !$RT::Handle->BinarySafeBLOBs
               && $Body =~ /\P{ASCII}/
-              && !Encode::is_utf8( $Body, 1 ) ) {
+              && !eval { Encode::decode( "UTF-8", $Body, Encode::FB_CROAK ) || 1} ) {
           $ContentEncoding = 'quoted-printable';
     }
 
