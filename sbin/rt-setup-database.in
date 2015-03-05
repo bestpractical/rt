@@ -48,6 +48,7 @@
 # END BPS TAGGED BLOCK }}}
 use strict;
 use warnings;
+use 5.010;
 
 use vars qw($Nobody $SystemUser $item);
 
@@ -348,9 +349,13 @@ sub action_coredata {
 }
 
 sub action_insert {
+    state $RAN_INIT;
     my %args = @_;
-    $RT::Handle = RT::Handle->new;
-    RT::Init();
+    unless ($RAN_INIT) {
+        $RT::Handle = RT::Handle->new;
+        RT::Init();
+        $RAN_INIT++;
+    }
     $log_actions = 1;
 
     my ($status, $msg) = RT::Handle->CheckCompatibility( $RT::Handle->dbh, 'insert' );
