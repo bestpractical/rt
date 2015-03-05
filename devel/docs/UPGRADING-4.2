@@ -43,4 +43,10 @@ you can use the class set on the E<lt>C<body>E<gt> element (for example:
 body.aileron).  See F<docs/customizing/styling_rt.pod> for more information
 on custom styles.
 
+=item *
+
+The C<AddRights> and C<AddRightCategories> methods on L<RT::Class>,
+L<RT::CustomField>, L<RT::Group>, L<RT::Queue>, and L<RT::System> were
+refactored into L<RT::Record::Role::Rights/AddRight>.
+
 =back
