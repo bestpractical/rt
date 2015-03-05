@@ -287,6 +287,8 @@ searchd {
     seamless_rotate         = 1
     preopen_indexes         = 0
     unlink_old              = 1
+    # For sphinx >= 1.10:
+    binlog_path             = $var_path/sphinx/
 }
 
 END
