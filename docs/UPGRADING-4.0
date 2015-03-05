@@ -1,5 +1,8 @@
 =head1 UPGRADING FROM BEFORE 4.0.0
 
+See F<devel/docs/UPGRADING-4.0> for internals changes relevant to
+extension writers.  The following is tailored to RT administrators:
+
 =head2 Common issues
 
 RT now defaults to a database name of rt4 and an installation root of
@@ -84,14 +87,6 @@ upgrade script that can port RTFM's internal CustomField and Transaction data
 to RT4.
 
 You must also remove RT::FM from your @Plugins line in RT_SiteConfig.pm.
-
-
-=head2 Removals and updates
-
-The deprecated classes RT::Action::Generic, RT::Condition::Generic and
-RT::Search::Generic have been removed, but you shouldn't have been using them
-anyway. You should have been using RT::Action, RT::Condition and RT::Search,
-respectively.
 
 =over
 
