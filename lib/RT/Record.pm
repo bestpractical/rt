@@ -787,7 +787,6 @@ sub _EncodeLOB {
 
     #if the current attachment contains nulls and the
     #database doesn't support embedded nulls
-
     if ( ( !$RT::Handle->BinarySafeBLOBs ) && ( $Body =~ /\x00/ ) ) {
 
         # set a flag telling us to mimencode the attachment
@@ -798,9 +797,16 @@ sub _EncodeLOB {
         $MaxSize = $MaxSize * 3 / 4;
     # Some databases (postgres) can't handle non-utf8 data
     } elsif (    !$RT::Handle->BinarySafeBLOBs
-              && $Body =~ /\P{ASCII}/
-              && !Encode::is_utf8( $Body, 1 ) ) {
-          $ContentEncoding = 'quoted-printable';
+              && $Body =~ /\P{ASCII}/ ) {
+        local $@;
+        # If it's valid UTF-8 data, store it as characters with no
+        # transfer-encoding; otherwise QP it
+        my $chars = eval { Encode::decode( "UTF-8", $Body, Encode::FB_CROAK | Encode::LEAVE_SRC ) };
+        if (not $@) {
+            $Body = $chars;
+        } else {
+            $ContentEncoding = 'quoted-printable';
+        }
     }
 
     #if the attachment is larger than the maximum size
