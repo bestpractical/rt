@@ -185,7 +185,7 @@ sub prompt_delete_objs
     }
     my $list = "Next ". scalar( @$objs ) ." objects would be deleted:\n";
     foreach my $o( @$objs ) {
-        $list .= "\t". $o->_AsString ." object\n";
+        $list .= "\t". $o->UID ." object\n";
     }
     print $list;
     exit(0) unless prompt_yN( "Do you want to proceed?" );

@@ -114,7 +114,7 @@ sub WriteDownGroup {
     my $self = shift;
     my %args = ( Object => undef, @_ );
     if ( $args{'Object'}->RoleClass ) {
-        return $skip_refs_to{ $args{'Object'}->_AsString } = 1;
+        return $skip_refs_to{ $args{'Object'}->UID } = 1;
     }
     return $self->WriteDownDefault( %args );
 }
@@ -153,7 +153,7 @@ sub _MakeHash {
     foreach (grep exists $hash->{$_}, qw(Creator LastUpdatedBy)) {
         my $method = $_ .'Obj';
         my $u = $obj->$method();
-        $hash->{ $_ } = $u->EmailAddress || $u->Name || $u->_AsString;
+        $hash->{ $_ } = $u->EmailAddress || $u->Name || $u->UID;
     }
     return $hash;
 }
@@ -170,7 +170,7 @@ sub _WriteDownHash {
     my ($self, $obj, $hash) = @_;
     return (0, 'no handle') unless my $fh = $self->{'opt'}{'file_handle'};
 
-    print $fh "=== ". $obj->_AsString ." ===\n"
+    print $fh "=== ". $obj->UID ." ===\n"
         or return (0, "Couldn't write to filehandle");
 
     foreach my $key( sort keys %$hash ) {

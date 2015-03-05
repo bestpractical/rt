@@ -56,14 +56,6 @@ use warnings FATAL => 'redefine';
 use RT::Shredder::Constants;
 use RT::Shredder::Exceptions;
 
-=head2 _AsString
-
-Returns string in format ClassName-ObjectId.
-
-=cut
-
-sub _AsString { return ref($_[0]) ."-". $_[0]->id }
-
 =head2 _AsInsertQuery
 
 Returns INSERT query string that duplicates current record and
@@ -100,7 +92,7 @@ sub Dependencies
     my $self = shift;
     my %args = (
             Shredder => undef,
-            Flags => DEPENDS_ON,
+            Flags => RT::Shredder::Constants::DEPENDS_ON,
             @_,
            );
 
@@ -109,7 +101,7 @@ sub Dependencies
     }
 
     my $deps = RT::Shredder::Dependencies->new();
-    if( $args{'Flags'} & DEPENDS_ON ) {
+    if( $args{'Flags'} & RT::Shredder::Constants::DEPENDS_ON ) {
         $self->__DependsOn( %args, Dependencies => $deps );
     }
     return $deps;
@@ -161,7 +153,7 @@ sub __DependsOn
 
     $deps->_PushDependencies(
             BaseObject => $self,
-            Flags => DEPENDS_ON,
+            Flags => RT::Shredder::Constants::DEPENDS_ON,
             TargetObjects => $list,
             Shredder => $args{'Shredder'}
         );
@@ -173,7 +165,7 @@ sub __DependsOn
 sub __Wipeout
 {
     my $self = shift;
-    my $msg = $self->_AsString ." wiped out";
+    my $msg = $self->UID ." wiped out";
     $self->SUPER::Delete;
     $RT::Logger->info( $msg );
     return;

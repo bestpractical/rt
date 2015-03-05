@@ -107,7 +107,7 @@ sub _PushDependency
             @_
            );
     my $rec = $args{'Shredder'}->PutObject( Object => $args{'TargetObject'} );
-    return if $rec->{'State'} & WIPED; # there is no object anymore
+    return if $rec->{'State'} & RT::Shredder::Constants::WIPED; # there is no object anymore
 
     push @{ $self->{'list'} },
         RT::Shredder::Dependency->new(
