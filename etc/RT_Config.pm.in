@@ -121,6 +121,9 @@ to the enabled C<@Plugins> list:
     Plugin( "RT::Extension::SLA" );
     Plugin( "RT::Authen::ExternalAuth" );
 
+RT will also accept the distribution name (i.e. C<RT-Extension-SLA>)
+instead of the package name (C<RT::Extension::SLA>).
+
 =cut
 
 Set(@Plugins, ());

@@ -1118,6 +1118,7 @@ sub _LoadConfig {
         };
         local *Plugin = sub {
             my (@new_plugins) = @_;
+            @new_plugins = map {s/-/::/g if not /:/; $_} @new_plugins;
             my ( $pack, $file, $line ) = caller;
             return $self->SetFromConfig(
                 Option     => \@RT::Plugins,
