@@ -18,7 +18,7 @@ diag "Trailing punctuation";
     for my $punc (qw( . ! ? ), ",") {
         is_string(
             make_clicky($m, "Refer to $url$punc  A following sentence."),
-            qq[Refer to <span class="clickylink"><a target="new" href="$url">$url</a></span>$punc  A following sentence.],
+            qq[Refer to <span class="clickylink"><a target="_blank" href="$url">$url</a></span>$punc  A following sentence.],
             "$punc not included in url",
         );
     }
@@ -31,7 +31,7 @@ diag "Punctuation as part of the url";
     RT::Interface::Web::EscapeHTML( \$escaped_url );
     is_string(
         make_clicky($m, "Refer to $url.  A following sentence."),
-        qq[Refer to <span class="clickylink"><a target="new" href="$escaped_url">$escaped_url</a></span>.  A following sentence.],
+        qq[Refer to <span class="clickylink"><a target="_blank" href="$escaped_url">$escaped_url</a></span>.  A following sentence.],
         "Punctuation in middle of URL",
     );
 }
