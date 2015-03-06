@@ -107,6 +107,7 @@ sub SetRecipients {
     if (   $arg =~ /\bOwner\b/
         && $ticket->OwnerObj->id != RT->Nobody->id
         && $ticket->OwnerObj->EmailAddress
+        && not $ticket->OwnerObj->Disabled
     ) {
         # If we're not sending to Ccs or requestors,
         # then the Owner can be the To.
