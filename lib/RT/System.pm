@@ -117,7 +117,7 @@ sub AvailableRights {
     if ($principal and $principal->IsRoleGroup) {
         my $role = $principal->Object->Name;
         for my $class (keys %RT::ACE::RIGHTS) {
-            next unless $class->DOES('RT::Record::Role::Roles') and $class->HasRole($role);
+            next unless $class->DOES('RT::Record::Role::Roles') and $class->HasRole($role) and $class ne "RT::System";
             push @rights, values %{ $RT::ACE::RIGHTS{$class} };
         }
     } else {
