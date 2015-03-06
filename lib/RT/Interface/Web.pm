@@ -2152,6 +2152,7 @@ sub CreateTicket {
         Due             => $due ? $due->ISO : undef,
         Starts          => $starts ? $starts->ISO : undef,
         MIMEObj         => $MIMEObj,
+        SquelchMailTo   => $ARGS{'SquelchMailTo'},
         TransSquelchMailTo => $ARGS{'TransSquelchMailTo'},
     );
 
