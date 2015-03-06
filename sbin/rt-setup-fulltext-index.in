@@ -91,7 +91,7 @@ my %OPT = (
 my %DEFAULT;
 if ( $DB{'type'} eq 'Pg' ) {
     %DEFAULT = (
-        table  => 'Attachments',
+        table  => 'AttachmentsIndex',
         column => 'ContentIndex',
     );
 }
@@ -121,6 +121,7 @@ GetOptions(
 
     'dba=s'          => \$DB{'admin'},
     'dba-password=s' => \$DB{'admin_password'},
+    'limit=i'        => \$DB{'batch-size'},
 ) or show_help();
 
 if ( $OPT{'help'} || (!$DB{'admin'} && $DB{'type'} eq 'Oracle' ) ) {
@@ -175,8 +176,12 @@ if ( $DB{'type'} eq 'mysql' ) {
     my $engine = $RT::Handle->dbh->{mysql_serverversion} < 50600 ? "MyISAM" : "InnoDB";
     my $schema = "CREATE TABLE $table ( "
         ."id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,"
-        ."Content LONGTEXT, FULLTEXT(Content) ) ENGINE=$engine CHARACTER SET utf8";
+        ."Content LONGTEXT ) ENGINE=$engine CHARACTER SET utf8";
     insert_schema( $schema );
+
+    insert_data( Table => $table, Engine => $engine );
+
+    insert_schema( "CREATE FULLTEXT INDEX $table ON $table(Content)" );
 
     print_rt_config( Table => $table );
 } elsif ($DB{'type'} eq 'sphinx') {
@@ -299,7 +304,7 @@ elsif ( $DB{'type'} eq 'Pg' ) {
     my $table = $OPT{'table'} || prompt(
         message => "Enter the name of a DB table that will be used to store the Pg tsvector.\n"
                  . "You may either use the existing Attachments table, or create a new\n"
-                 . "table.",
+                 . "table.  Creating a new table makes initial indexing faster.",
         default => $DEFAULT{'table'},
         silent  => !$OPT{'ask'},
     );
@@ -309,32 +314,39 @@ elsif ( $DB{'type'} eq 'Pg' ) {
         silent  => !$OPT{'ask'},
     );
 
-    my $schema;
+    my @schema;
     my $drop;
     if ( lc($table) eq 'attachments' ) {
         $drop = "ALTER TABLE $table DROP COLUMN $column";
-        $schema = "ALTER TABLE $table ADD COLUMN $column tsvector";
+        push @schema, "ALTER TABLE $table ADD COLUMN $column tsvector";
     } else {
         $drop = "DROP TABLE $table";
-        $schema = "CREATE TABLE $table ( "
-            ."id INTEGER NOT NULL,"
-            ."$column tsvector )";
+        push @schema, split /;\n+/, <<SCHEMA;
+CREATE TABLE $table (
+    id SERIAL,
+    $column tsvector
+);
+GRANT SELECT, INSERT, UPDATE, DELETE ON $table TO "$DB{user}"
+SCHEMA
     }
 
     my $index_type = lc($OPT{'index-type'} || '');
     while ( $index_type ne 'gist' and $index_type ne 'gin' ) {
         $index_type = lc prompt(
-            message => "You may choose between GiST or GIN indexes; the former is several times\n"
-                     . "slower to search, but takes less space on disk and is faster to update.",
-            default => 'GiST',
+            message => "You may choose between GiST or GIN indexes; the GiST takes less space on\n"
+                     . "disk and is faster to update, but is an order of magnitude slower to query.",
+            default => 'GIN',
             silent  => !$OPT{'ask'},
         );
     }
 
     do_error_is_ok( dba_handle() => $drop )
         unless $OPT{'dryrun'};
-    insert_schema( $schema );
-    insert_schema("CREATE INDEX ${column}_idx ON $table USING $index_type($column)");
+    insert_schema( $_ ) for @schema;
+
+    insert_data( Table => $table, Column => $column );
+
+    insert_schema( "CREATE INDEX ${column}_idx ON $table USING $index_type($column)" );
 
     print_rt_config( Table => $table, Column => $column );
 }
@@ -725,6 +737,16 @@ sub insert_schema {
     unless ( $res ) {
         die "Couldn't run DDL query: ". $dbh->errstr;
     }
+}
+
+sub insert_data {
+    return if $OPT{dryrun};
+
+    print "Indexing existing data...\n";
+
+    $ENV{RT_FTS_CONFIG} = JSON::to_json( {Enable => 1, Indexed => 1, @_});
+    system( "$RT::SbinPath/rt-fulltext-indexer", "--all",
+            ($DB{'batch-size'} ? ("--limit", $DB{'batch-size'}) : ()));
 }
 
 =head1 NAME

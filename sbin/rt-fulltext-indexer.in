@@ -48,7 +48,7 @@
 # END BPS TAGGED BLOCK }}}
 use strict;
 use warnings;
-no warnings 'once';
+use 5.010;
 
 # fix lib paths, some may be relative
 BEGIN { # BEGIN RT CMD BOILERPLATE
@@ -67,53 +67,25 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 
 }
 
-BEGIN {
-    use RT;
-    RT::LoadConfig();
-    RT::Init();
-};
+use RT -init;
 use RT::Interface::CLI ();
-
-my %OPT = (
-    help        => 0,
-    debug       => 0,
-    quiet       => 0,
-);
-my @OPT_LIST = qw(help|h! debug! quiet);
-
-my $db_type = RT->Config->Get('DatabaseType');
-if ( $db_type eq 'Pg' ) {
-    %OPT = (
-        %OPT,
-        limit  => 0,
-        all    => 0,
-    );
-    push @OPT_LIST, 'limit=i', 'all!';
-}
-elsif ( $db_type eq 'mysql' ) {
-    %OPT = (
-        %OPT,
-        limit    => 0,
-        all      => 0,
-    );
-    push @OPT_LIST, 'limit=i', 'all!';
-}
-elsif ( $db_type eq 'Oracle' ) {
-    %OPT = (
-        %OPT,
-        memory => '2M',
-    );
-    push @OPT_LIST, qw(memory=s);
-}
+use HTML::Entities;
 
 use Getopt::Long qw(GetOptions);
-GetOptions( \%OPT, @OPT_LIST );
+my %OPT = ( memory => '2M', limit => 0 );
+GetOptions( \%OPT,
+    "help|h!",
+    "debug!",
+    "quiet!",
 
-if ( $OPT{'help'} ) {
-    RT::Interface::CLI->ShowHelp(
-        Sections => 'NAME|DESCRIPTION|'. uc($db_type),
-    );
-}
+    "all!",
+    "limit=i",
+
+    "memory=s",
+);
+$OPT{limit} ||= 200;
+
+RT::Interface::CLI->ShowHelp if $OPT{help};
 
 use Fcntl ':flock';
 if ( !flock main::DATA, LOCK_EX | LOCK_NB ) {
@@ -127,7 +99,9 @@ if ( !flock main::DATA, LOCK_EX | LOCK_NB ) {
     }
 }
 
-my $fts_config = RT->Config->Get('FullTextSearch') || {};
+my $db_type = RT->Config->Get('DatabaseType');
+my $fts_config = $ENV{RT_FTS_CONFIG} ? JSON::from_json($ENV{RT_FTS_CONFIG})
+    : RT->Config->Get('FullTextSearch') || {};
 unless ( $fts_config->{'Enable'} ) {
     print STDERR <<EOT;
 
@@ -167,227 +141,214 @@ EOT
     exit 1;
 }
 
-my @types = qw(text html);
-foreach my $type ( @types ) {
-  REDO:
-    my $attachments = attachments($type);
-    $attachments->Limit(
-        FIELD => 'id',
-        OPERATOR => '>',
-        VALUE => last_indexed($type)
-    );
-    $attachments->OrderBy( FIELD => 'id', ORDER => 'asc' );
-    $attachments->RowsPerPage( $OPT{'limit'} || 100 );
+# Skip ACL checks.  This saves a large number of unnecessary queries
+# (for tickets, ACLs, and users) which are unnecessary, as we are
+# running as the system user.
+{
+    no warnings 'redefine';
+    no warnings 'once';
+    *RT::Attachment::_Value = \&DBIx::SearchBuilder::Record::_Value;
+    *RT::Attachments::Next  = \&DBIx::SearchBuilder::Next;
+}
 
-    my $found = 0;
-    while ( my $a = $attachments->Next ) {
-        next if filter( $type, $a );
-        debug("Found attachment #". $a->id );
-        my $txt = extract($type, $a) or next;
-        $found++;
-        process( $type, $a, $txt );
-        debug("Processed attachment #". $a->id );
+my $LAST;
+if ($db_type eq 'mysql') {
+    process_mysql();
+} elsif ($db_type eq 'Pg') {
+    process_pg();
+}
+
+sub attachment_loop {
+    my $subref = shift;
+    my $table = $fts_config->{'Table'};
+    $LAST //= 0;
+
+    # Fetch in batches of size --limit
+    {
+        # Indexes all text/plain and text/html attachments
+        my $attachments = RT::Attachments->new( RT->SystemUser );
+        $attachments->Limit(
+            FIELD    => 'ContentType',
+            OPERATOR => 'IN',
+            VALUE    => ['text/plain', 'text/html'],
+        );
+        $attachments->Limit( FIELD => 'id', OPERATOR => '>', VALUE => $LAST );
+        $attachments->OrderBy( FIELD => 'id', ORDER => 'asc' );
+        $attachments->RowsPerPage( $OPT{'limit'} );
+
+        # Call back to the DB-specific part
+        $subref->($attachments);
+
+        $LAST = $attachments->Last->id if $attachments->Count;
+
+        redo if $OPT{'all'} and $attachments->Count == $OPT{'limit'};
     }
-    goto REDO if $OPT{'all'} and $attachments->Count == ($OPT{'limit'} || 100)
 }
 
-sub attachments {
-    my $type = shift;
-    my $res = RT::Attachments->new( RT->SystemUser );
-    my $txn_alias = $res->Join(
-        ALIAS1 => 'main',
-        FIELD1 => 'TransactionId',
-        TABLE2 => 'Transactions',
-        FIELD2 => 'id',
-    );
-    $res->Limit(
-        ALIAS => $txn_alias,
-        FIELD => 'ObjectType',
-        VALUE => 'RT::Ticket',
-    );
-    my $ticket_alias = $res->Join(
-        ALIAS1 => $txn_alias,
-        FIELD1 => 'ObjectId',
-        TABLE2 => 'Tickets',
-        FIELD2 => 'id',
-    );
-    $res->Limit(
-        ALIAS => $ticket_alias,
-        FIELD => 'Status',
-        OPERATOR => '!=',
-        VALUE => 'deleted'
-    );
+sub process_bulk_insert {
+    my $dbh = $RT::Handle->dbh;
+    my ($statement, $error) = @_;
 
-    return goto_specific(
-        suffix => $type,
-        error => "Don't know how to find $type attachments",
-        arguments => [$res],
-    );
+    # Doing large inserts is faster than individual statements, but
+    # comes at a parsing cost; cache the statement handles (99% of which
+    # will be the same size) for a notable (2x) speed gain.
+    my %sthandles;
+
+    $sthandles{1} =
+        $dbh->prepare($statement->(1));
+
+    attachment_loop( sub {
+        my ($attachments) = @_;
+        my @insert;
+        my $found = 0;
+        while ( my $a = $attachments->Next ) {
+            debug("Found attachment #". $a->id );
+            my $text = $a->Content // "";
+            HTML::Entities::decode_entities($text) if $a->ContentType eq "text/html";
+            push @insert, $text, $a->id;
+            $found++;
+        }
+        return unless $found;
+
+        # $found should be the limit size on all but the last go-around.
+        $sthandles{$found} ||= $dbh->prepare($statement->($found));
+
+        return if eval { $sthandles{$found}->execute(@insert); };
+
+        # We can catch and recover from some errors; re-do row-by-row to
+        # know which row had which errors
+        while (@insert) {
+            my ($content, $id) = splice(@insert,0,2);
+            next if eval { $sthandles{1}->execute($content, $id); };
+            $error->($id, $content);
+
+            # If this was a semi-expected error, insert an empty
+            # tsvector, so we count this row as "indexed" for
+            # purposes of knowing where to pick up
+            eval { $sthandles{1}->execute( "", $id ) }
+                or die "Failed to insert empty row for attachment $id: " . $dbh->errstr;
+        }
+    });
 }
 
-sub last_indexed {
-    my ($type) = (@_);
-    return goto_specific(
-        suffix => $db_type,
-        error => "Don't know how to find last indexed $type attachment for $db_type DB",
-        arguments => \@_,
-    );
-}
-
-sub filter {
-    my $type = shift;
-    return goto_specific(
-        suffix    => $type,
-        arguments => \@_,
-    );
-}
-
-sub extract {
-    my $type = shift;
-    return goto_specific(
-        suffix    => $type,
-        error     => "No way to convert $type attachment into text",
-        arguments => \@_,
-    );
-}
-
-sub process {
-    return goto_specific(
-        suffix    => $db_type,
-        error     => "No processer for $db_type DB",
-        arguments => \@_,
-    );
-}
-
-sub last_indexed_mysql { last_indexed_pg(@_); }
 sub process_mysql {
-    my ($type, $attachment, $text) = (@_);
-
     my $dbh = $RT::Handle->dbh;
     my $table = $fts_config->{'Table'};
 
-    my $query;
-    if ( my ($id) = $dbh->selectrow_array("SELECT id FROM $table WHERE id = ?", undef, $attachment->id) ) {
-        $query = "UPDATE $table SET Content = ? WHERE id = ?";
-    } else {
-        $query = "INSERT INTO $table(Content, id) VALUES(?, ?)";
-    }
+    ($LAST) = $dbh->selectrow_array("SELECT MAX(id) FROM $table");
 
-    $dbh->do( $query, undef, $$text, $attachment->id );
-}
+    my $insert = $fts_config->{Engine} eq "MyISAM" ? "INSERT DELAYED" : "INSERT";
 
-sub last_indexed_pg {
-    my $type = shift;
-    my $attachments = attachments( $type );
-    my $alias = 'main';
-    if ( $fts_config->{'Table'} && $fts_config->{'Table'} ne 'Attachments' ) {
-        $alias = $attachments->Join(
-            TYPE    => 'left',
-            FIELD1 => 'id',
-            TABLE2  => $fts_config->{'Table'},
-            FIELD2 => 'id',
-        );
-    }
-    $attachments->Limit(
-        ALIAS => $alias,
-        FIELD => $fts_config->{'Column'},
-        OPERATOR => 'IS NOT',
-        VALUE => 'NULL',
+    process_bulk_insert(
+        sub {
+            my ($n) = @_;
+            return "$insert INTO $table(Content, id) VALUES "
+                . join(", ", ("(?,?)") x $n);
+        },
+        sub {
+            my ($id) = @_;
+            if ($dbh->err == 1366 and $dbh->state eq "HY000") {
+                warn "Attachment $id cannot be indexed. Most probably it contains invalid UTF8 bytes. ".
+                    "Error: ". $dbh->errstr;
+            } else {
+                die "Attachment $id cannot be indexed: " . $dbh->errstr;
+            }
+        }
     );
-    $attachments->OrderBy( FIELD => 'id', ORDER => 'desc' );
-    $attachments->RowsPerPage( 1 );
-    my $res = $attachments->First;
-    return 0 unless $res;
-    return $res->id;
 }
+
 
 sub process_pg {
-    my ($type, $attachment, $text) = (@_);
+    if ( $fts_config->{'Table'} ne 'Attachments' ) {
+        process_pg_insert();
+    } else {
+        process_pg_update();
+    }
+}
 
+sub process_pg_insert {
     my $dbh = $RT::Handle->dbh;
     my $table = $fts_config->{'Table'};
     my $column = $fts_config->{'Column'};
+    ($LAST) = $dbh->selectrow_array("SELECT MAX(id) FROM $table");
 
-    my $query;
-    if ( $table ) {
-        if ( my ($id) = $dbh->selectrow_array("SELECT id FROM $table WHERE id = ?", undef, $attachment->id) ) {
-            $query = "UPDATE $table SET $column = to_tsvector(?) WHERE id = ?";
-        } else {
-            $query = "INSERT INTO $table($column, id) VALUES(to_tsvector(?), ?)";
+    process_bulk_insert(
+        sub {
+            my ($n) = @_;
+            return "INSERT INTO $table($column, id) VALUES "
+                . join(", ", ("(TO_TSVECTOR(?),?)") x $n);
+        },
+        sub {
+            my ($id) = @_;
+            if ( $dbh->err == 7 && $dbh->state eq '54000' ) {
+                warn "Attachment $id cannot be indexed. Most probably it contains too many unique words. ".
+                  "Error: ". $dbh->errstr;
+            } elsif ( $dbh->err == 7 && $dbh->state eq '22021' ) {
+                warn "Attachment $id cannot be indexed. Most probably it contains invalid UTF8 bytes. ".
+                  "Error: ". $dbh->errstr;
+            } else {
+                die "Attachment $id cannot be indexed: " . $dbh->errstr;
+            }
         }
-    } else {
-        $query = "UPDATE Attachments SET $column = to_tsvector(?) WHERE id = ?";
-    }
+    );
+}
 
-    my $status = eval { $dbh->do( $query, undef, $$text, $attachment->id ) };
-    unless ( $status ) {
-        if ( $dbh->err == 7  && $dbh->state eq '54000' ) {
-            warn "Attachment @{[$attachment->id]} cannot be indexed. Most probably it contains too many unique words. Error: ". $dbh->errstr;
-        } elsif ( $dbh->err == 7 && $dbh->state eq '22021' ) {
-            warn "Attachment @{[$attachment->id]} cannot be indexed. Most probably it contains invalid UTF8 bytes. Error: ". $dbh->errstr;
-        } else {
-            die "error: ". $dbh->errstr;
+sub process_pg_update {
+    my $dbh = $RT::Handle->dbh;
+    my $column = $fts_config->{'Column'};
+
+    ($LAST) = $dbh->selectrow_array("SELECT MAX(id) FROM Attachments WHERE $column IS NOT NULL");
+
+    my $sth = $dbh->prepare("UPDATE Attachments SET $column = TO_TSVECTOR(?) WHERE id = ?");
+
+    attachment_loop( sub {
+        my ($attachments) = @_;
+        my @insert;
+        while ( my $a = $attachments->Next ) {
+            debug("Found attachment #". $a->id );
+
+            my $text = $a->Content // "";
+            HTML::Entities::decode_entities($text) if $a->ContentType eq "text/html";
+
+            push @insert, [$text, $a->id];
         }
 
-        # Insert an empty tsvector, so we count this row as "indexed"
-        # for purposes of knowing where to pick up
-        eval { $dbh->do( $query, undef, "", $attachment->id ) }
-            or die "Failed to insert empty tsvector: " . $dbh->errstr;
-    }
-}
+        # Try in one database transaction; if it fails, we roll it back
+        # and try one statement at a time.
+        $dbh->begin_work;
+        my $ok = 1;
+        for (@insert) {
+            $ok = eval { $sth->execute( $_->[0], $_->[1] ) };
+            last unless $ok;
+        }
+        if ($ok) {
+            $dbh->commit;
+            return;
+        }
+        $dbh->rollback;
 
-sub attachments_text {
-    my $res = shift;
-    $res->Limit( FIELD => 'ContentType', VALUE => 'text/plain' );
-    return $res;
-}
+        # Things didn't go well.  Retry the UPDATE statements one row at
+        # a time, outside of the transaction.
+        for (@insert) {
+            my ($content, $id) = ($_->[0], $_->[1]);
+            next if eval { $sth->execute( $content, $id ) };
+            if ( $dbh->err == 7  && $dbh->state eq '54000' ) {
+                warn "Attachment $id cannot be indexed. Most probably it contains too many unique words. ".
+                  "Error: ". $dbh->errstr;
+            } elsif ( $dbh->err == 7 && $dbh->state eq '22021' ) {
+                warn "Attachment $id cannot be indexed. Most probably it contains invalid UTF8 bytes. ".
+                  "Error: ". $dbh->errstr;
+            } else {
+                die "Attachment $id cannot be indexed: " . $dbh->errstr;
+            }
 
-sub extract_text {
-    my $attachment = shift;
-    my $text = $attachment->Content;
-    return undef unless defined $text && length($text);
-    return \$text;
-}
-
-sub attachments_html {
-    my $res = shift;
-    $res->Limit( FIELD => 'ContentType', VALUE => 'text/html' );
-    return $res;
-}
-
-sub filter_html {
-    my $attachment = shift;
-    if ( my $parent = $attachment->ParentObj ) {
-# skip html parts that are alternatives
-        return 1 if $parent->id
-            && $parent->ContentType eq 'mulitpart/alternative';
-    }
-    return 0;
-}
-
-sub extract_html {
-    my $attachment = shift;
-    my $text = $attachment->Content;
-    return undef unless defined $text && length($text);
-# the rich text editor generates html entities for characters
-# but Pg doesn't index them, so decode to something it can index.
-    require HTML::Entities;
-    HTML::Entities::decode_entities($text);
-    return \$text;
-}
-
-sub goto_specific {
-    my %args = (@_);
-
-    my $func = (caller(1))[3];
-    $func =~ s/.*:://;
-    my $call = $func ."_". lc $args{'suffix'};
-    unless ( defined &$call ) {
-        return undef unless $args{'error'};
-        require Carp; Carp::croak( $args{'error'} );
-    }
-    @_ = @{ $args{'arguments'} };
-    goto &$call;
+            # If this was a semi-expected error, insert an empty
+            # tsvector, so we count this row as "indexed" for
+            # purposes of knowing where to pick up
+            eval { $sth->execute( "", $id ) }
+                or die "Failed to insert empty row for attachment $id: " . $dbh->errstr;
+        }
+    });
 }
 
 
@@ -405,11 +366,6 @@ rt-fulltext-indexer - Indexer for full text search
 This is a helper script to keep full text indexes in sync with data.
 Read F<docs/full_text_indexing.pod> for complete details on how and when
 to run it.
-
-=head1 AUTHOR
-
-Ruslan Zakirov E<lt>ruz@bestpractical.comE<gt>,
-Alex Vandiver E<lt>alexmv@bestpractical.comE<gt>
 
 =cut
 
