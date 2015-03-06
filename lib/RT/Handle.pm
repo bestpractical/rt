@@ -302,7 +302,7 @@ sub CheckCompatibility {
             my $show_var = sub { $dbh->selectrow_arrayref("SHOW VARIABLES LIKE ?",{},$_[0])->[1] };
 
             my $max_packet = $show_var->("max_allowed_packet");
-            if ($max_packet <= (1024 * 1024)) {
+            if ($max_packet <= (5 * 1024 * 1024)) {
                 $max_packet = sprintf("%.1fM", $max_packet/1024/1024);
                 warn "max_allowed_packet is set to $max_packet, which limits the maximum attachment or email size that RT can process.  Consider adjusting MySQL's max_allowed_packet setting.\n";
             }
