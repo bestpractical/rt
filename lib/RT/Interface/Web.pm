@@ -2142,6 +2142,7 @@ sub CreateTicket {
         Requestor       => $ARGS{'Requestors'},
         Cc              => $ARGS{'Cc'},
         AdminCc         => $ARGS{'AdminCc'},
+        SquelchMailTo   => $ARGS{'SquelchMailTo'},
         InitialPriority => $ARGS{'InitialPriority'},
         FinalPriority   => $ARGS{'FinalPriority'},
         TimeLeft        => $ARGS{'TimeLeft'},
