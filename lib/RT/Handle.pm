@@ -299,10 +299,26 @@ sub CheckCompatibility {
             }
         }
 
-        my $max_packet = ($dbh->selectrow_array("show variables like 'max_allowed_packet'"))[1];
-        if ($state =~ /^(create|post)$/ and $max_packet <= (1024 * 1024)) {
-            my $max_packet = sprintf("%.1fM", $max_packet/1024/1024);
-            warn "max_allowed_packet is set to $max_packet, which limits the maximum attachment or email size that RT can process.  Consider adjusting MySQL's max_allowed_packet setting.\n";
+        if ($state =~ /^(create|post)$/) {
+            my $show_var = sub { $dbh->selectrow_arrayref("SHOW VARIABLES LIKE ?",{},$_[0])->[1] };
+
+            my $max_packet = $show_var->("max_allowed_packet");
+            if ($max_packet <= (1024 * 1024)) {
+                $max_packet = sprintf("%.1fM", $max_packet/1024/1024);
+                warn "max_allowed_packet is set to $max_packet, which limits the maximum attachment or email size that RT can process.  Consider adjusting MySQL's max_allowed_packet setting.\n";
+            }
+
+            my $full_version = $show_var->("version");
+            if ($full_version =~ /^5\.(\d+)\.(\d+)$/ and (($1 == 6 and $2 >= 20) or $1 > 6)) {
+                my $redo_log_size = $show_var->("innodb_log_file_size");
+                $redo_log_size *= $show_var->("innodb_log_files_in_group")
+                    if $full_version =~ /^5\.(\d+)\.(\d+)$/ and (($1 == 6 and $2 >= 22) or $1 > 6);
+
+                if ($redo_log_size / 10 < 5 * 1024 * 1024) {
+                    $redo_log_size = sprintf("%.1fM",$redo_log_size/1024/1024);
+                    warn "innodb_log_file_size is set to $redo_log_size; attachments can only be 10% of this value on MySQL 5.6.  Consider adjusting MySQL's innodb_log_file_size setting.\n";
+                }
+            }
         }
     }
     return (1)
