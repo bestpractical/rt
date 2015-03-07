@@ -3053,12 +3053,11 @@ sub Forward {
         Data    => Encode::encode( "UTF-8", $args{Content} ),
     );
 
-    $mime->head->replace(
-        $_ => RT::Interface::Email::EncodeToMIME( String => $args{$_} ) )
+    $mime->head->replace( $_ => Encode::encode('UTF-8',$args{$_} ) )
       for grep defined $args{$_}, qw(Subject To Cc Bcc);
     $mime->head->replace(
-        From => RT::Interface::Email::EncodeToMIME(
-            String => RT::Interface::Email::GetForwardFrom(
+        From => Encode::encode( 'UTF-8',
+            RT::Interface::Email::GetForwardFrom(
                 Transaction => $args{Transaction},
                 Ticket      => $self,
             )

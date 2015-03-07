@@ -12,4 +12,22 @@ our @Initial = (
                AND Content IS NULL;
 EOSQL
     },
+    sub {
+        my $txns = RT::Transactions->new(RT->SystemUser);
+        $txns->Limit( FIELD => 'Type', VALUE => 'Forward Transaction' );
+        $txns->Limit( FIELD => 'Type', VALUE => 'Forward Ticket' );
+        while ( my $txn = $txns->Next ) {
+            my $att = $txn->Attachments->First;
+
+            # we only need to process ascii-only strings
+            unless ( $att->Subject =~ /[^\x00-\x7F]/ ) {
+                $att->__Set( Field => 'Subject', Value => Encode::decode("UTF-8", RT::I18N::DecodeMIMEWordsToUTF8($att->Subject, 'Subject')) );
+            }
+            for my $field ( qw/Subject From To Cc Bcc/ ) {
+                next if !$att->GetHeader($field) || $att->GetHeader($field) =~ /[^\x00-\x7F]/;
+                # Subject here is not a typo, because we don't really want to parse email addresses here
+                $att->SetHeader( $field, Encode::decode("UTF-8", RT::I18N::DecodeMIMEWordsToUTF8($att->GetHeader($field), 'Subject')) );
+            }
+        }
+    },
 );
