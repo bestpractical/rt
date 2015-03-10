@@ -77,10 +77,15 @@ An example of using LDAP authentication and HTTP Basic auth:
             "ldap://ldap.example.com/dc=example,dc=com"
     </Location>
     <Location /REST/1.0/NoAuth/mail-gateway>
-        Order deny,allow
-        Deny from all
-        Allow from localhost
-        Satisfy any
+        <IfVersion >= 2.4> # For Apache 2.4
+            Require local
+        </IfVersion>
+        <IfVersion < 2.4>  # For Apache 2.2
+            Order deny,allow
+            Deny from all
+            Allow from localhost
+            Satisfy any
+        </IfVersion>
     </Location>
 
 
