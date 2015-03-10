@@ -487,6 +487,10 @@ sub SetupGroupings {
         # tickets, with no joins.  We then mark it as having been ACL'd,
         # since it was by dint of being in the search results above
         $self->CleanSlate;
+        while ( @match > 1000 ) {
+            my @batch = splice( @match, 0, 1000 );
+            $self->Limit( FIELD => 'Id', OPERATOR => 'IN', VALUE => \@batch );
+        }
         $self->Limit( FIELD => 'Id', OPERATOR => 'IN', VALUE => \@match );
         $self->{'_sql_current_user_can_see_applied'} = 1
     }
