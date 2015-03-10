@@ -55,6 +55,10 @@ my %MODULES = (
         "mod_perl" => [qw(authz_host env alias perl)],
         "fastcgi"  => [qw(authz_host env alias mime fastcgi)],
     },
+    '2.4' => {
+        "mod_perl" => [qw(mpm_worker authz_core authn_core authz_host env alias perl)],
+        "fastcgi"  => [qw(mpm_worker authz_core authn_core authz_host env alias mime fastcgi)],
+    },
 );
 
 my $apache_module_prefix = $ENV{RT_TEST_APACHE_MODULES};
@@ -192,14 +196,11 @@ sub apache_server_info {
 
     RT::Test::diag("Using '$bin' apache executable for testing");
 
-    my $info = `$bin -V`;
+    my $info = `$bin -v`;
     ($res{'version'}) = ($info =~ m{Server\s+version:\s+Apache/(\d+\.\d+)\.});
     Test::More::BAIL_OUT(
         "Couldn't figure out version of the server"
     ) unless $res{'version'};
-
-    my %opts = ($info =~ m/^\s*-D\s+([A-Z_]+?)(?:="(.*)")$/mg);
-    %res = (%res, %opts);
 
     $res{'modules'} = [
         map {s/^\s+//; s/\s+$//; $_}
@@ -231,6 +232,20 @@ sub apache_server_info {
         $res{'load_modules'} .=
             "LoadModule ${mod}_module $so_file\n";
     }
+
+    # Apache 2.4 wants to fully-parse a config file when running -V,
+    # because the MPM is no longer compiled-in.  Provide a trivial one.
+    require File::Temp;
+    my $tmp = File::Temp->new;
+    my ($mpm) = grep {/^mpm_/} @{$MODULES{$res{version}}{$res{variant}}};
+    print $tmp "LoadModule ${mpm}_module $apache_module_prefix/mod_${mpm}.so\n"
+        if $mpm;
+    print $tmp "ErrorLog /dev/null\n";
+    print $tmp "TransferLog /dev/null\n";
+    close $tmp;
+    $info = `$res{executable} -V -f $tmp`;
+    my %opts = ($info =~ m/^\s*-D\s+([A-Z_]+?)(?:="(.*)")$/mg);
+    %res = (%res, %opts);
     return %res;
 }
 
@@ -249,6 +264,7 @@ sub apache_mpm_type {
     if ( $out =~ /^\s*(worker|prefork|event|itk)\.c\s*$/m ) {
         return $1;
     }
+    return "worker";
 }
 
 sub fork_exec {
