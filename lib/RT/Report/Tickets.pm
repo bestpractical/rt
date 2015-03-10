@@ -487,7 +487,14 @@ sub SetupGroupings {
         # tickets, with no joins.  We then mark it as having been ACL'd,
         # since it was by dint of being in the search results above
         $self->CleanSlate;
-        $self->Limit( FIELD => 'Id', OPERATOR => 'IN', VALUE => \@match );
+        if ( RT->Config->Get( 'DatabaseType' ) eq 'Oracle' && @match > 1000 ) {
+            for my $id ( @match ) {
+                $self->Limit( FIELD => 'Id', VALUE => $id );
+            }
+        }
+        else {
+            $self->Limit( FIELD => 'Id', OPERATOR => 'IN', VALUE => \@match );
+        }
         $self->{'_sql_current_user_can_see_applied'} = 1
     }
 
