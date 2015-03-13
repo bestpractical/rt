@@ -268,6 +268,9 @@ sub process_pg {
         } elsif ( $dbh->err == 7 && $dbh->state eq '22021' ) {
             warn "Attachment $id cannot be indexed. Most probably it contains invalid UTF8 bytes. ".
                 "Error: ". $dbh->errstr;
+        } elsif ( $dbh->err == 7 && $dbh->state eq 'XX000' ) {
+            warn "Attachment $id cannot be indexed; it is too large.  ".
+                "Error: ". $dbh->errstr;
         } else {
             die "Attachment $id cannot be indexed: " . $dbh->errstr;
         }
