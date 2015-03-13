@@ -259,14 +259,29 @@ sub process_mysql {
 
 
 sub process_pg {
+    my $error_handling = sub {
+        my ($id) = @_;
+        my $dbh = $RT::Handle->dbh;
+        if ( $dbh->err == 7 && $dbh->state eq '54000' ) {
+            warn "Attachment $id cannot be indexed. Most probably it contains too many unique words. ".
+                "Error: ". $dbh->errstr;
+        } elsif ( $dbh->err == 7 && $dbh->state eq '22021' ) {
+            warn "Attachment $id cannot be indexed. Most probably it contains invalid UTF8 bytes. ".
+                "Error: ". $dbh->errstr;
+        } else {
+            die "Attachment $id cannot be indexed: " . $dbh->errstr;
+        }
+    };
+
     if ( $fts_config->{'Table'} ne 'Attachments' ) {
-        process_pg_insert();
+        process_pg_insert( $error_handling );
     } else {
-        process_pg_update();
+        process_pg_update( $error_handling );
     }
 }
 
 sub process_pg_insert {
+    my ($error_handling) = @_;
     my $dbh = $RT::Handle->dbh;
     my $table = $fts_config->{'Table'};
     my $column = $fts_config->{'Column'};
@@ -278,22 +293,12 @@ sub process_pg_insert {
             return "INSERT INTO $table($column, id) VALUES "
                 . join(", ", ("(TO_TSVECTOR(?),?)") x $n);
         },
-        sub {
-            my ($id) = @_;
-            if ( $dbh->err == 7 && $dbh->state eq '54000' ) {
-                warn "Attachment $id cannot be indexed. Most probably it contains too many unique words. ".
-                  "Error: ". $dbh->errstr;
-            } elsif ( $dbh->err == 7 && $dbh->state eq '22021' ) {
-                warn "Attachment $id cannot be indexed. Most probably it contains invalid UTF8 bytes. ".
-                  "Error: ". $dbh->errstr;
-            } else {
-                die "Attachment $id cannot be indexed: " . $dbh->errstr;
-            }
-        }
+        $error_handling,
     );
 }
 
 sub process_pg_update {
+    my ($error_handling) = @_;
     my $dbh = $RT::Handle->dbh;
     my $column = $fts_config->{'Column'};
 
@@ -332,15 +337,8 @@ sub process_pg_update {
         for (@insert) {
             my ($content, $id) = ($_->[0], $_->[1]);
             next if eval { $sth->execute( $content, $id ) };
-            if ( $dbh->err == 7  && $dbh->state eq '54000' ) {
-                warn "Attachment $id cannot be indexed. Most probably it contains too many unique words. ".
-                  "Error: ". $dbh->errstr;
-            } elsif ( $dbh->err == 7 && $dbh->state eq '22021' ) {
-                warn "Attachment $id cannot be indexed. Most probably it contains invalid UTF8 bytes. ".
-                  "Error: ". $dbh->errstr;
-            } else {
-                die "Attachment $id cannot be indexed: " . $dbh->errstr;
-            }
+
+            $error_handling->($id);
 
             # If this was a semi-expected error, insert an empty
             # tsvector, so we count this row as "indexed" for
