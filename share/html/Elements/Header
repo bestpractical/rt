@@ -97,7 +97,7 @@
 <& /Elements/Framekiller &>
 
 </head>
-  <body class="<% lc $style %><% RT->Config->Get("UseSideBySideLayout", $session{'CurrentUser'}) ? ' sidebyside' : '' %>" <% $id && qq[id="comp-$id"] |n %>>
+  <body class="<% join( ' ',@{$ARGS{'BodyClass'}}) %>" <% $id && qq[id="comp-$id"] |n %>>
 
 % if ($ShowBar) {
 <& /Elements/Logo, %ARGS &>
@@ -133,6 +133,14 @@ else {
     @css_files = "/NoAuth/css/$style/squished-$key.css";
 }
 
+# We use BodyClass in its $ARGS form so that callbacks have a chance to
+# massage it
+push @{$ARGS{'BodyClass'}}, lc $style;
+
+if (RT->Config->Get("UseSideBySideLayout", $session{'CurrentUser'})) {
+    push @{$ARGS{'BodyClass'}}, 'sidebyside';
+}
+
 </%INIT>
 
 <%ARGS>
@@ -147,4 +155,5 @@ $onload => undef
 $LinkRel => undef
 $SkipDoctype => 0
 $RichText => 1
+$BodyClass => undef
 </%ARGS>
