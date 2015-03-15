@@ -1393,7 +1393,7 @@ sub Indexes {
     }
     elsif ( $db_type eq 'Oracle' ) {
         $list = $dbh->selectall_arrayref(
-            'select table_name, index_name from dba_indexes where index_name NOT LIKE ? AND lower(Owner) = ?',
+            'select table_name, index_name from all_indexes where index_name NOT LIKE ? AND lower(Owner) = ?',
             undef, 'SYS_%$$', lc RT->Config->Get('DatabaseUser'),
         );
     }
@@ -1501,7 +1501,7 @@ sub IndexInfo {
     }
     elsif ( $db_type eq 'Oracle' ) {
         my $index = $dbh->selectrow_arrayref(
-            'select uniqueness, funcidx_status from dba_indexes
+            'select uniqueness, funcidx_status from all_indexes
             where lower(table_name) = ? AND lower(index_name) = ? AND LOWER(Owner) = ?',
             undef, lc $args{'Table'}, lc $args{'Name'}, lc RT->Config->Get('DatabaseUser'),
         );
@@ -1510,12 +1510,12 @@ sub IndexInfo {
         $res{'Functional'} = $index->[1] ? 1 : 0;
 
         my %columns = map @$_, @{ $dbh->selectall_arrayref(
-            'select column_position, column_name from dba_ind_columns
+            'select column_position, column_name from all_ind_columns
             where lower(table_name) = ? AND lower(index_name) = ? AND LOWER(index_owner) = ?',
             undef, lc $args{'Table'}, lc $args{'Name'}, lc RT->Config->Get('DatabaseUser'),
         ) };
         $columns{ $_->[0] } = $_->[1] foreach @{ $dbh->selectall_arrayref(
-            'select column_position, column_expression from dba_ind_expressions
+            'select column_position, column_expression from all_ind_expressions
             where lower(table_name) = ? AND lower(index_name) = ? AND LOWER(index_owner) = ?',
             undef, lc $args{'Table'}, lc $args{'Name'}, lc RT->Config->Get('DatabaseUser'),
         ) };
@@ -1559,7 +1559,7 @@ sub DropIndex {
         my $user = RT->Config->Get('DatabaseUser');
         # Check if it has constraints associated with it
         my ($constraint) = $dbh->selectrow_arrayref(
-            'SELECT constraint_name, table_name FROM dba_constraints WHERE LOWER(owner) = ? AND LOWER(index_name) = ?',
+            'SELECT constraint_name, table_name FROM all_constraints WHERE LOWER(owner) = ? AND LOWER(index_name) = ?',
             undef, lc $user, lc $args{'Name'}
         );
         if ($constraint) {
