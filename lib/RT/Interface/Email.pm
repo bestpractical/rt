@@ -1835,7 +1835,7 @@ sub _HTMLFormatter {
     # Always fall back to core, even if it is not listed
     for my $prog (@order) {
         if ($prog eq "core") {
-            RT->Logger->info("Using internal Perl HTML -> text conversion");
+            RT->Logger->debug("Using internal Perl HTML -> text conversion");
             require HTML::FormatText::WithLinks::AndTables;
             $formatter = \&_HTMLFormatText;
         } else {
@@ -1872,7 +1872,7 @@ sub _HTMLFormatter {
                 }
             }
 
-            RT->Logger->info("Using $prog for HTML -> text conversion");
+            RT->Logger->debug("Using $prog for HTML -> text conversion");
             $formatter = sub {
                 my $html = shift;
                 my $text = RT::Util::safe_run_child {
