@@ -7,7 +7,6 @@ ALTER TABLE Transactions ADD OldReference NUMBER(11,0) NULL;
 ALTER TABLE Transactions ADD NewReference NUMBER(11,0) NULL;
 DROP INDEX transactions1;            
 ALTER TABLE Transactions rename column Ticket to ObjectId;
-CREATE INDEX Transactions1 ON Transactions (ObjectType, ObjectId);
 
 ALTER TABLE TicketCustomFieldValues rename to ObjectCustomFieldValues;
 ALTER TABLE ObjectCustomFieldValues  rename column Ticket to ObjectId;
@@ -22,12 +21,6 @@ ALTER TABLE ObjectCustomFieldValues ADD LargeContent CLOB NULL;
 ALTER TABLE ObjectCustomFieldValues ADD ContentType VARCHAR2(80) NULL;
 ALTER TABLE ObjectCustomFieldValues ADD ContentEncoding VARCHAR2(80) NULL;
 ALTER TABLE ObjectCustomFieldValues ADD SortOrder NUMBER(11,0) DEFAULT 0 NOT NULL;
-
-
-
-CREATE INDEX ObjectCustomFieldValues1 on ObjectCustomFieldValues (CustomField,ObjectType,ObjectId,Content); 
-CREATE INDEX ObjectCustomFieldValues2  on ObjectCustomFieldValues (CustomField,ObjectType,ObjectId); 
-
 
 
 CREATE SEQUENCE OBJECTCUSTOMFIELDS_seq;

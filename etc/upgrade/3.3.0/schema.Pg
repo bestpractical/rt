@@ -9,8 +9,6 @@ drop index transactions1;
 alter table Transactions rename column Ticket to ObjectId;
 
 
-CREATE INDEX Transactions1 ON Transactions (ObjectType, ObjectId);
-
 alter table TicketCustomFieldValues rename to ObjectCustomFieldValues;
 
 alter table ObjectCustomFieldValues  rename column Ticket to ObjectId;
@@ -32,10 +30,6 @@ alter table objectcustomfieldvalues add column LargeContent TEXT NULL;
 alter table objectcustomfieldvalues add column ContentType varchar(80) NULL;
 
 alter table objectcustomfieldvalues add column ContentEncoding varchar(80) NULL;
-
-create index ObjectCustomFieldValues1 on objectcustomfieldvalues (CustomField,ObjectType,ObjectId,Content); 
-
-create index ObjectCustomFieldValues2  on objectcustomfieldvalues (CustomField,ObjectType,ObjectId); 
 
 
 CREATE SEQUENCE objectcustomfields_id_s;
