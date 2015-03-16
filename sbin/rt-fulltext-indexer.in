@@ -248,8 +248,8 @@ sub process_mysql {
         sub {
             my ($id) = @_;
             if ($dbh->err == 1366 and $dbh->state eq "HY000") {
-                warn "Attachment $id cannot be indexed. Most probably it contains invalid UTF8 bytes. ".
-                    "Error: ". $dbh->errstr;
+                $RT::Logger->info("Attachment $id cannot be indexed. Most probably it contains invalid UTF8 bytes. ".
+                    "Error: ". $dbh->errstr);
             } else {
                 die "Attachment $id cannot be indexed: " . $dbh->errstr;
             }
@@ -263,14 +263,14 @@ sub process_pg {
         my ($id) = @_;
         my $dbh = $RT::Handle->dbh;
         if ( $dbh->err == 7 && $dbh->state eq '54000' ) {
-            warn "Attachment $id cannot be indexed. Most probably it contains too many unique words. ".
-                "Error: ". $dbh->errstr;
+            $RT::Logger->info("Attachment $id cannot be indexed. Most probably it contains too many unique words. ".
+                $dbh->errstr);
         } elsif ( $dbh->err == 7 && $dbh->state eq '22021' ) {
-            warn "Attachment $id cannot be indexed. Most probably it contains invalid UTF8 bytes. ".
-                "Error: ". $dbh->errstr;
+            $RT::Logger->info("Attachment $id cannot be indexed. Most probably it contains invalid UTF8 bytes. ".
+                $dbh->errstr);
         } elsif ( $dbh->err == 7 && $dbh->state eq 'XX000' ) {
-            warn "Attachment $id cannot be indexed; it is too large.  ".
-                "Error: ". $dbh->errstr;
+            $RT::Logger->info("Attachment $id cannot be indexed; it is too large.  ".
+                $dbh->errstr);
         } else {
             die "Attachment $id cannot be indexed: " . $dbh->errstr;
         }

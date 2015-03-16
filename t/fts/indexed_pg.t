@@ -106,12 +106,7 @@ $content .= "$_\n" for 1..200_000;
     { Subject => 'Long content',  Content => $content  },
     { Subject => 'More short',    Content => '50' },
 );
-
-my ($exit_code, $output) = RT::Test->run_and_capture(
-    command => $RT::SbinPath .'/rt-fulltext-indexer'
-);
-like($output, qr/string is too long for tsvector/, "Got a warning for the ticket");
-ok(!$exit_code, "set up index");
+sync_index();
 
 # The long content is skipped entirely
 run_tests(
