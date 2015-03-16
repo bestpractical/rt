@@ -275,6 +275,11 @@ sub process_pg {
             die "Attachment $id cannot be indexed: " . $dbh->errstr;
         }
     };
+    my $dbh = $RT::Handle->dbh; Scalar::Util::weaken($dbh);
+    $dbh->{HandleError} = sub {
+        return 1 if $dbh->err == 7 and $dbh->state =~ /^(54000|22021|XX000)$/;
+        return;
+    };
 
     if ( $fts_config->{'Table'} ne 'Attachments' ) {
         process_pg_insert( $error_handling );
