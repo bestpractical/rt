@@ -57,7 +57,7 @@
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->Id%>" />
 
 <&| /Widgets/TitleBox, title => loc('Modify ticket # [_1]', $Ticket->Id), class=>'ticket-info-basics' &>
-<& Elements/EditBasics, TicketObj => $Ticket &>
+<& Elements/EditBasics, TicketObj => $Ticket, defaults => \%ARGS &>
 <& Elements/EditCustomFields, TicketObj => $Ticket &>
 </&>
 
@@ -158,21 +158,21 @@ ProcessAttachments(ARGSRef => \%ARGS);
 $m->callback( TicketObj => $Ticket, ARGSRef => \%ARGS );
 my @results;
 
-unless ($OnlySearchForPeople or $OnlySearchForGroup or $ARGS{'AddMoreAttach'} ) {
-    # There might be two owners. 
-    if ( ref ($ARGS{'Owner'} )) {
-        my @owners =@{$ARGS{'Owner'}};
-        delete $ARGS{'Owner'};
-        foreach my $owner(@owners){
-            if (defined($owner) && $owner =~ /\D/) {
-                $ARGS{'Owner'} = $owner unless ($Ticket->OwnerObj->Name eq $owner);
-            }
-            elsif (length $owner) {
-                $ARGS{'Owner'} = $owner unless ($Ticket->OwnerObj->id == $owner);
-            }
+# There might be two owners. 
+if ( ref ($ARGS{'Owner'} )) {
+    my @owners =@{$ARGS{'Owner'}};
+    delete $ARGS{'Owner'};
+    foreach my $owner(@owners){
+        if (defined($owner) && $owner =~ /\D/) {
+            $ARGS{'Owner'} = $owner unless ($Ticket->OwnerObj->Name eq $owner);
         }
-
+        elsif (length $owner) {
+            $ARGS{'Owner'} = $owner unless ($Ticket->OwnerObj->id == $owner);
+        }
     }
+}
+
+unless ($OnlySearchForPeople or $OnlySearchForGroup or $ARGS{'AddMoreAttach'} ) {
 
     push @results, ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
     push @results, ProcessObjectCustomFieldUpdates( Object => $Ticket, ARGSRef => \%ARGS);
