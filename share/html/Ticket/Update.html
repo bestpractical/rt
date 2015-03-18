@@ -214,7 +214,9 @@
 <script type="text/javascript">
 jQuery( function() {
    var updateScrips = function() {
-       CKEDITOR.instances['UpdateContent'].updateElement();
+       if (jQuery('#UpdateContent').hasClass("richtext")) {
+           CKEDITOR.instances['UpdateContent'].updateElement();
+       }
        var syncCheckboxes = function(ev) {
            var target = ev.target;
            jQuery("input[name=TxnSendMailTo]").filter( function() { return this.value == target.value; } ).prop("checked",jQuery(target).prop('checked'));
@@ -241,7 +243,9 @@ jQuery( function() {
        );
    };
    updateScrips();
-   CKEDITOR.instances['UpdateContent'].on('blur', updateScrips );
+   if (jQuery('#UpdateContent').hasClass("richtext")) {
+       CKEDITOR.instances['UpdateContent'].on('blur', updateScrips );
+   }
    jQuery("#ticket-update-metadata :input, #UpdateCc, #UpdateBcc").change( updateScrips );
 });
 </script>
