@@ -261,5 +261,24 @@ diag "Forward Ticket Template with a Subject: line" if $ENV{TEST_VERBOSE};
     like($mail, qr/Subject: \[example.com #\d+\] OVERRIDING SUBJECT/);
 }
 
+diag "Forward Transaction with non-ascii subject" if $ENV{TEST_VERBOSE};
+{
+    $m->follow_link_ok( { text => 'Forward', n => 2 }, 'follow 2nd Forward' );
+    my $subject = Encode::decode("UTF-8", 'test non-ascii äöü');
+    $m->submit_form(
+        form_name => 'ForwardMessage',
+        fields    => {
+            Subject => $subject,
+            To  => 'rt-to@example.com',
+        },
+        button => 'ForwardAndReturn'
+    );
+    my ($mail) = RT::Test->fetch_caught_mails;
+    if ( $mail =~ /Subject: (.+)/ ) {
+        like( Encode::decode("UTF-8", RT::I18N::DecodeMIMEWordsToUTF8( $1, 'Subject' )), qr/$subject/, 'non-ascii subject' );
+    }
+    $m->content_contains( $subject, 'non-ascii subject got displayed correctly' );
+}
+
 undef $m;
 done_testing;
