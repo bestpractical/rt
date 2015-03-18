@@ -1152,10 +1152,14 @@ This fact depends on type of the transaction, type of an object the transaction
 is attached to and may be other conditions, so this method is prefered over
 custom implementations.
 
+It always returns true if current user is system user.
+
 =cut
 
 sub CurrentUserCanSee {
     my $self = shift;
+
+    return 1 if $self->CurrentUser->PrincipalObj->Id == RT->SystemUser->Id;
 
     # If it's a comment, we need to be extra special careful
     my $type = $self->__Value('Type');
