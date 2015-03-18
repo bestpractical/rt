@@ -79,6 +79,7 @@ GetOptions(
     'with-HTML-DOC',
 
     'list-deps',
+    'siteinstall!',
     'help|h',
 );
 
@@ -189,7 +190,7 @@ CGI 3.38
 CGI::Cookie 1.20
 CGI::Emulate::PSGI
 CGI::PSGI 0.12
-Class::Accessor 0.34
+Class::Accessor::Fast
 Crypt::Eksblowfish
 CSS::Squish 0.06
 Data::GUID
@@ -489,6 +490,27 @@ sub resolve_dep {
     my $module = shift;
     my $version = shift;
 
+    unless (defined $args{siteinstall}) {
+        require Config;
+        my %uniq;
+        my @order = grep {($_ eq $Config::Config{sitelibexp}
+                        or $_ eq $Config::Config{privlibexp})
+                        and not $uniq{$_}++} @INC;
+        if ($] < 5.011 and @order == 2
+                and $order[0] eq $Config::Config{sitelibexp}
+                and $order[1] eq $Config::Config{privlibexp}) {
+
+            print "\n";
+            print "Patched perl, with site_perl before core in \@INC, detected.\n";
+            print "Installing dual-life modules into site_perl so they are not\n";
+            print "later overridden by the distribution's package.\n";
+
+            $args{siteinstall} = 1;
+        } else {
+            $args{siteinstall} = 0;
+        }
+    }
+
     print "\nInstall module $module\n";
 
     my $ext = $ENV{'RT_FIX_DEPS_CMD'} || $ENV{'PERL_PREFER_CPAN_CLIENT'};
@@ -508,6 +530,12 @@ Please run `@PERL@ -MCPAN -e shell` to configure it.
 END
             exit(1);
         }
+
+        my $installdirs = $CPAN::Config->{makepl_arg} ||= "";
+        $installdirs =~ s/(\bINSTALLDIRS=\S+|$)/ INSTALLDIRS=site/
+            if $args{siteinstall};
+        local $CPAN::Config->{makepl_arg} = $installdirs;
+
         my $rv = eval { require CPAN; CPAN::Shell->install($module) };
         return $rv unless $@;
 

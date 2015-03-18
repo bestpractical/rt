@@ -382,16 +382,11 @@ sub OriginalContent {
 
     return $self->Content unless RT::I18N::IsTextualContentType($self->ContentType);
 
-    my $content;
-    if ( !$self->ContentEncoding || $self->ContentEncoding eq 'none' ) {
-        $content = $self->_Value('Content', decode_utf8 => 0);
-    } elsif ( $self->ContentEncoding eq 'base64' ) {
-        $content = MIME::Base64::decode_base64($self->_Value('Content', decode_utf8 => 0));
-    } elsif ( $self->ContentEncoding eq 'quoted-printable' ) {
-        $content = MIME::QuotedPrint::decode($self->_Value('Content', decode_utf8 => 0));
-    } else {
-        return( $self->loc("Unknown ContentEncoding [_1]", $self->ContentEncoding));
-    }
+    my $content = $self->_DecodeLOB(
+        "application/octet-stream", # Force _DecodeLOB to not decode to characters
+        $self->ContentEncoding,
+        $self->_Value('Content', decode_utf8 => 0),
+    );
 
     my $entity = MIME::Entity->new();
     $entity->head->add("Content-Type", $self->GetHeader("Content-Type"));
