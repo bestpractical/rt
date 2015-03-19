@@ -82,7 +82,7 @@ my @users = sort { lc($a->[0]) cmp lc($b->[0]) }
 % my ($rendered, $user) = @$_;
 % $UsersSeen{ $user->id } = 1 if $SkipSeenUsers;
 <li><input type="checkbox" class="checkbox" name="DeleteMember-<% $user->PrincipalObj->Id %>" value="1" />
-<a href="<% RT->Config->Get('WebPath') %>/Admin/Users/Modify.html?id=<% $user->id %>"><% $rendered |n%></a></li>
+<% $rendered |n%></li>
 % }
 </ul>
 <&|/l&>Groups</&>

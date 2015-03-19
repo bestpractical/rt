@@ -57,14 +57,8 @@
 <li>
 <input type="checkbox" class="checkbox" name="Ticket-DeleteWatcher-Type-<% $Watchers->Name %>-Principal-<% $watcher->MemberId %>" value="1" unchecked />
 % if ( $member->isa( 'RT::User' ) ) { 
-% if ( $session{CurrentUser}->HasRight( Right => 'AdminUsers', Object => $RT::System ) &&
-%      $session{CurrentUser}->HasRight( Right => 'ShowConfigTab', Object =>$RT::System ) ) {
-<a href="<% RT->Config->Get('WebPath') %>/Admin/Users/Modify.html?id=<% $watcher->MemberId %>">
-<& /Elements/ShowUser, User => $member &></a> <& /Elements/ShowUserEmailFrequency, User => $member, Ticket => $TicketObj &>
-% } else {
 <& /Elements/ShowUser, User => $member &> <& /Elements/ShowUserEmailFrequency, User => $member, Ticket => $TicketObj &>
-% } }
-% else {
+% } else {
 % if ( $session{CurrentUser}->HasRight( Right => 'AdminGroup', Object => $RT::System ) &&
 %      $session{CurrentUser}->HasRight( Right => 'ShowConfigTab', Object =>$RT::System ) ) {
 <a href="<% RT->Config->Get('WebPath') %>/Admin/Groups/Modify.html?id=<% $watcher->MemberId %>">
