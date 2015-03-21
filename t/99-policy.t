@@ -94,11 +94,16 @@ sub check {
 
     if ($check{compile_perl}) {
         my ($input, $output, $error) = ('', '', '');
-        run3(
-            [$^X, '-Ilib', '-Mstrict', '-Mwarnings', '-c', $file],
-            \$input, \$output, \$error,
-        );
-        is $error, "$file syntax OK\n", "$file syntax is OK";
+        my $pre_check = 1;
+        if ( $file =~ /\bmysql\b/ ) {
+            eval { require DBD::mysql };
+            undef $pre_check if $@;
+        }
+
+        if ( $pre_check ) {
+            run3( [ $^X, '-Ilib', '-Mstrict', '-Mwarnings', '-c', $file ], \$input, \$output, \$error, );
+            is $error, "$file syntax OK\n", "$file syntax is OK";
+        }
     }
 }
 
