@@ -45,17 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%init>
-my $url = join("/",
-               RT->Config->Get('WebPath'),
-               $session{CurrentUser}->Privileged ? 'Download' : 'SelfService',
-               "CustomFieldValue",
-               $Object->Id,
-               $m->interp->apply_escapes($Object->Content, 'u')
-           );
-</%init>
-<a href="<% $url %>"><% $Object->Content %></a><br>
-<img type="<% $Object->ContentType %>" height="64" src="<% $url %>" align="middle" />
-<%ARGS>
-$Object
-</%ARGS>
+<%perl>
+$m->comp('/Download/CustomFieldValue/dhandler', %ARGS);
+$m->abort;
+</%perl>

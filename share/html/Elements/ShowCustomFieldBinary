@@ -45,7 +45,16 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<a href="<%RT->Config->Get('WebPath')%>/Download/CustomFieldValue/<% $Object->Id %>/<% $Object->Content |un %>"><% $Object->Content %></a>
+<%init>
+my $url = join("/",
+               RT->Config->Get('WebPath'),
+               $session{CurrentUser}->Privileged ? 'Download' : 'SelfService',
+               "CustomFieldValue",
+               $Object->Id,
+               $m->interp->apply_escapes($Object->Content, 'u')
+           );
+</%init>
+<a href="<% $url %>"><% $Object->Content %></a>
 <%ARGS>
 $Object => undef
 </%ARGS>
