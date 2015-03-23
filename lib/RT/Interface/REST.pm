@@ -298,7 +298,7 @@ sub vsplit {
                            (')   # Single-quoted string
                            ((?>[^\\']*(?:\\.[^\\']*)*))'
                        |
-                           q{(.*?)}  # A perl-ish q{} string; this does
+                           q\{(.*?)\}  # A perl-ish q{} string; this does
                                      # no paren balancing, however, and
                                      # only exists for back-compat
                        |

@@ -245,7 +245,7 @@ our %UPGRADES = (
             return unless $queue->Id and $queue->Name eq "___Approvals";
 
             $ref->{Content} =~
-s!(?<=Your ticket has been (?:approved|rejected) by { eval { )\$Approval->OwnerObj->Name!\$Approver->Name!;
+s!(?<=Your ticket has been (?:approved|rejected) by \{ eval \{ )\$Approval->OwnerObj->Name!\$Approver->Name!;
         },
     },
 
