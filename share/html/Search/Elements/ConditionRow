@@ -82,13 +82,13 @@ $handle_block = sub {
     }
     if ( $box->{'Type'} eq 'select' ) {
         my $res = '';
-        $res .= qq{<select id="$name" name="$name">};
+        $res .= qq{<select id="$name" name="$name">\n};
         my @options = @{ $box->{'Options'} };
         while( my $k = shift @options ) {
             my $v = shift @options;
-            $res .= qq{<option value="$k">$v</option>};
+            $res .= qq{    <option value="$k">$v</option>\n};
         }
-        $res .= qq{</select>};
+        $res .= qq{</select>\n};
         return $res;
     }
 };

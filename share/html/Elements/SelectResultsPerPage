@@ -49,9 +49,7 @@
 
 <select name="<% $Name %>">
 % foreach my $value ( @values ) {
-<option value="<% $value %>" <% $value == $Default? 'selected="selected"': '' |n%>>
-<% shift @labels %>
-</option>
+<option value="<% $value %>" <% $value == $Default? 'selected="selected"': '' |n%>><% shift @labels %></option>
 % }
 </select>
 
