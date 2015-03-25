@@ -51,7 +51,6 @@
 <option value="=" <%$TrueDefault|n%>><%$True%></option>
 <option value="!=" <%$FalseDefault|n%>><%$False%></option>
 </select>
-
 <%ARGS>
 $Name => undef
 $Like => loc('matches')

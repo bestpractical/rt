@@ -59,7 +59,6 @@
 %  }
 % }
 </select>
-
 <%INIT>
 my @types;
 if ($Scope =~ /queue/) {

@@ -73,7 +73,6 @@ $id => ''
 $hideable => 1
 $rolledup => 0
 </%ARGS>
-
 <%init>
 $hideable = 1 if $rolledup;
 #

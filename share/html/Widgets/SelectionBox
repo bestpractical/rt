@@ -148,9 +148,7 @@ if ($self->{AutoSave} or $ARGS{$self->{Name}.'-Save'}) {
 <%ARGS>
 $self => undef
 </%ARGS>
-
 </%method>
-
 <%method current>
 % for (@{$self->{Current}}) {
 <input type="hidden" class="hidden" name="<% $self->{Name} %>-Current" value="<%$_%>" />
@@ -197,7 +195,6 @@ selected="selected" \
  <input name="update" type="submit" class="button" value="<&|/l&>Update</&>" />
 % }
 % }
-
 % my $caption = "";
 % unless ($self->{'AutoSave'}) {
 % if ($self->{Modified}) {
@@ -206,7 +203,6 @@ selected="selected" \
 <& /Elements/Submit, Caption => loc($caption), Label => loc('Save'), Name => $name.'-Save' &>
 % }
 </form>
-
 <%ARGS>
 $self => undef
 $size => 10
@@ -215,5 +211,4 @@ $size => 10
 my $name = $self->{Name};
 my %selected = map {$_ => 1} @{$self->{Selected}};
 </%INIT>
-
 </%method>

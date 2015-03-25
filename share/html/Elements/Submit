@@ -65,7 +65,6 @@ id="<%$id%>" \
 % if ( $Back ) {
   <div class="next">
 % }
-
 % if ($AlternateLabel) {
   <span class="caption"><%$AlternateCaption%></span>
   <input type="submit" <% $OnClick ? qq[ onclick="$OnClick"] : '' | n %> <% $Name ? qq[ name="$Name"] : '' | n %> <% $SubmitId ? qq[ id="$SubmitId"] : '' | n %> value="<%$AlternateLabel%>" class="button" />
@@ -73,12 +72,9 @@ id="<%$id%>" \
   <span class="caption"><%$Caption%></span>
   <input type="submit" <% $OnClick ? qq[ onclick="$OnClick"] : '' | n %> <% $Name ? qq[ name="$Name"] : '' | n %> <% $SubmitId ? qq[ id="$SubmitId"] : '' | n %> value="<%$Label%>" class="button" />
 % }
-
 % if ( $Back ) {
   </div>
 % }
-
-
 % if ( $Back ) {
   <div class="back">
   <span class="caption"><%$BackCaption%></span>
@@ -86,11 +82,9 @@ id="<%$id%>" \
       $BackName ? qq[ name="$BackName"] : '' | n %> value="<%$BackLabel%>" class="button" />
   </div>
 % }
-
   </div>
   <div class="submit-clear"></div>
 </div>
-
 <%ARGS>
 $color => undef
 $Caption => ''

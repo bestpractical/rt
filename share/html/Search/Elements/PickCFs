@@ -100,7 +100,6 @@ while ( my $CustomField = $CustomFields->Next ) {
 $m->callback( Conditions => \@lines, Queues => \%queues );
 
 </%INIT>
-
 <%ARGS>
 %queues => ()
 $CustomFields

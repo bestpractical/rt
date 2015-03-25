@@ -49,7 +49,6 @@
 <option value="<%$TrueVal%>" <%$TrueDefault|n%>><%$True%></option>
 <option value="<%$FalseVal%>" <%$FalseDefault|n%>><%$False%></option>
 </select>
-
 <%ARGS>
 $Name => undef
 $True => loc("is")

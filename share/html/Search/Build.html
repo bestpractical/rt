@@ -67,23 +67,16 @@
 %#
 <& /Elements/Header, Title => $title &>
 <& /Elements/Tabs, %TabArgs &>
-
 <form method="post" action="Build.html" name="BuildQuery" id="BuildQuery">
 <input type="hidden" class="hidden" name="SavedSearchId" value="<% $saved_search{'Id'} %>" />
 <input type="hidden" class="hidden" name="SavedChartSearchId" value="<% $ARGS{'SavedChartSearchId'} %>" />
 <input type="hidden" class="hidden" name="Query" value="<% $query{'Query'} %>" />
 <input type="hidden" class="hidden" name="Format" value="<% $query{'Format'} %>" />
-
-
-
-
 <div id="pick-criteria">
     <& Elements/PickCriteria, query => $query{'Query'}, queues => $queues &>
 </div>
 <& /Elements/Submit,  Label => loc('Add these terms'), SubmitId => 'AddClause', Name => 'AddClause'&>
 <& /Elements/Submit, Label => loc('Add these terms and Search'), SubmitId => 'DoSearch', Name => 'DoSearch'&>
-
-
 <div id="editquery">
 <& Elements/EditQuery,
     %ARGS,
@@ -95,7 +88,6 @@
 <div id="editsearches">
     <& Elements/EditSearches, %saved_search, CurrentSearch => \%query &>
 </div>
-
 <span id="display-options">
 <& Elements/DisplayOptions,
     %ARGS, %query,
@@ -105,7 +97,6 @@
 </span>
 <& /Elements/Submit, Label => loc('Update format and Search'), Name => 'DoSearch', id=>"formatbuttons"&>
 </form>
-
 <%INIT>
 use RT::Interface::Web::QueryBuilder;
 use RT::Interface::Web::QueryBuilder::Tree;

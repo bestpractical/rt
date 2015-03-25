@@ -47,7 +47,6 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="edit-saved-searches">
 <&| /Widgets/TitleBox, title => loc($Title)&>
-
 %# Hide all the save functionality if the user shouldn't see it.
 % if ( $can_modify ) {
 <span class="label"><&|/l&>Privacy</&>:</span>
@@ -55,7 +54,6 @@
 <br />
 <span class="label"><&|/l&>Description</&>:</span>
 <input size="25" name="SavedSearchDescription" value="<% $Description || '' %>" />
-
 % if ($Id ne 'new') {
 <nobr>
 % if ( $Dirty ) {
@@ -123,7 +121,6 @@ my $Dirty = $is_dirty->(
 );
 
 </%INIT>
-
 <%ARGS>
 $Id            => 'new'
 $Object        => undef
@@ -134,7 +131,6 @@ $CurrentSearch => {}
 $AllowCopy     => 1
 $Title         => loc('Saved searches')
 </%ARGS>
-
 <%METHOD Init>
 <%ARGS>
 $Query       => {}
@@ -218,7 +214,6 @@ return @results;
 
 </%INIT>
 </%METHOD>
-
 <%METHOD Save>
 <%ARGS>
 $Query        => {}

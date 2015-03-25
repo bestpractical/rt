@@ -46,16 +46,13 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <table class="edit-columns">
-
 <tr>
 <th><&|/l&>Add Columns</&>:</th>
 <th><&|/l&>Format</&>:</th>
 <th></th>
 <th><&|/l&>Show Columns</&>:</th>
 </tr>
-
 <tr>
-
 <td valign="top"><select size="6" name="SelectDisplayColumns" multiple="multiple">
 % my %seen;
 % foreach my $field ( grep !$seen{lc $_}++, @$AvailableColumns) {
@@ -100,9 +97,7 @@
 </span>
 </div>
 </td>
-
 <td><input type="submit" class="button" name="AddCol" value=" &rarr; " /></td>
-
 <td valign="top">
 <select size="4" name="CurrentDisplayColumns">
 % my $i=0;
@@ -119,10 +114,8 @@
 <input type="submit" class="button" name="RemoveCol" value="<%loc('Delete')%>" />
 </center>
 </td>
-
 </tr>
 </table>
-
 <%init>
 my $selected = $ARGS{SelectDisplayColumns};
 $selected = [ $selected ] unless ref $selected;

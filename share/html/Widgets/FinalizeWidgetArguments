@@ -59,7 +59,6 @@
     }
     return \%args;
 </%init>
-
 <%args>
 $WidgetArguments => {}
 </%args>

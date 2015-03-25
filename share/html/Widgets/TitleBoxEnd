@@ -48,12 +48,9 @@
     <hr class="clear" />
   </div>
 </div>
-
 % #Manually flush the content buffer after each titlebox is displayed
 % $m->flush_buffer();
-
 <%ARGS>
 $title => undef
 $content => undef
 </%ARGS>
-

@@ -46,7 +46,6 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <table valign="top">
-
 % for my $o (0..3) {
 % $Order[$o] ||= ''; $OrderBy[$o] ||= '';
 <tr>
@@ -129,7 +128,6 @@ if ($Order =~ /\|/) {
 }
 
 </%INIT>
-
 <%ARGS>
 $Order => ''
 $OrderBy => ''

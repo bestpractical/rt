@@ -53,7 +53,6 @@
 <option value="<%$option%>"<%defined($Default) && $option eq $Default && qq[ selected="selected"] |n %>><%loc($option)%></option>
 %}
 </select>
-
 <%INIT>
 my @types;
 if ($Scope =~ /queue/) {

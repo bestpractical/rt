@@ -52,7 +52,6 @@ return \%ARGS;
 </%method>
 
 <%method process>
-
 <%init>
 my @actions;
 $self->{SearchId} ||= $args->{'SavedChartSearchId'} || 'new';
@@ -152,7 +151,6 @@ return @actions;
 $self
 $args
 </%ARGS>
-
 </%method>
 
 <%method show>
