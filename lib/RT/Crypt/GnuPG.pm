@@ -843,6 +843,8 @@ sub FindScatteredParts {
         my $fname = $part->head->recommended_filename || '';
         next unless $fname =~ /\.${RE_FILE_EXTENSIONS}$/;
 
+        next if $part->effective_type eq "application/pgp-keys";
+
         $RT::Logger->debug("Found encrypted attachment '$fname'");
 
         $args{'Skip'}{$part} = 1;
