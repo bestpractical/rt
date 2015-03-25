@@ -850,6 +850,7 @@ sub FindScatteredParts {
             Type    => 'encrypted',
             Format  => 'Attachment',
             Data    => $part,
+            Guess   => 1,
         };
     }
 
@@ -1176,6 +1177,11 @@ sub _DecryptInlineBlock {
     # status check we lose the decrypted text
     # XXX: add argument to the function to control this check
     delete $res{'message'} if $res{'status'} =~ /DECRYPTION_OKAY/;
+
+    # Ignore various forms of "not actually PGP data" if we were merely
+    # optimistically guessing that this was encrypted data.
+    $res{skip} = 1 if $args{Guess}
+        and $res{'status'} =~ /(UNEXPECTED 0|NODATA [12])/;
 
     return (undef, undef, %res) if $res{message};
 

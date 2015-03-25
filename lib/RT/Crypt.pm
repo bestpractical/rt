@@ -541,6 +541,8 @@ sub VerifyDecrypt {
             %args, Protocol => $protected->{'Protocol'}, Info => $protected
         );
 
+        next if $res{skip};
+
         # Let the header be modified so continuations are handled
         my $modify = $res{status_on}->head->modify;
         $res{status_on}->head->modify(1);
