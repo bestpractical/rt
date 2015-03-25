@@ -45,9 +45,9 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="submit"
-% if($id) {
-id="<%$id%>"
+<div class="submit" \
+% if ($id) {
+id="<%$id%>" \
 % }
 >
   <div class="extra-buttons">

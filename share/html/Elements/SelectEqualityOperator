@@ -48,14 +48,13 @@
 <select name="<%$Name%>">
 % while (my $option = shift @Options) {
 % my $value = shift @Values;
-<option value="<%$value%>"
+    <option value="<%$value%>" \
 % if ($Default eq $value) {
-selected="selected"
+selected="selected" \
 % }
 ><%$option%></option>
 % }
 </select>
-
 <%ARGS>
 $Name => undef
 @Options => (loc('less than'), loc('equal to'), loc('greater than'), loc('not equal to'))

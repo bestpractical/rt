@@ -76,9 +76,8 @@
 <br />
 <hr />
 <span class="label"><&|/l&>Load saved search</&>:</span>
-<& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@Objects, SearchType => $Type &>
-<input type="submit" value="<% loc('Load') %>" id="SavedSearchLoadSubmit" name="SavedSearchLoadSubmit" class="button" />
-
+<& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@Objects, SearchType => $Type &>\
+<input type="submit" value="<% loc('Load') %>" id="SavedSearchLoadSubmit" name="SavedSearchLoadSubmit" class="button" />\
 </&>
 </div>
 <%INIT>
