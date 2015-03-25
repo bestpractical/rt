@@ -49,13 +49,11 @@
 $focus => undef
 $onload => undef
 </%args>
-
 % for my $jsfile ( @js_files ) {
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%><% $jsfile %>"></script>
 % }
-
 <script type="text/javascript"><!--
-jQuery( loadTitleBoxStates );
+    jQuery( loadTitleBoxStates );
 % if ( $focus ) {
     jQuery(function () { jQuery(<% $focus |n,j%>).focus() });
 % }

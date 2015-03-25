@@ -60,27 +60,21 @@
 %   my $URL = $m->notes->{RefreshURL}; $URL = $URL ? ";URL=$URL" : "";
     <meta http-equiv="refresh" content="<% "$1$URL" %>" />
 % }
-
 <& JavascriptConfig &>
-
 % for my $cssfile ( @css_files ) {
 <link rel="stylesheet" href="<%RT->Config->Get('WebPath')%><% $cssfile %>" type="text/css" media="all" />
 % }
-
 % for (keys %{$LinkRel || {}}) {
     <link rel="<% $_ %>" href="<% RT->Config->Get('WebPath') . $LinkRel->{$_} %>" />
 % }
 <link rel="shortcut icon" href="<%RT->Config->Get('WebImagesURL')%>favicon.png" type="image/png" />
-
 % if ( $RSSAutoDiscovery ) {
     <link rel="alternate" href="<%$RSSAutoDiscovery%>" type="application/rss+xml" title="RSS RT Search" />
 % }
-
 % my $stylesheet_plugin = "/NoAuth/css/".$style."/InHeader";
 % if ($m->comp_exists($stylesheet_plugin) ) {
 <& $stylesheet_plugin &>
 % }
-
 <!-- Site CSS from theme editor -->
 <style type="text/css" media="all" id="sitecss">
 %# Header is used when there isn't a database (such as in the Installer) which means there is no
@@ -91,17 +85,12 @@
 </style>
 % # Leave %ARGS for backward compatibility
 % $m->callback( %ARGS, CallbackName => 'Head', ARGSRef => \%ARGS );
-
 <& HeaderJavascript, focus => $Focus, onload => $onload, RichText => $RichText &>
-
 <& /Elements/Framekiller &>
-
 </head>
   <body class="<% join( ' ',@{$ARGS{'BodyClass'}}) %>" <% $id && qq[id="comp-$id"] |n %>>
-
 % if ($ShowBar) {
 <& /Elements/Logo, %ARGS &>
-
 <div id="quickbar">
   <& /Elements/PersonalQuickbar, %ARGS &>
 </div>
@@ -142,7 +131,6 @@ if (RT->Config->Get("UseSideBySideLayout", $session{'CurrentUser'})) {
 }
 
 </%INIT>
-
 <%ARGS>
 #$Focus => 'focus'
 $Focus => ''
