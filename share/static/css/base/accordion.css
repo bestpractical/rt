@@ -41,8 +41,7 @@
     position: relative;
 }
 .user-accordion a.user-summary {
-    position: absolute;
-    right: 0;
+    float: right;
     text-decoration: none;
 }
 .user-accordion a.user-summary:hover { text-decoration: underline }
