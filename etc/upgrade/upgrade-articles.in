@@ -262,3 +262,11 @@ sub copy_tables {
         warn "Updating Attribute ".$a->Name." to point to RT::Class";
     }
 }
+
+{ # update Postgres sequence
+    if ( $db_type eq 'Pg' ) {
+        my $sql = "SELECT SETVAL('articles_id_seq', COALESCE( MAX(id), 1) ) FROM Articles";
+        $RT::Logger->debug($sql);
+        $dbh->do($sql);
+    }
+}
