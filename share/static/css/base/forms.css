@@ -32,7 +32,15 @@ div.button-row {
 }
 
 
-input[type=reset], input[type=submit], input[class=button], button {
+.button {
+    display: inline-block;
+}
+.button:hover {
+    text-decoration:none;
+    cursor: default;
+}
+
+.button, .button:visited, input[type=reset], input[type=submit], input[class=button], button {
    color: #fff;
    background: #3858a3;
    padding: 0.25em;
@@ -43,11 +51,11 @@ input[type=reset], input[type=submit], input[class=button], button {
    border-radius: 0.5em;
 }
 
-input.button:hover, button:hover, input[type=reset]:hover, input[type=submit]:hover, input[class=button]:hover {
+.button:hover, input.button:hover, button:hover, input[type=reset]:hover, input[type=submit]:hover, input[class=button]:hover {
    background: #1D3B7D;
 }
 
-input.button:focus, button:focus, input[type=reset]:focus, input[type=submit]:focus, input[class=button]:focus {
+.button:focus, input.button:focus, button:focus, input[type=reset]:focus, input[type=submit]:focus, input[class=button]:focus {
    background: #1D3B7D;
 }
 
