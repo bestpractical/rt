@@ -214,7 +214,7 @@
 <script type="text/javascript">
 jQuery( function() {
    var updateScrips = function() {
-       if (jQuery('#UpdateContent').hasClass("richtext")) {
+       if (CKEDITOR.instances && CKEDITOR.instances['UpdateContent']) {
            CKEDITOR.instances['UpdateContent'].updateElement();
        }
        var syncCheckboxes = function(ev) {
@@ -243,7 +243,7 @@ jQuery( function() {
        );
    };
    updateScrips();
-   if (jQuery('#UpdateContent').hasClass("richtext")) {
+   if (CKEDITOR.instances && CKEDITOR.instances['UpdateContent']) {
        CKEDITOR.instances['UpdateContent'].on('blur', updateScrips );
    }
    jQuery("#ticket-update-metadata :input, #UpdateCc, #UpdateBcc").change( updateScrips );
