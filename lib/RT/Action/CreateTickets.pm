@@ -715,35 +715,41 @@ sub ParseLines {
     $args{'type'} ||= 'ticket';
 
     my %ticketargs = (
-        Queue           => $args{'queue'},
-        Subject         => $args{'subject'},
-        Status          => $args{'status'} || 'new',
-        Due             => $args{'due'},
-        Starts          => $args{'starts'},
-        Started         => $args{'started'},
-        Resolved        => $args{'resolved'},
-        Owner           => $args{'owner'},
-        Requestor       => $args{'requestor'},
-        Cc              => $args{'cc'},
-        AdminCc         => $args{'admincc'},
-        TimeWorked      => $args{'timeworked'},
-        TimeEstimated   => $args{'timeestimated'},
-        TimeLeft        => $args{'timeleft'},
-        InitialPriority => $args{'initialpriority'} || 0,
-        FinalPriority   => $args{'finalpriority'} || 0,
-        SquelchMailTo   => $args{'squelchmailto'},
-        Type            => $args{'type'},
+        Queue           => delete $args{'queue'},
+        Subject         => delete $args{'subject'},
+        Status          => delete $args{'status'} || 'new',
+        Due             => delete $args{'due'},
+        Starts          => delete $args{'starts'},
+        Started         => delete $args{'started'},
+        Resolved        => delete $args{'resolved'},
+        Owner           => delete $args{'owner'},
+        Requestor       => delete $args{'requestor'},
+        Cc              => delete $args{'cc'},
+        AdminCc         => delete $args{'admincc'},
+        TimeWorked      => delete $args{'timeworked'},
+        TimeEstimated   => delete $args{'timeestimated'},
+        TimeLeft        => delete $args{'timeleft'},
+        InitialPriority => delete $args{'initialpriority'} || 0,
+        FinalPriority   => delete $args{'finalpriority'} || 0,
+        SquelchMailTo   => delete $args{'squelchmailto'},
+        Type            => delete $args{'type'},
     );
 
     if ( $args{content} ) {
         my $mimeobj = MIME::Entity->build(
-            Type    => $args{'contenttype'} || 'text/plain',
+            Type    => delete $args{'contenttype'} || 'text/plain',
             Charset => 'UTF-8',
-            Data    => [ map {Encode::encode( "UTF-8", $_ )} @{$args{'content'}} ],
+            Data    => [ map {Encode::encode( "UTF-8", $_ )} @{delete $args{'content'}} ],
         );
         $ticketargs{MIMEObj} = $mimeobj;
-        $ticketargs{UpdateType} = $args{'updatetype'} || 'correspond';
+        $ticketargs{UpdateType} = delete $args{'updatetype'} || 'correspond';
     }
+
+    # It may be impossible to create the ticket in the desired status;
+    # we defer setting the status in GetDeferred, and try again in
+    # PostProcess.
+    $args{status} = $ticketargs{Status};
+    $self->GetDeferred( \%args, $template_id, $links, $postponed );
 
     foreach my $tag ( keys(%args) ) {
         # if the tag was added later, skip it
@@ -773,8 +779,6 @@ sub ParseLines {
 
         }
     }
-
-    $self->GetDeferred( \%args, $template_id, $links, $postponed );
 
     return $TicketObj, \%ticketargs;
 }
@@ -929,19 +933,19 @@ sub GetDeferred {
     push @$links,
         (
         $id,
-        {   DependsOn    => $args->{'dependson'},
-            DependedOnBy => $args->{'dependedonby'},
-            RefersTo     => $args->{'refersto'},
-            ReferredToBy => $args->{'referredtoby'},
-            Children     => $args->{'children'},
-            Parents      => $args->{'parents'},
+        {   DependsOn    => delete $args->{'dependson'},
+            DependedOnBy => delete $args->{'dependedonby'},
+            RefersTo     => delete $args->{'refersto'},
+            ReferredToBy => delete $args->{'referredtoby'},
+            Children     => delete $args->{'children'},
+            Parents      => delete $args->{'parents'},
         }
         );
 
     push @$postponed, (
 
         # Status is postponed so we don't violate dependencies
-        $id, { Status => $args->{'status'}, }
+        $id, { Status => delete $args->{'status'}, }
     );
 }
 
