@@ -268,8 +268,8 @@ sub Create {
                        ObjectId      => $args{'ObjectId'},
                    );
     if ( $self->Id ) {
-        return ( 0, $self->loc('[_1] already has that right',
-                    $princ_obj->Object->Name) );
+        return ( 0, $self->loc('[_1] already has the right [_2] on [_3] [_4]',
+                    $princ_obj->Object->Name, $args{'RightName'}, $args{'ObjectType'},  $args{'ObjectId'}) );
     }
 
     my $id = $self->SUPER::Create( PrincipalId   => $princ_obj->id,
