@@ -174,7 +174,9 @@
 
     input,
     select,
-    option {
+    option,
+    button,
+    .button {
         background: white !important;
         color: black !important;
         border: 1px solid #666 !important;
