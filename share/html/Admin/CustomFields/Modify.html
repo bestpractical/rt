@@ -314,7 +314,7 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
             map { 
                 $ARGS{$paramtag."-new-$_"} =~ s/^\s+//;
                 $ARGS{$paramtag."-new-$_"} =~ s/\s+$//;
-                $_ => $ARGS{ $paramtag ."-new-$_" } } qw/ Name Description SortOrder Category/
+                $_ => $ARGS{ $paramtag ."-new-$_" } } grep { defined $ARGS{ $paramtag ."-new-$_" } } qw/ Name Description SortOrder Category/
         );
         push (@results, $msg);
         $added_cfv = 1 if $id;

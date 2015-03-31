@@ -76,8 +76,41 @@ jQuery(function() {
             var subfield = field.next("select[name=" + name + "]");
             var complete = subfield.next("select[name=" + name + "-Complete]");
             var value    = field.val();
-            filter_cascade_select( subfield[0], complete[0], value, true );
+            filter_cascade_select( subfield[0], complete[0], value );
         }).change();
+    });
+
+    jQuery('[data-cascade-based-on-name]').each( function() {
+        var based_on_name = jQuery(this).attr('data-cascade-based-on-name');
+        var based_on = jQuery('[name^="' + based_on_name + '"][type!="hidden"]:input:not(.hidden)');
+        var id = jQuery(this).attr('id');
+        based_on.each( function() {
+            var oldchange = jQuery(this).onchange;
+            jQuery(this).change( function () {
+                var vals;
+                if ( jQuery(this).is('select') ) {
+                    vals = based_on.first().val();
+                }
+                else {
+                    vals = [];
+                    jQuery(based_on).each( function() {
+                        if ( jQuery(this).is(':checked') ) {
+                            vals.push(jQuery(this).val());
+                        }
+                    });
+                }
+                filter_cascade_by_id( id, vals );
+                if (oldchange != null)
+                    oldchange();
+            });
+        });
+
+        if ( based_on.is('select') ) {
+            based_on.change();
+        }
+        else {
+            based_on.first().change();
+        }
     });
 });
 

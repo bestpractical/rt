@@ -59,15 +59,6 @@ You can now forward an entire Ticket history (in addition to specific
 transactions) but this requires a new Template called "Forward Ticket".  This
 template will be added as part of the standard database upgrade step.
 
-Custom fields with categories can optionally be split out into hierarchical
-custom fields.  If you wish to convert your old category-based custom fields,
-run:
-
-    /opt/rt4/etc/upgrade/split-out-cf-categories
-
-It will prompt you for each custom field with categories that it finds, and
-the name of the custom field to create to store the categories.
-
 If you were using the LocalizedDateTime RT::Date formatter from custom code,
 and passing a DateFormat or TimeFormat argument, you need to switch from the
 strftime methods to the cldr methods; that is,

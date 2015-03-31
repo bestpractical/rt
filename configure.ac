@@ -423,7 +423,6 @@ AC_CONFIG_FILES([
                  etc/upgrade/sanity-check-stylesheets
                  etc/upgrade/shrink-cgm-table
                  etc/upgrade/shrink-transactions-table
-                 etc/upgrade/split-out-cf-categories
                  etc/upgrade/switch-templates-to
                  etc/upgrade/time-worked-history
                  etc/upgrade/upgrade-articles
