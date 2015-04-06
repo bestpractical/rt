@@ -287,13 +287,12 @@ sub CheckCompatibility {
         }
 
         if ( $state eq 'post' ) {
-            my $create_table = $dbh->selectrow_arrayref("SHOW CREATE TABLE Tickets")->[1];
-            unless ( $create_table =~ /(?:ENGINE|TYPE)\s*=\s*InnoDB/i ) {
+            my $show_table = sub { $dbh->selectrow_arrayref("SHOW CREATE TABLE $_[0]")->[1] };
+            unless ( $show_table->("Tickets") =~ /(?:ENGINE|TYPE)\s*=\s*InnoDB/i ) {
                 return (0, "RT requires that all its tables be of InnoDB type. Upgrade RT tables.");
             }
 
-            $create_table = $dbh->selectrow_arrayref("SHOW CREATE TABLE Attachments")->[1];
-            unless ( $create_table =~ /\bContent\b[^,]*BLOB/i ) {
+            unless ( $show_table->("Attachments") =~ /\bContent\b[^,]*BLOB/i ) {
                 return (0, "RT since version 3.8 has new schema for MySQL versions after 4.1.0\n"
                     ."Follow instructions in the UPGRADING.mysql file.");
             }
