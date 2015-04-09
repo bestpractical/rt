@@ -10,15 +10,15 @@ for my $n (1..7) {
     my $ticket = RT::Ticket->new( RT->SystemUser );
     my $req = 'root' . ($n % 2) . '@localhost';
     my ( $ret, $msg ) = $ticket->Create(
-        Subject   => "base ticket $_",
+        Subject   => "base ticket $n",
         Queue     => "General",
         Owner     => "root",
         Requestor => $req,
         MIMEObj   => MIME::Entity->build(
             From    => $req,
             To      => 'rt@localhost',
-            Subject => "base ticket $_",
-            Data    => "Content $_",
+            Subject => "base ticket $n",
+            Data    => "Content $n",
         ),
     );
     ok( $ret, "ticket $n created: $msg" );
