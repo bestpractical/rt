@@ -65,14 +65,14 @@ my $ACL = RT::ACL->new($CurrentUser);
 
 
 package RT::ACL;
+use strict;
+use warnings;
+
 use base 'RT::SearchBuilder';
+sub Table { 'ACL'}
 
 use RT::ACE;
 
-sub Table { 'ACL'}
-
-use strict;
-use warnings;
 
 
 

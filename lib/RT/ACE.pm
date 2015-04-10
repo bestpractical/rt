@@ -63,13 +63,11 @@
 
 
 package RT::ACE;
-use base 'RT::Record';
-
-sub Table {'ACL'}
-
-
 use strict;
 use warnings;
+
+use base 'RT::Record';
+sub Table {'ACL'}
 
 require RT::Principals;
 require RT::Queues;

@@ -1,9 +1,9 @@
+use strict;
+use warnings;
 
 use RT::Test nodata => 1, tests => 21;
 RT::Init();
 
-use strict;
-use warnings;
 
 use RT::Tickets;
 use RT::Queue;

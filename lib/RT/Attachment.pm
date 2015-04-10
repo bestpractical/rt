@@ -64,16 +64,11 @@ similar objects.
 
 
 package RT::Attachment;
-use base 'RT::Record';
-
-sub Table {'Attachments'}
-
-
-
-
 use strict;
 use warnings;
 
+use base 'RT::Record';
+sub Table {'Attachments'}
 
 use RT::Transaction;
 use MIME::Base64;
