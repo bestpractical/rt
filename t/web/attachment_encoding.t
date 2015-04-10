@@ -46,8 +46,7 @@ diag 'test with attachemnts' if $ENV{TEST_VERBOSE};
 
     my $file =
       File::Spec->catfile( RT::Test->temp_directory, Encode::encode("UTF-8",$filename) );
-    open( my $fh, '>', $file ) or die $!;
-    binmode $fh, ':utf8';
+    open( my $fh, '>:encoding(UTF-8)', $file ) or die $!;
     print $fh $filename;
     close $fh;
 
