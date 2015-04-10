@@ -85,7 +85,7 @@ notification generated during the block or the test.
 
 =cut
 
-sub mail_ok (&@) {
+sub mail_ok (&@) { ## no critic
     my $code = shift;
 
     $code->();

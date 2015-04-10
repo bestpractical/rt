@@ -54,7 +54,7 @@ use warnings;
 use base 'Exporter';
 our @EXPORT = qw/safe_run_child mime_recommended_filename/;
 
-sub safe_run_child (&) {
+sub safe_run_child (&) { ## no critic
     my $our_pid = $$;
 
     # situation here is wierd, running external app
