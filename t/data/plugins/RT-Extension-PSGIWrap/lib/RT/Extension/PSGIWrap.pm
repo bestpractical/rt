@@ -1,4 +1,6 @@
 package RT::Extension::PSGIWrap;
+use strict;
+use warnings;
 
 use base 'Plack::Middleware';
 
