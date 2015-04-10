@@ -51,7 +51,7 @@ use warnings;
 
 # As we specify that XML is UTF-8 and we output it to STDOUT, we must be sure
 # it is UTF-8 so further XMLin will not break
-binmode( STDOUT, ":utf8" );
+binmode( STDOUT, ":encoding(UTF-8)" );
 
 # fix lib paths, some may be relative
 BEGIN { # BEGIN RT CMD BOILERPLATE
