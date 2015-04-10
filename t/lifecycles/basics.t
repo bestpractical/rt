@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-BEGIN {require  't/lifecycles/utils.pl'};
+use RT::Test::Lifecycle tests => undef;
 
 my $general = RT::Test->load_or_create_queue(
     Name => 'General',

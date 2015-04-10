@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-BEGIN {require  't/lifecycles/utils.pl'};
+use RT::Test::Lifecycle tests => undef;
 
 is_deeply( [ RT::Lifecycle->ListAll ], [qw/ approvals default delivery /],
        "Get the list of all lifecycles (implicitly for for tickets)");
