@@ -81,7 +81,7 @@ sub check {
         }
     }
 
-    my $executable = ( stat $file )[2] & 0100;
+    my $executable = ( stat $file )[2] & oct(100);
     if ($check{exec} == 1) {
         if ( $file =~ /\.in$/ ) {
             ok( !$executable, "$file permission is u-x (.in will add +x)" );
