@@ -87,7 +87,7 @@ if ($edit ne $orig) {
         print "Attribute key saved.\n";
     }
     else {
-        my $VAR1; eval $edit;
+        my $VAR1; eval $edit; ## no critic
         if ($@) {
             print STDERR "Your change had an error: $@";
             exit 1;

@@ -778,7 +778,7 @@ sub CompileCheck {
 
         do {
             no strict 'vars';
-            eval "sub { $code \n }";
+            eval "sub { $code \n }";  ## no critic
         };
         next if !$@;
 

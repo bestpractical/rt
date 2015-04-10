@@ -816,7 +816,7 @@ sub CompileCheck {
 
         do {
             no strict 'vars';
-            eval "sub { $fi_text }";
+            eval "sub { $fi_text }"; ## no critic
         };
         next if !$@;
 

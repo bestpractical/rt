@@ -459,7 +459,7 @@ sub test_dep {
     }
     else {
         no warnings 'deprecated';
-        eval "{ local \$ENV{__WARN__}; use $module $version () }";
+        eval "{ local \$ENV{__WARN__}; use $module $version () }"; ## no critic
         if ( my $error = $@ ) {
             return 0 unless wantarray;
 

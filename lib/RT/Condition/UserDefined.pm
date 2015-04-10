@@ -61,7 +61,7 @@ This happens on every transaction. it's always applicable
 sub IsApplicable {
     my $self = shift;
     local $@;
-    my $retval = eval $self->ScripObj->CustomIsApplicableCode;
+    my $retval = eval $self->ScripObj->CustomIsApplicableCode; ## no critic
     if ($@) {
         $RT::Logger->error("Scrip ".$self->ScripObj->Id. " IsApplicable failed: ".$@);
         return (undef);
