@@ -638,7 +638,7 @@ sub GetVersionFile {
     rc    => -1,
     head  => 9999,
 );
-sub cmp_version($$) {
+sub cmp_version($$) {  ## no critic
     my ($a, $b) = (@_);
     my @a = grep defined, map { /^[0-9]+$/? $_ : /^[a-zA-Z]+$/? $word{$_}|| -10 : undef }
         split /([^0-9]+)/, $a;

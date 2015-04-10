@@ -54,7 +54,6 @@ use warnings;
 use base 'RT::DependencyWalker';
 
 use Storable qw//;
-sub cmp_version($$) { RT::Handle::cmp_version($_[0],$_[1]) };
 use RT::Migrate::Incremental;
 use RT::Migrate::Serializer::IncrementalRecord;
 use RT::Migrate::Serializer::IncrementalRecords;
@@ -111,7 +110,7 @@ sub Metadata {
 
     # Determine the highest upgrade step that we run
     my @versions = ($RT::VERSION, keys %RT::Migrate::Incremental::UPGRADES);
-    my ($max) = reverse sort cmp_version @versions;
+    my ($max) = reverse sort RT::Handle::cmp_version @versions;
     # we don't want to run upgrades to 4.2.x if we're running
     # the serializier on an 4.0 instance.
     $max = $RT::VERSION unless $self->{Incremental};
@@ -305,10 +304,10 @@ sub InitStream {
     Storable::nstore_fd( $meta, $self->{Filehandle} );
     die "Failed to write metadata: $!" if $!;
 
-    return unless cmp_version($meta->{VersionFrom}, $meta->{Version}) < 0;
+    return unless RT::Handle::cmp_version($meta->{VersionFrom}, $meta->{Version}) < 0;
 
     my %transforms;
-    for my $v (sort cmp_version keys %RT::Migrate::Incremental::UPGRADES) {
+    for my $v (sort RT::Handle::cmp_version keys %RT::Migrate::Incremental::UPGRADES) {
         for my $ref (keys %{$RT::Migrate::Incremental::UPGRADES{$v}}) {
             push @{$transforms{$ref}}, $RT::Migrate::Incremental::UPGRADES{$v}{$ref};
         }
