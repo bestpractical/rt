@@ -522,15 +522,16 @@ sub _ResolveRoles {
                $value = $value->[0] if ref $value eq 'ARRAY';
             if (Scalar::Util::blessed($value) and $value->isa("RT::User")) {
                 # Accept a user; it may not be loaded, which we catch below
-                $roles->{$role} = $value->PrincipalObj;
-            } else {
-                # Try loading by id, name, then email.  If all fail, catch that below
-                my $user = RT::User->new( $self->CurrentUser );
-                $user->Load( $value );
-                # XXX: LoadOrCreateByEmail ?
-                $user->LoadByEmail( $value ) unless $user->id;
-                $roles->{$role} = $user->PrincipalObj;
+                $value = $value->PrincipalObj->id;
             }
+
+            # Try loading by id, name, then email.  If all fail, catch that below
+            my $user = RT::User->new( $self->CurrentUser );
+            $user->Load( $value );
+            # XXX: LoadOrCreateByEmail ?
+            $user->LoadByEmail( $value ) unless $user->id;
+            $roles->{$role} = $user->PrincipalObj;
+
             unless (Scalar::Util::blessed($roles->{$role}) and $roles->{$role}->id) {
                 push @errors, $self->loc("Invalid value for [_1]",$self->loc($role));
                 $roles->{$role} = RT->Nobody->PrincipalObj;
