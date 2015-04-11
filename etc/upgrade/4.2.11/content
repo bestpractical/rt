@@ -9,7 +9,7 @@ our @Initial = (
         RT->DatabaseHandle->dbh->do(<<EOSQL);
             DELETE FROM Attributes
              WHERE Name = 'DeferredRecipients'
-               AND Content IS NULL;
+               AND Content IS NULL
 EOSQL
     },
     sub {
