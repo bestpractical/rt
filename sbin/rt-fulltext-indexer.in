@@ -167,7 +167,7 @@ EOT
     exit 1;
 }
 
-my @types = qw(text html);
+my @types = qw(text html printable);
 foreach my $type ( @types ) {
   REDO:
     my $attachments = attachments($type);
@@ -355,6 +355,24 @@ sub attachments_html {
     return $res;
 }
 
+sub attachments_printable {
+    my $res = shift;
+    $res->Limit( FIELD => 'ContentEncoding', VALUE => 'quoted-printable' );
+    $res->Limit(
+        FIELD => 'ContentType',
+        OPERATOR => '!=',
+        VALUE => 'text/plain',
+        ENTRYAGGREGATOR => 'AND',
+    );
+    $res->Limit(
+        FIELD => 'ContentType',
+        OPERATOR => '!=',
+        VALUE => 'text/html',
+        ENTRYAGGREGATOR => 'AND',
+    );
+    return $res;
+}
+
 sub filter_html {
     my $attachment = shift;
     if ( my $parent = $attachment->ParentObj ) {
@@ -373,6 +391,13 @@ sub extract_html {
 # but Pg doesn't index them, so decode to something it can index.
     require HTML::Entities;
     HTML::Entities::decode_entities($text);
+    return \$text;
+}
+
+sub extract_printable {
+    my $attachment = shift;
+    my $text = $attachment->Content;
+    return undef unless defined $text && length($text);
     return \$text;
 }
 
