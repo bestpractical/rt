@@ -64,3 +64,13 @@
 .summary>div>.titlebox>.titlebox-content {
     background: none
 }
+
+tr.edit-custom-field.cftype-IPAddress input,
+tr.edit-custom-field.cftype-IPAddressRange input {
+    width: 24em;
+}
+
+tr.edit-custom-field.cftype-IPAddress textarea,
+tr.edit-custom-field.cftype-IPAddressRange textarea {
+    width: 24em;
+}
