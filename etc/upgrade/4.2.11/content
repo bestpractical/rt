@@ -44,6 +44,7 @@ EOSQL
         $txns->Limit( FIELD => 'Type', VALUE => 'Forward Ticket' );
         while ( my $txn = $txns->Next ) {
             my $att = $txn->Attachments->First;
+            next unless $att;
 
             # we only need to process ascii-only strings
             unless ( $att->Subject =~ /[^\x00-\x7F]/ ) {
