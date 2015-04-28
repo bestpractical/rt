@@ -1185,7 +1185,7 @@ sub _FormatUser {
         elsif ($duration < 60) {
             return ("Worked [quant,_1,minute,minutes]", $duration); # loc()
         } else {
-            return ("Worked [quant,_1,hour,hours] ([quant,_2,minute,minutes])", sprintf("%.1f", $duration / 60), $duration); # loc()
+            return ("Worked [quant,_1,hour,hours] ([quant,_2,minute,minutes])", sprintf("%.2f", $duration / 60), $duration); # loc()
         }
     },
     PurgeTransaction => sub {
