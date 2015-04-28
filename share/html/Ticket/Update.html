@@ -226,7 +226,9 @@ jQuery( function() {
                txn_send_field.change( syncCheckboxes );
                txn_send_field.click( function () { setCheckbox(this) } );
                jQuery("#recipients input[name=TxnSendMailToAll]").click( function() { setCheckbox(this, 'TxnSendMailTo'); } );
-               setCheckbox(txn_send_field);
+               if (txn_send_field.length > 0) {
+                   setCheckbox(txn_send_field[0]);
+               }
            }
        );
        jQuery('#previewscrips div.titlebox-content').load( '<% RT->Config->Get('WebPath')%>/Helpers/PreviewScrips',
@@ -236,7 +238,9 @@ jQuery( function() {
                txn_send_field.change( syncCheckboxes );
                txn_send_field.click( function () { setCheckbox(this) } );
                jQuery("#previewscrips input[name=TxnSendMailToAll]").click( function() { setCheckbox(this, 'TxnSendMailTo'); } );
-               setCheckbox(txn_send_field);
+               if (txn_send_field.length > 0) {
+                   setCheckbox(txn_send_field[0]);
+               }
            }
        );
    };
