@@ -1,6 +1,6 @@
 use utf8;
 
-# Any configuration directives you include  here will override 
+# Any configuration directives you include  here will override
 # RT's default configuration file, RT_Config.pm
 #
 # To include a directive here, just copy the equivalent statement
