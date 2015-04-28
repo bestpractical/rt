@@ -1376,8 +1376,12 @@ sub _DurationAsString {
     my $self = shift;
     my $value = shift;
     return "" unless $value;
-    return RT::Date->new( $self->CurrentUser )
-        ->DurationAsString( $value * 60 );
+    if ($value < 60) {
+        return $_[0]->loc("[quant,_1,minute,minutes]", $value);
+    } else {
+        my $h = sprintf("%.2f", $value / 60 );
+        return $_[0]->loc("[quant,_1,hour,hours] ([quant,_2,minute,minutes])", $h, $value);
+    }
 }
 
 =head2 TimeWorkedAsString
