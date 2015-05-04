@@ -1718,9 +1718,9 @@ sub file_content {
 }
 
 sub find_executable {
-    my $self = shift;
+    my ( $self, $exe ) = @_;
 
-    return File::Which::which( @_ );
+    return File::Which::which( $exe );
 }
 
 sub diag {
