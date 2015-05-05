@@ -72,7 +72,7 @@ Configure git to know your name and email address; git uses these when
 it makes commits.
 
     git config user.email your.email@example.com
-    git config user.name Examp L. Name
+    git config user.name "Examp L. Name"
 
 =item 4.
 
