@@ -1,15 +1,34 @@
-=head1 Development of RT
+=pod
 
-RT's source code is stored in a C<git> repository.  If you are not
-familiar with git, see L</git quickstart>, below, for a short tutorial
-which will give you enough information to get started submitting patches
-to RT.
+RT is open source, and we welcome contributions from the community.
+This document details the how of getting your changes into RT.
+
+=head1 Version control
+
+We use L<Git|http://git-scm.com/> to track all source code
+changes. L<GitHub|https://github.com/bestpractical> provides a
+L<user-friendly view of the
+repository|https://github.com/bestpractical/rt>.
+
+You can check out a copy of the stable trunk of RT (stable) from Git
+using the command line:
+
+    git clone git://github.com/bestpractical/rt.git -b stable
+
+If you're feeling adventurous, check out a copy of the development
+trunk of RT (master) from Git using:
+
+    git clone git://github.com/bestpractical/rt.git -b master
+
+You can submit changes either via mail to the L<C<rt-devel> mailing
+list|https://bestpractical.com/rt/lists.html>, or via pull requests on
+GitHub.  If you are not familiar with git, see L</git quickstart>,
+below, for a short tutorial which will give you enough information to
+get started submitting patches to RT.
 
 The rest of this document details conventions and tips surrounding the
 organization of RT's version control, source code conventions, and how
 to submit patches.
-
-
 
 =head1 Organization of rt.git
 
@@ -50,6 +69,10 @@ not include extraneous changes.
 
 
 =head1 git quickstart
+
+You are welcome to submit changes as pull requests via
+L<GitHub|https://github.com/bestpractical/rt>.  If you're unfamiliar
+with git, the following guide is an alternative way to get started:
 
 =over
 
