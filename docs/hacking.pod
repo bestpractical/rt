@@ -77,12 +77,12 @@ it makes commits.
 =item 4.
 
 Switch to the appropriate point to base your work on; this is generally
-C<origin/> followed by the major version, followed by C<-trunk>.  For
-example, if your bug was observed in version 3.8.9, you would choose
-C<origin/3.8-trunk>; if it was in 4.0.0, you would choose
-C<origin/4.0-trunk>.  New features should be based on C<origin/master>.
+C<origin/>, followed by the major version, followed by C<-trunk>.  For
+example, if your bug was observed in version 4.0.10, you would choose
+C<origin/4.0-trunk>; if it was in 4.2.2, you would choose
+C<origin/4.2-trunk>.  New features should be based on C<master>.
 
-    git checkout --track origin/4.0-trunk
+    git checkout --track origin/4.2-trunk
 
 =item 5.
 
