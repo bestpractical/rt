@@ -46,27 +46,20 @@ Branches should be reviewed by another developer before being merged.
 Reviewers should make sure that the branch accomplishes what it claims
 to, and does not introduce any unwanted behavior in doing so.  Commit
 messages explain the B<why> as much as the B<what> of each commit, and
-not include extranous changes.
+not include extraneous changes.
 
 
 =head1 Code conventions
 
-The RT codebase is more than ten years old; as such, there are sections
-which do not (yet) conform to the guidelines below.  Please attempt to
-follow the guidelines, even if the code surrounding your changes does
-not yet.
+The most salient convention is that RT uses four spaces for indentation,
+and eschews tabs entirely; a F<.perltidyrc> is included for use with
+L<perltidy|https://metacpan.org/pod/distribution/Perl-Tidy/bin/perltidy>.
 
-RT also includes a F<.perltidyrc> in its top-level which encodes many of
-the conventions.
-
-=over
-
-=item Indentation
-
-Each level of indentation should be four spaces; tabs should never be
-used for indentation.
-
-=back
+Note that the RT codebase is more than ten years old; as such, there are
+sections which do not (yet) conform to the perltidyrc.  Please attempt
+to follow its guidelines, even if the code surrounding your changes does
+not yet.  Better yet, include a commit which fixes the style of the
+surrounding code first.
 
 =head1 Internationalization
 
