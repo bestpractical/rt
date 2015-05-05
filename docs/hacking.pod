@@ -1,7 +1,8 @@
 =pod
 
-RT is open source, and we welcome contributions from the community.
-This document details the how of getting your changes into RT.
+RT is L<open source|/License>, and we welcome contributions from the
+community.  This document details the how of getting your changes into
+RT.
 
 =head1 Version control
 
@@ -175,6 +176,37 @@ send it to C<rt-devel@bestpractical.com>.
 
 If you have another bug or feature to implement, simply restart the
 process at step 4.
+
+
+=head1 License
+
+RT is licensed under the L<GNU GPL, Version
+2|https://www.gnu.org/licenses/gpl-2.0.html>; it is copyright by Best
+Practical Solutions.
+
+RT does not have an explicit Contributor License Agreement requirement,
+or requirement of Developer Certificate of Origin (C<Signed-Off-By:>);
+rather, it has the following legal statement concerning contributions:
+
+=over
+
+(The following paragraph is not intended to limit the rights granted
+to you to modify and distribute this software under the terms of
+the GNU General Public License and is only of importance to you if
+you choose to contribute your changes and enhancements to the
+community by submitting them to Best Practical Solutions, LLC.)
+
+By intentionally submitting any modifications, corrections or
+derivatives to this work, or any other work intended for use with
+Request Tracker, to Best Practical Solutions, LLC, you confirm that
+you are the copyright holder for those contributions and you grant
+Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+royalty-free, perpetual, license to use, copy, create derivative
+works based on those contributions, and sublicense and distribute
+those contributions and any derivatives thereof.
+
+=back
+
 
 =head1 Code conventions
 
