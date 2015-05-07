@@ -53,10 +53,8 @@ use warnings;
 use lib "@LOCAL_LIB_PATH@";
 use lib "@RT_LIB_PATH@";
 
-use RT -init;
-RT->Config->Set('LogToSTDERR' => 'debug');
-
-$| = 1;
+use RT::Interface::CLI qw(Init);
+Init();
 
 use RT::CachedGroupMembers;
 my $cgms = RT::CachedGroupMembers->new( RT->SystemUser );
@@ -102,7 +100,7 @@ while ( my $rec = FetchNext( $cgms ) ) {
     $RT::Handle->BeginTransaction;
     my ($status) = $rec->Delete;
     unless ($status) {
-        print STDERR "Couldn't delete CGM #". $rec->id;
+        $RT::Logger->error( "Couldn't delete CGM #". $rec->id );
         exit 1;
     }
     $RT::Handle->Commit;

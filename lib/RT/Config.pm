@@ -183,8 +183,9 @@ our %META;
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
             Description => 'Username format', # loc
-            Values      => [qw(concise verbose)],
+            Values      => [qw(role concise verbose)],
             ValuesLabel => {
+                role    => 'Privileged: usernames; Unprivileged: names and email addresses', # loc
                 concise => 'Short usernames', # loc
                 verbose => 'Name and email address', # loc
             },
@@ -572,6 +573,10 @@ our %META;
     },
 
     # Internal config options
+    DatabaseExtraDSN => {
+        Type => 'HASH',
+    },
+
     FullTextSearch => {
         Type => 'HASH',
         PostLoadCheck => sub {
@@ -617,6 +622,7 @@ our %META;
                     } else {
                         # Internal, one-column table
                         $v->{Column} = 'Content';
+                        $v->{Engine} = $engine;
                     }
                 }
             } else {
@@ -653,7 +659,7 @@ our %META;
             my $self = shift;
             my $value = $self->Get('MailCommand');
             return if ref($value) eq "CODE"
-                or $value =~/^(sendmail|sendmailpipe|qmail|testfile)$/;
+                or $value =~/^(sendmail|sendmailpipe|qmail|testfile|mbox)$/;
             $RT::Logger->error("Unknown value for \$MailCommand: $value; defaulting to sendmailpipe");
             $self->Set( MailCommand => 'sendmailpipe' );
         },
@@ -1013,6 +1019,13 @@ our %META;
             Message => "The LogoImageWidth configuration option did not affect display, and has been removed; please remove it from your RT_SiteConfig.pm",
         },
     },
+    DatabaseRequireSSL => {
+        Deprecated => {
+            Remove => '4.4',
+            LogLevel => "info",
+            Message => "The DatabaseRequireSSL configuration option did not enable SSL connections to the database, and has been removed; please remove it from your RT_SiteConfig.pm.  Use DatabaseExtraDSN to accomplish the same purpose.",
+        },
+    },
 );
 my %OPTIONS = ();
 my @LOADED_CONFIGS = ();
@@ -1129,6 +1142,7 @@ sub _LoadConfig {
         };
         local *Plugin = sub {
             my (@new_plugins) = @_;
+            @new_plugins = map {s/-/::/g if not /:/; $_} @new_plugins;
             my ( $pack, $file, $line ) = caller;
             return $self->SetFromConfig(
                 Option     => \@RT::Plugins,

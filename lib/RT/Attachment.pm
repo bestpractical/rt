@@ -174,6 +174,11 @@ sub Create {
 
         unless ($id) {
             $RT::Logger->crit("Attachment insert failed - ". $RT::Handle->dbh->errstr);
+            my $txn = RT::Transaction->new($self->CurrentUser);
+            $txn->Load($args{'TransactionId'});
+            if ( $txn->id ) {
+                $txn->Object->_NewTransaction( Type => 'AttachmentError', ActivateScrips => 0, Data => $Filename );
+            }
             return ($id);
         }
 
@@ -218,6 +223,11 @@ sub Create {
         }
         else {
             $RT::Logger->crit("Attachment insert failed: ". $RT::Handle->dbh->errstr);
+            my $txn = RT::Transaction->new($self->CurrentUser);
+            $txn->Load($args{'TransactionId'});
+            if ( $txn->id ) {
+                $txn->Object->_NewTransaction( Type => 'AttachmentError', ActivateScrips => 0, Data => $Filename );
+            }
         }
         return $id;
     }
@@ -372,16 +382,11 @@ sub OriginalContent {
 
     return $self->Content unless RT::I18N::IsTextualContentType($self->ContentType);
 
-    my $content;
-    if ( !$self->ContentEncoding || $self->ContentEncoding eq 'none' ) {
-        $content = $self->_Value('Content', decode_utf8 => 0);
-    } elsif ( $self->ContentEncoding eq 'base64' ) {
-        $content = MIME::Base64::decode_base64($self->_Value('Content', decode_utf8 => 0));
-    } elsif ( $self->ContentEncoding eq 'quoted-printable' ) {
-        $content = MIME::QuotedPrint::decode($self->_Value('Content', decode_utf8 => 0));
-    } else {
-        return( $self->loc("Unknown ContentEncoding [_1]", $self->ContentEncoding));
-    }
+    my $content = $self->_DecodeLOB(
+        "application/octet-stream", # Force _DecodeLOB to not decode to characters
+        $self->ContentEncoding,
+        $self->_Value('Content', decode_utf8 => 0),
+    );
 
     my $entity = MIME::Entity->new();
     $entity->head->add("Content-Type", $self->GetHeader("Content-Type"));
@@ -522,22 +527,23 @@ sub ContentAsMIME {
             $h_key, $self->_EncodeHeaderToMIME($h_key, $h_val)
         );
     }
-    
-    # since we want to return original content, let's use original encoding
-    $entity->head->mime_attr(
-        "Content-Type.charset" => $self->OriginalEncoding )
-      if $self->OriginalEncoding;
 
-    $entity->bodyhandle(
-        MIME::Body::Scalar->new( $self->OriginalContent )
-    );
-
-    if ($opts{'Children'} and not $self->IsMessageContentType) {
-        my $children = $self->Children;
-        while (my $child = $children->Next) {
-            $entity->make_multipart unless $entity->is_multipart;
-            $entity->add_part( $child->ContentAsMIME(%opts) );
+    if ($entity->is_multipart) {
+        if ($opts{'Children'} and not $self->IsMessageContentType) {
+            my $children = $self->Children;
+            while (my $child = $children->Next) {
+                $entity->add_part( $child->ContentAsMIME(%opts) );
+            }
         }
+    } else {
+        # since we want to return original content, let's use original encoding
+        $entity->head->mime_attr(
+            "Content-Type.charset" => $self->OriginalEncoding )
+          if $self->OriginalEncoding;
+
+        $entity->bodyhandle(
+            MIME::Body::Scalar->new( $self->OriginalContent )
+        );
     }
 
     return $entity;
@@ -1137,6 +1143,39 @@ sub FindDependencies {
 
     $self->SUPER::FindDependencies($walker, $deps);
     $deps->Add( out => $self->TransactionObj );
+}
+
+sub __DependsOn {
+    my $self = shift;
+    my %args = (
+        Shredder => undef,
+        Dependencies => undef,
+        @_,
+    );
+    my $deps = $args{'Dependencies'};
+    my $list = [];
+
+    # Nested attachments
+    my $objs = RT::Attachments->new( $self->CurrentUser );
+    $objs->Limit(
+        FIELD => 'Parent',
+        OPERATOR        => '=',
+        VALUE           => $self->Id
+    );
+    $objs->Limit(
+        FIELD => 'id',
+        OPERATOR        => '!=',
+        VALUE           => $self->Id
+    );
+    push( @$list, $objs );
+
+    $deps->_PushDependencies(
+        BaseObject => $self,
+        Flags => RT::Shredder::Constants::DEPENDS_ON,
+        TargetObjects => $list,
+        Shredder => $args{'Shredder'}
+    );
+    return $self->SUPER::__DependsOn( %args );
 }
 
 RT::Base->_ImportOverlays();

@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 44;
+use RT::Test tests => undef;
 
 use RT::CustomField;
 use RT::Queue;
@@ -16,12 +16,15 @@ my ($url, $m) = RT::Test->started_ok;
 # Variables to test return values
 my ($ret, $msg);
 
-# Create a test class
+# Create two classes
 my $class = RT::Class->new($RT::SystemUser);
-($ret, $msg) = $class->Create('Name' => 'tlaTestClass-'.$$,
+($ret, $msg) = $class->Create('Name' => 'First-class',
                               'Description' => 'A general-purpose test class');
 ok($ret, "Test class created");
 
+($ret, $msg) = $class->Create('Name' => 'Second-class',
+                              'Description' => 'Another class');
+ok($ret, "Test class created");
 
 my $questionCF = RT::CustomField->new($RT::SystemUser);
 my $answerCF = RT::CustomField->new($RT::SystemUser);
@@ -139,6 +142,9 @@ TODO:{
       if RT->Config->Get('DatabaseType') eq 'mysql';
     $m->text_contains('hoi polloi 4');
 }
+
+undef $m;
+done_testing;
 
 # When you send $m to this sub, it must be on a page with
 # a Search link.

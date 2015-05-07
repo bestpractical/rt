@@ -121,6 +121,9 @@ to the enabled C<@Plugins> list:
     Plugin( "RT::Extension::SLA" );
     Plugin( "RT::Authen::ExternalAuth" );
 
+RT will also accept the distribution name (i.e. C<RT-Extension-SLA>)
+instead of the package name (C<RT::Extension::SLA>).
+
 =cut
 
 Set(@Plugins, ());
@@ -211,15 +214,30 @@ SID and database objects are created in C<$DatabaseUser>'s schema.
 
 Set($DatabaseName, q{@DB_DATABASE@});
 
-=item C<$DatabaseRequireSSL>
+=item C<%DatabaseExtraDSN>
 
-If you're using PostgreSQL and have compiled in SSL support, set
-C<$DatabaseRequireSSL> to 1 to turn on SSL communication with the
-database.
+Allows additional properties to be passed to the database connection
+step.  Possible properties are specific to the database-type; see
+https://metacpan.org/pod/DBI#connect
+
+For PostgreSQL, for instance, the following enables SSL (but does no
+certificate checking, providing data hiding but no MITM protection):
+
+   # See https://metacpan.org/pod/DBD::Pg#connect
+   # and http://www.postgresql.org/docs/8.4/static/libpq-ssl.html
+   Set( %DatabaseExtraDSN, sslmode => 'require' );
+
+For MySQL, the following acts similarly if the server has enabled SSL.
+Otherwise, it provides no protection; MySQL provides no way to I<force>
+SSL connections:
+
+   # See https://metacpan.org/pod/DBD::mysql#connect
+   # and http://dev.mysql.com/doc/refman/5.1/en/ssl-options.html
+   Set( %DatabaseExtraDSN, mysql_ssl => 1 );
 
 =cut
 
-Set($DatabaseRequireSSL, undef);
+Set(%DatabaseExtraDSN, ());
 
 =item C<$DatabaseAdmin>
 
@@ -511,18 +529,11 @@ doesn't work well for you, try 'sendmail'.  'qmail' is also a supported
 value.
 
 For testing purposes, or to simply disable sending mail out into the
-world, you can set C<$MailCommand> to 'testfile' which writes all mail
-to a temporary file.  RT will log the location of the temporary file
-so you can extract mail from it afterward.
-
-On shutdown, RT will clean up the temporary file created when using
-the 'testfile' option. If testing while the RT server is still running,
-you can find the files in the location noted in the log file. If you run
-a tool like C<rt-crontool> however, or if you look after stopping the server,
-the files will have been deleted when the process completed. If you need to
-keep the files for development or debugging, you can manually set
-C<< UNLINK => 0 >> where the testfile config is processed in
-F<lib/RT/Interface/Email.pm>.
+world, you can set C<$MailCommand> to 'mbox' which logs all mail, in
+mbox format, to files in F</opt/rt4/var/> based in the process start
+time.  The 'testfile' option is similar, but the files that it creates
+(under /tmp) are temporary, and removed upon process completion; the
+format is also not mbox-compatable.
 
 =cut
 
@@ -1149,10 +1160,10 @@ RT comes with two TrueType fonts covering most available languages.
 
 Set(
     %ChartFont,
-    'zh-cn'  => "$RT::BasePath/share/fonts/DroidSansFallback.ttf",
-    'zh-tw'  => "$RT::BasePath/share/fonts/DroidSansFallback.ttf",
-    'ja'     => "$RT::BasePath/share/fonts/DroidSansFallback.ttf",
-    'others' => "$RT::BasePath/share/fonts/DroidSans.ttf",
+    'zh-cn'  => "$RT::FontPath/DroidSansFallback.ttf",
+    'zh-tw'  => "$RT::FontPath/DroidSansFallback.ttf",
+    'ja'     => "$RT::FontPath/DroidSansFallback.ttf",
+    'others' => "$RT::FontPath/DroidSans.ttf",
 );
 
 =item C<$ChartsTimezonesInDB>
@@ -2482,9 +2493,6 @@ Set(%GnuPGOptions,
 
 # URL of a keyserver
 #    keyserver => 'hkp://subkeys.pgp.net',
-
-# enables the automatic retrieving of keys when encrypting
-#    'auto-key-locate' => 'keyserver',
 
 # enables the automatic retrieving of keys when verifying signatures
 #    'keyserver-options' => 'auto-key-retrieve',

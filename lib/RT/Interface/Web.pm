@@ -1866,8 +1866,8 @@ sub RenderMenu {
 
             my $path = $child->path;
             my $url = (not $path or $path =~ m{^\w+:/}) ? $path : $web_path . $path;
-            $res .= ' href="'. $interp->apply_escapes($url, 'h') .'"'
-                if $url;
+            $url ||= "#";
+            $res .= ' href="'. $interp->apply_escapes($url, 'h') .'"';
 
             if ( $tmp = $child->target ) {
                 $res .= ' target="'. $interp->apply_escapes($tmp, 'h') .'"'
@@ -2155,6 +2155,7 @@ sub CreateTicket {
         Due             => $due ? $due->ISO : undef,
         Starts          => $starts ? $starts->ISO : undef,
         MIMEObj         => $MIMEObj,
+        SquelchMailTo   => $ARGS{'SquelchMailTo'},
         TransSquelchMailTo => $ARGS{'TransSquelchMailTo'},
     );
 
@@ -3939,7 +3940,7 @@ following:
 =cut
 
 our @SCRUBBER_ALLOWED_TAGS = qw(
-    A B U P BR I HR BR SMALL EM FONT SPAN STRONG SUB SUP STRIKE H1 H2 H3 H4 H5
+    A B U P BR I HR BR SMALL EM FONT SPAN STRONG SUB SUP S DEL STRIKE H1 H2 H3 H4 H5
     H6 DIV UL OL LI DL DT DD PRE BLOCKQUOTE BDO
 );
 

@@ -1046,6 +1046,29 @@ sub FindDependencies {
     $deps->Add( out => $self->QueueObj ) if $self->QueueObj->Id;
 }
 
+sub __DependsOn {
+    my $self = shift;
+    my %args = (
+        Shredder => undef,
+        Dependencies => undef,
+        @_,
+    );
+    my $deps = $args{'Dependencies'};
+    my $list = [];
+
+# Scrips
+    push( @$list, $self->UsedBy );
+
+    $deps->_PushDependencies(
+        BaseObject => $self,
+        Flags => RT::Shredder::Constants::DEPENDS_ON,
+        TargetObjects => $list,
+        Shredder => $args{'Shredder'},
+    );
+
+    return $self->SUPER::__DependsOn( %args );
+}
+
 sub PreInflate {
     my $class = shift;
     my ($importer, $uid, $data) = @_;

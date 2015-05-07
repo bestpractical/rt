@@ -117,7 +117,8 @@ BEGIN {
 
 sub import {
     my $class = shift;
-    my %args = %rttest_opt = @_;
+    my %args = @_;
+    %rttest_opt = %args;
 
     $rttest_opt{'nodb'} = $args{'nodb'} = 1 if $^C;
 
@@ -159,6 +160,8 @@ sub import {
     RT::InitClasses();
 
     RT::I18N->Init();
+
+    $class->set_config_wrapper;
     $class->bootstrap_db( %args );
 
     __reconnect_rt()
@@ -169,8 +172,6 @@ sub import {
     RT->Plugins;
 
     RT->Config->PostLoadCheck;
-
-    $class->set_config_wrapper;
 
     $class->encode_output;
 
@@ -397,6 +398,56 @@ sub set_config_wrapper {
 
     my $old_sub = \&RT::Config::Set;
     no warnings 'redefine';
+
+    *RT::Config::WriteSet = sub {
+        my ($self, $name) = @_;
+        my $type = $RT::Config::META{$name}->{'Type'} || 'SCALAR';
+        my %sigils = (
+            HASH   => '%',
+            ARRAY  => '@',
+            SCALAR => '$',
+        );
+        my $sigil = $sigils{$type} || $sigils{'SCALAR'};
+        open( my $fh, '<', $tmp{'config'}{'RT'} )
+            or die "Couldn't open config file: $!";
+        my @lines;
+        while (<$fh>) {
+            if (not @lines or /^Set\(/) {
+                push @lines, $_;
+            } else {
+                $lines[-1] .= $_;
+            }
+        }
+        close $fh;
+
+        # Traim trailing newlines and "1;"
+        $lines[-1] =~ s/(^1;\n|^\n)*\Z//m;
+
+        # Remove any previous definitions of this var
+        @lines = grep {not /^Set\(\s*\Q$sigil$name\E\b/} @lines;
+
+        # Format the new value for output
+        require Data::Dumper;
+        local $Data::Dumper::Terse = 1;
+        my $dump = Data::Dumper::Dumper([@_[2 .. $#_]]);
+        $dump =~ s/;?\s+\Z//;
+        push @lines, "Set( ${sigil}${name}, \@{". $dump ."});\n";
+        push @lines, "\n1;\n";
+
+        # Re-write the configuration file
+        open( $fh, '>', $tmp{'config'}{'RT'} )
+            or die "Couldn't open config file: $!";
+        print $fh $_ for @lines;
+        close $fh;
+
+        if ( @SERVERS ) {
+            warn "you're changing config option in a test file"
+                ." when server is active";
+        }
+
+        return $old_sub->(@_);
+    };
+
     *RT::Config::Set = sub {
         # Determine if the caller is either from a test script, or
         # from helper functions called by test script to alter
@@ -406,52 +457,9 @@ sub set_config_wrapper {
         my @caller = caller(1); # preserve list context
         @caller = caller(0) unless @caller;
 
-        if ( ($caller[1]||'') =~ /\.t$/) {
-            my ($self, $name) = @_;
-            my $type = $RT::Config::META{$name}->{'Type'} || 'SCALAR';
-            my %sigils = (
-                HASH   => '%',
-                ARRAY  => '@',
-                SCALAR => '$',
-            );
-            my $sigil = $sigils{$type} || $sigils{'SCALAR'};
-            open( my $fh, '<', $tmp{'config'}{'RT'} )
-                or die "Couldn't open config file: $!";
-            my @lines;
-            while (<$fh>) {
-                if (not @lines or /^Set\(/) {
-                    push @lines, $_;
-                } else {
-                    $lines[-1] .= $_;
-                }
-            }
-            close $fh;
+        return RT::Config::WriteSet(@_)
+            if ($caller[1]||'') =~ /\.t$/;
 
-            # Traim trailing newlines and "1;"
-            $lines[-1] =~ s/(^1;\n|^\n)*\Z//m;
-
-            # Remove any previous definitions of this var
-            @lines = grep {not /^Set\(\s*\Q$sigil$name\E\b/} @lines;
-
-            # Format the new value for output
-            require Data::Dumper;
-            local $Data::Dumper::Terse = 1;
-            my $dump = Data::Dumper::Dumper([@_[2 .. $#_]]);
-            $dump =~ s/;?\s+\Z//;
-            push @lines, "Set( ${sigil}${name}, \@{". $dump ."});\n";
-            push @lines, "\n1;\n";
-
-            # Re-write the configuration file
-            open( $fh, '>', $tmp{'config'}{'RT'} )
-                or die "Couldn't open config file: $!";
-            print $fh $_ for @lines;
-            close $fh;
-
-            if ( @SERVERS ) {
-                warn "you're changing config option in a test file"
-                    ." when server is active";
-            }
-        }
         return $old_sub->(@_);
     };
 }
@@ -487,6 +495,11 @@ sub bootstrap_db {
     }
 
     my $db_type = RT->Config->Get('DatabaseType');
+
+    if ($db_type eq "SQLite") {
+        RT->Config->WriteSet( DatabaseName => File::Spec->catfile( $self->temp_directory, "rt4test" ) );
+    }
+
     __create_database();
     __reconnect_rt('as dba');
     $RT::Handle->InsertSchema;
@@ -1273,13 +1286,15 @@ sub fetch_caught_mails {
 sub clean_caught_mails {
     unlink $tmp{'mailbox'};
 }
-my $validator_path = "$RT::SbinPath/rt-validator";
+
 sub run_validator {
     my $self = shift;
-    my %args = (check => 1, resolve => 0, force => 1, @_ );
+    my %args = (check => 1, resolve => 0, force => 1, timeout => 0, @_ );
 
-    my $cmd = $validator_path;
+    my $cmd = "$RT::SbinPath/rt-validator";
     die "Couldn't find $cmd command" unless -f $cmd;
+
+    my $timeout = delete $args{timeout};
 
     while( my ($k,$v) = each %args ) {
         next unless $v;
@@ -1292,9 +1307,14 @@ sub run_validator {
     my $pid = IPC::Open2::open2($child_out, $child_in, $cmd);
     close $child_in;
 
-    my $result = do { local $/; <$child_out> };
+    local $SIG{ALRM} = sub { kill KILL => $pid; die "Timeout!" };
+
+    alarm $timeout if $timeout;
+    my $result = eval { local $/; <$child_out> };
+    warn $@ if $@;
     close $child_out;
     waitpid $pid, 0;
+    alarm 0;
 
     DBIx::SearchBuilder::Record::Cachable->FlushCache
         if $args{'resolve'};
@@ -1698,9 +1718,9 @@ sub file_content {
 }
 
 sub find_executable {
-    my $self = shift;
+    my ( $self, $exe ) = @_;
 
-    return File::Which::which( @_ );
+    return File::Which::which( $exe );
 }
 
 sub diag {

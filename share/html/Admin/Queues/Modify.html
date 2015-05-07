@@ -108,8 +108,8 @@
 <td align="right"><input type="checkbox" class="checkbox" id="Encrypt" name="Encrypt" value="1" <% $QueueObj->Encrypt? 'checked="checked"': '' |n%> /></td>
 <td><label for="Encrypt"><&|/l&>Encrypt by default</&></label></td>
 </tr>
-<tr><td align="right"><input type="checkbox" class="checkbox" name="SignAuto" value="1" <% $QueueObj->SignAuto? 'checked="checked"': '' |n%> /></td>
-<td colspan="3"><&|/l_unsafe, "<b>","</b>","<i>","</i>"&>Sign all auto-generated mail.  [_1]Caution[_2]: Enabling this option alters the signature from providing [_3]authentication[_4] to providing [_3]integrity[_4].</&></td></tr>
+<tr><td align="right"><input type="checkbox" class="checkbox" id="SignAuto" name="SignAuto" value="1" <% $QueueObj->SignAuto? 'checked="checked"': '' |n%> /></td>
+<td colspan="3"><label for="SignAuto"><&|/l_unsafe, "<b>","</b>","<i>","</i>"&>Sign all auto-generated mail.  [_1]Caution[_2]: Enabling this option alters the signature from providing [_3]authentication[_4] to providing [_3]integrity[_4].</&></label></td></tr>
 % }
 
 % unless ($InternalQueue) {

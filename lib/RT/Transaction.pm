@@ -530,8 +530,36 @@ sub ContentObj {
 
     return undef unless ($Attachment);
 
+    my $Attachments = $self->Attachments;
+    while ( my $Attachment = $Attachments->Next ) {
+        if ( my $content = _FindPreferredContentObj( %args, Attachment => $Attachment ) ) {
+            return $content;
+        }
+    }
+
+    # If that fails, return the first top-level textual part which has some content.
+    # We probably really want this to become "recurse, looking for the other type of
+    # displayable".  For now, this maintains backcompat
+    my $all_parts = $self->Attachments;
+    while ( my $part = $all_parts->Next ) {
+        next unless _IsDisplayableTextualContentType($part->ContentType)
+        && $part->Content;
+        return $part;
+    }
+
+    return;
+}
+
+
+sub _FindPreferredContentObj {
+    my %args = @_;
+    my $Attachment = $args{Attachment};
+
+    # If we don't have any content, return undef now.
+    return undef unless $Attachment;
+
     # If it's a textual part, just return the body.
-    if ( RT::I18N::IsTextualContentType($Attachment->ContentType) ) {
+    if ( _IsDisplayableTextualContentType($Attachment->ContentType) ) {
         return ($Attachment);
     }
 
@@ -541,7 +569,7 @@ sub ContentObj {
     elsif ( $Attachment->ContentType =~ m|^multipart/mixed|i ) {
         my $kids = $Attachment->Children;
         while (my $child = $kids->Next) {
-            my $ret =  $self->ContentObj(%args, Attachment => $child);
+            my $ret =  _FindPreferredContentObj(%args, Attachment => $child);
             return $ret if ($ret);
         }
     }
@@ -555,14 +583,28 @@ sub ContentObj {
             if ( my $first = $plain_parts->First ) {
                 return $first;
             }
-        }
+        } else {
+            my $parts = $Attachment->Children;
+            $parts->LimitNotEmpty;
 
-        # If that fails, return the first textual part which has some content.
-        my $all_parts = $self->Attachments;
-        while ( my $part = $all_parts->Next ) {
-            next unless RT::I18N::IsTextualContentType($part->ContentType)
-                        && $part->Content;
-            return $part;
+            # If we actully found a part, return its content
+            while (my $part = $parts->Next) {
+                next unless _IsDisplayableTextualContentType($part->ContentType);
+                return $part;
+            }
+
+        }
+    }
+
+    # If this is a message/rfc822 mail, we need to dig into it in order to find 
+    # the actual textual content
+
+    elsif ( $Attachment->ContentType =~ '^message/rfc822' ) {
+        my $children = $Attachment->Children;
+        while ( my $child = $children->Next ) {
+            if ( my $content = _FindPreferredContentObj( %args, Attachment => $child ) ) {
+                return $content;
+            }
         }
     }
 
@@ -570,6 +612,18 @@ sub ContentObj {
     return (undef);
 }
 
+=head2 _IsDisplayableTextualContentType
+
+We may need to pull this out to another module later, but for now, this
+is better than RT::I18N::IsTextualContentType because that believes that
+a message/rfc822 email is displayable, despite it having no content
+
+=cut
+
+sub _IsDisplayableTextualContentType {
+    my $type = shift;
+    ($type =~ m{^text/(?:plain|html)\b}i) ? 1 : 0;
+}
 
 
 =head2 Subject
@@ -863,6 +917,15 @@ sub _FormatUser {
         else {
             return ( "Content dropped because its size ([_1] bytes) exceeded configured maximum size setting ([_2] bytes).",
                 $self->OldValue, $self->NewValue ); #loc()
+        }
+    },
+    AttachmentError => sub {
+        my $self = shift;
+        if ( defined $self->Data ) {
+            return ( "File '[_1]' insert failed. See error log for details.", $self->Data ); #loc()
+        }
+        else {
+            return ( "Content insert failed. See error log for details." ); #loc()
         }
     },
     "Forward Transaction" => sub {
@@ -1296,10 +1359,14 @@ This fact depends on type of the transaction, type of an object the transaction
 is attached to and may be other conditions, so this method is prefered over
 custom implementations.
 
+It always returns true if current user is system user.
+
 =cut
 
 sub CurrentUserCanSee {
     my $self = shift;
+
+    return 1 if $self->CurrentUser->PrincipalObj->Id == RT->SystemUser->Id;
 
     # Make sure the user can see the custom field before showing that it changed
     my $type = $self->__Value('Type');
@@ -1924,6 +1991,25 @@ sub FindDependencies {
         $ticket->Load( $self->NewValue );
         $deps->Add( out => $ticket );
     }
+}
+
+sub __DependsOn {
+    my $self = shift;
+    my %args = (
+        Shredder => undef,
+        Dependencies => undef,
+        @_,
+    );
+    my $deps = $args{'Dependencies'};
+
+    $deps->_PushDependencies(
+        BaseObject => $self,
+        Flags => RT::Shredder::Constants::DEPENDS_ON,
+        TargetObjects => $self->Attachments,
+        Shredder => $args{'Shredder'}
+    );
+
+    return $self->SUPER::__DependsOn( %args );
 }
 
 sub Serialize {

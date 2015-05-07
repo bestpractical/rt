@@ -708,6 +708,9 @@ sub FillCache {
             warn "Invalid right name ($lifecycle->{rights}{$schema}) in $name lifecycle; right names must be ASCII"
                 if $lifecycle->{rights}{$schema} =~ /\P{ASCII}/;
 
+            warn "Invalid right name ($lifecycle->{rights}{$schema}) in $name lifecycle; right names must be <= 25 characters"
+                if length($lifecycle->{rights}{$schema}) > 25;
+
             $lifecycle->{rights}{lc($from) . " -> " .lc($to)}
                 = delete $lifecycle->{rights}{$schema};
         }

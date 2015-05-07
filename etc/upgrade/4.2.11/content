@@ -1,0 +1,60 @@
+use strict;
+use warnings;
+
+our @Initial = (
+    sub {
+        # We do the delete in pure SQL because Attribute collections
+        # otherwise attempt to hash everything in memory.  As this may
+        # be a large list, do it directly.
+        RT->DatabaseHandle->dbh->do(<<EOSQL);
+            DELETE FROM Attributes
+             WHERE Name = 'DeferredRecipients'
+               AND Content IS NULL
+EOSQL
+    },
+    sub {
+        # Remove globally-granted role rights which couldn't also apply
+        # to some other object.  That is, globally granting that
+        # AdminCcs have SuperUser makes no sense.
+
+        # Find rights which apply globally
+        no warnings 'once';
+        my @rights = sort map {$_->{Name}} values %{$RT::ACE::RIGHTS{'RT::System'}};
+
+        # Those are not allowed to be granted on global role groups
+        my $invalid = RT::ACL->new( RT->SystemUser );
+        $invalid->LimitToObject( 'RT::System' );
+        $invalid->LimitToPrincipal( Id => RT::System->RoleGroup($_)->PrincipalId )
+            for RT::System->Roles;
+        $invalid->Limit( FIELD => 'RightName', OPERATOR => 'IN', VALUE => \@rights );
+
+        return unless $invalid->Count;
+
+        # Remove them, warning in the process
+        $RT::Logger->warning("There are invalid global role rights; removing:");
+        while (my $right = $invalid->Next) {
+            $RT::Logger->warning("  ".$right->RightName." granted globally to ".$right->PrincipalObj->Object->Name);
+            my ($ok, $msg) = $right->Delete;
+            $RT::Logger->error("Failed to remove right ".$right->id.": $msg") unless $ok;
+        }
+    },
+    sub {
+        my $txns = RT::Transactions->new(RT->SystemUser);
+        $txns->Limit( FIELD => 'Type', VALUE => 'Forward Transaction' );
+        $txns->Limit( FIELD => 'Type', VALUE => 'Forward Ticket' );
+        while ( my $txn = $txns->Next ) {
+            my $att = $txn->Attachments->First;
+            next unless $att;
+
+            # we only need to process ascii-only strings
+            unless ( $att->Subject =~ /[^\x00-\x7F]/ ) {
+                $att->__Set( Field => 'Subject', Value => Encode::decode("UTF-8", RT::I18N::DecodeMIMEWordsToUTF8($att->Subject, 'Subject')) );
+            }
+            for my $field ( qw/Subject From To Cc Bcc/ ) {
+                next if !$att->GetHeader($field) || $att->GetHeader($field) =~ /[^\x00-\x7F]/;
+                # Subject here is not a typo, because we don't really want to parse email addresses here
+                $att->SetHeader( $field, Encode::decode("UTF-8", RT::I18N::DecodeMIMEWordsToUTF8($att->GetHeader($field), 'Subject')) );
+            }
+        }
+    },
+);

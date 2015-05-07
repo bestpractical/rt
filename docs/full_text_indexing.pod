@@ -28,16 +28,14 @@ you may need to pass the C<--dba> or C<--dba-password> options:
 
     /opt/rt4/sbin/rt-setup-fulltext-index --dba postgres --dba-password secret
 
-This will also output an appropriate C<%FullTextSearch> configuration to
-add to your F<RT_SiteConfig.pm>; you will need to restart your webserver
-after making these changes.  However, the index will also need to be
-filled before it can be used.  To update the index initially, run:
+This will then tokenize and index all existing attachments in your
+database; it may take quite a while if your database already has a large
+number of tickets in it.
 
-    /opt/rt4/sbin/rt-fulltext-indexer --all
+Finally, it will output an appropriate C<%FullTextSearch> configuration
+to add to your F<RT_SiteConfig.pm>; you will need to restart your
+webserver after making these changes.
 
-This will tokenize and index all existing attachments in your database;
-it may take quite a while if your database already has a large number of
-tickets in it.
 
 =head2 Updating the index
 
@@ -45,10 +43,9 @@ To keep the index up-to-date, you will need to run:
 
     /opt/rt4/sbin/rt-fulltext-indexer
 
-...at regular intervals.  By default, this will only tokenize up to 100
-tickets at a time; you can adjust this upwards by passing
-C<--limit 500>.  Larger batch sizes will take longer and
-consume more memory.
+...at regular intervals.  By default, this will only tokenize up to 200
+tickets at a time; you can adjust this upwards by passing C<--limit
+500>.  Larger batch sizes will take longer and consume more memory.
 
 If there is already an instances of C<rt-fulltext-indexer> running, new
 ones will exit abnormally (with exit code 1) and the error message
@@ -78,16 +75,14 @@ you may need to pass the C<--dba> or C<--dba-password> options:
 
     /opt/rt4/sbin/rt-setup-fulltext-index --dba root --dba-password secret
 
-This will also output an appropriate C<%FullTextSearch> configuration to
-add to your F<RT_SiteConfig.pm>; you will need to restart your webserver
-after making these changes.  However, the index will also need to be
-filled before it can be used.  To update the index initially, run:
+This will then tokenize and index all existing attachments in your
+database; it may take quite a while if your database already has a large
+number of tickets in it.
 
-    /opt/rt4/sbin/rt-fulltext-indexer --all
+Finally, it will output an appropriate C<%FullTextSearch> configuration
+to add to your F<RT_SiteConfig.pm>; you will need to restart your
+webserver after making these changes.
 
-This will tokenize and index all existing attachments in your database;
-it may take quite a while if your database already has a large number of
-tickets in it.
 
 =head3 Updating the index
 
@@ -95,10 +90,9 @@ To keep the index up-to-date, you will need to run:
 
     /opt/rt4/sbin/rt-fulltext-indexer
 
-...at regular intervals.  By default, this will only tokenize up to 100
-tickets at a time; you can adjust this upwards by passing
-C<--limit 500>.  Larger batch sizes will take longer and
-consume more memory.
+...at regular intervals.  By default, this will only tokenize up to 200
+tickets at a time; you can adjust this upwards by passing C<--limit
+500>.  Larger batch sizes will take longer and consume more memory.
 
 If there is already an instances of C<rt-fulltext-indexer> running, new
 ones will exit abnormally (with exit code 1) and the error message

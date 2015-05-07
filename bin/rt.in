@@ -70,16 +70,6 @@ use Term::ReadLine;
 use Time::Local; # used in prettyshow
 use File::Temp;
 
-# strong (GSSAPI based) authentication is supported if the server does provide
-# it and the perl modules GSSAPI and LWP::Authen::Negotiate are installed
-# it can be suppressed by setting externalauth=0 (default is undef)
-eval { require GSSAPI };
-my $no_strong_auth = 'missing perl module GSSAPI';
-if ( ! $@ ) {
-    eval {require LWP::Authen::Negotiate};
-    $no_strong_auth = $@ ? 'missing perl module LWP::Authen::Negotiate' : 0;
-}
-
 # We derive configuration information from hardwired defaults, dotfiles,
 # and the RT* environment variables (in increasing order of precedence).
 # Session information is stored in ~/.rt_sessions.
@@ -99,18 +89,16 @@ my %config = (
         queue        => undef,
 # to protect against unlimited searches a better choice would be
 #       queue        => 'Unknown_Queue',
-# setting externalauth => undef will try GSSAPI auth if the corresponding perl
-# modules are installed, externalauth => 0 is the backward compatible choice 
-        externalauth => 0,
+        auth         => "rt",
     ),
     config_from_file($ENV{RTCONFIG} || ".rtrc"),
     config_from_env()
 );
+
+$config{auth} = "basic" if delete $config{externalauth};
+
 my $session = Session->new("$HOME/.rt_sessions");
 my $REST = "$config{server}/REST/1.0";
-$no_strong_auth = 'switched off by externalauth=0'
-    if defined $config{externalauth};
-
 
 my $prompt = 'rt> ';
 
@@ -1064,20 +1052,23 @@ sub submit {
     # Should we send authentication information to start a new session?
     my $how = $config{server} =~ /^https/ ? 'over SSL' : 'unencrypted';
     my($server) = $config{server} =~ m{^.*//([^/]+)};
-    if ($config{externalauth}) {
-        $h->authorization_basic($config{user}, $config{passwd} || read_passwd() );
+
+    if ($config{auth} eq "gssapi") {
+        die "GSSAPI support not available; failed to load perl module GSSAPI:\n$@\n"
+            unless eval { require GSSAPI; 1 };
+        die "GSSAPI support not available; failed to load perl module LWP::Authen::Negotiate:\n$@\n"
+            unless eval { require LWP::Authen::Negotiate; 1 };
+    } elsif ($config{auth} eq "basic") {
         print "   Password will be sent to $server $how\n",
               "   Press CTRL-C now if you do not want to continue\n"
             if ! $config{passwd};
-    } elsif ( $no_strong_auth ) {
-        if (!defined $session->cookie) {
-            print "   Strong encryption not available, $no_strong_auth\n",
-                  "   Password will be sent to $server $how\n",
-                  "   Press CTRL-C now if you do not want to continue\n"
-                if ! $config{passwd};
-            push @$data, ( user => $config{user} );
-            push @$data, ( pass => $config{passwd} || read_passwd() );
-        }
+        $h->authorization_basic($config{user}, $config{passwd} || read_passwd() );
+    } elsif ( !defined $session->cookie ) {
+        print "   Password will be sent to $server $how\n",
+              "   Press CTRL-C now if you do not want to continue\n"
+            if ! $config{passwd};
+        push @$data, ( user => $config{user} );
+        push @$data, ( pass => $config{passwd} || read_passwd() );
     }
 
     # Now, we construct the request.
@@ -1088,9 +1079,7 @@ sub submit {
         $req = GET($uri);
     }
     $session->add_cookie_header($req);
-    if ($config{externalauth}) {
-        $req->header(%$h);
-    }
+    $req->header(%$h) if %$h;
 
     # Then we send the request and parse the response.
     DEBUG(3, $req->as_string);
@@ -1428,7 +1417,7 @@ sub Form::compose {
 sub config_from_env {
     my %env;
 
-    foreach my $k (qw(EXTERNALAUTH DEBUG USER PASSWD SERVER QUERY ORDERBY)) {
+    foreach my $k (qw(EXTERNALAUTH AUTH DEBUG USER PASSWD SERVER QUERY ORDERBY)) {
 
         if (exists $ENV{"RT$k"}) {
             $env{lc $k} = $ENV{"RT$k"};
@@ -1482,7 +1471,7 @@ sub parse_config_file {
         chomp;
         next if (/^#/ || /^\s*$/);
 
-        if (/^(externalauth|user|passwd|server|query|orderby|queue)\s+(.*)\s?$/) {
+        if (/^(externalauth|auth|user|passwd|server|query|orderby|queue)\s+(.*)\s?$/) {
             $cfg{$1} = $2;
         }
         else {
@@ -1591,49 +1580,56 @@ sub vpush {
     }
 }
 
+# WARNING: this code is duplicated in lib/RT/Interface/REST.pm
+# If you change one, change both functions at once
 # "Normalise" a hash key that's known to be multi-valued.
 sub vsplit {
-    my ($val) = @_;
-    my ($word, @words);
-    my @values = ref $val eq 'ARRAY' ? @$val : $val;
+    my ($val, $strip) = @_;
+    my @words;
+    my @values = map {split /\n/} (ref $val eq 'ARRAY' ? @$val : $val);
 
-    foreach my $line (map {split /\n/} @values) {
-        # XXX: This should become a real parser, à la Text::ParseWords.
-        $line =~ s/^\s+//;
-        $line =~ s/\s+$//;
-        my ( $a, $b ) = split /\s*,\s*/, $line, 2;
-
-        while ($a) {
-            no warnings 'uninitialized';
-            if ( $a =~ /^'/ ) {
-                my $s = $a;
-                while ( $a !~ /'$/ || (   $a !~ /(\\\\)+'$/
-                            && $a =~ /(\\)+'$/ )) {
-                    ( $a, $b ) = split /\s*,\s*/, $b, 2;
-                    $s .= ',' . $a;
-                }
-                push @words, $s;
+    foreach my $line (@values) {
+        while ($line =~ /\S/) {
+            $line =~ s/^
+                       \s*   # Trim leading whitespace
+                       (?:
+                           (")   # Quoted string
+                           ((?>[^\\"]*(?:\\.[^\\"]*)*))"
+                       |
+                           (')   # Single-quoted string
+                           ((?>[^\\']*(?:\\.[^\\']*)*))'
+                       |
+                           q\{(.*?)\} # A perl-ish q{} string; this does
+                                      # no paren balancing, however, and
+                                      # only exists for back-compat
+                       |
+                           (.*?)     # Anything else, until the next comma
+                       )
+                       \s*   # Trim trailing whitespace
+                       (?:
+                           \Z  # Finish at end-of-line
+                       |
+                           ,   # Or a comma
+                       )
+                      //xs or last; # There should be no way this match
+                                    # fails, but add a failsafe to
+                                    # prevent infinite-looping if it
+                                    # somehow does.
+            my ($quote, $quoted) = ($1 ? ($1, $2) : $3 ? ($3, $4) : ('', $5 || $6));
+            # Only unquote the quote character, or the backslash -- and
+            # only if we were originally quoted..
+            if ($5) {
+                $quoted =~ s/([\\'])/\\$1/g;
+                $quote = "'";
             }
-            elsif ( $a =~ /^q\{/ ) {
-                my $s = $a;
-                while ( $a !~ /\}$/ ) {
-                    ( $a, $b ) =
-                      split /\s*,\s*/, $b, 2;
-                    $s .= ',' . $a;
-                }
-                $s =~ s/^q\{/'/;
-                $s =~ s/\}/'/;
-                push @words, $s;
+            if ($strip) {
+                $quoted =~ s/\\([\\$quote])/$1/g if $quote;
+                push @words, $quoted;
+            } else {
+                push @words, "$quote$quoted$quote";
             }
-            else {
-                push @words, $a;
-            }
-            ( $a, $b ) = split /\s*,\s*/, $b, 2;
         }
-
-
     }
-
     return \@words;
 }
 
@@ -1920,15 +1916,17 @@ Text:
 
         The following directives may occur, one per line:
 
-        - server <URL>          URL to RT server.
-        - user <username>       RT username.
-        - passwd <passwd>       RT user's password.
-        - query <RT Query>      Default RT Query for list action
-        - orderby <order>       Default RT order for list action
-        - queue <queuename>     Default RT Queue for list action
-        - externalauth <0|1>    Use HTTP Basic authentication
-         explicitely setting externalauth to 0 inhibits also GSSAPI based
-         authentication, if LWP::Authen::Negotiate (and GSSAPI) is installed
+        - server <URL>           URL to RT server.
+        - user <username>        RT username.
+        - passwd <passwd>        RT user's password.
+        - query <RT Query>       Default RT Query for list action
+        - orderby <order>        Default RT order for list action
+        - queue <queuename>      Default RT Queue for list action
+        - auth <rt|basic|gssapi> Method to authenticate via; "basic"
+                     means HTTP Basic authentication, "gssapi" means
+                     Kerberos credentials, if your RT is configured
+                     with $WebRemoteUserAuth.  For backwards
+                     compatibility, "externalauth 1" means "auth basic"
 
         Blank and #-commented lines are ignored.
 
@@ -1947,7 +1945,7 @@ Text:
 
         - RTUSER
         - RTPASSWD
-        - RTEXTERNALAUTH
+        - RTAUTH
         - RTSERVER
         - RTDEBUG       Numeric debug level. (Set to 3 for full logs.)
         - RTCONFIG      Specifies a name other than ".rtrc" for the

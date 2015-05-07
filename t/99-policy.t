@@ -11,7 +11,7 @@ find( { wanted   => sub {
             $File::Find::prune = 1 if $_ eq "t/tmp" or m{/\.git$};
         },
         no_chdir => 1 },
-      qw{etc lib share t bin sbin devel/tools docs} );
+      qw{etc lib share t bin sbin devel/tools docs devel/docs} );
 
 if ( my $dir = `git rev-parse --git-dir 2>/dev/null` ) {
     # We're in a git repo, use the ignore list
@@ -94,11 +94,16 @@ sub check {
 
     if ($check{compile_perl}) {
         my ($input, $output, $error) = ('', '', '');
-        run3(
-            [$^X, '-Ilib', '-Mstrict', '-Mwarnings', '-c', $file],
-            \$input, \$output, \$error,
-        );
-        is $error, "$file syntax OK\n", "$file syntax is OK";
+        my $pre_check = 1;
+        if ( $file =~ /\bmysql\b/ ) {
+            eval { require DBD::mysql };
+            undef $pre_check if $@;
+        }
+
+        if ( $pre_check ) {
+            run3( [ $^X, '-Ilib', '-Mstrict', '-Mwarnings', '-c', $file ], \$input, \$output, \$error, );
+            is $error, "$file syntax OK\n", "$file syntax is OK";
+        }
     }
 }
 
@@ -145,6 +150,6 @@ check( $_, compile_perl => 1, exec => 1 )
     for grep{ -f $_} map {s/\.in$//; $_} grep {m{^etc/upgrade/[^/]+$}} @files;
 
 check( $_, exec => -1 )
-    for grep {m{^docs/}} @files;
+    for grep {m{^(devel/)?docs/}} @files;
 
 done_testing;

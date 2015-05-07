@@ -81,16 +81,13 @@ if ($opts{'help'}) {
 
 require RT;
 require RT::Interface::CLI;
-RT::Interface::CLI->import(qw{ CleanEnv loc });
+RT::Interface::CLI->import(qw{ loc });
 
 # Load the config file
 RT::LoadConfig();
 
 # Connect to the database and get RT::SystemUser and RT::Nobody loaded
 RT::Init();
-
-# Clean out all the nasties from the environment
-CleanEnv();
 
 require RT::Dashboard::Mailer;
 RT::Dashboard::Mailer->MailDashboards(

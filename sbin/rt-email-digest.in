@@ -68,12 +68,11 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 use Date::Format qw( strftime );
 use Getopt::Long;
 use RT;
-use RT::Interface::CLI qw( CleanEnv loc );
+use RT::Interface::CLI qw( loc );
 use RT::Interface::Email;
 
 RT::LoadConfig();
 RT::Init();
-CleanEnv();
 
 sub usage {
     my ($error) = @_;

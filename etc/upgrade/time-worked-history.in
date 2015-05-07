@@ -53,10 +53,10 @@ use warnings;
 use lib "@LOCAL_LIB_PATH@";
 use lib "@RT_LIB_PATH@";
 
-use RT -init;
-RT->Config->Set('LogToSTDERR' => 'info');
+use RT::Interface::CLI qw(Init);
+Init();
 
-my $dbh = $RT::Handle->dbh;
+my $dbh = RT->DatabaseHandle->dbh;
 my $ids = $dbh->selectcol_arrayref(
     "SELECT t1.id FROM Tickets t1, Tickets t2 WHERE t1.id = t2.EffectiveId"
     ." AND t2.id != t2.EffectiveId AND t2.EffectiveId = t1.id"

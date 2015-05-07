@@ -165,12 +165,18 @@ sub BuildDSN {
         Database   => $db_name,
         Port       => $db_port,
         Driver     => $db_type,
-        RequireSSL => RT->Config->Get('DatabaseRequireSSL'),
     );
     if ( $db_type eq 'Oracle' && $db_host ) {
         $args{'SID'} = delete $args{'Database'};
     }
     $self->SUPER::BuildDSN( %args );
+
+    if (RT->Config->Get('DatabaseExtraDSN')) {
+        my %extra = RT->Config->Get('DatabaseExtraDSN');
+        $self->{'dsn'} .= ";$_=$extra{$_}"
+            for sort keys %extra;
+    }
+    return $self->{'dsn'};
 }
 
 =head2 DSN
@@ -281,22 +287,37 @@ sub CheckCompatibility {
         }
 
         if ( $state eq 'post' ) {
-            my $create_table = $dbh->selectrow_arrayref("SHOW CREATE TABLE Tickets")->[1];
-            unless ( $create_table =~ /(?:ENGINE|TYPE)\s*=\s*InnoDB/i ) {
+            my $show_table = sub { $dbh->selectrow_arrayref("SHOW CREATE TABLE $_[0]")->[1] };
+            unless ( $show_table->("Tickets") =~ /(?:ENGINE|TYPE)\s*=\s*InnoDB/i ) {
                 return (0, "RT requires that all its tables be of InnoDB type. Upgrade RT tables.");
             }
 
-            $create_table = $dbh->selectrow_arrayref("SHOW CREATE TABLE Attachments")->[1];
-            unless ( $create_table =~ /\bContent\b[^,]*BLOB/i ) {
+            unless ( $show_table->("Attachments") =~ /\bContent\b[^,]*BLOB/i ) {
                 return (0, "RT since version 3.8 has new schema for MySQL versions after 4.1.0\n"
                     ."Follow instructions in the UPGRADING.mysql file.");
             }
         }
 
-        my $max_packet = ($dbh->selectrow_array("show variables like 'max_allowed_packet'"))[1];
-        if ($state =~ /^(create|post)$/ and $max_packet <= (1024 * 1024)) {
-            my $max_packet = sprintf("%.1fM", $max_packet/1024/1024);
-            warn "max_allowed_packet is set to $max_packet, which limits the maximum attachment or email size that RT can process.  Consider adjusting MySQL's max_allowed_packet setting.\n";
+        if ($state =~ /^(create|post)$/) {
+            my $show_var = sub { $dbh->selectrow_arrayref("SHOW VARIABLES LIKE ?",{},$_[0])->[1] };
+
+            my $max_packet = $show_var->("max_allowed_packet");
+            if ($max_packet <= (5 * 1024 * 1024)) {
+                $max_packet = sprintf("%.1fM", $max_packet/1024/1024);
+                warn "max_allowed_packet is set to $max_packet, which limits the maximum attachment or email size that RT can process.  Consider adjusting MySQL's max_allowed_packet setting.\n";
+            }
+
+            my $full_version = $show_var->("version");
+            if ($full_version =~ /^5\.(\d+)\.(\d+)$/ and (($1 == 6 and $2 >= 20) or $1 > 6)) {
+                my $redo_log_size = $show_var->("innodb_log_file_size");
+                $redo_log_size *= $show_var->("innodb_log_files_in_group")
+                    if $full_version =~ /^5\.(\d+)\.(\d+)$/ and (($1 == 6 and $2 >= 22) or $1 > 6);
+
+                if ($redo_log_size / 10 < 5 * 1024 * 1024) {
+                    $redo_log_size = sprintf("%.1fM",$redo_log_size/1024/1024);
+                    warn "innodb_log_file_size is set to $redo_log_size; attachments can only be 10% of this value on MySQL 5.6.  Consider adjusting MySQL's innodb_log_file_size setting.\n";
+                }
+            }
         }
     }
     return (1)
@@ -828,6 +849,7 @@ sub InsertData {
     if ( @Groups ) {
         $RT::Logger->debug("Creating groups...");
         foreach my $item (@Groups) {
+            my $attributes = delete $item->{ Attributes };
             my $new_entry = RT::Group->new( RT->SystemUser );
             $item->{'Domain'} ||= 'UserDefined';
             my $member_of = delete $item->{'MemberOf'};
@@ -838,6 +860,8 @@ sub InsertData {
                 next;
             } else {
                 $RT::Logger->debug($return .".");
+                $_->{Object} = $new_entry for @{$attributes || []};
+                push @Attributes, @{$attributes || []};
             }
             if ( $member_of ) {
                 $member_of = [ $member_of ] unless ref $member_of eq 'ARRAY';
@@ -886,12 +910,15 @@ sub InsertData {
             if ( $item->{'Name'} eq 'root' && $root_password ) {
                 $item->{'Password'} = $root_password;
             }
+            my $attributes = delete $item->{ Attributes };
             my $new_entry = RT::User->new( RT->SystemUser );
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless ( $return ) {
                 $RT::Logger->error( $msg );
             } else {
                 $RT::Logger->debug( $return ."." );
+                $_->{Object} = $new_entry for @{$attributes || []};
+                push @Attributes, @{$attributes || []};
             }
             if ( $member_of ) {
                 $member_of = [ $member_of ] unless ref $member_of eq 'ARRAY';
@@ -957,12 +984,15 @@ sub InsertData {
     if ( @Queues ) {
         $RT::Logger->debug("Creating queues...");
         for my $item (@Queues) {
+            my $attributes = delete $item->{ Attributes };
             my $new_entry = RT::Queue->new(RT->SystemUser);
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless ( $return ) {
                 $RT::Logger->error( $msg );
             } else {
                 $RT::Logger->debug( $return ."." );
+                $_->{Object} = $new_entry for @{$attributes || []};
+                push @Attributes, @{$attributes || []};
             }
         }
         $RT::Logger->debug("done.");
@@ -970,6 +1000,7 @@ sub InsertData {
     if ( @CustomFields ) {
         $RT::Logger->debug("Creating custom fields...");
         for my $item ( @CustomFields ) {
+            my $attributes = delete $item->{ Attributes };
             my $new_entry = RT::CustomField->new( RT->SystemUser );
             my $values    = delete $item->{'Values'};
 
@@ -1045,6 +1076,9 @@ sub InsertData {
                     }
                 }
             }
+
+            $_->{Object} = $new_entry for @{$attributes || []};
+            push @Attributes, @{$attributes || []};
         }
 
         $RT::Logger->debug("done.");
@@ -1374,7 +1408,7 @@ sub Indexes {
     }
     elsif ( $db_type eq 'Oracle' ) {
         $list = $dbh->selectall_arrayref(
-            'select table_name, index_name from dba_indexes where index_name NOT LIKE ? AND lower(Owner) = ?',
+            'select table_name, index_name from all_indexes where index_name NOT LIKE ? AND lower(Owner) = ?',
             undef, 'SYS_%$$', lc RT->Config->Get('DatabaseUser'),
         );
     }
@@ -1482,7 +1516,7 @@ sub IndexInfo {
     }
     elsif ( $db_type eq 'Oracle' ) {
         my $index = $dbh->selectrow_arrayref(
-            'select uniqueness, funcidx_status from dba_indexes
+            'select uniqueness, funcidx_status from all_indexes
             where lower(table_name) = ? AND lower(index_name) = ? AND LOWER(Owner) = ?',
             undef, lc $args{'Table'}, lc $args{'Name'}, lc RT->Config->Get('DatabaseUser'),
         );
@@ -1491,12 +1525,12 @@ sub IndexInfo {
         $res{'Functional'} = $index->[1] ? 1 : 0;
 
         my %columns = map @$_, @{ $dbh->selectall_arrayref(
-            'select column_position, column_name from dba_ind_columns
+            'select column_position, column_name from all_ind_columns
             where lower(table_name) = ? AND lower(index_name) = ? AND LOWER(index_owner) = ?',
             undef, lc $args{'Table'}, lc $args{'Name'}, lc RT->Config->Get('DatabaseUser'),
         ) };
         $columns{ $_->[0] } = $_->[1] foreach @{ $dbh->selectall_arrayref(
-            'select column_position, column_expression from dba_ind_expressions
+            'select column_position, column_expression from all_ind_expressions
             where lower(table_name) = ? AND lower(index_name) = ? AND LOWER(index_owner) = ?',
             undef, lc $args{'Table'}, lc $args{'Name'}, lc RT->Config->Get('DatabaseUser'),
         ) };
@@ -1540,7 +1574,7 @@ sub DropIndex {
         my $user = RT->Config->Get('DatabaseUser');
         # Check if it has constraints associated with it
         my ($constraint) = $dbh->selectrow_arrayref(
-            'SELECT constraint_name, table_name FROM dba_constraints WHERE LOWER(owner) = ? AND LOWER(index_name) = ?',
+            'SELECT constraint_name, table_name FROM all_constraints WHERE LOWER(owner) = ? AND LOWER(index_name) = ?',
             undef, lc $user, lc $args{'Name'}
         );
         if ($constraint) {

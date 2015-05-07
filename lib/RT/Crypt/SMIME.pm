@@ -947,6 +947,9 @@ sub GetCertificateInfo {
         $res{info}[0]{TrustLevel} = 0;
     }
 
+    $res{info}[0]{Formatted} = $res{info}[0]{User}[0]{String}
+        . " (issued by $res{info}[0]{Issuer}[0]{String})";
+
     return %res;
 }
 

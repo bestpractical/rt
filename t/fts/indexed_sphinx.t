@@ -13,6 +13,11 @@ $sphinx{'indexer'} = RT::Test->find_executable('indexer');
 plan skip_all => "No searchd and indexer under PATH"
     unless $sphinx{'searchd'} && $sphinx{'indexer'};
 
+plan skip_all => "Can't determine sphinx version"
+    unless `$sphinx{searchd} --version` =~ /Sphinx (\d+)\.(\d+)(?:\.(\d+))?/;
+
+$sphinx{version} = sprintf "%d.%03d%03d", $1, $2, ($3 || 0);
+
 plan tests => 15;
 
 setup_indexing();
@@ -42,6 +47,17 @@ sub setup_indexing {
     my $sphinx_conf = $output;
     $sphinx_conf =~ s/.*?source rt \{/source rt {/ms;
     $sphinx_conf =~ s{\Q$RT::VarPath\E/sphinx/}{$tmp/}g;
+
+    # Remove lines for different versions of sphinx than we're running
+    $sphinx_conf =~ s{^(\s+ \# \s+ for \s+ sphinx \s+
+                          (<=?|>=?|=) \s*
+                          (\d+) \. (\d+) (?:\. (\d+))?
+                          .* \n)
+                      ((?:^\s* \w .*\n)+)}{
+        my $v = sprintf "%d.%03d%03d", $3, $4, ($5 || 0);
+        my $prefix = eval "$sphinx{version} $2 $v" ? "" : "#";
+        $1 . join("\n",map{"$prefix$_"} split "\n", $6) . "\n";
+    }emix;
 
     $sphinx{'config'} = File::Spec->catfile( $tmp, 'sphinx.conf' );
     {

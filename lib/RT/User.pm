@@ -633,25 +633,13 @@ sub SetEmailAddress {
 
 =head2 EmailFrequency
 
-Takes optional Ticket argument in paramhash. Returns 'no email',
-'squelched', 'daily', 'weekly' or empty string depending on
-user preferences.
+Takes optional Ticket argument in paramhash. Returns a string, suitable
+for localization, describing any notable properties about email delivery
+to the user.  This includes lack of email address, ticket-level
+squelching (if C<Ticket> is provided in the paramhash), or user email
+delivery preferences.
 
-=over 4
-
-=item 'no email' - user has no email, so can not recieve notifications.
-
-=item 'squelched' - returned only when Ticket argument is provided and
-notifications to the user has been supressed for this ticket.
-
-=item 'daily' - retruned when user recieve daily messages digest instead
-of immediate delivery.
-
-=item 'weekly' - previous, but weekly.
-
-=item empty string returned otherwise.
-
-=back
+Returns the empty string if there are no notable properties.
 
 =cut
 
@@ -663,12 +651,18 @@ sub EmailFrequency {
     );
     return '' unless $self->id && $self->id != RT->Nobody->id
         && $self->id != RT->SystemUser->id;
-    return 'no email address' unless my $email = $self->EmailAddress;
-    return 'email disabled for ticket' if $args{'Ticket'} &&
-        grep lc $email eq lc $_->Content, $args{'Ticket'}->SquelchMailTo;
+    return 'no email address set'  # loc
+        unless my $email = $self->EmailAddress;
+    return 'email disabled for ticket' # loc
+        if $args{'Ticket'} &&
+            grep lc $email eq lc $_->Content, $args{'Ticket'}->SquelchMailTo;
     my $frequency = RT->Config->Get( 'EmailFrequency', $self ) || '';
-    return 'daily' if $frequency =~ /daily/i;
-    return 'weekly' if $frequency =~ /weekly/i;
+    return 'receives daily digests' # loc
+        if $frequency =~ /daily/i;
+    return 'receives weekly digests' # loc
+        if $frequency =~ /weekly/i;
+    return 'email delivery suspended' # loc
+        if $frequency =~ /suspend/i;
     return '';
 }
 
@@ -1779,11 +1773,11 @@ sub PreferredKey
     return undef if @keys == 0;
 
     if (@keys == 1) {
-        $prefkey = $keys[0]->{'id'} || $keys[0]->{'Fingerprint'};
+        $prefkey = $keys[0]->{'Fingerprint'};
     } else {
         # prefer the maximally trusted key
         @keys = sort { $b->{'TrustLevel'} <=> $a->{'TrustLevel'} } @keys;
-        $prefkey = $keys[0]->{'id'} || $keys[0]->{'Fingerprint'};
+        $prefkey = $keys[0]->{'Fingerprint'};
     }
 
     $self->SetAttribute(Name => 'PreferredKey', Content => $prefkey);
@@ -2704,6 +2698,99 @@ sub FindDependencies {
 
     # XXX: This ignores the myriad of "in" references from the Creator
     # and LastUpdatedBy columns.
+}
+
+sub __DependsOn {
+    my $self = shift;
+    my %args = (
+        Shredder => undef,
+        Dependencies => undef,
+        @_,
+    );
+    my $deps = $args{'Dependencies'};
+    my $list = [];
+
+# Principal
+    $deps->_PushDependency(
+        BaseObject => $self,
+        Flags => RT::Shredder::Constants::DEPENDS_ON | RT::Shredder::Constants::WIPE_AFTER,
+        TargetObject => $self->PrincipalObj,
+        Shredder => $args{'Shredder'}
+    );
+
+# ACL equivalence group
+# don't use LoadACLEquivalenceGroup cause it may not exists any more
+    my $objs = RT::Groups->new( $self->CurrentUser );
+    $objs->Limit( FIELD => 'Domain', VALUE => 'ACLEquivalence', CASESENSITIVE => 0 );
+    $objs->Limit( FIELD => 'Instance', VALUE => $self->Id );
+    push( @$list, $objs );
+
+# Cleanup user's membership
+    $objs = RT::GroupMembers->new( $self->CurrentUser );
+    $objs->Limit( FIELD => 'MemberId', VALUE => $self->Id );
+    push( @$list, $objs );
+
+    $deps->_PushDependencies(
+        BaseObject => $self,
+        Flags => RT::Shredder::Constants::DEPENDS_ON,
+        TargetObjects => $list,
+        Shredder => $args{'Shredder'}
+    );
+
+# TODO: Almost all objects has Creator, LastUpdatedBy and etc. fields
+# which are references on users(Principal actualy)
+    my @OBJECTS = qw(
+        ACL
+        Articles
+        Attachments
+        Attributes
+        CachedGroupMembers
+        Classes
+        CustomFieldValues
+        CustomFields
+        GroupMembers
+        Groups
+        Links
+        ObjectClasses
+        ObjectCustomFieldValues
+        ObjectCustomFields
+        ObjectScrips
+        Principals
+        Queues
+        ScripActions
+        ScripConditions
+        Scrips
+        Templates
+        Tickets
+        Transactions
+        Users
+    );
+    my @var_objs;
+    foreach( @OBJECTS ) {
+        my $class = "RT::$_";
+        foreach my $method ( qw(Creator LastUpdatedBy) ) {
+            my $objs = $class->new( $self->CurrentUser );
+            next unless $objs->RecordClass->_Accessible( $method => 'read' );
+            $objs->Limit( FIELD => $method, VALUE => $self->id );
+            push @var_objs, $objs;
+        }
+    }
+    $deps->_PushDependencies(
+        BaseObject => $self,
+        Flags => RT::Shredder::Constants::DEPENDS_ON | RT::Shredder::Constants::VARIABLE,
+        TargetObjects => \@var_objs,
+        Shredder => $args{'Shredder'}
+    );
+
+    return $self->SUPER::__DependsOn( %args );
+}
+
+sub BeforeWipeout {
+    my $self = shift;
+    if( $self->Name =~ /^(RT_System|Nobody)$/ ) {
+        RT::Shredder::Exception::Info->throw('SystemObject');
+    }
+    return $self->SUPER::BeforeWipeout( @_ );
 }
 
 sub Serialize {

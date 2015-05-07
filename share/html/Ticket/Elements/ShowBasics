@@ -60,12 +60,14 @@
     <td class="value"><& ShowTime, minutes => $Ticket->TimeEstimated &></td>
   </tr>
 % }
+% $m->callback( %ARGS, CallbackName => 'AfterTimeEstimated', TicketObj => $Ticket );
 % if ($Ticket->TimeWorked) {
   <tr class="time worked">
     <td class="label"><&|/l&>Worked</&>:</td>
     <td class="value"><& ShowTime, minutes => $Ticket->TimeWorked &></td>
   </tr>
 % }
+% $m->callback( %ARGS, CallbackName => 'AfterTimeWorked', TicketObj => $Ticket );
 % if ($Ticket->TimeLeft) {
   <tr class="time left">
     <td class="label"><&|/l&>Left</&>:</td>

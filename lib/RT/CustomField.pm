@@ -2473,6 +2473,32 @@ sub FindDependencies {
     $deps->Add( in => $self->Values ) if $self->ValuesClass eq "RT::CustomFieldValues";
 }
 
+sub __DependsOn {
+    my $self = shift;
+    my %args = (
+        Shredder => undef,
+        Dependencies => undef,
+        @_,
+    );
+    my $deps = $args{'Dependencies'};
+    my $list = [];
+
+# Custom field values
+    push( @$list, $self->Values );
+
+# Ticket custom field values
+    my $objs = RT::ObjectCustomFieldValues->new( $self->CurrentUser );
+    $objs->LimitToCustomField( $self->Id );
+    push( @$list, $objs );
+
+    $deps->_PushDependencies(
+        BaseObject => $self,
+        Flags => RT::Shredder::Constants::DEPENDS_ON,
+        TargetObjects => $list,
+        Shredder => $args{'Shredder'}
+    );
+    return $self->SUPER::__DependsOn( %args );
+}
 
 RT::Base->_ImportOverlays();
 

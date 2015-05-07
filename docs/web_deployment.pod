@@ -53,8 +53,13 @@ use Apache to provide authentication.
 
         DocumentRoot "/opt/rt4/share/html"
         <Location />
-            Order allow,deny
-            Allow from all
+            <IfVersion >= 2.4> # For Apache 2.4
+                Require all granted
+            </IfVersion>
+            <IfVersion < 2.4>  # For Apache 2.2
+                Order allow,deny
+                Allow from all
+            </IfVersion>
 
             Options +ExecCGI
             AddHandler fastcgi-script fcgi
@@ -89,8 +94,13 @@ to return to the old default.
 
         DocumentRoot "/opt/rt4/share/html"
         <Location />
-            Order allow,deny
-            Allow from all
+            <IfVersion >= 2.4> # For Apache 2.4
+                Require all granted
+            </IfVersion>
+            <IfVersion < 2.4>  # For Apache 2.2
+                Order allow,deny
+                Allow from all
+            </IfVersion>
 
             Options +ExecCGI
             AddHandler fcgid-script fcgi
@@ -123,8 +133,13 @@ C<SetHandler modperl>, as the example below uses.
 
         DocumentRoot "/opt/rt4/share/html"
         <Location />
-            Order allow,deny
-            Allow from all
+            <IfVersion >= 2.4> # For Apache 2.4
+                Require all granted
+            </IfVersion>
+            <IfVersion < 2.4>  # For Apache 2.2
+                Order allow,deny
+                Allow from all
+            </IfVersion>
 
             SetHandler modperl
             PerlResponseHandler Plack::Handler::Apache2

@@ -1,0 +1,24 @@
+=head1 UPGRADING FROM BEFORE 4.0.0
+
+This documentation notes internals changes between the 3.8 and 4.0
+series that are primarily of interest to developers writing extensions
+or local customizations.  It is not an exhaustive list.
+
+=over
+
+=item *
+
+The deprecated classes RT::Action::Generic, RT::Condition::Generic and
+RT::Search::Generic have been removed, but you shouldn't have been using them
+anyway. You should have been using RT::Action, RT::Condition and RT::Search,
+respectively.
+
+=item *
+
+The menu system has been reworked significantly; the C<Privileged> and
+C<Unprivileged> callbacks in C<Elements/Tabs>, along with
+L<RT::Interface::Web::Menu>, comprise the new menuing hooks.
+
+=back
+
+=cut

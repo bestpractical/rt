@@ -70,8 +70,10 @@ descriptions of the values to place in them, is below.
 
 Each hashref in C<@Users> is treated as a new user to create and passed
 straight into C<< RT::User->Create >>.  All of the normal user fields are
-available, as well as C<Privileged> and C<Disabled> (both booleans) which will
-do the appropriate internal group/flag handling.
+available, as well as C<Privileged> and C<Disabled> (both booleans) which
+will do the appropriate internal group/flag handling.  Also accepts an
+C<Attributes> key, which is equivalent to pushing its arrayref of values
+onto C<@Attributes>, below, with C<Object> set to the new user.
 
 For a full list of fields, read the documentation for L<RT::User/Create>.
 
@@ -94,6 +96,10 @@ array ref.  Each value should be a user-defined group name or hashref to
 pass into L<RT::Group/LoadByCols>.  Each group found will have the new
 group added as a member.
 
+It also accepts an C<Attributes> key, which is equivalent to pushing its
+arrayref of values onto C<@Attributes>, below, with C<Object> set to the
+new group.
+
 =head2 C<@Queues>
 
     push @Queues, {
@@ -103,7 +109,10 @@ group added as a member.
     };
 
 Creates a new L<RT::Queue> for each hashref.  Refer to the documentation of
-L<RT::Queue/Create> for the fields you can use.
+L<RT::Queue/Create> for the fields you can use.  It also accepts an
+C<Attributes> key, which is equivalent to pushing its arrayref of values
+onto C<@Attributes>, below, with C<Object> set to the new queue.
+
 
 =head2 C<@CustomFields>
 
@@ -241,6 +250,10 @@ of categories for your values.
 The regular expression text (not C<qr//>!) used to validate values.
 
 =back
+
+It also accepts an C<Attributes> key, which is equivalent to pushing its
+arrayref of values onto C<@Attributes>, below, with C<Object> set to the
+new custom field.
 
 Refer to the documentation and implementation of L<RT::CustomField/Create> and
 L<RT::CustomFieldValue/Create> for the full list of available fields and

@@ -43,6 +43,7 @@ div.error .titlebox-title .widget a {
     background-position: center -7px
 }
 
+.button,
 input[type=reset],
 input[type=submit],
 input[class=button],
@@ -50,6 +51,8 @@ button,
 input,
 select { font-size: 1.0em }
 
+.button,
+.button:visited,
 input[type=reset],
 input[type=submit],
 input[class=button],
@@ -60,11 +63,13 @@ button {
     padding: 0.5em;
 }
 
+.button:focus,
 input.button:focus,
 button:focus,
 input[type=reset]:focus,
 input[type=submit]:focus,
 input[class=button]:focus,
+.button:hover,
 input.button:hover,
 button:hover,
 input[type=reset]:hover,
@@ -73,6 +78,7 @@ input[class=button]:hover {
     background: #3D5B9D
 }
 
+.button:active,
 input.button:active,
 button:active,
 input[type=reset]:active,
@@ -81,6 +87,7 @@ input[class=button]:active {
     background: #1D3B7D
 }
 
+.button,
 input[type=reset],
 input[type=submit],
 input[class=button],

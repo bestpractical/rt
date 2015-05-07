@@ -1,0 +1,52 @@
+=head1 UPGRADING FROM RT 4.0.0 and greater
+
+This documentation notes internals changes between the 4.0 and 4.2
+series that are primarily of interest to developers writing extensions
+or local customizations.  It is not an exhaustive list.
+
+=over
+
+=item *
+
+The link direction and type maps are consolidated into RT::Link.  If you
+wrote local customizations or extensions utilizing C<%RT::Ticket::LINKDIRMAP>,
+C<%RT::Ticket::LINKTYPEMAP>, C<RT::Ticket-E<gt>LINKDIRMAP>,
+C<RT::Ticket-E<gt>LINKTYPEMAP>, or C<%RT::Record::LINKDIRMAP>, you will need to
+switch to C<%RT::Link::DIRMAP> and C<%RT::Link::TYPEMAP>.
+
+=item *
+
+MakeClicky handlers added via a callback are now passed an "object" key in
+the parameter hash instead of "ticket".  The object may be any L<RT::Record>
+subclass.
+
+=item *
+
+C<ShowUser> handlers (C</Elements/ShowUser*>) have moved out of Mason components
+and into C<RT::User> methods.  Any custom username formats will need to be
+reimplemented as C<RT::User> methods.  Renaming should follow that of the core
+components:
+
+    /Elements/ShowUserConcise => RT::User->_FormatUserConcise
+    /Elements/ShowUserVerbose => RT::User->_FormatUserVerbose
+
+The C<_FormatUser*> methods are passed a hash containing the keys C<User> and
+C<Address>, which have the same properties as before.
+
+=item *
+
+CSS is no longer processed through Mason; it's served by a proper static file
+handler.  If you used the C<Begin> or C<End> callbacks of C<main.css> in the
+aileron, web2, or ballard themes, you should transition to the
+L<RT_Config/@CSSFiles> config option. If you need to target specific themes,
+you can use the class set on the E<lt>C<body>E<gt> element (for example:
+body.aileron).  See F<docs/customizing/styling_rt.pod> for more information
+on custom styles.
+
+=item *
+
+The C<AddRights> and C<AddRightCategories> methods on L<RT::Class>,
+L<RT::CustomField>, L<RT::Group>, L<RT::Queue>, and L<RT::System> were
+refactored into L<RT::Record::Role::Rights/AddRight>.
+
+=back

@@ -81,16 +81,6 @@
 % }
 </select> 
 
-<script type="text/javascript">
-    jQuery(function() {
-        jQuery("#UpdateType").change(function(ev) {
-            jQuery(".messagebox-container")
-                .removeClass("action-response action-private")
-                .addClass("action-"+ev.target.value);
-        });
-    });
-</script>
-
 % $m->callback( %ARGS, CallbackName => 'AfterUpdateType' );
 </td></tr>
 
@@ -121,7 +111,6 @@
             args => {
                 Name => 'UpdateTimeWorked',
                 Default => $ARGS{UpdateTimeWorked}||'',
-                InUnits => $ARGS{'UpdateTimeWorked-TimeUnits'}||'minutes',
             }
         },
     ]

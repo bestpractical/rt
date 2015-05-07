@@ -283,17 +283,52 @@ sub vpush {
 
 # "Normalise" a hash key that's known to be multi-valued.
 sub vsplit {
-    my ($val) = @_;
+    my ($val, $strip) = @_;
     my @words;
+    my @values = map {split /\n/} (ref $val eq 'ARRAY' ? @$val : $val);
 
-    foreach my $line (map {split /\n/} (ref $val eq 'ARRAY') ? @$val : ($val||''))
-    {
-        # XXX: This should become a real parser, ? la Text::ParseWords.
-        $line =~ s/^\s+//;
-        $line =~ s/\s+$//;
-        push @words, split /\s*,\s*/, $line;
+    foreach my $line (@values) {
+        while ($line =~ /\S/) {
+            $line =~ s/^
+                       \s*   # Trim leading whitespace
+                       (?:
+                           (")   # Quoted string
+                           ((?>[^\\"]*(?:\\.[^\\"]*)*))"
+                       |
+                           (')   # Single-quoted string
+                           ((?>[^\\']*(?:\\.[^\\']*)*))'
+                       |
+                           q\{(.*?)\}  # A perl-ish q{} string; this does
+                                     # no paren balancing, however, and
+                                     # only exists for back-compat
+                       |
+                           (.*?)     # Anything else, until the next comma
+                       )
+                       \s*   # Trim trailing whitespace
+                       (?:
+                           \Z  # Finish at end-of-line
+                       |
+                           ,   # Or a comma
+                       )
+                      //xs or last; # There should be no way this match
+                                    # fails, but add a failsafe to
+                                    # prevent infinite-looping if it
+                                    # somehow does.
+            my ($quote, $quoted) = ($1 ? ($1, $2) : $3 ? ($3, $4) : ('', $5 || $6));
+            # Only unquote the quote character, or the backslash -- and
+            # only if we were originally quoted..
+            if ($5) {
+                $quoted =~ s/([\\'])/\\$1/g;
+                $quote = "'";
+            }
+            if ($strip) {
+                $quoted =~ s/\\([\\$quote])/$1/g if $quote;
+                push @words, $quoted;
+            } else {
+                push @words, "$quote$quoted$quote";
+            }
+        }
     }
-
     return \@words;
 }
 
@@ -324,11 +359,17 @@ sub process_attachments {
         }
 
         my $info = $cgi->uploadInfo($fh);
+        # If Content-ID exists for attachment then we need multipart/related
+        # to be able to refer to this Content-Id in core of mime message
+        if($info->{'Content-ID'}) {
+            $entity->head->set('Content-Type', 'multipart/related');
+        }
         my $new_entity = $entity->attach(
             Path => $tmp_fn,
             Type => $info->{'Content-Type'} || guess_media_type($tmp_fn),
             Filename => $file,
             Disposition => $info->{'Content-Disposition'} || "attachment",
+            'Content-ID' => $info->{'Content-ID'},
         );
         $new_entity->bodyhandle->{'_dirty_hack_to_save_a_ref_tmp_fh'} = $tmp_fh;
         $i++;

@@ -77,6 +77,7 @@ GetOptions(  \%opt,
     "port|p=i",
     "ssl:i",
     "single|X",
+    "auth|A:s",
 
     "modules=s",
 
@@ -125,6 +126,21 @@ unless ($opt{port}) {
 # Set ssl port if they want it but didn't provide a number
 $opt{ssl} = 4430 if defined $opt{ssl} and not $opt{ssl};
 
+# Default auth to on if they set $WebRemoteUserAuth
+$opt{auth} = '' if not exists $opt{auth} and parseconf( "WebRemoteUserAuth" );
+
+# Set an auth path if they want it but didn't pass a path
+if (defined $opt{auth} and not $opt{auth}) {
+    $opt{auth} = "$opt{root}/var/htpasswd";
+    unless (-f $opt{auth}) {
+        open(my $fh, ">", $opt{auth}) or die "Can't create default htpasswd: $!";
+        print $fh 'root:$apr1$TZA4Y0DL$DS5ZhDH8QrhB.uAtvNJmh.' . "\n";
+        close $fh or die "Can't create default htpasswd: $!";
+    }
+} elsif ($opt{auth} and not -f $opt{auth}) {
+    die "Can't read htpasswd file $opt{auth}!";
+}
+
 # Parse out the WebPath
 my $path = parseconf( "WebPath" ) || "";
 
@@ -133,6 +149,7 @@ $template =~ s/\$PORT/$opt{port}/g;
 $template =~ s!\$PATH/!$path/!g;
 $template =~ s!\$PATH!$path || "/"!ge;
 $template =~ s/\$SSL/$opt{ssl} || 0/ge;
+$template =~ s/\$AUTH/$opt{auth}/ge;
 $template =~ s/\$RTHOME/$opt{root}/g;
 $template =~ s/\$MODULES/$opt{modules}/g;
 $template =~ s/\$TOOLS/$FindBin::Bin/g;
@@ -149,6 +166,7 @@ push @opts, "-DSSL" if $opt{ssl};
 push @opts, "-DRT3" if $opt{rt3};
 push @opts, "-DSINGLE" if $opt{single};
 push @opts, "-DREDIRECT" if $path;
+push @opts, "-DAUTH" if $opt{auth};
 
 # Wait for a previous run to terminate
 if ( open( PIDFILE, "<", "$opt{root}/var/apache2.pid") ) {
@@ -228,7 +246,7 @@ environment variable, or C</opt/rt4>.
 Determines the Apache module which is used.  By default, the first one
 of that list which exists will be used.  See also L</--modules>.
 
-=item --port B<number>
+=item --port B<number>, -p
 
 Choses the port to listen on.  By default, this is parsed from the
 F<RT_SiteConfig.pm>, and falling back to 8888.
@@ -238,6 +256,13 @@ F<RT_SiteConfig.pm>, and falling back to 8888.
 Also listens on the provided port with HTTPS, using a self-signed
 certificate for C<localhost>.  If the port number is not specified,
 defaults to port 4430.
+
+=item --auth [F</path/to/htpasswd>], -A
+
+Turns on HTTP Basic Authentication; this is done automatically if
+C<$WebRemoteUserAuth> is set in the F<RT_SiteConfig.pm>.  The provided
+path should be to a F<htpasswd> file; if not given, defaults to a file
+containing only user C<root> with password C<password>.
 
 =item --single, -X
 
@@ -335,6 +360,23 @@ DocumentRoot $RTHOME/share/html
     LoadModule rewrite_module $MODULES/mod_rewrite.so
     RewriteEngine on
     RewriteRule ^(?!\Q$PATH\E) - [R=404]
+</IfDefine>
+
+<IfDefine AUTH>
+    LoadModule auth_basic_module $MODULES/mod_auth_basic.so
+    LoadModule authn_file_module $MODULES/mod_authn_file.so
+    LoadModule authz_user_module $MODULES/mod_authz_user.so
+    <Location $PATH>
+        Require valid-user
+        AuthType basic
+        AuthName "RT access"
+        AuthBasicProvider file
+        AuthUserFile $AUTH
+    </Location>
+    <Location $PATH/REST/1.0/NoAuth/mail-gateway>
+        Allow from localhost
+        Satisfy any
+    </Location>
 </IfDefine>
 
 <IfDefine !RT3>
