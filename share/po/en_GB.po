@@ -7,28 +7,28 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-11-04 23:18+0000\n"
+"POT-Creation-Date: 2015-02-26 18:21+0000\n"
 "PO-Revision-Date: 2014-11-05 10:34+0000\n"
 "Last-Translator: Andi Chandler <Unknown>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-02-06 19:01+0000\n"
-"X-Generator: Launchpad (build 17331)\n"
+"X-Launchpad-Export-Date: 2015-04-22 14:42+0000\n"
+"X-Generator: Launchpad (build 17430)\n"
 
 #. ($RT::DatabaseName)
-#: share/html/Install/DatabaseDetails.html:180
+#: share/html/Install/DatabaseDetails.html:177
 msgid "%1 already exists and has RT's tables in place, but does not contain RT's metadata. The 'Initialize Database' step later on can insert metadata into this existing database. If this is acceptable, click 'Customize Basics' below to continue customizing RT."
 msgstr "%1 already exists and has RT's tables in place, but does not contain RT's metadata. The 'Initialise Database' step later on can insert metadata into this existing database. If this is acceptable, click 'Customise Basics' below to continue customising RT."
 
 #. ($RT::DatabaseName)
-#: share/html/Install/DatabaseDetails.html:185
+#: share/html/Install/DatabaseDetails.html:182
 msgid "%1 already exists, but does not contain RT's tables or metadata. The 'Initialize Database' step later on can insert tables and metadata into this existing database. if this is acceptable, click 'Customize Basic' below to continue customizing RT."
 msgstr "%1 already exists, but does not contain RT's tables or metadata. The 'Initialise Database' step later on can insert tables and metadata into this existing database. if this is acceptable, click 'Customise Basic' below to continue customising RT."
 
 #. ($RT::DatabaseName)
-#: share/html/Install/DatabaseDetails.html:176
+#: share/html/Install/DatabaseDetails.html:173
 msgid "%1 appears to be fully initialized.  We won't need to create any tables or insert metadata, but you can continue to customize RT by clicking 'Customize Basics' below"
 msgstr "%1 appears to be fully initialised. We won't need to create any tables or insert metadata, but you can continue to customise RT by clicking 'Customise Basics' below"
 
@@ -36,7 +36,7 @@ msgstr "%1 appears to be fully initialised. We won't need to create any tables o
 #. ($name, $self->loc($type))
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
 #. ($email->format, loc(substr($field, 6)))
-#: lib/RT/Record/Role/Roles.pm:365 lib/RT/Record/Role/Roles.pm:373 share/html/Ticket/Create.html:431 share/html/Ticket/Update.html:290 share/html/m/ticket/create:189 share/html/m/ticket/reply:208
+#: lib/RT/Record/Role/Roles.pm:365 lib/RT/Record/Role/Roles.pm:373 share/html/Ticket/Create.html:431 share/html/Ticket/Update.html:282 share/html/m/ticket/create:189 share/html/m/ticket/reply:207
 msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
 msgstr "%1 is an address where RT receives mail. Adding it as a '%2' would create a mail loop"
 
@@ -57,7 +57,7 @@ msgid "Any word not recognized by RT is searched for in ticket subjects."
 msgstr "Any word not recognised by RT is searched for in ticket subjects."
 
 #. ($valid_image_types)
-#: share/html/Admin/Tools/Theme.html:268
+#: share/html/Admin/Tools/Theme.html:269
 msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 msgstr "Automatically suggested theme colours are not available for your image. This might be because you uploaded an image type that your installed version of GD does not support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 
@@ -91,7 +91,7 @@ msgstr "Click to choose a colour"
 msgid "Condition is mandatory argument"
 msgstr "Condition is a mandatory argument"
 
-#: share/html/Install/DatabaseDetails.html:140
+#: share/html/Install/DatabaseDetails.html:137
 msgid "Connection succeeded"
 msgstr "Connection successful"
 
@@ -152,7 +152,7 @@ msgstr "LocalisedDateTime"
 msgid "No longer authorized"
 msgstr "No longer authorised"
 
-#: lib/RT/User.pm:94 share/html/Admin/Users/Modify.html:131 share/html/Elements/RT__User/ColumnMap:76 share/html/User/Prefs.html:132
+#: lib/RT/User.pm:94 share/html/Admin/Users/Modify.html:132 share/html/Elements/RT__User/ColumnMap:76 share/html/User/Prefs.html:132
 msgid "Organization"
 msgstr "Organisation"
 
@@ -164,7 +164,7 @@ msgstr "RT is used by Fortune 100 companies, one-person businesses, government a
 msgid "RT's logging configuration is summarized below:"
 msgstr "RT's logging configuration is summarised below:"
 
-#: lib/RT/Config.pm:358
+#: lib/RT/Config.pm:359
 msgid "Rich text (HTML) shows formatting such as colored text, bold, italics, and more"
 msgstr "Rich text (HTML) shows formatting such as coloured text, bold, italics, and more"
 
