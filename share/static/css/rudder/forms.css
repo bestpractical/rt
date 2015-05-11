@@ -102,3 +102,14 @@ button {
 .value {
     font-size: 1em
 }
+
+.messagebox-attachment-warning {
+    background-color: #fcc;
+    font-weight: bold;
+    padding: .5em 2em;
+    margin: .5em 0;
+
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+}
