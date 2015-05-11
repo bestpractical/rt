@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if ( $attachments ) {
-<tr><td class="label"><&|/l&>Attached file</&>:</td>
+<tr class="attachment"><td class="label"><&|/l&>Attached file</&>:</td>
 <td>
 <&|/l&>Check box to delete</&><br />
 % foreach my $attach_name ( sort keys %$attachments ) {
