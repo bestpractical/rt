@@ -523,7 +523,7 @@ sub SendEmail {
         }
         my $content = $args{Entity}->stringify;
         $content =~ s/^(>*From )/>$1/mg;
-        print $fh "From $ENV{USER}\@localhost  ".localtime."\n";
+        print $fh "From $ENV{USER}\@localhost  ".localtime()."\n";
         print $fh $content, "\n";
         close $fh;
     } else {
