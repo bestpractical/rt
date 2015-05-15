@@ -1,0 +1,54 @@
+use strict;
+use warnings;
+
+our @Initial = (
+    sub {
+        RT->Logger->debug('Make sure all columns we are about to drop are empty');
+
+        # Tickets
+        for my $column (qw/IssueStatement Resolution/) {
+            my $tickets = RT::Tickets->new(RT->SystemUser);
+            $tickets->Limit(
+                FIELD           => $column,
+                OPERATOR        => '!=',
+                VALUE           => 0,
+                ENTRYAGGREGATOR => 'AND',
+            );
+            $tickets->Limit(
+                FIELD           => $column,
+                OPERATOR        => 'IS NOT',
+                VALUE           => 'NULL',
+                ENTRYAGGREGATOR => 'AND',
+            );
+
+            if ($tickets->Count) {
+                die "You have " . $tickets->Count . " ticket(s) with a non-zero value for column '$column'. Core RT does not use this column, so perhaps an extension or local modification makes use of it. Please migrate these ticket values to a custom field or an attribute.";
+            }
+        }
+
+        # Users
+        for my $column (qw/
+            EmailEncoding WebEncoding ExternalContactInfoId
+            ContactInfoSystem ExternalAuthId AuthSystem PGPKey
+        /) {
+            my $users = RT::Users->new(RT->SystemUser);
+            $users->Limit(
+                FIELD           => $column,
+                OPERATOR        => '!=',
+                VALUE           => '',
+                ENTRYAGGREGATOR => 'AND',
+            );
+            $users->Limit(
+                FIELD           => $column,
+                OPERATOR        => 'IS NOT',
+                VALUE           => 'NULL',
+                ENTRYAGGREGATOR => 'AND',
+            );
+
+            if ($users->Count) {
+                die "You have " . $users->Count . " users(s) with a non-empty value for column '$column'. Core RT does not use this column, so perhaps an extension or local modification makes use of it. Please migrate these user values to a custom field or an attribute.";
+            }
+        }
+    },
+);
+
