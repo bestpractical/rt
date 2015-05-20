@@ -46,7 +46,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-package RT::Tickets::Tree;
+package RT::Interface::Web::QueryBuilder::Tree;
 
 use strict;
 use warnings;
@@ -56,7 +56,7 @@ use base qw/Tree::Simple/;
 
 =head1 NAME
 
-RT::Tickets::Tree - subclass of Tree::Simple used in Query Builder
+RT::Interface::Web::QueryBuilder::Tree - subclass of Tree::Simple used in Query Builder
 
 =head1 DESCRIPTION
 

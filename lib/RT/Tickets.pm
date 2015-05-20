@@ -79,7 +79,7 @@ use Scalar::Util qw/blessed/;
 
 use RT::Ticket;
 use RT::SQL;
-use RT::Tickets::Tree;
+use RT::Interface::Web::QueryBuilder::Tree;
 
 sub Table { 'Tickets'}
 
@@ -2930,7 +2930,7 @@ failure.
 sub _parser {
     my ($self,$string) = @_;
 
-    my $tree = RT::Tickets::Tree->new;
+    my $tree = RT::Interface::Web::QueryBuilder::Tree->new;
     $tree->ParseSQL(
         Query => $string,
         CurrentUser => $self->CurrentUser,

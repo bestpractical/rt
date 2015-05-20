@@ -140,7 +140,7 @@ elsif ( $ARGS{"Right"} ) {
                 my $sibling = $parent->getChild( $index - 1 );
                 $newparent = $sibling unless $sibling->isLeaf;
             }
-            $newparent ||= RT::Tickets::Tree->new( $ARGS{'AndOr'} || 'AND', $parent );
+            $newparent ||= RT::Interface::Web::QueryBuilder::Tree->new( $ARGS{'AndOr'} || 'AND', $parent );
 
             $parent->removeChild($value);
             $newparent->addChild($value);

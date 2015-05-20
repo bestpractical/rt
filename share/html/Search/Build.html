@@ -54,7 +54,7 @@
 %#
 %#   After doing some stuff with default arguments and saved searches, the ParseQuery
 %#   function (which is similar to, but not the same as, _parser in lib/RT/Tickets.pm)
-%#   converts the Query into a RT::Tickets::Tree.  This mason file
+%#   converts the Query into a RT::Interface::Web::QueryBuilder::Tree.  This mason file
 %#   then adds stuff to or modifies the tree based on the actions that had been requested
 %#   by clicking buttons.  It then calls GetQueryAndOptionList on the tree to generate
 %#   the SQL query (which is saved as a hidden input) and the option list for the Clauses
@@ -163,7 +163,7 @@ if ( $NewQuery ) {
 my $ParseQuery = sub {
     my ($string, $results) = @_;
 
-    my $tree = RT::Tickets::Tree->new('AND');
+    my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
     @$results = $tree->ParseSQL( Query => $string, CurrentUser => $session{'CurrentUser'} );
 
     return $tree;
@@ -234,7 +234,7 @@ foreach my $arg ( keys %ARGS ) {
             Value => $value,
         };
 
-        push @new_values, RT::Tickets::Tree->new($clause);
+        push @new_values, RT::Interface::Web::QueryBuilder::Tree->new($clause);
     }
 }
 
