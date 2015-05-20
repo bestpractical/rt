@@ -53,7 +53,7 @@
 
 <form action="<%RT->Config->Get('WebPath')%>/Admin/Queues/Modify.html" name="ModifyQueue" method="post" enctype="multipart/form-data">
 <input type="hidden" class="hidden" name="id" value="<% $Create? 'new': $QueueObj->Id %>" />
-
+% $m->callback( CallbackName => 'FormStart', Create => $Create, ARGSRef => \%ARGS );
 <table>
 <tr><td align="right"><&|/l&>Queue Name</&>:</td><td colspan="3">
 % if ($InternalQueue) {
