@@ -53,7 +53,7 @@
         (($can_modify || $can_modify_cf) ? (title_href => RT->Config->Get('WebPath')."/Ticket/Modify.html?id=".$Ticket->Id) : ()),
         class => 'ticket-info-basics',
     &><& /Ticket/Elements/ShowBasics, Ticket => $Ticket &></&>
-
+% $m->callback( %ARGS, CallbackName => 'AfterBasics' );
     <& /Elements/ShowCustomFieldCustomGroupings,
         Object       => $Ticket,
         title_href   => ($can_modify || $can_modify_cf) ? RT->Config->Get('WebPath')."/Ticket/Modify.html" : "",
@@ -63,6 +63,7 @@
         (($can_modify || $can_modify_owner || $can_modify_people) ? (title_href => RT->Config->Get('WebPath')."/Ticket/ModifyPeople.html?id=".$Ticket->Id) : ()),
         class => 'ticket-info-people',
     &><& /Ticket/Elements/ShowPeople, Ticket => $Ticket &></&>
+% $m->callback( %ARGS, CallbackName => 'AfterPeople' );
     <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket, Attachments => $Attachments &>
 % $m->callback( %ARGS, CallbackName => 'AfterAttachments' );
     <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
@@ -82,10 +83,12 @@
         </td></tr></table>
     </&>
 % }
+% $m->callback( %ARGS, CallbackName => 'AfterReminders' );
     <&| /Widgets/TitleBox, title => loc("Dates"),
         ($can_modify ? (title_href => RT->Config->Get('WebPath')."/Ticket/ModifyDates.html?id=".$Ticket->Id) : ()),
         class => 'ticket-info-dates',
     &><& /Ticket/Elements/ShowDates, Ticket => $Ticket &></&>
+% $m->callback( %ARGS, CallbackName => 'AfterDates' );
 % my (@extra);
 % push @extra, titleright_raw => '<a href="'. RT->Config->Get('WebPath'). '/Ticket/Graphs/index.html?id='.$Ticket->id.'">'.loc('Graph').'</a>' unless RT->Config->Get('DisableGraphViz');
 % $m->callback( %ARGS, CallbackName => 'LinksExtra', extra => \@extra );
