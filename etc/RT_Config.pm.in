@@ -2512,7 +2512,52 @@ Set(%GnuPGOptions,
 
 =back
 
+=head1 External storage
 
+By default, RT stores attachments in the database.  ExternalStorage moves
+all attachments that RT does not need efficient access to (which include
+textual content and images) to outside of the database.  This may either
+be on local disk, or to a cloud storage solution.  This decreases the
+size of RT's database, in turn decreasing the burden of backing up RT's
+database, at the cost of adding additional locations which must be
+configured or backed up.  Attachment storage paths are calculated based
+on file contents; this provides de-duplication.
+
+A full description of external storage can be found by running the command
+`perldoc L<RT::ExternalStorage>` (or `perldoc lib/RT/ExternalStorage.pm`
+from your RT install directory).
+
+Note that simply configuring L<RT::ExternalStorage> is insufficient; there
+are additional steps required (including setup of a regularly-scheduled
+upload job) to enable RT to make use of external storage.
+
+=over 4
+
+=item C<%ExternalStorage>
+
+This selects which storage engine is used, as well as options for
+configuring that specific storage engine. RT ships with the following
+storage engines:
+
+L<RT::ExternalStorage::Disk>, which stores files on directly onto disk.
+
+L<RT::ExternalStorage::AmazonS3>, which stores files on Amazon's S3 service.
+
+L<RT::ExternalStorage::Dropbox>, which stores files in Dropbox.
+
+See each storage engine's documentation for the configuration it requires
+and accepts.
+
+    Set(%ExternalStorage,
+        Type => 'Disk',
+        Path => '/opt/rt4/var/attachments',
+    );
+
+=cut
+
+Set(%ExternalStorage, ());
+
+=back
 
 =head1 Lifecycles
 

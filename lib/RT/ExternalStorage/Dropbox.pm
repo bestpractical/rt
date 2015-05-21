@@ -125,16 +125,16 @@ RT::ExternalStorage::Dropbox - Store files in the Dropbox cloud
 This storage option places attachments in the Dropbox shared file
 service.  The files are de-duplicated when they are saved; as such, if
 the same file appears in multiple transactions, only one copy will be
-stored on in Dropbox.
+stored in Dropbox.
 
-Files in Dropbox C<must not be modified or removed>; doing so may cause
+Files in Dropbox B<must not be modified or removed>; doing so may cause
 internal inconsistency.  It is also important to ensure that the Dropbox
 account used has sufficient space for the attachments, and to monitor
 its space usage.
 
 =head1 SETUP
 
-In order to use this stoage type, a new application must be registered
+In order to use this storage type, a new application must be registered
 with Dropbox:
 
 =over
@@ -153,21 +153,17 @@ Choose B<Dropbox API app> as the type of app.
 
 =item 4.
 
-Choose the B<Files and datastores> as the type of data to store.
+Choose B<Yes>, your application only needs access to files it creates.
 
 =item 5.
 
-Choose B<Yes>, your application only needs access to files it creates.
+Enter a descriptive name -- C<Request Tracker files> is fine.
 
 =item 6.
 
-Enter a descriptive name -- C<Request Tracker files> is fine.
-
-=item 7.
-
 Under C<Generated access token>, click the C<Generate> button.
 
-=item 8.
+=item 7.
 
 Copy the provided value into your F<RT_SiteConfig.pm> file as the
 C<AccessToken>:

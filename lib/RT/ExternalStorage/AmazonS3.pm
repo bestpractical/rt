@@ -126,68 +126,76 @@ sub Store {
 
 =head1 NAME
 
-RT::ExternalStorage::Dropbox - Store files in the Dropbox cloud
+RT::ExternalStorage::AmazonS3 - Store files in Amazon's S3 cloud
 
 =head1 SYNOPSIS
 
     Set(%ExternalStorage,
-        Type => 'Dropbox',
-        AccessToken => '...',
+        Type            => 'AmazonS3',
+        AccessKeyId     => '...',
+        SecretAccessKey => '...',
+        Bucket          => '...',
     );
 
 =head1 DESCRIPTION
 
-This storage option places attachments in the Dropbox shared file
+This storage option places attachments in the S3 cloud file storage
 service.  The files are de-duplicated when they are saved; as such, if
 the same file appears in multiple transactions, only one copy will be
-stored on in Dropbox.
+stored in S3.
 
-Files in Dropbox C<must not be modified or removed>; doing so may cause
-internal inconsistency.
+Files in S3 B<must not be modified or removed>; doing so may cause
+internal inconsistency.  It is also important to ensure that the S3
+account used maintains sufficient funds for your RT's B<storage and
+bandwidth> needs.
 
 =head1 SETUP
 
-In order to use this stoage type, a new application must be registered
-with Dropbox:
+In order to use this storage type, you must grant RT access to your
+S3 account.
 
 =over
 
 =item 1.
 
-Log into Dropbox as the user you wish to store files as.
+Log into Amazon S3, L<https://aws.amazon.com/s3/>, as the account you wish
+to store files under.
 
 =item 2.
 
-Click C<Create app> on L<https://www.dropbox.com/developers/apps>
+Navigate to "Security Credentials" under your account name in the menu bar.
 
 =item 3.
 
-Choose B<Dropbox API app> as the type of app.
+Open the "Access Keys" pane.
 
 =item 4.
 
-Choose the B<Files and datastores> as the type of data to store.
+Click "Create New Access Key".
 
 =item 5.
 
-Choose B<Yes>, your application only needs access to files it creates.
+Copy the provided values for Access Key ID and Secret Access Key into
+ your F<RT_SiteConfig.pm> file:
+
+    Set(%ExternalStorage,
+        Type            => 'AmazonS3',
+        AccessKeyId     => '...', # Put Access Key ID between quotes
+        SecretAccessKey => '...', # Put Secret Access Key between quotes
+        Bucket          => '...',
+    );
 
 =item 6.
 
-Enter a descriptive name -- C<Request Tracker files> is fine.
-
-=item 7.
-
-Under C<Generated access token>, click the C<Generate> button.
-
-=item 8.
-
-Copy the provided value into your F<RT_SiteConfig.pm> file as the
-C<AccessToken>:
+Set up a Bucket for RT to use. You can either create and configure it
+in the S3 web interface, or let RT create one itself. Either way, tell
+RT what bucket name to use in your F<RT_SiteConfig.pm> file:
 
     Set(%ExternalStorage,
-        Type => 'Dropbox',
-        AccessToken => '...',   # Replace the value here, between the quotes
+        Type            => 'AmazonS3',
+        AccessKeyId     => '...',
+        SecretAccessKey => '...',
+        Bucket          => '...', # Put bucket name between quotes
     );
 
 =back

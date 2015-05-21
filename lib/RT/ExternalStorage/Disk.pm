@@ -130,7 +130,7 @@ uncompressed.  The files are de-duplicated when they are saved; as such,
 if the same file appears in multiple transactions, only one copy will be
 stored on disk.
 
-The C<Path> must be readable by the webserver, and writable by the
+The C<Path> must be readable by the web server, and writable by the
 C<sbin/rt-externalize-attachments> script.  Because the majority of the
 attachments are in the filesystem, a simple database backup is thus
 incomplete.  It is B<extremely important> that I<backups include the
