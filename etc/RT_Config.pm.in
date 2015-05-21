@@ -2557,6 +2557,22 @@ and accepts.
 
 Set(%ExternalStorage, ());
 
+=item C<$ExternalStorageCutoffSize>
+
+Certain object types, like values for Binary (aka file upload) custom
+fields, are always put into external storage. However, for other
+object types, like images and text, there is a line in the sand where
+you want small objects in the database but large objects in external
+storage. By default, objects larger than 10 MB will be put into external
+storage. C<$ExternalStorageCutoffSize> adjusts that line in the sand.
+
+Note that changing this setting does not affect existing attachments, only
+the new ones that C<sbin/rt-externalize-attachments> hasn't seen yet.
+
+=cut
+
+Set($ExternalStorageCutoffSize, 10_000_000);
+
 =back
 
 =head1 Lifecycles

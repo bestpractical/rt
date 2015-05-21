@@ -118,7 +118,7 @@ for my $class (qw/RT::Attachments RT::ObjectCustomFieldValues/) {
             $attach->Limit(
                 FUNCTION  => 'LENGTH(main.Content)',
                 OPERATOR  => '>',
-                VALUE     => 10*1024*1024,
+                VALUE     => RT->Config->Get('ExternalStorageCutoffSize'),
                 SUBCLAUSE => 'applies',
                 ENTRYAGGREGATOR => 'OR',
             );

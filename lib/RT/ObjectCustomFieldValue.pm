@@ -742,7 +742,7 @@ sub ShouldStoreExternally {
 
     return 1 if $type eq "Binary";
 
-    return 1 if $type eq "Image" and $length > 10 * 1024 * 1024;
+    return 1 if $type eq "Image" and $length > RT->Config->Get('ExternalStorageCutoffSize');
 
     return 0;
 }
