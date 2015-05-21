@@ -50,7 +50,7 @@ use 5.008003;
 use warnings;
 use strict;
 
-package RT::Extension::ExternalStorage::Backend;
+package RT::ExternalStorage::Backend;
 
 use Role::Basic;
 
@@ -68,7 +68,7 @@ sub new {
         return undef;
     } elsif ($class->require) {
     } else {
-        my $long = "RT::Extension::ExternalStorage::$class";
+        my $long = "RT::ExternalStorage::$class";
         if ($long->require) {
             $class = $long;
         } else {
@@ -77,8 +77,8 @@ sub new {
         }
     }
 
-    unless ($class->DOES("RT::Extension::ExternalStorage::Backend")) {
-        RT->Logger->error("External storage engine $class doesn't implement RT::Extension::ExternalStorage::Backend");
+    unless ($class->DOES("RT::ExternalStorage::Backend")) {
+        RT->Logger->error("External storage engine $class doesn't implement RT::ExternalStorage::Backend");
         return undef;
     }
 

@@ -50,12 +50,12 @@ use 5.008003;
 use warnings;
 use strict;
 
-package RT::Extension::ExternalStorage::Disk;
+package RT::ExternalStorage::Disk;
 
 use File::Path qw//;
 
 use Role::Basic qw/with/;
-with 'RT::Extension::ExternalStorage::Backend';
+with 'RT::ExternalStorage::Backend';
 
 sub Init {
     my $self = shift;
@@ -114,7 +114,7 @@ sub Store {
 
 =head1 NAME
 
-RT::Extension::ExternalStorage::Disk - On-disk storage of attachments
+RT::ExternalStorage::Disk - On-disk storage of attachments
 
 =head1 SYNOPSIS
 
@@ -131,7 +131,7 @@ if the same file appears in multiple transactions, only one copy will be
 stored on disk.
 
 The C<Path> must be readable by the webserver, and writable by the
-C<bin/extract-attachments> script.  Because the majority of the
+C<sbin/rt-externalize-attachments> script.  Because the majority of the
 attachments are in the filesystem, a simple database backup is thus
 incomplete.  It is B<extremely important> that I<backups include the
 on-disk attachments directory>.

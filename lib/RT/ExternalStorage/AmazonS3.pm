@@ -50,10 +50,10 @@ use 5.008003;
 use warnings;
 use strict;
 
-package RT::Extension::ExternalStorage::AmazonS3;
+package RT::ExternalStorage::AmazonS3;
 
 use Role::Basic qw/with/;
-with 'RT::Extension::ExternalStorage::Backend';
+with 'RT::ExternalStorage::Backend';
 
 our( $S3, $BUCKET);
 sub Init {
@@ -126,7 +126,7 @@ sub Store {
 
 =head1 NAME
 
-RT::Extension::ExternalStorage::Dropbox - Store files in the Dropbox cloud
+RT::ExternalStorage::Dropbox - Store files in the Dropbox cloud
 
 =head1 SYNOPSIS
 

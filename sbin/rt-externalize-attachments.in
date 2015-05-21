@@ -1,6 +1,4 @@
-#!/usr/bin/env perl
-### before: #!@PERL@
-
+#!@PERL@
 # BEGIN BPS TAGGED BLOCK {{{
 #
 # COPYRIGHT:
@@ -51,10 +49,24 @@
 use strict;
 use warnings;
 
-### after: use lib qw(@RT_LIB_PATH@);
-use lib qw(/opt/rt4/local/lib /opt/rt4/lib);
+# fix lib paths, some may be relative
+BEGIN { # BEGIN RT CMD BOILERPLATE
+    require File::Spec;
+    require Cwd;
+    my @libs = ("@RT_LIB_PATH@", "@LOCAL_LIB_PATH@");
+    my $bin_path;
 
-BEGIN { $RT::Extension::ExternalStorage::WRITE = 1 };
+    for my $lib (@libs) {
+        unless ( File::Spec->file_name_is_absolute($lib) ) {
+            $bin_path ||= ( File::Spec->splitpath(Cwd::abs_path(__FILE__)) )[1];
+            $lib = File::Spec->catfile( $bin_path, File::Spec->updir, $lib );
+        }
+        unshift @INC, $lib;
+    }
+
+}
+
+BEGIN { $RT::ExternalStorage::WRITE = 1 };
 use RT -init;
 
 # Ensure we only run one of these processes at once
@@ -64,7 +76,7 @@ exit unless flock main::DATA, LOCK_EX | LOCK_NB;
 die "\%ExternalStorage is not configured\n"
     unless RT->Config->Get("ExternalStorage");
 
-exit unless $RT::Extension::ExternalStorage::BACKEND;
+exit unless $RT::ExternalStorage::BACKEND;
 
 my $last = RT->System->FirstAttribute("ExternalStorage");
 $last = $last ? $last->Content : {};
@@ -133,7 +145,7 @@ for my $class (qw/RT::Attachments RT::ObjectCustomFieldValues/) {
             );
 
             # Attempt to write that out
-            my ($key, $msg) = RT::Extension::ExternalStorage->Store( $content );
+            my ($key, $msg) = RT::ExternalStorage->Store( $content );
             unless ($key) {
                 RT->Logger->error("Failed to store $class $id: $msg");
                 exit 1;

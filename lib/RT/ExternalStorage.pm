@@ -50,21 +50,21 @@ use 5.008003;
 use warnings;
 use strict;
 
-package RT::Extension::ExternalStorage;
+package RT::ExternalStorage;
 
 our $VERSION = '0.61';
 
 use Digest::SHA qw//;
 
-require RT::Extension::ExternalStorage::Backend;
+require RT::ExternalStorage::Backend;
 
 =head1 NAME
 
-RT::Extension::ExternalStorage - Store attachments outside the database
+RT::ExternalStorage - Store attachments outside the database
 
 =head1 SYNOPSIS
 
-    Set( @Plugins, 'RT::Extension::ExternalStorage' );
+    Set( @Plugins, 'RT::ExternalStorage' );
 
     Set(%ExternalStorage,
         Type => 'Disk',
@@ -82,12 +82,12 @@ database, at the cost of adding additional locations which must be
 configured or backed up.  Attachment storage paths are calculated based
 on file contents; this provides de-duplication.
 
-The files are initially stored in the database when RT receives them;
-this guarantees that the user does not need to wait for the file to be
-transferred to disk or to the cloud, and makes it durable to transient
-failures of cloud connectivity.  The provided C<bin/extract-attachments>
-script, to be run regularly via cron, takes care of moving attachments
-out of the database at a later time.
+The files are initially stored in the database when RT receives
+them; this guarantees that the user does not need to wait for
+the file to be transferred to disk or to the cloud, and makes it
+durable to transient failures of cloud connectivity.  The provided
+C<sbin/rt-externalize-attachments> script, to be run regularly via cron,
+takes care of moving attachments out of the database at a later time.
 
 =head1 INSTALLATION
 
@@ -105,13 +105,13 @@ May need root permissions
 
 If you are using RT 4.2 or greater, add this line:
 
-    Plugin('RT::Extension::ExternalStorage');
+    Plugin('RT::ExternalStorage');
 
 For RT 4.0, add this line:
 
-    Set(@Plugins, qw(RT::Extension::ExternalStorage));
+    Set(@Plugins, qw(RT::ExternalStorage));
 
-or add C<RT::Extension::ExternalStorage> to your existing C<@Plugins> line.
+or add C<RT::ExternalStorage> to your existing C<@Plugins> line.
 
 You will also need to configure the C<%ExternalStorage> option,
 depending on how and where you want your data stored; see
@@ -125,18 +125,18 @@ are extracted.
 
 =item Extract existing attachments
 
-Run C<bin/extract-attachments>; this may take some time, depending on
-the existing size of the database.  This task may be safely cancelled
+Run C<sbin/rt-externalize-attachments>; this may take some time, depending
+on the existing size of the database.  This task may be safely cancelled
 and re-run to resume.
 
 =item Schedule attachments extraction
 
-Schedule C<bin/extract-attachments> to run at regular intervals via
+Schedule C<sbin/rt-externalize-attachments> to run at regular intervals via
 cron.  For instance, the following F</etc/cron.d/rt> entry will run it
 daily, which may be good to concentrate network or disk usage to times
 when RT is less in use:
 
-    0 0 * * * root /opt/rt4/local/plugins/RT-Extension-ExternalStorage/bin/extract-attachments
+    0 0 * * * root /opt/rt4/sbin/rt-externalize-attachments
 
 =back
 
@@ -147,11 +147,11 @@ documentation in each for necessary configuration details:
 
 =over
 
-=item L<RT::Extension::ExternalStorage::Disk>
+=item L<RT::ExternalStorage::Disk>
 
-=item L<RT::Extension::ExternalStorage::Dropbox>
+=item L<RT::ExternalStorage::Dropbox>
 
-=item L<RT::Extension::ExternalStorage::AmazonS3>
+=item L<RT::ExternalStorage::AmazonS3>
 
 =back
 
@@ -172,7 +172,7 @@ $RT::Config::META{ExternalStorage} = {
         my %hash = $self->Get('ExternalStorage');
         return unless keys %hash;
         $hash{Write} = $WRITE;
-        $BACKEND = RT::Extension::ExternalStorage::Backend->new( %hash );
+        $BACKEND = RT::ExternalStorage::Backend->new( %hash );
     },
 };
 

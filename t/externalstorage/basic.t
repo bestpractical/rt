@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Extension::ExternalStorage::Test tests => undef;
+use RT::Test::ExternalStorage tests => undef;
 
 my $queue = RT::Test->load_or_create_queue(Name => 'General');
 ok $queue && $queue->id;
@@ -51,13 +51,13 @@ is $attachs[3]->Content, 'thing',  "Can get the binary content";
 is $attachs[3]->ContentEncoding, "none", "Content is not encoded";
 ok $attachs[3]->StoreExternally, "Will store binary data on disk";
 
-my $dir = RT::Extension::ExternalStorage::Test->attachments_dir;
+my $dir = RT::Test::ExternalStorage->attachments_dir;
 ok !<$dir/*>, "Attachments directory is empty";
 
 
-ok -e 'sbin/extract-attachments', "Found extract-attachments script";
-ok -x 'sbin/extract-attachments', "extract-attachments is executable";
-ok !system('sbin/extract-attachments'), "extract-attachments ran successfully";
+ok -e 'sbin/rt-externalize-attachments', "Found rt-externalize-attachments script";
+ok -x 'sbin/rt-externalize-attachments', "rt-externalize-attachments is executable";
+ok !system('sbin/rt-externalize-attachments'), "rt-externalize-attachments ran successfully";
 
 @attachs = @{ $ticket->Transactions->First->Attachments->ItemsArrayRef };
 is $attachs[1]->Content, 'test', "Can still get the text part content";

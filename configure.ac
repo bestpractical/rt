@@ -436,6 +436,7 @@ AC_CONFIG_FILES([
                  sbin/rt-test-dependencies
                  sbin/rt-email-digest
                  sbin/rt-email-dashboards
+                 sbin/rt-externalize-attachments
                  sbin/rt-clean-sessions
                  sbin/rt-shredder
                  sbin/rt-validator

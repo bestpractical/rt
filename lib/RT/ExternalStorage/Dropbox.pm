@@ -50,10 +50,10 @@ use 5.008003;
 use warnings;
 use strict;
 
-package RT::Extension::ExternalStorage::Dropbox;
+package RT::ExternalStorage::Dropbox;
 
 use Role::Basic qw/with/;
-with 'RT::Extension::ExternalStorage::Backend';
+with 'RT::ExternalStorage::Backend';
 
 our $DROPBOX;
 sub Init {
@@ -111,7 +111,7 @@ sub Store {
 
 =head1 NAME
 
-RT::Extension::ExternalStorage::Dropbox - Store files in the Dropbox cloud
+RT::ExternalStorage::Dropbox - Store files in the Dropbox cloud
 
 =head1 SYNOPSIS
 
