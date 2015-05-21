@@ -46,7 +46,6 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use 5.008003;
 use warnings;
 use strict;
 
@@ -57,22 +56,33 @@ use File::Path qw//;
 use Role::Basic qw/with/;
 with 'RT::ExternalStorage::Backend';
 
+sub Path {
+    my $self = shift;
+    return $self->{Path};
+}
+
 sub Init {
     my $self = shift;
 
-    my %self = %{$self};
-    if (not $self{Path}) {
-        RT->Logger->error("No path provided for local storage");
+    if (not $self->Path) {
+        RT->Logger->error("Required option 'Path' not provided for Disk external storage.");
         return;
-    } elsif (not -e $self{Path}) {
-        RT->Logger->error("Path provided for local storage ($self{Path}) does not exist");
-        return;
-    } elsif ($self{Write} and not -w $self{Path}) {
-        RT->Logger->error("Path provided for local storage ($self{Path}) is not writable");
+    } elsif (not -e $self->Path) {
+        RT->Logger->error("Path provided for Disk external storage (".$self->Path.") does not exist");
         return;
     }
 
     return $self;
+}
+
+sub IsWriteable {
+    my $self = shift;
+
+    if (not -w $self->Path) {
+        return (undef, "Path provided for local storage (".$self->Path.") is not writable");
+    }
+
+    return (1);
 }
 
 sub Get {
@@ -80,7 +90,7 @@ sub Get {
     my ($sha) = @_;
 
     $sha =~ m{^(...)(...)(.*)};
-    my $path = $self->{Path} . "/$1/$2/$3";
+    my $path = $self->Path . "/$1/$2/$3";
 
     return (undef, "File does not exist") unless -e $path;
 
@@ -96,8 +106,9 @@ sub Store {
     my $self = shift;
     my ($sha, $content) = @_;
 
+    # fan out to avoid one gigantic directory which slows down all file access
     $sha =~ m{^(...)(...)(.*)};
-    my $dir  = $self->{Path} . "/$1/$2";
+    my $dir  = $self->Path . "/$1/$2";
     my $path = "$dir/$3";
 
     return (1) if -f $path;
@@ -140,5 +151,7 @@ Files also C<must not be modified or removed>; doing so may cause
 internal inconsistency.
 
 =cut
+
+RT::Base->_ImportOverlays();
 
 1;

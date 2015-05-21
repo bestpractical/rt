@@ -46,7 +46,6 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use 5.008003;
 use warnings;
 use strict;
 
@@ -67,6 +66,7 @@ sub new {
         RT->Logger->error("No storage engine type provided");
         return undef;
     } elsif ($class->require) {
+        # no action needed; $class was loaded
     } else {
         my $long = "RT::ExternalStorage::$class";
         if ($long->require) {
@@ -85,5 +85,7 @@ sub new {
     my $self = bless \%args, $class;
     $self->Init;
 }
+
+RT::Base->_ImportOverlays();
 
 1;

@@ -733,6 +733,20 @@ sub FindDependencies {
     $deps->Add( out => $self->Object );
 }
 
+sub ShouldStoreExternally {
+    my $self = shift;
+    my $type = $self->CustomFieldObj->Type;
+    my $length = length($self->LargeContent || '');
+
+    return 0 if $length == 0;
+
+    return 1 if $type eq "Binary";
+
+    return 1 if $type eq "Image" and $length > 10 * 1024 * 1024;
+
+    return 0;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

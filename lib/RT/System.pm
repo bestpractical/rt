@@ -327,6 +327,13 @@ sub ParsedUpgradeHistory {
     return ($version_status, @lines);
 }
 
+sub ExternalStorage {
+    my $self = shift;
+    if (@_) {
+        $self->{ExternalStorage} = shift;
+    }
+    return $self->{ExternalStorage};
+}
 
 RT::Base->_ImportOverlays();
 

@@ -46,7 +46,6 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use 5.008003;
 use warnings;
 use strict;
 
@@ -55,44 +54,74 @@ package RT::ExternalStorage::AmazonS3;
 use Role::Basic qw/with/;
 with 'RT::ExternalStorage::Backend';
 
-our( $S3, $BUCKET);
+sub S3 {
+    my $self = shift;
+    if (@_) {
+        $self->{S3} = shift;
+    }
+    return $self->{S3};
+}
+
+sub Bucket {
+    my $self = shift;
+    return $self->{Bucket};
+}
+
+sub AccessKeyId {
+    my $self = shift;
+    return $self->{AccessKeyId};
+}
+
+sub SecretAccessKey {
+    my $self = shift;
+    return $self->{SecretAccessKey};
+}
+
+sub BucketObj {
+    my $self = shift;
+    return $self->S3->bucket($self->Bucket);
+}
+
 sub Init {
     my $self = shift;
-    my %self = %{$self};
 
     if (not Amazon::S3->require) {
         RT->Logger->error("Required module Amazon::S3 is not installed");
         return;
-    } elsif (not $self{AccessKeyId}) {
-        RT->Logger->error("AccessKeyId not provided for AmazonS3");
-        return;
-    } elsif (not $self{SecretAccessKey}) {
-        RT->Logger->error("SecretAccessKey not provided for AmazonS3");
-        return;
-    } elsif (not $self{Bucket}) {
-        RT->Logger->error("Bucket not provided for AmazonS3");
-        return;
     }
 
+    for my $key (qw/AccessKeyId SecretAccessKey Bucket/) {
+        if (not $self->$key) {
+            RT->Logger->error("Required option '$key' not provided for AmazonS3 external storage. See the documentation for " . __PACKAGE__ . " for setting up this integration.");
+            return;
+        }
+    }
 
-    $S3 = Amazon::S3->new( {
-        aws_access_key_id     => $self{AccessKeyId},
-        aws_secret_access_key => $self{SecretAccessKey},
+    my $S3 = Amazon::S3->new( {
+        aws_access_key_id     => $self->AccessKeyId,
+        aws_secret_access_key => $self->SecretAccessKey,
         retry                 => 1,
     } );
+    $self->S3($S3);
 
-    my $buckets = $S3->bucket( $self{Bucket} );
+    my $buckets = $S3->bucket( $self->Bucket );
     unless ( $buckets ) {
         RT->Logger->error("Can't list buckets of AmazonS3: ".$S3->errstr);
         return;
     }
-    unless ( grep {$_->bucket eq $self{Bucket}} @{$buckets->{buckets}} ) {
+
+    my @buckets = $buckets->{buckets} ? @{$buckets->{buckets}} : ($buckets);
+
+    unless ( grep {$_->bucket eq $self->Bucket} @buckets ) {
         my $ok = $S3->add_bucket( {
-            bucket    => $self{Bucket},
+            bucket    => $self->Bucket,
             acl_short => 'private',
         } );
-        unless ($ok) {
-            RT->Logger->error("Can't create new bucket '$self{Bucket}' on AmazonS3: ".$S3->errstr);
+        if ($ok) {
+            RT->Logger->debug("Created new bucket '".$self->Bucket."' on AmazonS3");
+        }
+        else {
+            RT->Logger->error("Can't create new bucket '".$self->Bucket."' on AmazonS3: ".$S3->errstr);
             return;
         }
     }
@@ -104,8 +133,8 @@ sub Get {
     my $self = shift;
     my ($sha) = @_;
 
-    my $ok = $S3->bucket($self->{Bucket})->get_key( $sha );
-    return (undef, "Could not retrieve from AmazonS3:" . $S3->errstr)
+    my $ok = $self->BucketObj->get_key( $sha );
+    return (undef, "Could not retrieve from AmazonS3:" . $self->S3->errstr)
         unless $ok;
     return ($ok->{value});
 }
@@ -115,11 +144,11 @@ sub Store {
     my ($sha, $content) = @_;
 
     # No-op if the path exists already
-    return (1) if $S3->bucket($self->{Bucket})->head_key( $sha );
+    return (1) if $self->BucketObj->head_key( $sha );
 
-    $S3->bucket($self->{Bucket})->add_key(
+    $self->BucketObj->add_key(
         $sha => $content
-    ) or return (undef, "Failed to write to AmazonS3: " . $S3->errstr);
+    ) or return (undef, "Failed to write to AmazonS3: " . $self->S3->errstr);
 
     return (1);
 }
@@ -201,5 +230,7 @@ RT what bucket name to use in your F<RT_SiteConfig.pm> file:
 =back
 
 =cut
+
+RT::Base->_ImportOverlays();
 
 1;

@@ -46,15 +46,10 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use 5.008003;
 use warnings;
 use strict;
 
 package RT::ExternalStorage;
-
-our $VERSION = '0.61';
-
-use Digest::SHA qw//;
 
 require RT::ExternalStorage::Backend;
 
@@ -136,97 +131,6 @@ storage.
 
 =cut
 
-our $BACKEND;
-our $WRITE;
-$RT::Config::META{ExternalStorage} = {
-    Type => 'HASH',
-    PostLoadCheck => sub {
-        my $self = shift;
-        my %hash = $self->Get('ExternalStorage');
-        return unless keys %hash;
-        $hash{Write} = $WRITE;
-        $BACKEND = RT::ExternalStorage::Backend->new( %hash );
-    },
-};
-
-sub Store {
-    my $class = shift;
-    my $content = shift;
-
-    my $key = Digest::SHA::sha256_hex( $content );
-    my ($ok, $msg) = $BACKEND->Store( $key => $content );
-    return ($ok, $msg) unless defined $ok;
-
-    return ($key);
-}
-
-
-package RT::Record;
-
-no warnings 'redefine';
-my $__DecodeLOB = __PACKAGE__->can('_DecodeLOB');
-*_DecodeLOB = sub {
-    my $self            = shift;
-    my $ContentType     = shift || '';
-    my $ContentEncoding = shift || 'none';
-    my $Content         = shift;
-    my $Filename        = @_;
-
-    return $__DecodeLOB->($self, $ContentType, $ContentEncoding, $Content, $Filename)
-        unless $ContentEncoding eq "external";
-
-    unless ($BACKEND) {
-        RT->Logger->error( "Failed to load $Content; external storage not configured" );
-        return ("");
-    };
-
-    my ($ok, $msg) = $BACKEND->Get( $Content );
-    unless (defined $ok) {
-        RT->Logger->error( "Failed to load $Content from external storage: $msg" );
-        return ("");
-    }
-
-    return $__DecodeLOB->($self, $ContentType, 'none', $ok, $Filename);
-};
-
-package RT::ObjectCustomFieldValue;
-
-sub StoreExternally {
-    my $self = shift;
-    my $type = $self->CustomFieldObj->Type;
-    my $length = length($self->LargeContent || '');
-
-    return 0 if $length == 0;
-
-    return 1 if $type eq "Binary";
-
-    return 1 if $type eq "Image" and $length > 10 * 1024 * 1024;
-
-    return 0;
-}
-
-package RT::Attachment;
-
-sub StoreExternally {
-    my $self = shift;
-    my $type = $self->ContentType;
-    my $length = $self->ContentLength;
-
-    return 0 if $length == 0;
-
-    if ($type =~ m{^multipart/}) {
-        return 0;
-    } elsif ($type =~ m{^(text|message)/}) {
-        # If textual, we only store externally if it's _large_ (> 10M)
-        return 1 if $length > 10 * 1024 * 1024;
-        return 0;
-    } elsif ($type =~ m{^image/}) {
-        # Ditto images, which may be displayed inline
-        return 1 if $length > 10 * 1024 * 1024;
-        return 0;
-    } else {
-        return 1;
-    }
-}
+RT::Base->_ImportOverlays();
 
 1;

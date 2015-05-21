@@ -66,18 +66,25 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 
 }
 
-BEGIN { $RT::ExternalStorage::WRITE = 1 };
 use RT -init;
 
 # Ensure we only run one of these processes at once
 use Fcntl ':flock';
 exit unless flock main::DATA, LOCK_EX | LOCK_NB;
 
+use Digest::SHA qw//;
+
+my $ExternalStorage = RT->System->ExternalStorage;
+
 die "\%ExternalStorage is not configured\n"
-    unless RT->Config->Get("ExternalStorage");
+    unless $ExternalStorage;
 
-exit unless $RT::ExternalStorage::BACKEND;
+if ($ExternalStorage->can('IsWriteable')) {
+    my ($ok, $msg) = $ExternalStorage->IsWriteable;
+    die $msg if !$ok;
+}
 
+# pull out the previous high-water mark for each object type
 my $last = RT->System->FirstAttribute("ExternalStorage");
 $last = $last ? $last->Content : {};
 
@@ -122,20 +129,19 @@ for my $class (qw/RT::Attachments RT::ObjectCustomFieldValues/) {
                 TABLE2 => 'CustomFields',
                 FIELD2 => 'id',
             );
-            # TODO: use IN operator once we increase required RT version to 4.2
             $attach->Limit(
-                ALIAS => $cfs,
-                FIELD => "Type",
-                VALUE => $_,
-            ) for qw(Binary Image);
+                ALIAS    => $cfs,
+                FIELD    => 'Type',
+                OPERATOR => 'IN',
+                VALUE    => [ qw(Binary Image) ],
+            );
             $attach->{'find_expired_rows'} = 1;
         }
 
         $attach->RowsPerPage(100);
-        $RT::Handle->dbh->begin_work;
         while ( my $a = $attach->Next ) {
             $id = $a->id;
-            next unless $a->StoreExternally;
+            next unless $a->ShouldStoreExternally;
 
             # Explicitly get bytes (not characters, which ->$column would do)
             my $content = $a->_DecodeLOB(
@@ -145,11 +151,13 @@ for my $class (qw/RT::Attachments RT::ObjectCustomFieldValues/) {
             );
 
             # Attempt to write that out
-            my ($key, $msg) = RT::ExternalStorage->Store( $content );
+            my ($key, $msg) = Store( $content );
             unless ($key) {
                 RT->Logger->error("Failed to store $class $id: $msg");
                 exit 1;
             }
+
+            $RT::Handle->dbh->begin_work;
 
             (my $status, $msg ) = $a->__Set(
                 Field => $column, Value => $key
@@ -166,14 +174,27 @@ for my $class (qw/RT::Attachments RT::ObjectCustomFieldValues/) {
                 RT->Logger->error("Failed to update ContentEncoding of $class $id: $msg");
                 exit 2;
             }
+
+            $RT::Handle->dbh->commit;
         }
-        $RT::Handle->dbh->commit;
 
         last unless $attach->Count;
     }
     $last->{$class} = $id;
 }
 
+# update high-water mark for each object type
 RT->System->SetAttribute( Name => "ExternalStorage", Content => $last );
 
+sub Store {
+    my $content = shift;
+
+    my $key = Digest::SHA::sha256_hex( $content );
+    my ($ok, $msg) = $ExternalStorage->Store( $key => $content );
+    return ($ok, $msg) unless defined $ok;
+
+    return ($key);
+}
+
+# don't remove; for locking (see call to flock above)
 __DATA__
