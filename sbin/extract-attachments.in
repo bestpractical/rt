@@ -1,0 +1,167 @@
+#!/usr/bin/env perl
+### before: #!@PERL@
+
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2015 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
+use strict;
+use warnings;
+
+### after: use lib qw(@RT_LIB_PATH@);
+use lib qw(/opt/rt4/local/lib /opt/rt4/lib);
+
+BEGIN { $RT::Extension::ExternalStorage::WRITE = 1 };
+use RT -init;
+
+# Ensure we only run one of these processes at once
+use Fcntl ':flock';
+exit unless flock main::DATA, LOCK_EX | LOCK_NB;
+
+die "\%ExternalStorage is not configured\n"
+    unless RT->Config->Get("ExternalStorage");
+
+exit unless $RT::Extension::ExternalStorage::BACKEND;
+
+my $last = RT->System->FirstAttribute("ExternalStorage");
+$last = $last ? $last->Content : {};
+
+for my $class (qw/RT::Attachments RT::ObjectCustomFieldValues/) {
+    my $column = $class eq 'RT::Attachments' ? "Content" : "LargeContent";
+    my $id = $last->{$class} || 0;
+
+    while (1) {
+        my $attach = $class->new($RT::SystemUser);
+        $attach->Limit(
+            FIELD    => 'id',
+            OPERATOR => '>',
+            VALUE    => $id,
+        );
+        $attach->Limit(
+            FIELD           => 'ContentEncoding',
+            OPERATOR        => '!=',
+            VALUE           => 'external',
+            ENTRYAGGREGATOR => 'AND',
+        );
+        if ($class eq "RT::Attachments") {
+            $attach->_OpenParen('applies');
+            $attach->Limit(
+                FIELD     => 'ContentType',
+                OPERATOR  => 'NOT STARTSWITH',
+                VALUE     => $_,
+                SUBCLAUSE => 'applies',
+                ENTRYAGGREGATOR => "AND",
+            ) for "text/", "message/", "image/", "multipart/";
+            $attach->_CloseParen('applies');
+            $attach->Limit(
+                FUNCTION  => 'LENGTH(main.Content)',
+                OPERATOR  => '>',
+                VALUE     => 10*1024*1024,
+                SUBCLAUSE => 'applies',
+                ENTRYAGGREGATOR => 'OR',
+            );
+        } else {
+            my $cfs = $attach->Join(
+                ALIAS1 => 'main',
+                FIELD1 => 'CustomField',
+                TABLE2 => 'CustomFields',
+                FIELD2 => 'id',
+            );
+            # TODO: use IN operator once we increase required RT version to 4.2
+            $attach->Limit(
+                ALIAS => $cfs,
+                FIELD => "Type",
+                VALUE => $_,
+            ) for qw(Binary Image);
+            $attach->{'find_expired_rows'} = 1;
+        }
+
+        $attach->RowsPerPage(100);
+        $RT::Handle->dbh->begin_work;
+        while ( my $a = $attach->Next ) {
+            $id = $a->id;
+            next unless $a->StoreExternally;
+
+            # Explicitly get bytes (not characters, which ->$column would do)
+            my $content = $a->_DecodeLOB(
+                "application/octet-stream",
+                $a->ContentEncoding,
+                $a->_Value( $column, decode_utf8 => 0),
+            );
+
+            # Attempt to write that out
+            my ($key, $msg) = RT::Extension::ExternalStorage->Store( $content );
+            unless ($key) {
+                RT->Logger->error("Failed to store $class $id: $msg");
+                exit 1;
+            }
+
+            (my $status, $msg ) = $a->__Set(
+                Field => $column, Value => $key
+            );
+            unless ($status) {
+                RT->Logger->error("Failed to update $column of $class $id: $msg");
+                exit 2;
+            }
+
+            ( $status, $msg ) = $a->__Set(
+                Field => 'ContentEncoding', Value => 'external',
+            );
+            unless ($status) {
+                RT->Logger->error("Failed to update ContentEncoding of $class $id: $msg");
+                exit 2;
+            }
+        }
+        $RT::Handle->dbh->commit;
+
+        last unless $attach->Count;
+    }
+    $last->{$class} = $id;
+}
+
+RT->System->SetAttribute( Name => "ExternalStorage", Content => $last );
+
+__DATA__
