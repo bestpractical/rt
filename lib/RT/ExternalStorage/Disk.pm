@@ -123,6 +123,10 @@ sub Store {
     return (1);
 }
 
+sub DownloadURLFor {
+    return;
+}
+
 =head1 NAME
 
 RT::ExternalStorage::Disk - On-disk storage of attachments

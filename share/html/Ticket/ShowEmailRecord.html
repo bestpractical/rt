@@ -62,9 +62,10 @@ my $show_content = sub {
         $m->out( $content );
         return;
     }
-    my $href = RT->Config->Get('WebPath') .'/Ticket/Attachment/'
-        . $attach->TransactionId .'/'. $attach->id .'/'
-        . $m->interp->apply_escapes( $attach->Filename, 'u' );
+    my $href = RT->System->ExternalStorageURLFor($attach)
+            || RT->Config->Get('WebPath') .'/Ticket/Attachment/'
+             . $attach->TransactionId .'/'. $attach->id .'/'
+             . $m->interp->apply_escapes( $attach->Filename, 'u' );
     $m->out( '<a href="'. $href  .'">'. loc('download') .'</a>' );
 };
 

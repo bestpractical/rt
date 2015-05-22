@@ -123,6 +123,10 @@ sub Store {
     return (1);
 }
 
+sub DownloadURLFor {
+    return;
+}
+
 =head1 NAME
 
 RT::ExternalStorage::Dropbox - Store files in the Dropbox cloud

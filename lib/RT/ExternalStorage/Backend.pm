@@ -56,6 +56,7 @@ use Role::Basic;
 requires 'Init';
 requires 'Get';
 requires 'Store';
+requires 'DownloadURLFor';
 
 sub new {
     my $class = shift;

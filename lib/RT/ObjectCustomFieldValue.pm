@@ -747,6 +747,13 @@ sub ShouldStoreExternally {
     return 0;
 }
 
+sub ExternalStoreDigest {
+    my $self = shift;
+
+    return undef if $self->ContentEncoding ne 'external';
+    return $self->_Value( 'LargeContent' );
+}
+
 RT::Base->_ImportOverlays();
 
 1;

@@ -59,7 +59,12 @@ foreach my $message ( @{ $Attachments->{ $Parent || 0 } || [] } ) {
     if ( $message->ContentLength or $name ) {
 </%PERL>
 <div class="downloadattachment">
-<a href="<% $AttachmentPath %>/<% $Transaction->Id %>/<% $message->Id %>/<% $name | u%>"><&|/l&>Download</&> <% length $name ? $name : loc('(untitled)') %></a>\
+% if (my $url = RT->System->ExternalStorageURLFor($message)) {
+<a href="<% $url %>">
+% } else {
+<a href="<% $AttachmentPath %>/<% $Transaction->Id %>/<% $message->Id %>/<% $name | u%>">
+% }
+<&|/l&>Download</&> <% length $name ? $name : loc('(untitled)') %></a>\
 % if ( $DownloadableHeaders && ! length $name && $message->ContentType =~ /text/  ) {
  / <a href="<% $AttachmentPath %>/WithHeaders/<% $message->Id %>"><% loc('with headers') %></a>
 % }
@@ -275,11 +280,13 @@ my $render_attachment = sub {
 
         my $filename = length $name ? $name : loc('(untitled)');
         my $efilename = $m->interp->apply_escapes( $filename, 'h' );
+
+        my $url = RT->System->ExternalStorageURLFor($message)
+               || $AttachmentPath .'/'. $Transaction->Id .'/'. $message->Id .'/'
+                . $m->interp->apply_escapes( $filename, 'u', 'h' );
+
         $m->out(
-            qq{<img alt="$efilename" title="$efilename"}
-            . ' src="'. $AttachmentPath .'/'. $Transaction->Id .'/'. $message->Id .'/'
-                . $m->interp->apply_escapes( $filename, 'u', 'h' )
-            . '" />'
+            qq{<img alt="$efilename" title="$efilename" src="$url" />}
         );
     }
     elsif ( $message->ContentLength && $message->ContentLength > 0 ) {

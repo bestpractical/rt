@@ -327,12 +327,43 @@ sub ParsedUpgradeHistory {
     return ($version_status, @lines);
 }
 
+=head2 ExternalStorage
+
+Accessor for the storage engine selected by L<RT::ExternalStorage>. Will
+be undefined if external storage is not configured.
+
+=cut
+
 sub ExternalStorage {
     my $self = shift;
     if (@_) {
         $self->{ExternalStorage} = shift;
     }
     return $self->{ExternalStorage};
+}
+
+=head2 ExternalStorageURLFor object
+
+Returns a URL for direct linking to an L<RT::ExternalStorage>
+engine. Will return C<undef> if external storage is not configured, or
+if direct linking is disabled in config (C<$ExternalStorageDirectLink>),
+or if the external storage engine doesn't support hyperlinking (as in
+L<RT::ExternalStorage::Disk>), or finally, if the object is for whatever
+reason not present in external storage.
+
+=cut
+
+sub ExternalStorageURLFor {
+    my $self = shift;
+    my $Object = shift;
+
+    # external storage not configured
+    return undef if !$self->ExternalStorage;
+
+    # external storage direct links disabled
+    return undef if !RT->Config->Get('ExternalStorageDirectLink');
+
+    return $self->ExternalStorage->DownloadURLFor($Object);
 }
 
 RT::Base->_ImportOverlays();

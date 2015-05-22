@@ -153,6 +153,19 @@ sub Store {
     return (1);
 }
 
+sub DownloadURLFor {
+    my $self = shift;
+    my $object = shift;
+
+    my $column = $object->isa('RT::Attachment') ? 'Content' : 'LargeContent';
+    my $digest = $object->__Value($column);
+
+    # "If you make a request to the http://BUCKET.s3.amazonaws.com
+    # endpoint, the DNS has sufficient information to route your request
+    # directly to the region where your bucket resides."
+    return "https://" . $self->Bucket . ".s3.amazonaws.com/" . $digest;
+}
+
 =head1 NAME
 
 RT::ExternalStorage::AmazonS3 - Store files in Amazon's S3 cloud
@@ -228,6 +241,51 @@ RT what bucket name to use in your F<RT_SiteConfig.pm> file:
     );
 
 =back
+
+=head2 Direct Linking
+
+This storage engine supports direct linking. This means that RT can link
+I<directly> to S3 when listing attachments, showing image previews, etc.
+This relieves some bandwidth pressure from RT because ordinarily it would
+have to download each attachment from S3 to be able to serve it.
+
+To enable direct linking you must first make all content in your bucket
+publicly viewable.
+
+B<Beware that this could have serious implications for billing and
+privacy>. RT cannot enforce its access controls for content on S3. This
+is tempered somewhat by the fact that users must be able to guess the
+SHA-256 digest of the file to be able to access it. But there is nothing
+stopping someone from tweeting a URL to a file hosted on your S3. These
+concerns do not arise when using an RT-mediated link to S3, since RT
+uses an access key to upload to and download from S3.
+
+To make all content in an S3 bucket publicly viewable, navigate to
+the bucket in the S3 web UI. Select the "Properties" tab and inside
+"Permissions" there is a button to "Add bucket policy". Paste the
+following content in the provided textbox:
+
+    {
+        "Version": "2008-10-17",
+        "Statement": [
+            {
+                "Sid": "AllowPublicRead",
+                "Effect": "Allow",
+                "Principal": {
+                    "AWS": "*"
+                },
+                "Action": "s3:GetObject",
+                "Resource": "arn:aws:s3:::BUCKET/*"
+            }
+        ]
+    }
+
+Replace C<BUCKET> with the bucket name that is used by your RT instance.
+
+Finally, set C<$ExternalStorageDirectLink> to 1 in your
+F<RT_SiteConfig.pm> file:
+
+    Set($ExternalStorageDirectLink, 1);
 
 =cut
 

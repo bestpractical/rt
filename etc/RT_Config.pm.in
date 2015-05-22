@@ -2573,6 +2573,24 @@ the new ones that C<sbin/rt-externalize-attachments> hasn't seen yet.
 
 Set($ExternalStorageCutoffSize, 10_000_000);
 
+=item C<$ExternalStorageDirectLink>
+
+Certain ExternalStorage backends can serve files over HTTP.  For such
+backends, RT can link directly to those files in external storage.  This
+cuts down download time and relieves resource pressure because RT's web
+server is no longer involved in retrieving and then immediately serving
+each attachment.
+
+Of the storage engines that RT ships, only
+L<RT::ExternalStorage::AmazonS3> supports this feature, and you must
+manually configure it to allow direct linking.
+
+Set this to 1 to link directly to files in external storage.
+
+=cut
+
+Set($ExternalStorageDirectLink, 0);
+
 =back
 
 =head1 Lifecycles
