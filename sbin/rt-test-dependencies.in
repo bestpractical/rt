@@ -78,6 +78,8 @@ GetOptions(
     'with-USERLOGO',
     'with-HTML-DOC',
 
+    'with-S3', 'with-DROPBOX',
+
     'list-deps',
     'siteinstall!',
     'help|h',
@@ -91,18 +93,20 @@ if ( $args{help} ) {
 
 # Set up defaults
 my %default = (
-    'with-CORE' => 1,
-    'with-CLI' => 1,
-    'with-MAILGATE' => 1, 
-    'with-DEVELOPER' => @RT_DEVELOPER@,
-    'with-GPG' => @RT_GPG_DEPS@,
-    'with-SMIME' => @RT_SMIME_DEPS@,
-    'with-ICAL' => 1,
-    'with-GRAPHVIZ' => @RT_GRAPHVIZ@,
-    'with-GD' => @RT_GD@,
+    'with-CORE'       => 1,
+    'with-CLI'        => 1,
+    'with-MAILGATE'   => 1,
+    'with-DEVELOPER'  => @RT_DEVELOPER@,
+    'with-GPG'        => @RT_GPG_DEPS@,
+    'with-SMIME'      => @RT_SMIME_DEPS@,
+    'with-ICAL'       => 1,
+    'with-GRAPHVIZ'   => @RT_GRAPHVIZ@,
+    'with-GD'         => @RT_GD@,
     'with-DASHBOARDS' => 1,
-    'with-USERLOGO' => 1,
-    'with-HTML-DOC' => @RT_DEVELOPER@,
+    'with-USERLOGO'   => 1,
+    'with-HTML-DOC'   => @RT_DEVELOPER@,
+    'with-S3'         => (uc(q{@ATTACHMENT_STORE@}) eq 'S3'),
+    'with-DROPBOX'    => (uc(q{@ATTACHMENT_STORE@}) eq 'DROPBOX'),
 );
 $args{$_} = $default{$_} foreach grep !exists $args{$_}, keys %default;
 
@@ -376,6 +380,14 @@ Convert::Color
 $deps{'HTML-DOC'} = [ text_to_hash( <<'.') ];
 HTML::Entities
 Pod::Simple 3.24
+.
+
+$deps{'S3'} = [ text_to_hash( <<'.') ];
+Amazon::S3
+.
+
+$deps{'DROPBOX'} = [ text_to_hash( <<'.') ];
+File::Dropbox
 .
 
 my %AVOID = (
