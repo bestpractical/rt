@@ -76,7 +76,7 @@ use Role::Basic 'with';
 with 'RT::SearchBuilder::Role::Roles';
 
 use Scalar::Util qw/blessed/;
-
+use 5.010;
 use RT::Ticket;
 use RT::SQL;
 
@@ -2934,6 +2934,93 @@ sub _parser {
     $tree->ParseSQL(
         Query => $string,
         CurrentUser => $self->CurrentUser,
+    );
+
+    state ( $active_status_node, $inactive_status_node );
+
+    $tree->traverse(
+        sub {
+            my $node = shift;
+            return unless $node->isLeaf and $node->getNodeValue;
+            my ($key, $subkey, $meta, $op, $value, $bundle)
+                = @{$node->getNodeValue}{qw/Key Subkey Meta Op Value Bundle/};
+            return unless $key eq "Status" && $value =~ /^(?:__(?:in)?active__)$/i;
+
+            my $parent = $node->getParent;
+            my $index = $node->getIndex;
+
+            if ( ( lc $value eq '__inactive__' && $op eq '=' ) || ( lc $value eq '__active__' && $op eq '!=' ) ) {
+                unless ( $inactive_status_node ) {
+                    my %lifecycle =
+                      map { $_ => $RT::Lifecycle::LIFECYCLES{ $_ }{ inactive } }
+                      grep { @{ $RT::Lifecycle::LIFECYCLES{ $_ }{ inactive } || [] } }
+                      keys %RT::Lifecycle::LIFECYCLES;
+                    return unless %lifecycle;
+
+                    my $sql;
+                    if ( keys %lifecycle == 1 ) {
+                        $sql = join ' OR ', map { qq{ Status = "$_" } } map { @$_ } values %lifecycle;
+                    }
+                    else {
+                        my @inactive_sql;
+                        for my $name ( keys %lifecycle ) {
+                            my $inactive_sql =
+                                qq{Lifecycle = "$name"}
+                              . ' AND ('
+                              . join( ' OR ', map { qq{ Status = "$_" } } @{ $lifecycle{ $name } } ) . ')';
+                            push @inactive_sql, qq{($inactive_sql)};
+                        }
+                        $sql = join ' OR ', @inactive_sql;
+                    }
+                    $inactive_status_node = RT::Interface::Web::QueryBuilder::Tree->new;
+                    $inactive_status_node->ParseSQL(
+                        Query       => $sql,
+                        CurrentUser => $self->CurrentUser,
+                    );
+                }
+                $parent->removeChild( $node );
+                $parent->insertChild( $index, $inactive_status_node );
+            }
+            else {
+                unless ( $active_status_node ) {
+                    my %lifecycle =
+                      map {
+                        $_ => [
+                            @{ $RT::Lifecycle::LIFECYCLES{ $_ }{ initial } || [] },
+                            @{ $RT::Lifecycle::LIFECYCLES{ $_ }{ active }  || [] },
+                          ]
+                      }
+                      grep {
+                             @{ $RT::Lifecycle::LIFECYCLES{ $_ }{ initial } || [] }
+                          || @{ $RT::Lifecycle::LIFECYCLES{ $_ }{ active }  || [] }
+                      } keys %RT::Lifecycle::LIFECYCLES;
+                    return unless %lifecycle;
+
+                    my $sql;
+                    if ( keys %lifecycle == 1 ) {
+                        $sql = join ' OR ', map { qq{ Status = "$_" } } map { @$_ } values %lifecycle;
+                    }
+                    else {
+                        my @active_sql;
+                        for my $name ( keys %lifecycle ) {
+                            my $active_sql =
+                                qq{Lifecycle = "$name"}
+                              . ' AND ('
+                              . join( ' OR ', map { qq{ Status = "$_" } } @{ $lifecycle{ $name } } ) . ')';
+                            push @active_sql, qq{($active_sql)};
+                        }
+                        $sql = join ' OR ', @active_sql;
+                    }
+                    $active_status_node = RT::Interface::Web::QueryBuilder::Tree->new;
+                    $active_status_node->ParseSQL(
+                        Query       => $sql,
+                        CurrentUser => $self->CurrentUser,
+                    );
+                }
+                $parent->removeChild( $node );
+                $parent->insertChild( $index, $active_status_node );
+            }
+        }
     );
 
     # Perform an optimization pass looking for watcher bundling
