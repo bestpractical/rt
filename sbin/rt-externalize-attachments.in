@@ -118,36 +118,8 @@ for my $class (qw/RT::Attachments RT::ObjectCustomFieldValues/) {
             VALUE           => 'external',
             ENTRYAGGREGATOR => 'AND',
         );
-        if ($class eq "RT::Attachments") {
-            $attach->_OpenParen('applies');
-            $attach->Limit(
-                FIELD     => 'ContentType',
-                OPERATOR  => 'NOT STARTSWITH',
-                VALUE     => $_,
-                SUBCLAUSE => 'applies',
-                ENTRYAGGREGATOR => "AND",
-            ) for "text/", "message/", "image/", "multipart/";
-            $attach->_CloseParen('applies');
-            $attach->Limit(
-                FUNCTION  => 'LENGTH(main.Content)',
-                OPERATOR  => '>',
-                VALUE     => RT->Config->Get('ExternalStorageCutoffSize'),
-                SUBCLAUSE => 'applies',
-                ENTRYAGGREGATOR => 'OR',
-            );
-        } else {
-            my $cfs = $attach->Join(
-                ALIAS1 => 'main',
-                FIELD1 => 'CustomField',
-                TABLE2 => 'CustomFields',
-                FIELD2 => 'id',
-            );
-            $attach->Limit(
-                ALIAS    => $cfs,
-                FIELD    => 'Type',
-                OPERATOR => 'IN',
-                VALUE    => [ qw(Binary Image) ],
-            );
+
+        if ($class eq "RT::ObjectCustomFieldValues") {
             $attach->{'find_expired_rows'} = 1;
         }
 
