@@ -67,9 +67,9 @@
 % }
 </nobr>
 % }
-% if ( $Object && $Object->Id ) {
+% if ( $Object && $Object->Id && $Object->CurrentUserHasRight('update') ) {
 <input type="submit" class="button" id="SavedSearchSave" name="SavedSearchSave"   value="<%loc('Update')%>" />
-% } else {
+% } elsif ( !$Object ) {
 <input type="submit" class="button" id="SavedSearchSave" name="SavedSearchSave"   value="<%loc('Save')%>" />
 %}
 % }
