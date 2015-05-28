@@ -73,15 +73,15 @@ use Getopt::Long;
 
 use RT::Interface::CLI qw(GetCurrentUser loc);
 
-my ( $search, $condition, $action, $search_arg, $condition_arg, $action_arg,
+my ( $search, $condition, $actions, $search_arg, $condition_arg, $actions_arg,
      $template, $template_id, $transaction, $transaction_type, $help, $log, $verbose );
 GetOptions(
     "search=s"           => \$search,
     "search-arg=s"       => \$search_arg,
     "condition=s"        => \$condition,
     "condition-arg=s"    => \$condition_arg,
-    "action-arg=s"       => \$action_arg,
-    "action=s"           => \$action,
+    "action-arg=s@"      => \$actions_arg,
+    "action=s@"          => \$actions,
     "template=s"         => \$template,
     "template-id=s"      => \$template_id,
     "transaction=s"      => \$transaction,
@@ -114,7 +114,7 @@ unless ( $CurrentUser->Id ) {
     exit(1);
 }
 
-help() unless $search && $action;
+help() unless $search && $actions;
 
 $transaction = lc( $transaction||'' );
 if ( $transaction && $transaction !~ /^(first|all|last)$/i ) {
@@ -133,7 +133,9 @@ elsif ( $template_id ) {
 
 # We _must_ have a search object
 load_module($search);
-load_module($action)    if ($action);
+for my $action (@$actions) {
+    load_module($action);
+}
 load_module($condition) if ($condition);
 
 my $void_scrip = RT::Scrip->new( $CurrentUser );
@@ -197,24 +199,35 @@ sub process {
         print "\t".loc("Condition matches...")."\n" if $verbose;
     }
 
-    #prepare our action
-    my $action_obj = $action->new(
-        TicketObj      => $ticket,
-        TransactionObj => $transaction,
-        TemplateObj    => $template_obj,
-        Argument       => $action_arg,
-        ScripObj       => $void_scrip,
-        ScripActionObj => $void_scrip_action,
-        CurrentUser    => $CurrentUser,
-    );
+    my $i = 0;
+    for my $action (@$actions) {
 
-    #if our preparation, move onto the next ticket
-    return unless $action_obj->Prepare;
-    print "\t".loc("Action prepared...")."\n" if $verbose;
+        # Given the current index of the actions array, see
+        # if there is still a corresponding element in the
+        # actions_arg array. If so, then use that argument,
+        # else use undef.
+        my $action_argument = ($i <= $#$actions_arg) ? $actions_arg->[$i] : undef;
+        $i++;
 
-    #commit our action.
-    return unless $action_obj->Commit;
-    print "\t".loc("Action committed.")."\n" if $verbose;
+        # prepare our action
+        my $action_obj = $action->new(
+            TicketObj      => $ticket,
+            TransactionObj => $transaction,
+            TemplateObj    => $template_obj,
+            Argument       => $action_argument,
+            ScripObj       => $void_scrip,
+            ScripActionObj => $void_scrip_action,
+            CurrentUser    => $CurrentUser,
+        );
+
+        # if our preparation failed, move onto the next action
+        next unless $action_obj->Prepare;
+        print "\t".loc("Action prepared...")."\n" if $verbose;
+
+        # commit our action.
+        next unless $action_obj->Commit;
+        print "\t".loc("Action committed.")."\n" if $verbose;
+    }
 }
 
 # =head2 get_transactions
@@ -312,10 +325,10 @@ sub help {
       . loc( "[_1] - An argument to pass to [_2]", "--condition-arg", "--condition" )
       . "\n";
     print "        "
-      . loc( "[_1] - Specify the action module you want to use", "--action" )
+      . loc( "[_1] - Specify the action module you want to use. This option may be repeated to apply multiple actions to found tickets.", "--action" )
       . "\n";
     print "        "
-      . loc( "[_1] - An argument to pass to [_2]", "--action-arg", "--action" )
+      . loc( "[_1] - An argument to pass to [_2]. This option may be repeated to pass corresponding arguments to multiple calls of [_2].", "--action-arg", "--action" )
       . "\n";
     print "        "
       . loc( "[_1] - Specify name or id of template(s) you want to use", "--template" )
@@ -356,11 +369,6 @@ sub help {
     print " bin/rt-crontool \\\n";
     print "  --search RT::Search::ActiveTicketsInQueue  --search-arg general \\\n";
     print"  --action RT::Action::EscalatePriority\n";
- 
- 
- 
-
-
 
     exit(0);
 }
@@ -422,11 +430,11 @@ An argument to pass to --condition
 
 =item action 
 
-Specify the action module you want to use
+Specify the action module you want to use. This option may be repeated to apply multiple actions to found tickets.
 
 =item action-arg
 
-An argument to pass to --action
+An argument to pass to --action. This option may be repeated to pass corresponding arguments to multiple calls of --action.
 
 =item template
 
