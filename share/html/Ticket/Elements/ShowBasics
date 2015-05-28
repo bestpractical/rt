@@ -80,9 +80,13 @@
   </tr>
 %# This will check SeeQueue at the ticket role level, queue level, and global level
 % if ($Ticket->CurrentUserHasRight('SeeQueue')) {
+%   my $name = $Ticket->QueueObj->Name;
+%   $name =~ s/'/\\'/g;
+%   my $queue_cond = "Queue = '$name' AND ";
+%   my $all_q = $queue_cond . "(".join( " OR ", map $_->{cond}, @$conditions).")";
   <tr class="queue">
     <td class="label"><&|/l&>Queue</&>:</td>
-    <td class="value"><& ShowQueue, Ticket => $Ticket, QueueObj => $Ticket->QueueObj &></td>
+    <td class="value"><a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query=<% $all_q |u,n %>" title="<% $name %>"><% $name %></a></td>
   </tr>
 % }
   <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Grouping => 'Basics', Table => 0 &>
@@ -91,7 +95,16 @@
 % }
 % $m->callback( %ARGS, CallbackName => 'EndOfList', TicketObj => $Ticket );
 </table>
+<%INIT>
+# Ensure sane default
+unless ( @$conditions ) {
+    foreach (RT::Queue->ActiveStatusArray()) {
+        push @$conditions, { cond => "Status = '$_'", name => loc($_) };
+    }
+}
+</%INIT>
 <%ARGS>
 $Ticket => undef
 $UngroupedCFs => 0
+$conditions => []
 </%ARGS>
