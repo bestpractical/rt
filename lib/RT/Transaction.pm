@@ -1257,34 +1257,46 @@ sub _FormatUser {
         my $self = shift;
         my $ticket = RT::Ticket->new($self->CurrentUser);
         $ticket->Load($self->NewValue);
-        my $subject = [
-            \'<a href="', RT->Config->Get('WebPath'),
-            "/Ticket/Reminders.html?id=", $self->ObjectId,
-            "#reminder-", $ticket->id, \'">', $ticket->Subject, \'</a>'
-        ];
-        return ("Reminder '[_1]' added", $subject); #loc()
+        if ( $ticket->CurrentUserHasRight('ShowTicket') ) {
+            my $subject = [
+                \'<a href="', RT->Config->Get('WebPath'),
+                "/Ticket/Reminders.html?id=", $self->ObjectId,
+                "#reminder-", $ticket->id, \'">', $ticket->Subject, \'</a>'
+            ];
+            return ("Reminder '[_1]' added", $subject); #loc()
+        } else {
+            return ("Reminder added"); #loc()
+        }
     },
     OpenReminder => sub {
         my $self = shift;
         my $ticket = RT::Ticket->new($self->CurrentUser);
         $ticket->Load($self->NewValue);
-        my $subject = [
-            \'<a href="', RT->Config->Get('WebPath'),
-            "/Ticket/Reminders.html?id=", $self->ObjectId,
-            "#reminder-", $ticket->id, \'">', $ticket->Subject, \'</a>'
-        ];
-        return ("Reminder '[_1]' reopened", $subject);  #loc()
+        if ( $ticket->CurrentUserHasRight('ShowTicket') ) {
+            my $subject = [
+                \'<a href="', RT->Config->Get('WebPath'),
+                "/Ticket/Reminders.html?id=", $self->ObjectId,
+                "#reminder-", $ticket->id, \'">', $ticket->Subject, \'</a>'
+            ];
+            return ("Reminder '[_1]' reopened", $subject);  #loc()
+        } else {
+            return ("Reminder reopened");  #loc()
+        }
     },
     ResolveReminder => sub {
         my $self = shift;
         my $ticket = RT::Ticket->new($self->CurrentUser);
         $ticket->Load($self->NewValue);
-        my $subject = [
-            \'<a href="', RT->Config->Get('WebPath'),
-            "/Ticket/Reminders.html?id=", $self->ObjectId,
-            "#reminder-", $ticket->id, \'">', $ticket->Subject, \'</a>'
-        ];
-        return ("Reminder '[_1]' completed", $subject); #loc()
+        if ( $ticket->CurrentUserHasRight('ShowTicket') ) {
+            my $subject = [
+                \'<a href="', RT->Config->Get('WebPath'),
+                "/Ticket/Reminders.html?id=", $self->ObjectId,
+                "#reminder-", $ticket->id, \'">', $ticket->Subject, \'</a>'
+            ];
+            return ("Reminder '[_1]' completed", $subject); #loc()
+        } else {
+            return ("Reminder completed"); #loc()
+        }
     }
 );
 

@@ -98,7 +98,7 @@ if ($CloneTicket) {
         return if $uri->IsLocal and
                 $uri->Object and
                 $uri->Object->isa('RT::Ticket') and
-                $uri->Object->Type eq 'reminder';
+                $uri->Object->__Value('Type') eq 'reminder';
 
         return $link->$local_method || $uri->URI;
     };

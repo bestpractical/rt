@@ -106,7 +106,7 @@
 % if ( $hash{ReferredToBy} ) {
 % for my $link ( values %{$hash{ReferredToBy}} ) {
 % # Skip reminders
-% next if (UNIVERSAL::isa($link->BaseObj, 'RT::Ticket')  && $link->BaseObj->Type eq 'reminder');
+% next if (UNIVERSAL::isa($link->BaseObj, 'RT::Ticket')  && $link->BaseObj->__Value('Type') eq 'reminder');
       <input type="checkbox" class="checkbox" id="DeleteLink-<%$link->Base%>-<%$link->Type%>-" name="DeleteLink-<%$link->Base%>-<%$link->Type%>-" value="1" />
       <label for="DeleteLink-<%$link->Base%>-<%$link->Type%>-"><& /Elements/ShowLink, URI => $link->BaseURI &></label><br />
 % } }
