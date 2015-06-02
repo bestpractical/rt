@@ -16,11 +16,12 @@ ok($root->IsPassword("password"));
 is($root->__Value("Password"), $old, "Unchanged after password check");
 
 # bcrypt (smaller number of rounds)
+my $rounds = RT->Config->Get("BcryptCost");
 my $salt = Crypt::Eksblowfish::Bcrypt::en_base64("a"x16);
 $root->_Set( Field => "Password", Value => RT::User->_GeneratePassword_bcrypt("smaller", 6, $salt) );
 like($root->__Value("Password"), qr/^\!$default\!06\!/, "Stored with a smaller number of rounds");
 ok($root->IsPassword("smaller"), "Smaller number of bcrypt rounds works");
-like($root->__Value("Password"), qr/^\!$default\!10\!/, "And is now upgraded to salted $default");
+like($root->__Value("Password"), qr/^\!$default\!$rounds\!/, "And is now upgraded to $rounds rounds");
 
 # Salted SHA-512, one round
 $root->_Set( Field => "Password", Value => RT::User->_GeneratePassword_sha512("other", "salt") );

@@ -2071,7 +2071,7 @@ higher numbers denoting greater effort.
 
 =cut
 
-Set($BcryptCost, 10);
+Set($BcryptCost, 11);
 
 =back
 
