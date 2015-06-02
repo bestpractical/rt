@@ -367,6 +367,8 @@ if ($CloneTicket) {
         }
     }
 
+    $m->callback( CallbackName => 'MassageCloneArgs', ARGSRef => $clone, Queue => $Queue );
+
     for ( keys %$clone ) {
         $ARGS{$_} = $clone->{$_} if not defined $ARGS{$_};
     }
