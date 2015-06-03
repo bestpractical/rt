@@ -63,7 +63,7 @@ C<%AdminSearchResultFormat>
 Format strings are comma-separated lists of single-quoted strings.
 Since they're quoted strings of quoted strings, to prevent having to
 escape all of the quotes, they often use the C<qq{ ... }> operator in
-perl, which is just a fancy set of double-quotes.  For instance:
+Perl, which is just a fancy set of double-quotes.  For instance:
 
     Set( $DefaultSearchResultFormat, "'__id__','__Status__');
 
@@ -71,6 +71,7 @@ perl, which is just a fancy set of double-quotes.  For instance:
 
     Set( $DefaultSearchResultFormat, qq{ '__id__','__Status__' } );
 
+...except that it becomes easier to use double-quote characters.
 
 =head2 Elements
 
@@ -127,7 +128,7 @@ the list will be formatted on two lines.  For example, the format:
 
     '__id__', '__Subject__', '__NEWLINE__', '__Status__', '__QueueName__'
 
-..will render a three-ticket set of results as:
+...will render a three-ticket set of results as:
 
 =for html
 <table class="example"><tr class="none"><th>#</th><th>Subject</th></tr><tr><th>Status</th><th>Queue</th></tr>
