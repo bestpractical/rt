@@ -66,6 +66,19 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 
 }
 
+# Read in the options
+my %opts;
+use Getopt::Long;
+GetOptions( \%opts,
+    "help|h", "verbose|v",
+);
+
+if ($opts{'help'}) {
+    require Pod::Usage;
+    print Pod::Usage::pod2usage(-verbose => 2);
+    exit;
+}
+
 use RT -init;
 
 # Ensure we only run one of these processes at once
@@ -141,7 +154,14 @@ for my $class (qw/RT::Attachments RT::ObjectCustomFieldValues/) {
         $attach->RowsPerPage(100);
         while ( my $a = $attach->Next ) {
             $id = $a->id;
-            next unless $a->ShouldStoreExternally;
+
+            my ($ok, $why) = $a->ShouldStoreExternally;
+            if (!$ok) {
+                if ($opts{verbose}) {
+                    RT->Logger->info("Skipping $class $id because: $why");
+                }
+                next;
+            }
 
             # Explicitly get bytes (not characters, which ->$column would do)
             my $content = $a->_DecodeLOB(
@@ -151,6 +171,10 @@ for my $class (qw/RT::Attachments RT::ObjectCustomFieldValues/) {
             );
 
             # Attempt to write that out
+            if ($opts{verbose}) {
+                RT->Logger->info("Storing $class $id");
+            }
+
             my ($key, $msg) = Store( $content );
             unless ($key) {
                 RT->Logger->error("Failed to store $class $id: $msg");
@@ -176,6 +200,10 @@ for my $class (qw/RT::Attachments RT::ObjectCustomFieldValues/) {
             }
 
             $RT::Handle->dbh->commit;
+
+            if ($opts{verbose}) {
+                RT->Logger->info("Stored $class $id as $key");
+            }
         }
 
         last unless $attach->Count;
@@ -195,6 +223,37 @@ sub Store {
 
     return ($key);
 }
+
+=head1 NAME
+
+rt-externalize-attachments - Move attachments from database to external storage
+
+=head1 SYNOPSIS
+
+    rt-externalize-attachments [options]
+
+=head1 OPTIONS
+
+This tool supports a few options. Most are for debugging.
+
+=over 8
+
+=item -h
+
+=item --help
+
+Display this documentation
+
+=item -v
+
+=item --verbose
+
+Log a message (at level "info") for each attachment, both before its
+upload begins and after it completes.
+
+=back
+
+=cut
 
 # don't remove; for locking (see call to flock above)
 __DATA__

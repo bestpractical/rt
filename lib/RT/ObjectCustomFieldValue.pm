@@ -738,13 +738,17 @@ sub ShouldStoreExternally {
     my $type = $self->CustomFieldObj->Type;
     my $length = length($self->LargeContent || '');
 
-    return 0 if $length == 0;
+    return (0, "zero length") if $length == 0;
 
     return 1 if $type eq "Binary";
 
-    return 1 if $type eq "Image" and $length > RT->Config->Get('ExternalStorageCutoffSize');
+    if ($type eq "Image") {
+        # We only store externally if it's _large_
+        return 1 if $length > RT->Config->Get('ExternalStorageCutoffSize');
+        return (0, "image size ($length) does not exceed ExternalStorageCutoffSize (" . RT->Config->Get('ExternalStorageCutoffSize') . ")");
+    }
 
-    return 0;
+    return (0, "Only custom fields of type Binary or Image go into external storage (not $type)");
 }
 
 sub ExternalStoreDigest {
