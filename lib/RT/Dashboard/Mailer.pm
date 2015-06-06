@@ -149,17 +149,27 @@ sub IsSubscriptionReady {
     my $sub_dom       = $subscription->SubValue('Dom');
     my $sub_fow       = $subscription->SubValue('Fow') || 1;
 
+    my $log_frequency = $sub_frequency;
+    if ($log_frequency eq 'daily') {
+        my $days = join ' ', grep { $subscription->SubValue($_) }
+                             qw/Monday Tuesday Wednesday Thursday Friday
+                                Saturday Sunday/;
+
+        $log_frequency = "$log_frequency ($days)";
+    }
+
     my ($hour, $dow, $dom) = @{ $args{LocalTime} };
 
-    $RT::Logger->debug("Checking against subscription " . $subscription->Id . " for " . $args{User}->Name . " with frequency $sub_frequency, hour $sub_hour, dow $sub_dow, dom $sub_dom, fow $sub_fow, counter $counter");
+    $RT::Logger->debug("Checking against subscription " . $subscription->Id . " for " . $args{User}->Name . " with frequency $log_frequency, hour $sub_hour, dow $sub_dow, dom $sub_dom, fow $sub_fow, counter $counter");
 
     return 0 if $sub_frequency eq 'never';
 
     # correct hour?
     return 0 if $sub_hour ne $hour;
 
-    # all we need is the correct hour for daily dashboards
-    return 1 if $sub_frequency eq 'daily';
+    if ($sub_frequency eq 'daily') {
+        return $subscription->SubValue($dow) ? 1 : 0;
+    }
 
     if ($sub_frequency eq 'weekly') {
         # correct day of week?
@@ -176,12 +186,6 @@ sub IsSubscriptionReady {
     # if monthly, correct day of month?
     if ($sub_frequency eq 'monthly') {
         return $sub_dom == $dom;
-    }
-
-    # monday through friday
-    if ($sub_frequency eq 'm-f') {
-        return 0 if $dow eq 'Sunday' || $dow eq 'Saturday';
-        return 1;
     }
 
     $RT::Logger->debug("Invalid subscription frequency $sub_frequency for " . $args{User}->Name);
@@ -323,7 +327,6 @@ sub EmailDashboard {
     my $frequency    = $subscription->SubValue('Frequency');
 
     my %frequency_lookup = (
-        'm-f'     => 'Weekday', # loc
         'daily'   => 'Daily',   # loc
         'weekly'  => 'Weekly',  # loc
         'monthly' => 'Monthly', # loc

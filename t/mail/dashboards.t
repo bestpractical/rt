@@ -259,8 +259,13 @@ RT->Config->Set('DashboardAddress' => 'root');
 $m->login;
 create_dashboard($baseurl, $m);
 create_subscription($baseurl, $m,
-    Frequency => 'm-f',
-    Hour => '06:00',
+    Frequency => 'daily',
+    Monday    => 1,
+    Tuesday   => 1,
+    Wednesday => 1,
+    Thursday  => 1,
+    Friday    => 1,
+    Hour      => '06:00',
 );
 
 ($dashboard_id, $subscription_id) = get_dash_sub_ids();
@@ -270,7 +275,7 @@ $bad_time = $good_time - 86400;
 
 produces_dashboard_mail_ok(
     Time    => $good_time,
-    Subject =>  "[example.com] a Weekday b Testing! c\n",
+    Subject =>  "[example.com] a Daily b Testing! c\n",
 );
 
 produces_no_dashboard_mail_ok(
@@ -285,7 +290,7 @@ produces_no_dashboard_mail_ok(
 
 produces_dashboard_mail_ok(
     Time    => $bad_time - 86400 * 2, # friday
-    Subject =>  "[example.com] a Weekday b Testing! c\n",
+    Subject =>  "[example.com] a Daily b Testing! c\n",
 );
 
 
