@@ -85,3 +85,7 @@ textarea.messagebox, #cke_Content, #cke_UpdateContent {
     width: 1em;
     border-style: none;
 }
+
+.dashboard-subscription tr.frequency .value input {
+    margin-bottom: 0.75em;
+}

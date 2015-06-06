@@ -87,17 +87,21 @@
 
 <&| /Widgets/TitleBox, title => loc('Subscription') &>
 
-<table>
-<tr><td class="label">
+<table class="dashboard-subscription">
+<tr class="frequency"><td class="label">
 <&|/l&>Frequency</&>:
 </td><td class="value">
 
 <input type="radio" id="Frequency-daily" name="Frequency" value="daily" <% $fields{'Frequency'} eq 'daily' ? 'checked="checked"' : "" |n %>></input>
-<label for="Frequency-daily"><&|/l&>daily</&></label>
-<br />
+<label for="Frequency-daily">
+<&|/l&>daily, on</&>
+</label>
 
-<input type="radio" id="Frequency-m-f" name="Frequency" value="m-f" <% $fields{'Frequency'} eq 'm-f' ? 'checked="checked"' : "" |n %>></input>
-<label for="Frequency-m-f"><&|/l&>Monday through Friday</&></label>
+% for my $day ( qw/Monday Tuesday Wednesday Thursday Friday Saturday Sunday/ ) {
+    &nbsp; <label><input name="<% $day %>" value=1 type="checkbox" <% $fields{$day} ? 'checked="checked"' : '' %>> <&|/l&><% $day %></&></label>
+    <input type="hidden"class="hidden" name="<% $day %>-Magic" value=1 />
+% }
+
 <br />
 
 <input type="radio" id="Frequency-weekly" name="Frequency" value="weekly"<% $fields{'Frequency'} eq 'weekly' ? 'checked="checked"' : "" |n %>></input>
@@ -207,6 +211,13 @@ $id = $SubscriptionObj ? $SubscriptionObj->SubValue('DashboardId') : $ARGS{'id'}
 my %fields = (
     DashboardId => $id,
     Frequency   => 'daily',
+    Monday      => 1,
+    Tuesday     => 1,
+    Wednesday   => 1,
+    Thursday    => 1,
+    Friday      => 1,
+    Saturday    => 0,
+    Sunday      => 0,
     Hour        => '06:00',
     Dow         => 'Monday',
     Dom         => 1,
@@ -227,7 +238,7 @@ if ($SubscriptionObj) {
 for my $field (keys %fields) {
     next if $field eq 'DashboardId'; # but this one is immutable
     $fields{$field} = $ARGS{$field}
-        if defined($ARGS{$field});
+        if defined($ARGS{$field}) || $ARGS{$field.'-Magic'};
 }
 
 

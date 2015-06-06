@@ -1,0 +1,41 @@
+use strict;
+use warnings;
+
+our @Initial = (
+    sub {
+        $RT::Logger->info("Going to migrate dashboard subscriptions");
+
+        my $attrs = RT::Attributes->new( RT->SystemUser );
+        $attrs->Limit( FIELD => 'ObjectType', VALUE => 'RT::User' );
+        $attrs->Limit( FIELD => 'Name', VALUE => 'Subscription' );
+
+        while ( my $attr = $attrs->Next ) {
+            my %fields;
+            my $frequency = $attr->SubValue('Frequency');
+
+            if ($frequency eq 'daily') {
+                for my $day (qw/Monday Tuesday Wednesday Thursday Friday Saturday Sunday/) {
+                    $fields{$day} = 1;
+                }
+            }
+            elsif ($frequency eq 'm-f') {
+                $fields{Frequency} = 'daily';
+                for my $day (qw/Monday Tuesday Wednesday Thursday Friday/) {
+                    $fields{$day} = 1;
+                }
+                $fields{Saturday} = $fields{Sunday} = 0;
+            }
+            else {
+                next;
+            }
+
+            my ($ok, $msg) = $attr->SetSubValues(%fields);
+
+            if (!$ok) {
+                $RT::Logger->error("Couldn't update subscription $msg");
+            }
+        }
+        return 1;
+    },
+);
+

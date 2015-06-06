@@ -95,9 +95,6 @@ my $COLUMN_MAP = {
                 elsif ($freq eq 'daily') {
                     $frequency = loc("daily at [_1]", $hour);
                 }
-                elsif ($freq eq 'm-f') {
-                    $frequency = loc("M-F at [_1]", $hour);
-                }
                 elsif ($freq eq 'never') {
                     $frequency = loc("Never");
                 }
