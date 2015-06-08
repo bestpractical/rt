@@ -225,7 +225,7 @@ Regexp::Common
 Scalar::Util
 Module::Versions::Report 1.05
 Cache::Simple::TimedExpiry
-Encode 2.39
+Encode 2.64
 CSS::Squish 0.06
 File::Glob
 Devel::StackTrace 1.19
