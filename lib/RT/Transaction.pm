@@ -1197,7 +1197,7 @@ sub _FormatUser {
             my $q2 = RT::Queue->new( $self->CurrentUser );
             $q2->Load( $self->NewValue );
             return ("[_1] changed from [_2] to [_3]",
-                    $self->loc($self->Field) , $q1->Name , $q2->Name);  #loc()
+                    $self->loc($self->Field), $q1->Name // '#'.$q1->id, $q2->Name // '#'.$q2->id); #loc()
         }
 
         # Write the date/time change at local time:
