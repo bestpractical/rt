@@ -70,7 +70,7 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 my %opts;
 use Getopt::Long;
 GetOptions( \%opts,
-    "help|h", "dryrun", "time=i", "epoch=i", "all"
+    "help|h", "dryrun", "time=i", "epoch=i", "all", "log=s"
 );
 
 if ($opts{'help'}) {
@@ -85,6 +85,9 @@ RT::Interface::CLI->import(qw{ loc });
 
 # Load the config file
 RT::LoadConfig();
+
+# adjust logging to the screen according to options
+RT->Config->Set( LogToSTDERR => $opts{log} ) if $opts{log};
 
 # Connect to the database and get RT::SystemUser and RT::Nobody loaded
 RT::Init();
@@ -155,6 +158,10 @@ Back-compat for --time SECONDS.
 
 Ignore subscription frequency when considering each dashboard (should only be
 used with --dryrun for testing and debugging)
+
+=item --log LEVEL
+
+Adjust LogToSTDERR config option
 
 =back
 
