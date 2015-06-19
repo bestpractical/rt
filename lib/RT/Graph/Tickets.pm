@@ -163,7 +163,8 @@ sub TicketProperties {
         next if $seen{ lc $cf->Name }++;
         next if $cf->Type eq 'Image';
         if ( $first ) {
-            push @res, 'CustomFields', [];
+            push @res, 'Custom Fields', # loc
+                [];
             $first = 0;
         }
         push @{ $res[-1] }, 'CF.{'. $cf->Name .'}';
