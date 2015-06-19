@@ -104,16 +104,19 @@ sub gv_escape($) {
     return $value;
 }
 
+sub loc { return HTML::Mason::Commands::loc(@_) };
+
 our (%fill_cache, @available_colors) = ();
 
 our %property_cb = (
-    Queue => sub { return $_[0]->QueueObj->Name || $_[0]->Queue },
-    CF    => sub {
+    Queue  => sub { return $_[0]->QueueObj->Name || $_[0]->Queue },
+    Status => sub { return loc($_[0]->Status) },
+    CF     => sub {
         my $values = $_[0]->CustomFieldValues( $_[1] );
         return join ', ', map $_->Content, @{ $values->ItemsArrayRef };
     },
 );
-foreach my $field (qw(Subject Status TimeLeft TimeWorked TimeEstimated)) {
+foreach my $field (qw(Subject TimeLeft TimeWorked TimeEstimated)) {
     $property_cb{ $field } = sub { return $_[0]->$field },
 }
 foreach my $field (qw(Creator LastUpdatedBy Owner)) {
@@ -203,7 +206,8 @@ sub _PropertiesToFields {
             $RT::Logger->error("Couldn't find property handler for '$key' and '@subkeys' subkeys");
             next;
         }
-        push @fields, ($subkeys[0] || $key) .': '. $property_cb{ $key }->( $args{'Ticket'}, @subkeys );
+        my $label = $key eq 'CF' ? $subkeys[0] : loc($key);
+        push @fields, $label .': '. $property_cb{ $key }->( $args{'Ticket'}, @subkeys );
     }
 
     return @fields;
