@@ -673,26 +673,23 @@ sub SortEntries {
     for ( my $i = 0; $i < @groups; $i++ ) {
         my $group_by = $groups[$i];
         my $idx = $i+1;
-        my $method;
 
-        # If this is a CF, traverse the values being used for labels.
-        # If they all look like numbers or undef, flag for a numeric sort
+        my $order = $group_by->{'META'}{Sort} || 'label';
+        my $method = $order =~ /label$/ ? 'LabelValue' : 'RawValue';
 
-        my $looks_like_number;
-        if ( $group_by->{'KEY'} eq 'CF' ){
-            $looks_like_number = 1;
-
+        unless ($order =~ /^numeric/) {
+            # Traverse the values being used for labels.
+            # If they all look like numbers or undef, flag for a numeric sort.
+            my $looks_like_number = 1;
             foreach my $item (@data){
-                my $cf_label = $item->[0]->RawValue($group_by->{'NAME'});
+                my $label = $item->[0]->$method($group_by->{'NAME'});
 
                 $looks_like_number = 0
-                    unless (not defined $cf_label)
-                    or Scalar::Util::looks_like_number( $cf_label );
+                    unless (not defined $label)
+                    or Scalar::Util::looks_like_number( $label );
             }
+            $order = "numeric $order" if $looks_like_number;
         }
-
-        my $order = $looks_like_number ? 'numeric label' : 'label';
-        $order = $group_by->{'META'}{Sort} if exists $group_by->{'META'}{Sort};
 
         if ( $order eq 'label' ) {
             push @SORT_OPS, sub { $_[0][$idx] cmp $_[1][$idx] };
