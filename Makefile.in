@@ -144,6 +144,7 @@ SYSTEM_BINARIES		=	rt-attributes-viewer \
 				rt-email-dashboards \
 				rt-email-digest \
 				rt-email-group-admin \
+				rt-externalize-attachments \
 				rt-fulltext-indexer \
 				rt-importer \
 				rt-preferences-viewer \

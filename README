@@ -190,14 +190,18 @@ GENERAL INSTALLATION
  9) Set up automated recurring tasks (cronjobs):
 
     To generate email digest messages, you must arrange for the provided
-    utility to be run once daily, and once weekly. You may also want to
-    arrange for the rt-email-dashboards utility to be run hourly.  For
-    example, if your task scheduler is cron, you can configure it by
+    utility to be run once daily, and once weekly. You may also want
+    to arrange for the rt-email-dashboards utility to be run hourly. If
+    you choose to use the external storage feature, that must process
+    new attachments on a regular basis.
+
+    If your task scheduler is cron, you can configure it by
     adding the following lines as /etc/cron.d/rt:
 
         0 0 * * * root /opt/rt4/sbin/rt-email-digest -m daily
         0 0 * * 0 root /opt/rt4/sbin/rt-email-digest -m weekly
         0 * * * * root /opt/rt4/sbin/rt-email-dashboards
+        0 0 * * * root /opt/rt4/sbin/rt-externalize-attachments
 
 10) Configure the RT email gateway.  To let email flow to your RT
     server, you need to add a few lines of configuration to your mail

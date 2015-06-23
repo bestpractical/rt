@@ -860,24 +860,28 @@ sub _EncodeLOB {
 Unpacks data stored in the database, which may be base64 or QP encoded
 because of our need to store binary and badly encoded data in columns
 marked as UTF-8.  Databases such as PostgreSQL and Oracle care that you
-are feeding them invalid UTF-8 and will refuse the content.  This
-function handles unpacking the encoded data.
+are feeding them invalid UTF-8 and will refuse the content.  This function
+handles unpacking the encoded data.
 
-It returns textual data as a UTF-8 string which has been processed by Encode's
-PERLQQ filter which will replace the invalid bytes with \x{HH} so you can see
-the invalid byte but won't run into problems treating the data as UTF-8 later.
+Alternatively, if the data lives in external storage, it will be read
+(or downloaded) and returned.
+
+C<_DecodeLOB> returns textual data as a UTF-8 string which has been
+processed by L<Encode>'s PERLQQ filter which will replace the invalid bytes
+with C<\x{HH}> so you can see the invalid byte but won't run into problems
+treating the data as UTF-8 later.
 
 This is similar to how we filter all data coming in via the web UI in
-RT::Interface::Web::DecodeARGS. This filter should only end up being
+L<RT::Interface::Web/DecodeARGS>. This filter should only end up being
 applied to old data from less UTF-8-safe versions of RT.
 
 If the passed C<ContentType> includes a character set, that will be used
 to decode textual data; the default character set is UTF-8.  This is
 necessary because while we attempt to store textual data as UTF-8, the
 definition of "textual" has migrated over time, and thus we may now need
-to attempt to decode data that was previously not trancoded on insertion.
+to attempt to decode data that was previously not transcoded on insertion.
 
-Important Note - This function expects an octet string and returns a
+Important note: This function expects an octet string and returns a
 character string for non-binary data.
 
 =cut
@@ -896,9 +900,26 @@ sub _DecodeLOB {
     elsif ( $ContentEncoding eq 'quoted-printable' ) {
         $Content = MIME::QuotedPrint::decode($Content);
     }
+    elsif ( $ContentEncoding eq 'external' ) {
+        my $Digest = $Content;
+        my $Storage = RT->System->ExternalStorage;
+        unless ($Storage) {
+            RT->Logger->error( "Failed to load $Content; external storage not configured" );
+            return ("");
+        };
+
+        ($Content, my $msg) = $Storage->Get( $Digest );
+        unless (defined $Content) {
+            RT->Logger->error( "Failed to load $Digest from external storage: $msg" );
+            return ("");
+        }
+
+        return ($Content);
+    }
     elsif ( $ContentEncoding && $ContentEncoding ne 'none' ) {
         return ( $self->loc( "Unknown ContentEncoding [_1]", $ContentEncoding ) );
     }
+
     if ( RT::I18N::IsTextualContentType($ContentType) ) {
         my $entity = MIME::Entity->new();
         $entity->head->add("Content-Type", $ContentType);

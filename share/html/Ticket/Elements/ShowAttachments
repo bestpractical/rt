@@ -58,7 +58,11 @@
 % foreach my $rev (@{$documents{$key}}) {
 % if ($rev->ContentLength) {
 <li><font size="-2">
+% if (my $url = RT->System->ExternalStorageURLFor($rev)) {
+<a href="<%$url%>">
+% } else {
 <a href="<%RT->Config->Get('WebPath')%>/Ticket/Attachment/<%$rev->TransactionId%>/<%$rev->Id%>/<%$rev->Filename | un %>">
+% }
 % my $desc = loc("[_1] ([_2]) by [_3]", $rev->CreatedAsString, $rev->FriendlyContentLength, $m->scomp('/Elements/ShowUser', User => $rev->CreatorObj));
 <% $desc |n%>
 </a>

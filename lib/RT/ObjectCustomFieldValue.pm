@@ -733,6 +733,31 @@ sub FindDependencies {
     $deps->Add( out => $self->Object );
 }
 
+sub ShouldStoreExternally {
+    my $self = shift;
+    my $type = $self->CustomFieldObj->Type;
+    my $length = length($self->LargeContent || '');
+
+    return (0, "zero length") if $length == 0;
+
+    return 1 if $type eq "Binary";
+
+    if ($type eq "Image") {
+        # We only store externally if it's _large_
+        return 1 if $length > RT->Config->Get('ExternalStorageCutoffSize');
+        return (0, "image size ($length) does not exceed ExternalStorageCutoffSize (" . RT->Config->Get('ExternalStorageCutoffSize') . ")");
+    }
+
+    return (0, "Only custom fields of type Binary or Image go into external storage (not $type)");
+}
+
+sub ExternalStoreDigest {
+    my $self = shift;
+
+    return undef if $self->ContentEncoding ne 'external';
+    return $self->_Value( 'LargeContent' );
+}
+
 RT::Base->_ImportOverlays();
 
 1;

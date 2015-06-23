@@ -1178,6 +1178,39 @@ sub __DependsOn {
     return $self->SUPER::__DependsOn( %args );
 }
 
+sub ShouldStoreExternally {
+    my $self = shift;
+    my $type = $self->ContentType;
+    my $length = $self->ContentLength;
+
+    if ($type =~ m{^multipart/}) {
+        return (0, "attachment is multipart");
+    }
+    elsif ($length == 0) {
+        return (0, "zero length");
+    }
+    elsif ($type =~ m{^(text|message)/}) {
+        # If textual, we only store externally if it's _large_
+        return 1 if $length > RT->Config->Get('ExternalStorageCutoffSize');
+        return (0, "text length ($length) does not exceed ExternalStorageCutoffSize (" . RT->Config->Get('ExternalStorageCutoffSize') . ")");
+    }
+    elsif ($type =~ m{^image/}) {
+        # Ditto images, which may be displayed inline
+        return 1 if $length > RT->Config->Get('ExternalStorageCutoffSize');
+        return (0, "image size ($length) does not exceed ExternalStorageCutoffSize (" . RT->Config->Get('ExternalStorageCutoffSize') . ")");
+    }
+    else {
+        return 1;
+    }
+}
+
+sub ExternalStoreDigest {
+    my $self = shift;
+
+    return undef if $self->ContentEncoding ne 'external';
+    return $self->_Value('Content');
+}
+
 RT::Base->_ImportOverlays();
 
 1;

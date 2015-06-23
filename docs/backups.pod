@@ -188,6 +188,19 @@ the default cronjobs in place, it's one less piece to forget during a restore.
 If you have custom L<< C<rt-crontool> >> invocations, you don't want to have to
 recreate those.
 
+=item External storage
+
+If you use L<RT::ExternalStorage>, you will want to backup
+the attachments in your chosen storage engine.
+
+If you're using L<RT::ExternalStorage::Disk>, then you need only back
+up the files under the C<Path> option under C<%ExternalStorage> in your
+RT_SiteConfig.pm.
+
+If you're using a cloud storage engine like
+L<RT::ExternalStorage::AmazonS3>, consult that service's documentation
+regarding backups.
+
 =back
 
 Simply saving a tarball should be sufficient, with something like:
