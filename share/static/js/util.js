@@ -302,6 +302,120 @@ function ReplaceAllTextareas() {
     }
 };
 
+function AddAttachmentWarning() {
+    var plainMessageBox  = jQuery('.messagebox');
+    var addFileField     = jQuery('input[name=Attach]');
+    var existingFileList = jQuery('tr.attachment input[type=checkbox]');
+    var warningMessage   = jQuery('.messagebox-attachment-warning');
+    var ignoreMessage    = warningMessage.find('.ignore');
+
+    // there won't be a ckeditor when using the plain <textarea>
+    var richTextEditor;
+    var messageBoxId = plainMessageBox.attr('id');
+    if (CKEDITOR.instances && CKEDITOR.instances[messageBoxId]) {
+        richTextEditor = CKEDITOR.instances[messageBoxId];
+    }
+
+    var regex = new RegExp(loc_key("attachment_warning_regex"), "i");
+
+    // if the quoted text or signature contains the magic word
+    // then we can't do much here, because the user can make any text
+    // changes they want and there's no real way to track the provenance of
+    // the word "attachment"
+    var ignoreMessageText = ignoreMessage.text();
+    if (ignoreMessageText && ignoreMessageText.match(regex)) {
+        return;
+    }
+
+    // a true value for instant means no CSS animation, for displaying the
+    // warning at page load time
+    var toggleAttachmentWarning = function (instant) {
+        var text;
+        if (richTextEditor) {
+            text = richTextEditor.getData();
+        }
+        else {
+            text = plainMessageBox.val();
+        }
+
+        // if the word "attach" appears and there are no attachments in flight
+        var needsWarning = text &&
+                           text.match(regex) &&
+                           !addFileField.val() &&
+                           existingFileList.filter(":not(:checked)").length == 0;
+
+        if (needsWarning) {
+            warningMessage.show(instant ? 1 : 'fast');
+        }
+        else {
+            warningMessage.hide(instant ? 1 : 'fast');
+        }
+    };
+
+    // don't run all the machinery (including regex matching a potentially very
+    // long message) several times per keystroke
+    var timer;
+    var delayedAttachmentWarning = function () {
+        if (timer) {
+            return;
+        }
+
+        timer = setTimeout(function () {
+            timer = 0;
+            toggleAttachmentWarning();
+        }, 200);
+    };
+
+    if (richTextEditor) {
+        richTextEditor.on('instanceReady', function () {
+            // this set of events is imperfect. what I really want is:
+            //     this.on('change', ...)
+            // but ckeditor doesn't seem to provide that out of the box
+
+            this.on('blur', function () {
+                toggleAttachmentWarning();
+            });
+
+            // we want to capture ~every keystroke type event; we only do the
+            // full checking periodically to avoid overloading the browser
+            this.document.on("keyup", function () {
+                delayedAttachmentWarning();
+            });
+            this.document.on("keydown", function () {
+                delayedAttachmentWarning();
+            });
+            this.document.on("keypress", function () {
+                delayedAttachmentWarning();
+            });
+
+            // hook into the undo/redo buttons in the ckeditor UI
+            this.getCommand('undo').on('afterUndo', function () {
+                toggleAttachmentWarning();
+            });
+            this.getCommand('redo').on('afterRedo', function () {
+                toggleAttachmentWarning();
+            });
+        });
+    }
+    else {
+        // the propertychange event is for IE
+        plainMessageBox.bind('input propertychange', function () {
+            delayedAttachmentWarning();
+        });
+    }
+
+    addFileField.bind('change', function () {
+        toggleAttachmentWarning();
+    });
+
+    existingFileList.bind('change', function () {
+        toggleAttachmentWarning();
+    });
+
+    // also need to display the warning on initial page load
+    toggleAttachmentWarning(1);
+}
+
 function toggle_addprincipal_validity(input, good, title) {
     if (good) {
         jQuery(input).nextAll(".warning").hide();
@@ -385,4 +499,5 @@ jQuery(function() {
     });
     ReplaceAllTextareas();
     jQuery('select.chosen').chosen({ width: '20em', placeholder_text_multiple: ' ', no_results_text: ' ', search_contains: true });
+    AddAttachmentWarning();
 });

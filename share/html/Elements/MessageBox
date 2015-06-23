@@ -50,6 +50,11 @@
 % $m->callback( %ARGS, SignatureRef => \$signature );
 <% $Default || '' %><% $message %><% $signature %></textarea>
 % $m->callback( %ARGS, CallbackName => 'AfterTextArea' );
+
+% if (!$SuppressAttachmentWarning) {
+% $m->comp('/Elements/AttachmentWarning', QuotedMessage => $message, Signature => $signature, %ARGS);
+% }
+
 % if ($Type eq 'text/html') {
 <input type="text" style="display:none" name="<% $Name %>Type" id="<% $Name %>Type" value="<% $m->request_args->{$Name."Type"}||$Type %>" />
 % }
@@ -91,12 +96,13 @@ if ($Width) {
 
 </%INIT>
 <%ARGS>
-$QuoteTransaction => undef
-$Name             => 'Content'
-$Default          => ''
-$Width            => RT->Config->Get('MessageBoxWidth', $session{'CurrentUser'} )
-$Height           => RT->Config->Get('MessageBoxHeight', $session{'CurrentUser'} ) || 15
-$IncludeSignature => RT->Config->Get('MessageBoxIncludeSignature');
-$IncludeArticle   => 1;
-$Type             => RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ? 'text/html' : 'text/plain';
+$QuoteTransaction          => undef
+$Name                      => 'Content'
+$Default                   => ''
+$Width                     => RT->Config->Get('MessageBoxWidth', $session{'CurrentUser'} )
+$Height                    => RT->Config->Get('MessageBoxHeight', $session{'CurrentUser'} ) || 15
+$IncludeSignature          => RT->Config->Get('MessageBoxIncludeSignature');
+$IncludeArticle            => 1;
+$Type                      => RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ? 'text/html' : 'text/plain';
+$SuppressAttachmentWarning => 0
 </%ARGS>

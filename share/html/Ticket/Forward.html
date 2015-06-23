@@ -76,9 +76,9 @@
 <td><&|/l&>Content</&>:</td>
 <td>
 % if (exists $ARGS{Content}) {
-<& /Elements/MessageBox, Default => $ARGS{Content}, IncludeSignature => 0 &>
+<& /Elements/MessageBox, Default => $ARGS{Content}, IncludeSignature => 0, SuppressAttachmentWarning => 1 &>
 % } else {
-<& /Elements/MessageBox  &>
+<& /Elements/MessageBox, SuppressAttachmentWarning => 1 &>
 %}
 </td>
 </tr>

@@ -229,7 +229,7 @@ $showrows->(
     loc("Subject") => '<input type="text" name="Subject" size="30" maxsize="200" value="'.$escape->($ARGS{Subject} || '').'" />');
 </%perl>
     <span class="content-label label"><%loc("Describe the issue below")%></span>
-        <& /Elements/MessageBox, exists $ARGS{Content}  ? (Default => $ARGS{Content}, IncludeSignature => 0 ) : ( QuoteTransaction => $QuoteTransaction ), Height => 5  &>
+        <& /Elements/MessageBox, exists $ARGS{Content}  ? (Default => $ARGS{Content}, IncludeSignature => 0 ) : ( QuoteTransaction => $QuoteTransaction ), Height => 5, SuppressAttachmentWarning => 1  &>
 
 
 <&/Elements/Submit, Label => loc("Create") &>
