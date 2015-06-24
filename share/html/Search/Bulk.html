@@ -146,8 +146,6 @@
 </td></tr>
 % } # end if while
 
-<& /Ticket/Elements/AddAttachments, %ARGS &>
-
  <tr><td class="labeltop"><&|/l&>Message</&>:</td>
  <td class="messagebox-container action-<% $ARGS{UpdateType} || 'private' %>">
 % $m->callback( %ARGS, CallbackName => 'BeforeMessageBox' );
@@ -158,6 +156,9 @@
                         ( IncludeSignature => $IncludeSignature ),
         &>
  </td></tr>
+
+<& /Ticket/Elements/AddAttachments, %ARGS &>
+
  </table>
 
 </&>
