@@ -1,0 +1,7 @@
+use strict;
+use warnings;
+
+$RT::Handle->MakeSureIndexExists(
+    Table => 'CachedGroupMembers',
+    Columns => ['MemberId', 'ImmediateParentId'],
+);
