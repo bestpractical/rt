@@ -50,9 +50,14 @@ $Plugin => ''
 </%ARGS>
 <div id="shredder-plugin-<% $Plugin %>-arguments" class="shredder-form">
 <span><% loc('Fill arguments') %>:</span><br />
-% foreach my $a( $plugin_obj->SupportArgs ) {
-<span><% loc($a) %>:</span><input type="text" name="<% "$Plugin:$a" %>" value="<% $ARGS{ "$Plugin:$a" } || '' %>" /><br />
+<table>
+% for my $a ( $plugin_obj->SupportArgs ) {
+<tr>
+    <td class="label"><label for="<% "$Plugin:$a" %>"><% loc($a) %>:</label></td>
+    <td><input type="text" name="<% "$Plugin:$a" %>" id="<% "$Plugin:$a" %>" value="<% $ARGS{ "$Plugin:$a" } || '' %>" /></td>
+</tr>
 % }
+</table>
 </div>
 <%INIT>
 use RT::Shredder::Plugin;
