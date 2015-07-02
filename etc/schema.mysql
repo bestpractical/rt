@@ -469,6 +469,7 @@ CREATE TABLE Articles (
   Class int(11) NOT NULL default '0',
   Parent int(11) NOT NULL default '0',
   URI varchar(255) character set ascii default NULL,
+  Disabled int(2) NOT NULL default '0',
   Creator int(11) NOT NULL default '0',
   Created datetime default NULL,
   LastUpdatedBy int(11) NOT NULL default '0',

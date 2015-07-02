@@ -89,7 +89,10 @@ if ($changes) {
 
             my %old;
             my $field = $lfields{$key}->{Mode};
+            my $mode_obj = $field . 'Obj';
             while (my $link = $ticket->$key->Next) {
+                next if UNIVERSAL::isa($link->$mode_obj, 'RT::Article') && $link->$mode_obj->Disabled;
+                next if $field eq 'Base' && $link->Type eq 'RefersTo' && $link->BaseObj->Type eq 'reminder';
                 $old{$link->$field} = 1;
             }
 
@@ -157,7 +160,10 @@ else {
         my @val;
 
         my $field = $lfields{$key}->{Mode};
+        my $mode_obj = $field . 'Obj';
         while (my $link = $ticket->$key->Next) {
+            next if UNIVERSAL::isa($link->$mode_obj, 'RT::Article') && $link->$mode_obj->Disabled;
+            next if $field eq 'Base' && $link->Type eq 'RefersTo' && UNIVERSAL::isa($link->$mode_obj, 'RT::Ticket')  && $link->BaseObj->Type eq 'reminder';
             push @val, $link->$field;
         }
         push(@val, "") if (@val == 0 && defined $format && $format eq 'l');

@@ -124,6 +124,11 @@ if ($Class) {
 my %create_args;
 my %CFContent;
 my $EditClass = 1;
+
+if ( $ARGS{SetEnabled} ) {
+    $ARGS{Disabled} = $ARGS{Enabled} ? 0 : 1;
+}
+
 if ( !$id ) {
     $title = loc('Create a new article');
     foreach my $arg ( sort keys %ARGS ) {
@@ -161,6 +166,7 @@ elsif ( $id eq 'new' ) {
         Name    => $ARGS{'Name'},
         Class   => $ARGS{'Class'},
         Topics  => $ARGS{'Topics'},
+        Disabled => $ARGS{'Disabled'},
         %create_args,
         %cfs
     );
@@ -198,7 +204,7 @@ else {
             Why => loc("Unable to load article") );
     }
 
-    my @attribs = qw(Name Summary Class);
+    my @attribs = qw(Name Summary Class Disabled);
 
     @results = UpdateRecordObject(
         AttributesRef => \@attribs,

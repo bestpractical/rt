@@ -57,6 +57,7 @@ sub Table {'Articles'}
 
 sub _Init {
     my $self = shift;
+    $self->{'with_disabled_column'} = 1;
     $self->OrderByCols(
         { FIELD => 'SortOrder', ORDER => 'ASC' },
         { FIELD => 'Name',      ORDER => 'ASC' },

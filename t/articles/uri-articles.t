@@ -36,13 +36,7 @@ ok ($uri->ParseURI("fsck.com-article://example.com/article/$article_id"),
 
 ok ($article->Delete(), 'Deleted article');
 
-my $ret;
-warning_like {
-    $ret = $uri->ParseURI("fsck.com-article://example.com/article/$article_id");
-} qr/Unable to load article for id $article_id. It may have been deleted/,
-    "Warned about missing article";
-
-ok (!$ret, 'Returned false on missing article');
+ok($article->Disabled, 'deleted article is actually just disabled');
 
 ok (!$uri->ParseURI("fsck.com-article://foo.com/article/$article_id"),
     'ParseURI returned false with incorrect Organization');

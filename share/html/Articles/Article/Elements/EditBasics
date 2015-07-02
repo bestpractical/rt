@@ -64,6 +64,16 @@
 % }
 </td>
 </tr>
+% if ($ARGS{'id'} eq 'new' || $ArticleObj->CurrentUserHasRight('DisableArticle')) {
+<tr>
+<td class="label"></td>
+<td>
+    <input type="hidden" class="hidden" name="SetEnabled" value="1" />
+    <input type="checkbox" class="checkbox" id="Enabled" name="Enabled" value="1" <% ( $ArticleObj->id && $ArticleObj->Disabled || $ARGS{'Disabled'} ) ? '' : 'checked="checked"' |n %> />
+    <label for="Enabled"><&|/l&>Enabled (Unchecking this box disables this article)</&></label>
+</td>
+</tr>
+% }
 <%INIT>
 </%INIT>
 <%ARGS>
