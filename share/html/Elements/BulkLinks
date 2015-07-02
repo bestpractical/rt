@@ -55,8 +55,7 @@
     <td class="value">
 % if ( $hash{DependsOn} ) {
 % for my $link ( values %{$hash{DependsOn}} ) {
-      <input type="checkbox" class="checkbox" id="DeleteLink--<%$link->Type%>-<%$link->Target%>" name="DeleteLink--<%$link->Type%>-<%$link->Target%>" value="1" />
-      <label for="DeleteLink--<%$link->Type%>-<%$link->Target%>"><& /Elements/ShowLink, URI => $link->TargetURI &></label><br />
+      <& EditLink, Link => $link, Mode => 'Target' &>
 % } }
     </td>
   </tr>
@@ -65,8 +64,7 @@
     <td class="value">
 % if ( $hash{DependedOnBy} ) {
 % for my $link ( values %{$hash{DependedOnBy}} ) {
-      <input type="checkbox" class="checkbox" id="DeleteLink-<%$link->Base%>-<%$link->Type%>-" name="DeleteLink-<%$link->Base%>-<%$link->Type%>-" value="1" />
-      <label for="DeleteLink-<%$link->Base%>-<%$link->Type%>-"><& /Elements/ShowLink, URI => $link->BaseURI &></label><br />
+      <& EditLink, Link => $link, Mode => 'Base' &>
 % } }
     </td>
   </tr>
@@ -75,8 +73,7 @@
     <td class="value">
 % if ( $hash{MemberOf} ) {
 % for my $link ( values %{$hash{MemberOf}} ) {
-      <input type="checkbox" class="checkbox" id="DeleteLink--<%$link->Type%>-<%$link->Target%>" name="DeleteLink--<%$link->Type%>-<%$link->Target%>" value="1" />
-      <label for="DeleteLink--<%$link->Type%>-<%$link->Target%>"><& /Elements/ShowLink, URI => $link->TargetURI &></label><br />
+      <& EditLink, Link => $link, Mode => 'Target' &>
 % } }
     </td>
   </tr>
@@ -85,8 +82,7 @@
     <td class="value">
 % if ( $hash{Members} ) {
 % for my $link ( values %{$hash{Members}} ) {
-      <input type="checkbox" class="checkbox" id="DeleteLink-<%$link->Base%>-<%$link->Type%>-" name="DeleteLink-<%$link->Base%>-<%$link->Type%>-" value="1" />
-      <label for="DeleteLink-<%$link->Base%>-<%$link->Type%>-"><& /Elements/ShowLink, URI => $link->BaseURI &></label><br />
+      <& EditLink, Link => $link, Mode => 'Base' &>
 % } }
     </td>
   </tr>
@@ -95,8 +91,7 @@
     <td class="value">
 % if ( $hash{RefersTo} ) {
 % for my $link ( values %{$hash{RefersTo}} ) {
-      <input type="checkbox" class="checkbox" id="DeleteLink--<%$link->Type%>-<%$link->Target%>" name="DeleteLink--<%$link->Type%>-<%$link->Target%>" value="1" />
-      <label for="DeleteLink--<%$link->Type%>-<%$link->Target%>"><& /Elements/ShowLink, URI => $link->TargetURI &></label><br />
+      <& EditLink, Link => $link, Mode => 'Target' &>
 % } }
     </td>
   </tr>
@@ -105,10 +100,7 @@
     <td class="value">
 % if ( $hash{ReferredToBy} ) {
 % for my $link ( values %{$hash{ReferredToBy}} ) {
-% # Skip reminders
-% next if (UNIVERSAL::isa($link->BaseObj, 'RT::Ticket')  && $link->BaseObj->Type eq 'reminder');
-      <input type="checkbox" class="checkbox" id="DeleteLink-<%$link->Base%>-<%$link->Type%>-" name="DeleteLink-<%$link->Base%>-<%$link->Type%>-" value="1" />
-      <label for="DeleteLink-<%$link->Base%>-<%$link->Type%>-"><& /Elements/ShowLink, URI => $link->BaseURI &></label><br />
+      <& EditLink, Link => $link, Mode => 'Base' &>
 % } }
     </td>
   </tr>
