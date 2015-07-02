@@ -890,7 +890,6 @@ my $build_main_nav = sub {
             $tabs->child( display => title => loc('Display'), path => "/Articles/Article/Display.html?id=".$id );
             $tabs->child( history => title => loc('History'), path => "/Articles/Article/History.html?id=".$id );
             $tabs->child( modify  => title => loc('Modify'),  path => "/Articles/Article/Edit.html?id=".$id );
-            $tabs->child( delete  => title => loc('Delete'),  path => "/Articles/Article/Delete.html?id=".$id );
         }
     }
 
@@ -913,9 +912,6 @@ my $build_main_nav = sub {
 
                 if ( $obj->CurrentUserHasRight('ModifyArticle') ) {
                     $tabs->child(modify => title => loc('Modify'), path => '/Articles/Article/Edit.html?id=' . $id );
-                }
-                if ( $obj->CurrentUserHasRight('DeleteArticle') ) {
-                    $tabs->child(delete => title => loc('Delete'), path => '/Articles/Article/Delete.html?id=' . $id );
                 }
             }
         }

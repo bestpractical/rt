@@ -89,6 +89,7 @@ my $ModeObj = "${mode}Obj";
 my (@active, @inactive, @not_tickets);
 while (my $link = $links->Next) {
     my $ToObj = $link->$ModeObj;
+    next if UNIVERSAL::isa($ToObj,'RT::Article') && $ToObj->Disabled;
     if ($ToObj and $ToObj->isa('RT::Ticket')) {
         next if $Type eq "ReferredToBy"
             and $ToObj->Type eq 'reminder';

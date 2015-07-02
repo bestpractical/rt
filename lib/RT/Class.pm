@@ -96,7 +96,7 @@ __PACKAGE__->AddRight( Admin   => AdminClass          => 'Modify metadata and cu
 __PACKAGE__->AddRight( Admin   => AdminTopics         => 'Modify topic hierarchy associated with this class'); # loc
 __PACKAGE__->AddRight( Admin   => ShowACL             => 'Display Access Control List'); # loc
 __PACKAGE__->AddRight( Admin   => ModifyACL           => 'Create, modify and delete Access Control List entries'); # loc
-__PACKAGE__->AddRight( Staff   => DeleteArticle       => 'Delete articles in this class'); # loc
+__PACKAGE__->AddRight( Staff   => DisableArticle      => 'Disable articles in this class'); # loc
 
 # {{{ Create
 

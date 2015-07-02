@@ -401,7 +401,7 @@ for my $link ( @{ $Ticket->DependsOn->ItemsArrayRef } ) {
             push( @active, $link->TargetURI );
         }
     }
-    else {
+    elsif ( not (UNIVERSAL::isa($link->TargetObj, 'RT::Article') && $link->TargetObj->Disabled) ) {
         push( @not_tickets, $link->TargetURI );
     }
 }
@@ -420,6 +420,7 @@ for my $link ( @{ $Ticket->DependsOn->ItemsArrayRef } ) {
     <div class="value">
 <ul>
 % while (my $Link = $Ticket->DependedOnBy->Next) {
+% next if UNIVERSAL::isa($Link->BaseObj, 'RT::Article') && $Link->BaseObj->Disabled;
 <li><& /Elements/ShowLink, URI => $Link->BaseURI &></li>
 % }
 </ul>
@@ -438,6 +439,7 @@ for my $link ( @{ $Ticket->DependsOn->ItemsArrayRef } ) {
     <div class="value">
 <ul>
 % while (my $Link = $Ticket->RefersTo->Next) {
+% next if UNIVERSAL::isa($Link->TargetObj, 'RT::Article') && $Link->TargetObj->Disabled;
 <li><& /Elements/ShowLink, URI => $Link->TargetURI &></li>
 % }
 </ul>
@@ -448,6 +450,7 @@ for my $link ( @{ $Ticket->DependsOn->ItemsArrayRef } ) {
     <div class="value">
     <ul>
 % while (my $Link = $Ticket->ReferredToBy->Next) {
+% next if UNIVERSAL::isa($Link->BaseObj, 'RT::Article') && $Link->BaseObj->Disabled;
 % next if (UNIVERSAL::isa($Link->BaseObj, 'RT::Ticket')  && $Link->BaseObj->Type eq 'reminder');
 <li><& /Elements/ShowLink, URI => $Link->BaseURI &></li>
 % }

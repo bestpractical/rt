@@ -58,6 +58,7 @@
 
 <%INIT>
 my $ModeObj = $Mode . 'Obj';
+return if UNIVERSAL::isa($Link->$ModeObj, 'RT::Article') && $Link->$ModeObj->Disabled;
 
 # Skip reminders
 return if $Mode eq 'Base' && $Link->Type eq 'RefersTo' && UNIVERSAL::isa($Link->BaseObj, 'RT::Ticket')  && $Link->BaseObj->Type eq 'reminder';
