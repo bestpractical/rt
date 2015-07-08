@@ -159,13 +159,14 @@ sub logout {
 sub goto_ticket {
     my $self = shift;
     my $id   = shift;
+    my $view = shift || 'Display';
     unless ( $id && int $id ) {
         Test::More::diag( "error: wrong id ". defined $id? $id : '(undef)' );
         return 0;
     }
 
     my $url = $self->rt_base_url;
-    $url .= "Ticket/Display.html?id=$id";
+    $url .= "Ticket/${ view }.html?id=$id";
     $self->get($url);
     unless ( $self->status == 200 ) {
         Test::More::diag( "error: status is ". $self->status );
