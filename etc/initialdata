@@ -14,6 +14,17 @@
 @Groups = (
 );
 
+@CustomFields = (
+    {
+        Name        => 'SLA',
+        Queue       => 0,
+        Type        => 'SelectSingle',
+        Disabled    => 0,
+        Description => 'Service Level Agreement',
+        Values      => [ ],
+    },
+);
+
 @Queues = ({ Name              => 'General',
              Description       => 'The default queue',
              CorrespondAddress => "",
@@ -111,6 +122,18 @@
     { Name        => 'Send Forward',                 # loc
       Description => 'Send forwarded message',       # loc
       ExecModule  => 'SendForward', },
+    {  Name        => '[SLA] Set default service level', # loc
+       Description => 'Set service level according to the config' , # loc
+       ExecModule  => 'SLA_SetDefault',
+    },
+    {  Name        => '[SLA] Set starts date', # loc
+       Description => 'Set the starts date according to an agreement' , # loc
+       ExecModule  => 'SLA_SetStarts',
+    },
+    {  Name        => '[SLA] Set due date', # loc
+       Description => 'Set the due date according to an agreement' , # loc
+       ExecModule  => 'SLA_SetDue',
+    },
 );
 
 @ScripConditions = (
@@ -218,6 +241,21 @@
        Description          => 'Whenever a ticket is reopened', # loc
        ApplicableTransTypes => 'Status,Set',
        ExecModule           => 'ReopenTicket',
+    },
+    {  Name        => '[SLA] Require default', # loc
+       Description => 'Detect a situation when we should set default service level' , # loc
+       ApplicableTransTypes => 'Create',
+       ExecModule => 'SLA_RequireDefault',
+    },
+    {  Name        => '[SLA] Require Starts set', # loc
+       Description => 'Detect a situation when we should set Starts date' , # loc
+       ApplicableTransTypes => 'Create,CustomField',
+       ExecModule => 'SLA_RequireStartsSet',
+    },
+    {  Name        => '[SLA] Require Due set', # loc
+       Description => 'Detect a situation when we should set Due date' , # loc
+       ApplicableTransTypes => 'Create,CustomField,Correspond,Set,Status',
+       ExecModule => 'SLA_RequireDueSet',
     },
 
 );
@@ -792,6 +830,18 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
        ScripCondition => 'On Forward Ticket',
        ScripAction    => 'Send Forward',
        Template       => 'Forward Ticket' },
+    {  Description       => "[SLA] Set default service level if needed",
+       ScripCondition    => '[SLA] Require Default',
+       ScripAction       => '[SLA] Set default service level',
+       Template          => 'Blank' },
+    {  Description       => "[SLA] Set starts date if needed",
+       ScripCondition    => '[SLA] Require starts set',
+       ScripAction       => '[SLA] Set starts date',
+       Template          => 'Blank' },
+    {  Description       => "[SLA] Set due date if needed",
+       ScripCondition    => '[SLA] Require due set',
+       ScripAction       => '[SLA] Set due date',
+       Template          => 'Blank' },
 );
 
 @ACL = (
