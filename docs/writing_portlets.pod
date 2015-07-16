@@ -3,7 +3,7 @@
 A "portlet" is a component used to extend your RT instance, specifically
 the "RT-at-a-glance" home and Self-Service pages.  For instance, the
 "n Highest Priority Tickets I own", "Quick Ticket Creation" and
-"Quick Search" panels on the default homepage are portlets.
+"Queue List" panels on the default homepage are portlets.
 
 =head1 Creating the Portlet
 
