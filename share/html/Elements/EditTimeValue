@@ -62,6 +62,6 @@ $InUnits ||= RT->Config->Get('DefaultTimeUnitsToHours', $session{'CurrentUser'})
 
 if ($Default && $InUnits eq 'hours') {
     # 0+ here is to remove the ending 0s
-    $Default = 0 + sprintf '%.3f', $Default / 60;
+    $Default = 0 + sprintf '%.2f', $Default / 60;
 }
 </%INIT>

@@ -174,7 +174,7 @@ $COLUMN_MAP = {
     TimeWorked => {
         attribute => 'TimeWorked',
         title     => 'Time Worked', # loc
-        value     => sub { return $_[0]->TimeWorked }
+        value     => sub { return $_[0]->TimeWorkedAsString }
     },
     TimeLeft => {
         attribute => 'TimeLeft',
@@ -184,7 +184,7 @@ $COLUMN_MAP = {
     TimeEstimated => {
         attribute => 'TimeEstimated',
         title     => 'Time Estimated', # loc
-        value     => sub { return $_[0]->TimeEstimated }
+        value     => sub { return $_[0]->TimeEstimatedAsString }
     },
     StartsRelative => {
         title     => 'Starts', # loc
