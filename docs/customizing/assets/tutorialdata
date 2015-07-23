@@ -1,0 +1,91 @@
+@Users = (
+    {  Name         => 'asset-tutorial-staff',
+       RealName     => 'Asset Staff User',
+       Password     => 'password',
+       EmailAddress => "asset-tutorial-staff\@localhost",
+       Comments     => "Sample Staff user for Assets tutorial",
+       Privileged   => '1',
+    },
+    {  Name         => 'asset-tutorial-user1',
+       RealName     => 'Asset End User',
+       Password     => 'password',
+       EmailAddress => "asset-tutorial-user1\@localhost",
+       Comments     => "Sample end user for Assets tutorial",
+    },
+);
+
+@CustomFields = (
+    {   Name       => 'Serial Number',
+        Type       => 'FreeformSingle',
+        LookupType => 'RT::Catalog-RT::Asset',
+        ApplyTo    => 'General assets',
+    },
+    {   Name       => 'Tracking Number',
+        Type       => 'FreeformSingle',
+        LookupType => 'RT::Catalog-RT::Asset',
+        ApplyTo    => 'General assets',
+    },
+    {   Name       => 'Manufacturer',
+        Type       => 'SelectSingle',
+        LookupType => 'RT::Catalog-RT::Asset',
+        ApplyTo    => 'General assets',
+        MaxValues  => 1,
+        RenderType => 'Dropdown',
+        Values      => [
+            { Name => 'Apple', SortOrder => 1 },
+            { Name => 'Dell', SortOrder => 2 }, ],
+    },
+    {   Name       => 'Type',
+        Type       => 'SelectSingle',
+        LookupType => 'RT::Catalog-RT::Asset',
+        ApplyTo    => 'General assets',
+        MaxValues  => 1,
+        RenderType => 'Dropdown',
+        Values      => [
+            { Name => 'Desktop Computer', SortOrder => 1 },
+            { Name => 'Laptop Computer', SortOrder => 2 },
+            { Name => 'Server', SortOrder => 3 },
+            { Name => 'Mobile Phone', SortOrder => 4 },
+            { Name => 'Software', SortOrder => 5 },
+            { Name => 'Other', SortOrder => 6 }, ],
+    },
+    {   Name    => 'Issue Date',
+        Type    => 'Date',
+        LookupType => 'RT::Catalog-RT::Asset',
+        ApplyTo    => 'General assets',
+    },
+    {   Name    => 'Support Expiration',
+        Type    => 'Date',
+        LookupType => 'RT::Catalog-RT::Asset',
+        ApplyTo    => 'General assets',
+    },
+);
+
+push @ACL, map {
+        {
+            Right       => $_,
+            GroupDomain => 'SystemInternal',
+            GroupType   => 'Privileged',
+            ObjectType  => 'RT::Catalog',
+            ObjectId    => 'General assets',
+        }
+    } qw(ShowAsset ShowCatalog SeeCustomField CreateAsset
+         ModifyAsset ModifyCustomField);
+
+push @ACL, map {
+        {
+            Right       => $_,
+            GroupDomain => 'RT::System-Role',
+            GroupType   => 'HeldBy',
+        }
+    } qw(ShowAsset ShowCatalog);
+
+push @Final, sub {
+    # Update default catalog name
+    my $catalog = RT::Catalog->new(RT->SystemUser);
+    my ($ret, $msg) = $catalog->Load('General assets');
+    RT::Logger->error("Unable to load General assets catalog: $msg")
+        unless $ret;
+    $catalog->SetName('IT Department Assets');
+    return;
+};

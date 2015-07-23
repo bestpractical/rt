@@ -1,0 +1,33 @@
+
+CREATE SEQUENCE Assets_seq;
+CREATE TABLE Assets (
+    id              NUMBER(11,0)    CONSTRAINT Assets_key PRIMARY KEY,
+    Name            varchar2(255)   DEFAULT '',
+    Catalog         NUMBER(11,0)    DEFAULT 0 NOT NULL,
+    Status          varchar2(64)    DEFAULT '',
+    Description     varchar2(255)   DEFAULT '',
+    Creator         NUMBER(11,0)    DEFAULT 0 NOT NULL,
+    Created         DATE,
+    LastUpdatedBy   NUMBER(11,0)    DEFAULT 0 NOT NULL,
+    LastUpdated     DATE
+);
+
+CREATE INDEX AssetsName ON Assets (LOWER(Name));
+CREATE INDEX AssetsStatus ON Assets (Status);
+CREATE INDEX AssetsCatalog ON Assets (Catalog);
+
+CREATE SEQUENCE Catalogs_seq;
+CREATE TABLE Catalogs (
+    id              NUMBER(11,0)    CONSTRAINT Catalogs_key PRIMARY KEY,
+    Name            varchar2(255)   DEFAULT '',
+    Lifecycle       varchar2(32)    DEFAULT 'assets',
+    Description     varchar2(255)   DEFAULT '',
+    Disabled        NUMBER(11,0)    DEFAULT 0 NOT NULL,
+    Creator         NUMBER(11,0)    DEFAULT 0 NOT NULL,
+    Created         DATE,
+    LastUpdatedBy   NUMBER(11,0)    DEFAULT 0 NOT NULL,
+    LastUpdated     DATE
+);
+
+CREATE INDEX CatalogsName ON Catalogs (LOWER(Name));
+CREATE INDEX CatalogsDisabled ON Catalogs (Disabled);

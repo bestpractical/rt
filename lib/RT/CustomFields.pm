@@ -422,6 +422,37 @@ sub NewItem {
     return $res;
 }
 
+=head2 LimitToCatalog
+
+Takes a numeric L<RT::Catalog> ID.  Limits the L<RT::CustomFields> collection
+to only those fields applied directly to the specified catalog.  This limit is
+OR'd with other L</LimitToCatalog> and L<RT::CustomFields/LimitToObjectId>
+calls.
+
+Note that this will cause the collection to only return asset CFs.
+
+=cut
+
+sub LimitToCatalog  {
+    my $self = shift;
+    my $catalog = shift;
+
+    $self->Limit (ALIAS => $self->_OCFAlias,
+                  ENTRYAGGREGATOR => 'OR',
+                  FIELD => 'ObjectId',
+                  VALUE => "$catalog")
+      if defined $catalog;
+
+    $self->LimitToLookupType( RT::Asset->CustomFieldLookupType );
+    $self->ApplySortOrder;
+
+    unless ($self->ContextObject) {
+        my $obj = RT::Catalog->new( $self->CurrentUser );
+        $obj->Load( $catalog );
+        $self->SetContextObject( $obj );
+    }
+}
+
 RT::Base->_ImportOverlays();
 
 1;

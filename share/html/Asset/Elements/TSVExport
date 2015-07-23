@@ -1,0 +1,126 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2015 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<%ARGS>
+$Collection
+$Format
+$PreserveNewLines => 0
+</%ARGS>
+<%ONCE>
+my $no_html = HTML::Scrubber->new( deny => '*' );
+</%ONCE>
+<%INIT>
+require HTML::Entities;
+
+$r->content_type('application/vnd.ms-excel');
+
+my $DisplayFormat = $m->comp('/Elements/ScrubHTML', Content => $Format);
+
+my @Format = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $DisplayFormat);
+
+my @columns;
+
+my $should_loc = { map { $_ => 1 } qw(Status) };
+
+my $col_entry = sub {
+    my $col = shift;
+    # in tsv output, "#" is often a comment character but we use it for "id"
+    delete $col->{title}
+        if $col->{title} and $col->{title} =~ /^\s*#\s*$/;
+    return {
+        header => Encode::encode_utf8(loc($col->{title} || $col->{attribute})),
+        map    => $m->comp(
+            "/Elements/ColumnMap",
+            Class => "RT__Asset",
+            Name  => $col->{attribute},
+            Attr  => 'value'
+        ),
+        should_loc => $should_loc->{$col->{attribute}},
+    }
+};
+
+if ($PreserveNewLines) {
+    my $col = [];
+    push @columns, $col;
+    for (@Format) {
+        if ($_->{title} eq 'NEWLINE') {
+            $col = [];
+            push @columns, $col;
+        }
+        else {
+            push @$col, $col_entry->($_);
+        }
+    }
+}
+else {
+    push @columns, [map { $_->{attribute}
+                          ? $col_entry->($_)
+                          : () } @Format];
+}
+
+for (@columns) {
+    $m->out(join("\t", map { $_->{header} } @$_)."\n");
+}
+
+my $ii = 0;
+while (my $row = $Collection->Next) {
+    for my $col (@columns) {
+        $m->out(join("\t", map {
+            my $val = ProcessColumnMapValue($_->{map}, Arguments => [$row, $ii++], Escape => 0);
+            $val = loc($val) if $_->{should_loc};
+            # remove tabs from all field values, they screw up the tsv
+            $val = '' unless defined $val;
+            $val =~ s/(?:\n|\r)//g; $val =~ s{\t}{    }g;
+            $val = $no_html->scrub($val);
+            $val = HTML::Entities::decode_entities($val);
+            Encode::encode_utf8($val);
+        } @$col)."\n");
+    }
+}
+$m->abort();
+
+</%INIT>

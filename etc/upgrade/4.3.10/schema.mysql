@@ -1,0 +1,33 @@
+
+CREATE TABLE Assets (
+    id                int(11)         NOT NULL AUTO_INCREMENT,
+    Name              varchar(255)    NOT NULL DEFAULT '',
+    Catalog           int(11)         NOT NULL DEFAULT 0,
+    Status            varchar(64)     NOT NULL DEFAULT '',
+    Description       varchar(255)    NOT NULL DEFAULT '',
+    Creator           int(11)         NOT NULL DEFAULT 0,
+    Created           datetime                 DEFAULT NULL,
+    LastUpdatedBy     int(11)         NOT NULL DEFAULT 0,
+    LastUpdated       datetime                 DEFAULT NULL,
+    PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE INDEX AssetsName ON Assets (Name);
+CREATE INDEX AssetsStatus ON Assets (Status);
+CREATE INDEX AssetsCatalog ON Assets (Catalog);
+
+CREATE TABLE Catalogs (
+    id                int(11)         NOT NULL AUTO_INCREMENT,
+    Name              varchar(255)    NOT NULL DEFAULT '',
+    Lifecycle         varchar(32)     NOT NULL DEFAULT 'assets',
+    Description       varchar(255)    NOT NULL DEFAULT '',
+    Disabled          int2            NOT NULL DEFAULT 0,
+    Creator           int(11)         NOT NULL DEFAULT 0,
+    Created           datetime                 DEFAULT NULL,
+    LastUpdatedBy     int(11)         NOT NULL DEFAULT 0,
+    LastUpdated       datetime                 DEFAULT NULL,
+    PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE INDEX CatalogsName ON Catalogs (Name);
+CREATE INDEX CatalogsDisabled ON Catalogs (Disabled);

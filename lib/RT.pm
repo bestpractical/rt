@@ -477,6 +477,10 @@ sub InitClasses {
     require RT::Topics;
     require RT::Link;
     require RT::Links;
+    require RT::Catalog;
+    require RT::Catalogs;
+    require RT::Asset;
+    require RT::Assets;
 
     _BuildTableAttributes();
 

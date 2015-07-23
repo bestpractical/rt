@@ -164,6 +164,11 @@ my $build_admin_menu = sub {
         description => loc('Select Custom Fields for Articles in all Classes'),
         path        => '/Admin/Global/CustomFields/Class-Article.html',
     );
+    $cfadmin->child( 'assets' =>
+        title       => loc('Assets'),
+        description => loc('Select Custom Fields for Assets in all Catalogs'),
+        path        => '/Admin/Global/CustomFields/Catalog-Assets.html',
+    );
 
     my $article_admin = $admin->child( articles => title => loc('Articles'), path => "/Admin/Articles/index.html" );
     my $class_admin = $article_admin->child(classes => title => loc('Classes'), path => '/Admin/Articles/Classes/' );
@@ -191,6 +196,24 @@ my $build_admin_menu = sub {
         title => loc('Create'),
         path => '/Admin/CustomFields/Modify.html?'.$m->comp("/Elements/QueryString", Create=>1, LookupType=> "RT::Class-RT::Article" ),
     );
+
+    my $assets_admin = $admin->child( assets => title => loc("Assets"), path => '/Admin/Assets/' );
+    my $catalog_admin = $assets_admin->child( catalogs =>
+        title       => loc("Catalogs"),
+        description => loc("Modify asset catalogs"),
+        path        => "/Admin/Assets/Catalogs/"
+    );
+    $catalog_admin->child( "select", title => loc("Select"), path => $catalog_admin->path );
+    $catalog_admin->child( "create", title => loc("Create"), path => "Create.html" );
+
+
+    my $assets_cfs = $assets_admin->child( "cfs",
+        title => loc("Custom Fields"),
+        description => loc("Modify asset custom fields"),
+        path => "/Admin/CustomFields/?Type=" . RT::Asset->CustomFieldLookupType
+    );
+    $assets_cfs->child( "select", title => loc("Select"), path => $assets_cfs->path );
+    $assets_cfs->child( "create", title => loc("Create"), path => "/Admin/CustomFields/Modify.html?Create=1&LookupType=" . RT::Asset->CustomFieldLookupType);
 
     $admin_global->child( 'group-rights' =>
         title       => loc('Group Rights'),
@@ -465,8 +488,12 @@ my $build_admin_menu = sub {
 
 my $build_main_nav = sub {
 
-    PageWidgets()->child( simple_search => raw_html => $m->scomp('SimpleSearch') );
-    PageWidgets()->child( create_ticket => raw_html => $m->scomp('CreateTicket') );
+    if ($request_path =~ m{^/Asset/}) {
+        PageWidgets()->child( asset_search => raw_html => $m->scomp('/Asset/Elements/Search') );
+    } else {
+        PageWidgets()->child( simple_search => raw_html => $m->scomp('SimpleSearch') );
+        PageWidgets()->child( create_ticket => raw_html => $m->scomp('CreateTicket') );
+    }
 
     my $home = Menu->child( home => title => loc('Homepage'), path => '/' );
     unless ($session{'dashboards_in_menu'}) {
@@ -526,6 +553,8 @@ my $build_main_nav = sub {
 
     $search->child( users => title => loc('Users'),   path => "/User/Search.html" );
 
+    $search->child( assets => title => loc("Assets"), path => "/Asset/Search/" );
+
     if ($session{CurrentUser}->HasRight( Right => 'ShowArticlesMenu', Object => RT->System )) {
         my $articles = Menu->child( articles => title => loc('Articles'), path => "/Articles/index.html");
         $articles->child( articles => title => loc('Overview'), path => "/Articles/index.html" );
@@ -533,6 +562,10 @@ my $build_main_nav = sub {
         $articles->child( create   => title => loc('Create'),   path => "/Articles/Article/PreCreate.html" );
         $articles->child( search   => title => loc('Search'),   path => "/Articles/Article/Search.html" );
     }
+
+    my $assets = Menu->child( "assets", title => loc("Assets"), path => "/Asset/Search/" );
+    $assets->child( "create", title => loc("Create"), path => "/Asset/CreateInCatalog.html" );
+    $assets->child( "search", title => loc("Search"), path => "/Asset/Search/" );
 
     my $tools = Menu->child( tools => title => loc('Tools'), path => '/Tools/index.html' );
 
@@ -924,6 +957,111 @@ my $build_main_nav = sub {
 
     }
 
+    if ($request_path =~ m{^/Asset/} and $DECODED_ARGS->{id} and $DECODED_ARGS->{id} !~ /\D/) {
+        my $page  = PageMenu();
+        my $id    = $DECODED_ARGS->{id};
+        my $asset = RT::Asset->new( $session{CurrentUser} );
+        $asset->Load($id);
+
+        if ($asset->id) {
+            $page->child("display",     title => loc("Display"),        path => "/Asset/Display.html?id=$id");
+            $page->child("history",     title => loc("History"),        path => "/Asset/History.html?id=$id");
+            $page->child("basics",      title => loc("Basics"),         path => "/Asset/Modify.html?id=$id");
+            $page->child("links",       title => loc("Links"),          path => "/Asset/ModifyLinks.html?id=$id");
+            $page->child("people",      title => loc("People"),         path => "/Asset/ModifyPeople.html?id=$id");
+            $page->child("dates",       title => loc("Dates"),          path => "/Asset/ModifyDates.html?id=$id");
+
+            for my $grouping (RT::CustomField->CustomGroupings($asset)) {
+                my $cfs = $asset->CustomFields;
+                $cfs->LimitToGrouping( $asset => $grouping );
+                next unless $cfs->Count;
+                $page->child(
+                    "cf-grouping-$grouping",
+                    title   => loc($grouping),
+                    path    => "/Asset/ModifyCFs.html?id=$id;Grouping=" . $m->interp->apply_escapes($grouping, 'u'),
+                );
+            }
+
+            my $actions = $page->child("actions", title => loc("Actions"));
+            $actions->child("create-linked-ticket", title => loc("Create linked ticket"), path => "/Asset/CreateLinkedTicket.html?Asset=$id");
+
+            my $status    = $asset->Status;
+            my $lifecycle = $asset->LifecycleObj;
+            for my $action ( $lifecycle->Actions($status) ) {
+                my $next = $action->{'to'};
+                next unless $lifecycle->IsTransition( $status => $next );
+
+                my $check = $lifecycle->CheckRight( $status => $next );
+                next unless $asset->CurrentUserHasRight($check);
+
+                my $label = $action->{'label'} || ucfirst($next);
+                $actions->child(
+                    $label,
+                    title   => loc($label),
+                    path    => "/Asset/Modify.html?id=$id;Update=1;DisplayAfter=1;Status="
+                                . $m->interp->apply_escapes($next, 'u'),
+
+                    class       => "asset-lifecycle-action",
+                    attributes  => {
+                        'data-current-status'   => $status,
+                        'data-next-status'      => $next,
+                    },
+                );
+            }
+        }
+    } elsif ($request_path =~ m{^/Asset/Search/}) {
+        my $page  = PageMenu();
+        my %search = map @{$_},
+            grep defined $_->[1] && length $_->[1],
+            map {ref $DECODED_ARGS->{$_} ? [$_, $DECODED_ARGS->{$_}[0]] : [$_, $DECODED_ARGS->{$_}] }
+            grep /^(?:q|SearchAssets|!?(Name|Description|Catalog|Status|Role\..+|CF\..+)|Order(?:By)?|Page)$/,
+            keys %$DECODED_ARGS;
+        if ( $request_path =~ /Bulk/) {
+            $page->child('search',
+                title => loc('Show Results'),
+                path => '/Asset/Search/?' . keys %search ? $query_string->(%search) : '',
+            );
+        } else {
+            $page->child('bulk',
+                title => loc('Bulk Update'),
+                path => '/Asset/Search/Bulk.html?' . keys %search ? $query_string->(%search) : '',
+            );
+        }
+        $page->child('csv',
+            title => loc('Download Spreadsheet'),
+            path  => '/Asset/Search/Results.tsv?' . keys %search ? $query_string->(%search) : '',
+        );
+    } elsif ($request_path =~ m{^/Admin/Global/CustomFields/Catalog-Assets\.html$}) {
+        my $page  = PageMenu();
+        $page->child("create", title => loc("Create New"), path => "/Admin/CustomFields/Modify.html?Create=1;LookupType=" . RT::Asset->CustomFieldLookupType);
+    } elsif ($request_path =~ m{^/Admin/CustomFields(/|/index\.html)?$}
+            and $DECODED_ARGS->{'Type'} and $DECODED_ARGS->{'Type'} eq RT::Asset->CustomFieldLookupType) {
+        my $page  = PageMenu();
+        $page->child("create")->path( $page->child("create")->path . "&LookupType=" . RT::Asset->CustomFieldLookupType );
+    } elsif ($request_path =~ m{^/Admin/Assets/Catalogs/}) {
+        my $page  = PageMenu();
+        my $actions = $request_path =~ m{/((index|Create)\.html)?$}
+            ? $page
+            : $page->child("catalogs", title => loc("Catalogs"), path => "/Admin/Assets/Catalogs/");
+
+        $actions->child("select", title => loc("Select"), path => "/Admin/Assets/Catalogs/");
+        $actions->child("create", title => loc("Create"), path => "/Admin/Assets/Catalogs/Create.html");
+
+        my $catalog = RT::Catalog->new( $session{CurrentUser} );
+        $catalog->Load($DECODED_ARGS->{id}) if $DECODED_ARGS->{id};
+
+        if ($catalog->id and $catalog->CurrentUserCanSee) {
+            my $query = "id=" . $catalog->id;
+            $page->child("modify", title => loc("Basics"), path => "/Admin/Assets/Catalogs/Modify.html?$query");
+            $page->child("people", title => loc("Roles"),  path => "/Admin/Assets/Catalogs/Roles.html?$query");
+
+            $page->child("cfs", title => loc("Asset Custom Fields"), path => "/Admin/Assets/Catalogs/CustomFields.html?$query");
+
+            $page->child("group-rights", title => loc("Group Rights"), path => "/Admin/Assets/Catalogs/GroupRights.html?$query");
+            $page->child("user-rights",  title => loc("User Rights"),  path => "/Admin/Assets/Catalogs/UserRights.html?$query");
+        }
+    }
+
     if ( $request_path =~ m{^/User/(Summary|History)\.html} ) {
         if (PageMenu()->child('summary')) {
             # Already set up from having AdminUser and ShowConfigTab;
@@ -966,6 +1104,7 @@ my $build_selfservice_nav = sub {
     $tickets->child( open   => title => loc('Open tickets'),   path => '/SelfService/' );
     $tickets->child( closed => title => loc('Closed tickets'), path => '/SelfService/Closed.html' );
 
+    my $assets = Menu->child( "assets", title => loc("Assets"), path => "/SelfService/Asset/" );
 
     my $username = '<span class="current-user">'
                  . $m->interp->apply_escapes($session{'CurrentUser'}->Name, 'h')
@@ -991,6 +1130,18 @@ my $build_selfservice_nav = sub {
     }
 
     PageWidgets->child( goto => raw_html => $m->scomp('/SelfService/Elements/GotoTicket') );
+
+    if ($request_path =~ m{^/SelfService/Asset/} and $DECODED_ARGS->{id}) {
+        my $page = PageMenu();
+        my $id   = $DECODED_ARGS->{id};
+        $page->child("display",     title => loc("Display"),        path => "/SelfService/Asset/Display.html?id=$id");
+        $page->child("history",     title => loc("History"),        path => "/SelfService/Asset/History.html?id=$id");
+
+        if (Menu->child("new")) {
+            my $actions = $page->child("actions", title => loc("Actions"));
+            $actions->child("create-linked-ticket", title => loc("Create linked ticket"), path => "/SelfService/Asset/CreateLinkedTicket.html?Asset=$id");
+        }
+    }
 
     $m->callback( CallbackName => 'SelfService', Path => $request_path );
 };

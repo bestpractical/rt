@@ -130,6 +130,7 @@ sub JSFiles {
       late.js
       mousetrap.min.js
       keyboard-shortcuts.js
+      assets.js
       /static/RichText/ckeditor.js
       dropzone.min.js
       }, RT->Config->Get('JSFiles');
@@ -3930,6 +3931,250 @@ sub GetPrincipalsMap {
         }
     }
     return @map;
+}
+
+sub LoadCatalog {
+    my $id = shift
+        or Abort(loc("No catalog specified."));
+
+    my $catalog = RT::Catalog->new( $session{CurrentUser} );
+    $catalog->Load($id);
+
+    Abort(loc("Unable to find catalog [_1]", $id))
+        unless $catalog->id;
+
+    Abort(loc("You don't have permission to view this catalog."))
+        unless $catalog->CurrentUserCanSee;
+
+    return $catalog;
+}
+
+sub LoadAsset {
+    my $id = shift
+        or Abort(loc("No asset ID specified."));
+
+    my $asset = RT::Asset->new( $session{CurrentUser} );
+    $asset->Load($id);
+
+    Abort(loc("Unable to find asset #[_1]", $id))
+        unless $asset->id;
+
+    Abort(loc("You don't have permission to view this asset."))
+        unless $asset->CurrentUserCanSee;
+
+    return $asset;
+}
+
+sub ProcessAssetRoleMembers {
+    my $object = shift;
+    my %ARGS   = (@_);
+    my @results;
+
+    for my $arg (keys %ARGS) {
+        if ($arg =~ /^Add(User|Group)RoleMember$/) {
+            next unless $ARGS{$arg} and $ARGS{"$arg-Role"};
+
+            my ($ok, $msg) = $object->AddRoleMember(
+                Type => $ARGS{"$arg-Role"},
+                $1   => $ARGS{$arg},
+            );
+            push @results, $msg;
+        }
+        elsif ($arg =~ /^SetRoleMember-(.+)$/) {
+            my $role = $1;
+            my $group = $object->RoleGroup($role);
+            next unless $group->id and $group->SingleMemberRoleGroup;
+            next if $ARGS{$arg} eq $group->UserMembersObj->First->Name;
+            my ($ok, $msg) = $object->AddRoleMember(
+                Type => $role,
+                User => $ARGS{$arg} || 'Nobody',
+            );
+            push @results, $msg;
+        }
+        elsif ($arg =~ /^(Add|Remove)RoleMember-(.+)$/) {
+            my $role = $2;
+            my $method = $1 eq 'Add'? 'AddRoleMember' : 'DeleteRoleMember';
+
+            my $is = 'User';
+            if ( ($ARGS{"$arg-Type"}||'') =~ /^(User|Group)$/ ) {
+                $is = $1;
+            }
+
+            my ($ok, $msg) = $object->$method(
+                Type        => $role,
+                ($ARGS{$arg} =~ /\D/
+                    ? ($is => $ARGS{$arg})
+                    : (PrincipalId => $ARGS{$arg})
+                ),
+            );
+            push @results, $msg;
+        }
+        elsif ($arg =~ /^RemoveAllRoleMembers-(.+)$/) {
+            my $role = $1;
+            my $group = $object->RoleGroup($role);
+            next unless $group->id;
+
+            my $gms = $group->MembersObj;
+            while ( my $gm = $gms->Next ) {
+                my ($ok, $msg) = $object->DeleteRoleMember(
+                    Type        => $role,
+                    PrincipalId => $gm->MemberId,
+                );
+                push @results, $msg;
+            }
+        }
+    }
+    return @results;
+}
+
+
+# If provided a catalog, load it and return the object.
+# If no catalog is passed, load the first active catalog.
+
+sub LoadDefaultCatalog {
+    my $catalog = shift;
+    my $catalog_obj = RT::Catalog->new($session{CurrentUser});
+
+    if ( $catalog ){
+        $catalog_obj->Load($catalog);
+        RT::Logger->error("Unable to load catalog: " . $catalog)
+            unless $catalog_obj->Id;
+    }
+    elsif ( $session{'DefaultCatalog'} ){
+        $catalog_obj->Load($session{'DefaultCatalog'});
+        RT::Logger->error("Unable to load remembered catalog: " .
+                          $session{'DefaultCatalog'})
+            unless $catalog_obj->Id;
+    }
+    elsif ( RT->Config->Get("DefaultCatalog") ){
+        $catalog_obj->Load( RT->Config->Get("DefaultCatalog") );
+        RT::Logger->error("Unable to load default catalog: "
+                          . RT->Config->Get("DefaultCatalog"))
+            unless $catalog_obj->Id;
+    }
+    else {
+        # If no catalog, default to the first active catalog
+        my $catalogs = RT::Catalogs->new($session{CurrentUser});
+        $catalogs->UnLimit;
+        $catalog_obj = $catalogs->First();
+        RT::Logger->error("No active catalogs.")
+            unless $catalog_obj and $catalog_obj->Id;
+    }
+
+    return $catalog_obj;
+}
+
+sub ProcessAssetsSearchArguments {
+    my %args = (
+        Catalog => undef,
+        Assets => undef,
+        ARGSRef => undef,
+        @_
+    );
+    my $ARGSRef = $args{'ARGSRef'};
+
+    my @PassArguments;
+
+    if ($ARGSRef->{q}) {
+        if ($ARGSRef->{q} =~ /^\d+$/) {
+            my $asset = RT::Asset->new( $session{CurrentUser} );
+            $asset->Load( $ARGSRef->{q} );
+            RT::Interface::Web::Redirect(
+                RT->Config->Get('WebURL')."Asset/Display.html?id=".$ARGSRef->{q}
+            ) if $asset->id;
+        }
+        $args{'Assets'}->SimpleSearch( Term => $ARGSRef->{q}, Catalog => $args{Catalog} );
+        push @PassArguments, "q";
+    } elsif ( $ARGSRef->{'SearchAssets'} ){
+        for my $key (keys %$ARGSRef) {
+            my $value = ref $ARGSRef->{$key} ? $ARGSRef->{$key}[0] : $ARGSRef->{$key};
+            next unless defined $value and length $value;
+
+            my $orig_key = $key;
+            my $negative = ($key =~ s/^!// ? 1 : 0);
+            if ($key =~ /^(Name|Description)$/) {
+                $args{'Assets'}->Limit(
+                    FIELD => $key,
+                    OPERATOR => ($negative ? 'NOT LIKE' : 'LIKE'),
+                    VALUE => $value,
+                    ENTRYAGGREGATOR => "AND",
+                );
+            } elsif ($key eq 'Catalog') {
+                $args{'Assets'}->LimitCatalog(
+                    OPERATOR => ($negative ? '!=' : '='),
+                    VALUE => $value,
+                    ENTRYAGGREGATOR => "AND",
+                );
+            } elsif ($key eq 'Status') {
+                $args{'Assets'}->Limit(
+                    FIELD => $key,
+                    OPERATOR => ($negative ? '!=' : '='),
+                    VALUE => $value,
+                    ENTRYAGGREGATOR => "AND",
+                );
+            } elsif ($key =~ /^Role\.(.+)/) {
+                my $role = $1;
+                $args{'Assets'}->RoleLimit(
+                    TYPE      => $role,
+                    FIELD     => $_,
+                    OPERATOR  => ($negative ? '!=' : '='),
+                    VALUE     => $value,
+                    SUBCLAUSE => $role,
+                    ENTRYAGGREGATOR => ($negative ? "AND" : "OR"),
+                    CASESENSITIVE   => 0,
+                ) for qw/EmailAddress Name/;
+            } elsif ($key =~ /^CF\.\{(.+?)\}$/ or $key =~ /^CF\.(.*)/) {
+                my $cf = RT::Asset->new( $session{CurrentUser} )
+                  ->LoadCustomFieldByIdentifier( $1 );
+                next unless $cf->id;
+                if ( $value eq 'NULL' ) {
+                    $args{'Assets'}->LimitCustomField(
+                        CUSTOMFIELD => $cf->Id,
+                        OPERATOR    => ($negative ? "IS NOT" : "IS"),
+                        VALUE       => 'NULL',
+                        QUOTEVALUE  => 0,
+                        ENTRYAGGREGATOR => "AND",
+                    );
+                } else {
+                    $args{'Assets'}->LimitCustomField(
+                        CUSTOMFIELD => $cf->Id,
+                        OPERATOR    => ($negative ? "NOT LIKE" : "LIKE"),
+                        VALUE       => $value,
+                        ENTRYAGGREGATOR => "AND",
+                    );
+                }
+            }
+            else {
+                next;
+            }
+            push @PassArguments, $orig_key;
+        }
+        push @PassArguments, 'SearchAssets';
+    }
+
+    my $Format = RT->Config->Get('AssetSearchFormat');
+    $Format = $Format->{$args{'Catalog'}->id}
+        || $Format->{$args{'Catalog'}->Name}
+        || $Format->{''} if ref $Format;
+    $Format ||= q[
+        '<b><a href="__WebPath__/Asset/Display.html?id=__id__">__id__</a></b>/TITLE:#',
+        '<b><a href="__WebPath__/Asset/Display.html?id=__id__">__Name__</a></b>/TITLE:Name',
+        Description,
+        Status,
+    ];
+
+    $ARGSRef->{OrderBy} ||= 'id';
+
+    push @PassArguments, qw/OrderBy Order Page/;
+
+    return (
+        OrderBy         => 'id',
+        Order           => 'ASC',
+        Rows            => 50,
+        (map { $_ => $ARGSRef->{$_} } grep { defined $ARGSRef->{$_} } @PassArguments),
+        PassArguments   => \@PassArguments,
+        Format          => $Format,
+    );
 }
 
 =head2 _load_container_object ( $type, $id );

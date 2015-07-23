@@ -19,7 +19,7 @@ $root->AddCustomFieldValue( Field => 'foo', Value => 'blabla' );
 is( $root->FirstCustomFieldValue('foo'), 'blabla', 'cf is set' );
 
 ok( $m->login, 'logged in' );
-$m->post( "$baseurl/REST/1.0/show", [ id => 'user/12', ] );
+$m->post( "$baseurl/REST/1.0/show", [ id => 'user/14', ] );
 like( $m->content, qr/CF-foo: blabla/, 'found the cf' );
 
 undef $m;

@@ -1,0 +1,33 @@
+
+sub acl {
+    my $dbh = shift;
+
+    my @acls;
+
+    my @tables = qw (
+        catalogs_id_seq
+        Catalogs
+        assets_id_seq
+        Assets
+    );
+
+    my $db_user = RT->Config->Get('DatabaseUser');
+
+    my $sequence_right
+        = ( $dbh->{pg_server_version} >= 80200 )
+        ? "USAGE, SELECT, UPDATE"
+        : "SELECT, UPDATE";
+
+    foreach my $table (@tables) {
+        # Tables are upper-case, sequences are lowercase
+        if ( $table =~ /^[a-z]/ ) {
+            push @acls, "GRANT $sequence_right ON $table TO \"$db_user\";"
+        }
+        else {
+            push @acls, "GRANT SELECT, INSERT, UPDATE, DELETE ON $table TO \"$db_user\";"
+        }
+    }
+    return (@acls);
+}
+
+1;

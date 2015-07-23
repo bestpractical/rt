@@ -23,6 +23,11 @@
              Description => 'A system-internal queue for the approvals system',
              Disabled    => 2, } );
 
+@Catalogs = ({
+    Name        => "General assets",      # loc
+    Description => "The default catalog", # loc
+});
+
 @ScripActions = (
 
     {  Name        => 'Autoreply To Requestors',    # loc

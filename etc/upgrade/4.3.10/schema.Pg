@@ -1,0 +1,35 @@
+
+CREATE SEQUENCE assets_id_seq;
+CREATE TABLE Assets (
+    id                integer                  DEFAULT nextval('assets_id_seq'),
+    Name              varchar(255)    NOT NULL DEFAULT '',
+    Catalog           integer         NOT NULL DEFAULT 0,
+    Status            varchar(64)     NOT NULL DEFAULT '',
+    Description       varchar(255)    NOT NULL DEFAULT '',
+    Creator           integer         NOT NULL DEFAULT 0,
+    Created           timestamp                DEFAULT NULL,
+    LastUpdatedBy     integer         NOT NULL DEFAULT 0,
+    LastUpdated       timestamp                DEFAULT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE INDEX AssetsName ON Assets (LOWER(Name));
+CREATE INDEX AssetsStatus ON Assets (Status);
+CREATE INDEX AssetsCatalog ON Assets (Catalog);
+
+CREATE SEQUENCE catalogs_id_seq;
+CREATE TABLE Catalogs (
+    id                integer                  DEFAULT nextval('catalogs_id_seq'),
+    Name              varchar(255)    NOT NULL DEFAULT '',
+    Lifecycle         varchar(32)     NOT NULL DEFAULT 'assets',
+    Description       varchar(255)    NOT NULL DEFAULT '',
+    Disabled          integer         NOT NULL DEFAULT 0,
+    Creator           integer         NOT NULL DEFAULT 0,
+    Created           timestamp                DEFAULT NULL,
+    LastUpdatedBy     integer         NOT NULL DEFAULT 0,
+    LastUpdated       timestamp                DEFAULT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE INDEX CatalogsName ON Catalogs (LOWER(Name));
+CREATE INDEX CatalogsDisabled ON Catalogs (Disabled);

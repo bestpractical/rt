@@ -13,6 +13,7 @@
 /etc/upgrade/time-worked-history
 /etc/upgrade/upgrade-articles
 /etc/upgrade/upgrade-sla
+/etc/upgrade/upgrade-assets
 /etc/upgrade/vulnerable-passwords
 /lib/RT/Generated.pm
 /Makefile

@@ -22,7 +22,7 @@ $m->login;
     require JSON;
     is_deeply(
         JSON::from_json( $m->content ),
-        [{id => 12, "value" =>  "root\@localhost","label" => "root (Enoch Root)"}]
+        [{id => 14, "value" =>  "root\@localhost","label" => "root (Enoch Root)"}]
     );
 }
 
