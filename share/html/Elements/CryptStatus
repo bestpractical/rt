@@ -147,7 +147,7 @@ foreach my $run ( @runs ) {
                 push @messages, {
                     Tag     => $protocol,
                     Classes => [qw/keycheck bad/],
-                    Value   => loc( "Public key '0x[_1]' is required to verify signature", $line->{'Key'} ),
+                    Value   => $m->interp->apply_escapes( loc( "Public key '0x[_1]' is required to verify signature", $line->{'Key'} ), 'h'),
                 };
             }
         }
@@ -156,21 +156,21 @@ foreach my $run ( @runs ) {
             push @messages, {
                 Tag     => $protocol,
                 Classes => ['passphrasecheck', lc $line->{Status}],
-                Value   => loc( $line->{'Message'} ),
+                Value   => $m->interp->apply_escapes( loc( $line->{'Message'} ), 'h'),
             };
         }
         elsif ( $line->{'Operation'} eq 'Decrypt' ) {
             push @messages, {
                 Tag     => $protocol,
                 Classes => ['decrypt', lc $line->{Status}],
-                Value   => loc( $line->{'Message'} ),
+                Value   => $m->interp->apply_escapes( loc( $line->{'Message'} ), 'h'),
             };
         }
         elsif ( $line->{'Operation'} eq 'Verify' ) {
             push @messages, {
                 Tag     => $protocol,
                 Classes => ['verify', lc $line->{Status}, 'trust-'.($line->{Trust} || 'UNKNOWN')],
-                Value   => loc( $line->{'Message'} ),
+                Value   => $m->interp->apply_escapes( loc( $line->{'Message'} ), 'h'),
             };
         }
         else {
@@ -178,7 +178,7 @@ foreach my $run ( @runs ) {
             push @messages, {
                 Tag     => $protocol,
                 Classes => [lc $line->{Operation}, lc $line->{Status}],
-                Value   => loc( $line->{'Message'} ),
+                Value   => $m->interp->apply_escapes( loc( $line->{'Message'} ), 'h'),
             }
         }
     }
