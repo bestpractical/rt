@@ -12,6 +12,7 @@
 /etc/upgrade/switch-templates-to
 /etc/upgrade/time-worked-history
 /etc/upgrade/upgrade-articles
+/etc/upgrade/upgrade-sla
 /etc/upgrade/vulnerable-passwords
 /lib/RT/Generated.pm
 /Makefile

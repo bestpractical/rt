@@ -437,6 +437,7 @@ AC_CONFIG_FILES([
                  etc/upgrade/time-worked-history
                  etc/upgrade/upgrade-articles
                  etc/upgrade/vulnerable-passwords
+                 etc/upgrade/upgrade-sla
                  sbin/rt-attributes-viewer
                  sbin/rt-preferences-viewer
                  sbin/rt-session-viewer
