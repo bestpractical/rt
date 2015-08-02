@@ -1,17 +1,6 @@
 use strict;
 use warnings;
 
-our @CustomFields = (
-    {
-        Name        => 'SLA',
-        Queue       => 0,
-        Type        => 'SelectSingle',
-        Disabled    => 0,
-        Description => 'Service Level Agreement',
-        Values      => [ ],
-    },
-);
-
 our @ScripConditions = (
     {  Name        => '[SLA] Require default', # loc
        Description => 'Detect a situation when we should set default service level' , # loc
@@ -20,12 +9,12 @@ our @ScripConditions = (
     },
     {  Name        => '[SLA] Require Starts set', # loc
        Description => 'Detect a situation when we should set Starts date' , # loc
-       ApplicableTransTypes => 'Create,CustomField',
+       ApplicableTransTypes => 'Create,Set',
        ExecModule => 'SLA_RequireStartsSet',
     },
     {  Name        => '[SLA] Require Due set', # loc
        Description => 'Detect a situation when we should set Due date' , # loc
-       ApplicableTransTypes => 'Create,CustomField,Correspond,Set,Status',
+       ApplicableTransTypes => 'Create,Correspond,Set,Status',
        ExecModule => 'SLA_RequireDueSet',
     },
 );

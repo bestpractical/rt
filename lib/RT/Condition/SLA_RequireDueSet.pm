@@ -69,14 +69,16 @@ sub IsApplicable {
 
     my $type = $self->TransactionObj->Type;
     if ( $type eq 'Create' || $type eq 'Correspond' ) {
-        return 1 if $self->TicketObj->FirstCustomFieldValue('SLA');
+        return 1 if $self->TicketObj->SLA;
         return 0;
     }
     elsif ( $type eq 'Status' || ($type eq 'Set' && $self->TransactionObj->Field eq 'Status') ) {
-        return 1 if $self->TicketObj->FirstCustomFieldValue('SLA');
+        return 1 if $self->TicketObj->SLA;
         return 0;
     }
-    return 1 if $self->IsCustomFieldChange('SLA');
+    elsif ( $type eq 'SLA' || ($type eq 'Set' && $self->TransactionObj->Field eq 'SLA') ) {
+        return 1;
+    }
     return 0;
 }
 

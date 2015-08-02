@@ -104,6 +104,7 @@ __PACKAGE__->RegisterCustomFieldJoin(@$_) for
 
 our %FIELD_METADATA = (
     Status          => [ 'STRING', ], #loc_left_pair
+    SLA             => [ 'STRING', ], #loc_left_pair
     Queue           => [ 'ENUM' => 'Queue', ], #loc_left_pair
     Type            => [ 'ENUM', ], #loc_left_pair
     Creator         => [ 'ENUM' => 'User', ], #loc_left_pair

@@ -300,6 +300,7 @@ CREATE TABLE Tickets (
   TimeEstimated integer NULL DEFAULT 0 ,
   TimeWorked integer NULL DEFAULT 0 ,
   Status varchar(64) collate NOCASE NULL  ,
+  SLA varchar(64) collate NOCASE NULL  ,
   TimeLeft integer NULL DEFAULT 0 ,
   Told DATETIME NULL  ,
   Starts DATETIME NULL  ,

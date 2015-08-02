@@ -270,6 +270,7 @@ CREATE TABLE Tickets (
         TimeEstimated           NUMBER(11,0) DEFAULT 0 NOT NULL,
         TimeWorked              NUMBER(11,0) DEFAULT 0 NOT NULL,
         Status                  VARCHAR2(64),           
+        SLA                     VARCHAR2(64),
         TimeLeft                NUMBER(11,0) DEFAULT 0 NOT NULL,
         Told                    DATE,
         Starts                  DATE,

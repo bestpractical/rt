@@ -75,12 +75,6 @@ sub Prepare { return 1 }
 sub Commit {
     my $self = shift;
 
-    my $cf = $self->GetCustomField;
-    unless ( $cf->id ) {
-        $RT::Logger->warning("SLA scrip applied to a queue that has no SLA CF");
-        return 1;
-    }
-
     my $level = $self->GetDefaultServiceLevel;
     unless ( $level ) {
         $RT::Logger->info(
@@ -89,10 +83,7 @@ sub Commit {
         return 1;
     }
 
-    my ($status, $msg) = $self->TicketObj->AddCustomFieldValue(
-        Field => $cf->id,
-        Value => $level,
-    );
+    my ($status, $msg) = $self->TicketObj->SetSLA($level);
     unless ( $status ) {
         $RT::Logger->error("Couldn't set service level: $msg");
         return 0;

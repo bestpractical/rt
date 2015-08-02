@@ -377,17 +377,6 @@ Response SLA has only been met when the owner or AdminCc reply.
         ...
     };
 
-=head2 Access control
-
-You can totally hide SLA custom field from users and use per queue
-defaults, just revoke SeeCustomField and ModifyCustomField.
-
-If you want people to see the current service level ticket is assigned
-to then grant SeeCustomField right.
-
-You may want to allow customers or managers to escalate thier tickets.
-Just grant them ModifyCustomField right.
-
 =cut
 
 sub BusinessHours {
@@ -554,20 +543,6 @@ sub CalculateTime {
     die $@ unless $ok;
 
     return $res;
-}
-
-sub GetCustomField {
-    my $self = shift;
-    my %args = (Ticket => undef, CustomField => 'SLA', @_);
-    unless ( $args{'Ticket'} ) {
-        $args{'Ticket'} = $self->TicketObj if $self->can('TicketObj');
-    }
-    unless ( $args{'Ticket'} ) {
-        return RT::CustomField->new( $RT::SystemUser );
-    }
-    my $cfs = $args{'Ticket'}->QueueObj->TicketCustomFields;
-    $cfs->Limit( FIELD => 'Name', VALUE => $args{'CustomField'}, CASESENSITIVE => 0 );
-    return $cfs->First || RT::CustomField->new( $RT::SystemUser );
 }
 
 sub GetDefaultServiceLevel {

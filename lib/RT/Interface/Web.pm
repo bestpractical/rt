@@ -2140,6 +2140,7 @@ sub CreateTicket {
         Type => $ARGS{'Type'} || 'ticket',
         Queue => $ARGS{'Queue'},
         Owner => $ARGS{'Owner'},
+        SLA => $ARGS{'SLA'},
 
         # note: name change
         Requestor       => $ARGS{'Requestors'},
@@ -2861,6 +2862,7 @@ sub ProcessTicketBasics {
         Type
         Status
         Queue
+        SLA
     );
 
     # Canonicalize Queue and Owner to their IDs if they aren't numeric

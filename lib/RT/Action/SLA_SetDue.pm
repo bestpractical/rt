@@ -62,7 +62,7 @@ Checks if the ticket has service level defined.
 sub Prepare {
     my $self = shift;
 
-    unless ( $self->TicketObj->FirstCustomFieldValue('SLA') ) {
+    unless ( $self->TicketObj->SLA ) {
         $RT::Logger->error('SLA::SetDue scrip has been applied to ticket #'
             . $self->TicketObj->id . ' that has no SLA defined');
         return 0;
@@ -82,7 +82,7 @@ sub Commit {
 
     my $ticket = $self->TicketObj;
     my $txn = $self->TransactionObj;
-    my $level = $ticket->FirstCustomFieldValue('SLA');
+    my $level = $ticket->SLA;
 
     my ($last_reply, $is_outside) = $self->LastEffectiveAct;
     $RT::Logger->debug(
