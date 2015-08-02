@@ -65,6 +65,7 @@ sub IsApplicable {
     return 0 unless $self->TransactionObj->Type eq 'Create';
     my $ticket = $self->TicketObj;
     return 0 unless lc($ticket->Type) eq 'ticket';
+    return 0 if $ticket->QueueObj->SLADisabled;
     return 0 if $ticket->SLA;
     return 1;
 }

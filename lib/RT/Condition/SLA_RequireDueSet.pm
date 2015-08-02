@@ -66,6 +66,7 @@ a ticket and it has service level value or when we set service level.
 sub IsApplicable {
     my $self = shift;
     return 0 unless $self->SLAIsApplied;
+    return 0 if $self->TicketObj->QueueObj->SLADisabled;
 
     my $type = $self->TransactionObj->Type;
     if ( $type eq 'Create' || $type eq 'Correspond' ) {

@@ -95,6 +95,7 @@
                     QueueObj        => $QueueObj,
                 },
             },
+            $QueueObj->SLADisabled ? () : (
             {   name => 'SLA',
                 comp => '/Elements/SelectSLA',
                 args => {
@@ -103,7 +104,7 @@
                     DefaultValue    => RT::SLA->GetDefaultServiceLevel(Queue => $QueueObj) ? 0 : 1,
                     QueueObj        => $QueueObj,
                 },
-            }
+            }),
         ]
         &>
 

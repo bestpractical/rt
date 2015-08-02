@@ -54,10 +54,12 @@
     <td class="label"><&|/l&>Status</&>:</td>
     <td class="value"><% loc($Ticket->Status) %></td>
   </tr>
+% if ( !$Ticket->QueueObj->SLADisabled ) {
   <tr class="sla">
     <td class="label"><&|/l&>SLA</&>:</td>
     <td class="value"><% loc($Ticket->SLA) %></td>
   </tr>
+% }
 % if ($Ticket->TimeEstimated) {
   <tr class="time estimated">
     <td class="label"><&|/l&>Estimated</&>:</td>

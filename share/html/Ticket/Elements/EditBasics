@@ -85,6 +85,7 @@ unless ( @fields ) {
                 DefaultValue => 0,
             }
         },
+        $TicketObj->QueueObj->SLADisabled ? () : (
         {   name => 'SLA',
             comp => '/Elements/SelectSLA',
             args => {
@@ -93,7 +94,7 @@ unless ( @fields ) {
                 DefaultFromArgs => 0,
                 TicketObj => $TicketObj,
             },
-        },
+        }),
         # Time Estimated, Worked, and Left
         (
             map {
