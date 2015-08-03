@@ -1354,7 +1354,7 @@ sub StaticRoots {
     return grep { $_ and -d $_ } @static;
 }
 
-our %is_whitelisted_component = (
+our %IS_WHITELISTED_COMPONENT = (
     # The RSS feed embeds an auth token in the path, but query
     # information for the search.  Because it's a straight-up read, in
     # addition to embedding its own auth, it's fine.
@@ -1376,9 +1376,40 @@ our %is_whitelisted_component = (
     '/Ticket/ShowEmailRecord.html' => 1,
 );
 
+# Whitelist arguments that do not indicate an effectful request.
+our @GLOBAL_WHITELISTED_ARGS = (
+    # For example, "id" is acceptable because that is how RT retrieves a
+    # record.
+    'id',
+
+    # If they have a results= from MaybeRedirectForResults, that's also fine.
+    'results',
+
+    # The homepage refresh, which uses the Refresh header, doesn't send
+    # a referer in most browsers; whitelist the one parameter it reloads
+    # with, HomeRefreshInterval, which is safe
+    'HomeRefreshInterval',
+
+    # The NotMobile flag is fine for any page; it's only used to toggle a flag
+    # in the session related to which interface you get.
+    'NotMobile',
+);
+
+our %WHITELISTED_COMPONENT_ARGS = (
+    # SavedSearchLoad - This happens when you middle-(or ⌘ )-click "Edit" for a saved search on
+    # the homepage. It's not going to do any damage
+    # NewQuery - This is simply to clear the search query
+    '/Search/Build.html' => ['SavedSearchLoad','NewQuery'],
+    # Happens if you try and reply to a message in the ticket history or click a number
+    # of options on a tickets Action menu
+    '/Ticket/Update.html' => ['QuoteTransaction', 'Action', 'DefaultStatus'],
+    # Action->Extract Article on a ticket's menu
+    '/Articles/Article/ExtractIntoClass.html' => ['Ticket'],
+);
+
 # Components which are blacklisted from automatic, argument-based whitelisting.
 # These pages are not idempotent when called with just an id.
-our %is_blacklisted_component = (
+our %IS_BLACKLISTED_COMPONENT = (
     # Takes only id and toggles bookmark state
     '/Helpers/Toggle/TicketBookmark' => 1,
 );
@@ -1387,7 +1418,7 @@ sub IsCompCSRFWhitelisted {
     my $comp = shift;
     my $ARGS = shift;
 
-    return 1 if $is_whitelisted_component{$comp};
+    return 1 if $IS_WHITELISTED_COMPONENT{$comp};
 
     my %args = %{ $ARGS };
 
@@ -1407,7 +1438,7 @@ sub IsCompCSRFWhitelisted {
 
     # Some pages aren't idempotent even with safe args like id; blacklist
     # them from the automatic whitelisting below.
-    return 0 if $is_blacklisted_component{$comp};
+    return 0 if $IS_BLACKLISTED_COMPONENT{$comp};
 
     if ( my %csrf_config = RT->Config->Get('ReferrerComponents') ) {
         my $value = $csrf_config{$comp};
@@ -1420,28 +1451,25 @@ sub IsCompCSRFWhitelisted {
         }
     }
 
-    # Eliminate arguments that do not indicate an effectful request.
-    # For example, "id" is acceptable because that is how RT retrieves a
-    # record.
-    delete $args{id};
+    return AreCompCSRFParametersWhitelisted($comp, \%args);
+}
 
-    # If they have a results= from MaybeRedirectForResults, that's also fine.
-    delete $args{results};
+sub AreCompCSRFParametersWhitelisted {
+    my $sub = shift;
+    my $ARGS = shift;
 
-    # The homepage refresh, which uses the Refresh header, doesn't send
-    # a referer in most browsers; whitelist the one parameter it reloads
-    # with, HomeRefreshInterval, which is safe
-    delete $args{HomeRefreshInterval};
+    my %leftover_args = %{ $ARGS };
 
-    # The NotMobile flag is fine for any page; it's only used to toggle a flag
-    # in the session related to which interface you get.
-    delete $args{NotMobile};
+    # Join global whitelist and component-specific whitelist
+    my @whitelisted_args = (@GLOBAL_WHITELISTED_ARGS, @{ $WHITELISTED_COMPONENT_ARGS{$sub} || [] });
+
+    for my $arg (@whitelisted_args) {
+        delete $leftover_args{$arg};
+    }
 
     # If there are no arguments, then it's likely to be an idempotent
     # request, which are not susceptible to CSRF
-    return 1 if !%args;
-
-    return 0;
+    return !%leftover_args;
 }
 
 sub IsRefererCSRFWhitelisted {
