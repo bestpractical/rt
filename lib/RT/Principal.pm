@@ -117,8 +117,6 @@ sub IsUser {
     }
 }
 
-
-
 =head2 Object
 
 Returns the user or group associated with this principal
@@ -146,7 +144,18 @@ sub Object {
 
 }
 
+=head2 DisplayName
 
+Returns the relevant display name for this principal
+
+=cut
+
+sub DisplayName {
+    my $self = shift;
+    return undef unless $self->Object;
+    return $self->Object->Name unless $self->Object->InstanceObj;
+    return $self->Object->InstanceObj->Name;
+}
 
 =head2 GrantRight  { Right => RIGHTNAME, Object => undef }
 
