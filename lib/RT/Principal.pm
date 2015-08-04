@@ -146,7 +146,23 @@ sub Object {
 
 }
 
+=head2 DisplayName
 
+Returns the relevant display name for this principal
+
+=cut
+
+sub DisplayName {
+    my $self = shift;
+
+    return undef unless $self->Object;
+
+    # If this principal is an ACLEquivalence group, return the user name
+    return $self->Object->InstanceObj->Name if ($self->Object->Domain eq 'ACLEquivalence');
+
+    # Otherwise, show the group name
+    return $self->Object->Name;
+}
 
 =head2 GrantRight  { Right => RIGHTNAME, Object => undef }
 
