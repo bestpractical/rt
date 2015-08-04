@@ -1307,13 +1307,13 @@ sub ValidateWebConfig {
     if ( $port != RT->Config->Get('WebPort') and not $ENV{'rt.explicit_port'}) {
         $RT::Logger->warn("The requested port ($port) does NOT match the configured WebPort ($RT::WebPort).  "
                          ."Perhaps you should Set(\$WebPort, $port); in RT_SiteConfig.pm, "
-                         ."otherwise your internal links may be broken.");
+                         ."otherwise your internal hyperlinks may be broken.");
     }
 
     if ( $host ne RT->Config->Get('WebDomain') ) {
         $RT::Logger->warn("The requested host ($host) does NOT match the configured WebDomain ($RT::WebDomain).  "
                          ."Perhaps you should Set(\$WebDomain, '$host'); in RT_SiteConfig.pm, "
-                         ."otherwise your internal links may be broken.");
+                         ."otherwise your internal hyperlinks may be broken.");
     }
 
     # Unfortunately, there is no reliable way to get the _path_ that was
@@ -1323,7 +1323,7 @@ sub ValidateWebConfig {
     if ($ENV{SCRIPT_NAME} ne RT->Config->Get('WebPath') and not $proxied) {
         $RT::Logger->warn("The requested path ($ENV{SCRIPT_NAME}) does NOT match the configured WebPath ($RT::WebPath).  "
                          ."Perhaps you should Set(\$WebPath, '$ENV{SCRIPT_NAME}'); in RT_SiteConfig.pm, "
-                         ."otherwise your internal links may be broken.");
+                         ."otherwise your internal hyperlinks may be broken.");
     }
 }
 
