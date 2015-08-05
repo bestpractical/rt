@@ -45,7 +45,7 @@ diag "grant SuperUser right to everyone";
     $m->tick("SetRights-$everyone_gid-RT::System-1", 'SuperUser');
     $m->submit;
 
-    $m->content_contains('Right Granted', 'got message');
+    $m->content_contains('Granted right', 'got message');
     RT::Principal::InvalidateACLCache();
     ok($everyone->PrincipalObj->HasRight( Right => 'SuperUser', Object => $RT::System ), 'group has right');
     is_deeply( [get_rights( $m, $everyone_gid, 'RT::System-1' )], ['SuperUser'], 'granted SuperUser right' );
