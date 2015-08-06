@@ -310,11 +310,25 @@ sub Message {
 
 
 
+=head2 HasContent
+
+Returns whether this transaction has attached mime objects.
+
+=cut
+
+sub HasContent {
+    my $self = shift;
+    my $type = $PreferredContentType || '';
+    return !!$self->ContentObj( $type ? ( Type => $type) : () );
+}
+
+
+
 =head2 Content PARAMHASH
 
 If this transaction has attached mime objects, returns the body of the first
 textual part (as defined in RT::I18N::IsTextualContentType).  Otherwise,
-returns undef.
+returns the message "This transaction appears to have no content".
 
 Takes a paramhash.  If the $args{'Quote'} parameter is set, wraps this message 
 at $args{'Wrap'}.  $args{'Wrap'} defaults to 70.
@@ -337,8 +351,8 @@ sub Content {
     );
 
     my $content;
-    if ( my $content_obj =
-        $self->ContentObj( $args{Type} ? ( Type => $args{Type} ) : () ) )
+    if ( my $content_obj = 
+        $self->ContentObj( $args{Type} ? ( Type => $args{Type}) : () ) )
     {
         $content = $content_obj->Content ||'';
 
