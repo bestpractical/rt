@@ -34,6 +34,55 @@ $m->get_ok("$test_page&user=root&pass=password");
 $m->content_lacks("Possible cross-site request forgery");
 $m->title_is('Create a new ticket');
 
+# CSRF parameter whitelist tests
+my $searchBuildPath = '/Search/Build.html';
+
+# CSRF whitelist for /Search/Build.html param SavedSearchLoad
+$m->add_header(Referer => undef);
+$m->get_ok("$searchBuildPath?SavedSearchLoad=foo");
+$m->content_lacks('Possible cross-site request forgery');
+$m->title_is('Query Builder');
+
+# CSRF pass for /Search/Build.html no param
+$m->add_header(Referer => undef);
+$m->get_ok("$searchBuildPath");
+$m->content_lacks('Possible cross-site request forgery');
+$m->title_is('Query Builder');
+
+# CSRF fail for /Search/Build.html arbitrary param only
+$m->add_header(Referer => undef);
+$m->get_ok("$searchBuildPath?foo=bar");
+$m->content_contains('Possible cross-site request forgery');
+$m->title_is('Possible cross-site request forgery');
+
+# CSRF fail for /Search/Build.html arbitrary param with SavedSearchLoad
+$m->add_header(Referer => undef);
+$m->get_ok("$searchBuildPath?SavedSearchLoad=foo&foo=bar");
+$m->content_contains('Possible cross-site request forgery');
+$m->title_is('Possible cross-site request forgery');
+
+# CSRF pass for /Search/Build.html param NewQuery
+$m->add_header(Referer => undef);
+$m->get_ok("$searchBuildPath?NewQuery=1");
+$m->content_lacks('Possible cross-site request forgery');
+$m->title_is('Query Builder');
+
+# CSRF pass for /Ticket/Update.html items in ticket action menu
+$m->add_header(Referer => undef);
+$m->get_ok('/Ticket/Update.html?id=1&Action=foo');
+$m->content_lacks('Possible cross-site request forgery');
+
+# CSRF pass for /Ticket/Update.html reply to message in ticket history
+$m->add_header(Referer => undef);
+$m->get_ok('/Ticket/Update.html?id=1&QuoteTransaction=1&Action=Reply');
+$m->content_lacks('Possible cross-site request forgery');
+
+# CSRF pass for /Articles/Article/ExtractIntoClass.html
+# Action->Extract Article on ticket menu
+$m->add_header(Referer => undef);
+$m->get_ok('/Articles/Article/ExtractIntoClass.html?Ticket=1');
+$m->content_lacks('Possible cross-site request forgery');
+
 # now send a referer from an attacker
 $m->add_header(Referer => 'http://example.net');
 $m->get_ok($test_page);
