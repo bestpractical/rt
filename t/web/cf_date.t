@@ -270,4 +270,5 @@ diag 'retain values when adding attachments';
         "2015-12-16", "txn date value still on form" );
 }
 
+undef $m;
 done_testing;

@@ -427,6 +427,11 @@ sub dom {
 
 sub DESTROY {
     my $self = shift;
+
+    if ( RT::Test->builder->{Done_Testing} ) { 
+        die "RT::Test::Web object needs to be destroyed before done_testing is called";
+    }
+
     if ( !$RT::Test::Web::DESTROY++ ) {
         $self->no_warnings_ok;
     }
