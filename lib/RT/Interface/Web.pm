@@ -2327,7 +2327,8 @@ sub ProcessUpdateMessage {
         Sign         => $args{ARGSRef}->{'Sign'},
         Encrypt      => $args{ARGSRef}->{'Encrypt'},
         MIMEObj      => $Message,
-        TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'}
+        TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'},
+        AttachExisting => $args{ARGSRef}->{'AttachExisting'},
     );
 
     _ProcessUpdateMessageRecipients(
