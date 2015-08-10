@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 38;
+use RT::Test tests => 36;
 my ($baseurl, $agent) = RT::Test->started_ok;
 
 my $ticket = RT::Ticket->new(RT->SystemUser);
@@ -26,8 +26,6 @@ $agent->follow_link_ok({id => 'page-results'});
 for ( 1 .. 5 ) {
     $agent->content_contains('Ticket ' . $_);
 }
-my $rdf_path = $agent->uri->path_query;
-$rdf_path =~ s!Results\.html!Results.rdf!;
 
 $agent->follow_link_ok( { text => 'RSS' } );
 my $noauth_uri = $agent->uri;
@@ -36,8 +34,6 @@ for ( 1 .. 5 ) {
     $agent->content_contains('Ticket ' . $_);
 }
 my $rss_content = $agent->content;
-$agent->get_ok($rdf_path);
-is($agent->content, $rss_content, 'old Results.rdf still works');
 
 use XML::Simple;
 my $rss = XML::Simple::XMLin( $rss_content );
