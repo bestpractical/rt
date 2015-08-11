@@ -417,9 +417,8 @@ sub AddAttachmentsFromHeaders {
         next unless $attach->Id
                 and $attach->TransactionObj->CurrentUserCanSee;
 
-        if ( !$email->is_multipart ) {
-            $email->make_multipart( 'mixed', Force => 1 );
-        }
+        $email->make_multipart( 'mixed', Force => 1 )
+          unless $email->effective_type eq 'multipart/mixed';
         $self->AddAttachment($attach, $email);
     }
 }
