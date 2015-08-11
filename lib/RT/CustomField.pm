@@ -1586,9 +1586,18 @@ sub AddToObject {
     }
 
     my $ocf = RT::ObjectCustomField->new( $self->CurrentUser );
-    my ( $oid, $msg ) = $ocf->Add(
+    my $oid = $ocf->Add(
         CustomField => $self->id, ObjectId => $id,
     );
+
+    my $msg;
+    # If object has no id, it represents all objects
+    if ($object->id) {
+        $msg = $self->loc( 'Added custom field [_1] to [_2].', $self->Name, $object->Name );
+    } else {
+        $msg = $self->loc( 'Globally added custom field [_1].', $self->Name );
+    }
+
     return ( $oid, $msg );
 }
 
@@ -1620,7 +1629,16 @@ sub RemoveFromObject {
     }
 
     # XXX: Delete doesn't return anything
-    my ( $oid, $msg ) = $ocf->Delete;
+    my $oid = $ocf->Delete;
+
+    my $msg;
+    # If object has no id, it represents all objects
+    if ($object->id) {
+        $msg = $self->loc( 'Removed custom field [_1] from [_2].', $self->Name, $object->Name );
+    } else {
+        $msg = $self->loc( 'Globally removed custom field [_1].', $self->Name );
+    }
+
     return ( $oid, $msg );
 }
 

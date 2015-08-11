@@ -55,7 +55,7 @@ $m->form_number(3);
 my $tcf = (grep { /AddCustomField-/ } map { $_->name } $m->current_form->inputs )[0];
 $m->tick( $tcf, 0 );         # Associate the new CF with this queue
 $m->click('UpdateObjs');
-$m->content_like( qr/Object created/, 'TCF added to the queue' );
+$m->content_contains("Globally added custom field img$$", 'TCF added to the queue' );
 
 $m->follow_link_ok( { text => 'Articles', url_regex => qr!^/Articles/! },
     'UI -> Articles' );
