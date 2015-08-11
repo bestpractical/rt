@@ -111,10 +111,6 @@
     { Name        => 'Send Forward',                 # loc
       Description => 'Send forwarded message',       # loc
       ExecModule  => 'SendForward', },
-    {  Name        => '[SLA] Set default service level', # loc
-       Description => 'Set service level according to the config' , # loc
-       ExecModule  => 'SLA_SetDefault',
-    },
     {  Name        => '[SLA] Set starts date', # loc
        Description => 'Set the starts date according to an agreement' , # loc
        ExecModule  => 'SLA_SetStarts',
@@ -230,11 +226,6 @@
        Description          => 'Whenever a ticket is reopened', # loc
        ApplicableTransTypes => 'Status,Set',
        ExecModule           => 'ReopenTicket',
-    },
-    {  Name        => '[SLA] Require default', # loc
-       Description => 'Detect a situation when we should set default service level' , # loc
-       ApplicableTransTypes => 'Create',
-       ExecModule => 'SLA_RequireDefault',
     },
     {  Name        => '[SLA] Require Starts set', # loc
        Description => 'Detect a situation when we should set Starts date' , # loc
@@ -819,10 +810,6 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
        ScripCondition => 'On Forward Ticket',
        ScripAction    => 'Send Forward',
        Template       => 'Forward Ticket' },
-    {  Description       => "[SLA] Set default service level if needed",
-       ScripCondition    => '[SLA] Require Default',
-       ScripAction       => '[SLA] Set default service level',
-       Template          => 'Blank' },
     {  Description       => "[SLA] Set starts date if needed",
        ScripCondition    => '[SLA] Require starts set',
        ScripAction       => '[SLA] Set starts date',

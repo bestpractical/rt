@@ -555,6 +555,7 @@ sub GetDefaultServiceLevel {
         $args{'Queue'} = $args{'Ticket'}->QueueObj;
     }
     if ( $args{'Queue'} ) {
+        return undef if $args{Queue}->SLADisabled;
         return $args{'Queue'}->SLA if $args{'Queue'}->SLA;
         if ( $RT::ServiceAgreements{'QueueDefault'} &&
             ( my $info = $RT::ServiceAgreements{'QueueDefault'}{ $args{'Queue'}->Name } )) {

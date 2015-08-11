@@ -390,7 +390,9 @@ sub Create {
         Started         => $Started->ISO,
         Resolved        => $Resolved->ISO,
         Due             => $Due->ISO,
-        SLA             => $args{SLA},
+        $args{ 'Type' } eq 'ticket'
+          ? ( SLA => $args{ SLA } || RT::SLA->GetDefaultServiceLevel( Queue => $QueueObj ), )
+          : (),
     );
 
 # Parameters passed in during an import that we probably don't want to touch, otherwise
