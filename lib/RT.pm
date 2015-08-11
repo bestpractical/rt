@@ -722,11 +722,18 @@ their lib and L<HTML::Mason> component roots.
 
 =cut
 
+our %CORED_PLUGINS = (
+    'RT::Extension::SLA' => '4.4',
+);
+
 sub InitPlugins {
     my $self    = shift;
     my @plugins;
     require RT::Plugin;
     foreach my $plugin (grep $_, RT->Config->Get('Plugins')) {
+        if ( $CORED_PLUGINS{$plugin} ) {
+            RT->Logger->warning( "$plugin has been cored since RT $CORED_PLUGINS{$plugin}, please check the upgrade document for more details" );
+        }
         $plugin->require;
         die $UNIVERSAL::require::ERROR if ($UNIVERSAL::require::ERROR);
         push @plugins, RT::Plugin->new(name =>$plugin);
