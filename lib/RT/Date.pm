@@ -213,35 +213,7 @@ sub Set {
         }
     }
     elsif ( $format eq 'unknown' ) {
-        require Time::ParseDate;
-        # the module supports only legacy timezones like PDT or EST...
-        # so we parse date as GMT and later apply offset, this only
-        # should be applied to absolute times, so compensate shift in NOW
-        my $now = time;
-        $now += ($self->Localtime( $args{Timezone}, $now ))[9];
-        my ($date, $error) = Time::ParseDate::parsedate(
-            $args{'Value'},
-            GMT           => 1,
-            NOW           => $now,
-            UK            => RT->Config->Get('DateDayBeforeMonth'),
-            PREFER_PAST   => RT->Config->Get('AmbiguousDayInPast'),
-            PREFER_FUTURE => RT->Config->Get('AmbiguousDayInFuture'),
-        );
-        unless ( defined $date ) {
-            $RT::Logger->warning(
-                "Couldn't parse date '$args{'Value'}' by Time::ParseDate"
-            );
-            return $self->Unix(0);
-        }
-
-        # apply timezone offset
-        $date -= ($self->Localtime( $args{Timezone}, $date ))[9];
-
-        $RT::Logger->debug(
-            "RT::Date used Time::ParseDate to make '$args{'Value'}' $date\n"
-        );
-
-        return $self->Unix($date || 0);
+        return $self->Unix($self->ParseByTimeParseDate(%args) || 0);
     }
     else {
         $RT::Logger->error(
@@ -251,6 +223,46 @@ sub Set {
     }
 
     return $self->Unix;
+}
+
+=head2 ParseByTimeParseDate
+
+Parse date using Time::ParseDate.
+return undef if it fails to parse, otherwise return epoch time.
+
+=cut
+
+sub ParseByTimeParseDate {
+    my $self = shift;
+    my %args = @_;
+    require Time::ParseDate;
+    # the module supports only legacy timezones like PDT or EST...
+    # so we parse date as GMT and later apply offset, this only
+    # should be applied to absolute times, so compensate shift in NOW
+    my $now = time;
+    $now += ($self->Localtime( $args{Timezone}, $now ))[9];
+    my ($date, $error) = Time::ParseDate::parsedate(
+        $args{'Value'},
+        GMT           => 1,
+        NOW           => $now,
+        UK            => RT->Config->Get('DateDayBeforeMonth'),
+        PREFER_PAST   => RT->Config->Get('AmbiguousDayInPast'),
+        PREFER_FUTURE => RT->Config->Get('AmbiguousDayInFuture'),
+    );
+    unless ( defined $date ) {
+        $RT::Logger->warning(
+            "Couldn't parse date '$args{'Value'}' by Time::ParseDate"
+        );
+        return undef;
+    }
+
+    # apply timezone offset
+    $date -= ($self->Localtime( $args{Timezone}, $date ))[9];
+
+    $RT::Logger->debug(
+        "RT::Date used Time::ParseDate to make '$args{'Value'}' $date\n"
+    );
+    return $date;
 }
 
 =head2 SetToNow
