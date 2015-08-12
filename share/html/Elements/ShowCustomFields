@@ -56,9 +56,9 @@
 % next if $HideEmpty and not $count;
   <tr id="CF-<%$CustomField->id%>-ShowRow">
     <td class="label"><% $CustomField->Name %>:</td>
-    <td class="value">
+    <td class="value<% $count ? '' : ' no-value' %>">
 % unless ( $count ) {
-<i><&|/l&>(no value)</&></i>
+<&|/l&>(no value)</&>
 % } elsif ( $count == 1 ) {
 %   $print_value->( $CustomField, $Values->First );
 % } else {

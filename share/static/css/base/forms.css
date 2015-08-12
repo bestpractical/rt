@@ -24,6 +24,11 @@ form {
 
 }
 
+.value.no-value {
+    color: #666;
+    font-style: italic;
+}
+
 
 
 div.button-row {
