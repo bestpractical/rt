@@ -213,7 +213,7 @@ sub Set {
         }
     }
     elsif ( $format eq 'unknown' ) {
-        return $self->Unix($self->ParseByTimeParseDate(%args) || 0);
+        return $self->Unix($self->ParseByTimeParseDate(%args) || $self->ParseByDateTimeFormatNatural(%args) || 0);
     }
     else {
         $RT::Logger->error(
@@ -263,6 +263,38 @@ sub ParseByTimeParseDate {
         "RT::Date used Time::ParseDate to make '$args{'Value'}' $date\n"
     );
     return $date;
+}
+
+=head2 ParseByDateTimeFormatNatural
+
+Parse date using DateTime::Format::Natural.
+return undef if it fails to parse, otherwise return epoch time.
+
+=cut
+
+sub ParseByDateTimeFormatNatural {
+    my $self = shift;
+    my %args = @_;
+    require DateTime::Format::Natural;
+
+    my $parser = DateTime::Format::Natural->new(
+        prefer_future => RT->Config->Get('AmbiguousDayInPast') ? 0 : RT->Config->Get('AmbiguousDayInFuture'),
+        time_zone     => $self->Timezone($args{Timezone}),
+    );
+    my ($dt) = eval { $parser->parse_datetime($args{Value}) };
+    if ( !$@ && $parser->success && $dt ) {
+        my $date = $dt->epoch;
+        $RT::Logger->debug(
+            "RT::Date used DateTime::Format::Natural to make '$args{'Value'}' $date\n"
+        );
+        return $date;
+    }
+    else {
+        $RT::Logger->warning(
+            "Couldn't parse date '$args{'Value'}' by DateTime::Format::Natural"
+        );
+        return undef;
+    }
 }
 
 =head2 SetToNow
