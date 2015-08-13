@@ -45,6 +45,16 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<script type="text/javascript">
+window.onload = function () {
+    document.onkeydown = function (e) {
+        if (e.keyCode == 13 && e.ctrlKey) { // keyCode 13 is Enter
+            document.getElementById("SubmitTicketButton").click(); // submit the form by hitting ctrl + enter
+            return false; // preventing default action
+        }
+    }
+}
+</script>
 <& /Elements/Header, Title  => $title &>
 <& /Elements/Tabs &>
 
@@ -177,7 +187,7 @@
 
 % $m->callback( %ARGS, CallbackName => 'BeforeSubmit', Ticket => $TicketObj );
 
-  <& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket', id => 'SubmitTicket' &>
+  <& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket', id => 'SubmitTicket', SubmitId => 'SubmitTicketButton' &>
 
 % $m->callback( %ARGS, CallbackName => 'BeforeScrips', Ticket => $TicketObj );
 

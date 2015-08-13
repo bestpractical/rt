@@ -45,6 +45,16 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<script type="text/javascript">
+window.onload = function () {
+    document.onkeydown = function (e) {
+        if (e.keyCode == 13 && e.ctrlKey) { // keyCode 13 is Enter
+            document.getElementById("SubmitTicketButton").click(); // submit the form by hitting ctrl + enter
+            return false; // preventing default action
+        }
+    }
+}
+</script>
 <& /Elements/Header,
     Title => $title,
     onload => "function () { hide('Ticket-Create-details') }" &>
@@ -212,7 +222,7 @@
         <& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $QueueObj &>
       </table>
     </&>
-    <& /Elements/Submit, Label => loc("Create"), id => 'SubmitTicket' &>
+    <& /Elements/Submit, Label => loc("Create"), id => 'SubmitTicket', SubmitId => 'SubmitTicketButton' &>
   </div>
 </div>
 
