@@ -111,6 +111,10 @@
     { Name        => 'Send Forward',                 # loc
       Description => 'Send forwarded message',       # loc
       ExecModule  => 'SendForward', },
+    { Name        => 'Update Parent TimeWorked',     # loc
+      Description => 'Update Parent TimeWorked',     # loc
+      ExecModule  => 'UpdateParentTimeWorked',
+    },
 );
 
 @ScripConditions = (
@@ -218,6 +222,12 @@
        Description          => 'Whenever a ticket is reopened', # loc
        ApplicableTransTypes => 'Status,Set',
        ExecModule           => 'ReopenTicket',
+    },
+    {
+       Name                 => 'On TimeWorked Change',                    # loc
+       Description          => 'When TimeWorked Change',                  # loc
+       ApplicableTransTypes => 'Any',
+       ExecModule           => 'TimeWorkedChange',
     },
 
 );
@@ -792,6 +802,10 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
        ScripCondition => 'On Forward Ticket',
        ScripAction    => 'Send Forward',
        Template       => 'Forward Ticket' },
+    {  Description    => 'On TimeWorked Change Update Parent TimeWorked',
+       ScripCondition => 'On TimeWorked Change',
+       ScripAction    => 'Update Parent TimeWorked',
+       Template       => 'Blank' },
 );
 
 @ACL = (
