@@ -115,6 +115,10 @@
       Description => 'Update Parent TimeWorked',     # loc
       ExecModule  => 'UpdateParentTimeWorked',
     },
+    { Name        => 'Update User TimeWorked',       # loc
+      Description => 'Update User TimeWorked',       # loc
+      ExecModule  => 'UpdateUserTimeWorked',
+    },
 );
 
 @ScripConditions = (
@@ -805,6 +809,10 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
     {  Description    => 'On TimeWorked Change Update Parent TimeWorked',
        ScripCondition => 'On TimeWorked Change',
        ScripAction    => 'Update Parent TimeWorked',
+       Template       => 'Blank' },
+    {  Description    => 'On TimeWorked Change Update User TimeWorked',
+       ScripCondition => 'On TimeWorked Change',
+       ScripAction    => 'Update User TimeWorked',
        Template       => 'Blank' },
 );
 
