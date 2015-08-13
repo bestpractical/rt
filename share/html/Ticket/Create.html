@@ -303,24 +303,29 @@ $session{DefaultQueue} = $Queue;
 my $current_user = $session{'CurrentUser'};
 
 if ($CloneTicket) {
+    my %CloneTicketOptions = RT->Config->Get('CreateTicket_CloneTicketOptions');
     my $CloneTicketObj = RT::Ticket->new( $session{CurrentUser} );
     $CloneTicketObj->Load($CloneTicket)
         or Abort( loc("Ticket could not be loaded") );
 
-    my $clone = {
-        Requestors => join( ',', $CloneTicketObj->RequestorAddresses ),
-        Cc         => join( ',', $CloneTicketObj->CcAddresses ),
-        AdminCc    => join( ',', $CloneTicketObj->AdminCcAddresses ),
-        InitialPriority => $CloneTicketObj->Priority,
-    };
+    my $clone = {};
+    $clone->{'Requestors'} = join( ',', $CloneTicketObj->RequestorAddresses )
+        if !defined $CloneTicketOptions{'CloneRequestorAddresses'} || $CloneTicketOptions{'CloneRequestorAddresses'};
+    $clone->{'Cc'}         = join( ',', $CloneTicketObj->CcAddresses )
+        if !defined $CloneTicketOptions{'CloneCcAddresses'} || $CloneTicketOptions{'CloneCcAddresses'};
+    $clone->{'AdminCc'}    = join( ',', $CloneTicketObj->AdminCcAddresses )
+        if !defined $CloneTicketOptions{'CloneAdminCcAddresses'} || $CloneTicketOptions{'CloneAdminCcAddresses'};
+    $clone->{'InitialPriority'} = join( ',', $CloneTicketObj->Priority )
+        if !defined $CloneTicketOptions{'CloneTicketObjPriority2Priority'} || $CloneTicketOptions{'CloneTicketObjPriority2Priority'};
 
     $clone->{$_} = $CloneTicketObj->$_()
-        for qw/Owner Subject FinalPriority TimeEstimated TimeWorked
-        Status TimeLeft/;
+        for ( defined $CloneTicketOptions{'CloneBasic'}?@{ $CloneTicketOptions{'CloneBasic'} }
+                                                       :qw/Owner Subject FinalPriority TimeEstimated TimeWorked Status TimeLeft/);
 
     $clone->{$_} = $CloneTicketObj->$_->AsString
         for grep { $CloneTicketObj->$_->IsSet }
-        map      { $_ . "Obj" } qw/Starts Started Due Resolved/;
+        map      { $_ . "Obj" } ( defined $CloneTicketOptions{'CloneDates'}?@{ $CloneTicketOptions{'CloneDates'} }
+                                                                           :qw/Starts Started Due Resolved/);
 
     my $get_link_value = sub {
         my ($link, $type) = @_;
@@ -334,36 +339,47 @@ if ($CloneTicket) {
 
         return $link->$local_method || $uri->URI;
     };
-    my (@refers, @refers_by);
-    my $refers = $CloneTicketObj->RefersTo;
-    while ( my $refer = $refers->Next ) {
-        my $refer_value = $get_link_value->($refer, 'Target');
-        push @refers, $refer_value if defined $refer_value;
-    }
-    $clone->{'new-RefersTo'} = join ' ', @refers;
-
-    my $refers_by = $CloneTicketObj->ReferredToBy;
-    while ( my $refer_by = $refers_by->Next ) {
-        my $refer_by_value = $get_link_value->($refer_by, 'Base');
-        push @refers_by, $refer_by_value if defined $refer_by_value;
-    }
-    $clone->{'RefersTo-new'} = join ' ', @refers_by;
-
-    my $cfs = $CloneTicketObj->QueueObj->TicketCustomFields();
-    while ( my $cf = $cfs->Next ) {
-        my $cf_id     = $cf->id;
-        my $cf_values = $CloneTicketObj->CustomFieldValues( $cf->id );
-        my @cf_values;
-        while ( my $cf_value = $cf_values->Next ) {
-            push @cf_values, $cf_value->Content;
+    if ( !defined $CloneTicketOptions{'CloneRefersTo'} || $CloneTicketOptions{'CloneRefersTo'} ) {
+        my @refers;
+        my $refers = $CloneTicketObj->RefersTo;
+        while ( my $refer = $refers->Next ) {
+          my $refer_value = $get_link_value->($refer, 'Target');
+          push @refers, $refer_value if defined $refer_value;
         }
-
-        if ( @cf_values > 1 && $cf->Type eq 'Select' ) {
-            $clone->{GetCustomFieldInputName( CustomField => $cf )} = \@cf_values;
+        $clone->{'new-RefersTo'} = join ' ', @refers;
+    } else {
+        $ARGS{'new-RefersTo'} = ($ARGS{'new-RefersTo'} =~ m/$ARGS{'CloneTicket'}/) ? $ARGS{'CloneTicket'} : '';
+    }
+ 
+    if ( !defined $CloneTicketOptions{'CloneReferredToBy'} || $CloneTicketOptions{'CloneReferredToBy'} ) {
+        my @refers_by;
+        my $refers_by = $CloneTicketObj->ReferredToBy;
+        while ( my $refer_by = $refers_by->Next ) {
+            my $refer_by_value = $get_link_value->($refer_by, 'Base');
+            push @refers_by, $refer_by_value if defined $refer_by_value;
         }
-        else {
-            $clone->{GetCustomFieldInputName( CustomField => $cf )} = join "\n",
-              @cf_values;
+        $clone->{'RefersTo-new'} = join ' ', @refers_by;
+    } else {
+          $ARGS{'RefersTo-new'} = ($ARGS{'RefersTo-new'} =~ m/$ARGS{'CloneTicket'}/) ? $ARGS{'CloneTicket'} : '';
+    }
+ 
+    if ( !defined $CloneTicketOptions{'CloneTicketCustomFields'} || $CloneTicketOptions{'CloneTicketCustomFields'} ) {
+        my $cfs = $CloneTicketObj->QueueObj->TicketCustomFields();
+        while ( my $cf = $cfs->Next ) {
+            my $cf_id     = $cf->id;
+            my $cf_values = $CloneTicketObj->CustomFieldValues( $cf->id );
+            my @cf_values;
+            while ( my $cf_value = $cf_values->Next ) {
+                push @cf_values, $cf_value->Content;
+            }
+    
+            if ( @cf_values > 1 && $cf->Type eq 'Select' ) {
+                $clone->{GetCustomFieldInputName( CustomField => $cf )} = \@cf_values;
+            }
+            else {
+                $clone->{GetCustomFieldInputName( CustomField => $cf )} = join "\n",
+                  @cf_values;
+            }
         }
     }
 

@@ -1,0 +1,12 @@
+Set(
+    %CreateTicket_CloneTicketOptions,
+    CloneBasic => [ qw/Owner Subject FinalPriority TimeEstimated TimeWorked Status TimeLeft/ ],
+    CloneRequestorAddresses => 1,
+    CloneCcAddresses => 1,
+    CloneAdminCcAddresses => 1,
+    CloneTicketObjPriority2Priority => 1,
+    CloneDates => [ qw/Starts Started Due Resolved/ ],
+    CloneRefersTo => 1,
+    CloneReferredToBy => 1,
+    CloneTicketCustomFields => 1,
+);
