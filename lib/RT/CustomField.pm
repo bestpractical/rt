@@ -1084,6 +1084,22 @@ Takes a boolean.
 
 =cut
 
+sub SetDisabled {
+    my $self = shift;
+    my $val = shift;
+
+    my ($status, $msg) = $self->_Set(Field => 'Disabled', Value => $val);
+
+    unless ($status) {
+        return ($status, $msg);
+    }
+
+    if ( $val == 1 ) {
+        return (1, $self->loc("Disabled"));
+    } else {
+        return (1, $self->loc("Enabled"));
+    }
+}
 
 =head2 SetTypeComposite
 

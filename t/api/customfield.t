@@ -368,7 +368,14 @@ like($cf->Description, qr/Queue/, "Specify Queue => 1 and IncludeGlobal and get 
 
 # Disable one of them
 ($ok, $msg) = $cf->SetDisabled(1);
+is($msg, "Disabled", "Disabling custom field gives correct message");
 ok($ok, "Disabled the Queue-specific one");
+($ok, $msg) = $cf->SetDisabled(0);
+is($msg, "Enabled", "Enabling custom field gives correct message");
+ok($ok, "Enabled the Queue-specific one");
+($ok, $msg) = $cf->SetDisabled(1);
+is($msg, "Disabled", "Disabling custom field again gives correct message");
+ok($ok, "Disabled the Queue-specific one again");
 
 # With just a name, prefers the non-disabled
 $cf = RT::CustomField->new( RT->SystemUser );
