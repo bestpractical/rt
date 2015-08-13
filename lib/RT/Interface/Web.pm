@@ -3978,6 +3978,10 @@ our %SCRUBBER_ALLOWED_ATTRIBUTES = (
     }ix,
     dir    => qr/^(rtl|ltr)$/i,
     lang   => qr/^\w+(-\w+)?$/,
+
+    # timeworked per user attributes
+    'data-ticket-id'    => 1,
+    'data-ticket-class' => 1,
 );
 
 our %SCRUBBER_RULES = ();
