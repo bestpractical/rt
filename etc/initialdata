@@ -111,11 +111,11 @@
     { Name        => 'Send Forward',                 # loc
       Description => 'Send forwarded message',       # loc
       ExecModule  => 'SendForward', },
-    {  Name        => '[SLA] Set starts date', # loc
+    {  Name        => 'Set starts date according to SLA', # loc
        Description => 'Set the starts date according to an agreement' , # loc
        ExecModule  => 'SLA_SetStarts',
     },
-    {  Name        => '[SLA] Set due date', # loc
+    {  Name        => 'Set due date according to SLA', # loc
        Description => 'Set the due date according to an agreement' , # loc
        ExecModule  => 'SLA_SetDue',
     },
@@ -227,12 +227,12 @@
        ApplicableTransTypes => 'Status,Set',
        ExecModule           => 'ReopenTicket',
     },
-    {  Name        => '[SLA] Require Starts set', # loc
+    {  Name        => 'Require Starts set according to SLA', # loc
        Description => 'Detect a situation when we should set Starts date' , # loc
        ApplicableTransTypes => 'Create,Set',
        ExecModule => 'SLA_RequireStartsSet',
     },
-    {  Name        => '[SLA] Require Due set', # loc
+    {  Name        => 'Require Due set according to SLA', # loc
        Description => 'Detect a situation when we should set Due date' , # loc
        ApplicableTransTypes => 'Create,Correspond,Set,Status',
        ExecModule => 'SLA_RequireDueSet',
@@ -810,13 +810,13 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
        ScripCondition => 'On Forward Ticket',
        ScripAction    => 'Send Forward',
        Template       => 'Forward Ticket' },
-    {  Description       => "[SLA] Set starts date if needed",
-       ScripCondition    => '[SLA] Require starts set',
-       ScripAction       => '[SLA] Set starts date',
+    {  Description       => "Set starts date if needed according to SLA",
+       ScripCondition    => 'Require starts set according to SLA',
+       ScripAction       => 'Set starts date according to SLA',
        Template          => 'Blank' },
-    {  Description       => "[SLA] Set due date if needed",
-       ScripCondition    => '[SLA] Require due set',
-       ScripAction       => '[SLA] Set due date',
+    {  Description       => "Set due date if needed according to SLA",
+       ScripCondition    => 'Require due set according to SLA',
+       ScripAction       => 'Set due date according to SLA',
        Template          => 'Blank' },
 );
 
