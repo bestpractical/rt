@@ -2151,8 +2151,8 @@ sub CreateTicket {
 
     my @attachments;
     if ( my $tmp = $session{'Attachments'}{ $ARGS{'Token'} || '' } ) {
-        push @attachments, grep $_, map $tmp->{$_}, sort keys %$tmp;
-
+        push @attachments, $tmp->{$_}{ME}
+            foreach sort keys %$tmp;
         delete $session{'Attachments'}{ $ARGS{'Token'} || '' }
             unless $ARGS{'KeepAttachments'};
         $session{'Attachments'} = $session{'Attachments'}
@@ -2294,7 +2294,8 @@ sub ProcessUpdateMessage {
 
     my @attachments;
     if ( my $tmp = $session{'Attachments'}{ $args{'ARGSRef'}{'Token'} || '' } ) {
-        push @attachments, grep $_, map $tmp->{$_}, sort keys %$tmp;
+        push @attachments, $tmp->{$_}{ME}
+            foreach sort keys %$tmp;
 
         delete $session{'Attachments'}{ $args{'ARGSRef'}{'Token'} || '' }
             unless $args{'KeepAttachments'};
@@ -2475,7 +2476,15 @@ sub ProcessAttachments {
         # hence it was not decoded along with all of the standard
         # arguments in DecodeARGS
         my $file_path = Encode::decode( "UTF-8", "$new");
-        $session{'Attachments'}{ $token }{ $file_path } = $attachment;
+        my $UploadCount;
+        my $sort_attachments_by_uploading_order = RT->Config->Get('SortAttachmentsByUploadingOrder');
+        if ( !defined $sort_attachments_by_uploading_order || $sort_attachments_by_uploading_order == 0 ) {
+            $UploadCount = $file_path;
+        } else {
+            $UploadCount = ++($session{'Attachments'}{ 'UploadCount_'.$token });
+        }
+        $session{'Attachments'}{ $token }{ $UploadCount }{'name'} = $file_path;
+        $session{'Attachments'}{ $token }{ $UploadCount }{'ME'} = $attachment;
 
         $update_session = 1;
     }

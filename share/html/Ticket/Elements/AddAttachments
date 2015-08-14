@@ -49,9 +49,11 @@
 <tr><td class="label"><&|/l&>Attached file</&>:</td>
 <td>
 <&|/l&>Check box to delete</&><br />
-% foreach my $attach_name ( sort keys %$attachments ) {
-<input type="checkbox" class="checkbox" name="DeleteAttach" value="<% $attach_name %>" id="DeleteAttach-<%$attach_name%>" />
-<label for="DeleteAttach-<%$attach_name%>"><% $attach_name %></label>
+%  foreach my $attach_id ( sort keys %{$attachments} ) {
+%  my %att_h = %{$attachments};
+%  my $attach_name = $att_h{$attach_id}{name};
+<input type="checkbox" class="checkbox" name="DeleteAttach" value="<% $attach_id %>" id="DeleteAttach-<%$attach_id%>" />
+<label for="DeleteAttach-<%$attach_id%>"><% $attach_name %></label>
 <br />
 % } # end of foreach
 </td>
