@@ -213,7 +213,15 @@ diag 'check invalid inputs';
 
     my @warnings = $m->get_warnings;
     chomp @warnings;
-    is_deeply( [@warnings], [(q{Couldn't parse date 'foodate' by Time::ParseDate})x2] );
+    is_deeply(
+        [ @warnings ],
+        [
+            (
+                q{Couldn't parse date 'foodate' by Time::ParseDate},
+                q{Couldn't parse date 'foodate' by DateTime::Format::Natural}
+            ) x 2
+        ]
+    );
 }
 
 diag 'retain values when adding attachments';

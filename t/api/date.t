@@ -344,7 +344,9 @@ my $year = (localtime(time))[5] + 1900;
     my $date = RT::Date->new(RT->SystemUser);
     warnings_like {
         $date->Set(Format => 'unknown', Value => 'weird date');
-    } qr{Couldn't parse date 'weird date' by Time::ParseDate};
+    } [ qr{Couldn't parse date 'weird date' by Time::ParseDate},
+        qr{Couldn't parse date 'weird date' by DateTime::Format::Natural}
+      ];
     ok(!$date->IsSet, "date was wrong");
 
     RT->Config->Set( Timezone => 'Europe/Moscow' );
@@ -604,6 +606,36 @@ my $year = (localtime(time))[5] + 1900;
 
     $date->Set( Value => ' ', Format => 'unknown' );
     ok( !$date->IsSet, "unix is 0 with Value => ' ', Format => 'unknown'" );
+}
+
+{
+    # set+unknown format(DateTime::Format::Natural)
+    my $date = RT::Date->new(RT->SystemUser);
+    warnings_like {
+        $date->Set(Format => 'unknown', Value => 'another weird date');
+    } [ qr{Couldn't parse date 'another weird date' by Time::ParseDate},
+        qr{Couldn't parse date 'another weird date' by DateTime::Format::Natural}
+      ], 'warning for "another weird date"';
+    ok(!$date->IsSet, "date was wrong");
+    RT->Config->Set( AmbiguousDayInPast => 0 );
+    RT->Config->Set( AmbiguousDayInFuture => 0 );
+    RT->Config->Set( Timezone => 'Asia/Shanghai' );
+    set_fixed_time("2015-11-28T15:10:00Z");
+    warnings_like {
+        $date->Set(Format => 'unknown', Value => 'Apr');
+    } qr{Couldn't parse date 'Apr' by Time::ParseDate}, "warning by Time::ParseDate";
+    is($date->ISO, '2015-03-31 16:00:00', "April in the past");
+
+    warnings_like {
+        $date->Set(Format => 'unknown', Value => 'Monday');
+    } qr{Couldn't parse date 'Monday' by Time::ParseDate}, "warning by Time::ParseDate";
+    is($date->ISO, '2015-11-22 16:00:00', "Monday in the past");
+
+    RT->Config->Set( AmbiguousDayInFuture => 1 );
+    warnings_like {
+        $date->Set(Format => 'unknown', Value => 'Apr');
+    } qr{Couldn't parse date 'Apr' by Time::ParseDate}, "warning by Time::ParseDate";
+    is($date->ISO, '2016-03-31 16:00:00', "April in the future");
 }
 
 #TODO: AsString
