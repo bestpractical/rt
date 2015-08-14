@@ -16,3 +16,11 @@ jQuery(function() {
         }
     });
 });
+window.onload = function () {
+    document.onkeydown = function (e) {
+        if (e.keyCode == 13 && e.ctrlKey) { // keyCode 13 is Enter
+            document.getElementById("SubmitTicketButton").click(); // submit the form by hitting ctrl + enter
+            return false; // preventing default action
+        }
+    }
+}
