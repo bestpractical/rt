@@ -90,6 +90,7 @@ use RT::Transactions;
 use RT::Reminders;
 use RT::URI::fsck_com_rt;
 use RT::URI;
+use RT::SLA;
 use MIME::Entity;
 use Devel::GlobalDestruction;
 
@@ -235,6 +236,7 @@ sub Create {
         Starts             => undef,
         Started            => undef,
         Resolved           => undef,
+        SLA                => undef,
         MIMEObj            => undef,
         _RecordTransaction => 1,
         @_
@@ -387,7 +389,10 @@ sub Create {
         Starts          => $Starts->ISO,
         Started         => $Started->ISO,
         Resolved        => $Resolved->ISO,
-        Due             => $Due->ISO
+        Due             => $Due->ISO,
+        $args{ 'Type' } eq 'ticket'
+          ? ( SLA => $args{ SLA } || RT::SLA->GetDefaultServiceLevel( Queue => $QueueObj ), )
+          : (),
     );
 
 # Parameters passed in during an import that we probably don't want to touch, otherwise
@@ -3472,6 +3477,8 @@ sub _CoreAccessible {
         TimeWorked =>
                 {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Status =>
+                {read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
+        SLA =>
                 {read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
         TimeLeft =>
                 {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},

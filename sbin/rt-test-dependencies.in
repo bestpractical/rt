@@ -190,6 +190,7 @@ sub set_dep {
 
 $deps{'CORE'} = [ text_to_hash( << '.') ];
 Apache::Session 1.53
+Business::Hours
 CGI 3.38
 CGI::Cookie 1.20
 CGI::Emulate::PSGI

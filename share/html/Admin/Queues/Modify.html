@@ -92,6 +92,15 @@
 <br /><span><em><&|/l , RT->Config->Get('CommentAddress')&>(If left blank, will default to [_1])</&></em></span></td>
 </tr>
 
+<tr><td align="right"><input type="checkbox" class="checkbox" id="SLAEnabled" name="SLAEnabled" value="1" 
+% if ( $Create || !$QueueObj->SLADisabled ) {
+checked="checked"
+% }
+ /></td>
+<td colspan="3"><label for="SLAEnabled"><&|/l&>SLA Enabled (Unchecking this box disables SLA for this queue)</&></label><br />
+<input type="hidden" class="hidden" name="SetSLAEnabled" value="1" />
+</td></tr>
+
 % my $CFs = $QueueObj->CustomFields;
 % while (my $CF = $CFs->Next) {
 <tr valign="top"><td align="right">
@@ -176,11 +185,14 @@ unless ($Create) {
 if ( $QueueObj->Id ) {
     $title = loc('Configuration for queue [_1]', $QueueObj->Name );
     my @attribs= qw(Description CorrespondAddress CommentAddress Name
-        Sign SignAuto Encrypt Lifecycle SubjectTag Disabled);
+        Sign SignAuto Encrypt Lifecycle SubjectTag SLADisabled Disabled);
 
     # we're asking about enabled on the web page but really care about disabled
     if ( $SetEnabled ) {
         $Disabled = $ARGS{'Disabled'} = $Enabled? 0: 1;
+    }
+    if ( $SetSLAEnabled ) {
+        $ARGS{'SLADisabled'} = $SLAEnabled? 0: 1;
     }
     if ( $SetCrypt ) {
         $ARGS{$_} = 0 foreach grep !defined $ARGS{$_} || !length $ARGS{$_},
@@ -244,7 +256,9 @@ $Create => undef
 $Description => undef
 $CorrespondAddress => undef
 $CommentAddress => undef
+$SetSLAEnabled => undef
 $SetEnabled => undef
 $SetCrypt => undef
+$SLAEnabled => undef
 $Enabled => undef
 </%ARGS>

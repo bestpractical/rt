@@ -56,6 +56,7 @@ CREATE TABLE Queues (
   Created TIMESTAMP NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated TIMESTAMP NULL  ,
+  SLADisabled integer NOT NULL DEFAULT 0 ,
   Disabled integer NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
 
@@ -423,6 +424,7 @@ CREATE TABLE Tickets (
   TimeEstimated integer NOT NULL DEFAULT 0  ,
   TimeWorked integer NOT NULL DEFAULT 0  ,
   Status varchar(64) NULL  ,
+  SLA varchar(64) NULL  ,
   TimeLeft integer NOT NULL DEFAULT 0  ,
   Told TIMESTAMP NULL  ,
   Starts TIMESTAMP NULL  ,

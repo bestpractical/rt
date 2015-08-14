@@ -1014,6 +1014,8 @@ sub _CoreAccessible {
         {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         LastUpdated => 
         {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+        SLADisabled => 
+        {read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '0'},
         Disabled => 
         {read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '0'},
 
@@ -1190,6 +1192,30 @@ sub SetDefaultValue {
     }
 }
 
+sub SLA {
+    my $self = shift;
+    my $value = shift;
+    return undef unless $self->CurrentUserHasRight('SeeQueue');
+
+    my $attr = $self->FirstAttribute('SLA') or return undef;
+    return $attr->Content;
+}
+
+sub SetSLA {
+    my $self = shift;
+    my $value = shift;
+
+    return ( 0, $self->loc('Permission Denied') )
+        unless $self->CurrentUserHasRight('AdminQueue');
+
+    my ($status, $msg) = $self->SetAttribute(
+        Name        => 'SLA',
+        Description => 'Default Queue SLA',
+        Content     => $value,
+    );
+    return ($status, $msg) unless $status;
+    return ($status, $self->loc("Queue's default service level has been changed"));
+}
 
 RT::Base->_ImportOverlays();
 

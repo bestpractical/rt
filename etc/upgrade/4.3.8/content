@@ -1,0 +1,37 @@
+use strict;
+use warnings;
+
+our @ScripConditions = (
+    {  Name        => 'Require Starts set according to SLA', # loc
+       Description => 'Detect a situation when we should set Starts date' , # loc
+       ApplicableTransTypes => 'Create,Set',
+       ExecModule => 'SLA_RequireStartsSet',
+    },
+    {  Name        => 'Require Due set according to SLA', # loc
+       Description => 'Detect a situation when we should set Due date' , # loc
+       ApplicableTransTypes => 'Create,Correspond,Set,Status',
+       ExecModule => 'SLA_RequireDueSet',
+    },
+);
+
+our @ScripActions = (
+    {  Name        => 'Set starts date according to SLA', # loc
+       Description => 'Set the starts date according to an agreement' , # loc
+       ExecModule  => 'SLA_SetStarts',
+    },
+    {  Name        => 'Set due date according to SLA', # loc
+       Description => 'Set the due date according to an agreement' , # loc
+       ExecModule  => 'SLA_SetDue',
+    },
+);
+
+our @Scrips = (
+    {  Description       => "Set starts date if needed according to SLA",
+       ScripCondition    => 'Require starts set according to SLA',
+       ScripAction       => 'Set starts date according to SLA',
+       Template          => 'Blank' },
+    {  Description       => "Set due date if needed according to SLA",
+       ScripCondition    => 'Require due set according to SLA',
+       ScripAction       => 'Set due date according to SLA',
+       Template          => 'Blank' },
+);

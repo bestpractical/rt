@@ -34,6 +34,7 @@ CREATE TABLE Queues (
   Created DATETIME NULL  ,
   LastUpdatedBy integer NULL DEFAULT 0 ,
   LastUpdated DATETIME NULL  ,
+  SLADisabled int2 NOT NULL DEFAULT 0,
   Disabled int2 NOT NULL DEFAULT 0 
  
 ) ;
@@ -300,6 +301,7 @@ CREATE TABLE Tickets (
   TimeEstimated integer NULL DEFAULT 0 ,
   TimeWorked integer NULL DEFAULT 0 ,
   Status varchar(64) collate NOCASE NULL  ,
+  SLA varchar(64) collate NOCASE NULL  ,
   TimeLeft integer NULL DEFAULT 0 ,
   Told DATETIME NULL  ,
   Starts DATETIME NULL  ,
