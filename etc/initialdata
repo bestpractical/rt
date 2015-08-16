@@ -934,3 +934,11 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
         },
     },
 );
+
+@Classes = (
+    {
+        Name              => 'General',
+        Description       => 'The default class',
+        HotList           => 1,
+    },
+);
