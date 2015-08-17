@@ -123,7 +123,9 @@ $COLUMN_MAP = {
         value     => sub {
             my $Ticket = shift;
 
-            if ( my $count = $Ticket->HasUnresolvedDependencies ) {
+            my $unresolved_dependencies = $Ticket->UnresolvedDependencies;
+            my $count = $unresolved_dependencies->Count;
+            if ( $count ) {
                 if (   $Ticket->HasUnresolvedDependencies( Type => 'approval' )
                     or $Ticket->HasUnresolvedDependencies( Type => 'code' ) )
                 {
@@ -134,6 +136,12 @@ $COLUMN_MAP = {
                     $Query .= " AND (" . join(" OR ", map { "Status = '$_'" } RT::Queue->ActiveStatusArray) . ")";
 
                     my $SearchURL = RT->Config->Get('WebPath') . '/Search/Results.html?' . $m->comp('/Elements/QueryString', Query => $Query);
+
+                    if ($count == 1) {
+                        my $pending_ticket = $unresolved_dependencies->Next;
+                        my $pending_ticket_url = RT->Config->Get('WebPath') . '/Ticket/Display.html?id=' . $pending_ticket->id;
+                        return \'<a href="',$pending_ticket_url,\'">', loc('(pending ticket #[_1])',$pending_ticket->id), \'</a>';
+                    }
 
                     return \'<a href="',$SearchURL,\'">', loc('(pending [quant,_1,other ticket,other tickets])',$count), \'</a>';
                 }
