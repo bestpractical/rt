@@ -51,7 +51,7 @@
         jQuery(".more-about-requestor-tickets").tabs({
             cache: true,
             collapsible: true,
-            selected: <% $selected %>
+            active: <% $selected %>
         });
     });
 </script>
