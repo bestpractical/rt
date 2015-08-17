@@ -169,8 +169,10 @@ $m->callback( CallbackName => 'AddStatus', status_link_text => \$status_link_tex
 
 unless ( $DefaultTicketsTab eq 'None' ) {
     for (0 .. (@$status_order - 1)) {
-        $selected = $_ && last
-            if $status_order->[$_] eq $DefaultTicketsTab;
+        if ( $status_order->[$_] eq $DefaultTicketsTab ) {
+            $selected = $_;
+            last;
+        }
     }
 }
 
