@@ -68,10 +68,25 @@
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterTimeEstimated', TicketObj => $Ticket );
 % if ($Ticket->TimeWorked) {
-  <tr class="time worked">
+  <tr class="time worked sum">
     <td class="label"><&|/l&>Worked</&>:</td>
     <td class="value"><& ShowTime, minutes => $Ticket->TimeWorked &></td>
   </tr>
+% }
+% if ( keys %$time_worked ) {
+<tr class="time worked by-user">
+  <td class="label"><&|/l&>Users</&>:</td>
+  <td>
+    <table>
+%   for my $user ( keys %$time_worked ) {
+      <tr>
+        <td class="value"><% $user %>:</td>
+        <td class="value"><& /Ticket/Elements/ShowTime, minutes => $time_worked->{$user} &></td>
+      </tr>
+%   }
+    </table>
+  </td>
+</tr>
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterTimeWorked', TicketObj => $Ticket );
 % if ($Ticket->TimeLeft) {
@@ -101,3 +116,43 @@
 $Ticket => undef
 $UngroupedCFs => 0
 </%ARGS>
+<%init>
+my $time_worked;
+if ( $Ticket->TimeWorked ) {
+    my $time_worked_attr = $Ticket->FirstAttribute('TimeWorked');
+
+    if ($time_worked_attr) {
+        $time_worked = $time_worked_attr->Content;
+    } else {
+        $time_worked = {};
+        my $transactions = $Ticket->Transactions;
+        $transactions->Limit(
+            FIELD     => 'Type',
+            VALUE     => 'Set',
+            SUBCLAUSE => 'timeworked',
+        );
+
+        $transactions->Limit(
+            FIELD           => 'Field',
+            VALUE           => 'TimeWorked',
+            SUBCLAUSE       => 'timeworked',
+            ENTRYAGGREGATOR => 'AND',
+        );
+
+        $transactions->Limit(
+            FIELD           => 'TimeTaken',
+            VALUE           => 0,
+            OPERATOR        => '>',
+            SUBCLAUSE       => 'timeworked',
+            ENTRYAGGREGATOR => 'OR',
+        );
+
+        while ( my $txn = $transactions->Next ) {
+            $time_worked->{ $txn->CreatorObj->Name } += $txn->TimeTaken
+              || $txn->NewValue - $txn->OldValue;
+        }
+        $Ticket->SetAttribute( Name => 'TimeWorked', Content => $time_worked );
+    }
+}
+
+</%init>
