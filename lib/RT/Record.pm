@@ -1406,11 +1406,13 @@ sub _AddLink {
         return ( 0, $self->loc("Can't specify both base and target") );
     }
     elsif ( $args{'Base'} ) {
+        $args{'Base'} =~ s/\b0+//;
         $args{'Target'} = $self->URI();
         $remote_link    = $args{'Base'};
         $direction      = 'Target';
     }
     elsif ( $args{'Target'} ) {
+        $args{'Target'} =~ s/\b0+//;
         $args{'Base'} = $self->URI();
         $remote_link  = $args{'Target'};
         $direction    = 'Base';
@@ -1452,14 +1454,21 @@ sub _AddLink {
         return ( $old_link->id, $self->loc("Link already exists"), 1 );
     }
 
+    # Check for resulting circular relationships
     if ( $args{'Type'} =~ /^(?:DependsOn|MemberOf)$/ ) {
-
         my @tickets = $self->_AllLinkedTickets(
             LinkType  => $args{'Type'},
             Direction => $direction eq 'Target' ? 'Base' : 'Target',
         );
-        if ( grep { $_->id == ( $direction eq 'Target' ? $args{'Base'} : $args{'Target'} ) } @tickets ) {
-            return ( 0, $self->loc("Refused to add link which would create a circular relationship") );
+
+        foreach my $ticket (@tickets) {
+            my $uri_prefix = '';
+            if ($ticket->isa('RT::Asset')) { $uri_prefix = 'asset:'; }
+            elsif ($ticket->isa('RT::Article')) { $uri_prefix = 'a:'; }
+
+            if ( $uri_prefix . $ticket->id eq ( $direction eq 'Target' ? $args{'Base'} : $args{'Target'} ) ) {
+                return ( 0, $self->loc("Refused to add link which would create a circular relationship") );
+            }
         }
     }
 
