@@ -55,7 +55,7 @@ ok $queue && $queue->id, 'loaded or created queue';
     $m->tick( "AddCustomField" => $cfid );
     $m->click('UpdateCFs');
 
-    $m->content_contains('Object created', 'TCF added to the queue' );
+    $m->content_contains("Added custom field $cf_name to General", 'TCF added to the queue' );
 }
 
 diag 'check valid inputs with various timezones in ticket create page';

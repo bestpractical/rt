@@ -1,8 +1,9 @@
 
+
 use strict;
 use warnings FATAL => 'all';
 
-use RT::Test nodata => 1, tests => 145;
+use RT::Test nodata => 1, tests => 157;
 use Test::Warn;
 
 # Before we get going, ditch all object_cfs; this will remove
@@ -31,7 +32,7 @@ $ticket->Create(
 my $cfs = $ticket->CustomFields;
 is( $cfs->Count, 0 );
 
-# Check that record has no any CF values yet {{{
+# Check that record has no any CF values yet
 my $cfvs = $ticket->CustomFieldValues;
 is( $cfvs->Count, 0 );
 is( $ticket->FirstCustomFieldValue, undef );
@@ -63,7 +64,7 @@ my @custom_fields = ($local_cf1, $local_cf2, $global_cf3);
 $cfs = $ticket->CustomFields;
 is( $cfs->Count, 3 );
 
-# Check that record has no any CF values yet {{{
+# Check that record has no any CF values yet
 $cfvs = $ticket->CustomFieldValues;
 is( $cfvs->Count, 0 );
 is( $ticket->FirstCustomFieldValue, undef );
@@ -95,7 +96,7 @@ for (@custom_fields) {
     is( $ticket->FirstCustomFieldValue( $_->Name ), undef );
 }
 
-# try to add field value with fields that do not exist {{{
+# try to add field value with fields that do not exist
 my ($status, $msg) = $ticket->AddCustomFieldValue( Field => -1 , Value => 'foo' );
 ok(!$status, "shouldn't add value" );
 ($status, $msg) = $ticket->AddCustomFieldValue( Field => 'SomeUnexpedCustomFieldName' , Value => 'foo' );
@@ -230,4 +231,70 @@ warning_like {
 #       $test_add_delete_cycle->( sub { return $_[0]->Name } );
 #}
 
+# These represent adding the custom field to all objects
+my $all_queues = RT::Queue->new( RT->SystemUser );
+my $all_classes = RT::Class->new( RT->SystemUser );
+
+# Queue CustomField Message Test
+{
+    my $queue = RT::Queue->new( RT->SystemUser );
+    $queue->Create( Name => 'queue_name_0' );
+
+    my $custom_field = RT::CustomField->new( RT->SystemUser );
+    $custom_field->Create( Name => 'custom_field_0', Type => 'SelectSingle', LookupType => 'RT::Queue' );
+
+    my ($status, $msg) = $custom_field->AddToObject( $queue );
+    is($msg, 'Added custom field custom_field_0 to queue_name_0.', "Adding custom field to queue produces appropriate message");
+
+    ($status, $msg) = $custom_field->RemoveFromObject( $queue );
+    is($msg, 'Removed custom field custom_field_0 from queue_name_0.', "Removing custom field from queue produces appropriate message");
+
+    ($status, $msg) = $custom_field->AddToObject( $all_queues );
+    is($msg, 'Globally added custom field custom_field_0.', "Adding custom field globally produces appropriate message");
+
+    ($status, $msg) = $custom_field->RemoveFromObject( $all_queues );
+    is($msg, 'Globally removed custom field custom_field_0.', "Rmeoving custom field globally produces appropriate message");
+}
+
+# Ticket CustomField Message Test
+{
+    my $queue = RT::Queue->new( RT->SystemUser );
+    $queue->Create( Name => 'queue_name_1' );
+
+    my $custom_field = RT::CustomField->new( RT->SystemUser );
+    $custom_field->Create( Name => 'custom_field_1', Type => 'SelectSingle', LookupType => 'RT::Queue-RT::Ticket' );
+
+    my ($status, $msg) = $custom_field->AddToObject( $queue );
+    is($msg, 'Added custom field custom_field_1 to queue_name_1.', "Adding custom field to queue-ticket produces appropriate message");
+
+    ($status, $msg) = $custom_field->RemoveFromObject( $queue );
+    is($msg, 'Removed custom field custom_field_1 from queue_name_1.', "Removing custom field from queue produces appropriate message");
+
+    ($status, $msg) = $custom_field->AddToObject( $all_queues );
+    is($msg, 'Globally added custom field custom_field_1.', "Adding custom field globally produces appropriate message");
+
+    ($status, $msg) = $custom_field->RemoveFromObject( $all_queues );
+    is($msg, 'Globally removed custom field custom_field_1.', "Removing custom field globally produces appropriate message");
+}
+
+# Class CustomField Message Test
+{
+    my $class = RT::Class->new( RT->SystemUser );
+    $class->Create( Name => 'class_name_0' );
+
+    my $custom_field = RT::CustomField->new( RT->SystemUser );
+    $custom_field->Create( Name => 'custom_field_2', Type => 'SelectSingle', LookupType => 'RT::Class-RT::Article' );
+
+    my ($status, $msg) = $custom_field->AddToObject( $class );
+    is($msg, 'Added custom field custom_field_2 to class_name_0.', "Adding custom field to class-ticket produces appropriate message");
+
+    ($status, $msg) = $custom_field->RemoveFromObject( $class );
+    is($msg, 'Removed custom field custom_field_2 from class_name_0.', "Remove custom field from class produces appropriate message");
+
+    ($status, $msg) = $custom_field->AddToObject( $all_classes );
+    is($msg, 'Globally added custom field custom_field_2.', "Adding custom field globally produces appropriate message");
+
+    ($status, $msg) = $custom_field->RemoveFromObject( $all_classes );
+    is($msg, 'Globally removed custom field custom_field_2.', "Removing custom field globally produces appropriate message");
+}
 

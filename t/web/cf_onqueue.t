@@ -35,7 +35,7 @@ diag "Apply the new CF globally";
     $m->tick( AddCustomField => 1 );
     $m->click('UpdateCFs');
 
-    $m->content_contains('Object created', 'CF QueueCFTest enabled globally' );
+    $m->content_contains("Globally added custom field QueueCFTest", 'CF QueueCFTest enabled globally' );
 }
 
 diag "Edit the CF value for default queue";

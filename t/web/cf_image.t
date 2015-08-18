@@ -23,7 +23,7 @@ $m->follow_link_ok( {id => "page-applies-to"} );
 $m->form_with_fields( "AddCustomField-1" );
 $m->tick( "AddCustomField-1", 0 );
 $m->click_ok( "UpdateObjs" );
-$m->content_contains("Object created");
+$m->content_contains("Globally added custom field Images");
 
 
 $m->submit_form_ok({

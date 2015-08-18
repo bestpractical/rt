@@ -88,7 +88,7 @@ $m->get_ok($url.'/Admin/CustomFields/Objects.html?id='.$cf->id);
 $m->form_with_fields('UpdateObjs');
 $m->tick('AddCustomField-'.$cf->id => '0'); # Make CF global
 $m->click('UpdateObjs');
-$m->text_contains('Object created', 'CF applied globally');
+$m->text_contains("Globally added custom field CF1", 'CF applied globally');
 
 # Test for preservation when a ticket is submitted and CF validation fails
 for my $try (@form_tries) {
