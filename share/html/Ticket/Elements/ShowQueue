@@ -45,18 +45,34 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% if ( defined $RT_style_query && $RT_style_query ne '' ) {
+<a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query= <% $RT_style_query |u,n %>"><% $QueueObj_Name %></a>
+% } else {
 <% $value %>
+% }
 <%ARGS>
 $Ticket => undef
 $QueueObj
 </%ARGS>
 <%INIT>
 my $value = $QueueObj->Name;
+my $QueueObj_Name = undef;
+my $RT_style_query = undef;
 
 if ( $Ticket and $Ticket->CurrentUserHasRight('SeeQueue') ) {
     # Grab the queue name anyway if the current user can
     # see the queue based on his role for this ticket
-    $value = $QueueObj->__Value('Name');
+    $QueueObj_Name = $QueueObj->__Value('Name');
+    my $lifecycle = RT::Lifecycle->Load( Name => $Ticket->QueueObj->{'Lifecycle'} );
+    my @statuses;
+    foreach my $set ( 'initial', 'active' ) {
+      push @statuses, $lifecycle->Valid($set);
+    }
+    my @escaped = @statuses;
+    s{(['\\])}{\\$1}g for @escaped;
+    $RT_style_query = "Queue = '$QueueObj_Name' AND (".
+        join(" OR ", map {"Status = '$_'"} @escaped) #'
+        .")";
 }
 
 $value = '#'. $QueueObj->id
