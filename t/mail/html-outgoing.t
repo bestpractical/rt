@@ -84,6 +84,9 @@ mail_ok {
 SKIP: {
     skip "Only fails on core HTMLFormatter", 9
         unless RT->Config->Get("HTMLFormatter") eq "core";
+    require HTML::FormatText::WithLinks::AndTables;
+    skip "Only fails with older verions of HTML::FormatText::WithLinks::AndTables", 9
+        unless $HTML::FormatText::WithLinks::AndTables::VERSION < 0.03;
     diag "Failing HTML -> Text conversion";
     warnings_like {
         my $body = '<table><tr><td><table><tr><td>Foo</td></tr></table></td></tr></table>';
