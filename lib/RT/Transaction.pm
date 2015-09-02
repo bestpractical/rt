@@ -872,11 +872,11 @@ sub _FormatUser {
     },
     Enabled => sub {
         my $self = shift;
-        return ( "[_1] enabled", $self->FriendlyObjectType );   #loc()
+        return ( "[_1] enabled", $self->Field ? $self->loc($self->Field) : $self->FriendlyObjectType );   #loc()
     },
     Disabled => sub {
         my $self = shift;
-        return ( "[_1] disabled", $self->FriendlyObjectType );  #loc()
+        return ( "[_1] disabled", $self->Field ? $self->loc($self->Field) : $self->FriendlyObjectType );  #loc()
     },
     Status => sub {
         my $self = shift;
@@ -1201,7 +1201,7 @@ sub _FormatUser {
         }
 
         # Write the date/time change at local time:
-        elsif ($self->Field =~  /Due|Starts|Started|Told/) {
+        elsif ($self->Field =~ /^(?:Due|Starts|Started|Told)$/) {
             my $t1 = RT::Date->new($self->CurrentUser);
             $t1->Set(Format => 'ISO', Value => $self->NewValue);
             my $t2 = RT::Date->new($self->CurrentUser);
