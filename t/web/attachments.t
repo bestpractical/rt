@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 159;
+use RT::Test tests => undef;
 
 use constant LogoFile => $RT::StaticPath .'/images/bpslogo.png';
 use constant FaviconFile => $RT::StaticPath .'/images/favicon.png';
@@ -65,6 +65,9 @@ diag "with two attachments";
     $m->content_contains('Download favicon.png', 'page has file name');
 }
 
+SKIP: {
+    skip "delete attach function is ajaxified, no checkbox anymore", 8;
+
 diag "with one attachment, but delete one along the way";
 {
     $m->goto_create_ticket( $queue );
@@ -119,6 +122,8 @@ diag "with one attachment, but delete one along the way";
     $m->content_contains('Some content', 'and content');
     $m->content_lacks('Download bpslogo.png', 'page has file name');
     $m->content_contains('Download favicon.png', 'page has file name');
+}
+
 }
 
 diag "reply to a ticket in full interface";
@@ -166,6 +171,8 @@ diag "with two attachments";
     $m->content_contains('Download favicon.png', 'page has file name');
 }
 
+SKIP: {
+    skip "delete attach function is ajaxified, no checkbox anymore", 4;
 diag "with one attachment, delete one along the way";
 {
     my $ticket = RT::Test->create_ticket(
@@ -190,6 +197,7 @@ diag "with one attachment, delete one along the way";
 
     $m->content_lacks('Download bpslogo.png', 'page has file name');
     $m->content_contains('Download favicon.png', 'page has file name');
+}
 }
 
 diag "jumbo interface";
@@ -239,6 +247,8 @@ diag "with two attachments";
     $m->content_contains('Download favicon.png', 'page has file name');
 }
 
+SKIP: {
+    skip "delete attach function is ajaxified, no checkbox anymore", 4;
 diag "with one attachment, delete one along the way";
 {
     my $ticket = RT::Test->create_ticket(
@@ -264,6 +274,7 @@ diag "with one attachment, delete one along the way";
     $m->goto_ticket( $ticket->id );
     $m->content_lacks('Download bpslogo.png', 'page has file name');
     $m->content_contains('Download favicon.png', 'page has file name');
+}
 }
 
 diag "bulk update";
@@ -328,6 +339,8 @@ diag "two attachments";
     }
 }
 
+SKIP: {
+    skip "delete attach function is ajaxified, no checkbox anymore", 8;
 diag "one attachment, delete one along the way";
 {
     my @tickets = RT::Test->create_tickets(
@@ -360,6 +373,7 @@ diag "one attachment, delete one along the way";
         $m->content_lacks('Download bpslogo.png', 'page has file name');
         $m->content_contains('Download favicon.png', 'page has file name');
     }
+}
 }
 
 diag "self service";
@@ -504,3 +518,6 @@ diag "update and create";
     $m2->content_lacks('Download favicon.png', 'page has no file name');
 }
 
+undef $m;
+undef $m2;
+done_testing();

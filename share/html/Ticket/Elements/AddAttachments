@@ -48,11 +48,11 @@
 % if ( $attachments ) {
 <tr class="attachment"><td class="label"><&|/l&>Attached file</&>:</td>
 <td>
-<&|/l&>Check box to delete</&><br />
 % foreach my $attach_name ( sort keys %$attachments ) {
-<input type="checkbox" class="checkbox" name="DeleteAttach" value="<% $attach_name %>" id="DeleteAttach-<%$attach_name%>" />
-<label for="DeleteAttach-<%$attach_name%>"><% $attach_name %></label>
-<br />
+    <div>
+        <label for="DeleteAttach-<%$attach_name%>"><% $attach_name %></label>
+        (<a href="#" class="delete-attach" data-name="<%$attach_name%>" /><&|/l&>Delete</&></a>)
+    </div>
 % } # end of foreach
 </td>
 </tr>
