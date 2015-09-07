@@ -129,6 +129,7 @@ sub JSFiles {
       event-registration.js
       late.js
       /static/RichText/ckeditor.js
+      dropzone.min.js
       }, RT->Config->Get('JSFiles');
 }
 
