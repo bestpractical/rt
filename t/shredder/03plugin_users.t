@@ -6,7 +6,7 @@ use Test::Deep;
 use RT::Test::Shredder tests => 21;
 my $test = "RT::Test::Shredder";
 
-my @ARGS = sort qw(limit status name member_of not_member_of email replace_relations no_tickets);
+my @ARGS = sort qw(limit status name member_of not_member_of email replace_relations no_tickets no_ticket_transactions);
 
 use_ok('RT::Shredder::Plugin::Users');
 {
