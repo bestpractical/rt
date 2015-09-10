@@ -311,12 +311,7 @@ FCGI::ProcManager
 .
 
 $deps{'MODPERL1'} = [ text_to_hash( << '.') ];
-Apache::DBI 0.92
 Apache::Request
-.
-
-$deps{'MODPERL2'} = [ text_to_hash( << '.') ];
-Apache::DBI
 .
 
 $deps{'MYSQL'} = [ text_to_hash( << '.') ];
