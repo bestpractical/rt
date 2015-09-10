@@ -103,11 +103,11 @@ diag "checking parent ticket for expected timeworked data"; {
     $m->goto_ticket( $parent_id );
     $m->title_is( "#$parent_id: timeworked parent");
     $m->content_like(
-        qr{(?s)Worked:.+?value">2\.8 hours \(170 minutes\)},
+        qr{(?s)Worked:.+?value">2\.83 hours \(170 minutes\)},
         "found expected total TimeWorked in parent ticket"
     );
     $m->content_like(
-        qr{(?s)user_a:.+?value">1\.3 hours \(80 minutes\)},
+        qr{(?s)user_a:.+?value">1\.33 hours \(80 minutes\)},
         "found expected user_a TimeWorked in parent ticket"
     );
     $m->content_like(
@@ -133,7 +133,7 @@ diag "checking child ticket 2 for expected timeworked data"; {
     $m->goto_ticket( $child2_id );
     $m->title_is( "#$child2_id: child ticket 2");
     $m->content_like(
-        qr{(?s)Worked:.+?value">2\.1 hours \(125 minutes\)},
+        qr{(?s)Worked:.+?value">2\.08 hours \(125 minutes\)},
         "found expected total TimeWorked in child ticket 2"
     );
     $m->content_like(
