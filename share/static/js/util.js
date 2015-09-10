@@ -83,7 +83,12 @@ function set_rollup_state(e,e2,state) {
 function getClosestInputElements(input) {
     // Find inputs within the current form or collection list, whichever is closest.
     var container = jQuery(input).closest("form, table.collection-as-table").get(0);
-    return container.getElementsByTagName('input');
+    if ( container ) {
+        return container.getElementsByTagName('input');
+    }
+    else {
+        return [];
+    }
 }
 
 function setCheckbox(input, name, val) {
