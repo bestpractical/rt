@@ -128,6 +128,8 @@ sub JSFiles {
       forms.js
       event-registration.js
       late.js
+      mousetrap.min.js
+      keyboard-shortcuts.js
       /static/RichText/ckeditor.js
       dropzone.min.js
       }, RT->Config->Get('JSFiles');
