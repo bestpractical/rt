@@ -1,29 +1,31 @@
 use strict;
 use warnings;
 
-my $now;
-
 BEGIN {
-    $now = time();
     use Test::MockTime 'set_fixed_time';
-    set_fixed_time( $now );
+    use constant TIME => 1442455200;
+    set_fixed_time(TIME);
 
-    use RT::Test tests => undef;
+    use RT::Test
+        tests => undef,
+        config => "use Test::MockTime 'set_fixed_time'; set_fixed_time(". TIME . q!);
+            Set( %ServiceAgreements, (
+            Default => '2',
+            Levels  => {
+                '2' => {
+                    StartImmediately => 1,
+                    Response => { RealMinutes => 60 * 2 },
+                },
+                '4' => {
+                    StartImmediately => 1,
+                    Response => { RealMinutes => 60 * 4 },
+                },
+            },
+        ));!
+    ;
 }
 
-%RT::ServiceAgreements = (
-    Default => '2',
-    Levels  => {
-        '2' => {
-            StartImmediately => 1,
-            Response => { RealMinutes => 60 * 2 },
-        },
-        '4' => {
-            StartImmediately => 1,
-            Response => { RealMinutes => 60 * 4 },
-        },
-    },
-);
+my $now = TIME;
 
 my $queue = RT::Test->load_or_create_queue( Name => 'General' );
 
