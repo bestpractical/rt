@@ -57,6 +57,8 @@ $Class     => 'RT__Ticket'
 $Classes => ''
 </%ARGS>
 <%init>
+$m->out( '<tbody class="list-item"' . ( $record->can('id') ? ' data-record-id="'.$record->id.'"' : '' ) . '>' );
+
 $m->out(  '<tr class="' . $Classes . ' '
         . ( $Warning ? 'warnline' : $i % 2 ? 'oddline' : 'evenline' ) . '" >'
         . "\n" );
@@ -139,4 +141,5 @@ foreach my $column (@Format) {
     $m->out( '</td>' . "\n" );
 }
 $m->out('</tr>');
+$m->out('</tbody>');
 </%init>

@@ -517,3 +517,20 @@ jQuery(function() {
         return false;
     });
 });
+
+// focus jquery object in window, only moving the screen when necessary
+function scrollToJQueryObject(obj) {
+    if (!obj.length) return;
+
+    var viewportHeight = jQuery(window).height(),
+        currentScrollPosition = jQuery(window).scrollTop(),
+        currentItemPosition = obj.offset().top,
+        currentItemSize = obj.height() + obj.next().height();
+
+    if (currentScrollPosition + viewportHeight < currentItemPosition + currentItemSize) {
+        jQuery('html, body').scrollTop(currentItemPosition - viewportHeight + currentItemSize);
+    } else if (currentScrollPosition > currentItemPosition) {
+        jQuery('html, body').scrollTop(currentItemPosition);
+    }
+}
+
