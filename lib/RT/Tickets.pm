@@ -76,7 +76,7 @@ use Role::Basic 'with';
 with 'RT::SearchBuilder::Role::Roles';
 
 use Scalar::Util qw/blessed/;
-
+use 5.010;
 use RT::Ticket;
 use RT::SQL;
 
@@ -2929,113 +2929,154 @@ failure.
 
 sub _parser {
     my ($self,$string) = @_;
-    my $ea = '';
 
-    # Bundling of joins is implemented by dynamically tracking a parallel query
-    # tree in %sub_tree as the TicketSQL is parsed.
-    #
-    # Only positive, OR'd watcher conditions are bundled currently.  Each key
-    # in %sub_tree is a watcher type (Requestor, Cc, AdminCc) or the generic
-    # "Watcher" for any watcher type.  Owner is not bundled because it is
-    # denormalized into a Tickets column and doesn't need a join.  AND'd
-    # conditions are not bundled since a record may have multiple watchers
-    # which independently match the conditions, thus necessitating two joins.
-    #
-    # The values of %sub_tree are arrayrefs made up of:
-    #
-    #   * Open parentheses "(" pushed on by the OpenParen callback
-    #   * Arrayrefs of bundled join aliases pushed on by the Condition callback
-    #   * Entry aggregators (AND/OR) pushed on by the EntryAggregator callback
-    #
-    # The CloseParen callback takes care of backing off the query trees until
-    # outside of the just-closed parenthetical, thus restoring the tree state
-    # an equivalent of before the parenthetical was entered.
-    #
-    # The Condition callback handles starting a new subtree or extending an
-    # existing one, determining if bundling the current condition with any
-    # subtree is possible, and pruning any dangling entry aggregators from
-    # trees.
-    #
+    require RT::Interface::Web::QueryBuilder::Tree;
+    my $tree = RT::Interface::Web::QueryBuilder::Tree->new;
+    $tree->ParseSQL(
+        Query => $string,
+        CurrentUser => $self->CurrentUser,
+    );
 
-    my %sub_tree;
-    my $depth = 0;
+    state ( $active_status_node, $inactive_status_node );
 
-    my %callback;
-    $callback{'OpenParen'} = sub {
-      $self->_OpenParen;
-      $depth++;
-      push @$_, '(' foreach values %sub_tree;
-    };
-    $callback{'CloseParen'} = sub {
-      $self->_CloseParen;
-      $depth--;
-      foreach my $list ( values %sub_tree ) {
-          if ( $list->[-1] eq '(' ) {
-              pop @$list;
-              pop @$list if $list->[-1] =~ /^(?:AND|OR)$/i;
-          }
-          else {
-              pop @$list while $list->[-2] ne '(';
-              $list->[-1] = pop @$list;
-          }
-      }
-    };
-    $callback{'EntryAggregator'} = sub {
-      $ea = $_[0] || '';
-      push @$_, $ea foreach grep @$_ && $_->[-1] ne '(', values %sub_tree;
-    };
-    $callback{'Condition'} = sub {
-        my ($key, $op, $value) = @_;
+    $tree->traverse(
+        sub {
+            my $node = shift;
+            return unless $node->isLeaf and $node->getNodeValue;
+            my ($key, $subkey, $meta, $op, $value, $bundle)
+                = @{$node->getNodeValue}{qw/Key Subkey Meta Op Value Bundle/};
+            return unless $key eq "Status" && $value =~ /^(?:__(?:in)?active__)$/i;
 
-        my $negative_op = ($op eq '!=' || $op =~ /\bNOT\b/i);
-        my $null_op = ( 'is not' eq lc($op) || 'is' eq lc($op) );
-        # key has dot then it's compound variant and we have subkey
-        my $subkey = '';
-        ($key, $subkey) = ($1, $2) if $key =~ /^([^\.]+)\.(.+)$/;
+            my $parent = $node->getParent;
+            my $index = $node->getIndex;
 
-        # normalize key and get class (type)
-        my $class;
-        if (exists $LOWER_CASE_FIELDS{lc $key}) {
-            $key = $LOWER_CASE_FIELDS{lc $key};
-            $class = $FIELD_METADATA{$key}->[0];
-        }
-        die "Unknown field '$key' in '$string'" unless $class;
+            if ( ( lc $value eq '__inactive__' && $op eq '=' ) || ( lc $value eq '__active__' && $op eq '!=' ) ) {
+                unless ( $inactive_status_node ) {
+                    my %lifecycle =
+                      map { $_ => $RT::Lifecycle::LIFECYCLES{ $_ }{ inactive } }
+                      grep { @{ $RT::Lifecycle::LIFECYCLES{ $_ }{ inactive } || [] } }
+                      keys %RT::Lifecycle::LIFECYCLES;
+                    return unless %lifecycle;
 
-        # replace __CurrentUser__ with id
-        $value = $self->CurrentUser->id if $value eq '__CurrentUser__';
+                    my $sql;
+                    if ( keys %lifecycle == 1 ) {
+                        $sql = join ' OR ', map { qq{ Status = "$_" } } map { @$_ } values %lifecycle;
+                    }
+                    else {
+                        my @inactive_sql;
+                        for my $name ( keys %lifecycle ) {
+                            my $inactive_sql =
+                                qq{Lifecycle = "$name"}
+                              . ' AND ('
+                              . join( ' OR ', map { qq{ Status = "$_" } } @{ $lifecycle{ $name } } ) . ')';
+                            push @inactive_sql, qq{($inactive_sql)};
+                        }
+                        $sql = join ' OR ', @inactive_sql;
+                    }
+                    $inactive_status_node = RT::Interface::Web::QueryBuilder::Tree->new;
+                    $inactive_status_node->ParseSQL(
+                        Query       => $sql,
+                        CurrentUser => $self->CurrentUser,
+                    );
+                }
+                $parent->removeChild( $node );
+                $parent->insertChild( $index, $inactive_status_node );
+            }
+            else {
+                unless ( $active_status_node ) {
+                    my %lifecycle =
+                      map {
+                        $_ => [
+                            @{ $RT::Lifecycle::LIFECYCLES{ $_ }{ initial } || [] },
+                            @{ $RT::Lifecycle::LIFECYCLES{ $_ }{ active }  || [] },
+                          ]
+                      }
+                      grep {
+                             @{ $RT::Lifecycle::LIFECYCLES{ $_ }{ initial } || [] }
+                          || @{ $RT::Lifecycle::LIFECYCLES{ $_ }{ active }  || [] }
+                      } keys %RT::Lifecycle::LIFECYCLES;
+                    return unless %lifecycle;
 
-
-        unless( $dispatch{ $class } ) {
-            die "No dispatch method for class '$class'"
-        }
-        my $sub = $dispatch{ $class };
-
-        my @res; my $bundle_with;
-        if ( $class eq 'WATCHERFIELD' && $key ne 'Owner' && !$negative_op && (!$null_op || $subkey) ) {
-            if ( !$sub_tree{$key} ) {
-              $sub_tree{$key} = [ ('(')x$depth, \@res ];
-            } else {
-              $bundle_with = $self->_check_bundling_possibility( $string, @{ $sub_tree{$key} } );
-              if ( $sub_tree{$key}[-1] eq '(' ) {
-                    push @{ $sub_tree{$key} }, \@res;
-              }
+                    my $sql;
+                    if ( keys %lifecycle == 1 ) {
+                        $sql = join ' OR ', map { qq{ Status = "$_" } } map { @$_ } values %lifecycle;
+                    }
+                    else {
+                        my @active_sql;
+                        for my $name ( keys %lifecycle ) {
+                            my $active_sql =
+                                qq{Lifecycle = "$name"}
+                              . ' AND ('
+                              . join( ' OR ', map { qq{ Status = "$_" } } @{ $lifecycle{ $name } } ) . ')';
+                            push @active_sql, qq{($active_sql)};
+                        }
+                        $sql = join ' OR ', @active_sql;
+                    }
+                    $active_status_node = RT::Interface::Web::QueryBuilder::Tree->new;
+                    $active_status_node->ParseSQL(
+                        Query       => $sql,
+                        CurrentUser => $self->CurrentUser,
+                    );
+                }
+                $parent->removeChild( $node );
+                $parent->insertChild( $index, $active_status_node );
             }
         }
+    );
 
-        # Remove our aggregator from subtrees where our condition didn't get added
-        pop @$_ foreach grep @$_ && $_->[-1] =~ /^(?:AND|OR)$/i, values %sub_tree;
+    # Perform an optimization pass looking for watcher bundling
+    $tree->traverse(
+        sub {
+            my $node = shift;
+            return if $node->isLeaf;
+            return unless ($node->getNodeValue||'') eq "OR";
+            my %refs;
+            my @kids = grep {$_->{Meta}[0] eq "WATCHERFIELD"}
+                map {$_->getNodeValue}
+                grep {$_->isLeaf} $node->getAllChildren;
+            for (@kids) {
+                my $node = $_;
+                my ($key, $subkey, $op) = @{$node}{qw/Key Subkey Op/};
+                next if $node->{Meta}[1] and RT::Ticket->Role($node->{Meta}[1])->{Column};
+                next if $op =~ /^!=$|\bNOT\b/i;
+                next if $op =~ /^IS( NOT)?$/i and not $subkey;
+                $node->{Bundle} = $refs{$node->{Meta}[1] || ''} ||= [];
+            }
+        }
+    );
 
-        # A reference to @res may be pushed onto $sub_tree{$key} from
-        # above, and we fill it here.
-        @res = $sub->( $self, $key, $op, $value,
-                SUBCLAUSE       => '',  # don't need anymore
-                ENTRYAGGREGATOR => $ea,
-                SUBKEY          => $subkey,
-                BUNDLE          => $bundle_with,
-              );
-        $ea = '';
-    };
-    RT::SQL::Parse($string, \%callback);
+    my $ea = '';
+    $tree->traverse(
+        sub {
+            my $node = shift;
+            $ea = $node->getParent->getNodeValue if $node->getIndex > 0;
+            return $self->_OpenParen unless $node->isLeaf;
+
+            my ($key, $subkey, $meta, $op, $value, $bundle)
+                = @{$node->getNodeValue}{qw/Key Subkey Meta Op Value Bundle/};
+
+            # normalize key and get class (type)
+            my $class = $meta->[0];
+
+            # replace __CurrentUser__ with id
+            $value = $self->CurrentUser->id if $value eq '__CurrentUser__';
+
+            my $sub = $dispatch{ $class }
+                or die "No dispatch method for class '$class'";
+
+            # A reference to @res may be pushed onto $sub_tree{$key} from
+            # above, and we fill it here.
+            $sub->( $self, $key, $op, $value,
+                    ENTRYAGGREGATOR => $ea,
+                    SUBKEY          => $subkey,
+                    BUNDLE          => $bundle,
+                  );
+        },
+        sub {
+            my $node = shift;
+            return $self->_CloseParen unless $node->isLeaf;
+        }
+    );
 }
 
 sub FromSQL {
@@ -3101,29 +3142,6 @@ Returns the last string passed to L</FromSQL>.
 sub Query {
     my $self = shift;
     return $self->{_sql_query};
-}
-
-sub _check_bundling_possibility {
-    my $self = shift;
-    my $string = shift;
-    my @list = reverse @_;
-    while (my $e = shift @list) {
-        next if $e eq '(';
-        if ( lc($e) eq 'and' ) {
-            return undef;
-        }
-        elsif ( lc($e) eq 'or' ) {
-            return shift @list;
-        }
-        else {
-            # should not happen
-            $RT::Logger->error(
-                "Joins optimization failed when parsing '$string'. It's bug in RT, contact Best Practical"
-            );
-            die "Internal error. Contact your system administrator.";
-        }
-    }
-    return undef;
 }
 
 RT::Base->_ImportOverlays();

@@ -262,7 +262,7 @@ sub RoleLimit {
     $args{FIELD} ||= 'EmailAddress';
 
     my ($groups, $group_members, $users);
-    if ( $args{'BUNDLE'} ) {
+    if ( $args{'BUNDLE'} and @{$args{'BUNDLE'}}) {
         ($groups, $group_members, $users) = @{ $args{'BUNDLE'} };
     } else {
         $groups = $self->_RoleGroupsJoin( Name => $type, Class => $class, New => !$type );
@@ -393,7 +393,9 @@ sub RoleLimit {
         }
     }
     $self->_CloseParen( $args{SUBCLAUSE} ) if $args{SUBCLAUSE};
-    return ($groups, $group_members, $users);
+    if ($args{BUNDLE} and not @{$args{BUNDLE}}) {
+        @{$args{BUNDLE}} = ($groups, $group_members, $users);
+    }
 }
 
 1;
