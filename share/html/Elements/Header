@@ -106,7 +106,9 @@
   <& /Elements/PersonalQuickbar, %ARGS &>
 </div>
 % }
+% if ($ShowTitle) {
 <div id="header"><h1><% $Title %></h1></div>
+% }
 <%INIT>
 $r->headers_out->{'Pragma'} = 'no-cache';
 $r->headers_out->{'Cache-control'} = 'no-cache';
@@ -149,6 +151,7 @@ $Focus => ''
 $Title =>  'RT'
 $Refresh => 0
 $ShowBar => 1
+$ShowTitle => 1
 $URL => undef
 $RSSAutoDiscovery => undef
 $onload => undef
