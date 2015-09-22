@@ -828,9 +828,9 @@ sub InsertData {
     );
 
     # Slurp in stuff to insert from the datafile. Possible things to go in here:-
-    our (@Groups, @Users, @Members, @ACL, @Queues, @ScripActions, @ScripConditions,
+    our (@Groups, @Users, @Members, @ACL, @Queues, @Classes, @ScripActions, @ScripConditions,
            @Templates, @CustomFields, @Scrips, @Attributes, @Initial, @Final);
-    local (@Groups, @Users, @Members, @ACL, @Queues, @ScripActions, @ScripConditions,
+    local (@Groups, @Users, @Members, @ACL, @Queues, @Classes, @ScripActions, @ScripConditions,
            @Templates, @CustomFields, @Scrips, @Attributes, @Initial, @Final);
 
     local $@;
@@ -991,6 +991,45 @@ sub InsertData {
                 $RT::Logger->error( $msg );
             } else {
                 $RT::Logger->debug( $return ."." );
+                $_->{Object} = $new_entry for @{$attributes || []};
+                push @Attributes, @{$attributes || []};
+            }
+        }
+        $RT::Logger->debug("done.");
+    }
+    if ( @Classes ) {
+        $RT::Logger->debug("Creating classes...");
+        for my $item (@Classes) {
+            my $attributes = delete $item->{ Attributes };
+            # Back-compat for the old "Queue" argument
+            if ( exists $item->{'Queue'} ) {
+                $item->{'ApplyTo'} = delete $item->{'Queue'};
+            }
+
+            my $apply_to = delete $item->{'ApplyTo'};
+            my $new_entry = RT::Class->new(RT->SystemUser);
+            my ( $return, $msg ) = $new_entry->Create(%$item);
+            unless ( $return ) {
+                $RT::Logger->error( $msg );
+            } else {
+                $RT::Logger->debug( $return ."." );
+                if ( !$apply_to ) {
+                    ( $return, $msg) = $new_entry->AddToObject( RT::Queue->new(RT->SystemUser) );
+                    $RT::Logger->error( $msg ) unless $return;
+                } else {
+                    $apply_to = [ $apply_to ] unless ref $apply_to;
+                    for my $name ( @{ $apply_to } ) {
+                        my $queue = RT::Queue->new( RT->SystemUser );
+                        $queue->Load( $name );
+                        if ( $queue->id ) {
+                            ( $return, $msg) = $new_entry->AddToObject( $queue );
+                            $RT::Logger->error( $msg ) unless $return;
+                        }
+                        else {
+                            $RT::Logger->error( "Could not find RT::Queue $name to apply " . $new_entry->Name . " to" );
+                        }
+                    }
+                }
                 $_->{Object} = $new_entry for @{$attributes || []};
                 push @Attributes, @{$attributes || []};
             }
