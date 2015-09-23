@@ -76,6 +76,11 @@ textarea.messagebox, #cke_Content, #cke_UpdateContent {
   box-sizing: border-box;
 }
 
+.selection-box {
+    min-width: 300px;
+}
+
 .datepicker {
     width: 17em;
 }
+
