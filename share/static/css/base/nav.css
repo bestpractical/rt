@@ -15,11 +15,13 @@
     text-align: right;
 }
 
-#li-page-bookmark .toggle-bookmark a {
+#li-page-bookmark .toggle-bookmark a,
+#li-page-timer .timer-link a {
     padding: 0.5em 1em;
 }
 
-#li-page-bookmark a img {
+#li-page-bookmark a img,
+#li-page-timer a img {
     height: 1.25em;
     width: 1.25em;
 }

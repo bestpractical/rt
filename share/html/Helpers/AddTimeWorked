@@ -45,31 +45,38 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<script type="text/javascript">
-var initMenus = function() {
-    jQuery("#quick-personal").append('<ul id="prefs-menu"></ul>');
-    jQuery("#li-preferences").detach().appendTo("#prefs-menu");
-    jQuery("#li-tools-config").detach().appendTo("#app-nav");
-    jQuery("#li-search-simple").detach().insertBefore("#li-search");
-    jQuery("#li-tools-approval").detach().appendTo("#app-nav");
+<%ARGS>
+$id
+$seconds => 0
+</%ARGS>
+<%INIT>
+my $Ticket = RT::Ticket->new($session{'CurrentUser'});
+$Ticket->Load( $id );
 
-    jQuery("#li-page-bookmark").detach().appendTo("#li-page-actions>ul");
-    jQuery("#li-page-timer").detach().appendTo("#li-page-actions>ul");
-    jQuery("#li-page-actions>ul").attr("id","page-action-menu").detach().insertAfter("#topactions");
+# round up 30s or more
+my $minutes = int(0.5 + $seconds / 60);
 
-    jQuery.fn.supersubs.defaults = {
-        maxWidth: 30,
-        extraWidth: 2
-    };
+my ($ok, $msg);
+if ($minutes == 0) {
+    # avoid "That is already the current value" error
+    $ok = 1;
+    $msg = loc("Worked [quant,_1,minute,minutes]", 0);
+}
+else {
+    my $total_worked = $Ticket->TimeWorked + $minutes;
+    ($ok, $msg) = $Ticket->SetTimeWorked($total_worked);
 
-    jQuery("#page-menu.toplevel").addClass("sf-menu sf-js-enabled").supersubs().superfish({ dropShadows: false, speed: 'fast' }).supposition();
-    jQuery("#app-nav.toplevel").addClass("sf-menu sf-vertical sf-js-enabled").supersubs().superfish({ speed: 'fast' }).supposition();
-    jQuery("#prefs-menu").addClass("sf-menu sf-js-enabled").supersubs().superfish().supposition({ speed: 'fast' });
-};
+    if ($ok) {
+        if ($minutes < 60) {
+            $msg = loc("Worked [quant,_1,minute,minutes]", $minutes);
+        }
+        else {
+            $msg = loc("Worked [quant,_1,hour,hours] ([quant,_2,minute,minutes])", sprintf("%.2f", $minutes / 60), $minutes);
+        }
+    }
+}
 
-// If everything is loaded, init NOW.  Otherwise, defer to DOM ready.
-if (jQuery.fn.supersubs && jQuery.fn.superfish && jQuery.fn.supposition)
-    initMenus();
-else
-    jQuery(initMenus);
-</script>
+$r->content_type('application/json; charset=utf-8');
+$m->print(JSON({ ok => $ok, msg => $msg }));
+$m->abort;
+</%INIT>

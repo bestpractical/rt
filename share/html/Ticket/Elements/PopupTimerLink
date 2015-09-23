@@ -1,0 +1,11 @@
+<%ARGS>
+$id
+</%ARGS>
+<%INIT>
+my $url = RT->Config->Get('WebPath') . "/Helpers/TicketTimer?id=" . $id;
+</%INIT>
+<span class="timer-link">
+    <a href="<% $url %>" onclick="window.open(<% $url |n,j %>, '_blank', 'height=200,width=200'); return false;" >
+        <img src="<% RT->Config->Get('WebPath') %>/static/images/stopwatch.png" alt="<% loc('Open Timer') %>" title="<% loc('Open Timer') %>" />
+    </a>
+</span>
