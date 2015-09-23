@@ -15,3 +15,12 @@
     text-align: right;
 }
 
+#li-page-bookmark .toggle-bookmark a {
+    padding: 0.5em 1em;
+}
+
+#li-page-bookmark a img {
+    height: 1.25em;
+    width: 1.25em;
+}
+
