@@ -79,3 +79,8 @@ textarea.messagebox, #cke_Content, #cke_UpdateContent {
 .datepicker {
     width: 17em;
 }
+
+.toggle-bookmark a img {
+    height: 1em;
+    width: 1em;
+}

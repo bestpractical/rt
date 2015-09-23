@@ -171,17 +171,6 @@
     box-shadow: 2px 2px 8px -2px #999;
 }
 
-/* The bookmark star is too tall without adjusting the padding and height */
-
-.sf-menu .toggle-bookmark a {
-    padding: 0 1em;
-    height: 2.5em;
-}
-
-.sf-menu .toggle-bookmark a img {
-    padding-top: 0.6em
-}
-
 /* Pin page menu to top left corner once you scroll past it */
 
 #page-navigation #page-menu.pinned {
