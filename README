@@ -220,6 +220,12 @@ GENERAL INSTALLATION
 
            perldoc /opt/rt4/bin/rt-mailgate
 
+11) Set up full text search
+
+    Full text search (FTS) without database indexing is a very slow operation,
+    and is thus disabled by default. Please follow instructions in
+    docs/full_text_indexing.pod to build index and enable FTS.
+
 
 GETTING HELP
 ------------
