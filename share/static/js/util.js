@@ -505,4 +505,15 @@ jQuery(function() {
     ReplaceAllTextareas();
     jQuery('select.chosen').chosen({ width: '20em', placeholder_text_multiple: ' ', no_results_text: ' ', search_contains: true });
     AddAttachmentWarning();
+    jQuery('a.delete-attach').click( function() {
+        var parent = jQuery(this).closest('div');
+        var name = jQuery(this).attr('data-name');
+        var token = jQuery(this).closest('form').find('input[name=Token]').val();
+        jQuery.post('/Helpers/Upload/Delete', { Name: name, Token: token }, function(data) {
+            if ( data.status == 'success' ) {
+                parent.remove();
+            }
+        }, 'json');
+        return false;
+    });
 });
