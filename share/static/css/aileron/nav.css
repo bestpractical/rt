@@ -117,17 +117,6 @@
  color: #000;
  }
 
-/* The bookmark star is too tall without adjusting the padding and height */
-
-.sf-menu .toggle-bookmark a {
-    padding: 0 1em;
-    height: 2.5em;
-}
-
-.sf-menu .toggle-bookmark a img {
-    padding-top: 0.6em;
-}
-
 /* Pin page menu to top left corner once you scroll past it */
 
 #page-menu.pinned {

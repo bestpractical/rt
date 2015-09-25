@@ -1,0 +1,196 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2015 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<%ARGS>
+$id
+</%ARGS>
+<%INIT>
+my $Ticket = RT::Ticket->new($session{'CurrentUser'});
+$Ticket->Load( $id );
+
+my $unpause_img = RT->Config->Get('WebPath') . '/static/images/unpause.png';
+my $pause_img   = RT->Config->Get('WebPath') . '/static/images/pause.png';
+
+my $now = RT::Date->new($session{'CurrentUser'});
+$now->SetToNow;
+
+my $submit_url = RT->Config->Get('WebPath') . '/Helpers/AddTimeWorked';
+</%INIT>
+<& /Elements/Header, Title => loc('Timer for #[_1]: [_2]', $Ticket->Id, $Ticket->Subject), RichText => 0, ShowBar => 0, ShowTitle => 0 &>
+
+<script type="text/javascript">
+jQuery( function() {
+    var Interval;
+    var Seconds = 0;
+
+    var readout = jQuery('.readout');
+    var playpause = jQuery('.playpause');
+    var playpause_img = playpause.find('img');
+
+    var pause_alt = playpause_img.attr('alt');
+    var unpause_alt = playpause_img.data('toggle-alt');
+
+    var toHHMMSS = function (total) {
+        var hours   = Math.floor(total / 3600);
+        var minutes = Math.floor((total - (hours * 3600)) / 60);
+        var seconds = total - (hours * 3600) - (minutes * 60);
+
+        if (minutes < 10) { minutes = "0" + minutes; }
+        if (seconds < 10) { seconds = "0" + seconds; }
+
+        return hours + ':' + minutes + ':' + seconds;
+    };
+
+    var renderReadout = function (seconds) {
+        readout.text(toHHMMSS(seconds));
+    };
+
+    var tick = function () {
+        Seconds++;
+        renderReadout(Seconds);
+    };
+
+    jQuery('.playpause').click(function () {
+        if (Interval) {
+            // pause
+            clearInterval(Interval);
+            Interval = false;
+            playpause_img.attr('src', <% $unpause_img |n,j %>);
+            playpause_img.attr('alt', unpause_alt);
+            playpause_img.attr('title', unpause_alt);
+        }
+        else {
+            // unpause
+            Interval = setInterval(tick, 1000);
+            playpause_img.attr('src', <% $pause_img |n,j %>);
+            playpause_img.attr('alt', pause_alt);
+            playpause_img.attr('title', pause_alt);
+        }
+        return false;
+    });
+
+    jQuery('.submit-time').click(function () {
+        clearInterval(Interval);
+        jQuery('.control-line a').hide();
+
+        var payload = {
+            id: <% $Ticket->id %>,
+            seconds: Seconds
+        };
+
+        readout.text('<% loc("Submitting") %>');
+
+        var renderSubmitError = function (reason) {
+            renderReadout(Seconds);
+            jQuery('.ticket-timer').addClass('error');
+
+            // give the browser a chance to redraw the readout
+            setTimeout(function () {
+                alert('<% loc("Unable to submit time. Please add it to the ticket manually. Reason:") %>' + ' ' + reason);
+            }, 100);
+        };
+
+        jQuery.ajax({
+            url: <% $submit_url |n,j %>,
+            data: payload,
+            timeout: 30000, /* 30 seconds */
+            success: function (response) {
+                if (response.ok) {
+                    readout.text(response.msg);
+                    jQuery('.control-line .close-popup').show().removeClass('hidden');
+                }
+                else {
+                    renderSubmitError(response.msg);
+                }
+            },
+            error: function (xhr, reason) {
+                renderSubmitError(reason);
+            }
+        });
+
+        return false;
+    });
+
+    jQuery('.close-popup').click(function () {
+        window.close();
+        return false;
+    });
+
+    renderReadout(Seconds);
+    Interval = setInterval(tick, 1000);
+});
+</script>
+
+<div class="ticket-timer">
+    <div class="ticket-link">
+        <a target="_blank" href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<%$Ticket->Id%>">
+            <img src="<% RT->Config->Get('WebPath') %>/static/images/stopwatch.png" alt="<% loc('Stopwatch') %>" />
+            <%$Ticket->Id%>: <%$Ticket->Subject%>
+        </a>
+    </div>
+
+    <div class="gutter">
+        <div class="readout"></div>
+
+        <div class="control-line">
+            <a href="#" class="playpause"><img src="<% $pause_img %>" alt="<% loc('Pause Timer') %>" data-toggle-alt="<% loc('Unpause Timer') %>" title="<% loc('Pause Timer') %>" /></a>
+            <a href="#" class="submit-time"><img src="<% RT->Config->Get('WebPath') %>/static/images/submit.png" alt="<% loc('Submit Timer') %>" alt="<% loc('Submit Timer') %>" /></a>
+            <a href="#" class="close-popup hidden"><img src="<% RT->Config->Get('WebPath') %>/static/images/close.png" alt="<% loc('Close Window') %>" title="<% loc('Close Window') %>" /></a>
+        </div>
+    </div>
+
+    <div class="extra"><&|/l, $now->AsString &>Started at [_1].</&></div>
+
+% if ($Ticket->TimeEstimated) {
+    <div class="extra"><&|/l&>Time estimated</&>: <& /Ticket/Elements/ShowTime, minutes => $Ticket->TimeEstimated &></div>
+% }
+
+    <div class="on-error"><&|/l&>An error occurred while submitting time. Please submit your time manually.</&></div>
+
+</div>
+
+% $m->abort();

@@ -1,0 +1,27 @@
+.ticket-timer {
+    padding: 1em 1em 1em 1em;
+    -moz-border-radius-topleft: 0.5em;
+    -webkit-border-top-left-radius: 0.5em;
+    -moz-border-radius-bottomleft: 0.5em;
+    -webkit-border-bottom-left-radius: 0.5em;
+    margin-left: .25em;
+    margin-top: .25em;
+    margin-right: 0;
+    margin-bottom: 0em;
+    background: #fff;
+    border-top: 2px solid #ccc;
+    border-left: 2px solid #ccc;
+    border-radius: 0.5em 0 0 0.5em;
+}
+
+.ticket-timer .gutter {
+    background-color: #fff;
+    border-left: 1px solid #ccc;
+    border-top: 1px solid #ccc;
+    background-color: #efefef;
+    -moz-border-radius: 0.5em;
+    -webkit-border-radius: 0.5em;
+    border-bottom: 2px solid #aaa;
+    border-right: 2px solid #aaa;
+    border-radius: 0.5em;
+}

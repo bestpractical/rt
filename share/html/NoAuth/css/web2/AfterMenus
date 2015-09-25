@@ -54,6 +54,7 @@ var initMenus = function() {
     jQuery("#li-tools-approval").detach().appendTo("#app-nav");
 
     jQuery("#li-page-bookmark").detach().appendTo("#li-page-actions>ul");
+    jQuery("#li-page-timer").detach().appendTo("#li-page-actions>ul");
     jQuery("#li-page-actions>ul").attr("id","page-action-menu").detach().insertAfter("#topactions");
 
     jQuery.fn.supersubs.defaults = {
