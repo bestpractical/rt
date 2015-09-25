@@ -2924,7 +2924,7 @@ Set(%Lifecycles,
 
 =item C<%ServiceAgreements>
 
-    Set( %ServiceAgreements = (
+    Set( %ServiceAgreements, (
         Default => '4h',
         QueueDefault => {
             'Incident' => '2h',
