@@ -1,0 +1,104 @@
+=head1 Service Level Agreements
+
+This is used to automate C<Starts>/C<Due> date setting. Almost everything is
+controlled in RT's config using C<%ServiceAgreements> and
+C<%ServiceBusinessHours>.  Please check their documents in C<RT_Config.pm> for
+full details. This is a cookbook to give you a quick sense of how flexible and
+powerful RT's SLA support is.
+
+=head2 Show me a basic config that simply works?
+
+No problem.
+
+    Set( %ServiceAgreements, (
+        Default => 'standard',
+        Levels => {
+            'standard' => {
+                Starts => { RealMinutes => 0 },
+                Resolve => { RealMinutes => 8*60 },
+            },
+            'urgent' => {
+                Starts => { RealMinutes => 0 },
+                Resolve => { RealMinutes => 2*60 },
+            },
+        },
+    ));
+
+With this, tickets' C<Starts> date will be set to tickets' C<Created> date,
+and C<Due> date will be set to 2 or 8 hours after C<Created> date, based on
+the which SLA value ("standard" or "urgent") is chosen.
+
+=head2 Does it support business time instead of real time?
+
+Sure.
+
+    Set( %ServiceAgreements, (
+        Default => 'standard',
+        Levels => {
+            'standard' => {
+                Resolve => { BusinessMinutes => 4*60 },
+            },
+        },
+    ));
+
+You also need to define what business time is:
+
+    Set( %ServiceBusinessHours, (
+        'Default' => {
+            1 => { Name => 'Monday', Start => '9:00', End => '18:00' },
+            2 => { Name => 'Tuesday', Start => '9:00', End => '18:00' },
+            3 => { Name => 'Wednesday', Start => '9:00', End => '18:00' },
+            4 => { Name => 'Thursday', Start => '9:00', End => '18:00' },
+            5 => { Name => 'Friday', Start => '9:00', End => '18:00' },
+        },
+    );
+
+=head2 Does business time support holidays?
+
+Yep!
+
+    Set( %ServiceBusinessHours, (
+        'Default' => {
+            1 => { Name => 'Monday', Start => '9:00', End => '18:00' },
+            2 => { Name => 'Tuesday', Start => '9:00', End => '18:00' },
+            3 => { Name => 'Wednesday', Start => '9:00', End => '18:00' },
+            4 => { Name => 'Thursday', Start => '9:00', End => '18:00' },
+            5 => { Name => 'Friday', Start => '9:00', End => '18:00' },
+            holidays => [qw(01-01 12-25 2015-10-12)],
+        },
+    );
+
+=head2 Does it support response due?
+
+Yep. e.g.
+
+    Set( %ServiceAgreements, (
+        Default => 'standard',
+        Levels => {
+            'standard' => {
+                Starts => { RealMinutes => 0 },
+                Response => { RealMinutes => 8*60 },
+            },
+        },
+    ));
+
+With this, C<Due> date will be automatically unset after you reply to your
+clients. When your clients reply back, it'll be set to 8 hours after that.
+
+You can define both "Response" and "Resolve" and RT will pick the one that
+comes earlier as the C<Due> date.
+
+=head2 Could I ignore C<Due> date for stalled tickets?
+
+Sure!
+
+    Set( %ServiceAgreements, (
+        Default => 'standard',
+        Levels => {
+            'standard' => {
+                Starts => { RealMinutes => 0 },
+                Resolve => { RealMinutes => 8*60, IgnoreOnStatuses => ['stalled'] },
+            },
+        },
+    ));
+
