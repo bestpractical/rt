@@ -50,7 +50,7 @@
 <option value=""<% !$Default ? qq[ selected="selected"] : '' |n %>><%$DefaultLabel |n%></option>
 % }
 % for my $sla ( sort keys %{$RT::ServiceAgreements{'Levels'}} )  {
-<option <% $sla eq $Default ? qq[ selected="selected"] : '' |n %> value="<% $sla %>" ><% $sla %></option>
+<option <% $sla eq ($Default//'') ? qq[ selected="selected"] : '' |n %> value="<% $sla %>" ><% $sla %></option>
 % }
 </select>
 
