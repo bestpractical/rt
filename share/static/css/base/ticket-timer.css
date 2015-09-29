@@ -4,6 +4,11 @@
 
 .ticket-timer img {
     height: 1.5em;
+    border-style: none;
+}
+
+.timer-link a img {
+    border-style: none;
 }
 
 .ticket-timer .ticket-link img {
@@ -53,4 +58,8 @@
 .ticket-timer.error .on-error {
     display: block;
     color: red;
+}
+
+.ticket-timer .readout.response {
+    font-size: 1.25em;
 }

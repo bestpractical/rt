@@ -630,11 +630,6 @@ my $build_main_nav = sub {
 
             if ( $obj and $obj->id ) {
                 my $actions = PageMenu()->child( actions => title => loc('Actions'), sort_order  => 95 );
-                my $tabs = PageMenu();
-                $tabs->child( bookmark => raw_html => $m->scomp( '/Ticket/Elements/Bookmark', id => $id ), sort_order => 98 );
-                $tabs->child( timer => raw_html => $m->scomp( '/Ticket/Elements/PopupTimerLink', id => $id ), sort_order => 99 );
-                $tabs->child( display => title => loc('Display'), path => "/Ticket/Display.html?id=" . $id );
-                $tabs->child( history => title => loc('History'), path => "/Ticket/History.html?id=" . $id );
 
                 my %can = %{ $obj->CurrentUser->PrincipalObj->HasRights( Object => $obj ) };
                 $can{'_ModifyOwner'} = $obj->CurrentUserCanSetOwner();
@@ -646,6 +641,16 @@ my $build_main_nav = sub {
                             && ( $can{'ExecuteCode'} || $can{'SuperUser'} );
                     }
                 };
+
+                my $tabs = PageMenu();
+                $tabs->child( bookmark => raw_html => $m->scomp( '/Ticket/Elements/Bookmark', id => $id ), sort_order => 98 );
+
+                if ($can->('ModifyTicket')) {
+                    $tabs->child( timer => raw_html => $m->scomp( '/Ticket/Elements/PopupTimerLink', id => $id ), sort_order => 99 );
+                }
+
+                $tabs->child( display => title => loc('Display'), path => "/Ticket/Display.html?id=" . $id );
+                $tabs->child( history => title => loc('History'), path => "/Ticket/History.html?id=" . $id );
 
                 # comment out until we can do it for an individual custom field
                 #if ( $can->('ModifyTicket') || $can->('ModifyCustomField') ) {
