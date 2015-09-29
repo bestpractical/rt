@@ -18,6 +18,7 @@
 #li-page-bookmark .toggle-bookmark a,
 #li-page-timer .timer-link a {
     padding: 0.5em 1em;
+    border-style: none;
 }
 
 #li-page-bookmark a img,

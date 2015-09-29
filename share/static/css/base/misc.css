@@ -83,4 +83,5 @@ textarea.messagebox, #cke_Content, #cke_UpdateContent {
 .toggle-bookmark a img {
     height: 1em;
     width: 1em;
+    border-style: none;
 }
