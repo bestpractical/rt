@@ -177,8 +177,8 @@ jQuery( function() {
         <div class="readout"></div>
 
         <div class="control-line">
-            <a href="#" class="playpause"><img src="<% $pause_img %>" alt="<% loc('Pause Timer') %>" data-toggle-alt="<% loc('Unpause Timer') %>" title="<% loc('Pause Timer') %>" /></a>
-            <a href="#" class="submit-time"><img src="<% RT->Config->Get('WebPath') %>/static/images/submit.png" alt="<% loc('Submit Timer') %>" alt="<% loc('Submit Timer') %>" /></a>
+            <a href="#" class="playpause"><img src="<% $pause_img %>" alt="<% loc('Pause Timer') %>" data-toggle-alt="<% loc('Resume Timer') %>" title="<% loc('Pause Timer') %>" /></a>
+            <a href="#" class="submit-time"><img src="<% RT->Config->Get('WebPath') %>/static/images/submit.png" alt="<% loc('Submit Timer') %>" title="<% loc('Submit Timer') %>" /></a>
             <a href="#" class="close-popup hidden"><img src="<% RT->Config->Get('WebPath') %>/static/images/close.png" alt="<% loc('Close Window') %>" title="<% loc('Close Window') %>" /></a>
         </div>
     </div>
