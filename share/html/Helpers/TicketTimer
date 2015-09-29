@@ -140,6 +140,7 @@ jQuery( function() {
             timeout: 30000, /* 30 seconds */
             success: function (response) {
                 if (response.ok) {
+                    readout.addClass('response');
                     readout.text(response.msg);
                     jQuery('.control-line .close-popup').show().removeClass('hidden');
                 }

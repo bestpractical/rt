@@ -54,3 +54,7 @@
     display: block;
     color: red;
 }
+
+.ticket-timer .readout.response {
+    font-size: 1.25em;
+}
