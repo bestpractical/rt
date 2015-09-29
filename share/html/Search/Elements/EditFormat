@@ -54,9 +54,14 @@
 <th><&|/l&>Show Columns</&>:</th>
 </tr>
 
+<script type="text/javascript">
+jQuery( function() {
+    jQuery('select[name=SelectDisplayColumns].chosen').chosen({ width: '12em', placeholder_text_multiple: ' ', no_results_text: ' ', search_contains: true });
+});
+</script>
 <tr>
 
-<td valign="top"><select size="6" name="SelectDisplayColumns" multiple="multiple">
+<td valign="top"><select name="SelectDisplayColumns" multiple="multiple" class="chosen">
 % my %seen;
 % foreach my $field ( grep !$seen{lc $_}++, @$AvailableColumns) {
 <option value="<% $field %>" <% $selected{$field} ? 'selected="selected"' : '' |n%>>\
@@ -124,7 +129,7 @@
 </table>
 
 <%init>
-my $selected = $ARGS{SelectDisplayColumns};
+my $selected = $ARGS{AddCol} ? [] : $ARGS{SelectDisplayColumns};
 $selected = [ $selected ] unless ref $selected;
 my %selected;
 $selected{$_}++ for grep {defined} @{ $selected };
