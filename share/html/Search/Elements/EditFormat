@@ -57,6 +57,28 @@
 <script type="text/javascript">
 jQuery( function() {
     jQuery('select[name=SelectDisplayColumns].chosen').chosen({ width: '12em', placeholder_text_multiple: ' ', no_results_text: ' ', search_contains: true });
+    jQuery('[name=AddCol], [name=RemoveCol], [name=ColUp], [name=ColDown]').click( function() {
+        var name = jQuery(this).attr('name');
+        var form = jQuery(this).closest('form');
+        jQuery.ajax({
+            url: '/Helpers/BuildFormatString?' + name + '=1&' + form.serialize(),
+            success: function (data) {
+                if ( data.status == 'success' ) {
+                    form.find('input[name=Format]').val(data.Format);
+                    form.find('select[name=CurrentDisplayColumns]').html(data.CurrentDisplayColumns);
+                    form.find('select[name=SelectDisplayColumns]').val('').trigger("chosen:updated");
+                    form.find('[name=Link],[name=Title],[name=Size],[name=Face]').val('');
+                }
+                else {
+                    alert('<% loc("Failed to update format. Reason:") %>' + ' ' + data.message);
+                }
+            },
+            error: function (xhr, reason) {
+                alert('<% loc("Failed to update format. Reason:") %>' + ' ' + reason);
+            }
+        });
+        return false;
+    });
 });
 </script>
 <tr>
