@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="<% join ' ', @classes %>">
+<div class="<% join ' ', @classes %>" data-transaction-id="<% $Transaction->id %>">
   <div class="metadata">
     <span class="type">
       <a name="txn-<% $Transaction->id %>" \

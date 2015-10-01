@@ -1,0 +1,174 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2015 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<%ARGS>
+$Ticket
+</%ARGS>
+
+<%INIT>
+my %params = %ARGS;
+delete $params{Ticket};
+
+my $url = RT->Config->Get('WebPath') . "/Helpers/TicketHistoryPage?" .
+        $m->comp('/Elements/QueryString', %params, id => $Ticket->id );
+
+my %extra_args;
+$m->callback( CallbackName => 'ExtraShowHistoryArguments', Ticket => $Ticket, ExtraArgs => \%extra_args );
+
+my $ShowDisplayModes = 1 || $extra_args{'ShowDisplayModes'};
+my $ShowTitle =        1 || $extra_args{'ShowTitle'};
+my $ShowHeaders =      0 || $extra_args{'ShowHeaders'};
+
+my $oldestTransactionsFirst = RT->Config->Get("OldestTransactionsFirst", $session{CurrentUser});
+</%INIT>
+
+<& /Elements/ShowHistoryHeader,
+    Object            => $Ticket,
+    ShowHeaders       => $ShowHeaders,
+    ShowTitle         => $ShowTitle,
+    ShowDisplayModes  => $ShowDisplayModes,
+    &>
+
+</div>
+% if ($ShowDisplayModes or $ShowTitle) {
+    <& /Widgets/TitleBoxEnd &>
+% }
+</div>
+
+<script type="text/javascript">
+jQuery(function(){
+    var isLoading = false, // prevent multiple simultaneous load events
+        disableLoading = false, // prevent repeated fruitless attempts
+        loadDistanceFromBottom = 750, // to load before bottom of page is reached
+        lastTransactionId = null,
+        hash = window.location.hash,
+        hashTransactionId = null;
+
+    var oldestTransactionsFirst = <% $oldestTransactionsFirst || 0 %>;
+
+    var removeLoadingMessage = function() {
+        jQuery('.loading-message').remove();
+    };
+
+    var removeLoadLink = function() {
+        jQuery('.error-load-history').remove();
+    };
+
+    var showLoadingMessage = function() {
+        removeLoadingMessage();
+        var loadingMessage = jQuery('<span class="loading-message"><&|/l&>Loading...</&></span>');
+        jQuery(".history-container").append(loadingMessage);
+    };
+
+    var loadingError = function(reason) {
+        removeLoadingMessage();
+        disableLoading = true;
+        removeLoadLink();
+        var loadLink = jQuery('<div class="error-load-history"><&|/l&>Could not load ticket history. Reason: </&>' + reason + '<br/><a href="#"><&|/l&>Try again</&></a></div>');
+        jQuery(".history-container").append(loadLink);
+    };
+
+    var loadHistoryPage = function() {
+        if (isLoading || disableLoading) return;
+
+        isLoading = true;
+        showLoadingMessage();
+
+        var queryString = '&oldestTransactionsFirst=' + oldestTransactionsFirst;
+        if (lastTransactionId) queryString += '&lastTransactionId=' + lastTransactionId;
+
+        // check for link to specific transaction and make sure we load enough to focus it
+        if (hash && !lastTransactionId) {
+            var matches = hash.match(/^#txn-(\d+)$/);
+            if (matches) {
+                hashTransactionId = matches[1];
+                queryString += '&focusTransactionId=' + hashTransactionId;
+            }
+        }
+
+        jQuery.ajax({
+            url: "<% $url %>" + queryString,
+            success: function(html) {
+                var transactions = jQuery(html).filter('div.transaction');
+                if(html && transactions.length) {
+                    lastTransactionId = transactions.last().data('transactionId');
+                    jQuery(".history-container").append(html);
+
+                    if (hashTransactionId) { // focus transaction if we are following a link to it
+                        hashTransactionId = null;
+                        location.href = hash;
+                    }
+                } else {
+                    disableLoading = true;
+                }
+
+                isLoading = false;
+                removeLoadingMessage();
+            },
+            error: function(xhr, reason) {
+                isLoading = false;
+                loadingError(reason);
+            }
+        });
+    };
+
+    jQuery(window).scroll(function() {
+        if(jQuery(window).scrollTop() >= jQuery(document).height() - jQuery(window).height() - loadDistanceFromBottom) {
+            loadHistoryPage();
+        }
+    });
+
+    jQuery('.history-container').on('click', '.error-load-history a', function(e) {
+        e.preventDefault();
+        removeLoadLink();
+        disableLoading = false;
+        loadHistoryPage();
+    });
+
+    loadHistoryPage();
+});
+</script>
