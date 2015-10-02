@@ -163,6 +163,7 @@ jQuery( function() {
       <input type="checkbox" class="checkbox" name="AttachExisting" value="<% $attach->Id %>" \
              <% (grep { $attach->Id == $_ } @AttachExisting) ? 'checked' : '' %> />
       <% $attach->Filename %>
+      <% loc("[_1] ([_2]) by [_3]", $attach->CreatedAsString, $attach->FriendlyContentLength, $m->scomp('/Elements/ShowUser', User => $attach->CreatorObj)) |n %>
     </label>
 <%perl>
 my $url = sprintf '%s/Ticket/Attachment/%d/%d/%s',
