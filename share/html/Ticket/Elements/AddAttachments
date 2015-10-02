@@ -163,9 +163,10 @@ jQuery( function() {
       <input type="checkbox" class="checkbox" name="AttachExisting" value="<% $attach->Id %>" \
              <% (grep { $attach->Id == $_ } @AttachExisting) ? 'checked' : '' %> />
       <% $attach->Filename %>
+      <% loc("[_1] ([_2]) by [_3]", $attach->CreatedAsString, $attach->FriendlyContentLength, $m->scomp('/Elements/ShowUser', User => $attach->CreatorObj)) |n %>
     </label>
 <%perl>
-my $url = sprintf '%s/Ticket/Attachment/%d/%d/%s',
+my $url = RT->System->ExternalStorageURLFor($attach) || sprintf '%s/Ticket/Attachment/%d/%d/%s',
             RT->Config->Get('WebPath'), $attach->TransactionObj->Id, $attach->Id,
             $m->interp->apply_escapes($attach->Filename, 'u');
 </%perl>
@@ -189,13 +190,9 @@ if ( exists $session{'Attachments'}{ $Token } && keys %{ $session{'Attachments'}
 }
 
 my @quoted_attachments;
-if ($QuoteTransaction and $TicketObj and $TicketObj->id) {
-    my $txn = RT::Transaction->new( $session{'CurrentUser'} );
-    $txn->Load($QuoteTransaction);
-    if ($txn->Id and $txn->CurrentUserCanSee) {
-        @quoted_attachments = sort { lc($a->Filename) cmp lc($b->Filename) }
-                              grep { defined $_->Filename and length $_->Filename }
-                                  @{$txn->Attachments->ItemsArrayRef};
-    }
+if ($TicketObj and $TicketObj->id) {
+    @quoted_attachments = sort { lc($a->Filename) cmp lc($b->Filename) }
+                          grep { defined $_->Filename and length $_->Filename }
+                            @{$TicketObj->Attachments->ItemsArrayRef};
 }
 </%INIT>
