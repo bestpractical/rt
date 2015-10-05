@@ -64,8 +64,8 @@
 
 <h2><&|/l&>Selected Queues</&></h2>
 <& /Elements/CollectionList,
-    OrderBy => 'id',
-    Order => 'ASC',
+    OrderBy => ['SortOrder','Name'],
+    Order   => ['ASC', 'ASC'],
     %ARGS,
     Collection => $applied,
     Rows => 0,
@@ -81,8 +81,8 @@
 
 <h2><&|/l&>Unselected Queues</&></h2>
 <& /Elements/CollectionList,
-    OrderBy => 'id',
-    Order => 'ASC',
+    OrderBy => ['SortOrder','Name'],
+    Order   => ['ASC', 'ASC'],
     %ARGS,
     Collection => $not_applied,
     Rows          => $rows,

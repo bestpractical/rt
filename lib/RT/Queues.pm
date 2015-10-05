@@ -80,10 +80,19 @@ sub _Init {
   my $self = shift;
   $self->{'with_disabled_column'} = 1;
 
-  # By default, order by name
-  $self->OrderBy( ALIAS => 'main',
-                  FIELD => 'Name',
-                  ORDER => 'ASC');
+  # By default, order by SortOrder, then Name
+  $self->OrderByCols(
+      {
+          ALIAS => 'main',
+          FIELD => 'SortOrder',
+          ORDER => 'ASC',
+      },
+      {
+          ALIAS => 'main',
+          FIELD => 'Name',
+          ORDER => 'ASC',
+      }
+  );
 
   return ($self->SUPER::_Init(@_));
 }
@@ -110,6 +119,13 @@ sub AddRecord {
 
     push @{$self->{'items'}}, $Queue;
     $self->{'rows'}++;
+}
+
+# no need to order here, it's already ordered in _Init
+sub ItemsOrderBy {
+    my $self = shift;
+    my $items = shift;
+    return $items;
 }
 
 RT::Base->_ImportOverlays();

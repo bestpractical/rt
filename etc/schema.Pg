@@ -52,6 +52,7 @@ CREATE TABLE Queues (
   CommentAddress varchar(120) NULL  ,
   Lifecycle varchar(32) NULL,
   SubjectTag varchar(120) NULL  ,
+  SortOrder integer NOT NULL DEFAULT 0 ,
   Creator integer NOT NULL DEFAULT 0  ,
   Created TIMESTAMP NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,

@@ -112,7 +112,7 @@ my $COLUMN_MAP = {
 };
 
 foreach my $field (qw(
-    Name Description CorrespondAddress CommentAddress
+    Name Description CorrespondAddress CommentAddress SortOrder
 )) {
     $COLUMN_MAP->{$field} = {
         title => $field,

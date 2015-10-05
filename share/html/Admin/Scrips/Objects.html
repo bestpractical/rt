@@ -74,8 +74,8 @@
 
 <h2><&|/l&>Selected objects</&></h2>
 <& /Elements/CollectionList,
-    OrderBy => 'id',
-    Order => 'ASC',
+    OrderBy => ['SortOrder','Name'],
+    Order   => ['ASC', 'ASC'],
     %ARGS,
     Collection => $added,
     Rows => 0,
@@ -91,8 +91,8 @@
 
 <h2><&|/l&>Unselected objects</&></h2>
 <& /Elements/CollectionList,
-    OrderBy => 'Name',
-    Order   => 'ASC',
+    OrderBy => ['SortOrder','Name'],
+    Order   => ['ASC', 'ASC'],
     %ARGS,
     Collection    => $not_added,
     Rows          => $rows,

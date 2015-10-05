@@ -30,6 +30,7 @@ CREATE TABLE Queues (
   CommentAddress varchar(120) collate NOCASE NULL  ,
   Lifecycle varchar(32) collate NOCASE NULL  ,
   SubjectTag varchar(120) collate NOCASE NULL  ,
+  SortOrder integer NOT NULL DEFAULT 0 ,
   Creator integer NULL DEFAULT 0 ,
   Created DATETIME NULL  ,
   LastUpdatedBy integer NULL DEFAULT 0 ,

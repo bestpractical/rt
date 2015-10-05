@@ -66,8 +66,8 @@
 % unless ( $CF->IsOnlyGlobal ) {
 <h2><&|/l&>Selected objects</&></h2>
 <& /Elements/CollectionList,
-    OrderBy => 'id',
-    Order => 'ASC',
+    OrderBy => $class->isa('RT::Queue') ? ['SortOrder', 'Name'] : 'id',
+    Order => $class->isa('RT::Queue') ? ['ASC', 'ASC'] : 'ASC',
     %ARGS,
     Collection => $added,
     Rows => 0,
@@ -83,8 +83,8 @@
 
 <h2><&|/l&>Unselected objects</&></h2>
 <& /Elements/CollectionList,
-    OrderBy => 'id',
-    Order => 'ASC',
+    OrderBy => $class->isa('RT::Queue') ? ['SortOrder', 'Name'] : 'id',
+    Order => $class->isa('RT::Queue') ? ['ASC', 'ASC'] : 'ASC',
     %ARGS,
     Collection => $not_added,
     Rows          => $rows,
