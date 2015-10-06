@@ -50,6 +50,10 @@
     LinkRel => \%link_rel &>
 <& /Elements/Tabs &>
 
+% if (RT->Config->Get("DisplayTicketSummaryBar", $session{'CurrentUser'})) {
+<& /Ticket/Elements/SummaryBar, Ticket => $TicketObj &>
+% }
+
 % $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@Actions, ARGSRef => \%ARGS, Ticket => $TicketObj);
 
 <& /Elements/ListActions, actions => \@Actions &>

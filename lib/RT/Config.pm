@@ -487,6 +487,15 @@ our %META;
             Description => 'Enable quote folding?' # loc
         }
     },
+    DisplayTicketSummaryBar => {
+        Section => 'Ticket display',
+        Overridable => 1,
+        SortOrder => 11,
+        Widget => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Show ticket summary bar?' # loc
+        }
+    },
 
     # User overridable locale options
     DateTimeFormat => {
