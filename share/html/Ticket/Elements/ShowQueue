@@ -45,18 +45,28 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% if ( $query ) {
+<a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query=<% $query |u,n %>"><% $value %></a>
+% } else {
 <% $value %>
+% }
 <%ARGS>
 $Ticket => undef
 $QueueObj
 </%ARGS>
 <%INIT>
 my $value = $QueueObj->Name;
+my $query;
 
 if ( $Ticket and $Ticket->CurrentUserHasRight('SeeQueue') ) {
     # Grab the queue name anyway if the current user can
     # see the queue based on his role for this ticket
     $value = $QueueObj->__Value('Name');
+    if ( $session{CurrentUser}->Privileged ) {
+        my @statuses = $QueueObj->ActiveStatusArray();
+        s{(['\\])}{\\$1}g for @statuses;
+        $query = "Queue = " . $QueueObj->id . " AND ( ". join(" OR ", map {"Status = '$_'"} @statuses) . " )";
+    }
 }
 
 $value = '#'. $QueueObj->id
