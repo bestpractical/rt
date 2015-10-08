@@ -81,12 +81,12 @@
 <td><& /Elements/EditCustomFieldWikitext, @add &></td>
 <td>
 % } elsif ($cf->Type eq 'Date') {
-<td><& /Elements/EditCustomFieldDate, @add, Default => undef &></td>
-<td><& /Elements/EditCustomFieldDate, @del, Default => undef &><br />
+<td><& /Elements/EditCustomFieldDate, @add &></td>
+<td><& /Elements/EditCustomFieldDate, @del &><br />
 % } elsif ($cf->Type eq 'DateTime') {
 % # Pass datemanip format to prevent another tz date conversion
-<td><& /Elements/EditCustomFieldDateTime, @add, Default => undef, Format => 'datemanip' &></td>
-<td><& /Elements/EditCustomFieldDateTime, @del, Default => undef, Format => 'datemanip' &><br />
+<td><& /Elements/EditCustomFieldDateTime, @add, Format => 'datemanip' &></td>
+<td><& /Elements/EditCustomFieldDateTime, @del, Format => 'datemanip' &><br />
 % } else {
 %   $RT::Logger->crit("Unknown CustomField type: " . $cf->Type);
 %   next
