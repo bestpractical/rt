@@ -108,12 +108,21 @@ Note that found users still B<may have relations> with other objects,
 for example via Creator or LastUpdatedBy fields, and you most probably
 want to use C<replace_relations> option.
 
+=head2 no_ticket_transactions - boolean
+
+If true then plugin looks for users who have created no ticket transactions.
+This is especially useful after wiping out tickets.
+
+Note that found users still B<may have relations> with other objects,
+for example via Creator or LastUpdatedBy fields, and you most probably
+want to use C<replace_relations> option.
+
 =cut
 
 sub SupportArgs
 {
     return $_[0]->SUPER::SupportArgs,
-           qw(status name email member_of not_member_of replace_relations no_tickets);
+           qw(status name email member_of not_member_of replace_relations no_tickets no_ticket_transactions);
 }
 
 sub TestArgs
@@ -209,6 +218,11 @@ sub Run
             Shredder => $args{'Shredder'},
         );
     }
+    if( $self->{'opt'}{'no_ticket_transactions'} ) {
+        push @filter, $self->FilterWithoutTicketTransactions(
+            Shredder => $args{'Shredder'},
+        );
+    }
 
     if (@filter) {
         $self->FetchNext( $objs, 'init' );
@@ -284,11 +298,40 @@ sub _WithoutTickets {
     my $tickets = RT::Tickets->new( RT->SystemUser );
     $tickets->{'allow_deleted_search'} = 1;
     $tickets->FromSQL( 'Watcher.id = '. $user->id );
-    # HACK: we may use Count method which counts all records
-    # that match condtion, but we really want to know only that
-    # at least one record exist, so we fetch first row only
+
+    # we could use the Count method which counts all records
+    # that match, but we really want to know only that
+    # at least one record exists, so this is faster
     $tickets->RowsPerPage(1);
     return !$tickets->First;
+}
+
+sub FilterWithoutTicketTransactions {
+    my $self = shift;
+    my %args = (
+        Shredder => undef,
+        Objects  => undef,
+        @_,
+    );
+
+    return sub {
+        my $user = shift;
+        $self->_WithoutTicketTransactions( $user )
+    };
+}
+
+sub _WithoutTicketTransactions {
+    my ($self, $user) = @_;
+    return unless $user and $user->Id;
+    my $txns = RT::Transactions->new( RT->SystemUser );
+    $txns->Limit(FIELD => 'ObjectType', VALUE => 'RT::Ticket');
+    $txns->Limit(FIELD => 'Creator', VALUE => $user->Id);
+
+    # we could use the Count method which counts all records
+    # that match, but we really want to know only that
+    # at least one record exists, so this is faster
+    $txns->RowsPerPage(1);
+    return !$txns->First;
 }
 
 1;
