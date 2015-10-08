@@ -1,0 +1,48 @@
+ServerRoot %%SERVER_ROOT%%
+PidFile %%PID_FILE%%
+ServerAdmin root@localhost
+
+%%LOAD_MODULES%%
+
+<IfModule !mpm_netware_module>
+<IfModule !mpm_winnt_module>
+User @WEB_USER@
+Group @WEB_GROUP@
+</IfModule>
+</IfModule>
+
+ServerName localhost
+Listen %%LISTEN%%
+
+ErrorLog "%%LOG_FILE%%"
+LogLevel debug
+
+<Directory />
+    Options FollowSymLinks
+    AllowOverride None
+    Require all denied
+</Directory>
+
+AddDefaultCharset UTF-8
+
+FastCgiServer %%RT_SBIN_PATH%%/rt-server.fcgi \
+    -socket %%TMP_DIR%%/socket \
+    -processes 1 \
+    -idle-timeout 180 \
+    -initial-env RT_SITE_CONFIG=%%RT_SITE_CONFIG%% \
+    -initial-env RT_TESTING=1
+
+ScriptAlias / %%RT_SBIN_PATH%%/rt-server.fcgi/
+
+DocumentRoot "%%DOCUMENT_ROOT%%"
+<Location />
+
+    <RequireAll>
+        Require all granted
+%%BASIC_AUTH%%
+    </RequireAll>
+
+    Options +ExecCGI
+    AddHandler fastcgi-script fcgi
+</Location>
+

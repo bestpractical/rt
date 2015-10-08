@@ -1,0 +1,66 @@
+<IfModule mpm_prefork_module>
+    StartServers          1
+    MinSpareServers       1
+    MaxSpareServers       1
+    MaxClients            1
+    MaxRequestsPerChild   0
+</IfModule>
+
+<IfModule mpm_worker_module>
+    StartServers          1
+    MinSpareThreads       1
+    MaxSpareThreads       1
+    ThreadLimit           1
+    ThreadsPerChild       1
+    MaxClients            1
+    MaxRequestsPerChild   0
+</IfModule>
+
+ServerRoot %%SERVER_ROOT%%
+PidFile %%PID_FILE%%
+ServerAdmin root@localhost
+
+%%LOAD_MODULES%%
+
+<IfModule !mpm_netware_module>
+<IfModule !mpm_winnt_module>
+User @WEB_USER@
+Group @WEB_GROUP@
+</IfModule>
+</IfModule>
+
+ServerName localhost
+Listen %%LISTEN%%
+
+ErrorLog "%%LOG_FILE%%"
+LogLevel debug
+
+<Directory />
+    Options FollowSymLinks
+    AllowOverride None
+    Require all denied
+</Directory>
+
+AddDefaultCharset UTF-8
+PerlSetEnv RT_SITE_CONFIG %%RT_SITE_CONFIG%%
+
+DocumentRoot "%%DOCUMENT_ROOT%%"
+<Location />
+
+    <RequireAll>
+        Require all granted
+%%BASIC_AUTH%%
+    </RequireAll>
+
+    SetHandler modperl
+
+    PerlResponseHandler Plack::Handler::Apache2
+    PerlSetVar psgi_app %%RT_SBIN_PATH%%/rt-server
+</Location>
+
+<Perl>
+    $ENV{RT_TESTING}=1;
+    use Plack::Handler::Apache2;
+    Plack::Handler::Apache2->preload("%%RT_SBIN_PATH%%/rt-server");
+</Perl>
+
