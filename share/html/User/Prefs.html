@@ -116,11 +116,13 @@
 </td>
 <td valign="top" class="boxcontainer">
 
+% if ( $UserObj->__Value('Password') eq '*NO-PASSWORD*' ) {
 <&| /Widgets/TitleBox, title => loc('Password'), id => "user-prefs-password" &>
 <& /Elements/EditPassword,
     User => $UserObj,
     Name => [qw(CurrentPass Pass1 Pass2)],
 &>
+% }
 
 <& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Access control' &>
 
