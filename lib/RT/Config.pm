@@ -1039,6 +1039,121 @@ our %META;
             Message => "The DatabaseRequireSSL configuration option did not enable SSL connections to the database, and has been removed; please remove it from your RT_SiteConfig.pm.  Use DatabaseExtraDSN to accomplish the same purpose.",
         },
     },
+
+    ExternalAuth => {
+        PostLoadCheck => sub {
+            my $self = shift;
+            my $ExternalAuthEnabled = $self->Get('ExternalAuth');
+            if ( $ExternalAuthEnabled ) {
+                require RT::Authen::ExternalAuth;
+            }
+        }
+    },
+
+    ExternalSettings => {
+        Obfuscate => sub {
+            # Ensure passwords are obfuscated on the System Configuration page
+            my ($config, $sources, $user) = @_;
+
+            my $msg = 'Password not printed';
+               $msg = $user->loc($msg) if $user and $user->Id;
+
+            for my $source (values %$sources) {
+                $source->{pass} = $msg;
+            }
+            return $sources;
+        },
+        PostLoadCheck => sub {
+            my $self = shift;
+            my $settings = shift || {};
+
+            my $remove = sub {
+                my ($service) = @_;
+                delete $settings->{$service};
+
+                $self->Set( 'ExternalAuthPriority',
+                        [ grep { $_ ne $service } @{ $self->Get('ExternalAuthPriority') || [] } ] );
+
+                $self->Set( 'ExternalInfoPriority',
+                        [ grep { $_ ne $service } @{ $self->Get('ExternalInfoPriority') || [] } ] );
+            };
+
+            for my $service (keys %$settings) {
+                my %conf = %{ $settings->{$service} };
+
+                if ($conf{type} !~ /^(ldap|db|cookie)$/) {
+                    $RT::Logger->error(
+                        "Service '$service' in ExternalInfoPriority is not ldap, db, or cookie; removing."
+                    );
+                    $remove->($service);
+                    next;
+                }
+
+                next unless $conf{type} eq 'db';
+
+                # Ensure people don't misconfigure DBI auth to point to RT's
+                # Users table; only check server/hostname/table, as
+                # user/pass might be different (root, for instance)
+                no warnings 'uninitialized';
+                next unless lc $conf{server} eq lc RT->Config->Get('DatabaseHost') and
+                        lc $conf{database} eq lc RT->Config->Get('DatabaseName') and
+                        lc $conf{table} eq 'users';
+
+                $RT::Logger->error(
+                    "RT::Authen::ExternalAuth should _not_ be configured with a database auth service ".
+                    "that points back to RT's internal Users table.  Removing the service '$service'! ".
+                    "Please remove it from your config file."
+                );
+
+                $remove->($service);
+            }
+            $self->Set( 'ExternalSettings', $settings );
+        },
+    },
+
+    ExternalAuthPriority => {
+        PostLoadCheck => sub {
+            my $self = shift;
+            my @values = @{ shift || [] };
+            if (not @values) {
+                $self->Set( 'ExternalAuthPriority', \@values );
+                return;
+            }
+
+            my %settings = %{ $self->Get('ExternalSettings') };
+            for my $key (grep {not $settings{$_}} @values) {
+                $RT::Logger->error("Removing '$key' from ExternalAuthPriority, as it is not defined in ExternalSettings");
+            }
+            @values = grep {$settings{$_}} @values;
+            $self->Set( 'ExternalAuthPriority', \@values );
+        },
+    },
+
+    ExternalInfoPriority => {
+        PostLoadCheck => sub {
+            my $self = shift;
+            my @values = @{ shift || [] };
+            if (not @values) {
+                $RT::Logger->debug("ExternalInfoPriority not defined. User information (including user enabled/disabled) cannot be externally-sourced");
+                $self->Set( 'ExternalInfoPriority', \@values );
+                return;
+            }
+
+            my %settings = %{ $self->Get('ExternalSettings') };
+            for my $key (grep {not $settings{$_}} @values) {
+                $RT::Logger->error("Removing '$key' from ExternalInfoPriority, as it is not defined in ExternalSettings");
+            }
+            @values = grep {$settings{$_}} @values;
+
+            for my $key (grep {$settings{$_}{type} eq "cookie"} @values) {
+                $RT::Logger->error("Removing '$key' from ExternalInfoPriority, as cookie authentication cannot be used as an information source");
+            }
+            @values = grep {$settings{$_}{type} ne "cookie"} @values;
+
+            $self->Set( 'ExternalInfoPriority', \@values );
+        },
+    },
+
 );
 my %OPTIONS = ();
 my @LOADED_CONFIGS = ();
