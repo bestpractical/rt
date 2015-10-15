@@ -167,6 +167,18 @@ sub attachment_loop {
     {
         # Indexes all text/plain and text/html attachments
         my $attachments = RT::Attachments->new( RT->SystemUser );
+        my $txn_alias = $attachments->Join(
+            ALIAS1 => 'main',
+            FIELD1 => 'TransactionId',
+            TABLE2 => 'Transactions',
+            FIELD2 => 'id',
+        );
+        $attachments->Limit(
+            ALIAS    => $txn_alias,
+            FIELD    => 'Type',
+            OPERATOR => 'NOT IN',
+            VALUE    => ['EmailRecord', 'CommentEmailRecord'],
+        );
         $attachments->Limit(
             FIELD    => 'ContentType',
             OPERATOR => 'IN',
