@@ -228,8 +228,12 @@ sub Content {
         || $self->CustomFieldObj->Type eq 'IPAddressRange' )
     {
 
+        require Net::IP;
         if ( $content =~ /^\s*($re_ip_serialized)\s*$/o ) {
             $content = sprintf "%d.%d.%d.%d", split /\./, $1;
+        }
+        if ( $content =~ /^\s*($IPv6_re)\s*$/o ) {
+            $content = Net::IP::ip_compress_address($1, 6);
         }
 
         return $content if $self->CustomFieldObj->Type eq 'IPAddress';
@@ -245,7 +249,7 @@ sub Content {
             }
         }
         elsif ( $large_content =~ /^\s*($IPv6_re)\s*$/o ) {
-            my $eIP = $1;
+            my $eIP = Net::IP::ip_compress_address($1, 6);
             if ( $content eq $eIP ) {
                 return $content;
             }

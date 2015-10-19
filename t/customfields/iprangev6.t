@@ -40,13 +40,13 @@ diag "check that CF applies to queue General" if $ENV{'TEST_VERBOSE'};
 
 my %valid = (
     'abcd:' x 7 . 'abcd' => 'abcd:' x 7 . 'abcd',
-    '034:' x 7 . '034'   => '0034:' x 7 . '0034',
-    'abcd::'             => 'abcd:' . '0000:' x 6 . '0000',
-    '::abcd'             => '0000:' x 7 . 'abcd',
-    'abcd::034'          => 'abcd:' . '0000:' x 6 . '0034',
-    'abcd::192.168.1.1'  => 'abcd:' . '0000:' x 5 . 'c0a8:0101',
-    '::192.168.1.1'      => '0000:' x 6 . 'c0a8:0101',
-    '::'                 => '0000:' x 7 . '0000',
+    '034:' x 7 . '034'   => '34:' x 7 . '34',
+    'abcd::'             => 'abcd::',
+    '::abcd'             => '::abcd',
+    'abcd::034'          => 'abcd::34',
+    'abcd::192.168.1.1'  => 'abcd::c0a8:101',
+    '::192.168.1.1'      => '::c0a8:101',
+    '::'                 => '::',
 );
 
 diag "create a ticket via web and set IP" if $ENV{'TEST_VERBOSE'};
@@ -95,7 +95,7 @@ diag "create a ticket via web with CIDR" if $ENV{'TEST_VERBOSE'};
     ok( $ticket->id, 'loaded ticket' );
     is(
         $ticket->FirstCustomFieldValue('IP'),
-'abcd:0034:0000:0000:0000:0000:0000:0000-abcd:0035:ffff:ffff:ffff:ffff:ffff:ffff',
+'abcd:34::-abcd:35:ffff:ffff:ffff:ffff:ffff:ffff',
         'correct value'
     );
 }
@@ -149,7 +149,7 @@ diag "create a ticket and edit IP field using Edit page" if $ENV{'TEST_VERBOSE'}
         "Followed 'Basics' link" );
     $agent->form_name('TicketModify');
     is( $agent->value($cf_field), $val, 'IP is in input box' );
-    $val = 'abcd' . ':0000' x 7 . '-' . 'abcd' . ':ffff' x 7;
+    $val = 'abcd::' . '-' . 'abcd' . ':ffff' x 7;
     $agent->field( $cf_field => 'abcd::/16' );
     $agent->click('SubmitTicket');
 
@@ -165,7 +165,7 @@ diag "create a ticket and edit IP field using Edit page" if $ENV{'TEST_VERBOSE'}
         "Followed 'Basics' link" );
     $agent->form_name('TicketModify');
     is( $agent->value($cf_field), $val, 'IP is in input box' );
-    $val = 'bb00' . ':0000' x 7 . '-' . 'bbff' . ':ffff' x 7;
+    $val = 'bb::' . '-' . 'bbff' . ':ffff' x 7;
     $agent->field( $cf_field => $val );
     $agent->click('SubmitTicket');
 
@@ -224,7 +224,7 @@ diag "search tickets by IP" if $ENV{'TEST_VERBOSE'};
     ok( $tickets->Count, "found tickets" );
     is(
         $ticket->FirstCustomFieldValue('IP'),
-'abcd:0000:0000:0000:0000:0000:0000:0000-abcd:ffff:ffff:ffff:ffff:ffff:ffff:ffff',
+'abcd::-abcd:ffff:ffff:ffff:ffff:ffff:ffff:ffff',
         'correct value'
     );
 }
@@ -256,7 +256,7 @@ diag "search tickets by IP range" if $ENV{'TEST_VERBOSE'};
 
     is(
         $ticket->FirstCustomFieldValue('IP'),
-'abcd:ef00:0000:0000:0000:0000:0000:0000-abcd:efff:ffff:ffff:ffff:ffff:ffff:ffff',
+'abcd:ef00::-abcd:efff:ffff:ffff:ffff:ffff:ffff:ffff',
         'correct value'
     );
 }
@@ -265,8 +265,8 @@ diag "create two tickets with different IPs and check several searches" if $ENV{
 {
     ok $agent->goto_create_ticket($q), "go to create ticket";
     my $cf_field = "Object-RT::Ticket--CustomField-$cf_id-Values";
-    my $first_ip = 'cbcd' . ':0000' x 7;
-    my $second_ip = 'cbdd' . ':0000' x 7;
+    my $first_ip = 'cbcd::';
+    my $second_ip = 'cbdd::';
     $agent->submit_form(
         form_name => 'TicketCreate',
         fields    => {

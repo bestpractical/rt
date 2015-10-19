@@ -45,13 +45,14 @@ diag "check that CF applies to queue General" if $ENV{'TEST_VERBOSE'};
 
 my %valid = (
     'abcd:' x 7 . 'abcd' => 'abcd:' x 7 . 'abcd',
-    '034:' x 7 . '034'   => '0034:' x 7 . '0034',
-    'abcd::'             => 'abcd:' . '0000:' x 6 . '0000',
-    '::abcd'             => '0000:' x 7 . 'abcd',
-    'abcd::034'          => 'abcd:' . '0000:' x 6 . '0034',
-    'abcd::192.168.1.1'  => 'abcd:' . '0000:' x 5 . 'c0a8:0101',
-    '::192.168.1.1'      => '0000:' x 6 . 'c0a8:0101',
-    '::'                 => '0000:' x 7 . '0000',
+    '034:' x 7 . '034'   => '34:' x 7 . '34',
+    'abcd::'             => 'abcd::',
+    '::abcd'             => '::abcd',
+    'abcd::034'          => 'abcd::34',
+    'abcd::192.168.1.1'  => 'abcd::c0a8:101',
+    '::192.168.1.1'      => '::c0a8:101',
+    '::'                 => '::',
+    '034:' x 7 . '034'   => '34:'x7 . '34',
 );
 
 diag "create a ticket via web and set IP" if $ENV{'TEST_VERBOSE'};
@@ -117,7 +118,6 @@ diag "create a ticket and edit IP field using Edit page"
 
     diag "set IP with spaces around" if $ENV{'TEST_VERBOSE'};
     my $new_ip    = '::3141';
-    my $new_value = '0000:' x 7 . '3141';
 
     $agent->follow_link_ok( { text => 'Basics', n => "1" },
         "Followed 'Basics' link" );
@@ -126,12 +126,12 @@ diag "create a ticket and edit IP field using Edit page"
     $agent->field( $cf_field => $new_ip );
     $agent->click('SubmitTicket');
 
-    $agent->content_contains( $new_value, "IP on the page" );
+    $agent->content_contains( $new_ip, "IP on the page" );
 
     $ticket = RT::Ticket->new($RT::SystemUser);
     $ticket->Load($id);
     ok( $ticket->id, 'loaded ticket' );
-    is( $ticket->FirstCustomFieldValue('IP'), $new_value, 'correct value' );
+    is( $ticket->FirstCustomFieldValue('IP'), $new_ip, 'correct value' );
 }
 
 diag "check that we parse correct IPs only" if $ENV{'TEST_VERBOSE'};
@@ -191,23 +191,19 @@ diag "create two tickets with different IPs and check several searches"
     $tickets = RT::Tickets->new($RT::SystemUser);
     $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} = 'abcd::'");
     is( $tickets->Count, 1, "found one ticket" );
-    is( $tickets->First->FirstCustomFieldValue('IP'),
-        'abcd' . ':0000' x 7, "correct value" );
+    is( $tickets->First->FirstCustomFieldValue('IP'), 'abcd::', "correct value" );
     $tickets = RT::Tickets->new($RT::SystemUser);
     $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} = 'bbcd::'");
     is( $tickets->Count, 1, "found one ticket" );
-    is( $tickets->First->FirstCustomFieldValue('IP'),
-        'bbcd' . ':0000' x 7, "correct value" );
+    is( $tickets->First->FirstCustomFieldValue('IP'), 'bbcd::', "correct value" );
 
     $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} <= 'abcd::'");
     is( $tickets->Count, 1, "found one ticket" );
-    is( $tickets->First->FirstCustomFieldValue('IP'),
-        'abcd' . ':0000' x 7, "correct value" );
+    is( $tickets->First->FirstCustomFieldValue('IP'), 'abcd::', "correct value" );
     $tickets = RT::Tickets->new($RT::SystemUser);
     $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} >= 'bbcd::'");
     is( $tickets->Count, 1, "found one ticket" );
-    is( $tickets->First->FirstCustomFieldValue('IP'),
-        'bbcd' . ':0000' x 7, "correct value" );
+    is( $tickets->First->FirstCustomFieldValue('IP'), 'bbcd::', "correct value" );
 
     $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} > 'bbcd::'");
     is( $tickets->Count, 0, "no tickets found" );
@@ -217,12 +213,12 @@ diag "create two tickets with different IPs and check several searches"
     $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} < 'bbcd::'");
     is( $tickets->Count, 1, "found one ticket" );
     is( $tickets->First->FirstCustomFieldValue('IP'),
-        'abcd' . ':0000' x 7, "correct value" );
+        'abcd::', "correct value" );
 
     $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} > 'abcd::'");
     is( $tickets->Count, 1, "found one ticket" );
     is( $tickets->First->FirstCustomFieldValue('IP'),
-        'bbcd' . ':0000' x 7, "correct value" );
+        'bbcd::', "correct value" );
 }
 
 diag "create a ticket with an IP of abcd:23:: and search for doesn't match 'abcd:23'."
