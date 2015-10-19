@@ -45,38 +45,47 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/ShowHistoryHeader,
-    Object            => $Object,
-    ShowHeaders       => $ShowHeaders,
-    ShowTitle         => $ShowTitle,
-    ShowDisplayModes  => $ShowDisplayModes,
-    &>
-
-% $m->callback( %ARGS, Object => $Object, CallbackName => 'BeforeTransactions' );
-
-<& /Elements/ShowHistoryPage,
-    Object            => $Object,
-    Transactions      => $Object->SortedTransactions,
-    ShowHeaders       => $ARGS{'ShowHeaders'},
-    Attachments       => $Attachments,
-    AttachmentContent => $AttachmentContent,
-    PathPrefix        => ''
-    &>
-
-</div>
-% if ($ShowDisplayModes or $ShowTitle) {
-<& /Widgets/TitleBoxEnd &>
-% }
-</div>
 <%ARGS>
-$Object
-$Transactions      => $Object->SortedTransactions
-$Attachments       => $Object->Attachments( WithHeaders => 1 )
-$AttachmentContent => $Object->TextAttachments
-
-$ShowHeaders       => 0
-$ShowTitle         => 1
-$ShowDisplayModes  => 1
-
-$PathPrefix        => ''
+$id
+$oldestTransactionsFirst
+$lastTransactionId => undef
+$focusTransactionId => undef
 </%ARGS>
+<%INIT>
+my $TicketObj = RT::Ticket->new($session{'CurrentUser'});
+$TicketObj->Load($id);
+
+my %extra_args;
+$m->callback( CallbackName => 'ExtraShowHistoryArguments', Ticket => $TicketObj, ExtraArgs => \%extra_args );
+
+my $transactions  = $TicketObj->Transactions;
+my $order = $oldestTransactionsFirst ? 'ASC' : 'DESC';
+if ($lastTransactionId) {
+    $transactions->Limit(
+        FIELD    => 'id',
+        OPERATOR => $oldestTransactionsFirst ? '>' : '<',
+        VALUE    => $lastTransactionId
+    );
+}
+$transactions->OrderByCols(
+    { FIELD => 'Created',   ORDER => $order },
+    { FIELD => 'id',        ORDER => $order },
+);
+if ($focusTransactionId) { # make sure we load enough if we need to focus a transaction
+    $transactions->Limit(
+        FIELD    => 'id',
+        OPERATOR => $oldestTransactionsFirst ? '<=' : '>=',
+        VALUE    => $focusTransactionId
+    );
+} else { # otherwise, just load the standard page of 10 transactions
+    $transactions->RowsPerPage(10);
+    $transactions->FirstPage();
+}
+</%INIT>
+<& /Elements/ShowHistoryPage,
+    Object => $TicketObj,
+    ShowHeaders => $ARGS{'ShowHeaders'},
+    Transactions => $transactions,
+    %extra_args,
+    &>
+% $m->abort();

@@ -89,3 +89,17 @@ textarea.messagebox, #cke_Content, #cke_UpdateContent {
 .dashboard-subscription tr.frequency .value input {
     margin-bottom: 0.75em;
 }
+
+/* infinite history error message */
+
+.error-load-history {
+    background-color: #b32;
+    padding: 10px;
+    border-radius: 5px;
+    color: white;
+}
+
+.error-load-history a {
+    text-decoration: underline !important;
+    color: white !important;
+}

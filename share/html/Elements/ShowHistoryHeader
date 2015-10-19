@@ -45,38 +45,48 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/ShowHistoryHeader,
-    Object            => $Object,
-    ShowHeaders       => $ShowHeaders,
-    ShowTitle         => $ShowTitle,
-    ShowDisplayModes  => $ShowDisplayModes,
-    &>
-
-% $m->callback( %ARGS, Object => $Object, CallbackName => 'BeforeTransactions' );
-
-<& /Elements/ShowHistoryPage,
-    Object            => $Object,
-    Transactions      => $Object->SortedTransactions,
-    ShowHeaders       => $ARGS{'ShowHeaders'},
-    Attachments       => $Attachments,
-    AttachmentContent => $AttachmentContent,
-    PathPrefix        => ''
-    &>
-
-</div>
-% if ($ShowDisplayModes or $ShowTitle) {
-<& /Widgets/TitleBoxEnd &>
-% }
-</div>
 <%ARGS>
 $Object
-$Transactions      => $Object->SortedTransactions
-$Attachments       => $Object->Attachments( WithHeaders => 1 )
-$AttachmentContent => $Object->TextAttachments
-
 $ShowHeaders       => 0
 $ShowTitle         => 1
 $ShowDisplayModes  => 1
-
-$PathPrefix        => ''
 </%ARGS>
+<%INIT>
+my $record_type = $Object->RecordType;
+my $histid      = "\L$record_type\E-" . $Object->id . "-history";
+</%INIT>
+<div class="history <% lc $record_type %>" id="<% $histid %>">
+<%perl>
+if ( $ShowDisplayModes or $ShowTitle ) {
+    my $title = $ShowTitle
+                    ? loc('History')
+                    : '&nbsp;';
+
+    my $titleright = '';
+    if ( $ShowDisplayModes ) {
+        if ( RT->Config->Get( 'QuoteFolding', $session{CurrentUser} ) ) {
+            my $open_all  = $m->interp->apply_escapes( loc("Show all quoted text"), 'j' );
+            my $open_html = $m->interp->apply_escapes( loc("Show all quoted text"), 'h' );
+            my $close_all = $m->interp->apply_escapes( loc("Hide all quoted text"), 'j' );
+            $titleright .=    '<a href="#" data-direction="open" '
+                            . qq{onclick="return toggle_all_folds(this, $open_all, $close_all);"}
+                            . ">$open_html</a> &mdash; ";
+        }
+
+        if ($ShowHeaders) {
+            $titleright .= qq{<a href="?ForceShowHistory=1;id=} .
+                           $Object->id.qq{#$histid">} .
+                           loc("Show brief headers") .
+                           qq{</a>};
+        } else {
+            $titleright .= qq{<a href="?ForceShowHistory=1;ShowHeaders=1;id=} .
+                           $Object->id.qq{#$histid">} .
+                           loc("Show full headers") .
+                           qq{</a>};
+        }
+    }
+</%perl>
+<& /Widgets/TitleBoxStart, title => $title, titleright_raw => $titleright &>
+% }
+
+<div class="history-container">

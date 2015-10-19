@@ -390,11 +390,12 @@ our %META;
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
             Description => 'Show history',                #loc
-            Values      => [qw(delay click always)],
+            Values      => [qw(delay click always scroll)],
             ValuesLabel => {
                 delay   => "after the rest of the page loads",  #loc
                 click   => "after clicking a link",             #loc
                 always  => "immediately",                       #loc
+                scroll  => "as you scroll",                     #loc
             },
         },
     },
