@@ -83,7 +83,7 @@ my $oldestTransactionsFirst = RT->Config->Get("OldestTransactionsFirst", $sessio
 jQuery(function(){
     var isLoading = false, // prevent multiple simultaneous load events
         disableLoading = false, // prevent repeated fruitless attempts
-        loadDistanceFromBottom = 750, // to load before bottom of page is reached
+        loadDistanceFromBottom = 1500, // to load before bottom of page is reached
         lastTransactionId = null,
         hash = window.location.hash,
         hashTransactionId = null;
