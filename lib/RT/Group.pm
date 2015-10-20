@@ -303,7 +303,6 @@ sub _Create {
         _RecordTransaction => 1,
         @_
     );
-    $args{'Type'} = $args{'Name'};
 
     # Enforce uniqueness on user defined group names
     if ($args{'Domain'} and $args{'Domain'} eq 'UserDefined') {
@@ -325,7 +324,6 @@ sub _Create {
         id          => $principal_id,
         Name        => $args{'Name'},
         Description => $args{'Description'},
-        Type        => $args{'Type'},
         Domain      => $args{'Domain'},
         Instance    => ($args{'Instance'} || '0')
     );
@@ -627,13 +625,6 @@ sub SetName {
 
     my ($status, $msg) = $self->_Set( Field => 'Name', Value => $value );
     return ($status, $msg) unless $status;
-
-    {
-        my ($status, $msg) = $self->__Set( Field => 'Type', Value => $value );
-        RT->Logger->error("Couldn't set Type: $msg") unless $status;
-    }
-
-    return ($status, $msg);
 }
 
 =head2 Delete
@@ -1466,8 +1457,6 @@ sub _CoreAccessible {
         Description =>
                 {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         Domain =>
-                {read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
-        Type =>
                 {read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
         Instance =>
                 {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},

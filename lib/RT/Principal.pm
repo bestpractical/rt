@@ -423,7 +423,7 @@ sub HasRights {
     my $roles;
     {
         my $query
-            = "SELECT DISTINCT Groups.Type "
+            = "SELECT DISTINCT Groups.Name "
             . $self->_HasRoleRightQuery(
                 EquivObjects => $args{'EquivObjects'}
             );
