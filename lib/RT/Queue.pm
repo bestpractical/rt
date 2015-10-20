@@ -488,45 +488,6 @@ sub TicketTransactionCustomFields {
     return ($cfs);
 }
 
-
-
-
-
-=head2 AllRoleGroupTypes
-
-B<DEPRECATED> and will be removed in a future release. Use L</Roles>
-instead.
-
-Returns a list of the names of the various role group types for Queues,
-including roles used only for ACLs like Requestor and Owner. If you don't want
-them, see L</ManageableRoleGroupTypes>.
-
-=cut
-
-sub AllRoleGroupTypes {
-    RT->Deprecated(
-        Remove => "4.4",
-        Instead => "RT::Queue->Roles",
-    );
-    shift->Roles;
-}
-
-=head2 IsRoleGroupType
-
-B<DEPRECATED> and will be removed in a future release. Use L</HasRole> instead.
-
-Returns whether the passed-in type is a role group type.
-
-=cut
-
-sub IsRoleGroupType {
-    RT->Deprecated(
-        Remove => "4.4",
-        Instead => "RT::Queue->HasRole",
-    );
-    shift->HasRole(@_);
-}
-
 =head2 ManageableRoleGroupTypes
 
 Returns a list of the names of the various role group types for Queues,
