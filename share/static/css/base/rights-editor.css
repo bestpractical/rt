@@ -25,7 +25,7 @@
 .rights-editor > .ui-tabs-nav li a {
     float: none;
     display: block;
-    padding: 0 0 0.2em 1em;
+    padding: 0 0 0.2em 0.5em;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -127,4 +127,20 @@ li.category ~ li.category {
     margin-top: 0.3em;
 
     text-align: right;
+}
+
+span.rights-editor-label {
+    padding: 0.15em 0.5em;
+    border-radius: 6px;
+}
+
+.tab-aggregates-checked-rights {
+    background: #cfcfcf;
+}
+
+/* override jquery-ui by using a more specific
+ * class identifier.
+ */
+.category-tabs.ui-tabs .ui-tabs-nav li a {
+    padding: .5em 0.5em;
 }
