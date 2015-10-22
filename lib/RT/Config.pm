@@ -201,6 +201,16 @@ our %META;
             Hints       => 'Replaces the owner dropdowns with textboxes' #loc
         }
     },
+    AutocompleteQueues => {
+        Section     => 'General',
+        Overridable => 1,
+        SortOrder   => 3.2,
+        Widget      => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Use autocomplete to find queues?', # loc
+            Hints       => 'Replaces the queue dropdowns with textboxes' #loc
+        }
+    },
     WebDefaultStylesheet => {
         Section         => 'General',                #loc
         Overridable     => 1,
