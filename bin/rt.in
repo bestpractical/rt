@@ -1293,7 +1293,7 @@ sub Form::parse {
             elsif ($state <= 1 && $line =~ /^($field):(?:\s+(.*))?$/) {
                 # Read a field: value specification.
                 my $f  = $1;
-                my @v  = ($2 || ());
+                my @v  = (defined $2 && length $2 ? $2 : ());
 
                 # Read continuation lines, if any.
                 while (@lines && ($lines[0] eq '' || $lines[0] =~ /^\s+/)) {
