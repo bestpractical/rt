@@ -157,3 +157,10 @@
     -moz-border-radius:     0 0 0 5px;
     -webkit-border-radius:  0 0 0 5px;
 }
+
+#simple-search input.field {
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+}
+

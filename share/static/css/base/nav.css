@@ -27,3 +27,30 @@
     width: 1.25em;
 }
 
+#simple-search input.field {
+    border: none;
+
+    /* turn off webkit input[type=search] styling */
+    -webkit-appearance: textfield;
+}
+
+#simple-search input.field::-webkit-search-cancel-button {
+    /* hide webkit x button for searches */
+    -webkit-appearance: none;
+}
+
+#topactions input,
+#topactions select,
+#topactions button {
+    height: 2em;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+@-moz-document url-prefix() {
+    #topactions select.select-queue {
+        padding-top: 0.25em;
+        padding-bottom: 0.25em;
+        height: auto;
+    }
+}
