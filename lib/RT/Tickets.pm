@@ -976,12 +976,19 @@ sub _TransContentLimit {
         }
     } else {
         $self->Limit(
+            ALIAS    => $txn_alias,
+            FIELD    => 'Type',
+            OPERATOR => 'NOT IN',
+            VALUE    => ['EmailRecord', 'CommentEmailRecord'],
+        );
+        $self->Limit(
             %rest,
-            ALIAS         => $self->{_sql_trattachalias},
-            FIELD         => $field,
-            OPERATOR      => $op,
-            VALUE         => $value,
-            CASESENSITIVE => 0,
+            ENTRYAGGREGATOR => 'AND',
+            ALIAS           => $self->{_sql_trattachalias},
+            FIELD           => $field,
+            OPERATOR        => $op,
+            VALUE           => $value,
+            CASESENSITIVE   => 0,
         );
     }
     if ( RT->Config->Get('DontSearchFileAttachments') ) {
