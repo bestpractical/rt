@@ -217,7 +217,7 @@ sub process_bulk_insert {
             debug("Found attachment #". $a->id );
             my $text = $a->Content // "";
             HTML::Entities::decode_entities($text) if $a->ContentType eq "text/html";
-            push @insert, $text, $a->id;
+            push @insert, join("\n", $a->Subject // "", $text), $a->id;
             $found++;
         }
         return unless $found;
@@ -322,7 +322,7 @@ sub process_pg_update {
             my $text = $a->Content // "";
             HTML::Entities::decode_entities($text) if $a->ContentType eq "text/html";
 
-            push @insert, [$text, $a->id];
+            push @insert, [join("\n", $a->Subject // "", $text), $a->id];
         }
 
         # Try in one database transaction; if it fails, we roll it back
