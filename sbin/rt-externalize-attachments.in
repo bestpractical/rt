@@ -120,7 +120,7 @@ for my $class (qw/RT::Attachments RT::ObjectCustomFieldValues/) {
         );
 
         if ($class eq "RT::ObjectCustomFieldValues") {
-            $attach->{'find_expired_rows'} = 1;
+            $attach->{'find_disabled_rows'} = 1;
         }
 
         $attach->RowsPerPage(100);
