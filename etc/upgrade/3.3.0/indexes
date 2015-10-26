@@ -1,0 +1,25 @@
+use strict;
+use warnings;
+
+$RT::Handle->MakeSureIndexExists(
+    Table => 'Transactions',
+    Columns => ['ObjectType', 'ObjectId'],
+);
+
+if (RT->Config->Get('DatabaseType') eq 'mysql') {
+    $RT::Handle->MakeSureIndexExists(
+        Table => 'ObjectCustomFieldValues',
+        Columns => ['Content'],
+    );
+} else {
+    $RT::Handle->MakeSureIndexExists(
+        Table => 'ObjectCustomFieldValues',
+        Columns => ['CustomField','ObjectType','ObjectId','Content'],
+    );
+}
+
+$RT::Handle->MakeSureIndexExists(
+    Table => 'ObjectCustomFieldValues',
+    Columns => ['CustomField','ObjectType','ObjectId'],
+);
+

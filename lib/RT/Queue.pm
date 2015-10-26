@@ -217,43 +217,6 @@ sub Delete {
         $self->loc('Deleting this object would break referential integrity') );
 }
 
-
-
-=head2 SetDisabled
-
-Takes a boolean.
-1 will cause this queue to no longer be available for tickets.
-0 will re-enable this queue.
-
-=cut
-
-sub SetDisabled {
-    my $self = shift;
-    my $val = shift;
-
-    $RT::Handle->BeginTransaction();
-    my ($ok, $msg) = $self->_Set( Field =>'Disabled', Value => $val);
-    unless ($ok) {
-        $RT::Handle->Rollback();
-        $RT::Logger->warning("Couldn't ".(($val == 0) ? "enable" : "disable")." queue ".$self->Name.": $msg");
-        return ($ok, $msg);
-    }
-    $self->_NewTransaction( Type => ($val == 0) ? "Enabled" : "Disabled" );
-
-    $RT::Handle->Commit();
-
-    RT->System->QueueCacheNeedsUpdate(1);
-
-    if ( $val == 0 ) {
-        return (1, $self->loc("Queue enabled"));
-    } else {
-        return (1, $self->loc("Queue disabled"));
-    }
-
-}
-
-
-
 =head2 Load
 
 Takes either a numerical id or a textual Name and loads the specified queue.
@@ -348,8 +311,13 @@ sub SetSign {
         Content     => $value,
     );
     return ($status, $msg) unless $status;
-    return ($status, $self->loc('Signing enabled')) if $value;
-    return ($status, $self->loc('Signing disabled'));
+
+    my ( undef, undef, $TransObj ) = $self->_NewTransaction(
+        Field => 'Signing', #loc
+        Type  => $value ? "Enabled" : "Disabled"
+    );
+
+    return ($status, scalar $TransObj->BriefDescription);
 }
 
 sub SignAuto {
@@ -374,8 +342,13 @@ sub SetSignAuto {
         Content     => $value,
     );
     return ($status, $msg) unless $status;
-    return ($status, $self->loc('Signing enabled')) if $value;
-    return ($status, $self->loc('Signing disabled'));
+
+    my ( undef, undef, $TransObj ) = $self->_NewTransaction(
+        Field => 'AutoSigning', #loc
+        Type  => $value ? "Enabled" : "Disabled"
+    );
+
+    return ($status, scalar $TransObj->BriefDescription);
 }
 
 sub Encrypt {
@@ -400,8 +373,13 @@ sub SetEncrypt {
         Content     => $value,
     );
     return ($status, $msg) unless $status;
-    return ($status, $self->loc('Encrypting enabled')) if $value;
-    return ($status, $self->loc('Encrypting disabled'));
+
+    my ( undef, undef, $TransObj ) = $self->_NewTransaction(
+        Field => 'Encrypting', #loc
+        Type  => $value ? "Enabled" : "Disabled"
+    );
+
+    return ($status, scalar $TransObj->BriefDescription);
 }
 
 =head2 Templates
@@ -787,11 +765,44 @@ sub IsAdminCc {
 sub _Set {
     my $self = shift;
 
+    my %args = (
+        Field             => undef,
+        Value             => undef,
+        TransactionType   => 'Set',
+        RecordTransaction => 1,
+        @_
+    );
+
     unless ( $self->CurrentUserHasRight('AdminQueue') ) {
         return ( 0, $self->loc('Permission Denied') );
     }
+
+    my $Old = $self->SUPER::_Value("$args{'Field'}");
+
+    my ($ret, $msg) = $self->SUPER::_Set(
+        Field => $args{'Field'},
+        Value => $args{'Value'},
+    );
+
+    if ( $ret == 0 ) { return ( 0, $msg ); }
+
     RT->System->QueueCacheNeedsUpdate(1);
-    return ( $self->SUPER::_Set(@_) );
+
+    if ( $args{'RecordTransaction'} == 1 ) {
+        if ($args{'Field'} eq 'Disabled') {
+            $args{'TransactionType'} = ($args{'Value'} == 1) ? "Disabled" : "Enabled";
+            delete $args{'Field'};
+        }
+        my ( undef, undef, $TransObj ) = $self->_NewTransaction(
+            Type      => $args{'TransactionType'},
+            Field     => $args{'Field'},
+            NewValue  => $args{'Value'},
+            OldValue  => $Old,
+            TimeTaken => $args{'TimeTaken'},
+        );
+    }
+
+    return ( $ret, $msg );
 }
 
 

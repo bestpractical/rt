@@ -312,11 +312,25 @@ sub Message {
 
 
 
+=head2 HasContent
+
+Returns whether this transaction has attached mime objects.
+
+=cut
+
+sub HasContent {
+    my $self = shift;
+    my $type = $PreferredContentType || '';
+    return !!$self->ContentObj( $type ? ( Type => $type) : () );
+}
+
+
+
 =head2 Content PARAMHASH
 
 If this transaction has attached mime objects, returns the body of the first
 textual part (as defined in RT::I18N::IsTextualContentType).  Otherwise,
-returns undef.
+returns the message "This transaction appears to have no content".
 
 Takes a paramhash.  If the $args{'Quote'} parameter is set, wraps this message 
 at $args{'Wrap'}.  $args{'Wrap'} defaults to 70.
@@ -339,8 +353,8 @@ sub Content {
     );
 
     my $content;
-    if ( my $content_obj =
-        $self->ContentObj( $args{Type} ? ( Type => $args{Type} ) : () ) )
+    if ( my $content_obj = 
+        $self->ContentObj( $args{Type} ? ( Type => $args{Type}) : () ) )
     {
         $content = $content_obj->Content ||'';
 
@@ -860,11 +874,11 @@ sub _FormatUser {
     },
     Enabled => sub {
         my $self = shift;
-        return ( "[_1] enabled", $self->FriendlyObjectType );   #loc()
+        return ( "[_1] enabled", $self->Field ? $self->loc($self->Field) : $self->FriendlyObjectType );   #loc()
     },
     Disabled => sub {
         my $self = shift;
-        return ( "[_1] disabled", $self->FriendlyObjectType );  #loc()
+        return ( "[_1] disabled", $self->Field ? $self->loc($self->Field) : $self->FriendlyObjectType );  #loc()
     },
     Status => sub {
         my $self = shift;
@@ -1185,11 +1199,11 @@ sub _FormatUser {
             my $q2 = RT::Queue->new( $self->CurrentUser );
             $q2->Load( $self->NewValue );
             return ("[_1] changed from [_2] to [_3]",
-                    $self->loc($self->Field) , $q1->Name , $q2->Name);  #loc()
+                    $self->loc($self->Field), $q1->Name // '#'.$q1->id, $q2->Name // '#'.$q2->id); #loc()
         }
 
         # Write the date/time change at local time:
-        elsif ($self->Field =~  /Due|Starts|Started|Told/) {
+        elsif ($self->Field =~ /^(?:Due|Starts|Started|Told)$/) {
             my $t1 = RT::Date->new($self->CurrentUser);
             $t1->Set(Format => 'ISO', Value => $self->NewValue);
             my $t2 = RT::Date->new($self->CurrentUser);
@@ -1259,34 +1273,46 @@ sub _FormatUser {
         my $self = shift;
         my $ticket = RT::Ticket->new($self->CurrentUser);
         $ticket->Load($self->NewValue);
-        my $subject = [
-            \'<a href="', RT->Config->Get('WebPath'),
-            "/Ticket/Reminders.html?id=", $self->ObjectId,
-            "#reminder-", $ticket->id, \'">', $ticket->Subject, \'</a>'
-        ];
-        return ("Reminder '[_1]' added", $subject); #loc()
+        if ( $ticket->CurrentUserHasRight('ShowTicket') ) {
+            my $subject = [
+                \'<a href="', RT->Config->Get('WebPath'),
+                "/Ticket/Reminders.html?id=", $self->ObjectId,
+                "#reminder-", $ticket->id, \'">', $ticket->Subject, \'</a>'
+            ];
+            return ("Reminder '[_1]' added", $subject); #loc()
+        } else {
+            return ("Reminder added"); #loc()
+        }
     },
     OpenReminder => sub {
         my $self = shift;
         my $ticket = RT::Ticket->new($self->CurrentUser);
         $ticket->Load($self->NewValue);
-        my $subject = [
-            \'<a href="', RT->Config->Get('WebPath'),
-            "/Ticket/Reminders.html?id=", $self->ObjectId,
-            "#reminder-", $ticket->id, \'">', $ticket->Subject, \'</a>'
-        ];
-        return ("Reminder '[_1]' reopened", $subject);  #loc()
+        if ( $ticket->CurrentUserHasRight('ShowTicket') ) {
+            my $subject = [
+                \'<a href="', RT->Config->Get('WebPath'),
+                "/Ticket/Reminders.html?id=", $self->ObjectId,
+                "#reminder-", $ticket->id, \'">', $ticket->Subject, \'</a>'
+            ];
+            return ("Reminder '[_1]' reopened", $subject);  #loc()
+        } else {
+            return ("Reminder reopened");  #loc()
+        }
     },
     ResolveReminder => sub {
         my $self = shift;
         my $ticket = RT::Ticket->new($self->CurrentUser);
         $ticket->Load($self->NewValue);
-        my $subject = [
-            \'<a href="', RT->Config->Get('WebPath'),
-            "/Ticket/Reminders.html?id=", $self->ObjectId,
-            "#reminder-", $ticket->id, \'">', $ticket->Subject, \'</a>'
-        ];
-        return ("Reminder '[_1]' completed", $subject); #loc()
+        if ( $ticket->CurrentUserHasRight('ShowTicket') ) {
+            my $subject = [
+                \'<a href="', RT->Config->Get('WebPath'),
+                "/Ticket/Reminders.html?id=", $self->ObjectId,
+                "#reminder-", $ticket->id, \'">', $ticket->Subject, \'</a>'
+            ];
+            return ("Reminder '[_1]' completed", $subject); #loc()
+        } else {
+            return ("Reminder completed"); #loc()
+        }
     }
 );
 

@@ -911,10 +911,10 @@ sub _CheckIfProtectedInline {
     }
 
     while ( defined($_ = $io->getline) ) {
-        if ( /^-----BEGIN PGP (SIGNED )?MESSAGE-----/ ) {
+        if ( /^-----BEGIN PGP (SIGNED )?MESSAGE-----\s*$/ ) {
             return $1? 'signed': 'encrypted';
         }
-        elsif ( $check_for_signature && !/^-----BEGIN PGP SIGNATURE-----/ ) {
+        elsif ( $check_for_signature && !/^-----BEGIN PGP SIGNATURE-----\s*$/ ) {
             return 'signature';
         }
     }
@@ -1092,7 +1092,7 @@ sub DecryptInline {
     binmode $block_fh, ':raw';
 
     while ( defined(my $str = $io->getline) ) {
-        if ( $in_block && $str =~ /^-----END PGP (?:MESSAGE|SIGNATURE)-----/ ) {
+        if ( $in_block && $str =~ /^-----END PGP (?:MESSAGE|SIGNATURE)-----\s*$/ ) {
             print $block_fh $str;
             $in_block--;
             next if $in_block > 0;
@@ -1116,7 +1116,7 @@ sub DecryptInline {
             binmode $block_fh, ':raw';
             $in_block = 0;
         }
-        elsif ( $str =~ /^-----BEGIN PGP (SIGNED )?MESSAGE-----/ ) {
+        elsif ( $str =~ /^-----BEGIN PGP (SIGNED )?MESSAGE-----\s*$/ ) {
             $in_block++;
             print $block_fh $str;
         }

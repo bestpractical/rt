@@ -318,24 +318,21 @@ sub SendMessage {
     return (1);
 }
 
-=head2 AddAttachments
+=head2 AttachableFromTransaction
 
-Takes any attachments to this transaction and attaches them to the message
-we're building.
+Function (not method) that takes an L<RT::Transaction> and returns an
+L<RT::Attachments> collection of attachments suitable for attaching to an
+email.
 
 =cut
 
-sub AddAttachments {
-    my $self = shift;
-
-    my $MIMEObj = $self->TemplateObj->MIMEObj;
-
-    $MIMEObj->head->delete('RT-Attach-Message');
+sub AttachableFromTransaction {
+    my $txn = shift;
 
     my $attachments = RT::Attachments->new( RT->SystemUser );
     $attachments->Limit(
         FIELD => 'TransactionId',
-        VALUE => $self->TransactionObj->Id
+        VALUE => $txn->Id
     );
 
     # Don't attach anything blank
@@ -345,7 +342,7 @@ sub AddAttachments {
     # We want to make sure that we don't include the attachment that's
     # being used as the "Content" of this message" unless that attachment's
     # content type is not like text/...
-    my $transaction_content_obj = $self->TransactionObj->ContentObj;
+    my $transaction_content_obj = $txn->ContentObj;
 
     if (   $transaction_content_obj
         && $transaction_content_obj->ContentType =~ m{text/}i )
@@ -368,6 +365,25 @@ sub AddAttachments {
             );
         }
     }
+
+    return $attachments;
+}
+
+=head2 AddAttachments
+
+Takes any attachments to this transaction and attaches them to the message
+we're building.
+
+=cut
+
+sub AddAttachments {
+    my $self = shift;
+
+    my $MIMEObj = $self->TemplateObj->MIMEObj;
+
+    $MIMEObj->head->delete('RT-Attach-Message');
+
+    my $attachments = AttachableFromTransaction($self->TransactionObj);
 
     # attach any of this transaction's attachments
     my $seen_attachment = 0;

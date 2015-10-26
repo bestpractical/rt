@@ -80,6 +80,10 @@ div.cke {
     border: 1px solid #b6b6b6;
 }
 
+.selection-box {
+    min-width: 300px;
+}
+
 .datepicker {
     width: 17em;
 }

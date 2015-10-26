@@ -92,7 +92,7 @@ while (my $link = $links->Next) {
     next if UNIVERSAL::isa($ToObj,'RT::Article') && $ToObj->Disabled;
     if ($ToObj and $ToObj->isa('RT::Ticket')) {
         next if $Type eq "ReferredToBy"
-            and $ToObj->Type eq 'reminder';
+            and $ToObj->__Value('Type') eq 'reminder';
 
         if ( $ToObj->QueueObj->IsInactiveStatus( $ToObj->Status ) ) {
             push @inactive, $link;

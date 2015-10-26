@@ -9,7 +9,6 @@ alter Table Transactions
     CHANGE      Ticket ObjectId integer NOT NULL DEFAULT 0;
 
 UPDATE Transactions set ObjectType = 'RT::Ticket';
-CREATE INDEX Transactions1 ON Transactions (ObjectType, ObjectId);
 
 alter table TicketCustomFieldValues rename ObjectCustomFieldValues,
     change Ticket ObjectId integer NOT NULL DEFAULT 0  ,
@@ -24,10 +23,6 @@ update ObjectCustomFieldValues set ObjectType = 'RT::Ticket';
 # These could fail if there's no such index and there's no "drop index if exists" syntax
 #alter table ObjectCustomFieldValues drop index ticketcustomfieldvalues1;
 #alter table ObjectCustomFieldValues drop index ticketcustomfieldvalues2;
-
-alter table ObjectCustomFieldValues add index ObjectCustomFieldValues1 (Content),
-    add index ObjectCustomFieldValues2 (CustomField,ObjectType,ObjectId);
-
 
 CREATE TABLE ObjectCustomFields (
   id INTEGER NOT NULL  AUTO_INCREMENT,

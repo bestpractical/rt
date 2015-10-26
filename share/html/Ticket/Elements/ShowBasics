@@ -95,10 +95,12 @@
     <td class="value"><& ShowTime, minutes => $Ticket->TimeLeft &></td>
   </tr>
 % }
+% $m->callback( %ARGS, CallbackName => 'AfterTimeLeft', TicketObj => $Ticket );
   <tr class="priority">
     <td class="label"><&|/l&>Priority</&>:</td>
     <td class="value"><& ShowPriority, Ticket => $Ticket &></td>
   </tr>
+% $m->callback( %ARGS, CallbackName => 'AfterPriority', TicketObj => $Ticket );
 %# This will check SeeQueue at the ticket role level, queue level, and global level
 % if ($Ticket->CurrentUserHasRight('SeeQueue')) {
   <tr class="queue">
@@ -106,12 +108,14 @@
     <td class="value"><& ShowQueue, Ticket => $Ticket, QueueObj => $Ticket->QueueObj &></td>
   </tr>
 % }
+% $m->callback( %ARGS, CallbackName => 'AfterQueue', TicketObj => $Ticket );
   <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Grouping => 'Basics', Table => 0 &>
 % if ($UngroupedCFs) {
   <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Grouping => '', Table => 0 &>
 % }
 % $m->callback( %ARGS, CallbackName => 'EndOfList', TicketObj => $Ticket );
 </table>
+% $m->callback( %ARGS, CallbackName => 'AfterTable', TicketObj => $Ticket );
 <%ARGS>
 $Ticket => undef
 $UngroupedCFs => 0

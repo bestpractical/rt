@@ -1,0 +1,234 @@
+=for html
+<style>
+table.example { margin-left: auto; margin-right: auto; min-width: 25%; border-collapse: collapse; }
+table.example           td,
+table.example           th { margin: 0; padding: 0.25em 1em; }
+table.example td + td,
+table.example th + th      { border-left: 1px dotted black; }
+table.example           th { border-bottom: 2px solid black; text-align: left; }
+table.example tr.none   th { border-bottom: none; }
+table.example tr.bottom td { border-bottom: 1px dotted black; }
+</style>
+
+=head1 Formats
+
+"Format strings" are how RT specifies the layout of tables of data;
+allowing the user to choose which columns are used, as well as how they
+are formatted, and optionally linked.
+
+They are used by a number of core options, including:
+
+=over
+
+=item *
+
+C<$DefaultSearchResultFormat>
+
+=item *
+
+C<$DefaultSelfServiceSearchResultFormat>
+
+=item *
+
+C<$MoreAboutRequestorTicketListFormat>
+
+=item *
+
+C<$MoreAboutRequestorExtraInfo>
+
+=item *
+
+C<$UserSearchResultFormat>
+
+=item *
+
+C<$UserSummaryExtraInfo>
+
+=item *
+
+C<$UserSummaryTicketListFormat>
+
+=item *
+
+C<%AdminSearchResultFormat>
+
+=item *
+
+...as well as by all ticket searches.
+
+=back
+
+=head2 Structure
+
+Format strings are comma-separated lists of single-quoted strings.
+Since they're quoted strings of quoted strings, to prevent having to
+escape all of the quotes, they often use the C<qq{ ... }> operator in
+Perl, which is just a fancy set of double-quotes.  For instance:
+
+    Set( $DefaultSearchResultFormat, "'__id__','__Status__');
+
+...is the same as:
+
+    Set( $DefaultSearchResultFormat, qq{ '__id__','__Status__' } );
+
+...except that it becomes easier to use double-quote characters.
+
+=head2 Elements
+
+Pieces that can go inside of each quoted section of a format string
+include:
+
+=over
+
+=item Column name surrounded by double-underscores: C<__id__>
+
+If a property name is surrounded by double-underscores, the property
+name is used for the title of the column, and each row includes the
+value of that property.
+
+If the I<only> contents of the element is a double-underscored name, the
+quotes and underscores can be omitted.  That is, the format:
+
+    '__id__', '__Subject__'
+
+..can also be written:
+
+   id, Subject
+
+=item HTML
+
+HTML formatting can be included, which will by default be included in
+the column title as well as each row.  For instance, the format:
+
+    '<i>__Owner__</i>'
+
+...will render as:
+
+=for html
+<table class="example"><tr><th><i>Owner</i></th></tr>
+<tr><td><i>Alice</i></td></tr>
+<tr><td><i>Bob</i></td></tr>
+<tr><td><i>Charlie</i></td></tr>
+</table>
+
+=begin text
+
+      /Owner/
+    -----------
+      /Alice/
+      /Bob/
+      /Charlie/
+
+=end text
+
+=item C<__NEWLINE__>
+
+Used to wrap the format onto a new line.  This means that each result in
+the list will be formatted on two lines.  For example, the format:
+
+    '__id__', '__Subject__', '__NEWLINE__', '__Status__', '__QueueName__'
+
+...will render a three-ticket set of results as:
+
+=for html
+<table class="example"><tr class="none"><th>#</th><th>Subject</th></tr><tr><th>Status</th><th>Queue</th></tr>
+<tr><td>1</td><td>Broken laptop</td></tr><tr class="bottom"><td>open</td><td>General</td></tr>
+<tr><td>2</td><td>Missing caps lock</td></tr><tr class="bottom"><td>open</td><td>General</td></tr>
+<tr><td>3</td><td>Cracked screen</td></tr><tr class="bottom"><td>new</td><td>General</td></tr></table>
+
+=begin text
+
+      #      | Subject
+      Status | Queue
+    =========+====================
+      1      | Broken laptop
+      open   | General
+    ---------+--------------------
+      2      | Missing caps lock
+      open   | General
+    ---------+--------------------
+      3      | Cracked screen
+      new    | General
+
+=end text
+
+The number of columns shown will be padded to the width of the widest of
+the rows.
+
+=item C<__NBSP__>
+
+Renders as an empty cell.
+
+=item C</TITLE:...>
+
+Given at the end of a format string, sets the column title to what
+follows the colon.  The following format string:
+
+    '__id__', '__Subject__/TITLE:Favorite Color'
+
+...will render as (assuming the tickets have ticket subjects of colors):
+
+=for html
+<table class="example"><tr><th>#</th><th>Favorite Color</th></tr>
+<tr><td>1</td><td>Blue</td></tr>
+<tr><td>2</td><td>Green</td></tr>
+<tr><td>3</td><td>Orange</td></tr></table>
+
+=begin text
+
+      #  |  Favorite Color
+    -----+------------------
+      1  |  Blue
+      2  |  Green
+      3  |  Orange
+
+=end text
+
+=item C</SPAN:...>
+
+Given at the end of a format string, sets the column span of the given
+column; this is only of use if C<__NEWLINE__> is in use.  This can be
+used to merge columns into wider columns for more efficient use of
+space.  The following format string:
+
+    '__Subject__/SPAN:2', '__NEWLINE__', '__Status__', '__Queue__'
+
+...will render as:
+
+=for html
+<table class="example"><tr><th colspan="2">Subject</th></tr><tr><th>Status</th><th>Queue</th></tr>
+<tr><td colspan="2">Broken laptop</td></tr><tr class="bottom"><td>open</td><td>General</td></tr>
+<tr><td colspan="2">Missing caps lock</td></tr><tr class="bottom"><td>open</td><td>General</td></tr>
+<tr><td colspan="2">Cracked screen</td></tr><tr class="bottom"><td>new</td><td>General</td></tr></table>
+
+=begin text
+
+      #      | Subject
+      Status | Queue
+    =========+===========
+      Broken laptop
+      open   | General
+    ---------+-----------
+      Missing caps lock
+      open   | General
+    ---------+-----------
+      Cracked screen
+      new    | General
+
+=end text
+
+=item C</CLASS:...>
+
+Apply an arbitrary CSS class to the column heading and data cells.
+
+=item C</STYLE:...>
+
+Apply an arbitrary set of CSS styles to the column heading and data cells.
+
+=item C</ALIGN:...>
+
+Sets the alignment of the column heading and data cells.
+
+=back
+
+=cut

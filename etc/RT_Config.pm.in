@@ -2049,6 +2049,23 @@ Simple wildcards, similar to SSL certificates, are allowed.  For example:
 
 Set(@ReferrerWhitelist, qw());
 
+=item C<%ReferrerComponents>
+
+C<%ReferrerComponents> is the hash to customize referrer checking behavior when
+C<$RestrictReferrer> is enabled, where you can whitelist or blacklist the
+components along with their query args. e.g.
+
+    Set( %ReferrerComponents,
+        ( '/Foo.html' => 1, '/Bar.html' => 0, '/Baz.html' => [ 'id', 'results' ] )
+    );
+
+With this, '/Foo.html' will be whitelisted, and '/Bar.html' will be blacklisted.
+'/Baz.html' with id/results query arguments will be whitelisted but blacklisted
+if there are other query arguments.
+
+=cut
+
+Set( %ReferrerComponents );
 
 =item C<$BcryptCost>
 
@@ -2058,7 +2075,7 @@ higher numbers denoting greater effort.
 
 =cut
 
-Set($BcryptCost, 10);
+Set($BcryptCost, 11);
 
 =back
 

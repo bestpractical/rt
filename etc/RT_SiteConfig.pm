@@ -1,9 +1,14 @@
-# Any configuration directives you include  here will override 
+use utf8;
+
+# Any configuration directives you include  here will override
 # RT's default configuration file, RT_Config.pm
 #
 # To include a directive here, just copy the equivalent statement
 # from RT_Config.pm and change the value. We've included a single
 # sample value below.
+#
+# If this file includes non-ASCII characters, it must be encoded in
+# UTF-8.
 #
 # This file is actually a perl module, so you can include valid
 # perl code, as well.

@@ -455,7 +455,7 @@ for my $link ( @{ $Ticket->DependsOn->ItemsArrayRef } ) {
     <ul>
 % while (my $Link = $Ticket->ReferredToBy->Next) {
 % next if UNIVERSAL::isa($Link->BaseObj, 'RT::Article') && $Link->BaseObj->Disabled;
-% next if (UNIVERSAL::isa($Link->BaseObj, 'RT::Ticket')  && $Link->BaseObj->Type eq 'reminder');
+% next if (UNIVERSAL::isa($Link->BaseObj, 'RT::Ticket')  && $Link->BaseObj->__Value('Type') eq 'reminder');
 <li><& /Elements/ShowLink, URI => $Link->BaseURI &></li>
 % }
 </ul>

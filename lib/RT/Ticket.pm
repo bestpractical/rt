@@ -315,6 +315,10 @@ sub Create {
         unless defined $args{'Priority'};
 
     # Dates
+
+    my $Now = RT::Date->new( $self->CurrentUser );
+    $Now->SetToNow();
+
     #TODO we should see what sort of due date we're getting, rather +
     # than assuming it's in ISO format.
 
@@ -342,7 +346,7 @@ sub Create {
 
     # If the status is not an initial status, set the started date
     elsif ( !$cycle->IsInitial($args{'Status'}) ) {
-        $Started->SetToNow;
+        $Started->Set( Format => 'ISO', Value => $Now->ISO );
     }
 
     my $Resolved = RT::Date->new( $self->CurrentUser );
@@ -356,7 +360,7 @@ sub Create {
         $RT::Logger->debug( "Got a ". $args{'Status'}
             ."(inactive) ticket with undefined resolved date. Setting to now."
         );
-        $Resolved->SetToNow;
+        $Resolved->Set( Format => 'ISO', Value => $Now->ISO );
     }
 
     # Dealing with time fields
@@ -386,6 +390,7 @@ sub Create {
         TimeEstimated   => $args{'TimeEstimated'},
         TimeLeft        => $args{'TimeLeft'},
         Type            => $args{'Type'},
+        Created         => $Now->ISO,
         Starts          => $Starts->ISO,
         Started         => $Started->ISO,
         Resolved        => $Resolved->ISO,

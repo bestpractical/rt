@@ -46,22 +46,70 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
-$Plugin => ''
+$Name
+$Attr => undef
 </%ARGS>
-<div id="shredder-plugin-<% $Plugin %>-arguments" class="shredder-form">
-<span><% loc('Fill arguments') %>:</span><br />
-<table>
-% for my $a ( $plugin_obj->SupportArgs ) {
-<tr>
-    <td class="label"><label for="<% "$Plugin:$a" %>"><% loc($a) %>:</label></td>
-    <td><input type="text" name="<% "$Plugin:$a" %>" id="<% "$Plugin:$a" %>" value="<% $ARGS{ "$Plugin:$a" } || '' %>" /></td>
-</tr>
-% }
-</table>
-</div>
+<%ONCE>
+my $COLUMN_MAP = {
+    ObjectType => {
+        title     => 'Object Type', # loc
+        attribute => 'ObjectType',
+        value     => sub { return $_[0]->ObjectType() },
+    },
+    ObjectId => {
+        title     => 'Object Id', # loc
+        attribute => 'ObjectId',
+        value     => sub { return $_[0]->ObjectId() },
+    },
+    Type => {
+        title     => 'Type', # loc
+        attribute => 'Type',
+        value     => sub { return $_[0]->Type() },
+    },
+    Field => {
+        title     => 'Field', # loc
+        attribute => 'Field',
+        value     => sub { return $_[0]->Field() },
+    },
+    OldValue => {
+        title     => 'Old Value', # loc
+        attribute => 'OldValue',
+        value     => sub { return $_[0]->OldValue() },
+    },
+    NewValue => {
+        title     => 'New Value', # loc
+        attribute => 'NewValue',
+        value     => sub { return $_[0]->NewValue() },
+    },
+    TimeTaken => {
+        title     => 'Time Taken', # loc
+        attribute => 'TimeTaken',
+        value     => sub { return $_[0]->TimeTaken() },
+    },
+    Description => {
+        title     => 'Description', # loc
+        value     => sub { my $html = $_[0]->BriefDescriptionAsHTML(); return \$html },
+    },
+    ObjectName => {
+        title     => 'Name', # loc
+        value     => sub {
+            # Since ->can() is unreliable (due to AUTOLOAD), use
+            # _Accessible to check for methods
+            my $object = $_[0]->Object;
+            if ( $object->_Accessible('Name','read') ) {
+                return $object->Name;
+            } elsif ( $object->_Accessible('Subject','read') ) {
+                return $object->Subject;
+            } else {
+                return loc('No Name');
+            }
+        },
+    },
+};
+
+
+</%ONCE>
 <%INIT>
-use RT::Shredder::Plugin;
-my $plugin_obj = RT::Shredder::Plugin->new;
-my ($status, $msg) = $plugin_obj->LoadByName( $Plugin );
-die $msg unless $status;
+$m->callback( COLUMN_MAP => $COLUMN_MAP, CallbackName => 'ColumnMap', CallbackOnce => 1 );
+return GetColumnMapEntry( Map => $COLUMN_MAP, Name => $Name, Attribute => $Attr );
 </%INIT>

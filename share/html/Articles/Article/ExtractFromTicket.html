@@ -64,7 +64,7 @@
 </tr>
 % my $i;
 % while ( my $trans = $transactions->Next ) { 
-% next unless $trans->Content;
+% next unless $trans->HasContent && $trans->Content;
 <tr class="<% ($i++)%2 ? 'oddline' : 'evenline'%>" >                                
 <td valign="top">
 <select name="Transaction-<%$trans->Id%>">

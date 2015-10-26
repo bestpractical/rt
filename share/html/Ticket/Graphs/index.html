@@ -48,11 +48,14 @@
 <& /Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
 
+% $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $ticket);
+
 <& /Elements/ListActions, actions => \@results &>
 
 <& Elements/ShowGraph, %ARGS, Ticket => $ticket &>
 
 <form action="<% RT->Config->Get('WebPath') . $m->request_comp->path %>">
+% $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
 
 <& Elements/EditGraphProperties, %ARGS, Ticket => $ticket &>
@@ -68,10 +71,19 @@
 &>
 </form>
 
+% $m->callback(CallbackName => 'AfterForm', ARGSRef => \%ARGS, Ticket => $ticket);
+
 <%ARGS>
 </%ARGS>
 <%INIT>
 use RT::Graph::Tickets;
+
+my $id = $ARGS{'id'};
+my $ticket = LoadTicket( $id );
+$ARGS{'id'} = $id = $ticket->id;
+
+$m->callback( TicketObj => $ticket, ARGSRef => \%ARGS );
+
 my @results;
 
 my @save_arguments = qw(id Direction LeadingLink ShowLinks MaxDepth FillUsing ShowLinkDescriptions);
@@ -85,10 +97,6 @@ push @results, $m->comp( '/Search/Elements/EditSearches:Init',
     SavedSearch  => $saved_search,
     SearchFields => \@save_arguments,
 );
-
-my $id = $ARGS{'id'};
-my $ticket = LoadTicket( $id );
-$ARGS{'id'} = $id = $ticket->id;
 
 $ARGS{'LeadingLink'} ||= 'Members';
 if ( $ARGS{'ShowLinks'} && !ref $ARGS{'ShowLinks'} ) {
