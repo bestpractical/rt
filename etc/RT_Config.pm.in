@@ -3212,7 +3212,7 @@ Response SLA has only been met when the owner or AdminCc reply.
     Set ( %ServiceAgreements = (
         AssumeOutsideActor => 1,
         ...
-    );
+    ));
 
 =back
 
@@ -3234,7 +3234,7 @@ In the config you can set one or more work schedules, e.g.
         'Sales' => {
             ... description ...
         },
-    );
+    ));
 
 Read more about how to describe a schedule in L<Business::Hours>.
 
@@ -3256,7 +3256,7 @@ then L<%ServiceBusinessHours> should have the corresponding definition:
         'work just in Monday' => {
             1 => { Name => 'Monday', Start => '9:00', End => '18:00' },
         },
-    );
+    ));
 
 Default Business Hours setting is in $ServiceBusinessHours{'Default'}.
 
