@@ -443,8 +443,12 @@ sub AddRoleMember {
         if $acl and not $acl->($type => $principal);
 
     my $group = $self->RoleGroup( $type );
-    return (0, $self->loc("Role group '[_1]' not found", $type))
-        unless $group->id;
+    if (!$group->id) {
+        $group = $self->_CreateRoleGroup($type);
+        if (!$group || !$group->id) {
+            return (0, $self->loc("Role group '[_1]' not found", $type));
+        }
+    }
 
     return (0, $self->loc('[_1] is already a [_2]',
                           $principal->Object->Name, $self->loc($type)) )
