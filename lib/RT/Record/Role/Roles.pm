@@ -450,7 +450,7 @@ sub AddRoleMember {
         }
     }
 
-    return (0, $self->loc('[_1] is already a [_2]',
+    return (0, $self->loc('[_1] is already [_2]',
                           $principal->Object->Name, $self->loc($type)) )
             if $group->HasMember( $principal );
 

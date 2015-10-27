@@ -646,16 +646,44 @@ sub AddWatcher {
         @_
     );
 
-    $args{ACL} = sub { $self->_HasModifyWatcherRight( @_ ) };
     $args{User} ||= delete $args{Email};
-    my ($principal, $msg) = $self->AddRoleMember(
-        %args,
+    my ($principal, $msg) = $self->CanonicalizePrincipal(%args);
+    if (!$principal) {
+        return (0, $msg);
+    }
+
+    my $original_user;
+    my $group = $self->RoleGroup( $args{Type} );
+    if ($group->id && $group->SingleMemberRoleGroup) {
+        my $users = $group->UserMembersObj( Recursively => 0 );
+        $original_user = $users->First;
+        if ($original_user->PrincipalId == $principal->Id) {
+            return 1;
+        }
+    }
+    else {
+        $original_user = RT->Nobody;
+    }
+
+    ((my $ok), $msg) = $self->AddRoleMember(
+        Principal         => $principal,
+        ACL               => sub { $self->_HasModifyWatcherRight( @_ ) },
+        Type              => $args{Type},
         InsideTransaction => 1,
     );
-    return ( 0, $msg) unless $principal;
+    return ( 0, $msg) unless $ok;
 
-    return ( 1, $self->loc('Added [_1] as a [_2] for this ticket',
-                $principal->Object->Name, $self->loc($args{'Type'})) );
+    # reload group in case it was lazily created
+    $group = $self->RoleGroup( $args{Type} );
+
+    if ($group->SingleMemberRoleGroup) {
+        return ( 1, $self->loc( "[_1] changed from [_2] to [_3]",
+                       loc($args{Type}), $original_user->Name, $principal->Object->Name ) );
+    }
+    else {
+        return ( 1, $self->loc('Added [_1] as [_2] for this ticket',
+                    $principal->Object->Name, $self->loc($args{Type})) );
+    }
 }
 
 
@@ -684,7 +712,7 @@ sub DeleteWatcher {
     return ( 0, $msg ) unless $principal;
 
     return ( 1,
-             $self->loc( "[_1] is no longer a [_2] for this ticket.",
+             $self->loc( "[_1] is no longer [_2] for this ticket",
                          $principal->Object->Name,
                          $self->loc($args{'Type'}) ) );
 }
