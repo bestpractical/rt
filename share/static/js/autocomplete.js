@@ -33,6 +33,14 @@ window.RT.Autocomplete.bind = function(from) {
             queryargs.push("privileged=1");
         }
 
+        if (input.is('[data-autocomplete-include-nobody]')) {
+            queryargs.push("include_nobody=1");
+        }
+
+        if (input.is('[data-autocomplete-include-system]')) {
+            queryargs.push("include_system=1");
+        }
+
         if (input.is('[data-autocomplete-multiple]')) {
             if ( what != 'Tickets' ) {
                 queryargs.push("delim=,");

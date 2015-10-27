@@ -71,6 +71,14 @@
     data-autocomplete-return="<% $AutocompleteReturn %>"
 % }
 
+% if ($AutocompleteNobody) {
+    data-autocomplete-include-nobody
+% }
+
+% if ($AutocompleteSystem) {
+    data-autocomplete-include-system
+% }
+
 />
 % if ($EntryHint) {
 <br>
@@ -85,6 +93,8 @@ $Default => ''
 $Autocomplete => 1
 $AutocompleteMultiple => 0
 $AutocompleteReturn => ''
+$AutocompleteNobody => 0
+$AutocompleteSystem => 0
 $EntryHint => ''
 $Placeholder => ''
 </%ARGS>

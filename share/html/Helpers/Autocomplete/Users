@@ -56,6 +56,8 @@ $max => undef
 $privileged => undef
 $exclude => ''
 $op => undef
+$include_nobody => 0
+$include_system => 0
 </%ARGS>
 <%INIT>
 # Only allow certain return fields
@@ -86,7 +88,8 @@ $m->abort unless $CurrentUser->Privileged
 
 # the API wants a list of ids
 my @exclude = split /\s*,\s*/, $exclude;
-push @exclude, RT->SystemUser->id, RT->Nobody->id;
+push @exclude, RT->SystemUser->id unless $include_system;
+push @exclude, RT->Nobody->id unless $include_nobody;
 
 $m->callback( CallbackName => 'ModifyMaxResults', max => \$max );
 $max //= 10;
