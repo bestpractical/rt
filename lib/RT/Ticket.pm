@@ -789,12 +789,7 @@ B<Returns> String: All Ticket Requestor email addresses as a string.
 
 sub RequestorAddresses {
     my $self = shift;
-
-    unless ( $self->CurrentUserHasRight('ShowTicket') ) {
-        return undef;
-    }
-
-    return ( $self->Requestors->MemberEmailAddressesAsString );
+    return $self->RoleAddresses('Requestor');
 }
 
 
@@ -806,13 +801,7 @@ returns String: All Ticket AdminCc email addresses as a string
 
 sub AdminCcAddresses {
     my $self = shift;
-
-    unless ( $self->CurrentUserHasRight('ShowTicket') ) {
-        return undef;
-    }
-
-    return ( $self->AdminCc->MemberEmailAddressesAsString )
-
+    return $self->RoleAddresses('AdminCc');
 }
 
 =head2 CcAddresses
@@ -823,14 +812,25 @@ returns String: All Ticket Ccs as a string of email addresses
 
 sub CcAddresses {
     my $self = shift;
+    return $self->RoleAddresses('Cc');
+}
+
+=head2 RoleAddresses
+
+Takes a role name and returns a string of all the email addresses for
+users in that role
+
+=cut
+
+sub RoleAddresses {
+    my $self = shift;
+    my $role = shift;
 
     unless ( $self->CurrentUserHasRight('ShowTicket') ) {
         return undef;
     }
-    return ( $self->Cc->MemberEmailAddressesAsString);
-
+    return ( $self->RoleGroup($role)->MemberEmailAddressesAsString);
 }
-
 
 
 
