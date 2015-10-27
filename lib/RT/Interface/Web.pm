@@ -3835,6 +3835,13 @@ sub ProcessColumnMapValue {
 Returns an array suitable for passing to /Admin/Elements/EditRights with the
 principal collections mapped from the categories given.
 
+The return value is an array of arrays, where the inner arrays are like:
+
+    [ 'Category name' => $CollectionObj => 'DisplayColumn' => 1 ]
+
+The last value is a boolean determining if the value of DisplayColumn
+should be loc()-ed before display.
+
 =cut
 
 sub GetPrincipalsMap {
