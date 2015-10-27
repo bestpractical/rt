@@ -95,6 +95,7 @@ $m->callback( TicketObj => $TicketObj, CustomFields => $CustomFields, ARGSRef =>
 
 unless ($skip_update) {
     push @results, ProcessTicketBasics(TicketObj => $TicketObj, ARGSRef => \%ARGS);
+    push @results, ProcessTicketWatchers(TicketObj => $TicketObj, ARGSRef => \%ARGS);
     push @results, ProcessObjectCustomFieldUpdates(Object => $TicketObj, ARGSRef => \%ARGS);
     $m->callback( CallbackName => 'ProcessUpdates', TicketObj => $TicketObj,
                   ARGSRef => \%ARGS, Results => \@results );
