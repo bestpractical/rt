@@ -294,7 +294,13 @@ L<RT::Group> object on failure.
 sub RoleGroup {
     my $self  = shift;
     my $name  = shift;
+    my %args  = @_;
+
     my $group = RT::Group->new( $self->CurrentUser );
+
+    if ($args{CheckRight}) {
+        return $group if !$self->CurrentUserHasRight($args{CheckRight});
+    }
 
     if ($self->HasRole($name)) {
         $group->LoadRoleGroup(

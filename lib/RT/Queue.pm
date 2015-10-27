@@ -656,9 +656,7 @@ If the user doesn't have "ShowQueue" permission, returns an empty group
 sub Cc {
     my $self = shift;
 
-    return RT::Group->new($self->CurrentUser)
-        unless $self->CurrentUserHasRight('SeeQueue');
-    return $self->RoleGroup( 'Cc' );
+    return $self->RoleGroup( 'Cc', CheckRight => 'SeeQueue' );
 }
 
 
@@ -674,9 +672,7 @@ If the user doesn't have "ShowQueue" permission, returns an empty group
 sub AdminCc {
     my $self = shift;
 
-    return RT::Group->new($self->CurrentUser)
-        unless $self->CurrentUserHasRight('SeeQueue');
-    return $self->RoleGroup( 'AdminCc' );
+    return $self->RoleGroup( 'AdminCc', CheckRight => 'SeeQueue' );
 }
 
 
