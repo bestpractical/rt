@@ -2460,6 +2460,29 @@ This option can also be set as an individual user preference.
 
 Set($TimeInICal, 0);
 
+=item C<$PreferDateTimeFormatNatural>
+
+By default, RT parses an unknown date first with L<Time::ParseDate>, and if
+this fails with L<DateTime::Format::Natural>.
+C<$PreferDateTimeFormatNatural> changes this behavior to first parse with
+L<DateTime::Format::Natural>, and if this fails with L<Time::ParseDate>.
+This gives you the possibility to use the more advanced features of
+L<DateTime::Format::Natural>.
+For example with L<Time::ParseDate> it isn't possible to get the
+'first day of the last month', where L<DateTime::Format::Natural> supports
+this with 'last month'.
+
+Be aware that L<Time::ParseDate> and L<DateTime::Format::Natural> have
+different definitions for the relative date and time syntax.
+L<Time::ParseDate> returns for 'last month' this DayOfMonth from the last month.
+L<DateTime::Format::Natural> returns for 'last month' the first day of the last
+month. So changing this config option maybe changes the results of your saved
+searches.
+
+=cut
+
+Set($PreferDateTimeFormatNatural, 0);
+
 =back
 
 =head1 Cryptography
