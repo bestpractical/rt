@@ -81,7 +81,7 @@
 </tr>
 
 <tr>
-  <td class="label"><&|/l&>Administrative Cc</&>:</td>
+  <td class="label"><&|/l&>Admin Cc</&>:</td>
   <td class="value"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->AdminCc &></td>
 </tr>
 
