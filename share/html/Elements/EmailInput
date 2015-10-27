@@ -67,6 +67,10 @@
     data-autocomplete-multiple
 % }
 
+% if ($AutocompleteReturn) {
+    data-autocomplete-return="<% $AutocompleteReturn %>"
+% }
+
 />
 % if ($EntryHint) {
 <br>
@@ -80,6 +84,7 @@ $Size    => 40
 $Default => ''
 $Autocomplete => 1
 $AutocompleteMultiple => 0
+$AutocompleteReturn => ''
 $EntryHint => ''
 $Placeholder => ''
 </%ARGS>
