@@ -1018,18 +1018,19 @@ sub _WatcherLimit {
     my $meta = $FIELD_METADATA{ $field };
     my $type = $meta->[1] || '';
     my $class = $meta->[2] || 'Ticket';
+    my $column = $rest{SUBKEY};
 
     # Bail if the subfield is not allowed
-    if (    $rest{SUBKEY}
-        and not grep { $_ eq $rest{SUBKEY} } @{$SEARCHABLE_SUBFIELDS{'User'}})
+    if (    $column
+        and not grep { $_ eq $column } @{$SEARCHABLE_SUBFIELDS{'User'}})
     {
-        die "Invalid watcher subfield: '$rest{SUBKEY}'";
+        die "Invalid watcher subfield: '$column'";
     }
 
     $self->RoleLimit(
         TYPE      => $type,
         CLASS     => "RT::$class",
-        FIELD     => $rest{SUBKEY},
+        FIELD     => $column,
         OPERATOR  => $op,
         VALUE     => $value,
         SUBCLAUSE => "ticketsql",
@@ -1319,14 +1320,18 @@ sub OrderByCols {
         my ( $field, $subkey ) = split /\./, $row->{FIELD}, 2;
         my $meta = $FIELD_METADATA{$field};
         if ( defined $meta->[0] && $meta->[0] eq 'WATCHERFIELD' ) {
+            my $type = $meta->[1] || '';
+            my $class = $meta->[2] || 'Ticket';
+            my $column = $subkey;
+
             # cache alias as we want to use one alias per watcher type for sorting
-            my $cache_key = join "-", map { $_ || "" } @$meta[1,2];
+            my $cache_key = join "-", $type, $class;
             my $users = $self->{_sql_u_watchers_alias_for_sort}{ $cache_key };
             unless ( $users ) {
                 $self->{_sql_u_watchers_alias_for_sort}{ $cache_key }
-                    = $users = ( $self->_WatcherJoin( Name => $meta->[1], Class => "RT::" . ($meta->[2] || 'Ticket') ) )[2];
+                    = $users = ( $self->_WatcherJoin( Name => $type, Class => "RT::" . $class ) )[2];
             }
-            push @res, { %$row, ALIAS => $users, FIELD => $subkey };
+            push @res, { %$row, ALIAS => $users, FIELD => $column };
        } elsif ( defined $meta->[0] && $meta->[0] eq 'CUSTOMFIELD' ) {
            my ($object, $field, $cf, $column) = $self->_CustomFieldDecipher( $subkey );
            my $cfkey = $cf ? $cf->id : "$object.$field";
