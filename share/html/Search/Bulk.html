@@ -289,6 +289,7 @@ unless ( $ARGS{'AddMoreAttach'} ) {
         my @cfresults = ProcessRecordBulkCustomFields( RecordObj => $Ticket, ARGSRef => \%ARGS );
 
         my @tempresults = (
+            grep { defined }
             @watchresults,  @basicresults, @dateresults,
             @updateresults, @linkresults,  @cfresults
         );
