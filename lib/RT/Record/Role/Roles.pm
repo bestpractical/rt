@@ -129,6 +129,29 @@ Optional.  A numeric value indicating the position of this role when sorted
 ascending with other roles in a list.  Roles with the same sort order are
 ordered alphabetically by name within themselves.
 
+=item UserDefined
+
+Optional.  A true value indicates that this role was created by the user and
+as such is not managed by the core codebase or an extension.
+
+=item CreateGroupPredicate
+
+Optional.  A subroutine whose return value indicates whether the group for this
+role should be created as part of L</_CreateRoleGroups>.  When this subroutine
+is not provided, the group will be created.  The same parameters that will be
+passed to L<RT::Group/CreateRoleGroup> are passed to your predicate (including
+C<Object>)
+
+=item AppliesToObjectPredicate
+
+Optional.  A subroutine which decides whether a specific object in the class
+has the role or not.
+
+=item LabelGenerator
+
+Optional.  A subroutine which returns the name of the role as suitable for
+displaying to the end user. Will receive as an argument a specific object.
+
 =back
 
 =cut
@@ -137,9 +160,13 @@ sub RegisterRole {
     my $self  = shift;
     my $class = ref($self) || $self;
     my %role  = (
-        Name            => undef,
-        EquivClasses    => [],
-        SortOrder       => 0,
+        Name                     => undef,
+        EquivClasses             => [],
+        SortOrder                => 0,
+        UserDefined              => 0,
+        CreateGroupPredicate     => undef,
+        AppliesToObjectPredicate => undef,
+        LabelGenerator           => undef,
         @_
     );
     return unless $role{Name};
@@ -258,6 +285,8 @@ sub Roles {
                     $ok = 0, last if $attr{$k} xor $_->[1]{$k};
                 }
                 $ok }
+            grep { !$_->[1]{AppliesToObjectPredicate}
+                 or $_->[1]{AppliesToObjectPredicate}->($self) }
              map { [ $_, $self->Role($_) ] }
             keys %{ $self->_ROLES };
 }
@@ -620,12 +649,19 @@ sub _CreateRoleGroup {
         @_,
     );
 
-    my $type_obj = RT::Group->new($self->CurrentUser);
-    my ($id, $msg) = $type_obj->CreateRoleGroup(
+    my $role = $self->Role($name);
+
+    my %create = (
         Name    => $name,
         Object  => $self,
         %args,
     );
+
+    return (0) if $role->{CreateGroupPredicate}
+               && !$role->{CreateGroupPredicate}->(%create);
+
+    my $type_obj = RT::Group->new($self->CurrentUser);
+    my ($id, $msg) = $type_obj->CreateRoleGroup(%create);
 
     unless ($id) {
         $RT::Logger->error("Couldn't create a role group of type '$name' for ".ref($self)." ".
@@ -680,6 +716,22 @@ sub _AddRolesOnCreate {
     }
 
     return @errors;
+}
+
+=head2 LabelForRole
+
+Returns a label suitable for displaying the passed-in role to an end user.
+
+=cut
+
+sub LabelForRole {
+    my $self = shift;
+    my $name = shift;
+    my $role = $self->Role($name);
+    if ($role->{LabelGenerator}) {
+        return $role->{LabelGenerator}->($self);
+    }
+    return $role->{Name};
 }
 
 
