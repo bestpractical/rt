@@ -61,6 +61,8 @@
 
 <h3><&|/l&>Current watchers</&></h3>
 
+<i><&|/l&>(Check box to delete)</&></i><br /><br />
+
 % for my $Name (RT::Queue->ManageableRoleGroupTypes) {
 <& /Admin/Elements/EditQueueWatcherGroup, Label => loc($Name), QueueObj => $QueueObj, Watchers => $QueueObj->$Name &>
 % }
