@@ -49,8 +49,12 @@
 % if ($AllowNull) {
 <option value="">-</option>
 % }
-%for my $option (@types) {
-<option value="<%$option%>"<%defined($Default) && $option eq $Default && qq[ selected="selected"] |n %>><%loc($option)%></option>
+%for my $value (@types) {
+<option value="<%$value%>"
+% if (defined($Default) && $value eq $Default) {
+selected="selected"
+% }
+><% loc($Queue->LabelForRole($value)) %></option>
 %}
 </select>
 

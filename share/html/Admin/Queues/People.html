@@ -64,7 +64,11 @@
 <i><&|/l&>(Check box to delete)</&></i><br /><br />
 
 % for my $Name ($QueueObj->ManageableRoleGroupTypes) {
-<& /Admin/Elements/EditQueueWatcherGroup, Label => loc($Name), QueueObj => $QueueObj, Watchers => $QueueObj->$Name &>
+    <& /Admin/Elements/EditQueueWatcherGroup,
+        Label    => loc($QueueObj->LabelForRole($Name)),
+        QueueObj => $QueueObj,
+        Watchers => $QueueObj->RoleGroup($Name, CheckRight => 'SeeQueue')
+    &>
 % }
 
 % $m->callback(CallbackName => 'CurrentWatchers', QueueObj => $QueueObj);
