@@ -609,21 +609,35 @@ sub _ResolveRoles {
     return (@errors);
 }
 
+sub _CreateRoleGroup {
+    my $self = shift;
+    my $name = shift;
+    my %args = (
+        @_,
+    );
+
+    my $type_obj = RT::Group->new($self->CurrentUser);
+    my ($id, $msg) = $type_obj->CreateRoleGroup(
+        Name    => $name,
+        Object  => $self,
+        %args,
+    );
+
+    unless ($id) {
+        $RT::Logger->error("Couldn't create a role group of type '$name' for ".ref($self)." ".
+                               $self->id.": ".$msg);
+        return(undef);
+    }
+
+    return $type_obj;
+}
+
 sub _CreateRoleGroups {
     my $self = shift;
     my %args = (@_);
     for my $name ($self->Roles) {
-        my $type_obj = RT::Group->new($self->CurrentUser);
-        my ($id, $msg) = $type_obj->CreateRoleGroup(
-            Name    => $name,
-            Object  => $self,
-            %args,
-        );
-        unless ($id) {
-            $RT::Logger->error("Couldn't create a role group of type '$name' for ".ref($self)." ".
-                                   $self->id.": ".$msg);
-            return(undef);
-        }
+        my ($ok) = $self->_CreateRoleGroup($name, %args);
+        return(undef) if !$ok;
     }
     return(1);
 }
