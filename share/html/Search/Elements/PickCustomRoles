@@ -45,51 +45,46 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select id="<%$Name%>" name="<%$Name%>">
-% if ($AllowNull) {
-<option value="">-</option>
-% }
-% for my $option (@types) {
-% my ($value, $label) = ($option, $option);
-% if (ref($option)) {
-%     ($value, $label) = @$option;
-% }
-
-%  if ($Suffix) {
-<option value="<% $value %><% $Suffix %>"<%$value eq $Default && qq[ selected="selected"] |n %> ><% loc($label) %> <% loc('Group') %></option>
-%   next;
-%  }
-%  foreach my $subtype (@subtypes) {
-<option value="<%"$value.$subtype"%>"<%$value eq $Default && $subtype eq 'EmailAddress' && qq[ selected="selected"] |n %> ><% loc($label) %> <% loc($subtype) %></option>
-%  }
-% }
-</select>
-
+<%ARGS>
+%queues => ()
+</%ARGS>
 <%INIT>
-my @types;
-if ($Role) {
-   @types = (
-      [ "CustomRole.{" . $Role->Name . "}", $Role->Name ],
-   );
+my $CustomRoles = RT::CustomRoles->new( $session{'CurrentUser'});
+foreach my $id (keys %queues) {
+    # Gotta load up the $queue object, since queues get stored by name now.
+    my $queue = RT::Queue->new($session{'CurrentUser'});
+    $queue->Load($id);
+    next unless $queue->Id;
+    $CustomRoles->LimitToObjectId($queue->Id);
 }
-elsif ($Scope =~ /queue/) {
-   @types = qw(Cc AdminCc);
-}
-elsif ($Suffix eq 'Group') {
-   @types = qw(Owner Requestor Cc AdminCc Watcher);
-}
-else { 
-   @types = qw(Requestor Cc AdminCc Watcher Owner QueueCc QueueAdminCc QueueWatcher);
+$m->callback(
+    CallbackName => 'MassageCustomRoles',
+    CustomRoles  => $CustomRoles,
+);
+
+my @lines;
+while ( my $Role = $CustomRoles->Next ) {
+    my $name = "CustomRole.{" . $Role->Name . "}";
+    my %line = (
+        Name => $name,
+        Field => {
+            Type => 'component',
+            Path => 'SelectPersonType',
+            Arguments => { Role => $Role, Default => $name },
+        },
+        Op => {
+            Type => 'component',
+            Path => '/Elements/SelectMatch',
+        },
+        Value => { Type => 'text', Size => 20 },
+    );
+
+    push @lines, \%line;
 }
 
-my @subtypes = @{ $RT::Tickets::SEARCHABLE_SUBFIELDS{'User'} };
+$m->callback( Conditions => \@lines, Queues => \%queues );
 
 </%INIT>
-<%ARGS>
-$AllowNull => 1
-$Suffix => ''
-$Default=>undef
-$Scope => 'ticket'
-$Name => 'WatcherType'
-$Role => undef
-</%ARGS>
+% foreach( @lines ) {
+<& ConditionRow, Condition => $_ &>
+% }

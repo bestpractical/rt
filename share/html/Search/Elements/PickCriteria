@@ -52,6 +52,7 @@
 
 % $m->callback( %ARGS, CallbackName => "BeforeBasics" );
 <& PickBasics, queues => \%queues &>
+<& PickCustomRoles, queues => \%queues &>
 <& PickTicketCFs, queues => \%queues &>
 <& PickObjectCFs, Class => 'Transaction', queues => \%queues &>
 <& PickObjectCFs, Class => 'Queue', queues => \%queues &>
