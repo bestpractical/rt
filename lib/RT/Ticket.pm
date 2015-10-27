@@ -370,7 +370,7 @@ sub Create {
 
     # Figure out users for roles
     my $roles = {};
-    push @non_fatal_errors, $self->_ResolveRoles( $roles, %args );
+    push @non_fatal_errors, $QueueObj->_ResolveRoles( $roles, %args );
 
     $args{'Type'} = lc $args{'Type'}
         if $args{'Type'} =~ /^(ticket|approval|reminder)$/i;
