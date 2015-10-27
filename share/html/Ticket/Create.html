@@ -73,6 +73,7 @@
     <& /Ticket/Elements/EditBasics,
         InTable => 1,
         QueueObj => $QueueObj,
+        defaults => \%ARGS,
         fields  => [
             {   name => 'Queue',
                 comp => '/Ticket/Elements/ShowQueue',
