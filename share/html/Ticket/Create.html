@@ -72,6 +72,7 @@
     <table width="100%" border="0">
     <& /Ticket/Elements/EditBasics,
         InTable => 1,
+        QueueObj => $QueueObj,
         fields  => [
             {   name => 'Queue',
                 comp => '/Ticket/Elements/ShowQueue',

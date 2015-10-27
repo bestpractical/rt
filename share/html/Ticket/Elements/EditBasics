@@ -47,11 +47,16 @@
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
 $TicketObj => undef
+$QueueObj => undef
 @fields => ()
 $InTable => 0
 %defaults => ()
 </%ARGS>
 <%INIT>
+if ($TicketObj) {
+    $QueueObj ||= $TicketObj->QueueObj;
+}
+
 unless ( @fields ) {
     my $subject = $defaults{'Subject'} || $TicketObj->Subject;
     @fields = (
@@ -71,7 +76,7 @@ unless ( @fields ) {
             comp => '/Elements/SelectQueue',
             args => {
                 Name => 'Queue',
-                Default => $defaults{'Queue'} || $TicketObj->QueueObj->Id,
+                Default => $defaults{'Queue'} || $QueueObj->Id,
                 ShowNullOption => 0,
             }
         },
@@ -79,13 +84,13 @@ unless ( @fields ) {
             comp => '/Elements/SelectOwner',
             args => {
                 Name => 'Owner',
-                QueueObj => $TicketObj->QueueObj,
+                QueueObj => $QueueObj,
                 TicketObj => $TicketObj,
                 Default => $defaults{'Owner'} || $TicketObj->OwnerObj->Id,
                 DefaultValue => 0,
             }
         },
-        $TicketObj->QueueObj->SLADisabled ? () : (
+        $QueueObj->SLADisabled ? () : (
         {   name => 'SLA',
             comp => '/Elements/SelectSLA',
             args => {
