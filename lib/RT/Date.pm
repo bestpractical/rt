@@ -213,7 +213,19 @@ sub Set {
         }
     }
     elsif ( $format eq 'unknown' ) {
-        return $self->Unix($self->ParseByTimeParseDate(%args) || $self->ParseByDateTimeFormatNatural(%args) || 0);
+        if ( RT->Config->Get('PreferDateTimeFormatNatural') ) {
+            return $self->Unix(
+                   $self->ParseByDateTimeFormatNatural(%args)
+                || $self->ParseByTimeParseDate(%args)
+                || 0
+            );
+        } else {
+            return $self->Unix(
+                   $self->ParseByTimeParseDate(%args)
+                || $self->ParseByDateTimeFormatNatural(%args)
+                || 0
+            );
+        }
     }
     else {
         $RT::Logger->error(
