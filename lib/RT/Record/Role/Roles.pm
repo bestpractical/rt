@@ -226,7 +226,7 @@ sub Role {
 
 =head2 Roles
 
-Returns a list of role names registered for this class, sorted ascending by
+Returns a list of role names registered for this object, sorted ascending by
 SortOrder and then alphabetically by name.
 
 Optionally takes a hash specifying attributes the returned roles must possess

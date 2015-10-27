@@ -59,7 +59,10 @@
 </td></tr>
 % while (my $u = $Users->Next ) {
 <tr>
-<td><&/Elements/SelectWatcherType, Name  => "Ticket-AddWatcher-Principal-". $u->PrincipalId &></td>
+<td><&/Elements/SelectWatcherType,
+    Name  => "Ticket-AddWatcher-Principal-". $u->PrincipalId,
+    Queue => $Ticket->QueueObj,
+&></td>
 <td><& '/Elements/ShowUser', User => $u, style=>'verbose' &></td>
 </tr>
 % }
@@ -73,7 +76,10 @@
 </td></tr>
 % while (my $g = $Groups->Next ) {
 <tr>
-<td><& /Elements/SelectWatcherType, Name  => "Ticket-AddWatcher-Principal-".$g->PrincipalId, &></td>
+<td><& /Elements/SelectWatcherType,
+    Name  => "Ticket-AddWatcher-Principal-".$g->PrincipalId,
+    Queue => $Ticket->QueueObj,
+&></td>
 <td><%$g->Name%> (<%$g->Description%>)</td>
 </tr>
 % }
@@ -88,7 +94,7 @@
 % for my $email (@extras) {
 % $counter++;
 <tr><td>
-<&/Elements/SelectWatcherType, Name => "WatcherTypeEmail".$counter &>
+<&/Elements/SelectWatcherType, Name => "WatcherTypeEmail".$counter, Queue => $Ticket->QueueObj &>
 </td><td>
 <input type="hidden" name="WatcherAddressEmail<%$counter%>" value="<%$email->format%>">
 <%$email->format%>
@@ -96,7 +102,7 @@
 % }
 % for my $i (1 .. 3) {
 <tr><td>
-<&/Elements/SelectWatcherType, Name => "WatcherTypeEmail" . $i &>
+<&/Elements/SelectWatcherType, Name => "WatcherTypeEmail" . $i, Queue => $Ticket->QueueObj &>
 </td><td>
 <& /Elements/EmailInput, Name => 'WatcherAddressEmail' . $i, Size => '20' &>
 </td></tr>

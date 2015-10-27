@@ -57,15 +57,17 @@
 <%INIT>
 my @types;
 if ($Scope =~ /queue/) {
-   @types = RT::Queue->ManageableRoleGroupTypes;
+    @types = $Queue->ManageableRoleGroupTypes;
 }
 else { 
-   @types = qw(Requestor Cc AdminCc);
+    @types = $Queue->Roles(Single => 0);
 }
+
 </%INIT>
 <%ARGS>
 $AllowNull => 1
 $Default=>undef
 $Scope => 'ticket'
 $Name => 'WatcherType'
+$Queue => undef
 </%ARGS>

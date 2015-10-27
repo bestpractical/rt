@@ -63,7 +63,7 @@
 
 <i><&|/l&>(Check box to delete)</&></i><br /><br />
 
-% for my $Name (RT::Queue->ManageableRoleGroupTypes) {
+% for my $Name ($QueueObj->ManageableRoleGroupTypes) {
 <& /Admin/Elements/EditQueueWatcherGroup, Label => loc($Name), QueueObj => $QueueObj, Watchers => $QueueObj->$Name &>
 % }
 
@@ -93,7 +93,8 @@
 % while (my $u = $Users->Next ) {
 <li><& /Elements/SelectWatcherType,
     Scope => 'queue',
-    Name => "Queue-AddWatcher-Principal-". $u->PrincipalId,
+    Name  => "Queue-AddWatcher-Principal-". $u->PrincipalId,
+    Queue => $QueueObj,
 &>
 <& /Elements/ShowUser, User => $u &></li>
 % }
@@ -109,9 +110,12 @@
 % } elsif ($Groups) {
 <ul>
 % while (my $g = $Groups->Next ) {
-<li><&/Elements/SelectWatcherType, Scope=>'queue', Name =>
-"Queue-AddWatcher-Principal-".$g->PrincipalId &> <%$g->Name%>
-(<%$g->Description%>)
+<li><& /Elements/SelectWatcherType,
+    Scope => 'queue',
+    Name  => "Queue-AddWatcher-Principal-".$g->PrincipalId,
+    Queue => $QueueObj,
+&>
+<%$g->Name%> (<%$g->Description%>)
 % }
 </ul>
 % }
@@ -153,7 +157,7 @@ unless ($OnlySearchForPeople or $OnlySearchForGroup) {
         next unless $key =~ /^Queue-AddWatcher-Principal-(\d*)$/;
         my $id = $1;
 
-        next unless RT::Queue->IsManageableRoleGroupType($type);
+        next unless $QueueObj->IsManageableRoleGroupType($type);
 
         my ($code, $msg) = $QueueObj->AddWatcher(
             Type => $type,
