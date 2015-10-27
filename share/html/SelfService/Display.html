@@ -80,6 +80,8 @@
 </tr>
 </table>
 
+<& /Ticket/Elements/ShowAssets, Ticket => $Ticket &>
+
 % $m->callback(CallbackName => 'BeforeShowHistory', ARGSRef=> \%ARGS, Ticket => $Ticket );
 
 <& /Elements/ShowHistory,

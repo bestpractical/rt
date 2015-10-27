@@ -436,6 +436,7 @@ AC_CONFIG_FILES([
                  etc/upgrade/switch-templates-to
                  etc/upgrade/time-worked-history
                  etc/upgrade/upgrade-articles
+                 etc/upgrade/upgrade-assets
                  etc/upgrade/vulnerable-passwords
                  etc/upgrade/upgrade-sla
                  sbin/rt-attributes-viewer

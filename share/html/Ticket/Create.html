@@ -120,6 +120,9 @@
       <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, QueueObj => $QueueObj, InTable => 1 &>
     </table>
   </&>
+
+<& /Ticket/Elements/ShowAssetsOnCreate, QueueObj => $QueueObj, ARGSRef => \%ARGS &>
+
 % $m->callback( CallbackName => 'AfterBasics', QueueObj => $QueueObj, ARGSRef => \%ARGS );
 
 <& /Elements/EditCustomFieldCustomGroupings,

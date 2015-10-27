@@ -1,0 +1,121 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2015 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<%args>
+$QueueObj
+$ARGSRef
+</%args>
+<%init>
+my @linked_assets;
+foreach my $key ( map {+("new-$_", "$_-new")} keys %RT::Link::DIRMAP ) {
+    next unless $ARGSRef->{$key};
+    for my $linktext (grep $_, split ' ', $ARGSRef->{$key}) {
+        my $uri = RT::URI->new( $session{'CurrentUser'} );
+        next unless $uri->FromURI( $linktext );
+        next unless $uri->IsLocal and $uri->Object and $uri->Object->id and $uri->Object->isa("RT::Asset");
+        push @linked_assets, $uri->Object->id;
+    }
+}
+
+my $asset_queue;
+if (RT->Config->Get('AssetQueues')) {
+    $asset_queue = 1 if grep {$_ eq $QueueObj->Name} @{RT->Config->Get('AssetQueues')}
+} else {
+    $asset_queue = 1;
+}
+
+return unless @linked_assets or $asset_queue;
+
+my $assets = RT::Assets->new( $session{CurrentUser} );
+$assets->OrderBy( FIELD => "Name", ORDER => "ASC" );
+if ( @linked_assets ) {
+    $assets->Limit(
+        FIELD       => "id",
+        OPERATOR    => "IN",
+        VALUE       => \@linked_assets,
+    );
+}
+
+my $Format = RT->Config->Get("AssetSummaryFormat") || q[
+    '<a href="__WebHomePath__/Asset/Display.html?id=__id__">__Name__</a>/TITLE:Name',
+    Description,
+    Status,
+    Catalog,
+];
+
+$m->callback(
+    CallbackName    => 'ModifyCollection',
+    Queue           => $QueueObj,
+    Assets          => $assets,
+    Format          => \$Format,
+);
+
+
+</%init>
+<&| /Widgets/TitleBox,
+    title => loc('Assets'),
+    class => 'ticket-assets',
+    title_class => "inverse",
+    &>
+
+% $m->callback( CallbackName => "Start", Queue => $QueueObj, Assets => $assets );
+
+<div id="assets-accordion" class="rt-accordion">
+% while (my $asset = $assets->Next) {
+  <h3><a href="<% RT->Config->Get('WebPath') %>/Asset/Display.html?id=<% $asset->id %>"><&|/l, $asset->id, $asset->Name &>#[_1]: [_2]</&></a></h3>
+  <div class="details">
+    <& /Elements/ShowRecord,
+        Object      => $asset,
+        Format      => $Format,
+        TrustFormat => 1,
+        &>
+% $m->callback( CallbackName => "PerAsset", Queue => $QueueObj, Asset => $asset );
+  </div>
+% }
+</div>
+% $m->callback( CallbackName => "End", Queue => $QueueObj, Assets => $assets );
+</&>

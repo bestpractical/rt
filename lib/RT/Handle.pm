@@ -806,6 +806,25 @@ sub InsertInitialData {
         return ($val, $msg) unless $val;
     }
 
+    # assets role groups
+    foreach my $name (RT::Asset->Roles) {
+        next if $name eq "Owner";
+
+        my $group = RT->System->RoleGroup( $name );
+        if ( $group->id ) {
+            push @warns, "Assets role '$name' already exists.";
+            next;
+        }
+
+        $group = RT::Group->new( RT->SystemUser );
+        my ($val, $msg) = $group->CreateRoleGroup(
+            Object              => RT->System,
+            Name                => $name,
+            InsideTransaction   => 0,
+        );
+        return ($val, $msg) unless $val;
+    }
+
     push @warns, "You appear to have a functional RT database."
         if @warns;
 
@@ -829,10 +848,11 @@ sub InsertData {
 
     # Slurp in stuff to insert from the datafile. Possible things to go in here:-
     our (@Groups, @Users, @Members, @ACL, @Queues, @Classes, @ScripActions, @ScripConditions,
-           @Templates, @CustomFields, @Scrips, @Attributes, @Initial, @Final);
+           @Templates, @CustomFields, @Scrips, @Attributes, @Initial, @Final,
+           @Catalogs, @Assets);
     local (@Groups, @Users, @Members, @ACL, @Queues, @Classes, @ScripActions, @ScripConditions,
-           @Templates, @CustomFields, @Scrips, @Attributes, @Initial, @Final);
-
+           @Templates, @CustomFields, @Scrips, @Attributes, @Initial, @Final,
+           @Catalogs, @Assets);
     local $@;
     $RT::Logger->debug("Going to load '$datafile' data file");
     eval { require $datafile }
@@ -1036,6 +1056,41 @@ sub InsertData {
         }
         $RT::Logger->debug("done.");
     }
+
+    if ( @Catalogs ) {
+        $RT::Logger->debug("Creating Catalogs...");
+
+        for my $item (@Catalogs) {
+            my $new_entry = RT::Catalog->new(RT->SystemUser);
+            my ( $return, $msg ) = $new_entry->Create(%$item);
+            unless ( $return ) {
+                $RT::Logger->error( $msg );
+            }
+            else {
+                $RT::Logger->debug( $return ."." );
+            }
+        }
+
+        $RT::Logger->debug("done.");
+    }
+    if ( @Assets ) {
+        $RT::Logger->debug("Creating Assets...");
+
+        for my $item (@Catalogs) {
+            my $new_entry = RT::Asset->new(RT->SystemUser);
+            my ( $return, $msg ) = $new_entry->Create(%$item);
+            unless ( $return ) {
+                $RT::Logger->error( $msg );
+            }
+            else {
+                $RT::Logger->debug( $return ."." );
+            }
+        }
+
+        $RT::Logger->debug("done.");
+    }
+
+
     if ( @CustomFields ) {
         $RT::Logger->debug("Creating custom fields...");
         for my $item ( @CustomFields ) {

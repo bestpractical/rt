@@ -1,0 +1,31 @@
+
+CREATE TABLE Assets (
+    id                INTEGER PRIMARY KEY,
+    Name              varchar(255)    NOT NULL DEFAULT '',
+    Catalog           int(11)         NOT NULL DEFAULT 0,
+    Status            varchar(64)     NOT NULL DEFAULT '',
+    Description       varchar(255)    NOT NULL DEFAULT '',
+    Creator           int(11)         NOT NULL DEFAULT 0,
+    Created           timestamp                DEFAULT NULL,
+    LastUpdatedBy     int(11)         NOT NULL DEFAULT 0,
+    LastUpdated       timestamp                DEFAULT NULL
+);
+
+CREATE INDEX AssetsName on Assets (Name);
+CREATE INDEX AssetsStatus ON Assets (Status);
+CREATE INDEX AssetsCatalog ON Assets (Catalog);
+
+CREATE TABLE Catalogs (
+    id                INTEGER PRIMARY KEY,
+    Name              varchar(255)    NOT NULL DEFAULT '',
+    Lifecycle         varchar(32)     NOT NULL DEFAULT 'assets',
+    Description       varchar(255)    NOT NULL DEFAULT '',
+    Disabled          int2            NOT NULL DEFAULT 0,
+    Creator           int(11)         NOT NULL DEFAULT 0,
+    Created           timestamp                DEFAULT NULL,
+    LastUpdatedBy     int(11)         NOT NULL DEFAULT 0,
+    LastUpdated       timestamp                DEFAULT NULL
+);
+
+CREATE INDEX CatalogsName on Catalogs (Name);
+CREATE INDEX CatalogsDisabled ON Catalogs (Disabled);

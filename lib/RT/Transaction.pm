@@ -1313,7 +1313,16 @@ sub _FormatUser {
         } else {
             return ("Reminder completed"); #loc()
         }
-    }
+    },
+    'RT::Asset-Set-Catalog' => sub {
+        my $self = shift;
+        return ("[_1] changed from [_2] to [_3]",   #loc
+                $self->loc($self->Field), map {
+                    my $c = RT::Catalog->new($self->CurrentUser);
+                    $c->Load($_);
+                    $c->Name || $self->loc("~[a hidden catalog~]")
+                } $self->OldValue, $self->NewValue);
+    },
 );
 
 

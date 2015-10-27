@@ -1,0 +1,212 @@
+=encoding utf-8
+
+=head1 CONFIGURATION
+
+See L<RT_Config.pm> for documentation on the available configuration
+parameters.
+
+=head1 USAGE
+
+Assets start as a small set of fundamental record data upon which you build
+custom fields (CFs) of any type you like to describe the assets you want to
+track.  By themselves, before you setup any CFs, assets are not very useful.
+
+Just like tickets are assigned to queues, assets are assigned to B<catalogs>.
+The default catalog is named "General assets", but we suggest you rename it and
+add additional catalogs to better fit your organization.
+
+You may want to use catalogs to separate assets into departments, general type
+of asset, hardware vs. software, etc.  Catalogs, like queues, are generally
+easiest to work with when there's more than few but less than many dozen.  The
+catalog of an asset should represent some fundamental quality of it (and many
+other assets!), that could just as easily be expressed as a custom field, but
+which is more important than other qualities for categorizing, sorting, and
+searching.
+
+=head2 Managing catalogs
+
+Catalogs are managed by RT administrators, or anyone with the L</AdminCatalog>
+right.  You can find the list of catalogs, create new catalogs, and manage
+existing ones under the Tools → Configuration → Assets → Catalogs menu.
+
+Currently you need to log out and log back in to see changes to catalogs in any
+of the catalog selection dropdowns.  This doesn't affect the catalog name
+displayed on individual asset pages.
+
+=head2 Adding fields
+
+You can see the current asset CFs by navigating to Admin →
+Assets → Custom Fields.  From there you can use the "Create" link to create a
+new asset CF.  If you know you want to create a new CF right away, you can do
+so via Admin → Assets → Custom Fields → Create.
+
+When creating a CF, be sure to select "Assets" in the "Applies To" dropdown.
+You'll also need to grant rights to the groups and/or roles which need to see
+the fields, otherwise they'll be hidden.  See the following section, Rights.
+
+Similar to ticket CFs, asset custom fields are added globally or to specific
+catalogs.  Only assets within those specific catalogs will have the CFs
+available.  After creating a CF, you'll need to visit the "Applies To" page to
+add it to the catalogs you want or make it global.
+
+=head2 Rights
+
+There are three rights controlling basic access to assets and two for
+catalogs.  Each right is grantable at the global level or individual catalog
+level, and grantable to system groups, asset roles, user groups, and individual
+users (just like ticket and queue rights).
+
+=head3 ShowAsset
+
+Allows viewing an asset record and its core fields (but not CFs).  Without
+it, no assets can be seen.  Similar to ShowTicket.
+
+=head3 CreateAsset
+
+Allows creating assets and filling in the core fields (but not CFs).  Without
+it, no assets can be created.  Similar to CreateTicket.
+
+=head3 ModifyAsset
+
+Allows modifying existing assets and their core fields (but not CFs).  Without
+it, basic asset data cannot be modified after creation.  Similar to
+ModifyTicket.
+
+Most of your rights configuration will be on the CFs, and will likely need to
+be done for each CF.  This lets you fine tune which fields are visible to
+individual groups and/or roles of users.  Relevant CF rights are
+B<SeeCustomField> and B<ModifyCustomField>.
+
+Rights related to assets may also come from the L</Lifecycle statuses>
+configuration and restrict status transitions.
+
+=head3 ShowCatalog
+
+Allows seeing a catalog's name and other details when associated with assets.
+Without it, users will see "[a hidden catalog]" or a blank space where the
+catalog name would normally be.  Similar to SeeQueue.
+
+=head3 AdminCatalog
+
+Allows creating new catalogs and modifying all aspects of existing catalogs,
+including changing the CFs associated with the catalog, granting/revoking
+rights, and adding/removing role members.  This right should only be granted to
+administrators of RT.  Similar to AdminQueue.
+
+=head3 Typical configuration
+
+A typical configuration grants the system Privileged group the following:
+B<ShowAsset>, B<CreateAsset>, B<ModifyAsset>, and B<ShowCatalog> globally, and
+B<SeeCustomField> and B<ModifyCustomField> globally on all asset CFs.
+
+If you want self service users (Unprivileged) to be able to view the assets
+they hold, grant the Held By role B<ShowAsset> and B<ShowCatalog> globally and
+B<SeeCustomField> on the necessary asset CFs.
+
+=head2 People and Roles
+
+Just like tickets, assets have various roles which users and groups may be
+assigned to.  The intended usages of these roles are described below, but
+you're free to use them for whatever you'd like, of course.
+
+The roles provide ways to keep track of who is involved with each asset, as
+well as providing a place to grant rights that depend on the user's association
+with each asset.
+
+In addition to adding people to individual asset roles, you can also add role
+members at an entire catalog level.  These catalog-level roles are useful in
+cases when you might have an entire catalog of assets for which the same people
+should be the Contacts, or which are Held By the same group.  Unlike tickets
+where the queue watchers are invisible, catalog role members are visible
+because assets are generally much longer lived than tickets.  When a problem
+with an asset arises, it's easier to see who to create a ticket for.  On
+individual asset pages, catalog role members are shown with the text "(via this
+asset's catalog)" following each name.
+
+=head3 Owner
+
+The person responsible for the asset, perhaps the purchaser or manager.
+
+Restricted to a single user.  Not available at a catalog level.
+
+=head3 Held By
+
+The person or people who physically possess the asset or are actively using the
+asset (if it isn't physical).  This may be the same as the Contacts or may be
+different.  For example, a computer workstation may be "held by" a university
+professor, but the contact may be the IT staff member responsible for all
+assets in the professor's department.  This role is most similar to Requestor
+on tickets, although not equivalent.
+
+May be multiple users and/or groups.
+
+=head3 Contact
+
+The person or people who should be contacted with questions, problems,
+notifications, etc. about the asset.  Contacts share some of the same intended
+usages of both Requestors and Ccs on tickets.
+
+May be multiple users and/or groups.
+
+=head2 Lifecycle statuses
+
+One of the basic asset fields is "Status".  Similar to tickets, the valid
+statuses and their transitions and actions can be customized via RT's standard
+Lifecycles configuration (see "Lifecycles" in F<RT_Config.pm>).  The default
+lifecycle is named "assets".  You're free to modify it as much as you'd like,
+or add your own lifecycles.  Each catalog may have its own lifecycle.
+
+For the default "assets" configuration, see F<etc/RT_Config.pm>.
+
+=head2 Field organization
+
+=head3 Groupings
+
+You can organize your asset CFs into visual and logical "groupings" as you see
+fit.  These groupings appear as separate boxes on the asset display page and
+become separate pages for editing (showing up in the per-asset menu).
+
+By default your CFs will appear in a B<Custom Fields> box on the asset display
+page and will be editable from a box of the same name on the B<Basics> editing
+page.
+
+Using the C<%CustomFieldGroupings> option (documented in F<etc/RT_Config.pm>),
+you can move individual CFs by name into one of the four built-in groupings
+(B<Basics>, B<People>, B<Dates>, and B<Links>) or create your own just by
+naming it.  An example, assuming a date CF named "Purchased" and two "enter one
+value" CFs named "Weight" and "Color":
+
+    # In etc/RT_SiteConfig.pm
+    Set(%CustomFieldGroupings,
+        'RT::Asset' => {
+            'Dates'                 => ['Purchased'],
+            'Physical Properties'   => ['Weight', 'Color'],
+        },
+    );
+
+This configuration snippet will move all three CFs out of the generic B<Custom
+Fields> box and into the B<Dates> box and a new box titled B<Physical
+Properties>.  The "Purchased" CF will be editable from the Dates page and a new
+page titled "Physical Properties" will appear in the menu to allow editing of
+the "Weight" and "Color" CFs.
+
+=head3 Ordering
+
+Within a box, CFs come after any built-in asset fields such as Name,
+Description, Created, Last Updated, etc.  The CFs themselves are ordered
+according to the sorting seen (and adjustable) on the global Asset Custom
+Fields page (Tools → Configuration → Global → Custom Fields → Assets) and the
+individual catalog Custom Fields pages (Tools → Configuration → Assets →
+Catalogs → (Pick one) → Custom Fields).
+
+Global asset CFs may be intermixed with per-catalog CFs with ordering.
+
+=head2 Importing existing data
+
+Another extension, L<RT::Extension::Assets::Import::CSV> provides tools
+to import new and update existing assets from a CSV dump.  Its
+configuration lets you map the fields in the CSV to the asset fields
+you've already created in RT.  L<RT::Extension::Assets::AppleGSX> also
+provides tools for looking up data associated with an Apple product.
+
+=cut

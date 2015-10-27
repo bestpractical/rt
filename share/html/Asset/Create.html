@@ -1,0 +1,185 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2015 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Elements/Header, Title => loc("Create a new asset in catalog [_1]", $catalog->Name),
+    RT->Config->Get('AssetBasicCustomFieldsOnCreate')
+      ? (
+        onload => "function () { hide('Asset-Create-details') }"
+      )
+      : (),
+ &>
+<& /Elements/Tabs &>
+
+<& /Elements/ListActions, actions => \@results &>
+
+<span class="catalog <% CSSClass($catalog->Name) %>">
+<form method="post" enctype="multipart/form-data" id="CreateAsset" action="Create.html">
+  <input type="hidden" name="id" value="new">
+  <input type="hidden" name="Catalog" value="<% $catalog->id %>">
+
+<a name="basics"></a>
+<div id="Asset-Create-basics" class="asset-metadata">
+    <table>
+        <tbody>
+        <tr>
+            <td>
+  <&| /Widgets/TitleBox, title => loc("Basics"), class => "asset-basics", title_class => "inverse" &>
+    <& Elements/EditBasics, %ARGS, AssetObj => $asset, CatalogObj => $catalog &>
+  </&>
+
+  <&| /Widgets/TitleBox, title => loc("People"), class => "asset-people", title_class => "inverse" &>
+    <& Elements/EditPeople, %ARGS, AssetObj => $asset &>
+  </&>
+  </td><td>
+  <&| /Widgets/TitleBox, title => loc("Links"), class => "asset-links", title_class => "inverse" &>
+    <& /Elements/AddLinks,
+        Object          => $asset,
+        CustomFields    => $catalog->AssetCustomFields &>
+  </&>
+  </td>
+
+  </tr>
+  </tbody>
+  </table>
+</div>
+
+<div id="Asset-Create-details">
+<a name="details"></a>
+
+  <& /Elements/EditCustomFieldCustomGroupings,
+        Object => $asset,
+        TitleBoxARGS => { title_class => "inverse" },
+        KeepValue => 1,
+        CustomFieldGenerator => sub { $catalog->AssetCustomFields } &>
+</div>
+
+  <& /Elements/Submit, Label => loc('Create asset') &>
+</form>
+</span>
+
+<%args>
+$id => ""
+$Catalog => undef
+</%args>
+<%init>
+my $asset   = RT::Asset->new( $session{CurrentUser} );
+my $catalog = RT::Catalog->new( $session{CurrentUser} );
+$catalog->Load($Catalog);
+
+Abort(loc("Unable to find catalog '[_1]'", $Catalog))
+    unless $catalog->id;
+
+Abort(loc("You don't have permission to create assets in catalog [_1].",
+          $catalog->Name || $catalog->id))
+    unless $catalog->CurrentUserHasRight("CreateAsset");
+
+# Update the current default with the latest selection
+$session{'DefaultCatalog'} = $catalog->Id;
+
+my @results;
+
+if ($id eq "new") {
+    my $skip_create = 0;
+
+    my ($cf_ok, @cf_errors) = $m->comp(
+        '/Elements/ValidateCustomFields',
+        Object          => $asset,
+        CustomFields    => $catalog->AssetCustomFields,
+        ARGSRef         => \%ARGS
+    );
+
+    $m->callback(
+        CallbackName    => 'BeforeCreate',
+        AssetObj        => $asset,
+        CatalogObj      => $catalog,
+        results         => \@results,
+        cf_ok           => \$cf_ok,
+        skip_create     => \$skip_create,
+        ARGSRef         => \%ARGS
+    );
+
+    if ($cf_ok and not $skip_create) {
+        # Handle CFs and links
+        my %create = (
+            ProcessObjectCustomFieldUpdatesForCreate(
+                ARGSRef       => \%ARGS,
+                ContextObject => $catalog,
+            ),
+            ProcessLinksForCreate( ARGSRef => \%ARGS ),
+            map {
+                $_ => $ARGS{$_}
+            } $asset->Roles,
+        );
+
+        # Handle basic fields
+        for ($asset->WritableAttributes) {
+            $create{$_} = $ARGS{$_} if exists $ARGS{$_};
+        }
+
+        $m->callback( %ARGS, AssetObj => $asset, CatalogObj => $catalog, Create => \%create, CallbackName => 'MassageCreate' );
+
+        my ($ok, $msg, $nonfatal) = $asset->Create( %create );
+        push @results, $msg, @{$nonfatal || []};
+
+        if ($ok) {
+            MaybeRedirectForResults(
+                Actions     => \@results,
+                Path        => "/Asset/Display.html",
+                Arguments   => { id => $asset->id },
+            );
+        }
+    } else {
+        push @results, @cf_errors;
+    }
+}
+
+if ( RT->Config->Get('AssetBasicCustomFieldsOnCreate') ) {
+    PageMenu->child( basics => raw_html =>  q[<a href="#basics" onclick="return switchVisibility('Asset-Create-basics','Asset-Create-details');">] . loc('Basics') . q[</a>]);
+    PageMenu->child( details => raw_html =>  q[<a href="#details" onclick="return switchVisibility('Asset-Create-details','Asset-Create-basics');">] . loc('Details') . q[</a>]);
+}
+
+</%init>

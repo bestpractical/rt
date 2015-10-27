@@ -1,0 +1,108 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2015 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<%init>
+my $catalog_obj = LoadDefaultCatalog($ARGS{'Catalog'} || '');
+$ARGS{'Catalog'} = $catalog_obj->Id;
+
+my $assets = RT::Assets->new($session{CurrentUser});
+my %search = ProcessAssetsSearchArguments(
+    Assets => $assets, Catalog => $catalog_obj, ARGSRef => \%ARGS,
+);
+
+my $title = ( $ARGS{'SearchAssets'} or $ARGS{q} ) ?
+      loc("Found [quant,_1,asset,assets]",$assets->Count)
+    : loc("Assets");
+
+</%init>
+<& /Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
+
+% if ( $ARGS{'SearchAssets'} or $ARGS{q} ){
+<& /Elements/CollectionList,
+    %search,
+    Collection      => $assets,
+    AllowSorting    => 1,
+    &>
+%   if (not $assets->Count) {
+<em><&|/l&>No assets matching search criteria found.</&></em>
+%   }
+% }
+<span class="catalog <% CSSClass( $catalog_obj->Name ) %>">
+<form action="<% RT->Config->Get('WebPath') %>/Asset/Search/index.html" id="AssetSearch">
+<&| /Widgets/TitleBox, title => loc("Search Assets") &>
+<& /Asset/Elements/AssetSearchBasics, %ARGS, CatalogObj => $catalog_obj &>
+<& /Asset/Elements/AssetSearchPeople, %ARGS, CatalogObj => $catalog_obj &>
+<& /Elements/Submit, Label => loc('Search'), Name => 'SearchAssets' &>
+
+% foreach my $group ( 'Dates', 'Links', RT::CustomField->CustomGroupings( "RT::Asset" ), '' ) {
+    <& /Asset/Elements/AssetSearchCFs, %ARGS, Grouping => $group,
+       CatalogObj => $catalog_obj &>
+% }
+<& /Elements/Submit, Label => loc('Search'), Name => 'SearchAssets' &>
+</&>
+
+<script>
+jQuery(function() {
+    var all_inputs = jQuery("#AssetSearch input, #AssetSearch select");
+    all_inputs.each(function() {
+        var elem = jQuery(this);
+        var update_elems = all_inputs.filter(function () {
+            return jQuery(this).attr("name") == elem.attr("name");
+        }).not(elem);
+        if (update_elems.length == 0)
+            return;
+        var trigger_func = function() { update_elems.val(elem.val()) };
+        if (elem.attr("type") == "text")
+            elem.keyup( trigger_func );
+        else
+            elem.change( trigger_func );
+    });
+});
+</script>
+</form>
+</span>

@@ -74,7 +74,7 @@ SimpleTemplateTest(
 
 SimpleTemplateTest(
     Content => "\ntest { \$TicketOwnerId }",
-    Output  => "test 12",
+    Output  => "test 14",
 );
 
 SimpleTemplateTest(
