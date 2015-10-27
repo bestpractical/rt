@@ -526,7 +526,7 @@ Returns whether the passed-in type is a manageable role group type.
 sub IsManageableRoleGroupType {
     my $self = shift;
     my $type = shift;
-    return( $self->HasRole($type) and not $self->Role($type)->{ACLOnly} );
+    return grep { $type eq $_ } $self->ManageableRoleGroupTypes;
 }
 
 
