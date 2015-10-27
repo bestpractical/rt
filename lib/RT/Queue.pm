@@ -571,8 +571,9 @@ sub AddWatcher {
     my ($principal, $msg) = $self->AddRoleMember( %args );
     return ( 0, $msg) unless $principal;
 
+    my $group = $self->RoleGroup( $args{Type} );
     return ( 1, $self->loc("Added [_1] as [_2] for this queue",
-                           $principal->Object->Name, $self->loc($args{'Type'}) ));
+                           $principal->Object->Name, $group->Label ));
 }
 
 
@@ -601,8 +602,9 @@ sub DeleteWatcher {
     my ($principal, $msg) = $self->DeleteRoleMember( %args );
     return ( 0, $msg) unless $principal;
 
+    my $group = $self->RoleGroup( $args{Type} );
     return ( 1, $self->loc("[_1] is no longer [_2] for this queue",
-                           $principal->Object->Name, $self->loc($args{'Type'}) ));
+                           $principal->Object->Name, $group->Label ));
 }
 
 

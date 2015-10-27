@@ -50,9 +50,9 @@
 %    my $Group = RT::Group->new($session{'CurrentUser'});
 %    $Group->Load($GroupMember->GroupId) or next;
 %    if ($Group->Domain eq 'UserDefined') {
-<li><a href="<%RT->Config->Get('WebPath')%>/Admin/Groups/Modify.html?id=<% $Group->Id %>"><% $Group->Name %></a></li>
+<li><a href="<%RT->Config->Get('WebPath')%>/Admin/Groups/Modify.html?id=<% $Group->Id %>"><% $Group->Label %></a></li>
 %    } elsif ($Group->Domain eq 'SystemInternal') {
-<li><em><% loc($Group->Name) %></em></li>
+<li><em><% $Group->Label %></em></li>
 %    }
 % }
 </ul>

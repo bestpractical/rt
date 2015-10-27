@@ -480,10 +480,10 @@ sub AddRoleMember {
     }
 
     return (0, $self->loc('[_1] is already [_2]',
-                          $principal->Object->Name, $self->loc($type)) )
+                          $principal->Object->Name, $group->Label) )
             if $group->HasMember( $principal );
 
-    return (0, $self->loc('[_1] cannot be a group', $self->loc($type)) )
+    return (0, $self->loc('[_1] cannot be a group', $group->Label) )
                 if $group->SingleMemberRoleGroup and $principal->IsGroup;
 
     my ( $ok, $msg ) = $group->_AddMember( %args, PrincipalId => $principal->Id, RecordTransaction => !$args{Silent} );
@@ -491,7 +491,7 @@ sub AddRoleMember {
         $RT::Logger->error("Failed to add principal ".$principal->Id." as a member of group ".$group->Id.": ".$msg);
 
         return ( 0, $self->loc('Could not make [_1] a [_2]',
-                    $principal->Object->Name, $self->loc($type)) );
+                    $principal->Object->Name, $group->Label) );
     }
 
     return ($principal, $msg);

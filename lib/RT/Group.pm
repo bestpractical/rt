@@ -1425,6 +1425,23 @@ sub BasicColumns {
     );
 }
 
+=head2 Label
+
+Returns the group name suitable for displaying to end users. Override
+this instead of L</Name>, which is used internally.
+
+=cut
+
+sub Label {
+    my $self = shift;
+
+    # don't loc user-defined group names
+    if ($self->Domain eq 'UserDefined') {
+        return $self->Name;
+    }
+
+    return $self->loc($self->Name);
+}
 
 =head1 AUTHOR
 

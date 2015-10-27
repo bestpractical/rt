@@ -678,11 +678,11 @@ sub AddWatcher {
 
     if ($group->SingleMemberRoleGroup) {
         return ( 1, $self->loc( "[_1] changed from [_2] to [_3]",
-                       loc($args{Type}), $original_user->Name, $principal->Object->Name ) );
+                       $group->Label, $original_user->Name, $principal->Object->Name ) );
     }
     else {
         return ( 1, $self->loc('Added [_1] as [_2] for this ticket',
-                    $principal->Object->Name, $self->loc($args{Type})) );
+                    $principal->Object->Name, $group->Label) );
     }
 }
 
@@ -711,10 +711,11 @@ sub DeleteWatcher {
     my ($principal, $msg) = $self->DeleteRoleMember( %args );
     return ( 0, $msg ) unless $principal;
 
+    my $group = $self->RoleGroup( $args{Type} );
     return ( 1,
              $self->loc( "[_1] is no longer [_2] for this ticket",
                          $principal->Object->Name,
-                         $self->loc($args{'Type'}) ) );
+                         $group->Label ) );
 }
 
 

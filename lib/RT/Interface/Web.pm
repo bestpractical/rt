@@ -3872,7 +3872,7 @@ sub GetPrincipalsMap {
 
             push @map, [
                 'User Groups' => $groups,   # loc_left_pair
-                'Name'        => 0
+                'Label'       => 0
             ];
         }
         elsif (/Roles/) {
@@ -3902,7 +3902,7 @@ sub GetPrincipalsMap {
                 $roles->OrderBy( FIELD => 'Name', ORDER => 'ASC' );
                 push @map, [
                     'Roles' => $roles,  # loc_left_pair
-                    'Name'  => 1
+                    'Label' => 0
                 ];
             }
         }
