@@ -504,7 +504,7 @@ sub DeleteRoleMember {
     my $self = shift;
     my %args = (@_);
 
-    return (0, $self->loc("No valid Type specified"))
+    return (0, $self->loc("That role is invalid for this object"))
         unless $args{Type} and $self->HasRole($args{Type});
 
     if ($args{User}) {
