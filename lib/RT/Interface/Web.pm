@@ -1451,13 +1451,15 @@ sub IsCompCSRFWhitelisted {
     return 0 if $IS_BLACKLISTED_COMPONENT{$comp};
 
     if ( my %csrf_config = RT->Config->Get('ReferrerComponents') ) {
-        my $value = $csrf_config{$comp};
-        if ( ref $value eq 'ARRAY' ) {
-            delete $args{$_} for @$value;
-            return %args ? 0 : 1;
-        }
-        else {
-            return $value ? 1 : 0;
+        if (exists $csrf_config{$comp}) {
+            my $value = $csrf_config{$comp};
+            if ( ref $value eq 'ARRAY' ) {
+                delete $args{$_} for @$value;
+                return %args ? 0 : 1;
+            }
+            else {
+                return $value ? 1 : 0;
+            }
         }
     }
 
