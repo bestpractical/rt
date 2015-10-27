@@ -45,62 +45,66 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table>
-  <tr>
-    <td class="label"><&|/l&>Owner</&>:</td>
-% my $owner = $Ticket->OwnerObj;
-    <td class="value"><& /Elements/ShowUser, User => $owner, Ticket => $Ticket &>
-    <& /Elements/ShowUserEmailFrequency, User => $owner, Ticket => $Ticket &>
-% $m->callback( User => $owner, Ticket => $Ticket, %ARGS, CallbackName => 'AboutThisUser' );
-    </td>
-  </tr>
-
-% my $single_roles = $Ticket->QueueObj->CustomRoles;
-% $single_roles->LimitToSingleValue;
-% while (my $role = $single_roles->Next) {
-%     my $group = $Ticket->RoleGroup($role->GroupType);
-%     my $users = $group->UserMembersObj( Recursively => 0 );
-
-%# $users can be empty for tickets created before the custom role is added to the queue,
-%# so fall back to nobody
-
-%     my $user = $users->First || RT->Nobody;
-  <tr>
-    <td class="label"><% $role->Name %>:</td>
-    <td class="value"><& /Elements/ShowUser, User => $user, Ticket => $Ticket &></td>
-  </tr>
-% }
-
-  <tr>
-    <td class="labeltop"><&|/l&>Requestors</&>:</td>
-    <td class="value"><& ShowGroupMembers, Group => $Ticket->Requestors, Ticket => $Ticket &></td>
-  </tr>
-% if ( $Ticket->Cc->MembersObj->Count ) {
-  <tr>
-    <td class="labeltop"><&|/l&>Cc</&>:</td>
-    <td class="value"><& ShowGroupMembers, Group => $Ticket->Cc, Ticket => $Ticket &></td>
-  </tr>
-% }
-% if ( $Ticket->AdminCc->MembersObj->Count ) {
-  <tr>
-    <td class="labeltop"><&|/l&>AdminCc</&>:</td>
-    <td class="value"><& ShowGroupMembers, Group => $Ticket->AdminCc, Ticket => $Ticket &></td>
-  </tr>
-% }
-
-% my $multi_roles = $Ticket->QueueObj->CustomRoles;
-% $multi_roles->LimitToMultipleValue;
-% while (my $role = $multi_roles->Next) {
-  <tr>
-    <td class="labeltop"><% $role->Name %>:</td>
-    <td class="value"><& ShowGroupMembers, Group => $Ticket->RoleGroup($role->GroupType), Ticket => $Ticket &></td>
-  </tr>
-% }
-
-  <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Grouping => 'People', Table => 0 &>
-</table>
-<%INIT>
-</%INIT>
 <%ARGS>
-$Ticket => undef
+$Name => undef
+$Attr => undef
+$GenericMap => {}
 </%ARGS>
+<%ONCE>
+my $COLUMN_MAP = {
+    Disabled => {
+        title     => 'Status', # loc
+        attribute => 'Disabled',
+        value     => sub { return $_[0]->Disabled ? $_[0]->loc('Disabled') : $_[0]->loc('Enabled') },
+    },
+
+    map(
+        { my $c = $_; $c => {
+            title     => $c, attribute => $c,
+            value     => sub { return $_[0]->$c() },
+        } }
+        qw(Name Description EntryHint)
+    ),
+
+    MaxValues => {
+        title     => 'Number', # loc
+        attribute => 'MaxValues',
+        value     => sub {
+            my $v = $_[0]->MaxValues;
+            return !$v ? $_[0]->loc('Multiple') : $v == 1 ? $_[0]->loc('Single') : $v;
+        },
+    },
+
+    AddedTo => {
+        title     => 'Added', # loc
+        value     => sub {
+            my $collection = $_[0]->AddedTo;
+            return '' unless $collection;
+
+            $collection->RowsPerPage(10);
+
+            my $found = 0;
+            my $res = '';
+            while ( my $record = $collection->Next ) {
+                $res .= ', ' if $res;
+
+                my $id = '';
+                $id = $record->Name if $record->_Accessible('Name','read');
+                $id ||= "#". $record->id;
+                $res .= $id;
+
+                $found++;
+            }
+            $res .= ', ...' if $found >= 10;
+            return $res;
+        },
+
+    },
+};
+
+</%ONCE>
+<%INIT>
+$m->callback( GenericMap => $GenericMap, COLUMN_MAP => $COLUMN_MAP, CallbackName => 'ColumnMap', CallbackOnce => 1 );
+return GetColumnMapEntry( Map => $COLUMN_MAP, Name => $Name, Attribute => $Attr );
+</%INIT>
+

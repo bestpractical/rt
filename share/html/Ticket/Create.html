@@ -97,6 +97,9 @@
                     QueueObj        => $QueueObj,
                 },
             },
+
+            { special => 'roles' },
+
             $QueueObj->SLADisabled ? () : (
             {   name => 'SLA',
                 comp => '/Elements/SelectSLA',
@@ -175,6 +178,28 @@
     </font></i>
   </td>
 </tr>
+
+% my $roles = $QueueObj->CustomRoles;
+% $roles->LimitToMultipleValue;
+% while (my $role = $roles->Next) {
+<tr>
+<td class="label">
+<% $role->Name %>:
+</td>
+<td class="value" colspan="5"><& /Elements/EmailInput, Name => $role->GroupType, Size => undef, Default => $ARGS{$role->GroupType}, AutocompleteMultiple => 1 &></td>
+</tr>
+
+% if ($role->EntryHint) {
+<tr>
+  <td class="label">&nbsp;</td>
+  <td class="comment" colspan="5">
+    <i><font size="-2">
+      <% $role->EntryHint %>
+    </font></i>
+  </td>
+</tr>
+% }
+% }
 
 <& /Elements/EditCustomFields,
     %ARGS,

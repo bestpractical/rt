@@ -83,6 +83,7 @@ use Data::GUID;
 __PACKAGE__->AddRight( Admin   => SuperUser           => 'Do anything and everything'); # loc
 __PACKAGE__->AddRight( Staff   => ShowUserHistory     => 'Show history of public user properties'); # loc
 __PACKAGE__->AddRight( Admin   => AdminUsers          => 'Create, modify and delete users'); # loc
+__PACKAGE__->AddRight( Admin   => AdminCustomRoles    => 'Create, modify and delete custom roles'); # loc
 __PACKAGE__->AddRight( Staff   => ModifySelf          => "Modify one's own RT account"); # loc
 __PACKAGE__->AddRight( Staff   => ShowArticlesMenu    => 'Show Articles menu'); # loc
 __PACKAGE__->AddRight( Admin   => ShowConfigTab       => 'Show Admin menu'); # loc
@@ -208,6 +209,27 @@ sub QueueCacheNeedsUpdate {
         return $self->SetAttribute(Name => 'QueueCacheNeedsUpdate', Content => time);
     } else {
         my $cache = $self->FirstAttribute('QueueCacheNeedsUpdate');
+        return (defined $cache ? $cache->Content : 0 );
+    }
+}
+
+=head2 CustomRoleCacheNeedsUpdate ( 1 )
+
+Attribute to decide when we need to flush the list of custom roles
+and re-register any changes.  Set when roles are created, enabled/disabled, etc.
+
+If passed a true value, will update the attribute to be the current time.
+
+=cut
+
+sub CustomRoleCacheNeedsUpdate {
+    my $self = shift;
+    my $update = shift;
+
+    if ($update) {
+        return $self->SetAttribute(Name => 'CustomRoleCacheNeedsUpdate', Content => time);
+    } else {
+        my $cache = $self->FirstAttribute('CustomRoleCacheNeedsUpdate');
         return (defined $cache ? $cache->Content : 0 );
     }
 }

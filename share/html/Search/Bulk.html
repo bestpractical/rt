@@ -94,6 +94,31 @@
 <td class="value"> <& /Elements/EmailInput, Name => "AddAdminCc", Size=> 20, Default => $ARGS{AddAdminCc} &> </td></tr>
 <tr><td class="label"> <&|/l&>Remove AdminCc</&>: </td>
 <td class="value"> <& /Elements/EmailInput, Name => "DeleteAdminCc", Size=> 20, Default => $ARGS{DeleteAdminCc} &> </td></tr>
+
+% my $single_roles = RT::CustomRoles->new($session{CurrentUser});
+% $single_roles->LimitToSingleValue;
+% $single_roles->LimitToObjectId($_) for keys %$seen_queues;
+% while (my $role = $single_roles->Next) {
+<tr>
+<td class="label"> <&|/l, $role->Name &>Make [_1]</&>: </td>
+<td class="value"><& /Elements/SingleUserRoleInput, role => $role, ShowPlaceholder => 0, ShowEntryHint => 0, Size => 20, Default => $ARGS{"RT::CustomRole-" . $role->Id} &></td>
+</tr>
+% }
+
+% my $multi_roles = RT::CustomRoles->new($session{CurrentUser});
+% $multi_roles->LimitToMultipleValue;
+% $multi_roles->LimitToObjectId($_) for keys %$seen_queues;
+% while (my $role = $multi_roles->Next) {
+<tr>
+<td class="label"> <&|/l, $role->Name &>Add [_1]</&>: </td>
+<td class="value"> <& /Elements/EmailInput, Name => "AddRT::CustomRole-" . $role->Id, Size=> 20, Default => $ARGS{"AddRT::CustomRole-" . $role->Id} &> </td>
+</tr>
+<tr>
+<td class="label"> <&|/l, $role->Name &>Remove [_1]</&>: </td>
+<td class="value"> <& /Elements/EmailInput, Name => "DeleteRT::CustomRole-" . $role->Id, Size=> 20, Default => $ARGS{"DeleteRT::CustomRole-" . $role->Id} &> </td>
+</tr>
+% }
+
 </table>
 </td>
 <td valign="top">

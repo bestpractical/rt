@@ -51,6 +51,7 @@ $QueueObj => undef
 @fields => ()
 $InTable => 0
 %defaults => ()
+$ExcludeCustomRoles => 0
 </%ARGS>
 <%INIT>
 if ($TicketObj) {
@@ -90,6 +91,9 @@ unless ( @fields ) {
                 DefaultValue => 0,
             }
         },
+
+        { special => 'roles' },
+
         $QueueObj->SLADisabled ? () : (
         {   name => 'SLA',
             comp => '/Elements/SelectSLA',
@@ -130,6 +134,27 @@ unless ( @fields ) {
         ),
     );
 }
+
+my @role_fields;
+
+unless ($ExcludeCustomRoles) {
+    my $roles = $QueueObj->CustomRoles;
+    $roles->LimitToSingleValue;
+    while (my $role = $roles->Next) {
+        push @role_fields, {
+            name => $role->Name,
+            comp => '/Elements/SingleUserRoleInput',
+            args => {
+                role    => $role,
+                Ticket  => $TicketObj,
+                Default => $defaults{$role->GroupType},
+            }
+        };
+    }
+}
+
+# inflate the marker for custom roles into the field specs for each one
+@fields = map { ($_->{special}||'') eq 'roles' ? @role_fields : $_ } @fields;
 
 $m->callback( CallbackName => 'MassageFields', %ARGS, TicketObj => $TicketObj, Fields => \@fields );
 

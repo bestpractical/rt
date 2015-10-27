@@ -1,0 +1,188 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2015 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Admin/Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
+<& /Elements/ListActions, actions => \@results &>
+
+
+
+<form action="<%RT->Config->Get('WebPath')%>/Admin/CustomRoles/Modify.html" name="ModifyCustomRole" method="post" enctype="multipart/form-data">
+<input type="hidden" class="hidden" name="id" value="<% $Create ? 'new': $RoleObj->Id %>" />
+% $m->callback( CallbackName => 'FormStart', Create => $Create, ARGSRef => \%ARGS );
+<table>
+<tr><td align="right"><&|/l&>Role Name</&>:</td><td colspan="3">
+<input name="Name" value="<% $Create ? "" : $RoleObj->Name || $Name %>" />
+</td></tr>
+
+<tr><td align="right"><&|/l&>Description</&>:</td>
+<td colspan="3"><input name="Description" value="<% $Create ? "" : $RoleObj->Description || $Description || '' %>" size="60" /></td>
+</tr>
+
+<tr><td align="right"><&|/l&>Entry Hint</&>:</td>
+<td colspan="3"><input name="EntryHint" value="<% $Create ? "" : $RoleObj->EntryHint || $EntryHint || '' %>" size="60" /></td>
+</tr>
+
+<tr><td align="right"><input type="checkbox" class="checkbox" id="Multiple" name="Multiple" value="1"
+% if ( $Create || $RoleObj->UnlimitedValues ) {
+checked="checked"
+% }
+% if ( !$Create ) {
+disabled="disabled"
+% }
+ /></td>
+<td colspan="3"><label for="Multiple">
+% if ( $Create ) {
+<&|/l&>Multiple users (Unchecking this box limits this role to a single user. This cannot be modified after creation)</&>
+% } else {
+<&|/l&>Multiple users (This cannot be modified after creation)</&>
+% }
+</label><br />
+
+<input type="hidden" class="hidden" name="SetMultiple" value="1" />
+</td></tr>
+
+<tr><td align="right"><input type="checkbox" class="checkbox" id="Enabled" name="Enabled" value="1" <%$EnabledChecked|n%> /></td>
+<td colspan="3"><label for="Enabled"><&|/l&>Enabled (Unchecking this box disables this custom role)</&></label><br />
+<input type="hidden" class="hidden" name="SetEnabled" value="1" />
+% $m->callback( %ARGS, RoleObj => $RoleObj, results => \@results );
+</td></tr>
+
+</table>
+
+% if ( $Create ) {
+<& /Elements/Submit, Label => loc('Create') &>
+% } else {
+<& /Elements/Submit, Label => loc('Save Changes') &>
+% }
+</form>
+
+
+
+<%INIT>
+my ($title, @results, @no_redirect_results, $Disabled, $EnabledChecked);
+my $RoleObj = RT::CustomRole->new( $session{'CurrentUser'} );
+$RoleObj->Load( $id ) if !$id || $id eq 'new';
+
+$EnabledChecked = 'checked="checked"';
+
+unless ($Create) {
+    if ( defined $id && $id eq 'new' ) {
+        my ($val, $msg) = $RoleObj->Create( Name => $Name );
+        if (!$val) {
+            $Create = 1; # Create failed, so bring us back to step 1
+            push @results, $msg;
+        }
+        else {
+            push @results, loc("Custom role created");
+        }
+    } else {
+        $RoleObj->Load($id) || $RoleObj->Load($Name) || Abort(loc("Couldn't load custom role '[_1]'", $Name));
+    }
+}
+
+if ( $RoleObj->Id ) {
+    $title = loc('Configuration for role [_1]', $RoleObj->Name );
+    my @attribs = qw(Description Name EntryHint Disabled);
+
+    # we just created the role
+    if (!$id || $id eq 'new') {
+        push @attribs, 'MaxValues';
+        if ( $SetMultiple ) {
+            $ARGS{'MaxValues'} = $Multiple ? 0 : 1;
+        }
+    }
+
+    # we're asking about enabled on the page but really care about disabled
+    if ( $SetEnabled ) {
+        $Disabled = $ARGS{'Disabled'} = $Enabled? 0: 1;
+    }
+    $m->callback(
+        CallbackName => 'BeforeUpdate',
+        Role => $RoleObj,
+        AttributesRef => \@attribs,
+        ARGSRef => \%ARGS,
+    );
+
+    my @update_results = UpdateRecordObject(
+        AttributesRef => \@attribs,
+        Object => $RoleObj,
+        ARGSRef => \%ARGS
+    );
+
+    # if we're creating, then don't bother listing updates since it's just
+    # noise for finishing the setup of the newly created record
+    if ($id && $id ne 'new') {
+        push @results, @update_results;
+    }
+
+    $Disabled = $ARGS{'Disabled'} = $Enabled? 0: 1;
+
+    $EnabledChecked = "" if $RoleObj->Disabled;
+} else {
+    $title = loc("Create a custom role");
+}
+
+MaybeRedirectForResults(
+    Actions   => \@results,
+    Arguments => { id => $RoleObj->Id },
+) if $RoleObj->id;
+
+push @results, @no_redirect_results;
+</%INIT>
+<%ARGS>
+$id => undef
+$result => undef
+$Name => undef
+$Create => undef
+$Description => undef
+$EntryHint => undef
+$SetEnabled => undef
+$SetMultiple => undef
+$Multiple => undef
+$Enabled => undef
+</%ARGS>

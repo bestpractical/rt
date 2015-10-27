@@ -1,0 +1,121 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2015 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Admin/Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
+
+<h1><%$title%></h1>
+
+<form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/CustomRoles/index.html">
+% foreach my $field( qw(Format Rows Page Order OrderBy) ) {
+%     next unless defined $ARGS{ $field } && length $ARGS{ $field };
+<input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />
+% }
+
+<select name="SearchField">
+% foreach my $col (qw(Name Description EntryHint)) {
+<option <% $SearchField eq $col ? 'selected="selected"' : '' |n %> value="<% $col %>"><% loc($col) %></option>
+% }
+</select>
+<& /Elements/SelectMatch, Name => 'SearchOp', Default => $SearchOp &>
+<input size="8" name="SearchString" value="<% $SearchString %>" />
+<br />
+
+<input type="checkbox" class="checkbox" id="FindDisabled" name="FindDisabled" value="1" <% $FindDisabled? 'checked="checked"': '' |n%> />
+<label for="FindDisabled"><&|/l&>Include disabled custom roles in listing.</&></label>
+<div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div>
+</form>
+
+<p><&|/l&>Select a custom role</&>:</p>
+% unless ( $roles->Count ) {
+<em><&|/l&>No custom roles matching search criteria found.</&></em>
+% } else {
+<& /Elements/CollectionList,
+    OrderBy => 'Name',
+    Order => 'ASC',
+    Rows  => $Rows,
+    %ARGS,
+    Format => $Format,
+    Collection => $roles,
+    AllowSorting => 1,
+    PassArguments => [qw(
+        Format Rows Page Order OrderBy
+        FindDisabled SearchString SearchOp SearchField
+    )],
+&>
+% }
+
+<%INIT>
+my $title = loc("Select a Custom Role");
+
+my $roles = RT::CustomRoles->new($session{'CurrentUser'});
+$roles->FindAllRows if $FindDisabled;
+
+if ( defined $SearchString && length $SearchString ) {
+    $roles->Limit(
+        FIELD    => $SearchField,
+        OPERATOR => $SearchOp,
+        VALUE    => $SearchString,
+    );
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Admin/CustomRoles/Modify.html?id=".$roles->First->id)
+          if $roles->Count == 1;
+} else {
+    $roles->UnLimit;
+}
+
+$Format ||= RT->Config->Get('AdminSearchResultFormat')->{'CustomRoles'};
+my $Rows = RT->Config->Get('AdminSearchResultRows')->{'CustomRoles'} || 50;
+
+</%INIT>
+<%ARGS>
+$FindDisabled => 0
+$Format       => undef
+
+$SearchField   => 'Name'
+$SearchOp      => 'LIKE'
+$SearchString  => ''
+</%ARGS>

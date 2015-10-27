@@ -1,0 +1,28 @@
+CREATE TABLE CustomRoles (
+  id INTEGER NOT NULL  ,
+  Name varchar(200) collate NOCASE NULL  ,
+  Description varchar(255) collate NOCASE NULL  ,
+  MaxValues integer,
+  EntryHint varchar(255) collate NOCASE NULL  ,
+
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created DATETIME NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated DATETIME NULL  ,
+  Disabled int2 NOT NULL DEFAULT 0 ,
+  PRIMARY KEY (id)
+) ;
+
+CREATE TABLE ObjectCustomRoles (
+  id INTEGER NOT NULL  ,
+  CustomRole int NOT NULL  ,
+  ObjectId integer NOT NULL,
+  SortOrder integer NOT NULL DEFAULT 0  ,
+
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created DATETIME NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated DATETIME NULL  ,
+  PRIMARY KEY (id)
+);
+CREATE UNIQUE INDEX ObjectCustomRoles1 ON ObjectCustomRoles (ObjectId, CustomRole);

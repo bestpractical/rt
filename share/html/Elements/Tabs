@@ -97,6 +97,16 @@ my $build_admin_menu = sub {
         $cfs->child( create => title => loc('Create'), path => "/Admin/CustomFields/Modify.html?Create=1" );
     }
 
+    if ( $session{'CurrentUser'}->HasRight( Object => RT->System, Right => 'AdminCustomRoles' ) ) {
+        my $roles = $admin->child( 'custom-roles' =>
+            title       => loc('Custom Roles'),
+            description => loc('Manage custom roles'),
+            path        => '/Admin/CustomRoles/',
+        );
+        $roles->child( select => title => loc('Select'), path => "/Admin/CustomRoles/" );
+        $roles->child( create => title => loc('Create'), path => "/Admin/CustomRoles/Modify.html?Create=1" );
+    }
+
     if ( $session{'CurrentUser'}->HasRight( Object => RT->System, Right => 'ModifyScrips' ) ) {
         my $scrips = $admin->child( 'scrips' =>
             title       => loc('Scrips'),
@@ -247,7 +257,7 @@ my $build_admin_menu = sub {
         path        => '/Admin/Tools/Shredder',
     );
 
-    if ( $request_path =~ m{^/Admin/(Queues|Users|Groups|CustomFields)} ) {
+    if ( $request_path =~ m{^/Admin/(Queues|Users|Groups|CustomFields|CustomRoles)} ) {
         my $type = $1;
         my $tabs = PageMenu();
 
@@ -256,6 +266,7 @@ my $build_admin_menu = sub {
             Users        => loc("Users"),
             Groups       => loc("Groups"),
             CustomFields => loc("Custom Fields"),
+            CustomRoles  => loc("Custom Roles"),
         );
 
         my $section;
@@ -370,6 +381,20 @@ my $build_admin_menu = sub {
                 unless ( $obj->IsOnlyGlobal ) {
                     $tabs->child( 'applies-to' => title => loc('Applies to'),   path => "/Admin/CustomFields/Objects.html?id=" . $id );
                 }
+            }
+        }
+    }
+
+    if ( $request_path =~ m{^/Admin/CustomRoles} ) {
+        if ( $DECODED_ARGS->{'id'} && $DECODED_ARGS->{'id'} =~ /^\d+$/ ) {
+            my $id = $DECODED_ARGS->{'id'};
+            my $obj = RT::CustomRole->new( $session{'CurrentUser'} );
+            $obj->Load($id);
+
+            if ( $obj and $obj->id ) {
+                my $tabs = PageMenu();
+                $tabs->child( basics       => title => loc('Basics'),       path => "/Admin/CustomRoles/Modify.html?id=".$id );
+                $tabs->child( 'applies-to' => title => loc('Applies to'),   path => "/Admin/CustomRoles/Objects.html?id=" . $id );
             }
         }
     }

@@ -96,6 +96,7 @@ RT::ACE->RegisterCacheHandler(sub {
 });
 
 use RT::Groups;
+use RT::CustomRoles;
 use RT::ACL;
 use RT::Interface::Email;
 
@@ -466,7 +467,22 @@ sub TicketTransactionCustomFields {
     return ($cfs);
 }
 
+=head2 CustomRoles
 
+Returns an L<RT::CustomRoles> object containing all queue-specific roles.
+
+=cut
+
+sub CustomRoles {
+    my $self = shift;
+
+    my $roles = RT::CustomRoles->new( $self->CurrentUser );
+    if ( $self->CurrentUserHasRight('SeeQueue') ) {
+        $roles->LimitToObjectId( $self->Id );
+        $roles->ApplySortOrder;
+    }
+    return ($roles);
+}
 
 
 

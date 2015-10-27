@@ -63,8 +63,27 @@
         GroupString => $GroupString, GroupOp => $GroupOp,
         GroupField => $GroupField, PrivilegedOnly => $PrivilegedOnly &> 
 </td><td valign="top">
-<h3><&|/l&>Owner</&></h3>
-<&|/l&>Owner</&>: <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id, DefaultValue => 0&>
+<h3><&|/l&>People</&></h3>
+<table>
+
+<tr>
+  <td class="label"><&|/l&>Owner</&>:</td>
+  <td class="value"><& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id, DefaultValue => 0&></td>
+</tr>
+
+% my @role_fields;
+% my $single_roles = $Ticket->QueueObj->CustomRoles;
+% $single_roles->LimitToSingleValue;
+% while (my $role = $single_roles->Next) {
+<tr>
+  <td class="label"><% $role->Name %>:</td>
+  <td class="value"><& /Elements/SingleUserRoleInput, role => $role, Ticket => $Ticket &></td>
+</tr>
+
+% }
+
+</table>
+
 <h3><&|/l&>Current watchers</&></h3>
 <i><&|/l&>(Check box to delete)</&></i><br />
 
@@ -84,6 +103,16 @@
   <td class="label"><&|/l&>Admin Cc</&>:</td>
   <td class="value"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->AdminCc &></td>
 </tr>
+
+% my $multi_roles = $Ticket->QueueObj->CustomRoles;
+% $multi_roles->LimitToMultipleValue;
+% while (my $role = $multi_roles->Next) {
+% my $group = $Ticket->RoleGroup($role->GroupType);
+<tr>
+  <td class="label"><% $role->Name %>:</td>
+  <td class="value"><& EditWatchers, TicketObj => $Ticket, Watchers => $group &></td>
+</tr>
+% }
 
 <& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'People', InTable => 1 &>
 

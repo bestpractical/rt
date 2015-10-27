@@ -1,0 +1,29 @@
+CREATE TABLE CustomRoles (
+  id INTEGER NOT NULL  AUTO_INCREMENT,
+  Name varchar(200) NULL  ,
+  Description varchar(255) NULL  ,
+  MaxValues integer,
+  EntryHint varchar(255) NULL  ,
+
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created DATETIME NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated DATETIME NULL  ,
+  Disabled int2 NOT NULL DEFAULT 0 ,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+
+CREATE TABLE ObjectCustomRoles (
+  id INTEGER NOT NULL  AUTO_INCREMENT,
+  CustomRole integer NOT NULL  ,
+  ObjectId integer NOT NULL,
+  SortOrder integer NOT NULL DEFAULT 0  ,
+
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created DATETIME NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated DATETIME NULL  ,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+
+CREATE UNIQUE INDEX ObjectCustomRoles1 ON ObjectCustomRoles (ObjectId, CustomRole);

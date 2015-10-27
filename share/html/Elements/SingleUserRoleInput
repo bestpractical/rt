@@ -45,62 +45,33 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table>
-  <tr>
-    <td class="label"><&|/l&>Owner</&>:</td>
-% my $owner = $Ticket->OwnerObj;
-    <td class="value"><& /Elements/ShowUser, User => $owner, Ticket => $Ticket &>
-    <& /Elements/ShowUserEmailFrequency, User => $owner, Ticket => $Ticket &>
-% $m->callback( User => $owner, Ticket => $Ticket, %ARGS, CallbackName => 'AboutThisUser' );
-    </td>
-  </tr>
+<& /Elements/EmailInput,
+    Name => $role->GroupType,
+    Size => $Size,
+    ($ShowPlaceholder ? (Placeholder => loc(RT->Nobody->Name)) : ()),
+    ($ShowEntryHint ? (EntryHint => $role->EntryHint) : ()),
+    Default => $Default,
+    Autocomplete => 1,
+    AutocompleteReturn => "Name",
+    AutocompleteNobody => 1,
+&>
 
-% my $single_roles = $Ticket->QueueObj->CustomRoles;
-% $single_roles->LimitToSingleValue;
-% while (my $role = $single_roles->Next) {
-%     my $group = $Ticket->RoleGroup($role->GroupType);
-%     my $users = $group->UserMembersObj( Recursively => 0 );
-
-%# $users can be empty for tickets created before the custom role is added to the queue,
-%# so fall back to nobody
-
-%     my $user = $users->First || RT->Nobody;
-  <tr>
-    <td class="label"><% $role->Name %>:</td>
-    <td class="value"><& /Elements/ShowUser, User => $user, Ticket => $Ticket &></td>
-  </tr>
-% }
-
-  <tr>
-    <td class="labeltop"><&|/l&>Requestors</&>:</td>
-    <td class="value"><& ShowGroupMembers, Group => $Ticket->Requestors, Ticket => $Ticket &></td>
-  </tr>
-% if ( $Ticket->Cc->MembersObj->Count ) {
-  <tr>
-    <td class="labeltop"><&|/l&>Cc</&>:</td>
-    <td class="value"><& ShowGroupMembers, Group => $Ticket->Cc, Ticket => $Ticket &></td>
-  </tr>
-% }
-% if ( $Ticket->AdminCc->MembersObj->Count ) {
-  <tr>
-    <td class="labeltop"><&|/l&>AdminCc</&>:</td>
-    <td class="value"><& ShowGroupMembers, Group => $Ticket->AdminCc, Ticket => $Ticket &></td>
-  </tr>
-% }
-
-% my $multi_roles = $Ticket->QueueObj->CustomRoles;
-% $multi_roles->LimitToMultipleValue;
-% while (my $role = $multi_roles->Next) {
-  <tr>
-    <td class="labeltop"><% $role->Name %>:</td>
-    <td class="value"><& ShowGroupMembers, Group => $Ticket->RoleGroup($role->GroupType), Ticket => $Ticket &></td>
-  </tr>
-% }
-
-  <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Grouping => 'People', Table => 0 &>
-</table>
 <%INIT>
+if (!defined($Default)) {
+    if (!$User && $Ticket) {
+         my $group = $Ticket->RoleGroup($role->GroupType);
+         my $users = $group->UserMembersObj( Recursively => 0 );
+         $User = $users->First;
+    }
+    $Default = (!$User || $User->Id == RT->Nobody->id ? "" : $User->Name);
+}
 </%INIT>
 <%ARGS>
+$role
+$Size => undef
+$Default => undef
+$User => undef
 $Ticket => undef
+$ShowEntryHint => 1
+$ShowPlaceholder => 1
 </%ARGS>

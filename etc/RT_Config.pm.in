@@ -3319,6 +3319,11 @@ Set(%AdminSearchResultFormat,
         .q{,'<a href="__WebPath__/Admin/CustomFields/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}
         .q{,__AddedTo__, __EntryHint__, __FriendlyPattern__,__Disabled__},
 
+    CustomRoles =>
+        q{'<a href="__WebPath__/Admin/CustomRoles/Modify.html?id=__id__">__id__</a>/TITLE:#'}
+        .q{,'<a href="__WebPath__/Admin/CustomRoles/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}
+        .q{,__Description__,__MaxValues__,__Disabled__},
+
     Scrips =>
         q{'<a href="__WebPath__/Admin/Scrips/Modify.html?id=__id____From__">__id__</a>/TITLE:#'}
         .q{,'<a href="__WebPath__/Admin/Scrips/Modify.html?id=__id____From__">__Description__</a>/TITLE:Description'}
@@ -3346,6 +3351,7 @@ Set(%AdminSearchResultRows,
     Groups       => 50,
     Users        => 50,
     CustomFields => 50,
+    CustomRoles  => 50,
     Scrips       => 50,
     Templates    => 50,
     Classes      => 50,
