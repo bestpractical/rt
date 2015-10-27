@@ -55,6 +55,10 @@
     size="<% $Size %>"
 % }
 
+% if ($Placeholder) {
+    placeholder="<% $Placeholder %>"
+% }
+
 % if ($Autocomplete) {
     data-autocomplete="Users"
 % }
@@ -64,10 +68,18 @@
 % }
 
 />
+% if ($EntryHint) {
+<br>
+<i><font size="-2">
+  <&|/l&><% $EntryHint %></&>
+</font></i>
+% }
 <%ARGS>
 $Name
 $Size    => 40
 $Default => ''
 $Autocomplete => 1
 $AutocompleteMultiple => 0
+$EntryHint => ''
+$Placeholder => ''
 </%ARGS>
