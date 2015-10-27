@@ -451,9 +451,10 @@ sub Create {
     }
 
     # Codify what it takes to add each kind of group
+    my $always_ok = sub { 1 };
     my %acls = (
-        Cc        => sub { 1 },
-        Requestor => sub { 1 },
+        (map { $_ => $always_ok } $QueueObj->Roles),
+
         AdminCc   => sub {
             my $principal = shift;
             return 1 if $self->CurrentUserHasRight('ModifyTicket');

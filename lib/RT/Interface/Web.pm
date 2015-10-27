@@ -2190,13 +2190,7 @@ sub CreateTicket {
     my %create_args = (
         Type => $ARGS{'Type'} || 'ticket',
         Queue => $ARGS{'Queue'},
-        Owner => $ARGS{'Owner'},
         SLA => $ARGS{'SLA'},
-
-        # note: name change
-        Requestor       => $ARGS{'Requestors'},
-        Cc              => $ARGS{'Cc'},
-        AdminCc         => $ARGS{'AdminCc'},
         InitialPriority => $ARGS{'InitialPriority'},
         FinalPriority   => $ARGS{'FinalPriority'},
         TimeLeft        => $ARGS{'TimeLeft'},
@@ -2209,6 +2203,10 @@ sub CreateTicket {
         MIMEObj         => $MIMEObj,
         SquelchMailTo   => $ARGS{'SquelchMailTo'},
         TransSquelchMailTo => $ARGS{'TransSquelchMailTo'},
+
+        (map { $_ => $ARGS{$_} } $Queue->Roles),
+        # note: name change
+        Requestor       => $ARGS{'Requestors'},
     );
 
     my @txn_squelch;
