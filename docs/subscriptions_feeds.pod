@@ -1,0 +1,57 @@
+=pod
+
+For directions on how to build a dashboard from saved searches, please see
+L<Dashboards and Reporting|docs/dashboards_reporting.pod> documentation.
+
+=head1 Subscriptions
+
+You've built a dashboard to help yourself keep on top of your team's activity.
+Your boss wants to see it periodically, but doesn't want to have to navigate to
+it. You can set up a Subscription so that your boss, or anyone else interested,
+receives an email with these saved searches in the body at a specified interval.
+While modifying the dashboard, click on the Subscription link in the upper right
+hand corner, next to Content:
+
+=for html <img alt="Subscription"
+src="images/subscription.png">
+
+=for :text [Subscription F<docs/images/subscription.png>]
+
+=for :man [Subscription F<docs/images/subscription.png>]
+
+Now all you have to decide is what days and times the dashboard will show up in
+your boss' inbox. I've selected that my boss will see this dashboard every 4
+weeks on Thursday. The only search on this dashboard that isn't static is the
+'Bugs Resolved in the past six months', so every month she'll know roughly how
+many bugs have been addressed in the past month, as well as a short term view
+back to how productivity has compared in recent months.
+
+=head1 Feeds
+
+Feeds also apply to saved searches. Click on the saved search Bugs Created
+between 4.2.0 and 4.2.1 in the dashboard we'd created. In the upper right hand
+corner, there is a menu called Feeds. If you hover over it, there are three
+options to choose from: Spreadsheet, RSS, and iCal.
+
+If you select spreadsheet, all of the information that appears in your saved
+search will be exported into a spreadsheet. You can control the contents that is
+exported into the spreadsheet by going to the Edit Search tab on the top right
+hand side of the screen (also the search builder) and making adjustments in the
+Display Columns tab, as we reviewed above.
+
+The RSS feed options give you a feed of all of the correspondence that has
+occurred on all of the tickets in the queue, in written form, in the order that
+the tickets appear in the search, which can change depending on how you have
+arranged the order of this tickets in the Sorting tab of the Edit Search and
+Search builder.
+
+Choosing the iCal option imports all of the ticket dates that are set into your
+calendar app. The tickets are displayed as Start: (name of ticket) on the day
+that the project starts, and Due: (name of ticket) on the day that they are due.
+Depending on your settings, you can have it send alerts according to when
+tickets are due according to the date that's been set in RT. Keep in mind that
+when you make adjustments to dates in tickets that you'll need to do a fresh
+import, as iCal does not pull data from RT live.
+
+=cut
+
