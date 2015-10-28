@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <input type="hidden" name="EditTopics" value="1" />
-<select multiple size="10" name="Topics">
+<select multiple size="10" name="Topics" class="selection-box">
 % if (@Classes) {
 %   unless ($OnlyThisClass) {
 <optgroup label="Current classes (<% join(" ", map {$_->Name} @Classes) %>)">
