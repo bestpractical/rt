@@ -147,7 +147,7 @@
     transition: width 0.25s ease-in-out;
 }
 
-#topactions input:focus {
+#topactions #simple-search input:focus {
     width: 16em;
     -webkit-transition: width 0.25s ease-in-out;
     -moz-transition: width 0.25s ease-in-out;
