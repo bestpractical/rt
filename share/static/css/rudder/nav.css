@@ -147,6 +147,12 @@
     transition: width 0.25s ease-in-out;
 }
 
+#topactions .asset-search input[type="search"],
+#topactions .article-search input[type="search"]
+ {
+    width: 16em;
+}
+
 #topactions input[type="search"]:focus {
     width: 16em;
     -webkit-transition: width 0.25s ease-in-out;
