@@ -29,8 +29,15 @@ jQuery(function() {
             return;
         }
 
+        var is_search = jQuery('body#comp-Search-Results').length > 0;
+        var is_bulk_update = jQuery('body#comp-Search-Bulk').length > 0;
+
+        var url = RT.Config.WebHomePath + '/Helpers/ShortcutHelp' +
+                  '?show_search=' + ( is_search || is_bulk_update ? '1' : '0' ) +
+                  '&show_bulk_update=' + ( is_bulk_update ? '1' : '0' );
+
         jQuery.ajax({
-            url: RT.Config.WebHomePath + "/Helpers/ShortcutHelp",
+            url: url,
             success: showModal,
             error: function(xhr, reason) {
                 // give the browser a chance to redraw the readout

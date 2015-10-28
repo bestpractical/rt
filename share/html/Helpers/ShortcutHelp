@@ -45,6 +45,11 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<%args>
+$show_search      => 0
+$show_bulk_update => 0
+</%args>
+
 <div class="keyboard-shortcuts">
     <h2><&|/l&>Keyboard Shortcuts</&></h2>
 
@@ -72,6 +77,8 @@
         </div>
     </div>
 
+% if($show_search) {
+
     <div class="titlebox">
         <div class="titlebox-title">
             <span class="left"><&|/l&>Search</&></span>
@@ -96,13 +103,18 @@
                     <td><span class="keyboard-shortcuts-key">c</span></td>
                     <td><&|/l&>Comment on ticket</&></td>
                 </tr>
+% if($show_bulk_update) {
                 <tr>
                     <td><span class="keyboard-shortcuts-key">x</span></td>
-                    <td><&|/l&>Toggle highlighted ticket's checkbox (for bulk update)</&></td>
+                    <td><&|/l&>Toggle highlighted ticket's checkbox</&></td>
                 </tr>
+% }
             </table>
         </div>
     </div>
+
+% }
+
 </div>
 
 % $m->abort;
