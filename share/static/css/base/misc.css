@@ -80,6 +80,14 @@ div.cke {
     border: 1px solid #b6b6b6;
 }
 
+.cke_top {
+    border-bottom: none !important;
+}
+
+.cke_bottom {
+    border-top: none !important;
+}
+
 .selection-box {
     min-width: 300px;
 }

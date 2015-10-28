@@ -13,7 +13,7 @@ body
 	color: #333;
 
 	/* Remove the background color to make it transparent */
-	background-color: #fff;
+	background-color: transparent;
 
 	margin: 20px;
 }
@@ -130,9 +130,4 @@ a > img {
 	border: none;
 	outline: 1px solid #0782C1;
 }
-
-
-// RT override:
-body { background-color: transparent;}
-
 
