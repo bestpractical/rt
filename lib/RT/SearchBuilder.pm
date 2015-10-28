@@ -870,10 +870,6 @@ my %check_case_sensitivity = (
 );
 
 my %deprecated = (
-    groups => {
-        type => 'Name',
-    },
-    principals => { objectid => 'id' },
 );
 
 sub Limit {
@@ -913,6 +909,13 @@ sub Limit {
         ? ($ARGS{'ALIAS'} =~ /^(.*)_\d+$/)
         : $self->Table
     ;
+
+    if ( $table and $ARGS{FIELD} and my $instead = $deprecated{ lc $table }{ lc
+        RT->Deprecated(
+            Message => "$table.$ARGS{'FIELD'} column is deprecated",
+            Instead => $instead, Remove => '4.6'
+        );
+    }
 
     unless ( exists $ARGS{CASESENSITIVE} or (exists $ARGS{QUOTEVALUE} and not $ARGS{QUOTEVALUE}) ) {
         if ( $ARGS{FIELD} and $ARGS{'OPERATOR'} !~ /IS/i
