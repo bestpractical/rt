@@ -102,10 +102,6 @@ sub _RoleGroupsJoin {
     $args{'Class'} ||= $self->_RoleGroupClass;
 
     my $name = $args{'Name'};
-    if ( exists $args{'Type'} ) {
-        RT->Deprecated( Arguments => 'Type', Instead => 'Name', Remove => '4.4' );
-        $name = $args{'Type'};
-    }
 
     return $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $name }
         if $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $name }

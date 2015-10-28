@@ -131,14 +131,6 @@ sub Load  {
         ($ok, $msg) = $self->LoadByCol('Name', $identifier);
     }
 
-    if (@_) {
-        RT->Deprecated(
-            Arguments => "Template as second argument",
-            Remove    => "4.4",
-        );
-        $self->{'Template'} = shift;
-    }
-
     return wantarray ? ($ok, $msg) : $ok;
 }
 
@@ -177,42 +169,6 @@ sub LoadAction  {
         CurrentUser    => $self->CurrentUser,
         ScripActionObj => $self,
     );
-}
-
-
-=head2 TemplateObj
-
-Return this action's template object.  Deprecated.
-
-=cut
-
-sub TemplateObj {
-    my $self = shift;
-    RT->Deprecated(
-        Remove => "4.4",
-    );
-
-    if ( !$self->{'TemplateObj'} ) {
-        return undef unless $self->{Template};
-        $self->{'TemplateObj'} = RT::Template->new( $self->CurrentUser );
-        $self->{'TemplateObj'}->Load( $self->{'Template'} );
-
-        if ( ( $self->{'TemplateObj'}->__Value('Queue') == 0 )
-            && $self->{'_TicketObj'} ) {
-            my $tmptemplate = RT::Template->new( $self->CurrentUser );
-            my ( $ok, $err ) = $tmptemplate->LoadQueueTemplate(
-                Queue => $self->{'_TicketObj'}->QueueObj->id,
-                Name  => $self->{'TemplateObj'}->Name);
-
-            if ( $tmptemplate->id ) {
-                # found the queue-specific template with the same name
-                $self->{'TemplateObj'} = $tmptemplate;
-            }
-        }
-
-    }
-
-    return ( $self->{'TemplateObj'} );
 }
 
 sub Prepare  {

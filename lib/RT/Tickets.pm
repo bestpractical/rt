@@ -1373,17 +1373,6 @@ sub OrderByCols {
     return $self->SUPER::OrderByCols(@res);
 }
 
-sub _SQLLimit {
-    my $self = shift;
-    RT->Deprecated( Remove => "4.4", Instead => "Limit" );
-    $self->Limit(@_);
-}
-sub _SQLJoin {
-    my $self = shift;
-    RT->Deprecated( Remove => "4.4", Instead => "Join" );
-    $self->Join(@_);
-}
-
 sub _OpenParen {
     $_[0]->SUPER::_OpenParen( $_[1] || 'ticketsql' );
 }

@@ -914,13 +914,6 @@ sub Limit {
         : $self->Table
     ;
 
-    if ( $table and $ARGS{FIELD} and my $instead = $deprecated{ lc $table }{ lc $ARGS{'FIELD'} } ) {
-        RT->Deprecated(
-            Message => "$table.$ARGS{'FIELD'} column is deprecated",
-            Instead => $instead, Remove => '4.4'
-        );
-    }
-
     unless ( exists $ARGS{CASESENSITIVE} or (exists $ARGS{QUOTEVALUE} and not $ARGS{QUOTEVALUE}) ) {
         if ( $ARGS{FIELD} and $ARGS{'OPERATOR'} !~ /IS/i
             && $table && $check_case_sensitivity{ lc $table }{ lc $ARGS{'FIELD'} }

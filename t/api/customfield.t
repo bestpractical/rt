@@ -46,21 +46,6 @@ $cf = RT::CustomField->new(RT->SystemUser);
 );
 ok( ! $ok, "Correctly could not create with bogus type: $msg");
 
-
-# Deprecated types
-warning_like {
-    ok($cf->ValidateType('SelectSingle'), "ValidateType accepts SelectSingle");
-} qr/deprecated/, "...but warns of deprecation";
-
-warning_like {
-    ok($cf->ValidateType('SelectMultiple'), "ValidateType accepts SelectMultiple");
-} qr/deprecated/, "...but warns of deprecation";
-
-warning_like {
-    ok( ! $cf->ValidateType('SelectFooMultiple'), "ValidateType does not accept SelectFooMultiple");
-} qr/deprecated/, "...and also warns of deprecation";
-
-
 # Test adding and removing CFVs
 $cf->Load(1);
 ($ok, $msg) = $cf->AddValue(Name => 'foo' , Description => 'TestCFValue', SortOrder => '6');

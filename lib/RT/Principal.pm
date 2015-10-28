@@ -423,7 +423,7 @@ sub HasRights {
     my $roles;
     {
         my $query
-            = "SELECT DISTINCT Groups.Type "
+            = "SELECT DISTINCT Groups.Name "
             . $self->_HasRoleRightQuery(
                 EquivObjects => $args{'EquivObjects'}
             );
@@ -744,24 +744,6 @@ sub _ReferenceId {
         return ref($scalar);
     }
 }
-
-sub ObjectId {
-    my $self = shift;
-    RT->Deprecated( Instead => 'id', Remove => '4.4' );
-    return $self->_Value('ObjectId');
-}
-
-sub LoadByCols {
-    my $self = shift;
-    my %args = @_;
-    if ( exists $args{'ObjectId'} ) {
-        RT->Deprecated( Arguments => 'ObjectId', Instead => 'id', Remove => '4.4' );
-    }
-    return $self->SUPER::LoadByCols( %args );
-}
-
-
-
 
 =head2 id
 

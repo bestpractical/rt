@@ -82,26 +82,6 @@ our @EXPORT_OK = qw(CleanEnv GetCurrentUser debug loc Init);
 
 =cut
 
-
-=head2 CleanEnv
-
-Removes some of the nastiest nasties from the user's environment.
-
-=cut
-
-sub CleanEnv {
-    RT->Deprecated( Remove => "4.4" );
-
-    $ENV{'PATH'} = '/bin:/usr/bin';    # or whatever you need
-    $ENV{'CDPATH'} = '' if defined $ENV{'CDPATH'};
-    $ENV{'SHELL'} = '/bin/sh' if defined $ENV{'SHELL'};
-    $ENV{'ENV'} = '' if defined $ENV{'ENV'};
-    $ENV{'IFS'} = '' if defined $ENV{'IFS'};
-}
-
-
-
-
 {
 
     my $CurrentUser; # shared betwen GetCurrentUser and loc
@@ -146,11 +126,6 @@ sub loc {
     return $CurrentUser->loc(@_);
 }
 
-}
-
-sub debug {
-    RT->Deprecated( Remove => "4.4", Instead => '$RT::Logger->debug' );
-    $RT::Logger->debug(@_);
 }
 
 sub ShowHelp {
