@@ -910,7 +910,7 @@ sub Limit {
         : $self->Table
     ;
 
-    if ( $table and $ARGS{FIELD} and my $instead = $deprecated{ lc $table }{ lc
+    if ( $table and $ARGS{FIELD} and my $instead = $deprecated{ lc $table }{ lc $ARGS{'FIELD'} } ) {
         RT->Deprecated(
             Message => "$table.$ARGS{'FIELD'} column is deprecated",
             Instead => $instead, Remove => '4.6'
