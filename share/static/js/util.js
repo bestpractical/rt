@@ -309,10 +309,10 @@ function ReplaceAllTextareas() {
 
 function AddAttachmentWarning() {
     var plainMessageBox  = jQuery('.messagebox');
-    var addFileField     = jQuery('input[name=Attach]');
-    var existingFileList = jQuery('tr.attachment input[type=checkbox]');
     var warningMessage   = jQuery('.messagebox-attachment-warning');
     var ignoreMessage    = warningMessage.find('.ignore');
+    var dropzoneElement  = jQuery('#attach-dropzone');
+    var fallbackElement  = jQuery('.old-attach');
 
     // there won't be a ckeditor when using the plain <textarea>
     var richTextEditor;
@@ -346,8 +346,7 @@ function AddAttachmentWarning() {
         // if the word "attach" appears and there are no attachments in flight
         var needsWarning = text &&
                            text.match(regex) &&
-                           !addFileField.val() &&
-                           existingFileList.filter(":not(:checked)").length == 0;
+                           !dropzoneElement.hasClass('has-attachments');
 
         if (needsWarning) {
             warningMessage.show(instant ? 1 : 'fast');
@@ -371,54 +370,73 @@ function AddAttachmentWarning() {
         }, 200);
     };
 
-    if (richTextEditor) {
-        richTextEditor.on('instanceReady', function () {
-            // this set of events is imperfect. what I really want is:
-            //     this.on('change', ...)
-            // but ckeditor doesn't seem to provide that out of the box
+    var listenForAttachmentEvents = function () {
+        if (richTextEditor) {
+            richTextEditor.on('instanceReady', function () {
+                // this set of events is imperfect. what I really want is:
+                //     this.on('change', ...)
+                // but ckeditor doesn't seem to provide that out of the box
 
-            this.on('blur', function () {
-                toggleAttachmentWarning();
+                this.on('blur', function () {
+                    toggleAttachmentWarning();
+                });
+
+                // we want to capture ~every keystroke type event; we only do the
+                // full checking periodically to avoid overloading the browser
+                this.document.on("keyup", function () {
+                    delayedAttachmentWarning();
+                });
+                this.document.on("keydown", function () {
+                    delayedAttachmentWarning();
+                });
+                this.document.on("keypress", function () {
+                    delayedAttachmentWarning();
+                });
+
+                // hook into the undo/redo buttons in the ckeditor UI
+                this.getCommand('undo').on('afterUndo', function () {
+                    toggleAttachmentWarning();
+                });
+                this.getCommand('redo').on('afterRedo', function () {
+                    toggleAttachmentWarning();
+                });
             });
-
-            // we want to capture ~every keystroke type event; we only do the
-            // full checking periodically to avoid overloading the browser
-            this.document.on("keyup", function () {
+        }
+        else {
+            // the propertychange event is for IE
+            plainMessageBox.bind('input propertychange', function () {
                 delayedAttachmentWarning();
             });
-            this.document.on("keydown", function () {
-                delayedAttachmentWarning();
-            });
-            this.document.on("keypress", function () {
-                delayedAttachmentWarning();
-            });
+        }
 
-            // hook into the undo/redo buttons in the ckeditor UI
-            this.getCommand('undo').on('afterUndo', function () {
-                toggleAttachmentWarning();
-            });
-            this.getCommand('redo').on('afterRedo', function () {
-                toggleAttachmentWarning();
-            });
+        dropzoneElement.on('attachment-change', function () {
+            toggleAttachmentWarning();
         });
+    };
+
+    // if dropzone has already tried and failed, don't show spurious warnings
+    if (!fallbackElement.hasClass('hidden')) {
+        return;
     }
+    // if dropzone has already attached...
+    else if (dropzoneElement.hasClass('dropzone-init')) {
+        listenForAttachmentEvents();
+
+        // also need to display the warning on initial page load
+        toggleAttachmentWarning(1);
+    }
+    // otherwise, wait for dropzone to initialize and then add attachment
+    // warnings
     else {
-        // the propertychange event is for IE
-        plainMessageBox.bind('input propertychange', function () {
-            delayedAttachmentWarning();
+        dropzoneElement.on('dropzone-fallback', function () {
+            // do nothing. no dropzone = no attachment warnings
+        });
+
+        dropzoneElement.on('dropzone-init', function () {
+            listenForAttachmentEvents();
+            toggleAttachmentWarning(1);
         });
     }
-
-    addFileField.bind('change', function () {
-        toggleAttachmentWarning();
-    });
-
-    existingFileList.bind('change', function () {
-        toggleAttachmentWarning();
-    });
-
-    // also need to display the warning on initial page load
-    toggleAttachmentWarning(1);
 }
 
 function toggle_addprincipal_validity(input, good, title) {
