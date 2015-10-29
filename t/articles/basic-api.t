@@ -34,6 +34,13 @@ can_ok($class, 'CurrentUserHasRight');
 my $cf = RT::CustomField->new($RT::SystemUser);
 isa_ok($cf, 'RT::CustomField');
 
+# the following tests don't expect to see the new pre-defined "Content" cf.
+# disabling the pre-defined one so we can test if old behavior still works
+$cf->Load(1);
+$cf->SetDisabled(1);
+
+$cf = RT::CustomField->new($RT::SystemUser);
+
 ($id,$msg) = $cf->Create( Name => 'Articles::Sample-'.$$,
              Description => 'Test text cf',
              LookupType => RT::Article->CustomFieldLookupType,
