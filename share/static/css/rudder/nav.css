@@ -147,7 +147,13 @@
     transition: width 0.25s ease-in-out;
 }
 
-#topactions #simple-search input:focus {
+#topactions .asset-search input[type="search"],
+#topactions .article-search input[type="search"]
+ {
+    width: 16em;
+}
+
+#topactions input[type="search"]:focus {
     width: 16em;
     -webkit-transition: width 0.25s ease-in-out;
     -moz-transition: width 0.25s ease-in-out;
@@ -226,7 +232,7 @@
     -webkit-border-radius: 0 0 0 5px;
 }
 
-#simple-search input.field {
+#topactions input[type="search"] {
     border-radius: 3px;
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;

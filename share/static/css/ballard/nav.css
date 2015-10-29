@@ -126,11 +126,15 @@
     vertical-align: top;
 }
 
-#topactions button, #topactions select, #topactions input{
+#topactions button, #topactions select, #topactions input {
  padding-top: 0em;
  padding-bottom: 0em;
  width: 8em;
+}
 
+#topactions .asset-search input,
+#topactions .article-search input {
+ width: 16em;
 }
 
 #topactions #simple-search .field{
@@ -142,7 +146,7 @@
  color: #000;
  }
 
-#simple-search input.field {
+#topactions input[type="search"] {
     border-radius: 3px;
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;

@@ -45,8 +45,8 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<form ACTION="<% RT->Config->Get('WebPath') %>/Asset/Search/">
-  <input size="12" name="q" accesskey="0" class="field" value="<% $value %>" placeholder="<&|/l&>Search Assets</&>..." />
+<form action="<% RT->Config->Get('WebPath') %>/Asset/Search/" class="asset-search">
+  <input name="q" accesskey="0" class="field" value="<% $value %>" placeholder="<&|/l&>Search Assets</&>..." type="search" results=5 autosave="search-assets" />
 </form>
 <%init>
 my $value = defined $DECODED_ARGS->{q} ? $DECODED_ARGS->{q} : '';
