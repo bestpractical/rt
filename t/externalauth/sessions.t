@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => undef;
+use RT::Test tests => undef, config => 'Set($ExternalAuth, 1);';
 
 setup_auth_source();
 

@@ -477,11 +477,6 @@ sub InitClasses {
     require RT::Topics;
     require RT::Link;
     require RT::Links;
-    require RT::Authen::ExternalAuth;
-    require RT::Authen::ExternalAuth::LDAP;
-    require RT::Authen::ExternalAuth::DBI;
-    require RT::Authen::ExternalAuth::DBI::Cookie;
-    require RT::LDAPImport;
 
     _BuildTableAttributes();
 

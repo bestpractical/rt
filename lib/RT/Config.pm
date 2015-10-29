@@ -1040,6 +1040,16 @@ our %META;
         },
     },
 
+    ExternalAuth => {
+        PostLoadCheck => sub {
+            my $self = shift;
+            my $ExternalAuthEnabled = $self->Get('ExternalAuth');
+            if ( $ExternalAuthEnabled ) {
+                require RT::Authen::ExternalAuth;
+            }
+        }
+    },
+
     ExternalSettings => {
         Obfuscate => sub {
             # Ensure passwords are obfuscated on the System Configuration page

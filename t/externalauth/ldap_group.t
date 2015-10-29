@@ -6,8 +6,7 @@ BEGIN {
     $ENV{RT_TEST_WEB_HANDLER} = 'inline';
 }
 
-use RT::Test tests => undef;
-use Net::LDAP;
+use RT::Test tests => undef, config => 'Set($ExternalAuth, 1);';
 
 eval { require Net::LDAP::Server::Test; 1; } or do {
     plan skip_all => 'Unable to test without Net::LDAP::Server::Test';
