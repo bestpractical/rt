@@ -70,12 +70,25 @@ sub AccessToken {
 sub Init {
     my $self = shift;
 
-    if (not File::Dropbox->require) {
-        RT->Logger->error("Required module File::Dropbox is not installed");
-        return;
-    } elsif (not $self->AccessToken) {
-        RT->Logger->error("Required option 'AccessToken' not provided for Dropbox external storage. See the documentation for " . __PACKAGE__ . " for setting up this integration.");
-        return;
+    {
+        # suppress given/warn is experimental warnings from File::Dropbox 0.6
+        # https://rt.cpan.org/Ticket/Display.html?id=108107
+
+        my $original_warn_handler = $SIG{__WARN__};
+        local $SIG{__WARN__} = sub {
+            return if $_[0] =~ /(given|when) is experimental/;
+
+            # Avoid reporting this anonymous call frame as the source of the warning.
+            goto &$original_warn_handler;
+        };
+
+        if (not File::Dropbox->require) {
+            RT->Logger->error("Required module File::Dropbox is not installed");
+            return;
+        } elsif (not $self->AccessToken) {
+            RT->Logger->error("Required option 'AccessToken' not provided for Dropbox external storage. See the documentation for " . __PACKAGE__ . " for setting up this integration.");
+            return;
+        }
     }
 
 
