@@ -109,8 +109,7 @@ Provides the database implementation for L<RT::Authen::ExternalAuth>.
 =head1 CONFIGURATION
 
 DBI-specific options are described here. Shared options
-are described in the F<etc/RT_SiteConfig.pm> file included
-in this distribution.
+are described in L<RT::Authen::ExternalAuth>.
 
 The example in the L</SYNOPSIS> lists all available options
 and they are described below. See the L<DBI> module for details
@@ -675,5 +674,7 @@ sub _GetBoundDBIObj {
 }
 
 # }}}
+
+RT::Base->_ImportOverlays();
 
 1;

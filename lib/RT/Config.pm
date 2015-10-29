@@ -1055,7 +1055,6 @@ our %META;
             # Ensure passwords are obfuscated on the System Configuration page
             my ($config, $sources, $user) = @_;
 
-            # $user is only passed in versions of RT with 3c7db050
             my $msg = 'Password not printed';
                $msg = $user->loc($msg) if $user and $user->Id;
 

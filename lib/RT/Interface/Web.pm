@@ -307,7 +307,7 @@ sub HandleRequest {
         $HTML::Mason::Commands::session{'CurrentUser'} = RT::CurrentUser->new();
     }
 
-    # attempt external auth (see RT::Authen::ExternalAuth c4d53ec6d)
+    # attempt external auth
     $HTML::Mason::Commands::m->comp( '/Elements/DoAuth', %$ARGS );
 
     # Process session-related callbacks before any auth attempts
@@ -321,7 +321,7 @@ sub HandleRequest {
 
     _ForceLogout() unless _UserLoggedIn();
 
-    # attempt external auth (see RT::Authen::ExternalAuth c4d53ec6d)
+    # attempt external auth
     $HTML::Mason::Commands::m->comp( '/Elements/DoAuth', %$ARGS );
 
     # Process per-page authentication callbacks

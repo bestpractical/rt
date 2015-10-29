@@ -77,9 +77,6 @@ In C<RT_SiteConfig.pm>:
                        WorkPhone    => 'telephoneNumber',
                        Organization => 'departmentName'});
     
-    # Add to any existing plugins
-    Set(@Plugins, qw(RT::Extension::LDAPImport));
-    
     # If you want to sync Groups from LDAP into RT
     
     Set($LDAPGroupBase, 'ou=Groups,o=Our Place');
@@ -100,8 +97,8 @@ Running the import:
 
 =head1 CONFIGURATION
 
-All of the configuration for the importer goes
-your C<RT_SiteConfig.pm> file. Some of these values pass through
+All of the configuration for the importer goes in
+your F<RT_SiteConfig.pm> file. Some of these values pass through
 to L<Net::LDAP> so you can check there for valid values and more
 advanced options.
 
@@ -275,7 +272,7 @@ or code reference besides scalar.
 C<Member_Attr> is the field in the LDAP group record the importer should
 look at for group members. These values (there may be multiple members)
 will then be compared to the RT user name, which came from the LDAP
-user record. See F<t/group-callbacks.t> for a complex example of
+user record. See F<t/ldapimport/group-callbacks.t> for a complex example of
 using a code reference as value of this option.
 
 C<Member_Attr_Value>, which defaults to 'dn', specifies where on the LDAP
@@ -360,10 +357,6 @@ users into your RT database. It is recommended that you make a database
 backup before doing this. If your filters aren't set properly this could
 create a lot of users or groups in your RT instance.
 
-=head1 RT Versions
-
-The importer works with RT 4.0 and above.
-
 =head1 LDAP Filters
 
 The L<ldapsearch|http://www.openldap.org/software/man.cgi?query=ldapsearch&manpath=OpenLDAP+2.0-Release>
@@ -373,9 +366,8 @@ utility in openldap can be very helpful while refining your filters.
 
 =head2 connect_ldap
 
-Relies on the config variables C<$RT::LDAPHost>,
-C<$RT::LDAPUser> and C<$RT::LDAPPassword> being set
-in your RT Config files.
+Relies on the config variables C<$LDAPHost>, C<$LDAPUser> and C<$LDAPPassword>
+being set in your RT Config files.
 
  Set($LDAPHost,'my.ldap.host')
  Set($LDAPUSER,'me');
@@ -511,13 +503,13 @@ sub _run_search {
 
 Takes the results of the search from run_search
 and maps attributes from LDAP into C<RT::User> attributes
-using C<$RT::LDAPMapping>.
+using C<$LDAPMapping>.
 Creates RT users if they don't already exist.
 
 With no arguments, only prints debugging information.
 Pass C<--import> to actually change data.
 
-C<$RT::LDAPMapping>> should be set in your C<RT_SiteConfig.pm>
+C<$LDAPMapping>> should be set in your C<RT_SiteConfig.pm>
 file and look like this.
 
  Set($LDAPMapping, { RTUserField => LDAPField, RTUserField => LDAPField });
@@ -756,11 +748,6 @@ L<Net::LDAP::Entry> instance that should be mapped.
 
 Optional regular expression. If passed then only matching
 entries in the mapping will be processed.
-
-=item only
-
-Optional regular expression. If passed then matching
-entries in the mapping will be skipped.
 
 =item mapping
 
@@ -1093,7 +1080,7 @@ sub update_object_custom_field_values {
 
 Takes the results of the search from C<run_group_search>
 and maps attributes from LDAP into C<RT::Group> attributes
-using C<$RT::LDAPGroupMapping>.
+using C<$LDAPGroupMapping>.
 
 Creates groups if they don't exist.
 
@@ -1592,5 +1579,7 @@ sub _warn {
     $RT::Logger->warning($msg);
     print STDERR $msg, "\n";
 }
+
+RT::Base->_ImportOverlays();
 
 1;

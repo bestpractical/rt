@@ -59,7 +59,7 @@ more external data sources at once. It will also allow information about
 that user to be loaded from the same, or any other available, source as
 well as allowing multple redundant servers for each method.
 
-The extension currently supports authentication and information from
+The functionality currently supports authentication and information from
 LDAP via the Net::LDAP module, and from any data source that an
 installed DBI driver is available for.
 
@@ -72,7 +72,7 @@ access it.
 =head1 CONFIGURATION
 
 L<RT::Authen::ExternalAuth> provides a lot of flexibility with many
-configuration options.  The following desc these configuration options,
+configuration options.  The following describes these configuration options,
 and provides a complete example.
 
 =over 4
@@ -213,11 +213,7 @@ your authentication source. For example, an LDAP mapping might look like:
     Set( $ExternalAuthPriority, ["My_LDAP"] );
     Set( $ExternalInfoPriority, ["My_LDAP"] );
 
-    # Users created from LDAP should be Privileged; this is a core RT
-    # option.  Additionally, this is the 4.2 name for the option; for RT
-    # 4.0, is it named $AutoCreate   See the core RT documentation at
-    # http://docs.bestpractical.com/RT_Config#UserAutocreateDefaultsOnLogin
-    # for for further details.
+    # Make users created from LDAP Privileged
     Set( $UserAutocreateDefaultsOnLogin, { Privileged => 1 } );
 
     # Users should still be autocreated by RT as internal users if they
@@ -635,5 +631,7 @@ sub UserDisabled {
     }
     return $user_disabled;
 }
+
+RT::Base->_ImportOverlays();
 
 1;

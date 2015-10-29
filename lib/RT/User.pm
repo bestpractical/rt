@@ -717,6 +717,10 @@ sub CanonicalizeUserInfo {
 
 =head2 CanonicalizeUserInfoFromExternalAuth
 
+Convert an ldap entry in to fields that can be used by RT as specified by the
+C<attr_map> configuration in the C<$ExternalSettings> variable for
+L<RT::Authen::ExternalAuth>.
+
 =cut
 
 sub CanonicalizeUserInfoFromExternalAuth {

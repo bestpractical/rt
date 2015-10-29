@@ -109,8 +109,7 @@ Provides the LDAP implementation for L<RT::Authen::ExternalAuth>.
 =head1 CONFIGURATION
 
 LDAP-specific options are described here. Shared options
-are described in the F<etc/RT_SiteConfig.pm> file included
-in this distribution.
+are described in L<RT::Authen::ExternalAuth>.
 
 The example in the L</SYNOPSIS> lists all available options
 and they are described below. Note that many of these values
@@ -132,7 +131,7 @@ If you can bind to your LDAP server anonymously you may be able to omit these
 options.  Many servers do not allow anonymous binds, or restrict what information
 they can see or how much information they can retrieve.  If your server does not
 allow anonymous binds then you must have a service account created for this
-extension to function.
+component to function.
 
 =item base
 
@@ -688,5 +687,7 @@ sub _GetBoundLdapObj {
 }
 
 # }}}
+
+RT::Base->_ImportOverlays();
 
 1;
