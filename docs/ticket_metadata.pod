@@ -1,0 +1,228 @@
+=head1 Basic Terms
+
+=head2 id
+
+This term refers to the ticket ID number. Every ticket in RT has a number,
+different from every other ticket in RT, which is its main identity. Notice
+that you can select less than, greater than, equal to, or not equal to. These
+terms work exactly the way you learned in algebra; if you select 'less than',
+your results will come back with tickets that have a numerical id number lower
+than the ticket number you specified; 'greater than' and your results will be
+tickets whose id is larger than the number you entered, and so on.
+
+Ticket ID is a quick way to cull a potentially large number of tickets from
+your search that are irrelevant, especially if you know for sure that, for
+example, the ticket you're looking for was made recently, i.e. above a
+certainly threshold of ticket ID, and vice versa. As with all the other
+parameters, it's yet another way to isolate and manipulate information in
+RT, if less exacting than some of the other options.
+
+=head2 Subject
+
+This term refers to the title, or subject, of a ticket, which appears as the
+subject of an email if you interact with RT in an email client, or as the
+title you see in a queue if you are working in RT itself. This criterion is
+straightforward. You can either include ('matches') or exclude ('doesn't match')
+a word or phrase from your search, and it will spit out all the tickets that
+have or don't have that word or phrase. Try using 'the' in both cases; there
+are surely a lot of tickets that both do and do not have 'the' in the subject
+of the ticket!
+
+=head2 Queue
+
+Queue specification is a great way to narrow your search. If you are a
+privileged user, i.e. you can log into RT and see more than just the
+tickets you own, you probably know the names of the queues you have
+access to. This criterion is pretty self explanatory: you're searching
+for a ticket either in or not in whatever queue you specify from the drop
+down menu. Choice of queue may affect what custom fields you can select
+to search on as well. Depending on how your RT is configured, some queues
+may have custom fields added to them that others don't because of custom
+workflows or pieces of information that are needed to capture for whatever
+entity the queue is representing. We'll dig into this more later.
+
+=head2 Status
+
+Status - The Query Builder allows you to search for a ticket based on what
+status it's in. RT ships with some default statuses, such as 'open', 'stalled',
+and 'resolved'. There is also the 'deleted' status, but RT does not search
+deleted tickets (they're gone for a reason!), so it does not appear as an
+option in the Query Builder.
+
+Note that the statuses in the drop down menu are categorized by queues
+(more specifically, by lifecycle). Many queues probably share some basic
+statuses such as Open or Resolved, but avoid choosing a queue and then
+selecting a status that doesn't exist in that queue. Nothing bad will
+happen; you just won't get any results in your search!
+
+=head2 Owner/Creator/Last Updated By/Updated by
+
+Each of these terms refers to a user connected to a ticket. Whose task is this?
+Who made the ticket as a placeholder for the task in the first place? Who was
+the last person to change information on the ticket, including updating the
+ticket with a reply, comment, change in due date, or linking another ticket to
+it? Who has touched the ticket at any given time since it's creation?
+
+Keep in mind that, with Last Updated by, even an indirect update to a ticket
+counts as an update, in particular listing ticket A as a 'referred to by' link
+to ticket B. If you visit ticket A, you'll see that the last transaction on the
+ticket (assuming nothing else has occurred since you link the tickets together)
+is 'reference added to ticket B', which counts as updating the ticket.
+
+=head2 Requestor Email Address/Requestor RealName, etc..
+
+Each of these titles, or roles (Requestor, Cc, Admin Cc, Watcher, Owner, Queue
+Cc, Queue Admin Cc, and Queue Watcher) refer to how certain users in the system
+relate to a single or a group of tickets. Each option is a piece of data that
+you can record about a user. Say, for example, you have the phone number, but
+neither the name nor organization for a certain Queue Admin Cc. If that data
+was recorded when the user was set up in the system, you can search for him or
+her using it, and so on and so forth for other data items per user.
+
+=head2 Groups
+
+A group in RT is a collection of users. Most often, a group is comprised of
+users who need the same rights to certain entities in RT: it's much easier to
+assign the rights to, e.g., read a queue, once to a group of people than it is
+to assign it 10 or 20 times individually to a bunch of users, thus making
+rights management, amongst other things, that much easier in RT. You could also
+assign a group the rights to be made watchers on a queue, use saved searches,
+and view saved dashboards.
+
+=head2 Dates
+
+Each of the terms available (Created, Started, Resolved, Last Contacted, Last
+Updated, Starts, Due, Updated) are all events or milestones that can take place
+on any ticket in a default RT. Let's go through some of the terms that are
+unfamiliar.
+
+=head1 Advanced Terms
+
+Several of these terms - Created, Started, and Resolved - are self explanatory.
+Let's cover a few that are less obvious.
+
+=head2 Last Contacted
+
+This means 'the last time we contacted them', i.e. the last time
+correspondence, which goes out to the requestor and Ccs was added to the
+ticket. Last updated means the last time anything was adjusted on the ticket,
+e.g. changing the status of a ticket, the time worked, adding a link to the
+ticket, or adding a requestor, adding a comment, amongst many other things.
+Starts is a field in the Dates box that you (or any user that has the proper
+permissions) can set so that the owner of the ticke knows when he or she needs
+to start working on the ticket. Due functions the same way and means when the
+ticket must be completed. Updated means the same as Last Updated, but will
+include all tickets with any update on the date you specify in the search, not
+just tickets that were last touched that day. You can search on these criteria
+either before, after, or on a specific date.
+
+=head2 Time
+
+Time Estimated, Time Worked, and Time Left are each fields in The Basics tab
+and are manually updated as needed. This group of search criteria is a good way
+to find, for example, tickets that are nearing completion (Time Left less than
+5 minutes), or tickets that represent large projects (Time Estimated greater
+than 40 hours).
+
+=head2 Links
+
+Links represent different sorts of relationships between tickets, from simple
+allusions to related conversations across tickets to more complex systems that
+force resolving related tickets in a specific order to enforce a workflow.
+Below are the definitions of each sort of
+relationship and how one in particular may work with others that complement it.
+
+=head2 Child
+
+For a ticket to be a 'child', it must have a Parent ticket. You can create this
+relationship either by making both tickets and marking one as parent of the
+other, or one as the child of the other (in both cases the corresponding ticket
+will update itself with the opposite relationship).
+
+=head2 Parent
+
+Parent tickets have children tickets, all of which must be resolved before the
+parent ticket can be resolved.
+
+How would one use this information in searches? Let's say you're using RT to
+manage a release of the software your company makes. Often times release
+managers will make a parent ticket for the release, and make each of the
+deliverables meant to be included in the release children tickets of it. When
+you go to the master ticket, in the Links box toward the top of the ticket,
+there will appear a list of all the children tickets. While this list is
+useful, it's a bit hard to read. To get a more visible and detailed list of the
+children tickets, which, again, are the various items to be included in the
+release, you can set 'Parent is' in the Query Builder and then the ticket
+number, which will retrieve the list of children tickets.
+
+Similar searches can occur between other tickets that are linked together with
+other hierarchical relationships, such as Depends On and Depended on By. For
+that reason, making a master ticket for a project and then adding the substeps
+and tasks as dependencies to it is a useful approach.
+
+=head2 Refers to
+
+This ticket linkage is a nice way to note when two tickets overlap on subject
+matter, but do not depend on one another for a task. Either ticket can be
+resolved at any time without affecting the other. If you mark one ticket as
+referring to another, that other ticket will automatically update as being
+'referred to by' the former ticket.
+
+=head2 Reffered to by
+
+This is the mirror of Refers to.
+
+=head2 Depends on & Depended on by
+
+This linkage enforces an order of resolution between tickets. A ticket (ticket
+1) that Depends On another ticket (ticket 2) cannot be resolved before the
+latter ticket (ticket 2) is resolved. These criteria are useful in searching if
+you are looking to narrow results for a ticket or group of tickets that for one
+reason or another are dependent on one ticket, perhaps a bug fix that must
+occur before others can be fixed.
+
+=head2 Time
+
+SLA (Service Level Agreement) - An SLA determines the time limit a company has
+to respond to time sensitive issues. For example, Best Practical offers several
+levels of support, each with different windows within which Best Practical must
+answer the clients query. There may be other requirements attached to an SLA,
+but that is up to the company providing the service.
+
+A searching example of when this metadata may be useful could be a manager
+needing to see all tickets that presently have a 1 business day SLA and wanting
+to make this a saved search that s/he can use in a dashboard for easy access.
+
+=head2 Content
+
+This criterion functions similarly to the simple, or 'full text' search. Type
+in any word you want to search for and decide whether you want the search to
+include it ('matches') or exclude it ('doesn't match') amongst your other
+parameters.
+
+=head2 Content Type
+
+Simply, what sort of attachment does the ticket you're searching for have? a
+PDF? JPEG? Spreadsheet? etc..
+
+=head2 Filename
+
+Again, this term refers to the name of the attachment(s) that might be included
+on the ticket you're looking for. Is it a Master Agreement? Summary? Notes?
+
+=head2 Priority
+
+Every ticket has a 'Priority' in the Basics tab toward the top of the ticket.
+The scale is 0 to 99, and the meaning of high and low depends solely on the
+decision of the people managing RT. This piece of metadata doesn't do anything
+in particular on its own unless there are certain extensions installed that
+either raise (or in rare cases lower) the priority over time in respect of the
+due date that can be set either automatically or manually when a ticket comes
+in, and can send notifications for these tickets as they become closer to due
+(PriorityAsString), or allow for the scale to be non-numerical, i.e. low,
+medium, high, or critical.
+
+This search criterion is most useful to obtain a group of tickets, rather than
+one specific ticket. For example, one might be searching for all tickets owned
+by user X with priority 50, or maybe all tickets with requestor matching
+@google.com with priority 75.

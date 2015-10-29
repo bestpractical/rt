@@ -1,0 +1,139 @@
+=head1 Introduction
+
+The Query Builder is RT's search engine. It lets you find tickets matching
+some (potentially very complex) criteria. There are loads of criteria you can
+specify in order to perform a search. Strategies for narrowing your searches
+to find exactly what you're looking for (and no more) are discussed below.
+
+The Query Builder is the heart of reporting in RT, which is covered in the
+L<Dashboard and Reports|docs/dashboards_reporting.pod> document.
+
+To follow along with the examples, go to
+L<issues.bestpractical.com|http://issues.bestpractical.com> and try the
+searches yourself.
+
+=head1 Example
+
+Let's look for tickets in the "RT" queue (RT's bugtracker for itself) that have
+been resolved in the last year. (These examples assume it's currently mid June,
+2015). To do that, we specify the search criteria (Queue is RT, Status is
+resolved, and Resolved after 2014-06-15) in the upper left hand section of the
+Query Builder.
+
+=for html <img alt="Search Criteria"
+src="images/search-criteria.png">
+
+=for :text [Search Criteria F<docs/images/search-criteria.png>]
+
+=for :man [Search Criteria F<docs/images/search-criteria.png>]
+
+Now that I've selected some criteria, I can click either Add These Terms or
+Add These Terms and Search. I'll click the former:
+
+=for html <img alt="Added Terms"
+src="images/added-terms.png">
+
+=for :text [Added Terms F<docs/images/added-terms.png>]
+
+=for :man [Added Terms F<docs/images/added-terms.png>]
+
+The upper right hand side presents all the logic we've specified. This view is
+a nice way proofread your search: Have you captured everything you want? Are
+there things you'd maybe prefer to leave out for now?
+
+It turns out I've changed my mind. I actually don't want to restrict the search
+to just the RT queue. I want to see all the tickets in issues.bestpractical.com
+(which also includes feature requests, RTIR, etc) that have been resolved
+within the past year. To adjust the search, click on 'AND Queue = RT' and press
+Delete:
+
+=for html <img alt="Delete Term"
+src="images/delete-term.png">
+
+=for :text [Delete Term F<docs/images/delete-term.png>]
+
+=for :man [Delete Term F<docs/images/delete-term.png>]
+
+Your search should now look like this:
+
+=for html <img alt="Deleted Term"
+src="images/deleted-term.png">
+
+=for :text [Deleted Term F<docs/images/deleted-term.png>]
+
+=for :man [Deleted Term F<docs/images/deleted-term.png>]
+
+Now, finally, to make the search go, you can either press 'Add these terms and
+Search' (provided there's no new content in the Query Builder), or scroll all
+the way down and press 'Update format and Search'. This search should turn up
+a full page of tickets. Here's the top portion of the list:
+
+=for html <img alt="Search Results"
+src="images/search-results.png">
+
+=for :text [Search Results F<docs/images/search-results.png>]
+
+=for :man [Search Results F<docs/images/search-results.png>]
+
+This is the default view of your results. However, like nearly everything in RT,
+it's configurable. You can select additional columns to appear in your results,
+eliminate columns you don't find useful, or reorder them. To start, notice that
+at the bottom of the query builder page there are two panes: Sorting and Display
+Columns.
+
+=for html <img alt="Sorting and Display Columns"
+src="images/sorting-display-columns.png">
+
+=for :text [Sorting and Display Columns
+F<docs/images/sorting-display-columns.png>]
+
+=for :man [Sorting and Display Columns F<docs/images/sorting-display-columns.png>]
+
+There is more than one option for Sorting so that you can break apart tickets
+with the same search values into a meaningful order. For example, let's say you
+start off by sorting tickets in a search by their owner. Since you've only
+specified to sort by owner, RT doesn't order the tickets owned by the same user
+in a meaningful way. This is where the multiple sort criteria comes in handy.
+You can use a second sorting criteria to sort within the set of tickets owned by
+a single user. For example, you could add a sort by due date to see tickets
+sorted first by owner, and then tickets with the same order are ordered by due
+date.
+
+The Display Columns tab allows you to add or eliminate information displayed in
+the results of your search. NEWLINE indicates a line break, or new row, in how
+the results are displayed. NBSP for adding an empty column (such as what shows
+up underneath id in the following screenshot).
+
+Here is a search with NEWLINE where it is by default:
+
+=for html <img alt="With NEWLINE"
+src="images/with-newline.png">
+
+=for :text [With NEWLINE F<docs/images/with-newline.png>]
+
+=for :man [With NEWLINE F<docs/images/with-newline.png>]
+
+Notice that the structure of the data that's displayed is stacked: Subject on
+top of Requestor, Status on top of Created, etc.. Because we're displaying a
+lot of information (10 fields for each ticket), having the NEWLINE is
+important for the results more comprehensible.
+
+Here is that same search but without the NEWLINE:
+
+=for html <img alt="Without NEWLINE"
+src="images/without-newline.png">
+
+=for :text [Without NEWLINE F<docs/images/without-newline.png>]
+
+=for :man [Without NEWLINE F<docs/images/without-newline.png>]
+
+The same pieces of information are now spread across the display next to one
+another, which can be harder to read. So when you tell RT to display a lot of
+columns, it's usually worth adding a well-placed NEWLINE.
+
+And there are the basics of the query builder! To implement these basics to
+build reports, please see the Dashboard & Reports document. For definitions of
+piece of RT metadata, please see the Definitions of Ticket Metadata document.
+
+=cut
+
