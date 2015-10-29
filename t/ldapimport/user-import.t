@@ -1,10 +1,11 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 8 + 13*2;
-use Net::LDAP::Server::Test;
+use RT::Test tests => 8 + 13*2, config => 'Set($ExternalAuth, 1);';
 
-use Net::LDAP::Entry;
+eval { require RT::LDAPImport; require Net::LDAP::Server::Test; 1; } or do {
+    plan skip_all => 'Unable to test without RT::LDAPImport and Net::LDAP::Server::Test';
+};
 
 my $importer = RT::LDAPImport->new;
 isa_ok($importer,'RT::LDAPImport');

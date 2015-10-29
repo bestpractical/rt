@@ -74,7 +74,12 @@ BEGIN {
     RT::Init();
 };
 
-use RT::LDAPImport;
+eval { require RT::LDAPImport; 1; } or do {
+    print "Unable to run rt-ldapimport without dependencies.\n";
+    print "Rerun configure with the --enable-externalauth option.";
+    exit 0;
+};
+
 
 my %OPT = (
     users  => 1,
