@@ -32,7 +32,7 @@ diag "Apply the new CF globally";
     $m->content_contains('QueueCFTest', 'CF QueueCFTest displayed on page' );
 
     $m->form_name('EditCustomFields');
-    $m->tick( AddCustomField => 1 );
+    $m->tick( AddCustomField => 2 );
     $m->click('UpdateCFs');
 
     $m->content_contains("Globally added custom field QueueCFTest", 'CF QueueCFTest enabled globally' );
@@ -48,9 +48,9 @@ diag "Edit the CF value for default queue";
     $m->submit_form(
         form_number => 3,
         # The following doesn't want to works :(
-        #with_fields => { 'Object-RT::Queue-1-CustomField-1-Value' },
+        #with_fields => { 'Object-RT::Queue-1-CustomField-2-Value' },
         fields => {
-            'Object-RT::Queue-1-CustomField-1-Value' => 'QueueCFTest content',
+            'Object-RT::Queue-1-CustomField-2-Value' => 'QueueCFTest content',
         },
     );
     $m->content_contains('QueueCFTest QueueCFTest content added', 'Content filed in CF QueueCFTest for default queue' );

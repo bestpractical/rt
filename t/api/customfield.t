@@ -47,7 +47,7 @@ $cf = RT::CustomField->new(RT->SystemUser);
 ok( ! $ok, "Correctly could not create with bogus type: $msg");
 
 # Test adding and removing CFVs
-$cf->Load(1);
+$cf->Load(2);
 ($ok, $msg) = $cf->AddValue(Name => 'foo' , Description => 'TestCFValue', SortOrder => '6');
 ok($ok, "Added a new value to the select options");
 ($ok, $msg) = $cf->DeleteValue($ok);
@@ -131,7 +131,7 @@ warning_like {
 
 
 # Make it only apply to one queue
-$cf->Load(1);
+$cf->Load(2);
 my $ocf = RT::ObjectCustomField->new( RT->SystemUser );
 ( $ok, $msg ) = $ocf->LoadByCols( CustomField => $cf->id, ObjectId => 0 );
 ok( $ok, "Found global application of CF" );
@@ -273,7 +273,7 @@ ok( ! $cf->id, "Also doesn't find with Queue => 0 and IncludeGlobal" );
 
 
 # Change the lookup type to be a _user_ CF
-$cf->Load(1);
+$cf->Load(2);
 ($ok, $msg) = $cf->SetLookupType( RT::User->CustomFieldLookupType );
 ok($ok, "Changed CF type to be a CF on users" );
 $ocf = RT::ObjectCustomField->new( RT->SystemUser );
@@ -308,7 +308,7 @@ ok($cf->id, "Also with user CF and explicit global" );
 
 
 # Add a second, queue-specific CF to test load order
-$cf->Load(1);
+$cf->Load(2);
 ($ok, $msg) = $cf->SetLookupType( RT::Ticket->CustomFieldLookupType );
 ok($ok, "Changed CF type back to be a CF on tickets" );
 $ocf = RT::ObjectCustomField->new( RT->SystemUser );

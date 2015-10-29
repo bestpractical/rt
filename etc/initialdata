@@ -947,3 +947,13 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
         HotList           => 1,
     },
 );
+
+@CustomFields = (
+    {
+        Name              => 'Content',
+        Description       => 'Content',
+        LookupType        => 'RT::Class-RT::Article',
+        Type              => 'Text',
+        MaxValues         => 1,
+    },
+);
