@@ -22,7 +22,7 @@
     background: transparent;
 }
 
-.rights-editor > .ui-tabs-nav li a {
+.rights-editor > .ui-tabs-nav .ui-tabs-anchor {
     float: none;
     display: block;
     padding: 0 0 0.2em 0.5em;
@@ -141,6 +141,6 @@ span.rights-editor-label {
 /* override jquery-ui by using a more specific
  * class identifier.
  */
-.category-tabs.ui-tabs .ui-tabs-nav li a {
+.category-tabs.ui-tabs .ui-tabs-nav .ui-tabs-anchor {
     padding: .5em 0.5em;
 }
