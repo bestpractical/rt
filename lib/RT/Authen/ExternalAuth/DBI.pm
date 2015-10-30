@@ -285,7 +285,12 @@ sub GetAuth {
     $RT::Logger->debug( "Encryption Subroutine:",
                         $db_p_enc_sub);
 
-    $db_p_enc_pkg->require;
+    # Use config info to auto-load the perl package needed for password encryption
+    # Jump to next external authentication service on failure
+    $db_p_enc_pkg->require or do {
+        $RT::Logger->error("AUTH FAILED, Couldn't Load Password Encryption Package. Error: $@");
+        return 0;
+    };
 
     my $encrypt = $db_p_enc_pkg->can($db_p_enc_sub);
     if (defined($encrypt)) {

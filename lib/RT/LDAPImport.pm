@@ -641,9 +641,7 @@ sub _show_user_info {
     my $user = $args{user};
     my $rt_user = $args{rt_user};
 
-    return unless (RT->Config->Get('LogToSTDERR') || '') eq 'debug';
-
-    print "\tRT Field\tRT Value -> LDAP Value\n";
+    $RT::Logger->debug( "\tRT Field\tRT Value -> LDAP Value" );
     foreach my $key (sort keys %$user) {
         my $old_value;
         if ($rt_user) {
@@ -653,7 +651,7 @@ sub _show_user_info {
             }
         }
         $old_value ||= 'unset';
-        print "\t$key\t$old_value => $user->{$key}\n";
+        $RT::Logger->debug( "\t$key\t$old_value => $user->{$key}" );
     }
     #$RT::Logger->debug(Dumper($user));
 }
@@ -881,7 +879,7 @@ sub create_rt_user {
                 }
                 $RT::Logger->debug("Created user for $user->{Name} with id ".$user_obj->Id);
             } else {
-                print "Found new user $user->{Name} to create in RT\n";
+                $RT::Logger->debug( "Found new user $user->{Name} to create in RT" );
                 $self->_show_user_info( %args );
                 return;
             }
@@ -1222,7 +1220,7 @@ sub create_rt_group {
             my @results = $group_obj->Update( ARGSRef => $group, AttributesRef => [keys %$group] );
             $RT::Logger->debug(join("\n",@results)||'no change');
         } else {
-            print "Found existing group $group->{Name} to update\n";
+            $RT::Logger->debug( "Found existing group $group->{Name} to update" );
             $self->_show_group_info( %args, rt_group => $group_obj );
         }
     } else {
@@ -1249,7 +1247,7 @@ sub create_rt_group {
             }
 
         } else {
-            print "Found new group $group->{Name} to create in RT\n";
+            $RT::Logger->debug( "Found new group $group->{Name} to create in RT" );
             $self->_show_group_info( %args );
             return;
         }
@@ -1313,7 +1311,7 @@ sub find_rt_group {
             $RT::Logger->debug("Assigned $group->{id} LDAP group id to $group->{Name}");
         }
         else {
-            print "Group $group->{'Name'} gets LDAP id $group->{id}\n";
+            $RT::Logger->debug( "Group $group->{'Name'} gets LDAP id $group->{id}" );
         }
 
         return $group_obj;
@@ -1331,7 +1329,7 @@ sub find_rt_group {
             $RT::Logger->debug("Renamed group $old to $new");
         }
         else {
-            print "Group $old to be renamed to $new\n";
+            $RT::Logger->debug( "Group $old to be renamed to $new" );
         }
     }
 
@@ -1499,10 +1497,10 @@ sub _show_group {
     $rt_group->LoadUserDefinedGroup( $group->{Name} );
 
     if ( $rt_group->Id ) {
-        print "Found existing group $group->{Name} to update\n";
+        $RT::Logger->debug( "Found existing group $group->{Name} to update" );
         $self->_show_group_info( %args, rt_group => $rt_group );
     } else {
-        print "Found new group $group->{Name} to create in RT\n";
+        $RT::Logger->debug( "Found new group $group->{Name} to create in RT" );
         $self->_show_group_info( %args );
     }
 }
@@ -1513,9 +1511,7 @@ sub _show_group_info {
     my $group = $args{group};
     my $rt_group = $args{rt_group};
 
-    return unless (RT->Config->Get('LogToSTDERR') || '') eq 'debug';
-
-    print "\tRT Field\tRT Value -> LDAP Value\n";
+    $RT::Logger->debug( "\tRT Field\tRT Value -> LDAP Value" );
     foreach my $key (sort keys %$group) {
         my $old_value;
         if ($rt_group) {
@@ -1525,7 +1521,7 @@ sub _show_group_info {
             }
         }
         $old_value ||= 'unset';
-        print "\t$key\t$old_value => $group->{$key}\n";
+        $RT::Logger->debug( "\t$key\t$old_value => $group->{$key}" );
     }
 }
 
