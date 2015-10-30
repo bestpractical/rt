@@ -43,7 +43,7 @@ diag 'check Starts date' if $ENV{'TEST_VERBOSE'};
     );
 
     for my $time ( keys %time ) {
-        set_absolute_time($time);
+        set_fixed_time($time);
         my $ticket = RT::Ticket->new($RT::SystemUser);
         my ($id) = $ticket->Create( Queue => 'General', Subject => 'xxx' );
         ok $id, "created ticket #$id";
