@@ -97,7 +97,7 @@
 </tr>
 
 <tr><td align="right"><input type="checkbox" class="checkbox" id="SLAEnabled" name="SLAEnabled" value="1" 
-% if ( $Create || !$QueueObj->SLADisabled ) {
+% if ( $QueueObj->id && !$QueueObj->SLADisabled ) {
 checked="checked"
 % }
  /></td>
@@ -235,6 +235,9 @@ if ( $QueueObj->Id ) {
             next if RT::EmailParser->IsRTAddress( $address );
             push @no_redirect_results, loc("RTAddressRegexp option in the config doesn't match [_1]", $address );
         }
+    }
+    if ( !$QueueObj->SLADisabled && !( RT->Config->Get('ServiceAgreements') && keys %{RT->Config->Get('ServiceAgreements')}) ) {
+        push @no_redirect_results, loc("You enabled [_1] but [_2] hasn't been configured in RT_SiteConfig.pm, please check '[_3]' for more help", 'SLA', '%ServiceAgreements', 'docs/customizing/sla.pod');
     }
 } else {
     $title = loc("Create a queue");

@@ -3,6 +3,8 @@ use warnings;
 
 use RT::Test tests => undef;
 
+RT::Test->load_or_create_queue( Name => 'General', SLADisabled => 0 );
+
 diag 'check that reply to requestors dont unset due date with KeepInLoop' if $ENV{'TEST_VERBOSE'};
 {
     %RT::ServiceAgreements = (

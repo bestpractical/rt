@@ -816,7 +816,7 @@ sub load_or_create_queue {
         my ($val, $msg) = $obj->Create( %args );
         die "$msg" unless $val;
     } else {
-        my @fields = qw(CorrespondAddress CommentAddress);
+        my @fields = qw(CorrespondAddress CommentAddress SLADisabled);
         foreach my $field ( @fields ) {
             next unless exists $args{ $field };
             next if $args{ $field } eq ($obj->$field || '');

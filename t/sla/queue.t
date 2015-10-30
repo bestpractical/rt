@@ -4,9 +4,7 @@ use warnings;
 use Test::MockTime qw( :all );
 use RT::Test tests => undef;
 
-my $queue = RT::Queue->new($RT::SystemUser);
-$queue->Load('General');
-
+my $queue = RT::Test->load_or_create_queue( Name => 'General', SLADisabled => 0 );
 my $queue_sla = RT::Attribute->new($RT::SystemUser);
 
 diag 'check set of Due date with Queue default SLA' if $ENV{'TEST_VERBOSE'};

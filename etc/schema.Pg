@@ -57,7 +57,7 @@ CREATE TABLE Queues (
   Created TIMESTAMP NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated TIMESTAMP NULL  ,
-  SLADisabled integer NOT NULL DEFAULT 0 ,
+  SLADisabled integer NOT NULL DEFAULT 1 ,
   Disabled integer NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
 
