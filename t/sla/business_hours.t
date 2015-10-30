@@ -8,6 +8,8 @@ use RT::Test tests => undef;
 $ENV{'TZ'} = 'GMT';
 RT->Config->Set( Timezone => 'GMT' );
 
+RT::Test->load_or_create_queue( Name => 'General', SLADisabled => 0 );
+
 diag 'check business hours' if $ENV{'TEST_VERBOSE'};
 {
 

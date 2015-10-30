@@ -4,6 +4,8 @@ use warnings;
 use Test::MockTime qw( :all );
 use RT::Test tests => undef;
 
+RT::Test->load_or_create_queue( Name => 'General', SLADisabled => 0 );
+
 # we assume the RT's Timezone is UTC now, need a smart way to get over that.
 $ENV{'TZ'} = 'GMT';
 RT->Config->Set( Timezone => 'GMT' );

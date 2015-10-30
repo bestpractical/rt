@@ -34,7 +34,7 @@ CREATE TABLE Queues (
         Created                 DATE,
         LastUpdatedBy           NUMBER(11,0) DEFAULT 0 NOT NULL,
         LastUpdated             DATE,
-        SLADisabled             NUMBER(11,0) DEFAULT 0 NOT NULL,
+        SLADisabled             NUMBER(11,0) DEFAULT 1 NOT NULL,
         Disabled                NUMBER(11,0) DEFAULT 0 NOT NULL
 );
 CREATE UNIQUE INDEX Queues1 ON Queues (LOWER(Name));

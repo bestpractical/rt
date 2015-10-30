@@ -97,7 +97,7 @@
 </tr>
 
 <tr><td align="right"><input type="checkbox" class="checkbox" id="SLAEnabled" name="SLAEnabled" value="1" 
-% if ( $Create || !$QueueObj->SLADisabled ) {
+% if ( $QueueObj->id && !$QueueObj->SLADisabled ) {
 checked="checked"
 % }
  /></td>

@@ -4,10 +4,10 @@ use warnings;
 use Test::MockTime qw( :all );
 use RT::Test tests => undef;
 
-my $ru_queue = RT::Test->load_or_create_queue( Name => 'RU' );
+my $ru_queue = RT::Test->load_or_create_queue( Name => 'RU', SLADisabled => 0 );
 ok $ru_queue && $ru_queue->id, 'created RU queue';
 
-my $us_queue = RT::Test->load_or_create_queue( Name => 'US' );
+my $us_queue = RT::Test->load_or_create_queue( Name => 'US', SLADisabled => 0 );
 ok $us_queue && $ru_queue->id, 'created US queue';
 
 no warnings 'once';

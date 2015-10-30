@@ -27,7 +27,7 @@ BEGIN {
 
 my $now = TIME;
 
-my $queue = RT::Test->load_or_create_queue( Name => 'General' );
+my $queue = RT::Test->load_or_create_queue( Name => 'General', SLADisabled => 0 );
 
 my $user = RT::Test->load_or_create_user(
     Name         => 'user',

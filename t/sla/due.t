@@ -3,6 +3,8 @@ use warnings;
 
 use RT::Test tests => undef;
 
+RT::Test->load_or_create_queue( Name => 'General', SLADisabled => 0 );
+
 diag 'check change of Due date when SLA for a ticket is changed' if $ENV{'TEST_VERBOSE'};
 {
     %RT::ServiceAgreements = (
