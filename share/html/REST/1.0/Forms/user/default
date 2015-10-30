@@ -62,9 +62,7 @@ my $user = RT::User->new($session{CurrentUser});
 my @fields =
   qw(Name EmailAddress RealName NickName Gecos Organization Address1
   Address2 City State Zip Country HomePhone WorkPhone MobilePhone PagerPhone
-  FreeformContactInfo Comments Signature Lang EmailEncoding
-  WebEncoding ExternalContactInfoId ContactInfoSystem
-  ExternalAuthId AuthSystem Privileged Disabled);
+  FreeformContactInfo Comments Signature Lang Privileged Disabled);
 
 if ( $fields && %$fields ) {
   @fields = grep { exists $fields->{ lc $_ } } @fields;

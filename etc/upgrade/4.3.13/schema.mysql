@@ -1,0 +1,12 @@
+ALTER TABLE Tickets
+  DROP COLUMN IssueStatement,
+  DROP COLUMN Resolution;
+
+ALTER TABLE Users
+  DROP COLUMN EmailEncoding,
+  DROP COLUMN WebEncoding,
+  DROP COLUMN ExternalContactInfoId,
+  DROP COLUMN ContactInfoSystem,
+  DROP COLUMN ExternalAuthId,
+  DROP COLUMN AuthSystem,
+  DROP COLUMN PGPKey;

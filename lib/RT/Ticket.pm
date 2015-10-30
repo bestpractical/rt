@@ -3108,42 +3108,6 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=head2 IssueStatement
-
-Returns the current value of IssueStatement.
-(In the database, IssueStatement is stored as int(11).)
-
-
-
-=head2 SetIssueStatement VALUE
-
-
-Set IssueStatement to VALUE.
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, IssueStatement will be stored as a int(11).)
-
-
-=cut
-
-
-=head2 Resolution
-
-Returns the current value of Resolution.
-(In the database, Resolution is stored as int(11).)
-
-
-
-=head2 SetResolution VALUE
-
-
-Set Resolution to VALUE.
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Resolution will be stored as a int(11).)
-
-
-=cut
-
-
 =head2 Owner
 
 Returns the current value of Owner.
@@ -3444,10 +3408,6 @@ sub _CoreAccessible {
                 {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Type =>
                 {read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
-        IssueStatement =>
-                {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
-        Resolution =>
-                {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Owner =>
                 {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Subject =>

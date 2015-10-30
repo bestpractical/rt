@@ -225,10 +225,9 @@ if ( $ARGS{'ResetAuthToken'} ) {
 else {
     my @fields = qw(
         Name Comments Signature EmailAddress FreeformContactInfo 
-        Organization RealName NickName Lang EmailEncoding WebEncoding 
-        ExternalContactInfoId ContactInfoSystem Gecos ExternalAuthId 
-        AuthSystem HomePhone WorkPhone MobilePhone PagerPhone Address1
-        Address2 City State Zip Country Timezone
+        Organization RealName NickName Lang Gecos HomePhone WorkPhone
+        MobilePhone PagerPhone Address1 Address2 City State Zip Country
+        Timezone
     );
 
     $m->callback(
@@ -287,13 +286,7 @@ $SetPrivileged => undef
 $Enabled => undef
 $SetEnabled => undef
 $Lang  => undef
-$EmailEncoding  => undef
-$WebEncoding => undef
-$ExternalContactInfoId  => undef
-$ContactInfoSystem  => undef
 $Gecos => undef
-$ExternalAuthId  => undef
-$AuthSystem  => undef
 $HomePhone => undef
 $WorkPhone  => undef
 $MobilePhone  => undef

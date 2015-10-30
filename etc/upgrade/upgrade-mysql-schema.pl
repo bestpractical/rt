@@ -245,12 +245,6 @@ my %charset = (
         RealName  => 'utf8',
         NickName  => 'utf8',
         Lang  => 'ascii',
-        EmailEncoding  => 'ascii',
-        WebEncoding  => 'ascii',
-        ExternalContactInfoId  => 'utf8',
-        ContactInfoSystem  => 'utf8',
-        ExternalAuthId  => 'utf8',
-        AuthSystem  => 'utf8',
         Gecos  => 'utf8',
         HomePhone  => 'utf8',
         WorkPhone  => 'utf8',
@@ -263,7 +257,6 @@ my %charset = (
         Zip  => 'utf8',
         Country  => 'utf8',
         Timezone  => 'ascii',
-        PGPKey  => 'binary',
     },
 );
 

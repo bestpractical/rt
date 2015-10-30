@@ -1,0 +1,7 @@
+ALTER TABLE Tickets
+  DROP (IssueStatement, Resolution);
+
+ALTER TABLE Users
+  DROP (EmailEncoding, WebEncoding,
+        ExternalContactInfoId, ContactInfoSystem, ExternalAuthId, AuthSystem,
+        PGPKey);

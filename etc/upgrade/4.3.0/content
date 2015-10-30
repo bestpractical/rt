@@ -1,0 +1,73 @@
+use strict;
+use warnings;
+
+our @Initial = (
+    sub {
+        RT->Logger->debug('Make sure all columns we will drop are empty');
+
+        # Tickets
+        my @ticket_errors;
+
+        for my $column (qw/IssueStatement Resolution/) {
+            my $tickets = RT::Tickets->new(RT->SystemUser);
+            $tickets->{'allow_deleted_search'} = 1;
+            $tickets->Limit(
+                FIELD           => $column,
+                OPERATOR        => '!=',
+                VALUE           => 0,
+                ENTRYAGGREGATOR => 'AND',
+            );
+            $tickets->Limit(
+                FIELD           => $column,
+                OPERATOR        => 'IS NOT',
+                VALUE           => 'NULL',
+                ENTRYAGGREGATOR => 'AND',
+            );
+
+            if ($tickets->Count) {
+                push @ticket_errors, [$tickets->Count, $column];
+            }
+        }
+
+        # Users
+        my @user_errors;
+
+        for my $column (qw/
+            EmailEncoding WebEncoding ExternalContactInfoId
+            ContactInfoSystem ExternalAuthId AuthSystem PGPKey
+        /) {
+            my $users = RT::Users->new(RT->SystemUser);
+            $users->{'find_disabled_rows'} = 1;
+
+            $users->Limit(
+                FIELD           => $column,
+                OPERATOR        => '!=',
+                VALUE           => '',
+                ENTRYAGGREGATOR => 'AND',
+            );
+            $users->Limit(
+                FIELD           => $column,
+                OPERATOR        => 'IS NOT',
+                VALUE           => 'NULL',
+                ENTRYAGGREGATOR => 'AND',
+            );
+
+            if ($users->Count) {
+                push @user_errors, [$users->Count, $column];
+            }
+        }
+
+        for (@ticket_errors) {
+            my ($count, $column) = @$_;
+            warn "You have $count ticket(s) with a non-zero value for column '$column'. Core RT does not use this column, so perhaps an extension or local modification makes use of it. Please migrate these ticket values to a custom field or an attribute because this upgrade will drop these columns.";
+        }
+
+        for (@user_errors) {
+            my ($count, $column) = @$_;
+            warn "You have $count users(s) with a non-empty value for column '$column'. Core RT does not use this column, so perhaps an extension or local modification makes use of it. Please migrate these user values to a custom field or an attribute because this upgrade will drop these columns.";
+        }
+
+        exit 1 if @ticket_errors || @user_errors;
+    },
+);
+
