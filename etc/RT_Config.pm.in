@@ -1612,8 +1612,16 @@ transitioned to another inactive status.
 
 Set($HideResolveActionsWithDependencies, 0);
 
-=back
+=item C<$HideUnsetFieldsOnDisplay>
 
+This determines if we should hide unset fields on ticket display page.
+Set this to 1 to hide unset fields.
+
+=cut
+
+Set($HideUnsetFieldsOnDisplay, 0);
+
+=back
 
 
 =head2 Articles

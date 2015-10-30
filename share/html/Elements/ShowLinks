@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <table>
 % for my $type (@display) {
-% if ( $clone{$type} || $Object->$type->Count ) {
+% if ( !RT->Config->Get('HideUnsetFieldsOnDisplay', $session{CurrentUser}) || $clone{$type} || $Object->$type->Count ) {
   <tr>
     <td class="labeltop">
       <& ShowRelationLabel, Object => $Object, Label => $labels{$type}.':', Relation => $type &>

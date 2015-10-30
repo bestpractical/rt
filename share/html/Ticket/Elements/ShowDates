@@ -51,21 +51,21 @@
     <td class="value"><% $Ticket->CreatedObj->AsString %></td>
   </tr>
 % $m->callback( %ARGS, CallbackName => 'AfterCreated', TicketObj => $Ticket );
-% if ( $Ticket->StartsObj->Unix ) {
+% if ( !$hide_unset_fields || $Ticket->StartsObj->Unix ) {
   <tr class="date starts">
     <td class="label"><&|/l&>Starts</&>:</td>\
     <td class="value"><% $Ticket->StartsObj->AsString %></td>
   </tr>
 % $m->callback( %ARGS, CallbackName => 'AfterStarts', TicketObj => $Ticket );
 % }
-% if ( $Ticket->StartedObj->Unix ) {
+% if ( !$hide_unset_fields || $Ticket->StartedObj->Unix ) {
   <tr class="date started">
     <td class="label"><&|/l&>Started</&>:</td>\
     <td class="value"><% $Ticket->StartedObj->AsString %></td>
   </tr>
 % $m->callback( %ARGS, CallbackName => 'AfterStarted', TicketObj => $Ticket );
 % }
-% if ( $Ticket->ToldObj->Unix || $Ticket->CurrentUserHasRight('ModifyTicket') ) {
+% if ( !$hide_unset_fields || $Ticket->ToldObj->Unix || $Ticket->CurrentUserHasRight('ModifyTicket') ) {
   <tr class="date told">
     <td class="label">
 % if ( $Ticket->CurrentUserHasRight('ModifyTicket' ) ) {
@@ -78,11 +78,11 @@
 % $m->callback( %ARGS, CallbackName => 'AfterTold', TicketObj => $Ticket );
 % }
 
-% if ( $Ticket->DueObj->Unix ) {
+% if ( !$hide_unset_fields || $Ticket->DueObj->Unix ) {
   <tr class="date due">
     <td class="label"><&|/l&>Due</&>:</td>\
 % my $due = $Ticket->DueObj;
-% if ( $due && $due->IsSet && $due->Diff < 0 && $Ticket->QueueObj->IsActiveStatus($Ticket->Status) ) {
+% if ( !$hide_unset_fields || $due && $due->IsSet && $due->Diff < 0 && $Ticket->QueueObj->IsActiveStatus($Ticket->Status) ) {
     <td class="value"><span class="overdue"><% $due->AsString  %></span></td>
 % } else {
     <td class="value"><% $due->AsString  %></td>
@@ -91,7 +91,7 @@
 % $m->callback( %ARGS, CallbackName => 'AfterDue', TicketObj => $Ticket );
 % }
 
-% if ( $Ticket->ResolvedObj->Unix ) {
+% if ( !$hide_unset_fields || $Ticket->ResolvedObj->Unix ) {
   <tr class="date resolved">
     <td class="label"><&|/l&>Closed</&>:</td>\
     <td class="value"><% $Ticket->ResolvedObj->AsString  %></td>
@@ -117,6 +117,8 @@ $Ticket => undef
 $UpdatedLink => 1
 </%ARGS>
 <%INIT>
+my $hide_unset_fields = RT->Config->Get('HideUnsetFieldsOnDisplay', $session{CurrentUser});
+
 if ($UpdatedLink and $Ticket) {
     my $txns = $Ticket->Transactions;
     $txns->OrderByCols(
