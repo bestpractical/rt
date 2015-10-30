@@ -113,59 +113,56 @@ if ($anchor =~ /AddPrincipal/) {
           }
       });
 
-      // "rights" checkbox state datastore...
-      var categories_check_counts = {};
-      var principals_check_counts = {};
+      // "rights" checkbox state cache...
+      var check_counts = {};
 
       // Before page loads we need to initialize our "rights" checkbox state
-      // datastore.
+      // cache.
       jQuery("div.category-tabs input[type=checkbox]").each(function(index, element) {
           // Evaluating each checkbox and its current check state is the same
           // as evaluating a check event once the page is loaded. However, we
           // must indicate to the process_check_event that we are initializing
-          // the datastore. That is, we musn't decrement values from count
+          // the cache. That is, we musn't decrement values from count
           // totals for checkboxes that aren't checked. That only happens when
           // a user actually unchecks a box, not when we are initially counting
           // checked or unchecked boxes.
-          process_check_event(element, false);
+          process_check_event(element, true);
       });
 
       jQuery("div.category-tabs input[type=checkbox]").change(function() {
-          process_check_event(this, true);
+          process_check_event(this, false);
       });
 
-      /*
-       parameters:
-         checkbox - DOM checkbox element that was checked
-         is_initialized - a boolean that defines whether or not this function
-                          can assume that the "rights" checkbox state
-                          datastore has been initialized.
-
-       */
-      function process_check_event(checkbox, is_initialized) {
+      // parameters:
+      //   checkbox           - DOM checkbox element that was checked
+      //   initializing_cache - a boolean that defines whether or not this
+      //                        function was called with the purpose of
+      //                        initializing the contents of the check_counts
+      //                        cache.
+      function process_check_event(checkbox, initializing_cache) {
           var category_tab  = checkbox.getAttribute('data-category-tab');
           var principal_tab = checkbox.getAttribute('data-principal-tab');
 
-          classify_tab(checkbox.checked, category_tab, categories_check_counts, is_initialized);
-          classify_tab(checkbox.checked, principal_tab, principals_check_counts, is_initialized);
+          classify_tab(checkbox.checked, category_tab, initializing_cache);
+          classify_tab(checkbox.checked, principal_tab, initializing_cache);
       }
 
-      function classify_tab(checked, tab_id, tab_check_counts, is_initialized) {
-          if (typeof tab_check_counts[tab_id] == 'undefined') {
-              tab_check_counts[tab_id] = 0;
+      function classify_tab(checked, tab_id, initializing_cache) {
+          if (typeof check_counts[tab_id] == 'undefined') {
+              check_counts[tab_id] = 0;
           }
 
           if (checked) {
-              tab_check_counts[tab_id]++;
-              if (tab_check_counts[tab_id] == 1) {
+              check_counts[tab_id]++;
+              if (check_counts[tab_id] == 1) {
                   // Then this is the first check and we need to add a class
                   // to the tab.
                   jQuery('#' + tab_id).addClass("tab-aggregates-checked-rights");
               }
           }
-          else if (is_initialized) {
-              tab_check_counts[tab_id]--;
-              if (tab_check_counts[tab_id] == 0) {
+          else if (! initializing_cache) {
+              check_counts[tab_id]--;
+              if (check_counts[tab_id] == 0) {
                   // Then this is the last uncheck and we need to remove a
                   // class from the tab.
                   jQuery('#' + tab_id).removeClass("tab-aggregates-checked-rights");
