@@ -22,7 +22,7 @@ no warnings 'once';
     },
 );
 
-set_absolute_time('2007-01-01T22:00:00Z');
+set_fixed_time('2007-01-01T22:00:00Z');
 
 diag 'check dates in US queue' if $ENV{'TEST_VERBOSE'};
 {

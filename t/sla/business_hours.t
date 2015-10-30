@@ -42,7 +42,7 @@ diag 'check business hours' if $ENV{'TEST_VERBOSE'};
         },
     );
 
-    set_absolute_time('2007-01-01T00:00:00Z');
+    set_fixed_time('2007-01-01T00:00:00Z');
 
     my $ticket = RT::Ticket->new($RT::SystemUser);
     my ($id) = $ticket->Create( Queue => 'General', Subject => 'xxx' );

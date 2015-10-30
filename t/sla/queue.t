@@ -32,7 +32,7 @@ diag 'check set of Due date with Queue default SLA' if $ENV{'TEST_VERBOSE'};
     );
 
 
-    set_absolute_time('2007-01-01T00:00:00Z');
+    set_fixed_time('2007-01-01T00:00:00Z');
     my $time = time;
     my $ticket = RT::Ticket->new($RT::SystemUser);
     ($id) = $ticket->Create( Queue => 'General', Subject => 'xxx' );
