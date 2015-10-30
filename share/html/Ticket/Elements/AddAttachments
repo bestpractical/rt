@@ -121,7 +121,12 @@ jQuery( function() {
             '        </svg>' +
             '    </div>' +
             '</div>',
+        init: function() {
+            jQuery('#attach-dropzone').triggerHandler('dropzone-init');
+            jQuery('#attach-dropzone').addClass('dropzone-init');
+        },
         fallback: function() {
+            jQuery('#attach-dropzone').triggerHandler('dropzone-fallback');
             jQuery('#attach-dropzone').addClass('hidden');
             jQuery('#attach-dropzone').siblings('div.old-attach').removeClass('hidden');
         }
@@ -136,11 +141,15 @@ jQuery( function() {
         jQuery('#attach-dropzone').removeClass('scaled');
     });
     attachDropzone.on('reset', function() {
-        jQuery('#attach-dropzone').removeClass('scaled');
+        jQuery('#attach-dropzone').removeClass('scaled has-attachments');
+        jQuery('#attach-dropzone').triggerHandler('attachment-change');
     });
     var submit_input = jQuery('#attach-dropzone').closest('form').find('div.submit :submit:visible:last');
     var submit_input_label = submit_input.attr('value');
     attachDropzone.on('addedfile', function() {
+        jQuery('#attach-dropzone').addClass('has-attachments');
+        jQuery('#attach-dropzone').triggerHandler('attachment-change');
+
         submit_input.prop('disabled', true).attr('value', <% loc('Uploading...') |n,j %>);
     });
     attachDropzone.on('queuecomplete', function() {
