@@ -79,11 +79,16 @@ my $title = ( $ARGS{'SearchAssets'} or $ARGS{q} ) ?
 <& /Asset/Elements/AssetSearchPeople, %ARGS, CatalogObj => $catalog_obj &>
 <& /Elements/Submit, Label => loc('Search'), Name => 'SearchAssets' &>
 
+% my $has_assets_cfs = 0;
 % foreach my $group ( 'Dates', 'Links', RT::CustomField->CustomGroupings( "RT::Asset" ), '' ) {
     <& /Asset/Elements/AssetSearchCFs, %ARGS, Grouping => $group,
-       CatalogObj => $catalog_obj &>
+       CatalogObj => $catalog_obj, has_assets_cfs => \$has_assets_cfs &>
 % }
+
+% if ( $has_assets_cfs ) {
 <& /Elements/Submit, Label => loc('Search'), Name => 'SearchAssets' &>
+% }
+
 </&>
 
 <script>
