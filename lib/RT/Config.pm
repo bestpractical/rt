@@ -471,6 +471,15 @@ our %META;
             Description => 'Enable quote folding?' # loc
         }
     },
+    HideUnsetFieldsOnDisplay => {
+        Section => 'Ticket display',
+        Overridable => 1,
+        SortOrder => 11,
+        Widget => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Hide unset fields?' # loc
+        }
+    },
 
     # User overridable locale options
     DateTimeFormat => {

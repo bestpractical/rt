@@ -58,13 +58,13 @@
     <td class="labeltop"><&|/l&>Requestors</&>:</td>
     <td class="value"><& ShowGroupMembers, Group => $Ticket->Requestors, Ticket => $Ticket &></td>
   </tr>
-% if ( $Ticket->Cc->MembersObj->Count ) {
+% if ( !$hide_unset_fields || $Ticket->Cc->MembersObj->Count ) {
   <tr>
     <td class="labeltop"><&|/l&>Cc</&>:</td>
     <td class="value"><& ShowGroupMembers, Group => $Ticket->Cc, Ticket => $Ticket &></td>
   </tr>
 % }
-% if ( $Ticket->AdminCc->MembersObj->Count ) {
+% if ( !$hide_unset_fields || $Ticket->AdminCc->MembersObj->Count ) {
   <tr>
     <td class="labeltop"><&|/l&>AdminCc</&>:</td>
     <td class="value"><& ShowGroupMembers, Group => $Ticket->AdminCc, Ticket => $Ticket &></td>
@@ -73,6 +73,7 @@
   <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Grouping => 'People', Table => 0 &>
 </table>
 <%INIT>
+my $hide_unset_fields = RT->Config->Get('HideUnsetFieldsOnDisplay', $session{CurrentUser});
 </%INIT>
 <%ARGS>
 $Ticket => undef

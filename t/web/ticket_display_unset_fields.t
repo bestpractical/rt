@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => undef;
+use RT::Test tests => undef, config => 'Set( $HideUnsetFieldsOnDisplay, 1 );';
 
 my @link_labels = (
     'Depends on',
